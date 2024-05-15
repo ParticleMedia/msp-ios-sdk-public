@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Workspace
+   version = "1.0">
+   <FileRef
+      location = "group:MSPSharedLibraries/MSPSharedLibraries.xcodeproj">
+   </FileRef>
+   <FileRef
+      location = "group:MSPCore/MSPCore.xcodeproj">
+   </FileRef>
+   <FileRef
+      location = "group:PrebidAdapter/PrebidAdapter.xcodeproj">
+   </FileRef>
+   <FileRef
+      location = "group:GoogleAdapter/GoogleAdapter.xcodeproj">
+   </FileRef>
+   <FileRef
+      location = "group:MSPDemoApp/MSPDemoApp.xcodeproj">
+   </FileRef>
+   <FileRef
+      location = "group:Pods/Pods.xcodeproj">
+   </FileRef>
+</Workspace>

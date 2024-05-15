@@ -1,0 +1,10 @@
+framework module GoogleAdapter {
+    
+    // Versions
+    header "GoogleAdapter.h"
+}
+
+module GoogleAdapter.Swift {
+  header "GoogleAdapter-Swift.h"
+  requires objc
+}

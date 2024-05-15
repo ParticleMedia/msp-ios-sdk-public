@@ -1,0 +1,6 @@
+module Pods_MSPCore {
+  umbrella header "Pods-MSPCore-umbrella.h"
+
+  export *
+  module * { export * }
+}

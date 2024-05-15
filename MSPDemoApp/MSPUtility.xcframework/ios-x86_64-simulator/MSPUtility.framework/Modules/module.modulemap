@@ -1,0 +1,10 @@
+framework module MSPUtility {
+    
+    // Versions
+    header "MSPUtility.h"
+}
+
+module MSPUtility.Swift {
+  header "MSPUtility-Swift.h"
+  requires objc
+}

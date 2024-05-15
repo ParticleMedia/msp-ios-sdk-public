@@ -1,0 +1,6 @@
+module Pods_MSPDemoApp {
+  umbrella header "Pods-MSPDemoApp-umbrella.h"
+
+  export *
+  module * { export * }
+}

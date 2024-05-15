@@ -1,0 +1,36 @@
+// swift-interface-format-version: 1.0
+// swift-compiler-version: Apple Swift version 5.10 (swiftlang-5.10.0.13 clang-1500.3.9.4)
+// swift-module-flags: -target arm64-apple-ios13.0 -enable-objc-interop -enable-library-evolution -swift-version 5 -enforce-exclusivity=checked -O -enable-bare-slash-regex -module-name MSPUtility
+import Foundation
+@_exported import MSPUtility
+import PrebidAdapter
+import Swift
+import _Concurrency
+import _StringProcessing
+import _SwiftConcurrencyShims
+import shared
+@_hasMissingDesignatedInitializers public class MSPHelper {
+  public static let shared: MSPUtility.MSPHelper
+  public static func initMSP()
+  public static func createClassFromName(name: Swift.String) -> Any?
+  @objc deinit
+}
+public class MSPAdNetworkAdapterProvider : shared.AdNetworkAdapterProvider {
+  @objc public func getAdNetworkAdaptersCount() -> Swift.Int32
+  public init()
+  @objc public func getAdNetworkAdapter(adNetwork: shared.AdNetwork) -> (any shared.AdNetworkAdapter)?
+  @objc deinit
+}
+public class MSPBidLoaderProvider : shared.BidLoaderProvider {
+  public init()
+  @objc public func getBidLoader() -> shared.BidLoader
+  @objc deinit
+}
+@_hasMissingDesignatedInitializers public class GoogleQueryInfoFetcherStandalone : shared.GoogleQueryInfoFetcher {
+  @objc public func fetch(completeListener: any shared.GoogleQueryInfoListener, adRequest: shared.AdRequest)
+  @objc deinit
+}
+@_hasMissingDesignatedInitializers public class FacebookBidTokenProviderStandalone : shared.FacebookBidTokenProvider {
+  @objc public func fetch(completeListener: any shared.FacebookBidTokenListener, context: Any)
+  @objc deinit
+}

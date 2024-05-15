@@ -1,0 +1,2 @@
+${PODS_XCFRAMEWORKS_BUILD_DIR}/GoogleAdapter/PrebidMobile.framework
+${PODS_XCFRAMEWORKS_BUILD_DIR}/GoogleAdapter/MSPiOSCore.framework

@@ -1,0 +1,596 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		1FAD4CF4DA9A5F4F6FF39485 /* Pods_PrebidAdapter.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8A11CB79D7872D1A49043475 /* Pods_PrebidAdapter.framework */; };
+		5E351931D3F6D56A60BE2F9D /* Pods_PrebidAdapter_PrebidAdapterTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 64BFBFF1962FABF7FA1D080A /* Pods_PrebidAdapter_PrebidAdapterTests.framework */; };
+		665753802BF1A9DA00338B1C /* MSPiOSCore.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6657537F2BF1A9DA00338B1C /* MSPiOSCore.xcframework */; };
+		66D6C3A42B322B44006EBBF3 /* PrebidAdapter.docc in Sources */ = {isa = PBXBuildFile; fileRef = 66D6C3A32B322B44006EBBF3 /* PrebidAdapter.docc */; };
+		66D6C3AA2B322B44006EBBF3 /* PrebidAdapter.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 66D6C39F2B322B44006EBBF3 /* PrebidAdapter.framework */; };
+		66D6C3AF2B322B44006EBBF3 /* PrebidAdapterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66D6C3AE2B322B44006EBBF3 /* PrebidAdapterTests.swift */; };
+		66D6C3B02B322B44006EBBF3 /* PrebidAdapter.h in Headers */ = {isa = PBXBuildFile; fileRef = 66D6C3A22B322B44006EBBF3 /* PrebidAdapter.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		66D6C3E22B323EDD006EBBF3 /* PrebidMobile.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 66D6C3E12B323EDC006EBBF3 /* PrebidMobile.xcframework */; };
+		66D6C3E62B323F76006EBBF3 /* PrebidAdLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66D6C3E52B323F76006EBBF3 /* PrebidAdLoader.swift */; };
+		66D6C3F22B33996A006EBBF3 /* PrebidBidLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66D6C3F12B33996A006EBBF3 /* PrebidBidLoader.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		66D6C3AB2B322B44006EBBF3 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 66D6C3962B322B44006EBBF3 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 66D6C39E2B322B44006EBBF3;
+			remoteInfo = PrebidAdapter;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		3AD3FD3A62266440FBC1D284 /* Pods-PrebidAdapter.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PrebidAdapter.debug.xcconfig"; path = "Target Support Files/Pods-PrebidAdapter/Pods-PrebidAdapter.debug.xcconfig"; sourceTree = "<group>"; };
+		520CD0FAE42A5653AA1BB6DF /* Pods-PrebidAdapter-PrebidAdapterTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PrebidAdapter-PrebidAdapterTests.debug.xcconfig"; path = "Target Support Files/Pods-PrebidAdapter-PrebidAdapterTests/Pods-PrebidAdapter-PrebidAdapterTests.debug.xcconfig"; sourceTree = "<group>"; };
+		64BFBFF1962FABF7FA1D080A /* Pods_PrebidAdapter_PrebidAdapterTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_PrebidAdapter_PrebidAdapterTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		6657537F2BF1A9DA00338B1C /* MSPiOSCore.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; path = MSPiOSCore.xcframework; sourceTree = "<group>"; };
+		66D6C39F2B322B44006EBBF3 /* PrebidAdapter.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = PrebidAdapter.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		66D6C3A22B322B44006EBBF3 /* PrebidAdapter.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PrebidAdapter.h; sourceTree = "<group>"; };
+		66D6C3A32B322B44006EBBF3 /* PrebidAdapter.docc */ = {isa = PBXFileReference; lastKnownFileType = folder.documentationcatalog; path = PrebidAdapter.docc; sourceTree = "<group>"; };
+		66D6C3A92B322B44006EBBF3 /* PrebidAdapterTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = PrebidAdapterTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		66D6C3AE2B322B44006EBBF3 /* PrebidAdapterTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrebidAdapterTests.swift; sourceTree = "<group>"; };
+		66D6C3DF2B323E4A006EBBF3 /* PrebidAdapter */ = {isa = PBXFileReference; lastKnownFileType = folder; path = PrebidAdapter; sourceTree = "<group>"; };
+		66D6C3E12B323EDC006EBBF3 /* PrebidMobile.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; path = PrebidMobile.xcframework; sourceTree = "<group>"; };
+		66D6C3E52B323F76006EBBF3 /* PrebidAdLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrebidAdLoader.swift; sourceTree = "<group>"; };
+		66D6C3E72B325756006EBBF3 /* PrebidAdapter */ = {isa = PBXFileReference; lastKnownFileType = folder; path = PrebidAdapter; sourceTree = "<group>"; };
+		66D6C3E92B325768006EBBF3 /* shared.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; path = shared.xcframework; sourceTree = "<group>"; };
+		66D6C3F12B33996A006EBBF3 /* PrebidBidLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = PrebidBidLoader.swift; path = PrebidAdapter/PrebidBidLoader.swift; sourceTree = "<group>"; };
+		66D6C3F42B339BB0006EBBF3 /* PrebidAdapter.modulemap */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = "sourcecode.module-map"; path = PrebidAdapter.modulemap; sourceTree = "<group>"; };
+		66D6C3FD2B33B45F006EBBF3 /* PrebidAdapter */ = {isa = PBXFileReference; lastKnownFileType = folder; path = PrebidAdapter; sourceTree = "<group>"; };
+		79F5C94DBC06D9E0D184E08D /* Pods-PrebidAdapter.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PrebidAdapter.release.xcconfig"; path = "Target Support Files/Pods-PrebidAdapter/Pods-PrebidAdapter.release.xcconfig"; sourceTree = "<group>"; };
+		8A11CB79D7872D1A49043475 /* Pods_PrebidAdapter.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_PrebidAdapter.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		D451118E5E675DA783994638 /* Pods-PrebidAdapter-PrebidAdapterTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PrebidAdapter-PrebidAdapterTests.release.xcconfig"; path = "Target Support Files/Pods-PrebidAdapter-PrebidAdapterTests/Pods-PrebidAdapter-PrebidAdapterTests.release.xcconfig"; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		66D6C39C2B322B44006EBBF3 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				1FAD4CF4DA9A5F4F6FF39485 /* Pods_PrebidAdapter.framework in Frameworks */,
+				665753802BF1A9DA00338B1C /* MSPiOSCore.xcframework in Frameworks */,
+				66D6C3E22B323EDD006EBBF3 /* PrebidMobile.xcframework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		66D6C3A62B322B44006EBBF3 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				66D6C3AA2B322B44006EBBF3 /* PrebidAdapter.framework in Frameworks */,
+				5E351931D3F6D56A60BE2F9D /* Pods_PrebidAdapter_PrebidAdapterTests.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		23EB683437650D5DACF1B36A /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				6657537F2BF1A9DA00338B1C /* MSPiOSCore.xcframework */,
+				66D6C3E72B325756006EBBF3 /* PrebidAdapter */,
+				66D6C3FD2B33B45F006EBBF3 /* PrebidAdapter */,
+				66D6C3E12B323EDC006EBBF3 /* PrebidMobile.xcframework */,
+				66D6C3E92B325768006EBBF3 /* shared.xcframework */,
+				66D6C3DF2B323E4A006EBBF3 /* PrebidAdapter */,
+				8A11CB79D7872D1A49043475 /* Pods_PrebidAdapter.framework */,
+				64BFBFF1962FABF7FA1D080A /* Pods_PrebidAdapter_PrebidAdapterTests.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		66D6C3952B322B44006EBBF3 = {
+			isa = PBXGroup;
+			children = (
+				66D6C3F12B33996A006EBBF3 /* PrebidBidLoader.swift */,
+				66D6C3A12B322B44006EBBF3 /* PrebidAdapter */,
+				66D6C3AD2B322B44006EBBF3 /* PrebidAdapterTests */,
+				66D6C3A02B322B44006EBBF3 /* Products */,
+				E31AAD0FF50C895801B12B3B /* Pods */,
+				23EB683437650D5DACF1B36A /* Frameworks */,
+			);
+			sourceTree = "<group>";
+		};
+		66D6C3A02B322B44006EBBF3 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				66D6C39F2B322B44006EBBF3 /* PrebidAdapter.framework */,
+				66D6C3A92B322B44006EBBF3 /* PrebidAdapterTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		66D6C3A12B322B44006EBBF3 /* PrebidAdapter */ = {
+			isa = PBXGroup;
+			children = (
+				66D6C3F42B339BB0006EBBF3 /* PrebidAdapter.modulemap */,
+				66D6C3A22B322B44006EBBF3 /* PrebidAdapter.h */,
+				66D6C3A32B322B44006EBBF3 /* PrebidAdapter.docc */,
+				66D6C3E52B323F76006EBBF3 /* PrebidAdLoader.swift */,
+			);
+			path = PrebidAdapter;
+			sourceTree = "<group>";
+		};
+		66D6C3AD2B322B44006EBBF3 /* PrebidAdapterTests */ = {
+			isa = PBXGroup;
+			children = (
+				66D6C3AE2B322B44006EBBF3 /* PrebidAdapterTests.swift */,
+			);
+			path = PrebidAdapterTests;
+			sourceTree = "<group>";
+		};
+		E31AAD0FF50C895801B12B3B /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				3AD3FD3A62266440FBC1D284 /* Pods-PrebidAdapter.debug.xcconfig */,
+				79F5C94DBC06D9E0D184E08D /* Pods-PrebidAdapter.release.xcconfig */,
+				520CD0FAE42A5653AA1BB6DF /* Pods-PrebidAdapter-PrebidAdapterTests.debug.xcconfig */,
+				D451118E5E675DA783994638 /* Pods-PrebidAdapter-PrebidAdapterTests.release.xcconfig */,
+			);
+			name = Pods;
+			path = ../Pods;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		66D6C39A2B322B44006EBBF3 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				66D6C3B02B322B44006EBBF3 /* PrebidAdapter.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		66D6C39E2B322B44006EBBF3 /* PrebidAdapter */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 66D6C3B32B322B44006EBBF3 /* Build configuration list for PBXNativeTarget "PrebidAdapter" */;
+			buildPhases = (
+				C75470C8B86644BA8764E765 /* [CP] Check Pods Manifest.lock */,
+				66D6C39A2B322B44006EBBF3 /* Headers */,
+				66D6C39B2B322B44006EBBF3 /* Sources */,
+				66D6C39C2B322B44006EBBF3 /* Frameworks */,
+				66D6C39D2B322B44006EBBF3 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = PrebidAdapter;
+			productName = PrebidAdapter;
+			productReference = 66D6C39F2B322B44006EBBF3 /* PrebidAdapter.framework */;
+			productType = "com.apple.product-type.framework";
+		};
+		66D6C3A82B322B44006EBBF3 /* PrebidAdapterTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 66D6C3B62B322B44006EBBF3 /* Build configuration list for PBXNativeTarget "PrebidAdapterTests" */;
+			buildPhases = (
+				7EAC3798166082447D3B8125 /* [CP] Check Pods Manifest.lock */,
+				66D6C3A52B322B44006EBBF3 /* Sources */,
+				66D6C3A62B322B44006EBBF3 /* Frameworks */,
+				66D6C3A72B322B44006EBBF3 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				66D6C3AC2B322B44006EBBF3 /* PBXTargetDependency */,
+			);
+			name = PrebidAdapterTests;
+			productName = PrebidAdapterTests;
+			productReference = 66D6C3A92B322B44006EBBF3 /* PrebidAdapterTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		66D6C3962B322B44006EBBF3 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1430;
+				LastUpgradeCheck = 1430;
+				TargetAttributes = {
+					66D6C39E2B322B44006EBBF3 = {
+						CreatedOnToolsVersion = 14.3.1;
+					};
+					66D6C3A82B322B44006EBBF3 = {
+						CreatedOnToolsVersion = 14.3.1;
+					};
+				};
+			};
+			buildConfigurationList = 66D6C3992B322B44006EBBF3 /* Build configuration list for PBXProject "PrebidAdapter" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 66D6C3952B322B44006EBBF3;
+			productRefGroup = 66D6C3A02B322B44006EBBF3 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				66D6C39E2B322B44006EBBF3 /* PrebidAdapter */,
+				66D6C3A82B322B44006EBBF3 /* PrebidAdapterTests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		66D6C39D2B322B44006EBBF3 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		66D6C3A72B322B44006EBBF3 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		7EAC3798166082447D3B8125 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-PrebidAdapter-PrebidAdapterTests-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		C75470C8B86644BA8764E765 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-PrebidAdapter-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		66D6C39B2B322B44006EBBF3 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				66D6C3A42B322B44006EBBF3 /* PrebidAdapter.docc in Sources */,
+				66D6C3E62B323F76006EBBF3 /* PrebidAdLoader.swift in Sources */,
+				66D6C3F22B33996A006EBBF3 /* PrebidBidLoader.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		66D6C3A52B322B44006EBBF3 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				66D6C3AF2B322B44006EBBF3 /* PrebidAdapterTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		66D6C3AC2B322B44006EBBF3 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 66D6C39E2B322B44006EBBF3 /* PrebidAdapter */;
+			targetProxy = 66D6C3AB2B322B44006EBBF3 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		66D6C3B12B322B44006EBBF3 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.4;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Debug;
+		};
+		66D6C3B22B322B44006EBBF3 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.4;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				VALIDATE_PRODUCT = YES;
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Release;
+		};
+		66D6C3B42B322B44006EBBF3 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 3AD3FD3A62266440FBC1D284 /* Pods-PrebidAdapter.debug.xcconfig */;
+			buildSettings = {
+				BUILD_LIBRARY_FOR_DISTRIBUTION = YES;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DEVELOPMENT_TEAM = 4PEHUZX8QH;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				ENABLE_MODULE_VERIFIER = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)",
+				);
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				MODULEMAP_FILE = PrebidAdapter/PrebidAdapter.modulemap;
+				MODULE_VERIFIER_SUPPORTED_LANGUAGES = "objective-c objective-c++";
+				MODULE_VERIFIER_SUPPORTED_LANGUAGE_STANDARDS = "gnu11 gnu++20";
+				PRODUCT_BUNDLE_IDENTIFIER = "msp-adapter-demo.PrebidAdapter";
+				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		66D6C3B52B322B44006EBBF3 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 79F5C94DBC06D9E0D184E08D /* Pods-PrebidAdapter.release.xcconfig */;
+			buildSettings = {
+				BUILD_LIBRARY_FOR_DISTRIBUTION = YES;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DEVELOPMENT_TEAM = 4PEHUZX8QH;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				ENABLE_MODULE_VERIFIER = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)",
+				);
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				MODULEMAP_FILE = PrebidAdapter/PrebidAdapter.modulemap;
+				MODULE_VERIFIER_SUPPORTED_LANGUAGES = "objective-c objective-c++";
+				MODULE_VERIFIER_SUPPORTED_LANGUAGE_STANDARDS = "gnu11 gnu++20";
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = "msp-adapter-demo.PrebidAdapter";
+				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		66D6C3B72B322B44006EBBF3 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 520CD0FAE42A5653AA1BB6DF /* Pods-PrebidAdapter-PrebidAdapterTests.debug.xcconfig */;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 4PEHUZX8QH;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "msp-adapter-demo.PrebidAdapterTests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		66D6C3B82B322B44006EBBF3 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = D451118E5E675DA783994638 /* Pods-PrebidAdapter-PrebidAdapterTests.release.xcconfig */;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 4PEHUZX8QH;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "msp-adapter-demo.PrebidAdapterTests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		66D6C3992B322B44006EBBF3 /* Build configuration list for PBXProject "PrebidAdapter" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				66D6C3B12B322B44006EBBF3 /* Debug */,
+				66D6C3B22B322B44006EBBF3 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		66D6C3B32B322B44006EBBF3 /* Build configuration list for PBXNativeTarget "PrebidAdapter" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				66D6C3B42B322B44006EBBF3 /* Debug */,
+				66D6C3B52B322B44006EBBF3 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		66D6C3B62B322B44006EBBF3 /* Build configuration list for PBXNativeTarget "PrebidAdapterTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				66D6C3B72B322B44006EBBF3 /* Debug */,
+				66D6C3B82B322B44006EBBF3 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 66D6C3962B322B44006EBBF3 /* Project object */;
+}

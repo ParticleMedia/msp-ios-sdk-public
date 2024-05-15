@@ -1,0 +1,622 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		3F6DED87947F36F6685255A0 /* libPods-MSPCore.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3BEFDC62A992B10540FF1C8C /* libPods-MSPCore.a */; };
+		6639AC8A2B4DFAE300A248D2 /* MSPCore.docc in Sources */ = {isa = PBXBuildFile; fileRef = 6639AC892B4DFAE300A248D2 /* MSPCore.docc */; };
+		6639AC952B4DFAE400A248D2 /* MSPUtilityTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6639AC942B4DFAE400A248D2 /* MSPUtilityTests.swift */; };
+		6639AC962B4DFAE400A248D2 /* MSPCore.h in Headers */ = {isa = PBXBuildFile; fileRef = 6639AC882B4DFAE300A248D2 /* MSPCore.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		6639ACAB2B4DFDF700A248D2 /* MSPHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6639ACAA2B4DFDF700A248D2 /* MSPHelper.swift */; };
+		6639ACAD2B4E008B00A248D2 /* MSPBidLoaderProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6639ACAC2B4E008B00A248D2 /* MSPBidLoaderProvider.swift */; };
+		6639ACAF2B4E0C2B00A248D2 /* MSPAdNetworkAdapterProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6639ACAE2B4E0C2B00A248D2 /* MSPAdNetworkAdapterProvider.swift */; };
+		66CA2E1A2BEAA159001EFD30 /* libGoogleAdapter.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 66CA2E192BEAA159001EFD30 /* libGoogleAdapter.a */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		668480502BE03CE30025018B /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 6684804A2BE03CE30025018B /* MSPDemoApp.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 6684800B2BE03C840025018B;
+			remoteInfo = MSPDemoApp;
+		};
+		668480522BE03CE30025018B /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 6684804A2BE03CE30025018B /* MSPDemoApp.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 668480212BE03C870025018B;
+			remoteInfo = MSPDemoAppTests;
+		};
+		668480542BE03CE30025018B /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 6684804A2BE03CE30025018B /* MSPDemoApp.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 6684802B2BE03C870025018B;
+			remoteInfo = MSPDemoAppUITests;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		20D75C3E9C5E96F27754B64D /* Pods-MSPCore.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MSPCore.release.xcconfig"; path = "Target Support Files/Pods-MSPCore/Pods-MSPCore.release.xcconfig"; sourceTree = "<group>"; };
+		3BEFDC62A992B10540FF1C8C /* libPods-MSPCore.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-MSPCore.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		6639AC852B4DFAE300A248D2 /* MSPCore.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = MSPCore.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		6639AC882B4DFAE300A248D2 /* MSPCore.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MSPCore.h; sourceTree = "<group>"; };
+		6639AC892B4DFAE300A248D2 /* MSPCore.docc */ = {isa = PBXFileReference; lastKnownFileType = folder.documentationcatalog; path = MSPCore.docc; sourceTree = "<group>"; };
+		6639AC8F2B4DFAE400A248D2 /* MSPCoreTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MSPCoreTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		6639AC942B4DFAE400A248D2 /* MSPUtilityTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MSPUtilityTests.swift; sourceTree = "<group>"; };
+		6639ACA02B4DFBED00A248D2 /* shared.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; path = shared.xcframework; sourceTree = "<group>"; };
+		6639ACA42B4DFC5C00A248D2 /* GoogleAdapter.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = GoogleAdapter.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		6639ACA72B4DFC6B00A248D2 /* PrebidAdapter.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = PrebidAdapter.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		6639ACAA2B4DFDF700A248D2 /* MSPHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MSPHelper.swift; sourceTree = "<group>"; };
+		6639ACAC2B4E008B00A248D2 /* MSPBidLoaderProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MSPBidLoaderProvider.swift; sourceTree = "<group>"; };
+		6639ACAE2B4E0C2B00A248D2 /* MSPAdNetworkAdapterProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MSPAdNetworkAdapterProvider.swift; sourceTree = "<group>"; };
+		664DCF8C2B4F3D9700BF19B6 /* PrebidAdapter.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = PrebidAdapter.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		664DCF902B4F3EA800BF19B6 /* PrebidAdapter.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; path = PrebidAdapter.xcframework; sourceTree = "<group>"; };
+		664DCF942B4F3FA900BF19B6 /* PrebidMobile.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; path = PrebidMobile.xcframework; sourceTree = "<group>"; };
+		6684804A2BE03CE30025018B /* MSPDemoApp.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = MSPDemoApp.xcodeproj; path = ../MSPDemoApp/MSPDemoApp/MSPDemoApp.xcodeproj; sourceTree = "<group>"; };
+		66CA2E132BE9B683001EFD30 /* libGoogleAdapter.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libGoogleAdapter.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		66CA2E152BE9B68D001EFD30 /* libGoogleAdapter.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libGoogleAdapter.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		66CA2E192BEAA159001EFD30 /* libGoogleAdapter.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libGoogleAdapter.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		66F44F1B2B59B92500138384 /* GoogleAdapter.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; path = GoogleAdapter.xcframework; sourceTree = "<group>"; };
+		DB9A00C09162701FFB74F7C9 /* Pods-MSPCore.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MSPCore.debug.xcconfig"; path = "Target Support Files/Pods-MSPCore/Pods-MSPCore.debug.xcconfig"; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		6639AC822B4DFAE300A248D2 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				66CA2E1A2BEAA159001EFD30 /* libGoogleAdapter.a in Frameworks */,
+				3F6DED87947F36F6685255A0 /* libPods-MSPCore.a in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		6639AC8C2B4DFAE400A248D2 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		6639AC7B2B4DFAE300A248D2 = {
+			isa = PBXGroup;
+			children = (
+				6684804A2BE03CE30025018B /* MSPDemoApp.xcodeproj */,
+				6639AC872B4DFAE300A248D2 /* MSPCore */,
+				6639AC932B4DFAE400A248D2 /* MSPUtilityTests */,
+				6639AC862B4DFAE300A248D2 /* Products */,
+				6639AC9F2B4DFBED00A248D2 /* Frameworks */,
+				ABBF8EA5F85DDCAEDC9BE415 /* Pods */,
+			);
+			sourceTree = "<group>";
+		};
+		6639AC862B4DFAE300A248D2 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				6639AC852B4DFAE300A248D2 /* MSPCore.framework */,
+				6639AC8F2B4DFAE400A248D2 /* MSPCoreTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		6639AC872B4DFAE300A248D2 /* MSPCore */ = {
+			isa = PBXGroup;
+			children = (
+				6639AC882B4DFAE300A248D2 /* MSPCore.h */,
+				6639AC892B4DFAE300A248D2 /* MSPCore.docc */,
+				6639ACAA2B4DFDF700A248D2 /* MSPHelper.swift */,
+				6639ACAC2B4E008B00A248D2 /* MSPBidLoaderProvider.swift */,
+				6639ACAE2B4E0C2B00A248D2 /* MSPAdNetworkAdapterProvider.swift */,
+			);
+			path = MSPCore;
+			sourceTree = "<group>";
+		};
+		6639AC932B4DFAE400A248D2 /* MSPUtilityTests */ = {
+			isa = PBXGroup;
+			children = (
+				6639AC942B4DFAE400A248D2 /* MSPUtilityTests.swift */,
+			);
+			path = MSPUtilityTests;
+			sourceTree = "<group>";
+		};
+		6639AC9F2B4DFBED00A248D2 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				66CA2E192BEAA159001EFD30 /* libGoogleAdapter.a */,
+				66CA2E152BE9B68D001EFD30 /* libGoogleAdapter.a */,
+				66CA2E132BE9B683001EFD30 /* libGoogleAdapter.a */,
+				66F44F1B2B59B92500138384 /* GoogleAdapter.xcframework */,
+				664DCF942B4F3FA900BF19B6 /* PrebidMobile.xcframework */,
+				664DCF902B4F3EA800BF19B6 /* PrebidAdapter.xcframework */,
+				664DCF8C2B4F3D9700BF19B6 /* PrebidAdapter.framework */,
+				6639ACA72B4DFC6B00A248D2 /* PrebidAdapter.framework */,
+				6639ACA42B4DFC5C00A248D2 /* GoogleAdapter.framework */,
+				6639ACA02B4DFBED00A248D2 /* shared.xcframework */,
+				3BEFDC62A992B10540FF1C8C /* libPods-MSPCore.a */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		6684804B2BE03CE30025018B /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				668480512BE03CE30025018B /* MSPDemoApp.app */,
+				668480532BE03CE30025018B /* MSPDemoAppTests.xctest */,
+				668480552BE03CE30025018B /* MSPDemoAppUITests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		ABBF8EA5F85DDCAEDC9BE415 /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				DB9A00C09162701FFB74F7C9 /* Pods-MSPCore.debug.xcconfig */,
+				20D75C3E9C5E96F27754B64D /* Pods-MSPCore.release.xcconfig */,
+			);
+			name = Pods;
+			path = ../Pods;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		6639AC802B4DFAE300A248D2 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				6639AC962B4DFAE400A248D2 /* MSPCore.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		6639AC842B4DFAE300A248D2 /* MSPCore */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 6639AC992B4DFAE400A248D2 /* Build configuration list for PBXNativeTarget "MSPCore" */;
+			buildPhases = (
+				46C84CAF55D6A15AAB223DF8 /* [CP] Check Pods Manifest.lock */,
+				6639AC802B4DFAE300A248D2 /* Headers */,
+				6639AC812B4DFAE300A248D2 /* Sources */,
+				6639AC822B4DFAE300A248D2 /* Frameworks */,
+				6639AC832B4DFAE300A248D2 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = MSPCore;
+			productName = MSPUtility;
+			productReference = 6639AC852B4DFAE300A248D2 /* MSPCore.framework */;
+			productType = "com.apple.product-type.framework";
+		};
+		6639AC8E2B4DFAE400A248D2 /* MSPCoreTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 6639AC9C2B4DFAE400A248D2 /* Build configuration list for PBXNativeTarget "MSPCoreTests" */;
+			buildPhases = (
+				6639AC8B2B4DFAE400A248D2 /* Sources */,
+				6639AC8C2B4DFAE400A248D2 /* Frameworks */,
+				6639AC8D2B4DFAE400A248D2 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = MSPCoreTests;
+			productName = MSPUtilityTests;
+			productReference = 6639AC8F2B4DFAE400A248D2 /* MSPCoreTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		6639AC7C2B4DFAE300A248D2 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1430;
+				LastUpgradeCheck = 1430;
+				TargetAttributes = {
+					6639AC842B4DFAE300A248D2 = {
+						CreatedOnToolsVersion = 14.3.1;
+					};
+					6639AC8E2B4DFAE400A248D2 = {
+						CreatedOnToolsVersion = 14.3.1;
+					};
+				};
+			};
+			buildConfigurationList = 6639AC7F2B4DFAE300A248D2 /* Build configuration list for PBXProject "MSPCore" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 6639AC7B2B4DFAE300A248D2;
+			productRefGroup = 6639AC862B4DFAE300A248D2 /* Products */;
+			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = 6684804B2BE03CE30025018B /* Products */;
+					ProjectRef = 6684804A2BE03CE30025018B /* MSPDemoApp.xcodeproj */;
+				},
+			);
+			projectRoot = "";
+			targets = (
+				6639AC842B4DFAE300A248D2 /* MSPCore */,
+				6639AC8E2B4DFAE400A248D2 /* MSPCoreTests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXReferenceProxy section */
+		668480512BE03CE30025018B /* MSPDemoApp.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = MSPDemoApp.app;
+			remoteRef = 668480502BE03CE30025018B /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		668480532BE03CE30025018B /* MSPDemoAppTests.xctest */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.cfbundle;
+			path = MSPDemoAppTests.xctest;
+			remoteRef = 668480522BE03CE30025018B /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		668480552BE03CE30025018B /* MSPDemoAppUITests.xctest */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.cfbundle;
+			path = MSPDemoAppUITests.xctest;
+			remoteRef = 668480542BE03CE30025018B /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+/* End PBXReferenceProxy section */
+
+/* Begin PBXResourcesBuildPhase section */
+		6639AC832B4DFAE300A248D2 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		6639AC8D2B4DFAE400A248D2 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		46C84CAF55D6A15AAB223DF8 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-MSPCore-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		6639AC812B4DFAE300A248D2 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				6639ACAB2B4DFDF700A248D2 /* MSPHelper.swift in Sources */,
+				6639ACAF2B4E0C2B00A248D2 /* MSPAdNetworkAdapterProvider.swift in Sources */,
+				6639AC8A2B4DFAE300A248D2 /* MSPCore.docc in Sources */,
+				6639ACAD2B4E008B00A248D2 /* MSPBidLoaderProvider.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		6639AC8B2B4DFAE400A248D2 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				6639AC952B4DFAE400A248D2 /* MSPUtilityTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		6639AC972B4DFAE400A248D2 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.4;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Debug;
+		};
+		6639AC982B4DFAE400A248D2 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.4;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				VALIDATE_PRODUCT = YES;
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Release;
+		};
+		6639AC9A2B4DFAE400A248D2 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = DB9A00C09162701FFB74F7C9 /* Pods-MSPCore.debug.xcconfig */;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DEVELOPMENT_TEAM = 4PEHUZX8QH;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				ENABLE_MODULE_VERIFIER = NO;
+				GENERATE_INFOPLIST_FILE = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"${PODS_ROOT}/Headers/Public\"",
+					"\"${PODS_ROOT}/Headers/Public/GoogleAdapter\"",
+					"\"${PODS_ROOT}/Headers/Public/GoogleUtilities\"",
+					"\"${PODS_ROOT}/Headers/Public/PromisesObjC\"",
+					"\"${PODS_ROOT}/Headers/Public/nanopb\"",
+					"\"${PODS_ROOT}/\"/**",
+				);
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				MODULEMAP_FILE = MSPCore/MSPCore.modulemap;
+				MODULE_VERIFIER_SUPPORTED_LANGUAGES = "objective-c objective-c++";
+				MODULE_VERIFIER_SUPPORTED_LANGUAGE_STANDARDS = "gnu11 gnu++20";
+				PRODUCT_BUNDLE_IDENTIFIER = "msp-adapter-demo.MSPCore";
+				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		6639AC9B2B4DFAE400A248D2 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 20D75C3E9C5E96F27754B64D /* Pods-MSPCore.release.xcconfig */;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DEVELOPMENT_TEAM = 4PEHUZX8QH;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				ENABLE_MODULE_VERIFIER = NO;
+				GENERATE_INFOPLIST_FILE = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					"\"${PODS_ROOT}/Headers/Public\"",
+					"\"${PODS_ROOT}/Headers/Public/GoogleAdapter\"",
+					"\"${PODS_ROOT}/Headers/Public/GoogleUtilities\"",
+					"\"${PODS_ROOT}/Headers/Public/PromisesObjC\"",
+					"\"${PODS_ROOT}/Headers/Public/nanopb\"",
+					"\"${PODS_ROOT}/\"/**",
+				);
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				MODULEMAP_FILE = MSPCore/MSPCore.modulemap;
+				MODULE_VERIFIER_SUPPORTED_LANGUAGES = "objective-c objective-c++";
+				MODULE_VERIFIER_SUPPORTED_LANGUAGE_STANDARDS = "gnu11 gnu++20";
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = "msp-adapter-demo.MSPCore";
+				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		6639AC9D2B4DFAE400A248D2 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 4PEHUZX8QH;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "msp-adapter-demo.MSPUtilityTests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		6639AC9E2B4DFAE400A248D2 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 4PEHUZX8QH;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "msp-adapter-demo.MSPUtilityTests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		6639AC7F2B4DFAE300A248D2 /* Build configuration list for PBXProject "MSPCore" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				6639AC972B4DFAE400A248D2 /* Debug */,
+				6639AC982B4DFAE400A248D2 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		6639AC992B4DFAE400A248D2 /* Build configuration list for PBXNativeTarget "MSPCore" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				6639AC9A2B4DFAE400A248D2 /* Debug */,
+				6639AC9B2B4DFAE400A248D2 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		6639AC9C2B4DFAE400A248D2 /* Build configuration list for PBXNativeTarget "MSPCoreTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				6639AC9D2B4DFAE400A248D2 /* Debug */,
+				6639AC9E2B4DFAE400A248D2 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 6639AC7C2B4DFAE300A248D2 /* Project object */;
+}

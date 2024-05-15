@@ -1,0 +1,5 @@
+framework module MSPCore {
+    
+    // Versions
+    header "MSPCore.h"
+}
