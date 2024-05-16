@@ -6,7 +6,7 @@
     "ios": "13.0"
   },
   "description": "An utility for MSP settings",
-  "homepage": "https://github.com/ParticleMedia/msp-adapter-demo",
+  "homepage": "https://github.com/aimsp/msp-ios-sdk/MSPCore",
   "license": "Copyright",
   "authors": {
     "huanzhiNB": "huanzhi.zhang@newsbreak.com"
@@ -22,5 +22,8 @@
 
     ]
   },
-  "vendored_frameworks": "PrebidAdapter.xcframework"
+  "vendored_frameworks": "PrebidAdapter.xcframework",
+  "pod_target_xcconfig": {
+    "HEADER_SEARCH_PATHS": "$(PODS_TARGET_SRCROOT)/PrebidMobile.xcframework/Headers $(PODS_TARGET_SRCROOT)/MSPiOSCore.xcframework/Headers"
+  }
 }

@@ -6,7 +6,7 @@
     "ios": "13.0"
   },
   "description": "An utility for MSP settings",
-  "homepage": "https://github.com/ParticleMedia/msp-adapter-demo",
+  "homepage": "https://github.com/aimsp/msp-ios-sdk/MSPSharedLibraries",
   "license": "Copyright",
   "authors": {
     "huanzhiNB": "huanzhi.zhang@newsbreak.com"
@@ -20,5 +20,11 @@
   "vendored_frameworks": [
     "PrebidMobile.xcframework",
     "MSPiOSCore.xcframework"
-  ]
+  ],
+  "pod_target_xcconfig": {
+    "EXCLUDED_ARCHS[sdk=iphonesimulator*]": "arm64"
+  },
+  "user_target_xcconfig": {
+    "EXCLUDED_ARCHS[sdk=iphonesimulator*]": "arm64"
+  }
 }

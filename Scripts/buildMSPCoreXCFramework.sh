@@ -1,5 +1,5 @@
 # Create directories for output
-mkdir -p "$PWD/outputGoogle/xcframework"
+mkdir -p "$PWD/outputMSPCore/xcframework"
 
 echo -e "\n\n${GREEN}INSTALL PODS${NC}\n\n"
 
@@ -11,9 +11,9 @@ echo -e "\n\n${GREEN}BUILD ADAPTERS${NC}\n\n"
 # Build for simulator and device architectures
 xcodebuild archive \
     -workspace msp-ios-sdk.xcworkspace \
-    -scheme "GoogleAdapter" \
+    -scheme "MSPCore" \
     -destination="iOS" \
-    -archivePath "$PWD/outputGoogle/xcframework/GoogleAdapter-iOS" \
+    -archivePath "$PWD/outputMSPCore/xcframework/MSPCore-iOS" \
     SKIP_INSTALL=NO \
     -configuration Release \
     -arch arm64 \
@@ -22,9 +22,10 @@ xcodebuild archive \
 
 xcodebuild archive \
     -workspace msp-ios-sdk.xcworkspace \
-    -scheme "GoogleAdapter" \
+    -scheme "MSPCore" \
     -destination="iOS Simulator" \
-    -archivePath "$PWD/outputGoogle/xcframework/GoogleAdapter-Simulator" \
+    -archivePath "$PWD/outputMSPCore/xcframework/MSPCore-Simulator" \
+    -archivePath "$PWD/outputMSPCore/xcframework/MSPCore-Simulator" \
     SKIP_INSTALL=NO \
     -configuration Release \
     -arch x86_64 \
@@ -33,6 +34,6 @@ xcodebuild archive \
 
 # Create xcframework
 xcodebuild -create-xcframework \
-    -framework "$PWD/outputGoogle/xcframework/GoogleAdapter-iOS.xcarchive/Products/Library/Frameworks/GoogleAdapter.framework" \
-    -framework "$PWD/outputGoogle/xcframework/GoogleAdapter-Simulator.xcarchive/Products/Library/Frameworks/GoogleAdapter.framework" \
-    -output "$PWD/outputGoogle/xcframework/GoogleAdapter.xcframework"
+    -framework "$PWD/outputMSPCore/xcframework/MSPCore-iOS.xcarchive/Products/Library/Frameworks/MSPCore.framework" \
+    -framework "$PWD/outputMSPCore/xcframework/MSPCore-Simulator.xcarchive/Products/Library/Frameworks/MSPCore.framework" \
+    -output "$PWD/outputMSPCore/xcframework/MSPCore.xcframework"

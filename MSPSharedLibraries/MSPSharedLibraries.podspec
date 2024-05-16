@@ -27,7 +27,7 @@ Pod::Spec.new do |spec|
   #   * Write the description between the DESC delimiters below.
   #   * Finally, don't worry about the indent, CocoaPods strips it!
   spec.description  = "An utility for MSP settings"
-  spec.homepage     = "https://github.com/ParticleMedia/msp-adapter-demo"
+  spec.homepage     = "https://github.com/aimsp/msp-ios-sdk/MSPSharedLibraries"
   # spec.screenshots  = "www.example.com/screenshots_1.gif", "www.example.com/screenshots_2.gif"
 
 
@@ -98,6 +98,11 @@ Pod::Spec.new do |spec|
   spec.vendored_frameworks= "PrebidMobile.xcframework", "MSPiOSCore.xcframework"
 
   # spec.public_header_files = "Classes/**/*.h"
+  # s.pod_target_xcconfig = { 'HEADER_SEARCH_PATHS' => '$(PODS_TARGET_SRCROOT)/PrebidMobile.xcframework/Headers $(PODS_TARGET_SRCROOT)/MSPiOSCore.xcframework/Headers' }
+
+  spec.pod_target_xcconfig = { 'EXCLUDED_ARCHS[sdk=iphonesimulator*]' => 'arm64' }
+  spec.user_target_xcconfig = { 'EXCLUDED_ARCHS[sdk=iphonesimulator*]' => 'arm64' }
+
 
 
   # ――― Resources ―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
