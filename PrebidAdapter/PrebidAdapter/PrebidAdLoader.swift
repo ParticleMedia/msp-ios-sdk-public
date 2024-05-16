@@ -51,6 +51,13 @@ import UIKit
               let mBidResponse = bidResponse as? BidResponse else {
             return
         }
+        if context is UIViewController {
+            self.rootViewController = context as? UIViewController
+        }
+        guard let rootViewController else {
+            adListener.onError(msg: "missing rootViewController")
+            return
+        }
         
         let width = Int(adRequest.adSize?.width ?? 320)
         let height = Int(adRequest.adSize?.height ?? 50)
