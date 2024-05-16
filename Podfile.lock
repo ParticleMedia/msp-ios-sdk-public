@@ -85,11 +85,11 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   Google-Mobile-Ads-SDK: 8f67a72f88d057335b1ac3f501e2b68ad054116e
-  GoogleAdapter: f37a9f17606d3993b52398afb3c1967234518fb8
+  GoogleAdapter: 140aabbd6facf08e09c4c1629fc903e22aef1e68
   GoogleAppMeasurement: 9abf64b682732fed36da827aa2a68f0221fd2356
   GoogleUserMessagingPlatform: f131fa7978d2ba88d7426702b057c2cc318e6595
   GoogleUtilities: ea963c370a38a8069cc5f7ba4ca849a60b6d7d15
-  MSPCore: 044a8db0f7d0338d73261d519c5cb61d55f7b5a3
+  MSPCore: 5c05c6ddd54218c4057da397cfa243a9e5be50a9
   MSPSharedLibraries: 1b806acc9a401f3f587eaf820df408d8d7971066
   nanopb: 438bc412db1928dac798aa6fd75726007be04262
   PromisesObjC: f5707f49cb48b9636751c5b2e7d227e43fba9f47
