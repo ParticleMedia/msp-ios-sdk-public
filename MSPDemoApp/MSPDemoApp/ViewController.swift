@@ -17,6 +17,7 @@ class ViewController: UIViewController {
     var adLoader: iOSAdLoader?
 
     override func viewDidLoad() {
+        //google test ad config: msp-android-foryou-large-display_gg
         super.viewDidLoad()
         var adLoader = iOSAdLoader()
         self.adLoader = adLoader
@@ -25,8 +26,8 @@ class ViewController: UIViewController {
                                   context: nil,
                                   adaptiveBannerSize: AdSize(width: 320, height: 50, isInlineAdaptiveBanner: false, isAnchorAdaptiveBanner: false),
                                   adSize: AdSize(width: 320, height: 50, isInlineAdaptiveBanner: false, isAnchorAdaptiveBanner: false),
-                                  placementId: "msp-android-foryou-large-display_gg")
-        adLoader.loadAd(placementId: "msp-android-foryou-large-display_gg",
+                                  placementId: "msp-ios-article-top-display")
+        adLoader.loadAd(placementId: "msp-ios-article-top-display",
                         adListener: self,
                         context: self,
                         adRequest: adRequest,
