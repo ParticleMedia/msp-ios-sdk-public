@@ -6,8 +6,8 @@
 //
 
 import UIKit
-//import shared
-import MSPiOSCore
+import shared
+//import MSPiOSCore
 import MSPCore
 import PrebidMobile
 import GoogleAdapter

@@ -6,14 +6,16 @@
 //
 
 import Foundation
-import MSPiOSCore
+//import MSPiOSCore
+import shared
 
 public class GoogleManager: AdNetworkManager {
-    public init() {
-        
-    }
+    //public override init() {
+    //
+    //}
     
-    public func getAdNetworkAdapter() -> any MSPiOSCore.AdNetworkAdapter {
+    public override func getAdNetworkAdapter() -> AdNetworkAdapter? {
         return GADAdLoder()
     }
+
 }

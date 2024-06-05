@@ -7,7 +7,8 @@
 
 import Foundation
 import GoogleMobileAds
-import MSPiOSCore
+//import MSPiOSCore
+import shared
 import PrebidMobile
 
 @objc public class GADAdLoder : NSObject, AdNetworkAdapter {

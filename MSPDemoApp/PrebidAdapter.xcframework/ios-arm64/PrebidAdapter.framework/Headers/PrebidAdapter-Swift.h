@@ -281,6 +281,7 @@ typedef unsigned int swift_uint4  __attribute__((__ext_vector_type__(4)));
 @import Foundation;
 @import ObjectiveC;
 @import PrebidMobile;
+@import shared;
 #endif
 
 #endif
@@ -301,16 +302,30 @@ typedef unsigned int swift_uint4  __attribute__((__ext_vector_type__(4)));
 #endif
 
 #if defined(__OBJC__)
+@protocol SharedAdNetworkAdapter;
+
+SWIFT_CLASS("_TtC13PrebidAdapter8PrebidAd")
+@interface PrebidAd : SharedMSPAd
+- (nonnull instancetype)initWithAdNetworkAdapter:(id <SharedAdNetworkAdapter> _Nonnull)adNetworkAdapter OBJC_DESIGNATED_INITIALIZER;
+@end
+
 @protocol BannerEventLoadingDelegate;
 @protocol BannerEventInteractionDelegate;
+@protocol SharedInitializationParameters;
+@protocol SharedAdapterInitListener;
 @class UIViewController;
+@protocol SharedAdListener;
+@class SharedAdRequest;
 
 SWIFT_CLASS("_TtC13PrebidAdapter14PrebidAdLoader")
-@interface PrebidAdLoader : NSObject
+@interface PrebidAdLoader : NSObject <SharedAdNetworkAdapter>
 @property (nonatomic, weak) id <BannerEventLoadingDelegate> _Nullable loadingDelegate;
 @property (nonatomic, weak) id <BannerEventInteractionDelegate> _Nullable interactionDelegate;
 @property (nonatomic, copy) NSArray<NSValue *> * _Nonnull adSizes;
+- (void)destroyAd;
+- (void)initializeInitParams:(id <SharedInitializationParameters> _Nonnull)initParams adapterInitListener:(id <SharedAdapterInitListener> _Nonnull)adapterInitListener context:(id _Nullable)context;
 @property (nonatomic, strong) UIViewController * _Nullable rootViewController;
+- (void)loadAdCreativeBidResponse:(id _Nonnull)bidResponse adListener:(id <SharedAdListener> _Nonnull)adListener context:(id _Nonnull)context adRequest:(SharedAdRequest * _Nonnull)adRequest;
 - (nonnull instancetype)init OBJC_DESIGNATED_INITIALIZER;
 @end
 
@@ -330,6 +345,22 @@ SWIFT_CLASS("_TtC13PrebidAdapter14PrebidAdLoader")
 - (void)bannerView:(BannerView * _Nonnull)bannerView didFailToReceiveAdWith:(NSError * _Nonnull)error;
 - (void)bannerViewWillPresentModal:(BannerView * _Nonnull)bannerView;
 - (void)bannerViewDidDismissModal:(BannerView * _Nonnull)bannerView;
+@end
+
+@protocol SharedGoogleQueryInfoFetcher;
+@protocol SharedFacebookBidTokenProvider;
+@class NSString;
+@protocol SharedBidListener;
+
+SWIFT_CLASS("_TtC13PrebidAdapter15PrebidBidLoader")
+@interface PrebidBidLoader : SharedBidLoader
+- (nonnull instancetype)initWithGoogleQueryInfoFetcher:(id <SharedGoogleQueryInfoFetcher> _Nonnull)googleQueryInfoFetcher facebookBidTokenProvider:(id <SharedFacebookBidTokenProvider> _Nonnull)facebookBidTokenProvider OBJC_DESIGNATED_INITIALIZER;
+- (void)loadBidPlacementId:(NSString * _Nonnull)placementId adParams:(NSDictionary<NSString *, id> * _Nonnull)adParams bidListener:(id <SharedBidListener> _Nonnull)bidListener adRequest:(SharedAdRequest * _Nonnull)adRequest;
+@end
+
+
+@interface PrebidBidLoader (SWIFT_EXTENSION(PrebidAdapter)) <SharedGoogleQueryInfoListener>
+- (void)onCompleteQueryInfo:(NSString * _Nonnull)queryInfo;
 @end
 
 #endif
