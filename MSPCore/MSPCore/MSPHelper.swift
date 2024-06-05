@@ -6,7 +6,8 @@
 //
 
 import Foundation
-import MSPiOSCore
+//import MSPiOSCore
+import shared
 import PrebidAdapter
 
 
@@ -25,7 +26,7 @@ public class MSPHelper {
         numInitWaitingForCallbacks = 2 // For current use case it means 2 adnetwork: prebid, google
         self.sdkInitListener = sdkInitListener
         var adapterInitListener = MSPAdapterInitListener()
-        adNetworkAdapterProvider.googleManager?.getAdNetworkAdapter().initialize(initParams: initParams, adapterInitListener: adapterInitListener, context: nil)
+        adNetworkAdapterProvider.googleManager?.getAdNetworkAdapter()?.initialize(initParams: initParams, adapterInitListener: adapterInitListener, context: nil)
         PrebidAdLoader().initialize(initParams: initParams, adapterInitListener: adapterInitListener, context: nil)
     }
     
@@ -51,38 +52,38 @@ public class InitializationParametersImp: InitializationParameters {
     public init(prebidAPIKey: String, prebidHostUrl: String) {
         self.prebidAPIKey = prebidAPIKey
         self.prebidHostUrl = prebidHostUrl
-        super.init()
+        //super.init()
     }
     
-    public override func getPrebidAPIKey() -> String {
+    public func getPrebidAPIKey() -> String {
         return prebidAPIKey
     }
     
-    public override func getPrebidHostUrl() -> String {
+    public func getPrebidHostUrl() -> String {
         return prebidHostUrl
     }
     
-    public override func getConsentString() -> String {
+    public func getConsentString() -> String {
         return ""
     }
     
-    public override func getParameters() -> [String : Any] {
+    public func getParameters() -> [String : Any] {
         return [String : Any]()
     }
     
-    public override func hasUserConsent() -> Bool {
+    public func hasUserConsent() -> Bool {
         return false
     }
     
-    public override func isAgeRestrictedUser() -> Bool {
+    public func isAgeRestrictedUser() -> Bool {
         return false
     }
     
-    public override func isDoNotSell() -> Bool {
+    public func isDoNotSell() -> Bool {
         return false
     }
     
-    public override func isInTestMode() -> Bool {
+    public func isInTestMode() -> Bool {
         return false
     }
 }
@@ -91,7 +92,7 @@ public class iOSAdLoader: BidListener {
     var adListener: AdListener?
     var adRequest: AdRequest?
     
-    var bidLoader: BidLoader?
+    weak var bidLoader: BidLoader?
     var adNetworkAdapter: AdNetworkAdapter?
     var bidLoaderProvider: BidLoaderProvider?
 

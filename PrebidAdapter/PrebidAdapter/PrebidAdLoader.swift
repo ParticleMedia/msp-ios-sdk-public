@@ -7,8 +7,8 @@
 
 import PrebidMobile
 import Foundation
-//import shared
-import MSPiOSCore
+import shared
+//import MSPiOSCore
 import UIKit
 
 @objc public class PrebidAdLoader : NSObject, AdNetworkAdapter {

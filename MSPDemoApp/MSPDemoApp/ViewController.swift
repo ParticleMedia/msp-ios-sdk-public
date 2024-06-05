@@ -9,7 +9,8 @@ import UIKit
 import MSPCore
 import GoogleAdapter
 import PrebidAdapter
-import MSPiOSCore
+//import MSPiOSCore
+import shared
 
 class ViewController: UIViewController {
     
@@ -26,8 +27,8 @@ class ViewController: UIViewController {
                                   context: nil,
                                   adaptiveBannerSize: AdSize(width: 320, height: 50, isInlineAdaptiveBanner: false, isAnchorAdaptiveBanner: false),
                                   adSize: AdSize(width: 320, height: 50, isInlineAdaptiveBanner: false, isAnchorAdaptiveBanner: false),
-                                  placementId: "msp-ios-article-top-display")
-        adLoader.loadAd(placementId: "msp-ios-article-top-display",
+                                  placementId: "msp-android-foryou-large-display_gg")
+        adLoader.loadAd(placementId: "msp-android-foryou-large-display_gg",
                         adListener: self,
                         context: self,
                         adRequest: adRequest,
@@ -78,6 +79,5 @@ extension ViewController: AdListener {
     func onError(msg: String) {
         
     }
-    
 }
 

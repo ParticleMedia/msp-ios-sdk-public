@@ -6,8 +6,8 @@
 //
 
 import Foundation
-//import shared
-import MSPiOSCore
+import shared
+//import MSPiOSCore
 import PrebidMobile
 
 public class PrebidBidLoader : BidLoader {
@@ -66,10 +66,10 @@ public class PrebidBidLoader : BidLoader {
                 }
                 if seat == "msp_google" {
                     print("msp receive google response")
-                    self.bidListener?.onBidResponse(bidResponse: bidResponse, adNetwork: .google)
+                    self.bidListener?.onBidResponse(bidResponse: bidResponse, adNetwork: AdNetwork.google)
                 } else {
                     print("msp receive prebid response")
-                    self.bidListener?.onBidResponse(bidResponse: bidResponse, adNetwork: .prebid)
+                    self.bidListener?.onBidResponse(bidResponse: bidResponse, adNetwork: AdNetwork.prebid)
                 }
             } else {
                 bidListener?.onError(msg: "missing response")
