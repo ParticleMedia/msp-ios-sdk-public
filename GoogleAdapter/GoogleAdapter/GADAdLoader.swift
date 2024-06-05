@@ -35,6 +35,7 @@ import PrebidMobile
         
         guard bidResponse is BidResponse,
               let mBidResponse = bidResponse as? BidResponse else {
+            self.adListener?.onError(msg: "no valid response")
             return
         }
         
@@ -50,13 +51,10 @@ import PrebidMobile
               let googleExtDict = SafeAs(bidExtDict["google"], [String: Any].self),
               let adUnitId = SafeAs(googleExtDict["ad_unit_id"], String.self)
         else {
-            // return an ad object with no view
-            //let googleEmptyAd = GoogleAd(adNetworkAdapter: self)
-            //adListener.onAdLoaded(ad: googleEmptyAd)
+            self.adListener?.onError(msg: "no valid response")
             return
         }
         self.priceInDollar = Double(mBidResponse.winningBid?.price ?? 0)
-        print("demo adString = \(adString)")
         
         DispatchQueue.main.async {
             let gadBannerView = GAMBannerView(adSize: self.getGADAdSize(adRequest: adRequest))
