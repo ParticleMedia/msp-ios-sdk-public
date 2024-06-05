@@ -15,7 +15,7 @@ import shared
 class ViewController: UIViewController {
     
     @IBOutlet var appBannerView: UIView!
-    var adLoader: iOSAdLoader?
+    weak var adLoader: iOSAdLoader?
 
     override func viewDidLoad() {
         //google test ad config: msp-android-foryou-large-display_gg
