@@ -27,8 +27,8 @@ class ViewController: UIViewController {
                                   context: nil,
                                   adaptiveBannerSize: AdSize(width: 320, height: 50, isInlineAdaptiveBanner: false, isAnchorAdaptiveBanner: false),
                                   adSize: AdSize(width: 320, height: 50, isInlineAdaptiveBanner: false, isAnchorAdaptiveBanner: false),
-                                  placementId: "msp-android-foryou-large-display_gg")
-        adLoader.loadAd(placementId: "msp-android-foryou-large-display_gg",
+                                  placementId: "msp-ios-article-top-display")
+        adLoader.loadAd(placementId: "msp-ios-article-top-display",
                         adListener: self,
                         context: self,
                         adRequest: adRequest,
@@ -49,6 +49,10 @@ extension ViewController: AdListener {
     }
     
     func onAdLoaded(ad: MSPAd) {
+        if let priceInDollar = ad.adInfo["priceInDollar"],
+           let priceInDollarValue = priceInDollar as? Double {
+            print("demo price: \(priceInDollarValue)")
+        }
         if ad is PrebidAd {
             let prebidAd = ad as? PrebidAd
             if let adView = prebidAd?.adView {

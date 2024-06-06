@@ -32,15 +32,11 @@ public class MSPAdNetworkAdapterProvider: AdNetworkAdapterProvider {
     
     public func getAdNetworkAdapter(adNetwork: AdNetwork) -> AdNetworkAdapter? {
         print("msp begin get adnetwork adapter")
-        let myAdNetworkName = adNetwork
         if adNetwork.name == AdNetwork.prebid.name {
             var prebidAdLoader = PrebidAdLoader()
-            prebidAdLoader.rootViewController = self.rootViewController
-           
             return prebidAdLoader
         } else if adNetwork.name == AdNetwork.google.name {
             var gadAdLoader = googleManager?.getAdNetworkAdapter()
-            //gadAdLoader.rootViewController = self.rootViewController
             return gadAdLoader
         }
         return nil

@@ -94,7 +94,6 @@ public class iOSAdLoader: BidListener {
     
     weak var bidLoader: BidLoader?
     var adNetworkAdapter: AdNetworkAdapter?
-    var bidLoaderProvider: BidLoaderProvider?
 
     var rootViewController: UIViewController?
     
@@ -103,12 +102,10 @@ public class iOSAdLoader: BidListener {
     
     public func loadAd(placementId: String, adListener: AdListener, context: Any, adRequest: AdRequest, rootViewController: UIViewController) {
         
-        self.bidLoaderProvider = MSPHelper.shared.bidLoaderProvider
-        
         self.adListener = adListener
         self.adRequest = adRequest
         
-        self.bidLoader = bidLoaderProvider?.getBidLoader()
+        self.bidLoader = MSPHelper.shared.bidLoaderProvider.getBidLoader()
         self.rootViewController = rootViewController
         bidLoader?.loadBid(placementId: placementId, adParams: adRequest.customParams, bidListener: self, adRequest: adRequest)
         //loadAd(placementId: placementId, adListener: adListener, context: context, adRequest: adRequest)

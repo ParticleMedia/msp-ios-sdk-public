@@ -12,6 +12,7 @@ import shared
 
 public class MSPBidLoaderProvider: BidLoaderProvider {
     public var googleQueryInfoFetcher: GoogleQueryInfoFetcher?
+    public var bidLoader: BidLoader?
     
     public init() {
         
