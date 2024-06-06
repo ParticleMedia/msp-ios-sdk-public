@@ -171,7 +171,7 @@
 				6684805C2BE03D7D0025018B /* Frameworks */,
 				6684805D2BE03D7D0025018B /* Resources */,
 				1BBD7FC0E4E233D3AA7D0FD9 /* [CP] Embed Pods Frameworks */,
-				1EA193AD952FBF24A1196DD2 /* [CP] Copy Pods Resources */,
+				1457529E850AFA226C1528C3 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -288,6 +288,23 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
+		1457529E850AFA226C1528C3 /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-MSPDemoApp/Pods-MSPDemoApp-resources-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Copy Pods Resources";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-MSPDemoApp/Pods-MSPDemoApp-resources-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-MSPDemoApp/Pods-MSPDemoApp-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
 		1BBD7FC0E4E233D3AA7D0FD9 /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -303,23 +320,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-MSPDemoApp/Pods-MSPDemoApp-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		1EA193AD952FBF24A1196DD2 /* [CP] Copy Pods Resources */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-MSPDemoApp/Pods-MSPDemoApp-resources-${CONFIGURATION}-input-files.xcfilelist",
-			);
-			name = "[CP] Copy Pods Resources";
-			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-MSPDemoApp/Pods-MSPDemoApp-resources-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-MSPDemoApp/Pods-MSPDemoApp-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		73572960A518AB9766EA2250 /* [CP] Check Pods Manifest.lock */ = {
