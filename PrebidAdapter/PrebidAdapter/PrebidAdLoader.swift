@@ -7,8 +7,8 @@
 
 import PrebidMobile
 import Foundation
-//import shared
-import MSPiOSCore
+import shared
+//import MSPiOSCore
 import UIKit
 
 @objc public class PrebidAdLoader : NSObject, AdNetworkAdapter {
@@ -125,6 +125,7 @@ extension PrebidAdLoader: BannerViewDelegate {
         prebidAd.adView = self.bannerView
         if let priceInDollar = self.priceInDollar {
             prebidAd.adInfo["priceInDollar"] = priceInDollar
+            prebidAd.priceInDollar = priceInDollar
         }
         adListener?.onAdLoaded(ad: prebidAd)
     }
@@ -148,8 +149,8 @@ extension PrebidAdLoader: BannerViewDelegate {
 }
 
 public class PrebidAd: MSPAd {
-    
     public var adView: UIView?
+    public var priceInDollar: Double?
 }
 
 extension PrebidAdLoader: BannerEventHandler {

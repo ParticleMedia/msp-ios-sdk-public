@@ -19,7 +19,7 @@
   "exclude_files": "Classes/Exclude",
   "vendored_frameworks": [
     "PrebidMobile.xcframework",
-    "MSPiOSCore.xcframework"
+    "shared.xcframework"
   ],
   "pod_target_xcconfig": {
     "EXCLUDED_ARCHS[sdk=iphonesimulator*]": "arm64"

@@ -6,7 +6,7 @@
 	<dict>
 		<key>Headers/PrebidAdapter-Swift.h</key>
 		<data>
-		WCLTyHWYGox/otFtfW/F+rRKcLs=
+		Iubw2AhHceQv4SIWeFDifU43bFQ=
 		</data>
 		<key>Headers/PrebidAdapter.h</key>
 		<data>
@@ -14,15 +14,15 @@
 		</data>
 		<key>Info.plist</key>
 		<data>
-		Z86uterGAO8clfXC3/J+ejSHvuw=
+		0RSZ3q0VRqw9ioFu+HFHKJ5/GVw=
 		</data>
 		<key>Modules/PrebidAdapter.swiftmodule/x86_64-apple-ios-simulator.abi.json</key>
 		<data>
-		H1sBtbkTk8M9LE+Kncp25TqxxAI=
+		DdJBqi87rs1QEF3yDGrdxdOINc8=
 		</data>
 		<key>Modules/PrebidAdapter.swiftmodule/x86_64-apple-ios-simulator.private.swiftinterface</key>
 		<data>
-		44+sDNeJIYfR7a3rAG13RO7lxSk=
+		wsdXNXIVG6ZuT8Q8NTKSDzWDEDo=
 		</data>
 		<key>Modules/PrebidAdapter.swiftmodule/x86_64-apple-ios-simulator.swiftdoc</key>
 		<data>
@@ -30,11 +30,11 @@
 		</data>
 		<key>Modules/PrebidAdapter.swiftmodule/x86_64-apple-ios-simulator.swiftinterface</key>
 		<data>
-		44+sDNeJIYfR7a3rAG13RO7lxSk=
+		wsdXNXIVG6ZuT8Q8NTKSDzWDEDo=
 		</data>
 		<key>Modules/PrebidAdapter.swiftmodule/x86_64-apple-ios-simulator.swiftmodule</key>
 		<data>
-		3uJbusT8yYi0jwJrpqpZKcGGYcg=
+		UQlOt5RMdx481I7OZdbHoxSTZBw=
 		</data>
 		<key>Modules/module.modulemap</key>
 		<data>
@@ -47,7 +47,7 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			T6DYFa80+nUajRVcqYKVhCXIrVyx3gacz8iHurj7qyQ=
+			1RbhnvJlZ2yjxU5jggSheLUctbdGITSrumotVQTOn5c=
 			</data>
 		</dict>
 		<key>Headers/PrebidAdapter.h</key>
@@ -61,14 +61,14 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			UuX2FtkZPXYNm1qQKpvTIdtZDg0YP4J5fr/NuVUJcCA=
+			Gf2aXQHctyuzGb27ToKdoujq7cn7eTYigqBwAVVnoj4=
 			</data>
 		</dict>
 		<key>Modules/PrebidAdapter.swiftmodule/x86_64-apple-ios-simulator.private.swiftinterface</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			CsP5TZswcmNoYs7oPSXpga3X+/EuGjmv41fDCCha0H4=
+			/WWOhfE64GbbcVX5vKT486FFwghCda6iaqJE3Ey/5K0=
 			</data>
 		</dict>
 		<key>Modules/PrebidAdapter.swiftmodule/x86_64-apple-ios-simulator.swiftdoc</key>
@@ -82,14 +82,14 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			CsP5TZswcmNoYs7oPSXpga3X+/EuGjmv41fDCCha0H4=
+			/WWOhfE64GbbcVX5vKT486FFwghCda6iaqJE3Ey/5K0=
 			</data>
 		</dict>
 		<key>Modules/PrebidAdapter.swiftmodule/x86_64-apple-ios-simulator.swiftmodule</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			i8F/8Fj90OK6zkbsY6bgzQrV7ra6fvqnM8OVcdBdabs=
+			g49Dv3E6GQLmdnjagaFwFqpXdW1mb3RSWINrmtdUmSY=
 			</data>
 		</dict>
 		<key>Modules/module.modulemap</key>

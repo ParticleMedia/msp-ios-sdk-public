@@ -6,7 +6,7 @@
 	<dict>
 		<key>Headers/PrebidAdapter-Swift.h</key>
 		<data>
-		/7bLe8jMkAI1g9oD8f3vD5AVb50=
+		7rLLadG3md1Tca2riB4UZCFJ6Tw=
 		</data>
 		<key>Headers/PrebidAdapter.h</key>
 		<data>
@@ -14,15 +14,15 @@
 		</data>
 		<key>Info.plist</key>
 		<data>
-		hdBX0/TZrfPIVG1PA9Y6NSjBnMI=
+		q+KvGOVvHY9+oRw3lTveoVFLe3g=
 		</data>
 		<key>Modules/PrebidAdapter.swiftmodule/arm64-apple-ios.abi.json</key>
 		<data>
-		H1sBtbkTk8M9LE+Kncp25TqxxAI=
+		DdJBqi87rs1QEF3yDGrdxdOINc8=
 		</data>
 		<key>Modules/PrebidAdapter.swiftmodule/arm64-apple-ios.private.swiftinterface</key>
 		<data>
-		SLa5yAGYvblNW9HEnZU01/eKxfs=
+		2FIIY0s5GBDVH/yh3xoeRelK/Zc=
 		</data>
 		<key>Modules/PrebidAdapter.swiftmodule/arm64-apple-ios.swiftdoc</key>
 		<data>
@@ -30,11 +30,11 @@
 		</data>
 		<key>Modules/PrebidAdapter.swiftmodule/arm64-apple-ios.swiftinterface</key>
 		<data>
-		SLa5yAGYvblNW9HEnZU01/eKxfs=
+		2FIIY0s5GBDVH/yh3xoeRelK/Zc=
 		</data>
 		<key>Modules/PrebidAdapter.swiftmodule/arm64-apple-ios.swiftmodule</key>
 		<data>
-		HwIRyEmkcBlFH2oHPLAC2XFdLRo=
+		G/xIj7w/S+KVSFGQAKJoo6MTmwA=
 		</data>
 		<key>Modules/module.modulemap</key>
 		<data>
@@ -47,7 +47,7 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			xCRMZMbjJ6npAvgHQ6VgauNR3635VNgyoZFggginRq0=
+			VrLRLEfgv4Gvrv5q1MIVWdNyKTPNCHgofTwQn29E8OA=
 			</data>
 		</dict>
 		<key>Headers/PrebidAdapter.h</key>
@@ -61,14 +61,14 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			UuX2FtkZPXYNm1qQKpvTIdtZDg0YP4J5fr/NuVUJcCA=
+			Gf2aXQHctyuzGb27ToKdoujq7cn7eTYigqBwAVVnoj4=
 			</data>
 		</dict>
 		<key>Modules/PrebidAdapter.swiftmodule/arm64-apple-ios.private.swiftinterface</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			/Wx/85txmwxgkKS2k41uLHgVUaYGGZmk1QrS6uC1dWs=
+			z8O57S1wBNFKuptwThi60aOrZnO8J96DEa5r/YjYcYM=
 			</data>
 		</dict>
 		<key>Modules/PrebidAdapter.swiftmodule/arm64-apple-ios.swiftdoc</key>
@@ -82,14 +82,14 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			/Wx/85txmwxgkKS2k41uLHgVUaYGGZmk1QrS6uC1dWs=
+			z8O57S1wBNFKuptwThi60aOrZnO8J96DEa5r/YjYcYM=
 			</data>
 		</dict>
 		<key>Modules/PrebidAdapter.swiftmodule/arm64-apple-ios.swiftmodule</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			UgNr3wTiG02vICluBv2vg85hGEp/7uxBC3PkhAyJMAs=
+			QUUSdnLr/Ww832tdNFdPQS40j2JW0dqDi38Yl3SnMwI=
 			</data>
 		</dict>
 		<key>Modules/module.modulemap</key>
