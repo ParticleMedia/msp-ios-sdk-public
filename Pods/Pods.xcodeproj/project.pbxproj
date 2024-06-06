@@ -342,7 +342,6 @@
 		004F021434F85C12B7720D4CC93498BB /* GULReachabilityChecker.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = GULReachabilityChecker.m; path = GoogleUtilities/Reachability/GULReachabilityChecker.m; sourceTree = "<group>"; };
 		0054B17BB620914704D85DFD1CD5526F /* GULOriginalIMPConvenienceMacros.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = GULOriginalIMPConvenienceMacros.h; path = GoogleUtilities/MethodSwizzler/Public/GoogleUtilities/GULOriginalIMPConvenienceMacros.h; sourceTree = "<group>"; };
 		055D30C066852EC552E77AFF03BE1848 /* PromisesObjC.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = PromisesObjC.release.xcconfig; sourceTree = "<group>"; };
-		05D05EEDB3931E4BD49D23DB3AF50A85 /* PrebidMobile.xcframework */ = {isa = PBXFileReference; includeInIndex = 1; path = PrebidMobile.xcframework; sourceTree = "<group>"; };
 		06FC5C9CF96D60C50FCD47D339C91951 /* nanopb */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = nanopb; path = libnanopb.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		08237B0FDBEEA84D073BCC8C2BA56352 /* Pods-MSPCore-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "Pods-MSPCore-dummy.m"; sourceTree = "<group>"; };
 		0878D90FA298E851A52E66D7FB38B7DC /* GADAdLoader.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = GADAdLoader.swift; path = GoogleAdapter/GADAdLoader.swift; sourceTree = "<group>"; };
@@ -393,7 +392,6 @@
 		3347A1AB6546F0A3977529B8F199DC41 /* PromisesObjC */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = PromisesObjC; path = libPromisesObjC.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		369AEFFA7501DF27E695EB5E0D5195D3 /* MSPSharedLibraries-xcframeworks.sh */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.script.sh; path = "MSPSharedLibraries-xcframeworks.sh"; sourceTree = "<group>"; };
 		36A6B6EA5A336C3B725F8203A9C47BBC /* PrebidAdapter.xcframework */ = {isa = PBXFileReference; includeInIndex = 1; path = PrebidAdapter.xcframework; sourceTree = "<group>"; };
-		36FCA077F9F3A4C6ACB8717AA7F92C1C /* MSPiOSCore.xcframework */ = {isa = PBXFileReference; includeInIndex = 1; path = MSPiOSCore.xcframework; sourceTree = "<group>"; };
 		38B3109BBA3B378139C23FF5586B6113 /* Pods-PrebidAdapter-Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "Pods-PrebidAdapter-Info.plist"; sourceTree = "<group>"; };
 		3C2717E352A391DEFE6A65A4DA368C55 /* GoogleUtilities.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = GoogleUtilities.debug.xcconfig; sourceTree = "<group>"; };
 		3E8369DFAED08BE83361811FB9773B15 /* GULNetworkLoggerProtocol.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = GULNetworkLoggerProtocol.h; path = GoogleUtilities/Network/Public/GoogleUtilities/GULNetworkLoggerProtocol.h; sourceTree = "<group>"; };
@@ -466,6 +464,7 @@
 		9331D341AE6D2E186B5C98614B57DF6F /* FBLPromise+Reduce.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "FBLPromise+Reduce.h"; path = "Sources/FBLPromises/include/FBLPromise+Reduce.h"; sourceTree = "<group>"; };
 		939E07E8D61A57898653F5047BD19840 /* ResourceBundle-FBLPromises_Privacy-PromisesObjC-Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "ResourceBundle-FBLPromises_Privacy-PromisesObjC-Info.plist"; sourceTree = "<group>"; };
 		943436852F09019122D09A849A33BFB4 /* GULNetwork.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = GULNetwork.m; path = GoogleUtilities/Network/GULNetwork.m; sourceTree = "<group>"; };
+		9477DFE44BE9932793D681049D7DB24B /* PrebidMobile.xcframework */ = {isa = PBXFileReference; includeInIndex = 1; path = PrebidMobile.xcframework; sourceTree = "<group>"; };
 		96EAC38FFCDC4798091A9726775BEF0E /* nanopb-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "nanopb-prefix.pch"; sourceTree = "<group>"; };
 		9980BFA71D6F6AB2E18AB589426DCB1F /* GULReachabilityChecker+Internal.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "GULReachabilityChecker+Internal.h"; path = "GoogleUtilities/Reachability/GULReachabilityChecker+Internal.h"; sourceTree = "<group>"; };
 		99D744B472C4A2076881847A5749FB9C /* Pods-PrebidAdapter-PrebidAdapterTests-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "Pods-PrebidAdapter-PrebidAdapterTests-umbrella.h"; sourceTree = "<group>"; };
@@ -474,6 +473,7 @@
 		9BFF9D6F19E49C82097619A299FEA151 /* pb_decode.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = pb_decode.h; sourceTree = "<group>"; };
 		9C3C928284393859E92C48725E28A6F7 /* GoogleAdapter */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = GoogleAdapter; path = libGoogleAdapter.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		9C972F36FEB327565A44AECF6CADC209 /* GULLoggerCodes.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = GULLoggerCodes.h; path = GoogleUtilities/Common/GULLoggerCodes.h; sourceTree = "<group>"; };
+		9D6C7E5548488C2EC03CC0FC44723DFE /* shared.xcframework */ = {isa = PBXFileReference; includeInIndex = 1; path = shared.xcframework; sourceTree = "<group>"; };
 		9D940727FF8FB9C785EB98E56350EF41 /* Podfile */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; name = Podfile; path = ../Podfile; sourceTree = SOURCE_ROOT; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		9ED9BE882C4D7638AF3893A69A028BB5 /* GoogleAdapter.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.module; path = GoogleAdapter.modulemap; sourceTree = "<group>"; };
 		9F405885E851D6E25ABE48202AF54B7A /* GoogleUtilities-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "GoogleUtilities-dummy.m"; sourceTree = "<group>"; };
@@ -935,15 +935,6 @@
 			name = Network;
 			sourceTree = "<group>";
 		};
-		45D5AB14707A6E77B2F1EF98D587A697 /* Frameworks */ = {
-			isa = PBXGroup;
-			children = (
-				36FCA077F9F3A4C6ACB8717AA7F92C1C /* MSPiOSCore.xcframework */,
-				05D05EEDB3931E4BD49D23DB3AF50A85 /* PrebidMobile.xcframework */,
-			);
-			name = Frameworks;
-			sourceTree = "<group>";
-		};
 		482E787236C4F8FC0C9B753F24E6023A /* Pods */ = {
 			isa = PBXGroup;
 			children = (
@@ -1019,6 +1010,15 @@
 			);
 			name = "Pods-PrebidAdapter";
 			path = "Target Support Files/Pods-PrebidAdapter";
+			sourceTree = "<group>";
+		};
+		7BA7D92DA4441889DD51C9EA491039F5 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				9477DFE44BE9932793D681049D7DB24B /* PrebidMobile.xcframework */,
+				9D6C7E5548488C2EC03CC0FC44723DFE /* shared.xcframework */,
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 		7F346E0C8FBEC57271EE2AEA0CC685B6 /* Targets Support Files */ = {
@@ -1116,7 +1116,7 @@
 			isa = PBXGroup;
 			children = (
 				F2F901BEB29F2DAD28F60F49F10BA40E /* MSPSharedLibraries.h */,
-				45D5AB14707A6E77B2F1EF98D587A697 /* Frameworks */,
+				7BA7D92DA4441889DD51C9EA491039F5 /* Frameworks */,
 				160AC5335A2C53CE742FC71ECEA15453 /* Pod */,
 				11B887A8B458E81EAA94F34279193823 /* Support Files */,
 			);

@@ -9,12 +9,13 @@ import UIKit
 import MSPCore
 import GoogleAdapter
 import PrebidAdapter
-import MSPiOSCore
+//import MSPiOSCore
+import shared
 
 class ViewController: UIViewController {
     
     @IBOutlet var appBannerView: UIView!
-    var adLoader: iOSAdLoader?
+    weak var adLoader: iOSAdLoader?
 
     override func viewDidLoad() {
         //google test ad config: msp-android-foryou-large-display_gg
@@ -48,6 +49,10 @@ extension ViewController: AdListener {
     }
     
     func onAdLoaded(ad: MSPAd) {
+        if let priceInDollar = ad.adInfo["priceInDollar"],
+           let priceInDollarValue = priceInDollar as? Double {
+            print("demo price: \(priceInDollarValue)")
+        }
         if ad is PrebidAd {
             let prebidAd = ad as? PrebidAd
             if let adView = prebidAd?.adView {
@@ -78,6 +83,5 @@ extension ViewController: AdListener {
     func onError(msg: String) {
         
     }
-    
 }
 

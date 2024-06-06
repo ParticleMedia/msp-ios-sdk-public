@@ -2,7 +2,6 @@
 // swift-compiler-version: Apple Swift version 5.10 (swiftlang-5.10.0.13 clang-1500.3.9.4)
 // swift-module-flags: -target arm64-apple-ios13.0 -enable-objc-interop -enable-library-evolution -swift-version 5 -enforce-exclusivity=checked -O -enable-bare-slash-regex -module-name PrebidAdapter
 import Foundation
-import MSPiOSCore
 @_exported import PrebidAdapter
 import PrebidMobile
 import Swift
@@ -10,17 +9,18 @@ import UIKit
 import _Concurrency
 import _StringProcessing
 import _SwiftConcurrencyShims
-@_inheritsConvenienceInitializers @objc public class PrebidAdLoader : ObjectiveC.NSObject, MSPiOSCore.AdNetworkAdapter {
+import shared
+@_inheritsConvenienceInitializers @objc public class PrebidAdLoader : ObjectiveC.NSObject, shared.AdNetworkAdapter {
   @objc weak public var loadingDelegate: (any PrebidMobile.BannerEventLoadingDelegate)?
   @objc weak public var interactionDelegate: (any PrebidMobile.BannerEventInteractionDelegate)?
   @objc public var adSizes: [CoreFoundation.CGSize]
-  public func destroyAd()
-  public func initialize(initParams: MSPiOSCore.InitializationParameters, adapterInitListener: any MSPiOSCore.AdapterInitListener, context: Any?)
+  @objc public func destroyAd()
+  @objc public func initialize(initParams: any shared.InitializationParameters, adapterInitListener: any shared.AdapterInitListener, context: Any?)
   @objc public var rootViewController: UIKit.UIViewController?
-  public var adListener: (any MSPiOSCore.AdListener)?
+  public var adListener: (any shared.AdListener)?
   public var bannerView: PrebidMobile.BannerView?
   public var priceInDollar: Swift.Double?
-  public func loadAdCreative(bidResponse: Any, adListener: any MSPiOSCore.AdListener, context: Any, adRequest: MSPiOSCore.AdRequest)
+  @objc public func loadAdCreative(bidResponse: Any, adListener: any shared.AdListener, context: Any, adRequest: shared.AdRequest)
   public func registerRootViewController(rootViewController: UIKit.UIViewController?)
   @objc override dynamic public init()
   @objc deinit
@@ -33,26 +33,27 @@ extension PrebidAdapter.PrebidAdLoader : PrebidMobile.BannerViewDelegate {
   @objc dynamic public func bannerViewWillPresentModal(_ bannerView: PrebidMobile.BannerView)
   @objc dynamic public func bannerViewDidDismissModal(_ bannerView: PrebidMobile.BannerView)
 }
-@_inheritsConvenienceInitializers public class PrebidAd : MSPiOSCore.MSPAd {
+@objc @_inheritsConvenienceInitializers public class PrebidAd : shared.MSPAd {
   public var adView: UIKit.UIView?
-  override public init(adNetworkAdapter: any MSPiOSCore.AdNetworkAdapter)
+  public var priceInDollar: Swift.Double?
+  @objc override dynamic public init(adNetworkAdapter: any shared.AdNetworkAdapter)
   @objc deinit
 }
 extension PrebidAdapter.PrebidAdLoader : PrebidMobile.BannerEventHandler {
   @objc dynamic public func requestAd(with bidResponse: PrebidMobile.BidResponse?)
   @objc dynamic public func trackImpression()
 }
-@_inheritsConvenienceInitializers public class PrebidBidLoader : MSPiOSCore.BidLoader {
+@objc @_inheritsConvenienceInitializers public class PrebidBidLoader : shared.BidLoader {
   public var bidRequester: PrebidMobile.PBMBidRequester?
   public var configId: Swift.String?
-  public var bidListener: (any MSPiOSCore.BidListener)?
-  public var adRequest: MSPiOSCore.AdRequest?
-  override public init(googleQueryInfoFetcher: any MSPiOSCore.GoogleQueryInfoFetcher, facebookBidTokenProvider: any MSPiOSCore.FacebookBidTokenProvider)
-  override public func loadBid(placementId: Swift.String, adParams: [Swift.String : Any], bidListener: any MSPiOSCore.BidListener, adRequest: MSPiOSCore.AdRequest)
+  public var bidListener: (any shared.BidListener)?
+  public var adRequest: shared.AdRequest?
+  @objc override dynamic public init(googleQueryInfoFetcher: any shared.GoogleQueryInfoFetcher, facebookBidTokenProvider: any shared.FacebookBidTokenProvider)
+  @objc override dynamic public func loadBid(placementId: Swift.String, adParams: [Swift.String : Any], bidListener: any shared.BidListener, adRequest: shared.AdRequest)
   public func loadBidWithQueryInfo(queryInfo: Swift.String)
   public func multiFormatAdUnitConfig(configId: Swift.String, gadQueryInfo: Swift.String, requestUUID: Swift.String, prebidBannerAdSize: CoreFoundation.CGSize) -> PrebidMobile.AdUnitConfig
   @objc deinit
 }
-extension PrebidAdapter.PrebidBidLoader : MSPiOSCore.GoogleQueryInfoListener {
-  public func onComplete(queryInfo: Swift.String)
+extension PrebidAdapter.PrebidBidLoader : shared.GoogleQueryInfoListener {
+  @objc dynamic public func onComplete(queryInfo: Swift.String)
 }

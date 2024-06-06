@@ -23,20 +23,20 @@
       },
       {
         "kind": "Import",
-        "name": "MSPiOSCore",
-        "printedName": "MSPiOSCore",
+        "name": "shared",
+        "printedName": "shared",
         "declKind": "Import",
-        "moduleName": "PrebidAdapter",
-        "declAttributes": [
-          "RawDocComment"
-        ]
+        "moduleName": "PrebidAdapter"
       },
       {
         "kind": "Import",
         "name": "UIKit",
         "printedName": "UIKit",
         "declKind": "Import",
-        "moduleName": "PrebidAdapter"
+        "moduleName": "PrebidAdapter",
+        "declAttributes": [
+          "RawDocComment"
+        ]
       },
       {
         "kind": "TypeDecl",
@@ -401,10 +401,12 @@
               }
             ],
             "declKind": "Func",
-            "usr": "s:13PrebidAdapter0A8AdLoaderC07destroyC0yyF",
+            "usr": "c:@M@PrebidAdapter@objc(cs)PrebidAdLoader(im)destroyAd",
             "mangledName": "$s13PrebidAdapter0A8AdLoaderC07destroyC0yyF",
             "moduleName": "PrebidAdapter",
+            "objc_name": "destroyAd",
             "declAttributes": [
+              "ObjC",
               "AccessControl"
             ],
             "funcSelfKind": "NonMutating"
@@ -422,14 +424,14 @@
               {
                 "kind": "TypeNominal",
                 "name": "InitializationParameters",
-                "printedName": "MSPiOSCore.InitializationParameters",
-                "usr": "s:10MSPiOSCore24InitializationParametersC"
+                "printedName": "any shared.InitializationParameters",
+                "usr": "c:objc(pl)SharedInitializationParameters"
               },
               {
                 "kind": "TypeNominal",
                 "name": "AdapterInitListener",
-                "printedName": "any MSPiOSCore.AdapterInitListener",
-                "usr": "s:10MSPiOSCore19AdapterInitListenerP"
+                "printedName": "any shared.AdapterInitListener",
+                "usr": "c:objc(pl)SharedAdapterInitListener"
               },
               {
                 "kind": "TypeNominal",
@@ -446,10 +448,12 @@
               }
             ],
             "declKind": "Func",
-            "usr": "s:13PrebidAdapter0A8AdLoaderC10initialize10initParams19adapterInitListener7contexty10MSPiOSCore24InitializationParametersC_AH0biJ0_pypSgtF",
-            "mangledName": "$s13PrebidAdapter0A8AdLoaderC10initialize10initParams19adapterInitListener7contexty10MSPiOSCore24InitializationParametersC_AH0biJ0_pypSgtF",
+            "usr": "c:@M@PrebidAdapter@objc(cs)PrebidAdLoader(im)initializeInitParams:adapterInitListener:context:",
+            "mangledName": "$s13PrebidAdapter0A8AdLoaderC10initialize10initParams19adapterInitListener7contextySo30SharedInitializationParameters_p_So0lbiJ0_pypSgtF",
             "moduleName": "PrebidAdapter",
+            "objc_name": "initializeInitParams:adapterInitListener:context:",
             "declAttributes": [
+              "ObjC",
               "AccessControl"
             ],
             "funcSelfKind": "NonMutating"
@@ -579,21 +583,21 @@
               {
                 "kind": "TypeNominal",
                 "name": "Optional",
-                "printedName": "(any MSPiOSCore.AdListener)?",
+                "printedName": "(any shared.AdListener)?",
                 "children": [
                   {
                     "kind": "TypeNominal",
                     "name": "AdListener",
-                    "printedName": "any MSPiOSCore.AdListener",
-                    "usr": "s:10MSPiOSCore10AdListenerP"
+                    "printedName": "any shared.AdListener",
+                    "usr": "c:objc(pl)SharedAdListener"
                   }
                 ],
                 "usr": "s:Sq"
               }
             ],
             "declKind": "Var",
-            "usr": "s:13PrebidAdapter0A8AdLoaderC10adListener10MSPiOSCore0cF0_pSgvp",
-            "mangledName": "$s13PrebidAdapter0A8AdLoaderC10adListener10MSPiOSCore0cF0_pSgvp",
+            "usr": "s:13PrebidAdapter0A8AdLoaderC10adListenerSo06SharedcF0_pSgvp",
+            "mangledName": "$s13PrebidAdapter0A8AdLoaderC10adListenerSo06SharedcF0_pSgvp",
             "moduleName": "PrebidAdapter",
             "declAttributes": [
               "HasInitialValue",
@@ -610,21 +614,21 @@
                   {
                     "kind": "TypeNominal",
                     "name": "Optional",
-                    "printedName": "(any MSPiOSCore.AdListener)?",
+                    "printedName": "(any shared.AdListener)?",
                     "children": [
                       {
                         "kind": "TypeNominal",
                         "name": "AdListener",
-                        "printedName": "any MSPiOSCore.AdListener",
-                        "usr": "s:10MSPiOSCore10AdListenerP"
+                        "printedName": "any shared.AdListener",
+                        "usr": "c:objc(pl)SharedAdListener"
                       }
                     ],
                     "usr": "s:Sq"
                   }
                 ],
                 "declKind": "Accessor",
-                "usr": "s:13PrebidAdapter0A8AdLoaderC10adListener10MSPiOSCore0cF0_pSgvg",
-                "mangledName": "$s13PrebidAdapter0A8AdLoaderC10adListener10MSPiOSCore0cF0_pSgvg",
+                "usr": "s:13PrebidAdapter0A8AdLoaderC10adListenerSo06SharedcF0_pSgvg",
+                "mangledName": "$s13PrebidAdapter0A8AdLoaderC10adListenerSo06SharedcF0_pSgvg",
                 "moduleName": "PrebidAdapter",
                 "implicit": true,
                 "accessorKind": "get"
@@ -642,21 +646,21 @@
                   {
                     "kind": "TypeNominal",
                     "name": "Optional",
-                    "printedName": "(any MSPiOSCore.AdListener)?",
+                    "printedName": "(any shared.AdListener)?",
                     "children": [
                       {
                         "kind": "TypeNominal",
                         "name": "AdListener",
-                        "printedName": "any MSPiOSCore.AdListener",
-                        "usr": "s:10MSPiOSCore10AdListenerP"
+                        "printedName": "any shared.AdListener",
+                        "usr": "c:objc(pl)SharedAdListener"
                       }
                     ],
                     "usr": "s:Sq"
                   }
                 ],
                 "declKind": "Accessor",
-                "usr": "s:13PrebidAdapter0A8AdLoaderC10adListener10MSPiOSCore0cF0_pSgvs",
-                "mangledName": "$s13PrebidAdapter0A8AdLoaderC10adListener10MSPiOSCore0cF0_pSgvs",
+                "usr": "s:13PrebidAdapter0A8AdLoaderC10adListenerSo06SharedcF0_pSgvs",
+                "mangledName": "$s13PrebidAdapter0A8AdLoaderC10adListenerSo06SharedcF0_pSgvs",
                 "moduleName": "PrebidAdapter",
                 "implicit": true,
                 "accessorKind": "set"
@@ -673,8 +677,8 @@
                   }
                 ],
                 "declKind": "Accessor",
-                "usr": "s:13PrebidAdapter0A8AdLoaderC10adListener10MSPiOSCore0cF0_pSgvM",
-                "mangledName": "$s13PrebidAdapter0A8AdLoaderC10adListener10MSPiOSCore0cF0_pSgvM",
+                "usr": "s:13PrebidAdapter0A8AdLoaderC10adListenerSo06SharedcF0_pSgvM",
+                "mangledName": "$s13PrebidAdapter0A8AdLoaderC10adListenerSo06SharedcF0_pSgvM",
                 "moduleName": "PrebidAdapter",
                 "implicit": true,
                 "accessorKind": "_modify"
@@ -920,8 +924,8 @@
               {
                 "kind": "TypeNominal",
                 "name": "AdListener",
-                "printedName": "any MSPiOSCore.AdListener",
-                "usr": "s:10MSPiOSCore10AdListenerP"
+                "printedName": "any shared.AdListener",
+                "usr": "c:objc(pl)SharedAdListener"
               },
               {
                 "kind": "TypeNominal",
@@ -931,15 +935,17 @@
               {
                 "kind": "TypeNominal",
                 "name": "AdRequest",
-                "printedName": "MSPiOSCore.AdRequest",
-                "usr": "s:10MSPiOSCore9AdRequestC"
+                "printedName": "shared.AdRequest",
+                "usr": "c:objc(cs)SharedAdRequest"
               }
             ],
             "declKind": "Func",
-            "usr": "s:13PrebidAdapter0A8AdLoaderC04loadC8Creative11bidResponse10adListener7context0I7Requestyyp_10MSPiOSCore0cJ0_pypAI0cL0CtF",
-            "mangledName": "$s13PrebidAdapter0A8AdLoaderC04loadC8Creative11bidResponse10adListener7context0I7Requestyyp_10MSPiOSCore0cJ0_pypAI0cL0CtF",
+            "usr": "c:@M@PrebidAdapter@objc(cs)PrebidAdLoader(im)loadAdCreativeBidResponse:adListener:context:adRequest:",
+            "mangledName": "$s13PrebidAdapter0A8AdLoaderC04loadC8Creative11bidResponse10adListener7context0I7Requestyyp_So06SharedcJ0_pypSo0mcL0CtF",
             "moduleName": "PrebidAdapter",
+            "objc_name": "loadAdCreativeBidResponse:adListener:context:adRequest:",
             "declAttributes": [
+              "ObjC",
               "AccessControl"
             ],
             "funcSelfKind": "NonMutating"
@@ -1279,13 +1285,6 @@
         "conformances": [
           {
             "kind": "Conformance",
-            "name": "AdNetworkAdapter",
-            "printedName": "AdNetworkAdapter",
-            "usr": "s:10MSPiOSCore16AdNetworkAdapterP",
-            "mangledName": "$s10MSPiOSCore16AdNetworkAdapterP"
-          },
-          {
-            "kind": "Conformance",
             "name": "Equatable",
             "printedName": "Equatable",
             "usr": "s:SQ",
@@ -1465,6 +1464,116 @@
             ]
           },
           {
+            "kind": "Var",
+            "name": "priceInDollar",
+            "printedName": "priceInDollar",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Optional",
+                "printedName": "Swift.Double?",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Double",
+                    "printedName": "Swift.Double",
+                    "usr": "s:Sd"
+                  }
+                ],
+                "usr": "s:Sq"
+              }
+            ],
+            "declKind": "Var",
+            "usr": "s:13PrebidAdapter0A2AdC13priceInDollarSdSgvp",
+            "mangledName": "$s13PrebidAdapter0A2AdC13priceInDollarSdSgvp",
+            "moduleName": "PrebidAdapter",
+            "declAttributes": [
+              "HasInitialValue",
+              "HasStorage",
+              "AccessControl"
+            ],
+            "hasStorage": true,
+            "accessors": [
+              {
+                "kind": "Accessor",
+                "name": "Get",
+                "printedName": "Get()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Optional",
+                    "printedName": "Swift.Double?",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "Double",
+                        "printedName": "Swift.Double",
+                        "usr": "s:Sd"
+                      }
+                    ],
+                    "usr": "s:Sq"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:13PrebidAdapter0A2AdC13priceInDollarSdSgvg",
+                "mangledName": "$s13PrebidAdapter0A2AdC13priceInDollarSdSgvg",
+                "moduleName": "PrebidAdapter",
+                "implicit": true,
+                "accessorKind": "get"
+              },
+              {
+                "kind": "Accessor",
+                "name": "Set",
+                "printedName": "Set()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Void",
+                    "printedName": "()"
+                  },
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Optional",
+                    "printedName": "Swift.Double?",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "Double",
+                        "printedName": "Swift.Double",
+                        "usr": "s:Sd"
+                      }
+                    ],
+                    "usr": "s:Sq"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:13PrebidAdapter0A2AdC13priceInDollarSdSgvs",
+                "mangledName": "$s13PrebidAdapter0A2AdC13priceInDollarSdSgvs",
+                "moduleName": "PrebidAdapter",
+                "implicit": true,
+                "accessorKind": "set"
+              },
+              {
+                "kind": "Accessor",
+                "name": "Modify",
+                "printedName": "Modify()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Void",
+                    "printedName": "()"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:13PrebidAdapter0A2AdC13priceInDollarSdSgvM",
+                "mangledName": "$s13PrebidAdapter0A2AdC13priceInDollarSdSgvM",
+                "moduleName": "PrebidAdapter",
+                "implicit": true,
+                "accessorKind": "_modify"
+              }
+            ]
+          },
+          {
             "kind": "Constructor",
             "name": "init",
             "printedName": "init(adNetworkAdapter:)",
@@ -1473,38 +1582,95 @@
                 "kind": "TypeNominal",
                 "name": "PrebidAd",
                 "printedName": "PrebidAdapter.PrebidAd",
-                "usr": "s:13PrebidAdapter0A2AdC"
+                "usr": "c:@M@PrebidAdapter@objc(cs)PrebidAd"
               },
               {
                 "kind": "TypeNominal",
                 "name": "AdNetworkAdapter",
-                "printedName": "any MSPiOSCore.AdNetworkAdapter",
-                "usr": "s:10MSPiOSCore16AdNetworkAdapterP"
+                "printedName": "any shared.AdNetworkAdapter",
+                "usr": "c:objc(pl)SharedAdNetworkAdapter"
               }
             ],
             "declKind": "Constructor",
-            "usr": "s:13PrebidAdapter0A2AdC09adNetworkB0AC10MSPiOSCore0ceB0_p_tcfc",
-            "mangledName": "$s13PrebidAdapter0A2AdC09adNetworkB0AC10MSPiOSCore0ceB0_p_tcfc",
+            "usr": "c:@M@PrebidAdapter@objc(cs)PrebidAd(im)initWithAdNetworkAdapter:",
+            "mangledName": "$s13PrebidAdapter0A2AdC09adNetworkB0ACSo06SharedceB0_p_tcfc",
             "moduleName": "PrebidAdapter",
             "overriding": true,
             "implicit": true,
+            "objc_name": "initWithAdNetworkAdapter:",
             "declAttributes": [
+              "Dynamic",
+              "ObjC",
               "Override"
             ],
             "init_kind": "Designated"
           }
         ],
         "declKind": "Class",
-        "usr": "s:13PrebidAdapter0A2AdC",
+        "usr": "c:@M@PrebidAdapter@objc(cs)PrebidAd",
         "mangledName": "$s13PrebidAdapter0A2AdC",
         "moduleName": "PrebidAdapter",
         "declAttributes": [
-          "AccessControl"
+          "AccessControl",
+          "ObjC"
         ],
-        "superclassUsr": "s:10MSPiOSCore5MSPAdC",
+        "superclassUsr": "c:objc(cs)SharedMSPAd",
         "inheritsConvenienceInitializers": true,
         "superclassNames": [
-          "MSPiOSCore.MSPAd"
+          "shared.MSPAd",
+          "shared.KotlinBase",
+          "ObjectiveC.NSObject"
+        ],
+        "conformances": [
+          {
+            "kind": "Conformance",
+            "name": "Equatable",
+            "printedName": "Equatable",
+            "usr": "s:SQ",
+            "mangledName": "$sSQ"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Hashable",
+            "printedName": "Hashable",
+            "usr": "s:SH",
+            "mangledName": "$sSH"
+          },
+          {
+            "kind": "Conformance",
+            "name": "CVarArg",
+            "printedName": "CVarArg",
+            "usr": "s:s7CVarArgP",
+            "mangledName": "$ss7CVarArgP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "_KeyValueCodingAndObservingPublishing",
+            "printedName": "_KeyValueCodingAndObservingPublishing",
+            "usr": "s:10Foundation37_KeyValueCodingAndObservingPublishingP",
+            "mangledName": "$s10Foundation37_KeyValueCodingAndObservingPublishingP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "_KeyValueCodingAndObserving",
+            "printedName": "_KeyValueCodingAndObserving",
+            "usr": "s:10Foundation27_KeyValueCodingAndObservingP",
+            "mangledName": "$s10Foundation27_KeyValueCodingAndObservingP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "CustomStringConvertible",
+            "printedName": "CustomStringConvertible",
+            "usr": "s:s23CustomStringConvertibleP",
+            "mangledName": "$ss23CustomStringConvertibleP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "CustomDebugStringConvertible",
+            "printedName": "CustomDebugStringConvertible",
+            "usr": "s:s28CustomDebugStringConvertibleP",
+            "mangledName": "$ss28CustomDebugStringConvertibleP"
+          }
         ]
       },
       {
@@ -1519,20 +1685,20 @@
       },
       {
         "kind": "Import",
-        "name": "MSPiOSCore",
-        "printedName": "MSPiOSCore",
+        "name": "shared",
+        "printedName": "shared",
         "declKind": "Import",
-        "moduleName": "PrebidAdapter",
-        "declAttributes": [
-          "RawDocComment"
-        ]
+        "moduleName": "PrebidAdapter"
       },
       {
         "kind": "Import",
         "name": "PrebidMobile",
         "printedName": "PrebidMobile",
         "declKind": "Import",
-        "moduleName": "PrebidAdapter"
+        "moduleName": "PrebidAdapter",
+        "declAttributes": [
+          "RawDocComment"
+        ]
       },
       {
         "kind": "TypeDecl",
@@ -1767,21 +1933,21 @@
               {
                 "kind": "TypeNominal",
                 "name": "Optional",
-                "printedName": "(any MSPiOSCore.BidListener)?",
+                "printedName": "(any shared.BidListener)?",
                 "children": [
                   {
                     "kind": "TypeNominal",
                     "name": "BidListener",
-                    "printedName": "any MSPiOSCore.BidListener",
-                    "usr": "s:10MSPiOSCore11BidListenerP"
+                    "printedName": "any shared.BidListener",
+                    "usr": "c:objc(pl)SharedBidListener"
                   }
                 ],
                 "usr": "s:Sq"
               }
             ],
             "declKind": "Var",
-            "usr": "s:13PrebidAdapter0A9BidLoaderC11bidListener10MSPiOSCore0cF0_pSgvp",
-            "mangledName": "$s13PrebidAdapter0A9BidLoaderC11bidListener10MSPiOSCore0cF0_pSgvp",
+            "usr": "s:13PrebidAdapter0A9BidLoaderC11bidListenerSo06SharedcF0_pSgvp",
+            "mangledName": "$s13PrebidAdapter0A9BidLoaderC11bidListenerSo06SharedcF0_pSgvp",
             "moduleName": "PrebidAdapter",
             "declAttributes": [
               "HasInitialValue",
@@ -1798,21 +1964,21 @@
                   {
                     "kind": "TypeNominal",
                     "name": "Optional",
-                    "printedName": "(any MSPiOSCore.BidListener)?",
+                    "printedName": "(any shared.BidListener)?",
                     "children": [
                       {
                         "kind": "TypeNominal",
                         "name": "BidListener",
-                        "printedName": "any MSPiOSCore.BidListener",
-                        "usr": "s:10MSPiOSCore11BidListenerP"
+                        "printedName": "any shared.BidListener",
+                        "usr": "c:objc(pl)SharedBidListener"
                       }
                     ],
                     "usr": "s:Sq"
                   }
                 ],
                 "declKind": "Accessor",
-                "usr": "s:13PrebidAdapter0A9BidLoaderC11bidListener10MSPiOSCore0cF0_pSgvg",
-                "mangledName": "$s13PrebidAdapter0A9BidLoaderC11bidListener10MSPiOSCore0cF0_pSgvg",
+                "usr": "s:13PrebidAdapter0A9BidLoaderC11bidListenerSo06SharedcF0_pSgvg",
+                "mangledName": "$s13PrebidAdapter0A9BidLoaderC11bidListenerSo06SharedcF0_pSgvg",
                 "moduleName": "PrebidAdapter",
                 "implicit": true,
                 "accessorKind": "get"
@@ -1830,21 +1996,21 @@
                   {
                     "kind": "TypeNominal",
                     "name": "Optional",
-                    "printedName": "(any MSPiOSCore.BidListener)?",
+                    "printedName": "(any shared.BidListener)?",
                     "children": [
                       {
                         "kind": "TypeNominal",
                         "name": "BidListener",
-                        "printedName": "any MSPiOSCore.BidListener",
-                        "usr": "s:10MSPiOSCore11BidListenerP"
+                        "printedName": "any shared.BidListener",
+                        "usr": "c:objc(pl)SharedBidListener"
                       }
                     ],
                     "usr": "s:Sq"
                   }
                 ],
                 "declKind": "Accessor",
-                "usr": "s:13PrebidAdapter0A9BidLoaderC11bidListener10MSPiOSCore0cF0_pSgvs",
-                "mangledName": "$s13PrebidAdapter0A9BidLoaderC11bidListener10MSPiOSCore0cF0_pSgvs",
+                "usr": "s:13PrebidAdapter0A9BidLoaderC11bidListenerSo06SharedcF0_pSgvs",
+                "mangledName": "$s13PrebidAdapter0A9BidLoaderC11bidListenerSo06SharedcF0_pSgvs",
                 "moduleName": "PrebidAdapter",
                 "implicit": true,
                 "accessorKind": "set"
@@ -1861,8 +2027,8 @@
                   }
                 ],
                 "declKind": "Accessor",
-                "usr": "s:13PrebidAdapter0A9BidLoaderC11bidListener10MSPiOSCore0cF0_pSgvM",
-                "mangledName": "$s13PrebidAdapter0A9BidLoaderC11bidListener10MSPiOSCore0cF0_pSgvM",
+                "usr": "s:13PrebidAdapter0A9BidLoaderC11bidListenerSo06SharedcF0_pSgvM",
+                "mangledName": "$s13PrebidAdapter0A9BidLoaderC11bidListenerSo06SharedcF0_pSgvM",
                 "moduleName": "PrebidAdapter",
                 "implicit": true,
                 "accessorKind": "_modify"
@@ -1877,21 +2043,21 @@
               {
                 "kind": "TypeNominal",
                 "name": "Optional",
-                "printedName": "MSPiOSCore.AdRequest?",
+                "printedName": "shared.AdRequest?",
                 "children": [
                   {
                     "kind": "TypeNominal",
                     "name": "AdRequest",
-                    "printedName": "MSPiOSCore.AdRequest",
-                    "usr": "s:10MSPiOSCore9AdRequestC"
+                    "printedName": "shared.AdRequest",
+                    "usr": "c:objc(cs)SharedAdRequest"
                   }
                 ],
                 "usr": "s:Sq"
               }
             ],
             "declKind": "Var",
-            "usr": "s:13PrebidAdapter0A9BidLoaderC9adRequest10MSPiOSCore02AdF0CSgvp",
-            "mangledName": "$s13PrebidAdapter0A9BidLoaderC9adRequest10MSPiOSCore02AdF0CSgvp",
+            "usr": "s:13PrebidAdapter0A9BidLoaderC9adRequestSo08SharedAdF0CSgvp",
+            "mangledName": "$s13PrebidAdapter0A9BidLoaderC9adRequestSo08SharedAdF0CSgvp",
             "moduleName": "PrebidAdapter",
             "declAttributes": [
               "HasInitialValue",
@@ -1908,21 +2074,21 @@
                   {
                     "kind": "TypeNominal",
                     "name": "Optional",
-                    "printedName": "MSPiOSCore.AdRequest?",
+                    "printedName": "shared.AdRequest?",
                     "children": [
                       {
                         "kind": "TypeNominal",
                         "name": "AdRequest",
-                        "printedName": "MSPiOSCore.AdRequest",
-                        "usr": "s:10MSPiOSCore9AdRequestC"
+                        "printedName": "shared.AdRequest",
+                        "usr": "c:objc(cs)SharedAdRequest"
                       }
                     ],
                     "usr": "s:Sq"
                   }
                 ],
                 "declKind": "Accessor",
-                "usr": "s:13PrebidAdapter0A9BidLoaderC9adRequest10MSPiOSCore02AdF0CSgvg",
-                "mangledName": "$s13PrebidAdapter0A9BidLoaderC9adRequest10MSPiOSCore02AdF0CSgvg",
+                "usr": "s:13PrebidAdapter0A9BidLoaderC9adRequestSo08SharedAdF0CSgvg",
+                "mangledName": "$s13PrebidAdapter0A9BidLoaderC9adRequestSo08SharedAdF0CSgvg",
                 "moduleName": "PrebidAdapter",
                 "implicit": true,
                 "accessorKind": "get"
@@ -1940,21 +2106,21 @@
                   {
                     "kind": "TypeNominal",
                     "name": "Optional",
-                    "printedName": "MSPiOSCore.AdRequest?",
+                    "printedName": "shared.AdRequest?",
                     "children": [
                       {
                         "kind": "TypeNominal",
                         "name": "AdRequest",
-                        "printedName": "MSPiOSCore.AdRequest",
-                        "usr": "s:10MSPiOSCore9AdRequestC"
+                        "printedName": "shared.AdRequest",
+                        "usr": "c:objc(cs)SharedAdRequest"
                       }
                     ],
                     "usr": "s:Sq"
                   }
                 ],
                 "declKind": "Accessor",
-                "usr": "s:13PrebidAdapter0A9BidLoaderC9adRequest10MSPiOSCore02AdF0CSgvs",
-                "mangledName": "$s13PrebidAdapter0A9BidLoaderC9adRequest10MSPiOSCore02AdF0CSgvs",
+                "usr": "s:13PrebidAdapter0A9BidLoaderC9adRequestSo08SharedAdF0CSgvs",
+                "mangledName": "$s13PrebidAdapter0A9BidLoaderC9adRequestSo08SharedAdF0CSgvs",
                 "moduleName": "PrebidAdapter",
                 "implicit": true,
                 "accessorKind": "set"
@@ -1971,8 +2137,8 @@
                   }
                 ],
                 "declKind": "Accessor",
-                "usr": "s:13PrebidAdapter0A9BidLoaderC9adRequest10MSPiOSCore02AdF0CSgvM",
-                "mangledName": "$s13PrebidAdapter0A9BidLoaderC9adRequest10MSPiOSCore02AdF0CSgvM",
+                "usr": "s:13PrebidAdapter0A9BidLoaderC9adRequestSo08SharedAdF0CSgvM",
+                "mangledName": "$s13PrebidAdapter0A9BidLoaderC9adRequestSo08SharedAdF0CSgvM",
                 "moduleName": "PrebidAdapter",
                 "implicit": true,
                 "accessorKind": "_modify"
@@ -1988,27 +2154,30 @@
                 "kind": "TypeNominal",
                 "name": "PrebidBidLoader",
                 "printedName": "PrebidAdapter.PrebidBidLoader",
-                "usr": "s:13PrebidAdapter0A9BidLoaderC"
+                "usr": "c:@M@PrebidAdapter@objc(cs)PrebidBidLoader"
               },
               {
                 "kind": "TypeNominal",
                 "name": "GoogleQueryInfoFetcher",
-                "printedName": "any MSPiOSCore.GoogleQueryInfoFetcher",
-                "usr": "s:10MSPiOSCore22GoogleQueryInfoFetcherP"
+                "printedName": "any shared.GoogleQueryInfoFetcher",
+                "usr": "c:objc(pl)SharedGoogleQueryInfoFetcher"
               },
               {
                 "kind": "TypeNominal",
                 "name": "FacebookBidTokenProvider",
-                "printedName": "any MSPiOSCore.FacebookBidTokenProvider",
-                "usr": "s:10MSPiOSCore24FacebookBidTokenProviderP"
+                "printedName": "any shared.FacebookBidTokenProvider",
+                "usr": "c:objc(pl)SharedFacebookBidTokenProvider"
               }
             ],
             "declKind": "Constructor",
-            "usr": "s:13PrebidAdapter0A9BidLoaderC22googleQueryInfoFetcher08facebookC13TokenProviderAC10MSPiOSCore06GooglefgH0_p_AF08FacebookcjK0_ptcfc",
-            "mangledName": "$s13PrebidAdapter0A9BidLoaderC22googleQueryInfoFetcher08facebookC13TokenProviderAC10MSPiOSCore06GooglefgH0_p_AF08FacebookcjK0_ptcfc",
+            "usr": "c:@M@PrebidAdapter@objc(cs)PrebidBidLoader(im)initWithGoogleQueryInfoFetcher:facebookBidTokenProvider:",
+            "mangledName": "$s13PrebidAdapter0A9BidLoaderC22googleQueryInfoFetcher08facebookC13TokenProviderACSo012SharedGooglefgH0_p_So0l8FacebookcjK0_ptcfc",
             "moduleName": "PrebidAdapter",
             "overriding": true,
+            "objc_name": "initWithGoogleQueryInfoFetcher:facebookBidTokenProvider:",
             "declAttributes": [
+              "Dynamic",
+              "ObjC",
               "Override",
               "AccessControl"
             ],
@@ -2052,22 +2221,25 @@
               {
                 "kind": "TypeNominal",
                 "name": "BidListener",
-                "printedName": "any MSPiOSCore.BidListener",
-                "usr": "s:10MSPiOSCore11BidListenerP"
+                "printedName": "any shared.BidListener",
+                "usr": "c:objc(pl)SharedBidListener"
               },
               {
                 "kind": "TypeNominal",
                 "name": "AdRequest",
-                "printedName": "MSPiOSCore.AdRequest",
-                "usr": "s:10MSPiOSCore9AdRequestC"
+                "printedName": "shared.AdRequest",
+                "usr": "c:objc(cs)SharedAdRequest"
               }
             ],
             "declKind": "Func",
-            "usr": "s:13PrebidAdapter0A9BidLoaderC04loadC011placementId8adParams11bidListener0H7RequestySS_SDySSypG10MSPiOSCore0cK0_pAJ02AdL0CtF",
-            "mangledName": "$s13PrebidAdapter0A9BidLoaderC04loadC011placementId8adParams11bidListener0H7RequestySS_SDySSypG10MSPiOSCore0cK0_pAJ02AdL0CtF",
+            "usr": "c:@M@PrebidAdapter@objc(cs)PrebidBidLoader(im)loadBidPlacementId:adParams:bidListener:adRequest:",
+            "mangledName": "$s13PrebidAdapter0A9BidLoaderC04loadC011placementId8adParams11bidListener0H7RequestySS_SDySSypGSo06SharedcK0_pSo0m2AdL0CtF",
             "moduleName": "PrebidAdapter",
             "overriding": true,
+            "objc_name": "loadBidPlacementId:adParams:bidListener:adRequest:",
             "declAttributes": [
+              "Dynamic",
+              "ObjC",
               "Override",
               "AccessControl"
             ],
@@ -2162,10 +2334,13 @@
               }
             ],
             "declKind": "Func",
-            "usr": "s:13PrebidAdapter0A9BidLoaderC10onComplete9queryInfoySS_tF",
+            "usr": "c:@CM@PrebidAdapter@objc(cs)PrebidBidLoader(im)onCompleteQueryInfo:",
             "mangledName": "$s13PrebidAdapter0A9BidLoaderC10onComplete9queryInfoySS_tF",
             "moduleName": "PrebidAdapter",
+            "objc_name": "onCompleteQueryInfo:",
             "declAttributes": [
+              "Dynamic",
+              "ObjC",
               "AccessControl"
             ],
             "isFromExtension": true,
@@ -2173,24 +2348,69 @@
           }
         ],
         "declKind": "Class",
-        "usr": "s:13PrebidAdapter0A9BidLoaderC",
+        "usr": "c:@M@PrebidAdapter@objc(cs)PrebidBidLoader",
         "mangledName": "$s13PrebidAdapter0A9BidLoaderC",
         "moduleName": "PrebidAdapter",
         "declAttributes": [
-          "AccessControl"
+          "AccessControl",
+          "ObjC"
         ],
-        "superclassUsr": "s:10MSPiOSCore9BidLoaderC",
+        "superclassUsr": "c:objc(cs)SharedBidLoader",
         "inheritsConvenienceInitializers": true,
         "superclassNames": [
-          "MSPiOSCore.BidLoader"
+          "shared.BidLoader",
+          "shared.KotlinBase",
+          "ObjectiveC.NSObject"
         ],
         "conformances": [
           {
             "kind": "Conformance",
-            "name": "GoogleQueryInfoListener",
-            "printedName": "GoogleQueryInfoListener",
-            "usr": "s:10MSPiOSCore23GoogleQueryInfoListenerP",
-            "mangledName": "$s10MSPiOSCore23GoogleQueryInfoListenerP"
+            "name": "Equatable",
+            "printedName": "Equatable",
+            "usr": "s:SQ",
+            "mangledName": "$sSQ"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Hashable",
+            "printedName": "Hashable",
+            "usr": "s:SH",
+            "mangledName": "$sSH"
+          },
+          {
+            "kind": "Conformance",
+            "name": "CVarArg",
+            "printedName": "CVarArg",
+            "usr": "s:s7CVarArgP",
+            "mangledName": "$ss7CVarArgP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "_KeyValueCodingAndObservingPublishing",
+            "printedName": "_KeyValueCodingAndObservingPublishing",
+            "usr": "s:10Foundation37_KeyValueCodingAndObservingPublishingP",
+            "mangledName": "$s10Foundation37_KeyValueCodingAndObservingPublishingP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "_KeyValueCodingAndObserving",
+            "printedName": "_KeyValueCodingAndObserving",
+            "usr": "s:10Foundation27_KeyValueCodingAndObservingP",
+            "mangledName": "$s10Foundation27_KeyValueCodingAndObservingP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "CustomStringConvertible",
+            "printedName": "CustomStringConvertible",
+            "usr": "s:s23CustomStringConvertibleP",
+            "mangledName": "$ss23CustomStringConvertibleP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "CustomDebugStringConvertible",
+            "printedName": "CustomDebugStringConvertible",
+            "usr": "s:s28CustomDebugStringConvertibleP",
+            "mangledName": "$ss28CustomDebugStringConvertibleP"
           }
         ]
       }

@@ -95,7 +95,7 @@ Pod::Spec.new do |spec|
   spec.exclude_files = "Classes/Exclude"
 
   #spec.dependency 'GoogleAdapter'
-  spec.vendored_frameworks= "PrebidMobile.xcframework", "MSPiOSCore.xcframework"
+  spec.vendored_frameworks= "PrebidMobile.xcframework", "shared.xcframework"#"MSPiOSCore.xcframework"
 
   # spec.public_header_files = "Classes/**/*.h"
   # s.pod_target_xcconfig = { 'HEADER_SEARCH_PATHS' => '$(PODS_TARGET_SRCROOT)/PrebidMobile.xcframework/Headers $(PODS_TARGET_SRCROOT)/MSPiOSCore.xcframework/Headers' }

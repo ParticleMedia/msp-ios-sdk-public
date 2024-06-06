@@ -372,6 +372,13 @@ __attribute__((swift_name("AdLoader")))
 @property id<SharedBidLoaderProvider> _Nullable bidLoaderProvider __attribute__((swift_name("bidLoaderProvider")));
 @end
 
+__attribute__((swift_name("AdNetworkManager")))
+@interface SharedAdNetworkManager : SharedBase
+- (instancetype)init __attribute__((swift_name("init()"))) __attribute__((objc_designated_initializer));
++ (instancetype)new __attribute__((availability(swift, unavailable, message="use object initializers instead")));
+- (id<SharedAdNetworkAdapter> _Nullable)getAdNetworkAdapter __attribute__((swift_name("getAdNetworkAdapter()")));
+@end
+
 __attribute__((objc_subclassing_restricted))
 __attribute__((swift_name("AdRequest")))
 @interface SharedAdRequest : SharedBase

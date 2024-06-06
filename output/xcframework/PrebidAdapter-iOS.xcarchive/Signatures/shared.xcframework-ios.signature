@@ -7,11 +7,9 @@
 	<key>metadata</key>
 	<dict>
 		<key>library</key>
-		<string>MSPiOSCore.framework</string>
+		<string>shared.framework</string>
 		<key>platform</key>
 		<string>ios</string>
-		<key>platformVariant</key>
-		<string>simulator</string>
 	</dict>
 	<key>signed</key>
 	<false/>

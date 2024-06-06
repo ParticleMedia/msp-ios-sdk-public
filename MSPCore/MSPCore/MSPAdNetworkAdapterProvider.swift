@@ -7,14 +7,19 @@
 
 import Foundation
 import PrebidAdapter
-import MSPiOSCore
+//import MSPiOSCore
+import shared
 
 
 
 public class MSPAdNetworkAdapterProvider: AdNetworkAdapterProvider {
-    public func getAdNetworkAdaptersCount() -> Int {
+    public func getAdNetworkAdaptersCount() -> Int32 {
         return 2
     }
+    
+    //public func getAdNetworkAdaptersCount() -> Int {
+    //    return 2
+    //}
     
     public var rootViewController: UIViewController?
     
@@ -27,15 +32,11 @@ public class MSPAdNetworkAdapterProvider: AdNetworkAdapterProvider {
     
     public func getAdNetworkAdapter(adNetwork: AdNetwork) -> AdNetworkAdapter? {
         print("msp begin get adnetwork adapter")
-        let myAdNetworkName = adNetwork
-        if adNetwork == .prebid {
+        if adNetwork.name == AdNetwork.prebid.name {
             var prebidAdLoader = PrebidAdLoader()
-            prebidAdLoader.rootViewController = self.rootViewController
-           
             return prebidAdLoader
-        } else if adNetwork ==  .google {
+        } else if adNetwork.name == AdNetwork.google.name {
             var gadAdLoader = googleManager?.getAdNetworkAdapter()
-            //gadAdLoader.rootViewController = self.rootViewController
             return gadAdLoader
         }
         return nil
@@ -43,11 +44,11 @@ public class MSPAdNetworkAdapterProvider: AdNetworkAdapterProvider {
 }
 
 public class AdNetworkAdapterStandalone: AdNetworkAdapter {
-    public func loadAdCreative(bidResponse: Any, adListener: any MSPiOSCore.AdListener, context: Any, adRequest: MSPiOSCore.AdRequest) {
+    public func loadAdCreative(bidResponse: Any, adListener: AdListener, context: Any, adRequest: AdRequest) {
         
     }
     
-    public func initialize(initParams: MSPiOSCore.InitializationParameters, adapterInitListener: any MSPiOSCore.AdapterInitListener, context: Any?) {
+    public func initialize(initParams: InitializationParameters, adapterInitListener: any AdapterInitListener, context: Any?) {
         
     }
     

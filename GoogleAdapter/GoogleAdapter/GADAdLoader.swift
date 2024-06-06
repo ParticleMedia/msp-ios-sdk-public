@@ -7,7 +7,8 @@
 
 import Foundation
 import GoogleMobileAds
-import MSPiOSCore
+//import MSPiOSCore
+import shared
 import PrebidMobile
 
 @objc public class GADAdLoder : NSObject, AdNetworkAdapter {
@@ -34,6 +35,7 @@ import PrebidMobile
         
         guard bidResponse is BidResponse,
               let mBidResponse = bidResponse as? BidResponse else {
+            self.adListener?.onError(msg: "no valid response")
             return
         }
         
@@ -49,13 +51,10 @@ import PrebidMobile
               let googleExtDict = SafeAs(bidExtDict["google"], [String: Any].self),
               let adUnitId = SafeAs(googleExtDict["ad_unit_id"], String.self)
         else {
-            // return an ad object with no view
-            //let googleEmptyAd = GoogleAd(adNetworkAdapter: self)
-            //adListener.onAdLoaded(ad: googleEmptyAd)
+            self.adListener?.onError(msg: "no valid response")
             return
         }
         self.priceInDollar = Double(mBidResponse.winningBid?.price ?? 0)
-        print("demo adString = \(adString)")
         
         DispatchQueue.main.async {
             let gadBannerView = GAMBannerView(adSize: self.getGADAdSize(adRequest: adRequest))
@@ -108,6 +107,7 @@ extension GADAdLoder : GADBannerViewDelegate {
         googleAd.adView = self.gadBannerView
         if let priceInDollar = self.priceInDollar {
             googleAd.adInfo["priceInDollar"] = priceInDollar
+            googleAd.priceInDollar = priceInDollar
         }
         self.adListener?.onAdLoaded(ad: googleAd)
     }
@@ -132,4 +132,5 @@ extension GADAdLoder : GADBannerViewDelegate {
 
 public class GoogleAd: MSPAd {
     public var adView: UIView?
+    public var priceInDollar: Double?
 }
