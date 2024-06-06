@@ -107,6 +107,7 @@ extension GADAdLoder : GADBannerViewDelegate {
         googleAd.adView = self.gadBannerView
         if let priceInDollar = self.priceInDollar {
             googleAd.adInfo["priceInDollar"] = priceInDollar
+            googleAd.priceInDollar = priceInDollar
         }
         self.adListener?.onAdLoaded(ad: googleAd)
     }
@@ -131,4 +132,5 @@ extension GADAdLoder : GADBannerViewDelegate {
 
 public class GoogleAd: MSPAd {
     public var adView: UIView?
+    public var priceInDollar: Double?
 }

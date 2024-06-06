@@ -35,6 +35,7 @@ extension PrebidAdapter.PrebidAdLoader : PrebidMobile.BannerViewDelegate {
 }
 @objc @_inheritsConvenienceInitializers public class PrebidAd : shared.MSPAd {
   public var adView: UIKit.UIView?
+  public var priceInDollar: Swift.Double?
   @objc override dynamic public init(adNetworkAdapter: any shared.AdNetworkAdapter)
   @objc deinit
 }
