@@ -1,19 +1,21 @@
 // swift-interface-format-version: 1.0
-// swift-compiler-version: Apple Swift version 5.8.1 (swiftlang-5.8.0.124.5 clang-1403.0.22.11.100)
-// swift-module-flags: -target arm64-apple-ios10.0 -enable-objc-interop -enable-library-evolution -swift-version 5 -enforce-exclusivity=checked -O -module-name PrebidMobile
-// swift-module-flags-ignorable: -enable-bare-slash-regex
+// swift-compiler-version: Apple Swift version 5.10 (swiftlang-5.10.0.13 clang-1500.3.9.4)
+// swift-module-flags: -target arm64-apple-ios10.0 -enable-objc-interop -enable-library-evolution -swift-version 5 -enforce-exclusivity=checked -O -enable-bare-slash-regex -module-name PrebidMobile
 import CoreLocation
+import DeveloperToolsSupport
 import Foundation
 import MapKit
 import ObjectiveC
 @_exported import PrebidMobile
 import StoreKit
 import Swift
+import SwiftUI
 import SystemConfiguration
 import UIKit
 import WebKit
 import _Concurrency
 import _StringProcessing
+import _SwiftConcurrencyShims
 import ObjectiveC.runtime
 @objc public class DemandResponseInfo : ObjectiveC.NSObject {
   @objc public var fetchDemandResult: PrebidMobile.ResultCode {
@@ -700,6 +702,9 @@ extension UIKit.UIView {
   @objc public var monetizationCategories: [Swift.String]? {
     get
   }
+  @objc public var rawResponse: PrebidMobile.RawBidResponse<PrebidMobile.PBMORTBBidResponseExt, Foundation.NSDictionary, PrebidMobile.PBMORTBBidExt>? {
+    get
+  }
   @objc convenience public init(adUnitId: Swift.String?, targetingInfo: [Swift.String : Swift.String]?)
   @objc convenience public init(jsonDictionary: PrebidMobile.JsonDictionary)
   @objc public func setTargetingInfo(with newValue: [Swift.String : Swift.String])
@@ -758,8 +763,8 @@ extension UIKit.UIView {
   @objc public func fireAndForget(_ resourceURL: Swift.String?)
   @objc public func head(_ resourceURL: Swift.String?, timeout: Foundation.TimeInterval, callback: @escaping (PrebidMobile.ServerResponse) -> Swift.Void)
   @objc public func get(_ resourceURL: Swift.String?, timeout: Foundation.TimeInterval, callback: @escaping (PrebidMobile.ServerResponse) -> Swift.Void)
-  @objc public func post(_ resourceURL: Swift.String?, data: Foundation.Data?, timeout: Foundation.TimeInterval, callback: @escaping (PrebidMobile.ServerResponse) -> Swift.Void)
-  @objc public func post(_ resourceURL: Swift.String?, contentType: Swift.String?, data: Foundation.Data?, timeout: Foundation.TimeInterval, callback: @escaping (PrebidMobile.ServerResponse) -> Swift.Void)
+  @objc public func post(_ resourceURL: Swift.String?, headerParameter: [Swift.String : Swift.String]?, data: Foundation.Data?, timeout: Foundation.TimeInterval, callback: @escaping (PrebidMobile.ServerResponse) -> Swift.Void)
+  @objc public func post(_ resourceURL: Swift.String?, headerParameter: [Swift.String : Swift.String]?, contentType: Swift.String?, data: Foundation.Data?, timeout: Foundation.TimeInterval, callback: @escaping (PrebidMobile.ServerResponse) -> Swift.Void)
   @objc public func download(_ resourceURL: Swift.String?, callback: @escaping (PrebidMobile.ServerResponse) -> Swift.Void)
   @objc override dynamic public init()
   @objc deinit
@@ -1055,6 +1060,7 @@ extension UIKit.UIView {
   public func registerView(view: UIKit.UIView?, clickableViews: [UIKit.UIView]?) -> Swift.Bool
 }
 @objc @_inheritsConvenienceInitializers @_hasMissingDesignatedInitializers @objcMembers public class Prebid : ObjectiveC.NSObject {
+  @objc public var enablePageLoadFix: Swift.Bool
   @objc public static let bidderNameAppNexus: Swift.String
   @objc public static let bidderNameRubiconProject: Swift.String
   @objc public var timeoutUpdated: Swift.Bool
@@ -1493,6 +1499,7 @@ public let refreshIntervalDefault: Swift.Double
     @objc get
   }
   @objc public var nativeAdConfiguration: PrebidMobile.NativeAdConfiguration?
+  @objc public var extraRequestHeaders: [Swift.String : Swift.String]
   @objc public var additionalSizes: [CoreFoundation.CGSize]? {
     @objc get
     @objc set
@@ -1871,8 +1878,8 @@ public typealias ServerResponseCallback = (PrebidMobile.ServerResponse) -> Swift
   @objc func fireAndForget(_ resourceURL: Swift.String?)
   @objc func head(_ resourceURL: Swift.String?, timeout: Foundation.TimeInterval, callback: @escaping PrebidMobile.ServerResponseCallback)
   @objc func get(_ resourceURL: Swift.String?, timeout: Foundation.TimeInterval, callback: @escaping PrebidMobile.ServerResponseCallback)
-  @objc func post(_ resourceURL: Swift.String?, data: Foundation.Data?, timeout: Foundation.TimeInterval, callback: @escaping PrebidMobile.ServerResponseCallback)
-  @objc func post(_ resourceURL: Swift.String?, contentType: Swift.String?, data: Foundation.Data?, timeout: Foundation.TimeInterval, callback: @escaping PrebidMobile.ServerResponseCallback)
+  @objc func post(_ resourceURL: Swift.String?, headerParameter: [Swift.String : Swift.String]?, data: Foundation.Data?, timeout: Foundation.TimeInterval, callback: @escaping PrebidMobile.ServerResponseCallback)
+  @objc func post(_ resourceURL: Swift.String?, headerParameter: [Swift.String : Swift.String]?, contentType: Swift.String?, data: Foundation.Data?, timeout: Foundation.TimeInterval, callback: @escaping PrebidMobile.ServerResponseCallback)
   @objc func download(_ resourceURL: Swift.String?, callback: @escaping PrebidMobile.ServerResponseCallback)
 }
 @objc @_inheritsConvenienceInitializers @objcMembers public class BannerParameters : ObjectiveC.NSObject {

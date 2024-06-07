@@ -103,9 +103,7 @@ public class PrebidBidLoader : BidLoader {
         adUnitConfig.addContextData(key: "query_info", value: gadQueryInfo)
         var assets = [NativeAsset]()
         assets.append(NativeAssetTitle(length: 100, required: true))
-        adUnitConfig.nativeAdConfiguration?.markupRequestObject.assets = assets
-
-        
+        adUnitConfig.nativeAdConfiguration?.markupRequestObject.assets = assets  
         
         return adUnitConfig
     }
