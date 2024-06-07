@@ -17,10 +17,6 @@ public class MSPAdNetworkAdapterProvider: AdNetworkAdapterProvider {
         return 2
     }
     
-    //public func getAdNetworkAdaptersCount() -> Int {
-    //    return 2
-    //}
-    
     public var rootViewController: UIViewController?
     
     public var googleManager: AdNetworkManager?

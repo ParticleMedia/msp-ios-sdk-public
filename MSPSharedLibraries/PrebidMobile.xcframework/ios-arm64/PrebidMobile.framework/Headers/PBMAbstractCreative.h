@@ -99,6 +99,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)onViewabilityChanged:(BOOL)viewable viewExposure:(PBMViewExposure *)viewExposure;
 - (void)startViewabilityTracker;
+- (void)initViewabilityTracker;
 
 @end
 
