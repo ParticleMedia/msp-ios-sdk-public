@@ -61,8 +61,8 @@ target 'MSPDemoApp' do
   project 'MSPDemoApp/MSPDemoApp'
   #pod 'GoogleAdapter',  :path => 'GoogleAdapter', :modular_headers => true
   
-  pod 'MSPCore', '~> 0.0.5', :modular_headers => true
-  pod 'GoogleAdapter', '~> 0.0.4', :modular_headers => true
+  pod 'MSPCore', :path => './', :modular_headers => true
+  pod 'GoogleAdapter', :path => './', :modular_headers => true
   #pod 'MSPSharedLibraries', :modular_headers => true
  
 end
