@@ -10,9 +10,6 @@ import Foundation
 import shared
 
 public class GoogleManager: AdNetworkManager {
-    //public override init() {
-    //
-    //}
     
     public override func getAdNetworkAdapter() -> AdNetworkAdapter? {
         return GADAdLoder()

@@ -52,7 +52,6 @@ public class InitializationParametersImp: InitializationParameters {
     public init(prebidAPIKey: String, prebidHostUrl: String) {
         self.prebidAPIKey = prebidAPIKey
         self.prebidHostUrl = prebidHostUrl
-        //super.init()
     }
     
     public func getPrebidAPIKey() -> String {
@@ -108,7 +107,6 @@ public class iOSAdLoader: BidListener {
         self.bidLoader = MSPHelper.shared.bidLoaderProvider.getBidLoader()
         self.rootViewController = rootViewController
         bidLoader?.loadBid(placementId: placementId, adParams: adRequest.customParams, bidListener: self, adRequest: adRequest)
-        //loadAd(placementId: placementId, adListener: adListener, context: context, adRequest: adRequest)
     }
     
     public func onBidResponse(bidResponse: Any, adNetwork: AdNetwork) {

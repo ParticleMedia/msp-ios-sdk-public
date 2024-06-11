@@ -34,7 +34,5 @@ public class GoogleQueryInfoFetcherStandalone: GoogleQueryInfoFetcher {
 public class FacebookBidTokenProviderStandalone: FacebookBidTokenProvider {
     public func fetch(completeListener: any FacebookBidTokenListener, context: Any) {
         completeListener.onComplete(bidToken: "dummy bidder token")
-    }
-    
-    
+    } 
 }
