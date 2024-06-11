@@ -17,10 +17,6 @@ public class MSPAdNetworkAdapterProvider: AdNetworkAdapterProvider {
         return 2
     }
     
-    //public func getAdNetworkAdaptersCount() -> Int {
-    //    return 2
-    //}
-    
     public var rootViewController: UIViewController?
     
     public var googleManager: AdNetworkManager?
@@ -32,10 +28,10 @@ public class MSPAdNetworkAdapterProvider: AdNetworkAdapterProvider {
     
     public func getAdNetworkAdapter(adNetwork: AdNetwork) -> AdNetworkAdapter? {
         print("msp begin get adnetwork adapter")
-        if adNetwork.name == AdNetwork.prebid.name {
+        if adNetwork.name == "Prebid" {
             var prebidAdLoader = PrebidAdLoader()
             return prebidAdLoader
-        } else if adNetwork.name == AdNetwork.google.name {
+        } else if adNetwork.name == "Google" {
             var gadAdLoader = googleManager?.getAdNetworkAdapter()
             return gadAdLoader
         }

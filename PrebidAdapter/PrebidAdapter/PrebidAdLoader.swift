@@ -40,7 +40,6 @@ import UIKit
     
     @objc public var rootViewController: UIViewController?
     public var adListener: AdListener?
-    //public var bannerEventHandler: BannerEventHandler?
     
     public var bannerView: BannerView?
     public var priceInDollar: Double?
@@ -63,9 +62,6 @@ import UIKit
         let height = Int(adRequest.adSize?.height ?? 50)
         let adSize = CGSize(width: width, height: height)
          
-        //let bannerEventHandler = PrebidBannerEventHandler()
-        //bannerEventHandler.adListener = adListener
-        //self.bannerEventHandler = bannerEventHandler
         self.priceInDollar = Double(mBidResponse.winningBid?.price ?? 0)
 
         DispatchQueue.main.async {
@@ -81,12 +77,6 @@ import UIKit
             self.adListener = adListener
             bannerView.handleBidResponse(response: mBidResponse)
         }
-        
-    
-        //var prebidAd = PrebidAd()
-        //prebidAd.adView = bannerView
-        //self.adListener = adListener
-        //adListener.onAdLoaded(ad: prebidAd)
    }
     
     public func registerRootViewController(rootViewController: UIViewController?) {
