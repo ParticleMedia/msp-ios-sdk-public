@@ -2,7 +2,7 @@ PODS:
   - Google-Mobile-Ads-SDK (10.14.0):
     - GoogleAppMeasurement (< 11.0, >= 7.0)
     - GoogleUserMessagingPlatform (>= 1.1)
-  - GoogleAdapter (0.0.4):
+  - GoogleAdapter (0.0.9):
     - Google-Mobile-Ads-SDK (= 10.14.0)
     - MSPSharedLibraries
   - GoogleAppMeasurement (10.27.0):
@@ -51,9 +51,9 @@ PODS:
   - GoogleUtilities/Reachability (7.13.3):
     - GoogleUtilities/Logger
     - GoogleUtilities/Privacy
-  - MSPCore (0.0.5):
+  - MSPCore (0.0.9):
     - MSPSharedLibraries
-  - MSPSharedLibraries (0.0.4)
+  - MSPSharedLibraries (0.0.8)
   - nanopb (2.30910.0):
     - nanopb/decode (= 2.30910.0)
     - nanopb/encode (= 2.30910.0)
@@ -62,32 +62,36 @@ PODS:
   - PromisesObjC (2.4.0)
 
 DEPENDENCIES:
-  - GoogleAdapter (~> 0.0.4)
-  - MSPCore (~> 0.0.5)
+  - GoogleAdapter (from `./`)
+  - MSPCore (from `./`)
 
 SPEC REPOS:
   trunk:
     - Google-Mobile-Ads-SDK
-    - GoogleAdapter
     - GoogleAppMeasurement
     - GoogleUserMessagingPlatform
     - GoogleUtilities
-    - MSPCore
     - MSPSharedLibraries
     - nanopb
     - PromisesObjC
 
+EXTERNAL SOURCES:
+  GoogleAdapter:
+    :path: "./"
+  MSPCore:
+    :path: "./"
+
 SPEC CHECKSUMS:
   Google-Mobile-Ads-SDK: 8f67a72f88d057335b1ac3f501e2b68ad054116e
-  GoogleAdapter: 989131c626c24ce95a669a148b5749baae1afa69
+  GoogleAdapter: 050a81cbaafb102e0b24b32f519c6315673a7cd6
   GoogleAppMeasurement: f65fc137531af9ad647f1c0a42f3b6a4d3a98049
   GoogleUserMessagingPlatform: f131fa7978d2ba88d7426702b057c2cc318e6595
   GoogleUtilities: ea963c370a38a8069cc5f7ba4ca849a60b6d7d15
-  MSPCore: 77defb0cf47675dbfe61478c9a230d100adc018f
-  MSPSharedLibraries: 05adf2929f7d186e8aa74c35b7f841fe3c79d904
+  MSPCore: 4452fd65543fe72b8a5e22a67da9f4a00d37dec4
+  MSPSharedLibraries: bc55410eda8333bdee6f03af5c52b5459828d32e
   nanopb: 438bc412db1928dac798aa6fd75726007be04262
   PromisesObjC: f5707f49cb48b9636751c5b2e7d227e43fba9f47
 
-PODFILE CHECKSUM: 29e99d3acd2576e9ac4e0cb514e2a90adc421357
+PODFILE CHECKSUM: da304ddb47df049b841eb6d37e86a5003a4be1fd
 
 COCOAPODS: 1.14.3
