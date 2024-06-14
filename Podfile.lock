@@ -2,7 +2,7 @@ PODS:
   - Google-Mobile-Ads-SDK (10.14.0):
     - GoogleAppMeasurement (< 11.0, >= 7.0)
     - GoogleUserMessagingPlatform (>= 1.1)
-  - GoogleAdapter (0.0.9):
+  - GoogleAdapter (0.0.8):
     - Google-Mobile-Ads-SDK (= 10.14.0)
     - MSPSharedLibraries
   - GoogleAppMeasurement (10.27.0):
@@ -51,7 +51,7 @@ PODS:
   - GoogleUtilities/Reachability (7.13.3):
     - GoogleUtilities/Logger
     - GoogleUtilities/Privacy
-  - MSPCore (0.0.9):
+  - MSPCore (0.0.8):
     - MSPSharedLibraries
   - MSPSharedLibraries (0.0.8)
   - nanopb (2.30910.0):
@@ -64,6 +64,7 @@ PODS:
 DEPENDENCIES:
   - GoogleAdapter (from `./`)
   - MSPCore (from `./`)
+  - MSPSharedLibraries (from `./`)
 
 SPEC REPOS:
   trunk:
@@ -71,7 +72,6 @@ SPEC REPOS:
     - GoogleAppMeasurement
     - GoogleUserMessagingPlatform
     - GoogleUtilities
-    - MSPSharedLibraries
     - nanopb
     - PromisesObjC
 
@@ -80,18 +80,20 @@ EXTERNAL SOURCES:
     :path: "./"
   MSPCore:
     :path: "./"
+  MSPSharedLibraries:
+    :path: "./"
 
 SPEC CHECKSUMS:
   Google-Mobile-Ads-SDK: 8f67a72f88d057335b1ac3f501e2b68ad054116e
-  GoogleAdapter: 050a81cbaafb102e0b24b32f519c6315673a7cd6
+  GoogleAdapter: 255e22f8a69c6944a4786f8f4c619900f25d030e
   GoogleAppMeasurement: f65fc137531af9ad647f1c0a42f3b6a4d3a98049
   GoogleUserMessagingPlatform: f131fa7978d2ba88d7426702b057c2cc318e6595
   GoogleUtilities: ea963c370a38a8069cc5f7ba4ca849a60b6d7d15
-  MSPCore: 4452fd65543fe72b8a5e22a67da9f4a00d37dec4
+  MSPCore: e07f97a880e00adc5ad1d532414ae2fe241cab19
   MSPSharedLibraries: bc55410eda8333bdee6f03af5c52b5459828d32e
   nanopb: 438bc412db1928dac798aa6fd75726007be04262
   PromisesObjC: f5707f49cb48b9636751c5b2e7d227e43fba9f47
 
-PODFILE CHECKSUM: da304ddb47df049b841eb6d37e86a5003a4be1fd
+PODFILE CHECKSUM: f6a92a434934f855d3c4cea2b286415ed947f8d4
 
 COCOAPODS: 1.14.3

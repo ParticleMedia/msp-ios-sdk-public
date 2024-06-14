@@ -40,6 +40,10 @@ public class MSPAdNetworkAdapterProvider: AdNetworkAdapterProvider {
 }
 
 public class AdNetworkAdapterStandalone: AdNetworkAdapter {
+    public func prepareViewForInteraction(nativeAd: NativeAd, nativeAdView: Any) {
+        
+    }
+    
     public func loadAdCreative(bidResponse: Any, adListener: AdListener, context: Any, adRequest: AdRequest) {
         
     }

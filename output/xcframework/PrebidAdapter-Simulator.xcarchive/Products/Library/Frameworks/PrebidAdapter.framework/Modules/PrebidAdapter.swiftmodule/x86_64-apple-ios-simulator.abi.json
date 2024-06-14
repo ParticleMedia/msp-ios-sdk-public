@@ -44,6 +44,39 @@
         "printedName": "PrebidAdLoader",
         "children": [
           {
+            "kind": "Function",
+            "name": "prepareViewForInteraction",
+            "printedName": "prepareViewForInteraction(nativeAd:nativeAdView:)",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Void",
+                "printedName": "()"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "NativeAd",
+                "printedName": "shared.NativeAd",
+                "usr": "c:objc(cs)SharedNativeAd"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "ProtocolComposition",
+                "printedName": "Any"
+              }
+            ],
+            "declKind": "Func",
+            "usr": "c:@M@PrebidAdapter@objc(cs)PrebidAdLoader(im)prepareViewForInteractionNativeAd:nativeAdView:",
+            "mangledName": "$s13PrebidAdapter0A8AdLoaderC25prepareViewForInteraction06nativeC00icF0ySo012SharedNativeC0C_yptF",
+            "moduleName": "PrebidAdapter",
+            "objc_name": "prepareViewForInteractionNativeAd:nativeAdView:",
+            "declAttributes": [
+              "ObjC",
+              "AccessControl"
+            ],
+            "funcSelfKind": "NonMutating"
+          },
+          {
             "kind": "Var",
             "name": "loadingDelegate",
             "printedName": "loadingDelegate",
@@ -2420,7 +2453,7 @@
     {
       "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-sdk\/PrebidAdapter\/PrebidAdapter\/PrebidAdLoader.swift",
       "kind": "Array",
-      "offset": 458,
+      "offset": 559,
       "length": 2,
       "value": "[]"
     }

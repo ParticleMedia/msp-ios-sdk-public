@@ -309,6 +309,7 @@ SWIFT_CLASS("_TtC13PrebidAdapter8PrebidAd")
 - (nonnull instancetype)initWithAdNetworkAdapter:(id <SharedAdNetworkAdapter> _Nonnull)adNetworkAdapter OBJC_DESIGNATED_INITIALIZER;
 @end
 
+@class SharedNativeAd;
 @protocol BannerEventLoadingDelegate;
 @protocol BannerEventInteractionDelegate;
 @protocol SharedInitializationParameters;
@@ -319,6 +320,7 @@ SWIFT_CLASS("_TtC13PrebidAdapter8PrebidAd")
 
 SWIFT_CLASS("_TtC13PrebidAdapter14PrebidAdLoader")
 @interface PrebidAdLoader : NSObject <SharedAdNetworkAdapter>
+- (void)prepareViewForInteractionNativeAd:(SharedNativeAd * _Nonnull)nativeAd nativeAdView:(id _Nonnull)nativeAdView;
 @property (nonatomic, weak) id <BannerEventLoadingDelegate> _Nullable loadingDelegate;
 @property (nonatomic, weak) id <BannerEventInteractionDelegate> _Nullable interactionDelegate;
 @property (nonatomic, copy) NSArray<NSValue *> * _Nonnull adSizes;
