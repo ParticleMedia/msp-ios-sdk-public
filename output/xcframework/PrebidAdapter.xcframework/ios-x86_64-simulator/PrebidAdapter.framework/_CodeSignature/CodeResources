@@ -6,7 +6,7 @@
 	<dict>
 		<key>Headers/PrebidAdapter-Swift.h</key>
 		<data>
-		Iubw2AhHceQv4SIWeFDifU43bFQ=
+		sQZ+MEyua3f3mEZcIWqqNLHdrRY=
 		</data>
 		<key>Headers/PrebidAdapter.h</key>
 		<data>
@@ -18,11 +18,11 @@
 		</data>
 		<key>Modules/PrebidAdapter.swiftmodule/x86_64-apple-ios-simulator.abi.json</key>
 		<data>
-		G5HgiGqozU0OKMNyLhuX1s7jA9c=
+		i4F4AGC66brA5c2hZnp4iwcx1gY=
 		</data>
 		<key>Modules/PrebidAdapter.swiftmodule/x86_64-apple-ios-simulator.private.swiftinterface</key>
 		<data>
-		wsdXNXIVG6ZuT8Q8NTKSDzWDEDo=
+		IdEeU0F5e8UWy/BWFwJwZ+ASbLI=
 		</data>
 		<key>Modules/PrebidAdapter.swiftmodule/x86_64-apple-ios-simulator.swiftdoc</key>
 		<data>
@@ -30,11 +30,11 @@
 		</data>
 		<key>Modules/PrebidAdapter.swiftmodule/x86_64-apple-ios-simulator.swiftinterface</key>
 		<data>
-		wsdXNXIVG6ZuT8Q8NTKSDzWDEDo=
+		IdEeU0F5e8UWy/BWFwJwZ+ASbLI=
 		</data>
 		<key>Modules/PrebidAdapter.swiftmodule/x86_64-apple-ios-simulator.swiftmodule</key>
 		<data>
-		UQlOt5RMdx481I7OZdbHoxSTZBw=
+		ylPH6OshcKtzl/Q4tO1OUkiBB4Q=
 		</data>
 		<key>Modules/module.modulemap</key>
 		<data>
@@ -47,7 +47,7 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			1RbhnvJlZ2yjxU5jggSheLUctbdGITSrumotVQTOn5c=
+			g6IclJvW59ZhGd6c2qqZ/tNvUgL+c3374M10PpJgX3U=
 			</data>
 		</dict>
 		<key>Headers/PrebidAdapter.h</key>
@@ -61,14 +61,14 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			Zho6YH9G/DvN0KwZiKgY8nOk6gbYnZJT6jfNwKGfRMI=
+			2OrWRpeFXYdvKSvQt69wfzTglxIoqxeOZNi6KpM7S2A=
 			</data>
 		</dict>
 		<key>Modules/PrebidAdapter.swiftmodule/x86_64-apple-ios-simulator.private.swiftinterface</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			/WWOhfE64GbbcVX5vKT486FFwghCda6iaqJE3Ey/5K0=
+			pdhqQe+eO+eVryiqq+a/70niGXqw6xkbS2BvVrpoEVo=
 			</data>
 		</dict>
 		<key>Modules/PrebidAdapter.swiftmodule/x86_64-apple-ios-simulator.swiftdoc</key>
@@ -82,14 +82,14 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			/WWOhfE64GbbcVX5vKT486FFwghCda6iaqJE3Ey/5K0=
+			pdhqQe+eO+eVryiqq+a/70niGXqw6xkbS2BvVrpoEVo=
 			</data>
 		</dict>
 		<key>Modules/PrebidAdapter.swiftmodule/x86_64-apple-ios-simulator.swiftmodule</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			g49Dv3E6GQLmdnjagaFwFqpXdW1mb3RSWINrmtdUmSY=
+			eJwJ+2hGHSyHljNyTu4AhI5xFPpHya5xTqaUb958U0U=
 			</data>
 		</dict>
 		<key>Modules/module.modulemap</key>

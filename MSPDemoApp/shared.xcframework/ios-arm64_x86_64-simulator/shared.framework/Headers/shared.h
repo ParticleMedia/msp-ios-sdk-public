@@ -6,9 +6,9 @@
 #import <Foundation/NSString.h>
 #import <Foundation/NSValue.h>
 
-@class SharedAdNetwork, SharedAdRequest, SharedBidLoader, SharedMSPManager, SharedKotlinEnumCompanion, SharedKotlinEnum<E>, SharedKotlinArray<T>, SharedAdapterAdLoadError, SharedAdapterInitStatus, SharedBannerAdView, SharedNativeAd, SharedMSPAd, SharedGeo, SharedAdSize, SharedAdRequestBuilder, SharedMSPInitStatus, SharedLogger, SharedKotlinThrowable;
+@class SharedAdCache, SharedMSPAd, SharedAdNetwork, SharedAdRequest, SharedBidLoader, SharedMSPManager, SharedKotlinEnumCompanion, SharedKotlinEnum<E>, SharedKotlinArray<T>, SharedNativeAd, SharedAdapterAdLoadError, SharedAdapterInitStatus, SharedBannerAdView, SharedAdFormat, SharedGeo, SharedAdSize, SharedAdRequestBuilder, SharedMSPInitStatus, SharedNativeAdBuilder, SharedLogger, SharedKotlinThrowable;
 
-@protocol SharedAdNetworkAdapter, SharedGoogleQueryInfoFetcher, SharedFacebookBidTokenProvider, SharedBidListener, SharedPlatform, SharedInitializationParameters, SharedMSPInitListener, SharedAdNetworkAdapterProvider, SharedBidLoaderProvider, SharedKotlinComparable, SharedAdapterInitListener, SharedAdListener, SharedAdapterAdLoadListener, SharedFacebookBidTokenListener, SharedGoogleQueryInfoListener, SharedAdapterParameters, SharedKotlinIterator;
+@protocol SharedAdNetworkAdapter, SharedGoogleQueryInfoFetcher, SharedFacebookBidTokenProvider, SharedBidListener, SharedPlatform, SharedInitializationParameters, SharedMSPInitListener, SharedAdNetworkAdapterProvider, SharedBidLoaderProvider, SharedKotlinComparable, SharedAdapterInitListener, SharedAdListener, SharedAdapterAdLoadListener, SharedFacebookBidTokenListener, SharedGoogleQueryInfoListener, SharedAdapterParameters, SharedMediaListener, SharedMediaController, SharedKotlinIterator;
 
 NS_ASSUME_NONNULL_BEGIN
 #pragma clang diagnostic push
@@ -144,6 +144,18 @@ __attribute__((swift_name("KotlinBoolean")))
 + (instancetype)numberWithBool:(BOOL)value;
 @end
 
+__attribute__((objc_subclassing_restricted))
+__attribute__((swift_name("AdCache")))
+@interface SharedAdCache : SharedBase
++ (instancetype)alloc __attribute__((unavailable));
++ (instancetype)allocWithZone:(struct _NSZone *)zone __attribute__((unavailable));
++ (instancetype)adCache __attribute__((swift_name("init()")));
+@property (class, readonly, getter=shared) SharedAdCache *shared __attribute__((swift_name("shared")));
+- (SharedMSPAd * _Nullable)getAdPlacementId:(NSString *)placementId __attribute__((swift_name("getAd(placementId:)")));
+- (SharedMSPAd * _Nullable)peakAdPlacementId:(NSString *)placementId __attribute__((swift_name("peakAd(placementId:)")));
+- (void)saveAdPlacement:(NSString *)placement ad:(SharedMSPAd *)ad __attribute__((swift_name("saveAd(placement:ad:)")));
+@end
+
 __attribute__((swift_name("AdNetworkAdapterProvider")))
 @protocol SharedAdNetworkAdapterProvider
 @required
@@ -251,6 +263,7 @@ __attribute__((swift_name("AdNetworkAdapter")))
 - (void)destroyAd __attribute__((swift_name("destroyAd()")));
 - (void)initializeInitParams:(id<SharedInitializationParameters>)initParams adapterInitListener:(id<SharedAdapterInitListener>)adapterInitListener context:(id _Nullable)context __attribute__((swift_name("initialize(initParams:adapterInitListener:context:)")));
 - (void)loadAdCreativeBidResponse:(id)bidResponse adListener:(id<SharedAdListener>)adListener context:(id)context adRequest:(SharedAdRequest *)adRequest __attribute__((swift_name("loadAdCreative(bidResponse:adListener:context:adRequest:)")));
+- (void)prepareViewForInteractionNativeAd:(SharedNativeAd *)nativeAd nativeAdView:(id)nativeAdView __attribute__((swift_name("prepareViewForInteraction(nativeAd:nativeAdView:)")));
 @end
 
 __attribute__((objc_subclassing_restricted))
@@ -352,24 +365,38 @@ __attribute__((swift_name("NativeAdAdapterAdLoadListener")))
 - (void)onNativeAdLoadedAd:(SharedNativeAd *)ad __attribute__((swift_name("onNativeAdLoaded(ad:)")));
 @end
 
+__attribute__((objc_subclassing_restricted))
+__attribute__((swift_name("AdFormat")))
+@interface SharedAdFormat : SharedKotlinEnum<SharedAdFormat *>
++ (instancetype)alloc __attribute__((unavailable));
++ (instancetype)allocWithZone:(struct _NSZone *)zone __attribute__((unavailable));
+- (instancetype)initWithName:(NSString *)name ordinal:(int32_t)ordinal __attribute__((swift_name("init(name:ordinal:)"))) __attribute__((objc_designated_initializer)) __attribute__((unavailable));
+@property (class, readonly) SharedAdFormat *banner __attribute__((swift_name("banner")));
+@property (class, readonly) SharedAdFormat *native __attribute__((swift_name("native")));
+@property (class, readonly) SharedAdFormat *multiFormat __attribute__((swift_name("multiFormat")));
+@property (class, readonly) SharedAdFormat *interstitial __attribute__((swift_name("interstitial")));
++ (SharedKotlinArray<SharedAdFormat *> *)values __attribute__((swift_name("values()")));
+@property (class, readonly) NSArray<SharedAdFormat *> *entries __attribute__((swift_name("entries")));
+@end
+
 __attribute__((swift_name("AdListener")))
 @protocol SharedAdListener
 @required
 - (void)onAdClickAd:(SharedMSPAd *)ad __attribute__((swift_name("onAdClick(ad:)")));
 - (void)onAdImpressionAd:(SharedMSPAd *)ad __attribute__((swift_name("onAdImpression(ad:)")));
 - (void)onAdLoadedAd:(SharedMSPAd *)ad __attribute__((swift_name("onAdLoaded(ad:)")));
+- (void)onAdLoadedPlacementId:(NSString *)placementId __attribute__((swift_name("onAdLoaded(placementId:)")));
 - (void)onErrorMsg:(NSString *)msg __attribute__((swift_name("onError(msg:)")));
 @end
 
+__attribute__((objc_subclassing_restricted))
 __attribute__((swift_name("AdLoader")))
 @interface SharedAdLoader : SharedBase
 - (instancetype)init __attribute__((swift_name("init()"))) __attribute__((objc_designated_initializer));
 + (instancetype)new __attribute__((availability(swift, unavailable, message="use object initializers instead")));
 - (void)loadAdPlacementId:(NSString *)placementId adListener:(id<SharedAdListener>)adListener context:(id)context adRequest:(SharedAdRequest *)adRequest __attribute__((swift_name("loadAd(placementId:adListener:context:adRequest:)")));
 @property id<SharedAdNetworkAdapter> _Nullable adNetworkAdapter __attribute__((swift_name("adNetworkAdapter")));
-@property id<SharedAdNetworkAdapterProvider> _Nullable adNetworkAdapterProvider __attribute__((swift_name("adNetworkAdapterProvider")));
 @property SharedBidLoader * _Nullable bidLoader __attribute__((swift_name("bidLoader")));
-@property id<SharedBidLoaderProvider> _Nullable bidLoaderProvider __attribute__((swift_name("bidLoaderProvider")));
 @end
 
 __attribute__((swift_name("AdNetworkManager")))
@@ -382,24 +409,25 @@ __attribute__((swift_name("AdNetworkManager")))
 __attribute__((objc_subclassing_restricted))
 __attribute__((swift_name("AdRequest")))
 @interface SharedAdRequest : SharedBase
-- (instancetype)initWithCustomParams:(NSDictionary<NSString *, id> *)customParams geo:(SharedGeo * _Nullable)geo context:(id _Nullable)context adaptiveBannerSize:(SharedAdSize * _Nullable)adaptiveBannerSize adSize:(SharedAdSize * _Nullable)adSize placementId:(NSString *)placementId __attribute__((swift_name("init(customParams:geo:context:adaptiveBannerSize:adSize:placementId:)"))) __attribute__((objc_designated_initializer));
-- (SharedAdRequest *)doCopyCustomParams:(NSDictionary<NSString *, id> *)customParams geo:(SharedGeo * _Nullable)geo context:(id _Nullable)context adaptiveBannerSize:(SharedAdSize * _Nullable)adaptiveBannerSize adSize:(SharedAdSize * _Nullable)adSize placementId:(NSString *)placementId __attribute__((swift_name("doCopy(customParams:geo:context:adaptiveBannerSize:adSize:placementId:)")));
+- (instancetype)initWithCustomParams:(NSDictionary<NSString *, id> *)customParams geo:(SharedGeo * _Nullable)geo context:(id _Nullable)context adaptiveBannerSize:(SharedAdSize * _Nullable)adaptiveBannerSize adSize:(SharedAdSize * _Nullable)adSize placementId:(NSString *)placementId adFormat:(NSString *)adFormat isCacheSupported:(BOOL)isCacheSupported __attribute__((swift_name("init(customParams:geo:context:adaptiveBannerSize:adSize:placementId:adFormat:isCacheSupported:)"))) __attribute__((objc_designated_initializer));
+- (SharedAdRequest *)doCopyCustomParams:(NSDictionary<NSString *, id> *)customParams geo:(SharedGeo * _Nullable)geo context:(id _Nullable)context adaptiveBannerSize:(SharedAdSize * _Nullable)adaptiveBannerSize adSize:(SharedAdSize * _Nullable)adSize placementId:(NSString *)placementId adFormat:(NSString *)adFormat isCacheSupported:(BOOL)isCacheSupported __attribute__((swift_name("doCopy(customParams:geo:context:adaptiveBannerSize:adSize:placementId:adFormat:isCacheSupported:)")));
 - (BOOL)isEqual:(id _Nullable)other __attribute__((swift_name("isEqual(_:)")));
 - (NSUInteger)hash __attribute__((swift_name("hash()")));
 - (NSString *)description __attribute__((swift_name("description()")));
+@property (readonly) NSString *adFormat __attribute__((swift_name("adFormat")));
 @property (readonly) SharedAdSize * _Nullable adSize __attribute__((swift_name("adSize")));
 @property (readonly) SharedAdSize * _Nullable adaptiveBannerSize __attribute__((swift_name("adaptiveBannerSize")));
 @property (readonly) id _Nullable context __attribute__((swift_name("context")));
 @property (readonly) NSDictionary<NSString *, id> *customParams __attribute__((swift_name("customParams")));
 @property (readonly) SharedGeo * _Nullable geo __attribute__((swift_name("geo")));
+@property (readonly) BOOL isCacheSupported __attribute__((swift_name("isCacheSupported")));
 @property (readonly) NSString *placementId __attribute__((swift_name("placementId")));
 @end
 
 __attribute__((objc_subclassing_restricted))
 __attribute__((swift_name("AdRequest.Builder")))
 @interface SharedAdRequestBuilder : SharedBase
-- (instancetype)init __attribute__((swift_name("init()"))) __attribute__((objc_designated_initializer));
-+ (instancetype)new __attribute__((availability(swift, unavailable, message="use object initializers instead")));
+- (instancetype)initWithAdFormat:(NSString *)adFormat __attribute__((swift_name("init(adFormat:)"))) __attribute__((objc_designated_initializer));
 - (SharedAdRequestBuilder *)addCustomParamKey:(NSString *)key value:(id)value __attribute__((swift_name("addCustomParam(key:value:)")));
 - (SharedAdRequest *)build __attribute__((swift_name("build()")));
 - (SharedAdRequestBuilder *)setAdSizeAdSize:(SharedAdSize *)adSize __attribute__((swift_name("setAdSize(adSize:)")));
@@ -407,7 +435,9 @@ __attribute__((swift_name("AdRequest.Builder")))
 - (SharedAdRequestBuilder *)setContextContext:(id)context __attribute__((swift_name("setContext(context:)")));
 - (SharedAdRequestBuilder *)setCustomParamsParams:(NSDictionary<NSString *, id> *)params __attribute__((swift_name("setCustomParams(params:)")));
 - (SharedAdRequestBuilder *)setGeoLocationGeo:(SharedGeo *)geo __attribute__((swift_name("setGeoLocation(geo:)")));
+- (SharedAdRequestBuilder *)setIsCacheSupportedIsCacheSupported:(BOOL)isCacheSupported __attribute__((swift_name("setIsCacheSupported(isCacheSupported:)")));
 - (SharedAdRequestBuilder *)setPlacementPlacementId:(NSString *)placementId __attribute__((swift_name("setPlacement(placementId:)")));
+@property (readonly) NSString *adFormat __attribute__((swift_name("adFormat")));
 @end
 
 __attribute__((objc_subclassing_restricted))
@@ -429,6 +459,11 @@ __attribute__((swift_name("MSPAd")))
 - (instancetype)initWithAdNetworkAdapter:(id<SharedAdNetworkAdapter>)adNetworkAdapter __attribute__((swift_name("init(adNetworkAdapter:)"))) __attribute__((objc_designated_initializer));
 - (void)destroy __attribute__((swift_name("destroy()")));
 @property (readonly) SharedMutableDictionary<NSString *, id> *adInfo __attribute__((swift_name("adInfo")));
+
+/**
+ * @note This property has protected visibility in Kotlin source and is intended only for use by subclasses.
+*/
+@property (readonly) id<SharedAdNetworkAdapter> adNetworkAdapter __attribute__((swift_name("adNetworkAdapter")));
 @end
 
 __attribute__((objc_subclassing_restricted))
@@ -477,10 +512,53 @@ __attribute__((swift_name("MSPInitializationParameters")))
 @required
 @end
 
-__attribute__((objc_subclassing_restricted))
+__attribute__((swift_name("MediaController")))
+@protocol SharedMediaController
+@required
+- (void)addMediaListenerListener:(id<SharedMediaListener>)listener __attribute__((swift_name("addMediaListener(listener:)")));
+- (void)removeMediaListenerListener:(id<SharedMediaListener>)listener __attribute__((swift_name("removeMediaListener(listener:)")));
+@end
+
+__attribute__((swift_name("MediaListener")))
+@protocol SharedMediaListener
+@required
+- (void)onDurationUpdateDuration:(int64_t)duration __attribute__((swift_name("onDurationUpdate(duration:)")));
+- (void)onProgressUpdatePosition:(int64_t)position bufferedPosition:(int64_t)bufferedPosition __attribute__((swift_name("onProgressUpdate(position:bufferedPosition:)")));
+@end
+
 __attribute__((swift_name("NativeAd")))
 @interface SharedNativeAd : SharedMSPAd
+- (instancetype)initWithAdNetworkAdapter:(id<SharedAdNetworkAdapter>)adNetworkAdapter builder:(SharedNativeAdBuilder *)builder __attribute__((swift_name("init(adNetworkAdapter:builder:)"))) __attribute__((objc_designated_initializer));
+- (instancetype)initWithAdNetworkAdapter:(id<SharedAdNetworkAdapter>)adNetworkAdapter __attribute__((swift_name("init(adNetworkAdapter:)"))) __attribute__((objc_designated_initializer)) __attribute__((unavailable));
+- (void)prepareViewForInteractionNativeAdView:(id)nativeAdView __attribute__((swift_name("prepareViewForInteraction(nativeAdView:)")));
+@property (readonly) NSString *advertiser __attribute__((swift_name("advertiser")));
+@property (readonly) NSString *body __attribute__((swift_name("body")));
+@property (readonly) NSString *callToAction __attribute__((swift_name("callToAction")));
+@property (readonly) id<SharedMediaController> _Nullable mediaController __attribute__((swift_name("mediaController")));
+@property (readonly) id _Nullable mediaView __attribute__((swift_name("mediaView")));
+@property id _Nullable nativeAdView __attribute__((swift_name("nativeAdView")));
+@property (readonly) id _Nullable optionsView __attribute__((swift_name("optionsView")));
+@property (readonly) NSString *title __attribute__((swift_name("title")));
+@end
+
+__attribute__((swift_name("NativeAd.Builder")))
+@interface SharedNativeAdBuilder : SharedBase
 - (instancetype)initWithAdNetworkAdapter:(id<SharedAdNetworkAdapter>)adNetworkAdapter __attribute__((swift_name("init(adNetworkAdapter:)"))) __attribute__((objc_designated_initializer));
+- (SharedNativeAdBuilder *)advertiserAdvertiser:(NSString *)advertiser __attribute__((swift_name("advertiser(advertiser:)")));
+- (SharedNativeAdBuilder *)bodyBody:(NSString *)body __attribute__((swift_name("body(body:)")));
+- (SharedNativeAd *)build __attribute__((swift_name("build()")));
+- (SharedNativeAdBuilder *)callToActionCallToAction:(NSString *)callToAction __attribute__((swift_name("callToAction(callToAction:)")));
+- (SharedNativeAdBuilder *)mediaControllerMediaController:(id<SharedMediaController>)mediaController __attribute__((swift_name("mediaController(mediaController:)")));
+- (SharedNativeAdBuilder *)mediaViewMediaView:(id)mediaView __attribute__((swift_name("mediaView(mediaView:)")));
+- (SharedNativeAdBuilder *)optionsViewOptionsView:(id)optionsView __attribute__((swift_name("optionsView(optionsView:)")));
+- (SharedNativeAdBuilder *)titleTitle:(NSString *)title __attribute__((swift_name("title(title:)")));
+@property NSString *advertiser __attribute__((swift_name("advertiser")));
+@property NSString *body __attribute__((swift_name("body")));
+@property NSString *callToAction __attribute__((swift_name("callToAction")));
+@property id<SharedMediaController> _Nullable mediaController __attribute__((swift_name("mediaController")));
+@property id _Nullable mediaView __attribute__((swift_name("mediaView")));
+@property id _Nullable optionsView __attribute__((swift_name("optionsView")));
+@property NSString *title __attribute__((swift_name("title")));
 @end
 
 __attribute__((objc_subclassing_restricted))
@@ -519,6 +597,12 @@ __attribute__((swift_name("Platform_iosKt")))
 + (void)doPrintMessagePriority:(int32_t)messagePriority tag:(NSString *)tag message:(NSString *)message __attribute__((swift_name("doPrint(messagePriority:tag:message:)")));
 + (int64_t)getCurrentTimeMillis __attribute__((swift_name("getCurrentTimeMillis()")));
 + (id<SharedPlatform>)getPlatform __attribute__((swift_name("getPlatform()")));
+@end
+
+__attribute__((objc_subclassing_restricted))
+__attribute__((swift_name("UtilitiesKt")))
+@interface SharedUtilitiesKt : SharedBase
++ (void)handleAdLoadedAd:(SharedMSPAd *)ad listener:(id<SharedAdListener>)listener adRequest:(SharedAdRequest *)adRequest __attribute__((swift_name("handleAdLoaded(ad:listener:adRequest:)")));
 @end
 
 __attribute__((objc_subclassing_restricted))

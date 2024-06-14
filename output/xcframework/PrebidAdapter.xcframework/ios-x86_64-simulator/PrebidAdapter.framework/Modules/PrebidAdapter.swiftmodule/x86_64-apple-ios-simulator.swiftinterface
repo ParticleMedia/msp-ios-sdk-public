@@ -11,6 +11,7 @@ import _StringProcessing
 import _SwiftConcurrencyShims
 import shared
 @_inheritsConvenienceInitializers @objc public class PrebidAdLoader : ObjectiveC.NSObject, shared.AdNetworkAdapter {
+  @objc public func prepareViewForInteraction(nativeAd: shared.NativeAd, nativeAdView: Any)
   @objc weak public var loadingDelegate: (any PrebidMobile.BannerEventLoadingDelegate)?
   @objc weak public var interactionDelegate: (any PrebidMobile.BannerEventInteractionDelegate)?
   @objc public var adSizes: [CoreFoundation.CGSize]

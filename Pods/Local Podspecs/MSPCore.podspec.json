@@ -1,6 +1,6 @@
 {
   "name": "MSPCore",
-  "version": "0.0.9",
+  "version": "0.0.8",
   "summary": "An utility helper for MSP",
   "platforms": {
     "ios": "13.0"
@@ -13,7 +13,7 @@
   },
   "source": {
     "git": "https://github.com/huanzhiNB/msp-ios-sdk-public.git",
-    "tag": "0.0.9"
+    "tag": "0.0.8"
   },
   "source_files": "MSPCore/MSPCore/**/*.{h,m,swift}",
   "exclude_files": "Classes/Exclude",

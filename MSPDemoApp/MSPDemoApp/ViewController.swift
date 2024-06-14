@@ -27,7 +27,9 @@ class ViewController: UIViewController {
                                   context: nil,
                                   adaptiveBannerSize: AdSize(width: 320, height: 50, isInlineAdaptiveBanner: false, isAnchorAdaptiveBanner: false),
                                   adSize: AdSize(width: 320, height: 50, isInlineAdaptiveBanner: false, isAnchorAdaptiveBanner: false),
-                                  placementId: "msp-android-foryou-large-display_gg")
+                                  placementId: "msp-android-foryou-large-display_gg",
+                                  adFormat: "banner",
+                                  isCacheSupported: false)
         adLoader.loadAd(placementId: "msp-android-foryou-large-display_gg",
                         adListener: self,
                         context: self,
@@ -40,6 +42,10 @@ class ViewController: UIViewController {
 }
 
 extension ViewController: AdListener {
+    func onAdLoaded(placementId: String) {
+        
+    }
+    
     func onAdClick(ad: MSPAd) {
         
     }
@@ -77,6 +83,22 @@ extension ViewController: AdListener {
                     adView.heightAnchor.constraint(lessThanOrEqualTo: appBannerView.heightAnchor),
                 ])
             }
+        } else if ad is GoogleNativeAd {
+            let googleNativeAd = ad as? GoogleNativeAd
+            if let nativeAdItem = googleNativeAd?.nativeAdItem {
+                var demoGoogleNativeAdView = DemoGoogleNativeAdView()
+                demoGoogleNativeAdView.bindView(nativeAd: nativeAdItem)
+                demoGoogleNativeAdView.setUpView()
+                
+                
+                appBannerView.addSubview(demoGoogleNativeAdView)
+                NSLayoutConstraint.activate([
+                    demoGoogleNativeAdView.centerYAnchor.constraint(equalTo: appBannerView.centerYAnchor),
+                    demoGoogleNativeAdView.leadingAnchor.constraint(equalTo: appBannerView.leadingAnchor),
+                    demoGoogleNativeAdView.widthAnchor.constraint(lessThanOrEqualTo: appBannerView.widthAnchor),
+                    demoGoogleNativeAdView.heightAnchor.constraint(lessThanOrEqualTo: appBannerView.heightAnchor),
+                ])
+            }
         }
     }
     
@@ -84,4 +106,3 @@ extension ViewController: AdListener {
         
     }
 }
-

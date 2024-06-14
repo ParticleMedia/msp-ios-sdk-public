@@ -2,6 +2,9 @@
 <Workspace
    version = "1.0">
    <FileRef
+      location = "group:NovaAdapter/NovaAdapter.xcodeproj">
+   </FileRef>
+   <FileRef
       location = "group:MSPSharedLibraries/MSPSharedLibraries.xcodeproj">
    </FileRef>
    <FileRef

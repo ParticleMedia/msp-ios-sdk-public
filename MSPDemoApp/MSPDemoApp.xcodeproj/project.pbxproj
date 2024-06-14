@@ -15,6 +15,8 @@
 		6684807A2BE03D800025018B /* MSPDemoAppTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 668480792BE03D800025018B /* MSPDemoAppTests.swift */; };
 		668480842BE03D800025018B /* MSPDemoAppUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 668480832BE03D800025018B /* MSPDemoAppUITests.swift */; };
 		668480862BE03D800025018B /* MSPDemoAppUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 668480852BE03D800025018B /* MSPDemoAppUITestsLaunchTests.swift */; };
+		66E5334C2C1BA8C700255D15 /* DemoGoogleNativeAdView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E5334B2C1BA8C700255D15 /* DemoGoogleNativeAdView.swift */; };
+		66E5334E2C1BC1E700255D15 /* Colors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E5334D2C1BC1E700255D15 /* Colors.swift */; };
 		B943FF15F8426EF84393948B /* libPods-MSPDemoApp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 59F0CA5E99979A0306167AD2 /* libPods-MSPDemoApp.a */; };
 /* End PBXBuildFile section */
 
@@ -50,6 +52,8 @@
 		6684807F2BE03D800025018B /* MSPDemoAppUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MSPDemoAppUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		668480832BE03D800025018B /* MSPDemoAppUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MSPDemoAppUITests.swift; sourceTree = "<group>"; };
 		668480852BE03D800025018B /* MSPDemoAppUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MSPDemoAppUITestsLaunchTests.swift; sourceTree = "<group>"; };
+		66E5334B2C1BA8C700255D15 /* DemoGoogleNativeAdView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DemoGoogleNativeAdView.swift; sourceTree = "<group>"; };
+		66E5334D2C1BC1E700255D15 /* Colors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Colors.swift; sourceTree = "<group>"; };
 		66F4F0C22BE054800026CAB8 /* MSPUtility.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = MSPUtility.xcframework; path = ../outputMSPUtility/xcframework/MSPUtility.xcframework; sourceTree = "<group>"; };
 		66F4F0C72BE0550E0026CAB8 /* PrebidAdapter.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = PrebidAdapter.xcframework; path = ../output/xcframework/PrebidAdapter.xcframework; sourceTree = "<group>"; };
 		66F4F0CA2BE055360026CAB8 /* PrebidMobile.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = PrebidMobile.xcframework; path = ../MSPUtility/PrebidMobile.xcframework; sourceTree = "<group>"; };
@@ -119,6 +123,7 @@
 		668480612BE03D7D0025018B /* MSPDemoApp */ = {
 			isa = PBXGroup;
 			children = (
+				66E5334A2C1BA8AD00255D15 /* Native */,
 				668480622BE03D7D0025018B /* AppDelegate.swift */,
 				668480642BE03D7D0025018B /* SceneDelegate.swift */,
 				668480662BE03D7D0025018B /* ViewController.swift */,
@@ -126,6 +131,7 @@
 				6684806B2BE03D800025018B /* Assets.xcassets */,
 				6684806D2BE03D800025018B /* LaunchScreen.storyboard */,
 				668480702BE03D800025018B /* Info.plist */,
+				66E5334D2C1BC1E700255D15 /* Colors.swift */,
 			);
 			path = MSPDemoApp;
 			sourceTree = "<group>";
@@ -145,6 +151,14 @@
 				668480852BE03D800025018B /* MSPDemoAppUITestsLaunchTests.swift */,
 			);
 			path = MSPDemoAppUITests;
+			sourceTree = "<group>";
+		};
+		66E5334A2C1BA8AD00255D15 /* Native */ = {
+			isa = PBXGroup;
+			children = (
+				66E5334B2C1BA8C700255D15 /* DemoGoogleNativeAdView.swift */,
+			);
+			path = Native;
 			sourceTree = "<group>";
 		};
 		872BA9AE6FA9B4F214308302 /* Frameworks */ = {
@@ -351,6 +365,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				66E5334C2C1BA8C700255D15 /* DemoGoogleNativeAdView.swift in Sources */,
+				66E5334E2C1BC1E700255D15 /* Colors.swift in Sources */,
 				668480672BE03D7D0025018B /* ViewController.swift in Sources */,
 				668480632BE03D7D0025018B /* AppDelegate.swift in Sources */,
 				668480652BE03D7D0025018B /* SceneDelegate.swift in Sources */,

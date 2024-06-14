@@ -12,6 +12,10 @@ import shared
 import PrebidMobile
 
 @objc public class GADAdLoder : NSObject, AdNetworkAdapter {
+    public func prepareViewForInteraction(nativeAd: shared.NativeAd, nativeAdView: Any) {
+        
+    }
+    
     public func destroyAd() {
         
     }
@@ -31,6 +35,9 @@ import PrebidMobile
     public var adListener: AdListener?
     public var priceInDollar: Double?
     
+    private var adLoader: GADAdLoader?
+    private var googleNativeAd: GoogleNativeAd?
+    
     public func loadAdCreative(bidResponse: Any, adListener: any AdListener, context: Any, adRequest: AdRequest) {
         
         guard bidResponse is BidResponse,
@@ -49,23 +56,56 @@ import PrebidMobile
               let rawBidDict = SafeAs(mBidResponse.winningBid?.bid.rawJsonDictionary, [String: Any].self),
               let bidExtDict = SafeAs(rawBidDict["ext"], [String: Any].self),
               let googleExtDict = SafeAs(bidExtDict["google"], [String: Any].self),
-              let adUnitId = SafeAs(googleExtDict["ad_unit_id"], String.self)
+              let adUnitId = SafeAs(googleExtDict["ad_unit_id"], String.self),
+              let prebidExtDict = SafeAs(bidExtDict["prebid"], [String: Any].self),
+              let adType = SafeAs(prebidExtDict["type"], String.self)
         else {
             self.adListener?.onError(msg: "no valid response")
             return
         }
         self.priceInDollar = Double(mBidResponse.winningBid?.price ?? 0)
         
-        DispatchQueue.main.async {
-            let gadBannerView = GAMBannerView(adSize: self.getGADAdSize(adRequest: adRequest))
-            self.gadBannerView = gadBannerView
-            gadBannerView.isAutoloadEnabled = false
-            let request = GAMRequest()
-            request.adString = adString
-            gadBannerView.adUnitID = adUnitId
-            gadBannerView.delegate = self
-            gadBannerView.rootViewController = self.rootViewController
-            gadBannerView.load(request)
+        switch adType {
+        case "banner":
+            DispatchQueue.main.async {
+                let gadBannerView = GAMBannerView(adSize: self.getGADAdSize(adRequest: adRequest))
+                self.gadBannerView = gadBannerView
+                gadBannerView.isAutoloadEnabled = false
+                let request = GAMRequest()
+                request.adString = adString
+                gadBannerView.adUnitID = adUnitId
+                gadBannerView.delegate = self
+                gadBannerView.rootViewController = self.rootViewController
+                gadBannerView.load(request)
+            }
+
+        case "native":
+            let gadMultiFormatEnable = false
+            let adTypes: [GADAdLoaderAdType] = gadMultiFormatEnable ? [.native, .gamBanner] : [.native]
+            let videoOptions = GADVideoOptions()
+            videoOptions.startMuted = true
+            adLoader = GADAdLoader(
+                adUnitID: adUnitId,
+                rootViewController: rootViewController,
+                adTypes: adTypes,
+                options: [videoOptions])
+            adLoader?.delegate = self
+
+            let gamRequest = GAMRequest()
+            gamRequest.adString = adString
+            adLoader?.load(gamRequest)
+            /*
+            let nativeAd = NovaNativeAd(adNetworkAdapter: self,
+                                        builder: shared.NativeAd.Builder(adNetworkAdapter: self)
+                                                    .title(title: adItem.creative.headline ?? "")
+                                                    .body(body: adItem.creative.body ?? "")
+                                                    .advertiser(advertiser: adItem.creative.advertiser ?? "")
+                                                    .callToAction(callToAction: adItem.creative.callToAction ?? ""))
+            nativeAd.priceInDollar = self.priceInDollar
+             */
+            
+        default:
+            self.adListener?.onError(msg: "unknown adType")
         }
     }
     
@@ -130,6 +170,30 @@ extension GADAdLoder : GADBannerViewDelegate {
     }
 }
 
+extension GADAdLoder: GADNativeAdLoaderDelegate {
+    public func adLoader(_ adLoader: GADAdLoader, didReceive nativeAd: GADNativeAd) {
+        //let mediaView = GADMediaView()
+        //mediaView.translatesAutoresizingMaskIntoConstraints = false
+        //mediaView.contentMode = .scaleAspectFill
+        //mediaView.mediaContent = nativeAd.mediaContent
+        //let googleNativeAd = GoogleNativeAd(adNetworkAdapter: self, builder: shared.NativeAd.Builder(adNetworkAdapter: self)
+        //    .title(title: nativeAd.headline ?? "")
+        //    .body(body: nativeAd.body ?? "")
+        //    .advertiser(advertiser: nativeAd.advertiser ?? "")
+        //    .callToAction(callToAction: nativeAd.callToAction ?? "")
+        //    .mediaView(mediaView: mediaView))
+        let googleNativeAd = GoogleNativeAd(adNetworkAdapter: self, builder: shared.NativeAd.Builder(adNetworkAdapter: self))
+        self.googleNativeAd = googleNativeAd
+        googleNativeAd.priceInDollar = self.priceInDollar
+        googleNativeAd.nativeAdItem = nativeAd
+        self.adListener?.onAdLoaded(ad: googleNativeAd)
+    }
+    
+    public func adLoader(_ adLoader: GADAdLoader, didFailToReceiveAdWithError error: any Error) {
+        self.adListener?.onError(msg: error.localizedDescription)
+    }
+}
+                            
 public class GoogleAd: MSPAd {
     public var adView: UIView?
     public var priceInDollar: Double?

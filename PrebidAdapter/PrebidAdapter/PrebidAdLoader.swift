@@ -12,6 +12,9 @@ import shared
 import UIKit
 
 @objc public class PrebidAdLoader : NSObject, AdNetworkAdapter {
+    public func prepareViewForInteraction(nativeAd: shared.NativeAd, nativeAdView: Any) {
+    }
+    
     
     // MARK: - BannerEventHandler
     public weak var loadingDelegate: BannerEventLoadingDelegate?
