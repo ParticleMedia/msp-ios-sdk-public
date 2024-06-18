@@ -8,5 +8,6 @@ import shared
 import Foundation
 
 public class NovaNativeAd: NativeAd {
+    public var nativeAdItem: NovaNativeAdItem?
     public var priceInDollar: Double?
 }
