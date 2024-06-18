@@ -81,5 +81,7 @@ open class GoogleNativeAdView: UIView {
         self.nativeAdView.mediaView = gadMediaView
         
         self.nativeAdView.nativeAd = nativeAd
+        
+        //self.setUpView()
     }
 }
