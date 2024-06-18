@@ -15,6 +15,25 @@
 		66E533392C1A589700255D15 /* NovaNativeAd.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E533382C1A589700255D15 /* NovaNativeAd.swift */; };
 		66E5333B2C1A601D00255D15 /* NovaAdLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E5333A2C1A601D00255D15 /* NovaAdLoader.swift */; };
 		66E5333D2C1A67F600255D15 /* NovaResponseDataModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E5333C2C1A67F600255D15 /* NovaResponseDataModel.swift */; };
+		66E533592C22343600255D15 /* NovaBaseAd.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E533582C22343600255D15 /* NovaBaseAd.swift */; };
+		66E5335B2C2234EF00255D15 /* NovaNativeAdItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E5335A2C2234EF00255D15 /* NovaNativeAdItem.swift */; };
+		66E5335D2C22369F00255D15 /* NovaAdLaunchOption.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E5335C2C22369F00255D15 /* NovaAdLaunchOption.swift */; };
+		66E5335F2C2236BF00255D15 /* NovaCreativeType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E5335E2C2236BF00255D15 /* NovaCreativeType.swift */; };
+		66E533612C2237E000255D15 /* NovaNativeAdVideoInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E533602C2237E000255D15 /* NovaNativeAdVideoInfo.swift */; };
+		66E533632C22381700255D15 /* NovaNativeAdVideoState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E533622C22381700255D15 /* NovaNativeAdVideoState.swift */; };
+		66E533652C2238B200255D15 /* NovaNativeAdInteractiveBanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E533642C2238B200255D15 /* NovaNativeAdInteractiveBanner.swift */; };
+		66E533672C22393500255D15 /* NovaNativeAdDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E533662C22393500255D15 /* NovaNativeAdDelegate.swift */; };
+		66E5336A2C2239A800255D15 /* VideoPlayerCacheHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E533692C2239A800255D15 /* VideoPlayerCacheHandler.swift */; };
+		66E5336C2C223A4100255D15 /* VideoPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E5336B2C223A4100255D15 /* VideoPlayer.swift */; };
+		66E5336E2C223B0100255D15 /* Player.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E5336D2C223B0100255D15 /* Player.swift */; };
+		66E533702C223B7F00255D15 /* VideoPlayerProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E5336F2C223B7F00255D15 /* VideoPlayerProtocol.swift */; };
+		66E533732C223C0000255D15 /* ActionHandlerMaster.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E533722C223C0000255D15 /* ActionHandlerMaster.swift */; };
+		66E533752C223C2400255D15 /* ActionHandling.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E533742C223C2400255D15 /* ActionHandling.swift */; };
+		66E533772C223C3C00255D15 /* ActionModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E533762C223C3C00255D15 /* ActionModel.swift */; };
+		66E533792C223C6200255D15 /* EmptyActionDataModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E533782C223C6200255D15 /* EmptyActionDataModel.swift */; };
+		66E5337B2C223E1000255D15 /* VideoPlayerController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E5337A2C223E1000255D15 /* VideoPlayerController.swift */; };
+		66E5337D2C223F0C00255D15 /* VideoPlayLog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E5337C2C223F0C00255D15 /* VideoPlayLog.swift */; };
+		66E533812C2240E800255D15 /* VideoProgressView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E533802C2240E800255D15 /* VideoProgressView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -37,6 +56,25 @@
 		66E533382C1A589700255D15 /* NovaNativeAd.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NovaNativeAd.swift; sourceTree = "<group>"; };
 		66E5333A2C1A601D00255D15 /* NovaAdLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NovaAdLoader.swift; sourceTree = "<group>"; };
 		66E5333C2C1A67F600255D15 /* NovaResponseDataModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NovaResponseDataModel.swift; sourceTree = "<group>"; };
+		66E533582C22343600255D15 /* NovaBaseAd.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NovaBaseAd.swift; sourceTree = "<group>"; };
+		66E5335A2C2234EF00255D15 /* NovaNativeAdItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NovaNativeAdItem.swift; sourceTree = "<group>"; };
+		66E5335C2C22369F00255D15 /* NovaAdLaunchOption.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NovaAdLaunchOption.swift; sourceTree = "<group>"; };
+		66E5335E2C2236BF00255D15 /* NovaCreativeType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NovaCreativeType.swift; sourceTree = "<group>"; };
+		66E533602C2237E000255D15 /* NovaNativeAdVideoInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NovaNativeAdVideoInfo.swift; sourceTree = "<group>"; };
+		66E533622C22381700255D15 /* NovaNativeAdVideoState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NovaNativeAdVideoState.swift; sourceTree = "<group>"; };
+		66E533642C2238B200255D15 /* NovaNativeAdInteractiveBanner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NovaNativeAdInteractiveBanner.swift; sourceTree = "<group>"; };
+		66E533662C22393500255D15 /* NovaNativeAdDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NovaNativeAdDelegate.swift; sourceTree = "<group>"; };
+		66E533692C2239A800255D15 /* VideoPlayerCacheHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoPlayerCacheHandler.swift; sourceTree = "<group>"; };
+		66E5336B2C223A4100255D15 /* VideoPlayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoPlayer.swift; sourceTree = "<group>"; };
+		66E5336D2C223B0100255D15 /* Player.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Player.swift; sourceTree = "<group>"; };
+		66E5336F2C223B7F00255D15 /* VideoPlayerProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoPlayerProtocol.swift; sourceTree = "<group>"; };
+		66E533722C223C0000255D15 /* ActionHandlerMaster.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActionHandlerMaster.swift; sourceTree = "<group>"; };
+		66E533742C223C2400255D15 /* ActionHandling.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActionHandling.swift; sourceTree = "<group>"; };
+		66E533762C223C3C00255D15 /* ActionModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActionModel.swift; sourceTree = "<group>"; };
+		66E533782C223C6200255D15 /* EmptyActionDataModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmptyActionDataModel.swift; sourceTree = "<group>"; };
+		66E5337A2C223E1000255D15 /* VideoPlayerController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoPlayerController.swift; sourceTree = "<group>"; };
+		66E5337C2C223F0C00255D15 /* VideoPlayLog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoPlayLog.swift; sourceTree = "<group>"; };
+		66E533802C2240E800255D15 /* VideoProgressView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoProgressView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -81,12 +119,18 @@
 		66E5331B2C1A4ED900255D15 /* NovaAdapter */ = {
 			isa = PBXGroup;
 			children = (
+				66E533712C223BCC00255D15 /* MSPActionHandler */,
+				66E533682C22398B00255D15 /* VideoPlayer */,
+				66E533572C22340F00255D15 /* Native */,
 				66E5333E2C1B66D000255D15 /* Media */,
 				66E5331C2C1A4ED900255D15 /* NovaAdapter.h */,
 				66E5331D2C1A4ED900255D15 /* NovaAdapter.docc */,
 				66E533382C1A589700255D15 /* NovaNativeAd.swift */,
 				66E5333A2C1A601D00255D15 /* NovaAdLoader.swift */,
 				66E5333C2C1A67F600255D15 /* NovaResponseDataModel.swift */,
+				66E533582C22343600255D15 /* NovaBaseAd.swift */,
+				66E5335C2C22369F00255D15 /* NovaAdLaunchOption.swift */,
+				66E5335E2C2236BF00255D15 /* NovaCreativeType.swift */,
 			);
 			path = NovaAdapter;
 			sourceTree = "<group>";
@@ -112,6 +156,43 @@
 			children = (
 			);
 			path = Media;
+			sourceTree = "<group>";
+		};
+		66E533572C22340F00255D15 /* Native */ = {
+			isa = PBXGroup;
+			children = (
+				66E5335A2C2234EF00255D15 /* NovaNativeAdItem.swift */,
+				66E533602C2237E000255D15 /* NovaNativeAdVideoInfo.swift */,
+				66E533622C22381700255D15 /* NovaNativeAdVideoState.swift */,
+				66E533642C2238B200255D15 /* NovaNativeAdInteractiveBanner.swift */,
+				66E533662C22393500255D15 /* NovaNativeAdDelegate.swift */,
+			);
+			path = Native;
+			sourceTree = "<group>";
+		};
+		66E533682C22398B00255D15 /* VideoPlayer */ = {
+			isa = PBXGroup;
+			children = (
+				66E533692C2239A800255D15 /* VideoPlayerCacheHandler.swift */,
+				66E5336B2C223A4100255D15 /* VideoPlayer.swift */,
+				66E5336D2C223B0100255D15 /* Player.swift */,
+				66E5336F2C223B7F00255D15 /* VideoPlayerProtocol.swift */,
+				66E5337A2C223E1000255D15 /* VideoPlayerController.swift */,
+				66E5337C2C223F0C00255D15 /* VideoPlayLog.swift */,
+				66E533802C2240E800255D15 /* VideoProgressView.swift */,
+			);
+			path = VideoPlayer;
+			sourceTree = "<group>";
+		};
+		66E533712C223BCC00255D15 /* MSPActionHandler */ = {
+			isa = PBXGroup;
+			children = (
+				66E533722C223C0000255D15 /* ActionHandlerMaster.swift */,
+				66E533742C223C2400255D15 /* ActionHandling.swift */,
+				66E533762C223C3C00255D15 /* ActionModel.swift */,
+				66E533782C223C6200255D15 /* EmptyActionDataModel.swift */,
+			);
+			path = MSPActionHandler;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -223,9 +304,28 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				66E5337B2C223E1000255D15 /* VideoPlayerController.swift in Sources */,
+				66E5336C2C223A4100255D15 /* VideoPlayer.swift in Sources */,
+				66E533672C22393500255D15 /* NovaNativeAdDelegate.swift in Sources */,
 				66E5333D2C1A67F600255D15 /* NovaResponseDataModel.swift in Sources */,
+				66E533592C22343600255D15 /* NovaBaseAd.swift in Sources */,
+				66E533752C223C2400255D15 /* ActionHandling.swift in Sources */,
+				66E5335F2C2236BF00255D15 /* NovaCreativeType.swift in Sources */,
+				66E533652C2238B200255D15 /* NovaNativeAdInteractiveBanner.swift in Sources */,
+				66E5335B2C2234EF00255D15 /* NovaNativeAdItem.swift in Sources */,
+				66E5335D2C22369F00255D15 /* NovaAdLaunchOption.swift in Sources */,
+				66E533812C2240E800255D15 /* VideoProgressView.swift in Sources */,
+				66E5337D2C223F0C00255D15 /* VideoPlayLog.swift in Sources */,
+				66E533732C223C0000255D15 /* ActionHandlerMaster.swift in Sources */,
 				66E5331E2C1A4ED900255D15 /* NovaAdapter.docc in Sources */,
+				66E5336A2C2239A800255D15 /* VideoPlayerCacheHandler.swift in Sources */,
+				66E533772C223C3C00255D15 /* ActionModel.swift in Sources */,
+				66E533792C223C6200255D15 /* EmptyActionDataModel.swift in Sources */,
+				66E533702C223B7F00255D15 /* VideoPlayerProtocol.swift in Sources */,
+				66E533612C2237E000255D15 /* NovaNativeAdVideoInfo.swift in Sources */,
+				66E533632C22381700255D15 /* NovaNativeAdVideoState.swift in Sources */,
 				66E533392C1A589700255D15 /* NovaNativeAd.swift in Sources */,
+				66E5336E2C223B0100255D15 /* Player.swift in Sources */,
 				66E5333B2C1A601D00255D15 /* NovaAdLoader.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
