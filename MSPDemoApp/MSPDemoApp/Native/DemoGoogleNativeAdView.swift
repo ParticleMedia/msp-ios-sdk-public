@@ -23,28 +23,35 @@ public class DemoGoogleNativeAdView: GoogleNativeAdView {
         public static let verticalVideoDefaultAspectRatio: Double = 9.0 / 16.0
     }
     
-    public override func setUpView() {
-        super.setUpView()
+    private let mediaContainerView: UIView = {
+        let view = UIView()
+        view.clipsToBounds = true
+        view.contentMode = .scaleAspectFill
+        view.translatesAutoresizingMaskIntoConstraints = false
+        return view
+    }()
+    
+    private var mediaViewWidthConstraint: NSLayoutConstraint?
+    private var mediaViewHeightConstraint: NSLayoutConstraint?
+    
+    public override func setUpView(nativeAd: GADNativeAd) {
+        super.setUpView(nativeAd: nativeAd)
         
-        titleLabel = UILabel()
         titleLabel?.translatesAutoresizingMaskIntoConstraints = false
         titleLabel?.font = UIFont.systemFont(ofSize: 16, weight: .semibold)
         titleLabel?.textColor = UIColor(light: UIColor(hex: "000000")!.withAlphaComponent(0.9), dark: UIColor(hex: "FFFFFF")!.withAlphaComponent(0.85))
         
-        bodyLabel = UILabel()
         bodyLabel?.font = UIFont.systemFont(ofSize: 14, weight: .regular)
         bodyLabel?.textColor = UIColor(hex:"9B9B9B")
         bodyLabel?.numberOfLines = 2
         bodyLabel?.textAlignment = .natural
         bodyLabel?.translatesAutoresizingMaskIntoConstraints = false
         
-        advertiserLabel = UILabel()
         advertiserLabel?.translatesAutoresizingMaskIntoConstraints = false
         advertiserLabel?.font = UIFont.systemFont(ofSize: 12, weight: .regular)
         advertiserLabel?.numberOfLines = 1
         advertiserLabel?.textColor = UIColor(light: UIColor(hex: "000000")!.withAlphaComponent(0.3), dark: UIColor(hex: "FFFFFF")!.withAlphaComponent(0.6))
         
-        callToActionButton = UIButton(type: .custom)
         callToActionButton?.translatesAutoresizingMaskIntoConstraints = false
         callToActionButton?.semanticContentAttribute = .forceRightToLeft
         callToActionButton?.contentHorizontalAlignment = .right
@@ -57,10 +64,8 @@ public class DemoGoogleNativeAdView: GoogleNativeAdView {
         
         
         self.gadMediaView.translatesAutoresizingMaskIntoConstraints = false
-        //self.mediaView = mediaView
-        //self.parentView = parentView
             
-        let gadSubViews = [gadMediaView, titleLabel, bodyLabel, advertiserLabel, callToActionButton]
+        let gadSubViews = [mediaContainerView, titleLabel, bodyLabel, advertiserLabel, callToActionButton]
         for view in gadSubViews {
             if let view = view {
                 self.nativeAdView.addSubview(view)
@@ -86,16 +91,29 @@ public class DemoGoogleNativeAdView: GoogleNativeAdView {
                 equalTo: nativeAdView.trailingAnchor,
                 constant: -Constants.paddingSmall)
         
-
+        gadMediaView.contentMode = .scaleAspectFill
+        
+        mediaContainerView.addSubview(gadMediaView)
         NSLayoutConstraint.activate([
-            gadMediaView.leadingAnchor.constraint(equalTo: nativeAdView.leadingAnchor),
-            gadMediaView.topAnchor.constraint(equalTo: nativeAdView.topAnchor),
-            gadMediaView.trailingAnchor.constraint(equalTo: nativeAdView.trailingAnchor),
-            //gadMediaView.heightAnchor.constraint(
-            //    equalTo: gadMediaView.widthAnchor,
-            //    multiplier: Double(1.0 / AdsMediaConstants.defaultAspectRatio))
+            gadMediaView.centerXAnchor.constraint(equalTo: mediaContainerView.centerXAnchor),
+            gadMediaView.centerYAnchor.constraint(equalTo: mediaContainerView.centerYAnchor)
         ])
-        /*
+        if let mediaContent = nativeAdView.nativeAd?.mediaContent {
+            setupMediaViewConstraints(with: mediaContent)
+        }
+        NSLayoutConstraint.activate([
+            mediaContainerView.leadingAnchor.constraint(equalTo: nativeAdView.leadingAnchor),
+            mediaContainerView.topAnchor.constraint(equalTo: nativeAdView.topAnchor),
+            mediaContainerView.trailingAnchor.constraint(equalTo: nativeAdView.trailingAnchor),
+            mediaContainerView.heightAnchor.constraint(
+                equalTo: mediaContainerView.widthAnchor,
+                multiplier: Double(1.0 / AdsMediaConstants.defaultAspectRatio))
+        ])
+        gadMediaView.isHidden = false
+        mediaContainerView.isHidden = false
+        
+        
+        
         NSLayoutConstraint.activate([
             titleLabel.leadingAnchor.constraint(
                 equalTo: nativeAdView.leadingAnchor,
@@ -120,6 +138,42 @@ public class DemoGoogleNativeAdView: GoogleNativeAdView {
             callToActionButton.trailingAnchor.constraint(equalTo: nativeAdView.trailingAnchor, constant: -18),
             callToActionButton.heightAnchor.constraint(equalToConstant: Constants.ctaButtonHeight),
         ])
-         */
+         
+    }
+    
+    public func setupMediaViewConstraints(with mediaContent: GADMediaContent) {
+        mediaViewWidthConstraint?.isActive = false
+        mediaViewHeightConstraint?.isActive = false
+
+        let mediaAspectRatio = mediaContent.aspectRatio == 0
+            ? AdsMediaConstants.defaultAspectRatio
+            : mediaContent.aspectRatio
+
+        // We always want to show full contnet of video ads and center crop image ads
+        if mediaContent.hasVideoContent {
+            mediaViewWidthConstraint = gadMediaView.widthAnchor.constraint(equalTo: mediaContainerView.widthAnchor)
+            mediaViewHeightConstraint = gadMediaView.heightAnchor.constraint(equalTo: mediaContainerView.heightAnchor)
+        } else if mediaAspectRatio.isLess(than: AdsMediaConstants.defaultAspectRatio) {
+            mediaViewWidthConstraint = gadMediaView.widthAnchor.constraint(equalTo: mediaContainerView.widthAnchor)
+            mediaViewHeightConstraint = gadMediaView.heightAnchor.constraint(
+                equalTo: gadMediaView.widthAnchor,
+                multiplier: Double(1.0 / mediaAspectRatio))
+        } else {
+            mediaViewWidthConstraint = gadMediaView.widthAnchor.constraint(
+                equalTo: gadMediaView.heightAnchor,
+                multiplier: mediaAspectRatio)
+            mediaViewHeightConstraint = gadMediaView.heightAnchor.constraint(equalTo: mediaContainerView.heightAnchor)
+        }
+
+        mediaViewWidthConstraint?.isActive = true
+        mediaViewHeightConstraint?.isActive = true
+        
+        if let mediaViewWidthConstraint = mediaViewWidthConstraint,
+           let mediaViewHeightConstraint = mediaViewHeightConstraint {
+            NSLayoutConstraint.activate([
+                mediaViewWidthConstraint,
+                mediaViewHeightConstraint
+            ])
+        }
     }
 }

@@ -59,17 +59,22 @@ open class GoogleNativeAdView: UIView {
     }
     
     public func bindView(nativeAd: GADNativeAd) {
+        titleLabel = UILabel()
+        bodyLabel = UILabel()
+        advertiserLabel = UILabel()
+        callToActionButton = UIButton(type: .custom)
+        
         self.nativeAdView.advertiserView = self.advertiserLabel
         self.nativeAdView.headlineView = self.titleLabel
         self.nativeAdView.bodyView = self.bodyLabel
         self.nativeAdView.callToActionView = self.callToActionButton
         self.nativeAdView.callToActionView?.isUserInteractionEnabled = false
         self.nativeAdView.mediaView = self.gadMediaView
-        
-        self.setUpView(nativeAd: nativeAd)
     }
     
-    public func setUpView(nativeAd: GADNativeAd) {
+    open func setUpView(nativeAd: GADNativeAd) {
+        
+        self.setUpView()
         
         (nativeAdView.headlineView as? UILabel)?.text = nativeAd.headline
         (nativeAdView.bodyView as? UILabel)?.text = nativeAd.headline
@@ -81,7 +86,5 @@ open class GoogleNativeAdView: UIView {
         self.nativeAdView.mediaView = gadMediaView
         
         self.nativeAdView.nativeAd = nativeAd
-        
-        //self.setUpView()
     }
 }
