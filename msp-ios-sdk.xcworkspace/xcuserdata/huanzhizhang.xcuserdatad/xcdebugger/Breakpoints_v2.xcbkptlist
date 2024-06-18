@@ -14,24 +14,22 @@
             filePath = "MSPCore/MSPCore/MSPHelper.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "121"
-            endingLineNumber = "121"
-            landmarkName = "onError(msg:)"
-            landmarkType = "7">
+            startingLineNumber = "125"
+            endingLineNumber = "125">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "2DCF51B9-D10C-4F2E-B327-097AC0ED1B3E"
+            uuid = "F7751ECE-6804-453C-BC6A-8D83FCE5106A"
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "MSPDemoApp/MSPDemoApp/ViewController.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "87"
-            endingLineNumber = "87"
+            startingLineNumber = "84"
+            endingLineNumber = "84"
             landmarkName = "onAdLoaded(ad:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -39,33 +37,79 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "B8378D5F-8203-40C5-82FF-A090333F56F2"
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "GoogleAdapter/GoogleAdapter/Native/GoogleNativeAdView.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "32"
-            endingLineNumber = "32"
-            landmarkName = "setUpView()"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "81B9186B-2AF4-4EEF-82AC-2BEB336475EB"
+            uuid = "49EC2359-150E-40E8-B2D4-2CEF4A15106E"
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "MSPDemoApp/MSPDemoApp/Native/DemoGoogleNativeAdView.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "90"
-            endingLineNumber = "90"
-            landmarkName = "setUpView()"
+            startingLineNumber = "162"
+            endingLineNumber = "162"
+            landmarkName = "setupMediaViewConstraints(with:)"
             landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "57F3A470-3F1C-4839-A5E8-232D6B80903B"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "MSPDemoApp/MSPDemoApp/Native/DemoGoogleNativeAdView.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "157"
+            endingLineNumber = "157"
+            landmarkName = "setupMediaViewConstraints(with:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "E88AB90C-2ABE-43BE-9214-23A64142F2E8"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "MSPDemoApp/MSPDemoApp/Native/DemoGoogleNativeAdView.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "154"
+            endingLineNumber = "154"
+            landmarkName = "setupMediaViewConstraints(with:)"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "E88AB90C-2ABE-43BE-9214-23A64142F2E8 - e175937346b9b82e"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "MSPDemoApp.DemoGoogleNativeAdView.setupMediaViewConstraints(with: __C.GADMediaContent) -&gt; ()"
+                  moduleName = "MSPDemoApp"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/huanzhizhang/Huanzhi/msp-ios-sdk/MSPDemoApp/MSPDemoApp/Native/DemoGoogleNativeAdView.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "155"
+                  endingLineNumber = "155">
+               </Location>
+               <Location
+                  uuid = "E88AB90C-2ABE-43BE-9214-23A64142F2E8 - e175937346b9b80d"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "MSPDemoApp.DemoGoogleNativeAdView.setupMediaViewConstraints(with: __C.GADMediaContent) -&gt; ()"
+                  moduleName = "MSPDemoApp"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/huanzhizhang/Huanzhi/msp-ios-sdk/MSPDemoApp/MSPDemoApp/Native/DemoGoogleNativeAdView.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "154"
+                  endingLineNumber = "154">
+               </Location>
+            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
    </Breakpoints>

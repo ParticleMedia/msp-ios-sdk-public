@@ -88,27 +88,18 @@ extension ViewController: AdListener {
             if let nativeAdItem = googleNativeAd?.nativeAdItem {
                 var demoGoogleNativeAdView = DemoGoogleNativeAdView()
                 
-                appBannerView.addSubview(demoGoogleNativeAdView)
+                //appBannerView.addSubview(demoGoogleNativeAdView)
+                self.view.addSubview(demoGoogleNativeAdView)
+                demoGoogleNativeAdView.translatesAutoresizingMaskIntoConstraints = false
                 NSLayoutConstraint.activate([
-                    demoGoogleNativeAdView.centerYAnchor.constraint(equalTo: appBannerView.centerYAnchor),
-                    demoGoogleNativeAdView.leadingAnchor.constraint(equalTo: appBannerView.leadingAnchor),
-                    demoGoogleNativeAdView.widthAnchor.constraint(lessThanOrEqualTo: appBannerView.widthAnchor),
-                    demoGoogleNativeAdView.heightAnchor.constraint(lessThanOrEqualTo: appBannerView.heightAnchor),
+                    demoGoogleNativeAdView.leadingAnchor.constraint(lessThanOrEqualTo: self.view.leadingAnchor, constant: 100),
+                    demoGoogleNativeAdView.trailingAnchor.constraint(lessThanOrEqualTo: self.view.trailingAnchor),
+                    demoGoogleNativeAdView.topAnchor.constraint(lessThanOrEqualTo: self.view.topAnchor, constant: 100),
+                    demoGoogleNativeAdView.bottomAnchor.constraint(lessThanOrEqualTo: self.view.bottomAnchor),
                 ])
                 
-                demoGoogleNativeAdView.setUpView()
                 demoGoogleNativeAdView.bindView(nativeAd: nativeAdItem)
-                //demoGoogleNativeAdView.setUpView()
-                
-                /*
-                appBannerView.addSubview(demoGoogleNativeAdView)
-                NSLayoutConstraint.activate([
-                    demoGoogleNativeAdView.centerYAnchor.constraint(equalTo: appBannerView.centerYAnchor),
-                    demoGoogleNativeAdView.leadingAnchor.constraint(equalTo: appBannerView.leadingAnchor),
-                    demoGoogleNativeAdView.widthAnchor.constraint(lessThanOrEqualTo: appBannerView.widthAnchor),
-                    demoGoogleNativeAdView.heightAnchor.constraint(lessThanOrEqualTo: appBannerView.heightAnchor),
-                ])
-                 */
+                demoGoogleNativeAdView.setUpView(nativeAd: nativeAdItem)
             }
         }
     }
