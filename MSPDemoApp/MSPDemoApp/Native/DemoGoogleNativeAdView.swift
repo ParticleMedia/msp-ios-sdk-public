@@ -91,11 +91,11 @@ public class DemoGoogleNativeAdView: GoogleNativeAdView {
             gadMediaView.leadingAnchor.constraint(equalTo: nativeAdView.leadingAnchor),
             gadMediaView.topAnchor.constraint(equalTo: nativeAdView.topAnchor),
             gadMediaView.trailingAnchor.constraint(equalTo: nativeAdView.trailingAnchor),
-            gadMediaView.heightAnchor.constraint(
-                equalTo: gadMediaView.widthAnchor,
-                multiplier: Double(1.0 / AdsMediaConstants.defaultAspectRatio))
+            //gadMediaView.heightAnchor.constraint(
+            //    equalTo: gadMediaView.widthAnchor,
+            //    multiplier: Double(1.0 / AdsMediaConstants.defaultAspectRatio))
         ])
-        
+        /*
         NSLayoutConstraint.activate([
             titleLabel.leadingAnchor.constraint(
                 equalTo: nativeAdView.leadingAnchor,
@@ -120,5 +120,6 @@ public class DemoGoogleNativeAdView: GoogleNativeAdView {
             callToActionButton.trailingAnchor.constraint(equalTo: nativeAdView.trailingAnchor, constant: -18),
             callToActionButton.heightAnchor.constraint(equalToConstant: Constants.ctaButtonHeight),
         ])
+         */
     }
 }
