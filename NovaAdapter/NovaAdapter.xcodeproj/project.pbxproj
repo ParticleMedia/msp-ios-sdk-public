@@ -34,6 +34,25 @@
 		66E5337B2C223E1000255D15 /* VideoPlayerController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E5337A2C223E1000255D15 /* VideoPlayerController.swift */; };
 		66E5337D2C223F0C00255D15 /* VideoPlayLog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E5337C2C223F0C00255D15 /* VideoPlayLog.swift */; };
 		66E533812C2240E800255D15 /* VideoProgressView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E533802C2240E800255D15 /* VideoProgressView.swift */; };
+		66E533842C22464F00255D15 /* NovaAdBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E533832C22464F00255D15 /* NovaAdBuilder.swift */; };
+		66E533872C22470C00255D15 /* NovaAdUrlTransformer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E533862C22470C00255D15 /* NovaAdUrlTransformer.swift */; };
+		66E533892C224B0B00255D15 /* NovaNativeAdMediaView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E533882C224B0B00255D15 /* NovaNativeAdMediaView.swift */; };
+		66E5338B2C224BD400255D15 /* NovaNativeAdVideoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E5338A2C224BD400255D15 /* NovaNativeAdVideoView.swift */; };
+		66E5338D2C224C5400255D15 /* CancelBlocks.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E5338C2C224C5400255D15 /* CancelBlocks.swift */; };
+		66E533922C2256A300255D15 /* ColorPalettes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E533912C2256A300255D15 /* ColorPalettes.swift */; };
+		66E533942C22588200255D15 /* UIImage+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E533932C22588200255D15 /* UIImage+Extensions.swift */; };
+		66E533982C225DE600255D15 /* UIView+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E533972C225DE600255D15 /* UIView+Extensions.swift */; };
+		66E5339B2C225F2F00255D15 /* IABMetricReporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E5339A2C225F2F00255D15 /* IABMetricReporter.swift */; };
+		66E5339D2C22608000255D15 /* NovaAdVideoMetricReporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E5339C2C22608000255D15 /* NovaAdVideoMetricReporter.swift */; };
+		66E5339F2C2261BD00255D15 /* NovaAdMetricReporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E5339E2C2261BD00255D15 /* NovaAdMetricReporter.swift */; };
+		66E533A12C22622300255D15 /* AdsThirdPartyMetricReporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E533A02C22622300255D15 /* AdsThirdPartyMetricReporter.swift */; };
+		66E533A32C22626C00255D15 /* NovaAdEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E533A22C22626C00255D15 /* NovaAdEvent.swift */; };
+		66E533A52C2262A600255D15 /* NovaAdSkipReason.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E533A42C2262A600255D15 /* NovaAdSkipReason.swift */; };
+		66E533A72C22630400255D15 /* NovaAdsRequestUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E533A62C22630400255D15 /* NovaAdsRequestUtils.swift */; };
+		66E533A92C2263EF00255D15 /* NovaAdType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E533A82C2263EF00255D15 /* NovaAdType.swift */; };
+		66E533AB2C2264B500255D15 /* NovaDedupeManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E533AA2C2264B500255D15 /* NovaDedupeManager.swift */; };
+		66E533AD2C22652A00255D15 /* NovaNativeAdMediaViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E533AC2C22652A00255D15 /* NovaNativeAdMediaViewModel.swift */; };
+		D2960B5E12F52528A44CD919 /* libPods-NovaAdapter.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 688EDC195BB7C73373CB228A /* libPods-NovaAdapter.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -47,6 +66,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		28744C3FB2F6D3F9E993D07B /* Pods-NovaAdapter.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-NovaAdapter.release.xcconfig"; path = "Target Support Files/Pods-NovaAdapter/Pods-NovaAdapter.release.xcconfig"; sourceTree = "<group>"; };
 		66E533192C1A4ED900255D15 /* NovaAdapter.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = NovaAdapter.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		66E5331C2C1A4ED900255D15 /* NovaAdapter.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NovaAdapter.h; sourceTree = "<group>"; };
 		66E5331D2C1A4ED900255D15 /* NovaAdapter.docc */ = {isa = PBXFileReference; lastKnownFileType = folder.documentationcatalog; path = NovaAdapter.docc; sourceTree = "<group>"; };
@@ -75,6 +95,26 @@
 		66E5337A2C223E1000255D15 /* VideoPlayerController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoPlayerController.swift; sourceTree = "<group>"; };
 		66E5337C2C223F0C00255D15 /* VideoPlayLog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoPlayLog.swift; sourceTree = "<group>"; };
 		66E533802C2240E800255D15 /* VideoProgressView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoProgressView.swift; sourceTree = "<group>"; };
+		66E533832C22464F00255D15 /* NovaAdBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NovaAdBuilder.swift; sourceTree = "<group>"; };
+		66E533862C22470C00255D15 /* NovaAdUrlTransformer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NovaAdUrlTransformer.swift; sourceTree = "<group>"; };
+		66E533882C224B0B00255D15 /* NovaNativeAdMediaView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NovaNativeAdMediaView.swift; sourceTree = "<group>"; };
+		66E5338A2C224BD400255D15 /* NovaNativeAdVideoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NovaNativeAdVideoView.swift; sourceTree = "<group>"; };
+		66E5338C2C224C5400255D15 /* CancelBlocks.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CancelBlocks.swift; sourceTree = "<group>"; };
+		66E533912C2256A300255D15 /* ColorPalettes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorPalettes.swift; sourceTree = "<group>"; };
+		66E533932C22588200255D15 /* UIImage+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIImage+Extensions.swift"; sourceTree = "<group>"; };
+		66E533972C225DE600255D15 /* UIView+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+Extensions.swift"; sourceTree = "<group>"; };
+		66E5339A2C225F2F00255D15 /* IABMetricReporter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IABMetricReporter.swift; sourceTree = "<group>"; };
+		66E5339C2C22608000255D15 /* NovaAdVideoMetricReporter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NovaAdVideoMetricReporter.swift; sourceTree = "<group>"; };
+		66E5339E2C2261BD00255D15 /* NovaAdMetricReporter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NovaAdMetricReporter.swift; sourceTree = "<group>"; };
+		66E533A02C22622300255D15 /* AdsThirdPartyMetricReporter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdsThirdPartyMetricReporter.swift; sourceTree = "<group>"; };
+		66E533A22C22626C00255D15 /* NovaAdEvent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NovaAdEvent.swift; sourceTree = "<group>"; };
+		66E533A42C2262A600255D15 /* NovaAdSkipReason.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NovaAdSkipReason.swift; sourceTree = "<group>"; };
+		66E533A62C22630400255D15 /* NovaAdsRequestUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NovaAdsRequestUtils.swift; sourceTree = "<group>"; };
+		66E533A82C2263EF00255D15 /* NovaAdType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NovaAdType.swift; sourceTree = "<group>"; };
+		66E533AA2C2264B500255D15 /* NovaDedupeManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NovaDedupeManager.swift; sourceTree = "<group>"; };
+		66E533AC2C22652A00255D15 /* NovaNativeAdMediaViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NovaNativeAdMediaViewModel.swift; sourceTree = "<group>"; };
+		688EDC195BB7C73373CB228A /* libPods-NovaAdapter.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-NovaAdapter.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		E13406DB45269D62A6AD73D3 /* Pods-NovaAdapter.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-NovaAdapter.debug.xcconfig"; path = "Target Support Files/Pods-NovaAdapter/Pods-NovaAdapter.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -83,6 +123,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				66E533352C1A4F5800255D15 /* shared.xcframework in Frameworks */,
+				D2960B5E12F52528A44CD919 /* libPods-NovaAdapter.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -104,6 +145,7 @@
 				66E533272C1A4ED900255D15 /* NovaAdapterTests */,
 				66E5331A2C1A4ED900255D15 /* Products */,
 				66E533332C1A4F5800255D15 /* Frameworks */,
+				D3AA32872941A2A030B85907 /* Pods */,
 			);
 			sourceTree = "<group>";
 		};
@@ -119,6 +161,9 @@
 		66E5331B2C1A4ED900255D15 /* NovaAdapter */ = {
 			isa = PBXGroup;
 			children = (
+				66E533992C225F1600255D15 /* Metrics */,
+				66E533902C22564300255D15 /* UIUtils */,
+				66E533822C22462900255D15 /* Internal */,
 				66E533712C223BCC00255D15 /* MSPActionHandler */,
 				66E533682C22398B00255D15 /* VideoPlayer */,
 				66E533572C22340F00255D15 /* Native */,
@@ -147,6 +192,7 @@
 			isa = PBXGroup;
 			children = (
 				66E533342C1A4F5800255D15 /* shared.xcframework */,
+				688EDC195BB7C73373CB228A /* libPods-NovaAdapter.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -166,6 +212,10 @@
 				66E533622C22381700255D15 /* NovaNativeAdVideoState.swift */,
 				66E533642C2238B200255D15 /* NovaNativeAdInteractiveBanner.swift */,
 				66E533662C22393500255D15 /* NovaNativeAdDelegate.swift */,
+				66E533882C224B0B00255D15 /* NovaNativeAdMediaView.swift */,
+				66E5338A2C224BD400255D15 /* NovaNativeAdVideoView.swift */,
+				66E5338C2C224C5400255D15 /* CancelBlocks.swift */,
+				66E533AC2C22652A00255D15 /* NovaNativeAdMediaViewModel.swift */,
 			);
 			path = Native;
 			sourceTree = "<group>";
@@ -195,6 +245,51 @@
 			path = MSPActionHandler;
 			sourceTree = "<group>";
 		};
+		66E533822C22462900255D15 /* Internal */ = {
+			isa = PBXGroup;
+			children = (
+				66E533832C22464F00255D15 /* NovaAdBuilder.swift */,
+				66E533862C22470C00255D15 /* NovaAdUrlTransformer.swift */,
+				66E533A62C22630400255D15 /* NovaAdsRequestUtils.swift */,
+				66E533A82C2263EF00255D15 /* NovaAdType.swift */,
+				66E533AA2C2264B500255D15 /* NovaDedupeManager.swift */,
+			);
+			path = Internal;
+			sourceTree = "<group>";
+		};
+		66E533902C22564300255D15 /* UIUtils */ = {
+			isa = PBXGroup;
+			children = (
+				66E533912C2256A300255D15 /* ColorPalettes.swift */,
+				66E533932C22588200255D15 /* UIImage+Extensions.swift */,
+				66E533972C225DE600255D15 /* UIView+Extensions.swift */,
+			);
+			path = UIUtils;
+			sourceTree = "<group>";
+		};
+		66E533992C225F1600255D15 /* Metrics */ = {
+			isa = PBXGroup;
+			children = (
+				66E5339A2C225F2F00255D15 /* IABMetricReporter.swift */,
+				66E5339C2C22608000255D15 /* NovaAdVideoMetricReporter.swift */,
+				66E5339E2C2261BD00255D15 /* NovaAdMetricReporter.swift */,
+				66E533A02C22622300255D15 /* AdsThirdPartyMetricReporter.swift */,
+				66E533A22C22626C00255D15 /* NovaAdEvent.swift */,
+				66E533A42C2262A600255D15 /* NovaAdSkipReason.swift */,
+			);
+			path = Metrics;
+			sourceTree = "<group>";
+		};
+		D3AA32872941A2A030B85907 /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				E13406DB45269D62A6AD73D3 /* Pods-NovaAdapter.debug.xcconfig */,
+				28744C3FB2F6D3F9E993D07B /* Pods-NovaAdapter.release.xcconfig */,
+			);
+			name = Pods;
+			path = ../Pods;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
@@ -213,10 +308,12 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 66E5332D2C1A4ED900255D15 /* Build configuration list for PBXNativeTarget "NovaAdapter" */;
 			buildPhases = (
+				74126B21F718BAFD271A40AA /* [CP] Check Pods Manifest.lock */,
 				66E533142C1A4ED900255D15 /* Headers */,
 				66E533152C1A4ED900255D15 /* Sources */,
 				66E533162C1A4ED900255D15 /* Frameworks */,
 				66E533172C1A4ED900255D15 /* Resources */,
+				BF0C305B2D6A87FE9FB9EBF6 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -299,33 +396,93 @@
 		};
 /* End PBXResourcesBuildPhase section */
 
+/* Begin PBXShellScriptBuildPhase section */
+		74126B21F718BAFD271A40AA /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-NovaAdapter-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		BF0C305B2D6A87FE9FB9EBF6 /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-NovaAdapter/Pods-NovaAdapter-resources-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Copy Pods Resources";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-NovaAdapter/Pods-NovaAdapter-resources-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-NovaAdapter/Pods-NovaAdapter-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
 		66E533152C1A4ED900255D15 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				66E533AB2C2264B500255D15 /* NovaDedupeManager.swift in Sources */,
 				66E5337B2C223E1000255D15 /* VideoPlayerController.swift in Sources */,
+				66E533AD2C22652A00255D15 /* NovaNativeAdMediaViewModel.swift in Sources */,
 				66E5336C2C223A4100255D15 /* VideoPlayer.swift in Sources */,
+				66E533A72C22630400255D15 /* NovaAdsRequestUtils.swift in Sources */,
 				66E533672C22393500255D15 /* NovaNativeAdDelegate.swift in Sources */,
 				66E5333D2C1A67F600255D15 /* NovaResponseDataModel.swift in Sources */,
 				66E533592C22343600255D15 /* NovaBaseAd.swift in Sources */,
 				66E533752C223C2400255D15 /* ActionHandling.swift in Sources */,
 				66E5335F2C2236BF00255D15 /* NovaCreativeType.swift in Sources */,
+				66E5339D2C22608000255D15 /* NovaAdVideoMetricReporter.swift in Sources */,
 				66E533652C2238B200255D15 /* NovaNativeAdInteractiveBanner.swift in Sources */,
 				66E5335B2C2234EF00255D15 /* NovaNativeAdItem.swift in Sources */,
+				66E5338D2C224C5400255D15 /* CancelBlocks.swift in Sources */,
 				66E5335D2C22369F00255D15 /* NovaAdLaunchOption.swift in Sources */,
 				66E533812C2240E800255D15 /* VideoProgressView.swift in Sources */,
 				66E5337D2C223F0C00255D15 /* VideoPlayLog.swift in Sources */,
 				66E533732C223C0000255D15 /* ActionHandlerMaster.swift in Sources */,
+				66E5338B2C224BD400255D15 /* NovaNativeAdVideoView.swift in Sources */,
+				66E533942C22588200255D15 /* UIImage+Extensions.swift in Sources */,
 				66E5331E2C1A4ED900255D15 /* NovaAdapter.docc in Sources */,
 				66E5336A2C2239A800255D15 /* VideoPlayerCacheHandler.swift in Sources */,
+				66E533A52C2262A600255D15 /* NovaAdSkipReason.swift in Sources */,
+				66E5339F2C2261BD00255D15 /* NovaAdMetricReporter.swift in Sources */,
 				66E533772C223C3C00255D15 /* ActionModel.swift in Sources */,
+				66E533A12C22622300255D15 /* AdsThirdPartyMetricReporter.swift in Sources */,
+				66E533A92C2263EF00255D15 /* NovaAdType.swift in Sources */,
 				66E533792C223C6200255D15 /* EmptyActionDataModel.swift in Sources */,
 				66E533702C223B7F00255D15 /* VideoPlayerProtocol.swift in Sources */,
+				66E5339B2C225F2F00255D15 /* IABMetricReporter.swift in Sources */,
 				66E533612C2237E000255D15 /* NovaNativeAdVideoInfo.swift in Sources */,
 				66E533632C22381700255D15 /* NovaNativeAdVideoState.swift in Sources */,
 				66E533392C1A589700255D15 /* NovaNativeAd.swift in Sources */,
 				66E5336E2C223B0100255D15 /* Player.swift in Sources */,
+				66E533922C2256A300255D15 /* ColorPalettes.swift in Sources */,
+				66E533872C22470C00255D15 /* NovaAdUrlTransformer.swift in Sources */,
+				66E533A32C22626C00255D15 /* NovaAdEvent.swift in Sources */,
+				66E533892C224B0B00255D15 /* NovaNativeAdMediaView.swift in Sources */,
+				66E533982C225DE600255D15 /* UIView+Extensions.swift in Sources */,
+				66E533842C22464F00255D15 /* NovaAdBuilder.swift in Sources */,
 				66E5333B2C1A601D00255D15 /* NovaAdLoader.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -476,6 +633,7 @@
 		};
 		66E5332E2C1A4ED900255D15 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = E13406DB45269D62A6AD73D3 /* Pods-NovaAdapter.debug.xcconfig */;
 			buildSettings = {
 				BUILD_LIBRARY_FOR_DISTRIBUTION = YES;
 				CODE_SIGN_STYLE = Automatic;
@@ -510,6 +668,7 @@
 		};
 		66E5332F2C1A4ED900255D15 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 28744C3FB2F6D3F9E993D07B /* Pods-NovaAdapter.release.xcconfig */;
 			buildSettings = {
 				BUILD_LIBRARY_FOR_DISTRIBUTION = YES;
 				CODE_SIGN_STYLE = Automatic;

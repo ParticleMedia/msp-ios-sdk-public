@@ -1,0 +1,728 @@
+//
+//  NovaNativeAdVideoView.swift
+//  NovaAdapter
+//
+//  Created by Huanzhi Zhang on 6/18/24.
+//
+
+import Foundation
+import UIKit
+import SDWebImage
+import SnapKit
+import NBDesignSystem
+
+
+public final class NovaNativeAdVideoView: UIView {
+    
+    public var didTapCloseButtonCallback: (() -> Void)?;
+    
+    private let inLandingPage: Bool
+    private var inLandingViewsHideBlock: DispatchCancelableBlock?
+
+    private let coverImage: UIImageView = {
+        let imageView = UIImageView()
+        imageView.contentMode = .scaleAspectFill
+        imageView.clipsToBounds = true
+        imageView.translatesAutoresizingMaskIntoConstraints = false
+        return imageView
+    }()
+
+    private lazy var startButton: UIButton = {
+        let view = UIButton()
+        view.translatesAutoresizingMaskIntoConstraints = false
+        view.imageEdgeInsets = UIEdgeInsets(top: 12, left: 12, bottom: 12, right: 12)
+        view.setImage(.NB.playFilled?.withTintColor(ColorPalettes.White), for: .normal)
+        view.backgroundColor = ColorPalettes.Black.nb_opacity5()
+        view.layer.cornerRadius = 24
+        view.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(didTapStartButton)))
+        return view
+    }()
+
+    private lazy var panel: UIView = {
+        let view = UIView()
+        view.translatesAutoresizingMaskIntoConstraints = false
+        view.backgroundColor = ColorPalettes.Black.nb_opacity5()
+        view.layer.cornerRadius = 4
+        return view
+    }()
+    
+    private lazy var closeButton: UIButton = {
+        let button = UIButton()
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.setImage(UIImage.NB.crossFilled?.withTintColor(ColorPalettes.White), for: .normal)
+        button.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(didTapCloseButton)))
+        return button
+    }()
+
+    private lazy var playButton: UIButton = {
+        let view = UIButton()
+        view.translatesAutoresizingMaskIntoConstraints = false
+        view.imageEdgeInsets = UIEdgeInsets(top: 6, left: 8, bottom: 6, right: 8)
+        view.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(didTapPlayButton)))
+        return view
+    }()
+
+    private lazy var muteButton: UIButton = {
+        let view = UIButton()
+        view.translatesAutoresizingMaskIntoConstraints = false
+        if !inLandingPage {
+            view.imageEdgeInsets = UIEdgeInsets(top: 6, left: 8, bottom: 6, right: 8)
+        }
+        view.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(didTabMuteButton)))
+        return view
+    }()
+
+    private lazy var countText: UILabel = {
+        let view = UILabel()
+        view.translatesAutoresizingMaskIntoConstraints = false
+        view.font = .NB.caption1
+        view.textColor = ColorPalettes.White
+        view.numberOfLines = 1
+        view.backgroundColor = ColorPalettes.Black.nb_opacity5()
+        view.layer.cornerRadius = 4
+        view.textAlignment = .center
+        return view
+    }()
+    
+    private lazy var videoProgressText: UILabel = {
+        let label = UILabel()
+        label.font = .systemFont(ofSize: 10)
+        label.textColor = ColorPalettes.White
+        label.numberOfLines = 1
+        label.backgroundColor = .clear
+        label.textAlignment = .center
+        return label
+    }()
+    
+    private lazy var videoLengthText: UILabel = {
+        let label = UILabel()
+        label.font = .systemFont(ofSize: 10)
+        label.textColor = ColorPalettes.White
+        label.numberOfLines = 1
+        label.backgroundColor = .clear
+        label.textAlignment = .center
+        return label
+    }()
+    
+    private lazy var progressView: UIProgressView = {
+        let progress = UIProgressView()
+        progress.progressTintColor = ColorPalettes.Blue.tint500
+        progress.trackTintColor = ColorPalettes.White
+        return progress
+    }()
+
+
+    private lazy var playImage: UIImage? = {
+        if inLandingPage {
+            UIImage.NB.playFilled?.withTintColor(ColorPalettes.White)
+        } else {
+            UIImage.NB.playLine?.withTintColor(ColorPalettes.White)
+        }
+    }()
+
+    private lazy var pauseImage: UIImage? = {
+        if inLandingPage {
+            UIImage.NB.pauseFilled?.withTintColor(ColorPalettes.White)
+        } else {
+            .NB.pauseLine?.withTintColor(ColorPalettes.White)
+        }
+    }()
+
+    private let volumnOnImage = UIImage.NB.volumeOnLine?.withTintColor(ColorPalettes.White)
+
+    private let volumnOffImage = UIImage.NB.volumeOffLine?.withTintColor(ColorPalettes.White)
+
+    private var videoPlayer: VideoPlayer?
+
+    private var videoInfo: NovaNativeAdVideoInfo?
+    private var encryptedAdToken: String?
+
+    private var playState: NovaNativeAdVideoState.PlayState? {
+        willSet {
+            if let newValue, newValue != playState {
+                videoInfo?.state = NovaNativeAdVideoState(playState: newValue,
+                                                         isMute: videoPlayer?.isPlayerMuted() == true)
+            }
+        }
+    }
+    private var showCoverKey: Double?
+
+    private var configTime: Double? = nil
+    private var startTime: Double? = nil
+    private var lastResumeTime: Double? = nil
+    private var lastPauseTime: Double? = nil
+
+    private var isOnScreen: Bool = false
+
+    private var videoTapRecognizer: UITapGestureRecognizer?
+
+    private weak var iabReporter: IABMetricReporter?
+
+    public init(inLandingPage: Bool = false) {
+        self.inLandingPage = inLandingPage
+        super.init(frame: CGRectZero)
+        if inLandingPage {
+            addSubviews([closeButton, playButton, muteButton, videoProgressText, progressView, videoLengthText])
+            closeButton.snp.makeConstraints { make in
+                make.leading.equalTo(16)
+                make.top.equalTo(12)
+                make.size.equalTo(CGSize(width: 24, height: 24))
+            }
+            playButton.snp.makeConstraints { make in
+                make.height.width.equalTo(50)
+                make.center.equalToSuperview()
+            }
+            muteButton.snp.makeConstraints { make in
+                make.height.width.equalTo(20)
+                make.leading.equalTo(16)
+                make.bottom.equalTo(-8)
+                make.width.height.equalTo(20)
+            }
+            videoProgressText.snp.makeConstraints { make in
+                make.leading.equalTo(self.muteButton.snp.trailing).offset(16)
+                make.centerY.equalTo(self.muteButton)
+            }
+            progressView.snp.makeConstraints { make in
+                make.leading.equalTo(self.videoProgressText.snp.trailing).offset(12)
+                make.centerY.equalTo(self.muteButton)
+            }
+            videoLengthText.snp.makeConstraints { make in
+                make.leading.equalTo(self.progressView.snp.trailing).offset(12)
+                make.trailing.equalToSuperview().offset(-52)
+                make.centerY.equalTo(self.muteButton)
+            }
+        } else {
+            panel.addSubviews(playButton, muteButton)
+            addSubviews(coverImage, startButton, panel, countText)
+            NSLayoutConstraint.activate([
+                coverImage.topAnchor.constraint(equalTo: topAnchor),
+                coverImage.leadingAnchor.constraint(equalTo: leadingAnchor),
+                coverImage.bottomAnchor.constraint(equalTo: bottomAnchor),
+                coverImage.trailingAnchor.constraint(equalTo: trailingAnchor),
+            ])
+            NSLayoutConstraint.activate([
+                startButton.widthAnchor.constraint(equalToConstant: 48),
+                startButton.heightAnchor.constraint(equalToConstant: 48),
+                startButton.centerXAnchor.constraint(equalTo: centerXAnchor),
+                startButton.centerYAnchor.constraint(equalTo: centerYAnchor),
+            ])
+            NSLayoutConstraint.activate([
+                panel.widthAnchor.constraint(equalToConstant: 64),
+                panel.heightAnchor.constraint(equalToConstant: 28),
+                panel.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 12),
+                panel.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -12),
+            ])
+            NSLayoutConstraint.activate([
+                playButton.widthAnchor.constraint(equalToConstant: 32),
+                playButton.heightAnchor.constraint(equalToConstant: 28),
+                playButton.centerYAnchor.constraint(equalTo: panel.centerYAnchor),
+                playButton.leadingAnchor.constraint(equalTo: panel.leadingAnchor),
+            ])
+            NSLayoutConstraint.activate([
+                muteButton.widthAnchor.constraint(equalToConstant: 32),
+                muteButton.heightAnchor.constraint(equalToConstant: 28),
+                muteButton.centerYAnchor.constraint(equalTo: panel.centerYAnchor),
+                muteButton.trailingAnchor.constraint(equalTo: panel.trailingAnchor),
+            ])
+            NSLayoutConstraint.activate([
+                countText.widthAnchor.constraint(equalToConstant: 40),
+                countText.heightAnchor.constraint(equalToConstant: 24),
+                countText.topAnchor.constraint(equalTo: topAnchor, constant: 12),
+                countText.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -12),
+            ])
+        }
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+}
+
+// MARK: - public function
+
+public extension NovaNativeAdVideoView {
+
+    func config(videoInfo: NovaNativeAdVideoInfo,
+                encryptedAdToken: String,
+                iabReporter: IABMetricReporter?) {
+        self.videoInfo = videoInfo
+        self.encryptedAdToken = encryptedAdToken
+        self.iabReporter = iabReporter
+
+        if !videoInfo.isVideoClickable || inLandingPage {
+            // Add an empty gesture recognizer to disable click on parent media view
+            videoTapRecognizer = UITapGestureRecognizer(target: self, action: #selector(didTapVideo))
+            addGestureRecognizer(videoTapRecognizer!)
+        } else {
+            if !videoInfo.isAuto && !videoInfo.didStart {
+                videoTapRecognizer = UITapGestureRecognizer(target: self, action: #selector(didTapStartButton))
+                addGestureRecognizer(videoTapRecognizer!)
+            }
+        }
+        var hasCover = false
+        if let coverUrlStr = videoInfo.coverUrlStr, let coverUrl = URL(string: coverUrlStr) {
+            coverImage.sd_setImage(with: coverUrl)
+            hasCover = true
+        }
+        
+        setupPlayer(videoInfo: videoInfo, encryptedAdToken: encryptedAdToken)
+        setSubviewsOnVideo(videoInfo: videoInfo, inLandingPage: inLandingPage)
+        syncPlayState(from: videoInfo, hasCover: hasCover)
+    }
+
+    func prepareForReuse() {
+        videoPlayer?.stop(endKind: .none)
+        playState = nil
+        videoInfo = nil
+        if let videoTapRecognizer = videoTapRecognizer {
+            removeGestureRecognizer(videoTapRecognizer)
+            self.videoTapRecognizer = nil
+        }
+        videoPlayer?.getPlayerView().removeFromSuperview()
+    }
+    
+    func getPlayerSuperview() -> UIView? {
+        videoPlayer?.getPlayerView().superview
+    }
+    
+    func setPlayerBackOnView(view: UIView) {
+        if let playerView = videoPlayer?.getPlayerView(), playerView.superview != view {
+            playerView.removeFromSuperview()
+            view.insertSubview(playerView, at: 0)
+            playerView.snp.makeConstraints { make in
+                make.edges.equalTo(view)
+            }
+            view.layoutIfNeeded()
+        }
+    }
+
+    func handleVideoOnScreen() {
+        isOnScreen = true
+        setPlayerBackOnView(view: self)
+        if let videoInfo, let state = videoInfo.state {
+            syncVideoPlayingState(with: state.playState)
+        }
+    }
+
+    func handleVideoOffScreen() {
+        isOnScreen = false
+
+        guard let playState = playState else {
+            assertionFailure("lack state info")
+            return
+        }
+        switch playState {
+        case .showCover(_):
+            showCoverKey = nil
+        case .loading(_), .playing(_):
+            // NOTE(SHANYU): pause video here do not need to be sync to video info, or video won't auto play next time entering
+            pauseVideo(endKind: .stopAutoPlayInFeed)
+        default:
+            break
+        }
+    }
+}
+
+// MARK: - private function
+
+private extension NovaNativeAdVideoView {
+    func updateUI(with playState: NovaNativeAdVideoState.PlayState?) {
+        guard let playState else { return }
+        switch playState {
+        case .showCover(_):
+            startButton.isHidden = false
+            coverImage.isHidden = false
+            panel.isHidden = true
+        case .loading(let hideCover):
+            startButton.isHidden = hideCover
+            coverImage.isHidden = hideCover
+            panel.isHidden = true
+        case .playing(_):
+            updatePlayButton(true)
+            startButton.isHidden = true
+            coverImage.isHidden = true
+            panel.isHidden = false
+        case .paused(_):
+            updatePlayButton(false)
+            startButton.isHidden = true
+            coverImage.isHidden = true
+            panel.isHidden = false
+        case .complete:
+            startButton.isHidden = false
+            coverImage.isHidden = true
+            panel.isHidden = true
+        }
+    }
+    
+    func syncVideoPlayingState(with playState: NovaNativeAdVideoState.PlayState?) {
+        guard let playState else { return }
+        switch playState {
+        case .showCover(let autoPlay):
+            if autoPlay {
+                startCover()
+            }
+        case .loading(_):
+            startVideo()
+        case .playing(let currentTime):
+            if !currentTime.isIndefinite {
+                videoPlayer?.seek(to: currentTime, completionHandler: nil)
+            }
+            self.resumeVideo()
+        case .paused(let currentTime):
+            if !currentTime.isIndefinite {
+                videoPlayer?.seek(to: currentTime, completionHandler: nil)
+            }
+            self.pauseVideo(endKind: .none)
+        case .complete:
+            break
+        }
+    }
+
+    func startCover() {
+        let key = CACurrentMediaTime()
+        showCoverKey = key
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1) { [weak self] in
+            if key != self?.showCoverKey {
+                return
+            }
+            if let videoPlayer = self?.videoPlayer {
+                self?.playState = .playing(currentTime: videoPlayer.currentTime())
+                self?.startVideo()
+            }
+        }
+    }
+
+    func startVideo() {
+        guard let videoPlayer = videoPlayer else {
+            return
+        }
+
+        startTime = CACurrentMediaTime()
+        lastResumeTime = startTime
+        videoPlayer.play()
+    }
+
+    func resumeVideo() {
+        guard let videoPlayer = videoPlayer else {
+            return
+        }
+
+        videoPlayer.delegate = self
+        videoPlayer.play()
+        //iabReporter?.logVideoResume()
+        let resumeTime = CACurrentMediaTime()
+        if let encryptedAdToken = self.encryptedAdToken,
+           let lastPauseTime {
+            NovaAdVideoMetricReporter.logVideoResume(encryptedAdToken: encryptedAdToken,
+                                                     duration: resumeTime - lastPauseTime)
+        }
+        lastResumeTime = resumeTime
+    }
+
+    func pauseVideo(endKind: VideoEndKind) {
+        guard let videoPlayer = videoPlayer else {
+            return
+        }
+        videoPlayer.pause(endKind: endKind)
+        //iabReporter?.logVideoPause()
+        let pauseTime = CACurrentMediaTime()
+        if let encryptedAdToken = self.encryptedAdToken,
+           let lastResumeTime {
+            NovaAdVideoMetricReporter.logVideoPause(encryptedAdToken: encryptedAdToken,
+                                                    duration: pauseTime - lastResumeTime)
+        }
+        lastPauseTime = pauseTime
+    }
+
+    private func updatePlayButton(_ isPlaying: Bool) {
+        playButton.setImage(isPlaying ? pauseImage : playImage, for: .normal)
+    }
+
+    private func setVideoMute(_ isMute: Bool) {
+        guard let videoPlayer = videoPlayer else {
+            return
+        }
+        videoPlayer.setPlayerMute(isMute)
+        if let playState {
+            videoInfo?.state = NovaNativeAdVideoState(playState: playState, isMute: isMute)
+        }
+        muteButton.setImage(isMute ? volumnOffImage : volumnOnImage, for: .normal)
+        //iabReporter?.logVideoVolumeChange(to: isMute ? 0.0 : 1.0)
+    }
+
+    private func stringOf(timeInterval: Int?) -> String {
+        guard let timeInterval else {
+            return "NaN:NaN"
+        }
+        let second = timeInterval % 60
+        let minute = timeInterval / 60
+        let secondStr = second < 10 ? "0\(second)" : "\(second)"
+        let minuteStr = minute < 10 ? "0\(minute)" : "\(minute)"
+        return "\(minuteStr):\(secondStr)"
+    }
+    
+    private func setupPlayer(
+        videoInfo: NovaNativeAdVideoInfo,
+        encryptedAdToken: String
+    ) {
+        guard let videoUrl = URL(string: videoInfo.videoUrlStr) else {
+            assertionFailure("Invalid video url: \(videoInfo.videoUrlStr)")
+            return
+        }
+        guard let videoPlayer = VideoPlayerCacheHandler
+            .shared
+            .getCachedVideoControllerForURL(videoUrl, cacheKey: videoInfo.cacheKey) else {
+            return
+        }
+        self.videoPlayer = videoPlayer
+        self.configTime = CACurrentMediaTime()
+        NovaAdVideoMetricReporter.makeRecord(encryptedAdToken: encryptedAdToken)
+        let playerView = videoPlayer.getPlayerView()
+        playerView.translatesAutoresizingMaskIntoConstraints = false
+        if playerView.superview != nil {
+            playerView.removeFromSuperview()
+        }
+        insertSubview(playerView, at: 0)
+        NSLayoutConstraint.activate([
+            playerView.topAnchor.constraint(equalTo: topAnchor),
+            playerView.leadingAnchor.constraint(equalTo: leadingAnchor),
+            playerView.bottomAnchor.constraint(equalTo: bottomAnchor),
+            playerView.trailingAnchor.constraint(equalTo: trailingAnchor),
+        ])
+        let playInfo = PlayInfo(url: videoUrl,
+                                playLoops: videoInfo.isLoop,
+                                videoDataModel: nil,
+                                playStyle: .feed,
+                                isMute: videoInfo.isMute,
+                                disableGesture: true)
+        videoPlayer.play(with: playInfo, actionHandler: nil, delegate: self)
+    }
+    
+    private func setSubviewsOnVideo(videoInfo: NovaNativeAdVideoInfo, inLandingPage: Bool) {
+        if inLandingPage {
+            updateLandingSubviews(isHidden: false)
+            self.inLandingViewsHideBlock = dispatchMainAsyncAfter(delay: 3.0, block: DispatchWorkItem(block: { [weak self] in
+                self?.updateLandingSubviews(isHidden: true)
+            }))
+            guard let videoPlayer else { return }
+            videoLengthText.text = stringOf(timeInterval: videoPlayer.maximumTimeDuration().toIntValue())
+            switch videoInfo.state?.playState {
+            case .playing(_), .paused(_):
+                progressView.setProgress(Float(videoPlayer.getRealProgress().truncatingRemainder(dividingBy: 1.0)), animated: false)
+                videoProgressText.text = stringOf(timeInterval: videoPlayer.currentTimeInterval().toIntValue())
+            default:
+                videoProgressText.text = stringOf(timeInterval: 0)
+            }
+        } else {
+            countText.isHidden = true
+        }
+    }
+    
+    private func syncPlayState(from videoInfo: NovaNativeAdVideoInfo, hasCover: Bool) {
+        if let state = videoInfo.state {
+            playState = state.playState
+            setVideoMute(state.isMute)
+        } else {
+            if hasCover {
+                playState = .showCover(autoPlay: videoInfo.isAuto)
+            } else {
+                playState = videoInfo.isAuto ? .loading(hideCover: true) : .complete
+            }
+            setVideoMute(videoInfo.isMute)
+        }
+        updateUI(with: playState)
+        syncVideoPlayingState(with: playState)
+    }
+    
+    private func updateLandingSubviews(isHidden: Bool) {
+        closeButton.isHidden = isHidden
+        muteButton.isHidden = isHidden
+        videoProgressText.isHidden = isHidden
+        progressView.isHidden = isHidden
+        videoLengthText.isHidden = isHidden
+        playButton.isHidden = isHidden
+    }
+}
+
+// MARK: - User Event
+
+private extension NovaNativeAdVideoView {
+
+    @objc func didTapVideo() {
+        // Do nothing
+        if inLandingPage {
+            let currentHiddenStatus = muteButton.isHidden
+            updateLandingSubviews(isHidden: !currentHiddenStatus)
+            
+            if !currentHiddenStatus {
+                dispatchCancel(block: self.inLandingViewsHideBlock)
+            } else {
+                self.inLandingViewsHideBlock = dispatchMainAsyncAfter(delay: 3.0, block: DispatchWorkItem(block: { [weak self] in
+                    self?.updateLandingSubviews(isHidden: true)
+                }))
+            }
+        }
+    }
+
+    @objc func didTapPlayButton() {
+        guard let videoPlayer = videoPlayer else {
+            return
+        }
+        playState = videoPlayer.isVideoPlaying() ?
+            .paused(currentTime: videoPlayer.currentTime()) :
+            .playing(currentTime: videoPlayer.currentTime())
+        updateUI(with: playState)
+        if videoPlayer.isVideoPlaying() {
+            pauseVideo(endKind: .pause)
+        } else {
+            resumeVideo()
+        }
+    }
+
+    @objc func didTabMuteButton() {
+        guard let videoPlayer = videoPlayer else {
+            return
+        }
+        setVideoMute(!videoPlayer.isPlayerMuted())
+        if let encryptedAdToken = self.encryptedAdToken {
+            NovaAdVideoMetricReporter.logVideoMute(encryptedAdToken: encryptedAdToken,
+                                                   isMute: videoPlayer.isPlayerMuted())
+        }
+    }
+
+    @objc func didTapStartButton() {
+        playState = .loading(hideCover: true)
+        updateUI(with: playState)
+        startVideo()
+    }
+    
+    @objc func didTapCloseButton() {
+        if let didTapCloseButtonCallback {
+            didTapCloseButtonCallback()
+        }
+    }
+
+    func updateVideoInfoState(_ player: Player) {
+        guard let videoPlayer, let videoInfo else {
+            return
+        }
+        if videoPlayer.getCurrentProgress() >= 1 && !videoInfo.isLoop {
+            playState = .complete
+        }
+        updateUI(with: playState)
+    }
+    
+}
+
+// MARK: - VideoPlayerDelegate
+
+extension NovaNativeAdVideoView: VideoPlayerDelegate {
+    public func playerReady(_ player: Player) {}
+
+    public func playerPlaybackStateDidChange(_ player: Player) {
+        guard let videoPlayer = videoPlayer else {
+            return
+        }
+        guard let videoInfo = self.videoInfo else { return }
+        if videoPlayer.isVideoPlaying() {
+            if !inLandingPage && countText.isHidden {
+                let time = videoPlayer.currentTimeInterval()
+                if time <= 5 {
+                    countText.isHidden = false
+                    countText.text = stringOf(timeInterval: Int(player.maximumDuration - time))
+                }
+            }
+            if videoInfo.isVideoClickable && !inLandingPage, let videoTapRecognizer = videoTapRecognizer {
+                videoInfo.didStart = true
+                removeGestureRecognizer(videoTapRecognizer)
+                self.videoTapRecognizer = nil
+            }
+        }
+
+        updateVideoInfoState(player)
+    }
+
+    public func playerBufferTimeDidChange(_ bufferTime: Double) {
+    }
+
+    public func playerCurrentTimeDidChange(_ player: Player) {
+        guard let videoPlayer = videoPlayer else {
+            return
+        }
+        let videoCurrent = videoPlayer.currentTimeInterval()
+        let videoLength = player.maximumDuration
+        if videoCurrent.isNaN || videoLength.isNaN {
+            return
+        }
+        switch playState {
+        case .playing(_):
+            playState = .playing(currentTime: videoPlayer.currentTime())
+        case .paused(_):
+            playState = .paused(currentTime: videoPlayer.currentTime())
+        default:
+            break
+        }
+        if inLandingPage {
+            videoProgressText.text = stringOf(timeInterval: Int(videoCurrent.truncatingRemainder(dividingBy: videoLength)))
+            progressView.setProgress(Float(videoPlayer.getRealProgress().truncatingRemainder(dividingBy: 1.0)), animated: false)
+        } else if !countText.isHidden {
+            countText.text = stringOf(timeInterval: Int(videoLength - videoCurrent))
+            if videoCurrent > 5 {
+                countText.isHidden = true
+            }
+        }
+        guard let videoInfo = self.videoInfo else { return }
+        guard let encryptedAdToken = self.encryptedAdToken else { return }
+        if let startTime, let configTime {
+            let time = CACurrentMediaTime()
+            let duration = time - configTime
+            let latency = time - startTime
+            NovaAdVideoMetricReporter.logVideoStart(encryptedAdToken: encryptedAdToken,
+                                                    isAuto: videoInfo.isAuto,
+                                                    isMute: videoInfo.isMute,
+                                                    isLoop: videoInfo.isLoop,
+                                                    videoLength: videoLength,
+                                                    latency: latency,
+                                                    duration: duration)
+            //iabReporter?.logVideoStart(duration: videoCurrent, volume: videoPlayer.isPlayerMuted() ? 0.0 : 1.0)
+        }
+        NovaAdVideoMetricReporter.logVideoProgress(encryptedAdToken: encryptedAdToken,
+                                                   percentage: videoCurrent / videoLength,
+                                                   duration: videoCurrent)
+        //iabReporter?.logVideoProgress(percentage: videoCurrent / videoLength)
+    }
+
+    public func playerTimePassed60sAfterPlay(_ player: Player) {
+    }
+
+    public func player(_ player: Player, didFailWithError error: Error?) {
+        if let encryptedAdToken, let configTime {
+            NovaAdVideoMetricReporter.logVideoError(encryptedAdToken: encryptedAdToken,
+                                                    error: error?.localizedDescription ?? "",
+                                                    duration: CACurrentMediaTime() - configTime)
+        }
+    }
+
+    public func playerPlaybackWillLoop(_ player: Player) {
+    }
+
+    public func playerPlaybackDidLoop(_ player: Player) {
+    }
+}
+
+
+private extension TimeInterval {
+    func toIntValue() -> Int? {
+        /// NOTE: (shanyu.li) convert NaN to Int will crash
+        guard self.isFinite else {
+            return nil
+        }
+        if self > Double(Int.max) {
+            return Int.max
+        } else if self < Double(0) {
+            return 0
+        } else {
+            return Int(self)
+        }
+    }
+}

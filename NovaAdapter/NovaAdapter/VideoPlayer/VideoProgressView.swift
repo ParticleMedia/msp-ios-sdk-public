@@ -32,8 +32,6 @@ public class VideoProgressView: UIView {
 
     private var trackViewLeftConstraint: NSLayoutConstraint!
     private var containerHeight: NSLayoutConstraint!
-    
-    private static let White = getColorFromHex(hex: "FFFFFF")
 
     public init() {
         super.init(frame: .zero)
@@ -72,8 +70,8 @@ public class VideoProgressView: UIView {
         progressTrackView.layer.cornerRadius = progressTrackWidth * 0.5
         progressTrackView.isHidden = true
 
-        self.configProgressColor(progressTintColor: VideoProgressView.White.withAlphaComponent(0.6),
-                                 trackTintColor: VideoProgressView.White.withAlphaComponent(0.3))
+        self.configProgressColor(progressTintColor: ColorPalettes.White.nb_opacity6(),
+                                 trackTintColor: ColorPalettes.White.nb_opacity4())
     }
 
     required init?(coder: NSCoder) {
@@ -84,12 +82,12 @@ public class VideoProgressView: UIView {
         progressTrackView.isHidden = hidden
         if hidden {
             containerHeight.constant = 1
-            self.configProgressColor(progressTintColor: VideoProgressView.White.withAlphaComponent(0.6),
-                                     trackTintColor: VideoProgressView.White.withAlphaComponent(0.3))
+            self.configProgressColor(progressTintColor: ColorPalettes.White.nb_opacity6(),
+                                     trackTintColor: ColorPalettes.White.nb_opacity5())
         } else {
             containerHeight.constant = 2
-            self.configProgressColor(progressTintColor: VideoProgressView.White,
-                                     trackTintColor: VideoProgressView.White.withAlphaComponent(0.2))
+            self.configProgressColor(progressTintColor: ColorPalettes.White,
+                                     trackTintColor: ColorPalettes.White.nb_opacity4())
         }
     }
 
@@ -118,34 +116,5 @@ public class VideoProgressView: UIView {
     public func shouldReceivePanGesture(with position: CGPoint) -> Bool {
         let current = CGFloat(self.progressBar.progress) * self.frame.width
         return (current - position.x) <= 40
-    }
-    
-    public static func getColorFromHex(hex: String, alpha: CGFloat = 1) -> UIColor {
-        var string = hex
-        if string.hasPrefix("0x") {
-            string.removeFirst(2)
-        } else if string.hasPrefix("0X") {
-            string.removeFirst(2)
-        } else if string.hasPrefix("#") {
-            string.removeFirst(1)
-        }
-
-        guard let hexValue = Int(string, radix: 16) else {
-            assertionFailure("invalid color format for [\(hex)]")
-            return UIColor(white: 0.0, alpha: 0.0)
-        }
-
-        if string.count == 8 {
-            let red = (hexValue >> 24) & 0xFF
-            let green = (hexValue >> 16) & 0xFF
-            let blue = (hexValue >> 8) & 0xFF
-            let alphaValue = CGFloat(hexValue & 0xFF) / 255.0
-            return UIColor(red: CGFloat(red) / 255.0, green: CGFloat(green) / 255.0, blue: CGFloat(blue) / 255.0, alpha: alphaValue)
-        } else {
-            let red = (hexValue >> 16) & 0xFF
-            let green = (hexValue >> 8) & 0xFF
-            let blue = hexValue & 0xFF
-            return UIColor(red: CGFloat(red) / 255.0, green: CGFloat(green) / 255.0, blue: CGFloat(blue) / 255.0, alpha: alpha)
-        }
     }
 }

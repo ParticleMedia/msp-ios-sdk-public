@@ -1,0 +1,528 @@
+import Foundation
+import UIKit
+/// Standard color palettes are defined at
+/// https://www.figma.com/file/az2QtfMgOx1SK2q78WVu71/Design-System---Foundations?node-id=311%3A1224
+///
+@objc public class ColorPalettes: NSObject {
+    @objc public let tint50: UIColor
+    @objc public let tint100: UIColor
+    @objc public let tint200: UIColor
+    @objc public let tint300: UIColor
+    @objc public let tint400: UIColor
+    @objc public let tint500: UIColor
+    @objc public let tint600: UIColor
+    @objc public let tint700: UIColor
+    @objc public let tint800: UIColor
+    @objc public let tint900: UIColor
+    @objc public let tint950: UIColor?
+
+    private init(tint50: UIColor,
+                 tint100: UIColor,
+                 tint200: UIColor,
+                 tint300: UIColor,
+                 tint400: UIColor,
+                 tint500: UIColor,
+                 tint600: UIColor,
+                 tint700: UIColor,
+                 tint800: UIColor,
+                 tint900: UIColor,
+                 tint950: UIColor? = nil) {
+        self.tint50 = tint50
+        self.tint100 = tint100
+        self.tint200 = tint200
+        self.tint300 = tint300
+        self.tint400 = tint400
+        self.tint500 = tint500
+        self.tint600 = tint600
+        self.tint700 = tint700
+        self.tint800 = tint800
+        self.tint900 = tint900
+        self.tint950 = tint950
+
+        super.init()
+    }
+
+    @objc public static let Black = UIColor(hex: "000000")!
+
+    @objc public static let White = UIColor(hex: "FFFFFF")!
+
+    @objc public static let Gray = ColorPalettes(tint50: UIColor(hex: "FAFAFA")!,
+                                                 tint100: UIColor(hex: "F2F2F2")!,
+                                                 tint200: UIColor(hex: "E3E3E3")!,
+                                                 tint300: UIColor(hex: "BDBDBD")!,
+                                                 tint400: UIColor(hex: "9B9B9B")!,
+                                                 tint500: UIColor(hex: "656565")!,
+                                                 tint600: UIColor(hex: "444444")!,
+                                                 tint700: UIColor(hex: "282828")!,
+                                                 tint800: UIColor(hex: "242424")!,
+                                                 tint900: UIColor(hex: "121212")!)
+
+    @objc public static let App = ColorPalettes(tint50: UIColor(hex: "FFEFEF")!,
+                                                tint100: UIColor(hex: "FFCECE")!,
+                                                tint200: UIColor(hex: "FF9C9C")!,
+                                                tint300: UIColor(hex: "FF7B7B")!,
+                                                tint400: UIColor(hex: "FF5A5A")!,
+                                                tint500: UIColor(hex: "D34343")!,
+                                                tint600: UIColor(hex: "A93636")!,
+                                                tint700: UIColor(hex: "7F2828")!,
+                                                tint800: UIColor(hex: "541B1B")!,
+                                                tint900: UIColor(hex: "2A0D0D")!)
+
+    @objc public static let Blue = ColorPalettes(tint50: UIColor(hex: "E6F2FE")!,
+                                                 tint100: UIColor(hex: "99CBFD")!,
+                                                 tint200: UIColor(hex: "67B2FB")!,
+                                                 tint300: UIColor(hex: "3498FA")!,
+                                                 tint400: UIColor(hex: "158BFF")!,
+                                                 tint500: UIColor(hex: "017EF9")!,
+                                                 tint600: UIColor(hex: "0165C7")!,
+                                                 tint700: UIColor(hex: "014C95")!,
+                                                 tint800: UIColor(hex: "003264")!,
+                                                 tint900: UIColor(hex: "001932")!,
+                                                 tint950: UIColor(hex: "202F3E")!)
+
+
+    @objc public static let Green = ColorPalettes(tint50: UIColor(hex: "E6F5EF")!,
+                                                  tint100: UIColor(hex: "9DD8BF")!,
+                                                  tint200: UIColor(hex: "6BC49F")!,
+                                                  tint300: UIColor(hex: "3AB17F")!,
+                                                  tint400: UIColor(hex: "08A664")!,
+                                                  tint500: UIColor(hex: "099D5F")!,
+                                                  tint600: UIColor(hex: "077E4C")!,
+                                                  tint700: UIColor(hex: "055E39")!,
+                                                  tint800: UIColor(hex: "043F26")!,
+                                                  tint900: UIColor(hex: "021F13")!)
+
+    @objc public static let Orange = ColorPalettes(tint50: UIColor(hex: "FEF0EA")!,
+                                                   tint100: UIColor(hex: "FBC3AB")!,
+                                                   tint200: UIColor(hex: "F9A682")!,
+                                                   tint300: UIColor(hex: "F78858")!,
+                                                   tint400: UIColor(hex: "FF6C2D")!,
+                                                   tint500: UIColor(hex: "F56A2E")!,
+                                                   tint600: UIColor(hex: "C45525")!,
+                                                   tint700: UIColor(hex: "99431D")!,
+                                                   tint800: UIColor(hex: "622A12")!,
+                                                   tint900: UIColor(hex: "311509")!)
+
+    @objc public static let Yellow = ColorPalettes(tint50: UIColor(hex: "FFF5E8")!,
+                                                   tint100: UIColor(hex: "FFD699")!,
+                                                   tint200: UIColor(hex: "FFC266")!,
+                                                   tint300: UIColor(hex: "FFAD33")!,
+                                                   tint400: UIColor(hex: "FF9D0A")!,
+                                                   tint500: UIColor(hex: "FF9900")!,
+                                                   tint600: UIColor(hex: "CC7A00")!,
+                                                   tint700: UIColor(hex: "995C00")!,
+                                                   tint800: UIColor(hex: "663D00")!,
+                                                   tint900: UIColor(hex: "331F00")!)
+
+    @objc public static let Magenta = ColorPalettes(tint50: UIColor(hex: "000000")!,
+                                                    tint100: UIColor(hex: "000000")!,
+                                                    tint200: UIColor(hex: "000000")!,
+                                                    tint300: UIColor(hex: "C75EB6")!,
+                                                    tint400: UIColor(hex: "B93AA4")!,
+                                                    tint500: UIColor(hex: "000000")!,
+                                                    tint600: UIColor(hex: "000000")!,
+                                                    tint700: UIColor(hex: "000000")!,
+                                                    tint800: UIColor(hex: "000000")!,
+                                                    tint900: UIColor(hex: "000000")!)
+
+    @objc public static let Purple = ColorPalettes(tint50: UIColor(hex: "000000")!,
+                                                   tint100: UIColor(hex: "000000")!,
+                                                   tint200: UIColor(hex: "000000")!,
+                                                   tint300: UIColor(hex: "8A70BB")!,
+                                                   tint400: UIColor(hex: "7251B1")!,
+                                                   tint500: UIColor(hex: "000000")!,
+                                                   tint600: UIColor(hex: "000000")!,
+                                                   tint700: UIColor(hex: "000000")!,
+                                                   tint800: UIColor(hex: "000000")!,
+                                                   tint900: UIColor(hex: "000000")!)
+
+    @objc public static let Skyblue = ColorPalettes(tint50: UIColor(hex: "000000")!,
+                                                    tint100: UIColor(hex: "000000")!,
+                                                    tint200: UIColor(hex: "000000")!,
+                                                    tint300: UIColor(hex: "57A5D2")!,
+                                                    tint400: UIColor(hex: "3291C8")!,
+                                                    tint500: UIColor(hex: "000000")!,
+                                                    tint600: UIColor(hex: "000000")!,
+                                                    tint700: UIColor(hex: "000000")!,
+                                                    tint800: UIColor(hex: "000000")!,
+                                                    tint900: UIColor(hex: "000000")!)
+
+    @objc public static let Sapphire = ColorPalettes(tint50: UIColor(hex: "000000")!,
+                                                     tint100: UIColor(hex: "000000")!,
+                                                     tint200: UIColor(hex: "000000")!,
+                                                     tint300: UIColor(hex: "4760BA")!,
+                                                     tint400: UIColor(hex: "1E3DAB")!,
+                                                     tint500: UIColor(hex: "000000")!,
+                                                     tint600: UIColor(hex: "000000")!,
+                                                     tint700: UIColor(hex: "000000")!,
+                                                     tint800: UIColor(hex: "000000")!,
+                                                     tint900: UIColor(hex: "000000")!)
+}
+
+
+class Palettes: NSObject {
+    let tint50: UIColor
+    let tint100: UIColor
+    let tint200: UIColor
+    let tint300: UIColor
+    let tint400: UIColor
+    let tint500: UIColor
+    let tint600: UIColor
+    let tint700: UIColor
+    let tint800: UIColor
+    let tint900: UIColor
+    let tint950: UIColor?
+
+    private init(tint50: UIColor,
+                 tint100: UIColor,
+                 tint200: UIColor,
+                 tint300: UIColor,
+                 tint400: UIColor,
+                 tint500: UIColor,
+                 tint600: UIColor,
+                 tint700: UIColor,
+                 tint800: UIColor,
+                 tint900: UIColor,
+                 tint950: UIColor? = nil) {
+        self.tint50 = tint50
+        self.tint100 = tint100
+        self.tint200 = tint200
+        self.tint300 = tint300
+        self.tint400 = tint400
+        self.tint500 = tint500
+        self.tint600 = tint600
+        self.tint700 = tint700
+        self.tint800 = tint800
+        self.tint900 = tint900
+        self.tint950 = tint950
+
+        super.init()
+    }
+
+    static let Black = UIColor(hex: "000000")!
+    
+    static let White = UIColor(hex: "FFFFFF")!
+    
+    static let LocalGPT = UIColor(hex: "CCFD7C")!.withAlphaComponent(0.75)
+    static let LocalGPTDark = UIColor(hex: "072121")!
+    static let localGPTBackground = UIColor(hex: "CCFD7C")!.withAlphaComponent(0.1)
+    static let localGPTDarkBackground = UIColor(hex: "161B1F")!
+    
+    static let Gray = Palettes(tint50: UIColor(hex: "FAFAFA")!,
+                               tint100: UIColor(hex: "F2F2F2")!,
+                               tint200: UIColor(hex: "E3E3E3")!,
+                               tint300: UIColor(hex: "BDBDBD")!,
+                               tint400: UIColor(hex: "9B9B9B")!,
+                               tint500: UIColor(hex: "656565")!,
+                               tint600: UIColor(hex: "444444")!,
+                               tint700: UIColor(hex: "282828")!,
+                               tint800: UIColor(hex: "242424")!,
+                               tint900: UIColor(hex: "121212")!)
+    
+    static let App = Palettes(tint50: UIColor(hex: "FFEFEF")!,
+                              tint100: UIColor(hex: "FFCECE")!,
+                              tint200: UIColor(hex: "FF9C9C")!,
+                              tint300: UIColor(hex: "FF7B7B")!,
+                              tint400: UIColor(hex: "FF5A5A")!,
+                              tint500: UIColor(hex: "D34343")!,
+                              tint600: UIColor(hex: "A93636")!,
+                              tint700: UIColor(hex: "7F2828")!,
+                              tint800: UIColor(hex: "541B1B")!,
+                              tint900: UIColor(hex: "2A0D0D")!)
+    
+    static let Blue = Palettes(tint50: UIColor(hex: "E6F2FE")!,
+                               tint100: UIColor(hex: "99CBFD")!,
+                               tint200: UIColor(hex: "67B2FB")!,
+                               tint300: UIColor(hex: "3498FA")!,
+                               tint400: UIColor(hex: "158BFF")!,
+                               tint500: UIColor(hex: "017EF9")!,
+                               tint600: UIColor(hex: "0165C7")!,
+                               tint700: UIColor(hex: "014C95")!,
+                               tint800: UIColor(hex: "003264")!,
+                               tint900: UIColor(hex: "001932")!,
+                               tint950: UIColor(hex: "202F3E")!)
+    
+    
+    static let Green = Palettes(tint50: UIColor(hex: "E6F5EF")!,
+                                tint100: UIColor(hex: "9DD8BF")!,
+                                tint200: UIColor(hex: "6BC49F")!,
+                                tint300: UIColor(hex: "3AB17F")!,
+                                tint400: UIColor(hex: "08A664")!,
+                                tint500: UIColor(hex: "099D5F")!,
+                                tint600: UIColor(hex: "077E4C")!,
+                                tint700: UIColor(hex: "055E39")!,
+                                tint800: UIColor(hex: "043F26")!,
+                                tint900: UIColor(hex: "021F13")!)
+    
+    static let Orange = Palettes(tint50: UIColor(hex: "FEF0EA")!,
+                                 tint100: UIColor(hex: "FBC3AB")!,
+                                 tint200: UIColor(hex: "F9A682")!,
+                                 tint300: UIColor(hex: "F78858")!,
+                                 tint400: UIColor(hex: "FF6C2D")!,
+                                 tint500: UIColor(hex: "F56A2E")!,
+                                 tint600: UIColor(hex: "C45525")!,
+                                 tint700: UIColor(hex: "99431D")!,
+                                 tint800: UIColor(hex: "622A12")!,
+                                 tint900: UIColor(hex: "311509")!)
+    
+    static let Yellow = Palettes(tint50: UIColor(hex: "FFF5E8")!,
+                                 tint100: UIColor(hex: "FFD699")!,
+                                 tint200: UIColor(hex: "FFC266")!,
+                                 tint300: UIColor(hex: "FFAD33")!,
+                                 tint400: UIColor(hex: "FF9D0A")!,
+                                 tint500: UIColor(hex: "FF9900")!,
+                                 tint600: UIColor(hex: "CC7A00")!,
+                                 tint700: UIColor(hex: "995C00")!,
+                                 tint800: UIColor(hex: "663D00")!,
+                                 tint900: UIColor(hex: "331F00")!)
+    
+    static let Magenta = Palettes(tint50: UIColor(hex: "000000")!,
+                                  tint100: UIColor(hex: "000000")!,
+                                  tint200: UIColor(hex: "000000")!,
+                                  tint300: UIColor(hex: "C75EB6")!,
+                                  tint400: UIColor(hex: "B93AA4")!,
+                                  tint500: UIColor(hex: "000000")!,
+                                  tint600: UIColor(hex: "000000")!,
+                                  tint700: UIColor(hex: "000000")!,
+                                  tint800: UIColor(hex: "000000")!,
+                                  tint900: UIColor(hex: "000000")!)
+    
+    static let Purple = Palettes(tint50: UIColor(hex: "000000")!,
+                                 tint100: UIColor(hex: "000000")!,
+                                 tint200: UIColor(hex: "000000")!,
+                                 tint300: UIColor(hex: "8A70BB")!,
+                                 tint400: UIColor(hex: "7251B1")!,
+                                 tint500: UIColor(hex: "000000")!,
+                                 tint600: UIColor(hex: "000000")!,
+                                 tint700: UIColor(hex: "000000")!,
+                                 tint800: UIColor(hex: "000000")!,
+                                 tint900: UIColor(hex: "000000")!)
+    
+    static let Skyblue = Palettes(tint50: UIColor(hex: "000000")!,
+                                  tint100: UIColor(hex: "000000")!,
+                                  tint200: UIColor(hex: "000000")!,
+                                  tint300: UIColor(hex: "57A5D2")!,
+                                  tint400: UIColor(hex: "3291C8")!,
+                                  tint500: UIColor(hex: "000000")!,
+                                  tint600: UIColor(hex: "000000")!,
+                                  tint700: UIColor(hex: "000000")!,
+                                  tint800: UIColor(hex: "000000")!,
+                                  tint900: UIColor(hex: "000000")!)
+    
+    static let Sapphire = Palettes(tint50: UIColor(hex: "000000")!,
+                                   tint100: UIColor(hex: "000000")!,
+                                   tint200: UIColor(hex: "000000")!,
+                                   tint300: UIColor(hex: "4760BA")!,
+                                   tint400: UIColor(hex: "1E3DAB")!,
+                                   tint500: UIColor(hex: "000000")!,
+                                   tint600: UIColor(hex: "000000")!,
+                                   tint700: UIColor(hex: "000000")!,
+                                   tint800: UIColor(hex: "000000")!,
+                                   tint900: UIColor(hex: "000000")!)
+}
+
+
+
+public extension UIColor {
+
+    @objc convenience init(light: UIColor, dark: UIColor) {
+        self.init(dynamicProvider: { $0.userInterfaceStyle == .dark ? dark : light })
+    }
+
+    convenience init?(light: String, dark: String) {
+        guard let lightColor = UIColor(hex: light), let darkColor = UIColor(hex: dark) else {
+            return nil
+        }
+
+        self.init(light: lightColor, dark: darkColor)
+    }
+
+    convenience init?(red: Int, green: Int, blue: Int, alpha: CGFloat = 1) {
+        guard red >= 0, red <= 255 else {
+            return nil
+        }
+
+        guard green >= 0, green <= 255 else {
+            return nil
+        }
+
+        guard blue >= 0, blue <= 255 else {
+            return nil
+        }
+
+        self.init(red: CGFloat(red) / 255.0, green: CGFloat(green) / 255.0, blue: CGFloat(blue) / 255.0, alpha: alpha)
+    }
+
+    convenience init?(hex: String, alpha: CGFloat = 1) {
+        var string = hex
+        if string.hasPrefix("0x") {
+            string.removeFirst(2)
+        } else if string.hasPrefix("0X") {
+            string.removeFirst(2)
+        } else if string.hasPrefix("#") {
+            string.removeFirst(1)
+        }
+
+        guard let hexValue = Int(string, radix: 16) else {
+            assertionFailure("invalid color format for [\(hex)]")
+            return nil
+        }
+
+        if string.count == 8 {
+            let red = (hexValue >> 24) & 0xFF
+            let green = (hexValue >> 16) & 0xFF
+            let blue = (hexValue >> 8) & 0xFF
+            let alphaValue = CGFloat(hexValue & 0xFF) / 255.0
+            self.init(red: red, green: green, blue: blue, alpha: alphaValue)
+        } else {
+            let red = (hexValue >> 16) & 0xFF
+            let green = (hexValue >> 8) & 0xFF
+            let blue = hexValue & 0xFF
+            self.init(red: red, green: green, blue: blue, alpha: alpha)
+        }
+    }
+
+    convenience init?(ARGB: String) {
+        var string = ARGB
+        if string.hasPrefix("0x") {
+            string.removeFirst(2)
+        } else if string.hasPrefix("0X") {
+            string.removeFirst(2)
+        } else if string.hasPrefix("#") {
+            string.removeFirst(1)
+        }
+
+        guard let hexValue = Int(string, radix: 16) else {
+            assertionFailure("invalid color format for [\(ARGB)]")
+            return nil
+        }
+        let alphaValue = CGFloat((hexValue >> 24) & 0xFF) / 255.0
+        let red = (hexValue >> 16) & 0xFF
+        let green = (hexValue >> 8) & 0xFF
+        let blue = hexValue & 0xFF
+        self.init(red: red, green: green, blue: blue, alpha: alphaValue)
+    }
+    
+    var rgba: (red: CGFloat, green: CGFloat, blue: CGFloat, alpha: CGFloat) {
+        var r: CGFloat = 0, g: CGFloat = 0, b: CGFloat = 0, a: CGFloat = 0
+        if getRed(&r, green: &g, blue: &b, alpha: &a) {
+            return (r,g,b,a)
+        }
+        return (0, 0, 0, 0)
+    }
+
+    // hue, saturation, brightness and alpha components from UIColor**
+    var hsba: (hue: CGFloat, saturation: CGFloat, brightness: CGFloat, alpha: CGFloat) {
+        var hue: CGFloat = 0, saturation: CGFloat = 0, brightness: CGFloat = 0, alpha: CGFloat = 0
+        if getHue(&hue, saturation: &saturation, brightness: &brightness, alpha: &alpha) {
+            return (hue, saturation, brightness, alpha)
+        }
+        return (0,0,0,0)
+    }
+
+    var htmlRGB: String {
+        let rgbaCache = rgba
+        return String(format: "#%02x%02x%02x", Int(round(rgbaCache.red * 255)), Int(round(rgbaCache.green * 255)), Int(round(rgbaCache.blue * 255)))
+    }
+
+    var htmlRGBA: String {
+        let rgbaCache = rgba
+        return String(format: "#%02x%02x%02x%02x", Int(round(rgbaCache.red * 255)), Int(round(rgbaCache.green * 255)), Int(round(rgbaCache.blue * 255)), Int(round(rgbaCache.alpha * 255)) )
+    }
+    
+//    class var PrimaryText: UIColor {
+//        return UIColor(light: Palettes.Gray.tint800, dark: Palettes.Gray.tint200)
+//    }
+//
+//    class var SecondaryText: UIColor {
+//        return UIColor(light: Palettes.Gray.tint500, dark: Palettes.Gray.tint400)
+//    }
+    
+//    class var NBRed: UIColor {
+//        return Palettes.App.tint400
+//    }
+    
+    class var DefaultButton: UIColor {
+        return UIColor(light: Palettes.Blue.tint500, dark: Palettes.Blue.tint300)
+    }
+    
+    class var PressedButton: UIColor {
+        return UIColor(light: Palettes.Blue.tint500.withAlphaComponent(0.7), dark: Palettes.Blue.tint300.withAlphaComponent(0.7))
+    }
+    
+    class var DefaultButtonIcon: UIColor {
+        return UIColor(light: Palettes.Gray.tint300, dark: Palettes.Gray.tint500)
+    }
+//
+    class var PrimaryButtonBackground: UIColor {
+        return UIColor(light: .black, dark: .white)
+    }
+    
+    class var PrimaryButtonText: UIColor {
+        return UIColor(light: .white, dark: .black)
+    }
+    
+    class var AIPrimaryText: UIColor {
+        return UIColor(light: Palettes.Green.tint600, dark: Palettes.Green.tint100)
+    }
+    
+    class var AISecondaryText: UIColor {
+        return UIColor(light: Palettes.Green.tint700, dark: Palettes.Green.tint50)
+    }
+    
+    class var AITertiaryText: UIColor {
+        return UIColor(light: Palettes.Green.tint900, dark: Palettes.White)
+    }
+    
+    class var AIPrimarySurface: UIColor {
+        return UIColor(light: Palettes.Green.tint50, dark: Palettes.Green.tint600)
+    }
+    
+    class var AILocalGPT: UIColor {
+        return UIColor(light:Palettes.LocalGPT, dark: Palettes.LocalGPTDark)
+    }
+    
+    class var AILocalGPTBackground: UIColor {
+        return UIColor(light:Palettes.localGPTBackground, dark: Palettes.localGPTDarkBackground)
+    }
+}
+
+@objc public extension UIColor {
+    func nb_opacity1() -> UIColor {
+        return self.withAlphaComponent(0.05)
+    }
+
+    func nb_opacity2() -> UIColor {
+        return self.withAlphaComponent(0.1)
+    }
+
+    func nb_opacity3() -> UIColor {
+        return self.withAlphaComponent(0.15)
+    }
+
+    func nb_opacity4() -> UIColor {
+        return self.withAlphaComponent(0.2)
+    }
+
+    func nb_opacity5() -> UIColor {
+        return self.withAlphaComponent(0.3)
+    }
+
+    func nb_opacity6() -> UIColor {
+        return self.withAlphaComponent(0.6)
+    }
+
+    func nb_opacity7() -> UIColor {
+        return self.withAlphaComponent(0.7)
+    }
+
+    func nb_opacity8() -> UIColor {
+        return self.withAlphaComponent(0.85)
+    }
+
+    func nb_opacity9() -> UIColor {
+        return self.withAlphaComponent(0.9)
+    }
+}
+
+

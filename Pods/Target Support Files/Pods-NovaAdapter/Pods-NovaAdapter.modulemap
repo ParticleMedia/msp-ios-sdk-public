@@ -1,0 +1,6 @@
+module Pods_NovaAdapter {
+  umbrella header "Pods-NovaAdapter-umbrella.h"
+
+  export *
+  module * { export * }
+}
