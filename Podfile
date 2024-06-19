@@ -57,12 +57,14 @@ end
 target 'NovaAdapter' do
   project 'NovaAdapter/NovaAdapter'
   # Comment the next line if you don't want to use dynamic frameworks
-  # use_frameworks!
+  use_frameworks!
 
   # Pods for NovaAdapter
   pod 'SDWebImage', '5.18.8', :modular_headers => true
   pod 'SDWebImageWebPCoder', '0.14.2', :modular_headers => true
   pod 'SnapKit', '~> 5.6.0', :modular_headers => true
+  pod 'Shimmer', :modular_headers => true
+  pod 'DeviceKit', :modular_headers => true
   pod 'NBDesignSystem', :git => 'https://github.com/ParticleMedia/LAFoundation', :branch => 'main', :commit => $local_ai_version, :modular_headers => true
 end
 

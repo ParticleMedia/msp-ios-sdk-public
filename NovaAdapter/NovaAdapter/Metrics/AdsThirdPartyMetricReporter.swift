@@ -1,3 +1,5 @@
+import Foundation
+
 public enum AdsThirdPartyMetricReporter {
     public static func logImpression(thirdPartyImpressionTrackingUrls: [String]) {
         for thirdPartyImpressionTrackingUrl in thirdPartyImpressionTrackingUrls {

@@ -1,3 +1,5 @@
+import Foundation
+
 public final class NovaDedupeManager {
     public static let shared = NovaDedupeManager()
 

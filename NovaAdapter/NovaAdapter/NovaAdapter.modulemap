@@ -1,0 +1,5 @@
+framework module NovaAdapter {
+    
+    // Versions
+    header "NovaAdapter.h"
+}

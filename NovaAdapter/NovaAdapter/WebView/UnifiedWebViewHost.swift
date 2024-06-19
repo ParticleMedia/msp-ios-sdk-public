@@ -1,0 +1,304 @@
+//
+//  UnifiedWebViewHost.swift
+//  NovaAdapter
+//
+//  Created by Huanzhi Zhang on 6/19/24.
+//
+
+import Foundation
+import WebKit
+
+public class UnifiedWebViewHost: NSObject {
+    private let config: UnifiedWebViewConfig
+    private let jsBridgeHandlerMaster: JSBridgeHandlerMaster?
+    private var isGoingBackForward = false
+
+    private var wkWebView: WKWebView?
+    private weak var navigationDelegate: UnifiedWebViewNavigationDelegate?
+
+    private struct Constants {
+        static let jsMessageName = "callNative"
+        static let jsBridgeAction = "action"
+        static let jsBridgeCallback = "callback"
+    }
+
+    private let nativeSchemes: Set<String> = [
+        "tel",
+        "mailto",
+        "sms",
+        "newsbreak",
+        "com.amazon.mobile.shopping.web",
+        "itms-appss",
+    ]
+
+    public init(config: UnifiedWebViewConfig,
+                jsBridgeHandlerMaster: JSBridgeHandlerMaster?,
+                navigationDelegate: UnifiedWebViewNavigationDelegate?) {
+        self.config = config
+        self.jsBridgeHandlerMaster = jsBridgeHandlerMaster
+        self.navigationDelegate = navigationDelegate
+
+        super.init()
+
+        let userContentController = WKUserContentController()
+        userContentController.add(ScriptMessageHandlerProxy(handler: self), name: Constants.jsMessageName)
+        if let ruleList = ContentBlockHelper.contentBlockRuleList(for: config.blockedURLPrefixes) {
+            userContentController.add(ruleList)
+            //DebugLogging.info(.jsBridge, "webview apply content block rules for url prefixes:\(config.blockedURLPrefixes)")
+        }
+
+        let wkWebViewConfiguration = WKWebViewConfiguration()
+        wkWebViewConfiguration.userContentController = userContentController
+        wkWebViewConfiguration.allowsInlineMediaPlayback = true
+        if config.enableNBUserAgent {
+            //wkWebViewConfiguration.applicationNameForUserAgent = WKWebView.nb_userAgent
+        }
+
+        if config.enableJSBridge {
+            let injectedJS = """
+                    if (typeof NBJS == "undefined") {
+                        var NBJS = {};
+                        var callNativeObj = window.webkit.messageHandlers.callNative;
+                        NBJS.callNative = callNativeObj.postMessage.bind(callNativeObj);
+                    }
+                """
+            let wkUserScript = WKUserScript(source: injectedJS, injectionTime: .atDocumentStart, forMainFrameOnly: false)
+            userContentController.addUserScript(wkUserScript)
+        }
+
+        self.wkWebView = WKWebView(frame: .zero, configuration: wkWebViewConfiguration)
+        if #available(iOS 16.4, *) {
+            self.wkWebView?.isInspectable = true
+        }
+        self.wkWebView?.navigationDelegate = self
+        wkWebView?.uiDelegate = self
+    }
+
+    //public func addJSBridgeHandler(jsBridgeHandlers: [JSBridgeHandling]) {
+    //    self.jsBridgeHandlerMaster?.addActionHandlers(jsBridgeHandlers: jsBridgeHandlers)
+    //}
+
+    public func injectJavaScript(_ js: String, injectionTime: WKUserScriptInjectionTime) {
+        let wkUserScript = WKUserScript(source: js, injectionTime: injectionTime, forMainFrameOnly: true)
+        self.wkWebView?.configuration.userContentController.addUserScript(wkUserScript)
+    }
+
+    public func webView() -> WKWebView {
+        return wkWebView!
+    }
+
+    public func load(_ url: URL, referer: String? = nil) {
+        var request = URLRequest(url: url)
+        if let referer = referer {
+            request.setValue(referer, forHTTPHeaderField: "Referer")
+        }
+        for (field, value) in config.headers {
+            request.setValue(value, forHTTPHeaderField: field)
+        }
+
+        self.wkWebView?.load(request)
+    }
+    
+    public var scrollDepth: Double? {
+        guard let scrollView = wkWebView?.scrollView else {
+            return nil
+        }
+        
+        return Double(scrollView.contentOffset.y) / Double(scrollView.contentSize.height)
+    }
+    
+    public var pageIndex: Int? {
+        wkWebView?.backForwardList.backList.count
+    }
+
+    // MARK: - Private
+
+    private func webView(_ webView: WKWebView, policyFor navigationAction: WKNavigationAction) -> WKNavigationActionPolicy {
+        let sourceFrame: WKFrameInfo? = navigationAction.sourceFrame
+        let targetFrame: WKFrameInfo? = navigationAction.targetFrame
+
+        guard let url = navigationAction.request.url else {
+            return .allow
+        }
+        
+        if !webView.canGoBack && navigationAction.navigationType == .linkActivated {
+            navigationDelegate?.webViewInitialLoadDidRedirect(webView)
+        }
+        isGoingBackForward = navigationAction.navigationType == .backForward
+        
+        if navigationAction.navigationType == .linkActivated {
+            let domain: String
+            if #available(iOS 16.0, *) {
+                domain = url.host()?.lowercased() ?? "nil"
+            } else {
+                domain = url.host?.lowercased() ?? "nil"
+            }
+            let isVideoSite = domain.contains("tiktok") || domain.contains("youtube")
+            //MetricService.shared.logAmpliEvent(ExternalLinkClick.build(isVideoSite: isVideoSite, linkUrl: domain))
+        }
+
+        if let scheme = url.scheme,
+           nativeSchemes.contains(scheme),
+           UIApplication.shared.canOpenURL(url) {
+            UIApplication.shared.open(url)
+            return .cancel
+        }
+
+        if !["http", "https"].contains(url.scheme) {
+            return .allow
+        }
+
+        if config.goBackByUrlAllowed && url.absoluteString.contains("__go_back__") {
+            //NBUtil.topViewController()?.navigationController?.popViewController(animated: true)
+            return .cancel
+        }
+
+        // for google ad in iframe. we should avoid redirect in main frame when click.
+        if let source = sourceFrame, !source.isMainFrame, let target = targetFrame, target.isMainFrame {
+            if let navigationDelegate = self.navigationDelegate, navigationDelegate.webView(self.webView(), canRedirectTo: url) {
+                navigationDelegate.openWebPage(url)
+            }
+            return .cancel
+        }
+
+        // link open new page
+        if navigationAction.navigationType == .linkActivated && targetFrame == nil {
+            if let navigationDelegate = self.navigationDelegate, navigationDelegate.webView(self.webView(), canRedirectTo: url) {
+                navigationDelegate.openWebPage(url)
+            }
+            return .cancel
+        }
+
+        // link page in place
+        if navigationAction.navigationType == .linkActivated, let target = targetFrame, target.isMainFrame {
+            if let navigationDelegate = self.navigationDelegate, navigationDelegate.webView(self.webView(), canRedirectTo: url) {
+                navigationDelegate.openWebPage(url)
+            }
+            return .cancel
+        }
+
+        return .allow
+    }
+    
+    public func SafeAs<T, U>(_ object: T?, _ objectType: U.Type) -> U? {
+        if let object = object {
+            if let temp = object as? U {
+                return temp
+            } else {
+    //            assertionFailure("cannot cast \(object) to \(objectType)")
+                return nil
+            }
+        } else {
+            // It's always OK to cast nil to nil
+            return nil
+        }
+    }
+}
+
+extension UnifiedWebViewHost: WKScriptMessageHandler {
+
+    public func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
+        assert(message.name == Constants.jsMessageName, "unexpected message.name=\(message.name)")
+
+        guard config.enableJSBridge else { return }
+        guard let jsonStr = SafeAs(message.body, String.self) else { return }
+
+        //DebugLogging.info(.jsBridge, "jsBridge call with jsonStr=\(jsonStr), URL=\(message.frameInfo.request)")
+
+        guard let data = jsonStr.data(using: .utf8) else { return }
+        guard let dict = try? JSONSerialization.jsonObject(with: data, options: []) as? [String: Any] else { return }
+        guard let jsActionKey = SafeAs(dict[Constants.jsBridgeAction], String.self) else { return }
+        let callbackName = SafeAs(dict[Constants.jsBridgeCallback], String.self)
+
+        /*
+        guard let jsActionModel = self.jsBridgeHandlerMaster?.buildActionModel(jsActionKey: jsActionKey,
+                                                                               callbackName: callbackName,
+                                                                               dict: dict) else {
+            return
+        }
+
+        self.jsBridgeHandlerMaster?.performAction(actionModel: jsActionModel, callbackDelegate: self)
+         */
+    }
+
+}
+
+extension UnifiedWebViewHost: WKNavigationDelegate {
+
+    public func webView(_ webView: WKWebView, didCommit navigation: WKNavigation!) {
+        self.navigationDelegate?.webView(webView, didCommit: navigation)
+    }
+
+    public func webView(_ webView: WKWebView, didStartProvisionalNavigation navigation: WKNavigation!) {
+        self.navigationDelegate?.webView(webView, didStartProvisionalNavigation: navigation)
+    }
+
+    public func webView(_ webView: WKWebView,
+                        decidePolicyFor navigationAction: WKNavigationAction,
+                        preferences: WKWebpagePreferences,
+                        decisionHandler: @escaping (WKNavigationActionPolicy, WKWebpagePreferences) -> Void) {
+        if let policy = self.navigationDelegate?.webView(webView, policyFor: navigationAction) {
+            decisionHandler(policy, preferences)
+        } else {
+            let actionPolicy = self.webView(webView, policyFor: navigationAction)
+            decisionHandler(actionPolicy, preferences)
+        }
+    }
+
+    public func webView(_ webView: WKWebView,
+                        decidePolicyFor navigationAction: WKNavigationAction,
+                        decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
+        let actionPolicy = self.webView(webView, policyFor: navigationAction)
+        decisionHandler(actionPolicy)
+    }
+
+    public func webView(_ webView: WKWebView, decidePolicyFor navigationResponse: WKNavigationResponse, decisionHandler: @escaping (WKNavigationResponsePolicy) -> Void) {
+        self.navigationDelegate?.webView(webView, decidePolicyFor: navigationResponse, decisionHandler: decisionHandler)
+    }
+
+    public func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
+        self.navigationDelegate?.webView(webView, didFinish: navigation)
+        let currentIsInitialLoad = webView.canGoForward && !webView.canGoBack
+        if isGoingBackForward && currentIsInitialLoad {
+            navigationDelegate?.webViewDidGoBackToInitialLoad(webView)
+            isGoingBackForward = false
+        }
+    }
+
+    public func webView(_ webView: WKWebView, didFailProvisionalNavigation navigation: WKNavigation!, withError error: Error) {
+        self.navigationDelegate?.webView(webView, didFailProvisionalNavigation: navigation, withError: error)
+    }
+
+    public func webViewWebContentProcessDidTerminate(_ webView: WKWebView) {
+        self.navigationDelegate?.webViewWebContentProcessDidTerminate(webView)
+    }
+
+}
+
+extension UnifiedWebViewHost: WKUIDelegate {
+    public func webView(_ webView: WKWebView, createWebViewWith configuration: WKWebViewConfiguration, for navigationAction: WKNavigationAction, windowFeatures: WKWindowFeatures) -> WKWebView? {
+        guard let url = navigationAction.request.url else {
+            return nil
+        }
+
+        if ["http", "https"].contains(url.scheme?.lowercased() ?? "") {
+            if let navigationDelegate = self.navigationDelegate, navigationDelegate.webView(self.webView(), canRedirectTo: url) {
+                navigationDelegate.openWebPage(url)
+            }
+        }
+
+        return nil
+    }
+}
+
+/*
+ extension UnifiedWebViewHost: JSBridgeCallbackDelegate {
+ public func jsCallback(callbackName: String, parameters: [String: Any]) {
+ var parameterStr: String = ""
+ if let data = try? JSONSerialization.data(withJSONObject: parameters, options: []) {
+ parameterStr = String(data: data, encoding: .utf8) ?? ""
+ }
+ wkWebView?.evaluateJavaScript("\(callbackName)(\(parameterStr));", completionHandler: nil)
+ }
+ }
+ */

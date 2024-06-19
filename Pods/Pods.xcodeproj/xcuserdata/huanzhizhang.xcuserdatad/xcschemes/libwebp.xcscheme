@@ -15,7 +15,7 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "47D2E85A78C25869BB13521D8561A638"
-               BuildableName = "liblibwebp.a"
+               BuildableName = "libwebp.framework"
                BlueprintName = "libwebp"
                ReferencedContainer = "container:Pods.xcodeproj">
             </BuildableReference>

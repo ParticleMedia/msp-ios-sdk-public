@@ -1,3 +1,5 @@
+import Foundation
+
 public enum VideoLogActionKey: String {
     case videoPlay      = "log_videoPlay"
     case videoPlaying   = "log_videoPlaying"

@@ -1,4 +1,4 @@
-module NBDesignSystem {
+framework module NBDesignSystem {
   umbrella header "NBDesignSystem-umbrella.h"
 
   export *
