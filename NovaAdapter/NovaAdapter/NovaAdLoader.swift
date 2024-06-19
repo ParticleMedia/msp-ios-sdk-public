@@ -13,6 +13,7 @@ public class NovaAdLoader: AdNetworkAdapter {
     
     public var adListener: AdListener?
     public var priceInDollar: Double?
+    public var adUnitId: String?
     
     public func destroyAd() {
         
@@ -45,15 +46,16 @@ public class NovaAdLoader: AdNetworkAdapter {
             return
         }
         self.priceInDollar = Double(mBidResponse.winningBid?.price ?? 0)
-        
-        
+        self.adUnitId = adUnitId
+        let eCPMInDollar = Decimal(priceInDollar ?? 0.0)
+        parseNovaAdString(adString: adString, adType: "native", adUnitId: adUnitId, eCPMInDollar: eCPMInDollar)
     }
     
     public func prepareViewForInteraction(nativeAd: shared.NativeAd, nativeAdView: Any) {
         
     }
     
-    func parseNovaAdString(adString: String, adType: String) {
+    func parseNovaAdString(adString: String, adType: String, adUnitId: String, eCPMInDollar: Decimal) {
         let data = adString.data(using: .utf8)
         guard let data = data else { return }
 
@@ -80,7 +82,9 @@ public class NovaAdLoader: AdNetworkAdapter {
                                                         .body(body: adItem.creative.body ?? "")
                                                         .advertiser(advertiser: adItem.creative.advertiser ?? "")
                                                         .callToAction(callToAction: adItem.creative.callToAction ?? ""))
+                let nativeAdItem = NovaAdBuilder.buildNativeAd(adItem: adItem, adUnitId: adUnitId, eCPMInDollar: eCPMInDollar)
                 nativeAd.priceInDollar = self.priceInDollar
+                nativeAd.nativeAdItem = nativeAdItem
                 self.adListener?.onAdLoaded(ad: nativeAd)
             default:
                 self.adListener?.onError(msg: "unknown adType")
