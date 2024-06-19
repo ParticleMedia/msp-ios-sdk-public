@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>ArchiveVersion</key>
+	<integer>2</integer>
+	<key>CreationDate</key>
+	<date>2024-06-19T21:36:08Z</date>
+	<key>Name</key>
+	<string>NovaAdapter</string>
+	<key>SchemeName</key>
+	<string>NovaAdapter</string>
+</dict>
+</plist>

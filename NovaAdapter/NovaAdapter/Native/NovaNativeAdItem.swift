@@ -1,4 +1,5 @@
 //import NBVideoPlayer
+import Foundation
 
 @objc public final class NovaNativeAdItem: NovaBaseAd {
     // MARK: - Properties

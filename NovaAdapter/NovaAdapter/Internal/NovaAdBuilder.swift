@@ -1,3 +1,5 @@
+import Foundation
+
 enum NovaAdBuilder {
     static func buildNativeAd(
         adItem: AdItem,

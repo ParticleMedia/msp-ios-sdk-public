@@ -15,7 +15,7 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "AE13A34B12521714F8C1A3AE847B305D"
-               BuildableName = "libPods-NovaAdapter.a"
+               BuildableName = "Pods_NovaAdapter.framework"
                BlueprintName = "Pods-NovaAdapter"
                ReferencedContainer = "container:Pods.xcodeproj">
             </BuildableReference>
