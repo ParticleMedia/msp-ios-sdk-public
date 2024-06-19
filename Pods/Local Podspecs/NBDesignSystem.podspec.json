@@ -1,0 +1,26 @@
+{
+  "name": "NBDesignSystem",
+  "version": "0.1.1",
+  "summary": "summary",
+  "description": "description",
+  "homepage": "https://github.com/ParticleMedia/LAFoundation",
+  "license": "Copyright",
+  "authors": {
+    "Wei Wu": "wei.w@newsbreak.com"
+  },
+  "source": {
+    "git": "",
+    "tag": "0.1.1"
+  },
+  "platforms": {
+    "ios": "13.0"
+  },
+  "source_files": "NBDesignSystem/**/*.swift",
+  "ios": {
+    "resource_bundles": {
+      "NBResourceBundle": [
+        "NBAssets.xcassets"
+      ]
+    }
+  }
+}
