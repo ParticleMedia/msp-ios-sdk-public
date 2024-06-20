@@ -12677,6 +12677,56 @@
           },
           {
             "kind": "Var",
+            "name": "mediaView",
+            "printedName": "mediaView",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "NovaNativeAdMediaView",
+                "printedName": "NovaAdapter.NovaNativeAdMediaView",
+                "usr": "c:@M@NovaAdapter@objc(cs)NovaNativeAdMediaView"
+              }
+            ],
+            "declKind": "Var",
+            "usr": "s:11NovaAdapter0A12NativeAdViewC05mediaE0AA0acd5MediaE0Cvp",
+            "mangledName": "$s11NovaAdapter0A12NativeAdViewC05mediaE0AA0acd5MediaE0Cvp",
+            "moduleName": "NovaAdapter",
+            "declAttributes": [
+              "HasInitialValue",
+              "Final",
+              "HasStorage",
+              "Custom",
+              "AccessControl"
+            ],
+            "isLet": true,
+            "hasStorage": true,
+            "accessors": [
+              {
+                "kind": "Accessor",
+                "name": "Get",
+                "printedName": "Get()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "NovaNativeAdMediaView",
+                    "printedName": "NovaAdapter.NovaNativeAdMediaView",
+                    "usr": "c:@M@NovaAdapter@objc(cs)NovaNativeAdMediaView"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:11NovaAdapter0A12NativeAdViewC05mediaE0AA0acd5MediaE0Cvg",
+                "mangledName": "$s11NovaAdapter0A12NativeAdViewC05mediaE0AA0acd5MediaE0Cvg",
+                "moduleName": "NovaAdapter",
+                "implicit": true,
+                "declAttributes": [
+                  "Final"
+                ],
+                "accessorKind": "get"
+              }
+            ]
+          },
+          {
+            "kind": "Var",
             "name": "tappableViews",
             "printedName": "tappableViews",
             "children": [
@@ -12882,6 +12932,91 @@
           {
             "kind": "Constructor",
             "name": "init",
+            "printedName": "init(actionHandler:)",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "NovaNativeAdView",
+                "printedName": "NovaAdapter.NovaNativeAdView",
+                "usr": "c:@M@NovaAdapter@objc(cs)NovaNativeAdView"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "ActionHandling",
+                "printedName": "any NovaAdapter.ActionHandling",
+                "usr": "s:11NovaAdapter14ActionHandlingP"
+              }
+            ],
+            "declKind": "Constructor",
+            "usr": "s:11NovaAdapter0A12NativeAdViewC13actionHandlerAcA14ActionHandling_p_tcfc",
+            "mangledName": "$s11NovaAdapter0A12NativeAdViewC13actionHandlerAcA14ActionHandling_p_tcfc",
+            "moduleName": "NovaAdapter",
+            "declAttributes": [
+              "Custom",
+              "AccessControl",
+              "RawDocComment"
+            ],
+            "init_kind": "Designated"
+          },
+          {
+            "kind": "Function",
+            "name": "bindView",
+            "printedName": "bindView(nativeAd:)",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Void",
+                "printedName": "()"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "NovaNativeAdItem",
+                "printedName": "NovaAdapter.NovaNativeAdItem",
+                "usr": "c:@M@NovaAdapter@objc(cs)NovaNativeAdItem"
+              }
+            ],
+            "declKind": "Func",
+            "usr": "s:11NovaAdapter0A12NativeAdViewC04bindE006nativeD0yAA0acD4ItemC_tF",
+            "mangledName": "$s11NovaAdapter0A12NativeAdViewC04bindE006nativeD0yAA0acD4ItemC_tF",
+            "moduleName": "NovaAdapter",
+            "isOpen": true,
+            "declAttributes": [
+              "Custom",
+              "AccessControl"
+            ],
+            "funcSelfKind": "NonMutating"
+          },
+          {
+            "kind": "Function",
+            "name": "setUpView",
+            "printedName": "setUpView(nativeAd:)",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Void",
+                "printedName": "()"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "NovaNativeAdItem",
+                "printedName": "NovaAdapter.NovaNativeAdItem",
+                "usr": "c:@M@NovaAdapter@objc(cs)NovaNativeAdItem"
+              }
+            ],
+            "declKind": "Func",
+            "usr": "s:11NovaAdapter0A12NativeAdViewC05setUpE006nativeD0yAA0acD4ItemC_tF",
+            "mangledName": "$s11NovaAdapter0A12NativeAdViewC05setUpE006nativeD0yAA0acD4ItemC_tF",
+            "moduleName": "NovaAdapter",
+            "isOpen": true,
+            "declAttributes": [
+              "Custom",
+              "AccessControl"
+            ],
+            "funcSelfKind": "NonMutating"
+          },
+          {
+            "kind": "Constructor",
+            "name": "init",
             "printedName": "init(frame:)",
             "children": [
               {
@@ -12961,64 +13096,6 @@
             ],
             "isFromExtension": true,
             "funcSelfKind": "NonMutating"
-          },
-          {
-            "kind": "Function",
-            "name": "bindView",
-            "printedName": "bindView(nativeAd:)",
-            "children": [
-              {
-                "kind": "TypeNominal",
-                "name": "Void",
-                "printedName": "()"
-              },
-              {
-                "kind": "TypeNominal",
-                "name": "NovaNativeAdItem",
-                "printedName": "NovaAdapter.NovaNativeAdItem",
-                "usr": "c:@M@NovaAdapter@objc(cs)NovaNativeAdItem"
-              }
-            ],
-            "declKind": "Func",
-            "usr": "s:11NovaAdapter0A12NativeAdViewC04bindE006nativeD0yAA0acD4ItemC_tF",
-            "mangledName": "$s11NovaAdapter0A12NativeAdViewC04bindE006nativeD0yAA0acD4ItemC_tF",
-            "moduleName": "NovaAdapter",
-            "isOpen": true,
-            "declAttributes": [
-              "Custom",
-              "AccessControl"
-            ],
-            "isFromExtension": true,
-            "funcSelfKind": "NonMutating"
-          },
-          {
-            "kind": "Function",
-            "name": "setUpView",
-            "printedName": "setUpView(nativeAd:)",
-            "children": [
-              {
-                "kind": "TypeNominal",
-                "name": "Void",
-                "printedName": "()"
-              },
-              {
-                "kind": "TypeNominal",
-                "name": "NovaNativeAdItem",
-                "printedName": "NovaAdapter.NovaNativeAdItem",
-                "usr": "c:@M@NovaAdapter@objc(cs)NovaNativeAdItem"
-              }
-            ],
-            "declKind": "Func",
-            "usr": "s:11NovaAdapter0A12NativeAdViewC05setUpE006nativeD0yAA0acD4ItemC_tF",
-            "mangledName": "$s11NovaAdapter0A12NativeAdViewC05setUpE006nativeD0yAA0acD4ItemC_tF",
-            "moduleName": "NovaAdapter",
-            "isOpen": true,
-            "declAttributes": [
-              "Custom",
-              "AccessControl"
-            ],
-            "isFromExtension": true,
-            "funcSelfKind": "NonMutating"
           }
         ],
         "declKind": "Class",
@@ -13032,7 +13109,6 @@
           "ObjC"
         ],
         "superclassUsr": "c:objc(cs)UIView",
-        "hasMissingDesignatedInitializers": true,
         "superclassNames": [
           "UIKit.UIView",
           "UIKit.UIResponder",
@@ -32717,21 +32793,21 @@
     {
       "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-sdk\/NovaAdapter\/NovaAdapter\/Native\/NovaNativeAdView.swift",
       "kind": "StringLiteral",
-      "offset": 385,
+      "offset": 392,
       "length": 7,
       "value": "\"media\""
     },
     {
       "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-sdk\/NovaAdapter\/NovaAdapter\/Native\/NovaNativeAdView.swift",
       "kind": "BooleanLiteral",
-      "offset": 450,
+      "offset": 457,
       "length": 5,
       "value": "false"
     },
     {
       "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-sdk\/NovaAdapter\/NovaAdapter\/Native\/NovaNativeAdView.swift",
       "kind": "BooleanLiteral",
-      "offset": 642,
+      "offset": 649,
       "length": 4,
       "value": "true"
     },
