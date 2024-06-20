@@ -398,11 +398,12 @@ extension UIKit.UIImage {
   @objc convenience dynamic public init?(systemName: NovaAdapter.Icon.System)
   @objc convenience dynamic public init?(systemName: NovaAdapter.Icon.System, tintColor: UIKit.UIColor)
 }
-@objc @_hasMissingDesignatedInitializers @_Concurrency.MainActor(unsafe) open class NovaNativeAdView : UIKit.UIView {
+@objc @_Concurrency.MainActor(unsafe) open class NovaNativeAdView : UIKit.UIView {
   @_Concurrency.MainActor(unsafe) public var titleLabel: UIKit.UILabel?
   @_Concurrency.MainActor(unsafe) public var bodyLabel: UIKit.UILabel?
   @_Concurrency.MainActor(unsafe) public var advertiserLabel: UIKit.UILabel?
   @_Concurrency.MainActor(unsafe) public var callToActionButton: UIKit.UIButton?
+  @_Concurrency.MainActor(unsafe) final public let mediaView: NovaAdapter.NovaNativeAdMediaView
   @objc @_Concurrency.MainActor(unsafe) public var tappableViews: [UIKit.UIView]? {
     @objc get
     @objc set
@@ -410,15 +411,16 @@ extension UIKit.UIImage {
   @_Concurrency.MainActor(unsafe) public var iABMetricReporter: NovaAdapter.IABMetricReporter? {
     get
   }
+  @_Concurrency.MainActor(unsafe) public init(actionHandler: any NovaAdapter.ActionHandling)
   @available(*, unavailable)
   @_Concurrency.MainActor(unsafe) @objc required dynamic public init?(coder: Foundation.NSCoder)
   @objc deinit
+  @_Concurrency.MainActor(unsafe) open func bindView(nativeAd: NovaAdapter.NovaNativeAdItem)
+  @_Concurrency.MainActor(unsafe) open func setUpView(nativeAd: NovaAdapter.NovaNativeAdItem)
 }
 extension NovaAdapter.NovaNativeAdView {
   @objc @_Concurrency.MainActor(unsafe) dynamic public func register(_ nativeAd: NovaAdapter.NovaNativeAdItem)
   @_Concurrency.MainActor(unsafe) public func unregisterAd()
-  @_Concurrency.MainActor(unsafe) open func bindView(nativeAd: NovaAdapter.NovaNativeAdItem)
-  @_Concurrency.MainActor(unsafe) open func setUpView(nativeAd: NovaAdapter.NovaNativeAdItem)
 }
 @objc public class UnifiedWebViewHost : ObjectiveC.NSObject {
   public init(config: NovaAdapter.UnifiedWebViewConfig, jsBridgeHandlerMaster: NovaAdapter.JSBridgeHandlerMaster?, navigationDelegate: (any NovaAdapter.UnifiedWebViewNavigationDelegate)?)

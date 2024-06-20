@@ -28,10 +28,10 @@ class ViewController: UIViewController {
                                   context: nil,
                                   adaptiveBannerSize: AdSize(width: 320, height: 50, isInlineAdaptiveBanner: false, isAnchorAdaptiveBanner: false),
                                   adSize: AdSize(width: 320, height: 50, isInlineAdaptiveBanner: false, isAnchorAdaptiveBanner: false),
-                                  placementId: "msp-android-article-inside-native_gg",
+                                  placementId: "msp-android-foryou-large-native_nova",
                                   adFormat: "native",
                                   isCacheSupported: false)
-        adLoader.loadAd(placementId: "msp-android-article-inside-native_gg",
+        adLoader.loadAd(placementId: "msp-android-foryou-large-native_nova",
                         adListener: self,
                         context: self,
                         adRequest: adRequest,
@@ -105,7 +105,21 @@ extension ViewController: AdListener {
         } else if ad is NovaNativeAd {
             let novaNativeAd = ad as? NovaNativeAd
             if let nativeAdItem = novaNativeAd?.nativeAdItem {
+                let adOpenActionHandler = NovaAdOpenActionHandler()
+                let actionHandlerMaster = ActionHandlerMaster(actionHandlers: [adOpenActionHandler])
+                let demoNovaNativeAdView = DemoNovaNativeAdView(actionHandler: actionHandlerMaster)
                 
+                self.view.addSubview(demoNovaNativeAdView)
+                demoNovaNativeAdView.translatesAutoresizingMaskIntoConstraints = false
+                NSLayoutConstraint.activate([
+                    demoNovaNativeAdView.leadingAnchor.constraint(lessThanOrEqualTo: self.view.leadingAnchor, constant: 100),
+                    demoNovaNativeAdView.trailingAnchor.constraint(lessThanOrEqualTo: self.view.trailingAnchor),
+                    demoNovaNativeAdView.topAnchor.constraint(lessThanOrEqualTo: self.view.topAnchor, constant: 100),
+                    demoNovaNativeAdView.bottomAnchor.constraint(lessThanOrEqualTo: self.view.bottomAnchor),
+                ])
+                
+                demoNovaNativeAdView.bindView(nativeAd: nativeAdItem)
+                demoNovaNativeAdView.setUpView(nativeAd: nativeAdItem)
             }
         }
     }

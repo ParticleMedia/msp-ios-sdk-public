@@ -8,7 +8,7 @@ open class NovaNativeAdView: UIView {
     public var advertiserLabel: UILabel?
     public var callToActionButton: UIButton?
     
-    let mediaView: NovaNativeAdMediaView = {
+    public let mediaView: NovaNativeAdMediaView = {
         let view = NovaNativeAdMediaView()
         view.accessibilityIdentifier = "media"
         view.translatesAutoresizingMaskIntoConstraints = false
@@ -38,7 +38,7 @@ open class NovaNativeAdView: UIView {
 
     // MARK: -
 
-    init(actionHandler: ActionHandling) {
+    public init(actionHandler: ActionHandling) {
         self.actionHandler = actionHandler
 
         super.init(frame: .zero)
@@ -50,27 +50,6 @@ open class NovaNativeAdView: UIView {
     }
 
     deinit {
-        stopTimerIfNeeded()
-        //iABMetricReporter?.stopSession()
-    }
-}
-
-// MARK: - Public methods
-
-public extension NovaNativeAdView {
-    @objc func register(_ nativeAd: NovaNativeAdItem) {
-        self.nativeAd = nativeAd
-
-        // In case previous OMIDSDK's session is left started without a stop.
-        //iABMetricReporter?.stopSession()
-        //iABMetricReporter = Self.buildIABMetricReporterFor(nativeAd: nativeAd, adView: self)
-
-        startTimerIfNeeded()
-    }
-
-    func unregisterAd() {
-        nativeAd = nil
-
         stopTimerIfNeeded()
         //iABMetricReporter?.stopSession()
     }
@@ -101,6 +80,27 @@ public extension NovaNativeAdView {
             nativeAd.delegate?.nativeAdDidFinishRender(nativeAd)
         }
         register(nativeAd)
+    }
+}
+
+// MARK: - Public methods
+
+public extension NovaNativeAdView {
+    @objc func register(_ nativeAd: NovaNativeAdItem) {
+        self.nativeAd = nativeAd
+
+        // In case previous OMIDSDK's session is left started without a stop.
+        //iABMetricReporter?.stopSession()
+        //iABMetricReporter = Self.buildIABMetricReporterFor(nativeAd: nativeAd, adView: self)
+
+        startTimerIfNeeded()
+    }
+
+    func unregisterAd() {
+        nativeAd = nil
+
+        stopTimerIfNeeded()
+        //iABMetricReporter?.stopSession()
     }
 }
 
