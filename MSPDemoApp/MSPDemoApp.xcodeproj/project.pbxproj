@@ -17,6 +17,7 @@
 		668480862BE03D800025018B /* MSPDemoAppUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 668480852BE03D800025018B /* MSPDemoAppUITestsLaunchTests.swift */; };
 		66E5334C2C1BA8C700255D15 /* DemoGoogleNativeAdView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E5334B2C1BA8C700255D15 /* DemoGoogleNativeAdView.swift */; };
 		66E5334E2C1BC1E700255D15 /* Colors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E5334D2C1BC1E700255D15 /* Colors.swift */; };
+		66E534022C23B1AC00255D15 /* DemoNovaNativeAdView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E534012C23B1AC00255D15 /* DemoNovaNativeAdView.swift */; };
 		B943FF15F8426EF84393948B /* libPods-MSPDemoApp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 59F0CA5E99979A0306167AD2 /* libPods-MSPDemoApp.a */; };
 /* End PBXBuildFile section */
 
@@ -54,6 +55,7 @@
 		668480852BE03D800025018B /* MSPDemoAppUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MSPDemoAppUITestsLaunchTests.swift; sourceTree = "<group>"; };
 		66E5334B2C1BA8C700255D15 /* DemoGoogleNativeAdView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DemoGoogleNativeAdView.swift; sourceTree = "<group>"; };
 		66E5334D2C1BC1E700255D15 /* Colors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Colors.swift; sourceTree = "<group>"; };
+		66E534012C23B1AC00255D15 /* DemoNovaNativeAdView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DemoNovaNativeAdView.swift; sourceTree = "<group>"; };
 		66F4F0C22BE054800026CAB8 /* MSPUtility.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = MSPUtility.xcframework; path = ../outputMSPUtility/xcframework/MSPUtility.xcframework; sourceTree = "<group>"; };
 		66F4F0C72BE0550E0026CAB8 /* PrebidAdapter.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = PrebidAdapter.xcframework; path = ../output/xcframework/PrebidAdapter.xcframework; sourceTree = "<group>"; };
 		66F4F0CA2BE055360026CAB8 /* PrebidMobile.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = PrebidMobile.xcframework; path = ../MSPUtility/PrebidMobile.xcframework; sourceTree = "<group>"; };
@@ -157,6 +159,7 @@
 			isa = PBXGroup;
 			children = (
 				66E5334B2C1BA8C700255D15 /* DemoGoogleNativeAdView.swift */,
+				66E534012C23B1AC00255D15 /* DemoNovaNativeAdView.swift */,
 			);
 			path = Native;
 			sourceTree = "<group>";
@@ -366,6 +369,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				66E5334C2C1BA8C700255D15 /* DemoGoogleNativeAdView.swift in Sources */,
+				66E534022C23B1AC00255D15 /* DemoNovaNativeAdView.swift in Sources */,
 				66E5334E2C1BC1E700255D15 /* Colors.swift in Sources */,
 				668480672BE03D7D0025018B /* ViewController.swift in Sources */,
 				668480632BE03D7D0025018B /* AppDelegate.swift in Sources */,

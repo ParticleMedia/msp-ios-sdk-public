@@ -1,0 +1,72 @@
+---
+triple:          'x86_64-apple-darwin'
+binary-path:     '/Users/huanzhizhang/Library/Developer/Xcode/DerivedData/msp-ios-sdk-aihxriclplutuqfkjravzzfertmq/Build/Intermediates.noindex/ArchiveIntermediates/NovaAdapter/InstallationBuildProductsLocation/Library/Frameworks/Shimmer.framework/Shimmer'
+relocations:
+  - { offsetInCU: 0x34, offset: 0x556B2, size: 0x8, addend: 0x0, symName: _ShimmerVersionString, symObjAddr: 0x0, symBinAddr: 0x3270, symSize: 0x0 }
+  - { offsetInCU: 0x69, offset: 0x556E7, size: 0x8, addend: 0x0, symName: _ShimmerVersionNumber, symObjAddr: 0x28, symBinAddr: 0x3298, symSize: 0x0 }
+  - { offsetInCU: 0x27, offset: 0x55724, size: 0x8, addend: 0x0, symName: '-[FBShimmeringMaskLayer init]', symObjAddr: 0x0, symBinAddr: 0x11AB, symSize: 0xD5 }
+  - { offsetInCU: 0x1E5, offset: 0x558E2, size: 0x8, addend: 0x0, symName: '-[FBShimmeringMaskLayer init]', symObjAddr: 0x0, symBinAddr: 0x11AB, symSize: 0xD5 }
+  - { offsetInCU: 0x274, offset: 0x55971, size: 0x8, addend: 0x0, symName: '-[FBShimmeringMaskLayer layoutSublayers]', symObjAddr: 0xD5, symBinAddr: 0x1280, symSize: 0xCA }
+  - { offsetInCU: 0x319, offset: 0x55A16, size: 0x8, addend: 0x0, symName: '-[FBShimmeringMaskLayer fadeLayer]', symObjAddr: 0x19F, symBinAddr: 0x134A, symSize: 0x11 }
+  - { offsetInCU: 0x34E, offset: 0x55A4B, size: 0x8, addend: 0x0, symName: '-[FBShimmeringMaskLayer .cxx_destruct]', symObjAddr: 0x1B0, symBinAddr: 0x135B, symSize: 0x13 }
+  - { offsetInCU: 0x381, offset: 0x55A7E, size: 0x8, addend: 0x0, symName: '-[FBShimmeringLayer init]', symObjAddr: 0x1C3, symBinAddr: 0x136E, symSize: 0xD0 }
+  - { offsetInCU: 0x3B8, offset: 0x55AB5, size: 0x8, addend: 0x0, symName: '-[FBShimmeringLayer setContentLayer:]', symObjAddr: 0x293, symBinAddr: 0x143E, symSize: 0xFF }
+  - { offsetInCU: 0x4C8, offset: 0x55BC5, size: 0x8, addend: 0x0, symName: '-[FBShimmeringLayer setShimmering:]', symObjAddr: 0x392, symBinAddr: 0x153D, symSize: 0x23 }
+  - { offsetInCU: 0x515, offset: 0x55C12, size: 0x8, addend: 0x0, symName: '-[FBShimmeringLayer setShimmeringSpeed:]', symObjAddr: 0x3B5, symBinAddr: 0x1560, symSize: 0x2D }
+  - { offsetInCU: 0x560, offset: 0x55C5D, size: 0x8, addend: 0x0, symName: '-[FBShimmeringLayer setShimmeringHighlightLength:]', symObjAddr: 0x3E2, symBinAddr: 0x158D, symSize: 0x2D }
+  - { offsetInCU: 0x5AB, offset: 0x55CA8, size: 0x8, addend: 0x0, symName: '-[FBShimmeringLayer setShimmeringDirection:]', symObjAddr: 0x40F, symBinAddr: 0x15BA, symSize: 0x25 }
+  - { offsetInCU: 0x5F6, offset: 0x55CF3, size: 0x8, addend: 0x0, symName: '-[FBShimmeringLayer setShimmeringPauseDuration:]', symObjAddr: 0x434, symBinAddr: 0x15DF, symSize: 0x2D }
+  - { offsetInCU: 0x641, offset: 0x55D3E, size: 0x8, addend: 0x0, symName: '-[FBShimmeringLayer setShimmeringAnimationOpacity:]', symObjAddr: 0x461, symBinAddr: 0x160C, symSize: 0x2D }
+  - { offsetInCU: 0x68C, offset: 0x55D89, size: 0x8, addend: 0x0, symName: '-[FBShimmeringLayer setShimmeringOpacity:]', symObjAddr: 0x48E, symBinAddr: 0x1639, symSize: 0x2D }
+  - { offsetInCU: 0x6D7, offset: 0x55DD4, size: 0x8, addend: 0x0, symName: '-[FBShimmeringLayer layoutSublayers]', symObjAddr: 0x4BB, symBinAddr: 0x1666, symSize: 0x101 }
+  - { offsetInCU: 0x778, offset: 0x55E75, size: 0x8, addend: 0x0, symName: '-[FBShimmeringLayer setBounds:]', symObjAddr: 0x5BC, symBinAddr: 0x1767, symSize: 0x9C }
+  - { offsetInCU: 0x7F5, offset: 0x55EF2, size: 0x8, addend: 0x0, symName: '-[FBShimmeringLayer _clearMask]', symObjAddr: 0x658, symBinAddr: 0x1803, symSize: 0x9A }
+  - { offsetInCU: 0x89D, offset: 0x55F9A, size: 0x8, addend: 0x0, symName: '-[FBShimmeringLayer _createMaskIfNeeded]', symObjAddr: 0x6F2, symBinAddr: 0x189D, symSize: 0xB1 }
+  - { offsetInCU: 0x931, offset: 0x5602E, size: 0x8, addend: 0x0, symName: '-[FBShimmeringLayer _updateMaskColors]', symObjAddr: 0x7A3, symBinAddr: 0x194E, symSize: 0x16A }
+  - { offsetInCU: 0xA17, offset: 0x56114, size: 0x8, addend: 0x0, symName: '-[FBShimmeringLayer _updateMaskLayout]', symObjAddr: 0x90D, symBinAddr: 0x1AB8, symSize: 0x44F }
+  - { offsetInCU: 0xD71, offset: 0x5646E, size: 0x8, addend: 0x0, symName: '-[FBShimmeringLayer _updateShimmering]', symObjAddr: 0xD5C, symBinAddr: 0x1F07, symSize: 0x7D3 }
+  - { offsetInCU: 0x14EF, offset: 0x56BEC, size: 0x8, addend: 0x0, symName: _fade_animation, symObjAddr: 0x16FC, symBinAddr: 0x28A7, symSize: 0x18E }
+  - { offsetInCU: 0x16C8, offset: 0x56DC5, size: 0x8, addend: 0x0, symName: _FBShimmeringLayerAnimationApplyDragCoefficient, symObjAddr: 0x188A, symBinAddr: 0x2A35, symSize: 0x57 }
+  - { offsetInCU: 0x175B, offset: 0x56E58, size: 0x8, addend: 0x0, symName: '-[FBShimmeringLayer actionForLayer:forKey:]', symObjAddr: 0x152F, symBinAddr: 0x26DA, symSize: 0x14 }
+  - { offsetInCU: 0x17A9, offset: 0x56EA6, size: 0x8, addend: 0x0, symName: '-[FBShimmeringLayer animationDidStop:finished:]', symObjAddr: 0x1543, symBinAddr: 0x26EE, symSize: 0x7D }
+  - { offsetInCU: 0x183F, offset: 0x56F3C, size: 0x8, addend: 0x0, symName: '-[FBShimmeringLayer isShimmering]', symObjAddr: 0x15C0, symBinAddr: 0x276B, symSize: 0x10 }
+  - { offsetInCU: 0x1874, offset: 0x56F71, size: 0x8, addend: 0x0, symName: '-[FBShimmeringLayer shimmeringPauseDuration]', symObjAddr: 0x15D0, symBinAddr: 0x277B, symSize: 0x12 }
+  - { offsetInCU: 0x18A9, offset: 0x56FA6, size: 0x8, addend: 0x0, symName: '-[FBShimmeringLayer shimmeringAnimationOpacity]', symObjAddr: 0x15E2, symBinAddr: 0x278D, symSize: 0x12 }
+  - { offsetInCU: 0x18DE, offset: 0x56FDB, size: 0x8, addend: 0x0, symName: '-[FBShimmeringLayer shimmeringOpacity]', symObjAddr: 0x15F4, symBinAddr: 0x279F, symSize: 0x12 }
+  - { offsetInCU: 0x1913, offset: 0x57010, size: 0x8, addend: 0x0, symName: '-[FBShimmeringLayer shimmeringSpeed]', symObjAddr: 0x1606, symBinAddr: 0x27B1, symSize: 0x12 }
+  - { offsetInCU: 0x1948, offset: 0x57045, size: 0x8, addend: 0x0, symName: '-[FBShimmeringLayer shimmeringHighlightLength]', symObjAddr: 0x1618, symBinAddr: 0x27C3, symSize: 0x12 }
+  - { offsetInCU: 0x197D, offset: 0x5707A, size: 0x8, addend: 0x0, symName: '-[FBShimmeringLayer shimmeringDirection]', symObjAddr: 0x162A, symBinAddr: 0x27D5, symSize: 0x11 }
+  - { offsetInCU: 0x19B2, offset: 0x570AF, size: 0x8, addend: 0x0, symName: '-[FBShimmeringLayer shimmeringFadeTime]', symObjAddr: 0x163B, symBinAddr: 0x27E6, symSize: 0x12 }
+  - { offsetInCU: 0x19E7, offset: 0x570E4, size: 0x8, addend: 0x0, symName: '-[FBShimmeringLayer shimmeringBeginFadeDuration]', symObjAddr: 0x164D, symBinAddr: 0x27F8, symSize: 0x12 }
+  - { offsetInCU: 0x1A1C, offset: 0x57119, size: 0x8, addend: 0x0, symName: '-[FBShimmeringLayer setShimmeringBeginFadeDuration:]', symObjAddr: 0x165F, symBinAddr: 0x280A, symSize: 0x12 }
+  - { offsetInCU: 0x1A59, offset: 0x57156, size: 0x8, addend: 0x0, symName: '-[FBShimmeringLayer shimmeringEndFadeDuration]', symObjAddr: 0x1671, symBinAddr: 0x281C, symSize: 0x12 }
+  - { offsetInCU: 0x1A8E, offset: 0x5718B, size: 0x8, addend: 0x0, symName: '-[FBShimmeringLayer setShimmeringEndFadeDuration:]', symObjAddr: 0x1683, symBinAddr: 0x282E, symSize: 0x12 }
+  - { offsetInCU: 0x1ACB, offset: 0x571C8, size: 0x8, addend: 0x0, symName: '-[FBShimmeringLayer contentLayer]', symObjAddr: 0x1695, symBinAddr: 0x2840, symSize: 0x11 }
+  - { offsetInCU: 0x1B00, offset: 0x571FD, size: 0x8, addend: 0x0, symName: '-[FBShimmeringLayer maskLayer]', symObjAddr: 0x16A6, symBinAddr: 0x2851, symSize: 0x11 }
+  - { offsetInCU: 0x1B35, offset: 0x57232, size: 0x8, addend: 0x0, symName: '-[FBShimmeringLayer setMaskLayer:]', symObjAddr: 0x16B7, symBinAddr: 0x2862, symSize: 0x14 }
+  - { offsetInCU: 0x1B74, offset: 0x57271, size: 0x8, addend: 0x0, symName: '-[FBShimmeringLayer .cxx_destruct]', symObjAddr: 0x16CB, symBinAddr: 0x2876, symSize: 0x31 }
+  - { offsetInCU: 0x27, offset: 0x5731B, size: 0x8, addend: 0x0, symName: '+[FBShimmeringView layerClass]', symObjAddr: 0x0, symBinAddr: 0x2A8C, symSize: 0x11 }
+  - { offsetInCU: 0xAD, offset: 0x573A1, size: 0x8, addend: 0x0, symName: '+[FBShimmeringView layerClass]', symObjAddr: 0x0, symBinAddr: 0x2A8C, symSize: 0x11 }
+  - { offsetInCU: 0xE0, offset: 0x573D4, size: 0x8, addend: 0x0, symName: '-[FBShimmeringView isShimmering]', symObjAddr: 0x11, symBinAddr: 0x2A9D, symSize: 0x44 }
+  - { offsetInCU: 0x143, offset: 0x57437, size: 0x8, addend: 0x0, symName: '-[FBShimmeringView setShimmering:]', symObjAddr: 0x55, symBinAddr: 0x2AE1, symSize: 0x4A }
+  - { offsetInCU: 0x1BA, offset: 0x574AE, size: 0x8, addend: 0x0, symName: '-[FBShimmeringView shimmeringPauseDuration]', symObjAddr: 0x9F, symBinAddr: 0x2B2B, symSize: 0x50 }
+  - { offsetInCU: 0x21D, offset: 0x57511, size: 0x8, addend: 0x0, symName: '-[FBShimmeringView setShimmeringPauseDuration:]', symObjAddr: 0xEF, symBinAddr: 0x2B7B, symSize: 0x4F }
+  - { offsetInCU: 0x296, offset: 0x5758A, size: 0x8, addend: 0x0, symName: '-[FBShimmeringView shimmeringAnimationOpacity]', symObjAddr: 0x13E, symBinAddr: 0x2BCA, symSize: 0x50 }
+  - { offsetInCU: 0x2F9, offset: 0x575ED, size: 0x8, addend: 0x0, symName: '-[FBShimmeringView setShimmeringAnimationOpacity:]', symObjAddr: 0x18E, symBinAddr: 0x2C1A, symSize: 0x4F }
+  - { offsetInCU: 0x372, offset: 0x57666, size: 0x8, addend: 0x0, symName: '-[FBShimmeringView shimmeringOpacity]', symObjAddr: 0x1DD, symBinAddr: 0x2C69, symSize: 0x50 }
+  - { offsetInCU: 0x3D5, offset: 0x576C9, size: 0x8, addend: 0x0, symName: '-[FBShimmeringView setShimmeringOpacity:]', symObjAddr: 0x22D, symBinAddr: 0x2CB9, symSize: 0x4F }
+  - { offsetInCU: 0x44E, offset: 0x57742, size: 0x8, addend: 0x0, symName: '-[FBShimmeringView shimmeringSpeed]', symObjAddr: 0x27C, symBinAddr: 0x2D08, symSize: 0x50 }
+  - { offsetInCU: 0x4B1, offset: 0x577A5, size: 0x8, addend: 0x0, symName: '-[FBShimmeringView setShimmeringSpeed:]', symObjAddr: 0x2CC, symBinAddr: 0x2D58, symSize: 0x4F }
+  - { offsetInCU: 0x52A, offset: 0x5781E, size: 0x8, addend: 0x0, symName: '-[FBShimmeringView shimmeringHighlightLength]', symObjAddr: 0x31B, symBinAddr: 0x2DA7, symSize: 0x50 }
+  - { offsetInCU: 0x58D, offset: 0x57881, size: 0x8, addend: 0x0, symName: '-[FBShimmeringView setShimmeringHighlightLength:]', symObjAddr: 0x36B, symBinAddr: 0x2DF7, symSize: 0x4F }
+  - { offsetInCU: 0x606, offset: 0x578FA, size: 0x8, addend: 0x0, symName: '-[FBShimmeringView shimmeringDirection]', symObjAddr: 0x3BA, symBinAddr: 0x2E46, symSize: 0x44 }
+  - { offsetInCU: 0x669, offset: 0x5795D, size: 0x8, addend: 0x0, symName: '-[FBShimmeringView setShimmeringDirection:]', symObjAddr: 0x3FE, symBinAddr: 0x2E8A, symSize: 0x4C }
+  - { offsetInCU: 0x6E0, offset: 0x579D4, size: 0x8, addend: 0x0, symName: '-[FBShimmeringView shimmeringFadeTime]', symObjAddr: 0x44A, symBinAddr: 0x2ED6, symSize: 0x50 }
+  - { offsetInCU: 0x743, offset: 0x57A37, size: 0x8, addend: 0x0, symName: '-[FBShimmeringView shimmeringBeginFadeDuration]', symObjAddr: 0x49A, symBinAddr: 0x2F26, symSize: 0x50 }
+  - { offsetInCU: 0x7A6, offset: 0x57A9A, size: 0x8, addend: 0x0, symName: '-[FBShimmeringView setShimmeringBeginFadeDuration:]', symObjAddr: 0x4EA, symBinAddr: 0x2F76, symSize: 0x4F }
+  - { offsetInCU: 0x81F, offset: 0x57B13, size: 0x8, addend: 0x0, symName: '-[FBShimmeringView shimmeringEndFadeDuration]', symObjAddr: 0x539, symBinAddr: 0x2FC5, symSize: 0x50 }
+  - { offsetInCU: 0x882, offset: 0x57B76, size: 0x8, addend: 0x0, symName: '-[FBShimmeringView setShimmeringEndFadeDuration:]', symObjAddr: 0x589, symBinAddr: 0x3015, symSize: 0x4F }
+  - { offsetInCU: 0x8FB, offset: 0x57BEF, size: 0x8, addend: 0x0, symName: '-[FBShimmeringView setContentView:]', symObjAddr: 0x5D8, symBinAddr: 0x3064, symSize: 0xB8 }
+  - { offsetInCU: 0x9D6, offset: 0x57CCA, size: 0x8, addend: 0x0, symName: '-[FBShimmeringView contentView]', symObjAddr: 0x690, symBinAddr: 0x311C, symSize: 0x11 }
+  - { offsetInCU: 0xA0B, offset: 0x57CFF, size: 0x8, addend: 0x0, symName: '-[FBShimmeringView .cxx_destruct]', symObjAddr: 0x6A1, symBinAddr: 0x312D, symSize: 0x13 }
+...

@@ -23,6 +23,12 @@ variant_for_slice()
   "PrebidAdapter.xcframework/ios-x86_64-simulator")
     echo "simulator"
     ;;
+  "NovaAdapter.xcframework/ios-arm64")
+    echo ""
+    ;;
+  "NovaAdapter.xcframework/ios-x86_64-simulator")
+    echo "simulator"
+    ;;
   esac
 }
 
@@ -33,6 +39,12 @@ archs_for_slice()
     echo "arm64"
     ;;
   "PrebidAdapter.xcframework/ios-x86_64-simulator")
+    echo "x86_64"
+    ;;
+  "NovaAdapter.xcframework/ios-arm64")
+    echo "arm64"
+    ;;
+  "NovaAdapter.xcframework/ios-x86_64-simulator")
     echo "x86_64"
     ;;
   esac
@@ -118,4 +130,5 @@ install_xcframework() {
 }
 
 install_xcframework "${PODS_ROOT}/../MSPCore/PrebidAdapter.xcframework" "MSPCore" "framework" "ios-arm64" "ios-x86_64-simulator"
+install_xcframework "${PODS_ROOT}/../MSPCore/NovaAdapter.xcframework" "MSPCore" "framework" "ios-arm64" "ios-x86_64-simulator"
 

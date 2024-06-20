@@ -1,9 +1,21 @@
 import Foundation
 import UIKit
 
-public class NovaNativeAdView: UIView {
+open class NovaNativeAdView: UIView {
     // MARK: - Properties
-
+    public var titleLabel: UILabel?
+    public var bodyLabel: UILabel?
+    public var advertiserLabel: UILabel?
+    public var callToActionButton: UIButton?
+    
+    let mediaView: NovaNativeAdMediaView = {
+        let view = NovaNativeAdMediaView()
+        view.accessibilityIdentifier = "media"
+        view.translatesAutoresizingMaskIntoConstraints = false
+        return view
+    }()
+    
+    
     @objc public var tappableViews: [UIView]? {
         didSet {
             tappableViews?.forEach {
@@ -33,7 +45,7 @@ public class NovaNativeAdView: UIView {
     }
 
     @available(*, unavailable)
-    required init?(coder: NSCoder) {
+    required public init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 
@@ -61,6 +73,34 @@ public extension NovaNativeAdView {
 
         stopTimerIfNeeded()
         //iABMetricReporter?.stopSession()
+    }
+    
+    open func bindView(nativeAd: NovaNativeAdItem) {
+        titleLabel = UILabel()
+        bodyLabel = UILabel()
+        advertiserLabel = UILabel()
+        callToActionButton = UIButton(type: .custom)
+    }
+    
+    open func setUpView(nativeAd: NovaNativeAdItem) {
+        
+        
+        titleLabel?.text = nativeAd.headline
+        bodyLabel?.text = nativeAd.body
+        advertiserLabel?.text = nativeAd.advertiser
+        callToActionButton?.titleLabel?.text = nativeAd.callToAction
+        //self.nativeAdView.callToActionView?.isUserInteractionEnabled = false
+        //self.gadMediaView.translatesAutoresizingMaskIntoConstraints = false
+        //self.gadMediaView.contentMode = .scaleAspectFill
+        //self.gadMediaView.mediaContent = nativeAd.mediaContent
+        //self.nativeAdView.mediaView = gadMediaView
+        let mediaVM = NovaNativeAdMediaViewModel(encryptedAdToken: nativeAd.encryptedAdToken,
+                                                 imageUrlStr: nativeAd.imageUrlStr,
+                                                 videoInfo: nativeAd.videoInfo)
+        mediaView.config(with: mediaVM, iabReporter: self.iABMetricReporter) {
+            nativeAd.delegate?.nativeAdDidFinishRender(nativeAd)
+        }
+        register(nativeAd)
     }
 }
 

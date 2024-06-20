@@ -42,7 +42,7 @@
 		</data>
 		<key>Info.plist</key>
 		<data>
-		1KMzl7zRiY8qeqkKJNmKJG4jdwY=
+		tS+XmMJ3dQdrZhydUgOef6s13jU=
 		</data>
 		<key>Modules/module.modulemap</key>
 		<data>
@@ -53,10 +53,6 @@
 	<dict>
 		<key>Headers/decode.h</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			PabXAMPXaIp17CAraqLU/vjfb2Y=
-			</data>
 			<key>hash2</key>
 			<data>
 			AO49VxalwzT8greUNWuAZSdiJNetSEzw/eceYuZC3UU=
@@ -64,10 +60,6 @@
 		</dict>
 		<key>Headers/demux.h</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			7xd/cSnYZoliXsm98Yg+5GVsSn8=
-			</data>
 			<key>hash2</key>
 			<data>
 			w3vScpnZhLfZ7lZL8lhz9mIKCmoJdeRK3wq+7WKJma8=
@@ -75,10 +67,6 @@
 		</dict>
 		<key>Headers/encode.h</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			XL4FxrIw9SP7K6pvEgdeEKaK06k=
-			</data>
 			<key>hash2</key>
 			<data>
 			9cK2h7e+SWNa+wfdw/tpQC65q5kEScalQAU3U3us+cQ=
@@ -86,10 +74,6 @@
 		</dict>
 		<key>Headers/format_constants.h</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			fuZnPhPvG/chjLKgQCTE02TVHqc=
-			</data>
 			<key>hash2</key>
 			<data>
 			2OlrLRGp1ROPePQJQENAxBHqnKC6Xmpv0bavAbE/bVE=
@@ -97,10 +81,6 @@
 		</dict>
 		<key>Headers/libwebp-umbrella.h</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			TsUvQUcnpJRuqVcgdOWLQkW4MVk=
-			</data>
 			<key>hash2</key>
 			<data>
 			+g681z19V38oBdlDtRstcUWZ3xf6oGd96K+Ic35Jbxg=
@@ -108,10 +88,6 @@
 		</dict>
 		<key>Headers/mux.h</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			/z8dzJhrjhQYLvu81WGwslG+Mco=
-			</data>
 			<key>hash2</key>
 			<data>
 			PB20Z6J7e8JvGEj0k68aNjZsvEiFNbfYR3nMeOYMn5U=
@@ -119,10 +95,6 @@
 		</dict>
 		<key>Headers/mux_types.h</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			bq88aLBV6xk1L97Cz9wW1xwTano=
-			</data>
 			<key>hash2</key>
 			<data>
 			Yk1Ar5T0uELM3Y3MFKGYtAcD4WfkMjcZ0tFjIMlB+Bs=
@@ -130,10 +102,6 @@
 		</dict>
 		<key>Headers/sharpyuv.h</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			Dpt9FW+T2PXilUYkH97ZZZ/AHGQ=
-			</data>
 			<key>hash2</key>
 			<data>
 			XoU8ZdlYcSl+RGsi8J6DCfO3DdlmmQTRvBf/RZRzJd4=
@@ -141,10 +109,6 @@
 		</dict>
 		<key>Headers/types.h</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			3yIPWpddTdebOMdkbmfzAfHa/60=
-			</data>
 			<key>hash2</key>
 			<data>
 			pqxfAYEU+1Ely+RIbrwGYwPE8deWHfVGz1i9m4nfjns=
@@ -152,10 +116,6 @@
 		</dict>
 		<key>Modules/module.modulemap</key>
 		<dict>
-			<key>hash</key>
-			<data>
-			gvG6GiljcCNOjtALFPCnljPgkhw=
-			</data>
 			<key>hash2</key>
 			<data>
 			Xikya1CR/IMW7EjNcYFQcQigDnlMj50rgp4kSJmCZT4=
