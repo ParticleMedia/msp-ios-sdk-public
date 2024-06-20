@@ -9,6 +9,7 @@ import UIKit
 import MSPCore
 import GoogleAdapter
 import PrebidAdapter
+import NovaAdapter
 //import MSPiOSCore
 import shared
 
@@ -100,6 +101,11 @@ extension ViewController: AdListener {
                 
                 demoGoogleNativeAdView.bindView(nativeAd: nativeAdItem)
                 demoGoogleNativeAdView.setUpView(nativeAd: nativeAdItem)
+            }
+        } else if ad is NovaNativeAd {
+            let novaNativeAd = ad as? NovaNativeAd
+            if let nativeAdItem = novaNativeAd?.nativeAdItem {
+                
             }
         }
     }

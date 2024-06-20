@@ -4,38 +4,6 @@
 <dict>
 	<key>files</key>
 	<dict>
-		<key>Frameworks/PrebidMobile.framework/Assets.car</key>
-		<data>
-		9/s4e4H9c7S5TUZaF+d7p/Blkak=
-		</data>
-		<key>Frameworks/PrebidMobile.framework/ClickthroughBrowserView.nib</key>
-		<data>
-		rMwshyTSzdJXBME4GC/vCHyx1Rg=
-		</data>
-		<key>Frameworks/PrebidMobile.framework/Info.plist</key>
-		<data>
-		xZ+9bK5rYTDbzmlRHE3Wp8Xykh0=
-		</data>
-		<key>Frameworks/PrebidMobile.framework/PrebidMobile</key>
-		<data>
-		OL75i6SyA7W5FrbibcM2E3kxVHk=
-		</data>
-		<key>Frameworks/PrebidMobile.framework/_CodeSignature/CodeResources</key>
-		<data>
-		mCb1F9IndEsTRqTm9g45Lce6Uis=
-		</data>
-		<key>Frameworks/PrebidMobile.framework/companion.html</key>
-		<data>
-		NhLCGomJdkcbLTXc1GHXRF2JSzs=
-		</data>
-		<key>Frameworks/PrebidMobile.framework/mraid.js</key>
-		<data>
-		w/U1CCucLpP/H2bl8eyI6hhGRso=
-		</data>
-		<key>Frameworks/PrebidMobile.framework/omsdk.js</key>
-		<data>
-		gHGQFei4PigMPCDxMe1k+dLcbPA=
-		</data>
 		<key>Headers/NovaAdapter.h</key>
 		<data>
 		KmJxSJKvgiWLfryz9Grp3Ij3EL4=
@@ -46,23 +14,23 @@
 		</data>
 		<key>Modules/NovaAdapter.swiftmodule/arm64-apple-ios.abi.json</key>
 		<data>
-		sx8YwLnOIHo9yBFE927iXDkvsQY=
+		J16OMtZNNHigQXwdwyKwiqS8HO4=
 		</data>
 		<key>Modules/NovaAdapter.swiftmodule/arm64-apple-ios.private.swiftinterface</key>
 		<data>
-		7phN6Ge0mDHIhLejp7V5pzYaZkQ=
+		7W67GlGa6CEd3Z7OqBsbhaspD98=
 		</data>
 		<key>Modules/NovaAdapter.swiftmodule/arm64-apple-ios.swiftdoc</key>
 		<data>
-		DO/8Bv758RINmaZ3AfXyEtPGvL0=
+		sw57nTgHdLVecizSW6ifpCAhlhU=
 		</data>
 		<key>Modules/NovaAdapter.swiftmodule/arm64-apple-ios.swiftinterface</key>
 		<data>
-		7phN6Ge0mDHIhLejp7V5pzYaZkQ=
+		7W67GlGa6CEd3Z7OqBsbhaspD98=
 		</data>
 		<key>Modules/NovaAdapter.swiftmodule/arm64-apple-ios.swiftmodule</key>
 		<data>
-		eNW65XHFFt8VuGVBLGBv4ikzoe4=
+		1Ih2U0au+BDQznmhvyIFCmps5dA=
 		</data>
 		<key>Modules/module.modulemap</key>
 		<data>
@@ -71,62 +39,6 @@
 	</dict>
 	<key>files2</key>
 	<dict>
-		<key>Frameworks/PrebidMobile.framework/Assets.car</key>
-		<dict>
-			<key>hash2</key>
-			<data>
-			h2GogqQxJjDkgcgvYZcPFQWZrWM0mCXhkAEZQPrUxao=
-			</data>
-		</dict>
-		<key>Frameworks/PrebidMobile.framework/ClickthroughBrowserView.nib</key>
-		<dict>
-			<key>hash2</key>
-			<data>
-			ibxOATX8TEvGBwqUS0yKdQwTXCsoKCvSH1hQbLkMTlM=
-			</data>
-		</dict>
-		<key>Frameworks/PrebidMobile.framework/Info.plist</key>
-		<dict>
-			<key>hash2</key>
-			<data>
-			ELGHGWQfBnsnVtjGmKmY0k0w+99bfp+y0sKAd/9oqNY=
-			</data>
-		</dict>
-		<key>Frameworks/PrebidMobile.framework/PrebidMobile</key>
-		<dict>
-			<key>hash2</key>
-			<data>
-			HzFKLkLUaXzxa6G2DvEU++KTTFukyPArxtY6uTbabw8=
-			</data>
-		</dict>
-		<key>Frameworks/PrebidMobile.framework/_CodeSignature/CodeResources</key>
-		<dict>
-			<key>hash2</key>
-			<data>
-			MGD2BNerEHQ0PC20gYx39HOqtk1cjpahuHiKR7g1Ipw=
-			</data>
-		</dict>
-		<key>Frameworks/PrebidMobile.framework/companion.html</key>
-		<dict>
-			<key>hash2</key>
-			<data>
-			UsYyo6mmGwMOG5UV8/U9wCXXmIMMgtemG022RTT6plo=
-			</data>
-		</dict>
-		<key>Frameworks/PrebidMobile.framework/mraid.js</key>
-		<dict>
-			<key>hash2</key>
-			<data>
-			fmiQYqOzEVjTDwJr3YyfzYPTVXu1A2DgTcbK6dGeiJM=
-			</data>
-		</dict>
-		<key>Frameworks/PrebidMobile.framework/omsdk.js</key>
-		<dict>
-			<key>hash2</key>
-			<data>
-			n8WuqMyGPNYJumH+VtISaEBXQFrTsdDte7rIWtThJ/s=
-			</data>
-		</dict>
 		<key>Headers/NovaAdapter.h</key>
 		<dict>
 			<key>hash2</key>
@@ -138,35 +50,35 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			GzVYSreTnhY8IvCOgGWCHMDkSBcT5zquDFw/VWlEdBw=
+			fSwsW5QxstzALm4hy2hgrU41CkYcLP/zOy2YbIMK7gE=
 			</data>
 		</dict>
 		<key>Modules/NovaAdapter.swiftmodule/arm64-apple-ios.private.swiftinterface</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			F33laVWfKO/mtIJSMkf1m74cYtffASNVUHSNYlDVmS4=
+			vlm1WfWJ/Tt07C1VJXzD38sWZYcuMrqeOtFEWMLBKjY=
 			</data>
 		</dict>
 		<key>Modules/NovaAdapter.swiftmodule/arm64-apple-ios.swiftdoc</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			3XpWmmPaD2c8w2EJKQNuIm4WcgPwXH6cLhwc2LKB4Yk=
+			osrR96TVkuKYXRp9YgcoeMzoMAxDswZnn3KfVvGYsj0=
 			</data>
 		</dict>
 		<key>Modules/NovaAdapter.swiftmodule/arm64-apple-ios.swiftinterface</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			F33laVWfKO/mtIJSMkf1m74cYtffASNVUHSNYlDVmS4=
+			vlm1WfWJ/Tt07C1VJXzD38sWZYcuMrqeOtFEWMLBKjY=
 			</data>
 		</dict>
 		<key>Modules/NovaAdapter.swiftmodule/arm64-apple-ios.swiftmodule</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			BRpwbU44ItQ9vKV6+B3DUM1LZx2rgJxxsxufy9/a04w=
+			SffgR95G74oKAgk3PVVFuliB42/Ror+Et+2YmGDK3AE=
 			</data>
 		</dict>
 		<key>Modules/module.modulemap</key>

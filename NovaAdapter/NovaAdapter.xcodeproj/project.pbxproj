@@ -54,7 +54,6 @@
 		66E533AB2C2264B500255D15 /* NovaDedupeManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E533AA2C2264B500255D15 /* NovaDedupeManager.swift */; };
 		66E533AD2C22652A00255D15 /* NovaNativeAdMediaViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E533AC2C22652A00255D15 /* NovaNativeAdMediaViewModel.swift */; };
 		66E533BB2C23815B00255D15 /* PrebidMobile.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 66E533BA2C23815B00255D15 /* PrebidMobile.xcframework */; };
-		66E533BC2C23815B00255D15 /* PrebidMobile.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 66E533BA2C23815B00255D15 /* PrebidMobile.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		66E533C12C2387A200255D15 /* NovaNativeAdView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E533C02C2387A200255D15 /* NovaNativeAdView.swift */; };
 		66E533C32C23898D00255D15 /* NovaNativeAdView+Impression.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E533C22C23898D00255D15 /* NovaNativeAdView+Impression.swift */; };
 		66E533C52C238A1300255D15 /* NovaAdOpenActionKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E533C42C238A1300255D15 /* NovaAdOpenActionKey.swift */; };
@@ -93,20 +92,6 @@
 			remoteInfo = NovaAdapter;
 		};
 /* End PBXContainerItemProxy section */
-
-/* Begin PBXCopyFilesBuildPhase section */
-		66E533BD2C23815B00255D15 /* Embed Frameworks */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = "";
-			dstSubfolderSpec = 10;
-			files = (
-				66E533BC2C23815B00255D15 /* PrebidMobile.xcframework in Embed Frameworks */,
-			);
-			name = "Embed Frameworks";
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		28744C3FB2F6D3F9E993D07B /* Pods-NovaAdapter.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-NovaAdapter.release.xcconfig"; path = "Target Support Files/Pods-NovaAdapter/Pods-NovaAdapter.release.xcconfig"; sourceTree = "<group>"; };
@@ -429,7 +414,6 @@
 				66E533152C1A4ED900255D15 /* Sources */,
 				66E533162C1A4ED900255D15 /* Frameworks */,
 				66E533172C1A4ED900255D15 /* Resources */,
-				66E533BD2C23815B00255D15 /* Embed Frameworks */,
 			);
 			buildRules = (
 			);

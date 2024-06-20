@@ -6,18 +6,35 @@ import AdSupport
 import AppTrackingTransparency
 import CoreGraphics
 import CoreMedia
+import DeviceKit
 import Foundation
 import NBDesignSystem
 @_exported import NovaAdapter
 import PrebidMobile
 import SDWebImage
+import SafariServices
+import Shimmer
 import SnapKit
 import Swift
 import UIKit
+import WebKit
 import _Concurrency
 import _StringProcessing
 import _SwiftConcurrencyShims
 import shared
+public protocol JSBridgeHandling : AnyObject {
+}
+public struct WebViewNavigationViewModel {
+  public let includingStatusBar: Swift.Bool
+  public let title: Swift.String?
+  public var titleFontSize: CoreFoundation.CGFloat
+  public let hideLeftButton: Swift.Bool
+  public let leftButtonIcon: NovaAdapter.Icon.System?
+  public let rightButtonIcon: NovaAdapter.Icon.System?
+  public let leftButtonTapActionHandler: (() -> Swift.Void)?
+  public let rightButtonTapActionHandler: (() -> Swift.Void)?
+  public init(includingStatusBar: Swift.Bool = true, title: Swift.String?, titleFontSize: CoreFoundation.CGFloat? = nil, hideLeftButton: Swift.Bool = false, leftButtonIcon: NovaAdapter.Icon.System? = nil, leftButtonTapActionHandler: @escaping () -> Swift.Void, rightButtonIcon: NovaAdapter.Icon.System? = nil, rightButtonTapActionHandler: @escaping () -> Swift.Void)
+}
 @_hasMissingDesignatedInitializers final public class NovaDedupeManager {
   public static let shared: NovaAdapter.NovaDedupeManager
   @objc deinit
@@ -85,6 +102,13 @@ extension NovaAdapter.VideoPlayerController : NovaAdapter.PlayerPlaybackDelegate
   public func playerPlaybackWillLoop(_ player: NovaAdapter.Player)
   public func playerPlaybackDidLoop(_ player: NovaAdapter.Player)
 }
+@_hasMissingDesignatedInitializers public class UnifiedWebViewBuilder {
+  public static func buildWebViewHost(enableNBUserAgent: Swift.Bool, enableJSBridge: Swift.Bool = true, jsBridgeHandlers: [any NovaAdapter.JSBridgeHandling] = [], blockedURLPrefixes: [Swift.String] = [], navigationDelegate: (any NovaAdapter.UnifiedWebViewNavigationDelegate)? = nil, headers: [Swift.String : Swift.String] = [:]) -> NovaAdapter.UnifiedWebViewHost
+  @objc deinit
+}
+public struct NovaAdOpenActionDataModel {
+  public init(url: Foundation.URL, clickTime: Swift.Double, ad: NovaAdapter.NovaBaseAd)
+}
 public struct NovaNativeAdMediaViewModel {
   public init(encryptedAdToken: Swift.String, imageUrlStr: Swift.String?, videoInfo: NovaAdapter.NovaNativeAdVideoInfo?)
 }
@@ -136,9 +160,9 @@ extension NovaAdapter.VideoPlayer : NovaAdapter.PlayerPlaybackDelegate {
   public func playerPlaybackDidLoop(_ player: NovaAdapter.Player)
 }
 @objc public protocol NovaNativeAdDelegate {
-  @objc func nativeAdDidLogImpression(_ nativeAd: NovaAdapter.NovaNativeAd)
-  @objc func nativeAdDidLogClick(_ nativeAd: NovaAdapter.NovaNativeAd, clickAreaName: Swift.String)
-  @objc func nativeAdDidFinishRender(_ nativeAd: NovaAdapter.NovaNativeAd)
+  @objc func nativeAdDidLogImpression(_ nativeAd: NovaAdapter.NovaNativeAdItem)
+  @objc func nativeAdDidLogClick(_ nativeAd: NovaAdapter.NovaNativeAdItem, clickAreaName: Swift.String)
+  @objc func nativeAdDidFinishRender(_ nativeAd: NovaAdapter.NovaNativeAdItem)
 }
 @_hasMissingDesignatedInitializers @objc public class NovaBaseAd : ObjectiveC.NSObject, Swift.Codable {
   @objc final public let adUnitId: Swift.String
@@ -173,6 +197,44 @@ public enum NovaCreativeType : Swift.String {
     get
   }
 }
+@_hasMissingDesignatedInitializers @objc @_Concurrency.MainActor(unsafe) public class NovaAdsLandingWebViewController : UIKit.UIViewController {
+  @_Concurrency.MainActor(unsafe) public var initialLoadDidRedirectTo: ((WebKit.WKWebView) -> Swift.Void)?
+  @_Concurrency.MainActor(unsafe) public var didGoBackToInitialLoad: ((WebKit.WKWebView) -> Swift.Void)?
+  @_Concurrency.MainActor(unsafe) public var webViewDidScroll: ((UIKit.UIScrollView) -> Swift.Void)?
+  @_Concurrency.MainActor(unsafe) public var webViewDidEndDragging: ((UIKit.UIScrollView) -> Swift.Void)?
+  @_Concurrency.MainActor(unsafe) public init(dataModel: NovaAdapter.NovaAdOpenActionDataModel, navigationModel: NovaAdapter.WebViewNavigationViewModel? = nil, navigationHeight: CoreFoundation.CGFloat? = nil)
+  @objc deinit
+  @_Concurrency.MainActor(unsafe) @objc override dynamic public func viewDidLoad()
+  @_Concurrency.MainActor(unsafe) @objc override dynamic public func viewDidDisappear(_ animated: Swift.Bool)
+  @_Concurrency.MainActor(unsafe) public func changeLeftButtonOnNavigation(isHidden: Swift.Bool)
+  @_Concurrency.MainActor(unsafe) public func changeWebViewTappable(isEnable: Swift.Bool)
+  @_Concurrency.MainActor(unsafe) public func setWebView(offset: CoreFoundation.CGPoint)
+}
+extension NovaAdapter.NovaAdsLandingWebViewController : NovaAdapter.UnifiedWebViewNavigationDelegate {
+  @_Concurrency.MainActor(unsafe) public func openWebPage(_ url: Foundation.URL)
+  @_Concurrency.MainActor(unsafe) public func webView(_ webView: WebKit.WKWebView, didStartProvisionalNavigation navigation: WebKit.WKNavigation!)
+  @_Concurrency.MainActor(unsafe) public func webView(_ webView: WebKit.WKWebView, didCommit navigation: WebKit.WKNavigation!)
+  @_Concurrency.MainActor(unsafe) public func webView(_ webView: WebKit.WKWebView, policyFor navigationAction: WebKit.WKNavigationAction) -> WebKit.WKNavigationActionPolicy?
+  @_Concurrency.MainActor(unsafe) public func webView(_ webView: WebKit.WKWebView, didFinish navigation: WebKit.WKNavigation!)
+  @_Concurrency.MainActor(unsafe) public func webView(_ webView: WebKit.WKWebView, didFailProvisionalNavigation navigation: WebKit.WKNavigation!, withError error: any Swift.Error)
+  @_Concurrency.MainActor(unsafe) public func webViewInitialLoadDidRedirect(_ webView: WebKit.WKWebView)
+  @_Concurrency.MainActor(unsafe) public func webViewDidGoBackToInitialLoad(_ webView: WebKit.WKWebView)
+}
+extension NovaAdapter.NovaAdsLandingWebViewController : NovaAdapter.WebViewBottomViewDelegate {
+  @_Concurrency.MainActor(unsafe) public func bottomViewDidTapBackButton()
+  @_Concurrency.MainActor(unsafe) public func bottomViewDidTapForwardButton()
+}
+extension NovaAdapter.NovaAdsLandingWebViewController : UIKit.UIScrollViewDelegate {
+  @_Concurrency.MainActor(unsafe) @objc dynamic public func scrollViewDidScroll(_ scrollView: UIKit.UIScrollView)
+  @_Concurrency.MainActor(unsafe) @objc dynamic public func scrollViewDidEndDragging(_ scrollView: UIKit.UIScrollView, willDecelerate decelerate: Swift.Bool)
+}
+@objc @_inheritsConvenienceInitializers @_hasMissingDesignatedInitializers @_Concurrency.MainActor(unsafe) public class WebViewNavigationView : UIKit.UIView {
+  @_Concurrency.MainActor(unsafe) @objc override dynamic public init(frame: CoreFoundation.CGRect)
+  @_Concurrency.MainActor(unsafe) public func config(viewModel: NovaAdapter.WebViewNavigationViewModel)
+  @_Concurrency.MainActor(unsafe) public func setTitle(_ title: Swift.String?)
+  @_Concurrency.MainActor(unsafe) public func changeLeftButtonVisibility(isHidden: Swift.Bool)
+  @objc deinit
+}
 @_hasMissingDesignatedInitializers public class NovaAdVideoMetricReporter {
   public struct ProgressPercentagePoint {
   }
@@ -189,6 +251,15 @@ public enum NovaCreativeType : Swift.String {
   public static func logVideoResume(encryptedAdToken: Swift.String, duration: Swift.Double)
   public static func logVideoMute(encryptedAdToken: Swift.String, isMute: Swift.Bool)
   @objc deinit
+}
+@objc @_inheritsConvenienceInitializers final public class NovaAdOpenActionHandler : ObjectiveC.NSObject {
+  @objc deinit
+  @objc override dynamic public init()
+}
+extension NovaAdapter.NovaAdOpenActionHandler : NovaAdapter.ActionHandling {
+  final public func supportedActions() -> [Swift.String : any Any.Type]
+  final public func performAction(actionModel: NovaAdapter.ActionModel)
+  final public func SafeAs<T, U>(_ object: T?, _ objectType: U.Type) -> U?
 }
 public enum InteractiveBannerType : Swift.String {
   case displayCard
@@ -233,6 +304,18 @@ public enum NovaAdLaunchOption : Swift.String {
   public var rawValue: Swift.String {
     get
   }
+}
+public protocol WebViewBottomViewDelegate : AnyObject {
+  func bottomViewDidTapBackButton()
+  func bottomViewDidTapForwardButton()
+}
+@objc @_inheritsConvenienceInitializers @_hasMissingDesignatedInitializers @_Concurrency.MainActor(unsafe) public class WebViewBottomView : UIKit.UIView {
+  @_Concurrency.MainActor(unsafe) weak public var delegate: (any NovaAdapter.WebViewBottomViewDelegate)?
+  @_Concurrency.MainActor(unsafe) @objc override dynamic public init(frame: CoreFoundation.CGRect)
+  @objc deinit
+}
+extension NovaAdapter.WebViewBottomView {
+  @_Concurrency.MainActor(unsafe) public func configButton(canGoBack: Swift.Bool? = nil, canGoForward: Swift.Bool? = nil)
 }
 @objc @_hasMissingDesignatedInitializers @_Concurrency.MainActor(unsafe) public class VideoProgressView : UIKit.UIView {
   @_Concurrency.MainActor(unsafe) @objc dynamic public init()
@@ -280,6 +363,11 @@ extension NovaAdapter.ActionHandlerMaster : NovaAdapter.ActionHandling {
   final public func supportedActions() -> [Swift.String : any Any.Type]
   final public func performAction(actionModel: NovaAdapter.ActionModel)
 }
+public enum AdsMediaConstants {
+  public static let iPadAspectRatio: Swift.Double
+  public static let defaultAspectRatio: Swift.Double
+  public static let verticalVideoDefaultAspectRatio: Swift.Double
+}
 @objc @_hasMissingDesignatedInitializers @_Concurrency.MainActor(unsafe) final public class NovaNativeAdVideoView : UIKit.UIView {
   @_Concurrency.MainActor(unsafe) final public var didTapCloseButtonCallback: (() -> Swift.Void)?
   @_Concurrency.MainActor(unsafe) public init(inLandingPage: Swift.Bool = false)
@@ -305,6 +393,62 @@ extension NovaAdapter.NovaNativeAdVideoView : NovaAdapter.VideoPlayerDelegate {
 }
 extension UIKit.UIImage {
   public func tint(_ tintColor: UIKit.UIColor) -> UIKit.UIImage
+}
+extension UIKit.UIImage {
+  @objc convenience dynamic public init?(systemName: NovaAdapter.Icon.System)
+  @objc convenience dynamic public init?(systemName: NovaAdapter.Icon.System, tintColor: UIKit.UIColor)
+}
+@objc @_hasMissingDesignatedInitializers @_Concurrency.MainActor(unsafe) open class NovaNativeAdView : UIKit.UIView {
+  @_Concurrency.MainActor(unsafe) public var titleLabel: UIKit.UILabel?
+  @_Concurrency.MainActor(unsafe) public var bodyLabel: UIKit.UILabel?
+  @_Concurrency.MainActor(unsafe) public var advertiserLabel: UIKit.UILabel?
+  @_Concurrency.MainActor(unsafe) public var callToActionButton: UIKit.UIButton?
+  @objc @_Concurrency.MainActor(unsafe) public var tappableViews: [UIKit.UIView]? {
+    @objc get
+    @objc set
+  }
+  @_Concurrency.MainActor(unsafe) public var iABMetricReporter: NovaAdapter.IABMetricReporter? {
+    get
+  }
+  @available(*, unavailable)
+  @_Concurrency.MainActor(unsafe) @objc required dynamic public init?(coder: Foundation.NSCoder)
+  @objc deinit
+}
+extension NovaAdapter.NovaNativeAdView {
+  @objc @_Concurrency.MainActor(unsafe) dynamic public func register(_ nativeAd: NovaAdapter.NovaNativeAdItem)
+  @_Concurrency.MainActor(unsafe) public func unregisterAd()
+  @_Concurrency.MainActor(unsafe) open func bindView(nativeAd: NovaAdapter.NovaNativeAdItem)
+  @_Concurrency.MainActor(unsafe) open func setUpView(nativeAd: NovaAdapter.NovaNativeAdItem)
+}
+@objc public class UnifiedWebViewHost : ObjectiveC.NSObject {
+  public init(config: NovaAdapter.UnifiedWebViewConfig, jsBridgeHandlerMaster: NovaAdapter.JSBridgeHandlerMaster?, navigationDelegate: (any NovaAdapter.UnifiedWebViewNavigationDelegate)?)
+  public func injectJavaScript(_ js: Swift.String, injectionTime: WebKit.WKUserScriptInjectionTime)
+  public func webView() -> WebKit.WKWebView
+  public func load(_ url: Foundation.URL, referer: Swift.String? = nil)
+  public var scrollDepth: Swift.Double? {
+    get
+  }
+  public var pageIndex: Swift.Int? {
+    get
+  }
+  public func SafeAs<T, U>(_ object: T?, _ objectType: U.Type) -> U?
+  @objc deinit
+}
+extension NovaAdapter.UnifiedWebViewHost : WebKit.WKScriptMessageHandler {
+  @objc dynamic public func userContentController(_ userContentController: WebKit.WKUserContentController, didReceive message: WebKit.WKScriptMessage)
+}
+extension NovaAdapter.UnifiedWebViewHost : WebKit.WKNavigationDelegate {
+  @objc dynamic public func webView(_ webView: WebKit.WKWebView, didCommit navigation: WebKit.WKNavigation!)
+  @objc dynamic public func webView(_ webView: WebKit.WKWebView, didStartProvisionalNavigation navigation: WebKit.WKNavigation!)
+  @objc dynamic public func webView(_ webView: WebKit.WKWebView, decidePolicyFor navigationAction: WebKit.WKNavigationAction, preferences: WebKit.WKWebpagePreferences, decisionHandler: @escaping (WebKit.WKNavigationActionPolicy, WebKit.WKWebpagePreferences) -> Swift.Void)
+  @objc dynamic public func webView(_ webView: WebKit.WKWebView, decidePolicyFor navigationAction: WebKit.WKNavigationAction, decisionHandler: @escaping (WebKit.WKNavigationActionPolicy) -> Swift.Void)
+  @objc dynamic public func webView(_ webView: WebKit.WKWebView, decidePolicyFor navigationResponse: WebKit.WKNavigationResponse, decisionHandler: @escaping (WebKit.WKNavigationResponsePolicy) -> Swift.Void)
+  @objc dynamic public func webView(_ webView: WebKit.WKWebView, didFinish navigation: WebKit.WKNavigation!)
+  @objc dynamic public func webView(_ webView: WebKit.WKWebView, didFailProvisionalNavigation navigation: WebKit.WKNavigation!, withError error: any Swift.Error)
+  @objc dynamic public func webViewWebContentProcessDidTerminate(_ webView: WebKit.WKWebView)
+}
+extension NovaAdapter.UnifiedWebViewHost : WebKit.WKUIDelegate {
+  @objc dynamic public func webView(_ webView: WebKit.WKWebView, createWebViewWith configuration: WebKit.WKWebViewConfiguration, for navigationAction: WebKit.WKNavigationAction, windowFeatures: WebKit.WKWindowFeatures) -> WebKit.WKWebView?
 }
 @_inheritsConvenienceInitializers @objc public class VideoPlayerCacheHandler : ObjectiveC.NSObject {
   @objc public static let shared: NovaAdapter.VideoPlayerCacheHandler
@@ -345,6 +489,15 @@ public struct ActionModel {
 extension NovaAdapter.ActionModel : Swift.Equatable {
   public static func == (lhs: NovaAdapter.ActionModel, rhs: NovaAdapter.ActionModel) -> Swift.Bool
 }
+@objc @_Concurrency.MainActor(unsafe) public class NovaAdsVideoLandingWebViewController : UIKit.UIViewController {
+  @_Concurrency.MainActor(unsafe) public init(model: NovaAdapter.NovaAdOpenActionDataModel)
+  @available(*, unavailable)
+  @_Concurrency.MainActor(unsafe) @objc required dynamic public init?(coder: Foundation.NSCoder)
+  @_Concurrency.MainActor(unsafe) @objc override dynamic public func viewDidLoad()
+  @_Concurrency.MainActor(unsafe) @objc override dynamic public func viewWillAppear(_ animated: Swift.Bool)
+  @_Concurrency.MainActor(unsafe) @objc override dynamic public func viewWillDisappear(_ animated: Swift.Bool)
+  @objc deinit
+}
 public enum AdsThirdPartyMetricReporter {
   public static func logImpression(thirdPartyImpressionTrackingUrls: [Swift.String])
   public static func logClick(thirdPartyClickTrackingUrls: [Swift.String])
@@ -365,8 +518,26 @@ extension NovaAdapter.NovaAdType : Swift.CustomStringConvertible {
     get
   }
 }
+extension UIKit.UIApplication {
+  @objc @_Concurrency.MainActor(unsafe) dynamic public var nb_safeAreaInsets: UIKit.UIEdgeInsets {
+    @objc get
+  }
+  @_Concurrency.MainActor(unsafe) public class var windowScenes: [UIKit.UIWindowScene] {
+    get
+  }
+  @_Concurrency.MainActor(unsafe) public class var sharedKeyWindow: UIKit.UIWindow? {
+    get
+  }
+  @_Concurrency.MainActor(unsafe) public class var keyRootViewController: UIKit.UIViewController? {
+    get
+  }
+}
 public struct EmptyActionDataModel {
   public init()
+}
+final public class JSBridgeHandlerMaster {
+  public init(jsBridgeHandlers: [any NovaAdapter.JSBridgeHandling])
+  @objc deinit
 }
 public enum VideoPlayStyle : Swift.String {
   case none
@@ -393,6 +564,31 @@ public protocol VideoPlayerDelegate : ObjectiveC.NSObjectProtocol {
   func playerPlaybackWillLoop(_ player: NovaAdapter.Player)
   func playerPlaybackDidLoop(_ player: NovaAdapter.Player)
 }
+public protocol UnifiedWebViewNavigationDelegate : ObjectiveC.NSObject {
+  func openWebPage(_ url: Foundation.URL)
+  func webView(_ webView: WebKit.WKWebView, didStartProvisionalNavigation navigation: WebKit.WKNavigation!)
+  func webView(_ webView: WebKit.WKWebView, didCommit navigation: WebKit.WKNavigation!)
+  func webView(_ webView: WebKit.WKWebView, policyFor navigationAction: WebKit.WKNavigationAction) -> WebKit.WKNavigationActionPolicy?
+  func webView(_ webView: WebKit.WKWebView, canRedirectTo url: Foundation.URL) -> Swift.Bool
+  func webView(_ webView: WebKit.WKWebView, didFinish navigation: WebKit.WKNavigation!)
+  func webView(_ webView: WebKit.WKWebView, didFailProvisionalNavigation navigation: WebKit.WKNavigation!, withError error: any Swift.Error)
+  func webView(_ webView: WebKit.WKWebView, decidePolicyFor navigationResponse: WebKit.WKNavigationResponse, decisionHandler: @escaping (WebKit.WKNavigationResponsePolicy) -> Swift.Void)
+  func webViewWebContentProcessDidTerminate(_ webView: WebKit.WKWebView)
+  func webViewInitialLoadDidRedirect(_ webView: WebKit.WKWebView)
+  func webViewDidGoBackToInitialLoad(_ webView: WebKit.WKWebView)
+}
+extension NovaAdapter.UnifiedWebViewNavigationDelegate {
+  public func webView(_ webView: WebKit.WKWebView, didStartProvisionalNavigation navigation: WebKit.WKNavigation!)
+  public func webView(_ webView: WebKit.WKWebView, didCommit navigation: WebKit.WKNavigation!)
+  public func webView(_ webView: WebKit.WKWebView, policyFor navigationAction: WebKit.WKNavigationAction) -> WebKit.WKNavigationActionPolicy?
+  public func webView(_ webView: WebKit.WKWebView, canRedirectTo url: Foundation.URL) -> Swift.Bool
+  public func webView(_ webView: WebKit.WKWebView, didFinish navigation: WebKit.WKNavigation!)
+  public func webView(_ webView: WebKit.WKWebView, didFailProvisionalNavigation navigation: WebKit.WKNavigation!, withError error: any Swift.Error)
+  public func webView(_ webView: WebKit.WKWebView, decidePolicyFor navigationResponse: WebKit.WKNavigationResponse, decisionHandler: @escaping (WebKit.WKNavigationResponsePolicy) -> Swift.Void)
+  public func webViewWebContentProcessDidTerminate(_ webView: WebKit.WKWebView)
+  public func webViewInitialLoadDidRedirect(_ webView: WebKit.WKWebView)
+  public func webViewDidGoBackToInitialLoad(_ webView: WebKit.WKWebView)
+}
 @_hasMissingDesignatedInitializers public class IABMetricReporter {
   @objc deinit
 }
@@ -415,8 +611,97 @@ public protocol VideoPlayerDelegate : ObjectiveC.NSObjectProtocol {
   final public func encode(to encoder: any Swift.Encoder) throws
   @objc deinit
 }
+public struct UnifiedWebViewConfig {
+  public let enableJSBridge: Swift.Bool
+  public let enableNBUserAgent: Swift.Bool
+  public let blockedURLPrefixes: [Swift.String]
+  public let displayNavigationHeader: Swift.Bool
+  public let navigationTitleText: Swift.String?
+  public let goBackByUrlAllowed: Swift.Bool
+  public let headers: [Swift.String : Swift.String]
+  public init(enableJSBridge: Swift.Bool, enableNBUserAgent: Swift.Bool, blockedURLPrefixes: [Swift.String], displayNavigationHeader: Swift.Bool, navigationTitleText: Swift.String?, goBackByUrlAllowed: Swift.Bool, headers: [Swift.String : Swift.String])
+}
 public struct NovaNativeAdVideoState {
   public let isMute: Swift.Bool
+}
+@_inheritsConvenienceInitializers @_hasMissingDesignatedInitializers @objc public class Icon : ObjectiveC.NSObject {
+  @objc deinit
+}
+public protocol IconName : Swift.CustomStringConvertible {
+}
+extension NovaAdapter.Icon {
+  @objc public enum System : Swift.Int, Swift.CaseIterable {
+    case arrowLeftOutline
+    case bellFilled
+    case bellOutline
+    case breezeFilled
+    case breezeOutline
+    case cameraOutline
+    case chartBarOutline
+    case checkCircleFilled
+    case checkCircleOutline
+    case chevronDownFilled
+    case chevronDownOutline
+    case chevronLeftFilled
+    case chevronLeftOutline
+    case chevronRightFilled
+    case chevronRightOutline
+    case chevronUpFilled
+    case clockOutline
+    case crossFilled
+    case crossOutline
+    case crossCircleFilled
+    case crossCircleOutline
+    case ellipsisHorizontalOutline
+    case ellipsisVerticalFilled
+    case exclamationCircleOutline
+    case exclamationTriangleOutline
+    case globeOutline
+    case hashtagOutline
+    case heartOutline
+    case imageOutline
+    case linkOutline
+    case locationOutline
+    case moneyOutline
+    case navigationArrowOutline
+    case newsbreakOutline
+    case peopleFilled
+    case peopleOutline
+    case playFilled
+    case plusOutline
+    case prohibitOutline
+    case shareOutline
+    case shieldErrorOutline
+    case trashOutline
+    case videoClipFilled
+    case videoClipOutline
+    case magicOutline
+    case magicStarFilled
+    case homeOutline
+    public init?(rawValue: Swift.Int)
+    public typealias AllCases = [NovaAdapter.Icon.System]
+    public typealias RawValue = Swift.Int
+    public static var allCases: [NovaAdapter.Icon.System] {
+      get
+    }
+    public var rawValue: Swift.Int {
+      get
+    }
+  }
+}
+extension NovaAdapter.Icon.System : NovaAdapter.IconName {
+  public var description: Swift.String {
+    get
+  }
+}
+public enum NovaAdOpenActionKey : Swift.String {
+  case launchBrowser
+  case launchWebView
+  public init?(rawValue: Swift.String)
+  public typealias RawValue = Swift.String
+  public var rawValue: Swift.String {
+    get
+  }
 }
 @objc @_inheritsConvenienceInitializers public class NovaNativeAd : shared.NativeAd {
   public var nativeAdItem: NovaAdapter.NovaNativeAdItem?
@@ -680,6 +965,38 @@ extension UIKit.UIColor {
   @objc dynamic public func nb_opacity8() -> UIKit.UIColor
   @objc dynamic public func nb_opacity9() -> UIKit.UIColor
 }
+extension UIKit.UIDevice {
+  @objc @_Concurrency.MainActor(unsafe) public static var nb_isiPad: Swift.Bool {
+    @objc get
+  }
+  @objc @_Concurrency.MainActor(unsafe) public static var nb_isiPhone: Swift.Bool {
+    @objc get
+  }
+  @objc @_Concurrency.MainActor(unsafe) public static var nb_orientationWidth: CoreFoundation.CGFloat {
+    @objc get
+  }
+  @objc @_Concurrency.MainActor(unsafe) public static var nb_orientationSize: CoreFoundation.CGSize {
+    @objc get
+  }
+  @_Concurrency.MainActor(unsafe) public static var nb_isiPhoneX: Swift.Bool {
+    get
+  }
+  @_Concurrency.MainActor(unsafe) public static var nb_safeAreaInsets: UIKit.UIEdgeInsets {
+    get
+  }
+  @objc @_Concurrency.MainActor(unsafe) public static var nb_deviceModelRaw: Swift.String {
+    @objc get
+  }
+  @objc @_Concurrency.MainActor(unsafe) public static var nb_deviceModelMarketName: Swift.String {
+    @objc get
+  }
+  @objc @_Concurrency.MainActor(unsafe) public static var statusBarHeight: CoreFoundation.CGFloat {
+    @objc get
+  }
+  @objc @_Concurrency.MainActor(unsafe) public static var bottomRoundAreaHeight: CoreFoundation.CGFloat {
+    @objc get
+  }
+}
 public enum NovaAdUrlTransformer {
   public static func replaceMacro(in urlString: Swift.String) -> Swift.String
 }
@@ -758,6 +1075,12 @@ extension NovaAdapter.NovaAdType : Swift.RawRepresentable {}
 extension NovaAdapter.VideoPlayStyle : Swift.Equatable {}
 extension NovaAdapter.VideoPlayStyle : Swift.Hashable {}
 extension NovaAdapter.VideoPlayStyle : Swift.RawRepresentable {}
+extension NovaAdapter.Icon.System : Swift.Equatable {}
+extension NovaAdapter.Icon.System : Swift.Hashable {}
+extension NovaAdapter.Icon.System : Swift.RawRepresentable {}
+extension NovaAdapter.NovaAdOpenActionKey : Swift.Equatable {}
+extension NovaAdapter.NovaAdOpenActionKey : Swift.Hashable {}
+extension NovaAdapter.NovaAdOpenActionKey : Swift.RawRepresentable {}
 extension NovaAdapter.PlayerError : Swift.Equatable {}
 extension NovaAdapter.PlayerError : Swift.Hashable {}
 extension NovaAdapter.Player.PlaybackState : Swift.Equatable {}
