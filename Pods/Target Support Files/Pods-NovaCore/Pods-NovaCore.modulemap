@@ -1,0 +1,6 @@
+module Pods_NovaCore {
+  umbrella header "Pods-NovaCore-umbrella.h"
+
+  export *
+  module * { export * }
+}

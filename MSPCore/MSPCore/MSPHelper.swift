@@ -9,6 +9,7 @@ import Foundation
 //import MSPiOSCore
 import shared
 import PrebidAdapter
+import UIKit
 
 
 public class MSPHelper {

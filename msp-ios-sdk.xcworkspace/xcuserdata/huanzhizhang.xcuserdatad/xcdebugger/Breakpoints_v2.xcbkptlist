@@ -80,36 +80,6 @@
             endingLineNumber = "154"
             landmarkName = "setupMediaViewConstraints(with:)"
             landmarkType = "7">
-            <Locations>
-               <Location
-                  uuid = "E88AB90C-2ABE-43BE-9214-23A64142F2E8 - e175937346b9b82e"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "MSPDemoApp.DemoGoogleNativeAdView.setupMediaViewConstraints(with: __C.GADMediaContent) -&gt; ()"
-                  moduleName = "MSPDemoApp"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/huanzhizhang/Huanzhi/msp-ios-sdk/MSPDemoApp/MSPDemoApp/Native/DemoGoogleNativeAdView.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "155"
-                  endingLineNumber = "155">
-               </Location>
-               <Location
-                  uuid = "E88AB90C-2ABE-43BE-9214-23A64142F2E8 - e175937346b9b80d"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "MSPDemoApp.DemoGoogleNativeAdView.setupMediaViewConstraints(with: __C.GADMediaContent) -&gt; ()"
-                  moduleName = "MSPDemoApp"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/huanzhizhang/Huanzhi/msp-ios-sdk/MSPDemoApp/MSPDemoApp/Native/DemoGoogleNativeAdView.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "154"
-                  endingLineNumber = "154">
-               </Location>
-            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
    </Breakpoints>

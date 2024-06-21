@@ -8,6 +8,7 @@
 import Foundation
 import shared
 import PrebidMobile
+import NovaCore
 
 public class NovaAdLoader: AdNetworkAdapter {
     
@@ -76,12 +77,15 @@ public class NovaAdLoader: AdNetworkAdapter {
                 //delegate?.novaAdLoader?(self, didReceiveBannerAd: bannerAd)
 
             case "native":
+                /*
                 let nativeAd = NovaNativeAd(adNetworkAdapter: self,
                                             builder: shared.NativeAd.Builder(adNetworkAdapter: self)
                                                         .title(title: adItem.creative.headline ?? "")
                                                         .body(body: adItem.creative.body ?? "")
                                                         .advertiser(advertiser: adItem.creative.advertiser ?? "")
                                                         .callToAction(callToAction: adItem.creative.callToAction ?? ""))
+                 */
+                let nativeAd = NovaNativeAd(adNetworkAdapter: self)
                 let nativeAdItem = NovaAdBuilder.buildNativeAd(adItem: adItem, adUnitId: adUnitId, eCPMInDollar: eCPMInDollar)
                 nativeAd.priceInDollar = self.priceInDollar
                 nativeAd.nativeAdItem = nativeAdItem

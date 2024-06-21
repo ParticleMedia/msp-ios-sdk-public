@@ -177,13 +177,13 @@ code_sign_if_enabled() {
 
 if [[ "$CONFIGURATION" == "Debug" ]]; then
   install_framework "${PODS_XCFRAMEWORKS_BUILD_DIR}/MSPCore/PrebidAdapter.framework"
-  install_framework "${PODS_XCFRAMEWORKS_BUILD_DIR}/MSPCore/NovaAdapter.framework"
   install_framework "${PODS_XCFRAMEWORKS_BUILD_DIR}/MSPSharedLibraries/PrebidMobile.framework"
+  install_framework "${PODS_XCFRAMEWORKS_BUILD_DIR}/NovaAdapter/NovaCore.framework"
 fi
 if [[ "$CONFIGURATION" == "Release" ]]; then
   install_framework "${PODS_XCFRAMEWORKS_BUILD_DIR}/MSPCore/PrebidAdapter.framework"
-  install_framework "${PODS_XCFRAMEWORKS_BUILD_DIR}/MSPCore/NovaAdapter.framework"
   install_framework "${PODS_XCFRAMEWORKS_BUILD_DIR}/MSPSharedLibraries/PrebidMobile.framework"
+  install_framework "${PODS_XCFRAMEWORKS_BUILD_DIR}/NovaAdapter/NovaCore.framework"
 fi
 if [ "${COCOAPODS_PARALLEL_CODE_SIGN}" == "true" ]; then
   wait
