@@ -7,6 +7,7 @@
 
 import Foundation
 import NovaAdapter
+import NovaCore
 import UIKit
 
 public class DemoNovaNativeAdView: NovaNativeAdView {

@@ -105,12 +105,13 @@ extension ViewController: AdListener {
         } else if ad is NovaNativeAd {
             let novaNativeAd = ad as? NovaNativeAd
             if let nativeAdItem = novaNativeAd?.nativeAdItem {
-                let adOpenActionHandler = NovaAdOpenActionHandler()
-                let actionHandlerMaster = ActionHandlerMaster(actionHandlers: [adOpenActionHandler])
-                let demoNovaNativeAdView = DemoNovaNativeAdView(actionHandler: actionHandlerMaster)
+                /*
+                //let adOpenActionHandler = NovaAdOpenActionHandler()
+                //let actionHandlerMaster = ActionHandlerMaster(actionHandlers: [adOpenActionHandler])
+                //let demoNovaNativeAdView = DemoNovaNativeAdView(actionHandler: actionHandlerMaster)
                 
-                self.view.addSubview(demoNovaNativeAdView)
-                demoNovaNativeAdView.translatesAutoresizingMaskIntoConstraints = false
+                //self.view.addSubview(demoNovaNativeAdView)
+                //demoNovaNativeAdView.translatesAutoresizingMaskIntoConstraints = false
                 NSLayoutConstraint.activate([
                     demoNovaNativeAdView.leadingAnchor.constraint(lessThanOrEqualTo: self.view.leadingAnchor, constant: 100),
                     demoNovaNativeAdView.trailingAnchor.constraint(lessThanOrEqualTo: self.view.trailingAnchor),
@@ -120,6 +121,7 @@ extension ViewController: AdListener {
                 
                 demoNovaNativeAdView.bindView(nativeAd: nativeAdItem)
                 demoNovaNativeAdView.setUpView(nativeAd: nativeAdItem)
+                 */
             }
         }
     }

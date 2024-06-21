@@ -9,6 +9,7 @@ import Foundation
 import PrebidAdapter
 //import MSPiOSCore
 import shared
+import UIKit
 
 
 

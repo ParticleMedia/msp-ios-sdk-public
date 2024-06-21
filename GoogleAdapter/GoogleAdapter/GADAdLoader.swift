@@ -182,11 +182,13 @@ extension GADAdLoder: GADNativeAdLoaderDelegate {
         //    .advertiser(advertiser: nativeAd.advertiser ?? "")
         //    .callToAction(callToAction: nativeAd.callToAction ?? "")
         //    .mediaView(mediaView: mediaView))
+        /*
         let googleNativeAd = GoogleNativeAd(adNetworkAdapter: self, builder: shared.NativeAd.Builder(adNetworkAdapter: self))
         self.googleNativeAd = googleNativeAd
         googleNativeAd.priceInDollar = self.priceInDollar
         googleNativeAd.nativeAdItem = nativeAd
         self.adListener?.onAdLoaded(ad: googleNativeAd)
+         */
     }
     
     public func adLoader(_ adLoader: GADAdLoader, didFailToReceiveAdWithError error: any Error) {

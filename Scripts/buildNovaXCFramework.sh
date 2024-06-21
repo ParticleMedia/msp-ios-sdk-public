@@ -11,9 +11,9 @@ echo -e "\n\n${GREEN}BUILD ADAPTERS${NC}\n\n"
 # Build for simulator and device architectures
 xcodebuild archive \
     -workspace msp-ios-sdk.xcworkspace \
-    -scheme "NovaAdapter" \
+    -scheme "NovaCore" \
     -destination="iOS" \
-    -archivePath "$PWD/outputNova/xcframework/NovaAdapter-iOS" \
+    -archivePath "$PWD/outputNova/xcframework/NovaCore-iOS" \
     SKIP_INSTALL=NO \
     -configuration Release \
     -arch arm64 \
@@ -22,9 +22,9 @@ xcodebuild archive \
 
 xcodebuild archive \
     -workspace msp-ios-sdk.xcworkspace \
-    -scheme "NovaAdapter" \
+    -scheme "NovaCore" \
     -destination="iOS Simulator" \
-    -archivePath "$PWD/outputNova/xcframework/NovaAdapter-Simulator" \
+    -archivePath "$PWD/outputNova/xcframework/NovaCore-Simulator" \
     SKIP_INSTALL=NO \
     -configuration Release \
     -arch x86_64 \
@@ -33,6 +33,6 @@ xcodebuild archive \
 
 # Create xcframework
 xcodebuild -create-xcframework \
-    -framework "$PWD/outputNova/xcframework/NovaAdapter-iOS.xcarchive/Products/Library/Frameworks/NovaAdapter.framework" \
-    -framework "$PWD/outputNova/xcframework/NovaAdapter-Simulator.xcarchive/Products/Library/Frameworks/NovaAdapter.framework" \
-    -output "$PWD/outputNova/xcframework/NovaAdapter.xcframework"
+    -framework "$PWD/outputNova/xcframework/NovaCore-iOS.xcarchive/Products/Library/Frameworks/NovaCore.framework" \
+    -framework "$PWD/outputNova/xcframework/NovaCore-Simulator.xcarchive/Products/Library/Frameworks/NovaCore.framework" \
+    -output "$PWD/outputNova/xcframework/NovaCore.xcframework"

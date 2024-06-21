@@ -57,15 +57,31 @@ end
 target 'NovaAdapter' do
   project 'NovaAdapter/NovaAdapter'
   # Comment the next line if you don't want to use dynamic frameworks
-  use_frameworks!
+  #use_frameworks!
+
+  # Pods for NovaAdapter
+  #pod 'SDWebImage', '5.18.8', :modular_headers => true
+  #pod 'SDWebImageWebPCoder', '0.14.2', :modular_headers => true
+  #pod 'SnapKit', '~> 5.6.0', :modular_headers => true
+  #pod 'Shimmer', :modular_headers => true
+  #pod 'DeviceKit', :modular_headers => true
+  #pod 'NBDesignSystem', :git => 'https://github.com/ParticleMedia/LAFoundation', :branch => 'main', :commit => 'b94a948', :modular_headers => true
+  #pod 'MSPSharedLibraries', :path => './', :modular_headers => true
+end
+
+target 'NovaCore' do
+  project 'NovaCore/NovaCore'
+  # Comment the next line if you don't want to use dynamic frameworks
+  #use_frameworks!
 
   # Pods for NovaAdapter
   pod 'SDWebImage', '5.18.8', :modular_headers => true
   pod 'SDWebImageWebPCoder', '0.14.2', :modular_headers => true
   pod 'SnapKit', '~> 5.6.0', :modular_headers => true
   pod 'Shimmer', :modular_headers => true
-  pod 'DeviceKit', :modular_headers => true
-  pod 'NBDesignSystem', :git => 'https://github.com/ParticleMedia/LAFoundation', :branch => 'main', :commit => $local_ai_version, :modular_headers => true
+  #pod 'DeviceKit', :modular_headers => true
+  #pod 'NBDesignSystem', :git => 'https://github.com/ParticleMedia/LAFoundation', :branch => 'main', :commit => 'b94a948', :modular_headers => true
+  #pod 'MSPSharedLibraries', :path => './', :modular_headers => true
 end
 
   #target 'GoogleAdapterTests' do
@@ -75,10 +91,15 @@ end
 target 'MSPDemoApp' do
   project 'MSPDemoApp/MSPDemoApp'
   #pod 'GoogleAdapter',  :path => 'GoogleAdapter', :modular_headers => true
-  
+  #use_frameworks!
   pod 'MSPCore', :path => './', :modular_headers => true
   pod 'GoogleAdapter', :path => './', :modular_headers => true
-  pod 'MSPSharedLibraries', :path => './', :modular_headers => true
+  #pod 'GoogleMobileAds', :modular_headers => true
+  pod 'NovaAdapter', :path => './', :modular_headers => true
+  pod 'SDWebImage', '5.18.8', :modular_headers => true
+  pod 'SDWebImageWebPCoder', '0.14.2', :modular_headers => true
+  #pod 'NBDesignSystem', :git => 'https://github.com/ParticleMedia/LAFoundation', :branch => 'main', :commit => 'b94a948', :modular_headers => true
+  #pod 'MSPSharedLibraries', :path => './', :modular_headers => true
  
 end
 
@@ -86,9 +107,11 @@ post_install do |installer|
   installer.pods_project.targets.each do |target|
     target.build_configurations.each do |config|
       config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '13.0'
+      config.build_settings['OTHER_SWIFT_FLAGS'] = '-no-verify-emitted-module-interface'
     end
   end
 end
+
 
 
 

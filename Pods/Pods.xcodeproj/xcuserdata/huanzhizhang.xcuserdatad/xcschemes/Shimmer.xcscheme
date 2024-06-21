@@ -15,7 +15,7 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "CE3774A41C0BF2BDF93D3484B60028D9"
-               BuildableName = "Shimmer.framework"
+               BuildableName = "libShimmer.a"
                BlueprintName = "Shimmer"
                ReferencedContainer = "container:Pods.xcodeproj">
             </BuildableReference>
