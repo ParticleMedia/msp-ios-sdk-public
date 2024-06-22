@@ -87,6 +87,9 @@
 		66E535272C250A8900255D15 /* UIColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E5351C2C250A8900255D15 /* UIColor.swift */; };
 		66E535282C250A8900255D15 /* UIFont.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E5351D2C250A8900255D15 /* UIFont.swift */; };
 		66E535292C250A8900255D15 /* UIImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E5351E2C250A8900255D15 /* UIImage.swift */; };
+		66E535392C263FEB00255D15 /* NBResourceBundle.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 66E535382C263FEB00255D15 /* NBResourceBundle.bundle */; };
+		66E535412C26453100255D15 /* ImageResourceBundle.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 66E5353F2C26453100255D15 /* ImageResourceBundle.bundle */; };
+		66E535422C26453100255D15 /* IconResourceBundle.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 66E535402C26453100255D15 /* IconResourceBundle.bundle */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -181,6 +184,9 @@
 		66E5351C2C250A8900255D15 /* UIColor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIColor.swift; sourceTree = "<group>"; };
 		66E5351D2C250A8900255D15 /* UIFont.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIFont.swift; sourceTree = "<group>"; };
 		66E5351E2C250A8900255D15 /* UIImage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIImage.swift; sourceTree = "<group>"; };
+		66E535382C263FEB00255D15 /* NBResourceBundle.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = NBResourceBundle.bundle; sourceTree = "<group>"; };
+		66E5353F2C26453100255D15 /* ImageResourceBundle.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = ImageResourceBundle.bundle; sourceTree = "<group>"; };
+		66E535402C26453100255D15 /* IconResourceBundle.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = IconResourceBundle.bundle; sourceTree = "<group>"; };
 		782A0D4A6DFC4D6D978FA699 /* Pods-NovaCore.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-NovaCore.release.xcconfig"; path = "Target Support Files/Pods-NovaCore/Pods-NovaCore.release.xcconfig"; sourceTree = "<group>"; };
 		A7278CCCE62DB4171E27ED0A /* Pods-NovaCore.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-NovaCore.debug.xcconfig"; path = "Target Support Files/Pods-NovaCore/Pods-NovaCore.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -246,6 +252,9 @@
 		66E534362C24CAAE00255D15 /* NovaCore */ = {
 			isa = PBXGroup;
 			children = (
+				66E535402C26453100255D15 /* IconResourceBundle.bundle */,
+				66E5353F2C26453100255D15 /* ImageResourceBundle.bundle */,
+				66E535382C263FEB00255D15 /* NBResourceBundle.bundle */,
 				66E535152C250A8900255D15 /* NBAssets.xcassets */,
 				66E5351F2C250A8900255D15 /* NBDesignSystem */,
 				66E5349C2C24CBF200255D15 /* Internal */,
@@ -509,7 +518,10 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				66E535422C26453100255D15 /* IconResourceBundle.bundle in Resources */,
+				66E535412C26453100255D15 /* ImageResourceBundle.bundle in Resources */,
 				66E535202C250A8900255D15 /* NBAssets.xcassets in Resources */,
+				66E535392C263FEB00255D15 /* NBResourceBundle.bundle in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

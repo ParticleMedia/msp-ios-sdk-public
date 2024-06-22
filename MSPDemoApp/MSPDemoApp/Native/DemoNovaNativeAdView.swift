@@ -58,6 +58,7 @@ public class DemoNovaNativeAdView: NovaNativeAdView {
         mediaView.translatesAutoresizingMaskIntoConstraints = false
         
         let novaSubViews = [titleLabel, bodyLabel, advertiserLabel, callToActionButton, mediaView]
+        self.tappableViews = [UIView]()
         for view in novaSubViews {
             if let view = view {
                 self.addSubview(view)
@@ -86,7 +87,7 @@ public class DemoNovaNativeAdView: NovaNativeAdView {
                 constant: -Constants.paddingSmall)
         
         mediaView.contentMode = .scaleAspectFill
-        
+        mediaView.clipsToBounds = true
         //if let mediaContent = nativeAdView.nativeAd?.mediaContent {
         //    setupMediaViewConstraints(with: mediaContent)
         //}
@@ -94,6 +95,7 @@ public class DemoNovaNativeAdView: NovaNativeAdView {
             mediaView.leadingAnchor.constraint(equalTo: self.leadingAnchor),
             mediaView.topAnchor.constraint(equalTo: self.topAnchor),
             mediaView.trailingAnchor.constraint(equalTo: self.trailingAnchor),
+            mediaView.widthAnchor.constraint(equalTo: self.widthAnchor),
             mediaView.heightAnchor.constraint(
                 equalTo: mediaView.widthAnchor,
                 multiplier: Double(1.0 / AdsMediaConstants.defaultAspectRatio))
