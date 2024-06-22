@@ -16,6 +16,22 @@
 		<data>
 		+s07ZhRZYN1RHaDKgTTbp50TNZw=
 		</data>
+		<key>IconResourceBundle.bundle/Assets.car</key>
+		<data>
+		QqgxUZKq02sera+f+b8/FBZDrKU=
+		</data>
+		<key>IconResourceBundle.bundle/Info.plist</key>
+		<data>
+		EynL+sB3S0FPLLnnUB7ZVAr+FD0=
+		</data>
+		<key>ImageResourceBundle.bundle/Assets.car</key>
+		<data>
+		017h0m2WhdTnComzIb11F1IRVJ4=
+		</data>
+		<key>ImageResourceBundle.bundle/Info.plist</key>
+		<data>
+		+0S7d3V9C9bmqZ0AK8+pivhnOTk=
+		</data>
 		<key>Info.plist</key>
 		<data>
 		V7zko1Z+uAHNBjgrSnF0xC0z32M=
@@ -43,6 +59,14 @@
 		<key>Modules/module.modulemap</key>
 		<data>
 		ISuw/KxZQCtSGzA71N1DgaktPFM=
+		</data>
+		<key>NBResourceBundle.bundle/Assets.car</key>
+		<data>
+		sxG0stl4BThuc8TB72+Z5eGeacM=
+		</data>
+		<key>NBResourceBundle.bundle/Info.plist</key>
+		<data>
+		Fy2xJpRmudov5/YO/Oe8Dy5RnQ4=
 		</data>
 		<key>SDWebImage.bundle/Info.plist</key>
 		<data>
@@ -74,6 +98,34 @@
 			<key>hash2</key>
 			<data>
 			jHbnefnHl7xLtWsQm8ASkHm8T084ziblQpKiWQTibsU=
+			</data>
+		</dict>
+		<key>IconResourceBundle.bundle/Assets.car</key>
+		<dict>
+			<key>hash2</key>
+			<data>
+			3JwaIaALebfb8quOKkeEndB4kHtkwxLhSdlTMynJEMg=
+			</data>
+		</dict>
+		<key>IconResourceBundle.bundle/Info.plist</key>
+		<dict>
+			<key>hash2</key>
+			<data>
+			GOMc/EzCTqKz4YZWWrWoJ/QeGfxSXGScNO7bsdCek4I=
+			</data>
+		</dict>
+		<key>ImageResourceBundle.bundle/Assets.car</key>
+		<dict>
+			<key>hash2</key>
+			<data>
+			Y82FxQaci2pNC74LDTsnPd222NL1+X8baORXdIpVRMs=
+			</data>
+		</dict>
+		<key>ImageResourceBundle.bundle/Info.plist</key>
+		<dict>
+			<key>hash2</key>
+			<data>
+			Ra1eiXuOOBkl7ziwUgJD6Ie9AZEQ12mTBfMPjBYLjwU=
 			</data>
 		</dict>
 		<key>Modules/NovaCore.swiftmodule/x86_64-apple-ios-simulator.abi.json</key>
@@ -116,6 +168,20 @@
 			<key>hash2</key>
 			<data>
 			sHn5aJyTgggeGyjI1D3pS+bs/o9OOlFBPHl3HRkLoyU=
+			</data>
+		</dict>
+		<key>NBResourceBundle.bundle/Assets.car</key>
+		<dict>
+			<key>hash2</key>
+			<data>
+			oPVxxcLytBq9xJqpH1GKtJbPypSURFbABxt60DJyOSY=
+			</data>
+		</dict>
+		<key>NBResourceBundle.bundle/Info.plist</key>
+		<dict>
+			<key>hash2</key>
+			<data>
+			NnxZUAeySPB6W89uRFEesPN1Ga0i16Xt+NJQ2Mi5JHA=
 			</data>
 		</dict>
 		<key>SDWebImage.bundle/Info.plist</key>

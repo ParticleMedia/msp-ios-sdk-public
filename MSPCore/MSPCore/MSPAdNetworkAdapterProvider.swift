@@ -22,6 +22,8 @@ public class MSPAdNetworkAdapterProvider: AdNetworkAdapterProvider {
     
     public var googleManager: AdNetworkManager?
     
+    public var novaManager: AdNetworkManager?
+    
     
     public init() {
         
@@ -35,6 +37,9 @@ public class MSPAdNetworkAdapterProvider: AdNetworkAdapterProvider {
         } else if adNetwork.name == "Google" {
             var gadAdLoader = googleManager?.getAdNetworkAdapter()
             return gadAdLoader
+        } else if adNetwork.name == "Nova" {
+            var novaAdLoader = novaManager?.getAdNetworkAdapter()
+            return novaAdLoader
         }
         return nil
     }

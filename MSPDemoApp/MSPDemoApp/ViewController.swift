@@ -29,14 +29,18 @@ class ViewController: UIViewController {
                                   context: nil,
                                   adaptiveBannerSize: AdSize(width: 320, height: 50, isInlineAdaptiveBanner: false, isAnchorAdaptiveBanner: false),
                                   adSize: AdSize(width: 320, height: 50, isInlineAdaptiveBanner: false, isAnchorAdaptiveBanner: false),
-                                  placementId: "msp-ios-foryou-large-display",
+                                  placementId: "scoopz-android-foryou-test-nova",
                                   adFormat: "native",
                                   isCacheSupported: false)
-        adLoader.loadAd(placementId: "msp-ios-foryou-large-display",
+        adLoader.loadAd(placementId: "scoopz-android-foryou-test-nova",
                         adListener: self,
                         context: self,
                         adRequest: adRequest,
                         rootViewController:self)
+        
+        
+        let novaAdLoader = MSPHelper.shared.adNetworkAdapterProvider.getAdNetworkAdapter(adNetwork: .nova)
+        novaAdLoader?.loadAdCreative(bidResponse: "test", adListener: self, context: self, adRequest: adRequest)
         // Do any additional setup after loading the view.
     }
 

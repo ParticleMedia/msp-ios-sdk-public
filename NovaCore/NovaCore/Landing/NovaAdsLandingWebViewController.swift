@@ -1,9 +1,3 @@
-//
-//  NovaAdsLandingWebViewController.swift
-//  NovaAdapter
-//
-//  Created by Huanzhi Zhang on 6/19/24.
-//
 import SafariServices
 import WebKit
 import UIKit

@@ -43,6 +43,10 @@ public class MSPHelper {
     public func setGoogleManager(googleManager: AdNetworkManager) {
         adNetworkAdapterProvider.googleManager = googleManager
     }
+    
+    public func setNovaManager(novaManager: AdNetworkManager) {
+        adNetworkAdapterProvider.novaManager = novaManager
+    }
 }
 
 public class InitializationParametersImp: InitializationParameters {
