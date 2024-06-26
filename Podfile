@@ -9,6 +9,7 @@ project 'MSPCore/MSPCore'
 project 'MSPDemoApp/MSPDemoApp'
 project 'NovaAdapter/NovaAdapter'
 project 'MSPSharedLibraries/MSPSharedLibraries'
+project 'MetaAdapter/MetaAdapter'
 
 target 'PrebidAdapter' do
   project 'PrebidAdapter/PrebidAdapter'
@@ -69,6 +70,11 @@ target 'NovaAdapter' do
   #pod 'MSPSharedLibraries', :path => './', :modular_headers => true
 end
 
+target 'MetaAdapter' do
+  project 'MetaAdapter/MetaAdapter'
+  
+end
+
 target 'NovaCore' do
   project 'NovaCore/NovaCore'
   # Comment the next line if you don't want to use dynamic frameworks
@@ -96,6 +102,7 @@ target 'MSPDemoApp' do
   pod 'GoogleAdapter', :path => './', :modular_headers => true
   #pod 'GoogleMobileAds', :modular_headers => true
   pod 'NovaAdapter', :path => './', :modular_headers => true
+  pod 'MetaAdapter', :path => './', :modular_headers => true
   pod 'SDWebImage', '5.18.8', :modular_headers => true
   pod 'SDWebImageWebPCoder', '0.14.2', :modular_headers => true
   #pod 'NBDesignSystem', :git => 'https://github.com/ParticleMedia/LAFoundation', :branch => 'main', :commit => 'b94a948', :modular_headers => true
