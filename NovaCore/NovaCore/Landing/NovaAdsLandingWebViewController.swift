@@ -213,8 +213,7 @@ import Foundation
             return false
         }
 
-        let safeAreaInsets: UIEdgeInsets = UIApplication.shared.delegate?.window??.safeAreaInsets ?? .zero
-
+        let safeAreaInsets: UIEdgeInsets = UIApplication.shared.windows.first?.safeAreaInsets ?? .zero
         return safeAreaInsets.top > 20
     }
 }

@@ -117,10 +117,11 @@ extension ViewController: AdListener {
                 self.view.addSubview(demoNovaNativeAdView)
                 demoNovaNativeAdView.translatesAutoresizingMaskIntoConstraints = false
                 NSLayoutConstraint.activate([
-                    demoNovaNativeAdView.leadingAnchor.constraint(lessThanOrEqualTo: self.view.leadingAnchor, constant: 100),
+                    demoNovaNativeAdView.leadingAnchor.constraint(lessThanOrEqualTo: self.view.leadingAnchor, constant: 50),
                     demoNovaNativeAdView.trailingAnchor.constraint(lessThanOrEqualTo: self.view.trailingAnchor),
-                    demoNovaNativeAdView.topAnchor.constraint(lessThanOrEqualTo: self.view.topAnchor, constant: 100),
+                    demoNovaNativeAdView.topAnchor.constraint(lessThanOrEqualTo: self.view.topAnchor, constant: 50),
                     demoNovaNativeAdView.bottomAnchor.constraint(lessThanOrEqualTo: self.view.bottomAnchor),
+                    demoNovaNativeAdView.widthAnchor.constraint(equalToConstant: 300.0)
                 ])
                 
                 demoNovaNativeAdView.bindView(nativeAd: nativeAdItem)

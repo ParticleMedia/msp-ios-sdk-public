@@ -6,11 +6,11 @@
 	<dict>
 		<key>Assets.car</key>
 		<data>
-		s6jticwW5/KNbKUm9yPMZ7sTkS0=
+		r6Zj0PZhJUnYIESsU2ELmlEWr/M=
 		</data>
 		<key>Headers/NovaCore-Swift.h</key>
 		<data>
-		yGEXXeme89DrdcxUcaYQyTVh2J8=
+		hdRnqqNKIdmIV8VUzQc9+UjW54s=
 		</data>
 		<key>Headers/NovaCore.h</key>
 		<data>
@@ -38,7 +38,7 @@
 		</data>
 		<key>Modules/NovaCore.swiftmodule/x86_64-apple-ios-simulator.abi.json</key>
 		<data>
-		3Iw6Utha1wg166PetPEEhEtoyWs=
+		3yCcSOriMc2s3FbKGRdLBwnkl88=
 		</data>
 		<key>Modules/NovaCore.swiftmodule/x86_64-apple-ios-simulator.private.swiftinterface</key>
 		<data>
@@ -54,7 +54,7 @@
 		</data>
 		<key>Modules/NovaCore.swiftmodule/x86_64-apple-ios-simulator.swiftmodule</key>
 		<data>
-		sSCH1CwPt5J2PXa4iqlGNLdYZbo=
+		iz5OQFDp65vPpK2nDpTAx560Dg8=
 		</data>
 		<key>Modules/module.modulemap</key>
 		<data>
@@ -83,14 +83,14 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			Fzeyv140QNfidruC6myD/h9dzrGHEYPZ5c2NOiLzOJU=
+			/xgLgCFwBVmJzZoBpMOvIOmiBGb2R39Efsp9JQNvLLc=
 			</data>
 		</dict>
 		<key>Headers/NovaCore-Swift.h</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			LFVQDulOAqn1u5H7KGrreJb4GE5FryuCfKDrxKben/g=
+			1Z7z90QwWWDSYWizl7FbTLWLGzYlmh9h31f0ZC1cb+Q=
 			</data>
 		</dict>
 		<key>Headers/NovaCore.h</key>
@@ -132,7 +132,7 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			Di2xBgXjME2vBVwCNs0i88SYUTp+9kXg0oyUZi7fp1A=
+			WCNOvMMxrndeYp7JFFtgQN+iNDfyN6JeQZ0CT908Vw0=
 			</data>
 		</dict>
 		<key>Modules/NovaCore.swiftmodule/x86_64-apple-ios-simulator.private.swiftinterface</key>
@@ -160,7 +160,7 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			CsuF2ck0mjBLGhoktC8tx1mjUMQ47bBSDKhu5IXb6sg=
+			GuNEbWQUQNRWWzVAuo5XWuicCEz3qcE0b/go2TWmx4I=
 			</data>
 		</dict>
 		<key>Modules/module.modulemap</key>

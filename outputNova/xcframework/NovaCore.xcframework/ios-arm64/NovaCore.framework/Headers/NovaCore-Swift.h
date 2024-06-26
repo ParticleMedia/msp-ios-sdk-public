@@ -645,6 +645,7 @@ SWIFT_CLASS_PROPERTY(@property (nonatomic, class, readonly) Class _Nonnull layer
 @end
 
 
+
 SWIFT_CLASS("_TtC8NovaCore18UnifiedWebViewHost")
 @interface UnifiedWebViewHost : NSObject
 - (nonnull instancetype)init SWIFT_UNAVAILABLE;

@@ -67,7 +67,7 @@ open class NovaNativeAdView: UIView {
         titleLabel?.text = nativeAd.headline
         bodyLabel?.text = nativeAd.body
         advertiserLabel?.text = nativeAd.advertiser
-        callToActionButton?.titleLabel?.text = nativeAd.callToAction
+        callToActionButton?.setTitle(nativeAd.callToAction, for: .normal)
         //self.nativeAdView.callToActionView?.isUserInteractionEnabled = false
         //self.gadMediaView.translatesAutoresizingMaskIntoConstraints = false
         //self.gadMediaView.contentMode = .scaleAspectFill
