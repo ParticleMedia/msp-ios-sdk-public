@@ -10,7 +10,7 @@
 		</data>
 		<key>Headers/NovaCore-Swift.h</key>
 		<data>
-		uOGqDJBh+1yePeJci1m/7lFmDlA=
+		VHBatptAnTxVNK6vhEyRylrDjbQ=
 		</data>
 		<key>Headers/NovaCore.h</key>
 		<data>
@@ -38,7 +38,7 @@
 		</data>
 		<key>Modules/NovaCore.swiftmodule/arm64-apple-ios.abi.json</key>
 		<data>
-		fbUM2JFJ0BGN+ObeHGU2ZOfZ9+U=
+		ZPHRGGN5hfGOMiu9hTk28ddqe4k=
 		</data>
 		<key>Modules/NovaCore.swiftmodule/arm64-apple-ios.private.swiftinterface</key>
 		<data>
@@ -54,7 +54,7 @@
 		</data>
 		<key>Modules/NovaCore.swiftmodule/arm64-apple-ios.swiftmodule</key>
 		<data>
-		kAhvFAOl90FuT4vG4IUu+/liH9s=
+		O4Fn7HPXEFMXB8vyuISIRgiDY0Q=
 		</data>
 		<key>Modules/module.modulemap</key>
 		<data>
@@ -90,7 +90,7 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			5DZK8oQStDQmFsb+7TXRilMb8xvqDQ0WODwqH0ztJ1E=
+			EBOpA0dW10HNs5KqntAqv4nYuCWq2dbNCut6S6sfX/s=
 			</data>
 		</dict>
 		<key>Headers/NovaCore.h</key>
@@ -132,7 +132,7 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			ouwCGxkyf+NZdlkw+vjgl9dsv2FU5yMEaBWLgxriJqY=
+			OYPX5liJz6tJ4lSCiOASzWfo1sA4NeKOEwjQRSoLq3s=
 			</data>
 		</dict>
 		<key>Modules/NovaCore.swiftmodule/arm64-apple-ios.private.swiftinterface</key>
@@ -160,7 +160,7 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			785rl8WAM5l/aVJ2jcDCT7NbDnOdqKtP41bmjjoWedo=
+			zA4MWB7f3gC2DuIgyAH9B49GSK5UmNjqbtC6jXL2QB4=
 			</data>
 		</dict>
 		<key>Modules/module.modulemap</key>

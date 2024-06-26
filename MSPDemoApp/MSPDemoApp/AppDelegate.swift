@@ -16,7 +16,7 @@ import NovaAdapter
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
-
+    var window: UIWindow?
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
@@ -30,6 +30,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         MSPHelper.shared.setNovaManager(novaManager: NovaManager())
         MSPHelper.shared.bidLoaderProvider.googleQueryInfoFetcher = GoogleQueryInfoFetcherHelper()
         MSPHelper.shared.initMSP(initParams: mspInitParameters, sdkInitListener: nil)
+        
+        window = UIWindow(frame: UIScreen.main.bounds)
+        self.window?.makeKeyAndVisible()
         
         return true
     }

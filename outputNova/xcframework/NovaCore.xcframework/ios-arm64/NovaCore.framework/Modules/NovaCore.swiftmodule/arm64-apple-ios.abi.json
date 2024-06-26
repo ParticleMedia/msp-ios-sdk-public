@@ -13703,6 +13703,13 @@
         ]
       },
       {
+        "kind": "Import",
+        "name": "UIKit",
+        "printedName": "UIKit",
+        "declKind": "Import",
+        "moduleName": "NovaCore"
+      },
+      {
         "kind": "TypeDecl",
         "name": "NovaAdLaunchOption",
         "printedName": "NovaAdLaunchOption",
@@ -24244,10 +24251,7 @@
         "name": "SafariServices",
         "printedName": "SafariServices",
         "declKind": "Import",
-        "moduleName": "NovaCore",
-        "declAttributes": [
-          "RawDocComment"
-        ]
+        "moduleName": "NovaCore"
       },
       {
         "kind": "Import",
@@ -79188,42 +79192,42 @@
     {
       "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-sdk\/NovaCore\/NovaCore\/Landing\/NovaAdsLandingWebViewController.swift",
       "kind": "BooleanLiteral",
-      "offset": 719,
+      "offset": 611,
       "length": 5,
       "value": "false"
     },
     {
       "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-sdk\/NovaCore\/NovaCore\/Landing\/NovaAdsLandingWebViewController.swift",
       "kind": "BooleanLiteral",
-      "offset": 900,
+      "offset": 792,
       "length": 5,
       "value": "false"
     },
     {
       "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-sdk\/NovaCore\/NovaCore\/Landing\/NovaAdsLandingWebViewController.swift",
       "kind": "BooleanLiteral",
-      "offset": 1186,
+      "offset": 1078,
       "length": 5,
       "value": "false"
     },
     {
       "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-sdk\/NovaCore\/NovaCore\/Landing\/NovaAdsLandingWebViewController.swift",
       "kind": "BooleanLiteral",
-      "offset": 1367,
+      "offset": 1259,
       "length": 5,
       "value": "false"
     },
     {
       "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-sdk\/NovaCore\/NovaCore\/Landing\/NovaAdsLandingWebViewController.swift",
       "kind": "BooleanLiteral",
-      "offset": 2234,
+      "offset": 2126,
       "length": 5,
       "value": "false"
     },
     {
       "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-sdk\/NovaCore\/NovaCore\/Landing\/NovaAdsLandingWebViewController.swift",
       "kind": "StringLiteral",
-      "offset": 195,
+      "offset": 87,
       "length": 31,
       "value": "\"NovaCore.NovaAdsLandingWebViewController\""
     },

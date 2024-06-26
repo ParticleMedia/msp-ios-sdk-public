@@ -2,9 +2,6 @@
 <Workspace
    version = "1.0">
    <FileRef
-      location = "group:NovaCore/NovaCore.xcodeproj">
-   </FileRef>
-   <FileRef
       location = "group:NovaAdapter/NovaAdapter.xcodeproj">
    </FileRef>
    <FileRef
@@ -24,5 +21,8 @@
    </FileRef>
    <FileRef
       location = "group:Pods/Pods.xcodeproj">
+   </FileRef>
+   <FileRef
+      location = "group:NovaCore/NovaCore.xcodeproj">
    </FileRef>
 </Workspace>

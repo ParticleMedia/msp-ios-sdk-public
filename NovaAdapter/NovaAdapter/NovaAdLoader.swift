@@ -16,6 +16,8 @@ public class NovaAdLoader: AdNetworkAdapter {
     public var priceInDollar: Double?
     public var adUnitId: String?
     
+    public var nativeAd: MSPAd?
+    
     public func destroyAd() {
         
     }
@@ -90,6 +92,8 @@ public class NovaAdLoader: AdNetworkAdapter {
                 let nativeAdItem = NovaAdBuilder.buildNativeAd(adItem: adItem, adUnitId: adUnitId, eCPMInDollar: eCPMInDollar)
                 nativeAd.priceInDollar = self.priceInDollar
                 nativeAd.nativeAdItem = nativeAdItem
+                self.nativeAd = nativeAd
+                nativeAdItem.delegate = self
                 self.adListener?.onAdLoaded(ad: nativeAd)
             default:
                 self.adListener?.onError(msg: "unknown adType")
@@ -151,4 +155,22 @@ public class NovaAdLoader: AdNetworkAdapter {
   "abConfig": {}
 }
 """
+}
+
+extension NovaAdLoader: NovaNativeAdDelegate {
+    public func nativeAdDidLogImpression(_ nativeAd: NovaCore.NovaNativeAdItem) {
+        if let nativeAd = self.nativeAd {
+            self.adListener?.onAdImpression(ad: nativeAd)
+        }
+    }
+    
+    public func nativeAdDidLogClick(_ nativeAd: NovaCore.NovaNativeAdItem, clickAreaName: String) {
+        if let nativeAd = self.nativeAd {
+            self.adListener?.onAdClick(ad: nativeAd)
+        }
+    }
+    
+    public func nativeAdDidFinishRender(_ nativeAd: NovaCore.NovaNativeAdItem) {
+        
+    }
 }
