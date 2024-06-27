@@ -2178,6 +2178,226 @@
             ]
           },
           {
+            "kind": "Var",
+            "name": "googleQueryInfo",
+            "printedName": "googleQueryInfo",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Optional",
+                "printedName": "Swift.String?",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "String",
+                    "printedName": "Swift.String",
+                    "usr": "s:SS"
+                  }
+                ],
+                "usr": "s:Sq"
+              }
+            ],
+            "declKind": "Var",
+            "usr": "s:13PrebidAdapter0A9BidLoaderC15googleQueryInfoSSSgvp",
+            "mangledName": "$s13PrebidAdapter0A9BidLoaderC15googleQueryInfoSSSgvp",
+            "moduleName": "PrebidAdapter",
+            "declAttributes": [
+              "HasInitialValue",
+              "HasStorage",
+              "AccessControl"
+            ],
+            "hasStorage": true,
+            "accessors": [
+              {
+                "kind": "Accessor",
+                "name": "Get",
+                "printedName": "Get()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Optional",
+                    "printedName": "Swift.String?",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "String",
+                        "printedName": "Swift.String",
+                        "usr": "s:SS"
+                      }
+                    ],
+                    "usr": "s:Sq"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:13PrebidAdapter0A9BidLoaderC15googleQueryInfoSSSgvg",
+                "mangledName": "$s13PrebidAdapter0A9BidLoaderC15googleQueryInfoSSSgvg",
+                "moduleName": "PrebidAdapter",
+                "implicit": true,
+                "accessorKind": "get"
+              },
+              {
+                "kind": "Accessor",
+                "name": "Set",
+                "printedName": "Set()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Void",
+                    "printedName": "()"
+                  },
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Optional",
+                    "printedName": "Swift.String?",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "String",
+                        "printedName": "Swift.String",
+                        "usr": "s:SS"
+                      }
+                    ],
+                    "usr": "s:Sq"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:13PrebidAdapter0A9BidLoaderC15googleQueryInfoSSSgvs",
+                "mangledName": "$s13PrebidAdapter0A9BidLoaderC15googleQueryInfoSSSgvs",
+                "moduleName": "PrebidAdapter",
+                "implicit": true,
+                "accessorKind": "set"
+              },
+              {
+                "kind": "Accessor",
+                "name": "Modify",
+                "printedName": "Modify()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Void",
+                    "printedName": "()"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:13PrebidAdapter0A9BidLoaderC15googleQueryInfoSSSgvM",
+                "mangledName": "$s13PrebidAdapter0A9BidLoaderC15googleQueryInfoSSSgvM",
+                "moduleName": "PrebidAdapter",
+                "implicit": true,
+                "accessorKind": "_modify"
+              }
+            ]
+          },
+          {
+            "kind": "Var",
+            "name": "facebookBidToken",
+            "printedName": "facebookBidToken",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Optional",
+                "printedName": "Swift.String?",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "String",
+                    "printedName": "Swift.String",
+                    "usr": "s:SS"
+                  }
+                ],
+                "usr": "s:Sq"
+              }
+            ],
+            "declKind": "Var",
+            "usr": "s:13PrebidAdapter0A9BidLoaderC08facebookC5TokenSSSgvp",
+            "mangledName": "$s13PrebidAdapter0A9BidLoaderC08facebookC5TokenSSSgvp",
+            "moduleName": "PrebidAdapter",
+            "declAttributes": [
+              "HasInitialValue",
+              "HasStorage",
+              "AccessControl"
+            ],
+            "hasStorage": true,
+            "accessors": [
+              {
+                "kind": "Accessor",
+                "name": "Get",
+                "printedName": "Get()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Optional",
+                    "printedName": "Swift.String?",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "String",
+                        "printedName": "Swift.String",
+                        "usr": "s:SS"
+                      }
+                    ],
+                    "usr": "s:Sq"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:13PrebidAdapter0A9BidLoaderC08facebookC5TokenSSSgvg",
+                "mangledName": "$s13PrebidAdapter0A9BidLoaderC08facebookC5TokenSSSgvg",
+                "moduleName": "PrebidAdapter",
+                "implicit": true,
+                "accessorKind": "get"
+              },
+              {
+                "kind": "Accessor",
+                "name": "Set",
+                "printedName": "Set()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Void",
+                    "printedName": "()"
+                  },
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Optional",
+                    "printedName": "Swift.String?",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "String",
+                        "printedName": "Swift.String",
+                        "usr": "s:SS"
+                      }
+                    ],
+                    "usr": "s:Sq"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:13PrebidAdapter0A9BidLoaderC08facebookC5TokenSSSgvs",
+                "mangledName": "$s13PrebidAdapter0A9BidLoaderC08facebookC5TokenSSSgvs",
+                "moduleName": "PrebidAdapter",
+                "implicit": true,
+                "accessorKind": "set"
+              },
+              {
+                "kind": "Accessor",
+                "name": "Modify",
+                "printedName": "Modify()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Void",
+                    "printedName": "()"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:13PrebidAdapter0A9BidLoaderC08facebookC5TokenSSSgvM",
+                "mangledName": "$s13PrebidAdapter0A9BidLoaderC08facebookC5TokenSSSgvM",
+                "moduleName": "PrebidAdapter",
+                "implicit": true,
+                "accessorKind": "_modify"
+              }
+            ]
+          },
+          {
             "kind": "Constructor",
             "name": "init",
             "printedName": "init(googleQueryInfoFetcher:facebookBidTokenProvider:)",
@@ -2279,8 +2499,8 @@
           },
           {
             "kind": "Function",
-            "name": "loadBidWithQueryInfo",
-            "printedName": "loadBidWithQueryInfo(queryInfo:)",
+            "name": "loadBidWithTokens",
+            "printedName": "loadBidWithTokens(googleQueryInfo:facebookBidToken:)",
             "children": [
               {
                 "kind": "TypeNominal",
@@ -2289,14 +2509,36 @@
               },
               {
                 "kind": "TypeNominal",
-                "name": "String",
-                "printedName": "Swift.String",
-                "usr": "s:SS"
+                "name": "Optional",
+                "printedName": "Swift.String?",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "String",
+                    "printedName": "Swift.String",
+                    "usr": "s:SS"
+                  }
+                ],
+                "usr": "s:Sq"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "Optional",
+                "printedName": "Swift.String?",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "String",
+                    "printedName": "Swift.String",
+                    "usr": "s:SS"
+                  }
+                ],
+                "usr": "s:Sq"
               }
             ],
             "declKind": "Func",
-            "usr": "s:13PrebidAdapter0A9BidLoaderC04loadC13WithQueryInfo05queryH0ySS_tF",
-            "mangledName": "$s13PrebidAdapter0A9BidLoaderC04loadC13WithQueryInfo05queryH0ySS_tF",
+            "usr": "s:13PrebidAdapter0A9BidLoaderC04loadC10WithTokens15googleQueryInfo08facebookC5TokenySSSg_AGtF",
+            "mangledName": "$s13PrebidAdapter0A9BidLoaderC04loadC10WithTokens15googleQueryInfo08facebookC5TokenySSSg_AGtF",
             "moduleName": "PrebidAdapter",
             "declAttributes": [
               "AccessControl"
@@ -2306,7 +2548,7 @@
           {
             "kind": "Function",
             "name": "multiFormatAdUnitConfig",
-            "printedName": "multiFormatAdUnitConfig(configId:gadQueryInfo:requestUUID:prebidBannerAdSize:)",
+            "printedName": "multiFormatAdUnitConfig(configId:gadQueryInfo:facebookBidToken:requestUUID:prebidBannerAdSize:)",
             "children": [
               {
                 "kind": "TypeNominal",
@@ -2322,9 +2564,31 @@
               },
               {
                 "kind": "TypeNominal",
-                "name": "String",
-                "printedName": "Swift.String",
-                "usr": "s:SS"
+                "name": "Optional",
+                "printedName": "Swift.String?",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "String",
+                    "printedName": "Swift.String",
+                    "usr": "s:SS"
+                  }
+                ],
+                "usr": "s:Sq"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "Optional",
+                "printedName": "Swift.String?",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "String",
+                    "printedName": "Swift.String",
+                    "usr": "s:SS"
+                  }
+                ],
+                "usr": "s:Sq"
               },
               {
                 "kind": "TypeNominal",
@@ -2340,8 +2604,8 @@
               }
             ],
             "declKind": "Func",
-            "usr": "s:13PrebidAdapter0A9BidLoaderC23multiFormatAdUnitConfig8configId12gadQueryInfo11requestUUID012prebidBannerG4Size0A6Mobile0ghI0CSS_S2SSo6CGSizeVtF",
-            "mangledName": "$s13PrebidAdapter0A9BidLoaderC23multiFormatAdUnitConfig8configId12gadQueryInfo11requestUUID012prebidBannerG4Size0A6Mobile0ghI0CSS_S2SSo6CGSizeVtF",
+            "usr": "s:13PrebidAdapter0A9BidLoaderC23multiFormatAdUnitConfig8configId12gadQueryInfo08facebookC5Token11requestUUID012prebidBannerG4Size0A6Mobile0ghI0CSS_SSSgAMSSSo6CGSizeVtF",
+            "mangledName": "$s13PrebidAdapter0A9BidLoaderC23multiFormatAdUnitConfig8configId12gadQueryInfo08facebookC5Token11requestUUID012prebidBannerG4Size0A6Mobile0ghI0CSS_SSSgAMSSSo6CGSizeVtF",
             "moduleName": "PrebidAdapter",
             "declAttributes": [
               "AccessControl"
@@ -2370,6 +2634,36 @@
             "mangledName": "$s13PrebidAdapter0A9BidLoaderC10onComplete9queryInfoySS_tF",
             "moduleName": "PrebidAdapter",
             "objc_name": "onCompleteQueryInfo:",
+            "declAttributes": [
+              "Dynamic",
+              "ObjC",
+              "AccessControl"
+            ],
+            "isFromExtension": true,
+            "funcSelfKind": "NonMutating"
+          },
+          {
+            "kind": "Function",
+            "name": "onComplete",
+            "printedName": "onComplete(bidToken:)",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Void",
+                "printedName": "()"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "String",
+                "printedName": "Swift.String",
+                "usr": "s:SS"
+              }
+            ],
+            "declKind": "Func",
+            "usr": "c:@CM@PrebidAdapter@objc(cs)PrebidBidLoader(im)onCompleteBidToken:",
+            "mangledName": "$s13PrebidAdapter0A9BidLoaderC10onComplete8bidTokenySS_tF",
+            "moduleName": "PrebidAdapter",
+            "objc_name": "onCompleteBidToken:",
             "declAttributes": [
               "Dynamic",
               "ObjC",
