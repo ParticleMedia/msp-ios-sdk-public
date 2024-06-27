@@ -24,6 +24,8 @@ public class MSPAdNetworkAdapterProvider: AdNetworkAdapterProvider {
     
     public var novaManager: AdNetworkManager?
     
+    public var metaManager: AdNetworkManager?
+    
     
     public init() {
         
@@ -40,6 +42,9 @@ public class MSPAdNetworkAdapterProvider: AdNetworkAdapterProvider {
         } else if adNetwork.name == "Nova" {
             var novaAdLoader = novaManager?.getAdNetworkAdapter()
             return novaAdLoader
+        } else if adNetwork.name == "Facebook" {
+            var metaAdapter = metaManager?.getAdNetworkAdapter()
+            return metaAdapter
         }
         return nil
     }

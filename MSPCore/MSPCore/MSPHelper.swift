@@ -47,6 +47,10 @@ public class MSPHelper {
     public func setNovaManager(novaManager: AdNetworkManager) {
         adNetworkAdapterProvider.novaManager = novaManager
     }
+    
+    public func setMetaManager(metaManager: AdNetworkManager) {
+        adNetworkAdapterProvider.metaManager = metaManager
+    }
 }
 
 public class InitializationParametersImp: InitializationParameters {

@@ -11,6 +11,7 @@ import shared
 import MSPCore
 import PrebidMobile
 import GoogleAdapter
+import MetaAdapter
 import NovaAdapter
 
 @main
@@ -28,7 +29,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         let mspInitParameters = InitializationParametersImp(prebidAPIKey: "sggU8Y1UB6xara62G23qGdcOA8co2O4N_debug",
                                                             prebidHostUrl: "https://prebid-server.newsbreak.com/openrtb2/auction")
         MSPHelper.shared.setNovaManager(novaManager: NovaManager())
+        MSPHelper.shared.setGoogleManager(googleManager: GoogleManager())
         MSPHelper.shared.bidLoaderProvider.googleQueryInfoFetcher = GoogleQueryInfoFetcherHelper()
+        MSPHelper.shared.setMetaManager(metaManager: MetaManager())
+        MSPHelper.shared.bidLoaderProvider.facebookBidTokenProvider = FacebookBidTokenProviderHelper()
         MSPHelper.shared.initMSP(initParams: mspInitParameters, sdkInitListener: nil)
         
         window = UIWindow(frame: UIScreen.main.bounds)
