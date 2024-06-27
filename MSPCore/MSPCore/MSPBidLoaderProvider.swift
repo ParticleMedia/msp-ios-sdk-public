@@ -12,6 +12,7 @@ import shared
 
 public class MSPBidLoaderProvider: BidLoaderProvider {
     public var googleQueryInfoFetcher: GoogleQueryInfoFetcher?
+    public var facebookBidTokenProvider: FacebookBidTokenProvider?
     public var bidLoader: BidLoader?
     
     public init() {
@@ -20,7 +21,7 @@ public class MSPBidLoaderProvider: BidLoaderProvider {
     
     public func getBidLoader() -> BidLoader {
         print("msp get bid load without google query info fetcher")
-        return PrebidBidLoader(googleQueryInfoFetcher: googleQueryInfoFetcher ?? GoogleQueryInfoFetcherStandalone(), facebookBidTokenProvider: FacebookBidTokenProviderStandalone())
+        return PrebidBidLoader(googleQueryInfoFetcher: googleQueryInfoFetcher ?? GoogleQueryInfoFetcherStandalone(), facebookBidTokenProvider: facebookBidTokenProvider ?? FacebookBidTokenProviderStandalone())
     }
 }
 

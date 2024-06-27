@@ -14,6 +14,7 @@
 		66B7302B2C2CCD390042E4FF /* MetaAdLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66B7302A2C2CCD390042E4FF /* MetaAdLoader.swift */; };
 		66B7302F2C2CD10F0042E4FF /* MetaManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66B7302E2C2CD10F0042E4FF /* MetaManager.swift */; };
 		66B730322C2CD22F0042E4FF /* MetaNativeAd.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66B730312C2CD22F0042E4FF /* MetaNativeAd.swift */; };
+		66B730352C2CDD490042E4FF /* FacebookBidTokenProviderHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66B730342C2CDD490042E4FF /* FacebookBidTokenProviderHelper.swift */; };
 		F88C0EFDECCBE738A22D94F9 /* libPods-MetaAdapter.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A67E72BE4FDE15CC4962BC56 /* libPods-MetaAdapter.a */; };
 /* End PBXBuildFile section */
 
@@ -36,6 +37,7 @@
 		66B7302A2C2CCD390042E4FF /* MetaAdLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetaAdLoader.swift; sourceTree = "<group>"; };
 		66B7302E2C2CD10F0042E4FF /* MetaManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetaManager.swift; sourceTree = "<group>"; };
 		66B730312C2CD22F0042E4FF /* MetaNativeAd.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetaNativeAd.swift; sourceTree = "<group>"; };
+		66B730342C2CDD490042E4FF /* FacebookBidTokenProviderHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FacebookBidTokenProviderHelper.swift; sourceTree = "<group>"; };
 		A67E72BE4FDE15CC4962BC56 /* libPods-MetaAdapter.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-MetaAdapter.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		C302EF7DCE62B63A460496D8 /* Pods-MetaAdapter.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MetaAdapter.release.xcconfig"; path = "Target Support Files/Pods-MetaAdapter/Pods-MetaAdapter.release.xcconfig"; sourceTree = "<group>"; };
 		DBA52CF482851172B9D71194 /* Pods-MetaAdapter.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MetaAdapter.debug.xcconfig"; path = "Target Support Files/Pods-MetaAdapter/Pods-MetaAdapter.debug.xcconfig"; sourceTree = "<group>"; };
@@ -99,6 +101,7 @@
 				66B730132C2CCB250042E4FF /* MetaAdapter.docc */,
 				66B7302A2C2CCD390042E4FF /* MetaAdLoader.swift */,
 				66B7302E2C2CD10F0042E4FF /* MetaManager.swift */,
+				66B730342C2CDD490042E4FF /* FacebookBidTokenProviderHelper.swift */,
 			);
 			path = MetaAdapter;
 			sourceTree = "<group>";
@@ -265,6 +268,7 @@
 				66B730322C2CD22F0042E4FF /* MetaNativeAd.swift in Sources */,
 				66B7302F2C2CD10F0042E4FF /* MetaManager.swift in Sources */,
 				66B7302B2C2CCD390042E4FF /* MetaAdLoader.swift in Sources */,
+				66B730352C2CDD490042E4FF /* FacebookBidTokenProviderHelper.swift in Sources */,
 				66B730142C2CCB250042E4FF /* MetaAdapter.docc in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
