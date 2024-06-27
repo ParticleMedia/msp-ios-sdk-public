@@ -49,12 +49,17 @@ extension PrebidAdapter.PrebidAdLoader : PrebidMobile.BannerEventHandler {
   public var configId: Swift.String?
   public var bidListener: (any shared.BidListener)?
   public var adRequest: shared.AdRequest?
+  public var googleQueryInfo: Swift.String?
+  public var facebookBidToken: Swift.String?
   @objc override dynamic public init(googleQueryInfoFetcher: any shared.GoogleQueryInfoFetcher, facebookBidTokenProvider: any shared.FacebookBidTokenProvider)
   @objc override dynamic public func loadBid(placementId: Swift.String, adParams: [Swift.String : Any], bidListener: any shared.BidListener, adRequest: shared.AdRequest)
-  public func loadBidWithQueryInfo(queryInfo: Swift.String)
-  public func multiFormatAdUnitConfig(configId: Swift.String, gadQueryInfo: Swift.String, requestUUID: Swift.String, prebidBannerAdSize: CoreFoundation.CGSize) -> PrebidMobile.AdUnitConfig
+  public func loadBidWithTokens(googleQueryInfo: Swift.String?, facebookBidToken: Swift.String?)
+  public func multiFormatAdUnitConfig(configId: Swift.String, gadQueryInfo: Swift.String?, facebookBidToken: Swift.String?, requestUUID: Swift.String, prebidBannerAdSize: CoreFoundation.CGSize) -> PrebidMobile.AdUnitConfig
   @objc deinit
 }
 extension PrebidAdapter.PrebidBidLoader : shared.GoogleQueryInfoListener {
   @objc dynamic public func onComplete(queryInfo: Swift.String)
+}
+extension PrebidAdapter.PrebidBidLoader : shared.FacebookBidTokenListener {
+  @objc dynamic public func onComplete(bidToken: Swift.String)
 }

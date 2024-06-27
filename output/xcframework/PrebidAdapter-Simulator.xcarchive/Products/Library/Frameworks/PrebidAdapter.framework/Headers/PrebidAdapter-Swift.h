@@ -361,6 +361,11 @@ SWIFT_CLASS("_TtC13PrebidAdapter15PrebidBidLoader")
 @end
 
 
+@interface PrebidBidLoader (SWIFT_EXTENSION(PrebidAdapter)) <SharedFacebookBidTokenListener>
+- (void)onCompleteBidToken:(NSString * _Nonnull)bidToken;
+@end
+
+
 @interface PrebidBidLoader (SWIFT_EXTENSION(PrebidAdapter)) <SharedGoogleQueryInfoListener>
 - (void)onCompleteQueryInfo:(NSString * _Nonnull)queryInfo;
 @end

@@ -15,8 +15,7 @@ public class FacebookBidTokenProviderHelper: FacebookBidTokenProvider {
     }
     
     public func fetch(completeListener: any FacebookBidTokenListener, context: Any) {
-        if let bidToken = FBAdSettings.bidderToken {
-            completeListener.onComplete(bidToken: bidToken)
-        }
+        let bidToken = FBAdSettings.bidderToken
+        completeListener.onComplete(bidToken: bidToken)
     }
 }
