@@ -15,6 +15,7 @@
 		6684807A2BE03D800025018B /* MSPDemoAppTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 668480792BE03D800025018B /* MSPDemoAppTests.swift */; };
 		668480842BE03D800025018B /* MSPDemoAppUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 668480832BE03D800025018B /* MSPDemoAppUITests.swift */; };
 		668480862BE03D800025018B /* MSPDemoAppUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 668480852BE03D800025018B /* MSPDemoAppUITestsLaunchTests.swift */; };
+		66B7303E2C2E3F750042E4FF /* DemoMetaNativeAdView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66B7303D2C2E3F750042E4FF /* DemoMetaNativeAdView.swift */; };
 		66E5334C2C1BA8C700255D15 /* DemoGoogleNativeAdView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E5334B2C1BA8C700255D15 /* DemoGoogleNativeAdView.swift */; };
 		66E5334E2C1BC1E700255D15 /* Colors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E5334D2C1BC1E700255D15 /* Colors.swift */; };
 		66E534022C23B1AC00255D15 /* DemoNovaNativeAdView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E534012C23B1AC00255D15 /* DemoNovaNativeAdView.swift */; };
@@ -52,6 +53,7 @@
 		6684807F2BE03D800025018B /* MSPDemoAppUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MSPDemoAppUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		668480832BE03D800025018B /* MSPDemoAppUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MSPDemoAppUITests.swift; sourceTree = "<group>"; };
 		668480852BE03D800025018B /* MSPDemoAppUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MSPDemoAppUITestsLaunchTests.swift; sourceTree = "<group>"; };
+		66B7303D2C2E3F750042E4FF /* DemoMetaNativeAdView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DemoMetaNativeAdView.swift; sourceTree = "<group>"; };
 		66E5334B2C1BA8C700255D15 /* DemoGoogleNativeAdView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DemoGoogleNativeAdView.swift; sourceTree = "<group>"; };
 		66E5334D2C1BC1E700255D15 /* Colors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Colors.swift; sourceTree = "<group>"; };
 		66E534012C23B1AC00255D15 /* DemoNovaNativeAdView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DemoNovaNativeAdView.swift; sourceTree = "<group>"; };
@@ -161,6 +163,7 @@
 			children = (
 				66E5334B2C1BA8C700255D15 /* DemoGoogleNativeAdView.swift */,
 				66E534012C23B1AC00255D15 /* DemoNovaNativeAdView.swift */,
+				66B7303D2C2E3F750042E4FF /* DemoMetaNativeAdView.swift */,
 			);
 			path = Native;
 			sourceTree = "<group>";
@@ -375,6 +378,7 @@
 				66E5334E2C1BC1E700255D15 /* Colors.swift in Sources */,
 				668480672BE03D7D0025018B /* ViewController.swift in Sources */,
 				668480632BE03D7D0025018B /* AppDelegate.swift in Sources */,
+				66B7303E2C2E3F750042E4FF /* DemoMetaNativeAdView.swift in Sources */,
 				668480652BE03D7D0025018B /* SceneDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

@@ -13,6 +13,7 @@ import NovaAdapter
 //import MSPiOSCore
 import NovaCore
 import shared
+import MetaAdapter
 
 class ViewController: UIViewController {
     
@@ -127,6 +128,22 @@ extension ViewController: AdListener {
                 demoNovaNativeAdView.bindView(nativeAd: nativeAdItem)
                 demoNovaNativeAdView.setUpView(nativeAd: nativeAdItem)
                  
+            }
+        } else if ad is MetaNativeAd {
+            let metaNativeAd = ad as? MetaNativeAd
+            if let nativeAdItem = metaNativeAd?.nativeAdItem {
+                let demoMetaNativeAdView = DemoMetaNativeAdView()
+                self.view.addSubview(demoMetaNativeAdView)
+                demoMetaNativeAdView.translatesAutoresizingMaskIntoConstraints = false
+                NSLayoutConstraint.activate([
+                    demoMetaNativeAdView.leadingAnchor.constraint(lessThanOrEqualTo: self.view.leadingAnchor, constant: 100),
+                    demoMetaNativeAdView.trailingAnchor.constraint(lessThanOrEqualTo: self.view.trailingAnchor),
+                    demoMetaNativeAdView.topAnchor.constraint(lessThanOrEqualTo: self.view.topAnchor, constant: 100),
+                    demoMetaNativeAdView.bottomAnchor.constraint(lessThanOrEqualTo: self.view.bottomAnchor),
+                ])
+                
+                demoMetaNativeAdView.bindView(nativeAd: nativeAdItem)
+                demoMetaNativeAdView.setUpView(nativeAd: nativeAdItem)
             }
         }
     }
