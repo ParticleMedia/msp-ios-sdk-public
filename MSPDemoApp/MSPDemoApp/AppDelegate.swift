@@ -13,6 +13,7 @@ import PrebidMobile
 import GoogleAdapter
 import MetaAdapter
 import NovaAdapter
+import AppTrackingTransparency
 
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -37,6 +38,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         window = UIWindow(frame: UIScreen.main.bounds)
         self.window?.makeKeyAndVisible()
+        
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+            ATTrackingManager.requestTrackingAuthorization { result in
+                print(result.rawValue)
+            }
+        }
         
         return true
     }

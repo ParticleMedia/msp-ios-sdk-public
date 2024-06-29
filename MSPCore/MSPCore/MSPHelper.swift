@@ -28,6 +28,7 @@ public class MSPHelper {
         self.sdkInitListener = sdkInitListener
         var adapterInitListener = MSPAdapterInitListener()
         adNetworkAdapterProvider.googleManager?.getAdNetworkAdapter()?.initialize(initParams: initParams, adapterInitListener: adapterInitListener, context: nil)
+        adNetworkAdapterProvider.metaManager?.getAdNetworkAdapter()?.initialize(initParams: initParams, adapterInitListener: adapterInitListener, context: nil)
         PrebidAdLoader().initialize(initParams: initParams, adapterInitListener: adapterInitListener, context: nil)
     }
     
