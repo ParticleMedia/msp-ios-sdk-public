@@ -56,7 +56,7 @@ import Foundation
                 return
             }
             nativeAdItem = FBNativeAd(placementID: placementId)
-            //nativeAdItem?.delegate = fbAdDelegate
+            nativeAdItem?.delegate = self
 
             DispatchQueue.main.async {
                 self.nativeAdItem?.loadAd(withBidPayload: adString)
@@ -64,6 +64,14 @@ import Foundation
         default:
             self.adListener?.onError(msg: "unknown adType")
         }
+    }
+    
+    public func loadTestAdCreative() {
+        nativeAdItem = FBNativeAd(placementID: "placementId#IMG_16_9_LINK")
+        nativeAdItem?.delegate = self
+        
+        self.nativeAdItem?.loadAd(withBidPayload: "placementId#IMG_16_9_LINK")
+        
     }
     
     public func isIDFAAuthorized() -> Bool {

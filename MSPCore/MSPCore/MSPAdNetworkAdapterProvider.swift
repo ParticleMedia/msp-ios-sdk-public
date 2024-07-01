@@ -26,6 +26,8 @@ public class MSPAdNetworkAdapterProvider: AdNetworkAdapterProvider {
     
     public var metaManager: AdNetworkManager?
     
+    public var adNetworkAdapter: AdNetworkAdapter?
+    
     
     public init() {
         
@@ -35,15 +37,41 @@ public class MSPAdNetworkAdapterProvider: AdNetworkAdapterProvider {
         print("msp begin get adnetwork adapter")
         if adNetwork.name == "Prebid" {
             var prebidAdLoader = PrebidAdLoader()
+            self.adNetworkAdapter = prebidAdLoader
             return prebidAdLoader
         } else if adNetwork.name == "Google" {
             var gadAdLoader = googleManager?.getAdNetworkAdapter()
+            self.adNetworkAdapter = gadAdLoader
             return gadAdLoader
         } else if adNetwork.name == "Nova" {
             var novaAdLoader = novaManager?.getAdNetworkAdapter()
+            self.adNetworkAdapter = novaAdLoader
             return novaAdLoader
         } else if adNetwork.name == "Facebook" {
             var metaAdapter = metaManager?.getAdNetworkAdapter()
+            self.adNetworkAdapter = metaAdapter
+            return metaAdapter
+        }
+        return nil
+    }
+    
+    public func getAdNetworkAdapterByName(adNetworkName: String) -> AdNetworkAdapter? {
+        print("msp begin get adnetwork adapter")
+        if adNetworkName == "Prebid" {
+            var prebidAdLoader = PrebidAdLoader()
+            self.adNetworkAdapter = prebidAdLoader
+            return prebidAdLoader
+        } else if adNetworkName == "Google" {
+            var gadAdLoader = googleManager?.getAdNetworkAdapter()
+            self.adNetworkAdapter = gadAdLoader
+            return gadAdLoader
+        } else if adNetworkName == "Nova" {
+            var novaAdLoader = novaManager?.getAdNetworkAdapter()
+            self.adNetworkAdapter = novaAdLoader
+            return novaAdLoader
+        } else if adNetworkName == "Facebook" {
+            var metaAdapter = metaManager?.getAdNetworkAdapter()
+            self.adNetworkAdapter = metaAdapter
             return metaAdapter
         }
         return nil
