@@ -1,4 +1,5 @@
 ${PODS_ROOT}/Target Support Files/Pods-MSPDemoApp/Pods-MSPDemoApp-frameworks.sh
 ${PODS_XCFRAMEWORKS_BUILD_DIR}/MSPCore/PrebidAdapter.framework/PrebidAdapter
 ${PODS_XCFRAMEWORKS_BUILD_DIR}/MSPSharedLibraries/PrebidMobile.framework/PrebidMobile
+${PODS_XCFRAMEWORKS_BUILD_DIR}/MSPSharedLibraries/MSPiOSCore.framework/MSPiOSCore
 ${PODS_XCFRAMEWORKS_BUILD_DIR}/NovaAdapter/NovaCore.framework/NovaCore

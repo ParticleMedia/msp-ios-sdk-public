@@ -6,8 +6,8 @@
 //
 
 import Foundation
-//import MSPiOSCore
-import shared
+import MSPiOSCore
+//import shared
 import PrebidAdapter
 import UIKit
 
@@ -36,7 +36,7 @@ public class MSPHelper {
         public func onComplete(adNetwork: AdNetwork, adapterInitStatus: AdapterInitStatus, message: String) {
             MSPHelper.shared.numInitWaitingForCallbacks = MSPHelper.shared.numInitWaitingForCallbacks - 1
             if MSPHelper.shared.numInitWaitingForCallbacks == 0{
-                MSPHelper.shared.sdkInitListener?.onComplete(status: .success, message: "")
+                MSPHelper.shared.sdkInitListener?.onComplete(status: .SUCCESS, message: "")
             }
         }
     }
@@ -76,7 +76,7 @@ public class InitializationParametersImp: InitializationParameters {
         return ""
     }
     
-    public func getParameters() -> [String : Any] {
+    public func getParameters() -> [String : Any]? {
         return [String : Any]()
     }
     

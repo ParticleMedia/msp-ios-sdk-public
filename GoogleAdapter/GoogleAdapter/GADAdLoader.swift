@@ -7,12 +7,12 @@
 
 import Foundation
 import GoogleMobileAds
-//import MSPiOSCore
-import shared
+import MSPiOSCore
+//import shared
 import PrebidMobile
 
 @objc public class GADAdLoder : NSObject, AdNetworkAdapter {
-    public func prepareViewForInteraction(nativeAd: shared.NativeAd, nativeAdView: Any) {
+    public func prepareViewForInteraction(nativeAd: MSPiOSCore.NativeAd, nativeAdView: Any) {
         
     }
     

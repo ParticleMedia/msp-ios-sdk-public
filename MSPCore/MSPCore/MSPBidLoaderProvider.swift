@@ -7,8 +7,8 @@
 
 import Foundation
 import PrebidAdapter
-//import MSPiOSCore
-import shared
+import MSPiOSCore
+//import shared
 
 public class MSPBidLoaderProvider: BidLoaderProvider {
     public var googleQueryInfoFetcher: GoogleQueryInfoFetcher?

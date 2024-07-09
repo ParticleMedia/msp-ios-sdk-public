@@ -4,7 +4,8 @@
 //
 //  Created by Huanzhi Zhang on 6/12/24.
 //
-import shared
+//import shared
+import MSPiOSCore
 import Foundation
 import NovaCore
 

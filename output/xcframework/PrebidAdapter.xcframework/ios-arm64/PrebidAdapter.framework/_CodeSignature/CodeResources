@@ -10,7 +10,7 @@
 		</data>
 		<key>Frameworks/MSPiOSCore.framework/MSPiOSCore</key>
 		<data>
-		8VN5FmxT0Zg63PDohHUjzyrB8sE=
+		xWHqN7K8795Appb3BNZNJOF7j/4=
 		</data>
 		<key>Frameworks/MSPiOSCore.framework/_CodeSignature/CodeResources</key>
 		<data>
@@ -30,7 +30,7 @@
 		</data>
 		<key>Frameworks/PrebidMobile.framework/PrebidMobile</key>
 		<data>
-		QzNb018Hr9J1FEdsZNTPL183tg4=
+		utS+XOzE2OzLbzVH1QcmS5xyKKA=
 		</data>
 		<key>Frameworks/PrebidMobile.framework/_CodeSignature/CodeResources</key>
 		<data>
@@ -98,7 +98,7 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			L5kvrVoVzcnb+hxTdBWKsT9PheLsYO6QieCzCflYic8=
+			4jzHnqXYivHBaDlHdVSnsF2OuI+idywQ/xKs+aaZDW0=
 			</data>
 		</dict>
 		<key>Frameworks/MSPiOSCore.framework/_CodeSignature/CodeResources</key>
@@ -133,7 +133,7 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			fiqhCIv3QKinNwr0+g0nPNOSitvKLi1uMjQs/gMQH60=
+			LNxnPLX/WKJCjOHptw2t2f2oMZfT/fi4ooCvoP0QNJs=
 			</data>
 		</dict>
 		<key>Frameworks/PrebidMobile.framework/_CodeSignature/CodeResources</key>

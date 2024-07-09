@@ -6,8 +6,8 @@
 //
 
 import Foundation
-//import MSPiOSCore
-import shared
+import MSPiOSCore
+//import shared
 import GoogleMobileAds
 
 public class GoogleQueryInfoFetcherHelper: GoogleQueryInfoFetcher {

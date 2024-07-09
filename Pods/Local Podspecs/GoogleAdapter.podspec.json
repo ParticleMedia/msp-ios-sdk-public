@@ -22,7 +22,7 @@
       "10.14.0"
     ],
     "MSPSharedLibraries": [
-
+      "0.0.15"
     ]
   },
   "pod_target_xcconfig": {

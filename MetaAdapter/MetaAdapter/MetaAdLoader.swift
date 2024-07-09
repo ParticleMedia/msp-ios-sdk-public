@@ -4,7 +4,8 @@
 //
 //  Created by Huanzhi Zhang on 6/26/24.
 //
-import shared
+//import shared
+import MSPiOSCore
 import FBAudienceNetwork
 import AppTrackingTransparency
 import PrebidMobile
@@ -12,6 +13,10 @@ import PrebidMobile
 import Foundation
 
 @objc public class MetaAdLoder : NSObject, AdNetworkAdapter {
+    public func prepareViewForInteraction(nativeAd: MSPiOSCore.NativeAd, nativeAdView: Any) {
+        
+    }
+    
     
     public var rootViewController: UIViewController?
     public var adListener: AdListener?

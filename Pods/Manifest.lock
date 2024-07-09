@@ -5,28 +5,28 @@ PODS:
     - GoogleUserMessagingPlatform (>= 1.1)
   - GoogleAdapter (0.0.8):
     - Google-Mobile-Ads-SDK (= 10.14.0)
-    - MSPSharedLibraries
-  - GoogleAppMeasurement (10.27.0):
-    - GoogleAppMeasurement/AdIdSupport (= 10.27.0)
+    - MSPSharedLibraries (= 0.0.15)
+  - GoogleAppMeasurement (10.29.0):
+    - GoogleAppMeasurement/AdIdSupport (= 10.29.0)
     - GoogleUtilities/AppDelegateSwizzler (~> 7.11)
     - GoogleUtilities/MethodSwizzler (~> 7.11)
     - GoogleUtilities/Network (~> 7.11)
     - "GoogleUtilities/NSData+zlib (~> 7.11)"
     - nanopb (< 2.30911.0, >= 2.30908.0)
-  - GoogleAppMeasurement/AdIdSupport (10.27.0):
-    - GoogleAppMeasurement/WithoutAdIdSupport (= 10.27.0)
+  - GoogleAppMeasurement/AdIdSupport (10.29.0):
+    - GoogleAppMeasurement/WithoutAdIdSupport (= 10.29.0)
     - GoogleUtilities/AppDelegateSwizzler (~> 7.11)
     - GoogleUtilities/MethodSwizzler (~> 7.11)
     - GoogleUtilities/Network (~> 7.11)
     - "GoogleUtilities/NSData+zlib (~> 7.11)"
     - nanopb (< 2.30911.0, >= 2.30908.0)
-  - GoogleAppMeasurement/WithoutAdIdSupport (10.27.0):
+  - GoogleAppMeasurement/WithoutAdIdSupport (10.29.0):
     - GoogleUtilities/AppDelegateSwizzler (~> 7.11)
     - GoogleUtilities/MethodSwizzler (~> 7.11)
     - GoogleUtilities/Network (~> 7.11)
     - "GoogleUtilities/NSData+zlib (~> 7.11)"
     - nanopb (< 2.30911.0, >= 2.30908.0)
-  - GoogleUserMessagingPlatform (2.4.0)
+  - GoogleUserMessagingPlatform (2.5.0)
   - GoogleUtilities/AppDelegateSwizzler (7.13.3):
     - GoogleUtilities/Environment
     - GoogleUtilities/Logger
@@ -66,17 +66,17 @@ PODS:
     - libwebp/sharpyuv
   - MetaAdapter (0.0.8):
     - FBAudienceNetwork (= 6.15.0)
-    - MSPSharedLibraries
+    - MSPSharedLibraries (= 0.0.15)
   - MSPCore (0.0.8):
-    - MSPSharedLibraries
-  - MSPSharedLibraries (0.0.8)
+    - MSPSharedLibraries (= 0.0.15)
+  - MSPSharedLibraries (0.0.15)
   - nanopb (2.30910.0):
     - nanopb/decode (= 2.30910.0)
     - nanopb/encode (= 2.30910.0)
   - nanopb/decode (2.30910.0)
   - nanopb/encode (2.30910.0)
   - NovaAdapter (0.0.8):
-    - MSPSharedLibraries
+    - MSPSharedLibraries (= 0.0.15)
   - PromisesObjC (2.4.0)
   - SDWebImage (5.18.8):
     - SDWebImage/Core (= 5.18.8)
@@ -126,16 +126,16 @@ EXTERNAL SOURCES:
 SPEC CHECKSUMS:
   FBAudienceNetwork: 80a035aa69cc3a71c99e44cb5c2874e4cef9909f
   Google-Mobile-Ads-SDK: 8f67a72f88d057335b1ac3f501e2b68ad054116e
-  GoogleAdapter: 255e22f8a69c6944a4786f8f4c619900f25d030e
-  GoogleAppMeasurement: f65fc137531af9ad647f1c0a42f3b6a4d3a98049
-  GoogleUserMessagingPlatform: f131fa7978d2ba88d7426702b057c2cc318e6595
+  GoogleAdapter: 2478e9598b230907dfeb3c2d946d316099f3a910
+  GoogleAppMeasurement: f9de05ee17401e3355f68e8fc8b5064d429f5918
+  GoogleUserMessagingPlatform: 6b4f48a370e77ce121d034c908cc6ee4fdafaf13
   GoogleUtilities: ea963c370a38a8069cc5f7ba4ca849a60b6d7d15
   libwebp: 1786c9f4ff8a279e4dac1e8f385004d5fc253009
-  MetaAdapter: 473f60c5684d5b35bbdd734f8da7dfcb1bf250c8
-  MSPCore: e07f97a880e00adc5ad1d532414ae2fe241cab19
-  MSPSharedLibraries: bc55410eda8333bdee6f03af5c52b5459828d32e
+  MetaAdapter: 6f3ce055b24e2f7ec48b0c65daf3f03636b90595
+  MSPCore: 9b4c931ae737cd5025fc11318ddbcf66a248f4ab
+  MSPSharedLibraries: 2defaaaad5743d00c50d82edb91135a61a321b01
   nanopb: 438bc412db1928dac798aa6fd75726007be04262
-  NovaAdapter: 5f92e0ad0cb5222905cbc33f15e28e7e1cda0f5f
+  NovaAdapter: 9c017345cdf5b9fbb14bf017c8e23b39b01a9a36
   PromisesObjC: f5707f49cb48b9636751c5b2e7d227e43fba9f47
   SDWebImage: a81bbb3ba4ea5f810f4069c68727cb118467a04a
   SDWebImageWebPCoder: 633b813fca24f1de5e076bcd7f720c038b23892b

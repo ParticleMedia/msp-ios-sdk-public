@@ -1042,6 +1042,7 @@
 		35A6A54ECC7CFDD424E9FD5C188918E0 /* common_sse41.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = common_sse41.h; path = src/dsp/common_sse41.h; sourceTree = "<group>"; };
 		35E34D4F87B75947C0957E46E10185C9 /* SDWebImage-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "SDWebImage-umbrella.h"; sourceTree = "<group>"; };
 		360E30C76C53E413901D01FA47169657 /* Google-Mobile-Ads-SDK.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Google-Mobile-Ads-SDK.release.xcconfig"; sourceTree = "<group>"; };
+		36411A2B7F0416689EC9066D15CA9277 /* PrebidMobile.xcframework */ = {isa = PBXFileReference; includeInIndex = 1; name = PrebidMobile.xcframework; path = MSPSharedLibraries/PrebidMobile.xcframework; sourceTree = "<group>"; };
 		3643F516348F36EEFBF7271A648BFF4C /* FBLPromise+Delay.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "FBLPromise+Delay.h"; path = "Sources/FBLPromises/include/FBLPromise+Delay.h"; sourceTree = "<group>"; };
 		36A689A7B341A048351FEB2F218E73F8 /* picture_rescale_enc.c */ = {isa = PBXFileReference; includeInIndex = 1; name = picture_rescale_enc.c; path = src/enc/picture_rescale_enc.c; sourceTree = "<group>"; };
 		36AF4D431008FAD7079BC1A303073807 /* NovaAdapter-xcframeworks.sh */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.script.sh; path = "NovaAdapter-xcframeworks.sh"; sourceTree = "<group>"; };
@@ -1320,6 +1321,7 @@
 		8FA730975D5B79DA4BF670E9969926ED /* FBAdCompanionView.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = FBAdCompanionView.h; path = "Static/FBAudienceNetwork.xcframework/ios-arm64_x86_64-simulator/FBAudienceNetwork.framework/Headers/FBAdCompanionView.h"; sourceTree = "<group>"; };
 		8FB3C793E223A8E78634FBCCA4B92F30 /* FBAdView.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = FBAdView.h; path = "Static/FBAudienceNetwork.xcframework/ios-arm64_x86_64-simulator/FBAudienceNetwork.framework/Headers/FBAdView.h"; sourceTree = "<group>"; };
 		8FD968A23654BD75A779C699DA55D31E /* sharpyuv_gamma.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = sharpyuv_gamma.h; path = sharpyuv/sharpyuv_gamma.h; sourceTree = "<group>"; };
+		90296D26C047A1C584539CE0AB5F28C9 /* MSPiOSCore.xcframework */ = {isa = PBXFileReference; includeInIndex = 1; name = MSPiOSCore.xcframework; path = MSPSharedLibraries/MSPiOSCore.xcframework; sourceTree = "<group>"; };
 		910DD4AB2BCCE5013CF0891DC3315CF9 /* GULKeychainStorage.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = GULKeychainStorage.h; path = GoogleUtilities/Environment/Public/GoogleUtilities/GULKeychainStorage.h; sourceTree = "<group>"; };
 		91D1009CC7B7BF944DE0DD7960805886 /* SDInternalMacros.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SDInternalMacros.h; path = SDWebImage/Private/SDInternalMacros.h; sourceTree = "<group>"; };
 		91E843466A47A5FD45A9BB12EA1C19DA /* NovaAdapter */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = NovaAdapter; path = libNovaAdapter.a; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -1399,7 +1401,6 @@
 		A8A3C5D15724FF4E76102995DA7E7CB1 /* vp8i_dec.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = vp8i_dec.h; path = src/dec/vp8i_dec.h; sourceTree = "<group>"; };
 		A93890465A8DA7CC581E2B0413A34D47 /* lossless_enc_mips_dsp_r2.c */ = {isa = PBXFileReference; includeInIndex = 1; name = lossless_enc_mips_dsp_r2.c; path = src/dsp/lossless_enc_mips_dsp_r2.c; sourceTree = "<group>"; };
 		A9801CEFC93D62301F1B82947A02AFB8 /* anim_decode.c */ = {isa = PBXFileReference; includeInIndex = 1; name = anim_decode.c; path = src/demux/anim_decode.c; sourceTree = "<group>"; };
-		A9AF34FAB520F5CCA57CBB5FBF97D54E /* shared.xcframework */ = {isa = PBXFileReference; includeInIndex = 1; name = shared.xcframework; path = MSPSharedLibraries/shared.xcframework; sourceTree = "<group>"; };
 		AA4D83F0150B6D5FF2F52B40FD1BEC7F /* FBAdSettings.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = FBAdSettings.h; path = "Static/FBAudienceNetwork.xcframework/ios-arm64_x86_64-simulator/FBAudienceNetwork.framework/Headers/FBAdSettings.h"; sourceTree = "<group>"; };
 		AAB611B9BE94814AD63C334A59547010 /* FBMediaView.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = FBMediaView.h; path = "Static/FBAudienceNetwork.xcframework/ios-arm64_x86_64-simulator/FBAudienceNetwork.framework/Headers/FBMediaView.h"; sourceTree = "<group>"; };
 		AAB6401E392B2DF29E12E0C965C329C3 /* ConstraintMakerExtendable.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ConstraintMakerExtendable.swift; path = Sources/ConstraintMakerExtendable.swift; sourceTree = "<group>"; };
@@ -1458,7 +1459,6 @@
 		B9BBDAA9274C96469CA489AE8C2EF908 /* UIImage+GIF.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = "UIImage+GIF.m"; path = "SDWebImage/Core/UIImage+GIF.m"; sourceTree = "<group>"; };
 		BA08BC5D6F0670E38FD8D5B49F5DFCDC /* ConstraintPriority.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ConstraintPriority.swift; path = Sources/ConstraintPriority.swift; sourceTree = "<group>"; };
 		BA58AE850E54C6BC976AAC07977D12FB /* pb_encode.c */ = {isa = PBXFileReference; includeInIndex = 1; path = pb_encode.c; sourceTree = "<group>"; };
-		BA82E2FD2C4BEBF7C05D0F9A37B35B14 /* PrebidMobile.xcframework */ = {isa = PBXFileReference; includeInIndex = 1; name = PrebidMobile.xcframework; path = MSPSharedLibraries/PrebidMobile.xcframework; sourceTree = "<group>"; };
 		BB457BA2377CD54DE04E7EC73CA5F55D /* Pods-NovaCore-acknowledgements.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "Pods-NovaCore-acknowledgements.plist"; sourceTree = "<group>"; };
 		BB5391E92A286B533E8ACF1B6E9727F4 /* FBNativeAdView.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = FBNativeAdView.h; path = "Static/FBAudienceNetwork.xcframework/ios-arm64_x86_64-simulator/FBAudienceNetwork.framework/Headers/FBNativeAdView.h"; sourceTree = "<group>"; };
 		BB5850EA88A3DEFE5AB090E15F375740 /* sharpyuv.c */ = {isa = PBXFileReference; includeInIndex = 1; name = sharpyuv.c; path = sharpyuv/sharpyuv.c; sourceTree = "<group>"; };
@@ -1915,7 +1915,7 @@
 			isa = PBXGroup;
 			children = (
 				36E09C56E803724EBC8B0E537C06BAEE /* MSPSharedLibraries.h */,
-				2C0919C0EC65CD6BAEDE89E47CFFFFDB /* Frameworks */,
+				A009EAE00FE04B89435256B2FC62C86F /* Frameworks */,
 				1FCAC4FADBBFCF1F7661E701CD24EA82 /* Support Files */,
 			);
 			name = MSPSharedLibraries;
@@ -2069,15 +2069,6 @@
 				06E73672A8049BDFA43E11F4457B3A0B /* NSURLSession+GULPromises.m */,
 			);
 			name = Environment;
-			sourceTree = "<group>";
-		};
-		2C0919C0EC65CD6BAEDE89E47CFFFFDB /* Frameworks */ = {
-			isa = PBXGroup;
-			children = (
-				BA82E2FD2C4BEBF7C05D0F9A37B35B14 /* PrebidMobile.xcframework */,
-				A9AF34FAB520F5CCA57CBB5FBF97D54E /* shared.xcframework */,
-			);
-			name = Frameworks;
 			sourceTree = "<group>";
 		};
 		2C1C6B3C82407AF633F9600DBC2D1EBE /* NSData+zlib */ = {
@@ -2621,6 +2612,15 @@
 			);
 			name = libwebp;
 			path = libwebp;
+			sourceTree = "<group>";
+		};
+		A009EAE00FE04B89435256B2FC62C86F /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				90296D26C047A1C584539CE0AB5F28C9 /* MSPiOSCore.xcframework */,
+				36411A2B7F0416689EC9066D15CA9277 /* PrebidMobile.xcframework */,
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 		A365590BF1127928AF012D4654468A8F /* Frameworks */ = {

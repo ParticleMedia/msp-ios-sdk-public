@@ -23,10 +23,10 @@ variant_for_slice()
   "PrebidMobile.xcframework/ios-x86_64-simulator")
     echo "simulator"
     ;;
-  "shared.xcframework/ios-arm64")
+  "MSPiOSCore.xcframework/ios-arm64")
     echo ""
     ;;
-  "shared.xcframework/ios-arm64_x86_64-simulator")
+  "MSPiOSCore.xcframework/ios-x86_64-simulator")
     echo "simulator"
     ;;
   esac
@@ -41,11 +41,11 @@ archs_for_slice()
   "PrebidMobile.xcframework/ios-x86_64-simulator")
     echo "x86_64"
     ;;
-  "shared.xcframework/ios-arm64")
+  "MSPiOSCore.xcframework/ios-arm64")
     echo "arm64"
     ;;
-  "shared.xcframework/ios-arm64_x86_64-simulator")
-    echo "arm64 x86_64"
+  "MSPiOSCore.xcframework/ios-x86_64-simulator")
+    echo "x86_64"
     ;;
   esac
 }
@@ -130,5 +130,5 @@ install_xcframework() {
 }
 
 install_xcframework "${PODS_ROOT}/MSPSharedLibraries/MSPSharedLibraries/PrebidMobile.xcframework" "MSPSharedLibraries" "framework" "ios-arm64" "ios-x86_64-simulator"
-install_xcframework "${PODS_ROOT}/MSPSharedLibraries/MSPSharedLibraries/shared.xcframework" "MSPSharedLibraries" "framework" "ios-arm64" "ios-arm64_x86_64-simulator"
+install_xcframework "${PODS_ROOT}/MSPSharedLibraries/MSPSharedLibraries/MSPiOSCore.xcframework" "MSPSharedLibraries" "framework" "ios-arm64" "ios-x86_64-simulator"
 

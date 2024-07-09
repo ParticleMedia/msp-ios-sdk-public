@@ -1556,6 +1556,91 @@
           },
           {
             "kind": "Var",
+            "name": "adFormat",
+            "printedName": "adFormat",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "AdFormat",
+                "printedName": "MSPiOSCore.AdFormat",
+                "usr": "s:10MSPiOSCore8AdFormatO"
+              }
+            ],
+            "declKind": "Var",
+            "usr": "s:10MSPiOSCore9AdRequestC8adFormatAA0cF0Ovp",
+            "mangledName": "$s10MSPiOSCore9AdRequestC8adFormatAA0cF0Ovp",
+            "moduleName": "MSPiOSCore",
+            "declAttributes": [
+              "HasStorage",
+              "AccessControl"
+            ],
+            "hasStorage": true,
+            "accessors": [
+              {
+                "kind": "Accessor",
+                "name": "Get",
+                "printedName": "Get()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "AdFormat",
+                    "printedName": "MSPiOSCore.AdFormat",
+                    "usr": "s:10MSPiOSCore8AdFormatO"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:10MSPiOSCore9AdRequestC8adFormatAA0cF0Ovg",
+                "mangledName": "$s10MSPiOSCore9AdRequestC8adFormatAA0cF0Ovg",
+                "moduleName": "MSPiOSCore",
+                "implicit": true,
+                "accessorKind": "get"
+              },
+              {
+                "kind": "Accessor",
+                "name": "Set",
+                "printedName": "Set()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Void",
+                    "printedName": "()"
+                  },
+                  {
+                    "kind": "TypeNominal",
+                    "name": "AdFormat",
+                    "printedName": "MSPiOSCore.AdFormat",
+                    "usr": "s:10MSPiOSCore8AdFormatO"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:10MSPiOSCore9AdRequestC8adFormatAA0cF0Ovs",
+                "mangledName": "$s10MSPiOSCore9AdRequestC8adFormatAA0cF0Ovs",
+                "moduleName": "MSPiOSCore",
+                "implicit": true,
+                "accessorKind": "set"
+              },
+              {
+                "kind": "Accessor",
+                "name": "Modify",
+                "printedName": "Modify()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Void",
+                    "printedName": "()"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:10MSPiOSCore9AdRequestC8adFormatAA0cF0OvM",
+                "mangledName": "$s10MSPiOSCore9AdRequestC8adFormatAA0cF0OvM",
+                "moduleName": "MSPiOSCore",
+                "implicit": true,
+                "accessorKind": "_modify"
+              }
+            ]
+          },
+          {
+            "kind": "Var",
             "name": "isCacheSupported",
             "printedName": "isCacheSupported",
             "children": [
@@ -1642,7 +1727,7 @@
           {
             "kind": "Constructor",
             "name": "init",
-            "printedName": "init(customParams:geo:context:adaptiveBannerSize:adSize:placementId:isCacheSupported:)",
+            "printedName": "init(customParams:geo:context:adaptiveBannerSize:adSize:placementId:adFormat:isCacheSupported:)",
             "children": [
               {
                 "kind": "TypeNominal",
@@ -1732,6 +1817,12 @@
               },
               {
                 "kind": "TypeNominal",
+                "name": "AdFormat",
+                "printedName": "MSPiOSCore.AdFormat",
+                "usr": "s:10MSPiOSCore8AdFormatO"
+              },
+              {
+                "kind": "TypeNominal",
                 "name": "Bool",
                 "printedName": "Swift.Bool",
                 "hasDefaultArg": true,
@@ -1739,8 +1830,8 @@
               }
             ],
             "declKind": "Constructor",
-            "usr": "s:10MSPiOSCore9AdRequestC12customParams3geo7context18adaptiveBannerSize02adK011placementId16isCacheSupportedACSDySSypG_AA3GeoVSgypSgAA0cK0VSgARSSSbtcfc",
-            "mangledName": "$s10MSPiOSCore9AdRequestC12customParams3geo7context18adaptiveBannerSize02adK011placementId16isCacheSupportedACSDySSypG_AA3GeoVSgypSgAA0cK0VSgARSSSbtcfc",
+            "usr": "s:10MSPiOSCore9AdRequestC12customParams3geo7context18adaptiveBannerSize02adK011placementId0L6Format16isCacheSupportedACSDySSypG_AA3GeoVSgypSgAA0cK0VSgASSSAA0cO0OSbtcfc",
+            "mangledName": "$s10MSPiOSCore9AdRequestC12customParams3geo7context18adaptiveBannerSize02adK011placementId0L6Format16isCacheSupportedACSDySSypG_AA3GeoVSgypSgAA0cK0VSgASSSAA0cO0OSbtcfc",
             "moduleName": "MSPiOSCore",
             "declAttributes": [
               "AccessControl"
@@ -2705,6 +2796,27 @@
         "printedName": "AdNetworkManager",
         "children": [
           {
+            "kind": "Constructor",
+            "name": "init",
+            "printedName": "init()",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "AdNetworkManager",
+                "printedName": "MSPiOSCore.AdNetworkManager",
+                "usr": "s:10MSPiOSCore16AdNetworkManagerC"
+              }
+            ],
+            "declKind": "Constructor",
+            "usr": "s:10MSPiOSCore16AdNetworkManagerCACycfc",
+            "mangledName": "$s10MSPiOSCore16AdNetworkManagerCACycfc",
+            "moduleName": "MSPiOSCore",
+            "declAttributes": [
+              "AccessControl"
+            ],
+            "init_kind": "Designated"
+          },
+          {
             "kind": "Function",
             "name": "getAdNetworkAdapter",
             "printedName": "getAdNetworkAdapter()",
@@ -2742,8 +2854,7 @@
         "isOpen": true,
         "declAttributes": [
           "AccessControl"
-        ],
-        "hasMissingDesignatedInitializers": true
+        ]
       },
       {
         "kind": "Import",
@@ -4688,21 +4799,21 @@
     {
       "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-core\/MSPiOSCore\/MSPiOSCore\/api\/AdRequest.swift",
       "kind": "BooleanLiteral",
-      "offset": 541,
+      "offset": 595,
       "length": 5,
       "value": "false"
     },
     {
       "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-core\/MSPiOSCore\/MSPiOSCore\/api\/AdRequest.swift",
       "kind": "BooleanLiteral",
-      "offset": 1066,
+      "offset": 1153,
       "length": 5,
       "value": "false"
     },
     {
       "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-core\/MSPiOSCore\/MSPiOSCore\/api\/AdRequest.swift",
       "kind": "BooleanLiteral",
-      "offset": 1104,
+      "offset": 1191,
       "length": 5,
       "value": "false"
     },

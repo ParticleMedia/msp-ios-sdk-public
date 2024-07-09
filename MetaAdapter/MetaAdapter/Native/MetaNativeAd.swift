@@ -6,7 +6,8 @@
 //
 
 import Foundation
-import shared
+//import shared
+import MSPiOSCore
 import FBAudienceNetwork
 
 public class MetaNativeAd: MSPAd {

@@ -50,8 +50,9 @@ public class AdRequest {
   public var adaptiveBannerSize: MSPiOSCore.AdSize?
   public var adSize: MSPiOSCore.AdSize?
   public var placementId: Swift.String
+  public var adFormat: MSPiOSCore.AdFormat
   public var isCacheSupported: Swift.Bool
-  public init(customParams: [Swift.String : Any], geo: MSPiOSCore.Geo?, context: Any?, adaptiveBannerSize: MSPiOSCore.AdSize?, adSize: MSPiOSCore.AdSize?, placementId: Swift.String, isCacheSupported: Swift.Bool = false)
+  public init(customParams: [Swift.String : Any], geo: MSPiOSCore.Geo?, context: Any?, adaptiveBannerSize: MSPiOSCore.AdSize?, adSize: MSPiOSCore.AdSize?, placementId: Swift.String, adFormat: MSPiOSCore.AdFormat, isCacheSupported: Swift.Bool = false)
   @objc deinit
 }
 public struct AdSize {
@@ -94,7 +95,8 @@ public protocol AdNetworkAdapterProvider {
 public protocol BidLoaderProvider {
   func getBidLoader() -> MSPiOSCore.BidLoader
 }
-@_hasMissingDesignatedInitializers open class AdNetworkManager {
+open class AdNetworkManager {
+  public init()
   open func getAdNetworkAdapter() -> (any MSPiOSCore.AdNetworkAdapter)?
   @objc deinit
 }
