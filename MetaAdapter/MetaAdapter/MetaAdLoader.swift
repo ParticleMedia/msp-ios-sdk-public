@@ -27,11 +27,13 @@ import Foundation
     public func initialize(initParams: any InitializationParameters, adapterInitListener: any AdapterInitListener, context: Any?) {
         FBAdSettings.setAdvertiserTrackingEnabled(isIDFAAuthorized())
         FBAudienceNetworkAds.initialize(with: nil, completionHandler: {_ in
-            adapterInitListener.onComplete(adNetwork: .facebook, adapterInitStatus: .success, message: "")
+            //adapterInitListener.onComplete(adNetwork: .facebook, adapterInitStatus: .success, message: "")
         })
     }
     
     public func loadAdCreative(bidResponse: Any, adListener: any AdListener, context: Any, adRequest: AdRequest) {
+        self.adListener = adListener
+        
         guard bidResponse is BidResponse,
               let mBidResponse = bidResponse as? BidResponse else {
             self.adListener?.onError(msg: "no valid response")

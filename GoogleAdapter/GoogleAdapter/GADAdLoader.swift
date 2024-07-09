@@ -26,7 +26,7 @@ import PrebidMobile
     
     public func initialize(initParams: InitializationParameters, adapterInitListener: AdapterInitListener, context: Any?) {
         GADMobileAds.sharedInstance().start(completionHandler: {_ in
-            adapterInitListener.onComplete(adNetwork: .google, adapterInitStatus: .success, message: "")
+            //adapterInitListener.onComplete(adNetwork: .google, adapterInitStatus: .success, message: "")
         })
     }
     

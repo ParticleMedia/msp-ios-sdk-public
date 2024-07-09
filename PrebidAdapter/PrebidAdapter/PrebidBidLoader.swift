@@ -87,6 +87,9 @@ public class PrebidBidLoader : BidLoader {
                 if seat == "msp_google" {
                     print("msp receive google response")
                     self.bidListener?.onBidResponse(bidResponse: bidResponse, adNetwork: AdNetwork.google)
+                } else if seat == "audienceNetwork" {
+                    print("msp receive meta response")
+                    self.bidListener?.onBidResponse(bidResponse: bidResponse, adNetwork: AdNetwork.facebook)
                 } else {
                     print("msp receive prebid response")
                     self.bidListener?.onBidResponse(bidResponse: bidResponse, adNetwork: AdNetwork.prebid)

@@ -27,7 +27,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         //MSPManager.shared.adNetworkAdapterProvider = MSPAdNetworkAdapterProvider()
         //[[Prebid shared] setCustomPrebidServerWithUrl: [NSString stringWithFormat:@"%@openrtb2/auction", prebidHost] error:nil];
         //[Prebid shared].prebidServerAccountId =  @"sggU8Y1UB6xara62G23qGdcOA8co2O4N_debug";
-        let mspInitParameters = InitializationParametersImp(prebidAPIKey: "sggU8Y1UB6xara62G23qGdcOA8co2O4N_debug",
+        let mspInitParameters = InitializationParametersImp(prebidAPIKey: "sggU8Y1UB6xara62G23qGdcOA8co2O4N",
                                                             prebidHostUrl: "https://prebid-server.newsbreak.com/openrtb2/auction")
         MSPHelper.shared.setNovaManager(novaManager: NovaManager())
         MSPHelper.shared.setGoogleManager(googleManager: GoogleManager())
