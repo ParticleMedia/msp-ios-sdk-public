@@ -7,6 +7,12 @@ import Swift
 import _Concurrency
 import _StringProcessing
 import _SwiftConcurrencyShims
+public protocol LoadAdParameters : MSPiOSCore.AdapterParameters {
+  func getAdUnitId() -> Swift.String
+  func getThirdPartyAdPlacementId() -> Swift.String
+  func getBidPayload() -> Swift.String
+  func getBidExpirationMillis() -> Swift.UInt64
+}
 open class BidLoader {
   public var googleQueryInfoFetcher: any MSPiOSCore.GoogleQueryInfoFetcher
   public var facebookBidTokenProvider: any MSPiOSCore.FacebookBidTokenProvider
@@ -14,8 +20,28 @@ open class BidLoader {
   open func loadBid(placementId: Swift.String, adParams: [Swift.String : Any], bidListener: any MSPiOSCore.BidListener, adRequest: MSPiOSCore.AdRequest)
   @objc deinit
 }
+public enum AdapterAdLoadError {
+  case NO_FILL
+  public static func == (a: MSPiOSCore.AdapterAdLoadError, b: MSPiOSCore.AdapterAdLoadError) -> Swift.Bool
+  public func hash(into hasher: inout Swift.Hasher)
+  public var hashValue: Swift.Int {
+    get
+  }
+}
+public protocol MediaListener {
+  func onDurationUpdate(duration: Swift.UInt64)
+  func onProgressUpdate(position: Swift.UInt64, bufferedPosition: Swift.UInt64)
+}
 public protocol GoogleQueryInfoListener {
   func onComplete(queryInfo: Swift.String)
+}
+public enum AdapterInitStatus : Swift.String {
+  case SUCCESS
+  public init?(rawValue: Swift.String)
+  public typealias RawValue = Swift.String
+  public var rawValue: Swift.String {
+    get
+  }
 }
 public class AdRequest {
   public var customParams: [Swift.String : Any]
@@ -24,7 +50,8 @@ public class AdRequest {
   public var adaptiveBannerSize: MSPiOSCore.AdSize?
   public var adSize: MSPiOSCore.AdSize?
   public var placementId: Swift.String
-  public init(customParams: [Swift.String : Any], geo: MSPiOSCore.Geo?, context: Any?, adaptiveBannerSize: MSPiOSCore.AdSize?, adSize: MSPiOSCore.AdSize?, placementId: Swift.String)
+  public var isCacheSupported: Swift.Bool
+  public init(customParams: [Swift.String : Any], geo: MSPiOSCore.Geo?, context: Any?, adaptiveBannerSize: MSPiOSCore.AdSize?, adSize: MSPiOSCore.AdSize?, placementId: Swift.String, isCacheSupported: Swift.Bool = false)
   @objc deinit
 }
 public struct AdSize {
@@ -44,24 +71,18 @@ public protocol BidListener {
 public protocol AdapterAdLoadListener {
   func onAdLoadedFailed(error: MSPiOSCore.AdapterAdLoadError)
 }
-public enum AdapterAdLoadError {
-  case noFill
-  public static func == (a: MSPiOSCore.AdapterAdLoadError, b: MSPiOSCore.AdapterAdLoadError) -> Swift.Bool
-  public func hash(into hasher: inout Swift.Hasher)
-  public var hashValue: Swift.Int {
-    get
-  }
-}
 public protocol AdListener {
   func onAdLoaded(ad: MSPiOSCore.MSPAd)
   func onError(msg: Swift.String)
   func onAdImpression(ad: MSPiOSCore.MSPAd)
   func onAdClick(ad: MSPiOSCore.MSPAd)
+  func onAdLoaded(placementId: Swift.String)
 }
 public protocol AdNetworkAdapter {
   func loadAdCreative(bidResponse: Any, adListener: any MSPiOSCore.AdListener, context: Any, adRequest: MSPiOSCore.AdRequest)
-  func initialize(initParams: MSPiOSCore.InitializationParameters, adapterInitListener: any MSPiOSCore.AdapterInitListener, context: Any?)
+  func initialize(initParams: any MSPiOSCore.InitializationParameters, adapterInitListener: any MSPiOSCore.AdapterInitListener, context: Any?)
   func destroyAd()
+  func prepareViewForInteraction(nativeAd: MSPiOSCore.NativeAd, nativeAdView: Any)
 }
 public protocol GoogleQueryInfoFetcher {
   func fetch(completeListener: any MSPiOSCore.GoogleQueryInfoListener, adRequest: MSPiOSCore.AdRequest)
@@ -72,6 +93,13 @@ public protocol AdNetworkAdapterProvider {
 }
 public protocol BidLoaderProvider {
   func getBidLoader() -> MSPiOSCore.BidLoader
+}
+@_hasMissingDesignatedInitializers open class AdNetworkManager {
+  open func getAdNetworkAdapter() -> (any MSPiOSCore.AdNetworkAdapter)?
+  @objc deinit
+}
+@_hasMissingDesignatedInitializers open class NativeAd : MSPiOSCore.MSPAd {
+  @objc deinit
 }
 public protocol FacebookBidTokenProvider {
   func fetch(completeListener: any MSPiOSCore.FacebookBidTokenListener, context: Any)
@@ -84,11 +112,21 @@ public protocol AdapterParameters {
   func getConsentString() -> Swift.String
   func isInTestMode() -> Swift.Bool
 }
+public enum AdFormat {
+  case banner
+  case native
+  case multi_format
+  case interstitial
+  public static func == (a: MSPiOSCore.AdFormat, b: MSPiOSCore.AdFormat) -> Swift.Bool
+  public func hash(into hasher: inout Swift.Hasher)
+  public var hashValue: Swift.Int {
+    get
+  }
+}
 public protocol MSPInitListener {
   func onComplete(status: MSPiOSCore.MSPInitStatus, message: Swift.String)
 }
-public protocol AdNetworkManager {
-  func getAdNetworkAdapter() -> any MSPiOSCore.AdNetworkAdapter
+public protocol MSPInitializationParameters : MSPiOSCore.InitializationParameters {
 }
 open class MSPAd {
   public var adNetworkAdapter: any MSPiOSCore.AdNetworkAdapter
@@ -97,17 +135,13 @@ open class MSPAd {
   public func destroy()
   @objc deinit
 }
-open class InitializationParameters : MSPiOSCore.AdapterParameters {
-  public init()
-  open func getParameters() -> [Swift.String : Any]?
-  open func hasUserConsent() -> Swift.Bool
-  open func isAgeRestrictedUser() -> Swift.Bool
-  open func isDoNotSell() -> Swift.Bool
-  open func getConsentString() -> Swift.String
-  open func isInTestMode() -> Swift.Bool
-  open func getPrebidAPIKey() -> Swift.String
-  open func getPrebidHostUrl() -> Swift.String
-  @objc deinit
+public protocol MediaController {
+  func addMediaListener(listener: any MSPiOSCore.MediaListener)
+  func removeMediaListener(listener: any MSPiOSCore.MediaListener)
+}
+public protocol InitializationParameters : MSPiOSCore.AdapterParameters {
+  func getPrebidAPIKey() -> Swift.String
+  func getPrebidHostUrl() -> Swift.String
 }
 public enum AdNetwork : Swift.String {
   case google
@@ -123,16 +157,8 @@ public enum AdNetwork : Swift.String {
 public protocol AdapterInitListener {
   func onComplete(adNetwork: MSPiOSCore.AdNetwork, adapterInitStatus: MSPiOSCore.AdapterInitStatus, message: Swift.String)
 }
-public enum AdapterInitStatus : Swift.String {
-  case success
-  public init?(rawValue: Swift.String)
-  public typealias RawValue = Swift.String
-  public var rawValue: Swift.String {
-    get
-  }
-}
 public enum MSPInitStatus {
-  case success
+  case SUCCESS
   public static func == (a: MSPiOSCore.MSPInitStatus, b: MSPiOSCore.MSPInitStatus) -> Swift.Bool
   public func hash(into hasher: inout Swift.Hasher)
   public var hashValue: Swift.Int {
@@ -149,11 +175,13 @@ public struct Geo {
 }
 extension MSPiOSCore.AdapterAdLoadError : Swift.Equatable {}
 extension MSPiOSCore.AdapterAdLoadError : Swift.Hashable {}
-extension MSPiOSCore.AdNetwork : Swift.Equatable {}
-extension MSPiOSCore.AdNetwork : Swift.Hashable {}
-extension MSPiOSCore.AdNetwork : Swift.RawRepresentable {}
 extension MSPiOSCore.AdapterInitStatus : Swift.Equatable {}
 extension MSPiOSCore.AdapterInitStatus : Swift.Hashable {}
 extension MSPiOSCore.AdapterInitStatus : Swift.RawRepresentable {}
+extension MSPiOSCore.AdFormat : Swift.Equatable {}
+extension MSPiOSCore.AdFormat : Swift.Hashable {}
+extension MSPiOSCore.AdNetwork : Swift.Equatable {}
+extension MSPiOSCore.AdNetwork : Swift.Hashable {}
+extension MSPiOSCore.AdNetwork : Swift.RawRepresentable {}
 extension MSPiOSCore.MSPInitStatus : Swift.Equatable {}
 extension MSPiOSCore.MSPInitStatus : Swift.Hashable {}

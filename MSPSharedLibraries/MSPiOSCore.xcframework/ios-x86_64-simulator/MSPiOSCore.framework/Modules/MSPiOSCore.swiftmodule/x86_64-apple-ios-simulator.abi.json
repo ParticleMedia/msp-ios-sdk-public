@@ -16,6 +16,129 @@
       },
       {
         "kind": "TypeDecl",
+        "name": "LoadAdParameters",
+        "printedName": "LoadAdParameters",
+        "children": [
+          {
+            "kind": "Function",
+            "name": "getAdUnitId",
+            "printedName": "getAdUnitId()",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "String",
+                "printedName": "Swift.String",
+                "usr": "s:SS"
+              }
+            ],
+            "declKind": "Func",
+            "usr": "s:10MSPiOSCore16LoadAdParametersP03getD6UnitIdSSyF",
+            "mangledName": "$s10MSPiOSCore16LoadAdParametersP03getD6UnitIdSSyF",
+            "moduleName": "MSPiOSCore",
+            "genericSig": "<τ_0_0 where τ_0_0 : MSPiOSCore.LoadAdParameters>",
+            "sugared_genericSig": "<Self where Self : MSPiOSCore.LoadAdParameters>",
+            "protocolReq": true,
+            "reqNewWitnessTableEntry": true,
+            "funcSelfKind": "NonMutating"
+          },
+          {
+            "kind": "Function",
+            "name": "getThirdPartyAdPlacementId",
+            "printedName": "getThirdPartyAdPlacementId()",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "String",
+                "printedName": "Swift.String",
+                "usr": "s:SS"
+              }
+            ],
+            "declKind": "Func",
+            "usr": "s:10MSPiOSCore16LoadAdParametersP013getThirdPartyD11PlacementIdSSyF",
+            "mangledName": "$s10MSPiOSCore16LoadAdParametersP013getThirdPartyD11PlacementIdSSyF",
+            "moduleName": "MSPiOSCore",
+            "genericSig": "<τ_0_0 where τ_0_0 : MSPiOSCore.LoadAdParameters>",
+            "sugared_genericSig": "<Self where Self : MSPiOSCore.LoadAdParameters>",
+            "protocolReq": true,
+            "reqNewWitnessTableEntry": true,
+            "funcSelfKind": "NonMutating"
+          },
+          {
+            "kind": "Function",
+            "name": "getBidPayload",
+            "printedName": "getBidPayload()",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "String",
+                "printedName": "Swift.String",
+                "usr": "s:SS"
+              }
+            ],
+            "declKind": "Func",
+            "usr": "s:10MSPiOSCore16LoadAdParametersP13getBidPayloadSSyF",
+            "mangledName": "$s10MSPiOSCore16LoadAdParametersP13getBidPayloadSSyF",
+            "moduleName": "MSPiOSCore",
+            "genericSig": "<τ_0_0 where τ_0_0 : MSPiOSCore.LoadAdParameters>",
+            "sugared_genericSig": "<Self where Self : MSPiOSCore.LoadAdParameters>",
+            "protocolReq": true,
+            "reqNewWitnessTableEntry": true,
+            "funcSelfKind": "NonMutating"
+          },
+          {
+            "kind": "Function",
+            "name": "getBidExpirationMillis",
+            "printedName": "getBidExpirationMillis()",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "UInt64",
+                "printedName": "Swift.UInt64",
+                "usr": "s:s6UInt64V"
+              }
+            ],
+            "declKind": "Func",
+            "usr": "s:10MSPiOSCore16LoadAdParametersP22getBidExpirationMilliss6UInt64VyF",
+            "mangledName": "$s10MSPiOSCore16LoadAdParametersP22getBidExpirationMilliss6UInt64VyF",
+            "moduleName": "MSPiOSCore",
+            "genericSig": "<τ_0_0 where τ_0_0 : MSPiOSCore.LoadAdParameters>",
+            "sugared_genericSig": "<Self where Self : MSPiOSCore.LoadAdParameters>",
+            "protocolReq": true,
+            "reqNewWitnessTableEntry": true,
+            "funcSelfKind": "NonMutating"
+          }
+        ],
+        "declKind": "Protocol",
+        "usr": "s:10MSPiOSCore16LoadAdParametersP",
+        "mangledName": "$s10MSPiOSCore16LoadAdParametersP",
+        "moduleName": "MSPiOSCore",
+        "genericSig": "<τ_0_0 : MSPiOSCore.AdapterParameters>",
+        "sugared_genericSig": "<Self : MSPiOSCore.AdapterParameters>",
+        "declAttributes": [
+          "AccessControl"
+        ],
+        "conformances": [
+          {
+            "kind": "Conformance",
+            "name": "AdapterParameters",
+            "printedName": "AdapterParameters",
+            "usr": "s:10MSPiOSCore17AdapterParametersP",
+            "mangledName": "$s10MSPiOSCore17AdapterParametersP"
+          }
+        ]
+      },
+      {
+        "kind": "Import",
+        "name": "Foundation",
+        "printedName": "Foundation",
+        "declKind": "Import",
+        "moduleName": "MSPiOSCore",
+        "declAttributes": [
+          "RawDocComment"
+        ]
+      },
+      {
+        "kind": "TypeDecl",
         "name": "BidLoader",
         "printedName": "BidLoader",
         "children": [
@@ -302,6 +425,263 @@
       },
       {
         "kind": "TypeDecl",
+        "name": "AdapterAdLoadError",
+        "printedName": "AdapterAdLoadError",
+        "children": [
+          {
+            "kind": "Var",
+            "name": "NO_FILL",
+            "printedName": "NO_FILL",
+            "children": [
+              {
+                "kind": "TypeFunc",
+                "name": "Function",
+                "printedName": "(MSPiOSCore.AdapterAdLoadError.Type) -> MSPiOSCore.AdapterAdLoadError",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "AdapterAdLoadError",
+                    "printedName": "MSPiOSCore.AdapterAdLoadError",
+                    "usr": "s:10MSPiOSCore18AdapterAdLoadErrorO"
+                  },
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Metatype",
+                    "printedName": "MSPiOSCore.AdapterAdLoadError.Type",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "AdapterAdLoadError",
+                        "printedName": "MSPiOSCore.AdapterAdLoadError",
+                        "usr": "s:10MSPiOSCore18AdapterAdLoadErrorO"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ],
+            "declKind": "EnumElement",
+            "usr": "s:10MSPiOSCore18AdapterAdLoadErrorO7NO_FILLyA2CmF",
+            "mangledName": "$s10MSPiOSCore18AdapterAdLoadErrorO7NO_FILLyA2CmF",
+            "moduleName": "MSPiOSCore"
+          },
+          {
+            "kind": "Function",
+            "name": "==",
+            "printedName": "==(_:_:)",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Bool",
+                "printedName": "Swift.Bool",
+                "usr": "s:Sb"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "AdapterAdLoadError",
+                "printedName": "MSPiOSCore.AdapterAdLoadError",
+                "usr": "s:10MSPiOSCore18AdapterAdLoadErrorO"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "AdapterAdLoadError",
+                "printedName": "MSPiOSCore.AdapterAdLoadError",
+                "usr": "s:10MSPiOSCore18AdapterAdLoadErrorO"
+              }
+            ],
+            "declKind": "Func",
+            "usr": "s:10MSPiOSCore18AdapterAdLoadErrorO2eeoiySbAC_ACtFZ",
+            "mangledName": "$s10MSPiOSCore18AdapterAdLoadErrorO2eeoiySbAC_ACtFZ",
+            "moduleName": "MSPiOSCore",
+            "static": true,
+            "implicit": true,
+            "funcSelfKind": "NonMutating"
+          },
+          {
+            "kind": "Var",
+            "name": "hashValue",
+            "printedName": "hashValue",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Int",
+                "printedName": "Swift.Int",
+                "usr": "s:Si"
+              }
+            ],
+            "declKind": "Var",
+            "usr": "s:10MSPiOSCore18AdapterAdLoadErrorO9hashValueSivp",
+            "mangledName": "$s10MSPiOSCore18AdapterAdLoadErrorO9hashValueSivp",
+            "moduleName": "MSPiOSCore",
+            "implicit": true,
+            "accessors": [
+              {
+                "kind": "Accessor",
+                "name": "Get",
+                "printedName": "Get()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Int",
+                    "printedName": "Swift.Int",
+                    "usr": "s:Si"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:10MSPiOSCore18AdapterAdLoadErrorO9hashValueSivg",
+                "mangledName": "$s10MSPiOSCore18AdapterAdLoadErrorO9hashValueSivg",
+                "moduleName": "MSPiOSCore",
+                "implicit": true,
+                "accessorKind": "get"
+              }
+            ]
+          },
+          {
+            "kind": "Function",
+            "name": "hash",
+            "printedName": "hash(into:)",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Void",
+                "printedName": "()"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "Hasher",
+                "printedName": "Swift.Hasher",
+                "paramValueOwnership": "InOut",
+                "usr": "s:s6HasherV"
+              }
+            ],
+            "declKind": "Func",
+            "usr": "s:10MSPiOSCore18AdapterAdLoadErrorO4hash4intoys6HasherVz_tF",
+            "mangledName": "$s10MSPiOSCore18AdapterAdLoadErrorO4hash4intoys6HasherVz_tF",
+            "moduleName": "MSPiOSCore",
+            "implicit": true,
+            "funcSelfKind": "NonMutating"
+          }
+        ],
+        "declKind": "Enum",
+        "usr": "s:10MSPiOSCore18AdapterAdLoadErrorO",
+        "mangledName": "$s10MSPiOSCore18AdapterAdLoadErrorO",
+        "moduleName": "MSPiOSCore",
+        "declAttributes": [
+          "AccessControl"
+        ],
+        "conformances": [
+          {
+            "kind": "Conformance",
+            "name": "Equatable",
+            "printedName": "Equatable",
+            "usr": "s:SQ",
+            "mangledName": "$sSQ"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Hashable",
+            "printedName": "Hashable",
+            "usr": "s:SH",
+            "mangledName": "$sSH"
+          }
+        ]
+      },
+      {
+        "kind": "Import",
+        "name": "Foundation",
+        "printedName": "Foundation",
+        "declKind": "Import",
+        "moduleName": "MSPiOSCore",
+        "declAttributes": [
+          "RawDocComment"
+        ]
+      },
+      {
+        "kind": "TypeDecl",
+        "name": "MediaListener",
+        "printedName": "MediaListener",
+        "children": [
+          {
+            "kind": "Function",
+            "name": "onDurationUpdate",
+            "printedName": "onDurationUpdate(duration:)",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Void",
+                "printedName": "()"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "UInt64",
+                "printedName": "Swift.UInt64",
+                "usr": "s:s6UInt64V"
+              }
+            ],
+            "declKind": "Func",
+            "usr": "s:10MSPiOSCore13MediaListenerP16onDurationUpdate8durationys6UInt64V_tF",
+            "mangledName": "$s10MSPiOSCore13MediaListenerP16onDurationUpdate8durationys6UInt64V_tF",
+            "moduleName": "MSPiOSCore",
+            "genericSig": "<τ_0_0 where τ_0_0 : MSPiOSCore.MediaListener>",
+            "sugared_genericSig": "<Self where Self : MSPiOSCore.MediaListener>",
+            "protocolReq": true,
+            "reqNewWitnessTableEntry": true,
+            "funcSelfKind": "NonMutating"
+          },
+          {
+            "kind": "Function",
+            "name": "onProgressUpdate",
+            "printedName": "onProgressUpdate(position:bufferedPosition:)",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Void",
+                "printedName": "()"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "UInt64",
+                "printedName": "Swift.UInt64",
+                "usr": "s:s6UInt64V"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "UInt64",
+                "printedName": "Swift.UInt64",
+                "usr": "s:s6UInt64V"
+              }
+            ],
+            "declKind": "Func",
+            "usr": "s:10MSPiOSCore13MediaListenerP16onProgressUpdate8position16bufferedPositionys6UInt64V_AHtF",
+            "mangledName": "$s10MSPiOSCore13MediaListenerP16onProgressUpdate8position16bufferedPositionys6UInt64V_AHtF",
+            "moduleName": "MSPiOSCore",
+            "genericSig": "<τ_0_0 where τ_0_0 : MSPiOSCore.MediaListener>",
+            "sugared_genericSig": "<Self where Self : MSPiOSCore.MediaListener>",
+            "protocolReq": true,
+            "reqNewWitnessTableEntry": true,
+            "funcSelfKind": "NonMutating"
+          }
+        ],
+        "declKind": "Protocol",
+        "usr": "s:10MSPiOSCore13MediaListenerP",
+        "mangledName": "$s10MSPiOSCore13MediaListenerP",
+        "moduleName": "MSPiOSCore",
+        "declAttributes": [
+          "AccessControl"
+        ]
+      },
+      {
+        "kind": "Import",
+        "name": "Foundation",
+        "printedName": "Foundation",
+        "declKind": "Import",
+        "moduleName": "MSPiOSCore",
+        "declAttributes": [
+          "RawDocComment"
+        ]
+      },
+      {
+        "kind": "TypeDecl",
         "name": "GoogleQueryInfoListener",
         "printedName": "GoogleQueryInfoListener",
         "children": [
@@ -339,6 +719,178 @@
         "moduleName": "MSPiOSCore",
         "declAttributes": [
           "AccessControl"
+        ]
+      },
+      {
+        "kind": "Import",
+        "name": "Foundation",
+        "printedName": "Foundation",
+        "declKind": "Import",
+        "moduleName": "MSPiOSCore",
+        "declAttributes": [
+          "RawDocComment"
+        ]
+      },
+      {
+        "kind": "TypeDecl",
+        "name": "AdapterInitStatus",
+        "printedName": "AdapterInitStatus",
+        "children": [
+          {
+            "kind": "Var",
+            "name": "SUCCESS",
+            "printedName": "SUCCESS",
+            "children": [
+              {
+                "kind": "TypeFunc",
+                "name": "Function",
+                "printedName": "(MSPiOSCore.AdapterInitStatus.Type) -> MSPiOSCore.AdapterInitStatus",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "AdapterInitStatus",
+                    "printedName": "MSPiOSCore.AdapterInitStatus",
+                    "usr": "s:10MSPiOSCore17AdapterInitStatusO"
+                  },
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Metatype",
+                    "printedName": "MSPiOSCore.AdapterInitStatus.Type",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "AdapterInitStatus",
+                        "printedName": "MSPiOSCore.AdapterInitStatus",
+                        "usr": "s:10MSPiOSCore17AdapterInitStatusO"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ],
+            "declKind": "EnumElement",
+            "usr": "s:10MSPiOSCore17AdapterInitStatusO7SUCCESSyA2CmF",
+            "mangledName": "$s10MSPiOSCore17AdapterInitStatusO7SUCCESSyA2CmF",
+            "moduleName": "MSPiOSCore"
+          },
+          {
+            "kind": "Constructor",
+            "name": "init",
+            "printedName": "init(rawValue:)",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Optional",
+                "printedName": "MSPiOSCore.AdapterInitStatus?",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "AdapterInitStatus",
+                    "printedName": "MSPiOSCore.AdapterInitStatus",
+                    "usr": "s:10MSPiOSCore17AdapterInitStatusO"
+                  }
+                ],
+                "usr": "s:Sq"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "String",
+                "printedName": "Swift.String",
+                "usr": "s:SS"
+              }
+            ],
+            "declKind": "Constructor",
+            "usr": "s:10MSPiOSCore17AdapterInitStatusO8rawValueACSgSS_tcfc",
+            "mangledName": "$s10MSPiOSCore17AdapterInitStatusO8rawValueACSgSS_tcfc",
+            "moduleName": "MSPiOSCore",
+            "implicit": true,
+            "init_kind": "Designated"
+          },
+          {
+            "kind": "Var",
+            "name": "rawValue",
+            "printedName": "rawValue",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "String",
+                "printedName": "Swift.String",
+                "usr": "s:SS"
+              }
+            ],
+            "declKind": "Var",
+            "usr": "s:10MSPiOSCore17AdapterInitStatusO8rawValueSSvp",
+            "mangledName": "$s10MSPiOSCore17AdapterInitStatusO8rawValueSSvp",
+            "moduleName": "MSPiOSCore",
+            "implicit": true,
+            "accessors": [
+              {
+                "kind": "Accessor",
+                "name": "Get",
+                "printedName": "Get()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "String",
+                    "printedName": "Swift.String",
+                    "usr": "s:SS"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:10MSPiOSCore17AdapterInitStatusO8rawValueSSvg",
+                "mangledName": "$s10MSPiOSCore17AdapterInitStatusO8rawValueSSvg",
+                "moduleName": "MSPiOSCore",
+                "implicit": true,
+                "accessorKind": "get"
+              }
+            ]
+          }
+        ],
+        "declKind": "Enum",
+        "usr": "s:10MSPiOSCore17AdapterInitStatusO",
+        "mangledName": "$s10MSPiOSCore17AdapterInitStatusO",
+        "moduleName": "MSPiOSCore",
+        "declAttributes": [
+          "AccessControl"
+        ],
+        "enumRawTypeName": "String",
+        "conformances": [
+          {
+            "kind": "Conformance",
+            "name": "Equatable",
+            "printedName": "Equatable",
+            "usr": "s:SQ",
+            "mangledName": "$sSQ"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Hashable",
+            "printedName": "Hashable",
+            "usr": "s:SH",
+            "mangledName": "$sSH"
+          },
+          {
+            "kind": "Conformance",
+            "name": "RawRepresentable",
+            "printedName": "RawRepresentable",
+            "children": [
+              {
+                "kind": "TypeWitness",
+                "name": "RawValue",
+                "printedName": "RawValue",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "String",
+                    "printedName": "Swift.String",
+                    "usr": "s:SS"
+                  }
+                ]
+              }
+            ],
+            "usr": "s:SY",
+            "mangledName": "$sSY"
+          }
         ]
       },
       {
@@ -1003,9 +1555,94 @@
             ]
           },
           {
+            "kind": "Var",
+            "name": "isCacheSupported",
+            "printedName": "isCacheSupported",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Bool",
+                "printedName": "Swift.Bool",
+                "usr": "s:Sb"
+              }
+            ],
+            "declKind": "Var",
+            "usr": "s:10MSPiOSCore9AdRequestC16isCacheSupportedSbvp",
+            "mangledName": "$s10MSPiOSCore9AdRequestC16isCacheSupportedSbvp",
+            "moduleName": "MSPiOSCore",
+            "declAttributes": [
+              "HasStorage",
+              "AccessControl"
+            ],
+            "hasStorage": true,
+            "accessors": [
+              {
+                "kind": "Accessor",
+                "name": "Get",
+                "printedName": "Get()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Bool",
+                    "printedName": "Swift.Bool",
+                    "usr": "s:Sb"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:10MSPiOSCore9AdRequestC16isCacheSupportedSbvg",
+                "mangledName": "$s10MSPiOSCore9AdRequestC16isCacheSupportedSbvg",
+                "moduleName": "MSPiOSCore",
+                "implicit": true,
+                "accessorKind": "get"
+              },
+              {
+                "kind": "Accessor",
+                "name": "Set",
+                "printedName": "Set()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Void",
+                    "printedName": "()"
+                  },
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Bool",
+                    "printedName": "Swift.Bool",
+                    "usr": "s:Sb"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:10MSPiOSCore9AdRequestC16isCacheSupportedSbvs",
+                "mangledName": "$s10MSPiOSCore9AdRequestC16isCacheSupportedSbvs",
+                "moduleName": "MSPiOSCore",
+                "implicit": true,
+                "accessorKind": "set"
+              },
+              {
+                "kind": "Accessor",
+                "name": "Modify",
+                "printedName": "Modify()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Void",
+                    "printedName": "()"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:10MSPiOSCore9AdRequestC16isCacheSupportedSbvM",
+                "mangledName": "$s10MSPiOSCore9AdRequestC16isCacheSupportedSbvM",
+                "moduleName": "MSPiOSCore",
+                "implicit": true,
+                "accessorKind": "_modify"
+              }
+            ]
+          },
+          {
             "kind": "Constructor",
             "name": "init",
-            "printedName": "init(customParams:geo:context:adaptiveBannerSize:adSize:placementId:)",
+            "printedName": "init(customParams:geo:context:adaptiveBannerSize:adSize:placementId:isCacheSupported:)",
             "children": [
               {
                 "kind": "TypeNominal",
@@ -1092,11 +1729,18 @@
                 "name": "String",
                 "printedName": "Swift.String",
                 "usr": "s:SS"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "Bool",
+                "printedName": "Swift.Bool",
+                "hasDefaultArg": true,
+                "usr": "s:Sb"
               }
             ],
             "declKind": "Constructor",
-            "usr": "s:10MSPiOSCore9AdRequestC12customParams3geo7context18adaptiveBannerSize02adK011placementIdACSDySSypG_AA3GeoVSgypSgAA0cK0VSgAQSStcfc",
-            "mangledName": "$s10MSPiOSCore9AdRequestC12customParams3geo7context18adaptiveBannerSize02adK011placementIdACSDySSypG_AA3GeoVSgypSgAA0cK0VSgAQSStcfc",
+            "usr": "s:10MSPiOSCore9AdRequestC12customParams3geo7context18adaptiveBannerSize02adK011placementId16isCacheSupportedACSDySSypG_AA3GeoVSgypSgAA0cK0VSgARSSSbtcfc",
+            "mangledName": "$s10MSPiOSCore9AdRequestC12customParams3geo7context18adaptiveBannerSize02adK011placementId16isCacheSupportedACSDySSypG_AA3GeoVSgypSgAA0cK0VSgARSSSbtcfc",
             "moduleName": "MSPiOSCore",
             "declAttributes": [
               "AccessControl"
@@ -1411,6 +2055,16 @@
         ]
       },
       {
+        "kind": "Import",
+        "name": "Foundation",
+        "printedName": "Foundation",
+        "declKind": "Import",
+        "moduleName": "MSPiOSCore",
+        "declAttributes": [
+          "RawDocComment"
+        ]
+      },
+      {
         "kind": "TypeDecl",
         "name": "BidListener",
         "printedName": "BidListener",
@@ -1535,169 +2189,6 @@
         ]
       },
       {
-        "kind": "TypeDecl",
-        "name": "AdapterAdLoadError",
-        "printedName": "AdapterAdLoadError",
-        "children": [
-          {
-            "kind": "Var",
-            "name": "noFill",
-            "printedName": "noFill",
-            "children": [
-              {
-                "kind": "TypeFunc",
-                "name": "Function",
-                "printedName": "(MSPiOSCore.AdapterAdLoadError.Type) -> MSPiOSCore.AdapterAdLoadError",
-                "children": [
-                  {
-                    "kind": "TypeNominal",
-                    "name": "AdapterAdLoadError",
-                    "printedName": "MSPiOSCore.AdapterAdLoadError",
-                    "usr": "s:10MSPiOSCore18AdapterAdLoadErrorO"
-                  },
-                  {
-                    "kind": "TypeNominal",
-                    "name": "Metatype",
-                    "printedName": "MSPiOSCore.AdapterAdLoadError.Type",
-                    "children": [
-                      {
-                        "kind": "TypeNominal",
-                        "name": "AdapterAdLoadError",
-                        "printedName": "MSPiOSCore.AdapterAdLoadError",
-                        "usr": "s:10MSPiOSCore18AdapterAdLoadErrorO"
-                      }
-                    ]
-                  }
-                ]
-              }
-            ],
-            "declKind": "EnumElement",
-            "usr": "s:10MSPiOSCore18AdapterAdLoadErrorO6noFillyA2CmF",
-            "mangledName": "$s10MSPiOSCore18AdapterAdLoadErrorO6noFillyA2CmF",
-            "moduleName": "MSPiOSCore"
-          },
-          {
-            "kind": "Function",
-            "name": "==",
-            "printedName": "==(_:_:)",
-            "children": [
-              {
-                "kind": "TypeNominal",
-                "name": "Bool",
-                "printedName": "Swift.Bool",
-                "usr": "s:Sb"
-              },
-              {
-                "kind": "TypeNominal",
-                "name": "AdapterAdLoadError",
-                "printedName": "MSPiOSCore.AdapterAdLoadError",
-                "usr": "s:10MSPiOSCore18AdapterAdLoadErrorO"
-              },
-              {
-                "kind": "TypeNominal",
-                "name": "AdapterAdLoadError",
-                "printedName": "MSPiOSCore.AdapterAdLoadError",
-                "usr": "s:10MSPiOSCore18AdapterAdLoadErrorO"
-              }
-            ],
-            "declKind": "Func",
-            "usr": "s:10MSPiOSCore18AdapterAdLoadErrorO2eeoiySbAC_ACtFZ",
-            "mangledName": "$s10MSPiOSCore18AdapterAdLoadErrorO2eeoiySbAC_ACtFZ",
-            "moduleName": "MSPiOSCore",
-            "static": true,
-            "implicit": true,
-            "funcSelfKind": "NonMutating"
-          },
-          {
-            "kind": "Var",
-            "name": "hashValue",
-            "printedName": "hashValue",
-            "children": [
-              {
-                "kind": "TypeNominal",
-                "name": "Int",
-                "printedName": "Swift.Int",
-                "usr": "s:Si"
-              }
-            ],
-            "declKind": "Var",
-            "usr": "s:10MSPiOSCore18AdapterAdLoadErrorO9hashValueSivp",
-            "mangledName": "$s10MSPiOSCore18AdapterAdLoadErrorO9hashValueSivp",
-            "moduleName": "MSPiOSCore",
-            "implicit": true,
-            "accessors": [
-              {
-                "kind": "Accessor",
-                "name": "Get",
-                "printedName": "Get()",
-                "children": [
-                  {
-                    "kind": "TypeNominal",
-                    "name": "Int",
-                    "printedName": "Swift.Int",
-                    "usr": "s:Si"
-                  }
-                ],
-                "declKind": "Accessor",
-                "usr": "s:10MSPiOSCore18AdapterAdLoadErrorO9hashValueSivg",
-                "mangledName": "$s10MSPiOSCore18AdapterAdLoadErrorO9hashValueSivg",
-                "moduleName": "MSPiOSCore",
-                "implicit": true,
-                "accessorKind": "get"
-              }
-            ]
-          },
-          {
-            "kind": "Function",
-            "name": "hash",
-            "printedName": "hash(into:)",
-            "children": [
-              {
-                "kind": "TypeNominal",
-                "name": "Void",
-                "printedName": "()"
-              },
-              {
-                "kind": "TypeNominal",
-                "name": "Hasher",
-                "printedName": "Swift.Hasher",
-                "paramValueOwnership": "InOut",
-                "usr": "s:s6HasherV"
-              }
-            ],
-            "declKind": "Func",
-            "usr": "s:10MSPiOSCore18AdapterAdLoadErrorO4hash4intoys6HasherVz_tF",
-            "mangledName": "$s10MSPiOSCore18AdapterAdLoadErrorO4hash4intoys6HasherVz_tF",
-            "moduleName": "MSPiOSCore",
-            "implicit": true,
-            "funcSelfKind": "NonMutating"
-          }
-        ],
-        "declKind": "Enum",
-        "usr": "s:10MSPiOSCore18AdapterAdLoadErrorO",
-        "mangledName": "$s10MSPiOSCore18AdapterAdLoadErrorO",
-        "moduleName": "MSPiOSCore",
-        "declAttributes": [
-          "AccessControl"
-        ],
-        "conformances": [
-          {
-            "kind": "Conformance",
-            "name": "Equatable",
-            "printedName": "Equatable",
-            "usr": "s:SQ",
-            "mangledName": "$sSQ"
-          },
-          {
-            "kind": "Conformance",
-            "name": "Hashable",
-            "printedName": "Hashable",
-            "usr": "s:SH",
-            "mangledName": "$sSH"
-          }
-        ]
-      },
-      {
         "kind": "Import",
         "name": "Foundation",
         "printedName": "Foundation",
@@ -1819,6 +2310,33 @@
             "protocolReq": true,
             "reqNewWitnessTableEntry": true,
             "funcSelfKind": "NonMutating"
+          },
+          {
+            "kind": "Function",
+            "name": "onAdLoaded",
+            "printedName": "onAdLoaded(placementId:)",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Void",
+                "printedName": "()"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "String",
+                "printedName": "Swift.String",
+                "usr": "s:SS"
+              }
+            ],
+            "declKind": "Func",
+            "usr": "s:10MSPiOSCore10AdListenerP02onC6Loaded11placementIdySS_tF",
+            "mangledName": "$s10MSPiOSCore10AdListenerP02onC6Loaded11placementIdySS_tF",
+            "moduleName": "MSPiOSCore",
+            "genericSig": "<τ_0_0 where τ_0_0 : MSPiOSCore.AdListener>",
+            "sugared_genericSig": "<Self where Self : MSPiOSCore.AdListener>",
+            "protocolReq": true,
+            "reqNewWitnessTableEntry": true,
+            "funcSelfKind": "NonMutating"
           }
         ],
         "declKind": "Protocol",
@@ -1890,8 +2408,8 @@
               {
                 "kind": "TypeNominal",
                 "name": "InitializationParameters",
-                "printedName": "MSPiOSCore.InitializationParameters",
-                "usr": "s:10MSPiOSCore24InitializationParametersC"
+                "printedName": "any MSPiOSCore.InitializationParameters",
+                "usr": "s:10MSPiOSCore24InitializationParametersP"
               },
               {
                 "kind": "TypeNominal",
@@ -1914,8 +2432,8 @@
               }
             ],
             "declKind": "Func",
-            "usr": "s:10MSPiOSCore16AdNetworkAdapterP10initialize10initParams19adapterInitListener7contextyAA24InitializationParametersC_AA0ejK0_pypSgtF",
-            "mangledName": "$s10MSPiOSCore16AdNetworkAdapterP10initialize10initParams19adapterInitListener7contextyAA24InitializationParametersC_AA0ejK0_pypSgtF",
+            "usr": "s:10MSPiOSCore16AdNetworkAdapterP10initialize10initParams19adapterInitListener7contextyAA24InitializationParameters_p_AA0ejK0_pypSgtF",
+            "mangledName": "$s10MSPiOSCore16AdNetworkAdapterP10initialize10initParams19adapterInitListener7contextyAA24InitializationParameters_p_AA0ejK0_pypSgtF",
             "moduleName": "MSPiOSCore",
             "genericSig": "<τ_0_0 where τ_0_0 : MSPiOSCore.AdNetworkAdapter>",
             "sugared_genericSig": "<Self where Self : MSPiOSCore.AdNetworkAdapter>",
@@ -1937,6 +2455,38 @@
             "declKind": "Func",
             "usr": "s:10MSPiOSCore16AdNetworkAdapterP07destroyC0yyF",
             "mangledName": "$s10MSPiOSCore16AdNetworkAdapterP07destroyC0yyF",
+            "moduleName": "MSPiOSCore",
+            "genericSig": "<τ_0_0 where τ_0_0 : MSPiOSCore.AdNetworkAdapter>",
+            "sugared_genericSig": "<Self where Self : MSPiOSCore.AdNetworkAdapter>",
+            "protocolReq": true,
+            "reqNewWitnessTableEntry": true,
+            "funcSelfKind": "NonMutating"
+          },
+          {
+            "kind": "Function",
+            "name": "prepareViewForInteraction",
+            "printedName": "prepareViewForInteraction(nativeAd:nativeAdView:)",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Void",
+                "printedName": "()"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "NativeAd",
+                "printedName": "MSPiOSCore.NativeAd",
+                "usr": "s:10MSPiOSCore8NativeAdC"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "ProtocolComposition",
+                "printedName": "Any"
+              }
+            ],
+            "declKind": "Func",
+            "usr": "s:10MSPiOSCore16AdNetworkAdapterP25prepareViewForInteraction06nativeC00jcG0yAA06NativeC0C_yptF",
+            "mangledName": "$s10MSPiOSCore16AdNetworkAdapterP25prepareViewForInteraction06nativeC00jcG0yAA06NativeC0C_yptF",
             "moduleName": "MSPiOSCore",
             "genericSig": "<τ_0_0 where τ_0_0 : MSPiOSCore.AdNetworkAdapter>",
             "sugared_genericSig": "<Self where Self : MSPiOSCore.AdNetworkAdapter>",
@@ -2137,6 +2687,121 @@
         "moduleName": "MSPiOSCore",
         "declAttributes": [
           "AccessControl"
+        ]
+      },
+      {
+        "kind": "Import",
+        "name": "Foundation",
+        "printedName": "Foundation",
+        "declKind": "Import",
+        "moduleName": "MSPiOSCore",
+        "declAttributes": [
+          "RawDocComment"
+        ]
+      },
+      {
+        "kind": "TypeDecl",
+        "name": "AdNetworkManager",
+        "printedName": "AdNetworkManager",
+        "children": [
+          {
+            "kind": "Function",
+            "name": "getAdNetworkAdapter",
+            "printedName": "getAdNetworkAdapter()",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Optional",
+                "printedName": "(any MSPiOSCore.AdNetworkAdapter)?",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "AdNetworkAdapter",
+                    "printedName": "any MSPiOSCore.AdNetworkAdapter",
+                    "usr": "s:10MSPiOSCore16AdNetworkAdapterP"
+                  }
+                ],
+                "usr": "s:Sq"
+              }
+            ],
+            "declKind": "Func",
+            "usr": "s:10MSPiOSCore16AdNetworkManagerC03getcD7AdapterAA0cdG0_pSgyF",
+            "mangledName": "$s10MSPiOSCore16AdNetworkManagerC03getcD7AdapterAA0cdG0_pSgyF",
+            "moduleName": "MSPiOSCore",
+            "isOpen": true,
+            "declAttributes": [
+              "AccessControl"
+            ],
+            "funcSelfKind": "NonMutating"
+          }
+        ],
+        "declKind": "Class",
+        "usr": "s:10MSPiOSCore16AdNetworkManagerC",
+        "mangledName": "$s10MSPiOSCore16AdNetworkManagerC",
+        "moduleName": "MSPiOSCore",
+        "isOpen": true,
+        "declAttributes": [
+          "AccessControl"
+        ],
+        "hasMissingDesignatedInitializers": true
+      },
+      {
+        "kind": "Import",
+        "name": "Foundation",
+        "printedName": "Foundation",
+        "declKind": "Import",
+        "moduleName": "MSPiOSCore",
+        "declAttributes": [
+          "RawDocComment"
+        ]
+      },
+      {
+        "kind": "TypeDecl",
+        "name": "NativeAd",
+        "printedName": "NativeAd",
+        "children": [
+          {
+            "kind": "Constructor",
+            "name": "init",
+            "printedName": "init(adNetworkAdapter:)",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "NativeAd",
+                "printedName": "MSPiOSCore.NativeAd",
+                "usr": "s:10MSPiOSCore8NativeAdC"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "AdNetworkAdapter",
+                "printedName": "any MSPiOSCore.AdNetworkAdapter",
+                "usr": "s:10MSPiOSCore16AdNetworkAdapterP"
+              }
+            ],
+            "declKind": "Constructor",
+            "usr": "s:10MSPiOSCore8NativeAdC16adNetworkAdapterAcA0dfG0_p_tcfc",
+            "mangledName": "$s10MSPiOSCore8NativeAdC16adNetworkAdapterAcA0dfG0_p_tcfc",
+            "moduleName": "MSPiOSCore",
+            "overriding": true,
+            "implicit": true,
+            "declAttributes": [
+              "Override"
+            ],
+            "init_kind": "Designated"
+          }
+        ],
+        "declKind": "Class",
+        "usr": "s:10MSPiOSCore8NativeAdC",
+        "mangledName": "$s10MSPiOSCore8NativeAdC",
+        "moduleName": "MSPiOSCore",
+        "isOpen": true,
+        "declAttributes": [
+          "AccessControl"
+        ],
+        "superclassUsr": "s:10MSPiOSCore5MSPAdC",
+        "hasMissingDesignatedInitializers": true,
+        "superclassNames": [
+          "MSPiOSCore.MSPAd"
         ]
       },
       {
@@ -2384,6 +3049,290 @@
       },
       {
         "kind": "TypeDecl",
+        "name": "AdFormat",
+        "printedName": "AdFormat",
+        "children": [
+          {
+            "kind": "Var",
+            "name": "banner",
+            "printedName": "banner",
+            "children": [
+              {
+                "kind": "TypeFunc",
+                "name": "Function",
+                "printedName": "(MSPiOSCore.AdFormat.Type) -> MSPiOSCore.AdFormat",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "AdFormat",
+                    "printedName": "MSPiOSCore.AdFormat",
+                    "usr": "s:10MSPiOSCore8AdFormatO"
+                  },
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Metatype",
+                    "printedName": "MSPiOSCore.AdFormat.Type",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "AdFormat",
+                        "printedName": "MSPiOSCore.AdFormat",
+                        "usr": "s:10MSPiOSCore8AdFormatO"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ],
+            "declKind": "EnumElement",
+            "usr": "s:10MSPiOSCore8AdFormatO6banneryA2CmF",
+            "mangledName": "$s10MSPiOSCore8AdFormatO6banneryA2CmF",
+            "moduleName": "MSPiOSCore"
+          },
+          {
+            "kind": "Var",
+            "name": "native",
+            "printedName": "native",
+            "children": [
+              {
+                "kind": "TypeFunc",
+                "name": "Function",
+                "printedName": "(MSPiOSCore.AdFormat.Type) -> MSPiOSCore.AdFormat",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "AdFormat",
+                    "printedName": "MSPiOSCore.AdFormat",
+                    "usr": "s:10MSPiOSCore8AdFormatO"
+                  },
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Metatype",
+                    "printedName": "MSPiOSCore.AdFormat.Type",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "AdFormat",
+                        "printedName": "MSPiOSCore.AdFormat",
+                        "usr": "s:10MSPiOSCore8AdFormatO"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ],
+            "declKind": "EnumElement",
+            "usr": "s:10MSPiOSCore8AdFormatO6nativeyA2CmF",
+            "mangledName": "$s10MSPiOSCore8AdFormatO6nativeyA2CmF",
+            "moduleName": "MSPiOSCore"
+          },
+          {
+            "kind": "Var",
+            "name": "multi_format",
+            "printedName": "multi_format",
+            "children": [
+              {
+                "kind": "TypeFunc",
+                "name": "Function",
+                "printedName": "(MSPiOSCore.AdFormat.Type) -> MSPiOSCore.AdFormat",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "AdFormat",
+                    "printedName": "MSPiOSCore.AdFormat",
+                    "usr": "s:10MSPiOSCore8AdFormatO"
+                  },
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Metatype",
+                    "printedName": "MSPiOSCore.AdFormat.Type",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "AdFormat",
+                        "printedName": "MSPiOSCore.AdFormat",
+                        "usr": "s:10MSPiOSCore8AdFormatO"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ],
+            "declKind": "EnumElement",
+            "usr": "s:10MSPiOSCore8AdFormatO12multi_formatyA2CmF",
+            "mangledName": "$s10MSPiOSCore8AdFormatO12multi_formatyA2CmF",
+            "moduleName": "MSPiOSCore"
+          },
+          {
+            "kind": "Var",
+            "name": "interstitial",
+            "printedName": "interstitial",
+            "children": [
+              {
+                "kind": "TypeFunc",
+                "name": "Function",
+                "printedName": "(MSPiOSCore.AdFormat.Type) -> MSPiOSCore.AdFormat",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "AdFormat",
+                    "printedName": "MSPiOSCore.AdFormat",
+                    "usr": "s:10MSPiOSCore8AdFormatO"
+                  },
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Metatype",
+                    "printedName": "MSPiOSCore.AdFormat.Type",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "AdFormat",
+                        "printedName": "MSPiOSCore.AdFormat",
+                        "usr": "s:10MSPiOSCore8AdFormatO"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ],
+            "declKind": "EnumElement",
+            "usr": "s:10MSPiOSCore8AdFormatO12interstitialyA2CmF",
+            "mangledName": "$s10MSPiOSCore8AdFormatO12interstitialyA2CmF",
+            "moduleName": "MSPiOSCore"
+          },
+          {
+            "kind": "Function",
+            "name": "==",
+            "printedName": "==(_:_:)",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Bool",
+                "printedName": "Swift.Bool",
+                "usr": "s:Sb"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "AdFormat",
+                "printedName": "MSPiOSCore.AdFormat",
+                "usr": "s:10MSPiOSCore8AdFormatO"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "AdFormat",
+                "printedName": "MSPiOSCore.AdFormat",
+                "usr": "s:10MSPiOSCore8AdFormatO"
+              }
+            ],
+            "declKind": "Func",
+            "usr": "s:10MSPiOSCore8AdFormatO2eeoiySbAC_ACtFZ",
+            "mangledName": "$s10MSPiOSCore8AdFormatO2eeoiySbAC_ACtFZ",
+            "moduleName": "MSPiOSCore",
+            "static": true,
+            "implicit": true,
+            "funcSelfKind": "NonMutating"
+          },
+          {
+            "kind": "Var",
+            "name": "hashValue",
+            "printedName": "hashValue",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Int",
+                "printedName": "Swift.Int",
+                "usr": "s:Si"
+              }
+            ],
+            "declKind": "Var",
+            "usr": "s:10MSPiOSCore8AdFormatO9hashValueSivp",
+            "mangledName": "$s10MSPiOSCore8AdFormatO9hashValueSivp",
+            "moduleName": "MSPiOSCore",
+            "implicit": true,
+            "accessors": [
+              {
+                "kind": "Accessor",
+                "name": "Get",
+                "printedName": "Get()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Int",
+                    "printedName": "Swift.Int",
+                    "usr": "s:Si"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:10MSPiOSCore8AdFormatO9hashValueSivg",
+                "mangledName": "$s10MSPiOSCore8AdFormatO9hashValueSivg",
+                "moduleName": "MSPiOSCore",
+                "implicit": true,
+                "accessorKind": "get"
+              }
+            ]
+          },
+          {
+            "kind": "Function",
+            "name": "hash",
+            "printedName": "hash(into:)",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Void",
+                "printedName": "()"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "Hasher",
+                "printedName": "Swift.Hasher",
+                "paramValueOwnership": "InOut",
+                "usr": "s:s6HasherV"
+              }
+            ],
+            "declKind": "Func",
+            "usr": "s:10MSPiOSCore8AdFormatO4hash4intoys6HasherVz_tF",
+            "mangledName": "$s10MSPiOSCore8AdFormatO4hash4intoys6HasherVz_tF",
+            "moduleName": "MSPiOSCore",
+            "implicit": true,
+            "funcSelfKind": "NonMutating"
+          }
+        ],
+        "declKind": "Enum",
+        "usr": "s:10MSPiOSCore8AdFormatO",
+        "mangledName": "$s10MSPiOSCore8AdFormatO",
+        "moduleName": "MSPiOSCore",
+        "declAttributes": [
+          "AccessControl"
+        ],
+        "conformances": [
+          {
+            "kind": "Conformance",
+            "name": "Equatable",
+            "printedName": "Equatable",
+            "usr": "s:SQ",
+            "mangledName": "$sSQ"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Hashable",
+            "printedName": "Hashable",
+            "usr": "s:SH",
+            "mangledName": "$sSH"
+          }
+        ]
+      },
+      {
+        "kind": "Import",
+        "name": "Foundation",
+        "printedName": "Foundation",
+        "declKind": "Import",
+        "moduleName": "MSPiOSCore",
+        "declAttributes": [
+          "RawDocComment"
+        ]
+      },
+      {
+        "kind": "TypeDecl",
         "name": "MSPInitListener",
         "printedName": "MSPInitListener",
         "children": [
@@ -2441,38 +3390,32 @@
       },
       {
         "kind": "TypeDecl",
-        "name": "AdNetworkManager",
-        "printedName": "AdNetworkManager",
-        "children": [
-          {
-            "kind": "Function",
-            "name": "getAdNetworkAdapter",
-            "printedName": "getAdNetworkAdapter()",
-            "children": [
-              {
-                "kind": "TypeNominal",
-                "name": "AdNetworkAdapter",
-                "printedName": "any MSPiOSCore.AdNetworkAdapter",
-                "usr": "s:10MSPiOSCore16AdNetworkAdapterP"
-              }
-            ],
-            "declKind": "Func",
-            "usr": "s:10MSPiOSCore16AdNetworkManagerP03getcD7AdapterAA0cdG0_pyF",
-            "mangledName": "$s10MSPiOSCore16AdNetworkManagerP03getcD7AdapterAA0cdG0_pyF",
-            "moduleName": "MSPiOSCore",
-            "genericSig": "<τ_0_0 where τ_0_0 : MSPiOSCore.AdNetworkManager>",
-            "sugared_genericSig": "<Self where Self : MSPiOSCore.AdNetworkManager>",
-            "protocolReq": true,
-            "reqNewWitnessTableEntry": true,
-            "funcSelfKind": "NonMutating"
-          }
-        ],
+        "name": "MSPInitializationParameters",
+        "printedName": "MSPInitializationParameters",
         "declKind": "Protocol",
-        "usr": "s:10MSPiOSCore16AdNetworkManagerP",
-        "mangledName": "$s10MSPiOSCore16AdNetworkManagerP",
+        "usr": "s:10MSPiOSCore27MSPInitializationParametersP",
+        "mangledName": "$s10MSPiOSCore27MSPInitializationParametersP",
         "moduleName": "MSPiOSCore",
+        "genericSig": "<τ_0_0 : MSPiOSCore.InitializationParameters>",
+        "sugared_genericSig": "<Self : MSPiOSCore.InitializationParameters>",
         "declAttributes": [
           "AccessControl"
+        ],
+        "conformances": [
+          {
+            "kind": "Conformance",
+            "name": "InitializationParameters",
+            "printedName": "InitializationParameters",
+            "usr": "s:10MSPiOSCore24InitializationParametersP",
+            "mangledName": "$s10MSPiOSCore24InitializationParametersP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "AdapterParameters",
+            "printedName": "AdapterParameters",
+            "usr": "s:10MSPiOSCore17AdapterParametersP",
+            "mangledName": "$s10MSPiOSCore17AdapterParametersP"
+          }
         ]
       },
       {
@@ -2760,183 +3703,87 @@
       },
       {
         "kind": "TypeDecl",
+        "name": "MediaController",
+        "printedName": "MediaController",
+        "children": [
+          {
+            "kind": "Function",
+            "name": "addMediaListener",
+            "printedName": "addMediaListener(listener:)",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Void",
+                "printedName": "()"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "MediaListener",
+                "printedName": "any MSPiOSCore.MediaListener",
+                "usr": "s:10MSPiOSCore13MediaListenerP"
+              }
+            ],
+            "declKind": "Func",
+            "usr": "s:10MSPiOSCore15MediaControllerP03addC8Listener8listeneryAA0cF0_p_tF",
+            "mangledName": "$s10MSPiOSCore15MediaControllerP03addC8Listener8listeneryAA0cF0_p_tF",
+            "moduleName": "MSPiOSCore",
+            "genericSig": "<τ_0_0 where τ_0_0 : MSPiOSCore.MediaController>",
+            "sugared_genericSig": "<Self where Self : MSPiOSCore.MediaController>",
+            "protocolReq": true,
+            "reqNewWitnessTableEntry": true,
+            "funcSelfKind": "NonMutating"
+          },
+          {
+            "kind": "Function",
+            "name": "removeMediaListener",
+            "printedName": "removeMediaListener(listener:)",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Void",
+                "printedName": "()"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "MediaListener",
+                "printedName": "any MSPiOSCore.MediaListener",
+                "usr": "s:10MSPiOSCore13MediaListenerP"
+              }
+            ],
+            "declKind": "Func",
+            "usr": "s:10MSPiOSCore15MediaControllerP06removeC8Listener8listeneryAA0cF0_p_tF",
+            "mangledName": "$s10MSPiOSCore15MediaControllerP06removeC8Listener8listeneryAA0cF0_p_tF",
+            "moduleName": "MSPiOSCore",
+            "genericSig": "<τ_0_0 where τ_0_0 : MSPiOSCore.MediaController>",
+            "sugared_genericSig": "<Self where Self : MSPiOSCore.MediaController>",
+            "protocolReq": true,
+            "reqNewWitnessTableEntry": true,
+            "funcSelfKind": "NonMutating"
+          }
+        ],
+        "declKind": "Protocol",
+        "usr": "s:10MSPiOSCore15MediaControllerP",
+        "mangledName": "$s10MSPiOSCore15MediaControllerP",
+        "moduleName": "MSPiOSCore",
+        "declAttributes": [
+          "AccessControl"
+        ]
+      },
+      {
+        "kind": "Import",
+        "name": "Foundation",
+        "printedName": "Foundation",
+        "declKind": "Import",
+        "moduleName": "MSPiOSCore",
+        "declAttributes": [
+          "RawDocComment"
+        ]
+      },
+      {
+        "kind": "TypeDecl",
         "name": "InitializationParameters",
         "printedName": "InitializationParameters",
         "children": [
-          {
-            "kind": "Constructor",
-            "name": "init",
-            "printedName": "init()",
-            "children": [
-              {
-                "kind": "TypeNominal",
-                "name": "InitializationParameters",
-                "printedName": "MSPiOSCore.InitializationParameters",
-                "usr": "s:10MSPiOSCore24InitializationParametersC"
-              }
-            ],
-            "declKind": "Constructor",
-            "usr": "s:10MSPiOSCore24InitializationParametersCACycfc",
-            "mangledName": "$s10MSPiOSCore24InitializationParametersCACycfc",
-            "moduleName": "MSPiOSCore",
-            "declAttributes": [
-              "AccessControl"
-            ],
-            "init_kind": "Designated"
-          },
-          {
-            "kind": "Function",
-            "name": "getParameters",
-            "printedName": "getParameters()",
-            "children": [
-              {
-                "kind": "TypeNominal",
-                "name": "Optional",
-                "printedName": "[Swift.String : Any]?",
-                "children": [
-                  {
-                    "kind": "TypeNominal",
-                    "name": "Dictionary",
-                    "printedName": "[Swift.String : Any]",
-                    "children": [
-                      {
-                        "kind": "TypeNominal",
-                        "name": "String",
-                        "printedName": "Swift.String",
-                        "usr": "s:SS"
-                      },
-                      {
-                        "kind": "TypeNominal",
-                        "name": "ProtocolComposition",
-                        "printedName": "Any"
-                      }
-                    ],
-                    "usr": "s:SD"
-                  }
-                ],
-                "usr": "s:Sq"
-              }
-            ],
-            "declKind": "Func",
-            "usr": "s:10MSPiOSCore24InitializationParametersC03getD0SDySSypGSgyF",
-            "mangledName": "$s10MSPiOSCore24InitializationParametersC03getD0SDySSypGSgyF",
-            "moduleName": "MSPiOSCore",
-            "isOpen": true,
-            "declAttributes": [
-              "AccessControl"
-            ],
-            "funcSelfKind": "NonMutating"
-          },
-          {
-            "kind": "Function",
-            "name": "hasUserConsent",
-            "printedName": "hasUserConsent()",
-            "children": [
-              {
-                "kind": "TypeNominal",
-                "name": "Bool",
-                "printedName": "Swift.Bool",
-                "usr": "s:Sb"
-              }
-            ],
-            "declKind": "Func",
-            "usr": "s:10MSPiOSCore24InitializationParametersC14hasUserConsentSbyF",
-            "mangledName": "$s10MSPiOSCore24InitializationParametersC14hasUserConsentSbyF",
-            "moduleName": "MSPiOSCore",
-            "isOpen": true,
-            "declAttributes": [
-              "AccessControl"
-            ],
-            "funcSelfKind": "NonMutating"
-          },
-          {
-            "kind": "Function",
-            "name": "isAgeRestrictedUser",
-            "printedName": "isAgeRestrictedUser()",
-            "children": [
-              {
-                "kind": "TypeNominal",
-                "name": "Bool",
-                "printedName": "Swift.Bool",
-                "usr": "s:Sb"
-              }
-            ],
-            "declKind": "Func",
-            "usr": "s:10MSPiOSCore24InitializationParametersC19isAgeRestrictedUserSbyF",
-            "mangledName": "$s10MSPiOSCore24InitializationParametersC19isAgeRestrictedUserSbyF",
-            "moduleName": "MSPiOSCore",
-            "isOpen": true,
-            "declAttributes": [
-              "AccessControl"
-            ],
-            "funcSelfKind": "NonMutating"
-          },
-          {
-            "kind": "Function",
-            "name": "isDoNotSell",
-            "printedName": "isDoNotSell()",
-            "children": [
-              {
-                "kind": "TypeNominal",
-                "name": "Bool",
-                "printedName": "Swift.Bool",
-                "usr": "s:Sb"
-              }
-            ],
-            "declKind": "Func",
-            "usr": "s:10MSPiOSCore24InitializationParametersC11isDoNotSellSbyF",
-            "mangledName": "$s10MSPiOSCore24InitializationParametersC11isDoNotSellSbyF",
-            "moduleName": "MSPiOSCore",
-            "isOpen": true,
-            "declAttributes": [
-              "AccessControl"
-            ],
-            "funcSelfKind": "NonMutating"
-          },
-          {
-            "kind": "Function",
-            "name": "getConsentString",
-            "printedName": "getConsentString()",
-            "children": [
-              {
-                "kind": "TypeNominal",
-                "name": "String",
-                "printedName": "Swift.String",
-                "usr": "s:SS"
-              }
-            ],
-            "declKind": "Func",
-            "usr": "s:10MSPiOSCore24InitializationParametersC16getConsentStringSSyF",
-            "mangledName": "$s10MSPiOSCore24InitializationParametersC16getConsentStringSSyF",
-            "moduleName": "MSPiOSCore",
-            "isOpen": true,
-            "declAttributes": [
-              "AccessControl"
-            ],
-            "funcSelfKind": "NonMutating"
-          },
-          {
-            "kind": "Function",
-            "name": "isInTestMode",
-            "printedName": "isInTestMode()",
-            "children": [
-              {
-                "kind": "TypeNominal",
-                "name": "Bool",
-                "printedName": "Swift.Bool",
-                "usr": "s:Sb"
-              }
-            ],
-            "declKind": "Func",
-            "usr": "s:10MSPiOSCore24InitializationParametersC12isInTestModeSbyF",
-            "mangledName": "$s10MSPiOSCore24InitializationParametersC12isInTestModeSbyF",
-            "moduleName": "MSPiOSCore",
-            "isOpen": true,
-            "declAttributes": [
-              "AccessControl"
-            ],
-            "funcSelfKind": "NonMutating"
-          },
           {
             "kind": "Function",
             "name": "getPrebidAPIKey",
@@ -2950,13 +3797,13 @@
               }
             ],
             "declKind": "Func",
-            "usr": "s:10MSPiOSCore24InitializationParametersC15getPrebidAPIKeySSyF",
-            "mangledName": "$s10MSPiOSCore24InitializationParametersC15getPrebidAPIKeySSyF",
+            "usr": "s:10MSPiOSCore24InitializationParametersP15getPrebidAPIKeySSyF",
+            "mangledName": "$s10MSPiOSCore24InitializationParametersP15getPrebidAPIKeySSyF",
             "moduleName": "MSPiOSCore",
-            "isOpen": true,
-            "declAttributes": [
-              "AccessControl"
-            ],
+            "genericSig": "<τ_0_0 where τ_0_0 : MSPiOSCore.InitializationParameters>",
+            "sugared_genericSig": "<Self where Self : MSPiOSCore.InitializationParameters>",
+            "protocolReq": true,
+            "reqNewWitnessTableEntry": true,
             "funcSelfKind": "NonMutating"
           },
           {
@@ -2972,21 +3819,22 @@
               }
             ],
             "declKind": "Func",
-            "usr": "s:10MSPiOSCore24InitializationParametersC16getPrebidHostUrlSSyF",
-            "mangledName": "$s10MSPiOSCore24InitializationParametersC16getPrebidHostUrlSSyF",
+            "usr": "s:10MSPiOSCore24InitializationParametersP16getPrebidHostUrlSSyF",
+            "mangledName": "$s10MSPiOSCore24InitializationParametersP16getPrebidHostUrlSSyF",
             "moduleName": "MSPiOSCore",
-            "isOpen": true,
-            "declAttributes": [
-              "AccessControl"
-            ],
+            "genericSig": "<τ_0_0 where τ_0_0 : MSPiOSCore.InitializationParameters>",
+            "sugared_genericSig": "<Self where Self : MSPiOSCore.InitializationParameters>",
+            "protocolReq": true,
+            "reqNewWitnessTableEntry": true,
             "funcSelfKind": "NonMutating"
           }
         ],
-        "declKind": "Class",
-        "usr": "s:10MSPiOSCore24InitializationParametersC",
-        "mangledName": "$s10MSPiOSCore24InitializationParametersC",
+        "declKind": "Protocol",
+        "usr": "s:10MSPiOSCore24InitializationParametersP",
+        "mangledName": "$s10MSPiOSCore24InitializationParametersP",
         "moduleName": "MSPiOSCore",
-        "isOpen": true,
+        "genericSig": "<τ_0_0 : MSPiOSCore.AdapterParameters>",
+        "sugared_genericSig": "<Self : MSPiOSCore.AdapterParameters>",
         "declAttributes": [
           "AccessControl"
         ],
@@ -3347,168 +4195,6 @@
         ]
       },
       {
-        "kind": "TypeDecl",
-        "name": "AdapterInitStatus",
-        "printedName": "AdapterInitStatus",
-        "children": [
-          {
-            "kind": "Var",
-            "name": "success",
-            "printedName": "success",
-            "children": [
-              {
-                "kind": "TypeFunc",
-                "name": "Function",
-                "printedName": "(MSPiOSCore.AdapterInitStatus.Type) -> MSPiOSCore.AdapterInitStatus",
-                "children": [
-                  {
-                    "kind": "TypeNominal",
-                    "name": "AdapterInitStatus",
-                    "printedName": "MSPiOSCore.AdapterInitStatus",
-                    "usr": "s:10MSPiOSCore17AdapterInitStatusO"
-                  },
-                  {
-                    "kind": "TypeNominal",
-                    "name": "Metatype",
-                    "printedName": "MSPiOSCore.AdapterInitStatus.Type",
-                    "children": [
-                      {
-                        "kind": "TypeNominal",
-                        "name": "AdapterInitStatus",
-                        "printedName": "MSPiOSCore.AdapterInitStatus",
-                        "usr": "s:10MSPiOSCore17AdapterInitStatusO"
-                      }
-                    ]
-                  }
-                ]
-              }
-            ],
-            "declKind": "EnumElement",
-            "usr": "s:10MSPiOSCore17AdapterInitStatusO7successyA2CmF",
-            "mangledName": "$s10MSPiOSCore17AdapterInitStatusO7successyA2CmF",
-            "moduleName": "MSPiOSCore"
-          },
-          {
-            "kind": "Constructor",
-            "name": "init",
-            "printedName": "init(rawValue:)",
-            "children": [
-              {
-                "kind": "TypeNominal",
-                "name": "Optional",
-                "printedName": "MSPiOSCore.AdapterInitStatus?",
-                "children": [
-                  {
-                    "kind": "TypeNominal",
-                    "name": "AdapterInitStatus",
-                    "printedName": "MSPiOSCore.AdapterInitStatus",
-                    "usr": "s:10MSPiOSCore17AdapterInitStatusO"
-                  }
-                ],
-                "usr": "s:Sq"
-              },
-              {
-                "kind": "TypeNominal",
-                "name": "String",
-                "printedName": "Swift.String",
-                "usr": "s:SS"
-              }
-            ],
-            "declKind": "Constructor",
-            "usr": "s:10MSPiOSCore17AdapterInitStatusO8rawValueACSgSS_tcfc",
-            "mangledName": "$s10MSPiOSCore17AdapterInitStatusO8rawValueACSgSS_tcfc",
-            "moduleName": "MSPiOSCore",
-            "implicit": true,
-            "init_kind": "Designated"
-          },
-          {
-            "kind": "Var",
-            "name": "rawValue",
-            "printedName": "rawValue",
-            "children": [
-              {
-                "kind": "TypeNominal",
-                "name": "String",
-                "printedName": "Swift.String",
-                "usr": "s:SS"
-              }
-            ],
-            "declKind": "Var",
-            "usr": "s:10MSPiOSCore17AdapterInitStatusO8rawValueSSvp",
-            "mangledName": "$s10MSPiOSCore17AdapterInitStatusO8rawValueSSvp",
-            "moduleName": "MSPiOSCore",
-            "implicit": true,
-            "accessors": [
-              {
-                "kind": "Accessor",
-                "name": "Get",
-                "printedName": "Get()",
-                "children": [
-                  {
-                    "kind": "TypeNominal",
-                    "name": "String",
-                    "printedName": "Swift.String",
-                    "usr": "s:SS"
-                  }
-                ],
-                "declKind": "Accessor",
-                "usr": "s:10MSPiOSCore17AdapterInitStatusO8rawValueSSvg",
-                "mangledName": "$s10MSPiOSCore17AdapterInitStatusO8rawValueSSvg",
-                "moduleName": "MSPiOSCore",
-                "implicit": true,
-                "accessorKind": "get"
-              }
-            ]
-          }
-        ],
-        "declKind": "Enum",
-        "usr": "s:10MSPiOSCore17AdapterInitStatusO",
-        "mangledName": "$s10MSPiOSCore17AdapterInitStatusO",
-        "moduleName": "MSPiOSCore",
-        "declAttributes": [
-          "AccessControl"
-        ],
-        "enumRawTypeName": "String",
-        "conformances": [
-          {
-            "kind": "Conformance",
-            "name": "Equatable",
-            "printedName": "Equatable",
-            "usr": "s:SQ",
-            "mangledName": "$sSQ"
-          },
-          {
-            "kind": "Conformance",
-            "name": "Hashable",
-            "printedName": "Hashable",
-            "usr": "s:SH",
-            "mangledName": "$sSH"
-          },
-          {
-            "kind": "Conformance",
-            "name": "RawRepresentable",
-            "printedName": "RawRepresentable",
-            "children": [
-              {
-                "kind": "TypeWitness",
-                "name": "RawValue",
-                "printedName": "RawValue",
-                "children": [
-                  {
-                    "kind": "TypeNominal",
-                    "name": "String",
-                    "printedName": "Swift.String",
-                    "usr": "s:SS"
-                  }
-                ]
-              }
-            ],
-            "usr": "s:SY",
-            "mangledName": "$sSY"
-          }
-        ]
-      },
-      {
         "kind": "Import",
         "name": "Foundation",
         "printedName": "Foundation",
@@ -3525,8 +4211,8 @@
         "children": [
           {
             "kind": "Var",
-            "name": "success",
-            "printedName": "success",
+            "name": "SUCCESS",
+            "printedName": "SUCCESS",
             "children": [
               {
                 "kind": "TypeFunc",
@@ -3556,8 +4242,8 @@
               }
             ],
             "declKind": "EnumElement",
-            "usr": "s:10MSPiOSCore13MSPInitStatusO7successyA2CmF",
-            "mangledName": "$s10MSPiOSCore13MSPInitStatusO7successyA2CmF",
+            "usr": "s:10MSPiOSCore13MSPInitStatusO7SUCCESSyA2CmF",
+            "mangledName": "$s10MSPiOSCore13MSPInitStatusO7SUCCESSyA2CmF",
             "moduleName": "MSPiOSCore"
           },
           {
@@ -3986,18 +4672,74 @@
   },
   "ConstValues": [
     {
+      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-core\/MSPiOSCore\/MSPiOSCore\/adapter\/AdapterInitStatus.swift",
+      "kind": "StringLiteral",
+      "offset": 171,
+      "length": 30,
+      "value": "\"adapter is successfully init\""
+    },
+    {
+      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-core\/MSPiOSCore\/MSPiOSCore\/adapter\/AdapterInitStatus.swift",
+      "kind": "StringLiteral",
+      "offset": 171,
+      "length": 30,
+      "value": "\"adapter is successfully init\""
+    },
+    {
       "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-core\/MSPiOSCore\/MSPiOSCore\/api\/AdRequest.swift",
       "kind": "BooleanLiteral",
-      "offset": 946,
+      "offset": 541,
       "length": 5,
       "value": "false"
     },
     {
       "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-core\/MSPiOSCore\/MSPiOSCore\/api\/AdRequest.swift",
       "kind": "BooleanLiteral",
-      "offset": 984,
+      "offset": 1066,
       "length": 5,
       "value": "false"
+    },
+    {
+      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-core\/MSPiOSCore\/MSPiOSCore\/api\/AdRequest.swift",
+      "kind": "BooleanLiteral",
+      "offset": 1104,
+      "length": 5,
+      "value": "false"
+    },
+    {
+      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-core\/MSPiOSCore\/MSPiOSCore\/api\/NativeAd.swift",
+      "kind": "StringLiteral",
+      "offset": 964,
+      "length": 2,
+      "value": "\"\""
+    },
+    {
+      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-core\/MSPiOSCore\/MSPiOSCore\/api\/NativeAd.swift",
+      "kind": "StringLiteral",
+      "offset": 994,
+      "length": 2,
+      "value": "\"\""
+    },
+    {
+      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-core\/MSPiOSCore\/MSPiOSCore\/api\/NativeAd.swift",
+      "kind": "StringLiteral",
+      "offset": 1030,
+      "length": 2,
+      "value": "\"\""
+    },
+    {
+      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-core\/MSPiOSCore\/MSPiOSCore\/api\/NativeAd.swift",
+      "kind": "StringLiteral",
+      "offset": 1068,
+      "length": 2,
+      "value": "\"\""
+    },
+    {
+      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-core\/MSPiOSCore\/MSPiOSCore\/api\/NativeAd.swift",
+      "kind": "StringLiteral",
+      "offset": 114,
+      "length": 8,
+      "value": "\"MSPiOSCore.NativeAd\""
     },
     {
       "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-core\/MSPiOSCore\/MSPiOSCore\/adapter\/AdNetwork.swift",
@@ -4054,20 +4796,6 @@
       "offset": 238,
       "length": 6,
       "value": "\"Nova\""
-    },
-    {
-      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-core\/MSPiOSCore\/MSPiOSCore\/adapter\/AdapterInitListener.swift",
-      "kind": "StringLiteral",
-      "offset": 312,
-      "length": 30,
-      "value": "\"adapter is successfully init\""
-    },
-    {
-      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-core\/MSPiOSCore\/MSPiOSCore\/adapter\/AdapterInitListener.swift",
-      "kind": "StringLiteral",
-      "offset": 312,
-      "length": 30,
-      "value": "\"adapter is successfully init\""
     },
     {
       "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-core\/MSPiOSCore\/MSPiOSCore\/api\/Geo.swift",

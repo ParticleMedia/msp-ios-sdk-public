@@ -4,6 +4,18 @@
 <dict>
 	<key>files</key>
 	<dict>
+		<key>Frameworks/MSPiOSCore.framework/Info.plist</key>
+		<data>
+		43JxNff6Kb/gV8zelLGclCVa6+w=
+		</data>
+		<key>Frameworks/MSPiOSCore.framework/MSPiOSCore</key>
+		<data>
+		8VN5FmxT0Zg63PDohHUjzyrB8sE=
+		</data>
+		<key>Frameworks/MSPiOSCore.framework/_CodeSignature/CodeResources</key>
+		<data>
+		fY9pORAYh6bZKJzyfoKNSqCmWrU=
+		</data>
 		<key>Frameworks/PrebidMobile.framework/Assets.car</key>
 		<data>
 		9/s4e4H9c7S5TUZaF+d7p/Blkak=
@@ -18,7 +30,7 @@
 		</data>
 		<key>Frameworks/PrebidMobile.framework/PrebidMobile</key>
 		<data>
-		xxfGOJ/CsXRWEvg8GlDqOwFBcps=
+		QzNb018Hr9J1FEdsZNTPL183tg4=
 		</data>
 		<key>Frameworks/PrebidMobile.framework/_CodeSignature/CodeResources</key>
 		<data>
@@ -36,21 +48,9 @@
 		<data>
 		gHGQFei4PigMPCDxMe1k+dLcbPA=
 		</data>
-		<key>Frameworks/shared.framework/Info.plist</key>
-		<data>
-		4gdJYOfKPnvNsRYfFL6ssld88tY=
-		</data>
-		<key>Frameworks/shared.framework/_CodeSignature/CodeResources</key>
-		<data>
-		vRYupE36p+B3X/dM7sSmsYKm1oM=
-		</data>
-		<key>Frameworks/shared.framework/shared</key>
-		<data>
-		NdiBgDxPIU+t3nGOJ2IgJ8idkWA=
-		</data>
 		<key>Headers/PrebidAdapter-Swift.h</key>
 		<data>
-		eEuOr7czDbjmwmxkU/fooeYP5io=
+		/7bLe8jMkAI1g9oD8f3vD5AVb50=
 		</data>
 		<key>Headers/PrebidAdapter.h</key>
 		<data>
@@ -62,11 +62,11 @@
 		</data>
 		<key>Modules/PrebidAdapter.swiftmodule/arm64-apple-ios.abi.json</key>
 		<data>
-		ysrgXY/vG947WTpe1Ct9LoRF/j8=
+		6Ae0bDpm/A55NFIfreMtkjRiPMI=
 		</data>
 		<key>Modules/PrebidAdapter.swiftmodule/arm64-apple-ios.private.swiftinterface</key>
 		<data>
-		zUL0KblkepqiVM6TwXY7oH++2vk=
+		IqWZDXcvPw6CZ98jeGbobWKUOW4=
 		</data>
 		<key>Modules/PrebidAdapter.swiftmodule/arm64-apple-ios.swiftdoc</key>
 		<data>
@@ -74,11 +74,11 @@
 		</data>
 		<key>Modules/PrebidAdapter.swiftmodule/arm64-apple-ios.swiftinterface</key>
 		<data>
-		zUL0KblkepqiVM6TwXY7oH++2vk=
+		IqWZDXcvPw6CZ98jeGbobWKUOW4=
 		</data>
 		<key>Modules/PrebidAdapter.swiftmodule/arm64-apple-ios.swiftmodule</key>
 		<data>
-		rtEQmEb3x+BRCm0XQ0O3mIVTBrA=
+		M99mSIkKAVdmaWwFKbAuepPPX8c=
 		</data>
 		<key>Modules/module.modulemap</key>
 		<data>
@@ -87,6 +87,27 @@
 	</dict>
 	<key>files2</key>
 	<dict>
+		<key>Frameworks/MSPiOSCore.framework/Info.plist</key>
+		<dict>
+			<key>hash2</key>
+			<data>
+			y1CwU+zqvr1Zbv1GX5Q5ZiUwaJZ5wg8nUJRkIPKmjHc=
+			</data>
+		</dict>
+		<key>Frameworks/MSPiOSCore.framework/MSPiOSCore</key>
+		<dict>
+			<key>hash2</key>
+			<data>
+			L5kvrVoVzcnb+hxTdBWKsT9PheLsYO6QieCzCflYic8=
+			</data>
+		</dict>
+		<key>Frameworks/MSPiOSCore.framework/_CodeSignature/CodeResources</key>
+		<dict>
+			<key>hash2</key>
+			<data>
+			TRajXMImtM9uicDSEOuBMXQt82sO7nNYVSyBZkoupJI=
+			</data>
+		</dict>
 		<key>Frameworks/PrebidMobile.framework/Assets.car</key>
 		<dict>
 			<key>hash2</key>
@@ -112,7 +133,7 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			6tPEqlo4FmI7GgSgU+uSkypaXDMSibSYuCMLm3ghdnE=
+			fiqhCIv3QKinNwr0+g0nPNOSitvKLi1uMjQs/gMQH60=
 			</data>
 		</dict>
 		<key>Frameworks/PrebidMobile.framework/_CodeSignature/CodeResources</key>
@@ -143,32 +164,11 @@
 			n8WuqMyGPNYJumH+VtISaEBXQFrTsdDte7rIWtThJ/s=
 			</data>
 		</dict>
-		<key>Frameworks/shared.framework/Info.plist</key>
-		<dict>
-			<key>hash2</key>
-			<data>
-			ayeJ3pvJ1sEodw3CyZWhZ+pDKdZIXBvZCw+Kb+Zwnlk=
-			</data>
-		</dict>
-		<key>Frameworks/shared.framework/_CodeSignature/CodeResources</key>
-		<dict>
-			<key>hash2</key>
-			<data>
-			tny8dKaMyOfuJtONiZrYn8MvKr9QqOHgr3DZxUhHiow=
-			</data>
-		</dict>
-		<key>Frameworks/shared.framework/shared</key>
-		<dict>
-			<key>hash2</key>
-			<data>
-			ynXOYHN0GguPV3yX3Cqc0aw+DQNbKWhoOj+jUiqtNSI=
-			</data>
-		</dict>
 		<key>Headers/PrebidAdapter-Swift.h</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			1oIlDCHQZrwTCIvJA82gZqAw9e0HParx0TgCLJena5k=
+			xCRMZMbjJ6npAvgHQ6VgauNR3635VNgyoZFggginRq0=
 			</data>
 		</dict>
 		<key>Headers/PrebidAdapter.h</key>
@@ -182,14 +182,14 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			2976N/y2fsN0Gn/SUtwZM6P5jWa4lMBKOPOezAAyFik=
+			xCKY9wbdZTAmRtONUs1NW3nBDyCus7dfxj7U7Ryh2qo=
 			</data>
 		</dict>
 		<key>Modules/PrebidAdapter.swiftmodule/arm64-apple-ios.private.swiftinterface</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			F5z1ox1V3PMKzSQ/KtATY2+6CaixBGMCsRJRb5eG69U=
+			l+z7ugJMlA1V3XHgG4qehXKzIOEIx1vCMKmvLlUHHcs=
 			</data>
 		</dict>
 		<key>Modules/PrebidAdapter.swiftmodule/arm64-apple-ios.swiftdoc</key>
@@ -203,14 +203,14 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			F5z1ox1V3PMKzSQ/KtATY2+6CaixBGMCsRJRb5eG69U=
+			l+z7ugJMlA1V3XHgG4qehXKzIOEIx1vCMKmvLlUHHcs=
 			</data>
 		</dict>
 		<key>Modules/PrebidAdapter.swiftmodule/arm64-apple-ios.swiftmodule</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			Irbq07ZQ68W72gCqxox0OXAJnSXpdCcb0/R7vS5iw08=
+			tvSTPKjMN5BHbPc2SVYfg1kzmVtdUa5DxHq3LJBU6Ik=
 			</data>
 		</dict>
 		<key>Modules/module.modulemap</key>

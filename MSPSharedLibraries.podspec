@@ -16,7 +16,7 @@ Pod::Spec.new do |spec|
   #
 
   spec.name         = "MSPSharedLibraries"
-  spec.version      = "0.0.8"
+  spec.version      = "0.0.13"
   spec.summary      = "An utility helper for MSP"
 
   spec.ios.deployment_target = '13.0'
@@ -95,7 +95,7 @@ Pod::Spec.new do |spec|
   spec.exclude_files = "Classes/Exclude"
 
   #spec.dependency 'GoogleAdapter'
-  spec.vendored_frameworks = "MSPSharedLibraries/PrebidMobile.xcframework", "MSPSharedLibraries/shared.xcframework"
+  spec.vendored_frameworks = "MSPSharedLibraries/PrebidMobile.xcframework", "MSPSharedLibraries/MSPiOSCore.xcframework"
 
   # spec.public_header_files = "Classes/**/*.h"
   # s.pod_target_xcconfig = { 'HEADER_SEARCH_PATHS' => '$(PODS_TARGET_SRCROOT)/PrebidMobile.xcframework/Headers $(PODS_TARGET_SRCROOT)/MSPiOSCore.xcframework/Headers' }
