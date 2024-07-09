@@ -7,14 +7,13 @@
 
 import PrebidMobile
 import Foundation
-import shared
-//import MSPiOSCore
+//import shared
+import MSPiOSCore
 import UIKit
 
 @objc public class PrebidAdLoader : NSObject, AdNetworkAdapter {
-    public func prepareViewForInteraction(nativeAd: shared.NativeAd, nativeAdView: Any) {
+    public func prepareViewForInteraction(nativeAd: MSPiOSCore.NativeAd, nativeAdView: Any) {
     }
-    
     
     // MARK: - BannerEventHandler
     public weak var loadingDelegate: BannerEventLoadingDelegate?
@@ -33,7 +32,7 @@ import UIKit
             Prebid.shared.shareGeoLocation = true
             Prebid.initializeSDK{ status, error in
                 if status == .successed {
-                    adapterInitListener.onComplete(adNetwork: .prebid, adapterInitStatus: .success, message: "")
+                    adapterInitListener.onComplete(adNetwork: .prebid, adapterInitStatus: .SUCCESS, message: "")
                 }
             }
         } catch {
@@ -87,20 +86,6 @@ import UIKit
     }
 }
 
-// MARK: - BannerEventHandler
-/*
-extension PrebidAdLoader: BannerEventHandler {
-    public func requestAd(with bidResponse: BidResponse?) {
-        print("demo request ad")
-        loadingDelegate?.prebidDidWin()
-    }
-
-    public func trackImpression() {
-    }
-        
-}
- */
-
 extension PrebidAdLoader: BannerViewDelegate {
     public func bannerViewPresentationController() -> UIViewController? {
         return rootViewController
@@ -147,12 +132,6 @@ public class PrebidAd: MSPAd {
 }
 
 extension PrebidAdLoader: BannerEventHandler {
-    
-    
-    // MARK: - BannerEventHandler
-    //public weak var loadingDelegate: BannerEventLoadingDelegate?
-    //public weak var interactionDelegate: BannerEventInteractionDelegate?
-    //public var adSizes: [CGSize] = []
     
     public func requestAd(with bidResponse: BidResponse?) {
         print("demo request ad")
