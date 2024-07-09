@@ -6,7 +6,8 @@
 //
 
 import Foundation
-import shared
+//import shared
+import MSPiOSCore
 import GoogleMobileAds
 
 public class GoogleNativeAd: MSPAd {

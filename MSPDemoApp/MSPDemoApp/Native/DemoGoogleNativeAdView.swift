@@ -6,7 +6,8 @@
 //
 
 import Foundation
-import shared
+//import shared
+import MSPiOSCore
 import GoogleAdapter
 import GoogleMobileAds
 

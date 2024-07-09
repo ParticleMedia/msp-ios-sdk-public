@@ -7,14 +7,14 @@
 
 import Foundation
 import PrebidAdapter
-//import MSPiOSCore
-import shared
+import MSPiOSCore
+// shared
 import UIKit
 
 
 
 public class MSPAdNetworkAdapterProvider: AdNetworkAdapterProvider {
-    public func getAdNetworkAdaptersCount() -> Int32 {
+    public func getAdNetworkAdaptersCount() -> Int {
         return 2
     }
     
@@ -35,19 +35,19 @@ public class MSPAdNetworkAdapterProvider: AdNetworkAdapterProvider {
     
     public func getAdNetworkAdapter(adNetwork: AdNetwork) -> AdNetworkAdapter? {
         print("msp begin get adnetwork adapter")
-        if adNetwork.name == "Prebid" {
+        if adNetwork == .prebid {
             var prebidAdLoader = PrebidAdLoader()
             self.adNetworkAdapter = prebidAdLoader
             return prebidAdLoader
-        } else if adNetwork.name == "Google" {
+        } else if adNetwork == .google {
             var gadAdLoader = googleManager?.getAdNetworkAdapter()
             self.adNetworkAdapter = gadAdLoader
             return gadAdLoader
-        } else if adNetwork.name == "Nova" {
+        } else if adNetwork == .nova {
             var novaAdLoader = novaManager?.getAdNetworkAdapter()
             self.adNetworkAdapter = novaAdLoader
             return novaAdLoader
-        } else if adNetwork.name == "Facebook" {
+        } else if adNetwork == .facebook {
             var metaAdapter = metaManager?.getAdNetworkAdapter()
             self.adNetworkAdapter = metaAdapter
             return metaAdapter

@@ -6,7 +6,8 @@
 //
 
 import Foundation
-import shared
+//import shared
+import MSPiOSCore
 import PrebidMobile
 import NovaCore
 
@@ -55,7 +56,7 @@ public class NovaAdLoader: AdNetworkAdapter {
         parseNovaAdString(adString: testAdImmersiveString1, adType: "native", adUnitId: "12345", eCPMInDollar: eCPMInDollar)
     }
     
-    public func prepareViewForInteraction(nativeAd: shared.NativeAd, nativeAdView: Any) {
+    public func prepareViewForInteraction(nativeAd: MSPiOSCore.NativeAd, nativeAdView: Any) {
         
     }
     

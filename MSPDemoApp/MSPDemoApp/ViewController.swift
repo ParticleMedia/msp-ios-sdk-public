@@ -10,9 +10,9 @@ import MSPCore
 import GoogleAdapter
 import PrebidAdapter
 import NovaAdapter
-//import MSPiOSCore
+import MSPiOSCore
 import NovaCore
-import shared
+//import shared
 import MetaAdapter
 import AppTrackingTransparency
 
@@ -33,7 +33,7 @@ class ViewController: UIViewController {
                                   adaptiveBannerSize: AdSize(width: 320, height: 50, isInlineAdaptiveBanner: false, isAnchorAdaptiveBanner: false),
                                   adSize: AdSize(width: 320, height: 50, isInlineAdaptiveBanner: false, isAnchorAdaptiveBanner: false),
                                   placementId: "msp-android-immersive-flow-native-s2smf-nfs",
-                                  adFormat: "native",
+                                  adFormat: .native,
                                   isCacheSupported: false)
         //adLoader.loadAd(placementId: "msp-android-immersive-flow-native-s2smf-nfs",
         //                adListener: self,
