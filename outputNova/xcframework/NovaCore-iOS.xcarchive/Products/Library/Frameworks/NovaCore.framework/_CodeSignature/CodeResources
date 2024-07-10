@@ -6,11 +6,11 @@
 	<dict>
 		<key>Assets.car</key>
 		<data>
-		s6jticwW5/KNbKUm9yPMZ7sTkS0=
+		r6Zj0PZhJUnYIESsU2ELmlEWr/M=
 		</data>
 		<key>Headers/NovaCore-Swift.h</key>
 		<data>
-		VHBatptAnTxVNK6vhEyRylrDjbQ=
+		FRl1sGwPGLxDJgnGWbHz2Z4Mjao=
 		</data>
 		<key>Headers/NovaCore.h</key>
 		<data>
@@ -38,11 +38,11 @@
 		</data>
 		<key>Modules/NovaCore.swiftmodule/arm64-apple-ios.abi.json</key>
 		<data>
-		ZPHRGGN5hfGOMiu9hTk28ddqe4k=
+		CaYGQonQ1ByMLu+W0MHGT1oy+6w=
 		</data>
 		<key>Modules/NovaCore.swiftmodule/arm64-apple-ios.private.swiftinterface</key>
 		<data>
-		KdCLwSnF3ij8zia9HLgMvxiLJSs=
+		cA41P3ICRyrDTh+DTi7l+J2vqrI=
 		</data>
 		<key>Modules/NovaCore.swiftmodule/arm64-apple-ios.swiftdoc</key>
 		<data>
@@ -50,11 +50,11 @@
 		</data>
 		<key>Modules/NovaCore.swiftmodule/arm64-apple-ios.swiftinterface</key>
 		<data>
-		KdCLwSnF3ij8zia9HLgMvxiLJSs=
+		cA41P3ICRyrDTh+DTi7l+J2vqrI=
 		</data>
 		<key>Modules/NovaCore.swiftmodule/arm64-apple-ios.swiftmodule</key>
 		<data>
-		O4Fn7HPXEFMXB8vyuISIRgiDY0Q=
+		JRsrXqzrogBm/hH4vb75j/j4/Gc=
 		</data>
 		<key>Modules/module.modulemap</key>
 		<data>
@@ -83,14 +83,14 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			Fzeyv140QNfidruC6myD/h9dzrGHEYPZ5c2NOiLzOJU=
+			/xgLgCFwBVmJzZoBpMOvIOmiBGb2R39Efsp9JQNvLLc=
 			</data>
 		</dict>
 		<key>Headers/NovaCore-Swift.h</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			EBOpA0dW10HNs5KqntAqv4nYuCWq2dbNCut6S6sfX/s=
+			y+JxF0CgYvHI8wqWD3xgtVunqonhQQUzD6de0ZYB3bE=
 			</data>
 		</dict>
 		<key>Headers/NovaCore.h</key>
@@ -132,14 +132,14 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			OYPX5liJz6tJ4lSCiOASzWfo1sA4NeKOEwjQRSoLq3s=
+			f/nIlfNvDlr3Orl0jJkqPWI45zxtYDuVWyvnEjfk4bY=
 			</data>
 		</dict>
 		<key>Modules/NovaCore.swiftmodule/arm64-apple-ios.private.swiftinterface</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			RvrycYOMuPLXpgrcJuP+/+CLWfPCaBzbKz7/JjNENqI=
+			gvhKtwlBt5+evYPXj4VQLQI0YiYYkKn0zwba94sbtEY=
 			</data>
 		</dict>
 		<key>Modules/NovaCore.swiftmodule/arm64-apple-ios.swiftdoc</key>
@@ -153,14 +153,14 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			RvrycYOMuPLXpgrcJuP+/+CLWfPCaBzbKz7/JjNENqI=
+			gvhKtwlBt5+evYPXj4VQLQI0YiYYkKn0zwba94sbtEY=
 			</data>
 		</dict>
 		<key>Modules/NovaCore.swiftmodule/arm64-apple-ios.swiftmodule</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			zA4MWB7f3gC2DuIgyAH9B49GSK5UmNjqbtC6jXL2QB4=
+			XrPDz2B3nz4jrpR3F9oN+IMIrT7CsqRGTwO2+jSsax8=
 			</data>
 		</dict>
 		<key>Modules/module.modulemap</key>

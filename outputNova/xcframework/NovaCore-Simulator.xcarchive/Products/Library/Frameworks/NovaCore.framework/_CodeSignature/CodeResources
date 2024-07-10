@@ -10,7 +10,7 @@
 		</data>
 		<key>Headers/NovaCore-Swift.h</key>
 		<data>
-		hdRnqqNKIdmIV8VUzQc9+UjW54s=
+		mjSbL1pUr/aGQn+Cs7sN4Btnqzs=
 		</data>
 		<key>Headers/NovaCore.h</key>
 		<data>
@@ -38,11 +38,11 @@
 		</data>
 		<key>Modules/NovaCore.swiftmodule/x86_64-apple-ios-simulator.abi.json</key>
 		<data>
-		3yCcSOriMc2s3FbKGRdLBwnkl88=
+		I6n90wnEi08dTXJb9Hh7zfL466A=
 		</data>
 		<key>Modules/NovaCore.swiftmodule/x86_64-apple-ios-simulator.private.swiftinterface</key>
 		<data>
-		VWxi83jfk94eLPFXSrNt4mgitR8=
+		6lmwf0Nlqc5WIfYS9XLH6G8c2OA=
 		</data>
 		<key>Modules/NovaCore.swiftmodule/x86_64-apple-ios-simulator.swiftdoc</key>
 		<data>
@@ -50,11 +50,11 @@
 		</data>
 		<key>Modules/NovaCore.swiftmodule/x86_64-apple-ios-simulator.swiftinterface</key>
 		<data>
-		VWxi83jfk94eLPFXSrNt4mgitR8=
+		6lmwf0Nlqc5WIfYS9XLH6G8c2OA=
 		</data>
 		<key>Modules/NovaCore.swiftmodule/x86_64-apple-ios-simulator.swiftmodule</key>
 		<data>
-		iz5OQFDp65vPpK2nDpTAx560Dg8=
+		UGILKV3w70GeiAfM7ScYZisw/io=
 		</data>
 		<key>Modules/module.modulemap</key>
 		<data>
@@ -90,7 +90,7 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			1Z7z90QwWWDSYWizl7FbTLWLGzYlmh9h31f0ZC1cb+Q=
+			OSOUELrr8rod3rqc3r252TQodrOayL0uAxWJqZJivdM=
 			</data>
 		</dict>
 		<key>Headers/NovaCore.h</key>
@@ -132,14 +132,14 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			WCNOvMMxrndeYp7JFFtgQN+iNDfyN6JeQZ0CT908Vw0=
+			4CT7cxz7PNN+l2og8nuOpKrjul7Fxa2i3naQUH4++bQ=
 			</data>
 		</dict>
 		<key>Modules/NovaCore.swiftmodule/x86_64-apple-ios-simulator.private.swiftinterface</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			F+U4pDWwKFxF04oJWGjtEbSVLFNVViz1XziBzhSRUog=
+			jcMw+HBtIR5pAQq9uhNUgCJEBO4KlpskmyYBBy+CgoM=
 			</data>
 		</dict>
 		<key>Modules/NovaCore.swiftmodule/x86_64-apple-ios-simulator.swiftdoc</key>
@@ -153,14 +153,14 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			F+U4pDWwKFxF04oJWGjtEbSVLFNVViz1XziBzhSRUog=
+			jcMw+HBtIR5pAQq9uhNUgCJEBO4KlpskmyYBBy+CgoM=
 			</data>
 		</dict>
 		<key>Modules/NovaCore.swiftmodule/x86_64-apple-ios-simulator.swiftmodule</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			GuNEbWQUQNRWWzVAuo5XWuicCEz3qcE0b/go2TWmx4I=
+			+b2KtbBfrEK9JcU8N53/3OSdrj1aErdiWp4iGpl20h0=
 			</data>
 		</dict>
 		<key>Modules/module.modulemap</key>

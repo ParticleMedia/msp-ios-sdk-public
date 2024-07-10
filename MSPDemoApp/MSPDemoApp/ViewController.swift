@@ -35,15 +35,15 @@ class ViewController: UIViewController {
                                   placementId: "msp-android-immersive-flow-native-s2smf-nfs",
                                   adFormat: .native,
                                   isCacheSupported: false)
-        adLoader.loadAd(placementId: "msp-android-immersive-flow-native-s2smf-nfs",
-                        adListener: self,
-                        context: self,
-                        adRequest: adRequest,
-                        rootViewController:self)
+        //adLoader.loadAd(placementId: "msp-android-immersive-flow-native-s2smf-nfs",
+        //                adListener: self,
+        //                context: self,
+        //                adRequest: adRequest,
+        //                rootViewController:self)
         
         
-        //let novaAdLoader = MSPHelper.shared.adNetworkAdapterProvider.getAdNetworkAdapterByName(adNetworkName: "Nova")
-        //novaAdLoader?.loadAdCreative(bidResponse: "test", adListener: self, context: self, adRequest: adRequest)
+        let novaAdLoader = MSPHelper.shared.adNetworkAdapterProvider.getAdNetworkAdapterByName(adNetworkName: "Nova")
+        novaAdLoader?.loadAdCreative(bidResponse: "test", adListener: self, context: self, adRequest: adRequest)
         
         //let metaAdLoader = MSPHelper.shared.adNetworkAdapterProvider.getAdNetworkAdapterByName(adNetworkName: "Facebook") as? MetaAdLoder
         //metaAdLoader?.loadTestAdCreative()

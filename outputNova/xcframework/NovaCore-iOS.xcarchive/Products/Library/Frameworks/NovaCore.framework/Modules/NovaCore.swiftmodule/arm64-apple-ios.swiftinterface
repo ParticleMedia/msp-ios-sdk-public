@@ -644,6 +644,7 @@ extension NovaCore.NovaNativeAdVideoView {
   @_Concurrency.MainActor(unsafe) final public func setPlayerBackOnView(view: UIKit.UIView)
   @_Concurrency.MainActor(unsafe) final public func handleVideoOnScreen()
   @_Concurrency.MainActor(unsafe) final public func handleVideoOffScreen()
+  @_Concurrency.MainActor(unsafe) final public func setVideoSubviewsVisibility(isHidden: Swift.Bool)
 }
 extension NovaCore.NovaNativeAdVideoView : NovaCore.VideoPlayerDelegate {
   @_Concurrency.MainActor(unsafe) final public func playerReady(_ player: NovaCore.Player)
@@ -687,6 +688,10 @@ extension UIKit.UIApplication {
   @_Concurrency.MainActor(unsafe) public class var keyRootViewController: UIKit.UIViewController? {
     get
   }
+}
+@_inheritsConvenienceInitializers @objc public class MetricService : ObjectiveC.NSObject {
+  @objc override dynamic public init()
+  @objc deinit
 }
 public struct NovaAdOpenActionDataModel {
   public init(url: Foundation.URL, clickTime: Swift.Double, ad: NovaCore.NovaBaseAd)
@@ -747,6 +752,241 @@ extension UIKit.UIColor {
     @objc deinit
   }
   public static let NB: UIKit.UIColor.NBUIColor
+}
+@objc public enum MetricEvent : Swift.Int, Swift.CaseIterable {
+  case facebookLogin
+  case feedbackTextSubmitted
+  case articleFeedback
+  case articleRating
+  case adClick
+  case adSlotImpression
+  case adRevenueImpression
+  case adDeDuplicated
+  case adBlocked
+  case adSendFeedback
+  case adPaid
+  case adWinnerDecided
+  case loadItemsWithoutAds
+  case adResponse
+  case adRequest
+  case adClickEmptyArea
+  case appContentDisplayed
+  case adCacheExpired
+  case enterFullArticleWithAdSlot
+  case enterFullArticleWithAdFilled
+  case clickPushDoc
+  case clickPushOthers
+  case invalidPushContent
+  case getPushContentFailed
+  case clickDoc
+  case enterNews
+  case clickSocial
+  case enterSocial
+  case enterNewsByWebUrl
+  case popBtnView
+  case popBtnClick
+  case novaLandingPageLaunchFailed
+  case novaLandingPageStart
+  case novaLandingPageTextLoad
+  case novaLandingPageAllLoad
+  case novaLandingPageClose
+  case novaLandingPageJumpOut
+  case novaLandingPageJumpIn
+  case novaLandingPageResignActive
+  case novaLandingPageAliveAfter5s
+  case novaLandingPageRecycledAfter5s
+  case prebidBannerPresentModal
+  case imageDownloadReport
+  case imageDownloadErrorReport
+  case openApp
+  case closeApp
+  case firstOpen
+  case tabBarViewTime
+  case tabAddClick
+  case tabManage
+  case goTab2
+  case topSearchBoxShow
+  case topSearchBoxClick
+  case systemPushNotificationAllowed
+  case systemPushNotificationDenied
+  case googleLogin
+  case appleLogin
+  case emailLogin
+  case registerPush
+  case detectApp
+  case apiReport
+  case networkError
+  case negativeFeedback
+  case shareViaEmail
+  case shareViaSMS
+  case shareViaWhatsapp
+  case viewStream
+  case channelViewTime
+  case changeChannel
+  case leaveNews
+  case pageLoadDetail
+  case clickVideo
+  case videoPlay
+  case videoPlaying
+  case videoEnd
+  case videoFailed
+  case videoLoadTime
+  case fullArticleFinishedLoading
+  case pageLoadFailure
+  case readFullArticle
+  case followMediaAccount
+  case unfollowMediaAccount
+  case checkUserProfile
+  case thumbUpDoc
+  case thumbDownDoc
+  case enterVideo
+  case shareButton
+  case shareDestination
+  case shareSendResult
+  case didGrantLocationPermission
+  case didDenyLocationPermission
+  case didLocationUndetermined
+  case loadFeedReturnError
+  case reactionDetailClick
+  case showSearchHomePage
+  case doSearch
+  case fetchedSearchResults
+  case searchResultClick
+  case searchSortChange
+  case fetchedNoResults
+  case followWidgetExposure
+  case clickHyperlink
+  case autoLogin
+  case getUserInfo
+  case newSession
+  case usageDuration
+  case clickFeedArticleMoreButton
+  case commentTopShow
+  case commentAllShow
+  case commentShow
+  case commentReplyClick
+  case commentReplyFinish
+  case commentCommentClick
+  case commentCommentFinish
+  case commentShowRepliesClick
+  case thumbUpComment
+  case thumbDownComment
+  case commentThreePointClick
+  case commentShareClick
+  case commentDuration
+  case commentReportShow
+  case commentReportReason
+  case commentBlockUser
+  case commentCollapsedClick
+  case viewComment
+  case postComment
+  case postReply
+  case leaveCommentsView
+  case commentGuidelinesClick
+  case ugcPinComment
+  case noCommentViewShow
+  case writeCommentButtonClick
+  case notificationCommentShow
+  case commentAppealClick
+  case commentAppealComplete
+  case negativeFeedbackShow
+  case undoNegativeFeedbackClick
+  case negativeFeedbackSubmit
+  case showLocationPicker
+  case clickPrimeLocationChange
+  case clickAddMoreLocations
+  case clickLocationSearchBar
+  case setPrimeLocation
+  case addLocationSearchSelect
+  case removeLocation
+  case moduleViewMore
+  case moduleClick
+  case feedActionPromptClick
+  case feedActionPromptDismiss
+  case checkedViewNew
+  case topicFollow
+  case topicUnfollow
+  case topicsSelected
+  case ugcEnterPostManagement
+  case ugcCreateVideo
+  case ugcLostPermission
+  case ugcVideoOpenCamera
+  case ugcDiscardPost
+  case ugcVideoUpload
+  case ugcCreateVideoCompleted
+  case ugcEnterMetadata
+  case ugcEnterDetailedLocation
+  case ugcSelectedLocation
+  case ugcSubmitPost
+  case ugcSubmitPostFinished
+  case ugcEnterFollowerList
+  case ugcClickFollower
+  case ugcViewPost
+  case ugcDeletePost
+  case showInboxTab
+  case ugcClickActivityMessage
+  case carouselCreateVideo
+  case pushPromptClick
+  case ugcCommentDropdown
+  case profilePageEnter
+  case likeDoc
+  case unlikeDoc
+  case summaryDoc
+  case ugcEnterPrompt
+  case ugcCheckPrompt
+  case ugcCreateFromPrompt
+  case pushStatusChange
+  case clickPushChannel
+  case clickPushWebUrl
+  case beginSearchChannel
+  case pushAlive
+  case addChannels
+  case removeChannels
+  case streamRefresh
+  case cancelPushDoc
+  case safetyMapMarkersAgg
+  case safetyMapMarkersScattered
+  case safetyMapDuration
+  case safetyMapAction
+  case safetyMapNotificationOnBanner
+  case safetyMapGpsOnBanner
+  case safetyMapLocOpt
+  case crimeReportDuration
+  case shareCrimeReport
+  case recAccountPage
+  case recAccountYes
+  case recAccountNo
+  case fullArticleCrimeMapBtnClick
+  case fullArticleCrimeMapBtnView
+  case fullArticleCrimeMapImgClick
+  case fullArticleCrimeMapImgView
+  case fullArticleShareBtnView
+  case fullArticleShareBtnFacebookClick
+  case fullArticleShareBtnSmsClick
+  case fullArticleShareBtnEmailClick
+  case fullArticleShareBtnMessengerClick
+  case fullArticleShareBtnCopyClick
+  case elecNaviClick
+  case elecStateSelect
+  case elecStatePage
+  case elecStateDone
+  case elecCandClick
+  case openShortcut
+  case openSpotlight
+  public init?(rawValue: Swift.Int)
+  public typealias AllCases = [NovaCore.MetricEvent]
+  public typealias RawValue = Swift.Int
+  public static var allCases: [NovaCore.MetricEvent] {
+    get
+  }
+  public var rawValue: Swift.Int {
+    get
+  }
+}
+extension NovaCore.MetricEvent {
+  public var shouldForwardToApmTool: Swift.Bool {
+    get
+  }
 }
 public enum InteractiveBannerType : Swift.String {
   case displayCard
@@ -1660,6 +1900,7 @@ extension NovaCore.NovaNativeAdMediaView {
   @_Concurrency.MainActor(unsafe) final public func updateVideoStateOnScroll(containerFrame: CoreFoundation.CGRect, cellFrame: CoreFoundation.CGRect, offset: CoreFoundation.CGPoint, inset: UIKit.UIEdgeInsets)
   @_Concurrency.MainActor(unsafe) final public func updateVideoStateOnScroll()
   @_Concurrency.MainActor(unsafe) final public func updateVideoDisplayState(fullyDisplayed: Swift.Bool)
+  @_Concurrency.MainActor(unsafe) final public func setVideoSubviewsVisibility(isHidden: Swift.Bool)
 }
 final public class JSBridgeHandlerMaster {
   public init(jsBridgeHandlers: [any NovaCore.JSBridgeHandling])
@@ -1788,6 +2029,9 @@ extension NovaCore.NovaCreativeType : Swift.RawRepresentable {}
 extension NovaCore.NovaAdType : Swift.Equatable {}
 extension NovaCore.NovaAdType : Swift.Hashable {}
 extension NovaCore.NovaAdType : Swift.RawRepresentable {}
+extension NovaCore.MetricEvent : Swift.Equatable {}
+extension NovaCore.MetricEvent : Swift.Hashable {}
+extension NovaCore.MetricEvent : Swift.RawRepresentable {}
 extension NovaCore.InteractiveBannerType : Swift.Equatable {}
 extension NovaCore.InteractiveBannerType : Swift.Hashable {}
 extension NovaCore.InteractiveBannerType : Swift.RawRepresentable {}
