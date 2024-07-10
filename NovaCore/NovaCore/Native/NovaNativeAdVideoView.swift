@@ -609,7 +609,11 @@ private extension NovaNativeAdVideoView {
         if videoPlayer.getCurrentProgress() >= 1 && !videoInfo.isLoop {
             playState = .complete
         }
+        if videoPlayer.isVideoPlaying() {
+            playState = .playing(currentTime: videoPlayer.currentTime())
+        }
         updateUI(with: playState)
+        syncVideoPlayingState(with: playState)
     }
     
 }

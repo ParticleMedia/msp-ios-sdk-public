@@ -423,6 +423,234 @@ typedef SWIFT_ENUM(NSInteger, System, open) {
   SystemHomeOutline = 46,
 };
 
+typedef SWIFT_ENUM(NSInteger, MetricEvent, open) {
+  MetricEventFacebookLogin = 0,
+  MetricEventFeedbackTextSubmitted = 1,
+  MetricEventArticleFeedback = 2,
+  MetricEventArticleRating = 3,
+  MetricEventAdClick = 4,
+  MetricEventAdSlotImpression = 5,
+  MetricEventAdRevenueImpression = 6,
+  MetricEventAdDeDuplicated = 7,
+  MetricEventAdBlocked = 8,
+  MetricEventAdSendFeedback = 9,
+  MetricEventAdPaid = 10,
+  MetricEventAdWinnerDecided = 11,
+  MetricEventLoadItemsWithoutAds = 12,
+  MetricEventAdResponse = 13,
+  MetricEventAdRequest = 14,
+  MetricEventAdClickEmptyArea = 15,
+  MetricEventAppContentDisplayed = 16,
+  MetricEventAdCacheExpired = 17,
+  MetricEventEnterFullArticleWithAdSlot = 18,
+  MetricEventEnterFullArticleWithAdFilled = 19,
+  MetricEventClickPushDoc = 20,
+  MetricEventClickPushOthers = 21,
+  MetricEventInvalidPushContent = 22,
+  MetricEventGetPushContentFailed = 23,
+  MetricEventClickDoc = 24,
+  MetricEventEnterNews = 25,
+  MetricEventClickSocial = 26,
+  MetricEventEnterSocial = 27,
+  MetricEventEnterNewsByWebUrl = 28,
+  MetricEventPopBtnView = 29,
+  MetricEventPopBtnClick = 30,
+  MetricEventNovaLandingPageLaunchFailed = 31,
+  MetricEventNovaLandingPageStart = 32,
+  MetricEventNovaLandingPageTextLoad = 33,
+  MetricEventNovaLandingPageAllLoad = 34,
+  MetricEventNovaLandingPageClose = 35,
+  MetricEventNovaLandingPageJumpOut = 36,
+  MetricEventNovaLandingPageJumpIn = 37,
+  MetricEventNovaLandingPageResignActive = 38,
+  MetricEventNovaLandingPageAliveAfter5s = 39,
+  MetricEventNovaLandingPageRecycledAfter5s = 40,
+  MetricEventPrebidBannerPresentModal = 41,
+  MetricEventImageDownloadReport = 42,
+  MetricEventImageDownloadErrorReport = 43,
+  MetricEventOpenApp = 44,
+  MetricEventCloseApp = 45,
+  MetricEventFirstOpen = 46,
+  MetricEventTabBarViewTime = 47,
+  MetricEventTabAddClick = 48,
+  MetricEventTabManage = 49,
+  MetricEventGoTab2 = 50,
+  MetricEventTopSearchBoxShow = 51,
+  MetricEventTopSearchBoxClick = 52,
+  MetricEventSystemPushNotificationAllowed = 53,
+  MetricEventSystemPushNotificationDenied = 54,
+  MetricEventGoogleLogin = 55,
+  MetricEventAppleLogin = 56,
+  MetricEventEmailLogin = 57,
+  MetricEventRegisterPush = 58,
+  MetricEventDetectApp = 59,
+  MetricEventApiReport = 60,
+  MetricEventNetworkError = 61,
+  MetricEventNegativeFeedback = 62,
+  MetricEventShareViaEmail = 63,
+  MetricEventShareViaSMS = 64,
+  MetricEventShareViaWhatsapp = 65,
+  MetricEventViewStream = 66,
+  MetricEventChannelViewTime = 67,
+  MetricEventChangeChannel = 68,
+  MetricEventLeaveNews = 69,
+  MetricEventPageLoadDetail = 70,
+  MetricEventClickVideo = 71,
+  MetricEventVideoPlay = 72,
+  MetricEventVideoPlaying = 73,
+  MetricEventVideoEnd = 74,
+  MetricEventVideoFailed = 75,
+  MetricEventVideoLoadTime = 76,
+  MetricEventFullArticleFinishedLoading = 77,
+  MetricEventPageLoadFailure = 78,
+  MetricEventReadFullArticle = 79,
+  MetricEventFollowMediaAccount = 80,
+  MetricEventUnfollowMediaAccount = 81,
+  MetricEventCheckUserProfile = 82,
+  MetricEventThumbUpDoc = 83,
+  MetricEventThumbDownDoc = 84,
+  MetricEventEnterVideo = 85,
+  MetricEventShareButton = 86,
+  MetricEventShareDestination = 87,
+  MetricEventShareSendResult = 88,
+  MetricEventDidGrantLocationPermission = 89,
+  MetricEventDidDenyLocationPermission = 90,
+  MetricEventDidLocationUndetermined = 91,
+  MetricEventLoadFeedReturnError = 92,
+  MetricEventReactionDetailClick = 93,
+  MetricEventShowSearchHomePage = 94,
+  MetricEventDoSearch = 95,
+  MetricEventFetchedSearchResults = 96,
+  MetricEventSearchResultClick = 97,
+  MetricEventSearchSortChange = 98,
+  MetricEventFetchedNoResults = 99,
+  MetricEventFollowWidgetExposure = 100,
+  MetricEventClickHyperlink = 101,
+  MetricEventAutoLogin = 102,
+  MetricEventGetUserInfo = 103,
+  MetricEventNewSession = 104,
+  MetricEventUsageDuration = 105,
+  MetricEventClickFeedArticleMoreButton = 106,
+  MetricEventCommentTopShow = 107,
+  MetricEventCommentAllShow = 108,
+  MetricEventCommentShow = 109,
+  MetricEventCommentReplyClick = 110,
+  MetricEventCommentReplyFinish = 111,
+  MetricEventCommentCommentClick = 112,
+  MetricEventCommentCommentFinish = 113,
+  MetricEventCommentShowRepliesClick = 114,
+  MetricEventThumbUpComment = 115,
+  MetricEventThumbDownComment = 116,
+  MetricEventCommentThreePointClick = 117,
+  MetricEventCommentShareClick = 118,
+  MetricEventCommentDuration = 119,
+  MetricEventCommentReportShow = 120,
+  MetricEventCommentReportReason = 121,
+  MetricEventCommentBlockUser = 122,
+  MetricEventCommentCollapsedClick = 123,
+  MetricEventViewComment = 124,
+  MetricEventPostComment = 125,
+  MetricEventPostReply = 126,
+  MetricEventLeaveCommentsView = 127,
+  MetricEventCommentGuidelinesClick = 128,
+  MetricEventUgcPinComment = 129,
+  MetricEventNoCommentViewShow = 130,
+  MetricEventWriteCommentButtonClick = 131,
+  MetricEventNotificationCommentShow = 132,
+  MetricEventCommentAppealClick = 133,
+  MetricEventCommentAppealComplete = 134,
+  MetricEventNegativeFeedbackShow = 135,
+  MetricEventUndoNegativeFeedbackClick = 136,
+  MetricEventNegativeFeedbackSubmit = 137,
+  MetricEventShowLocationPicker = 138,
+  MetricEventClickPrimeLocationChange = 139,
+  MetricEventClickAddMoreLocations = 140,
+  MetricEventClickLocationSearchBar = 141,
+  MetricEventSetPrimeLocation = 142,
+  MetricEventAddLocationSearchSelect = 143,
+  MetricEventRemoveLocation = 144,
+  MetricEventModuleViewMore = 145,
+  MetricEventModuleClick = 146,
+  MetricEventFeedActionPromptClick = 147,
+  MetricEventFeedActionPromptDismiss = 148,
+  MetricEventCheckedViewNew = 149,
+  MetricEventTopicFollow = 150,
+  MetricEventTopicUnfollow = 151,
+  MetricEventTopicsSelected = 152,
+  MetricEventUgcEnterPostManagement = 153,
+  MetricEventUgcCreateVideo = 154,
+  MetricEventUgcLostPermission = 155,
+  MetricEventUgcVideoOpenCamera = 156,
+  MetricEventUgcDiscardPost = 157,
+  MetricEventUgcVideoUpload = 158,
+  MetricEventUgcCreateVideoCompleted = 159,
+  MetricEventUgcEnterMetadata = 160,
+  MetricEventUgcEnterDetailedLocation = 161,
+  MetricEventUgcSelectedLocation = 162,
+  MetricEventUgcSubmitPost = 163,
+  MetricEventUgcSubmitPostFinished = 164,
+  MetricEventUgcEnterFollowerList = 165,
+  MetricEventUgcClickFollower = 166,
+  MetricEventUgcViewPost = 167,
+  MetricEventUgcDeletePost = 168,
+  MetricEventShowInboxTab = 169,
+  MetricEventUgcClickActivityMessage = 170,
+  MetricEventCarouselCreateVideo = 171,
+  MetricEventPushPromptClick = 172,
+  MetricEventUgcCommentDropdown = 173,
+  MetricEventProfilePageEnter = 174,
+  MetricEventLikeDoc = 175,
+  MetricEventUnlikeDoc = 176,
+  MetricEventSummaryDoc = 177,
+  MetricEventUgcEnterPrompt = 178,
+  MetricEventUgcCheckPrompt = 179,
+  MetricEventUgcCreateFromPrompt = 180,
+  MetricEventPushStatusChange = 181,
+  MetricEventClickPushChannel = 182,
+  MetricEventClickPushWebUrl = 183,
+  MetricEventBeginSearchChannel = 184,
+  MetricEventPushAlive = 185,
+  MetricEventAddChannels = 186,
+  MetricEventRemoveChannels = 187,
+  MetricEventStreamRefresh = 188,
+  MetricEventCancelPushDoc = 189,
+  MetricEventSafetyMapMarkersAgg = 190,
+  MetricEventSafetyMapMarkersScattered = 191,
+  MetricEventSafetyMapDuration = 192,
+  MetricEventSafetyMapAction = 193,
+  MetricEventSafetyMapNotificationOnBanner = 194,
+  MetricEventSafetyMapGpsOnBanner = 195,
+  MetricEventSafetyMapLocOpt = 196,
+  MetricEventCrimeReportDuration = 197,
+  MetricEventShareCrimeReport = 198,
+  MetricEventRecAccountPage = 199,
+  MetricEventRecAccountYes = 200,
+  MetricEventRecAccountNo = 201,
+  MetricEventFullArticleCrimeMapBtnClick = 202,
+  MetricEventFullArticleCrimeMapBtnView = 203,
+  MetricEventFullArticleCrimeMapImgClick = 204,
+  MetricEventFullArticleCrimeMapImgView = 205,
+  MetricEventFullArticleShareBtnView = 206,
+  MetricEventFullArticleShareBtnFacebookClick = 207,
+  MetricEventFullArticleShareBtnSmsClick = 208,
+  MetricEventFullArticleShareBtnEmailClick = 209,
+  MetricEventFullArticleShareBtnMessengerClick = 210,
+  MetricEventFullArticleShareBtnCopyClick = 211,
+  MetricEventElecNaviClick = 212,
+  MetricEventElecStateSelect = 213,
+  MetricEventElecStatePage = 214,
+  MetricEventElecStateDone = 215,
+  MetricEventElecCandClick = 216,
+  MetricEventOpenShortcut = 217,
+  MetricEventOpenSpotlight = 218,
+};
+
+
+SWIFT_CLASS("_TtC8NovaCore13MetricService")
+@interface MetricService : NSObject
+- (nonnull instancetype)init OBJC_DESIGNATED_INITIALIZER;
+@end
+
 @class NSString;
 
 SWIFT_CLASS("_TtC8NovaCore20NovaAdMetricReporter")
@@ -627,11 +855,11 @@ SWIFT_CLASS_PROPERTY(@property (nonatomic, class, readonly) Class _Nonnull layer
 
 
 
-
 @interface UIImage (SWIFT_EXTENSION(NovaCore))
 - (nullable instancetype)initWithSystemName:(enum System)systemName;
 - (nullable instancetype)initWithSystemName:(enum System)systemName tintColor:(UIColor * _Nonnull)tintColor;
 @end
+
 
 
 
@@ -645,11 +873,17 @@ SWIFT_CLASS_PROPERTY(@property (nonatomic, class, readonly) Class _Nonnull layer
 @end
 
 
-
 SWIFT_CLASS("_TtC8NovaCore18UnifiedWebViewHost")
 @interface UnifiedWebViewHost : NSObject
 - (nonnull instancetype)init SWIFT_UNAVAILABLE;
 + (nonnull instancetype)new SWIFT_UNAVAILABLE_MSG("-init is unavailable");
+@end
+
+@class WKUserContentController;
+@class WKScriptMessage;
+
+@interface UnifiedWebViewHost (SWIFT_EXTENSION(NovaCore)) <WKScriptMessageHandler>
+- (void)userContentController:(WKUserContentController * _Nonnull)userContentController didReceiveScriptMessage:(WKScriptMessage * _Nonnull)message;
 @end
 
 @class WKWebView;
@@ -659,13 +893,6 @@ SWIFT_CLASS("_TtC8NovaCore18UnifiedWebViewHost")
 
 @interface UnifiedWebViewHost (SWIFT_EXTENSION(NovaCore)) <WKUIDelegate>
 - (WKWebView * _Nullable)webView:(WKWebView * _Nonnull)webView createWebViewWithConfiguration:(WKWebViewConfiguration * _Nonnull)configuration forNavigationAction:(WKNavigationAction * _Nonnull)navigationAction windowFeatures:(WKWindowFeatures * _Nonnull)windowFeatures SWIFT_WARN_UNUSED_RESULT;
-@end
-
-@class WKUserContentController;
-@class WKScriptMessage;
-
-@interface UnifiedWebViewHost (SWIFT_EXTENSION(NovaCore)) <WKScriptMessageHandler>
-- (void)userContentController:(WKUserContentController * _Nonnull)userContentController didReceiveScriptMessage:(WKScriptMessage * _Nonnull)message;
 @end
 
 @class WKNavigation;

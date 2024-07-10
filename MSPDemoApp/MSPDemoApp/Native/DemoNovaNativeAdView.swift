@@ -102,7 +102,6 @@ public class DemoNovaNativeAdView: NovaNativeAdView {
         ])
         mediaView.isHidden = false
         
-        
         NSLayoutConstraint.activate([
             titleLabel.leadingAnchor.constraint(
                 equalTo: self.leadingAnchor,
