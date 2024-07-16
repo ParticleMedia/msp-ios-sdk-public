@@ -279,6 +279,7 @@ extension VideoPlayer: VideoPlayerProtocol {
         playStyle = info.playStyle
         player.muted = info.isMute
         try? AVAudioSession.sharedInstance().setCategory(.playback)
+        try? AVAudioSession.sharedInstance().setActive(true)
         self.tapGestureRecognizer?.isEnabled = !info.disableGesture
 
         self.setProgress(0)

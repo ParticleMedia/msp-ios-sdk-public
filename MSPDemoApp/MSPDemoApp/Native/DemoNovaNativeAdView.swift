@@ -23,8 +23,8 @@ public class DemoNovaNativeAdView: NovaNativeAdView {
         public static let verticalVideoDefaultAspectRatio: Double = 9.0 / 16.0
     }
     
-    public override init(actionHandler: any ActionHandling) {
-        super.init(actionHandler: actionHandler)
+    public override init(actionHandler: any ActionHandling, rootViewController: UIViewController) {
+        super.init(actionHandler: actionHandler, rootViewController: rootViewController)
     }
     
     public override func setUpView(nativeAd: NovaNativeAdItem) {

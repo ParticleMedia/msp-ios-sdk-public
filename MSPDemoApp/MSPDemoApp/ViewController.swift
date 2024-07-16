@@ -119,7 +119,7 @@ extension ViewController: AdListener {
                 
                 let adOpenActionHandler = NovaAdOpenActionHandler()
                 let actionHandlerMaster = ActionHandlerMaster(actionHandlers: [adOpenActionHandler])
-                let demoNovaNativeAdView = DemoNovaNativeAdView(actionHandler: actionHandlerMaster)
+                let demoNovaNativeAdView = DemoNovaNativeAdView(actionHandler: actionHandlerMaster, rootViewController: self)
                 self.view.addSubview(demoNovaNativeAdView)
                 demoNovaNativeAdView.translatesAutoresizingMaskIntoConstraints = false
                 NSLayoutConstraint.activate([

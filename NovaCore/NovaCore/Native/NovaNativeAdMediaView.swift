@@ -43,6 +43,19 @@ public final class NovaNativeAdMediaView: UIView {
             videoView.bottomAnchor.constraint(equalTo: bottomAnchor),
             videoView.trailingAnchor.constraint(equalTo: trailingAnchor),
         ])
+        
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(willResignActive),
+            name: UIApplication.willResignActiveNotification,
+            object: nil)
+
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(didBecomeActive),
+            name: UIApplication.didBecomeActiveNotification,
+            object: nil)
+
     }
 
     required init?(coder: NSCoder) {
@@ -108,5 +121,17 @@ public extension NovaNativeAdMediaView {
                 videoView.handleVideoOffScreen()
             }
         }
+    }
+    
+    @objc func willResignActive() {
+        updateVideoDisplayState(fullyDisplayed: false)
+    }
+    
+    @objc func didBecomeActive() {
+        updateVideoDisplayState(fullyDisplayed: true)
+    }
+    
+    @objc func handleVideoOnScreen() {
+        videoView.handleVideoOnScreen()
     }
 }

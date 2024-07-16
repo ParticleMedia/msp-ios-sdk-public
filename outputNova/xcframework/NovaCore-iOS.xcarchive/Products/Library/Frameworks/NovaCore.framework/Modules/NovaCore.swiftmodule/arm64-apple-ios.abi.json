@@ -8503,6 +8503,55 @@
           },
           {
             "kind": "Var",
+            "name": "mediaViewController",
+            "printedName": "mediaViewController",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "NovaNativeAdMediaViewController",
+                "printedName": "NovaCore.NovaNativeAdMediaViewController",
+                "usr": "c:@M@NovaCore@objc(cs)NovaNativeAdMediaViewController"
+              }
+            ],
+            "declKind": "Var",
+            "usr": "s:8NovaCore0A12NativeAdViewC05mediaE10ControllerAA0acd5MediaeG0Cvp",
+            "mangledName": "$s8NovaCore0A12NativeAdViewC05mediaE10ControllerAA0acd5MediaeG0Cvp",
+            "moduleName": "NovaCore",
+            "declAttributes": [
+              "Final",
+              "HasStorage",
+              "Custom",
+              "AccessControl"
+            ],
+            "isLet": true,
+            "hasStorage": true,
+            "accessors": [
+              {
+                "kind": "Accessor",
+                "name": "Get",
+                "printedName": "Get()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "NovaNativeAdMediaViewController",
+                    "printedName": "NovaCore.NovaNativeAdMediaViewController",
+                    "usr": "c:@M@NovaCore@objc(cs)NovaNativeAdMediaViewController"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:8NovaCore0A12NativeAdViewC05mediaE10ControllerAA0acd5MediaeG0Cvg",
+                "mangledName": "$s8NovaCore0A12NativeAdViewC05mediaE10ControllerAA0acd5MediaeG0Cvg",
+                "moduleName": "NovaCore",
+                "implicit": true,
+                "declAttributes": [
+                  "Final"
+                ],
+                "accessorKind": "get"
+              }
+            ]
+          },
+          {
+            "kind": "Var",
             "name": "tappableViews",
             "printedName": "tappableViews",
             "children": [
@@ -8708,7 +8757,7 @@
           {
             "kind": "Constructor",
             "name": "init",
-            "printedName": "init(actionHandler:)",
+            "printedName": "init(actionHandler:rootViewController:)",
             "children": [
               {
                 "kind": "TypeNominal",
@@ -8721,11 +8770,17 @@
                 "name": "ActionHandling",
                 "printedName": "any NovaCore.ActionHandling",
                 "usr": "s:8NovaCore14ActionHandlingP"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "UIViewController",
+                "printedName": "UIKit.UIViewController",
+                "usr": "c:objc(cs)UIViewController"
               }
             ],
             "declKind": "Constructor",
-            "usr": "s:8NovaCore0A12NativeAdViewC13actionHandlerAcA14ActionHandling_p_tcfc",
-            "mangledName": "$s8NovaCore0A12NativeAdViewC13actionHandlerAcA14ActionHandling_p_tcfc",
+            "usr": "s:8NovaCore0A12NativeAdViewC13actionHandler04rootE10ControllerAcA14ActionHandling_p_So06UIViewI0Ctcfc",
+            "mangledName": "$s8NovaCore0A12NativeAdViewC13actionHandler04rootE10ControllerAcA14ActionHandling_p_So06UIViewI0Ctcfc",
             "moduleName": "NovaCore",
             "declAttributes": [
               "Custom",
@@ -9400,34 +9455,6 @@
             "declKind": "Func",
             "usr": "s:8NovaCore0A17NativeAdVideoViewC06handleE9OffScreenyyF",
             "mangledName": "$s8NovaCore0A17NativeAdVideoViewC06handleE9OffScreenyyF",
-            "moduleName": "NovaCore",
-            "declAttributes": [
-              "Custom",
-              "Final"
-            ],
-            "isFromExtension": true,
-            "funcSelfKind": "NonMutating"
-          },
-          {
-            "kind": "Function",
-            "name": "setVideoSubviewsVisibility",
-            "printedName": "setVideoSubviewsVisibility(isHidden:)",
-            "children": [
-              {
-                "kind": "TypeNominal",
-                "name": "Void",
-                "printedName": "()"
-              },
-              {
-                "kind": "TypeNominal",
-                "name": "Bool",
-                "printedName": "Swift.Bool",
-                "usr": "s:Sb"
-              }
-            ],
-            "declKind": "Func",
-            "usr": "s:8NovaCore0A17NativeAdVideoViewC03setE18SubviewsVisibility8isHiddenySb_tF",
-            "mangledName": "$s8NovaCore0A17NativeAdVideoViewC03setE18SubviewsVisibility8isHiddenySb_tF",
             "moduleName": "NovaCore",
             "declAttributes": [
               "Custom",
@@ -21749,6 +21776,396 @@
         "name": "Foundation",
         "printedName": "Foundation",
         "declKind": "Import",
+        "moduleName": "NovaCore",
+        "declAttributes": [
+          "RawDocComment"
+        ]
+      },
+      {
+        "kind": "Import",
+        "name": "UIKit",
+        "printedName": "UIKit",
+        "declKind": "Import",
+        "moduleName": "NovaCore"
+      },
+      {
+        "kind": "TypeDecl",
+        "name": "NovaNativeAdMediaViewController",
+        "printedName": "NovaNativeAdMediaViewController",
+        "children": [
+          {
+            "kind": "Var",
+            "name": "mediaView",
+            "printedName": "mediaView",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "NovaNativeAdMediaView",
+                "printedName": "NovaCore.NovaNativeAdMediaView",
+                "usr": "c:@M@NovaCore@objc(cs)NovaNativeAdMediaView"
+              }
+            ],
+            "declKind": "Var",
+            "usr": "s:8NovaCore0A27NativeAdMediaViewControllerC05mediaF0AA0acdeF0Cvp",
+            "mangledName": "$s8NovaCore0A27NativeAdMediaViewControllerC05mediaF0AA0acdeF0Cvp",
+            "moduleName": "NovaCore",
+            "declAttributes": [
+              "HasStorage",
+              "Custom",
+              "AccessControl"
+            ],
+            "hasStorage": true,
+            "accessors": [
+              {
+                "kind": "Accessor",
+                "name": "Get",
+                "printedName": "Get()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "NovaNativeAdMediaView",
+                    "printedName": "NovaCore.NovaNativeAdMediaView",
+                    "usr": "c:@M@NovaCore@objc(cs)NovaNativeAdMediaView"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:8NovaCore0A27NativeAdMediaViewControllerC05mediaF0AA0acdeF0Cvg",
+                "mangledName": "$s8NovaCore0A27NativeAdMediaViewControllerC05mediaF0AA0acdeF0Cvg",
+                "moduleName": "NovaCore",
+                "implicit": true,
+                "accessorKind": "get"
+              },
+              {
+                "kind": "Accessor",
+                "name": "Set",
+                "printedName": "Set()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Void",
+                    "printedName": "()"
+                  },
+                  {
+                    "kind": "TypeNominal",
+                    "name": "NovaNativeAdMediaView",
+                    "printedName": "NovaCore.NovaNativeAdMediaView",
+                    "usr": "c:@M@NovaCore@objc(cs)NovaNativeAdMediaView"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:8NovaCore0A27NativeAdMediaViewControllerC05mediaF0AA0acdeF0Cvs",
+                "mangledName": "$s8NovaCore0A27NativeAdMediaViewControllerC05mediaF0AA0acdeF0Cvs",
+                "moduleName": "NovaCore",
+                "implicit": true,
+                "accessorKind": "set"
+              },
+              {
+                "kind": "Accessor",
+                "name": "Modify",
+                "printedName": "Modify()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Void",
+                    "printedName": "()"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:8NovaCore0A27NativeAdMediaViewControllerC05mediaF0AA0acdeF0CvM",
+                "mangledName": "$s8NovaCore0A27NativeAdMediaViewControllerC05mediaF0AA0acdeF0CvM",
+                "moduleName": "NovaCore",
+                "implicit": true,
+                "accessorKind": "_modify"
+              }
+            ]
+          },
+          {
+            "kind": "Constructor",
+            "name": "init",
+            "printedName": "init(mediaView:)",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "NovaNativeAdMediaViewController",
+                "printedName": "NovaCore.NovaNativeAdMediaViewController",
+                "usr": "c:@M@NovaCore@objc(cs)NovaNativeAdMediaViewController"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "NovaNativeAdMediaView",
+                "printedName": "NovaCore.NovaNativeAdMediaView",
+                "usr": "c:@M@NovaCore@objc(cs)NovaNativeAdMediaView"
+              }
+            ],
+            "declKind": "Constructor",
+            "usr": "s:8NovaCore0A27NativeAdMediaViewControllerC05mediaF0AcA0acdeF0C_tcfc",
+            "mangledName": "$s8NovaCore0A27NativeAdMediaViewControllerC05mediaF0AcA0acdeF0C_tcfc",
+            "moduleName": "NovaCore",
+            "declAttributes": [
+              "Custom",
+              "AccessControl"
+            ],
+            "init_kind": "Designated"
+          },
+          {
+            "kind": "Function",
+            "name": "loadView",
+            "printedName": "loadView()",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Void",
+                "printedName": "()"
+              }
+            ],
+            "declKind": "Func",
+            "usr": "c:@M@NovaCore@objc(cs)NovaNativeAdMediaViewController(im)loadView",
+            "mangledName": "$s8NovaCore0A27NativeAdMediaViewControllerC04loadF0yyF",
+            "moduleName": "NovaCore",
+            "overriding": true,
+            "objc_name": "loadView",
+            "declAttributes": [
+              "Dynamic",
+              "ObjC",
+              "Custom",
+              "Override",
+              "AccessControl"
+            ],
+            "funcSelfKind": "NonMutating"
+          },
+          {
+            "kind": "Function",
+            "name": "viewDidLoad",
+            "printedName": "viewDidLoad()",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Void",
+                "printedName": "()"
+              }
+            ],
+            "declKind": "Func",
+            "usr": "c:@M@NovaCore@objc(cs)NovaNativeAdMediaViewController(im)viewDidLoad",
+            "mangledName": "$s8NovaCore0A27NativeAdMediaViewControllerC11viewDidLoadyyF",
+            "moduleName": "NovaCore",
+            "overriding": true,
+            "objc_name": "viewDidLoad",
+            "declAttributes": [
+              "Dynamic",
+              "ObjC",
+              "Custom",
+              "Override",
+              "AccessControl"
+            ],
+            "funcSelfKind": "NonMutating"
+          },
+          {
+            "kind": "Function",
+            "name": "viewWillAppear",
+            "printedName": "viewWillAppear(_:)",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Void",
+                "printedName": "()"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "Bool",
+                "printedName": "Swift.Bool",
+                "usr": "s:Sb"
+              }
+            ],
+            "declKind": "Func",
+            "usr": "c:@M@NovaCore@objc(cs)NovaNativeAdMediaViewController(im)viewWillAppear:",
+            "mangledName": "$s8NovaCore0A27NativeAdMediaViewControllerC14viewWillAppearyySbF",
+            "moduleName": "NovaCore",
+            "overriding": true,
+            "objc_name": "viewWillAppear:",
+            "declAttributes": [
+              "Dynamic",
+              "ObjC",
+              "Custom",
+              "Override",
+              "AccessControl"
+            ],
+            "funcSelfKind": "NonMutating"
+          },
+          {
+            "kind": "Function",
+            "name": "viewWillDisappear",
+            "printedName": "viewWillDisappear(_:)",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Void",
+                "printedName": "()"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "Bool",
+                "printedName": "Swift.Bool",
+                "usr": "s:Sb"
+              }
+            ],
+            "declKind": "Func",
+            "usr": "c:@M@NovaCore@objc(cs)NovaNativeAdMediaViewController(im)viewWillDisappear:",
+            "mangledName": "$s8NovaCore0A27NativeAdMediaViewControllerC17viewWillDisappearyySbF",
+            "moduleName": "NovaCore",
+            "overriding": true,
+            "objc_name": "viewWillDisappear:",
+            "declAttributes": [
+              "Dynamic",
+              "ObjC",
+              "Custom",
+              "Override",
+              "AccessControl"
+            ],
+            "funcSelfKind": "NonMutating"
+          },
+          {
+            "kind": "Constructor",
+            "name": "init",
+            "printedName": "init(nibName:bundle:)",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "NovaNativeAdMediaViewController",
+                "printedName": "NovaCore.NovaNativeAdMediaViewController",
+                "usr": "c:@M@NovaCore@objc(cs)NovaNativeAdMediaViewController"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "Optional",
+                "printedName": "Swift.String?",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "String",
+                    "printedName": "Swift.String",
+                    "usr": "s:SS"
+                  }
+                ],
+                "usr": "s:Sq"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "Optional",
+                "printedName": "Foundation.Bundle?",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Bundle",
+                    "printedName": "Foundation.Bundle",
+                    "usr": "c:objc(cs)NSBundle"
+                  }
+                ],
+                "usr": "s:Sq"
+              }
+            ],
+            "declKind": "Constructor",
+            "usr": "c:@M@NovaCore@objc(cs)NovaNativeAdMediaViewController(im)initWithNibName:bundle:",
+            "mangledName": "$s8NovaCore0A27NativeAdMediaViewControllerC7nibName6bundleACSSSg_So8NSBundleCSgtcfc",
+            "moduleName": "NovaCore",
+            "overriding": true,
+            "implicit": true,
+            "objc_name": "initWithNibName:bundle:",
+            "declAttributes": [
+              "Dynamic",
+              "ObjC",
+              "Custom",
+              "Override"
+            ],
+            "init_kind": "Designated"
+          }
+        ],
+        "declKind": "Class",
+        "usr": "c:@M@NovaCore@objc(cs)NovaNativeAdMediaViewController",
+        "mangledName": "$s8NovaCore0A27NativeAdMediaViewControllerC",
+        "moduleName": "NovaCore",
+        "declAttributes": [
+          "Custom",
+          "AccessControl",
+          "ObjC"
+        ],
+        "superclassUsr": "c:objc(cs)UIViewController",
+        "hasMissingDesignatedInitializers": true,
+        "superclassNames": [
+          "UIKit.UIViewController",
+          "UIKit.UIResponder",
+          "ObjectiveC.NSObject"
+        ],
+        "conformances": [
+          {
+            "kind": "Conformance",
+            "name": "Equatable",
+            "printedName": "Equatable",
+            "usr": "s:SQ",
+            "mangledName": "$sSQ"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Hashable",
+            "printedName": "Hashable",
+            "usr": "s:SH",
+            "mangledName": "$sSH"
+          },
+          {
+            "kind": "Conformance",
+            "name": "CVarArg",
+            "printedName": "CVarArg",
+            "usr": "s:s7CVarArgP",
+            "mangledName": "$ss7CVarArgP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "_KeyValueCodingAndObservingPublishing",
+            "printedName": "_KeyValueCodingAndObservingPublishing",
+            "usr": "s:10Foundation37_KeyValueCodingAndObservingPublishingP",
+            "mangledName": "$s10Foundation37_KeyValueCodingAndObservingPublishingP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "_KeyValueCodingAndObserving",
+            "printedName": "_KeyValueCodingAndObserving",
+            "usr": "s:10Foundation27_KeyValueCodingAndObservingP",
+            "mangledName": "$s10Foundation27_KeyValueCodingAndObservingP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "CustomStringConvertible",
+            "printedName": "CustomStringConvertible",
+            "usr": "s:s23CustomStringConvertibleP",
+            "mangledName": "$ss23CustomStringConvertibleP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "CustomDebugStringConvertible",
+            "printedName": "CustomDebugStringConvertible",
+            "usr": "s:s28CustomDebugStringConvertibleP",
+            "mangledName": "$ss28CustomDebugStringConvertibleP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "UITraitChangeObservable",
+            "printedName": "UITraitChangeObservable",
+            "usr": "s:5UIKit23UITraitChangeObservableP",
+            "mangledName": "$s5UIKit23UITraitChangeObservableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Sendable",
+            "printedName": "Sendable",
+            "usr": "s:s8SendableP",
+            "mangledName": "$ss8SendableP"
+          }
+        ]
+      },
+      {
+        "kind": "Import",
+        "name": "Foundation",
+        "printedName": "Foundation",
+        "declKind": "Import",
         "moduleName": "NovaCore"
       },
       {
@@ -31106,6 +31523,13 @@
         "moduleName": "NovaCore"
       },
       {
+        "kind": "Import",
+        "name": "UIKit",
+        "printedName": "UIKit",
+        "declKind": "Import",
+        "moduleName": "NovaCore"
+      },
+      {
         "kind": "TypeDecl",
         "name": "NovaNativeAdDelegate",
         "printedName": "NovaNativeAdDelegate",
@@ -31196,6 +31620,39 @@
             "declKind": "Func",
             "usr": "c:@M@NovaCore@objc(pl)NovaNativeAdDelegate(im)nativeAdDidFinishRender:",
             "mangledName": "$s8NovaCore0A16NativeAdDelegateP06nativeD15DidFinishRenderyyAA0acD4ItemCF",
+            "moduleName": "NovaCore",
+            "genericSig": "<τ_0_0 where τ_0_0 : NovaCore.NovaNativeAdDelegate>",
+            "sugared_genericSig": "<Self where Self : NovaCore.NovaNativeAdDelegate>",
+            "protocolReq": true,
+            "declAttributes": [
+              "ObjC"
+            ],
+            "reqNewWitnessTableEntry": true,
+            "funcSelfKind": "NonMutating"
+          },
+          {
+            "kind": "Function",
+            "name": "nativeAdRootViewController",
+            "printedName": "nativeAdRootViewController()",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Optional",
+                "printedName": "UIKit.UIViewController?",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "UIViewController",
+                    "printedName": "UIKit.UIViewController",
+                    "usr": "c:objc(cs)UIViewController"
+                  }
+                ],
+                "usr": "s:Sq"
+              }
+            ],
+            "declKind": "Func",
+            "usr": "c:@M@NovaCore@objc(pl)NovaNativeAdDelegate(im)nativeAdRootViewController",
+            "mangledName": "$s8NovaCore0A16NativeAdDelegateP06nativeD18RootViewControllerSo06UIViewI0CSgyF",
             "moduleName": "NovaCore",
             "genericSig": "<τ_0_0 where τ_0_0 : NovaCore.NovaNativeAdDelegate>",
             "sugared_genericSig": "<Self where Self : NovaCore.NovaNativeAdDelegate>",
@@ -35608,28 +36065,69 @@
           },
           {
             "kind": "Function",
-            "name": "setVideoSubviewsVisibility",
-            "printedName": "setVideoSubviewsVisibility(isHidden:)",
+            "name": "willResignActive",
+            "printedName": "willResignActive()",
             "children": [
               {
                 "kind": "TypeNominal",
                 "name": "Void",
                 "printedName": "()"
-              },
-              {
-                "kind": "TypeNominal",
-                "name": "Bool",
-                "printedName": "Swift.Bool",
-                "usr": "s:Sb"
               }
             ],
             "declKind": "Func",
-            "usr": "s:8NovaCore0A17NativeAdMediaViewC26setVideoSubviewsVisibility8isHiddenySb_tF",
-            "mangledName": "$s8NovaCore0A17NativeAdMediaViewC26setVideoSubviewsVisibility8isHiddenySb_tF",
+            "usr": "c:@CM@NovaCore@objc(cs)NovaNativeAdMediaView(im)willResignActive",
+            "mangledName": "$s8NovaCore0A17NativeAdMediaViewC16willResignActiveyyF",
             "moduleName": "NovaCore",
             "declAttributes": [
+              "Final",
               "Custom",
-              "Final"
+              "ObjC"
+            ],
+            "isFromExtension": true,
+            "funcSelfKind": "NonMutating"
+          },
+          {
+            "kind": "Function",
+            "name": "didBecomeActive",
+            "printedName": "didBecomeActive()",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Void",
+                "printedName": "()"
+              }
+            ],
+            "declKind": "Func",
+            "usr": "c:@CM@NovaCore@objc(cs)NovaNativeAdMediaView(im)didBecomeActive",
+            "mangledName": "$s8NovaCore0A17NativeAdMediaViewC15didBecomeActiveyyF",
+            "moduleName": "NovaCore",
+            "declAttributes": [
+              "Final",
+              "Custom",
+              "ObjC"
+            ],
+            "isFromExtension": true,
+            "funcSelfKind": "NonMutating"
+          },
+          {
+            "kind": "Function",
+            "name": "handleVideoOnScreen",
+            "printedName": "handleVideoOnScreen()",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Void",
+                "printedName": "()"
+              }
+            ],
+            "declKind": "Func",
+            "usr": "c:@CM@NovaCore@objc(cs)NovaNativeAdMediaView(im)handleVideoOnScreen",
+            "mangledName": "$s8NovaCore0A17NativeAdMediaViewC19handleVideoOnScreenyyF",
+            "moduleName": "NovaCore",
+            "declAttributes": [
+              "Final",
+              "Custom",
+              "ObjC"
             ],
             "isFromExtension": true,
             "funcSelfKind": "NonMutating"
@@ -84614,21 +85112,21 @@
     {
       "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-sdk\/NovaCore\/NovaCore\/Native\/NovaNativeAdView.swift",
       "kind": "StringLiteral",
-      "offset": 392,
+      "offset": 387,
       "length": 7,
       "value": "\"media\""
     },
     {
       "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-sdk\/NovaCore\/NovaCore\/Native\/NovaNativeAdView.swift",
       "kind": "BooleanLiteral",
-      "offset": 457,
+      "offset": 452,
       "length": 5,
       "value": "false"
     },
     {
       "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-sdk\/NovaCore\/NovaCore\/Native\/NovaNativeAdView.swift",
       "kind": "BooleanLiteral",
-      "offset": 649,
+      "offset": 712,
       "length": 4,
       "value": "true"
     },
@@ -88271,6 +88769,13 @@
       "offset": 295,
       "length": 1,
       "value": "0"
+    },
+    {
+      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-sdk\/NovaCore\/NovaCore\/Native\/NovaNativeAdMediaViewController.swift",
+      "kind": "StringLiteral",
+      "offset": 151,
+      "length": 31,
+      "value": "\"NovaCore.NovaNativeAdMediaViewController\""
     },
     {
       "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-sdk\/NovaCore\/NovaCore\/Internal\/NovaDedupeManager.swift",

@@ -688,13 +688,13 @@ SWIFT_CLASS("_TtC8NovaCore31NovaAdsLandingWebViewController")
 @end
 
 
+
 @class UIScrollView;
 
 @interface NovaAdsLandingWebViewController (SWIFT_EXTENSION(NovaCore)) <UIScrollViewDelegate>
 - (void)scrollViewDidScroll:(UIScrollView * _Nonnull)scrollView;
 - (void)scrollViewDidEndDragging:(UIScrollView * _Nonnull)scrollView willDecelerate:(BOOL)decelerate;
 @end
-
 
 
 
@@ -736,6 +736,7 @@ SWIFT_PROTOCOL("_TtP8NovaCore20NovaNativeAdDelegate_")
 - (void)nativeAdDidLogImpression:(NovaNativeAdItem * _Nonnull)nativeAd;
 - (void)nativeAdDidLogClick:(NovaNativeAdItem * _Nonnull)nativeAd clickAreaName:(NSString * _Nonnull)clickAreaName;
 - (void)nativeAdDidFinishRender:(NovaNativeAdItem * _Nonnull)nativeAd;
+- (UIViewController * _Nullable)nativeAdRootViewController SWIFT_WARN_UNUSED_RESULT;
 @end
 
 @class NSIndexPath;
@@ -768,6 +769,23 @@ SWIFT_CLASS("_TtC8NovaCore21NovaNativeAdMediaView")
 @end
 
 
+@interface NovaNativeAdMediaView (SWIFT_EXTENSION(NovaCore))
+- (void)willResignActive;
+- (void)didBecomeActive;
+- (void)handleVideoOnScreen;
+@end
+
+
+SWIFT_CLASS("_TtC8NovaCore31NovaNativeAdMediaViewController")
+@interface NovaNativeAdMediaViewController : UIViewController
+- (nullable instancetype)initWithCoder:(NSCoder * _Nonnull)coder SWIFT_UNAVAILABLE;
+- (void)loadView;
+- (void)viewDidLoad;
+- (void)viewWillAppear:(BOOL)animated;
+- (void)viewWillDisappear:(BOOL)animated;
+- (nonnull instancetype)initWithNibName:(NSString * _Nullable)nibNameOrNil bundle:(NSBundle * _Nullable)nibBundleOrNil SWIFT_UNAVAILABLE;
+@end
+
 
 SWIFT_CLASS("_TtC8NovaCore21NovaNativeAdVideoView")
 @interface NovaNativeAdVideoView : UIView
@@ -788,10 +806,10 @@ SWIFT_CLASS("_TtC8NovaCore16NovaNativeAdView")
 @end
 
 
+
 @interface NovaNativeAdView (SWIFT_EXTENSION(NovaCore))
 - (void)register:(NovaNativeAdItem * _Nonnull)nativeAd;
 @end
-
 
 
 
@@ -855,11 +873,11 @@ SWIFT_CLASS_PROPERTY(@property (nonatomic, class, readonly) Class _Nonnull layer
 
 
 
+
 @interface UIImage (SWIFT_EXTENSION(NovaCore))
 - (nullable instancetype)initWithSystemName:(enum System)systemName;
 - (nullable instancetype)initWithSystemName:(enum System)systemName tintColor:(UIColor * _Nonnull)tintColor;
 @end
-
 
 
 
@@ -879,13 +897,6 @@ SWIFT_CLASS("_TtC8NovaCore18UnifiedWebViewHost")
 + (nonnull instancetype)new SWIFT_UNAVAILABLE_MSG("-init is unavailable");
 @end
 
-@class WKUserContentController;
-@class WKScriptMessage;
-
-@interface UnifiedWebViewHost (SWIFT_EXTENSION(NovaCore)) <WKScriptMessageHandler>
-- (void)userContentController:(WKUserContentController * _Nonnull)userContentController didReceiveScriptMessage:(WKScriptMessage * _Nonnull)message;
-@end
-
 @class WKWebView;
 @class WKWebViewConfiguration;
 @class WKNavigationAction;
@@ -893,6 +904,13 @@ SWIFT_CLASS("_TtC8NovaCore18UnifiedWebViewHost")
 
 @interface UnifiedWebViewHost (SWIFT_EXTENSION(NovaCore)) <WKUIDelegate>
 - (WKWebView * _Nullable)webView:(WKWebView * _Nonnull)webView createWebViewWithConfiguration:(WKWebViewConfiguration * _Nonnull)configuration forNavigationAction:(WKNavigationAction * _Nonnull)navigationAction windowFeatures:(WKWindowFeatures * _Nonnull)windowFeatures SWIFT_WARN_UNUSED_RESULT;
+@end
+
+@class WKUserContentController;
+@class WKScriptMessage;
+
+@interface UnifiedWebViewHost (SWIFT_EXTENSION(NovaCore)) <WKScriptMessageHandler>
+- (void)userContentController:(WKUserContentController * _Nonnull)userContentController didReceiveScriptMessage:(WKScriptMessage * _Nonnull)message;
 @end
 
 @class WKNavigation;

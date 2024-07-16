@@ -7,13 +7,13 @@ open class NovaNativeAdView: UIView {
     public var bodyLabel: UILabel?
     public var advertiserLabel: UILabel?
     public var callToActionButton: UIButton?
-    
     public let mediaView: NovaNativeAdMediaView = {
         let view = NovaNativeAdMediaView()
         view.accessibilityIdentifier = "media"
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }()
+    public let mediaViewController: NovaNativeAdMediaViewController
     
     
     @objc public var tappableViews: [UIView]? {
@@ -38,9 +38,10 @@ open class NovaNativeAdView: UIView {
 
     // MARK: -
 
-    public init(actionHandler: ActionHandling) {
+    public init(actionHandler: ActionHandling, rootViewController: UIViewController) {
         self.actionHandler = actionHandler
-
+        self.mediaViewController = NovaNativeAdMediaViewController(mediaView: mediaView)
+        rootViewController.addChild(mediaViewController)
         super.init(frame: .zero)
     }
 
@@ -68,17 +69,14 @@ open class NovaNativeAdView: UIView {
         bodyLabel?.text = nativeAd.body
         advertiserLabel?.text = nativeAd.advertiser
         callToActionButton?.setTitle(nativeAd.callToAction, for: .normal)
-        //self.nativeAdView.callToActionView?.isUserInteractionEnabled = false
-        //self.gadMediaView.translatesAutoresizingMaskIntoConstraints = false
-        //self.gadMediaView.contentMode = .scaleAspectFill
-        //self.gadMediaView.mediaContent = nativeAd.mediaContent
-        //self.nativeAdView.mediaView = gadMediaView
+        
         let mediaVM = NovaNativeAdMediaViewModel(encryptedAdToken: nativeAd.encryptedAdToken,
                                                  imageUrlStr: nativeAd.imageUrlStr,
                                                  videoInfo: nativeAd.videoInfo)
         mediaView.config(with: mediaVM, iabReporter: self.iABMetricReporter) {
             nativeAd.delegate?.nativeAdDidFinishRender(nativeAd)
         }
+        
         register(nativeAd)
     }
 }
