@@ -614,6 +614,7 @@ extension NovaCore.ActionModel : Swift.Equatable {
   @_Concurrency.MainActor(unsafe) public var advertiserLabel: UIKit.UILabel?
   @_Concurrency.MainActor(unsafe) public var callToActionButton: UIKit.UIButton?
   @_Concurrency.MainActor(unsafe) final public let mediaView: NovaCore.NovaNativeAdMediaView
+  @_Concurrency.MainActor(unsafe) final public let mediaViewController: NovaCore.NovaNativeAdMediaViewController
   @objc @_Concurrency.MainActor(unsafe) public var tappableViews: [UIKit.UIView]? {
     @objc get
     @objc set
@@ -621,7 +622,7 @@ extension NovaCore.ActionModel : Swift.Equatable {
   @_Concurrency.MainActor(unsafe) public var iABMetricReporter: NovaCore.IABMetricReporter? {
     get
   }
-  @_Concurrency.MainActor(unsafe) public init(actionHandler: any NovaCore.ActionHandling)
+  @_Concurrency.MainActor(unsafe) public init(actionHandler: any NovaCore.ActionHandling, rootViewController: UIKit.UIViewController)
   @available(*, unavailable)
   @_Concurrency.MainActor(unsafe) @objc required dynamic public init?(coder: Foundation.NSCoder)
   @objc deinit
@@ -644,7 +645,6 @@ extension NovaCore.NovaNativeAdVideoView {
   @_Concurrency.MainActor(unsafe) final public func setPlayerBackOnView(view: UIKit.UIView)
   @_Concurrency.MainActor(unsafe) final public func handleVideoOnScreen()
   @_Concurrency.MainActor(unsafe) final public func handleVideoOffScreen()
-  @_Concurrency.MainActor(unsafe) final public func setVideoSubviewsVisibility(isHidden: Swift.Bool)
 }
 extension NovaCore.NovaNativeAdVideoView : NovaCore.VideoPlayerDelegate {
   @_Concurrency.MainActor(unsafe) final public func playerReady(_ player: NovaCore.Player)
@@ -1073,6 +1073,15 @@ extension SwiftUI.Image {
     final public let wow: SwiftUI.Image
     @objc deinit
   }
+}
+@objc @_hasMissingDesignatedInitializers @_Concurrency.MainActor(unsafe) public class NovaNativeAdMediaViewController : UIKit.UIViewController {
+  @_Concurrency.MainActor(unsafe) public var mediaView: NovaCore.NovaNativeAdMediaView
+  @_Concurrency.MainActor(unsafe) public init(mediaView: NovaCore.NovaNativeAdMediaView)
+  @_Concurrency.MainActor(unsafe) @objc override dynamic public func loadView()
+  @_Concurrency.MainActor(unsafe) @objc override dynamic public func viewDidLoad()
+  @_Concurrency.MainActor(unsafe) @objc override dynamic public func viewWillAppear(_ animated: Swift.Bool)
+  @_Concurrency.MainActor(unsafe) @objc override dynamic public func viewWillDisappear(_ animated: Swift.Bool)
+  @objc deinit
 }
 @_hasMissingDesignatedInitializers final public class NovaDedupeManager {
   public static let shared: NovaCore.NovaDedupeManager
@@ -1731,6 +1740,7 @@ public enum NovaAdBuilder {
   @objc func nativeAdDidLogImpression(_ nativeAd: NovaCore.NovaNativeAdItem)
   @objc func nativeAdDidLogClick(_ nativeAd: NovaCore.NovaNativeAdItem, clickAreaName: Swift.String)
   @objc func nativeAdDidFinishRender(_ nativeAd: NovaCore.NovaNativeAdItem)
+  @objc func nativeAdRootViewController() -> UIKit.UIViewController?
 }
 public enum NovaAdSkipReason : Swift.String {
   case timeout
@@ -1900,7 +1910,9 @@ extension NovaCore.NovaNativeAdMediaView {
   @_Concurrency.MainActor(unsafe) final public func updateVideoStateOnScroll(containerFrame: CoreFoundation.CGRect, cellFrame: CoreFoundation.CGRect, offset: CoreFoundation.CGPoint, inset: UIKit.UIEdgeInsets)
   @_Concurrency.MainActor(unsafe) final public func updateVideoStateOnScroll()
   @_Concurrency.MainActor(unsafe) final public func updateVideoDisplayState(fullyDisplayed: Swift.Bool)
-  @_Concurrency.MainActor(unsafe) final public func setVideoSubviewsVisibility(isHidden: Swift.Bool)
+  @objc @_Concurrency.MainActor(unsafe) final public func willResignActive()
+  @objc @_Concurrency.MainActor(unsafe) final public func didBecomeActive()
+  @objc @_Concurrency.MainActor(unsafe) final public func handleVideoOnScreen()
 }
 final public class JSBridgeHandlerMaster {
   public init(jsBridgeHandlers: [any NovaCore.JSBridgeHandling])

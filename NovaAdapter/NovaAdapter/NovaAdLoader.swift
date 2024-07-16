@@ -10,6 +10,7 @@ import Foundation
 import MSPiOSCore
 import PrebidMobile
 import NovaCore
+import UIKit
 
 public class NovaAdLoader: AdNetworkAdapter {
     
@@ -18,6 +19,7 @@ public class NovaAdLoader: AdNetworkAdapter {
     public var adUnitId: String?
     
     public var nativeAd: MSPAd?
+    public var rootViewController: UIViewController?
     
     public func destroyAd() {
         
@@ -51,6 +53,9 @@ public class NovaAdLoader: AdNetworkAdapter {
         }
          */
         //self.priceInDollar = Double(mBidResponse.winningBid?.price ?? 0)
+        if context is UIViewController {
+            self.rootViewController = context as? UIViewController
+        }
         self.adUnitId = "12345"//adUnitId
         let eCPMInDollar = Decimal(priceInDollar ?? 0.0)
         parseNovaAdString(adString: testAdImmersiveString1, adType: "native", adUnitId: "12345", eCPMInDollar: eCPMInDollar)
@@ -270,5 +275,9 @@ extension NovaAdLoader: NovaNativeAdDelegate {
     
     public func nativeAdDidFinishRender(_ nativeAd: NovaCore.NovaNativeAdItem) {
         
+    }
+    
+    public func nativeAdRootViewController() -> UIViewController? {
+        return self.rootViewController
     }
 }

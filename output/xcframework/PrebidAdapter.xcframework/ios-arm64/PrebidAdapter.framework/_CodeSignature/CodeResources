@@ -4,50 +4,6 @@
 <dict>
 	<key>files</key>
 	<dict>
-		<key>Frameworks/MSPiOSCore.framework/Info.plist</key>
-		<data>
-		43JxNff6Kb/gV8zelLGclCVa6+w=
-		</data>
-		<key>Frameworks/MSPiOSCore.framework/MSPiOSCore</key>
-		<data>
-		xWHqN7K8795Appb3BNZNJOF7j/4=
-		</data>
-		<key>Frameworks/MSPiOSCore.framework/_CodeSignature/CodeResources</key>
-		<data>
-		fY9pORAYh6bZKJzyfoKNSqCmWrU=
-		</data>
-		<key>Frameworks/PrebidMobile.framework/Assets.car</key>
-		<data>
-		9/s4e4H9c7S5TUZaF+d7p/Blkak=
-		</data>
-		<key>Frameworks/PrebidMobile.framework/ClickthroughBrowserView.nib</key>
-		<data>
-		rMwshyTSzdJXBME4GC/vCHyx1Rg=
-		</data>
-		<key>Frameworks/PrebidMobile.framework/Info.plist</key>
-		<data>
-		xZ+9bK5rYTDbzmlRHE3Wp8Xykh0=
-		</data>
-		<key>Frameworks/PrebidMobile.framework/PrebidMobile</key>
-		<data>
-		utS+XOzE2OzLbzVH1QcmS5xyKKA=
-		</data>
-		<key>Frameworks/PrebidMobile.framework/_CodeSignature/CodeResources</key>
-		<data>
-		mCb1F9IndEsTRqTm9g45Lce6Uis=
-		</data>
-		<key>Frameworks/PrebidMobile.framework/companion.html</key>
-		<data>
-		NhLCGomJdkcbLTXc1GHXRF2JSzs=
-		</data>
-		<key>Frameworks/PrebidMobile.framework/mraid.js</key>
-		<data>
-		w/U1CCucLpP/H2bl8eyI6hhGRso=
-		</data>
-		<key>Frameworks/PrebidMobile.framework/omsdk.js</key>
-		<data>
-		gHGQFei4PigMPCDxMe1k+dLcbPA=
-		</data>
 		<key>Headers/PrebidAdapter-Swift.h</key>
 		<data>
 		/7bLe8jMkAI1g9oD8f3vD5AVb50=
@@ -87,83 +43,6 @@
 	</dict>
 	<key>files2</key>
 	<dict>
-		<key>Frameworks/MSPiOSCore.framework/Info.plist</key>
-		<dict>
-			<key>hash2</key>
-			<data>
-			y1CwU+zqvr1Zbv1GX5Q5ZiUwaJZ5wg8nUJRkIPKmjHc=
-			</data>
-		</dict>
-		<key>Frameworks/MSPiOSCore.framework/MSPiOSCore</key>
-		<dict>
-			<key>hash2</key>
-			<data>
-			4jzHnqXYivHBaDlHdVSnsF2OuI+idywQ/xKs+aaZDW0=
-			</data>
-		</dict>
-		<key>Frameworks/MSPiOSCore.framework/_CodeSignature/CodeResources</key>
-		<dict>
-			<key>hash2</key>
-			<data>
-			TRajXMImtM9uicDSEOuBMXQt82sO7nNYVSyBZkoupJI=
-			</data>
-		</dict>
-		<key>Frameworks/PrebidMobile.framework/Assets.car</key>
-		<dict>
-			<key>hash2</key>
-			<data>
-			h2GogqQxJjDkgcgvYZcPFQWZrWM0mCXhkAEZQPrUxao=
-			</data>
-		</dict>
-		<key>Frameworks/PrebidMobile.framework/ClickthroughBrowserView.nib</key>
-		<dict>
-			<key>hash2</key>
-			<data>
-			ibxOATX8TEvGBwqUS0yKdQwTXCsoKCvSH1hQbLkMTlM=
-			</data>
-		</dict>
-		<key>Frameworks/PrebidMobile.framework/Info.plist</key>
-		<dict>
-			<key>hash2</key>
-			<data>
-			ELGHGWQfBnsnVtjGmKmY0k0w+99bfp+y0sKAd/9oqNY=
-			</data>
-		</dict>
-		<key>Frameworks/PrebidMobile.framework/PrebidMobile</key>
-		<dict>
-			<key>hash2</key>
-			<data>
-			LNxnPLX/WKJCjOHptw2t2f2oMZfT/fi4ooCvoP0QNJs=
-			</data>
-		</dict>
-		<key>Frameworks/PrebidMobile.framework/_CodeSignature/CodeResources</key>
-		<dict>
-			<key>hash2</key>
-			<data>
-			MGD2BNerEHQ0PC20gYx39HOqtk1cjpahuHiKR7g1Ipw=
-			</data>
-		</dict>
-		<key>Frameworks/PrebidMobile.framework/companion.html</key>
-		<dict>
-			<key>hash2</key>
-			<data>
-			UsYyo6mmGwMOG5UV8/U9wCXXmIMMgtemG022RTT6plo=
-			</data>
-		</dict>
-		<key>Frameworks/PrebidMobile.framework/mraid.js</key>
-		<dict>
-			<key>hash2</key>
-			<data>
-			fmiQYqOzEVjTDwJr3YyfzYPTVXu1A2DgTcbK6dGeiJM=
-			</data>
-		</dict>
-		<key>Frameworks/PrebidMobile.framework/omsdk.js</key>
-		<dict>
-			<key>hash2</key>
-			<data>
-			n8WuqMyGPNYJumH+VtISaEBXQFrTsdDte7rIWtThJ/s=
-			</data>
-		</dict>
 		<key>Headers/PrebidAdapter-Swift.h</key>
 		<dict>
 			<key>hash2</key>
