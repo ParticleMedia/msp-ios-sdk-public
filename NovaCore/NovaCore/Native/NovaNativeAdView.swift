@@ -7,12 +7,13 @@ open class NovaNativeAdView: UIView {
     public var bodyLabel: UILabel?
     public var advertiserLabel: UILabel?
     public var callToActionButton: UIButton?
-    public let mediaView: NovaNativeAdMediaView = {
-        let view = NovaNativeAdMediaView()
-        view.accessibilityIdentifier = "media"
-        view.translatesAutoresizingMaskIntoConstraints = false
-        return view
-    }()
+    //public let mediaView: NovaNativeAdMediaView = {
+    //    let view = NovaNativeAdMediaView()
+    //    view.accessibilityIdentifier = "media"
+    //    view.translatesAutoresizingMaskIntoConstraints = false
+    //    return view
+    //}()
+    public let mediaView: NovaNativeAdMediaView
     public let mediaViewController: NovaNativeAdMediaViewController
     
     
@@ -38,9 +39,15 @@ open class NovaNativeAdView: UIView {
 
     // MARK: -
 
-    public init(actionHandler: ActionHandling, rootViewController: UIViewController) {
+    public init(actionHandler: ActionHandling, rootViewController: UIViewController, mediaView: NovaNativeAdMediaView? = nil) {
         self.actionHandler = actionHandler
-        self.mediaViewController = NovaNativeAdMediaViewController(mediaView: mediaView)
+        self.mediaView = mediaView ?? {
+            let view = NovaNativeAdMediaView()
+            view.accessibilityIdentifier = "media"
+            view.translatesAutoresizingMaskIntoConstraints = false
+            return view
+        }()
+        self.mediaViewController = NovaNativeAdMediaViewController(mediaView: self.mediaView)
         rootViewController.addChild(mediaViewController)
         super.init(frame: .zero)
     }
@@ -76,7 +83,16 @@ open class NovaNativeAdView: UIView {
         mediaView.config(with: mediaVM, iabReporter: self.iABMetricReporter) {
             nativeAd.delegate?.nativeAdDidFinishRender(nativeAd)
         }
-        
+        register(nativeAd)
+    }
+    
+    public func prepareViewForInteraction(nativeAd: NovaNativeAdItem) {
+        let mediaVM = NovaNativeAdMediaViewModel(encryptedAdToken: nativeAd.encryptedAdToken,
+                                                 imageUrlStr: nativeAd.imageUrlStr,
+                                                 videoInfo: nativeAd.videoInfo)
+        mediaView.config(with: mediaVM, iabReporter: self.iABMetricReporter) {
+            nativeAd.delegate?.nativeAdDidFinishRender(nativeAd)
+        }
         register(nativeAd)
     }
 }

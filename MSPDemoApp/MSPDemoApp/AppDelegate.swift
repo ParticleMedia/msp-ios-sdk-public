@@ -21,20 +21,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     var window: UIWindow?
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-        // Override point for customization after application launch.
-        //MSPHelper.initMSP()
-        //MSPManager().adNetworkAdapterProvider = MSPAdNetworkAdapterProvider()
-        //MSPManager.shared.adNetworkAdapterProvider = MSPAdNetworkAdapterProvider()
-        //[[Prebid shared] setCustomPrebidServerWithUrl: [NSString stringWithFormat:@"%@openrtb2/auction", prebidHost] error:nil];
-        //[Prebid shared].prebidServerAccountId =  @"sggU8Y1UB6xara62G23qGdcOA8co2O4N_debug";
+        
         let mspInitParameters = InitializationParametersImp(prebidAPIKey: "sggU8Y1UB6xara62G23qGdcOA8co2O4N",
                                                             prebidHostUrl: "https://prebid-server.newsbreak.com/openrtb2/auction")
-        MSPHelper.shared.setNovaManager(novaManager: NovaManager())
-        MSPHelper.shared.setGoogleManager(googleManager: GoogleManager())
-        MSPHelper.shared.bidLoaderProvider.googleQueryInfoFetcher = GoogleQueryInfoFetcherHelper()
-        MSPHelper.shared.setMetaManager(metaManager: MetaManager())
-        MSPHelper.shared.bidLoaderProvider.facebookBidTokenProvider = FacebookBidTokenProviderHelper()
-        MSPHelper.shared.initMSP(initParams: mspInitParameters, sdkInitListener: nil)
+        MSP.shared.setNovaManager(novaManager: NovaManager())
+        MSP.shared.setGoogleManager(googleManager: GoogleManager())
+        MSP.shared.bidLoaderProvider.googleQueryInfoFetcher = GoogleQueryInfoFetcherHelper()
+        MSP.shared.setMetaManager(metaManager: MetaManager())
+        MSP.shared.bidLoaderProvider.facebookBidTokenProvider = FacebookBidTokenProviderHelper()
+        MSP.shared.initMSP(initParams: mspInitParameters, sdkInitListener: nil)
         
         window = UIWindow(frame: UIScreen.main.bounds)
         self.window?.makeKeyAndVisible()

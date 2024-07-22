@@ -1,17 +1,8 @@
-//
-//  DemoMetaNativeAdView.swift
-//  MSPDemoApp
-//
-//  Created by Huanzhi Zhang on 6/27/24.
-//
-
 import Foundation
-import MetaAdapter
+import MSPiOSCore
 import UIKit
-import FBAudienceNetwork
 
-//Note: Deprecated
-public class DemoMetaNativeAdView: MetaNativeAdView {
+public class DemoNativeAdViewBinder: NativeAdViewBinder {
     private enum Constants {
         static let paddingSmall: Double = 12.0
         static let ctaButtonHeight: Double = 26.0
@@ -24,10 +15,8 @@ public class DemoMetaNativeAdView: MetaNativeAdView {
         public static let verticalVideoDefaultAspectRatio: Double = 9.0 / 16.0
     }
     
-  
-    public override func setUpView(nativeAd: FBNativeAd) {
-        super.setUpView(nativeAd: nativeAd)
-        
+    
+    public override func setUpViews(parentView: UIView) {
         titleLabel?.translatesAutoresizingMaskIntoConstraints = false
         titleLabel?.font = UIFont.systemFont(ofSize: 16, weight: .semibold)
         titleLabel?.textColor = UIColor(light: UIColor(hex: "000000")!.withAlphaComponent(0.9), dark: UIColor(hex: "FFFFFF")!.withAlphaComponent(0.85))
@@ -53,7 +42,9 @@ public class DemoMetaNativeAdView: MetaNativeAdView {
         callToActionButton?.setImage(UIImage(named: "article_ad_cta"), for: .normal)
         callToActionButton?.setContentCompressionResistancePriority(.required, for: .horizontal)
         
-        fbMediaView.translatesAutoresizingMaskIntoConstraints = false
+        mediaView?.translatesAutoresizingMaskIntoConstraints = false
+        
+        
         
         self.titleLabel?.setContentCompressionResistancePriority(.required, for: .vertical)
         
@@ -63,47 +54,48 @@ public class DemoMetaNativeAdView: MetaNativeAdView {
         guard let titleLabel = titleLabel,
               let bodyLabel = bodyLabel,
               let advertiserLabel = advertiserLabel,
-              let callToActionButton = callToActionButton else {
+              let callToActionButton = callToActionButton,
+              let mediaView = mediaView else {
             return
         }
         
         titleLabelTrailingConstraint = titleLabel.trailingAnchor.constraint(
-                equalTo: self.trailingAnchor,
+                equalTo: parentView.trailingAnchor,
                 constant: -Constants.paddingSmall)
         bodyLabelTrailingConstraint = bodyLabel.trailingAnchor.constraint(
-                equalTo: self.trailingAnchor,
+                equalTo: parentView.trailingAnchor,
                 constant: -Constants.paddingSmall)
+
         
-        fbMediaView.contentMode = .scaleAspectFill
-        fbMediaView.clipsToBounds = true
+        mediaView.contentMode = .scaleAspectFill
+        mediaView.clipsToBounds = true
         //if let mediaContent = nativeAdView.nativeAd?.mediaContent {
         //    setupMediaViewConstraints(with: mediaContent)
         //}
         NSLayoutConstraint.activate([
-            fbMediaView.leadingAnchor.constraint(equalTo: self.leadingAnchor),
-            fbMediaView.topAnchor.constraint(equalTo: self.topAnchor),
-            fbMediaView.trailingAnchor.constraint(equalTo: self.trailingAnchor),
-            fbMediaView.widthAnchor.constraint(equalTo: self.widthAnchor),
-            fbMediaView.heightAnchor.constraint(
-                equalTo: fbMediaView.widthAnchor,
+            mediaView.leadingAnchor.constraint(equalTo: parentView.leadingAnchor),
+            mediaView.topAnchor.constraint(equalTo: parentView.topAnchor),
+            mediaView.trailingAnchor.constraint(equalTo: parentView.trailingAnchor),
+            mediaView.widthAnchor.constraint(equalTo: parentView.widthAnchor),
+            mediaView.heightAnchor.constraint(
+                equalTo: mediaView.widthAnchor,
                 multiplier: Double(1.0 / AdsMediaConstants.defaultAspectRatio))
         ])
-        fbMediaView.isHidden = false
-        
+        mediaView.isHidden = false
         
         NSLayoutConstraint.activate([
             titleLabel.leadingAnchor.constraint(
-                equalTo: self.leadingAnchor,
+                equalTo: parentView.leadingAnchor,
                 constant: Constants.paddingSmall),
-            titleLabel.topAnchor.constraint(equalTo: fbMediaView.bottomAnchor, constant: Constants.paddingSmall),
+            titleLabel.topAnchor.constraint(equalTo: mediaView.bottomAnchor, constant: Constants.paddingSmall),
             titleLabelTrailingConstraint,
             
-            bodyLabel.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: Constants.paddingSmall),
+            bodyLabel.leadingAnchor.constraint(equalTo: parentView.leadingAnchor, constant: Constants.paddingSmall),
             bodyLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 4),
             bodyLabelTrailingConstraint,
             
             advertiserLabel.leadingAnchor.constraint(
-                equalTo: self.leadingAnchor,
+                equalTo: parentView.leadingAnchor,
                 constant: Constants.paddingSmall),
             advertiserLabel.centerYAnchor.constraint(equalTo: callToActionButton.centerYAnchor),
             advertiserLabel.trailingAnchor.constraint(
@@ -111,8 +103,8 @@ public class DemoMetaNativeAdView: MetaNativeAdView {
                 constant: -16),
             
             callToActionButton.topAnchor.constraint(equalTo: bodyLabel.bottomAnchor, constant: 4),
-            callToActionButton.bottomAnchor.constraint(equalTo:self.bottomAnchor, constant: -8),
-            callToActionButton.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -18),
+            callToActionButton.bottomAnchor.constraint(equalTo:parentView.bottomAnchor, constant: -8),
+            callToActionButton.trailingAnchor.constraint(equalTo: parentView.trailingAnchor, constant: -18),
             callToActionButton.heightAnchor.constraint(equalToConstant: Constants.ctaButtonHeight),
         ])
     }

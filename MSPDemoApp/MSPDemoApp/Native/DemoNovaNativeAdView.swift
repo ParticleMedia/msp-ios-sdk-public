@@ -10,6 +10,7 @@ import NovaAdapter
 import NovaCore
 import UIKit
 
+//Note: Deprecated
 public class DemoNovaNativeAdView: NovaNativeAdView {
     private enum Constants {
         static let paddingSmall: Double = 12.0
@@ -23,8 +24,8 @@ public class DemoNovaNativeAdView: NovaNativeAdView {
         public static let verticalVideoDefaultAspectRatio: Double = 9.0 / 16.0
     }
     
-    public override init(actionHandler: any ActionHandling, rootViewController: UIViewController) {
-        super.init(actionHandler: actionHandler, rootViewController: rootViewController)
+    public override init(actionHandler: any ActionHandling, rootViewController: UIViewController, mediaView: NovaNativeAdMediaView?) {
+        super.init(actionHandler: actionHandler, rootViewController: rootViewController, mediaView: mediaView)
     }
     
     public override func setUpView(nativeAd: NovaNativeAdItem) {

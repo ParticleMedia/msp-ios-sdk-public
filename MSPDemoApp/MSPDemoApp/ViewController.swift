@@ -19,35 +19,33 @@ import AppTrackingTransparency
 class ViewController: UIViewController {
     
     @IBOutlet var appBannerView: UIView!
-    weak var adLoader: iOSAdLoader?
+    weak var adLoader: MSPAdLoader?
 
     override func viewDidLoad() {
         //google test ad config: msp-android-foryou-large-display_gg
         super.viewDidLoad()
         
-        var adLoader = iOSAdLoader()
+        var adLoader = MSPAdLoader()
         self.adLoader = adLoader
-        let adRequest = AdRequest(customParams: [String: String](),
+        var customParams = [String: String]()
+        customParams["user_id"] = "143378797"
+        let adRequest = AdRequest(customParams: customParams,
                                   geo: Geo(city: "Beijing", stateCode: "12345", zipCode: "12345", lat: "12345", lon: "12345"),
                                   context: nil,
                                   adaptiveBannerSize: AdSize(width: 320, height: 50, isInlineAdaptiveBanner: false, isAnchorAdaptiveBanner: false),
                                   adSize: AdSize(width: 320, height: 50, isInlineAdaptiveBanner: false, isAnchorAdaptiveBanner: false),
-                                  placementId: "msp-android-immersive-flow-native-s2smf-nfs",
+                                  placementId: "msp-ios-foryou-large-display-prod2",
                                   adFormat: .native,
                                   isCacheSupported: false)
-        //adLoader.loadAd(placementId: "msp-android-immersive-flow-native-s2smf-nfs",
-        //                adListener: self,
-        //                context: self,
-        //                adRequest: adRequest,
-        //                rootViewController:self)
+        adLoader.loadAd(placementId: "msp-ios-foryou-large-display-prod2",
+                        adListener: self,
+                        context: self,
+                        adRequest: adRequest,
+                        rootViewController:self)
         
-        
-        let novaAdLoader = MSPHelper.shared.adNetworkAdapterProvider.getAdNetworkAdapterByName(adNetworkName: "Nova")
-        novaAdLoader?.loadAdCreative(bidResponse: "test", adListener: self, context: self, adRequest: adRequest)
-        
-        //let metaAdLoader = MSPHelper.shared.adNetworkAdapterProvider.getAdNetworkAdapterByName(adNetworkName: "Facebook") as? MetaAdLoder
-        //metaAdLoader?.loadTestAdCreative()
-        // Do any additional setup after loading the view.
+        //To test a ad creative
+        //let novaAdLoader = MSP.shared.adNetworkAdapterProvider.getAdNetworkAdapterByName(adNetworkName: "Nova") as? NovaAdLoader
+        //novaAdLoader?.loadTestAdCreative(adString:testAdString, adListener: self, context: self, adRequest: adRequest)
     }
 
 
@@ -66,6 +64,29 @@ extension ViewController: AdListener {
         
     }
     
+    func onAdLoaded(ad: MSPAd) {
+        if let priceInDollar = ad.adInfo["priceInDollar"],
+           let priceInDollarValue = priceInDollar as? Double {
+            print("demo price: \(priceInDollarValue)")
+        }
+        if ad is NativeAd,
+           let nativeAd = ad as? NativeAd {
+            let nativeAdViewBinder = DemoNativeAdViewBinder(nativeAd: nativeAd)
+            let nativeAdView = NativeAdView(nativeAd: nativeAd, rootViewController: self, nativeAdViewBinder: nativeAdViewBinder)
+            //nativeAd.adNetworkAdapter.prepareViewForInteraction(nativeAd: nativeAd, nativeAdView: nativeAdView)
+        
+            self.view.addSubview(nativeAdView)
+            nativeAdView.translatesAutoresizingMaskIntoConstraints = false
+            NSLayoutConstraint.activate([
+                nativeAdView.leadingAnchor.constraint(lessThanOrEqualTo: self.view.leadingAnchor, constant: 100),
+                nativeAdView.trailingAnchor.constraint(lessThanOrEqualTo: self.view.trailingAnchor),
+                nativeAdView.topAnchor.constraint(lessThanOrEqualTo: self.view.topAnchor, constant: 100),
+                nativeAdView.bottomAnchor.constraint(lessThanOrEqualTo: self.view.bottomAnchor),
+                nativeAdView.widthAnchor.constraint(equalToConstant: 300.0)
+            ])
+        }
+    }
+    /*
     func onAdLoaded(ad: MSPAd) {
         if let priceInDollar = ad.adInfo["priceInDollar"],
            let priceInDollarValue = priceInDollar as? Double {
@@ -108,6 +129,7 @@ extension ViewController: AdListener {
                     demoGoogleNativeAdView.trailingAnchor.constraint(lessThanOrEqualTo: self.view.trailingAnchor),
                     demoGoogleNativeAdView.topAnchor.constraint(lessThanOrEqualTo: self.view.topAnchor, constant: 100),
                     demoGoogleNativeAdView.bottomAnchor.constraint(lessThanOrEqualTo: self.view.bottomAnchor),
+                    demoGoogleNativeAdView.widthAnchor.constraint(equalToConstant: 300.0)
                 ])
                 
                 demoGoogleNativeAdView.bindView(nativeAd: nativeAdItem)
@@ -150,8 +172,11 @@ extension ViewController: AdListener {
                 demoMetaNativeAdView.bindView(nativeAd: nativeAdItem)
                 demoMetaNativeAdView.setUpView(nativeAd: nativeAdItem)
             }
+        } else if ad is NativeAd {
+            //let demoNativeAdView = MSPNativeAdView()
         }
     }
+     */
     
     func onError(msg: String) {
         print(msg)

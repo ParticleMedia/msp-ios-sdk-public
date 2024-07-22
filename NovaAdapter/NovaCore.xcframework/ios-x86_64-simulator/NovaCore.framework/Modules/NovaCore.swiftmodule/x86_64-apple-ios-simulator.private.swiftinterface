@@ -622,12 +622,13 @@ extension NovaCore.ActionModel : Swift.Equatable {
   @_Concurrency.MainActor(unsafe) public var iABMetricReporter: NovaCore.IABMetricReporter? {
     get
   }
-  @_Concurrency.MainActor(unsafe) public init(actionHandler: any NovaCore.ActionHandling, rootViewController: UIKit.UIViewController)
+  @_Concurrency.MainActor(unsafe) public init(actionHandler: any NovaCore.ActionHandling, rootViewController: UIKit.UIViewController, mediaView: NovaCore.NovaNativeAdMediaView? = nil)
   @available(*, unavailable)
   @_Concurrency.MainActor(unsafe) @objc required dynamic public init?(coder: Foundation.NSCoder)
   @objc deinit
   @_Concurrency.MainActor(unsafe) open func bindView(nativeAd: NovaCore.NovaNativeAdItem)
   @_Concurrency.MainActor(unsafe) open func setUpView(nativeAd: NovaCore.NovaNativeAdItem)
+  @_Concurrency.MainActor(unsafe) public func prepareViewForInteraction(nativeAd: NovaCore.NovaNativeAdItem)
 }
 extension NovaCore.NovaNativeAdView {
   @objc @_Concurrency.MainActor(unsafe) dynamic public func register(_ nativeAd: NovaCore.NovaNativeAdItem)

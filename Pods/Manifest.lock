@@ -5,7 +5,7 @@ PODS:
     - GoogleUserMessagingPlatform (>= 1.1)
   - GoogleAdapter (0.0.8):
     - Google-Mobile-Ads-SDK (= 10.14.0)
-    - MSPSharedLibraries (= 0.0.15)
+    - MSPSharedLibraries (= 0.0.19)
   - GoogleAppMeasurement (10.29.0):
     - GoogleAppMeasurement/AdIdSupport (= 10.29.0)
     - GoogleUtilities/AppDelegateSwizzler (~> 7.11)
@@ -66,17 +66,17 @@ PODS:
     - libwebp/sharpyuv
   - MetaAdapter (0.0.8):
     - FBAudienceNetwork (= 6.15.0)
-    - MSPSharedLibraries (= 0.0.15)
+    - MSPSharedLibraries (= 0.0.19)
   - MSPCore (0.0.8):
-    - MSPSharedLibraries (= 0.0.15)
-  - MSPSharedLibraries (0.0.15)
+    - MSPSharedLibraries (= 0.0.19)
+  - MSPSharedLibraries (0.0.19)
   - nanopb (2.30910.0):
     - nanopb/decode (= 2.30910.0)
     - nanopb/encode (= 2.30910.0)
   - nanopb/decode (2.30910.0)
   - nanopb/encode (2.30910.0)
   - NovaAdapter (0.0.8):
-    - MSPSharedLibraries (= 0.0.15)
+    - MSPSharedLibraries (= 0.0.19)
   - PromisesObjC (2.4.0)
   - SDWebImage (5.18.8):
     - SDWebImage/Core (= 5.18.8)
@@ -126,22 +126,22 @@ EXTERNAL SOURCES:
 SPEC CHECKSUMS:
   FBAudienceNetwork: 80a035aa69cc3a71c99e44cb5c2874e4cef9909f
   Google-Mobile-Ads-SDK: 8f67a72f88d057335b1ac3f501e2b68ad054116e
-  GoogleAdapter: 2478e9598b230907dfeb3c2d946d316099f3a910
+  GoogleAdapter: c11fdc58f8ddacfce63e2bc019ea687058f1cf3c
   GoogleAppMeasurement: f9de05ee17401e3355f68e8fc8b5064d429f5918
   GoogleUserMessagingPlatform: 6b4f48a370e77ce121d034c908cc6ee4fdafaf13
   GoogleUtilities: ea963c370a38a8069cc5f7ba4ca849a60b6d7d15
   libwebp: 1786c9f4ff8a279e4dac1e8f385004d5fc253009
-  MetaAdapter: 6f3ce055b24e2f7ec48b0c65daf3f03636b90595
-  MSPCore: 9b4c931ae737cd5025fc11318ddbcf66a248f4ab
-  MSPSharedLibraries: 2defaaaad5743d00c50d82edb91135a61a321b01
+  MetaAdapter: b7ae33fcca1632e403cc85f6ffee059bfb495a2a
+  MSPCore: 261615a151579c64502b73d861d46e42fab3fbdf
+  MSPSharedLibraries: c610158df65b367dcf467e4d55133a189e750bdb
   nanopb: 438bc412db1928dac798aa6fd75726007be04262
-  NovaAdapter: 9c017345cdf5b9fbb14bf017c8e23b39b01a9a36
+  NovaAdapter: b4347eda2b49a1d1ce780861bee355862c58ef10
   PromisesObjC: f5707f49cb48b9636751c5b2e7d227e43fba9f47
   SDWebImage: a81bbb3ba4ea5f810f4069c68727cb118467a04a
   SDWebImageWebPCoder: 633b813fca24f1de5e076bcd7f720c038b23892b
   Shimmer: c5374be1c2b0c9e292fb05b339a513cf291cac86
   SnapKit: e01d52ebb8ddbc333eefe2132acf85c8227d9c25
 
-PODFILE CHECKSUM: 6581cbe6083dc66bc8fad0cf7c836ecee4c3e8af
+PODFILE CHECKSUM: 75b85b7ff79f562b0986d256e5b6ad2017e8c7f9
 
 COCOAPODS: 1.14.3

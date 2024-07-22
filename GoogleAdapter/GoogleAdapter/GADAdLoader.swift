@@ -37,8 +37,11 @@ import PrebidMobile
     
     private var adLoader: GADAdLoader?
     private var googleNativeAd: GoogleNativeAd?
+    private var adRequest: AdRequest?
     
     public func loadAdCreative(bidResponse: Any, adListener: any AdListener, context: Any, adRequest: AdRequest) {
+        
+        self.adRequest = adRequest
         
         guard bidResponse is BidResponse,
               let mBidResponse = bidResponse as? BidResponse else {
@@ -149,7 +152,11 @@ extension GADAdLoder : GADBannerViewDelegate {
             googleAd.adInfo["priceInDollar"] = priceInDollar
             googleAd.priceInDollar = priceInDollar
         }
-        self.adListener?.onAdLoaded(ad: googleAd)
+        //self.adListener?.onAdLoaded(ad: googleAd)
+        if let adListener = adListener,
+           let adRequest = adRequest {
+            handleAdLoaded(ad: googleAd, listener: adListener, adRequest: adRequest)
+        }
     }
     
     public func bannerView(_ bannerView: GADBannerView, didFailToReceiveAdWithError error: Error) {
@@ -182,13 +189,16 @@ extension GADAdLoder: GADNativeAdLoaderDelegate {
         //    .advertiser(advertiser: nativeAd.advertiser ?? "")
         //    .callToAction(callToAction: nativeAd.callToAction ?? "")
         //    .mediaView(mediaView: mediaView))
-        /*
-        let googleNativeAd = GoogleNativeAd(adNetworkAdapter: self, builder: shared.NativeAd.Builder(adNetworkAdapter: self))
+        
+        let googleNativeAd = GoogleNativeAd(adNetworkAdapter: self)
         self.googleNativeAd = googleNativeAd
         googleNativeAd.priceInDollar = self.priceInDollar
         googleNativeAd.nativeAdItem = nativeAd
-        self.adListener?.onAdLoaded(ad: googleNativeAd)
-         */
+        //self.adListener?.onAdLoaded(ad: googleNativeAd)
+        if let adListener = adListener,
+           let adRequest = adRequest {
+            handleAdLoaded(ad: googleNativeAd, listener: adListener, adRequest: adRequest)
+        }
     }
     
     public func adLoader(_ adLoader: GADAdLoader, didFailToReceiveAdWithError error: any Error) {
