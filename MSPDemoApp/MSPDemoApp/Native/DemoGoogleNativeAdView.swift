@@ -11,6 +11,7 @@ import MSPiOSCore
 import GoogleAdapter
 import GoogleMobileAds
 
+//Note: Deprecated
 public class DemoGoogleNativeAdView: GoogleNativeAdView {
     private enum Constants {
         static let paddingSmall: Double = 12.0

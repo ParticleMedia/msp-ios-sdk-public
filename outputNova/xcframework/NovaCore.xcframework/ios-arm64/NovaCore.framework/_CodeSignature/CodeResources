@@ -6,7 +6,7 @@
 	<dict>
 		<key>Assets.car</key>
 		<data>
-		s6jticwW5/KNbKUm9yPMZ7sTkS0=
+		r6Zj0PZhJUnYIESsU2ELmlEWr/M=
 		</data>
 		<key>Headers/NovaCore-Swift.h</key>
 		<data>
@@ -38,11 +38,11 @@
 		</data>
 		<key>Modules/NovaCore.swiftmodule/arm64-apple-ios.abi.json</key>
 		<data>
-		ZPQoZrnIKoTwhMiZfo7UXp5OgBI=
+		wkrPa1ToASXsOfGXD4tTv46YAcY=
 		</data>
 		<key>Modules/NovaCore.swiftmodule/arm64-apple-ios.private.swiftinterface</key>
 		<data>
-		CCjbKN7ks6i7GDkeDZcJcxWCMTU=
+		SEzCfuvCxcxvDSkr4X0B3KOyJ2s=
 		</data>
 		<key>Modules/NovaCore.swiftmodule/arm64-apple-ios.swiftdoc</key>
 		<data>
@@ -50,11 +50,11 @@
 		</data>
 		<key>Modules/NovaCore.swiftmodule/arm64-apple-ios.swiftinterface</key>
 		<data>
-		CCjbKN7ks6i7GDkeDZcJcxWCMTU=
+		SEzCfuvCxcxvDSkr4X0B3KOyJ2s=
 		</data>
 		<key>Modules/NovaCore.swiftmodule/arm64-apple-ios.swiftmodule</key>
 		<data>
-		wURBwsVf/uFkNBj4mVtueeCh+Aw=
+		HUPY9A8zwdAk8F+3QXdzJU9G+Rs=
 		</data>
 		<key>Modules/module.modulemap</key>
 		<data>
@@ -83,7 +83,7 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			Fzeyv140QNfidruC6myD/h9dzrGHEYPZ5c2NOiLzOJU=
+			/xgLgCFwBVmJzZoBpMOvIOmiBGb2R39Efsp9JQNvLLc=
 			</data>
 		</dict>
 		<key>Headers/NovaCore-Swift.h</key>
@@ -132,14 +132,14 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			D+v229GpL5NzlLIgmYrGVAWomo6JzUQrjn9/fKjn7hE=
+			ir+D2vl+wrImMncWfmHimFrqOR9/D8GTu1uREf39Bjs=
 			</data>
 		</dict>
 		<key>Modules/NovaCore.swiftmodule/arm64-apple-ios.private.swiftinterface</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			ddrVl4LMoy7CIxPLukyzT3jWVJNmNDw2ejg8xJTocJ4=
+			iRi8daHkWkz9yRDC/FczeFQgIat2B4GXg9FXhImOR/I=
 			</data>
 		</dict>
 		<key>Modules/NovaCore.swiftmodule/arm64-apple-ios.swiftdoc</key>
@@ -153,14 +153,14 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			ddrVl4LMoy7CIxPLukyzT3jWVJNmNDw2ejg8xJTocJ4=
+			iRi8daHkWkz9yRDC/FczeFQgIat2B4GXg9FXhImOR/I=
 			</data>
 		</dict>
 		<key>Modules/NovaCore.swiftmodule/arm64-apple-ios.swiftmodule</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			dlFpMoxSTx8mYWc1vtg1JerXpz0TC2WBqY/xHZ5LaEM=
+			FVxDSYArZiBitQc+u1F/+hP/4TGIGyxa+4V0RVu9P84=
 			</data>
 		</dict>
 		<key>Modules/module.modulemap</key>

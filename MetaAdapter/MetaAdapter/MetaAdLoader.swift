@@ -24,6 +24,7 @@ import Foundation
     
     private var nativeAdItem: FBNativeAd?
     private var metaNativeAd: MetaNativeAd?
+    private var adRequest: AdRequest?
     
     public func destroyAd() {
         
@@ -38,6 +39,7 @@ import Foundation
     
     public func loadAdCreative(bidResponse: Any, adListener: any AdListener, context: Any, adRequest: AdRequest) {
         self.adListener = adListener
+        self.adRequest = adRequest
         
         guard bidResponse is BidResponse,
               let mBidResponse = bidResponse as? BidResponse else {
@@ -125,9 +127,14 @@ import Foundation
 extension MetaAdLoder: FBNativeAdDelegate {
     public func nativeAdDidLoad(_ nativeAd: FBNativeAd) {
         let metaNativeAd = MetaNativeAd(adNetworkAdapter: self)
+        self.metaNativeAd = metaNativeAd
         metaNativeAd.priceInDollar = self.priceInDollar
         metaNativeAd.nativeAdItem = nativeAd
-        self.adListener?.onAdLoaded(ad: metaNativeAd)
+        //self.adListener?.onAdLoaded(ad: metaNativeAd)
+        if let adListener = adListener,
+           let adRequest = adRequest {
+            handleAdLoaded(ad: metaNativeAd, listener: adListener, adRequest: adRequest)
+        }
     }
     
     public func nativeAd(_ nativeAd: FBNativeAd, didFailWithError error: Error) {

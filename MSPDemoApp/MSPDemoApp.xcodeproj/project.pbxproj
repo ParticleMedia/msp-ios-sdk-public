@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		664F334B2C49B2970014E1BA /* DemoNativeAdViewBinder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 664F334A2C49B2970014E1BA /* DemoNativeAdViewBinder.swift */; };
+		664F335F2C4F1CB60014E1BA /* NovaTestAdString.swift in Sources */ = {isa = PBXBuildFile; fileRef = 664F335E2C4F1CB60014E1BA /* NovaTestAdString.swift */; };
 		668480632BE03D7D0025018B /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 668480622BE03D7D0025018B /* AppDelegate.swift */; };
 		668480652BE03D7D0025018B /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 668480642BE03D7D0025018B /* SceneDelegate.swift */; };
 		668480672BE03D7D0025018B /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 668480662BE03D7D0025018B /* ViewController.swift */; };
@@ -40,6 +42,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		664F334A2C49B2970014E1BA /* DemoNativeAdViewBinder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DemoNativeAdViewBinder.swift; sourceTree = "<group>"; };
+		664F335E2C4F1CB60014E1BA /* NovaTestAdString.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NovaTestAdString.swift; sourceTree = "<group>"; };
 		6684805F2BE03D7D0025018B /* MSPDemoApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MSPDemoApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		668480622BE03D7D0025018B /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		668480642BE03D7D0025018B /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -164,6 +168,8 @@
 				66E5334B2C1BA8C700255D15 /* DemoGoogleNativeAdView.swift */,
 				66E534012C23B1AC00255D15 /* DemoNovaNativeAdView.swift */,
 				66B7303D2C2E3F750042E4FF /* DemoMetaNativeAdView.swift */,
+				664F334A2C49B2970014E1BA /* DemoNativeAdViewBinder.swift */,
+				664F335E2C4F1CB60014E1BA /* NovaTestAdString.swift */,
 			);
 			path = Native;
 			sourceTree = "<group>";
@@ -380,6 +386,8 @@
 				668480632BE03D7D0025018B /* AppDelegate.swift in Sources */,
 				66B7303E2C2E3F750042E4FF /* DemoMetaNativeAdView.swift in Sources */,
 				668480652BE03D7D0025018B /* SceneDelegate.swift in Sources */,
+				664F334B2C49B2970014E1BA /* DemoNativeAdViewBinder.swift in Sources */,
+				664F335F2C4F1CB60014E1BA /* NovaTestAdString.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

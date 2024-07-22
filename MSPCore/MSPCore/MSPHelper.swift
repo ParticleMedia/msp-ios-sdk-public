@@ -1,20 +1,12 @@
-//
-//  MSPHelper.swift
-//  MSPUtility
-//
-//  Created by Huanzhi Zhang on 1/9/24.
-//
-
 import Foundation
 import MSPiOSCore
 //import shared
 import PrebidAdapter
 import UIKit
 
-
-public class MSPHelper {
+public class MSP {
     
-    public static let shared = MSPHelper()
+    public static let shared = MSP()
     public var numInitWaitingForCallbacks = 0;
     public var sdkInitListener: MSPInitListener?
     
@@ -24,7 +16,7 @@ public class MSPHelper {
     public func initMSP(initParams: InitializationParameters, sdkInitListener: MSPInitListener?) {
         // This is a temporary solution to replace MSPManager class in kotlin to solve the Kotlin singleton issue
         print("msp init SDK")
-        numInitWaitingForCallbacks = 2 // For current use case it means 2 adnetwork: prebid, google
+        numInitWaitingForCallbacks = 4
         self.sdkInitListener = sdkInitListener
         var adapterInitListener = MSPAdapterInitListener()
         adNetworkAdapterProvider.googleManager?.getAdNetworkAdapter()?.initialize(initParams: initParams, adapterInitListener: adapterInitListener, context: nil)
@@ -34,9 +26,9 @@ public class MSPHelper {
     
     public class MSPAdapterInitListener: AdapterInitListener {
         public func onComplete(adNetwork: AdNetwork, adapterInitStatus: AdapterInitStatus, message: String) {
-            MSPHelper.shared.numInitWaitingForCallbacks = MSPHelper.shared.numInitWaitingForCallbacks - 1
-            if MSPHelper.shared.numInitWaitingForCallbacks == 0{
-                MSPHelper.shared.sdkInitListener?.onComplete(status: .SUCCESS, message: "")
+            MSP.shared.numInitWaitingForCallbacks = MSP.shared.numInitWaitingForCallbacks - 1
+            if MSP.shared.numInitWaitingForCallbacks == 0{
+                MSP.shared.sdkInitListener?.onComplete(status: .SUCCESS, message: "")
             }
         }
     }
@@ -97,7 +89,7 @@ public class InitializationParametersImp: InitializationParameters {
     }
 }
 
-public class iOSAdLoader: BidListener {
+public class MSPAdLoader: BidListener {
     var adListener: AdListener?
     var adRequest: AdRequest?
     
@@ -114,13 +106,13 @@ public class iOSAdLoader: BidListener {
         self.adListener = adListener
         self.adRequest = adRequest
         
-        self.bidLoader = MSPHelper.shared.bidLoaderProvider.getBidLoader()
+        self.bidLoader = MSP.shared.bidLoaderProvider.getBidLoader()
         self.rootViewController = rootViewController
         bidLoader?.loadBid(placementId: placementId, adParams: adRequest.customParams, bidListener: self, adRequest: adRequest)
     }
     
     public func onBidResponse(bidResponse: Any, adNetwork: AdNetwork) {
-        adNetworkAdapter = MSPHelper.shared.adNetworkAdapterProvider.getAdNetworkAdapter(adNetwork: adNetwork)
+        adNetworkAdapter = MSP.shared.adNetworkAdapterProvider.getAdNetworkAdapter(adNetwork: adNetwork)
         if let adListener = self.adListener,
            let adRequest = self.adRequest {
             adNetworkAdapter?.loadAdCreative(bidResponse: bidResponse, adListener: adListener, context: self.rootViewController ?? self, adRequest: adRequest)

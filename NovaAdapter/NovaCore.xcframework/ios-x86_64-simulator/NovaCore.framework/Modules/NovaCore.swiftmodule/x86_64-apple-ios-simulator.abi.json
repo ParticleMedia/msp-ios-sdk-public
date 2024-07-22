@@ -8468,11 +8468,11 @@
             "mangledName": "$s8NovaCore0A12NativeAdViewC05mediaE0AA0acd5MediaE0Cvp",
             "moduleName": "NovaCore",
             "declAttributes": [
-              "HasInitialValue",
               "Final",
               "HasStorage",
               "Custom",
-              "AccessControl"
+              "AccessControl",
+              "RawDocComment"
             ],
             "isLet": true,
             "hasStorage": true,
@@ -8757,7 +8757,7 @@
           {
             "kind": "Constructor",
             "name": "init",
-            "printedName": "init(actionHandler:rootViewController:)",
+            "printedName": "init(actionHandler:rootViewController:mediaView:)",
             "children": [
               {
                 "kind": "TypeNominal",
@@ -8776,11 +8776,26 @@
                 "name": "UIViewController",
                 "printedName": "UIKit.UIViewController",
                 "usr": "c:objc(cs)UIViewController"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "Optional",
+                "printedName": "NovaCore.NovaNativeAdMediaView?",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "NovaNativeAdMediaView",
+                    "printedName": "NovaCore.NovaNativeAdMediaView",
+                    "usr": "c:@M@NovaCore@objc(cs)NovaNativeAdMediaView"
+                  }
+                ],
+                "hasDefaultArg": true,
+                "usr": "s:Sq"
               }
             ],
             "declKind": "Constructor",
-            "usr": "s:8NovaCore0A12NativeAdViewC13actionHandler04rootE10ControllerAcA14ActionHandling_p_So06UIViewI0Ctcfc",
-            "mangledName": "$s8NovaCore0A12NativeAdViewC13actionHandler04rootE10ControllerAcA14ActionHandling_p_So06UIViewI0Ctcfc",
+            "usr": "s:8NovaCore0A12NativeAdViewC13actionHandler04rootE10Controller05mediaE0AcA14ActionHandling_p_So06UIViewI0CAA0acd5MediaE0CSgtcfc",
+            "mangledName": "$s8NovaCore0A12NativeAdViewC13actionHandler04rootE10Controller05mediaE0AcA14ActionHandling_p_So06UIViewI0CAA0acd5MediaE0CSgtcfc",
             "moduleName": "NovaCore",
             "declAttributes": [
               "Custom",
@@ -8839,6 +8854,33 @@
             "mangledName": "$s8NovaCore0A12NativeAdViewC05setUpE006nativeD0yAA0acD4ItemC_tF",
             "moduleName": "NovaCore",
             "isOpen": true,
+            "declAttributes": [
+              "Custom",
+              "AccessControl"
+            ],
+            "funcSelfKind": "NonMutating"
+          },
+          {
+            "kind": "Function",
+            "name": "prepareViewForInteraction",
+            "printedName": "prepareViewForInteraction(nativeAd:)",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Void",
+                "printedName": "()"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "NovaNativeAdItem",
+                "printedName": "NovaCore.NovaNativeAdItem",
+                "usr": "c:@M@NovaCore@objc(cs)NovaNativeAdItem"
+              }
+            ],
+            "declKind": "Func",
+            "usr": "s:8NovaCore0A12NativeAdViewC07prepareE14ForInteraction06nativeD0yAA0acD4ItemC_tF",
+            "mangledName": "$s8NovaCore0A12NativeAdViewC07prepareE14ForInteraction06nativeD0yAA0acD4ItemC_tF",
+            "moduleName": "NovaCore",
             "declAttributes": [
               "Custom",
               "AccessControl"
@@ -85111,22 +85153,8 @@
     },
     {
       "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-sdk\/NovaCore\/NovaCore\/Native\/NovaNativeAdView.swift",
-      "kind": "StringLiteral",
-      "offset": 387,
-      "length": 7,
-      "value": "\"media\""
-    },
-    {
-      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-sdk\/NovaCore\/NovaCore\/Native\/NovaNativeAdView.swift",
       "kind": "BooleanLiteral",
-      "offset": 452,
-      "length": 5,
-      "value": "false"
-    },
-    {
-      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-sdk\/NovaCore\/NovaCore\/Native\/NovaNativeAdView.swift",
-      "kind": "BooleanLiteral",
-      "offset": 712,
+      "offset": 772,
       "length": 4,
       "value": "true"
     },

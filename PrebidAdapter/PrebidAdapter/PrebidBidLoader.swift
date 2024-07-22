@@ -30,7 +30,7 @@ public class PrebidBidLoader : BidLoader {
     }
     
     public override func loadBid(placementId: String, adParams: [String : Any], bidListener: any BidListener, adRequest: AdRequest) {
-        
+        print("msp start load bid")
         self.configId = placementId
         self.bidListener = bidListener
         self.adRequest = adRequest
@@ -42,6 +42,7 @@ public class PrebidBidLoader : BidLoader {
     }
     
     func fetchTokens(adRequest: AdRequest, completion: @escaping (String?, String?) -> Void) {
+        print("msp start fetch tokens")
         self.dispatchGroup.enter()
         self.googleQueryInfoFetcher.fetch(completeListener: self, adRequest: adRequest)
         
