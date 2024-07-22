@@ -36,7 +36,7 @@ class ViewController: UIViewController {
                                   adSize: AdSize(width: 320, height: 50, isInlineAdaptiveBanner: false, isAnchorAdaptiveBanner: false),
                                   placementId: "msp-ios-foryou-large-display-prod2",
                                   adFormat: .native,
-                                  isCacheSupported: false)
+                                  isCacheSupported: true)
         adLoader.loadAd(placementId: "msp-ios-foryou-large-display-prod2",
                         adListener: self,
                         context: self,
@@ -53,7 +53,9 @@ class ViewController: UIViewController {
 
 extension ViewController: AdListener {
     func onAdLoaded(placementId: String) {
-        
+        if let ad = AdCache.shared.getAd(placementId: placementId) {
+            self.onAdLoaded(ad: ad)
+        }
     }
     
     func onAdClick(ad: MSPAd) {
@@ -87,6 +89,7 @@ extension ViewController: AdListener {
         }
     }
     /*
+    // deprecated api
     func onAdLoaded(ad: MSPAd) {
         if let priceInDollar = ad.adInfo["priceInDollar"],
            let priceInDollarValue = priceInDollar as? Double {
