@@ -129,21 +129,23 @@ public class NovaAdLoader: AdNetworkAdapter {
                                             body: nativeAdItem.body ?? "",
                                             advertiser: nativeAdItem.advertiser ?? "",
                                             callToAction:nativeAdItem.callToAction ?? "")
-                let mediaView = {
-                    let view = NovaNativeAdMediaView()
-                    view.accessibilityIdentifier = "media"
-                    view.translatesAutoresizingMaskIntoConstraints = false
-                    return view
-                }()
-                nativeAd.mediaView = mediaView
-                nativeAd.priceInDollar = self.priceInDollar
-                nativeAd.nativeAdItem = nativeAdItem
-                self.nativeAdItem = nativeAdItem
-                self.nativeAd = nativeAd
-                nativeAdItem.delegate = self
-                if let adListener = adListener,
-                   let adRequest = adRequest {
-                    handleAdLoaded(ad: nativeAd, listener: adListener, adRequest: adRequest)
+                DispatchQueue.main.async{
+                    let mediaView = {
+                        let view = NovaNativeAdMediaView()
+                        view.accessibilityIdentifier = "media"
+                        view.translatesAutoresizingMaskIntoConstraints = false
+                        return view
+                    }()
+                    nativeAd.mediaView = mediaView
+                    nativeAd.priceInDollar = self.priceInDollar
+                    nativeAd.nativeAdItem = nativeAdItem
+                    self.nativeAdItem = nativeAdItem
+                    self.nativeAd = nativeAd
+                    nativeAdItem.delegate = self
+                    if let adListener = self.adListener,
+                       let adRequest = self.adRequest {
+                        handleAdLoaded(ad: nativeAd, listener: adListener, adRequest: adRequest)
+                    }
                 }
             default:
                 self.adListener?.onError(msg: "unknown adType")

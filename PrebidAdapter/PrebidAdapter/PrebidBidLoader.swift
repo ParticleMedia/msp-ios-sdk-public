@@ -91,7 +91,10 @@ public class PrebidBidLoader : BidLoader {
                 } else if seat == "audienceNetwork" {
                     print("msp receive meta response")
                     self.bidListener?.onBidResponse(bidResponse: bidResponse, adNetwork: AdNetwork.facebook)
-                } else {
+                } else if seat == "msp_nova" {
+                    print("msp receive nova response")
+                    self.bidListener?.onBidResponse(bidResponse: bidResponse, adNetwork: AdNetwork.nova)
+                }else {
                     print("msp receive prebid response")
                     self.bidListener?.onBidResponse(bidResponse: bidResponse, adNetwork: AdNetwork.prebid)
                 }
