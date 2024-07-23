@@ -26,9 +26,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                                                             prebidHostUrl: "https://prebid-server.newsbreak.com/openrtb2/auction")
         MSP.shared.setNovaManager(novaManager: NovaManager())
         MSP.shared.setGoogleManager(googleManager: GoogleManager())
-        MSP.shared.bidLoaderProvider.googleQueryInfoFetcher = GoogleQueryInfoFetcherHelper()
+        //MSP.shared.bidLoaderProvider.googleQueryInfoFetcher = GoogleQueryInfoFetcherHelper()
         MSP.shared.setMetaManager(metaManager: MetaManager())
-        MSP.shared.bidLoaderProvider.facebookBidTokenProvider = FacebookBidTokenProviderHelper()
+        Targeting.shared.sourceapp = "1132762804"
+        Targeting.shared.userID = "143378797"
+        //MSP.shared.bidLoaderProvider.facebookBidTokenProvider = FacebookBidTokenProviderHelper()
         MSP.shared.initMSP(initParams: mspInitParameters, sdkInitListener: nil)
         
         window = UIWindow(frame: UIScreen.main.bounds)
