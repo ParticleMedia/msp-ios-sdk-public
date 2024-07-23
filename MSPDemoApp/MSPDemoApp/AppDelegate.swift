@@ -29,7 +29,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         //MSP.shared.bidLoaderProvider.googleQueryInfoFetcher = GoogleQueryInfoFetcherHelper()
         MSP.shared.setMetaManager(metaManager: MetaManager())
         Targeting.shared.sourceapp = "1132762804"
-        Targeting.shared.userID = "143378797"
         //MSP.shared.bidLoaderProvider.facebookBidTokenProvider = FacebookBidTokenProviderHelper()
         MSP.shared.initMSP(initParams: mspInitParameters, sdkInitListener: nil)
         
