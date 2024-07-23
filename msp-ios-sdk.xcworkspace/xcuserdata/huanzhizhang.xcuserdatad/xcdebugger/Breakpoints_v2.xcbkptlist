@@ -498,36 +498,6 @@
             endingLineNumber = "58"
             landmarkName = "onAdLoaded(placementId:)"
             landmarkType = "7">
-            <Locations>
-               <Location
-                  uuid = "9D8902F9-FC6C-44EF-882B-75BB6BE5D0D4 - 479b9a74c9710ca9"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "MSPDemoApp.ViewController.onAdLoaded(placementId: Swift.String) -&gt; ()"
-                  moduleName = "MSPDemoApp"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/huanzhizhang/Huanzhi/msp-ios-sdk/MSPDemoApp/MSPDemoApp/ViewController.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "58"
-                  endingLineNumber = "58">
-               </Location>
-               <Location
-                  uuid = "9D8902F9-FC6C-44EF-882B-75BB6BE5D0D4 - 479b9a74c9710ca9"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "MSPDemoApp.ViewController.onAdLoaded(placementId: Swift.String) -&gt; ()"
-                  moduleName = "MSPDemoApp"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/huanzhizhang/Huanzhi/msp-ios-sdk/MSPDemoApp/MSPDemoApp/ViewController.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "58"
-                  endingLineNumber = "58">
-               </Location>
-            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -544,36 +514,6 @@
             endingLineNumber = "74"
             landmarkName = "loadBidWithTokens(googleQueryInfo:facebookBidToken:)"
             landmarkType = "7">
-            <Locations>
-               <Location
-                  uuid = "806FDA7A-26B0-40FD-8AE9-9C0A3840A30D - 8579ba71483e4ca6"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "PrebidAdapter.PrebidBidLoader.loadBidWithTokens(googleQueryInfo: Swift.Optional&lt;Swift.String&gt;, facebookBidToken: Swift.Optional&lt;Swift.String&gt;) -&gt; ()"
-                  moduleName = "PrebidAdapter"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/huanzhizhang/Huanzhi/msp-ios-sdk/PrebidAdapter/PrebidAdapter/PrebidBidLoader.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "74"
-                  endingLineNumber = "74">
-               </Location>
-               <Location
-                  uuid = "806FDA7A-26B0-40FD-8AE9-9C0A3840A30D - 5d184d02515c3b6a"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "closure #1 (Swift.Optional&lt;PrebidMobile.BidResponse&gt;, Swift.Optional&lt;Swift.Error&gt;) -&gt; () in PrebidAdapter.PrebidBidLoader.loadBidWithTokens(googleQueryInfo: Swift.Optional&lt;Swift.String&gt;, facebookBidToken: Swift.Optional&lt;Swift.String&gt;) -&gt; ()"
-                  moduleName = "PrebidAdapter"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/huanzhizhang/Huanzhi/msp-ios-sdk/PrebidAdapter/PrebidAdapter/PrebidBidLoader.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "74"
-                  endingLineNumber = "74">
-               </Location>
-            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
    </Breakpoints>
