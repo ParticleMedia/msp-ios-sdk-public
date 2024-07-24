@@ -25,18 +25,18 @@ import UIKit
     }
     
     public func initialize(initParams: InitializationParameters, adapterInitListener: AdapterInitListener, context: Any?) {
+        Prebid.shared.shareGeoLocation = true
         do {
             try Prebid.shared.setCustomPrebidServer(url: initParams.getPrebidHostUrl())
             Prebid.shared.prebidServerAccountId = initParams.getPrebidAPIKey()
+            Prebid.shared.shareGeoLocation = true
             Prebid.initializeSDK{ status, error in
                 if status == .successed {
                     adapterInitListener.onComplete(adNetwork: .prebid, adapterInitStatus: .SUCCESS, message: "")
-                } else {
-                    adapterInitListener.onComplete(adNetwork: .prebid, adapterInitStatus: .SUCCESS, message: error?.localizedDescription ?? "")
                 }
             }
         } catch {
-            adapterInitListener.onComplete(adNetwork: .prebid, adapterInitStatus: .SUCCESS, message: "")
+            
         }
     }
     
@@ -92,10 +92,13 @@ extension PrebidAdLoader: BannerViewDelegate {
     }
     
     @objc public func bannerViewDidReceiveBidResponse(_ bannerView: BannerView) {
+        print("demo load ad content")
         self.bannerView?.loadAdContent()
     }
     
     @objc public func bannerView(_ bannerView: BannerView, didReceiveAdWithAdSize adSize: CGSize) {
+        print("demo receive ad view")
+        print("demo webview: \(self.bannerView?.lastBidResponse?.winningBid?.adm)")
         var prebidAd = PrebidAd(adNetworkAdapter: self)
         prebidAd.adView = self.bannerView
         if let priceInDollar = self.priceInDollar {
@@ -106,6 +109,7 @@ extension PrebidAdLoader: BannerViewDelegate {
     }
     
     @objc public func bannerView(_ bannerView: BannerView, didFailToReceiveAdWith error: Error) {
+        print("demo error:\(error.localizedDescription)")
         adListener?.onError(msg: error.localizedDescription)
     }
     
@@ -130,6 +134,7 @@ public class PrebidAd: MSPAd {
 extension PrebidAdLoader: BannerEventHandler {
     
     public func requestAd(with bidResponse: BidResponse?) {
+        print("demo request ad")
         loadingDelegate?.prebidDidWin()
     }
 

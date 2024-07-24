@@ -160,7 +160,6 @@ extension GADAdLoder : GADBannerViewDelegate {
     }
     
     public func bannerView(_ bannerView: GADBannerView, didFailToReceiveAdWithError error: Error) {
-        print("demo error: \(error.localizedDescription)")
         self.adListener?.onError(msg: error.localizedDescription)
     }
     
