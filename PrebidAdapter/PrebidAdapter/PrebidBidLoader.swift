@@ -1,10 +1,3 @@
-//
-//  PrebidBidLoader.swift
-//  PrebidAdapter
-//
-//  Created by Huanzhi Zhang on 12/19/23.
-//
-
 import Foundation
 //import shared
 import MSPiOSCore
