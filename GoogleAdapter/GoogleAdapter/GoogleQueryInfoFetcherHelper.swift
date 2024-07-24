@@ -26,14 +26,13 @@ public class GoogleQueryInfoFetcherHelper: GoogleQueryInfoFetcher {
         GADQueryInfo.createQueryInfo(with: request, adFormat: googleAdFormat) { [weak self] queryInfo, error in
             guard let self = self else {return}
             if let error = error {
-                print("demo error: \(error.localizedDescription)")
                 return
             }
 
             if let queryInfoString = queryInfo?.query {
                 completeListener.onComplete(queryInfo: queryInfoString)
             } else {
-                print("demo error: no query info string")
+                completeListener.onComplete(queryInfo: "")
             }
         }
     }

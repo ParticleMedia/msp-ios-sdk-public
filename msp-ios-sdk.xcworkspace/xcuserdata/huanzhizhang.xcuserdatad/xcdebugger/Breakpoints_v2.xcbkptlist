@@ -167,22 +167,6 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "324DC92A-1AAD-4888-84C0-5D17F22CFB51"
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "MSPCore/MSPCore/MSPHelper.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "124"
-            endingLineNumber = "124"
-            landmarkName = "onBidResponse(bidResponse:adNetwork:)"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
             uuid = "85C46D6B-EB2A-4BAA-8571-E8ECC5238917"
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
@@ -190,8 +174,8 @@
             filePath = "MSPCore/MSPCore/MSPAdNetworkAdapterProvider.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "38"
-            endingLineNumber = "38"
+            startingLineNumber = "37"
+            endingLineNumber = "37"
             landmarkName = "getAdNetworkAdapter(adNetwork:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -295,38 +279,6 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "9EC473CA-83FC-4321-B129-D6B167256FE4"
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "MSPCore/MSPCore/MSPHelper.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "120"
-            endingLineNumber = "120"
-            landmarkName = "loadAd(placementId:adListener:context:adRequest:rootViewController:)"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "90B3503B-0F7A-48A2-84F7-8C4B75471AD1"
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "MSPCore/MSPCore/MSPHelper.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "132"
-            endingLineNumber = "132"
-            landmarkName = "onError(msg:)"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
             uuid = "BE1F8F79-0D38-4D26-A3DA-77D8C5BF6C16"
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
@@ -334,8 +286,8 @@
             filePath = "PrebidAdapter/PrebidAdapter/PrebidBidLoader.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "51"
-            endingLineNumber = "51"
+            startingLineNumber = "48"
+            endingLineNumber = "48"
             landmarkName = "loadBidWithTokens(googleQueryInfo:facebookBidToken:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -350,8 +302,8 @@
             filePath = "PrebidAdapter/PrebidAdapter/PrebidBidLoader.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "27"
-            endingLineNumber = "27"
+            startingLineNumber = "25"
+            endingLineNumber = "25"
             landmarkName = "loadBid(placementId:adParams:bidListener:adRequest:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -366,8 +318,8 @@
             filePath = "PrebidAdapter/PrebidAdapter/PrebidBidLoader.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "39"
-            endingLineNumber = "39"
+            startingLineNumber = "36"
+            endingLineNumber = "36"
             landmarkName = "fetchTokens(adRequest:completion:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -385,22 +337,6 @@
             startingLineNumber = "19"
             endingLineNumber = "19"
             landmarkName = "fetch(completeListener:adRequest:)"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "158001C9-1CD3-42BE-8292-7410ACD7CB7E"
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "MSPCore/MSPCore/MSPHelper.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "127"
-            endingLineNumber = "127"
-            landmarkName = "onBidResponse(bidResponse:adNetwork:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -498,6 +434,36 @@
             endingLineNumber = "58"
             landmarkName = "onAdLoaded(placementId:)"
             landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "9D8902F9-FC6C-44EF-882B-75BB6BE5D0D4 - 479b9a74c9710ca9"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "MSPDemoApp.ViewController.onAdLoaded(placementId: Swift.String) -&gt; ()"
+                  moduleName = "MSPDemoApp"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/huanzhizhang/Huanzhi/msp-ios-sdk/MSPDemoApp/MSPDemoApp/ViewController.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "58"
+                  endingLineNumber = "58">
+               </Location>
+               <Location
+                  uuid = "9D8902F9-FC6C-44EF-882B-75BB6BE5D0D4 - 479b9a74c9710ca9"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "MSPDemoApp.ViewController.onAdLoaded(placementId: Swift.String) -&gt; ()"
+                  moduleName = "MSPDemoApp"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/huanzhizhang/Huanzhi/msp-ios-sdk/MSPDemoApp/MSPDemoApp/ViewController.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "58"
+                  endingLineNumber = "58">
+               </Location>
+            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -510,9 +476,25 @@
             filePath = "PrebidAdapter/PrebidAdapter/PrebidBidLoader.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "67"
-            endingLineNumber = "67"
+            startingLineNumber = "64"
+            endingLineNumber = "64"
             landmarkName = "loadBidWithTokens(googleQueryInfo:facebookBidToken:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "11A5F22E-3EA0-4C98-81AA-A1DE4364EEF4"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "MSPCore/MSPCore/MSPHelper.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "43"
+            endingLineNumber = "43"
+            landmarkName = "onComplete(adNetwork:adapterInitStatus:message:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>

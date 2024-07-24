@@ -95,7 +95,8 @@ Pod::Spec.new do |spec|
   spec.exclude_files = "Classes/Exclude"
 
   spec.dependency 'MSPSharedLibraries', '0.0.19'
-  spec.vendored_frameworks= "MSPCore/PrebidAdapter.xcframework"#, "PrebidMobile.xcframework", "MSPiOSCore.xcframework"
+  spec.dependency 'PrebidAdapter', '0.0.20'
+  #spec.vendored_frameworks= "MSPCore/PrebidAdapter.xcframework"#, "PrebidMobile.xcframework", "MSPiOSCore.xcframework"
 
   #spec.pod_target_xcconfig = {
   #  'HEADER_SEARCH_PATHS' => '$(PODS_TARGET_SRCROOT)/PrebidMobile.xcframework/Headers $(PODS_TARGET_SRCROOT)/MSPiOSCore.xcframework/Headers'

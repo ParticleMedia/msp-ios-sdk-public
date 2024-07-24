@@ -16,12 +16,18 @@ public class MSP {
     
     public func initMSP(initParams: InitializationParameters, sdkInitListener: MSPInitListener?) {
         // This is a temporary solution to replace MSPManager class in kotlin to solve the Kotlin singleton issue
-        print("msp init SDK")
-        numInitWaitingForCallbacks = 4
+        let managers: [AdNetworkManager?] = [adNetworkAdapterProvider.googleManager, adNetworkAdapterProvider.metaManager, adNetworkAdapterProvider.novaManager]
+        numInitWaitingForCallbacks = 1 //default vaule is 1 for prebid sdk is alwasys in the dependency
+        for adManager in managers {
+            if let manager = adManager {
+                numInitWaitingForCallbacks += 1
+            }
+        }
         self.sdkInitListener = sdkInitListener
         var adapterInitListener = MSPAdapterInitListener()
         adNetworkAdapterProvider.googleManager?.getAdNetworkAdapter()?.initialize(initParams: initParams, adapterInitListener: adapterInitListener, context: nil)
         adNetworkAdapterProvider.metaManager?.getAdNetworkAdapter()?.initialize(initParams: initParams, adapterInitListener: adapterInitListener, context: nil)
+        adNetworkAdapterProvider.novaManager?.getAdNetworkAdapter()?.initialize(initParams: initParams, adapterInitListener: adapterInitListener, context: nil)
         PrebidAdLoader().initialize(initParams: initParams, adapterInitListener: adapterInitListener, context: nil)
         
         if let initParamsImp = initParams as? InitializationParametersImp,
@@ -33,7 +39,7 @@ public class MSP {
     public class MSPAdapterInitListener: AdapterInitListener {
         public func onComplete(adNetwork: AdNetwork, adapterInitStatus: AdapterInitStatus, message: String) {
             MSP.shared.numInitWaitingForCallbacks = MSP.shared.numInitWaitingForCallbacks - 1
-            if MSP.shared.numInitWaitingForCallbacks == 0{
+            if MSP.shared.numInitWaitingForCallbacks == 0 {
                 MSP.shared.sdkInitListener?.onComplete(status: .SUCCESS, message: "")
             }
         }

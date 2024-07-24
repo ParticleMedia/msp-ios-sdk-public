@@ -39,7 +39,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
             if #available(iOS 14, *) {
                 ATTrackingManager.requestTrackingAuthorization { result in
-                    print(result.rawValue)
+                    
                 }
             } else {
                 // Fallback on earlier versions

@@ -20,9 +20,11 @@
   "dependencies": {
     "MSPSharedLibraries": [
       "0.0.19"
+    ],
+    "PrebidAdapter": [
+      "0.0.20"
     ]
   },
-  "vendored_frameworks": "MSPCore/PrebidAdapter.xcframework",
   "pod_target_xcconfig": {
     "VALID_ARCHS": "x86_64 armv7 arm64"
   },

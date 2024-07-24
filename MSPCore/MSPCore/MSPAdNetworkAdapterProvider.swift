@@ -34,7 +34,6 @@ public class MSPAdNetworkAdapterProvider: AdNetworkAdapterProvider {
     }
     
     public func getAdNetworkAdapter(adNetwork: AdNetwork) -> AdNetworkAdapter? {
-        print("msp begin get adnetwork adapter")
         if adNetwork == .prebid {
             var prebidAdLoader = PrebidAdLoader()
             self.adNetworkAdapter = prebidAdLoader
@@ -56,7 +55,6 @@ public class MSPAdNetworkAdapterProvider: AdNetworkAdapterProvider {
     }
     
     public func getAdNetworkAdapterByName(adNetworkName: String) -> AdNetworkAdapter? {
-        print("msp begin get adnetwork adapter")
         if adNetworkName == "Prebid" {
             var prebidAdLoader = PrebidAdLoader()
             self.adNetworkAdapter = prebidAdLoader
