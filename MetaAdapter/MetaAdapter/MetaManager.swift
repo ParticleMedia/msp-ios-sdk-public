@@ -12,7 +12,7 @@ import MSPiOSCore
 public class MetaManager: AdNetworkManager {
     
     public override func getAdNetworkAdapter() -> AdNetworkAdapter? {
-        return MetaAdLoder()
+        return FacebookAdapter()
     }
 
 }

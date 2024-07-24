@@ -1,10 +1,3 @@
-//
-//  NovaAdLoader.swift
-//  NovaAdapter
-//
-//  Created by Huanzhi Zhang on 6/12/24.
-//
-
 import Foundation
 //import shared
 import MSPiOSCore
@@ -12,7 +5,7 @@ import PrebidMobile
 import NovaCore
 import UIKit
 
-public class NovaAdLoader: AdNetworkAdapter {
+public class NovaAdapter: AdNetworkAdapter {
     
     public var adListener: AdListener?
     public var priceInDollar: Double?
@@ -119,8 +112,7 @@ public class NovaAdLoader: AdNetworkAdapter {
             switch adType {
             case "banner":
                 return
-                //let bannerAd = NovaAdBuilder.buildBannerAd(adItem: ads.first!, adUnitId: adUnitId)
-                //delegate?.novaAdLoader?(self, didReceiveBannerAd: bannerAd)
+                
 
             case "native":
                 let nativeAdItem = NovaAdBuilder.buildNativeAd(adItem: adItem, adUnitId: adUnitId, eCPMInDollar: eCPMInDollar)
@@ -183,7 +175,7 @@ public class NovaAdLoader: AdNetworkAdapter {
     }
 }
 
-extension NovaAdLoader: NovaNativeAdDelegate {
+extension NovaAdapter: NovaNativeAdDelegate {
     public func nativeAdDidLogImpression(_ nativeAd: NovaCore.NovaNativeAdItem) {
         if let nativeAd = self.nativeAd {
             self.adListener?.onAdImpression(ad: nativeAd)

@@ -11,7 +11,7 @@ import Foundation
 import MSPiOSCore
 import UIKit
 
-@objc public class PrebidAdLoader : NSObject, AdNetworkAdapter {
+@objc public class PrebidAdapter : NSObject, AdNetworkAdapter {
     public func prepareViewForInteraction(nativeAd: MSPiOSCore.NativeAd, nativeAdView: Any) {
     }
     
@@ -86,7 +86,7 @@ import UIKit
     }
 }
 
-extension PrebidAdLoader: BannerViewDelegate {
+extension PrebidAdapter: BannerViewDelegate {
     public func bannerViewPresentationController() -> UIViewController? {
         return rootViewController
     }
@@ -127,7 +127,7 @@ public class PrebidAd: MSPAd {
     public var priceInDollar: Double?
 }
 
-extension PrebidAdLoader: BannerEventHandler {
+extension PrebidAdapter: BannerEventHandler {
     
     public func requestAd(with bidResponse: BidResponse?) {
         loadingDelegate?.prebidDidWin()

@@ -14,7 +14,7 @@
 		66D6C3AA2B322B44006EBBF3 /* PrebidAdapter.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 66D6C39F2B322B44006EBBF3 /* PrebidAdapter.framework */; };
 		66D6C3AF2B322B44006EBBF3 /* PrebidAdapterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66D6C3AE2B322B44006EBBF3 /* PrebidAdapterTests.swift */; };
 		66D6C3B02B322B44006EBBF3 /* PrebidAdapter.h in Headers */ = {isa = PBXBuildFile; fileRef = 66D6C3A22B322B44006EBBF3 /* PrebidAdapter.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		66D6C3E62B323F76006EBBF3 /* PrebidAdLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66D6C3E52B323F76006EBBF3 /* PrebidAdLoader.swift */; };
+		66D6C3E62B323F76006EBBF3 /* PrebidAdapter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66D6C3E52B323F76006EBBF3 /* PrebidAdapter.swift */; };
 		66D6C3F22B33996A006EBBF3 /* PrebidBidLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66D6C3F12B33996A006EBBF3 /* PrebidBidLoader.swift */; };
 		66E534152C24B4B300255D15 /* PrebidMobile.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 66D6C3E12B323EDC006EBBF3 /* PrebidMobile.xcframework */; };
 /* End PBXBuildFile section */
@@ -41,7 +41,7 @@
 		66D6C3AE2B322B44006EBBF3 /* PrebidAdapterTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrebidAdapterTests.swift; sourceTree = "<group>"; };
 		66D6C3DF2B323E4A006EBBF3 /* PrebidAdapter */ = {isa = PBXFileReference; lastKnownFileType = folder; path = PrebidAdapter; sourceTree = "<group>"; };
 		66D6C3E12B323EDC006EBBF3 /* PrebidMobile.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; path = PrebidMobile.xcframework; sourceTree = "<group>"; };
-		66D6C3E52B323F76006EBBF3 /* PrebidAdLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrebidAdLoader.swift; sourceTree = "<group>"; };
+		66D6C3E52B323F76006EBBF3 /* PrebidAdapter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrebidAdapter.swift; sourceTree = "<group>"; };
 		66D6C3E72B325756006EBBF3 /* PrebidAdapter */ = {isa = PBXFileReference; lastKnownFileType = folder; path = PrebidAdapter; sourceTree = "<group>"; };
 		66D6C3E92B325768006EBBF3 /* shared.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; path = shared.xcframework; sourceTree = "<group>"; };
 		66D6C3F12B33996A006EBBF3 /* PrebidBidLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = PrebidBidLoader.swift; path = PrebidAdapter/PrebidBidLoader.swift; sourceTree = "<group>"; };
@@ -117,7 +117,7 @@
 				66D6C3F42B339BB0006EBBF3 /* PrebidAdapter.modulemap */,
 				66D6C3A22B322B44006EBBF3 /* PrebidAdapter.h */,
 				66D6C3A32B322B44006EBBF3 /* PrebidAdapter.docc */,
-				66D6C3E52B323F76006EBBF3 /* PrebidAdLoader.swift */,
+				66D6C3E52B323F76006EBBF3 /* PrebidAdapter.swift */,
 			);
 			path = PrebidAdapter;
 			sourceTree = "<group>";
@@ -301,7 +301,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				66D6C3A42B322B44006EBBF3 /* PrebidAdapter.docc in Sources */,
-				66D6C3E62B323F76006EBBF3 /* PrebidAdLoader.swift in Sources */,
+				66D6C3E62B323F76006EBBF3 /* PrebidAdapter.swift in Sources */,
 				66D6C3F22B33996A006EBBF3 /* PrebidBidLoader.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

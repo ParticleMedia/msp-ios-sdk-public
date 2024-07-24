@@ -12,7 +12,7 @@ import PrebidMobile
 
 import Foundation
 
-@objc public class MetaAdLoder : NSObject, AdNetworkAdapter {
+@objc public class FacebookAdapter : NSObject, AdNetworkAdapter {
     public func prepareViewForInteraction(nativeAd: MSPiOSCore.NativeAd, nativeAdView: Any) {
         
     }
@@ -124,7 +124,7 @@ import Foundation
 }
 
 
-extension MetaAdLoder: FBNativeAdDelegate {
+extension FacebookAdapter: FBNativeAdDelegate {
     public func nativeAdDidLoad(_ nativeAd: FBNativeAd) {
         let metaNativeAd = MetaNativeAd(adNetworkAdapter: self)
         self.metaNativeAd = metaNativeAd
