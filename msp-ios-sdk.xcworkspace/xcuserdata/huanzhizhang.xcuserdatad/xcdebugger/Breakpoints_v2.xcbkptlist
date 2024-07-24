@@ -334,8 +334,8 @@
             filePath = "PrebidAdapter/PrebidAdapter/PrebidBidLoader.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "58"
-            endingLineNumber = "58"
+            startingLineNumber = "51"
+            endingLineNumber = "51"
             landmarkName = "loadBidWithTokens(googleQueryInfo:facebookBidToken:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -350,8 +350,8 @@
             filePath = "PrebidAdapter/PrebidAdapter/PrebidBidLoader.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "34"
-            endingLineNumber = "34"
+            startingLineNumber = "27"
+            endingLineNumber = "27"
             landmarkName = "loadBid(placementId:adParams:bidListener:adRequest:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -366,8 +366,8 @@
             filePath = "PrebidAdapter/PrebidAdapter/PrebidBidLoader.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "46"
-            endingLineNumber = "46"
+            startingLineNumber = "39"
+            endingLineNumber = "39"
             landmarkName = "fetchTokens(adRequest:completion:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -510,8 +510,8 @@
             filePath = "PrebidAdapter/PrebidAdapter/PrebidBidLoader.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "74"
-            endingLineNumber = "74"
+            startingLineNumber = "67"
+            endingLineNumber = "67"
             landmarkName = "loadBidWithTokens(googleQueryInfo:facebookBidToken:)"
             landmarkType = "7">
          </BreakpointContent>
