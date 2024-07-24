@@ -43,9 +43,9 @@ public class MSPAdNetworkAdapterProvider: AdNetworkAdapterProvider {
             self.adNetworkAdapter = gadAdLoader
             return gadAdLoader
         } else if adNetwork == .nova {
-            var novaAdLoader = novaManager?.getAdNetworkAdapter()
-            self.adNetworkAdapter = novaAdLoader
-            return novaAdLoader
+            var novaAdapter = novaManager?.getAdNetworkAdapter()
+            self.adNetworkAdapter = novaAdapter
+            return novaAdapter
         } else if adNetwork == .facebook {
             var metaAdapter = metaManager?.getAdNetworkAdapter()
             self.adNetworkAdapter = metaAdapter
@@ -64,9 +64,9 @@ public class MSPAdNetworkAdapterProvider: AdNetworkAdapterProvider {
             self.adNetworkAdapter = gadAdLoader
             return gadAdLoader
         } else if adNetworkName == "Nova" {
-            var novaAdLoader = novaManager?.getAdNetworkAdapter()
-            self.adNetworkAdapter = novaAdLoader
-            return novaAdLoader
+            var novaAdapter = novaManager?.getAdNetworkAdapter()
+            self.adNetworkAdapter = novaAdapter
+            return novaAdapter
         } else if adNetworkName == "Facebook" {
             var metaAdapter = metaManager?.getAdNetworkAdapter()
             self.adNetworkAdapter = metaAdapter

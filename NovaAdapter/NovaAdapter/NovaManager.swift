@@ -12,7 +12,7 @@ import MSPiOSCore
 public class NovaManager: AdNetworkManager {
     
     public override func getAdNetworkAdapter() -> AdNetworkAdapter? {
-        return NovaAdLoader()
+        return NovaAdapter()
     }
 
 }

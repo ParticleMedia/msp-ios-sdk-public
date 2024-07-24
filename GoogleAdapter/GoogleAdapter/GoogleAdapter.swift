@@ -11,7 +11,7 @@ import MSPiOSCore
 //import shared
 import PrebidMobile
 
-@objc public class GADAdLoder : NSObject, AdNetworkAdapter {
+@objc public class GoogleAdapter : NSObject, AdNetworkAdapter {
     public func prepareViewForInteraction(nativeAd: MSPiOSCore.NativeAd, nativeAdView: Any) {
         
     }
@@ -176,7 +176,7 @@ extension GADAdLoder : GADBannerViewDelegate {
     }
 }
 
-extension GADAdLoder: GADNativeAdLoaderDelegate {
+extension GoogleAdapter: GADNativeAdLoaderDelegate {
     public func adLoader(_ adLoader: GADAdLoader, didReceive nativeAd: GADNativeAd) {
         //let mediaView = GADMediaView()
         //mediaView.translatesAutoresizingMaskIntoConstraints = false
