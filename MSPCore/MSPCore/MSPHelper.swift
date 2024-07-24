@@ -2,6 +2,7 @@ import Foundation
 import MSPiOSCore
 //import shared
 import PrebidAdapter
+import PrebidMobile
 import UIKit
 
 public class MSP {
@@ -22,6 +23,11 @@ public class MSP {
         adNetworkAdapterProvider.googleManager?.getAdNetworkAdapter()?.initialize(initParams: initParams, adapterInitListener: adapterInitListener, context: nil)
         adNetworkAdapterProvider.metaManager?.getAdNetworkAdapter()?.initialize(initParams: initParams, adapterInitListener: adapterInitListener, context: nil)
         PrebidAdLoader().initialize(initParams: initParams, adapterInitListener: adapterInitListener, context: nil)
+        
+        if let initParamsImp = initParams as? InitializationParametersImp,
+           let sourceApp = initParamsImp.sourceApp {
+            Targeting.shared.sourceapp = sourceApp
+        }
     }
     
     public class MSPAdapterInitListener: AdapterInitListener {
@@ -51,9 +57,12 @@ public class InitializationParametersImp: InitializationParameters {
     public var prebidAPIKey: String //= "sggU8Y1UB6xara62G23qGdcOA8co2O4N_debug"
     public var prebidHostUrl: String //= "https://prebid-server.newsbreak.com/openrtb2/auction"
     
-    public init(prebidAPIKey: String, prebidHostUrl: String) {
+    public var sourceApp: String?
+    
+    public init(prebidAPIKey: String, prebidHostUrl: String, sourceApp: String? = nil) {
         self.prebidAPIKey = prebidAPIKey
         self.prebidHostUrl = prebidHostUrl
+        self.sourceApp = sourceApp
     }
     
     public func getPrebidAPIKey() -> String {
