@@ -7,11 +7,11 @@
 
 import UIKit
 //import shared
-import MSPiOSCore
+//import MSPiOSCore
 import MSPCore
-import PrebidMobile
-import GoogleAdapter
-import MetaAdapter
+//import PrebidMobile
+//import GoogleAdapter
+//import MetaAdapter
 import NovaAdapter
 import AppTrackingTransparency
 
@@ -26,6 +26,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                                                             prebidHostUrl: "https://prebid-server.newsbreak.com/openrtb2/auction",
                                                             sourceApp: "1132762804")
         MSP.shared.setNovaManager(novaManager: NovaManager())
+        
+        // optional ad networks
         //MSP.shared.setGoogleManager(googleManager: GoogleManager())
         //MSP.shared.bidLoaderProvider.googleQueryInfoFetcher = GoogleQueryInfoFetcherHelper()
         //MSP.shared.setMetaManager(metaManager: MetaManager())

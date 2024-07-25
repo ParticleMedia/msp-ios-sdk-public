@@ -7,13 +7,13 @@
 
 import UIKit
 import MSPCore
-import GoogleAdapter
-import PrebidAdapter
+//import GoogleAdapter
+//import PrebidAdapter
 import NovaAdapter
 import MSPiOSCore
-import NovaCore
+//import NovaCore
 //import shared
-import MetaAdapter
+//import MetaAdapter
 import AppTrackingTransparency
 
 class ViewController: UIViewController {
@@ -91,98 +91,6 @@ extension ViewController: AdListener {
             }
         }
     }
-    /*
-    // deprecated api
-    func onAdLoaded(ad: MSPAd) {
-        if let priceInDollar = ad.adInfo["priceInDollar"],
-           let priceInDollarValue = priceInDollar as? Double {
-            print("demo price: \(priceInDollarValue)")
-        }
-        if ad is PrebidAd {
-            let prebidAd = ad as? PrebidAd
-            if let adView = prebidAd?.adView {
-                appBannerView.backgroundColor = .red
-                appBannerView.addSubview(adView)
-                NSLayoutConstraint.activate([
-                    adView.centerYAnchor.constraint(equalTo: appBannerView.centerYAnchor),
-                    adView.leadingAnchor.constraint(equalTo: appBannerView.leadingAnchor),
-                    adView.widthAnchor.constraint(lessThanOrEqualTo: appBannerView.widthAnchor),
-                    adView.heightAnchor.constraint(lessThanOrEqualTo: appBannerView.heightAnchor),
-                ])
-            }
-        } else if ad is GoogleAd {
-            let googleAd = ad as? GoogleAd
-            if let adView = googleAd?.adView {
-                appBannerView.backgroundColor = .red
-                appBannerView.addSubview(adView)
-                NSLayoutConstraint.activate([
-                    adView.centerYAnchor.constraint(equalTo: appBannerView.centerYAnchor),
-                    adView.leadingAnchor.constraint(equalTo: appBannerView.leadingAnchor),
-                    adView.widthAnchor.constraint(lessThanOrEqualTo: appBannerView.widthAnchor),
-                    adView.heightAnchor.constraint(lessThanOrEqualTo: appBannerView.heightAnchor),
-                ])
-            }
-        } else if ad is GoogleNativeAd {
-            let googleNativeAd = ad as? GoogleNativeAd
-            if let nativeAdItem = googleNativeAd?.nativeAdItem {
-                var demoGoogleNativeAdView = DemoGoogleNativeAdView()
-                
-                //appBannerView.addSubview(demoGoogleNativeAdView)
-                self.view.addSubview(demoGoogleNativeAdView)
-                demoGoogleNativeAdView.translatesAutoresizingMaskIntoConstraints = false
-                NSLayoutConstraint.activate([
-                    demoGoogleNativeAdView.leadingAnchor.constraint(lessThanOrEqualTo: self.view.leadingAnchor, constant: 100),
-                    demoGoogleNativeAdView.trailingAnchor.constraint(lessThanOrEqualTo: self.view.trailingAnchor),
-                    demoGoogleNativeAdView.topAnchor.constraint(lessThanOrEqualTo: self.view.topAnchor, constant: 100),
-                    demoGoogleNativeAdView.bottomAnchor.constraint(lessThanOrEqualTo: self.view.bottomAnchor),
-                    demoGoogleNativeAdView.widthAnchor.constraint(equalToConstant: 300.0)
-                ])
-                
-                demoGoogleNativeAdView.bindView(nativeAd: nativeAdItem)
-                demoGoogleNativeAdView.setUpView(nativeAd: nativeAdItem)
-            }
-        } else if ad is NovaNativeAd {
-            let novaNativeAd = ad as? NovaNativeAd
-            if let nativeAdItem = novaNativeAd?.nativeAdItem {
-                
-                let adOpenActionHandler = NovaAdOpenActionHandler()
-                let actionHandlerMaster = ActionHandlerMaster(actionHandlers: [adOpenActionHandler])
-                let demoNovaNativeAdView = DemoNovaNativeAdView(actionHandler: actionHandlerMaster, rootViewController: self)
-                self.view.addSubview(demoNovaNativeAdView)
-                demoNovaNativeAdView.translatesAutoresizingMaskIntoConstraints = false
-                NSLayoutConstraint.activate([
-                    demoNovaNativeAdView.leadingAnchor.constraint(lessThanOrEqualTo: self.view.leadingAnchor, constant: 50),
-                    demoNovaNativeAdView.trailingAnchor.constraint(lessThanOrEqualTo: self.view.trailingAnchor),
-                    demoNovaNativeAdView.topAnchor.constraint(lessThanOrEqualTo: self.view.topAnchor, constant: 50),
-                    demoNovaNativeAdView.bottomAnchor.constraint(lessThanOrEqualTo: self.view.bottomAnchor),
-                    demoNovaNativeAdView.widthAnchor.constraint(equalToConstant: 300.0)
-                ])
-                
-                demoNovaNativeAdView.bindView(nativeAd: nativeAdItem)
-                demoNovaNativeAdView.setUpView(nativeAd: nativeAdItem)
-                 
-            }
-        } else if ad is MetaNativeAd {
-            let metaNativeAd = ad as? MetaNativeAd
-            if let nativeAdItem = metaNativeAd?.nativeAdItem {
-                let demoMetaNativeAdView = DemoMetaNativeAdView()
-                self.view.addSubview(demoMetaNativeAdView)
-                demoMetaNativeAdView.translatesAutoresizingMaskIntoConstraints = false
-                NSLayoutConstraint.activate([
-                    demoMetaNativeAdView.leadingAnchor.constraint(lessThanOrEqualTo: self.view.leadingAnchor, constant: 100),
-                    demoMetaNativeAdView.trailingAnchor.constraint(lessThanOrEqualTo: self.view.trailingAnchor),
-                    demoMetaNativeAdView.topAnchor.constraint(lessThanOrEqualTo: self.view.topAnchor, constant: 100),
-                    demoMetaNativeAdView.bottomAnchor.constraint(lessThanOrEqualTo: self.view.bottomAnchor),
-                ])
-                
-                demoMetaNativeAdView.bindView(nativeAd: nativeAdItem)
-                demoMetaNativeAdView.setUpView(nativeAd: nativeAdItem)
-            }
-        } else if ad is NativeAd {
-            //let demoNativeAdView = MSPNativeAdView()
-        }
-    }
-     */
     
     func onError(msg: String) {
         print(msg)

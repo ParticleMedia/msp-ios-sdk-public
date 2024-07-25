@@ -5,7 +5,7 @@ Pod::Spec.new do |spec|
   
 
   spec.name         = "MetaAdapter"
-  spec.version      = "0.0.8"
+  spec.version      = "0.0.21"
   spec.summary      = "an adapter for Meta SDK"
   spec.description  = "an adapter for Meta SDK for MSP S2S"
 

@@ -1,10 +1,3 @@
-//
-//  GADAdLoader.swift
-//  GoogleAdapter
-//
-//  Created by Huanzhi Zhang on 12/19/23.
-//
-
 import Foundation
 import GoogleMobileAds
 import MSPiOSCore
@@ -144,7 +137,7 @@ import PrebidMobile
     }
 }
 
-extension GADAdLoder : GADBannerViewDelegate {
+extension GoogleAdapter : GADBannerViewDelegate {
     public func bannerViewDidReceiveAd(_ bannerView: GADBannerView) {
         let googleAd = GoogleAd(adNetworkAdapter: self)
         googleAd.adView = self.gadBannerView

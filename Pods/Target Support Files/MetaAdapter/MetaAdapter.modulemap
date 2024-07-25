@@ -1,6 +1,0 @@
-module MetaAdapter {
-  umbrella header "MetaAdapter-umbrella.h"
-
-  export *
-  module * { export * }
-}

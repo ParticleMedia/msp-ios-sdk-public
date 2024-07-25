@@ -1,10 +1,3 @@
-//
-//  GoogleManager.swift
-//  GoogleAdapter
-//
-//  Created by Huanzhi Zhang on 5/15/24.
-//
-
 import Foundation
 import MSPiOSCore
 //import shared
@@ -12,7 +5,7 @@ import MSPiOSCore
 public class GoogleManager: AdNetworkManager {
     
     public override func getAdNetworkAdapter() -> AdNetworkAdapter? {
-        return GADAdLoder()
+        return GoogleAdapter()
     }
 
 }
