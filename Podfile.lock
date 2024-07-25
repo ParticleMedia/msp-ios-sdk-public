@@ -1,57 +1,4 @@
 PODS:
-  - FBAudienceNetwork (6.15.0)
-  - Google-Mobile-Ads-SDK (10.14.0):
-    - GoogleAppMeasurement (< 11.0, >= 7.0)
-    - GoogleUserMessagingPlatform (>= 1.1)
-  - GoogleAdapter (0.0.8):
-    - Google-Mobile-Ads-SDK (= 10.14.0)
-    - MSPSharedLibraries (= 0.0.19)
-  - GoogleAppMeasurement (10.29.0):
-    - GoogleAppMeasurement/AdIdSupport (= 10.29.0)
-    - GoogleUtilities/AppDelegateSwizzler (~> 7.11)
-    - GoogleUtilities/MethodSwizzler (~> 7.11)
-    - GoogleUtilities/Network (~> 7.11)
-    - "GoogleUtilities/NSData+zlib (~> 7.11)"
-    - nanopb (< 2.30911.0, >= 2.30908.0)
-  - GoogleAppMeasurement/AdIdSupport (10.29.0):
-    - GoogleAppMeasurement/WithoutAdIdSupport (= 10.29.0)
-    - GoogleUtilities/AppDelegateSwizzler (~> 7.11)
-    - GoogleUtilities/MethodSwizzler (~> 7.11)
-    - GoogleUtilities/Network (~> 7.11)
-    - "GoogleUtilities/NSData+zlib (~> 7.11)"
-    - nanopb (< 2.30911.0, >= 2.30908.0)
-  - GoogleAppMeasurement/WithoutAdIdSupport (10.29.0):
-    - GoogleUtilities/AppDelegateSwizzler (~> 7.11)
-    - GoogleUtilities/MethodSwizzler (~> 7.11)
-    - GoogleUtilities/Network (~> 7.11)
-    - "GoogleUtilities/NSData+zlib (~> 7.11)"
-    - nanopb (< 2.30911.0, >= 2.30908.0)
-  - GoogleUserMessagingPlatform (2.5.0)
-  - GoogleUtilities/AppDelegateSwizzler (7.13.3):
-    - GoogleUtilities/Environment
-    - GoogleUtilities/Logger
-    - GoogleUtilities/Network
-    - GoogleUtilities/Privacy
-  - GoogleUtilities/Environment (7.13.3):
-    - GoogleUtilities/Privacy
-    - PromisesObjC (< 3.0, >= 1.2)
-  - GoogleUtilities/Logger (7.13.3):
-    - GoogleUtilities/Environment
-    - GoogleUtilities/Privacy
-  - GoogleUtilities/MethodSwizzler (7.13.3):
-    - GoogleUtilities/Logger
-    - GoogleUtilities/Privacy
-  - GoogleUtilities/Network (7.13.3):
-    - GoogleUtilities/Logger
-    - "GoogleUtilities/NSData+zlib"
-    - GoogleUtilities/Privacy
-    - GoogleUtilities/Reachability
-  - "GoogleUtilities/NSData+zlib (7.13.3)":
-    - GoogleUtilities/Privacy
-  - GoogleUtilities/Privacy (7.13.3)
-  - GoogleUtilities/Reachability (7.13.3):
-    - GoogleUtilities/Logger
-    - GoogleUtilities/Privacy
   - libwebp (1.3.2):
     - libwebp/demux (= 1.3.2)
     - libwebp/mux (= 1.3.2)
@@ -64,23 +11,14 @@ PODS:
   - libwebp/sharpyuv (1.3.2)
   - libwebp/webp (1.3.2):
     - libwebp/sharpyuv
-  - MetaAdapter (0.0.8):
-    - FBAudienceNetwork (= 6.15.0)
+  - MSPCore (0.0.22):
     - MSPSharedLibraries (= 0.0.19)
-  - MSPCore (0.0.8):
-    - MSPSharedLibraries (= 0.0.19)
-    - PrebidAdapter (= 0.0.20)
+    - PrebidAdapter (= 0.0.21)
   - MSPSharedLibraries (0.0.19)
-  - nanopb (2.30910.0):
-    - nanopb/decode (= 2.30910.0)
-    - nanopb/encode (= 2.30910.0)
-  - nanopb/decode (2.30910.0)
-  - nanopb/encode (2.30910.0)
-  - NovaAdapter (0.0.8):
+  - NovaAdapter (0.0.21):
     - MSPSharedLibraries (= 0.0.19)
-  - PrebidAdapter (0.0.20):
+  - PrebidAdapter (0.0.21):
     - MSPSharedLibraries (= 0.0.19)
-  - PromisesObjC (2.4.0)
   - SDWebImage (5.18.8):
     - SDWebImage/Core (= 5.18.8)
   - SDWebImage/Core (5.18.8)
@@ -91,10 +29,8 @@ PODS:
   - SnapKit (5.6.0)
 
 DEPENDENCIES:
-  - GoogleAdapter (from `./`)
-  - MetaAdapter (from `./`)
-  - MSPCore (from `./`)
-  - NovaAdapter (from `./`)
+  - MSPCore (= 0.0.22)
+  - NovaAdapter (= 0.0.21)
   - SDWebImage (= 5.18.8)
   - SDWebImageWebPCoder (= 0.14.2)
   - Shimmer
@@ -102,51 +38,27 @@ DEPENDENCIES:
 
 SPEC REPOS:
   trunk:
-    - FBAudienceNetwork
-    - Google-Mobile-Ads-SDK
-    - GoogleAppMeasurement
-    - GoogleUserMessagingPlatform
-    - GoogleUtilities
     - libwebp
+    - MSPCore
     - MSPSharedLibraries
-    - nanopb
+    - NovaAdapter
     - PrebidAdapter
-    - PromisesObjC
     - SDWebImage
     - SDWebImageWebPCoder
     - Shimmer
     - SnapKit
 
-EXTERNAL SOURCES:
-  GoogleAdapter:
-    :path: "./"
-  MetaAdapter:
-    :path: "./"
-  MSPCore:
-    :path: "./"
-  NovaAdapter:
-    :path: "./"
-
 SPEC CHECKSUMS:
-  FBAudienceNetwork: 80a035aa69cc3a71c99e44cb5c2874e4cef9909f
-  Google-Mobile-Ads-SDK: 8f67a72f88d057335b1ac3f501e2b68ad054116e
-  GoogleAdapter: c11fdc58f8ddacfce63e2bc019ea687058f1cf3c
-  GoogleAppMeasurement: f9de05ee17401e3355f68e8fc8b5064d429f5918
-  GoogleUserMessagingPlatform: 6b4f48a370e77ce121d034c908cc6ee4fdafaf13
-  GoogleUtilities: ea963c370a38a8069cc5f7ba4ca849a60b6d7d15
   libwebp: 1786c9f4ff8a279e4dac1e8f385004d5fc253009
-  MetaAdapter: b7ae33fcca1632e403cc85f6ffee059bfb495a2a
-  MSPCore: 3f15528b57638912611d95efbe78c37499b2f001
+  MSPCore: 4518e84ff66742e660accf459c5fd5aa615981f1
   MSPSharedLibraries: c610158df65b367dcf467e4d55133a189e750bdb
-  nanopb: 438bc412db1928dac798aa6fd75726007be04262
-  NovaAdapter: b4347eda2b49a1d1ce780861bee355862c58ef10
-  PrebidAdapter: 04398414c1bc4c61b99f1e3dd9e4cdc1009278c6
-  PromisesObjC: f5707f49cb48b9636751c5b2e7d227e43fba9f47
+  NovaAdapter: 3e8c2010ddd5ce7fc4b1b04837e6473089abb91f
+  PrebidAdapter: a5954c7c0d6c8ab44850c81306237f72a0ac95d8
   SDWebImage: a81bbb3ba4ea5f810f4069c68727cb118467a04a
   SDWebImageWebPCoder: 633b813fca24f1de5e076bcd7f720c038b23892b
   Shimmer: c5374be1c2b0c9e292fb05b339a513cf291cac86
   SnapKit: e01d52ebb8ddbc333eefe2132acf85c8227d9c25
 
-PODFILE CHECKSUM: 75b85b7ff79f562b0986d256e5b6ad2017e8c7f9
+PODFILE CHECKSUM: 7cc2217bd2c842d67b108e0fc7fc68a1d841dec5
 
 COCOAPODS: 1.14.3

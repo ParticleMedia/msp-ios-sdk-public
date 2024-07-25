@@ -19,11 +19,9 @@ public class PrebidBidLoader : BidLoader {
         
         super.init(googleQueryInfoFetcher: googleQueryInfoFetcher, facebookBidTokenProvider: facebookBidTokenProvider)
         
-        Prebid.shared.shareGeoLocation = true
     }
     
     public override func loadBid(placementId: String, adParams: [String : Any], bidListener: any BidListener, adRequest: AdRequest) {
-        print("msp start load bid")
         self.configId = placementId
         self.bidListener = bidListener
         self.adRequest = adRequest
@@ -35,7 +33,6 @@ public class PrebidBidLoader : BidLoader {
     }
     
     func fetchTokens(adRequest: AdRequest, completion: @escaping (String?, String?) -> Void) {
-        print("msp start fetch tokens")
         self.dispatchGroup.enter()
         self.googleQueryInfoFetcher.fetch(completeListener: self, adRequest: adRequest)
         
@@ -48,7 +45,7 @@ public class PrebidBidLoader : BidLoader {
     }
     
     public func loadBidWithTokens(googleQueryInfo: String?, facebookBidToken: String?) {
-        print("msp start load bid with query info")
+
         let width = Int(adRequest?.adSize?.width ?? 320)
         let height = Int(adRequest?.adSize?.height ?? 50)
         let adSize = CGSize(width: width, height: height)
@@ -68,7 +65,6 @@ public class PrebidBidLoader : BidLoader {
             guard let self = self else { return }
 
             if let error = error {
-                print("msp error:" + error.localizedDescription)
                 bidListener?.onError(msg: error.localizedDescription)
                 return
             }
@@ -76,19 +72,14 @@ public class PrebidBidLoader : BidLoader {
             if let bidResponse = bidResponse {
                 let seat = bidResponse.winningBidSeat
                 if self.bidListener == nil {
-                    print("msp missing bidListener")
                 }
                 if seat == "msp_google" {
-                    print("msp receive google response")
                     self.bidListener?.onBidResponse(bidResponse: bidResponse, adNetwork: AdNetwork.google)
                 } else if seat == "audienceNetwork" {
-                    print("msp receive meta response")
                     self.bidListener?.onBidResponse(bidResponse: bidResponse, adNetwork: AdNetwork.facebook)
                 } else if seat == "msp_nova" {
-                    print("msp receive nova response")
                     self.bidListener?.onBidResponse(bidResponse: bidResponse, adNetwork: AdNetwork.nova)
                 }else {
-                    print("msp receive prebid response")
                     self.bidListener?.onBidResponse(bidResponse: bidResponse, adNetwork: AdNetwork.prebid)
                 }
             } else {

@@ -17,10 +17,7 @@
 		6684807A2BE03D800025018B /* MSPDemoAppTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 668480792BE03D800025018B /* MSPDemoAppTests.swift */; };
 		668480842BE03D800025018B /* MSPDemoAppUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 668480832BE03D800025018B /* MSPDemoAppUITests.swift */; };
 		668480862BE03D800025018B /* MSPDemoAppUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 668480852BE03D800025018B /* MSPDemoAppUITestsLaunchTests.swift */; };
-		66B7303E2C2E3F750042E4FF /* DemoMetaNativeAdView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66B7303D2C2E3F750042E4FF /* DemoMetaNativeAdView.swift */; };
-		66E5334C2C1BA8C700255D15 /* DemoGoogleNativeAdView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E5334B2C1BA8C700255D15 /* DemoGoogleNativeAdView.swift */; };
 		66E5334E2C1BC1E700255D15 /* Colors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E5334D2C1BC1E700255D15 /* Colors.swift */; };
-		66E534022C23B1AC00255D15 /* DemoNovaNativeAdView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E534012C23B1AC00255D15 /* DemoNovaNativeAdView.swift */; };
 		E0D4098C6B103253761A220B /* libPods-MSPDemoApp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 865DA71BB2BB723F7DC9E210 /* libPods-MSPDemoApp.a */; };
 /* End PBXBuildFile section */
 
@@ -57,10 +54,7 @@
 		6684807F2BE03D800025018B /* MSPDemoAppUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MSPDemoAppUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		668480832BE03D800025018B /* MSPDemoAppUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MSPDemoAppUITests.swift; sourceTree = "<group>"; };
 		668480852BE03D800025018B /* MSPDemoAppUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MSPDemoAppUITestsLaunchTests.swift; sourceTree = "<group>"; };
-		66B7303D2C2E3F750042E4FF /* DemoMetaNativeAdView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DemoMetaNativeAdView.swift; sourceTree = "<group>"; };
-		66E5334B2C1BA8C700255D15 /* DemoGoogleNativeAdView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DemoGoogleNativeAdView.swift; sourceTree = "<group>"; };
 		66E5334D2C1BC1E700255D15 /* Colors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Colors.swift; sourceTree = "<group>"; };
-		66E534012C23B1AC00255D15 /* DemoNovaNativeAdView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DemoNovaNativeAdView.swift; sourceTree = "<group>"; };
 		66E534E62C24D51800255D15 /* NovaCore.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; path = NovaCore.xcframework; sourceTree = "<group>"; };
 		66F4F0C22BE054800026CAB8 /* MSPUtility.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = MSPUtility.xcframework; path = ../outputMSPUtility/xcframework/MSPUtility.xcframework; sourceTree = "<group>"; };
 		66F4F0C72BE0550E0026CAB8 /* PrebidAdapter.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = PrebidAdapter.xcframework; path = ../output/xcframework/PrebidAdapter.xcframework; sourceTree = "<group>"; };
@@ -165,9 +159,6 @@
 		66E5334A2C1BA8AD00255D15 /* Native */ = {
 			isa = PBXGroup;
 			children = (
-				66E5334B2C1BA8C700255D15 /* DemoGoogleNativeAdView.swift */,
-				66E534012C23B1AC00255D15 /* DemoNovaNativeAdView.swift */,
-				66B7303D2C2E3F750042E4FF /* DemoMetaNativeAdView.swift */,
 				664F334A2C49B2970014E1BA /* DemoNativeAdViewBinder.swift */,
 				664F335E2C4F1CB60014E1BA /* NovaTestAdString.swift */,
 			);
@@ -199,7 +190,6 @@
 				6684805C2BE03D7D0025018B /* Frameworks */,
 				6684805D2BE03D7D0025018B /* Resources */,
 				1BBD7FC0E4E233D3AA7D0FD9 /* [CP] Embed Pods Frameworks */,
-				1457529E850AFA226C1528C3 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -316,23 +306,6 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		1457529E850AFA226C1528C3 /* [CP] Copy Pods Resources */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-MSPDemoApp/Pods-MSPDemoApp-resources-${CONFIGURATION}-input-files.xcfilelist",
-			);
-			name = "[CP] Copy Pods Resources";
-			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-MSPDemoApp/Pods-MSPDemoApp-resources-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-MSPDemoApp/Pods-MSPDemoApp-resources.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
 		1BBD7FC0E4E233D3AA7D0FD9 /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -379,12 +352,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				66E5334C2C1BA8C700255D15 /* DemoGoogleNativeAdView.swift in Sources */,
-				66E534022C23B1AC00255D15 /* DemoNovaNativeAdView.swift in Sources */,
 				66E5334E2C1BC1E700255D15 /* Colors.swift in Sources */,
 				668480672BE03D7D0025018B /* ViewController.swift in Sources */,
 				668480632BE03D7D0025018B /* AppDelegate.swift in Sources */,
-				66B7303E2C2E3F750042E4FF /* DemoMetaNativeAdView.swift in Sources */,
 				668480652BE03D7D0025018B /* SceneDelegate.swift in Sources */,
 				664F334B2C49B2970014E1BA /* DemoNativeAdViewBinder.swift in Sources */,
 				664F335F2C4F1CB60014E1BA /* NovaTestAdString.swift in Sources */,

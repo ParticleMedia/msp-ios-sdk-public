@@ -1,9 +1,4 @@
-//
-//  MetaAdLoader.swift
-//  MetaAdapter
-//
-//  Created by Huanzhi Zhang on 6/26/24.
-//
+
 //import shared
 import MSPiOSCore
 import FBAudienceNetwork

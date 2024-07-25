@@ -1,6 +1,6 @@
 CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = NO
 GCC_PREPROCESSOR_DEFINITIONS = $(inherited) COCOAPODS=1
-HEADER_SEARCH_PATHS = $(inherited) "${PODS_ROOT}/Headers/Public" "${PODS_ROOT}/Headers/Public/GoogleAdapter" "${PODS_ROOT}/Headers/Public/GoogleUtilities" "${PODS_ROOT}/Headers/Public/MSPCore" "${PODS_ROOT}/Headers/Public/MSPSharedLibraries" "${PODS_ROOT}/Headers/Public/MetaAdapter" "${PODS_ROOT}/Headers/Public/NovaAdapter" "${PODS_ROOT}/Headers/Public/PrebidAdapter" "${PODS_ROOT}/Headers/Public/PromisesObjC" "${PODS_ROOT}/Headers/Public/SDWebImage" "${PODS_ROOT}/Headers/Public/SDWebImageWebPCoder" "${PODS_ROOT}/Headers/Public/Shimmer" "${PODS_ROOT}/Headers/Public/libwebp" "${PODS_ROOT}/Headers/Public/nanopb"
+HEADER_SEARCH_PATHS = $(inherited) "${PODS_ROOT}/Headers/Public" "${PODS_ROOT}/Headers/Public/MSPCore" "${PODS_ROOT}/Headers/Public/MSPSharedLibraries" "${PODS_ROOT}/Headers/Public/NovaAdapter" "${PODS_ROOT}/Headers/Public/PrebidAdapter" "${PODS_ROOT}/Headers/Public/SDWebImage" "${PODS_ROOT}/Headers/Public/SDWebImageWebPCoder" "${PODS_ROOT}/Headers/Public/Shimmer" "${PODS_ROOT}/Headers/Public/libwebp"
 PODS_BUILD_DIR = ${BUILD_DIR}
 PODS_CONFIGURATION_BUILD_DIR = ${PODS_BUILD_DIR}/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)
 PODS_PODFILE_DIR_PATH = ${SRCROOT}/..
