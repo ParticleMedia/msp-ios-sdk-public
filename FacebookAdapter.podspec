@@ -4,7 +4,7 @@ Pod::Spec.new do |spec|
 
   
 
-  spec.name         = "MetaAdapter"
+  spec.name         = "FacebookAdapter"
   spec.version      = "0.0.21"
   spec.summary      = "an adapter for Meta SDK"
   spec.description  = "an adapter for Meta SDK for MSP S2S"
@@ -42,7 +42,7 @@ Pod::Spec.new do |spec|
   spec.ios.deployment_target = '13.0'
 
 
-  spec.source_files  = "MetaAdapter/MetaAdapter/**/*.{h,m,swift}"
+  spec.source_files  = "FacebookAdapter/FacebookAdapter/**/*.{h,m,swift}"
   spec.exclude_files = "Classes/Exclude"
 
   spec.dependency 'FBAudienceNetwork', '6.15.0'

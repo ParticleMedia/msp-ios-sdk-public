@@ -1,16 +1,10 @@
-//
-//  MetaNativeAd.swift
-//  MetaAdapter
-//
-//  Created by Huanzhi Zhang on 6/26/24.
-//
 
 import Foundation
 //import shared
 import MSPiOSCore
 import FBAudienceNetwork
 
-public class MetaNativeAd: MSPAd {
+public class FacebookNativeAd: MSPAd {
     public var nativeAdItem: FBNativeAd?
     public var priceInDollar: Double?
 }

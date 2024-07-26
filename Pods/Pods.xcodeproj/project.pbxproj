@@ -62,7 +62,7 @@
 		16A0D775B0C93949B15096121A237D73 /* cost_enc.c in Sources */ = {isa = PBXBuildFile; fileRef = EC5A8E4CE7AB9D01B2D95DFDEC32F74A /* cost_enc.c */; settings = {COMPILER_FLAGS = "-D_THREAD_SAFE -fno-objc-arc"; }; };
 		16BE51D69378B3D85B4BFBB28948DEAC /* SDImageCacheConfig.h in Headers */ = {isa = PBXBuildFile; fileRef = 7FFD2922EABB3B94413FE86DF8F202F0 /* SDImageCacheConfig.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		1948947C508ABE0FF819DCCB3105872A /* MSPNativeAdContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25EB2208318DF5D221436E71699E8CED /* MSPNativeAdContainer.swift */; };
-		19611D961CAEBE25D246D720A0AB7825 /* Pods-NovaAdapter-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 9542835C527C45857575C90789D76C86 /* Pods-NovaAdapter-dummy.m */; };
+		19611D961CAEBE25D246D720A0AB7825 /* Pods-NovaAdapter-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = DA926E02A1F5C1672056EA6CB67D55CF /* Pods-NovaAdapter-dummy.m */; };
 		1992AAD044BFFA65AF15DF0068C0C717 /* SDImageTransformer.m in Sources */ = {isa = PBXBuildFile; fileRef = A02DAA86CE541C4ED1EB1C19D2831AB5 /* SDImageTransformer.m */; };
 		1A46F3DC70FD700043694244E0B68E05 /* alpha_processing_sse41.c in Sources */ = {isa = PBXBuildFile; fileRef = DC152F02EB2F6826E3C9E665C71BBD3F /* alpha_processing_sse41.c */; settings = {COMPILER_FLAGS = "-D_THREAD_SAFE -fno-objc-arc"; }; };
 		1A7E454FA5314EFCE44487533D6F8186 /* huffman_utils.h in Headers */ = {isa = PBXBuildFile; fileRef = 215C0D48F8D6DB56E5F4CE222FE8A8A8 /* huffman_utils.h */; settings = {ATTRIBUTES = (Project, ); }; };
@@ -152,14 +152,14 @@
 		5B0BE119F70948E40EA07DE0C94918B8 /* lossless_enc.c in Sources */ = {isa = PBXBuildFile; fileRef = 9DB4E6D1B2051B85126FE9ECA558E05F /* lossless_enc.c */; settings = {COMPILER_FLAGS = "-D_THREAD_SAFE -fno-objc-arc"; }; };
 		5BF4D4F79ABF620D60BA9FED67501FB6 /* PrebidAdapter.h in Headers */ = {isa = PBXBuildFile; fileRef = 3F6770290A57F7A3458E7528ACDCB465 /* PrebidAdapter.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		5C36E20E0143B4771825A5C99E2E2AF9 /* SDImageAWebPCoder.m in Sources */ = {isa = PBXBuildFile; fileRef = A5D6268BA7501FFAB2E87F388D9719F6 /* SDImageAWebPCoder.m */; };
-		5CD4276C299601562EB2564DBC401162 /* Pods-PrebidAdapter-PrebidAdapterTests-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = 39BE9D0B4780184F9194B14FB9541341 /* Pods-PrebidAdapter-PrebidAdapterTests-umbrella.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		5CD4276C299601562EB2564DBC401162 /* Pods-PrebidAdapter-PrebidAdapterTests-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = 62F20A221E8AF84BCAF7C66F12177718 /* Pods-PrebidAdapter-PrebidAdapterTests-umbrella.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		5CF4670F6E41D06C52DCE2D441B5066F /* ConstraintMakerFinalizable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EC731ECA9394B94FED756F80AA7AF9E /* ConstraintMakerFinalizable.swift */; };
 		5E21CB013C02D26C99DD76AB527CEC71 /* alpha_processing_sse2.c in Sources */ = {isa = PBXBuildFile; fileRef = D3892CCE8BFD41C9DB6F4853E72D1CD4 /* alpha_processing_sse2.c */; settings = {COMPILER_FLAGS = "-D_THREAD_SAFE -fno-objc-arc"; }; };
 		5FB24F83F56CBE719C07973934515875 /* SDImageGraphics.h in Headers */ = {isa = PBXBuildFile; fileRef = 00E4A6EC7B885BF59E6D535D37AA69C7 /* SDImageGraphics.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		60046E496BA9E23F883C5A4C5C556086 /* Shimmer-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 38DD656FC17F429F7DEFF251B7F62FDF /* Shimmer-dummy.m */; };
 		6015E4A41E1C7C2EE95D777A149E5352 /* syntax_enc.c in Sources */ = {isa = PBXBuildFile; fileRef = 1DD9ED4A9C8A750BB9200273113F5022 /* syntax_enc.c */; settings = {COMPILER_FLAGS = "-D_THREAD_SAFE -fno-objc-arc"; }; };
 		640DB188B1F19E0A7989B4C2797E8A93 /* NSData+ImageContentType.h in Headers */ = {isa = PBXBuildFile; fileRef = DF4201CA14FED9546A50A1C0B9D1CD5D /* NSData+ImageContentType.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		645554B316222517689D48DB3A8643EF /* Pods-PrebidAdapter-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = 6AD3719130422CC395D86CF9994C06E0 /* Pods-PrebidAdapter-umbrella.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		645554B316222517689D48DB3A8643EF /* Pods-PrebidAdapter-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = EC13C77D5C10412F95E9C73DE47AEEFC /* Pods-PrebidAdapter-umbrella.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		6481C5A632C8A1C2DCD05F77ABCF24DA /* upsampling_msa.c in Sources */ = {isa = PBXBuildFile; fileRef = 964DF1346BF2FDAFB716D7D92C218D4E /* upsampling_msa.c */; settings = {COMPILER_FLAGS = "-D_THREAD_SAFE -fno-objc-arc"; }; };
 		65107EFA4F2349F005C638E2A583C530 /* backward_references_enc.c in Sources */ = {isa = PBXBuildFile; fileRef = 8D7E0FECC2C753D874A51B1D72378805 /* backward_references_enc.c */; settings = {COMPILER_FLAGS = "-D_THREAD_SAFE -fno-objc-arc"; }; };
 		655EF4C572C5855969675324C2AB9709 /* vp8_dec.c in Sources */ = {isa = PBXBuildFile; fileRef = 0A33329B4A7C96863101A73D8755491D /* vp8_dec.c */; settings = {COMPILER_FLAGS = "-D_THREAD_SAFE -fno-objc-arc"; }; };
@@ -192,7 +192,7 @@
 		776D78F87EB11CC1B0C15C32D1DC16C6 /* yuv_mips32.c in Sources */ = {isa = PBXBuildFile; fileRef = 2E7E108B7931A938DDD49B8BB1D7ED25 /* yuv_mips32.c */; settings = {COMPILER_FLAGS = "-D_THREAD_SAFE -fno-objc-arc"; }; };
 		7773A012DCAEAD14F9AD32A16BE6E4EC /* SDWebImageOptionsProcessor.h in Headers */ = {isa = PBXBuildFile; fileRef = A68ECF9859BCC9151DD9D8971209F927 /* SDWebImageOptionsProcessor.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		77D1CB05302245CC86472E19B0097857 /* picture_rescale_enc.c in Sources */ = {isa = PBXBuildFile; fileRef = A0051E5C047173261EFCFD1E8092FF41 /* picture_rescale_enc.c */; settings = {COMPILER_FLAGS = "-D_THREAD_SAFE -fno-objc-arc"; }; };
-		7859A46FA3B80A604BFC9CAB7D51D956 /* Pods-MSPCore-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = D3E2116B52BADF3FF156F0C3756DB2E8 /* Pods-MSPCore-dummy.m */; };
+		7859A46FA3B80A604BFC9CAB7D51D956 /* Pods-MSPCore-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = EC1C18407E64E86E7518AEDC58A1B9B7 /* Pods-MSPCore-dummy.m */; };
 		789669534EB26DFDC99F48EF1EF141C2 /* cpu.c in Sources */ = {isa = PBXBuildFile; fileRef = 80FA6E9B1BFB4574F93DA7FB7DF5252E /* cpu.c */; settings = {COMPILER_FLAGS = "-D_THREAD_SAFE -fno-objc-arc"; }; };
 		78ECD3C575927015209D8BE59B80BD6E /* muxread.c in Sources */ = {isa = PBXBuildFile; fileRef = 5F6E6A373A6F7B24E0A12A9786F88A6A /* muxread.c */; settings = {COMPILER_FLAGS = "-D_THREAD_SAFE -fno-objc-arc"; }; };
 		7924B9D1F31AF6FB92B575B958613591 /* vp8i_dec.h in Headers */ = {isa = PBXBuildFile; fileRef = FF8E3FA93CB658A5959A9AB1FE2E7B43 /* vp8i_dec.h */; settings = {ATTRIBUTES = (Project, ); }; };
@@ -246,7 +246,7 @@
 		972881E9F343BA0196F76586E52C9E8A /* sharpyuv_gamma.c in Sources */ = {isa = PBXBuildFile; fileRef = CC5E4D17A07E3507FCDB760BBBD20401 /* sharpyuv_gamma.c */; settings = {COMPILER_FLAGS = "-D_THREAD_SAFE -fno-objc-arc"; }; };
 		9A7C950C37E714016B28B80B5BC922D0 /* SDWebImageCacheSerializer.m in Sources */ = {isa = PBXBuildFile; fileRef = 21CF5D810A99E2EC438F7D58DF646FD4 /* SDWebImageCacheSerializer.m */; };
 		9AA4F2C5543617B8C9C6445C9494002A /* types.h in Headers */ = {isa = PBXBuildFile; fileRef = B2C3DB93589EA4BA2A6FDEA330CD79AD /* types.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		9B31535DB712E2909DAA7B7EFB7ED694 /* Pods-GoogleAdapter-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = A12C0214E2E2D5C063378E250CAF0494 /* Pods-GoogleAdapter-dummy.m */; };
+		9B31535DB712E2909DAA7B7EFB7ED694 /* Pods-GoogleAdapter-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = E20B5CE7B391730CC51F5AEF8DBFB9A6 /* Pods-GoogleAdapter-dummy.m */; };
 		9B90828C120CECCA9A9F5ECA601F94E0 /* UIView+WebCache.h in Headers */ = {isa = PBXBuildFile; fileRef = 9E57F8F1B132F296E06293C432E1B01D /* UIView+WebCache.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		9BEE059DD55A5DD94D1CADBDCBE02BDC /* analysis_enc.c in Sources */ = {isa = PBXBuildFile; fileRef = 2EC242A77CCFBB9173354A659A314FAE /* analysis_enc.c */; settings = {COMPILER_FLAGS = "-D_THREAD_SAFE -fno-objc-arc"; }; };
 		9C3E13F903B08DD7F9CE8A39F117AC7B /* PrebidAdapter-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 9440B643DDC8ECDD3AB6542AA1280EAC /* PrebidAdapter-dummy.m */; };
@@ -307,7 +307,7 @@
 		BABA3CE54BDCAF9D1F73BE7E86E777ED /* SDAnimatedImageView+WebCache.h in Headers */ = {isa = PBXBuildFile; fileRef = 7979B4B7346CFBF73684FBC4F90E6E49 /* SDAnimatedImageView+WebCache.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		BAD7E19C023F4C87B86B90019ADC0D83 /* SDWebImageWebPCoderDefine.h in Headers */ = {isa = PBXBuildFile; fileRef = 95DD4C4C89BE786FEEA4DD5A657657C9 /* SDWebImageWebPCoderDefine.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		BB1A3454A3893E940062C2F343EC46AC /* SDDisplayLink.m in Sources */ = {isa = PBXBuildFile; fileRef = C3D2CC07869255AF5294999C146B1708 /* SDDisplayLink.m */; };
-		BB7298064FF49466E260BD617425EF8A /* Pods-MSPDemoApp-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = E5FF6E1F5447832A453412DC1764A23C /* Pods-MSPDemoApp-dummy.m */; };
+		BB7298064FF49466E260BD617425EF8A /* Pods-MSPDemoApp-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 188F5E825BFE7951B35895EEF77FFBDE /* Pods-MSPDemoApp-dummy.m */; };
 		BCFAD6C7A08088BC42A370C86EAD949D /* cost_neon.c in Sources */ = {isa = PBXBuildFile; fileRef = 3694413A7E9A5454631F34D31893C005 /* cost_neon.c */; settings = {COMPILER_FLAGS = "-D_THREAD_SAFE -fno-objc-arc"; }; };
 		BD29645196B8DBBF6592FE0D6DA10C01 /* quant_levels_utils.c in Sources */ = {isa = PBXBuildFile; fileRef = 17C6EEC8A06766F71410CB7ABE43B148 /* quant_levels_utils.c */; settings = {COMPILER_FLAGS = "-D_THREAD_SAFE -fno-objc-arc"; }; };
 		BD4624A95831B4B96BA9715D4F838CCA /* cpu.h in Headers */ = {isa = PBXBuildFile; fileRef = 866AB96EE85B419825241025BF439C44 /* cpu.h */; settings = {ATTRIBUTES = (Project, ); }; };
@@ -335,13 +335,13 @@
 		CA7DE6FB96BFEEA6126CF7DDA3E4EBE5 /* lossless_mips_dsp_r2.c in Sources */ = {isa = PBXBuildFile; fileRef = 21EEF262B4C35D4E50023FBD74732B61 /* lossless_mips_dsp_r2.c */; settings = {COMPILER_FLAGS = "-D_THREAD_SAFE -fno-objc-arc"; }; };
 		CBEF6E219BB7B89B45B6EF838FD79C6D /* SDCallbackQueue.h in Headers */ = {isa = PBXBuildFile; fileRef = 196FC7A82F1B81849628D96C92C7AE45 /* SDCallbackQueue.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		CBF48264C7053F2FF54A799F46B1A5C5 /* UIImage+Metadata.h in Headers */ = {isa = PBXBuildFile; fileRef = 5236440086418BF2D6752F23510E0E85 /* UIImage+Metadata.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		CC2475C7080521DB3A4A5A60D7AEC878 /* Pods-MSPDemoApp-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = E9B60B248499D69157E189E0216611A3 /* Pods-MSPDemoApp-umbrella.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		CC2475C7080521DB3A4A5A60D7AEC878 /* Pods-MSPDemoApp-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = 1E619CDBD6FC4414C01B4A3559A5F22D /* Pods-MSPDemoApp-umbrella.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		CC2B7957F5DA5422D8E7B13E1D009A3F /* picture_tools_enc.c in Sources */ = {isa = PBXBuildFile; fileRef = 884D56EB4AD94FAC686BA8209B2C75B4 /* picture_tools_enc.c */; settings = {COMPILER_FLAGS = "-D_THREAD_SAFE -fno-objc-arc"; }; };
 		CCF93BEE1BB6D3FB1FAB8B358D747152 /* SDAsyncBlockOperation.h in Headers */ = {isa = PBXBuildFile; fileRef = 76E9E210C475382EAFDDE7CBCEB1D876 /* SDAsyncBlockOperation.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		CD95BB514213677F1D8F56D6B8C5BEB4 /* SDDiskCache.h in Headers */ = {isa = PBXBuildFile; fileRef = 790CC24A49B7FFBFC62B8654BCD07570 /* SDDiskCache.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		CEC2CDACFDC30EAF6DEBC41F2FDEC328 /* SDImageIOAnimatedCoder.m in Sources */ = {isa = PBXBuildFile; fileRef = CE9F45C0296B87F341C90095856E9B62 /* SDImageIOAnimatedCoder.m */; };
 		CF7D0179F9C38E265C7BB60671A07300 /* config_enc.c in Sources */ = {isa = PBXBuildFile; fileRef = 7C5DF917536B1FB50CC74BFA8E8909B4 /* config_enc.c */; settings = {COMPILER_FLAGS = "-D_THREAD_SAFE -fno-objc-arc"; }; };
-		D0C2AC767E5A42B8E67127711023D792 /* Pods-MSPSharedLibraries-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 0BEB0B0EEC93BD2E25613BC9421AF2C0 /* Pods-MSPSharedLibraries-dummy.m */; };
+		D0C2AC767E5A42B8E67127711023D792 /* Pods-MSPSharedLibraries-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = A82755B86FD44E80B38E67D47D7660D9 /* Pods-MSPSharedLibraries-dummy.m */; };
 		D15B3F2C1AB80D46FD442930BE90E55B /* SDImageHEICCoder.m in Sources */ = {isa = PBXBuildFile; fileRef = A7EA3C5E783CCC39EB14FBD3CD914E0A /* SDImageHEICCoder.m */; };
 		D16B6C583965A288DCED4C5921BE5F4F /* MSPCore.h in Headers */ = {isa = PBXBuildFile; fileRef = 96E49D57B9607C59163D9213DD7000B7 /* MSPCore.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		D228AEAE31DD99AE8272AAB2CCABF7E9 /* bit_reader_utils.h in Headers */ = {isa = PBXBuildFile; fileRef = 08549D438E180BA4C5ED8255C89CB1A8 /* bit_reader_utils.h */; settings = {ATTRIBUTES = (Project, ); }; };
@@ -355,8 +355,8 @@
 		D6D9664D275B7C631A884686E75060E1 /* token_enc.c in Sources */ = {isa = PBXBuildFile; fileRef = 5AFF9347A05D317F785B39F6637725A3 /* token_enc.c */; settings = {COMPILER_FLAGS = "-D_THREAD_SAFE -fno-objc-arc"; }; };
 		D7B1EC913D0389C1F09F66BE9DA6FD68 /* histogram_enc.h in Headers */ = {isa = PBXBuildFile; fileRef = 8BF09C6282005B0CF1DE1FF6D7EB8BE3 /* histogram_enc.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		D7F4059B9B793BEC9443C2A4BB137D10 /* predictor_enc.c in Sources */ = {isa = PBXBuildFile; fileRef = 8E10416B50F3EB1C866DF35A5AB7CEBE /* predictor_enc.c */; settings = {COMPILER_FLAGS = "-D_THREAD_SAFE -fno-objc-arc"; }; };
+		D846B2965FC3382C4947DC5387BF4658 /* Pods-FacebookAdapter-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 4290002649366DBA2D8EB70886F1BFEE /* Pods-FacebookAdapter-dummy.m */; };
 		D849087BB951C54BA71B8E2D1DF259A7 /* filters_sse2.c in Sources */ = {isa = PBXBuildFile; fileRef = 0339DF62713782AFDC06F88F442F154C /* filters_sse2.c */; settings = {COMPILER_FLAGS = "-D_THREAD_SAFE -fno-objc-arc"; }; };
-		D8D812B3A8F8C5F0BF131FE598C64DA1 /* Pods-MetaAdapter-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 99314CBFEACB5C380521E696F1E7DC4D /* Pods-MetaAdapter-dummy.m */; };
 		D9851DC58C5243178EDE8F4C62BC3351 /* quant_dec.c in Sources */ = {isa = PBXBuildFile; fileRef = B266303500AE9B0FD344C7A4FDB2DEBB /* quant_dec.c */; settings = {COMPILER_FLAGS = "-D_THREAD_SAFE -fno-objc-arc"; }; };
 		DA1DDBF70C187CECB7F1F4AC6CC86979 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 73010CC983E3809BECEE5348DA1BB8C6 /* Foundation.framework */; };
 		DB5B2AADF248591EEA2664EBC0933A4B /* ConstraintDirectionalInsetTarget.swift in Sources */ = {isa = PBXBuildFile; fileRef = B0100A7ACD86059C619E3D9482582269 /* ConstraintDirectionalInsetTarget.swift */; };
@@ -384,14 +384,14 @@
 		E8106232B755303B579B08C94A3861E7 /* picture_psnr_enc.c in Sources */ = {isa = PBXBuildFile; fileRef = AE2D668D42208421C9D5DFE4A6DFB366 /* picture_psnr_enc.c */; settings = {COMPILER_FLAGS = "-D_THREAD_SAFE -fno-objc-arc"; }; };
 		E881E3C9261C9C1C3A882C46B0ED66C0 /* SDImageCoder.m in Sources */ = {isa = PBXBuildFile; fileRef = CA41A0D2779734A6EF8F1ED705ADC30E /* SDImageCoder.m */; };
 		E8838454528DCDCF6DA1514BFC666E6D /* rescaler_utils.h in Headers */ = {isa = PBXBuildFile; fileRef = 314FD27FE8285704B330B007EE2C24F9 /* rescaler_utils.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		E91C1B7E856DB70FA0613EAA3D09E3F7 /* Pods-PrebidAdapter-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = C72E04C427898604D98AEFA85481BC1F /* Pods-PrebidAdapter-dummy.m */; };
+		E91C1B7E856DB70FA0613EAA3D09E3F7 /* Pods-PrebidAdapter-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = F00FFC3BF1116A33088EF9F3F20ECD90 /* Pods-PrebidAdapter-dummy.m */; };
 		EA11DD72867C9195778142B6985FBBBD /* UIImage+Transform.m in Sources */ = {isa = PBXBuildFile; fileRef = 6003D2EC958869C31BAEF15292F395E4 /* UIImage+Transform.m */; };
-		EA1FFFE4DDFAA03749E8E97EF01EFADA /* Pods-PrebidAdapter-PrebidAdapterTests-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 59C4BA0470AE7F56BD91E46942094E00 /* Pods-PrebidAdapter-PrebidAdapterTests-dummy.m */; };
+		EA1FFFE4DDFAA03749E8E97EF01EFADA /* Pods-PrebidAdapter-PrebidAdapterTests-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 294F804CC460AB8F17027585D7738848 /* Pods-PrebidAdapter-PrebidAdapterTests-dummy.m */; };
 		EA567FF21C3D64BDF2A0F9EF9C74B5D6 /* ConstraintConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5CF9E83997E0694D1F1D5B6C24418F7 /* ConstraintConfig.swift */; };
 		EB6637912B9B4BE8676702F39711021E /* SDImageGIFCoder.m in Sources */ = {isa = PBXBuildFile; fileRef = 933DD9B45603CCCF38464983930643CC /* SDImageGIFCoder.m */; };
 		EBB7FC68CA90B857634FE52A0EEDB605 /* SDWebImageDownloaderConfig.m in Sources */ = {isa = PBXBuildFile; fileRef = 50389D121659C8E41AD9BEE9D13A9912 /* SDWebImageDownloaderConfig.m */; };
 		ED7E1B11B78B7395C30392DDB207A5AA /* sharpyuv_csp.h in Headers */ = {isa = PBXBuildFile; fileRef = 45E147977179E2CB37F4663C36827EE6 /* sharpyuv_csp.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		EE1C7C090B8DB7E3A048006637B7DC50 /* Pods-NovaCore-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = DC9431B64A14CFC1568DA252FD4F1586 /* Pods-NovaCore-umbrella.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		EE1C7C090B8DB7E3A048006637B7DC50 /* Pods-NovaCore-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = F8DE86456712FA86BBB3DAA5A065DCC8 /* Pods-NovaCore-umbrella.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		EE3CD3C2876BD7828F04E8BB067E6884 /* FBShimmeringLayer.h in Headers */ = {isa = PBXBuildFile; fileRef = 01B5CB46EFE096512BA1C965C1CEA803 /* FBShimmeringLayer.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		EE4088A88A45A316D64FB2C88E39E9B3 /* dec_sse2.c in Sources */ = {isa = PBXBuildFile; fileRef = 44DD238C4A89D6A31A1515EE0F5EB2A4 /* dec_sse2.c */; settings = {COMPILER_FLAGS = "-D_THREAD_SAFE -fno-objc-arc"; }; };
 		EF6139548C0B0AAAEEF4EE8AD1A40D6F /* muxi.h in Headers */ = {isa = PBXBuildFile; fileRef = F6D6D1AD8169B9C867B1A43DCBDBBFC8 /* muxi.h */; settings = {ATTRIBUTES = (Project, ); }; };
@@ -411,7 +411,7 @@
 		F8913F79FB4BDB5155F99A1F8BE542C7 /* SDWebImageManager.h in Headers */ = {isa = PBXBuildFile; fileRef = B7DEC7A937A881417BAE8AADCF14E0EB /* SDWebImageManager.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		F8AB07442996C0330A7C752F2741F0D4 /* rescaler_msa.c in Sources */ = {isa = PBXBuildFile; fileRef = 740F7C7AA9BA2DAA746764292FF9F474 /* rescaler_msa.c */; settings = {COMPILER_FLAGS = "-D_THREAD_SAFE -fno-objc-arc"; }; };
 		F8FAA2AE8E76585B3624E72079A846A4 /* SDWebImageDownloaderResponseModifier.m in Sources */ = {isa = PBXBuildFile; fileRef = C6FD3651F3BC64CD37B9FE51AEA573BD /* SDWebImageDownloaderResponseModifier.m */; };
-		F97D7D5ACF7F43859984A7843D242A61 /* Pods-NovaCore-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 1E553A8D94D1788168F70C45FB8AD697 /* Pods-NovaCore-dummy.m */; };
+		F97D7D5ACF7F43859984A7843D242A61 /* Pods-NovaCore-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 7EE381151B4D6285C54F5390E07984A2 /* Pods-NovaCore-dummy.m */; };
 		F98537E0192FBF769BEECDB15CB42FDD /* webp_dec.c in Sources */ = {isa = PBXBuildFile; fileRef = E80EA091B9D9ADB674533C743FBBB21A /* webp_dec.c */; settings = {COMPILER_FLAGS = "-D_THREAD_SAFE -fno-objc-arc"; }; };
 		F9950C1E4D8AE0D0B70A83F6530B460E /* cost_enc.h in Headers */ = {isa = PBXBuildFile; fileRef = E89C78602DD7E1D896B6C71D16596E64 /* cost_enc.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		FA4A3DB6DB6DC84C19B5D87E4CDB792A /* anim_decode.c in Sources */ = {isa = PBXBuildFile; fileRef = C4AC5F8BA5AB6697717ACA2F6660AF05 /* anim_decode.c */; settings = {COMPILER_FLAGS = "-D_THREAD_SAFE -fno-objc-arc"; }; };
@@ -557,28 +557,25 @@
 		038305F86B660F40F6B7652CE9872F14 /* SDImageIOCoder.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = SDImageIOCoder.m; path = SDWebImage/Core/SDImageIOCoder.m; sourceTree = "<group>"; };
 		056F720D47243E3F8B7282648390B486 /* ConstraintDirectionalInsets.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ConstraintDirectionalInsets.swift; path = Sources/ConstraintDirectionalInsets.swift; sourceTree = "<group>"; };
 		05B28940D5A86CC4355ED9440767C23F /* common_sse41.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = common_sse41.h; path = src/dsp/common_sse41.h; sourceTree = "<group>"; };
-		06EA3C4C385CFB9E22E3A2E6E3C43A8C /* Pods-GoogleAdapter-acknowledgements.markdown */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = "Pods-GoogleAdapter-acknowledgements.markdown"; sourceTree = "<group>"; };
 		06F513B1D64600ED1578836E23DCECEE /* UIView+WebCacheOperation.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "UIView+WebCacheOperation.h"; path = "SDWebImage/Core/UIView+WebCacheOperation.h"; sourceTree = "<group>"; };
 		07797CC9C9DF4D5BE78C8540EF0888F5 /* SDWebImageWebPCoderDefine.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = SDWebImageWebPCoderDefine.m; path = SDWebImageWebPCoder/Classes/SDWebImageWebPCoderDefine.m; sourceTree = "<group>"; };
 		0792D97E8DA3241DE636BE77BE0242B4 /* SDWebImageDownloaderResponseModifier.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SDWebImageDownloaderResponseModifier.h; path = SDWebImage/Core/SDWebImageDownloaderResponseModifier.h; sourceTree = "<group>"; };
-		07A7E2D2E77A958AFA79B7BEAE3BA56B /* Pods-MSPDemoApp-acknowledgements.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "Pods-MSPDemoApp-acknowledgements.plist"; sourceTree = "<group>"; };
 		08549D438E180BA4C5ED8255C89CB1A8 /* bit_reader_utils.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = bit_reader_utils.h; path = src/utils/bit_reader_utils.h; sourceTree = "<group>"; };
 		08FA31B52435C166F16F73B38789ED12 /* ConstraintLayoutSupportDSL.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ConstraintLayoutSupportDSL.swift; path = Sources/ConstraintLayoutSupportDSL.swift; sourceTree = "<group>"; };
 		08FB0B57490C1195A7E473F1FC674530 /* NovaNativeAd.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = NovaNativeAd.swift; path = NovaAdapter/NovaAdapter/NovaNativeAd.swift; sourceTree = "<group>"; };
-		09182853BF7B4ACBC1797F8FDEBF43DF /* Pods-PrebidAdapter.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.module; path = "Pods-PrebidAdapter.modulemap"; sourceTree = "<group>"; };
 		094098E80E55D252E0917B70118D9B05 /* sharpyuv_sse2.c */ = {isa = PBXFileReference; includeInIndex = 1; name = sharpyuv_sse2.c; path = sharpyuv/sharpyuv_sse2.c; sourceTree = "<group>"; };
 		0A33329B4A7C96863101A73D8755491D /* vp8_dec.c */ = {isa = PBXFileReference; includeInIndex = 1; name = vp8_dec.c; path = src/dec/vp8_dec.c; sourceTree = "<group>"; };
 		0ACFD48FBF63BC8A9CAE7E3FD073C756 /* SDWebImage-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "SDWebImage-dummy.m"; sourceTree = "<group>"; };
 		0B34D59DBA9EF8DB1FFCD753527D9520 /* sharpyuv_neon.c */ = {isa = PBXFileReference; includeInIndex = 1; name = sharpyuv_neon.c; path = sharpyuv/sharpyuv_neon.c; sourceTree = "<group>"; };
 		0B3B151A6573FBE53427A1DC79192068 /* filters_msa.c */ = {isa = PBXFileReference; includeInIndex = 1; name = filters_msa.c; path = src/dsp/filters_msa.c; sourceTree = "<group>"; };
+		0B9FC43B0826AD63B4D47552CF7BC96E /* Pods-NovaCore.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-NovaCore.debug.xcconfig"; sourceTree = "<group>"; };
 		0BE5B85C053E64BC06025A2183C3C113 /* SDWebImageWebPCoder-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "SDWebImageWebPCoder-prefix.pch"; sourceTree = "<group>"; };
 		0BE8E8AAEEE11D40D8365CAE18085C1A /* NovaManager.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = NovaManager.swift; path = NovaAdapter/NovaAdapter/NovaManager.swift; sourceTree = "<group>"; };
-		0BEB0B0EEC93BD2E25613BC9421AF2C0 /* Pods-MSPSharedLibraries-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "Pods-MSPSharedLibraries-dummy.m"; sourceTree = "<group>"; };
 		0CB5F80C0F8709B3822F6CA39FD7EDC6 /* UIButton+WebCache.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "UIButton+WebCache.h"; path = "SDWebImage/Core/UIButton+WebCache.h"; sourceTree = "<group>"; };
 		0CD7CE925B99E5B93ED8AB065079B88A /* NSButton+WebCache.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "NSButton+WebCache.h"; path = "SDWebImage/Core/NSButton+WebCache.h"; sourceTree = "<group>"; };
 		0CE680C7503C6CC2DDA020599EE7426C /* MSPSharedLibraries.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = MSPSharedLibraries.h; path = MSPSharedLibraries/MSPSharedLibraries/MSPSharedLibraries.h; sourceTree = "<group>"; };
+		0D63EBE26D3E0A2B8C295AFAA28C5ED1 /* Pods-FacebookAdapter-acknowledgements.markdown */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = "Pods-FacebookAdapter-acknowledgements.markdown"; sourceTree = "<group>"; };
 		0D7D41CF0BC715C11EBF4AC6E6E1E991 /* SDWebImageCacheKeyFilter.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = SDWebImageCacheKeyFilter.m; path = SDWebImage/Core/SDWebImageCacheKeyFilter.m; sourceTree = "<group>"; };
-		0D8BFFBB5AA7D0CE7395E0550BEA4B01 /* Pods-GoogleAdapter.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-GoogleAdapter.release.xcconfig"; sourceTree = "<group>"; };
 		0DAA15691DB78E45D113136424C43C64 /* Pods-MSPCore */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = "Pods-MSPCore"; path = "libPods-MSPCore.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		0DB848BAB73A599AF892CFF31148E889 /* UIImageView+HighlightedWebCache.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = "UIImageView+HighlightedWebCache.m"; path = "SDWebImage/Core/UIImageView+HighlightedWebCache.m"; sourceTree = "<group>"; };
 		0EA07D4FE41E02B0ACD00394FF9380D6 /* muxedit.c */ = {isa = PBXFileReference; includeInIndex = 1; name = muxedit.c; path = src/mux/muxedit.c; sourceTree = "<group>"; };
@@ -587,6 +584,7 @@
 		0F93547575135974D24213EE62E2B1B6 /* vp8_dec.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = vp8_dec.h; path = src/dec/vp8_dec.h; sourceTree = "<group>"; };
 		100692798C2D95DBDB154D0DEB9515E5 /* ConstraintMaker.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ConstraintMaker.swift; path = Sources/ConstraintMaker.swift; sourceTree = "<group>"; };
 		1105FC9DF4CEA5E8BB7BFD83E4A86A5D /* animi.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = animi.h; path = src/mux/animi.h; sourceTree = "<group>"; };
+		113EEC63D2550AF644491BEA206B29AD /* Pods-MSPSharedLibraries.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-MSPSharedLibraries.release.xcconfig"; sourceTree = "<group>"; };
 		11B33D6A8C7441FD50DD330D20C6788B /* SDImageCodersManager.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SDImageCodersManager.h; path = SDWebImage/Core/SDImageCodersManager.h; sourceTree = "<group>"; };
 		11BEE8F705D774BB9337A3DA51AFAE30 /* dec_msa.c */ = {isa = PBXFileReference; includeInIndex = 1; name = dec_msa.c; path = src/dsp/dec_msa.c; sourceTree = "<group>"; };
 		127A637ACEA9EBC2F63B1AA58A067794 /* SDWebImage.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SDWebImage.h; path = WebImage/SDWebImage.h; sourceTree = "<group>"; };
@@ -594,7 +592,6 @@
 		12A150A1ADF7E05D4D53E0162DD61DC0 /* SDImageAWebPCoder.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SDImageAWebPCoder.h; path = SDWebImage/Core/SDImageAWebPCoder.h; sourceTree = "<group>"; };
 		12FE4D9636C67976F147C6DDFEEC8EAA /* upsampling_sse41.c */ = {isa = PBXFileReference; includeInIndex = 1; name = upsampling_sse41.c; path = src/dsp/upsampling_sse41.c; sourceTree = "<group>"; };
 		1363AC9487AAD85E62CFD6C86EE2EAB4 /* UIImageView+WebCache.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = "UIImageView+WebCache.m"; path = "SDWebImage/Core/UIImageView+WebCache.m"; sourceTree = "<group>"; };
-		1427A3CF63640D156B4B1448C3EAD5AC /* Pods-MSPSharedLibraries-acknowledgements.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "Pods-MSPSharedLibraries-acknowledgements.plist"; sourceTree = "<group>"; };
 		142A5D0EC9F4EB975AD2745D160BE825 /* sharpyuv.c */ = {isa = PBXFileReference; includeInIndex = 1; name = sharpyuv.c; path = sharpyuv/sharpyuv.c; sourceTree = "<group>"; };
 		152A445488F814C843D740C124068B45 /* SDImageGIFCoder.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SDImageGIFCoder.h; path = SDWebImage/Core/SDImageGIFCoder.h; sourceTree = "<group>"; };
 		1569E23BC9AC24A8A4D7CBA7FFA8ECA2 /* alpha_processing.c */ = {isa = PBXFileReference; includeInIndex = 1; name = alpha_processing.c; path = src/dsp/alpha_processing.c; sourceTree = "<group>"; };
@@ -604,12 +601,13 @@
 		1781C02AD285511659C01B76E27D6D3D /* huffman_encode_utils.c */ = {isa = PBXFileReference; includeInIndex = 1; name = huffman_encode_utils.c; path = src/utils/huffman_encode_utils.c; sourceTree = "<group>"; };
 		17C02271E06193E2E633AF11AD32D74E /* vp8li_enc.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = vp8li_enc.h; path = src/enc/vp8li_enc.h; sourceTree = "<group>"; };
 		17C6EEC8A06766F71410CB7ABE43B148 /* quant_levels_utils.c */ = {isa = PBXFileReference; includeInIndex = 1; name = quant_levels_utils.c; path = src/utils/quant_levels_utils.c; sourceTree = "<group>"; };
-		18268D02DBC7666A55263A57016A842B /* Pods-MSPCore.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-MSPCore.debug.xcconfig"; sourceTree = "<group>"; };
+		17CC205ABBEDFE6C9388575CDFDDFFE6 /* Pods-NovaCore-acknowledgements.markdown */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = "Pods-NovaCore-acknowledgements.markdown"; sourceTree = "<group>"; };
+		188F5E825BFE7951B35895EEF77FFBDE /* Pods-MSPDemoApp-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "Pods-MSPDemoApp-dummy.m"; sourceTree = "<group>"; };
 		18A8DC899B5EEB8A4781895878089E69 /* SDWebImageDownloaderOperation.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = SDWebImageDownloaderOperation.m; path = SDWebImage/Core/SDWebImageDownloaderOperation.m; sourceTree = "<group>"; };
+		18C48AD8697102A862EDFFDA8185CDD7 /* Pods-PrebidAdapter-PrebidAdapterTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-PrebidAdapter-PrebidAdapterTests.release.xcconfig"; sourceTree = "<group>"; };
 		194376DA6E9C3E6E4F4BE736CE95B712 /* libwebp-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "libwebp-dummy.m"; sourceTree = "<group>"; };
 		196160C6BE69EEE377A8D28EFD431314 /* lossless_neon.c */ = {isa = PBXFileReference; includeInIndex = 1; name = lossless_neon.c; path = src/dsp/lossless_neon.c; sourceTree = "<group>"; };
 		196FC7A82F1B81849628D96C92C7AE45 /* SDCallbackQueue.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SDCallbackQueue.h; path = SDWebImage/Core/SDCallbackQueue.h; sourceTree = "<group>"; };
-		19BD0C01DFCD671164D7A8431C0BD31A /* Pods-MSPDemoApp.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-MSPDemoApp.debug.xcconfig"; sourceTree = "<group>"; };
 		1A28FB0B6BB845ACAAC8C987AECB9894 /* SDImageCoder.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SDImageCoder.h; path = SDWebImage/Core/SDImageCoder.h; sourceTree = "<group>"; };
 		1B2A2866A9EFBD1D96BDDA9161A98867 /* sharpyuv_dsp.c */ = {isa = PBXFileReference; includeInIndex = 1; name = sharpyuv_dsp.c; path = sharpyuv/sharpyuv_dsp.c; sourceTree = "<group>"; };
 		1B371101FF278E53D4C54216F258FBE5 /* NovaAdapter.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = NovaAdapter.h; path = NovaAdapter/NovaAdapter/NovaAdapter.h; sourceTree = "<group>"; };
@@ -619,20 +617,19 @@
 		1D98516D416AA5713C2171FA9FAB4793 /* SDWebImageManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = SDWebImageManager.m; path = SDWebImage/Core/SDWebImageManager.m; sourceTree = "<group>"; };
 		1DC95BF4F8FA4F6262C3B70035AFE63F /* muxinternal.c */ = {isa = PBXFileReference; includeInIndex = 1; name = muxinternal.c; path = src/mux/muxinternal.c; sourceTree = "<group>"; };
 		1DD9ED4A9C8A750BB9200273113F5022 /* syntax_enc.c */ = {isa = PBXFileReference; includeInIndex = 1; name = syntax_enc.c; path = src/enc/syntax_enc.c; sourceTree = "<group>"; };
+		1E01183037E206CF142B964CBC1FC1BA /* Pods-PrebidAdapter-acknowledgements.markdown */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = "Pods-PrebidAdapter-acknowledgements.markdown"; sourceTree = "<group>"; };
 		1E31A659EE10BC9EF86D0D44120D2015 /* SDImageAPNGCoder.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SDImageAPNGCoder.h; path = SDWebImage/Core/SDImageAPNGCoder.h; sourceTree = "<group>"; };
 		1E43C430A337105205C0B4A4297B1DB6 /* dec.c */ = {isa = PBXFileReference; includeInIndex = 1; name = dec.c; path = src/dsp/dec.c; sourceTree = "<group>"; };
-		1E553A8D94D1788168F70C45FB8AD697 /* Pods-NovaCore-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "Pods-NovaCore-dummy.m"; sourceTree = "<group>"; };
-		1E942542D0E265080AD448FDE8C4C711 /* Pods-MSPSharedLibraries.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-MSPSharedLibraries.debug.xcconfig"; sourceTree = "<group>"; };
+		1E619CDBD6FC4414C01B4A3559A5F22D /* Pods-MSPDemoApp-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "Pods-MSPDemoApp-umbrella.h"; sourceTree = "<group>"; };
 		1EA9766FB78A4E5E65924CBD6090A5E6 /* lossless_enc_neon.c */ = {isa = PBXFileReference; includeInIndex = 1; name = lossless_enc_neon.c; path = src/dsp/lossless_enc_neon.c; sourceTree = "<group>"; };
 		1EE7C48D94109E7227EDA71B4DFC052F /* alpha_processing_mips_dsp_r2.c */ = {isa = PBXFileReference; includeInIndex = 1; name = alpha_processing_mips_dsp_r2.c; path = src/dsp/alpha_processing_mips_dsp_r2.c; sourceTree = "<group>"; };
 		1F4897B75817DFC88F41DE47FF0564D6 /* ConstraintAttributes.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ConstraintAttributes.swift; path = Sources/ConstraintAttributes.swift; sourceTree = "<group>"; };
 		1F5633707B251ADE228CDB1ECA54BE50 /* Typealiases.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = Typealiases.swift; path = Sources/Typealiases.swift; sourceTree = "<group>"; };
-		1F83B034742D4BEA03762FA9B0BA7B53 /* Pods-NovaAdapter.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-NovaAdapter.release.xcconfig"; sourceTree = "<group>"; };
-		2072C8618B37379471062D6C2AB3427C /* Pods-MSPDemoApp-acknowledgements.markdown */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = "Pods-MSPDemoApp-acknowledgements.markdown"; sourceTree = "<group>"; };
 		215C0D48F8D6DB56E5F4CE222FE8A8A8 /* huffman_utils.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = huffman_utils.h; path = src/utils/huffman_utils.h; sourceTree = "<group>"; };
 		2196C2C88C66FCA48D6D217F0B37B97F /* SDWeakProxy.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SDWeakProxy.h; path = SDWebImage/Private/SDWeakProxy.h; sourceTree = "<group>"; };
 		21CF5D810A99E2EC438F7D58DF646FD4 /* SDWebImageCacheSerializer.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = SDWebImageCacheSerializer.m; path = SDWebImage/Core/SDWebImageCacheSerializer.m; sourceTree = "<group>"; };
 		21EEF262B4C35D4E50023FBD74732B61 /* lossless_mips_dsp_r2.c */ = {isa = PBXFileReference; includeInIndex = 1; name = lossless_mips_dsp_r2.c; path = src/dsp/lossless_mips_dsp_r2.c; sourceTree = "<group>"; };
+		22034CE8DCB80D00470F30F21154BBC9 /* Pods-FacebookAdapter-acknowledgements.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "Pods-FacebookAdapter-acknowledgements.plist"; sourceTree = "<group>"; };
 		24182F7857D3336DD38E9E74BAB6F9D0 /* SDWebImagePrefetcher.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SDWebImagePrefetcher.h; path = SDWebImage/Core/SDWebImagePrefetcher.h; sourceTree = "<group>"; };
 		244CF2D1B67800F07C9260EFCAA6C790 /* SDImageAssetManager.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SDImageAssetManager.h; path = SDWebImage/Private/SDImageAssetManager.h; sourceTree = "<group>"; };
 		2551676F65ABD7B9D306DD36DC5244F7 /* alpha_dec.c */ = {isa = PBXFileReference; includeInIndex = 1; name = alpha_dec.c; path = src/dec/alpha_dec.c; sourceTree = "<group>"; };
@@ -645,6 +642,7 @@
 		28795DC6B7343A06F0941427C173D18D /* ConstraintLayoutSupport.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ConstraintLayoutSupport.swift; path = Sources/ConstraintLayoutSupport.swift; sourceTree = "<group>"; };
 		28C0C766B4BA121698A08C30624A15C6 /* ssim_sse2.c */ = {isa = PBXFileReference; includeInIndex = 1; name = ssim_sse2.c; path = src/dsp/ssim_sse2.c; sourceTree = "<group>"; };
 		28D0A4D2D8F82F5D00FA9FDA121190B3 /* SDWebImage-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "SDWebImage-prefix.pch"; sourceTree = "<group>"; };
+		294F804CC460AB8F17027585D7738848 /* Pods-PrebidAdapter-PrebidAdapterTests-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "Pods-PrebidAdapter-PrebidAdapterTests-dummy.m"; sourceTree = "<group>"; };
 		2A4D8F3DE98C62D4E5F0877B7D2CF926 /* libwebp.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = libwebp.release.xcconfig; sourceTree = "<group>"; };
 		2B00E423E903297FA99B3D39706764C4 /* MSPCore.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.module; path = MSPCore.modulemap; sourceTree = "<group>"; };
 		2B438DF112D146015D26F11622B3B2E8 /* NovaAdapter.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = NovaAdapter.release.xcconfig; sourceTree = "<group>"; };
@@ -654,7 +652,6 @@
 		2E7E108B7931A938DDD49B8BB1D7ED25 /* yuv_mips32.c */ = {isa = PBXFileReference; includeInIndex = 1; name = yuv_mips32.c; path = src/dsp/yuv_mips32.c; sourceTree = "<group>"; };
 		2E842F0D1B730B0A50AE7677C37769B3 /* UIImage+ForceDecode.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = "UIImage+ForceDecode.m"; path = "SDWebImage/Core/UIImage+ForceDecode.m"; sourceTree = "<group>"; };
 		2EB3F9927779A929B3BC94E1DF6C9598 /* picture_csp_enc.c */ = {isa = PBXFileReference; includeInIndex = 1; name = picture_csp_enc.c; path = src/enc/picture_csp_enc.c; sourceTree = "<group>"; };
-		2EB7084C395CA1790CA1D22310D84E41 /* Pods-MSPDemoApp-frameworks.sh */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.script.sh; path = "Pods-MSPDemoApp-frameworks.sh"; sourceTree = "<group>"; };
 		2EC242A77CCFBB9173354A659A314FAE /* analysis_enc.c */ = {isa = PBXFileReference; includeInIndex = 1; name = analysis_enc.c; path = src/enc/analysis_enc.c; sourceTree = "<group>"; };
 		2FA4EA9C3FBD515C1CA4C9E82A0B5BA7 /* SDWebImageDefine.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = SDWebImageDefine.m; path = SDWebImage/Core/SDWebImageDefine.m; sourceTree = "<group>"; };
 		2FC172A15A5A963DEEC54B564C621A3D /* MSPAdNetworkAdapterProvider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = MSPAdNetworkAdapterProvider.swift; path = MSPCore/MSPCore/MSPAdNetworkAdapterProvider.swift; sourceTree = "<group>"; };
@@ -666,6 +663,7 @@
 		31B113F71B6B3396AA6D728309F00E61 /* NovaAdapter.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.module; path = NovaAdapter.modulemap; sourceTree = "<group>"; };
 		31DE8956617954DEDB5D428FFE622505 /* MSPCore-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "MSPCore-umbrella.h"; sourceTree = "<group>"; };
 		326CAC9C54198A2F2382FB136CA36B9F /* SDWebImageOperation.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = SDWebImageOperation.m; path = SDWebImage/Core/SDWebImageOperation.m; sourceTree = "<group>"; };
+		342C34AC365D2B934AA10495EB0058C0 /* Pods-GoogleAdapter.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-GoogleAdapter.debug.xcconfig"; sourceTree = "<group>"; };
 		34C298694751C571DDBA0F487448420D /* SDImageGraphics.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = SDImageGraphics.m; path = SDWebImage/Core/SDImageGraphics.m; sourceTree = "<group>"; };
 		35707EDD65801E37D4819261010C354A /* SDWebImageIndicator.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SDWebImageIndicator.h; path = SDWebImage/Core/SDWebImageIndicator.h; sourceTree = "<group>"; };
 		366C3DABC5E532CA6F85E7A3171E7F5E /* SDImageIOAnimatedCoderInternal.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SDImageIOAnimatedCoderInternal.h; path = SDWebImage/Private/SDImageIOAnimatedCoderInternal.h; sourceTree = "<group>"; };
@@ -678,9 +676,7 @@
 		38F71209A83E0788D2182FF7C31699F0 /* SDWebImageTransitionInternal.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SDWebImageTransitionInternal.h; path = SDWebImage/Private/SDWebImageTransitionInternal.h; sourceTree = "<group>"; };
 		39969145296D6368F1A07C1613773706 /* NovaAdapter-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "NovaAdapter-dummy.m"; sourceTree = "<group>"; };
 		399D5F97F9AF96279D95D7A5499BC8EE /* mux.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = mux.h; path = src/webp/mux.h; sourceTree = "<group>"; };
-		39BE9D0B4780184F9194B14FB9541341 /* Pods-PrebidAdapter-PrebidAdapterTests-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "Pods-PrebidAdapter-PrebidAdapterTests-umbrella.h"; sourceTree = "<group>"; };
 		3CD6DD19676FA3BF503410CACCA0307C /* SDWebImageCompat.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = SDWebImageCompat.m; path = SDWebImage/Core/SDWebImageCompat.m; sourceTree = "<group>"; };
-		3CDE99014A69188D2142EDECA492E9D4 /* Pods-PrebidAdapter-PrebidAdapterTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-PrebidAdapter-PrebidAdapterTests.debug.xcconfig"; sourceTree = "<group>"; };
 		3EA742A5D5199A1391145E92BFE7A7C4 /* UIImage+Transform.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "UIImage+Transform.h"; path = "SDWebImage/Core/UIImage+Transform.h"; sourceTree = "<group>"; };
 		3F6770290A57F7A3458E7528ACDCB465 /* PrebidAdapter.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = PrebidAdapter.h; path = PrebidAdapter/PrebidAdapter/PrebidAdapter.h; sourceTree = "<group>"; };
 		3FBAE730BBBCB02C448DF36CC3B09740 /* SDDeviceHelper.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SDDeviceHelper.h; path = SDWebImage/Private/SDDeviceHelper.h; sourceTree = "<group>"; };
@@ -688,17 +684,20 @@
 		409187C4DC9F9F9984BCD7BFDDF8F45F /* FBShimmeringView.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = FBShimmeringView.m; path = FBShimmering/FBShimmeringView.m; sourceTree = "<group>"; };
 		40A052225013CB384CC507F1BE5940E3 /* FBShimmering.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = FBShimmering.h; path = FBShimmering/FBShimmering.h; sourceTree = "<group>"; };
 		4176735E1EA3E910E9EED5ACBA8287D0 /* SDWebImage.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.module; path = SDWebImage.modulemap; sourceTree = "<group>"; };
+		4290002649366DBA2D8EB70886F1BFEE /* Pods-FacebookAdapter-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "Pods-FacebookAdapter-dummy.m"; sourceTree = "<group>"; };
 		429F8C3662180D116E3BC5082416F6CE /* Debugging.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = Debugging.swift; path = Sources/Debugging.swift; sourceTree = "<group>"; };
+		43B9FCC20D021CCF261E0FD36886F9EE /* Pods-MSPSharedLibraries.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-MSPSharedLibraries.debug.xcconfig"; sourceTree = "<group>"; };
 		43E5810CAA3B25A3C9147846DDD0E20B /* ConstraintRelatableTarget.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ConstraintRelatableTarget.swift; path = Sources/ConstraintRelatableTarget.swift; sourceTree = "<group>"; };
+		446761AA0F89931E7CD51218A8B65842 /* Pods-FacebookAdapter */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = "Pods-FacebookAdapter"; path = "libPods-FacebookAdapter.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		44DD238C4A89D6A31A1515EE0F5EB2A4 /* dec_sse2.c */ = {isa = PBXFileReference; includeInIndex = 1; name = dec_sse2.c; path = src/dsp/dec_sse2.c; sourceTree = "<group>"; };
 		45E147977179E2CB37F4663C36827EE6 /* sharpyuv_csp.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = sharpyuv_csp.h; path = sharpyuv/sharpyuv_csp.h; sourceTree = "<group>"; };
 		4639D20634F9F05F564620EAE5D72C4D /* MSPCore.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = MSPCore.release.xcconfig; sourceTree = "<group>"; };
 		4815177196C1E51E47F3BCA6B9B187C3 /* SDWebImageError.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = SDWebImageError.m; path = SDWebImage/Core/SDWebImageError.m; sourceTree = "<group>"; };
 		486FA9527C030AB4E2980571738F7567 /* SDImageIOAnimatedCoder.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SDImageIOAnimatedCoder.h; path = SDWebImage/Core/SDImageIOAnimatedCoder.h; sourceTree = "<group>"; };
 		48B1E9B7DCE0ABE7FF329D712186222A /* filters_utils.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = filters_utils.h; path = src/utils/filters_utils.h; sourceTree = "<group>"; };
-		49BD620E21C52B00F564AB1CEFA48F9C /* Pods-PrebidAdapter-PrebidAdapterTests-Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "Pods-PrebidAdapter-PrebidAdapterTests-Info.plist"; sourceTree = "<group>"; };
+		495805A62C019D2B7EF3C3987561A577 /* Pods-NovaAdapter.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-NovaAdapter.debug.xcconfig"; sourceTree = "<group>"; };
+		49F9785BD67FCB73FD491AE42B2DFCF2 /* Pods-NovaCore.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-NovaCore.release.xcconfig"; sourceTree = "<group>"; };
 		4AF8EBC968143C7D596B4201C95D8CE1 /* SDImageLoadersManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = SDImageLoadersManager.m; path = SDWebImage/Core/SDImageLoadersManager.m; sourceTree = "<group>"; };
-		4B78C37654444D15606685418E8EBDDD /* Pods-MSPSharedLibraries.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-MSPSharedLibraries.release.xcconfig"; sourceTree = "<group>"; };
 		4B7E75EE424135D87BB71F108667EE82 /* rescaler_sse2.c */ = {isa = PBXFileReference; includeInIndex = 1; name = rescaler_sse2.c; path = src/dsp/rescaler_sse2.c; sourceTree = "<group>"; };
 		4C195B4F99B839B30F1E6DF6A3F6F7C5 /* SDWebImageDownloaderRequestModifier.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SDWebImageDownloaderRequestModifier.h; path = SDWebImage/Core/SDWebImageDownloaderRequestModifier.h; sourceTree = "<group>"; };
 		4CAD21DBDA7C3D18089EE58F1F47AF5C /* FBShimmeringLayer.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = FBShimmeringLayer.m; path = FBShimmering/FBShimmeringLayer.m; sourceTree = "<group>"; };
@@ -712,21 +711,21 @@
 		4F95736EB525EC8A66BC512C346E7179 /* lossless_sse41.c */ = {isa = PBXFileReference; includeInIndex = 1; name = lossless_sse41.c; path = src/dsp/lossless_sse41.c; sourceTree = "<group>"; };
 		5029E01D4BA820729A41F5C3359BAE40 /* vp8li_dec.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = vp8li_dec.h; path = src/dec/vp8li_dec.h; sourceTree = "<group>"; };
 		50389D121659C8E41AD9BEE9D13A9912 /* SDWebImageDownloaderConfig.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = SDWebImageDownloaderConfig.m; path = SDWebImage/Core/SDWebImageDownloaderConfig.m; sourceTree = "<group>"; };
+		507F109765BAF863FC639ECE6DDC94AC /* Pods-MSPCore.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-MSPCore.release.xcconfig"; sourceTree = "<group>"; };
 		50EFEF1978C3C15CEEA0284DA3709550 /* NovaAdapter-xcframeworks.sh */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.script.sh; path = "NovaAdapter-xcframeworks.sh"; sourceTree = "<group>"; };
 		51259D0AFE09585FCE27718EC1947285 /* lossless_enc_sse2.c */ = {isa = PBXFileReference; includeInIndex = 1; name = lossless_enc_sse2.c; path = src/dsp/lossless_enc_sse2.c; sourceTree = "<group>"; };
 		5144CF4CD182518AE6826AB702AF1005 /* MSPiOSCore.xcframework */ = {isa = PBXFileReference; includeInIndex = 1; name = MSPiOSCore.xcframework; path = MSPSharedLibraries/MSPiOSCore.xcframework; sourceTree = "<group>"; };
 		514E10DE056C52CC135589377213D715 /* cost_sse2.c */ = {isa = PBXFileReference; includeInIndex = 1; name = cost_sse2.c; path = src/dsp/cost_sse2.c; sourceTree = "<group>"; };
 		522637BEC0A30B7D5E0EDFDA08903569 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; includeInIndex = 1; name = PrivacyInfo.xcprivacy; path = WebImage/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		5236440086418BF2D6752F23510E0E85 /* UIImage+Metadata.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "UIImage+Metadata.h"; path = "SDWebImage/Core/UIImage+Metadata.h"; sourceTree = "<group>"; };
-		533644BB0CA111A06895FAEF799B9240 /* Pods-PrebidAdapter-Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "Pods-PrebidAdapter-Info.plist"; sourceTree = "<group>"; };
+		54AE31AD0B629DF8B1CD6DA6FFB7DB55 /* Pods-FacebookAdapter.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-FacebookAdapter.release.xcconfig"; sourceTree = "<group>"; };
 		54D6B9AAE5934DD9BC8780DB76D6BF4F /* ConstraintLayoutGuideDSL.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ConstraintLayoutGuideDSL.swift; path = Sources/ConstraintLayoutGuideDSL.swift; sourceTree = "<group>"; };
+		557309455EDB9B4E8B86C9479D409FC7 /* Pods-MSPDemoApp.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.module; path = "Pods-MSPDemoApp.modulemap"; sourceTree = "<group>"; };
 		567EB5CA7EA82EC4F3DE0616897F59E1 /* SDWebImageDownloaderRequestModifier.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = SDWebImageDownloaderRequestModifier.m; path = SDWebImage/Core/SDWebImageDownloaderRequestModifier.m; sourceTree = "<group>"; };
-		5681003E0E4CA20DE99815D475A89877 /* Pods-PrebidAdapter-PrebidAdapterTests.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.module; path = "Pods-PrebidAdapter-PrebidAdapterTests.modulemap"; sourceTree = "<group>"; };
 		571CB4F84504FA3D07BBB0E7605DDBB2 /* UIImage+GIF.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = "UIImage+GIF.m"; path = "SDWebImage/Core/UIImage+GIF.m"; sourceTree = "<group>"; };
 		57FA2AF36F24CB7E85E29BDFA8B28F5A /* sharpyuv_dsp.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = sharpyuv_dsp.h; path = sharpyuv/sharpyuv_dsp.h; sourceTree = "<group>"; };
-		5811518BE3F28F7F4E068330FEEB525D /* Pods-GoogleAdapter-acknowledgements.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "Pods-GoogleAdapter-acknowledgements.plist"; sourceTree = "<group>"; };
+		58958458EEB7A44E965E888502E46866 /* Pods-MSPSharedLibraries-acknowledgements.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "Pods-MSPSharedLibraries-acknowledgements.plist"; sourceTree = "<group>"; };
 		58BCE35550BFB7AFDC43C33143534EB8 /* Pods-NovaAdapter */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = "Pods-NovaAdapter"; path = "libPods-NovaAdapter.a"; sourceTree = BUILT_PRODUCTS_DIR; };
-		59C4BA0470AE7F56BD91E46942094E00 /* Pods-PrebidAdapter-PrebidAdapterTests-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "Pods-PrebidAdapter-PrebidAdapterTests-dummy.m"; sourceTree = "<group>"; };
 		5A081C6B17086B71991887FAD0553C38 /* iterator_enc.c */ = {isa = PBXFileReference; includeInIndex = 1; name = iterator_enc.c; path = src/enc/iterator_enc.c; sourceTree = "<group>"; };
 		5A458CE6820215CAB07557109A1C54F5 /* sharpyuv_gamma.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = sharpyuv_gamma.h; path = sharpyuv/sharpyuv_gamma.h; sourceTree = "<group>"; };
 		5AFF9347A05D317F785B39F6637725A3 /* token_enc.c */ = {isa = PBXFileReference; includeInIndex = 1; name = token_enc.c; path = src/enc/token_enc.c; sourceTree = "<group>"; };
@@ -743,9 +742,11 @@
 		6059C226AF94F1A22067EA9B51CB7B89 /* SnapKit-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "SnapKit-umbrella.h"; sourceTree = "<group>"; };
 		61970D9E4A1DBBA321B03237CE758971 /* UIImage+MemoryCacheCost.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = "UIImage+MemoryCacheCost.m"; path = "SDWebImage/Core/UIImage+MemoryCacheCost.m"; sourceTree = "<group>"; };
 		62A349B840D8504D61409C9FEEFC2CCB /* color_cache_utils.c */ = {isa = PBXFileReference; includeInIndex = 1; name = color_cache_utils.c; path = src/utils/color_cache_utils.c; sourceTree = "<group>"; };
+		62F20A221E8AF84BCAF7C66F12177718 /* Pods-PrebidAdapter-PrebidAdapterTests-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "Pods-PrebidAdapter-PrebidAdapterTests-umbrella.h"; sourceTree = "<group>"; };
 		631D822EDAA0110D9ED6B089807C5ED5 /* UIView+WebCacheState.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "UIView+WebCacheState.h"; path = "SDWebImage/Core/UIView+WebCacheState.h"; sourceTree = "<group>"; };
 		6322058AA87AC0A5AF4FADE10AE0CA51 /* SDImageAPNGCoder.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = SDImageAPNGCoder.m; path = SDWebImage/Core/SDImageAPNGCoder.m; sourceTree = "<group>"; };
 		64BC8EB76E7EB5482DF26145921EB477 /* MSPCore-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "MSPCore-prefix.pch"; sourceTree = "<group>"; };
+		65662C7AFFC28935BE963A0D86A8760F /* Pods-MSPDemoApp-acknowledgements.markdown */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = "Pods-MSPDemoApp-acknowledgements.markdown"; sourceTree = "<group>"; };
 		6600BFE21AA6FA83805F794E5FBB010B /* msa_macro.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = msa_macro.h; path = src/dsp/msa_macro.h; sourceTree = "<group>"; };
 		66B71989CAF43A3D76CE8F8072D55100 /* SDWebImage.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = SDWebImage.debug.xcconfig; sourceTree = "<group>"; };
 		670869210FB04537873275F42D4351FA /* SDAnimatedImageRep.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SDAnimatedImageRep.h; path = SDWebImage/Core/SDAnimatedImageRep.h; sourceTree = "<group>"; };
@@ -753,15 +754,16 @@
 		691416624D76056C80B4AD1D56F67ECB /* frame_enc.c */ = {isa = PBXFileReference; includeInIndex = 1; name = frame_enc.c; path = src/enc/frame_enc.c; sourceTree = "<group>"; };
 		6A09C49FA952BF488DAB6AA7EBA74572 /* SDFileAttributeHelper.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SDFileAttributeHelper.h; path = SDWebImage/Private/SDFileAttributeHelper.h; sourceTree = "<group>"; };
 		6A106AD85863AFF5195221683D7D6933 /* common_sse2.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = common_sse2.h; path = src/dsp/common_sse2.h; sourceTree = "<group>"; };
-		6AD3719130422CC395D86CF9994C06E0 /* Pods-PrebidAdapter-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "Pods-PrebidAdapter-umbrella.h"; sourceTree = "<group>"; };
+		6A2B87384331D1EB86FD2875AC3A14EC /* Pods-PrebidAdapter.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-PrebidAdapter.debug.xcconfig"; sourceTree = "<group>"; };
+		6A3AEF0EB53DC6D07C05E65D86A4A415 /* Pods-PrebidAdapter-Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "Pods-PrebidAdapter-Info.plist"; sourceTree = "<group>"; };
 		6C034458EBF65FD6620EC092580B3567 /* Constraint.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = Constraint.swift; path = Sources/Constraint.swift; sourceTree = "<group>"; };
+		6C66C9A515CFCCE694C3D777BDD69769 /* Pods-GoogleAdapter.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-GoogleAdapter.release.xcconfig"; sourceTree = "<group>"; };
 		6C8E54E2DE5FE72B1BA997404759E6DC /* dec_mips_dsp_r2.c */ = {isa = PBXFileReference; includeInIndex = 1; name = dec_mips_dsp_r2.c; path = src/dsp/dec_mips_dsp_r2.c; sourceTree = "<group>"; };
 		6D2CF4B12D1457E16F643A409F0C32F7 /* enc_msa.c */ = {isa = PBXFileReference; includeInIndex = 1; name = enc_msa.c; path = src/dsp/enc_msa.c; sourceTree = "<group>"; };
 		6E93FD27C0E9139C5AFE0C071446E4DF /* SDInternalMacros.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = SDInternalMacros.m; path = SDWebImage/Private/SDInternalMacros.m; sourceTree = "<group>"; };
 		6F65ACCEE02FB0963F1BA575FA5B6A13 /* ResourceBundle-SDWebImage-SDWebImage-Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "ResourceBundle-SDWebImage-SDWebImage-Info.plist"; sourceTree = "<group>"; };
 		6F6FA3F06E37BFEBF9C57901BE61FFE3 /* SDWebImageIndicator.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = SDWebImageIndicator.m; path = SDWebImage/Core/SDWebImageIndicator.m; sourceTree = "<group>"; };
 		6FA3C39C3B5AEA10DE724149A9899D73 /* quant.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = quant.h; path = src/dsp/quant.h; sourceTree = "<group>"; };
-		71743A0EF526209085680DF790B7326C /* Pods-MSPDemoApp.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-MSPDemoApp.release.xcconfig"; sourceTree = "<group>"; };
 		71DBF066922DDD97BE3DA8B08337CEF1 /* ConstraintView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ConstraintView.swift; path = Sources/ConstraintView.swift; sourceTree = "<group>"; };
 		7251CBE77107E7B444E38E68AED3EE2D /* color_cache_utils.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = color_cache_utils.h; path = src/utils/color_cache_utils.h; sourceTree = "<group>"; };
 		72966BF3C8182D2E5C1A92A8126F04CB /* dsp.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = dsp.h; path = src/dsp/dsp.h; sourceTree = "<group>"; };
@@ -772,9 +774,10 @@
 		746DDDE977E4B1F17457240C42632A86 /* rescaler_neon.c */ = {isa = PBXFileReference; includeInIndex = 1; name = rescaler_neon.c; path = src/dsp/rescaler_neon.c; sourceTree = "<group>"; };
 		748C272A8D00D38280D5F2CDF8EB60E3 /* huffman_utils.c */ = {isa = PBXFileReference; includeInIndex = 1; name = huffman_utils.c; path = src/utils/huffman_utils.c; sourceTree = "<group>"; };
 		75612F842973C6007C36580912A61DA4 /* filters.c */ = {isa = PBXFileReference; includeInIndex = 1; name = filters.c; path = src/dsp/filters.c; sourceTree = "<group>"; };
-		769C3DB1C2B3571754858DF98ADFEEB8 /* Pods-GoogleAdapter.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-GoogleAdapter.debug.xcconfig"; sourceTree = "<group>"; };
+		7584A0E25B1463DD276909CD39F048D8 /* Pods-PrebidAdapter-PrebidAdapterTests-acknowledgements.markdown */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = "Pods-PrebidAdapter-PrebidAdapterTests-acknowledgements.markdown"; sourceTree = "<group>"; };
 		76E9E210C475382EAFDDE7CBCEB1D876 /* SDAsyncBlockOperation.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SDAsyncBlockOperation.h; path = SDWebImage/Private/SDAsyncBlockOperation.h; sourceTree = "<group>"; };
 		773E267B8087E7A7BA65F7485D4C1CFA /* vp8i_enc.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = vp8i_enc.h; path = src/enc/vp8i_enc.h; sourceTree = "<group>"; };
+		7794B5436E88F14685F4E2862F3C0C21 /* Pods-PrebidAdapter-PrebidAdapterTests.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.module; path = "Pods-PrebidAdapter-PrebidAdapterTests.modulemap"; sourceTree = "<group>"; };
 		77BE9A751AE1C56C93BFDB77EC05358F /* alphai_dec.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = alphai_dec.h; path = src/dec/alphai_dec.h; sourceTree = "<group>"; };
 		77FCCE4B2B5254783D4C76F758F32CF6 /* enc_sse41.c */ = {isa = PBXFileReference; includeInIndex = 1; name = enc_sse41.c; path = src/dsp/enc_sse41.c; sourceTree = "<group>"; };
 		790CC24A49B7FFBFC62B8654BCD07570 /* SDDiskCache.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SDDiskCache.h; path = SDWebImage/Core/SDDiskCache.h; sourceTree = "<group>"; };
@@ -788,6 +791,8 @@
 		7CFCEEEA82B66222784AC2CF8559373B /* SDImageCachesManagerOperation.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = SDImageCachesManagerOperation.m; path = SDWebImage/Private/SDImageCachesManagerOperation.m; sourceTree = "<group>"; };
 		7DAF6DA9BF99AF9FFB84AB663E23E703 /* alpha_processing_neon.c */ = {isa = PBXFileReference; includeInIndex = 1; name = alpha_processing_neon.c; path = src/dsp/alpha_processing_neon.c; sourceTree = "<group>"; };
 		7DBE009E3BAF5AD0A0A13B10EF2A347C /* SDWebImageWebPCoder.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SDWebImageWebPCoder.h; path = SDWebImageWebPCoder/Module/SDWebImageWebPCoder.h; sourceTree = "<group>"; };
+		7DE0EB2DCFEF1C61ADE146166DB32FC7 /* Pods-MSPDemoApp.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-MSPDemoApp.release.xcconfig"; sourceTree = "<group>"; };
+		7EE381151B4D6285C54F5390E07984A2 /* Pods-NovaCore-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "Pods-NovaCore-dummy.m"; sourceTree = "<group>"; };
 		7F46FB45E03F9703BE89761D6A41D993 /* tree_dec.c */ = {isa = PBXFileReference; includeInIndex = 1; name = tree_dec.c; path = src/dec/tree_dec.c; sourceTree = "<group>"; };
 		7FFD2922EABB3B94413FE86DF8F202F0 /* SDImageCacheConfig.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SDImageCacheConfig.h; path = SDWebImage/Core/SDImageCacheConfig.h; sourceTree = "<group>"; };
 		80449212BB8D46E56E40817EA9C9568B /* demux.c */ = {isa = PBXFileReference; includeInIndex = 1; name = demux.c; path = src/demux/demux.c; sourceTree = "<group>"; };
@@ -795,24 +800,21 @@
 		80FA6E9B1BFB4574F93DA7FB7DF5252E /* cpu.c */ = {isa = PBXFileReference; includeInIndex = 1; name = cpu.c; path = src/dsp/cpu.c; sourceTree = "<group>"; };
 		8107A0117CEF13CFEFECF262303B405F /* near_lossless_enc.c */ = {isa = PBXFileReference; includeInIndex = 1; name = near_lossless_enc.c; path = src/enc/near_lossless_enc.c; sourceTree = "<group>"; };
 		81717334F44D65A3B51B7712815729F6 /* buffer_dec.c */ = {isa = PBXFileReference; includeInIndex = 1; name = buffer_dec.c; path = src/dec/buffer_dec.c; sourceTree = "<group>"; };
-		81C2C82B6366B609FCB5C7357819C7B6 /* Pods-MSPDemoApp.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.module; path = "Pods-MSPDemoApp.modulemap"; sourceTree = "<group>"; };
 		823B240B565984448B6BD7859B5595B6 /* UILayoutSupport+Extensions.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = "UILayoutSupport+Extensions.swift"; path = "Sources/UILayoutSupport+Extensions.swift"; sourceTree = "<group>"; };
 		83752BCA4EF1ECEC8EB52706548F9A85 /* ConstraintPriority.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ConstraintPriority.swift; path = Sources/ConstraintPriority.swift; sourceTree = "<group>"; };
-		83ADB54F67E24E5B5398BF9DAD1AA5C0 /* Pods-MSPCore-acknowledgements.markdown */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = "Pods-MSPCore-acknowledgements.markdown"; sourceTree = "<group>"; };
 		84324FB93BB7058B43ED5199EB671B9B /* lossless_enc_msa.c */ = {isa = PBXFileReference; includeInIndex = 1; name = lossless_enc_msa.c; path = src/dsp/lossless_enc_msa.c; sourceTree = "<group>"; };
 		8473B849E3B793F9C55994A822331329 /* SDImageCache.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SDImageCache.h; path = SDWebImage/Core/SDImageCache.h; sourceTree = "<group>"; };
 		84A6424EAD43EBBF2F367BFA74CE41D1 /* NSBezierPath+SDRoundedCorners.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = "NSBezierPath+SDRoundedCorners.m"; path = "SDWebImage/Private/NSBezierPath+SDRoundedCorners.m"; sourceTree = "<group>"; };
 		851560E3B0E763E0421706DD8E3F7C98 /* SDWebImageWebPCoder-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "SDWebImageWebPCoder-dummy.m"; sourceTree = "<group>"; };
 		85296D4A5A31374E8A80B648EAC702F4 /* rescaler_mips32.c */ = {isa = PBXFileReference; includeInIndex = 1; name = rescaler_mips32.c; path = src/dsp/rescaler_mips32.c; sourceTree = "<group>"; };
-		85499398EA52A956ADB5463FE054637A /* Pods-MSPSharedLibraries-acknowledgements.markdown */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = "Pods-MSPSharedLibraries-acknowledgements.markdown"; sourceTree = "<group>"; };
 		85B16BA31306D87FDACC464B2AAD6A93 /* UIImage+WebP.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = "UIImage+WebP.m"; path = "SDWebImageWebPCoder/Classes/UIImage+WebP.m"; sourceTree = "<group>"; };
 		85CF931B575E41CE7FC513CF5B06B043 /* NovaAdapter.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = NovaAdapter.debug.xcconfig; sourceTree = "<group>"; };
 		866AB96EE85B419825241025BF439C44 /* cpu.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = cpu.h; path = src/dsp/cpu.h; sourceTree = "<group>"; };
 		87A068DA746880D0C548335CEC5A124E /* yuv_mips_dsp_r2.c */ = {isa = PBXFileReference; includeInIndex = 1; name = yuv_mips_dsp_r2.c; path = src/dsp/yuv_mips_dsp_r2.c; sourceTree = "<group>"; };
 		87C2EE79DF48F196C7E2A1A3EE71753E /* quant_levels_dec_utils.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = quant_levels_dec_utils.h; path = src/utils/quant_levels_dec_utils.h; sourceTree = "<group>"; };
 		884D56EB4AD94FAC686BA8209B2C75B4 /* picture_tools_enc.c */ = {isa = PBXFileReference; includeInIndex = 1; name = picture_tools_enc.c; path = src/enc/picture_tools_enc.c; sourceTree = "<group>"; };
-		887AF27E9A38B790182D3E2DA1269FE3 /* Pods-NovaCore-acknowledgements.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "Pods-NovaCore-acknowledgements.plist"; sourceTree = "<group>"; };
 		88C840C3EFC1FA951AD64BE2F45A1EB9 /* NovaAdapter-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "NovaAdapter-umbrella.h"; sourceTree = "<group>"; };
+		895B467368872FD5A6AC87E412BB3C2B /* Pods-PrebidAdapter-PrebidAdapterTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-PrebidAdapter-PrebidAdapterTests.debug.xcconfig"; sourceTree = "<group>"; };
 		8A610C2529FBCF0F8CD66601CAB340D8 /* utils.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = utils.h; path = src/utils/utils.h; sourceTree = "<group>"; };
 		8A870694E66C26808A79212EDD7A7F41 /* SDWebImageWebPCoder.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.module; path = SDWebImageWebPCoder.modulemap; sourceTree = "<group>"; };
 		8B13E9C9FBDF0ED453E6B928A3B6B7E0 /* random_utils.c */ = {isa = PBXFileReference; includeInIndex = 1; name = random_utils.c; path = src/utils/random_utils.c; sourceTree = "<group>"; };
@@ -820,7 +822,6 @@
 		8B3B1FDD06AC1EB3B74956F3E1370834 /* ConstraintMakerRelatable.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ConstraintMakerRelatable.swift; path = Sources/ConstraintMakerRelatable.swift; sourceTree = "<group>"; };
 		8BBD2B3D45DE83AF15DD284CFD2032F7 /* neon.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = neon.h; path = src/dsp/neon.h; sourceTree = "<group>"; };
 		8BF09C6282005B0CF1DE1FF6D7EB8BE3 /* histogram_enc.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = histogram_enc.h; path = src/enc/histogram_enc.h; sourceTree = "<group>"; };
-		8C1531AD35AAE55D21754609D27F09B7 /* Pods-NovaAdapter.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-NovaAdapter.debug.xcconfig"; sourceTree = "<group>"; };
 		8D7E0FECC2C753D874A51B1D72378805 /* backward_references_enc.c */ = {isa = PBXFileReference; includeInIndex = 1; name = backward_references_enc.c; path = src/enc/backward_references_enc.c; sourceTree = "<group>"; };
 		8D8EC5EB4E2C10221DCC8FDC5329FECF /* SDWebImageCacheSerializer.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SDWebImageCacheSerializer.h; path = SDWebImage/Core/SDWebImageCacheSerializer.h; sourceTree = "<group>"; };
 		8E10416B50F3EB1C866DF35A5AB7CEBE /* predictor_enc.c */ = {isa = PBXFileReference; includeInIndex = 1; name = predictor_enc.c; path = src/enc/predictor_enc.c; sourceTree = "<group>"; };
@@ -830,7 +831,6 @@
 		913F709F86083358A80C2A0DE4B397F6 /* enc_neon.c */ = {isa = PBXFileReference; includeInIndex = 1; name = enc_neon.c; path = src/dsp/enc_neon.c; sourceTree = "<group>"; };
 		91E843466A47A5FD45A9BB12EA1C19DA /* NovaAdapter */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = NovaAdapter; path = libNovaAdapter.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		927B384032F9990BECFFF2913913E7B6 /* UIColor+SDHexString.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = "UIColor+SDHexString.m"; path = "SDWebImage/Private/UIColor+SDHexString.m"; sourceTree = "<group>"; };
-		9292E1CD49F17BDC437802C35DE9D00D /* Pods-MSPCore-acknowledgements.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "Pods-MSPCore-acknowledgements.plist"; sourceTree = "<group>"; };
 		92CB79BE4217E40776EB5F1A64CEA425 /* MSPCore-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "MSPCore-dummy.m"; sourceTree = "<group>"; };
 		92CF7E126DE19329D6241946969C7AEF /* SDDeviceHelper.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = SDDeviceHelper.m; path = SDWebImage/Private/SDDeviceHelper.m; sourceTree = "<group>"; };
 		92E98456901B15058AC0D48B42118083 /* quant_levels_utils.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = quant_levels_utils.h; path = src/utils/quant_levels_utils.h; sourceTree = "<group>"; };
@@ -840,8 +840,8 @@
 		940A5851A1383B5AADD3C0F947EA0AEA /* ConstraintOffsetTarget.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ConstraintOffsetTarget.swift; path = Sources/ConstraintOffsetTarget.swift; sourceTree = "<group>"; };
 		943BD2995310638AEBCE392084E80D50 /* SDWebImageError.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SDWebImageError.h; path = SDWebImage/Core/SDWebImageError.h; sourceTree = "<group>"; };
 		9440B643DDC8ECDD3AB6542AA1280EAC /* PrebidAdapter-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "PrebidAdapter-dummy.m"; sourceTree = "<group>"; };
+		946F7A52C03673A7C9F076D07318380F /* Pods-FacebookAdapter.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-FacebookAdapter.debug.xcconfig"; sourceTree = "<group>"; };
 		952D620265FC0DCEE9E21C36B75433CF /* SDImageCoderHelper.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = SDImageCoderHelper.m; path = SDWebImage/Core/SDImageCoderHelper.m; sourceTree = "<group>"; };
-		9542835C527C45857575C90789D76C86 /* Pods-NovaAdapter-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "Pods-NovaAdapter-dummy.m"; sourceTree = "<group>"; };
 		95DD4C4C89BE786FEEA4DD5A657657C9 /* SDWebImageWebPCoderDefine.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SDWebImageWebPCoderDefine.h; path = SDWebImageWebPCoder/Classes/SDWebImageWebPCoderDefine.h; sourceTree = "<group>"; };
 		964DF1346BF2FDAFB716D7D92C218D4E /* upsampling_msa.c */ = {isa = PBXFileReference; includeInIndex = 1; name = upsampling_msa.c; path = src/dsp/upsampling_msa.c; sourceTree = "<group>"; };
 		96E49D57B9607C59163D9213DD7000B7 /* MSPCore.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = MSPCore.h; path = MSPCore/MSPCore/MSPCore.h; sourceTree = "<group>"; };
@@ -850,23 +850,23 @@
 		976D16156F81BD59C90A165CCA03A90E /* SDImageCache.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = SDImageCache.m; path = SDWebImage/Core/SDImageCache.m; sourceTree = "<group>"; };
 		979454F837C6CD006FD32E7B57941DE4 /* SDImageIOCoder.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SDImageIOCoder.h; path = SDWebImage/Core/SDImageIOCoder.h; sourceTree = "<group>"; };
 		979486118B3E90C08386079D57962701 /* SnapKit */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = SnapKit; path = libSnapKit.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		99314CBFEACB5C380521E696F1E7DC4D /* Pods-MetaAdapter-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "Pods-MetaAdapter-dummy.m"; sourceTree = "<group>"; };
 		9AA66E66C0761D1F095EBA1C4BF87A77 /* Pods-PrebidAdapter */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = "Pods-PrebidAdapter"; path = Pods_PrebidAdapter.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		9C285FCCD60D729EE730DD2D9140A529 /* Pods-NovaCore.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.module; path = "Pods-NovaCore.modulemap"; sourceTree = "<group>"; };
 		9CD010D9032F0D7B61D10ABA1B1B4C5C /* upsampling_neon.c */ = {isa = PBXFileReference; includeInIndex = 1; name = upsampling_neon.c; path = src/dsp/upsampling_neon.c; sourceTree = "<group>"; };
 		9CF0EF9FC30933C293E2012BADB098A0 /* webp_enc.c */ = {isa = PBXFileReference; includeInIndex = 1; name = webp_enc.c; path = src/enc/webp_enc.c; sourceTree = "<group>"; };
 		9D8ED341FBDF10218BB13C2A2C29762D /* NSImage+Compatibility.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "NSImage+Compatibility.h"; path = "SDWebImage/Core/NSImage+Compatibility.h"; sourceTree = "<group>"; };
 		9D940727FF8FB9C785EB98E56350EF41 /* Podfile */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; name = Podfile; path = ../Podfile; sourceTree = SOURCE_ROOT; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		9DA6E313F8E98BBECE663C4A2B5F7306 /* Pods-MSPCore.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-MSPCore.debug.xcconfig"; sourceTree = "<group>"; };
 		9DB4E6D1B2051B85126FE9ECA558E05F /* lossless_enc.c */ = {isa = PBXFileReference; includeInIndex = 1; name = lossless_enc.c; path = src/dsp/lossless_enc.c; sourceTree = "<group>"; };
 		9E2E4A6649919FDD01AEB845D1AE1107 /* huffman_encode_utils.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = huffman_encode_utils.h; path = src/utils/huffman_encode_utils.h; sourceTree = "<group>"; };
 		9E57F8F1B132F296E06293C432E1B01D /* UIView+WebCache.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "UIView+WebCache.h"; path = "SDWebImage/Core/UIView+WebCache.h"; sourceTree = "<group>"; };
+		9FAA27C1690C95C6A931C3E7CB3FE417 /* Pods-NovaAdapter.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-NovaAdapter.release.xcconfig"; sourceTree = "<group>"; };
 		A0051E5C047173261EFCFD1E8092FF41 /* picture_rescale_enc.c */ = {isa = PBXFileReference; includeInIndex = 1; name = picture_rescale_enc.c; path = src/enc/picture_rescale_enc.c; sourceTree = "<group>"; };
 		A02DAA86CE541C4ED1EB1C19D2831AB5 /* SDImageTransformer.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = SDImageTransformer.m; path = SDWebImage/Core/SDImageTransformer.m; sourceTree = "<group>"; };
 		A0BD273D6D5259002639686777A7ED3E /* SDImageCacheDefine.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = SDImageCacheDefine.m; path = SDWebImage/Core/SDImageCacheDefine.m; sourceTree = "<group>"; };
-		A12C0214E2E2D5C063378E250CAF0494 /* Pods-GoogleAdapter-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "Pods-GoogleAdapter-dummy.m"; sourceTree = "<group>"; };
 		A1E62C5D3DCDA0D2DB544EDE1FD7BAF1 /* enc_sse2.c */ = {isa = PBXFileReference; includeInIndex = 1; name = enc_sse2.c; path = src/dsp/enc_sse2.c; sourceTree = "<group>"; };
 		A22F3A381C0D157F5C19822C17935B0C /* upsampling_mips_dsp_r2.c */ = {isa = PBXFileReference; includeInIndex = 1; name = upsampling_mips_dsp_r2.c; path = src/dsp/upsampling_mips_dsp_r2.c; sourceTree = "<group>"; };
 		A3829515E2A3685934F76003894DBAF6 /* SDImageCachesManager.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SDImageCachesManager.h; path = SDWebImage/Core/SDImageCachesManager.h; sourceTree = "<group>"; };
-		A3CAE764345269C5C717D2F3ECC4349A /* Pods-PrebidAdapter.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-PrebidAdapter.release.xcconfig"; sourceTree = "<group>"; };
 		A3F47ACE58E5C5245E9D6415F5CA816E /* SDAnimatedImageView.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = SDAnimatedImageView.m; path = SDWebImage/Core/SDAnimatedImageView.m; sourceTree = "<group>"; };
 		A449431FA20BC7C1A4F2D1277936FE48 /* dec_neon.c */ = {isa = PBXFileReference; includeInIndex = 1; name = dec_neon.c; path = src/dsp/dec_neon.c; sourceTree = "<group>"; };
 		A52E9088DE6D71BD6BCA8FF3377FA73E /* random_utils.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = random_utils.h; path = src/utils/random_utils.h; sourceTree = "<group>"; };
@@ -878,17 +878,18 @@
 		A6E719E465AC936B76220B0576169CE7 /* ConstraintDSL.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ConstraintDSL.swift; path = Sources/ConstraintDSL.swift; sourceTree = "<group>"; };
 		A754CC4ECFE8016D19BE5DBF0E911229 /* NovaAdapter.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = NovaAdapter.swift; path = NovaAdapter/NovaAdapter/NovaAdapter.swift; sourceTree = "<group>"; };
 		A7EA3C5E783CCC39EB14FBD3CD914E0A /* SDImageHEICCoder.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = SDImageHEICCoder.m; path = SDWebImage/Core/SDImageHEICCoder.m; sourceTree = "<group>"; };
-		A92A118C35ADD708245929A3F65FB19C /* Pods-MetaAdapter.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-MetaAdapter.release.xcconfig"; sourceTree = "<group>"; };
+		A82755B86FD44E80B38E67D47D7660D9 /* Pods-MSPSharedLibraries-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "Pods-MSPSharedLibraries-dummy.m"; sourceTree = "<group>"; };
+		A85A471B191746836D5F38F2EA0AB639 /* Pods-PrebidAdapter-PrebidAdapterTests-acknowledgements.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "Pods-PrebidAdapter-PrebidAdapterTests-acknowledgements.plist"; sourceTree = "<group>"; };
+		A95A5E273CA9EF133B1DB49FCB87E329 /* Pods-NovaCore-resources.sh */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.script.sh; path = "Pods-NovaCore-resources.sh"; sourceTree = "<group>"; };
+		A9A94ED8598265D83656CAF34C08AEC4 /* Pods-NovaAdapter-acknowledgements.markdown */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = "Pods-NovaAdapter-acknowledgements.markdown"; sourceTree = "<group>"; };
 		A9D8E8F3B24A87FA3B631308DCA5FBB5 /* Shimmer-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "Shimmer-prefix.pch"; sourceTree = "<group>"; };
 		A9F3EF3260EE87F0E25F866BD181D024 /* UIView+WebCacheState.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = "UIView+WebCacheState.m"; path = "SDWebImage/Core/UIView+WebCacheState.m"; sourceTree = "<group>"; };
 		A9FAA53ED9F2FF7E715DD1EB241A04C9 /* PrebidAdapter-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "PrebidAdapter-prefix.pch"; sourceTree = "<group>"; };
-		AAC4D2C3D6BF8D53CEEACD9D0459F038 /* Pods-NovaAdapter-acknowledgements.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "Pods-NovaAdapter-acknowledgements.plist"; sourceTree = "<group>"; };
 		AAF52C109E6D9A96093D0250636443E6 /* PrebidMobile.xcframework */ = {isa = PBXFileReference; includeInIndex = 1; name = PrebidMobile.xcframework; path = MSPSharedLibraries/PrebidMobile.xcframework; sourceTree = "<group>"; };
 		AB23355F45BD64AB990551C5FC42F9EA /* cost_mips_dsp_r2.c */ = {isa = PBXFileReference; includeInIndex = 1; name = cost_mips_dsp_r2.c; path = src/dsp/cost_mips_dsp_r2.c; sourceTree = "<group>"; };
 		AB4847328ADE8258E00A14F0F9F4CDBD /* ConstraintInsetTarget.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ConstraintInsetTarget.swift; path = Sources/ConstraintInsetTarget.swift; sourceTree = "<group>"; };
 		ABDDEC6FFEC787FCFA452A338E3BF87B /* ConstraintItem.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ConstraintItem.swift; path = Sources/ConstraintItem.swift; sourceTree = "<group>"; };
 		AC1602E4191EFA61B0E932CBD13C58F4 /* SDImageFrame.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SDImageFrame.h; path = SDWebImage/Core/SDImageFrame.h; sourceTree = "<group>"; };
-		ADC760FDEA657362CCD2ED6E1345BD27 /* Pods-PrebidAdapter-PrebidAdapterTests-acknowledgements.markdown */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = "Pods-PrebidAdapter-PrebidAdapterTests-acknowledgements.markdown"; sourceTree = "<group>"; };
 		AE2D668D42208421C9D5DFE4A6DFB366 /* picture_psnr_enc.c */ = {isa = PBXFileReference; includeInIndex = 1; name = picture_psnr_enc.c; path = src/enc/picture_psnr_enc.c; sourceTree = "<group>"; };
 		AEC4FA4C727A16E8E2D3B7B3F6E9AF7F /* SDImageCachesManagerOperation.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SDImageCachesManagerOperation.h; path = SDWebImage/Private/SDImageCachesManagerOperation.h; sourceTree = "<group>"; };
 		AF29443D9079645FE262EA509FDE233A /* backward_references_cost_enc.c */ = {isa = PBXFileReference; includeInIndex = 1; name = backward_references_cost_enc.c; path = src/enc/backward_references_cost_enc.c; sourceTree = "<group>"; };
@@ -897,28 +898,29 @@
 		B0B214D775196BA7CA8E17E53048A493 /* SDWebImage */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = SDWebImage; path = libSDWebImage.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		B0BE33EDB12C9D5901B8EC14A7EA95D3 /* SDWebImage.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = SDWebImage.release.xcconfig; sourceTree = "<group>"; };
 		B0F326CE131AE00992CA64D00657C689 /* SDImageHEICCoder.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SDImageHEICCoder.h; path = SDWebImage/Core/SDImageHEICCoder.h; sourceTree = "<group>"; };
+		B1570C098D7EF4082234CF03C1F2862B /* Pods-PrebidAdapter-acknowledgements.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "Pods-PrebidAdapter-acknowledgements.plist"; sourceTree = "<group>"; };
 		B1B6A2DEFA089BFB6E957F5C8BAC6714 /* enc.c */ = {isa = PBXFileReference; includeInIndex = 1; name = enc.c; path = src/dsp/enc.c; sourceTree = "<group>"; };
 		B266303500AE9B0FD344C7A4FDB2DEBB /* quant_dec.c */ = {isa = PBXFileReference; includeInIndex = 1; name = quant_dec.c; path = src/dec/quant_dec.c; sourceTree = "<group>"; };
 		B2A9997761D3EFA081E008F51530C650 /* SDFileAttributeHelper.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = SDFileAttributeHelper.m; path = SDWebImage/Private/SDFileAttributeHelper.m; sourceTree = "<group>"; };
 		B2C3DB93589EA4BA2A6FDEA330CD79AD /* types.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = types.h; path = src/webp/types.h; sourceTree = "<group>"; };
 		B2E729A5CCB02D4B458C7E67800015DD /* SDWebImageCompat.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SDWebImageCompat.h; path = SDWebImage/Core/SDWebImageCompat.h; sourceTree = "<group>"; };
-		B331A72F0FD04BFD0CB928F6FE3F779A /* Pods-NovaCore.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.module; path = "Pods-NovaCore.modulemap"; sourceTree = "<group>"; };
 		B3AD1DCEFE5EA3132F84D815E8719A59 /* SDAnimatedImage.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = SDAnimatedImage.m; path = SDWebImage/Core/SDAnimatedImage.m; sourceTree = "<group>"; };
 		B3CEBD753F24E156BB4247A9AF398653 /* webpi_dec.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = webpi_dec.h; path = src/dec/webpi_dec.h; sourceTree = "<group>"; };
+		B3DBF68C5462A3B57904E18243693AE6 /* Pods-MSPDemoApp.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-MSPDemoApp.debug.xcconfig"; sourceTree = "<group>"; };
 		B467265A0715B2620458BE768E64A537 /* LayoutConstraint.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = LayoutConstraint.swift; path = Sources/LayoutConstraint.swift; sourceTree = "<group>"; };
 		B5CD1A1E6DC303BD87437ABF2533390D /* filter_enc.c */ = {isa = PBXFileReference; includeInIndex = 1; name = filter_enc.c; path = src/enc/filter_enc.c; sourceTree = "<group>"; };
 		B5E6B90D93EF3D02095EF944FD0DD5DA /* idec_dec.c */ = {isa = PBXFileReference; includeInIndex = 1; name = idec_dec.c; path = src/dec/idec_dec.c; sourceTree = "<group>"; };
 		B6112347A81DD16659F84F3A260BCF6C /* Shimmer-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "Shimmer-umbrella.h"; sourceTree = "<group>"; };
+		B6118128F335B334325EDBBAD5C3E83F /* Pods-MSPCore-acknowledgements.markdown */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = "Pods-MSPCore-acknowledgements.markdown"; sourceTree = "<group>"; };
 		B6E557F98C7A4C446F7AC3F0BEB2266B /* Pods-GoogleAdapter */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = "Pods-GoogleAdapter"; path = "libPods-GoogleAdapter.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		B6EF152C1525A6855311018F0EDC505C /* filters_neon.c */ = {isa = PBXFileReference; includeInIndex = 1; name = filters_neon.c; path = src/dsp/filters_neon.c; sourceTree = "<group>"; };
 		B7C0FB6341FADB6764BCAD94527C26C4 /* yuv.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = yuv.h; path = src/dsp/yuv.h; sourceTree = "<group>"; };
 		B7DEC7A937A881417BAE8AADCF14E0EB /* SDWebImageManager.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SDWebImageManager.h; path = SDWebImage/Core/SDWebImageManager.h; sourceTree = "<group>"; };
 		B8B93315331DE97FF7AFBB91D4AC278A /* UIImage+GIF.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "UIImage+GIF.h"; path = "SDWebImage/Core/UIImage+GIF.h"; sourceTree = "<group>"; };
 		B9A3E7A2ADAA9C65E3822DBF6DDE0EC9 /* thread_utils.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = thread_utils.h; path = src/utils/thread_utils.h; sourceTree = "<group>"; };
-		BA19CC6851417DF00B246209FF46E774 /* Pods-NovaCore-acknowledgements.markdown */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = "Pods-NovaCore-acknowledgements.markdown"; sourceTree = "<group>"; };
-		BA67DBFAACAEDC38C0940B2B7C015593 /* Pods-NovaAdapter-acknowledgements.markdown */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = "Pods-NovaAdapter-acknowledgements.markdown"; sourceTree = "<group>"; };
-		BB0F911CE4483CCCCDDD19D34F9F172D /* Pods-MetaAdapter-acknowledgements.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "Pods-MetaAdapter-acknowledgements.plist"; sourceTree = "<group>"; };
+		BAA8ED943CA4FF9EDC11FAB19D6E5A27 /* Pods-GoogleAdapter-acknowledgements.markdown */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = "Pods-GoogleAdapter-acknowledgements.markdown"; sourceTree = "<group>"; };
 		BBB106C8369A2D060D05A037F41B6B06 /* sharpyuv_csp.c */ = {isa = PBXFileReference; includeInIndex = 1; name = sharpyuv_csp.c; path = sharpyuv/sharpyuv_csp.c; sourceTree = "<group>"; };
+		BBBEA3A620FDE0E2C707AB8470E3E705 /* Pods-MSPDemoApp-frameworks.sh */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.script.sh; path = "Pods-MSPDemoApp-frameworks.sh"; sourceTree = "<group>"; };
 		BBCABBED12A76EB81658535E6BF36D88 /* alpha_enc.c */ = {isa = PBXFileReference; includeInIndex = 1; name = alpha_enc.c; path = src/enc/alpha_enc.c; sourceTree = "<group>"; };
 		BBED884A4C34DCD1F32CF52C81DEFF13 /* MSPCore.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = MSPCore.debug.xcconfig; sourceTree = "<group>"; };
 		BC261C70EFA06FA4F0D6825B5A82AC5D /* UIImage+MultiFormat.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = "UIImage+MultiFormat.m"; path = "SDWebImage/Core/UIImage+MultiFormat.m"; sourceTree = "<group>"; };
@@ -926,7 +928,6 @@
 		BDFDF83659BAB4527EBF89644FE7DAEB /* cost.c */ = {isa = PBXFileReference; includeInIndex = 1; name = cost.c; path = src/dsp/cost.c; sourceTree = "<group>"; };
 		BE1258DED0E32369F0377D1C8FB6C4F1 /* ConstraintRelation.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ConstraintRelation.swift; path = Sources/ConstraintRelation.swift; sourceTree = "<group>"; };
 		BE3B052745284FC1F4E8D2625849A076 /* SDImageCacheConfig.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = SDImageCacheConfig.m; path = SDWebImage/Core/SDImageCacheConfig.m; sourceTree = "<group>"; };
-		BE45C2131F36300F8205B5D61F0AC4D6 /* Pods-MetaAdapter-acknowledgements.markdown */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = "Pods-MetaAdapter-acknowledgements.markdown"; sourceTree = "<group>"; };
 		BE99A5942E36C7808D7DAF0F5F72FDE4 /* encode.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = encode.h; path = src/webp/encode.h; sourceTree = "<group>"; };
 		BFA97308F25739447A2EE6D475C9D17B /* SDImageLoader.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = SDImageLoader.m; path = SDWebImage/Core/SDImageLoader.m; sourceTree = "<group>"; };
 		C17EDCAD3CBD9FC66D27EC22F679973B /* ConstraintMakerExtendable.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ConstraintMakerExtendable.swift; path = Sources/ConstraintMakerExtendable.swift; sourceTree = "<group>"; };
@@ -935,11 +936,8 @@
 		C3D2CC07869255AF5294999C146B1708 /* SDDisplayLink.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = SDDisplayLink.m; path = SDWebImage/Private/SDDisplayLink.m; sourceTree = "<group>"; };
 		C4A11C223E5F81DFD7ED9AF143CD41BC /* SDWebImageDefine.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SDWebImageDefine.h; path = SDWebImage/Core/SDWebImageDefine.h; sourceTree = "<group>"; };
 		C4AC5F8BA5AB6697717ACA2F6660AF05 /* anim_decode.c */ = {isa = PBXFileReference; includeInIndex = 1; name = anim_decode.c; path = src/demux/anim_decode.c; sourceTree = "<group>"; };
-		C571C0A063E02AF654E04D0C98945918 /* Pods-MSPCore.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-MSPCore.release.xcconfig"; sourceTree = "<group>"; };
 		C6FD3651F3BC64CD37B9FE51AEA573BD /* SDWebImageDownloaderResponseModifier.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = SDWebImageDownloaderResponseModifier.m; path = SDWebImage/Core/SDWebImageDownloaderResponseModifier.m; sourceTree = "<group>"; };
-		C72E04C427898604D98AEFA85481BC1F /* Pods-PrebidAdapter-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "Pods-PrebidAdapter-dummy.m"; sourceTree = "<group>"; };
 		C85B7A234481AE469D9ED5FC557DB4A5 /* SDWebImageWebPCoder.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = SDWebImageWebPCoder.debug.xcconfig; sourceTree = "<group>"; };
-		C85DD4845C64BC84F38739126A13AF3A /* Pods-PrebidAdapter-acknowledgements.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "Pods-PrebidAdapter-acknowledgements.plist"; sourceTree = "<group>"; };
 		C8B349B6535F5867FC3A1C481C489847 /* SnapKit.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.module; path = SnapKit.modulemap; sourceTree = "<group>"; };
 		C96C9A41455CDBD4D90B61CA67707120 /* SDDiskCache.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = SDDiskCache.m; path = SDWebImage/Core/SDDiskCache.m; sourceTree = "<group>"; };
 		C9ACFDCDB28E101DE3D82614E887B10A /* Shimmer.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = Shimmer.release.xcconfig; sourceTree = "<group>"; };
@@ -951,16 +949,15 @@
 		CB1C740A33768D13AFDBB8D7A56A7D18 /* Pods-PrebidAdapter-PrebidAdapterTests */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = "Pods-PrebidAdapter-PrebidAdapterTests"; path = Pods_PrebidAdapter_PrebidAdapterTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		CB5D455A574680536A92FC06B000ED1D /* dec_clip_tables.c */ = {isa = PBXFileReference; includeInIndex = 1; name = dec_clip_tables.c; path = src/dsp/dec_clip_tables.c; sourceTree = "<group>"; };
 		CB7416924963570488316121F31E5F90 /* SDAnimatedImageRep.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = SDAnimatedImageRep.m; path = SDWebImage/Core/SDAnimatedImageRep.m; sourceTree = "<group>"; };
+		CC08C91C1AA8A220714DFE14D16B99EF /* Pods-MSPCore-acknowledgements.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "Pods-MSPCore-acknowledgements.plist"; sourceTree = "<group>"; };
 		CC0A929315B8A5F416C0FA72D2B63C77 /* sharpyuv_cpu.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = sharpyuv_cpu.h; path = sharpyuv/sharpyuv_cpu.h; sourceTree = "<group>"; };
 		CC1F07DF6DB05A80405460A9B799A419 /* UIImage+ForceDecode.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "UIImage+ForceDecode.h"; path = "SDWebImage/Core/UIImage+ForceDecode.h"; sourceTree = "<group>"; };
 		CC5E4D17A07E3507FCDB760BBBD20401 /* sharpyuv_gamma.c */ = {isa = PBXFileReference; includeInIndex = 1; name = sharpyuv_gamma.c; path = sharpyuv/sharpyuv_gamma.c; sourceTree = "<group>"; };
-		CC89633651865AC00F7B8D16B285E606 /* Pods-NovaCore-resources.sh */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.script.sh; path = "Pods-NovaCore-resources.sh"; sourceTree = "<group>"; };
 		CD3E52AA4204C42D000E326B4A10419E /* quant_levels_dec_utils.c */ = {isa = PBXFileReference; includeInIndex = 1; name = quant_levels_dec_utils.c; path = src/utils/quant_levels_dec_utils.c; sourceTree = "<group>"; };
 		CE9F45C0296B87F341C90095856E9B62 /* SDImageIOAnimatedCoder.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = SDImageIOAnimatedCoder.m; path = SDWebImage/Core/SDImageIOAnimatedCoder.m; sourceTree = "<group>"; };
 		CF1281E58AA1045D4B7F33FC56691C42 /* SDWebImage-SDWebImage */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; name = "SDWebImage-SDWebImage"; path = SDWebImage.bundle; sourceTree = BUILT_PRODUCTS_DIR; };
 		CF3C8F3B74F9CAEB7ABE279CC8953EA2 /* SDGraphicsImageRenderer.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = SDGraphicsImageRenderer.m; path = SDWebImage/Core/SDGraphicsImageRenderer.m; sourceTree = "<group>"; };
 		CF5966896558D9A4EDE60C516DC80CE9 /* sharpyuv_cpu.c */ = {isa = PBXFileReference; includeInIndex = 1; name = sharpyuv_cpu.c; path = sharpyuv/sharpyuv_cpu.c; sourceTree = "<group>"; };
-		CF5A10A26701CBF88882D640332171FD /* Pods-NovaCore.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-NovaCore.debug.xcconfig"; sourceTree = "<group>"; };
 		CFE90D353ADABBDB3CD47F200FE4CD63 /* enc_mips_dsp_r2.c */ = {isa = PBXFileReference; includeInIndex = 1; name = enc_mips_dsp_r2.c; path = src/dsp/enc_mips_dsp_r2.c; sourceTree = "<group>"; };
 		D0163C11FF972653F946283D18E22CEA /* SDAnimatedImageView+WebCache.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = "SDAnimatedImageView+WebCache.m"; path = "SDWebImage/Core/SDAnimatedImageView+WebCache.m"; sourceTree = "<group>"; };
 		D0D82BBF7DAA5C2053C64014E61D2378 /* UIImage+Metadata.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = "UIImage+Metadata.m"; path = "SDWebImage/Core/UIImage+Metadata.m"; sourceTree = "<group>"; };
@@ -970,23 +967,25 @@
 		D1BC55D57C4E96B846DEC8B66A7C196A /* SDWebImageTransition.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = SDWebImageTransition.m; path = SDWebImage/Core/SDWebImageTransition.m; sourceTree = "<group>"; };
 		D228A588C828716A726A805ADFB36892 /* SDImageFramePool.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SDImageFramePool.h; path = SDWebImage/Private/SDImageFramePool.h; sourceTree = "<group>"; };
 		D3892CCE8BFD41C9DB6F4853E72D1CD4 /* alpha_processing_sse2.c */ = {isa = PBXFileReference; includeInIndex = 1; name = alpha_processing_sse2.c; path = src/dsp/alpha_processing_sse2.c; sourceTree = "<group>"; };
-		D3BE9F5C107CD7DEB50147776DAF373B /* Pods-PrebidAdapter.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-PrebidAdapter.debug.xcconfig"; sourceTree = "<group>"; };
-		D3E2116B52BADF3FF156F0C3756DB2E8 /* Pods-MSPCore-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "Pods-MSPCore-dummy.m"; sourceTree = "<group>"; };
+		D43F8C10172B3F319BEAD4F1F35EA6E2 /* Pods-GoogleAdapter-acknowledgements.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "Pods-GoogleAdapter-acknowledgements.plist"; sourceTree = "<group>"; };
 		D53A553FA9851117BE1E72AB7CEED298 /* histogram_enc.c */ = {isa = PBXFileReference; includeInIndex = 1; name = histogram_enc.c; path = src/enc/histogram_enc.c; sourceTree = "<group>"; };
 		D5709B66B3443B5C7EE3F084FDE9309C /* yuv_neon.c */ = {isa = PBXFileReference; includeInIndex = 1; name = yuv_neon.c; path = src/dsp/yuv_neon.c; sourceTree = "<group>"; };
+		D68B7CD94B4D8A8EAD3EB300DDCC1C37 /* Pods-PrebidAdapter-PrebidAdapterTests-Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "Pods-PrebidAdapter-PrebidAdapterTests-Info.plist"; sourceTree = "<group>"; };
 		D68C01B3A6AA3C215020A72319AA55CC /* rescaler_mips_dsp_r2.c */ = {isa = PBXFileReference; includeInIndex = 1; name = rescaler_mips_dsp_r2.c; path = src/dsp/rescaler_mips_dsp_r2.c; sourceTree = "<group>"; };
 		D6C0BFFAC159F67607514243EED86CEA /* SDWebImageOperation.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SDWebImageOperation.h; path = SDWebImage/Core/SDWebImageOperation.h; sourceTree = "<group>"; };
 		D6FD9E2FA71932D600FDD9A0947CFDC9 /* SDWebImageDownloader.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = SDWebImageDownloader.m; path = SDWebImage/Core/SDWebImageDownloader.m; sourceTree = "<group>"; };
 		D70B596B4D923637477973A753FEEC7E /* Pods-MSPSharedLibraries */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = "Pods-MSPSharedLibraries"; path = "libPods-MSPSharedLibraries.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		D7174807FC95DB5146A8885CF8882EBB /* Pods-MSPSharedLibraries-acknowledgements.markdown */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = "Pods-MSPSharedLibraries-acknowledgements.markdown"; sourceTree = "<group>"; };
 		D8876211FFDB935BB0D722C2BF2CD0B2 /* MSPHelper.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = MSPHelper.swift; path = MSPCore/MSPCore/MSPHelper.swift; sourceTree = "<group>"; };
-		D9471CC909DD947752FF2A549A3C55AF /* Pods-PrebidAdapter-PrebidAdapterTests-acknowledgements.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "Pods-PrebidAdapter-PrebidAdapterTests-acknowledgements.plist"; sourceTree = "<group>"; };
+		D92AD52E6647581969CD442BF4C6D4EF /* Pods-PrebidAdapter.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.module; path = "Pods-PrebidAdapter.modulemap"; sourceTree = "<group>"; };
+		D9A3F941B0E8A9741CB1B5989542F42B /* Pods-MSPDemoApp-acknowledgements.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "Pods-MSPDemoApp-acknowledgements.plist"; sourceTree = "<group>"; };
 		D9C8FF981257ECE3060650D14966E732 /* SDAnimatedImageView.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SDAnimatedImageView.h; path = SDWebImage/Core/SDAnimatedImageView.h; sourceTree = "<group>"; };
 		DA75767D3E34B48400B4DDCE0F3C6B9D /* SDImageCacheDefine.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SDImageCacheDefine.h; path = SDWebImage/Core/SDImageCacheDefine.h; sourceTree = "<group>"; };
 		DA8FB7B1C5090706B0AF7AD0EB8D3923 /* lossless.c */ = {isa = PBXFileReference; includeInIndex = 1; name = lossless.c; path = src/dsp/lossless.c; sourceTree = "<group>"; };
+		DA926E02A1F5C1672056EA6CB67D55CF /* Pods-NovaAdapter-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "Pods-NovaAdapter-dummy.m"; sourceTree = "<group>"; };
 		DB3F564163F204E8AE93646A09D10671 /* SDMemoryCache.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = SDMemoryCache.m; path = SDWebImage/Core/SDMemoryCache.m; sourceTree = "<group>"; };
 		DC152F02EB2F6826E3C9E665C71BBD3F /* alpha_processing_sse41.c */ = {isa = PBXFileReference; includeInIndex = 1; name = alpha_processing_sse41.c; path = src/dsp/alpha_processing_sse41.c; sourceTree = "<group>"; };
 		DC167D14F8594ECDA31357D0908ABE33 /* SDAnimatedImagePlayer.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SDAnimatedImagePlayer.h; path = SDWebImage/Core/SDAnimatedImagePlayer.h; sourceTree = "<group>"; };
-		DC9431B64A14CFC1568DA252FD4F1586 /* Pods-NovaCore-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "Pods-NovaCore-umbrella.h"; sourceTree = "<group>"; };
 		DD63C896552EAEC283E8D46A8373A965 /* SnapKit.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = SnapKit.debug.xcconfig; sourceTree = "<group>"; };
 		DE3C3C2F80538687857A924B4A837F95 /* UIImage+ExtendedCacheData.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "UIImage+ExtendedCacheData.h"; path = "SDWebImage/Core/UIImage+ExtendedCacheData.h"; sourceTree = "<group>"; };
 		DF4201CA14FED9546A50A1C0B9D1CD5D /* NSData+ImageContentType.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "NSData+ImageContentType.h"; path = "SDWebImage/Core/NSData+ImageContentType.h"; sourceTree = "<group>"; };
@@ -998,15 +997,15 @@
 		E125CA28F74186513573D27CFCA140A7 /* MSPSharedLibraries.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = MSPSharedLibraries.debug.xcconfig; sourceTree = "<group>"; };
 		E177D2FF962F20E1ADFA3DE6ACC45605 /* bit_writer_utils.c */ = {isa = PBXFileReference; includeInIndex = 1; name = bit_writer_utils.c; path = src/utils/bit_writer_utils.c; sourceTree = "<group>"; };
 		E1D4BC8E74DAC4646FBEBDA5B9A3C679 /* cost_mips32.c */ = {isa = PBXFileReference; includeInIndex = 1; name = cost_mips32.c; path = src/dsp/cost_mips32.c; sourceTree = "<group>"; };
+		E20B5CE7B391730CC51F5AEF8DBFB9A6 /* Pods-GoogleAdapter-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "Pods-GoogleAdapter-dummy.m"; sourceTree = "<group>"; };
+		E237DB90B7D323BD7EDF0A32FEE5510D /* Pods-NovaAdapter-acknowledgements.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "Pods-NovaAdapter-acknowledgements.plist"; sourceTree = "<group>"; };
 		E26CF9428ED23AACE1EFD611AAFD2267 /* libwebp.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = libwebp.debug.xcconfig; sourceTree = "<group>"; };
 		E2FCBF12E8997D94A0F8B43B461F1E25 /* SDmetamacros.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SDmetamacros.h; path = SDWebImage/Private/SDmetamacros.h; sourceTree = "<group>"; };
 		E2FCF73E87E4DD434319E28AE74B43BC /* rescaler.c */ = {isa = PBXFileReference; includeInIndex = 1; name = rescaler.c; path = src/dsp/rescaler.c; sourceTree = "<group>"; };
-		E31506ECA34399B832C38AC2F7261752 /* Pods-PrebidAdapter-acknowledgements.markdown */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = "Pods-PrebidAdapter-acknowledgements.markdown"; sourceTree = "<group>"; };
 		E374DE26A40F765AB7E357CF47B3729C /* PrebidAdapter.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = PrebidAdapter.release.xcconfig; sourceTree = "<group>"; };
 		E38C5A60AAD0EBE914E57E38660C7736 /* ConstraintInsets.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ConstraintInsets.swift; path = Sources/ConstraintInsets.swift; sourceTree = "<group>"; };
 		E460539D3FF599695631619314A40CC8 /* FBShimmeringView.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = FBShimmeringView.h; path = FBShimmering/FBShimmeringView.h; sourceTree = "<group>"; };
-		E4997415D0BF5BE7F157B7F252F7C6C7 /* Pods-NovaCore.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-NovaCore.release.xcconfig"; sourceTree = "<group>"; };
-		E5FF6E1F5447832A453412DC1764A23C /* Pods-MSPDemoApp-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "Pods-MSPDemoApp-dummy.m"; sourceTree = "<group>"; };
+		E61A4EEA23A664B5D3323D7E71DAB116 /* Pods-NovaCore-acknowledgements.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "Pods-NovaCore-acknowledgements.plist"; sourceTree = "<group>"; };
 		E64BF14713C6FEE14BDEC0BA787DAD5A /* SnapKit-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "SnapKit-prefix.pch"; sourceTree = "<group>"; };
 		E67E983C90D132FDCB5224F854DD7EFB /* bit_reader_utils.c */ = {isa = PBXFileReference; includeInIndex = 1; name = bit_reader_utils.c; path = src/utils/bit_reader_utils.c; sourceTree = "<group>"; };
 		E6D8BD6ADCFA16D8110C7EE27495FA2E /* UIButton+WebCache.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = "UIButton+WebCache.m"; path = "SDWebImage/Core/UIButton+WebCache.m"; sourceTree = "<group>"; };
@@ -1019,19 +1018,21 @@
 		E87358201AE20989597B79C7DC089063 /* decode.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = decode.h; path = src/webp/decode.h; sourceTree = "<group>"; };
 		E89C78602DD7E1D896B6C71D16596E64 /* cost_enc.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = cost_enc.h; path = src/enc/cost_enc.h; sourceTree = "<group>"; };
 		E9267F71E5132BD0A0013C541DE4CA94 /* yuv_sse2.c */ = {isa = PBXFileReference; includeInIndex = 1; name = yuv_sse2.c; path = src/dsp/yuv_sse2.c; sourceTree = "<group>"; };
-		E9B60B248499D69157E189E0216611A3 /* Pods-MSPDemoApp-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "Pods-MSPDemoApp-umbrella.h"; sourceTree = "<group>"; };
 		E9E25AEC7CEE218A45CD59EC644CB138 /* format_constants.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = format_constants.h; path = src/webp/format_constants.h; sourceTree = "<group>"; };
 		EAD425F5E5004A0971318AEA048F0E09 /* utils.c */ = {isa = PBXFileReference; includeInIndex = 1; name = utils.c; path = src/utils/utils.c; sourceTree = "<group>"; };
 		EB08F567E3C072AEA2779FB61C1FB1CC /* SDImageTransformer.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SDImageTransformer.h; path = SDWebImage/Core/SDImageTransformer.h; sourceTree = "<group>"; };
 		EBA956557BE8F3ED8B63C27C6B948C9F /* lossless_sse2.c */ = {isa = PBXFileReference; includeInIndex = 1; name = lossless_sse2.c; path = src/dsp/lossless_sse2.c; sourceTree = "<group>"; };
+		EC13C77D5C10412F95E9C73DE47AEEFC /* Pods-PrebidAdapter-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "Pods-PrebidAdapter-umbrella.h"; sourceTree = "<group>"; };
+		EC1C18407E64E86E7518AEDC58A1B9B7 /* Pods-MSPCore-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "Pods-MSPCore-dummy.m"; sourceTree = "<group>"; };
 		EC5A8E4CE7AB9D01B2D95DFDEC32F74A /* cost_enc.c */ = {isa = PBXFileReference; includeInIndex = 1; name = cost_enc.c; path = src/enc/cost_enc.c; sourceTree = "<group>"; };
 		ECB58DCD8436D3F33A4C01C76CCAC7A6 /* SDImageFramePool.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = SDImageFramePool.m; path = SDWebImage/Private/SDImageFramePool.m; sourceTree = "<group>"; };
 		ECC4DB637F0BAE3B7781FE9DBA0B5FFF /* UIColor+SDHexString.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "UIColor+SDHexString.h"; path = "SDWebImage/Private/UIColor+SDHexString.h"; sourceTree = "<group>"; };
-		ED2B140ED82920D53EE57871D0E617EF /* Pods-PrebidAdapter-PrebidAdapterTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-PrebidAdapter-PrebidAdapterTests.release.xcconfig"; sourceTree = "<group>"; };
 		ED7BF41D22B53658D7F249D727B1BC22 /* UIView+WebCacheOperation.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = "UIView+WebCacheOperation.m"; path = "SDWebImage/Core/UIView+WebCacheOperation.m"; sourceTree = "<group>"; };
 		EEF4CFBD4CDE24480399A8902FF61596 /* SDAssociatedObject.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = SDAssociatedObject.m; path = SDWebImage/Private/SDAssociatedObject.m; sourceTree = "<group>"; };
 		EF07CD0542083257496C4914C9EAF3BE /* PrebidAdapter.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = PrebidAdapter.debug.xcconfig; sourceTree = "<group>"; };
+		EF738AE2BDC3F92D66F5D94FDCC41BFA /* Pods-PrebidAdapter.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-PrebidAdapter.release.xcconfig"; sourceTree = "<group>"; };
 		EF8EE9F2E214F6DA7CAFD2A9F3B5C52A /* UIView+WebCache.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = "UIView+WebCache.m"; path = "SDWebImage/Core/UIView+WebCache.m"; sourceTree = "<group>"; };
+		F00FFC3BF1116A33088EF9F3F20ECD90 /* Pods-PrebidAdapter-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "Pods-PrebidAdapter-dummy.m"; sourceTree = "<group>"; };
 		F170F351F3C668582F62EF7D25C5E207 /* SDGraphicsImageRenderer.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SDGraphicsImageRenderer.h; path = SDWebImage/Core/SDGraphicsImageRenderer.h; sourceTree = "<group>"; };
 		F1AF006535ECF11B82D169F0382CCBE3 /* SDWebImageDownloaderDecryptor.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = SDWebImageDownloaderDecryptor.m; path = SDWebImage/Core/SDWebImageDownloaderDecryptor.m; sourceTree = "<group>"; };
 		F21442AB5C7918D7B831D7E7D1D8DC9F /* sharpyuv.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = sharpyuv.h; path = sharpyuv/sharpyuv.h; sourceTree = "<group>"; };
@@ -1040,15 +1041,14 @@
 		F4CB82E0CD21A4B099056EC83F404312 /* SDImageCoderHelper.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SDImageCoderHelper.h; path = SDWebImage/Core/SDImageCoderHelper.h; sourceTree = "<group>"; };
 		F5CF9E83997E0694D1F1D5B6C24418F7 /* ConstraintConfig.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ConstraintConfig.swift; path = Sources/ConstraintConfig.swift; sourceTree = "<group>"; };
 		F6D6D1AD8169B9C867B1A43DCBDBBFC8 /* muxi.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = muxi.h; path = src/mux/muxi.h; sourceTree = "<group>"; };
-		F72D9C7E16CCC0134BC1009371B65836 /* Pods-MetaAdapter.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-MetaAdapter.debug.xcconfig"; sourceTree = "<group>"; };
 		F7CCD2FC823DD1D6AB4A9DFC79D815FD /* backward_references_enc.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = backward_references_enc.h; path = src/enc/backward_references_enc.h; sourceTree = "<group>"; };
 		F836840AD2BB5FAC10A3AEA2868EE03C /* libwebp-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "libwebp-prefix.pch"; sourceTree = "<group>"; };
 		F84202624241B939BABA4DB35C22A22F /* SDImageAssetManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = SDImageAssetManager.m; path = SDWebImage/Private/SDImageAssetManager.m; sourceTree = "<group>"; };
 		F8738898F1BF37E9652EBAC4A0F8C737 /* mips_macro.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = mips_macro.h; path = src/dsp/mips_macro.h; sourceTree = "<group>"; };
 		F8C6C1FA9CB9D59BD3AAD9796729DA2E /* upsampling.c */ = {isa = PBXFileReference; includeInIndex = 1; name = upsampling.c; path = src/dsp/upsampling.c; sourceTree = "<group>"; };
+		F8DE86456712FA86BBB3DAA5A065DCC8 /* Pods-NovaCore-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "Pods-NovaCore-umbrella.h"; sourceTree = "<group>"; };
 		FAC3C9829CAD385C02ED08D12866C247 /* NSImage+Compatibility.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = "NSImage+Compatibility.m"; path = "SDWebImage/Core/NSImage+Compatibility.m"; sourceTree = "<group>"; };
 		FAE024E1FC0FA08920E469F0C1218DC3 /* bit_reader_inl_utils.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = bit_reader_inl_utils.h; path = src/utils/bit_reader_inl_utils.h; sourceTree = "<group>"; };
-		FBAC3E19EE1F12F22D7AC4D4F9F3A05C /* Pods-MetaAdapter */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = "Pods-MetaAdapter"; path = "libPods-MetaAdapter.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		FC7543ED383E2DE846559EE132CEBE3F /* yuv_sse41.c */ = {isa = PBXFileReference; includeInIndex = 1; name = yuv_sse41.c; path = src/dsp/yuv_sse41.c; sourceTree = "<group>"; };
 		FCCD3280EF1741363565CFFC64DD4734 /* dec_mips32.c */ = {isa = PBXFileReference; includeInIndex = 1; name = dec_mips32.c; path = src/dsp/dec_mips32.c; sourceTree = "<group>"; };
 		FCF61D9B2B75054A9A3185DDC609B7FF /* SDWebImageWebPCoder */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = SDWebImageWebPCoder; path = libSDWebImageWebPCoder.a; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -1066,6 +1066,13 @@
 
 /* Begin PBXFrameworksBuildPhase section */
 		036B790A23780B8D8287395A0571EE1F /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		06F3B8C464C4BF6ABD7634E1527BEFE1 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -1129,13 +1136,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		94A8EF53296066755A75F756B4C85105 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		9559FAC3375EEC118A9F224598772FAF /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -1211,17 +1211,20 @@
 			path = "../Target Support Files/NovaAdapter";
 			sourceTree = "<group>";
 		};
-		01ECB8B491EA9EA53908B4982151EA64 /* Pods-MSPSharedLibraries */ = {
+		03AF4FA06632F6EEC98AE27034D66340 /* Pods-MSPDemoApp */ = {
 			isa = PBXGroup;
 			children = (
-				85499398EA52A956ADB5463FE054637A /* Pods-MSPSharedLibraries-acknowledgements.markdown */,
-				1427A3CF63640D156B4B1448C3EAD5AC /* Pods-MSPSharedLibraries-acknowledgements.plist */,
-				0BEB0B0EEC93BD2E25613BC9421AF2C0 /* Pods-MSPSharedLibraries-dummy.m */,
-				1E942542D0E265080AD448FDE8C4C711 /* Pods-MSPSharedLibraries.debug.xcconfig */,
-				4B78C37654444D15606685418E8EBDDD /* Pods-MSPSharedLibraries.release.xcconfig */,
+				557309455EDB9B4E8B86C9479D409FC7 /* Pods-MSPDemoApp.modulemap */,
+				65662C7AFFC28935BE963A0D86A8760F /* Pods-MSPDemoApp-acknowledgements.markdown */,
+				D9A3F941B0E8A9741CB1B5989542F42B /* Pods-MSPDemoApp-acknowledgements.plist */,
+				188F5E825BFE7951B35895EEF77FFBDE /* Pods-MSPDemoApp-dummy.m */,
+				BBBEA3A620FDE0E2C707AB8470E3E705 /* Pods-MSPDemoApp-frameworks.sh */,
+				1E619CDBD6FC4414C01B4A3559A5F22D /* Pods-MSPDemoApp-umbrella.h */,
+				B3DBF68C5462A3B57904E18243693AE6 /* Pods-MSPDemoApp.debug.xcconfig */,
+				7DE0EB2DCFEF1C61ADE146166DB32FC7 /* Pods-MSPDemoApp.release.xcconfig */,
 			);
-			name = "Pods-MSPSharedLibraries";
-			path = "Target Support Files/Pods-MSPSharedLibraries";
+			name = "Pods-MSPDemoApp";
+			path = "Target Support Files/Pods-MSPDemoApp";
 			sourceTree = "<group>";
 		};
 		09CC7C4631A09DD4679B343D9391015F /* mux */ = {
@@ -1266,6 +1269,19 @@
 				094098E80E55D252E0917B70118D9B05 /* sharpyuv_sse2.c */,
 			);
 			name = sharpyuv;
+			sourceTree = "<group>";
+		};
+		1BDD893F40AC201954E1CD9F4F3A7681 /* Pods-MSPCore */ = {
+			isa = PBXGroup;
+			children = (
+				B6118128F335B334325EDBBAD5C3E83F /* Pods-MSPCore-acknowledgements.markdown */,
+				CC08C91C1AA8A220714DFE14D16B99EF /* Pods-MSPCore-acknowledgements.plist */,
+				EC1C18407E64E86E7518AEDC58A1B9B7 /* Pods-MSPCore-dummy.m */,
+				9DA6E313F8E98BBECE663C4A2B5F7306 /* Pods-MSPCore.debug.xcconfig */,
+				507F109765BAF863FC639ECE6DDC94AC /* Pods-MSPCore.release.xcconfig */,
+			);
+			name = "Pods-MSPCore";
+			path = "Target Support Files/Pods-MSPCore";
 			sourceTree = "<group>";
 		};
 		1FCEC5D6C2D9E2DE03ED5178958C9450 /* SnapKit */ = {
@@ -1327,6 +1343,22 @@
 			path = libwebp;
 			sourceTree = "<group>";
 		};
+		236A6BDB9D5BFF7EA486B40F9263171B /* Targets Support Files */ = {
+			isa = PBXGroup;
+			children = (
+				F315BB0BAEAC796F4CF14A82591B9416 /* Pods-FacebookAdapter */,
+				30DF98DCEA79D41ACC6A1B71B1CBE59E /* Pods-GoogleAdapter */,
+				1BDD893F40AC201954E1CD9F4F3A7681 /* Pods-MSPCore */,
+				03AF4FA06632F6EEC98AE27034D66340 /* Pods-MSPDemoApp */,
+				DE3D7E260F64DD928F62C712FD17D7B5 /* Pods-MSPSharedLibraries */,
+				B5C90590E5E091BA2FBC336F9FB9DB10 /* Pods-NovaAdapter */,
+				8880BA44BDD8E0980E01DE9FEB90A683 /* Pods-NovaCore */,
+				BEFA65B718C9719916D4782582991479 /* Pods-PrebidAdapter */,
+				80A6DFDDD7D2EBBF90E5E9084537737F /* Pods-PrebidAdapter-PrebidAdapterTests */,
+			);
+			name = "Targets Support Files";
+			sourceTree = "<group>";
+		};
 		2CDDD76266766C3F54885BB1E7970A5C /* MSPSharedLibraries */ = {
 			isa = PBXGroup;
 			children = (
@@ -1336,6 +1368,44 @@
 			);
 			name = MSPSharedLibraries;
 			path = MSPSharedLibraries;
+			sourceTree = "<group>";
+		};
+		2D71B883E5F4B694A513CDF3946900CD /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				5E4674603A5D5B9215FFA0F8E69F8B71 /* libwebp */,
+				25DC918703BE979A2118F52CC67A9FCF /* MSPCore */,
+				91E843466A47A5FD45A9BB12EA1C19DA /* NovaAdapter */,
+				446761AA0F89931E7CD51218A8B65842 /* Pods-FacebookAdapter */,
+				B6E557F98C7A4C446F7AC3F0BEB2266B /* Pods-GoogleAdapter */,
+				0DAA15691DB78E45D113136424C43C64 /* Pods-MSPCore */,
+				30F69FBF545DED3F2CF55CC2DB040F1E /* Pods-MSPDemoApp */,
+				D70B596B4D923637477973A753FEEC7E /* Pods-MSPSharedLibraries */,
+				58BCE35550BFB7AFDC43C33143534EB8 /* Pods-NovaAdapter */,
+				128CCEC755138567D40C2B348A67ADBA /* Pods-NovaCore */,
+				9AA66E66C0761D1F095EBA1C4BF87A77 /* Pods-PrebidAdapter */,
+				CB1C740A33768D13AFDBB8D7A56A7D18 /* Pods-PrebidAdapter-PrebidAdapterTests */,
+				382BB09236DD3AB6042D0911AED0516B /* PrebidAdapter */,
+				B0B214D775196BA7CA8E17E53048A493 /* SDWebImage */,
+				CF1281E58AA1045D4B7F33FC56691C42 /* SDWebImage-SDWebImage */,
+				FCF61D9B2B75054A9A3185DDC609B7FF /* SDWebImageWebPCoder */,
+				FD65F4477DA6FF1249FE4272D666BECA /* Shimmer */,
+				979486118B3E90C08386079D57962701 /* SnapKit */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		30DF98DCEA79D41ACC6A1B71B1CBE59E /* Pods-GoogleAdapter */ = {
+			isa = PBXGroup;
+			children = (
+				BAA8ED943CA4FF9EDC11FAB19D6E5A27 /* Pods-GoogleAdapter-acknowledgements.markdown */,
+				D43F8C10172B3F319BEAD4F1F35EA6E2 /* Pods-GoogleAdapter-acknowledgements.plist */,
+				E20B5CE7B391730CC51F5AEF8DBFB9A6 /* Pods-GoogleAdapter-dummy.m */,
+				342C34AC365D2B934AA10495EB0058C0 /* Pods-GoogleAdapter.debug.xcconfig */,
+				6C66C9A515CFCCE694C3D777BDD69769 /* Pods-GoogleAdapter.release.xcconfig */,
+			);
+			name = "Pods-GoogleAdapter";
+			path = "Target Support Files/Pods-GoogleAdapter";
 			sourceTree = "<group>";
 		};
 		41C5469FF587BDBB8C54FDC6D14AA661 /* SDWebImage */ = {
@@ -1363,73 +1433,12 @@
 			path = Shimmer;
 			sourceTree = "<group>";
 		};
-		5057CC31EB6F57FC3DF0B5802BFC577C /* Pods-PrebidAdapter */ = {
-			isa = PBXGroup;
-			children = (
-				09182853BF7B4ACBC1797F8FDEBF43DF /* Pods-PrebidAdapter.modulemap */,
-				E31506ECA34399B832C38AC2F7261752 /* Pods-PrebidAdapter-acknowledgements.markdown */,
-				C85DD4845C64BC84F38739126A13AF3A /* Pods-PrebidAdapter-acknowledgements.plist */,
-				C72E04C427898604D98AEFA85481BC1F /* Pods-PrebidAdapter-dummy.m */,
-				533644BB0CA111A06895FAEF799B9240 /* Pods-PrebidAdapter-Info.plist */,
-				6AD3719130422CC395D86CF9994C06E0 /* Pods-PrebidAdapter-umbrella.h */,
-				D3BE9F5C107CD7DEB50147776DAF373B /* Pods-PrebidAdapter.debug.xcconfig */,
-				A3CAE764345269C5C717D2F3ECC4349A /* Pods-PrebidAdapter.release.xcconfig */,
-			);
-			name = "Pods-PrebidAdapter";
-			path = "Target Support Files/Pods-PrebidAdapter";
-			sourceTree = "<group>";
-		};
-		54C675563BC42BFDFB5F6907653363FF /* Targets Support Files */ = {
-			isa = PBXGroup;
-			children = (
-				5D0ADF5D4C8CFBEA3DA26A25AD5D9346 /* Pods-GoogleAdapter */,
-				B0A641474FC9F162F0836AA0444C3362 /* Pods-MetaAdapter */,
-				9EBC313EFE1D6F8185B18250E3F28F14 /* Pods-MSPCore */,
-				CF22707A4AC479D804863AA2BAC5141F /* Pods-MSPDemoApp */,
-				01ECB8B491EA9EA53908B4982151EA64 /* Pods-MSPSharedLibraries */,
-				EDAE0A64EC8AB5C45578D9E5C23F0F63 /* Pods-NovaAdapter */,
-				5A4C66A3958AC875785A54368094CC00 /* Pods-NovaCore */,
-				5057CC31EB6F57FC3DF0B5802BFC577C /* Pods-PrebidAdapter */,
-				803147797EB5E3217F59A675B7884E92 /* Pods-PrebidAdapter-PrebidAdapterTests */,
-			);
-			name = "Targets Support Files";
-			sourceTree = "<group>";
-		};
 		578452D2E740E91742655AC8F1636D1F /* iOS */ = {
 			isa = PBXGroup;
 			children = (
 				73010CC983E3809BECEE5348DA1BB8C6 /* Foundation.framework */,
 			);
 			name = iOS;
-			sourceTree = "<group>";
-		};
-		5A4C66A3958AC875785A54368094CC00 /* Pods-NovaCore */ = {
-			isa = PBXGroup;
-			children = (
-				B331A72F0FD04BFD0CB928F6FE3F779A /* Pods-NovaCore.modulemap */,
-				BA19CC6851417DF00B246209FF46E774 /* Pods-NovaCore-acknowledgements.markdown */,
-				887AF27E9A38B790182D3E2DA1269FE3 /* Pods-NovaCore-acknowledgements.plist */,
-				1E553A8D94D1788168F70C45FB8AD697 /* Pods-NovaCore-dummy.m */,
-				CC89633651865AC00F7B8D16B285E606 /* Pods-NovaCore-resources.sh */,
-				DC9431B64A14CFC1568DA252FD4F1586 /* Pods-NovaCore-umbrella.h */,
-				CF5A10A26701CBF88882D640332171FD /* Pods-NovaCore.debug.xcconfig */,
-				E4997415D0BF5BE7F157B7F252F7C6C7 /* Pods-NovaCore.release.xcconfig */,
-			);
-			name = "Pods-NovaCore";
-			path = "Target Support Files/Pods-NovaCore";
-			sourceTree = "<group>";
-		};
-		5D0ADF5D4C8CFBEA3DA26A25AD5D9346 /* Pods-GoogleAdapter */ = {
-			isa = PBXGroup;
-			children = (
-				06EA3C4C385CFB9E22E3A2E6E3C43A8C /* Pods-GoogleAdapter-acknowledgements.markdown */,
-				5811518BE3F28F7F4E068330FEEB525D /* Pods-GoogleAdapter-acknowledgements.plist */,
-				A12C0214E2E2D5C063378E250CAF0494 /* Pods-GoogleAdapter-dummy.m */,
-				769C3DB1C2B3571754858DF98ADFEEB8 /* Pods-GoogleAdapter.debug.xcconfig */,
-				0D8BFFBB5AA7D0CE7395E0550BEA4B01 /* Pods-GoogleAdapter.release.xcconfig */,
-			);
-			name = "Pods-GoogleAdapter";
-			path = "Target Support Files/Pods-GoogleAdapter";
 			sourceTree = "<group>";
 		};
 		60407C773717143A2621C21F438C430F /* Support Files */ = {
@@ -1475,17 +1484,17 @@
 			name = Resources;
 			sourceTree = "<group>";
 		};
-		803147797EB5E3217F59A675B7884E92 /* Pods-PrebidAdapter-PrebidAdapterTests */ = {
+		80A6DFDDD7D2EBBF90E5E9084537737F /* Pods-PrebidAdapter-PrebidAdapterTests */ = {
 			isa = PBXGroup;
 			children = (
-				5681003E0E4CA20DE99815D475A89877 /* Pods-PrebidAdapter-PrebidAdapterTests.modulemap */,
-				ADC760FDEA657362CCD2ED6E1345BD27 /* Pods-PrebidAdapter-PrebidAdapterTests-acknowledgements.markdown */,
-				D9471CC909DD947752FF2A549A3C55AF /* Pods-PrebidAdapter-PrebidAdapterTests-acknowledgements.plist */,
-				59C4BA0470AE7F56BD91E46942094E00 /* Pods-PrebidAdapter-PrebidAdapterTests-dummy.m */,
-				49BD620E21C52B00F564AB1CEFA48F9C /* Pods-PrebidAdapter-PrebidAdapterTests-Info.plist */,
-				39BE9D0B4780184F9194B14FB9541341 /* Pods-PrebidAdapter-PrebidAdapterTests-umbrella.h */,
-				3CDE99014A69188D2142EDECA492E9D4 /* Pods-PrebidAdapter-PrebidAdapterTests.debug.xcconfig */,
-				ED2B140ED82920D53EE57871D0E617EF /* Pods-PrebidAdapter-PrebidAdapterTests.release.xcconfig */,
+				7794B5436E88F14685F4E2862F3C0C21 /* Pods-PrebidAdapter-PrebidAdapterTests.modulemap */,
+				7584A0E25B1463DD276909CD39F048D8 /* Pods-PrebidAdapter-PrebidAdapterTests-acknowledgements.markdown */,
+				A85A471B191746836D5F38F2EA0AB639 /* Pods-PrebidAdapter-PrebidAdapterTests-acknowledgements.plist */,
+				294F804CC460AB8F17027585D7738848 /* Pods-PrebidAdapter-PrebidAdapterTests-dummy.m */,
+				D68B7CD94B4D8A8EAD3EB300DDCC1C37 /* Pods-PrebidAdapter-PrebidAdapterTests-Info.plist */,
+				62F20A221E8AF84BCAF7C66F12177718 /* Pods-PrebidAdapter-PrebidAdapterTests-umbrella.h */,
+				895B467368872FD5A6AC87E412BB3C2B /* Pods-PrebidAdapter-PrebidAdapterTests.debug.xcconfig */,
+				18C48AD8697102A862EDFFDA8185CDD7 /* Pods-PrebidAdapter-PrebidAdapterTests.release.xcconfig */,
 			);
 			name = "Pods-PrebidAdapter-PrebidAdapterTests";
 			path = "Target Support Files/Pods-PrebidAdapter-PrebidAdapterTests";
@@ -1691,6 +1700,22 @@
 			path = "../Target Support Files/SDWebImage";
 			sourceTree = "<group>";
 		};
+		8880BA44BDD8E0980E01DE9FEB90A683 /* Pods-NovaCore */ = {
+			isa = PBXGroup;
+			children = (
+				9C285FCCD60D729EE730DD2D9140A529 /* Pods-NovaCore.modulemap */,
+				17CC205ABBEDFE6C9388575CDFDDFFE6 /* Pods-NovaCore-acknowledgements.markdown */,
+				E61A4EEA23A664B5D3323D7E71DAB116 /* Pods-NovaCore-acknowledgements.plist */,
+				7EE381151B4D6285C54F5390E07984A2 /* Pods-NovaCore-dummy.m */,
+				A95A5E273CA9EF133B1DB49FCB87E329 /* Pods-NovaCore-resources.sh */,
+				F8DE86456712FA86BBB3DAA5A065DCC8 /* Pods-NovaCore-umbrella.h */,
+				0B9FC43B0826AD63B4D47552CF7BC96E /* Pods-NovaCore.debug.xcconfig */,
+				49F9785BD67FCB73FD491AE42B2DFCF2 /* Pods-NovaCore.release.xcconfig */,
+			);
+			name = "Pods-NovaCore";
+			path = "Target Support Files/Pods-NovaCore";
+			sourceTree = "<group>";
+		};
 		8D3BE7B3A16277ABBC17B32E61EF663D /* NovaAdapter */ = {
 			isa = PBXGroup;
 			children = (
@@ -1734,30 +1759,33 @@
 			path = "../Target Support Files/SDWebImageWebPCoder";
 			sourceTree = "<group>";
 		};
-		9EBC313EFE1D6F8185B18250E3F28F14 /* Pods-MSPCore */ = {
+		B5C90590E5E091BA2FBC336F9FB9DB10 /* Pods-NovaAdapter */ = {
 			isa = PBXGroup;
 			children = (
-				83ADB54F67E24E5B5398BF9DAD1AA5C0 /* Pods-MSPCore-acknowledgements.markdown */,
-				9292E1CD49F17BDC437802C35DE9D00D /* Pods-MSPCore-acknowledgements.plist */,
-				D3E2116B52BADF3FF156F0C3756DB2E8 /* Pods-MSPCore-dummy.m */,
-				18268D02DBC7666A55263A57016A842B /* Pods-MSPCore.debug.xcconfig */,
-				C571C0A063E02AF654E04D0C98945918 /* Pods-MSPCore.release.xcconfig */,
+				A9A94ED8598265D83656CAF34C08AEC4 /* Pods-NovaAdapter-acknowledgements.markdown */,
+				E237DB90B7D323BD7EDF0A32FEE5510D /* Pods-NovaAdapter-acknowledgements.plist */,
+				DA926E02A1F5C1672056EA6CB67D55CF /* Pods-NovaAdapter-dummy.m */,
+				495805A62C019D2B7EF3C3987561A577 /* Pods-NovaAdapter.debug.xcconfig */,
+				9FAA27C1690C95C6A931C3E7CB3FE417 /* Pods-NovaAdapter.release.xcconfig */,
 			);
-			name = "Pods-MSPCore";
-			path = "Target Support Files/Pods-MSPCore";
+			name = "Pods-NovaAdapter";
+			path = "Target Support Files/Pods-NovaAdapter";
 			sourceTree = "<group>";
 		};
-		B0A641474FC9F162F0836AA0444C3362 /* Pods-MetaAdapter */ = {
+		BEFA65B718C9719916D4782582991479 /* Pods-PrebidAdapter */ = {
 			isa = PBXGroup;
 			children = (
-				BE45C2131F36300F8205B5D61F0AC4D6 /* Pods-MetaAdapter-acknowledgements.markdown */,
-				BB0F911CE4483CCCCDDD19D34F9F172D /* Pods-MetaAdapter-acknowledgements.plist */,
-				99314CBFEACB5C380521E696F1E7DC4D /* Pods-MetaAdapter-dummy.m */,
-				F72D9C7E16CCC0134BC1009371B65836 /* Pods-MetaAdapter.debug.xcconfig */,
-				A92A118C35ADD708245929A3F65FB19C /* Pods-MetaAdapter.release.xcconfig */,
+				D92AD52E6647581969CD442BF4C6D4EF /* Pods-PrebidAdapter.modulemap */,
+				1E01183037E206CF142B964CBC1FC1BA /* Pods-PrebidAdapter-acknowledgements.markdown */,
+				B1570C098D7EF4082234CF03C1F2862B /* Pods-PrebidAdapter-acknowledgements.plist */,
+				F00FFC3BF1116A33088EF9F3F20ECD90 /* Pods-PrebidAdapter-dummy.m */,
+				6A3AEF0EB53DC6D07C05E65D86A4A415 /* Pods-PrebidAdapter-Info.plist */,
+				EC13C77D5C10412F95E9C73DE47AEEFC /* Pods-PrebidAdapter-umbrella.h */,
+				6A2B87384331D1EB86FD2875AC3A14EC /* Pods-PrebidAdapter.debug.xcconfig */,
+				EF738AE2BDC3F92D66F5D94FDCC41BFA /* Pods-PrebidAdapter.release.xcconfig */,
 			);
-			name = "Pods-MetaAdapter";
-			path = "Target Support Files/Pods-MetaAdapter";
+			name = "Pods-PrebidAdapter";
+			path = "Target Support Files/Pods-PrebidAdapter";
 			sourceTree = "<group>";
 		};
 		C1FA44463E65112695B1829EAACA0383 /* Frameworks */ = {
@@ -1766,31 +1794,6 @@
 				686ABA10DC3123E00A8A7E0273FB0BCA /* NovaCore.xcframework */,
 			);
 			name = Frameworks;
-			sourceTree = "<group>";
-		};
-		C29BD8DD82CC1CDD283A0BB160E8F4C3 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				5E4674603A5D5B9215FFA0F8E69F8B71 /* libwebp */,
-				25DC918703BE979A2118F52CC67A9FCF /* MSPCore */,
-				91E843466A47A5FD45A9BB12EA1C19DA /* NovaAdapter */,
-				B6E557F98C7A4C446F7AC3F0BEB2266B /* Pods-GoogleAdapter */,
-				FBAC3E19EE1F12F22D7AC4D4F9F3A05C /* Pods-MetaAdapter */,
-				0DAA15691DB78E45D113136424C43C64 /* Pods-MSPCore */,
-				30F69FBF545DED3F2CF55CC2DB040F1E /* Pods-MSPDemoApp */,
-				D70B596B4D923637477973A753FEEC7E /* Pods-MSPSharedLibraries */,
-				58BCE35550BFB7AFDC43C33143534EB8 /* Pods-NovaAdapter */,
-				128CCEC755138567D40C2B348A67ADBA /* Pods-NovaCore */,
-				9AA66E66C0761D1F095EBA1C4BF87A77 /* Pods-PrebidAdapter */,
-				CB1C740A33768D13AFDBB8D7A56A7D18 /* Pods-PrebidAdapter-PrebidAdapterTests */,
-				382BB09236DD3AB6042D0911AED0516B /* PrebidAdapter */,
-				B0B214D775196BA7CA8E17E53048A493 /* SDWebImage */,
-				CF1281E58AA1045D4B7F33FC56691C42 /* SDWebImage-SDWebImage */,
-				FCF61D9B2B75054A9A3185DDC609B7FF /* SDWebImageWebPCoder */,
-				FD65F4477DA6FF1249FE4272D666BECA /* Shimmer */,
-				979486118B3E90C08386079D57962701 /* SnapKit */,
-			);
-			name = Products;
 			sourceTree = "<group>";
 		};
 		C5F3A10EF0A18D0F23F62A6F9DDA5183 /* MSPCore */ = {
@@ -1813,25 +1816,9 @@
 				9D940727FF8FB9C785EB98E56350EF41 /* Podfile */,
 				D210D550F4EA176C3123ED886F8F87F5 /* Frameworks */,
 				9211D54C7BDC24155E708F4D86DBFFC0 /* Pods */,
-				C29BD8DD82CC1CDD283A0BB160E8F4C3 /* Products */,
-				54C675563BC42BFDFB5F6907653363FF /* Targets Support Files */,
+				2D71B883E5F4B694A513CDF3946900CD /* Products */,
+				236A6BDB9D5BFF7EA486B40F9263171B /* Targets Support Files */,
 			);
-			sourceTree = "<group>";
-		};
-		CF22707A4AC479D804863AA2BAC5141F /* Pods-MSPDemoApp */ = {
-			isa = PBXGroup;
-			children = (
-				81C2C82B6366B609FCB5C7357819C7B6 /* Pods-MSPDemoApp.modulemap */,
-				2072C8618B37379471062D6C2AB3427C /* Pods-MSPDemoApp-acknowledgements.markdown */,
-				07A7E2D2E77A958AFA79B7BEAE3BA56B /* Pods-MSPDemoApp-acknowledgements.plist */,
-				E5FF6E1F5447832A453412DC1764A23C /* Pods-MSPDemoApp-dummy.m */,
-				2EB7084C395CA1790CA1D22310D84E41 /* Pods-MSPDemoApp-frameworks.sh */,
-				E9B60B248499D69157E189E0216611A3 /* Pods-MSPDemoApp-umbrella.h */,
-				19BD0C01DFCD671164D7A8431C0BD31A /* Pods-MSPDemoApp.debug.xcconfig */,
-				71743A0EF526209085680DF790B7326C /* Pods-MSPDemoApp.release.xcconfig */,
-			);
-			name = "Pods-MSPDemoApp";
-			path = "Target Support Files/Pods-MSPDemoApp";
 			sourceTree = "<group>";
 		};
 		D210D550F4EA176C3123ED886F8F87F5 /* Frameworks */ = {
@@ -1852,6 +1839,19 @@
 			);
 			name = PrebidAdapter;
 			path = PrebidAdapter;
+			sourceTree = "<group>";
+		};
+		DE3D7E260F64DD928F62C712FD17D7B5 /* Pods-MSPSharedLibraries */ = {
+			isa = PBXGroup;
+			children = (
+				D7174807FC95DB5146A8885CF8882EBB /* Pods-MSPSharedLibraries-acknowledgements.markdown */,
+				58958458EEB7A44E965E888502E46866 /* Pods-MSPSharedLibraries-acknowledgements.plist */,
+				A82755B86FD44E80B38E67D47D7660D9 /* Pods-MSPSharedLibraries-dummy.m */,
+				43B9FCC20D021CCF261E0FD36886F9EE /* Pods-MSPSharedLibraries.debug.xcconfig */,
+				113EEC63D2550AF644491BEA206B29AD /* Pods-MSPSharedLibraries.release.xcconfig */,
+			);
+			name = "Pods-MSPSharedLibraries";
+			path = "Target Support Files/Pods-MSPSharedLibraries";
 			sourceTree = "<group>";
 		};
 		DEB0B98B4F7B5EF9B620D25FD5AA548D /* demux */ = {
@@ -2035,17 +2035,17 @@
 			path = "../Target Support Files/Shimmer";
 			sourceTree = "<group>";
 		};
-		EDAE0A64EC8AB5C45578D9E5C23F0F63 /* Pods-NovaAdapter */ = {
+		F315BB0BAEAC796F4CF14A82591B9416 /* Pods-FacebookAdapter */ = {
 			isa = PBXGroup;
 			children = (
-				BA67DBFAACAEDC38C0940B2B7C015593 /* Pods-NovaAdapter-acknowledgements.markdown */,
-				AAC4D2C3D6BF8D53CEEACD9D0459F038 /* Pods-NovaAdapter-acknowledgements.plist */,
-				9542835C527C45857575C90789D76C86 /* Pods-NovaAdapter-dummy.m */,
-				8C1531AD35AAE55D21754609D27F09B7 /* Pods-NovaAdapter.debug.xcconfig */,
-				1F83B034742D4BEA03762FA9B0BA7B53 /* Pods-NovaAdapter.release.xcconfig */,
+				0D63EBE26D3E0A2B8C295AFAA28C5ED1 /* Pods-FacebookAdapter-acknowledgements.markdown */,
+				22034CE8DCB80D00470F30F21154BBC9 /* Pods-FacebookAdapter-acknowledgements.plist */,
+				4290002649366DBA2D8EB70886F1BFEE /* Pods-FacebookAdapter-dummy.m */,
+				946F7A52C03673A7C9F076D07318380F /* Pods-FacebookAdapter.debug.xcconfig */,
+				54AE31AD0B629DF8B1CD6DA6FFB7DB55 /* Pods-FacebookAdapter.release.xcconfig */,
 			);
-			name = "Pods-NovaAdapter";
-			path = "Target Support Files/Pods-NovaAdapter";
+			name = "Pods-FacebookAdapter";
+			path = "Target Support Files/Pods-FacebookAdapter";
 			sourceTree = "<group>";
 		};
 		F3CEB0154D5DFDDABC281F026D7328B5 /* Support Files */ = {
@@ -2065,13 +2065,6 @@
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
-		05853CC2571803F11B743A62C480A246 /* Headers */ = {
-			isa = PBXHeadersBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		22F7ED5A5A1595EB4792C2B9170935E7 /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
@@ -2316,6 +2309,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		CB525C611FB2FE3C73D14D663CC4FA37 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		CF4DBA01F0F9C3F161D804924999144D /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
@@ -2421,6 +2421,23 @@
 			name = SDWebImage;
 			productName = SDWebImage;
 			productReference = B0B214D775196BA7CA8E17E53048A493 /* SDWebImage */;
+			productType = "com.apple.product-type.library.static";
+		};
+		3DE37C94DCBEB6A1B879EC0B1047DA88 /* Pods-FacebookAdapter */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 650FCCF040F30FC6891789530C21B189 /* Build configuration list for PBXNativeTarget "Pods-FacebookAdapter" */;
+			buildPhases = (
+				CB525C611FB2FE3C73D14D663CC4FA37 /* Headers */,
+				8EA75FAFE142CD18D40C3537CB6D5B98 /* Sources */,
+				06F3B8C464C4BF6ABD7634E1527BEFE1 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "Pods-FacebookAdapter";
+			productName = "Pods-FacebookAdapter";
+			productReference = 446761AA0F89931E7CD51218A8B65842 /* Pods-FacebookAdapter */;
 			productType = "com.apple.product-type.library.static";
 		};
 		47D2E85A78C25869BB13521D8561A638 /* libwebp */ = {
@@ -2538,23 +2555,6 @@
 			name = PrebidAdapter;
 			productName = PrebidAdapter;
 			productReference = 382BB09236DD3AB6042D0911AED0516B /* PrebidAdapter */;
-			productType = "com.apple.product-type.library.static";
-		};
-		8170C9D6D159A1492AA1E8424EAF787E /* Pods-MetaAdapter */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = B976FA966F4B6C02242A400CB76A8830 /* Build configuration list for PBXNativeTarget "Pods-MetaAdapter" */;
-			buildPhases = (
-				05853CC2571803F11B743A62C480A246 /* Headers */,
-				40573E6EA61821500B434C5DC5DB7973 /* Sources */,
-				9559FAC3375EEC118A9F224598772FAF /* Frameworks */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-			);
-			name = "Pods-MetaAdapter";
-			productName = "Pods-MetaAdapter";
-			productReference = FBAC3E19EE1F12F22D7AC4D4F9F3A05C /* Pods-MetaAdapter */;
 			productType = "com.apple.product-type.library.static";
 		};
 		842B8FD13FCB2C98896621D2A5ACD940 /* MSPCore */ = {
@@ -2680,7 +2680,7 @@
 				en,
 			);
 			mainGroup = CF1408CF629C7361332E53B88F7BD30C;
-			productRefGroup = C29BD8DD82CC1CDD283A0BB160E8F4C3 /* Products */;
+			productRefGroup = 2D71B883E5F4B694A513CDF3946900CD /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
@@ -2688,8 +2688,8 @@
 				842B8FD13FCB2C98896621D2A5ACD940 /* MSPCore */,
 				D5D11636294BD62069CA3A8320C5D917 /* MSPSharedLibraries */,
 				50F36179BE3E2CDC1681A5447D600A88 /* NovaAdapter */,
+				3DE37C94DCBEB6A1B879EC0B1047DA88 /* Pods-FacebookAdapter */,
 				FB8887B7A1488223C2A29DEDC65EA4ED /* Pods-GoogleAdapter */,
-				8170C9D6D159A1492AA1E8424EAF787E /* Pods-MetaAdapter */,
 				D81DB52376927FFE8E1CD84C03ABC4D3 /* Pods-MSPCore */,
 				6D2ACD0B95DD51FD05D506D25F8D2DD1 /* Pods-MSPDemoApp */,
 				12C927825E2ED1FC8C1526DD54DB5D87 /* Pods-MSPSharedLibraries */,
@@ -2901,14 +2901,6 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		40573E6EA61821500B434C5DC5DB7973 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				D8D812B3A8F8C5F0BF131FE598C64DA1 /* Pods-MetaAdapter-dummy.m in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		4FB3865FE1A21830C6625D95C5895F18 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -3112,6 +3104,14 @@
 				E59B9CDC6A194C13F7FD1A6999965724 /* MSPCore-dummy.m in Sources */,
 				69A59B75977A836EF95C5676D869EE5E /* MSPHelper.swift in Sources */,
 				1948947C508ABE0FF819DCCB3105872A /* MSPNativeAdContainer.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		8EA75FAFE142CD18D40C3537CB6D5B98 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D846B2965FC3382C4947DC5387BF4658 /* Pods-FacebookAdapter-dummy.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3358,7 +3358,7 @@
 /* Begin XCBuildConfiguration section */
 		145460B97E8E78F1CA046C6751B94EC7 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 19BD0C01DFCD671164D7A8431C0BD31A /* Pods-MSPDemoApp.debug.xcconfig */;
+			baseConfigurationReference = B3DBF68C5462A3B57904E18243693AE6 /* Pods-MSPDemoApp.debug.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = NO;
 				CLANG_ENABLE_OBJC_WEAK = NO;
@@ -3381,7 +3381,7 @@
 		};
 		1647836467011A1D5A08669D803E0DFE /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 71743A0EF526209085680DF790B7326C /* Pods-MSPDemoApp.release.xcconfig */;
+			baseConfigurationReference = 7DE0EB2DCFEF1C61ADE146166DB32FC7 /* Pods-MSPDemoApp.release.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = NO;
 				CLANG_ENABLE_OBJC_WEAK = NO;
@@ -3405,7 +3405,7 @@
 		};
 		200FB36311D592F9ACA94B8C74BCFF69 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 8C1531AD35AAE55D21754609D27F09B7 /* Pods-NovaAdapter.debug.xcconfig */;
+			baseConfigurationReference = 495805A62C019D2B7EF3C3987561A577 /* Pods-NovaAdapter.debug.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = NO;
 				CLANG_ENABLE_OBJC_WEAK = NO;
@@ -3497,7 +3497,7 @@
 		};
 		2F4670B91FC1F2E306FAFD403AF6D8BA /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 1E942542D0E265080AD448FDE8C4C711 /* Pods-MSPSharedLibraries.debug.xcconfig */;
+			baseConfigurationReference = 43B9FCC20D021CCF261E0FD36886F9EE /* Pods-MSPSharedLibraries.debug.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = NO;
 				CLANG_ENABLE_OBJC_WEAK = NO;
@@ -3543,6 +3543,29 @@
 			};
 			name = Debug;
 		};
+		404138C0C6D9C8D96547A876E5A76780 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 54AE31AD0B629DF8B1CD6DA6FFB7DB55 /* Pods-FacebookAdapter.release.xcconfig */;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = NO;
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				MACH_O_TYPE = staticlib;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				OTHER_SWIFT_FLAGS = "-no-verify-emitted-module-interface";
+				PODS_ROOT = "$(SRCROOT)";
+				PRODUCT_BUNDLE_IDENTIFIER = "org.cocoapods.${PRODUCT_NAME:rfc1034identifier}";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
 		40A30A62EFDB7D1D7255BD80526D8461 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 66B71989CAF43A3D76CE8F8072D55100 /* SDWebImage.debug.xcconfig */;
@@ -3570,7 +3593,7 @@
 		};
 		46B1FD9AAA9D3486C612A40BC2AB16BB /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = A3CAE764345269C5C717D2F3ECC4349A /* Pods-PrebidAdapter.release.xcconfig */;
+			baseConfigurationReference = EF738AE2BDC3F92D66F5D94FDCC41BFA /* Pods-PrebidAdapter.release.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = NO;
 				CLANG_ENABLE_OBJC_WEAK = NO;
@@ -3609,7 +3632,7 @@
 		};
 		5B1C81CA6E0CBE8B4EB88A3E57B7C504 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = E4997415D0BF5BE7F157B7F252F7C6C7 /* Pods-NovaCore.release.xcconfig */;
+			baseConfigurationReference = 49F9785BD67FCB73FD491AE42B2DFCF2 /* Pods-NovaCore.release.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = NO;
 				CLANG_ENABLE_OBJC_WEAK = NO;
@@ -3657,7 +3680,7 @@
 		};
 		5EA69D8B33485F682901AF917222CB63 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 3CDE99014A69188D2142EDECA492E9D4 /* Pods-PrebidAdapter-PrebidAdapterTests.debug.xcconfig */;
+			baseConfigurationReference = 895B467368872FD5A6AC87E412BB3C2B /* Pods-PrebidAdapter-PrebidAdapterTests.debug.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = NO;
 				CLANG_ENABLE_OBJC_WEAK = NO;
@@ -3722,7 +3745,7 @@
 		};
 		741AE388519474F7211E16D97DEF0A7F /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 0D8BFFBB5AA7D0CE7395E0550BEA4B01 /* Pods-GoogleAdapter.release.xcconfig */;
+			baseConfigurationReference = 6C66C9A515CFCCE694C3D777BDD69769 /* Pods-GoogleAdapter.release.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = NO;
 				CLANG_ENABLE_OBJC_WEAK = NO;
@@ -3817,7 +3840,7 @@
 		};
 		8A43099CCAA057DACE3ED551155F150D /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 18268D02DBC7666A55263A57016A842B /* Pods-MSPCore.debug.xcconfig */;
+			baseConfigurationReference = 9DA6E313F8E98BBECE663C4A2B5F7306 /* Pods-MSPCore.debug.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = NO;
 				CLANG_ENABLE_OBJC_WEAK = NO;
@@ -3992,28 +4015,6 @@
 			};
 			name = Release;
 		};
-		A8845EC3FFCD902E5B4641D83C2BFF3C /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = F72D9C7E16CCC0134BC1009371B65836 /* Pods-MetaAdapter.debug.xcconfig */;
-			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = NO;
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
-				MACH_O_TYPE = staticlib;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				OTHER_SWIFT_FLAGS = "-no-verify-emitted-module-interface";
-				PODS_ROOT = "$(SRCROOT)";
-				PRODUCT_BUNDLE_IDENTIFIER = "org.cocoapods.${PRODUCT_NAME:rfc1034identifier}";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Debug;
-		};
 		AB804B59F68795AC6449262436056E0C /* Release */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = E374DE26A40F765AB7E357CF47B3729C /* PrebidAdapter.release.xcconfig */;
@@ -4112,7 +4113,7 @@
 		};
 		BA17A8315A2AF1AB0F527B6806837E2C /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = D3BE9F5C107CD7DEB50147776DAF373B /* Pods-PrebidAdapter.debug.xcconfig */;
+			baseConfigurationReference = 6A2B87384331D1EB86FD2875AC3A14EC /* Pods-PrebidAdapter.debug.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = NO;
 				CLANG_ENABLE_OBJC_WEAK = NO;
@@ -4150,7 +4151,7 @@
 		};
 		C507CE5FE9376FA387D024B92D0B46C0 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = ED2B140ED82920D53EE57871D0E617EF /* Pods-PrebidAdapter-PrebidAdapterTests.release.xcconfig */;
+			baseConfigurationReference = 18C48AD8697102A862EDFFDA8185CDD7 /* Pods-PrebidAdapter-PrebidAdapterTests.release.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = NO;
 				CLANG_ENABLE_OBJC_WEAK = NO;
@@ -4214,7 +4215,7 @@
 		};
 		C69C456D6D2D4D3E993721D359C3F96F /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 1F83B034742D4BEA03762FA9B0BA7B53 /* Pods-NovaAdapter.release.xcconfig */;
+			baseConfigurationReference = 9FAA27C1690C95C6A931C3E7CB3FE417 /* Pods-NovaAdapter.release.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = NO;
 				CLANG_ENABLE_OBJC_WEAK = NO;
@@ -4259,29 +4260,6 @@
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
-		};
-		D21B6C01D09B76BB2976EC15C10E10A9 /* Release */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = A92A118C35ADD708245929A3F65FB19C /* Pods-MetaAdapter.release.xcconfig */;
-			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = NO;
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
-				MACH_O_TYPE = staticlib;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				OTHER_SWIFT_FLAGS = "-no-verify-emitted-module-interface";
-				PODS_ROOT = "$(SRCROOT)";
-				PRODUCT_BUNDLE_IDENTIFIER = "org.cocoapods.${PRODUCT_NAME:rfc1034identifier}";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
-			};
-			name = Release;
 		};
 		D9F1AD7DD6BC05BD7FA24F3C4818ABF4 /* Debug */ = {
 			isa = XCBuildConfiguration;
@@ -4329,7 +4307,7 @@
 		};
 		E0B5EEC3487681309C6EEF39005E0C86 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = C571C0A063E02AF654E04D0C98945918 /* Pods-MSPCore.release.xcconfig */;
+			baseConfigurationReference = 507F109765BAF863FC639ECE6DDC94AC /* Pods-MSPCore.release.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = NO;
 				CLANG_ENABLE_OBJC_WEAK = NO;
@@ -4352,7 +4330,7 @@
 		};
 		E1EF779323D07ADFAA00CA23962555AF /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = CF5A10A26701CBF88882D640332171FD /* Pods-NovaCore.debug.xcconfig */;
+			baseConfigurationReference = 0B9FC43B0826AD63B4D47552CF7BC96E /* Pods-NovaCore.debug.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = NO;
 				CLANG_ENABLE_OBJC_WEAK = NO;
@@ -4375,7 +4353,7 @@
 		};
 		EB7F33F8020D9BB9AFA97F828DDBA5D3 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 769C3DB1C2B3571754858DF98ADFEEB8 /* Pods-GoogleAdapter.debug.xcconfig */;
+			baseConfigurationReference = 342C34AC365D2B934AA10495EB0058C0 /* Pods-GoogleAdapter.debug.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = NO;
 				CLANG_ENABLE_OBJC_WEAK = NO;
@@ -4423,7 +4401,7 @@
 		};
 		F2784BD15759B05C81DFD352B3BBB84A /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 4B78C37654444D15606685418E8EBDDD /* Pods-MSPSharedLibraries.release.xcconfig */;
+			baseConfigurationReference = 113EEC63D2550AF644491BEA206B29AD /* Pods-MSPSharedLibraries.release.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = NO;
 				CLANG_ENABLE_OBJC_WEAK = NO;
@@ -4443,6 +4421,28 @@
 				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;
+		};
+		FCF8F2DDDB9AEACA84CDB5CB94B37FF7 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 946F7A52C03673A7C9F076D07318380F /* Pods-FacebookAdapter.debug.xcconfig */;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = NO;
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				MACH_O_TYPE = staticlib;
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				OTHER_SWIFT_FLAGS = "-no-verify-emitted-module-interface";
+				PODS_ROOT = "$(SRCROOT)";
+				PRODUCT_BUNDLE_IDENTIFIER = "org.cocoapods.${PRODUCT_NAME:rfc1034identifier}";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
 		};
 /* End XCBuildConfiguration section */
 
@@ -4519,6 +4519,15 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
+		650FCCF040F30FC6891789530C21B189 /* Build configuration list for PBXNativeTarget "Pods-FacebookAdapter" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				FCF8F2DDDB9AEACA84CDB5CB94B37FF7 /* Debug */,
+				404138C0C6D9C8D96547A876E5A76780 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		668CC29970BE5FCCCA030075900C2BC2 /* Build configuration list for PBXNativeTarget "Pods-PrebidAdapter" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
@@ -4587,15 +4596,6 @@
 			buildConfigurations = (
 				C84581279FDFF8B8738A2C51A4969632 /* Debug */,
 				860EE958701240BA8A47D70895DD478A /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		B976FA966F4B6C02242A400CB76A8830 /* Build configuration list for PBXNativeTarget "Pods-MetaAdapter" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				A8845EC3FFCD902E5B4641D83C2BFF3C /* Debug */,
-				D21B6C01D09B76BB2976EC15C10E10A9 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

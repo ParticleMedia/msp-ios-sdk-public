@@ -18,7 +18,7 @@ import Foundation
     public var priceInDollar: Double?
     
     private var nativeAdItem: FBNativeAd?
-    private var metaNativeAd: MetaNativeAd?
+    private var facebookNativeAd: FacebookNativeAd?
     private var adRequest: AdRequest?
     
     public func destroyAd() {
@@ -121,14 +121,13 @@ import Foundation
 
 extension FacebookAdapter: FBNativeAdDelegate {
     public func nativeAdDidLoad(_ nativeAd: FBNativeAd) {
-        let metaNativeAd = MetaNativeAd(adNetworkAdapter: self)
-        self.metaNativeAd = metaNativeAd
-        metaNativeAd.priceInDollar = self.priceInDollar
-        metaNativeAd.nativeAdItem = nativeAd
-        //self.adListener?.onAdLoaded(ad: metaNativeAd)
+        let facebookNativeAd = FacebookNativeAd(adNetworkAdapter: self)
+        self.facebookNativeAd = facebookNativeAd
+        facebookNativeAd.priceInDollar = self.priceInDollar
+        facebookNativeAd.nativeAdItem = nativeAd
         if let adListener = adListener,
            let adRequest = adRequest {
-            handleAdLoaded(ad: metaNativeAd, listener: adListener, adRequest: adRequest)
+            handleAdLoaded(ad: facebookNativeAd, listener: adListener, adRequest: adRequest)
         }
     }
     
@@ -137,14 +136,14 @@ extension FacebookAdapter: FBNativeAdDelegate {
     }
     
     public func nativeAdWillLogImpression(_ nativeAd: FBNativeAd) {
-        if let metaNativeAd = self.metaNativeAd {
-            self.adListener?.onAdImpression(ad: metaNativeAd)
+        if let facebookNativeAd = self.facebookNativeAd {
+            self.adListener?.onAdImpression(ad: facebookNativeAd)
         }
     }
     
     public func nativeAdDidClick(_ nativeAd: FBNativeAd) {
-        if let metaNativeAd = self.metaNativeAd {
-            self.adListener?.onAdClick(ad: metaNativeAd)
+        if let facebookNativeAd = self.facebookNativeAd {
+            self.adListener?.onAdClick(ad: facebookNativeAd)
         }
     }
 }

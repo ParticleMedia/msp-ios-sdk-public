@@ -9,7 +9,7 @@ project 'MSPCore/MSPCore'
 project 'MSPDemoApp/MSPDemoApp'
 project 'NovaAdapter/NovaAdapter'
 project 'MSPSharedLibraries/MSPSharedLibraries'
-project 'MetaAdapter/MetaAdapter'
+project 'FacebookAdapter/FacebookAdapter'
 
 target 'PrebidAdapter' do
   project 'PrebidAdapter/PrebidAdapter'
@@ -70,8 +70,8 @@ target 'NovaAdapter' do
   #pod 'MSPSharedLibraries', :path => './', :modular_headers => true
 end
 
-target 'MetaAdapter' do
-  project 'MetaAdapter/MetaAdapter'
+target 'FacebookAdapter' do
+  project 'FacebookAdapter/FacebookAdapter'
   
 end
 
