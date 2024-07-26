@@ -14,9 +14,9 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "8170C9D6D159A1492AA1E8424EAF787E"
-               BuildableName = "libPods-MetaAdapter.a"
-               BlueprintName = "Pods-MetaAdapter"
+               BlueprintIdentifier = "3DE37C94DCBEB6A1B879EC0B1047DA88"
+               BuildableName = "libPods-FacebookAdapter.a"
+               BlueprintName = "Pods-FacebookAdapter"
                ReferencedContainer = "container:Pods.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>

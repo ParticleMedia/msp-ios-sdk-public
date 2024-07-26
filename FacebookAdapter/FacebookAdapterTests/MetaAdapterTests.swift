@@ -1,14 +1,9 @@
-//
-//  MetaAdapterTests.swift
-//  MetaAdapterTests
-//
-//  Created by Huanzhi Zhang on 6/26/24.
-//
+
 
 import XCTest
-@testable import MetaAdapter
+@testable import FacebookAdapter
 
-final class MetaAdapterTests: XCTestCase {
+final class FacebookAdapterTests: XCTestCase {
 
     override func setUpWithError() throws {
         // Put setup code here. This method is called before the invocation of each test method in the class.

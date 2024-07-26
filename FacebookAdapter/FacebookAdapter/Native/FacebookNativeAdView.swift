@@ -1,14 +1,9 @@
-//
-//  MetaNativeAdView.swift
-//  MetaAdapter
-//
-//  Created by Huanzhi Zhang on 6/27/24.
-//
+
 
 import Foundation
 import FBAudienceNetwork
 
-open class MetaNativeAdView: UIView {
+open class FacebookNativeAdView: UIView {
     
     public var titleLabel: UILabel?
     public var bodyLabel: UILabel?
