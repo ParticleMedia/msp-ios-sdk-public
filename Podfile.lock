@@ -15,7 +15,7 @@ PODS:
     - MSPSharedLibraries (= 0.0.19)
     - PrebidAdapter (= 0.0.21)
   - MSPSharedLibraries (0.0.19)
-  - NovaAdapter (0.0.21):
+  - NovaAdapter (0.0.23):
     - MSPSharedLibraries (= 0.0.19)
   - PrebidAdapter (0.0.21):
     - MSPSharedLibraries (= 0.0.19)
@@ -30,7 +30,7 @@ PODS:
 
 DEPENDENCIES:
   - MSPCore (= 0.0.22)
-  - NovaAdapter (= 0.0.21)
+  - NovaAdapter (= 0.0.23)
   - SDWebImage (= 5.18.8)
   - SDWebImageWebPCoder (= 0.14.2)
   - Shimmer
@@ -52,13 +52,13 @@ SPEC CHECKSUMS:
   libwebp: 1786c9f4ff8a279e4dac1e8f385004d5fc253009
   MSPCore: 4518e84ff66742e660accf459c5fd5aa615981f1
   MSPSharedLibraries: c610158df65b367dcf467e4d55133a189e750bdb
-  NovaAdapter: 3e8c2010ddd5ce7fc4b1b04837e6473089abb91f
+  NovaAdapter: c95db67a4c119b49b06479629621d25fafde2cc3
   PrebidAdapter: a5954c7c0d6c8ab44850c81306237f72a0ac95d8
   SDWebImage: a81bbb3ba4ea5f810f4069c68727cb118467a04a
   SDWebImageWebPCoder: 633b813fca24f1de5e076bcd7f720c038b23892b
   Shimmer: c5374be1c2b0c9e292fb05b339a513cf291cac86
   SnapKit: e01d52ebb8ddbc333eefe2132acf85c8227d9c25
 
-PODFILE CHECKSUM: c5afef00ab073892d2533bd3e43ab17387b7d5d1
+PODFILE CHECKSUM: 0494d0fffc40d725a5b9b1748ac5c6b410578f46
 
 COCOAPODS: 1.14.3
