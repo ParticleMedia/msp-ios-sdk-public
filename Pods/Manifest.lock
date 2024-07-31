@@ -1,4 +1,56 @@
 PODS:
+  - Google-Mobile-Ads-SDK (10.14.0):
+    - GoogleAppMeasurement (< 11.0, >= 7.0)
+    - GoogleUserMessagingPlatform (>= 1.1)
+  - GoogleAdapter (0.0.21):
+    - Google-Mobile-Ads-SDK (= 10.14.0)
+    - MSPSharedLibraries (= 0.0.19)
+  - GoogleAppMeasurement (10.29.0):
+    - GoogleAppMeasurement/AdIdSupport (= 10.29.0)
+    - GoogleUtilities/AppDelegateSwizzler (~> 7.11)
+    - GoogleUtilities/MethodSwizzler (~> 7.11)
+    - GoogleUtilities/Network (~> 7.11)
+    - "GoogleUtilities/NSData+zlib (~> 7.11)"
+    - nanopb (< 2.30911.0, >= 2.30908.0)
+  - GoogleAppMeasurement/AdIdSupport (10.29.0):
+    - GoogleAppMeasurement/WithoutAdIdSupport (= 10.29.0)
+    - GoogleUtilities/AppDelegateSwizzler (~> 7.11)
+    - GoogleUtilities/MethodSwizzler (~> 7.11)
+    - GoogleUtilities/Network (~> 7.11)
+    - "GoogleUtilities/NSData+zlib (~> 7.11)"
+    - nanopb (< 2.30911.0, >= 2.30908.0)
+  - GoogleAppMeasurement/WithoutAdIdSupport (10.29.0):
+    - GoogleUtilities/AppDelegateSwizzler (~> 7.11)
+    - GoogleUtilities/MethodSwizzler (~> 7.11)
+    - GoogleUtilities/Network (~> 7.11)
+    - "GoogleUtilities/NSData+zlib (~> 7.11)"
+    - nanopb (< 2.30911.0, >= 2.30908.0)
+  - GoogleUserMessagingPlatform (2.5.0)
+  - GoogleUtilities/AppDelegateSwizzler (7.13.3):
+    - GoogleUtilities/Environment
+    - GoogleUtilities/Logger
+    - GoogleUtilities/Network
+    - GoogleUtilities/Privacy
+  - GoogleUtilities/Environment (7.13.3):
+    - GoogleUtilities/Privacy
+    - PromisesObjC (< 3.0, >= 1.2)
+  - GoogleUtilities/Logger (7.13.3):
+    - GoogleUtilities/Environment
+    - GoogleUtilities/Privacy
+  - GoogleUtilities/MethodSwizzler (7.13.3):
+    - GoogleUtilities/Logger
+    - GoogleUtilities/Privacy
+  - GoogleUtilities/Network (7.13.3):
+    - GoogleUtilities/Logger
+    - "GoogleUtilities/NSData+zlib"
+    - GoogleUtilities/Privacy
+    - GoogleUtilities/Reachability
+  - "GoogleUtilities/NSData+zlib (7.13.3)":
+    - GoogleUtilities/Privacy
+  - GoogleUtilities/Privacy (7.13.3)
+  - GoogleUtilities/Reachability (7.13.3):
+    - GoogleUtilities/Logger
+    - GoogleUtilities/Privacy
   - libwebp (1.3.2):
     - libwebp/demux (= 1.3.2)
     - libwebp/mux (= 1.3.2)
@@ -15,10 +67,16 @@ PODS:
     - MSPSharedLibraries (= 0.0.19)
     - PrebidAdapter (= 0.0.21)
   - MSPSharedLibraries (0.0.19)
-  - NovaAdapter (0.0.23):
+  - nanopb (2.30910.0):
+    - nanopb/decode (= 2.30910.0)
+    - nanopb/encode (= 2.30910.0)
+  - nanopb/decode (2.30910.0)
+  - nanopb/encode (2.30910.0)
+  - NovaAdapter (0.0.22):
     - MSPSharedLibraries (= 0.0.19)
   - PrebidAdapter (0.0.21):
     - MSPSharedLibraries (= 0.0.19)
+  - PromisesObjC (2.4.0)
   - SDWebImage (5.18.8):
     - SDWebImage/Core (= 5.18.8)
   - SDWebImage/Core (5.18.8)
@@ -29,8 +87,9 @@ PODS:
   - SnapKit (5.6.0)
 
 DEPENDENCIES:
-  - MSPCore (= 0.0.22)
-  - NovaAdapter (= 0.0.23)
+  - GoogleAdapter (from `./`)
+  - MSPCore (from `./`)
+  - NovaAdapter (from `./`)
   - SDWebImage (= 5.18.8)
   - SDWebImageWebPCoder (= 0.14.2)
   - Shimmer
@@ -38,27 +97,46 @@ DEPENDENCIES:
 
 SPEC REPOS:
   trunk:
+    - Google-Mobile-Ads-SDK
+    - GoogleAppMeasurement
+    - GoogleUserMessagingPlatform
+    - GoogleUtilities
     - libwebp
-    - MSPCore
     - MSPSharedLibraries
-    - NovaAdapter
+    - nanopb
     - PrebidAdapter
+    - PromisesObjC
     - SDWebImage
     - SDWebImageWebPCoder
     - Shimmer
     - SnapKit
 
+EXTERNAL SOURCES:
+  GoogleAdapter:
+    :path: "./"
+  MSPCore:
+    :path: "./"
+  NovaAdapter:
+    :path: "./"
+
 SPEC CHECKSUMS:
+  Google-Mobile-Ads-SDK: 8f67a72f88d057335b1ac3f501e2b68ad054116e
+  GoogleAdapter: 47487ca19c9f1bf98849cd0ad3de0d1a3909b2f2
+  GoogleAppMeasurement: f9de05ee17401e3355f68e8fc8b5064d429f5918
+  GoogleUserMessagingPlatform: 6b4f48a370e77ce121d034c908cc6ee4fdafaf13
+  GoogleUtilities: ea963c370a38a8069cc5f7ba4ca849a60b6d7d15
   libwebp: 1786c9f4ff8a279e4dac1e8f385004d5fc253009
-  MSPCore: 4518e84ff66742e660accf459c5fd5aa615981f1
+  MSPCore: 6cc49423f6bf4411c34a2bf0ce2631facccb79c1
   MSPSharedLibraries: c610158df65b367dcf467e4d55133a189e750bdb
-  NovaAdapter: c95db67a4c119b49b06479629621d25fafde2cc3
+  nanopb: 438bc412db1928dac798aa6fd75726007be04262
+  NovaAdapter: 7034706cfa02c25e3c01d84b6218f45c7dab7749
   PrebidAdapter: a5954c7c0d6c8ab44850c81306237f72a0ac95d8
+  PromisesObjC: f5707f49cb48b9636751c5b2e7d227e43fba9f47
   SDWebImage: a81bbb3ba4ea5f810f4069c68727cb118467a04a
   SDWebImageWebPCoder: 633b813fca24f1de5e076bcd7f720c038b23892b
   Shimmer: c5374be1c2b0c9e292fb05b339a513cf291cac86
   SnapKit: e01d52ebb8ddbc333eefe2132acf85c8227d9c25
 
-PODFILE CHECKSUM: 0494d0fffc40d725a5b9b1748ac5c6b410578f46
+PODFILE CHECKSUM: 9db87377a43faa849e5d95e4213178e053722cbc
 
 COCOAPODS: 1.14.3

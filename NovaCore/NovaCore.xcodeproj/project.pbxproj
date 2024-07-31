@@ -9,7 +9,6 @@
 /* Begin PBXBuildFile section */
 		37975389D929094082150DF7 /* libPods-NovaCore.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 116EB80EEAD425BF5D47DE4F /* libPods-NovaCore.a */; };
 		664F33282C45C5020014E1BA /* NovaNativeAdMediaViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 664F33272C45C5020014E1BA /* NovaNativeAdMediaViewController.swift */; };
-		66B730512C38B73E0042E4FF /* MetricService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66B730502C38B73E0042E4FF /* MetricService.swift */; };
 		66B730532C38B84A0042E4FF /* MetricEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66B730522C38B84A0042E4FF /* MetricEvent.swift */; };
 		66B730552C38CE850042E4FF /* RealtimeMetricLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66B730542C38CE850042E4FF /* RealtimeMetricLogger.swift */; };
 		66E534392C24CAAE00255D15 /* NovaCore.docc in Sources */ = {isa = PBXBuildFile; fileRef = 66E534382C24CAAE00255D15 /* NovaCore.docc */; };
@@ -109,7 +108,6 @@
 /* Begin PBXFileReference section */
 		116EB80EEAD425BF5D47DE4F /* libPods-NovaCore.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-NovaCore.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		664F33272C45C5020014E1BA /* NovaNativeAdMediaViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NovaNativeAdMediaViewController.swift; sourceTree = "<group>"; };
-		66B730502C38B73E0042E4FF /* MetricService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetricService.swift; sourceTree = "<group>"; };
 		66B730522C38B84A0042E4FF /* MetricEvent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetricEvent.swift; sourceTree = "<group>"; };
 		66B730542C38CE850042E4FF /* RealtimeMetricLogger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RealtimeMetricLogger.swift; sourceTree = "<group>"; };
 		66E534342C24CAAE00255D15 /* NovaCore.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = NovaCore.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -373,7 +371,6 @@
 				66E534832C24CBF200255D15 /* NovaAdSkipReason.swift */,
 				66E534842C24CBF200255D15 /* NovaAdVideoMetricReporter.swift */,
 				66E534852C24CBF200255D15 /* RegularMetricLogger.swift */,
-				66B730502C38B73E0042E4FF /* MetricService.swift */,
 				66B730522C38B84A0042E4FF /* MetricEvent.swift */,
 				66B730542C38CE850042E4FF /* RealtimeMetricLogger.swift */,
 			);
@@ -625,7 +622,6 @@
 				66E534B52C24CBF200255D15 /* NovaNativeAdMediaViewModel.swift in Sources */,
 				66E534D52C24CBF200255D15 /* UIApplication+Extensions.swift in Sources */,
 				66E534DA2C24CBF200255D15 /* NovaAdsRequestUtils.swift in Sources */,
-				66B730512C38B73E0042E4FF /* MetricService.swift in Sources */,
 				66E534CF2C24CBF200255D15 /* NovaAdOpenActionDataModel.swift in Sources */,
 				66E534D82C24CBF200255D15 /* UIView+Extensions.swift in Sources */,
 				66E535272C250A8900255D15 /* UIColor.swift in Sources */,
