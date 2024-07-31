@@ -16,7 +16,6 @@ xcodebuild archive \
     -archivePath "$PWD/outputNova/xcframework/NovaCore-iOS" \
     SKIP_INSTALL=NO \
     -configuration Release \
-    -arch arm64 \
     -sdk "iphoneos" \
     BUILD_LIBRARY_FOR_DISTRIBUTION=YES
 
@@ -27,7 +26,6 @@ xcodebuild archive \
     -archivePath "$PWD/outputNova/xcframework/NovaCore-Simulator" \
     SKIP_INSTALL=NO \
     -configuration Release \
-    -arch x86_64 \
     -sdk "iphonesimulator" \
     BUILD_LIBRARY_FOR_DISTRIBUTION=YES
 
