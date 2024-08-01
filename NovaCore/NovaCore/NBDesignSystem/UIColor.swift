@@ -8,7 +8,7 @@
 import Foundation
 import UIKit
 public extension UIColor {
-    class NBUIColor {
+    class NovaUIColor {
         // https://www.figma.com/file/QGyK88wpVY510IuIBoE5tX/🟡Foundation-(WIP)?node-id=1%3A325&mode=dev
         
         // App 400 FF5A5A
@@ -56,5 +56,5 @@ public extension UIColor {
         public let secondaryDividerDeprecated = UIColor(named: "Secondary Divider", in: NovaAsset.getBundle(), compatibleWith: nil)!
     }
     
-    static let NB = NBUIColor()
+    static let Nova = NovaUIColor()
 }

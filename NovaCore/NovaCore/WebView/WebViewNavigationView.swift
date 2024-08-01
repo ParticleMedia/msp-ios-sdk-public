@@ -23,7 +23,7 @@ public class WebViewNavigationView: UIView {
 
     private let divider: UIView = {
         let view = UIView()
-        view.backgroundColor = .NB.secondaryDividerDeprecated
+        view.backgroundColor = .Nova.secondaryDividerDeprecated
         return view
     }()
 
@@ -78,7 +78,7 @@ public class WebViewNavigationView: UIView {
         if let icon = viewModel.leftButtonIcon {
             let leftButtonImage = UIImage(
                 systemName: icon,
-                tintColor: .NB.primaryText)
+                tintColor: .Nova.primaryText)
             leftButton.setImage(leftButtonImage, for: .normal)
             leftButton.addTarget(self, action: #selector(didTapLeftButton), for: .touchUpInside)
         }
@@ -87,7 +87,7 @@ public class WebViewNavigationView: UIView {
         if let icon = viewModel.rightButtonIcon {
             let rightButtonImage = UIImage(
                 systemName: icon,
-                tintColor: .NB.primaryText)
+                tintColor: .Nova.primaryText)
             rightButton.setImage(rightButtonImage, for: .normal)
             rightButton.addTarget(self, action: #selector(didTapRightButton), for: .touchUpInside)
             backgroundColor = .clear
