@@ -75,7 +75,7 @@ public final class NovaNativeAdVideoView: UIView {
     private lazy var countText: UILabel = {
         let view = UILabel()
         view.translatesAutoresizingMaskIntoConstraints = false
-        view.font = .NB.caption1
+        view.font = .Nova.caption1
         view.textColor = NovaColorPalettes.White
         view.numberOfLines = 1
         view.backgroundColor = NovaColorPalettes.Black.nb_opacity5()
