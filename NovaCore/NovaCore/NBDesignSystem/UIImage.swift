@@ -47,9 +47,9 @@ extension UIImage {
 }
 */
 public extension UIImage {
-    static let NB = NBImage()
+    static let Nova = NovaImage()
     
-    class NBImage {
+    class NovaImage {
         public let aiSummaryFilled = UIImage(named: "ai_summary_filled", in: NovaAsset.getBundle(), compatibleWith: nil)
         public let aiSummaryLine = UIImage(named: "ai_summary_line", in: NovaAsset.getBundle(), compatibleWith: nil)
         public let alertFilled = UIImage(named: "alert_filled", in: NovaAsset.getBundle(), compatibleWith: nil)

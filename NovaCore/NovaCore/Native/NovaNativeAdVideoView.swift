@@ -31,7 +31,7 @@ public final class NovaNativeAdVideoView: UIView {
         let view = UIButton()
         view.translatesAutoresizingMaskIntoConstraints = false
         view.imageEdgeInsets = UIEdgeInsets(top: 12, left: 12, bottom: 12, right: 12)
-        view.setImage(UIImage.NB.playFilled?.withTintColor(NovaColorPalettes.White), for: .normal)
+        view.setImage(UIImage.Nova.playFilled?.withTintColor(NovaColorPalettes.White), for: .normal)
         view.backgroundColor = NovaColorPalettes.Black.nb_opacity5()
         view.layer.cornerRadius = 24
         view.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(didTapStartButton)))
@@ -49,7 +49,7 @@ public final class NovaNativeAdVideoView: UIView {
     private lazy var closeButton: UIButton = {
         let button = UIButton()
         button.translatesAutoresizingMaskIntoConstraints = false
-        button.setImage(UIImage.NB.crossFilled?.withTintColor(NovaColorPalettes.White), for: .normal)
+        button.setImage(UIImage.Nova.crossFilled?.withTintColor(NovaColorPalettes.White), for: .normal)
         button.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(didTapCloseButton)))
         return button
     }()
@@ -114,23 +114,23 @@ public final class NovaNativeAdVideoView: UIView {
 
     private lazy var playImage: UIImage? = {
         if inLandingPage {
-            UIImage.NB.playFilled?.withTintColor(NovaColorPalettes.White)
+            UIImage.Nova.playFilled?.withTintColor(NovaColorPalettes.White)
         } else {
-            UIImage.NB.playLine?.withTintColor(NovaColorPalettes.White)
+            UIImage.Nova.playLine?.withTintColor(NovaColorPalettes.White)
         }
     }()
 
     private lazy var pauseImage: UIImage? = {
         if inLandingPage {
-            UIImage.NB.pauseFilled?.withTintColor(NovaColorPalettes.White)
+            UIImage.Nova.pauseFilled?.withTintColor(NovaColorPalettes.White)
         } else {
-            .NB.pauseLine?.withTintColor(NovaColorPalettes.White)
+            .Nova.pauseLine?.withTintColor(NovaColorPalettes.White)
         }
     }()
 
-    private let volumnOnImage = UIImage.NB.volumeOnLine?.withTintColor(NovaColorPalettes.White)
+    private let volumnOnImage = UIImage.Nova.volumeOnLine?.withTintColor(NovaColorPalettes.White)
 
-    private let volumnOffImage = UIImage.NB.volumeOffLine?.withTintColor(NovaColorPalettes.White)
+    private let volumnOffImage = UIImage.Nova.volumeOffLine?.withTintColor(NovaColorPalettes.White)
 
     private var videoPlayer: VideoPlayer?
 

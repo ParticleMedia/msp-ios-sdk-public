@@ -1,9 +1,9 @@
 import SwiftUI
 
 public extension Image {
-    static let NB = NBImage()
+    static let Nova = NovaImage()
     
-    class NBImage {
+    class NovaImage {
         public let aiSummaryFilled = Image("ai_summary_filled", bundle: NovaAsset.getBundle())
         public let aiSummaryLine = Image("ai_summary_line", bundle: NovaAsset.getBundle())
         public let alertFilled = Image("alert_filled", bundle: NovaAsset.getBundle())
