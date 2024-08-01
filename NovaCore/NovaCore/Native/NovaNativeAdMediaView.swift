@@ -103,7 +103,7 @@ public extension NovaNativeAdMediaView {
     }
 
     func updateVideoStateOnScroll() {
-        updateVideoDisplayState(fullyDisplayed: videoView.nb_isFullyVisibleOnScreen)
+        updateVideoDisplayState(fullyDisplayed: videoView.nova_isFullyVisibleOnScreen)
     }
 
     func updateVideoDisplayState(fullyDisplayed: Bool) {
