@@ -9,7 +9,7 @@ import Foundation
 import SwiftUI
 
 public extension Color {
-    class NBColor {
+    class NovaColor {
         // https://www.figma.com/file/QGyK88wpVY510IuIBoE5tX/🟡Foundation-(WIP)?node-id=1%3A325&mode=dev
         
         // App 400 FF5A5A
@@ -57,7 +57,7 @@ public extension Color {
         public let secondaryDividerDeprecated = Color("Secondary Divider", bundle: NovaAsset.getBundle())
     }
     
-    static let NB = NBColor()
+    static let Nova = NovaColor()
 }
 
 extension Color {
