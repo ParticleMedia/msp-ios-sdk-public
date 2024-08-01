@@ -31,8 +31,8 @@ public final class NovaNativeAdVideoView: UIView {
         let view = UIButton()
         view.translatesAutoresizingMaskIntoConstraints = false
         view.imageEdgeInsets = UIEdgeInsets(top: 12, left: 12, bottom: 12, right: 12)
-        view.setImage(UIImage.NB.playFilled?.withTintColor(ColorPalettes.White), for: .normal)
-        view.backgroundColor = ColorPalettes.Black.nb_opacity5()
+        view.setImage(UIImage.NB.playFilled?.withTintColor(NovaColorPalettes.White), for: .normal)
+        view.backgroundColor = NovaColorPalettes.Black.nb_opacity5()
         view.layer.cornerRadius = 24
         view.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(didTapStartButton)))
         return view
@@ -41,7 +41,7 @@ public final class NovaNativeAdVideoView: UIView {
     private lazy var panel: UIView = {
         let view = UIView()
         view.translatesAutoresizingMaskIntoConstraints = false
-        view.backgroundColor = ColorPalettes.Black.nb_opacity5()
+        view.backgroundColor = NovaColorPalettes.Black.nb_opacity5()
         view.layer.cornerRadius = 4
         return view
     }()
@@ -49,7 +49,7 @@ public final class NovaNativeAdVideoView: UIView {
     private lazy var closeButton: UIButton = {
         let button = UIButton()
         button.translatesAutoresizingMaskIntoConstraints = false
-        button.setImage(UIImage.NB.crossFilled?.withTintColor(ColorPalettes.White), for: .normal)
+        button.setImage(UIImage.NB.crossFilled?.withTintColor(NovaColorPalettes.White), for: .normal)
         button.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(didTapCloseButton)))
         return button
     }()
@@ -76,9 +76,9 @@ public final class NovaNativeAdVideoView: UIView {
         let view = UILabel()
         view.translatesAutoresizingMaskIntoConstraints = false
         view.font = .NB.caption1
-        view.textColor = ColorPalettes.White
+        view.textColor = NovaColorPalettes.White
         view.numberOfLines = 1
-        view.backgroundColor = ColorPalettes.Black.nb_opacity5()
+        view.backgroundColor = NovaColorPalettes.Black.nb_opacity5()
         view.layer.cornerRadius = 4
         view.textAlignment = .center
         return view
@@ -87,7 +87,7 @@ public final class NovaNativeAdVideoView: UIView {
     private lazy var videoProgressText: UILabel = {
         let label = UILabel()
         label.font = .systemFont(ofSize: 10)
-        label.textColor = ColorPalettes.White
+        label.textColor = NovaColorPalettes.White
         label.numberOfLines = 1
         label.backgroundColor = .clear
         label.textAlignment = .center
@@ -97,7 +97,7 @@ public final class NovaNativeAdVideoView: UIView {
     private lazy var videoLengthText: UILabel = {
         let label = UILabel()
         label.font = .systemFont(ofSize: 10)
-        label.textColor = ColorPalettes.White
+        label.textColor = NovaColorPalettes.White
         label.numberOfLines = 1
         label.backgroundColor = .clear
         label.textAlignment = .center
@@ -106,31 +106,31 @@ public final class NovaNativeAdVideoView: UIView {
     
     private lazy var progressView: UIProgressView = {
         let progress = UIProgressView()
-        progress.progressTintColor = ColorPalettes.Blue.tint500
-        progress.trackTintColor = ColorPalettes.White
+        progress.progressTintColor = NovaColorPalettes.Blue.tint500
+        progress.trackTintColor = NovaColorPalettes.White
         return progress
     }()
 
 
     private lazy var playImage: UIImage? = {
         if inLandingPage {
-            UIImage.NB.playFilled?.withTintColor(ColorPalettes.White)
+            UIImage.NB.playFilled?.withTintColor(NovaColorPalettes.White)
         } else {
-            UIImage.NB.playLine?.withTintColor(ColorPalettes.White)
+            UIImage.NB.playLine?.withTintColor(NovaColorPalettes.White)
         }
     }()
 
     private lazy var pauseImage: UIImage? = {
         if inLandingPage {
-            UIImage.NB.pauseFilled?.withTintColor(ColorPalettes.White)
+            UIImage.NB.pauseFilled?.withTintColor(NovaColorPalettes.White)
         } else {
-            .NB.pauseLine?.withTintColor(ColorPalettes.White)
+            .NB.pauseLine?.withTintColor(NovaColorPalettes.White)
         }
     }()
 
-    private let volumnOnImage = UIImage.NB.volumeOnLine?.withTintColor(ColorPalettes.White)
+    private let volumnOnImage = UIImage.NB.volumeOnLine?.withTintColor(NovaColorPalettes.White)
 
-    private let volumnOffImage = UIImage.NB.volumeOffLine?.withTintColor(ColorPalettes.White)
+    private let volumnOffImage = UIImage.NB.volumeOffLine?.withTintColor(NovaColorPalettes.White)
 
     private var videoPlayer: VideoPlayer?
 

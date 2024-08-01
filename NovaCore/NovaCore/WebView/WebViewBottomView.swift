@@ -10,8 +10,8 @@ public class WebViewBottomView: UIView {
     // MARK: - Constants
 
     private enum Constants {
-        static let buttonDisableColor = UIColor(light: ColorPalettes.Gray.tint200, dark: ColorPalettes.Gray.tint500)
-        static let buttonEnableColor = UIColor(light: ColorPalettes.Black, dark: ColorPalettes.White)
+        static let buttonDisableColor = UIColor(light: NovaColorPalettes.Gray.tint200, dark: NovaColorPalettes.Gray.tint500)
+        static let buttonEnableColor = UIColor(light: NovaColorPalettes.Black, dark: NovaColorPalettes.White)
     }
 
     // MARK: - Properties
@@ -53,7 +53,7 @@ public class WebViewBottomView: UIView {
         backButton.addTarget(self, action: #selector(didTapBackButton), for: .touchUpInside)
         forwardButton.addTarget(self, action: #selector(didTapForwardButton), for: .touchUpInside)
 
-        backgroundColor = UIColor(light: ColorPalettes.Gray.tint100, dark: ColorPalettes.Gray.tint700)
+        backgroundColor = UIColor(light: NovaColorPalettes.Gray.tint100, dark: NovaColorPalettes.Gray.tint700)
 
         addSubview(containerView)
 
