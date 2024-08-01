@@ -690,10 +690,6 @@ extension UIKit.UIApplication {
     get
   }
 }
-@_inheritsConvenienceInitializers @objc public class MetricService : ObjectiveC.NSObject {
-  @objc override dynamic public init()
-  @objc deinit
-}
 public struct NovaAdOpenActionDataModel {
   public init(url: Foundation.URL, clickTime: Swift.Double, ad: NovaCore.NovaBaseAd)
 }
