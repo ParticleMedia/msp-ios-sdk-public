@@ -1,9 +1,9 @@
 import SwiftUI
 
 public extension Image {
-    static let NBEmoji = NBImageEmoji()
+    static let NovaEmoji = NovaImageEmoji()
     
-    class NBImageEmoji {
+    class NovaImageEmoji {
         public let angry = Image("angry", bundle: NovaAsset.getBundle())
         public let haha = Image("haha", bundle: NovaAsset.getBundle())
         public let like = Image("like", bundle: NovaAsset.getBundle())
