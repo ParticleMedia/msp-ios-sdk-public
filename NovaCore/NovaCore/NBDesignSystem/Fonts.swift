@@ -10,7 +10,7 @@ import SwiftUI
 
 // https://www.figma.com/file/QGyK88wpVY510IuIBoE5tX/🟡Foundation-(WIP)?type=design&node-id=118-1818&mode=design&t=V4Ya56QB07TW2wVs-0
 public extension Font {
-    class NBFont {
+    class NovaFont {
         public let display1 = Font.system(size: 24, weight: .black)
         public let display2 = Font.system(size: 16, weight: .black)
         public let headline1 = Font.system(size: 20, weight: .bold)
@@ -26,5 +26,5 @@ public extension Font {
         public let caption2 = Font.system(size: 11, weight: .regular)
     }
     
-    static let NB = NBFont()
+    static let Nova = NovaFont()
 }
