@@ -77,7 +77,7 @@ public class WebViewNavigationView: UIView {
 
         if let icon = viewModel.leftButtonIcon {
             let leftButtonImage = UIImage(
-                systemName: icon,
+                novasystemName: icon,
                 tintColor: .Nova.primaryText)
             leftButton.setImage(leftButtonImage, for: .normal)
             leftButton.addTarget(self, action: #selector(didTapLeftButton), for: .touchUpInside)
@@ -86,7 +86,7 @@ public class WebViewNavigationView: UIView {
 
         if let icon = viewModel.rightButtonIcon {
             let rightButtonImage = UIImage(
-                systemName: icon,
+                novasystemName: icon,
                 tintColor: .Nova.primaryText)
             rightButton.setImage(rightButtonImage, for: .normal)
             rightButton.addTarget(self, action: #selector(didTapRightButton), for: .touchUpInside)

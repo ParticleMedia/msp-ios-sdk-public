@@ -1,13 +1,13 @@
 import Foundation
 
-@objc public class Icon: NSObject {
+@objc public class NovaIcon: NSObject {
     override private init() {}
 }
 
 public protocol IconName: CustomStringConvertible {}
 
 
-extension Icon {
+extension NovaIcon {
     @objc public enum NovaSystem: Int, CaseIterable {
         case arrowLeftOutline
         case bellFilled
@@ -59,7 +59,7 @@ extension Icon {
     }
 }
 
-extension Icon.NovaSystem: IconName {
+extension NovaIcon.NovaSystem: IconName {
     public var description: String {
         switch self {
         case .arrowLeftOutline: return "arrow_left_outline"

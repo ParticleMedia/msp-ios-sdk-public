@@ -317,51 +317,6 @@ SWIFT_CLASS("_TtC8NovaCore14CheckBoxButton")
 - (nullable instancetype)initWithCoder:(NSCoder * _Nonnull)coder SWIFT_UNAVAILABLE;
 @end
 
-@class UIColor;
-
-/// Standard color palettes are defined at
-/// https://www.figma.com/file/az2QtfMgOx1SK2q78WVu71/Design-System—Foundations?node-id=311%3A1224
-SWIFT_CLASS("_TtC8NovaCore13ColorPalettes")
-@interface ColorPalettes : NSObject
-@property (nonatomic, readonly, strong) UIColor * _Nonnull tint50;
-@property (nonatomic, readonly, strong) UIColor * _Nonnull tint100;
-@property (nonatomic, readonly, strong) UIColor * _Nonnull tint200;
-@property (nonatomic, readonly, strong) UIColor * _Nonnull tint300;
-@property (nonatomic, readonly, strong) UIColor * _Nonnull tint400;
-@property (nonatomic, readonly, strong) UIColor * _Nonnull tint500;
-@property (nonatomic, readonly, strong) UIColor * _Nonnull tint600;
-@property (nonatomic, readonly, strong) UIColor * _Nonnull tint700;
-@property (nonatomic, readonly, strong) UIColor * _Nonnull tint800;
-@property (nonatomic, readonly, strong) UIColor * _Nonnull tint900;
-@property (nonatomic, readonly, strong) UIColor * _Nullable tint950;
-SWIFT_CLASS_PROPERTY(@property (nonatomic, class, readonly, strong) UIColor * _Nonnull Black;)
-+ (UIColor * _Nonnull)Black SWIFT_WARN_UNUSED_RESULT;
-SWIFT_CLASS_PROPERTY(@property (nonatomic, class, readonly, strong) UIColor * _Nonnull White;)
-+ (UIColor * _Nonnull)White SWIFT_WARN_UNUSED_RESULT;
-SWIFT_CLASS_PROPERTY(@property (nonatomic, class, readonly, strong) ColorPalettes * _Nonnull Gray;)
-+ (ColorPalettes * _Nonnull)Gray SWIFT_WARN_UNUSED_RESULT;
-SWIFT_CLASS_PROPERTY(@property (nonatomic, class, readonly, strong) ColorPalettes * _Nonnull App;)
-+ (ColorPalettes * _Nonnull)App SWIFT_WARN_UNUSED_RESULT;
-SWIFT_CLASS_PROPERTY(@property (nonatomic, class, readonly, strong) ColorPalettes * _Nonnull Blue;)
-+ (ColorPalettes * _Nonnull)Blue SWIFT_WARN_UNUSED_RESULT;
-SWIFT_CLASS_PROPERTY(@property (nonatomic, class, readonly, strong) ColorPalettes * _Nonnull Green;)
-+ (ColorPalettes * _Nonnull)Green SWIFT_WARN_UNUSED_RESULT;
-SWIFT_CLASS_PROPERTY(@property (nonatomic, class, readonly, strong) ColorPalettes * _Nonnull Orange;)
-+ (ColorPalettes * _Nonnull)Orange SWIFT_WARN_UNUSED_RESULT;
-SWIFT_CLASS_PROPERTY(@property (nonatomic, class, readonly, strong) ColorPalettes * _Nonnull Yellow;)
-+ (ColorPalettes * _Nonnull)Yellow SWIFT_WARN_UNUSED_RESULT;
-SWIFT_CLASS_PROPERTY(@property (nonatomic, class, readonly, strong) ColorPalettes * _Nonnull Magenta;)
-+ (ColorPalettes * _Nonnull)Magenta SWIFT_WARN_UNUSED_RESULT;
-SWIFT_CLASS_PROPERTY(@property (nonatomic, class, readonly, strong) ColorPalettes * _Nonnull Purple;)
-+ (ColorPalettes * _Nonnull)Purple SWIFT_WARN_UNUSED_RESULT;
-SWIFT_CLASS_PROPERTY(@property (nonatomic, class, readonly, strong) ColorPalettes * _Nonnull Skyblue;)
-+ (ColorPalettes * _Nonnull)Skyblue SWIFT_WARN_UNUSED_RESULT;
-SWIFT_CLASS_PROPERTY(@property (nonatomic, class, readonly, strong) ColorPalettes * _Nonnull Sapphire;)
-+ (ColorPalettes * _Nonnull)Sapphire SWIFT_WARN_UNUSED_RESULT;
-- (nonnull instancetype)init SWIFT_UNAVAILABLE;
-+ (nonnull instancetype)new SWIFT_UNAVAILABLE_MSG("-init is unavailable");
-@end
-
 
 SWIFT_CLASS("_TtC8NovaCore4Icon")
 @interface Icon : NSObject
@@ -373,54 +328,54 @@ SWIFT_CLASS("_TtC8NovaCore4Icon")
 @interface Icon (SWIFT_EXTENSION(NovaCore))
 @end
 
-typedef SWIFT_ENUM(NSInteger, System, open) {
-  SystemArrowLeftOutline = 0,
-  SystemBellFilled = 1,
-  SystemBellOutline = 2,
-  SystemBreezeFilled = 3,
-  SystemBreezeOutline = 4,
-  SystemCameraOutline = 5,
-  SystemChartBarOutline = 6,
-  SystemCheckCircleFilled = 7,
-  SystemCheckCircleOutline = 8,
-  SystemChevronDownFilled = 9,
-  SystemChevronDownOutline = 10,
-  SystemChevronLeftFilled = 11,
-  SystemChevronLeftOutline = 12,
-  SystemChevronRightFilled = 13,
-  SystemChevronRightOutline = 14,
-  SystemChevronUpFilled = 15,
-  SystemClockOutline = 16,
-  SystemCrossFilled = 17,
-  SystemCrossOutline = 18,
-  SystemCrossCircleFilled = 19,
-  SystemCrossCircleOutline = 20,
-  SystemEllipsisHorizontalOutline = 21,
-  SystemEllipsisVerticalFilled = 22,
-  SystemExclamationCircleOutline = 23,
-  SystemExclamationTriangleOutline = 24,
-  SystemGlobeOutline = 25,
-  SystemHashtagOutline = 26,
-  SystemHeartOutline = 27,
-  SystemImageOutline = 28,
-  SystemLinkOutline = 29,
-  SystemLocationOutline = 30,
-  SystemMoneyOutline = 31,
-  SystemNavigationArrowOutline = 32,
-  SystemNewsbreakOutline = 33,
-  SystemPeopleFilled = 34,
-  SystemPeopleOutline = 35,
-  SystemPlayFilled = 36,
-  SystemPlusOutline = 37,
-  SystemProhibitOutline = 38,
-  SystemShareOutline = 39,
-  SystemShieldErrorOutline = 40,
-  SystemTrashOutline = 41,
-  SystemVideoClipFilled = 42,
-  SystemVideoClipOutline = 43,
-  SystemMagicOutline = 44,
-  SystemMagicStarFilled = 45,
-  SystemHomeOutline = 46,
+typedef SWIFT_ENUM(NSInteger, NovaSystem, open) {
+  NovaSystemArrowLeftOutline = 0,
+  NovaSystemBellFilled = 1,
+  NovaSystemBellOutline = 2,
+  NovaSystemBreezeFilled = 3,
+  NovaSystemBreezeOutline = 4,
+  NovaSystemCameraOutline = 5,
+  NovaSystemChartBarOutline = 6,
+  NovaSystemCheckCircleFilled = 7,
+  NovaSystemCheckCircleOutline = 8,
+  NovaSystemChevronDownFilled = 9,
+  NovaSystemChevronDownOutline = 10,
+  NovaSystemChevronLeftFilled = 11,
+  NovaSystemChevronLeftOutline = 12,
+  NovaSystemChevronRightFilled = 13,
+  NovaSystemChevronRightOutline = 14,
+  NovaSystemChevronUpFilled = 15,
+  NovaSystemClockOutline = 16,
+  NovaSystemCrossFilled = 17,
+  NovaSystemCrossOutline = 18,
+  NovaSystemCrossCircleFilled = 19,
+  NovaSystemCrossCircleOutline = 20,
+  NovaSystemEllipsisHorizontalOutline = 21,
+  NovaSystemEllipsisVerticalFilled = 22,
+  NovaSystemExclamationCircleOutline = 23,
+  NovaSystemExclamationTriangleOutline = 24,
+  NovaSystemGlobeOutline = 25,
+  NovaSystemHashtagOutline = 26,
+  NovaSystemHeartOutline = 27,
+  NovaSystemImageOutline = 28,
+  NovaSystemLinkOutline = 29,
+  NovaSystemLocationOutline = 30,
+  NovaSystemMoneyOutline = 31,
+  NovaSystemNavigationArrowOutline = 32,
+  NovaSystemNewsbreakOutline = 33,
+  NovaSystemPeopleFilled = 34,
+  NovaSystemPeopleOutline = 35,
+  NovaSystemPlayFilled = 36,
+  NovaSystemPlusOutline = 37,
+  NovaSystemProhibitOutline = 38,
+  NovaSystemShareOutline = 39,
+  NovaSystemShieldErrorOutline = 40,
+  NovaSystemTrashOutline = 41,
+  NovaSystemVideoClipFilled = 42,
+  NovaSystemVideoClipOutline = 43,
+  NovaSystemMagicOutline = 44,
+  NovaSystemMagicStarFilled = 45,
+  NovaSystemHomeOutline = 46,
 };
 
 typedef SWIFT_ENUM(NSInteger, MetricEvent, open) {
@@ -723,6 +678,51 @@ SWIFT_CLASS("_TtC8NovaCore10NovaBaseAd")
 + (nonnull instancetype)new SWIFT_UNAVAILABLE_MSG("-init is unavailable");
 @end
 
+@class UIColor;
+
+/// Standard color palettes are defined at
+/// https://www.figma.com/file/az2QtfMgOx1SK2q78WVu71/Design-System—Foundations?node-id=311%3A1224
+SWIFT_CLASS("_TtC8NovaCore17NovaColorPalettes")
+@interface NovaColorPalettes : NSObject
+@property (nonatomic, readonly, strong) UIColor * _Nonnull tint50;
+@property (nonatomic, readonly, strong) UIColor * _Nonnull tint100;
+@property (nonatomic, readonly, strong) UIColor * _Nonnull tint200;
+@property (nonatomic, readonly, strong) UIColor * _Nonnull tint300;
+@property (nonatomic, readonly, strong) UIColor * _Nonnull tint400;
+@property (nonatomic, readonly, strong) UIColor * _Nonnull tint500;
+@property (nonatomic, readonly, strong) UIColor * _Nonnull tint600;
+@property (nonatomic, readonly, strong) UIColor * _Nonnull tint700;
+@property (nonatomic, readonly, strong) UIColor * _Nonnull tint800;
+@property (nonatomic, readonly, strong) UIColor * _Nonnull tint900;
+@property (nonatomic, readonly, strong) UIColor * _Nullable tint950;
+SWIFT_CLASS_PROPERTY(@property (nonatomic, class, readonly, strong) UIColor * _Nonnull Black;)
++ (UIColor * _Nonnull)Black SWIFT_WARN_UNUSED_RESULT;
+SWIFT_CLASS_PROPERTY(@property (nonatomic, class, readonly, strong) UIColor * _Nonnull White;)
++ (UIColor * _Nonnull)White SWIFT_WARN_UNUSED_RESULT;
+SWIFT_CLASS_PROPERTY(@property (nonatomic, class, readonly, strong) NovaColorPalettes * _Nonnull Gray;)
++ (NovaColorPalettes * _Nonnull)Gray SWIFT_WARN_UNUSED_RESULT;
+SWIFT_CLASS_PROPERTY(@property (nonatomic, class, readonly, strong) NovaColorPalettes * _Nonnull App;)
++ (NovaColorPalettes * _Nonnull)App SWIFT_WARN_UNUSED_RESULT;
+SWIFT_CLASS_PROPERTY(@property (nonatomic, class, readonly, strong) NovaColorPalettes * _Nonnull Blue;)
++ (NovaColorPalettes * _Nonnull)Blue SWIFT_WARN_UNUSED_RESULT;
+SWIFT_CLASS_PROPERTY(@property (nonatomic, class, readonly, strong) NovaColorPalettes * _Nonnull Green;)
++ (NovaColorPalettes * _Nonnull)Green SWIFT_WARN_UNUSED_RESULT;
+SWIFT_CLASS_PROPERTY(@property (nonatomic, class, readonly, strong) NovaColorPalettes * _Nonnull Orange;)
++ (NovaColorPalettes * _Nonnull)Orange SWIFT_WARN_UNUSED_RESULT;
+SWIFT_CLASS_PROPERTY(@property (nonatomic, class, readonly, strong) NovaColorPalettes * _Nonnull Yellow;)
++ (NovaColorPalettes * _Nonnull)Yellow SWIFT_WARN_UNUSED_RESULT;
+SWIFT_CLASS_PROPERTY(@property (nonatomic, class, readonly, strong) NovaColorPalettes * _Nonnull Magenta;)
++ (NovaColorPalettes * _Nonnull)Magenta SWIFT_WARN_UNUSED_RESULT;
+SWIFT_CLASS_PROPERTY(@property (nonatomic, class, readonly, strong) NovaColorPalettes * _Nonnull Purple;)
++ (NovaColorPalettes * _Nonnull)Purple SWIFT_WARN_UNUSED_RESULT;
+SWIFT_CLASS_PROPERTY(@property (nonatomic, class, readonly, strong) NovaColorPalettes * _Nonnull Skyblue;)
++ (NovaColorPalettes * _Nonnull)Skyblue SWIFT_WARN_UNUSED_RESULT;
+SWIFT_CLASS_PROPERTY(@property (nonatomic, class, readonly, strong) NovaColorPalettes * _Nonnull Sapphire;)
++ (NovaColorPalettes * _Nonnull)Sapphire SWIFT_WARN_UNUSED_RESULT;
+- (nonnull instancetype)init SWIFT_UNAVAILABLE;
++ (nonnull instancetype)new SWIFT_UNAVAILABLE_MSG("-init is unavailable");
+@end
+
 @class NovaNativeAdItem;
 
 SWIFT_PROTOCOL("_TtP8NovaCore20NovaNativeAdDelegate_")
@@ -836,7 +836,7 @@ SWIFT_CLASS_PROPERTY(@property (nonatomic, class, readonly) Class _Nonnull layer
 
 
 @interface UIApplication (SWIFT_EXTENSION(NovaCore))
-@property (nonatomic, readonly) UIEdgeInsets nb_safeAreaInsets;
+@property (nonatomic, readonly) UIEdgeInsets nova_safeAreaInsets;
 @end
 
 
@@ -869,8 +869,8 @@ SWIFT_CLASS_PROPERTY(@property (nonatomic, class, readonly) Class _Nonnull layer
 
 
 @interface UIImage (SWIFT_EXTENSION(NovaCore))
-- (nullable instancetype)initWithSystemName:(enum System)systemName;
-- (nullable instancetype)initWithSystemName:(enum System)systemName tintColor:(UIColor * _Nonnull)tintColor;
+- (nullable instancetype)initWithSystemName:(enum NovaSystem)systemName;
+- (nullable instancetype)initWithSystemName:(enum NovaSystem)systemName tintColor:(UIColor * _Nonnull)tintColor;
 @end
 
 
@@ -881,7 +881,7 @@ SWIFT_CLASS_PROPERTY(@property (nonatomic, class, readonly) Class _Nonnull layer
 
 
 @interface UIView (SWIFT_EXTENSION(NovaCore))
-@property (nonatomic, readonly) BOOL nb_isPartiallyVisibleOnScreen;
+@property (nonatomic, readonly) BOOL nova_isPartiallyVisibleOnScreen;
 @end
 
 
@@ -1310,51 +1310,6 @@ SWIFT_CLASS("_TtC8NovaCore14CheckBoxButton")
 - (nullable instancetype)initWithCoder:(NSCoder * _Nonnull)coder SWIFT_UNAVAILABLE;
 @end
 
-@class UIColor;
-
-/// Standard color palettes are defined at
-/// https://www.figma.com/file/az2QtfMgOx1SK2q78WVu71/Design-System—Foundations?node-id=311%3A1224
-SWIFT_CLASS("_TtC8NovaCore13ColorPalettes")
-@interface ColorPalettes : NSObject
-@property (nonatomic, readonly, strong) UIColor * _Nonnull tint50;
-@property (nonatomic, readonly, strong) UIColor * _Nonnull tint100;
-@property (nonatomic, readonly, strong) UIColor * _Nonnull tint200;
-@property (nonatomic, readonly, strong) UIColor * _Nonnull tint300;
-@property (nonatomic, readonly, strong) UIColor * _Nonnull tint400;
-@property (nonatomic, readonly, strong) UIColor * _Nonnull tint500;
-@property (nonatomic, readonly, strong) UIColor * _Nonnull tint600;
-@property (nonatomic, readonly, strong) UIColor * _Nonnull tint700;
-@property (nonatomic, readonly, strong) UIColor * _Nonnull tint800;
-@property (nonatomic, readonly, strong) UIColor * _Nonnull tint900;
-@property (nonatomic, readonly, strong) UIColor * _Nullable tint950;
-SWIFT_CLASS_PROPERTY(@property (nonatomic, class, readonly, strong) UIColor * _Nonnull Black;)
-+ (UIColor * _Nonnull)Black SWIFT_WARN_UNUSED_RESULT;
-SWIFT_CLASS_PROPERTY(@property (nonatomic, class, readonly, strong) UIColor * _Nonnull White;)
-+ (UIColor * _Nonnull)White SWIFT_WARN_UNUSED_RESULT;
-SWIFT_CLASS_PROPERTY(@property (nonatomic, class, readonly, strong) ColorPalettes * _Nonnull Gray;)
-+ (ColorPalettes * _Nonnull)Gray SWIFT_WARN_UNUSED_RESULT;
-SWIFT_CLASS_PROPERTY(@property (nonatomic, class, readonly, strong) ColorPalettes * _Nonnull App;)
-+ (ColorPalettes * _Nonnull)App SWIFT_WARN_UNUSED_RESULT;
-SWIFT_CLASS_PROPERTY(@property (nonatomic, class, readonly, strong) ColorPalettes * _Nonnull Blue;)
-+ (ColorPalettes * _Nonnull)Blue SWIFT_WARN_UNUSED_RESULT;
-SWIFT_CLASS_PROPERTY(@property (nonatomic, class, readonly, strong) ColorPalettes * _Nonnull Green;)
-+ (ColorPalettes * _Nonnull)Green SWIFT_WARN_UNUSED_RESULT;
-SWIFT_CLASS_PROPERTY(@property (nonatomic, class, readonly, strong) ColorPalettes * _Nonnull Orange;)
-+ (ColorPalettes * _Nonnull)Orange SWIFT_WARN_UNUSED_RESULT;
-SWIFT_CLASS_PROPERTY(@property (nonatomic, class, readonly, strong) ColorPalettes * _Nonnull Yellow;)
-+ (ColorPalettes * _Nonnull)Yellow SWIFT_WARN_UNUSED_RESULT;
-SWIFT_CLASS_PROPERTY(@property (nonatomic, class, readonly, strong) ColorPalettes * _Nonnull Magenta;)
-+ (ColorPalettes * _Nonnull)Magenta SWIFT_WARN_UNUSED_RESULT;
-SWIFT_CLASS_PROPERTY(@property (nonatomic, class, readonly, strong) ColorPalettes * _Nonnull Purple;)
-+ (ColorPalettes * _Nonnull)Purple SWIFT_WARN_UNUSED_RESULT;
-SWIFT_CLASS_PROPERTY(@property (nonatomic, class, readonly, strong) ColorPalettes * _Nonnull Skyblue;)
-+ (ColorPalettes * _Nonnull)Skyblue SWIFT_WARN_UNUSED_RESULT;
-SWIFT_CLASS_PROPERTY(@property (nonatomic, class, readonly, strong) ColorPalettes * _Nonnull Sapphire;)
-+ (ColorPalettes * _Nonnull)Sapphire SWIFT_WARN_UNUSED_RESULT;
-- (nonnull instancetype)init SWIFT_UNAVAILABLE;
-+ (nonnull instancetype)new SWIFT_UNAVAILABLE_MSG("-init is unavailable");
-@end
-
 
 SWIFT_CLASS("_TtC8NovaCore4Icon")
 @interface Icon : NSObject
@@ -1366,54 +1321,54 @@ SWIFT_CLASS("_TtC8NovaCore4Icon")
 @interface Icon (SWIFT_EXTENSION(NovaCore))
 @end
 
-typedef SWIFT_ENUM(NSInteger, System, open) {
-  SystemArrowLeftOutline = 0,
-  SystemBellFilled = 1,
-  SystemBellOutline = 2,
-  SystemBreezeFilled = 3,
-  SystemBreezeOutline = 4,
-  SystemCameraOutline = 5,
-  SystemChartBarOutline = 6,
-  SystemCheckCircleFilled = 7,
-  SystemCheckCircleOutline = 8,
-  SystemChevronDownFilled = 9,
-  SystemChevronDownOutline = 10,
-  SystemChevronLeftFilled = 11,
-  SystemChevronLeftOutline = 12,
-  SystemChevronRightFilled = 13,
-  SystemChevronRightOutline = 14,
-  SystemChevronUpFilled = 15,
-  SystemClockOutline = 16,
-  SystemCrossFilled = 17,
-  SystemCrossOutline = 18,
-  SystemCrossCircleFilled = 19,
-  SystemCrossCircleOutline = 20,
-  SystemEllipsisHorizontalOutline = 21,
-  SystemEllipsisVerticalFilled = 22,
-  SystemExclamationCircleOutline = 23,
-  SystemExclamationTriangleOutline = 24,
-  SystemGlobeOutline = 25,
-  SystemHashtagOutline = 26,
-  SystemHeartOutline = 27,
-  SystemImageOutline = 28,
-  SystemLinkOutline = 29,
-  SystemLocationOutline = 30,
-  SystemMoneyOutline = 31,
-  SystemNavigationArrowOutline = 32,
-  SystemNewsbreakOutline = 33,
-  SystemPeopleFilled = 34,
-  SystemPeopleOutline = 35,
-  SystemPlayFilled = 36,
-  SystemPlusOutline = 37,
-  SystemProhibitOutline = 38,
-  SystemShareOutline = 39,
-  SystemShieldErrorOutline = 40,
-  SystemTrashOutline = 41,
-  SystemVideoClipFilled = 42,
-  SystemVideoClipOutline = 43,
-  SystemMagicOutline = 44,
-  SystemMagicStarFilled = 45,
-  SystemHomeOutline = 46,
+typedef SWIFT_ENUM(NSInteger, NovaSystem, open) {
+  NovaSystemArrowLeftOutline = 0,
+  NovaSystemBellFilled = 1,
+  NovaSystemBellOutline = 2,
+  NovaSystemBreezeFilled = 3,
+  NovaSystemBreezeOutline = 4,
+  NovaSystemCameraOutline = 5,
+  NovaSystemChartBarOutline = 6,
+  NovaSystemCheckCircleFilled = 7,
+  NovaSystemCheckCircleOutline = 8,
+  NovaSystemChevronDownFilled = 9,
+  NovaSystemChevronDownOutline = 10,
+  NovaSystemChevronLeftFilled = 11,
+  NovaSystemChevronLeftOutline = 12,
+  NovaSystemChevronRightFilled = 13,
+  NovaSystemChevronRightOutline = 14,
+  NovaSystemChevronUpFilled = 15,
+  NovaSystemClockOutline = 16,
+  NovaSystemCrossFilled = 17,
+  NovaSystemCrossOutline = 18,
+  NovaSystemCrossCircleFilled = 19,
+  NovaSystemCrossCircleOutline = 20,
+  NovaSystemEllipsisHorizontalOutline = 21,
+  NovaSystemEllipsisVerticalFilled = 22,
+  NovaSystemExclamationCircleOutline = 23,
+  NovaSystemExclamationTriangleOutline = 24,
+  NovaSystemGlobeOutline = 25,
+  NovaSystemHashtagOutline = 26,
+  NovaSystemHeartOutline = 27,
+  NovaSystemImageOutline = 28,
+  NovaSystemLinkOutline = 29,
+  NovaSystemLocationOutline = 30,
+  NovaSystemMoneyOutline = 31,
+  NovaSystemNavigationArrowOutline = 32,
+  NovaSystemNewsbreakOutline = 33,
+  NovaSystemPeopleFilled = 34,
+  NovaSystemPeopleOutline = 35,
+  NovaSystemPlayFilled = 36,
+  NovaSystemPlusOutline = 37,
+  NovaSystemProhibitOutline = 38,
+  NovaSystemShareOutline = 39,
+  NovaSystemShieldErrorOutline = 40,
+  NovaSystemTrashOutline = 41,
+  NovaSystemVideoClipFilled = 42,
+  NovaSystemVideoClipOutline = 43,
+  NovaSystemMagicOutline = 44,
+  NovaSystemMagicStarFilled = 45,
+  NovaSystemHomeOutline = 46,
 };
 
 typedef SWIFT_ENUM(NSInteger, MetricEvent, open) {
@@ -1716,6 +1671,51 @@ SWIFT_CLASS("_TtC8NovaCore10NovaBaseAd")
 + (nonnull instancetype)new SWIFT_UNAVAILABLE_MSG("-init is unavailable");
 @end
 
+@class UIColor;
+
+/// Standard color palettes are defined at
+/// https://www.figma.com/file/az2QtfMgOx1SK2q78WVu71/Design-System—Foundations?node-id=311%3A1224
+SWIFT_CLASS("_TtC8NovaCore17NovaColorPalettes")
+@interface NovaColorPalettes : NSObject
+@property (nonatomic, readonly, strong) UIColor * _Nonnull tint50;
+@property (nonatomic, readonly, strong) UIColor * _Nonnull tint100;
+@property (nonatomic, readonly, strong) UIColor * _Nonnull tint200;
+@property (nonatomic, readonly, strong) UIColor * _Nonnull tint300;
+@property (nonatomic, readonly, strong) UIColor * _Nonnull tint400;
+@property (nonatomic, readonly, strong) UIColor * _Nonnull tint500;
+@property (nonatomic, readonly, strong) UIColor * _Nonnull tint600;
+@property (nonatomic, readonly, strong) UIColor * _Nonnull tint700;
+@property (nonatomic, readonly, strong) UIColor * _Nonnull tint800;
+@property (nonatomic, readonly, strong) UIColor * _Nonnull tint900;
+@property (nonatomic, readonly, strong) UIColor * _Nullable tint950;
+SWIFT_CLASS_PROPERTY(@property (nonatomic, class, readonly, strong) UIColor * _Nonnull Black;)
++ (UIColor * _Nonnull)Black SWIFT_WARN_UNUSED_RESULT;
+SWIFT_CLASS_PROPERTY(@property (nonatomic, class, readonly, strong) UIColor * _Nonnull White;)
++ (UIColor * _Nonnull)White SWIFT_WARN_UNUSED_RESULT;
+SWIFT_CLASS_PROPERTY(@property (nonatomic, class, readonly, strong) NovaColorPalettes * _Nonnull Gray;)
++ (NovaColorPalettes * _Nonnull)Gray SWIFT_WARN_UNUSED_RESULT;
+SWIFT_CLASS_PROPERTY(@property (nonatomic, class, readonly, strong) NovaColorPalettes * _Nonnull App;)
++ (NovaColorPalettes * _Nonnull)App SWIFT_WARN_UNUSED_RESULT;
+SWIFT_CLASS_PROPERTY(@property (nonatomic, class, readonly, strong) NovaColorPalettes * _Nonnull Blue;)
++ (NovaColorPalettes * _Nonnull)Blue SWIFT_WARN_UNUSED_RESULT;
+SWIFT_CLASS_PROPERTY(@property (nonatomic, class, readonly, strong) NovaColorPalettes * _Nonnull Green;)
++ (NovaColorPalettes * _Nonnull)Green SWIFT_WARN_UNUSED_RESULT;
+SWIFT_CLASS_PROPERTY(@property (nonatomic, class, readonly, strong) NovaColorPalettes * _Nonnull Orange;)
++ (NovaColorPalettes * _Nonnull)Orange SWIFT_WARN_UNUSED_RESULT;
+SWIFT_CLASS_PROPERTY(@property (nonatomic, class, readonly, strong) NovaColorPalettes * _Nonnull Yellow;)
++ (NovaColorPalettes * _Nonnull)Yellow SWIFT_WARN_UNUSED_RESULT;
+SWIFT_CLASS_PROPERTY(@property (nonatomic, class, readonly, strong) NovaColorPalettes * _Nonnull Magenta;)
++ (NovaColorPalettes * _Nonnull)Magenta SWIFT_WARN_UNUSED_RESULT;
+SWIFT_CLASS_PROPERTY(@property (nonatomic, class, readonly, strong) NovaColorPalettes * _Nonnull Purple;)
++ (NovaColorPalettes * _Nonnull)Purple SWIFT_WARN_UNUSED_RESULT;
+SWIFT_CLASS_PROPERTY(@property (nonatomic, class, readonly, strong) NovaColorPalettes * _Nonnull Skyblue;)
++ (NovaColorPalettes * _Nonnull)Skyblue SWIFT_WARN_UNUSED_RESULT;
+SWIFT_CLASS_PROPERTY(@property (nonatomic, class, readonly, strong) NovaColorPalettes * _Nonnull Sapphire;)
++ (NovaColorPalettes * _Nonnull)Sapphire SWIFT_WARN_UNUSED_RESULT;
+- (nonnull instancetype)init SWIFT_UNAVAILABLE;
++ (nonnull instancetype)new SWIFT_UNAVAILABLE_MSG("-init is unavailable");
+@end
+
 @class NovaNativeAdItem;
 
 SWIFT_PROTOCOL("_TtP8NovaCore20NovaNativeAdDelegate_")
@@ -1829,7 +1829,7 @@ SWIFT_CLASS_PROPERTY(@property (nonatomic, class, readonly) Class _Nonnull layer
 
 
 @interface UIApplication (SWIFT_EXTENSION(NovaCore))
-@property (nonatomic, readonly) UIEdgeInsets nb_safeAreaInsets;
+@property (nonatomic, readonly) UIEdgeInsets nova_safeAreaInsets;
 @end
 
 
@@ -1862,8 +1862,8 @@ SWIFT_CLASS_PROPERTY(@property (nonatomic, class, readonly) Class _Nonnull layer
 
 
 @interface UIImage (SWIFT_EXTENSION(NovaCore))
-- (nullable instancetype)initWithSystemName:(enum System)systemName;
-- (nullable instancetype)initWithSystemName:(enum System)systemName tintColor:(UIColor * _Nonnull)tintColor;
+- (nullable instancetype)initWithSystemName:(enum NovaSystem)systemName;
+- (nullable instancetype)initWithSystemName:(enum NovaSystem)systemName tintColor:(UIColor * _Nonnull)tintColor;
 @end
 
 
@@ -1874,7 +1874,7 @@ SWIFT_CLASS_PROPERTY(@property (nonatomic, class, readonly) Class _Nonnull layer
 
 
 @interface UIView (SWIFT_EXTENSION(NovaCore))
-@property (nonatomic, readonly) BOOL nb_isPartiallyVisibleOnScreen;
+@property (nonatomic, readonly) BOOL nova_isPartiallyVisibleOnScreen;
 @end
 
 
