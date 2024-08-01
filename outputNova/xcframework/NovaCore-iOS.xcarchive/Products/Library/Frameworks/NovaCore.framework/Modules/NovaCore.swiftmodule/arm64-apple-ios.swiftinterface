@@ -69,7 +69,7 @@ public struct VideoLogActionDataModel {
 public protocol IconName : Swift.CustomStringConvertible {
 }
 extension NovaCore.Icon {
-  @objc public enum System : Swift.Int, Swift.CaseIterable {
+  @objc public enum NovaSystem : Swift.Int, Swift.CaseIterable {
     case arrowLeftOutline
     case bellFilled
     case bellOutline
@@ -118,9 +118,9 @@ extension NovaCore.Icon {
     case magicStarFilled
     case homeOutline
     public init?(rawValue: Swift.Int)
-    public typealias AllCases = [NovaCore.Icon.System]
+    public typealias AllCases = [NovaCore.Icon.NovaSystem]
     public typealias RawValue = Swift.Int
-    public static var allCases: [NovaCore.Icon.System] {
+    public static var allCases: [NovaCore.Icon.NovaSystem] {
       get
     }
     public var rawValue: Swift.Int {
@@ -128,7 +128,7 @@ extension NovaCore.Icon {
     }
   }
 }
-extension NovaCore.Icon.System : NovaCore.IconName {
+extension NovaCore.Icon.NovaSystem : NovaCore.IconName {
   public var description: Swift.String {
     get
   }
@@ -147,8 +147,8 @@ extension UIKit.UIImage {
   public func tint(_ tintColor: UIKit.UIColor) -> UIKit.UIImage
 }
 extension UIKit.UIImage {
-  @objc convenience dynamic public init?(systemName: NovaCore.Icon.System)
-  @objc convenience dynamic public init?(systemName: NovaCore.Icon.System, tintColor: UIKit.UIColor)
+  @objc convenience dynamic public init?(systemName: NovaCore.Icon.NovaSystem)
+  @objc convenience dynamic public init?(systemName: NovaCore.Icon.NovaSystem, tintColor: UIKit.UIColor)
 }
 public enum AdsMediaConstants {
   public static let iPadAspectRatio: Swift.Double
@@ -177,7 +177,7 @@ public enum NovaCreativeType : Swift.String {
   }
 }
 extension SwiftUI.Color {
-  @_hasMissingDesignatedInitializers public class NBColor {
+  @_hasMissingDesignatedInitializers public class NovaColor {
     final public let newsbreakRed: SwiftUI.Color
     final public let primaryText: SwiftUI.Color
     final public let secondaryText: SwiftUI.Color
@@ -201,7 +201,7 @@ extension SwiftUI.Color {
     final public let secondaryDividerDeprecated: SwiftUI.Color
     @objc deinit
   }
-  public static let NB: SwiftUI.Color.NBColor
+  public static let Nova: SwiftUI.Color.NovaColor
 }
 public enum AdsThirdPartyMetricReporter {
   public static func logImpression(thirdPartyImpressionTrackingUrls: [Swift.String])
@@ -237,8 +237,8 @@ extension NovaCore.NovaAdMetricReporter {
   public static func convertNovaClickAreaNameToMetric(clickArea: Swift.String?) -> Swift.String?
 }
 extension SwiftUI.Image {
-  public static let NB: SwiftUI.Image.NBImage
-  @_hasMissingDesignatedInitializers public class NBImage {
+  public static let Nova: SwiftUI.Image.NovaImage
+  @_hasMissingDesignatedInitializers public class NovaImage {
     final public let aiSummaryFilled: SwiftUI.Image
     final public let aiSummaryLine: SwiftUI.Image
     final public let alertFilled: SwiftUI.Image
@@ -677,16 +677,16 @@ public struct NovaNativeAdMediaViewModel {
   public init(encryptedAdToken: Swift.String, imageUrlStr: Swift.String?, videoInfo: NovaCore.NovaNativeAdVideoInfo?)
 }
 extension UIKit.UIApplication {
-  @objc @_Concurrency.MainActor(unsafe) dynamic public var nb_safeAreaInsets: UIKit.UIEdgeInsets {
+  @objc @_Concurrency.MainActor(unsafe) dynamic public var nova_safeAreaInsets: UIKit.UIEdgeInsets {
     @objc get
   }
-  @_Concurrency.MainActor(unsafe) public class var windowScenes: [UIKit.UIWindowScene] {
+  @_Concurrency.MainActor(unsafe) public class var novawindowScenes: [UIKit.UIWindowScene] {
     get
   }
-  @_Concurrency.MainActor(unsafe) public class var sharedKeyWindow: UIKit.UIWindow? {
+  @_Concurrency.MainActor(unsafe) public class var novasharedKeyWindow: UIKit.UIWindow? {
     get
   }
-  @_Concurrency.MainActor(unsafe) public class var keyRootViewController: UIKit.UIViewController? {
+  @_Concurrency.MainActor(unsafe) public class var novakeyRootViewController: UIKit.UIViewController? {
     get
   }
 }
@@ -708,23 +708,23 @@ extension UIKit.UIView {
   }
 }
 extension UIKit.UIView {
-  @_Concurrency.MainActor(unsafe) public var nb_isFullyVisibleOnScreen: Swift.Bool {
+  @_Concurrency.MainActor(unsafe) public var nova_isFullyVisibleOnScreen: Swift.Bool {
     get
   }
-  @objc @_Concurrency.MainActor(unsafe) dynamic public var nb_isPartiallyVisibleOnScreen: Swift.Bool {
+  @objc @_Concurrency.MainActor(unsafe) dynamic public var nova_isPartiallyVisibleOnScreen: Swift.Bool {
     @objc get
   }
-  @_Concurrency.MainActor(unsafe) public func isCheckedView() -> Swift.Bool
+  @_Concurrency.MainActor(unsafe) public func novaisCheckedView() -> Swift.Bool
 }
 extension UIKit.UIView {
-  @_Concurrency.MainActor(unsafe) public func setShadow(x: Swift.Double, y: Swift.Double, b: Swift.Double, s: Swift.Double, color: UIKit.UIColor, alpha: Swift.Float)
+  @_Concurrency.MainActor(unsafe) public func novasetShadow(x: Swift.Double, y: Swift.Double, b: Swift.Double, s: Swift.Double, color: UIKit.UIColor, alpha: Swift.Float)
 }
 extension UIKit.UIView {
-  @_Concurrency.MainActor(unsafe) public func pinConstraints() -> [UIKit.NSLayoutConstraint]
-  @_Concurrency.MainActor(unsafe) public func pinToSuperView()
+  @_Concurrency.MainActor(unsafe) public func novapinConstraints() -> [UIKit.NSLayoutConstraint]
+  @_Concurrency.MainActor(unsafe) public func novapinToSuperView()
 }
 extension UIKit.UIColor {
-  @_hasMissingDesignatedInitializers public class NBUIColor {
+  @_hasMissingDesignatedInitializers public class NovaUIColor {
     final public let newsbreakRed: UIKit.UIColor
     final public let primaryText: UIKit.UIColor
     final public let secondaryText: UIKit.UIColor
@@ -748,7 +748,7 @@ extension UIKit.UIColor {
     final public let secondaryDividerDeprecated: UIKit.UIColor
     @objc deinit
   }
-  public static let NB: UIKit.UIColor.NBUIColor
+  public static let Nova: UIKit.UIColor.NovaUIColor
 }
 @objc public enum MetricEvent : Swift.Int, Swift.CaseIterable {
   case facebookLogin
@@ -1060,8 +1060,8 @@ extension NovaCore.UnifiedWebViewHost : WebKit.WKUIDelegate {
   @objc deinit
 }
 extension SwiftUI.Image {
-  public static let NBEmoji: SwiftUI.Image.NBImageEmoji
-  @_hasMissingDesignatedInitializers public class NBImageEmoji {
+  public static let NovaEmoji: SwiftUI.Image.NovaImageEmoji
+  @_hasMissingDesignatedInitializers public class NovaImageEmoji {
     final public let angry: SwiftUI.Image
     final public let haha: SwiftUI.Image
     final public let like: SwiftUI.Image
@@ -1323,8 +1323,8 @@ public enum NovaAdUrlTransformer {
   public static func replaceMacro(in urlString: Swift.String) -> Swift.String
 }
 extension UIKit.UIImage {
-  public static let NB: UIKit.UIImage.NBImage
-  @_hasMissingDesignatedInitializers public class NBImage {
+  public static let Nova: UIKit.UIImage.NovaImage
+  @_hasMissingDesignatedInitializers public class NovaImage {
     final public let aiSummaryFilled: UIKit.UIImage?
     final public let aiSummaryLine: UIKit.UIImage?
     final public let alertFilled: UIKit.UIImage?
@@ -1647,11 +1647,11 @@ public struct WebViewNavigationViewModel {
   public let title: Swift.String?
   public var titleFontSize: CoreFoundation.CGFloat
   public let hideLeftButton: Swift.Bool
-  public let leftButtonIcon: NovaCore.Icon.System?
-  public let rightButtonIcon: NovaCore.Icon.System?
+  public let leftButtonIcon: NovaCore.Icon.NovaSystem?
+  public let rightButtonIcon: NovaCore.Icon.NovaSystem?
   public let leftButtonTapActionHandler: (() -> Swift.Void)?
   public let rightButtonTapActionHandler: (() -> Swift.Void)?
-  public init(includingStatusBar: Swift.Bool = true, title: Swift.String?, titleFontSize: CoreFoundation.CGFloat? = nil, hideLeftButton: Swift.Bool = false, leftButtonIcon: NovaCore.Icon.System? = nil, leftButtonTapActionHandler: @escaping () -> Swift.Void, rightButtonIcon: NovaCore.Icon.System? = nil, rightButtonTapActionHandler: @escaping () -> Swift.Void)
+  public init(includingStatusBar: Swift.Bool = true, title: Swift.String?, titleFontSize: CoreFoundation.CGFloat? = nil, hideLeftButton: Swift.Bool = false, leftButtonIcon: NovaCore.Icon.NovaSystem? = nil, leftButtonTapActionHandler: @escaping () -> Swift.Void, rightButtonIcon: NovaCore.Icon.NovaSystem? = nil, rightButtonTapActionHandler: @escaping () -> Swift.Void)
 }
 @_hasMissingDesignatedInitializers @objc final public class NovaNativeAdItem : NovaCore.NovaBaseAd {
   @objc final public let headline: Swift.String?
@@ -1673,7 +1673,7 @@ public struct WebViewNavigationViewModel {
   @objc final public func downloadMedia()
 }
 extension UIKit.UIFont {
-  @_hasMissingDesignatedInitializers public class NBFont {
+  @_hasMissingDesignatedInitializers public class NovaFont {
     final public let display1: UIKit.UIFont
     final public let display2: UIKit.UIFont
     final public let headline1: UIKit.UIFont
@@ -1711,7 +1711,7 @@ extension UIKit.UIFont {
     final public let deprecated15Regular: UIKit.UIFont
     @objc deinit
   }
-  public static let NB: UIKit.UIFont.NBFont
+  public static let Nova: UIKit.UIFont.NovaFont
 }
 public enum NovaAdBuilder {
   public static func buildNativeAd(adItem: NovaCore.AdItem, adUnitId: Swift.String, eCPMInDollar: Foundation.Decimal, isParallax: Swift.Bool = false) -> NovaCore.NovaNativeAdItem
@@ -1751,7 +1751,7 @@ public enum NovaAdSkipReason : Swift.String {
   }
 }
 extension SwiftUI.Font {
-  @_hasMissingDesignatedInitializers public class NBFont {
+  @_hasMissingDesignatedInitializers public class NovaFont {
     final public let display1: SwiftUI.Font
     final public let display2: SwiftUI.Font
     final public let headline1: SwiftUI.Font
@@ -1767,7 +1767,7 @@ extension SwiftUI.Font {
     final public let caption2: SwiftUI.Font
     @objc deinit
   }
-  public static let NB: SwiftUI.Font.NBFont
+  public static let Nova: SwiftUI.Font.NovaFont
 }
 public enum VideoPlayStyle : Swift.String {
   case none
@@ -1934,7 +1934,7 @@ extension NovaCore.ActionHandlerMaster : NovaCore.ActionHandling {
   final public func supportedActions() -> [Swift.String : any Any.Type]
   final public func performAction(actionModel: NovaCore.ActionModel)
 }
-@_hasMissingDesignatedInitializers @objc public class ColorPalettes : ObjectiveC.NSObject {
+@_hasMissingDesignatedInitializers @objc public class NovaColorPalettes : ObjectiveC.NSObject {
   @objc final public let tint50: UIKit.UIColor
   @objc final public let tint100: UIKit.UIColor
   @objc final public let tint200: UIKit.UIColor
@@ -1948,16 +1948,16 @@ extension NovaCore.ActionHandlerMaster : NovaCore.ActionHandling {
   @objc final public let tint950: UIKit.UIColor?
   @objc public static let Black: UIKit.UIColor
   @objc public static let White: UIKit.UIColor
-  @objc public static let Gray: NovaCore.ColorPalettes
-  @objc public static let App: NovaCore.ColorPalettes
-  @objc public static let Blue: NovaCore.ColorPalettes
-  @objc public static let Green: NovaCore.ColorPalettes
-  @objc public static let Orange: NovaCore.ColorPalettes
-  @objc public static let Yellow: NovaCore.ColorPalettes
-  @objc public static let Magenta: NovaCore.ColorPalettes
-  @objc public static let Purple: NovaCore.ColorPalettes
-  @objc public static let Skyblue: NovaCore.ColorPalettes
-  @objc public static let Sapphire: NovaCore.ColorPalettes
+  @objc public static let Gray: NovaCore.NovaColorPalettes
+  @objc public static let App: NovaCore.NovaColorPalettes
+  @objc public static let Blue: NovaCore.NovaColorPalettes
+  @objc public static let Green: NovaCore.NovaColorPalettes
+  @objc public static let Orange: NovaCore.NovaColorPalettes
+  @objc public static let Yellow: NovaCore.NovaColorPalettes
+  @objc public static let Magenta: NovaCore.NovaColorPalettes
+  @objc public static let Purple: NovaCore.NovaColorPalettes
+  @objc public static let Skyblue: NovaCore.NovaColorPalettes
+  @objc public static let Sapphire: NovaCore.NovaColorPalettes
   @objc deinit
 }
 extension UIKit.UIColor {
@@ -2029,9 +2029,9 @@ extension NovaCore.NovaAdOpenActionKey : Swift.RawRepresentable {}
 extension NovaCore.VideoLogActionKey : Swift.Equatable {}
 extension NovaCore.VideoLogActionKey : Swift.Hashable {}
 extension NovaCore.VideoLogActionKey : Swift.RawRepresentable {}
-extension NovaCore.Icon.System : Swift.Equatable {}
-extension NovaCore.Icon.System : Swift.Hashable {}
-extension NovaCore.Icon.System : Swift.RawRepresentable {}
+extension NovaCore.Icon.NovaSystem : Swift.Equatable {}
+extension NovaCore.Icon.NovaSystem : Swift.Hashable {}
+extension NovaCore.Icon.NovaSystem : Swift.RawRepresentable {}
 extension NovaCore.NovaCreativeType : Swift.Equatable {}
 extension NovaCore.NovaCreativeType : Swift.Hashable {}
 extension NovaCore.NovaCreativeType : Swift.RawRepresentable {}
