@@ -7,8 +7,8 @@ public struct WebViewNavigationViewModel {
     public let title: String?
     public var titleFontSize: CGFloat = 16
     public let hideLeftButton: Bool
-    public let leftButtonIcon: Icon.System?
-    public let rightButtonIcon: Icon.System?
+    public let leftButtonIcon: Icon.NovaSystem?
+    public let rightButtonIcon: Icon.NovaSystem?
     public let leftButtonTapActionHandler: (() -> Void)?
     public let rightButtonTapActionHandler: (() -> Void)?
     
@@ -19,9 +19,9 @@ public struct WebViewNavigationViewModel {
         title: String?,
         titleFontSize: CGFloat? = nil,
         hideLeftButton: Bool = false,
-        leftButtonIcon: Icon.System? = nil,
+        leftButtonIcon: Icon.NovaSystem? = nil,
         leftButtonTapActionHandler: @escaping () -> Void,
-        rightButtonIcon: Icon.System? = nil,
+        rightButtonIcon: Icon.NovaSystem? = nil,
         rightButtonTapActionHandler: @escaping () -> Void
     ) {
         self.includingStatusBar = includingStatusBar

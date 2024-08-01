@@ -8,7 +8,7 @@ public protocol IconName: CustomStringConvertible {}
 
 
 extension Icon {
-    @objc public enum System: Int, CaseIterable {
+    @objc public enum NovaSystem: Int, CaseIterable {
         case arrowLeftOutline
         case bellFilled
         case bellOutline
@@ -59,7 +59,7 @@ extension Icon {
     }
 }
 
-extension Icon.System: IconName {
+extension Icon.NovaSystem: IconName {
     public var description: String {
         switch self {
         case .arrowLeftOutline: return "arrow_left_outline"
