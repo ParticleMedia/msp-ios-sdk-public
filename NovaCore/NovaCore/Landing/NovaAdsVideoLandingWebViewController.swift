@@ -161,7 +161,7 @@ public class NovaAdsVideoLandingWebViewController: UIViewController {
                 make.height.equalTo(topVideoHeight)
             }
         }
-        initialHeight = view.bounds.height - topVideoHeight - (UIApplication.sharedKeyWindow?.safeAreaInsets.top ?? 0)
+        initialHeight = view.bounds.height - topVideoHeight - (UIApplication.novasharedKeyWindow?.safeAreaInsets.top ?? 0)
         currentHeight = initialHeight
         isWebViewOnTop = topVideoHeight == 0
         view.addSubview(containerView)

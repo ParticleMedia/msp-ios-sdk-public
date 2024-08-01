@@ -32,15 +32,15 @@ public extension UIView {
 }
 
 extension UIView {
-    public var nb_isFullyVisibleOnScreen: Bool {
-        return isVisibleOnScreen(partially: false)
+    public var nova_isFullyVisibleOnScreen: Bool {
+        return novaisVisibleOnScreen(partially: false)
     }
 
-    @objc public var nb_isPartiallyVisibleOnScreen: Bool {
-        return isVisibleOnScreen(partially: true)
+    @objc public var nova_isPartiallyVisibleOnScreen: Bool {
+        return novaisVisibleOnScreen(partially: true)
     }
 
-    private func isVisibleOnScreen(partially: Bool) -> Bool {
+    private func novaisVisibleOnScreen(partially: Bool) -> Bool {
         if isHidden || alpha == 0 || superview == nil || window == nil {
             return false
         }
@@ -66,11 +66,11 @@ extension UIView {
     }
 
     // Should log view impression
-    public func isCheckedView() -> Bool {
-        return getVisiblePercentage() >= 50
+    public func novaisCheckedView() -> Bool {
+        return novagetVisiblePercentage() >= 50
     }
 
-    private func getVisiblePercentage() -> Double {
+    private func novagetVisiblePercentage() -> Double {
         if isHidden || alpha == 0 || superview == nil || window == nil {
             return 0
         }
@@ -96,7 +96,7 @@ extension UIView {
 // MARK: - Shadow
 
 extension UIView {
-    public func setShadow(x: Double, y: Double, b: Double, s: Double, color: UIColor, alpha: Float) {
+    public func novasetShadow(x: Double, y: Double, b: Double, s: Double, color: UIColor, alpha: Float) {
         let rect = bounds.insetBy(dx: -s, dy: -s)
         layer.shadowPath = UIBezierPath(rect: rect).cgPath
         layer.shadowColor = color.cgColor
@@ -107,7 +107,7 @@ extension UIView {
 }
 
 extension UIView {
-    public func pinConstraints() -> [NSLayoutConstraint] {
+    public func novapinConstraints() -> [NSLayoutConstraint] {
         guard let parentView = superview else {
             return []
         }
@@ -119,7 +119,7 @@ extension UIView {
         ]
     }
 
-    public func pinToSuperView() {
-        NSLayoutConstraint.activate(pinConstraints())
+    public func novapinToSuperView() {
+        NSLayoutConstraint.activate(novapinConstraints())
     }
 }
