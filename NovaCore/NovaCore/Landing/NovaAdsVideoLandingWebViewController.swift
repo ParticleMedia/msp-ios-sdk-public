@@ -15,7 +15,7 @@ public class NovaAdsVideoLandingWebViewController: UIViewController {
     
     private let statusBarView: UIView = {
         let view = UIView()
-        view.backgroundColor = UIColor(light: ColorPalettes.White, dark: ColorPalettes.Gray.tint900)
+        view.backgroundColor = UIColor(light: NovaColorPalettes.White, dark: NovaColorPalettes.Gray.tint900)
         return view
     }()
 

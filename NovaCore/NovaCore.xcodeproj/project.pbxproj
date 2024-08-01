@@ -69,7 +69,7 @@
 		66E534D02C24CBF200255D15 /* NovaAdOpenActionHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E5348C2C24CBF200255D15 /* NovaAdOpenActionHandler.swift */; };
 		66E534D12C24CBF200255D15 /* NovaAdOpenActionKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E5348D2C24CBF200255D15 /* NovaAdOpenActionKey.swift */; };
 		66E534D22C24CBF200255D15 /* AdsMediaConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E5348F2C24CBF200255D15 /* AdsMediaConstants.swift */; };
-		66E534D32C24CBF200255D15 /* ColorPalettes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E534902C24CBF200255D15 /* ColorPalettes.swift */; };
+		66E534D32C24CBF200255D15 /* NovaColorPalettes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E534902C24CBF200255D15 /* NovaColorPalettes.swift */; };
 		66E534D42C24CBF200255D15 /* Icon.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E534912C24CBF200255D15 /* Icon.swift */; };
 		66E534D52C24CBF200255D15 /* UIApplication+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E534922C24CBF200255D15 /* UIApplication+Extensions.swift */; };
 		66E534D62C24CBF200255D15 /* UIDevice+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E534932C24CBF200255D15 /* UIDevice+Extensions.swift */; };
@@ -169,7 +169,7 @@
 		66E5348C2C24CBF200255D15 /* NovaAdOpenActionHandler.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NovaAdOpenActionHandler.swift; sourceTree = "<group>"; };
 		66E5348D2C24CBF200255D15 /* NovaAdOpenActionKey.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NovaAdOpenActionKey.swift; sourceTree = "<group>"; };
 		66E5348F2C24CBF200255D15 /* AdsMediaConstants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AdsMediaConstants.swift; sourceTree = "<group>"; };
-		66E534902C24CBF200255D15 /* ColorPalettes.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ColorPalettes.swift; sourceTree = "<group>"; };
+		66E534902C24CBF200255D15 /* NovaColorPalettes.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NovaColorPalettes.swift; sourceTree = "<group>"; };
 		66E534912C24CBF200255D15 /* Icon.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Icon.swift; sourceTree = "<group>"; };
 		66E534922C24CBF200255D15 /* UIApplication+Extensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIApplication+Extensions.swift"; sourceTree = "<group>"; };
 		66E534932C24CBF200255D15 /* UIDevice+Extensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIDevice+Extensions.swift"; sourceTree = "<group>"; };
@@ -395,7 +395,7 @@
 			isa = PBXGroup;
 			children = (
 				66E5348F2C24CBF200255D15 /* AdsMediaConstants.swift */,
-				66E534902C24CBF200255D15 /* ColorPalettes.swift */,
+				66E534902C24CBF200255D15 /* NovaColorPalettes.swift */,
 				66E534912C24CBF200255D15 /* Icon.swift */,
 				66E534922C24CBF200255D15 /* UIApplication+Extensions.swift */,
 				66E534932C24CBF200255D15 /* UIDevice+Extensions.swift */,
@@ -667,7 +667,7 @@
 				66E534D02C24CBF200255D15 /* NovaAdOpenActionHandler.swift in Sources */,
 				66E534CB2C24CBF200255D15 /* ActionHandlerMaster.swift in Sources */,
 				66E5349D2C24CBF200255D15 /* ContentBlockHelper.swift in Sources */,
-				66E534D32C24CBF200255D15 /* ColorPalettes.swift in Sources */,
+				66E534D32C24CBF200255D15 /* NovaColorPalettes.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

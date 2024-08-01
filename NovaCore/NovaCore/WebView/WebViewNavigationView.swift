@@ -16,7 +16,7 @@ public class WebViewNavigationView: UIView {
 
     private let titleLabel: UILabel = {
         let label = UILabel()
-        label.textColor = UIColor(light: ColorPalettes.Gray.tint800, dark: ColorPalettes.White)
+        label.textColor = UIColor(light: NovaColorPalettes.Gray.tint800, dark: NovaColorPalettes.White)
         label.textAlignment = .center
         return label
     }()
@@ -33,7 +33,7 @@ public class WebViewNavigationView: UIView {
     override public init(frame: CGRect) {
         super.init(frame: frame)
 
-        backgroundColor = UIColor(light: ColorPalettes.White, dark: ColorPalettes.Gray.tint900)
+        backgroundColor = UIColor(light: NovaColorPalettes.White, dark: NovaColorPalettes.Gray.tint900)
 
         addSubviews([leftButton, titleLabel, divider, rightButton])
     }
