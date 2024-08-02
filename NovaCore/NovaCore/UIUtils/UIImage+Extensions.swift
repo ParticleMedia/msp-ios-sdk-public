@@ -53,14 +53,14 @@ public extension UIImage {
 
     // MARK: - System
 
-    @objc convenience init?(systemName: Icon.System) {
+    @objc convenience init?(novasystemName: NovaIcon.NovaSystem) {
         guard let url = Self.BundleUrl() else { fatalError("Wrong bundle url") }
 
-        self.init(named: systemName.description, in: Bundle(url: url), compatibleWith: nil)
+        self.init(named: novasystemName.description, in: Bundle(url: url), compatibleWith: nil)
     }
 
-    @objc convenience init?(systemName: Icon.System, tintColor: UIColor) {
-        guard let image = UIImage(systemName: systemName) else {
+    @objc convenience init?(novasystemName: NovaIcon.NovaSystem, tintColor: UIColor) {
+        guard let image = UIImage(novasystemName: novasystemName) else {
             return nil
         }
 

@@ -70,8 +70,8 @@ public class VideoProgressView: UIView {
         progressTrackView.layer.cornerRadius = progressTrackWidth * 0.5
         progressTrackView.isHidden = true
 
-        self.configProgressColor(progressTintColor: ColorPalettes.White.nb_opacity6(),
-                                 trackTintColor: ColorPalettes.White.nb_opacity4())
+        self.configProgressColor(progressTintColor: NovaColorPalettes.White.nb_opacity6(),
+                                 trackTintColor: NovaColorPalettes.White.nb_opacity4())
     }
 
     required init?(coder: NSCoder) {
@@ -82,12 +82,12 @@ public class VideoProgressView: UIView {
         progressTrackView.isHidden = hidden
         if hidden {
             containerHeight.constant = 1
-            self.configProgressColor(progressTintColor: ColorPalettes.White.nb_opacity6(),
-                                     trackTintColor: ColorPalettes.White.nb_opacity5())
+            self.configProgressColor(progressTintColor: NovaColorPalettes.White.nb_opacity6(),
+                                     trackTintColor: NovaColorPalettes.White.nb_opacity5())
         } else {
             containerHeight.constant = 2
-            self.configProgressColor(progressTintColor: ColorPalettes.White,
-                                     trackTintColor: ColorPalettes.White.nb_opacity4())
+            self.configProgressColor(progressTintColor: NovaColorPalettes.White,
+                                     trackTintColor: NovaColorPalettes.White.nb_opacity4())
         }
     }
 

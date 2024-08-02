@@ -21,7 +21,7 @@ import Foundation
     private let progressView: UIProgressView = {
         let view = UIProgressView()
         view.translatesAutoresizingMaskIntoConstraints = false
-        view.tintColor = UIColor(light: ColorPalettes.Blue.tint200, dark: ColorPalettes.Blue.tint400)
+        view.tintColor = UIColor(light: NovaColorPalettes.Blue.tint200, dark: NovaColorPalettes.Blue.tint400)
         return view
     }()
 
@@ -134,7 +134,7 @@ import Foundation
 
         bottomView.delegate = self
 
-        view.backgroundColor = UIColor(light: ColorPalettes.Gray.tint100, dark: ColorPalettes.Gray.tint700)
+        view.backgroundColor = UIColor(light: NovaColorPalettes.Gray.tint100, dark: NovaColorPalettes.Gray.tint700)
 
         self.view.addSubviews([naviView, webView, loadingView, progressView, bottomView])
 

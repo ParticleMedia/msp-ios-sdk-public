@@ -69,7 +69,7 @@
 		66E534D02C24CBF200255D15 /* NovaAdOpenActionHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E5348C2C24CBF200255D15 /* NovaAdOpenActionHandler.swift */; };
 		66E534D12C24CBF200255D15 /* NovaAdOpenActionKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E5348D2C24CBF200255D15 /* NovaAdOpenActionKey.swift */; };
 		66E534D22C24CBF200255D15 /* AdsMediaConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E5348F2C24CBF200255D15 /* AdsMediaConstants.swift */; };
-		66E534D32C24CBF200255D15 /* ColorPalettes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E534902C24CBF200255D15 /* ColorPalettes.swift */; };
+		66E534D32C24CBF200255D15 /* NovaColorPalettes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E534902C24CBF200255D15 /* NovaColorPalettes.swift */; };
 		66E534D42C24CBF200255D15 /* Icon.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E534912C24CBF200255D15 /* Icon.swift */; };
 		66E534D52C24CBF200255D15 /* UIApplication+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E534922C24CBF200255D15 /* UIApplication+Extensions.swift */; };
 		66E534D62C24CBF200255D15 /* UIDevice+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E534932C24CBF200255D15 /* UIDevice+Extensions.swift */; };
@@ -81,7 +81,7 @@
 		66E534DC2C24CBF200255D15 /* NovaAdUrlTransformer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E5349A2C24CBF200255D15 /* NovaAdUrlTransformer.swift */; };
 		66E534DD2C24CBF200255D15 /* NovaDedupeManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E5349B2C24CBF200255D15 /* NovaDedupeManager.swift */; };
 		66E535202C250A8900255D15 /* NBAssets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 66E535152C250A8900255D15 /* NBAssets.xcassets */; };
-		66E535212C250A8900255D15 /* Asset.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E535162C250A8900255D15 /* Asset.swift */; };
+		66E535212C250A8900255D15 /* NovaAsset.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E535162C250A8900255D15 /* NovaAsset.swift */; };
 		66E535222C250A8900255D15 /* CheckBoxButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E535172C250A8900255D15 /* CheckBoxButton.swift */; };
 		66E535232C250A8900255D15 /* Colors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E535182C250A8900255D15 /* Colors.swift */; };
 		66E535242C250A8900255D15 /* Fonts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E535192C250A8900255D15 /* Fonts.swift */; };
@@ -169,7 +169,7 @@
 		66E5348C2C24CBF200255D15 /* NovaAdOpenActionHandler.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NovaAdOpenActionHandler.swift; sourceTree = "<group>"; };
 		66E5348D2C24CBF200255D15 /* NovaAdOpenActionKey.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NovaAdOpenActionKey.swift; sourceTree = "<group>"; };
 		66E5348F2C24CBF200255D15 /* AdsMediaConstants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AdsMediaConstants.swift; sourceTree = "<group>"; };
-		66E534902C24CBF200255D15 /* ColorPalettes.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ColorPalettes.swift; sourceTree = "<group>"; };
+		66E534902C24CBF200255D15 /* NovaColorPalettes.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NovaColorPalettes.swift; sourceTree = "<group>"; };
 		66E534912C24CBF200255D15 /* Icon.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Icon.swift; sourceTree = "<group>"; };
 		66E534922C24CBF200255D15 /* UIApplication+Extensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIApplication+Extensions.swift"; sourceTree = "<group>"; };
 		66E534932C24CBF200255D15 /* UIDevice+Extensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIDevice+Extensions.swift"; sourceTree = "<group>"; };
@@ -181,7 +181,7 @@
 		66E5349A2C24CBF200255D15 /* NovaAdUrlTransformer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NovaAdUrlTransformer.swift; sourceTree = "<group>"; };
 		66E5349B2C24CBF200255D15 /* NovaDedupeManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NovaDedupeManager.swift; sourceTree = "<group>"; };
 		66E535152C250A8900255D15 /* NBAssets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = NBAssets.xcassets; sourceTree = "<group>"; };
-		66E535162C250A8900255D15 /* Asset.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Asset.swift; sourceTree = "<group>"; };
+		66E535162C250A8900255D15 /* NovaAsset.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NovaAsset.swift; sourceTree = "<group>"; };
 		66E535172C250A8900255D15 /* CheckBoxButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CheckBoxButton.swift; sourceTree = "<group>"; };
 		66E535182C250A8900255D15 /* Colors.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Colors.swift; sourceTree = "<group>"; };
 		66E535192C250A8900255D15 /* Fonts.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Fonts.swift; sourceTree = "<group>"; };
@@ -395,7 +395,7 @@
 			isa = PBXGroup;
 			children = (
 				66E5348F2C24CBF200255D15 /* AdsMediaConstants.swift */,
-				66E534902C24CBF200255D15 /* ColorPalettes.swift */,
+				66E534902C24CBF200255D15 /* NovaColorPalettes.swift */,
 				66E534912C24CBF200255D15 /* Icon.swift */,
 				66E534922C24CBF200255D15 /* UIApplication+Extensions.swift */,
 				66E534932C24CBF200255D15 /* UIDevice+Extensions.swift */,
@@ -420,7 +420,7 @@
 		66E5351F2C250A8900255D15 /* NBDesignSystem */ = {
 			isa = PBXGroup;
 			children = (
-				66E535162C250A8900255D15 /* Asset.swift */,
+				66E535162C250A8900255D15 /* NovaAsset.swift */,
 				66E535172C250A8900255D15 /* CheckBoxButton.swift */,
 				66E535182C250A8900255D15 /* Colors.swift */,
 				66E535192C250A8900255D15 /* Fonts.swift */,
@@ -663,11 +663,11 @@
 				66E534D62C24CBF200255D15 /* UIDevice+Extensions.swift in Sources */,
 				66E534B42C24CBF200255D15 /* NovaNativeAdMediaView.swift in Sources */,
 				66E5349E2C24CBF200255D15 /* JSBridgeHandlerMaster.swift in Sources */,
-				66E535212C250A8900255D15 /* Asset.swift in Sources */,
+				66E535212C250A8900255D15 /* NovaAsset.swift in Sources */,
 				66E534D02C24CBF200255D15 /* NovaAdOpenActionHandler.swift in Sources */,
 				66E534CB2C24CBF200255D15 /* ActionHandlerMaster.swift in Sources */,
 				66E5349D2C24CBF200255D15 /* ContentBlockHelper.swift in Sources */,
-				66E534D32C24CBF200255D15 /* ColorPalettes.swift in Sources */,
+				66E534D32C24CBF200255D15 /* NovaColorPalettes.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

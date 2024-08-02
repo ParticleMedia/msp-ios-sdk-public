@@ -9,7 +9,7 @@ import Foundation
 import UIKit
 // https://www.figma.com/file/QGyK88wpVY510IuIBoE5tX/🟡Foundation-(WIP)?type=design&node-id=118-1818&mode=design&t=V4Ya56QB07TW2wVs-0
 public extension UIFont {
-    class NBFont {
+    class NovaFont {
         public let display1 = UIFont.systemFont(ofSize: 24, weight: .black)
         public let display2 = UIFont.systemFont(ofSize: 16, weight: .black)
         public let headline1 = UIFont.systemFont(ofSize: 20, weight: .bold)
@@ -56,5 +56,5 @@ public extension UIFont {
         public let deprecated15Regular = UIFont.systemFont(ofSize: 15, weight: .regular)
     }
     
-    static let NB = NBFont()
+    static let Nova = NovaFont()
 }

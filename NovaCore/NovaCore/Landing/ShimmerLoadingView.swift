@@ -40,7 +40,7 @@ class ShimmerLoadingView: UIView {
         let headerInsets: [CGFloat] = [0.0, 12.0, 120.0]
         for inset in headerInsets {
             let view = UIView()
-            view.backgroundColor = UIColor(light: ColorPalettes.Gray.tint100, dark: ColorPalettes.Gray.tint800)
+            view.backgroundColor = UIColor(light: NovaColorPalettes.Gray.tint100, dark: NovaColorPalettes.Gray.tint800)
             view.translatesAutoresizingMaskIntoConstraints = false
             view.layer.cornerRadius = 4
             stackView.addArrangedSubview(view)
@@ -54,7 +54,7 @@ class ShimmerLoadingView: UIView {
 
         let imageView = UIView()
         imageView.translatesAutoresizingMaskIntoConstraints = false
-        imageView.backgroundColor = UIColor(light: ColorPalettes.Gray.tint100, dark: ColorPalettes.Gray.tint800)
+        imageView.backgroundColor = UIColor(light: NovaColorPalettes.Gray.tint100, dark: NovaColorPalettes.Gray.tint800)
         imageView.layer.cornerRadius = 4
         stackView.addArrangedSubview(imageView)
         NSLayoutConstraint.activate([
@@ -68,7 +68,7 @@ class ShimmerLoadingView: UIView {
         for inset in bodyInsets {
             let view = UIView()
             view.translatesAutoresizingMaskIntoConstraints = false
-            view.backgroundColor = UIColor(light: ColorPalettes.Gray.tint100, dark: ColorPalettes.Gray.tint800)
+            view.backgroundColor = UIColor(light: NovaColorPalettes.Gray.tint100, dark: NovaColorPalettes.Gray.tint800)
             view.layer.cornerRadius = 4
             stackView.addArrangedSubview(view)
             NSLayoutConstraint.activate([
