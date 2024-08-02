@@ -63,12 +63,12 @@ public struct VideoLogActionDataModel {
   public let reason: Swift.String
   public init(docid: Swift.String, timeElapsed: Swift.Int, timeElapsedFloat: CoreFoundation.CGFloat, progress: CoreFoundation.CGFloat, duration: Swift.Int, videoLoadDuration: Swift.Int, source: Swift.String, isLoadSuccess: Swift.Bool, meta: Swift.String, loadingTime: Swift.Int, playStyle: NovaCore.VideoPlayStyle, reason: Swift.String)
 }
-@_inheritsConvenienceInitializers @_hasMissingDesignatedInitializers @objc public class Icon : ObjectiveC.NSObject {
+@_inheritsConvenienceInitializers @_hasMissingDesignatedInitializers @objc public class NovaIcon : ObjectiveC.NSObject {
   @objc deinit
 }
 public protocol IconName : Swift.CustomStringConvertible {
 }
-extension NovaCore.Icon {
+extension NovaCore.NovaIcon {
   @objc public enum NovaSystem : Swift.Int, Swift.CaseIterable {
     case arrowLeftOutline
     case bellFilled
@@ -118,9 +118,9 @@ extension NovaCore.Icon {
     case magicStarFilled
     case homeOutline
     public init?(rawValue: Swift.Int)
-    public typealias AllCases = [NovaCore.Icon.NovaSystem]
+    public typealias AllCases = [NovaCore.NovaIcon.NovaSystem]
     public typealias RawValue = Swift.Int
-    public static var allCases: [NovaCore.Icon.NovaSystem] {
+    public static var allCases: [NovaCore.NovaIcon.NovaSystem] {
       get
     }
     public var rawValue: Swift.Int {
@@ -128,7 +128,7 @@ extension NovaCore.Icon {
     }
   }
 }
-extension NovaCore.Icon.NovaSystem : NovaCore.IconName {
+extension NovaCore.NovaIcon.NovaSystem : NovaCore.IconName {
   public var description: Swift.String {
     get
   }
@@ -147,8 +147,8 @@ extension UIKit.UIImage {
   public func tint(_ tintColor: UIKit.UIColor) -> UIKit.UIImage
 }
 extension UIKit.UIImage {
-  @objc convenience dynamic public init?(systemName: NovaCore.Icon.NovaSystem)
-  @objc convenience dynamic public init?(systemName: NovaCore.Icon.NovaSystem, tintColor: UIKit.UIColor)
+  @objc convenience dynamic public init?(novasystemName: NovaCore.NovaIcon.NovaSystem)
+  @objc convenience dynamic public init?(novasystemName: NovaCore.NovaIcon.NovaSystem, tintColor: UIKit.UIColor)
 }
 public enum AdsMediaConstants {
   public static let iPadAspectRatio: Swift.Double
@@ -1647,11 +1647,11 @@ public struct WebViewNavigationViewModel {
   public let title: Swift.String?
   public var titleFontSize: CoreFoundation.CGFloat
   public let hideLeftButton: Swift.Bool
-  public let leftButtonIcon: NovaCore.Icon.NovaSystem?
-  public let rightButtonIcon: NovaCore.Icon.NovaSystem?
+  public let leftButtonIcon: NovaCore.NovaIcon.NovaSystem?
+  public let rightButtonIcon: NovaCore.NovaIcon.NovaSystem?
   public let leftButtonTapActionHandler: (() -> Swift.Void)?
   public let rightButtonTapActionHandler: (() -> Swift.Void)?
-  public init(includingStatusBar: Swift.Bool = true, title: Swift.String?, titleFontSize: CoreFoundation.CGFloat? = nil, hideLeftButton: Swift.Bool = false, leftButtonIcon: NovaCore.Icon.NovaSystem? = nil, leftButtonTapActionHandler: @escaping () -> Swift.Void, rightButtonIcon: NovaCore.Icon.NovaSystem? = nil, rightButtonTapActionHandler: @escaping () -> Swift.Void)
+  public init(includingStatusBar: Swift.Bool = true, title: Swift.String?, titleFontSize: CoreFoundation.CGFloat? = nil, hideLeftButton: Swift.Bool = false, leftButtonIcon: NovaCore.NovaIcon.NovaSystem? = nil, leftButtonTapActionHandler: @escaping () -> Swift.Void, rightButtonIcon: NovaCore.NovaIcon.NovaSystem? = nil, rightButtonTapActionHandler: @escaping () -> Swift.Void)
 }
 @_hasMissingDesignatedInitializers @objc final public class NovaNativeAdItem : NovaCore.NovaBaseAd {
   @objc final public let headline: Swift.String?
@@ -2029,9 +2029,9 @@ extension NovaCore.NovaAdOpenActionKey : Swift.RawRepresentable {}
 extension NovaCore.VideoLogActionKey : Swift.Equatable {}
 extension NovaCore.VideoLogActionKey : Swift.Hashable {}
 extension NovaCore.VideoLogActionKey : Swift.RawRepresentable {}
-extension NovaCore.Icon.NovaSystem : Swift.Equatable {}
-extension NovaCore.Icon.NovaSystem : Swift.Hashable {}
-extension NovaCore.Icon.NovaSystem : Swift.RawRepresentable {}
+extension NovaCore.NovaIcon.NovaSystem : Swift.Equatable {}
+extension NovaCore.NovaIcon.NovaSystem : Swift.Hashable {}
+extension NovaCore.NovaIcon.NovaSystem : Swift.RawRepresentable {}
 extension NovaCore.NovaCreativeType : Swift.Equatable {}
 extension NovaCore.NovaCreativeType : Swift.Hashable {}
 extension NovaCore.NovaCreativeType : Swift.RawRepresentable {}
