@@ -3,7 +3,7 @@ import UIKit
 
 public extension UIApplication {
 
-    @objc var nb_safeAreaInsets: UIEdgeInsets {
+    @objc var nova_safeAreaInsets: UIEdgeInsets {
         guard self.windows.count > 0 else {
             return .zero
         }
@@ -11,20 +11,20 @@ public extension UIApplication {
         return self.windows[0].safeAreaInsets
     }
     
-    class var windowScenes: [UIWindowScene] {
+    class var novawindowScenes: [UIWindowScene] {
         return Self.shared.connectedScenes.compactMap({ $0 as? UIWindowScene })
     }
 
-    class var sharedKeyWindow: UIWindow? {
+    class var novasharedKeyWindow: UIWindow? {
         if #available(iOS 15, *) {
-            return windowScenes.first(where: { $0.keyWindow != nil })?.keyWindow ?? windowScenes.first?.keyWindow
+            return novawindowScenes.first(where: { $0.keyWindow != nil })?.keyWindow ?? novawindowScenes.first?.keyWindow
         } else {
             return Self.shared.windows.filter({ $0.isKeyWindow }).first
         }
     }
 
-    class var keyRootViewController: UIViewController? {
-        sharedKeyWindow?.rootViewController
+    class var novakeyRootViewController: UIViewController? {
+        novasharedKeyWindow?.rootViewController
     }
 
 }

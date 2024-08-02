@@ -3,7 +3,7 @@ import UIKit
 /// Standard color palettes are defined at
 /// https://www.figma.com/file/az2QtfMgOx1SK2q78WVu71/Design-System---Foundations?node-id=311%3A1224
 ///
-@objc public class ColorPalettes: NSObject {
+@objc public class NovaColorPalettes: NSObject {
     @objc public let tint50: UIColor
     @objc public let tint100: UIColor
     @objc public let tint200: UIColor
@@ -46,7 +46,7 @@ import UIKit
 
     @objc public static let White = UIColor(hex: "FFFFFF")!
 
-    @objc public static let Gray = ColorPalettes(tint50: UIColor(hex: "FAFAFA")!,
+    @objc public static let Gray = NovaColorPalettes(tint50: UIColor(hex: "FAFAFA")!,
                                                  tint100: UIColor(hex: "F2F2F2")!,
                                                  tint200: UIColor(hex: "E3E3E3")!,
                                                  tint300: UIColor(hex: "BDBDBD")!,
@@ -57,7 +57,7 @@ import UIKit
                                                  tint800: UIColor(hex: "242424")!,
                                                  tint900: UIColor(hex: "121212")!)
 
-    @objc public static let App = ColorPalettes(tint50: UIColor(hex: "FFEFEF")!,
+    @objc public static let App = NovaColorPalettes(tint50: UIColor(hex: "FFEFEF")!,
                                                 tint100: UIColor(hex: "FFCECE")!,
                                                 tint200: UIColor(hex: "FF9C9C")!,
                                                 tint300: UIColor(hex: "FF7B7B")!,
@@ -68,7 +68,7 @@ import UIKit
                                                 tint800: UIColor(hex: "541B1B")!,
                                                 tint900: UIColor(hex: "2A0D0D")!)
 
-    @objc public static let Blue = ColorPalettes(tint50: UIColor(hex: "E6F2FE")!,
+    @objc public static let Blue = NovaColorPalettes(tint50: UIColor(hex: "E6F2FE")!,
                                                  tint100: UIColor(hex: "99CBFD")!,
                                                  tint200: UIColor(hex: "67B2FB")!,
                                                  tint300: UIColor(hex: "3498FA")!,
@@ -81,7 +81,7 @@ import UIKit
                                                  tint950: UIColor(hex: "202F3E")!)
 
 
-    @objc public static let Green = ColorPalettes(tint50: UIColor(hex: "E6F5EF")!,
+    @objc public static let Green = NovaColorPalettes(tint50: UIColor(hex: "E6F5EF")!,
                                                   tint100: UIColor(hex: "9DD8BF")!,
                                                   tint200: UIColor(hex: "6BC49F")!,
                                                   tint300: UIColor(hex: "3AB17F")!,
@@ -92,7 +92,7 @@ import UIKit
                                                   tint800: UIColor(hex: "043F26")!,
                                                   tint900: UIColor(hex: "021F13")!)
 
-    @objc public static let Orange = ColorPalettes(tint50: UIColor(hex: "FEF0EA")!,
+    @objc public static let Orange = NovaColorPalettes(tint50: UIColor(hex: "FEF0EA")!,
                                                    tint100: UIColor(hex: "FBC3AB")!,
                                                    tint200: UIColor(hex: "F9A682")!,
                                                    tint300: UIColor(hex: "F78858")!,
@@ -103,7 +103,7 @@ import UIKit
                                                    tint800: UIColor(hex: "622A12")!,
                                                    tint900: UIColor(hex: "311509")!)
 
-    @objc public static let Yellow = ColorPalettes(tint50: UIColor(hex: "FFF5E8")!,
+    @objc public static let Yellow = NovaColorPalettes(tint50: UIColor(hex: "FFF5E8")!,
                                                    tint100: UIColor(hex: "FFD699")!,
                                                    tint200: UIColor(hex: "FFC266")!,
                                                    tint300: UIColor(hex: "FFAD33")!,
@@ -114,7 +114,7 @@ import UIKit
                                                    tint800: UIColor(hex: "663D00")!,
                                                    tint900: UIColor(hex: "331F00")!)
 
-    @objc public static let Magenta = ColorPalettes(tint50: UIColor(hex: "000000")!,
+    @objc public static let Magenta = NovaColorPalettes(tint50: UIColor(hex: "000000")!,
                                                     tint100: UIColor(hex: "000000")!,
                                                     tint200: UIColor(hex: "000000")!,
                                                     tint300: UIColor(hex: "C75EB6")!,
@@ -125,7 +125,7 @@ import UIKit
                                                     tint800: UIColor(hex: "000000")!,
                                                     tint900: UIColor(hex: "000000")!)
 
-    @objc public static let Purple = ColorPalettes(tint50: UIColor(hex: "000000")!,
+    @objc public static let Purple = NovaColorPalettes(tint50: UIColor(hex: "000000")!,
                                                    tint100: UIColor(hex: "000000")!,
                                                    tint200: UIColor(hex: "000000")!,
                                                    tint300: UIColor(hex: "8A70BB")!,
@@ -136,7 +136,7 @@ import UIKit
                                                    tint800: UIColor(hex: "000000")!,
                                                    tint900: UIColor(hex: "000000")!)
 
-    @objc public static let Skyblue = ColorPalettes(tint50: UIColor(hex: "000000")!,
+    @objc public static let Skyblue = NovaColorPalettes(tint50: UIColor(hex: "000000")!,
                                                     tint100: UIColor(hex: "000000")!,
                                                     tint200: UIColor(hex: "000000")!,
                                                     tint300: UIColor(hex: "57A5D2")!,
@@ -147,7 +147,7 @@ import UIKit
                                                     tint800: UIColor(hex: "000000")!,
                                                     tint900: UIColor(hex: "000000")!)
 
-    @objc public static let Sapphire = ColorPalettes(tint50: UIColor(hex: "000000")!,
+    @objc public static let Sapphire = NovaColorPalettes(tint50: UIColor(hex: "000000")!,
                                                      tint100: UIColor(hex: "000000")!,
                                                      tint200: UIColor(hex: "000000")!,
                                                      tint300: UIColor(hex: "4760BA")!,
@@ -160,7 +160,7 @@ import UIKit
 }
 
 
-class Palettes: NSObject {
+class NovaPalettes: NSObject {
     let tint50: UIColor
     let tint100: UIColor
     let tint200: UIColor
@@ -208,7 +208,7 @@ class Palettes: NSObject {
     static let localGPTBackground = UIColor(hex: "CCFD7C")!.withAlphaComponent(0.1)
     static let localGPTDarkBackground = UIColor(hex: "161B1F")!
     
-    static let Gray = Palettes(tint50: UIColor(hex: "FAFAFA")!,
+    static let Gray = NovaPalettes(tint50: UIColor(hex: "FAFAFA")!,
                                tint100: UIColor(hex: "F2F2F2")!,
                                tint200: UIColor(hex: "E3E3E3")!,
                                tint300: UIColor(hex: "BDBDBD")!,
@@ -219,7 +219,7 @@ class Palettes: NSObject {
                                tint800: UIColor(hex: "242424")!,
                                tint900: UIColor(hex: "121212")!)
     
-    static let App = Palettes(tint50: UIColor(hex: "FFEFEF")!,
+    static let App = NovaPalettes(tint50: UIColor(hex: "FFEFEF")!,
                               tint100: UIColor(hex: "FFCECE")!,
                               tint200: UIColor(hex: "FF9C9C")!,
                               tint300: UIColor(hex: "FF7B7B")!,
@@ -230,7 +230,7 @@ class Palettes: NSObject {
                               tint800: UIColor(hex: "541B1B")!,
                               tint900: UIColor(hex: "2A0D0D")!)
     
-    static let Blue = Palettes(tint50: UIColor(hex: "E6F2FE")!,
+    static let Blue = NovaPalettes(tint50: UIColor(hex: "E6F2FE")!,
                                tint100: UIColor(hex: "99CBFD")!,
                                tint200: UIColor(hex: "67B2FB")!,
                                tint300: UIColor(hex: "3498FA")!,
@@ -243,7 +243,7 @@ class Palettes: NSObject {
                                tint950: UIColor(hex: "202F3E")!)
     
     
-    static let Green = Palettes(tint50: UIColor(hex: "E6F5EF")!,
+    static let Green = NovaPalettes(tint50: UIColor(hex: "E6F5EF")!,
                                 tint100: UIColor(hex: "9DD8BF")!,
                                 tint200: UIColor(hex: "6BC49F")!,
                                 tint300: UIColor(hex: "3AB17F")!,
@@ -254,7 +254,7 @@ class Palettes: NSObject {
                                 tint800: UIColor(hex: "043F26")!,
                                 tint900: UIColor(hex: "021F13")!)
     
-    static let Orange = Palettes(tint50: UIColor(hex: "FEF0EA")!,
+    static let Orange = NovaPalettes(tint50: UIColor(hex: "FEF0EA")!,
                                  tint100: UIColor(hex: "FBC3AB")!,
                                  tint200: UIColor(hex: "F9A682")!,
                                  tint300: UIColor(hex: "F78858")!,
@@ -265,7 +265,7 @@ class Palettes: NSObject {
                                  tint800: UIColor(hex: "622A12")!,
                                  tint900: UIColor(hex: "311509")!)
     
-    static let Yellow = Palettes(tint50: UIColor(hex: "FFF5E8")!,
+    static let Yellow = NovaPalettes(tint50: UIColor(hex: "FFF5E8")!,
                                  tint100: UIColor(hex: "FFD699")!,
                                  tint200: UIColor(hex: "FFC266")!,
                                  tint300: UIColor(hex: "FFAD33")!,
@@ -276,7 +276,7 @@ class Palettes: NSObject {
                                  tint800: UIColor(hex: "663D00")!,
                                  tint900: UIColor(hex: "331F00")!)
     
-    static let Magenta = Palettes(tint50: UIColor(hex: "000000")!,
+    static let Magenta = NovaPalettes(tint50: UIColor(hex: "000000")!,
                                   tint100: UIColor(hex: "000000")!,
                                   tint200: UIColor(hex: "000000")!,
                                   tint300: UIColor(hex: "C75EB6")!,
@@ -287,7 +287,7 @@ class Palettes: NSObject {
                                   tint800: UIColor(hex: "000000")!,
                                   tint900: UIColor(hex: "000000")!)
     
-    static let Purple = Palettes(tint50: UIColor(hex: "000000")!,
+    static let Purple = NovaPalettes(tint50: UIColor(hex: "000000")!,
                                  tint100: UIColor(hex: "000000")!,
                                  tint200: UIColor(hex: "000000")!,
                                  tint300: UIColor(hex: "8A70BB")!,
@@ -298,7 +298,7 @@ class Palettes: NSObject {
                                  tint800: UIColor(hex: "000000")!,
                                  tint900: UIColor(hex: "000000")!)
     
-    static let Skyblue = Palettes(tint50: UIColor(hex: "000000")!,
+    static let Skyblue = NovaPalettes(tint50: UIColor(hex: "000000")!,
                                   tint100: UIColor(hex: "000000")!,
                                   tint200: UIColor(hex: "000000")!,
                                   tint300: UIColor(hex: "57A5D2")!,
@@ -309,7 +309,7 @@ class Palettes: NSObject {
                                   tint800: UIColor(hex: "000000")!,
                                   tint900: UIColor(hex: "000000")!)
     
-    static let Sapphire = Palettes(tint50: UIColor(hex: "000000")!,
+    static let Sapphire = NovaPalettes(tint50: UIColor(hex: "000000")!,
                                    tint100: UIColor(hex: "000000")!,
                                    tint200: UIColor(hex: "000000")!,
                                    tint300: UIColor(hex: "4760BA")!,
@@ -443,15 +443,15 @@ public extension UIColor {
 //    }
     
     class var DefaultButton: UIColor {
-        return UIColor(light: Palettes.Blue.tint500, dark: Palettes.Blue.tint300)
+        return UIColor(light: NovaPalettes.Blue.tint500, dark: NovaPalettes.Blue.tint300)
     }
     
     class var PressedButton: UIColor {
-        return UIColor(light: Palettes.Blue.tint500.withAlphaComponent(0.7), dark: Palettes.Blue.tint300.withAlphaComponent(0.7))
+        return UIColor(light: NovaPalettes.Blue.tint500.withAlphaComponent(0.7), dark: NovaPalettes.Blue.tint300.withAlphaComponent(0.7))
     }
     
     class var DefaultButtonIcon: UIColor {
-        return UIColor(light: Palettes.Gray.tint300, dark: Palettes.Gray.tint500)
+        return UIColor(light: NovaPalettes.Gray.tint300, dark: NovaPalettes.Gray.tint500)
     }
 //
     class var PrimaryButtonBackground: UIColor {
@@ -463,27 +463,27 @@ public extension UIColor {
     }
     
     class var AIPrimaryText: UIColor {
-        return UIColor(light: Palettes.Green.tint600, dark: Palettes.Green.tint100)
+        return UIColor(light: NovaPalettes.Green.tint600, dark: NovaPalettes.Green.tint100)
     }
     
     class var AISecondaryText: UIColor {
-        return UIColor(light: Palettes.Green.tint700, dark: Palettes.Green.tint50)
+        return UIColor(light: NovaPalettes.Green.tint700, dark: NovaPalettes.Green.tint50)
     }
     
     class var AITertiaryText: UIColor {
-        return UIColor(light: Palettes.Green.tint900, dark: Palettes.White)
+        return UIColor(light: NovaPalettes.Green.tint900, dark: NovaPalettes.White)
     }
     
     class var AIPrimarySurface: UIColor {
-        return UIColor(light: Palettes.Green.tint50, dark: Palettes.Green.tint600)
+        return UIColor(light: NovaPalettes.Green.tint50, dark: NovaPalettes.Green.tint600)
     }
     
     class var AILocalGPT: UIColor {
-        return UIColor(light:Palettes.LocalGPT, dark: Palettes.LocalGPTDark)
+        return UIColor(light:NovaPalettes.LocalGPT, dark: NovaPalettes.LocalGPTDark)
     }
     
     class var AILocalGPTBackground: UIColor {
-        return UIColor(light:Palettes.localGPTBackground, dark: Palettes.localGPTDarkBackground)
+        return UIColor(light:NovaPalettes.localGPTBackground, dark: NovaPalettes.localGPTDarkBackground)
     }
 }
 

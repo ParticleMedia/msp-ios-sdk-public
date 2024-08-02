@@ -89,7 +89,7 @@ private extension NovaAdOpenActionHandler {
             launchBrowser(with: url)
             return
         }
-        guard let vc = UIApplication.keyRootViewController else {
+        guard let vc = UIApplication.novakeyRootViewController else {
             assertionFailure("Invalid vc.")
             launchBrowser(with: url)
             return
