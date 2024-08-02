@@ -317,67 +317,6 @@ SWIFT_CLASS("_TtC8NovaCore14CheckBoxButton")
 - (nullable instancetype)initWithCoder:(NSCoder * _Nonnull)coder SWIFT_UNAVAILABLE;
 @end
 
-
-SWIFT_CLASS("_TtC8NovaCore4Icon")
-@interface Icon : NSObject
-- (nonnull instancetype)init SWIFT_UNAVAILABLE;
-+ (nonnull instancetype)new SWIFT_UNAVAILABLE_MSG("-init is unavailable");
-@end
-
-
-@interface Icon (SWIFT_EXTENSION(NovaCore))
-@end
-
-typedef SWIFT_ENUM(NSInteger, NovaSystem, open) {
-  NovaSystemArrowLeftOutline = 0,
-  NovaSystemBellFilled = 1,
-  NovaSystemBellOutline = 2,
-  NovaSystemBreezeFilled = 3,
-  NovaSystemBreezeOutline = 4,
-  NovaSystemCameraOutline = 5,
-  NovaSystemChartBarOutline = 6,
-  NovaSystemCheckCircleFilled = 7,
-  NovaSystemCheckCircleOutline = 8,
-  NovaSystemChevronDownFilled = 9,
-  NovaSystemChevronDownOutline = 10,
-  NovaSystemChevronLeftFilled = 11,
-  NovaSystemChevronLeftOutline = 12,
-  NovaSystemChevronRightFilled = 13,
-  NovaSystemChevronRightOutline = 14,
-  NovaSystemChevronUpFilled = 15,
-  NovaSystemClockOutline = 16,
-  NovaSystemCrossFilled = 17,
-  NovaSystemCrossOutline = 18,
-  NovaSystemCrossCircleFilled = 19,
-  NovaSystemCrossCircleOutline = 20,
-  NovaSystemEllipsisHorizontalOutline = 21,
-  NovaSystemEllipsisVerticalFilled = 22,
-  NovaSystemExclamationCircleOutline = 23,
-  NovaSystemExclamationTriangleOutline = 24,
-  NovaSystemGlobeOutline = 25,
-  NovaSystemHashtagOutline = 26,
-  NovaSystemHeartOutline = 27,
-  NovaSystemImageOutline = 28,
-  NovaSystemLinkOutline = 29,
-  NovaSystemLocationOutline = 30,
-  NovaSystemMoneyOutline = 31,
-  NovaSystemNavigationArrowOutline = 32,
-  NovaSystemNewsbreakOutline = 33,
-  NovaSystemPeopleFilled = 34,
-  NovaSystemPeopleOutline = 35,
-  NovaSystemPlayFilled = 36,
-  NovaSystemPlusOutline = 37,
-  NovaSystemProhibitOutline = 38,
-  NovaSystemShareOutline = 39,
-  NovaSystemShieldErrorOutline = 40,
-  NovaSystemTrashOutline = 41,
-  NovaSystemVideoClipFilled = 42,
-  NovaSystemVideoClipOutline = 43,
-  NovaSystemMagicOutline = 44,
-  NovaSystemMagicStarFilled = 45,
-  NovaSystemHomeOutline = 46,
-};
-
 typedef SWIFT_ENUM(NSInteger, MetricEvent, open) {
   MetricEventFacebookLogin = 0,
   MetricEventFeedbackTextSubmitted = 1,
@@ -723,6 +662,67 @@ SWIFT_CLASS_PROPERTY(@property (nonatomic, class, readonly, strong) NovaColorPal
 + (nonnull instancetype)new SWIFT_UNAVAILABLE_MSG("-init is unavailable");
 @end
 
+
+SWIFT_CLASS("_TtC8NovaCore8NovaIcon")
+@interface NovaIcon : NSObject
+- (nonnull instancetype)init SWIFT_UNAVAILABLE;
++ (nonnull instancetype)new SWIFT_UNAVAILABLE_MSG("-init is unavailable");
+@end
+
+
+@interface NovaIcon (SWIFT_EXTENSION(NovaCore))
+@end
+
+typedef SWIFT_ENUM(NSInteger, NovaSystem, open) {
+  NovaSystemArrowLeftOutline = 0,
+  NovaSystemBellFilled = 1,
+  NovaSystemBellOutline = 2,
+  NovaSystemBreezeFilled = 3,
+  NovaSystemBreezeOutline = 4,
+  NovaSystemCameraOutline = 5,
+  NovaSystemChartBarOutline = 6,
+  NovaSystemCheckCircleFilled = 7,
+  NovaSystemCheckCircleOutline = 8,
+  NovaSystemChevronDownFilled = 9,
+  NovaSystemChevronDownOutline = 10,
+  NovaSystemChevronLeftFilled = 11,
+  NovaSystemChevronLeftOutline = 12,
+  NovaSystemChevronRightFilled = 13,
+  NovaSystemChevronRightOutline = 14,
+  NovaSystemChevronUpFilled = 15,
+  NovaSystemClockOutline = 16,
+  NovaSystemCrossFilled = 17,
+  NovaSystemCrossOutline = 18,
+  NovaSystemCrossCircleFilled = 19,
+  NovaSystemCrossCircleOutline = 20,
+  NovaSystemEllipsisHorizontalOutline = 21,
+  NovaSystemEllipsisVerticalFilled = 22,
+  NovaSystemExclamationCircleOutline = 23,
+  NovaSystemExclamationTriangleOutline = 24,
+  NovaSystemGlobeOutline = 25,
+  NovaSystemHashtagOutline = 26,
+  NovaSystemHeartOutline = 27,
+  NovaSystemImageOutline = 28,
+  NovaSystemLinkOutline = 29,
+  NovaSystemLocationOutline = 30,
+  NovaSystemMoneyOutline = 31,
+  NovaSystemNavigationArrowOutline = 32,
+  NovaSystemNewsbreakOutline = 33,
+  NovaSystemPeopleFilled = 34,
+  NovaSystemPeopleOutline = 35,
+  NovaSystemPlayFilled = 36,
+  NovaSystemPlusOutline = 37,
+  NovaSystemProhibitOutline = 38,
+  NovaSystemShareOutline = 39,
+  NovaSystemShieldErrorOutline = 40,
+  NovaSystemTrashOutline = 41,
+  NovaSystemVideoClipFilled = 42,
+  NovaSystemVideoClipOutline = 43,
+  NovaSystemMagicOutline = 44,
+  NovaSystemMagicStarFilled = 45,
+  NovaSystemHomeOutline = 46,
+};
+
 @class NovaNativeAdItem;
 
 SWIFT_PROTOCOL("_TtP8NovaCore20NovaNativeAdDelegate_")
@@ -869,8 +869,8 @@ SWIFT_CLASS_PROPERTY(@property (nonatomic, class, readonly) Class _Nonnull layer
 
 
 @interface UIImage (SWIFT_EXTENSION(NovaCore))
-- (nullable instancetype)initWithSystemName:(enum NovaSystem)systemName;
-- (nullable instancetype)initWithSystemName:(enum NovaSystem)systemName tintColor:(UIColor * _Nonnull)tintColor;
+- (nullable instancetype)initWithNovasystemName:(enum NovaSystem)novasystemName;
+- (nullable instancetype)initWithNovasystemName:(enum NovaSystem)novasystemName tintColor:(UIColor * _Nonnull)tintColor;
 @end
 
 
@@ -1310,67 +1310,6 @@ SWIFT_CLASS("_TtC8NovaCore14CheckBoxButton")
 - (nullable instancetype)initWithCoder:(NSCoder * _Nonnull)coder SWIFT_UNAVAILABLE;
 @end
 
-
-SWIFT_CLASS("_TtC8NovaCore4Icon")
-@interface Icon : NSObject
-- (nonnull instancetype)init SWIFT_UNAVAILABLE;
-+ (nonnull instancetype)new SWIFT_UNAVAILABLE_MSG("-init is unavailable");
-@end
-
-
-@interface Icon (SWIFT_EXTENSION(NovaCore))
-@end
-
-typedef SWIFT_ENUM(NSInteger, NovaSystem, open) {
-  NovaSystemArrowLeftOutline = 0,
-  NovaSystemBellFilled = 1,
-  NovaSystemBellOutline = 2,
-  NovaSystemBreezeFilled = 3,
-  NovaSystemBreezeOutline = 4,
-  NovaSystemCameraOutline = 5,
-  NovaSystemChartBarOutline = 6,
-  NovaSystemCheckCircleFilled = 7,
-  NovaSystemCheckCircleOutline = 8,
-  NovaSystemChevronDownFilled = 9,
-  NovaSystemChevronDownOutline = 10,
-  NovaSystemChevronLeftFilled = 11,
-  NovaSystemChevronLeftOutline = 12,
-  NovaSystemChevronRightFilled = 13,
-  NovaSystemChevronRightOutline = 14,
-  NovaSystemChevronUpFilled = 15,
-  NovaSystemClockOutline = 16,
-  NovaSystemCrossFilled = 17,
-  NovaSystemCrossOutline = 18,
-  NovaSystemCrossCircleFilled = 19,
-  NovaSystemCrossCircleOutline = 20,
-  NovaSystemEllipsisHorizontalOutline = 21,
-  NovaSystemEllipsisVerticalFilled = 22,
-  NovaSystemExclamationCircleOutline = 23,
-  NovaSystemExclamationTriangleOutline = 24,
-  NovaSystemGlobeOutline = 25,
-  NovaSystemHashtagOutline = 26,
-  NovaSystemHeartOutline = 27,
-  NovaSystemImageOutline = 28,
-  NovaSystemLinkOutline = 29,
-  NovaSystemLocationOutline = 30,
-  NovaSystemMoneyOutline = 31,
-  NovaSystemNavigationArrowOutline = 32,
-  NovaSystemNewsbreakOutline = 33,
-  NovaSystemPeopleFilled = 34,
-  NovaSystemPeopleOutline = 35,
-  NovaSystemPlayFilled = 36,
-  NovaSystemPlusOutline = 37,
-  NovaSystemProhibitOutline = 38,
-  NovaSystemShareOutline = 39,
-  NovaSystemShieldErrorOutline = 40,
-  NovaSystemTrashOutline = 41,
-  NovaSystemVideoClipFilled = 42,
-  NovaSystemVideoClipOutline = 43,
-  NovaSystemMagicOutline = 44,
-  NovaSystemMagicStarFilled = 45,
-  NovaSystemHomeOutline = 46,
-};
-
 typedef SWIFT_ENUM(NSInteger, MetricEvent, open) {
   MetricEventFacebookLogin = 0,
   MetricEventFeedbackTextSubmitted = 1,
@@ -1716,6 +1655,67 @@ SWIFT_CLASS_PROPERTY(@property (nonatomic, class, readonly, strong) NovaColorPal
 + (nonnull instancetype)new SWIFT_UNAVAILABLE_MSG("-init is unavailable");
 @end
 
+
+SWIFT_CLASS("_TtC8NovaCore8NovaIcon")
+@interface NovaIcon : NSObject
+- (nonnull instancetype)init SWIFT_UNAVAILABLE;
++ (nonnull instancetype)new SWIFT_UNAVAILABLE_MSG("-init is unavailable");
+@end
+
+
+@interface NovaIcon (SWIFT_EXTENSION(NovaCore))
+@end
+
+typedef SWIFT_ENUM(NSInteger, NovaSystem, open) {
+  NovaSystemArrowLeftOutline = 0,
+  NovaSystemBellFilled = 1,
+  NovaSystemBellOutline = 2,
+  NovaSystemBreezeFilled = 3,
+  NovaSystemBreezeOutline = 4,
+  NovaSystemCameraOutline = 5,
+  NovaSystemChartBarOutline = 6,
+  NovaSystemCheckCircleFilled = 7,
+  NovaSystemCheckCircleOutline = 8,
+  NovaSystemChevronDownFilled = 9,
+  NovaSystemChevronDownOutline = 10,
+  NovaSystemChevronLeftFilled = 11,
+  NovaSystemChevronLeftOutline = 12,
+  NovaSystemChevronRightFilled = 13,
+  NovaSystemChevronRightOutline = 14,
+  NovaSystemChevronUpFilled = 15,
+  NovaSystemClockOutline = 16,
+  NovaSystemCrossFilled = 17,
+  NovaSystemCrossOutline = 18,
+  NovaSystemCrossCircleFilled = 19,
+  NovaSystemCrossCircleOutline = 20,
+  NovaSystemEllipsisHorizontalOutline = 21,
+  NovaSystemEllipsisVerticalFilled = 22,
+  NovaSystemExclamationCircleOutline = 23,
+  NovaSystemExclamationTriangleOutline = 24,
+  NovaSystemGlobeOutline = 25,
+  NovaSystemHashtagOutline = 26,
+  NovaSystemHeartOutline = 27,
+  NovaSystemImageOutline = 28,
+  NovaSystemLinkOutline = 29,
+  NovaSystemLocationOutline = 30,
+  NovaSystemMoneyOutline = 31,
+  NovaSystemNavigationArrowOutline = 32,
+  NovaSystemNewsbreakOutline = 33,
+  NovaSystemPeopleFilled = 34,
+  NovaSystemPeopleOutline = 35,
+  NovaSystemPlayFilled = 36,
+  NovaSystemPlusOutline = 37,
+  NovaSystemProhibitOutline = 38,
+  NovaSystemShareOutline = 39,
+  NovaSystemShieldErrorOutline = 40,
+  NovaSystemTrashOutline = 41,
+  NovaSystemVideoClipFilled = 42,
+  NovaSystemVideoClipOutline = 43,
+  NovaSystemMagicOutline = 44,
+  NovaSystemMagicStarFilled = 45,
+  NovaSystemHomeOutline = 46,
+};
+
 @class NovaNativeAdItem;
 
 SWIFT_PROTOCOL("_TtP8NovaCore20NovaNativeAdDelegate_")
@@ -1862,8 +1862,8 @@ SWIFT_CLASS_PROPERTY(@property (nonatomic, class, readonly) Class _Nonnull layer
 
 
 @interface UIImage (SWIFT_EXTENSION(NovaCore))
-- (nullable instancetype)initWithSystemName:(enum NovaSystem)systemName;
-- (nullable instancetype)initWithSystemName:(enum NovaSystem)systemName tintColor:(UIColor * _Nonnull)tintColor;
+- (nullable instancetype)initWithNovasystemName:(enum NovaSystem)novasystemName;
+- (nullable instancetype)initWithNovasystemName:(enum NovaSystem)novasystemName tintColor:(UIColor * _Nonnull)tintColor;
 @end
 
 

@@ -149,31 +149,31 @@ relocations:
   - { offsetInCU: 0x6F7, offset: 0xCD487, size: 0x8, addend: 0x0, symName: '_$s8NovaCore23VideoLogActionDataModelV9playStyleAA0c4PlayI0Ovg', symObjAddr: 0x268, symBinAddr: 0xBEA4, symSize: 0xC }
   - { offsetInCU: 0x70B, offset: 0xCD49B, size: 0x8, addend: 0x0, symName: '_$s8NovaCore23VideoLogActionDataModelV6reasonSSvg', symObjAddr: 0x274, symBinAddr: 0xBEB0, symSize: 0x2C }
   - { offsetInCU: 0x725, offset: 0xCD4B5, size: 0x8, addend: 0x0, symName: '_$s8NovaCore23VideoLogActionDataModelV5docid11timeElapsed0iJ5Float8progress8duration17videoLoadDuration6source02isO7Success4meta11loadingTime9playStyle6reasonACSS_Si0B8Graphics7CGFloatVARS2iSSSbSSSiAA0c4PlayX0OSStcfC', symObjAddr: 0x2A0, symBinAddr: 0xBEDC, symSize: 0x3C }
-  - { offsetInCU: 0x2B, offset: 0xCD5CC, size: 0x8, addend: 0x0, symName: '_$s8NovaCore4IconCACyc33_06CBFE3995AF2FC70E73A2F21F251A9DLlfcTo', symObjAddr: 0x0, symBinAddr: 0xC420, symSize: 0x3C }
-  - { offsetInCU: 0x65, offset: 0xCD606, size: 0x8, addend: 0x0, symName: '_$s8NovaCore4IconCACyc33_06CBFE3995AF2FC70E73A2F21F251A9DLlfcTo', symObjAddr: 0x0, symBinAddr: 0xC420, symSize: 0x3C }
-  - { offsetInCU: 0xB7, offset: 0xCD658, size: 0x8, addend: 0x0, symName: '_$s8NovaCore4IconCMa', symObjAddr: 0x6C, symBinAddr: 0xC48C, symSize: 0x20 }
-  - { offsetInCU: 0x127, offset: 0xCD6C8, size: 0x8, addend: 0x0, symName: '_$s8NovaCore4IconC0A6SystemOSYAASY8rawValuexSg03RawF0Qz_tcfCTW', symObjAddr: 0x18C, symBinAddr: 0xC5AC, symSize: 0x30 }
-  - { offsetInCU: 0x158, offset: 0xCD6F9, size: 0x8, addend: 0x0, symName: '_$s8NovaCore4IconC0A6SystemOSYAASY8rawValue03RawF0QzvgTW', symObjAddr: 0x1BC, symBinAddr: 0xC5DC, symSize: 0xC }
-  - { offsetInCU: 0x174, offset: 0xCD715, size: 0x8, addend: 0x0, symName: '_$s8NovaCore4IconC0A6SystemOs12CaseIterableAAsAFP8allCases03AllH0QzvgZTW', symObjAddr: 0x1C8, symBinAddr: 0xC5E8, symSize: 0x38 }
-  - { offsetInCU: 0x1CF, offset: 0xCD770, size: 0x8, addend: 0x0, symName: '_$s8NovaCore4IconC0A6SystemO8rawValueAESgSi_tcfCTf4nd_n', symObjAddr: 0x5BC, symBinAddr: 0xC9DC, symSize: 0x14 }
-  - { offsetInCU: 0x23C, offset: 0xCD7DD, size: 0x8, addend: 0x0, symName: '_$s8NovaCore4IconC0A6SystemOs23CustomStringConvertibleAAsAFP11descriptionSSvgTW', symObjAddr: 0x5B4, symBinAddr: 0xC9D4, symSize: 0x8 }
-  - { offsetInCU: 0x258, offset: 0xCD7F9, size: 0x8, addend: 0x0, symName: '_$s8NovaCore4IconC0A6SystemOSHAASQWb', symObjAddr: 0x610, symBinAddr: 0xC9F0, symSize: 0x4 }
-  - { offsetInCU: 0x26C, offset: 0xCD80D, size: 0x8, addend: 0x0, symName: '_$s8NovaCore4IconC0A6SystemOAESQAAWl', symObjAddr: 0x614, symBinAddr: 0xC9F4, symSize: 0x44 }
-  - { offsetInCU: 0x280, offset: 0xCD821, size: 0x8, addend: 0x0, symName: '_$s8NovaCore4IconC0A6SystemOs12CaseIterableAA8AllCasessAFP_SlWT', symObjAddr: 0x658, symBinAddr: 0xCA38, symSize: 0x4 }
-  - { offsetInCU: 0x294, offset: 0xCD835, size: 0x8, addend: 0x0, symName: '_$sSay8NovaCore4IconC0A6SystemOGSayxGSlsWl', symObjAddr: 0x65C, symBinAddr: 0xCA3C, symSize: 0x48 }
-  - { offsetInCU: 0x2A8, offset: 0xCD849, size: 0x8, addend: 0x0, symName: '_$sSay8NovaCore4IconC0A6SystemOGMa', symObjAddr: 0x6A4, symBinAddr: 0xCA84, symSize: 0x54 }
-  - { offsetInCU: 0x2BC, offset: 0xCD85D, size: 0x8, addend: 0x0, symName: '_$s8NovaCore4IconC0A6SystemOAA0C4NameAAWI', symObjAddr: 0x6F8, symBinAddr: 0xCAD8, symSize: 0x24 }
-  - { offsetInCU: 0x2D0, offset: 0xCD871, size: 0x8, addend: 0x0, symName: '_$s8NovaCore4IconC0A6SystemOAEs23CustomStringConvertibleAAWl', symObjAddr: 0x71C, symBinAddr: 0xCAFC, symSize: 0x44 }
-  - { offsetInCU: 0x2E4, offset: 0xCD885, size: 0x8, addend: 0x0, symName: '_$s8NovaCore4IconC0A6SystemOMa', symObjAddr: 0x760, symBinAddr: 0xCB40, symSize: 0x10 }
-  - { offsetInCU: 0x336, offset: 0xCD8D7, size: 0x8, addend: 0x0, symName: '_$s8NovaCore4IconC0A6SystemOSQAASQ2eeoiySbx_xtFZTW', symObjAddr: 0xCC, symBinAddr: 0xC4EC, symSize: 0x14 }
-  - { offsetInCU: 0x3E6, offset: 0xCD987, size: 0x8, addend: 0x0, symName: '_$s8NovaCore4IconC0A6SystemOSHAASH9hashValueSivgTW', symObjAddr: 0xE0, symBinAddr: 0xC500, symSize: 0x44 }
-  - { offsetInCU: 0x495, offset: 0xCDA36, size: 0x8, addend: 0x0, symName: '_$s8NovaCore4IconC0A6SystemOSHAASH4hash4intoys6HasherVz_tFTW', symObjAddr: 0x124, symBinAddr: 0xC544, symSize: 0x28 }
-  - { offsetInCU: 0x4E8, offset: 0xCDA89, size: 0x8, addend: 0x0, symName: '_$s8NovaCore4IconC0A6SystemOSHAASH13_rawHashValue4seedS2i_tFTW', symObjAddr: 0x14C, symBinAddr: 0xC56C, symSize: 0x40 }
-  - { offsetInCU: 0x739, offset: 0xCDCDA, size: 0x8, addend: 0x0, symName: '_$s8NovaCore4IconCfD', symObjAddr: 0x3C, symBinAddr: 0xC45C, symSize: 0x30 }
-  - { offsetInCU: 0x762, offset: 0xCDD03, size: 0x8, addend: 0x0, symName: '_$s8NovaCore4IconC0A6SystemO8rawValueAESgSi_tcfC', symObjAddr: 0x8C, symBinAddr: 0xC4AC, symSize: 0x18 }
-  - { offsetInCU: 0x77C, offset: 0xCDD1D, size: 0x8, addend: 0x0, symName: '_$s8NovaCore4IconC0A6SystemO8allCasesSayAEGvgZ', symObjAddr: 0xA4, symBinAddr: 0xC4C4, symSize: 0x24 }
-  - { offsetInCU: 0x7BA, offset: 0xCDD5B, size: 0x8, addend: 0x0, symName: '_$s8NovaCore4IconC0A6SystemO8rawValueSivg', symObjAddr: 0xC8, symBinAddr: 0xC4E8, symSize: 0x4 }
-  - { offsetInCU: 0x805, offset: 0xCDDA6, size: 0x8, addend: 0x0, symName: '_$s8NovaCore4IconC0A6SystemO11descriptionSSvg', symObjAddr: 0x200, symBinAddr: 0xC620, symSize: 0x3B4 }
+  - { offsetInCU: 0x2B, offset: 0xCD5CC, size: 0x8, addend: 0x0, symName: '_$s8NovaCore0A4IconCACyc33_06CBFE3995AF2FC70E73A2F21F251A9DLlfcTo', symObjAddr: 0x0, symBinAddr: 0xC420, symSize: 0x3C }
+  - { offsetInCU: 0x65, offset: 0xCD606, size: 0x8, addend: 0x0, symName: '_$s8NovaCore0A4IconCACyc33_06CBFE3995AF2FC70E73A2F21F251A9DLlfcTo', symObjAddr: 0x0, symBinAddr: 0xC420, symSize: 0x3C }
+  - { offsetInCU: 0xB7, offset: 0xCD658, size: 0x8, addend: 0x0, symName: '_$s8NovaCore0A4IconCMa', symObjAddr: 0x6C, symBinAddr: 0xC48C, symSize: 0x20 }
+  - { offsetInCU: 0x127, offset: 0xCD6C8, size: 0x8, addend: 0x0, symName: '_$s8NovaCore0A4IconC0A6SystemOSYAASY8rawValuexSg03RawF0Qz_tcfCTW', symObjAddr: 0x18C, symBinAddr: 0xC5AC, symSize: 0x30 }
+  - { offsetInCU: 0x158, offset: 0xCD6F9, size: 0x8, addend: 0x0, symName: '_$s8NovaCore0A4IconC0A6SystemOSYAASY8rawValue03RawF0QzvgTW', symObjAddr: 0x1BC, symBinAddr: 0xC5DC, symSize: 0xC }
+  - { offsetInCU: 0x174, offset: 0xCD715, size: 0x8, addend: 0x0, symName: '_$s8NovaCore0A4IconC0A6SystemOs12CaseIterableAAsAFP8allCases03AllH0QzvgZTW', symObjAddr: 0x1C8, symBinAddr: 0xC5E8, symSize: 0x38 }
+  - { offsetInCU: 0x1CF, offset: 0xCD770, size: 0x8, addend: 0x0, symName: '_$s8NovaCore0A4IconC0A6SystemO8rawValueAESgSi_tcfCTf4nd_n', symObjAddr: 0x5BC, symBinAddr: 0xC9DC, symSize: 0x14 }
+  - { offsetInCU: 0x23C, offset: 0xCD7DD, size: 0x8, addend: 0x0, symName: '_$s8NovaCore0A4IconC0A6SystemOs23CustomStringConvertibleAAsAFP11descriptionSSvgTW', symObjAddr: 0x5B4, symBinAddr: 0xC9D4, symSize: 0x8 }
+  - { offsetInCU: 0x258, offset: 0xCD7F9, size: 0x8, addend: 0x0, symName: '_$s8NovaCore0A4IconC0A6SystemOSHAASQWb', symObjAddr: 0x610, symBinAddr: 0xC9F0, symSize: 0x4 }
+  - { offsetInCU: 0x26C, offset: 0xCD80D, size: 0x8, addend: 0x0, symName: '_$s8NovaCore0A4IconC0A6SystemOAESQAAWl', symObjAddr: 0x614, symBinAddr: 0xC9F4, symSize: 0x44 }
+  - { offsetInCU: 0x280, offset: 0xCD821, size: 0x8, addend: 0x0, symName: '_$s8NovaCore0A4IconC0A6SystemOs12CaseIterableAA8AllCasessAFP_SlWT', symObjAddr: 0x658, symBinAddr: 0xCA38, symSize: 0x4 }
+  - { offsetInCU: 0x294, offset: 0xCD835, size: 0x8, addend: 0x0, symName: '_$sSay8NovaCore0A4IconC0A6SystemOGSayxGSlsWl', symObjAddr: 0x65C, symBinAddr: 0xCA3C, symSize: 0x48 }
+  - { offsetInCU: 0x2A8, offset: 0xCD849, size: 0x8, addend: 0x0, symName: '_$sSay8NovaCore0A4IconC0A6SystemOGMa', symObjAddr: 0x6A4, symBinAddr: 0xCA84, symSize: 0x54 }
+  - { offsetInCU: 0x2BC, offset: 0xCD85D, size: 0x8, addend: 0x0, symName: '_$s8NovaCore0A4IconC0A6SystemOAA0C4NameAAWI', symObjAddr: 0x6F8, symBinAddr: 0xCAD8, symSize: 0x24 }
+  - { offsetInCU: 0x2D0, offset: 0xCD871, size: 0x8, addend: 0x0, symName: '_$s8NovaCore0A4IconC0A6SystemOAEs23CustomStringConvertibleAAWl', symObjAddr: 0x71C, symBinAddr: 0xCAFC, symSize: 0x44 }
+  - { offsetInCU: 0x2E4, offset: 0xCD885, size: 0x8, addend: 0x0, symName: '_$s8NovaCore0A4IconC0A6SystemOMa', symObjAddr: 0x760, symBinAddr: 0xCB40, symSize: 0x10 }
+  - { offsetInCU: 0x336, offset: 0xCD8D7, size: 0x8, addend: 0x0, symName: '_$s8NovaCore0A4IconC0A6SystemOSQAASQ2eeoiySbx_xtFZTW', symObjAddr: 0xCC, symBinAddr: 0xC4EC, symSize: 0x14 }
+  - { offsetInCU: 0x3E6, offset: 0xCD987, size: 0x8, addend: 0x0, symName: '_$s8NovaCore0A4IconC0A6SystemOSHAASH9hashValueSivgTW', symObjAddr: 0xE0, symBinAddr: 0xC500, symSize: 0x44 }
+  - { offsetInCU: 0x495, offset: 0xCDA36, size: 0x8, addend: 0x0, symName: '_$s8NovaCore0A4IconC0A6SystemOSHAASH4hash4intoys6HasherVz_tFTW', symObjAddr: 0x124, symBinAddr: 0xC544, symSize: 0x28 }
+  - { offsetInCU: 0x4E8, offset: 0xCDA89, size: 0x8, addend: 0x0, symName: '_$s8NovaCore0A4IconC0A6SystemOSHAASH13_rawHashValue4seedS2i_tFTW', symObjAddr: 0x14C, symBinAddr: 0xC56C, symSize: 0x40 }
+  - { offsetInCU: 0x739, offset: 0xCDCDA, size: 0x8, addend: 0x0, symName: '_$s8NovaCore0A4IconCfD', symObjAddr: 0x3C, symBinAddr: 0xC45C, symSize: 0x30 }
+  - { offsetInCU: 0x762, offset: 0xCDD03, size: 0x8, addend: 0x0, symName: '_$s8NovaCore0A4IconC0A6SystemO8rawValueAESgSi_tcfC', symObjAddr: 0x8C, symBinAddr: 0xC4AC, symSize: 0x18 }
+  - { offsetInCU: 0x77C, offset: 0xCDD1D, size: 0x8, addend: 0x0, symName: '_$s8NovaCore0A4IconC0A6SystemO8allCasesSayAEGvgZ', symObjAddr: 0xA4, symBinAddr: 0xC4C4, symSize: 0x24 }
+  - { offsetInCU: 0x7BA, offset: 0xCDD5B, size: 0x8, addend: 0x0, symName: '_$s8NovaCore0A4IconC0A6SystemO8rawValueSivg', symObjAddr: 0xC8, symBinAddr: 0xC4E8, symSize: 0x4 }
+  - { offsetInCU: 0x805, offset: 0xCDDA6, size: 0x8, addend: 0x0, symName: '_$s8NovaCore0A4IconC0A6SystemO11descriptionSSvg', symObjAddr: 0x200, symBinAddr: 0xC620, symSize: 0x3B4 }
   - { offsetInCU: 0x3F, offset: 0xCDE14, size: 0x8, addend: 0x0, symName: '_$s8NovaCore0A7AdEventOwet', symObjAddr: 0x10, symBinAddr: 0xCB50, symSize: 0x90 }
   - { offsetInCU: 0x53, offset: 0xCDE28, size: 0x8, addend: 0x0, symName: '_$s8NovaCore0A7AdEventOwst', symObjAddr: 0xA0, symBinAddr: 0xCBE0, symSize: 0xBC }
   - { offsetInCU: 0x67, offset: 0xCDE3C, size: 0x8, addend: 0x0, symName: '_$s8NovaCore0A7AdEventOwug', symObjAddr: 0x15C, symBinAddr: 0xCC9C, symSize: 0x8 }
@@ -222,9 +222,9 @@ relocations:
   - { offsetInCU: 0x1AF, offset: 0xCF1AF, size: 0x8, addend: 0x0, symName: '_$sSo30UIGraphicsImageRendererContextCIegg_ABIyBy_TR', symObjAddr: 0x564, symBinAddr: 0xDB58, symSize: 0x38 }
   - { offsetInCU: 0x1C7, offset: 0xCF1C7, size: 0x8, addend: 0x0, symName: '_$sSo7UIImageC8NovaCoreE5image9tintColorABSgAB_So7UIColorCtcfcTo', symObjAddr: 0x59C, symBinAddr: 0xDB90, symSize: 0x48 }
   - { offsetInCU: 0x25B, offset: 0xCF25B, size: 0x8, addend: 0x0, symName: '_$s10Foundation3URLVSgWOh', symObjAddr: 0x9B4, symBinAddr: 0xDF68, symSize: 0x40 }
-  - { offsetInCU: 0x26F, offset: 0xCF26F, size: 0x8, addend: 0x0, symName: '_$sSo7UIImageC8NovaCoreE10systemNameABSgAC4IconC0B6SystemO_tcfcTo', symObjAddr: 0x9F4, symBinAddr: 0xDFA8, symSize: 0x24 }
-  - { offsetInCU: 0x2CC, offset: 0xCF2CC, size: 0x8, addend: 0x0, symName: '_$sSo7UIImageC8NovaCoreE10systemName9tintColorABSgAC4IconC0B6SystemO_So7UIColorCtcfc11iconCgImageL_3forSo10CGImageRefaSgSo20UIUserInterfaceStyleV_tF', symObjAddr: 0xD68, symBinAddr: 0xE31C, symSize: 0x240 }
-  - { offsetInCU: 0x3AC, offset: 0xCF3AC, size: 0x8, addend: 0x0, symName: '_$sSo7UIImageC8NovaCoreE10systemName9tintColorABSgAC4IconC0B6SystemO_So7UIColorCtcfcTo', symObjAddr: 0x1074, symBinAddr: 0xE628, symSize: 0x34 }
+  - { offsetInCU: 0x26F, offset: 0xCF26F, size: 0x8, addend: 0x0, symName: '_$sSo7UIImageC8NovaCoreE14novasystemNameABSgAC0B4IconC0B6SystemO_tcfcTo', symObjAddr: 0x9F4, symBinAddr: 0xDFA8, symSize: 0x24 }
+  - { offsetInCU: 0x2CC, offset: 0xCF2CC, size: 0x8, addend: 0x0, symName: '_$sSo7UIImageC8NovaCoreE14novasystemName9tintColorABSgAC0B4IconC0B6SystemO_So7UIColorCtcfc11iconCgImageL_3forSo10CGImageRefaSgSo20UIUserInterfaceStyleV_tF', symObjAddr: 0xD68, symBinAddr: 0xE31C, symSize: 0x240 }
+  - { offsetInCU: 0x3AC, offset: 0xCF3AC, size: 0x8, addend: 0x0, symName: '_$sSo7UIImageC8NovaCoreE14novasystemName9tintColorABSgAC0B4IconC0B6SystemO_So7UIColorCtcfcTo', symObjAddr: 0x1074, symBinAddr: 0xE628, symSize: 0x34 }
   - { offsetInCU: 0x3D3, offset: 0xCF3D3, size: 0x8, addend: 0x0, symName: '_$ss29getContiguousArrayStorageType3fors01_bcD0CyxGmxm_tlFSo18NSLayoutConstraintC_Tgm5', symObjAddr: 0x10A8, symBinAddr: 0xE65C, symSize: 0x64 }
   - { offsetInCU: 0x400, offset: 0xCF400, size: 0x8, addend: 0x0, symName: '_$ss29getContiguousArrayStorageType3fors01_bcD0CyxGmxm_tlFSo6UIViewC_Tgm5', symObjAddr: 0x110C, symBinAddr: 0xE6C0, symSize: 0x64 }
   - { offsetInCU: 0x42D, offset: 0xCF42D, size: 0x8, addend: 0x0, symName: '_$ss29getContiguousArrayStorageType3fors01_bcD0CyxGmxm_tlFSo13UIWindowSceneC_Tgm5', symObjAddr: 0x1170, symBinAddr: 0xE724, symSize: 0x64 }
@@ -237,15 +237,15 @@ relocations:
   - { offsetInCU: 0x53D, offset: 0xCF53D, size: 0x8, addend: 0x0, symName: _block_destroy_helper, symObjAddr: 0x1374, symBinAddr: 0xE928, symSize: 0x8 }
   - { offsetInCU: 0x551, offset: 0xCF551, size: 0x8, addend: 0x0, symName: '_$ss29getContiguousArrayStorageType3fors01_bcD0CyxGmxm_tlF8NovaCore0G6BaseAdC_Tgm5', symObjAddr: 0x137C, symBinAddr: 0xE930, symSize: 0x54 }
   - { offsetInCU: 0x57E, offset: 0xCF57E, size: 0x8, addend: 0x0, symName: '_$ss29getContiguousArrayStorageType3fors01_bcD0CyxGmxm_tlFSo7NSValueC_Tgm5', symObjAddr: 0x13D0, symBinAddr: 0xE984, symSize: 0x64 }
-  - { offsetInCU: 0x5AB, offset: 0xCF5AB, size: 0x8, addend: 0x0, symName: '_$sSo7UIImageC8NovaCoreE10systemName9tintColorABSgAC4IconC0B6SystemO_So7UIColorCtcfc11iconCgImageL_3forSo10CGImageRefaSgSo20UIUserInterfaceStyleV_tFySo010UIGraphicsM15RendererContextCXEfU_TA', symObjAddr: 0x1434, symBinAddr: 0xE9E8, symSize: 0x18 }
+  - { offsetInCU: 0x5AB, offset: 0xCF5AB, size: 0x8, addend: 0x0, symName: '_$sSo7UIImageC8NovaCoreE14novasystemName9tintColorABSgAC0B4IconC0B6SystemO_So7UIColorCtcfc11iconCgImageL_3forSo10CGImageRefaSgSo20UIUserInterfaceStyleV_tFySo010UIGraphicsM15RendererContextCXEfU_TA', symObjAddr: 0x1434, symBinAddr: 0xE9E8, symSize: 0x18 }
   - { offsetInCU: 0x98A, offset: 0xCF98A, size: 0x8, addend: 0x0, symName: '_$sSo7UIImageC8NovaCoreE4tintyABSo7UIColorCF', symObjAddr: 0x0, symBinAddr: 0xD5F4, symSize: 0x50 }
   - { offsetInCU: 0xA16, offset: 0xCFA16, size: 0x8, addend: 0x0, symName: '_$sSo7UIImageC8NovaCoreE5image9tintColorABSgAB_So7UIColorCtcfc', symObjAddr: 0x50, symBinAddr: 0xD644, symSize: 0x2D4 }
   - { offsetInCU: 0xBAF, offset: 0xCFBAF, size: 0x8, addend: 0x0, symName: '_$sSo7UIImageC8NovaCoreE2__33_99971CEFA5BD948195E7A19A391D36DALLCfD', symObjAddr: 0x5E4, symBinAddr: 0xDBD8, symSize: 0x10 }
   - { offsetInCU: 0xBE7, offset: 0xCFBE7, size: 0x8, addend: 0x0, symName: '_$sSo7UIImageC8NovaCoreE9BundleUrl10Foundation3URLVSgyFZ', symObjAddr: 0x5F4, symBinAddr: 0xDBE8, symSize: 0x130 }
-  - { offsetInCU: 0xC1D, offset: 0xCFC1D, size: 0x8, addend: 0x0, symName: '_$sSo7UIImageC8NovaCoreE10systemNameABSgAC4IconC0B6SystemO_tcfC', symObjAddr: 0x724, symBinAddr: 0xDD18, symSize: 0x34 }
-  - { offsetInCU: 0xC3F, offset: 0xCFC3F, size: 0x8, addend: 0x0, symName: '_$sSo7UIImageC8NovaCoreE10systemNameABSgAC4IconC0B6SystemO_tcfc', symObjAddr: 0x758, symBinAddr: 0xDD4C, symSize: 0x21C }
-  - { offsetInCU: 0xCB5, offset: 0xCFCB5, size: 0x8, addend: 0x0, symName: '_$sSo7UIImageC8NovaCoreE10systemName9tintColorABSgAC4IconC0B6SystemO_So7UIColorCtcfC', symObjAddr: 0xA18, symBinAddr: 0xDFCC, symSize: 0x58 }
-  - { offsetInCU: 0xCD0, offset: 0xCFCD0, size: 0x8, addend: 0x0, symName: '_$sSo7UIImageC8NovaCoreE10systemName9tintColorABSgAC4IconC0B6SystemO_So7UIColorCtcfc', symObjAddr: 0xA70, symBinAddr: 0xE024, symSize: 0x2F8 }
+  - { offsetInCU: 0xC1D, offset: 0xCFC1D, size: 0x8, addend: 0x0, symName: '_$sSo7UIImageC8NovaCoreE14novasystemNameABSgAC0B4IconC0B6SystemO_tcfC', symObjAddr: 0x724, symBinAddr: 0xDD18, symSize: 0x34 }
+  - { offsetInCU: 0xC3F, offset: 0xCFC3F, size: 0x8, addend: 0x0, symName: '_$sSo7UIImageC8NovaCoreE14novasystemNameABSgAC0B4IconC0B6SystemO_tcfc', symObjAddr: 0x758, symBinAddr: 0xDD4C, symSize: 0x21C }
+  - { offsetInCU: 0xCB5, offset: 0xCFCB5, size: 0x8, addend: 0x0, symName: '_$sSo7UIImageC8NovaCoreE14novasystemName9tintColorABSgAC0B4IconC0B6SystemO_So7UIColorCtcfC', symObjAddr: 0xA18, symBinAddr: 0xDFCC, symSize: 0x58 }
+  - { offsetInCU: 0xCD0, offset: 0xCFCD0, size: 0x8, addend: 0x0, symName: '_$sSo7UIImageC8NovaCoreE14novasystemName9tintColorABSgAC0B4IconC0B6SystemO_So7UIColorCtcfc', symObjAddr: 0xA70, symBinAddr: 0xE024, symSize: 0x2F8 }
   - { offsetInCU: 0x27, offset: 0xCFEE9, size: 0x8, addend: 0x0, symName: '_$s8NovaCore17AdsMediaConstantsO15iPadAspectRatioSdvgZ', symObjAddr: 0x0, symBinAddr: 0xEA5C, symSize: 0xC }
   - { offsetInCU: 0x8C, offset: 0xCFF4E, size: 0x8, addend: 0x0, symName: '_$s8NovaCore17AdsMediaConstantsOMa', symObjAddr: 0x20, symBinAddr: 0xEA7C, symSize: 0x10 }
   - { offsetInCU: 0x267, offset: 0xD0129, size: 0x8, addend: 0x0, symName: '_$s8NovaCore17AdsMediaConstantsO15iPadAspectRatioSdvgZ', symObjAddr: 0x0, symBinAddr: 0xEA5C, symSize: 0xC }
@@ -2213,7 +2213,7 @@ relocations:
   - { offsetInCU: 0x4BDC, offset: 0x10A143, size: 0x8, addend: 0x0, symName: '_$sSo7UIImageC8NovaCoreE0B5ImageCfd', symObjAddr: 0x30E8, symBinAddr: 0x4EF00, symSize: 0x9C4 }
   - { offsetInCU: 0x4C05, offset: 0x10A16C, size: 0x8, addend: 0x0, symName: '_$sSo7UIImageC8NovaCoreE0B5ImageCfD', symObjAddr: 0x3AAC, symBinAddr: 0x4F8C4, symSize: 0x20 }
   - { offsetInCU: 0x4C36, offset: 0x10A19D, size: 0x8, addend: 0x0, symName: '_$sSo7UIImageC8NovaCoreE0B5ImageCAEycfc', symObjAddr: 0x3AF8, symBinAddr: 0x4F910, symSize: 0x7798 }
-  - { offsetInCU: 0x27, offset: 0x10D5A0, size: 0x8, addend: 0x0, symName: '_$s8NovaCore017WebViewNavigationD5ModelV18includingStatusBar5title0J8FontSize14hideLeftButton04leftO4Icon0pO16TapActionHandler05rightoQ00uorsT0ACSb_SSSg0B8Graphics7CGFloatVSgSbAA0Q0C0A6SystemOSgyycAUyyctcfC', symObjAddr: 0x0, symBinAddr: 0x570B8, symSize: 0x54 }
+  - { offsetInCU: 0x27, offset: 0x10D5A0, size: 0x8, addend: 0x0, symName: '_$s8NovaCore017WebViewNavigationD5ModelV18includingStatusBar5title0J8FontSize14hideLeftButton04leftO4Icon0pO16TapActionHandler05rightoQ00uorsT0ACSb_SSSg0B8Graphics7CGFloatVSgSbAA0aQ0C0A6SystemOSgyycAUyyctcfC', symObjAddr: 0x0, symBinAddr: 0x570B8, symSize: 0x54 }
   - { offsetInCU: 0x181, offset: 0x10D6FA, size: 0x8, addend: 0x0, symName: '_$s8NovaCore017WebViewNavigationD5ModelVwCP', symObjAddr: 0x13C, symBinAddr: 0x571E4, symSize: 0x30 }
   - { offsetInCU: 0x195, offset: 0x10D70E, size: 0x8, addend: 0x0, symName: '_$s8NovaCore017WebViewNavigationD5ModelVwxx', symObjAddr: 0x16C, symBinAddr: 0x57214, symSize: 0x4C }
   - { offsetInCU: 0x1A9, offset: 0x10D722, size: 0x8, addend: 0x0, symName: '_$s8NovaCore017WebViewNavigationD5ModelVwcp', symObjAddr: 0x1B8, symBinAddr: 0x57260, symSize: 0xC0 }
@@ -2223,7 +2223,7 @@ relocations:
   - { offsetInCU: 0x1F9, offset: 0x10D772, size: 0x8, addend: 0x0, symName: '_$s8NovaCore017WebViewNavigationD5ModelVwet', symObjAddr: 0x4E4, symBinAddr: 0x5758C, symSize: 0x5C }
   - { offsetInCU: 0x20D, offset: 0x10D786, size: 0x8, addend: 0x0, symName: '_$s8NovaCore017WebViewNavigationD5ModelVwst', symObjAddr: 0x540, symBinAddr: 0x575E8, symSize: 0x6C }
   - { offsetInCU: 0x221, offset: 0x10D79A, size: 0x8, addend: 0x0, symName: '_$s8NovaCore017WebViewNavigationD5ModelVMa', symObjAddr: 0x5AC, symBinAddr: 0x57654, symSize: 0x10 }
-  - { offsetInCU: 0x476, offset: 0x10D9EF, size: 0x8, addend: 0x0, symName: '_$s8NovaCore017WebViewNavigationD5ModelV18includingStatusBar5title0J8FontSize14hideLeftButton04leftO4Icon0pO16TapActionHandler05rightoQ00uorsT0ACSb_SSSg0B8Graphics7CGFloatVSgSbAA0Q0C0A6SystemOSgyycAUyyctcfC', symObjAddr: 0x0, symBinAddr: 0x570B8, symSize: 0x54 }
+  - { offsetInCU: 0x476, offset: 0x10D9EF, size: 0x8, addend: 0x0, symName: '_$s8NovaCore017WebViewNavigationD5ModelV18includingStatusBar5title0J8FontSize14hideLeftButton04leftO4Icon0pO16TapActionHandler05rightoQ00uorsT0ACSb_SSSg0B8Graphics7CGFloatVSgSbAA0aQ0C0A6SystemOSgyycAUyyctcfC', symObjAddr: 0x0, symBinAddr: 0x570B8, symSize: 0x54 }
   - { offsetInCU: 0x503, offset: 0x10DA7C, size: 0x8, addend: 0x0, symName: '_$s8NovaCore017WebViewNavigationD5ModelV18includingStatusBarSbvg', symObjAddr: 0x54, symBinAddr: 0x5710C, symSize: 0x8 }
   - { offsetInCU: 0x517, offset: 0x10DA90, size: 0x8, addend: 0x0, symName: '_$s8NovaCore017WebViewNavigationD5ModelV5titleSSSgvg', symObjAddr: 0x5C, symBinAddr: 0x57114, symSize: 0x2C }
   - { offsetInCU: 0x52B, offset: 0x10DAA4, size: 0x8, addend: 0x0, symName: '_$s8NovaCore017WebViewNavigationD5ModelV13titleFontSize0B8Graphics7CGFloatVvg', symObjAddr: 0x88, symBinAddr: 0x57140, symSize: 0x8 }
@@ -2231,8 +2231,8 @@ relocations:
   - { offsetInCU: 0x578, offset: 0x10DAF1, size: 0x8, addend: 0x0, symName: '_$s8NovaCore017WebViewNavigationD5ModelV13titleFontSize0B8Graphics7CGFloatVvM', symObjAddr: 0x98, symBinAddr: 0x57150, symSize: 0x10 }
   - { offsetInCU: 0x59C, offset: 0x10DB15, size: 0x8, addend: 0x0, symName: '_$s8NovaCore017WebViewNavigationD5ModelV13titleFontSize0B8Graphics7CGFloatVvM.resume.0', symObjAddr: 0xA8, symBinAddr: 0x57160, symSize: 0x4 }
   - { offsetInCU: 0x5BD, offset: 0x10DB36, size: 0x8, addend: 0x0, symName: '_$s8NovaCore017WebViewNavigationD5ModelV14hideLeftButtonSbvg', symObjAddr: 0xAC, symBinAddr: 0x57164, symSize: 0x8 }
-  - { offsetInCU: 0x5D1, offset: 0x10DB4A, size: 0x8, addend: 0x0, symName: '_$s8NovaCore017WebViewNavigationD5ModelV14leftButtonIconAA0I0C0A6SystemOSgvg', symObjAddr: 0xB4, symBinAddr: 0x5716C, symSize: 0xC }
-  - { offsetInCU: 0x5E5, offset: 0x10DB5E, size: 0x8, addend: 0x0, symName: '_$s8NovaCore017WebViewNavigationD5ModelV15rightButtonIconAA0I0C0A6SystemOSgvg', symObjAddr: 0xC0, symBinAddr: 0x57178, symSize: 0xC }
+  - { offsetInCU: 0x5D1, offset: 0x10DB4A, size: 0x8, addend: 0x0, symName: '_$s8NovaCore017WebViewNavigationD5ModelV14leftButtonIconAA0aI0C0A6SystemOSgvg', symObjAddr: 0xB4, symBinAddr: 0x5716C, symSize: 0xC }
+  - { offsetInCU: 0x5E5, offset: 0x10DB5E, size: 0x8, addend: 0x0, symName: '_$s8NovaCore017WebViewNavigationD5ModelV15rightButtonIconAA0aI0C0A6SystemOSgvg', symObjAddr: 0xC0, symBinAddr: 0x57178, symSize: 0xC }
   - { offsetInCU: 0x5F9, offset: 0x10DB72, size: 0x8, addend: 0x0, symName: '_$s8NovaCore017WebViewNavigationD5ModelV26leftButtonTapActionHandleryycSgvg', symObjAddr: 0xCC, symBinAddr: 0x57184, symSize: 0x30 }
   - { offsetInCU: 0x60D, offset: 0x10DB86, size: 0x8, addend: 0x0, symName: '_$s8NovaCore017WebViewNavigationD5ModelV27rightButtonTapActionHandleryycSgvg', symObjAddr: 0x10C, symBinAddr: 0x571B4, symSize: 0x30 }
   - { offsetInCU: 0xB9, offset: 0x10DC71, size: 0x8, addend: 0x0, symName: '_$s8NovaCore0A12NativeAdItemC8delegateAA0acD8Delegate_pSgvgTo', symObjAddr: 0x13C, symBinAddr: 0x577A0, symSize: 0x48 }
@@ -4485,7 +4485,7 @@ relocations:
   - { offsetInCU: 0x86D, offset: 0x186F0E, size: 0x8, addend: 0x0, symName: '-[UIImageView(WebCache) sd_currentImageURL]', symObjAddr: 0x184, symBinAddr: 0x9ECD4, symSize: 0x48 }
   - { offsetInCU: 0x8A4, offset: 0x186F45, size: 0x8, addend: 0x0, symName: '-[UIImageView(WebCache) sd_cancelCurrentImageLoad]', symObjAddr: 0x1CC, symBinAddr: 0x9ED1C, symSize: 0x8 }
   - { offsetInCU: 0x27, offset: 0x188870, size: 0x8, addend: 0x0, symName: '-[UIView(WebCache) sd_latestOperationKey]', symObjAddr: 0x0, symBinAddr: 0x9ED24, symSize: 0xC }
-  - { offsetInCU: 0x41, offset: 0x18888A, size: 0x8, addend: 0x0, symName: _SDWebImageProgressUnitCountUnknown, symObjAddr: 0x2130, symBinAddr: 0x103F48, symSize: 0x0 }
+  - { offsetInCU: 0x41, offset: 0x18888A, size: 0x8, addend: 0x0, symName: _SDWebImageProgressUnitCountUnknown, symObjAddr: 0x2130, symBinAddr: 0x103F58, symSize: 0x0 }
   - { offsetInCU: 0xB79, offset: 0x1893C2, size: 0x8, addend: 0x0, symName: '-[UIView(WebCache) sd_latestOperationKey]', symObjAddr: 0x0, symBinAddr: 0x9ED24, symSize: 0xC }
   - { offsetInCU: 0xBE3, offset: 0x18942C, size: 0x8, addend: 0x0, symName: '-[UIView(WebCache) setSd_latestOperationKey:]', symObjAddr: 0xC, symBinAddr: 0x9ED30, symSize: 0x10 }
   - { offsetInCU: 0xC71, offset: 0x1894BA, size: 0x8, addend: 0x0, symName: '-[UIView(WebCache) sd_imageURL]', symObjAddr: 0x1C, symBinAddr: 0x9ED40, symSize: 0x70 }
@@ -5210,7 +5210,7 @@ relocations:
   - { offsetInCU: 0x2D48, offset: 0x1B364F, size: 0x8, addend: 0x0, symName: _UpdateCostPerInterval.cold.1, symObjAddr: 0x1350, symBinAddr: 0xED224, symSize: 0x24 }
   - { offsetInCU: 0x2D77, offset: 0x1B367E, size: 0x8, addend: 0x0, symName: _OUTLINED_FUNCTION_0, symObjAddr: 0x1374, symBinAddr: 0xB34A8, symSize: 0x8 }
   - { offsetInCU: 0x26, offset: 0x1B36CB, size: 0x8, addend: 0x0, symName: _VP8LDistanceToPlaneCode, symObjAddr: 0x0, symBinAddr: 0xB34B0, symSize: 0x5C }
-  - { offsetInCU: 0x4E, offset: 0x1B36F3, size: 0x8, addend: 0x0, symName: _plane_to_code_lut, symObjAddr: 0x1E08, symBinAddr: 0x104ED4, symSize: 0x0 }
+  - { offsetInCU: 0x4E, offset: 0x1B36F3, size: 0x8, addend: 0x0, symName: _plane_to_code_lut, symObjAddr: 0x1E08, symBinAddr: 0x104EE4, symSize: 0x0 }
   - { offsetInCU: 0x228, offset: 0x1B38CD, size: 0x8, addend: 0x0, symName: _VP8LDistanceToPlaneCode, symObjAddr: 0x0, symBinAddr: 0xB34B0, symSize: 0x5C }
   - { offsetInCU: 0x281, offset: 0x1B3926, size: 0x8, addend: 0x0, symName: _VP8LClearBackwardRefs, symObjAddr: 0x5C, symBinAddr: 0xB350C, symSize: 0x34 }
   - { offsetInCU: 0x2A3, offset: 0x1B3948, size: 0x8, addend: 0x0, symName: _VP8LBackwardRefsClear, symObjAddr: 0x90, symBinAddr: 0xB3540, symSize: 0x5C }
@@ -5259,9 +5259,9 @@ relocations:
   - { offsetInCU: 0x3513, offset: 0x1B6BB8, size: 0x8, addend: 0x0, symName: _VP8LGetBackwardReferences.cold.3, symObjAddr: 0x1CC4, symBinAddr: 0xED4C8, symSize: 0x28 }
   - { offsetInCU: 0x35A2, offset: 0x1B6C47, size: 0x8, addend: 0x0, symName: _BackwardReferencesLz77.cold.1, symObjAddr: 0x1DDC, symBinAddr: 0xED5E0, symSize: 0x28 }
   - { offsetInCU: 0x26, offset: 0x1B6CAE, size: 0x8, addend: 0x0, symName: _VP8BitReaderSetBuffer, symObjAddr: 0x0, symBinAddr: 0xB4EF4, symSize: 0x1C }
-  - { offsetInCU: 0x4E, offset: 0x1B6CD6, size: 0x8, addend: 0x0, symName: _kVP8Log2Range, symObjAddr: 0x8A8, symBinAddr: 0x104F60, symSize: 0x0 }
-  - { offsetInCU: 0x87, offset: 0x1B6D0F, size: 0x8, addend: 0x0, symName: _kVP8NewRange, symObjAddr: 0x928, symBinAddr: 0x104FE0, symSize: 0x0 }
-  - { offsetInCU: 0x9D, offset: 0x1B6D25, size: 0x8, addend: 0x0, symName: _kBitMask, symObjAddr: 0x9A8, symBinAddr: 0x105060, symSize: 0x0 }
+  - { offsetInCU: 0x4E, offset: 0x1B6CD6, size: 0x8, addend: 0x0, symName: _kVP8Log2Range, symObjAddr: 0x8A8, symBinAddr: 0x104F70, symSize: 0x0 }
+  - { offsetInCU: 0x87, offset: 0x1B6D0F, size: 0x8, addend: 0x0, symName: _kVP8NewRange, symObjAddr: 0x928, symBinAddr: 0x104FF0, symSize: 0x0 }
+  - { offsetInCU: 0x9D, offset: 0x1B6D25, size: 0x8, addend: 0x0, symName: _kBitMask, symObjAddr: 0x9A8, symBinAddr: 0x105070, symSize: 0x0 }
   - { offsetInCU: 0x120, offset: 0x1B6DA8, size: 0x8, addend: 0x0, symName: _VP8BitReaderSetBuffer, symObjAddr: 0x0, symBinAddr: 0xB4EF4, symSize: 0x1C }
   - { offsetInCU: 0x271, offset: 0x1B6EF9, size: 0x8, addend: 0x0, symName: _VP8InitBitReader, symObjAddr: 0x1C, symBinAddr: 0xB4F10, symSize: 0x84 }
   - { offsetInCU: 0x36A, offset: 0x1B6FF2, size: 0x8, addend: 0x0, symName: _VP8RemapBitReader, symObjAddr: 0xA0, symBinAddr: 0xB4F94, symSize: 0x24 }
@@ -5296,7 +5296,7 @@ relocations:
   - { offsetInCU: 0xAF9, offset: 0x1B7781, size: 0x8, addend: 0x0, symName: _VP8InitBitReader.cold.1, symObjAddr: 0x4D4, symBinAddr: 0xED608, symSize: 0x28 }
   - { offsetInCU: 0xB04, offset: 0x1B778C, size: 0x8, addend: 0x0, symName: _VP8LReadBits.cold.1, symObjAddr: 0x6DC, symBinAddr: 0xED810, symSize: 0x28 }
   - { offsetInCU: 0x26, offset: 0x1B77E7, size: 0x8, addend: 0x0, symName: _VP8PutBit, symObjAddr: 0x0, symBinAddr: 0xB53C8, symSize: 0x8C }
-  - { offsetInCU: 0x71, offset: 0x1B7832, size: 0x8, addend: 0x0, symName: _kNewRange, symObjAddr: 0xB5F, symBinAddr: 0x1050E0, symSize: 0x0 }
+  - { offsetInCU: 0x71, offset: 0x1B7832, size: 0x8, addend: 0x0, symName: _kNewRange, symObjAddr: 0xB5F, symBinAddr: 0x1050F0, symSize: 0x0 }
   - { offsetInCU: 0xF3, offset: 0x1B78B4, size: 0x8, addend: 0x0, symName: _VP8PutBit, symObjAddr: 0x0, symBinAddr: 0xB53C8, symSize: 0x8C }
   - { offsetInCU: 0x17B, offset: 0x1B793C, size: 0x8, addend: 0x0, symName: _Flush, symObjAddr: 0x8C, symBinAddr: 0xB5454, symSize: 0xEC }
   - { offsetInCU: 0x215, offset: 0x1B79D6, size: 0x8, addend: 0x0, symName: _VP8PutBitUniform, symObjAddr: 0x178, symBinAddr: 0xB5540, symSize: 0x78 }
@@ -5332,7 +5332,7 @@ relocations:
   - { offsetInCU: 0x9B7, offset: 0x1B8178, size: 0x8, addend: 0x0, symName: _VP8LPutBitsInternal.cold.2, symObjAddr: 0x960, symBinAddr: 0xED950, symSize: 0x28 }
   - { offsetInCU: 0x9CF, offset: 0x1B8190, size: 0x8, addend: 0x0, symName: _VP8LBitWriterFinish, symObjAddr: 0x7DC, symBinAddr: 0xB5BA4, symSize: 0x6C }
   - { offsetInCU: 0x26, offset: 0x1B8314, size: 0x8, addend: 0x0, symName: _WebPFlipBuffer, symObjAddr: 0x0, symBinAddr: 0xB5C10, symSize: 0xAC }
-  - { offsetInCU: 0x4E, offset: 0x1B833C, size: 0x8, addend: 0x0, symName: _kModeBpp, symObjAddr: 0x7CE, symBinAddr: 0x105160, symSize: 0x0 }
+  - { offsetInCU: 0x4E, offset: 0x1B833C, size: 0x8, addend: 0x0, symName: _kModeBpp, symObjAddr: 0x7CE, symBinAddr: 0x105170, symSize: 0x0 }
   - { offsetInCU: 0x186, offset: 0x1B8474, size: 0x8, addend: 0x0, symName: _WebPFlipBuffer, symObjAddr: 0x0, symBinAddr: 0xB5C10, symSize: 0xAC }
   - { offsetInCU: 0x477, offset: 0x1B8765, size: 0x8, addend: 0x0, symName: _WebPAllocateDecBuffer, symObjAddr: 0xAC, symBinAddr: 0xB5CBC, symSize: 0x1FC }
   - { offsetInCU: 0x6F0, offset: 0x1B89DE, size: 0x8, addend: 0x0, symName: _CheckDecBuffer, symObjAddr: 0x51C, symBinAddr: 0xB612C, symSize: 0x150 }
@@ -5359,14 +5359,14 @@ relocations:
   - { offsetInCU: 0x22C, offset: 0x1B922D, size: 0x8, addend: 0x0, symName: _VP8LColorCacheCopy.cold.2, symObjAddr: 0x14C, symBinAddr: 0xEDA68, symSize: 0x28 }
   - { offsetInCU: 0x244, offset: 0x1B9245, size: 0x8, addend: 0x0, symName: _VP8LColorCacheCopy.cold.3, symObjAddr: 0x174, symBinAddr: 0xEDA90, symSize: 0x28 }
   - { offsetInCU: 0x26, offset: 0x1B92DC, size: 0x8, addend: 0x0, symName: _WebPConfigInitInternal, symObjAddr: 0x0, symBinAddr: 0xB63A4, symSize: 0xFC }
-  - { offsetInCU: 0x40, offset: 0x1B92F6, size: 0x8, addend: 0x0, symName: _kLosslessPresets, symObjAddr: 0x32D, symBinAddr: 0x1051DD, symSize: 0x0 }
+  - { offsetInCU: 0x40, offset: 0x1B92F6, size: 0x8, addend: 0x0, symName: _kLosslessPresets, symObjAddr: 0x32D, symBinAddr: 0x1051ED, symSize: 0x0 }
   - { offsetInCU: 0x102, offset: 0x1B93B8, size: 0x8, addend: 0x0, symName: _WebPConfigInitInternal, symObjAddr: 0x0, symBinAddr: 0xB63A4, symSize: 0xFC }
   - { offsetInCU: 0x191, offset: 0x1B9447, size: 0x8, addend: 0x0, symName: _WebPValidateConfig, symObjAddr: 0xFC, symBinAddr: 0xB64A0, symSize: 0x180 }
   - { offsetInCU: 0x1BC, offset: 0x1B9472, size: 0x8, addend: 0x0, symName: _WebPConfigLosslessPreset, symObjAddr: 0x27C, symBinAddr: 0xB6620, symSize: 0x40 }
   - { offsetInCU: 0x26, offset: 0x1B9674, size: 0x8, addend: 0x0, symName: _VP8EncDspCostInit, symObjAddr: 0x0, symBinAddr: 0xB6660, symSize: 0x70 }
-  - { offsetInCU: 0x40, offset: 0x1B968E, size: 0x8, addend: 0x0, symName: _VP8EntropyCost, symObjAddr: 0x290, symBinAddr: 0x1051F2, symSize: 0x0 }
-  - { offsetInCU: 0x81, offset: 0x1B96CF, size: 0x8, addend: 0x0, symName: _VP8LevelFixedCosts, symObjAddr: 0x490, symBinAddr: 0x1053F2, symSize: 0x0 }
-  - { offsetInCU: 0xA5, offset: 0x1B96F3, size: 0x8, addend: 0x0, symName: _VP8EncBands, symObjAddr: 0x1490, symBinAddr: 0x1063F2, symSize: 0x0 }
+  - { offsetInCU: 0x40, offset: 0x1B968E, size: 0x8, addend: 0x0, symName: _VP8EntropyCost, symObjAddr: 0x290, symBinAddr: 0x105202, symSize: 0x0 }
+  - { offsetInCU: 0x81, offset: 0x1B96CF, size: 0x8, addend: 0x0, symName: _VP8LevelFixedCosts, symObjAddr: 0x490, symBinAddr: 0x105402, symSize: 0x0 }
+  - { offsetInCU: 0xA5, offset: 0x1B96F3, size: 0x8, addend: 0x0, symName: _VP8EncBands, symObjAddr: 0x1490, symBinAddr: 0x106402, symSize: 0x0 }
   - { offsetInCU: 0xD2, offset: 0x1B9720, size: 0x8, addend: 0x0, symName: _VP8EncDspCostInit, symObjAddr: 0x0, symBinAddr: 0xB6660, symSize: 0x70 }
   - { offsetInCU: 0xF6, offset: 0x1B9744, size: 0x8, addend: 0x0, symName: _VP8EncDspCostInit.VP8EncDspCostInit_body_last_cpuinfo_used, symObjAddr: 0x14A8, symBinAddr: 0x170098, symSize: 0x0 }
   - { offsetInCU: 0x1C5, offset: 0x1B9813, size: 0x8, addend: 0x0, symName: _VP8GetResidualCost, symObjAddr: 0x3070, symBinAddr: 0x177218, symSize: 0x0 }
@@ -5378,10 +5378,10 @@ relocations:
   - { offsetInCU: 0x5F9, offset: 0x1B9C47, size: 0x8, addend: 0x0, symName: _GetResidualCost_C.cold.1, symObjAddr: 0x240, symBinAddr: 0xEDAB8, symSize: 0x28 }
   - { offsetInCU: 0x604, offset: 0x1B9C52, size: 0x8, addend: 0x0, symName: _SetResidualCoeffs_C.cold.1, symObjAddr: 0x268, symBinAddr: 0xEDAE0, symSize: 0x28 }
   - { offsetInCU: 0x26, offset: 0x1B9CBE, size: 0x8, addend: 0x0, symName: _VP8CalculateLevelCosts, symObjAddr: 0x0, symBinAddr: 0xB68A0, symSize: 0x1DC }
-  - { offsetInCU: 0x40, offset: 0x1B9CD8, size: 0x8, addend: 0x0, symName: _VP8LevelCodes, symObjAddr: 0x75C, symBinAddr: 0x106404, symSize: 0x0 }
-  - { offsetInCU: 0x86, offset: 0x1B9D1E, size: 0x8, addend: 0x0, symName: _VP8FixedCostsUV, symObjAddr: 0x868, symBinAddr: 0x106510, symSize: 0x0 }
-  - { offsetInCU: 0xA8, offset: 0x1B9D40, size: 0x8, addend: 0x0, symName: _VP8FixedCostsI16, symObjAddr: 0x870, symBinAddr: 0x106518, symSize: 0x0 }
-  - { offsetInCU: 0xBE, offset: 0x1B9D56, size: 0x8, addend: 0x0, symName: _VP8FixedCostsI4, symObjAddr: 0x878, symBinAddr: 0x106520, symSize: 0x0 }
+  - { offsetInCU: 0x40, offset: 0x1B9CD8, size: 0x8, addend: 0x0, symName: _VP8LevelCodes, symObjAddr: 0x75C, symBinAddr: 0x106414, symSize: 0x0 }
+  - { offsetInCU: 0x86, offset: 0x1B9D1E, size: 0x8, addend: 0x0, symName: _VP8FixedCostsUV, symObjAddr: 0x868, symBinAddr: 0x106520, symSize: 0x0 }
+  - { offsetInCU: 0xA8, offset: 0x1B9D40, size: 0x8, addend: 0x0, symName: _VP8FixedCostsI16, symObjAddr: 0x870, symBinAddr: 0x106528, symSize: 0x0 }
+  - { offsetInCU: 0xBE, offset: 0x1B9D56, size: 0x8, addend: 0x0, symName: _VP8FixedCostsI4, symObjAddr: 0x878, symBinAddr: 0x106530, symSize: 0x0 }
   - { offsetInCU: 0x293, offset: 0x1B9F2B, size: 0x8, addend: 0x0, symName: _VP8CalculateLevelCosts, symObjAddr: 0x0, symBinAddr: 0xB68A0, symSize: 0x1DC }
   - { offsetInCU: 0x449, offset: 0x1BA0E1, size: 0x8, addend: 0x0, symName: _VP8InitResidual, symObjAddr: 0x1DC, symBinAddr: 0xB6A7C, symSize: 0x40 }
   - { offsetInCU: 0x12FA, offset: 0x1BAF92, size: 0x8, addend: 0x0, symName: _VP8GetCostLuma4, symObjAddr: 0x21C, symBinAddr: 0xB6ABC, symSize: 0xA4 }
@@ -5479,10 +5479,10 @@ relocations:
   - { offsetInCU: 0x79, offset: 0x1BD4BB, size: 0x8, addend: 0x0, symName: _VP8ksclip2, symObjAddr: 0xDE8, symBinAddr: 0x141F20, symSize: 0x0 }
   - { offsetInCU: 0x90, offset: 0x1BD4D2, size: 0x8, addend: 0x0, symName: _VP8kclip1, symObjAddr: 0xDF0, symBinAddr: 0x141F28, symSize: 0x0 }
   - { offsetInCU: 0xC8, offset: 0x1BD50A, size: 0x8, addend: 0x0, symName: _VP8kabs0, symObjAddr: 0xDF8, symBinAddr: 0x141F30, symSize: 0x0 }
-  - { offsetInCU: 0xDE, offset: 0x1BD520, size: 0x8, addend: 0x0, symName: _sclip1, symObjAddr: 0x4, symBinAddr: 0x106D00, symSize: 0x0 }
-  - { offsetInCU: 0x108, offset: 0x1BD54A, size: 0x8, addend: 0x0, symName: _sclip2, symObjAddr: 0x7FD, symBinAddr: 0x1074F9, symSize: 0x0 }
-  - { offsetInCU: 0x12B, offset: 0x1BD56D, size: 0x8, addend: 0x0, symName: _clip1, symObjAddr: 0x8DE, symBinAddr: 0x1075DA, symSize: 0x0 }
-  - { offsetInCU: 0x14E, offset: 0x1BD590, size: 0x8, addend: 0x0, symName: _abs0, symObjAddr: 0xBDD, symBinAddr: 0x1078D9, symSize: 0x0 }
+  - { offsetInCU: 0xDE, offset: 0x1BD520, size: 0x8, addend: 0x0, symName: _sclip1, symObjAddr: 0x4, symBinAddr: 0x106D10, symSize: 0x0 }
+  - { offsetInCU: 0x108, offset: 0x1BD54A, size: 0x8, addend: 0x0, symName: _sclip2, symObjAddr: 0x7FD, symBinAddr: 0x107509, symSize: 0x0 }
+  - { offsetInCU: 0x12B, offset: 0x1BD56D, size: 0x8, addend: 0x0, symName: _clip1, symObjAddr: 0x8DE, symBinAddr: 0x1075EA, symSize: 0x0 }
+  - { offsetInCU: 0x14E, offset: 0x1BD590, size: 0x8, addend: 0x0, symName: _abs0, symObjAddr: 0xBDD, symBinAddr: 0x1078E9, symSize: 0x0 }
   - { offsetInCU: 0x173, offset: 0x1BD5B5, size: 0x8, addend: 0x0, symName: _VP8InitClipTables, symObjAddr: 0x0, symBinAddr: 0xB7A90, symSize: 0x4 }
   - { offsetInCU: 0x26, offset: 0x1BD5F2, size: 0x8, addend: 0x0, symName: _VP8DspInitNEON, symObjAddr: 0x0, symBinAddr: 0xB7A94, symSize: 0x224 }
   - { offsetInCU: 0x6B, offset: 0x1BD637, size: 0x8, addend: 0x0, symName: _TransformAC3_NEON, symObjAddr: 0x270, symBinAddr: 0xB7D04, symSize: 0xB8 }
@@ -5563,7 +5563,7 @@ relocations:
   - { offsetInCU: 0x1D6D, offset: 0x1C9AC3, size: 0x8, addend: 0x0, symName: _ParseVP8XChunks, symObjAddr: 0xC2C, symBinAddr: 0xBA8E4, symSize: 0x458 }
   - { offsetInCU: 0x264E, offset: 0x1CA3A4, size: 0x8, addend: 0x0, symName: _IsValidExtendedFormat, symObjAddr: 0x8C0, symBinAddr: 0xBA578, symSize: 0x16C }
   - { offsetInCU: 0x26, offset: 0x1CA6B6, size: 0x8, addend: 0x0, symName: _VP8SetHistogramData, symObjAddr: 0x0, symBinAddr: 0xBAD3C, symSize: 0x38 }
-  - { offsetInCU: 0x40, offset: 0x1CA6D0, size: 0x8, addend: 0x0, symName: _VP8DspScan, symObjAddr: 0x1370, symBinAddr: 0x107B10, symSize: 0x0 }
+  - { offsetInCU: 0x40, offset: 0x1CA6D0, size: 0x8, addend: 0x0, symName: _VP8DspScan, symObjAddr: 0x1370, symBinAddr: 0x107B20, symSize: 0x0 }
   - { offsetInCU: 0x69, offset: 0x1CA6F9, size: 0x8, addend: 0x0, symName: _VP8EncDspInit, symObjAddr: 0x38, symBinAddr: 0xBAD74, symSize: 0x268 }
   - { offsetInCU: 0x8D, offset: 0x1CA71D, size: 0x8, addend: 0x0, symName: _VP8EncDspInit.VP8EncDspInit_body_last_cpuinfo_used, symObjAddr: 0x13E0, symBinAddr: 0x1700B0, symSize: 0x0 }
   - { offsetInCU: 0x1F4, offset: 0x1CA884, size: 0x8, addend: 0x0, symName: _FTransform2_C, symObjAddr: 0x2A0, symBinAddr: 0xBAFDC, symSize: 0x48 }
@@ -5589,7 +5589,7 @@ relocations:
   - { offsetInCU: 0x6CE, offset: 0x1CAD5E, size: 0x8, addend: 0x0, symName: _VP8Copy16x8, symObjAddr: 0x8208, symBinAddr: 0x177418, symSize: 0x0 }
   - { offsetInCU: 0x6EB, offset: 0x1CAD7B, size: 0x8, addend: 0x0, symName: _tables_ok, symObjAddr: 0x8210, symBinAddr: 0x1750C0, symSize: 0x0 }
   - { offsetInCU: 0x706, offset: 0x1CAD96, size: 0x8, addend: 0x0, symName: _clip1, symObjAddr: 0x8214, symBinAddr: 0x1750C4, symSize: 0x0 }
-  - { offsetInCU: 0x72A, offset: 0x1CADBA, size: 0x8, addend: 0x0, symName: _kZigzag, symObjAddr: 0x13D0, symBinAddr: 0x107B70, symSize: 0x0 }
+  - { offsetInCU: 0x72A, offset: 0x1CADBA, size: 0x8, addend: 0x0, symName: _kZigzag, symObjAddr: 0x13D0, symBinAddr: 0x107B80, symSize: 0x0 }
   - { offsetInCU: 0x76A, offset: 0x1CADFA, size: 0x8, addend: 0x0, symName: _VP8SetHistogramData, symObjAddr: 0x0, symBinAddr: 0xBAD3C, symSize: 0x38 }
   - { offsetInCU: 0x836, offset: 0x1CAEC6, size: 0x8, addend: 0x0, symName: _VP8EncDspInit.cold.1, symObjAddr: 0x1038, symBinAddr: 0xEE210, symSize: 0x28 }
   - { offsetInCU: 0x865, offset: 0x1CAEF5, size: 0x8, addend: 0x0, symName: _VP8EncDspInit.cold.2, symObjAddr: 0x1060, symBinAddr: 0xEE238, symSize: 0x28 }
@@ -5643,7 +5643,7 @@ relocations:
   - { offsetInCU: 0x21E5, offset: 0x1CEA55, size: 0x8, addend: 0x0, symName: _QuantizeBlock_NEON, symObjAddr: 0x704, symBinAddr: 0xBC478, symSize: 0xE4 }
   - { offsetInCU: 0x2430, offset: 0x1CECA0, size: 0x8, addend: 0x0, symName: _Quantize2Blocks_NEON, symObjAddr: 0x7E8, symBinAddr: 0xBC55C, symSize: 0x48 }
   - { offsetInCU: 0x26, offset: 0x1CF089, size: 0x8, addend: 0x0, symName: _VP8FilterStrengthFromDelta, symObjAddr: 0x0, symBinAddr: 0xBC6B4, symSize: 0x3C }
-  - { offsetInCU: 0x4E, offset: 0x1CF0B1, size: 0x8, addend: 0x0, symName: _kLevelsFromDelta, symObjAddr: 0x591, symBinAddr: 0x107BA8, symSize: 0x0 }
+  - { offsetInCU: 0x4E, offset: 0x1CF0B1, size: 0x8, addend: 0x0, symName: _kLevelsFromDelta, symObjAddr: 0x591, symBinAddr: 0x107BB8, symSize: 0x0 }
   - { offsetInCU: 0x18F, offset: 0x1CF1F2, size: 0x8, addend: 0x0, symName: _VP8FilterStrengthFromDelta, symObjAddr: 0x0, symBinAddr: 0xBC6B4, symSize: 0x3C }
   - { offsetInCU: 0x1C5, offset: 0x1CF228, size: 0x8, addend: 0x0, symName: _VP8InitFilter, symObjAddr: 0x3C, symBinAddr: 0xBC6F0, symSize: 0x28 }
   - { offsetInCU: 0x1D0, offset: 0x1CF233, size: 0x8, addend: 0x0, symName: _VP8FilterStrengthFromDelta.cold.1, symObjAddr: 0x4F0, symBinAddr: 0xEE530, symSize: 0x28 }
@@ -5702,9 +5702,9 @@ relocations:
   - { offsetInCU: 0x26, offset: 0x1D1EBC, size: 0x8, addend: 0x0, symName: _WebPEstimateBestFilter, symObjAddr: 0x0, symBinAddr: 0xBD234, symSize: 0x1E8 }
   - { offsetInCU: 0xF3, offset: 0x1D1F89, size: 0x8, addend: 0x0, symName: _WebPEstimateBestFilter, symObjAddr: 0x0, symBinAddr: 0xBD234, symSize: 0x1E8 }
   - { offsetInCU: 0x26, offset: 0x1D2168, size: 0x8, addend: 0x0, symName: _VP8InitDithering, symObjAddr: 0x0, symBinAddr: 0xBD41C, symSize: 0xF4 }
-  - { offsetInCU: 0x54, offset: 0x1D2196, size: 0x8, addend: 0x0, symName: _kQuantToDitherAmp, symObjAddr: 0x173A, symBinAddr: 0x107DC0, symSize: 0x0 }
-  - { offsetInCU: 0x8D, offset: 0x1D21CF, size: 0x8, addend: 0x0, symName: _kScan, symObjAddr: 0x174A, symBinAddr: 0x107DD0, symSize: 0x0 }
-  - { offsetInCU: 0xC6, offset: 0x1D2208, size: 0x8, addend: 0x0, symName: _kFilterExtraRows, symObjAddr: 0x1746, symBinAddr: 0x107DCC, symSize: 0x0 }
+  - { offsetInCU: 0x54, offset: 0x1D2196, size: 0x8, addend: 0x0, symName: _kQuantToDitherAmp, symObjAddr: 0x173A, symBinAddr: 0x107DD0, symSize: 0x0 }
+  - { offsetInCU: 0x8D, offset: 0x1D21CF, size: 0x8, addend: 0x0, symName: _kScan, symObjAddr: 0x174A, symBinAddr: 0x107DE0, symSize: 0x0 }
+  - { offsetInCU: 0xC6, offset: 0x1D2208, size: 0x8, addend: 0x0, symName: _kFilterExtraRows, symObjAddr: 0x1746, symBinAddr: 0x107DDC, symSize: 0x0 }
   - { offsetInCU: 0xBFE, offset: 0x1D2D40, size: 0x8, addend: 0x0, symName: _VP8InitDithering, symObjAddr: 0x0, symBinAddr: 0xBD41C, symSize: 0xF4 }
   - { offsetInCU: 0xD0D, offset: 0x1D2E4F, size: 0x8, addend: 0x0, symName: _VP8ProcessRow, symObjAddr: 0xF4, symBinAddr: 0xBD510, symSize: 0x174 }
   - { offsetInCU: 0xD3C, offset: 0x1D2E7E, size: 0x8, addend: 0x0, symName: _VP8InitDithering.cold.1, symObjAddr: 0x14E4, symBinAddr: 0xEE8DC, symSize: 0x28 }
@@ -5726,11 +5726,11 @@ relocations:
   - { offsetInCU: 0x23BE, offset: 0x1D4500, size: 0x8, addend: 0x0, symName: _Dither8x8, symObjAddr: 0x1424, symBinAddr: 0xBE840, symSize: 0xC0 }
   - { offsetInCU: 0x240A, offset: 0x1D454C, size: 0x8, addend: 0x0, symName: _VP8InitFrame.cold.1, symObjAddr: 0x15AC, symBinAddr: 0xEE9A4, symSize: 0x28 }
   - { offsetInCU: 0x26, offset: 0x1D4796, size: 0x8, addend: 0x0, symName: _VP8EncLoop, symObjAddr: 0x0, symBinAddr: 0xBE900, symSize: 0x970 }
-  - { offsetInCU: 0x40, offset: 0x1D47B0, size: 0x8, addend: 0x0, symName: _VP8Cat3, symObjAddr: 0x1CD7, symBinAddr: 0x107E0F, symSize: 0x0 }
-  - { offsetInCU: 0x80, offset: 0x1D47F0, size: 0x8, addend: 0x0, symName: _VP8Cat4, symObjAddr: 0x1CDA, symBinAddr: 0x107E12, symSize: 0x0 }
-  - { offsetInCU: 0xA2, offset: 0x1D4812, size: 0x8, addend: 0x0, symName: _VP8Cat5, symObjAddr: 0x1CDE, symBinAddr: 0x107E16, symSize: 0x0 }
-  - { offsetInCU: 0xC4, offset: 0x1D4834, size: 0x8, addend: 0x0, symName: _VP8Cat6, symObjAddr: 0x1CE3, symBinAddr: 0x107E1B, symSize: 0x0 }
-  - { offsetInCU: 0xEE, offset: 0x1D485E, size: 0x8, addend: 0x0, symName: _kAverageBytesPerMB, symObjAddr: 0x1CEE, symBinAddr: 0x107E26, symSize: 0x0 }
+  - { offsetInCU: 0x40, offset: 0x1D47B0, size: 0x8, addend: 0x0, symName: _VP8Cat3, symObjAddr: 0x1CD7, symBinAddr: 0x107E1F, symSize: 0x0 }
+  - { offsetInCU: 0x80, offset: 0x1D47F0, size: 0x8, addend: 0x0, symName: _VP8Cat4, symObjAddr: 0x1CDA, symBinAddr: 0x107E22, symSize: 0x0 }
+  - { offsetInCU: 0xA2, offset: 0x1D4812, size: 0x8, addend: 0x0, symName: _VP8Cat5, symObjAddr: 0x1CDE, symBinAddr: 0x107E26, symSize: 0x0 }
+  - { offsetInCU: 0xC4, offset: 0x1D4834, size: 0x8, addend: 0x0, symName: _VP8Cat6, symObjAddr: 0x1CE3, symBinAddr: 0x107E2B, symSize: 0x0 }
+  - { offsetInCU: 0xEE, offset: 0x1D485E, size: 0x8, addend: 0x0, symName: _kAverageBytesPerMB, symObjAddr: 0x1CEE, symBinAddr: 0x107E36, symSize: 0x0 }
   - { offsetInCU: 0x181D, offset: 0x1D5F8D, size: 0x8, addend: 0x0, symName: _VP8EncLoop, symObjAddr: 0x0, symBinAddr: 0xBE900, symSize: 0x970 }
   - { offsetInCU: 0x216A, offset: 0x1D68DA, size: 0x8, addend: 0x0, symName: _PreLoopInitialize, symObjAddr: 0x970, symBinAddr: 0xBF270, symSize: 0xAC }
   - { offsetInCU: 0x2237, offset: 0x1D69A7, size: 0x8, addend: 0x0, symName: _SetLoopParams, symObjAddr: 0x1370, symBinAddr: 0xBFC70, symSize: 0x264 }
@@ -5816,7 +5816,7 @@ relocations:
   - { offsetInCU: 0x40F8, offset: 0x1DC352, size: 0x8, addend: 0x0, symName: _HistoQueueUpdateHead.cold.1, symObjAddr: 0x2430, symBinAddr: 0xEEF1C, symSize: 0x28 }
   - { offsetInCU: 0x4110, offset: 0x1DC36A, size: 0x8, addend: 0x0, symName: _HistoQueueUpdateHead.cold.3, symObjAddr: 0x2480, symBinAddr: 0xEEF6C, symSize: 0x28 }
   - { offsetInCU: 0x26, offset: 0x1DC3D6, size: 0x8, addend: 0x0, symName: _VP8LCreateCompressedHuffmanTree, symObjAddr: 0x0, symBinAddr: 0xC2480, symSize: 0x1DC }
-  - { offsetInCU: 0x4F, offset: 0x1DC3FF, size: 0x8, addend: 0x0, symName: _kReversedBits, symObjAddr: 0xA8B, symBinAddr: 0x107E68, symSize: 0x0 }
+  - { offsetInCU: 0x4F, offset: 0x1DC3FF, size: 0x8, addend: 0x0, symName: _kReversedBits, symObjAddr: 0xA8B, symBinAddr: 0x107E78, symSize: 0x0 }
   - { offsetInCU: 0x1C3, offset: 0x1DC573, size: 0x8, addend: 0x0, symName: _VP8LCreateCompressedHuffmanTree, symObjAddr: 0x0, symBinAddr: 0xC2480, symSize: 0x1DC }
   - { offsetInCU: 0x344, offset: 0x1DC6F4, size: 0x8, addend: 0x0, symName: _VP8LCreateHuffmanTree, symObjAddr: 0x1DC, symBinAddr: 0xC265C, symSize: 0x5C4 }
   - { offsetInCU: 0x34F, offset: 0x1DC6FF, size: 0x8, addend: 0x0, symName: _VP8LCreateCompressedHuffmanTree.cold.2, symObjAddr: 0x880, symBinAddr: 0xEEFBC, symSize: 0x28 }
@@ -5923,7 +5923,7 @@ relocations:
   - { offsetInCU: 0x23FD, offset: 0x1E3A59, size: 0x8, addend: 0x0, symName: _EmitRescaledAlphaYUV.cold.2, symObjAddr: 0x15D4, symBinAddr: 0xEF5AC, symSize: 0x28 }
   - { offsetInCU: 0x2415, offset: 0x1E3A71, size: 0x8, addend: 0x0, symName: _EmitRescaledAlphaYUV.cold.1, symObjAddr: 0x15AC, symBinAddr: 0xEF584, symSize: 0x28 }
   - { offsetInCU: 0x26, offset: 0x1E3B2E, size: 0x8, addend: 0x0, symName: _VP8IteratorSetRow, symObjAddr: 0x0, symBinAddr: 0xC5948, symSize: 0x5C }
-  - { offsetInCU: 0x41, offset: 0x1E3B49, size: 0x8, addend: 0x0, symName: _VP8TopLeftI4, symObjAddr: 0xD20, symBinAddr: 0x107EF0, symSize: 0x0 }
+  - { offsetInCU: 0x41, offset: 0x1E3B49, size: 0x8, addend: 0x0, symName: _VP8TopLeftI4, symObjAddr: 0xD20, symBinAddr: 0x107F00, symSize: 0x0 }
   - { offsetInCU: 0x18F, offset: 0x1E3C97, size: 0x8, addend: 0x0, symName: _VP8IteratorSetRow, symObjAddr: 0x0, symBinAddr: 0xC5948, symSize: 0x5C }
   - { offsetInCU: 0x1E9, offset: 0x1E3CF1, size: 0x8, addend: 0x0, symName: _InitLeft, symObjAddr: 0x5C, symBinAddr: 0xC59A4, symSize: 0x58 }
   - { offsetInCU: 0x1216, offset: 0x1E4D1E, size: 0x8, addend: 0x0, symName: _VP8IteratorReset, symObjAddr: 0xB4, symBinAddr: 0xC59FC, symSize: 0x88 }
@@ -6041,10 +6041,10 @@ relocations:
   - { offsetInCU: 0x32FA, offset: 0x1E8C3D, size: 0x8, addend: 0x0, symName: _MapARGB_C, symObjAddr: 0x1548, symBinAddr: 0xC7B38, symSize: 0x4C }
   - { offsetInCU: 0x339F, offset: 0x1E8CE2, size: 0x8, addend: 0x0, symName: _MapAlpha_C, symObjAddr: 0x1594, symBinAddr: 0xC7B84, symSize: 0x3C }
   - { offsetInCU: 0x26, offset: 0x1E8DDF, size: 0x8, addend: 0x0, symName: _VP8LBitEntropyInit, symObjAddr: 0x0, symBinAddr: 0xC7BC0, symSize: 0x10 }
-  - { offsetInCU: 0x40, offset: 0x1E8DF9, size: 0x8, addend: 0x0, symName: _kLog2Table, symObjAddr: 0x2510, symBinAddr: 0x107F40, symSize: 0x0 }
-  - { offsetInCU: 0x76, offset: 0x1E8E2F, size: 0x8, addend: 0x0, symName: _kSLog2Table, symObjAddr: 0x2910, symBinAddr: 0x108340, symSize: 0x0 }
-  - { offsetInCU: 0x8C, offset: 0x1E8E45, size: 0x8, addend: 0x0, symName: _kPrefixEncodeCode, symObjAddr: 0x2D10, symBinAddr: 0x108740, symSize: 0x0 }
-  - { offsetInCU: 0xEF, offset: 0x1E8EA8, size: 0x8, addend: 0x0, symName: _kPrefixEncodeExtraBitsValue, symObjAddr: 0x3110, symBinAddr: 0x108B40, symSize: 0x0 }
+  - { offsetInCU: 0x40, offset: 0x1E8DF9, size: 0x8, addend: 0x0, symName: _kLog2Table, symObjAddr: 0x2510, symBinAddr: 0x107F50, symSize: 0x0 }
+  - { offsetInCU: 0x76, offset: 0x1E8E2F, size: 0x8, addend: 0x0, symName: _kSLog2Table, symObjAddr: 0x2910, symBinAddr: 0x108350, symSize: 0x0 }
+  - { offsetInCU: 0x8C, offset: 0x1E8E45, size: 0x8, addend: 0x0, symName: _kPrefixEncodeCode, symObjAddr: 0x2D10, symBinAddr: 0x108750, symSize: 0x0 }
+  - { offsetInCU: 0xEF, offset: 0x1E8EA8, size: 0x8, addend: 0x0, symName: _kPrefixEncodeExtraBitsValue, symObjAddr: 0x3110, symBinAddr: 0x108B50, symSize: 0x0 }
   - { offsetInCU: 0x124, offset: 0x1E8EDD, size: 0x8, addend: 0x0, symName: _VP8LEncDspInit, symObjAddr: 0x754, symBinAddr: 0xC8314, symSize: 0x4C8 }
   - { offsetInCU: 0x148, offset: 0x1E8F01, size: 0x8, addend: 0x0, symName: _VP8LEncDspInit.VP8LEncDspInit_body_last_cpuinfo_used, symObjAddr: 0x3A10, symBinAddr: 0x1700C8, symSize: 0x0 }
   - { offsetInCU: 0x404, offset: 0x1E91BD, size: 0x8, addend: 0x0, symName: _FastLog2Slow_C, symObjAddr: 0xC1C, symBinAddr: 0xC87DC, symSize: 0x98 }
@@ -6257,7 +6257,7 @@ relocations:
   - { offsetInCU: 0x2686, offset: 0x1F1ADE, size: 0x8, addend: 0x0, symName: _WebPMuxAssemble.cold.4, symObjAddr: 0x1240, symBinAddr: 0xF0588, symSize: 0x28 }
   - { offsetInCU: 0x269E, offset: 0x1F1AF6, size: 0x8, addend: 0x0, symName: _OUTLINED_FUNCTION_0, symObjAddr: 0x13C8, symBinAddr: 0xCB498, symSize: 0x8 }
   - { offsetInCU: 0x26, offset: 0x1F1C2D, size: 0x8, addend: 0x0, symName: _WebPGetMuxVersion, symObjAddr: 0x0, symBinAddr: 0xCB4A0, symSize: 0xC }
-  - { offsetInCU: 0x40, offset: 0x1F1C47, size: 0x8, addend: 0x0, symName: _kChunks, symObjAddr: 0x1044, symBinAddr: 0x108D80, symSize: 0x0 }
+  - { offsetInCU: 0x40, offset: 0x1F1C47, size: 0x8, addend: 0x0, symName: _kChunks, symObjAddr: 0x1044, symBinAddr: 0x108D90, symSize: 0x0 }
   - { offsetInCU: 0x345, offset: 0x1F1F4C, size: 0x8, addend: 0x0, symName: _WebPGetMuxVersion, symObjAddr: 0x0, symBinAddr: 0xCB4A0, symSize: 0xC }
   - { offsetInCU: 0x35F, offset: 0x1F1F66, size: 0x8, addend: 0x0, symName: _ChunkInit, symObjAddr: 0xC, symBinAddr: 0xCB4AC, symSize: 0x24 }
   - { offsetInCU: 0x381, offset: 0x1F1F88, size: 0x8, addend: 0x0, symName: _ChunkRelease, symObjAddr: 0x30, symBinAddr: 0xCB4D0, symSize: 0x44 }
@@ -6368,7 +6368,7 @@ relocations:
   - { offsetInCU: 0x10A, offset: 0x1F6C7E, size: 0x8, addend: 0x0, symName: _kGammaTablesOk, symObjAddr: 0xFC5C, symBinAddr: 0x1753C4, symSize: 0x0 }
   - { offsetInCU: 0x125, offset: 0x1F6C99, size: 0x8, addend: 0x0, symName: _kGammaToLinearTab, symObjAddr: 0xFC60, symBinAddr: 0x1753C8, symSize: 0x0 }
   - { offsetInCU: 0x15A, offset: 0x1F6CCE, size: 0x8, addend: 0x0, symName: _kLinearToGammaTab, symObjAddr: 0xFE60, symBinAddr: 0x1755C8, symSize: 0x0 }
-  - { offsetInCU: 0x1A4, offset: 0x1F6D18, size: 0x8, addend: 0x0, symName: _kInvAlpha, symObjAddr: 0x2058, symBinAddr: 0x108E48, symSize: 0x0 }
+  - { offsetInCU: 0x1A4, offset: 0x1F6D18, size: 0x8, addend: 0x0, symName: _kInvAlpha, symObjAddr: 0x2058, symBinAddr: 0x108E58, symSize: 0x0 }
   - { offsetInCU: 0x328, offset: 0x1F6E9C, size: 0x8, addend: 0x0, symName: _WebPPictureHasTransparency, symObjAddr: 0x0, symBinAddr: 0xCD3B0, symSize: 0xE8 }
   - { offsetInCU: 0x41A, offset: 0x1F6F8E, size: 0x8, addend: 0x0, symName: _WebPPictureARGBToYUVADithered, symObjAddr: 0xE8, symBinAddr: 0xCD498, symSize: 0x8 }
   - { offsetInCU: 0x493, offset: 0x1F7007, size: 0x8, addend: 0x0, symName: _PictureARGBToYUVA, symObjAddr: 0xF0, symBinAddr: 0xCD4A0, symSize: 0x58 }
@@ -6475,23 +6475,23 @@ relocations:
   - { offsetInCU: 0x2827, offset: 0x2004AA, size: 0x8, addend: 0x0, symName: _MaxDiffBetweenPixels, symObjAddr: 0x14AC, symBinAddr: 0xD1BC4, symSize: 0x64 }
   - { offsetInCU: 0x2A52, offset: 0x2006D5, size: 0x8, addend: 0x0, symName: _NearLosslessComponent, symObjAddr: 0x1510, symBinAddr: 0xD1C28, symSize: 0x64 }
   - { offsetInCU: 0x26, offset: 0x2007C6, size: 0x8, addend: 0x0, symName: _VP8ParseQuant, symObjAddr: 0x0, symBinAddr: 0xD1E60, symSize: 0x230 }
-  - { offsetInCU: 0x40, offset: 0x2007E0, size: 0x8, addend: 0x0, symName: _kDcTable, symObjAddr: 0x230, symBinAddr: 0x109E78, symSize: 0x0 }
-  - { offsetInCU: 0x80, offset: 0x200820, size: 0x8, addend: 0x0, symName: _kAcTable, symObjAddr: 0x2B0, symBinAddr: 0x109EF8, symSize: 0x0 }
+  - { offsetInCU: 0x40, offset: 0x2007E0, size: 0x8, addend: 0x0, symName: _kDcTable, symObjAddr: 0x230, symBinAddr: 0x109E88, symSize: 0x0 }
+  - { offsetInCU: 0x80, offset: 0x200820, size: 0x8, addend: 0x0, symName: _kAcTable, symObjAddr: 0x2B0, symBinAddr: 0x109F08, symSize: 0x0 }
   - { offsetInCU: 0x155, offset: 0x2008F5, size: 0x8, addend: 0x0, symName: _VP8ParseQuant, symObjAddr: 0x0, symBinAddr: 0xD1E60, symSize: 0x230 }
   - { offsetInCU: 0x26, offset: 0x2016EC, size: 0x8, addend: 0x0, symName: _VP8SetSegmentParams, symObjAddr: 0x0, symBinAddr: 0xD2090, symSize: 0x724 }
-  - { offsetInCU: 0x4F, offset: 0x201715, size: 0x8, addend: 0x0, symName: _VP8I16ModeOffsets, symObjAddr: 0x2694, symBinAddr: 0x10A030, symSize: 0x0 }
-  - { offsetInCU: 0x89, offset: 0x20174F, size: 0x8, addend: 0x0, symName: _VP8UVModeOffsets, symObjAddr: 0x269C, symBinAddr: 0x10A038, symSize: 0x0 }
-  - { offsetInCU: 0xA0, offset: 0x201766, size: 0x8, addend: 0x0, symName: _VP8I4ModeOffsets, symObjAddr: 0x26A4, symBinAddr: 0x10A040, symSize: 0x0 }
-  - { offsetInCU: 0xC3, offset: 0x201789, size: 0x8, addend: 0x0, symName: _VP8Scan, symObjAddr: 0x26B8, symBinAddr: 0x10A054, symSize: 0x0 }
-  - { offsetInCU: 0xE5, offset: 0x2017AB, size: 0x8, addend: 0x0, symName: _kAcTable, symObjAddr: 0x26D8, symBinAddr: 0x10A074, symSize: 0x0 }
-  - { offsetInCU: 0x107, offset: 0x2017CD, size: 0x8, addend: 0x0, symName: _kDcTable, symObjAddr: 0x27D8, symBinAddr: 0x10A174, symSize: 0x0 }
-  - { offsetInCU: 0x140, offset: 0x201806, size: 0x8, addend: 0x0, symName: _kAcTable2, symObjAddr: 0x2858, symBinAddr: 0x10A1F4, symSize: 0x0 }
-  - { offsetInCU: 0x156, offset: 0x20181C, size: 0x8, addend: 0x0, symName: _kBiasMatrices, symObjAddr: 0x2958, symBinAddr: 0x10A2F4, symSize: 0x0 }
-  - { offsetInCU: 0x17E, offset: 0x201844, size: 0x8, addend: 0x0, symName: _kFreqSharpening, symObjAddr: 0x295E, symBinAddr: 0x10A2FA, symSize: 0x0 }
-  - { offsetInCU: 0x1A0, offset: 0x201866, size: 0x8, addend: 0x0, symName: _kZigzag, symObjAddr: 0x298E, symBinAddr: 0x10A32A, symSize: 0x0 }
-  - { offsetInCU: 0x1B7, offset: 0x20187D, size: 0x8, addend: 0x0, symName: _kWeightTrellis, symObjAddr: 0x299E, symBinAddr: 0x10A33A, symSize: 0x0 }
-  - { offsetInCU: 0x1CE, offset: 0x201894, size: 0x8, addend: 0x0, symName: _kWeightY, symObjAddr: 0x296E, symBinAddr: 0x10A30A, symSize: 0x0 }
-  - { offsetInCU: 0x1E5, offset: 0x2018AB, size: 0x8, addend: 0x0, symName: _VP8ScanUV, symObjAddr: 0x29BE, symBinAddr: 0x10A35A, symSize: 0x0 }
+  - { offsetInCU: 0x4F, offset: 0x201715, size: 0x8, addend: 0x0, symName: _VP8I16ModeOffsets, symObjAddr: 0x2694, symBinAddr: 0x10A040, symSize: 0x0 }
+  - { offsetInCU: 0x89, offset: 0x20174F, size: 0x8, addend: 0x0, symName: _VP8UVModeOffsets, symObjAddr: 0x269C, symBinAddr: 0x10A048, symSize: 0x0 }
+  - { offsetInCU: 0xA0, offset: 0x201766, size: 0x8, addend: 0x0, symName: _VP8I4ModeOffsets, symObjAddr: 0x26A4, symBinAddr: 0x10A050, symSize: 0x0 }
+  - { offsetInCU: 0xC3, offset: 0x201789, size: 0x8, addend: 0x0, symName: _VP8Scan, symObjAddr: 0x26B8, symBinAddr: 0x10A064, symSize: 0x0 }
+  - { offsetInCU: 0xE5, offset: 0x2017AB, size: 0x8, addend: 0x0, symName: _kAcTable, symObjAddr: 0x26D8, symBinAddr: 0x10A084, symSize: 0x0 }
+  - { offsetInCU: 0x107, offset: 0x2017CD, size: 0x8, addend: 0x0, symName: _kDcTable, symObjAddr: 0x27D8, symBinAddr: 0x10A184, symSize: 0x0 }
+  - { offsetInCU: 0x140, offset: 0x201806, size: 0x8, addend: 0x0, symName: _kAcTable2, symObjAddr: 0x2858, symBinAddr: 0x10A204, symSize: 0x0 }
+  - { offsetInCU: 0x156, offset: 0x20181C, size: 0x8, addend: 0x0, symName: _kBiasMatrices, symObjAddr: 0x2958, symBinAddr: 0x10A304, symSize: 0x0 }
+  - { offsetInCU: 0x17E, offset: 0x201844, size: 0x8, addend: 0x0, symName: _kFreqSharpening, symObjAddr: 0x295E, symBinAddr: 0x10A30A, symSize: 0x0 }
+  - { offsetInCU: 0x1A0, offset: 0x201866, size: 0x8, addend: 0x0, symName: _kZigzag, symObjAddr: 0x298E, symBinAddr: 0x10A33A, symSize: 0x0 }
+  - { offsetInCU: 0x1B7, offset: 0x20187D, size: 0x8, addend: 0x0, symName: _kWeightTrellis, symObjAddr: 0x299E, symBinAddr: 0x10A34A, symSize: 0x0 }
+  - { offsetInCU: 0x1CE, offset: 0x201894, size: 0x8, addend: 0x0, symName: _kWeightY, symObjAddr: 0x296E, symBinAddr: 0x10A31A, symSize: 0x0 }
+  - { offsetInCU: 0x1E5, offset: 0x2018AB, size: 0x8, addend: 0x0, symName: _VP8ScanUV, symObjAddr: 0x29BE, symBinAddr: 0x10A36A, symSize: 0x0 }
   - { offsetInCU: 0x1400, offset: 0x202AC6, size: 0x8, addend: 0x0, symName: _VP8SetSegmentParams, symObjAddr: 0x0, symBinAddr: 0xD2090, symSize: 0x724 }
   - { offsetInCU: 0x1B45, offset: 0x20320B, size: 0x8, addend: 0x0, symName: _ExpandMatrix, symObjAddr: 0x17BC, symBinAddr: 0xD384C, symSize: 0xEC }
   - { offsetInCU: 0x1BC9, offset: 0x20328F, size: 0x8, addend: 0x0, symName: _VP8SetSegmentParams.cold.1, symObjAddr: 0x24E0, symBinAddr: 0xF114C, symSize: 0x28 }
@@ -6515,7 +6515,7 @@ relocations:
   - { offsetInCU: 0x2E6, offset: 0x206ABF, size: 0x8, addend: 0x0, symName: _QuantizeLevels.cold.1, symObjAddr: 0x49C, symBinAddr: 0xF11EC, symSize: 0x28 }
   - { offsetInCU: 0x2FE, offset: 0x206AD7, size: 0x8, addend: 0x0, symName: _QuantizeLevels.cold.2, symObjAddr: 0x4C4, symBinAddr: 0xF1214, symSize: 0x28 }
   - { offsetInCU: 0x26, offset: 0x206B78, size: 0x8, addend: 0x0, symName: _VP8InitRandom, symObjAddr: 0x0, symBinAddr: 0xD4F18, symSize: 0x90 }
-  - { offsetInCU: 0x40, offset: 0x206B92, size: 0x8, addend: 0x0, symName: _kRandomTable, symObjAddr: 0x98, symBinAddr: 0x10A388, symSize: 0x0 }
+  - { offsetInCU: 0x40, offset: 0x206B92, size: 0x8, addend: 0x0, symName: _kRandomTable, symObjAddr: 0x98, symBinAddr: 0x10A398, symSize: 0x0 }
   - { offsetInCU: 0x90, offset: 0x206BE2, size: 0x8, addend: 0x0, symName: _VP8InitRandom, symObjAddr: 0x0, symBinAddr: 0xD4F18, symSize: 0x90 }
   - { offsetInCU: 0x26, offset: 0x206CA0, size: 0x8, addend: 0x0, symName: _WebPRescalerImportRowExpand_C, symObjAddr: 0x0, symBinAddr: 0xD4FA8, symSize: 0x104 }
   - { offsetInCU: 0x42, offset: 0x206CBC, size: 0x8, addend: 0x0, symName: _WebPRescalerDspInit, symObjAddr: 0x53C, symBinAddr: 0xD54E4, symSize: 0xA0 }
@@ -6600,11 +6600,11 @@ relocations:
   - { offsetInCU: 0x40, offset: 0x20AA2D, size: 0x8, addend: 0x0, symName: _SharpYuvGetCPUInfo, symObjAddr: 0x10, symBinAddr: 0x1700E8, symSize: 0x0 }
   - { offsetInCU: 0xD3, offset: 0x20AAC0, size: 0x8, addend: 0x0, symName: _armCPUInfo, symObjAddr: 0x0, symBinAddr: 0xD6DD0, symSize: 0xC }
   - { offsetInCU: 0x26, offset: 0x20AB11, size: 0x8, addend: 0x0, symName: _SharpYuvComputeConversionMatrix, symObjAddr: 0x0, symBinAddr: 0xD6DDC, symSize: 0x15C }
-  - { offsetInCU: 0x4E, offset: 0x20AB39, size: 0x8, addend: 0x0, symName: _kWebpMatrix, symObjAddr: 0x200, symBinAddr: 0x10A470, symSize: 0x0 }
-  - { offsetInCU: 0xB0, offset: 0x20AB9B, size: 0x8, addend: 0x0, symName: _kRec601LimitedMatrix, symObjAddr: 0x230, symBinAddr: 0x10A4A0, symSize: 0x0 }
-  - { offsetInCU: 0xC6, offset: 0x20ABB1, size: 0x8, addend: 0x0, symName: _kRec601FullMatrix, symObjAddr: 0x260, symBinAddr: 0x10A4D0, symSize: 0x0 }
-  - { offsetInCU: 0xDC, offset: 0x20ABC7, size: 0x8, addend: 0x0, symName: _kRec709LimitedMatrix, symObjAddr: 0x290, symBinAddr: 0x10A500, symSize: 0x0 }
-  - { offsetInCU: 0xF2, offset: 0x20ABDD, size: 0x8, addend: 0x0, symName: _kRec709FullMatrix, symObjAddr: 0x2C0, symBinAddr: 0x10A530, symSize: 0x0 }
+  - { offsetInCU: 0x4E, offset: 0x20AB39, size: 0x8, addend: 0x0, symName: _kWebpMatrix, symObjAddr: 0x200, symBinAddr: 0x10A480, symSize: 0x0 }
+  - { offsetInCU: 0xB0, offset: 0x20AB9B, size: 0x8, addend: 0x0, symName: _kRec601LimitedMatrix, symObjAddr: 0x230, symBinAddr: 0x10A4B0, symSize: 0x0 }
+  - { offsetInCU: 0xC6, offset: 0x20ABB1, size: 0x8, addend: 0x0, symName: _kRec601FullMatrix, symObjAddr: 0x260, symBinAddr: 0x10A4E0, symSize: 0x0 }
+  - { offsetInCU: 0xDC, offset: 0x20ABC7, size: 0x8, addend: 0x0, symName: _kRec709LimitedMatrix, symObjAddr: 0x290, symBinAddr: 0x10A510, symSize: 0x0 }
+  - { offsetInCU: 0xF2, offset: 0x20ABDD, size: 0x8, addend: 0x0, symName: _kRec709FullMatrix, symObjAddr: 0x2C0, symBinAddr: 0x10A540, symSize: 0x0 }
   - { offsetInCU: 0x17B, offset: 0x20AC66, size: 0x8, addend: 0x0, symName: _SharpYuvComputeConversionMatrix, symObjAddr: 0x0, symBinAddr: 0xD6DDC, symSize: 0x15C }
   - { offsetInCU: 0x2F1, offset: 0x20ADDC, size: 0x8, addend: 0x0, symName: _SharpYuvGetConversionMatrix, symObjAddr: 0x15C, symBinAddr: 0xD6F38, symSize: 0x20 }
   - { offsetInCU: 0x2FC, offset: 0x20ADE7, size: 0x8, addend: 0x0, symName: _SharpYuvComputeConversionMatrix.cold.1, symObjAddr: 0x17C, symBinAddr: 0xF17B4, symSize: 0x28 }
@@ -6636,7 +6636,7 @@ relocations:
   - { offsetInCU: 0x120, offset: 0x20C44C, size: 0x8, addend: 0x0, symName: _VP8SSIMGet, symObjAddr: 0x2DA8, symBinAddr: 0x1777D8, symSize: 0x0 }
   - { offsetInCU: 0x183, offset: 0x20C4AF, size: 0x8, addend: 0x0, symName: _VP8SSIMGetClipped, symObjAddr: 0x2DB0, symBinAddr: 0x1777E0, symSize: 0x0 }
   - { offsetInCU: 0x1D7, offset: 0x20C503, size: 0x8, addend: 0x0, symName: _VP8AccumulateSSE, symObjAddr: 0x2DB8, symBinAddr: 0x1777E8, symSize: 0x0 }
-  - { offsetInCU: 0x220, offset: 0x20C54C, size: 0x8, addend: 0x0, symName: _kWeight, symObjAddr: 0x4B8, symBinAddr: 0x10A5A0, symSize: 0x0 }
+  - { offsetInCU: 0x220, offset: 0x20C54C, size: 0x8, addend: 0x0, symName: _kWeight, symObjAddr: 0x4B8, symBinAddr: 0x10A5B0, symSize: 0x0 }
   - { offsetInCU: 0x3C9, offset: 0x20C6F5, size: 0x8, addend: 0x0, symName: _VP8SSIMFromStats, symObjAddr: 0x0, symBinAddr: 0xD7658, symSize: 0x98 }
   - { offsetInCU: 0x49E, offset: 0x20C7CA, size: 0x8, addend: 0x0, symName: _VP8SSIMFromStatsClipped, symObjAddr: 0x98, symBinAddr: 0xD76F0, symSize: 0xA4 }
   - { offsetInCU: 0x4A9, offset: 0x20C7D5, size: 0x8, addend: 0x0, symName: _VP8SSIMFromStats.cold.1, symObjAddr: 0x3EC, symBinAddr: 0xF1854, symSize: 0x28 }
@@ -6703,10 +6703,10 @@ relocations:
   - { offsetInCU: 0x14DE, offset: 0x2107BA, size: 0x8, addend: 0x0, symName: _VP8EstimateTokenSize.cold.1, symObjAddr: 0xF90, symBinAddr: 0xF1C98, symSize: 0x28 }
   - { offsetInCU: 0x151F, offset: 0x2107FB, size: 0x8, addend: 0x0, symName: _OUTLINED_FUNCTION_0, symObjAddr: 0xFB8, symBinAddr: 0xD9134, symSize: 0x8 }
   - { offsetInCU: 0x26, offset: 0x210962, size: 0x8, addend: 0x0, symName: _VP8ResetProba, symObjAddr: 0x0, symBinAddr: 0xD913C, symSize: 0x10 }
-  - { offsetInCU: 0x40, offset: 0x21097C, size: 0x8, addend: 0x0, symName: _kBModesProba, symObjAddr: 0x1C85, symBinAddr: 0x10AE19, symSize: 0x0 }
-  - { offsetInCU: 0x99, offset: 0x2109D5, size: 0x8, addend: 0x0, symName: _CoeffsUpdateProba, symObjAddr: 0x1434, symBinAddr: 0x10A5C8, symSize: 0x0 }
-  - { offsetInCU: 0xCD, offset: 0x210A09, size: 0x8, addend: 0x0, symName: _CoeffsProba0, symObjAddr: 0x1854, symBinAddr: 0x10A9E8, symSize: 0x0 }
-  - { offsetInCU: 0xE4, offset: 0x210A20, size: 0x8, addend: 0x0, symName: _kBands, symObjAddr: 0x1C74, symBinAddr: 0x10AE08, symSize: 0x0 }
+  - { offsetInCU: 0x40, offset: 0x21097C, size: 0x8, addend: 0x0, symName: _kBModesProba, symObjAddr: 0x1C85, symBinAddr: 0x10AE29, symSize: 0x0 }
+  - { offsetInCU: 0x99, offset: 0x2109D5, size: 0x8, addend: 0x0, symName: _CoeffsUpdateProba, symObjAddr: 0x1434, symBinAddr: 0x10A5D8, symSize: 0x0 }
+  - { offsetInCU: 0xCD, offset: 0x210A09, size: 0x8, addend: 0x0, symName: _CoeffsProba0, symObjAddr: 0x1854, symBinAddr: 0x10A9F8, symSize: 0x0 }
+  - { offsetInCU: 0xE4, offset: 0x210A20, size: 0x8, addend: 0x0, symName: _kBands, symObjAddr: 0x1C74, symBinAddr: 0x10AE18, symSize: 0x0 }
   - { offsetInCU: 0x1B0, offset: 0x210AEC, size: 0x8, addend: 0x0, symName: _VP8ResetProba, symObjAddr: 0x0, symBinAddr: 0xD913C, symSize: 0x10 }
   - { offsetInCU: 0xE13, offset: 0x21174F, size: 0x8, addend: 0x0, symName: _VP8ParseIntraModeRow, symObjAddr: 0x10, symBinAddr: 0xD914C, symSize: 0xF14 }
   - { offsetInCU: 0x239C, offset: 0x212CD8, size: 0x8, addend: 0x0, symName: _VP8ParseProba, symObjAddr: 0xF24, symBinAddr: 0xDA060, symSize: 0x214 }
@@ -6735,9 +6735,9 @@ relocations:
   - { offsetInCU: 0x2CFD, offset: 0x213639, size: 0x8, addend: 0x0, symName: _VP8ParseProba.cold.1, symObjAddr: 0x1408, symBinAddr: 0xF1F90, symSize: 0x24 }
   - { offsetInCU: 0x2D42, offset: 0x21367E, size: 0x8, addend: 0x0, symName: _OUTLINED_FUNCTION_0, symObjAddr: 0x142C, symBinAddr: 0xDA274, symSize: 0x8 }
   - { offsetInCU: 0x26, offset: 0x2136C6, size: 0x8, addend: 0x0, symName: _VP8DefaultProbas, symObjAddr: 0x0, symBinAddr: 0xDA27C, symSize: 0x48 }
-  - { offsetInCU: 0x40, offset: 0x2136E0, size: 0x8, addend: 0x0, symName: _VP8CoeffsProba0, symObjAddr: 0x498, symBinAddr: 0x10B1A8, symSize: 0x0 }
-  - { offsetInCU: 0x93, offset: 0x213733, size: 0x8, addend: 0x0, symName: _VP8CoeffsUpdateProba, symObjAddr: 0xC3C, symBinAddr: 0x10B94C, symSize: 0x0 }
-  - { offsetInCU: 0xA9, offset: 0x213749, size: 0x8, addend: 0x0, symName: _kBModesProba, symObjAddr: 0x8B8, symBinAddr: 0x10B5C8, symSize: 0x0 }
+  - { offsetInCU: 0x40, offset: 0x2136E0, size: 0x8, addend: 0x0, symName: _VP8CoeffsProba0, symObjAddr: 0x498, symBinAddr: 0x10B1B8, symSize: 0x0 }
+  - { offsetInCU: 0x93, offset: 0x213733, size: 0x8, addend: 0x0, symName: _VP8CoeffsUpdateProba, symObjAddr: 0xC3C, symBinAddr: 0x10B95C, symSize: 0x0 }
+  - { offsetInCU: 0xA9, offset: 0x213749, size: 0x8, addend: 0x0, symName: _kBModesProba, symObjAddr: 0x8B8, symBinAddr: 0x10B5D8, symSize: 0x0 }
   - { offsetInCU: 0x1D8, offset: 0x213878, size: 0x8, addend: 0x0, symName: _VP8DefaultProbas, symObjAddr: 0x0, symBinAddr: 0xDA27C, symSize: 0x48 }
   - { offsetInCU: 0x372, offset: 0x213A12, size: 0x8, addend: 0x0, symName: _VP8CodeIntraModes, symObjAddr: 0x48, symBinAddr: 0xDA2C4, symSize: 0x2EC }
   - { offsetInCU: 0x1647, offset: 0x214CE7, size: 0x8, addend: 0x0, symName: _VP8WriteProbas, symObjAddr: 0x334, symBinAddr: 0xDA5B0, symSize: 0x158 }
@@ -6810,11 +6810,11 @@ relocations:
   - { offsetInCU: 0x64A, offset: 0x2229E6, size: 0x8, addend: 0x0, symName: _WebPGetColorPalette.cold.1, symObjAddr: 0x444, symBinAddr: 0xF239C, symSize: 0x28 }
   - { offsetInCU: 0x26, offset: 0x222DE5, size: 0x8, addend: 0x0, symName: _WebPGetDecoderVersion, symObjAddr: 0x0, symBinAddr: 0xDEBE4, symSize: 0xC }
   - { offsetInCU: 0x62, offset: 0x222E21, size: 0x8, addend: 0x0, symName: _kCat3456, symObjAddr: 0x2430, symBinAddr: 0x141FC8, symSize: 0x0 }
-  - { offsetInCU: 0xA6, offset: 0x222E65, size: 0x8, addend: 0x0, symName: _kCat3, symObjAddr: 0x2410, symBinAddr: 0x10BD98, symSize: 0x0 }
-  - { offsetInCU: 0xC9, offset: 0x222E88, size: 0x8, addend: 0x0, symName: _kCat4, symObjAddr: 0x2414, symBinAddr: 0x10BD9C, symSize: 0x0 }
-  - { offsetInCU: 0xEC, offset: 0x222EAB, size: 0x8, addend: 0x0, symName: _kCat5, symObjAddr: 0x2419, symBinAddr: 0x10BDA1, symSize: 0x0 }
-  - { offsetInCU: 0x10F, offset: 0x222ECE, size: 0x8, addend: 0x0, symName: _kCat6, symObjAddr: 0x241F, symBinAddr: 0x10BDA7, symSize: 0x0 }
-  - { offsetInCU: 0x132, offset: 0x222EF1, size: 0x8, addend: 0x0, symName: _kZigzag, symObjAddr: 0x2400, symBinAddr: 0x10BD88, symSize: 0x0 }
+  - { offsetInCU: 0xA6, offset: 0x222E65, size: 0x8, addend: 0x0, symName: _kCat3, symObjAddr: 0x2410, symBinAddr: 0x10BDA8, symSize: 0x0 }
+  - { offsetInCU: 0xC9, offset: 0x222E88, size: 0x8, addend: 0x0, symName: _kCat4, symObjAddr: 0x2414, symBinAddr: 0x10BDAC, symSize: 0x0 }
+  - { offsetInCU: 0xEC, offset: 0x222EAB, size: 0x8, addend: 0x0, symName: _kCat5, symObjAddr: 0x2419, symBinAddr: 0x10BDB1, symSize: 0x0 }
+  - { offsetInCU: 0x10F, offset: 0x222ECE, size: 0x8, addend: 0x0, symName: _kCat6, symObjAddr: 0x241F, symBinAddr: 0x10BDB7, symSize: 0x0 }
+  - { offsetInCU: 0x132, offset: 0x222EF1, size: 0x8, addend: 0x0, symName: _kZigzag, symObjAddr: 0x2400, symBinAddr: 0x10BD98, symSize: 0x0 }
   - { offsetInCU: 0x154, offset: 0x222F13, size: 0x8, addend: 0x0, symName: _GetCoeffs, symObjAddr: 0x111F8, symBinAddr: 0x176E60, symSize: 0x0 }
   - { offsetInCU: 0x14D0, offset: 0x22428F, size: 0x8, addend: 0x0, symName: _WebPGetDecoderVersion, symObjAddr: 0x0, symBinAddr: 0xDEBE4, symSize: 0xC }
   - { offsetInCU: 0x14EA, offset: 0x2242A9, size: 0x8, addend: 0x0, symName: _VP8InitIoInternal, symObjAddr: 0xC, symBinAddr: 0xDEBF0, symSize: 0x44 }
@@ -6864,12 +6864,12 @@ relocations:
   - { offsetInCU: 0x4701, offset: 0x2274C0, size: 0x8, addend: 0x0, symName: _GetLargeValue.cold.8, symObjAddr: 0x2114, symBinAddr: 0xF2630, symSize: 0x24 }
   - { offsetInCU: 0x4746, offset: 0x227505, size: 0x8, addend: 0x0, symName: _OUTLINED_FUNCTION_0, symObjAddr: 0x21A4, symBinAddr: 0xE0A8C, symSize: 0x8 }
   - { offsetInCU: 0x26, offset: 0x22757F, size: 0x8, addend: 0x0, symName: _VP8LCheckSignature, symObjAddr: 0x0, symBinAddr: 0xE0A94, symSize: 0x2C }
-  - { offsetInCU: 0x4E, offset: 0x2275A7, size: 0x8, addend: 0x0, symName: _kTableSize, symObjAddr: 0x3E0E, symBinAddr: 0x10BDC0, symSize: 0x0 }
-  - { offsetInCU: 0x87, offset: 0x2275E0, size: 0x8, addend: 0x0, symName: _kAlphabetSize, symObjAddr: 0x3E26, symBinAddr: 0x10BDD8, symSize: 0x0 }
-  - { offsetInCU: 0xA9, offset: 0x227602, size: 0x8, addend: 0x0, symName: _kCodeLengthCodeOrder, symObjAddr: 0x3E30, symBinAddr: 0x10BDE2, symSize: 0x0 }
-  - { offsetInCU: 0x108, offset: 0x227661, size: 0x8, addend: 0x0, symName: _kCodeLengthExtraBits, symObjAddr: 0x3E43, symBinAddr: 0x10BDF5, symSize: 0x0 }
-  - { offsetInCU: 0x12A, offset: 0x227683, size: 0x8, addend: 0x0, symName: _kCodeLengthRepeatOffsets, symObjAddr: 0x3E46, symBinAddr: 0x10BDF8, symSize: 0x0 }
-  - { offsetInCU: 0x140, offset: 0x227699, size: 0x8, addend: 0x0, symName: _kCodeToPlane, symObjAddr: 0x3E49, symBinAddr: 0x10BDFB, symSize: 0x0 }
+  - { offsetInCU: 0x4E, offset: 0x2275A7, size: 0x8, addend: 0x0, symName: _kTableSize, symObjAddr: 0x3E0E, symBinAddr: 0x10BDD0, symSize: 0x0 }
+  - { offsetInCU: 0x87, offset: 0x2275E0, size: 0x8, addend: 0x0, symName: _kAlphabetSize, symObjAddr: 0x3E26, symBinAddr: 0x10BDE8, symSize: 0x0 }
+  - { offsetInCU: 0xA9, offset: 0x227602, size: 0x8, addend: 0x0, symName: _kCodeLengthCodeOrder, symObjAddr: 0x3E30, symBinAddr: 0x10BDF2, symSize: 0x0 }
+  - { offsetInCU: 0x108, offset: 0x227661, size: 0x8, addend: 0x0, symName: _kCodeLengthExtraBits, symObjAddr: 0x3E43, symBinAddr: 0x10BE05, symSize: 0x0 }
+  - { offsetInCU: 0x12A, offset: 0x227683, size: 0x8, addend: 0x0, symName: _kCodeLengthRepeatOffsets, symObjAddr: 0x3E46, symBinAddr: 0x10BE08, symSize: 0x0 }
+  - { offsetInCU: 0x140, offset: 0x227699, size: 0x8, addend: 0x0, symName: _kCodeToPlane, symObjAddr: 0x3E49, symBinAddr: 0x10BE0B, symSize: 0x0 }
   - { offsetInCU: 0xE27, offset: 0x228380, size: 0x8, addend: 0x0, symName: _VP8LCheckSignature, symObjAddr: 0x0, symBinAddr: 0xE0A94, symSize: 0x2C }
   - { offsetInCU: 0xE79, offset: 0x2283D2, size: 0x8, addend: 0x0, symName: _VP8LGetInfo, symObjAddr: 0x2C, symBinAddr: 0xE0AC0, symSize: 0xB4 }
   - { offsetInCU: 0xFBB, offset: 0x228514, size: 0x8, addend: 0x0, symName: _ReadImageInfo, symObjAddr: 0xE0, symBinAddr: 0xE0B74, symSize: 0x9C }
@@ -6976,7 +6976,7 @@ relocations:
   - { offsetInCU: 0x6287, offset: 0x22D7E0, size: 0x8, addend: 0x0, symName: _OUTLINED_FUNCTION_1, symObjAddr: 0x36F8, symBinAddr: 0xE3810, symSize: 0x8 }
   - { offsetInCU: 0x26, offset: 0x22D888, size: 0x8, addend: 0x0, symName: _VP8LEncodeStream, symObjAddr: 0x0, symBinAddr: 0xE3818, symSize: 0xB7C }
   - { offsetInCU: 0x59, offset: 0x22D8BB, size: 0x8, addend: 0x0, symName: _StoreImageToBitMask, symObjAddr: 0x36B4, symBinAddr: 0xE6ECC, symSize: 0x2F8 }
-  - { offsetInCU: 0x81, offset: 0x22D8E3, size: 0x8, addend: 0x0, symName: _StoreImageToBitMask.order, symObjAddr: 0x41F1, symBinAddr: 0x10BE91, symSize: 0x0 }
+  - { offsetInCU: 0x81, offset: 0x22D8E3, size: 0x8, addend: 0x0, symName: _StoreImageToBitMask.order, symObjAddr: 0x41F1, symBinAddr: 0x10BEA1, symSize: 0x0 }
   - { offsetInCU: 0x6CF, offset: 0x22DF31, size: 0x8, addend: 0x0, symName: _ApplyPaletteHash0, symObjAddr: 0x39AC, symBinAddr: 0xE71C4, symSize: 0x8 }
   - { offsetInCU: 0x16A1, offset: 0x22EF03, size: 0x8, addend: 0x0, symName: _VP8LEncodeStream, symObjAddr: 0x0, symBinAddr: 0xE3818, symSize: 0xB7C }
   - { offsetInCU: 0x1FF1, offset: 0x22F853, size: 0x8, addend: 0x0, symName: _VP8LEncoderNew, symObjAddr: 0xB7C, symBinAddr: 0xE4394, symSize: 0x5C }
