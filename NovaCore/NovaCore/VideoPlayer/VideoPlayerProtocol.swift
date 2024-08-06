@@ -1,6 +1,6 @@
 import AVFoundation
 
-public enum VideoPlayStyle: String {
+public enum NovaVideoPlayStyle: String {
     case none = "none"
     case feed = "feed"
     case immersiveFeed = "immersive_feed"
@@ -8,11 +8,11 @@ public enum VideoPlayStyle: String {
     case adInFeed = "ad_in_feed"
 }
 
-public struct PlayInfo {
+public struct NovaPlayInfo {
     let url: URL
     let playLoops: Bool
     let videoDataModel: Any?
-    let playStyle: VideoPlayStyle
+    let playStyle: NovaVideoPlayStyle
     let isMute: Bool
     let disableGesture: Bool
     let enableLogging: Bool
@@ -20,7 +20,7 @@ public struct PlayInfo {
     public init(url: URL,
                 playLoops: Bool,
                 videoDataModel: Any?,
-                playStyle: VideoPlayStyle,
+                playStyle: NovaVideoPlayStyle,
                 isMute: Bool,
                 disableGesture: Bool,
                 enableLogging: Bool = true) {
@@ -34,26 +34,26 @@ public struct PlayInfo {
     }
 }
 
-public protocol VideoPlayerDelegate: NSObjectProtocol {
-    func playerReady(_ player: Player)
-    func playerPlaybackStateDidChange(_ player: Player)
+public protocol NovaVideoPlayerDelegate: NSObjectProtocol {
+    func playerReady(_ player: NovaPlayer)
+    func playerPlaybackStateDidChange(_ player: NovaPlayer)
     func playerBufferTimeDidChange(_ bufferTime: Double)
-    func playerCurrentTimeDidChange(_ player: Player)
-    func playerTimePassed60sAfterPlay(_ player: Player)
-    func player(_ player: Player, didFailWithError error: Error?)
-    func playerPlaybackWillLoop(_ player: Player)
-    func playerPlaybackDidLoop(_ player: Player)
+    func playerCurrentTimeDidChange(_ player: NovaPlayer)
+    func playerTimePassed60sAfterPlay(_ player: NovaPlayer)
+    func player(_ player: NovaPlayer, didFailWithError error: Error?)
+    func playerPlaybackWillLoop(_ player: NovaPlayer)
+    func playerPlaybackDidLoop(_ player: NovaPlayer)
 }
 
-protocol VideoPlayerProtocol {
+protocol NovaVideoPlayerProtocol {
     func play()
-    func pause(endKind: VideoEndKind)
-    func endPlay(endKind: VideoEndKind)
+    func pause(endKind: NovaVideoEndKind)
+    func endPlay(endKind: NovaVideoEndKind)
     func seek(to time: CMTime,
               completionHandler: ((Bool) -> Swift.Void)?)
-    func play(with info: PlayInfo,
+    func play(with info: NovaPlayInfo,
               actionHandler: ActionHandling?,
-              delegate: VideoPlayerDelegate)
+              delegate: NovaVideoPlayerDelegate)
     func isPlayerMuted() -> Bool
     func setPlayerMute(_ mute: Bool)
 }

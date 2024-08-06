@@ -113,7 +113,7 @@ import Foundation
     deinit {
         if let videoInfo = videoInfo {
             DispatchQueue.main.async {
-                VideoPlayerCacheHandler.shared.removePlayer(cacheKey: videoInfo.cacheKey)
+                NovaVideoPlayerCacheHandler.shared.removePlayer(cacheKey: videoInfo.cacheKey)
             }
         }
     }
@@ -122,7 +122,7 @@ import Foundation
         if let videoInfo = videoInfo,
            let videoUrl = URL(string: videoInfo.videoUrlStr) {
             DispatchQueue.main.async {
-                VideoPlayerCacheHandler.shared.getControllerToPreload(cacheKey: videoInfo.cacheKey, url: videoUrl)
+                NovaVideoPlayerCacheHandler.shared.getControllerToPreload(cacheKey: videoInfo.cacheKey, url: videoUrl)
             }
         }
     }
