@@ -32,10 +32,10 @@ import CoreGraphics
 // MARK: - error types
 
 /// Error domain for all Player errors.
-public let PlayerErrorDomain = "PlayerErrorDomain"
+public let NovaPlayerErrorDomain = "PlayerErrorDomain"
 
 /// Error types.
-public enum PlayerError: Error, CustomStringConvertible {
+public enum NovaPlayerError: Error, CustomStringConvertible {
     case failed
 
     public var description: String {
@@ -51,32 +51,32 @@ public enum PlayerError: Error, CustomStringConvertible {
 // MARK: - PlayerDelegate
 
 /// Player delegate protocol
-public protocol PlayerDelegate: AnyObject {
-    func playerReady(_ player: Player)
-    func playerPlaybackStateDidChange(_ player: Player)
-    func playerBufferingStateDidChange(_ player: Player)
+public protocol NovaPlayerDelegate: AnyObject {
+    func playerReady(_ player: NovaPlayer)
+    func playerPlaybackStateDidChange(_ player: NovaPlayer)
+    func playerBufferingStateDidChange(_ player: NovaPlayer)
 
     // This is the time in seconds that the video has been buffered.
     // If implementing a UIProgressView, user this value / player.maximumDuration to set progress.
     func playerBufferTimeDidChange(_ bufferTime: Double)
 
-    func player(_ player: Player, didFailWithError error: Error?)
+    func player(_ player: NovaPlayer, didFailWithError error: Error?)
 }
 
 
 /// Player playback protocol
-public protocol PlayerPlaybackDelegate: AnyObject {
-    func playerCurrentTimeDidChange(_ player: Player)
-    func playerPlaybackWillStartFromBeginning(_ player: Player)
-    func playerPlaybackDidEnd(_ player: Player)
-    func playerPlaybackWillLoop(_ player: Player)
-    func playerPlaybackDidLoop(_ player: Player)
+public protocol NovaPlayerPlaybackDelegate: AnyObject {
+    func playerCurrentTimeDidChange(_ player: NovaPlayer)
+    func playerPlaybackWillStartFromBeginning(_ player: NovaPlayer)
+    func playerPlaybackDidEnd(_ player: NovaPlayer)
+    func playerPlaybackWillLoop(_ player: NovaPlayer)
+    func playerPlaybackDidLoop(_ player: NovaPlayer)
 }
 
 // MARK: - Player
 
 /// ▶️ Player, simple way to play and stream media
-open class Player: UIViewController {
+open class NovaPlayer: UIViewController {
 
     // types
     
@@ -133,10 +133,10 @@ open class Player: UIViewController {
     // properties
     
     /// Player delegate.
-    open weak var playerDelegate: PlayerDelegate?
+    open weak var playerDelegate: NovaPlayerDelegate?
 
     /// Playback delegate.
-    open weak var playbackDelegate: PlayerPlaybackDelegate?
+    open weak var playbackDelegate: NovaPlayerPlaybackDelegate?
 
     // configuration
 
@@ -160,7 +160,7 @@ open class Player: UIViewController {
 
     /// Specifies how the video is displayed within a player layer’s bounds.
     /// The default value is `AVLayerVideoGravityResizeAspect`. See `PlayerFillMode`.
-    open var fillMode: Player.FillMode {
+    open var fillMode: NovaPlayer.FillMode {
         get {
             return self._playerView.playerFillMode
         }
@@ -308,7 +308,7 @@ open class Player: UIViewController {
     }
 
     /// self.view as PlayerView type
-    public var playerView: PlayerView {
+    public var playerView: NovaPlayerView {
         get {
             return self._playerView
         }
@@ -359,7 +359,7 @@ open class Player: UIViewController {
     internal var _playerLayerObserver: NSKeyValueObservation?
     internal var _playerTimeObserver: Any?
 
-    internal var _playerView: PlayerView = PlayerView(frame: .zero)
+    internal var _playerView: NovaPlayerView = NovaPlayerView(frame: .zero)
     internal var _seekTimeRequested: CMTime?
     internal var _lastBufferTime: Double = 0
     internal var _preferredMaximumResolution: CGSize = .zero
@@ -430,7 +430,7 @@ open class Player: UIViewController {
 
 // MARK: - performance
 
-extension Player {
+extension NovaPlayer {
 
     /// Total time spent playing.
     public var totalDurationWatched: TimeInterval {
@@ -483,7 +483,7 @@ extension Player {
 
 // MARK: - actions
 
-extension Player {
+extension NovaPlayer {
 
     /// Begins playback of the media from the beginning.
     open func playFromBeginning() {
@@ -601,7 +601,7 @@ extension Player {
 
 // MARK: - loading funcs
 
-extension Player {
+extension NovaPlayer {
 
     fileprivate func setup(url: URL) {
         guard isViewLoaded else { return }
@@ -656,7 +656,7 @@ extension Player {
             if !asset.isPlayable {
                 self.playbackState = .failed
                 self.executeClosureOnMainQueueIfNecessary {
-                    self.playerDelegate?.player(self, didFailWithError: PlayerError.failed)
+                    self.playerDelegate?.player(self, didFailWithError: NovaPlayerError.failed)
                 }
                 return
             }
@@ -707,7 +707,7 @@ extension Player {
 
 // MARK: - NSNotifications
 
-extension Player {
+extension NovaPlayer {
 
     // MARK: - UIApplication
 
@@ -775,7 +775,7 @@ extension Player {
 
 // MARK: - KVO
 
-extension Player {
+extension NovaPlayer {
 
     // MARK: - AVPlayerItemObservers
 
@@ -911,7 +911,7 @@ extension Player {
 
 // MARK: - queues
 
-extension Player {
+extension NovaPlayer {
 
     internal func executeClosureOnMainQueueIfNecessary(withClosure closure: @escaping () -> Void) {
         if Thread.isMainThread {
@@ -925,7 +925,7 @@ extension Player {
 
 // MARK: - PlayerView
 
-public class PlayerView: UIView {
+public class NovaPlayerView: UIView {
 
     // MARK: - overrides
 
@@ -967,7 +967,7 @@ public class PlayerView: UIView {
         }
     }
 
-    public var playerFillMode: Player.FillMode {
+    public var playerFillMode: NovaPlayer.FillMode {
         get {
             return self.playerLayer.videoGravity
         }
