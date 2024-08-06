@@ -1,12 +1,12 @@
 import Foundation
 import UIKit
 
-public protocol WebViewBottomViewDelegate: AnyObject {
+public protocol NovaWebViewBottomViewDelegate: AnyObject {
     func bottomViewDidTapBackButton()
     func bottomViewDidTapForwardButton()
 }
 
-public class WebViewBottomView: UIView {
+public class NovaWebViewBottomView: UIView {
     // MARK: - Constants
 
     private enum Constants {
@@ -16,7 +16,7 @@ public class WebViewBottomView: UIView {
 
     // MARK: - Properties
 
-    public weak var delegate: WebViewBottomViewDelegate?
+    public weak var delegate: NovaWebViewBottomViewDelegate?
 
     private let backButton: UIButton = {
         let button = UIButton()
@@ -81,7 +81,7 @@ public class WebViewBottomView: UIView {
 
 // MARK: - Public functions
 
-public extension WebViewBottomView {
+public extension NovaWebViewBottomView {
     func configButton(canGoBack: Bool? = nil, canGoForward: Bool? = nil) {
         if let canGoBack {
             backButton.isEnabled = canGoBack
@@ -95,7 +95,7 @@ public extension WebViewBottomView {
 
 // MARK: - Private functions
 
-private extension WebViewBottomView {
+private extension NovaWebViewBottomView {
     @objc func didTapBackButton() {
         delegate?.bottomViewDidTapBackButton()
     }

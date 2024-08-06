@@ -1,6 +1,6 @@
 import WebKit
 
-class ScriptMessageHandlerProxy: NSObject, WKScriptMessageHandler {
+class NovaScriptMessageHandlerProxy: NSObject, WKScriptMessageHandler {
 
     private weak var handler: WKScriptMessageHandler?
 

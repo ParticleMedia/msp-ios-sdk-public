@@ -10,10 +10,10 @@ import Foundation
     public var webViewDidScroll: ((UIScrollView) -> Void)?
     public var webViewDidEndDragging: ((UIScrollView) -> Void)?
 
-    private var unifiedWebViewHost: UnifiedWebViewHost!
+    private var unifiedWebViewHost: NovaUnifiedWebViewHost!
 
-    private let naviView: WebViewNavigationView = {
-        let naviView = WebViewNavigationView()
+    private let naviView: NovaWebViewNavigationView = {
+        let naviView = NovaWebViewNavigationView()
         naviView.translatesAutoresizingMaskIntoConstraints = false
         return naviView
     }()
@@ -31,14 +31,14 @@ import Foundation
         return view
     }()
 
-    private let bottomView: WebViewBottomView = {
-        let view = WebViewBottomView()
+    private let bottomView: NovaWebViewBottomView = {
+        let view = NovaWebViewBottomView()
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }()
 
     private let model: NovaAdOpenActionDataModel
-    private let navigationModel: WebViewNavigationViewModel?
+    private let navigationModel: NovaWebViewNavigationViewModel?
     private let navigationHeight: CGFloat?
 
     private var webView: WKWebView!
@@ -59,14 +59,14 @@ import Foundation
 
     public init(
         dataModel: NovaAdOpenActionDataModel,
-        navigationModel: WebViewNavigationViewModel? = nil,
+        navigationModel: NovaWebViewNavigationViewModel? = nil,
         navigationHeight: CGFloat? = nil
     ) {
         self.model = dataModel
         self.navigationModel = navigationModel
         self.navigationHeight = navigationHeight
         super.init(nibName: nil, bundle: nil)
-        self.unifiedWebViewHost = UnifiedWebViewBuilder.buildWebViewHost(enableNBUserAgent: false,
+        self.unifiedWebViewHost = NovaUnifiedWebViewBuilder.buildWebViewHost(enableNBUserAgent: false,
                                                                          enableJSBridge: false,
                                                                          navigationDelegate: self)
         self.webView = self.unifiedWebViewHost.webView()
@@ -120,7 +120,7 @@ import Foundation
     public override func viewDidLoad() {
         super.viewDidLoad()
 
-        let naviViewModel = self.navigationModel ?? WebViewNavigationViewModel(
+        let naviViewModel = self.navigationModel ?? NovaWebViewNavigationViewModel(
             title: nil,
             leftButtonIcon: .crossOutline,
             leftButtonTapActionHandler: { [weak self] in
@@ -248,7 +248,7 @@ private extension NovaAdsLandingWebViewController {
     }
 }
 
-extension NovaAdsLandingWebViewController: UnifiedWebViewNavigationDelegate {
+extension NovaAdsLandingWebViewController: NovaUnifiedWebViewNavigationDelegate {
     public func openWebPage(_ url: URL) {
         self.smoothProgress.startUpdatingProgress()
         self.progressView.setProgress(0, animated: false)
@@ -345,7 +345,7 @@ extension NovaAdsLandingWebViewController: SmoothProgressDelegate {
 
 // MARK: - WebViewBottomViewDelegate
 
-extension NovaAdsLandingWebViewController: WebViewBottomViewDelegate {
+extension NovaAdsLandingWebViewController: NovaWebViewBottomViewDelegate {
     public func bottomViewDidTapBackButton() {
         guard webView.canGoBack else { return }
 

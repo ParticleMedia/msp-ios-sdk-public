@@ -8,13 +8,13 @@
 import Foundation
 import WebKit
 
-public class UnifiedWebViewHost: NSObject {
-    private let config: UnifiedWebViewConfig
-    private let jsBridgeHandlerMaster: JSBridgeHandlerMaster?
+public class NovaUnifiedWebViewHost: NSObject {
+    private let config: NovaUnifiedWebViewConfig
+    private let jsBridgeHandlerMaster: NovaJSBridgeHandlerMaster?
     private var isGoingBackForward = false
 
     private var wkWebView: WKWebView?
-    private weak var navigationDelegate: UnifiedWebViewNavigationDelegate?
+    private weak var navigationDelegate: NovaUnifiedWebViewNavigationDelegate?
 
     private struct Constants {
         static let jsMessageName = "callNative"
@@ -31,9 +31,9 @@ public class UnifiedWebViewHost: NSObject {
         "itms-appss",
     ]
 
-    public init(config: UnifiedWebViewConfig,
-                jsBridgeHandlerMaster: JSBridgeHandlerMaster?,
-                navigationDelegate: UnifiedWebViewNavigationDelegate?) {
+    public init(config: NovaUnifiedWebViewConfig,
+                jsBridgeHandlerMaster: NovaJSBridgeHandlerMaster?,
+                navigationDelegate: NovaUnifiedWebViewNavigationDelegate?) {
         self.config = config
         self.jsBridgeHandlerMaster = jsBridgeHandlerMaster
         self.navigationDelegate = navigationDelegate
@@ -41,8 +41,8 @@ public class UnifiedWebViewHost: NSObject {
         super.init()
 
         let userContentController = WKUserContentController()
-        userContentController.add(ScriptMessageHandlerProxy(handler: self), name: Constants.jsMessageName)
-        if let ruleList = ContentBlockHelper.contentBlockRuleList(for: config.blockedURLPrefixes) {
+        userContentController.add(NovaScriptMessageHandlerProxy(handler: self), name: Constants.jsMessageName)
+        if let ruleList = NovaContentBlockHelper.contentBlockRuleList(for: config.blockedURLPrefixes) {
             userContentController.add(ruleList)
             //DebugLogging.info(.jsBridge, "webview apply content block rules for url prefixes:\(config.blockedURLPrefixes)")
         }
@@ -195,7 +195,7 @@ public class UnifiedWebViewHost: NSObject {
     }
 }
 
-extension UnifiedWebViewHost: WKScriptMessageHandler {
+extension NovaUnifiedWebViewHost: WKScriptMessageHandler {
 
     public func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
         assert(message.name == Constants.jsMessageName, "unexpected message.name=\(message.name)")
@@ -223,7 +223,7 @@ extension UnifiedWebViewHost: WKScriptMessageHandler {
 
 }
 
-extension UnifiedWebViewHost: WKNavigationDelegate {
+extension NovaUnifiedWebViewHost: WKNavigationDelegate {
 
     public func webView(_ webView: WKWebView, didCommit navigation: WKNavigation!) {
         self.navigationDelegate?.webView(webView, didCommit: navigation)
@@ -275,7 +275,7 @@ extension UnifiedWebViewHost: WKNavigationDelegate {
 
 }
 
-extension UnifiedWebViewHost: WKUIDelegate {
+extension NovaUnifiedWebViewHost: WKUIDelegate {
     public func webView(_ webView: WKWebView, createWebViewWith configuration: WKWebViewConfiguration, for navigationAction: WKNavigationAction, windowFeatures: WKWindowFeatures) -> WKWebView? {
         guard let url = navigationAction.request.url else {
             return nil

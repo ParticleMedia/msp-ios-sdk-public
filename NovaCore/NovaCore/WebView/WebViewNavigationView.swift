@@ -1,7 +1,7 @@
 import UIKit
 import Foundation
 
-public class WebViewNavigationView: UIView {
+public class NovaWebViewNavigationView: UIView {
     private let leftButton: UIButton = {
         let button = UIButton()
         button.imageEdgeInsets = UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
@@ -27,7 +27,7 @@ public class WebViewNavigationView: UIView {
         return view
     }()
 
-    private var viewModel: WebViewNavigationViewModel?
+    private var viewModel: NovaWebViewNavigationViewModel?
     private var leftButtonBottomConstraint: NSLayoutConstraint?
 
     override public init(frame: CGRect) {
@@ -43,7 +43,7 @@ public class WebViewNavigationView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
 
-    public func config(viewModel: WebViewNavigationViewModel) {
+    public func config(viewModel: NovaWebViewNavigationViewModel) {
         self.viewModel = viewModel
         
         if viewModel.includingStatusBar {
