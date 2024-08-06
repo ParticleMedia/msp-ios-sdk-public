@@ -35,7 +35,7 @@ public enum NovaAdOpenActionKey : Swift.String {
     get
   }
 }
-public enum VideoLogActionKey : Swift.String {
+public enum NovaVideoLogActionKey : Swift.String {
   case videoPlay
   case videoPlaying
   case videoEnd
@@ -48,7 +48,7 @@ public enum VideoLogActionKey : Swift.String {
     get
   }
 }
-public struct VideoLogActionDataModel {
+public struct NovaVideoLogActionDataModel {
   public let docid: Swift.String
   public let timeElapsed: Swift.Int
   public let timeElapsedFloat: CoreFoundation.CGFloat
@@ -59,9 +59,9 @@ public struct VideoLogActionDataModel {
   public let isLoadSuccess: Swift.Bool
   public let meta: Swift.String
   public let loadingTime: Swift.Int
-  public let playStyle: NovaCore.VideoPlayStyle
+  public let playStyle: NovaCore.NovaVideoPlayStyle
   public let reason: Swift.String
-  public init(docid: Swift.String, timeElapsed: Swift.Int, timeElapsedFloat: CoreFoundation.CGFloat, progress: CoreFoundation.CGFloat, duration: Swift.Int, videoLoadDuration: Swift.Int, source: Swift.String, isLoadSuccess: Swift.Bool, meta: Swift.String, loadingTime: Swift.Int, playStyle: NovaCore.VideoPlayStyle, reason: Swift.String)
+  public init(docid: Swift.String, timeElapsed: Swift.Int, timeElapsedFloat: CoreFoundation.CGFloat, progress: CoreFoundation.CGFloat, duration: Swift.Int, videoLoadDuration: Swift.Int, source: Swift.String, isLoadSuccess: Swift.Bool, meta: Swift.String, loadingTime: Swift.Int, playStyle: NovaCore.NovaVideoPlayStyle, reason: Swift.String)
 }
 @_inheritsConvenienceInitializers @_hasMissingDesignatedInitializers @objc public class NovaIcon : ObjectiveC.NSObject {
   @objc deinit
@@ -133,7 +133,7 @@ extension NovaCore.NovaIcon.NovaSystem : NovaCore.IconName {
     get
   }
 }
-public struct UnifiedWebViewConfig {
+public struct NovaUnifiedWebViewConfig {
   public let enableJSBridge: Swift.Bool
   public let enableNBUserAgent: Swift.Bool
   public let blockedURLPrefixes: [Swift.String]
@@ -155,14 +155,14 @@ public enum AdsMediaConstants {
   public static let defaultAspectRatio: Swift.Double
   public static let verticalVideoDefaultAspectRatio: Swift.Double
 }
-@objc @_inheritsConvenienceInitializers @_hasMissingDesignatedInitializers @_Concurrency.MainActor(unsafe) public class WebViewNavigationView : UIKit.UIView {
+@objc @_inheritsConvenienceInitializers @_hasMissingDesignatedInitializers @_Concurrency.MainActor(unsafe) public class NovaWebViewNavigationView : UIKit.UIView {
   @_Concurrency.MainActor(unsafe) @objc override dynamic public init(frame: CoreFoundation.CGRect)
-  @_Concurrency.MainActor(unsafe) public func config(viewModel: NovaCore.WebViewNavigationViewModel)
+  @_Concurrency.MainActor(unsafe) public func config(viewModel: NovaCore.NovaWebViewNavigationViewModel)
   @_Concurrency.MainActor(unsafe) public func setTitle(_ title: Swift.String?)
   @_Concurrency.MainActor(unsafe) public func changeLeftButtonVisibility(isHidden: Swift.Bool)
   @objc deinit
 }
-public protocol JSBridgeHandling : AnyObject {
+public protocol NovaJSBridgeHandling : AnyObject {
 }
 public enum NovaCreativeType : Swift.String {
   case businessProfile
@@ -216,7 +216,7 @@ public struct AdItem : Swift.Codable {
   public func encode(to encoder: any Swift.Encoder) throws
   public init(from decoder: any Swift.Decoder) throws
 }
-@objc @_hasMissingDesignatedInitializers @_Concurrency.MainActor(unsafe) public class VideoProgressView : UIKit.UIView {
+@objc @_hasMissingDesignatedInitializers @_Concurrency.MainActor(unsafe) public class NovaVideoProgressView : UIKit.UIView {
   @_Concurrency.MainActor(unsafe) @objc dynamic public init()
   @_Concurrency.MainActor(unsafe) public func setTrackView(hidden: Swift.Bool)
   @_Concurrency.MainActor(unsafe) public func configProgressColor(progressTintColor: UIKit.UIColor, trackTintColor: UIKit.UIColor)
@@ -552,7 +552,7 @@ extension SwiftUI.Image {
     @objc deinit
   }
 }
-public protocol UnifiedWebViewNavigationDelegate : ObjectiveC.NSObject {
+public protocol NovaUnifiedWebViewNavigationDelegate : ObjectiveC.NSObject {
   func openWebPage(_ url: Foundation.URL)
   func webView(_ webView: WebKit.WKWebView, didStartProvisionalNavigation navigation: WebKit.WKNavigation!)
   func webView(_ webView: WebKit.WKWebView, didCommit navigation: WebKit.WKNavigation!)
@@ -565,7 +565,7 @@ public protocol UnifiedWebViewNavigationDelegate : ObjectiveC.NSObject {
   func webViewInitialLoadDidRedirect(_ webView: WebKit.WKWebView)
   func webViewDidGoBackToInitialLoad(_ webView: WebKit.WKWebView)
 }
-extension NovaCore.UnifiedWebViewNavigationDelegate {
+extension NovaCore.NovaUnifiedWebViewNavigationDelegate {
   public func webView(_ webView: WebKit.WKWebView, didStartProvisionalNavigation navigation: WebKit.WKNavigation!)
   public func webView(_ webView: WebKit.WKWebView, didCommit navigation: WebKit.WKNavigation!)
   public func webView(_ webView: WebKit.WKWebView, policyFor navigationAction: WebKit.WKNavigationAction) -> WebKit.WKNavigationActionPolicy?
@@ -647,15 +647,15 @@ extension NovaCore.NovaNativeAdVideoView {
   @_Concurrency.MainActor(unsafe) final public func handleVideoOnScreen()
   @_Concurrency.MainActor(unsafe) final public func handleVideoOffScreen()
 }
-extension NovaCore.NovaNativeAdVideoView : NovaCore.VideoPlayerDelegate {
-  @_Concurrency.MainActor(unsafe) final public func playerReady(_ player: NovaCore.Player)
-  @_Concurrency.MainActor(unsafe) final public func playerPlaybackStateDidChange(_ player: NovaCore.Player)
+extension NovaCore.NovaNativeAdVideoView : NovaCore.NovaVideoPlayerDelegate {
+  @_Concurrency.MainActor(unsafe) final public func playerReady(_ player: NovaCore.NovaPlayer)
+  @_Concurrency.MainActor(unsafe) final public func playerPlaybackStateDidChange(_ player: NovaCore.NovaPlayer)
   @_Concurrency.MainActor(unsafe) final public func playerBufferTimeDidChange(_ bufferTime: Swift.Double)
-  @_Concurrency.MainActor(unsafe) final public func playerCurrentTimeDidChange(_ player: NovaCore.Player)
-  @_Concurrency.MainActor(unsafe) final public func playerTimePassed60sAfterPlay(_ player: NovaCore.Player)
-  @_Concurrency.MainActor(unsafe) final public func player(_ player: NovaCore.Player, didFailWithError error: (any Swift.Error)?)
-  @_Concurrency.MainActor(unsafe) final public func playerPlaybackWillLoop(_ player: NovaCore.Player)
-  @_Concurrency.MainActor(unsafe) final public func playerPlaybackDidLoop(_ player: NovaCore.Player)
+  @_Concurrency.MainActor(unsafe) final public func playerCurrentTimeDidChange(_ player: NovaCore.NovaPlayer)
+  @_Concurrency.MainActor(unsafe) final public func playerTimePassed60sAfterPlay(_ player: NovaCore.NovaPlayer)
+  @_Concurrency.MainActor(unsafe) final public func player(_ player: NovaCore.NovaPlayer, didFailWithError error: (any Swift.Error)?)
+  @_Concurrency.MainActor(unsafe) final public func playerPlaybackWillLoop(_ player: NovaCore.NovaPlayer)
+  @_Concurrency.MainActor(unsafe) final public func playerPlaybackDidLoop(_ player: NovaCore.NovaPlayer)
 }
 @objc public enum NovaAdType : Swift.Int {
   case appOpen
@@ -1021,8 +1021,8 @@ public struct NovaNativeAdVideoState {
   public static func logVideoMute(encryptedAdToken: Swift.String, isMute: Swift.Bool)
   @objc deinit
 }
-@objc public class UnifiedWebViewHost : ObjectiveC.NSObject {
-  public init(config: NovaCore.UnifiedWebViewConfig, jsBridgeHandlerMaster: NovaCore.JSBridgeHandlerMaster?, navigationDelegate: (any NovaCore.UnifiedWebViewNavigationDelegate)?)
+@objc public class NovaUnifiedWebViewHost : ObjectiveC.NSObject {
+  public init(config: NovaCore.NovaUnifiedWebViewConfig, jsBridgeHandlerMaster: NovaCore.NovaJSBridgeHandlerMaster?, navigationDelegate: (any NovaCore.NovaUnifiedWebViewNavigationDelegate)?)
   public func injectJavaScript(_ js: Swift.String, injectionTime: WebKit.WKUserScriptInjectionTime)
   public func webView() -> WebKit.WKWebView
   public func load(_ url: Foundation.URL, referer: Swift.String? = nil)
@@ -1035,10 +1035,10 @@ public struct NovaNativeAdVideoState {
   public func SafeAs<T, U>(_ object: T?, _ objectType: U.Type) -> U?
   @objc deinit
 }
-extension NovaCore.UnifiedWebViewHost : WebKit.WKScriptMessageHandler {
+extension NovaCore.NovaUnifiedWebViewHost : WebKit.WKScriptMessageHandler {
   @objc dynamic public func userContentController(_ userContentController: WebKit.WKUserContentController, didReceive message: WebKit.WKScriptMessage)
 }
-extension NovaCore.UnifiedWebViewHost : WebKit.WKNavigationDelegate {
+extension NovaCore.NovaUnifiedWebViewHost : WebKit.WKNavigationDelegate {
   @objc dynamic public func webView(_ webView: WebKit.WKWebView, didCommit navigation: WebKit.WKNavigation!)
   @objc dynamic public func webView(_ webView: WebKit.WKWebView, didStartProvisionalNavigation navigation: WebKit.WKNavigation!)
   @objc dynamic public func webView(_ webView: WebKit.WKWebView, decidePolicyFor navigationAction: WebKit.WKNavigationAction, preferences: WebKit.WKWebpagePreferences, decisionHandler: @escaping (WebKit.WKNavigationActionPolicy, WebKit.WKWebpagePreferences) -> Swift.Void)
@@ -1048,12 +1048,12 @@ extension NovaCore.UnifiedWebViewHost : WebKit.WKNavigationDelegate {
   @objc dynamic public func webView(_ webView: WebKit.WKWebView, didFailProvisionalNavigation navigation: WebKit.WKNavigation!, withError error: any Swift.Error)
   @objc dynamic public func webViewWebContentProcessDidTerminate(_ webView: WebKit.WKWebView)
 }
-extension NovaCore.UnifiedWebViewHost : WebKit.WKUIDelegate {
+extension NovaCore.NovaUnifiedWebViewHost : WebKit.WKUIDelegate {
   @objc dynamic public func webView(_ webView: WebKit.WKWebView, createWebViewWith configuration: WebKit.WKWebViewConfiguration, for navigationAction: WebKit.WKNavigationAction, windowFeatures: WebKit.WKWindowFeatures) -> WebKit.WKWebView?
 }
-@_inheritsConvenienceInitializers @objc public class VideoPlayerCacheHandler : ObjectiveC.NSObject {
-  @objc public static let shared: NovaCore.VideoPlayerCacheHandler
-  public func getCachedVideoControllerForURL(_ url: Foundation.URL, cacheKey: Swift.String) -> NovaCore.VideoPlayer?
+@_inheritsConvenienceInitializers @objc public class NovaVideoPlayerCacheHandler : ObjectiveC.NSObject {
+  @objc public static let shared: NovaCore.NovaVideoPlayerCacheHandler
+  public func getCachedVideoControllerForURL(_ url: Foundation.URL, cacheKey: Swift.String) -> NovaCore.NovaVideoPlayer?
   @objc public func getControllerToPreload(cacheKey: Swift.String, url: Foundation.URL)
   public func removePlayer(cacheKey: Swift.String)
   @objc override dynamic public init()
@@ -1089,8 +1089,8 @@ extension NovaCore.NovaDedupeManager {
   final public func novaAdDidShow(_ novaAd: NovaCore.NovaBaseAd)
   final public func getServerDedupeKeys(first k: Swift.Int, prioritizedBy adUnitId: Swift.String) -> [Swift.String]
 }
-@objc @_inheritsConvenienceInitializers public class VideoPlayer : ObjectiveC.NSObject {
-  weak public var delegate: (any NovaCore.VideoPlayerDelegate)?
+@objc @_inheritsConvenienceInitializers public class NovaVideoPlayer : ObjectiveC.NSObject {
+  weak public var delegate: (any NovaCore.NovaVideoPlayerDelegate)?
   @objc override dynamic public init()
   public func configDisplay(_ display: Swift.Bool)
   public func currentTime() -> CoreMedia.CMTime
@@ -1104,37 +1104,37 @@ extension NovaCore.NovaDedupeManager {
   public func getCurrentProgress() -> Swift.Double
   public func getRealProgress() -> Swift.Double
   public func addUpLocalTimeElapsed()
-  public func getVideoEndKind() -> NovaCore.VideoEndKind
+  public func getVideoEndKind() -> NovaCore.NovaVideoEndKind
   public func getLoadingTimeElapsed() -> Swift.Int
   @objc deinit
 }
-extension NovaCore.VideoPlayer {
+extension NovaCore.NovaVideoPlayer {
   public func isPlayerMuted() -> Swift.Bool
   public func setPlayerMute(_ mute: Swift.Bool)
   public func play()
-  public func pause(endKind: NovaCore.VideoEndKind)
-  public func stop(endKind: NovaCore.VideoEndKind)
-  public func endPlay(endKind: NovaCore.VideoEndKind)
+  public func pause(endKind: NovaCore.NovaVideoEndKind)
+  public func stop(endKind: NovaCore.NovaVideoEndKind)
+  public func endPlay(endKind: NovaCore.NovaVideoEndKind)
   public func isPlaying(urlString: Swift.String) -> Swift.Bool
   public func seek(to time: CoreMedia.CMTime, completionHandler: ((Swift.Bool) -> Swift.Void)?)
-  public func play(with info: NovaCore.PlayInfo, actionHandler: (any NovaCore.ActionHandling)?, delegate: any NovaCore.VideoPlayerDelegate)
+  public func play(with info: NovaCore.NovaPlayInfo, actionHandler: (any NovaCore.ActionHandling)?, delegate: any NovaCore.NovaVideoPlayerDelegate)
   public func update(fillMode: AVFoundation.AVLayerVideoGravity)
   public func preload(with url: Foundation.URL)
   public func getPlayerView() -> UIKit.UIView
 }
-extension NovaCore.VideoPlayer : NovaCore.PlayerDelegate {
-  public func playerReady(_ player: NovaCore.Player)
-  public func playerPlaybackStateDidChange(_ player: NovaCore.Player)
-  public func playerBufferingStateDidChange(_ player: NovaCore.Player)
+extension NovaCore.NovaVideoPlayer : NovaCore.NovaPlayerDelegate {
+  public func playerReady(_ player: NovaCore.NovaPlayer)
+  public func playerPlaybackStateDidChange(_ player: NovaCore.NovaPlayer)
+  public func playerBufferingStateDidChange(_ player: NovaCore.NovaPlayer)
   public func playerBufferTimeDidChange(_ bufferTime: Swift.Double)
-  public func player(_ player: NovaCore.Player, didFailWithError error: (any Swift.Error)?)
+  public func player(_ player: NovaCore.NovaPlayer, didFailWithError error: (any Swift.Error)?)
 }
-extension NovaCore.VideoPlayer : NovaCore.PlayerPlaybackDelegate {
-  public func playerCurrentTimeDidChange(_ player: NovaCore.Player)
-  public func playerPlaybackWillStartFromBeginning(_ player: NovaCore.Player)
-  public func playerPlaybackDidEnd(_ player: NovaCore.Player)
-  public func playerPlaybackWillLoop(_ player: NovaCore.Player)
-  public func playerPlaybackDidLoop(_ player: NovaCore.Player)
+extension NovaCore.NovaVideoPlayer : NovaCore.NovaPlayerPlaybackDelegate {
+  public func playerCurrentTimeDidChange(_ player: NovaCore.NovaPlayer)
+  public func playerPlaybackWillStartFromBeginning(_ player: NovaCore.NovaPlayer)
+  public func playerPlaybackDidEnd(_ player: NovaCore.NovaPlayer)
+  public func playerPlaybackWillLoop(_ player: NovaCore.NovaPlayer)
+  public func playerPlaybackDidLoop(_ player: NovaCore.NovaPlayer)
 }
 public enum NovaAdLaunchOption : Swift.String {
   case launchWebView
@@ -1145,40 +1145,40 @@ public enum NovaAdLaunchOption : Swift.String {
     get
   }
 }
-@_hasMissingDesignatedInitializers public class UnifiedWebViewBuilder {
-  public static func buildWebViewHost(enableNBUserAgent: Swift.Bool, enableJSBridge: Swift.Bool = true, jsBridgeHandlers: [any NovaCore.JSBridgeHandling] = [], blockedURLPrefixes: [Swift.String] = [], navigationDelegate: (any NovaCore.UnifiedWebViewNavigationDelegate)? = nil, headers: [Swift.String : Swift.String] = [:]) -> NovaCore.UnifiedWebViewHost
+@_hasMissingDesignatedInitializers public class NovaUnifiedWebViewBuilder {
+  public static func buildWebViewHost(enableNBUserAgent: Swift.Bool, enableJSBridge: Swift.Bool = true, jsBridgeHandlers: [any NovaCore.NovaJSBridgeHandling] = [], blockedURLPrefixes: [Swift.String] = [], navigationDelegate: (any NovaCore.NovaUnifiedWebViewNavigationDelegate)? = nil, headers: [Swift.String : Swift.String] = [:]) -> NovaCore.NovaUnifiedWebViewHost
   @objc deinit
 }
 public struct EmptyActionDataModel {
   public init()
 }
-public let PlayerErrorDomain: Swift.String
-public enum PlayerError : Swift.Error, Swift.CustomStringConvertible {
+public let NovaPlayerErrorDomain: Swift.String
+public enum NovaPlayerError : Swift.Error, Swift.CustomStringConvertible {
   case failed
   public var description: Swift.String {
     get
   }
-  public static func == (a: NovaCore.PlayerError, b: NovaCore.PlayerError) -> Swift.Bool
+  public static func == (a: NovaCore.NovaPlayerError, b: NovaCore.NovaPlayerError) -> Swift.Bool
   public func hash(into hasher: inout Swift.Hasher)
   public var hashValue: Swift.Int {
     get
   }
 }
-public protocol PlayerDelegate : AnyObject {
-  func playerReady(_ player: NovaCore.Player)
-  func playerPlaybackStateDidChange(_ player: NovaCore.Player)
-  func playerBufferingStateDidChange(_ player: NovaCore.Player)
+public protocol NovaPlayerDelegate : AnyObject {
+  func playerReady(_ player: NovaCore.NovaPlayer)
+  func playerPlaybackStateDidChange(_ player: NovaCore.NovaPlayer)
+  func playerBufferingStateDidChange(_ player: NovaCore.NovaPlayer)
   func playerBufferTimeDidChange(_ bufferTime: Swift.Double)
-  func player(_ player: NovaCore.Player, didFailWithError error: (any Swift.Error)?)
+  func player(_ player: NovaCore.NovaPlayer, didFailWithError error: (any Swift.Error)?)
 }
-public protocol PlayerPlaybackDelegate : AnyObject {
-  func playerCurrentTimeDidChange(_ player: NovaCore.Player)
-  func playerPlaybackWillStartFromBeginning(_ player: NovaCore.Player)
-  func playerPlaybackDidEnd(_ player: NovaCore.Player)
-  func playerPlaybackWillLoop(_ player: NovaCore.Player)
-  func playerPlaybackDidLoop(_ player: NovaCore.Player)
+public protocol NovaPlayerPlaybackDelegate : AnyObject {
+  func playerCurrentTimeDidChange(_ player: NovaCore.NovaPlayer)
+  func playerPlaybackWillStartFromBeginning(_ player: NovaCore.NovaPlayer)
+  func playerPlaybackDidEnd(_ player: NovaCore.NovaPlayer)
+  func playerPlaybackWillLoop(_ player: NovaCore.NovaPlayer)
+  func playerPlaybackDidLoop(_ player: NovaCore.NovaPlayer)
 }
-@objc @_inheritsConvenienceInitializers @_Concurrency.MainActor(unsafe) open class Player : UIKit.UIViewController {
+@objc @_inheritsConvenienceInitializers @_Concurrency.MainActor(unsafe) open class NovaPlayer : UIKit.UIViewController {
   public typealias FillMode = AVFoundation.AVLayerVideoGravity
   public enum PlaybackState : Swift.Int, Swift.CustomStringConvertible {
     case stopped
@@ -1207,8 +1207,8 @@ public protocol PlayerPlaybackDelegate : AnyObject {
       get
     }
   }
-  @_Concurrency.MainActor(unsafe) weak open var playerDelegate: (any NovaCore.PlayerDelegate)?
-  @_Concurrency.MainActor(unsafe) weak open var playbackDelegate: (any NovaCore.PlayerPlaybackDelegate)?
+  @_Concurrency.MainActor(unsafe) weak open var playerDelegate: (any NovaCore.NovaPlayerDelegate)?
+  @_Concurrency.MainActor(unsafe) weak open var playbackDelegate: (any NovaCore.NovaPlayerPlaybackDelegate)?
   @_Concurrency.MainActor(unsafe) open var url: Foundation.URL? {
     get
     set
@@ -1217,7 +1217,7 @@ public protocol PlayerPlaybackDelegate : AnyObject {
     get
     set
   }
-  @_Concurrency.MainActor(unsafe) open var fillMode: NovaCore.Player.FillMode {
+  @_Concurrency.MainActor(unsafe) open var fillMode: NovaCore.NovaPlayer.FillMode {
     get
     set
   }
@@ -1242,11 +1242,11 @@ public protocol PlayerPlaybackDelegate : AnyObject {
     set
   }
   @_Concurrency.MainActor(unsafe) open var playbackFreezesAtEnd: Swift.Bool
-  @_Concurrency.MainActor(unsafe) open var playbackState: NovaCore.Player.PlaybackState {
+  @_Concurrency.MainActor(unsafe) open var playbackState: NovaCore.NovaPlayer.PlaybackState {
     get
     set
   }
-  @_Concurrency.MainActor(unsafe) open var bufferingState: NovaCore.Player.BufferingState {
+  @_Concurrency.MainActor(unsafe) open var bufferingState: NovaCore.NovaPlayer.BufferingState {
     get
     set
   }
@@ -1264,7 +1264,7 @@ public protocol PlayerPlaybackDelegate : AnyObject {
   @_Concurrency.MainActor(unsafe) open var naturalSize: CoreFoundation.CGSize {
     get
   }
-  @_Concurrency.MainActor(unsafe) public var playerView: NovaCore.PlayerView {
+  @_Concurrency.MainActor(unsafe) public var playerView: NovaCore.NovaPlayerView {
     get
   }
   @_Concurrency.MainActor(unsafe) open func playerLayer() -> AVFoundation.AVPlayerLayer?
@@ -1285,13 +1285,13 @@ public protocol PlayerPlaybackDelegate : AnyObject {
   @_Concurrency.MainActor(unsafe) @objc override dynamic open func viewDidLoad()
   @_Concurrency.MainActor(unsafe) @objc override dynamic open func viewDidDisappear(_ animated: Swift.Bool)
 }
-extension NovaCore.Player {
+extension NovaCore.NovaPlayer {
   @_Concurrency.MainActor(unsafe) public var totalDurationWatched: Foundation.TimeInterval {
     get
   }
   @_Concurrency.MainActor(unsafe) public func setPlayImmediately(atRate rate: Swift.Float)
 }
-extension NovaCore.Player {
+extension NovaCore.NovaPlayer {
   @_Concurrency.MainActor(unsafe) open func playFromBeginning()
   @_Concurrency.MainActor(unsafe) open func playFromCurrentTime()
   @_Concurrency.MainActor(unsafe) open func pause()
@@ -1300,7 +1300,7 @@ extension NovaCore.Player {
   @_Concurrency.MainActor(unsafe) open func seekToTime(to time: CoreMedia.CMTime, toleranceBefore: CoreMedia.CMTime, toleranceAfter: CoreMedia.CMTime, completionHandler: ((Swift.Bool) -> Swift.Void)? = nil)
   @_Concurrency.MainActor(unsafe) open func takeSnapshot(completionHandler: ((_ image: UIKit.UIImage?, _ error: (any Swift.Error)?) -> Swift.Void)?)
 }
-@objc @_inheritsConvenienceInitializers @_Concurrency.MainActor(unsafe) public class PlayerView : UIKit.UIView {
+@objc @_inheritsConvenienceInitializers @_Concurrency.MainActor(unsafe) public class NovaPlayerView : UIKit.UIView {
   @_Concurrency.MainActor(unsafe) @objc override dynamic public class var layerClass: Swift.AnyClass {
     @objc get
   }
@@ -1308,7 +1308,7 @@ extension NovaCore.Player {
     get
     set
   }
-  @_Concurrency.MainActor(unsafe) public var playerFillMode: NovaCore.Player.FillMode {
+  @_Concurrency.MainActor(unsafe) public var playerFillMode: NovaCore.NovaPlayer.FillMode {
     get
     set
   }
@@ -1642,7 +1642,7 @@ public protocol ActionHandling : AnyObject {
   func supportedActions() -> [Swift.String : any Any.Type]
   func performAction(actionModel: NovaCore.ActionModel)
 }
-public struct WebViewNavigationViewModel {
+public struct NovaWebViewNavigationViewModel {
   public let includingStatusBar: Swift.Bool
   public let title: Swift.String?
   public var titleFontSize: CoreFoundation.CGFloat
@@ -1769,7 +1769,7 @@ extension SwiftUI.Font {
   }
   public static let Nova: SwiftUI.Font.NovaFont
 }
-public enum VideoPlayStyle : Swift.String {
+public enum NovaVideoPlayStyle : Swift.String {
   case none
   case feed
   case immersiveFeed
@@ -1781,20 +1781,20 @@ public enum VideoPlayStyle : Swift.String {
     get
   }
 }
-public struct PlayInfo {
-  public init(url: Foundation.URL, playLoops: Swift.Bool, videoDataModel: Any?, playStyle: NovaCore.VideoPlayStyle, isMute: Swift.Bool, disableGesture: Swift.Bool, enableLogging: Swift.Bool = true)
+public struct NovaPlayInfo {
+  public init(url: Foundation.URL, playLoops: Swift.Bool, videoDataModel: Any?, playStyle: NovaCore.NovaVideoPlayStyle, isMute: Swift.Bool, disableGesture: Swift.Bool, enableLogging: Swift.Bool = true)
 }
-public protocol VideoPlayerDelegate : ObjectiveC.NSObjectProtocol {
-  func playerReady(_ player: NovaCore.Player)
-  func playerPlaybackStateDidChange(_ player: NovaCore.Player)
+public protocol NovaVideoPlayerDelegate : ObjectiveC.NSObjectProtocol {
+  func playerReady(_ player: NovaCore.NovaPlayer)
+  func playerPlaybackStateDidChange(_ player: NovaCore.NovaPlayer)
   func playerBufferTimeDidChange(_ bufferTime: Swift.Double)
-  func playerCurrentTimeDidChange(_ player: NovaCore.Player)
-  func playerTimePassed60sAfterPlay(_ player: NovaCore.Player)
-  func player(_ player: NovaCore.Player, didFailWithError error: (any Swift.Error)?)
-  func playerPlaybackWillLoop(_ player: NovaCore.Player)
-  func playerPlaybackDidLoop(_ player: NovaCore.Player)
+  func playerCurrentTimeDidChange(_ player: NovaCore.NovaPlayer)
+  func playerTimePassed60sAfterPlay(_ player: NovaCore.NovaPlayer)
+  func player(_ player: NovaCore.NovaPlayer, didFailWithError error: (any Swift.Error)?)
+  func playerPlaybackWillLoop(_ player: NovaCore.NovaPlayer)
+  func playerPlaybackDidLoop(_ player: NovaCore.NovaPlayer)
 }
-public enum VideoEndKind : Swift.String {
+public enum NovaVideoEndKind : Swift.String {
   case none
   case pause
   case stopLoadingCache
@@ -1812,8 +1812,8 @@ public enum VideoEndKind : Swift.String {
     get
   }
 }
-@objc @_inheritsConvenienceInitializers public class VideoPlayerController : ObjectiveC.NSObject {
-  final public let progressBackgroundBar: NovaCore.VideoProgressView
+@objc @_inheritsConvenienceInitializers public class NovaVideoPlayerController : ObjectiveC.NSObject {
+  final public let progressBackgroundBar: NovaCore.NovaVideoProgressView
   @objc override dynamic public init()
   public func configDisplay(_ display: Swift.Bool)
   public func configPlayImage(image: UIKit.UIImage?, size: CoreFoundation.CGSize)
@@ -1823,41 +1823,41 @@ public enum VideoEndKind : Swift.String {
   public func videoPlayedTimeElapsed() -> Foundation.TimeInterval
   @objc deinit
 }
-extension NovaCore.VideoPlayerController : UIKit.UIGestureRecognizerDelegate {
+extension NovaCore.NovaVideoPlayerController : UIKit.UIGestureRecognizerDelegate {
   @_Concurrency.MainActor(unsafe) @objc dynamic public func gestureRecognizer(_ gestureRecognizer: UIKit.UIGestureRecognizer, shouldReceive touch: UIKit.UITouch) -> Swift.Bool
 }
-extension NovaCore.VideoPlayerController {
+extension NovaCore.NovaVideoPlayerController {
   public func play()
-  public func pause(endKind: NovaCore.VideoEndKind)
-  public func stop(endKind: NovaCore.VideoEndKind)
-  public func endPlay(endKind: NovaCore.VideoEndKind)
+  public func pause(endKind: NovaCore.NovaVideoEndKind)
+  public func stop(endKind: NovaCore.NovaVideoEndKind)
+  public func endPlay(endKind: NovaCore.NovaVideoEndKind)
   public func isPlaying(urlString: Swift.String) -> Swift.Bool
   public func seek(to time: CoreMedia.CMTime, completionHandler: ((Swift.Bool) -> Swift.Void)?)
-  public func play(with info: NovaCore.PlayInfo, actionHandler: (any NovaCore.ActionHandling)?, delegate: any NovaCore.VideoPlayerDelegate)
+  public func play(with info: NovaCore.NovaPlayInfo, actionHandler: (any NovaCore.ActionHandling)?, delegate: any NovaCore.NovaVideoPlayerDelegate)
   public func update(fillMode: AVFoundation.AVLayerVideoGravity)
   public func preload(with url: Foundation.URL)
   public func getPlayerView() -> UIKit.UIView
 }
-extension NovaCore.VideoPlayerController : NovaCore.PlayerDelegate {
-  public func playerReady(_ player: NovaCore.Player)
-  public func playerPlaybackStateDidChange(_ player: NovaCore.Player)
-  public func playerBufferingStateDidChange(_ player: NovaCore.Player)
+extension NovaCore.NovaVideoPlayerController : NovaCore.NovaPlayerDelegate {
+  public func playerReady(_ player: NovaCore.NovaPlayer)
+  public func playerPlaybackStateDidChange(_ player: NovaCore.NovaPlayer)
+  public func playerBufferingStateDidChange(_ player: NovaCore.NovaPlayer)
   public func playerBufferTimeDidChange(_ bufferTime: Swift.Double)
-  public func player(_ player: NovaCore.Player, didFailWithError error: (any Swift.Error)?)
+  public func player(_ player: NovaCore.NovaPlayer, didFailWithError error: (any Swift.Error)?)
 }
-extension NovaCore.VideoPlayerController : NovaCore.PlayerPlaybackDelegate {
-  public func playerCurrentTimeDidChange(_ player: NovaCore.Player)
-  public func playerPlaybackWillStartFromBeginning(_ player: NovaCore.Player)
-  public func playerPlaybackDidEnd(_ player: NovaCore.Player)
-  public func playerPlaybackWillLoop(_ player: NovaCore.Player)
-  public func playerPlaybackDidLoop(_ player: NovaCore.Player)
+extension NovaCore.NovaVideoPlayerController : NovaCore.NovaPlayerPlaybackDelegate {
+  public func playerCurrentTimeDidChange(_ player: NovaCore.NovaPlayer)
+  public func playerPlaybackWillStartFromBeginning(_ player: NovaCore.NovaPlayer)
+  public func playerPlaybackDidEnd(_ player: NovaCore.NovaPlayer)
+  public func playerPlaybackWillLoop(_ player: NovaCore.NovaPlayer)
+  public func playerPlaybackDidLoop(_ player: NovaCore.NovaPlayer)
 }
 @_hasMissingDesignatedInitializers @objc @_Concurrency.MainActor(unsafe) public class NovaAdsLandingWebViewController : UIKit.UIViewController {
   @_Concurrency.MainActor(unsafe) public var initialLoadDidRedirectTo: ((WebKit.WKWebView) -> Swift.Void)?
   @_Concurrency.MainActor(unsafe) public var didGoBackToInitialLoad: ((WebKit.WKWebView) -> Swift.Void)?
   @_Concurrency.MainActor(unsafe) public var webViewDidScroll: ((UIKit.UIScrollView) -> Swift.Void)?
   @_Concurrency.MainActor(unsafe) public var webViewDidEndDragging: ((UIKit.UIScrollView) -> Swift.Void)?
-  @_Concurrency.MainActor(unsafe) public init(dataModel: NovaCore.NovaAdOpenActionDataModel, navigationModel: NovaCore.WebViewNavigationViewModel? = nil, navigationHeight: CoreFoundation.CGFloat? = nil)
+  @_Concurrency.MainActor(unsafe) public init(dataModel: NovaCore.NovaAdOpenActionDataModel, navigationModel: NovaCore.NovaWebViewNavigationViewModel? = nil, navigationHeight: CoreFoundation.CGFloat? = nil)
   @objc deinit
   @_Concurrency.MainActor(unsafe) @objc override dynamic public func viewDidLoad()
   @_Concurrency.MainActor(unsafe) @objc override dynamic public func viewDidDisappear(_ animated: Swift.Bool)
@@ -1865,7 +1865,7 @@ extension NovaCore.VideoPlayerController : NovaCore.PlayerPlaybackDelegate {
   @_Concurrency.MainActor(unsafe) public func changeWebViewTappable(isEnable: Swift.Bool)
   @_Concurrency.MainActor(unsafe) public func setWebView(offset: CoreFoundation.CGPoint)
 }
-extension NovaCore.NovaAdsLandingWebViewController : NovaCore.UnifiedWebViewNavigationDelegate {
+extension NovaCore.NovaAdsLandingWebViewController : NovaCore.NovaUnifiedWebViewNavigationDelegate {
   @_Concurrency.MainActor(unsafe) public func openWebPage(_ url: Foundation.URL)
   @_Concurrency.MainActor(unsafe) public func webView(_ webView: WebKit.WKWebView, didStartProvisionalNavigation navigation: WebKit.WKNavigation!)
   @_Concurrency.MainActor(unsafe) public func webView(_ webView: WebKit.WKWebView, didCommit navigation: WebKit.WKNavigation!)
@@ -1875,7 +1875,7 @@ extension NovaCore.NovaAdsLandingWebViewController : NovaCore.UnifiedWebViewNavi
   @_Concurrency.MainActor(unsafe) public func webViewInitialLoadDidRedirect(_ webView: WebKit.WKWebView)
   @_Concurrency.MainActor(unsafe) public func webViewDidGoBackToInitialLoad(_ webView: WebKit.WKWebView)
 }
-extension NovaCore.NovaAdsLandingWebViewController : NovaCore.WebViewBottomViewDelegate {
+extension NovaCore.NovaAdsLandingWebViewController : NovaCore.NovaWebViewBottomViewDelegate {
   @_Concurrency.MainActor(unsafe) public func bottomViewDidTapBackButton()
   @_Concurrency.MainActor(unsafe) public func bottomViewDidTapForwardButton()
 }
@@ -1886,16 +1886,16 @@ extension NovaCore.NovaAdsLandingWebViewController : UIKit.UIScrollViewDelegate 
 @_hasMissingDesignatedInitializers public class IABMetricReporter {
   @objc deinit
 }
-public protocol WebViewBottomViewDelegate : AnyObject {
+public protocol NovaWebViewBottomViewDelegate : AnyObject {
   func bottomViewDidTapBackButton()
   func bottomViewDidTapForwardButton()
 }
-@objc @_inheritsConvenienceInitializers @_hasMissingDesignatedInitializers @_Concurrency.MainActor(unsafe) public class WebViewBottomView : UIKit.UIView {
-  @_Concurrency.MainActor(unsafe) weak public var delegate: (any NovaCore.WebViewBottomViewDelegate)?
+@objc @_inheritsConvenienceInitializers @_hasMissingDesignatedInitializers @_Concurrency.MainActor(unsafe) public class NovaWebViewBottomView : UIKit.UIView {
+  @_Concurrency.MainActor(unsafe) weak public var delegate: (any NovaCore.NovaWebViewBottomViewDelegate)?
   @_Concurrency.MainActor(unsafe) @objc override dynamic public init(frame: CoreFoundation.CGRect)
   @objc deinit
 }
-extension NovaCore.WebViewBottomView {
+extension NovaCore.NovaWebViewBottomView {
   @_Concurrency.MainActor(unsafe) public func configButton(canGoBack: Swift.Bool? = nil, canGoForward: Swift.Bool? = nil)
 }
 @objc @_inheritsConvenienceInitializers @_hasMissingDesignatedInitializers @_Concurrency.MainActor(unsafe) final public class NovaNativeAdMediaView : UIKit.UIView {
@@ -1911,8 +1911,8 @@ extension NovaCore.NovaNativeAdMediaView {
   @objc @_Concurrency.MainActor(unsafe) final public func didBecomeActive()
   @objc @_Concurrency.MainActor(unsafe) final public func handleVideoOnScreen()
 }
-final public class JSBridgeHandlerMaster {
-  public init(jsBridgeHandlers: [any NovaCore.JSBridgeHandling])
+final public class NovaJSBridgeHandlerMaster {
+  public init(jsBridgeHandlers: [any NovaCore.NovaJSBridgeHandling])
   @objc deinit
 }
 @objc @_inheritsConvenienceInitializers final public class NovaAdOpenActionHandler : ObjectiveC.NSObject {
@@ -2026,9 +2026,9 @@ extension UIKit.UIColor {
 extension NovaCore.NovaAdOpenActionKey : Swift.Equatable {}
 extension NovaCore.NovaAdOpenActionKey : Swift.Hashable {}
 extension NovaCore.NovaAdOpenActionKey : Swift.RawRepresentable {}
-extension NovaCore.VideoLogActionKey : Swift.Equatable {}
-extension NovaCore.VideoLogActionKey : Swift.Hashable {}
-extension NovaCore.VideoLogActionKey : Swift.RawRepresentable {}
+extension NovaCore.NovaVideoLogActionKey : Swift.Equatable {}
+extension NovaCore.NovaVideoLogActionKey : Swift.Hashable {}
+extension NovaCore.NovaVideoLogActionKey : Swift.RawRepresentable {}
 extension NovaCore.NovaIcon.NovaSystem : Swift.Equatable {}
 extension NovaCore.NovaIcon.NovaSystem : Swift.Hashable {}
 extension NovaCore.NovaIcon.NovaSystem : Swift.RawRepresentable {}
@@ -2047,20 +2047,20 @@ extension NovaCore.InteractiveBannerType : Swift.RawRepresentable {}
 extension NovaCore.NovaAdLaunchOption : Swift.Equatable {}
 extension NovaCore.NovaAdLaunchOption : Swift.Hashable {}
 extension NovaCore.NovaAdLaunchOption : Swift.RawRepresentable {}
-extension NovaCore.PlayerError : Swift.Equatable {}
-extension NovaCore.PlayerError : Swift.Hashable {}
-extension NovaCore.Player.PlaybackState : Swift.Equatable {}
-extension NovaCore.Player.PlaybackState : Swift.Hashable {}
-extension NovaCore.Player.PlaybackState : Swift.RawRepresentable {}
-extension NovaCore.Player.BufferingState : Swift.Equatable {}
-extension NovaCore.Player.BufferingState : Swift.Hashable {}
-extension NovaCore.Player.BufferingState : Swift.RawRepresentable {}
+extension NovaCore.NovaPlayerError : Swift.Equatable {}
+extension NovaCore.NovaPlayerError : Swift.Hashable {}
+extension NovaCore.NovaPlayer.PlaybackState : Swift.Equatable {}
+extension NovaCore.NovaPlayer.PlaybackState : Swift.Hashable {}
+extension NovaCore.NovaPlayer.PlaybackState : Swift.RawRepresentable {}
+extension NovaCore.NovaPlayer.BufferingState : Swift.Equatable {}
+extension NovaCore.NovaPlayer.BufferingState : Swift.Hashable {}
+extension NovaCore.NovaPlayer.BufferingState : Swift.RawRepresentable {}
 extension NovaCore.NovaAdSkipReason : Swift.Equatable {}
 extension NovaCore.NovaAdSkipReason : Swift.Hashable {}
 extension NovaCore.NovaAdSkipReason : Swift.RawRepresentable {}
-extension NovaCore.VideoPlayStyle : Swift.Equatable {}
-extension NovaCore.VideoPlayStyle : Swift.Hashable {}
-extension NovaCore.VideoPlayStyle : Swift.RawRepresentable {}
-extension NovaCore.VideoEndKind : Swift.Equatable {}
-extension NovaCore.VideoEndKind : Swift.Hashable {}
-extension NovaCore.VideoEndKind : Swift.RawRepresentable {}
+extension NovaCore.NovaVideoPlayStyle : Swift.Equatable {}
+extension NovaCore.NovaVideoPlayStyle : Swift.Hashable {}
+extension NovaCore.NovaVideoPlayStyle : Swift.RawRepresentable {}
+extension NovaCore.NovaVideoEndKind : Swift.Equatable {}
+extension NovaCore.NovaVideoEndKind : Swift.Hashable {}
+extension NovaCore.NovaVideoEndKind : Swift.RawRepresentable {}
