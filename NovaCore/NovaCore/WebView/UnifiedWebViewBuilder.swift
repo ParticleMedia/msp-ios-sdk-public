@@ -8,7 +8,7 @@
 import Foundation
 import UIKit
 
-public class UnifiedWebViewBuilder {
+public class NovaUnifiedWebViewBuilder {
     /*
     public static func buildWebViewController(urlString: String,
                                               jsBridgeHandlers: [JSBridgeHandling],
@@ -58,19 +58,19 @@ public class UnifiedWebViewBuilder {
 
     public static func buildWebViewHost(enableNBUserAgent: Bool,
                                         enableJSBridge: Bool = true,
-                                        jsBridgeHandlers: [JSBridgeHandling] = [],
+                                        jsBridgeHandlers: [NovaJSBridgeHandling] = [],
                                         blockedURLPrefixes: [String] = [],
-                                        navigationDelegate: UnifiedWebViewNavigationDelegate? = nil,
-                                        headers: [String: String] = [:]) -> UnifiedWebViewHost {
-        let config = UnifiedWebViewConfig(enableJSBridge: enableJSBridge,
+                                        navigationDelegate: NovaUnifiedWebViewNavigationDelegate? = nil,
+                                        headers: [String: String] = [:]) -> NovaUnifiedWebViewHost {
+        let config = NovaUnifiedWebViewConfig(enableJSBridge: enableJSBridge,
                                           enableNBUserAgent: enableNBUserAgent,
                                           blockedURLPrefixes: blockedURLPrefixes,
                                           displayNavigationHeader: true,
                                           navigationTitleText: nil,
                                           goBackByUrlAllowed: false,
                                           headers: headers)
-        let jsBridgeHandlerMaster = enableJSBridge ? JSBridgeHandlerMaster(jsBridgeHandlers: jsBridgeHandlers) : nil
-        return UnifiedWebViewHost(config: config,
+        let jsBridgeHandlerMaster = enableJSBridge ? NovaJSBridgeHandlerMaster(jsBridgeHandlers: jsBridgeHandlers) : nil
+        return NovaUnifiedWebViewHost(config: config,
                                   jsBridgeHandlerMaster: jsBridgeHandlerMaster,
                                   navigationDelegate: navigationDelegate)
     }

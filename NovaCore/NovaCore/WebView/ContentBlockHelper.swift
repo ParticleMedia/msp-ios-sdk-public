@@ -1,7 +1,7 @@
 import WebKit
 import Foundation
 
-class ContentBlockHelper {
+class NovaContentBlockHelper {
     
     static func contentBlockRuleList(for urlPrefixes: [String]) -> WKContentRuleList? {
         let array = urlPrefixes.filter({ !$0.isEmpty })

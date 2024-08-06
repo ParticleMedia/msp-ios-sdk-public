@@ -2,7 +2,7 @@
 
 import Foundation
 
-public struct WebViewNavigationViewModel {
+public struct NovaWebViewNavigationViewModel {
     public let includingStatusBar: Bool
     public let title: String?
     public var titleFontSize: CGFloat = 16
