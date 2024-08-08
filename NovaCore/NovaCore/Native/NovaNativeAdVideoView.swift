@@ -132,7 +132,7 @@ public final class NovaNativeAdVideoView: UIView {
 
     private let volumnOffImage = UIImage.Nova.volumeOffLine?.withTintColor(NovaColorPalettes.White)
 
-    private var videoPlayer: VideoPlayer?
+    private var videoPlayer: NovaVideoPlayer?
 
     private var videoInfo: NovaNativeAdVideoInfo?
     private var encryptedAdToken: String?
@@ -419,7 +419,7 @@ private extension NovaNativeAdVideoView {
         lastResumeTime = resumeTime
     }
 
-    func pauseVideo(endKind: VideoEndKind) {
+    func pauseVideo(endKind: NovaVideoEndKind) {
         guard let videoPlayer = videoPlayer else {
             return
         }
@@ -469,7 +469,7 @@ private extension NovaNativeAdVideoView {
             assertionFailure("Invalid video url: \(videoInfo.videoUrlStr)")
             return
         }
-        guard let videoPlayer = VideoPlayerCacheHandler
+        guard let videoPlayer = NovaVideoPlayerCacheHandler
             .shared
             .getCachedVideoControllerForURL(videoUrl, cacheKey: videoInfo.cacheKey) else {
             return
@@ -489,7 +489,7 @@ private extension NovaNativeAdVideoView {
             playerView.bottomAnchor.constraint(equalTo: bottomAnchor),
             playerView.trailingAnchor.constraint(equalTo: trailingAnchor),
         ])
-        let playInfo = PlayInfo(url: videoUrl,
+        let playInfo = NovaPlayInfo(url: videoUrl,
                                 playLoops: videoInfo.isLoop,
                                 videoDataModel: nil,
                                 playStyle: .feed,
@@ -602,7 +602,7 @@ private extension NovaNativeAdVideoView {
         }
     }
 
-    func updateVideoInfoState(_ player: Player) {
+    func updateVideoInfoState(_ player: NovaPlayer) {
         guard let videoPlayer, let videoInfo else {
             return
         }
@@ -620,10 +620,10 @@ private extension NovaNativeAdVideoView {
 
 // MARK: - VideoPlayerDelegate
 
-extension NovaNativeAdVideoView: VideoPlayerDelegate {
-    public func playerReady(_ player: Player) {}
+extension NovaNativeAdVideoView: NovaVideoPlayerDelegate {
+    public func playerReady(_ player: NovaPlayer) {}
 
-    public func playerPlaybackStateDidChange(_ player: Player) {
+    public func playerPlaybackStateDidChange(_ player: NovaPlayer) {
         guard let videoPlayer = videoPlayer else {
             return
         }
@@ -649,7 +649,7 @@ extension NovaNativeAdVideoView: VideoPlayerDelegate {
     public func playerBufferTimeDidChange(_ bufferTime: Double) {
     }
 
-    public func playerCurrentTimeDidChange(_ player: Player) {
+    public func playerCurrentTimeDidChange(_ player: NovaPlayer) {
         guard let videoPlayer = videoPlayer else {
             return
         }
@@ -696,10 +696,10 @@ extension NovaNativeAdVideoView: VideoPlayerDelegate {
         //iabReporter?.logVideoProgress(percentage: videoCurrent / videoLength)
     }
 
-    public func playerTimePassed60sAfterPlay(_ player: Player) {
+    public func playerTimePassed60sAfterPlay(_ player: NovaPlayer) {
     }
 
-    public func player(_ player: Player, didFailWithError error: Error?) {
+    public func player(_ player: NovaPlayer, didFailWithError error: Error?) {
         if let encryptedAdToken, let configTime {
             NovaAdVideoMetricReporter.logVideoError(encryptedAdToken: encryptedAdToken,
                                                     error: error?.localizedDescription ?? "",
@@ -707,10 +707,10 @@ extension NovaNativeAdVideoView: VideoPlayerDelegate {
         }
     }
 
-    public func playerPlaybackWillLoop(_ player: Player) {
+    public func playerPlaybackWillLoop(_ player: NovaPlayer) {
     }
 
-    public func playerPlaybackDidLoop(_ player: Player) {
+    public func playerPlaybackDidLoop(_ player: NovaPlayer) {
     }
 }
 

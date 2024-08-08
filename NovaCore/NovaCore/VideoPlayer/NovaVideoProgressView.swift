@@ -2,7 +2,7 @@ import Foundation
 import UIKit
 //import NBColorPalettes
 
-public class VideoProgressView: UIView {
+public class NovaVideoProgressView: UIView {
 
     private let progressTrackWidth: CGFloat = 8.0
 

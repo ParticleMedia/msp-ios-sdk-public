@@ -47,7 +47,7 @@ public class NovaAdsVideoLandingWebViewController: UIViewController {
             }
             return videoView
         }()
-        let navigationModel = WebViewNavigationViewModel(
+        let navigationModel = NovaWebViewNavigationViewModel(
             includingStatusBar: false,
             title: nil,
             hideLeftButton: true,

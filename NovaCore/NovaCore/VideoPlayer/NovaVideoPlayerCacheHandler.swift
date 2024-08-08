@@ -1,13 +1,13 @@
 import Foundation
 
-@objc public class VideoPlayerCacheHandler: NSObject {
+@objc public class NovaVideoPlayerCacheHandler: NSObject {
 
-    @objc public static let shared = VideoPlayerCacheHandler()
+    @objc public static let shared = NovaVideoPlayerCacheHandler()
 
-    private var videoMap = [String: VideoPlayer]()
+    private var videoMap = [String: NovaVideoPlayer]()
 
     //get the video player for url
-    public func getCachedVideoControllerForURL(_ url: URL, cacheKey: String) -> VideoPlayer? {
+    public func getCachedVideoControllerForURL(_ url: URL, cacheKey: String) -> NovaVideoPlayer? {
         if let playerController = videoMap[cacheKey] {
             return playerController
         } else {
@@ -18,12 +18,12 @@ import Foundation
 
     //get the player to preload the url
     @objc public func getControllerToPreload(cacheKey: String, url: URL) {
-        let controller: VideoPlayer
+        let controller: NovaVideoPlayer
 
         if let c = videoMap[cacheKey] {
             controller = c
         } else {
-            controller = VideoPlayer()
+            controller = NovaVideoPlayer()
             self.videoMap[cacheKey] = controller
         }
 
