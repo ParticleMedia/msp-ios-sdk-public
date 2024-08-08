@@ -39,15 +39,15 @@ class ViewController: UIViewController {
                                   placementId: "msp-ios-foryou-large-display-prod2",
                                   adFormat: .native,
                                   isCacheSupported: true)
-        adLoader.loadAd(placementId: "msp-ios-foryou-large-display-prod2",
-                        adListener: self,
-                        context: self,
-                        adRequest: adRequest,
-                        rootViewController:self)
+        //adLoader.loadAd(placementId: "msp-ios-foryou-large-display-prod2",
+        //                adListener: self,
+        //                context: self,
+        //                adRequest: adRequest,
+        //                rootViewController:self)
         
         //To test a ad creative
-        //let novaAdLoader = MSP.shared.adNetworkAdapterProvider.getAdNetworkAdapterByName(adNetworkName: "Nova") as? NovaAdLoader
-        //novaAdLoader?.loadTestAdCreative(adString:testAdString, adListener: self, context: self, adRequest: adRequest)
+        let novaAdLoader = MSP.shared.adNetworkAdapterProvider.getAdNetworkAdapterByName(adNetworkName: "Nova") as? NovaAdapter
+        novaAdLoader?.loadTestAdCreative(adString:testAdImmersiveString, adListener: self, context: self, adRequest: adRequest)
     }
 
 

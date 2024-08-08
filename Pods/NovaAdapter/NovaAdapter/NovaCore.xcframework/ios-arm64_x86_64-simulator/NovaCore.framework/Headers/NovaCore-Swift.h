@@ -317,112 +317,6 @@ SWIFT_CLASS("_TtC8NovaCore14CheckBoxButton")
 - (nullable instancetype)initWithCoder:(NSCoder * _Nonnull)coder SWIFT_UNAVAILABLE;
 @end
 
-@class UIColor;
-
-/// Standard color palettes are defined at
-/// https://www.figma.com/file/az2QtfMgOx1SK2q78WVu71/Design-System—Foundations?node-id=311%3A1224
-SWIFT_CLASS("_TtC8NovaCore13ColorPalettes")
-@interface ColorPalettes : NSObject
-@property (nonatomic, readonly, strong) UIColor * _Nonnull tint50;
-@property (nonatomic, readonly, strong) UIColor * _Nonnull tint100;
-@property (nonatomic, readonly, strong) UIColor * _Nonnull tint200;
-@property (nonatomic, readonly, strong) UIColor * _Nonnull tint300;
-@property (nonatomic, readonly, strong) UIColor * _Nonnull tint400;
-@property (nonatomic, readonly, strong) UIColor * _Nonnull tint500;
-@property (nonatomic, readonly, strong) UIColor * _Nonnull tint600;
-@property (nonatomic, readonly, strong) UIColor * _Nonnull tint700;
-@property (nonatomic, readonly, strong) UIColor * _Nonnull tint800;
-@property (nonatomic, readonly, strong) UIColor * _Nonnull tint900;
-@property (nonatomic, readonly, strong) UIColor * _Nullable tint950;
-SWIFT_CLASS_PROPERTY(@property (nonatomic, class, readonly, strong) UIColor * _Nonnull Black;)
-+ (UIColor * _Nonnull)Black SWIFT_WARN_UNUSED_RESULT;
-SWIFT_CLASS_PROPERTY(@property (nonatomic, class, readonly, strong) UIColor * _Nonnull White;)
-+ (UIColor * _Nonnull)White SWIFT_WARN_UNUSED_RESULT;
-SWIFT_CLASS_PROPERTY(@property (nonatomic, class, readonly, strong) ColorPalettes * _Nonnull Gray;)
-+ (ColorPalettes * _Nonnull)Gray SWIFT_WARN_UNUSED_RESULT;
-SWIFT_CLASS_PROPERTY(@property (nonatomic, class, readonly, strong) ColorPalettes * _Nonnull App;)
-+ (ColorPalettes * _Nonnull)App SWIFT_WARN_UNUSED_RESULT;
-SWIFT_CLASS_PROPERTY(@property (nonatomic, class, readonly, strong) ColorPalettes * _Nonnull Blue;)
-+ (ColorPalettes * _Nonnull)Blue SWIFT_WARN_UNUSED_RESULT;
-SWIFT_CLASS_PROPERTY(@property (nonatomic, class, readonly, strong) ColorPalettes * _Nonnull Green;)
-+ (ColorPalettes * _Nonnull)Green SWIFT_WARN_UNUSED_RESULT;
-SWIFT_CLASS_PROPERTY(@property (nonatomic, class, readonly, strong) ColorPalettes * _Nonnull Orange;)
-+ (ColorPalettes * _Nonnull)Orange SWIFT_WARN_UNUSED_RESULT;
-SWIFT_CLASS_PROPERTY(@property (nonatomic, class, readonly, strong) ColorPalettes * _Nonnull Yellow;)
-+ (ColorPalettes * _Nonnull)Yellow SWIFT_WARN_UNUSED_RESULT;
-SWIFT_CLASS_PROPERTY(@property (nonatomic, class, readonly, strong) ColorPalettes * _Nonnull Magenta;)
-+ (ColorPalettes * _Nonnull)Magenta SWIFT_WARN_UNUSED_RESULT;
-SWIFT_CLASS_PROPERTY(@property (nonatomic, class, readonly, strong) ColorPalettes * _Nonnull Purple;)
-+ (ColorPalettes * _Nonnull)Purple SWIFT_WARN_UNUSED_RESULT;
-SWIFT_CLASS_PROPERTY(@property (nonatomic, class, readonly, strong) ColorPalettes * _Nonnull Skyblue;)
-+ (ColorPalettes * _Nonnull)Skyblue SWIFT_WARN_UNUSED_RESULT;
-SWIFT_CLASS_PROPERTY(@property (nonatomic, class, readonly, strong) ColorPalettes * _Nonnull Sapphire;)
-+ (ColorPalettes * _Nonnull)Sapphire SWIFT_WARN_UNUSED_RESULT;
-- (nonnull instancetype)init SWIFT_UNAVAILABLE;
-+ (nonnull instancetype)new SWIFT_UNAVAILABLE_MSG("-init is unavailable");
-@end
-
-
-SWIFT_CLASS("_TtC8NovaCore4Icon")
-@interface Icon : NSObject
-- (nonnull instancetype)init SWIFT_UNAVAILABLE;
-+ (nonnull instancetype)new SWIFT_UNAVAILABLE_MSG("-init is unavailable");
-@end
-
-
-@interface Icon (SWIFT_EXTENSION(NovaCore))
-@end
-
-typedef SWIFT_ENUM(NSInteger, System, open) {
-  SystemArrowLeftOutline = 0,
-  SystemBellFilled = 1,
-  SystemBellOutline = 2,
-  SystemBreezeFilled = 3,
-  SystemBreezeOutline = 4,
-  SystemCameraOutline = 5,
-  SystemChartBarOutline = 6,
-  SystemCheckCircleFilled = 7,
-  SystemCheckCircleOutline = 8,
-  SystemChevronDownFilled = 9,
-  SystemChevronDownOutline = 10,
-  SystemChevronLeftFilled = 11,
-  SystemChevronLeftOutline = 12,
-  SystemChevronRightFilled = 13,
-  SystemChevronRightOutline = 14,
-  SystemChevronUpFilled = 15,
-  SystemClockOutline = 16,
-  SystemCrossFilled = 17,
-  SystemCrossOutline = 18,
-  SystemCrossCircleFilled = 19,
-  SystemCrossCircleOutline = 20,
-  SystemEllipsisHorizontalOutline = 21,
-  SystemEllipsisVerticalFilled = 22,
-  SystemExclamationCircleOutline = 23,
-  SystemExclamationTriangleOutline = 24,
-  SystemGlobeOutline = 25,
-  SystemHashtagOutline = 26,
-  SystemHeartOutline = 27,
-  SystemImageOutline = 28,
-  SystemLinkOutline = 29,
-  SystemLocationOutline = 30,
-  SystemMoneyOutline = 31,
-  SystemNavigationArrowOutline = 32,
-  SystemNewsbreakOutline = 33,
-  SystemPeopleFilled = 34,
-  SystemPeopleOutline = 35,
-  SystemPlayFilled = 36,
-  SystemPlusOutline = 37,
-  SystemProhibitOutline = 38,
-  SystemShareOutline = 39,
-  SystemShieldErrorOutline = 40,
-  SystemTrashOutline = 41,
-  SystemVideoClipFilled = 42,
-  SystemVideoClipOutline = 43,
-  SystemMagicOutline = 44,
-  SystemMagicStarFilled = 45,
-  SystemHomeOutline = 46,
-};
-
 typedef SWIFT_ENUM(NSInteger, MetricEvent, open) {
   MetricEventFacebookLogin = 0,
   MetricEventFeedbackTextSubmitted = 1,
@@ -723,6 +617,112 @@ SWIFT_CLASS("_TtC8NovaCore10NovaBaseAd")
 + (nonnull instancetype)new SWIFT_UNAVAILABLE_MSG("-init is unavailable");
 @end
 
+@class UIColor;
+
+/// Standard color palettes are defined at
+/// https://www.figma.com/file/az2QtfMgOx1SK2q78WVu71/Design-System—Foundations?node-id=311%3A1224
+SWIFT_CLASS("_TtC8NovaCore17NovaColorPalettes")
+@interface NovaColorPalettes : NSObject
+@property (nonatomic, readonly, strong) UIColor * _Nonnull tint50;
+@property (nonatomic, readonly, strong) UIColor * _Nonnull tint100;
+@property (nonatomic, readonly, strong) UIColor * _Nonnull tint200;
+@property (nonatomic, readonly, strong) UIColor * _Nonnull tint300;
+@property (nonatomic, readonly, strong) UIColor * _Nonnull tint400;
+@property (nonatomic, readonly, strong) UIColor * _Nonnull tint500;
+@property (nonatomic, readonly, strong) UIColor * _Nonnull tint600;
+@property (nonatomic, readonly, strong) UIColor * _Nonnull tint700;
+@property (nonatomic, readonly, strong) UIColor * _Nonnull tint800;
+@property (nonatomic, readonly, strong) UIColor * _Nonnull tint900;
+@property (nonatomic, readonly, strong) UIColor * _Nullable tint950;
+SWIFT_CLASS_PROPERTY(@property (nonatomic, class, readonly, strong) UIColor * _Nonnull Black;)
++ (UIColor * _Nonnull)Black SWIFT_WARN_UNUSED_RESULT;
+SWIFT_CLASS_PROPERTY(@property (nonatomic, class, readonly, strong) UIColor * _Nonnull White;)
++ (UIColor * _Nonnull)White SWIFT_WARN_UNUSED_RESULT;
+SWIFT_CLASS_PROPERTY(@property (nonatomic, class, readonly, strong) NovaColorPalettes * _Nonnull Gray;)
++ (NovaColorPalettes * _Nonnull)Gray SWIFT_WARN_UNUSED_RESULT;
+SWIFT_CLASS_PROPERTY(@property (nonatomic, class, readonly, strong) NovaColorPalettes * _Nonnull App;)
++ (NovaColorPalettes * _Nonnull)App SWIFT_WARN_UNUSED_RESULT;
+SWIFT_CLASS_PROPERTY(@property (nonatomic, class, readonly, strong) NovaColorPalettes * _Nonnull Blue;)
++ (NovaColorPalettes * _Nonnull)Blue SWIFT_WARN_UNUSED_RESULT;
+SWIFT_CLASS_PROPERTY(@property (nonatomic, class, readonly, strong) NovaColorPalettes * _Nonnull Green;)
++ (NovaColorPalettes * _Nonnull)Green SWIFT_WARN_UNUSED_RESULT;
+SWIFT_CLASS_PROPERTY(@property (nonatomic, class, readonly, strong) NovaColorPalettes * _Nonnull Orange;)
++ (NovaColorPalettes * _Nonnull)Orange SWIFT_WARN_UNUSED_RESULT;
+SWIFT_CLASS_PROPERTY(@property (nonatomic, class, readonly, strong) NovaColorPalettes * _Nonnull Yellow;)
++ (NovaColorPalettes * _Nonnull)Yellow SWIFT_WARN_UNUSED_RESULT;
+SWIFT_CLASS_PROPERTY(@property (nonatomic, class, readonly, strong) NovaColorPalettes * _Nonnull Magenta;)
++ (NovaColorPalettes * _Nonnull)Magenta SWIFT_WARN_UNUSED_RESULT;
+SWIFT_CLASS_PROPERTY(@property (nonatomic, class, readonly, strong) NovaColorPalettes * _Nonnull Purple;)
++ (NovaColorPalettes * _Nonnull)Purple SWIFT_WARN_UNUSED_RESULT;
+SWIFT_CLASS_PROPERTY(@property (nonatomic, class, readonly, strong) NovaColorPalettes * _Nonnull Skyblue;)
++ (NovaColorPalettes * _Nonnull)Skyblue SWIFT_WARN_UNUSED_RESULT;
+SWIFT_CLASS_PROPERTY(@property (nonatomic, class, readonly, strong) NovaColorPalettes * _Nonnull Sapphire;)
++ (NovaColorPalettes * _Nonnull)Sapphire SWIFT_WARN_UNUSED_RESULT;
+- (nonnull instancetype)init SWIFT_UNAVAILABLE;
++ (nonnull instancetype)new SWIFT_UNAVAILABLE_MSG("-init is unavailable");
+@end
+
+
+SWIFT_CLASS("_TtC8NovaCore8NovaIcon")
+@interface NovaIcon : NSObject
+- (nonnull instancetype)init SWIFT_UNAVAILABLE;
++ (nonnull instancetype)new SWIFT_UNAVAILABLE_MSG("-init is unavailable");
+@end
+
+
+@interface NovaIcon (SWIFT_EXTENSION(NovaCore))
+@end
+
+typedef SWIFT_ENUM(NSInteger, NovaSystem, open) {
+  NovaSystemArrowLeftOutline = 0,
+  NovaSystemBellFilled = 1,
+  NovaSystemBellOutline = 2,
+  NovaSystemBreezeFilled = 3,
+  NovaSystemBreezeOutline = 4,
+  NovaSystemCameraOutline = 5,
+  NovaSystemChartBarOutline = 6,
+  NovaSystemCheckCircleFilled = 7,
+  NovaSystemCheckCircleOutline = 8,
+  NovaSystemChevronDownFilled = 9,
+  NovaSystemChevronDownOutline = 10,
+  NovaSystemChevronLeftFilled = 11,
+  NovaSystemChevronLeftOutline = 12,
+  NovaSystemChevronRightFilled = 13,
+  NovaSystemChevronRightOutline = 14,
+  NovaSystemChevronUpFilled = 15,
+  NovaSystemClockOutline = 16,
+  NovaSystemCrossFilled = 17,
+  NovaSystemCrossOutline = 18,
+  NovaSystemCrossCircleFilled = 19,
+  NovaSystemCrossCircleOutline = 20,
+  NovaSystemEllipsisHorizontalOutline = 21,
+  NovaSystemEllipsisVerticalFilled = 22,
+  NovaSystemExclamationCircleOutline = 23,
+  NovaSystemExclamationTriangleOutline = 24,
+  NovaSystemGlobeOutline = 25,
+  NovaSystemHashtagOutline = 26,
+  NovaSystemHeartOutline = 27,
+  NovaSystemImageOutline = 28,
+  NovaSystemLinkOutline = 29,
+  NovaSystemLocationOutline = 30,
+  NovaSystemMoneyOutline = 31,
+  NovaSystemNavigationArrowOutline = 32,
+  NovaSystemNewsbreakOutline = 33,
+  NovaSystemPeopleFilled = 34,
+  NovaSystemPeopleOutline = 35,
+  NovaSystemPlayFilled = 36,
+  NovaSystemPlusOutline = 37,
+  NovaSystemProhibitOutline = 38,
+  NovaSystemShareOutline = 39,
+  NovaSystemShieldErrorOutline = 40,
+  NovaSystemTrashOutline = 41,
+  NovaSystemVideoClipFilled = 42,
+  NovaSystemVideoClipOutline = 43,
+  NovaSystemMagicOutline = 44,
+  NovaSystemMagicStarFilled = 45,
+  NovaSystemHomeOutline = 46,
+};
+
 @class NovaNativeAdItem;
 
 SWIFT_PROTOCOL("_TtP8NovaCore20NovaNativeAdDelegate_")
@@ -800,7 +800,6 @@ SWIFT_CLASS("_TtC8NovaCore16NovaNativeAdView")
 @end
 
 
-
 @interface NovaNativeAdView (SWIFT_EXTENSION(NovaCore))
 - (void)register:(NovaNativeAdItem * _Nonnull)nativeAd;
 @end
@@ -808,9 +807,10 @@ SWIFT_CLASS("_TtC8NovaCore16NovaNativeAdView")
 
 
 
+
 /// ▶️ Player, simple way to play and stream media
-SWIFT_CLASS("_TtC8NovaCore6Player")
-@interface Player : UIViewController
+SWIFT_CLASS("_TtC8NovaCore10NovaPlayer")
+@interface NovaPlayer : UIViewController
 - (nonnull instancetype)init;
 - (nullable instancetype)initWithCoder:(NSCoder * _Nonnull)aDecoder OBJC_DESIGNATED_INITIALIZER;
 - (nonnull instancetype)initWithNibName:(NSString * _Nullable)nibNameOrNil bundle:(NSBundle * _Nullable)nibBundleOrNil OBJC_DESIGNATED_INITIALIZER;
@@ -826,8 +826,8 @@ SWIFT_CLASS("_TtC8NovaCore6Player")
 
 
 
-SWIFT_CLASS("_TtC8NovaCore10PlayerView")
-@interface PlayerView : UIView
+SWIFT_CLASS("_TtC8NovaCore14NovaPlayerView")
+@interface NovaPlayerView : UIView
 SWIFT_CLASS_PROPERTY(@property (nonatomic, class, readonly) Class _Nonnull layerClass;)
 + (Class _Nonnull)layerClass SWIFT_WARN_UNUSED_RESULT;
 - (nonnull instancetype)initWithFrame:(CGRect)frame OBJC_DESIGNATED_INITIALIZER;
@@ -835,8 +835,107 @@ SWIFT_CLASS_PROPERTY(@property (nonatomic, class, readonly) Class _Nonnull layer
 @end
 
 
+SWIFT_CLASS("_TtC8NovaCore22NovaUnifiedWebViewHost")
+@interface NovaUnifiedWebViewHost : NSObject
+- (nonnull instancetype)init SWIFT_UNAVAILABLE;
++ (nonnull instancetype)new SWIFT_UNAVAILABLE_MSG("-init is unavailable");
+@end
+
+@class WKUserContentController;
+@class WKScriptMessage;
+
+@interface NovaUnifiedWebViewHost (SWIFT_EXTENSION(NovaCore)) <WKScriptMessageHandler>
+- (void)userContentController:(WKUserContentController * _Nonnull)userContentController didReceiveScriptMessage:(WKScriptMessage * _Nonnull)message;
+@end
+
+@class WKWebView;
+@class WKWebViewConfiguration;
+@class WKNavigationAction;
+@class WKWindowFeatures;
+
+@interface NovaUnifiedWebViewHost (SWIFT_EXTENSION(NovaCore)) <WKUIDelegate>
+- (WKWebView * _Nullable)webView:(WKWebView * _Nonnull)webView createWebViewWithConfiguration:(WKWebViewConfiguration * _Nonnull)configuration forNavigationAction:(WKNavigationAction * _Nonnull)navigationAction windowFeatures:(WKWindowFeatures * _Nonnull)windowFeatures SWIFT_WARN_UNUSED_RESULT;
+@end
+
+@class WKNavigation;
+@class WKWebpagePreferences;
+@class WKNavigationResponse;
+
+@interface NovaUnifiedWebViewHost (SWIFT_EXTENSION(NovaCore)) <WKNavigationDelegate>
+- (void)webView:(WKWebView * _Nonnull)webView didCommitNavigation:(WKNavigation * _Null_unspecified)navigation;
+- (void)webView:(WKWebView * _Nonnull)webView didStartProvisionalNavigation:(WKNavigation * _Null_unspecified)navigation;
+- (void)webView:(WKWebView * _Nonnull)webView decidePolicyForNavigationAction:(WKNavigationAction * _Nonnull)navigationAction preferences:(WKWebpagePreferences * _Nonnull)preferences decisionHandler:(void (^ _Nonnull)(WKNavigationActionPolicy, WKWebpagePreferences * _Nonnull))decisionHandler;
+- (void)webView:(WKWebView * _Nonnull)webView decidePolicyForNavigationAction:(WKNavigationAction * _Nonnull)navigationAction decisionHandler:(void (^ _Nonnull)(WKNavigationActionPolicy))decisionHandler;
+- (void)webView:(WKWebView * _Nonnull)webView decidePolicyForNavigationResponse:(WKNavigationResponse * _Nonnull)navigationResponse decisionHandler:(void (^ _Nonnull)(WKNavigationResponsePolicy))decisionHandler;
+- (void)webView:(WKWebView * _Nonnull)webView didFinishNavigation:(WKNavigation * _Null_unspecified)navigation;
+- (void)webView:(WKWebView * _Nonnull)webView didFailProvisionalNavigation:(WKNavigation * _Null_unspecified)navigation withError:(NSError * _Nonnull)error;
+- (void)webViewWebContentProcessDidTerminate:(WKWebView * _Nonnull)webView;
+@end
+
+
+SWIFT_CLASS("_TtC8NovaCore15NovaVideoPlayer")
+@interface NovaVideoPlayer : NSObject
+- (nonnull instancetype)init OBJC_DESIGNATED_INITIALIZER;
+@end
+
+
+
+
+
+@class NSURL;
+
+SWIFT_CLASS("_TtC8NovaCore27NovaVideoPlayerCacheHandler")
+@interface NovaVideoPlayerCacheHandler : NSObject
+SWIFT_CLASS_PROPERTY(@property (nonatomic, class, readonly, strong) NovaVideoPlayerCacheHandler * _Nonnull shared;)
++ (NovaVideoPlayerCacheHandler * _Nonnull)shared SWIFT_WARN_UNUSED_RESULT;
+- (void)getControllerToPreloadWithCacheKey:(NSString * _Nonnull)cacheKey url:(NSURL * _Nonnull)url;
+- (nonnull instancetype)init OBJC_DESIGNATED_INITIALIZER;
+@end
+
+
+SWIFT_CLASS("_TtC8NovaCore25NovaVideoPlayerController")
+@interface NovaVideoPlayerController : NSObject
+- (nonnull instancetype)init OBJC_DESIGNATED_INITIALIZER;
+@end
+
+
+@class UIGestureRecognizer;
+@class UITouch;
+
+@interface NovaVideoPlayerController (SWIFT_EXTENSION(NovaCore)) <UIGestureRecognizerDelegate>
+- (BOOL)gestureRecognizer:(UIGestureRecognizer * _Nonnull)gestureRecognizer shouldReceiveTouch:(UITouch * _Nonnull)touch SWIFT_WARN_UNUSED_RESULT;
+@end
+
+
+
+
+
+SWIFT_CLASS("_TtC8NovaCore21NovaVideoProgressView")
+@interface NovaVideoProgressView : UIView
+- (nonnull instancetype)init OBJC_DESIGNATED_INITIALIZER;
+- (nullable instancetype)initWithCoder:(NSCoder * _Nonnull)coder SWIFT_UNAVAILABLE;
+- (nonnull instancetype)initWithFrame:(CGRect)frame SWIFT_UNAVAILABLE;
+@end
+
+
+SWIFT_CLASS("_TtC8NovaCore21NovaWebViewBottomView")
+@interface NovaWebViewBottomView : UIView
+- (nonnull instancetype)initWithFrame:(CGRect)frame OBJC_DESIGNATED_INITIALIZER;
+- (nullable instancetype)initWithCoder:(NSCoder * _Nonnull)coder SWIFT_UNAVAILABLE;
+@end
+
+
+
+
+SWIFT_CLASS("_TtC8NovaCore25NovaWebViewNavigationView")
+@interface NovaWebViewNavigationView : UIView
+- (nonnull instancetype)initWithFrame:(CGRect)frame OBJC_DESIGNATED_INITIALIZER;
+- (nullable instancetype)initWithCoder:(NSCoder * _Nonnull)coder SWIFT_UNAVAILABLE;
+@end
+
+
 @interface UIApplication (SWIFT_EXTENSION(NovaCore))
-@property (nonatomic, readonly) UIEdgeInsets nb_safeAreaInsets;
+@property (nonatomic, readonly) UIEdgeInsets nova_safeAreaInsets;
 @end
 
 
@@ -867,11 +966,11 @@ SWIFT_CLASS_PROPERTY(@property (nonatomic, class, readonly) Class _Nonnull layer
 
 
 
-
 @interface UIImage (SWIFT_EXTENSION(NovaCore))
-- (nullable instancetype)initWithSystemName:(enum System)systemName;
-- (nullable instancetype)initWithSystemName:(enum System)systemName tintColor:(UIColor * _Nonnull)tintColor;
+- (nullable instancetype)initWithNovasystemName:(enum NovaSystem)novasystemName;
+- (nullable instancetype)initWithNovasystemName:(enum NovaSystem)novasystemName tintColor:(UIColor * _Nonnull)tintColor;
 @end
+
 
 
 
@@ -881,106 +980,7 @@ SWIFT_CLASS_PROPERTY(@property (nonatomic, class, readonly) Class _Nonnull layer
 
 
 @interface UIView (SWIFT_EXTENSION(NovaCore))
-@property (nonatomic, readonly) BOOL nb_isPartiallyVisibleOnScreen;
-@end
-
-
-SWIFT_CLASS("_TtC8NovaCore18UnifiedWebViewHost")
-@interface UnifiedWebViewHost : NSObject
-- (nonnull instancetype)init SWIFT_UNAVAILABLE;
-+ (nonnull instancetype)new SWIFT_UNAVAILABLE_MSG("-init is unavailable");
-@end
-
-@class WKWebView;
-@class WKWebViewConfiguration;
-@class WKNavigationAction;
-@class WKWindowFeatures;
-
-@interface UnifiedWebViewHost (SWIFT_EXTENSION(NovaCore)) <WKUIDelegate>
-- (WKWebView * _Nullable)webView:(WKWebView * _Nonnull)webView createWebViewWithConfiguration:(WKWebViewConfiguration * _Nonnull)configuration forNavigationAction:(WKNavigationAction * _Nonnull)navigationAction windowFeatures:(WKWindowFeatures * _Nonnull)windowFeatures SWIFT_WARN_UNUSED_RESULT;
-@end
-
-@class WKUserContentController;
-@class WKScriptMessage;
-
-@interface UnifiedWebViewHost (SWIFT_EXTENSION(NovaCore)) <WKScriptMessageHandler>
-- (void)userContentController:(WKUserContentController * _Nonnull)userContentController didReceiveScriptMessage:(WKScriptMessage * _Nonnull)message;
-@end
-
-@class WKNavigation;
-@class WKWebpagePreferences;
-@class WKNavigationResponse;
-
-@interface UnifiedWebViewHost (SWIFT_EXTENSION(NovaCore)) <WKNavigationDelegate>
-- (void)webView:(WKWebView * _Nonnull)webView didCommitNavigation:(WKNavigation * _Null_unspecified)navigation;
-- (void)webView:(WKWebView * _Nonnull)webView didStartProvisionalNavigation:(WKNavigation * _Null_unspecified)navigation;
-- (void)webView:(WKWebView * _Nonnull)webView decidePolicyForNavigationAction:(WKNavigationAction * _Nonnull)navigationAction preferences:(WKWebpagePreferences * _Nonnull)preferences decisionHandler:(void (^ _Nonnull)(WKNavigationActionPolicy, WKWebpagePreferences * _Nonnull))decisionHandler;
-- (void)webView:(WKWebView * _Nonnull)webView decidePolicyForNavigationAction:(WKNavigationAction * _Nonnull)navigationAction decisionHandler:(void (^ _Nonnull)(WKNavigationActionPolicy))decisionHandler;
-- (void)webView:(WKWebView * _Nonnull)webView decidePolicyForNavigationResponse:(WKNavigationResponse * _Nonnull)navigationResponse decisionHandler:(void (^ _Nonnull)(WKNavigationResponsePolicy))decisionHandler;
-- (void)webView:(WKWebView * _Nonnull)webView didFinishNavigation:(WKNavigation * _Null_unspecified)navigation;
-- (void)webView:(WKWebView * _Nonnull)webView didFailProvisionalNavigation:(WKNavigation * _Null_unspecified)navigation withError:(NSError * _Nonnull)error;
-- (void)webViewWebContentProcessDidTerminate:(WKWebView * _Nonnull)webView;
-@end
-
-
-SWIFT_CLASS("_TtC8NovaCore11VideoPlayer")
-@interface VideoPlayer : NSObject
-- (nonnull instancetype)init OBJC_DESIGNATED_INITIALIZER;
-@end
-
-
-
-
-
-@class NSURL;
-
-SWIFT_CLASS("_TtC8NovaCore23VideoPlayerCacheHandler")
-@interface VideoPlayerCacheHandler : NSObject
-SWIFT_CLASS_PROPERTY(@property (nonatomic, class, readonly, strong) VideoPlayerCacheHandler * _Nonnull shared;)
-+ (VideoPlayerCacheHandler * _Nonnull)shared SWIFT_WARN_UNUSED_RESULT;
-- (void)getControllerToPreloadWithCacheKey:(NSString * _Nonnull)cacheKey url:(NSURL * _Nonnull)url;
-- (nonnull instancetype)init OBJC_DESIGNATED_INITIALIZER;
-@end
-
-
-SWIFT_CLASS("_TtC8NovaCore21VideoPlayerController")
-@interface VideoPlayerController : NSObject
-- (nonnull instancetype)init OBJC_DESIGNATED_INITIALIZER;
-@end
-
-
-@class UIGestureRecognizer;
-@class UITouch;
-
-@interface VideoPlayerController (SWIFT_EXTENSION(NovaCore)) <UIGestureRecognizerDelegate>
-- (BOOL)gestureRecognizer:(UIGestureRecognizer * _Nonnull)gestureRecognizer shouldReceiveTouch:(UITouch * _Nonnull)touch SWIFT_WARN_UNUSED_RESULT;
-@end
-
-
-
-
-
-SWIFT_CLASS("_TtC8NovaCore17VideoProgressView")
-@interface VideoProgressView : UIView
-- (nonnull instancetype)init OBJC_DESIGNATED_INITIALIZER;
-- (nullable instancetype)initWithCoder:(NSCoder * _Nonnull)coder SWIFT_UNAVAILABLE;
-- (nonnull instancetype)initWithFrame:(CGRect)frame SWIFT_UNAVAILABLE;
-@end
-
-
-SWIFT_CLASS("_TtC8NovaCore17WebViewBottomView")
-@interface WebViewBottomView : UIView
-- (nonnull instancetype)initWithFrame:(CGRect)frame OBJC_DESIGNATED_INITIALIZER;
-- (nullable instancetype)initWithCoder:(NSCoder * _Nonnull)coder SWIFT_UNAVAILABLE;
-@end
-
-
-
-
-SWIFT_CLASS("_TtC8NovaCore21WebViewNavigationView")
-@interface WebViewNavigationView : UIView
-- (nonnull instancetype)initWithFrame:(CGRect)frame OBJC_DESIGNATED_INITIALIZER;
-- (nullable instancetype)initWithCoder:(NSCoder * _Nonnull)coder SWIFT_UNAVAILABLE;
+@property (nonatomic, readonly) BOOL nova_isPartiallyVisibleOnScreen;
 @end
 
 #endif
@@ -1310,112 +1310,6 @@ SWIFT_CLASS("_TtC8NovaCore14CheckBoxButton")
 - (nullable instancetype)initWithCoder:(NSCoder * _Nonnull)coder SWIFT_UNAVAILABLE;
 @end
 
-@class UIColor;
-
-/// Standard color palettes are defined at
-/// https://www.figma.com/file/az2QtfMgOx1SK2q78WVu71/Design-System—Foundations?node-id=311%3A1224
-SWIFT_CLASS("_TtC8NovaCore13ColorPalettes")
-@interface ColorPalettes : NSObject
-@property (nonatomic, readonly, strong) UIColor * _Nonnull tint50;
-@property (nonatomic, readonly, strong) UIColor * _Nonnull tint100;
-@property (nonatomic, readonly, strong) UIColor * _Nonnull tint200;
-@property (nonatomic, readonly, strong) UIColor * _Nonnull tint300;
-@property (nonatomic, readonly, strong) UIColor * _Nonnull tint400;
-@property (nonatomic, readonly, strong) UIColor * _Nonnull tint500;
-@property (nonatomic, readonly, strong) UIColor * _Nonnull tint600;
-@property (nonatomic, readonly, strong) UIColor * _Nonnull tint700;
-@property (nonatomic, readonly, strong) UIColor * _Nonnull tint800;
-@property (nonatomic, readonly, strong) UIColor * _Nonnull tint900;
-@property (nonatomic, readonly, strong) UIColor * _Nullable tint950;
-SWIFT_CLASS_PROPERTY(@property (nonatomic, class, readonly, strong) UIColor * _Nonnull Black;)
-+ (UIColor * _Nonnull)Black SWIFT_WARN_UNUSED_RESULT;
-SWIFT_CLASS_PROPERTY(@property (nonatomic, class, readonly, strong) UIColor * _Nonnull White;)
-+ (UIColor * _Nonnull)White SWIFT_WARN_UNUSED_RESULT;
-SWIFT_CLASS_PROPERTY(@property (nonatomic, class, readonly, strong) ColorPalettes * _Nonnull Gray;)
-+ (ColorPalettes * _Nonnull)Gray SWIFT_WARN_UNUSED_RESULT;
-SWIFT_CLASS_PROPERTY(@property (nonatomic, class, readonly, strong) ColorPalettes * _Nonnull App;)
-+ (ColorPalettes * _Nonnull)App SWIFT_WARN_UNUSED_RESULT;
-SWIFT_CLASS_PROPERTY(@property (nonatomic, class, readonly, strong) ColorPalettes * _Nonnull Blue;)
-+ (ColorPalettes * _Nonnull)Blue SWIFT_WARN_UNUSED_RESULT;
-SWIFT_CLASS_PROPERTY(@property (nonatomic, class, readonly, strong) ColorPalettes * _Nonnull Green;)
-+ (ColorPalettes * _Nonnull)Green SWIFT_WARN_UNUSED_RESULT;
-SWIFT_CLASS_PROPERTY(@property (nonatomic, class, readonly, strong) ColorPalettes * _Nonnull Orange;)
-+ (ColorPalettes * _Nonnull)Orange SWIFT_WARN_UNUSED_RESULT;
-SWIFT_CLASS_PROPERTY(@property (nonatomic, class, readonly, strong) ColorPalettes * _Nonnull Yellow;)
-+ (ColorPalettes * _Nonnull)Yellow SWIFT_WARN_UNUSED_RESULT;
-SWIFT_CLASS_PROPERTY(@property (nonatomic, class, readonly, strong) ColorPalettes * _Nonnull Magenta;)
-+ (ColorPalettes * _Nonnull)Magenta SWIFT_WARN_UNUSED_RESULT;
-SWIFT_CLASS_PROPERTY(@property (nonatomic, class, readonly, strong) ColorPalettes * _Nonnull Purple;)
-+ (ColorPalettes * _Nonnull)Purple SWIFT_WARN_UNUSED_RESULT;
-SWIFT_CLASS_PROPERTY(@property (nonatomic, class, readonly, strong) ColorPalettes * _Nonnull Skyblue;)
-+ (ColorPalettes * _Nonnull)Skyblue SWIFT_WARN_UNUSED_RESULT;
-SWIFT_CLASS_PROPERTY(@property (nonatomic, class, readonly, strong) ColorPalettes * _Nonnull Sapphire;)
-+ (ColorPalettes * _Nonnull)Sapphire SWIFT_WARN_UNUSED_RESULT;
-- (nonnull instancetype)init SWIFT_UNAVAILABLE;
-+ (nonnull instancetype)new SWIFT_UNAVAILABLE_MSG("-init is unavailable");
-@end
-
-
-SWIFT_CLASS("_TtC8NovaCore4Icon")
-@interface Icon : NSObject
-- (nonnull instancetype)init SWIFT_UNAVAILABLE;
-+ (nonnull instancetype)new SWIFT_UNAVAILABLE_MSG("-init is unavailable");
-@end
-
-
-@interface Icon (SWIFT_EXTENSION(NovaCore))
-@end
-
-typedef SWIFT_ENUM(NSInteger, System, open) {
-  SystemArrowLeftOutline = 0,
-  SystemBellFilled = 1,
-  SystemBellOutline = 2,
-  SystemBreezeFilled = 3,
-  SystemBreezeOutline = 4,
-  SystemCameraOutline = 5,
-  SystemChartBarOutline = 6,
-  SystemCheckCircleFilled = 7,
-  SystemCheckCircleOutline = 8,
-  SystemChevronDownFilled = 9,
-  SystemChevronDownOutline = 10,
-  SystemChevronLeftFilled = 11,
-  SystemChevronLeftOutline = 12,
-  SystemChevronRightFilled = 13,
-  SystemChevronRightOutline = 14,
-  SystemChevronUpFilled = 15,
-  SystemClockOutline = 16,
-  SystemCrossFilled = 17,
-  SystemCrossOutline = 18,
-  SystemCrossCircleFilled = 19,
-  SystemCrossCircleOutline = 20,
-  SystemEllipsisHorizontalOutline = 21,
-  SystemEllipsisVerticalFilled = 22,
-  SystemExclamationCircleOutline = 23,
-  SystemExclamationTriangleOutline = 24,
-  SystemGlobeOutline = 25,
-  SystemHashtagOutline = 26,
-  SystemHeartOutline = 27,
-  SystemImageOutline = 28,
-  SystemLinkOutline = 29,
-  SystemLocationOutline = 30,
-  SystemMoneyOutline = 31,
-  SystemNavigationArrowOutline = 32,
-  SystemNewsbreakOutline = 33,
-  SystemPeopleFilled = 34,
-  SystemPeopleOutline = 35,
-  SystemPlayFilled = 36,
-  SystemPlusOutline = 37,
-  SystemProhibitOutline = 38,
-  SystemShareOutline = 39,
-  SystemShieldErrorOutline = 40,
-  SystemTrashOutline = 41,
-  SystemVideoClipFilled = 42,
-  SystemVideoClipOutline = 43,
-  SystemMagicOutline = 44,
-  SystemMagicStarFilled = 45,
-  SystemHomeOutline = 46,
-};
-
 typedef SWIFT_ENUM(NSInteger, MetricEvent, open) {
   MetricEventFacebookLogin = 0,
   MetricEventFeedbackTextSubmitted = 1,
@@ -1716,6 +1610,112 @@ SWIFT_CLASS("_TtC8NovaCore10NovaBaseAd")
 + (nonnull instancetype)new SWIFT_UNAVAILABLE_MSG("-init is unavailable");
 @end
 
+@class UIColor;
+
+/// Standard color palettes are defined at
+/// https://www.figma.com/file/az2QtfMgOx1SK2q78WVu71/Design-System—Foundations?node-id=311%3A1224
+SWIFT_CLASS("_TtC8NovaCore17NovaColorPalettes")
+@interface NovaColorPalettes : NSObject
+@property (nonatomic, readonly, strong) UIColor * _Nonnull tint50;
+@property (nonatomic, readonly, strong) UIColor * _Nonnull tint100;
+@property (nonatomic, readonly, strong) UIColor * _Nonnull tint200;
+@property (nonatomic, readonly, strong) UIColor * _Nonnull tint300;
+@property (nonatomic, readonly, strong) UIColor * _Nonnull tint400;
+@property (nonatomic, readonly, strong) UIColor * _Nonnull tint500;
+@property (nonatomic, readonly, strong) UIColor * _Nonnull tint600;
+@property (nonatomic, readonly, strong) UIColor * _Nonnull tint700;
+@property (nonatomic, readonly, strong) UIColor * _Nonnull tint800;
+@property (nonatomic, readonly, strong) UIColor * _Nonnull tint900;
+@property (nonatomic, readonly, strong) UIColor * _Nullable tint950;
+SWIFT_CLASS_PROPERTY(@property (nonatomic, class, readonly, strong) UIColor * _Nonnull Black;)
++ (UIColor * _Nonnull)Black SWIFT_WARN_UNUSED_RESULT;
+SWIFT_CLASS_PROPERTY(@property (nonatomic, class, readonly, strong) UIColor * _Nonnull White;)
++ (UIColor * _Nonnull)White SWIFT_WARN_UNUSED_RESULT;
+SWIFT_CLASS_PROPERTY(@property (nonatomic, class, readonly, strong) NovaColorPalettes * _Nonnull Gray;)
++ (NovaColorPalettes * _Nonnull)Gray SWIFT_WARN_UNUSED_RESULT;
+SWIFT_CLASS_PROPERTY(@property (nonatomic, class, readonly, strong) NovaColorPalettes * _Nonnull App;)
++ (NovaColorPalettes * _Nonnull)App SWIFT_WARN_UNUSED_RESULT;
+SWIFT_CLASS_PROPERTY(@property (nonatomic, class, readonly, strong) NovaColorPalettes * _Nonnull Blue;)
++ (NovaColorPalettes * _Nonnull)Blue SWIFT_WARN_UNUSED_RESULT;
+SWIFT_CLASS_PROPERTY(@property (nonatomic, class, readonly, strong) NovaColorPalettes * _Nonnull Green;)
++ (NovaColorPalettes * _Nonnull)Green SWIFT_WARN_UNUSED_RESULT;
+SWIFT_CLASS_PROPERTY(@property (nonatomic, class, readonly, strong) NovaColorPalettes * _Nonnull Orange;)
++ (NovaColorPalettes * _Nonnull)Orange SWIFT_WARN_UNUSED_RESULT;
+SWIFT_CLASS_PROPERTY(@property (nonatomic, class, readonly, strong) NovaColorPalettes * _Nonnull Yellow;)
++ (NovaColorPalettes * _Nonnull)Yellow SWIFT_WARN_UNUSED_RESULT;
+SWIFT_CLASS_PROPERTY(@property (nonatomic, class, readonly, strong) NovaColorPalettes * _Nonnull Magenta;)
++ (NovaColorPalettes * _Nonnull)Magenta SWIFT_WARN_UNUSED_RESULT;
+SWIFT_CLASS_PROPERTY(@property (nonatomic, class, readonly, strong) NovaColorPalettes * _Nonnull Purple;)
++ (NovaColorPalettes * _Nonnull)Purple SWIFT_WARN_UNUSED_RESULT;
+SWIFT_CLASS_PROPERTY(@property (nonatomic, class, readonly, strong) NovaColorPalettes * _Nonnull Skyblue;)
++ (NovaColorPalettes * _Nonnull)Skyblue SWIFT_WARN_UNUSED_RESULT;
+SWIFT_CLASS_PROPERTY(@property (nonatomic, class, readonly, strong) NovaColorPalettes * _Nonnull Sapphire;)
++ (NovaColorPalettes * _Nonnull)Sapphire SWIFT_WARN_UNUSED_RESULT;
+- (nonnull instancetype)init SWIFT_UNAVAILABLE;
++ (nonnull instancetype)new SWIFT_UNAVAILABLE_MSG("-init is unavailable");
+@end
+
+
+SWIFT_CLASS("_TtC8NovaCore8NovaIcon")
+@interface NovaIcon : NSObject
+- (nonnull instancetype)init SWIFT_UNAVAILABLE;
++ (nonnull instancetype)new SWIFT_UNAVAILABLE_MSG("-init is unavailable");
+@end
+
+
+@interface NovaIcon (SWIFT_EXTENSION(NovaCore))
+@end
+
+typedef SWIFT_ENUM(NSInteger, NovaSystem, open) {
+  NovaSystemArrowLeftOutline = 0,
+  NovaSystemBellFilled = 1,
+  NovaSystemBellOutline = 2,
+  NovaSystemBreezeFilled = 3,
+  NovaSystemBreezeOutline = 4,
+  NovaSystemCameraOutline = 5,
+  NovaSystemChartBarOutline = 6,
+  NovaSystemCheckCircleFilled = 7,
+  NovaSystemCheckCircleOutline = 8,
+  NovaSystemChevronDownFilled = 9,
+  NovaSystemChevronDownOutline = 10,
+  NovaSystemChevronLeftFilled = 11,
+  NovaSystemChevronLeftOutline = 12,
+  NovaSystemChevronRightFilled = 13,
+  NovaSystemChevronRightOutline = 14,
+  NovaSystemChevronUpFilled = 15,
+  NovaSystemClockOutline = 16,
+  NovaSystemCrossFilled = 17,
+  NovaSystemCrossOutline = 18,
+  NovaSystemCrossCircleFilled = 19,
+  NovaSystemCrossCircleOutline = 20,
+  NovaSystemEllipsisHorizontalOutline = 21,
+  NovaSystemEllipsisVerticalFilled = 22,
+  NovaSystemExclamationCircleOutline = 23,
+  NovaSystemExclamationTriangleOutline = 24,
+  NovaSystemGlobeOutline = 25,
+  NovaSystemHashtagOutline = 26,
+  NovaSystemHeartOutline = 27,
+  NovaSystemImageOutline = 28,
+  NovaSystemLinkOutline = 29,
+  NovaSystemLocationOutline = 30,
+  NovaSystemMoneyOutline = 31,
+  NovaSystemNavigationArrowOutline = 32,
+  NovaSystemNewsbreakOutline = 33,
+  NovaSystemPeopleFilled = 34,
+  NovaSystemPeopleOutline = 35,
+  NovaSystemPlayFilled = 36,
+  NovaSystemPlusOutline = 37,
+  NovaSystemProhibitOutline = 38,
+  NovaSystemShareOutline = 39,
+  NovaSystemShieldErrorOutline = 40,
+  NovaSystemTrashOutline = 41,
+  NovaSystemVideoClipFilled = 42,
+  NovaSystemVideoClipOutline = 43,
+  NovaSystemMagicOutline = 44,
+  NovaSystemMagicStarFilled = 45,
+  NovaSystemHomeOutline = 46,
+};
+
 @class NovaNativeAdItem;
 
 SWIFT_PROTOCOL("_TtP8NovaCore20NovaNativeAdDelegate_")
@@ -1793,7 +1793,6 @@ SWIFT_CLASS("_TtC8NovaCore16NovaNativeAdView")
 @end
 
 
-
 @interface NovaNativeAdView (SWIFT_EXTENSION(NovaCore))
 - (void)register:(NovaNativeAdItem * _Nonnull)nativeAd;
 @end
@@ -1801,9 +1800,10 @@ SWIFT_CLASS("_TtC8NovaCore16NovaNativeAdView")
 
 
 
+
 /// ▶️ Player, simple way to play and stream media
-SWIFT_CLASS("_TtC8NovaCore6Player")
-@interface Player : UIViewController
+SWIFT_CLASS("_TtC8NovaCore10NovaPlayer")
+@interface NovaPlayer : UIViewController
 - (nonnull instancetype)init;
 - (nullable instancetype)initWithCoder:(NSCoder * _Nonnull)aDecoder OBJC_DESIGNATED_INITIALIZER;
 - (nonnull instancetype)initWithNibName:(NSString * _Nullable)nibNameOrNil bundle:(NSBundle * _Nullable)nibBundleOrNil OBJC_DESIGNATED_INITIALIZER;
@@ -1819,8 +1819,8 @@ SWIFT_CLASS("_TtC8NovaCore6Player")
 
 
 
-SWIFT_CLASS("_TtC8NovaCore10PlayerView")
-@interface PlayerView : UIView
+SWIFT_CLASS("_TtC8NovaCore14NovaPlayerView")
+@interface NovaPlayerView : UIView
 SWIFT_CLASS_PROPERTY(@property (nonatomic, class, readonly) Class _Nonnull layerClass;)
 + (Class _Nonnull)layerClass SWIFT_WARN_UNUSED_RESULT;
 - (nonnull instancetype)initWithFrame:(CGRect)frame OBJC_DESIGNATED_INITIALIZER;
@@ -1828,8 +1828,107 @@ SWIFT_CLASS_PROPERTY(@property (nonatomic, class, readonly) Class _Nonnull layer
 @end
 
 
+SWIFT_CLASS("_TtC8NovaCore22NovaUnifiedWebViewHost")
+@interface NovaUnifiedWebViewHost : NSObject
+- (nonnull instancetype)init SWIFT_UNAVAILABLE;
++ (nonnull instancetype)new SWIFT_UNAVAILABLE_MSG("-init is unavailable");
+@end
+
+@class WKUserContentController;
+@class WKScriptMessage;
+
+@interface NovaUnifiedWebViewHost (SWIFT_EXTENSION(NovaCore)) <WKScriptMessageHandler>
+- (void)userContentController:(WKUserContentController * _Nonnull)userContentController didReceiveScriptMessage:(WKScriptMessage * _Nonnull)message;
+@end
+
+@class WKWebView;
+@class WKWebViewConfiguration;
+@class WKNavigationAction;
+@class WKWindowFeatures;
+
+@interface NovaUnifiedWebViewHost (SWIFT_EXTENSION(NovaCore)) <WKUIDelegate>
+- (WKWebView * _Nullable)webView:(WKWebView * _Nonnull)webView createWebViewWithConfiguration:(WKWebViewConfiguration * _Nonnull)configuration forNavigationAction:(WKNavigationAction * _Nonnull)navigationAction windowFeatures:(WKWindowFeatures * _Nonnull)windowFeatures SWIFT_WARN_UNUSED_RESULT;
+@end
+
+@class WKNavigation;
+@class WKWebpagePreferences;
+@class WKNavigationResponse;
+
+@interface NovaUnifiedWebViewHost (SWIFT_EXTENSION(NovaCore)) <WKNavigationDelegate>
+- (void)webView:(WKWebView * _Nonnull)webView didCommitNavigation:(WKNavigation * _Null_unspecified)navigation;
+- (void)webView:(WKWebView * _Nonnull)webView didStartProvisionalNavigation:(WKNavigation * _Null_unspecified)navigation;
+- (void)webView:(WKWebView * _Nonnull)webView decidePolicyForNavigationAction:(WKNavigationAction * _Nonnull)navigationAction preferences:(WKWebpagePreferences * _Nonnull)preferences decisionHandler:(void (^ _Nonnull)(WKNavigationActionPolicy, WKWebpagePreferences * _Nonnull))decisionHandler;
+- (void)webView:(WKWebView * _Nonnull)webView decidePolicyForNavigationAction:(WKNavigationAction * _Nonnull)navigationAction decisionHandler:(void (^ _Nonnull)(WKNavigationActionPolicy))decisionHandler;
+- (void)webView:(WKWebView * _Nonnull)webView decidePolicyForNavigationResponse:(WKNavigationResponse * _Nonnull)navigationResponse decisionHandler:(void (^ _Nonnull)(WKNavigationResponsePolicy))decisionHandler;
+- (void)webView:(WKWebView * _Nonnull)webView didFinishNavigation:(WKNavigation * _Null_unspecified)navigation;
+- (void)webView:(WKWebView * _Nonnull)webView didFailProvisionalNavigation:(WKNavigation * _Null_unspecified)navigation withError:(NSError * _Nonnull)error;
+- (void)webViewWebContentProcessDidTerminate:(WKWebView * _Nonnull)webView;
+@end
+
+
+SWIFT_CLASS("_TtC8NovaCore15NovaVideoPlayer")
+@interface NovaVideoPlayer : NSObject
+- (nonnull instancetype)init OBJC_DESIGNATED_INITIALIZER;
+@end
+
+
+
+
+
+@class NSURL;
+
+SWIFT_CLASS("_TtC8NovaCore27NovaVideoPlayerCacheHandler")
+@interface NovaVideoPlayerCacheHandler : NSObject
+SWIFT_CLASS_PROPERTY(@property (nonatomic, class, readonly, strong) NovaVideoPlayerCacheHandler * _Nonnull shared;)
++ (NovaVideoPlayerCacheHandler * _Nonnull)shared SWIFT_WARN_UNUSED_RESULT;
+- (void)getControllerToPreloadWithCacheKey:(NSString * _Nonnull)cacheKey url:(NSURL * _Nonnull)url;
+- (nonnull instancetype)init OBJC_DESIGNATED_INITIALIZER;
+@end
+
+
+SWIFT_CLASS("_TtC8NovaCore25NovaVideoPlayerController")
+@interface NovaVideoPlayerController : NSObject
+- (nonnull instancetype)init OBJC_DESIGNATED_INITIALIZER;
+@end
+
+
+@class UIGestureRecognizer;
+@class UITouch;
+
+@interface NovaVideoPlayerController (SWIFT_EXTENSION(NovaCore)) <UIGestureRecognizerDelegate>
+- (BOOL)gestureRecognizer:(UIGestureRecognizer * _Nonnull)gestureRecognizer shouldReceiveTouch:(UITouch * _Nonnull)touch SWIFT_WARN_UNUSED_RESULT;
+@end
+
+
+
+
+
+SWIFT_CLASS("_TtC8NovaCore21NovaVideoProgressView")
+@interface NovaVideoProgressView : UIView
+- (nonnull instancetype)init OBJC_DESIGNATED_INITIALIZER;
+- (nullable instancetype)initWithCoder:(NSCoder * _Nonnull)coder SWIFT_UNAVAILABLE;
+- (nonnull instancetype)initWithFrame:(CGRect)frame SWIFT_UNAVAILABLE;
+@end
+
+
+SWIFT_CLASS("_TtC8NovaCore21NovaWebViewBottomView")
+@interface NovaWebViewBottomView : UIView
+- (nonnull instancetype)initWithFrame:(CGRect)frame OBJC_DESIGNATED_INITIALIZER;
+- (nullable instancetype)initWithCoder:(NSCoder * _Nonnull)coder SWIFT_UNAVAILABLE;
+@end
+
+
+
+
+SWIFT_CLASS("_TtC8NovaCore25NovaWebViewNavigationView")
+@interface NovaWebViewNavigationView : UIView
+- (nonnull instancetype)initWithFrame:(CGRect)frame OBJC_DESIGNATED_INITIALIZER;
+- (nullable instancetype)initWithCoder:(NSCoder * _Nonnull)coder SWIFT_UNAVAILABLE;
+@end
+
+
 @interface UIApplication (SWIFT_EXTENSION(NovaCore))
-@property (nonatomic, readonly) UIEdgeInsets nb_safeAreaInsets;
+@property (nonatomic, readonly) UIEdgeInsets nova_safeAreaInsets;
 @end
 
 
@@ -1860,11 +1959,11 @@ SWIFT_CLASS_PROPERTY(@property (nonatomic, class, readonly) Class _Nonnull layer
 
 
 
-
 @interface UIImage (SWIFT_EXTENSION(NovaCore))
-- (nullable instancetype)initWithSystemName:(enum System)systemName;
-- (nullable instancetype)initWithSystemName:(enum System)systemName tintColor:(UIColor * _Nonnull)tintColor;
+- (nullable instancetype)initWithNovasystemName:(enum NovaSystem)novasystemName;
+- (nullable instancetype)initWithNovasystemName:(enum NovaSystem)novasystemName tintColor:(UIColor * _Nonnull)tintColor;
 @end
+
 
 
 
@@ -1874,106 +1973,7 @@ SWIFT_CLASS_PROPERTY(@property (nonatomic, class, readonly) Class _Nonnull layer
 
 
 @interface UIView (SWIFT_EXTENSION(NovaCore))
-@property (nonatomic, readonly) BOOL nb_isPartiallyVisibleOnScreen;
-@end
-
-
-SWIFT_CLASS("_TtC8NovaCore18UnifiedWebViewHost")
-@interface UnifiedWebViewHost : NSObject
-- (nonnull instancetype)init SWIFT_UNAVAILABLE;
-+ (nonnull instancetype)new SWIFT_UNAVAILABLE_MSG("-init is unavailable");
-@end
-
-@class WKWebView;
-@class WKWebViewConfiguration;
-@class WKNavigationAction;
-@class WKWindowFeatures;
-
-@interface UnifiedWebViewHost (SWIFT_EXTENSION(NovaCore)) <WKUIDelegate>
-- (WKWebView * _Nullable)webView:(WKWebView * _Nonnull)webView createWebViewWithConfiguration:(WKWebViewConfiguration * _Nonnull)configuration forNavigationAction:(WKNavigationAction * _Nonnull)navigationAction windowFeatures:(WKWindowFeatures * _Nonnull)windowFeatures SWIFT_WARN_UNUSED_RESULT;
-@end
-
-@class WKUserContentController;
-@class WKScriptMessage;
-
-@interface UnifiedWebViewHost (SWIFT_EXTENSION(NovaCore)) <WKScriptMessageHandler>
-- (void)userContentController:(WKUserContentController * _Nonnull)userContentController didReceiveScriptMessage:(WKScriptMessage * _Nonnull)message;
-@end
-
-@class WKNavigation;
-@class WKWebpagePreferences;
-@class WKNavigationResponse;
-
-@interface UnifiedWebViewHost (SWIFT_EXTENSION(NovaCore)) <WKNavigationDelegate>
-- (void)webView:(WKWebView * _Nonnull)webView didCommitNavigation:(WKNavigation * _Null_unspecified)navigation;
-- (void)webView:(WKWebView * _Nonnull)webView didStartProvisionalNavigation:(WKNavigation * _Null_unspecified)navigation;
-- (void)webView:(WKWebView * _Nonnull)webView decidePolicyForNavigationAction:(WKNavigationAction * _Nonnull)navigationAction preferences:(WKWebpagePreferences * _Nonnull)preferences decisionHandler:(void (^ _Nonnull)(WKNavigationActionPolicy, WKWebpagePreferences * _Nonnull))decisionHandler;
-- (void)webView:(WKWebView * _Nonnull)webView decidePolicyForNavigationAction:(WKNavigationAction * _Nonnull)navigationAction decisionHandler:(void (^ _Nonnull)(WKNavigationActionPolicy))decisionHandler;
-- (void)webView:(WKWebView * _Nonnull)webView decidePolicyForNavigationResponse:(WKNavigationResponse * _Nonnull)navigationResponse decisionHandler:(void (^ _Nonnull)(WKNavigationResponsePolicy))decisionHandler;
-- (void)webView:(WKWebView * _Nonnull)webView didFinishNavigation:(WKNavigation * _Null_unspecified)navigation;
-- (void)webView:(WKWebView * _Nonnull)webView didFailProvisionalNavigation:(WKNavigation * _Null_unspecified)navigation withError:(NSError * _Nonnull)error;
-- (void)webViewWebContentProcessDidTerminate:(WKWebView * _Nonnull)webView;
-@end
-
-
-SWIFT_CLASS("_TtC8NovaCore11VideoPlayer")
-@interface VideoPlayer : NSObject
-- (nonnull instancetype)init OBJC_DESIGNATED_INITIALIZER;
-@end
-
-
-
-
-
-@class NSURL;
-
-SWIFT_CLASS("_TtC8NovaCore23VideoPlayerCacheHandler")
-@interface VideoPlayerCacheHandler : NSObject
-SWIFT_CLASS_PROPERTY(@property (nonatomic, class, readonly, strong) VideoPlayerCacheHandler * _Nonnull shared;)
-+ (VideoPlayerCacheHandler * _Nonnull)shared SWIFT_WARN_UNUSED_RESULT;
-- (void)getControllerToPreloadWithCacheKey:(NSString * _Nonnull)cacheKey url:(NSURL * _Nonnull)url;
-- (nonnull instancetype)init OBJC_DESIGNATED_INITIALIZER;
-@end
-
-
-SWIFT_CLASS("_TtC8NovaCore21VideoPlayerController")
-@interface VideoPlayerController : NSObject
-- (nonnull instancetype)init OBJC_DESIGNATED_INITIALIZER;
-@end
-
-
-@class UIGestureRecognizer;
-@class UITouch;
-
-@interface VideoPlayerController (SWIFT_EXTENSION(NovaCore)) <UIGestureRecognizerDelegate>
-- (BOOL)gestureRecognizer:(UIGestureRecognizer * _Nonnull)gestureRecognizer shouldReceiveTouch:(UITouch * _Nonnull)touch SWIFT_WARN_UNUSED_RESULT;
-@end
-
-
-
-
-
-SWIFT_CLASS("_TtC8NovaCore17VideoProgressView")
-@interface VideoProgressView : UIView
-- (nonnull instancetype)init OBJC_DESIGNATED_INITIALIZER;
-- (nullable instancetype)initWithCoder:(NSCoder * _Nonnull)coder SWIFT_UNAVAILABLE;
-- (nonnull instancetype)initWithFrame:(CGRect)frame SWIFT_UNAVAILABLE;
-@end
-
-
-SWIFT_CLASS("_TtC8NovaCore17WebViewBottomView")
-@interface WebViewBottomView : UIView
-- (nonnull instancetype)initWithFrame:(CGRect)frame OBJC_DESIGNATED_INITIALIZER;
-- (nullable instancetype)initWithCoder:(NSCoder * _Nonnull)coder SWIFT_UNAVAILABLE;
-@end
-
-
-
-
-SWIFT_CLASS("_TtC8NovaCore21WebViewNavigationView")
-@interface WebViewNavigationView : UIView
-- (nonnull instancetype)initWithFrame:(CGRect)frame OBJC_DESIGNATED_INITIALIZER;
-- (nullable instancetype)initWithCoder:(NSCoder * _Nonnull)coder SWIFT_UNAVAILABLE;
+@property (nonatomic, readonly) BOOL nova_isPartiallyVisibleOnScreen;
 @end
 
 #endif
