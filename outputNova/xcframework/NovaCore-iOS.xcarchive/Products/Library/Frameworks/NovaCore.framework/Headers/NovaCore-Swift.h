@@ -800,7 +800,6 @@ SWIFT_CLASS("_TtC8NovaCore16NovaNativeAdView")
 @end
 
 
-
 @interface NovaNativeAdView (SWIFT_EXTENSION(NovaCore))
 - (void)register:(NovaNativeAdItem * _Nonnull)nativeAd;
 @end
@@ -808,9 +807,10 @@ SWIFT_CLASS("_TtC8NovaCore16NovaNativeAdView")
 
 
 
+
 /// ▶️ Player, simple way to play and stream media
-SWIFT_CLASS("_TtC8NovaCore6Player")
-@interface Player : UIViewController
+SWIFT_CLASS("_TtC8NovaCore10NovaPlayer")
+@interface NovaPlayer : UIViewController
 - (nonnull instancetype)init;
 - (nullable instancetype)initWithCoder:(NSCoder * _Nonnull)aDecoder OBJC_DESIGNATED_INITIALIZER;
 - (nonnull instancetype)initWithNibName:(NSString * _Nullable)nibNameOrNil bundle:(NSBundle * _Nullable)nibBundleOrNil OBJC_DESIGNATED_INITIALIZER;
@@ -826,12 +826,111 @@ SWIFT_CLASS("_TtC8NovaCore6Player")
 
 
 
-SWIFT_CLASS("_TtC8NovaCore10PlayerView")
-@interface PlayerView : UIView
+SWIFT_CLASS("_TtC8NovaCore14NovaPlayerView")
+@interface NovaPlayerView : UIView
 SWIFT_CLASS_PROPERTY(@property (nonatomic, class, readonly) Class _Nonnull layerClass;)
 + (Class _Nonnull)layerClass SWIFT_WARN_UNUSED_RESULT;
 - (nonnull instancetype)initWithFrame:(CGRect)frame OBJC_DESIGNATED_INITIALIZER;
 - (nullable instancetype)initWithCoder:(NSCoder * _Nonnull)aDecoder OBJC_DESIGNATED_INITIALIZER;
+@end
+
+
+SWIFT_CLASS("_TtC8NovaCore22NovaUnifiedWebViewHost")
+@interface NovaUnifiedWebViewHost : NSObject
+- (nonnull instancetype)init SWIFT_UNAVAILABLE;
++ (nonnull instancetype)new SWIFT_UNAVAILABLE_MSG("-init is unavailable");
+@end
+
+@class WKUserContentController;
+@class WKScriptMessage;
+
+@interface NovaUnifiedWebViewHost (SWIFT_EXTENSION(NovaCore)) <WKScriptMessageHandler>
+- (void)userContentController:(WKUserContentController * _Nonnull)userContentController didReceiveScriptMessage:(WKScriptMessage * _Nonnull)message;
+@end
+
+@class WKWebView;
+@class WKWebViewConfiguration;
+@class WKNavigationAction;
+@class WKWindowFeatures;
+
+@interface NovaUnifiedWebViewHost (SWIFT_EXTENSION(NovaCore)) <WKUIDelegate>
+- (WKWebView * _Nullable)webView:(WKWebView * _Nonnull)webView createWebViewWithConfiguration:(WKWebViewConfiguration * _Nonnull)configuration forNavigationAction:(WKNavigationAction * _Nonnull)navigationAction windowFeatures:(WKWindowFeatures * _Nonnull)windowFeatures SWIFT_WARN_UNUSED_RESULT;
+@end
+
+@class WKNavigation;
+@class WKWebpagePreferences;
+@class WKNavigationResponse;
+
+@interface NovaUnifiedWebViewHost (SWIFT_EXTENSION(NovaCore)) <WKNavigationDelegate>
+- (void)webView:(WKWebView * _Nonnull)webView didCommitNavigation:(WKNavigation * _Null_unspecified)navigation;
+- (void)webView:(WKWebView * _Nonnull)webView didStartProvisionalNavigation:(WKNavigation * _Null_unspecified)navigation;
+- (void)webView:(WKWebView * _Nonnull)webView decidePolicyForNavigationAction:(WKNavigationAction * _Nonnull)navigationAction preferences:(WKWebpagePreferences * _Nonnull)preferences decisionHandler:(void (^ _Nonnull)(WKNavigationActionPolicy, WKWebpagePreferences * _Nonnull))decisionHandler;
+- (void)webView:(WKWebView * _Nonnull)webView decidePolicyForNavigationAction:(WKNavigationAction * _Nonnull)navigationAction decisionHandler:(void (^ _Nonnull)(WKNavigationActionPolicy))decisionHandler;
+- (void)webView:(WKWebView * _Nonnull)webView decidePolicyForNavigationResponse:(WKNavigationResponse * _Nonnull)navigationResponse decisionHandler:(void (^ _Nonnull)(WKNavigationResponsePolicy))decisionHandler;
+- (void)webView:(WKWebView * _Nonnull)webView didFinishNavigation:(WKNavigation * _Null_unspecified)navigation;
+- (void)webView:(WKWebView * _Nonnull)webView didFailProvisionalNavigation:(WKNavigation * _Null_unspecified)navigation withError:(NSError * _Nonnull)error;
+- (void)webViewWebContentProcessDidTerminate:(WKWebView * _Nonnull)webView;
+@end
+
+
+SWIFT_CLASS("_TtC8NovaCore15NovaVideoPlayer")
+@interface NovaVideoPlayer : NSObject
+- (nonnull instancetype)init OBJC_DESIGNATED_INITIALIZER;
+@end
+
+
+
+
+
+@class NSURL;
+
+SWIFT_CLASS("_TtC8NovaCore27NovaVideoPlayerCacheHandler")
+@interface NovaVideoPlayerCacheHandler : NSObject
+SWIFT_CLASS_PROPERTY(@property (nonatomic, class, readonly, strong) NovaVideoPlayerCacheHandler * _Nonnull shared;)
++ (NovaVideoPlayerCacheHandler * _Nonnull)shared SWIFT_WARN_UNUSED_RESULT;
+- (void)getControllerToPreloadWithCacheKey:(NSString * _Nonnull)cacheKey url:(NSURL * _Nonnull)url;
+- (nonnull instancetype)init OBJC_DESIGNATED_INITIALIZER;
+@end
+
+
+SWIFT_CLASS("_TtC8NovaCore25NovaVideoPlayerController")
+@interface NovaVideoPlayerController : NSObject
+- (nonnull instancetype)init OBJC_DESIGNATED_INITIALIZER;
+@end
+
+
+@class UIGestureRecognizer;
+@class UITouch;
+
+@interface NovaVideoPlayerController (SWIFT_EXTENSION(NovaCore)) <UIGestureRecognizerDelegate>
+- (BOOL)gestureRecognizer:(UIGestureRecognizer * _Nonnull)gestureRecognizer shouldReceiveTouch:(UITouch * _Nonnull)touch SWIFT_WARN_UNUSED_RESULT;
+@end
+
+
+
+
+
+SWIFT_CLASS("_TtC8NovaCore21NovaVideoProgressView")
+@interface NovaVideoProgressView : UIView
+- (nonnull instancetype)init OBJC_DESIGNATED_INITIALIZER;
+- (nullable instancetype)initWithCoder:(NSCoder * _Nonnull)coder SWIFT_UNAVAILABLE;
+- (nonnull instancetype)initWithFrame:(CGRect)frame SWIFT_UNAVAILABLE;
+@end
+
+
+SWIFT_CLASS("_TtC8NovaCore21NovaWebViewBottomView")
+@interface NovaWebViewBottomView : UIView
+- (nonnull instancetype)initWithFrame:(CGRect)frame OBJC_DESIGNATED_INITIALIZER;
+- (nullable instancetype)initWithCoder:(NSCoder * _Nonnull)coder SWIFT_UNAVAILABLE;
+@end
+
+
+
+
+SWIFT_CLASS("_TtC8NovaCore25NovaWebViewNavigationView")
+@interface NovaWebViewNavigationView : UIView
+- (nonnull instancetype)initWithFrame:(CGRect)frame OBJC_DESIGNATED_INITIALIZER;
+- (nullable instancetype)initWithCoder:(NSCoder * _Nonnull)coder SWIFT_UNAVAILABLE;
 @end
 
 
@@ -867,7 +966,6 @@ SWIFT_CLASS_PROPERTY(@property (nonatomic, class, readonly) Class _Nonnull layer
 
 
 
-
 @interface UIImage (SWIFT_EXTENSION(NovaCore))
 - (nullable instancetype)initWithNovasystemName:(enum NovaSystem)novasystemName;
 - (nullable instancetype)initWithNovasystemName:(enum NovaSystem)novasystemName tintColor:(UIColor * _Nonnull)tintColor;
@@ -880,107 +978,9 @@ SWIFT_CLASS_PROPERTY(@property (nonatomic, class, readonly) Class _Nonnull layer
 
 
 
+
 @interface UIView (SWIFT_EXTENSION(NovaCore))
 @property (nonatomic, readonly) BOOL nova_isPartiallyVisibleOnScreen;
-@end
-
-
-SWIFT_CLASS("_TtC8NovaCore18UnifiedWebViewHost")
-@interface UnifiedWebViewHost : NSObject
-- (nonnull instancetype)init SWIFT_UNAVAILABLE;
-+ (nonnull instancetype)new SWIFT_UNAVAILABLE_MSG("-init is unavailable");
-@end
-
-@class WKWebView;
-@class WKWebViewConfiguration;
-@class WKNavigationAction;
-@class WKWindowFeatures;
-
-@interface UnifiedWebViewHost (SWIFT_EXTENSION(NovaCore)) <WKUIDelegate>
-- (WKWebView * _Nullable)webView:(WKWebView * _Nonnull)webView createWebViewWithConfiguration:(WKWebViewConfiguration * _Nonnull)configuration forNavigationAction:(WKNavigationAction * _Nonnull)navigationAction windowFeatures:(WKWindowFeatures * _Nonnull)windowFeatures SWIFT_WARN_UNUSED_RESULT;
-@end
-
-@class WKUserContentController;
-@class WKScriptMessage;
-
-@interface UnifiedWebViewHost (SWIFT_EXTENSION(NovaCore)) <WKScriptMessageHandler>
-- (void)userContentController:(WKUserContentController * _Nonnull)userContentController didReceiveScriptMessage:(WKScriptMessage * _Nonnull)message;
-@end
-
-@class WKNavigation;
-@class WKWebpagePreferences;
-@class WKNavigationResponse;
-
-@interface UnifiedWebViewHost (SWIFT_EXTENSION(NovaCore)) <WKNavigationDelegate>
-- (void)webView:(WKWebView * _Nonnull)webView didCommitNavigation:(WKNavigation * _Null_unspecified)navigation;
-- (void)webView:(WKWebView * _Nonnull)webView didStartProvisionalNavigation:(WKNavigation * _Null_unspecified)navigation;
-- (void)webView:(WKWebView * _Nonnull)webView decidePolicyForNavigationAction:(WKNavigationAction * _Nonnull)navigationAction preferences:(WKWebpagePreferences * _Nonnull)preferences decisionHandler:(void (^ _Nonnull)(WKNavigationActionPolicy, WKWebpagePreferences * _Nonnull))decisionHandler;
-- (void)webView:(WKWebView * _Nonnull)webView decidePolicyForNavigationAction:(WKNavigationAction * _Nonnull)navigationAction decisionHandler:(void (^ _Nonnull)(WKNavigationActionPolicy))decisionHandler;
-- (void)webView:(WKWebView * _Nonnull)webView decidePolicyForNavigationResponse:(WKNavigationResponse * _Nonnull)navigationResponse decisionHandler:(void (^ _Nonnull)(WKNavigationResponsePolicy))decisionHandler;
-- (void)webView:(WKWebView * _Nonnull)webView didFinishNavigation:(WKNavigation * _Null_unspecified)navigation;
-- (void)webView:(WKWebView * _Nonnull)webView didFailProvisionalNavigation:(WKNavigation * _Null_unspecified)navigation withError:(NSError * _Nonnull)error;
-- (void)webViewWebContentProcessDidTerminate:(WKWebView * _Nonnull)webView;
-@end
-
-
-SWIFT_CLASS("_TtC8NovaCore11VideoPlayer")
-@interface VideoPlayer : NSObject
-- (nonnull instancetype)init OBJC_DESIGNATED_INITIALIZER;
-@end
-
-
-
-
-
-@class NSURL;
-
-SWIFT_CLASS("_TtC8NovaCore23VideoPlayerCacheHandler")
-@interface VideoPlayerCacheHandler : NSObject
-SWIFT_CLASS_PROPERTY(@property (nonatomic, class, readonly, strong) VideoPlayerCacheHandler * _Nonnull shared;)
-+ (VideoPlayerCacheHandler * _Nonnull)shared SWIFT_WARN_UNUSED_RESULT;
-- (void)getControllerToPreloadWithCacheKey:(NSString * _Nonnull)cacheKey url:(NSURL * _Nonnull)url;
-- (nonnull instancetype)init OBJC_DESIGNATED_INITIALIZER;
-@end
-
-
-SWIFT_CLASS("_TtC8NovaCore21VideoPlayerController")
-@interface VideoPlayerController : NSObject
-- (nonnull instancetype)init OBJC_DESIGNATED_INITIALIZER;
-@end
-
-
-@class UIGestureRecognizer;
-@class UITouch;
-
-@interface VideoPlayerController (SWIFT_EXTENSION(NovaCore)) <UIGestureRecognizerDelegate>
-- (BOOL)gestureRecognizer:(UIGestureRecognizer * _Nonnull)gestureRecognizer shouldReceiveTouch:(UITouch * _Nonnull)touch SWIFT_WARN_UNUSED_RESULT;
-@end
-
-
-
-
-
-SWIFT_CLASS("_TtC8NovaCore17VideoProgressView")
-@interface VideoProgressView : UIView
-- (nonnull instancetype)init OBJC_DESIGNATED_INITIALIZER;
-- (nullable instancetype)initWithCoder:(NSCoder * _Nonnull)coder SWIFT_UNAVAILABLE;
-- (nonnull instancetype)initWithFrame:(CGRect)frame SWIFT_UNAVAILABLE;
-@end
-
-
-SWIFT_CLASS("_TtC8NovaCore17WebViewBottomView")
-@interface WebViewBottomView : UIView
-- (nonnull instancetype)initWithFrame:(CGRect)frame OBJC_DESIGNATED_INITIALIZER;
-- (nullable instancetype)initWithCoder:(NSCoder * _Nonnull)coder SWIFT_UNAVAILABLE;
-@end
-
-
-
-
-SWIFT_CLASS("_TtC8NovaCore21WebViewNavigationView")
-@interface WebViewNavigationView : UIView
-- (nonnull instancetype)initWithFrame:(CGRect)frame OBJC_DESIGNATED_INITIALIZER;
-- (nullable instancetype)initWithCoder:(NSCoder * _Nonnull)coder SWIFT_UNAVAILABLE;
 @end
 
 #endif

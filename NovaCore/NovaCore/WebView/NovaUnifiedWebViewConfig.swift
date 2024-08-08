@@ -1,6 +1,6 @@
 import Foundation
 
-public struct UnifiedWebViewConfig {
+public struct NovaUnifiedWebViewConfig {
     public let enableJSBridge: Bool
     public let enableNBUserAgent: Bool
     public let blockedURLPrefixes: [String]

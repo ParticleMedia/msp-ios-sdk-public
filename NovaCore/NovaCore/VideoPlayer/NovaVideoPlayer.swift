@@ -2,16 +2,16 @@
 import AVFoundation
 import UIKit
 
-public class VideoPlayer: NSObject {
+public class NovaVideoPlayer: NSObject {
 
     static let urlToStopLoading = "https://www.newsbreak.com"
 
-    public weak var delegate: VideoPlayerDelegate?
-    private let player = Player()
+    public weak var delegate: NovaVideoPlayerDelegate?
+    private let player = NovaPlayer()
     private var url: URL?
     private var actionHandler: ActionHandling?
 
-    private var playStyle: VideoPlayStyle = .none
+    private var playStyle: NovaVideoPlayStyle = .none
 
     private var tapGestureRecognizer: UITapGestureRecognizer?
 
@@ -23,7 +23,7 @@ public class VideoPlayer: NSObject {
     private var localTimeElapsed: TimeInterval = 0
     private var videoStartToload: Date?
     private var localLoadingTimeElapsed = 0 // ms
-    private var videoEndKind: VideoEndKind = .none
+    private var videoEndKind: NovaVideoEndKind = .none
 
     private let loadingIndicatorView: UIActivityIndicatorView = {
         let indicator = UIActivityIndicatorView()
@@ -165,7 +165,7 @@ public class VideoPlayer: NSObject {
         }
     }
 
-    public func getVideoEndKind() -> VideoEndKind {
+    public func getVideoEndKind() -> NovaVideoEndKind {
         return self.videoEndKind
     }
 
@@ -196,7 +196,7 @@ public class VideoPlayer: NSObject {
     }
 }
 
-extension VideoPlayer {
+extension NovaVideoPlayer {
     @objc func handleTapGestureRecognizer(_ gestureRecognizer: UITapGestureRecognizer) {
         self.adjustVideoPlayerStatus()
     }
@@ -206,7 +206,7 @@ extension VideoPlayer {
     }
 }
 
-extension VideoPlayer: VideoPlayerProtocol {
+extension NovaVideoPlayer: NovaVideoPlayerProtocol {
     public func isPlayerMuted() -> Bool {
         return player.muted
     }
@@ -222,13 +222,13 @@ extension VideoPlayer: VideoPlayerProtocol {
         player.playFromCurrentTime()
     }
 
-    public func pause(endKind: VideoEndKind) {
+    public func pause(endKind: NovaVideoEndKind) {
         //DebugLogging.info(.video, "VideoPlayer Inside pause")
         videoEndKind = endKind
         player.pause()
     }
 
-    public func stop(endKind: VideoEndKind) {
+    public func stop(endKind: NovaVideoEndKind) {
         //DebugLogging.info(.video, "VideoPlayer Inside stop")
         callingStop = true
         videoEndKind = endKind
@@ -237,7 +237,7 @@ extension VideoPlayer: VideoPlayerProtocol {
         localTimeElapsed = 0
     }
 
-    public func endPlay(endKind: VideoEndKind) {
+    public func endPlay(endKind: NovaVideoEndKind) {
         //DebugLogging.info(.video, "VideoPlayer Inside stop")
         if player.playbackState == .stopped { return }
         callingStop = true
@@ -248,7 +248,7 @@ extension VideoPlayer: VideoPlayerProtocol {
         callingStop = false
         localTimeElapsed = 0
         if endKind == .stopLoadingCache {
-            self.player.url = URL(string: VideoPlayerController.urlToStopLoading)
+            self.player.url = URL(string: NovaVideoPlayerController.urlToStopLoading)
         }
     }
 
@@ -260,9 +260,9 @@ extension VideoPlayer: VideoPlayerProtocol {
         player.seek(to: time, completionHandler: completionHandler)
     }
 
-    public func play(with info: PlayInfo,
+    public func play(with info: NovaPlayInfo,
                      actionHandler: ActionHandling?,
-                     delegate: VideoPlayerDelegate) {
+                     delegate: NovaVideoPlayerDelegate) {
         //DebugLogging.info(.video, "VideoPlayer Inside play")
         self.actionHandler = actionHandler
         if player.url?.absoluteString != info.url.absoluteString {
@@ -303,7 +303,7 @@ extension VideoPlayer: VideoPlayerProtocol {
         return self.player.view
     }
 
-    private func _playerStateDidChange(_ player: Player) {
+    private func _playerStateDidChange(_ player: NovaPlayer) {
         let videoLoadDuration = Double(player.maximumDuration)
 
         switch player.playbackState {
@@ -341,16 +341,16 @@ extension VideoPlayer: VideoPlayerProtocol {
     }
 }
 
-extension VideoPlayer: PlayerDelegate {
-    public func playerReady(_ player: Player) {
+extension NovaVideoPlayer: NovaPlayerDelegate {
+    public func playerReady(_ player: NovaPlayer) {
         self.delegate?.playerReady(player)
     }
 
-    public func playerPlaybackStateDidChange(_ player: Player) {
+    public func playerPlaybackStateDidChange(_ player: NovaPlayer) {
         _playerStateDidChange(player)
     }
 
-    public func playerBufferingStateDidChange(_ player: Player) {
+    public func playerBufferingStateDidChange(_ player: NovaPlayer) {
 
     }
 
@@ -358,13 +358,13 @@ extension VideoPlayer: PlayerDelegate {
         self.delegate?.playerBufferTimeDidChange(bufferTime)
     }
 
-    public func player(_ player: Player, didFailWithError error: Error?) {
+    public func player(_ player: NovaPlayer, didFailWithError error: Error?) {
         self.delegate?.player(player, didFailWithError: error)
     }
 }
 
-extension VideoPlayer: PlayerPlaybackDelegate {
-    public func playerCurrentTimeDidChange(_ player: Player) {
+extension NovaVideoPlayer: NovaPlayerPlaybackDelegate {
+    public func playerCurrentTimeDidChange(_ player: NovaPlayer) {
         if player.currentTimeInterval > 0 {
             self.configDisplay(true)
         }
@@ -385,21 +385,21 @@ extension VideoPlayer: PlayerPlaybackDelegate {
         self.delegate?.playerCurrentTimeDidChange(player)
     }
 
-    public func playerPlaybackWillStartFromBeginning(_ player: Player) {
+    public func playerPlaybackWillStartFromBeginning(_ player: NovaPlayer) {
 
     }
 
-    public func playerPlaybackDidEnd(_ player: Player) {
+    public func playerPlaybackDidEnd(_ player: NovaPlayer) {
 
     }
 
-    public func playerPlaybackWillLoop(_ player: Player) {
+    public func playerPlaybackWillLoop(_ player: NovaPlayer) {
         localProgress = 1.0
         self.delegate?.playerPlaybackWillLoop(player)
 
     }
 
-    public func playerPlaybackDidLoop(_ player: Player) {
+    public func playerPlaybackDidLoop(_ player: NovaPlayer) {
         videoStart = Date()
         self.delegate?.playerPlaybackDidLoop(player)
     }
