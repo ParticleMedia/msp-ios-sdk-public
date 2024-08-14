@@ -6,7 +6,7 @@
 	<dict>
 		<key>Assets.car</key>
 		<data>
-		s6jticwW5/KNbKUm9yPMZ7sTkS0=
+		r6Zj0PZhJUnYIESsU2ELmlEWr/M=
 		</data>
 		<key>Headers/NovaCore-Swift.h</key>
 		<data>
@@ -22,7 +22,7 @@
 		</data>
 		<key>IconResourceBundle.bundle/Info.plist</key>
 		<data>
-		EynL+sB3S0FPLLnnUB7ZVAr+FD0=
+		mzv/4sBEg7JcyNvX5Mka0T6F+pc=
 		</data>
 		<key>ImageResourceBundle.bundle/Assets.car</key>
 		<data>
@@ -30,7 +30,7 @@
 		</data>
 		<key>ImageResourceBundle.bundle/Info.plist</key>
 		<data>
-		+0S7d3V9C9bmqZ0AK8+pivhnOTk=
+		qeA/7kvOih8MBC/seR7+LWiXE/U=
 		</data>
 		<key>Info.plist</key>
 		<data>
@@ -66,7 +66,7 @@
 		</data>
 		<key>NBResourceBundle.bundle/Info.plist</key>
 		<data>
-		Fy2xJpRmudov5/YO/Oe8Dy5RnQ4=
+		fTKH0SBXC2KDwUuF/HNGcgPT/vQ=
 		</data>
 		<key>SDWebImage.bundle/Info.plist</key>
 		<data>
@@ -83,7 +83,7 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			Fzeyv140QNfidruC6myD/h9dzrGHEYPZ5c2NOiLzOJU=
+			/xgLgCFwBVmJzZoBpMOvIOmiBGb2R39Efsp9JQNvLLc=
 			</data>
 		</dict>
 		<key>Headers/NovaCore-Swift.h</key>
@@ -111,7 +111,7 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			GOMc/EzCTqKz4YZWWrWoJ/QeGfxSXGScNO7bsdCek4I=
+			cpdPf5BX2mNKZIHqVYG7hKZBCMouFYucJnzDjneu7Rg=
 			</data>
 		</dict>
 		<key>ImageResourceBundle.bundle/Assets.car</key>
@@ -125,7 +125,7 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			Ra1eiXuOOBkl7ziwUgJD6Ie9AZEQ12mTBfMPjBYLjwU=
+			c2IMetftQUdNPq9KhRUktrSkQKuG10HOFt6vhlyvP1o=
 			</data>
 		</dict>
 		<key>Modules/NovaCore.swiftmodule/arm64-apple-ios.abi.json</key>
@@ -181,7 +181,7 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			NnxZUAeySPB6W89uRFEesPN1Ga0i16Xt+NJQ2Mi5JHA=
+			6LF+lZkwp8pkE5YWMyYAJw3DO3SpWWUbHdfs0fLuz2o=
 			</data>
 		</dict>
 		<key>SDWebImage.bundle/Info.plist</key>

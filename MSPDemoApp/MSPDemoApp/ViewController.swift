@@ -20,8 +20,6 @@ class ViewController: UIViewController {
     
     @IBOutlet var appBannerView: UIView!
     weak var adLoader: MSPAdLoader?
-    
-    var second = false
 
     override func viewDidLoad() {
         //google test ad config: msp-android-foryou-large-display_gg
@@ -50,14 +48,6 @@ class ViewController: UIViewController {
         //To test a ad creative
         let novaAdLoader = MSP.shared.adNetworkAdapterProvider.getAdNetworkAdapterByName(adNetworkName: "Nova") as? NovaAdapter
         novaAdLoader?.loadTestAdCreative(adString:testAdImmersiveString, adListener: self, context: self, adRequest: adRequest)
-        
-        DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) { // Change `2.0` to the desired number of seconds.
-            self.second = true
-            let novaAdLoader1 = MSP.shared.adNetworkAdapterProvider.getAdNetworkAdapterByName(adNetworkName: "Nova") as? NovaAdapter
-            novaAdLoader1?.loadTestAdCreative(adString:testAdImmersiveString, adListener: self, context: self, adRequest: adRequest)
-        }
-        //let novaAdLoader1 = MSP.shared.adNetworkAdapterProvider.getAdNetworkAdapterByName(adNetworkName: "Nova") as? NovaAdapter
-        //novaAdLoader1?.loadTestAdCreative(adString:testAdImmersiveString, adListener: self, context: self, adRequest: adRequest)
     }
 
 
@@ -91,23 +81,13 @@ extension ViewController: AdListener {
 
                 self.view.addSubview(nativeAdView)
                 nativeAdView.translatesAutoresizingMaskIntoConstraints = false
-                if self.second {
-                    NSLayoutConstraint.activate([
-                        nativeAdView.leadingAnchor.constraint(lessThanOrEqualTo: self.view.leadingAnchor, constant: 100),
-                        nativeAdView.trailingAnchor.constraint(lessThanOrEqualTo: self.view.trailingAnchor),
-                        nativeAdView.topAnchor.constraint(lessThanOrEqualTo: self.view.topAnchor),
-                        nativeAdView.bottomAnchor.constraint(lessThanOrEqualTo: self.view.bottomAnchor, constant: 100),
-                        nativeAdView.widthAnchor.constraint(equalToConstant: 300.0)
-                    ])
-                } else {
-                    NSLayoutConstraint.activate([
-                        nativeAdView.leadingAnchor.constraint(lessThanOrEqualTo: self.view.leadingAnchor, constant: 100),
-                        nativeAdView.trailingAnchor.constraint(lessThanOrEqualTo: self.view.trailingAnchor),
-                        nativeAdView.topAnchor.constraint(lessThanOrEqualTo: self.view.topAnchor, constant: 500),
-                        nativeAdView.bottomAnchor.constraint(lessThanOrEqualTo: self.view.bottomAnchor),
-                        nativeAdView.widthAnchor.constraint(equalToConstant: 300.0)
-                    ])
-                }
+                NSLayoutConstraint.activate([
+                    nativeAdView.leadingAnchor.constraint(lessThanOrEqualTo: self.view.leadingAnchor, constant: 100),
+                    nativeAdView.trailingAnchor.constraint(lessThanOrEqualTo: self.view.trailingAnchor),
+                    nativeAdView.topAnchor.constraint(lessThanOrEqualTo: self.view.topAnchor, constant: 100),
+                    nativeAdView.bottomAnchor.constraint(lessThanOrEqualTo: self.view.bottomAnchor),
+                    nativeAdView.widthAnchor.constraint(equalToConstant: 300.0)
+                ])
             }
         }
     }
