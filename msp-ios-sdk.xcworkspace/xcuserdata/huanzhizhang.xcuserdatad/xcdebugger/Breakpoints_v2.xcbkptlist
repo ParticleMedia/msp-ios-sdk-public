@@ -188,8 +188,8 @@
             filePath = "NovaCore/NovaCore/Native/NovaNativeAdMediaViewController.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "34"
-            endingLineNumber = "34"
+            startingLineNumber = "35"
+            endingLineNumber = "35"
             landmarkName = "viewWillAppear(_:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -348,8 +348,8 @@
             filePath = "MSPDemoApp/MSPDemoApp/ViewController.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "58"
-            endingLineNumber = "58"
+            startingLineNumber = "68"
+            endingLineNumber = "68"
             landmarkName = "onAdLoaded(placementId:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -365,7 +365,9 @@
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "109"
-            endingLineNumber = "109">
+            endingLineNumber = "109"
+            landmarkName = "onAdLoaded(ad:)"
+            landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -378,40 +380,10 @@
             filePath = "MSPDemoApp/MSPDemoApp/ViewController.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "66"
-            endingLineNumber = "66"
+            startingLineNumber = "76"
+            endingLineNumber = "76"
             landmarkName = "ViewController"
             landmarkType = "21">
-            <Locations>
-               <Location
-                  uuid = "9D8902F9-FC6C-44EF-882B-75BB6BE5D0D4 - 479b9a74c9710d50"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "MSPDemoApp.ViewController.onAdLoaded(placementId: Swift.String) -&gt; ()"
-                  moduleName = "MSPDemoApp"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/huanzhizhang/Huanzhi/msp-ios-sdk/MSPDemoApp/MSPDemoApp/ViewController.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "65"
-                  endingLineNumber = "65">
-               </Location>
-               <Location
-                  uuid = "9D8902F9-FC6C-44EF-882B-75BB6BE5D0D4 - 479b9a74c9710d50"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "MSPDemoApp.ViewController.onAdLoaded(placementId: Swift.String) -&gt; ()"
-                  moduleName = "MSPDemoApp"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/huanzhizhang/Huanzhi/msp-ios-sdk/MSPDemoApp/MSPDemoApp/ViewController.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "65"
-                  endingLineNumber = "65">
-               </Location>
-            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -456,8 +428,8 @@
             filePath = "MSPDemoApp/MSPDemoApp/ViewController.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "80"
-            endingLineNumber = "80"
+            startingLineNumber = "90"
+            endingLineNumber = "90"
             landmarkName = "onAdLoaded(ad:)"
             landmarkType = "7">
          </BreakpointContent>

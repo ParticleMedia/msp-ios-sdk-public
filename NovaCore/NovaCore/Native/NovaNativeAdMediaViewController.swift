@@ -31,7 +31,9 @@ public class NovaNativeAdMediaViewController: UIViewController {
     
     public override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        mediaView.updateVideoDisplayState(fullyDisplayed: true)
+        if mediaView.nova_isPartiallyVisibleOnScreen {
+            mediaView.updateVideoDisplayState(fullyDisplayed: true)
+        }
     }
     
     public override func viewWillDisappear(_ animated: Bool) {
