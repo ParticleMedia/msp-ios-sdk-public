@@ -128,7 +128,9 @@ public extension NovaNativeAdMediaView {
     }
     
     @objc func didBecomeActive() {
-        updateVideoDisplayState(fullyDisplayed: true)
+        if self.nova_isPartiallyVisibleOnScreen {
+            updateVideoDisplayState(fullyDisplayed: true)
+        }
     }
     
     @objc func handleVideoOnScreen() {
