@@ -1,10 +1,3 @@
-//
-//  PrebidAdLoader.swift
-//  PrebidAdapter
-//
-//  Created by Huanzhi Zhang on 12/19/23.
-//
-
 import PrebidMobile
 import Foundation
 //import shared

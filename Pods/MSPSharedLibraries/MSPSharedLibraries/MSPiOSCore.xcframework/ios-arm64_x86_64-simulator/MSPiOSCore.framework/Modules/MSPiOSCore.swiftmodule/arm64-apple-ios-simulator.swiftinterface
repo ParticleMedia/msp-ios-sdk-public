@@ -156,6 +156,7 @@ public protocol FacebookBidTokenProvider {
   @_Concurrency.MainActor(unsafe) public var callToActionButton: UIKit.UIButton?
   @_Concurrency.MainActor(unsafe) public var optionView: UIKit.UIView?
   @_Concurrency.MainActor(unsafe) public var mediaView: UIKit.UIView?
+  @_Concurrency.MainActor(unsafe) public var mediaController: (any MSPiOSCore.MediaController)?
   @_Concurrency.MainActor(unsafe) public init(nativeAd: MSPiOSCore.NativeAd, rootViewController: UIKit.UIViewController, nativeAdViewBinder: MSPiOSCore.NativeAdViewBinder)
   @objc deinit
 }

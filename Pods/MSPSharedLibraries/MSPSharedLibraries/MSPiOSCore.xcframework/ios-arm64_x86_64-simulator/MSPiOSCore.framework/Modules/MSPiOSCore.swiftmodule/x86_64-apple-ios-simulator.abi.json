@@ -5814,6 +5814,117 @@
             ]
           },
           {
+            "kind": "Var",
+            "name": "mediaController",
+            "printedName": "mediaController",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Optional",
+                "printedName": "(any MSPiOSCore.MediaController)?",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "MediaController",
+                    "printedName": "any MSPiOSCore.MediaController",
+                    "usr": "s:10MSPiOSCore15MediaControllerP"
+                  }
+                ],
+                "usr": "s:Sq"
+              }
+            ],
+            "declKind": "Var",
+            "usr": "s:10MSPiOSCore12NativeAdViewC15mediaControllerAA05MediaG0_pSgvp",
+            "mangledName": "$s10MSPiOSCore12NativeAdViewC15mediaControllerAA05MediaG0_pSgvp",
+            "moduleName": "MSPiOSCore",
+            "declAttributes": [
+              "HasInitialValue",
+              "HasStorage",
+              "Custom",
+              "AccessControl"
+            ],
+            "hasStorage": true,
+            "accessors": [
+              {
+                "kind": "Accessor",
+                "name": "Get",
+                "printedName": "Get()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Optional",
+                    "printedName": "(any MSPiOSCore.MediaController)?",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "MediaController",
+                        "printedName": "any MSPiOSCore.MediaController",
+                        "usr": "s:10MSPiOSCore15MediaControllerP"
+                      }
+                    ],
+                    "usr": "s:Sq"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:10MSPiOSCore12NativeAdViewC15mediaControllerAA05MediaG0_pSgvg",
+                "mangledName": "$s10MSPiOSCore12NativeAdViewC15mediaControllerAA05MediaG0_pSgvg",
+                "moduleName": "MSPiOSCore",
+                "implicit": true,
+                "accessorKind": "get"
+              },
+              {
+                "kind": "Accessor",
+                "name": "Set",
+                "printedName": "Set()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Void",
+                    "printedName": "()"
+                  },
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Optional",
+                    "printedName": "(any MSPiOSCore.MediaController)?",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "MediaController",
+                        "printedName": "any MSPiOSCore.MediaController",
+                        "usr": "s:10MSPiOSCore15MediaControllerP"
+                      }
+                    ],
+                    "usr": "s:Sq"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:10MSPiOSCore12NativeAdViewC15mediaControllerAA05MediaG0_pSgvs",
+                "mangledName": "$s10MSPiOSCore12NativeAdViewC15mediaControllerAA05MediaG0_pSgvs",
+                "moduleName": "MSPiOSCore",
+                "implicit": true,
+                "accessorKind": "set"
+              },
+              {
+                "kind": "Accessor",
+                "name": "Modify",
+                "printedName": "Modify()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Void",
+                    "printedName": "()"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:10MSPiOSCore12NativeAdViewC15mediaControllerAA05MediaG0_pSgvM",
+                "mangledName": "$s10MSPiOSCore12NativeAdViewC15mediaControllerAA05MediaG0_pSgvM",
+                "moduleName": "MSPiOSCore",
+                "implicit": true,
+                "accessorKind": "_modify"
+              }
+            ]
+          },
+          {
             "kind": "Constructor",
             "name": "init",
             "printedName": "init(nativeAd:rootViewController:nativeAdViewBinder:)",

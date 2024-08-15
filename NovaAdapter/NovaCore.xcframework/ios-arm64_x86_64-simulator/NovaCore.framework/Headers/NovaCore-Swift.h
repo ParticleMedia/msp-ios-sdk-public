@@ -781,6 +781,12 @@ SWIFT_CLASS("_TtC8NovaCore31NovaNativeAdMediaViewController")
 @end
 
 
+SWIFT_PROTOCOL("_TtP8NovaCore25NovaNativeAdVideoDelegate_")
+@protocol NovaNativeAdVideoDelegate
+- (void)playerCurrentTimeDidChangeWithCurrentTime:(double)currentTime durationTime:(double)durationTime;
+@end
+
+
 SWIFT_CLASS("_TtC8NovaCore21NovaNativeAdVideoView")
 @interface NovaNativeAdVideoView : UIView
 - (nullable instancetype)initWithCoder:(NSCoder * _Nonnull)coder SWIFT_UNAVAILABLE;
@@ -800,10 +806,10 @@ SWIFT_CLASS("_TtC8NovaCore16NovaNativeAdView")
 @end
 
 
+
 @interface NovaNativeAdView (SWIFT_EXTENSION(NovaCore))
 - (void)register:(NovaNativeAdItem * _Nonnull)nativeAd;
 @end
-
 
 
 
@@ -841,13 +847,6 @@ SWIFT_CLASS("_TtC8NovaCore22NovaUnifiedWebViewHost")
 + (nonnull instancetype)new SWIFT_UNAVAILABLE_MSG("-init is unavailable");
 @end
 
-@class WKUserContentController;
-@class WKScriptMessage;
-
-@interface NovaUnifiedWebViewHost (SWIFT_EXTENSION(NovaCore)) <WKScriptMessageHandler>
-- (void)userContentController:(WKUserContentController * _Nonnull)userContentController didReceiveScriptMessage:(WKScriptMessage * _Nonnull)message;
-@end
-
 @class WKWebView;
 @class WKWebViewConfiguration;
 @class WKNavigationAction;
@@ -855,6 +854,13 @@ SWIFT_CLASS("_TtC8NovaCore22NovaUnifiedWebViewHost")
 
 @interface NovaUnifiedWebViewHost (SWIFT_EXTENSION(NovaCore)) <WKUIDelegate>
 - (WKWebView * _Nullable)webView:(WKWebView * _Nonnull)webView createWebViewWithConfiguration:(WKWebViewConfiguration * _Nonnull)configuration forNavigationAction:(WKNavigationAction * _Nonnull)navigationAction windowFeatures:(WKWindowFeatures * _Nonnull)windowFeatures SWIFT_WARN_UNUSED_RESULT;
+@end
+
+@class WKUserContentController;
+@class WKScriptMessage;
+
+@interface NovaUnifiedWebViewHost (SWIFT_EXTENSION(NovaCore)) <WKScriptMessageHandler>
+- (void)userContentController:(WKUserContentController * _Nonnull)userContentController didReceiveScriptMessage:(WKScriptMessage * _Nonnull)message;
 @end
 
 @class WKNavigation;
@@ -966,11 +972,11 @@ SWIFT_CLASS("_TtC8NovaCore25NovaWebViewNavigationView")
 
 
 
+
 @interface UIImage (SWIFT_EXTENSION(NovaCore))
 - (nullable instancetype)initWithNovasystemName:(enum NovaSystem)novasystemName;
 - (nullable instancetype)initWithNovasystemName:(enum NovaSystem)novasystemName tintColor:(UIColor * _Nonnull)tintColor;
 @end
-
 
 
 
@@ -1774,6 +1780,12 @@ SWIFT_CLASS("_TtC8NovaCore31NovaNativeAdMediaViewController")
 @end
 
 
+SWIFT_PROTOCOL("_TtP8NovaCore25NovaNativeAdVideoDelegate_")
+@protocol NovaNativeAdVideoDelegate
+- (void)playerCurrentTimeDidChangeWithCurrentTime:(double)currentTime durationTime:(double)durationTime;
+@end
+
+
 SWIFT_CLASS("_TtC8NovaCore21NovaNativeAdVideoView")
 @interface NovaNativeAdVideoView : UIView
 - (nullable instancetype)initWithCoder:(NSCoder * _Nonnull)coder SWIFT_UNAVAILABLE;
@@ -1793,10 +1805,10 @@ SWIFT_CLASS("_TtC8NovaCore16NovaNativeAdView")
 @end
 
 
+
 @interface NovaNativeAdView (SWIFT_EXTENSION(NovaCore))
 - (void)register:(NovaNativeAdItem * _Nonnull)nativeAd;
 @end
-
 
 
 
@@ -1834,13 +1846,6 @@ SWIFT_CLASS("_TtC8NovaCore22NovaUnifiedWebViewHost")
 + (nonnull instancetype)new SWIFT_UNAVAILABLE_MSG("-init is unavailable");
 @end
 
-@class WKUserContentController;
-@class WKScriptMessage;
-
-@interface NovaUnifiedWebViewHost (SWIFT_EXTENSION(NovaCore)) <WKScriptMessageHandler>
-- (void)userContentController:(WKUserContentController * _Nonnull)userContentController didReceiveScriptMessage:(WKScriptMessage * _Nonnull)message;
-@end
-
 @class WKWebView;
 @class WKWebViewConfiguration;
 @class WKNavigationAction;
@@ -1848,6 +1853,13 @@ SWIFT_CLASS("_TtC8NovaCore22NovaUnifiedWebViewHost")
 
 @interface NovaUnifiedWebViewHost (SWIFT_EXTENSION(NovaCore)) <WKUIDelegate>
 - (WKWebView * _Nullable)webView:(WKWebView * _Nonnull)webView createWebViewWithConfiguration:(WKWebViewConfiguration * _Nonnull)configuration forNavigationAction:(WKNavigationAction * _Nonnull)navigationAction windowFeatures:(WKWindowFeatures * _Nonnull)windowFeatures SWIFT_WARN_UNUSED_RESULT;
+@end
+
+@class WKUserContentController;
+@class WKScriptMessage;
+
+@interface NovaUnifiedWebViewHost (SWIFT_EXTENSION(NovaCore)) <WKScriptMessageHandler>
+- (void)userContentController:(WKUserContentController * _Nonnull)userContentController didReceiveScriptMessage:(WKScriptMessage * _Nonnull)message;
 @end
 
 @class WKNavigation;
@@ -1959,11 +1971,11 @@ SWIFT_CLASS("_TtC8NovaCore25NovaWebViewNavigationView")
 
 
 
+
 @interface UIImage (SWIFT_EXTENSION(NovaCore))
 - (nullable instancetype)initWithNovasystemName:(enum NovaSystem)novasystemName;
 - (nullable instancetype)initWithNovasystemName:(enum NovaSystem)novasystemName tintColor:(UIColor * _Nonnull)tintColor;
 @end
-
 
 
 

@@ -157,6 +157,8 @@ public final class NovaNativeAdVideoView: UIView {
     private var videoTapRecognizer: UITapGestureRecognizer?
 
     private weak var iabReporter: IABMetricReporter?
+    
+    public var novaNativeAdVideoDelegate: NovaNativeAdVideoDelegate?
 
     public init(inLandingPage: Bool = false) {
         self.inLandingPage = inLandingPage
@@ -694,6 +696,7 @@ extension NovaNativeAdVideoView: NovaVideoPlayerDelegate {
                                                    percentage: videoCurrent / videoLength,
                                                    duration: videoCurrent)
         //iabReporter?.logVideoProgress(percentage: videoCurrent / videoLength)
+        novaNativeAdVideoDelegate?.playerCurrentTimeDidChange(currentTime: videoPlayer.currentTimeInterval(), durationTime: videoLength)
     }
 
     public func playerTimePassed60sAfterPlay(_ player: NovaPlayer) {

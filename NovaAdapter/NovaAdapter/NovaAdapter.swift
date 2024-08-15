@@ -13,6 +13,11 @@ public class NovaAdapter: AdNetworkAdapter {
     
     public var nativeAd: MSPAd?
     public var nativeAdItem: NovaNativeAdItem?
+    
+    public var nativeAdView: NativeAdView?
+    public var novaNativeAdView: NovaNativeAdView?
+    
+    
     public var rootViewController: UIViewController?
     
     private var adRequest: AdRequest?
@@ -197,3 +202,5 @@ extension NovaAdapter: NovaNativeAdDelegate {
         return self.rootViewController
     }
 }
+
+
