@@ -16,6 +16,7 @@ open class NovaNativeAdView: UIView {
     public let mediaView: NovaNativeAdMediaView
     public let mediaViewController: NovaNativeAdMediaViewController
     
+    public var novaNativeAdVideoDelegate: NovaNativeAdVideoDelegate?
     
     @objc public var tappableViews: [UIView]? {
         didSet {

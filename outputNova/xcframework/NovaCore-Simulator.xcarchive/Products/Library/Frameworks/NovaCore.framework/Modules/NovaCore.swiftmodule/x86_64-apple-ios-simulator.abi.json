@@ -6888,6 +6888,69 @@
         ]
       },
       {
+        "kind": "Import",
+        "name": "Foundation",
+        "printedName": "Foundation",
+        "declKind": "Import",
+        "moduleName": "NovaCore",
+        "declAttributes": [
+          "RawDocComment"
+        ]
+      },
+      {
+        "kind": "TypeDecl",
+        "name": "NovaNativeAdVideoDelegate",
+        "printedName": "NovaNativeAdVideoDelegate",
+        "children": [
+          {
+            "kind": "Function",
+            "name": "playerCurrentTimeDidChange",
+            "printedName": "playerCurrentTimeDidChange(currentTime:durationTime:)",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Void",
+                "printedName": "()"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "Double",
+                "printedName": "Swift.Double",
+                "usr": "s:Sd"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "Double",
+                "printedName": "Swift.Double",
+                "usr": "s:Sd"
+              }
+            ],
+            "declKind": "Func",
+            "usr": "c:@M@NovaCore@objc(pl)NovaNativeAdVideoDelegate(im)playerCurrentTimeDidChangeWithCurrentTime:durationTime:",
+            "mangledName": "$s8NovaCore0A21NativeAdVideoDelegateP26playerCurrentTimeDidChange07currentI008durationI0ySd_SdtF",
+            "moduleName": "NovaCore",
+            "genericSig": "<τ_0_0 where τ_0_0 : NovaCore.NovaNativeAdVideoDelegate>",
+            "sugared_genericSig": "<Self where Self : NovaCore.NovaNativeAdVideoDelegate>",
+            "protocolReq": true,
+            "declAttributes": [
+              "ObjC"
+            ],
+            "reqNewWitnessTableEntry": true,
+            "funcSelfKind": "NonMutating"
+          }
+        ],
+        "declKind": "Protocol",
+        "usr": "c:@M@NovaCore@objc(pl)NovaNativeAdVideoDelegate",
+        "mangledName": "$s8NovaCore0A21NativeAdVideoDelegateP",
+        "moduleName": "NovaCore",
+        "genericSig": "<τ_0_0 : AnyObject>",
+        "sugared_genericSig": "<Self : AnyObject>",
+        "declAttributes": [
+          "AccessControl",
+          "ObjC"
+        ]
+      },
+      {
         "kind": "TypeDecl",
         "name": "NovaNativeAdVideoInfo",
         "printedName": "NovaNativeAdVideoInfo",
@@ -8552,6 +8615,117 @@
           },
           {
             "kind": "Var",
+            "name": "novaNativeAdVideoDelegate",
+            "printedName": "novaNativeAdVideoDelegate",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Optional",
+                "printedName": "(any NovaCore.NovaNativeAdVideoDelegate)?",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "NovaNativeAdVideoDelegate",
+                    "printedName": "any NovaCore.NovaNativeAdVideoDelegate",
+                    "usr": "c:@M@NovaCore@objc(pl)NovaNativeAdVideoDelegate"
+                  }
+                ],
+                "usr": "s:Sq"
+              }
+            ],
+            "declKind": "Var",
+            "usr": "s:8NovaCore0A12NativeAdViewC04novacD13VideoDelegateAA0acdgH0_pSgvp",
+            "mangledName": "$s8NovaCore0A12NativeAdViewC04novacD13VideoDelegateAA0acdgH0_pSgvp",
+            "moduleName": "NovaCore",
+            "declAttributes": [
+              "HasInitialValue",
+              "HasStorage",
+              "Custom",
+              "AccessControl"
+            ],
+            "hasStorage": true,
+            "accessors": [
+              {
+                "kind": "Accessor",
+                "name": "Get",
+                "printedName": "Get()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Optional",
+                    "printedName": "(any NovaCore.NovaNativeAdVideoDelegate)?",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "NovaNativeAdVideoDelegate",
+                        "printedName": "any NovaCore.NovaNativeAdVideoDelegate",
+                        "usr": "c:@M@NovaCore@objc(pl)NovaNativeAdVideoDelegate"
+                      }
+                    ],
+                    "usr": "s:Sq"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:8NovaCore0A12NativeAdViewC04novacD13VideoDelegateAA0acdgH0_pSgvg",
+                "mangledName": "$s8NovaCore0A12NativeAdViewC04novacD13VideoDelegateAA0acdgH0_pSgvg",
+                "moduleName": "NovaCore",
+                "implicit": true,
+                "accessorKind": "get"
+              },
+              {
+                "kind": "Accessor",
+                "name": "Set",
+                "printedName": "Set()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Void",
+                    "printedName": "()"
+                  },
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Optional",
+                    "printedName": "(any NovaCore.NovaNativeAdVideoDelegate)?",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "NovaNativeAdVideoDelegate",
+                        "printedName": "any NovaCore.NovaNativeAdVideoDelegate",
+                        "usr": "c:@M@NovaCore@objc(pl)NovaNativeAdVideoDelegate"
+                      }
+                    ],
+                    "usr": "s:Sq"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:8NovaCore0A12NativeAdViewC04novacD13VideoDelegateAA0acdgH0_pSgvs",
+                "mangledName": "$s8NovaCore0A12NativeAdViewC04novacD13VideoDelegateAA0acdgH0_pSgvs",
+                "moduleName": "NovaCore",
+                "implicit": true,
+                "accessorKind": "set"
+              },
+              {
+                "kind": "Accessor",
+                "name": "Modify",
+                "printedName": "Modify()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Void",
+                    "printedName": "()"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:8NovaCore0A12NativeAdViewC04novacD13VideoDelegateAA0acdgH0_pSgvM",
+                "mangledName": "$s8NovaCore0A12NativeAdViewC04novacD13VideoDelegateAA0acdgH0_pSgvM",
+                "moduleName": "NovaCore",
+                "implicit": true,
+                "accessorKind": "_modify"
+              }
+            ]
+          },
+          {
+            "kind": "Var",
             "name": "tappableViews",
             "printedName": "tappableViews",
             "children": [
@@ -9261,6 +9435,127 @@
                 "declKind": "Accessor",
                 "usr": "s:8NovaCore0A17NativeAdVideoViewC25didTapCloseButtonCallbackyycSgvM",
                 "mangledName": "$s8NovaCore0A17NativeAdVideoViewC25didTapCloseButtonCallbackyycSgvM",
+                "moduleName": "NovaCore",
+                "implicit": true,
+                "declAttributes": [
+                  "Final"
+                ],
+                "accessorKind": "_modify"
+              }
+            ]
+          },
+          {
+            "kind": "Var",
+            "name": "novaNativeAdVideoDelegate",
+            "printedName": "novaNativeAdVideoDelegate",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Optional",
+                "printedName": "(any NovaCore.NovaNativeAdVideoDelegate)?",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "NovaNativeAdVideoDelegate",
+                    "printedName": "any NovaCore.NovaNativeAdVideoDelegate",
+                    "usr": "c:@M@NovaCore@objc(pl)NovaNativeAdVideoDelegate"
+                  }
+                ],
+                "usr": "s:Sq"
+              }
+            ],
+            "declKind": "Var",
+            "usr": "s:8NovaCore0A17NativeAdVideoViewC04novacdE8DelegateAA0acdeH0_pSgvp",
+            "mangledName": "$s8NovaCore0A17NativeAdVideoViewC04novacdE8DelegateAA0acdeH0_pSgvp",
+            "moduleName": "NovaCore",
+            "declAttributes": [
+              "HasInitialValue",
+              "Final",
+              "HasStorage",
+              "Custom",
+              "AccessControl"
+            ],
+            "hasStorage": true,
+            "accessors": [
+              {
+                "kind": "Accessor",
+                "name": "Get",
+                "printedName": "Get()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Optional",
+                    "printedName": "(any NovaCore.NovaNativeAdVideoDelegate)?",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "NovaNativeAdVideoDelegate",
+                        "printedName": "any NovaCore.NovaNativeAdVideoDelegate",
+                        "usr": "c:@M@NovaCore@objc(pl)NovaNativeAdVideoDelegate"
+                      }
+                    ],
+                    "usr": "s:Sq"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:8NovaCore0A17NativeAdVideoViewC04novacdE8DelegateAA0acdeH0_pSgvg",
+                "mangledName": "$s8NovaCore0A17NativeAdVideoViewC04novacdE8DelegateAA0acdeH0_pSgvg",
+                "moduleName": "NovaCore",
+                "implicit": true,
+                "declAttributes": [
+                  "Final"
+                ],
+                "accessorKind": "get"
+              },
+              {
+                "kind": "Accessor",
+                "name": "Set",
+                "printedName": "Set()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Void",
+                    "printedName": "()"
+                  },
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Optional",
+                    "printedName": "(any NovaCore.NovaNativeAdVideoDelegate)?",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "NovaNativeAdVideoDelegate",
+                        "printedName": "any NovaCore.NovaNativeAdVideoDelegate",
+                        "usr": "c:@M@NovaCore@objc(pl)NovaNativeAdVideoDelegate"
+                      }
+                    ],
+                    "usr": "s:Sq"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:8NovaCore0A17NativeAdVideoViewC04novacdE8DelegateAA0acdeH0_pSgvs",
+                "mangledName": "$s8NovaCore0A17NativeAdVideoViewC04novacdE8DelegateAA0acdeH0_pSgvs",
+                "moduleName": "NovaCore",
+                "implicit": true,
+                "declAttributes": [
+                  "Final"
+                ],
+                "accessorKind": "set"
+              },
+              {
+                "kind": "Accessor",
+                "name": "Modify",
+                "printedName": "Modify()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Void",
+                    "printedName": "()"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:8NovaCore0A17NativeAdVideoViewC04novacdE8DelegateAA0acdeH0_pSgvM",
+                "mangledName": "$s8NovaCore0A17NativeAdVideoViewC04novacdE8DelegateAA0acdeH0_pSgvM",
                 "moduleName": "NovaCore",
                 "implicit": true,
                 "declAttributes": [
@@ -35821,6 +36116,155 @@
         "name": "NovaNativeAdMediaView",
         "printedName": "NovaNativeAdMediaView",
         "children": [
+          {
+            "kind": "Var",
+            "name": "novaNativeAdVideoDelegate",
+            "printedName": "novaNativeAdVideoDelegate",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Optional",
+                "printedName": "(any NovaCore.NovaNativeAdVideoDelegate)?",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "NovaNativeAdVideoDelegate",
+                    "printedName": "any NovaCore.NovaNativeAdVideoDelegate",
+                    "usr": "c:@M@NovaCore@objc(pl)NovaNativeAdVideoDelegate"
+                  }
+                ],
+                "usr": "s:Sq"
+              }
+            ],
+            "declKind": "Var",
+            "usr": "s:8NovaCore0A17NativeAdMediaViewC04novacD13VideoDelegateAA0acdhI0_pSgvp",
+            "mangledName": "$s8NovaCore0A17NativeAdMediaViewC04novacD13VideoDelegateAA0acdhI0_pSgvp",
+            "moduleName": "NovaCore",
+            "declAttributes": [
+              "HasInitialValue",
+              "Final",
+              "HasStorage",
+              "Custom",
+              "AccessControl"
+            ],
+            "hasStorage": true,
+            "accessors": [
+              {
+                "kind": "Accessor",
+                "name": "Get",
+                "printedName": "Get()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Optional",
+                    "printedName": "(any NovaCore.NovaNativeAdVideoDelegate)?",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "NovaNativeAdVideoDelegate",
+                        "printedName": "any NovaCore.NovaNativeAdVideoDelegate",
+                        "usr": "c:@M@NovaCore@objc(pl)NovaNativeAdVideoDelegate"
+                      }
+                    ],
+                    "usr": "s:Sq"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:8NovaCore0A17NativeAdMediaViewC04novacD13VideoDelegateAA0acdhI0_pSgvg",
+                "mangledName": "$s8NovaCore0A17NativeAdMediaViewC04novacD13VideoDelegateAA0acdhI0_pSgvg",
+                "moduleName": "NovaCore",
+                "implicit": true,
+                "declAttributes": [
+                  "Final"
+                ],
+                "accessorKind": "get"
+              },
+              {
+                "kind": "Accessor",
+                "name": "Set",
+                "printedName": "Set()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Void",
+                    "printedName": "()"
+                  },
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Optional",
+                    "printedName": "(any NovaCore.NovaNativeAdVideoDelegate)?",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "NovaNativeAdVideoDelegate",
+                        "printedName": "any NovaCore.NovaNativeAdVideoDelegate",
+                        "usr": "c:@M@NovaCore@objc(pl)NovaNativeAdVideoDelegate"
+                      }
+                    ],
+                    "usr": "s:Sq"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:8NovaCore0A17NativeAdMediaViewC04novacD13VideoDelegateAA0acdhI0_pSgvs",
+                "mangledName": "$s8NovaCore0A17NativeAdMediaViewC04novacD13VideoDelegateAA0acdhI0_pSgvs",
+                "moduleName": "NovaCore",
+                "implicit": true,
+                "declAttributes": [
+                  "Final"
+                ],
+                "accessorKind": "set"
+              },
+              {
+                "kind": "Accessor",
+                "name": "Modify",
+                "printedName": "Modify()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Void",
+                    "printedName": "()"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:8NovaCore0A17NativeAdMediaViewC04novacD13VideoDelegateAA0acdhI0_pSgvM",
+                "mangledName": "$s8NovaCore0A17NativeAdMediaViewC04novacD13VideoDelegateAA0acdhI0_pSgvM",
+                "moduleName": "NovaCore",
+                "implicit": true,
+                "declAttributes": [
+                  "Final"
+                ],
+                "accessorKind": "_modify"
+              }
+            ]
+          },
+          {
+            "kind": "Function",
+            "name": "setNovaNativeAdVideoDelegate",
+            "printedName": "setNovaNativeAdVideoDelegate(delegate:)",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Void",
+                "printedName": "()"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "NovaNativeAdVideoDelegate",
+                "printedName": "any NovaCore.NovaNativeAdVideoDelegate",
+                "usr": "c:@M@NovaCore@objc(pl)NovaNativeAdVideoDelegate"
+              }
+            ],
+            "declKind": "Func",
+            "usr": "s:8NovaCore0A17NativeAdMediaViewC03setacD13VideoDelegate8delegateyAA0acdhI0_p_tF",
+            "mangledName": "$s8NovaCore0A17NativeAdMediaViewC03setacD13VideoDelegate8delegateyAA0acdhI0_p_tF",
+            "moduleName": "NovaCore",
+            "declAttributes": [
+              "Custom",
+              "Final",
+              "AccessControl"
+            ],
+            "funcSelfKind": "NonMutating"
+          },
           {
             "kind": "Function",
             "name": "config",
@@ -85047,7 +85491,7 @@
     {
       "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-sdk\/NovaCore\/NovaCore\/Native\/NovaNativeAdView.swift",
       "kind": "BooleanLiteral",
-      "offset": 772,
+      "offset": 841,
       "length": 4,
       "value": "true"
     },
@@ -85264,7 +85708,7 @@
     {
       "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-sdk\/NovaCore\/NovaCore\/Native\/NovaNativeAdVideoView.swift",
       "kind": "BooleanLiteral",
-      "offset": 5661,
+      "offset": 5735,
       "length": 5,
       "value": "false"
     },

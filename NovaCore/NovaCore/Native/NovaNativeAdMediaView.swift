@@ -20,6 +20,8 @@ public final class NovaNativeAdMediaView: UIView {
     }()
 
     private var isVideoDisplayed = false
+    
+    public var novaNativeAdVideoDelegate: NovaNativeAdVideoDelegate?
 
     // MARK: -
 
@@ -61,12 +63,18 @@ public final class NovaNativeAdMediaView: UIView {
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
+    
+    public func setNovaNativeAdVideoDelegate(delegate: NovaNativeAdVideoDelegate) {
+        self.novaNativeAdVideoDelegate = delegate
+        self.videoView.novaNativeAdVideoDelegate = delegate
+    }
 }
 
 // MARK: - Public methods
 
 public extension NovaNativeAdMediaView {
     func config(with viewModel: NovaNativeAdMediaViewModel, iabReporter: IABMetricReporter?, completion: @escaping () -> Void) {
+        videoView.novaNativeAdVideoDelegate = novaNativeAdVideoDelegate
         if let videoInfo = viewModel.videoInfo {
             videoView.config(videoInfo: videoInfo,
                              encryptedAdToken: viewModel.encryptedAdToken,
