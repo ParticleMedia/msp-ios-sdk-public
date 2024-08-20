@@ -36,7 +36,7 @@ public class MSP {
         }
         Prebid.shared.shareGeoLocation = true
         
-        UserDefaults.standard.setValue(Date().timeIntervalSince1970, forKey: "FirstLaunchTime")
+        UserDefaults.standard.setValue(String(Date().timeIntervalSince1970 * 1000), forKey: "FirstLaunchTime")
     }
     
     public class MSPAdapterInitListener: AdapterInitListener {
