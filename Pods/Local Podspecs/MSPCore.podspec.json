@@ -1,6 +1,6 @@
 {
   "name": "MSPCore",
-  "version": "0.0.38",
+  "version": "0.0.41",
   "summary": "An utility helper for MSP",
   "platforms": {
     "ios": "13.0"
@@ -13,7 +13,7 @@
   },
   "source": {
     "git": "https://github.com/huanzhiNB/msp-ios-sdk-public.git",
-    "tag": "0.0.38"
+    "tag": "0.0.41"
   },
   "source_files": "MSPCore/MSPCore/**/*.{h,m,swift}",
   "exclude_files": "Classes/Exclude",
@@ -22,7 +22,7 @@
       "0.0.38"
     ],
     "PrebidAdapter": [
-      "0.0.38"
+      "0.0.41"
     ]
   },
   "static_framework": true
