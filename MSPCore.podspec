@@ -16,7 +16,7 @@ Pod::Spec.new do |spec|
   #
 
   spec.name         = "MSPCore"
-  spec.version      = "0.0.38"
+  spec.version      = "0.0.41"
   spec.summary      = "An utility helper for MSP"
 
   spec.ios.deployment_target = '13.0'
@@ -95,7 +95,7 @@ Pod::Spec.new do |spec|
   spec.exclude_files = "Classes/Exclude"
 
   spec.dependency 'MSPSharedLibraries', '0.0.38'
-  spec.dependency 'PrebidAdapter', '0.0.38'
+  spec.dependency 'PrebidAdapter', '0.0.41'
   #spec.vendored_frameworks= "MSPCore/PrebidAdapter.xcframework"#, "PrebidMobile.xcframework", "MSPiOSCore.xcframework"
 
   #spec.pod_target_xcconfig = {

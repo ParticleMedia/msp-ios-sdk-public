@@ -159,9 +159,7 @@
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "136"
-            endingLineNumber = "136"
-            landmarkName = "onError(msg:)"
-            landmarkType = "7">
+            endingLineNumber = "136">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -336,8 +334,8 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "60"
             endingLineNumber = "60"
-            landmarkName = "ViewController"
-            landmarkType = "3">
+            landmarkName = "onAdLoaded(placementId:)"
+            landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -354,36 +352,6 @@
             endingLineNumber = "97"
             landmarkName = "onAdLoaded(ad:)"
             landmarkType = "7">
-            <Locations>
-               <Location
-                  uuid = "658F6CE4-769D-4356-A63B-4CAC7378E15E - 114f26f9cecea972"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "MSPDemoApp.ViewController.onAdLoaded(ad: __C.SharedMSPAd) -&gt; ()"
-                  moduleName = "MSPDemoApp"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/huanzhizhang/Huanzhi/msp-ios-sdk/MSPDemoApp/MSPDemoApp/ViewController.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "97"
-                  endingLineNumber = "97">
-               </Location>
-               <Location
-                  uuid = "658F6CE4-769D-4356-A63B-4CAC7378E15E - 114f26f9cecea972"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "MSPDemoApp.ViewController.onAdLoaded(ad: __C.SharedMSPAd) -&gt; ()"
-                  moduleName = "MSPDemoApp"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/huanzhizhang/Huanzhi/msp-ios-sdk/MSPDemoApp/MSPDemoApp/ViewController.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "97"
-                  endingLineNumber = "97">
-               </Location>
-            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -398,8 +366,8 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "68"
             endingLineNumber = "68"
-            landmarkName = "onAdLoaded(placementId:)"
-            landmarkType = "7">
+            landmarkName = "ViewController"
+            landmarkType = "21">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
