@@ -110,10 +110,6 @@ public class PrebidBidLoader : BidLoader {
                 }
             }
         }
-        
-        if let firstLaunchTime = UserDefaults.standard.string(forKey: "FirstLaunchTime") {
-            adUnitConfig.addContextData(key: "app_install_timestamp", value: firstLaunchTime as? String ?? "")
-        }
 
         if let gadQueryInfo = gadQueryInfo {
             adUnitConfig.addContextData(key: "query_info", value: gadQueryInfo)
