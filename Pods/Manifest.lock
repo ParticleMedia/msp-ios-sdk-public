@@ -11,13 +11,13 @@ PODS:
   - libwebp/sharpyuv (1.3.2)
   - libwebp/webp (1.3.2):
     - libwebp/sharpyuv
-  - MSPCore (0.0.38):
+  - MSPCore (0.0.41):
     - MSPSharedLibraries (= 0.0.38)
-    - PrebidAdapter (= 0.0.38)
+    - PrebidAdapter (= 0.0.42)
   - MSPSharedLibraries (0.0.38)
-  - NovaAdapter (0.0.39):
+  - NovaAdapter (0.0.43):
     - MSPSharedLibraries (= 0.0.38)
-  - PrebidAdapter (0.0.38):
+  - PrebidAdapter (0.0.42):
     - MSPSharedLibraries (= 0.0.38)
   - SDWebImage (5.18.8):
     - SDWebImage/Core (= 5.18.8)
@@ -54,10 +54,10 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   libwebp: 1786c9f4ff8a279e4dac1e8f385004d5fc253009
-  MSPCore: 7fc8a3c9ee4cd8004ee4113bda0bdc577d8bc9e0
+  MSPCore: 7ddcb28540c2a39eca2e099ba33b9853d77047f1
   MSPSharedLibraries: a69a861287a58ea9bb9e2974abd93e41594b0546
-  NovaAdapter: f4f9294d4548079a8c0390e0a8d719f96b88b28d
-  PrebidAdapter: aaaf303590502da6d633d9b1cc812639920a829e
+  NovaAdapter: fe74dd04e8751abdfe8101a08065ecb577065221
+  PrebidAdapter: ac22c7cc15e5c33fd122d8338f984d8616e9905c
   SDWebImage: a81bbb3ba4ea5f810f4069c68727cb118467a04a
   SDWebImageWebPCoder: 633b813fca24f1de5e076bcd7f720c038b23892b
   Shimmer: c5374be1c2b0c9e292fb05b339a513cf291cac86

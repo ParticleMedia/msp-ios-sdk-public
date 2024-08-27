@@ -124,6 +124,11 @@ public class MSPAdLoader: BidListener {
         self.adListener = adListener
         self.adRequest = adRequest
         
+        if adRequest.isCacheSupported, let ad = AdCache.shared.peakAd(placementId: placementId) {
+            adListener.onAdLoaded(placementId: placementId)
+            return
+        }
+        
         self.bidLoader = MSP.shared.bidLoaderProvider.getBidLoader()
         self.rootViewController = rootViewController
         bidLoader?.loadBid(placementId: placementId, adParams: adRequest.customParams, bidListener: self, adRequest: adRequest)

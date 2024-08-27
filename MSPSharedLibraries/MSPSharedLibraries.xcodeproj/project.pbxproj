@@ -12,8 +12,6 @@
 		661709022BF5666600DFB7DD /* MSPSharedLibraries.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 661708F72BF5666500DFB7DD /* MSPSharedLibraries.framework */; };
 		661709072BF5666600DFB7DD /* MSPSharedLibrariesTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 661709062BF5666600DFB7DD /* MSPSharedLibrariesTests.swift */; };
 		661709082BF5666600DFB7DD /* MSPSharedLibraries.h in Headers */ = {isa = PBXBuildFile; fileRef = 661708FA2BF5666500DFB7DD /* MSPSharedLibraries.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		66E534EC2C24D7BA00255D15 /* NovaCore.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 66E534EB2C24D7BA00255D15 /* NovaCore.xcframework */; };
-		66E534ED2C24D7BA00255D15 /* NovaCore.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 66E534EB2C24D7BA00255D15 /* NovaCore.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -25,20 +23,6 @@
 			remoteInfo = MSPSharedLibraries;
 		};
 /* End PBXContainerItemProxy section */
-
-/* Begin PBXCopyFilesBuildPhase section */
-		66E534EE2C24D7BA00255D15 /* Embed Frameworks */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = "";
-			dstSubfolderSpec = 10;
-			files = (
-				66E534ED2C24D7BA00255D15 /* NovaCore.xcframework in Embed Frameworks */,
-			);
-			name = "Embed Frameworks";
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		06CA1C8E4A3AA5501D8131F1 /* libPods-MSPSharedLibraries.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-MSPSharedLibraries.a"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -57,7 +41,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				66E534EC2C24D7BA00255D15 /* NovaCore.xcframework in Frameworks */,
 				0EA849A618C2019BB3E53BE0 /* libPods-MSPSharedLibraries.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -152,7 +135,6 @@
 				661708F32BF5666500DFB7DD /* Sources */,
 				661708F42BF5666500DFB7DD /* Frameworks */,
 				661708F52BF5666500DFB7DD /* Resources */,
-				66E534EE2C24D7BA00255D15 /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
@@ -433,6 +415,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -471,6 +454,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
