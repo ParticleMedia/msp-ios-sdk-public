@@ -53,7 +53,8 @@ public class AdRequest {
   public var placementId: Swift.String
   public var adFormat: MSPiOSCore.AdFormat
   public var isCacheSupported: Swift.Bool
-  public init(customParams: [Swift.String : Any], geo: MSPiOSCore.Geo?, context: Any?, adaptiveBannerSize: MSPiOSCore.AdSize?, adSize: MSPiOSCore.AdSize?, placementId: Swift.String, adFormat: MSPiOSCore.AdFormat, isCacheSupported: Swift.Bool = false)
+  public var testParams: [Swift.String : Any]
+  public init(customParams: [Swift.String : Any], geo: MSPiOSCore.Geo?, context: Any?, adaptiveBannerSize: MSPiOSCore.AdSize?, adSize: MSPiOSCore.AdSize?, placementId: Swift.String, adFormat: MSPiOSCore.AdFormat, isCacheSupported: Swift.Bool = false, testParams: [Swift.String : Any] = [:])
   @objc deinit
 }
 public struct AdSize {
