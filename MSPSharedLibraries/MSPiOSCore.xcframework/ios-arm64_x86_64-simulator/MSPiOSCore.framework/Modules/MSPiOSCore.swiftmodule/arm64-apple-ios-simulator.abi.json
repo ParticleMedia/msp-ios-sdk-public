@@ -1725,9 +1725,133 @@
             ]
           },
           {
+            "kind": "Var",
+            "name": "testParams",
+            "printedName": "testParams",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Dictionary",
+                "printedName": "[Swift.String : Any]",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "String",
+                    "printedName": "Swift.String",
+                    "usr": "s:SS"
+                  },
+                  {
+                    "kind": "TypeNominal",
+                    "name": "ProtocolComposition",
+                    "printedName": "Any"
+                  }
+                ],
+                "usr": "s:SD"
+              }
+            ],
+            "declKind": "Var",
+            "usr": "s:10MSPiOSCore9AdRequestC10testParamsSDySSypGvp",
+            "mangledName": "$s10MSPiOSCore9AdRequestC10testParamsSDySSypGvp",
+            "moduleName": "MSPiOSCore",
+            "declAttributes": [
+              "HasStorage",
+              "AccessControl"
+            ],
+            "hasStorage": true,
+            "accessors": [
+              {
+                "kind": "Accessor",
+                "name": "Get",
+                "printedName": "Get()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Dictionary",
+                    "printedName": "[Swift.String : Any]",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "String",
+                        "printedName": "Swift.String",
+                        "usr": "s:SS"
+                      },
+                      {
+                        "kind": "TypeNominal",
+                        "name": "ProtocolComposition",
+                        "printedName": "Any"
+                      }
+                    ],
+                    "usr": "s:SD"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:10MSPiOSCore9AdRequestC10testParamsSDySSypGvg",
+                "mangledName": "$s10MSPiOSCore9AdRequestC10testParamsSDySSypGvg",
+                "moduleName": "MSPiOSCore",
+                "implicit": true,
+                "accessorKind": "get"
+              },
+              {
+                "kind": "Accessor",
+                "name": "Set",
+                "printedName": "Set()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Void",
+                    "printedName": "()"
+                  },
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Dictionary",
+                    "printedName": "[Swift.String : Any]",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "String",
+                        "printedName": "Swift.String",
+                        "usr": "s:SS"
+                      },
+                      {
+                        "kind": "TypeNominal",
+                        "name": "ProtocolComposition",
+                        "printedName": "Any"
+                      }
+                    ],
+                    "usr": "s:SD"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:10MSPiOSCore9AdRequestC10testParamsSDySSypGvs",
+                "mangledName": "$s10MSPiOSCore9AdRequestC10testParamsSDySSypGvs",
+                "moduleName": "MSPiOSCore",
+                "implicit": true,
+                "accessorKind": "set"
+              },
+              {
+                "kind": "Accessor",
+                "name": "Modify",
+                "printedName": "Modify()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Void",
+                    "printedName": "()"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:10MSPiOSCore9AdRequestC10testParamsSDySSypGvM",
+                "mangledName": "$s10MSPiOSCore9AdRequestC10testParamsSDySSypGvM",
+                "moduleName": "MSPiOSCore",
+                "implicit": true,
+                "accessorKind": "_modify"
+              }
+            ]
+          },
+          {
             "kind": "Constructor",
             "name": "init",
-            "printedName": "init(customParams:geo:context:adaptiveBannerSize:adSize:placementId:adFormat:isCacheSupported:)",
+            "printedName": "init(customParams:geo:context:adaptiveBannerSize:adSize:placementId:adFormat:isCacheSupported:testParams:)",
             "children": [
               {
                 "kind": "TypeNominal",
@@ -1827,11 +1951,31 @@
                 "printedName": "Swift.Bool",
                 "hasDefaultArg": true,
                 "usr": "s:Sb"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "Dictionary",
+                "printedName": "[Swift.String : Any]",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "String",
+                    "printedName": "Swift.String",
+                    "usr": "s:SS"
+                  },
+                  {
+                    "kind": "TypeNominal",
+                    "name": "ProtocolComposition",
+                    "printedName": "Any"
+                  }
+                ],
+                "hasDefaultArg": true,
+                "usr": "s:SD"
               }
             ],
             "declKind": "Constructor",
-            "usr": "s:10MSPiOSCore9AdRequestC12customParams3geo7context18adaptiveBannerSize02adK011placementId0L6Format16isCacheSupportedACSDySSypG_AA3GeoVSgypSgAA0cK0VSgASSSAA0cO0OSbtcfc",
-            "mangledName": "$s10MSPiOSCore9AdRequestC12customParams3geo7context18adaptiveBannerSize02adK011placementId0L6Format16isCacheSupportedACSDySSypG_AA3GeoVSgypSgAA0cK0VSgASSSAA0cO0OSbtcfc",
+            "usr": "s:10MSPiOSCore9AdRequestC12customParams3geo7context18adaptiveBannerSize02adK011placementId0L6Format16isCacheSupported04testF0ACSDySSypG_AA3GeoVSgypSgAA0cK0VSgATSSAA0cO0OSbAMtcfc",
+            "mangledName": "$s10MSPiOSCore9AdRequestC12customParams3geo7context18adaptiveBannerSize02adK011placementId0L6Format16isCacheSupported04testF0ACSDySSypG_AA3GeoVSgypSgAA0cK0VSgATSSAA0cO0OSbAMtcfc",
             "moduleName": "MSPiOSCore",
             "declAttributes": [
               "AccessControl"
@@ -8815,21 +8959,28 @@
     {
       "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-core\/MSPiOSCore\/MSPiOSCore\/api\/AdRequest.swift",
       "kind": "BooleanLiteral",
-      "offset": 595,
+      "offset": 635,
+      "length": 5,
+      "value": "false"
+    },
+    {
+      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-core\/MSPiOSCore\/MSPiOSCore\/api\/AdRequest.swift",
+      "kind": "Dictionary",
+      "offset": 669,
+      "length": 3,
+      "value": "[]"
+    },
+    {
+      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-core\/MSPiOSCore\/MSPiOSCore\/api\/AdRequest.swift",
+      "kind": "BooleanLiteral",
+      "offset": 1262,
       "length": 5,
       "value": "false"
     },
     {
       "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-core\/MSPiOSCore\/MSPiOSCore\/api\/AdRequest.swift",
       "kind": "BooleanLiteral",
-      "offset": 1153,
-      "length": 5,
-      "value": "false"
-    },
-    {
-      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-core\/MSPiOSCore\/MSPiOSCore\/api\/AdRequest.swift",
-      "kind": "BooleanLiteral",
-      "offset": 1191,
+      "offset": 1300,
       "length": 5,
       "value": "false"
     },
