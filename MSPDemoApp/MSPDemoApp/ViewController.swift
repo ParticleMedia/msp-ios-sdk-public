@@ -30,9 +30,10 @@ class ViewController: UIViewController {
         var adLoader = MSPAdLoader()
         self.adLoader = adLoader
         var customParams = [String: String]()
+        var testParams = [String: String]()
         customParams["user_id"] = "143378797"
-        //customParams["test"] = "{\"ad_network\":\"msp_nova\",\"test_ad\":true}"
         customParams["profile_id"] = "09hbNFOl"
+        testParams["test"] = "{\"ad_network\":\"msp_nova\",\"test_ad\":true}"
         let adRequest = AdRequest(customParams: customParams,
                                   geo: Geo(city: "San Francisco", stateCode: "CA", zipCode: "94102", lat: "37.79", lon: "-122.41"),
                                   context: nil,
@@ -40,7 +41,8 @@ class ViewController: UIViewController {
                                   adSize: AdSize(width: 320, height: 50, isInlineAdaptiveBanner: false, isAnchorAdaptiveBanner: false),
                                   placementId: "msp-ios-foryou-large-display-prod2",
                                   adFormat: .native,
-                                  isCacheSupported: true)
+                                  isCacheSupported: true,
+                                  testParams: testParams)
         adLoader.loadAd(placementId: "msp-ios-foryou-large-display-prod2",
                         adListener: self,
                         context: self,
