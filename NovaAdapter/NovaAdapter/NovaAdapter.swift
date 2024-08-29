@@ -13,6 +13,11 @@ public class NovaAdapter: AdNetworkAdapter {
     
     public var nativeAd: MSPAd?
     public var nativeAdItem: NovaNativeAdItem?
+    
+    public var nativeAdView: NativeAdView?
+    public var novaNativeAdView: NovaNativeAdView?
+    
+    
     public var rootViewController: UIViewController?
     
     private var adRequest: AdRequest?
@@ -131,6 +136,7 @@ public class NovaAdapter: AdNetworkAdapter {
                     nativeAd.mediaView = mediaView
                     nativeAd.priceInDollar = self.priceInDollar
                     nativeAd.adInfo["priceInDollar"] = self.priceInDollar
+                    nativeAd.adInfo["isVideo"] = (nativeAdItem.creativeType == .nativeVideo)
                     nativeAd.nativeAdItem = nativeAdItem
                     self.nativeAdItem = nativeAdItem
                     self.nativeAd = nativeAd
@@ -197,3 +203,5 @@ extension NovaAdapter: NovaNativeAdDelegate {
         return self.rootViewController
     }
 }
+
+

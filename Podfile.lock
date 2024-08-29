@@ -11,14 +11,14 @@ PODS:
   - libwebp/sharpyuv (1.3.2)
   - libwebp/webp (1.3.2):
     - libwebp/sharpyuv
-  - MSPCore (0.0.26):
-    - MSPSharedLibraries (= 0.0.26)
-    - PrebidAdapter (= 0.0.26)
-  - MSPSharedLibraries (0.0.26)
-  - NovaAdapter (0.0.26):
-    - MSPSharedLibraries (= 0.0.26)
-  - PrebidAdapter (0.0.26):
-    - MSPSharedLibraries (= 0.0.26)
+  - MSPCore (0.0.46):
+    - MSPSharedLibraries (= 0.0.45)
+    - PrebidAdapter (= 0.0.46)
+  - MSPSharedLibraries (0.0.45)
+  - NovaAdapter (0.0.46):
+    - MSPSharedLibraries (= 0.0.45)
+  - PrebidAdapter (0.0.46):
+    - MSPSharedLibraries (= 0.0.45)
   - SDWebImage (5.18.8):
     - SDWebImage/Core (= 5.18.8)
   - SDWebImage/Core (5.18.8)
@@ -29,8 +29,8 @@ PODS:
   - SnapKit (5.6.0)
 
 DEPENDENCIES:
-  - MSPCore (= 0.0.26)
-  - NovaAdapter (= 0.0.26)
+  - MSPCore (from `./`)
+  - NovaAdapter (from `./`)
   - SDWebImage (= 5.18.8)
   - SDWebImageWebPCoder (= 0.14.2)
   - Shimmer
@@ -39,26 +39,30 @@ DEPENDENCIES:
 SPEC REPOS:
   trunk:
     - libwebp
-    - MSPCore
     - MSPSharedLibraries
-    - NovaAdapter
     - PrebidAdapter
     - SDWebImage
     - SDWebImageWebPCoder
     - Shimmer
     - SnapKit
 
+EXTERNAL SOURCES:
+  MSPCore:
+    :path: "./"
+  NovaAdapter:
+    :path: "./"
+
 SPEC CHECKSUMS:
   libwebp: 1786c9f4ff8a279e4dac1e8f385004d5fc253009
-  MSPCore: e9592bf481035d026a46192abb9cc3bffa6ef170
-  MSPSharedLibraries: 092d0cd686cb82b5f76b9807d671265a6792add5
-  NovaAdapter: 0b64a70e0b9a3b3356aff4247b85cd22a4b0a442
-  PrebidAdapter: 65072018431d93efecc163c743312f62c859cf32
+  MSPCore: 88555b2ff6b498c387b3535b828b8a7d64f9e407
+  MSPSharedLibraries: aee8e56bc19148568585b9e6f67046f418c96a0c
+  NovaAdapter: bb7c43a3a6cb56ebbc4d9a7b730c95d45c822c74
+  PrebidAdapter: 95a756fc9d09f0d65fc918df4f07280150a8a0d1
   SDWebImage: a81bbb3ba4ea5f810f4069c68727cb118467a04a
   SDWebImageWebPCoder: 633b813fca24f1de5e076bcd7f720c038b23892b
   Shimmer: c5374be1c2b0c9e292fb05b339a513cf291cac86
   SnapKit: e01d52ebb8ddbc333eefe2132acf85c8227d9c25
 
-PODFILE CHECKSUM: 06cbc54e86495c238ae43103cbcc98cd47650ff3
+PODFILE CHECKSUM: 4bf5cfb53ba09a063c16eb7a110d3125abf8a0bc
 
 COCOAPODS: 1.14.3

@@ -35,6 +35,8 @@ public class MSP {
             Targeting.shared.sourceapp = sourceApp
         }
         Prebid.shared.shareGeoLocation = true
+        
+        UserDefaults.standard.setValue(String(Date().timeIntervalSince1970 * 1000), forKey: "FirstLaunchTime")
     }
     
     public class MSPAdapterInitListener: AdapterInitListener {
@@ -121,6 +123,11 @@ public class MSPAdLoader: BidListener {
         
         self.adListener = adListener
         self.adRequest = adRequest
+        
+        if adRequest.isCacheSupported, let ad = AdCache.shared.peakAd(placementId: placementId) {
+            adListener.onAdLoaded(placementId: placementId)
+            return
+        }
         
         self.bidLoader = MSP.shared.bidLoaderProvider.getBidLoader()
         self.rootViewController = rootViewController

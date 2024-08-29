@@ -9,14 +9,12 @@
 /* Begin PBXBuildFile section */
 		1FAD4CF4DA9A5F4F6FF39485 /* Pods_PrebidAdapter.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8A11CB79D7872D1A49043475 /* Pods_PrebidAdapter.framework */; };
 		5E351931D3F6D56A60BE2F9D /* Pods_PrebidAdapter_PrebidAdapterTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 64BFBFF1962FABF7FA1D080A /* Pods_PrebidAdapter_PrebidAdapterTests.framework */; };
-		66B730672C3DD2C10042E4FF /* MSPiOSCore.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6657537F2BF1A9DA00338B1C /* MSPiOSCore.xcframework */; };
 		66D6C3A42B322B44006EBBF3 /* PrebidAdapter.docc in Sources */ = {isa = PBXBuildFile; fileRef = 66D6C3A32B322B44006EBBF3 /* PrebidAdapter.docc */; };
 		66D6C3AA2B322B44006EBBF3 /* PrebidAdapter.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 66D6C39F2B322B44006EBBF3 /* PrebidAdapter.framework */; };
 		66D6C3AF2B322B44006EBBF3 /* PrebidAdapterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66D6C3AE2B322B44006EBBF3 /* PrebidAdapterTests.swift */; };
 		66D6C3B02B322B44006EBBF3 /* PrebidAdapter.h in Headers */ = {isa = PBXBuildFile; fileRef = 66D6C3A22B322B44006EBBF3 /* PrebidAdapter.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		66D6C3E62B323F76006EBBF3 /* PrebidAdapter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66D6C3E52B323F76006EBBF3 /* PrebidAdapter.swift */; };
 		66D6C3F22B33996A006EBBF3 /* PrebidBidLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66D6C3F12B33996A006EBBF3 /* PrebidBidLoader.swift */; };
-		66E534152C24B4B300255D15 /* PrebidMobile.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 66D6C3E12B323EDC006EBBF3 /* PrebidMobile.xcframework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -58,8 +56,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				1FAD4CF4DA9A5F4F6FF39485 /* Pods_PrebidAdapter.framework in Frameworks */,
-				66B730672C3DD2C10042E4FF /* MSPiOSCore.xcframework in Frameworks */,
-				66E534152C24B4B300255D15 /* PrebidMobile.xcframework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
