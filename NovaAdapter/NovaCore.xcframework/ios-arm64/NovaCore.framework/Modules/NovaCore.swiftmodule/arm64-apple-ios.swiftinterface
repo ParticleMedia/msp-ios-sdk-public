@@ -577,6 +577,9 @@ extension NovaCore.NovaUnifiedWebViewNavigationDelegate {
   public func webViewInitialLoadDidRedirect(_ webView: WebKit.WKWebView)
   public func webViewDidGoBackToInitialLoad(_ webView: WebKit.WKWebView)
 }
+@objc public protocol NovaNativeAdVideoDelegate {
+  @objc func playerCurrentTimeDidChange(currentTime: Swift.Double, durationTime: Swift.Double)
+}
 @_hasMissingDesignatedInitializers final public class NovaNativeAdVideoInfo : Swift.Codable {
   final public let cacheKey: Swift.String
   final public let coverUrlStr: Swift.String?
@@ -615,6 +618,7 @@ extension NovaCore.ActionModel : Swift.Equatable {
   @_Concurrency.MainActor(unsafe) public var callToActionButton: UIKit.UIButton?
   @_Concurrency.MainActor(unsafe) final public let mediaView: NovaCore.NovaNativeAdMediaView
   @_Concurrency.MainActor(unsafe) final public let mediaViewController: NovaCore.NovaNativeAdMediaViewController
+  @_Concurrency.MainActor(unsafe) public var novaNativeAdVideoDelegate: (any NovaCore.NovaNativeAdVideoDelegate)?
   @objc @_Concurrency.MainActor(unsafe) public var tappableViews: [UIKit.UIView]? {
     @objc get
     @objc set
@@ -636,6 +640,7 @@ extension NovaCore.NovaNativeAdView {
 }
 @objc @_hasMissingDesignatedInitializers @_Concurrency.MainActor(unsafe) final public class NovaNativeAdVideoView : UIKit.UIView {
   @_Concurrency.MainActor(unsafe) final public var didTapCloseButtonCallback: (() -> Swift.Void)?
+  @_Concurrency.MainActor(unsafe) final public var novaNativeAdVideoDelegate: (any NovaCore.NovaNativeAdVideoDelegate)?
   @_Concurrency.MainActor(unsafe) public init(inLandingPage: Swift.Bool = false)
   @objc deinit
 }
@@ -1899,6 +1904,8 @@ extension NovaCore.NovaWebViewBottomView {
   @_Concurrency.MainActor(unsafe) public func configButton(canGoBack: Swift.Bool? = nil, canGoForward: Swift.Bool? = nil)
 }
 @objc @_inheritsConvenienceInitializers @_hasMissingDesignatedInitializers @_Concurrency.MainActor(unsafe) final public class NovaNativeAdMediaView : UIKit.UIView {
+  @_Concurrency.MainActor(unsafe) final public var novaNativeAdVideoDelegate: (any NovaCore.NovaNativeAdVideoDelegate)?
+  @_Concurrency.MainActor(unsafe) final public func setNovaNativeAdVideoDelegate(delegate: any NovaCore.NovaNativeAdVideoDelegate)
   @objc deinit
 }
 extension NovaCore.NovaNativeAdMediaView {

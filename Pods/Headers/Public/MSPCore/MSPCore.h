@@ -1,1 +1,1 @@
-../../../MSPCore/MSPCore/MSPCore/MSPCore.h
+../../../../MSPCore/MSPCore/MSPCore.h

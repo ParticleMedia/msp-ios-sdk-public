@@ -11,7 +11,7 @@ import MSPCore
 //import PrebidAdapter
 import NovaAdapter
 import MSPiOSCore
-//import NovaCore
+import NovaCore
 //import shared
 //import MetaAdapter
 import AppTrackingTransparency
@@ -20,6 +20,8 @@ class ViewController: UIViewController {
     
     @IBOutlet var appBannerView: UIView!
     weak var adLoader: MSPAdLoader?
+    public var nativeAdView: NativeAdView?
+    public var isCtaShown = false
 
     override func viewDidLoad() {
         //google test ad config: msp-android-foryou-large-display_gg
@@ -28,9 +30,10 @@ class ViewController: UIViewController {
         var adLoader = MSPAdLoader()
         self.adLoader = adLoader
         var customParams = [String: String]()
+        var testParams = [String: String]()
         customParams["user_id"] = "143378797"
-        //customParams["test"] = "{\"ad_network\":\"msp_nova\",\"test_ad\":true}"
         customParams["profile_id"] = "09hbNFOl"
+        testParams["test"] = "{\"ad_network\":\"msp_nova\",\"test_ad\":true}"
         let adRequest = AdRequest(customParams: customParams,
                                   geo: Geo(city: "San Francisco", stateCode: "CA", zipCode: "94102", lat: "37.79", lon: "-122.41"),
                                   context: nil,
@@ -38,7 +41,8 @@ class ViewController: UIViewController {
                                   adSize: AdSize(width: 320, height: 50, isInlineAdaptiveBanner: false, isAnchorAdaptiveBanner: false),
                                   placementId: "msp-ios-foryou-large-display-prod2",
                                   adFormat: .native,
-                                  isCacheSupported: true)
+                                  isCacheSupported: true,
+                                  testParams: testParams)
         adLoader.loadAd(placementId: "msp-ios-foryou-large-display-prod2",
                         adListener: self,
                         context: self,
@@ -46,8 +50,8 @@ class ViewController: UIViewController {
                         rootViewController:self)
         
         //To test a ad creative
-        //let novaAdLoader = MSP.shared.adNetworkAdapterProvider.getAdNetworkAdapterByName(adNetworkName: "Nova") as? NovaAdLoader
-        //novaAdLoader?.loadTestAdCreative(adString:testAdString, adListener: self, context: self, adRequest: adRequest)
+        //let novaAdLoader = MSP.shared.adNetworkAdapterProvider.getAdNetworkAdapterByName(adNetworkName: "Nova") as? NovaAdapter
+        //novaAdLoader?.loadTestAdCreative(adString:testAdImmersiveString, adListener: self, context: self, adRequest: adRequest)
     }
 
 
@@ -78,8 +82,13 @@ extension ViewController: AdListener {
             DispatchQueue.main.async{
                 let nativeAdViewBinder = DemoNativeAdViewBinder(nativeAd: nativeAd)
                 let nativeAdView = NativeAdView(nativeAd: nativeAd, rootViewController: self, nativeAdViewBinder: nativeAdViewBinder)
-
+                if nativeAdView.mediaView is NovaNativeAdMediaView {
+                    let novaNativeAdMediaView = nativeAdView.mediaView as? NovaNativeAdMediaView
+                    novaNativeAdMediaView?.setNovaNativeAdVideoDelegate(delegate: self)
+                }
+                self.nativeAdView = nativeAdView
                 self.view.addSubview(nativeAdView)
+                self.nativeAdView?.callToActionButton?.isHidden = true
                 nativeAdView.translatesAutoresizingMaskIntoConstraints = false
                 NSLayoutConstraint.activate([
                     nativeAdView.leadingAnchor.constraint(lessThanOrEqualTo: self.view.leadingAnchor, constant: 100),
@@ -94,5 +103,19 @@ extension ViewController: AdListener {
     
     func onError(msg: String) {
         print(msg)
+    }
+}
+
+extension ViewController: NovaNativeAdVideoDelegate {
+    func playerCurrentTimeDidChange(currentTime: Double, durationTime: Double) {
+        print("video time change: currentTime = \(currentTime), durationTime = \(durationTime)")
+        if currentTime > 4.0, !self.isCtaShown {
+            self.isCtaShown = true
+            UIView.animate(withDuration: 0.5, delay: 0, options: .transitionCurlUp, animations: { [weak self] in
+                self?.nativeAdView?.callToActionButton?.transform = CGAffineTransform.identity
+            }, completion: { [weak self] _ in
+                self?.nativeAdView?.callToActionButton?.isHidden = false
+            })
+        }
     }
 }
