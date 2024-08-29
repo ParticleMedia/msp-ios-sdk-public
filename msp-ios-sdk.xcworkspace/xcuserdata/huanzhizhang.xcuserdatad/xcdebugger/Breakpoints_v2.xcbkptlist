@@ -142,10 +142,40 @@
             filePath = "MSPDemoApp/MSPDemoApp/ViewController.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "115"
-            endingLineNumber = "115"
+            startingLineNumber = "117"
+            endingLineNumber = "117"
             landmarkName = "playerCurrentTimeDidChange(currentTime:durationTime:)"
             landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "AC7AB46B-CDCD-4F07-9580-AED63B938CE2 - 72adeb0334dfed7f"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "closure #2 (Swift.Bool) -&gt; () in MSPDemoApp.ViewController.playerCurrentTimeDidChange(currentTime: Swift.Double, durationTime: Swift.Double) -&gt; ()"
+                  moduleName = "MSPDemoApp"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/huanzhizhang/Huanzhi/msp-ios-sdk/MSPDemoApp/MSPDemoApp/ViewController.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "115"
+                  endingLineNumber = "115">
+               </Location>
+               <Location
+                  uuid = "AC7AB46B-CDCD-4F07-9580-AED63B938CE2 - 72adeb0334dfeeb9"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "closure #2 (Swift.Bool) -&gt; () in MSPDemoApp.ViewController.playerCurrentTimeDidChange(currentTime: Swift.Double, durationTime: Swift.Double) -&gt; ()"
+                  moduleName = "MSPDemoApp"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/huanzhizhang/Huanzhi/msp-ios-sdk/MSPDemoApp/MSPDemoApp/ViewController.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "117"
+                  endingLineNumber = "117">
+               </Location>
+            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy

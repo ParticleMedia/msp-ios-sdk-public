@@ -110,6 +110,14 @@ public class PrebidBidLoader : BidLoader {
                 }
             }
         }
+        
+        if let testParams = adRequest?.testParams {
+            for (key, value) in testParams {
+                if value is String {
+                    adUnitConfig.addContextData(key: key, value: value as? String ?? "")
+                }
+            }
+        }
 
         if let gadQueryInfo = gadQueryInfo {
             adUnitConfig.addContextData(key: "query_info", value: gadQueryInfo)

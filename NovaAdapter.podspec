@@ -5,7 +5,7 @@ Pod::Spec.new do |spec|
   
 
   spec.name         = "NovaAdapter"
-  spec.version      = "0.0.43"
+  spec.version      = "0.0.46"
   spec.summary      = "an adapter for Google SDK"
   spec.description  = "an adapter for Google SDK for MSP S2S"
 
@@ -46,7 +46,7 @@ Pod::Spec.new do |spec|
   spec.exclude_files = "Classes/Exclude"
 
   #spec.dependency 'Google-Mobile-Ads-SDK', "10.14.0"
-  spec.dependency 'MSPSharedLibraries', '0.0.38'
+  spec.dependency 'MSPSharedLibraries', '0.0.45'
 
 
   spec.vendored_frameworks= "NovaAdapter/NovaCore.xcframework"
