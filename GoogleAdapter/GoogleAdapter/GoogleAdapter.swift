@@ -19,7 +19,7 @@ import PrebidMobile
     
     public func initialize(initParams: InitializationParameters, adapterInitListener: AdapterInitListener, context: Any?) {
         GADMobileAds.sharedInstance().start(completionHandler: {_ in
-            //adapterInitListener.onComplete(adNetwork: .google, adapterInitStatus: .success, message: "")
+            adapterInitListener.onComplete(adNetwork: .google, adapterInitStatus: .SUCCESS, message: "")
         })
     }
     
@@ -29,8 +29,10 @@ import PrebidMobile
     public var priceInDollar: Double?
     
     private var adLoader: GADAdLoader?
-    private var googleNativeAd: GoogleNativeAd?
     private var adRequest: AdRequest?
+    
+    private var bannerAd: BannerAd?
+    private var nativeAd: MSPiOSCore.NativeAd?
     
     public func loadAdCreative(bidResponse: Any, adListener: any AdListener, context: Any, adRequest: AdRequest) {
         
@@ -76,6 +78,8 @@ import PrebidMobile
             }
 
         case "native":
+            self.adListener?.onError(msg: "unknown adType")
+            /*
             let gadMultiFormatEnable = false
             let adTypes: [GADAdLoaderAdType] = gadMultiFormatEnable ? [.native, .gamBanner] : [.native]
             let videoOptions = GADVideoOptions()
@@ -90,14 +94,7 @@ import PrebidMobile
             let gamRequest = GAMRequest()
             gamRequest.adString = adString
             adLoader?.load(gamRequest)
-            /*
-            let nativeAd = NovaNativeAd(adNetworkAdapter: self,
-                                        builder: shared.NativeAd.Builder(adNetworkAdapter: self)
-                                                    .title(title: adItem.creative.headline ?? "")
-                                                    .body(body: adItem.creative.body ?? "")
-                                                    .advertiser(advertiser: adItem.creative.advertiser ?? "")
-                                                    .callToAction(callToAction: adItem.creative.callToAction ?? ""))
-            nativeAd.priceInDollar = self.priceInDollar
+            
              */
             
         default:
@@ -139,16 +136,15 @@ import PrebidMobile
 
 extension GoogleAdapter : GADBannerViewDelegate {
     public func bannerViewDidReceiveAd(_ bannerView: GADBannerView) {
-        let googleAd = GoogleAd(adNetworkAdapter: self)
-        googleAd.adView = self.gadBannerView
+        var bannerAd = BannerAd(adView: bannerView, adNetworkAdapter: self)
+        self.bannerAd = bannerAd
         if let priceInDollar = self.priceInDollar {
-            googleAd.adInfo["priceInDollar"] = priceInDollar
-            googleAd.priceInDollar = priceInDollar
+            bannerAd.adInfo["priceInDollar"] = priceInDollar
         }
-        //self.adListener?.onAdLoaded(ad: googleAd)
+        
         if let adListener = adListener,
            let adRequest = adRequest {
-            handleAdLoaded(ad: googleAd, listener: adListener, adRequest: adRequest)
+            handleAdLoaded(ad: bannerAd, listener: adListener, adRequest: adRequest)
         }
     }
     
@@ -157,15 +153,15 @@ extension GoogleAdapter : GADBannerViewDelegate {
     }
     
     public func bannerViewDidRecordClick(_ bannerView: GADBannerView) {
-        let googleAd = GoogleAd(adNetworkAdapter: self)
-        googleAd.adView = self.gadBannerView
-        self.adListener?.onAdClick(ad: googleAd)
+        if let googleAd = self.bannerAd {
+            self.adListener?.onAdClick(ad: googleAd)
+        }
     }
     
     public func bannerViewDidRecordImpression(_ bannerView: GADBannerView) {
-        let googleAd = GoogleAd(adNetworkAdapter: self)
-        googleAd.adView = self.gadBannerView
-        self.adListener?.onAdImpression(ad: googleAd)
+        if let googleAd = self.bannerAd {
+            self.adListener?.onAdImpression(ad: googleAd)
+        }
     }
 }
 
@@ -182,6 +178,7 @@ extension GoogleAdapter: GADNativeAdLoaderDelegate {
         //    .callToAction(callToAction: nativeAd.callToAction ?? "")
         //    .mediaView(mediaView: mediaView))
         
+        /*
         let googleNativeAd = GoogleNativeAd(adNetworkAdapter: self)
         self.googleNativeAd = googleNativeAd
         googleNativeAd.priceInDollar = self.priceInDollar
@@ -191,6 +188,7 @@ extension GoogleAdapter: GADNativeAdLoaderDelegate {
            let adRequest = adRequest {
             handleAdLoaded(ad: googleNativeAd, listener: adListener, adRequest: adRequest)
         }
+         */
     }
     
     public func adLoader(_ adLoader: GADAdLoader, didFailToReceiveAdWithError error: any Error) {
@@ -198,7 +196,3 @@ extension GoogleAdapter: GADNativeAdLoaderDelegate {
     }
 }
                             
-public class GoogleAd: MSPAd {
-    public var adView: UIView?
-    public var priceInDollar: Double?
-}

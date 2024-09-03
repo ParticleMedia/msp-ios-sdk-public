@@ -1,1 +1,1 @@
-../../../PrebidAdapter/PrebidAdapter/PrebidAdapter/PrebidAdapter.h
+../../../../PrebidAdapter/PrebidAdapter/PrebidAdapter.h
