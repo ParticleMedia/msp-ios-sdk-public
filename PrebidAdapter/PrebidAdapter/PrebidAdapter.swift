@@ -39,12 +39,15 @@ import UIKit
     public var bannerView: BannerView?
     public var priceInDollar: Double?
     
+    private var adRequest: AdRequest?
+    private var bannerAd: BannerAd?
     
     public func loadAdCreative(bidResponse: Any, adListener: any AdListener, context: Any, adRequest: AdRequest) {
         guard bidResponse is BidResponse,
               let mBidResponse = bidResponse as? BidResponse else {
             return
         }
+        self.adRequest = adRequest
         if context is UIViewController {
             self.rootViewController = context as? UIViewController
         }
@@ -89,13 +92,16 @@ extension PrebidAdapter: BannerViewDelegate {
     }
     
     @objc public func bannerView(_ bannerView: BannerView, didReceiveAdWithAdSize adSize: CGSize) {
-        var prebidAd = PrebidAd(adNetworkAdapter: self)
-        prebidAd.adView = self.bannerView
+        var prebidAd = BannerAd(adView: bannerView, adNetworkAdapter: self)
+        self.bannerAd = prebidAd
         if let priceInDollar = self.priceInDollar {
             prebidAd.adInfo["priceInDollar"] = priceInDollar
-            prebidAd.priceInDollar = priceInDollar
         }
-        adListener?.onAdLoaded(ad: prebidAd)
+        
+        if let adListener = self.adListener,
+           let adRequest = self.adRequest {
+            handleAdLoaded(ad: prebidAd, listener: adListener, adRequest: adRequest)
+        }
     }
     
     @objc public func bannerView(_ bannerView: BannerView, didFailToReceiveAdWith error: Error) {
@@ -103,21 +109,16 @@ extension PrebidAdapter: BannerViewDelegate {
     }
     
     @objc public func bannerViewWillPresentModal(_ bannerView: BannerView) {
-        var prebidAd = PrebidAd(adNetworkAdapter: self)
-        prebidAd.adView = self.bannerView
-        adListener?.onAdClick(ad: prebidAd)
+        if let prebidAd = self.bannerAd {
+            adListener?.onAdClick(ad: prebidAd)
+        }
     }
     
     @objc public func bannerViewDidDismissModal(_ bannerView: BannerView) {
-        var prebidAd = PrebidAd(adNetworkAdapter: self)
-        prebidAd.adView = self.bannerView
-        adListener?.onAdClick(ad: prebidAd)
+        if let prebidAd = self.bannerAd {
+            adListener?.onAdClick(ad: prebidAd)
+        }
     }
-}
-
-public class PrebidAd: MSPAd {
-    public var adView: UIView?
-    public var priceInDollar: Double?
 }
 
 extension PrebidAdapter: BannerEventHandler {
@@ -127,9 +128,9 @@ extension PrebidAdapter: BannerEventHandler {
     }
 
     public func trackImpression() {
-        var prebidAd = PrebidAd(adNetworkAdapter: self)
-        prebidAd.adView = self.bannerView
-        adListener?.onAdImpression(ad: prebidAd)
+        if let prebidAd = self.bannerAd {
+            adListener?.onAdImpression(ad: prebidAd)
+        }
     }
 }
 
