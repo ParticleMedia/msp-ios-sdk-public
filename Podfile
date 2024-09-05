@@ -99,10 +99,10 @@ target 'MSPDemoApp' do
   #pod 'GoogleAdapter',  :path => 'GoogleAdapter', :modular_headers => true
   #use_frameworks!
   #pod 'MSPCore', :path => './', :modular_headers => true
-  pod 'MSPCore', '0.0.48', :modular_headers => true
-  pod 'NovaAdapter', :path => '0.0.49', :modular_headers => true
+  pod 'MSPCore', :path => './', :modular_headers => true
+  pod 'NovaAdapter', :path => './', :modular_headers => true
   #pod 'PrebidAdapter', :path => '0.0.48', :modular_headers => true
-  pod 'GoogleAdapter', '0.0.48', :modular_headers => true
+  pod 'GoogleAdapter', :path => './', :modular_headers => true
   #pod 'GoogleMobileAds', :modular_headers => true
   #pod 'NovaAdapter', :path => './', :modular_headers => true
   #pod 'MetaAdapter', :path => './', :modular_headers => true

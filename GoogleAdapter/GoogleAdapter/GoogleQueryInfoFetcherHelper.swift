@@ -44,6 +44,11 @@ public class GoogleQueryInfoFetcherHelper: GoogleQueryInfoFetcher {
             extras.additionalParameters = ["query_info_type" : "requester_type_8",
                                            "inlined_adaptive_banner_w" : adapterBannerSize.width,
                                            "inlined_adaptive_banner_h" : adapterBannerSize.height]
+        } else if let adapterBannerSize = adRequest.adaptiveBannerSize,
+                   adapterBannerSize.isAnchorAdaptiveBanner {
+            extras.additionalParameters = ["query_info_type" : "requester_type_8",
+                                           "adaptive_banner_w" : adapterBannerSize.width,
+                                           "adaptive_banner_h" : adapterBannerSize.height]
         } else {
             extras.additionalParameters = ["query_info_type" : "requester_type_8"]
         }
