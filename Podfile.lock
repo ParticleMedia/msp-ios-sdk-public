@@ -2,7 +2,7 @@ PODS:
   - Google-Mobile-Ads-SDK (10.14.0):
     - GoogleAppMeasurement (< 11.0, >= 7.0)
     - GoogleUserMessagingPlatform (>= 1.1)
-  - GoogleAdapter (0.0.48):
+  - GoogleAdapter (0.0.21):
     - Google-Mobile-Ads-SDK (= 10.14.0)
     - MSPSharedLibraries (= 0.0.47)
   - GoogleAppMeasurement (10.29.0):
@@ -63,7 +63,7 @@ PODS:
   - libwebp/sharpyuv (1.3.2)
   - libwebp/webp (1.3.2):
     - libwebp/sharpyuv
-  - MSPCore (0.0.48):
+  - MSPCore (0.0.46):
     - MSPSharedLibraries (= 0.0.47)
     - PrebidAdapter (= 0.0.48)
   - MSPSharedLibraries (0.0.47)
@@ -72,6 +72,8 @@ PODS:
     - nanopb/encode (= 2.30910.0)
   - nanopb/decode (2.30910.0)
   - nanopb/encode (2.30910.0)
+  - NovaAdapter (0.0.49):
+    - MSPSharedLibraries (= 0.0.47)
   - PrebidAdapter (0.0.48):
     - MSPSharedLibraries (= 0.0.47)
   - PromisesObjC (2.4.0)
@@ -85,8 +87,9 @@ PODS:
   - SnapKit (5.6.0)
 
 DEPENDENCIES:
-  - GoogleAdapter (= 0.0.48)
-  - MSPCore (= 0.0.48)
+  - GoogleAdapter (from `./`)
+  - MSPCore (from `./`)
+  - NovaAdapter (from `./`)
   - SDWebImage (= 5.18.8)
   - SDWebImageWebPCoder (= 0.14.2)
   - Shimmer
@@ -95,12 +98,10 @@ DEPENDENCIES:
 SPEC REPOS:
   trunk:
     - Google-Mobile-Ads-SDK
-    - GoogleAdapter
     - GoogleAppMeasurement
     - GoogleUserMessagingPlatform
     - GoogleUtilities
     - libwebp
-    - MSPCore
     - MSPSharedLibraries
     - nanopb
     - PrebidAdapter
@@ -110,16 +111,25 @@ SPEC REPOS:
     - Shimmer
     - SnapKit
 
+EXTERNAL SOURCES:
+  GoogleAdapter:
+    :path: "./"
+  MSPCore:
+    :path: "./"
+  NovaAdapter:
+    :path: "./"
+
 SPEC CHECKSUMS:
   Google-Mobile-Ads-SDK: 8f67a72f88d057335b1ac3f501e2b68ad054116e
-  GoogleAdapter: 9b1b3acf1c26b99e22d51e56d2c7c92527c3875c
+  GoogleAdapter: df174ba9e35e54f038060b61686184fad14bd7ac
   GoogleAppMeasurement: f9de05ee17401e3355f68e8fc8b5064d429f5918
   GoogleUserMessagingPlatform: 6b4f48a370e77ce121d034c908cc6ee4fdafaf13
   GoogleUtilities: ea963c370a38a8069cc5f7ba4ca849a60b6d7d15
   libwebp: 1786c9f4ff8a279e4dac1e8f385004d5fc253009
-  MSPCore: d7bdb3f51c7a881b50e7800fc5cb3d0db5d44b0e
+  MSPCore: a6f3389f370534a39997a48b0cbd3d3805bcfa2f
   MSPSharedLibraries: 290f6d24c74d636be2019e3253c9f1e0c660339d
   nanopb: 438bc412db1928dac798aa6fd75726007be04262
+  NovaAdapter: b46648026c9414d6ca8c5dd8518d103f59139385
   PrebidAdapter: 540c1e4c68ef9bcd11525fc96f2093d7cc56ccd0
   PromisesObjC: f5707f49cb48b9636751c5b2e7d227e43fba9f47
   SDWebImage: a81bbb3ba4ea5f810f4069c68727cb118467a04a
@@ -127,6 +137,6 @@ SPEC CHECKSUMS:
   Shimmer: c5374be1c2b0c9e292fb05b339a513cf291cac86
   SnapKit: e01d52ebb8ddbc333eefe2132acf85c8227d9c25
 
-PODFILE CHECKSUM: bb0569d5e81c18efee41e58f647759c5143c1cef
+PODFILE CHECKSUM: ffa7e9a55b13751f128f18a256ea2de6d209d831
 
 COCOAPODS: 1.14.3
