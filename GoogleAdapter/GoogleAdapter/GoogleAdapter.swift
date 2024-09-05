@@ -6,7 +6,38 @@ import PrebidMobile
 
 @objc public class GoogleAdapter : NSObject, AdNetworkAdapter {
     public func prepareViewForInteraction(nativeAd: MSPiOSCore.NativeAd, nativeAdView: Any) {
+        guard let rootViewController = self.rootViewController,
+              let nativeAdView = nativeAdView as? NativeAdView,
+              let mediaView = nativeAdView.mediaView as? GADMediaView,
+              let gadNativeAdItem = self.nativeAdItem else {return}
+        let gadNativeAdView = GADNativeAdView()
+        gadNativeAdView.translatesAutoresizingMaskIntoConstraints = false
         
+        gadNativeAdView.headlineView = nativeAdView.titleLabel
+        gadNativeAdView.bodyView = nativeAdView.bodyLabel
+        gadNativeAdView.advertiserView = nativeAdView.advertiserLabel
+        gadNativeAdView.callToActionView = nativeAdView.callToActionButton
+        gadNativeAdView.mediaView = mediaView
+        gadNativeAdView.nativeAd = gadNativeAdItem
+        
+        let gadSubViews = [gadNativeAdView.headlineView, gadNativeAdView.bodyView, gadNativeAdView.advertiserView, gadNativeAdView.callToActionView, gadNativeAdView.mediaView]
+        for view in gadSubViews {
+            if let view = view {
+                gadNativeAdView.addSubview(view)
+            }
+        }
+        
+        nativeAdView.nativeAdViewBinder.setUpViews(parentView: gadNativeAdView)
+        nativeAdView.addSubview(gadNativeAdView)
+        NSLayoutConstraint.activate([
+            //novaNativeAdView.centerYAnchor.constraint(equalTo: nativeAdView.centerYAnchor),
+            gadNativeAdView.leadingAnchor.constraint(equalTo: nativeAdView.leadingAnchor),
+            gadNativeAdView.trailingAnchor.constraint(equalTo: nativeAdView.trailingAnchor),
+            gadNativeAdView.topAnchor.constraint(equalTo: nativeAdView.topAnchor),
+            gadNativeAdView.bottomAnchor.constraint(equalTo: nativeAdView.bottomAnchor),
+            gadNativeAdView.widthAnchor.constraint(lessThanOrEqualTo: nativeAdView.widthAnchor),
+            gadNativeAdView.heightAnchor.constraint(lessThanOrEqualTo: nativeAdView.heightAnchor),
+        ])
     }
     
     public func destroyAd() {
@@ -33,6 +64,8 @@ import PrebidMobile
     
     private var bannerAd: BannerAd?
     private var nativeAd: MSPiOSCore.NativeAd?
+    
+    public var nativeAdItem: GADNativeAd?
     
     public func loadAdCreative(bidResponse: Any, adListener: any AdListener, context: Any, adRequest: AdRequest) {
         
@@ -78,7 +111,18 @@ import PrebidMobile
             }
 
         case "native":
-            self.adListener?.onError(msg: "unknown adType")
+            let adTypes: [GADAdLoaderAdType] = [.native]
+            let videoOptions = GADVideoOptions()
+            videoOptions.startMuted = true
+            adLoader = GADAdLoader(
+                adUnitID: adUnitId,
+                rootViewController: rootViewController,
+                adTypes: adTypes,
+                options: [videoOptions])
+            adLoader?.delegate = self
+            let gamRequest = GAMRequest()
+            gamRequest.adString = adString
+            adLoader?.load(gamRequest)
             /*
             let gadMultiFormatEnable = false
             let adTypes: [GADAdLoaderAdType] = gadMultiFormatEnable ? [.native, .gamBanner] : [.native]
@@ -167,10 +211,30 @@ extension GoogleAdapter : GADBannerViewDelegate {
 
 extension GoogleAdapter: GADNativeAdLoaderDelegate {
     public func adLoader(_ adLoader: GADAdLoader, didReceive nativeAd: GADNativeAd) {
-        //let mediaView = GADMediaView()
-        //mediaView.translatesAutoresizingMaskIntoConstraints = false
-        //mediaView.contentMode = .scaleAspectFill
-        //mediaView.mediaContent = nativeAd.mediaContent
+        let mediaView = GADMediaView()
+        mediaView.translatesAutoresizingMaskIntoConstraints = false
+        mediaView.contentMode = .scaleAspectFill
+        mediaView.mediaContent = nativeAd.mediaContent
+
+        let googleNativeAd = GoogleNativeAd(adNetworkAdapter: self,
+                                            title: nativeAd.headline ?? "",
+                                            body: nativeAd.body ?? "",
+                                            advertiser: nativeAd.advertiser ?? "",
+                                            callToAction:nativeAd.callToAction ?? "")
+        
+        googleNativeAd.nativeAdItem = nativeAd
+        googleNativeAd.mediaView = mediaView
+        googleNativeAd.priceInDollar = self.priceInDollar
+        googleNativeAd.adInfo["priceInDollar"] = self.priceInDollar
+        nativeAd.delegate = self
+        self.nativeAdItem = nativeAd
+        self.nativeAd = googleNativeAd
+        googleNativeAd.priceInDollar = self.priceInDollar
+        if let adListener = adListener,
+           let adRequest = adRequest {
+            handleAdLoaded(ad: googleNativeAd, listener: adListener, adRequest: adRequest)
+        }
+        
         //let googleNativeAd = GoogleNativeAd(adNetworkAdapter: self, builder: shared.NativeAd.Builder(adNetworkAdapter: self)
         //    .title(title: nativeAd.headline ?? "")
         //    .body(body: nativeAd.body ?? "")
@@ -195,4 +259,20 @@ extension GoogleAdapter: GADNativeAdLoaderDelegate {
         self.adListener?.onError(msg: error.localizedDescription)
     }
 }
+
+extension GoogleAdapter: GADNativeAdDelegate {
+
+    public func nativeAdDidRecordImpression(_ nativeAd: GADNativeAd) {
+        if let nativeAd = self.nativeAd {
+            self.adListener?.onAdImpression(ad: nativeAd)
+        }
+    }
+
+    public func nativeAdDidRecordClick(_ nativeAd: GADNativeAd) {
+        if let nativeAd = self.nativeAd {
+            self.adListener?.onAdClick(ad: nativeAd)
+        }
+    }
+}
+
                             

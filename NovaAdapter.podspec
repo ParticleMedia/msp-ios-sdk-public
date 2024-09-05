@@ -5,7 +5,7 @@ Pod::Spec.new do |spec|
   
 
   spec.name         = "NovaAdapter"
-  spec.version      = "0.0.46"
+  spec.version      = "0.0.49"
   spec.summary      = "an adapter for Google SDK"
   spec.description  = "an adapter for Google SDK for MSP S2S"
 

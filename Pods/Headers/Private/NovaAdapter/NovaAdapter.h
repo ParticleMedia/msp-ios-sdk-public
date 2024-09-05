@@ -1,1 +1,0 @@
-../../../../NovaAdapter/NovaAdapter/NovaAdapter.h

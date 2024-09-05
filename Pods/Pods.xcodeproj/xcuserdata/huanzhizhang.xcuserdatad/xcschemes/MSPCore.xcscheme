@@ -14,9 +14,9 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "50F36179BE3E2CDC1681A5447D600A88"
-               BuildableName = "libNovaAdapter.a"
-               BlueprintName = "NovaAdapter"
+               BlueprintIdentifier = "842B8FD13FCB2C98896621D2A5ACD940"
+               BuildableName = "libMSPCore.a"
+               BlueprintName = "MSPCore"
                ReferencedContainer = "container:Pods.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>

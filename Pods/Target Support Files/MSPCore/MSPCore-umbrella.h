@@ -10,8 +10,8 @@
 #endif
 #endif
 
-#import "NovaAdapter.h"
+#import "MSPCore.h"
 
-FOUNDATION_EXPORT double NovaAdapterVersionNumber;
-FOUNDATION_EXPORT const unsigned char NovaAdapterVersionString[];
+FOUNDATION_EXPORT double MSPCoreVersionNumber;
+FOUNDATION_EXPORT const unsigned char MSPCoreVersionString[];
 
