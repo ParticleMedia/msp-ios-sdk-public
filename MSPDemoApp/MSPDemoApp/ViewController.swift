@@ -39,11 +39,11 @@ class ViewController: UIViewController {
                                   context: nil,
                                   adaptiveBannerSize: AdSize(width: 320, height: 50, isInlineAdaptiveBanner: false, isAnchorAdaptiveBanner: true),
                                   adSize: AdSize(width: 320, height: 50, isInlineAdaptiveBanner: false, isAnchorAdaptiveBanner: false),
-                                  placementId: "msp-android-foryou-large-display_gg",
+                                  placementId: "msp-ios-article-top-display",
                                   adFormat: .native,
                                   isCacheSupported: true,
                                   testParams: testParams)
-        adLoader.loadAd(placementId: "msp-android-foryou-large-display_gg",
+        adLoader.loadAd(placementId: "msp-ios-article-top-display",
                         adListener: self,
                         context: self,
                         adRequest: adRequest,
