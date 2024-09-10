@@ -17,6 +17,7 @@ import MSPiOSCore
 //import shared
 //import MetaAdapter
 import AppTrackingTransparency
+import PrebidMobile
 
 public enum AdType: String {
     case prebidBanner
@@ -38,7 +39,7 @@ class DemoAdViewController: UIViewController {
         case .googleBanner:
             return "msp-ios-article-top-display_gg"
         case .googleNative:
-            return "msp-ios-foryou-large-display-prod2"
+            return "msp-ios-article-top-display"
         case .novaNative:
             return "msp-ios-foryou-large-display-prod2"
         }
@@ -65,7 +66,13 @@ class DemoAdViewController: UIViewController {
         var testParams = [String: String]()
         customParams["user_id"] = "143378797"
         customParams["profile_id"] = "09hbNFOl"
-        //testParams["test"] = "{\"ad_network\":\"msp_google\",\"test_ad\":true}"
+        if adType == .novaNative {
+            testParams["test"] = "{\"ad_network\":\"msp_nova\",\"test_ad\":true}"
+        } else if adType == .prebidBanner {
+            Prebid.shared.prebidServerAccountId = "sggU8Y1UB6xara62G23qGdcOA8co2O4N_debug"
+        } else {
+            Prebid.shared.prebidServerAccountId = "sggU8Y1UB6xara62G23qGdcOA8co2O4N"
+        }
         let adRequest = AdRequest(customParams: customParams,
                                   geo: Geo(city: "San Francisco", stateCode: "CA", zipCode: "94102", lat: "37.79", lon: "-122.41"),
                                   context: nil,
@@ -108,8 +115,8 @@ extension DemoAdViewController: AdListener {
            let priceInDollarValue = priceInDollar as? Double {
             print("demo price: \(priceInDollarValue)")
         }
-        if ad is NativeAd,
-           let nativeAd = ad as? NativeAd {
+        if ad is MSPiOSCore.NativeAd,
+           let nativeAd = ad as? MSPiOSCore.NativeAd {
             
             DispatchQueue.main.async{
                 let nativeAdViewBinder = DemoNativeAdViewBinder(nativeAd: nativeAd)
