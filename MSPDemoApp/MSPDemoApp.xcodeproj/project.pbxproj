@@ -17,6 +17,7 @@
 		6684807A2BE03D800025018B /* MSPDemoAppTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 668480792BE03D800025018B /* MSPDemoAppTests.swift */; };
 		668480842BE03D800025018B /* MSPDemoAppUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 668480832BE03D800025018B /* MSPDemoAppUITests.swift */; };
 		668480862BE03D800025018B /* MSPDemoAppUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 668480852BE03D800025018B /* MSPDemoAppUITestsLaunchTests.swift */; };
+		66CC4E562C8FB6AE0005CCF6 /* DemoAdViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66CC4E552C8FB6AE0005CCF6 /* DemoAdViewController.swift */; };
 		66E5334E2C1BC1E700255D15 /* Colors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E5334D2C1BC1E700255D15 /* Colors.swift */; };
 		E0D4098C6B103253761A220B /* libPods-MSPDemoApp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 865DA71BB2BB723F7DC9E210 /* libPods-MSPDemoApp.a */; };
 /* End PBXBuildFile section */
@@ -54,6 +55,7 @@
 		6684807F2BE03D800025018B /* MSPDemoAppUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MSPDemoAppUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		668480832BE03D800025018B /* MSPDemoAppUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MSPDemoAppUITests.swift; sourceTree = "<group>"; };
 		668480852BE03D800025018B /* MSPDemoAppUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MSPDemoAppUITestsLaunchTests.swift; sourceTree = "<group>"; };
+		66CC4E552C8FB6AE0005CCF6 /* DemoAdViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DemoAdViewController.swift; sourceTree = "<group>"; };
 		66E5334D2C1BC1E700255D15 /* Colors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Colors.swift; sourceTree = "<group>"; };
 		66E534E62C24D51800255D15 /* NovaCore.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; path = NovaCore.xcframework; sourceTree = "<group>"; };
 		66F4F0C22BE054800026CAB8 /* MSPUtility.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = MSPUtility.xcframework; path = ../outputMSPUtility/xcframework/MSPUtility.xcframework; sourceTree = "<group>"; };
@@ -126,6 +128,7 @@
 		668480612BE03D7D0025018B /* MSPDemoApp */ = {
 			isa = PBXGroup;
 			children = (
+				66CC4E542C8FB68D0005CCF6 /* DemoViewControllers */,
 				66E5334A2C1BA8AD00255D15 /* Native */,
 				668480622BE03D7D0025018B /* AppDelegate.swift */,
 				668480642BE03D7D0025018B /* SceneDelegate.swift */,
@@ -154,6 +157,14 @@
 				668480852BE03D800025018B /* MSPDemoAppUITestsLaunchTests.swift */,
 			);
 			path = MSPDemoAppUITests;
+			sourceTree = "<group>";
+		};
+		66CC4E542C8FB68D0005CCF6 /* DemoViewControllers */ = {
+			isa = PBXGroup;
+			children = (
+				66CC4E552C8FB6AE0005CCF6 /* DemoAdViewController.swift */,
+			);
+			path = DemoViewControllers;
 			sourceTree = "<group>";
 		};
 		66E5334A2C1BA8AD00255D15 /* Native */ = {
@@ -371,6 +382,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				66E5334E2C1BC1E700255D15 /* Colors.swift in Sources */,
+				66CC4E562C8FB6AE0005CCF6 /* DemoAdViewController.swift in Sources */,
 				668480672BE03D7D0025018B /* ViewController.swift in Sources */,
 				668480632BE03D7D0025018B /* AppDelegate.swift in Sources */,
 				668480652BE03D7D0025018B /* SceneDelegate.swift in Sources */,

@@ -1,11 +1,13 @@
 //
-//  ViewController.swift
+//  PrebidBannerViewController.swift
 //  MSPDemoApp
 //
-//  Created by Huanzhi Zhang on 4/29/24.
+//  Created by Huanzhi Zhang on 9/9/24.
 //
 
+import Foundation
 import UIKit
+
 import MSPCore
 //import GoogleAdapter
 //import PrebidAdapter
@@ -16,47 +18,47 @@ import MSPiOSCore
 //import MetaAdapter
 import AppTrackingTransparency
 
-class ViewController: UIViewController {
-    
-    @IBOutlet var appBannerView: UIView!
+public enum AdType: String {
+    case prebidBanner
+    case googleBanner
+    case googleNative
+    case novaNative
+}
+
+class DemoAdViewController: UIViewController {
+    public let adType: AdType
     weak var adLoader: MSPAdLoader?
     public var nativeAdView: NativeAdView?
     public var isCtaShown = false
-
+    
+    private lazy var placementId = {
+        switch adType {
+        case .prebidBanner:
+            return "msp-ios-article-top-display"
+        case .googleBanner:
+            return "msp-ios-article-top-display_gg"
+        case .googleNative:
+            return "msp-ios-foryou-large-display-prod2"
+        case .novaNative:
+            return "msp-ios-foryou-large-display-prod2"
+        }
+    }()
+    
+    init(adType: AdType) {
+        self.adType = adType
+        super.init(nibName: nil, bundle: nil)
+        
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
     override func viewDidLoad() {
         //google test ad config: msp-android-foryou-large-display_gg
         super.viewDidLoad()
+        view.backgroundColor = .white
         
-        let button1 = UIButton(type: .system)
-                button1.setTitle("Prebid Banner View", for: .normal)
-                button1.addAction(UIAction { [weak self] _ in
-                    self?.openDemoAdPage(adType: .prebidBanner)
-                }, for: .touchUpInside)
-                button1.frame = CGRect(x: 100, y: 200, width: 200, height: 50)
-                view.addSubview(button1)
-        
-        let button2 = UIButton(type: .system)
-                button2.setTitle("Google Banner View", for: .normal)
-                button2.addAction(UIAction { [weak self] _ in
-                    self?.openDemoAdPage(adType: .googleBanner)
-                }, for: .touchUpInside)
-                button2.frame = CGRect(x: 100, y: 300, width: 200, height: 50)
-                view.addSubview(button2)
-        let button3 = UIButton(type: .system)
-                button3.setTitle("Google Native View", for: .normal)
-                button3.addAction(UIAction { [weak self] _ in
-                    self?.openDemoAdPage(adType: .googleNative)
-                }, for: .touchUpInside)
-                button3.frame = CGRect(x: 100, y: 400, width: 200, height: 50)
-                view.addSubview(button3)
-        let button4 = UIButton(type: .system)
-                button4.setTitle("Nova Native View", for: .normal)
-                button4.addAction(UIAction { [weak self] _ in
-                    self?.openDemoAdPage(adType: .novaNative)
-                }, for: .touchUpInside)
-                button4.frame = CGRect(x: 100, y: 500, width: 200, height: 50)
-                view.addSubview(button4)
-        /*
         var adLoader = MSPAdLoader()
         self.adLoader = adLoader
         var customParams = [String: String]()
@@ -69,29 +71,24 @@ class ViewController: UIViewController {
                                   context: nil,
                                   adaptiveBannerSize: AdSize(width: 320, height: 50, isInlineAdaptiveBanner: false, isAnchorAdaptiveBanner: true),
                                   adSize: AdSize(width: 320, height: 50, isInlineAdaptiveBanner: false, isAnchorAdaptiveBanner: false),
-                                  placementId: "msp-ios-article-top-display",
+                                  placementId: placementId,
                                   adFormat: .native,
                                   isCacheSupported: true,
                                   testParams: testParams)
-        adLoader.loadAd(placementId: "msp-ios-article-top-display",
+        adLoader.loadAd(placementId: placementId,
                         adListener: self,
                         context: self,
                         adRequest: adRequest,
                         rootViewController:self)
-        */
+        
         //To test a ad creative
         //let novaAdLoader = MSP.shared.adNetworkAdapterProvider.getAdNetworkAdapterByName(adNetworkName: "Nova") as? NovaAdapter
         //novaAdLoader?.loadTestAdCreative(adString:testAdImmersiveString, adListener: self, context: self, adRequest: adRequest)
     }
 
-    func openDemoAdPage(adType: AdType) {
-        let demoAdVC = DemoAdViewController(adType: adType)
-        navigationController?.pushViewController(demoAdVC, animated: true)
-    }
-
 }
-/*
-extension ViewController: AdListener {
+
+extension DemoAdViewController: AdListener {
     func onAdLoaded(placementId: String) {
         if let ad = AdCache.shared.getAd(placementId: placementId) {
             self.onAdLoaded(ad: ad)
@@ -137,7 +134,12 @@ extension ViewController: AdListener {
         } else if ad is BannerAd,
                 let bannerAd = ad as? BannerAd {
             let adView = bannerAd.adView
-            self.appBannerView.addSubview(adView)
+            adView.translatesAutoresizingMaskIntoConstraints = false
+            self.view.addSubview(adView)
+            NSLayoutConstraint.activate([
+                adView.leadingAnchor.constraint(equalTo: self.view.leadingAnchor, constant: 100),
+                adView.topAnchor.constraint(equalTo: self.view.topAnchor, constant: 200),
+            ])
         }
     }
     
@@ -145,19 +147,3 @@ extension ViewController: AdListener {
         print(msg)
     }
 }
-*/
-/*
- extension ViewController: NovaNativeAdVideoDelegate {
- func playerCurrentTimeDidChange(currentTime: Double, durationTime: Double) {
- print("video time change: currentTime = \(currentTime), durationTime = \(durationTime)")
- if currentTime > 4.0, !self.isCtaShown {
- self.isCtaShown = true
- UIView.animate(withDuration: 0.5, delay: 0, options: .transitionCurlUp, animations: { [weak self] in
- self?.nativeAdView?.callToActionButton?.transform = CGAffineTransform.identity
- }, completion: { [weak self] _ in
- self?.nativeAdView?.callToActionButton?.isHidden = false
- })
- }
- }
- }
- */
