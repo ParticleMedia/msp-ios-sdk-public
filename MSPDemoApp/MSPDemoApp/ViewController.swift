@@ -56,32 +56,7 @@ class ViewController: UIViewController {
                 }, for: .touchUpInside)
                 button4.frame = CGRect(x: 100, y: 500, width: 200, height: 50)
                 view.addSubview(button4)
-        /*
-        var adLoader = MSPAdLoader()
-        self.adLoader = adLoader
-        var customParams = [String: String]()
-        var testParams = [String: String]()
-        customParams["user_id"] = "143378797"
-        customParams["profile_id"] = "09hbNFOl"
-        //testParams["test"] = "{\"ad_network\":\"msp_google\",\"test_ad\":true}"
-        let adRequest = AdRequest(customParams: customParams,
-                                  geo: Geo(city: "San Francisco", stateCode: "CA", zipCode: "94102", lat: "37.79", lon: "-122.41"),
-                                  context: nil,
-                                  adaptiveBannerSize: AdSize(width: 320, height: 50, isInlineAdaptiveBanner: false, isAnchorAdaptiveBanner: true),
-                                  adSize: AdSize(width: 320, height: 50, isInlineAdaptiveBanner: false, isAnchorAdaptiveBanner: false),
-                                  placementId: "msp-ios-article-top-display",
-                                  adFormat: .native,
-                                  isCacheSupported: true,
-                                  testParams: testParams)
-        adLoader.loadAd(placementId: "msp-ios-article-top-display",
-                        adListener: self,
-                        context: self,
-                        adRequest: adRequest,
-                        rootViewController:self)
-        */
-        //To test a ad creative
-        //let novaAdLoader = MSP.shared.adNetworkAdapterProvider.getAdNetworkAdapterByName(adNetworkName: "Nova") as? NovaAdapter
-        //novaAdLoader?.loadTestAdCreative(adString:testAdImmersiveString, adListener: self, context: self, adRequest: adRequest)
+       
     }
 
     func openDemoAdPage(adType: AdType) {
@@ -90,74 +65,3 @@ class ViewController: UIViewController {
     }
 
 }
-/*
-extension ViewController: AdListener {
-    func onAdLoaded(placementId: String) {
-        if let ad = AdCache.shared.getAd(placementId: placementId) {
-            self.onAdLoaded(ad: ad)
-        }
-    }
-    
-    func onAdClick(ad: MSPAd) {
-        
-    }
-    
-    func onAdImpression(ad: MSPAd) {
-        
-    }
-    
-    func onAdLoaded(ad: MSPAd) {
-        if let priceInDollar = ad.adInfo["priceInDollar"],
-           let priceInDollarValue = priceInDollar as? Double {
-            print("demo price: \(priceInDollarValue)")
-        }
-        if ad is NativeAd,
-           let nativeAd = ad as? NativeAd {
-            
-            DispatchQueue.main.async{
-                let nativeAdViewBinder = DemoNativeAdViewBinder(nativeAd: nativeAd)
-                let nativeAdView = NativeAdView(nativeAd: nativeAd, rootViewController: self, nativeAdViewBinder: nativeAdViewBinder)
-                //if nativeAdView.mediaView is NovaNativeAdMediaView {
-                //    let novaNativeAdMediaView = nativeAdView.mediaView as? NovaNativeAdMediaView
-                //    novaNativeAdMediaView?.setNovaNativeAdVideoDelegate(delegate: self)
-                //}
-                self.nativeAdView = nativeAdView
-                self.view.addSubview(nativeAdView)
-                //self.nativeAdView?.callToActionButton?.isHidden = true
-                nativeAdView.translatesAutoresizingMaskIntoConstraints = false
-                NSLayoutConstraint.activate([
-                    nativeAdView.leadingAnchor.constraint(lessThanOrEqualTo: self.view.leadingAnchor, constant: 100),
-                    nativeAdView.trailingAnchor.constraint(lessThanOrEqualTo: self.view.trailingAnchor),
-                    nativeAdView.topAnchor.constraint(lessThanOrEqualTo: self.view.topAnchor, constant: 100),
-                    nativeAdView.bottomAnchor.constraint(lessThanOrEqualTo: self.view.bottomAnchor),
-                    nativeAdView.widthAnchor.constraint(equalToConstant: 300.0)
-                ])
-            }
-             
-        } else if ad is BannerAd,
-                let bannerAd = ad as? BannerAd {
-            let adView = bannerAd.adView
-            self.appBannerView.addSubview(adView)
-        }
-    }
-    
-    func onError(msg: String) {
-        print(msg)
-    }
-}
-*/
-/*
- extension ViewController: NovaNativeAdVideoDelegate {
- func playerCurrentTimeDidChange(currentTime: Double, durationTime: Double) {
- print("video time change: currentTime = \(currentTime), durationTime = \(durationTime)")
- if currentTime > 4.0, !self.isCtaShown {
- self.isCtaShown = true
- UIView.animate(withDuration: 0.5, delay: 0, options: .transitionCurlUp, animations: { [weak self] in
- self?.nativeAdView?.callToActionButton?.transform = CGAffineTransform.identity
- }, completion: { [weak self] _ in
- self?.nativeAdView?.callToActionButton?.isHidden = false
- })
- }
- }
- }
- */
