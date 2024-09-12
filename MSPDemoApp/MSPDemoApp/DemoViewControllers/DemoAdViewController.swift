@@ -35,9 +35,9 @@ class DemoAdViewController: UIViewController {
     private lazy var placementId = {
         switch adType {
         case .prebidBanner:
-            return "msp-ios-article-top-display"
+            return "demo-ios-article-top"//"msp-ios-article-top-display"
         case .googleBanner:
-            return "msp-ios-article-top-display_gg"
+            return "demo-ios-article-top"//"msp-ios-article-top-display_gg"
         case .googleNative:
             return "msp-ios-article-top-display"
         case .novaNative:
@@ -69,11 +69,11 @@ class DemoAdViewController: UIViewController {
         if adType == .novaNative {
             testParams["test"] = "{\"ad_network\":\"msp_nova\",\"test_ad\":true}"
         } else if adType == .prebidBanner {
-            Prebid.shared.prebidServerAccountId = "sggU8Y1UB6xara62G23qGdcOA8co2O4N_debug"
+            Prebid.shared.prebidServerAccountId = "af7ce3f9-462d-4df1-815f-09314bb87ca3_debug"
         } else if adType == .googleBanner {
             testParams["test"] = "{\"ad_network\":\"msp_google\",\"test_ad\":true}"
         } else {
-            Prebid.shared.prebidServerAccountId = "sggU8Y1UB6xara62G23qGdcOA8co2O4N"
+            Prebid.shared.prebidServerAccountId = "af7ce3f9-462d-4df1-815f-09314bb87ca3"
         }
         let adRequest = AdRequest(customParams: customParams,
                                   geo: Geo(city: "San Francisco", stateCode: "CA", zipCode: "94102", lat: "37.79", lon: "-122.41"),

@@ -101,7 +101,7 @@ target 'MSPDemoApp' do
   #pod 'MSPCore', :path => './', :modular_headers => true
   pod 'MSPCore', :path => './', :modular_headers => true
   pod 'NovaAdapter', :path => './', :modular_headers => true
-  #pod 'PrebidAdapter', :path => '0.0.48', :modular_headers => true
+  #pod 'PrebidAdapter', :path => './', :modular_headers => true
   pod 'GoogleAdapter', :path => './', :modular_headers => true
   #pod 'GoogleMobileAds', :modular_headers => true
   #pod 'NovaAdapter', :path => './', :modular_headers => true
