@@ -28,7 +28,7 @@ public class PrebidBidLoader : BidLoader {
         
         //googleQueryInfoFetcher.fetch(completeListener: self, adRequest: adRequest)
         self.fetchTokens(adRequest: adRequest){ googleQueryInfo, facebookBidToken in
-            self.loadBidWithTokens(googleQueryInfo: googleQueryInfo, facebookBidToken: facebookBidToken, adRequest: AdRequest)
+            self.loadBidWithTokens(googleQueryInfo: googleQueryInfo, facebookBidToken: facebookBidToken, adRequest: adRequest)
         }
     }
     
@@ -46,10 +46,10 @@ public class PrebidBidLoader : BidLoader {
     
     public func loadBidWithTokens(googleQueryInfo: String?, facebookBidToken: String?, adRequest: AdRequest) {
 
-        let width = Int(adRequest?.adSize?.width ?? 320)
-        let height = Int(adRequest?.adSize?.height ?? 50)
+        let width = Int(adRequest.adSize?.width ?? 320)
+        let height = Int(adRequest.adSize?.height ?? 50)
         let adSize = CGSize(width: width, height: height)
-        var adUnitConfig = getAdUnitConfig(configId: configId ?? "msp-ios-article-top-display",
+        var adUnitConfig = getAdUnitConfig(configId: configId ?? "demo-ios-article-top",
                                            gadQueryInfo: googleQueryInfo,
                                            facebookBidToken: facebookBidToken,
                                            requestUUID: UUID().uuidString,
@@ -90,20 +90,20 @@ public class PrebidBidLoader : BidLoader {
     }
     
     
-    public func grtAdUnitConfig(configId: String,
+    public func getAdUnitConfig(configId: String,
                                 gadQueryInfo: String?,
                                 facebookBidToken: String?,
                                 requestUUID: String,
                                 prebidBannerAdSize: CGSize,
                                 adRequest: AdRequest) -> AdUnitConfig {
         let adUnitConfig = AdUnitConfig(configId: configId, size: prebidBannerAdSize)
-        if adRequest.format == .banner {
+        if adRequest.adFormat == .banner {
             adUnitConfig.adConfiguration.bannerParameters.api = PrebidConstants.supportedRenderingBannerAPISignals
             adUnitConfig.adFormats = [.display]
-        } else if adRequest.format == .native {
+        } else if adRequest.adFormat == .native {
             adUnitConfig.nativeAdConfiguration = NativeAdConfiguration()
             adUnitConfig.adFormats = [.native]
-        } else if adRequest.format == .multi_format {
+        } else if adRequest.adFormat == .multi_format {
             adUnitConfig.adConfiguration.bannerParameters.api = PrebidConstants.supportedRenderingBannerAPISignals
             adUnitConfig.nativeAdConfiguration = NativeAdConfiguration()
             adUnitConfig.adFormats = [.display, .native]
@@ -113,21 +113,21 @@ public class PrebidBidLoader : BidLoader {
         userExt["geo"] = getGeoDict()
         Targeting.shared.userExt = userExt
         
-        if let customParams = adRequest?.customParams {
-            for (key, value) in customParams {
-                if value is String {
-                    adUnitConfig.addContextData(key: key, value: value as? String ?? "")
-                }
+        let customParams = adRequest.customParams
+        for (key, value) in customParams {
+            if value is String {
+                adUnitConfig.addContextData(key: key, value: value as? String ?? "")
             }
         }
         
-        if let testParams = adRequest?.testParams {
-            for (key, value) in testParams {
-                if value is String {
-                    adUnitConfig.addContextData(key: key, value: value as? String ?? "")
-                }
+        
+        let testParams = adRequest.testParams
+        for (key, value) in testParams {
+            if value is String {
+                adUnitConfig.addContextData(key: key, value: value as? String ?? "")
             }
         }
+        
 
         if let gadQueryInfo = gadQueryInfo {
             adUnitConfig.addContextData(key: "query_info", value: gadQueryInfo)
@@ -136,7 +136,7 @@ public class PrebidBidLoader : BidLoader {
             Targeting.shared.buyerUID = facebookBidToken
         }
         
-        if adRequest.format == .native || adRequest.format == .multi_format {
+        if adRequest.adFormat == .native || adRequest.adFormat == .multi_format {
             var assets = [NativeAsset]()
             assets.append(NativeAssetTitle(length: 100, required: true))
             adUnitConfig.nativeAdConfiguration?.markupRequestObject.assets = assets
