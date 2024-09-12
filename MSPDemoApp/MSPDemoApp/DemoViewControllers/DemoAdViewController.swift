@@ -70,6 +70,8 @@ class DemoAdViewController: UIViewController {
             testParams["test"] = "{\"ad_network\":\"msp_nova\",\"test_ad\":true}"
         } else if adType == .prebidBanner {
             Prebid.shared.prebidServerAccountId = "sggU8Y1UB6xara62G23qGdcOA8co2O4N_debug"
+        } else if adType == .googleBanner {
+            testParams["test"] = "{\"ad_network\":\"msp_google\",\"test_ad\":true}"
         } else {
             Prebid.shared.prebidServerAccountId = "sggU8Y1UB6xara62G23qGdcOA8co2O4N"
         }
@@ -79,7 +81,7 @@ class DemoAdViewController: UIViewController {
                                   adaptiveBannerSize: AdSize(width: 320, height: 50, isInlineAdaptiveBanner: false, isAnchorAdaptiveBanner: true),
                                   adSize: AdSize(width: 320, height: 50, isInlineAdaptiveBanner: false, isAnchorAdaptiveBanner: false),
                                   placementId: placementId,
-                                  adFormat: .native,
+                                  adFormat: .banner,
                                   isCacheSupported: true,
                                   testParams: testParams)
         adLoader.loadAd(placementId: placementId,
