@@ -28,7 +28,7 @@ public class PrebidBidLoader : BidLoader {
         
         //googleQueryInfoFetcher.fetch(completeListener: self, adRequest: adRequest)
         self.fetchTokens(adRequest: adRequest){ googleQueryInfo, facebookBidToken in
-            self.loadBidWithTokens(googleQueryInfo: googleQueryInfo, facebookBidToken: facebookBidToken)
+            self.loadBidWithTokens(googleQueryInfo: googleQueryInfo, facebookBidToken: facebookBidToken, adRequest: AdRequest)
         }
     }
     
@@ -44,16 +44,17 @@ public class PrebidBidLoader : BidLoader {
         }
     }
     
-    public func loadBidWithTokens(googleQueryInfo: String?, facebookBidToken: String?) {
+    public func loadBidWithTokens(googleQueryInfo: String?, facebookBidToken: String?, adRequest: AdRequest) {
 
         let width = Int(adRequest?.adSize?.width ?? 320)
         let height = Int(adRequest?.adSize?.height ?? 50)
         let adSize = CGSize(width: width, height: height)
-        var adUnitConfig = multiFormatAdUnitConfig(configId: configId ?? "msp-ios-article-top-display",
-                                                   gadQueryInfo: googleQueryInfo,
-                                                   facebookBidToken: facebookBidToken,
-                                                   requestUUID: UUID().uuidString,
-                                                   prebidBannerAdSize: adSize)
+        var adUnitConfig = getAdUnitConfig(configId: configId ?? "msp-ios-article-top-display",
+                                           gadQueryInfo: googleQueryInfo,
+                                           facebookBidToken: facebookBidToken,
+                                           requestUUID: UUID().uuidString,
+                                           prebidBannerAdSize: adSize,
+                                           adRequest: adRequest)
         
         let bidRequester = PBMBidRequester(connection: ServerConnection.shared,
                                            sdkConfiguration: Prebid.shared,
@@ -89,15 +90,24 @@ public class PrebidBidLoader : BidLoader {
     }
     
     
-    public func multiFormatAdUnitConfig(configId: String,
-                                        gadQueryInfo: String?,
-                                        facebookBidToken: String?,
-                                        requestUUID: String,
-                                        prebidBannerAdSize: CGSize) -> AdUnitConfig {
+    public func grtAdUnitConfig(configId: String,
+                                gadQueryInfo: String?,
+                                facebookBidToken: String?,
+                                requestUUID: String,
+                                prebidBannerAdSize: CGSize,
+                                adRequest: AdRequest) -> AdUnitConfig {
         let adUnitConfig = AdUnitConfig(configId: configId, size: prebidBannerAdSize)
-        adUnitConfig.adConfiguration.bannerParameters.api = PrebidConstants.supportedRenderingBannerAPISignals
-        adUnitConfig.nativeAdConfiguration = NativeAdConfiguration()
-        adUnitConfig.adFormats = [.display, .native]
+        if adRequest.format == .banner {
+            adUnitConfig.adConfiguration.bannerParameters.api = PrebidConstants.supportedRenderingBannerAPISignals
+            adUnitConfig.adFormats = [.display]
+        } else if adRequest.format == .native {
+            adUnitConfig.nativeAdConfiguration = NativeAdConfiguration()
+            adUnitConfig.adFormats = [.native]
+        } else if adRequest.format == .multi_format {
+            adUnitConfig.adConfiguration.bannerParameters.api = PrebidConstants.supportedRenderingBannerAPISignals
+            adUnitConfig.nativeAdConfiguration = NativeAdConfiguration()
+            adUnitConfig.adFormats = [.display, .native]
+        }
         
         var userExt = Targeting.shared.userExt ?? [String: AnyHashable]()
         userExt["geo"] = getGeoDict()
@@ -125,9 +135,12 @@ public class PrebidBidLoader : BidLoader {
         if let facebookBidToken = facebookBidToken {
             Targeting.shared.buyerUID = facebookBidToken
         }
-        var assets = [NativeAsset]()
-        assets.append(NativeAssetTitle(length: 100, required: true))
-        adUnitConfig.nativeAdConfiguration?.markupRequestObject.assets = assets  
+        
+        if adRequest.format == .native || adRequest.format == .multi_format {
+            var assets = [NativeAsset]()
+            assets.append(NativeAssetTitle(length: 100, required: true))
+            adUnitConfig.nativeAdConfiguration?.markupRequestObject.assets = assets
+        }
         
         return adUnitConfig
     }

@@ -22,7 +22,7 @@ public class GoogleQueryInfoFetcherHelper: GoogleQueryInfoFetcher {
         let extras = GADExtras()
         extras.additionalParameters = ["query_info_type" : "requester_type_8"]
         request.register(extras)
-        let googleAdFormat = GADAdFormat.banner
+        let googleAdFormat = adRequest.adFormat == .banner ? GADAdFormat.banner : GADAdFormat.native
         GADQueryInfo.createQueryInfo(with: request, adFormat: googleAdFormat) { [weak self] queryInfo, error in
             guard let self = self else {return}
             if let error = error {
