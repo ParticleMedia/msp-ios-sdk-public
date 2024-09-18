@@ -35,9 +35,9 @@ class DemoAdViewController: UIViewController {
     private lazy var placementId = {
         switch adType {
         case .prebidBanner:
-            return "demo-ios-article-top"//"msp-ios-article-top-display"
+            return "demo-ios-article-top"
         case .googleBanner:
-            return "demo-ios-article-top"//"msp-ios-article-top-display_gg"
+            return "demo-ios-article-top"
         case .googleNative:
             return "msp-ios-article-top-display"
         case .novaNative:
@@ -56,7 +56,6 @@ class DemoAdViewController: UIViewController {
     }
     
     override func viewDidLoad() {
-        //google test ad config: msp-android-foryou-large-display_gg
         super.viewDidLoad()
         view.backgroundColor = .white
         
@@ -69,7 +68,7 @@ class DemoAdViewController: UIViewController {
         if adType == .novaNative {
             testParams["test"] = "{\"ad_network\":\"msp_nova\",\"test_ad\":true}"
         } else if adType == .prebidBanner {
-            Prebid.shared.prebidServerAccountId = "af7ce3f9-462d-4df1-815f-09314bb87ca3_debug"
+            testParams["test"] = "{\"ad_network\":\"msp_prebid\",\"test_ad\":true}"
         } else if adType == .googleBanner {
             testParams["test"] = "{\"ad_network\":\"msp_google\",\"test_ad\":true}"
         } else {
@@ -89,10 +88,6 @@ class DemoAdViewController: UIViewController {
                         context: self,
                         adRequest: adRequest,
                         rootViewController:self)
-        
-        //To test a ad creative
-        //let novaAdLoader = MSP.shared.adNetworkAdapterProvider.getAdNetworkAdapterByName(adNetworkName: "Nova") as? NovaAdapter
-        //novaAdLoader?.loadTestAdCreative(adString:testAdImmersiveString, adListener: self, context: self, adRequest: adRequest)
     }
 
 }
@@ -123,10 +118,6 @@ extension DemoAdViewController: AdListener {
             DispatchQueue.main.async{
                 let nativeAdViewBinder = DemoNativeAdViewBinder(nativeAd: nativeAd)
                 let nativeAdView = NativeAdView(nativeAd: nativeAd, rootViewController: self, nativeAdViewBinder: nativeAdViewBinder)
-                //if nativeAdView.mediaView is NovaNativeAdMediaView {
-                //    let novaNativeAdMediaView = nativeAdView.mediaView as? NovaNativeAdMediaView
-                //    novaNativeAdMediaView?.setNovaNativeAdVideoDelegate(delegate: self)
-                //}
                 self.nativeAdView = nativeAdView
                 self.view.addSubview(nativeAdView)
                 //self.nativeAdView?.callToActionButton?.isHidden = true

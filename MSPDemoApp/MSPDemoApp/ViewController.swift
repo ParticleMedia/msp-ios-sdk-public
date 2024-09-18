@@ -24,7 +24,6 @@ class ViewController: UIViewController {
     public var isCtaShown = false
 
     override func viewDidLoad() {
-        //google test ad config: msp-android-foryou-large-display_gg
         super.viewDidLoad()
         
         let button1 = UIButton(type: .system)
