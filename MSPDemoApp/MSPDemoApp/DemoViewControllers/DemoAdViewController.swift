@@ -39,9 +39,9 @@ class DemoAdViewController: UIViewController {
         case .googleBanner:
             return "demo-ios-article-top"
         case .googleNative:
-            return "msp-ios-article-top-display"
+            return ""
         case .novaNative:
-            return "msp-ios-foryou-large-display-prod2"
+            return ""
         }
     }()
     
@@ -63,16 +63,14 @@ class DemoAdViewController: UIViewController {
         self.adLoader = adLoader
         var customParams = [String: String]()
         var testParams = [String: String]()
-        customParams["user_id"] = "143378797"
-        customParams["profile_id"] = "09hbNFOl"
+        customParams["user_id"] = ""
+        customParams["profile_id"] = ""
         if adType == .novaNative {
             testParams["test"] = "{\"ad_network\":\"msp_nova\",\"test_ad\":true}"
         } else if adType == .prebidBanner {
-            testParams["test"] = "{\"ad_network\":\"msp_prebid\",\"test_ad\":true}"
+            testParams["test"] = "{\"ad_network\":\"pubmatic\",\"test_ad\":true}"
         } else if adType == .googleBanner {
             testParams["test"] = "{\"ad_network\":\"msp_google\",\"test_ad\":true}"
-        } else {
-            Prebid.shared.prebidServerAccountId = "af7ce3f9-462d-4df1-815f-09314bb87ca3"
         }
         let adRequest = AdRequest(customParams: customParams,
                                   geo: Geo(city: "San Francisco", stateCode: "CA", zipCode: "94102", lat: "37.79", lon: "-122.41"),
