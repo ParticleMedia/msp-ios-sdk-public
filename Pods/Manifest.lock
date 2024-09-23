@@ -1,4 +1,8 @@
 PODS:
+  - FacebookAdapter (0.0.21):
+    - FBAudienceNetwork (= 6.15.0)
+    - MSPSharedLibraries (= 0.0.47)
+  - FBAudienceNetwork (6.15.0)
   - Google-Mobile-Ads-SDK (10.14.0):
     - GoogleAppMeasurement (< 11.0, >= 7.0)
     - GoogleUserMessagingPlatform (>= 1.1)
@@ -87,6 +91,7 @@ PODS:
   - SnapKit (5.6.0)
 
 DEPENDENCIES:
+  - FacebookAdapter (from `./`)
   - GoogleAdapter (from `./`)
   - MSPCore (from `./`)
   - NovaAdapter (from `./`)
@@ -97,6 +102,7 @@ DEPENDENCIES:
 
 SPEC REPOS:
   trunk:
+    - FBAudienceNetwork
     - Google-Mobile-Ads-SDK
     - GoogleAppMeasurement
     - GoogleUserMessagingPlatform
@@ -112,6 +118,8 @@ SPEC REPOS:
     - SnapKit
 
 EXTERNAL SOURCES:
+  FacebookAdapter:
+    :path: "./"
   GoogleAdapter:
     :path: "./"
   MSPCore:
@@ -120,6 +128,8 @@ EXTERNAL SOURCES:
     :path: "./"
 
 SPEC CHECKSUMS:
+  FacebookAdapter: 602fdf5bb388bb501ebe9297579eb5183e14069b
+  FBAudienceNetwork: 80a035aa69cc3a71c99e44cb5c2874e4cef9909f
   Google-Mobile-Ads-SDK: 8f67a72f88d057335b1ac3f501e2b68ad054116e
   GoogleAdapter: df174ba9e35e54f038060b61686184fad14bd7ac
   GoogleAppMeasurement: f9de05ee17401e3355f68e8fc8b5064d429f5918
@@ -137,6 +147,6 @@ SPEC CHECKSUMS:
   Shimmer: c5374be1c2b0c9e292fb05b339a513cf291cac86
   SnapKit: e01d52ebb8ddbc333eefe2132acf85c8227d9c25
 
-PODFILE CHECKSUM: 24b380e69748035081b195a209d053a5bdf423e1
+PODFILE CHECKSUM: 2672f4747ce0f3cded752a1b0915445cb3a271a4
 
 COCOAPODS: 1.14.3

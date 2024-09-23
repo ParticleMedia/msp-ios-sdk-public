@@ -103,6 +103,7 @@ target 'MSPDemoApp' do
   pod 'NovaAdapter', :path => './', :modular_headers => true
   #pod 'PrebidAdapter', :path => './', :modular_headers => true
   pod 'GoogleAdapter', :path => './', :modular_headers => true
+  pod 'FacebookAdapter', :path => './', :modular_headers => true
   #pod 'GoogleMobileAds', :modular_headers => true
   #pod 'NovaAdapter', :path => './', :modular_headers => true
   #pod 'MetaAdapter', :path => './', :modular_headers => true
