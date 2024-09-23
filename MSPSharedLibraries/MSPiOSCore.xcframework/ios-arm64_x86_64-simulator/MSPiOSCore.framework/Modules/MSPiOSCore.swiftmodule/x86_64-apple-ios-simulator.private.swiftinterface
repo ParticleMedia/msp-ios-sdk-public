@@ -14,6 +14,11 @@ public protocol LoadAdParameters : MSPiOSCore.AdapterParameters {
   func getBidPayload() -> Swift.String
   func getBidExpirationMillis() -> Swift.UInt64
 }
+open class BannerAd : MSPiOSCore.MSPAd {
+  public var adView: UIKit.UIView
+  public init(adView: UIKit.UIView, adNetworkAdapter: any MSPiOSCore.AdNetworkAdapter)
+  @objc deinit
+}
 open class BidLoader {
   public var googleQueryInfoFetcher: any MSPiOSCore.GoogleQueryInfoFetcher
   public var facebookBidTokenProvider: any MSPiOSCore.FacebookBidTokenProvider

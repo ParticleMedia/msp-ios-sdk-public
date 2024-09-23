@@ -10,9 +10,10 @@ import UIKit
 //import MSPiOSCore
 import MSPCore
 //import PrebidMobile
-//import GoogleAdapter
+import GoogleAdapter
 //import MetaAdapter
 import NovaAdapter
+import FacebookAdapter
 import AppTrackingTransparency
 
 @main
@@ -22,14 +23,17 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         
-        let mspInitParameters = InitializationParametersImp(prebidAPIKey: "sggU8Y1UB6xara62G23qGdcOA8co2O4N",
-                                                            prebidHostUrl: "https://prebid-server.newsbreak.com/openrtb2/auction",
-                                                            sourceApp: "1132762804")
+        let mspInitParameters = InitializationParametersImp(prebidAPIKey: "af7ce3f9-462d-4df1-815f-09314bb87ca3",
+                                                            prebidHostUrl: "https://prebid-server.themsp.ai/openrtb2/auction",
+                                                            sourceApp: "")
         MSP.shared.setNovaManager(novaManager: NovaManager())
+        MSP.shared.setGoogleManager(googleManager: GoogleManager())
+        MSP.shared.setMetaManager(metaManager: FacebookManager())
         
         // optional ad networks
         //MSP.shared.setGoogleManager(googleManager: GoogleManager())
-        //MSP.shared.bidLoaderProvider.googleQueryInfoFetcher = GoogleQueryInfoFetcherHelper()
+        MSP.shared.bidLoaderProvider.googleQueryInfoFetcher = GoogleQueryInfoFetcherHelper()
+        MSP.shared.bidLoaderProvider.facebookBidTokenProvider = FacebookBidTokenProviderHelper()
         //MSP.shared.setMetaManager(metaManager: MetaManager())
         //MSP.shared.bidLoaderProvider.facebookBidTokenProvider = FacebookBidTokenProviderHelper()
         MSP.shared.initMSP(initParams: mspInitParameters, sdkInitListener: nil)

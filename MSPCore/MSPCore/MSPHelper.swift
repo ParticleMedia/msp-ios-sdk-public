@@ -63,8 +63,8 @@ public class MSP {
 
 public class InitializationParametersImp: InitializationParameters {
     
-    public var prebidAPIKey: String //= "sggU8Y1UB6xara62G23qGdcOA8co2O4N_debug"
-    public var prebidHostUrl: String //= "https://prebid-server.newsbreak.com/openrtb2/auction"
+    public var prebidAPIKey: String
+    public var prebidHostUrl: String
     
     public var sourceApp: String?
     

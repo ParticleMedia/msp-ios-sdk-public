@@ -4,7 +4,7 @@ import Foundation
 import MSPiOSCore
 import FBAudienceNetwork
 
-public class FacebookNativeAd: MSPAd {
+public class FacebookNativeAd: NativeAd {
     public var nativeAdItem: FBNativeAd?
     public var priceInDollar: Double?
 }
