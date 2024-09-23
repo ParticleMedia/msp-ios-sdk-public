@@ -10,7 +10,7 @@ import Foundation
 import MSPiOSCore
 import GoogleMobileAds
 
-public class GoogleNativeAd: MSPAd {
+public class GoogleNativeAd: NativeAd {
     public var nativeAdItem: GADNativeAd?
     public var priceInDollar: Double?
 }

@@ -9,6 +9,11 @@ import Foundation
 
 @objc public class FacebookAdapter : NSObject, AdNetworkAdapter {
     public func prepareViewForInteraction(nativeAd: MSPiOSCore.NativeAd, nativeAdView: Any) {
+        guard let rootViewController = self.rootViewController,
+              let nativeAdView = nativeAdView as? NativeAdView,
+              let mediaView = nativeAdView.mediaView as? FBMediaView,
+              let gadNativeAdItem = self.nativeAdItem else {return}
+        let fbNativeAdView = UIView()
         
     }
     
@@ -28,7 +33,7 @@ import Foundation
     public func initialize(initParams: any InitializationParameters, adapterInitListener: any AdapterInitListener, context: Any?) {
         FBAdSettings.setAdvertiserTrackingEnabled(isIDFAAuthorized())
         FBAudienceNetworkAds.initialize(with: nil, completionHandler: {_ in
-            //adapterInitListener.onComplete(adNetwork: .facebook, adapterInitStatus: .success, message: "")
+            adapterInitListener.onComplete(adNetwork: .facebook, adapterInitStatus: .SUCCESS, message: "")
         })
     }
     
@@ -121,10 +126,20 @@ import Foundation
 
 extension FacebookAdapter: FBNativeAdDelegate {
     public func nativeAdDidLoad(_ nativeAd: FBNativeAd) {
-        let facebookNativeAd = FacebookNativeAd(adNetworkAdapter: self)
+        let mediaView = FBMediaView(frame: .zero)
+        mediaView.translatesAutoresizingMaskIntoConstraints = false
+        
+        let facebookNativeAd = FacebookNativeAd(adNetworkAdapter: self,
+                                                title: nativeAd.headline ?? "",
+                                                body: nativeAd.bodyText ?? "",
+                                                advertiser: nativeAd.advertiserName ?? "",
+                                                callToAction:nativeAd.callToAction ?? "")
         self.facebookNativeAd = facebookNativeAd
         facebookNativeAd.priceInDollar = self.priceInDollar
         facebookNativeAd.nativeAdItem = nativeAd
+        facebookNativeAd.mediaView = mediaView
+        facebookNativeAd.adInfo["priceInDollar"] = self.priceInDollar
+        self.nativeAdItem = nativeAd
         if let adListener = adListener,
            let adRequest = adRequest {
             handleAdLoaded(ad: facebookNativeAd, listener: adListener, adRequest: adRequest)

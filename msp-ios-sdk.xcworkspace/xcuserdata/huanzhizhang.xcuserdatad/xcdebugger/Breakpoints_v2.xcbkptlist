@@ -135,52 +135,6 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "AC7AB46B-CDCD-4F07-9580-AED63B938CE2"
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "MSPDemoApp/MSPDemoApp/ViewController.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "117"
-            endingLineNumber = "117"
-            landmarkName = "playerCurrentTimeDidChange(currentTime:durationTime:)"
-            landmarkType = "7">
-            <Locations>
-               <Location
-                  uuid = "AC7AB46B-CDCD-4F07-9580-AED63B938CE2 - 72adeb0334dfed7f"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "closure #2 (Swift.Bool) -&gt; () in MSPDemoApp.ViewController.playerCurrentTimeDidChange(currentTime: Swift.Double, durationTime: Swift.Double) -&gt; ()"
-                  moduleName = "MSPDemoApp"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/huanzhizhang/Huanzhi/msp-ios-sdk/MSPDemoApp/MSPDemoApp/ViewController.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "115"
-                  endingLineNumber = "115">
-               </Location>
-               <Location
-                  uuid = "AC7AB46B-CDCD-4F07-9580-AED63B938CE2 - 72adeb0334dfeeb9"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "closure #2 (Swift.Bool) -&gt; () in MSPDemoApp.ViewController.playerCurrentTimeDidChange(currentTime: Swift.Double, durationTime: Swift.Double) -&gt; ()"
-                  moduleName = "MSPDemoApp"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/huanzhizhang/Huanzhi/msp-ios-sdk/MSPDemoApp/MSPDemoApp/ViewController.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "117"
-                  endingLineNumber = "117">
-               </Location>
-            </Locations>
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
             uuid = "78D2CCE2-2364-46FF-8F3B-FFA08ACBB3CA"
             shouldBeEnabled = "No"
             ignoreCount = "0"
@@ -229,22 +183,6 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "8FCC0EFD-E5A0-4FCC-AA42-B0AE09FAC056"
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "NovaCore/NovaCore/Native/NovaNativeAdMediaView.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "118"
-            endingLineNumber = "118"
-            landmarkName = "updateVideoDisplayState(fullyDisplayed:)"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
             uuid = "BE1F8F79-0D38-4D26-A3DA-77D8C5BF6C16"
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
@@ -254,7 +192,7 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "48"
             endingLineNumber = "48"
-            landmarkName = "loadBidWithTokens(googleQueryInfo:facebookBidToken:)"
+            landmarkName = "loadBidWithTokens(googleQueryInfo:facebookBidToken:adRequest:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -348,9 +286,9 @@
             filePath = "PrebidAdapter/PrebidAdapter/PrebidBidLoader.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "64"
-            endingLineNumber = "64"
-            landmarkName = "loadBidWithTokens(googleQueryInfo:facebookBidToken:)"
+            startingLineNumber = "65"
+            endingLineNumber = "65"
+            landmarkName = "loadBidWithTokens(googleQueryInfo:facebookBidToken:adRequest:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -364,9 +302,25 @@
             filePath = "GoogleAdapter/GoogleAdapter/GoogleAdapter.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "136"
-            endingLineNumber = "136"
+            startingLineNumber = "177"
+            endingLineNumber = "177"
             landmarkName = "getGADAdSize(adRequest:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "E298A4D7-7274-431F-B0BF-642766E7F7AC"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "GoogleAdapter/GoogleAdapter/GoogleAdapter.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "9"
+            endingLineNumber = "9"
+            landmarkName = "prepareViewForInteraction(nativeAd:nativeAdView:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
