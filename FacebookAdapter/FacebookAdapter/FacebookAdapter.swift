@@ -12,7 +12,7 @@ import Foundation
         guard let rootViewController = self.rootViewController,
               let nativeAdView = nativeAdView as? NativeAdView,
               let mediaView = nativeAdView.mediaView as? FBMediaView,
-              let gadNativeAdItem = self.nativeAdItem else {return}
+              let fbNativeAdItem = self.nativeAdItem else {return}
         //let fbNativeAdView = UIView()
         nativeAdView.translatesAutoresizingMaskIntoConstraints = false
         let fbSubViews = [nativeAdView.titleLabel, nativeAdView.bodyLabel, nativeAdView.advertiserLabel, nativeAdView.callToActionButton, mediaView]
@@ -22,6 +22,11 @@ import Foundation
             }
         }
         nativeAdView.nativeAdViewBinder.setUpViews(parentView: nativeAdView)
+        fbNativeAdItem.registerView(forInteraction: nativeAdView,
+                                    mediaView: self.fbMediaView,
+                                    iconImageView: nil,
+                                    viewController: nil,
+                                    clickableViews: fbSubViews)
     }
     
     
