@@ -13,8 +13,15 @@ import Foundation
               let nativeAdView = nativeAdView as? NativeAdView,
               let mediaView = nativeAdView.mediaView as? FBMediaView,
               let gadNativeAdItem = self.nativeAdItem else {return}
-        let fbNativeAdView = UIView()
-        
+        //let fbNativeAdView = UIView()
+        nativeAdView.translatesAutoresizingMaskIntoConstraints = false
+        let fbSubViews = [nativeAdView.titleLabel, nativeAdView.bodyLabel, nativeAdView.advertiserLabel, nativeAdView.callToActionButton, mediaView]
+        for view in fbSubViews {
+            if let view = view {
+                nativeAdView.addSubview(view)
+            }
+        }
+        nativeAdView.nativeAdViewBinder.setUpViews(parentView: nativeAdView)
     }
     
     
