@@ -135,7 +135,7 @@ extension DemoAdViewController: AdListener {
             adView.translatesAutoresizingMaskIntoConstraints = false
             self.view.addSubview(adView)
             NSLayoutConstraint.activate([
-                adView.leadingAnchor.constraint(equalTo: self.view.leadingAnchor, constant: 100),
+                adView.centerXAnchor.constraint(equalTo: self.view.centerXAnchor),
                 adView.topAnchor.constraint(equalTo: self.view.topAnchor, constant: 200),
             ])
         }
