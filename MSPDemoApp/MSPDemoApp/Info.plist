@@ -21,9 +21,9 @@
 			</array>
 		</dict>
 	</dict>
-    <key>GADApplicationIdentifier</key>
-    <string>ca-app-pub-3384408078236170~9501675642</string>
-    <key>NSUserTrackingUsageDescription</key>
-    <string>We need your permission to track your activity for better advertising experience.</string>
+	<key>GADApplicationIdentifier</key>
+	<string>ca-app-pub-3940256099942544~1458002511</string>
+	<key>NSUserTrackingUsageDescription</key>
+	<string>We need your permission to track your activity for better advertising experience.</string>
 </dict>
 </plist>
