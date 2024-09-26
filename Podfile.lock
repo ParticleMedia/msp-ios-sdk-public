@@ -1,8 +1,12 @@
 PODS:
+  - FacebookAdapter (0.0.21):
+    - FBAudienceNetwork (= 6.15.0)
+    - MSPSharedLibraries (= 0.0.47)
+  - FBAudienceNetwork (6.15.0)
   - Google-Mobile-Ads-SDK (10.14.0):
     - GoogleAppMeasurement (< 11.0, >= 7.0)
     - GoogleUserMessagingPlatform (>= 1.1)
-  - GoogleAdapter (0.0.52):
+  - GoogleAdapter (0.0.21):
     - Google-Mobile-Ads-SDK (= 10.14.0)
     - MSPSharedLibraries (= 0.0.47)
   - GoogleAppMeasurement (10.29.0):
@@ -63,7 +67,7 @@ PODS:
   - libwebp/sharpyuv (1.3.2)
   - libwebp/webp (1.3.2):
     - libwebp/sharpyuv
-  - MSPCore (0.0.52):
+  - MSPCore (0.0.46):
     - MSPSharedLibraries (= 0.0.47)
     - PrebidAdapter (= 0.0.52)
   - MSPSharedLibraries (0.0.47)
@@ -87,9 +91,10 @@ PODS:
   - SnapKit (5.6.0)
 
 DEPENDENCIES:
-  - GoogleAdapter (= 0.0.52)
-  - MSPCore (= 0.0.52)
-  - NovaAdapter (= 0.0.49)
+  - FacebookAdapter (from `./`)
+  - GoogleAdapter (from `./`)
+  - MSPCore (from `./`)
+  - NovaAdapter (from `./`)
   - SDWebImage (= 5.18.8)
   - SDWebImageWebPCoder (= 0.14.2)
   - Shimmer
@@ -97,16 +102,14 @@ DEPENDENCIES:
 
 SPEC REPOS:
   trunk:
+    - FBAudienceNetwork
     - Google-Mobile-Ads-SDK
-    - GoogleAdapter
     - GoogleAppMeasurement
     - GoogleUserMessagingPlatform
     - GoogleUtilities
     - libwebp
-    - MSPCore
     - MSPSharedLibraries
     - nanopb
-    - NovaAdapter
     - PrebidAdapter
     - PromisesObjC
     - SDWebImage
@@ -114,14 +117,26 @@ SPEC REPOS:
     - Shimmer
     - SnapKit
 
+EXTERNAL SOURCES:
+  FacebookAdapter:
+    :path: "./"
+  GoogleAdapter:
+    :path: "./"
+  MSPCore:
+    :path: "./"
+  NovaAdapter:
+    :path: "./"
+
 SPEC CHECKSUMS:
+  FacebookAdapter: 602fdf5bb388bb501ebe9297579eb5183e14069b
+  FBAudienceNetwork: 80a035aa69cc3a71c99e44cb5c2874e4cef9909f
   Google-Mobile-Ads-SDK: 8f67a72f88d057335b1ac3f501e2b68ad054116e
-  GoogleAdapter: 5fc39379d2850c0bd4421676838cdde43e0d0d7c
+  GoogleAdapter: df174ba9e35e54f038060b61686184fad14bd7ac
   GoogleAppMeasurement: f9de05ee17401e3355f68e8fc8b5064d429f5918
   GoogleUserMessagingPlatform: 0c3a08353e53ce8c2feab7addd0b652cde522450
   GoogleUtilities: ea963c370a38a8069cc5f7ba4ca849a60b6d7d15
   libwebp: 1786c9f4ff8a279e4dac1e8f385004d5fc253009
-  MSPCore: abcc7840be5d9716782667c9403ee037b185eb1d
+  MSPCore: 04b4fa67cab2384e6df2cdaf94398b9cf615911e
   MSPSharedLibraries: 290f6d24c74d636be2019e3253c9f1e0c660339d
   nanopb: 438bc412db1928dac798aa6fd75726007be04262
   NovaAdapter: b46648026c9414d6ca8c5dd8518d103f59139385
@@ -132,6 +147,6 @@ SPEC CHECKSUMS:
   Shimmer: c5374be1c2b0c9e292fb05b339a513cf291cac86
   SnapKit: e01d52ebb8ddbc333eefe2132acf85c8227d9c25
 
-PODFILE CHECKSUM: ae323c17871ff15c91361c04933a6a6a626cfa05
+PODFILE CHECKSUM: 2672f4747ce0f3cded752a1b0915445cb3a271a4
 
 COCOAPODS: 1.14.3

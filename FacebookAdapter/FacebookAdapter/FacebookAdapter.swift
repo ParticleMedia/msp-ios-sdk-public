@@ -23,10 +23,10 @@ import Foundation
         }
         nativeAdView.nativeAdViewBinder.setUpViews(parentView: nativeAdView)
         fbNativeAdItem.registerView(forInteraction: nativeAdView,
-                                    mediaView: self.fbMediaView,
+                                    mediaView: mediaView,
                                     iconImageView: nil,
                                     viewController: nil,
-                                    clickableViews: fbSubViews)
+                                    clickableViews: fbSubViews.compactMap{ $0 })
     }
     
     

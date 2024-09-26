@@ -13,7 +13,7 @@ import MSPCore
 import GoogleAdapter
 //import MetaAdapter
 import NovaAdapter
-//import FacebookAdapter
+import FacebookAdapter
 import AppTrackingTransparency
 
 @main
@@ -28,14 +28,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                                                             sourceApp: "")
         MSP.shared.setNovaManager(novaManager: NovaManager())
         MSP.shared.setGoogleManager(googleManager: GoogleManager())
-        //MSP.shared.setMetaManager(metaManager: FacebookManager())
+        MSP.shared.setMetaManager(metaManager: FacebookManager())
         
         // optional ad networks
         //MSP.shared.setGoogleManager(googleManager: GoogleManager())
         MSP.shared.bidLoaderProvider.googleQueryInfoFetcher = GoogleQueryInfoFetcherHelper()
         //MSP.shared.bidLoaderProvider.facebookBidTokenProvider = FacebookBidTokenProviderHelper()
-        //MSP.shared.setMetaManager(metaManager: MetaManager())
-        //MSP.shared.bidLoaderProvider.facebookBidTokenProvider = FacebookBidTokenProviderHelper()
+
+        MSP.shared.bidLoaderProvider.facebookBidTokenProvider = FacebookBidTokenProviderHelper()
         MSP.shared.initMSP(initParams: mspInitParameters, sdkInitListener: nil)
         
         window = UIWindow(frame: UIScreen.main.bounds)
