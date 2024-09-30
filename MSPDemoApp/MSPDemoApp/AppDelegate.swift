@@ -1,19 +1,7 @@
-//
-//  AppDelegate.swift
-//  MSPDemoApp
-//
-//  Created by Huanzhi Zhang on 4/29/24.
-//
-
 import UIKit
-//import shared
-//import MSPiOSCore
 import MSPCore
-//import PrebidMobile
 import GoogleAdapter
-//import MetaAdapter
 import NovaAdapter
-import FacebookAdapter
 import AppTrackingTransparency
 
 @main
@@ -26,16 +14,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         let mspInitParameters = InitializationParametersImp(prebidAPIKey: "af7ce3f9-462d-4df1-815f-09314bb87ca3",
                                                             prebidHostUrl: "https://prebid-server.themsp.ai/openrtb2/auction",
                                                             sourceApp: "")
-        MSP.shared.setNovaManager(novaManager: NovaManager())
-        MSP.shared.setGoogleManager(googleManager: GoogleManager())
-        MSP.shared.setMetaManager(metaManager: FacebookManager())
         
-        // optional ad networks
-        //MSP.shared.setGoogleManager(googleManager: GoogleManager())
+        MSP.shared.setNovaManager(novaManager: NovaManager())
+        
+        MSP.shared.setGoogleManager(googleManager: GoogleManager())
         MSP.shared.bidLoaderProvider.googleQueryInfoFetcher = GoogleQueryInfoFetcherHelper()
-        //MSP.shared.bidLoaderProvider.facebookBidTokenProvider = FacebookBidTokenProviderHelper()
-
-        MSP.shared.bidLoaderProvider.facebookBidTokenProvider = FacebookBidTokenProviderHelper()
+        
         MSP.shared.initMSP(initParams: mspInitParameters, sdkInitListener: nil)
         
         window = UIWindow(frame: UIScreen.main.bounds)

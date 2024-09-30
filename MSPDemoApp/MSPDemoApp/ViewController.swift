@@ -1,19 +1,6 @@
-//
-//  ViewController.swift
-//  MSPDemoApp
-//
-//  Created by Huanzhi Zhang on 4/29/24.
-//
-
 import UIKit
 import MSPCore
-//import GoogleAdapter
-//import PrebidAdapter
-//import NovaAdapter
 import MSPiOSCore
-//import NovaCore
-//import shared
-//import MetaAdapter
 import AppTrackingTransparency
 
 class ViewController: UIViewController {
