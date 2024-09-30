@@ -1,10 +1,3 @@
-//
-//  SceneDelegate.swift
-//  MSPDemoApp
-//
-//  Created by Huanzhi Zhang on 4/29/24.
-//
-
 import UIKit
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {

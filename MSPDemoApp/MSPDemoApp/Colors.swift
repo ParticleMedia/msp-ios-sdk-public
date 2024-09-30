@@ -1,10 +1,3 @@
-//
-//  Colors.swift
-//  MSPDemoApp
-//
-//  Created by Huanzhi Zhang on 6/13/24.
-//
-
 import Foundation
 import UIKit
 
