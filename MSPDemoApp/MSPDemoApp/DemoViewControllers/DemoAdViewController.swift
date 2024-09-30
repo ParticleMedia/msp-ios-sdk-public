@@ -1,21 +1,8 @@
-//
-//  PrebidBannerViewController.swift
-//  MSPDemoApp
-//
-//  Created by Huanzhi Zhang on 9/9/24.
-//
-
 import Foundation
 import UIKit
 
 import MSPCore
-//import GoogleAdapter
-//import PrebidAdapter
-//import NovaAdapter
 import MSPiOSCore
-//import NovaCore
-//import shared
-//import MetaAdapter
 import AppTrackingTransparency
 import PrebidMobile
 
@@ -73,7 +60,7 @@ class DemoAdViewController: UIViewController {
             testParams["test"] = "{\"ad_network\":\"msp_google\",\"test_ad\":true}"
         }
         let adRequest = AdRequest(customParams: customParams,
-                                  geo: Geo(city: "San Francisco", stateCode: "CA", zipCode: "94102", lat: "37.79", lon: "-122.41"),
+                                  geo: nil,
                                   context: nil,
                                   adaptiveBannerSize: AdSize(width: 320, height: 50, isInlineAdaptiveBanner: false, isAnchorAdaptiveBanner: true),
                                   adSize: AdSize(width: 320, height: 50, isInlineAdaptiveBanner: false, isAnchorAdaptiveBanner: false),
