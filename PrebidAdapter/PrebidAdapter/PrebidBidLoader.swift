@@ -107,6 +107,11 @@ public class PrebidBidLoader : BidLoader {
             adUnitConfig.adConfiguration.bannerParameters.api = PrebidConstants.supportedRenderingBannerAPISignals
             adUnitConfig.nativeAdConfiguration = NativeAdConfiguration()
             adUnitConfig.adFormats = [.display, .native]
+        } else if adRequest.adFormat == .interstitial {
+            adUnitConfig.adPosition = .fullScreen
+            adUnitConfig.adConfiguration.adFormats = [.display]
+            adUnitConfig.adConfiguration.isInterstitialAd = true
+            adUnitConfig.adConfiguration.bannerParameters.api = PrebidConstants.supportedRenderingBannerAPISignals
         }
         
         var userExt = Targeting.shared.userExt ?? [String: AnyHashable]()
