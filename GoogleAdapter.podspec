@@ -46,7 +46,7 @@ Pod::Spec.new do |spec|
   spec.exclude_files = "Classes/Exclude"
 
   spec.dependency 'Google-Mobile-Ads-SDK', "10.14.0"
-  spec.dependency 'MSPSharedLibraries', '0.0.47'
+  spec.dependency 'MSPSharedLibraries', '0.0.53'
   #spec.module_map = 'GoogleAdapter/GoogleAdapter.modulemap'
 
   #spec.public_header_files = "GoogleAdapter//**/*.h"

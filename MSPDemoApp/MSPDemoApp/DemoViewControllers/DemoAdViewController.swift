@@ -11,6 +11,8 @@ public enum AdType: String {
     case googleBanner
     case googleNative
     case novaNative
+    case googleInterstitial
+    case novaInterstitial
 }
 
 class DemoAdViewController: UIViewController {
@@ -29,6 +31,10 @@ class DemoAdViewController: UIViewController {
             return ""
         case .novaNative:
             return ""
+        case .googleInterstitial:
+            return "demo-ios-launch-fullscreen"
+        case .novaInterstitial:
+            return "demo-ios-launch-fullscreen"
         }
     }()
     
@@ -52,20 +58,20 @@ class DemoAdViewController: UIViewController {
         var testParams = [String: String]()
         customParams["user_id"] = ""
         customParams["profile_id"] = ""
-        if adType == .novaNative {
+        if adType == .novaNative || adType == .novaInterstitial {
             testParams["test"] = "{\"ad_network\":\"msp_nova\",\"test_ad\":true}"
         } else if adType == .prebidBanner {
             testParams["test"] = "{\"ad_network\":\"pubmatic\",\"test_ad\":true}"
-        } else if adType == .googleBanner {
+        } else if adType == .googleBanner || adType == .googleInterstitial {
             testParams["test"] = "{\"ad_network\":\"msp_google\",\"test_ad\":true}"
         }
         let adRequest = AdRequest(customParams: customParams,
                                   geo: nil,
                                   context: nil,
-                                  adaptiveBannerSize: AdSize(width: 320, height: 50, isInlineAdaptiveBanner: false, isAnchorAdaptiveBanner: true),
+                                  adaptiveBannerSize: AdSize(width: 320, height: 50, isInlineAdaptiveBanner: false, isAnchorAdaptiveBanner: false),
                                   adSize: AdSize(width: 320, height: 50, isInlineAdaptiveBanner: false, isAnchorAdaptiveBanner: false),
                                   placementId: placementId,
-                                  adFormat: .banner,
+                                  adFormat: .interstitial,
                                   isCacheSupported: true,
                                   testParams: testParams)
         adLoader.loadAd(placementId: placementId,

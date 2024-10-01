@@ -42,6 +42,13 @@ class ViewController: UIViewController {
                 }, for: .touchUpInside)
                 button4.frame = CGRect(x: 100, y: 500, width: 200, height: 50)
                 view.addSubview(button4)
+        let button5 = UIButton(type: .system)
+                button5.setTitle("Google Interstitial View", for: .normal)
+                button5.addAction(UIAction { [weak self] _ in
+                    self?.openDemoAdPage(adType: .googleInterstitial)
+                }, for: .touchUpInside)
+                button5.frame = CGRect(x: 100, y: 600, width: 200, height: 50)
+                view.addSubview(button5)
        
     }
 
