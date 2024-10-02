@@ -54,6 +54,51 @@ public enum NovaAdBuilder {
             encryptedAdToken: adItem.encryptedAdToken,
             isParallax: isParallax)
     }
+    
+    public static func buildAppOpenAds(adItems: [AdItem], adUnitId: String) -> [NovaAppOpenAd] {
+        return adItems.map { adItem in
+            let ctrUrlStr = transformedUrlStr(adItem.creative.ctrUrl)
+            let ctrUrl = URL(string: ctrUrlStr)
+            let videoInfo = NovaAdBuilder.buildVideoInfo(adItem.creative.videoItem, adId: adItem.adId)
+
+            let thirdPartyViewTrackingUrls = adItem.creative.thirdPartyViewTrackingUrls?.map {
+                transformedUrlStr($0)
+            } ?? []
+            let thirdPartyImpressionTrackingUrls = adItem.creative.thirdPartyImpressionTrackingUrls?.map {
+                transformedUrlStr($0)
+            } ?? []
+            let thirdPartyClickTrackingUrls = adItem.creative.thirdPartyClickTrackingUrls?.map {
+                transformedUrlStr($0)
+            } ?? []
+
+            let startTimeInMs = Double(adItem.startTimeMs ?? "")
+            let expirationTimeInMs = Double(adItem.expirationMs ?? "")
+
+            return NovaAppOpenAd(
+                adUnitId: adUnitId,
+                requestId: adItem.requestId,
+                adId: adItem.adId,
+                adSetId: adItem.adsetId,
+                imageUrlStr: adItem.creative.imageUrl,
+                isVerticalImage: adItem.creative.isVerticalImage,
+                ctrUrl: ctrUrl,
+                headline: adItem.creative.headline,
+                body: adItem.creative.body,
+                callToAction: adItem.creative.callToAction,
+                advertiser: adItem.creative.advertiser,
+                creativeType: NovaCreativeType(rawValue: adItem.creative.creativeType ?? ""),
+                videoInfo: videoInfo,
+                iconUrl: adItem.creative.iconUrl,
+                launchOption: adItem.creative.launchOption,
+                thirdPartyViewTrackingUrls: thirdPartyViewTrackingUrls,
+                thirdPartyImpressionTrackingUrls: thirdPartyImpressionTrackingUrls,
+                thirdPartyClickTrackingUrls: thirdPartyClickTrackingUrls,
+                priceInDollar: adItem.price,
+                startTimeInMs: startTimeInMs,
+                expirationTimeInMs: expirationTimeInMs,
+                encryptedAdToken: adItem.encryptedAdToken)
+        }
+    }
 
    
     
