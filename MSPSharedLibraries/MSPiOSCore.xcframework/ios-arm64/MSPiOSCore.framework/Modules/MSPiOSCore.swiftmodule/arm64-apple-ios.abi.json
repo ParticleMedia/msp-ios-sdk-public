@@ -806,6 +806,7 @@
             "usr": "s:10MSPiOSCore14InterstitialAdC4showyyF",
             "mangledName": "$s10MSPiOSCore14InterstitialAdC4showyyF",
             "moduleName": "MSPiOSCore",
+            "isOpen": true,
             "declAttributes": [
               "AccessControl"
             ],

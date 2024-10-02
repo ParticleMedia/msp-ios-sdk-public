@@ -32,7 +32,7 @@ class DemoAdViewController: UIViewController {
         case .novaNative:
             return ""
         case .googleInterstitial:
-            return "demo-ios-launch-fullscreen"
+            return "msp-ios-launch-fullscreen-interstitial-gg.s2s.v2-dam.freeloader"
         case .novaInterstitial:
             return "demo-ios-launch-fullscreen"
         }
@@ -131,6 +131,9 @@ extension DemoAdViewController: AdListener {
                 adView.centerXAnchor.constraint(equalTo: self.view.centerXAnchor),
                 adView.topAnchor.constraint(equalTo: self.view.topAnchor, constant: 200),
             ])
+        } else if ad is InterstitialAd,
+                  let interstitialAd = ad as? InterstitialAd {
+            interstitialAd.show()
         }
     }
     

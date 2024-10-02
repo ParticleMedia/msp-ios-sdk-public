@@ -96,7 +96,10 @@ public class PrebidBidLoader : BidLoader {
                                 requestUUID: String,
                                 prebidBannerAdSize: CGSize,
                                 adRequest: AdRequest) -> AdUnitConfig {
-        let adUnitConfig = AdUnitConfig(configId: configId, size: prebidBannerAdSize)
+        
+        let adUnitConfig = adRequest.adFormat == .interstitial ?
+        AdUnitConfig(configId: configId) :
+        AdUnitConfig(configId: configId, size: prebidBannerAdSize)
         if adRequest.adFormat == .banner {
             adUnitConfig.adConfiguration.bannerParameters.api = PrebidConstants.supportedRenderingBannerAPISignals
             adUnitConfig.adFormats = [.display]
