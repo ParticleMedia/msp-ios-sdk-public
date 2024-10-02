@@ -14,6 +14,8 @@ public class NovaAdapter: AdNetworkAdapter {
     public var nativeAd: MSPAd?
     public var nativeAdItem: NovaNativeAdItem?
     
+    public var interstitialAd: InterstitialAd?
+    
     public var nativeAdView: NativeAdView?
     public var novaNativeAdView: NovaNativeAdView?
     
@@ -146,6 +148,9 @@ public class NovaAdapter: AdNetworkAdapter {
                         handleAdLoaded(ad: nativeAd, listener: adListener, adRequest: adRequest)
                     }
                 }
+                
+            case "app_open":
+                let appOpenAds = NovaAdBuilder.buildAppOpenAds(adItems: ads, adUnitId: adUnitId)
             default:
                 self.adListener?.onError(msg: "unknown adType")
             }
@@ -178,7 +183,8 @@ public class NovaAdapter: AdNetworkAdapter {
         }
 
         let eCPMInDollar = Decimal(priceInDollar ?? 0.0)
-        parseNovaAdString(adString: adString, adType: "native", adUnitId: "dummy_id", eCPMInDollar: eCPMInDollar)
+        let adType = adRequest.adFormat == .interstitial ? "app_open" : "native"
+        parseNovaAdString(adString: adString, adType: adType, adUnitId: "dummy_id", eCPMInDollar: eCPMInDollar)
     }
 }
 
