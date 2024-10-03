@@ -21,15 +21,15 @@ import UIKit
 }
 
 extension NovaAppOpenAdViewActionHandler: ActionHandling {
-    func supportedActions() -> [String: Any.Type] {
+    public func supportedActions() -> [String: Any.Type] {
         return [
             NovaAppOpenAdViewActionKey.adTapped.rawValue: EmptyActionDataModel.self,
             NovaAppOpenAdViewActionKey.manualSkip.rawValue: EmptyActionDataModel.self,
-            NovaAppOpenAdViewActionKey.feedbackReport.rawValue: NovaAppOpenAdFeedBackReportActionModel.self,
+            //NovaAppOpenAdViewActionKey.feedbackReport.rawValue: NovaAppOpenAdFeedBackReportActionModel.self,
         ]
     }
 
-    func performAction(actionModel: ActionModel) {
+    public func performAction(actionModel: ActionModel) {
         switch actionModel.actionKey {
         case NovaAppOpenAdViewActionKey.adTapped.rawValue:
             didTapAd()
@@ -37,10 +37,10 @@ extension NovaAppOpenAdViewActionHandler: ActionHandling {
         case NovaAppOpenAdViewActionKey.manualSkip.rawValue:
             didManualSkip()
 
-        case NovaAppOpenAdViewActionKey.feedbackReport.rawValue:
-            if let dataModel = actionModel.actionDataModel as? NovaAppOpenAdFeedBackReportActionModel {
-                didTapReportAd(with: dataModel.appOpenAd)
-            }
+        //case NovaAppOpenAdViewActionKey.feedbackReport.rawValue:
+            //if let dataModel = actionModel.actionDataModel as? NovaAppOpenAdFeedBackReportActionModel {
+            //    didTapReportAd(with: dataModel.appOpenAd)
+            //}
 
         default:
             break

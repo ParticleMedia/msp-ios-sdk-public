@@ -80,7 +80,6 @@ public enum NovaAdBuilder {
                 adId: adItem.adId,
                 adSetId: adItem.adsetId,
                 imageUrlStr: adItem.creative.imageUrl,
-                isVerticalImage: adItem.creative.isVerticalImage,
                 ctrUrl: ctrUrl,
                 headline: adItem.creative.headline,
                 body: adItem.creative.body,
