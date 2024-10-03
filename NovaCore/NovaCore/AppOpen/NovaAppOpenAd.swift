@@ -147,7 +147,7 @@ import UIKit
                 }
 
                 DispatchQueue.main.async {
-                    Self.requestToDisplay(
+                    self.requestToDisplay(
                         rootViewController: rootViewController,
                         adResource: .image(image)
                     )
@@ -158,7 +158,7 @@ import UIKit
                 return
             }
             DispatchQueue.main.async {
-                Self.requestToDisplay(
+                self.requestToDisplay(
                     rootViewController: rootViewController,
                     adResource: .video(videoInfo)
                 )
@@ -197,17 +197,15 @@ import UIKit
         }.resume()
     }
     
-    public static func requestToDisplay(
+    public func requestToDisplay(
         rootViewController: UIViewController,
         adResource: NovaAppOpenAdResource
     ) {
         dispatchPrecondition(condition: .onQueue(.main))
 
-        /*
-        let controller = NovaAppOpenAdViewController(appOpenAd: appOpenAd, adResource: adResource)
+        let controller = NovaAppOpenAdViewController(appOpenAd: self, adResource: adResource)
         controller.modalPresentationStyle = .fullScreen
         controller.modalTransitionStyle = .crossDissolve
         rootViewController.present(controller, animated: true)
-        */
     }
 }

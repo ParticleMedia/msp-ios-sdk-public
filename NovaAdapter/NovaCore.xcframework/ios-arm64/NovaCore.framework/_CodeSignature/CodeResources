@@ -6,11 +6,11 @@
 	<dict>
 		<key>Assets.car</key>
 		<data>
-		r6Zj0PZhJUnYIESsU2ELmlEWr/M=
+		O7cgVV3nqzgQAQvH+G41P2vgCBI=
 		</data>
 		<key>Headers/NovaCore-Swift.h</key>
 		<data>
-		jDAYrqgGM7dVFDhbTZC4SJWOU6s=
+		p/sma7AwgKFQI4mHvtgIJnpn0OM=
 		</data>
 		<key>Headers/NovaCore.h</key>
 		<data>
@@ -34,27 +34,27 @@
 		</data>
 		<key>Info.plist</key>
 		<data>
-		5ZDjPWqbHlenR9MWBF+lwn4GqPg=
+		akw9iPiswjYswemIOk2eCDgVXZ0=
 		</data>
 		<key>Modules/NovaCore.swiftmodule/arm64-apple-ios.abi.json</key>
 		<data>
-		XY8tqxNQus9ff+azAyY4nu6UVxY=
+		ZjavHrnTiWHpy+o/O7luWlQKPjA=
 		</data>
 		<key>Modules/NovaCore.swiftmodule/arm64-apple-ios.private.swiftinterface</key>
 		<data>
-		sZfSuWsI+mHJwWKm17cUfp31/yI=
+		t/adtU2tP6ObSFNlFSz+MJDMg/o=
 		</data>
 		<key>Modules/NovaCore.swiftmodule/arm64-apple-ios.swiftdoc</key>
 		<data>
-		xtetwzDD1pLaRo/XoE0OsuWBltQ=
+		41jYm/rNZIrdI7mLiwvzE1/Cx4g=
 		</data>
 		<key>Modules/NovaCore.swiftmodule/arm64-apple-ios.swiftinterface</key>
 		<data>
-		sZfSuWsI+mHJwWKm17cUfp31/yI=
+		t/adtU2tP6ObSFNlFSz+MJDMg/o=
 		</data>
 		<key>Modules/NovaCore.swiftmodule/arm64-apple-ios.swiftmodule</key>
 		<data>
-		IoGucs0Xl9ptZhhXUOa60ejc8oY=
+		KuRkSFlA9AD4DGjSYaQsl3EMw8Q=
 		</data>
 		<key>Modules/module.modulemap</key>
 		<data>
@@ -70,7 +70,7 @@
 		</data>
 		<key>SDWebImage.bundle/Info.plist</key>
 		<data>
-		L3vJ9hXcd1nOBF7a7R+7MN/WWJ8=
+		alVhNzocq0cuJS9wpyQqV687+uQ=
 		</data>
 		<key>SDWebImage.bundle/PrivacyInfo.xcprivacy</key>
 		<data>
@@ -83,14 +83,14 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			/xgLgCFwBVmJzZoBpMOvIOmiBGb2R39Efsp9JQNvLLc=
+			fAfGzk9ImNR5+uy0dezYmlWvG0BEVwfvIHhc2/VOb7Y=
 			</data>
 		</dict>
 		<key>Headers/NovaCore-Swift.h</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			IoPDh/oc33r7yCGm/i1sgr+k+qJO21dSBBvBc94EAUQ=
+			TcBaydqjUQFNfWhDUDE9vHahSRxxtSwBBMAkZ3D9k6o=
 			</data>
 		</dict>
 		<key>Headers/NovaCore.h</key>
@@ -132,35 +132,35 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			rVtjVqflTpO2IQ9GhAbf9lvOh2vPCMOZqWkOTUwhXGU=
+			ba8UaJZV+FOI57j1Xs8nkxSP7m1LZUaee5lNRvEA84U=
 			</data>
 		</dict>
 		<key>Modules/NovaCore.swiftmodule/arm64-apple-ios.private.swiftinterface</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			gcXwmdQIr4RdDAI3eJ2Il/F22gNpihcHl+gwKeFxlaU=
+			UAxBfBoBqFu/QKmYCI9T03MQgYVnMwjLFBE8gA15Fxg=
 			</data>
 		</dict>
 		<key>Modules/NovaCore.swiftmodule/arm64-apple-ios.swiftdoc</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			s48MB1C/4Cq5ZqXBtWMSMpywYyb5kv/JaSL9luN7Q5U=
+			YYu/ZVw4UpNrPdAVC+YIkOZJLhD3zmnYUpBepDJK49k=
 			</data>
 		</dict>
 		<key>Modules/NovaCore.swiftmodule/arm64-apple-ios.swiftinterface</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			gcXwmdQIr4RdDAI3eJ2Il/F22gNpihcHl+gwKeFxlaU=
+			UAxBfBoBqFu/QKmYCI9T03MQgYVnMwjLFBE8gA15Fxg=
 			</data>
 		</dict>
 		<key>Modules/NovaCore.swiftmodule/arm64-apple-ios.swiftmodule</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			aMMyIxcsdrSs7IGGvj2fBD+bGLNpabgo4iKmL5c03kA=
+			nQgaG7beHHg/FAieKNnEJD8kBcU3K+S8JRByIOakVHk=
 			</data>
 		</dict>
 		<key>Modules/module.modulemap</key>
@@ -188,7 +188,7 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			5C8Av0I3Nqd9/T6QQn++1MKd3ll4VzMk4RG3BWKgDl4=
+			S1dEAkt7U9QEIxxjVDT6BaqawKpiRSOgw/TlqXImn7Q=
 			</data>
 		</dict>
 		<key>SDWebImage.bundle/PrivacyInfo.xcprivacy</key>
