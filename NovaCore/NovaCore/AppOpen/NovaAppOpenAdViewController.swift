@@ -48,7 +48,7 @@ public enum NovaAppOpenAdResource {
 
         case .video(let videoInfo):
             if videoInfo.isVertical {
-                adView = NovaAppOpenVerticalVideoAdView(appOpenAd: appOpenAd, videoInfo: videoInfo, actionHandler: actionHandler)
+                adView = NovaAppOpenVerticalVideoAdView(appOpenAd: appOpenAd, videoInfo: videoInfo, actionHandler: actionHandler, viewController: self)
             } else {
                 let media = NovaNativeAdMedia.video(NovaNativeAdVideoResource(videoInfo: videoInfo, adToken: appOpenAd.encryptedAdToken, reporter: nil))
                 adView = NovaAppOpenAdViewV3(with: media, openAd: appOpenAd, actionHandler: actionHandler)
