@@ -34,14 +34,13 @@ class DemoAdViewController: UIViewController {
         case .googleInterstitial:
             return "msp-ios-launch-fullscreen-interstitial-gg.s2s.v2-dam.freeloader"
         case .novaInterstitial:
-            return "demo-ios-launch-fullscreen"
+            return "msp-ios-launch-fullscreen-interstitial-prod"
         }
     }()
     
     init(adType: AdType) {
         self.adType = adType
         super.init(nibName: nil, bundle: nil)
-        
     }
     
     required init?(coder: NSCoder) {
@@ -56,8 +55,8 @@ class DemoAdViewController: UIViewController {
         self.adLoader = adLoader
         var customParams = [String: String]()
         var testParams = [String: String]()
-        customParams["user_id"] = ""
-        customParams["profile_id"] = ""
+        customParams["user_id"] = "143378797"
+        customParams["profile_id"] = "09hbNFOl"
         if adType == .novaNative || adType == .novaInterstitial {
             testParams["test"] = "{\"ad_network\":\"msp_nova\",\"test_ad\":true}"
         } else if adType == .prebidBanner {

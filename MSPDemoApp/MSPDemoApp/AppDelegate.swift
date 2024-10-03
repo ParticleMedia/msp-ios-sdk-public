@@ -16,7 +16,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         //                                                    sourceApp: "")
         let mspInitParameters = InitializationParametersImp(prebidAPIKey: "sggU8Y1UB6xara62G23qGdcOA8co2O4N",
                                                             prebidHostUrl: "https://prebid-server.newsbreak.com/openrtb2/auction",
-                                                            sourceApp: "")
+                                                            sourceApp: "1132762804")
         
         MSP.shared.setNovaManager(novaManager: NovaManager())
         
@@ -24,7 +24,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         MSP.shared.bidLoaderProvider.googleQueryInfoFetcher = GoogleQueryInfoFetcherHelper()
         
         MSP.shared.initMSP(initParams: mspInitParameters, sdkInitListener: nil)
-        
         window = UIWindow(frame: UIScreen.main.bounds)
         self.window?.makeKeyAndVisible()
         

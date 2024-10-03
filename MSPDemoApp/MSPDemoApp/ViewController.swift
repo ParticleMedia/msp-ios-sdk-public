@@ -49,6 +49,13 @@ class ViewController: UIViewController {
                 }, for: .touchUpInside)
                 button5.frame = CGRect(x: 100, y: 600, width: 200, height: 50)
                 view.addSubview(button5)
+        let button6 = UIButton(type: .system)
+                button6.setTitle("Nova Interstitial View", for: .normal)
+                button6.addAction(UIAction { [weak self] _ in
+                    self?.openDemoAdPage(adType: .novaInterstitial)
+                }, for: .touchUpInside)
+                button6.frame = CGRect(x: 100, y: 700, width: 200, height: 50)
+                view.addSubview(button6)
        
     }
 
