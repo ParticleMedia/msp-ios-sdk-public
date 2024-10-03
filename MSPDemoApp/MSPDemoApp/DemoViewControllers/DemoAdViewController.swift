@@ -32,9 +32,9 @@ class DemoAdViewController: UIViewController {
         case .novaNative:
             return ""
         case .googleInterstitial:
-            return "msp-ios-launch-fullscreen-interstitial-gg.s2s.v2-dam.freeloader"
+            return "demo-ios-launch-fullscreen"//"msp-ios-launch-fullscreen-interstitial-gg.s2s.v2-dam.freeloader"
         case .novaInterstitial:
-            return "msp-ios-launch-fullscreen-interstitial-prod"
+            return "demo-ios-launch-fullscreen"//"demo-ios-launch-fullscreen"//"msp-ios-launch-fullscreen-interstitial-prod"
         }
     }()
     
