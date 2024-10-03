@@ -11,12 +11,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         
-        //let mspInitParameters = InitializationParametersImp(prebidAPIKey: "af7ce3f9-462d-4df1-815f-09314bb87ca3",
-        //                                                    prebidHostUrl: "https://prebid-server.themsp.ai/openrtb2/auction",
-        //                                                    sourceApp: "")
-        let mspInitParameters = InitializationParametersImp(prebidAPIKey: "sggU8Y1UB6xara62G23qGdcOA8co2O4N",
-                                                            prebidHostUrl: "https://prebid-server.newsbreak.com/openrtb2/auction",
+        let mspInitParameters = InitializationParametersImp(prebidAPIKey: "af7ce3f9-462d-4df1-815f-09314bb87ca3",
+                                                            prebidHostUrl: "https://prebid-server.themsp.ai/openrtb2/auction",
                                                             sourceApp: "1132762804")
+        //let mspInitParameters = InitializationParametersImp(prebidAPIKey: "sggU8Y1UB6xara62G23qGdcOA8co2O4N",
+        //                                                    prebidHostUrl: "https://prebid-server.newsbreak.com/openrtb2/auction",
+        //                                                    sourceApp: "1132762804")
         
         MSP.shared.setNovaManager(novaManager: NovaManager())
         

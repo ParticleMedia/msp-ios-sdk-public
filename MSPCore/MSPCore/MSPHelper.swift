@@ -25,6 +25,32 @@ public class MSP {
         }
         self.sdkInitListener = sdkInitListener
         var adapterInitListener = MSPAdapterInitListener()
+        /*
+        fetchServerConfigData { result in
+            switch result {
+            case .success(let configData):
+                if let prebidHost = configData["prebid_host"] {
+                }
+
+                if let mesHost = configData["mes_host"] {
+                }
+
+                if let novaEventHost = configData["nova_event_host"] {
+                    
+                }
+                
+                
+                
+            case .failure(let error):
+                print("Error fetching data: \(error)")
+            }
+            
+            self.adNetworkAdapterProvider.googleManager?.getAdNetworkAdapter()?.initialize(initParams: initParams, adapterInitListener: adapterInitListener, context: nil)
+            self.adNetworkAdapterProvider.metaManager?.getAdNetworkAdapter()?.initialize(initParams: initParams, adapterInitListener: adapterInitListener, context: nil)
+            self.adNetworkAdapterProvider.novaManager?.getAdNetworkAdapter()?.initialize(initParams: initParams, adapterInitListener: adapterInitListener, context: nil)
+            PrebidAdapter().initialize(initParams: initParams, adapterInitListener: adapterInitListener, context: nil)
+        }
+        */
         adNetworkAdapterProvider.googleManager?.getAdNetworkAdapter()?.initialize(initParams: initParams, adapterInitListener: adapterInitListener, context: nil)
         adNetworkAdapterProvider.metaManager?.getAdNetworkAdapter()?.initialize(initParams: initParams, adapterInitListener: adapterInitListener, context: nil)
         adNetworkAdapterProvider.novaManager?.getAdNetworkAdapter()?.initialize(initParams: initParams, adapterInitListener: adapterInitListener, context: nil)
@@ -58,6 +84,44 @@ public class MSP {
     
     public func setMetaManager(metaManager: AdNetworkManager) {
         adNetworkAdapterProvider.metaManager = metaManager
+    }
+    
+    func fetchServerConfigData(completion: @escaping (Result<[String: String], Error>) -> Void) {
+        let urlString = "http://35.160.18.119/mspconfig"
+        
+        guard let url = URL(string: urlString) else {
+            completion(.failure(NSError(domain: "Invalid URL", code: -1, userInfo: nil)))
+            return
+        }
+        
+        let task = URLSession.shared.dataTask(with: url) { data, response, error in
+            // Handle any errors
+            if let error = error {
+                completion(.failure(error)) // Pass error through completion
+                return
+            }
+            
+            // Ensure that we have data
+            guard let data = data else {
+                completion(.failure(NSError(domain: "No data", code: -1, userInfo: nil)))
+                return
+            }
+            
+            // Parse the JSON manually using JSONSerialization
+            do {
+                if let json = try JSONSerialization.jsonObject(with: data, options: []) as? [String: String] {
+                    completion(.success(json))
+                } else {
+                    let parsingError = NSError(domain: "Invalid JSON format", code: -2, userInfo: nil)
+                    completion(.failure(parsingError))
+                }
+            } catch {
+                completion(.failure(error))
+            }
+        }
+        
+        // Start the task
+        task.resume()
     }
 }
 
