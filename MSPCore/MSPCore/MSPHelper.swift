@@ -15,7 +15,7 @@ public class MSP {
     public var bidLoaderProvider = MSPBidLoaderProvider()
     
     public var prebidHost = "https://msp.newsbreak.com"
-    public var mesHost = "https://mes.newsbreak.com"
+    public var mesHost = "https://mes-msp.newsbreak.com"
     public var novaEventHost = "https://dsp.newsbreak.com"
     
     public func initMSP(initParams: InitializationParameters, sdkInitListener: MSPInitListener?) {
