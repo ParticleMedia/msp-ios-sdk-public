@@ -87,7 +87,7 @@ private extension NovaAdMetricReporter {
         //params["user_id"] = user?.uid
         //params["profile_id"] = user?.pid
 
-        var components = URLComponents(string: NovaAdsRequestUtils.novaAdsBaseUri)
+        var components = URLComponents(string: NovaConstants.shared.NovaEventHostUrl)
         components?.path = "/api/logAdEvent/"
         components?.queryItems = params.map {
             URLQueryItem(name: $0.0, value: $0.1)

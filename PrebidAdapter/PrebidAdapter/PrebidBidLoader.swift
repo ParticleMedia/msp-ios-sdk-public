@@ -121,9 +121,18 @@ public class PrebidBidLoader : BidLoader {
         userExt["geo"] = getGeoDict()
         Targeting.shared.userExt = userExt
         
+        lf let userId = UserDefaults.standard.string(forKey: "msp_user_id") {
+            adUnitConfig.addContextData(key: "user_id", value: userId)
+        } else {
+            let uuid = UUID().uuidString
+            adUnitConfig.addContextData(key: "user_id", value: uuid)
+            UserDefaults.standard.setValue(uuid, forKey: "msp_user_id")
+        }
+        
         let customParams = adRequest.customParams
         for (key, value) in customParams {
             if value is String {
+                adUnitConfig.removeContextData(for: key)
                 adUnitConfig.addContextData(key: key, value: value as? String ?? "")
             }
         }
@@ -132,6 +141,7 @@ public class PrebidBidLoader : BidLoader {
         let testParams = adRequest.testParams
         for (key, value) in testParams {
             if value is String {
+                adUnitConfig.removeContextData(for: key)
                 adUnitConfig.addContextData(key: key, value: value as? String ?? "")
             }
         }
