@@ -56,7 +56,7 @@ class DemoAdViewController: UIViewController {
         var customParams = [String: String]()
         var testParams = [String: String]()
         customParams["user_id"] = "143378797"
-        customParams["profile_id"] = "09hbNFOl"
+        //customParams["profile_id"] = "09hbNFOl"
         if adType == .novaNative || adType == .novaInterstitial {
             testParams["test"] = "{\"ad_network\":\"msp_nova\",\"test_ad\":true}"
         } else if adType == .prebidBanner {

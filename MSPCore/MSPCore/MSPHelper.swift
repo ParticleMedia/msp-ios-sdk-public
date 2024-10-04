@@ -14,6 +14,10 @@ public class MSP {
     public var adNetworkAdapterProvider = MSPAdNetworkAdapterProvider()
     public var bidLoaderProvider = MSPBidLoaderProvider()
     
+    public var prebidHost = "https://msp.newsbreak.com"
+    public var mesHost = "https://mes.newsbreak.com"
+    public var novaEventHost = "https://dsp.newsbreak.com"
+    
     public func initMSP(initParams: InitializationParameters, sdkInitListener: MSPInitListener?) {
         // This is a temporary solution to replace MSPManager class in kotlin to solve the Kotlin singleton issue
         let managers: [AdNetworkManager?] = [adNetworkAdapterProvider.googleManager, adNetworkAdapterProvider.metaManager, adNetworkAdapterProvider.novaManager]
@@ -30,16 +34,16 @@ public class MSP {
             switch result {
             case .success(let configData):
                 if let prebidHost = configData["prebid_host"] {
+                    self.prebidHost = prebidHost
                 }
 
                 if let mesHost = configData["mes_host"] {
+                    self.mesHost = mesHost
                 }
 
                 if let novaEventHost = configData["nova_event_host"] {
-                    
+                    self.novaEventHost = novaEventHost
                 }
-                
-                
                 
             case .failure(let error):
                 print("Error fetching data: \(error)")
@@ -50,12 +54,12 @@ public class MSP {
             self.adNetworkAdapterProvider.novaManager?.getAdNetworkAdapter()?.initialize(initParams: initParams, adapterInitListener: adapterInitListener, context: nil)
             PrebidAdapter().initialize(initParams: initParams, adapterInitListener: adapterInitListener, context: nil)
         }
-        */
+         */
         adNetworkAdapterProvider.googleManager?.getAdNetworkAdapter()?.initialize(initParams: initParams, adapterInitListener: adapterInitListener, context: nil)
         adNetworkAdapterProvider.metaManager?.getAdNetworkAdapter()?.initialize(initParams: initParams, adapterInitListener: adapterInitListener, context: nil)
         adNetworkAdapterProvider.novaManager?.getAdNetworkAdapter()?.initialize(initParams: initParams, adapterInitListener: adapterInitListener, context: nil)
         PrebidAdapter().initialize(initParams: initParams, adapterInitListener: adapterInitListener, context: nil)
-        
+       
         if let initParamsImp = initParams as? InitializationParametersImp,
            let sourceApp = initParamsImp.sourceApp {
             Targeting.shared.sourceapp = sourceApp
@@ -87,7 +91,7 @@ public class MSP {
     }
     
     func fetchServerConfigData(completion: @escaping (Result<[String: String], Error>) -> Void) {
-        let urlString = "http://35.160.18.119/mspconfig"
+        let urlString = "https://35.160.18.119/mspconfig"
         
         guard let url = URL(string: urlString) else {
             completion(.failure(NSError(domain: "Invalid URL", code: -1, userInfo: nil)))
@@ -128,7 +132,7 @@ public class MSP {
 public class InitializationParametersImp: InitializationParameters {
     
     public var prebidAPIKey: String
-    public var prebidHostUrl: String
+    public var prebidHostUrl: String = MSP.shared.prebidHost + "/openrtb2/auction"
     
     public var sourceApp: String?
     
@@ -138,12 +142,18 @@ public class InitializationParametersImp: InitializationParameters {
         self.sourceApp = sourceApp
     }
     
+    public init(prebidAPIKey: String, sourceApp: String? = nil) {
+        self.prebidAPIKey = prebidAPIKey
+        self.sourceApp = sourceApp
+    }
+    
     public func getPrebidAPIKey() -> String {
         return prebidAPIKey
     }
     
     public func getPrebidHostUrl() -> String {
-        return prebidHostUrl
+        let host = prebidHostUrl ?? MSP.shared.prebidHost + "/openrtb2/auction"
+        return host
     }
     
     public func getConsentString() -> String {
