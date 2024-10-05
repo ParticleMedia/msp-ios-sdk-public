@@ -64,6 +64,7 @@ import PrebidMobile
     
     private var bannerAd: BannerAd?
     private var nativeAd: MSPiOSCore.NativeAd?
+    private var interstitialAd: MSPiOSCore.InterstitialAd?
     
     public var nativeAdItem: GADNativeAd?
     
@@ -98,16 +99,49 @@ import PrebidMobile
         
         switch adType {
         case "banner":
-            DispatchQueue.main.async {
-                let gadBannerView = GAMBannerView(adSize: self.getGADAdSize(adRequest: adRequest))
-                self.gadBannerView = gadBannerView
-                gadBannerView.isAutoloadEnabled = false
+            if adRequest.adFormat == .interstitial {
                 let request = GAMRequest()
                 request.adString = adString
-                gadBannerView.adUnitID = adUnitId
-                gadBannerView.delegate = self
-                gadBannerView.rootViewController = self.rootViewController
-                gadBannerView.load(request)
+                
+                GADInterstitialAd.load(withAdUnitID: adUnitId, request: request) { [weak self] ad, error in
+                    guard let self else { return }
+
+                    if let error {
+                        self.adListener?.onError(msg: error.localizedDescription)
+                        return
+                    }
+
+                    guard let ad else {
+                        self.adListener?.onError(msg: "Missing ad")
+                        return
+                    }
+
+                    DispatchQueue.main.async {
+                        var googleInterstitialAd = GoogleInterstitialAd(adNetworkAdapter: self)
+                        googleInterstitialAd.interstitialAdItem = ad
+                        ad.fullScreenContentDelegate = self
+                        googleInterstitialAd.rootViewController = self.rootViewController
+                        self.interstitialAd = googleInterstitialAd
+                        
+                        if let adListener = self.adListener,
+                           let adRequest = self.adRequest {
+                            handleAdLoaded(ad: googleInterstitialAd, listener: adListener, adRequest: adRequest)
+                        }
+                    }
+                }
+                
+            } else {
+                DispatchQueue.main.async {
+                    let gadBannerView = GAMBannerView(adSize: self.getGADAdSize(adRequest: adRequest))
+                    self.gadBannerView = gadBannerView
+                    gadBannerView.isAutoloadEnabled = false
+                    let request = GAMRequest()
+                    request.adString = adString
+                    gadBannerView.adUnitID = adUnitId
+                    gadBannerView.delegate = self
+                    gadBannerView.rootViewController = self.rootViewController
+                    gadBannerView.load(request)
+                }
             }
 
         case "native":
@@ -273,6 +307,22 @@ extension GoogleAdapter: GADNativeAdDelegate {
             self.adListener?.onAdClick(ad: nativeAd)
         }
     }
+}
+
+extension GoogleAdapter: GADFullScreenContentDelegate {
+    
+    public func adDidRecordImpression(_ ad: GADFullScreenPresentingAd) {
+        if let interstitialAd = self.interstitialAd {
+            self.adListener?.onAdImpression(ad: interstitialAd)
+        }
+    }
+
+    public func adDidRecordClick(_ ad: GADFullScreenPresentingAd) {
+        if let interstitialAd = self.interstitialAd {
+            self.adListener?.onAdClick(ad: interstitialAd)
+        }
+    }
+
 }
 
                             

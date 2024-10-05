@@ -14,6 +14,7 @@
 		66E533392C1A589700255D15 /* NovaNativeAd.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E533382C1A589700255D15 /* NovaNativeAd.swift */; };
 		66E5333B2C1A601D00255D15 /* NovaAdapter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E5333A2C1A601D00255D15 /* NovaAdapter.swift */; };
 		66E535362C262F9E00255D15 /* NovaManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E535352C262F9E00255D15 /* NovaManager.swift */; };
+		66F48C582CAE1F9C00902F4D /* NovaInterstitialAd.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66F48C572CAE1F9C00902F4D /* NovaInterstitialAd.swift */; };
 		B9408A549E0B25DB24A70CAC /* libPods-NovaAdapter.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E133F513B7AA39D265F227A6 /* libPods-NovaAdapter.a */; };
 /* End PBXBuildFile section */
 
@@ -39,6 +40,7 @@
 		66E5333A2C1A601D00255D15 /* NovaAdapter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NovaAdapter.swift; sourceTree = "<group>"; };
 		66E533BA2C23815B00255D15 /* PrebidMobile.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; path = PrebidMobile.xcframework; sourceTree = "<group>"; };
 		66E535352C262F9E00255D15 /* NovaManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NovaManager.swift; sourceTree = "<group>"; };
+		66F48C572CAE1F9C00902F4D /* NovaInterstitialAd.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NovaInterstitialAd.swift; sourceTree = "<group>"; };
 		E133F513B7AA39D265F227A6 /* libPods-NovaAdapter.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-NovaAdapter.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		E13406DB45269D62A6AD73D3 /* Pods-NovaAdapter.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-NovaAdapter.debug.xcconfig"; path = "Target Support Files/Pods-NovaAdapter/Pods-NovaAdapter.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -86,6 +88,7 @@
 		66E5331B2C1A4ED900255D15 /* NovaAdapter */ = {
 			isa = PBXGroup;
 			children = (
+				66F48C562CAE1F8500902F4D /* Interstitial */,
 				66E5331C2C1A4ED900255D15 /* NovaAdapter.h */,
 				66E5331D2C1A4ED900255D15 /* NovaAdapter.docc */,
 				66E533382C1A589700255D15 /* NovaNativeAd.swift */,
@@ -111,6 +114,14 @@
 				E133F513B7AA39D265F227A6 /* libPods-NovaAdapter.a */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		66F48C562CAE1F8500902F4D /* Interstitial */ = {
+			isa = PBXGroup;
+			children = (
+				66F48C572CAE1F9C00902F4D /* NovaInterstitialAd.swift */,
+			);
+			path = Interstitial;
 			sourceTree = "<group>";
 		};
 		D3AA32872941A2A030B85907 /* Pods */ = {
@@ -259,6 +270,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				66E5331E2C1A4ED900255D15 /* NovaAdapter.docc in Sources */,
+				66F48C582CAE1F9C00902F4D /* NovaInterstitialAd.swift in Sources */,
 				66E533392C1A589700255D15 /* NovaNativeAd.swift in Sources */,
 				66E5333B2C1A601D00255D15 /* NovaAdapter.swift in Sources */,
 				66E535362C262F9E00255D15 /* NovaManager.swift in Sources */,

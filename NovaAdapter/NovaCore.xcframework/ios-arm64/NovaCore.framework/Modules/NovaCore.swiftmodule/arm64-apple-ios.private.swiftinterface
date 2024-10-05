@@ -35,6 +35,29 @@ public enum NovaAdOpenActionKey : Swift.String {
     get
   }
 }
+public enum NovaAppOpenAdViewActionKey : Swift.String {
+  case adTapped
+  case manualSkip
+  case feedbackReport
+  public init?(rawValue: Swift.String)
+  public typealias RawValue = Swift.String
+  public var rawValue: Swift.String {
+    get
+  }
+}
+@_hasMissingDesignatedInitializers @objc @_Concurrency.MainActor(unsafe) final public class NovaNativeAdMediaViewV2 : UIKit.UIView {
+  @_Concurrency.MainActor(unsafe) @objc dynamic public init()
+  @objc deinit
+}
+extension NovaCore.NovaNativeAdMediaViewV2 {
+  @_Concurrency.MainActor(unsafe) final public func config(with media: NovaCore.NovaNativeAdMedia)
+  @_Concurrency.MainActor(unsafe) final public func prepareForReuse()
+  @_Concurrency.MainActor(unsafe) final public func mediaStartShown()
+  @_Concurrency.MainActor(unsafe) final public func mediaEndShown()
+}
+@_hasMissingDesignatedInitializers public class AppOpenAdResource {
+  @objc deinit
+}
 public enum NovaVideoLogActionKey : Swift.String {
   case videoPlay
   case videoPlaying
@@ -176,6 +199,12 @@ public enum NovaCreativeType : Swift.String {
     get
   }
 }
+@objc public protocol NovaAppOpenAdDelegate {
+  @objc func appOpenAdDidDisplay(_ appOpenAd: NovaCore.NovaAppOpenAd)
+  @objc func appOpenAdDidDismiss(_ appOpenAd: NovaCore.NovaAppOpenAd)
+  @objc func appOpenAdDidLogClick(_ appOpenAd: NovaCore.NovaAppOpenAd)
+  @objc optional func appOpenAdDidFailToDisplay(_ appOpenAd: NovaCore.NovaAppOpenAd)
+}
 extension SwiftUI.Color {
   @_hasMissingDesignatedInitializers public class NovaColor {
     final public let newsbreakRed: SwiftUI.Color
@@ -206,6 +235,19 @@ extension SwiftUI.Color {
 public enum AdsThirdPartyMetricReporter {
   public static func logImpression(thirdPartyImpressionTrackingUrls: [Swift.String])
   public static func logClick(thirdPartyClickTrackingUrls: [Swift.String])
+}
+public enum NovaAppOpenAdResource {
+  case image(UIKit.UIImage)
+  case video(NovaCore.NovaNativeAdVideoInfo)
+}
+@_hasMissingDesignatedInitializers @objc @_Concurrency.MainActor(unsafe) public class NovaAppOpenAdViewController : UIKit.UIViewController {
+  @_Concurrency.MainActor(unsafe) @objc override dynamic public func loadView()
+  @_Concurrency.MainActor(unsafe) @objc override dynamic public func viewDidAppear(_ animated: Swift.Bool)
+  @_Concurrency.MainActor(unsafe) @objc override dynamic public func viewDidDisappear(_ animated: Swift.Bool)
+  @_Concurrency.MainActor(unsafe) @objc override dynamic public var preferredStatusBarStyle: UIKit.UIStatusBarStyle {
+    @objc get
+  }
+  @objc deinit
 }
 public struct NovaResponseDataModel : Swift.Codable {
   public let ads: [NovaCore.AdItem]?
@@ -638,6 +680,9 @@ extension NovaCore.NovaNativeAdView {
   @objc @_Concurrency.MainActor(unsafe) dynamic public func register(_ nativeAd: NovaCore.NovaNativeAdItem)
   @_Concurrency.MainActor(unsafe) public func unregisterAd()
 }
+@_hasMissingDesignatedInitializers @objc @_Concurrency.MainActor(unsafe) public class NovaAppOpenAdViewV3 : UIKit.UIView {
+  @objc deinit
+}
 @objc @_hasMissingDesignatedInitializers @_Concurrency.MainActor(unsafe) final public class NovaNativeAdVideoView : UIKit.UIView {
   @_Concurrency.MainActor(unsafe) final public var didTapCloseButtonCallback: (() -> Swift.Void)?
   @_Concurrency.MainActor(unsafe) final public var novaNativeAdVideoDelegate: (any NovaCore.NovaNativeAdVideoDelegate)?
@@ -1064,6 +1109,10 @@ extension NovaCore.NovaUnifiedWebViewHost : WebKit.WKUIDelegate {
   @objc override dynamic public init()
   @objc deinit
 }
+@objc @_hasMissingDesignatedInitializers @_Concurrency.MainActor(unsafe) public class NovaAppOpenVerticalVideoAdView : UIKit.UIView {
+  @_Concurrency.MainActor(unsafe) public var viewController: UIKit.UIViewController
+  @objc deinit
+}
 extension SwiftUI.Image {
   public static let NovaEmoji: SwiftUI.Image.NovaImageEmoji
   @_hasMissingDesignatedInitializers public class NovaImageEmoji {
@@ -1093,6 +1142,17 @@ extension NovaCore.NovaDedupeManager {
   final public func novaAdDidFill(_ novaAd: NovaCore.NovaBaseAd)
   final public func novaAdDidShow(_ novaAd: NovaCore.NovaBaseAd)
   final public func getServerDedupeKeys(first k: Swift.Int, prioritizedBy adUnitId: Swift.String) -> [Swift.String]
+}
+public enum NovaNativeAdImageResource {
+  case imageURLStr(Swift.String)
+  case image(UIKit.UIImage)
+}
+public struct NovaNativeAdVideoResource {
+  public init(videoInfo: NovaCore.NovaNativeAdVideoInfo, adToken: Swift.String, reporter: NovaCore.IABMetricReporter?)
+}
+public enum NovaNativeAdMedia {
+  case image(NovaCore.NovaNativeAdImageResource)
+  case video(NovaCore.NovaNativeAdVideoResource)
 }
 @objc @_inheritsConvenienceInitializers public class NovaVideoPlayer : ObjectiveC.NSObject {
   weak public var delegate: (any NovaCore.NovaVideoPlayerDelegate)?
@@ -1720,6 +1780,7 @@ extension UIKit.UIFont {
 }
 public enum NovaAdBuilder {
   public static func buildNativeAd(adItem: NovaCore.AdItem, adUnitId: Swift.String, eCPMInDollar: Foundation.Decimal, isParallax: Swift.Bool = false) -> NovaCore.NovaNativeAdItem
+  public static func buildAppOpenAds(adItems: [NovaCore.AdItem], adUnitId: Swift.String) -> [NovaCore.NovaAppOpenAd]
 }
 @_hasMissingDesignatedInitializers @objc public class NovaBaseAd : ObjectiveC.NSObject, Swift.Codable {
   @objc final public let adUnitId: Swift.String
@@ -1922,6 +1983,23 @@ final public class NovaJSBridgeHandlerMaster {
   public init(jsBridgeHandlers: [any NovaCore.NovaJSBridgeHandling])
   @objc deinit
 }
+@_hasMissingDesignatedInitializers @objc final public class NovaAppOpenAd : NovaCore.NovaBaseAd {
+  final public let creativeType: NovaCore.NovaCreativeType?
+  final public let launchOption: Swift.String?
+  final public let startTimeInMs: Swift.Double?
+  final public let expirationTimeInMs: Swift.Double?
+  final public let headline: Swift.String?
+  final public let body: Swift.String?
+  final public let callToAction: Swift.String?
+  final public let advertiser: Swift.String?
+  final public let videoInfo: NovaCore.NovaNativeAdVideoInfo?
+  final public let iconUrl: Swift.String?
+  @objc weak final public var delegate: (any NovaCore.NovaAppOpenAdDelegate)?
+  override final public func encode(to encoder: any Swift.Encoder) throws
+  final public func present(rootViewController: UIKit.UIViewController)
+  final public func requestToDisplay(rootViewController: UIKit.UIViewController, adResource: NovaCore.NovaAppOpenAdResource)
+  @objc deinit
+}
 @objc @_inheritsConvenienceInitializers final public class NovaAdOpenActionHandler : ObjectiveC.NSObject {
   @objc deinit
   @objc override dynamic public init()
@@ -1930,6 +2008,14 @@ extension NovaCore.NovaAdOpenActionHandler : NovaCore.ActionHandling {
   final public func supportedActions() -> [Swift.String : any Any.Type]
   final public func performAction(actionModel: NovaCore.ActionModel)
   final public func SafeAs<T, U>(_ object: T?, _ objectType: U.Type) -> U?
+}
+@objc public class NovaAppOpenAdViewActionHandler : ObjectiveC.NSObject {
+  public init(viewController: UIKit.UIViewController)
+  @objc deinit
+}
+extension NovaCore.NovaAppOpenAdViewActionHandler : NovaCore.ActionHandling {
+  public func supportedActions() -> [Swift.String : any Any.Type]
+  public func performAction(actionModel: NovaCore.ActionModel)
 }
 @objc @_inheritsConvenienceInitializers final public class ActionHandlerMaster : ObjectiveC.NSObject {
   @objc override dynamic public init()
@@ -2033,6 +2119,9 @@ extension UIKit.UIColor {
 extension NovaCore.NovaAdOpenActionKey : Swift.Equatable {}
 extension NovaCore.NovaAdOpenActionKey : Swift.Hashable {}
 extension NovaCore.NovaAdOpenActionKey : Swift.RawRepresentable {}
+extension NovaCore.NovaAppOpenAdViewActionKey : Swift.Equatable {}
+extension NovaCore.NovaAppOpenAdViewActionKey : Swift.Hashable {}
+extension NovaCore.NovaAppOpenAdViewActionKey : Swift.RawRepresentable {}
 extension NovaCore.NovaVideoLogActionKey : Swift.Equatable {}
 extension NovaCore.NovaVideoLogActionKey : Swift.Hashable {}
 extension NovaCore.NovaVideoLogActionKey : Swift.RawRepresentable {}

@@ -96,7 +96,10 @@ public class PrebidBidLoader : BidLoader {
                                 requestUUID: String,
                                 prebidBannerAdSize: CGSize,
                                 adRequest: AdRequest) -> AdUnitConfig {
-        let adUnitConfig = AdUnitConfig(configId: configId, size: prebidBannerAdSize)
+        
+        let adUnitConfig = adRequest.adFormat == .interstitial ?
+        AdUnitConfig(configId: configId) :
+        AdUnitConfig(configId: configId, size: prebidBannerAdSize)
         if adRequest.adFormat == .banner {
             adUnitConfig.adConfiguration.bannerParameters.api = PrebidConstants.supportedRenderingBannerAPISignals
             adUnitConfig.adFormats = [.display]
@@ -107,15 +110,29 @@ public class PrebidBidLoader : BidLoader {
             adUnitConfig.adConfiguration.bannerParameters.api = PrebidConstants.supportedRenderingBannerAPISignals
             adUnitConfig.nativeAdConfiguration = NativeAdConfiguration()
             adUnitConfig.adFormats = [.display, .native]
+        } else if adRequest.adFormat == .interstitial {
+            adUnitConfig.adPosition = .fullScreen
+            adUnitConfig.adConfiguration.adFormats = [.display]
+            adUnitConfig.adConfiguration.isInterstitialAd = true
+            adUnitConfig.adConfiguration.bannerParameters.api = PrebidConstants.supportedRenderingBannerAPISignals
         }
         
         var userExt = Targeting.shared.userExt ?? [String: AnyHashable]()
         userExt["geo"] = getGeoDict()
         Targeting.shared.userExt = userExt
         
+        lf let userId = UserDefaults.standard.string(forKey: "msp_user_id") {
+            adUnitConfig.addContextData(key: "user_id", value: userId)
+        } else {
+            let uuid = UUID().uuidString
+            adUnitConfig.addContextData(key: "user_id", value: uuid)
+            UserDefaults.standard.setValue(uuid, forKey: "msp_user_id")
+        }
+        
         let customParams = adRequest.customParams
         for (key, value) in customParams {
             if value is String {
+                adUnitConfig.removeContextData(for: key)
                 adUnitConfig.addContextData(key: key, value: value as? String ?? "")
             }
         }
@@ -124,6 +141,7 @@ public class PrebidBidLoader : BidLoader {
         let testParams = adRequest.testParams
         for (key, value) in testParams {
             if value is String {
+                adUnitConfig.removeContextData(for: key)
                 adUnitConfig.addContextData(key: key, value: value as? String ?? "")
             }
         }
