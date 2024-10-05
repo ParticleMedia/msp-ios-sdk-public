@@ -38,6 +38,18 @@ class DemoAdViewController: UIViewController {
         }
     }()
     
+    private lazy var adFormat: MSPiOSCore.AdFormat = {
+        switch adType {
+        case .prebidBanner, .googleBanner :
+            return .banner
+    
+        case .googleNative, .novaNative:
+            return .native
+        case .googleInterstitial, .novaInterstitial:
+            return .interstitial
+        }
+    }()
+    
     init(adType: AdType) {
         self.adType = adType
         super.init(nibName: nil, bundle: nil)
@@ -54,6 +66,7 @@ class DemoAdViewController: UIViewController {
         var adLoader = MSPAdLoader()
         self.adLoader = adLoader
         var customParams = [String: String]()
+        customParams["user_id"] = "00000000"
         var testParams = [String: String]()
         if adType == .novaNative || adType == .novaInterstitial {
             testParams["test"] = "{\"ad_network\":\"msp_nova\",\"test_ad\":true}"
@@ -62,13 +75,15 @@ class DemoAdViewController: UIViewController {
         } else if adType == .googleBanner || adType == .googleInterstitial {
             testParams["test"] = "{\"ad_network\":\"msp_google\",\"test_ad\":true}"
         }
+        
+        
         let adRequest = AdRequest(customParams: customParams,
                                   geo: nil,
                                   context: nil,
                                   adaptiveBannerSize: AdSize(width: 320, height: 50, isInlineAdaptiveBanner: false, isAnchorAdaptiveBanner: false),
                                   adSize: AdSize(width: 320, height: 50, isInlineAdaptiveBanner: false, isAnchorAdaptiveBanner: false),
                                   placementId: placementId,
-                                  adFormat: .interstitial,
+                                  adFormat: adFormat,
                                   isCacheSupported: true,
                                   testParams: testParams)
         adLoader.loadAd(placementId: placementId,
