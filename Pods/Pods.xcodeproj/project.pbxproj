@@ -6,62 +6,25 @@
 	objectVersion = 56;
 	objects = {
 
-/* Begin PBXAggregateTarget section */
-		D5D11636294BD62069CA3A8320C5D917 /* MSPSharedLibraries */ = {
-			isa = PBXAggregateTarget;
-			buildConfigurationList = CCBDD60133BB50D56F5840F610E535D5 /* Build configuration list for PBXAggregateTarget "MSPSharedLibraries" */;
-			buildPhases = (
-				807450B3E7293EF55955D049E3C02088 /* [CP] Copy XCFrameworks */,
-			);
-			dependencies = (
-			);
-			name = MSPSharedLibraries;
-		};
-/* End PBXAggregateTarget section */
-
 /* Begin PBXBuildFile section */
-		1F4707C02B5A6B0BEDD8C93B17EF358D /* Pods-MSPDemoApp-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 8569F2FC0AE4585D26DB63FD9008A850 /* Pods-MSPDemoApp-dummy.m */; };
-		7859A46FA3B80A604BFC9CAB7D51D956 /* Pods-MSPCore-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 2E43777648443C23E271F5160FCF234E /* Pods-MSPCore-dummy.m */; };
-		9B31535DB712E2909DAA7B7EFB7ED694 /* Pods-GoogleAdapter-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = A7C5C4024EBB2A5BEB0CCAEDCFC7B09E /* Pods-GoogleAdapter-dummy.m */; };
+		7859A46FA3B80A604BFC9CAB7D51D956 /* Pods-MSPCore-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 882CE6455A3010B34366976924CA1A85 /* Pods-MSPCore-dummy.m */; };
+		9B31535DB712E2909DAA7B7EFB7ED694 /* Pods-GoogleAdapter-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = C21855809E9D21591830F9BAA786B9B1 /* Pods-GoogleAdapter-dummy.m */; };
 /* End PBXBuildFile section */
 
-/* Begin PBXContainerItemProxy section */
-		6AC64210FCA4E63A7C990206FBCF3A48 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = BFDFE7DC352907FC980B868725387E98 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = D5D11636294BD62069CA3A8320C5D917;
-			remoteInfo = MSPSharedLibraries;
-		};
-/* End PBXContainerItemProxy section */
-
 /* Begin PBXFileReference section */
-		0C0B78CA93EFACEDD4608F0741DE9395 /* Pods-MSPDemoApp-frameworks.sh */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.script.sh; path = "Pods-MSPDemoApp-frameworks.sh"; sourceTree = "<group>"; };
 		0DAA15691DB78E45D113136424C43C64 /* Pods-MSPCore */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = "Pods-MSPCore"; path = "libPods-MSPCore.a"; sourceTree = BUILT_PRODUCTS_DIR; };
-		1A4F2FEB5E7A1A01E04B9C4D94242695 /* Pods-MSPDemoApp.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-MSPDemoApp.debug.xcconfig"; sourceTree = "<group>"; };
-		2E43777648443C23E271F5160FCF234E /* Pods-MSPCore-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "Pods-MSPCore-dummy.m"; sourceTree = "<group>"; };
-		30F69FBF545DED3F2CF55CC2DB040F1E /* Pods-MSPDemoApp */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = "Pods-MSPDemoApp"; path = "libPods-MSPDemoApp.a"; sourceTree = BUILT_PRODUCTS_DIR; };
-		43A57D16DF80C33F0F92C19711B1A87F /* Pods-MSPDemoApp-acknowledgements.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "Pods-MSPDemoApp-acknowledgements.plist"; sourceTree = "<group>"; };
-		4D2B59248BE171CB8B6FCEFC5325BB9C /* Pods-MSPDemoApp.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-MSPDemoApp.release.xcconfig"; sourceTree = "<group>"; };
-		54AB73FBE8575E1F10CA4A1CA3DA6B5B /* MSPSharedLibraries.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = MSPSharedLibraries.release.xcconfig; sourceTree = "<group>"; };
-		5EDCA80152BF6BF48A546A0472105CC7 /* Pods-MSPCore.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-MSPCore.release.xcconfig"; sourceTree = "<group>"; };
-		67CC263219F6859690A26A54B11F82AC /* Pods-GoogleAdapter.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-GoogleAdapter.debug.xcconfig"; sourceTree = "<group>"; };
-		6EE9DC9EF5C3B337118ECE378D9B35DC /* Pods-GoogleAdapter.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-GoogleAdapter.release.xcconfig"; sourceTree = "<group>"; };
-		7B03EFB7414F53E4E1CC890884D783EA /* Pods-GoogleAdapter-acknowledgements.markdown */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = "Pods-GoogleAdapter-acknowledgements.markdown"; sourceTree = "<group>"; };
-		8569F2FC0AE4585D26DB63FD9008A850 /* Pods-MSPDemoApp-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "Pods-MSPDemoApp-dummy.m"; sourceTree = "<group>"; };
-		8C9549317D26022A031A870F485B91B5 /* Pods-MSPDemoApp-acknowledgements.markdown */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = "Pods-MSPDemoApp-acknowledgements.markdown"; sourceTree = "<group>"; };
-		90C26F902AB881C23E30370D9A690562 /* MSPSharedLibraries-xcframeworks.sh */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.script.sh; path = "MSPSharedLibraries-xcframeworks.sh"; sourceTree = "<group>"; };
-		9412C286215F92372E429BA1EC65A9A9 /* shared.xcframework */ = {isa = PBXFileReference; includeInIndex = 1; name = shared.xcframework; path = MSPSharedLibraries/shared.xcframework; sourceTree = "<group>"; };
+		23945B9088F14289BB639FBDAC6717C8 /* Pods-GoogleAdapter.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-GoogleAdapter.debug.xcconfig"; sourceTree = "<group>"; };
+		50090C12497A84F62E29DD29A216C66C /* Pods-MSPCore.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-MSPCore.debug.xcconfig"; sourceTree = "<group>"; };
+		593539571E0F19D4441362BC1A5872B9 /* Pods-GoogleAdapter.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-GoogleAdapter.release.xcconfig"; sourceTree = "<group>"; };
+		742CDC4B5A6B88AC388B7EE94F4C8F5D /* Pods-MSPCore.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-MSPCore.release.xcconfig"; sourceTree = "<group>"; };
+		7C4444BBF2CEDBDF5E619E84A5F02F7E /* Pods-MSPCore-acknowledgements.markdown */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = "Pods-MSPCore-acknowledgements.markdown"; sourceTree = "<group>"; };
+		882CE6455A3010B34366976924CA1A85 /* Pods-MSPCore-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "Pods-MSPCore-dummy.m"; sourceTree = "<group>"; };
+		9009002C7C1A51E94F5A5B7F3278649B /* Pods-MSPCore-acknowledgements.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "Pods-MSPCore-acknowledgements.plist"; sourceTree = "<group>"; };
 		9D940727FF8FB9C785EB98E56350EF41 /* Podfile */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; name = Podfile; path = ../Podfile; sourceTree = SOURCE_ROOT; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
-		9F76137B4FBBDE51E1D0861A51F6A522 /* Pods-MSPCore.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-MSPCore.debug.xcconfig"; sourceTree = "<group>"; };
-		A0821A123D073B01823D0E76CBD67D85 /* PrebidMobile.xcframework */ = {isa = PBXFileReference; includeInIndex = 1; name = PrebidMobile.xcframework; path = MSPSharedLibraries/PrebidMobile.xcframework; sourceTree = "<group>"; };
-		A7C5C4024EBB2A5BEB0CCAEDCFC7B09E /* Pods-GoogleAdapter-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "Pods-GoogleAdapter-dummy.m"; sourceTree = "<group>"; };
-		B0E664325B04ADAFDDE75AA1DEA778C0 /* Pods-MSPCore-acknowledgements.markdown */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = "Pods-MSPCore-acknowledgements.markdown"; sourceTree = "<group>"; };
+		B26E98C1AF05C3ADD8C8B60C9E54D8BE /* Pods-GoogleAdapter-acknowledgements.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "Pods-GoogleAdapter-acknowledgements.plist"; sourceTree = "<group>"; };
 		B6E557F98C7A4C446F7AC3F0BEB2266B /* Pods-GoogleAdapter */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = "Pods-GoogleAdapter"; path = "libPods-GoogleAdapter.a"; sourceTree = BUILT_PRODUCTS_DIR; };
-		C90F52553D45E5E58EA829A1DD7857DA /* MSPSharedLibraries.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = MSPSharedLibraries.h; path = MSPSharedLibraries/MSPSharedLibraries/MSPSharedLibraries.h; sourceTree = "<group>"; };
-		E39A43B95548D5DD4C5A612B09E5BB2D /* Pods-GoogleAdapter-acknowledgements.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "Pods-GoogleAdapter-acknowledgements.plist"; sourceTree = "<group>"; };
-		EE1C008C932D3F36DA8655FEC350B0F5 /* Pods-MSPCore-acknowledgements.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "Pods-MSPCore-acknowledgements.plist"; sourceTree = "<group>"; };
-		F57FDEA8495CEA075E7A876D5249DFDF /* MSPSharedLibraries.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = MSPSharedLibraries.debug.xcconfig; sourceTree = "<group>"; };
+		C21855809E9D21591830F9BAA786B9B1 /* Pods-GoogleAdapter-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "Pods-GoogleAdapter-dummy.m"; sourceTree = "<group>"; };
+		D42B926F20836A90D0158982361FE0FA /* Pods-GoogleAdapter-acknowledgements.markdown */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = "Pods-GoogleAdapter-acknowledgements.markdown"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -79,86 +42,33 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		D2FAEE7ECAA5AE6B2D5592471C9E5ABA /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		05FCBA10958380371480CB586C604C25 /* Pods-GoogleAdapter */ = {
+		2BA0CB1D8E3AA61CD324622FD629523E /* Pods-MSPCore */ = {
 			isa = PBXGroup;
 			children = (
-				7B03EFB7414F53E4E1CC890884D783EA /* Pods-GoogleAdapter-acknowledgements.markdown */,
-				E39A43B95548D5DD4C5A612B09E5BB2D /* Pods-GoogleAdapter-acknowledgements.plist */,
-				A7C5C4024EBB2A5BEB0CCAEDCFC7B09E /* Pods-GoogleAdapter-dummy.m */,
-				67CC263219F6859690A26A54B11F82AC /* Pods-GoogleAdapter.debug.xcconfig */,
-				6EE9DC9EF5C3B337118ECE378D9B35DC /* Pods-GoogleAdapter.release.xcconfig */,
-			);
-			name = "Pods-GoogleAdapter";
-			path = "Target Support Files/Pods-GoogleAdapter";
-			sourceTree = "<group>";
-		};
-		1CA4124CF08FCE8B6AA87F24C326A1A9 /* Support Files */ = {
-			isa = PBXGroup;
-			children = (
-				90C26F902AB881C23E30370D9A690562 /* MSPSharedLibraries-xcframeworks.sh */,
-				F57FDEA8495CEA075E7A876D5249DFDF /* MSPSharedLibraries.debug.xcconfig */,
-				54AB73FBE8575E1F10CA4A1CA3DA6B5B /* MSPSharedLibraries.release.xcconfig */,
-			);
-			name = "Support Files";
-			path = "../Target Support Files/MSPSharedLibraries";
-			sourceTree = "<group>";
-		};
-		4DB2DFB856E5781846F7CF4626926861 /* Pods-MSPDemoApp */ = {
-			isa = PBXGroup;
-			children = (
-				8C9549317D26022A031A870F485B91B5 /* Pods-MSPDemoApp-acknowledgements.markdown */,
-				43A57D16DF80C33F0F92C19711B1A87F /* Pods-MSPDemoApp-acknowledgements.plist */,
-				8569F2FC0AE4585D26DB63FD9008A850 /* Pods-MSPDemoApp-dummy.m */,
-				0C0B78CA93EFACEDD4608F0741DE9395 /* Pods-MSPDemoApp-frameworks.sh */,
-				1A4F2FEB5E7A1A01E04B9C4D94242695 /* Pods-MSPDemoApp.debug.xcconfig */,
-				4D2B59248BE171CB8B6FCEFC5325BB9C /* Pods-MSPDemoApp.release.xcconfig */,
-			);
-			name = "Pods-MSPDemoApp";
-			path = "Target Support Files/Pods-MSPDemoApp";
-			sourceTree = "<group>";
-		};
-		602D50397BB348571FDB5ABDE195C4E0 /* MSPSharedLibraries */ = {
-			isa = PBXGroup;
-			children = (
-				C90F52553D45E5E58EA829A1DD7857DA /* MSPSharedLibraries.h */,
-				F3632E7A1286BD7AFCBD378B5D42AABA /* Frameworks */,
-				1CA4124CF08FCE8B6AA87F24C326A1A9 /* Support Files */,
-			);
-			name = MSPSharedLibraries;
-			path = MSPSharedLibraries;
-			sourceTree = "<group>";
-		};
-		A8000876D3545EDD4F88B3F20BA1A140 /* Pods-MSPCore */ = {
-			isa = PBXGroup;
-			children = (
-				B0E664325B04ADAFDDE75AA1DEA778C0 /* Pods-MSPCore-acknowledgements.markdown */,
-				EE1C008C932D3F36DA8655FEC350B0F5 /* Pods-MSPCore-acknowledgements.plist */,
-				2E43777648443C23E271F5160FCF234E /* Pods-MSPCore-dummy.m */,
-				9F76137B4FBBDE51E1D0861A51F6A522 /* Pods-MSPCore.debug.xcconfig */,
-				5EDCA80152BF6BF48A546A0472105CC7 /* Pods-MSPCore.release.xcconfig */,
+				7C4444BBF2CEDBDF5E619E84A5F02F7E /* Pods-MSPCore-acknowledgements.markdown */,
+				9009002C7C1A51E94F5A5B7F3278649B /* Pods-MSPCore-acknowledgements.plist */,
+				882CE6455A3010B34366976924CA1A85 /* Pods-MSPCore-dummy.m */,
+				50090C12497A84F62E29DD29A216C66C /* Pods-MSPCore.debug.xcconfig */,
+				742CDC4B5A6B88AC388B7EE94F4C8F5D /* Pods-MSPCore.release.xcconfig */,
 			);
 			name = "Pods-MSPCore";
 			path = "Target Support Files/Pods-MSPCore";
 			sourceTree = "<group>";
 		};
-		B813EEA6D8781BBA8AEF7F46B2B87CA1 /* Targets Support Files */ = {
+		C229B9332E0D7BCE2729BC593C778558 /* Pods-GoogleAdapter */ = {
 			isa = PBXGroup;
 			children = (
-				05FCBA10958380371480CB586C604C25 /* Pods-GoogleAdapter */,
-				A8000876D3545EDD4F88B3F20BA1A140 /* Pods-MSPCore */,
-				4DB2DFB856E5781846F7CF4626926861 /* Pods-MSPDemoApp */,
+				D42B926F20836A90D0158982361FE0FA /* Pods-GoogleAdapter-acknowledgements.markdown */,
+				B26E98C1AF05C3ADD8C8B60C9E54D8BE /* Pods-GoogleAdapter-acknowledgements.plist */,
+				C21855809E9D21591830F9BAA786B9B1 /* Pods-GoogleAdapter-dummy.m */,
+				23945B9088F14289BB639FBDAC6717C8 /* Pods-GoogleAdapter.debug.xcconfig */,
+				593539571E0F19D4441362BC1A5872B9 /* Pods-GoogleAdapter.release.xcconfig */,
 			);
-			name = "Targets Support Files";
+			name = "Pods-GoogleAdapter";
+			path = "Target Support Files/Pods-GoogleAdapter";
 			sourceTree = "<group>";
 		};
 		CF1408CF629C7361332E53B88F7BD30C = {
@@ -166,18 +76,16 @@
 			children = (
 				9D940727FF8FB9C785EB98E56350EF41 /* Podfile */,
 				D89477F20FB1DE18A04690586D7808C4 /* Frameworks */,
-				EADA1FD20993C4A494A9133744DC0DDD /* Pods */,
-				D17D43188C790836C43FBCC54C5AA408 /* Products */,
-				B813EEA6D8781BBA8AEF7F46B2B87CA1 /* Targets Support Files */,
+				D6C53D0FA6F0EB6579A7698D9816F3E3 /* Products */,
+				DD03E176ACA90FA61093E1A75B7B303A /* Targets Support Files */,
 			);
 			sourceTree = "<group>";
 		};
-		D17D43188C790836C43FBCC54C5AA408 /* Products */ = {
+		D6C53D0FA6F0EB6579A7698D9816F3E3 /* Products */ = {
 			isa = PBXGroup;
 			children = (
 				B6E557F98C7A4C446F7AC3F0BEB2266B /* Pods-GoogleAdapter */,
 				0DAA15691DB78E45D113136424C43C64 /* Pods-MSPCore */,
-				30F69FBF545DED3F2CF55CC2DB040F1E /* Pods-MSPDemoApp */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -189,33 +97,18 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		EADA1FD20993C4A494A9133744DC0DDD /* Pods */ = {
+		DD03E176ACA90FA61093E1A75B7B303A /* Targets Support Files */ = {
 			isa = PBXGroup;
 			children = (
-				602D50397BB348571FDB5ABDE195C4E0 /* MSPSharedLibraries */,
+				C229B9332E0D7BCE2729BC593C778558 /* Pods-GoogleAdapter */,
+				2BA0CB1D8E3AA61CD324622FD629523E /* Pods-MSPCore */,
 			);
-			name = Pods;
-			sourceTree = "<group>";
-		};
-		F3632E7A1286BD7AFCBD378B5D42AABA /* Frameworks */ = {
-			isa = PBXGroup;
-			children = (
-				A0821A123D073B01823D0E76CBD67D85 /* PrebidMobile.xcframework */,
-				9412C286215F92372E429BA1EC65A9A9 /* shared.xcframework */,
-			);
-			name = Frameworks;
+			name = "Targets Support Files";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
-		0BDEB5AF85B4109436250F4D9B055D6E /* Headers */ = {
-			isa = PBXHeadersBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		22F7ED5A5A1595EB4792C2B9170935E7 /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
@@ -233,24 +126,6 @@
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
-		6D2ACD0B95DD51FD05D506D25F8D2DD1 /* Pods-MSPDemoApp */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 1ACBEC8B7D121D88A6D110F6C1496330 /* Build configuration list for PBXNativeTarget "Pods-MSPDemoApp" */;
-			buildPhases = (
-				0BDEB5AF85B4109436250F4D9B055D6E /* Headers */,
-				B53B534BFBB83BAE5F14A7F09932045D /* Sources */,
-				D2FAEE7ECAA5AE6B2D5592471C9E5ABA /* Frameworks */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				C1C37F0A245059EA764C2B64E4C272AA /* PBXTargetDependency */,
-			);
-			name = "Pods-MSPDemoApp";
-			productName = "Pods-MSPDemoApp";
-			productReference = 30F69FBF545DED3F2CF55CC2DB040F1E /* Pods-MSPDemoApp */;
-			productType = "com.apple.product-type.library.static";
-		};
 		D81DB52376927FFE8E1CD84C03ABC4D3 /* Pods-MSPCore */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 5A67E00B491B75C8F64DFDD0EC619444 /* Build configuration list for PBXNativeTarget "Pods-MSPCore" */;
@@ -303,37 +178,15 @@
 				en,
 			);
 			mainGroup = CF1408CF629C7361332E53B88F7BD30C;
-			productRefGroup = D17D43188C790836C43FBCC54C5AA408 /* Products */;
+			productRefGroup = D6C53D0FA6F0EB6579A7698D9816F3E3 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				D5D11636294BD62069CA3A8320C5D917 /* MSPSharedLibraries */,
 				FB8887B7A1488223C2A29DEDC65EA4ED /* Pods-GoogleAdapter */,
 				D81DB52376927FFE8E1CD84C03ABC4D3 /* Pods-MSPCore */,
-				6D2ACD0B95DD51FD05D506D25F8D2DD1 /* Pods-MSPDemoApp */,
 			);
 		};
 /* End PBXProject section */
-
-/* Begin PBXShellScriptBuildPhase section */
-		807450B3E7293EF55955D049E3C02088 /* [CP] Copy XCFrameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/MSPSharedLibraries/MSPSharedLibraries-xcframeworks-input-files.xcfilelist",
-			);
-			name = "[CP] Copy XCFrameworks";
-			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/MSPSharedLibraries/MSPSharedLibraries-xcframeworks-output-files.xcfilelist",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/MSPSharedLibraries/MSPSharedLibraries-xcframeworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		3089A9DC2D406102C96EBFFD220BD50C /* Sources */ = {
@@ -341,14 +194,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				7859A46FA3B80A604BFC9CAB7D51D956 /* Pods-MSPCore-dummy.m in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		B53B534BFBB83BAE5F14A7F09932045D /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				1F4707C02B5A6B0BEDD8C93B17EF358D /* Pods-MSPDemoApp-dummy.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -362,80 +207,10 @@
 		};
 /* End PBXSourcesBuildPhase section */
 
-/* Begin PBXTargetDependency section */
-		C1C37F0A245059EA764C2B64E4C272AA /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = MSPSharedLibraries;
-			target = D5D11636294BD62069CA3A8320C5D917 /* MSPSharedLibraries */;
-			targetProxy = 6AC64210FCA4E63A7C990206FBCF3A48 /* PBXContainerItemProxy */;
-		};
-/* End PBXTargetDependency section */
-
 /* Begin XCBuildConfiguration section */
-		5214DE063012D01D02E3E611CD4DCE9B /* Release */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 54AB73FBE8575E1F10CA4A1CA3DA6B5B /* MSPSharedLibraries.release.xcconfig */;
-			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-				);
-				SDKROOT = iphoneos;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
-			};
-			name = Release;
-		};
-		5C96C3EF6A7652013558F51DBFCF6946 /* Release */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 4D2B59248BE171CB8B6FCEFC5325BB9C /* Pods-MSPDemoApp.release.xcconfig */;
-			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = NO;
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
-				MACH_O_TYPE = staticlib;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PODS_ROOT = "$(SRCROOT)";
-				PRODUCT_BUNDLE_IDENTIFIER = "org.cocoapods.${PRODUCT_NAME:rfc1034identifier}";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
-			};
-			name = Release;
-		};
-		5DFEE081337A4CC18C7E0AC0B6C07E04 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 1A4F2FEB5E7A1A01E04B9C4D94242695 /* Pods-MSPDemoApp.debug.xcconfig */;
-			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = NO;
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
-				MACH_O_TYPE = staticlib;
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PODS_ROOT = "$(SRCROOT)";
-				PRODUCT_BUNDLE_IDENTIFIER = "org.cocoapods.${PRODUCT_NAME:rfc1034identifier}";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Debug;
-		};
 		741AE388519474F7211E16D97DEF0A7F /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 6EE9DC9EF5C3B337118ECE378D9B35DC /* Pods-GoogleAdapter.release.xcconfig */;
+			baseConfigurationReference = 593539571E0F19D4441362BC1A5872B9 /* Pods-GoogleAdapter.release.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = NO;
 				CLANG_ENABLE_OBJC_WEAK = NO;
@@ -457,7 +232,7 @@
 		};
 		8A43099CCAA057DACE3ED551155F150D /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 9F76137B4FBBDE51E1D0861A51F6A522 /* Pods-MSPCore.debug.xcconfig */;
+			baseConfigurationReference = 50090C12497A84F62E29DD29A216C66C /* Pods-MSPCore.debug.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = NO;
 				CLANG_ENABLE_OBJC_WEAK = NO;
@@ -604,26 +379,9 @@
 			};
 			name = Release;
 		};
-		AFDCF896EFDB89AD4D8086B89655E09C /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = F57FDEA8495CEA075E7A876D5249DFDF /* MSPSharedLibraries.debug.xcconfig */;
-			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-				);
-				SDKROOT = iphoneos;
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Debug;
-		};
 		E0B5EEC3487681309C6EEF39005E0C86 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 5EDCA80152BF6BF48A546A0472105CC7 /* Pods-MSPCore.release.xcconfig */;
+			baseConfigurationReference = 742CDC4B5A6B88AC388B7EE94F4C8F5D /* Pods-MSPCore.release.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = NO;
 				CLANG_ENABLE_OBJC_WEAK = NO;
@@ -645,7 +403,7 @@
 		};
 		EB7F33F8020D9BB9AFA97F828DDBA5D3 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 67CC263219F6859690A26A54B11F82AC /* Pods-GoogleAdapter.debug.xcconfig */;
+			baseConfigurationReference = 23945B9088F14289BB639FBDAC6717C8 /* Pods-GoogleAdapter.debug.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = NO;
 				CLANG_ENABLE_OBJC_WEAK = NO;
@@ -667,15 +425,6 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		1ACBEC8B7D121D88A6D110F6C1496330 /* Build configuration list for PBXNativeTarget "Pods-MSPDemoApp" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				5DFEE081337A4CC18C7E0AC0B6C07E04 /* Debug */,
-				5C96C3EF6A7652013558F51DBFCF6946 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
 		465F4C39A0141C70F18D797F2420B5B3 /* Build configuration list for PBXNativeTarget "Pods-GoogleAdapter" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
@@ -699,15 +448,6 @@
 			buildConfigurations = (
 				8A43099CCAA057DACE3ED551155F150D /* Debug */,
 				E0B5EEC3487681309C6EEF39005E0C86 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		CCBDD60133BB50D56F5840F610E535D5 /* Build configuration list for PBXAggregateTarget "MSPSharedLibraries" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				AFDCF896EFDB89AD4D8086B89655E09C /* Debug */,
-				5214DE063012D01D02E3E611CD4DCE9B /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

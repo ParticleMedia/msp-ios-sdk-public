@@ -780,6 +780,93 @@
         ]
       },
       {
+        "kind": "Import",
+        "name": "UIKit",
+        "printedName": "UIKit",
+        "declKind": "Import",
+        "moduleName": "MSPiOSCore"
+      },
+      {
+        "kind": "TypeDecl",
+        "name": "InterstitialAd",
+        "printedName": "InterstitialAd",
+        "children": [
+          {
+            "kind": "Function",
+            "name": "show",
+            "printedName": "show()",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Void",
+                "printedName": "()"
+              }
+            ],
+            "declKind": "Func",
+            "usr": "s:10MSPiOSCore14InterstitialAdC4showyyF",
+            "mangledName": "$s10MSPiOSCore14InterstitialAdC4showyyF",
+            "moduleName": "MSPiOSCore",
+            "isOpen": true,
+            "declAttributes": [
+              "AccessControl"
+            ],
+            "funcSelfKind": "NonMutating"
+          },
+          {
+            "kind": "Constructor",
+            "name": "init",
+            "printedName": "init(adNetworkAdapter:)",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "InterstitialAd",
+                "printedName": "MSPiOSCore.InterstitialAd",
+                "usr": "s:10MSPiOSCore14InterstitialAdC"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "AdNetworkAdapter",
+                "printedName": "any MSPiOSCore.AdNetworkAdapter",
+                "usr": "s:10MSPiOSCore16AdNetworkAdapterP"
+              }
+            ],
+            "declKind": "Constructor",
+            "usr": "s:10MSPiOSCore14InterstitialAdC16adNetworkAdapterAcA0dfG0_p_tcfc",
+            "mangledName": "$s10MSPiOSCore14InterstitialAdC16adNetworkAdapterAcA0dfG0_p_tcfc",
+            "moduleName": "MSPiOSCore",
+            "overriding": true,
+            "implicit": true,
+            "declAttributes": [
+              "Override"
+            ],
+            "init_kind": "Designated"
+          }
+        ],
+        "declKind": "Class",
+        "usr": "s:10MSPiOSCore14InterstitialAdC",
+        "mangledName": "$s10MSPiOSCore14InterstitialAdC",
+        "moduleName": "MSPiOSCore",
+        "isOpen": true,
+        "declAttributes": [
+          "AccessControl"
+        ],
+        "superclassUsr": "s:10MSPiOSCore5MSPAdC",
+        "inheritsConvenienceInitializers": true,
+        "superclassNames": [
+          "MSPiOSCore.MSPAd"
+        ]
+      },
+      {
+        "kind": "Import",
+        "name": "Foundation",
+        "printedName": "Foundation",
+        "declKind": "Import",
+        "moduleName": "MSPiOSCore",
+        "declAttributes": [
+          "RawDocComment"
+        ]
+      },
+      {
         "kind": "TypeDecl",
         "name": "MediaListener",
         "printedName": "MediaListener",

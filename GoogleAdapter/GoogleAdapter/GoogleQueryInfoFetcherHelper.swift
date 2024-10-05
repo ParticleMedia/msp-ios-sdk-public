@@ -19,10 +19,21 @@ public class GoogleQueryInfoFetcherHelper: GoogleQueryInfoFetcher {
         let request = GAMRequest()
         // Specify the "query_info_type" as "requester_type_8" to
         // denote that the usage of QueryInfo is for Ad Manager S2S.
-        let extras = GADExtras()
-        extras.additionalParameters = ["query_info_type" : "requester_type_8"]
+        let extras = getExtras(adRequest: adRequest)
+        //extras.additionalParameters = ["query_info_type" : "requester_type_8"]
         request.register(extras)
-        let googleAdFormat = adRequest.adFormat == .banner ? GADAdFormat.banner : GADAdFormat.native
+        let googleAdFormat: GADAdFormat
+        switch adRequest.adFormat {
+        case .banner:
+            googleAdFormat = GADAdFormat.banner
+        case .native:
+            googleAdFormat = GADAdFormat.native
+        case .interstitial:
+            googleAdFormat = GADAdFormat.interstitial
+        default:
+            googleAdFormat = GADAdFormat.native
+        }
+        //= adRequest.adFormat == .banner ? GADAdFormat.banner : GADAdFormat.native
         GADQueryInfo.createQueryInfo(with: request, adFormat: googleAdFormat) { [weak self] queryInfo, error in
             guard let self = self else {return}
             if let error = error {
