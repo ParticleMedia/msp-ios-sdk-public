@@ -77,6 +77,11 @@ public struct AdSize {
 public protocol FacebookBidTokenListener {
   func onComplete(bidToken: Swift.String)
 }
+public protocol AdMetricReporter {
+  func logAdImpression(ad: MSPiOSCore.MSPAd)
+  func logGetAdFromCache(cacheKey: Swift.String, fill: Swift.Bool, ad: MSPiOSCore.MSPAd?)
+  func logAdResult(placementId: Swift.String, ad: MSPiOSCore.MSPAd?, fill: Swift.Bool, isFromCache: Swift.Bool)
+}
 public func handleAdLoaded(ad: MSPiOSCore.MSPAd, listener: any MSPiOSCore.AdListener, adRequest: MSPiOSCore.AdRequest)
 public protocol BidListener {
   func onBidResponse(bidResponse: Any, adNetwork: MSPiOSCore.AdNetwork)
@@ -97,6 +102,7 @@ public protocol AdNetworkAdapter {
   func initialize(initParams: any MSPiOSCore.InitializationParameters, adapterInitListener: any MSPiOSCore.AdapterInitListener, context: Any?)
   func destroyAd()
   func prepareViewForInteraction(nativeAd: MSPiOSCore.NativeAd, nativeAdView: Any)
+  func setAdMetricReporter(adMetricReporter: any MSPiOSCore.AdMetricReporter)
 }
 public protocol GoogleQueryInfoFetcher {
   func fetch(completeListener: any MSPiOSCore.GoogleQueryInfoListener, adRequest: MSPiOSCore.AdRequest)
@@ -253,6 +259,7 @@ public struct Geo {
 }
 @_hasMissingDesignatedInitializers public class AdCache {
   public static let shared: MSPiOSCore.AdCache
+  public var adMetricReporter: (any MSPiOSCore.AdMetricReporter)?
   public func peakAd(placementId: Swift.String) -> MSPiOSCore.MSPAd?
   public func getAd(placementId: Swift.String) -> MSPiOSCore.MSPAd?
   public func saveAd(placementId: Swift.String, ad: MSPiOSCore.MSPAd)
