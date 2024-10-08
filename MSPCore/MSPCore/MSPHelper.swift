@@ -5,6 +5,8 @@ import PrebidAdapter
 import PrebidMobile
 import UIKit
 
+import SwiftProtobuf
+
 public class MSP {
     
     public static let shared = MSP()
@@ -17,9 +19,19 @@ public class MSP {
     public var prebidHost = "https://msp.newsbreak.com"
     public var mesHost = "https://mes-msp.newsbreak.com"
     public var novaEventHost = "https://dsp.newsbreak.com"
+    public var org: String?
+    public var app: String?
     
     public func initMSP(initParams: InitializationParameters, sdkInitListener: MSPInitListener?) {
         // This is a temporary solution to replace MSPManager class in kotlin to solve the Kotlin singleton issue
+        MESMetricReporter.shared.logSDKInit()
+        AdCache.shared.adMetricReporter = AdMetricReporterImp()
+        if initParams is InitializationParametersImp {
+            let params = initParams as? InitializationParametersImp
+            self.org = params?.org
+            self.app = params?.app
+        }
+        
         let managers: [AdNetworkManager?] = [adNetworkAdapterProvider.googleManager, adNetworkAdapterProvider.metaManager, adNetworkAdapterProvider.novaManager]
         numInitWaitingForCallbacks = 1 //default vaule is 1 for prebid sdk is alwasys in the dependency
         for adManager in managers {
@@ -136,10 +148,20 @@ public class InitializationParametersImp: InitializationParameters {
     
     public var sourceApp: String?
     
+    public var org: String?
+    public var app: String?
+    
     public init(prebidAPIKey: String, prebidHostUrl: String, sourceApp: String? = nil) {
         self.prebidAPIKey = prebidAPIKey
         self.prebidHostUrl = prebidHostUrl
         self.sourceApp = sourceApp
+    }
+    
+    public init(prebidAPIKey: String, prebidHostUrl: String, org: String?, app: String?) {
+        self.prebidAPIKey = prebidAPIKey
+        self.prebidHostUrl = prebidHostUrl
+        self.org = org
+        self.app = app
     }
     
     public init(prebidAPIKey: String, sourceApp: String? = nil) {
@@ -194,11 +216,12 @@ public class MSPAdLoader: BidListener {
     public init() {}
     
     public func loadAd(placementId: String, adListener: AdListener, context: Any, adRequest: AdRequest, rootViewController: UIViewController) {
-        
+        MESMetricReporter.shared.logAdRequest(adRequest: adRequest)
         self.adListener = adListener
         self.adRequest = adRequest
         
         if adRequest.isCacheSupported, let ad = AdCache.shared.peakAd(placementId: placementId) {
+            MESMetricReporter.shared.logAdResult(placementId: placementId, ad: ad, fill: true, isFromCache: true)
             adListener.onAdLoaded(placementId: placementId)
             return
         }
@@ -212,6 +235,7 @@ public class MSPAdLoader: BidListener {
         adNetworkAdapter = MSP.shared.adNetworkAdapterProvider.getAdNetworkAdapter(adNetwork: adNetwork)
         if let adListener = self.adListener,
            let adRequest = self.adRequest {
+            adNetworkAdapter?.setAdMetricReporter(adMetricReporter: AdMetricReporterImp())
             adNetworkAdapter?.loadAdCreative(bidResponse: bidResponse, adListener: adListener, context: self.rootViewController ?? self, adRequest: adRequest)
         }
     }
