@@ -11,5 +11,5 @@ import Foundation
 public class NovaConstants {
     public static let shared = NovaConstants()
     
-    public var NovaEventHostUrl = "dsp.newsbreak.com"
+    public var NovaEventHostUrl = "https://dsp.newsbreak.com"
 }
