@@ -6,6 +6,10 @@ import NovaCore
 import UIKit
 
 public class NovaAdapter: AdNetworkAdapter {
+    public func setAdMetricReporter(adMetricReporter: any MSPiOSCore.AdMetricReporter) {
+        self.adMetricReporter = adMetricReporter
+    }
+    
     
     public var adListener: AdListener?
     public var priceInDollar: Double?
@@ -24,6 +28,8 @@ public class NovaAdapter: AdNetworkAdapter {
     
     private var adRequest: AdRequest?
     
+    private var adMetricReporter: AdMetricReporter?
+    
     public func destroyAd() {
         
     }
@@ -36,6 +42,7 @@ public class NovaAdapter: AdNetworkAdapter {
         guard bidResponse is BidResponse,
               let mBidResponse = bidResponse as? BidResponse else {
             self.adListener?.onError(msg: "no valid response")
+            self.adMetricReporter?.logAdResult(placementId: adRequest.placementId, ad: nil, fill: false, isFromCache: false)
             return
         }
  
@@ -51,6 +58,7 @@ public class NovaAdapter: AdNetworkAdapter {
               let adType = SafeAs(prebidExtDict["type"], String.self)
         else {
             self.adListener?.onError(msg: "no valid response")
+            self.adMetricReporter?.logAdResult(placementId: adRequest.placementId, ad: nil, fill: false, isFromCache: false)
             return
         }
          
@@ -119,6 +127,7 @@ public class NovaAdapter: AdNetworkAdapter {
                     !ads.isEmpty,
                     let adItem = ads.first else {
                 self.adListener?.onError(msg: "no valid response")
+                self.adMetricReporter?.logAdResult(placementId: adRequest?.placementId ?? "", ad: nil, fill: false, isFromCache: false)
                 return
             }
             
@@ -152,6 +161,7 @@ public class NovaAdapter: AdNetworkAdapter {
                     if let adListener = self.adListener,
                        let adRequest = self.adRequest {
                         handleAdLoaded(ad: nativeAd, listener: adListener, adRequest: adRequest)
+                        self.adMetricReporter?.logAdResult(placementId: adRequest.placementId, ad: nativeAd, fill: true, isFromCache: false)
                     }
                 }
                 
@@ -170,13 +180,16 @@ public class NovaAdapter: AdNetworkAdapter {
                 if let adListener = self.adListener,
                    let adRequest = self.adRequest {
                     handleAdLoaded(ad: novaInterstitialAd, listener: adListener, adRequest: adRequest)
+                    self.adMetricReporter?.logAdResult(placementId: adRequest.placementId, ad: novaInterstitialAd, fill: true, isFromCache: false)
                 }
                 
             default:
                 self.adListener?.onError(msg: "unknown adType")
+                self.adMetricReporter?.logAdResult(placementId: adRequest?.placementId ?? "", ad: nil, fill: false, isFromCache: false)
             }
         } catch {
             self.adListener?.onError(msg: "error decode nova ad string")
+            self.adMetricReporter?.logAdResult(placementId: adRequest?.placementId ?? "", ad: nil, fill: false, isFromCache: false)
         }
         
     }
@@ -213,6 +226,7 @@ extension NovaAdapter: NovaNativeAdDelegate {
     public func nativeAdDidLogImpression(_ nativeAd: NovaCore.NovaNativeAdItem) {
         if let nativeAd = self.nativeAd {
             self.adListener?.onAdImpression(ad: nativeAd)
+            self.adMetricReporter?.logAdImpression(ad: nativeAd)
         }
     }
     
@@ -235,6 +249,7 @@ extension NovaAdapter: NovaAppOpenAdDelegate {
     public func appOpenAdDidDismiss(_ appOpenAd: NovaCore.NovaAppOpenAd) {
         if let interstitialAd = self.interstitialAd {
             self.adListener?.onAdImpression(ad: interstitialAd)
+            self.adMetricReporter?.logAdImpression(ad: interstitialAd)
         }
     }
     

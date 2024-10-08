@@ -5,6 +5,10 @@ import MSPiOSCore
 import UIKit
 
 @objc public class PrebidAdapter : NSObject, AdNetworkAdapter {
+    public func setAdMetricReporter(adMetricReporter: any MSPiOSCore.AdMetricReporter) {
+        self.adMetricReporter = adMetricReporter
+    }
+    
     public func prepareViewForInteraction(nativeAd: MSPiOSCore.NativeAd, nativeAdView: Any) {
     }
     
@@ -41,6 +45,8 @@ import UIKit
     
     private var adRequest: AdRequest?
     private var bannerAd: BannerAd?
+    
+    private var adMetricReporter: AdMetricReporter?
     
     public func loadAdCreative(bidResponse: Any, adListener: any AdListener, context: Any, adRequest: AdRequest) {
         guard bidResponse is BidResponse,
@@ -101,11 +107,13 @@ extension PrebidAdapter: BannerViewDelegate {
         if let adListener = self.adListener,
            let adRequest = self.adRequest {
             handleAdLoaded(ad: prebidAd, listener: adListener, adRequest: adRequest)
+            self.adMetricReporter?.logAdResult(placementId: adRequest.placementId, ad: prebidAd, fill: true, isFromCache: false)
         }
     }
     
     @objc public func bannerView(_ bannerView: BannerView, didFailToReceiveAdWith error: Error) {
         adListener?.onError(msg: error.localizedDescription)
+        adMetricReporter?.logAdResult(placementId: adRequest?.placementId ?? "", ad: nil, fill: false, isFromCache: false)
     }
     
     @objc public func bannerViewWillPresentModal(_ bannerView: BannerView) {
@@ -130,6 +138,7 @@ extension PrebidAdapter: BannerEventHandler {
     public func trackImpression() {
         if let prebidAd = self.bannerAd {
             adListener?.onAdImpression(ad: prebidAd)
+            self.adMetricReporter?.logAdImpression(ad: prebidAd)
         }
     }
 }
