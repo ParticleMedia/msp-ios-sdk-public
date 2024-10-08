@@ -28,9 +28,9 @@ class DemoAdViewController: UIViewController {
         case .googleBanner:
             return "demo-ios-article-top"
         case .googleNative:
-            return ""
+            return "demo-ios-foryou-large"
         case .novaNative:
-            return ""
+            return "demo-ios-foryou-large"
         case .googleInterstitial:
             return "demo-ios-article-top"
         case .novaInterstitial:

@@ -5,6 +5,10 @@ import MSPiOSCore
 import PrebidMobile
 
 @objc public class GoogleAdapter : NSObject, AdNetworkAdapter {
+    public func setAdMetricReporter(adMetricReporter: any MSPiOSCore.AdMetricReporter) {
+        self.adMetricReporter = adMetricReporter
+    }
+    
     public func prepareViewForInteraction(nativeAd: MSPiOSCore.NativeAd, nativeAdView: Any) {
         guard let rootViewController = self.rootViewController,
               let nativeAdView = nativeAdView as? NativeAdView,
@@ -68,6 +72,8 @@ import PrebidMobile
     
     public var nativeAdItem: GADNativeAd?
     
+    private var adMetricReporter: AdMetricReporter?
+    
     public func loadAdCreative(bidResponse: Any, adListener: any AdListener, context: Any, adRequest: AdRequest) {
         
         self.adRequest = adRequest
@@ -75,6 +81,7 @@ import PrebidMobile
         guard bidResponse is BidResponse,
               let mBidResponse = bidResponse as? BidResponse else {
             self.adListener?.onError(msg: "no valid response")
+            self.adMetricReporter?.logAdResult(placementId: adRequest.placementId ?? "", ad: nil, fill: false, isFromCache: false)
             return
         }
         
@@ -93,6 +100,7 @@ import PrebidMobile
               let adType = SafeAs(prebidExtDict["type"], String.self)
         else {
             self.adListener?.onError(msg: "no valid response")
+            self.adMetricReporter?.logAdResult(placementId: adRequest.placementId ?? "", ad: nil, fill: false, isFromCache: false)
             return
         }
         self.priceInDollar = Double(mBidResponse.winningBid?.price ?? 0)
@@ -108,11 +116,13 @@ import PrebidMobile
 
                     if let error {
                         self.adListener?.onError(msg: error.localizedDescription)
+                        self.adMetricReporter?.logAdResult(placementId: adRequest.placementId ?? "", ad: nil, fill: false, isFromCache: false)
                         return
                     }
 
                     guard let ad else {
                         self.adListener?.onError(msg: "Missing ad")
+                        self.adMetricReporter?.logAdResult(placementId: adRequest.placementId ?? "", ad: nil, fill: false, isFromCache: false)
                         return
                     }
 
@@ -126,6 +136,7 @@ import PrebidMobile
                         if let adListener = self.adListener,
                            let adRequest = self.adRequest {
                             handleAdLoaded(ad: googleInterstitialAd, listener: adListener, adRequest: adRequest)
+                            self.adMetricReporter?.logAdResult(placementId: adRequest.placementId, ad: googleInterstitialAd, fill: true, isFromCache: false)
                         }
                     }
                 }
@@ -223,11 +234,13 @@ extension GoogleAdapter : GADBannerViewDelegate {
         if let adListener = adListener,
            let adRequest = adRequest {
             handleAdLoaded(ad: bannerAd, listener: adListener, adRequest: adRequest)
+            self.adMetricReporter?.logAdResult(placementId: adRequest.placementId, ad: bannerAd, fill: true, isFromCache: false)
         }
     }
     
     public func bannerView(_ bannerView: GADBannerView, didFailToReceiveAdWithError error: Error) {
         self.adListener?.onError(msg: error.localizedDescription)
+        self.adMetricReporter?.logAdResult(placementId: adRequest?.placementId ?? "", ad: nil, fill: false, isFromCache: false)
     }
     
     public func bannerViewDidRecordClick(_ bannerView: GADBannerView) {
@@ -267,6 +280,7 @@ extension GoogleAdapter: GADNativeAdLoaderDelegate {
         if let adListener = adListener,
            let adRequest = adRequest {
             handleAdLoaded(ad: googleNativeAd, listener: adListener, adRequest: adRequest)
+            self.adMetricReporter?.logAdResult(placementId: adRequest.placementId, ad: googleNativeAd, fill: true, isFromCache: false)
         }
         
         //let googleNativeAd = GoogleNativeAd(adNetworkAdapter: self, builder: shared.NativeAd.Builder(adNetworkAdapter: self)
@@ -291,6 +305,7 @@ extension GoogleAdapter: GADNativeAdLoaderDelegate {
     
     public func adLoader(_ adLoader: GADAdLoader, didFailToReceiveAdWithError error: any Error) {
         self.adListener?.onError(msg: error.localizedDescription)
+        self.adMetricReporter?.logAdResult(placementId: adRequest?.placementId ?? "", ad: nil, fill: false, isFromCache: false)
     }
 }
 

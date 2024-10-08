@@ -1,1 +1,1 @@
-../../../NovaAdapter/NovaAdapter/NovaAdapter/NovaAdapter.h
+../../../../NovaAdapter/NovaAdapter/NovaAdapter.h
