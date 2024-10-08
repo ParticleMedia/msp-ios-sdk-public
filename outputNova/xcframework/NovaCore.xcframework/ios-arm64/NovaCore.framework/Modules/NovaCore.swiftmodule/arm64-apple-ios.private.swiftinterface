@@ -55,6 +55,11 @@ extension NovaCore.NovaNativeAdMediaViewV2 {
   @_Concurrency.MainActor(unsafe) final public func mediaStartShown()
   @_Concurrency.MainActor(unsafe) final public func mediaEndShown()
 }
+@_hasMissingDesignatedInitializers public class NovaConstants {
+  public static let shared: NovaCore.NovaConstants
+  public var NovaEventHostUrl: Swift.String
+  @objc deinit
+}
 @_hasMissingDesignatedInitializers public class AppOpenAdResource {
   @objc deinit
 }

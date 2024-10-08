@@ -80,7 +80,7 @@ Pod::Spec.new do |spec|
   #  Supports git, hg, bzr, svn and HTTP.
   #
 
-  spec.source       = { :git => "https://github.com/huanzhiNB/msp-ios-sdk-public.git", :tag => "#{spec.version}" }
+  spec.source       = { :git => "https://github.com/ParticleMedia/msp-ios-sdk-public.git", :tag => "#{spec.version}" }
 
 
   # ――― Source Code ―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
@@ -94,8 +94,9 @@ Pod::Spec.new do |spec|
   spec.source_files  = "MSPCore/MSPCore/**/*.{h,m,swift}"
   spec.exclude_files = "Classes/Exclude"
 
-  spec.dependency 'MSPSharedLibraries', '0.0.55'
+  spec.dependency 'MSPSharedLibraries', '0.0.57'
   spec.dependency 'PrebidAdapter', '0.0.55'
+  spec.dependency 'SwiftProtobuf', '1.21.0'
   #spec.vendored_frameworks= "MSPCore/PrebidAdapter.xcframework"#, "PrebidMobile.xcframework", "MSPiOSCore.xcframework"
 
   #spec.pod_target_xcconfig = {

@@ -121,7 +121,7 @@ public class PrebidBidLoader : BidLoader {
         userExt["geo"] = getGeoDict()
         Targeting.shared.userExt = userExt
         
-        lf let userId = UserDefaults.standard.string(forKey: "msp_user_id") {
+        if let userId = UserDefaults.standard.string(forKey: "msp_user_id") {
             adUnitConfig.addContextData(key: "user_id", value: userId)
         } else {
             let uuid = UUID().uuidString

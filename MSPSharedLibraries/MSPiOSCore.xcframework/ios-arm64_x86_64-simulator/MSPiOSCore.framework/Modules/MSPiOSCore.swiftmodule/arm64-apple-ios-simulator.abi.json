@@ -2560,6 +2560,157 @@
         ]
       },
       {
+        "kind": "TypeDecl",
+        "name": "AdMetricReporter",
+        "printedName": "AdMetricReporter",
+        "children": [
+          {
+            "kind": "Function",
+            "name": "logAdImpression",
+            "printedName": "logAdImpression(ad:)",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Void",
+                "printedName": "()"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "MSPAd",
+                "printedName": "MSPiOSCore.MSPAd",
+                "usr": "s:10MSPiOSCore5MSPAdC"
+              }
+            ],
+            "declKind": "Func",
+            "usr": "s:10MSPiOSCore16AdMetricReporterP03logC10Impression2adyAA5MSPAdC_tF",
+            "mangledName": "$s10MSPiOSCore16AdMetricReporterP03logC10Impression2adyAA5MSPAdC_tF",
+            "moduleName": "MSPiOSCore",
+            "genericSig": "<τ_0_0 where τ_0_0 : MSPiOSCore.AdMetricReporter>",
+            "sugared_genericSig": "<Self where Self : MSPiOSCore.AdMetricReporter>",
+            "protocolReq": true,
+            "reqNewWitnessTableEntry": true,
+            "funcSelfKind": "NonMutating"
+          },
+          {
+            "kind": "Function",
+            "name": "logGetAdFromCache",
+            "printedName": "logGetAdFromCache(cacheKey:fill:ad:)",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Void",
+                "printedName": "()"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "String",
+                "printedName": "Swift.String",
+                "usr": "s:SS"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "Bool",
+                "printedName": "Swift.Bool",
+                "usr": "s:Sb"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "Optional",
+                "printedName": "MSPiOSCore.MSPAd?",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "MSPAd",
+                    "printedName": "MSPiOSCore.MSPAd",
+                    "usr": "s:10MSPiOSCore5MSPAdC"
+                  }
+                ],
+                "usr": "s:Sq"
+              }
+            ],
+            "declKind": "Func",
+            "usr": "s:10MSPiOSCore16AdMetricReporterP06logGetC9FromCache8cacheKey4fill2adySS_SbAA5MSPAdCSgtF",
+            "mangledName": "$s10MSPiOSCore16AdMetricReporterP06logGetC9FromCache8cacheKey4fill2adySS_SbAA5MSPAdCSgtF",
+            "moduleName": "MSPiOSCore",
+            "genericSig": "<τ_0_0 where τ_0_0 : MSPiOSCore.AdMetricReporter>",
+            "sugared_genericSig": "<Self where Self : MSPiOSCore.AdMetricReporter>",
+            "protocolReq": true,
+            "reqNewWitnessTableEntry": true,
+            "funcSelfKind": "NonMutating"
+          },
+          {
+            "kind": "Function",
+            "name": "logAdResult",
+            "printedName": "logAdResult(placementId:ad:fill:isFromCache:)",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Void",
+                "printedName": "()"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "String",
+                "printedName": "Swift.String",
+                "usr": "s:SS"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "Optional",
+                "printedName": "MSPiOSCore.MSPAd?",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "MSPAd",
+                    "printedName": "MSPiOSCore.MSPAd",
+                    "usr": "s:10MSPiOSCore5MSPAdC"
+                  }
+                ],
+                "usr": "s:Sq"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "Bool",
+                "printedName": "Swift.Bool",
+                "usr": "s:Sb"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "Bool",
+                "printedName": "Swift.Bool",
+                "usr": "s:Sb"
+              }
+            ],
+            "declKind": "Func",
+            "usr": "s:10MSPiOSCore16AdMetricReporterP03logC6Result11placementId2ad4fill11isFromCacheySS_AA5MSPAdCSgS2btF",
+            "mangledName": "$s10MSPiOSCore16AdMetricReporterP03logC6Result11placementId2ad4fill11isFromCacheySS_AA5MSPAdCSgS2btF",
+            "moduleName": "MSPiOSCore",
+            "genericSig": "<τ_0_0 where τ_0_0 : MSPiOSCore.AdMetricReporter>",
+            "sugared_genericSig": "<Self where Self : MSPiOSCore.AdMetricReporter>",
+            "protocolReq": true,
+            "reqNewWitnessTableEntry": true,
+            "funcSelfKind": "NonMutating"
+          }
+        ],
+        "declKind": "Protocol",
+        "usr": "s:10MSPiOSCore16AdMetricReporterP",
+        "mangledName": "$s10MSPiOSCore16AdMetricReporterP",
+        "moduleName": "MSPiOSCore",
+        "declAttributes": [
+          "AccessControl"
+        ]
+      },
+      {
+        "kind": "Import",
+        "name": "Foundation",
+        "printedName": "Foundation",
+        "declKind": "Import",
+        "moduleName": "MSPiOSCore",
+        "declAttributes": [
+          "RawDocComment"
+        ]
+      },
+      {
         "kind": "Function",
         "name": "handleAdLoaded",
         "printedName": "handleAdLoaded(ad:listener:adRequest:)",
@@ -3040,6 +3191,33 @@
             "declKind": "Func",
             "usr": "s:10MSPiOSCore16AdNetworkAdapterP25prepareViewForInteraction06nativeC00jcG0yAA06NativeC0C_yptF",
             "mangledName": "$s10MSPiOSCore16AdNetworkAdapterP25prepareViewForInteraction06nativeC00jcG0yAA06NativeC0C_yptF",
+            "moduleName": "MSPiOSCore",
+            "genericSig": "<τ_0_0 where τ_0_0 : MSPiOSCore.AdNetworkAdapter>",
+            "sugared_genericSig": "<Self where Self : MSPiOSCore.AdNetworkAdapter>",
+            "protocolReq": true,
+            "reqNewWitnessTableEntry": true,
+            "funcSelfKind": "NonMutating"
+          },
+          {
+            "kind": "Function",
+            "name": "setAdMetricReporter",
+            "printedName": "setAdMetricReporter(adMetricReporter:)",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Void",
+                "printedName": "()"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "AdMetricReporter",
+                "printedName": "any MSPiOSCore.AdMetricReporter",
+                "usr": "s:10MSPiOSCore16AdMetricReporterP"
+              }
+            ],
+            "declKind": "Func",
+            "usr": "s:10MSPiOSCore16AdNetworkAdapterP03setC14MetricReporter02adgH0yAA0cgH0_p_tF",
+            "mangledName": "$s10MSPiOSCore16AdNetworkAdapterP03setC14MetricReporter02adgH0yAA0cgH0_p_tF",
             "moduleName": "MSPiOSCore",
             "genericSig": "<τ_0_0 where τ_0_0 : MSPiOSCore.AdNetworkAdapter>",
             "sugared_genericSig": "<Self where Self : MSPiOSCore.AdNetworkAdapter>",
@@ -9093,6 +9271,116 @@
                   "Final"
                 ],
                 "accessorKind": "get"
+              }
+            ]
+          },
+          {
+            "kind": "Var",
+            "name": "adMetricReporter",
+            "printedName": "adMetricReporter",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Optional",
+                "printedName": "(any MSPiOSCore.AdMetricReporter)?",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "AdMetricReporter",
+                    "printedName": "any MSPiOSCore.AdMetricReporter",
+                    "usr": "s:10MSPiOSCore16AdMetricReporterP"
+                  }
+                ],
+                "usr": "s:Sq"
+              }
+            ],
+            "declKind": "Var",
+            "usr": "s:10MSPiOSCore7AdCacheC16adMetricReporterAA0cfG0_pSgvp",
+            "mangledName": "$s10MSPiOSCore7AdCacheC16adMetricReporterAA0cfG0_pSgvp",
+            "moduleName": "MSPiOSCore",
+            "declAttributes": [
+              "HasInitialValue",
+              "HasStorage",
+              "AccessControl"
+            ],
+            "hasStorage": true,
+            "accessors": [
+              {
+                "kind": "Accessor",
+                "name": "Get",
+                "printedName": "Get()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Optional",
+                    "printedName": "(any MSPiOSCore.AdMetricReporter)?",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "AdMetricReporter",
+                        "printedName": "any MSPiOSCore.AdMetricReporter",
+                        "usr": "s:10MSPiOSCore16AdMetricReporterP"
+                      }
+                    ],
+                    "usr": "s:Sq"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:10MSPiOSCore7AdCacheC16adMetricReporterAA0cfG0_pSgvg",
+                "mangledName": "$s10MSPiOSCore7AdCacheC16adMetricReporterAA0cfG0_pSgvg",
+                "moduleName": "MSPiOSCore",
+                "implicit": true,
+                "accessorKind": "get"
+              },
+              {
+                "kind": "Accessor",
+                "name": "Set",
+                "printedName": "Set()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Void",
+                    "printedName": "()"
+                  },
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Optional",
+                    "printedName": "(any MSPiOSCore.AdMetricReporter)?",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "AdMetricReporter",
+                        "printedName": "any MSPiOSCore.AdMetricReporter",
+                        "usr": "s:10MSPiOSCore16AdMetricReporterP"
+                      }
+                    ],
+                    "usr": "s:Sq"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:10MSPiOSCore7AdCacheC16adMetricReporterAA0cfG0_pSgvs",
+                "mangledName": "$s10MSPiOSCore7AdCacheC16adMetricReporterAA0cfG0_pSgvs",
+                "moduleName": "MSPiOSCore",
+                "implicit": true,
+                "accessorKind": "set"
+              },
+              {
+                "kind": "Accessor",
+                "name": "Modify",
+                "printedName": "Modify()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Void",
+                    "printedName": "()"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:10MSPiOSCore7AdCacheC16adMetricReporterAA0cfG0_pSgvM",
+                "mangledName": "$s10MSPiOSCore7AdCacheC16adMetricReporterAA0cfG0_pSgvM",
+                "moduleName": "MSPiOSCore",
+                "implicit": true,
+                "accessorKind": "_modify"
               }
             ]
           },
