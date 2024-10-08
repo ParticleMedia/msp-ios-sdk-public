@@ -85082,8 +85082,8 @@
       "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-sdk\/NovaCore\/NovaCore\/NovaConstants.swift",
       "kind": "StringLiteral",
       "offset": 223,
-      "length": 19,
-      "value": "\"dsp.newsbreak.com\""
+      "length": 27,
+      "value": "\"https:\/\/dsp.newsbreak.com\""
     },
     {
       "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-sdk\/NovaCore\/NovaCore\/VideoPlayer\/NovaVideoPlayLog.swift",
