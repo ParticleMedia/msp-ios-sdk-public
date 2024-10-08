@@ -1035,6 +1035,168 @@
         ]
       },
       {
+        "kind": "TypeDecl",
+        "name": "NovaConstants",
+        "printedName": "NovaConstants",
+        "children": [
+          {
+            "kind": "Var",
+            "name": "shared",
+            "printedName": "shared",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "NovaConstants",
+                "printedName": "NovaCore.NovaConstants",
+                "usr": "s:8NovaCore0A9ConstantsC"
+              }
+            ],
+            "declKind": "Var",
+            "usr": "s:8NovaCore0A9ConstantsC6sharedACvpZ",
+            "mangledName": "$s8NovaCore0A9ConstantsC6sharedACvpZ",
+            "moduleName": "NovaCore",
+            "static": true,
+            "declAttributes": [
+              "HasInitialValue",
+              "Final",
+              "HasStorage",
+              "AccessControl"
+            ],
+            "isLet": true,
+            "hasStorage": true,
+            "accessors": [
+              {
+                "kind": "Accessor",
+                "name": "Get",
+                "printedName": "Get()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "NovaConstants",
+                    "printedName": "NovaCore.NovaConstants",
+                    "usr": "s:8NovaCore0A9ConstantsC"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:8NovaCore0A9ConstantsC6sharedACvgZ",
+                "mangledName": "$s8NovaCore0A9ConstantsC6sharedACvgZ",
+                "moduleName": "NovaCore",
+                "static": true,
+                "implicit": true,
+                "declAttributes": [
+                  "Final"
+                ],
+                "accessorKind": "get"
+              }
+            ]
+          },
+          {
+            "kind": "Var",
+            "name": "NovaEventHostUrl",
+            "printedName": "NovaEventHostUrl",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "String",
+                "printedName": "Swift.String",
+                "usr": "s:SS"
+              }
+            ],
+            "declKind": "Var",
+            "usr": "s:8NovaCore0A9ConstantsC0A12EventHostUrlSSvp",
+            "mangledName": "$s8NovaCore0A9ConstantsC0A12EventHostUrlSSvp",
+            "moduleName": "NovaCore",
+            "declAttributes": [
+              "HasInitialValue",
+              "HasStorage",
+              "AccessControl"
+            ],
+            "hasStorage": true,
+            "accessors": [
+              {
+                "kind": "Accessor",
+                "name": "Get",
+                "printedName": "Get()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "String",
+                    "printedName": "Swift.String",
+                    "usr": "s:SS"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:8NovaCore0A9ConstantsC0A12EventHostUrlSSvg",
+                "mangledName": "$s8NovaCore0A9ConstantsC0A12EventHostUrlSSvg",
+                "moduleName": "NovaCore",
+                "implicit": true,
+                "accessorKind": "get"
+              },
+              {
+                "kind": "Accessor",
+                "name": "Set",
+                "printedName": "Set()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Void",
+                    "printedName": "()"
+                  },
+                  {
+                    "kind": "TypeNominal",
+                    "name": "String",
+                    "printedName": "Swift.String",
+                    "usr": "s:SS"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:8NovaCore0A9ConstantsC0A12EventHostUrlSSvs",
+                "mangledName": "$s8NovaCore0A9ConstantsC0A12EventHostUrlSSvs",
+                "moduleName": "NovaCore",
+                "implicit": true,
+                "accessorKind": "set"
+              },
+              {
+                "kind": "Accessor",
+                "name": "Modify",
+                "printedName": "Modify()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Void",
+                    "printedName": "()"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:8NovaCore0A9ConstantsC0A12EventHostUrlSSvM",
+                "mangledName": "$s8NovaCore0A9ConstantsC0A12EventHostUrlSSvM",
+                "moduleName": "NovaCore",
+                "implicit": true,
+                "accessorKind": "_modify"
+              }
+            ]
+          }
+        ],
+        "declKind": "Class",
+        "usr": "s:8NovaCore0A9ConstantsC",
+        "mangledName": "$s8NovaCore0A9ConstantsC",
+        "moduleName": "NovaCore",
+        "declAttributes": [
+          "AccessControl"
+        ],
+        "hasMissingDesignatedInitializers": true
+      },
+      {
+        "kind": "Import",
+        "name": "Foundation",
+        "printedName": "Foundation",
+        "declKind": "Import",
+        "moduleName": "NovaCore",
+        "declAttributes": [
+          "RawDocComment"
+        ]
+      },
+      {
         "kind": "Import",
         "name": "UIKit",
         "printedName": "UIKit",
@@ -84915,6 +85077,13 @@
       "offset": 188,
       "length": 3,
       "value": "1.0"
+    },
+    {
+      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-sdk\/NovaCore\/NovaCore\/NovaConstants.swift",
+      "kind": "StringLiteral",
+      "offset": 223,
+      "length": 19,
+      "value": "\"dsp.newsbreak.com\""
     },
     {
       "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-sdk\/NovaCore\/NovaCore\/VideoPlayer\/NovaVideoPlayLog.swift",
