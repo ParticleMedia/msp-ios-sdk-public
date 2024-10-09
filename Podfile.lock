@@ -73,7 +73,7 @@ PODS:
     - nanopb/encode (= 2.30910.0)
   - nanopb/decode (2.30910.0)
   - nanopb/encode (2.30910.0)
-  - NovaAdapter (0.0.59):
+  - NovaAdapter (0.0.60):
     - MSPSharedLibraries (= 0.0.57)
   - PrebidAdapter (0.0.58):
     - MSPSharedLibraries (= 0.0.57)
@@ -90,8 +90,8 @@ PODS:
 
 DEPENDENCIES:
   - GoogleAdapter (= 0.0.58)
-  - MSPCore (= 0.0.59)
-  - NovaAdapter (= 0.0.59)
+  - MSPCore (from `./`)
+  - NovaAdapter (= 0.0.60)
   - SDWebImage (= 5.18.8)
   - SDWebImageWebPCoder (= 0.14.2)
   - Shimmer
@@ -105,7 +105,6 @@ SPEC REPOS:
     - GoogleUserMessagingPlatform
     - GoogleUtilities
     - libwebp
-    - MSPCore
     - MSPSharedLibraries
     - nanopb
     - NovaAdapter
@@ -117,6 +116,10 @@ SPEC REPOS:
     - SnapKit
     - SwiftProtobuf
 
+EXTERNAL SOURCES:
+  MSPCore:
+    :path: "./"
+
 SPEC CHECKSUMS:
   Google-Mobile-Ads-SDK: 8f67a72f88d057335b1ac3f501e2b68ad054116e
   GoogleAdapter: a6561874691c1d9bb3f5ed2d77fadbb27eea024a
@@ -127,7 +130,7 @@ SPEC CHECKSUMS:
   MSPCore: 94619699445526f41bc943e8cd638a2b1ece7d6f
   MSPSharedLibraries: 3ab22c9fe8e75490abdc7373bccf1cd4f97dc1f8
   nanopb: 438bc412db1928dac798aa6fd75726007be04262
-  NovaAdapter: 4df3ebedbde4c84b3d61382f2b050238e589641a
+  NovaAdapter: f1b6c08d9ca4cb61d2faf82fda9fa5def4cc7f7f
   PrebidAdapter: b24ca3090a40cc7bb01dea78f4d975123fa49a6f
   PromisesObjC: f5707f49cb48b9636751c5b2e7d227e43fba9f47
   SDWebImage: a81bbb3ba4ea5f810f4069c68727cb118467a04a
@@ -136,6 +139,6 @@ SPEC CHECKSUMS:
   SnapKit: e01d52ebb8ddbc333eefe2132acf85c8227d9c25
   SwiftProtobuf: afced68785854575756db965e9da52bbf3dc45e7
 
-PODFILE CHECKSUM: 2e3e786d06f7a4873ff895668a3c0e27245b176a
+PODFILE CHECKSUM: 3ad90b60189388a4509829ec5b453b31afa955c8
 
 COCOAPODS: 1.14.3
