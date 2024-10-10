@@ -247,7 +247,9 @@ extension NovaAdapter: NovaNativeAdDelegate {
 
 extension NovaAdapter: NovaAppOpenAdDelegate {
     public func appOpenAdDidDismiss(_ appOpenAd: NovaCore.NovaAppOpenAd) {
-        
+        if let interstitialAd = self.interstitialAd {
+            self.adListener?.onAdDismissed(ad: interstitialAd)
+        }
     }
     
     public func appOpenAdDidDisplay(_ appOpenAd: NovaCore.NovaAppOpenAd) {
