@@ -23,7 +23,7 @@ import MSPiOSCore
     
     func report(event type: AdEventType, with data: Data, completion: @escaping (Bool, Error?) -> Void) {
         let host = MSP.shared.mesHost ?? "mes.newsbreak.com"
-        let urlStr =  host + "v1/event/" + type.rawValue
+        let urlStr =  host + "/v1/event/" + type.rawValue
         guard let url = URL(string: urlStr) else {
             return
         }
