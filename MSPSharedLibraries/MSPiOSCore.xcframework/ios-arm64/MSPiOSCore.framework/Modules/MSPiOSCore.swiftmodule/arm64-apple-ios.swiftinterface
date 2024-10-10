@@ -96,6 +96,7 @@ public protocol AdListener {
   func onAdImpression(ad: MSPiOSCore.MSPAd)
   func onAdClick(ad: MSPiOSCore.MSPAd)
   func onAdLoaded(placementId: Swift.String)
+  func onAdDismissed(ad: MSPiOSCore.InterstitialAd)
 }
 public protocol AdNetworkAdapter {
   func loadAdCreative(bidResponse: Any, adListener: any MSPiOSCore.AdListener, context: Any, adRequest: MSPiOSCore.AdRequest)

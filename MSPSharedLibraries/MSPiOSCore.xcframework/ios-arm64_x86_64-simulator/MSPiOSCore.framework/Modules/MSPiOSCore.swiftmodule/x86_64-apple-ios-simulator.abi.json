@@ -3041,6 +3041,33 @@
             "protocolReq": true,
             "reqNewWitnessTableEntry": true,
             "funcSelfKind": "NonMutating"
+          },
+          {
+            "kind": "Function",
+            "name": "onAdDismissed",
+            "printedName": "onAdDismissed(ad:)",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Void",
+                "printedName": "()"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "InterstitialAd",
+                "printedName": "MSPiOSCore.InterstitialAd",
+                "usr": "s:10MSPiOSCore14InterstitialAdC"
+              }
+            ],
+            "declKind": "Func",
+            "usr": "s:10MSPiOSCore10AdListenerP02onC9Dismissed2adyAA012InterstitialC0C_tF",
+            "mangledName": "$s10MSPiOSCore10AdListenerP02onC9Dismissed2adyAA012InterstitialC0C_tF",
+            "moduleName": "MSPiOSCore",
+            "genericSig": "<τ_0_0 where τ_0_0 : MSPiOSCore.AdListener>",
+            "sugared_genericSig": "<Self where Self : MSPiOSCore.AdListener>",
+            "protocolReq": true,
+            "reqNewWitnessTableEntry": true,
+            "funcSelfKind": "NonMutating"
           }
         ],
         "declKind": "Protocol",
