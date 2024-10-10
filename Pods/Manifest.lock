@@ -1,7 +1,11 @@
 PODS:
+  - FacebookAdapter (0.0.21):
+    - FBAudienceNetwork (= 6.15.0)
+    - MSPSharedLibraries (= 0.0.61)
+  - FBAudienceNetwork (6.15.0)
   - Google-Mobile-Ads-SDK (11.2.0):
     - GoogleUserMessagingPlatform (>= 1.1)
-  - GoogleAdapter (0.0.61):
+  - GoogleAdapter (0.0.62):
     - Google-Mobile-Ads-SDK (= 11.2.0)
     - MSPSharedLibraries (= 0.0.61)
   - GoogleUserMessagingPlatform (2.6.0)
@@ -17,12 +21,12 @@ PODS:
   - libwebp/sharpyuv (1.3.2)
   - libwebp/webp (1.3.2):
     - libwebp/sharpyuv
-  - MSPCore (0.0.61):
+  - MSPCore (0.0.62):
     - MSPSharedLibraries (= 0.0.61)
     - PrebidAdapter (= 0.0.61)
     - SwiftProtobuf (= 1.21.0)
   - MSPSharedLibraries (0.0.61)
-  - NovaAdapter (0.0.61):
+  - NovaAdapter (0.0.62):
     - MSPSharedLibraries (= 0.0.61)
   - PrebidAdapter (0.0.61):
     - MSPSharedLibraries (= 0.0.61)
@@ -37,6 +41,7 @@ PODS:
   - SwiftProtobuf (1.21.0)
 
 DEPENDENCIES:
+  - FacebookAdapter (from `./`)
   - GoogleAdapter (from `./`)
   - MSPCore (from `./`)
   - NovaAdapter (from `./`)
@@ -47,6 +52,7 @@ DEPENDENCIES:
 
 SPEC REPOS:
   trunk:
+    - FBAudienceNetwork
     - Google-Mobile-Ads-SDK
     - GoogleUserMessagingPlatform
     - libwebp
@@ -59,6 +65,8 @@ SPEC REPOS:
     - SwiftProtobuf
 
 EXTERNAL SOURCES:
+  FacebookAdapter:
+    :path: "./"
   GoogleAdapter:
     :path: "./"
   MSPCore:
@@ -67,13 +75,15 @@ EXTERNAL SOURCES:
     :path: "./"
 
 SPEC CHECKSUMS:
+  FacebookAdapter: 20cf6705a290131b73e214d10aa36a0cc609037d
+  FBAudienceNetwork: 80a035aa69cc3a71c99e44cb5c2874e4cef9909f
   Google-Mobile-Ads-SDK: 5a6d005a6cb5b5e8f4c7b69ca05cdea79c181139
-  GoogleAdapter: 76d291568093a21ec4fc2e0bb0f87f8b527b1296
+  GoogleAdapter: eecd74d31fe5ff9f68c96916d9a90782b5c85316
   GoogleUserMessagingPlatform: 0c3a08353e53ce8c2feab7addd0b652cde522450
   libwebp: 1786c9f4ff8a279e4dac1e8f385004d5fc253009
-  MSPCore: 38691b9f6159fb8ce793a80e8d031527c33facda
+  MSPCore: 7a82bda1d5d42cdeced1bf4de29db5455b50199f
   MSPSharedLibraries: a1f34f4c0078330a25b46871118bee538fed8219
-  NovaAdapter: 0850bdcfd86e15f36f6b483cab568134f5fa455a
+  NovaAdapter: e67eaf196cd862d45446e719c0dee2313f7097df
   PrebidAdapter: 50ba78bc8d8d7e009a2217b0ae8c35859cd5777b
   SDWebImage: a81bbb3ba4ea5f810f4069c68727cb118467a04a
   SDWebImageWebPCoder: 633b813fca24f1de5e076bcd7f720c038b23892b
@@ -81,6 +91,6 @@ SPEC CHECKSUMS:
   SnapKit: e01d52ebb8ddbc333eefe2132acf85c8227d9c25
   SwiftProtobuf: afced68785854575756db965e9da52bbf3dc45e7
 
-PODFILE CHECKSUM: ffb5bb3df808de0bc52bd17dca4df3fcc5b00177
+PODFILE CHECKSUM: a53f20ee4167c2264e74612a8c9bfb8ce69ddddf
 
 COCOAPODS: 1.15.2
