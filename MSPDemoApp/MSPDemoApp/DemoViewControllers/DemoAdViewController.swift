@@ -96,6 +96,10 @@ class DemoAdViewController: UIViewController {
 }
 
 extension DemoAdViewController: AdListener {
+    func onAdDismissed(ad: MSPiOSCore.InterstitialAd) {
+        
+    }
+    
     func onAdLoaded(placementId: String) {
         if let ad = AdCache.shared.getAd(placementId: placementId) {
             self.onAdLoaded(ad: ad)

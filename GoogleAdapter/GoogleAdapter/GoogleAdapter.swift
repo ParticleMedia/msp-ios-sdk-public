@@ -337,6 +337,12 @@ extension GoogleAdapter: GADFullScreenContentDelegate {
             self.adListener?.onAdClick(ad: interstitialAd)
         }
     }
+    
+    public func adDidDismissFullScreenContent(_ ad: any GADFullScreenPresentingAd) {
+        if let interstitialAd = self.interstitialAd {
+            self.adListener?.onAdDismissed(ad: interstitialAd)
+        }
+    }
 
 }
 
