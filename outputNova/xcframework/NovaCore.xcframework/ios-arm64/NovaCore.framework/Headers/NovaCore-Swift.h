@@ -576,13 +576,13 @@ SWIFT_CLASS("_TtC8NovaCore31NovaAdsLandingWebViewController")
 @end
 
 
-
 @class UIScrollView;
 
 @interface NovaAdsLandingWebViewController (SWIFT_EXTENSION(NovaCore)) <UIScrollViewDelegate>
 - (void)scrollViewDidScroll:(UIScrollView * _Nonnull)scrollView;
 - (void)scrollViewDidEndDragging:(UIScrollView * _Nonnull)scrollView willDecelerate:(BOOL)decelerate;
 @end
+
 
 
 
@@ -616,6 +616,62 @@ SWIFT_CLASS("_TtC8NovaCore10NovaBaseAd")
 - (nonnull instancetype)init SWIFT_UNAVAILABLE;
 + (nonnull instancetype)new SWIFT_UNAVAILABLE_MSG("-init is unavailable");
 @end
+
+@protocol NovaAppOpenAdDelegate;
+
+SWIFT_CLASS("_TtC8NovaCore13NovaAppOpenAd")
+@interface NovaAppOpenAd : NovaBaseAd
+/// Delegate used to handle ad click event logging
+@property (nonatomic, weak) id <NovaAppOpenAdDelegate> _Nullable delegate;
+@end
+
+
+SWIFT_PROTOCOL("_TtP8NovaCore21NovaAppOpenAdDelegate_")
+@protocol NovaAppOpenAdDelegate
+- (void)appOpenAdDidDisplay:(NovaAppOpenAd * _Nonnull)appOpenAd;
+- (void)appOpenAdDidDismiss:(NovaAppOpenAd * _Nonnull)appOpenAd;
+- (void)appOpenAdDidLogClick:(NovaAppOpenAd * _Nonnull)appOpenAd;
+@optional
+- (void)appOpenAdDidFailToDisplay:(NovaAppOpenAd * _Nonnull)appOpenAd;
+@end
+
+
+SWIFT_CLASS("_TtC8NovaCore30NovaAppOpenAdViewActionHandler")
+@interface NovaAppOpenAdViewActionHandler : NSObject
+- (nonnull instancetype)init SWIFT_UNAVAILABLE;
++ (nonnull instancetype)new SWIFT_UNAVAILABLE_MSG("-init is unavailable");
+@end
+
+
+
+
+SWIFT_CLASS("_TtC8NovaCore27NovaAppOpenAdViewController")
+@interface NovaAppOpenAdViewController : UIViewController
+- (nullable instancetype)initWithCoder:(NSCoder * _Nonnull)coder SWIFT_UNAVAILABLE;
+- (void)loadView;
+- (void)viewDidAppear:(BOOL)animated;
+- (void)viewDidDisappear:(BOOL)animated;
+@property (nonatomic, readonly) UIStatusBarStyle preferredStatusBarStyle;
+- (nonnull instancetype)initWithNibName:(NSString * _Nullable)nibNameOrNil bundle:(NSBundle * _Nullable)nibBundleOrNil SWIFT_UNAVAILABLE;
+@end
+
+
+SWIFT_CLASS("_TtC8NovaCore19NovaAppOpenAdViewV3")
+@interface NovaAppOpenAdViewV3 : UIView
+- (nullable instancetype)initWithCoder:(NSCoder * _Nonnull)coder SWIFT_UNAVAILABLE;
+- (nonnull instancetype)initWithFrame:(CGRect)frame SWIFT_UNAVAILABLE;
+@end
+
+
+
+SWIFT_CLASS("_TtC8NovaCore30NovaAppOpenVerticalVideoAdView")
+@interface NovaAppOpenVerticalVideoAdView : UIView
+- (nullable instancetype)initWithCoder:(NSCoder * _Nonnull)coder SWIFT_UNAVAILABLE;
+- (nonnull instancetype)initWithFrame:(CGRect)frame SWIFT_UNAVAILABLE;
+@end
+
+
+
 
 @class UIColor;
 
@@ -781,6 +837,15 @@ SWIFT_CLASS("_TtC8NovaCore31NovaNativeAdMediaViewController")
 @end
 
 
+SWIFT_CLASS("_TtC8NovaCore23NovaNativeAdMediaViewV2")
+@interface NovaNativeAdMediaViewV2 : UIView
+- (nonnull instancetype)init OBJC_DESIGNATED_INITIALIZER;
+- (nullable instancetype)initWithCoder:(NSCoder * _Nonnull)coder SWIFT_UNAVAILABLE;
+- (nonnull instancetype)initWithFrame:(CGRect)frame SWIFT_UNAVAILABLE;
+@end
+
+
+
 SWIFT_PROTOCOL("_TtP8NovaCore25NovaNativeAdVideoDelegate_")
 @protocol NovaNativeAdVideoDelegate
 - (void)playerCurrentTimeDidChangeWithCurrentTime:(double)currentTime durationTime:(double)durationTime;
@@ -806,10 +871,10 @@ SWIFT_CLASS("_TtC8NovaCore16NovaNativeAdView")
 @end
 
 
-
 @interface NovaNativeAdView (SWIFT_EXTENSION(NovaCore))
 - (void)register:(NovaNativeAdItem * _Nonnull)nativeAd;
 @end
+
 
 
 
@@ -847,6 +912,13 @@ SWIFT_CLASS("_TtC8NovaCore22NovaUnifiedWebViewHost")
 + (nonnull instancetype)new SWIFT_UNAVAILABLE_MSG("-init is unavailable");
 @end
 
+@class WKUserContentController;
+@class WKScriptMessage;
+
+@interface NovaUnifiedWebViewHost (SWIFT_EXTENSION(NovaCore)) <WKScriptMessageHandler>
+- (void)userContentController:(WKUserContentController * _Nonnull)userContentController didReceiveScriptMessage:(WKScriptMessage * _Nonnull)message;
+@end
+
 @class WKWebView;
 @class WKWebViewConfiguration;
 @class WKNavigationAction;
@@ -854,13 +926,6 @@ SWIFT_CLASS("_TtC8NovaCore22NovaUnifiedWebViewHost")
 
 @interface NovaUnifiedWebViewHost (SWIFT_EXTENSION(NovaCore)) <WKUIDelegate>
 - (WKWebView * _Nullable)webView:(WKWebView * _Nonnull)webView createWebViewWithConfiguration:(WKWebViewConfiguration * _Nonnull)configuration forNavigationAction:(WKNavigationAction * _Nonnull)navigationAction windowFeatures:(WKWindowFeatures * _Nonnull)windowFeatures SWIFT_WARN_UNUSED_RESULT;
-@end
-
-@class WKUserContentController;
-@class WKScriptMessage;
-
-@interface NovaUnifiedWebViewHost (SWIFT_EXTENSION(NovaCore)) <WKScriptMessageHandler>
-- (void)userContentController:(WKUserContentController * _Nonnull)userContentController didReceiveScriptMessage:(WKScriptMessage * _Nonnull)message;
 @end
 
 @class WKNavigation;

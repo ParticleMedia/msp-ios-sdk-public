@@ -5,7 +5,7 @@ Pod::Spec.new do |spec|
   
 
   spec.name         = "GoogleAdapter"
-  spec.version      = "0.0.21"
+  spec.version      = "0.0.62"
   spec.summary      = "an adapter for Google SDK"
   spec.description  = "an adapter for Google SDK for MSP S2S"
 
@@ -37,7 +37,7 @@ Pod::Spec.new do |spec|
   #  Supports git, hg, bzr, svn and HTTP.
   #
 
-  spec.source       = { :git => "https://github.com/huanzhiNB/msp-ios-sdk-public.git", :tag => "#{spec.version}" }
+  spec.source       = { :git => "https://github.com/ParticleMedia/msp-ios-sdk-public.git", :tag => "#{spec.version}" }
 
   spec.ios.deployment_target = '13.0'
 
@@ -45,8 +45,8 @@ Pod::Spec.new do |spec|
   spec.source_files  = "GoogleAdapter/GoogleAdapter/**/*.{h,m,swift}"
   spec.exclude_files = "Classes/Exclude"
 
-  spec.dependency 'Google-Mobile-Ads-SDK', "10.14.0"
-  spec.dependency 'MSPSharedLibraries', '0.0.47'
+  spec.dependency 'Google-Mobile-Ads-SDK', "11.2.0"
+  spec.dependency 'MSPSharedLibraries', '0.0.61'
   #spec.module_map = 'GoogleAdapter/GoogleAdapter.modulemap'
 
   #spec.public_header_files = "GoogleAdapter//**/*.h"

@@ -8,6 +8,10 @@ import PrebidMobile
 import Foundation
 
 @objc public class FacebookAdapter : NSObject, AdNetworkAdapter {
+    public func setAdMetricReporter(adMetricReporter: any MSPiOSCore.AdMetricReporter) {
+        
+    }
+    
     public func prepareViewForInteraction(nativeAd: MSPiOSCore.NativeAd, nativeAdView: Any) {
         guard let rootViewController = self.rootViewController,
               let nativeAdView = nativeAdView as? NativeAdView,

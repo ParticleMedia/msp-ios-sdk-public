@@ -1,6 +1,6 @@
 {
   "name": "MSPCore",
-  "version": "0.0.46",
+  "version": "0.0.62",
   "summary": "An utility helper for MSP",
   "platforms": {
     "ios": "13.0"
@@ -12,17 +12,20 @@
     "huanzhiNB": "huanzhi.zhang@newsbreak.com"
   },
   "source": {
-    "git": "https://github.com/huanzhiNB/msp-ios-sdk-public.git",
-    "tag": "0.0.46"
+    "git": "https://github.com/ParticleMedia/msp-ios-sdk-public.git",
+    "tag": "0.0.62"
   },
   "source_files": "MSPCore/MSPCore/**/*.{h,m,swift}",
   "exclude_files": "Classes/Exclude",
   "dependencies": {
     "MSPSharedLibraries": [
-      "0.0.47"
+      "0.0.61"
     ],
     "PrebidAdapter": [
-      "0.0.52"
+      "0.0.61"
+    ],
+    "SwiftProtobuf": [
+      "1.21.0"
     ]
   },
   "static_framework": true
