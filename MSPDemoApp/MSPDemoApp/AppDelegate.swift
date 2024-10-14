@@ -4,6 +4,9 @@ import GoogleAdapter
 import NovaAdapter
 import AppTrackingTransparency
 
+import FacebookAdapter
+
+
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
@@ -12,7 +15,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         
         let mspInitParameters = InitializationParametersImp(prebidAPIKey: "af7ce3f9-462d-4df1-815f-09314bb87ca3",
-                                                            prebidHostUrl: "https://prebid-server.themsp.ai/openrtb2/auction",
                                                             sourceApp: "")
         
         MSP.shared.setNovaManager(novaManager: NovaManager())
@@ -20,8 +22,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         MSP.shared.setGoogleManager(googleManager: GoogleManager())
         MSP.shared.bidLoaderProvider.googleQueryInfoFetcher = GoogleQueryInfoFetcherHelper()
         
-        MSP.shared.initMSP(initParams: mspInitParameters, sdkInitListener: nil)
+        MSP.shared.setMetaManager(metaManager: FacebookManager())
+        MSP.shared.bidLoaderProvider.facebookBidTokenProvider = FacebookBidTokenProviderHelper()
         
+        MSP.shared.initMSP(initParams: mspInitParameters, sdkInitListener: nil)
         window = UIWindow(frame: UIScreen.main.bounds)
         self.window?.makeKeyAndVisible()
         

@@ -6,6 +6,10 @@ import NovaCore
 import UIKit
 
 public class NovaAdapter: AdNetworkAdapter {
+    public func setAdMetricReporter(adMetricReporter: any MSPiOSCore.AdMetricReporter) {
+        self.adMetricReporter = adMetricReporter
+    }
+    
     
     public var adListener: AdListener?
     public var priceInDollar: Double?
@@ -14,6 +18,8 @@ public class NovaAdapter: AdNetworkAdapter {
     public var nativeAd: MSPAd?
     public var nativeAdItem: NovaNativeAdItem?
     
+    public var interstitialAd: InterstitialAd?
+    
     public var nativeAdView: NativeAdView?
     public var novaNativeAdView: NovaNativeAdView?
     
@@ -21,6 +27,8 @@ public class NovaAdapter: AdNetworkAdapter {
     public var rootViewController: UIViewController?
     
     private var adRequest: AdRequest?
+    
+    private var adMetricReporter: AdMetricReporter?
     
     public func destroyAd() {
         
@@ -34,6 +42,7 @@ public class NovaAdapter: AdNetworkAdapter {
         guard bidResponse is BidResponse,
               let mBidResponse = bidResponse as? BidResponse else {
             self.adListener?.onError(msg: "no valid response")
+            self.adMetricReporter?.logAdResult(placementId: adRequest.placementId, ad: nil, fill: false, isFromCache: false)
             return
         }
  
@@ -49,6 +58,7 @@ public class NovaAdapter: AdNetworkAdapter {
               let adType = SafeAs(prebidExtDict["type"], String.self)
         else {
             self.adListener?.onError(msg: "no valid response")
+            self.adMetricReporter?.logAdResult(placementId: adRequest.placementId, ad: nil, fill: false, isFromCache: false)
             return
         }
          
@@ -58,7 +68,13 @@ public class NovaAdapter: AdNetworkAdapter {
         }
         self.adUnitId = adUnitId
         let eCPMInDollar = Decimal(priceInDollar ?? 0.0)
-        parseNovaAdString(adString: adString, adType: "native", adUnitId: adUnitId, eCPMInDollar: eCPMInDollar)
+        let novaAdType: String
+        if adRequest.adFormat == .interstitial {
+            novaAdType = "app_open"
+        } else {
+            novaAdType = "native"
+        }
+        parseNovaAdString(adString: adString, adType: novaAdType, adUnitId: adUnitId, eCPMInDollar: eCPMInDollar)
     }
     
     public func prepareViewForInteraction(nativeAd: MSPiOSCore.NativeAd, nativeAdView: Any) {
@@ -111,6 +127,7 @@ public class NovaAdapter: AdNetworkAdapter {
                     !ads.isEmpty,
                     let adItem = ads.first else {
                 self.adListener?.onError(msg: "no valid response")
+                self.adMetricReporter?.logAdResult(placementId: adRequest?.placementId ?? "", ad: nil, fill: false, isFromCache: false)
                 return
             }
             
@@ -144,13 +161,35 @@ public class NovaAdapter: AdNetworkAdapter {
                     if let adListener = self.adListener,
                        let adRequest = self.adRequest {
                         handleAdLoaded(ad: nativeAd, listener: adListener, adRequest: adRequest)
+                        self.adMetricReporter?.logAdResult(placementId: adRequest.placementId, ad: nativeAd, fill: true, isFromCache: false)
                     }
                 }
+                
+            case "app_open":
+                let appOpenAds = NovaAdBuilder.buildAppOpenAds(adItems: ads, adUnitId: adUnitId)
+                let appOpenAd = appOpenAds.first
+                
+                var novaInterstitialAd = NovaInterstitialAd(adNetworkAdapter: self)
+                novaInterstitialAd.interstitialAdItem = appOpenAd
+                //ad.fullScreenContentDelegate = self
+                novaInterstitialAd.rootViewController = self.rootViewController
+                self.interstitialAd = novaInterstitialAd
+                novaInterstitialAd.adInfo["priceInDollar"] = self.priceInDollar
+                appOpenAd?.delegate = self
+                
+                if let adListener = self.adListener,
+                   let adRequest = self.adRequest {
+                    handleAdLoaded(ad: novaInterstitialAd, listener: adListener, adRequest: adRequest)
+                    self.adMetricReporter?.logAdResult(placementId: adRequest.placementId, ad: novaInterstitialAd, fill: true, isFromCache: false)
+                }
+                
             default:
                 self.adListener?.onError(msg: "unknown adType")
+                self.adMetricReporter?.logAdResult(placementId: adRequest?.placementId ?? "", ad: nil, fill: false, isFromCache: false)
             }
         } catch {
             self.adListener?.onError(msg: "error decode nova ad string")
+            self.adMetricReporter?.logAdResult(placementId: adRequest?.placementId ?? "", ad: nil, fill: false, isFromCache: false)
         }
         
     }
@@ -178,7 +217,8 @@ public class NovaAdapter: AdNetworkAdapter {
         }
 
         let eCPMInDollar = Decimal(priceInDollar ?? 0.0)
-        parseNovaAdString(adString: adString, adType: "native", adUnitId: "dummy_id", eCPMInDollar: eCPMInDollar)
+        let adType = adRequest.adFormat == .interstitial ? "app_open" : "native"
+        parseNovaAdString(adString: adString, adType: adType, adUnitId: "dummy_id", eCPMInDollar: eCPMInDollar)
     }
 }
 
@@ -186,6 +226,7 @@ extension NovaAdapter: NovaNativeAdDelegate {
     public func nativeAdDidLogImpression(_ nativeAd: NovaCore.NovaNativeAdItem) {
         if let nativeAd = self.nativeAd {
             self.adListener?.onAdImpression(ad: nativeAd)
+            self.adMetricReporter?.logAdImpression(ad: nativeAd)
         }
     }
     
@@ -202,6 +243,28 @@ extension NovaAdapter: NovaNativeAdDelegate {
     public func nativeAdRootViewController() -> UIViewController? {
         return self.rootViewController
     }
+}
+
+extension NovaAdapter: NovaAppOpenAdDelegate {
+    public func appOpenAdDidDismiss(_ appOpenAd: NovaCore.NovaAppOpenAd) {
+        if let interstitialAd = self.interstitialAd {
+            self.adListener?.onAdDismissed(ad: interstitialAd)
+        }
+    }
+    
+    public func appOpenAdDidDisplay(_ appOpenAd: NovaCore.NovaAppOpenAd) {
+        if let interstitialAd = self.interstitialAd {
+            self.adListener?.onAdImpression(ad: interstitialAd)
+            self.adMetricReporter?.logAdImpression(ad: interstitialAd)
+        }
+    }
+    
+    public func appOpenAdDidLogClick(_ appOpenAd: NovaCore.NovaAppOpenAd) {
+        if let interstitialAd = self.interstitialAd {
+            self.adListener?.onAdClick(ad: interstitialAd)
+        }
+    }
+    
 }
 
 

@@ -11,6 +11,9 @@ public enum AdType: String {
     case googleBanner
     case googleNative
     case novaNative
+    case googleInterstitial
+    case novaInterstitial
+    case facebookNative
 }
 
 class DemoAdViewController: UIViewController {
@@ -26,16 +29,33 @@ class DemoAdViewController: UIViewController {
         case .googleBanner:
             return "demo-ios-article-top"
         case .googleNative:
-            return ""
+            return "demo-ios-foryou-large"
         case .novaNative:
-            return ""
+            return "demo-ios-foryou-large"
+        case .googleInterstitial:
+            return "demo-ios-article-top"
+        case .novaInterstitial:
+            return "demo-ios-launch-fullscreen"
+        case .facebookNative:
+            return "msp-ios-foryou-large-native-debug_fb"
+        }
+    }()
+    
+    private lazy var adFormat: MSPiOSCore.AdFormat = {
+        switch adType {
+        case .prebidBanner, .googleBanner :
+            return .banner
+    
+        case .googleNative, .novaNative, .facebookNative:
+            return .native
+        case .googleInterstitial, .novaInterstitial:
+            return .interstitial
         }
     }()
     
     init(adType: AdType) {
         self.adType = adType
         super.init(nibName: nil, bundle: nil)
-        
     }
     
     required init?(coder: NSCoder) {
@@ -49,23 +69,26 @@ class DemoAdViewController: UIViewController {
         var adLoader = MSPAdLoader()
         self.adLoader = adLoader
         var customParams = [String: String]()
+        customParams["user_id"] = "00000000"
         var testParams = [String: String]()
-        customParams["user_id"] = ""
-        customParams["profile_id"] = ""
-        if adType == .novaNative {
+        if adType == .novaNative || adType == .novaInterstitial {
             testParams["test"] = "{\"ad_network\":\"msp_nova\",\"test_ad\":true}"
         } else if adType == .prebidBanner {
             testParams["test"] = "{\"ad_network\":\"pubmatic\",\"test_ad\":true}"
-        } else if adType == .googleBanner {
+        } else if adType == .googleBanner || adType == .googleInterstitial {
             testParams["test"] = "{\"ad_network\":\"msp_google\",\"test_ad\":true}"
+        } else if adType == .facebookNative {
+            testParams["test"] = "{\"ad_network\":\"msp_fb\",\"test_ad\":true}"
         }
+         
+        
         let adRequest = AdRequest(customParams: customParams,
                                   geo: nil,
                                   context: nil,
-                                  adaptiveBannerSize: AdSize(width: 320, height: 50, isInlineAdaptiveBanner: false, isAnchorAdaptiveBanner: true),
+                                  adaptiveBannerSize: AdSize(width: 320, height: 50, isInlineAdaptiveBanner: false, isAnchorAdaptiveBanner: false),
                                   adSize: AdSize(width: 320, height: 50, isInlineAdaptiveBanner: false, isAnchorAdaptiveBanner: false),
                                   placementId: placementId,
-                                  adFormat: .banner,
+                                  adFormat: adFormat,
                                   isCacheSupported: true,
                                   testParams: testParams)
         adLoader.loadAd(placementId: placementId,
@@ -78,6 +101,10 @@ class DemoAdViewController: UIViewController {
 }
 
 extension DemoAdViewController: AdListener {
+    func onAdDismissed(ad: MSPiOSCore.InterstitialAd) {
+        
+    }
+    
     func onAdLoaded(placementId: String) {
         if let ad = AdCache.shared.getAd(placementId: placementId) {
             self.onAdLoaded(ad: ad)
@@ -125,6 +152,9 @@ extension DemoAdViewController: AdListener {
                 adView.centerXAnchor.constraint(equalTo: self.view.centerXAnchor),
                 adView.topAnchor.constraint(equalTo: self.view.topAnchor, constant: 200),
             ])
+        } else if ad is InterstitialAd,
+                  let interstitialAd = ad as? InterstitialAd {
+            interstitialAd.show()
         }
     }
     

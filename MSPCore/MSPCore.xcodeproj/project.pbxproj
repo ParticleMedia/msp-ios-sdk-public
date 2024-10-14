@@ -8,6 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		3F6DED87947F36F6685255A0 /* libPods-MSPCore.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3BEFDC62A992B10540FF1C8C /* libPods-MSPCore.a */; };
+		660ED3E12CB45513002F237C /* common.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = 660ED3E02CB45513002F237C /* common.pb.swift */; };
+		660ED3E32CB45557002F237C /* MESMetricReporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 660ED3E22CB45557002F237C /* MESMetricReporter.swift */; };
 		6639AC8A2B4DFAE300A248D2 /* MSPCore.docc in Sources */ = {isa = PBXBuildFile; fileRef = 6639AC892B4DFAE300A248D2 /* MSPCore.docc */; };
 		6639AC952B4DFAE400A248D2 /* MSPUtilityTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6639AC942B4DFAE400A248D2 /* MSPUtilityTests.swift */; };
 		6639AC962B4DFAE400A248D2 /* MSPCore.h in Headers */ = {isa = PBXBuildFile; fileRef = 6639AC882B4DFAE300A248D2 /* MSPCore.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -15,6 +17,13 @@
 		6639ACAD2B4E008B00A248D2 /* MSPBidLoaderProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6639ACAC2B4E008B00A248D2 /* MSPBidLoaderProvider.swift */; };
 		6639ACAF2B4E0C2B00A248D2 /* MSPAdNetworkAdapterProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6639ACAE2B4E0C2B00A248D2 /* MSPAdNetworkAdapterProvider.swift */; };
 		664F333C2C4740320014E1BA /* MSPNativeAdContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 664F333B2C4740320014E1BA /* MSPNativeAdContainer.swift */; };
+		66AFBBDA2CB459B9000D0DD3 /* openrtb-v26.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66AFBBD92CB459B9000D0DD3 /* openrtb-v26.pb.swift */; };
+		66AFBBDF2CB45FA9000D0DD3 /* ad_impression.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66AFBBDE2CB45FA9000D0DD3 /* ad_impression.pb.swift */; };
+		66AFBBE12CB45FB3000D0DD3 /* get_ad_from_cache.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66AFBBE02CB45FB3000D0DD3 /* get_ad_from_cache.pb.swift */; };
+		66AFBBE32CB45FBB000D0DD3 /* load_ad_request.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66AFBBE22CB45FBB000D0DD3 /* load_ad_request.pb.swift */; };
+		66AFBBE52CB45FC1000D0DD3 /* load_ad_result.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66AFBBE42CB45FC1000D0DD3 /* load_ad_result.pb.swift */; };
+		66AFBBE72CB45FC8000D0DD3 /* sdk_init.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66AFBBE62CB45FC8000D0DD3 /* sdk_init.pb.swift */; };
+		66AFBBF12CB4B70F000D0DD3 /* AdMetricReporterImp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66AFBBF02CB4B70F000D0DD3 /* AdMetricReporterImp.swift */; };
 		66CA2E1A2BEAA159001EFD30 /* libGoogleAdapter.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 66CA2E192BEAA159001EFD30 /* libGoogleAdapter.a */; };
 /* End PBXBuildFile section */
 
@@ -45,6 +54,8 @@
 /* Begin PBXFileReference section */
 		20D75C3E9C5E96F27754B64D /* Pods-MSPCore.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MSPCore.release.xcconfig"; path = "Target Support Files/Pods-MSPCore/Pods-MSPCore.release.xcconfig"; sourceTree = "<group>"; };
 		3BEFDC62A992B10540FF1C8C /* libPods-MSPCore.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-MSPCore.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		660ED3E02CB45513002F237C /* common.pb.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = common.pb.swift; sourceTree = "<group>"; };
+		660ED3E22CB45557002F237C /* MESMetricReporter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MESMetricReporter.swift; sourceTree = "<group>"; };
 		6639AC852B4DFAE300A248D2 /* MSPCore.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = MSPCore.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		6639AC882B4DFAE300A248D2 /* MSPCore.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MSPCore.h; sourceTree = "<group>"; };
 		6639AC892B4DFAE300A248D2 /* MSPCore.docc */ = {isa = PBXFileReference; lastKnownFileType = folder.documentationcatalog; path = MSPCore.docc; sourceTree = "<group>"; };
@@ -61,6 +72,13 @@
 		664DCF942B4F3FA900BF19B6 /* PrebidMobile.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; path = PrebidMobile.xcframework; sourceTree = "<group>"; };
 		664F333B2C4740320014E1BA /* MSPNativeAdContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MSPNativeAdContainer.swift; sourceTree = "<group>"; };
 		6684804A2BE03CE30025018B /* MSPDemoApp.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = MSPDemoApp.xcodeproj; path = ../MSPDemoApp/MSPDemoApp/MSPDemoApp.xcodeproj; sourceTree = "<group>"; };
+		66AFBBD92CB459B9000D0DD3 /* openrtb-v26.pb.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "openrtb-v26.pb.swift"; sourceTree = "<group>"; };
+		66AFBBDE2CB45FA9000D0DD3 /* ad_impression.pb.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ad_impression.pb.swift; sourceTree = "<group>"; };
+		66AFBBE02CB45FB3000D0DD3 /* get_ad_from_cache.pb.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = get_ad_from_cache.pb.swift; sourceTree = "<group>"; };
+		66AFBBE22CB45FBB000D0DD3 /* load_ad_request.pb.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = load_ad_request.pb.swift; sourceTree = "<group>"; };
+		66AFBBE42CB45FC1000D0DD3 /* load_ad_result.pb.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = load_ad_result.pb.swift; sourceTree = "<group>"; };
+		66AFBBE62CB45FC8000D0DD3 /* sdk_init.pb.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = sdk_init.pb.swift; sourceTree = "<group>"; };
+		66AFBBF02CB4B70F000D0DD3 /* AdMetricReporterImp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdMetricReporterImp.swift; sourceTree = "<group>"; };
 		66CA2E132BE9B683001EFD30 /* libGoogleAdapter.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libGoogleAdapter.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		66CA2E152BE9B68D001EFD30 /* libGoogleAdapter.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libGoogleAdapter.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		66CA2E192BEAA159001EFD30 /* libGoogleAdapter.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libGoogleAdapter.a; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -112,12 +130,15 @@
 		6639AC872B4DFAE300A248D2 /* MSPCore */ = {
 			isa = PBXGroup;
 			children = (
+				66AFBBDC2CB45EF2000D0DD3 /* MESRawFiles */,
 				6639AC882B4DFAE300A248D2 /* MSPCore.h */,
 				6639AC892B4DFAE300A248D2 /* MSPCore.docc */,
 				6639ACAA2B4DFDF700A248D2 /* MSPHelper.swift */,
 				6639ACAC2B4E008B00A248D2 /* MSPBidLoaderProvider.swift */,
 				6639ACAE2B4E0C2B00A248D2 /* MSPAdNetworkAdapterProvider.swift */,
 				664F333B2C4740320014E1BA /* MSPNativeAdContainer.swift */,
+				660ED3E22CB45557002F237C /* MESMetricReporter.swift */,
+				66AFBBF02CB4B70F000D0DD3 /* AdMetricReporterImp.swift */,
 			);
 			path = MSPCore;
 			sourceTree = "<group>";
@@ -156,6 +177,20 @@
 				668480552BE03CE30025018B /* MSPDemoAppUITests.xctest */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		66AFBBDC2CB45EF2000D0DD3 /* MESRawFiles */ = {
+			isa = PBXGroup;
+			children = (
+				66AFBBDE2CB45FA9000D0DD3 /* ad_impression.pb.swift */,
+				66AFBBE62CB45FC8000D0DD3 /* sdk_init.pb.swift */,
+				66AFBBE22CB45FBB000D0DD3 /* load_ad_request.pb.swift */,
+				66AFBBE02CB45FB3000D0DD3 /* get_ad_from_cache.pb.swift */,
+				66AFBBE42CB45FC1000D0DD3 /* load_ad_result.pb.swift */,
+				660ED3E02CB45513002F237C /* common.pb.swift */,
+				66AFBBD92CB459B9000D0DD3 /* openrtb-v26.pb.swift */,
+			);
+			path = MESRawFiles;
 			sourceTree = "<group>";
 		};
 		ABBF8EA5F85DDCAEDC9BE415 /* Pods */ = {
@@ -332,11 +367,20 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				660ED3E32CB45557002F237C /* MESMetricReporter.swift in Sources */,
+				66AFBBDF2CB45FA9000D0DD3 /* ad_impression.pb.swift in Sources */,
+				66AFBBF12CB4B70F000D0DD3 /* AdMetricReporterImp.swift in Sources */,
 				6639ACAB2B4DFDF700A248D2 /* MSPHelper.swift in Sources */,
+				66AFBBE12CB45FB3000D0DD3 /* get_ad_from_cache.pb.swift in Sources */,
 				664F333C2C4740320014E1BA /* MSPNativeAdContainer.swift in Sources */,
 				6639ACAF2B4E0C2B00A248D2 /* MSPAdNetworkAdapterProvider.swift in Sources */,
+				66AFBBDA2CB459B9000D0DD3 /* openrtb-v26.pb.swift in Sources */,
 				6639AC8A2B4DFAE300A248D2 /* MSPCore.docc in Sources */,
+				66AFBBE52CB45FC1000D0DD3 /* load_ad_result.pb.swift in Sources */,
 				6639ACAD2B4E008B00A248D2 /* MSPBidLoaderProvider.swift in Sources */,
+				660ED3E12CB45513002F237C /* common.pb.swift in Sources */,
+				66AFBBE72CB45FC8000D0DD3 /* sdk_init.pb.swift in Sources */,
+				66AFBBE32CB45FBB000D0DD3 /* load_ad_request.pb.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
