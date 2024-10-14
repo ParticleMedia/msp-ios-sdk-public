@@ -56,6 +56,14 @@ class ViewController: UIViewController {
                 }, for: .touchUpInside)
                 button6.frame = CGRect(x: 100, y: 700, width: 200, height: 50)
                 view.addSubview(button6)
+        
+        let button7 = UIButton(type: .system)
+                button7.setTitle("Facebook Native View", for: .normal)
+                button7.addAction(UIAction { [weak self] _ in
+                    self?.openDemoAdPage(adType: .facebookNative)
+                }, for: .touchUpInside)
+                button7.frame = CGRect(x: 100, y: 800, width: 200, height: 50)
+                view.addSubview(button7)
        
     }
 

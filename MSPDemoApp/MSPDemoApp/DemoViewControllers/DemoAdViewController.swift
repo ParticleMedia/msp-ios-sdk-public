@@ -13,6 +13,7 @@ public enum AdType: String {
     case novaNative
     case googleInterstitial
     case novaInterstitial
+    case facebookNative
 }
 
 class DemoAdViewController: UIViewController {
@@ -35,6 +36,8 @@ class DemoAdViewController: UIViewController {
             return "demo-ios-article-top"
         case .novaInterstitial:
             return "demo-ios-launch-fullscreen"
+        case .facebookNative:
+            return "msp-ios-foryou-large-native-debug_fb"
         }
     }()
     
@@ -43,7 +46,7 @@ class DemoAdViewController: UIViewController {
         case .prebidBanner, .googleBanner :
             return .banner
     
-        case .googleNative, .novaNative:
+        case .googleNative, .novaNative, .facebookNative:
             return .native
         case .googleInterstitial, .novaInterstitial:
             return .interstitial
@@ -74,8 +77,10 @@ class DemoAdViewController: UIViewController {
             testParams["test"] = "{\"ad_network\":\"pubmatic\",\"test_ad\":true}"
         } else if adType == .googleBanner || adType == .googleInterstitial {
             testParams["test"] = "{\"ad_network\":\"msp_google\",\"test_ad\":true}"
+        } else if adType == .facebookNative {
+            testParams["test"] = "{\"ad_network\":\"msp_fb\",\"test_ad\":true}"
         }
-        
+         
         
         let adRequest = AdRequest(customParams: customParams,
                                   geo: nil,
