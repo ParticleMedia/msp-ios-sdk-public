@@ -210,12 +210,11 @@ public class MSPAdLoader: BidListener {
     weak var bidLoader: BidLoader?
     var adNetworkAdapter: AdNetworkAdapter?
 
-    var rootViewController: UIViewController?
     
     
     public init() {}
     
-    public func loadAd(placementId: String, adListener: AdListener, context: Any, adRequest: AdRequest, rootViewController: UIViewController) {
+    public func loadAd(placementId: String, adListener: AdListener, adRequest: AdRequest) {
         MESMetricReporter.shared.logAdRequest(adRequest: adRequest)
         self.adListener = adListener
         self.adRequest = adRequest
@@ -227,7 +226,6 @@ public class MSPAdLoader: BidListener {
         }
         
         self.bidLoader = MSP.shared.bidLoaderProvider.getBidLoader()
-        self.rootViewController = rootViewController
         bidLoader?.loadBid(placementId: placementId, adParams: adRequest.customParams, bidListener: self, adRequest: adRequest)
     }
     
@@ -236,7 +234,7 @@ public class MSPAdLoader: BidListener {
         if let adListener = self.adListener,
            let adRequest = self.adRequest {
             adNetworkAdapter?.setAdMetricReporter(adMetricReporter: AdMetricReporterImp())
-            adNetworkAdapter?.loadAdCreative(bidResponse: bidResponse, adListener: adListener, context: self.rootViewController ?? self, adRequest: adRequest)
+            adNetworkAdapter?.loadAdCreative(bidResponse: bidResponse, adListener: adListener, context: self, adRequest: adRequest)
         }
     }
     

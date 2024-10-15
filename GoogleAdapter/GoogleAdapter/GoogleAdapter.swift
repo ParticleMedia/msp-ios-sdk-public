@@ -10,8 +10,7 @@ import PrebidMobile
     }
     
     public func prepareViewForInteraction(nativeAd: MSPiOSCore.NativeAd, nativeAdView: Any) {
-        guard let rootViewController = self.rootViewController,
-              let nativeAdView = nativeAdView as? NativeAdView,
+        guard let nativeAdView = nativeAdView as? NativeAdView,
               let mediaView = nativeAdView.mediaView as? GADMediaView,
               let gadNativeAdItem = self.nativeAdItem else {return}
         let gadNativeAdView = GADNativeAdView()
@@ -59,7 +58,6 @@ import PrebidMobile
     }
     
     public var gadBannerView: GAMBannerView?
-    public var rootViewController: UIViewController?
     public var adListener: AdListener?
     public var priceInDollar: Double?
     
@@ -83,10 +81,6 @@ import PrebidMobile
             self.adListener?.onError(msg: "no valid response")
             self.adMetricReporter?.logAdResult(placementId: adRequest.placementId ?? "", ad: nil, fill: false, isFromCache: false)
             return
-        }
-        
-        if context is UIViewController {
-            self.rootViewController = context as? UIViewController
         }
         
         self.adListener = adListener
@@ -130,7 +124,7 @@ import PrebidMobile
                         var googleInterstitialAd = GoogleInterstitialAd(adNetworkAdapter: self)
                         googleInterstitialAd.interstitialAdItem = ad
                         ad.fullScreenContentDelegate = self
-                        googleInterstitialAd.rootViewController = self.rootViewController
+                        googleInterstitialAd.rootViewController = self.adListener?.getRootViewController()
                         self.interstitialAd = googleInterstitialAd
                         
                         if let adListener = self.adListener,
@@ -150,7 +144,7 @@ import PrebidMobile
                     request.adString = adString
                     gadBannerView.adUnitID = adUnitId
                     gadBannerView.delegate = self
-                    gadBannerView.rootViewController = self.rootViewController
+                    gadBannerView.rootViewController = self.adListener?.getRootViewController()
                     gadBannerView.load(request)
                 }
             }
@@ -161,7 +155,7 @@ import PrebidMobile
             videoOptions.startMuted = true
             adLoader = GADAdLoader(
                 adUnitID: adUnitId,
-                rootViewController: rootViewController,
+                rootViewController: self.adListener?.getRootViewController(),
                 adTypes: adTypes,
                 options: [videoOptions])
             adLoader?.delegate = self

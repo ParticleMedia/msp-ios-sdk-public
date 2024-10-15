@@ -23,9 +23,6 @@ public class NovaAdapter: AdNetworkAdapter {
     public var nativeAdView: NativeAdView?
     public var novaNativeAdView: NovaNativeAdView?
     
-    
-    public var rootViewController: UIViewController?
-    
     private var adRequest: AdRequest?
     
     private var adMetricReporter: AdMetricReporter?
@@ -63,9 +60,6 @@ public class NovaAdapter: AdNetworkAdapter {
         }
          
         self.priceInDollar = Double(mBidResponse.winningBid?.price ?? 0)
-        if context is UIViewController {
-            self.rootViewController = context as? UIViewController
-        }
         self.adUnitId = adUnitId
         let eCPMInDollar = Decimal(priceInDollar ?? 0.0)
         let novaAdType: String
@@ -80,12 +74,11 @@ public class NovaAdapter: AdNetworkAdapter {
     public func prepareViewForInteraction(nativeAd: MSPiOSCore.NativeAd, nativeAdView: Any) {
         let adOpenActionHandler = NovaAdOpenActionHandler()
         let actionHandlerMaster = ActionHandlerMaster(actionHandlers: [adOpenActionHandler])
-        guard let rootViewController = self.rootViewController,
-              let nativeAdView = nativeAdView as? NativeAdView,
+        guard let nativeAdView = nativeAdView as? NativeAdView,
               let mediaView = nativeAdView.mediaView as? NovaNativeAdMediaView,
               let novaNativeAdItem = self.nativeAdItem else {return}
         let novaNativeAdView = NovaNativeAdView(actionHandler: actionHandlerMaster, 
-                                                rootViewController: rootViewController,
+                                                rootViewController: nativeAdView.rootViewController,
                                                 mediaView: mediaView)
         novaNativeAdView.titleLabel = nativeAdView.titleLabel
         novaNativeAdView.bodyLabel = nativeAdView.bodyLabel
@@ -172,7 +165,7 @@ public class NovaAdapter: AdNetworkAdapter {
                 var novaInterstitialAd = NovaInterstitialAd(adNetworkAdapter: self)
                 novaInterstitialAd.interstitialAdItem = appOpenAd
                 //ad.fullScreenContentDelegate = self
-                novaInterstitialAd.rootViewController = self.rootViewController
+                novaInterstitialAd.rootViewController = self.adListener?.getRootViewController()
                 self.interstitialAd = novaInterstitialAd
                 novaInterstitialAd.adInfo["priceInDollar"] = self.priceInDollar
                 appOpenAd?.delegate = self
@@ -212,10 +205,6 @@ public class NovaAdapter: AdNetworkAdapter {
         self.adListener = adListener
         self.adRequest = adRequest
 
-        if context is UIViewController {
-            self.rootViewController = context as? UIViewController
-        }
-
         let eCPMInDollar = Decimal(priceInDollar ?? 0.0)
         let adType = adRequest.adFormat == .interstitial ? "app_open" : "native"
         parseNovaAdString(adString: adString, adType: adType, adUnitId: "dummy_id", eCPMInDollar: eCPMInDollar)
@@ -241,7 +230,7 @@ extension NovaAdapter: NovaNativeAdDelegate {
     }
     
     public func nativeAdRootViewController() -> UIViewController? {
-        return self.rootViewController
+        return self.adListener?.getRootViewController()
     }
 }
 
