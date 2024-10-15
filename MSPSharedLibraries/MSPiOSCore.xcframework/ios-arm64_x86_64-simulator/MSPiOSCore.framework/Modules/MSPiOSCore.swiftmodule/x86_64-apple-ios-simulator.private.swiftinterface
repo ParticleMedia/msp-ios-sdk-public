@@ -97,6 +97,7 @@ public protocol AdListener {
   func onAdClick(ad: MSPiOSCore.MSPAd)
   func onAdLoaded(placementId: Swift.String)
   func onAdDismissed(ad: MSPiOSCore.InterstitialAd)
+  func getRootViewController() -> UIKit.UIViewController?
 }
 public protocol AdNetworkAdapter {
   func loadAdCreative(bidResponse: Any, adListener: any MSPiOSCore.AdListener, context: Any, adRequest: MSPiOSCore.AdRequest)
@@ -216,6 +217,7 @@ public protocol MSPInitializationParameters : MSPiOSCore.InitializationParameter
 open class MSPAd {
   public var adNetworkAdapter: any MSPiOSCore.AdNetworkAdapter
   public var adInfo: [Swift.String : Any]
+  public var adListener: (any MSPiOSCore.AdListener)?
   public init(adNetworkAdapter: any MSPiOSCore.AdNetworkAdapter)
   public func destroy()
   @objc deinit
