@@ -93,14 +93,16 @@ class DemoAdViewController: UIViewController {
                                   testParams: testParams)
         adLoader.loadAd(placementId: placementId,
                         adListener: self,
-                        context: self,
-                        adRequest: adRequest,
-                        rootViewController:self)
+                        adRequest: adRequest)
     }
 
 }
 
 extension DemoAdViewController: AdListener {
+    func getRootViewController() -> UIViewController? {
+        return self
+    }
+    
     func onAdDismissed(ad: MSPiOSCore.InterstitialAd) {
         
     }

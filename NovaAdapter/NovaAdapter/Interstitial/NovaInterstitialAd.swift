@@ -20,4 +20,10 @@ public class NovaInterstitialAd: MSPiOSCore.InterstitialAd {
             interstitialAdItem?.present(rootViewController: rootViewController)
         }
     }
+    
+    public override func show(rootViewController: UIViewController?) {
+        if let rootViewController = rootViewController {
+            interstitialAdItem?.present(rootViewController: rootViewController)
+        }
+    }
 }

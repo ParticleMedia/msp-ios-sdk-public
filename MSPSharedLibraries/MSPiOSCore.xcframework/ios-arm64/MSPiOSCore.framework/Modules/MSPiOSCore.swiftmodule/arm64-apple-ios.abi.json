@@ -813,6 +813,41 @@
             "funcSelfKind": "NonMutating"
           },
           {
+            "kind": "Function",
+            "name": "show",
+            "printedName": "show(rootViewController:)",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Void",
+                "printedName": "()"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "Optional",
+                "printedName": "UIKit.UIViewController?",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "UIViewController",
+                    "printedName": "UIKit.UIViewController",
+                    "usr": "c:objc(cs)UIViewController"
+                  }
+                ],
+                "usr": "s:Sq"
+              }
+            ],
+            "declKind": "Func",
+            "usr": "s:10MSPiOSCore14InterstitialAdC4show18rootViewControllerySo06UIViewH0CSg_tF",
+            "mangledName": "$s10MSPiOSCore14InterstitialAdC4show18rootViewControllerySo06UIViewH0CSg_tF",
+            "moduleName": "MSPiOSCore",
+            "isOpen": true,
+            "declAttributes": [
+              "AccessControl"
+            ],
+            "funcSelfKind": "NonMutating"
+          },
+          {
             "kind": "Constructor",
             "name": "init",
             "printedName": "init(adNetworkAdapter:)",
@@ -2903,6 +2938,13 @@
         ]
       },
       {
+        "kind": "Import",
+        "name": "UIKit",
+        "printedName": "UIKit",
+        "declKind": "Import",
+        "moduleName": "MSPiOSCore"
+      },
+      {
         "kind": "TypeDecl",
         "name": "AdListener",
         "printedName": "AdListener",
@@ -3062,6 +3104,36 @@
             "declKind": "Func",
             "usr": "s:10MSPiOSCore10AdListenerP02onC9Dismissed2adyAA012InterstitialC0C_tF",
             "mangledName": "$s10MSPiOSCore10AdListenerP02onC9Dismissed2adyAA012InterstitialC0C_tF",
+            "moduleName": "MSPiOSCore",
+            "genericSig": "<τ_0_0 where τ_0_0 : MSPiOSCore.AdListener>",
+            "sugared_genericSig": "<Self where Self : MSPiOSCore.AdListener>",
+            "protocolReq": true,
+            "reqNewWitnessTableEntry": true,
+            "funcSelfKind": "NonMutating"
+          },
+          {
+            "kind": "Function",
+            "name": "getRootViewController",
+            "printedName": "getRootViewController()",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Optional",
+                "printedName": "UIKit.UIViewController?",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "UIViewController",
+                    "printedName": "UIKit.UIViewController",
+                    "usr": "c:objc(cs)UIViewController"
+                  }
+                ],
+                "usr": "s:Sq"
+              }
+            ],
+            "declKind": "Func",
+            "usr": "s:10MSPiOSCore10AdListenerP21getRootViewControllerSo06UIViewH0CSgyF",
+            "mangledName": "$s10MSPiOSCore10AdListenerP21getRootViewControllerSo06UIViewH0CSgyF",
             "moduleName": "MSPiOSCore",
             "genericSig": "<τ_0_0 where τ_0_0 : MSPiOSCore.AdListener>",
             "sugared_genericSig": "<Self where Self : MSPiOSCore.AdListener>",
@@ -8195,6 +8267,116 @@
                 "declKind": "Accessor",
                 "usr": "s:10MSPiOSCore5MSPAdC6adInfoSDySSypGvM",
                 "mangledName": "$s10MSPiOSCore5MSPAdC6adInfoSDySSypGvM",
+                "moduleName": "MSPiOSCore",
+                "implicit": true,
+                "accessorKind": "_modify"
+              }
+            ]
+          },
+          {
+            "kind": "Var",
+            "name": "adListener",
+            "printedName": "adListener",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Optional",
+                "printedName": "(any MSPiOSCore.AdListener)?",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "AdListener",
+                    "printedName": "any MSPiOSCore.AdListener",
+                    "usr": "s:10MSPiOSCore10AdListenerP"
+                  }
+                ],
+                "usr": "s:Sq"
+              }
+            ],
+            "declKind": "Var",
+            "usr": "s:10MSPiOSCore5MSPAdC10adListenerAA02AdE0_pSgvp",
+            "mangledName": "$s10MSPiOSCore5MSPAdC10adListenerAA02AdE0_pSgvp",
+            "moduleName": "MSPiOSCore",
+            "declAttributes": [
+              "HasInitialValue",
+              "HasStorage",
+              "AccessControl"
+            ],
+            "hasStorage": true,
+            "accessors": [
+              {
+                "kind": "Accessor",
+                "name": "Get",
+                "printedName": "Get()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Optional",
+                    "printedName": "(any MSPiOSCore.AdListener)?",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "AdListener",
+                        "printedName": "any MSPiOSCore.AdListener",
+                        "usr": "s:10MSPiOSCore10AdListenerP"
+                      }
+                    ],
+                    "usr": "s:Sq"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:10MSPiOSCore5MSPAdC10adListenerAA02AdE0_pSgvg",
+                "mangledName": "$s10MSPiOSCore5MSPAdC10adListenerAA02AdE0_pSgvg",
+                "moduleName": "MSPiOSCore",
+                "implicit": true,
+                "accessorKind": "get"
+              },
+              {
+                "kind": "Accessor",
+                "name": "Set",
+                "printedName": "Set()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Void",
+                    "printedName": "()"
+                  },
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Optional",
+                    "printedName": "(any MSPiOSCore.AdListener)?",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "AdListener",
+                        "printedName": "any MSPiOSCore.AdListener",
+                        "usr": "s:10MSPiOSCore10AdListenerP"
+                      }
+                    ],
+                    "usr": "s:Sq"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:10MSPiOSCore5MSPAdC10adListenerAA02AdE0_pSgvs",
+                "mangledName": "$s10MSPiOSCore5MSPAdC10adListenerAA02AdE0_pSgvs",
+                "moduleName": "MSPiOSCore",
+                "implicit": true,
+                "accessorKind": "set"
+              },
+              {
+                "kind": "Accessor",
+                "name": "Modify",
+                "printedName": "Modify()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Void",
+                    "printedName": "()"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:10MSPiOSCore5MSPAdC10adListenerAA02AdE0_pSgvM",
+                "mangledName": "$s10MSPiOSCore5MSPAdC10adListenerAA02AdE0_pSgvM",
                 "moduleName": "MSPiOSCore",
                 "implicit": true,
                 "accessorKind": "_modify"
