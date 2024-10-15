@@ -15,8 +15,10 @@ public class GoogleInterstitialAd: MSPiOSCore.InterstitialAd {
     public var interstitialAdItem: GADInterstitialAd?
     
     public override func show() {
-        if let rootViewController = rootViewController {
-            interstitialAdItem?.present(fromRootViewController: rootViewController)
-        }
+        interstitialAdItem?.present(fromRootViewController: rootViewController)
+    }
+    
+    public override func show(rootViewController: UIViewController?) {
+        interstitialAdItem?.present(fromRootViewController: rootViewController)
     }
 }
