@@ -256,23 +256,7 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "179"
             endingLineNumber = "179"
-            landmarkName = "unknown"
-            landmarkType = "0">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "2C262871-A9C8-4C47-830F-DD3ECB1DD8C4"
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "NovaCore/NovaCore/MSPActionHandler/NovaAdOpenActionHandler.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "49"
-            endingLineNumber = "49"
-            landmarkName = "performAction(actionModel:)"
+            landmarkName = "nativeAdDidClick(_:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -318,8 +302,8 @@
             filePath = "MSPDemoApp/MSPDemoApp/DemoViewControllers/DemoAdViewController.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "162"
-            endingLineNumber = "162"
+            startingLineNumber = "164"
+            endingLineNumber = "164"
             landmarkName = "onError(msg:)"
             landmarkType = "7">
          </BreakpointContent>
