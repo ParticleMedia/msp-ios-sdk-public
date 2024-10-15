@@ -36,6 +36,7 @@ public enum AdapterAdLoadError {
 }
 @_inheritsConvenienceInitializers open class InterstitialAd : MSPiOSCore.MSPAd {
   open func show()
+  open func show(rootViewController: UIKit.UIViewController?)
   override public init(adNetworkAdapter: any MSPiOSCore.AdNetworkAdapter)
   @objc deinit
 }

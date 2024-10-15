@@ -37,7 +37,6 @@ import UIKit
         }
     }
     
-    @objc public var rootViewController: UIViewController?
     public var adListener: AdListener?
     
     public var bannerView: BannerView?
@@ -54,13 +53,6 @@ import UIKit
             return
         }
         self.adRequest = adRequest
-        if context is UIViewController {
-            self.rootViewController = context as? UIViewController
-        }
-        guard let rootViewController else {
-            adListener.onError(msg: "missing rootViewController")
-            return
-        }
         
         let width = Int(adRequest.adSize?.width ?? 320)
         let height = Int(adRequest.adSize?.height ?? 50)
@@ -83,14 +75,11 @@ import UIKit
         }
    }
     
-    public func registerRootViewController(rootViewController: UIViewController?) {
-        self.rootViewController = rootViewController
-    }
 }
 
 extension PrebidAdapter: BannerViewDelegate {
     public func bannerViewPresentationController() -> UIViewController? {
-        return rootViewController
+        return self.adListener?.getRootViewController()
     }
     
     @objc public func bannerViewDidReceiveBidResponse(_ bannerView: BannerView) {
