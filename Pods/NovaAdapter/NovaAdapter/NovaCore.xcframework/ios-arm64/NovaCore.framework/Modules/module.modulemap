@@ -1,0 +1,12 @@
+framework module NovaCore {
+    
+    // Versions
+    header "NovaCore.h"
+    
+    
+}
+
+module NovaCore.Swift {
+  header "NovaCore-Swift.h"
+  requires objc
+}
