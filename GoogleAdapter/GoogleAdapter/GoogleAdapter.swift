@@ -150,7 +150,12 @@ import PrebidMobile
             }
 
         case "native":
-            let adTypes: [GADAdLoaderAdType] = [.native]
+            let adTypes: [GADAdLoaderAdType] 
+            if adRequest.adFormat == .native {
+                adTypes = [.native]
+            } else {
+                adTypes = [.native, .gamBanner]
+            }
             let videoOptions = GADVideoOptions()
             videoOptions.startMuted = true
             adLoader = GADAdLoader(
@@ -338,6 +343,30 @@ extension GoogleAdapter: GADFullScreenContentDelegate {
         }
     }
 
+}
+
+extension GoogleAdapter: GAMBannerAdLoaderDelegate {
+    public func validBannerSizes(for adLoader: GADAdLoader) -> [NSValue] {
+        if let adRequest = adRequest {
+            let adSize = self.getGADAdSize(adRequest: adRequest)
+            return [NSValueFromGADAdSize(adSize)]
+        }
+        return [NSValueFromGADAdSize(GADAdSizeMediumRectangle)] //default size: 300 * 250
+    }
+    
+    public func adLoader(_ adLoader: GADAdLoader, didReceive bannerView: GAMBannerView) {
+        var bannerAd = BannerAd(adView: bannerView, adNetworkAdapter: self)
+        self.bannerAd = bannerAd
+        if let priceInDollar = self.priceInDollar {
+            bannerAd.adInfo["priceInDollar"] = priceInDollar
+        }
+        
+        if let adListener = adListener,
+           let adRequest = adRequest {
+            handleAdLoaded(ad: bannerAd, listener: adListener, adRequest: adRequest)
+            self.adMetricReporter?.logAdResult(placementId: adRequest.placementId, ad: bannerAd, fill: true, isFromCache: false)
+        }
+    }
 }
 
                             
