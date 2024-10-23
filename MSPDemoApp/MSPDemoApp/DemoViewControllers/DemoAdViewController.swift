@@ -37,7 +37,7 @@ class DemoAdViewController: UIViewController {
         case .novaInterstitial:
             return "demo-ios-launch-fullscreen"
         case .facebookNative:
-            return "msp-ios-foryou-large-native-debug_fb"
+            return "demo-ios-foryou-large"
         }
     }()
     
