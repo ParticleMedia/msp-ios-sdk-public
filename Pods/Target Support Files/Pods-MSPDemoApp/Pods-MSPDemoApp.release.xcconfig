@@ -1,7 +1,7 @@
 ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES
 CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = NO
 EXCLUDED_ARCHS[sdk=iphonesimulator*] = arm64
-FRAMEWORK_SEARCH_PATHS = $(inherited) "${PODS_ROOT}/Google-Mobile-Ads-SDK/Frameworks/GoogleMobileAdsFramework" "${PODS_ROOT}/GoogleUserMessagingPlatform/Frameworks/Release" "${PODS_ROOT}/MSPSharedLibraries/MSPSharedLibraries" "${PODS_ROOT}/NovaAdapter/NovaAdapter" "${PODS_XCFRAMEWORKS_BUILD_DIR}/Google-Mobile-Ads-SDK" "${PODS_XCFRAMEWORKS_BUILD_DIR}/GoogleUserMessagingPlatform" "${PODS_XCFRAMEWORKS_BUILD_DIR}/MSPSharedLibraries" "${PODS_XCFRAMEWORKS_BUILD_DIR}/NovaAdapter"
+FRAMEWORK_SEARCH_PATHS = $(inherited) "${PODS_ROOT}/../NovaAdapter" "${PODS_ROOT}/Google-Mobile-Ads-SDK/Frameworks/GoogleMobileAdsFramework" "${PODS_ROOT}/GoogleUserMessagingPlatform/Frameworks/Release" "${PODS_ROOT}/MSPSharedLibraries/MSPSharedLibraries" "${PODS_XCFRAMEWORKS_BUILD_DIR}/Google-Mobile-Ads-SDK" "${PODS_XCFRAMEWORKS_BUILD_DIR}/GoogleUserMessagingPlatform" "${PODS_XCFRAMEWORKS_BUILD_DIR}/MSPSharedLibraries" "${PODS_XCFRAMEWORKS_BUILD_DIR}/NovaAdapter"
 GCC_PREPROCESSOR_DEFINITIONS = $(inherited) COCOAPODS=1
 HEADER_SEARCH_PATHS = $(inherited) "${PODS_ROOT}/Headers/Public" "${PODS_ROOT}/Headers/Public/GoogleAdapter" "${PODS_ROOT}/Headers/Public/MSPCore" "${PODS_ROOT}/Headers/Public/MSPSharedLibraries" "${PODS_ROOT}/Headers/Public/NovaAdapter" "${PODS_ROOT}/Headers/Public/PrebidAdapter" "${PODS_ROOT}/Headers/Public/SDWebImage" "${PODS_ROOT}/Headers/Public/SDWebImageWebPCoder" "${PODS_ROOT}/Headers/Public/Shimmer" "${PODS_ROOT}/Headers/Public/libwebp"
 LD_RUNPATH_SEARCH_PATHS = $(inherited) /usr/lib/swift '@executable_path/Frameworks' '@loader_path/Frameworks'
