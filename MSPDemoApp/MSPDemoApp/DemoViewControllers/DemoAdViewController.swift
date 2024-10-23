@@ -14,6 +14,7 @@ public enum AdType: String {
     case googleInterstitial
     case novaInterstitial
     case facebookNative
+    case facebookInterstitial
 }
 
 class DemoAdViewController: UIViewController {
@@ -38,6 +39,8 @@ class DemoAdViewController: UIViewController {
             return "demo-ios-launch-fullscreen"
         case .facebookNative:
             return "demo-ios-foryou-large"
+        case .facebookInterstitial:
+            return "demo-ios-launch-fullscreen"
         }
     }()
     
@@ -48,7 +51,7 @@ class DemoAdViewController: UIViewController {
     
         case .googleNative, .novaNative, .facebookNative:
             return .native
-        case .googleInterstitial, .novaInterstitial:
+        case .googleInterstitial, .novaInterstitial, .facebookInterstitial:
             return .interstitial
         }
     }()

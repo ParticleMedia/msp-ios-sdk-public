@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		038135564898D05ECF9F4DE2 /* libPods-FacebookAdapter.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E08585DBE79311974847A20E /* libPods-FacebookAdapter.a */; };
+		668ACA632CC9B83C00F45803 /* FacebookInterstitialAd.swift in Sources */ = {isa = PBXBuildFile; fileRef = 668ACA622CC9B83C00F45803 /* FacebookInterstitialAd.swift */; };
 		66B730142C2CCB250042E4FF /* FacebookAdapter.docc in Sources */ = {isa = PBXBuildFile; fileRef = 66B730132C2CCB250042E4FF /* FacebookAdapter.docc */; };
 		66B7301A2C2CCB260042E4FF /* FacebookAdapter.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 66B7300F2C2CCB250042E4FF /* FacebookAdapter.framework */; };
 		66B7301F2C2CCB260042E4FF /* MetaAdapterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66B7301E2C2CCB260042E4FF /* MetaAdapterTests.swift */; };
@@ -31,6 +32,7 @@
 
 /* Begin PBXFileReference section */
 		3D26F55FD54E848B3F19F5D2 /* Pods-FacebookAdapter.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FacebookAdapter.debug.xcconfig"; path = "Target Support Files/Pods-FacebookAdapter/Pods-FacebookAdapter.debug.xcconfig"; sourceTree = "<group>"; };
+		668ACA622CC9B83C00F45803 /* FacebookInterstitialAd.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FacebookInterstitialAd.swift; sourceTree = "<group>"; };
 		66B7300F2C2CCB250042E4FF /* FacebookAdapter.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = FacebookAdapter.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		66B730122C2CCB250042E4FF /* FacebookAdapter.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = FacebookAdapter.h; sourceTree = "<group>"; };
 		66B730132C2CCB250042E4FF /* FacebookAdapter.docc */ = {isa = PBXFileReference; lastKnownFileType = folder.documentationcatalog; path = FacebookAdapter.docc; sourceTree = "<group>"; };
@@ -79,6 +81,14 @@
 			path = ../Pods;
 			sourceTree = "<group>";
 		};
+		668ACA612CC9B81800F45803 /* Interstitial */ = {
+			isa = PBXGroup;
+			children = (
+				668ACA622CC9B83C00F45803 /* FacebookInterstitialAd.swift */,
+			);
+			path = Interstitial;
+			sourceTree = "<group>";
+		};
 		66B730052C2CCB250042E4FF = {
 			isa = PBXGroup;
 			children = (
@@ -102,6 +112,7 @@
 		66B730112C2CCB250042E4FF /* FacebookAdapter */ = {
 			isa = PBXGroup;
 			children = (
+				668ACA612CC9B81800F45803 /* Interstitial */,
 				66B730302C2CD21B0042E4FF /* Native */,
 				66B730122C2CCB250042E4FF /* FacebookAdapter.h */,
 				66B730132C2CCB250042E4FF /* FacebookAdapter.docc */,
@@ -276,6 +287,7 @@
 				66B7302F2C2CD10F0042E4FF /* FacebookManager.swift in Sources */,
 				66B7302B2C2CCD390042E4FF /* FacebookAdapter.swift in Sources */,
 				66B730352C2CDD490042E4FF /* FacebookBidTokenProviderHelper.swift in Sources */,
+				668ACA632CC9B83C00F45803 /* FacebookInterstitialAd.swift in Sources */,
 				66B730142C2CCB250042E4FF /* FacebookAdapter.docc in Sources */,
 				66B7303B2C2E21D80042E4FF /* FacebookNativeAdView.swift in Sources */,
 			);
