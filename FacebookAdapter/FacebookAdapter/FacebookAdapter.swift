@@ -13,8 +13,7 @@ import Foundation
     }
     
     public func prepareViewForInteraction(nativeAd: MSPiOSCore.NativeAd, nativeAdView: Any) {
-        guard let rootViewController = self.rootViewController,
-              let nativeAdView = nativeAdView as? NativeAdView,
+        guard let nativeAdView = nativeAdView as? NativeAdView,
               let mediaView = nativeAdView.mediaView as? FBMediaView,
               let fbNativeAdItem = self.nativeAdItem else {return}
         //let fbNativeAdView = UIView()
@@ -26,15 +25,27 @@ import Foundation
             }
         }
         nativeAdView.nativeAdViewBinder.setUpViews(parentView: nativeAdView)
+        
+        let fbAdOptionsView = FBAdOptionsView(frame: .zero)
+        fbAdOptionsView.backgroundColor = .clear
+        fbAdOptionsView.translatesAutoresizingMaskIntoConstraints = false
+
+        nativeAdView.addSubview(fbAdOptionsView)
+        NSLayoutConstraint.activate([
+            fbAdOptionsView.topAnchor.constraint(equalTo: nativeAdView.topAnchor),
+            fbAdOptionsView.trailingAnchor.constraint(equalTo: nativeAdView.trailingAnchor),
+            fbAdOptionsView.widthAnchor.constraint(equalToConstant: FBAdOptionsViewWidth),
+            fbAdOptionsView.heightAnchor.constraint(equalToConstant: FBAdOptionsViewHeight)
+        ])
+        
         fbNativeAdItem.registerView(forInteraction: nativeAdView,
                                     mediaView: mediaView,
                                     iconImageView: nil,
                                     viewController: nil,
                                     clickableViews: fbSubViews.compactMap{ $0 })
+        fbAdOptionsView.nativeAd = fbNativeAdItem
     }
     
-    
-    public var rootViewController: UIViewController?
     public var adListener: AdListener?
     public var priceInDollar: Double?
     
