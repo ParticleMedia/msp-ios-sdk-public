@@ -1,1 +1,0 @@
-# msp-ios-sdk

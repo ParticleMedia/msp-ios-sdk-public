@@ -37,9 +37,9 @@ PODS:
   - SwiftProtobuf (1.21.0)
 
 DEPENDENCIES:
-  - GoogleAdapter (= 0.0.65)
-  - MSPCore (= 0.0.65)
-  - NovaAdapter (= 0.0.65)
+  - GoogleAdapter (from `./`)
+  - MSPCore (from `./`)
+  - NovaAdapter (from `./`)
   - SDWebImage (= 5.18.8)
   - SDWebImageWebPCoder (= 0.14.2)
   - Shimmer
@@ -48,18 +48,23 @@ DEPENDENCIES:
 SPEC REPOS:
   trunk:
     - Google-Mobile-Ads-SDK
-    - GoogleAdapter
     - GoogleUserMessagingPlatform
     - libwebp
-    - MSPCore
     - MSPSharedLibraries
-    - NovaAdapter
     - PrebidAdapter
     - SDWebImage
     - SDWebImageWebPCoder
     - Shimmer
     - SnapKit
     - SwiftProtobuf
+
+EXTERNAL SOURCES:
+  GoogleAdapter:
+    :path: "./"
+  MSPCore:
+    :path: "./"
+  NovaAdapter:
+    :path: "./"
 
 SPEC CHECKSUMS:
   Google-Mobile-Ads-SDK: 5a6d005a6cb5b5e8f4c7b69ca05cdea79c181139
@@ -76,6 +81,6 @@ SPEC CHECKSUMS:
   SnapKit: e01d52ebb8ddbc333eefe2132acf85c8227d9c25
   SwiftProtobuf: afced68785854575756db965e9da52bbf3dc45e7
 
-PODFILE CHECKSUM: 6a15c42713e71bac2e597d3561bccec488628626
+PODFILE CHECKSUM: ffb5bb3df808de0bc52bd17dca4df3fcc5b00177
 
 COCOAPODS: 1.15.2
