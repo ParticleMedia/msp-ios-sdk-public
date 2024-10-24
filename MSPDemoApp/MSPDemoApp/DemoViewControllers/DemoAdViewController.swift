@@ -78,7 +78,7 @@ class DemoAdViewController: UIViewController {
             testParams["test"] = "{\"ad_network\":\"msp_nova\",\"test_ad\":true}"
         } else if adType == .prebidBanner {
             testParams["test"] = "{\"ad_network\":\"pubmatic\",\"test_ad\":true}"
-        } else if adType == .googleBanner || adType == .googleInterstitial {
+        } else if adType == .googleBanner || adType == .googleInterstitial || adType == .googleNative {
             testParams["test"] = "{\"ad_network\":\"msp_google\",\"test_ad\":true}"
         } else if adType == .facebookNative || adType == .facebookInterstitial {
             testParams["test"] = "{\"ad_network\":\"msp_fb\",\"test_ad\":true}"
@@ -140,10 +140,8 @@ extension DemoAdViewController: AdListener {
                 //self.nativeAdView?.callToActionButton?.isHidden = true
                 nativeAdView.translatesAutoresizingMaskIntoConstraints = false
                 NSLayoutConstraint.activate([
-                    nativeAdView.leadingAnchor.constraint(lessThanOrEqualTo: self.view.leadingAnchor, constant: 100),
-                    nativeAdView.trailingAnchor.constraint(lessThanOrEqualTo: self.view.trailingAnchor),
-                    nativeAdView.topAnchor.constraint(lessThanOrEqualTo: self.view.topAnchor, constant: 100),
-                    nativeAdView.bottomAnchor.constraint(lessThanOrEqualTo: self.view.bottomAnchor),
+                    nativeAdView.centerXAnchor.constraint(equalTo: self.view.centerXAnchor),
+                    nativeAdView.topAnchor.constraint(lessThanOrEqualTo: self.view.topAnchor, constant: 200),
                     nativeAdView.widthAnchor.constraint(equalToConstant: 300.0)
                 ])
             }
