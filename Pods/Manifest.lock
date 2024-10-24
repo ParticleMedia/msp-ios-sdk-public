@@ -1,5 +1,5 @@
 PODS:
-  - FacebookAdapter (0.0.21):
+  - FacebookAdapter (0.0.67):
     - FBAudienceNetwork (= 6.15.0)
     - MSPSharedLibraries (= 0.0.64)
   - FBAudienceNetwork (6.15.0)
@@ -75,7 +75,7 @@ EXTERNAL SOURCES:
     :path: "./"
 
 SPEC CHECKSUMS:
-  FacebookAdapter: e6c78ed0f9c39c52d399b7b1b4e8fc2d768109f0
+  FacebookAdapter: 839d9b8107f386ac56da109517300c96d8b96d33
   FBAudienceNetwork: 80a035aa69cc3a71c99e44cb5c2874e4cef9909f
   Google-Mobile-Ads-SDK: 5a6d005a6cb5b5e8f4c7b69ca05cdea79c181139
   GoogleAdapter: 5ee4b015fe542d23f6eb90e0f3bfa7e20b31dbdd
