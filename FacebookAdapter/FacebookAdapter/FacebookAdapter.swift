@@ -9,12 +9,11 @@ import Foundation
 
 @objc public class FacebookAdapter : NSObject, AdNetworkAdapter {
     public func setAdMetricReporter(adMetricReporter: any MSPiOSCore.AdMetricReporter) {
-        
+        self.adMetricReporter = adMetricReporter
     }
     
     public func prepareViewForInteraction(nativeAd: MSPiOSCore.NativeAd, nativeAdView: Any) {
-        guard let rootViewController = self.rootViewController,
-              let nativeAdView = nativeAdView as? NativeAdView,
+        guard let nativeAdView = nativeAdView as? NativeAdView,
               let mediaView = nativeAdView.mediaView as? FBMediaView,
               let fbNativeAdItem = self.nativeAdItem else {return}
         //let fbNativeAdView = UIView()
@@ -26,21 +25,38 @@ import Foundation
             }
         }
         nativeAdView.nativeAdViewBinder.setUpViews(parentView: nativeAdView)
+        
+        let fbAdOptionsView = FBAdOptionsView(frame: .zero)
+        fbAdOptionsView.backgroundColor = .clear
+        fbAdOptionsView.translatesAutoresizingMaskIntoConstraints = false
+
+        nativeAdView.addSubview(fbAdOptionsView)
+        NSLayoutConstraint.activate([
+            fbAdOptionsView.topAnchor.constraint(equalTo: nativeAdView.topAnchor),
+            fbAdOptionsView.trailingAnchor.constraint(equalTo: nativeAdView.trailingAnchor),
+            fbAdOptionsView.widthAnchor.constraint(equalToConstant: FBAdOptionsViewWidth),
+            fbAdOptionsView.heightAnchor.constraint(equalToConstant: FBAdOptionsViewHeight)
+        ])
+        
         fbNativeAdItem.registerView(forInteraction: nativeAdView,
                                     mediaView: mediaView,
                                     iconImageView: nil,
                                     viewController: nil,
                                     clickableViews: fbSubViews.compactMap{ $0 })
+        fbAdOptionsView.nativeAd = fbNativeAdItem
     }
     
-    
-    public var rootViewController: UIViewController?
     public var adListener: AdListener?
     public var priceInDollar: Double?
     
     private var nativeAdItem: FBNativeAd?
     private var facebookNativeAd: FacebookNativeAd?
     private var adRequest: AdRequest?
+    
+    private var facebookInterstitialAd: FacebookInterstitialAd?
+    private var interstitialAdItem: FBInterstitialAd?
+    
+    private var adMetricReporter: AdMetricReporter?
     
     public func destroyAd() {
         
@@ -85,6 +101,20 @@ import Foundation
 
             DispatchQueue.main.async {
                 self.nativeAdItem?.loadAd(withBidPayload: adString)
+            }
+        case "banner":
+            if adRequest.adFormat == .interstitial {
+                guard let placementId = self.getFBPlacementId(from: adString) else {
+                    self.adListener?.onError(msg: "Missing FB payload or placementId")
+                    return
+                }
+                let facebookInterstitialAdItem = FBInterstitialAd(placementID: placementId)
+                self.interstitialAdItem = facebookInterstitialAdItem
+                facebookInterstitialAdItem.delegate = self
+                DispatchQueue.main.async {
+                    facebookInterstitialAdItem.load(withBidPayload: adString)
+                }
+                
             }
         default:
             self.adListener?.onError(msg: "unknown adType")
@@ -175,6 +205,46 @@ extension FacebookAdapter: FBNativeAdDelegate {
     public func nativeAdDidClick(_ nativeAd: FBNativeAd) {
         if let facebookNativeAd = self.facebookNativeAd {
             self.adListener?.onAdClick(ad: facebookNativeAd)
+        }
+    }
+}
+
+extension FacebookAdapter: FBInterstitialAdDelegate {
+    public func interstitialAdDidLoad(_ interstitialAd: FBInterstitialAd) {
+        var facebookInterstitialAd = FacebookInterstitialAd(adNetworkAdapter: self)
+        facebookInterstitialAd.interstitialAdItem = interstitialAd
+        interstitialAd.delegate = self
+        self.interstitialAdItem = interstitialAd
+        self.facebookInterstitialAd = facebookInterstitialAd
+        
+        
+        if let adListener = self.adListener,
+           let adRequest = self.adRequest {
+            handleAdLoaded(ad: facebookInterstitialAd, listener: adListener, adRequest: adRequest)
+            self.adMetricReporter?.logAdResult(placementId: adRequest.placementId, ad: facebookInterstitialAd, fill: true, isFromCache: false)
+        }
+    }
+    
+    public func interstitialAd(_ interstitialAd: FBInterstitialAd, didFailWithError error: Error) {
+        self.adListener?.onError(msg: error.localizedDescription)
+        self.adMetricReporter?.logAdResult(placementId: adRequest?.placementId ?? "", ad: nil, fill: false, isFromCache: false)
+    }
+    
+    public func interstitialAdDidClick(_ interstitialAd: FBInterstitialAd) {
+        if let facebookInterstitialAd = self.facebookInterstitialAd {
+            self.adListener?.onAdClick(ad: facebookInterstitialAd)
+        }
+    }
+    
+    public func interstitialAdDidClose(_ interstitialAd: FBInterstitialAd) {
+        if let facebookInterstitialAd = self.facebookInterstitialAd {
+            self.adListener?.onAdDismissed(ad: facebookInterstitialAd)
+        }
+    }
+    
+    public func interstitialAdWillLogImpression(_ interstitialAd: FBInterstitialAd) {
+        if let facebookInterstitialAd = self.facebookInterstitialAd {
+            self.adListener?.onAdImpression(ad: facebookInterstitialAd)
         }
     }
 }
