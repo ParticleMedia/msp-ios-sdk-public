@@ -5,7 +5,7 @@ Pod::Spec.new do |spec|
   
 
   spec.name         = "FacebookAdapter"
-  spec.version      = "0.0.67"
+  spec.version      = "0.0.68"
   spec.summary      = "an adapter for Meta SDK"
   spec.description  = "an adapter for Meta SDK for MSP S2S"
 
@@ -37,7 +37,7 @@ Pod::Spec.new do |spec|
   #  Supports git, hg, bzr, svn and HTTP.
   #
 
-  spec.source       = { :git => "https://github.com/huanzhiNB/msp-ios-sdk-public.git", :tag => "#{spec.version}" }
+  spec.source       = { :git => "https://github.com/ParticleMedia/msp-ios-sdk-public.git", :tag => "#{spec.version}" }
 
   spec.ios.deployment_target = '13.0'
 
