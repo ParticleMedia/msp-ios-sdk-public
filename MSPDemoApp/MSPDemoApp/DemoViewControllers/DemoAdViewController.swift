@@ -80,7 +80,7 @@ class DemoAdViewController: UIViewController {
             testParams["test"] = "{\"ad_network\":\"pubmatic\",\"test_ad\":true}"
         } else if adType == .googleBanner || adType == .googleInterstitial {
             testParams["test"] = "{\"ad_network\":\"msp_google\",\"test_ad\":true}"
-        } else if adType == .facebookNative {
+        } else if adType == .facebookNative || adType == .facebookInterstitial {
             testParams["test"] = "{\"ad_network\":\"msp_fb\",\"test_ad\":true}"
         }
          
