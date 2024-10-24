@@ -111,7 +111,9 @@ import Foundation
                 let facebookInterstitialAdItem = FBInterstitialAd(placementID: placementId)
                 self.interstitialAdItem = facebookInterstitialAdItem
                 facebookInterstitialAdItem.delegate = self
-                facebookInterstitialAdItem.load(withBidPayload: adString)
+                DispatchQueue.main.async {
+                    facebookInterstitialAdItem.load(withBidPayload: adString)
+                }
                 
             }
         default:
