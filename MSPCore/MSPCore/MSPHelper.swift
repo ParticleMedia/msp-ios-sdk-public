@@ -1,9 +1,11 @@
 import Foundation
+import AdSupport
 import MSPiOSCore
 //import shared
 import PrebidAdapter
 import PrebidMobile
 import UIKit
+import AppTrackingTransparency
 
 import SwiftProtobuf
 
@@ -19,8 +21,13 @@ public class MSP {
     public var prebidHost = "https://msp.newsbreak.com"
     public var mesHost = "https://mes-msp.newsbreak.com"
     public var novaEventHost = "https://dsp.newsbreak.com"
+    public var orgId: Int64?
+    public var appId: Int64?
     public var org: String?
     public var app: String?
+    public var ppid: String?
+    public var email: String?
+    public var prebidAPIKey: String?
     
     public func initMSP(initParams: InitializationParameters, sdkInitListener: MSPInitListener?) {
         // This is a temporary solution to replace MSPManager class in kotlin to solve the Kotlin singleton issue
@@ -28,8 +35,19 @@ public class MSP {
         AdCache.shared.adMetricReporter = AdMetricReporterImp()
         if initParams is InitializationParametersImp {
             let params = initParams as? InitializationParametersImp
-            self.org = params?.org
-            self.app = params?.app
+            self.orgId = params?.orgId
+            self.appId = params?.appId
+            if let orgId = orgId {
+                self.org = String(orgId)
+            }
+            if let appId = appId {
+                self.app = String(appId)
+            }
+            self.prebidAPIKey = initParams.getPrebidAPIKey()
+        }
+        
+        if UserDefaults.standard.string(forKey: "msp_user_id") == nil {
+            fetchMSPUserId()
         }
         
         let managers: [AdNetworkManager?] = [adNetworkAdapterProvider.googleManager, adNetworkAdapterProvider.metaManager, adNetworkAdapterProvider.novaManager]
@@ -139,6 +157,57 @@ public class MSP {
         // Start the task
         task.resume()
     }
+    
+    func fetchMSPUserId() {
+        guard let url = URL(string: "https://id-msp.newsbreak.com/getId") else {
+            return
+        }
+        let parameters: [String: Any] = [
+            "orgID": self.orgId ?? 0,
+            "appID": self.appId ?? 0,
+            "ppid": self.ppid ?? "",
+            "device_id": ASIdentifierManager.shared().advertisingIdentifier.uuidString ?? "",
+            "email": self.email ?? "",
+            "token": self.prebidAPIKey ?? ""
+        ]
+
+        guard let httpBody = try? JSONSerialization.data(withJSONObject: parameters, options: []) else {
+            print("Error: Cannot serialize parameters")
+            return
+        }
+        
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.httpBody = httpBody
+        
+        let task = URLSession.shared.dataTask(with: request) { data, response, error in
+            if let error = error {
+                print("Error: \(error)")
+                return
+            }
+            
+            if let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 {
+                if let data = data {
+                    do {
+                        // Handle JSON response
+                        if let responseDict = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any],
+                           let id = responseDict["id"] as? Int64 {
+                            UserDefaults.standard.setValue(String(id), forKey: "msp_user_id")
+                        }
+                    } catch {
+                        print("Error parsing response: \(error)")
+                    }
+                }
+            } else {
+                print("Unexpected response code or data")
+            }
+        }
+        
+        task.resume()
+
+    }
+    
 }
 
 public class InitializationParametersImp: InitializationParameters {
@@ -148,8 +217,8 @@ public class InitializationParametersImp: InitializationParameters {
     
     public var sourceApp: String?
     
-    public var org: String?
-    public var app: String?
+    public var orgId: Int64?
+    public var appId: Int64?
     
     public init(prebidAPIKey: String, prebidHostUrl: String, sourceApp: String? = nil) {
         self.prebidAPIKey = prebidAPIKey
@@ -157,16 +226,22 @@ public class InitializationParametersImp: InitializationParameters {
         self.sourceApp = sourceApp
     }
     
-    public init(prebidAPIKey: String, prebidHostUrl: String, org: String?, app: String?) {
+    public init(prebidAPIKey: String, prebidHostUrl: String, orgId: Int64?, appId: Int64?) {
         self.prebidAPIKey = prebidAPIKey
         self.prebidHostUrl = prebidHostUrl
-        self.org = org
-        self.app = app
+        self.orgId = orgId
+        self.appId = appId
     }
     
     public init(prebidAPIKey: String, sourceApp: String? = nil) {
         self.prebidAPIKey = prebidAPIKey
         self.sourceApp = sourceApp
+    }
+    
+    public init(prebidAPIKey: String, orgId: Int64?, appId: Int64?) {
+        self.prebidAPIKey = prebidAPIKey
+        self.orgId = orgId
+        self.appId = appId
     }
     
     public func getPrebidAPIKey() -> String {

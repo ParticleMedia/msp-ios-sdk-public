@@ -5,7 +5,7 @@ Pod::Spec.new do |spec|
   
 
   spec.name         = "PrebidAdapter"
-  spec.version      = "0.0.64"
+  spec.version      = "0.0.69"
   spec.summary      = "an adapter for Google SDK"
   spec.description  = "an adapter for Google SDK for MSP S2S"
 
