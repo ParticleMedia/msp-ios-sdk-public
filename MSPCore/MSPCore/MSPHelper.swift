@@ -165,9 +165,9 @@ public class MSP {
         let parameters: [String: Any] = [
             "orgID": self.orgId ?? 0,
             "appID": self.appId ?? 0,
-            "ppid": self.ppid ?? "test",
+            "ppid": self.ppid ?? "",
             "device_id": ASIdentifierManager.shared().advertisingIdentifier.uuidString ?? "",
-            "email": self.email ?? "test",
+            "email": self.email ?? "",
             "token": self.prebidAPIKey ?? ""
         ]
 
