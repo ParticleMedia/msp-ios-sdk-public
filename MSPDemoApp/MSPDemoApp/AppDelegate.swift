@@ -15,8 +15,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         
         let mspInitParameters = InitializationParametersImp(prebidAPIKey: "af7ce3f9-462d-4df1-815f-09314bb87ca3",
-                                                            sourceApp: "")
-        
+                                                            orgId: 1061,
+                                                            appId: 1)
         MSP.shared.setNovaManager(novaManager: NovaManager())
         
         MSP.shared.setGoogleManager(googleManager: GoogleManager())
