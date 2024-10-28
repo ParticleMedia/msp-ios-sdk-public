@@ -238,6 +238,12 @@ public class InitializationParametersImp: InitializationParameters {
         self.sourceApp = sourceApp
     }
     
+    public init(prebidAPIKey: String, orgId: Int64?, appId: Int64?) {
+        self.prebidAPIKey = prebidAPIKey
+        self.orgId = orgId
+        self.appId = appId
+    }
+    
     public func getPrebidAPIKey() -> String {
         return prebidAPIKey
     }
