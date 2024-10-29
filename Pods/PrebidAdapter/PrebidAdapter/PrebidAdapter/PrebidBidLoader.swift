@@ -123,10 +123,6 @@ public class PrebidBidLoader : BidLoader {
         
         if let userId = UserDefaults.standard.string(forKey: "msp_user_id") {
             adUnitConfig.addContextData(key: "user_id", value: userId)
-        } else {
-            let uuid = UUID().uuidString
-            adUnitConfig.addContextData(key: "user_id", value: uuid)
-            UserDefaults.standard.setValue(uuid, forKey: "msp_user_id")
         }
         
         let customParams = adRequest.customParams
