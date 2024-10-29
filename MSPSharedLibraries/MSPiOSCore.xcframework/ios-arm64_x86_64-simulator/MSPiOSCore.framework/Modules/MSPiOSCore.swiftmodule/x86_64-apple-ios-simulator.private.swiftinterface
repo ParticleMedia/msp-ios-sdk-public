@@ -1,5 +1,5 @@
 // swift-interface-format-version: 1.0
-// swift-compiler-version: Apple Swift version 5.10 (swiftlang-5.10.0.13 clang-1500.3.9.4)
+// swift-compiler-version: Apple Swift version 6.0 effective-5.10 (swiftlang-6.0.0.9.10 clang-1600.0.26.2)
 // swift-module-flags: -target x86_64-apple-ios13.0-simulator -enable-objc-interop -enable-library-evolution -swift-version 5 -enforce-exclusivity=checked -O -enable-bare-slash-regex -module-name MSPiOSCore
 import Foundation
 @_exported import MSPiOSCore
@@ -166,18 +166,18 @@ open class NativeAd : MSPiOSCore.MSPAd {
 public protocol FacebookBidTokenProvider {
   func fetch(completeListener: any MSPiOSCore.FacebookBidTokenListener, context: Any)
 }
-@objc @_hasMissingDesignatedInitializers @_Concurrency.MainActor(unsafe) public class NativeAdView : UIKit.UIView {
-  @_Concurrency.MainActor(unsafe) public var nativeAd: MSPiOSCore.NativeAd
-  @_Concurrency.MainActor(unsafe) public var rootViewController: UIKit.UIViewController
-  @_Concurrency.MainActor(unsafe) public var nativeAdViewBinder: MSPiOSCore.NativeAdViewBinder
-  @_Concurrency.MainActor(unsafe) public var titleLabel: UIKit.UILabel?
-  @_Concurrency.MainActor(unsafe) public var bodyLabel: UIKit.UILabel?
-  @_Concurrency.MainActor(unsafe) public var advertiserLabel: UIKit.UILabel?
-  @_Concurrency.MainActor(unsafe) public var callToActionButton: UIKit.UIButton?
-  @_Concurrency.MainActor(unsafe) public var optionView: UIKit.UIView?
-  @_Concurrency.MainActor(unsafe) public var mediaView: UIKit.UIView?
-  @_Concurrency.MainActor(unsafe) public var mediaController: (any MSPiOSCore.MediaController)?
-  @_Concurrency.MainActor(unsafe) public init(nativeAd: MSPiOSCore.NativeAd, rootViewController: UIKit.UIViewController, nativeAdViewBinder: MSPiOSCore.NativeAdViewBinder)
+@objc @_hasMissingDesignatedInitializers @_Concurrency.MainActor @preconcurrency public class NativeAdView : UIKit.UIView {
+  @_Concurrency.MainActor @preconcurrency public var nativeAd: MSPiOSCore.NativeAd
+  @_Concurrency.MainActor @preconcurrency weak public var rootViewController: UIKit.UIViewController?
+  @_Concurrency.MainActor @preconcurrency public var nativeAdViewBinder: MSPiOSCore.NativeAdViewBinder
+  @_Concurrency.MainActor @preconcurrency public var titleLabel: UIKit.UILabel?
+  @_Concurrency.MainActor @preconcurrency public var bodyLabel: UIKit.UILabel?
+  @_Concurrency.MainActor @preconcurrency public var advertiserLabel: UIKit.UILabel?
+  @_Concurrency.MainActor @preconcurrency public var callToActionButton: UIKit.UIButton?
+  @_Concurrency.MainActor @preconcurrency public var optionView: UIKit.UIView?
+  @_Concurrency.MainActor @preconcurrency public var mediaView: UIKit.UIView?
+  @_Concurrency.MainActor @preconcurrency public var mediaController: (any MSPiOSCore.MediaController)?
+  @_Concurrency.MainActor @preconcurrency public init(nativeAd: MSPiOSCore.NativeAd, nativeAdViewBinder: MSPiOSCore.NativeAdViewBinder)
   @objc deinit
 }
 open class NativeAdViewBinder {
