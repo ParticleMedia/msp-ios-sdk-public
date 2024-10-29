@@ -1,0 +1,6 @@
+module PrebidAdapter {
+  umbrella header "PrebidAdapter-umbrella.h"
+
+  export *
+  module * { export * }
+}
