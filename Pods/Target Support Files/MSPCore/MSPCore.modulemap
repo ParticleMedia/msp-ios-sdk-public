@@ -1,6 +1,0 @@
-module MSPCore {
-  umbrella header "MSPCore-umbrella.h"
-
-  export *
-  module * { export * }
-}

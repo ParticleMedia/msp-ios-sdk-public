@@ -1,13 +1,13 @@
 PODS:
   - FacebookAdapter (0.0.68):
     - FBAudienceNetwork (= 6.15.0)
-    - MSPSharedLibraries (= 0.0.64)
+    - MSPSharedLibraries (= 0.0.70)
   - FBAudienceNetwork (6.15.0)
   - Google-Mobile-Ads-SDK (11.2.0):
     - GoogleUserMessagingPlatform (>= 1.1)
   - GoogleAdapter (0.0.66):
     - Google-Mobile-Ads-SDK (= 11.2.0)
-    - MSPSharedLibraries (= 0.0.64)
+    - MSPSharedLibraries (= 0.0.70)
   - GoogleUserMessagingPlatform (2.6.0)
   - libwebp (1.3.2):
     - libwebp/demux (= 1.3.2)
@@ -21,15 +21,9 @@ PODS:
   - libwebp/sharpyuv (1.3.2)
   - libwebp/webp (1.3.2):
     - libwebp/sharpyuv
-  - MSPCore (0.0.65):
-    - MSPSharedLibraries (= 0.0.64)
-    - PrebidAdapter (= 0.0.64)
-    - SwiftProtobuf (= 1.21.0)
-  - MSPSharedLibraries (0.0.64)
+  - MSPSharedLibraries (0.0.70)
   - NovaAdapter (0.0.65):
-    - MSPSharedLibraries (= 0.0.64)
-  - PrebidAdapter (0.0.64):
-    - MSPSharedLibraries (= 0.0.64)
+    - MSPSharedLibraries (= 0.0.70)
   - SDWebImage (5.18.8):
     - SDWebImage/Core (= 5.18.8)
   - SDWebImage/Core (5.18.8)
@@ -38,12 +32,10 @@ PODS:
     - SDWebImage/Core (~> 5.17)
   - Shimmer (1.0.2)
   - SnapKit (5.6.0)
-  - SwiftProtobuf (1.21.0)
 
 DEPENDENCIES:
   - FacebookAdapter (from `./`)
   - GoogleAdapter (from `./`)
-  - MSPCore (from `./`)
   - NovaAdapter (from `./`)
   - SDWebImage (= 5.18.8)
   - SDWebImageWebPCoder (= 0.14.2)
@@ -57,40 +49,33 @@ SPEC REPOS:
     - GoogleUserMessagingPlatform
     - libwebp
     - MSPSharedLibraries
-    - PrebidAdapter
     - SDWebImage
     - SDWebImageWebPCoder
     - Shimmer
     - SnapKit
-    - SwiftProtobuf
 
 EXTERNAL SOURCES:
   FacebookAdapter:
     :path: "./"
   GoogleAdapter:
     :path: "./"
-  MSPCore:
-    :path: "./"
   NovaAdapter:
     :path: "./"
 
 SPEC CHECKSUMS:
-  FacebookAdapter: a96ee32547a84129f8a52dcfa32a0f2dfd936c43
+  FacebookAdapter: c6eb46632c086cdafff31bb786661b92de04b23b
   FBAudienceNetwork: 80a035aa69cc3a71c99e44cb5c2874e4cef9909f
   Google-Mobile-Ads-SDK: 5a6d005a6cb5b5e8f4c7b69ca05cdea79c181139
-  GoogleAdapter: 5ee4b015fe542d23f6eb90e0f3bfa7e20b31dbdd
+  GoogleAdapter: 705ba508adbe2ae164c8d173bedf02d17402d3f0
   GoogleUserMessagingPlatform: 0c3a08353e53ce8c2feab7addd0b652cde522450
   libwebp: 1786c9f4ff8a279e4dac1e8f385004d5fc253009
-  MSPCore: 2e7953623088be3c6451234bdb865e670e0bd7e9
-  MSPSharedLibraries: 5afabcfd3a685571361236d52bb63261f96e90bb
-  NovaAdapter: 14105fdb692e7ee800e73de321cc1ac41b011e96
-  PrebidAdapter: 9eb0fa13a4a9a9f433c7b7452734debed5b1c893
+  MSPSharedLibraries: 0efdaa5fd388afc9b8bde3552134f765d289d5c5
+  NovaAdapter: dd6de808397a4a69128103277038c15a1fc7d7a3
   SDWebImage: a81bbb3ba4ea5f810f4069c68727cb118467a04a
   SDWebImageWebPCoder: 633b813fca24f1de5e076bcd7f720c038b23892b
   Shimmer: c5374be1c2b0c9e292fb05b339a513cf291cac86
   SnapKit: e01d52ebb8ddbc333eefe2132acf85c8227d9c25
-  SwiftProtobuf: afced68785854575756db965e9da52bbf3dc45e7
 
-PODFILE CHECKSUM: a53f20ee4167c2264e74612a8c9bfb8ce69ddddf
+PODFILE CHECKSUM: f66b76a81e5ceef4cbdea83d706117605c16eadd
 
 COCOAPODS: 1.15.2

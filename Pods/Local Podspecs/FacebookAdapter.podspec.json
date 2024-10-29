@@ -22,7 +22,7 @@
       "6.15.0"
     ],
     "MSPSharedLibraries": [
-      "0.0.64"
+      "0.0.70"
     ]
   },
   "pod_target_xcconfig": {
