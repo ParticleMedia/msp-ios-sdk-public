@@ -77,7 +77,7 @@ public class NovaAdapter: AdNetworkAdapter {
         guard let nativeAdView = nativeAdView as? NativeAdView,
               let mediaView = nativeAdView.mediaView as? NovaNativeAdMediaView,
               let novaNativeAdItem = self.nativeAdItem,
-              let rootViewController = nativeAdView.rootViewController else {
+              let rootViewController = self.adListener?.getRootViewController() else {
             self.adListener?.onError(msg: "fail to render native view")
             return
         }
