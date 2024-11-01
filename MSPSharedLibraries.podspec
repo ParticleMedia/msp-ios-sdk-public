@@ -16,7 +16,7 @@ Pod::Spec.new do |spec|
   #
 
   spec.name         = "MSPSharedLibraries"
-  spec.version      = "0.0.73"
+  spec.version      = "0.0.74"
   spec.summary      = "An utility helper for MSP"
 
   spec.ios.deployment_target = '13.0'
