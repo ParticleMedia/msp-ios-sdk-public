@@ -94,8 +94,8 @@ Pod::Spec.new do |spec|
   spec.source_files  = "MSPCore/MSPCore/**/*.{h,m,swift}"
   spec.exclude_files = "Classes/Exclude"
 
-  spec.dependency 'MSPSharedLibraries', '0.0.70'
-  spec.dependency 'PrebidAdapter', '0.0.71'
+  spec.dependency 'MSPSharedLibraries', '0.0.74'
+  spec.dependency 'PrebidAdapter', '0.0.74'
   spec.dependency 'SwiftProtobuf', '1.21.0'
   #spec.vendored_frameworks= "MSPCore/PrebidAdapter.xcframework"#, "PrebidMobile.xcframework", "MSPiOSCore.xcframework"
 

@@ -14,17 +14,17 @@ import Foundation
     
     public func prepareViewForInteraction(nativeAd: MSPiOSCore.NativeAd, nativeAdView: Any) {
         guard let nativeAdView = nativeAdView as? NativeAdView,
-              let mediaView = nativeAdView.mediaView as? FBMediaView,
+              let mediaView = nativeAdView.nativeAdViewBinder?.mediaView as? FBMediaView,
               let fbNativeAdItem = self.nativeAdItem else {return}
         //let fbNativeAdView = UIView()
         nativeAdView.translatesAutoresizingMaskIntoConstraints = false
-        let fbSubViews = [nativeAdView.titleLabel, nativeAdView.bodyLabel, nativeAdView.advertiserLabel, nativeAdView.callToActionButton, mediaView]
+        let fbSubViews = [nativeAdView.nativeAdViewBinder?.titleLabel, nativeAdView.nativeAdViewBinder?.bodyLabel, nativeAdView.nativeAdViewBinder?.advertiserLabel, nativeAdView.nativeAdViewBinder?.callToActionButton, mediaView]
         for view in fbSubViews {
             if let view = view {
                 nativeAdView.addSubview(view)
             }
         }
-        nativeAdView.nativeAdViewBinder.setUpViews(parentView: nativeAdView)
+        nativeAdView.nativeAdViewBinder?.setUpViews(parentView: nativeAdView)
         
         let fbAdOptionsView = FBAdOptionsView(frame: .zero)
         fbAdOptionsView.backgroundColor = .clear
