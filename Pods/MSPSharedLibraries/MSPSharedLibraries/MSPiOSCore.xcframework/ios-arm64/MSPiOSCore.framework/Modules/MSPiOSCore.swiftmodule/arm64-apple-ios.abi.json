@@ -6141,27 +6141,8 @@
             "children": [
               {
                 "kind": "TypeNominal",
-                "name": "NativeAdViewBinder",
-                "printedName": "MSPiOSCore.NativeAdViewBinder",
-                "usr": "s:10MSPiOSCore18NativeAdViewBinderC"
-              }
-            ],
-            "declKind": "Var",
-            "usr": "s:10MSPiOSCore12NativeAdViewC06nativedE6BinderAA0cdeG0Cvp",
-            "mangledName": "$s10MSPiOSCore12NativeAdViewC06nativedE6BinderAA0cdeG0Cvp",
-            "moduleName": "MSPiOSCore",
-            "declAttributes": [
-              "Preconcurrency",
-              "Custom",
-              "HasStorage",
-              "AccessControl"
-            ],
-            "hasStorage": true,
-            "accessors": [
-              {
-                "kind": "Accessor",
-                "name": "Get",
-                "printedName": "Get()",
+                "name": "Optional",
+                "printedName": "MSPiOSCore.NativeAdViewBinder?",
                 "children": [
                   {
                     "kind": "TypeNominal",
@@ -6170,80 +6151,12 @@
                     "usr": "s:10MSPiOSCore18NativeAdViewBinderC"
                   }
                 ],
-                "declKind": "Accessor",
-                "usr": "s:10MSPiOSCore12NativeAdViewC06nativedE6BinderAA0cdeG0Cvg",
-                "mangledName": "$s10MSPiOSCore12NativeAdViewC06nativedE6BinderAA0cdeG0Cvg",
-                "moduleName": "MSPiOSCore",
-                "implicit": true,
-                "accessorKind": "get"
-              },
-              {
-                "kind": "Accessor",
-                "name": "Set",
-                "printedName": "Set()",
-                "children": [
-                  {
-                    "kind": "TypeNominal",
-                    "name": "Void",
-                    "printedName": "()"
-                  },
-                  {
-                    "kind": "TypeNominal",
-                    "name": "NativeAdViewBinder",
-                    "printedName": "MSPiOSCore.NativeAdViewBinder",
-                    "usr": "s:10MSPiOSCore18NativeAdViewBinderC"
-                  }
-                ],
-                "declKind": "Accessor",
-                "usr": "s:10MSPiOSCore12NativeAdViewC06nativedE6BinderAA0cdeG0Cvs",
-                "mangledName": "$s10MSPiOSCore12NativeAdViewC06nativedE6BinderAA0cdeG0Cvs",
-                "moduleName": "MSPiOSCore",
-                "implicit": true,
-                "accessorKind": "set"
-              },
-              {
-                "kind": "Accessor",
-                "name": "Modify",
-                "printedName": "Modify()",
-                "children": [
-                  {
-                    "kind": "TypeNominal",
-                    "name": "Void",
-                    "printedName": "()"
-                  }
-                ],
-                "declKind": "Accessor",
-                "usr": "s:10MSPiOSCore12NativeAdViewC06nativedE6BinderAA0cdeG0CvM",
-                "mangledName": "$s10MSPiOSCore12NativeAdViewC06nativedE6BinderAA0cdeG0CvM",
-                "moduleName": "MSPiOSCore",
-                "implicit": true,
-                "accessorKind": "_modify"
-              }
-            ]
-          },
-          {
-            "kind": "Var",
-            "name": "titleLabel",
-            "printedName": "titleLabel",
-            "children": [
-              {
-                "kind": "TypeNominal",
-                "name": "Optional",
-                "printedName": "UIKit.UILabel?",
-                "children": [
-                  {
-                    "kind": "TypeNominal",
-                    "name": "UILabel",
-                    "printedName": "UIKit.UILabel",
-                    "usr": "c:objc(cs)UILabel"
-                  }
-                ],
                 "usr": "s:Sq"
               }
             ],
             "declKind": "Var",
-            "usr": "s:10MSPiOSCore12NativeAdViewC10titleLabelSo7UILabelCSgvp",
-            "mangledName": "$s10MSPiOSCore12NativeAdViewC10titleLabelSo7UILabelCSgvp",
+            "usr": "s:10MSPiOSCore12NativeAdViewC06nativedE6BinderAA0cdeG0CSgvp",
+            "mangledName": "$s10MSPiOSCore12NativeAdViewC06nativedE6BinderAA0cdeG0CSgvp",
             "moduleName": "MSPiOSCore",
             "declAttributes": [
               "HasInitialValue",
@@ -6262,21 +6175,21 @@
                   {
                     "kind": "TypeNominal",
                     "name": "Optional",
-                    "printedName": "UIKit.UILabel?",
+                    "printedName": "MSPiOSCore.NativeAdViewBinder?",
                     "children": [
                       {
                         "kind": "TypeNominal",
-                        "name": "UILabel",
-                        "printedName": "UIKit.UILabel",
-                        "usr": "c:objc(cs)UILabel"
+                        "name": "NativeAdViewBinder",
+                        "printedName": "MSPiOSCore.NativeAdViewBinder",
+                        "usr": "s:10MSPiOSCore18NativeAdViewBinderC"
                       }
                     ],
                     "usr": "s:Sq"
                   }
                 ],
                 "declKind": "Accessor",
-                "usr": "s:10MSPiOSCore12NativeAdViewC10titleLabelSo7UILabelCSgvg",
-                "mangledName": "$s10MSPiOSCore12NativeAdViewC10titleLabelSo7UILabelCSgvg",
+                "usr": "s:10MSPiOSCore12NativeAdViewC06nativedE6BinderAA0cdeG0CSgvg",
+                "mangledName": "$s10MSPiOSCore12NativeAdViewC06nativedE6BinderAA0cdeG0CSgvg",
                 "moduleName": "MSPiOSCore",
                 "implicit": true,
                 "accessorKind": "get"
@@ -6294,21 +6207,21 @@
                   {
                     "kind": "TypeNominal",
                     "name": "Optional",
-                    "printedName": "UIKit.UILabel?",
+                    "printedName": "MSPiOSCore.NativeAdViewBinder?",
                     "children": [
                       {
                         "kind": "TypeNominal",
-                        "name": "UILabel",
-                        "printedName": "UIKit.UILabel",
-                        "usr": "c:objc(cs)UILabel"
+                        "name": "NativeAdViewBinder",
+                        "printedName": "MSPiOSCore.NativeAdViewBinder",
+                        "usr": "s:10MSPiOSCore18NativeAdViewBinderC"
                       }
                     ],
                     "usr": "s:Sq"
                   }
                 ],
                 "declKind": "Accessor",
-                "usr": "s:10MSPiOSCore12NativeAdViewC10titleLabelSo7UILabelCSgvs",
-                "mangledName": "$s10MSPiOSCore12NativeAdViewC10titleLabelSo7UILabelCSgvs",
+                "usr": "s:10MSPiOSCore12NativeAdViewC06nativedE6BinderAA0cdeG0CSgvs",
+                "mangledName": "$s10MSPiOSCore12NativeAdViewC06nativedE6BinderAA0cdeG0CSgvs",
                 "moduleName": "MSPiOSCore",
                 "implicit": true,
                 "accessorKind": "set"
@@ -6325,8 +6238,8 @@
                   }
                 ],
                 "declKind": "Accessor",
-                "usr": "s:10MSPiOSCore12NativeAdViewC10titleLabelSo7UILabelCSgvM",
-                "mangledName": "$s10MSPiOSCore12NativeAdViewC10titleLabelSo7UILabelCSgvM",
+                "usr": "s:10MSPiOSCore12NativeAdViewC06nativedE6BinderAA0cdeG0CSgvM",
+                "mangledName": "$s10MSPiOSCore12NativeAdViewC06nativedE6BinderAA0cdeG0CSgvM",
                 "moduleName": "MSPiOSCore",
                 "implicit": true,
                 "accessorKind": "_modify"
@@ -6335,27 +6248,27 @@
           },
           {
             "kind": "Var",
-            "name": "bodyLabel",
-            "printedName": "bodyLabel",
+            "name": "nativeAdContainer",
+            "printedName": "nativeAdContainer",
             "children": [
               {
                 "kind": "TypeNominal",
                 "name": "Optional",
-                "printedName": "UIKit.UILabel?",
+                "printedName": "(any MSPiOSCore.MSPNativeAdContainer)?",
                 "children": [
                   {
                     "kind": "TypeNominal",
-                    "name": "UILabel",
-                    "printedName": "UIKit.UILabel",
-                    "usr": "c:objc(cs)UILabel"
+                    "name": "MSPNativeAdContainer",
+                    "printedName": "any MSPiOSCore.MSPNativeAdContainer",
+                    "usr": "s:10MSPiOSCore20MSPNativeAdContainerP"
                   }
                 ],
                 "usr": "s:Sq"
               }
             ],
             "declKind": "Var",
-            "usr": "s:10MSPiOSCore12NativeAdViewC9bodyLabelSo7UILabelCSgvp",
-            "mangledName": "$s10MSPiOSCore12NativeAdViewC9bodyLabelSo7UILabelCSgvp",
+            "usr": "s:10MSPiOSCore12NativeAdViewC06nativeD9ContainerAA09MSPNativedG0_pSgvp",
+            "mangledName": "$s10MSPiOSCore12NativeAdViewC06nativeD9ContainerAA09MSPNativedG0_pSgvp",
             "moduleName": "MSPiOSCore",
             "declAttributes": [
               "HasInitialValue",
@@ -6374,21 +6287,21 @@
                   {
                     "kind": "TypeNominal",
                     "name": "Optional",
-                    "printedName": "UIKit.UILabel?",
+                    "printedName": "(any MSPiOSCore.MSPNativeAdContainer)?",
                     "children": [
                       {
                         "kind": "TypeNominal",
-                        "name": "UILabel",
-                        "printedName": "UIKit.UILabel",
-                        "usr": "c:objc(cs)UILabel"
+                        "name": "MSPNativeAdContainer",
+                        "printedName": "any MSPiOSCore.MSPNativeAdContainer",
+                        "usr": "s:10MSPiOSCore20MSPNativeAdContainerP"
                       }
                     ],
                     "usr": "s:Sq"
                   }
                 ],
                 "declKind": "Accessor",
-                "usr": "s:10MSPiOSCore12NativeAdViewC9bodyLabelSo7UILabelCSgvg",
-                "mangledName": "$s10MSPiOSCore12NativeAdViewC9bodyLabelSo7UILabelCSgvg",
+                "usr": "s:10MSPiOSCore12NativeAdViewC06nativeD9ContainerAA09MSPNativedG0_pSgvg",
+                "mangledName": "$s10MSPiOSCore12NativeAdViewC06nativeD9ContainerAA09MSPNativedG0_pSgvg",
                 "moduleName": "MSPiOSCore",
                 "implicit": true,
                 "accessorKind": "get"
@@ -6406,21 +6319,21 @@
                   {
                     "kind": "TypeNominal",
                     "name": "Optional",
-                    "printedName": "UIKit.UILabel?",
+                    "printedName": "(any MSPiOSCore.MSPNativeAdContainer)?",
                     "children": [
                       {
                         "kind": "TypeNominal",
-                        "name": "UILabel",
-                        "printedName": "UIKit.UILabel",
-                        "usr": "c:objc(cs)UILabel"
+                        "name": "MSPNativeAdContainer",
+                        "printedName": "any MSPiOSCore.MSPNativeAdContainer",
+                        "usr": "s:10MSPiOSCore20MSPNativeAdContainerP"
                       }
                     ],
                     "usr": "s:Sq"
                   }
                 ],
                 "declKind": "Accessor",
-                "usr": "s:10MSPiOSCore12NativeAdViewC9bodyLabelSo7UILabelCSgvs",
-                "mangledName": "$s10MSPiOSCore12NativeAdViewC9bodyLabelSo7UILabelCSgvs",
+                "usr": "s:10MSPiOSCore12NativeAdViewC06nativeD9ContainerAA09MSPNativedG0_pSgvs",
+                "mangledName": "$s10MSPiOSCore12NativeAdViewC06nativeD9ContainerAA09MSPNativedG0_pSgvs",
                 "moduleName": "MSPiOSCore",
                 "implicit": true,
                 "accessorKind": "set"
@@ -6437,456 +6350,8 @@
                   }
                 ],
                 "declKind": "Accessor",
-                "usr": "s:10MSPiOSCore12NativeAdViewC9bodyLabelSo7UILabelCSgvM",
-                "mangledName": "$s10MSPiOSCore12NativeAdViewC9bodyLabelSo7UILabelCSgvM",
-                "moduleName": "MSPiOSCore",
-                "implicit": true,
-                "accessorKind": "_modify"
-              }
-            ]
-          },
-          {
-            "kind": "Var",
-            "name": "advertiserLabel",
-            "printedName": "advertiserLabel",
-            "children": [
-              {
-                "kind": "TypeNominal",
-                "name": "Optional",
-                "printedName": "UIKit.UILabel?",
-                "children": [
-                  {
-                    "kind": "TypeNominal",
-                    "name": "UILabel",
-                    "printedName": "UIKit.UILabel",
-                    "usr": "c:objc(cs)UILabel"
-                  }
-                ],
-                "usr": "s:Sq"
-              }
-            ],
-            "declKind": "Var",
-            "usr": "s:10MSPiOSCore12NativeAdViewC15advertiserLabelSo7UILabelCSgvp",
-            "mangledName": "$s10MSPiOSCore12NativeAdViewC15advertiserLabelSo7UILabelCSgvp",
-            "moduleName": "MSPiOSCore",
-            "declAttributes": [
-              "HasInitialValue",
-              "Preconcurrency",
-              "Custom",
-              "HasStorage",
-              "AccessControl"
-            ],
-            "hasStorage": true,
-            "accessors": [
-              {
-                "kind": "Accessor",
-                "name": "Get",
-                "printedName": "Get()",
-                "children": [
-                  {
-                    "kind": "TypeNominal",
-                    "name": "Optional",
-                    "printedName": "UIKit.UILabel?",
-                    "children": [
-                      {
-                        "kind": "TypeNominal",
-                        "name": "UILabel",
-                        "printedName": "UIKit.UILabel",
-                        "usr": "c:objc(cs)UILabel"
-                      }
-                    ],
-                    "usr": "s:Sq"
-                  }
-                ],
-                "declKind": "Accessor",
-                "usr": "s:10MSPiOSCore12NativeAdViewC15advertiserLabelSo7UILabelCSgvg",
-                "mangledName": "$s10MSPiOSCore12NativeAdViewC15advertiserLabelSo7UILabelCSgvg",
-                "moduleName": "MSPiOSCore",
-                "implicit": true,
-                "accessorKind": "get"
-              },
-              {
-                "kind": "Accessor",
-                "name": "Set",
-                "printedName": "Set()",
-                "children": [
-                  {
-                    "kind": "TypeNominal",
-                    "name": "Void",
-                    "printedName": "()"
-                  },
-                  {
-                    "kind": "TypeNominal",
-                    "name": "Optional",
-                    "printedName": "UIKit.UILabel?",
-                    "children": [
-                      {
-                        "kind": "TypeNominal",
-                        "name": "UILabel",
-                        "printedName": "UIKit.UILabel",
-                        "usr": "c:objc(cs)UILabel"
-                      }
-                    ],
-                    "usr": "s:Sq"
-                  }
-                ],
-                "declKind": "Accessor",
-                "usr": "s:10MSPiOSCore12NativeAdViewC15advertiserLabelSo7UILabelCSgvs",
-                "mangledName": "$s10MSPiOSCore12NativeAdViewC15advertiserLabelSo7UILabelCSgvs",
-                "moduleName": "MSPiOSCore",
-                "implicit": true,
-                "accessorKind": "set"
-              },
-              {
-                "kind": "Accessor",
-                "name": "Modify",
-                "printedName": "Modify()",
-                "children": [
-                  {
-                    "kind": "TypeNominal",
-                    "name": "Void",
-                    "printedName": "()"
-                  }
-                ],
-                "declKind": "Accessor",
-                "usr": "s:10MSPiOSCore12NativeAdViewC15advertiserLabelSo7UILabelCSgvM",
-                "mangledName": "$s10MSPiOSCore12NativeAdViewC15advertiserLabelSo7UILabelCSgvM",
-                "moduleName": "MSPiOSCore",
-                "implicit": true,
-                "accessorKind": "_modify"
-              }
-            ]
-          },
-          {
-            "kind": "Var",
-            "name": "callToActionButton",
-            "printedName": "callToActionButton",
-            "children": [
-              {
-                "kind": "TypeNominal",
-                "name": "Optional",
-                "printedName": "UIKit.UIButton?",
-                "children": [
-                  {
-                    "kind": "TypeNominal",
-                    "name": "UIButton",
-                    "printedName": "UIKit.UIButton",
-                    "usr": "c:objc(cs)UIButton"
-                  }
-                ],
-                "usr": "s:Sq"
-              }
-            ],
-            "declKind": "Var",
-            "usr": "s:10MSPiOSCore12NativeAdViewC18callToActionButtonSo8UIButtonCSgvp",
-            "mangledName": "$s10MSPiOSCore12NativeAdViewC18callToActionButtonSo8UIButtonCSgvp",
-            "moduleName": "MSPiOSCore",
-            "declAttributes": [
-              "HasInitialValue",
-              "Preconcurrency",
-              "Custom",
-              "HasStorage",
-              "AccessControl"
-            ],
-            "hasStorage": true,
-            "accessors": [
-              {
-                "kind": "Accessor",
-                "name": "Get",
-                "printedName": "Get()",
-                "children": [
-                  {
-                    "kind": "TypeNominal",
-                    "name": "Optional",
-                    "printedName": "UIKit.UIButton?",
-                    "children": [
-                      {
-                        "kind": "TypeNominal",
-                        "name": "UIButton",
-                        "printedName": "UIKit.UIButton",
-                        "usr": "c:objc(cs)UIButton"
-                      }
-                    ],
-                    "usr": "s:Sq"
-                  }
-                ],
-                "declKind": "Accessor",
-                "usr": "s:10MSPiOSCore12NativeAdViewC18callToActionButtonSo8UIButtonCSgvg",
-                "mangledName": "$s10MSPiOSCore12NativeAdViewC18callToActionButtonSo8UIButtonCSgvg",
-                "moduleName": "MSPiOSCore",
-                "implicit": true,
-                "accessorKind": "get"
-              },
-              {
-                "kind": "Accessor",
-                "name": "Set",
-                "printedName": "Set()",
-                "children": [
-                  {
-                    "kind": "TypeNominal",
-                    "name": "Void",
-                    "printedName": "()"
-                  },
-                  {
-                    "kind": "TypeNominal",
-                    "name": "Optional",
-                    "printedName": "UIKit.UIButton?",
-                    "children": [
-                      {
-                        "kind": "TypeNominal",
-                        "name": "UIButton",
-                        "printedName": "UIKit.UIButton",
-                        "usr": "c:objc(cs)UIButton"
-                      }
-                    ],
-                    "usr": "s:Sq"
-                  }
-                ],
-                "declKind": "Accessor",
-                "usr": "s:10MSPiOSCore12NativeAdViewC18callToActionButtonSo8UIButtonCSgvs",
-                "mangledName": "$s10MSPiOSCore12NativeAdViewC18callToActionButtonSo8UIButtonCSgvs",
-                "moduleName": "MSPiOSCore",
-                "implicit": true,
-                "accessorKind": "set"
-              },
-              {
-                "kind": "Accessor",
-                "name": "Modify",
-                "printedName": "Modify()",
-                "children": [
-                  {
-                    "kind": "TypeNominal",
-                    "name": "Void",
-                    "printedName": "()"
-                  }
-                ],
-                "declKind": "Accessor",
-                "usr": "s:10MSPiOSCore12NativeAdViewC18callToActionButtonSo8UIButtonCSgvM",
-                "mangledName": "$s10MSPiOSCore12NativeAdViewC18callToActionButtonSo8UIButtonCSgvM",
-                "moduleName": "MSPiOSCore",
-                "implicit": true,
-                "accessorKind": "_modify"
-              }
-            ]
-          },
-          {
-            "kind": "Var",
-            "name": "optionView",
-            "printedName": "optionView",
-            "children": [
-              {
-                "kind": "TypeNominal",
-                "name": "Optional",
-                "printedName": "UIKit.UIView?",
-                "children": [
-                  {
-                    "kind": "TypeNominal",
-                    "name": "UIView",
-                    "printedName": "UIKit.UIView",
-                    "usr": "c:objc(cs)UIView"
-                  }
-                ],
-                "usr": "s:Sq"
-              }
-            ],
-            "declKind": "Var",
-            "usr": "s:10MSPiOSCore12NativeAdViewC06optionE0So6UIViewCSgvp",
-            "mangledName": "$s10MSPiOSCore12NativeAdViewC06optionE0So6UIViewCSgvp",
-            "moduleName": "MSPiOSCore",
-            "declAttributes": [
-              "HasInitialValue",
-              "Preconcurrency",
-              "Custom",
-              "HasStorage",
-              "AccessControl"
-            ],
-            "hasStorage": true,
-            "accessors": [
-              {
-                "kind": "Accessor",
-                "name": "Get",
-                "printedName": "Get()",
-                "children": [
-                  {
-                    "kind": "TypeNominal",
-                    "name": "Optional",
-                    "printedName": "UIKit.UIView?",
-                    "children": [
-                      {
-                        "kind": "TypeNominal",
-                        "name": "UIView",
-                        "printedName": "UIKit.UIView",
-                        "usr": "c:objc(cs)UIView"
-                      }
-                    ],
-                    "usr": "s:Sq"
-                  }
-                ],
-                "declKind": "Accessor",
-                "usr": "s:10MSPiOSCore12NativeAdViewC06optionE0So6UIViewCSgvg",
-                "mangledName": "$s10MSPiOSCore12NativeAdViewC06optionE0So6UIViewCSgvg",
-                "moduleName": "MSPiOSCore",
-                "implicit": true,
-                "accessorKind": "get"
-              },
-              {
-                "kind": "Accessor",
-                "name": "Set",
-                "printedName": "Set()",
-                "children": [
-                  {
-                    "kind": "TypeNominal",
-                    "name": "Void",
-                    "printedName": "()"
-                  },
-                  {
-                    "kind": "TypeNominal",
-                    "name": "Optional",
-                    "printedName": "UIKit.UIView?",
-                    "children": [
-                      {
-                        "kind": "TypeNominal",
-                        "name": "UIView",
-                        "printedName": "UIKit.UIView",
-                        "usr": "c:objc(cs)UIView"
-                      }
-                    ],
-                    "usr": "s:Sq"
-                  }
-                ],
-                "declKind": "Accessor",
-                "usr": "s:10MSPiOSCore12NativeAdViewC06optionE0So6UIViewCSgvs",
-                "mangledName": "$s10MSPiOSCore12NativeAdViewC06optionE0So6UIViewCSgvs",
-                "moduleName": "MSPiOSCore",
-                "implicit": true,
-                "accessorKind": "set"
-              },
-              {
-                "kind": "Accessor",
-                "name": "Modify",
-                "printedName": "Modify()",
-                "children": [
-                  {
-                    "kind": "TypeNominal",
-                    "name": "Void",
-                    "printedName": "()"
-                  }
-                ],
-                "declKind": "Accessor",
-                "usr": "s:10MSPiOSCore12NativeAdViewC06optionE0So6UIViewCSgvM",
-                "mangledName": "$s10MSPiOSCore12NativeAdViewC06optionE0So6UIViewCSgvM",
-                "moduleName": "MSPiOSCore",
-                "implicit": true,
-                "accessorKind": "_modify"
-              }
-            ]
-          },
-          {
-            "kind": "Var",
-            "name": "mediaView",
-            "printedName": "mediaView",
-            "children": [
-              {
-                "kind": "TypeNominal",
-                "name": "Optional",
-                "printedName": "UIKit.UIView?",
-                "children": [
-                  {
-                    "kind": "TypeNominal",
-                    "name": "UIView",
-                    "printedName": "UIKit.UIView",
-                    "usr": "c:objc(cs)UIView"
-                  }
-                ],
-                "usr": "s:Sq"
-              }
-            ],
-            "declKind": "Var",
-            "usr": "s:10MSPiOSCore12NativeAdViewC05mediaE0So6UIViewCSgvp",
-            "mangledName": "$s10MSPiOSCore12NativeAdViewC05mediaE0So6UIViewCSgvp",
-            "moduleName": "MSPiOSCore",
-            "declAttributes": [
-              "HasInitialValue",
-              "Preconcurrency",
-              "Custom",
-              "HasStorage",
-              "AccessControl"
-            ],
-            "hasStorage": true,
-            "accessors": [
-              {
-                "kind": "Accessor",
-                "name": "Get",
-                "printedName": "Get()",
-                "children": [
-                  {
-                    "kind": "TypeNominal",
-                    "name": "Optional",
-                    "printedName": "UIKit.UIView?",
-                    "children": [
-                      {
-                        "kind": "TypeNominal",
-                        "name": "UIView",
-                        "printedName": "UIKit.UIView",
-                        "usr": "c:objc(cs)UIView"
-                      }
-                    ],
-                    "usr": "s:Sq"
-                  }
-                ],
-                "declKind": "Accessor",
-                "usr": "s:10MSPiOSCore12NativeAdViewC05mediaE0So6UIViewCSgvg",
-                "mangledName": "$s10MSPiOSCore12NativeAdViewC05mediaE0So6UIViewCSgvg",
-                "moduleName": "MSPiOSCore",
-                "implicit": true,
-                "accessorKind": "get"
-              },
-              {
-                "kind": "Accessor",
-                "name": "Set",
-                "printedName": "Set()",
-                "children": [
-                  {
-                    "kind": "TypeNominal",
-                    "name": "Void",
-                    "printedName": "()"
-                  },
-                  {
-                    "kind": "TypeNominal",
-                    "name": "Optional",
-                    "printedName": "UIKit.UIView?",
-                    "children": [
-                      {
-                        "kind": "TypeNominal",
-                        "name": "UIView",
-                        "printedName": "UIKit.UIView",
-                        "usr": "c:objc(cs)UIView"
-                      }
-                    ],
-                    "usr": "s:Sq"
-                  }
-                ],
-                "declKind": "Accessor",
-                "usr": "s:10MSPiOSCore12NativeAdViewC05mediaE0So6UIViewCSgvs",
-                "mangledName": "$s10MSPiOSCore12NativeAdViewC05mediaE0So6UIViewCSgvs",
-                "moduleName": "MSPiOSCore",
-                "implicit": true,
-                "accessorKind": "set"
-              },
-              {
-                "kind": "Accessor",
-                "name": "Modify",
-                "printedName": "Modify()",
-                "children": [
-                  {
-                    "kind": "TypeNominal",
-                    "name": "Void",
-                    "printedName": "()"
-                  }
-                ],
-                "declKind": "Accessor",
-                "usr": "s:10MSPiOSCore12NativeAdViewC05mediaE0So6UIViewCSgvM",
-                "mangledName": "$s10MSPiOSCore12NativeAdViewC05mediaE0So6UIViewCSgvM",
+                "usr": "s:10MSPiOSCore12NativeAdViewC06nativeD9ContainerAA09MSPNativedG0_pSgvM",
+                "mangledName": "$s10MSPiOSCore12NativeAdViewC06nativeD9ContainerAA09MSPNativedG0_pSgvM",
                 "moduleName": "MSPiOSCore",
                 "implicit": true,
                 "accessorKind": "_modify"
@@ -7032,6 +6497,41 @@
             "declKind": "Constructor",
             "usr": "s:10MSPiOSCore12NativeAdViewC06nativeD00fdE6BinderAcA0cD0C_AA0cdeG0Ctcfc",
             "mangledName": "$s10MSPiOSCore12NativeAdViewC06nativeD00fdE6BinderAcA0cD0C_AA0cdeG0Ctcfc",
+            "moduleName": "MSPiOSCore",
+            "declAttributes": [
+              "Preconcurrency",
+              "Custom",
+              "AccessControl"
+            ],
+            "init_kind": "Designated"
+          },
+          {
+            "kind": "Constructor",
+            "name": "init",
+            "printedName": "init(nativeAd:nativeAdContainer:)",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "NativeAdView",
+                "printedName": "MSPiOSCore.NativeAdView",
+                "usr": "c:@M@MSPiOSCore@objc(cs)NativeAdView"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "NativeAd",
+                "printedName": "MSPiOSCore.NativeAd",
+                "usr": "s:10MSPiOSCore8NativeAdC"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "MSPNativeAdContainer",
+                "printedName": "any MSPiOSCore.MSPNativeAdContainer",
+                "usr": "s:10MSPiOSCore20MSPNativeAdContainerP"
+              }
+            ],
+            "declKind": "Constructor",
+            "usr": "s:10MSPiOSCore12NativeAdViewC06nativeD00fD9ContainerAcA0cD0C_AA09MSPNativedG0_ptcfc",
+            "mangledName": "$s10MSPiOSCore12NativeAdViewC06nativeD00fD9ContainerAcA0cD0C_AA09MSPNativedG0_ptcfc",
             "moduleName": "MSPiOSCore",
             "declAttributes": [
               "Preconcurrency",
@@ -8461,6 +7961,205 @@
         "usr": "s:10MSPiOSCore15MSPInitListenerP",
         "mangledName": "$s10MSPiOSCore15MSPInitListenerP",
         "moduleName": "MSPiOSCore",
+        "declAttributes": [
+          "AccessControl"
+        ],
+        "conformances": [
+          {
+            "kind": "Conformance",
+            "name": "Escapable",
+            "printedName": "Escapable",
+            "usr": "s:s9EscapableP",
+            "mangledName": "$ss9EscapableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Copyable",
+            "printedName": "Copyable",
+            "usr": "s:s8CopyableP",
+            "mangledName": "$ss8CopyableP"
+          }
+        ]
+      },
+      {
+        "kind": "Import",
+        "name": "Foundation",
+        "printedName": "Foundation",
+        "declKind": "Import",
+        "moduleName": "MSPiOSCore",
+        "declAttributes": [
+          "RawDocComment"
+        ]
+      },
+      {
+        "kind": "Import",
+        "name": "UIKit",
+        "printedName": "UIKit",
+        "declKind": "Import",
+        "moduleName": "MSPiOSCore"
+      },
+      {
+        "kind": "TypeDecl",
+        "name": "MSPNativeAdContainer",
+        "printedName": "MSPNativeAdContainer",
+        "children": [
+          {
+            "kind": "Function",
+            "name": "getTitle",
+            "printedName": "getTitle()",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Optional",
+                "printedName": "UIKit.UILabel?",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "UILabel",
+                    "printedName": "UIKit.UILabel",
+                    "usr": "c:objc(cs)UILabel"
+                  }
+                ],
+                "usr": "s:Sq"
+              }
+            ],
+            "declKind": "Func",
+            "usr": "s:10MSPiOSCore20MSPNativeAdContainerP8getTitleSo7UILabelCSgyF",
+            "mangledName": "$s10MSPiOSCore20MSPNativeAdContainerP8getTitleSo7UILabelCSgyF",
+            "moduleName": "MSPiOSCore",
+            "genericSig": "<τ_0_0 where τ_0_0 : MSPiOSCore.MSPNativeAdContainer>",
+            "sugared_genericSig": "<Self where Self : MSPiOSCore.MSPNativeAdContainer>",
+            "protocolReq": true,
+            "reqNewWitnessTableEntry": true,
+            "funcSelfKind": "NonMutating"
+          },
+          {
+            "kind": "Function",
+            "name": "getbody",
+            "printedName": "getbody()",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Optional",
+                "printedName": "UIKit.UILabel?",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "UILabel",
+                    "printedName": "UIKit.UILabel",
+                    "usr": "c:objc(cs)UILabel"
+                  }
+                ],
+                "usr": "s:Sq"
+              }
+            ],
+            "declKind": "Func",
+            "usr": "s:10MSPiOSCore20MSPNativeAdContainerP7getbodySo7UILabelCSgyF",
+            "mangledName": "$s10MSPiOSCore20MSPNativeAdContainerP7getbodySo7UILabelCSgyF",
+            "moduleName": "MSPiOSCore",
+            "genericSig": "<τ_0_0 where τ_0_0 : MSPiOSCore.MSPNativeAdContainer>",
+            "sugared_genericSig": "<Self where Self : MSPiOSCore.MSPNativeAdContainer>",
+            "protocolReq": true,
+            "reqNewWitnessTableEntry": true,
+            "funcSelfKind": "NonMutating"
+          },
+          {
+            "kind": "Function",
+            "name": "getAdvertiser",
+            "printedName": "getAdvertiser()",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Optional",
+                "printedName": "UIKit.UILabel?",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "UILabel",
+                    "printedName": "UIKit.UILabel",
+                    "usr": "c:objc(cs)UILabel"
+                  }
+                ],
+                "usr": "s:Sq"
+              }
+            ],
+            "declKind": "Func",
+            "usr": "s:10MSPiOSCore20MSPNativeAdContainerP13getAdvertiserSo7UILabelCSgyF",
+            "mangledName": "$s10MSPiOSCore20MSPNativeAdContainerP13getAdvertiserSo7UILabelCSgyF",
+            "moduleName": "MSPiOSCore",
+            "genericSig": "<τ_0_0 where τ_0_0 : MSPiOSCore.MSPNativeAdContainer>",
+            "sugared_genericSig": "<Self where Self : MSPiOSCore.MSPNativeAdContainer>",
+            "protocolReq": true,
+            "reqNewWitnessTableEntry": true,
+            "funcSelfKind": "NonMutating"
+          },
+          {
+            "kind": "Function",
+            "name": "getCallToAction",
+            "printedName": "getCallToAction()",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Optional",
+                "printedName": "UIKit.UIButton?",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "UIButton",
+                    "printedName": "UIKit.UIButton",
+                    "usr": "c:objc(cs)UIButton"
+                  }
+                ],
+                "usr": "s:Sq"
+              }
+            ],
+            "declKind": "Func",
+            "usr": "s:10MSPiOSCore20MSPNativeAdContainerP15getCallToActionSo8UIButtonCSgyF",
+            "mangledName": "$s10MSPiOSCore20MSPNativeAdContainerP15getCallToActionSo8UIButtonCSgyF",
+            "moduleName": "MSPiOSCore",
+            "genericSig": "<τ_0_0 where τ_0_0 : MSPiOSCore.MSPNativeAdContainer>",
+            "sugared_genericSig": "<Self where Self : MSPiOSCore.MSPNativeAdContainer>",
+            "protocolReq": true,
+            "reqNewWitnessTableEntry": true,
+            "funcSelfKind": "NonMutating"
+          },
+          {
+            "kind": "Function",
+            "name": "getMedia",
+            "printedName": "getMedia()",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Optional",
+                "printedName": "UIKit.UIView?",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "UIView",
+                    "printedName": "UIKit.UIView",
+                    "usr": "c:objc(cs)UIView"
+                  }
+                ],
+                "usr": "s:Sq"
+              }
+            ],
+            "declKind": "Func",
+            "usr": "s:10MSPiOSCore20MSPNativeAdContainerP8getMediaSo6UIViewCSgyF",
+            "mangledName": "$s10MSPiOSCore20MSPNativeAdContainerP8getMediaSo6UIViewCSgyF",
+            "moduleName": "MSPiOSCore",
+            "genericSig": "<τ_0_0 where τ_0_0 : MSPiOSCore.MSPNativeAdContainer>",
+            "sugared_genericSig": "<Self where Self : MSPiOSCore.MSPNativeAdContainer>",
+            "protocolReq": true,
+            "reqNewWitnessTableEntry": true,
+            "funcSelfKind": "NonMutating"
+          }
+        ],
+        "declKind": "Protocol",
+        "usr": "s:10MSPiOSCore20MSPNativeAdContainerP",
+        "mangledName": "$s10MSPiOSCore20MSPNativeAdContainerP",
+        "moduleName": "MSPiOSCore",
+        "genericSig": "<τ_0_0 : UIKit.UIView>",
+        "sugared_genericSig": "<Self : UIKit.UIView>",
         "declAttributes": [
           "AccessControl"
         ],

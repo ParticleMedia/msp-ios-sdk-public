@@ -169,15 +169,11 @@ public protocol FacebookBidTokenProvider {
 @objc @_hasMissingDesignatedInitializers @_Concurrency.MainActor @preconcurrency public class NativeAdView : UIKit.UIView {
   @_Concurrency.MainActor @preconcurrency public var nativeAd: MSPiOSCore.NativeAd
   @_Concurrency.MainActor @preconcurrency weak public var rootViewController: UIKit.UIViewController?
-  @_Concurrency.MainActor @preconcurrency public var nativeAdViewBinder: MSPiOSCore.NativeAdViewBinder
-  @_Concurrency.MainActor @preconcurrency public var titleLabel: UIKit.UILabel?
-  @_Concurrency.MainActor @preconcurrency public var bodyLabel: UIKit.UILabel?
-  @_Concurrency.MainActor @preconcurrency public var advertiserLabel: UIKit.UILabel?
-  @_Concurrency.MainActor @preconcurrency public var callToActionButton: UIKit.UIButton?
-  @_Concurrency.MainActor @preconcurrency public var optionView: UIKit.UIView?
-  @_Concurrency.MainActor @preconcurrency public var mediaView: UIKit.UIView?
+  @_Concurrency.MainActor @preconcurrency public var nativeAdViewBinder: MSPiOSCore.NativeAdViewBinder?
+  @_Concurrency.MainActor @preconcurrency public var nativeAdContainer: (any MSPiOSCore.MSPNativeAdContainer)?
   @_Concurrency.MainActor @preconcurrency public var mediaController: (any MSPiOSCore.MediaController)?
   @_Concurrency.MainActor @preconcurrency public init(nativeAd: MSPiOSCore.NativeAd, nativeAdViewBinder: MSPiOSCore.NativeAdViewBinder)
+  @_Concurrency.MainActor @preconcurrency public init(nativeAd: MSPiOSCore.NativeAd, nativeAdContainer: any MSPiOSCore.MSPNativeAdContainer)
   @objc deinit
 }
 open class NativeAdViewBinder {
@@ -212,6 +208,13 @@ public enum AdFormat {
 }
 public protocol MSPInitListener {
   func onComplete(status: MSPiOSCore.MSPInitStatus, message: Swift.String)
+}
+public protocol MSPNativeAdContainer : UIKit.UIView {
+  func getTitle() -> UIKit.UILabel?
+  func getbody() -> UIKit.UILabel?
+  func getAdvertiser() -> UIKit.UILabel?
+  func getCallToAction() -> UIKit.UIButton?
+  func getMedia() -> UIKit.UIView?
 }
 public protocol MSPInitializationParameters : MSPiOSCore.InitializationParameters {
 }

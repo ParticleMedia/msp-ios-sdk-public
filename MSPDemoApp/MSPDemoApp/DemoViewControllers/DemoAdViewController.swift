@@ -133,8 +133,10 @@ extension DemoAdViewController: AdListener {
            let nativeAd = ad as? MSPiOSCore.NativeAd {
             
             DispatchQueue.main.async{
-                let nativeAdViewBinder = DemoNativeAdViewBinder(nativeAd: nativeAd)
-                let nativeAdView = NativeAdView(nativeAd: nativeAd, nativeAdViewBinder: nativeAdViewBinder)
+                //let nativeAdViewBinder = DemoNativeAdViewBinder(nativeAd: nativeAd)
+                //let nativeAdView = NativeAdView(nativeAd: nativeAd, nativeAdViewBinder: nativeAdViewBinder)
+                let nativeAdContainer = DemoNativeAdContainer(frame: CGRect(x: 0, y: 0, width: 300, height: 250))
+                let nativeAdView = NativeAdView(nativeAd: nativeAd, nativeAdContainer: nativeAdContainer)
                 self.nativeAdView = nativeAdView
                 self.view.addSubview(nativeAdView)
                 //self.nativeAdView?.callToActionButton?.isHidden = true
