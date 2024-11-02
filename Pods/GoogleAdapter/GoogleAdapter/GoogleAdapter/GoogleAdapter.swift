@@ -11,26 +11,57 @@ import PrebidMobile
     
     public func prepareViewForInteraction(nativeAd: MSPiOSCore.NativeAd, nativeAdView: Any) {
         guard let nativeAdView = nativeAdView as? NativeAdView,
-              let mediaView = nativeAdView.mediaView as? GADMediaView,
               let gadNativeAdItem = self.nativeAdItem else {return}
         let gadNativeAdView = GADNativeAdView()
         gadNativeAdView.translatesAutoresizingMaskIntoConstraints = false
-        
-        gadNativeAdView.headlineView = nativeAdView.titleLabel
-        gadNativeAdView.bodyView = nativeAdView.bodyLabel
-        gadNativeAdView.advertiserView = nativeAdView.advertiserLabel
-        gadNativeAdView.callToActionView = nativeAdView.callToActionButton
-        gadNativeAdView.mediaView = mediaView
         gadNativeAdView.nativeAd = gadNativeAdItem
         
-        let gadSubViews = [gadNativeAdView.headlineView, gadNativeAdView.bodyView, gadNativeAdView.advertiserView, gadNativeAdView.callToActionView, gadNativeAdView.mediaView]
-        for view in gadSubViews {
-            if let view = view {
-                gadNativeAdView.addSubview(view)
+        if let nativeAdViewBinder = nativeAdView.nativeAdViewBinder {
+            gadNativeAdView.headlineView = nativeAdView.nativeAdViewBinder?.titleLabel
+            gadNativeAdView.bodyView = nativeAdView.nativeAdViewBinder?.bodyLabel
+            gadNativeAdView.advertiserView = nativeAdView.nativeAdViewBinder?.advertiserLabel
+            gadNativeAdView.callToActionView = nativeAdView.nativeAdViewBinder?.callToActionButton
+            gadNativeAdView.mediaView = nativeAdView.nativeAdViewBinder?.mediaView as? GADMediaView
+            
+            let gadSubViews = [gadNativeAdView.headlineView, gadNativeAdView.bodyView, gadNativeAdView.advertiserView, gadNativeAdView.callToActionView, gadNativeAdView.mediaView]
+            for view in gadSubViews {
+                if let view = view {
+                    gadNativeAdView.addSubview(view)
+                }
             }
+            nativeAdView.nativeAdViewBinder?.setUpViews(parentView: gadNativeAdView)
+        } else if let nativeAdContainer = nativeAdView.nativeAdContainer {
+            gadNativeAdView.headlineView = nativeAdContainer.getTitle()
+            gadNativeAdView.bodyView = nativeAdContainer.getbody()
+            gadNativeAdView.advertiserView = nativeAdContainer.getAdvertiser()
+            gadNativeAdView.callToActionView = nativeAdContainer.getCallToAction()
+            
+            if let mediaContainer = nativeAdContainer.getMedia(),
+               let mediaView =  nativeAd.mediaView as? GADMediaView {
+                gadNativeAdView.mediaView = mediaView
+                mediaContainer.addSubview(mediaView)
+                NSLayoutConstraint.activate([
+                    //novaNativeAdView.centerYAnchor.constraint(equalTo: nativeAdView.centerYAnchor),
+                    mediaView.leadingAnchor.constraint(equalTo: mediaContainer.leadingAnchor),
+                    mediaView.trailingAnchor.constraint(equalTo: mediaContainer.trailingAnchor),
+                    mediaView.topAnchor.constraint(equalTo: mediaContainer.topAnchor),
+                    mediaView.bottomAnchor.constraint(equalTo: mediaContainer.bottomAnchor)
+                ])
+            }
+            
+            gadNativeAdView.addSubview(nativeAdContainer)
+            NSLayoutConstraint.activate([
+                //novaNativeAdView.centerYAnchor.constraint(equalTo: nativeAdView.centerYAnchor),
+                nativeAdContainer.leadingAnchor.constraint(equalTo: gadNativeAdView.leadingAnchor),
+                nativeAdContainer.trailingAnchor.constraint(equalTo: gadNativeAdView.trailingAnchor),
+                nativeAdContainer.topAnchor.constraint(equalTo: gadNativeAdView.topAnchor),
+                nativeAdContainer.bottomAnchor.constraint(equalTo: gadNativeAdView.bottomAnchor),
+                nativeAdContainer.widthAnchor.constraint(lessThanOrEqualTo: gadNativeAdView.widthAnchor),
+                nativeAdContainer.heightAnchor.constraint(lessThanOrEqualTo: gadNativeAdView.heightAnchor),
+            ])
+            
         }
         
-        nativeAdView.nativeAdViewBinder.setUpViews(parentView: gadNativeAdView)
         nativeAdView.addSubview(gadNativeAdView)
         NSLayoutConstraint.activate([
             //novaNativeAdView.centerYAnchor.constraint(equalTo: nativeAdView.centerYAnchor),

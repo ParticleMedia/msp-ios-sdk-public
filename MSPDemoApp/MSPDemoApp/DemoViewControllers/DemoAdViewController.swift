@@ -72,7 +72,6 @@ class DemoAdViewController: UIViewController {
         var adLoader = MSPAdLoader()
         self.adLoader = adLoader
         var customParams = [String: String]()
-        customParams["user_id"] = "00000000"
         var testParams = [String: String]()
         if adType == .novaNative || adType == .novaInterstitial {
             testParams["test"] = "{\"ad_network\":\"msp_nova\",\"test_ad\":true}"
@@ -133,8 +132,6 @@ extension DemoAdViewController: AdListener {
            let nativeAd = ad as? MSPiOSCore.NativeAd {
             
             DispatchQueue.main.async{
-                //let nativeAdViewBinder = DemoNativeAdViewBinder(nativeAd: nativeAd)
-                //let nativeAdView = NativeAdView(nativeAd: nativeAd, nativeAdViewBinder: nativeAdViewBinder)
                 let nativeAdContainer = DemoNativeAdContainer(frame: CGRect(x: 0, y: 0, width: 300, height: 250))
                 let nativeAdView = NativeAdView(nativeAd: nativeAd, nativeAdContainer: nativeAdContainer)
                 self.nativeAdView = nativeAdView
