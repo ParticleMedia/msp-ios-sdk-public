@@ -14,17 +14,55 @@ import Foundation
     
     public func prepareViewForInteraction(nativeAd: MSPiOSCore.NativeAd, nativeAdView: Any) {
         guard let nativeAdView = nativeAdView as? NativeAdView,
-              let mediaView = nativeAdView.mediaView as? FBMediaView,
+              let mediaView = nativeAd.mediaView as? FBMediaView,
               let fbNativeAdItem = self.nativeAdItem else {return}
         //let fbNativeAdView = UIView()
         nativeAdView.translatesAutoresizingMaskIntoConstraints = false
-        let fbSubViews = [nativeAdView.titleLabel, nativeAdView.bodyLabel, nativeAdView.advertiserLabel, nativeAdView.callToActionButton, mediaView]
-        for view in fbSubViews {
-            if let view = view {
-                nativeAdView.addSubview(view)
+        if let nativeAdViewBinder = nativeAdView.nativeAdViewBinder {
+            let fbSubViews = [nativeAdView.nativeAdViewBinder?.titleLabel, nativeAdView.nativeAdViewBinder?.bodyLabel, nativeAdView.nativeAdViewBinder?.advertiserLabel, nativeAdView.nativeAdViewBinder?.callToActionButton, mediaView]
+            for view in fbSubViews {
+                if let view = view {
+                    nativeAdView.addSubview(view)
+                }
             }
+            nativeAdView.nativeAdViewBinder?.setUpViews(parentView: nativeAdView)
+            
+            fbNativeAdItem.registerView(forInteraction: nativeAdView,
+                                        mediaView: mediaView,
+                                        iconImageView: nil,
+                                        viewController: nil,
+                                        clickableViews: fbSubViews.compactMap{ $0 })
+        } else if let nativeAdContainer = nativeAdView.nativeAdContainer {
+            nativeAdView.addSubview(nativeAdContainer)
+            
+            if let mediaContainer = nativeAdContainer.getMedia() {
+                mediaContainer.addSubview(mediaView)
+                NSLayoutConstraint.activate([
+                    //novaNativeAdView.centerYAnchor.constraint(equalTo: nativeAdView.centerYAnchor),
+                    mediaView.leadingAnchor.constraint(equalTo: mediaContainer.leadingAnchor),
+                    mediaView.trailingAnchor.constraint(equalTo: mediaContainer.trailingAnchor),
+                    mediaView.topAnchor.constraint(equalTo: mediaContainer.topAnchor),
+                    mediaView.bottomAnchor.constraint(equalTo: mediaContainer.bottomAnchor)
+                ])
+            }
+            
+            NSLayoutConstraint.activate([
+                //novaNativeAdView.centerYAnchor.constraint(equalTo: nativeAdView.centerYAnchor),
+                nativeAdContainer.leadingAnchor.constraint(equalTo: nativeAdView.leadingAnchor),
+                nativeAdContainer.trailingAnchor.constraint(equalTo: nativeAdView.trailingAnchor),
+                nativeAdContainer.topAnchor.constraint(equalTo: nativeAdView.topAnchor),
+                nativeAdContainer.bottomAnchor.constraint(equalTo: nativeAdView.bottomAnchor),
+                nativeAdContainer.widthAnchor.constraint(lessThanOrEqualTo: nativeAdView.widthAnchor),
+                nativeAdContainer.heightAnchor.constraint(lessThanOrEqualTo: nativeAdView.heightAnchor),
+            ])
+            
+            let fbSubViews = [nativeAdContainer.getTitle(), nativeAdContainer.getbody(), nativeAdContainer.getAdvertiser(), nativeAdContainer.getCallToAction(), mediaView]
+            fbNativeAdItem.registerView(forInteraction: nativeAdView,
+                                        mediaView: mediaView,
+                                        iconImageView: nil,
+                                        viewController: nil,
+                                        clickableViews: fbSubViews.compactMap{ $0 })
         }
-        nativeAdView.nativeAdViewBinder.setUpViews(parentView: nativeAdView)
         
         let fbAdOptionsView = FBAdOptionsView(frame: .zero)
         fbAdOptionsView.backgroundColor = .clear
@@ -37,12 +75,6 @@ import Foundation
             fbAdOptionsView.widthAnchor.constraint(equalToConstant: FBAdOptionsViewWidth),
             fbAdOptionsView.heightAnchor.constraint(equalToConstant: FBAdOptionsViewHeight)
         ])
-        
-        fbNativeAdItem.registerView(forInteraction: nativeAdView,
-                                    mediaView: mediaView,
-                                    iconImageView: nil,
-                                    viewController: nil,
-                                    clickableViews: fbSubViews.compactMap{ $0 })
         fbAdOptionsView.nativeAd = fbNativeAdItem
     }
     
