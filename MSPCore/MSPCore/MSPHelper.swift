@@ -233,6 +233,13 @@ public class InitializationParametersImp: InitializationParameters {
         self.appId = appId
     }
     
+    public init(prebidAPIKey: String, sourceApp: String?, orgId: Int64?, appId: Int64?) {
+        self.prebidAPIKey = prebidAPIKey
+        self.sourceApp = sourceApp
+        self.orgId = orgId
+        self.appId = appId
+    }
+    
     public init(prebidAPIKey: String, sourceApp: String? = nil) {
         self.prebidAPIKey = prebidAPIKey
         self.sourceApp = sourceApp
