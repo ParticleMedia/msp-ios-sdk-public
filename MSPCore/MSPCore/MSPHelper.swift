@@ -13,7 +13,7 @@ public class MSP {
     
     public static let shared = MSP()
     public var numInitWaitingForCallbacks = 0;
-    public var sdkInitListener: MSPInitListener?
+    public weak var sdkInitListener: MSPInitListener?
     
     public var adNetworkAdapterProvider = MSPAdNetworkAdapterProvider()
     public var bidLoaderProvider = MSPBidLoaderProvider()
@@ -99,7 +99,7 @@ public class MSP {
         UserDefaults.standard.setValue(String(Date().timeIntervalSince1970 * 1000), forKey: "FirstLaunchTime")
     }
     
-    public class MSPAdapterInitListener: AdapterInitListener {
+    public class MSPAdapterInitListener: NSObject, AdapterInitListener {
         public func onComplete(adNetwork: AdNetwork, adapterInitStatus: AdapterInitStatus, message: String) {
             MSP.shared.numInitWaitingForCallbacks = MSP.shared.numInitWaitingForCallbacks - 1
             if MSP.shared.numInitWaitingForCallbacks == 0 {
@@ -285,16 +285,16 @@ public class InitializationParametersImp: InitializationParameters {
     }
 }
 
-public class MSPAdLoader: BidListener {
-    var adListener: AdListener?
+public class MSPAdLoader: NSObject, BidListener {
+    weak var adListener: AdListener?
     var adRequest: AdRequest?
     
-    weak var bidLoader: BidLoader?
+    var bidLoader: BidLoader?
     var adNetworkAdapter: AdNetworkAdapter?
 
     
     
-    public init() {}
+    public override init() {}
     
     public func loadAd(placementId: String, adListener: AdListener, adRequest: AdRequest) {
         MESMetricReporter.shared.logAdRequest(adRequest: adRequest)

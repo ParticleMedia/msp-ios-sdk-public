@@ -78,7 +78,7 @@ import Foundation
         fbAdOptionsView.nativeAd = fbNativeAdItem
     }
     
-    public var adListener: AdListener?
+    public weak var adListener: AdListener?
     public var priceInDollar: Double?
     
     private var nativeAdItem: FBNativeAd?

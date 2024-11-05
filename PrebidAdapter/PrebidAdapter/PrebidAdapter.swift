@@ -37,7 +37,7 @@ import UIKit
         }
     }
     
-    public var adListener: AdListener?
+    public weak var adListener: AdListener?
     
     public var bannerView: BannerView?
     public var priceInDollar: Double?
@@ -131,10 +131,3 @@ extension PrebidAdapter: BannerEventHandler {
         }
     }
 }
-
-
-
-        
-
-
- 
