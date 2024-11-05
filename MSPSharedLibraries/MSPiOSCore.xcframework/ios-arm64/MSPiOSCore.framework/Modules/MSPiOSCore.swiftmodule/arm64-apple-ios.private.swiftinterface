@@ -40,11 +40,11 @@ public enum AdapterAdLoadError {
   override public init(adNetworkAdapter: any MSPiOSCore.AdNetworkAdapter)
   @objc deinit
 }
-public protocol MediaListener {
+public protocol MediaListener : AnyObject {
   func onDurationUpdate(duration: Swift.UInt64)
   func onProgressUpdate(position: Swift.UInt64, bufferedPosition: Swift.UInt64)
 }
-public protocol GoogleQueryInfoListener {
+public protocol GoogleQueryInfoListener : AnyObject {
   func onComplete(queryInfo: Swift.String)
 }
 public enum AdapterInitStatus : Swift.String {
@@ -75,23 +75,23 @@ public struct AdSize {
   public let isAnchorAdaptiveBanner: Swift.Bool
   public init(width: Swift.Int, height: Swift.Int, isInlineAdaptiveBanner: Swift.Bool = false, isAnchorAdaptiveBanner: Swift.Bool = false)
 }
-public protocol FacebookBidTokenListener {
+public protocol FacebookBidTokenListener : AnyObject {
   func onComplete(bidToken: Swift.String)
 }
-public protocol AdMetricReporter {
+public protocol AdMetricReporter : AnyObject {
   func logAdImpression(ad: MSPiOSCore.MSPAd)
   func logGetAdFromCache(cacheKey: Swift.String, fill: Swift.Bool, ad: MSPiOSCore.MSPAd?)
   func logAdResult(placementId: Swift.String, ad: MSPiOSCore.MSPAd?, fill: Swift.Bool, isFromCache: Swift.Bool)
 }
 public func handleAdLoaded(ad: MSPiOSCore.MSPAd, listener: any MSPiOSCore.AdListener, adRequest: MSPiOSCore.AdRequest)
-public protocol BidListener {
+public protocol BidListener : AnyObject {
   func onBidResponse(bidResponse: Any, adNetwork: MSPiOSCore.AdNetwork)
   func onError(msg: Swift.String)
 }
-public protocol AdapterAdLoadListener {
+public protocol AdapterAdLoadListener : AnyObject {
   func onAdLoadedFailed(error: MSPiOSCore.AdapterAdLoadError)
 }
-public protocol AdListener {
+public protocol AdListener : AnyObject {
   func onAdLoaded(ad: MSPiOSCore.MSPAd)
   func onError(msg: Swift.String)
   func onAdImpression(ad: MSPiOSCore.MSPAd)
@@ -100,21 +100,21 @@ public protocol AdListener {
   func onAdDismissed(ad: MSPiOSCore.InterstitialAd)
   func getRootViewController() -> UIKit.UIViewController?
 }
-public protocol AdNetworkAdapter {
+public protocol AdNetworkAdapter : AnyObject {
   func loadAdCreative(bidResponse: Any, adListener: any MSPiOSCore.AdListener, context: Any, adRequest: MSPiOSCore.AdRequest)
   func initialize(initParams: any MSPiOSCore.InitializationParameters, adapterInitListener: any MSPiOSCore.AdapterInitListener, context: Any?)
   func destroyAd()
   func prepareViewForInteraction(nativeAd: MSPiOSCore.NativeAd, nativeAdView: Any)
   func setAdMetricReporter(adMetricReporter: any MSPiOSCore.AdMetricReporter)
 }
-public protocol GoogleQueryInfoFetcher {
+public protocol GoogleQueryInfoFetcher : AnyObject {
   func fetch(completeListener: any MSPiOSCore.GoogleQueryInfoListener, adRequest: MSPiOSCore.AdRequest)
 }
-public protocol AdNetworkAdapterProvider {
+public protocol AdNetworkAdapterProvider : AnyObject {
   func getAdNetworkAdapter(adNetwork: MSPiOSCore.AdNetwork) -> (any MSPiOSCore.AdNetworkAdapter)?
   func getAdNetworkAdaptersCount() -> Swift.Int
 }
-public protocol BidLoaderProvider {
+public protocol BidLoaderProvider : AnyObject {
   func getBidLoader() -> MSPiOSCore.BidLoader
 }
 open class AdNetworkManager {
@@ -163,11 +163,11 @@ open class NativeAd : MSPiOSCore.MSPAd {
   }
   @objc deinit
 }
-public protocol FacebookBidTokenProvider {
+public protocol FacebookBidTokenProvider : AnyObject {
   func fetch(completeListener: any MSPiOSCore.FacebookBidTokenListener, context: Any)
 }
 @objc @_hasMissingDesignatedInitializers @_Concurrency.MainActor @preconcurrency public class NativeAdView : UIKit.UIView {
-  @_Concurrency.MainActor @preconcurrency public var nativeAd: MSPiOSCore.NativeAd
+  @_Concurrency.MainActor @preconcurrency weak public var nativeAd: MSPiOSCore.NativeAd?
   @_Concurrency.MainActor @preconcurrency weak public var rootViewController: UIKit.UIViewController?
   @_Concurrency.MainActor @preconcurrency public var nativeAdViewBinder: MSPiOSCore.NativeAdViewBinder?
   @_Concurrency.MainActor @preconcurrency public var nativeAdContainer: (any MSPiOSCore.MSPNativeAdContainer)?
@@ -187,7 +187,7 @@ open class NativeAdViewBinder {
   open func setUpViews(parentView: UIKit.UIView)
   @objc deinit
 }
-public protocol AdapterParameters {
+public protocol AdapterParameters : AnyObject {
   func getParameters() -> [Swift.String : Any]?
   func hasUserConsent() -> Swift.Bool
   func isAgeRestrictedUser() -> Swift.Bool
@@ -206,7 +206,7 @@ public enum AdFormat {
     get
   }
 }
-public protocol MSPInitListener {
+public protocol MSPInitListener : AnyObject {
   func onComplete(status: MSPiOSCore.MSPInitStatus, message: Swift.String)
 }
 public protocol MSPNativeAdContainer : UIKit.UIView {
@@ -219,9 +219,9 @@ public protocol MSPNativeAdContainer : UIKit.UIView {
 public protocol MSPInitializationParameters : MSPiOSCore.InitializationParameters {
 }
 open class MSPAd {
-  public var adNetworkAdapter: any MSPiOSCore.AdNetworkAdapter
+  weak public var adNetworkAdapter: (any MSPiOSCore.AdNetworkAdapter)?
   public var adInfo: [Swift.String : Any]
-  public var adListener: (any MSPiOSCore.AdListener)?
+  weak public var adListener: (any MSPiOSCore.AdListener)?
   public init(adNetworkAdapter: any MSPiOSCore.AdNetworkAdapter)
   public func destroy()
   @objc deinit
@@ -245,7 +245,7 @@ public enum AdNetwork : Swift.String {
     get
   }
 }
-public protocol AdapterInitListener {
+public protocol AdapterInitListener : AnyObject {
   func onComplete(adNetwork: MSPiOSCore.AdNetwork, adapterInitStatus: MSPiOSCore.AdapterInitStatus, message: Swift.String)
 }
 public enum MSPInitStatus {
