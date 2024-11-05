@@ -1047,6 +1047,8 @@
         "usr": "s:10MSPiOSCore13MediaListenerP",
         "mangledName": "$s10MSPiOSCore13MediaListenerP",
         "moduleName": "MSPiOSCore",
+        "genericSig": "<τ_0_0 : AnyObject>",
+        "sugared_genericSig": "<Self : AnyObject>",
         "declAttributes": [
           "AccessControl"
         ],
@@ -1114,6 +1116,8 @@
         "usr": "s:10MSPiOSCore23GoogleQueryInfoListenerP",
         "mangledName": "$s10MSPiOSCore23GoogleQueryInfoListenerP",
         "moduleName": "MSPiOSCore",
+        "genericSig": "<τ_0_0 : AnyObject>",
+        "sugared_genericSig": "<Self : AnyObject>",
         "declAttributes": [
           "AccessControl"
         ],
@@ -2734,6 +2738,8 @@
         "usr": "s:10MSPiOSCore24FacebookBidTokenListenerP",
         "mangledName": "$s10MSPiOSCore24FacebookBidTokenListenerP",
         "moduleName": "MSPiOSCore",
+        "genericSig": "<τ_0_0 : AnyObject>",
+        "sugared_genericSig": "<Self : AnyObject>",
         "declAttributes": [
           "AccessControl"
         ],
@@ -2901,6 +2907,8 @@
         "usr": "s:10MSPiOSCore16AdMetricReporterP",
         "mangledName": "$s10MSPiOSCore16AdMetricReporterP",
         "moduleName": "MSPiOSCore",
+        "genericSig": "<τ_0_0 : AnyObject>",
+        "sugared_genericSig": "<Self : AnyObject>",
         "declAttributes": [
           "AccessControl"
         ],
@@ -3058,6 +3066,8 @@
         "usr": "s:10MSPiOSCore11BidListenerP",
         "mangledName": "$s10MSPiOSCore11BidListenerP",
         "moduleName": "MSPiOSCore",
+        "genericSig": "<τ_0_0 : AnyObject>",
+        "sugared_genericSig": "<Self : AnyObject>",
         "declAttributes": [
           "AccessControl"
         ],
@@ -3125,6 +3135,8 @@
         "usr": "s:10MSPiOSCore21AdapterAdLoadListenerP",
         "mangledName": "$s10MSPiOSCore21AdapterAdLoadListenerP",
         "moduleName": "MSPiOSCore",
+        "genericSig": "<τ_0_0 : AnyObject>",
+        "sugared_genericSig": "<Self : AnyObject>",
         "declAttributes": [
           "AccessControl"
         ],
@@ -3364,6 +3376,8 @@
         "usr": "s:10MSPiOSCore10AdListenerP",
         "mangledName": "$s10MSPiOSCore10AdListenerP",
         "moduleName": "MSPiOSCore",
+        "genericSig": "<τ_0_0 : AnyObject>",
+        "sugared_genericSig": "<Self : AnyObject>",
         "declAttributes": [
           "AccessControl"
         ],
@@ -3382,6 +3396,16 @@
             "usr": "s:s8CopyableP",
             "mangledName": "$ss8CopyableP"
           }
+        ]
+      },
+      {
+        "kind": "Import",
+        "name": "Foundation",
+        "printedName": "Foundation",
+        "declKind": "Import",
+        "moduleName": "MSPiOSCore",
+        "declAttributes": [
+          "RawDocComment"
         ]
       },
       {
@@ -3563,9 +3587,10 @@
         "usr": "s:10MSPiOSCore16AdNetworkAdapterP",
         "mangledName": "$s10MSPiOSCore16AdNetworkAdapterP",
         "moduleName": "MSPiOSCore",
+        "genericSig": "<τ_0_0 : AnyObject>",
+        "sugared_genericSig": "<Self : AnyObject>",
         "declAttributes": [
-          "AccessControl",
-          "RawDocComment"
+          "AccessControl"
         ],
         "conformances": [
           {
@@ -3637,6 +3662,8 @@
         "usr": "s:10MSPiOSCore22GoogleQueryInfoFetcherP",
         "mangledName": "$s10MSPiOSCore22GoogleQueryInfoFetcherP",
         "moduleName": "MSPiOSCore",
+        "genericSig": "<τ_0_0 : AnyObject>",
+        "sugared_genericSig": "<Self : AnyObject>",
         "declAttributes": [
           "AccessControl"
         ],
@@ -3735,6 +3762,8 @@
         "usr": "s:10MSPiOSCore24AdNetworkAdapterProviderP",
         "mangledName": "$s10MSPiOSCore24AdNetworkAdapterProviderP",
         "moduleName": "MSPiOSCore",
+        "genericSig": "<τ_0_0 : AnyObject>",
+        "sugared_genericSig": "<Self : AnyObject>",
         "declAttributes": [
           "AccessControl"
         ],
@@ -3797,6 +3826,8 @@
         "usr": "s:10MSPiOSCore17BidLoaderProviderP",
         "mangledName": "$s10MSPiOSCore17BidLoaderProviderP",
         "moduleName": "MSPiOSCore",
+        "genericSig": "<τ_0_0 : AnyObject>",
+        "sugared_genericSig": "<Self : AnyObject>",
         "declAttributes": [
           "AccessControl"
         ],
@@ -5903,6 +5934,8 @@
         "usr": "s:10MSPiOSCore24FacebookBidTokenProviderP",
         "mangledName": "$s10MSPiOSCore24FacebookBidTokenProviderP",
         "moduleName": "MSPiOSCore",
+        "genericSig": "<τ_0_0 : AnyObject>",
+        "sugared_genericSig": "<Self : AnyObject>",
         "declAttributes": [
           "AccessControl"
         ],
@@ -5949,21 +5982,23 @@
             "children": [
               {
                 "kind": "TypeNominal",
-                "name": "NativeAd",
-                "printedName": "MSPiOSCore.NativeAd",
-                "usr": "s:10MSPiOSCore8NativeAdC"
+                "name": "WeakStorage",
+                "printedName": "MSPiOSCore.NativeAd?"
               }
             ],
             "declKind": "Var",
-            "usr": "s:10MSPiOSCore12NativeAdViewC06nativeD0AA0cD0Cvp",
-            "mangledName": "$s10MSPiOSCore12NativeAdViewC06nativeD0AA0cD0Cvp",
+            "usr": "s:10MSPiOSCore12NativeAdViewC06nativeD0AA0cD0CSgvp",
+            "mangledName": "$s10MSPiOSCore12NativeAdViewC06nativeD0AA0cD0CSgvp",
             "moduleName": "MSPiOSCore",
             "declAttributes": [
+              "HasInitialValue",
               "Preconcurrency",
               "Custom",
               "HasStorage",
+              "ReferenceOwnership",
               "AccessControl"
             ],
+            "ownership": 1,
             "hasStorage": true,
             "accessors": [
               {
@@ -5973,14 +6008,22 @@
                 "children": [
                   {
                     "kind": "TypeNominal",
-                    "name": "NativeAd",
-                    "printedName": "MSPiOSCore.NativeAd",
-                    "usr": "s:10MSPiOSCore8NativeAdC"
+                    "name": "Optional",
+                    "printedName": "MSPiOSCore.NativeAd?",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "NativeAd",
+                        "printedName": "MSPiOSCore.NativeAd",
+                        "usr": "s:10MSPiOSCore8NativeAdC"
+                      }
+                    ],
+                    "usr": "s:Sq"
                   }
                 ],
                 "declKind": "Accessor",
-                "usr": "s:10MSPiOSCore12NativeAdViewC06nativeD0AA0cD0Cvg",
-                "mangledName": "$s10MSPiOSCore12NativeAdViewC06nativeD0AA0cD0Cvg",
+                "usr": "s:10MSPiOSCore12NativeAdViewC06nativeD0AA0cD0CSgvg",
+                "mangledName": "$s10MSPiOSCore12NativeAdViewC06nativeD0AA0cD0CSgvg",
                 "moduleName": "MSPiOSCore",
                 "implicit": true,
                 "accessorKind": "get"
@@ -5997,14 +6040,22 @@
                   },
                   {
                     "kind": "TypeNominal",
-                    "name": "NativeAd",
-                    "printedName": "MSPiOSCore.NativeAd",
-                    "usr": "s:10MSPiOSCore8NativeAdC"
+                    "name": "Optional",
+                    "printedName": "MSPiOSCore.NativeAd?",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "NativeAd",
+                        "printedName": "MSPiOSCore.NativeAd",
+                        "usr": "s:10MSPiOSCore8NativeAdC"
+                      }
+                    ],
+                    "usr": "s:Sq"
                   }
                 ],
                 "declKind": "Accessor",
-                "usr": "s:10MSPiOSCore12NativeAdViewC06nativeD0AA0cD0Cvs",
-                "mangledName": "$s10MSPiOSCore12NativeAdViewC06nativeD0AA0cD0Cvs",
+                "usr": "s:10MSPiOSCore12NativeAdViewC06nativeD0AA0cD0CSgvs",
+                "mangledName": "$s10MSPiOSCore12NativeAdViewC06nativeD0AA0cD0CSgvs",
                 "moduleName": "MSPiOSCore",
                 "implicit": true,
                 "accessorKind": "set"
@@ -6021,8 +6072,8 @@
                   }
                 ],
                 "declKind": "Accessor",
-                "usr": "s:10MSPiOSCore12NativeAdViewC06nativeD0AA0cD0CvM",
-                "mangledName": "$s10MSPiOSCore12NativeAdViewC06nativeD0AA0cD0CvM",
+                "usr": "s:10MSPiOSCore12NativeAdViewC06nativeD0AA0cD0CSgvM",
+                "mangledName": "$s10MSPiOSCore12NativeAdViewC06nativeD0AA0cD0CSgvM",
                 "moduleName": "MSPiOSCore",
                 "implicit": true,
                 "accessorKind": "_modify"
@@ -7590,6 +7641,8 @@
         "usr": "s:10MSPiOSCore17AdapterParametersP",
         "mangledName": "$s10MSPiOSCore17AdapterParametersP",
         "moduleName": "MSPiOSCore",
+        "genericSig": "<τ_0_0 : AnyObject>",
+        "sugared_genericSig": "<Self : AnyObject>",
         "declAttributes": [
           "AccessControl"
         ],
@@ -7961,6 +8014,8 @@
         "usr": "s:10MSPiOSCore15MSPInitListenerP",
         "mangledName": "$s10MSPiOSCore15MSPInitListenerP",
         "moduleName": "MSPiOSCore",
+        "genericSig": "<τ_0_0 : AnyObject>",
+        "sugared_genericSig": "<Self : AnyObject>",
         "declAttributes": [
           "AccessControl"
         ],
@@ -8246,19 +8301,21 @@
             "children": [
               {
                 "kind": "TypeNominal",
-                "name": "AdNetworkAdapter",
-                "printedName": "any MSPiOSCore.AdNetworkAdapter",
-                "usr": "s:10MSPiOSCore16AdNetworkAdapterP"
+                "name": "WeakStorage",
+                "printedName": "(any MSPiOSCore.AdNetworkAdapter)?"
               }
             ],
             "declKind": "Var",
-            "usr": "s:10MSPiOSCore5MSPAdC16adNetworkAdapterAA02AdeF0_pvp",
-            "mangledName": "$s10MSPiOSCore5MSPAdC16adNetworkAdapterAA02AdeF0_pvp",
+            "usr": "s:10MSPiOSCore5MSPAdC16adNetworkAdapterAA02AdeF0_pSgvp",
+            "mangledName": "$s10MSPiOSCore5MSPAdC16adNetworkAdapterAA02AdeF0_pSgvp",
             "moduleName": "MSPiOSCore",
             "declAttributes": [
+              "HasInitialValue",
               "HasStorage",
+              "ReferenceOwnership",
               "AccessControl"
             ],
+            "ownership": 1,
             "hasStorage": true,
             "accessors": [
               {
@@ -8268,14 +8325,22 @@
                 "children": [
                   {
                     "kind": "TypeNominal",
-                    "name": "AdNetworkAdapter",
-                    "printedName": "any MSPiOSCore.AdNetworkAdapter",
-                    "usr": "s:10MSPiOSCore16AdNetworkAdapterP"
+                    "name": "Optional",
+                    "printedName": "(any MSPiOSCore.AdNetworkAdapter)?",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "AdNetworkAdapter",
+                        "printedName": "any MSPiOSCore.AdNetworkAdapter",
+                        "usr": "s:10MSPiOSCore16AdNetworkAdapterP"
+                      }
+                    ],
+                    "usr": "s:Sq"
                   }
                 ],
                 "declKind": "Accessor",
-                "usr": "s:10MSPiOSCore5MSPAdC16adNetworkAdapterAA02AdeF0_pvg",
-                "mangledName": "$s10MSPiOSCore5MSPAdC16adNetworkAdapterAA02AdeF0_pvg",
+                "usr": "s:10MSPiOSCore5MSPAdC16adNetworkAdapterAA02AdeF0_pSgvg",
+                "mangledName": "$s10MSPiOSCore5MSPAdC16adNetworkAdapterAA02AdeF0_pSgvg",
                 "moduleName": "MSPiOSCore",
                 "implicit": true,
                 "accessorKind": "get"
@@ -8292,14 +8357,22 @@
                   },
                   {
                     "kind": "TypeNominal",
-                    "name": "AdNetworkAdapter",
-                    "printedName": "any MSPiOSCore.AdNetworkAdapter",
-                    "usr": "s:10MSPiOSCore16AdNetworkAdapterP"
+                    "name": "Optional",
+                    "printedName": "(any MSPiOSCore.AdNetworkAdapter)?",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "AdNetworkAdapter",
+                        "printedName": "any MSPiOSCore.AdNetworkAdapter",
+                        "usr": "s:10MSPiOSCore16AdNetworkAdapterP"
+                      }
+                    ],
+                    "usr": "s:Sq"
                   }
                 ],
                 "declKind": "Accessor",
-                "usr": "s:10MSPiOSCore5MSPAdC16adNetworkAdapterAA02AdeF0_pvs",
-                "mangledName": "$s10MSPiOSCore5MSPAdC16adNetworkAdapterAA02AdeF0_pvs",
+                "usr": "s:10MSPiOSCore5MSPAdC16adNetworkAdapterAA02AdeF0_pSgvs",
+                "mangledName": "$s10MSPiOSCore5MSPAdC16adNetworkAdapterAA02AdeF0_pSgvs",
                 "moduleName": "MSPiOSCore",
                 "implicit": true,
                 "accessorKind": "set"
@@ -8316,8 +8389,8 @@
                   }
                 ],
                 "declKind": "Accessor",
-                "usr": "s:10MSPiOSCore5MSPAdC16adNetworkAdapterAA02AdeF0_pvM",
-                "mangledName": "$s10MSPiOSCore5MSPAdC16adNetworkAdapterAA02AdeF0_pvM",
+                "usr": "s:10MSPiOSCore5MSPAdC16adNetworkAdapterAA02AdeF0_pSgvM",
+                "mangledName": "$s10MSPiOSCore5MSPAdC16adNetworkAdapterAA02AdeF0_pSgvM",
                 "moduleName": "MSPiOSCore",
                 "implicit": true,
                 "accessorKind": "_modify"
@@ -8456,17 +8529,8 @@
             "children": [
               {
                 "kind": "TypeNominal",
-                "name": "Optional",
-                "printedName": "(any MSPiOSCore.AdListener)?",
-                "children": [
-                  {
-                    "kind": "TypeNominal",
-                    "name": "AdListener",
-                    "printedName": "any MSPiOSCore.AdListener",
-                    "usr": "s:10MSPiOSCore10AdListenerP"
-                  }
-                ],
-                "usr": "s:Sq"
+                "name": "WeakStorage",
+                "printedName": "(any MSPiOSCore.AdListener)?"
               }
             ],
             "declKind": "Var",
@@ -8476,8 +8540,10 @@
             "declAttributes": [
               "HasInitialValue",
               "HasStorage",
+              "ReferenceOwnership",
               "AccessControl"
             ],
+            "ownership": 1,
             "hasStorage": true,
             "accessors": [
               {
@@ -9176,6 +9242,8 @@
         "usr": "s:10MSPiOSCore19AdapterInitListenerP",
         "mangledName": "$s10MSPiOSCore19AdapterInitListenerP",
         "moduleName": "MSPiOSCore",
+        "genericSig": "<τ_0_0 : AnyObject>",
+        "sugared_genericSig": "<Self : AnyObject>",
         "declAttributes": [
           "AccessControl"
         ],
@@ -10017,28 +10085,28 @@
     {
       "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-core\/MSPiOSCore\/MSPiOSCore\/api\/AdRequest.swift",
       "kind": "BooleanLiteral",
-      "offset": 635,
+      "offset": 636,
       "length": 5,
       "value": "false"
     },
     {
       "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-core\/MSPiOSCore\/MSPiOSCore\/api\/AdRequest.swift",
       "kind": "Dictionary",
-      "offset": 669,
+      "offset": 670,
       "length": 3,
       "value": "[]"
     },
     {
       "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-core\/MSPiOSCore\/MSPiOSCore\/api\/AdRequest.swift",
       "kind": "BooleanLiteral",
-      "offset": 1262,
+      "offset": 1263,
       "length": 5,
       "value": "false"
     },
     {
       "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-core\/MSPiOSCore\/MSPiOSCore\/api\/AdRequest.swift",
       "kind": "BooleanLiteral",
-      "offset": 1300,
+      "offset": 1301,
       "length": 5,
       "value": "false"
     },
