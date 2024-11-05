@@ -1,13 +1,13 @@
 PODS:
-  - FacebookAdapter (0.0.75):
+  - FacebookAdapter (0.0.79):
     - FBAudienceNetwork (= 6.15.0)
-    - MSPSharedLibraries (= 0.0.74)
+    - MSPSharedLibraries (= 0.0.78)
   - FBAudienceNetwork (6.15.0)
   - Google-Mobile-Ads-SDK (11.2.0):
     - GoogleUserMessagingPlatform (>= 1.1)
-  - GoogleAdapter (0.0.75):
+  - GoogleAdapter (0.0.79):
     - Google-Mobile-Ads-SDK (= 11.2.0)
-    - MSPSharedLibraries (= 0.0.74)
+    - MSPSharedLibraries (= 0.0.78)
   - GoogleUserMessagingPlatform (2.7.0)
   - libwebp (1.3.2):
     - libwebp/demux (= 1.3.2)
@@ -21,15 +21,15 @@ PODS:
   - libwebp/sharpyuv (1.3.2)
   - libwebp/webp (1.3.2):
     - libwebp/sharpyuv
-  - MSPCore (0.0.76):
-    - MSPSharedLibraries (= 0.0.74)
-    - PrebidAdapter (= 0.0.74)
+  - MSPCore (0.0.77):
+    - MSPSharedLibraries (= 0.0.78)
+    - PrebidAdapter (= 0.0.79)
     - SwiftProtobuf (= 1.21.0)
-  - MSPSharedLibraries (0.0.74)
-  - NovaAdapter (0.0.75):
-    - MSPSharedLibraries (= 0.0.74)
-  - PrebidAdapter (0.0.74):
-    - MSPSharedLibraries (= 0.0.74)
+  - MSPSharedLibraries (0.0.78)
+  - NovaAdapter (0.0.79):
+    - MSPSharedLibraries (= 0.0.78)
+  - PrebidAdapter (0.0.79):
+    - MSPSharedLibraries (= 0.0.78)
   - SDWebImage (5.18.8):
     - SDWebImage/Core (= 5.18.8)
   - SDWebImage/Core (5.18.8)
@@ -75,16 +75,16 @@ EXTERNAL SOURCES:
     :path: "./"
 
 SPEC CHECKSUMS:
-  FacebookAdapter: a4180367e8a2bafa4612fcfdd9321554e5664185
+  FacebookAdapter: 9a490635a2f6612ae7c090481a37ee28cf594683
   FBAudienceNetwork: 80a035aa69cc3a71c99e44cb5c2874e4cef9909f
   Google-Mobile-Ads-SDK: 5a6d005a6cb5b5e8f4c7b69ca05cdea79c181139
-  GoogleAdapter: 952db4161e383d24d81b72044c7358b8e5b0822b
+  GoogleAdapter: 90981af16a5f977240b0edebc0468710d3967bb3
   GoogleUserMessagingPlatform: a8b56893477f67212fbc8411c139e61d463349f5
   libwebp: 1786c9f4ff8a279e4dac1e8f385004d5fc253009
-  MSPCore: 1bd9707a018a258cd7862d1576e29e153b114cf3
-  MSPSharedLibraries: 7c30ae5a90286801672b39025b9e34427588ed80
-  NovaAdapter: 600d9caa9d0fd622effd7609360b4cc4593bf6a9
-  PrebidAdapter: cc6de120c4680b3d3d35b064b339a8d77bd649fe
+  MSPCore: 29db1cec238a0d76be58e3c76f68780d6b04ac41
+  MSPSharedLibraries: 6b799fca03c17e960888dbde560fcf1330fe9ef8
+  NovaAdapter: 5d65e7b99a0bbfcc0e779bddb884693caadc77a6
+  PrebidAdapter: 98b9ff942346676bc083eaffcc5e8124eeec7047
   SDWebImage: a81bbb3ba4ea5f810f4069c68727cb118467a04a
   SDWebImageWebPCoder: 633b813fca24f1de5e076bcd7f720c038b23892b
   Shimmer: c5374be1c2b0c9e292fb05b339a513cf291cac86

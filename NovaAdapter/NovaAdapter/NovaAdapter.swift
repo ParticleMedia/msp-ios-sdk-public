@@ -11,7 +11,7 @@ public class NovaAdapter: AdNetworkAdapter {
     }
     
     
-    public var adListener: AdListener?
+    public weak var adListener: AdListener?
     public var priceInDollar: Double?
     public var adUnitId: String?
     

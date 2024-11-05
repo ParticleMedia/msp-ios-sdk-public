@@ -89,7 +89,7 @@ import PrebidMobile
     }
     
     public var gadBannerView: GAMBannerView?
-    public var adListener: AdListener?
+    public weak var adListener: AdListener?
     public var priceInDollar: Double?
     
     private var adLoader: GADAdLoader?
