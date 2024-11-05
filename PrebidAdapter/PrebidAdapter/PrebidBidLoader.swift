@@ -7,7 +7,7 @@ public class PrebidBidLoader : BidLoader {
     
     public var bidRequester: PBMBidRequester?
     public var configId: String?
-    public var bidListener: BidListener?
+    public weak var bidListener: BidListener?
     
     public var adRequest: AdRequest?
     
