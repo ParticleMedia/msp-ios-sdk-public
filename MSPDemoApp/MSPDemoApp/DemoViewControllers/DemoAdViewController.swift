@@ -116,11 +116,11 @@ extension DemoAdViewController: AdListener {
     }
     
     func onAdClick(ad: MSPAd) {
-        print("ad click")
+        
     }
     
     func onAdImpression(ad: MSPAd) {
-        print("ad impression")
+        
     }
     
     func onAdLoaded(ad: MSPAd) {
