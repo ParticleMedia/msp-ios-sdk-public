@@ -12,7 +12,7 @@ import UIKit
 
 
 public class NovaInterstitialAd: MSPiOSCore.InterstitialAd {
-    public var rootViewController: UIViewController?
+    public weak var rootViewController: UIViewController?
     public var interstitialAdItem: NovaAppOpenAd?
     
     public override func show() {
