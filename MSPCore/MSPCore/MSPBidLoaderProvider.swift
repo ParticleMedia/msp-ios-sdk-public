@@ -13,7 +13,7 @@ import MSPiOSCore
 public class MSPBidLoaderProvider: BidLoaderProvider {
     public var googleQueryInfoFetcher: GoogleQueryInfoFetcher?
     public var facebookBidTokenProvider: FacebookBidTokenProvider?
-    public var bidLoader: BidLoader?
+    public weak var bidLoader: BidLoader?
     
     public init() {
         

@@ -33,7 +33,7 @@ public class MSPAdNetworkAdapterProvider: AdNetworkAdapterProvider {
     
     public var metaManager: AdNetworkManager?
     
-    public var adNetworkAdapter: AdNetworkAdapter?
+    public weak var adNetworkAdapter: AdNetworkAdapter?
     
     
     public init() {

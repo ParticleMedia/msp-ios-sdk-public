@@ -11,7 +11,7 @@ import MSPiOSCore
 
 
 public class GoogleInterstitialAd: MSPiOSCore.InterstitialAd {
-    public var rootViewController: UIViewController?
+    public weak var rootViewController: UIViewController?
     public var interstitialAdItem: GADInterstitialAd?
     
     public override func show() {
