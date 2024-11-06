@@ -19,7 +19,7 @@ public enum AdType: String {
 
 class DemoAdViewController: UIViewController {
     public let adType: AdType
-    weak var adLoader: MSPAdLoader?
+    public var adLoader: MSPAdLoader?
     public var nativeAdView: NativeAdView?
     public var isCtaShown = false
     
