@@ -44,19 +44,35 @@ public extension NovaNativeAdMediaViewV2 {
         switch media {
         case .image(let imageResource):
             addSubviews(imageView)
-            imageView.snp.makeConstraints { make in
-                make.edges.equalToSuperview()
-            }
+            imageView.translatesAutoresizingMaskIntoConstraints = false
+
+            NSLayoutConstraint.activate([
+                imageView.topAnchor.constraint(equalTo: imageView.superview!.topAnchor),
+                imageView.leadingAnchor.constraint(equalTo: imageView.superview!.leadingAnchor),
+                imageView.trailingAnchor.constraint(equalTo: imageView.superview!.trailingAnchor),
+                imageView.bottomAnchor.constraint(equalTo: imageView.superview!.bottomAnchor)
+            ])
             switch imageResource {
             case .imageURLStr(let urlStr):
-                imageView.sd_setImage(with: URL(string: urlStr))
+                if let url = URL(string: urlStr) {
+                    NovaUIUtils.setImage(from: url, to: imageView) {
+                        
+                    }
+                }
             case .image(let image):
                 imageView.image = image
             }
         case .video(let videoResource):
             addSubview(videoView)
-            videoView.snp.makeConstraints { make in
-                make.edges.equalToSuperview()
+            videoView.translatesAutoresizingMaskIntoConstraints = false
+
+            if let superView = videoView.superview {
+                NSLayoutConstraint.activate([
+                    videoView.topAnchor.constraint(equalTo: superView.topAnchor),
+                    videoView.leadingAnchor.constraint(equalTo: superView.leadingAnchor),
+                    videoView.trailingAnchor.constraint(equalTo: superView.trailingAnchor),
+                    videoView.bottomAnchor.constraint(equalTo: superView.bottomAnchor)
+                ])
             }
             videoView.config(videoInfo: videoResource.videoInfo, encryptedAdToken: videoResource.adToken, iabReporter: videoResource.reporter)
         }

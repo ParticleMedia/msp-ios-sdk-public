@@ -248,7 +248,7 @@ extension FacebookAdapter: FBInterstitialAdDelegate {
         interstitialAd.delegate = self
         self.interstitialAdItem = interstitialAd
         self.facebookInterstitialAd = facebookInterstitialAd
-        
+        facebookInterstitialAd.adInfo["priceInDollar"] = self.priceInDollar
         
         if let adListener = self.adListener,
            let adRequest = self.adRequest {

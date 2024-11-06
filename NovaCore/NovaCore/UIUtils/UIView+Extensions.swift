@@ -41,9 +41,21 @@ extension UIView {
     }
 
     private func novaisVisibleOnScreen(partially: Bool) -> Bool {
-        if isHidden || alpha == 0 || superview == nil || window == nil {
+        if isHidden  {
             return false
         }
+        
+        if alpha == 0 {
+            return false
+        }
+        
+        if superview == nil {
+            return false
+        }
+        
+        //if window == nil {
+        //    return false
+        //}
 
         guard let rootViewController = UIApplication.shared.keyWindow?.rootViewController else {
             return false
