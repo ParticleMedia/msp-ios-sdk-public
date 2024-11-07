@@ -90,7 +90,7 @@ extension PrebidAdapter: BannerViewDelegate {
         var prebidAd = BannerAd(adView: bannerView, adNetworkAdapter: self)
         self.bannerAd = prebidAd
         if let priceInDollar = self.priceInDollar {
-            prebidAd.adInfo["priceInDollar"] = priceInDollar
+            prebidAd.adInfo["price"] = priceInDollar
         }
         
         if let adListener = self.adListener,
