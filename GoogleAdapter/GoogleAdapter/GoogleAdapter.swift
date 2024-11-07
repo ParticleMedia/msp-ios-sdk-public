@@ -157,7 +157,7 @@ import PrebidMobile
                         ad.fullScreenContentDelegate = self
                         googleInterstitialAd.rootViewController = self.adListener?.getRootViewController()
                         self.interstitialAd = googleInterstitialAd
-                        googleInterstitialAd.adInfo["priceInDollar"] = self.priceInDollar
+                        googleInterstitialAd.adInfo["price"] = self.priceInDollar
                         if let adListener = self.adListener,
                            let adRequest = self.adRequest {
                             handleAdLoaded(ad: googleInterstitialAd, listener: adListener, adRequest: adRequest)
@@ -258,7 +258,7 @@ extension GoogleAdapter : GADBannerViewDelegate {
         var bannerAd = BannerAd(adView: bannerView, adNetworkAdapter: self)
         self.bannerAd = bannerAd
         if let priceInDollar = self.priceInDollar {
-            bannerAd.adInfo["priceInDollar"] = priceInDollar
+            bannerAd.adInfo["price"] = priceInDollar
         }
         
         if let adListener = adListener,
@@ -302,7 +302,7 @@ extension GoogleAdapter: GADNativeAdLoaderDelegate {
         googleNativeAd.nativeAdItem = nativeAd
         googleNativeAd.mediaView = mediaView
         googleNativeAd.priceInDollar = self.priceInDollar
-        googleNativeAd.adInfo["priceInDollar"] = self.priceInDollar
+        googleNativeAd.adInfo["price"] = self.priceInDollar
         nativeAd.delegate = self
         self.nativeAdItem = nativeAd
         self.nativeAd = googleNativeAd
@@ -389,7 +389,7 @@ extension GoogleAdapter: GAMBannerAdLoaderDelegate {
         var bannerAd = BannerAd(adView: bannerView, adNetworkAdapter: self)
         self.bannerAd = bannerAd
         if let priceInDollar = self.priceInDollar {
-            bannerAd.adInfo["priceInDollar"] = priceInDollar
+            bannerAd.adInfo["price"] = priceInDollar
         }
         
         if let adListener = adListener,
