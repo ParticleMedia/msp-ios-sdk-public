@@ -31,6 +31,9 @@ import PrebidMobile
             }
             nativeAdView.nativeAdViewBinder?.setUpViews(parentView: gadNativeAdView)
         } else if let nativeAdContainer = nativeAdView.nativeAdContainer {
+            
+            nativeAdContainer.translatesAutoresizingMaskIntoConstraints = false
+            
             gadNativeAdView.headlineView = nativeAdContainer.getTitle()
             gadNativeAdView.bodyView = nativeAdContainer.getbody()
             gadNativeAdView.advertiserView = nativeAdContainer.getAdvertiser()
@@ -181,40 +184,26 @@ import PrebidMobile
             }
 
         case "native":
-            let adTypes: [GADAdLoaderAdType] 
-            if adRequest.adFormat == .native {
-                adTypes = [.native]
-            } else {
-                adTypes = [.native, .gamBanner]
+            DispatchQueue.main.async {
+                let adTypes: [GADAdLoaderAdType]
+                if adRequest.adFormat == .native {
+                    adTypes = [.native]
+                } else {
+                    adTypes = [.native, .gamBanner]
+                }
+                let videoOptions = GADVideoOptions()
+                videoOptions.startMuted = true
+                let adLoader = GADAdLoader(
+                    adUnitID: adUnitId,
+                    rootViewController: self.adListener?.getRootViewController(),
+                    adTypes: adTypes,
+                    options: [videoOptions])
+                adLoader.delegate = self
+                self.adLoader = adLoader
+                let gamRequest = GAMRequest()
+                gamRequest.adString = adString
+                adLoader.load(gamRequest)
             }
-            let videoOptions = GADVideoOptions()
-            videoOptions.startMuted = true
-            adLoader = GADAdLoader(
-                adUnitID: adUnitId,
-                rootViewController: self.adListener?.getRootViewController(),
-                adTypes: adTypes,
-                options: [videoOptions])
-            adLoader?.delegate = self
-            let gamRequest = GAMRequest()
-            gamRequest.adString = adString
-            adLoader?.load(gamRequest)
-            /*
-            let gadMultiFormatEnable = false
-            let adTypes: [GADAdLoaderAdType] = gadMultiFormatEnable ? [.native, .gamBanner] : [.native]
-            let videoOptions = GADVideoOptions()
-            videoOptions.startMuted = true
-            adLoader = GADAdLoader(
-                adUnitID: adUnitId,
-                rootViewController: rootViewController,
-                adTypes: adTypes,
-                options: [videoOptions])
-            adLoader?.delegate = self
-
-            let gamRequest = GAMRequest()
-            gamRequest.adString = adString
-            adLoader?.load(gamRequest)
-            
-             */
             
         default:
             self.adListener?.onError(msg: "unknown adType")

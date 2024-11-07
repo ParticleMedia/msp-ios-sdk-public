@@ -74,78 +74,82 @@ public class NovaAdapter: AdNetworkAdapter {
     public func prepareViewForInteraction(nativeAd: MSPiOSCore.NativeAd, nativeAdView: Any) {
         let adOpenActionHandler = NovaAdOpenActionHandler()
         let actionHandlerMaster = ActionHandlerMaster(actionHandlers: [adOpenActionHandler])
-        guard let nativeAdView = nativeAdView as? NativeAdView,
-              let mediaView = nativeAd.mediaView as? NovaNativeAdMediaView,
-              let novaNativeAdItem = self.nativeAdItem,
-              let rootViewController = self.adListener?.getRootViewController() else {
-            self.adListener?.onError(msg: "fail to render native view")
-            return
-        }
-        let novaNativeAdView = NovaNativeAdView(actionHandler: actionHandlerMaster,
-                                                rootViewController: rootViewController,
-                                                mediaView: mediaView)
-        
-        if let nativeAdViewBinder = nativeAdView.nativeAdViewBinder {
-            novaNativeAdView.titleLabel = nativeAdView.nativeAdViewBinder?.titleLabel
-            novaNativeAdView.bodyLabel = nativeAdView.nativeAdViewBinder?.bodyLabel
-            novaNativeAdView.advertiserLabel = nativeAdView.nativeAdViewBinder?.advertiserLabel
-            novaNativeAdView.callToActionButton = nativeAdView.nativeAdViewBinder?.callToActionButton
-            novaNativeAdView.prepareViewForInteraction(nativeAd: novaNativeAdItem)
-            
-            let novaSubViews = [novaNativeAdView.titleLabel, novaNativeAdView.bodyLabel, novaNativeAdView.advertiserLabel, novaNativeAdView.callToActionButton, mediaView]
-            novaNativeAdView.tappableViews = [UIView]()
-            for view in novaSubViews {
-                if let view = view {
-                    novaNativeAdView.addSubview(view)
-                    novaNativeAdView.tappableViews?.append(view)
-                }
+        DispatchQueue.main.async {
+            guard let nativeAdView = nativeAdView as? NativeAdView,
+                  let mediaView = nativeAd.mediaView as? NovaNativeAdMediaView,
+                  let novaNativeAdItem = self.nativeAdItem,
+                  let rootViewController = self.adListener?.getRootViewController() else {
+                self.adListener?.onError(msg: "fail to render native view")
+                return
             }
-            novaNativeAdView.translatesAutoresizingMaskIntoConstraints = false
-            nativeAdView.nativeAdViewBinder?.setUpViews(parentView: novaNativeAdView)
-        } else if let nativeAdContainer = nativeAdView.nativeAdContainer {
-            novaNativeAdView.titleLabel = nativeAdContainer.getTitle()
-            novaNativeAdView.bodyLabel = nativeAdContainer.getbody()
-            novaNativeAdView.advertiserLabel = nativeAdContainer.getAdvertiser()
-            novaNativeAdView.callToActionButton = nativeAdContainer.getCallToAction()
-            novaNativeAdView.prepareViewForInteraction(nativeAd: novaNativeAdItem)
+            let novaNativeAdView = NovaNativeAdView(actionHandler: actionHandlerMaster,
+                                                    rootViewController: rootViewController,
+                                                    mediaView: mediaView)
             
-            if let mediaContainer = nativeAdContainer.getMedia() {
-                mediaContainer.addSubview(mediaView)
+            if let nativeAdViewBinder = nativeAdView.nativeAdViewBinder {
+                novaNativeAdView.titleLabel = nativeAdView.nativeAdViewBinder?.titleLabel
+                novaNativeAdView.bodyLabel = nativeAdView.nativeAdViewBinder?.bodyLabel
+                novaNativeAdView.advertiserLabel = nativeAdView.nativeAdViewBinder?.advertiserLabel
+                novaNativeAdView.callToActionButton = nativeAdView.nativeAdViewBinder?.callToActionButton
+                novaNativeAdView.prepareViewForInteraction(nativeAd: novaNativeAdItem)
+                
+                let novaSubViews = [novaNativeAdView.titleLabel, novaNativeAdView.bodyLabel, novaNativeAdView.advertiserLabel, novaNativeAdView.callToActionButton, mediaView]
+                novaNativeAdView.tappableViews = [UIView]()
+                for view in novaSubViews {
+                    if let view = view {
+                        novaNativeAdView.addSubview(view)
+                        novaNativeAdView.tappableViews?.append(view)
+                    }
+                }
+                novaNativeAdView.translatesAutoresizingMaskIntoConstraints = false
+                nativeAdView.nativeAdViewBinder?.setUpViews(parentView: novaNativeAdView)
+            } else if let nativeAdContainer = nativeAdView.nativeAdContainer {
+                novaNativeAdView.titleLabel = nativeAdContainer.getTitle()
+                novaNativeAdView.bodyLabel = nativeAdContainer.getbody()
+                novaNativeAdView.advertiserLabel = nativeAdContainer.getAdvertiser()
+                novaNativeAdView.callToActionButton = nativeAdContainer.getCallToAction()
+                novaNativeAdView.prepareViewForInteraction(nativeAd: novaNativeAdItem)
+                
+                if let mediaContainer = nativeAdContainer.getMedia() {
+                    mediaContainer.addSubview(mediaView)
+                    NSLayoutConstraint.activate([
+                        //novaNativeAdView.centerYAnchor.constraint(equalTo: nativeAdView.centerYAnchor),
+                        mediaView.leadingAnchor.constraint(equalTo: mediaContainer.leadingAnchor),
+                        mediaView.trailingAnchor.constraint(equalTo: mediaContainer.trailingAnchor),
+                        mediaView.topAnchor.constraint(equalTo: mediaContainer.topAnchor),
+                        mediaView.bottomAnchor.constraint(equalTo: mediaContainer.bottomAnchor)
+                    ])
+                }
+                
+                nativeAdContainer.translatesAutoresizingMaskIntoConstraints = false
+                
+                novaNativeAdView.addSubview(nativeAdContainer)
+                novaNativeAdView.tappableViews = [UIView]()
+                novaNativeAdView.tappableViews?.append(mediaView)
+                novaNativeAdView.tappableViews?.append(nativeAdContainer)
+                novaNativeAdView.translatesAutoresizingMaskIntoConstraints = false
                 NSLayoutConstraint.activate([
                     //novaNativeAdView.centerYAnchor.constraint(equalTo: nativeAdView.centerYAnchor),
-                    mediaView.leadingAnchor.constraint(equalTo: mediaContainer.leadingAnchor),
-                    mediaView.trailingAnchor.constraint(equalTo: mediaContainer.trailingAnchor),
-                    mediaView.topAnchor.constraint(equalTo: mediaContainer.topAnchor),
-                    mediaView.bottomAnchor.constraint(equalTo: mediaContainer.bottomAnchor)
+                    nativeAdContainer.leadingAnchor.constraint(equalTo: novaNativeAdView.leadingAnchor),
+                    nativeAdContainer.trailingAnchor.constraint(equalTo: novaNativeAdView.trailingAnchor),
+                    nativeAdContainer.topAnchor.constraint(equalTo: novaNativeAdView.topAnchor),
+                    nativeAdContainer.bottomAnchor.constraint(equalTo: novaNativeAdView.bottomAnchor),
+                    nativeAdContainer.widthAnchor.constraint(lessThanOrEqualTo: novaNativeAdView.widthAnchor),
+                    nativeAdContainer.heightAnchor.constraint(lessThanOrEqualTo: novaNativeAdView.heightAnchor),
                 ])
             }
             
-            novaNativeAdView.addSubview(nativeAdContainer)
-            novaNativeAdView.tappableViews = [UIView]()
-            novaNativeAdView.tappableViews?.append(mediaView)
-            novaNativeAdView.tappableViews?.append(nativeAdContainer)
-            novaNativeAdView.translatesAutoresizingMaskIntoConstraints = false
+            nativeAdView.addSubview(novaNativeAdView)
             NSLayoutConstraint.activate([
                 //novaNativeAdView.centerYAnchor.constraint(equalTo: nativeAdView.centerYAnchor),
-                nativeAdContainer.leadingAnchor.constraint(equalTo: novaNativeAdView.leadingAnchor),
-                nativeAdContainer.trailingAnchor.constraint(equalTo: novaNativeAdView.trailingAnchor),
-                nativeAdContainer.topAnchor.constraint(equalTo: novaNativeAdView.topAnchor),
-                nativeAdContainer.bottomAnchor.constraint(equalTo: novaNativeAdView.bottomAnchor),
-                nativeAdContainer.widthAnchor.constraint(lessThanOrEqualTo: novaNativeAdView.widthAnchor),
-                nativeAdContainer.heightAnchor.constraint(lessThanOrEqualTo: novaNativeAdView.heightAnchor),
+                novaNativeAdView.leadingAnchor.constraint(equalTo: nativeAdView.leadingAnchor),
+                novaNativeAdView.trailingAnchor.constraint(equalTo: nativeAdView.trailingAnchor),
+                novaNativeAdView.topAnchor.constraint(equalTo: nativeAdView.topAnchor),
+                novaNativeAdView.bottomAnchor.constraint(equalTo: nativeAdView.bottomAnchor),
+                novaNativeAdView.widthAnchor.constraint(lessThanOrEqualTo: nativeAdView.widthAnchor),
+                novaNativeAdView.heightAnchor.constraint(lessThanOrEqualTo: nativeAdView.heightAnchor),
             ])
         }
-        
-        nativeAdView.addSubview(novaNativeAdView)
-        NSLayoutConstraint.activate([
-            //novaNativeAdView.centerYAnchor.constraint(equalTo: nativeAdView.centerYAnchor),
-            novaNativeAdView.leadingAnchor.constraint(equalTo: nativeAdView.leadingAnchor),
-            novaNativeAdView.trailingAnchor.constraint(equalTo: nativeAdView.trailingAnchor),
-            novaNativeAdView.topAnchor.constraint(equalTo: nativeAdView.topAnchor),
-            novaNativeAdView.bottomAnchor.constraint(equalTo: nativeAdView.bottomAnchor),
-            novaNativeAdView.widthAnchor.constraint(lessThanOrEqualTo: nativeAdView.widthAnchor),
-            novaNativeAdView.heightAnchor.constraint(lessThanOrEqualTo: nativeAdView.heightAnchor),
-        ])
     }
     
     func parseNovaAdString(adString: String, adType: String, adUnitId: String, eCPMInDollar: Decimal) {
@@ -204,7 +208,9 @@ public class NovaAdapter: AdNetworkAdapter {
                 var novaInterstitialAd = NovaInterstitialAd(adNetworkAdapter: self)
                 novaInterstitialAd.interstitialAdItem = appOpenAd
                 //ad.fullScreenContentDelegate = self
-                novaInterstitialAd.rootViewController = self.adListener?.getRootViewController()
+                DispatchQueue.main.async {
+                    novaInterstitialAd.rootViewController = self.adListener?.getRootViewController()
+                }
                 self.interstitialAd = novaInterstitialAd
                 novaInterstitialAd.adInfo["price"] = self.priceInDollar
                 appOpenAd?.delegate = self
@@ -269,7 +275,14 @@ extension NovaAdapter: NovaNativeAdDelegate {
     }
     
     public func nativeAdRootViewController() -> UIViewController? {
-        return self.adListener?.getRootViewController()
+        if Thread.isMainThread {
+                return self.adListener?.getRootViewController()
+        } else {
+            return DispatchQueue.main.sync {
+                self.adListener?.getRootViewController()
+            }
+        }
+        //return self.adListener?.getRootViewController()
     }
 }
 

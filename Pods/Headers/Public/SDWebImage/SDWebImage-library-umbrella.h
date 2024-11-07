@@ -1,1 +1,0 @@
-../../../Target Support Files/SDWebImage-library/SDWebImage-library-umbrella.h

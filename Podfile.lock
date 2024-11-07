@@ -1,22 +1,22 @@
 PODS:
-  - FacebookAdapter (0.0.80):
+  - FacebookAdapter (0.0.81):
     - FBAudienceNetwork (= 6.15.0)
     - MSPSharedLibraries (= 0.0.78)
   - FBAudienceNetwork (6.15.0)
   - Google-Mobile-Ads-SDK (11.2.0):
     - GoogleUserMessagingPlatform (>= 1.1)
-  - GoogleAdapter (0.0.80):
+  - GoogleAdapter (0.0.81):
     - Google-Mobile-Ads-SDK (= 11.2.0)
     - MSPSharedLibraries (= 0.0.78)
   - GoogleUserMessagingPlatform (2.7.0)
-  - MSPCore (0.0.80):
+  - MSPCore (0.0.81):
     - MSPSharedLibraries (= 0.0.78)
-    - PrebidAdapter (= 0.0.79)
+    - PrebidAdapter (= 0.0.81)
     - SwiftProtobuf (= 1.21.0)
   - MSPSharedLibraries (0.0.78)
-  - NovaAdapter (0.0.80):
+  - NovaAdapter (0.0.81):
     - MSPSharedLibraries (= 0.0.78)
-  - PrebidAdapter (0.0.79):
+  - PrebidAdapter (0.0.81):
     - MSPSharedLibraries (= 0.0.78)
   - Shimmer (1.0.2)
   - SwiftProtobuf (1.21.0)
@@ -49,15 +49,15 @@ EXTERNAL SOURCES:
     :path: "./"
 
 SPEC CHECKSUMS:
-  FacebookAdapter: d0cf322dce0b8f4876ee12cc9cf7d0bf1f67a16c
+  FacebookAdapter: 69b72f010f547b872dd17c690db2933b1d4f8afe
   FBAudienceNetwork: 80a035aa69cc3a71c99e44cb5c2874e4cef9909f
   Google-Mobile-Ads-SDK: 5a6d005a6cb5b5e8f4c7b69ca05cdea79c181139
-  GoogleAdapter: d3f6106e3e64504b3e6614c84a7560b3c869ca09
+  GoogleAdapter: 798264209482d2ff4552d5f72baf21e4d80142f2
   GoogleUserMessagingPlatform: a8b56893477f67212fbc8411c139e61d463349f5
-  MSPCore: 25c37220dd456c346230ca42b22131971fc24d75
+  MSPCore: c027b57316dfc7629371b33c2dc100cf3c5d1e91
   MSPSharedLibraries: 6b799fca03c17e960888dbde560fcf1330fe9ef8
-  NovaAdapter: bcd2f5a6c82da82a5cda22ca0c1f52b9bd45c6bc
-  PrebidAdapter: 98b9ff942346676bc083eaffcc5e8124eeec7047
+  NovaAdapter: 8d033182a5d0c90d175cc20b2a99f9edddd49f24
+  PrebidAdapter: 4946490628dc1cfa3f3e9d2b201379ee1ff03a21
   Shimmer: c5374be1c2b0c9e292fb05b339a513cf291cac86
   SwiftProtobuf: afced68785854575756db965e9da52bbf3dc45e7
 
