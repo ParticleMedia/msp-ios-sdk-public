@@ -79,7 +79,14 @@ import UIKit
 
 extension PrebidAdapter: BannerViewDelegate {
     public func bannerViewPresentationController() -> UIViewController? {
-        return self.adListener?.getRootViewController()
+        if Thread.isMainThread {
+                return self.adListener?.getRootViewController()
+        } else {
+            return DispatchQueue.main.sync {
+                self.adListener?.getRootViewController()
+            }
+        }
+        //return self.adListener?.getRootViewController()
     }
     
     @objc public func bannerViewDidReceiveBidResponse(_ bannerView: BannerView) {

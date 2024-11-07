@@ -33,6 +33,9 @@ import Foundation
                                         viewController: nil,
                                         clickableViews: fbSubViews.compactMap{ $0 })
         } else if let nativeAdContainer = nativeAdView.nativeAdContainer {
+            
+            nativeAdContainer.translatesAutoresizingMaskIntoConstraints = false
+            
             nativeAdView.addSubview(nativeAdContainer)
             
             if let mediaContainer = nativeAdContainer.getMedia() {
@@ -216,7 +219,7 @@ extension FacebookAdapter: FBNativeAdDelegate {
         facebookNativeAd.priceInDollar = self.priceInDollar
         facebookNativeAd.nativeAdItem = nativeAd
         facebookNativeAd.mediaView = mediaView
-        facebookNativeAd.adInfo["price"] = self.priceInDollar
+        facebookNativeAd.adInfo["priceInDollar"] = self.priceInDollar
         self.nativeAdItem = nativeAd
         if let adListener = adListener,
            let adRequest = adRequest {
@@ -248,7 +251,7 @@ extension FacebookAdapter: FBInterstitialAdDelegate {
         interstitialAd.delegate = self
         self.interstitialAdItem = interstitialAd
         self.facebookInterstitialAd = facebookInterstitialAd
-        facebookInterstitialAd.adInfo["price"] = self.priceInDollar
+        
         
         if let adListener = self.adListener,
            let adRequest = self.adRequest {
