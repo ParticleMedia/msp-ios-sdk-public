@@ -1,6 +1,7 @@
 // swift-interface-format-version: 1.0
-// swift-compiler-version: Apple Swift version 5.10 (swiftlang-5.10.0.13 clang-1500.3.9.4)
+// swift-compiler-version: Apple Swift version 6.0 effective-5.10 (swiftlang-6.0.0.9.10 clang-1600.0.26.2)
 // swift-module-flags: -target arm64-apple-ios13.0 -enable-objc-interop -enable-library-evolution -swift-version 5 -enforce-exclusivity=checked -O -enable-bare-slash-regex -module-name NovaCore
+// swift-module-flags-ignorable: -no-verify-emitted-module-interface
 import AVFoundation
 import AdSupport
 import AppTrackingTransparency
@@ -17,13 +18,13 @@ import WebKit
 import _Concurrency
 import _StringProcessing
 import _SwiftConcurrencyShims
-@objc @_Concurrency.MainActor(unsafe) public class NovaAdsVideoLandingWebViewController : UIKit.UIViewController {
-  @_Concurrency.MainActor(unsafe) public init(model: NovaCore.NovaAdOpenActionDataModel)
+@objc @_Concurrency.MainActor @preconcurrency public class NovaAdsVideoLandingWebViewController : UIKit.UIViewController {
+  @_Concurrency.MainActor @preconcurrency public init(model: NovaCore.NovaAdOpenActionDataModel)
   @available(*, unavailable)
-  @_Concurrency.MainActor(unsafe) @objc required dynamic public init?(coder: Foundation.NSCoder)
-  @_Concurrency.MainActor(unsafe) @objc override dynamic public func viewDidLoad()
-  @_Concurrency.MainActor(unsafe) @objc override dynamic public func viewWillAppear(_ animated: Swift.Bool)
-  @_Concurrency.MainActor(unsafe) @objc override dynamic public func viewWillDisappear(_ animated: Swift.Bool)
+  @_Concurrency.MainActor @preconcurrency @objc required dynamic public init?(coder: Foundation.NSCoder)
+  @_Concurrency.MainActor @preconcurrency @objc override dynamic public func viewDidLoad()
+  @_Concurrency.MainActor @preconcurrency @objc override dynamic public func viewWillAppear(_ animated: Swift.Bool)
+  @_Concurrency.MainActor @preconcurrency @objc override dynamic public func viewWillDisappear(_ animated: Swift.Bool)
   @objc deinit
 }
 public enum NovaAdOpenActionKey : Swift.String {
@@ -45,15 +46,15 @@ public enum NovaAppOpenAdViewActionKey : Swift.String {
     get
   }
 }
-@_hasMissingDesignatedInitializers @objc @_Concurrency.MainActor(unsafe) final public class NovaNativeAdMediaViewV2 : UIKit.UIView {
-  @_Concurrency.MainActor(unsafe) @objc dynamic public init()
+@_hasMissingDesignatedInitializers @objc @_Concurrency.MainActor @preconcurrency final public class NovaNativeAdMediaViewV2 : UIKit.UIView {
+  @_Concurrency.MainActor @preconcurrency @objc dynamic public init()
   @objc deinit
 }
 extension NovaCore.NovaNativeAdMediaViewV2 {
-  @_Concurrency.MainActor(unsafe) final public func config(with media: NovaCore.NovaNativeAdMedia)
-  @_Concurrency.MainActor(unsafe) final public func prepareForReuse()
-  @_Concurrency.MainActor(unsafe) final public func mediaStartShown()
-  @_Concurrency.MainActor(unsafe) final public func mediaEndShown()
+  @_Concurrency.MainActor @preconcurrency final public func config(with media: NovaCore.NovaNativeAdMedia)
+  @_Concurrency.MainActor @preconcurrency final public func prepareForReuse()
+  @_Concurrency.MainActor @preconcurrency final public func mediaStartShown()
+  @_Concurrency.MainActor @preconcurrency final public func mediaEndShown()
 }
 @_hasMissingDesignatedInitializers public class NovaConstants {
   public static let shared: NovaCore.NovaConstants
@@ -148,7 +149,7 @@ extension NovaCore.NovaIcon {
     public init?(rawValue: Swift.Int)
     public typealias AllCases = [NovaCore.NovaIcon.NovaSystem]
     public typealias RawValue = Swift.Int
-    public static var allCases: [NovaCore.NovaIcon.NovaSystem] {
+    nonisolated public static var allCases: [NovaCore.NovaIcon.NovaSystem] {
       get
     }
     public var rawValue: Swift.Int {
@@ -183,11 +184,11 @@ public enum AdsMediaConstants {
   public static let defaultAspectRatio: Swift.Double
   public static let verticalVideoDefaultAspectRatio: Swift.Double
 }
-@objc @_inheritsConvenienceInitializers @_hasMissingDesignatedInitializers @_Concurrency.MainActor(unsafe) public class NovaWebViewNavigationView : UIKit.UIView {
-  @_Concurrency.MainActor(unsafe) @objc override dynamic public init(frame: CoreFoundation.CGRect)
-  @_Concurrency.MainActor(unsafe) public func config(viewModel: NovaCore.NovaWebViewNavigationViewModel)
-  @_Concurrency.MainActor(unsafe) public func setTitle(_ title: Swift.String?)
-  @_Concurrency.MainActor(unsafe) public func changeLeftButtonVisibility(isHidden: Swift.Bool)
+@objc @_inheritsConvenienceInitializers @_hasMissingDesignatedInitializers @_Concurrency.MainActor @preconcurrency public class NovaWebViewNavigationView : UIKit.UIView {
+  @_Concurrency.MainActor @preconcurrency @objc override dynamic public init(frame: CoreFoundation.CGRect)
+  @_Concurrency.MainActor @preconcurrency public func config(viewModel: NovaCore.NovaWebViewNavigationViewModel)
+  @_Concurrency.MainActor @preconcurrency public func setTitle(_ title: Swift.String?)
+  @_Concurrency.MainActor @preconcurrency public func changeLeftButtonVisibility(isHidden: Swift.Bool)
   @objc deinit
 }
 public protocol NovaJSBridgeHandling : AnyObject {
@@ -210,32 +211,32 @@ public enum NovaCreativeType : Swift.String {
   @objc func appOpenAdDidLogClick(_ appOpenAd: NovaCore.NovaAppOpenAd)
   @objc optional func appOpenAdDidFailToDisplay(_ appOpenAd: NovaCore.NovaAppOpenAd)
 }
-extension SwiftUI.Color {
+extension SwiftUICore.Color {
   @_hasMissingDesignatedInitializers public class NovaColor {
-    final public let newsbreakRed: SwiftUI.Color
-    final public let primaryText: SwiftUI.Color
-    final public let secondaryText: SwiftUI.Color
-    final public let disabledText: SwiftUI.Color
-    final public let primarySurface: SwiftUI.Color
-    final public let secondarySurface: SwiftUI.Color
-    final public let divider: SwiftUI.Color
-    final public let errorLevel1: SwiftUI.Color
-    final public let errorLevel2: SwiftUI.Color
-    final public let errorLevel3: SwiftUI.Color
-    final public let success: SwiftUI.Color
-    final public let progress: SwiftUI.Color
-    final public let unread: SwiftUI.Color
-    final public let textButton: SwiftUI.Color
-    final public let textButtonPressed: SwiftUI.Color
-    final public let linkText: SwiftUI.Color
-    final public let linkBannerBackground: SwiftUI.Color
-    final public let tagText: SwiftUI.Color
-    final public let tagBackground: SwiftUI.Color
-    final public let primaryDividerDeprecated: SwiftUI.Color
-    final public let secondaryDividerDeprecated: SwiftUI.Color
+    final public let newsbreakRed: SwiftUICore.Color
+    final public let primaryText: SwiftUICore.Color
+    final public let secondaryText: SwiftUICore.Color
+    final public let disabledText: SwiftUICore.Color
+    final public let primarySurface: SwiftUICore.Color
+    final public let secondarySurface: SwiftUICore.Color
+    final public let divider: SwiftUICore.Color
+    final public let errorLevel1: SwiftUICore.Color
+    final public let errorLevel2: SwiftUICore.Color
+    final public let errorLevel3: SwiftUICore.Color
+    final public let success: SwiftUICore.Color
+    final public let progress: SwiftUICore.Color
+    final public let unread: SwiftUICore.Color
+    final public let textButton: SwiftUICore.Color
+    final public let textButtonPressed: SwiftUICore.Color
+    final public let linkText: SwiftUICore.Color
+    final public let linkBannerBackground: SwiftUICore.Color
+    final public let tagText: SwiftUICore.Color
+    final public let tagBackground: SwiftUICore.Color
+    final public let primaryDividerDeprecated: SwiftUICore.Color
+    final public let secondaryDividerDeprecated: SwiftUICore.Color
     @objc deinit
   }
-  public static let Nova: SwiftUI.Color.NovaColor
+  public static let Nova: SwiftUICore.Color.NovaColor
 }
 public enum AdsThirdPartyMetricReporter {
   public static func logImpression(thirdPartyImpressionTrackingUrls: [Swift.String])
@@ -245,11 +246,11 @@ public enum NovaAppOpenAdResource {
   case image(UIKit.UIImage)
   case video(NovaCore.NovaNativeAdVideoInfo)
 }
-@_hasMissingDesignatedInitializers @objc @_Concurrency.MainActor(unsafe) public class NovaAppOpenAdViewController : UIKit.UIViewController {
-  @_Concurrency.MainActor(unsafe) @objc override dynamic public func loadView()
-  @_Concurrency.MainActor(unsafe) @objc override dynamic public func viewDidAppear(_ animated: Swift.Bool)
-  @_Concurrency.MainActor(unsafe) @objc override dynamic public func viewDidDisappear(_ animated: Swift.Bool)
-  @_Concurrency.MainActor(unsafe) @objc override dynamic public var preferredStatusBarStyle: UIKit.UIStatusBarStyle {
+@_hasMissingDesignatedInitializers @objc @_Concurrency.MainActor @preconcurrency public class NovaAppOpenAdViewController : UIKit.UIViewController {
+  @_Concurrency.MainActor @preconcurrency @objc override dynamic public func loadView()
+  @_Concurrency.MainActor @preconcurrency @objc override dynamic public func viewDidAppear(_ animated: Swift.Bool)
+  @_Concurrency.MainActor @preconcurrency @objc override dynamic public func viewDidDisappear(_ animated: Swift.Bool)
+  @_Concurrency.MainActor @preconcurrency @objc override dynamic public var preferredStatusBarStyle: UIKit.UIStatusBarStyle {
     @objc get
   }
   @objc deinit
@@ -263,12 +264,12 @@ public struct AdItem : Swift.Codable {
   public func encode(to encoder: any Swift.Encoder) throws
   public init(from decoder: any Swift.Decoder) throws
 }
-@objc @_hasMissingDesignatedInitializers @_Concurrency.MainActor(unsafe) public class NovaVideoProgressView : UIKit.UIView {
-  @_Concurrency.MainActor(unsafe) @objc dynamic public init()
-  @_Concurrency.MainActor(unsafe) public func setTrackView(hidden: Swift.Bool)
-  @_Concurrency.MainActor(unsafe) public func configProgressColor(progressTintColor: UIKit.UIColor, trackTintColor: UIKit.UIColor)
-  @_Concurrency.MainActor(unsafe) public func updateProgress(_ progress: Swift.Float)
-  @_Concurrency.MainActor(unsafe) public func shouldReceivePanGesture(with position: CoreFoundation.CGPoint) -> Swift.Bool
+@objc @_hasMissingDesignatedInitializers @_Concurrency.MainActor @preconcurrency public class NovaVideoProgressView : UIKit.UIView {
+  @_Concurrency.MainActor @preconcurrency @objc dynamic public init()
+  @_Concurrency.MainActor @preconcurrency public func setTrackView(hidden: Swift.Bool)
+  @_Concurrency.MainActor @preconcurrency public func configProgressColor(progressTintColor: UIKit.UIColor, trackTintColor: UIKit.UIColor)
+  @_Concurrency.MainActor @preconcurrency public func updateProgress(_ progress: Swift.Float)
+  @_Concurrency.MainActor @preconcurrency public func shouldReceivePanGesture(with position: CoreFoundation.CGPoint) -> Swift.Bool
   @objc deinit
 }
 @_inheritsConvenienceInitializers @objc public class NovaAdMetricReporter : ObjectiveC.NSObject {
@@ -283,319 +284,319 @@ public struct AdItem : Swift.Codable {
 extension NovaCore.NovaAdMetricReporter {
   public static func convertNovaClickAreaNameToMetric(clickArea: Swift.String?) -> Swift.String?
 }
-extension SwiftUI.Image {
-  public static let Nova: SwiftUI.Image.NovaImage
+extension SwiftUICore.Image {
+  public static let Nova: SwiftUICore.Image.NovaImage
   @_hasMissingDesignatedInitializers public class NovaImage {
-    final public let aiSummaryFilled: SwiftUI.Image
-    final public let aiSummaryLine: SwiftUI.Image
-    final public let alertFilled: SwiftUI.Image
-    final public let alertLine: SwiftUI.Image
-    final public let arrowClockwiseFilled: SwiftUI.Image
-    final public let arrowClockwiseLine: SwiftUI.Image
-    final public let arrowCounterclockwiseFilled: SwiftUI.Image
-    final public let arrowCounterclockwiseLine: SwiftUI.Image
-    final public let arrowDownFilled: SwiftUI.Image
-    final public let arrowDownLine: SwiftUI.Image
-    final public let arrowLeftFilled: SwiftUI.Image
-    final public let arrowLeftLine: SwiftUI.Image
-    final public let arrowLineUpFilled: SwiftUI.Image
-    final public let arrowLineUpLine: SwiftUI.Image
-    final public let arrowLineUpOffFilled: SwiftUI.Image
-    final public let arrowLineUpOffLine: SwiftUI.Image
-    final public let arrowRightFilled: SwiftUI.Image
-    final public let arrowRightLine: SwiftUI.Image
-    final public let arrowTipDownFilled: SwiftUI.Image
-    final public let arrowTipDownLine: SwiftUI.Image
-    final public let arrowTipUpFilled: SwiftUI.Image
-    final public let arrowTipUpLine: SwiftUI.Image
-    final public let arrowUpFilled: SwiftUI.Image
-    final public let arrowUpLine: SwiftUI.Image
-    final public let backwordAudioFilled: SwiftUI.Image
-    final public let backwordAudioLine: SwiftUI.Image
-    final public let bellFilled: SwiftUI.Image
-    final public let bellLine: SwiftUI.Image
-    final public let bookmarkFilled: SwiftUI.Image
-    final public let bookmarkLine: SwiftUI.Image
-    final public let bookmarkPageFilled: SwiftUI.Image
-    final public let bookmarkPageLine: SwiftUI.Image
-    final public let calendarFilled: SwiftUI.Image
-    final public let calendarLine: SwiftUI.Image
-    final public let callFilled: SwiftUI.Image
-    final public let callLine: SwiftUI.Image
-    final public let cameraFilled: SwiftUI.Image
-    final public let cameraLine: SwiftUI.Image
-    final public let cameraSwitchFilled: SwiftUI.Image
-    final public let cameraSwitchLine: SwiftUI.Image
-    final public let categoryFilled: SwiftUI.Image
-    final public let categoryLine: SwiftUI.Image
-    final public let chartBarFilled: SwiftUI.Image
-    final public let chartBarLine: SwiftUI.Image
-    final public let chartUpFilled: SwiftUI.Image
-    final public let chartUpLine: SwiftUI.Image
-    final public let chatFilled: SwiftUI.Image
-    final public let chatInfoFilled: SwiftUI.Image
-    final public let chatInfoLine: SwiftUI.Image
-    final public let chatLine: SwiftUI.Image
-    final public let checkmarkCircleFilled: SwiftUI.Image
-    final public let checkmarkCircleLine: SwiftUI.Image
-    final public let checkmarkFilled: SwiftUI.Image
-    final public let checkmarkLine: SwiftUI.Image
-    final public let chevronDownCircleFilled: SwiftUI.Image
-    final public let chevronDownCircleLine: SwiftUI.Image
-    final public let chevronDownFilled: SwiftUI.Image
-    final public let chevronDownLine: SwiftUI.Image
-    final public let chevronLeftCircleFilled: SwiftUI.Image
-    final public let chevronLeftCircleLine: SwiftUI.Image
-    final public let chevronLeftFilled: SwiftUI.Image
-    final public let chevronLeftLine: SwiftUI.Image
-    final public let chevronRightCircleFilled: SwiftUI.Image
-    final public let chevronRightCircleLine: SwiftUI.Image
-    final public let chevronRightFilled: SwiftUI.Image
-    final public let chevronRightLine: SwiftUI.Image
-    final public let chevronUpCircleFilled: SwiftUI.Image
-    final public let chevronUpCircleLine: SwiftUI.Image
-    final public let chevronUpFilled: SwiftUI.Image
-    final public let chevronUpLine: SwiftUI.Image
-    final public let clockFilled: SwiftUI.Image
-    final public let clockLeftFilled: SwiftUI.Image
-    final public let clockLeftLine: SwiftUI.Image
-    final public let clockLine: SwiftUI.Image
-    final public let cloudFilled: SwiftUI.Image
-    final public let cloudLine: SwiftUI.Image
-    final public let coffeeFilled: SwiftUI.Image
-    final public let coffeeLine: SwiftUI.Image
-    final public let compassFilled: SwiftUI.Image
-    final public let compassLine: SwiftUI.Image
-    final public let composeFilled: SwiftUI.Image
-    final public let composeLine: SwiftUI.Image
-    final public let contextFilled: SwiftUI.Image
-    final public let contextFilledFilled: SwiftUI.Image
-    final public let contextFilledLine: SwiftUI.Image
-    final public let contextLine: SwiftUI.Image
-    final public let conversationFilled: SwiftUI.Image
-    final public let conversationLine: SwiftUI.Image
-    final public let cornerInFilled: SwiftUI.Image
-    final public let cornerInLine: SwiftUI.Image
-    final public let cornerOutFilled: SwiftUI.Image
-    final public let cornerOutLine: SwiftUI.Image
-    final public let crossCircleFilled: SwiftUI.Image
-    final public let crossCircleLine: SwiftUI.Image
-    final public let crossFilled: SwiftUI.Image
-    final public let crossLine: SwiftUI.Image
-    final public let desktopFilled: SwiftUI.Image
-    final public let desktopLine: SwiftUI.Image
-    final public let directionFilled: SwiftUI.Image
-    final public let directionLine: SwiftUI.Image
-    final public let displayFilled: SwiftUI.Image
-    final public let displayLine: SwiftUI.Image
-    final public let downloadFilled: SwiftUI.Image
-    final public let downloadLine: SwiftUI.Image
-    final public let earpodFilled: SwiftUI.Image
-    final public let earpodLine: SwiftUI.Image
-    final public let ellipsisHorizontalCircleFilled: SwiftUI.Image
-    final public let ellipsisHorizontalCircleLine: SwiftUI.Image
-    final public let ellipsisHorizontalFilled: SwiftUI.Image
-    final public let ellipsisHorizontalLine: SwiftUI.Image
-    final public let ellipsisVerticalCircleFilled: SwiftUI.Image
-    final public let ellipsisVerticalCircleLine: SwiftUI.Image
-    final public let ellipsisVerticalFilled: SwiftUI.Image
-    final public let ellipsisVerticalLine: SwiftUI.Image
-    final public let errorFilled: SwiftUI.Image
-    final public let errorLine: SwiftUI.Image
-    final public let fastForwardFilled: SwiftUI.Image
-    final public let fastForwardLine: SwiftUI.Image
-    final public let filter2Filled: SwiftUI.Image
-    final public let filter2Line: SwiftUI.Image
-    final public let filterFilled: SwiftUI.Image
-    final public let filterLine: SwiftUI.Image
-    final public let fireFilled: SwiftUI.Image
-    final public let fireLine: SwiftUI.Image
-    final public let flagFilled: SwiftUI.Image
-    final public let flagLine: SwiftUI.Image
-    final public let forwordAudioFilled: SwiftUI.Image
-    final public let forwordAudioLine: SwiftUI.Image
-    final public let giftFilled: SwiftUI.Image
-    final public let giftLine: SwiftUI.Image
-    final public let globalFilled: SwiftUI.Image
-    final public let globalLine: SwiftUI.Image
-    final public let handFilled: SwiftUI.Image
-    final public let handLine: SwiftUI.Image
-    final public let handleFilled: SwiftUI.Image
-    final public let handleLine: SwiftUI.Image
-    final public let hashtagFilled: SwiftUI.Image
-    final public let hashtagLine: SwiftUI.Image
-    final public let heartFilled: SwiftUI.Image
-    final public let heartLine: SwiftUI.Image
-    final public let hideFilled: SwiftUI.Image
-    final public let hideLine: SwiftUI.Image
-    final public let homeFilled: SwiftUI.Image
-    final public let homeLine: SwiftUI.Image
-    final public let imageFilled: SwiftUI.Image
-    final public let imageLine: SwiftUI.Image
-    final public let infoFilled: SwiftUI.Image
-    final public let infoLine: SwiftUI.Image
-    final public let inviteFilled: SwiftUI.Image
-    final public let inviteLine: SwiftUI.Image
-    final public let keyFilled: SwiftUI.Image
-    final public let keyLine: SwiftUI.Image
-    final public let kudosFilled: SwiftUI.Image
-    final public let kudosLine: SwiftUI.Image
-    final public let layerFilled: SwiftUI.Image
-    final public let layerLine: SwiftUI.Image
-    final public let lightbulbFilled: SwiftUI.Image
-    final public let lightbulbInfoFilled: SwiftUI.Image
-    final public let lightbulbInfoLine: SwiftUI.Image
-    final public let lightbulbLine: SwiftUI.Image
-    final public let lightbulbfilled1: SwiftUI.Image
-    final public let lightbulbline1: SwiftUI.Image
-    final public let lightningFilled: SwiftUI.Image
-    final public let lightningLine: SwiftUI.Image
-    final public let linkFilled: SwiftUI.Image
-    final public let linkLine: SwiftUI.Image
-    final public let listBulletFilled: SwiftUI.Image
-    final public let listBulletLine: SwiftUI.Image
-    final public let locationFilled: SwiftUI.Image
-    final public let locationLine: SwiftUI.Image
-    final public let lockFilled: SwiftUI.Image
-    final public let lockLine: SwiftUI.Image
-    final public let loginFilled: SwiftUI.Image
-    final public let loginLine: SwiftUI.Image
-    final public let logoutFilled: SwiftUI.Image
-    final public let logoutLine: SwiftUI.Image
-    final public let magicFilled: SwiftUI.Image
-    final public let magicLine: SwiftUI.Image
-    final public let mailFilled: SwiftUI.Image
-    final public let mailLine: SwiftUI.Image
-    final public let mailboxFilled: SwiftUI.Image
-    final public let mailboxLine: SwiftUI.Image
-    final public let mapFilled: SwiftUI.Image
-    final public let mapLine: SwiftUI.Image
-    final public let micFilled: SwiftUI.Image
-    final public let micLine: SwiftUI.Image
-    final public let minusCircleFilled: SwiftUI.Image
-    final public let minusCircleLine: SwiftUI.Image
-    final public let minusFilled: SwiftUI.Image
-    final public let minusLine: SwiftUI.Image
-    final public let mobileFilled: SwiftUI.Image
-    final public let mobileLine: SwiftUI.Image
-    final public let moneyFilled: SwiftUI.Image
-    final public let moneyLine: SwiftUI.Image
-    final public let moonFilled: SwiftUI.Image
-    final public let moonLine: SwiftUI.Image
-    final public let musicFilled: SwiftUI.Image
-    final public let musicLine: SwiftUI.Image
-    final public let musicWaveFilled: SwiftUI.Image
-    final public let musicWaveLine: SwiftUI.Image
-    final public let muteFilled: SwiftUI.Image
-    final public let muteLine: SwiftUI.Image
-    final public let navigationFilled: SwiftUI.Image
-    final public let navigationLine: SwiftUI.Image
-    final public let newChatFilled: SwiftUI.Image
-    final public let newChatLine: SwiftUI.Image
-    final public let newsbreakFilled: SwiftUI.Image
-    final public let newsbreakLine: SwiftUI.Image
-    final public let newspaperFilled: SwiftUI.Image
-    final public let newspaperLine: SwiftUI.Image
-    final public let nextSongFilled: SwiftUI.Image
-    final public let nextSongLine: SwiftUI.Image
-    final public let pauseAudioFilled: SwiftUI.Image
-    final public let pauseAudioLine: SwiftUI.Image
-    final public let pauseFilled: SwiftUI.Image
-    final public let pauseLine: SwiftUI.Image
-    final public let pencilFilled: SwiftUI.Image
-    final public let pencilLine: SwiftUI.Image
-    final public let peopleFilled: SwiftUI.Image
-    final public let peopleLine: SwiftUI.Image
-    final public let pinFilled: SwiftUI.Image
-    final public let pinLine: SwiftUI.Image
-    final public let playAudioFilled: SwiftUI.Image
-    final public let playAudioLine: SwiftUI.Image
-    final public let playFilled: SwiftUI.Image
-    final public let playLine: SwiftUI.Image
-    final public let plusCircleFilled: SwiftUI.Image
-    final public let plusCircleLine: SwiftUI.Image
-    final public let plusFilled: SwiftUI.Image
-    final public let plusLine: SwiftUI.Image
-    final public let plusSquareFilled: SwiftUI.Image
-    final public let plusSquareLine: SwiftUI.Image
-    final public let podcastsFilled: SwiftUI.Image
-    final public let podcastsLine: SwiftUI.Image
-    final public let policeDepartmentFilled: SwiftUI.Image
-    final public let policeDepartmentLine: SwiftUI.Image
-    final public let preSongFilled: SwiftUI.Image
-    final public let preSongLine: SwiftUI.Image
-    final public let profileFilled: SwiftUI.Image
-    final public let profileLine: SwiftUI.Image
-    final public let questionFilled: SwiftUI.Image
-    final public let questionLine: SwiftUI.Image
-    final public let recordFilled: SwiftUI.Image
-    final public let recordLine: SwiftUI.Image
-    final public let refreshFilled: SwiftUI.Image
-    final public let refreshLine: SwiftUI.Image
-    final public let repostFilled: SwiftUI.Image
-    final public let repostLine: SwiftUI.Image
-    final public let revealFilled: SwiftUI.Image
-    final public let revealLine: SwiftUI.Image
-    final public let rewindFilled: SwiftUI.Image
-    final public let rewindLine: SwiftUI.Image
-    final public let sadFilled: SwiftUI.Image
-    final public let sadLine: SwiftUI.Image
-    final public let screenshotFilled: SwiftUI.Image
-    final public let screenshotLine: SwiftUI.Image
-    final public let searchFilled: SwiftUI.Image
-    final public let searchLine: SwiftUI.Image
-    final public let sendFilled: SwiftUI.Image
-    final public let sendLine: SwiftUI.Image
-    final public let settingFilled: SwiftUI.Image
-    final public let settingLine: SwiftUI.Image
-    final public let shareAndroidFilled: SwiftUI.Image
-    final public let shareAndroidLine: SwiftUI.Image
-    final public let shareFilled: SwiftUI.Image
-    final public let shareLine: SwiftUI.Image
-    final public let shortpostFilled: SwiftUI.Image
-    final public let shortpostLine: SwiftUI.Image
-    final public let smileyFilled: SwiftUI.Image
-    final public let smileyLine: SwiftUI.Image
-    final public let starFilled: SwiftUI.Image
-    final public let starLine: SwiftUI.Image
-    final public let stopFilled: SwiftUI.Image
-    final public let stopLine: SwiftUI.Image
-    final public let switchFilled: SwiftUI.Image
-    final public let switchLine: SwiftUI.Image
-    final public let targetFilled: SwiftUI.Image
-    final public let targetLine: SwiftUI.Image
-    final public let textSizeFilled: SwiftUI.Image
-    final public let textSizeLine: SwiftUI.Image
-    final public let thumbsDownFilled: SwiftUI.Image
-    final public let thumbsDownLine: SwiftUI.Image
-    final public let thumbsUpFilled: SwiftUI.Image
-    final public let thumbsUpLine: SwiftUI.Image
-    final public let titleFilled: SwiftUI.Image
-    final public let titleLine: SwiftUI.Image
-    final public let translationFilled: SwiftUI.Image
-    final public let translationLine: SwiftUI.Image
-    final public let trashFilled: SwiftUI.Image
-    final public let trashLine: SwiftUI.Image
-    final public let trendDownFilled: SwiftUI.Image
-    final public let trendDownLine: SwiftUI.Image
-    final public let trendUpFilled: SwiftUI.Image
-    final public let trendUpLine: SwiftUI.Image
-    final public let unlockFilled: SwiftUI.Image
-    final public let unlockLine: SwiftUI.Image
-    final public let unpinFilled: SwiftUI.Image
-    final public let uppinLine: SwiftUI.Image
-    final public let videoClipFilled: SwiftUI.Image
-    final public let videoClipLine: SwiftUI.Image
-    final public let videoFilled: SwiftUI.Image
-    final public let videoLine: SwiftUI.Image
-    final public let volumeOffFilled: SwiftUI.Image
-    final public let volumeOffLine: SwiftUI.Image
-    final public let volumeOnFilled: SwiftUI.Image
-    final public let volumeOnLine: SwiftUI.Image
-    final public let volumeUpFilled: SwiftUI.Image
-    final public let volumeUpLine: SwiftUI.Image
-    final public let volumnDownFilled: SwiftUI.Image
-    final public let volumnDownLine: SwiftUI.Image
+    final public let aiSummaryFilled: SwiftUICore.Image
+    final public let aiSummaryLine: SwiftUICore.Image
+    final public let alertFilled: SwiftUICore.Image
+    final public let alertLine: SwiftUICore.Image
+    final public let arrowClockwiseFilled: SwiftUICore.Image
+    final public let arrowClockwiseLine: SwiftUICore.Image
+    final public let arrowCounterclockwiseFilled: SwiftUICore.Image
+    final public let arrowCounterclockwiseLine: SwiftUICore.Image
+    final public let arrowDownFilled: SwiftUICore.Image
+    final public let arrowDownLine: SwiftUICore.Image
+    final public let arrowLeftFilled: SwiftUICore.Image
+    final public let arrowLeftLine: SwiftUICore.Image
+    final public let arrowLineUpFilled: SwiftUICore.Image
+    final public let arrowLineUpLine: SwiftUICore.Image
+    final public let arrowLineUpOffFilled: SwiftUICore.Image
+    final public let arrowLineUpOffLine: SwiftUICore.Image
+    final public let arrowRightFilled: SwiftUICore.Image
+    final public let arrowRightLine: SwiftUICore.Image
+    final public let arrowTipDownFilled: SwiftUICore.Image
+    final public let arrowTipDownLine: SwiftUICore.Image
+    final public let arrowTipUpFilled: SwiftUICore.Image
+    final public let arrowTipUpLine: SwiftUICore.Image
+    final public let arrowUpFilled: SwiftUICore.Image
+    final public let arrowUpLine: SwiftUICore.Image
+    final public let backwordAudioFilled: SwiftUICore.Image
+    final public let backwordAudioLine: SwiftUICore.Image
+    final public let bellFilled: SwiftUICore.Image
+    final public let bellLine: SwiftUICore.Image
+    final public let bookmarkFilled: SwiftUICore.Image
+    final public let bookmarkLine: SwiftUICore.Image
+    final public let bookmarkPageFilled: SwiftUICore.Image
+    final public let bookmarkPageLine: SwiftUICore.Image
+    final public let calendarFilled: SwiftUICore.Image
+    final public let calendarLine: SwiftUICore.Image
+    final public let callFilled: SwiftUICore.Image
+    final public let callLine: SwiftUICore.Image
+    final public let cameraFilled: SwiftUICore.Image
+    final public let cameraLine: SwiftUICore.Image
+    final public let cameraSwitchFilled: SwiftUICore.Image
+    final public let cameraSwitchLine: SwiftUICore.Image
+    final public let categoryFilled: SwiftUICore.Image
+    final public let categoryLine: SwiftUICore.Image
+    final public let chartBarFilled: SwiftUICore.Image
+    final public let chartBarLine: SwiftUICore.Image
+    final public let chartUpFilled: SwiftUICore.Image
+    final public let chartUpLine: SwiftUICore.Image
+    final public let chatFilled: SwiftUICore.Image
+    final public let chatInfoFilled: SwiftUICore.Image
+    final public let chatInfoLine: SwiftUICore.Image
+    final public let chatLine: SwiftUICore.Image
+    final public let checkmarkCircleFilled: SwiftUICore.Image
+    final public let checkmarkCircleLine: SwiftUICore.Image
+    final public let checkmarkFilled: SwiftUICore.Image
+    final public let checkmarkLine: SwiftUICore.Image
+    final public let chevronDownCircleFilled: SwiftUICore.Image
+    final public let chevronDownCircleLine: SwiftUICore.Image
+    final public let chevronDownFilled: SwiftUICore.Image
+    final public let chevronDownLine: SwiftUICore.Image
+    final public let chevronLeftCircleFilled: SwiftUICore.Image
+    final public let chevronLeftCircleLine: SwiftUICore.Image
+    final public let chevronLeftFilled: SwiftUICore.Image
+    final public let chevronLeftLine: SwiftUICore.Image
+    final public let chevronRightCircleFilled: SwiftUICore.Image
+    final public let chevronRightCircleLine: SwiftUICore.Image
+    final public let chevronRightFilled: SwiftUICore.Image
+    final public let chevronRightLine: SwiftUICore.Image
+    final public let chevronUpCircleFilled: SwiftUICore.Image
+    final public let chevronUpCircleLine: SwiftUICore.Image
+    final public let chevronUpFilled: SwiftUICore.Image
+    final public let chevronUpLine: SwiftUICore.Image
+    final public let clockFilled: SwiftUICore.Image
+    final public let clockLeftFilled: SwiftUICore.Image
+    final public let clockLeftLine: SwiftUICore.Image
+    final public let clockLine: SwiftUICore.Image
+    final public let cloudFilled: SwiftUICore.Image
+    final public let cloudLine: SwiftUICore.Image
+    final public let coffeeFilled: SwiftUICore.Image
+    final public let coffeeLine: SwiftUICore.Image
+    final public let compassFilled: SwiftUICore.Image
+    final public let compassLine: SwiftUICore.Image
+    final public let composeFilled: SwiftUICore.Image
+    final public let composeLine: SwiftUICore.Image
+    final public let contextFilled: SwiftUICore.Image
+    final public let contextFilledFilled: SwiftUICore.Image
+    final public let contextFilledLine: SwiftUICore.Image
+    final public let contextLine: SwiftUICore.Image
+    final public let conversationFilled: SwiftUICore.Image
+    final public let conversationLine: SwiftUICore.Image
+    final public let cornerInFilled: SwiftUICore.Image
+    final public let cornerInLine: SwiftUICore.Image
+    final public let cornerOutFilled: SwiftUICore.Image
+    final public let cornerOutLine: SwiftUICore.Image
+    final public let crossCircleFilled: SwiftUICore.Image
+    final public let crossCircleLine: SwiftUICore.Image
+    final public let crossFilled: SwiftUICore.Image
+    final public let crossLine: SwiftUICore.Image
+    final public let desktopFilled: SwiftUICore.Image
+    final public let desktopLine: SwiftUICore.Image
+    final public let directionFilled: SwiftUICore.Image
+    final public let directionLine: SwiftUICore.Image
+    final public let displayFilled: SwiftUICore.Image
+    final public let displayLine: SwiftUICore.Image
+    final public let downloadFilled: SwiftUICore.Image
+    final public let downloadLine: SwiftUICore.Image
+    final public let earpodFilled: SwiftUICore.Image
+    final public let earpodLine: SwiftUICore.Image
+    final public let ellipsisHorizontalCircleFilled: SwiftUICore.Image
+    final public let ellipsisHorizontalCircleLine: SwiftUICore.Image
+    final public let ellipsisHorizontalFilled: SwiftUICore.Image
+    final public let ellipsisHorizontalLine: SwiftUICore.Image
+    final public let ellipsisVerticalCircleFilled: SwiftUICore.Image
+    final public let ellipsisVerticalCircleLine: SwiftUICore.Image
+    final public let ellipsisVerticalFilled: SwiftUICore.Image
+    final public let ellipsisVerticalLine: SwiftUICore.Image
+    final public let errorFilled: SwiftUICore.Image
+    final public let errorLine: SwiftUICore.Image
+    final public let fastForwardFilled: SwiftUICore.Image
+    final public let fastForwardLine: SwiftUICore.Image
+    final public let filter2Filled: SwiftUICore.Image
+    final public let filter2Line: SwiftUICore.Image
+    final public let filterFilled: SwiftUICore.Image
+    final public let filterLine: SwiftUICore.Image
+    final public let fireFilled: SwiftUICore.Image
+    final public let fireLine: SwiftUICore.Image
+    final public let flagFilled: SwiftUICore.Image
+    final public let flagLine: SwiftUICore.Image
+    final public let forwordAudioFilled: SwiftUICore.Image
+    final public let forwordAudioLine: SwiftUICore.Image
+    final public let giftFilled: SwiftUICore.Image
+    final public let giftLine: SwiftUICore.Image
+    final public let globalFilled: SwiftUICore.Image
+    final public let globalLine: SwiftUICore.Image
+    final public let handFilled: SwiftUICore.Image
+    final public let handLine: SwiftUICore.Image
+    final public let handleFilled: SwiftUICore.Image
+    final public let handleLine: SwiftUICore.Image
+    final public let hashtagFilled: SwiftUICore.Image
+    final public let hashtagLine: SwiftUICore.Image
+    final public let heartFilled: SwiftUICore.Image
+    final public let heartLine: SwiftUICore.Image
+    final public let hideFilled: SwiftUICore.Image
+    final public let hideLine: SwiftUICore.Image
+    final public let homeFilled: SwiftUICore.Image
+    final public let homeLine: SwiftUICore.Image
+    final public let imageFilled: SwiftUICore.Image
+    final public let imageLine: SwiftUICore.Image
+    final public let infoFilled: SwiftUICore.Image
+    final public let infoLine: SwiftUICore.Image
+    final public let inviteFilled: SwiftUICore.Image
+    final public let inviteLine: SwiftUICore.Image
+    final public let keyFilled: SwiftUICore.Image
+    final public let keyLine: SwiftUICore.Image
+    final public let kudosFilled: SwiftUICore.Image
+    final public let kudosLine: SwiftUICore.Image
+    final public let layerFilled: SwiftUICore.Image
+    final public let layerLine: SwiftUICore.Image
+    final public let lightbulbFilled: SwiftUICore.Image
+    final public let lightbulbInfoFilled: SwiftUICore.Image
+    final public let lightbulbInfoLine: SwiftUICore.Image
+    final public let lightbulbLine: SwiftUICore.Image
+    final public let lightbulbfilled1: SwiftUICore.Image
+    final public let lightbulbline1: SwiftUICore.Image
+    final public let lightningFilled: SwiftUICore.Image
+    final public let lightningLine: SwiftUICore.Image
+    final public let linkFilled: SwiftUICore.Image
+    final public let linkLine: SwiftUICore.Image
+    final public let listBulletFilled: SwiftUICore.Image
+    final public let listBulletLine: SwiftUICore.Image
+    final public let locationFilled: SwiftUICore.Image
+    final public let locationLine: SwiftUICore.Image
+    final public let lockFilled: SwiftUICore.Image
+    final public let lockLine: SwiftUICore.Image
+    final public let loginFilled: SwiftUICore.Image
+    final public let loginLine: SwiftUICore.Image
+    final public let logoutFilled: SwiftUICore.Image
+    final public let logoutLine: SwiftUICore.Image
+    final public let magicFilled: SwiftUICore.Image
+    final public let magicLine: SwiftUICore.Image
+    final public let mailFilled: SwiftUICore.Image
+    final public let mailLine: SwiftUICore.Image
+    final public let mailboxFilled: SwiftUICore.Image
+    final public let mailboxLine: SwiftUICore.Image
+    final public let mapFilled: SwiftUICore.Image
+    final public let mapLine: SwiftUICore.Image
+    final public let micFilled: SwiftUICore.Image
+    final public let micLine: SwiftUICore.Image
+    final public let minusCircleFilled: SwiftUICore.Image
+    final public let minusCircleLine: SwiftUICore.Image
+    final public let minusFilled: SwiftUICore.Image
+    final public let minusLine: SwiftUICore.Image
+    final public let mobileFilled: SwiftUICore.Image
+    final public let mobileLine: SwiftUICore.Image
+    final public let moneyFilled: SwiftUICore.Image
+    final public let moneyLine: SwiftUICore.Image
+    final public let moonFilled: SwiftUICore.Image
+    final public let moonLine: SwiftUICore.Image
+    final public let musicFilled: SwiftUICore.Image
+    final public let musicLine: SwiftUICore.Image
+    final public let musicWaveFilled: SwiftUICore.Image
+    final public let musicWaveLine: SwiftUICore.Image
+    final public let muteFilled: SwiftUICore.Image
+    final public let muteLine: SwiftUICore.Image
+    final public let navigationFilled: SwiftUICore.Image
+    final public let navigationLine: SwiftUICore.Image
+    final public let newChatFilled: SwiftUICore.Image
+    final public let newChatLine: SwiftUICore.Image
+    final public let newsbreakFilled: SwiftUICore.Image
+    final public let newsbreakLine: SwiftUICore.Image
+    final public let newspaperFilled: SwiftUICore.Image
+    final public let newspaperLine: SwiftUICore.Image
+    final public let nextSongFilled: SwiftUICore.Image
+    final public let nextSongLine: SwiftUICore.Image
+    final public let pauseAudioFilled: SwiftUICore.Image
+    final public let pauseAudioLine: SwiftUICore.Image
+    final public let pauseFilled: SwiftUICore.Image
+    final public let pauseLine: SwiftUICore.Image
+    final public let pencilFilled: SwiftUICore.Image
+    final public let pencilLine: SwiftUICore.Image
+    final public let peopleFilled: SwiftUICore.Image
+    final public let peopleLine: SwiftUICore.Image
+    final public let pinFilled: SwiftUICore.Image
+    final public let pinLine: SwiftUICore.Image
+    final public let playAudioFilled: SwiftUICore.Image
+    final public let playAudioLine: SwiftUICore.Image
+    final public let playFilled: SwiftUICore.Image
+    final public let playLine: SwiftUICore.Image
+    final public let plusCircleFilled: SwiftUICore.Image
+    final public let plusCircleLine: SwiftUICore.Image
+    final public let plusFilled: SwiftUICore.Image
+    final public let plusLine: SwiftUICore.Image
+    final public let plusSquareFilled: SwiftUICore.Image
+    final public let plusSquareLine: SwiftUICore.Image
+    final public let podcastsFilled: SwiftUICore.Image
+    final public let podcastsLine: SwiftUICore.Image
+    final public let policeDepartmentFilled: SwiftUICore.Image
+    final public let policeDepartmentLine: SwiftUICore.Image
+    final public let preSongFilled: SwiftUICore.Image
+    final public let preSongLine: SwiftUICore.Image
+    final public let profileFilled: SwiftUICore.Image
+    final public let profileLine: SwiftUICore.Image
+    final public let questionFilled: SwiftUICore.Image
+    final public let questionLine: SwiftUICore.Image
+    final public let recordFilled: SwiftUICore.Image
+    final public let recordLine: SwiftUICore.Image
+    final public let refreshFilled: SwiftUICore.Image
+    final public let refreshLine: SwiftUICore.Image
+    final public let repostFilled: SwiftUICore.Image
+    final public let repostLine: SwiftUICore.Image
+    final public let revealFilled: SwiftUICore.Image
+    final public let revealLine: SwiftUICore.Image
+    final public let rewindFilled: SwiftUICore.Image
+    final public let rewindLine: SwiftUICore.Image
+    final public let sadFilled: SwiftUICore.Image
+    final public let sadLine: SwiftUICore.Image
+    final public let screenshotFilled: SwiftUICore.Image
+    final public let screenshotLine: SwiftUICore.Image
+    final public let searchFilled: SwiftUICore.Image
+    final public let searchLine: SwiftUICore.Image
+    final public let sendFilled: SwiftUICore.Image
+    final public let sendLine: SwiftUICore.Image
+    final public let settingFilled: SwiftUICore.Image
+    final public let settingLine: SwiftUICore.Image
+    final public let shareAndroidFilled: SwiftUICore.Image
+    final public let shareAndroidLine: SwiftUICore.Image
+    final public let shareFilled: SwiftUICore.Image
+    final public let shareLine: SwiftUICore.Image
+    final public let shortpostFilled: SwiftUICore.Image
+    final public let shortpostLine: SwiftUICore.Image
+    final public let smileyFilled: SwiftUICore.Image
+    final public let smileyLine: SwiftUICore.Image
+    final public let starFilled: SwiftUICore.Image
+    final public let starLine: SwiftUICore.Image
+    final public let stopFilled: SwiftUICore.Image
+    final public let stopLine: SwiftUICore.Image
+    final public let switchFilled: SwiftUICore.Image
+    final public let switchLine: SwiftUICore.Image
+    final public let targetFilled: SwiftUICore.Image
+    final public let targetLine: SwiftUICore.Image
+    final public let textSizeFilled: SwiftUICore.Image
+    final public let textSizeLine: SwiftUICore.Image
+    final public let thumbsDownFilled: SwiftUICore.Image
+    final public let thumbsDownLine: SwiftUICore.Image
+    final public let thumbsUpFilled: SwiftUICore.Image
+    final public let thumbsUpLine: SwiftUICore.Image
+    final public let titleFilled: SwiftUICore.Image
+    final public let titleLine: SwiftUICore.Image
+    final public let translationFilled: SwiftUICore.Image
+    final public let translationLine: SwiftUICore.Image
+    final public let trashFilled: SwiftUICore.Image
+    final public let trashLine: SwiftUICore.Image
+    final public let trendDownFilled: SwiftUICore.Image
+    final public let trendDownLine: SwiftUICore.Image
+    final public let trendUpFilled: SwiftUICore.Image
+    final public let trendUpLine: SwiftUICore.Image
+    final public let unlockFilled: SwiftUICore.Image
+    final public let unlockLine: SwiftUICore.Image
+    final public let unpinFilled: SwiftUICore.Image
+    final public let uppinLine: SwiftUICore.Image
+    final public let videoClipFilled: SwiftUICore.Image
+    final public let videoClipLine: SwiftUICore.Image
+    final public let videoFilled: SwiftUICore.Image
+    final public let videoLine: SwiftUICore.Image
+    final public let volumeOffFilled: SwiftUICore.Image
+    final public let volumeOffLine: SwiftUICore.Image
+    final public let volumeOnFilled: SwiftUICore.Image
+    final public let volumeOnLine: SwiftUICore.Image
+    final public let volumeUpFilled: SwiftUICore.Image
+    final public let volumeUpLine: SwiftUICore.Image
+    final public let volumnDownFilled: SwiftUICore.Image
+    final public let volumnDownLine: SwiftUICore.Image
     @objc deinit
   }
 }
@@ -654,63 +655,63 @@ public struct ActionModel {
 extension NovaCore.ActionModel : Swift.Equatable {
   public static func == (lhs: NovaCore.ActionModel, rhs: NovaCore.ActionModel) -> Swift.Bool
 }
-@objc @_inheritsConvenienceInitializers @_hasMissingDesignatedInitializers @_Concurrency.MainActor(unsafe) public class CheckBoxButton : UIKit.UIButton {
-  @_Concurrency.MainActor(unsafe) @objc override dynamic public init(frame: CoreFoundation.CGRect)
+@objc @_inheritsConvenienceInitializers @_hasMissingDesignatedInitializers @_Concurrency.MainActor @preconcurrency public class CheckBoxButton : UIKit.UIButton {
+  @_Concurrency.MainActor @preconcurrency @objc override dynamic public init(frame: CoreFoundation.CGRect)
   @objc deinit
 }
-@objc @_Concurrency.MainActor(unsafe) open class NovaNativeAdView : UIKit.UIView {
-  @_Concurrency.MainActor(unsafe) public var titleLabel: UIKit.UILabel?
-  @_Concurrency.MainActor(unsafe) public var bodyLabel: UIKit.UILabel?
-  @_Concurrency.MainActor(unsafe) public var advertiserLabel: UIKit.UILabel?
-  @_Concurrency.MainActor(unsafe) public var callToActionButton: UIKit.UIButton?
-  @_Concurrency.MainActor(unsafe) final public let mediaView: NovaCore.NovaNativeAdMediaView
-  @_Concurrency.MainActor(unsafe) final public let mediaViewController: NovaCore.NovaNativeAdMediaViewController
-  @_Concurrency.MainActor(unsafe) public var novaNativeAdVideoDelegate: (any NovaCore.NovaNativeAdVideoDelegate)?
-  @objc @_Concurrency.MainActor(unsafe) public var tappableViews: [UIKit.UIView]? {
+@objc @_Concurrency.MainActor @preconcurrency open class NovaNativeAdView : UIKit.UIView {
+  @_Concurrency.MainActor @preconcurrency public var titleLabel: UIKit.UILabel?
+  @_Concurrency.MainActor @preconcurrency public var bodyLabel: UIKit.UILabel?
+  @_Concurrency.MainActor @preconcurrency public var advertiserLabel: UIKit.UILabel?
+  @_Concurrency.MainActor @preconcurrency public var callToActionButton: UIKit.UIButton?
+  @_Concurrency.MainActor @preconcurrency final public let mediaView: NovaCore.NovaNativeAdMediaView
+  @_Concurrency.MainActor @preconcurrency final public let mediaViewController: NovaCore.NovaNativeAdMediaViewController
+  @_Concurrency.MainActor @preconcurrency public var novaNativeAdVideoDelegate: (any NovaCore.NovaNativeAdVideoDelegate)?
+  @objc @_Concurrency.MainActor @preconcurrency public var tappableViews: [UIKit.UIView]? {
     @objc get
     @objc set
   }
-  @_Concurrency.MainActor(unsafe) public var iABMetricReporter: NovaCore.IABMetricReporter? {
+  @_Concurrency.MainActor @preconcurrency public var iABMetricReporter: NovaCore.IABMetricReporter? {
     get
   }
-  @_Concurrency.MainActor(unsafe) public init(actionHandler: any NovaCore.ActionHandling, rootViewController: UIKit.UIViewController, mediaView: NovaCore.NovaNativeAdMediaView? = nil)
+  @_Concurrency.MainActor @preconcurrency public init(actionHandler: any NovaCore.ActionHandling, rootViewController: UIKit.UIViewController, mediaView: NovaCore.NovaNativeAdMediaView? = nil)
   @available(*, unavailable)
-  @_Concurrency.MainActor(unsafe) @objc required dynamic public init?(coder: Foundation.NSCoder)
+  @_Concurrency.MainActor @preconcurrency @objc required dynamic public init?(coder: Foundation.NSCoder)
   @objc deinit
-  @_Concurrency.MainActor(unsafe) open func bindView(nativeAd: NovaCore.NovaNativeAdItem)
-  @_Concurrency.MainActor(unsafe) open func setUpView(nativeAd: NovaCore.NovaNativeAdItem)
-  @_Concurrency.MainActor(unsafe) public func prepareViewForInteraction(nativeAd: NovaCore.NovaNativeAdItem)
+  @_Concurrency.MainActor @preconcurrency open func bindView(nativeAd: NovaCore.NovaNativeAdItem)
+  @_Concurrency.MainActor @preconcurrency open func setUpView(nativeAd: NovaCore.NovaNativeAdItem)
+  @_Concurrency.MainActor @preconcurrency public func prepareViewForInteraction(nativeAd: NovaCore.NovaNativeAdItem)
 }
 extension NovaCore.NovaNativeAdView {
-  @objc @_Concurrency.MainActor(unsafe) dynamic public func register(_ nativeAd: NovaCore.NovaNativeAdItem)
-  @_Concurrency.MainActor(unsafe) public func unregisterAd()
+  @objc @_Concurrency.MainActor @preconcurrency dynamic public func register(_ nativeAd: NovaCore.NovaNativeAdItem)
+  @_Concurrency.MainActor @preconcurrency public func unregisterAd()
 }
-@_hasMissingDesignatedInitializers @objc @_Concurrency.MainActor(unsafe) public class NovaAppOpenAdViewV3 : UIKit.UIView {
+@_hasMissingDesignatedInitializers @objc @_Concurrency.MainActor @preconcurrency public class NovaAppOpenAdViewV3 : UIKit.UIView {
   @objc deinit
 }
-@objc @_hasMissingDesignatedInitializers @_Concurrency.MainActor(unsafe) final public class NovaNativeAdVideoView : UIKit.UIView {
-  @_Concurrency.MainActor(unsafe) final public var didTapCloseButtonCallback: (() -> Swift.Void)?
-  @_Concurrency.MainActor(unsafe) final public var novaNativeAdVideoDelegate: (any NovaCore.NovaNativeAdVideoDelegate)?
-  @_Concurrency.MainActor(unsafe) public init(inLandingPage: Swift.Bool = false)
+@objc @_hasMissingDesignatedInitializers @_Concurrency.MainActor @preconcurrency final public class NovaNativeAdVideoView : UIKit.UIView {
+  @_Concurrency.MainActor @preconcurrency final public var didTapCloseButtonCallback: (() -> Swift.Void)?
+  @_Concurrency.MainActor @preconcurrency final public var novaNativeAdVideoDelegate: (any NovaCore.NovaNativeAdVideoDelegate)?
+  @_Concurrency.MainActor @preconcurrency public init(inLandingPage: Swift.Bool = false)
   @objc deinit
 }
 extension NovaCore.NovaNativeAdVideoView {
-  @_Concurrency.MainActor(unsafe) final public func config(videoInfo: NovaCore.NovaNativeAdVideoInfo, encryptedAdToken: Swift.String, iabReporter: NovaCore.IABMetricReporter?)
-  @_Concurrency.MainActor(unsafe) final public func prepareForReuse()
-  @_Concurrency.MainActor(unsafe) final public func getPlayerSuperview() -> UIKit.UIView?
-  @_Concurrency.MainActor(unsafe) final public func setPlayerBackOnView(view: UIKit.UIView)
-  @_Concurrency.MainActor(unsafe) final public func handleVideoOnScreen()
-  @_Concurrency.MainActor(unsafe) final public func handleVideoOffScreen()
+  @_Concurrency.MainActor @preconcurrency final public func config(videoInfo: NovaCore.NovaNativeAdVideoInfo, encryptedAdToken: Swift.String, iabReporter: NovaCore.IABMetricReporter?)
+  @_Concurrency.MainActor @preconcurrency final public func prepareForReuse()
+  @_Concurrency.MainActor @preconcurrency final public func getPlayerSuperview() -> UIKit.UIView?
+  @_Concurrency.MainActor @preconcurrency final public func setPlayerBackOnView(view: UIKit.UIView)
+  @_Concurrency.MainActor @preconcurrency final public func handleVideoOnScreen()
+  @_Concurrency.MainActor @preconcurrency final public func handleVideoOffScreen()
 }
 extension NovaCore.NovaNativeAdVideoView : NovaCore.NovaVideoPlayerDelegate {
-  @_Concurrency.MainActor(unsafe) final public func playerReady(_ player: NovaCore.NovaPlayer)
-  @_Concurrency.MainActor(unsafe) final public func playerPlaybackStateDidChange(_ player: NovaCore.NovaPlayer)
-  @_Concurrency.MainActor(unsafe) final public func playerBufferTimeDidChange(_ bufferTime: Swift.Double)
-  @_Concurrency.MainActor(unsafe) final public func playerCurrentTimeDidChange(_ player: NovaCore.NovaPlayer)
-  @_Concurrency.MainActor(unsafe) final public func playerTimePassed60sAfterPlay(_ player: NovaCore.NovaPlayer)
-  @_Concurrency.MainActor(unsafe) final public func player(_ player: NovaCore.NovaPlayer, didFailWithError error: (any Swift.Error)?)
-  @_Concurrency.MainActor(unsafe) final public func playerPlaybackWillLoop(_ player: NovaCore.NovaPlayer)
-  @_Concurrency.MainActor(unsafe) final public func playerPlaybackDidLoop(_ player: NovaCore.NovaPlayer)
+  @_Concurrency.MainActor @preconcurrency final public func playerReady(_ player: NovaCore.NovaPlayer)
+  @_Concurrency.MainActor @preconcurrency final public func playerPlaybackStateDidChange(_ player: NovaCore.NovaPlayer)
+  @_Concurrency.MainActor @preconcurrency final public func playerBufferTimeDidChange(_ bufferTime: Swift.Double)
+  @_Concurrency.MainActor @preconcurrency final public func playerCurrentTimeDidChange(_ player: NovaCore.NovaPlayer)
+  @_Concurrency.MainActor @preconcurrency final public func playerTimePassed60sAfterPlay(_ player: NovaCore.NovaPlayer)
+  @_Concurrency.MainActor @preconcurrency final public func player(_ player: NovaCore.NovaPlayer, didFailWithError error: (any Swift.Error)?)
+  @_Concurrency.MainActor @preconcurrency final public func playerPlaybackWillLoop(_ player: NovaCore.NovaPlayer)
+  @_Concurrency.MainActor @preconcurrency final public func playerPlaybackDidLoop(_ player: NovaCore.NovaPlayer)
 }
 @objc public enum NovaAdType : Swift.Int {
   case appOpen
@@ -732,16 +733,16 @@ public struct NovaNativeAdMediaViewModel {
   public init(encryptedAdToken: Swift.String, imageUrlStr: Swift.String?, videoInfo: NovaCore.NovaNativeAdVideoInfo?)
 }
 extension UIKit.UIApplication {
-  @objc @_Concurrency.MainActor(unsafe) dynamic public var nova_safeAreaInsets: UIKit.UIEdgeInsets {
+  @objc @_Concurrency.MainActor @preconcurrency dynamic public var nova_safeAreaInsets: UIKit.UIEdgeInsets {
     @objc get
   }
-  @_Concurrency.MainActor(unsafe) public class var novawindowScenes: [UIKit.UIWindowScene] {
+  @_Concurrency.MainActor @preconcurrency public class var novawindowScenes: [UIKit.UIWindowScene] {
     get
   }
-  @_Concurrency.MainActor(unsafe) public class var novasharedKeyWindow: UIKit.UIWindow? {
+  @_Concurrency.MainActor @preconcurrency public class var novasharedKeyWindow: UIKit.UIWindow? {
     get
   }
-  @_Concurrency.MainActor(unsafe) public class var novakeyRootViewController: UIKit.UIViewController? {
+  @_Concurrency.MainActor @preconcurrency public class var novakeyRootViewController: UIKit.UIViewController? {
     get
   }
 }
@@ -749,34 +750,34 @@ public struct NovaAdOpenActionDataModel {
   public init(url: Foundation.URL, clickTime: Swift.Double, ad: NovaCore.NovaBaseAd)
 }
 extension UIKit.UIView {
-  @_Concurrency.MainActor(unsafe) public static func ignoreAutoresizing(_ views: [UIKit.UIView])
-  @_Concurrency.MainActor(unsafe) public static func ignoreAutoresizing(_ views: UIKit.UIView...)
-  @_Concurrency.MainActor(unsafe) public func addSubviews(_ views: [UIKit.UIView])
-  @_Concurrency.MainActor(unsafe) public func addSubviews(_ views: UIKit.UIView...)
-  @_Concurrency.MainActor(unsafe) public func addSubviewsAndIgnoreAutoResizing(_ views: [UIKit.UIView])
-  @_Concurrency.MainActor(unsafe) public func addSubviewsAndIgnoreAutoResizing(_ views: UIKit.UIView...)
+  @_Concurrency.MainActor @preconcurrency public static func ignoreAutoresizing(_ views: [UIKit.UIView])
+  @_Concurrency.MainActor @preconcurrency public static func ignoreAutoresizing(_ views: UIKit.UIView...)
+  @_Concurrency.MainActor @preconcurrency public func addSubviews(_ views: [UIKit.UIView])
+  @_Concurrency.MainActor @preconcurrency public func addSubviews(_ views: UIKit.UIView...)
+  @_Concurrency.MainActor @preconcurrency public func addSubviewsAndIgnoreAutoResizing(_ views: [UIKit.UIView])
+  @_Concurrency.MainActor @preconcurrency public func addSubviewsAndIgnoreAutoResizing(_ views: UIKit.UIView...)
 }
 extension UIKit.UIView {
-  @_Concurrency.MainActor(unsafe) public static let minTapLength: CoreFoundation.CGFloat
-  @_Concurrency.MainActor(unsafe) public var minTapLength: CoreFoundation.CGFloat {
+  @_Concurrency.MainActor @preconcurrency public static let minTapLength: CoreFoundation.CGFloat
+  @_Concurrency.MainActor @preconcurrency public var minTapLength: CoreFoundation.CGFloat {
     get
   }
 }
 extension UIKit.UIView {
-  @_Concurrency.MainActor(unsafe) public var nova_isFullyVisibleOnScreen: Swift.Bool {
+  @_Concurrency.MainActor @preconcurrency public var nova_isFullyVisibleOnScreen: Swift.Bool {
     get
   }
-  @objc @_Concurrency.MainActor(unsafe) dynamic public var nova_isPartiallyVisibleOnScreen: Swift.Bool {
+  @objc @_Concurrency.MainActor @preconcurrency dynamic public var nova_isPartiallyVisibleOnScreen: Swift.Bool {
     @objc get
   }
-  @_Concurrency.MainActor(unsafe) public func novaisCheckedView() -> Swift.Bool
+  @_Concurrency.MainActor @preconcurrency public func novaisCheckedView() -> Swift.Bool
 }
 extension UIKit.UIView {
-  @_Concurrency.MainActor(unsafe) public func novasetShadow(x: Swift.Double, y: Swift.Double, b: Swift.Double, s: Swift.Double, color: UIKit.UIColor, alpha: Swift.Float)
+  @_Concurrency.MainActor @preconcurrency public func novasetShadow(x: Swift.Double, y: Swift.Double, b: Swift.Double, s: Swift.Double, color: UIKit.UIColor, alpha: Swift.Float)
 }
 extension UIKit.UIView {
-  @_Concurrency.MainActor(unsafe) public func novapinConstraints() -> [UIKit.NSLayoutConstraint]
-  @_Concurrency.MainActor(unsafe) public func novapinToSuperView()
+  @_Concurrency.MainActor @preconcurrency public func novapinConstraints() -> [UIKit.NSLayoutConstraint]
+  @_Concurrency.MainActor @preconcurrency public func novapinToSuperView()
 }
 extension UIKit.UIColor {
   @_hasMissingDesignatedInitializers public class NovaUIColor {
@@ -1028,7 +1029,7 @@ extension UIKit.UIColor {
   public init?(rawValue: Swift.Int)
   public typealias AllCases = [NovaCore.MetricEvent]
   public typealias RawValue = Swift.Int
-  public static var allCases: [NovaCore.MetricEvent] {
+  nonisolated public static var allCases: [NovaCore.MetricEvent] {
     get
   }
   public var rawValue: Swift.Int {
@@ -1091,20 +1092,20 @@ public struct NovaNativeAdVideoState {
   @objc deinit
 }
 extension NovaCore.NovaUnifiedWebViewHost : WebKit.WKScriptMessageHandler {
-  @objc dynamic public func userContentController(_ userContentController: WebKit.WKUserContentController, didReceive message: WebKit.WKScriptMessage)
+  @_Concurrency.MainActor @preconcurrency @objc dynamic public func userContentController(_ userContentController: WebKit.WKUserContentController, didReceive message: WebKit.WKScriptMessage)
 }
 extension NovaCore.NovaUnifiedWebViewHost : WebKit.WKNavigationDelegate {
-  @objc dynamic public func webView(_ webView: WebKit.WKWebView, didCommit navigation: WebKit.WKNavigation!)
-  @objc dynamic public func webView(_ webView: WebKit.WKWebView, didStartProvisionalNavigation navigation: WebKit.WKNavigation!)
-  @objc dynamic public func webView(_ webView: WebKit.WKWebView, decidePolicyFor navigationAction: WebKit.WKNavigationAction, preferences: WebKit.WKWebpagePreferences, decisionHandler: @escaping (WebKit.WKNavigationActionPolicy, WebKit.WKWebpagePreferences) -> Swift.Void)
-  @objc dynamic public func webView(_ webView: WebKit.WKWebView, decidePolicyFor navigationAction: WebKit.WKNavigationAction, decisionHandler: @escaping (WebKit.WKNavigationActionPolicy) -> Swift.Void)
-  @objc dynamic public func webView(_ webView: WebKit.WKWebView, decidePolicyFor navigationResponse: WebKit.WKNavigationResponse, decisionHandler: @escaping (WebKit.WKNavigationResponsePolicy) -> Swift.Void)
-  @objc dynamic public func webView(_ webView: WebKit.WKWebView, didFinish navigation: WebKit.WKNavigation!)
-  @objc dynamic public func webView(_ webView: WebKit.WKWebView, didFailProvisionalNavigation navigation: WebKit.WKNavigation!, withError error: any Swift.Error)
-  @objc dynamic public func webViewWebContentProcessDidTerminate(_ webView: WebKit.WKWebView)
+  @_Concurrency.MainActor @preconcurrency @objc dynamic public func webView(_ webView: WebKit.WKWebView, didCommit navigation: WebKit.WKNavigation!)
+  @_Concurrency.MainActor @preconcurrency @objc dynamic public func webView(_ webView: WebKit.WKWebView, didStartProvisionalNavigation navigation: WebKit.WKNavigation!)
+  @_Concurrency.MainActor @preconcurrency @objc dynamic public func webView(_ webView: WebKit.WKWebView, decidePolicyFor navigationAction: WebKit.WKNavigationAction, preferences: WebKit.WKWebpagePreferences, decisionHandler: @escaping (WebKit.WKNavigationActionPolicy, WebKit.WKWebpagePreferences) -> Swift.Void)
+  @_Concurrency.MainActor @preconcurrency @objc dynamic public func webView(_ webView: WebKit.WKWebView, decidePolicyFor navigationAction: WebKit.WKNavigationAction, decisionHandler: @escaping (WebKit.WKNavigationActionPolicy) -> Swift.Void)
+  @_Concurrency.MainActor @preconcurrency @objc dynamic public func webView(_ webView: WebKit.WKWebView, decidePolicyFor navigationResponse: WebKit.WKNavigationResponse, decisionHandler: @escaping (WebKit.WKNavigationResponsePolicy) -> Swift.Void)
+  @_Concurrency.MainActor @preconcurrency @objc dynamic public func webView(_ webView: WebKit.WKWebView, didFinish navigation: WebKit.WKNavigation!)
+  @_Concurrency.MainActor @preconcurrency @objc dynamic public func webView(_ webView: WebKit.WKWebView, didFailProvisionalNavigation navigation: WebKit.WKNavigation!, withError error: any Swift.Error)
+  @_Concurrency.MainActor @preconcurrency @objc dynamic public func webViewWebContentProcessDidTerminate(_ webView: WebKit.WKWebView)
 }
 extension NovaCore.NovaUnifiedWebViewHost : WebKit.WKUIDelegate {
-  @objc dynamic public func webView(_ webView: WebKit.WKWebView, createWebViewWith configuration: WebKit.WKWebViewConfiguration, for navigationAction: WebKit.WKNavigationAction, windowFeatures: WebKit.WKWindowFeatures) -> WebKit.WKWebView?
+  @_Concurrency.MainActor @preconcurrency @objc dynamic public func webView(_ webView: WebKit.WKWebView, createWebViewWith configuration: WebKit.WKWebViewConfiguration, for navigationAction: WebKit.WKNavigationAction, windowFeatures: WebKit.WKWindowFeatures) -> WebKit.WKWebView?
 }
 @_inheritsConvenienceInitializers @objc public class NovaVideoPlayerCacheHandler : ObjectiveC.NSObject {
   @objc public static let shared: NovaCore.NovaVideoPlayerCacheHandler
@@ -1114,29 +1115,29 @@ extension NovaCore.NovaUnifiedWebViewHost : WebKit.WKUIDelegate {
   @objc override dynamic public init()
   @objc deinit
 }
-@objc @_hasMissingDesignatedInitializers @_Concurrency.MainActor(unsafe) public class NovaAppOpenVerticalVideoAdView : UIKit.UIView {
-  @_Concurrency.MainActor(unsafe) public var viewController: UIKit.UIViewController
+@objc @_hasMissingDesignatedInitializers @_Concurrency.MainActor @preconcurrency public class NovaAppOpenVerticalVideoAdView : UIKit.UIView {
+  @_Concurrency.MainActor @preconcurrency public var viewController: UIKit.UIViewController
   @objc deinit
 }
-extension SwiftUI.Image {
-  public static let NovaEmoji: SwiftUI.Image.NovaImageEmoji
+extension SwiftUICore.Image {
+  public static let NovaEmoji: SwiftUICore.Image.NovaImageEmoji
   @_hasMissingDesignatedInitializers public class NovaImageEmoji {
-    final public let angry: SwiftUI.Image
-    final public let haha: SwiftUI.Image
-    final public let like: SwiftUI.Image
-    final public let love: SwiftUI.Image
-    final public let sad: SwiftUI.Image
-    final public let wow: SwiftUI.Image
+    final public let angry: SwiftUICore.Image
+    final public let haha: SwiftUICore.Image
+    final public let like: SwiftUICore.Image
+    final public let love: SwiftUICore.Image
+    final public let sad: SwiftUICore.Image
+    final public let wow: SwiftUICore.Image
     @objc deinit
   }
 }
-@objc @_hasMissingDesignatedInitializers @_Concurrency.MainActor(unsafe) public class NovaNativeAdMediaViewController : UIKit.UIViewController {
-  @_Concurrency.MainActor(unsafe) public var mediaView: NovaCore.NovaNativeAdMediaView
-  @_Concurrency.MainActor(unsafe) public init(mediaView: NovaCore.NovaNativeAdMediaView)
-  @_Concurrency.MainActor(unsafe) @objc override dynamic public func loadView()
-  @_Concurrency.MainActor(unsafe) @objc override dynamic public func viewDidLoad()
-  @_Concurrency.MainActor(unsafe) @objc override dynamic public func viewWillAppear(_ animated: Swift.Bool)
-  @_Concurrency.MainActor(unsafe) @objc override dynamic public func viewWillDisappear(_ animated: Swift.Bool)
+@objc @_hasMissingDesignatedInitializers @_Concurrency.MainActor @preconcurrency public class NovaNativeAdMediaViewController : UIKit.UIViewController {
+  @_Concurrency.MainActor @preconcurrency public var mediaView: NovaCore.NovaNativeAdMediaView
+  @_Concurrency.MainActor @preconcurrency public init(mediaView: NovaCore.NovaNativeAdMediaView)
+  @_Concurrency.MainActor @preconcurrency @objc override dynamic public func loadView()
+  @_Concurrency.MainActor @preconcurrency @objc override dynamic public func viewDidLoad()
+  @_Concurrency.MainActor @preconcurrency @objc override dynamic public func viewWillAppear(_ animated: Swift.Bool)
+  @_Concurrency.MainActor @preconcurrency @objc override dynamic public func viewWillDisappear(_ animated: Swift.Bool)
   @objc deinit
 }
 @_hasMissingDesignatedInitializers final public class NovaDedupeManager {
@@ -1206,6 +1207,10 @@ extension NovaCore.NovaVideoPlayer : NovaCore.NovaPlayerPlaybackDelegate {
   public func playerPlaybackWillLoop(_ player: NovaCore.NovaPlayer)
   public func playerPlaybackDidLoop(_ player: NovaCore.NovaPlayer)
 }
+@_hasMissingDesignatedInitializers public class NovaUIUtils {
+  public static func setImage(from url: Foundation.URL, to imageView: UIKit.UIImageView, completion: @escaping () -> Swift.Void)
+  @objc deinit
+}
 public enum NovaAdLaunchOption : Swift.String {
   case launchWebView
   case launchBrowser
@@ -1248,7 +1253,7 @@ public protocol NovaPlayerPlaybackDelegate : AnyObject {
   func playerPlaybackWillLoop(_ player: NovaCore.NovaPlayer)
   func playerPlaybackDidLoop(_ player: NovaCore.NovaPlayer)
 }
-@objc @_inheritsConvenienceInitializers @_Concurrency.MainActor(unsafe) open class NovaPlayer : UIKit.UIViewController {
+@objc @_inheritsConvenienceInitializers @_Concurrency.MainActor @preconcurrency open class NovaPlayer : UIKit.UIViewController {
   public typealias FillMode = AVFoundation.AVLayerVideoGravity
   public enum PlaybackState : Swift.Int, Swift.CustomStringConvertible {
     case stopped
@@ -1277,116 +1282,116 @@ public protocol NovaPlayerPlaybackDelegate : AnyObject {
       get
     }
   }
-  @_Concurrency.MainActor(unsafe) weak open var playerDelegate: (any NovaCore.NovaPlayerDelegate)?
-  @_Concurrency.MainActor(unsafe) weak open var playbackDelegate: (any NovaCore.NovaPlayerPlaybackDelegate)?
-  @_Concurrency.MainActor(unsafe) open var url: Foundation.URL? {
+  @_Concurrency.MainActor @preconcurrency weak open var playerDelegate: (any NovaCore.NovaPlayerDelegate)?
+  @_Concurrency.MainActor @preconcurrency weak open var playbackDelegate: (any NovaCore.NovaPlayerPlaybackDelegate)?
+  @_Concurrency.MainActor @preconcurrency open var url: Foundation.URL? {
     get
     set
   }
-  @_Concurrency.MainActor(unsafe) open var asset: AVFoundation.AVAsset? {
+  @_Concurrency.MainActor @preconcurrency open var asset: AVFoundation.AVAsset? {
     get
     set
   }
-  @_Concurrency.MainActor(unsafe) open var fillMode: NovaCore.NovaPlayer.FillMode {
+  @_Concurrency.MainActor @preconcurrency open var fillMode: NovaCore.NovaPlayer.FillMode {
     get
     set
   }
-  @_Concurrency.MainActor(unsafe) open var autoplay: Swift.Bool
-  @_Concurrency.MainActor(unsafe) open var muted: Swift.Bool {
+  @_Concurrency.MainActor @preconcurrency open var autoplay: Swift.Bool
+  @_Concurrency.MainActor @preconcurrency open var muted: Swift.Bool {
     get
     set
   }
-  @_Concurrency.MainActor(unsafe) open var volume: Swift.Float {
+  @_Concurrency.MainActor @preconcurrency open var volume: Swift.Float {
     get
     set
   }
-  @_Concurrency.MainActor(unsafe) open var playbackPausesWhenResigningActive: Swift.Bool
-  @_Concurrency.MainActor(unsafe) open var playbackPausesWhenBackgrounded: Swift.Bool
-  @_Concurrency.MainActor(unsafe) open var playbackResumesWhenBecameActive: Swift.Bool
-  @_Concurrency.MainActor(unsafe) open var playbackResumesWhenEnteringForeground: Swift.Bool
-  @_Concurrency.MainActor(unsafe) open var isPlayingVideo: Swift.Bool {
+  @_Concurrency.MainActor @preconcurrency open var playbackPausesWhenResigningActive: Swift.Bool
+  @_Concurrency.MainActor @preconcurrency open var playbackPausesWhenBackgrounded: Swift.Bool
+  @_Concurrency.MainActor @preconcurrency open var playbackResumesWhenBecameActive: Swift.Bool
+  @_Concurrency.MainActor @preconcurrency open var playbackResumesWhenEnteringForeground: Swift.Bool
+  @_Concurrency.MainActor @preconcurrency open var isPlayingVideo: Swift.Bool {
     get
   }
-  @_Concurrency.MainActor(unsafe) open var playbackLoops: Swift.Bool {
-    get
-    set
-  }
-  @_Concurrency.MainActor(unsafe) open var playbackFreezesAtEnd: Swift.Bool
-  @_Concurrency.MainActor(unsafe) open var playbackState: NovaCore.NovaPlayer.PlaybackState {
+  @_Concurrency.MainActor @preconcurrency open var playbackLoops: Swift.Bool {
     get
     set
   }
-  @_Concurrency.MainActor(unsafe) open var bufferingState: NovaCore.NovaPlayer.BufferingState {
+  @_Concurrency.MainActor @preconcurrency open var playbackFreezesAtEnd: Swift.Bool
+  @_Concurrency.MainActor @preconcurrency open var playbackState: NovaCore.NovaPlayer.PlaybackState {
     get
     set
   }
-  @_Concurrency.MainActor(unsafe) open var bufferSizeInSeconds: Swift.Double
-  @_Concurrency.MainActor(unsafe) open var playbackEdgeTriggered: Swift.Bool
-  @_Concurrency.MainActor(unsafe) open var maximumDuration: Foundation.TimeInterval {
+  @_Concurrency.MainActor @preconcurrency open var bufferingState: NovaCore.NovaPlayer.BufferingState {
+    get
+    set
+  }
+  @_Concurrency.MainActor @preconcurrency open var bufferSizeInSeconds: Swift.Double
+  @_Concurrency.MainActor @preconcurrency open var playbackEdgeTriggered: Swift.Bool
+  @_Concurrency.MainActor @preconcurrency open var maximumDuration: Foundation.TimeInterval {
     get
   }
-  @_Concurrency.MainActor(unsafe) open var currentTimeInterval: Foundation.TimeInterval {
+  @_Concurrency.MainActor @preconcurrency open var currentTimeInterval: Foundation.TimeInterval {
     get
   }
-  @_Concurrency.MainActor(unsafe) open var currentTime: CoreMedia.CMTime {
+  @_Concurrency.MainActor @preconcurrency open var currentTime: CoreMedia.CMTime {
     get
   }
-  @_Concurrency.MainActor(unsafe) open var naturalSize: CoreFoundation.CGSize {
+  @_Concurrency.MainActor @preconcurrency open var naturalSize: CoreFoundation.CGSize {
     get
   }
-  @_Concurrency.MainActor(unsafe) public var playerView: NovaCore.NovaPlayerView {
+  @_Concurrency.MainActor @preconcurrency public var playerView: NovaCore.NovaPlayerView {
     get
   }
-  @_Concurrency.MainActor(unsafe) open func playerLayer() -> AVFoundation.AVPlayerLayer?
-  @_Concurrency.MainActor(unsafe) open var preferredPeakBitRate: Swift.Double {
+  @_Concurrency.MainActor @preconcurrency open func playerLayer() -> AVFoundation.AVPlayerLayer?
+  @_Concurrency.MainActor @preconcurrency open var preferredPeakBitRate: Swift.Double {
     get
     set
   }
   @available(iOS 11.0, tvOS 11.0, *)
-  @_Concurrency.MainActor(unsafe) open var preferredMaximumResolution: CoreFoundation.CGSize {
+  @_Concurrency.MainActor @preconcurrency open var preferredMaximumResolution: CoreFoundation.CGSize {
     get
     set
   }
-  @_Concurrency.MainActor(unsafe) @objc convenience dynamic public init()
-  @_Concurrency.MainActor(unsafe) @objc required dynamic public init?(coder aDecoder: Foundation.NSCoder)
-  @_Concurrency.MainActor(unsafe) @objc override dynamic public init(nibName nibNameOrNil: Swift.String?, bundle nibBundleOrNil: Foundation.Bundle?)
+  @_Concurrency.MainActor @preconcurrency @objc convenience dynamic public init()
+  @_Concurrency.MainActor @preconcurrency @objc required dynamic public init?(coder aDecoder: Foundation.NSCoder)
+  @_Concurrency.MainActor @preconcurrency @objc override dynamic public init(nibName nibNameOrNil: Swift.String?, bundle nibBundleOrNil: Foundation.Bundle?)
   @objc deinit
-  @_Concurrency.MainActor(unsafe) @objc override dynamic open func loadView()
-  @_Concurrency.MainActor(unsafe) @objc override dynamic open func viewDidLoad()
-  @_Concurrency.MainActor(unsafe) @objc override dynamic open func viewDidDisappear(_ animated: Swift.Bool)
+  @_Concurrency.MainActor @preconcurrency @objc override dynamic open func loadView()
+  @_Concurrency.MainActor @preconcurrency @objc override dynamic open func viewDidLoad()
+  @_Concurrency.MainActor @preconcurrency @objc override dynamic open func viewDidDisappear(_ animated: Swift.Bool)
 }
 extension NovaCore.NovaPlayer {
-  @_Concurrency.MainActor(unsafe) public var totalDurationWatched: Foundation.TimeInterval {
+  @_Concurrency.MainActor @preconcurrency public var totalDurationWatched: Foundation.TimeInterval {
     get
   }
-  @_Concurrency.MainActor(unsafe) public func setPlayImmediately(atRate rate: Swift.Float)
+  @_Concurrency.MainActor @preconcurrency public func setPlayImmediately(atRate rate: Swift.Float)
 }
 extension NovaCore.NovaPlayer {
-  @_Concurrency.MainActor(unsafe) open func playFromBeginning()
-  @_Concurrency.MainActor(unsafe) open func playFromCurrentTime()
-  @_Concurrency.MainActor(unsafe) open func pause()
-  @_Concurrency.MainActor(unsafe) open func stop()
-  @_Concurrency.MainActor(unsafe) open func seek(to time: CoreMedia.CMTime, completionHandler: ((Swift.Bool) -> Swift.Void)? = nil)
-  @_Concurrency.MainActor(unsafe) open func seekToTime(to time: CoreMedia.CMTime, toleranceBefore: CoreMedia.CMTime, toleranceAfter: CoreMedia.CMTime, completionHandler: ((Swift.Bool) -> Swift.Void)? = nil)
-  @_Concurrency.MainActor(unsafe) open func takeSnapshot(completionHandler: ((_ image: UIKit.UIImage?, _ error: (any Swift.Error)?) -> Swift.Void)?)
+  @_Concurrency.MainActor @preconcurrency open func playFromBeginning()
+  @_Concurrency.MainActor @preconcurrency open func playFromCurrentTime()
+  @_Concurrency.MainActor @preconcurrency open func pause()
+  @_Concurrency.MainActor @preconcurrency open func stop()
+  @_Concurrency.MainActor @preconcurrency open func seek(to time: CoreMedia.CMTime, completionHandler: ((Swift.Bool) -> Swift.Void)? = nil)
+  @_Concurrency.MainActor @preconcurrency open func seekToTime(to time: CoreMedia.CMTime, toleranceBefore: CoreMedia.CMTime, toleranceAfter: CoreMedia.CMTime, completionHandler: ((Swift.Bool) -> Swift.Void)? = nil)
+  @_Concurrency.MainActor @preconcurrency open func takeSnapshot(completionHandler: ((_ image: UIKit.UIImage?, _ error: (any Swift.Error)?) -> Swift.Void)?)
 }
-@objc @_inheritsConvenienceInitializers @_Concurrency.MainActor(unsafe) public class NovaPlayerView : UIKit.UIView {
-  @_Concurrency.MainActor(unsafe) @objc override dynamic public class var layerClass: Swift.AnyClass {
+@objc @_inheritsConvenienceInitializers @_Concurrency.MainActor @preconcurrency public class NovaPlayerView : UIKit.UIView {
+  @_Concurrency.MainActor @preconcurrency @objc override dynamic public class var layerClass: Swift.AnyClass {
     @objc get
   }
-  @_Concurrency.MainActor(unsafe) public var playerBackgroundColor: UIKit.UIColor? {
+  @_Concurrency.MainActor @preconcurrency public var playerBackgroundColor: UIKit.UIColor? {
     get
     set
   }
-  @_Concurrency.MainActor(unsafe) public var playerFillMode: NovaCore.NovaPlayer.FillMode {
+  @_Concurrency.MainActor @preconcurrency public var playerFillMode: NovaCore.NovaPlayer.FillMode {
     get
     set
   }
-  @_Concurrency.MainActor(unsafe) public var isReadyForDisplay: Swift.Bool {
+  @_Concurrency.MainActor @preconcurrency public var isReadyForDisplay: Swift.Bool {
     get
   }
-  @_Concurrency.MainActor(unsafe) @objc override dynamic public init(frame: CoreFoundation.CGRect)
-  @_Concurrency.MainActor(unsafe) @objc required dynamic public init?(coder aDecoder: Foundation.NSCoder)
+  @_Concurrency.MainActor @preconcurrency @objc override dynamic public init(frame: CoreFoundation.CGRect)
+  @_Concurrency.MainActor @preconcurrency @objc required dynamic public init?(coder aDecoder: Foundation.NSCoder)
   @objc deinit
 }
 public enum NovaAdUrlTransformer {
@@ -1821,24 +1826,24 @@ public enum NovaAdSkipReason : Swift.String {
     get
   }
 }
-extension SwiftUI.Font {
+extension SwiftUICore.Font {
   @_hasMissingDesignatedInitializers public class NovaFont {
-    final public let display1: SwiftUI.Font
-    final public let display2: SwiftUI.Font
-    final public let headline1: SwiftUI.Font
-    final public let headline2: SwiftUI.Font
-    final public let headline3: SwiftUI.Font
-    final public let body1: SwiftUI.Font
-    final public let body2: SwiftUI.Font
-    final public let bodyTablet: SwiftUI.Font
-    final public let subtitle1: SwiftUI.Font
-    final public let subtitle2: SwiftUI.Font
-    final public let subtitle3: SwiftUI.Font
-    final public let caption1: SwiftUI.Font
-    final public let caption2: SwiftUI.Font
+    final public let display1: SwiftUICore.Font
+    final public let display2: SwiftUICore.Font
+    final public let headline1: SwiftUICore.Font
+    final public let headline2: SwiftUICore.Font
+    final public let headline3: SwiftUICore.Font
+    final public let body1: SwiftUICore.Font
+    final public let body2: SwiftUICore.Font
+    final public let bodyTablet: SwiftUICore.Font
+    final public let subtitle1: SwiftUICore.Font
+    final public let subtitle2: SwiftUICore.Font
+    final public let subtitle3: SwiftUICore.Font
+    final public let caption1: SwiftUICore.Font
+    final public let caption2: SwiftUICore.Font
     @objc deinit
   }
-  public static let Nova: SwiftUI.Font.NovaFont
+  public static let Nova: SwiftUICore.Font.NovaFont
 }
 public enum NovaVideoPlayStyle : Swift.String {
   case none
@@ -1895,7 +1900,7 @@ public enum NovaVideoEndKind : Swift.String {
   @objc deinit
 }
 extension NovaCore.NovaVideoPlayerController : UIKit.UIGestureRecognizerDelegate {
-  @_Concurrency.MainActor(unsafe) @objc dynamic public func gestureRecognizer(_ gestureRecognizer: UIKit.UIGestureRecognizer, shouldReceive touch: UIKit.UITouch) -> Swift.Bool
+  @_Concurrency.MainActor @preconcurrency @objc dynamic public func gestureRecognizer(_ gestureRecognizer: UIKit.UIGestureRecognizer, shouldReceive touch: UIKit.UITouch) -> Swift.Bool
 }
 extension NovaCore.NovaVideoPlayerController {
   public func play()
@@ -1923,36 +1928,36 @@ extension NovaCore.NovaVideoPlayerController : NovaCore.NovaPlayerPlaybackDelega
   public func playerPlaybackWillLoop(_ player: NovaCore.NovaPlayer)
   public func playerPlaybackDidLoop(_ player: NovaCore.NovaPlayer)
 }
-@_hasMissingDesignatedInitializers @objc @_Concurrency.MainActor(unsafe) public class NovaAdsLandingWebViewController : UIKit.UIViewController {
-  @_Concurrency.MainActor(unsafe) public var initialLoadDidRedirectTo: ((WebKit.WKWebView) -> Swift.Void)?
-  @_Concurrency.MainActor(unsafe) public var didGoBackToInitialLoad: ((WebKit.WKWebView) -> Swift.Void)?
-  @_Concurrency.MainActor(unsafe) public var webViewDidScroll: ((UIKit.UIScrollView) -> Swift.Void)?
-  @_Concurrency.MainActor(unsafe) public var webViewDidEndDragging: ((UIKit.UIScrollView) -> Swift.Void)?
-  @_Concurrency.MainActor(unsafe) public init(dataModel: NovaCore.NovaAdOpenActionDataModel, navigationModel: NovaCore.NovaWebViewNavigationViewModel? = nil, navigationHeight: CoreFoundation.CGFloat? = nil)
+@_hasMissingDesignatedInitializers @objc @_Concurrency.MainActor @preconcurrency public class NovaAdsLandingWebViewController : UIKit.UIViewController {
+  @_Concurrency.MainActor @preconcurrency public var initialLoadDidRedirectTo: ((WebKit.WKWebView) -> Swift.Void)?
+  @_Concurrency.MainActor @preconcurrency public var didGoBackToInitialLoad: ((WebKit.WKWebView) -> Swift.Void)?
+  @_Concurrency.MainActor @preconcurrency public var webViewDidScroll: ((UIKit.UIScrollView) -> Swift.Void)?
+  @_Concurrency.MainActor @preconcurrency public var webViewDidEndDragging: ((UIKit.UIScrollView) -> Swift.Void)?
+  @_Concurrency.MainActor @preconcurrency public init(dataModel: NovaCore.NovaAdOpenActionDataModel, navigationModel: NovaCore.NovaWebViewNavigationViewModel? = nil, navigationHeight: CoreFoundation.CGFloat? = nil)
   @objc deinit
-  @_Concurrency.MainActor(unsafe) @objc override dynamic public func viewDidLoad()
-  @_Concurrency.MainActor(unsafe) @objc override dynamic public func viewDidDisappear(_ animated: Swift.Bool)
-  @_Concurrency.MainActor(unsafe) public func changeLeftButtonOnNavigation(isHidden: Swift.Bool)
-  @_Concurrency.MainActor(unsafe) public func changeWebViewTappable(isEnable: Swift.Bool)
-  @_Concurrency.MainActor(unsafe) public func setWebView(offset: CoreFoundation.CGPoint)
+  @_Concurrency.MainActor @preconcurrency @objc override dynamic public func viewDidLoad()
+  @_Concurrency.MainActor @preconcurrency @objc override dynamic public func viewDidDisappear(_ animated: Swift.Bool)
+  @_Concurrency.MainActor @preconcurrency public func changeLeftButtonOnNavigation(isHidden: Swift.Bool)
+  @_Concurrency.MainActor @preconcurrency public func changeWebViewTappable(isEnable: Swift.Bool)
+  @_Concurrency.MainActor @preconcurrency public func setWebView(offset: CoreFoundation.CGPoint)
 }
 extension NovaCore.NovaAdsLandingWebViewController : NovaCore.NovaUnifiedWebViewNavigationDelegate {
-  @_Concurrency.MainActor(unsafe) public func openWebPage(_ url: Foundation.URL)
-  @_Concurrency.MainActor(unsafe) public func webView(_ webView: WebKit.WKWebView, didStartProvisionalNavigation navigation: WebKit.WKNavigation!)
-  @_Concurrency.MainActor(unsafe) public func webView(_ webView: WebKit.WKWebView, didCommit navigation: WebKit.WKNavigation!)
-  @_Concurrency.MainActor(unsafe) public func webView(_ webView: WebKit.WKWebView, policyFor navigationAction: WebKit.WKNavigationAction) -> WebKit.WKNavigationActionPolicy?
-  @_Concurrency.MainActor(unsafe) public func webView(_ webView: WebKit.WKWebView, didFinish navigation: WebKit.WKNavigation!)
-  @_Concurrency.MainActor(unsafe) public func webView(_ webView: WebKit.WKWebView, didFailProvisionalNavigation navigation: WebKit.WKNavigation!, withError error: any Swift.Error)
-  @_Concurrency.MainActor(unsafe) public func webViewInitialLoadDidRedirect(_ webView: WebKit.WKWebView)
-  @_Concurrency.MainActor(unsafe) public func webViewDidGoBackToInitialLoad(_ webView: WebKit.WKWebView)
+  @_Concurrency.MainActor @preconcurrency public func openWebPage(_ url: Foundation.URL)
+  @_Concurrency.MainActor @preconcurrency public func webView(_ webView: WebKit.WKWebView, didStartProvisionalNavigation navigation: WebKit.WKNavigation!)
+  @_Concurrency.MainActor @preconcurrency public func webView(_ webView: WebKit.WKWebView, didCommit navigation: WebKit.WKNavigation!)
+  @_Concurrency.MainActor @preconcurrency public func webView(_ webView: WebKit.WKWebView, policyFor navigationAction: WebKit.WKNavigationAction) -> WebKit.WKNavigationActionPolicy?
+  @_Concurrency.MainActor @preconcurrency public func webView(_ webView: WebKit.WKWebView, didFinish navigation: WebKit.WKNavigation!)
+  @_Concurrency.MainActor @preconcurrency public func webView(_ webView: WebKit.WKWebView, didFailProvisionalNavigation navigation: WebKit.WKNavigation!, withError error: any Swift.Error)
+  @_Concurrency.MainActor @preconcurrency public func webViewInitialLoadDidRedirect(_ webView: WebKit.WKWebView)
+  @_Concurrency.MainActor @preconcurrency public func webViewDidGoBackToInitialLoad(_ webView: WebKit.WKWebView)
 }
 extension NovaCore.NovaAdsLandingWebViewController : NovaCore.NovaWebViewBottomViewDelegate {
-  @_Concurrency.MainActor(unsafe) public func bottomViewDidTapBackButton()
-  @_Concurrency.MainActor(unsafe) public func bottomViewDidTapForwardButton()
+  @_Concurrency.MainActor @preconcurrency public func bottomViewDidTapBackButton()
+  @_Concurrency.MainActor @preconcurrency public func bottomViewDidTapForwardButton()
 }
 extension NovaCore.NovaAdsLandingWebViewController : UIKit.UIScrollViewDelegate {
-  @_Concurrency.MainActor(unsafe) @objc dynamic public func scrollViewDidScroll(_ scrollView: UIKit.UIScrollView)
-  @_Concurrency.MainActor(unsafe) @objc dynamic public func scrollViewDidEndDragging(_ scrollView: UIKit.UIScrollView, willDecelerate decelerate: Swift.Bool)
+  @_Concurrency.MainActor @preconcurrency @objc dynamic public func scrollViewDidScroll(_ scrollView: UIKit.UIScrollView)
+  @_Concurrency.MainActor @preconcurrency @objc dynamic public func scrollViewDidEndDragging(_ scrollView: UIKit.UIScrollView, willDecelerate decelerate: Swift.Bool)
 }
 @_hasMissingDesignatedInitializers public class IABMetricReporter {
   @objc deinit
@@ -1961,28 +1966,28 @@ public protocol NovaWebViewBottomViewDelegate : AnyObject {
   func bottomViewDidTapBackButton()
   func bottomViewDidTapForwardButton()
 }
-@objc @_inheritsConvenienceInitializers @_hasMissingDesignatedInitializers @_Concurrency.MainActor(unsafe) public class NovaWebViewBottomView : UIKit.UIView {
-  @_Concurrency.MainActor(unsafe) weak public var delegate: (any NovaCore.NovaWebViewBottomViewDelegate)?
-  @_Concurrency.MainActor(unsafe) @objc override dynamic public init(frame: CoreFoundation.CGRect)
+@objc @_inheritsConvenienceInitializers @_hasMissingDesignatedInitializers @_Concurrency.MainActor @preconcurrency public class NovaWebViewBottomView : UIKit.UIView {
+  @_Concurrency.MainActor @preconcurrency weak public var delegate: (any NovaCore.NovaWebViewBottomViewDelegate)?
+  @_Concurrency.MainActor @preconcurrency @objc override dynamic public init(frame: CoreFoundation.CGRect)
   @objc deinit
 }
 extension NovaCore.NovaWebViewBottomView {
-  @_Concurrency.MainActor(unsafe) public func configButton(canGoBack: Swift.Bool? = nil, canGoForward: Swift.Bool? = nil)
+  @_Concurrency.MainActor @preconcurrency public func configButton(canGoBack: Swift.Bool? = nil, canGoForward: Swift.Bool? = nil)
 }
-@objc @_inheritsConvenienceInitializers @_hasMissingDesignatedInitializers @_Concurrency.MainActor(unsafe) final public class NovaNativeAdMediaView : UIKit.UIView {
-  @_Concurrency.MainActor(unsafe) final public var novaNativeAdVideoDelegate: (any NovaCore.NovaNativeAdVideoDelegate)?
-  @_Concurrency.MainActor(unsafe) final public func setNovaNativeAdVideoDelegate(delegate: any NovaCore.NovaNativeAdVideoDelegate)
+@objc @_inheritsConvenienceInitializers @_hasMissingDesignatedInitializers @_Concurrency.MainActor @preconcurrency final public class NovaNativeAdMediaView : UIKit.UIView {
+  @_Concurrency.MainActor @preconcurrency final public var novaNativeAdVideoDelegate: (any NovaCore.NovaNativeAdVideoDelegate)?
+  @_Concurrency.MainActor @preconcurrency final public func setNovaNativeAdVideoDelegate(delegate: any NovaCore.NovaNativeAdVideoDelegate)
   @objc deinit
 }
 extension NovaCore.NovaNativeAdMediaView {
-  @_Concurrency.MainActor(unsafe) final public func config(with viewModel: NovaCore.NovaNativeAdMediaViewModel, iabReporter: NovaCore.IABMetricReporter?, completion: @escaping () -> Swift.Void)
-  @_Concurrency.MainActor(unsafe) final public func prepareForReuse()
-  @_Concurrency.MainActor(unsafe) final public func updateVideoStateOnScroll(containerFrame: CoreFoundation.CGRect, cellFrame: CoreFoundation.CGRect, offset: CoreFoundation.CGPoint, inset: UIKit.UIEdgeInsets)
-  @_Concurrency.MainActor(unsafe) final public func updateVideoStateOnScroll()
-  @_Concurrency.MainActor(unsafe) final public func updateVideoDisplayState(fullyDisplayed: Swift.Bool)
-  @objc @_Concurrency.MainActor(unsafe) final public func willResignActive()
-  @objc @_Concurrency.MainActor(unsafe) final public func didBecomeActive()
-  @objc @_Concurrency.MainActor(unsafe) final public func handleVideoOnScreen()
+  @_Concurrency.MainActor @preconcurrency final public func config(with viewModel: NovaCore.NovaNativeAdMediaViewModel, iabReporter: NovaCore.IABMetricReporter?, completion: @escaping () -> Swift.Void)
+  @_Concurrency.MainActor @preconcurrency final public func prepareForReuse()
+  @_Concurrency.MainActor @preconcurrency final public func updateVideoStateOnScroll(containerFrame: CoreFoundation.CGRect, cellFrame: CoreFoundation.CGRect, offset: CoreFoundation.CGPoint, inset: UIKit.UIEdgeInsets)
+  @_Concurrency.MainActor @preconcurrency final public func updateVideoStateOnScroll()
+  @_Concurrency.MainActor @preconcurrency final public func updateVideoDisplayState(fullyDisplayed: Swift.Bool)
+  @objc @_Concurrency.MainActor @preconcurrency final public func willResignActive()
+  @objc @_Concurrency.MainActor @preconcurrency final public func didBecomeActive()
+  @objc @_Concurrency.MainActor @preconcurrency final public func handleVideoOnScreen()
 }
 final public class NovaJSBridgeHandlerMaster {
   public init(jsBridgeHandlers: [any NovaCore.NovaJSBridgeHandling])
