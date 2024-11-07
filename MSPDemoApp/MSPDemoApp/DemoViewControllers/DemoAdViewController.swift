@@ -124,7 +124,7 @@ extension DemoAdViewController: AdListener {
     }
     
     func onAdLoaded(ad: MSPAd) {
-        if let priceInDollar = ad.adInfo["priceInDollar"],
+        if let priceInDollar = ad.adInfo["price"],
            let priceInDollarValue = priceInDollar as? Double {
             print("demo price: \(priceInDollarValue)")
         }
