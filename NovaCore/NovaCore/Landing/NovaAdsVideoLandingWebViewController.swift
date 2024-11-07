@@ -7,7 +7,6 @@
 
 import Foundation
 import UIKit
-@_implementationOnly import SnapKit
 
 public class NovaAdsVideoLandingWebViewController: UIViewController {
     private let model: NovaAdOpenActionDataModel
@@ -27,7 +26,7 @@ public class NovaAdsVideoLandingWebViewController: UIViewController {
         return view
     }()
     
-    private var containerViewHeightConstraint: Constraint?
+    private var containerViewHeightConstraint: NSLayoutConstraint?
     private var initialHeight: CGFloat!
     private var currentHeight: CGFloat!
     private var nestedViewController: NovaAdsLandingWebViewController?
@@ -97,7 +96,7 @@ public class NovaAdsVideoLandingWebViewController: UIViewController {
                     }
                 }()
                 if let finalHeight {
-                    self.containerViewHeightConstraint?.update(offset: finalHeight)
+                    self.containerViewHeightConstraint?.constant = finalHeight
                     self.view.layoutIfNeeded()
                 }
             }
@@ -148,34 +147,60 @@ public class NovaAdsVideoLandingWebViewController: UIViewController {
     private func setupViews() {
         // Do any additional setup after loading the view.
         view.addSubview(statusBarView)
-        statusBarView.snp.makeConstraints { make in
-            make.top.leading.trailing.equalTo(self.view)
-            make.bottom.equalTo(self.view.snp_topMargin)
-        }
+        statusBarView.translatesAutoresizingMaskIntoConstraints = false
+        videoView?.translatesAutoresizingMaskIntoConstraints = false
+        containerView.translatesAutoresizingMaskIntoConstraints = false
+        nestedViewController?.view.translatesAutoresizingMaskIntoConstraints = false
+
+        // statusBarView constraints
+        NSLayoutConstraint.activate([
+            statusBarView.topAnchor.constraint(equalTo: view.topAnchor),
+            statusBarView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            statusBarView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            statusBarView.bottomAnchor.constraint(equalTo: view.layoutMarginsGuide.topAnchor)
+        ])
+
+        // Setting the video view’s height based on whether model.videoInfo is present
         let topVideoHeight = model.videoInfo != nil ? view.bounds.width / AdsMediaConstants.defaultAspectRatio : 0
-        if let videoView {
+
+        // videoView constraints
+        if let videoView = videoView {
             view.addSubview(videoView)
-            videoView.snp.makeConstraints { make in
-                make.top.equalTo(self.view.snp_topMargin)
-                make.leading.trailing.equalTo(self.view)
-                make.height.equalTo(topVideoHeight)
-            }
+            NSLayoutConstraint.activate([
+                videoView.topAnchor.constraint(equalTo: view.layoutMarginsGuide.topAnchor),
+                videoView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+                videoView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+                videoView.heightAnchor.constraint(equalToConstant: topVideoHeight)
+            ])
         }
-        initialHeight = view.bounds.height - topVideoHeight - (UIApplication.novasharedKeyWindow?.safeAreaInsets.top ?? 0)
+
+        // Calculating initialHeight and currentHeight
+        initialHeight = view.bounds.height - topVideoHeight - (UIApplication.shared.keyWindow?.safeAreaInsets.top ?? 0)
         currentHeight = initialHeight
         isWebViewOnTop = topVideoHeight == 0
+
+        // containerView constraints
         view.addSubview(containerView)
-        containerView.snp.makeConstraints { make in
-            make.leading.trailing.bottom.equalToSuperview()
-            self.containerViewHeightConstraint = make.height.equalTo(self.initialHeight).constraint
-        }
-        if let nestedViewController {
+        containerViewHeightConstraint = containerView.heightAnchor.constraint(equalToConstant: initialHeight)
+        NSLayoutConstraint.activate([
+            containerView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            containerView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            containerView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            containerViewHeightConstraint!
+        ])
+
+        // Adding and setting up nestedViewController within containerView
+        if let nestedViewController = nestedViewController {
             addChild(nestedViewController)
             containerView.addSubview(nestedViewController.view)
             nestedViewController.didMove(toParent: self)
-            nestedViewController.view.snp.makeConstraints { make in
-                make.top.leading.trailing.bottom.equalTo(self.containerView)
-            }
+            
+            NSLayoutConstraint.activate([
+                nestedViewController.view.topAnchor.constraint(equalTo: containerView.topAnchor),
+                nestedViewController.view.leadingAnchor.constraint(equalTo: containerView.leadingAnchor),
+                nestedViewController.view.trailingAnchor.constraint(equalTo: containerView.trailingAnchor),
+                nestedViewController.view.bottomAnchor.constraint(equalTo: containerView.bottomAnchor)
+            ])
         }
     }
     
@@ -198,14 +223,14 @@ public class NovaAdsVideoLandingWebViewController: UIViewController {
         switch gesture.state {
         case .changed:
             if initialHeight <= newHeight && newHeight <= maxContainerHeight {
-                containerViewHeightConstraint?.update(offset: newHeight)
+                containerViewHeightConstraint?.constant = newHeight
                 view.layoutIfNeeded()
             } else if newHeight < initialHeight {
-                containerViewHeightConstraint?.update(offset: initialHeight)
+                containerViewHeightConstraint?.constant = initialHeight
                 view.layoutIfNeeded()
             } else {
-                containerViewHeightConstraint?.update(offset: maxContainerHeight)
-                self.nestedViewController?.setWebView(offset: CGPointMake(0, newHeight - maxContainerHeight))
+                containerViewHeightConstraint?.constant = maxContainerHeight
+                self.nestedViewController?.setWebView(offset: CGPoint(x: 0, y: newHeight - maxContainerHeight))
                 view.layoutIfNeeded()
             }
         case .ended:
@@ -223,7 +248,7 @@ public class NovaAdsVideoLandingWebViewController: UIViewController {
     private func animateContainerHeight(_ height: CGFloat, isOnTop: Bool) {
         self.nestedViewController?.changeWebViewTappable(isEnable: isOnTop)
         UIView.animate(withDuration: 0.3) {
-            self.containerViewHeightConstraint?.update(offset: height)
+            self.containerViewHeightConstraint?.constant = height
             self.view.layoutIfNeeded()
             self.nestedViewController?.changeLeftButtonOnNavigation(isHidden: !isOnTop)
         }
@@ -236,7 +261,7 @@ public class NovaAdsVideoLandingWebViewController: UIViewController {
         if let containerGesture {
             containerGesture.isEnabled = false
         }
-        containerViewHeightConstraint?.update(offset: height)
+        containerViewHeightConstraint?.constant = height
         view.layoutIfNeeded()
         nestedViewController?.changeLeftButtonOnNavigation(isHidden: false)
     }
@@ -246,7 +271,7 @@ public class NovaAdsVideoLandingWebViewController: UIViewController {
             containerGesture.isEnabled = true
         }
         let maxHeight = view.bounds.height - view.safeAreaInsets.top
-        containerViewHeightConstraint?.update(offset: self.currentHeight)
+        containerViewHeightConstraint?.constant = self.currentHeight
         view.layoutIfNeeded()
         nestedViewController?.changeLeftButtonOnNavigation(isHidden: self.currentHeight != maxHeight)
     }

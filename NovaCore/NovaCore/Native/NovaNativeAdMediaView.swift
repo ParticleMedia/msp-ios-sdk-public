@@ -1,6 +1,5 @@
 import Foundation
 import UIKit
-@_implementationOnly import SDWebImage
 
 public final class NovaNativeAdMediaView: UIView {
     // MARK: - Properties
@@ -86,12 +85,7 @@ public extension NovaNativeAdMediaView {
         imageView.isHidden = false
         videoView.isHidden = true
         guard let imageUrlStr = viewModel.imageUrlStr, let imageUrl = URL(string: imageUrlStr) else { return }
-        imageView.sd_setImage(with: imageUrl) { _, error, _, _ in
-            if let error {
-                //DebugLogging.error(.ads, "Set image on view failed: \(error.localizedDescription)")
-            }
-            completion()
-        }
+        NovaUIUtils.setImage(from: imageUrl, to: imageView, completion: completion)
     }
 
     func prepareForReuse() {

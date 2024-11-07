@@ -158,50 +158,60 @@ private extension NovaAppOpenAdViewV3 {
     
     func setupSubviews() {
         addSubviews([adLabel, mediaView, advertiserLabel, feedbackButton, headlineLabel, bodyLabel, closeButton, ctaButton])
-        adLabel.snp.makeConstraints { make in
-            make.top.equalTo(UIApplication.shared.nova_safeAreaInsets.top + 16)
-            make.leading.equalTo(16)
-        }
-        mediaView.snp.makeConstraints { make in
-            make.top.equalTo(self.adLabel.snp.bottom).offset(16)
-            make.leading.equalTo(16)
-            make.trailing.equalTo(-16)
-            make.height.equalTo(self.mediaView.snp.width)
-                .multipliedBy(Double(1.0 / AdsMediaConstants.defaultAspectRatio))
-        }
-        advertiserLabel.snp.makeConstraints { make in
-            make.top.equalTo(self.mediaView.snp.bottom).offset(24)
-            make.leading.equalTo(16)
-            make.trailing.lessThanOrEqualTo(feedbackButton.snp.leading).offset(-16)
-        }
-        feedbackButton.snp.makeConstraints { make in
-            make.centerY.equalTo(advertiserLabel)
-            make.trailing.equalTo(-16)
-            make.width.height.equalTo(24)
-        }
-        headlineLabel.snp.makeConstraints { make in
-            make.top.equalTo(self.advertiserLabel.snp.bottom).offset(20)
-            make.leading.equalTo(16)
-            make.trailing.equalTo(-16)
-        }
-        bodyLabel.snp.makeConstraints { make in
-            make.top.equalTo(self.headlineLabel.snp.bottom).offset(36)
-            make.leading.equalTo(16)
-            make.trailing.lessThanOrEqualTo(-16)
-        }
-        closeButton.snp.makeConstraints { make in
-            make.top.equalTo(self.bodyLabel.snp.bottom).offset(72)
-            make.height.equalTo(40)
-            make.leading.equalTo(16)
-            make.trailing.equalTo(self.snp.centerX).offset(-8)
-        }
-        ctaButton.snp.makeConstraints { make in
-            make.top.equalTo(self.closeButton)
-            make.leading.equalTo(self.snp.centerX).offset(8)
-            make.height.equalTo(40)
-            make.trailing.equalTo(-16)
-        }
-        
+
+        adLabel.translatesAutoresizingMaskIntoConstraints = false
+        mediaView.translatesAutoresizingMaskIntoConstraints = false
+        advertiserLabel.translatesAutoresizingMaskIntoConstraints = false
+        feedbackButton.translatesAutoresizingMaskIntoConstraints = false
+        headlineLabel.translatesAutoresizingMaskIntoConstraints = false
+        bodyLabel.translatesAutoresizingMaskIntoConstraints = false
+        closeButton.translatesAutoresizingMaskIntoConstraints = false
+        ctaButton.translatesAutoresizingMaskIntoConstraints = false
+
+        NSLayoutConstraint.activate([
+            // adLabel constraints
+            adLabel.topAnchor.constraint(equalTo: self.safeAreaLayoutGuide.topAnchor, constant: self.safeAreaInsets.top + 16),
+            adLabel.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 16),
+            
+            // mediaView constraints
+            mediaView.topAnchor.constraint(equalTo: adLabel.bottomAnchor, constant: 16),
+            mediaView.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 16),
+            mediaView.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -16),
+            mediaView.heightAnchor.constraint(equalTo: mediaView.widthAnchor, multiplier: CGFloat(1.0 / AdsMediaConstants.defaultAspectRatio)),
+            
+            // advertiserLabel constraints
+            advertiserLabel.topAnchor.constraint(equalTo: mediaView.bottomAnchor, constant: 24),
+            advertiserLabel.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 16),
+            advertiserLabel.trailingAnchor.constraint(lessThanOrEqualTo: feedbackButton.leadingAnchor, constant: -16),
+            
+            // feedbackButton constraints
+            feedbackButton.centerYAnchor.constraint(equalTo: advertiserLabel.centerYAnchor),
+            feedbackButton.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -16),
+            feedbackButton.widthAnchor.constraint(equalToConstant: 24),
+            feedbackButton.heightAnchor.constraint(equalToConstant: 24),
+            
+            // headlineLabel constraints
+            headlineLabel.topAnchor.constraint(equalTo: advertiserLabel.bottomAnchor, constant: 20),
+            headlineLabel.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 16),
+            headlineLabel.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -16),
+            
+            // bodyLabel constraints
+            bodyLabel.topAnchor.constraint(equalTo: headlineLabel.bottomAnchor, constant: 36),
+            bodyLabel.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 16),
+            bodyLabel.trailingAnchor.constraint(lessThanOrEqualTo: self.trailingAnchor, constant: -16),
+            
+            // closeButton constraints
+            closeButton.topAnchor.constraint(equalTo: bodyLabel.bottomAnchor, constant: 72),
+            closeButton.heightAnchor.constraint(equalToConstant: 40),
+            closeButton.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 16),
+            closeButton.trailingAnchor.constraint(equalTo: self.centerXAnchor, constant: -8),
+            
+            // ctaButton constraints
+            ctaButton.topAnchor.constraint(equalTo: closeButton.topAnchor),
+            ctaButton.leadingAnchor.constraint(equalTo: self.centerXAnchor, constant: 8),
+            ctaButton.heightAnchor.constraint(equalToConstant: 40),
+            ctaButton.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -16)
+        ])
         feedbackButton.isHidden = true
     }
     

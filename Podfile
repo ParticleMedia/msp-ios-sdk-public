@@ -81,9 +81,9 @@ target 'NovaCore' do
   #use_frameworks!
 
   # Pods for NovaAdapter
-  pod 'SDWebImage', '5.18.8', :modular_headers => true
-  pod 'SDWebImageWebPCoder', '0.14.2', :modular_headers => true
-  pod 'SnapKit', '~> 5.6.0', :modular_headers => true
+  #pod 'SDWebImage', '5.18.8', :modular_headers => true
+  #pod 'SDWebImageWebPCoder', '0.14.2', :modular_headers => true
+  #pod 'SnapKit', '~> 5.6.0', :modular_headers => true
   pod 'Shimmer', :modular_headers => true
   #pod 'DeviceKit', :modular_headers => true
   #pod 'NBDesignSystem', :git => 'https://github.com/ParticleMedia/LAFoundation', :branch => 'main', :commit => 'b94a948', :modular_headers => true

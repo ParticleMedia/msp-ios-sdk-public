@@ -7,8 +7,6 @@
 
 import Foundation
 import UIKit
-@_implementationOnly import SDWebImage
-@_implementationOnly import SnapKit
 //@_implementationOnly import NBDesignSystem
 
 
@@ -165,34 +163,56 @@ public final class NovaNativeAdVideoView: UIView {
         super.init(frame: CGRectZero)
         if inLandingPage {
             addSubviews([closeButton, playButton, muteButton, videoProgressText, progressView, videoLengthText])
-            closeButton.snp.makeConstraints { make in
-                make.leading.equalTo(16)
-                make.top.equalTo(12)
-                make.size.equalTo(CGSize(width: 24, height: 24))
-            }
-            playButton.snp.makeConstraints { make in
-                make.height.width.equalTo(50)
-                make.center.equalToSuperview()
-            }
-            muteButton.snp.makeConstraints { make in
-                make.height.width.equalTo(20)
-                make.leading.equalTo(16)
-                make.bottom.equalTo(-8)
-                make.width.height.equalTo(20)
-            }
-            videoProgressText.snp.makeConstraints { make in
-                make.leading.equalTo(self.muteButton.snp.trailing).offset(16)
-                make.centerY.equalTo(self.muteButton)
-            }
-            progressView.snp.makeConstraints { make in
-                make.leading.equalTo(self.videoProgressText.snp.trailing).offset(12)
-                make.centerY.equalTo(self.muteButton)
-            }
-            videoLengthText.snp.makeConstraints { make in
-                make.leading.equalTo(self.progressView.snp.trailing).offset(12)
-                make.trailing.equalToSuperview().offset(-52)
-                make.centerY.equalTo(self.muteButton)
-            }
+            
+            closeButton.translatesAutoresizingMaskIntoConstraints = false
+            playButton.translatesAutoresizingMaskIntoConstraints = false
+            muteButton.translatesAutoresizingMaskIntoConstraints = false
+            videoProgressText.translatesAutoresizingMaskIntoConstraints = false
+            progressView.translatesAutoresizingMaskIntoConstraints = false
+            videoLengthText.translatesAutoresizingMaskIntoConstraints = false
+
+            // closeButton constraints
+            NSLayoutConstraint.activate([
+                closeButton.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 16),
+                closeButton.topAnchor.constraint(equalTo: topAnchor, constant: 12),
+                closeButton.widthAnchor.constraint(equalToConstant: 24),
+                closeButton.heightAnchor.constraint(equalToConstant: 24)
+            ])
+
+            // playButton constraints
+            NSLayoutConstraint.activate([
+                playButton.heightAnchor.constraint(equalToConstant: 50),
+                playButton.widthAnchor.constraint(equalToConstant: 50),
+                playButton.centerXAnchor.constraint(equalTo: centerXAnchor),
+                playButton.centerYAnchor.constraint(equalTo: centerYAnchor)
+            ])
+
+            // muteButton constraints
+            NSLayoutConstraint.activate([
+                muteButton.heightAnchor.constraint(equalToConstant: 20),
+                muteButton.widthAnchor.constraint(equalToConstant: 20),
+                muteButton.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 16),
+                muteButton.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -8)
+            ])
+
+            // videoProgressText constraints
+            NSLayoutConstraint.activate([
+                videoProgressText.leadingAnchor.constraint(equalTo: muteButton.trailingAnchor, constant: 16),
+                videoProgressText.centerYAnchor.constraint(equalTo: muteButton.centerYAnchor)
+            ])
+
+            // progressView constraints
+            NSLayoutConstraint.activate([
+                progressView.leadingAnchor.constraint(equalTo: videoProgressText.trailingAnchor, constant: 12),
+                progressView.centerYAnchor.constraint(equalTo: muteButton.centerYAnchor)
+            ])
+
+            // videoLengthText constraints
+            NSLayoutConstraint.activate([
+                videoLengthText.leadingAnchor.constraint(equalTo: progressView.trailingAnchor, constant: 12),
+                videoLengthText.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -52),
+                videoLengthText.centerYAnchor.constraint(equalTo: muteButton.centerYAnchor)
+            ])
         } else {
             panel.addSubviews(playButton, muteButton)
             addSubviews(coverImage, startButton, panel, countText)
@@ -263,7 +283,9 @@ public extension NovaNativeAdVideoView {
         }
         var hasCover = false
         if let coverUrlStr = videoInfo.coverUrlStr, let coverUrl = URL(string: coverUrlStr) {
-            coverImage.sd_setImage(with: coverUrl)
+            NovaUIUtils.setImage(from: coverUrl, to: coverImage) {
+                
+            }
             hasCover = true
         }
         
@@ -291,9 +313,14 @@ public extension NovaNativeAdVideoView {
         if let playerView = videoPlayer?.getPlayerView(), playerView.superview != view {
             playerView.removeFromSuperview()
             view.insertSubview(playerView, at: 0)
-            playerView.snp.makeConstraints { make in
-                make.edges.equalTo(view)
-            }
+            playerView.translatesAutoresizingMaskIntoConstraints = false
+
+            NSLayoutConstraint.activate([
+                playerView.topAnchor.constraint(equalTo: view.topAnchor),
+                playerView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+                playerView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+                playerView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
+            ])
             view.layoutIfNeeded()
         }
     }

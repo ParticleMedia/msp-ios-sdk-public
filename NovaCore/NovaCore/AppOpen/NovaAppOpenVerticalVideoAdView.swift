@@ -206,10 +206,17 @@ private extension NovaAppOpenVerticalVideoAdView {
     func setupSubviews() {
         addSubviews(nativeAdView)
 
-        nativeAdView.snp.makeConstraints { make in
-            make.edges.equalToSuperview()
-        }
+        nativeAdView.translatesAutoresizingMaskIntoConstraints = false
+        bottomShadow.translatesAutoresizingMaskIntoConstraints = false
+        closeButton.translatesAutoresizingMaskIntoConstraints = false
+        ctaButton.translatesAutoresizingMaskIntoConstraints = false
+        adTagLabel.translatesAutoresizingMaskIntoConstraints = false
+        advertiserInfoStackView.translatesAutoresizingMaskIntoConstraints = false
+        feedbackButton.translatesAutoresizingMaskIntoConstraints = false
+        bodyLabel.translatesAutoresizingMaskIntoConstraints = false
+        volumeButton.translatesAutoresizingMaskIntoConstraints = false
 
+        // Adding subviews
         nativeAdView.addSubviews(
             bottomShadow,
             closeButton,
@@ -219,59 +226,62 @@ private extension NovaAppOpenVerticalVideoAdView {
             feedbackButton,
             bodyLabel,
             adTagLabel,
-            volumeButton)
-
-        bottomShadow.snp.makeConstraints { make in
-            make.leading.trailing.bottom.equalToSuperview()
-            let screenWidth = UIScreen.main.bounds.width
-            make.height.equalTo(screenWidth * 280 / 375)
-        }
-
+            volumeButton
+        )
         let totalButtonBottomMargin = LayoutMetrics.bottomButtonBottomMargin + LayoutMetrics.progressBarBottomMargin
-
-        closeButton.snp.makeConstraints { make in
-            make.leading.equalTo(LayoutMetrics.horizontalMargin)
-            make.bottom.equalTo(-totalButtonBottomMargin)
-            make.height.equalTo(LayoutMetrics.bottomButtonHeight)
-            make.width.equalTo(LayoutMetrics.bottomButtonWidth)
-        }
-
-        ctaButton.snp.makeConstraints { make in
-            make.trailing.equalTo(-LayoutMetrics.horizontalMargin)
-            make.bottom.equalTo(-totalButtonBottomMargin)
-            make.height.equalTo(LayoutMetrics.bottomButtonHeight)
-            make.width.equalTo(LayoutMetrics.bottomButtonWidth)
-        }
-
-        adTagLabel.snp.makeConstraints { make in
-            make.leading.equalTo(LayoutMetrics.horizontalMargin)
-            make.trailing.lessThanOrEqualTo(-LayoutMetrics.horizontalMargin)
-            make.bottom.equalTo(closeButton.snp.top).offset(-16.0)
-        }
-
-        bodyLabel.snp.makeConstraints { make in
-            make.leading.equalTo(LayoutMetrics.horizontalMargin)
-            make.trailing.equalTo(-LayoutMetrics.horizontalMargin)
-            make.bottom.equalTo(adTagLabel.snp.top).offset(-8.0)
-        }
-
-        advertiserInfoStackView.snp.makeConstraints { make in
-            make.leading.equalTo(LayoutMetrics.horizontalMargin)
-            make.trailing.lessThanOrEqualTo(feedbackButton.snp.leading).offset(-LayoutMetrics.horizontalMargin)
-            make.bottom.equalTo(bodyLabel.snp.top).offset(-8.0)
-        }
-        
-        feedbackButton.snp.makeConstraints { make in
-            make.centerY.equalTo(advertiserInfoStackView)
-            make.trailing.equalTo(-LayoutMetrics.horizontalMargin)
-            make.width.height.equalTo(24)
-        }
-
-        volumeButton.snp.makeConstraints { make in
-            make.leading.equalTo(LayoutMetrics.horizontalMargin)
-            make.height.width.equalTo(LayoutMetrics.volumeButtonWidth)
-            make.bottom.equalTo(self.advertiserInfoStackView.snp.top).offset(-LayoutMetrics.volumeButtonBottomMargin)
-        }
+        // Activate native constraints
+        NSLayoutConstraint.activate([
+            // nativeAdView constraints
+            nativeAdView.topAnchor.constraint(equalTo: self.topAnchor),
+            nativeAdView.leadingAnchor.constraint(equalTo: self.leadingAnchor),
+            nativeAdView.trailingAnchor.constraint(equalTo: self.trailingAnchor),
+            nativeAdView.bottomAnchor.constraint(equalTo: self.bottomAnchor),
+            
+            // bottomShadow constraints
+            bottomShadow.leadingAnchor.constraint(equalTo: nativeAdView.leadingAnchor),
+            bottomShadow.trailingAnchor.constraint(equalTo: nativeAdView.trailingAnchor),
+            bottomShadow.bottomAnchor.constraint(equalTo: nativeAdView.bottomAnchor),
+            bottomShadow.heightAnchor.constraint(equalToConstant: UIScreen.main.bounds.width * 280 / 375),
+            
+            // closeButton constraints
+            closeButton.leadingAnchor.constraint(equalTo: nativeAdView.leadingAnchor, constant: LayoutMetrics.horizontalMargin),
+            closeButton.bottomAnchor.constraint(equalTo: nativeAdView.bottomAnchor, constant: -totalButtonBottomMargin),
+            closeButton.heightAnchor.constraint(equalToConstant: LayoutMetrics.bottomButtonHeight),
+            closeButton.widthAnchor.constraint(equalToConstant: LayoutMetrics.bottomButtonWidth),
+            
+            // ctaButton constraints
+            ctaButton.trailingAnchor.constraint(equalTo: nativeAdView.trailingAnchor, constant: -LayoutMetrics.horizontalMargin),
+            ctaButton.bottomAnchor.constraint(equalTo: nativeAdView.bottomAnchor, constant: -totalButtonBottomMargin),
+            ctaButton.heightAnchor.constraint(equalToConstant: LayoutMetrics.bottomButtonHeight),
+            ctaButton.widthAnchor.constraint(equalToConstant: LayoutMetrics.bottomButtonWidth),
+            
+            // adTagLabel constraints
+            adTagLabel.leadingAnchor.constraint(equalTo: nativeAdView.leadingAnchor, constant: LayoutMetrics.horizontalMargin),
+            adTagLabel.trailingAnchor.constraint(lessThanOrEqualTo: nativeAdView.trailingAnchor, constant: -LayoutMetrics.horizontalMargin),
+            adTagLabel.bottomAnchor.constraint(equalTo: closeButton.topAnchor, constant: -16.0),
+            
+            // bodyLabel constraints
+            bodyLabel.leadingAnchor.constraint(equalTo: nativeAdView.leadingAnchor, constant: LayoutMetrics.horizontalMargin),
+            bodyLabel.trailingAnchor.constraint(equalTo: nativeAdView.trailingAnchor, constant: -LayoutMetrics.horizontalMargin),
+            bodyLabel.bottomAnchor.constraint(equalTo: adTagLabel.topAnchor, constant: -8.0),
+            
+            // advertiserInfoStackView constraints
+            advertiserInfoStackView.leadingAnchor.constraint(equalTo: nativeAdView.leadingAnchor, constant: LayoutMetrics.horizontalMargin),
+            advertiserInfoStackView.trailingAnchor.constraint(lessThanOrEqualTo: feedbackButton.leadingAnchor, constant: -LayoutMetrics.horizontalMargin),
+            advertiserInfoStackView.bottomAnchor.constraint(equalTo: bodyLabel.topAnchor, constant: -8.0),
+            
+            // feedbackButton constraints
+            feedbackButton.centerYAnchor.constraint(equalTo: advertiserInfoStackView.centerYAnchor),
+            feedbackButton.trailingAnchor.constraint(equalTo: nativeAdView.trailingAnchor, constant: -LayoutMetrics.horizontalMargin),
+            feedbackButton.widthAnchor.constraint(equalToConstant: 24),
+            feedbackButton.heightAnchor.constraint(equalToConstant: 24),
+            
+            // volumeButton constraints
+            volumeButton.leadingAnchor.constraint(equalTo: nativeAdView.leadingAnchor, constant: LayoutMetrics.horizontalMargin),
+            volumeButton.heightAnchor.constraint(equalToConstant: LayoutMetrics.volumeButtonWidth),
+            volumeButton.widthAnchor.constraint(equalToConstant: LayoutMetrics.volumeButtonWidth),
+            volumeButton.bottomAnchor.constraint(equalTo: advertiserInfoStackView.topAnchor, constant: -LayoutMetrics.volumeButtonBottomMargin)
+        ])
         
         feedbackButton.isHidden = true
         volumeButton.isHidden = true
@@ -309,8 +319,11 @@ private extension NovaAppOpenVerticalVideoAdView {
             advertiserAvatar.isHidden = true
             return
         }
-
-        advertiserAvatar.sd_setImage(with: URL(string: iconUrl))
+        if let url = URL(string: iconUrl) {
+            NovaUIUtils.setImage(from: url, to: advertiserAvatar) {
+                
+            }
+        }
     }
 
     func configMediaView(for openAd: NovaAppOpenAd) {
@@ -357,9 +370,12 @@ private extension NovaAppOpenVerticalVideoAdView {
         mediaView.isUserInteractionEnabled = true
         nativeAdView.insertSubview(mediaView, at: 0)
 
-        mediaView.snp.makeConstraints { make in
-            make.edges.equalTo(self.nativeAdView)
-        }
+        NSLayoutConstraint.activate([
+            mediaView.topAnchor.constraint(equalTo: nativeAdView.topAnchor),
+            mediaView.leadingAnchor.constraint(equalTo: nativeAdView.leadingAnchor),
+            mediaView.trailingAnchor.constraint(equalTo: nativeAdView.trailingAnchor),
+            mediaView.bottomAnchor.constraint(equalTo: nativeAdView.bottomAnchor)
+        ])
 
         self.mediaView = mediaView
     }
