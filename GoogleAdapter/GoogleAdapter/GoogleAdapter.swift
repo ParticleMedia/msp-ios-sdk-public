@@ -157,7 +157,7 @@ import PrebidMobile
                         ad.fullScreenContentDelegate = self
                         googleInterstitialAd.rootViewController = self.adListener?.getRootViewController()
                         self.interstitialAd = googleInterstitialAd
-                        
+                        googleInterstitialAd.adInfo["priceInDollar"] = self.priceInDollar
                         if let adListener = self.adListener,
                            let adRequest = self.adRequest {
                             handleAdLoaded(ad: googleInterstitialAd, listener: adListener, adRequest: adRequest)
