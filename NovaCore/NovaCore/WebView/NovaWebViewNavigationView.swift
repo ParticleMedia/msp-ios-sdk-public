@@ -46,34 +46,47 @@ public class NovaWebViewNavigationView: UIView {
     public func config(viewModel: NovaWebViewNavigationViewModel) {
         self.viewModel = viewModel
         
+        leftButton.translatesAutoresizingMaskIntoConstraints = false
+        titleLabel.translatesAutoresizingMaskIntoConstraints = false
+        rightButton.translatesAutoresizingMaskIntoConstraints = false
+        divider.translatesAutoresizingMaskIntoConstraints = false
+
         if viewModel.includingStatusBar {
-            leftButton.snp.makeConstraints { make in
-                make.leading.equalTo(6)
-                make.bottom.equalTo(self.divider.snp.top)
-                make.height.width.equalTo(44)
-            }
+            NSLayoutConstraint.activate([
+                leftButton.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 6),
+                leftButton.bottomAnchor.constraint(equalTo: divider.topAnchor),
+                leftButton.heightAnchor.constraint(equalToConstant: 44),
+                leftButton.widthAnchor.constraint(equalToConstant: 44)
+            ])
         } else {
-            leftButton.snp.makeConstraints { make in
-                make.leading.equalTo(6)
-                make.centerY.equalToSuperview()
-                make.height.width.equalTo(44)
-            }
+            NSLayoutConstraint.activate([
+                leftButton.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 6),
+                leftButton.centerYAnchor.constraint(equalTo: centerYAnchor),
+                leftButton.heightAnchor.constraint(equalToConstant: 44),
+                leftButton.widthAnchor.constraint(equalToConstant: 44)
+            ])
         }
-        titleLabel.snp.makeConstraints { make in
-            make.leading.greaterThanOrEqualTo(56)
-            make.trailing.lessThanOrEqualTo(-56)
-            make.centerY.equalTo(self.leftButton.snp.centerY)
-            make.centerX.equalToSuperview()
-        }
-        rightButton.snp.makeConstraints { make in
-            make.trailing.equalToSuperview()
-            make.centerY.equalTo(self.leftButton.snp.centerY)
-            make.height.width.equalTo(44)
-        }
-        divider.snp.makeConstraints { make in
-            make.height.equalTo(1)
-            make.leading.trailing.bottom.equalToSuperview()
-        }
+
+        NSLayoutConstraint.activate([
+            titleLabel.leadingAnchor.constraint(greaterThanOrEqualTo: leadingAnchor, constant: 56),
+            titleLabel.trailingAnchor.constraint(lessThanOrEqualTo: trailingAnchor, constant: -56),
+            titleLabel.centerYAnchor.constraint(equalTo: leftButton.centerYAnchor),
+            titleLabel.centerXAnchor.constraint(equalTo: centerXAnchor)
+        ])
+
+        NSLayoutConstraint.activate([
+            rightButton.trailingAnchor.constraint(equalTo: trailingAnchor),
+            rightButton.centerYAnchor.constraint(equalTo: leftButton.centerYAnchor),
+            rightButton.heightAnchor.constraint(equalToConstant: 44),
+            rightButton.widthAnchor.constraint(equalToConstant: 44)
+        ])
+
+        NSLayoutConstraint.activate([
+            divider.heightAnchor.constraint(equalToConstant: 1),
+            divider.leadingAnchor.constraint(equalTo: leadingAnchor),
+            divider.trailingAnchor.constraint(equalTo: trailingAnchor),
+            divider.bottomAnchor.constraint(equalTo: bottomAnchor)
+        ])
 
         if let icon = viewModel.leftButtonIcon {
             let leftButtonImage = UIImage(

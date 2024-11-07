@@ -184,7 +184,7 @@ public class NovaAdapter: AdNetworkAdapter {
                     }()
                     nativeAd.mediaView = mediaView
                     nativeAd.priceInDollar = self.priceInDollar
-                    nativeAd.adInfo["priceInDollar"] = self.priceInDollar
+                    nativeAd.adInfo["price"] = self.priceInDollar
                     nativeAd.adInfo["isVideo"] = (nativeAdItem.creativeType == .nativeVideo)
                     nativeAd.nativeAdItem = nativeAdItem
                     self.nativeAdItem = nativeAdItem
@@ -206,7 +206,7 @@ public class NovaAdapter: AdNetworkAdapter {
                 //ad.fullScreenContentDelegate = self
                 novaInterstitialAd.rootViewController = self.adListener?.getRootViewController()
                 self.interstitialAd = novaInterstitialAd
-                novaInterstitialAd.adInfo["priceInDollar"] = self.priceInDollar
+                novaInterstitialAd.adInfo["price"] = self.priceInDollar
                 appOpenAd?.delegate = self
                 
                 if let adListener = self.adListener,
