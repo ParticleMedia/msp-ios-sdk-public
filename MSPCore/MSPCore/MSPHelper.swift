@@ -312,11 +312,17 @@ public class MSPAdLoader: NSObject, BidListener {
     }
     
     public func onBidResponse(bidResponse: Any, adNetwork: AdNetwork) {
-        adNetworkAdapter = MSP.shared.adNetworkAdapterProvider.getAdNetworkAdapter(adNetwork: adNetwork)
         if let adListener = self.adListener,
            let adRequest = self.adRequest {
-            adNetworkAdapter?.setAdMetricReporter(adMetricReporter: AdMetricReporterImp())
-            adNetworkAdapter?.loadAdCreative(bidResponse: bidResponse, adListener: adListener, context: self, adRequest: adRequest)
+            if let adNetworkAdapter = MSP.shared.adNetworkAdapterProvider.getAdNetworkAdapter(adNetwork: adNetwork) {
+                self.adNetworkAdapter = adNetworkAdapter
+                adNetworkAdapter.setAdMetricReporter(adMetricReporter: AdMetricReporterImp())
+                adNetworkAdapter.loadAdCreative(bidResponse: bidResponse, adListener: adListener, context: self, adRequest: adRequest)
+            } else {
+                adListener.onError(msg: "Ad network is not supported")
+            }
+        } else {
+            adListener?.onError(msg: "Invalid request")
         }
     }
     

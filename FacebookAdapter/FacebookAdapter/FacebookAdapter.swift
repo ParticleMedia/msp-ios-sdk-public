@@ -33,6 +33,9 @@ import Foundation
                                         viewController: nil,
                                         clickableViews: fbSubViews.compactMap{ $0 })
         } else if let nativeAdContainer = nativeAdView.nativeAdContainer {
+            
+            nativeAdContainer.translatesAutoresizingMaskIntoConstraints = false
+            
             nativeAdView.addSubview(nativeAdContainer)
             
             if let mediaContainer = nativeAdContainer.getMedia() {
@@ -120,7 +123,6 @@ import Foundation
             self.adListener?.onError(msg: "no valid response")
             return
         }
-        self.priceInDollar = Double(mBidResponse.winningBid?.price ?? 0)
         
         switch adType {
         case "native":
@@ -132,6 +134,7 @@ import Foundation
             nativeAdItem?.delegate = self
 
             DispatchQueue.main.async {
+                self.priceInDollar = Double(mBidResponse.winningBid?.price ?? 0)
                 self.nativeAdItem?.loadAd(withBidPayload: adString)
             }
         case "banner":
@@ -144,6 +147,7 @@ import Foundation
                 self.interstitialAdItem = facebookInterstitialAdItem
                 facebookInterstitialAdItem.delegate = self
                 DispatchQueue.main.async {
+                    self.priceInDollar = Double(mBidResponse.winningBid?.price ?? 0)
                     facebookInterstitialAdItem.load(withBidPayload: adString)
                 }
                 
@@ -204,23 +208,25 @@ import Foundation
 
 extension FacebookAdapter: FBNativeAdDelegate {
     public func nativeAdDidLoad(_ nativeAd: FBNativeAd) {
-        let mediaView = FBMediaView(frame: .zero)
-        mediaView.translatesAutoresizingMaskIntoConstraints = false
-        
-        let facebookNativeAd = FacebookNativeAd(adNetworkAdapter: self,
-                                                title: nativeAd.headline ?? "",
-                                                body: nativeAd.bodyText ?? "",
-                                                advertiser: nativeAd.advertiserName ?? "",
-                                                callToAction:nativeAd.callToAction ?? "")
-        self.facebookNativeAd = facebookNativeAd
-        facebookNativeAd.priceInDollar = self.priceInDollar
-        facebookNativeAd.nativeAdItem = nativeAd
-        facebookNativeAd.mediaView = mediaView
-        facebookNativeAd.adInfo["price"] = self.priceInDollar
-        self.nativeAdItem = nativeAd
-        if let adListener = adListener,
-           let adRequest = adRequest {
-            handleAdLoaded(ad: facebookNativeAd, listener: adListener, adRequest: adRequest)
+        DispatchQueue.main.async {
+            let mediaView = FBMediaView(frame: .zero)
+            mediaView.translatesAutoresizingMaskIntoConstraints = false
+            
+            let facebookNativeAd = FacebookNativeAd(adNetworkAdapter: self,
+                                                    title: nativeAd.headline ?? "",
+                                                    body: nativeAd.bodyText ?? "",
+                                                    advertiser: nativeAd.advertiserName ?? "",
+                                                    callToAction:nativeAd.callToAction ?? "")
+            self.facebookNativeAd = facebookNativeAd
+            facebookNativeAd.priceInDollar = self.priceInDollar
+            facebookNativeAd.nativeAdItem = nativeAd
+            facebookNativeAd.mediaView = mediaView
+            facebookNativeAd.adInfo["priceInDollar"] = self.priceInDollar
+            self.nativeAdItem = nativeAd
+            if let adListener = self.adListener,
+               let adRequest = self.adRequest {
+                handleAdLoaded(ad: facebookNativeAd, listener: adListener, adRequest: adRequest)
+            }
         }
     }
     
@@ -248,7 +254,7 @@ extension FacebookAdapter: FBInterstitialAdDelegate {
         interstitialAd.delegate = self
         self.interstitialAdItem = interstitialAd
         self.facebookInterstitialAd = facebookInterstitialAd
-        facebookInterstitialAd.adInfo["price"] = self.priceInDollar
+        
         
         if let adListener = self.adListener,
            let adRequest = self.adRequest {
