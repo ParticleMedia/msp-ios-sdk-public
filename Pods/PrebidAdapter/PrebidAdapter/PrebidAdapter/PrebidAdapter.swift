@@ -57,11 +57,10 @@ import UIKit
         let width = Int(adRequest.adSize?.width ?? 320)
         let height = Int(adRequest.adSize?.height ?? 50)
         let adSize = CGSize(width: width, height: height)
-         
-        self.priceInDollar = Double(mBidResponse.winningBid?.price ?? 0)
 
         DispatchQueue.main.async {
             
+            self.priceInDollar = Double(mBidResponse.winningBid?.price ?? 0)
             var bannerView = BannerView(frame: CGRect(origin: .zero, size: adSize),
                                         configID: adRequest.placementId,
                                         adSize: adSize,
@@ -79,7 +78,14 @@ import UIKit
 
 extension PrebidAdapter: BannerViewDelegate {
     public func bannerViewPresentationController() -> UIViewController? {
-        return self.adListener?.getRootViewController()
+        if Thread.isMainThread {
+                return self.adListener?.getRootViewController()
+        } else {
+            return DispatchQueue.main.sync {
+                self.adListener?.getRootViewController()
+            }
+        }
+        //return self.adListener?.getRootViewController()
     }
     
     @objc public func bannerViewDidReceiveBidResponse(_ bannerView: BannerView) {
@@ -87,16 +93,18 @@ extension PrebidAdapter: BannerViewDelegate {
     }
     
     @objc public func bannerView(_ bannerView: BannerView, didReceiveAdWithAdSize adSize: CGSize) {
-        var prebidAd = BannerAd(adView: bannerView, adNetworkAdapter: self)
-        self.bannerAd = prebidAd
-        if let priceInDollar = self.priceInDollar {
-            prebidAd.adInfo["priceInDollar"] = priceInDollar
-        }
-        
-        if let adListener = self.adListener,
-           let adRequest = self.adRequest {
-            handleAdLoaded(ad: prebidAd, listener: adListener, adRequest: adRequest)
-            self.adMetricReporter?.logAdResult(placementId: adRequest.placementId, ad: prebidAd, fill: true, isFromCache: false)
+        DispatchQueue.main.async {
+            var prebidAd = BannerAd(adView: bannerView, adNetworkAdapter: self)
+            self.bannerAd = prebidAd
+            if let priceInDollar = self.priceInDollar {
+                prebidAd.adInfo["price"] = priceInDollar
+            }
+            
+            if let adListener = self.adListener,
+               let adRequest = self.adRequest {
+                handleAdLoaded(ad: prebidAd, listener: adListener, adRequest: adRequest)
+                self.adMetricReporter?.logAdResult(placementId: adRequest.placementId, ad: prebidAd, fill: true, isFromCache: false)
+            }
         }
     }
     

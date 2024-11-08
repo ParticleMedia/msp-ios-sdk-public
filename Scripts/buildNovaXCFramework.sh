@@ -8,6 +8,7 @@ pod install --repo-update
 
 echo -e "\n\n${GREEN}BUILD ADAPTERS${NC}\n\n"
 
+SWIFT_VERSION=5.0
 # Build for simulator and device architectures
 xcodebuild archive \
     -workspace msp-ios-sdk.xcworkspace \
