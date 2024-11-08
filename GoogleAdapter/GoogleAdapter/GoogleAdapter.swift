@@ -31,6 +31,9 @@ import PrebidMobile
             }
             nativeAdView.nativeAdViewBinder?.setUpViews(parentView: gadNativeAdView)
         } else if let nativeAdContainer = nativeAdView.nativeAdContainer {
+            
+            nativeAdContainer.translatesAutoresizingMaskIntoConstraints = false
+            
             gadNativeAdView.headlineView = nativeAdContainer.getTitle()
             gadNativeAdView.bodyView = nativeAdContainer.getbody()
             gadNativeAdView.advertiserView = nativeAdContainer.getAdvertiser()
@@ -128,7 +131,6 @@ import PrebidMobile
             self.adMetricReporter?.logAdResult(placementId: adRequest.placementId ?? "", ad: nil, fill: false, isFromCache: false)
             return
         }
-        self.priceInDollar = Double(mBidResponse.winningBid?.price ?? 0)
         
         switch adType {
         case "banner":
@@ -152,6 +154,7 @@ import PrebidMobile
                     }
 
                     DispatchQueue.main.async {
+                        self.priceInDollar = Double(mBidResponse.winningBid?.price ?? 0)
                         var googleInterstitialAd = GoogleInterstitialAd(adNetworkAdapter: self)
                         googleInterstitialAd.interstitialAdItem = ad
                         ad.fullScreenContentDelegate = self
@@ -168,6 +171,7 @@ import PrebidMobile
                 
             } else {
                 DispatchQueue.main.async {
+                    self.priceInDollar = Double(mBidResponse.winningBid?.price ?? 0)
                     let gadBannerView = GAMBannerView(adSize: self.getGADAdSize(adRequest: adRequest))
                     self.gadBannerView = gadBannerView
                     gadBannerView.isAutoloadEnabled = false
@@ -181,40 +185,27 @@ import PrebidMobile
             }
 
         case "native":
-            let adTypes: [GADAdLoaderAdType] 
-            if adRequest.adFormat == .native {
-                adTypes = [.native]
-            } else {
-                adTypes = [.native, .gamBanner]
+            DispatchQueue.main.async {
+                self.priceInDollar = Double(mBidResponse.winningBid?.price ?? 0)
+                let adTypes: [GADAdLoaderAdType]
+                if adRequest.adFormat == .native {
+                    adTypes = [.native]
+                } else {
+                    adTypes = [.native, .gamBanner]
+                }
+                let videoOptions = GADVideoOptions()
+                videoOptions.startMuted = true
+                let adLoader = GADAdLoader(
+                    adUnitID: adUnitId,
+                    rootViewController: self.adListener?.getRootViewController(),
+                    adTypes: adTypes,
+                    options: [videoOptions])
+                adLoader.delegate = self
+                self.adLoader = adLoader
+                let gamRequest = GAMRequest()
+                gamRequest.adString = adString
+                adLoader.load(gamRequest)
             }
-            let videoOptions = GADVideoOptions()
-            videoOptions.startMuted = true
-            adLoader = GADAdLoader(
-                adUnitID: adUnitId,
-                rootViewController: self.adListener?.getRootViewController(),
-                adTypes: adTypes,
-                options: [videoOptions])
-            adLoader?.delegate = self
-            let gamRequest = GAMRequest()
-            gamRequest.adString = adString
-            adLoader?.load(gamRequest)
-            /*
-            let gadMultiFormatEnable = false
-            let adTypes: [GADAdLoaderAdType] = gadMultiFormatEnable ? [.native, .gamBanner] : [.native]
-            let videoOptions = GADVideoOptions()
-            videoOptions.startMuted = true
-            adLoader = GADAdLoader(
-                adUnitID: adUnitId,
-                rootViewController: rootViewController,
-                adTypes: adTypes,
-                options: [videoOptions])
-            adLoader?.delegate = self
-
-            let gamRequest = GAMRequest()
-            gamRequest.adString = adString
-            adLoader?.load(gamRequest)
-            
-             */
             
         default:
             self.adListener?.onError(msg: "unknown adType")
@@ -255,16 +246,18 @@ import PrebidMobile
 
 extension GoogleAdapter : GADBannerViewDelegate {
     public func bannerViewDidReceiveAd(_ bannerView: GADBannerView) {
-        var bannerAd = BannerAd(adView: bannerView, adNetworkAdapter: self)
-        self.bannerAd = bannerAd
-        if let priceInDollar = self.priceInDollar {
-            bannerAd.adInfo["price"] = priceInDollar
-        }
-        
-        if let adListener = adListener,
-           let adRequest = adRequest {
-            handleAdLoaded(ad: bannerAd, listener: adListener, adRequest: adRequest)
-            self.adMetricReporter?.logAdResult(placementId: adRequest.placementId, ad: bannerAd, fill: true, isFromCache: false)
+        DispatchQueue.main.async {
+            var bannerAd = BannerAd(adView: bannerView, adNetworkAdapter: self)
+            self.bannerAd = bannerAd
+            if let priceInDollar = self.priceInDollar {
+                bannerAd.adInfo["price"] = priceInDollar
+            }
+            
+            if let adListener = self.adListener,
+               let adRequest = self.adRequest {
+                handleAdLoaded(ad: bannerAd, listener: adListener, adRequest: adRequest)
+                self.adMetricReporter?.logAdResult(placementId: adRequest.placementId, ad: bannerAd, fill: true, isFromCache: false)
+            }
         }
     }
     
@@ -288,49 +281,32 @@ extension GoogleAdapter : GADBannerViewDelegate {
 
 extension GoogleAdapter: GADNativeAdLoaderDelegate {
     public func adLoader(_ adLoader: GADAdLoader, didReceive nativeAd: GADNativeAd) {
-        let mediaView = GADMediaView()
-        mediaView.translatesAutoresizingMaskIntoConstraints = false
-        mediaView.contentMode = .scaleAspectFill
-        mediaView.mediaContent = nativeAd.mediaContent
-
-        let googleNativeAd = GoogleNativeAd(adNetworkAdapter: self,
-                                            title: nativeAd.headline ?? "",
-                                            body: nativeAd.body ?? "",
-                                            advertiser: nativeAd.advertiser ?? "",
-                                            callToAction:nativeAd.callToAction ?? "")
-        
-        googleNativeAd.nativeAdItem = nativeAd
-        googleNativeAd.mediaView = mediaView
-        googleNativeAd.priceInDollar = self.priceInDollar
-        googleNativeAd.adInfo["price"] = self.priceInDollar
-        nativeAd.delegate = self
-        self.nativeAdItem = nativeAd
-        self.nativeAd = googleNativeAd
-        googleNativeAd.priceInDollar = self.priceInDollar
-        if let adListener = adListener,
-           let adRequest = adRequest {
-            handleAdLoaded(ad: googleNativeAd, listener: adListener, adRequest: adRequest)
-            self.adMetricReporter?.logAdResult(placementId: adRequest.placementId, ad: googleNativeAd, fill: true, isFromCache: false)
+        DispatchQueue.main.async {
+            let mediaView = GADMediaView()
+            mediaView.translatesAutoresizingMaskIntoConstraints = false
+            mediaView.contentMode = .scaleAspectFill
+            mediaView.mediaContent = nativeAd.mediaContent
+            
+            let googleNativeAd = GoogleNativeAd(adNetworkAdapter: self,
+                                                title: nativeAd.headline ?? "",
+                                                body: nativeAd.body ?? "",
+                                                advertiser: nativeAd.advertiser ?? "",
+                                                callToAction:nativeAd.callToAction ?? "")
+            
+            googleNativeAd.nativeAdItem = nativeAd
+            googleNativeAd.mediaView = mediaView
+            googleNativeAd.priceInDollar = self.priceInDollar
+            googleNativeAd.adInfo["price"] = self.priceInDollar
+            nativeAd.delegate = self
+            self.nativeAdItem = nativeAd
+            self.nativeAd = googleNativeAd
+            googleNativeAd.priceInDollar = self.priceInDollar
+            if let adListener = self.adListener,
+               let adRequest = self.adRequest {
+                handleAdLoaded(ad: googleNativeAd, listener: adListener, adRequest: adRequest)
+                self.adMetricReporter?.logAdResult(placementId: adRequest.placementId, ad: googleNativeAd, fill: true, isFromCache: false)
+            }
         }
-        
-        //let googleNativeAd = GoogleNativeAd(adNetworkAdapter: self, builder: shared.NativeAd.Builder(adNetworkAdapter: self)
-        //    .title(title: nativeAd.headline ?? "")
-        //    .body(body: nativeAd.body ?? "")
-        //    .advertiser(advertiser: nativeAd.advertiser ?? "")
-        //    .callToAction(callToAction: nativeAd.callToAction ?? "")
-        //    .mediaView(mediaView: mediaView))
-        
-        /*
-        let googleNativeAd = GoogleNativeAd(adNetworkAdapter: self)
-        self.googleNativeAd = googleNativeAd
-        googleNativeAd.priceInDollar = self.priceInDollar
-        googleNativeAd.nativeAdItem = nativeAd
-        //self.adListener?.onAdLoaded(ad: googleNativeAd)
-        if let adListener = adListener,
-           let adRequest = adRequest {
-            handleAdLoaded(ad: googleNativeAd, listener: adListener, adRequest: adRequest)
-        }
-         */
     }
     
     public func adLoader(_ adLoader: GADAdLoader, didFailToReceiveAdWithError error: any Error) {
@@ -386,16 +362,18 @@ extension GoogleAdapter: GAMBannerAdLoaderDelegate {
     }
     
     public func adLoader(_ adLoader: GADAdLoader, didReceive bannerView: GAMBannerView) {
-        var bannerAd = BannerAd(adView: bannerView, adNetworkAdapter: self)
-        self.bannerAd = bannerAd
-        if let priceInDollar = self.priceInDollar {
-            bannerAd.adInfo["price"] = priceInDollar
-        }
-        
-        if let adListener = adListener,
-           let adRequest = adRequest {
-            handleAdLoaded(ad: bannerAd, listener: adListener, adRequest: adRequest)
-            self.adMetricReporter?.logAdResult(placementId: adRequest.placementId, ad: bannerAd, fill: true, isFromCache: false)
+        DispatchQueue.main.async {
+            var bannerAd = BannerAd(adView: bannerView, adNetworkAdapter: self)
+            self.bannerAd = bannerAd
+            if let priceInDollar = self.priceInDollar {
+                bannerAd.adInfo["price"] = priceInDollar
+            }
+            
+            if let adListener = self.adListener,
+               let adRequest = self.adRequest {
+                handleAdLoaded(ad: bannerAd, listener: adListener, adRequest: adRequest)
+                self.adMetricReporter?.logAdResult(placementId: adRequest.placementId, ad: bannerAd, fill: true, isFromCache: false)
+            }
         }
     }
 }
