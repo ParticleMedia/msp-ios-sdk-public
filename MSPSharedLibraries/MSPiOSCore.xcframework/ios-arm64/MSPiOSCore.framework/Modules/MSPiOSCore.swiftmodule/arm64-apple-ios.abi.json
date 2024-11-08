@@ -8427,7 +8427,6 @@
             "mangledName": "$s10MSPiOSCore5MSPAdC6adInfoSDySSypGvp",
             "moduleName": "MSPiOSCore",
             "declAttributes": [
-              "HasInitialValue",
               "HasStorage",
               "AccessControl"
             ],
