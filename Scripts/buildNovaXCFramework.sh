@@ -8,7 +8,7 @@ pod install --repo-update
 
 echo -e "\n\n${GREEN}BUILD ADAPTERS${NC}\n\n"
 
-SWIFT_VERSION=5.0
+SWIFT_VERSION=5.8
 # Build for simulator and device architectures
 xcodebuild archive \
     -workspace msp-ios-sdk.xcworkspace \
@@ -18,7 +18,8 @@ xcodebuild archive \
     SKIP_INSTALL=NO \
     -configuration Release \
     -sdk "iphoneos" \
-    BUILD_LIBRARY_FOR_DISTRIBUTION=YES
+    BUILD_LIBRARY_FOR_DISTRIBUTION=YES \
+    SWIFT_VERSION=$SWIFT_VERSION
 
 xcodebuild archive \
     -workspace msp-ios-sdk.xcworkspace \
@@ -28,7 +29,8 @@ xcodebuild archive \
     SKIP_INSTALL=NO \
     -configuration Release \
     -sdk "iphonesimulator" \
-    BUILD_LIBRARY_FOR_DISTRIBUTION=YES
+    BUILD_LIBRARY_FOR_DISTRIBUTION=YES \
+    SWIFT_VERSION=$SWIFT_VERSION
 
 # Create xcframework
 xcodebuild -create-xcframework \
