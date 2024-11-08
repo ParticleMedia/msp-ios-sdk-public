@@ -58,8 +58,9 @@ public class NovaAdapter: AdNetworkAdapter {
             self.adMetricReporter?.logAdResult(placementId: adRequest.placementId, ad: nil, fill: false, isFromCache: false)
             return
         }
-         
-        self.priceInDollar = Double(mBidResponse.winningBid?.price ?? 0)
+        DispatchQueue.main.async {
+            self.priceInDollar = Double(mBidResponse.winningBid?.price ?? 0)
+        }
         self.adUnitId = adUnitId
         let eCPMInDollar = Decimal(priceInDollar ?? 0.0)
         let novaAdType: String
@@ -210,15 +211,16 @@ public class NovaAdapter: AdNetworkAdapter {
                 //ad.fullScreenContentDelegate = self
                 DispatchQueue.main.async {
                     novaInterstitialAd.rootViewController = self.adListener?.getRootViewController()
-                }
-                self.interstitialAd = novaInterstitialAd
-                novaInterstitialAd.adInfo["price"] = self.priceInDollar
-                appOpenAd?.delegate = self
                 
-                if let adListener = self.adListener,
-                   let adRequest = self.adRequest {
-                    handleAdLoaded(ad: novaInterstitialAd, listener: adListener, adRequest: adRequest)
-                    self.adMetricReporter?.logAdResult(placementId: adRequest.placementId, ad: novaInterstitialAd, fill: true, isFromCache: false)
+                    self.interstitialAd = novaInterstitialAd
+                    novaInterstitialAd.adInfo["price"] = self.priceInDollar
+                    appOpenAd?.delegate = self
+                
+                    if let adListener = self.adListener,
+                       let adRequest = self.adRequest {
+                        handleAdLoaded(ad: novaInterstitialAd, listener: adListener, adRequest: adRequest)
+                        self.adMetricReporter?.logAdResult(placementId: adRequest.placementId, ad: novaInterstitialAd, fill: true, isFromCache: false)
+                    }
                 }
                 
             default:

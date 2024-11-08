@@ -206,8 +206,8 @@
             filePath = "FacebookAdapter/FacebookAdapter/FacebookAdapter.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "245"
-            endingLineNumber = "245"
+            startingLineNumber = "248"
+            endingLineNumber = "248"
             landmarkName = "FacebookAdapter"
             landmarkType = "21">
          </BreakpointContent>
@@ -328,10 +328,40 @@
             filePath = "NovaAdapter/NovaAdapter/NovaAdapter.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "226"
-            endingLineNumber = "226"
+            startingLineNumber = "228"
+            endingLineNumber = "228"
             landmarkName = "parseNovaAdString(adString:adType:adUnitId:eCPMInDollar:)"
             landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "9D66F01F-4753-4835-833D-C06412F09666 - 24df15369ffe72c2"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "NovaAdapter.NovaAdapter.parseNovaAdString(adString: Swift.String, adType: Swift.String, adUnitId: Swift.String, eCPMInDollar: __C.NSDecimal) -&gt; ()"
+                  moduleName = "MSPDemoApp.debug.dylib"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/huanzhizhang/Huanzhi/msp-ios-sdk/NovaAdapter/NovaAdapter/NovaAdapter.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "228"
+                  endingLineNumber = "228">
+               </Location>
+               <Location
+                  uuid = "9D66F01F-4753-4835-833D-C06412F09666 - 24df15369ffe72c2"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "NovaAdapter.NovaAdapter.parseNovaAdString(adString: Swift.String, adType: Swift.String, adUnitId: Swift.String, eCPMInDollar: __C.NSDecimal) -&gt; ()"
+                  moduleName = "MSPDemoApp.debug.dylib"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/huanzhizhang/Huanzhi/msp-ios-sdk/NovaAdapter/NovaAdapter/NovaAdapter.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "228"
+                  endingLineNumber = "228">
+               </Location>
+            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
