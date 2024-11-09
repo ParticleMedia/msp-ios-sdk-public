@@ -69,7 +69,7 @@ public class NovaAdapter: AdNetworkAdapter {
         } else {
             novaAdType = "native"
         }
-        parseNovaAdString(adString: testadString, adType: novaAdType, adUnitId: adUnitId, eCPMInDollar: eCPMInDollar)
+        parseNovaAdString(adString: adString, adType: novaAdType, adUnitId: adUnitId, eCPMInDollar: eCPMInDollar)
     }
     
     public func prepareViewForInteraction(nativeAd: MSPiOSCore.NativeAd, nativeAdView: Any) {
@@ -305,55 +305,4 @@ extension NovaAdapter: NovaAppOpenAdDelegate {
             self.adListener?.onAdClick(ad: interstitialAd)
         }
     }
-    
 }
-
-
-public let testadString = """
-{
-"ad": [
-{
-  "creative": {
-    "ctrUrl": "https://pirmtrack.com/index.php?route=jgo29b3fiwnt1ddzxoy9&clickid=nvss_3664BB667F894370844B9574C4E58ABF_1797565827727880193&os=ios&cpid=1790759981782003714&cpname=NW01+-+Squaredance+-++Ozempic+&adsetid=1797565377049915394&adsname=US%28OG%29+Male&adid=1797565827727880193&adname=VIDOld&is_nova=true&utm_content=nvss_3664BB667F894370844B9574C4E58ABF_1797565827727880193&nb_cid=3664BB667F894370844B9574C4E58ABF_1797565827727880193",
-    "headline": "Join OVER 1,500,000 weight loss patients with Ozempic!",
-    "body": "Get approved with this 3-min quiz, no insurance needed 🔥",
-    "callToAction": "Shop Now",
-    "imageUrl": "https://static.particlenews.com/nova/assets/1790462451202519041/74bce18f018c86e9f019dd6463b8596ea8868730_trans.mp4/360_30_3mbps_h264.mp4",
-    "address": "",
-    "creativeType": "VIDEO",
-    "image": "",
-    "thirdPartyImpressionTrackingUrls": [],
-    "thirdPartyViewTrackingUrls": [],
-    "thirdPartyClickTrackingUrls": [],
-    "launchOption": "LAUNCH_WEBVIEW",
-    "advertiser": "Ozempic",
-    "adm": "",
-    "carouselItems": [],
-    "iconUrl": "https://static.particlenews.com/nova/assets/1790462451202519041/6219b00517e90abe135dda3502e85b2ff3cf017d.jpg",
-    "videoItem": {
-      "videoUrl": "https://static.particlenews.com/nova/assets/1790462451202519041/74bce18f018c86e9f019dd6463b8596ea8868730_trans.mp4/360_30_3mbps_h264.mp4",
-      "coverUrl": "",
-      "isPlayAutomatically": true,
-      "isLoop": true,
-      "isMute": false,
-      "isVideoClickable": true,
-      "isVertical": true,
-      "isPlayOnLandingPage": false
-    },
-    "channelId": "",
-    "isImageClickable": false
-  },
-  "expirationMs": "1719452171875",
-  "encryptedAdToken": "3664BB66-7F89-4370-844B-9574C4E58ABF.CjII4Ijps4UyFUK1qMAaJDM2NjRCQjY2LTdGODktNDM3MC04NDRCLTk1NzRDNEU1OEFCRhCB4Oecz4PA7BgYguDngPPWg+0YIILg5/z7hY/5GCiC4OfqipOP+RgwgeDn8IqTj/kYOgVDTElDS0CQTkgBUg9JTU1FUlNJVkVfVklERU9aJm5vdmEtaW9zLWltbWVyc2l2ZS1mbG93LW5hdGl2ZS1wcm9kLW9iaqwDaHR0cHM6Ly9waXJtdHJhY2suY29tL2luZGV4LnBocD9yb3V0ZT1qZ28yOWIzZml3bnQxZGR6eG95OSZjbGlja2lkPW52c3NfMzY2NEJCNjY3Rjg5NDM3MDg0NEI5NTc0QzRFNThBQkZfMTc5NzU2NTgyNzcyNzg4MDE5MyZvcz1pb3MmY3BpZD0xNzkwNzU5OTgxNzgyMDAzNzE0JmNwbmFtZT1OVzAxKy0rU3F1YXJlZGFuY2UrLSsrT3plbXBpYysmYWRzZXRpZD0xNzk3NTY1Mzc3MDQ5OTE1Mzk0JmFkc25hbWU9VVMlMjhPRyUyOStNYWxlJmFkaWQ9MTc5NzU2NTgyNzcyNzg4MDE5MyZhZG5hbWU9VklET2xkJmlzX25vdmE9dHJ1ZSZ1dG1fY29udGVudD1udnNzXzM2NjRCQjY2N0Y4OTQzNzA4NDRCOTU3NEM0RTU4QUJGXzE3OTc1NjU4Mjc3Mjc4ODAxOTMmbmJfY2lkPTM2NjRCQjY2N0Y4OTQzNzA4NDRCOTU3NEM0RTU4QUJGXzE3OTc1NjU4Mjc3Mjc4ODAxOTNxPJZ4h52wAECRAQAAAIB0Gq0/mQEAAACA2P5uP6ABkMsBqAHgwvPr/TGwAeP817qFMroBBAgBEAHCAQVEQUlMWcoBJDNCMDZDNDc4LTg0M0YtNDg0OS1BNjAzLTJGNkU5OTFCNjQ3Q9IBCkNPTlZFUlNJT07ZAZ7S2gpib0FA4gEIUFJFX1BBSUToAYHg55zPg8DsGPAB////////////AYkCAAAAYBsIrj+RAgAAAODhJGU/mQI8lniHnbAAQA==",
-  "startTimeMs": "1717407900000",
-  "requestId": "3664BB66-7F89-4370-844B-9574C4E58ABF",
-  "adId": "1797565827727880193",
-  "adsetId": "1797565377049915394",
-  "price": 20.86237963073272
-}
-],
-"status": "success",
-"code": 0,
-"abConfig": {}
-}
-"""
