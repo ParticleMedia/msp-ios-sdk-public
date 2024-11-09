@@ -6,7 +6,7 @@
 	<dict>
 		<key>Assets.car</key>
 		<data>
-		hSH6PTMkgPXFWWB+U4E3D6jHn+I=
+		NG2VHDicRnmgaBL5bWn/AiMYPGs=
 		</data>
 		<key>Headers/NovaCore-Swift.h</key>
 		<data>
@@ -34,15 +34,15 @@
 		</data>
 		<key>Info.plist</key>
 		<data>
-		5ZDjPWqbHlenR9MWBF+lwn4GqPg=
+		akw9iPiswjYswemIOk2eCDgVXZ0=
 		</data>
 		<key>Modules/NovaCore.swiftmodule/arm64-apple-ios.abi.json</key>
 		<data>
-		nhqQjvJ05rTL8Npvkl7xCPdIxb0=
+		iOUvycC6EsS+HdHrbmd4HNN6Hlg=
 		</data>
 		<key>Modules/NovaCore.swiftmodule/arm64-apple-ios.private.swiftinterface</key>
 		<data>
-		1TtoGoSdg6ePps7KvvykyWpvcZo=
+		PFmspfFPOOG8OIdhZhQxkiPhGHU=
 		</data>
 		<key>Modules/NovaCore.swiftmodule/arm64-apple-ios.swiftdoc</key>
 		<data>
@@ -50,11 +50,11 @@
 		</data>
 		<key>Modules/NovaCore.swiftmodule/arm64-apple-ios.swiftinterface</key>
 		<data>
-		1TtoGoSdg6ePps7KvvykyWpvcZo=
+		PFmspfFPOOG8OIdhZhQxkiPhGHU=
 		</data>
 		<key>Modules/NovaCore.swiftmodule/arm64-apple-ios.swiftmodule</key>
 		<data>
-		zrMQZ7iXU8OtFhRywFLFKSUsMQE=
+		qNTOJgincVUviI0ffHRHhsvGoKc=
 		</data>
 		<key>Modules/module.modulemap</key>
 		<data>
@@ -75,7 +75,7 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			c0k0305MgJrhm3Omlt/21f7/XEufkSHYXdgk2FdH5Zw=
+			/T82AjTKtPOqYC/Ucahd+a4Xoi32BqGsIFHSqYLKjwY=
 			</data>
 		</dict>
 		<key>Headers/NovaCore-Swift.h</key>
@@ -124,14 +124,14 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			VUMC61Zr0GAHNNHREDKZJD9VOXy4rFvLbU2/pkOjbjE=
+			Oce5m2Wn2LHlZ9VoAOcyuk3QRJ8gWxQlCuhGaqhiBJ8=
 			</data>
 		</dict>
 		<key>Modules/NovaCore.swiftmodule/arm64-apple-ios.private.swiftinterface</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			BaNbWibWUDT3HEAfdr6VYgnzNFLiBuzd54JvC81FTw8=
+			ZC5uWakvMG3TygLGGsdXGU1ftVpiKblv6Gvqb+a/IBA=
 			</data>
 		</dict>
 		<key>Modules/NovaCore.swiftmodule/arm64-apple-ios.swiftdoc</key>
@@ -145,14 +145,14 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			BaNbWibWUDT3HEAfdr6VYgnzNFLiBuzd54JvC81FTw8=
+			ZC5uWakvMG3TygLGGsdXGU1ftVpiKblv6Gvqb+a/IBA=
 			</data>
 		</dict>
 		<key>Modules/NovaCore.swiftmodule/arm64-apple-ios.swiftmodule</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			0p1Q7CCCntmwXjcV2AVmsjP1QV1SAvyfTqXi6szHGXE=
+			9b52C1+2Igt2tPTY/v56leMXINyZYeievQIlGS7EmnA=
 			</data>
 		</dict>
 		<key>Modules/module.modulemap</key>
