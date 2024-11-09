@@ -130,7 +130,7 @@ public final class NovaNativeAdVideoView: UIView {
 
     private let volumnOffImage = UIImage.Nova.volumeOffLine?.withTintColor(NovaColorPalettes.White)
 
-    private var videoPlayer: NovaVideoPlayer?
+    public var videoPlayer: NovaVideoPlayer?
 
     private var videoInfo: NovaNativeAdVideoInfo?
     private var encryptedAdToken: String?

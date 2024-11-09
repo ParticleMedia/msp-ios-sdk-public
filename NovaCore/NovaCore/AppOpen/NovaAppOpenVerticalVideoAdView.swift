@@ -171,7 +171,7 @@ public class NovaAppOpenVerticalVideoAdView: UIView {
         let adOpenActionHandler = NovaAdOpenActionHandler()
         let actionHandlerMaster = ActionHandlerMaster(actionHandlers: [adOpenActionHandler])
 
-        self.nativeAdView = NovaNativeAdView(actionHandler: actionHandlerMaster, rootViewController: viewController)
+        self.nativeAdView = NovaNativeAdView(actionHandler: actionHandlerMaster)
         
         super.init(frame: .zero)
 

@@ -12,7 +12,7 @@ public final class NovaNativeAdMediaView: UIView {
         return imageView
     }()
 
-    private let videoView: NovaNativeAdVideoView = {
+    public let videoView: NovaNativeAdVideoView = {
         let videoView = NovaNativeAdVideoView()
         videoView.translatesAutoresizingMaskIntoConstraints = false
         return videoView
