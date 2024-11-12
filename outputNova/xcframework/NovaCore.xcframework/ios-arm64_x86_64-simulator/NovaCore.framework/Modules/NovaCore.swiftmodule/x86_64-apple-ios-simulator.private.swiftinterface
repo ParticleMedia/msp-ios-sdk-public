@@ -244,6 +244,7 @@ public enum AdsThirdPartyMetricReporter {
 }
 public enum NovaAppOpenAdResource {
   case image(UIKit.UIImage)
+  case imageURL(Swift.String)
   case video(NovaCore.NovaNativeAdVideoInfo)
 }
 @_hasMissingDesignatedInitializers @objc @_Concurrency.MainActor(unsafe) public class NovaAppOpenAdViewController : UIKit.UIViewController {

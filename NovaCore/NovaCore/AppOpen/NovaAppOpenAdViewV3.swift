@@ -130,7 +130,6 @@ import UIKit
 
 private extension NovaAppOpenAdViewV3 {
     func bindAppOpenAd() {
-        mediaView.config(with: media)
         
         if let advertiser = appOpenAd.advertiser?.trimmingCharacters(in: .whitespacesAndNewlines), !advertiser.isEmpty {
             advertiserLabel.text = advertiser
@@ -143,6 +142,8 @@ private extension NovaAppOpenAdViewV3 {
         }
         ctaButton.setTitle(appOpenAd.callToAction, for: .normal)
         closeButton.setTitle(NSLocalizedString("Close", comment: ""), for: .normal)
+        
+        mediaView.config(with: media)
     }
     
     func setupGestures() {
