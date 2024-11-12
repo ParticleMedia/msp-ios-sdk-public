@@ -24,8 +24,10 @@ extension NovaNativeAdView {
         guard timer == nil else { return }
 
         let timer = Timer(timeInterval: Constants.detectionInterval, repeats: true) { [weak self] _ in
-            self?.detectImpression()
-            self?.detectVideoOnScreen()
+            DispatchQueue.main.async {
+                self?.detectImpression()
+                self?.detectVideoOnScreen()
+            }
         }
         timer.tolerance = 0.1
         RunLoop.current.add(timer, forMode: .common)

@@ -335,6 +335,11 @@ public extension NovaNativeAdVideoView {
 
     func handleVideoOffScreen() {
         isOnScreen = false
+        
+        if let playerView = self.videoPlayer?.getPlayerView(),
+           playerView.superview != self {
+            return
+        }
 
         guard let playState = playState else {
             assertionFailure("lack state info")
