@@ -221,7 +221,7 @@ extension FacebookAdapter: FBNativeAdDelegate {
             facebookNativeAd.priceInDollar = self.priceInDollar
             facebookNativeAd.nativeAdItem = nativeAd
             facebookNativeAd.mediaView = mediaView
-            facebookNativeAd.adInfo["priceInDollar"] = self.priceInDollar
+            facebookNativeAd.adInfo["price"] = self.priceInDollar
             self.nativeAdItem = nativeAd
             if let adListener = self.adListener,
                let adRequest = self.adRequest {
@@ -249,17 +249,22 @@ extension FacebookAdapter: FBNativeAdDelegate {
 
 extension FacebookAdapter: FBInterstitialAdDelegate {
     public func interstitialAdDidLoad(_ interstitialAd: FBInterstitialAd) {
-        var facebookInterstitialAd = FacebookInterstitialAd(adNetworkAdapter: self)
-        facebookInterstitialAd.interstitialAdItem = interstitialAd
-        interstitialAd.delegate = self
-        self.interstitialAdItem = interstitialAd
-        self.facebookInterstitialAd = facebookInterstitialAd
-        
-        
-        if let adListener = self.adListener,
-           let adRequest = self.adRequest {
-            handleAdLoaded(ad: facebookInterstitialAd, listener: adListener, adRequest: adRequest)
-            self.adMetricReporter?.logAdResult(placementId: adRequest.placementId, ad: facebookInterstitialAd, fill: true, isFromCache: false)
+        DispatchQueue.main.async {
+            var facebookInterstitialAd = FacebookInterstitialAd(adNetworkAdapter: self)
+            facebookInterstitialAd.interstitialAdItem = interstitialAd
+            interstitialAd.delegate = self
+            self.interstitialAdItem = interstitialAd
+            self.facebookInterstitialAd = facebookInterstitialAd
+            if let priceInDollar = self.priceInDollar {
+                facebookInterstitialAd.adInfo["price"] = priceInDollar
+            }
+            
+            
+            if let adListener = self.adListener,
+               let adRequest = self.adRequest {
+                handleAdLoaded(ad: facebookInterstitialAd, listener: adListener, adRequest: adRequest)
+                self.adMetricReporter?.logAdResult(placementId: adRequest.placementId, ad: facebookInterstitialAd, fill: true, isFromCache: false)
+            }
         }
     }
     

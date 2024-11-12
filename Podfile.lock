@@ -14,7 +14,7 @@ PODS:
     - PrebidAdapter (= 0.0.83)
     - SwiftProtobuf (= 1.21.0)
   - MSPSharedLibraries (0.0.82)
-  - NovaAdapter (0.0.84):
+  - NovaAdapter (0.0.85):
     - MSPSharedLibraries (= 0.0.82)
   - PrebidAdapter (0.0.83):
     - MSPSharedLibraries (= 0.0.82)
@@ -56,7 +56,7 @@ SPEC CHECKSUMS:
   GoogleUserMessagingPlatform: a8b56893477f67212fbc8411c139e61d463349f5
   MSPCore: 342ce274091911857a02d9ee4fa03b9d15875be8
   MSPSharedLibraries: 4139079ca2cd4889f9f8bca26371965df301ed6c
-  NovaAdapter: f803f94a24424fb95145a74bf9c851ff179c0830
+  NovaAdapter: 9fd004886ee2a508d5cdb71b1ba21471dea3b0d3
   PrebidAdapter: e46ef4937d720e73c6be8d6e1e0a80d49e253dc8
   Shimmer: c5374be1c2b0c9e292fb05b339a513cf291cac86
   SwiftProtobuf: afced68785854575756db965e9da52bbf3dc45e7
