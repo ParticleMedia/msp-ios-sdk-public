@@ -141,18 +141,8 @@ import UIKit
             guard let imageUrlStr = self.imageUrlStr else {
                 return
             }
-            Self.downloadAdImage(urlStr: imageUrlStr) { image in
-                guard let image else {
-                    return
-                }
-
-                DispatchQueue.main.async {
-                    self.requestToDisplay(
-                        rootViewController: rootViewController,
-                        adResource: .image(image)
-                    )
-                }
-            }
+            self.requestToDisplay(rootViewController: rootViewController, adResource: .imageURL(imageUrlStr))
+            
         case .nativeVideo:
             guard let videoInfo = self.videoInfo else {
                 return
