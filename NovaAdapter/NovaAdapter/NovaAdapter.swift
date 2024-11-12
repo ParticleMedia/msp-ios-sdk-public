@@ -216,10 +216,12 @@ public class NovaAdapter: AdNetworkAdapter {
                 
                     if let adListener = self.adListener,
                        let adRequest = self.adRequest {
-                        appOpenAd?.preloadAdImage() {_ in
-                            DispatchQueue.main.async {
-                                handleAdLoaded(ad: novaInterstitialAd, listener: adListener, adRequest: adRequest)
-                                self.adMetricReporter?.logAdResult(placementId: adRequest.placementId, ad: novaInterstitialAd, fill: true, isFromCache: false)
+                        if appOpenAd?.creativeType == .nativeImage {
+                            appOpenAd?.preloadAdImage() {_ in
+                                DispatchQueue.main.async {
+                                    handleAdLoaded(ad: novaInterstitialAd, listener: adListener, adRequest: adRequest)
+                                    self.adMetricReporter?.logAdResult(placementId: adRequest.placementId, ad: novaInterstitialAd, fill: true, isFromCache: false)
+                                }
                             }
                         }
                     }
