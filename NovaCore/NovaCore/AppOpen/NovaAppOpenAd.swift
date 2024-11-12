@@ -190,7 +190,7 @@ import UIKit
                 return
             }
             self.image = UIImage(data: data)
-            completion(UIImage(data: data))
+            completion(self.image)
         }.resume()
     }
     
