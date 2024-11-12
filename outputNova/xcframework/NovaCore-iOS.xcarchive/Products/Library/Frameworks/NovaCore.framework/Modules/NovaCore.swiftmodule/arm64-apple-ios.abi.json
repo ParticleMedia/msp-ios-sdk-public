@@ -6087,6 +6087,56 @@
           },
           {
             "kind": "Var",
+            "name": "imageURL",
+            "printedName": "imageURL",
+            "children": [
+              {
+                "kind": "TypeFunc",
+                "name": "Function",
+                "printedName": "(NovaCore.NovaAppOpenAdResource.Type) -> (Swift.String) -> NovaCore.NovaAppOpenAdResource",
+                "children": [
+                  {
+                    "kind": "TypeFunc",
+                    "name": "Function",
+                    "printedName": "(Swift.String) -> NovaCore.NovaAppOpenAdResource",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "NovaAppOpenAdResource",
+                        "printedName": "NovaCore.NovaAppOpenAdResource",
+                        "usr": "s:8NovaCore0A17AppOpenAdResourceO"
+                      },
+                      {
+                        "kind": "TypeNominal",
+                        "name": "String",
+                        "printedName": "Swift.String",
+                        "usr": "s:SS"
+                      }
+                    ]
+                  },
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Metatype",
+                    "printedName": "NovaCore.NovaAppOpenAdResource.Type",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "NovaAppOpenAdResource",
+                        "printedName": "NovaCore.NovaAppOpenAdResource",
+                        "usr": "s:8NovaCore0A17AppOpenAdResourceO"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ],
+            "declKind": "EnumElement",
+            "usr": "s:8NovaCore0A17AppOpenAdResourceO8imageURLyACSScACmF",
+            "mangledName": "$s8NovaCore0A17AppOpenAdResourceO8imageURLyACSScACmF",
+            "moduleName": "NovaCore"
+          },
+          {
+            "kind": "Var",
             "name": "video",
             "printedName": "video",
             "children": [
@@ -86511,7 +86561,7 @@
     {
       "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-sdk\/NovaCore\/NovaCore\/AppOpen\/NovaAppOpenAdViewController.swift",
       "kind": "StringLiteral",
-      "offset": 254,
+      "offset": 280,
       "length": 27,
       "value": "\"NovaCore.NovaAppOpenAdViewController\""
     },
