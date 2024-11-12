@@ -132,6 +132,10 @@ public class NovaAdsVideoLandingWebViewController: UIViewController {
         if let videoInfo = model.videoInfo {
             videoView?.config(videoInfo: videoInfo, encryptedAdToken: model.encryptedAdToken, iabReporter: nil)
         }
+        //videoView?.handleVideoOnScreen()
+    }
+    
+    public override func viewDidAppear(_ animated: Bool) {
         videoView?.handleVideoOnScreen()
     }
     

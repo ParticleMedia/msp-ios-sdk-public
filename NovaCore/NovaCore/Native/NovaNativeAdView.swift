@@ -14,7 +14,6 @@ open class NovaNativeAdView: UIView {
     //    return view
     //}()
     public let mediaView: NovaNativeAdMediaView
-    public let mediaViewController: NovaNativeAdMediaViewController
     
     public var novaNativeAdVideoDelegate: NovaNativeAdVideoDelegate?
     
@@ -40,7 +39,7 @@ open class NovaNativeAdView: UIView {
 
     // MARK: -
 
-    public init(actionHandler: ActionHandling, rootViewController: UIViewController, mediaView: NovaNativeAdMediaView? = nil) {
+    public init(actionHandler: ActionHandling, mediaView: NovaNativeAdMediaView? = nil) {
         self.actionHandler = actionHandler
         self.mediaView = mediaView ?? {
             let view = NovaNativeAdMediaView()
@@ -48,8 +47,6 @@ open class NovaNativeAdView: UIView {
             view.translatesAutoresizingMaskIntoConstraints = false
             return view
         }()
-        self.mediaViewController = NovaNativeAdMediaViewController(mediaView: self.mediaView)
-        rootViewController.addChild(mediaViewController)
         super.init(frame: .zero)
     }
 

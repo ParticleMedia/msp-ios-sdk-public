@@ -23,6 +23,7 @@ import _SwiftConcurrencyShims
   @_Concurrency.MainActor(unsafe) @objc required dynamic public init?(coder: Foundation.NSCoder)
   @_Concurrency.MainActor(unsafe) @objc override dynamic public func viewDidLoad()
   @_Concurrency.MainActor(unsafe) @objc override dynamic public func viewWillAppear(_ animated: Swift.Bool)
+  @_Concurrency.MainActor(unsafe) @objc override dynamic public func viewDidAppear(_ animated: Swift.Bool)
   @_Concurrency.MainActor(unsafe) @objc override dynamic public func viewWillDisappear(_ animated: Swift.Bool)
   @objc deinit
 }
@@ -664,7 +665,6 @@ extension NovaCore.ActionModel : Swift.Equatable {
   @_Concurrency.MainActor(unsafe) public var advertiserLabel: UIKit.UILabel?
   @_Concurrency.MainActor(unsafe) public var callToActionButton: UIKit.UIButton?
   @_Concurrency.MainActor(unsafe) final public let mediaView: NovaCore.NovaNativeAdMediaView
-  @_Concurrency.MainActor(unsafe) final public let mediaViewController: NovaCore.NovaNativeAdMediaViewController
   @_Concurrency.MainActor(unsafe) public var novaNativeAdVideoDelegate: (any NovaCore.NovaNativeAdVideoDelegate)?
   @objc @_Concurrency.MainActor(unsafe) public var tappableViews: [UIKit.UIView]? {
     @objc get
@@ -673,7 +673,7 @@ extension NovaCore.ActionModel : Swift.Equatable {
   @_Concurrency.MainActor(unsafe) public var iABMetricReporter: NovaCore.IABMetricReporter? {
     get
   }
-  @_Concurrency.MainActor(unsafe) public init(actionHandler: any NovaCore.ActionHandling, rootViewController: UIKit.UIViewController, mediaView: NovaCore.NovaNativeAdMediaView? = nil)
+  @_Concurrency.MainActor(unsafe) public init(actionHandler: any NovaCore.ActionHandling, mediaView: NovaCore.NovaNativeAdMediaView? = nil)
   @available(*, unavailable)
   @_Concurrency.MainActor(unsafe) @objc required dynamic public init?(coder: Foundation.NSCoder)
   @objc deinit
@@ -690,6 +690,7 @@ extension NovaCore.NovaNativeAdView {
 }
 @objc @_hasMissingDesignatedInitializers @_Concurrency.MainActor(unsafe) final public class NovaNativeAdVideoView : UIKit.UIView {
   @_Concurrency.MainActor(unsafe) final public var didTapCloseButtonCallback: (() -> Swift.Void)?
+  @_Concurrency.MainActor(unsafe) final public var videoPlayer: NovaCore.NovaVideoPlayer?
   @_Concurrency.MainActor(unsafe) final public var novaNativeAdVideoDelegate: (any NovaCore.NovaNativeAdVideoDelegate)?
   @_Concurrency.MainActor(unsafe) public init(inLandingPage: Swift.Bool = false)
   @objc deinit
@@ -1974,6 +1975,7 @@ extension NovaCore.NovaWebViewBottomView {
   @_Concurrency.MainActor(unsafe) public func configButton(canGoBack: Swift.Bool? = nil, canGoForward: Swift.Bool? = nil)
 }
 @objc @_inheritsConvenienceInitializers @_hasMissingDesignatedInitializers @_Concurrency.MainActor(unsafe) final public class NovaNativeAdMediaView : UIKit.UIView {
+  @_Concurrency.MainActor(unsafe) final public let videoView: NovaCore.NovaNativeAdVideoView
   @_Concurrency.MainActor(unsafe) final public var novaNativeAdVideoDelegate: (any NovaCore.NovaNativeAdVideoDelegate)?
   @_Concurrency.MainActor(unsafe) final public func setNovaNativeAdVideoDelegate(delegate: any NovaCore.NovaNativeAdVideoDelegate)
   @objc deinit

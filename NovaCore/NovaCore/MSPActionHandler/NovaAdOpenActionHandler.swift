@@ -97,7 +97,9 @@ private extension NovaAdOpenActionHandler {
 
         self.model = model
         webType = .unified
-        launchUnified(vc: vc, model: model)
+        DispatchQueue.main.async {
+            self.launchUnified(vc: vc, model: model)
+        }
 
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(handleApplicationWillResignActive(_:)),
