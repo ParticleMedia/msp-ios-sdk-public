@@ -142,8 +142,8 @@
             filePath = "NovaCore/NovaCore/Native/NovaNativeAdVideoView.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "612"
-            endingLineNumber = "612"
+            startingLineNumber = "617"
+            endingLineNumber = "617"
             landmarkName = "didTabMuteButton()"
             landmarkType = "7">
          </BreakpointContent>
@@ -259,52 +259,6 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "A5843199-DA12-4331-A528-88DD62DB2971"
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "NovaCore/NovaCore/Native/NovaNativeAdVideoView.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "313"
-            endingLineNumber = "313"
-            landmarkName = "setPlayerBackOnView(view:)"
-            landmarkType = "7">
-            <Locations>
-               <Location
-                  uuid = "A5843199-DA12-4331-A528-88DD62DB2971 - 8a297890fb0f5fde"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "NovaCore.NovaNativeAdVideoView.setPlayerBackOnView(view: __C.UIView) -&gt; ()"
-                  moduleName = "NovaCore"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/huanzhizhang/Huanzhi/msp-ios-sdk/NovaCore/NovaCore/Native/NovaNativeAdVideoView.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "313"
-                  endingLineNumber = "313">
-               </Location>
-               <Location
-                  uuid = "A5843199-DA12-4331-A528-88DD62DB2971 - 8a297890fb0f5fde"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "NovaCore.NovaNativeAdVideoView.setPlayerBackOnView(view: __C.UIView) -&gt; ()"
-                  moduleName = "NovaCore"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/huanzhizhang/Huanzhi/msp-ios-sdk/NovaCore/NovaCore/Native/NovaNativeAdVideoView.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "313"
-                  endingLineNumber = "313">
-               </Location>
-            </Locations>
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
             uuid = "223657AE-94CD-4D29-A75A-DCA44E13E1B2"
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
@@ -328,40 +282,10 @@
             filePath = "NovaAdapter/NovaAdapter/NovaAdapter.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "228"
-            endingLineNumber = "228"
+            startingLineNumber = "226"
+            endingLineNumber = "226"
             landmarkName = "parseNovaAdString(adString:adType:adUnitId:eCPMInDollar:)"
             landmarkType = "7">
-            <Locations>
-               <Location
-                  uuid = "9D66F01F-4753-4835-833D-C06412F09666 - 24df15369ffe72c2"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "NovaAdapter.NovaAdapter.parseNovaAdString(adString: Swift.String, adType: Swift.String, adUnitId: Swift.String, eCPMInDollar: __C.NSDecimal) -&gt; ()"
-                  moduleName = "MSPDemoApp.debug.dylib"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/huanzhizhang/Huanzhi/msp-ios-sdk/NovaAdapter/NovaAdapter/NovaAdapter.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "228"
-                  endingLineNumber = "228">
-               </Location>
-               <Location
-                  uuid = "9D66F01F-4753-4835-833D-C06412F09666 - 24df15369ffe72c2"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "NovaAdapter.NovaAdapter.parseNovaAdString(adString: Swift.String, adType: Swift.String, adUnitId: Swift.String, eCPMInDollar: __C.NSDecimal) -&gt; ()"
-                  moduleName = "MSPDemoApp.debug.dylib"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/huanzhizhang/Huanzhi/msp-ios-sdk/NovaAdapter/NovaAdapter/NovaAdapter.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "228"
-                  endingLineNumber = "228">
-               </Location>
-            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -374,9 +298,137 @@
             filePath = "MSPDemoApp/MSPDemoApp/DemoViewControllers/DemoAdViewController.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "164"
-            endingLineNumber = "164"
+            startingLineNumber = "163"
+            endingLineNumber = "163"
             landmarkName = "onError(msg:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "F9F2FF1A-5678-439D-BCAA-C97941450412"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "FacebookAdapter/FacebookAdapter/FacebookAdapter.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "224"
+            endingLineNumber = "224"
+            landmarkName = "nativeAdDidLoad(_:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "2C4664BA-AB88-4D6D-96EE-13FB7EB1A549"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "NovaCore/NovaCore/Landing/NovaAdsVideoLandingWebViewController.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "135"
+            endingLineNumber = "135"
+            landmarkName = "viewWillAppear(_:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "37E0CFEA-9FEE-458E-AB6C-D7D17F11F2AC"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "NovaCore/NovaCore/Native/NovaNativeAdMediaView.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "128"
+            endingLineNumber = "128"
+            landmarkName = "willResignActive()"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "007C1748-6FA4-4F91-B40D-F8A91DA8BC1B"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "NovaCore/NovaCore/Native/NovaNativeAdMediaView.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "132"
+            endingLineNumber = "132"
+            landmarkName = "didBecomeActive()"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "14824DE3-4FBB-42C6-87EA-304B73C63087"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "NovaCore/NovaCore/Native/NovaNativeAdMediaView.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "112"
+            endingLineNumber = "112"
+            landmarkName = "updateVideoDisplayState(fullyDisplayed:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "B81941E8-9D76-4682-B3C3-2CEEFC8C5C07"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "NovaCore/NovaCore/Native/NovaNativeAdView+Impression.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "74"
+            endingLineNumber = "74"
+            landmarkName = "isViewOnTop(view:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "1F0586E6-7B38-4610-9FBC-0EC67FBFC816"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "NovaCore/NovaCore/Native/NovaNativeAdVideoView.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "313"
+            endingLineNumber = "313"
+            landmarkName = "setPlayerBackOnView(view:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "7FDAE5F9-D6B1-4881-8F96-E14792B2F682"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "NovaCore/NovaCore/MSPActionHandler/NovaAdOpenActionHandler.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "101"
+            endingLineNumber = "101"
+            landmarkName = "launchWebView(with:model:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>

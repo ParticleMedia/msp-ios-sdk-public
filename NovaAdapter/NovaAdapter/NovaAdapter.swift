@@ -78,13 +78,11 @@ public class NovaAdapter: AdNetworkAdapter {
         DispatchQueue.main.async {
             guard let nativeAdView = nativeAdView as? NativeAdView,
                   let mediaView = nativeAd.mediaView as? NovaNativeAdMediaView,
-                  let novaNativeAdItem = self.nativeAdItem,
-                  let rootViewController = self.adListener?.getRootViewController() else {
+                  let novaNativeAdItem = self.nativeAdItem else {
                 self.adListener?.onError(msg: "fail to render native view")
                 return
             }
             let novaNativeAdView = NovaNativeAdView(actionHandler: actionHandlerMaster,
-                                                    rootViewController: rootViewController,
                                                     mediaView: mediaView)
             
             if let nativeAdViewBinder = nativeAdView.nativeAdViewBinder {
@@ -307,7 +305,4 @@ extension NovaAdapter: NovaAppOpenAdDelegate {
             self.adListener?.onAdClick(ad: interstitialAd)
         }
     }
-    
 }
-
-

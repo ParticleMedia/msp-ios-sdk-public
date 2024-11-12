@@ -53,9 +53,9 @@ extension UIView {
             return false
         }
         
-        //if window == nil {
-        //    return false
-        //}
+        if window == nil {
+            return false
+        }
 
         guard let rootViewController = UIApplication.shared.keyWindow?.rootViewController else {
             return false
