@@ -28,6 +28,8 @@ import UIKit
     public let videoInfo: NovaNativeAdVideoInfo?
     
     public let iconUrl: String?
+    
+    public var image: UIImage?
 
     /// Delegate used to handle ad click event logging
     @objc public weak var delegate: NovaAppOpenAdDelegate?
@@ -141,7 +143,11 @@ import UIKit
             guard let imageUrlStr = self.imageUrlStr else {
                 return
             }
-            self.requestToDisplay(rootViewController: rootViewController, adResource: .imageURL(imageUrlStr))
+            if let image = self.image {
+                self.requestToDisplay(rootViewController: rootViewController, adResource: .image(image))
+            } else {
+                self.requestToDisplay(rootViewController: rootViewController, adResource: .imageURL(imageUrlStr))
+            }
             
         case .nativeVideo:
             guard let videoInfo = self.videoInfo else {
@@ -158,8 +164,9 @@ import UIKit
         }
     }
     
-    static func downloadAdImage(urlStr: String, completion: @escaping (UIImage?) -> Void) {
-        guard let imageUrl = URL(string: urlStr) else {
+    public func preloadAdImage(completion: @escaping (UIImage?) -> Void) {
+        guard let urlString = self.imageUrlStr,
+              let imageUrl = URL(string: urlString) else {
             completion(nil)
             return
         }
@@ -182,8 +189,8 @@ import UIKit
                 completion(nil)
                 return
             }
-
-            completion(UIImage(data: data))
+            self.image = UIImage(data: data)
+            completion(self.image)
         }.resume()
     }
     

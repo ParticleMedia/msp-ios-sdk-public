@@ -156,7 +156,9 @@ extension DemoAdViewController: AdListener {
             ])
         } else if ad is InterstitialAd,
                   let interstitialAd = ad as? InterstitialAd {
-            interstitialAd.show()
+            DispatchQueue.main.async {
+                interstitialAd.show()
+            }
         }
     }
     
