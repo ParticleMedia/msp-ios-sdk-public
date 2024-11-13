@@ -244,6 +244,7 @@ public enum AdsThirdPartyMetricReporter {
 }
 public enum NovaAppOpenAdResource {
   case image(UIKit.UIImage)
+  case imageURL(Swift.String)
   case video(NovaCore.NovaNativeAdVideoInfo)
 }
 @_hasMissingDesignatedInitializers @objc @_Concurrency.MainActor(unsafe) public class NovaAppOpenAdViewController : UIKit.UIViewController {
@@ -2005,9 +2006,11 @@ final public class NovaJSBridgeHandlerMaster {
   final public let advertiser: Swift.String?
   final public let videoInfo: NovaCore.NovaNativeAdVideoInfo?
   final public let iconUrl: Swift.String?
+  final public var image: UIKit.UIImage?
   @objc weak final public var delegate: (any NovaCore.NovaAppOpenAdDelegate)?
   override final public func encode(to encoder: any Swift.Encoder) throws
   final public func present(rootViewController: UIKit.UIViewController)
+  final public func preloadAdImage(completion: @escaping (UIKit.UIImage?) -> Swift.Void)
   final public func requestToDisplay(rootViewController: UIKit.UIViewController, adResource: NovaCore.NovaAppOpenAdResource)
   @objc deinit
 }
