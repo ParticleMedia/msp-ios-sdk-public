@@ -8,6 +8,7 @@
 import Foundation
 import UIKit
 
+
 @objc public class NovaAppOpenAdViewActionHandler: NSObject {
     private weak var viewController: UIViewController?
     //private var feedbackHandler: AdsFeedbackActionHandler?
@@ -18,6 +19,12 @@ import UIKit
         //self.feedbackDelegate = feedbackDelegate
         super.init()
     }
+    
+    private static let acceptedSchemes: [String] = ["http", "https", "newsbreak"]
+    private static let httpSchemes: [String] = ["http", "https"]
+
+    private var model: NovaAdOpenActionDataModel?
+    private var webType: NovaAdOpenLandingLogger.WebType?
 }
 
 extension NovaAppOpenAdViewActionHandler: ActionHandling {
@@ -25,17 +32,32 @@ extension NovaAppOpenAdViewActionHandler: ActionHandling {
         return [
             NovaAppOpenAdViewActionKey.adTapped.rawValue: EmptyActionDataModel.self,
             NovaAppOpenAdViewActionKey.manualSkip.rawValue: EmptyActionDataModel.self,
+            NovaAppOpenAdViewActionKey.launchBrowser.rawValue: NovaAdOpenActionDataModel.self,
+            NovaAppOpenAdViewActionKey.launchWebView.rawValue: NovaAdOpenActionDataModel.self,
             //NovaAppOpenAdViewActionKey.feedbackReport.rawValue: NovaAppOpenAdFeedBackReportActionModel.self,
         ]
     }
 
     public func performAction(actionModel: ActionModel) {
+        
         switch actionModel.actionKey {
         case NovaAppOpenAdViewActionKey.adTapped.rawValue:
             didTapAd()
 
         case NovaAppOpenAdViewActionKey.manualSkip.rawValue:
             didManualSkip()
+            
+        case NovaAppOpenAdViewActionKey.launchBrowser.rawValue:
+            guard let actionDataModel = SafeAs(actionModel.actionDataModel, NovaAdOpenActionDataModel.self) else {
+                return
+            }
+            launchBrowser(with: actionDataModel.url)
+            
+        case NovaAppOpenAdViewActionKey.launchWebView.rawValue:
+            guard let actionDataModel = SafeAs(actionModel.actionDataModel, NovaAdOpenActionDataModel.self) else {
+                return
+            }
+            launchWebView(with: actionDataModel.url, model: actionDataModel)
 
         //case NovaAppOpenAdViewActionKey.feedbackReport.rawValue:
             //if let dataModel = actionModel.actionDataModel as? NovaAppOpenAdFeedBackReportActionModel {
@@ -50,7 +72,7 @@ extension NovaAppOpenAdViewActionHandler: ActionHandling {
 
 private extension NovaAppOpenAdViewActionHandler {
     func didTapAd() {
-        viewController?.dismiss(animated: true)
+        //viewController?.dismiss(animated: true)
     }
 
     func didManualSkip() {
@@ -110,4 +132,66 @@ private extension NovaAppOpenAdViewActionHandler {
                                               shouldShowHideOption: false)
     }
      */
+    
+    
+    func launchBrowser(with url: URL) {
+        guard let scheme = url.scheme,
+              Self.acceptedSchemes.contains(scheme)
+        else {
+            assertionFailure("Invalid url.")
+            return
+        }
+
+        UIApplication.shared.open(url)
+    }
+
+    func launchWebView(with url: URL, model: NovaAdOpenActionDataModel) {
+        // It would crash if we pass in url that is not with http:// or https:// schemes.
+        guard let scheme = url.scheme,
+              Self.httpSchemes.contains(scheme)
+        else {
+            assertionFailure("Invalid url.")
+            launchBrowser(with: url)
+            return
+        }
+        guard let vc = self.viewController else {
+            assertionFailure("Invalid vc.")
+            launchBrowser(with: url)
+            return
+        }
+
+        self.model = model
+        webType = .unified
+        DispatchQueue.main.async {
+            self.launchUnified(vc: vc, model: model)
+        }
+    }
+
+    func launchUnified(vc: UIViewController, model: NovaAdOpenActionDataModel) {
+        let webViewController = {
+            if let videoInfo = model.videoInfo, videoInfo.isPlayOnLandingPage {
+                NovaAdsVideoLandingWebViewController(model: model)
+            } else {
+                NovaAdsLandingWebViewController(dataModel: model)
+            }
+        }()
+        webViewController.modalPresentationStyle = .fullScreen
+        vc.present(webViewController, animated: true)
+    }
+    
+    public func SafeAs<T, U>(_ object: T?, _ objectType: U.Type) -> U? {
+        if let object = object {
+            if let temp = object as? U {
+                return temp
+            } else {
+    //            assertionFailure("cannot cast \(object) to \(objectType)")
+                return nil
+            }
+        } else {
+            // It's always OK to cast nil to nil
+            return nil
+        }
+    }
 }
+
+
