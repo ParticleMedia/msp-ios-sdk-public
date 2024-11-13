@@ -96,6 +96,7 @@
 		04C52D41A26178099ABC1C12 /* Pods */ = {
 			isa = PBXGroup;
 			children = (
+				6684806B2BE03D800025018B /* Assets.xcassets */,
 				7D28AF188F67939620E30F42 /* Pods-MSPDemoApp.debug.xcconfig */,
 				E28AB29591E557D754243851 /* Pods-MSPDemoApp.release.xcconfig */,
 			);
@@ -134,7 +135,6 @@
 				668480642BE03D7D0025018B /* SceneDelegate.swift */,
 				668480662BE03D7D0025018B /* ViewController.swift */,
 				668480682BE03D7D0025018B /* Main.storyboard */,
-				6684806B2BE03D800025018B /* Assets.xcassets */,
 				6684806D2BE03D800025018B /* LaunchScreen.storyboard */,
 				668480702BE03D800025018B /* Info.plist */,
 				66E5334D2C1BC1E700255D15 /* Colors.swift */,
