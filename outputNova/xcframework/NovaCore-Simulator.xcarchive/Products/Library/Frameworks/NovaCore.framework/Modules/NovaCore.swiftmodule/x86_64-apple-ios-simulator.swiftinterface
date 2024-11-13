@@ -40,6 +40,8 @@ public enum NovaAppOpenAdViewActionKey : Swift.String {
   case adTapped
   case manualSkip
   case feedbackReport
+  case launchBrowser
+  case launchWebView
   public init?(rawValue: Swift.String)
   public typealias RawValue = Swift.String
   public var rawValue: Swift.String {
@@ -1789,6 +1791,9 @@ extension UIKit.UIFont {
   }
   public static let Nova: UIKit.UIFont.NovaFont
 }
+public struct NovaAppOpenAdActionDataModel {
+  public init(url: Foundation.URL, clickTime: Swift.Double, ad: NovaCore.NovaBaseAd)
+}
 public enum NovaAdBuilder {
   public static func buildNativeAd(adItem: NovaCore.AdItem, adUnitId: Swift.String, eCPMInDollar: Foundation.Decimal, isParallax: Swift.Bool = false) -> NovaCore.NovaNativeAdItem
   public static func buildAppOpenAds(adItems: [NovaCore.AdItem], adUnitId: Swift.String) -> [NovaCore.NovaAppOpenAd]
@@ -2030,6 +2035,9 @@ extension NovaCore.NovaAdOpenActionHandler : NovaCore.ActionHandling {
 extension NovaCore.NovaAppOpenAdViewActionHandler : NovaCore.ActionHandling {
   public func supportedActions() -> [Swift.String : any Any.Type]
   public func performAction(actionModel: NovaCore.ActionModel)
+}
+extension NovaCore.NovaAppOpenAdViewActionHandler {
+  public func SafeAs<T, U>(_ object: T?, _ objectType: U.Type) -> U?
 }
 @objc @_inheritsConvenienceInitializers final public class ActionHandlerMaster : ObjectiveC.NSObject {
   @objc override dynamic public init()

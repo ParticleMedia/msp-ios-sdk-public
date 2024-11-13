@@ -35,9 +35,8 @@ public enum NovaAppOpenAdResource {
 
     public override func loadView() {
 
-        let openActionHandler = NovaAdOpenActionHandler()
         let viewActionHandler = NovaAppOpenAdViewActionHandler(viewController: self)
-        let actionHandler = ActionHandlerMaster(actionHandlers: [openActionHandler, viewActionHandler])
+        let actionHandler = ActionHandlerMaster(actionHandlers: [viewActionHandler])
         
         let adView: UIView
         
@@ -107,6 +106,6 @@ public enum NovaAppOpenAdResource {
     }
 
     @objc internal func handleApplicationWillEnterForeground(_ aNoticiation: Notification) {
-        dismiss(animated: false)
+        //dismiss(animated: false)
     }
 }

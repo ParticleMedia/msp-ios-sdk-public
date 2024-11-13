@@ -445,12 +445,12 @@ private extension NovaAppOpenVerticalVideoAdView {
         }
 
         let tapActionModel = ActionModel(
-            actionKey: NovaAppOpenAdViewActionKey.adTapped.rawValue,
-            actionDataModel: EmptyActionDataModel())
+            actionKey: actionKey,
+            actionDataModel: openActionDataModel)
         actionHandler.performAction(actionModel: tapActionModel)
 
-        let openActionModel = ActionModel(actionKey: actionKey, actionDataModel: openActionDataModel)
-        actionHandler.performAction(actionModel: openActionModel)
+        //let openActionModel = ActionModel(actionKey: actionKey, actionDataModel: openActionDataModel)
+        //actionHandler.performAction(actionModel: openActionModel)
 
         NovaAdMetricReporter.logAdClick(
             thirdPartyClickTrackingUrls: appOpenAd.thirdPartyClickTrackingUrls,
