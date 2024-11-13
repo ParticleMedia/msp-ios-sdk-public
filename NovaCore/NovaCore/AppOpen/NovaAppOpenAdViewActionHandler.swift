@@ -50,7 +50,7 @@ extension NovaAppOpenAdViewActionHandler: ActionHandling {
 
 private extension NovaAppOpenAdViewActionHandler {
     func didTapAd() {
-        viewController?.dismiss(animated: true)
+        //viewController?.dismiss(animated: true)
     }
 
     func didManualSkip() {
