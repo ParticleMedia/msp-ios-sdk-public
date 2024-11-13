@@ -275,9 +275,6 @@ private extension NovaAppOpenAdViewV3 {
             actionDataModel: openActionDataModel)
         actionHandler.performAction(actionModel: tapActionModel)
 
-        //let openActionModel = ActionModel(actionKey: actionKey, actionDataModel: openActionDataModel)
-        //actionHandler.performAction(actionModel: openActionModel)
-
         NovaAdMetricReporter.logAdClick(
             thirdPartyClickTrackingUrls: appOpenAd.thirdPartyClickTrackingUrls,
             encryptedAdToken: appOpenAd.encryptedAdToken,
