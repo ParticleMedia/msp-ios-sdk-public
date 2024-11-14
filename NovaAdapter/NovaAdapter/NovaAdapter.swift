@@ -92,7 +92,7 @@ public class NovaAdapter: AdNetworkAdapter {
                 novaNativeAdView.callToActionButton = nativeAdView.nativeAdViewBinder?.callToActionButton
                 novaNativeAdView.prepareViewForInteraction(nativeAd: novaNativeAdItem)
                 
-                let novaSubViews = [novaNativeAdView.titleLabel, novaNativeAdView.bodyLabel, novaNativeAdView.advertiserLabel, novaNativeAdView.callToActionButton, mediaView]
+                let novaSubViews: [UIView?] = [novaNativeAdView.titleLabel, novaNativeAdView.bodyLabel, novaNativeAdView.advertiserLabel, novaNativeAdView.callToActionButton, mediaView]
                 novaNativeAdView.tappableViews = [UIView]()
                 for view in novaSubViews {
                     if let view = view {
@@ -126,6 +126,9 @@ public class NovaAdapter: AdNetworkAdapter {
                 novaNativeAdView.tappableViews = [UIView]()
                 novaNativeAdView.tappableViews?.append(mediaView)
                 novaNativeAdView.tappableViews?.append(nativeAdContainer)
+                if let button = novaNativeAdView.callToActionButton {
+                    novaNativeAdView.tappableViews?.append(button)
+                }
                 novaNativeAdView.translatesAutoresizingMaskIntoConstraints = false
                 NSLayoutConstraint.activate([
                     //novaNativeAdView.centerYAnchor.constraint(equalTo: nativeAdView.centerYAnchor),
