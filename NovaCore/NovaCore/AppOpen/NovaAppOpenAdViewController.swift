@@ -20,10 +20,12 @@ public enum NovaAppOpenAdResource {
 
     private let appOpenAd: NovaAppOpenAd
     private let adResource: NovaAppOpenAdResource
+    private var hasImpressionLogged: Bool
 
     init(appOpenAd: NovaAppOpenAd, adResource: NovaAppOpenAdResource) {
         self.appOpenAd = appOpenAd
         self.adResource = adResource
+        self.hasImpressionLogged = false
 
         super.init(nibName: nil, bundle: nil)
     }
@@ -73,13 +75,17 @@ public enum NovaAppOpenAdResource {
                 (view as? NovaAppOpenAdViewV3)?.mediaStartShown()
             }
         }
-        NovaAdMetricReporter.logAdImpression(
-            thirdPartyImpressionTrackingUrls: appOpenAd.thirdPartyImpressionTrackingUrls,
-            encryptedAdToken: appOpenAd.encryptedAdToken,
-            startTimeInMs: appOpenAd.startTimeInMs,
-            expirationTimeInMs: appOpenAd.expirationTimeInMs)
-
-        appOpenAd.delegate?.appOpenAdDidDisplay(appOpenAd)
+        
+        if !hasImpressionLogged {
+            hasImpressionLogged = true
+            NovaAdMetricReporter.logAdImpression(
+                thirdPartyImpressionTrackingUrls: appOpenAd.thirdPartyImpressionTrackingUrls,
+                encryptedAdToken: appOpenAd.encryptedAdToken,
+                startTimeInMs: appOpenAd.startTimeInMs,
+                expirationTimeInMs: appOpenAd.expirationTimeInMs)
+            
+            appOpenAd.delegate?.appOpenAdDidDisplay(appOpenAd)
+        }
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(handleApplicationWillEnterForeground(_:)),
                                                name: UIApplication.willEnterForegroundNotification,
