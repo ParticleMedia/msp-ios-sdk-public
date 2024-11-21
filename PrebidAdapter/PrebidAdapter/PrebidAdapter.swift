@@ -25,8 +25,7 @@ import UIKit
         do {
             try Prebid.shared.setCustomPrebidServer(url: initParams.getPrebidHostUrl())
             Prebid.shared.prebidServerAccountId = initParams.getPrebidAPIKey()
-            Prebid.initializeSDK{ [weak self] status, error in
-                guard let self = self else { return }
+            Prebid.initializeSDK{ status, error in
                 if status == .successed {
                     adapterInitListener.onComplete(adNetwork: .prebid, adapterInitStatus: .SUCCESS, message: "")
                 } else {
