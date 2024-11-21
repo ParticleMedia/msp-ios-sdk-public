@@ -35,8 +35,12 @@ public class GoogleQueryInfoFetcherHelper: GoogleQueryInfoFetcher {
         }
         //= adRequest.adFormat == .banner ? GADAdFormat.banner : GADAdFormat.native
         GADQueryInfo.createQueryInfo(with: request, adFormat: googleAdFormat) { [weak self] queryInfo, error in
-            guard let self = self else {return}
+            guard let self = self else {
+                completeListener.onComplete(queryInfo: "")
+                return
+            }
             if let error = error {
+                completeListener.onComplete(queryInfo: "")
                 return
             }
 
