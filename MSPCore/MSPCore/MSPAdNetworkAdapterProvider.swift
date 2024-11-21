@@ -33,9 +33,6 @@ public class MSPAdNetworkAdapterProvider: AdNetworkAdapterProvider {
     
     public var metaManager: AdNetworkManager?
     
-    public weak var adNetworkAdapter: AdNetworkAdapter?
-    
-    
     public init() {
         
     }
@@ -43,19 +40,15 @@ public class MSPAdNetworkAdapterProvider: AdNetworkAdapterProvider {
     public func getAdNetworkAdapter(adNetwork: AdNetwork) -> AdNetworkAdapter? {
         if adNetwork == .prebid {
             var prebidAdapter = PrebidAdapter()
-            self.adNetworkAdapter = prebidAdapter
             return prebidAdapter
         } else if adNetwork == .google {
             var googleAdapter = googleManager?.getAdNetworkAdapter()
-            self.adNetworkAdapter = googleAdapter
             return googleAdapter
         } else if adNetwork == .nova {
             var novaAdapter = novaManager?.getAdNetworkAdapter()
-            self.adNetworkAdapter = novaAdapter
             return novaAdapter
         } else if adNetwork == .facebook {
             var facebookAdapter = metaManager?.getAdNetworkAdapter()
-            self.adNetworkAdapter = facebookAdapter
             return facebookAdapter
         }
         return nil
@@ -64,19 +57,15 @@ public class MSPAdNetworkAdapterProvider: AdNetworkAdapterProvider {
     public func getAdNetworkAdapterByName(adNetworkName: String) -> AdNetworkAdapter? {
         if adNetworkName == "Prebid" {
             var prebidAdapter = PrebidAdapter()
-            self.adNetworkAdapter = prebidAdapter
             return prebidAdapter
         } else if adNetworkName == "Google" {
             var googleAdapter = googleManager?.getAdNetworkAdapter()
-            self.adNetworkAdapter = googleAdapter
             return googleAdapter
         } else if adNetworkName == "Nova" {
             var novaAdapter = novaManager?.getAdNetworkAdapter()
-            self.adNetworkAdapter = novaAdapter
             return novaAdapter
         } else if adNetworkName == "Facebook" {
             var facebookAdapter = metaManager?.getAdNetworkAdapter()
-            self.adNetworkAdapter = facebookAdapter
             return facebookAdapter
         }
         return nil
