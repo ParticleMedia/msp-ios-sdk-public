@@ -21,7 +21,7 @@ import UIKit
         
     }
     
-    public func initialize(initParams: InitializationParameters, adapterInitListener: AdapterInitListener, context: Any?) {
+    public static func initialize(initParams: InitializationParameters, adapterInitListener: AdapterInitListener, context: Any?) {
         do {
             try Prebid.shared.setCustomPrebidServer(url: initParams.getPrebidHostUrl())
             Prebid.shared.prebidServerAccountId = initParams.getPrebidAPIKey()
@@ -53,9 +53,9 @@ import UIKit
             return
         }
         self.adRequest = adRequest
-        
         let width = Int(adRequest.adSize?.width ?? 320)
         let height = Int(adRequest.adSize?.height ?? 50)
+        
         let adSize = CGSize(width: width, height: height)
 
         DispatchQueue.main.async {
