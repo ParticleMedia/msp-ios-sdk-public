@@ -21,7 +21,24 @@ import UIKit
         
     }
     
-    public static func initialize(initParams: InitializationParameters, adapterInitListener: AdapterInitListener, context: Any?) {
+    public static override func initializePrebid(initParams: InitializationParameters, adapterInitListener: AdapterInitListener, context: Any?) {
+        do {
+            try Prebid.shared.setCustomPrebidServer(url: initParams.getPrebidHostUrl())
+            Prebid.shared.prebidServerAccountId = initParams.getPrebidAPIKey()
+            Prebid.initializeSDK{ status, error in
+                if status == .successed {
+                    adapterInitListener.onComplete(adNetwork: .prebid, adapterInitStatus: .SUCCESS, message: "")
+                } else {
+                    adapterInitListener.onComplete(adNetwork: .prebid, adapterInitStatus: .SUCCESS, message: error?.localizedDescription ?? "")
+                }
+            }
+        } catch {
+            adapterInitListener.onComplete(adNetwork: .prebid, adapterInitStatus: .SUCCESS, message: "")
+        }
+    }
+    
+    
+    public func initialize(initParams: InitializationParameters, adapterInitListener: AdapterInitListener, context: Any?) {
         do {
             try Prebid.shared.setCustomPrebidServer(url: initParams.getPrebidHostUrl())
             Prebid.shared.prebidServerAccountId = initParams.getPrebidAPIKey()
