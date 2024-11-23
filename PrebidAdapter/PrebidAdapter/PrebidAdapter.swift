@@ -21,7 +21,7 @@ import UIKit
         
     }
     
-    public static override func initializePrebid(initParams: InitializationParameters, adapterInitListener: AdapterInitListener, context: Any?) {
+    public static func initializePrebid(initParams: InitializationParameters, adapterInitListener: AdapterInitListener, context: Any?) {
         do {
             try Prebid.shared.setCustomPrebidServer(url: initParams.getPrebidHostUrl())
             Prebid.shared.prebidServerAccountId = initParams.getPrebidAPIKey()

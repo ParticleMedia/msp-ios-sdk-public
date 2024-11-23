@@ -88,7 +88,7 @@ public class MSP {
         adNetworkAdapterProvider.googleManager?.getAdNetworkAdapter()?.initialize(initParams: initParams, adapterInitListener: adapterInitListener, context: nil)
         adNetworkAdapterProvider.metaManager?.getAdNetworkAdapter()?.initialize(initParams: initParams, adapterInitListener: adapterInitListener, context: nil)
         adNetworkAdapterProvider.novaManager?.getAdNetworkAdapter()?.initialize(initParams: initParams, adapterInitListener: adapterInitListener, context: nil)
-        PrebidAdapter().initialize(initParams: initParams, adapterInitListener: adapterInitListener, context: nil)
+        PrebidAdapter.initializePrebid(initParams: initParams, adapterInitListener: adapterInitListener, context: nil)
        
         if let initParamsImp = initParams as? InitializationParametersImp,
            let sourceApp = initParamsImp.sourceApp {
