@@ -27,7 +27,10 @@ public class PrebidBidLoader : BidLoader {
         self.adRequest = adRequest
         
         //googleQueryInfoFetcher.fetch(completeListener: self, adRequest: adRequest)
-        self.fetchTokens(adRequest: adRequest){ googleQueryInfo, facebookBidToken in
+        self.fetchTokens(adRequest: adRequest){ [weak self] googleQueryInfo, facebookBidToken in
+            guard let self = self else {
+                return
+            }
             self.loadBidWithTokens(googleQueryInfo: googleQueryInfo, facebookBidToken: facebookBidToken, adRequest: adRequest)
         }
     }

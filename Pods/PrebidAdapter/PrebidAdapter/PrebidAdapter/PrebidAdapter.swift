@@ -21,6 +21,23 @@ import UIKit
         
     }
     
+    public static func initializePrebid(initParams: InitializationParameters, adapterInitListener: AdapterInitListener, context: Any?) {
+        do {
+            try Prebid.shared.setCustomPrebidServer(url: initParams.getPrebidHostUrl())
+            Prebid.shared.prebidServerAccountId = initParams.getPrebidAPIKey()
+            Prebid.initializeSDK{ status, error in
+                if status == .successed {
+                    adapterInitListener.onComplete(adNetwork: .prebid, adapterInitStatus: .SUCCESS, message: "")
+                } else {
+                    adapterInitListener.onComplete(adNetwork: .prebid, adapterInitStatus: .SUCCESS, message: error?.localizedDescription ?? "")
+                }
+            }
+        } catch {
+            adapterInitListener.onComplete(adNetwork: .prebid, adapterInitStatus: .SUCCESS, message: "")
+        }
+    }
+    
+    
     public func initialize(initParams: InitializationParameters, adapterInitListener: AdapterInitListener, context: Any?) {
         do {
             try Prebid.shared.setCustomPrebidServer(url: initParams.getPrebidHostUrl())
@@ -53,9 +70,9 @@ import UIKit
             return
         }
         self.adRequest = adRequest
-        
         let width = Int(adRequest.adSize?.width ?? 320)
         let height = Int(adRequest.adSize?.height ?? 50)
+        
         let adSize = CGSize(width: width, height: height)
 
         DispatchQueue.main.async {
