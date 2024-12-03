@@ -97,6 +97,7 @@ import PrebidMobile
     
     private var adLoader: GADAdLoader?
     private var adRequest: AdRequest?
+    private var bidResponse: BidResponse?
     
     private var bannerAd: BannerAd?
     private var nativeAd: MSPiOSCore.NativeAd?
@@ -118,6 +119,7 @@ import PrebidMobile
         }
         
         self.adListener = adListener
+        self.bidResponse = mBidResponse
         
         guard let adString = mBidResponse.winningBid?.bid.adm,
               let rawBidDict = SafeAs(mBidResponse.winningBid?.bid.rawJsonDictionary, [String: Any].self),
@@ -275,6 +277,10 @@ extension GoogleAdapter : GADBannerViewDelegate {
     public func bannerViewDidRecordImpression(_ bannerView: GADBannerView) {
         if let googleAd = self.bannerAd {
             self.adListener?.onAdImpression(ad: googleAd)
+            if let adRequest = adRequest,
+               let bidResponse = bidResponse {
+                self.adMetricReporter?.logAdImpression(ad: googleAd, adRequest: adRequest, bidResponse: bidResponse, params: nil)
+            }
         }
     }
 }
@@ -320,6 +326,10 @@ extension GoogleAdapter: GADNativeAdDelegate {
     public func nativeAdDidRecordImpression(_ nativeAd: GADNativeAd) {
         if let nativeAd = self.nativeAd {
             self.adListener?.onAdImpression(ad: nativeAd)
+            if let adRequest = adRequest,
+               let bidResponse = bidResponse {
+                self.adMetricReporter?.logAdImpression(ad: nativeAd, adRequest: adRequest, bidResponse: bidResponse, params: nil)
+            }
         }
     }
 
@@ -335,6 +345,10 @@ extension GoogleAdapter: GADFullScreenContentDelegate {
     public func adDidRecordImpression(_ ad: GADFullScreenPresentingAd) {
         if let interstitialAd = self.interstitialAd {
             self.adListener?.onAdImpression(ad: interstitialAd)
+            if let adRequest = adRequest,
+               let bidResponse = bidResponse {
+                self.adMetricReporter?.logAdImpression(ad: interstitialAd, adRequest: adRequest, bidResponse: bidResponse, params: nil)
+            }
         }
     }
 

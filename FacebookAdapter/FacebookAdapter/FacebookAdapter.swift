@@ -87,6 +87,7 @@ import Foundation
     private var nativeAdItem: FBNativeAd?
     private var facebookNativeAd: FacebookNativeAd?
     private var adRequest: AdRequest?
+    private var bidResponse: BidResponse?
     
     private var facebookInterstitialAd: FacebookInterstitialAd?
     private var interstitialAdItem: FBInterstitialAd?
@@ -113,6 +114,8 @@ import Foundation
             self.adListener?.onError(msg: "no valid response")
             return
         }
+        
+        self.bidResponse = mBidResponse
         
         guard let adString = mBidResponse.winningBid?.bid.adm,
               let rawBidDict = SafeAs(mBidResponse.winningBid?.bid.rawJsonDictionary, [String: Any].self),
@@ -237,6 +240,11 @@ extension FacebookAdapter: FBNativeAdDelegate {
     public func nativeAdWillLogImpression(_ nativeAd: FBNativeAd) {
         if let facebookNativeAd = self.facebookNativeAd {
             self.adListener?.onAdImpression(ad: facebookNativeAd)
+            
+            if let adRequest = adRequest,
+               let bidResponse = bidResponse {
+                self.adMetricReporter?.logAdImpression(ad: facebookNativeAd, adRequest: adRequest, bidResponse: bidResponse, params: nil)
+            }
         }
     }
     
@@ -288,6 +296,11 @@ extension FacebookAdapter: FBInterstitialAdDelegate {
     public func interstitialAdWillLogImpression(_ interstitialAd: FBInterstitialAd) {
         if let facebookInterstitialAd = self.facebookInterstitialAd {
             self.adListener?.onAdImpression(ad: facebookInterstitialAd)
+            
+            if let adRequest = adRequest,
+               let bidResponse = bidResponse {
+                self.adMetricReporter?.logAdImpression(ad: facebookInterstitialAd, adRequest: adRequest, bidResponse: bidResponse, params: nil)
+            }
         }
     }
 }
