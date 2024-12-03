@@ -1,5 +1,5 @@
 {
-  "name": "GoogleAdapter",
+  "name": "PrebidAdapter",
   "version": "0.0.89",
   "summary": "an adapter for Google SDK",
   "description": "an adapter for Google SDK for MSP S2S",
@@ -15,21 +15,12 @@
   "platforms": {
     "ios": "13.0"
   },
-  "source_files": "GoogleAdapter/GoogleAdapter/**/*.{h,m,swift}",
+  "source_files": "PrebidAdapter/PrebidAdapter/**/*.{h,m,swift}",
   "exclude_files": "Classes/Exclude",
   "dependencies": {
-    "Google-Mobile-Ads-SDK": [
-      "11.2.0"
-    ],
     "MSPSharedLibraries": [
       "0.0.91"
     ]
-  },
-  "pod_target_xcconfig": {
-    "VALID_ARCHS": "x86_64 armv7 arm64"
-  },
-  "user_target_xcconfig": {
-    "EXCLUDED_ARCHS[sdk=iphonesimulator*]": "arm64"
   },
   "static_framework": true
 }
