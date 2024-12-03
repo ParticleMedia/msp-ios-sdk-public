@@ -60,6 +60,7 @@ import UIKit
     public var priceInDollar: Double?
     
     private var adRequest: AdRequest?
+    private var bidResponse: BidResponse?
     private var bannerAd: BannerAd?
     
     private var adMetricReporter: AdMetricReporter?
@@ -70,6 +71,7 @@ import UIKit
             return
         }
         self.adRequest = adRequest
+        self.bidResponse = mBidResponse
         let width = Int(adRequest.adSize?.width ?? 320)
         let height = Int(adRequest.adSize?.height ?? 50)
         
@@ -152,7 +154,10 @@ extension PrebidAdapter: BannerEventHandler {
     public func trackImpression() {
         if let prebidAd = self.bannerAd {
             adListener?.onAdImpression(ad: prebidAd)
-            self.adMetricReporter?.logAdImpression(ad: prebidAd)
+            if let adRequest = adRequest,
+               let bidResponse = bidResponse {
+                self.adMetricReporter?.logAdImpression(ad: prebidAd, adRequest: adRequest, bidResponse: bidResponse, params: nil)
+            }
         }
     }
 }
