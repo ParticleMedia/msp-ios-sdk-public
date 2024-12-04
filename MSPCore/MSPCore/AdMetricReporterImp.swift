@@ -7,10 +7,11 @@
 
 import Foundation
 import MSPiOSCore
+import PrebidMobile
 
 public class AdMetricReporterImp: AdMetricReporter {
-    public func logAdImpression(ad: MSPiOSCore.MSPAd) {
-        MESMetricReporter.shared.logAdImpression(ad: ad)
+    public func logAdImpression(ad: MSPiOSCore.MSPAd, adRequest: MSPiOSCore.AdRequest, bidResponse: Any, params: [String : Any?]?) {
+        MESMetricReporter.shared.logAdImpression(ad: ad, adRequest: adRequest, bidResponse: bidResponse, params: params)
     }
     
     public func logGetAdFromCache(cacheKey: String, fill: Bool, ad: MSPiOSCore.MSPAd?) {
