@@ -7,6 +7,7 @@
 
 import Foundation
 import MSPiOSCore
+import PrebidMobile
 //import SwiftProtobuf
 
 @objc public class MESMetricReporter: NSObject {
@@ -95,10 +96,14 @@ import MSPiOSCore
         }
     }
     
-    public func logAdImpression(ad: MSPAd) {
+    public func logAdImpression(ad: MSPiOSCore.MSPAd, adRequest: MSPiOSCore.AdRequest, bidResponse: Any, params: [String : Any?]?) {
         var eventModel = Com_Newsbreak_Mes_Events_AdImpressionEvent()
         eventModel.tsMs = UInt64(Date().timeIntervalSince1970 * 1000)
-        eventModel.ad = generateAdContext(ad: ad)
+        if bidResponse is BidResponse,
+           let mBidResponse = bidResponse as? BidResponse {
+            eventModel.requestContext = generateRequestContext(request: adRequest, bidResponse: mBidResponse)
+            eventModel.ad = generateAdContext(ad: ad, request: adRequest, bidResponse: mBidResponse)
+        }
         
         eventModel.os = .ios
         if let org = MSP.shared.org {
@@ -167,17 +172,37 @@ import MSPiOSCore
         }
     }
     
-    func generateRequestContext(request: AdRequest) -> Com_Newsbreak_Monetization_Common_RequestContext {
+    func generateRequestContext(request: AdRequest, bidResponse: BidResponse) -> Com_Newsbreak_Monetization_Common_RequestContext {
         var eventModel = Com_Newsbreak_Monetization_Common_RequestContext()
         eventModel.tsMs = UInt64(Date().timeIntervalSince1970 * 1000)
+        eventModel.bidRequest = generateBidRequest(request: request, bidResponse: bidResponse)
+        eventModel.ext = generateRequestContextExt(request: request, bidResponse: bidResponse)
+        
         return eventModel
     }
     
-    func generateAdContext(ad: MSPAd) -> Com_Newsbreak_Monetization_Common_Ad {
+    func generateBidRequest(request: AdRequest, bidResponse: BidResponse) -> Com_Google_Openrtb_BidRequest {
+        var eventModel = Com_Google_Openrtb_BidRequest()
+        
+        eventModel.id = bidResponse.winningBid?.bid.impid ?? ""
+        
+        return eventModel
+    }
+    
+    func generateRequestContextExt(request: AdRequest, bidResponse: BidResponse) -> Com_Newsbreak_Monetization_Common_RequestContextExt {
+        var eventModel = Com_Newsbreak_Monetization_Common_RequestContextExt()
+        eventModel.source = request.placementId
+        eventModel.placementID = bidResponse.adUnitId ?? request.placementId
+        eventModel.userID = UserDefaults.standard.string(forKey: "msp_user_id") ?? ""
+        
+        return eventModel
+    }
+    
+    func generateAdContext(ad: MSPAd, request: AdRequest, bidResponse: BidResponse) -> Com_Newsbreak_Monetization_Common_Ad {
         var eventModel = Com_Newsbreak_Monetization_Common_Ad()
         eventModel.tsMs = UInt64(Date().timeIntervalSince1970 * 1000)
-        if ad is NativeAd,
-           let nativeAd = ad as? NativeAd {
+        if ad is MSPiOSCore.NativeAd,
+           let nativeAd = ad as? MSPiOSCore.NativeAd {
             eventModel.title = nativeAd.title
             eventModel.body = nativeAd.body
             eventModel.advertiser = nativeAd.advertiser
@@ -187,8 +212,35 @@ import MSPiOSCore
         } else if ad is BannerAd {
             eventModel.type = .display
         }
+        
+        eventModel.seatBid = generateSeatBid(ad: ad, request: request, bidResponse: bidResponse)
+        
         return eventModel
     }
+    
+    func generateSeatBid(ad: MSPAd, request: AdRequest, bidResponse: BidResponse) -> Com_Google_Openrtb_BidResponse.SeatBid {
+        var eventModel = Com_Google_Openrtb_BidResponse.SeatBid()
+        eventModel.seat = bidResponse.winningBidSeat ?? ""
+        eventModel.bid = [generateBid(ad: ad, request: request, bidResponse: bidResponse)]
+        return eventModel
+    }
+    
+    func generateBid(ad: MSPAd, request: AdRequest, bidResponse: BidResponse) -> Com_Google_Openrtb_BidResponse.SeatBid.Bid {
+        var eventModel = Com_Google_Openrtb_BidResponse.SeatBid.Bid()
+        eventModel.adid = bidResponse.winningBid?.bid.adid ?? ""
+        eventModel.adm = bidResponse.winningBid?.adm ?? ""
+        eventModel.crid = bidResponse.winningBid?.bid.crid ?? ""
+        eventModel.cid = bidResponse.winningBid?.bid.cid ?? ""
+        eventModel.id = bidResponse.winningBid?.bid.bidID ?? ""
+        eventModel.lurl = bidResponse.winningBid?.bid.lurl ?? ""
+        eventModel.nurl = bidResponse.winningBid?.bid.nurl ?? ""
+        eventModel.price = Double(bidResponse.winningBid?.price ?? 0)
+        eventModel.adomain = bidResponse.winningBid?.bid.adomain ?? [""]
+        eventModel.impid = bidResponse.winningBid?.bid.impid ?? ""
+        
+        return eventModel
+    }
+    
     
 }
 
