@@ -10,27 +10,27 @@
 		</data>
 		<key>Info.plist</key>
 		<data>
-		vCKGX/hVe1sumJ70RsQSXs90m48=
+		gWOBWNJUmKcpYyUWAh4QFAyDCDE=
 		</data>
 		<key>Modules/MSPiOSCore.swiftmodule/arm64-apple-ios.abi.json</key>
 		<data>
-		syGLkAnCbzKeJBQg//+bmheo7fA=
+		AyTwvRUHeTiFHu1bsy10AdqDZo8=
 		</data>
 		<key>Modules/MSPiOSCore.swiftmodule/arm64-apple-ios.private.swiftinterface</key>
 		<data>
-		20wsqQB4oaPBNYVOXQEmm607gl0=
+		7sKHWiETbM3ggBE0ReQr95V4t9g=
 		</data>
 		<key>Modules/MSPiOSCore.swiftmodule/arm64-apple-ios.swiftdoc</key>
 		<data>
-		yMiBNzBVlqCcNMUE+iG/HaW+8ZE=
+		3Oi19ae6mMQVEyPDmuEzBrOedy4=
 		</data>
 		<key>Modules/MSPiOSCore.swiftmodule/arm64-apple-ios.swiftinterface</key>
 		<data>
-		20wsqQB4oaPBNYVOXQEmm607gl0=
+		7sKHWiETbM3ggBE0ReQr95V4t9g=
 		</data>
 		<key>Modules/MSPiOSCore.swiftmodule/arm64-apple-ios.swiftmodule</key>
 		<data>
-		EvTFlGiAf1c8PdXsbCA7zWVH/Vw=
+		UI8hzoN9YFLz5EH85PnOjhKB7Pc=
 		</data>
 		<key>Modules/module.modulemap</key>
 		<data>
@@ -50,35 +50,35 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			DkhYtD44VN7x1YI4mGdZzMYPB4ZMD5Y17g80R+tlLS0=
+			ytRKbFLDNWpXwer0+WDujiVVewfyhtUNIlhVgarUXzE=
 			</data>
 		</dict>
 		<key>Modules/MSPiOSCore.swiftmodule/arm64-apple-ios.private.swiftinterface</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			l1uqEtcJ9LwGE2R+LbH65sSCBaXL8bKrDwekYg5tye8=
+			hEiegtwYjCXArgnMLPhQnwfXRS/rHc+ueCz+olksFR4=
 			</data>
 		</dict>
 		<key>Modules/MSPiOSCore.swiftmodule/arm64-apple-ios.swiftdoc</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			7awgeG+AAr48Z/zEZ1TL4H05XyLiR0DCPDISgM0CvC0=
+			ExSuDaLBhIgwxvbWhWbf5fxy7dtT3VklmtP680Rd3E0=
 			</data>
 		</dict>
 		<key>Modules/MSPiOSCore.swiftmodule/arm64-apple-ios.swiftinterface</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			l1uqEtcJ9LwGE2R+LbH65sSCBaXL8bKrDwekYg5tye8=
+			hEiegtwYjCXArgnMLPhQnwfXRS/rHc+ueCz+olksFR4=
 			</data>
 		</dict>
 		<key>Modules/MSPiOSCore.swiftmodule/arm64-apple-ios.swiftmodule</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			Le6qjmSXo5PY2JDJliN1MHgB9MXZx08I/ioKQYtlmKI=
+			24HAmt29J4vjydz4opr9YPKtawvbQFXZ3kUf7ug8XvA=
 			</data>
 		</dict>
 		<key>Modules/module.modulemap</key>
