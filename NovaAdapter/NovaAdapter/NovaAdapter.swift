@@ -24,6 +24,7 @@ public class NovaAdapter: AdNetworkAdapter {
     public var novaNativeAdView: NovaNativeAdView?
     
     private var adRequest: AdRequest?
+    private var bidResponse: BidResponse?
     
     private var adMetricReporter: AdMetricReporter?
     
@@ -45,6 +46,7 @@ public class NovaAdapter: AdNetworkAdapter {
  
         self.adListener = adListener
         self.adRequest = adRequest
+        self.bidResponse = mBidResponse
         
         guard let adString = mBidResponse.winningBid?.bid.adm,
               let rawBidDict = SafeAs(mBidResponse.winningBid?.bid.rawJsonDictionary, [String: Any].self),
@@ -274,7 +276,10 @@ extension NovaAdapter: NovaNativeAdDelegate {
     public func nativeAdDidLogImpression(_ nativeAd: NovaCore.NovaNativeAdItem) {
         if let nativeAd = self.nativeAd {
             self.adListener?.onAdImpression(ad: nativeAd)
-            self.adMetricReporter?.logAdImpression(ad: nativeAd)
+            if let adRequest = adRequest,
+               let bidResponse = bidResponse {
+                self.adMetricReporter?.logAdImpression(ad: nativeAd, adRequest: adRequest, bidResponse: bidResponse, params: nil)
+            }
         }
     }
     
@@ -310,7 +315,10 @@ extension NovaAdapter: NovaAppOpenAdDelegate {
     public func appOpenAdDidDisplay(_ appOpenAd: NovaCore.NovaAppOpenAd) {
         if let interstitialAd = self.interstitialAd {
             self.adListener?.onAdImpression(ad: interstitialAd)
-            self.adMetricReporter?.logAdImpression(ad: interstitialAd)
+            if let adRequest = adRequest,
+               let bidResponse = bidResponse {
+                self.adMetricReporter?.logAdImpression(ad: interstitialAd, adRequest: adRequest, bidResponse: bidResponse, params: nil)
+            }
         }
     }
     
