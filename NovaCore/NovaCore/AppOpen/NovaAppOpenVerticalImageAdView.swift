@@ -1,14 +1,14 @@
 //
-//  NovaAppOpenVerticalVideoAdView.swift
+//  NovaAppOpenVerticalImageAdView.swift
 //  NovaCore
 //
-//  Created by Huanzhi Zhang on 10/2/24.
+//  Created by Huanzhi Zhang on 12/5/24.
 //
 
 import Foundation
 import UIKit
 
-public class NovaAppOpenVerticalVideoAdView: UIView {
+public class NovaAppOpenVerticalImageAdView: UIView {
     static var nb_isiPhoneX: Bool {
         guard UIDevice.current.userInterfaceIdiom == .phone else {
             return false
@@ -33,7 +33,6 @@ public class NovaAppOpenVerticalVideoAdView: UIView {
     }
 
     private let actionHandler: ActionHandling
-    public var viewController: UIViewController
 
     private let nativeAdView: NovaNativeAdView
 
@@ -153,20 +152,19 @@ public class NovaAppOpenVerticalVideoAdView: UIView {
         return button
     }()
 
-    private var mediaView: NovaNativeAdMediaView?//(UIView & NovaNativeAdImmersiveMediaView)?
+    private var mediaView: NovaNativeAdMediaViewV2?
+    private let media: NovaNativeAdMedia
 
     private let appOpenAd: NovaAppOpenAd
-    private let appOpenVideoInfo: NovaNativeAdVideoInfo
     private let startTime: CFTimeInterval
 
     // MARK: -
 
-    init(appOpenAd: NovaAppOpenAd, videoInfo: NovaNativeAdVideoInfo, actionHandler: ActionHandling, viewController: UIViewController) {
+    init(with media: NovaNativeAdMedia, appOpenAd: NovaAppOpenAd, actionHandler: ActionHandling) {
         self.actionHandler = actionHandler
         self.appOpenAd = appOpenAd
-        self.appOpenVideoInfo = videoInfo
         self.startTime = CACurrentMediaTime()
-        self.viewController = viewController
+        self.media = media
         
         let adOpenActionHandler = NovaAdOpenActionHandler()
         let actionHandlerMaster = ActionHandlerMaster(actionHandlers: [adOpenActionHandler])
@@ -188,21 +186,9 @@ public class NovaAppOpenVerticalVideoAdView: UIView {
     }
 }
 
-// MARK: - Public methods
-
-extension NovaAppOpenVerticalVideoAdView {
-    func startPlaying() {
-        mediaView?.updateVideoDisplayState(fullyDisplayed: true)
-    }
-
-    func endPlaying() {
-        //mediaView?.endPlaying()
-    }
-}
-
 // MARK: - Private methods
 
-private extension NovaAppOpenVerticalVideoAdView {
+private extension NovaAppOpenVerticalImageAdView {
     func setupSubviews() {
         addSubviews(nativeAdView)
 
@@ -297,7 +283,6 @@ private extension NovaAppOpenVerticalVideoAdView {
     }
 
     func configTapGesture(for openAd: NovaAppOpenAd) {
-        volumeButton.addTarget(self, action: #selector(didTapVolumeButton), for: .touchUpInside)
         closeButton.addTarget(self, action: #selector(didTapCloseButton), for: .touchUpInside)
         feedbackButton.addTarget(self, action: #selector(didTapReportButton), for: .touchUpInside)
         let tappableViews = [bottomShadow,
@@ -309,7 +294,7 @@ private extension NovaAppOpenVerticalVideoAdView {
         for view in tappableViews {
             view.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(didTapAd(sender:))))
         }
-        if openAd.videoInfo?.isVideoClickable ?? false {
+        if openAd.isImageClickable ?? true {
             mediaView?.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(didTapAd(sender:))))
         }
     }
@@ -333,34 +318,12 @@ private extension NovaAppOpenVerticalVideoAdView {
 
         guard let mediaView else { return }
         
-        let mediaVM = NovaNativeAdMediaViewModel(encryptedAdToken: openAd.encryptedAdToken,
-                                                 imageUrlStr: openAd.imageUrlStr,
-                                                 videoInfo: openAd.videoInfo)
-        mediaView.config(with: mediaVM, iabReporter: IABMetricReporter()) {
-            
-        }
-
-        /*
-        let mediaViewModel = NovaNativeAdImmersiveMediaViewModel(
-            encryptedAdToken: openAd.encryptedAdToken,
-            adId: openAd.adId,
-            imageUrlStr: openAd.imageUrlStr,
-            isImageClickable: false,
-            videoInfo: openAd.videoInfo,
-            bannerDisplayTime: nil
-        )
-        mediaView.config(viewModel: mediaViewModel, delegate: nil, iabMetricReporter: nativeAdView.iABMetricReporter)
-         */
-        setPlayerVolume(muted: openAd.videoInfo?.state?.isMute ?? true)
+        mediaView.config(with: media)
     }
 
     func createMediaView(for openAd: NovaAppOpenAd) {
-        guard case .nativeVideo = openAd.creativeType else {
-            assertionFailure("Unsupported Nova immersive ad creative type = \(String(describing: openAd.creativeType?.rawValue))")
-            return
-        }
 
-        let mediaView = NovaNativeAdMediaView()
+        let mediaView = NovaNativeAdMediaViewV2()
         mediaView.accessibilityIdentifier = "media"
         mediaView.translatesAutoresizingMaskIntoConstraints = false
         
@@ -378,13 +341,6 @@ private extension NovaAppOpenVerticalVideoAdView {
         ])
 
         self.mediaView = mediaView
-    }
-
-    func setPlayerVolume(muted: Bool) {
-        let volumnOnImage = UIImage.Nova.volumeOnLine?.withTintColor(NovaColorPalettes.White)
-        let volumnOffImage = UIImage.Nova.volumeOffLine?.withTintColor(NovaColorPalettes.White)
-        //mediaView?.setPlayerVolume(muted: muted)
-        volumeButton.setImage(muted ? volumnOffImage : volumnOnImage, for: .normal)
     }
 
     @objc func didTapMediaView() {
@@ -459,9 +415,5 @@ private extension NovaAppOpenVerticalVideoAdView {
             clickArea: sender.view?.accessibilityIdentifier)
     }
 
-    @objc func didTapVolumeButton() {
-        //let muted = mediaView?.getPlayerMutedState() ?? true
-        //setPlayerVolume(muted: !muted)
-        //NovaAdVideoMetricReporter.logVideoMute(encryptedAdToken: appOpenAd.encryptedAdToken, isMute: !muted)
-    }
+   
 }

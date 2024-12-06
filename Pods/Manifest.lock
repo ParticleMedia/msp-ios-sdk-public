@@ -9,7 +9,7 @@ PODS:
     - Google-Mobile-Ads-SDK (= 11.2.0)
     - MSPSharedLibraries (= 0.0.91)
   - GoogleUserMessagingPlatform (2.7.0)
-  - MSPCore (0.0.90):
+  - MSPCore (0.0.93):
     - MSPSharedLibraries (= 0.0.91)
     - PrebidAdapter (= 0.0.92)
     - SwiftProtobuf (= 1.21.0)
@@ -54,7 +54,7 @@ SPEC CHECKSUMS:
   Google-Mobile-Ads-SDK: 5a6d005a6cb5b5e8f4c7b69ca05cdea79c181139
   GoogleAdapter: 83c1e05f7ca39b227180adaca9eb9687fb8aed94
   GoogleUserMessagingPlatform: a8b56893477f67212fbc8411c139e61d463349f5
-  MSPCore: 1fde1817d00c50dd30eeee01703992f82348e627
+  MSPCore: d4509d0f11b06c1934e5e5e151b77264b9988f5f
   MSPSharedLibraries: 45598e3d4212dcc69100c948c9456e836404a6b8
   NovaAdapter: 090f14758e72c760677039dba96042af91dd680b
   PrebidAdapter: 01366ecf88ab19af81f4b6b08eab0ddf7a8ba827
