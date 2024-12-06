@@ -181,6 +181,9 @@ extension UIKit.UIImage {
   @objc convenience dynamic public init?(novasystemName: NovaCore.NovaIcon.NovaSystem)
   @objc convenience dynamic public init?(novasystemName: NovaCore.NovaIcon.NovaSystem, tintColor: UIKit.UIColor)
 }
+@objc @_hasMissingDesignatedInitializers @_Concurrency.MainActor(unsafe) public class NovaAppOpenVerticalImageAdView : UIKit.UIView {
+  @objc deinit
+}
 public enum AdsMediaConstants {
   public static let iPadAspectRatio: Swift.Double
   public static let defaultAspectRatio: Swift.Double
@@ -2010,6 +2013,8 @@ final public class NovaJSBridgeHandlerMaster {
   final public let callToAction: Swift.String?
   final public let advertiser: Swift.String?
   final public let videoInfo: NovaCore.NovaNativeAdVideoInfo?
+  final public let isVerticalImage: Swift.Bool?
+  final public let isImageClickable: Swift.Bool?
   final public let iconUrl: Swift.String?
   final public var image: UIKit.UIImage?
   @objc weak final public var delegate: (any NovaCore.NovaAppOpenAdDelegate)?

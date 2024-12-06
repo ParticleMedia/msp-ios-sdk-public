@@ -24,6 +24,7 @@ struct Creative: Codable {
     let callToAction: String?
     let imageUrl: String?
     let isImageClickable: Bool?
+    let isVerticalImage: Bool?
     let advertiser: String?
     let iconUrl: String?
     let adFormatSpec: AdFormatSpec?

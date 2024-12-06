@@ -45,7 +45,11 @@ public enum NovaAppOpenAdResource {
         switch adResource {
         case let .image(image):
             let media = NovaNativeAdMedia.image(.image(image))
-            adView = NovaAppOpenAdViewV3(with: media, openAd: appOpenAd, actionHandler: actionHandler)
+            if appOpenAd.isVerticalImage ?? false {
+                adView = NovaAppOpenVerticalImageAdView(with: media, appOpenAd: appOpenAd, actionHandler: actionHandler)
+            } else {
+                adView = NovaAppOpenAdViewV3(with: media, openAd: appOpenAd, actionHandler: actionHandler)
+            }
             
         case let .imageURL(imageURL):
             let media = NovaNativeAdMedia.image(.imageURLStr(imageURL))

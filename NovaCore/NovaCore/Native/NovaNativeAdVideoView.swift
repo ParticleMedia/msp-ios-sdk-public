@@ -342,7 +342,6 @@ public extension NovaNativeAdVideoView {
         }
 
         guard let playState = playState else {
-            assertionFailure("lack state info")
             return
         }
         switch playState {

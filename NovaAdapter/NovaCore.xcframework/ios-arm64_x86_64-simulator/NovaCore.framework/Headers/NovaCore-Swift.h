@@ -665,6 +665,14 @@ SWIFT_CLASS("_TtC8NovaCore19NovaAppOpenAdViewV3")
 
 
 
+SWIFT_CLASS("_TtC8NovaCore30NovaAppOpenVerticalImageAdView")
+@interface NovaAppOpenVerticalImageAdView : UIView
+- (nullable instancetype)initWithCoder:(NSCoder * _Nonnull)coder SWIFT_UNAVAILABLE;
+- (nonnull instancetype)initWithFrame:(CGRect)frame SWIFT_UNAVAILABLE;
+@end
+
+
+
 SWIFT_CLASS("_TtC8NovaCore30NovaAppOpenVerticalVideoAdView")
 @interface NovaAppOpenVerticalVideoAdView : UIView
 - (nullable instancetype)initWithCoder:(NSCoder * _Nonnull)coder SWIFT_UNAVAILABLE;
@@ -1038,11 +1046,11 @@ SWIFT_CLASS("_TtC8NovaCore25NovaWebViewNavigationView")
 
 
 
-
 @interface UIImage (SWIFT_EXTENSION(NovaCore))
 - (nullable instancetype)initWithNovasystemName:(enum NovaSystem)novasystemName;
 - (nullable instancetype)initWithNovasystemName:(enum NovaSystem)novasystemName tintColor:(UIColor * _Nonnull)tintColor;
 @end
+
 
 
 
@@ -1730,6 +1738,14 @@ SWIFT_CLASS("_TtC8NovaCore19NovaAppOpenAdViewV3")
 
 
 
+SWIFT_CLASS("_TtC8NovaCore30NovaAppOpenVerticalImageAdView")
+@interface NovaAppOpenVerticalImageAdView : UIView
+- (nullable instancetype)initWithCoder:(NSCoder * _Nonnull)coder SWIFT_UNAVAILABLE;
+- (nonnull instancetype)initWithFrame:(CGRect)frame SWIFT_UNAVAILABLE;
+@end
+
+
+
 SWIFT_CLASS("_TtC8NovaCore30NovaAppOpenVerticalVideoAdView")
 @interface NovaAppOpenVerticalVideoAdView : UIView
 - (nullable instancetype)initWithCoder:(NSCoder * _Nonnull)coder SWIFT_UNAVAILABLE;
@@ -2103,11 +2119,11 @@ SWIFT_CLASS("_TtC8NovaCore25NovaWebViewNavigationView")
 
 
 
-
 @interface UIImage (SWIFT_EXTENSION(NovaCore))
 - (nullable instancetype)initWithNovasystemName:(enum NovaSystem)novasystemName;
 - (nullable instancetype)initWithNovasystemName:(enum NovaSystem)novasystemName tintColor:(UIColor * _Nonnull)tintColor;
 @end
+
 
 
 
