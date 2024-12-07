@@ -26,6 +26,10 @@ import UIKit
     public let advertiser: String?
     /// video info
     public let videoInfo: NovaNativeAdVideoInfo?
+    /// if media is vertical image
+    public let isVerticalImage: Bool?
+    /// if the image media is clickable
+    public let isImageClickable: Bool?
     
     public let iconUrl: String?
     
@@ -49,6 +53,8 @@ import UIKit
         advertiser: String?,
         creativeType: NovaCreativeType?,
         videoInfo: NovaNativeAdVideoInfo?,
+        isImageClickable: Bool?,
+        isVerticalImage: Bool?,
         iconUrl: String?,
         launchOption: String?,
         thirdPartyViewTrackingUrls: [String],
@@ -69,6 +75,8 @@ import UIKit
         self.callToAction = callToAction
         self.advertiser = advertiser
         self.videoInfo = videoInfo
+        self.isImageClickable = isImageClickable
+        self.isVerticalImage = isVerticalImage
         self.iconUrl = iconUrl
 
         super.init(adUnitId: adUnitId,
@@ -98,7 +106,8 @@ import UIKit
         advertiser = try container.decodeIfPresent(String.self, forKey: .advertiser)
         videoInfo = try container.decodeIfPresent(NovaNativeAdVideoInfo.self, forKey: .videoInfo)
         iconUrl = try container.decodeIfPresent(String.self, forKey: .iconUrl)
-
+        isImageClickable = try container.decodeIfPresent(Bool.self, forKey: .isImageClickable)
+        isVerticalImage = try container.decodeIfPresent(Bool.self, forKey: .isVerticalImage)
         let superDecoder = try container.superDecoder()
         try super.init(from: superDecoder)
     }
@@ -115,6 +124,8 @@ import UIKit
         case callToAction
         case advertiser
         case videoInfo
+        case isImageClickable
+        case isVerticalImage
         case iconUrl
     }
 

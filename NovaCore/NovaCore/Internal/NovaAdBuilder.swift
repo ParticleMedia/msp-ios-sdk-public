@@ -73,6 +73,8 @@ public enum NovaAdBuilder {
 
             let startTimeInMs = Double(adItem.startTimeMs ?? "")
             let expirationTimeInMs = Double(adItem.expirationMs ?? "")
+            let isImageClickable = adItem.creative.isImageClickable ?? true
+            let isVerticalImage = adItem.creative.isVerticalImage ?? false
 
             return NovaAppOpenAd(
                 adUnitId: adUnitId,
@@ -87,6 +89,8 @@ public enum NovaAdBuilder {
                 advertiser: adItem.creative.advertiser,
                 creativeType: NovaCreativeType(rawValue: adItem.creative.creativeType ?? ""),
                 videoInfo: videoInfo,
+                isImageClickable: isImageClickable,
+                isVerticalImage: isVerticalImage,
                 iconUrl: adItem.creative.iconUrl,
                 launchOption: adItem.creative.launchOption,
                 thirdPartyViewTrackingUrls: thirdPartyViewTrackingUrls,

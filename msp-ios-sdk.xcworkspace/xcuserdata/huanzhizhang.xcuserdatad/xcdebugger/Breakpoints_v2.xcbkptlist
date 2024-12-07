@@ -142,8 +142,8 @@
             filePath = "NovaCore/NovaCore/Native/NovaNativeAdVideoView.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "617"
-            endingLineNumber = "617"
+            startingLineNumber = "623"
+            endingLineNumber = "623"
             landmarkName = "didTabMuteButton()"
             landmarkType = "7">
          </BreakpointContent>
@@ -206,8 +206,8 @@
             filePath = "FacebookAdapter/FacebookAdapter/FacebookAdapter.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "257"
-            endingLineNumber = "257"
+            startingLineNumber = "249"
+            endingLineNumber = "249"
             landmarkName = "unknown"
             landmarkType = "0">
          </BreakpointContent>
@@ -247,52 +247,6 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "223657AE-94CD-4D29-A75A-DCA44E13E1B2"
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "NovaCore/NovaCore/Native/NovaNativeAdVideoView.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "329"
-            endingLineNumber = "329"
-            landmarkName = "handleVideoOnScreen()"
-            landmarkType = "7">
-            <Locations>
-               <Location
-                  uuid = "223657AE-94CD-4D29-A75A-DCA44E13E1B2 - 3559da8c8351565d"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "NovaCore.NovaNativeAdVideoView.handleVideoOnScreen() -&gt; ()"
-                  moduleName = "NovaCore"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/huanzhizhang/Huanzhi/msp-ios-sdk/NovaCore/NovaCore/Native/NovaNativeAdVideoView.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "329"
-                  endingLineNumber = "329">
-               </Location>
-               <Location
-                  uuid = "223657AE-94CD-4D29-A75A-DCA44E13E1B2 - 3559da8c8351565d"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "NovaCore.NovaNativeAdVideoView.handleVideoOnScreen() -&gt; ()"
-                  moduleName = "NovaCore"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/huanzhizhang/Huanzhi/msp-ios-sdk/NovaCore/NovaCore/Native/NovaNativeAdVideoView.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "329"
-                  endingLineNumber = "329">
-               </Location>
-            </Locations>
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
             uuid = "9D66F01F-4753-4835-833D-C06412F09666"
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
@@ -300,40 +254,10 @@
             filePath = "NovaAdapter/NovaAdapter/NovaAdapter.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "242"
-            endingLineNumber = "242"
+            startingLineNumber = "251"
+            endingLineNumber = "251"
             landmarkName = "parseNovaAdString(adString:adType:adUnitId:eCPMInDollar:)"
             landmarkType = "7">
-            <Locations>
-               <Location
-                  uuid = "9D66F01F-4753-4835-833D-C06412F09666 - 8d957c233a2daf13"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "NovaAdapter.NovaAdapter.parseNovaAdString(adString: Swift.String, adType: Swift.String, adUnitId: Swift.String, eCPMInDollar: __C.NSDecimal) -&gt; ()"
-                  moduleName = "MSPDemoApp"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/huanzhizhang/Huanzhi/msp-ios-sdk/NovaAdapter/NovaAdapter/NovaAdapter.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "242"
-                  endingLineNumber = "242">
-               </Location>
-               <Location
-                  uuid = "9D66F01F-4753-4835-833D-C06412F09666 - 8d957c233a2daf13"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "NovaAdapter.NovaAdapter.parseNovaAdString(adString: Swift.String, adType: Swift.String, adUnitId: Swift.String, eCPMInDollar: __C.NSDecimal) -&gt; ()"
-                  moduleName = "MSPDemoApp"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/huanzhizhang/Huanzhi/msp-ios-sdk/NovaAdapter/NovaAdapter/NovaAdapter.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "242"
-                  endingLineNumber = "242">
-               </Location>
-            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -346,40 +270,10 @@
             filePath = "FacebookAdapter/FacebookAdapter/FacebookAdapter.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "228"
-            endingLineNumber = "228"
+            startingLineNumber = "225"
+            endingLineNumber = "225"
             landmarkName = "nativeAdDidLoad(_:)"
             landmarkType = "7">
-            <Locations>
-               <Location
-                  uuid = "F9F2FF1A-5678-439D-BCAA-C97941450412 - 681fa8d579089e8c"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "closure #1 @Swift.MainActor () -&gt; () in FacebookAdapter.FacebookAdapter.nativeAdDidLoad(__C.FBNativeAd) -&gt; ()"
-                  moduleName = "MSPDemoApp"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/huanzhizhang/Huanzhi/msp-ios-sdk/FacebookAdapter/FacebookAdapter/FacebookAdapter.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "228"
-                  endingLineNumber = "228">
-               </Location>
-               <Location
-                  uuid = "F9F2FF1A-5678-439D-BCAA-C97941450412 - 681fa8d579089e8c"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "closure #1 @Swift.MainActor () -&gt; () in FacebookAdapter.FacebookAdapter.nativeAdDidLoad(__C.FBNativeAd) -&gt; ()"
-                  moduleName = "MSPDemoApp"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/huanzhizhang/Huanzhi/msp-ios-sdk/FacebookAdapter/FacebookAdapter/FacebookAdapter.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "228"
-                  endingLineNumber = "228">
-               </Location>
-            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -396,36 +290,6 @@
             endingLineNumber = "135"
             landmarkName = "viewWillAppear(_:)"
             landmarkType = "7">
-            <Locations>
-               <Location
-                  uuid = "2C4664BA-AB88-4D6D-96EE-13FB7EB1A549 - b46c4bb0a8a11164"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "NovaCore.NovaAdsVideoLandingWebViewController.viewWillAppear(Swift.Bool) -&gt; ()"
-                  moduleName = "NovaCore"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/huanzhizhang/Huanzhi/msp-ios-sdk/NovaCore/NovaCore/Landing/NovaAdsVideoLandingWebViewController.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "136"
-                  endingLineNumber = "136">
-               </Location>
-               <Location
-                  uuid = "2C4664BA-AB88-4D6D-96EE-13FB7EB1A549 - b46c4bb0a8a11164"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "NovaCore.NovaAdsVideoLandingWebViewController.viewWillAppear(Swift.Bool) -&gt; ()"
-                  moduleName = "NovaCore"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/huanzhizhang/Huanzhi/msp-ios-sdk/NovaCore/NovaCore/Landing/NovaAdsVideoLandingWebViewController.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "136"
-                  endingLineNumber = "136">
-               </Location>
-            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -442,110 +306,6 @@
             endingLineNumber = "74"
             landmarkName = "isViewOnTop(view:)"
             landmarkType = "7">
-            <Locations>
-               <Location
-                  uuid = "B81941E8-9D76-4682-B3C3-2CEEFC8C5C07 - c88afa9aa25142e1"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "NovaCore.NovaNativeAdView.isViewOnTop(view: Swift.Optional&lt;__C.UIView&gt;) -&gt; Swift.Bool"
-                  moduleName = "NovaCore"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/huanzhizhang/Huanzhi/msp-ios-sdk/NovaCore/NovaCore/Native/NovaNativeAdView+Impression.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "74"
-                  endingLineNumber = "74">
-               </Location>
-               <Location
-                  uuid = "B81941E8-9D76-4682-B3C3-2CEEFC8C5C07 - c88afa9aa25142e1"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "NovaCore.NovaNativeAdView.isViewOnTop(view: Swift.Optional&lt;__C.UIView&gt;) -&gt; Swift.Bool"
-                  moduleName = "NovaCore"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/huanzhizhang/Huanzhi/msp-ios-sdk/NovaCore/NovaCore/Native/NovaNativeAdView+Impression.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "74"
-                  endingLineNumber = "74">
-               </Location>
-            </Locations>
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "1F0586E6-7B38-4610-9FBC-0EC67FBFC816"
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "NovaCore/NovaCore/Native/NovaNativeAdVideoView.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "313"
-            endingLineNumber = "313"
-            landmarkName = "setPlayerBackOnView(view:)"
-            landmarkType = "7">
-            <Locations>
-               <Location
-                  uuid = "1F0586E6-7B38-4610-9FBC-0EC67FBFC816 - 8a297890fb0f5fde"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "NovaCore.NovaNativeAdVideoView.setPlayerBackOnView(view: __C.UIView) -&gt; ()"
-                  moduleName = "NovaCore"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/huanzhizhang/Huanzhi/msp-ios-sdk/NovaCore/NovaCore/Native/NovaNativeAdVideoView.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "313"
-                  endingLineNumber = "313">
-               </Location>
-               <Location
-                  uuid = "1F0586E6-7B38-4610-9FBC-0EC67FBFC816 - 8a297890fb0f5fde"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "NovaCore.NovaNativeAdVideoView.setPlayerBackOnView(view: __C.UIView) -&gt; ()"
-                  moduleName = "NovaCore"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/huanzhizhang/Huanzhi/msp-ios-sdk/NovaCore/NovaCore/Native/NovaNativeAdVideoView.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "313"
-                  endingLineNumber = "313">
-               </Location>
-               <Location
-                  uuid = "1F0586E6-7B38-4610-9FBC-0EC67FBFC816 - 8a297890fb0f5fde"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "NovaCore.NovaNativeAdVideoView.setPlayerBackOnView(view: __C.UIView) -&gt; ()"
-                  moduleName = "NovaCore"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/huanzhizhang/Huanzhi/msp-ios-sdk/NovaCore/NovaCore/Native/NovaNativeAdVideoView.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "313"
-                  endingLineNumber = "313">
-               </Location>
-               <Location
-                  uuid = "1F0586E6-7B38-4610-9FBC-0EC67FBFC816 - 8a297890fb0f5fde"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "NovaCore.NovaNativeAdVideoView.setPlayerBackOnView(view: __C.UIView) -&gt; ()"
-                  moduleName = "NovaCore"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/huanzhizhang/Huanzhi/msp-ios-sdk/NovaCore/NovaCore/Native/NovaNativeAdVideoView.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "313"
-                  endingLineNumber = "313">
-               </Location>
-            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -562,36 +322,6 @@
             endingLineNumber = "101"
             landmarkName = "launchWebView(with:model:)"
             landmarkType = "7">
-            <Locations>
-               <Location
-                  uuid = "7FDAE5F9-D6B1-4881-8F96-E14792B2F682 - 55b6989215156e9c"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "closure #1 @Swift.MainActor () -&gt; () in NovaCore.NovaAdOpenActionHandler.launchWebView(with: Foundation.URL, model: NovaCore.NovaAdOpenActionDataModel) -&gt; ()"
-                  moduleName = "NovaCore"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/huanzhizhang/Huanzhi/msp-ios-sdk/NovaCore/NovaCore/MSPActionHandler/NovaAdOpenActionHandler.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "101"
-                  endingLineNumber = "101">
-               </Location>
-               <Location
-                  uuid = "7FDAE5F9-D6B1-4881-8F96-E14792B2F682 - 55b6989215156e9c"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "closure #1 @Swift.MainActor () -&gt; () in NovaCore.NovaAdOpenActionHandler.launchWebView(with: Foundation.URL, model: NovaCore.NovaAdOpenActionDataModel) -&gt; ()"
-                  moduleName = "NovaCore"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/huanzhizhang/Huanzhi/msp-ios-sdk/NovaCore/NovaCore/MSPActionHandler/NovaAdOpenActionHandler.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "101"
-                  endingLineNumber = "101">
-               </Location>
-            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -608,50 +338,6 @@
             endingLineNumber = "58"
             landmarkName = "config(with:)"
             landmarkType = "7">
-            <Locations>
-               <Location
-                  uuid = "D9021E94-0BF4-4566-9A97-440E0911D066 - bcf2b4129af0e3e4"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "NovaCore.NovaNativeAdMediaViewV2.config(with: NovaCore.NovaNativeAdMedia) -&gt; ()"
-                  moduleName = "NovaCore"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/huanzhizhang/Huanzhi/msp-ios-sdk/NovaCore/NovaCore/Native/NovaNativeAdMediaViewV2.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "58"
-                  endingLineNumber = "58">
-               </Location>
-               <Location
-                  uuid = "D9021E94-0BF4-4566-9A97-440E0911D066 - f950b29e9f8e67ab"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "closure #1 () -&gt; () in NovaCore.NovaNativeAdMediaViewV2.config(with: NovaCore.NovaNativeAdMedia) -&gt; ()"
-                  moduleName = "NovaCore"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/huanzhizhang/Huanzhi/msp-ios-sdk/NovaCore/NovaCore/Native/NovaNativeAdMediaViewV2.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "58"
-                  endingLineNumber = "58">
-               </Location>
-               <Location
-                  uuid = "D9021E94-0BF4-4566-9A97-440E0911D066 - bcf2b4129af0e3e4"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "NovaCore.NovaNativeAdMediaViewV2.config(with: NovaCore.NovaNativeAdMedia) -&gt; ()"
-                  moduleName = "NovaCore"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/huanzhizhang/Huanzhi/msp-ios-sdk/NovaCore/NovaCore/Native/NovaNativeAdMediaViewV2.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "58"
-                  endingLineNumber = "58">
-               </Location>
-            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -668,36 +354,6 @@
             endingLineNumber = "120"
             landmarkName = "launchUnified(vc:model:)"
             landmarkType = "7">
-            <Locations>
-               <Location
-                  uuid = "3A460B01-47B4-4361-947A-22A603BF84F9 - e8fd6c8895110021"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "NovaCore.NovaAdOpenActionHandler.launchUnified(vc: __C.UIViewController, model: NovaCore.NovaAdOpenActionDataModel) -&gt; ()"
-                  moduleName = "NovaCore"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/huanzhizhang/Huanzhi/msp-ios-sdk/NovaCore/NovaCore/MSPActionHandler/NovaAdOpenActionHandler.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "120"
-                  endingLineNumber = "120">
-               </Location>
-               <Location
-                  uuid = "3A460B01-47B4-4361-947A-22A603BF84F9 - e8fd6c8895110021"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "NovaCore.NovaAdOpenActionHandler.launchUnified(vc: __C.UIViewController, model: NovaCore.NovaAdOpenActionDataModel) -&gt; ()"
-                  moduleName = "NovaCore"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/huanzhizhang/Huanzhi/msp-ios-sdk/NovaCore/NovaCore/MSPActionHandler/NovaAdOpenActionHandler.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "120"
-                  endingLineNumber = "120">
-               </Location>
-            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -714,36 +370,6 @@
             endingLineNumber = "137"
             landmarkName = "didTapAdView(sender:)"
             landmarkType = "7">
-            <Locations>
-               <Location
-                  uuid = "F69970B6-1982-4BF7-8143-C00AE51B1B8D - 425446e64702afbb"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "NovaCore.NovaNativeAdView.didTapAdView(sender: __C.UIGestureRecognizer) -&gt; ()"
-                  moduleName = "NovaCore"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/huanzhizhang/Huanzhi/msp-ios-sdk/NovaCore/NovaCore/Native/NovaNativeAdView.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "137"
-                  endingLineNumber = "137">
-               </Location>
-               <Location
-                  uuid = "F69970B6-1982-4BF7-8143-C00AE51B1B8D - 425446e64702afbb"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "NovaCore.NovaNativeAdView.didTapAdView(sender: __C.UIGestureRecognizer) -&gt; ()"
-                  moduleName = "NovaCore"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/huanzhizhang/Huanzhi/msp-ios-sdk/NovaCore/NovaCore/Native/NovaNativeAdView.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "137"
-                  endingLineNumber = "137">
-               </Location>
-            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -760,128 +386,6 @@
             endingLineNumber = "228"
             landmarkName = "didTapCloseButton()"
             landmarkType = "7">
-            <Locations>
-               <Location
-                  uuid = "BB16CED4-983F-4EF9-99AF-C3CCCC4E6EAA - 77ee01ec3b83dee5"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "NovaCore.NovaAppOpenAdViewV3.didTapCloseButton() -&gt; ()"
-                  moduleName = "NovaCore"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/huanzhizhang/Huanzhi/msp-ios-sdk/NovaCore/NovaCore/AppOpen/NovaAppOpenAdViewV3.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "228"
-                  endingLineNumber = "228">
-               </Location>
-               <Location
-                  uuid = "BB16CED4-983F-4EF9-99AF-C3CCCC4E6EAA - 77ee01ec3b83dee5"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "NovaCore.NovaAppOpenAdViewV3.didTapCloseButton() -&gt; ()"
-                  moduleName = "NovaCore"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/huanzhizhang/Huanzhi/msp-ios-sdk/NovaCore/NovaCore/AppOpen/NovaAppOpenAdViewV3.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "228"
-                  endingLineNumber = "228">
-               </Location>
-            </Locations>
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "A1F276B5-893F-419D-BE96-248E3B0372AB"
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "NovaCore/NovaCore/AppOpen/NovaAppOpenAdViewActionHandler.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "79"
-            endingLineNumber = "79"
-            landmarkName = "didManualSkip()"
-            landmarkType = "7">
-            <Locations>
-               <Location
-                  uuid = "A1F276B5-893F-419D-BE96-248E3B0372AB - fdc28f2bf8f83229"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "NovaCore.NovaAppOpenAdViewActionHandler.didManualSkip() -&gt; ()"
-                  moduleName = "NovaCore"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/huanzhizhang/Huanzhi/msp-ios-sdk/NovaCore/NovaCore/AppOpen/NovaAppOpenAdViewActionHandler.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "79"
-                  endingLineNumber = "79">
-               </Location>
-               <Location
-                  uuid = "A1F276B5-893F-419D-BE96-248E3B0372AB - fdc28f2bf8f83229"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "NovaCore.NovaAppOpenAdViewActionHandler.didManualSkip() -&gt; ()"
-                  moduleName = "NovaCore"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/huanzhizhang/Huanzhi/msp-ios-sdk/NovaCore/NovaCore/AppOpen/NovaAppOpenAdViewActionHandler.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "79"
-                  endingLineNumber = "79">
-               </Location>
-            </Locations>
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "3E5FABFC-434E-4A40-84AF-1C8D6A050AFB"
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "NovaCore/NovaCore/AppOpen/NovaAppOpenAdViewActionHandler.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "43"
-            endingLineNumber = "43"
-            landmarkName = "performAction(actionModel:)"
-            landmarkType = "7">
-            <Locations>
-               <Location
-                  uuid = "3E5FABFC-434E-4A40-84AF-1C8D6A050AFB - 48d657e1cee88bba"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "NovaCore.NovaAppOpenAdViewActionHandler.performAction(actionModel: NovaCore.ActionModel) -&gt; ()"
-                  moduleName = "NovaCore"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/huanzhizhang/Huanzhi/msp-ios-sdk/NovaCore/NovaCore/AppOpen/NovaAppOpenAdViewActionHandler.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "43"
-                  endingLineNumber = "43">
-               </Location>
-               <Location
-                  uuid = "3E5FABFC-434E-4A40-84AF-1C8D6A050AFB - 48d657e1cee88bba"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "NovaCore.NovaAppOpenAdViewActionHandler.performAction(actionModel: NovaCore.ActionModel) -&gt; ()"
-                  moduleName = "NovaCore"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/huanzhizhang/Huanzhi/msp-ios-sdk/NovaCore/NovaCore/AppOpen/NovaAppOpenAdViewActionHandler.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "43"
-                  endingLineNumber = "43">
-               </Location>
-            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -898,36 +402,6 @@
             endingLineNumber = "231"
             landmarkName = "didTapCloseButton()"
             landmarkType = "7">
-            <Locations>
-               <Location
-                  uuid = "72EDCED1-8765-42F1-B862-2B50232491E8 - 77ee01ec3b83de86"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "NovaCore.NovaAppOpenAdViewV3.didTapCloseButton() -&gt; ()"
-                  moduleName = "NovaCore"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/huanzhizhang/Huanzhi/msp-ios-sdk/NovaCore/NovaCore/AppOpen/NovaAppOpenAdViewV3.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "231"
-                  endingLineNumber = "231">
-               </Location>
-               <Location
-                  uuid = "72EDCED1-8765-42F1-B862-2B50232491E8 - 77ee01ec3b83de86"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "NovaCore.NovaAppOpenAdViewV3.didTapCloseButton() -&gt; ()"
-                  moduleName = "NovaCore"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/huanzhizhang/Huanzhi/msp-ios-sdk/NovaCore/NovaCore/AppOpen/NovaAppOpenAdViewV3.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "231"
-                  endingLineNumber = "231">
-               </Location>
-            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -944,386 +418,102 @@
             endingLineNumber = "39"
             landmarkName = "performAction(actionModel:)"
             landmarkType = "7">
-            <Locations>
-               <Location
-                  uuid = "3F576ED5-75C5-4992-B682-B770B54A2D26 - 741014485305f1d6"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "NovaCore.NovaAdOpenActionHandler.performAction(actionModel: NovaCore.ActionModel) -&gt; ()"
-                  moduleName = "NovaCore"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/huanzhizhang/Huanzhi/msp-ios-sdk/NovaCore/NovaCore/MSPActionHandler/NovaAdOpenActionHandler.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "39"
-                  endingLineNumber = "39">
-               </Location>
-               <Location
-                  uuid = "3F576ED5-75C5-4992-B682-B770B54A2D26 - 741014485305f1d6"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "NovaCore.NovaAdOpenActionHandler.performAction(actionModel: NovaCore.ActionModel) -&gt; ()"
-                  moduleName = "NovaCore"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/huanzhizhang/Huanzhi/msp-ios-sdk/NovaCore/NovaCore/MSPActionHandler/NovaAdOpenActionHandler.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "39"
-                  endingLineNumber = "39">
-               </Location>
-            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "C7CA4C3D-21A8-4557-A82F-8A1AA92A16C5"
+            uuid = "50B80EEF-9E9D-40C7-A541-9DA782F9E687"
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "NovaCore/NovaCore/MSPActionHandler/ActionHandlerMaster.swift"
+            filePath = "NovaCore/NovaCore/Native/NovaNativeAdVideoView.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "52"
-            endingLineNumber = "52"
-            landmarkName = "performAction(actionModel:)"
+            startingLineNumber = "350"
+            endingLineNumber = "350"
+            landmarkName = "handleVideoOffScreen()"
             landmarkType = "7">
-            <Locations>
-               <Location
-                  uuid = "C7CA4C3D-21A8-4557-A82F-8A1AA92A16C5 - 77a03e722932211a"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "NovaCore.ActionHandlerMaster.performAction(actionModel: NovaCore.ActionModel) -&gt; ()"
-                  moduleName = "NovaCore"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/huanzhizhang/Huanzhi/msp-ios-sdk/NovaCore/NovaCore/MSPActionHandler/ActionHandlerMaster.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "52"
-                  endingLineNumber = "52">
-               </Location>
-               <Location
-                  uuid = "C7CA4C3D-21A8-4557-A82F-8A1AA92A16C5 - 77a03e722932211a"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "NovaCore.ActionHandlerMaster.performAction(actionModel: NovaCore.ActionModel) -&gt; ()"
-                  moduleName = "NovaCore"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/huanzhizhang/Huanzhi/msp-ios-sdk/NovaCore/NovaCore/MSPActionHandler/ActionHandlerMaster.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "52"
-                  endingLineNumber = "52">
-               </Location>
-            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "4FA34771-4A62-4D11-8126-F186CD08A767"
+            uuid = "1BF1A1EC-4053-4F6F-A6A9-63A1E6838733"
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "NovaCore/NovaCore/AppOpen/NovaAppOpenAdViewActionHandler.swift"
+            filePath = "NovaCore/NovaCore/Native/NovaNativeAdVideoView.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "42"
-            endingLineNumber = "42"
-            landmarkName = "performAction(actionModel:)"
+            startingLineNumber = "357"
+            endingLineNumber = "357"
+            landmarkName = "handleVideoOffScreen()"
             landmarkType = "7">
-            <Locations>
-               <Location
-                  uuid = "4FA34771-4A62-4D11-8126-F186CD08A767 - 48d657e1cee88bba"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "NovaCore.NovaAppOpenAdViewActionHandler.performAction(actionModel: NovaCore.ActionModel) -&gt; ()"
-                  moduleName = "NovaCore"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/huanzhizhang/Huanzhi/msp-ios-sdk/NovaCore/NovaCore/AppOpen/NovaAppOpenAdViewActionHandler.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "43"
-                  endingLineNumber = "43">
-               </Location>
-               <Location
-                  uuid = "4FA34771-4A62-4D11-8126-F186CD08A767 - 48d657e1cee88bba"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "NovaCore.NovaAppOpenAdViewActionHandler.performAction(actionModel: NovaCore.ActionModel) -&gt; ()"
-                  moduleName = "NovaCore"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/huanzhizhang/Huanzhi/msp-ios-sdk/NovaCore/NovaCore/AppOpen/NovaAppOpenAdViewActionHandler.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "43"
-                  endingLineNumber = "43">
-               </Location>
-            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "F4F5024A-0C3F-4227-A4D7-FDCEEA1761B7"
+            uuid = "D6BBAD2A-1617-4020-B384-2EB081B4FE20"
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "NovaCore/NovaCore/MSPActionHandler/ActionHandlerMaster.swift"
+            filePath = "NovaCore/NovaCore/Native/NovaNativeAdVideoView.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "59"
-            endingLineNumber = "59"
-            landmarkName = "performAction(actionModel:)"
+            startingLineNumber = "301"
+            endingLineNumber = "301"
+            landmarkName = "prepareForReuse()"
             landmarkType = "7">
-            <Locations>
-               <Location
-                  uuid = "F4F5024A-0C3F-4227-A4D7-FDCEEA1761B7 - 77a03e7229322031"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "NovaCore.ActionHandlerMaster.performAction(actionModel: NovaCore.ActionModel) -&gt; ()"
-                  moduleName = "NovaCore"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/huanzhizhang/Huanzhi/msp-ios-sdk/NovaCore/NovaCore/MSPActionHandler/ActionHandlerMaster.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "59"
-                  endingLineNumber = "59">
-               </Location>
-               <Location
-                  uuid = "F4F5024A-0C3F-4227-A4D7-FDCEEA1761B7 - 77a03e7229322031"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "NovaCore.ActionHandlerMaster.performAction(actionModel: NovaCore.ActionModel) -&gt; ()"
-                  moduleName = "NovaCore"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/huanzhizhang/Huanzhi/msp-ios-sdk/NovaCore/NovaCore/MSPActionHandler/ActionHandlerMaster.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "59"
-                  endingLineNumber = "59">
-               </Location>
-            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "176A912F-D41A-4311-952B-AA670EF07EB9"
+            uuid = "51E6E77D-9CD1-4965-958A-E532718C15FC"
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "NovaCore/NovaCore/AppOpen/NovaAppOpenAdViewActionHandler.swift"
+            filePath = "NovaCore/NovaCore/Native/NovaNativeAdMediaView.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "48"
-            endingLineNumber = "48"
-            landmarkName = "performAction(actionModel:)"
+            startingLineNumber = "112"
+            endingLineNumber = "112"
+            landmarkName = "updateVideoDisplayState(fullyDisplayed:)"
             landmarkType = "7">
-            <Locations>
-               <Location
-                  uuid = "176A912F-D41A-4311-952B-AA670EF07EB9 - 48d657e1cee88b67"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "NovaCore.NovaAppOpenAdViewActionHandler.performAction(actionModel: NovaCore.ActionModel) -&gt; ()"
-                  moduleName = "NovaCore"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/huanzhizhang/Huanzhi/msp-ios-sdk/NovaCore/NovaCore/AppOpen/NovaAppOpenAdViewActionHandler.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "48"
-                  endingLineNumber = "48">
-               </Location>
-               <Location
-                  uuid = "176A912F-D41A-4311-952B-AA670EF07EB9 - 48d657e1cee88b67"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "NovaCore.NovaAppOpenAdViewActionHandler.performAction(actionModel: NovaCore.ActionModel) -&gt; ()"
-                  moduleName = "NovaCore"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/huanzhizhang/Huanzhi/msp-ios-sdk/NovaCore/NovaCore/AppOpen/NovaAppOpenAdViewActionHandler.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "48"
-                  endingLineNumber = "48">
-               </Location>
-            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "64F9E1BE-A7C4-4FB8-BA95-40AF1709DBBF"
+            uuid = "5871F405-C57F-4F7F-9467-F04109711020"
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "Pods/PrebidAdapter/PrebidAdapter/PrebidAdapter/PrebidAdapter.swift"
+            filePath = "NovaCore/NovaCore/AppOpen/NovaAppOpenAdViewController.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "157"
-            endingLineNumber = "157"
-            landmarkName = "trackImpression()"
+            startingLineNumber = "77"
+            endingLineNumber = "77"
+            landmarkName = "viewDidAppear(_:)"
             landmarkType = "7">
-            <Locations>
-               <Location
-                  uuid = "64F9E1BE-A7C4-4FB8-BA95-40AF1709DBBF - 769bad7f4b7818b"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "PrebidAdapter.PrebidAdapter.trackImpression() -&gt; ()"
-                  moduleName = "MSPDemoApp"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/huanzhizhang/Huanzhi/msp-ios-sdk/Pods/PrebidAdapter/PrebidAdapter/PrebidAdapter/PrebidAdapter.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "157"
-                  endingLineNumber = "157">
-               </Location>
-               <Location
-                  uuid = "64F9E1BE-A7C4-4FB8-BA95-40AF1709DBBF - 769bad7f4b7818b"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "PrebidAdapter.PrebidAdapter.trackImpression() -&gt; ()"
-                  moduleName = "MSPDemoApp"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/huanzhizhang/Huanzhi/msp-ios-sdk/Pods/PrebidAdapter/PrebidAdapter/PrebidAdapter/PrebidAdapter.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "157"
-                  endingLineNumber = "157">
-               </Location>
-            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "4D8BBCD2-8CE3-4BC1-B9A3-6A0AEBCD404C"
+            uuid = "175069F0-9D60-4F58-B0A8-A398D1203D1D"
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "MSPCore/MSPCore/MESMetricReporter.swift"
+            filePath = "NovaCore/NovaCore/Native/NovaNativeAdVideoView.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "100"
-            endingLineNumber = "100"
-            landmarkName = "logAdImpression(ad:adRequest:bidResponse:params:)"
+            startingLineNumber = "337"
+            endingLineNumber = "337"
+            landmarkName = "handleVideoOffScreen()"
             landmarkType = "7">
-            <Locations>
-               <Location
-                  uuid = "4D8BBCD2-8CE3-4BC1-B9A3-6A0AEBCD404C - d24b46793447a156"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "MSPCore.MESMetricReporter.logAdImpression(ad: MSPiOSCore.MSPAd, adRequest: MSPiOSCore.AdRequest, bidResponse: Any, params: Swift.Optional&lt;Swift.Dictionary&lt;Swift.String, Swift.Optional&lt;Any&gt;&gt;&gt;) -&gt; ()"
-                  moduleName = "MSPDemoApp"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/huanzhizhang/Huanzhi/msp-ios-sdk/MSPCore/MSPCore/MESMetricReporter.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "100"
-                  endingLineNumber = "100">
-               </Location>
-               <Location
-                  uuid = "4D8BBCD2-8CE3-4BC1-B9A3-6A0AEBCD404C - d24b46793447a156"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "MSPCore.MESMetricReporter.logAdImpression(ad: MSPiOSCore.MSPAd, adRequest: MSPiOSCore.AdRequest, bidResponse: Any, params: Swift.Optional&lt;Swift.Dictionary&lt;Swift.String, Swift.Optional&lt;Any&gt;&gt;&gt;) -&gt; ()"
-                  moduleName = "MSPDemoApp"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/huanzhizhang/Huanzhi/msp-ios-sdk/MSPCore/MSPCore/MESMetricReporter.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "100"
-                  endingLineNumber = "100">
-               </Location>
-            </Locations>
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "634655D3-98A1-45C7-B0CE-63C87A0E3565"
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "MSPCore/MSPCore/MESMetricReporter.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "38"
-            endingLineNumber = "38"
-            landmarkName = "report(event:with:completion:)"
-            landmarkType = "7">
-            <Locations>
-               <Location
-                  uuid = "634655D3-98A1-45C7-B0CE-63C87A0E3565 - 4bbfefca7b513da1"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "closure #1 @Sendable (Swift.Optional&lt;Foundation.Data&gt;, Swift.Optional&lt;__C.NSURLResponse&gt;, Swift.Optional&lt;Swift.Error&gt;) -&gt; () in MSPCore.MESMetricReporter.report(event: MSPCore.MESMetricReporter.AdEventType, with: Foundation.Data, completion: (Swift.Bool, Swift.Optional&lt;Swift.Error&gt;) -&gt; ()) -&gt; ()"
-                  moduleName = "MSPDemoApp"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/huanzhizhang/Huanzhi/msp-ios-sdk/MSPCore/MSPCore/MESMetricReporter.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "38"
-                  endingLineNumber = "38">
-               </Location>
-               <Location
-                  uuid = "634655D3-98A1-45C7-B0CE-63C87A0E3565 - 4bbfefca7b513da1"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "closure #1 @Sendable (Swift.Optional&lt;Foundation.Data&gt;, Swift.Optional&lt;__C.NSURLResponse&gt;, Swift.Optional&lt;Swift.Error&gt;) -&gt; () in MSPCore.MESMetricReporter.report(event: MSPCore.MESMetricReporter.AdEventType, with: Foundation.Data, completion: (Swift.Bool, Swift.Optional&lt;Swift.Error&gt;) -&gt; ()) -&gt; ()"
-                  moduleName = "MSPDemoApp"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/huanzhizhang/Huanzhi/msp-ios-sdk/MSPCore/MSPCore/MESMetricReporter.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "38"
-                  endingLineNumber = "38">
-               </Location>
-               <Location
-                  uuid = "634655D3-98A1-45C7-B0CE-63C87A0E3565 - 4bbfefca7b513da1"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "closure #1 @Sendable (Swift.Optional&lt;Foundation.Data&gt;, Swift.Optional&lt;__C.NSURLResponse&gt;, Swift.Optional&lt;Swift.Error&gt;) -&gt; () in MSPCore.MESMetricReporter.report(event: MSPCore.MESMetricReporter.AdEventType, with: Foundation.Data, completion: (Swift.Bool, Swift.Optional&lt;Swift.Error&gt;) -&gt; ()) -&gt; ()"
-                  moduleName = "MSPDemoApp"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/huanzhizhang/Huanzhi/msp-ios-sdk/MSPCore/MSPCore/MESMetricReporter.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "38"
-                  endingLineNumber = "38">
-               </Location>
-               <Location
-                  uuid = "634655D3-98A1-45C7-B0CE-63C87A0E3565 - 4bbfefca7b513da1"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "closure #1 @Sendable (Swift.Optional&lt;Foundation.Data&gt;, Swift.Optional&lt;__C.NSURLResponse&gt;, Swift.Optional&lt;Swift.Error&gt;) -&gt; () in MSPCore.MESMetricReporter.report(event: MSPCore.MESMetricReporter.AdEventType, with: Foundation.Data, completion: (Swift.Bool, Swift.Optional&lt;Swift.Error&gt;) -&gt; ()) -&gt; ()"
-                  moduleName = "MSPDemoApp"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/huanzhizhang/Huanzhi/msp-ios-sdk/MSPCore/MSPCore/MESMetricReporter.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "38"
-                  endingLineNumber = "38">
-               </Location>
-            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
    </Breakpoints>

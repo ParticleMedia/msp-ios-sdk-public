@@ -233,6 +233,10 @@ public class NovaAdapter: AdNetworkAdapter {
                                     }
                                 }
                             }
+                        } else {
+                            DispatchQueue.main.async {
+                                handleAdLoaded(ad: novaInterstitialAd, listener: adListener, adRequest: adRequest)
+                            }
                         }
                     }
                 }
