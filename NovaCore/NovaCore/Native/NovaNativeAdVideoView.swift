@@ -157,6 +157,8 @@ public final class NovaNativeAdVideoView: UIView {
     private weak var iabReporter: IABMetricReporter?
     
     public var novaNativeAdVideoDelegate: NovaNativeAdVideoDelegate?
+    
+    private var isVideoStartLogged = false
 
     public init(inLandingPage: Bool = false) {
         self.inLandingPage = inLandingPage
@@ -334,6 +336,9 @@ public extension NovaNativeAdVideoView {
     }
 
     func handleVideoOffScreen() {
+        if !isOnScreen {
+            return
+        }
         isOnScreen = false
         
         if let playerView = self.videoPlayer?.getPlayerView(),
@@ -710,7 +715,8 @@ extension NovaNativeAdVideoView: NovaVideoPlayerDelegate {
         }
         guard let videoInfo = self.videoInfo else { return }
         guard let encryptedAdToken = self.encryptedAdToken else { return }
-        if let startTime, let configTime {
+        if let startTime, let configTime, !isVideoStartLogged {
+            isVideoStartLogged = true
             let time = CACurrentMediaTime()
             let duration = time - configTime
             let latency = time - startTime
