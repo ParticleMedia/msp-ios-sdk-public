@@ -90164,7 +90164,14 @@
     {
       "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-sdk\/NovaCore\/NovaCore\/Native\/NovaNativeAdVideoView.swift",
       "kind": "BooleanLiteral",
-      "offset": 5658,
+      "offset": 5661,
+      "length": 5,
+      "value": "false"
+    },
+    {
+      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-sdk\/NovaCore\/NovaCore\/Native\/NovaNativeAdVideoView.swift",
+      "kind": "BooleanLiteral",
+      "offset": 5706,
       "length": 5,
       "value": "false"
     },
