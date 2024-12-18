@@ -14,6 +14,17 @@ public protocol LoadAdParameters : MSPiOSCore.AdapterParameters {
   func getBidPayload() -> Swift.String
   func getBidExpirationMillis() -> Swift.UInt64
 }
+open class Bidder {
+  public var name: Swift.String
+  public var bidderPlacementId: Swift.String
+  public init(name: Swift.String, bidderPlacementId: Swift.String)
+  open func requestBid(adRequest: MSPiOSCore.AdRequest, bidListener: any MSPiOSCore.AuctionBidListener, adListener: any MSPiOSCore.AdListener)
+  @objc deinit
+}
+public protocol AuctionListener : AnyObject {
+  func onSuccess(winningBid: MSPiOSCore.AuctionBid)
+  func onError(error: Swift.String)
+}
 open class BannerAd : MSPiOSCore.MSPAd {
   public var adView: UIKit.UIView
   public init(adView: UIKit.UIView, adNetworkAdapter: any MSPiOSCore.AdNetworkAdapter)
@@ -63,9 +74,8 @@ public class AdRequest {
   public var adSize: MSPiOSCore.AdSize?
   public var placementId: Swift.String
   public var adFormat: MSPiOSCore.AdFormat
-  public var isCacheSupported: Swift.Bool
   public var testParams: [Swift.String : Any]
-  public init(customParams: [Swift.String : Any], geo: MSPiOSCore.Geo?, context: Any?, adaptiveBannerSize: MSPiOSCore.AdSize?, adSize: MSPiOSCore.AdSize?, placementId: Swift.String, adFormat: MSPiOSCore.AdFormat, isCacheSupported: Swift.Bool = false, testParams: [Swift.String : Any] = [:])
+  public init(customParams: [Swift.String : Any], geo: MSPiOSCore.Geo?, context: Any?, adaptiveBannerSize: MSPiOSCore.AdSize?, adSize: MSPiOSCore.AdSize?, placementId: Swift.String, adFormat: MSPiOSCore.AdFormat, testParams: [Swift.String : Any] = [:])
   @objc deinit
 }
 public struct AdSize {
@@ -92,7 +102,6 @@ public protocol AdapterAdLoadListener : AnyObject {
   func onAdLoadedFailed(error: MSPiOSCore.AdapterAdLoadError)
 }
 public protocol AdListener : AnyObject {
-  func onAdLoaded(ad: MSPiOSCore.MSPAd)
   func onError(msg: Swift.String)
   func onAdImpression(ad: MSPiOSCore.MSPAd)
   func onAdClick(ad: MSPiOSCore.MSPAd)
@@ -101,7 +110,7 @@ public protocol AdListener : AnyObject {
   func getRootViewController() -> UIKit.UIViewController?
 }
 public protocol AdNetworkAdapter : AnyObject {
-  func loadAdCreative(bidResponse: Any, adListener: any MSPiOSCore.AdListener, context: Any, adRequest: MSPiOSCore.AdRequest)
+  func loadAdCreative(bidResponse: Any, auctionBidListener: any MSPiOSCore.AuctionBidListener, adListener: any MSPiOSCore.AdListener, context: Any, adRequest: MSPiOSCore.AdRequest)
   func initialize(initParams: any MSPiOSCore.InitializationParameters, adapterInitListener: any MSPiOSCore.AdapterInitListener, context: Any?)
   func destroyAd()
   func prepareViewForInteraction(nativeAd: MSPiOSCore.NativeAd, nativeAdView: Any)
@@ -120,6 +129,7 @@ public protocol BidLoaderProvider : AnyObject {
 open class AdNetworkManager {
   public init()
   open func getAdNetworkAdapter() -> (any MSPiOSCore.AdNetworkAdapter)?
+  open func getAdBidder() -> MSPiOSCore.Bidder?
   @objc deinit
 }
 open class NativeAd : MSPiOSCore.MSPAd {
@@ -219,7 +229,7 @@ public protocol MSPNativeAdContainer : UIKit.UIView {
 public protocol MSPInitializationParameters : MSPiOSCore.InitializationParameters {
 }
 open class MSPAd {
-  weak public var adNetworkAdapter: (any MSPiOSCore.AdNetworkAdapter)?
+  public var adNetworkAdapter: (any MSPiOSCore.AdNetworkAdapter)?
   public var adInfo: [Swift.String : Any]
   weak public var adListener: (any MSPiOSCore.AdListener)?
   public init(adNetworkAdapter: any MSPiOSCore.AdNetworkAdapter)
@@ -234,6 +244,13 @@ public protocol InitializationParameters : MSPiOSCore.AdapterParameters {
   func getPrebidAPIKey() -> Swift.String
   func getPrebidHostUrl() -> Swift.String
 }
+public class AuctionBid {
+  public var bidderName: Swift.String
+  public var bidderPlacementId: Swift.String
+  public var ecpm: Swift.Double
+  public init(bidderName: Swift.String, bidderPlacementId: Swift.String, ecpm: Swift.Double)
+  @objc deinit
+}
 public enum AdNetwork : Swift.String {
   case google
   case facebook
@@ -245,6 +262,10 @@ public enum AdNetwork : Swift.String {
     get
   }
 }
+public protocol AuctionBidListener : AnyObject {
+  func onSuccess(bid: MSPiOSCore.AuctionBid)
+  func onError(error: Swift.String)
+}
 public protocol AdapterInitListener : AnyObject {
   func onComplete(adNetwork: MSPiOSCore.AdNetwork, adapterInitStatus: MSPiOSCore.AdapterInitStatus, message: Swift.String)
 }
@@ -255,6 +276,16 @@ public enum MSPInitStatus {
   public var hashValue: Swift.Int {
     get
   }
+}
+open class Auction {
+  public var bidders: [MSPiOSCore.Bidder]
+  public var adRequest: MSPiOSCore.AdRequest?
+  public var cacheOnly: Swift.Bool
+  public var timeout: Foundation.TimeInterval
+  public init(bidders: [MSPiOSCore.Bidder], adRequest: MSPiOSCore.AdRequest? = nil, cacheOnly: Swift.Bool, timeout: Foundation.TimeInterval)
+  open func startAuction(auctionListener: any MSPiOSCore.AuctionListener, adListener: (any MSPiOSCore.AdListener)?)
+  open func fetchBid(bidder: MSPiOSCore.Bidder, adListener: (any MSPiOSCore.AdListener)?, cacheOnly: Swift.Bool) -> MSPiOSCore.AuctionBid?
+  @objc deinit
 }
 public struct Geo {
   public let city: Swift.String
