@@ -9,7 +9,7 @@ import Foundation
 import MSPiOSCore
 import PrebidMobile
 
-public class MSPMultiFormatBidder: Bidder {
+public class MSPMultiFormatBidder: MSPiOSCore.Bidder {
     public weak var auctionBidListener: AuctionBidListener?
     public weak var adListener: AdListener?
     public var adRequest: AdRequest?
