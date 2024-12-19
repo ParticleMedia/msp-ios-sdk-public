@@ -81,7 +81,7 @@ public class AdNetworkAdapterStandalone: AdNetworkAdapter {
         
     }
     
-    public func loadAdCreative(bidResponse: Any, adListener: AdListener, context: Any, adRequest: AdRequest) {
+    public func loadAdCreative(bidResponse: Any, auctionBidListener: AuctionBidListener, adListener: AdListener, context: Any, adRequest: AdRequest) {
         
     }
     

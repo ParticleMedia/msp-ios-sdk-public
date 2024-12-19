@@ -91,7 +91,6 @@ class DemoAdViewController: UIViewController {
                                   adSize: AdSize(width: 320, height: 50, isInlineAdaptiveBanner: false, isAnchorAdaptiveBanner: false),
                                   placementId: placementId,
                                   adFormat: adFormat,
-                                  isCacheSupported: true,
                                   testParams: testParams)
         adLoader.loadAd(placementId: placementId,
                         adListener: self,

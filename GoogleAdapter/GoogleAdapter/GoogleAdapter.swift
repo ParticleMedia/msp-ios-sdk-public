@@ -99,15 +99,15 @@ import PrebidMobile
     private var adRequest: AdRequest?
     private var bidResponse: BidResponse?
     
-    private var bannerAd: BannerAd?
-    private var nativeAd: MSPiOSCore.NativeAd?
-    private var interstitialAd: MSPiOSCore.InterstitialAd?
+    private weak var bannerAd: BannerAd?
+    private weak var nativeAd: MSPiOSCore.NativeAd?
+    private weak var interstitialAd: MSPiOSCore.InterstitialAd?
     
     public var nativeAdItem: GADNativeAd?
     
     private var adMetricReporter: AdMetricReporter?
     
-    public func loadAdCreative(bidResponse: Any, adListener: any AdListener, context: Any, adRequest: AdRequest) {
+    public func loadAdCreative(bidResponse: Any, auctionBidListener: AuctionBidListener, adListener: any AdListener, context: Any, adRequest: AdRequest) {
         
         self.adRequest = adRequest
         
