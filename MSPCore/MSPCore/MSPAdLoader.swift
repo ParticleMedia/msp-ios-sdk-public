@@ -34,10 +34,39 @@ public class MSPAdLoader: NSObject {
         self.bidLoader = MSP.shared.bidLoaderProvider.getBidLoader()
         bidLoader?.loadBid(placementId: placementId, adParams: adRequest.customParams, bidListener: self, adRequest: adRequest)
          */
-        let mspAuction = MSPAuction(bidders: [MSPMultiFormatBidder(name: "msp", bidderPlacementId: adRequest.placementId)], cacheOnly: false, timeout: 5000)
+        let mspAuction = MSPAuction(bidders: getBidders(placementId: placementId), cacheOnly: false, timeout: 5000)
         self.mspAuction = mspAuction
         mspAuction.adRequest = adRequest
         mspAuction.startAuction(auctionListener: self, adListener: adListener)
+    }
+    
+    public func getBidders(placementId: String) -> [MSPiOSCore.Bidder] {
+        var bidders = [MSPiOSCore.Bidder]()
+        
+        if let adConfig = MSPAdConfigManager.shared.adConfig,
+           let placements = adConfig.placements {
+            for placement in placements {
+                if placement.placementId == placementId,
+                   let bidderInfoList = placement.bidders {
+                    for bidderInfo in bidderInfoList {
+                        if let bidder = getBidder(bidderInfo: bidderInfo) {
+                            bidders.append(bidder)
+                        }
+                    }
+                }
+            }
+        }
+        
+        return bidders
+    }
+    
+    public func getBidder(bidderInfo: BidderInfo) -> MSPiOSCore.Bidder? {
+        switch bidderInfo.name {
+        case "msp":
+            return MSPMultiFormatBidder(name: "msp", bidderPlacementId: bidderInfo.bidderPlacementId)
+        default:
+            return nil
+        }
     }
     /*
     public func onBidResponse(bidResponse: Any, adNetwork: AdNetwork) {

@@ -85,6 +85,7 @@ public class MSP {
             PrebidAdapter().initialize(initParams: initParams, adapterInitListener: adapterInitListener, context: nil)
         }
          */
+        MSPAdConfigManager.shared.initAdConfig()
         adNetworkAdapterProvider.googleManager?.getAdNetworkAdapter()?.initialize(initParams: initParams, adapterInitListener: adapterInitListener, context: nil)
         adNetworkAdapterProvider.metaManager?.getAdNetworkAdapter()?.initialize(initParams: initParams, adapterInitListener: adapterInitListener, context: nil)
         adNetworkAdapterProvider.novaManager?.getAdNetworkAdapter()?.initialize(initParams: initParams, adapterInitListener: adapterInitListener, context: nil)

@@ -215,52 +215,6 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "E2FFCECC-4EAB-4A23-9AC4-E4A3F22E34F0"
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "PrebidAdapter/PrebidAdapter/PrebidBidLoader.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "68"
-            endingLineNumber = "68"
-            landmarkName = "loadBidWithTokens(googleQueryInfo:facebookBidToken:adRequest:)"
-            landmarkType = "7">
-            <Locations>
-               <Location
-                  uuid = "E2FFCECC-4EAB-4A23-9AC4-E4A3F22E34F0 - 2927a972e7ca0d0"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "PrebidAdapter.PrebidBidLoader.loadBidWithTokens(googleQueryInfo: Swift.Optional&lt;Swift.String&gt;, facebookBidToken: Swift.Optional&lt;Swift.String&gt;, adRequest: MSPiOSCore.AdRequest) -&gt; ()"
-                  moduleName = "MSPDemoApp"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/huanzhizhang/Huanzhi/msp-ios-sdk/PrebidAdapter/PrebidAdapter/PrebidBidLoader.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "68"
-                  endingLineNumber = "68">
-               </Location>
-               <Location
-                  uuid = "E2FFCECC-4EAB-4A23-9AC4-E4A3F22E34F0 - 4fa75d1d98e15aa9"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "closure #1 (Swift.Optional&lt;PrebidMobile.BidResponse&gt;, Swift.Optional&lt;Swift.Error&gt;) -&gt; () in PrebidAdapter.PrebidBidLoader.loadBidWithTokens(googleQueryInfo: Swift.Optional&lt;Swift.String&gt;, facebookBidToken: Swift.Optional&lt;Swift.String&gt;, adRequest: MSPiOSCore.AdRequest) -&gt; ()"
-                  moduleName = "MSPDemoApp"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/huanzhizhang/Huanzhi/msp-ios-sdk/PrebidAdapter/PrebidAdapter/PrebidBidLoader.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "68"
-                  endingLineNumber = "68">
-               </Location>
-            </Locations>
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
             uuid = "A1160995-F86B-488B-A234-ABCA63560991"
             shouldBeEnabled = "No"
             ignoreCount = "0"
@@ -627,111 +581,33 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "6C1C9D98-B967-4AE1-9DE9-6C1437BFD098"
+            uuid = "0A613284-F1ED-42A5-95AB-83273ADEDDDB"
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "PrebidAdapter/PrebidAdapter/PrebidAdapter.swift"
+            filePath = "MSPDemoApp/MSPDemoApp/DemoViewControllers/DemoAdViewController.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "129"
-            endingLineNumber = "129"
-            landmarkName = "bannerView(_:didReceiveAdWithAdSize:)"
+            startingLineNumber = "122"
+            endingLineNumber = "122"
+            landmarkName = "onAdImpression(ad:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "211F9BD3-BEEC-4057-AE5E-F096D8410334"
+            uuid = "71AB2E62-523C-478F-9175-F62072FA53FD"
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "MSPCore/MSPCore/MSPAuction.swift"
+            filePath = "MSPDemoApp/MSPDemoApp/DemoViewControllers/DemoAdViewController.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "44"
-            endingLineNumber = "44"
-            landmarkName = "fetchBid(bidder:cacheOnly:auctionBidListener:adListener:)"
+            startingLineNumber = "118"
+            endingLineNumber = "118"
+            landmarkName = "onAdClick(ad:)"
             landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "A16EC8B5-6FAB-4658-B901-8EB6A67D8ADA"
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "MSPCore/MSPCore/MSPAdLoader.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "40"
-            endingLineNumber = "40"
-            landmarkName = "loadAd(placementId:adListener:adRequest:)"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "D96FC5D7-45FB-486C-8E70-CAD39CC6BF3D"
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "MSPCore/MSPCore/MSPAuction.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "20"
-            endingLineNumber = "20"
-            landmarkName = "startAuction(auctionListener:adListener:)"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "BD65A5C5-5A77-47DF-90F6-1A41AEF0A56D"
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "MSPCore/MSPCore/MSPAuction.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "37"
-            endingLineNumber = "37"
-            landmarkName = "fetchBid(bidder:cacheOnly:auctionBidListener:adListener:)"
-            landmarkType = "7">
-            <Locations>
-               <Location
-                  uuid = "BD65A5C5-5A77-47DF-90F6-1A41AEF0A56D - fd4aeaf07e357794"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "MSPCore.MSPAuction.fetchBid(bidder: MSPiOSCore.Bidder, cacheOnly: Swift.Bool, auctionBidListener: MSPiOSCore.AuctionBidListener, adListener: Swift.Optional&lt;MSPiOSCore.AdListener&gt;) -&gt; ()"
-                  moduleName = "MSPDemoApp"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/huanzhizhang/Huanzhi/msp-ios-sdk/MSPCore/MSPCore/MSPAuction.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "37"
-                  endingLineNumber = "37">
-               </Location>
-               <Location
-                  uuid = "BD65A5C5-5A77-47DF-90F6-1A41AEF0A56D - fd4aeaf07e357794"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "MSPCore.MSPAuction.fetchBid(bidder: MSPiOSCore.Bidder, cacheOnly: Swift.Bool, auctionBidListener: MSPiOSCore.AuctionBidListener, adListener: Swift.Optional&lt;MSPiOSCore.AdListener&gt;) -&gt; ()"
-                  moduleName = "MSPDemoApp"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/huanzhizhang/Huanzhi/msp-ios-sdk/MSPCore/MSPCore/MSPAuction.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "37"
-                  endingLineNumber = "37">
-               </Location>
-            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
    </Breakpoints>
