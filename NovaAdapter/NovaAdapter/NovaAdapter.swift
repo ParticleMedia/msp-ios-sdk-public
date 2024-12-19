@@ -12,13 +12,14 @@ public class NovaAdapter: AdNetworkAdapter {
     
     
     public weak var adListener: AdListener?
+    public weak var auctionBidListener: AuctionBidListener?
     public var priceInDollar: Double?
     public var adUnitId: String?
     
-    public var nativeAd: MSPAd?
+    public weak var nativeAd: MSPAd?
     public var nativeAdItem: NovaNativeAdItem?
     
-    public var interstitialAd: InterstitialAd?
+    public weak var interstitialAd: InterstitialAd?
     
     public var nativeAdView: NativeAdView?
     public var novaNativeAdView: NovaNativeAdView?
@@ -36,7 +37,7 @@ public class NovaAdapter: AdNetworkAdapter {
         adapterInitListener.onComplete(adNetwork: .nova, adapterInitStatus: .SUCCESS, message: "")
     }
     
-    public func loadAdCreative(bidResponse: Any, adListener: any AdListener, context: Any, adRequest: AdRequest) {
+    public func loadAdCreative(bidResponse: Any, auctionBidListener: AuctionBidListener, adListener: any AdListener, context: Any, adRequest: AdRequest) {
         guard bidResponse is BidResponse,
               let mBidResponse = bidResponse as? BidResponse else {
             self.adListener?.onError(msg: "no valid response")
@@ -45,6 +46,7 @@ public class NovaAdapter: AdNetworkAdapter {
         }
  
         self.adListener = adListener
+        self.auctionBidListener = auctionBidListener
         self.adRequest = adRequest
         self.bidResponse = mBidResponse
         

@@ -85,11 +85,11 @@ import Foundation
     public var priceInDollar: Double?
     
     private var nativeAdItem: FBNativeAd?
-    private var facebookNativeAd: FacebookNativeAd?
+    private weak var facebookNativeAd: FacebookNativeAd?
     private var adRequest: AdRequest?
     private var bidResponse: BidResponse?
     
-    private var facebookInterstitialAd: FacebookInterstitialAd?
+    private weak var facebookInterstitialAd: FacebookInterstitialAd?
     private var interstitialAdItem: FBInterstitialAd?
     
     private var adMetricReporter: AdMetricReporter?
@@ -105,7 +105,7 @@ import Foundation
         })
     }
     
-    public func loadAdCreative(bidResponse: Any, adListener: any AdListener, context: Any, adRequest: AdRequest) {
+    public func loadAdCreative(bidResponse: Any, auctionBidListener: AuctionBidListener, adListener: any AdListener, context: Any, adRequest: AdRequest) {
         self.adListener = adListener
         self.adRequest = adRequest
         

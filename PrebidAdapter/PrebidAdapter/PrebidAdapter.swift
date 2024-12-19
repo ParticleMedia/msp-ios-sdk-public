@@ -56,22 +56,25 @@ import UIKit
     
     public weak var adListener: AdListener?
     
+    public weak var auctionBidListener: AuctionBidListener?
+    
     public var bannerView: BannerView?
     public var priceInDollar: Double?
     
     private var adRequest: AdRequest?
     private var bidResponse: BidResponse?
-    private var bannerAd: BannerAd?
+    private weak var bannerAd: BannerAd?
     
     private var adMetricReporter: AdMetricReporter?
     
-    public func loadAdCreative(bidResponse: Any, adListener: any AdListener, context: Any, adRequest: AdRequest) {
+    public func loadAdCreative(bidResponse: Any, auctionBidListener: AuctionBidListener, adListener: any AdListener, context: Any, adRequest: AdRequest) {
         guard bidResponse is BidResponse,
               let mBidResponse = bidResponse as? BidResponse else {
             return
         }
         self.adRequest = adRequest
         self.bidResponse = mBidResponse
+        self.auctionBidListener = auctionBidListener
         let width = Int(adRequest.adSize?.width ?? 320)
         let height = Int(adRequest.adSize?.height ?? 50)
         
@@ -120,11 +123,20 @@ extension PrebidAdapter: BannerViewDelegate {
             }
             
             if let adListener = self.adListener,
-               let adRequest = self.adRequest {
-                handleAdLoaded(ad: prebidAd, listener: adListener, adRequest: adRequest)
+               let adRequest = self.adRequest,
+               let auctionBidListener = self.auctionBidListener {
+                //handleAdLoaded(ad: prebidAd, listener: adListener, adRequest: adRequest)
+                self.handleAdLoaded(ad: prebidAd, auctionBidListener: auctionBidListener, bidderPlacementId: adRequest.placementId)
                 self.adMetricReporter?.logAdResult(placementId: adRequest.placementId, ad: prebidAd, fill: true, isFromCache: false)
             }
         }
+    }
+    
+    public func handleAdLoaded(ad: MSPAd, auctionBidListener: AuctionBidListener, bidderPlacementId: String) {
+        // to do: move this to ios core
+        AdCache.shared.saveAd(placementId: bidderPlacementId, ad: ad)
+        let auctionBid = AuctionBid(bidderName: "msp", bidderPlacementId: bidderPlacementId, ecpm: ad.adInfo["price"] as? Double ?? 0.0)
+        auctionBidListener.onSuccess(bid: auctionBid)
     }
     
     @objc public func bannerView(_ bannerView: BannerView, didFailToReceiveAdWith error: Error) {

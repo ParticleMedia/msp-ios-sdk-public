@@ -8,14 +8,15 @@
 import Foundation
 import MSPiOSCore
 
-public class MSPAdLoader: NSObject, BidListener {
+public class MSPAdLoader: NSObject {
+    
     weak var adListener: AdListener?
     var adRequest: AdRequest?
     
     var bidLoader: BidLoader?
     var adNetworkAdapter: AdNetworkAdapter?
 
-    
+    var mspAuction: MSPAuction?
     
     public override init() {}
     
@@ -23,8 +24,8 @@ public class MSPAdLoader: NSObject, BidListener {
         MESMetricReporter.shared.logAdRequest(adRequest: adRequest)
         self.adListener = adListener
         self.adRequest = adRequest
-        
-        if adRequest.isCacheSupported, let ad = AdCache.shared.peakAd(placementId: placementId) {
+        /*
+        if let ad = AdCache.shared.peakAd(placementId: placementId) {
             MESMetricReporter.shared.logAdResult(placementId: placementId, ad: ad, fill: true, isFromCache: true)
             adListener.onAdLoaded(placementId: placementId)
             return
@@ -32,15 +33,20 @@ public class MSPAdLoader: NSObject, BidListener {
         
         self.bidLoader = MSP.shared.bidLoaderProvider.getBidLoader()
         bidLoader?.loadBid(placementId: placementId, adParams: adRequest.customParams, bidListener: self, adRequest: adRequest)
+         */
+        let mspAuction = MSPAuction(bidders: [MSPMultiFormatBidder(name: "msp", bidderPlacementId: adRequest.placementId)], cacheOnly: false, timeout: 5000)
+        self.mspAuction = mspAuction
+        mspAuction.adRequest = adRequest
+        mspAuction.startAuction(auctionListener: self, adListener: adListener)
     }
-    
+    /*
     public func onBidResponse(bidResponse: Any, adNetwork: AdNetwork) {
         if let adListener = self.adListener,
            let adRequest = self.adRequest {
             if let adNetworkAdapter = MSP.shared.adNetworkAdapterProvider.getAdNetworkAdapter(adNetwork: adNetwork) {
                 self.adNetworkAdapter = adNetworkAdapter
                 adNetworkAdapter.setAdMetricReporter(adMetricReporter: AdMetricReporterImp())
-                adNetworkAdapter.loadAdCreative(bidResponse: bidResponse, adListener: adListener, context: self, adRequest: adRequest)
+                adNetworkAdapter.loadAdCreative(bidResponse: bidResponse, auctionBidListener: self, adListener: adListener, context: self, adRequest: adRequest)
             } else {
                 adListener.onError(msg: "Ad network is not supported")
             }
@@ -52,4 +58,24 @@ public class MSPAdLoader: NSObject, BidListener {
     public func onError(msg: String) {
         adListener?.onError(msg: msg)
     }
+     */
 }
+
+
+
+extension MSPAdLoader: AuctionListener {
+    public func onSuccess(winningBid: MSPiOSCore.AuctionBid) {
+        if let placementId = adRequest?.placementId {
+            adListener?.onAdLoaded(placementId: placementId)
+        } else {
+            adListener?.onError(msg: "no valid request placement")
+        }
+    }
+    
+    public func onError(error: String) {
+        adListener?.onError(msg: error)
+    }
+    
+    
+}
+
