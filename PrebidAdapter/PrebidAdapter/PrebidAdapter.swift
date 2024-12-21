@@ -57,6 +57,7 @@ import UIKit
     public weak var adListener: AdListener?
     
     public weak var auctionBidListener: AuctionBidListener?
+    public var bidderPlacementId: String?
     
     public var bannerView: BannerView?
     public var priceInDollar: Double?
@@ -67,7 +68,7 @@ import UIKit
     
     private var adMetricReporter: AdMetricReporter?
     
-    public func loadAdCreative(bidResponse: Any, auctionBidListener: AuctionBidListener, adListener: any AdListener, context: Any, adRequest: AdRequest) {
+    public func loadAdCreative(bidResponse: Any, auctionBidListener: AuctionBidListener, adListener: any AdListener, context: Any, adRequest: AdRequest, bidderPlacementId: String) {
         guard bidResponse is BidResponse,
               let mBidResponse = bidResponse as? BidResponse else {
             return
@@ -75,6 +76,7 @@ import UIKit
         self.adRequest = adRequest
         self.bidResponse = mBidResponse
         self.auctionBidListener = auctionBidListener
+        self.bidderPlacementId = bidderPlacementId
         let width = Int(adRequest.adSize?.width ?? 320)
         let height = Int(adRequest.adSize?.height ?? 50)
         
@@ -126,7 +128,7 @@ extension PrebidAdapter: BannerViewDelegate {
                let adRequest = self.adRequest,
                let auctionBidListener = self.auctionBidListener {
                 //handleAdLoaded(ad: prebidAd, listener: adListener, adRequest: adRequest)
-                self.handleAdLoaded(ad: prebidAd, auctionBidListener: auctionBidListener, bidderPlacementId: adRequest.placementId)
+                self.handleAdLoaded(ad: prebidAd, auctionBidListener: auctionBidListener, bidderPlacementId: self.bidderPlacementId  ?? adRequest.placementId)
                 self.adMetricReporter?.logAdResult(placementId: adRequest.placementId, ad: prebidAd, fill: true, isFromCache: false)
             }
         }
@@ -140,7 +142,8 @@ extension PrebidAdapter: BannerViewDelegate {
     }
     
     @objc public func bannerView(_ bannerView: BannerView, didFailToReceiveAdWith error: Error) {
-        adListener?.onError(msg: error.localizedDescription)
+        //adListener?.onError(msg: error.localizedDescription)
+        self.auctionBidListener?.onError(error: "fail to get ad")
         adMetricReporter?.logAdResult(placementId: adRequest?.placementId ?? "", ad: nil, fill: false, isFromCache: false)
     }
     
