@@ -1,23 +1,23 @@
 PODS:
   - FacebookAdapter (0.0.92):
     - FBAudienceNetwork (= 6.15.0)
-    - MSPSharedLibraries (= 0.0.96)
+    - MSPSharedLibraries
   - FBAudienceNetwork (6.15.0)
   - Google-Mobile-Ads-SDK (11.2.0):
     - GoogleUserMessagingPlatform (>= 1.1)
   - GoogleAdapter (0.0.92):
     - Google-Mobile-Ads-SDK (= 11.2.0)
-    - MSPSharedLibraries (= 0.0.96)
+    - MSPSharedLibraries
   - GoogleUserMessagingPlatform (2.7.0)
   - MSPCore (0.0.93):
-    - MSPSharedLibraries (= 0.0.96)
+    - MSPSharedLibraries
     - PrebidAdapter
     - SwiftProtobuf (= 1.21.0)
   - MSPSharedLibraries (0.0.96)
   - NovaAdapter (0.0.95):
-    - MSPSharedLibraries (= 0.0.96)
+    - MSPSharedLibraries
   - PrebidAdapter (0.0.92):
-    - MSPSharedLibraries (= 0.0.96)
+    - MSPSharedLibraries
   - Shimmer (1.0.2)
   - SwiftProtobuf (1.21.0)
 
@@ -25,6 +25,7 @@ DEPENDENCIES:
   - FacebookAdapter (from `./`)
   - GoogleAdapter (from `./`)
   - MSPCore (from `./`)
+  - MSPSharedLibraries (from `./`)
   - NovaAdapter (from `./`)
   - PrebidAdapter (from `./`)
   - Shimmer
@@ -34,7 +35,6 @@ SPEC REPOS:
     - FBAudienceNetwork
     - Google-Mobile-Ads-SDK
     - GoogleUserMessagingPlatform
-    - MSPSharedLibraries
     - Shimmer
     - SwiftProtobuf
 
@@ -45,24 +45,26 @@ EXTERNAL SOURCES:
     :path: "./"
   MSPCore:
     :path: "./"
+  MSPSharedLibraries:
+    :path: "./"
   NovaAdapter:
     :path: "./"
   PrebidAdapter:
     :path: "./"
 
 SPEC CHECKSUMS:
-  FacebookAdapter: 4867043adcd6d97b94871550df42665102b2f1e9
+  FacebookAdapter: 520042d7038b7e0ff6b8675e9f8357bc3fc30b94
   FBAudienceNetwork: 80a035aa69cc3a71c99e44cb5c2874e4cef9909f
   Google-Mobile-Ads-SDK: 5a6d005a6cb5b5e8f4c7b69ca05cdea79c181139
-  GoogleAdapter: 4658be681ab34c97d14e2ec31ee3febfc6648578
+  GoogleAdapter: 9c1f31f37c6bd649a88a4d6354be3159582a426e
   GoogleUserMessagingPlatform: a8b56893477f67212fbc8411c139e61d463349f5
-  MSPCore: 32de4c3ff23aa2ed88f58cdb28172524ce82f631
+  MSPCore: 17e487644c7e847b715a2bd41eb3326b3f02a7e8
   MSPSharedLibraries: b94b7149e712d215a38a9eff261e012f1bde2d66
-  NovaAdapter: 790ec65549c8e39b9265254c7ed5c9102012dd4d
-  PrebidAdapter: f164446dc27059004052741f0c4bb8058161a9e9
+  NovaAdapter: 988ba259ef433c28ccb2ed6d337362549936802a
+  PrebidAdapter: b468910148971e7487425c82a2251c79959e3f18
   Shimmer: c5374be1c2b0c9e292fb05b339a513cf291cac86
   SwiftProtobuf: afced68785854575756db965e9da52bbf3dc45e7
 
-PODFILE CHECKSUM: 0304b98633d2ad83a7949495633f7c6896483c9d
+PODFILE CHECKSUM: cccbb7d0c686118735ba4c7d3750cf3e8023ed6f
 
 COCOAPODS: 1.15.2

@@ -3459,7 +3459,7 @@
           {
             "kind": "Function",
             "name": "loadAdCreative",
-            "printedName": "loadAdCreative(bidResponse:auctionBidListener:adListener:context:adRequest:)",
+            "printedName": "loadAdCreative(bidResponse:auctionBidListener:adListener:context:adRequest:bidderPlacementId:)",
             "children": [
               {
                 "kind": "TypeNominal",
@@ -3493,11 +3493,17 @@
                 "name": "AdRequest",
                 "printedName": "MSPiOSCore.AdRequest",
                 "usr": "s:10MSPiOSCore9AdRequestC"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "String",
+                "printedName": "Swift.String",
+                "usr": "s:SS"
               }
             ],
             "declKind": "Func",
-            "usr": "s:10MSPiOSCore16AdNetworkAdapterP04loadC8Creative11bidResponse18auctionBidListener02adL07context0M7Requestyyp_AA07AuctionkL0_pAA0cL0_pypAA0cO0CtF",
-            "mangledName": "$s10MSPiOSCore16AdNetworkAdapterP04loadC8Creative11bidResponse18auctionBidListener02adL07context0M7Requestyyp_AA07AuctionkL0_pAA0cL0_pypAA0cO0CtF",
+            "usr": "s:10MSPiOSCore16AdNetworkAdapterP04loadC8Creative11bidResponse18auctionBidListener02adL07context0M7Request17bidderPlacementIdyyp_AA07AuctionkL0_pAA0cL0_pypAA0cO0CSStF",
+            "mangledName": "$s10MSPiOSCore16AdNetworkAdapterP04loadC8Creative11bidResponse18auctionBidListener02adL07context0M7Request17bidderPlacementIdyyp_AA07AuctionkL0_pAA0cL0_pypAA0cO0CSStF",
             "moduleName": "MSPiOSCore",
             "genericSig": "<τ_0_0 where τ_0_0 : MSPiOSCore.AdNetworkAdapter>",
             "sugared_genericSig": "<Self where Self : MSPiOSCore.AdNetworkAdapter>",

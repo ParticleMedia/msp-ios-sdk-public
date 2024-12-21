@@ -110,7 +110,7 @@ target 'MSPDemoApp' do
   #pod 'SDWebImage', '5.18.8', :modular_headers => true
   #pod 'SDWebImageWebPCoder', '0.14.2', :modular_headers => true
   #pod 'NBDesignSystem', :git => 'https://github.com/ParticleMedia/LAFoundation', :branch => 'main', :commit => 'b94a948', :modular_headers => true
-  #pod 'MSPSharedLibraries', :path => './', :modular_headers => true
+  pod 'MSPSharedLibraries', :path => './', :modular_headers => true
  
 end
 

@@ -19,7 +19,7 @@
   "exclude_files": "Classes/Exclude",
   "dependencies": {
     "MSPSharedLibraries": [
-      "0.0.96"
+
     ]
   },
   "static_framework": true

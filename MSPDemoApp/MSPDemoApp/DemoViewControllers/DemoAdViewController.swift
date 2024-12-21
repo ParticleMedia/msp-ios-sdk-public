@@ -23,6 +23,8 @@ class DemoAdViewController: UIViewController {
     public var nativeAdView: NativeAdView?
     public var isCtaShown = false
     
+    public var ad: MSPAd?
+    
     private lazy var placementId = {
         switch adType {
         case .prebidBanner:
@@ -123,6 +125,7 @@ extension DemoAdViewController: AdListener {
     }
     
     func onAdLoaded(ad: MSPAd) {
+        self.ad = ad
         if let priceInDollar = ad.adInfo["price"],
            let priceInDollarValue = priceInDollar as? Double {
             print("demo price: \(priceInDollarValue)")
