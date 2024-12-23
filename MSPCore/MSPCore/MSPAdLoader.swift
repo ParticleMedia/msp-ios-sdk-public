@@ -94,11 +94,7 @@ public class MSPAdLoader: NSObject {
 
 extension MSPAdLoader: AuctionListener {
     public func onSuccess(winningBid: MSPiOSCore.AuctionBid) {
-        if let placementId = adRequest?.placementId {
-            adListener?.onAdLoaded(placementId: placementId)
-        } else {
-            adListener?.onError(msg: "no valid request placement")
-        }
+        adListener?.onAdLoaded(placementId: winningBid.bidderPlacementId)
     }
     
     public func onError(error: String) {
