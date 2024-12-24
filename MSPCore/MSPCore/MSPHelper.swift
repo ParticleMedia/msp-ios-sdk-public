@@ -50,7 +50,7 @@ public class MSP {
             fetchMSPUserId()
         }
         
-        let managers: [AdNetworkManager?] = [adNetworkAdapterProvider.googleManager, adNetworkAdapterProvider.metaManager, adNetworkAdapterProvider.novaManager]
+        let managers: [AdNetworkManager?] = [adNetworkAdapterProvider.googleManager, adNetworkAdapterProvider.metaManager, adNetworkAdapterProvider.novaManager, adNetworkAdapterProvider.unityManager]
         numInitWaitingForCallbacks = 1 //default vaule is 1 for prebid sdk is alwasys in the dependency
         for adManager in managers {
             if let manager = adManager {
@@ -89,6 +89,7 @@ public class MSP {
         adNetworkAdapterProvider.googleManager?.getAdNetworkAdapter()?.initialize(initParams: initParams, adapterInitListener: adapterInitListener, context: nil)
         adNetworkAdapterProvider.metaManager?.getAdNetworkAdapter()?.initialize(initParams: initParams, adapterInitListener: adapterInitListener, context: nil)
         adNetworkAdapterProvider.novaManager?.getAdNetworkAdapter()?.initialize(initParams: initParams, adapterInitListener: adapterInitListener, context: nil)
+        adNetworkAdapterProvider.unityManager?.getAdNetworkAdapter()?.initialize(initParams: initParams, adapterInitListener: adapterInitListener, context: nil)
         PrebidAdapter.initializePrebid(initParams: initParams, adapterInitListener: adapterInitListener, context: nil)
        
         if let initParamsImp = initParams as? InitializationParametersImp,
@@ -119,6 +120,10 @@ public class MSP {
     
     public func setMetaManager(metaManager: AdNetworkManager) {
         adNetworkAdapterProvider.metaManager = metaManager
+    }
+    
+    public func setUnityManager(unityManager: AdNetworkManager) {
+        adNetworkAdapterProvider.unityManager = unityManager
     }
     
     func fetchServerConfigData(completion: @escaping (Result<[String: String], Error>) -> Void) {
@@ -221,6 +226,8 @@ public class InitializationParametersImp: InitializationParameters {
     public var orgId: Int64?
     public var appId: Int64?
     
+    public var params: [String: Any]?
+    
     public init(prebidAPIKey: String, prebidHostUrl: String, sourceApp: String? = nil) {
         self.prebidAPIKey = prebidAPIKey
         self.prebidHostUrl = prebidHostUrl
@@ -266,7 +273,7 @@ public class InitializationParametersImp: InitializationParameters {
     }
     
     public func getParameters() -> [String : Any]? {
-        return [String : Any]()
+        return params
     }
     
     public func hasUserConsent() -> Bool {

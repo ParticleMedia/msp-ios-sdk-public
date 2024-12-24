@@ -33,6 +33,8 @@ public class MSPAdNetworkAdapterProvider: AdNetworkAdapterProvider {
     
     public var metaManager: AdNetworkManager?
     
+    public var unityManager: AdNetworkManager?
+    
     public init() {
         
     }
@@ -50,6 +52,9 @@ public class MSPAdNetworkAdapterProvider: AdNetworkAdapterProvider {
         } else if adNetwork == .facebook {
             var facebookAdapter = metaManager?.getAdNetworkAdapter()
             return facebookAdapter
+        } else if adNetwork == .unity {
+            var unityManager = unityManager?.getAdNetworkAdapter()
+            return unityManager
         }
         return nil
     }
@@ -67,6 +72,9 @@ public class MSPAdNetworkAdapterProvider: AdNetworkAdapterProvider {
         } else if adNetworkName == "Facebook" {
             var facebookAdapter = metaManager?.getAdNetworkAdapter()
             return facebookAdapter
+        } else if adNetworkName == "Unity" {
+            var unityManager = unityManager?.getAdNetworkAdapter()
+            return unityManager
         }
         return nil
     }

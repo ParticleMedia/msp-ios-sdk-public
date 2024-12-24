@@ -72,6 +72,14 @@ class ViewController: UIViewController {
                 }, for: .touchUpInside)
                 button8.frame = CGRect(x: 100, y: 450, width: 200, height: 50)
                 view.addSubview(button8)
+        
+        let button9 = UIButton(type: .system)
+                button9.setTitle("Unity Banner View", for: .normal)
+                button9.addAction(UIAction { [weak self] _ in
+                    self?.openDemoAdPage(adType: .unityBanner)
+                }, for: .touchUpInside)
+                button9.frame = CGRect(x: 100, y: 500, width: 200, height: 50)
+                view.addSubview(button9)
     }
 
     func openDemoAdPage(adType: AdType) {

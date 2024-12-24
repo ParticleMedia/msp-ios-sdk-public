@@ -321,7 +321,7 @@
                 "kind": "TypeNominal",
                 "name": "Bidder",
                 "printedName": "MSPiOSCore.Bidder",
-                "usr": "s:10MSPiOSCore6BidderC"
+                "usr": "c:@M@MSPiOSCore@objc(cs)Bidder"
               },
               {
                 "kind": "TypeNominal",
@@ -383,15 +383,97 @@
               "AccessControl"
             ],
             "funcSelfKind": "NonMutating"
+          },
+          {
+            "kind": "Constructor",
+            "name": "init",
+            "printedName": "init()",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Bidder",
+                "printedName": "MSPiOSCore.Bidder",
+                "usr": "c:@M@MSPiOSCore@objc(cs)Bidder"
+              }
+            ],
+            "declKind": "Constructor",
+            "usr": "c:@M@MSPiOSCore@objc(cs)Bidder(im)init",
+            "mangledName": "$s10MSPiOSCore6BidderCACycfc",
+            "moduleName": "MSPiOSCore",
+            "overriding": true,
+            "implicit": true,
+            "objc_name": "init",
+            "declAttributes": [
+              "Dynamic",
+              "ObjC",
+              "Override"
+            ],
+            "init_kind": "Designated"
           }
         ],
         "declKind": "Class",
-        "usr": "s:10MSPiOSCore6BidderC",
+        "usr": "c:@M@MSPiOSCore@objc(cs)Bidder",
         "mangledName": "$s10MSPiOSCore6BidderC",
         "moduleName": "MSPiOSCore",
         "isOpen": true,
         "declAttributes": [
-          "AccessControl"
+          "AccessControl",
+          "ObjC"
+        ],
+        "superclassUsr": "c:objc(cs)NSObject",
+        "superclassNames": [
+          "ObjectiveC.NSObject"
+        ],
+        "conformances": [
+          {
+            "kind": "Conformance",
+            "name": "Equatable",
+            "printedName": "Equatable",
+            "usr": "s:SQ",
+            "mangledName": "$sSQ"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Hashable",
+            "printedName": "Hashable",
+            "usr": "s:SH",
+            "mangledName": "$sSH"
+          },
+          {
+            "kind": "Conformance",
+            "name": "CVarArg",
+            "printedName": "CVarArg",
+            "usr": "s:s7CVarArgP",
+            "mangledName": "$ss7CVarArgP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "_KeyValueCodingAndObservingPublishing",
+            "printedName": "_KeyValueCodingAndObservingPublishing",
+            "usr": "s:10Foundation37_KeyValueCodingAndObservingPublishingP",
+            "mangledName": "$s10Foundation37_KeyValueCodingAndObservingPublishingP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "_KeyValueCodingAndObserving",
+            "printedName": "_KeyValueCodingAndObserving",
+            "usr": "s:10Foundation27_KeyValueCodingAndObservingP",
+            "mangledName": "$s10Foundation27_KeyValueCodingAndObservingP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "CustomStringConvertible",
+            "printedName": "CustomStringConvertible",
+            "usr": "s:s23CustomStringConvertibleP",
+            "mangledName": "$ss23CustomStringConvertibleP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "CustomDebugStringConvertible",
+            "printedName": "CustomDebugStringConvertible",
+            "usr": "s:s28CustomDebugStringConvertibleP",
+            "mangledName": "$ss28CustomDebugStringConvertibleP"
+          }
         ]
       },
       {
@@ -3911,7 +3993,7 @@
           {
             "kind": "Function",
             "name": "getAdBidder",
-            "printedName": "getAdBidder()",
+            "printedName": "getAdBidder(bidderPlacementId:)",
             "children": [
               {
                 "kind": "TypeNominal",
@@ -3922,15 +4004,21 @@
                     "kind": "TypeNominal",
                     "name": "Bidder",
                     "printedName": "MSPiOSCore.Bidder",
-                    "usr": "s:10MSPiOSCore6BidderC"
+                    "usr": "c:@M@MSPiOSCore@objc(cs)Bidder"
                   }
                 ],
                 "usr": "s:Sq"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "String",
+                "printedName": "Swift.String",
+                "usr": "s:SS"
               }
             ],
             "declKind": "Func",
-            "usr": "s:10MSPiOSCore16AdNetworkManagerC03getC6BidderAA0G0CSgyF",
-            "mangledName": "$s10MSPiOSCore16AdNetworkManagerC03getC6BidderAA0G0CSgyF",
+            "usr": "s:10MSPiOSCore16AdNetworkManagerC03getC6Bidder17bidderPlacementIdAA0G0CSgSS_tF",
+            "mangledName": "$s10MSPiOSCore16AdNetworkManagerC03getC6Bidder17bidderPlacementIdAA0G0CSgSS_tF",
             "moduleName": "MSPiOSCore",
             "isOpen": true,
             "declAttributes": [
@@ -9173,6 +9261,43 @@
             "moduleName": "MSPiOSCore"
           },
           {
+            "kind": "Var",
+            "name": "unity",
+            "printedName": "unity",
+            "children": [
+              {
+                "kind": "TypeFunc",
+                "name": "Function",
+                "printedName": "(MSPiOSCore.AdNetwork.Type) -> MSPiOSCore.AdNetwork",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "AdNetwork",
+                    "printedName": "MSPiOSCore.AdNetwork",
+                    "usr": "s:10MSPiOSCore9AdNetworkO"
+                  },
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Metatype",
+                    "printedName": "MSPiOSCore.AdNetwork.Type",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "AdNetwork",
+                        "printedName": "MSPiOSCore.AdNetwork",
+                        "usr": "s:10MSPiOSCore9AdNetworkO"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ],
+            "declKind": "EnumElement",
+            "usr": "s:10MSPiOSCore9AdNetworkO5unityyA2CmF",
+            "mangledName": "$s10MSPiOSCore9AdNetworkO5unityyA2CmF",
+            "moduleName": "MSPiOSCore"
+          },
+          {
             "kind": "Constructor",
             "name": "init",
             "printedName": "init(rawValue:)",
@@ -9639,7 +9764,7 @@
                     "kind": "TypeNominal",
                     "name": "Bidder",
                     "printedName": "MSPiOSCore.Bidder",
-                    "usr": "s:10MSPiOSCore6BidderC"
+                    "usr": "c:@M@MSPiOSCore@objc(cs)Bidder"
                   }
                 ],
                 "usr": "s:Sa"
@@ -9669,7 +9794,7 @@
                         "kind": "TypeNominal",
                         "name": "Bidder",
                         "printedName": "MSPiOSCore.Bidder",
-                        "usr": "s:10MSPiOSCore6BidderC"
+                        "usr": "c:@M@MSPiOSCore@objc(cs)Bidder"
                       }
                     ],
                     "usr": "s:Sa"
@@ -9701,7 +9826,7 @@
                         "kind": "TypeNominal",
                         "name": "Bidder",
                         "printedName": "MSPiOSCore.Bidder",
-                        "usr": "s:10MSPiOSCore6BidderC"
+                        "usr": "c:@M@MSPiOSCore@objc(cs)Bidder"
                       }
                     ],
                     "usr": "s:Sa"
@@ -10034,7 +10159,7 @@
                     "kind": "TypeNominal",
                     "name": "Bidder",
                     "printedName": "MSPiOSCore.Bidder",
-                    "usr": "s:10MSPiOSCore6BidderC"
+                    "usr": "c:@M@MSPiOSCore@objc(cs)Bidder"
                   }
                 ],
                 "usr": "s:Sa"
@@ -10140,7 +10265,7 @@
                 "kind": "TypeNominal",
                 "name": "Bidder",
                 "printedName": "MSPiOSCore.Bidder",
-                "usr": "s:10MSPiOSCore6BidderC"
+                "usr": "c:@M@MSPiOSCore@objc(cs)Bidder"
               },
               {
                 "kind": "TypeNominal",
@@ -10776,6 +10901,13 @@
   },
   "ConstValues": [
     {
+      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-core\/MSPiOSCore\/MSPiOSCore\/Auction\/Bidder.swift",
+      "kind": "StringLiteral",
+      "offset": 115,
+      "length": 6,
+      "value": "\"MSPiOSCore.Bidder\""
+    },
+    {
       "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-core\/MSPiOSCore\/MSPiOSCore\/api\/BannerAd.swift",
       "kind": "StringLiteral",
       "offset": 128,
@@ -10890,6 +11022,13 @@
     {
       "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-core\/MSPiOSCore\/MSPiOSCore\/adapter\/AdNetwork.swift",
       "kind": "StringLiteral",
+      "offset": 262,
+      "length": 7,
+      "value": "\"Unity\""
+    },
+    {
+      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-core\/MSPiOSCore\/MSPiOSCore\/adapter\/AdNetwork.swift",
+      "kind": "StringLiteral",
       "offset": 155,
       "length": 8,
       "value": "\"Google\""
@@ -10914,6 +11053,13 @@
       "offset": 238,
       "length": 6,
       "value": "\"Nova\""
+    },
+    {
+      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-core\/MSPiOSCore\/MSPiOSCore\/adapter\/AdNetwork.swift",
+      "kind": "StringLiteral",
+      "offset": 262,
+      "length": 7,
+      "value": "\"Unity\""
     },
     {
       "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-core\/MSPiOSCore\/MSPiOSCore\/api\/Geo.swift",

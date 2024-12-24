@@ -36,10 +36,10 @@ extension MSPMultiFormatBidder: BidListener {
                 adNetworkAdapter.setAdMetricReporter(adMetricReporter: AdMetricReporterImp())
                 adNetworkAdapter.loadAdCreative(bidResponse: bidResponse, auctionBidListener: auctionBidListener, adListener: adListener, context: self, adRequest: adRequest, bidderPlacementId: bidderPlacementId)
             } else {
-                adListener.onError(msg: "Ad network is not supported")
+                auctionBidListener.onError(error: "Ad network is not supported")
             }
         } else {
-            adListener?.onError(msg: "Invalid request")
+            auctionBidListener?.onError(error: "Invalid request")
         }
     }
     
