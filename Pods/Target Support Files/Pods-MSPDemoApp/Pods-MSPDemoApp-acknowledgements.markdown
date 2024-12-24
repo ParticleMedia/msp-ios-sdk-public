@@ -30,6 +30,10 @@ Copyright 2024 Google LLC
 
 Copyright 2024 Google LLC
 
+## IronSourceSDK
+
+https://platform.ironsrc.com/partners/terms-and-conditions-new-user
+
 ## SwiftProtobuf
 
                                  Apache License

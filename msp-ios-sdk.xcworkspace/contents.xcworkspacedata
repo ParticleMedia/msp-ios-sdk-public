@@ -2,6 +2,9 @@
 <Workspace
    version = "1.0">
    <FileRef
+      location = "group:UnityAdapter/UnityAdapter.xcodeproj">
+   </FileRef>
+   <FileRef
       location = "group:/Users/huanzhizhang/Huanzhi/msp-ios-sdk/MetaAdapter/FacebookAdapter.xcodeproj">
    </FileRef>
    <FileRef

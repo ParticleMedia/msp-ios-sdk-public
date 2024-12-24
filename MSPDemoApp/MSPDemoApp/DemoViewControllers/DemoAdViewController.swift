@@ -15,6 +15,7 @@ public enum AdType: String {
     case novaInterstitial
     case facebookNative
     case facebookInterstitial
+    case unityBanner
 }
 
 class DemoAdViewController: UIViewController {
@@ -43,12 +44,14 @@ class DemoAdViewController: UIViewController {
             return "demo-ios-foryou-large"
         case .facebookInterstitial:
             return "demo-ios-launch-fullscreen"
+        case .unityBanner:
+            return "demo-ios-article-top-unity"
         }
     }()
     
     private lazy var adFormat: MSPiOSCore.AdFormat = {
         switch adType {
-        case .prebidBanner, .googleBanner :
+        case .prebidBanner, .googleBanner, .unityBanner :
             return .banner
     
         case .googleNative, .novaNative, .facebookNative:

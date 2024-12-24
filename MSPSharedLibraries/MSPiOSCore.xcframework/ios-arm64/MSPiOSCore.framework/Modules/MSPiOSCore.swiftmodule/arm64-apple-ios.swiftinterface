@@ -14,7 +14,7 @@ public protocol LoadAdParameters : MSPiOSCore.AdapterParameters {
   func getBidPayload() -> Swift.String
   func getBidExpirationMillis() -> Swift.UInt64
 }
-open class Bidder {
+@objc open class Bidder : ObjectiveC.NSObject {
   public var name: Swift.String
   public var bidderPlacementId: Swift.String
   public init(name: Swift.String, bidderPlacementId: Swift.String)
@@ -129,7 +129,7 @@ public protocol BidLoaderProvider : AnyObject {
 open class AdNetworkManager {
   public init()
   open func getAdNetworkAdapter() -> (any MSPiOSCore.AdNetworkAdapter)?
-  open func getAdBidder() -> MSPiOSCore.Bidder?
+  open func getAdBidder(bidderPlacementId: Swift.String) -> MSPiOSCore.Bidder?
   @objc deinit
 }
 open class NativeAd : MSPiOSCore.MSPAd {
@@ -256,6 +256,7 @@ public enum AdNetwork : Swift.String {
   case facebook
   case prebid
   case nova
+  case unity
   public init?(rawValue: Swift.String)
   public typealias RawValue = Swift.String
   public var rawValue: Swift.String {

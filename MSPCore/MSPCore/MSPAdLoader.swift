@@ -64,6 +64,8 @@ public class MSPAdLoader: NSObject {
         switch bidderInfo.name {
         case "msp":
             return MSPMultiFormatBidder(name: "msp", bidderPlacementId: bidderInfo.bidderPlacementId)
+        case "unity":
+            return MSP.shared.adNetworkAdapterProvider.unityManager?.getAdBidder(bidderPlacementId: bidderInfo.bidderPlacementId)
         default:
             return nil
         }

@@ -2,6 +2,7 @@ import UIKit
 import MSPCore
 import GoogleAdapter
 import NovaAdapter
+import UnityAdapter
 import AppTrackingTransparency
 
 import FacebookAdapter
@@ -18,6 +19,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                                                             sourceApp: "0000000000", // Your App's numeric ID on App Store
                                                             orgId: 1061,
                                                             appId: 1)
+        mspInitParameters.params = ["unityAppKey": "8545d445"]
         MSP.shared.setNovaManager(novaManager: NovaManager())
         
         MSP.shared.setGoogleManager(googleManager: GoogleManager())
@@ -25,6 +27,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         MSP.shared.setMetaManager(metaManager: FacebookManager())
         MSP.shared.bidLoaderProvider.facebookBidTokenProvider = FacebookBidTokenProviderHelper()
+        
+        MSP.shared.setUnityManager(unityManager: UnityManager())
         
         MSP.shared.initMSP(initParams: mspInitParameters, sdkInitListener: nil)
         window = UIWindow(frame: UIScreen.main.bounds)

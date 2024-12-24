@@ -9,6 +9,8 @@ import Foundation
 import MSPiOSCore
 
 public class MSPAuction: Auction {
+    // To do: add timeout item and add a specific queue for bidding job
+    
     private let biddingDispatchQueue = DispatchQueue(label: "com.msp.ads.bidding", attributes: .concurrent)
     private var dispatchGroup = DispatchGroup()
     private var auctionBidList: [AuctionBid]?
@@ -28,10 +30,6 @@ public class MSPAuction: Auction {
             }
         }
     }
-    
-    //public override func fetchBid(bidder: Bidder, adListener: (any AdListener)?, cacheOnly: Bool) -> AuctionBid? {
-    //    return nil
-    //}
     
     private func fetchBid(bidder: Bidder, cacheOnly: Bool, auctionBidListener: AuctionBidListener, adListener: AdListener?) {
         if let cachedAd = AdCache.shared.peakAd(placementId: bidder.bidderPlacementId) {
