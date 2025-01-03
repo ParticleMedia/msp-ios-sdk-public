@@ -80,6 +80,14 @@ class ViewController: UIViewController {
                 }, for: .touchUpInside)
                 button9.frame = CGRect(x: 100, y: 500, width: 200, height: 50)
                 view.addSubview(button9)
+        
+        let button10 = UIButton(type: .system)
+                button10.setTitle("Unity Interstitial View", for: .normal)
+                button10.addAction(UIAction { [weak self] _ in
+                    self?.openDemoAdPage(adType: .unityInterstitial)
+                }, for: .touchUpInside)
+                button10.frame = CGRect(x: 100, y: 550, width: 200, height: 50)
+                view.addSubview(button10)
     }
 
     func openDemoAdPage(adType: AdType) {

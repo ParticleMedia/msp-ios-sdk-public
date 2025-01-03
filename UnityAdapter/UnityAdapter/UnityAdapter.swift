@@ -19,6 +19,9 @@ import IronSource
     public weak var bannerAd: BannerAd?
     public var bannerView: LPMBannerAdView?
     
+    private var interstitialAdItem: LPMInterstitialAd?
+    public weak var interstitialAd: UnityInterstitialAd?
+    
     private var adMetricReporter: AdMetricReporter?
     
     public func loadAdCreative(bidResponse: Any, auctionBidListener: any MSPiOSCore.AuctionBidListener, adListener: any MSPiOSCore.AdListener, context: Any, adRequest: MSPiOSCore.AdRequest, bidderPlacementId: String) {
@@ -28,7 +31,9 @@ import IronSource
         self.bidderPlacementId = bidderPlacementId
         
         if adRequest.adFormat == .interstitial {
-            
+            self.interstitialAdItem = LPMInterstitialAd(adUnitId: "wmgt0712uuux8ju4")
+            self.interstitialAdItem?.setDelegate(self)
+            self.interstitialAdItem?.loadAd()
         } else {
             self.bannerView = LPMBannerAdView(adUnitId: bidderPlacementId)
             bannerView?.setDelegate(self)
@@ -93,7 +98,7 @@ import IronSource
     }
 }
 
-extension UnityAdapter: LPMBannerAdViewDelegate {
+extension UnityAdapter: LPMBannerAdViewDelegate, LPMInterstitialAdDelegate {
     public func didLoadAd(with adInfo: LPMAdInfo) {
         self.bannerView?.pauseAutoRefresh()
         if let bannerView = self.bannerView,
@@ -102,6 +107,14 @@ extension UnityAdapter: LPMBannerAdViewDelegate {
             self.bannerAd = bannerAd
             bannerAd.adInfo["price"] = adInfo.revenue
             self.handleAdLoaded(ad: bannerAd, auctionBidListener: auctionBidListener, bidderPlacementId: bidderPlacementId ?? "unity_placement_id")
+        } else if let interstitialAdItem = self.interstitialAdItem,
+                  let auctionBidListener = self.auctionBidListener {
+            let interstitialAd = UnityInterstitialAd(adNetworkAdapter: self)
+            interstitialAd.interstitialAdItem = interstitialAdItem
+            interstitialAd.rootViewController = adListener?.getRootViewController()
+            self.interstitialAd = interstitialAd
+            interstitialAd.adInfo["price"] = adInfo.revenue
+            self.handleAdLoaded(ad: interstitialAd, auctionBidListener: auctionBidListener, bidderPlacementId: bidderPlacementId ?? "unity_placement_id")
         }
     }
     
@@ -113,13 +126,23 @@ extension UnityAdapter: LPMBannerAdViewDelegate {
     public func didClickAd(with adInfo: LPMAdInfo) {
         if let bannerAd = self.bannerAd {
             adListener?.onAdClick(ad: bannerAd)
+        } else if let interstitialAd = self.interstitialAd {
+            adListener?.onAdClick(ad: interstitialAd)
         }
     }
     
     public func didDisplayAd(with adInfo: LPMAdInfo) {
         if let bannerAd = self.bannerAd {
             adListener?.onAdImpression(ad: bannerAd)
+        } else if let interstitialAd = self.interstitialAd {
+            adListener?.onAdImpression(ad: interstitialAd)
         }
     }
     
+    public func didCloseAd(with adInfo: LPMAdInfo) {
+        if let interstitialAd = self.interstitialAd {
+            adListener?.onAdDismissed(ad: interstitialAd)
+        }
+    }
 }
+
