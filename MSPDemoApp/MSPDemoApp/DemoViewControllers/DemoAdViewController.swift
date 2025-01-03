@@ -16,6 +16,7 @@ public enum AdType: String {
     case facebookNative
     case facebookInterstitial
     case unityBanner
+    case unityInterstitial
 }
 
 class DemoAdViewController: UIViewController {
@@ -46,6 +47,8 @@ class DemoAdViewController: UIViewController {
             return "demo-ios-launch-fullscreen"
         case .unityBanner:
             return "demo-ios-article-top-unity"
+        case .unityInterstitial:
+            return "demo-ios-article-top-unity"
         }
     }()
     
@@ -56,7 +59,7 @@ class DemoAdViewController: UIViewController {
     
         case .googleNative, .novaNative, .facebookNative:
             return .native
-        case .googleInterstitial, .novaInterstitial, .facebookInterstitial:
+        case .googleInterstitial, .novaInterstitial, .facebookInterstitial, .unityInterstitial:
             return .interstitial
         }
     }()
@@ -152,13 +155,15 @@ extension DemoAdViewController: AdListener {
              
         } else if ad is BannerAd,
                 let bannerAd = ad as? BannerAd {
-            let adView = bannerAd.adView
-            adView.translatesAutoresizingMaskIntoConstraints = false
-            self.view.addSubview(adView)
-            NSLayoutConstraint.activate([
-                adView.centerXAnchor.constraint(equalTo: self.view.centerXAnchor),
-                adView.topAnchor.constraint(equalTo: self.view.topAnchor, constant: 200),
-            ])
+            DispatchQueue.main.async{
+                let adView = bannerAd.adView
+                adView.translatesAutoresizingMaskIntoConstraints = false
+                self.view.addSubview(adView)
+                NSLayoutConstraint.activate([
+                    adView.centerXAnchor.constraint(equalTo: self.view.centerXAnchor),
+                    adView.topAnchor.constraint(equalTo: self.view.topAnchor, constant: 200),
+                ])
+            }
         } else if ad is InterstitialAd,
                   let interstitialAd = ad as? InterstitialAd {
             DispatchQueue.main.async {

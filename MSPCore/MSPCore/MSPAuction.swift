@@ -15,6 +15,8 @@ public class MSPAuction: Auction {
     private var dispatchGroup = DispatchGroup()
     private var auctionBidList: [AuctionBid]?
     
+    private var isTimeout = false
+    
     public override func startAuction(auctionListener: any AuctionListener, adListener: (any AdListener)?) {
         auctionBidList = [AuctionBid]()
         for bidder in bidders {
@@ -22,11 +24,28 @@ public class MSPAuction: Auction {
             fetchBid(bidder: bidder, cacheOnly: cacheOnly, auctionBidListener: self, adListener: adListener)
         }
         
+        let timeoutWorkItem = DispatchWorkItem { [weak self] in
+            self?.isTimeout = true
+            self?.biddingDispatchQueue.async {
+                if let winnerBid = self?.getWinnerBid() {
+                    auctionListener.onSuccess(winningBid: winnerBid)
+                } else {
+                    auctionListener.onError(error: "client auction no winning bid")
+                }
+            }
+        }
+        
+        // Wait for all responses or timeout
+        DispatchQueue.global().asyncAfter(deadline: .now() + timeout, execute: timeoutWorkItem)
+        
         dispatchGroup.notify(queue: .main) { [weak self] in
-            if let winnerBid = self?.getWinnerBid() {
-                auctionListener.onSuccess(winningBid: winnerBid)
-            } else {
-                auctionListener.onError(error: "client auction no winning bid")
+            timeoutWorkItem.cancel()
+            self?.biddingDispatchQueue.async {
+                if let winnerBid = self?.getWinnerBid() {
+                    auctionListener.onSuccess(winningBid: winnerBid)
+                } else {
+                    auctionListener.onError(error: "client auction no winning bid")
+                }
             }
         }
     }
@@ -59,7 +78,9 @@ public class MSPAuction: Auction {
 
 extension MSPAuction: AuctionBidListener {
     public func onSuccess(bid: MSPiOSCore.AuctionBid) {
-        auctionBidList?.append(bid)
+        self.biddingDispatchQueue.async {
+            self.auctionBidList?.append(bid)
+        }
         self.dispatchGroup.leave()
     }
     
