@@ -15,6 +15,7 @@
 		66EFCE042D19F388005E0135 /* UnityBidder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66EFCE032D19F388005E0135 /* UnityBidder.swift */; };
 		66EFCE0A2D1A1187005E0135 /* UnityManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66EFCE092D1A1187005E0135 /* UnityManager.swift */; };
 		66EFCE132D27474A005E0135 /* UnityInterstitialAd.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66EFCE122D27474A005E0135 /* UnityInterstitialAd.swift */; };
+		66EFCE182D276C42005E0135 /* UnityNativeAd.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66EFCE172D276C42005E0135 /* UnityNativeAd.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -37,6 +38,7 @@
 		66EFCE032D19F388005E0135 /* UnityBidder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UnityBidder.swift; sourceTree = "<group>"; };
 		66EFCE092D1A1187005E0135 /* UnityManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UnityManager.swift; sourceTree = "<group>"; };
 		66EFCE122D27474A005E0135 /* UnityInterstitialAd.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UnityInterstitialAd.swift; sourceTree = "<group>"; };
+		66EFCE172D276C42005E0135 /* UnityNativeAd.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UnityNativeAd.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -79,6 +81,7 @@
 		66EFCDE72D19F0FF005E0135 /* UnityAdapter */ = {
 			isa = PBXGroup;
 			children = (
+				66EFCE162D276C2D005E0135 /* native */,
 				66EFCE112D274732005E0135 /* interstitial */,
 				66EFCDE82D19F0FF005E0135 /* UnityAdapter.h */,
 				66EFCDE92D19F0FF005E0135 /* UnityAdapter.docc */,
@@ -103,6 +106,14 @@
 				66EFCE122D27474A005E0135 /* UnityInterstitialAd.swift */,
 			);
 			path = interstitial;
+			sourceTree = "<group>";
+		};
+		66EFCE162D276C2D005E0135 /* native */ = {
+			isa = PBXGroup;
+			children = (
+				66EFCE172D276C42005E0135 /* UnityNativeAd.swift */,
+			);
+			path = native;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -215,6 +226,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				66EFCE132D27474A005E0135 /* UnityInterstitialAd.swift in Sources */,
+				66EFCE182D276C42005E0135 /* UnityNativeAd.swift in Sources */,
 				66EFCDEA2D19F0FF005E0135 /* UnityAdapter.docc in Sources */,
 				66EFCE0A2D1A1187005E0135 /* UnityManager.swift in Sources */,
 				66EFCE042D19F388005E0135 /* UnityBidder.swift in Sources */,

@@ -88,6 +88,13 @@ class ViewController: UIViewController {
                 }, for: .touchUpInside)
                 button10.frame = CGRect(x: 100, y: 550, width: 200, height: 50)
                 view.addSubview(button10)
+        let button11 = UIButton(type: .system)
+                button11.setTitle("Unity Native View", for: .normal)
+                button11.addAction(UIAction { [weak self] _ in
+                    self?.openDemoAdPage(adType: .unityNative)
+                }, for: .touchUpInside)
+                button11.frame = CGRect(x: 100, y: 600, width: 200, height: 50)
+                view.addSubview(button11)
     }
 
     func openDemoAdPage(adType: AdType) {
