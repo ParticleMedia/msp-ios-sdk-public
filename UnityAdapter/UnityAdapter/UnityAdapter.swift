@@ -11,6 +11,7 @@ import IronSource
 
 @objc public class UnityAdapter : NSObject, AdNetworkAdapter {
     // to do: interstitial and native, multiformat
+    // to do: make it use main thread like other adapters
     public weak var adListener: AdListener?
     public var adRequest: AdRequest?
     public weak var auctionBidListener: AuctionBidListener?
@@ -21,6 +22,9 @@ import IronSource
     
     private var interstitialAdItem: LPMInterstitialAd?
     public weak var interstitialAd: UnityInterstitialAd?
+    
+    private var nativeAdItem: LevelPlayNativeAd?
+    public weak var nativeAd: UnityNativeAd?
     
     private var adMetricReporter: AdMetricReporter?
     
@@ -34,6 +38,18 @@ import IronSource
             self.interstitialAdItem = LPMInterstitialAd(adUnitId: "wmgt0712uuux8ju4")
             self.interstitialAdItem?.setDelegate(self)
             self.interstitialAdItem?.loadAd()
+        } else if adRequest.adFormat == .native {
+            if let rootViewController = adListener.getRootViewController() {
+                let levelPlayNativeAd: LevelPlayNativeAd = LevelPlayNativeAdBuilder()
+                    .withViewController(rootViewController)
+                    .withPlacementName("YOUR_PLACEMENT_NAME") // Replace with your placement or leave empty
+                    .withDelegate(self)
+                    .build()
+                self.nativeAdItem = levelPlayNativeAd
+                levelPlayNativeAd.load()
+            } else {
+                auctionBidListener.onError(error: "unity native no valid UIViewController")
+            }
         } else {
             self.bannerView = LPMBannerAdView(adUnitId: bidderPlacementId)
             bannerView?.setDelegate(self)
@@ -73,6 +89,54 @@ import IronSource
     }
     
     public func prepareViewForInteraction(nativeAd: MSPiOSCore.NativeAd, nativeAdView: Any) {
+        guard let nativeAdView = nativeAdView as? NativeAdView,
+              let nativeAdItem = self.nativeAdItem else {return}
+        
+        let unityNativeAdView = ISNativeAdView()
+        unityNativeAdView.translatesAutoresizingMaskIntoConstraints = false
+        
+        if let nativeAdContainer = nativeAdView.nativeAdContainer {
+            
+            nativeAdContainer.translatesAutoresizingMaskIntoConstraints = false
+            
+            unityNativeAdView.adTitleView = nativeAdContainer.getTitle()
+            unityNativeAdView.adBodyView = nativeAdContainer.getbody()
+            unityNativeAdView.adAdvertiserView = nativeAdContainer.getAdvertiser()
+            unityNativeAdView.adCallToActionView = nativeAdContainer.getCallToAction()
+            
+            if let mediaContainer = nativeAdContainer.getMedia(),
+               let mediaView =  nativeAd.mediaView as? LevelPlayMediaView{
+                unityNativeAdView.adMediaView = mediaView
+                mediaContainer.addSubview(mediaView)
+                NSLayoutConstraint.activate([
+                    //novaNativeAdView.centerYAnchor.constraint(equalTo: nativeAdView.centerYAnchor),
+                    mediaView.leadingAnchor.constraint(equalTo: mediaContainer.leadingAnchor),
+                    mediaView.trailingAnchor.constraint(equalTo: mediaContainer.trailingAnchor),
+                    mediaView.topAnchor.constraint(equalTo: mediaContainer.topAnchor),
+                    mediaView.bottomAnchor.constraint(equalTo: mediaContainer.bottomAnchor)
+                ])
+            }
+            
+            unityNativeAdView.addSubview(nativeAdContainer)
+            NSLayoutConstraint.activate([
+                //novaNativeAdView.centerYAnchor.constraint(equalTo: nativeAdView.centerYAnchor),
+                nativeAdContainer.leadingAnchor.constraint(equalTo: unityNativeAdView.leadingAnchor),
+                nativeAdContainer.trailingAnchor.constraint(equalTo: unityNativeAdView.trailingAnchor),
+                nativeAdContainer.topAnchor.constraint(equalTo: unityNativeAdView.topAnchor),
+                nativeAdContainer.bottomAnchor.constraint(equalTo: unityNativeAdView.bottomAnchor),
+                nativeAdContainer.widthAnchor.constraint(lessThanOrEqualTo: unityNativeAdView.widthAnchor),
+                nativeAdContainer.heightAnchor.constraint(lessThanOrEqualTo: unityNativeAdView.heightAnchor),
+            ])
+            
+            unityNativeAdView.adTitleView?.text = nativeAd.title
+            unityNativeAdView.adBodyView?.text = nativeAd.body
+            unityNativeAdView.adAdvertiserView?.text = nativeAd.advertiser
+            unityNativeAdView.adCallToActionView?.setTitle(nativeAd.callToAction, for: .normal)
+            unityNativeAdView.adCallToActionView?.isUserInteractionEnabled = false
+            unityNativeAdView.registerNativeAdViews(nativeAdItem)
+            
+            
+        }
         
     }
     
@@ -144,5 +208,47 @@ extension UnityAdapter: LPMBannerAdViewDelegate, LPMInterstitialAdDelegate {
             adListener?.onAdDismissed(ad: interstitialAd)
         }
     }
+}
+
+extension UnityAdapter: LevelPlayNativeAdDelegate {
+    public func didLoad(_ nativeAd: LevelPlayNativeAd, with adInfo: ISAdInfo) {
+        self.nativeAdItem = nativeAd
+        if let auctionBidListener = self.auctionBidListener {
+            let unityNativeAd = UnityNativeAd(adNetworkAdapter: self,
+                                         title: nativeAd.title ?? "",
+                                         body: nativeAd.body ?? "",
+                                         advertiser: nativeAd.advertiser ?? "",
+                                         callToAction: nativeAd.callToAction ?? "")
+            unityNativeAd.nativeAdItem = nativeAd
+            unityNativeAd.adInfo["price"] = adInfo.revenue
+            
+            let mediaView = LevelPlayMediaView()
+            mediaView.translatesAutoresizingMaskIntoConstraints = false
+            unityNativeAd.mediaView = mediaView
+            
+            if let adListener = self.adListener,
+               let adRequest = self.adRequest,
+               let auctionBidListener = self.auctionBidListener {
+                //handleAdLoaded(ad: googleNativeAd, listener: adListener, adRequest: adRequest)
+                self.handleAdLoaded(ad: unityNativeAd, auctionBidListener: auctionBidListener, bidderPlacementId: self.bidderPlacementId ?? adRequest.placementId)
+                self.adMetricReporter?.logAdResult(placementId: adRequest.placementId, ad: unityNativeAd, fill: true, isFromCache: false)
+            }
+            
+            let nativeView = ISNativeAdView()
+        }
+    }
+    
+    public func didFail(toLoad nativeAd: LevelPlayNativeAd, withError error: any Error) {
+        
+    }
+    
+    public func didRecordImpression(_ nativeAd: LevelPlayNativeAd, with adInfo: ISAdInfo) {
+    
+    }
+    
+    public func didClick(_ nativeAd: LevelPlayNativeAd, with adInfo: ISAdInfo) {
+        
+    }
+    
 }
 

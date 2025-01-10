@@ -17,6 +17,7 @@ public enum AdType: String {
     case facebookInterstitial
     case unityBanner
     case unityInterstitial
+    case unityNative
 }
 
 class DemoAdViewController: UIViewController {
@@ -49,6 +50,8 @@ class DemoAdViewController: UIViewController {
             return "demo-ios-article-top-unity"
         case .unityInterstitial:
             return "demo-ios-article-top-unity"
+        case .unityNative:
+            return "demo-ios-article-top-unity"
         }
     }()
     
@@ -57,7 +60,7 @@ class DemoAdViewController: UIViewController {
         case .prebidBanner, .googleBanner, .unityBanner :
             return .banner
     
-        case .googleNative, .novaNative, .facebookNative:
+        case .googleNative, .novaNative, .facebookNative, .unityNative:
             return .native
         case .googleInterstitial, .novaInterstitial, .facebookInterstitial, .unityInterstitial:
             return .interstitial
