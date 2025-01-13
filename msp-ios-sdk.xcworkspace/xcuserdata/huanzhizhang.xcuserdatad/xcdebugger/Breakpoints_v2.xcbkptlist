@@ -208,8 +208,8 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "181"
             endingLineNumber = "181"
-            landmarkName = "DemoAdViewController"
-            landmarkType = "21">
+            landmarkName = "unknown"
+            landmarkType = "0">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -274,36 +274,6 @@
             endingLineNumber = "58"
             landmarkName = "config(with:)"
             landmarkType = "7">
-            <Locations>
-               <Location
-                  uuid = "D9021E94-0BF4-4566-9A97-440E0911D066 - bcf2b4129af0e3e4"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "NovaCore.NovaNativeAdMediaViewV2.config(with: NovaCore.NovaNativeAdMedia) -&gt; ()"
-                  moduleName = "NovaCore"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/huanzhizhang/Huanzhi/msp-ios-sdk/NovaCore/NovaCore/Native/NovaNativeAdMediaViewV2.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "58"
-                  endingLineNumber = "58">
-               </Location>
-               <Location
-                  uuid = "D9021E94-0BF4-4566-9A97-440E0911D066 - f950b29e9f8e67ab"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "closure #1 () -&gt; () in NovaCore.NovaNativeAdMediaViewV2.config(with: NovaCore.NovaNativeAdMedia) -&gt; ()"
-                  moduleName = "NovaCore"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/huanzhizhang/Huanzhi/msp-ios-sdk/NovaCore/NovaCore/Native/NovaNativeAdMediaViewV2.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "58"
-                  endingLineNumber = "58">
-               </Location>
-            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -448,36 +418,6 @@
             endingLineNumber = "281"
             landmarkName = "bannerViewDidRecordClick(_:)"
             landmarkType = "7">
-            <Locations>
-               <Location
-                  uuid = "E79FBF24-5380-46E0-BAD8-7C43226A3AA3 - 8f19071efff42d99"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "GoogleAdapter.GoogleAdapter.bannerViewDidRecordClick(__C.GADBannerView) -&gt; ()"
-                  moduleName = "MSPDemoApp"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/huanzhizhang/Huanzhi/msp-ios-sdk/GoogleAdapter/GoogleAdapter/GoogleAdapter.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "281"
-                  endingLineNumber = "281">
-               </Location>
-               <Location
-                  uuid = "E79FBF24-5380-46E0-BAD8-7C43226A3AA3 - 8f19071efff42d99"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "GoogleAdapter.GoogleAdapter.bannerViewDidRecordClick(__C.GADBannerView) -&gt; ()"
-                  moduleName = "MSPDemoApp"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/huanzhizhang/Huanzhi/msp-ios-sdk/GoogleAdapter/GoogleAdapter/GoogleAdapter.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "281"
-                  endingLineNumber = "281">
-               </Location>
-            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -590,36 +530,6 @@
             endingLineNumber = "44"
             landmarkName = "startAuction(auctionListener:adListener:)"
             landmarkType = "7">
-            <Locations>
-               <Location
-                  uuid = "60FD4332-43FF-49E4-8D1B-877DAAC0B025 - 53fd9399152229ee"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "closure #1 @Sendable () -&gt; () in closure #2 () -&gt; () in MSPCore.MSPAuction.startAuction(auctionListener: MSPiOSCore.AuctionListener, adListener: Swift.Optional&lt;MSPiOSCore.AdListener&gt;) -&gt; ()"
-                  moduleName = "MSPDemoApp"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/huanzhizhang/Huanzhi/msp-ios-sdk/MSPCore/MSPCore/MSPAuction.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "44"
-                  endingLineNumber = "44">
-               </Location>
-               <Location
-                  uuid = "60FD4332-43FF-49E4-8D1B-877DAAC0B025 - 53fd9399152229ee"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "closure #1 @Sendable () -&gt; () in closure #2 () -&gt; () in MSPCore.MSPAuction.startAuction(auctionListener: MSPiOSCore.AuctionListener, adListener: Swift.Optional&lt;MSPiOSCore.AdListener&gt;) -&gt; ()"
-                  moduleName = "MSPDemoApp"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/huanzhizhang/Huanzhi/msp-ios-sdk/MSPCore/MSPCore/MSPAuction.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "44"
-                  endingLineNumber = "44">
-               </Location>
-            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -680,8 +590,8 @@
             filePath = "MSPCore/MSPCore/MSPAdLoader.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "99"
-            endingLineNumber = "99"
+            startingLineNumber = "100"
+            endingLineNumber = "100"
             landmarkName = "onSuccess(winningBid:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -748,36 +658,6 @@
             endingLineNumber = "87"
             landmarkName = "fetchAdConfigData(completion:)"
             landmarkType = "7">
-            <Locations>
-               <Location
-                  uuid = "03BD0CED-F2F3-4394-B72F-269FCB0DB423 - 8a8d6675d1a32b40"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "closure #1 @Sendable (Swift.Optional&lt;Foundation.Data&gt;, Swift.Optional&lt;__C.NSURLResponse&gt;, Swift.Optional&lt;Swift.Error&gt;) -&gt; () in MSPCore.MSPAdConfigManager.fetchAdConfigData(completion: (Swift.Result&lt;Swift.Dictionary&lt;Swift.String, Any&gt;, Swift.Error&gt;) -&gt; ()) -&gt; ()"
-                  moduleName = "MSPDemoApp"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/huanzhizhang/Huanzhi/msp-ios-sdk/MSPCore/MSPCore/MSPAdConfigManager.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "87"
-                  endingLineNumber = "87">
-               </Location>
-               <Location
-                  uuid = "03BD0CED-F2F3-4394-B72F-269FCB0DB423 - 8a8d6675d1a32b40"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "closure #1 @Sendable (Swift.Optional&lt;Foundation.Data&gt;, Swift.Optional&lt;__C.NSURLResponse&gt;, Swift.Optional&lt;Swift.Error&gt;) -&gt; () in MSPCore.MSPAdConfigManager.fetchAdConfigData(completion: (Swift.Result&lt;Swift.Dictionary&lt;Swift.String, Any&gt;, Swift.Error&gt;) -&gt; ()) -&gt; ()"
-                  moduleName = "MSPDemoApp"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/huanzhizhang/Huanzhi/msp-ios-sdk/MSPCore/MSPCore/MSPAdConfigManager.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "87"
-                  endingLineNumber = "87">
-               </Location>
-            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
    </Breakpoints>
