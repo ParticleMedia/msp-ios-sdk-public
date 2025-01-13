@@ -96,7 +96,9 @@ public class MSPAdLoader: NSObject {
 
 extension MSPAdLoader: AuctionListener {
     public func onSuccess(winningBid: MSPiOSCore.AuctionBid) {
-        adListener?.onAdLoaded(placementId: winningBid.bidderPlacementId)
+        DispatchQueue.main.async {
+            self.adListener?.onAdLoaded(placementId: winningBid.bidderPlacementId)
+        }
     }
     
     public func onError(error: String) {
