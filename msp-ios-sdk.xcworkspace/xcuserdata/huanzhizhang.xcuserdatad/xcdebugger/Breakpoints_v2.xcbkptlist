@@ -274,6 +274,36 @@
             endingLineNumber = "58"
             landmarkName = "config(with:)"
             landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "D9021E94-0BF4-4566-9A97-440E0911D066 - bcf2b4129af0e3e4"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "NovaCore.NovaNativeAdMediaViewV2.config(with: NovaCore.NovaNativeAdMedia) -&gt; ()"
+                  moduleName = "NovaCore"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/huanzhizhang/Huanzhi/msp-ios-sdk/NovaCore/NovaCore/Native/NovaNativeAdMediaViewV2.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "58"
+                  endingLineNumber = "58">
+               </Location>
+               <Location
+                  uuid = "D9021E94-0BF4-4566-9A97-440E0911D066 - f950b29e9f8e67ab"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "closure #1 () -&gt; () in NovaCore.NovaNativeAdMediaViewV2.config(with: NovaCore.NovaNativeAdMedia) -&gt; ()"
+                  moduleName = "NovaCore"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/huanzhizhang/Huanzhi/msp-ios-sdk/NovaCore/NovaCore/Native/NovaNativeAdMediaViewV2.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "58"
+                  endingLineNumber = "58">
+               </Location>
+            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -418,38 +448,36 @@
             endingLineNumber = "281"
             landmarkName = "bannerViewDidRecordClick(_:)"
             landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "3881DBF3-F65B-40F9-BEDB-4EC6BF549C6D"
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "UnityAdapter/UnityAdapter/UnityAdapter.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "54"
-            endingLineNumber = "54"
-            landmarkName = "loadAdCreative(bidResponse:auctionBidListener:adListener:context:adRequest:bidderPlacementId:)"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "89A5B3CA-F6F0-4117-ADF9-A6468FDB3051"
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "UnityAdapter/UnityAdapter/UnityAdapter.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "60"
-            endingLineNumber = "60"
-            landmarkName = "loadAdCreative(bidResponse:auctionBidListener:adListener:context:adRequest:bidderPlacementId:)"
-            landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "E79FBF24-5380-46E0-BAD8-7C43226A3AA3 - 8f19071efff42d99"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "GoogleAdapter.GoogleAdapter.bannerViewDidRecordClick(__C.GADBannerView) -&gt; ()"
+                  moduleName = "MSPDemoApp"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/huanzhizhang/Huanzhi/msp-ios-sdk/GoogleAdapter/GoogleAdapter/GoogleAdapter.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "281"
+                  endingLineNumber = "281">
+               </Location>
+               <Location
+                  uuid = "E79FBF24-5380-46E0-BAD8-7C43226A3AA3 - 8f19071efff42d99"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "GoogleAdapter.GoogleAdapter.bannerViewDidRecordClick(__C.GADBannerView) -&gt; ()"
+                  moduleName = "MSPDemoApp"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/huanzhizhang/Huanzhi/msp-ios-sdk/GoogleAdapter/GoogleAdapter/GoogleAdapter.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "281"
+                  endingLineNumber = "281">
+               </Location>
+            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -462,25 +490,9 @@
             filePath = "UnityAdapter/UnityAdapter/UnityAdapter.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "38"
-            endingLineNumber = "38"
-            landmarkName = "loadAdCreative(bidResponse:auctionBidListener:adListener:context:adRequest:bidderPlacementId:)"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "74D45B82-A0CC-4354-91CB-FDB75AC7151F"
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "UnityAdapter/UnityAdapter/UnityAdapter.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "167"
-            endingLineNumber = "167"
-            landmarkName = "didLoadAd(with:)"
+            startingLineNumber = "41"
+            endingLineNumber = "41"
+            landmarkName = "loadAdCreative(bidResponse:auctionBidListener:adListener:context:adRequest:bidderPlacementId:bidderFormat:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -494,105 +506,9 @@
             filePath = "UnityAdapter/UnityAdapter/UnityAdapter.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "186"
-            endingLineNumber = "186"
+            startingLineNumber = "190"
+            endingLineNumber = "190"
             landmarkName = "didFailToLoadAd(withAdUnitId:error:)"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "7EB3B0A9-D163-45EE-A69D-3963D49D733C"
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "UnityAdapter/UnityAdapter/UnityAdapter.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "181"
-            endingLineNumber = "181"
-            landmarkName = "didLoadAd(with:)"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "60FD4332-43FF-49E4-8D1B-877DAAC0B025"
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "MSPCore/MSPCore/MSPAuction.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "44"
-            endingLineNumber = "44"
-            landmarkName = "startAuction(auctionListener:adListener:)"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "77B6A904-55B2-4D0C-858F-D8D74482DBE6"
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "MSPCore/MSPCore/MSPAuction.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "68"
-            endingLineNumber = "68"
-            landmarkName = "getWinnerBid()"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "E5990571-F666-4B22-9317-0874FB0FD346"
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "MSPCore/MSPCore/MSPAuction.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "45"
-            endingLineNumber = "45"
-            landmarkName = "startAuction(auctionListener:adListener:)"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "E9492CBA-9965-4343-AD3F-0A3E9AB35EBE"
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "UnityAdapter/UnityAdapter/UnityAdapter.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "173"
-            endingLineNumber = "173"
-            landmarkName = "didLoadAd(with:)"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "557C4DEE-51FA-4CF0-9230-B17C2791F8AB"
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "MSPCore/MSPCore/MSPAdLoader.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "100"
-            endingLineNumber = "100"
-            landmarkName = "onSuccess(winningBid:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -606,9 +522,9 @@
             filePath = "UnityAdapter/UnityAdapter/UnityAdapter.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "49"
-            endingLineNumber = "49"
-            landmarkName = "loadAdCreative(bidResponse:auctionBidListener:adListener:context:adRequest:bidderPlacementId:)"
+            startingLineNumber = "52"
+            endingLineNumber = "52"
+            landmarkName = "loadAdCreative(bidResponse:auctionBidListener:adListener:context:adRequest:bidderPlacementId:bidderFormat:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -622,8 +538,8 @@
             filePath = "UnityAdapter/UnityAdapter/UnityAdapter.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "215"
-            endingLineNumber = "215"
+            startingLineNumber = "219"
+            endingLineNumber = "219"
             landmarkName = "didLoad(_:with:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -638,8 +554,8 @@
             filePath = "UnityAdapter/UnityAdapter/UnityAdapter.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "242"
-            endingLineNumber = "242"
+            startingLineNumber = "246"
+            endingLineNumber = "246"
             landmarkName = "didFail(toLoad:withError:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -647,17 +563,95 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "03BD0CED-F2F3-4394-B72F-269FCB0DB423"
+            uuid = "8097C559-0D9B-4FDB-8359-D61EE0768883"
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "MSPCore/MSPCore/MSPAdConfigManager.swift"
+            filePath = "UnityAdapter/UnityAdapter/UnityAdapter.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "87"
-            endingLineNumber = "87"
-            landmarkName = "fetchAdConfigData(completion:)"
+            startingLineNumber = "83"
+            endingLineNumber = "83"
+            landmarkName = "initialize(initParams:adapterInitListener:context:)"
             landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "C33E1676-EA6B-4EFA-8807-ACC9F25541EC"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "UnityAdapter/UnityAdapter/UnityAdapter.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "85"
+            endingLineNumber = "85"
+            landmarkName = "initialize(initParams:adapterInitListener:context:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "6299B153-17E7-406A-9F1B-F872E64E76F8"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "UnityAdapter/UnityAdapter/UnityAdapter.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "63"
+            endingLineNumber = "63"
+            landmarkName = "loadAdCreative(bidResponse:auctionBidListener:adListener:context:adRequest:bidderPlacementId:bidderFormat:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "5E293F71-1C2A-429A-8440-757D8A7E8D34"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "UnityAdapter/UnityAdapter/UnityAdapter.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "32"
+            endingLineNumber = "32"
+            landmarkName = "loadAdCreative(bidResponse:auctionBidListener:adListener:context:adRequest:bidderPlacementId:bidderFormat:)"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "5E293F71-1C2A-429A-8440-757D8A7E8D34 - 168536aeb0b3117a"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "UnityAdapter.UnityAdapter.loadAdCreative(bidResponse: Any, auctionBidListener: MSPiOSCore.AuctionBidListener, adListener: MSPiOSCore.AdListener, context: Any, adRequest: MSPiOSCore.AdRequest, bidderPlacementId: Swift.String, bidderFormat: Swift.Optional&lt;MSPiOSCore.AdFormat&gt;) -&gt; ()"
+                  moduleName = "MSPDemoApp"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/huanzhizhang/Huanzhi/msp-ios-sdk/UnityAdapter/UnityAdapter/UnityAdapter.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "32"
+                  endingLineNumber = "32">
+               </Location>
+               <Location
+                  uuid = "5E293F71-1C2A-429A-8440-757D8A7E8D34 - 8deafc813108c04"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "closure #1 @Swift.MainActor () -&gt; () in UnityAdapter.UnityAdapter.loadAdCreative(bidResponse: Any, auctionBidListener: MSPiOSCore.AuctionBidListener, adListener: MSPiOSCore.AdListener, context: Any, adRequest: MSPiOSCore.AdRequest, bidderPlacementId: Swift.String, bidderFormat: Swift.Optional&lt;MSPiOSCore.AdFormat&gt;) -&gt; ()"
+                  moduleName = "MSPDemoApp"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/huanzhizhang/Huanzhi/msp-ios-sdk/UnityAdapter/UnityAdapter/UnityAdapter.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "32"
+                  endingLineNumber = "32">
+               </Location>
+            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
    </Breakpoints>

@@ -17,7 +17,8 @@ public protocol LoadAdParameters : MSPiOSCore.AdapterParameters {
 @objc open class Bidder : ObjectiveC.NSObject {
   public var name: Swift.String
   public var bidderPlacementId: Swift.String
-  public init(name: Swift.String, bidderPlacementId: Swift.String)
+  public var bidderFormat: MSPiOSCore.AdFormat?
+  public init(name: Swift.String, bidderPlacementId: Swift.String, bidderFormat: MSPiOSCore.AdFormat?)
   open func requestBid(adRequest: MSPiOSCore.AdRequest, bidListener: any MSPiOSCore.AuctionBidListener, adListener: any MSPiOSCore.AdListener)
   @objc deinit
 }
@@ -110,7 +111,7 @@ public protocol AdListener : AnyObject {
   func getRootViewController() -> UIKit.UIViewController?
 }
 public protocol AdNetworkAdapter : AnyObject {
-  func loadAdCreative(bidResponse: Any, auctionBidListener: any MSPiOSCore.AuctionBidListener, adListener: any MSPiOSCore.AdListener, context: Any, adRequest: MSPiOSCore.AdRequest, bidderPlacementId: Swift.String)
+  func loadAdCreative(bidResponse: Any, auctionBidListener: any MSPiOSCore.AuctionBidListener, adListener: any MSPiOSCore.AdListener, context: Any, adRequest: MSPiOSCore.AdRequest, bidderPlacementId: Swift.String, bidderFormat: MSPiOSCore.AdFormat?)
   func initialize(initParams: any MSPiOSCore.InitializationParameters, adapterInitListener: any MSPiOSCore.AdapterInitListener, context: Any?)
   func destroyAd()
   func prepareViewForInteraction(nativeAd: MSPiOSCore.NativeAd, nativeAdView: Any)
@@ -129,7 +130,7 @@ public protocol BidLoaderProvider : AnyObject {
 open class AdNetworkManager {
   public init()
   open func getAdNetworkAdapter() -> (any MSPiOSCore.AdNetworkAdapter)?
-  open func getAdBidder(bidderPlacementId: Swift.String) -> MSPiOSCore.Bidder?
+  open func getAdBidder(bidderPlacementId: Swift.String, bidderFormat: MSPiOSCore.AdFormat?) -> MSPiOSCore.Bidder?
   @objc deinit
 }
 open class NativeAd : MSPiOSCore.MSPAd {

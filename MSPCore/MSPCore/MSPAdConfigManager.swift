@@ -122,9 +122,11 @@ public struct Placement: Codable {
 public struct BidderInfo: Codable {
     public let name: String
     public let bidderPlacementId: String
+    public let bidderFormat: String?
     
     enum CodingKeys: String, CodingKey {
         case name
         case bidderPlacementId = "bidder_placement_id"
+        case bidderFormat = "bidder_format"
     }
 }

@@ -28,38 +28,42 @@ import IronSource
     
     private var adMetricReporter: AdMetricReporter?
     
-    public func loadAdCreative(bidResponse: Any, auctionBidListener: any MSPiOSCore.AuctionBidListener, adListener: any MSPiOSCore.AdListener, context: Any, adRequest: MSPiOSCore.AdRequest, bidderPlacementId: String) {
-        self.auctionBidListener = auctionBidListener
-        self.adListener = adListener
-        self.adRequest = adRequest
-        self.bidderPlacementId = bidderPlacementId
-        
-        if adRequest.adFormat == .interstitial {
-            self.interstitialAdItem = LPMInterstitialAd(adUnitId: "wmgt0712uuux8ju4")
-            self.interstitialAdItem?.setDelegate(self)
-            self.interstitialAdItem?.loadAd()
-        } else if adRequest.adFormat == .native {
-            if let rootViewController = adListener.getRootViewController() {
-                let levelPlayNativeAd: LevelPlayNativeAd = LevelPlayNativeAdBuilder()
-                    .withViewController(rootViewController)
-                    .withPlacementName("YOUR_PLACEMENT_NAME") // Replace with your placement or leave empty
-                    .withDelegate(self)
-                    .build()
-                self.nativeAdItem = levelPlayNativeAd
-                levelPlayNativeAd.load()
+    public func loadAdCreative(bidResponse: Any, auctionBidListener: any MSPiOSCore.AuctionBidListener, adListener: any MSPiOSCore.AdListener, context: Any, adRequest: MSPiOSCore.AdRequest, bidderPlacementId: String, bidderFormat: MSPiOSCore.AdFormat?) {
+        DispatchQueue.main.async {
+            self.auctionBidListener = auctionBidListener
+            self.adListener = adListener
+            self.adRequest = adRequest
+            self.bidderPlacementId = bidderPlacementId
+            
+            let adFormat = bidderFormat ?? adRequest.adFormat
+            
+            if adFormat == .interstitial {
+                self.interstitialAdItem = LPMInterstitialAd(adUnitId: "wmgt0712uuux8ju4")
+                self.interstitialAdItem?.setDelegate(self)
+                self.interstitialAdItem?.loadAd()
+            } else if adFormat == .native {
+                if let rootViewController = adListener.getRootViewController() {
+                    let levelPlayNativeAd: LevelPlayNativeAd = LevelPlayNativeAdBuilder()
+                        .withViewController(rootViewController)
+                        //.withPlacementName("o8vvkqbt8zvdv7i7") // Replace with your placement or leave empty
+                        .withDelegate(self)
+                        .build()
+                    self.nativeAdItem = levelPlayNativeAd
+                    levelPlayNativeAd.load()
+                } else {
+                    auctionBidListener.onError(error: "unity native no valid UIViewController")
+                }
             } else {
-                auctionBidListener.onError(error: "unity native no valid UIViewController")
-            }
-        } else {
-            self.bannerView = LPMBannerAdView(adUnitId: bidderPlacementId)
-            bannerView?.setDelegate(self)
-            if let adSize = adRequest.adSize {
-                self.setBannerAdSize(adSize: adSize)
-            }
-            if let viewController = adListener.getRootViewController() {
-                bannerView?.loadAd(with: viewController)
-            } else {
-                auctionBidListener.onError(error: "unity banner no valid UIViewController")
+                self.bannerView = LPMBannerAdView(adUnitId: bidderPlacementId)
+                self.bannerView?.setDelegate(self)
+                if let adSize = adRequest.adSize {
+                    self.setBannerAdSize(adSize: adSize)
+                }
+                if let viewController = adListener.getRootViewController() {
+                    self.bannerView?.loadAd(with: viewController)
+                } else {
+                    auctionBidListener.onError(error: "unity banner no valid UIViewController")
+                }
             }
         }
     }
@@ -78,7 +82,7 @@ import IronSource
                 if let error = error {
                     adapterInitListener.onComplete(adNetwork: .unity, adapterInitStatus: .SUCCESS, message: "")
                 } else {
-                    
+                    adapterInitListener.onComplete(adNetwork: .unity, adapterInitStatus: .SUCCESS, message: "")
                 }
             }
         }
@@ -239,7 +243,7 @@ extension UnityAdapter: LevelPlayNativeAdDelegate {
     }
     
     public func didFail(toLoad nativeAd: LevelPlayNativeAd, withError error: any Error) {
-        
+        print(error.localizedDescription)
     }
     
     public func didRecordImpression(_ nativeAd: LevelPlayNativeAd, with adInfo: ISAdInfo) {

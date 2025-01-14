@@ -108,7 +108,7 @@ import Foundation
         })
     }
     
-    public func loadAdCreative(bidResponse: Any, auctionBidListener: AuctionBidListener, adListener: any AdListener, context: Any, adRequest: AdRequest, bidderPlacementId: String) {
+    public func loadAdCreative(bidResponse: Any, auctionBidListener: AuctionBidListener, adListener: any AdListener, context: Any, adRequest: AdRequest, bidderPlacementId: String, bidderFormat: MSPiOSCore.AdFormat?) {
         self.adListener = adListener
         self.adRequest = adRequest
         self.auctionBidListener = auctionBidListener

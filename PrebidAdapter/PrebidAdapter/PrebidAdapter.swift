@@ -68,7 +68,7 @@ import UIKit
     
     private var adMetricReporter: AdMetricReporter?
     
-    public func loadAdCreative(bidResponse: Any, auctionBidListener: AuctionBidListener, adListener: any AdListener, context: Any, adRequest: AdRequest, bidderPlacementId: String) {
+    public func loadAdCreative(bidResponse: Any, auctionBidListener: AuctionBidListener, adListener: any AdListener, context: Any, adRequest: AdRequest, bidderPlacementId: String, bidderFormat: MSPiOSCore.AdFormat?) {
         guard bidResponse is BidResponse,
               let mBidResponse = bidResponse as? BidResponse else {
             return

@@ -81,6 +81,10 @@ public class MSPAdNetworkAdapterProvider: AdNetworkAdapterProvider {
 }
 
 public class AdNetworkAdapterStandalone: AdNetworkAdapter {
+    public func loadAdCreative(bidResponse: Any, auctionBidListener: any MSPiOSCore.AuctionBidListener, adListener: any MSPiOSCore.AdListener, context: Any, adRequest: MSPiOSCore.AdRequest, bidderPlacementId: String, bidderFormat: MSPiOSCore.AdFormat?) {
+        
+    }
+    
     public func setAdMetricReporter(adMetricReporter: any MSPiOSCore.AdMetricReporter) {
         
     }
