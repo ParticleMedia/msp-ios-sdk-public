@@ -19,7 +19,7 @@
   "exclude_files": "Classes/Exclude",
   "dependencies": {
     "IronSourceSDK": [
-      "8.5.1.0"
+      "8.6.0.0"
     ],
     "MSPSharedLibraries": [
 
