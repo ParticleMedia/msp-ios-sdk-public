@@ -72,7 +72,7 @@ import IronSource
         if let params = initParams.getParameters(),
            let appKey = params["unityAppKey"] as? String {
             let requestBuilder = LPMInitRequestBuilder(appKey: appKey)
-                .withLegacyAdFormats([IS_REWARDED_VIDEO])
+                .withLegacyAdFormats([IS_REWARDED_VIDEO, IS_NATIVE_AD])
                 .withUserId(UserDefaults.standard.string(forKey: "msp_user_id") ?? "")
             // Build the initial request
             let initRequest = requestBuilder.build()
@@ -138,6 +138,17 @@ import IronSource
             unityNativeAdView.adCallToActionView?.setTitle(nativeAd.callToAction, for: .normal)
             unityNativeAdView.adCallToActionView?.isUserInteractionEnabled = false
             unityNativeAdView.registerNativeAdViews(nativeAdItem)
+            
+            nativeAdView.addSubview(unityNativeAdView)
+            NSLayoutConstraint.activate([
+                //novaNativeAdView.centerYAnchor.constraint(equalTo: nativeAdView.centerYAnchor),
+                unityNativeAdView.leadingAnchor.constraint(equalTo: nativeAdView.leadingAnchor),
+                unityNativeAdView.trailingAnchor.constraint(equalTo: nativeAdView.trailingAnchor),
+                unityNativeAdView.topAnchor.constraint(equalTo: nativeAdView.topAnchor),
+                unityNativeAdView.bottomAnchor.constraint(equalTo: nativeAdView.bottomAnchor),
+                unityNativeAdView.widthAnchor.constraint(lessThanOrEqualTo: nativeAdView.widthAnchor),
+                unityNativeAdView.heightAnchor.constraint(lessThanOrEqualTo: nativeAdView.heightAnchor),
+            ])
             
             
         }
@@ -224,6 +235,7 @@ extension UnityAdapter: LevelPlayNativeAdDelegate {
                                          advertiser: nativeAd.advertiser ?? "",
                                          callToAction: nativeAd.callToAction ?? "")
             unityNativeAd.nativeAdItem = nativeAd
+            self.nativeAd = unityNativeAd
             unityNativeAd.adInfo["price"] = adInfo.revenue
             
             let mediaView = LevelPlayMediaView()
@@ -238,7 +250,6 @@ extension UnityAdapter: LevelPlayNativeAdDelegate {
                 self.adMetricReporter?.logAdResult(placementId: adRequest.placementId, ad: unityNativeAd, fill: true, isFromCache: false)
             }
             
-            let nativeView = ISNativeAdView()
         }
     }
     

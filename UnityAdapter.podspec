@@ -45,7 +45,8 @@ Pod::Spec.new do |spec|
   spec.source_files  = "UnityAdapter/UnityAdapter/**/*.{h,m,swift}"
   spec.exclude_files = "Classes/Exclude"
 
-  spec.dependency 'IronSourceSDK','8.5.1.0'
+  #spec.dependency 'IronSourceSDK','8.5.1.0'
+  spec.dependency 'IronSourceSDK','8.6.0.0'
   spec.dependency 'MSPSharedLibraries'
   #spec.module_map = 'GoogleAdapter/GoogleAdapter.modulemap'
 
