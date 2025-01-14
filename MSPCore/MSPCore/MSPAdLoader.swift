@@ -61,11 +61,26 @@ public class MSPAdLoader: NSObject {
     }
     
     public func getBidder(bidderInfo: BidderInfo) -> MSPiOSCore.Bidder? {
+        var bidderFormat: AdFormat?
+        switch bidderInfo.bidderFormat {
+        case "banner":
+            bidderFormat = .banner
+        case "native":
+            bidderFormat = .native
+        case "interstitial":
+            bidderFormat = .interstitial
+        case "multi_format":
+            bidderFormat = .multi_format
+        default:
+            bidderFormat = nil
+            
+        }
+        
         switch bidderInfo.name {
         case "msp":
-            return MSPMultiFormatBidder(name: "msp", bidderPlacementId: bidderInfo.bidderPlacementId)
+            return MSPMultiFormatBidder(name: "msp", bidderPlacementId: bidderInfo.bidderPlacementId, bidderFormat: bidderFormat)
         case "unity":
-            return MSP.shared.adNetworkAdapterProvider.unityManager?.getAdBidder(bidderPlacementId: bidderInfo.bidderPlacementId)
+            return MSP.shared.adNetworkAdapterProvider.unityManager?.getAdBidder(bidderPlacementId: bidderInfo.bidderPlacementId, bidderFormat: bidderFormat)
         default:
             return nil
         }

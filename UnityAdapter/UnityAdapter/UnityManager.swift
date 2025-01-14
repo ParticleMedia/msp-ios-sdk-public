@@ -13,7 +13,7 @@ public class UnityManager: AdNetworkManager {
         return UnityAdapter()
     }
     
-    public override func getAdBidder(bidderPlacementId: String) -> Bidder? {
-        return UnityBidder(name: "unity", bidderPlacementId: bidderPlacementId)
+    public override func getAdBidder(bidderPlacementId: String, bidderFormat: AdFormat?) -> Bidder? {
+        return UnityBidder(name: "unity", bidderPlacementId: bidderPlacementId, bidderFormat: bidderFormat)
     }
 }

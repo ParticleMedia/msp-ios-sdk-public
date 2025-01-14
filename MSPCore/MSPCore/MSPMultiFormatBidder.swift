@@ -34,7 +34,7 @@ extension MSPMultiFormatBidder: BidListener {
             if let adNetworkAdapter = MSP.shared.adNetworkAdapterProvider.getAdNetworkAdapter(adNetwork: adNetwork) {
                 self.adNetworkAdapter = adNetworkAdapter
                 adNetworkAdapter.setAdMetricReporter(adMetricReporter: AdMetricReporterImp())
-                adNetworkAdapter.loadAdCreative(bidResponse: bidResponse, auctionBidListener: auctionBidListener, adListener: adListener, context: self, adRequest: adRequest, bidderPlacementId: bidderPlacementId)
+                adNetworkAdapter.loadAdCreative(bidResponse: bidResponse, auctionBidListener: auctionBidListener, adListener: adListener, context: self, adRequest: adRequest, bidderPlacementId: bidderPlacementId, bidderFormat: nil)
             } else {
                 auctionBidListener.onError(error: "Ad network is not supported")
             }

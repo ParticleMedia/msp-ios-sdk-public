@@ -25,7 +25,7 @@ public class UnityBidder: MSPiOSCore.Bidder {
         
         adNetworkAdapter = UnityAdapter()
         if let auctionBidListener = self.auctionBidListener {
-            adNetworkAdapter?.loadAdCreative(bidResponse: self, auctionBidListener: auctionBidListener, adListener: adListener, context: self, adRequest: adRequest, bidderPlacementId: bidderPlacementId)
+            adNetworkAdapter?.loadAdCreative(bidResponse: self, auctionBidListener: auctionBidListener, adListener: adListener, context: self, adRequest: adRequest, bidderPlacementId: bidderPlacementId, bidderFormat: self.bidderFormat)
         }
         
         
