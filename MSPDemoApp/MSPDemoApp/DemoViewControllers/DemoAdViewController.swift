@@ -125,7 +125,7 @@ extension DemoAdViewController: AdListener {
     }
     
     func onAdLoaded(placementId: String) {
-        if let ad = AdCache.shared.getAd(placementId: placementId) {
+        if let ad = self.adLoader?.getAd(placementId: placementId) {
             self.onAdLoaded(ad: ad)
         }
     }
