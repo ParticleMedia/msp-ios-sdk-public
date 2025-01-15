@@ -50,7 +50,7 @@ class DemoAdViewController: UIViewController {
         case .unityBanner:
             return "demo-ios-article-top-unity"
         case .unityInterstitial:
-            return "demo-ios-article-top-unity"
+            return "demo-ios-launch-fullscreen-unity"
         case .unityNative:
             return "demo-ios-article-top-unity"
         case .clientBiddingBanner:

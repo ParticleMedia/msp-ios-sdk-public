@@ -22,13 +22,13 @@ public class MSPAdConfigManager {
         fetchAdConfigData { result in
             switch result {
             case .success(let configData):
-                //if let adConfigString = configData["ad_config"] as? String {
-                //    self.parseAdConfig(string: adConfigString)
-                //    UserDefaults.standard.setValue(adConfigString, forKey: self.MSP_AD_CONFIG_KEY)
-                //}
+                if let adConfigString = configData["ad_config"] as? String {
+                    self.parseAdConfig(string: adConfigString)
+                    UserDefaults.standard.setValue(adConfigString, forKey: self.MSP_AD_CONFIG_KEY)
+                }
                 
-                self.parseAdConfig(string: testAdConfigString)
-                UserDefaults.standard.setValue(testAdConfigString, forKey: self.MSP_AD_CONFIG_KEY)
+                //self.parseAdConfig(string: testAdConfigString)
+                //UserDefaults.standard.setValue(testAdConfigString, forKey: self.MSP_AD_CONFIG_KEY)
                 
             case .failure(let error):
                 print("Error fetching data: \(error)")
@@ -136,5 +136,5 @@ public struct BidderInfo: Codable {
 
 
 let testAdConfigString = """
-{"orgId":1061,"appId":1,"bundle":"com.demo.msp","placements":[{"placement_id":"demo-ios-article-top","auction_timeout":8000,"bidders":[{"name":"msp","bidder_placement_id":"demo-ios-article-top"}]},{"placement_id":"demo-ios-foryou-large","auction_timeout":8000,"bidders":[{"name":"msp","bidder_placement_id":"demo-ios-foryou-large"}]},{"placement_id":"demo-ios-launch-fullscreen","auction_timeout":8000,"bidders":[{"name":"msp","bidder_placement_id":"demo-ios-launch-fullscreen"}]},{"placement_id":"demo-ios-article-top-unity","auction_timeout":8000,"bidders":[{"name":"unity","bidder_placement_id":"iep3rxsyp9na3rw8"}]},{"placement_id":"demo-ios-article-top-client-bidding","auction_timeout":8000,"bidders":[{"name":"unity","bidder_placement_id":"iep3rxsyp9na3rw8"},{"name":"msp","bidder_placement_id":"demo-ios-article-top"}]}]}
+{"orgId":1061,"appId":1,"bundle":"com.demo.msp","placements":[{"placement_id":"demo-ios-article-top","auction_timeout":8000,"bidders":[{"name":"msp","bidder_placement_id":"demo-ios-article-top"}]},{"placement_id":"demo-ios-foryou-large","auction_timeout":8000,"bidders":[{"name":"msp","bidder_placement_id":"demo-ios-foryou-large"}]},{"placement_id":"demo-ios-launch-fullscreen","auction_timeout":8000,"bidders":[{"name":"msp","bidder_placement_id":"demo-ios-launch-fullscreen"}]},{"placement_id":"demo-ios-article-top-unity","auction_timeout":8000,"bidders":[{"name":"unity","bidder_placement_id":"iep3rxsyp9na3rw8"}]},{"placement_id":"demo-ios-launch-fullscreen-unity","auction_timeout":8000,"bidders":[{"name":"unity","bidder_placement_id":"wmgt0712uuux8ju4"}]},{"placement_id":"demo-ios-article-top-client-bidding","auction_timeout":8000,"bidders":[{"name":"unity","bidder_placement_id":"iep3rxsyp9na3rw8"},{"name":"msp","bidder_placement_id":"demo-ios-article-top"}]}]}
 """
