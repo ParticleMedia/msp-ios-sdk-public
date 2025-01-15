@@ -38,7 +38,7 @@ import IronSource
             let adFormat = bidderFormat ?? adRequest.adFormat
             
             if adFormat == .interstitial {
-                self.interstitialAdItem = LPMInterstitialAd(adUnitId: "wmgt0712uuux8ju4")
+                self.interstitialAdItem = LPMInterstitialAd(adUnitId: bidderPlacementId)
                 self.interstitialAdItem?.setDelegate(self)
                 self.interstitialAdItem?.loadAd()
             } else if adFormat == .native {
@@ -258,11 +258,15 @@ extension UnityAdapter: LevelPlayNativeAdDelegate {
     }
     
     public func didRecordImpression(_ nativeAd: LevelPlayNativeAd, with adInfo: ISAdInfo) {
-    
+        if let nativeAd = self.nativeAd {
+            adListener?.onAdImpression(ad: nativeAd)
+        }
     }
     
     public func didClick(_ nativeAd: LevelPlayNativeAd, with adInfo: ISAdInfo) {
-        
+        if let nativeAd = self.nativeAd {
+            adListener?.onAdClick(ad: nativeAd)
+        }
     }
     
 }
