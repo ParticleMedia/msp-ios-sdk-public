@@ -15,6 +15,8 @@ public class MSPAdLoader: NSObject {
     
     var bidLoader: BidLoader?
     var adNetworkAdapter: AdNetworkAdapter?
+    
+    var winnerBidderPlacementId: String?
 
     var mspAuction: MSPAuction?
     
@@ -95,6 +97,13 @@ public class MSPAdLoader: NSObject {
             return nil
         }
     }
+    
+    public func getAd(placementId: String) -> MSPAd? {
+        if let winnerBidderPlacement = self.winnerBidderPlacementId {
+            return AdCache.shared.getAd(placementId: winnerBidderPlacement)
+        }
+        return nil
+    }
     /*
     public func onBidResponse(bidResponse: Any, adNetwork: AdNetwork) {
         if let adListener = self.adListener,
@@ -122,7 +131,10 @@ public class MSPAdLoader: NSObject {
 extension MSPAdLoader: AuctionListener {
     public func onSuccess(winningBid: MSPiOSCore.AuctionBid) {
         DispatchQueue.main.async {
-            self.adListener?.onAdLoaded(placementId: winningBid.bidderPlacementId)
+            self.winnerBidderPlacementId = winningBid.bidderPlacementId
+            if let placementId = self.adRequest?.placementId {
+                self.adListener?.onAdLoaded(placementId: placementId)
+            }
         }
     }
     

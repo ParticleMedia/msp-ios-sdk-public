@@ -274,36 +274,6 @@
             endingLineNumber = "58"
             landmarkName = "config(with:)"
             landmarkType = "7">
-            <Locations>
-               <Location
-                  uuid = "D9021E94-0BF4-4566-9A97-440E0911D066 - bcf2b4129af0e3e4"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "NovaCore.NovaNativeAdMediaViewV2.config(with: NovaCore.NovaNativeAdMedia) -&gt; ()"
-                  moduleName = "NovaCore"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/huanzhizhang/Huanzhi/msp-ios-sdk/NovaCore/NovaCore/Native/NovaNativeAdMediaViewV2.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "58"
-                  endingLineNumber = "58">
-               </Location>
-               <Location
-                  uuid = "D9021E94-0BF4-4566-9A97-440E0911D066 - f950b29e9f8e67ab"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "closure #1 () -&gt; () in NovaCore.NovaNativeAdMediaViewV2.config(with: NovaCore.NovaNativeAdMedia) -&gt; ()"
-                  moduleName = "NovaCore"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/huanzhizhang/Huanzhi/msp-ios-sdk/NovaCore/NovaCore/Native/NovaNativeAdMediaViewV2.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "58"
-                  endingLineNumber = "58">
-               </Location>
-            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
