@@ -540,40 +540,10 @@
             filePath = "MSPCore/MSPCore/MSPAuction.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "72"
-            endingLineNumber = "72"
+            startingLineNumber = "73"
+            endingLineNumber = "73"
             landmarkName = "getWinnerBid()"
             landmarkType = "7">
-            <Locations>
-               <Location
-                  uuid = "CE91763F-B342-444E-86BA-536BAE06E402 - 6f8cf12e4b6f501b"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "MSPCore.MSPAuction.getWinnerBid() -&gt; Swift.Optional&lt;MSPiOSCore.AuctionBid&gt;"
-                  moduleName = "MSPDemoApp.debug.dylib"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/huanzhizhang/Huanzhi/msp-ios-sdk/MSPCore/MSPCore/MSPAuction.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "72"
-                  endingLineNumber = "72">
-               </Location>
-               <Location
-                  uuid = "CE91763F-B342-444E-86BA-536BAE06E402 - 28e6ccce6f534538"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "closure #1 () -&gt; Swift.Optional&lt;MSPiOSCore.AuctionBid&gt; in MSPCore.MSPAuction.getWinnerBid() -&gt; Swift.Optional&lt;MSPiOSCore.AuctionBid&gt;"
-                  moduleName = "MSPDemoApp.debug.dylib"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/huanzhizhang/Huanzhi/msp-ios-sdk/MSPCore/MSPCore/MSPAuction.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "72"
-                  endingLineNumber = "72">
-               </Location>
-            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -586,8 +556,8 @@
             filePath = "MSPCore/MSPCore/MSPAuction.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "24"
-            endingLineNumber = "24"
+            startingLineNumber = "25"
+            endingLineNumber = "25"
             landmarkName = "startAuction(auctionListener:adListener:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -634,8 +604,8 @@
             filePath = "MSPCore/MSPCore/MSPAuction.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "95"
-            endingLineNumber = "95"
+            startingLineNumber = "96"
+            endingLineNumber = "96"
             landmarkName = "onError(error:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -650,40 +620,10 @@
             filePath = "MSPCore/MSPCore/MSPAuction.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "58"
-            endingLineNumber = "58"
+            startingLineNumber = "59"
+            endingLineNumber = "59"
             landmarkName = "fetchBid(bidder:cacheOnly:auctionBidListener:adListener:)"
             landmarkType = "7">
-            <Locations>
-               <Location
-                  uuid = "6A1B379F-79C5-4E8C-83DF-98F1A715CF32 - 540083e5dbe6abca"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "MSPCore.MSPAuction.fetchBid(bidder: MSPiOSCore.Bidder, cacheOnly: Swift.Bool, auctionBidListener: MSPiOSCore.AuctionBidListener, adListener: Swift.Optional&lt;MSPiOSCore.AdListener&gt;) -&gt; ()"
-                  moduleName = "MSPDemoApp.debug.dylib"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/huanzhizhang/Huanzhi/msp-ios-sdk/MSPCore/MSPCore/MSPAuction.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "58"
-                  endingLineNumber = "58">
-               </Location>
-               <Location
-                  uuid = "6A1B379F-79C5-4E8C-83DF-98F1A715CF32 - 540083e5dbe6abca"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "MSPCore.MSPAuction.fetchBid(bidder: MSPiOSCore.Bidder, cacheOnly: Swift.Bool, auctionBidListener: MSPiOSCore.AuctionBidListener, adListener: Swift.Optional&lt;MSPiOSCore.AdListener&gt;) -&gt; ()"
-                  moduleName = "MSPDemoApp.debug.dylib"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/huanzhizhang/Huanzhi/msp-ios-sdk/MSPCore/MSPCore/MSPAuction.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "58"
-                  endingLineNumber = "58">
-               </Location>
-            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -696,40 +636,10 @@
             filePath = "MSPCore/MSPCore/MSPAuction.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "64"
-            endingLineNumber = "64"
+            startingLineNumber = "65"
+            endingLineNumber = "65"
             landmarkName = "fetchBid(bidder:cacheOnly:auctionBidListener:adListener:)"
             landmarkType = "7">
-            <Locations>
-               <Location
-                  uuid = "C220E13B-9A29-47BA-B2DA-438B40F7857A - 540083e5dbe6a88c"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "MSPCore.MSPAuction.fetchBid(bidder: MSPiOSCore.Bidder, cacheOnly: Swift.Bool, auctionBidListener: MSPiOSCore.AuctionBidListener, adListener: Swift.Optional&lt;MSPiOSCore.AdListener&gt;) -&gt; ()"
-                  moduleName = "MSPDemoApp.debug.dylib"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/huanzhizhang/Huanzhi/msp-ios-sdk/MSPCore/MSPCore/MSPAuction.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "64"
-                  endingLineNumber = "64">
-               </Location>
-               <Location
-                  uuid = "C220E13B-9A29-47BA-B2DA-438B40F7857A - 540083e5dbe6a88c"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "MSPCore.MSPAuction.fetchBid(bidder: MSPiOSCore.Bidder, cacheOnly: Swift.Bool, auctionBidListener: MSPiOSCore.AuctionBidListener, adListener: Swift.Optional&lt;MSPiOSCore.AdListener&gt;) -&gt; ()"
-                  moduleName = "MSPDemoApp.debug.dylib"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/huanzhizhang/Huanzhi/msp-ios-sdk/MSPCore/MSPCore/MSPAuction.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "64"
-                  endingLineNumber = "64">
-               </Location>
-            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -742,54 +652,10 @@
             filePath = "MSPCore/MSPCore/MSPAuction.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "87"
-            endingLineNumber = "87"
+            startingLineNumber = "88"
+            endingLineNumber = "88"
             landmarkName = "onSuccess(bid:)"
             landmarkType = "7">
-            <Locations>
-               <Location
-                  uuid = "3ED2A749-BCF8-49F7-BA04-E587E8478C9C - c60a7ecb89523512"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "MSPCore.MSPAuction.onError(error: Swift.String) -&gt; ()"
-                  moduleName = "MSPDemoApp.debug.dylib"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/huanzhizhang/Huanzhi/msp-ios-sdk/MSPCore/MSPCore/MSPAuction.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "87"
-                  endingLineNumber = "87">
-               </Location>
-               <Location
-                  uuid = "3ED2A749-BCF8-49F7-BA04-E587E8478C9C - e0285cfb950603f2"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "MSPCore.MSPAuction.onSuccess(bid: MSPiOSCore.AuctionBid) -&gt; ()"
-                  moduleName = "MSPDemoApp.debug.dylib"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/huanzhizhang/Huanzhi/msp-ios-sdk/MSPCore/MSPCore/MSPAuction.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "88"
-                  endingLineNumber = "88">
-               </Location>
-               <Location
-                  uuid = "3ED2A749-BCF8-49F7-BA04-E587E8478C9C - 999edc4e46178eaf"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "closure #1 @Sendable () -&gt; () in MSPCore.MSPAuction.onSuccess(bid: MSPiOSCore.AuctionBid) -&gt; ()"
-                  moduleName = "MSPDemoApp.debug.dylib"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/huanzhizhang/Huanzhi/msp-ios-sdk/MSPCore/MSPCore/MSPAuction.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "87"
-                  endingLineNumber = "87">
-               </Location>
-            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -818,54 +684,26 @@
             filePath = "MSPCore/MSPCore/MSPAuction.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "48"
-            endingLineNumber = "48"
+            startingLineNumber = "49"
+            endingLineNumber = "49"
             landmarkName = "startAuction(auctionListener:adListener:)"
             landmarkType = "7">
-            <Locations>
-               <Location
-                  uuid = "840DC594-8584-4223-ACA0-18222318A626 - fab7fa8cb0f1f2e9"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "closure #1 @Sendable () -&gt; () in closure #2 () -&gt; () in MSPCore.MSPAuction.startAuction(auctionListener: MSPiOSCore.AuctionListener, adListener: Swift.Optional&lt;MSPiOSCore.AdListener&gt;) -&gt; ()"
-                  moduleName = "MSPDemoApp.debug.dylib"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/huanzhizhang/Huanzhi/msp-ios-sdk/MSPCore/MSPCore/MSPAuction.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "48"
-                  endingLineNumber = "48">
-               </Location>
-               <Location
-                  uuid = "840DC594-8584-4223-ACA0-18222318A626 - fab7fa8cb0f1f2e9"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "closure #1 @Sendable () -&gt; () in closure #2 () -&gt; () in MSPCore.MSPAuction.startAuction(auctionListener: MSPiOSCore.AuctionListener, adListener: Swift.Optional&lt;MSPiOSCore.AdListener&gt;) -&gt; ()"
-                  moduleName = "MSPDemoApp.debug.dylib"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/huanzhizhang/Huanzhi/msp-ios-sdk/MSPCore/MSPCore/MSPAuction.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "48"
-                  endingLineNumber = "48">
-               </Location>
-               <Location
-                  uuid = "840DC594-8584-4223-ACA0-18222318A626 - 996bfaa8dd607d8c"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "closure #2 () -&gt; () in MSPCore.MSPAuction.startAuction(auctionListener: MSPiOSCore.AuctionListener, adListener: Swift.Optional&lt;MSPiOSCore.AdListener&gt;) -&gt; ()"
-                  moduleName = "MSPDemoApp.debug.dylib"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/huanzhizhang/Huanzhi/msp-ios-sdk/MSPCore/MSPCore/MSPAuction.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "48"
-                  endingLineNumber = "48">
-               </Location>
-            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "E64E1F52-C034-4BAF-9028-4A0E2FBDA8B5"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "MSPCore/MSPCore/MSPAuction.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "29"
+            endingLineNumber = "29"
+            landmarkName = "startAuction(auctionListener:adListener:)"
+            landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
    </Breakpoints>
