@@ -38,15 +38,18 @@ public class MSPAuction: Auction {
         // Wait for all responses or timeout
         DispatchQueue.global().asyncAfter(deadline: .now() + timeout, execute: timeoutWorkItem)
         
-        dispatchGroup.notify(queue: .main) { [weak self] in
-            timeoutWorkItem.cancel()
-            self?.biddingDispatchQueue.async {
-                if let winnerBid = self?.getWinnerBid() {
-                    auctionListener.onSuccess(winningBid: winnerBid)
-                } else {
-                    auctionListener.onError(error: "client auction no winning bid")
-                }
+        dispatchGroup.notify(queue: biddingDispatchQueue) { [weak self] in
+            if let isTimeout = self?.isTimeout,
+               isTimeout {
+                return
             }
+            timeoutWorkItem.cancel()
+            if let winnerBid = self?.getWinnerBid() {
+                auctionListener.onSuccess(winningBid: winnerBid)
+            } else {
+                auctionListener.onError(error: "client auction no winning bid")
+            }
+            
         }
     }
     
@@ -65,14 +68,16 @@ public class MSPAuction: Auction {
     }
     
     private func getWinnerBid() -> AuctionBid? {
-        guard let auctionBidList = auctionBidList,
-              var winnerBid = auctionBidList.first else {return nil}
-        for auctionBid in auctionBidList {
-            if auctionBid.ecpm > winnerBid.ecpm {
-                winnerBid = auctionBid
+        biddingDispatchQueue.sync {
+            guard let auctionBidList = self.auctionBidList,
+                  var winnerBid = auctionBidList.first else {return nil}
+            for auctionBid in auctionBidList {
+                if auctionBid.ecpm > winnerBid.ecpm {
+                    winnerBid = auctionBid
+                }
             }
+            return winnerBid
         }
-        return winnerBid
     }
 }
 
@@ -80,11 +85,14 @@ extension MSPAuction: AuctionBidListener {
     public func onSuccess(bid: MSPiOSCore.AuctionBid) {
         self.biddingDispatchQueue.async {
             self.auctionBidList?.append(bid)
+            self.dispatchGroup.leave()
         }
-        self.dispatchGroup.leave()
+        
     }
     
     public func onError(error: String) {
-        self.dispatchGroup.leave()
+        self.biddingDispatchQueue.async {
+            self.dispatchGroup.leave()
+        }
     }
 }

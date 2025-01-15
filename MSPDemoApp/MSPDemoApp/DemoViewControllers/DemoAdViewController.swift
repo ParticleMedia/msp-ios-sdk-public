@@ -18,6 +18,7 @@ public enum AdType: String {
     case unityBanner
     case unityInterstitial
     case unityNative
+    case clientBiddingBanner
 }
 
 class DemoAdViewController: UIViewController {
@@ -52,12 +53,14 @@ class DemoAdViewController: UIViewController {
             return "demo-ios-article-top-unity"
         case .unityNative:
             return "demo-ios-article-top-unity"
+        case .clientBiddingBanner:
+            return "demo-ios-article-top-client-bidding"
         }
     }()
     
     private lazy var adFormat: MSPiOSCore.AdFormat = {
         switch adType {
-        case .prebidBanner, .googleBanner, .unityBanner :
+        case .prebidBanner, .googleBanner, .unityBanner, .clientBiddingBanner :
             return .banner
     
         case .googleNative, .novaNative, .facebookNative, .unityNative:
@@ -92,6 +95,8 @@ class DemoAdViewController: UIViewController {
             testParams["test"] = "{\"ad_network\":\"msp_google\",\"test_ad\":true}"
         } else if adType == .facebookNative || adType == .facebookInterstitial {
             testParams["test"] = "{\"ad_network\":\"msp_fb\",\"test_ad\":true}"
+        } else if adType == .clientBiddingBanner {
+            testParams["test"] = "{\"ad_network\":\"msp_google\",\"test_ad\":true}"
         }
          
         

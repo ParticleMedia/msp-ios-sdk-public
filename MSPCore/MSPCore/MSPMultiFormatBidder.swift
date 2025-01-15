@@ -22,7 +22,7 @@ public class MSPMultiFormatBidder: MSPiOSCore.Bidder {
         self.adListener = adListener
         self.adRequest = adRequest
         self.bidLoader = prebidBidLoader
-        prebidBidLoader.loadBid(placementId: adRequest.placementId, adParams: adRequest.customParams, bidListener: self, adRequest: adRequest)
+        prebidBidLoader.loadBid(placementId: bidderPlacementId, adParams: adRequest.customParams, bidListener: self, adRequest: adRequest)
     }
 }
 
