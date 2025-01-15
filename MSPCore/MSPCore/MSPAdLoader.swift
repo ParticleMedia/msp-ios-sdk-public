@@ -34,25 +34,35 @@ public class MSPAdLoader: NSObject {
         self.bidLoader = MSP.shared.bidLoaderProvider.getBidLoader()
         bidLoader?.loadBid(placementId: placementId, adParams: adRequest.customParams, bidListener: self, adRequest: adRequest)
          */
-        let mspAuction = MSPAuction(bidders: getBidders(placementId: placementId), cacheOnly: false, timeout: 5000)
-        self.mspAuction = mspAuction
-        mspAuction.adRequest = adRequest
-        mspAuction.startAuction(auctionListener: self, adListener: adListener)
+        if let placement = getPlacement(placementId: placementId) {
+            let mspAuction = MSPAuction(bidders: getBidders(placement: placement), cacheOnly: false, timeout: Double(placement.auctionTimeout ?? 8))
+            self.mspAuction = mspAuction
+            mspAuction.adRequest = adRequest
+            mspAuction.startAuction(auctionListener: self, adListener: adListener)
+        } else {
+            adListener.onError(msg: "invalid placement")
+        }
     }
     
-    public func getBidders(placementId: String) -> [MSPiOSCore.Bidder] {
-        var bidders = [MSPiOSCore.Bidder]()
-        
+    public func getPlacement(placementId: String) -> Placement? {
         if let adConfig = MSPAdConfigManager.shared.adConfig,
            let placements = adConfig.placements {
             for placement in placements {
-                if placement.placementId == placementId,
-                   let bidderInfoList = placement.bidders {
-                    for bidderInfo in bidderInfoList {
-                        if let bidder = getBidder(bidderInfo: bidderInfo) {
-                            bidders.append(bidder)
-                        }
-                    }
+                if placement.placementId == placementId {
+                    return placement
+                }
+            }
+        }
+        return nil
+    }
+    
+    public func getBidders(placement: Placement) -> [MSPiOSCore.Bidder] {
+        var bidders = [MSPiOSCore.Bidder]()
+        
+        if let bidderInfoList = placement.bidders {
+            for bidderInfo in bidderInfoList {
+                if let bidder = getBidder(bidderInfo: bidderInfo) {
+                    bidders.append(bidder)
                 }
             }
         }
