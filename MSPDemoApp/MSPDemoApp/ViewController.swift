@@ -95,6 +95,13 @@ class ViewController: UIViewController {
                 }, for: .touchUpInside)
                 button11.frame = CGRect(x: 100, y: 600, width: 200, height: 50)
                 view.addSubview(button11)
+        let button12 = UIButton(type: .system)
+                button12.setTitle("Client Bidding Banner", for: .normal)
+                button12.addAction(UIAction { [weak self] _ in
+                    self?.openDemoAdPage(adType: .clientBiddingBanner)
+                }, for: .touchUpInside)
+                button12.frame = CGRect(x: 100, y: 650, width: 200, height: 50)
+                view.addSubview(button12)
     }
 
     func openDemoAdPage(adType: AdType) {
