@@ -179,21 +179,23 @@ import IronSource
 
 extension UnityAdapter: LPMBannerAdViewDelegate, LPMInterstitialAdDelegate {
     public func didLoadAd(with adInfo: LPMAdInfo) {
-        self.bannerView?.pauseAutoRefresh()
-        if let bannerView = self.bannerView,
-           let auctionBidListener = self.auctionBidListener {
-            let bannerAd = BannerAd(adView: bannerView, adNetworkAdapter: self)
-            self.bannerAd = bannerAd
-            bannerAd.adInfo["price"] = adInfo.revenue
-            self.handleAdLoaded(ad: bannerAd, auctionBidListener: auctionBidListener, bidderPlacementId: bidderPlacementId ?? "unity_placement_id")
-        } else if let interstitialAdItem = self.interstitialAdItem,
-                  let auctionBidListener = self.auctionBidListener {
-            let interstitialAd = UnityInterstitialAd(adNetworkAdapter: self)
-            interstitialAd.interstitialAdItem = interstitialAdItem
-            interstitialAd.rootViewController = adListener?.getRootViewController()
-            self.interstitialAd = interstitialAd
-            interstitialAd.adInfo["price"] = adInfo.revenue
-            self.handleAdLoaded(ad: interstitialAd, auctionBidListener: auctionBidListener, bidderPlacementId: bidderPlacementId ?? "unity_placement_id")
+        DispatchQueue.main.async {
+            self.bannerView?.pauseAutoRefresh()
+            if let bannerView = self.bannerView,
+               let auctionBidListener = self.auctionBidListener {
+                let bannerAd = BannerAd(adView: bannerView, adNetworkAdapter: self)
+                self.bannerAd = bannerAd
+                bannerAd.adInfo["price"] = adInfo.revenue
+                self.handleAdLoaded(ad: bannerAd, auctionBidListener: auctionBidListener, bidderPlacementId: self.bidderPlacementId ?? "unity_placement_id")
+            } else if let interstitialAdItem = self.interstitialAdItem,
+                      let auctionBidListener = self.auctionBidListener {
+                let interstitialAd = UnityInterstitialAd(adNetworkAdapter: self)
+                interstitialAd.interstitialAdItem = interstitialAdItem
+                interstitialAd.rootViewController = self.adListener?.getRootViewController()
+                self.interstitialAd = interstitialAd
+                interstitialAd.adInfo["price"] = adInfo.revenue
+                self.handleAdLoaded(ad: interstitialAd, auctionBidListener: auctionBidListener, bidderPlacementId: self.bidderPlacementId ?? "unity_placement_id")
+            }
         }
     }
     
@@ -227,29 +229,31 @@ extension UnityAdapter: LPMBannerAdViewDelegate, LPMInterstitialAdDelegate {
 
 extension UnityAdapter: LevelPlayNativeAdDelegate {
     public func didLoad(_ nativeAd: LevelPlayNativeAd, with adInfo: ISAdInfo) {
-        self.nativeAdItem = nativeAd
-        if let auctionBidListener = self.auctionBidListener {
-            let unityNativeAd = UnityNativeAd(adNetworkAdapter: self,
-                                         title: nativeAd.title ?? "",
-                                         body: nativeAd.body ?? "",
-                                         advertiser: nativeAd.advertiser ?? "",
-                                         callToAction: nativeAd.callToAction ?? "")
-            unityNativeAd.nativeAdItem = nativeAd
-            self.nativeAd = unityNativeAd
-            unityNativeAd.adInfo["price"] = adInfo.revenue
-            
-            let mediaView = LevelPlayMediaView()
-            mediaView.translatesAutoresizingMaskIntoConstraints = false
-            unityNativeAd.mediaView = mediaView
-            
-            if let adListener = self.adListener,
-               let adRequest = self.adRequest,
-               let auctionBidListener = self.auctionBidListener {
-                //handleAdLoaded(ad: googleNativeAd, listener: adListener, adRequest: adRequest)
-                self.handleAdLoaded(ad: unityNativeAd, auctionBidListener: auctionBidListener, bidderPlacementId: self.bidderPlacementId ?? adRequest.placementId)
-                self.adMetricReporter?.logAdResult(placementId: adRequest.placementId, ad: unityNativeAd, fill: true, isFromCache: false)
+        DispatchQueue.main.async {
+            self.nativeAdItem = nativeAd
+            if let auctionBidListener = self.auctionBidListener {
+                let unityNativeAd = UnityNativeAd(adNetworkAdapter: self,
+                                                  title: nativeAd.title ?? "",
+                                                  body: nativeAd.body ?? "",
+                                                  advertiser: nativeAd.advertiser ?? "",
+                                                  callToAction: nativeAd.callToAction ?? "")
+                unityNativeAd.nativeAdItem = nativeAd
+                self.nativeAd = unityNativeAd
+                unityNativeAd.adInfo["price"] = adInfo.revenue
+                
+                let mediaView = LevelPlayMediaView()
+                mediaView.translatesAutoresizingMaskIntoConstraints = false
+                unityNativeAd.mediaView = mediaView
+                
+                if let adListener = self.adListener,
+                   let adRequest = self.adRequest,
+                   let auctionBidListener = self.auctionBidListener {
+                    //handleAdLoaded(ad: googleNativeAd, listener: adListener, adRequest: adRequest)
+                    self.handleAdLoaded(ad: unityNativeAd, auctionBidListener: auctionBidListener, bidderPlacementId: self.bidderPlacementId ?? adRequest.placementId)
+                    self.adMetricReporter?.logAdResult(placementId: adRequest.placementId, ad: unityNativeAd, fill: true, isFromCache: false)
+                }
+                
             }
-            
         }
     }
     
