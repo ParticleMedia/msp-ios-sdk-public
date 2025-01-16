@@ -9,8 +9,6 @@ import Foundation
 import MSPiOSCore
 
 public class MSPAuction: Auction {
-    // To do: add timeout item and add a specific queue for bidding job
-    // To do: set time out
     
     private let biddingDispatchQueue = DispatchQueue(label: "com.msp.ads.bidding", attributes: .concurrent)
     private var dispatchGroup = DispatchGroup()

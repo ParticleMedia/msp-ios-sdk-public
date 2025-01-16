@@ -10,8 +10,6 @@ import MSPiOSCore
 import IronSource
 
 @objc public class UnityAdapter : NSObject, AdNetworkAdapter {
-    // to do: interstitial and native, multiformat
-    // to do: make it use main thread like other adapters
     public weak var adListener: AdListener?
     public var adRequest: AdRequest?
     public weak var auctionBidListener: AuctionBidListener?
