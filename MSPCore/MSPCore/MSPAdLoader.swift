@@ -26,16 +26,7 @@ public class MSPAdLoader: NSObject {
         MESMetricReporter.shared.logAdRequest(adRequest: adRequest)
         self.adListener = adListener
         self.adRequest = adRequest
-        /*
-        if let ad = AdCache.shared.peakAd(placementId: placementId) {
-            MESMetricReporter.shared.logAdResult(placementId: placementId, ad: ad, fill: true, isFromCache: true)
-            adListener.onAdLoaded(placementId: placementId)
-            return
-        }
         
-        self.bidLoader = MSP.shared.bidLoaderProvider.getBidLoader()
-        bidLoader?.loadBid(placementId: placementId, adParams: adRequest.customParams, bidListener: self, adRequest: adRequest)
-         */
         if let placement = getPlacement(placementId: placementId) {
             let mspAuction = MSPAuction(bidders: getBidders(placement: placement), cacheOnly: false, timeout: Double(placement.auctionTimeout ?? 8))
             self.mspAuction = mspAuction
@@ -104,26 +95,6 @@ public class MSPAdLoader: NSObject {
         }
         return nil
     }
-    /*
-    public func onBidResponse(bidResponse: Any, adNetwork: AdNetwork) {
-        if let adListener = self.adListener,
-           let adRequest = self.adRequest {
-            if let adNetworkAdapter = MSP.shared.adNetworkAdapterProvider.getAdNetworkAdapter(adNetwork: adNetwork) {
-                self.adNetworkAdapter = adNetworkAdapter
-                adNetworkAdapter.setAdMetricReporter(adMetricReporter: AdMetricReporterImp())
-                adNetworkAdapter.loadAdCreative(bidResponse: bidResponse, auctionBidListener: self, adListener: adListener, context: self, adRequest: adRequest)
-            } else {
-                adListener.onError(msg: "Ad network is not supported")
-            }
-        } else {
-            adListener?.onError(msg: "Invalid request")
-        }
-    }
-    
-    public func onError(msg: String) {
-        adListener?.onError(msg: msg)
-    }
-     */
 }
 
 
