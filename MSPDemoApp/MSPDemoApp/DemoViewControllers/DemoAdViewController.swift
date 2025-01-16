@@ -147,7 +147,7 @@ extension DemoAdViewController: AdListener {
         if ad is MSPiOSCore.NativeAd,
            let nativeAd = ad as? MSPiOSCore.NativeAd {
             
-            DispatchQueue.main.async{
+            DispatchQueue.main.async {
                 let nativeAdContainer = DemoNativeAdContainer(frame: CGRect(x: 0, y: 0, width: 300, height: 250))
                 let nativeAdView = NativeAdView(nativeAd: nativeAd, nativeAdContainer: nativeAdContainer)
                 self.nativeAdView = nativeAdView
