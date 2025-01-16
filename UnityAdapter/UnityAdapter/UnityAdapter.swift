@@ -27,7 +27,9 @@ import IronSource
     private var adMetricReporter: AdMetricReporter?
     
     public func loadAdCreative(bidResponse: Any, auctionBidListener: any MSPiOSCore.AuctionBidListener, adListener: any MSPiOSCore.AdListener, context: Any, adRequest: MSPiOSCore.AdRequest, bidderPlacementId: String, bidderFormat: MSPiOSCore.AdFormat?) {
+        
         DispatchQueue.main.async {
+            
             self.auctionBidListener = auctionBidListener
             self.adListener = adListener
             self.adRequest = adRequest
@@ -211,10 +213,20 @@ extension UnityAdapter: LPMBannerAdViewDelegate, LPMInterstitialAdDelegate {
     }
     
     public func didDisplayAd(with adInfo: LPMAdInfo) {
-        if let bannerAd = self.bannerAd {
-            adListener?.onAdImpression(ad: bannerAd)
-        } else if let interstitialAd = self.interstitialAd {
-            adListener?.onAdImpression(ad: interstitialAd)
+        DispatchQueue.main.async {
+            if let adRequest = self.adRequest {
+                var params = [String:Any?]()
+                params["seat"] = "unity"
+                params["bidderPlacementId"] = self.bidderPlacementId
+                params["price"] = adInfo.revenue
+                if let bannerAd = self.bannerAd {
+                    self.adListener?.onAdImpression(ad: bannerAd)
+                    self.adMetricReporter?.logAdImpression(ad: bannerAd, adRequest: adRequest, bidResponse: self, params: params)
+                } else if let interstitialAd = self.interstitialAd {
+                    self.adListener?.onAdImpression(ad: interstitialAd)
+                    self.adMetricReporter?.logAdImpression(ad: interstitialAd, adRequest: adRequest, bidResponse: self, params: params)
+                }
+            }
         }
     }
     
@@ -260,8 +272,16 @@ extension UnityAdapter: LevelPlayNativeAdDelegate {
     }
     
     public func didRecordImpression(_ nativeAd: LevelPlayNativeAd, with adInfo: ISAdInfo) {
-        if let nativeAd = self.nativeAd {
-            adListener?.onAdImpression(ad: nativeAd)
+        DispatchQueue.main.async{
+            if let nativeAd = self.nativeAd,
+               let adRequest = self.adRequest {
+                self.adListener?.onAdImpression(ad: nativeAd)
+                var params = [String:Any?]()
+                params["seat"] = "unity"
+                params["bidderPlacementId"] = self.bidderPlacementId
+                params["price"] = adInfo.revenue
+                self.adMetricReporter?.logAdImpression(ad: nativeAd, adRequest: adRequest, bidResponse: self, params: params)
+            }
         }
     }
     
