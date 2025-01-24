@@ -92,8 +92,23 @@ public class MSPAdLoader: NSObject {
     }
     
     public func getAd(placementId: String) -> MSPAd? {
-        if let winnerBidderPlacement = self.winnerBidderPlacementId {
-            return AdCache.shared.getAd(placementId: winnerBidderPlacement)
+        
+        var winnerPlacementId = ""
+        var winnerPrice = 0.0
+        if let placement = getPlacement(placementId: placementId),
+           let bidderInfoList = placement.bidders {
+            for bidderInfo in bidderInfoList {
+                let bidderPlacementId = bidderInfo.bidderPlacementId
+                if let ad = AdCache.shared.peakAd(placementId: bidderPlacementId),
+                   let price = ad.adInfo["price"] as? Double,
+                   price > winnerPrice {
+                    winnerPrice = price
+                    winnerPlacementId = bidderPlacementId
+                }
+            }
+            if let ad = AdCache.shared.getAd(placementId: winnerPlacementId) {
+                return ad
+            }
         }
         return nil
     }

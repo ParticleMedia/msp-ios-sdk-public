@@ -272,7 +272,7 @@ extension UnityAdapter: LevelPlayNativeAdDelegate {
     }
     
     public func didRecordImpression(_ nativeAd: LevelPlayNativeAd, with adInfo: ISAdInfo) {
-        DispatchQueue.main.async{
+        DispatchQueue.main.async {
             if let nativeAd = self.nativeAd,
                let adRequest = self.adRequest {
                 self.adListener?.onAdImpression(ad: nativeAd)
