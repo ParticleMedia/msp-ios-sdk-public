@@ -9,6 +9,10 @@ PODS:
     - Google-Mobile-Ads-SDK (= 11.2.0)
     - MSPSharedLibraries
   - GoogleUserMessagingPlatform (2.7.0)
+  - InmobiAdapter (0.0.92):
+    - InMobiSDK (= 10.8.0)
+    - MSPSharedLibraries
+  - InMobiSDK (10.8.0)
   - IronSourceSDK (8.6.0.0)
   - MSPCore (0.0.93):
     - MSPSharedLibraries
@@ -28,6 +32,7 @@ PODS:
 DEPENDENCIES:
   - FacebookAdapter (from `./`)
   - GoogleAdapter (from `./`)
+  - InmobiAdapter (from `./`)
   - MSPCore (from `./`)
   - MSPSharedLibraries (from `./`)
   - NovaAdapter (from `./`)
@@ -40,6 +45,7 @@ SPEC REPOS:
     - FBAudienceNetwork
     - Google-Mobile-Ads-SDK
     - GoogleUserMessagingPlatform
+    - InMobiSDK
     - IronSourceSDK
     - Shimmer
     - SwiftProtobuf
@@ -48,6 +54,8 @@ EXTERNAL SOURCES:
   FacebookAdapter:
     :path: "./"
   GoogleAdapter:
+    :path: "./"
+  InmobiAdapter:
     :path: "./"
   MSPCore:
     :path: "./"
@@ -66,6 +74,8 @@ SPEC CHECKSUMS:
   Google-Mobile-Ads-SDK: 5a6d005a6cb5b5e8f4c7b69ca05cdea79c181139
   GoogleAdapter: 9c1f31f37c6bd649a88a4d6354be3159582a426e
   GoogleUserMessagingPlatform: a8b56893477f67212fbc8411c139e61d463349f5
+  InmobiAdapter: 10899618680d3793b6b4ebce115d47fdf65a176d
+  InMobiSDK: 0cfb1a1eb5112fa0236ae1fab549e31fb96c9566
   IronSourceSDK: ae03a5aef5cc17a9868540aa409098e9614dfd48
   MSPCore: 17e487644c7e847b715a2bd41eb3326b3f02a7e8
   MSPSharedLibraries: b94b7149e712d215a38a9eff261e012f1bde2d66
@@ -75,6 +85,6 @@ SPEC CHECKSUMS:
   SwiftProtobuf: afced68785854575756db965e9da52bbf3dc45e7
   UnityAdapter: 1cbd3be5c5635006db1c2b8dfcac34a7f247843e
 
-PODFILE CHECKSUM: 2af01303cf582d2a646527c8aec57b6e21567b0a
+PODFILE CHECKSUM: 6083ce7c76f00b59495d5221542c754aab8da403
 
 COCOAPODS: 1.15.2
