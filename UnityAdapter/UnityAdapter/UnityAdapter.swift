@@ -269,6 +269,7 @@ extension UnityAdapter: LevelPlayNativeAdDelegate {
     
     public func didFail(toLoad nativeAd: LevelPlayNativeAd, withError error: any Error) {
         print(error.localizedDescription)
+        self.auctionBidListener?.onError(error: "fail to load ad")
     }
     
     public func didRecordImpression(_ nativeAd: LevelPlayNativeAd, with adInfo: ISAdInfo) {

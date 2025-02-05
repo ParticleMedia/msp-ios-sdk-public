@@ -106,6 +106,7 @@ target 'MSPDemoApp' do
   pod 'FacebookAdapter', :path => './', :modular_headers => true
   #pod 'IronSourceSDK','8.6.0.0', :modular_headers => true
   pod 'UnityAdapter', :path => './', :modular_headers => true
+  pod 'InmobiAdapter', :path => './', :modular_headers => true
   #pod 'GoogleMobileAds', :modular_headers => true
   #pod 'NovaAdapter', :path => './', :modular_headers => true
   #pod 'MetaAdapter', :path => './', :modular_headers => true
