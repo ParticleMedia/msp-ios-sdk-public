@@ -1,0 +1,1 @@
+../../../Target Support Files/MintegralAdapter/MintegralAdapter-umbrella.h

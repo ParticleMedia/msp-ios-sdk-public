@@ -227,6 +227,12 @@ extension InmobiAdapter: IMInterstitialDelegate {
             adListener?.onAdClick(ad: interstitialAd)
         }
     }
+    
+    public func interstitialDidDismiss(_ interstitial: InMobiSDK.IMInterstitial) {
+        if let interstitialAd = self.interstitialAd {
+            adListener?.onAdDismissed(ad: interstitialAd)
+        }
+    }
 }
 
 extension InmobiAdapter: IMNativeDelegate {

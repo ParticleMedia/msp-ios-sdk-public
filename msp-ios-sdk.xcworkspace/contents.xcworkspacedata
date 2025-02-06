@@ -2,6 +2,12 @@
 <Workspace
    version = "1.0">
    <FileRef
+      location = "group:MintegralAdapter/MintegralAdapter.xcodeproj">
+   </FileRef>
+   <FileRef
+      location = "group:MobilefuseAdapter/MobilefuseAdapter.xcodeproj">
+   </FileRef>
+   <FileRef
       location = "group:InmobiAdapter/InmobiAdapter.xcodeproj">
    </FileRef>
    <FileRef
