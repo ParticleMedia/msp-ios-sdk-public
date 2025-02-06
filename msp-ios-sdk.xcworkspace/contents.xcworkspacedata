@@ -2,6 +2,9 @@
 <Workspace
    version = "1.0">
    <FileRef
+      location = "group:PubmaticAdapter/PubmaticAdapter.xcodeproj">
+   </FileRef>
+   <FileRef
       location = "group:MintegralAdapter/MintegralAdapter.xcodeproj">
    </FileRef>
    <FileRef

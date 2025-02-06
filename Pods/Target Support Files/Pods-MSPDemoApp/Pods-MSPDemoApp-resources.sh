@@ -102,6 +102,9 @@ if [[ "$CONFIGURATION" == "Debug" ]]; then
   install_resource "${PODS_CONFIGURATION_BUILD_DIR}/GoogleUserMessagingPlatform/UserMessagingPlatformResources.bundle"
   install_resource "${PODS_CONFIGURATION_BUILD_DIR}/IronSourceSDK/IronSourcePrivacyInfo.bundle"
   install_resource "${PODS_CONFIGURATION_BUILD_DIR}/MintegralAdSDK/MTGSDK.bundle"
+  install_resource "${PODS_CONFIGURATION_BUILD_DIR}/OpenWrapSDK/OpenWrapSDKPrivacyManifest.bundle"
+  install_resource "${PODS_ROOT}/OpenWrapSDK/OpenWrapSDK/POBResources.bundle"
+  install_resource "${PODS_ROOT}/OpenWrapSDK/OpenWrapSDK/POBNativeResources.bundle"
 fi
 if [[ "$CONFIGURATION" == "Release" ]]; then
   install_resource "${PODS_CONFIGURATION_BUILD_DIR}/FBAudienceNetwork/FBAudienceNetwork.bundle"
@@ -109,6 +112,9 @@ if [[ "$CONFIGURATION" == "Release" ]]; then
   install_resource "${PODS_CONFIGURATION_BUILD_DIR}/GoogleUserMessagingPlatform/UserMessagingPlatformResources.bundle"
   install_resource "${PODS_CONFIGURATION_BUILD_DIR}/IronSourceSDK/IronSourcePrivacyInfo.bundle"
   install_resource "${PODS_CONFIGURATION_BUILD_DIR}/MintegralAdSDK/MTGSDK.bundle"
+  install_resource "${PODS_CONFIGURATION_BUILD_DIR}/OpenWrapSDK/OpenWrapSDKPrivacyManifest.bundle"
+  install_resource "${PODS_ROOT}/OpenWrapSDK/OpenWrapSDK/POBResources.bundle"
+  install_resource "${PODS_ROOT}/OpenWrapSDK/OpenWrapSDK/POBNativeResources.bundle"
 fi
 
 mkdir -p "${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}"

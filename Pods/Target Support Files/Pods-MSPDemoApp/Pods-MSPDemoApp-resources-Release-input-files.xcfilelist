@@ -4,3 +4,6 @@ ${PODS_CONFIGURATION_BUILD_DIR}/Google-Mobile-Ads-SDK/GoogleMobileAdsResources.b
 ${PODS_CONFIGURATION_BUILD_DIR}/GoogleUserMessagingPlatform/UserMessagingPlatformResources.bundle
 ${PODS_CONFIGURATION_BUILD_DIR}/IronSourceSDK/IronSourcePrivacyInfo.bundle
 ${PODS_CONFIGURATION_BUILD_DIR}/MintegralAdSDK/MTGSDK.bundle
+${PODS_CONFIGURATION_BUILD_DIR}/OpenWrapSDK/OpenWrapSDKPrivacyManifest.bundle
+${PODS_ROOT}/OpenWrapSDK/OpenWrapSDK/POBResources.bundle
+${PODS_ROOT}/OpenWrapSDK/OpenWrapSDK/POBNativeResources.bundle

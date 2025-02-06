@@ -109,6 +109,7 @@ target 'MSPDemoApp' do
   pod 'InmobiAdapter', :path => './', :modular_headers => true
   pod 'MobilefuseAdapter', :path => './', :modular_headers => true
   pod 'MintegralAdapter', :path => './', :modular_headers => true
+  pod 'PubmaticAdapter', :path => './', :modular_headers => true
   #pod 'GoogleMobileAds', :modular_headers => true
   #pod 'NovaAdapter', :path => './', :modular_headers => true
   #pod 'MetaAdapter', :path => './', :modular_headers => true
