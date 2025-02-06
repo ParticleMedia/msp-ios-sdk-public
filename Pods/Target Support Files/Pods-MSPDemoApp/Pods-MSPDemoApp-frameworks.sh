@@ -181,6 +181,7 @@ if [[ "$CONFIGURATION" == "Debug" ]]; then
   install_framework "${PODS_XCFRAMEWORKS_BUILD_DIR}/MSPSharedLibraries/MSPiOSCore.framework"
   install_framework "${PODS_XCFRAMEWORKS_BUILD_DIR}/MobileFuseSDK/MobileFuseSDK.framework"
   install_framework "${PODS_XCFRAMEWORKS_BUILD_DIR}/NovaAdapter/NovaCore.framework"
+  install_framework "${PODS_XCFRAMEWORKS_BUILD_DIR}/OpenWrapSDK/OpenWrap/OMSDK_Pubmatic.framework"
 fi
 if [[ "$CONFIGURATION" == "Release" ]]; then
   install_framework "${PODS_XCFRAMEWORKS_BUILD_DIR}/InMobiSDK/InMobiSDK.framework"
@@ -188,6 +189,7 @@ if [[ "$CONFIGURATION" == "Release" ]]; then
   install_framework "${PODS_XCFRAMEWORKS_BUILD_DIR}/MSPSharedLibraries/MSPiOSCore.framework"
   install_framework "${PODS_XCFRAMEWORKS_BUILD_DIR}/MobileFuseSDK/MobileFuseSDK.framework"
   install_framework "${PODS_XCFRAMEWORKS_BUILD_DIR}/NovaAdapter/NovaCore.framework"
+  install_framework "${PODS_XCFRAMEWORKS_BUILD_DIR}/OpenWrapSDK/OpenWrap/OMSDK_Pubmatic.framework"
 fi
 if [ "${COCOAPODS_PARALLEL_CODE_SIGN}" == "true" ]; then
   wait

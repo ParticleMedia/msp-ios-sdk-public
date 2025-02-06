@@ -46,8 +46,14 @@ PODS:
   - MSPSharedLibraries (0.0.96)
   - NovaAdapter (0.0.95):
     - MSPSharedLibraries
+  - OpenWrapSDK (4.0.0):
+    - OpenWrapSDK/OpenWrap (= 4.0.0)
+  - OpenWrapSDK/OpenWrap (4.0.0)
   - PrebidAdapter (0.0.92):
     - MSPSharedLibraries
+  - PubmaticAdapter (0.0.92):
+    - MSPSharedLibraries
+    - OpenWrapSDK (= 4.0.0)
   - Shimmer (1.0.2)
   - SwiftProtobuf (1.21.0)
   - UnityAdapter (0.0.92):
@@ -64,6 +70,7 @@ DEPENDENCIES:
   - MSPSharedLibraries (from `./`)
   - NovaAdapter (from `./`)
   - PrebidAdapter (from `./`)
+  - PubmaticAdapter (from `./`)
   - Shimmer
   - UnityAdapter (from `./`)
 
@@ -76,6 +83,7 @@ SPEC REPOS:
     - IronSourceSDK
     - MintegralAdSDK
     - MobileFuseSDK
+    - OpenWrapSDK
     - Shimmer
     - SwiftProtobuf
 
@@ -98,6 +106,8 @@ EXTERNAL SOURCES:
     :path: "./"
   PrebidAdapter:
     :path: "./"
+  PubmaticAdapter:
+    :path: "./"
   UnityAdapter:
     :path: "./"
 
@@ -117,11 +127,13 @@ SPEC CHECKSUMS:
   MSPCore: 17e487644c7e847b715a2bd41eb3326b3f02a7e8
   MSPSharedLibraries: b94b7149e712d215a38a9eff261e012f1bde2d66
   NovaAdapter: 988ba259ef433c28ccb2ed6d337362549936802a
+  OpenWrapSDK: b01d82f549472b23094dac1645a3eaa28b9830ce
   PrebidAdapter: b468910148971e7487425c82a2251c79959e3f18
+  PubmaticAdapter: fcd022a8f46da2ab6f32582e39b8b61da0bdfcc6
   Shimmer: c5374be1c2b0c9e292fb05b339a513cf291cac86
   SwiftProtobuf: afced68785854575756db965e9da52bbf3dc45e7
   UnityAdapter: 1cbd3be5c5635006db1c2b8dfcac34a7f247843e
 
-PODFILE CHECKSUM: 295ad476c4f587bc64a8a4a88f2a1e3f09cb3e46
+PODFILE CHECKSUM: c25e9924340db210e19cd690f591b5d1ba8114da
 
 COCOAPODS: 1.15.2
