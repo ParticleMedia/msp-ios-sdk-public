@@ -91,6 +91,15 @@ This EULA and all disputes arising thereof shall be subject to the laws of Singa
 
 https://platform.ironsrc.com/partners/terms-and-conditions-new-user
 
+## MintegralAdSDK
+
+https://raw.githubusercontent.com/Mintegral-official/MintegralAdSDK-iOS-new/master/LICENSE.txt
+
+
+## MobileFuseSDK
+
+Copyright 2022 MobileFuse, LLC
+
 ## SwiftProtobuf
 
                                  Apache License

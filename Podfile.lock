@@ -14,6 +14,31 @@ PODS:
     - MSPSharedLibraries
   - InMobiSDK (10.8.0)
   - IronSourceSDK (8.6.0.0)
+  - MintegralAdapter (0.0.92):
+    - MintegralAdSDK/BidBannerAd
+    - MintegralAdSDK/BidNativeAd
+    - MintegralAdSDK/BidNewInterstitialAd
+    - MSPSharedLibraries
+  - MintegralAdSDK/BannerAd (7.7.5):
+    - MintegralAdSDK/NativeAd
+  - MintegralAdSDK/BidBannerAd (7.7.5):
+    - MintegralAdSDK/BannerAd
+    - MintegralAdSDK/BidNativeAd
+  - MintegralAdSDK/BidNativeAd (7.7.5):
+    - MintegralAdSDK/NativeAd
+  - MintegralAdSDK/BidNewInterstitialAd (7.7.5):
+    - MintegralAdSDK/BidNativeAd
+    - MintegralAdSDK/NewInterstitialAd
+  - MintegralAdSDK/InterstitialVideoAd (7.7.5):
+    - MintegralAdSDK/NativeAd
+  - MintegralAdSDK/NativeAd (7.7.5)
+  - MintegralAdSDK/NewInterstitialAd (7.7.5):
+    - MintegralAdSDK/InterstitialVideoAd
+    - MintegralAdSDK/NativeAd
+  - MobilefuseAdapter (0.0.92):
+    - MobileFuseSDK (= 1.8.2)
+    - MSPSharedLibraries
+  - MobileFuseSDK (1.8.2)
   - MSPCore (0.0.93):
     - MSPSharedLibraries
     - PrebidAdapter
@@ -33,6 +58,8 @@ DEPENDENCIES:
   - FacebookAdapter (from `./`)
   - GoogleAdapter (from `./`)
   - InmobiAdapter (from `./`)
+  - MintegralAdapter (from `./`)
+  - MobilefuseAdapter (from `./`)
   - MSPCore (from `./`)
   - MSPSharedLibraries (from `./`)
   - NovaAdapter (from `./`)
@@ -47,6 +74,8 @@ SPEC REPOS:
     - GoogleUserMessagingPlatform
     - InMobiSDK
     - IronSourceSDK
+    - MintegralAdSDK
+    - MobileFuseSDK
     - Shimmer
     - SwiftProtobuf
 
@@ -56,6 +85,10 @@ EXTERNAL SOURCES:
   GoogleAdapter:
     :path: "./"
   InmobiAdapter:
+    :path: "./"
+  MintegralAdapter:
+    :path: "./"
+  MobilefuseAdapter:
     :path: "./"
   MSPCore:
     :path: "./"
@@ -77,6 +110,10 @@ SPEC CHECKSUMS:
   InmobiAdapter: 10899618680d3793b6b4ebce115d47fdf65a176d
   InMobiSDK: 0cfb1a1eb5112fa0236ae1fab549e31fb96c9566
   IronSourceSDK: ae03a5aef5cc17a9868540aa409098e9614dfd48
+  MintegralAdapter: 5773a19978e710d2c384317f9d939811d4661952
+  MintegralAdSDK: 88cc19314a1424a5d7f976c834030879017ed5f9
+  MobilefuseAdapter: 7ee61b673714e1cc0e4b0e37e1b1a81b4c606e83
+  MobileFuseSDK: e0b927c961317444d0140322caddf5f944912e4b
   MSPCore: 17e487644c7e847b715a2bd41eb3326b3f02a7e8
   MSPSharedLibraries: b94b7149e712d215a38a9eff261e012f1bde2d66
   NovaAdapter: 988ba259ef433c28ccb2ed6d337362549936802a
@@ -85,6 +122,6 @@ SPEC CHECKSUMS:
   SwiftProtobuf: afced68785854575756db965e9da52bbf3dc45e7
   UnityAdapter: 1cbd3be5c5635006db1c2b8dfcac34a7f247843e
 
-PODFILE CHECKSUM: 6083ce7c76f00b59495d5221542c754aab8da403
+PODFILE CHECKSUM: 295ad476c4f587bc64a8a4a88f2a1e3f09cb3e46
 
 COCOAPODS: 1.15.2

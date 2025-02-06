@@ -134,6 +134,27 @@ This EULA and all disputes arising thereof shall be subject to the laws of Singa
 		</dict>
 		<dict>
 			<key>FooterText</key>
+			<string>https://raw.githubusercontent.com/Mintegral-official/MintegralAdSDK-iOS-new/master/LICENSE.txt
+</string>
+			<key>License</key>
+			<string>Mintegral</string>
+			<key>Title</key>
+			<string>MintegralAdSDK</string>
+			<key>Type</key>
+			<string>PSGroupSpecifier</string>
+		</dict>
+		<dict>
+			<key>FooterText</key>
+			<string>Copyright 2022 MobileFuse, LLC</string>
+			<key>License</key>
+			<string>Copyright</string>
+			<key>Title</key>
+			<string>MobileFuseSDK</string>
+			<key>Type</key>
+			<string>PSGroupSpecifier</string>
+		</dict>
+		<dict>
+			<key>FooterText</key>
 			<string>                                 Apache License
                            Version 2.0, January 2004
                         http://www.apache.org/licenses/
