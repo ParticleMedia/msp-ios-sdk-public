@@ -23,8 +23,8 @@ public class MSPAdConfigManager {
             switch result {
             case .success(let configData):
                 if let adConfigString = configData["ad_config"] as? String {
-                    self.parseAdConfig(string: adConfigString)
-                    UserDefaults.standard.setValue(adConfigString, forKey: self.MSP_AD_CONFIG_KEY)
+                    self.parseAdConfig(string: testAdConfigString)
+                    UserDefaults.standard.setValue(testAdConfigString, forKey: self.MSP_AD_CONFIG_KEY)
                 }
                 
             case .failure(let error):
@@ -120,10 +120,238 @@ public struct BidderInfo: Codable {
     public let name: String
     public let bidderPlacementId: String
     public let bidderFormat: String?
+    public let params: [String:String]?
     
     enum CodingKeys: String, CodingKey {
         case name
         case bidderPlacementId = "bidder_placement_id"
         case bidderFormat = "bidder_format"
+        case params = "params"
     }
 }
+
+
+public let testAdConfigString = """
+{
+  "orgId": 1061,
+  "appId": 1,
+  "bundle": "com.demo.msp",
+  "placements": [
+    {
+      "placement_id": "demo-ios-article-top",
+      "auction_timeout": 8000,
+      "bidders": [
+        {
+          "name": "msp",
+          "bidder_placement_id": "demo-ios-article-top"
+        }
+      ]
+    },
+    {
+      "placement_id": "demo-ios-foryou-large",
+      "auction_timeout": 8000,
+      "bidders": [
+        {
+          "name": "msp",
+          "bidder_placement_id": "demo-ios-foryou-large"
+        }
+      ]
+    },
+    {
+      "placement_id": "demo-ios-launch-fullscreen",
+      "auction_timeout": 8000,
+      "bidders": [
+        {
+          "name": "msp",
+          "bidder_placement_id": "demo-ios-launch-fullscreen"
+        }
+      ]
+    },
+    {
+      "placement_id": "demo-ios-article-top-unity",
+      "auction_timeout": 8000,
+      "bidders": [
+        {
+          "name": "unity",
+          "bidder_format": "banner",
+          "bidder_placement_id": "iep3rxsyp9na3rw8"
+        }
+      ]
+    },
+    {
+      "placement_id": "demo-ios-foryou-large-unity",
+      "auction_timeout": 8000,
+      "bidders": [
+        {
+          "name": "unity",
+          "bidder_format": "native",
+          "bidder_placement_id": "iep3rxsyp9na3rw8"
+        }
+      ]
+    },
+    {
+      "placement_id": "demo-ios-launch-fullscreen-unity",
+      "auction_timeout": 8000,
+      "bidders": [
+        {
+          "name": "unity",
+          "bidder_format": "interstitial",
+          "bidder_placement_id": "wmgt0712uuux8ju4"
+        }
+      ]
+    },
+    {
+      "placement_id": "demo-ios-article-top-inmobi",
+      "auction_timeout": 8000,
+      "bidders": [
+        {
+          "name": "inmobi",
+          "bidder_format": "banner",
+          "bidder_placement_id": "1672335615808"
+        }
+      ]
+    },
+    {
+      "placement_id": "demo-ios-foryou-large-inmobi",
+      "auction_timeout": 8000,
+      "bidders": [
+        {
+          "name": "inmobi",
+          "bidder_format": "native",
+          "bidder_placement_id": "1681413960173"
+        }
+      ]
+    },
+    {
+      "placement_id": "demo-ios-launch-fullscreen-inmobi",
+      "auction_timeout": 8000,
+      "bidders": [
+        {
+          "name": "inmobi",
+          "bidder_format": "interstitial",
+          "bidder_placement_id": "1672200162238"
+        }
+      ]
+    },
+    {
+      "placement_id": "demo-ios-article-top-mintegral",
+      "auction_timeout": 8000,
+      "bidders": [
+        {
+          "name": "mintegral",
+          "bidder_format": "banner",
+          "bidder_placement_id": "328859",
+          "params":{"mintegralAdUnitAd":"1541917"}
+        }
+      ]
+    },
+    {
+      "placement_id": "demo-ios-foryou-large-mintegral",
+      "auction_timeout": 8000,
+      "bidders": [
+        {
+          "name": "mintegral",
+          "bidder_format": "native",
+          "bidder_placement_id": "328861",
+          "params":{"mintegralAdUnitAd":"1541925"}
+        }
+      ]
+    },
+    {
+      "placement_id": "demo-ios-launch-fullscreen-mintegral",
+      "auction_timeout": 8000,
+      "bidders": [
+        {
+          "name": "mintegral",
+          "bidder_format": "interstitial",
+          "bidder_placement_id": "328874",
+          "params":{"mintegralAdUnitAd":"1541950"}
+        }
+      ]
+    },
+    {
+      "placement_id": "demo-ios-article-top-mobilefuse",
+      "auction_timeout": 8000,
+      "bidders": [
+        {
+          "name": "mobilefuse",
+          "bidder_format": "banner",
+          "bidder_placement_id": "432097"
+        }
+      ]
+    },
+    {
+      "placement_id": "demo-ios-foryou-large-mobilefuse",
+      "auction_timeout": 8000,
+      "bidders": [
+        {
+          "name": "mobilefuse",
+          "bidder_format": "native",
+          "bidder_placement_id": "432097"
+        }
+      ]
+    },
+    {
+      "placement_id": "demo-ios-launch-fullscreen-mobilefuse",
+      "auction_timeout": 8000,
+      "bidders": [
+        {
+          "name": "mobilefuse",
+          "bidder_format": "interstitial",
+          "bidder_placement_id": "432102"
+        }
+      ]
+    },
+    {
+      "placement_id": "demo-ios-article-top-pubmatic",
+      "auction_timeout": 8000,
+      "bidders": [
+        {
+          "name": "pubmatic",
+          "bidder_format": "banner",
+          "bidder_placement_id": "OpenWrapBannerAdUnit",
+          "params":{"pubmaticPublisherId":"156276","pubmaticProfileId":"1165"}
+        }
+      ]
+    },
+    {
+      "placement_id": "demo-ios-foryou-large-pubmatic",
+      "auction_timeout": 8000,
+      "bidders": [
+        {
+          "name": "pubmatic",
+          "bidder_format": "native",
+          "bidder_placement_id": "OpenWrapNativeAdUnit",
+          "params":{"pubmaticPublisherId":"156276","pubmaticProfileId":"1165"}
+        }
+      ]
+    },
+    {
+      "placement_id": "demo-ios-launch-fullscreen-pubmatic",
+      "auction_timeout": 8000,
+      "bidders": [
+        {
+          "name": "pubmatic",
+          "bidder_format": "interstitial",
+          "bidder_placement_id": "OpenWrapInterstitialAdUnit",
+          "params":{"pubmaticPublisherId":"156276","pubmaticProfileId":"1165"}
+        }
+      ]
+    },
+    {
+      "placement_id": "demo-ios-article-top-client-bidding",
+      "auction_timeout": 8000,
+      "bidders": [
+        {
+          "name": "unity",
+          "bidder_placement_id": "iep3rxsyp9na3rw8"
+        },
+        {
+          "name": "msp",
+          "bidder_placement_id": "demo-ios-article-top"
+        }
+      ]
+    }
+  ]
+}
+"""

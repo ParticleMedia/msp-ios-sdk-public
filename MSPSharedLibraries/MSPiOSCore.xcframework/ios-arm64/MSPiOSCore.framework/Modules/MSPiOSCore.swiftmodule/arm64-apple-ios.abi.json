@@ -437,6 +437,158 @@
             ]
           },
           {
+            "kind": "Var",
+            "name": "params",
+            "printedName": "params",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Optional",
+                "printedName": "[Swift.String : Swift.String]?",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Dictionary",
+                    "printedName": "[Swift.String : Swift.String]",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "String",
+                        "printedName": "Swift.String",
+                        "usr": "s:SS"
+                      },
+                      {
+                        "kind": "TypeNominal",
+                        "name": "String",
+                        "printedName": "Swift.String",
+                        "usr": "s:SS"
+                      }
+                    ],
+                    "usr": "s:SD"
+                  }
+                ],
+                "usr": "s:Sq"
+              }
+            ],
+            "declKind": "Var",
+            "usr": "s:10MSPiOSCore6BidderC6paramsSDyS2SGSgvp",
+            "mangledName": "$s10MSPiOSCore6BidderC6paramsSDyS2SGSgvp",
+            "moduleName": "MSPiOSCore",
+            "declAttributes": [
+              "HasInitialValue",
+              "HasStorage",
+              "AccessControl"
+            ],
+            "hasStorage": true,
+            "accessors": [
+              {
+                "kind": "Accessor",
+                "name": "Get",
+                "printedName": "Get()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Optional",
+                    "printedName": "[Swift.String : Swift.String]?",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "Dictionary",
+                        "printedName": "[Swift.String : Swift.String]",
+                        "children": [
+                          {
+                            "kind": "TypeNominal",
+                            "name": "String",
+                            "printedName": "Swift.String",
+                            "usr": "s:SS"
+                          },
+                          {
+                            "kind": "TypeNominal",
+                            "name": "String",
+                            "printedName": "Swift.String",
+                            "usr": "s:SS"
+                          }
+                        ],
+                        "usr": "s:SD"
+                      }
+                    ],
+                    "usr": "s:Sq"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:10MSPiOSCore6BidderC6paramsSDyS2SGSgvg",
+                "mangledName": "$s10MSPiOSCore6BidderC6paramsSDyS2SGSgvg",
+                "moduleName": "MSPiOSCore",
+                "implicit": true,
+                "accessorKind": "get"
+              },
+              {
+                "kind": "Accessor",
+                "name": "Set",
+                "printedName": "Set()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Void",
+                    "printedName": "()"
+                  },
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Optional",
+                    "printedName": "[Swift.String : Swift.String]?",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "Dictionary",
+                        "printedName": "[Swift.String : Swift.String]",
+                        "children": [
+                          {
+                            "kind": "TypeNominal",
+                            "name": "String",
+                            "printedName": "Swift.String",
+                            "usr": "s:SS"
+                          },
+                          {
+                            "kind": "TypeNominal",
+                            "name": "String",
+                            "printedName": "Swift.String",
+                            "usr": "s:SS"
+                          }
+                        ],
+                        "usr": "s:SD"
+                      }
+                    ],
+                    "usr": "s:Sq"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:10MSPiOSCore6BidderC6paramsSDyS2SGSgvs",
+                "mangledName": "$s10MSPiOSCore6BidderC6paramsSDyS2SGSgvs",
+                "moduleName": "MSPiOSCore",
+                "implicit": true,
+                "accessorKind": "set"
+              },
+              {
+                "kind": "Accessor",
+                "name": "Modify",
+                "printedName": "Modify()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Void",
+                    "printedName": "()"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:10MSPiOSCore6BidderC6paramsSDyS2SGSgvM",
+                "mangledName": "$s10MSPiOSCore6BidderC6paramsSDyS2SGSgvM",
+                "moduleName": "MSPiOSCore",
+                "implicit": true,
+                "accessorKind": "_modify"
+              }
+            ]
+          },
+          {
             "kind": "Constructor",
             "name": "init",
             "printedName": "init(name:bidderPlacementId:bidderFormat:)",
@@ -3956,7 +4108,7 @@
           {
             "kind": "Function",
             "name": "loadAdCreative",
-            "printedName": "loadAdCreative(bidResponse:auctionBidListener:adListener:context:adRequest:bidderPlacementId:bidderFormat:)",
+            "printedName": "loadAdCreative(bidResponse:auctionBidListener:adListener:context:adRequest:bidderPlacementId:bidderFormat:params:)",
             "children": [
               {
                 "kind": "TypeNominal",
@@ -4010,11 +4162,39 @@
                   }
                 ],
                 "usr": "s:Sq"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "Optional",
+                "printedName": "[Swift.String : Swift.String]?",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Dictionary",
+                    "printedName": "[Swift.String : Swift.String]",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "String",
+                        "printedName": "Swift.String",
+                        "usr": "s:SS"
+                      },
+                      {
+                        "kind": "TypeNominal",
+                        "name": "String",
+                        "printedName": "Swift.String",
+                        "usr": "s:SS"
+                      }
+                    ],
+                    "usr": "s:SD"
+                  }
+                ],
+                "usr": "s:Sq"
               }
             ],
             "declKind": "Func",
-            "usr": "s:10MSPiOSCore16AdNetworkAdapterP04loadC8Creative11bidResponse18auctionBidListener02adL07context0M7Request17bidderPlacementId0P6Formatyyp_AA07AuctionkL0_pAA0cL0_pypAA0cO0CSSAA0cS0OSgtF",
-            "mangledName": "$s10MSPiOSCore16AdNetworkAdapterP04loadC8Creative11bidResponse18auctionBidListener02adL07context0M7Request17bidderPlacementId0P6Formatyyp_AA07AuctionkL0_pAA0cL0_pypAA0cO0CSSAA0cS0OSgtF",
+            "usr": "s:10MSPiOSCore16AdNetworkAdapterP04loadC8Creative11bidResponse18auctionBidListener02adL07context0M7Request17bidderPlacementId0P6Format6paramsyyp_AA07AuctionkL0_pAA0cL0_pypAA0cO0CSSAA0cS0OSgSDyS2SGSgtF",
+            "mangledName": "$s10MSPiOSCore16AdNetworkAdapterP04loadC8Creative11bidResponse18auctionBidListener02adL07context0M7Request17bidderPlacementId0P6Format6paramsyyp_AA07AuctionkL0_pAA0cL0_pypAA0cO0CSSAA0cS0OSgSDyS2SGSgtF",
             "moduleName": "MSPiOSCore",
             "genericSig": "<τ_0_0 where τ_0_0 : MSPiOSCore.AdNetworkAdapter>",
             "sugared_genericSig": "<Self where Self : MSPiOSCore.AdNetworkAdapter>",
@@ -4144,6 +4324,28 @@
             "declKind": "Func",
             "usr": "s:10MSPiOSCore16AdNetworkAdapterP03setC14MetricReporter02adgH0yAA0cgH0_p_tF",
             "mangledName": "$s10MSPiOSCore16AdNetworkAdapterP03setC14MetricReporter02adgH0yAA0cgH0_p_tF",
+            "moduleName": "MSPiOSCore",
+            "genericSig": "<τ_0_0 where τ_0_0 : MSPiOSCore.AdNetworkAdapter>",
+            "sugared_genericSig": "<Self where Self : MSPiOSCore.AdNetworkAdapter>",
+            "protocolReq": true,
+            "reqNewWitnessTableEntry": true,
+            "funcSelfKind": "NonMutating"
+          },
+          {
+            "kind": "Function",
+            "name": "getAdNetwork",
+            "printedName": "getAdNetwork()",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "AdNetwork",
+                "printedName": "MSPiOSCore.AdNetwork",
+                "usr": "s:10MSPiOSCore9AdNetworkO"
+              }
+            ],
+            "declKind": "Func",
+            "usr": "s:10MSPiOSCore16AdNetworkAdapterP03getcD0AA0cD0OyF",
+            "mangledName": "$s10MSPiOSCore16AdNetworkAdapterP03getcD0AA0cD0OyF",
             "moduleName": "MSPiOSCore",
             "genericSig": "<τ_0_0 where τ_0_0 : MSPiOSCore.AdNetworkAdapter>",
             "sugared_genericSig": "<Self where Self : MSPiOSCore.AdNetworkAdapter>",
@@ -9862,6 +10064,43 @@
         "children": [
           {
             "kind": "Var",
+            "name": "unknown",
+            "printedName": "unknown",
+            "children": [
+              {
+                "kind": "TypeFunc",
+                "name": "Function",
+                "printedName": "(MSPiOSCore.AdNetwork.Type) -> MSPiOSCore.AdNetwork",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "AdNetwork",
+                    "printedName": "MSPiOSCore.AdNetwork",
+                    "usr": "s:10MSPiOSCore9AdNetworkO"
+                  },
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Metatype",
+                    "printedName": "MSPiOSCore.AdNetwork.Type",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "AdNetwork",
+                        "printedName": "MSPiOSCore.AdNetwork",
+                        "usr": "s:10MSPiOSCore9AdNetworkO"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ],
+            "declKind": "EnumElement",
+            "usr": "s:10MSPiOSCore9AdNetworkO7unknownyA2CmF",
+            "mangledName": "$s10MSPiOSCore9AdNetworkO7unknownyA2CmF",
+            "moduleName": "MSPiOSCore"
+          },
+          {
+            "kind": "Var",
             "name": "google",
             "printedName": "google",
             "children": [
@@ -10043,6 +10282,154 @@
             "declKind": "EnumElement",
             "usr": "s:10MSPiOSCore9AdNetworkO5unityyA2CmF",
             "mangledName": "$s10MSPiOSCore9AdNetworkO5unityyA2CmF",
+            "moduleName": "MSPiOSCore"
+          },
+          {
+            "kind": "Var",
+            "name": "pubmatic",
+            "printedName": "pubmatic",
+            "children": [
+              {
+                "kind": "TypeFunc",
+                "name": "Function",
+                "printedName": "(MSPiOSCore.AdNetwork.Type) -> MSPiOSCore.AdNetwork",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "AdNetwork",
+                    "printedName": "MSPiOSCore.AdNetwork",
+                    "usr": "s:10MSPiOSCore9AdNetworkO"
+                  },
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Metatype",
+                    "printedName": "MSPiOSCore.AdNetwork.Type",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "AdNetwork",
+                        "printedName": "MSPiOSCore.AdNetwork",
+                        "usr": "s:10MSPiOSCore9AdNetworkO"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ],
+            "declKind": "EnumElement",
+            "usr": "s:10MSPiOSCore9AdNetworkO8pubmaticyA2CmF",
+            "mangledName": "$s10MSPiOSCore9AdNetworkO8pubmaticyA2CmF",
+            "moduleName": "MSPiOSCore"
+          },
+          {
+            "kind": "Var",
+            "name": "mintegral",
+            "printedName": "mintegral",
+            "children": [
+              {
+                "kind": "TypeFunc",
+                "name": "Function",
+                "printedName": "(MSPiOSCore.AdNetwork.Type) -> MSPiOSCore.AdNetwork",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "AdNetwork",
+                    "printedName": "MSPiOSCore.AdNetwork",
+                    "usr": "s:10MSPiOSCore9AdNetworkO"
+                  },
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Metatype",
+                    "printedName": "MSPiOSCore.AdNetwork.Type",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "AdNetwork",
+                        "printedName": "MSPiOSCore.AdNetwork",
+                        "usr": "s:10MSPiOSCore9AdNetworkO"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ],
+            "declKind": "EnumElement",
+            "usr": "s:10MSPiOSCore9AdNetworkO9mintegralyA2CmF",
+            "mangledName": "$s10MSPiOSCore9AdNetworkO9mintegralyA2CmF",
+            "moduleName": "MSPiOSCore"
+          },
+          {
+            "kind": "Var",
+            "name": "mobilefuse",
+            "printedName": "mobilefuse",
+            "children": [
+              {
+                "kind": "TypeFunc",
+                "name": "Function",
+                "printedName": "(MSPiOSCore.AdNetwork.Type) -> MSPiOSCore.AdNetwork",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "AdNetwork",
+                    "printedName": "MSPiOSCore.AdNetwork",
+                    "usr": "s:10MSPiOSCore9AdNetworkO"
+                  },
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Metatype",
+                    "printedName": "MSPiOSCore.AdNetwork.Type",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "AdNetwork",
+                        "printedName": "MSPiOSCore.AdNetwork",
+                        "usr": "s:10MSPiOSCore9AdNetworkO"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ],
+            "declKind": "EnumElement",
+            "usr": "s:10MSPiOSCore9AdNetworkO10mobilefuseyA2CmF",
+            "mangledName": "$s10MSPiOSCore9AdNetworkO10mobilefuseyA2CmF",
+            "moduleName": "MSPiOSCore"
+          },
+          {
+            "kind": "Var",
+            "name": "inmobi",
+            "printedName": "inmobi",
+            "children": [
+              {
+                "kind": "TypeFunc",
+                "name": "Function",
+                "printedName": "(MSPiOSCore.AdNetwork.Type) -> MSPiOSCore.AdNetwork",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "AdNetwork",
+                    "printedName": "MSPiOSCore.AdNetwork",
+                    "usr": "s:10MSPiOSCore9AdNetworkO"
+                  },
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Metatype",
+                    "printedName": "MSPiOSCore.AdNetwork.Type",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "AdNetwork",
+                        "printedName": "MSPiOSCore.AdNetwork",
+                        "usr": "s:10MSPiOSCore9AdNetworkO"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ],
+            "declKind": "EnumElement",
+            "usr": "s:10MSPiOSCore9AdNetworkO6inmobiyA2CmF",
+            "mangledName": "$s10MSPiOSCore9AdNetworkO6inmobiyA2CmF",
             "moduleName": "MSPiOSCore"
           },
           {
@@ -11815,37 +12202,72 @@
     {
       "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-core\/MSPiOSCore\/MSPiOSCore\/adapter\/AdNetwork.swift",
       "kind": "StringLiteral",
-      "offset": 155,
+      "offset": 156,
+      "length": 9,
+      "value": "\"Unknown\""
+    },
+    {
+      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-core\/MSPiOSCore\/MSPiOSCore\/adapter\/AdNetwork.swift",
+      "kind": "StringLiteral",
+      "offset": 189,
       "length": 8,
       "value": "\"Google\""
     },
     {
       "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-core\/MSPiOSCore\/MSPiOSCore\/adapter\/AdNetwork.swift",
       "kind": "StringLiteral",
-      "offset": 184,
+      "offset": 218,
       "length": 10,
       "value": "\"Facebook\""
     },
     {
       "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-core\/MSPiOSCore\/MSPiOSCore\/adapter\/AdNetwork.swift",
       "kind": "StringLiteral",
-      "offset": 213,
+      "offset": 247,
       "length": 8,
       "value": "\"Prebid\""
     },
     {
       "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-core\/MSPiOSCore\/MSPiOSCore\/adapter\/AdNetwork.swift",
       "kind": "StringLiteral",
-      "offset": 238,
+      "offset": 272,
       "length": 6,
       "value": "\"Nova\""
     },
     {
       "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-core\/MSPiOSCore\/MSPiOSCore\/adapter\/AdNetwork.swift",
       "kind": "StringLiteral",
-      "offset": 262,
+      "offset": 296,
       "length": 7,
       "value": "\"Unity\""
+    },
+    {
+      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-core\/MSPiOSCore\/MSPiOSCore\/adapter\/AdNetwork.swift",
+      "kind": "StringLiteral",
+      "offset": 324,
+      "length": 10,
+      "value": "\"Pubmatic\""
+    },
+    {
+      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-core\/MSPiOSCore\/MSPiOSCore\/adapter\/AdNetwork.swift",
+      "kind": "StringLiteral",
+      "offset": 356,
+      "length": 11,
+      "value": "\"Mintegral\""
+    },
+    {
+      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-core\/MSPiOSCore\/MSPiOSCore\/adapter\/AdNetwork.swift",
+      "kind": "StringLiteral",
+      "offset": 390,
+      "length": 12,
+      "value": "\"Mobilefuse\""
+    },
+    {
+      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-core\/MSPiOSCore\/MSPiOSCore\/adapter\/AdNetwork.swift",
+      "kind": "StringLiteral",
+      "offset": 421,
+      "length": 8,
+      "value": "\"Inmobi\""
     },
     {
       "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-core\/MSPiOSCore\/MSPiOSCore\/api\/Geo.swift",

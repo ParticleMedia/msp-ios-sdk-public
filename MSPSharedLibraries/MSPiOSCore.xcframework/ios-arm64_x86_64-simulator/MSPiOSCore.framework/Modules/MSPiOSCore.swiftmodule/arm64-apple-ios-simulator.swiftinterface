@@ -18,6 +18,7 @@ public protocol LoadAdParameters : MSPiOSCore.AdapterParameters {
   public var name: Swift.String
   public var bidderPlacementId: Swift.String
   public var bidderFormat: MSPiOSCore.AdFormat?
+  public var params: [Swift.String : Swift.String]?
   public init(name: Swift.String, bidderPlacementId: Swift.String, bidderFormat: MSPiOSCore.AdFormat?)
   open func requestBid(adRequest: MSPiOSCore.AdRequest, bidListener: any MSPiOSCore.AuctionBidListener, adListener: any MSPiOSCore.AdListener)
   open func setAdMetricReporter(adMetricReporter: any MSPiOSCore.AdMetricReporter)
@@ -112,11 +113,12 @@ public protocol AdListener : AnyObject {
   func getRootViewController() -> UIKit.UIViewController?
 }
 public protocol AdNetworkAdapter : AnyObject {
-  func loadAdCreative(bidResponse: Any, auctionBidListener: any MSPiOSCore.AuctionBidListener, adListener: any MSPiOSCore.AdListener, context: Any, adRequest: MSPiOSCore.AdRequest, bidderPlacementId: Swift.String, bidderFormat: MSPiOSCore.AdFormat?)
+  func loadAdCreative(bidResponse: Any, auctionBidListener: any MSPiOSCore.AuctionBidListener, adListener: any MSPiOSCore.AdListener, context: Any, adRequest: MSPiOSCore.AdRequest, bidderPlacementId: Swift.String, bidderFormat: MSPiOSCore.AdFormat?, params: [Swift.String : Swift.String]?)
   func initialize(initParams: any MSPiOSCore.InitializationParameters, adapterInitListener: any MSPiOSCore.AdapterInitListener, context: Any?)
   func destroyAd()
   func prepareViewForInteraction(nativeAd: MSPiOSCore.NativeAd, nativeAdView: Any)
   func setAdMetricReporter(adMetricReporter: any MSPiOSCore.AdMetricReporter)
+  func getAdNetwork() -> MSPiOSCore.AdNetwork
 }
 public protocol GoogleQueryInfoFetcher : AnyObject {
   func fetch(completeListener: any MSPiOSCore.GoogleQueryInfoListener, adRequest: MSPiOSCore.AdRequest)
@@ -254,11 +256,16 @@ public class AuctionBid {
   @objc deinit
 }
 public enum AdNetwork : Swift.String {
+  case unknown
   case google
   case facebook
   case prebid
   case nova
   case unity
+  case pubmatic
+  case mintegral
+  case mobilefuse
+  case inmobi
   public init?(rawValue: Swift.String)
   public typealias RawValue = Swift.String
   public var rawValue: Swift.String {

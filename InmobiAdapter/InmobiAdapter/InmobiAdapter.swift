@@ -31,7 +31,7 @@ import InMobiSDK
     private var adMetricReporter: AdMetricReporter?
 
 
-    public func loadAdCreative(bidResponse: Any, auctionBidListener: any MSPiOSCore.AuctionBidListener, adListener: any MSPiOSCore.AdListener, context: Any, adRequest: MSPiOSCore.AdRequest, bidderPlacementId: String, bidderFormat: MSPiOSCore.AdFormat?) {
+    public func loadAdCreative(bidResponse: Any, auctionBidListener: any MSPiOSCore.AuctionBidListener, adListener: any MSPiOSCore.AdListener, context: Any, adRequest: MSPiOSCore.AdRequest, bidderPlacementId: String, bidderFormat: MSPiOSCore.AdFormat?, params: [String:String]?) {
 
         DispatchQueue.main.async {
 
@@ -79,6 +79,7 @@ import InMobiSDK
                 }
             })
         }
+        adapterInitListener.onComplete(adNetwork: .pubmatic, adapterInitStatus: .SUCCESS, message: "")
     }
 
     public func destroyAd() {
@@ -144,17 +145,23 @@ import InMobiSDK
     @objc private func handleNativeAdClick() {
         self.nativeAdItem?.reportAdClickAndOpenLandingPage()
     }
+    
+    public func getAdNetwork() -> MSPiOSCore.AdNetwork {
+        return .inmobi
+    }
 }
 
 extension InmobiAdapter: IMBannerDelegate {
 
     public func banner(_ banner: IMBanner, didReceiveWithMetaInfo info: InMobiSDK.IMAdMetaInfo) {
-        if let bannerView = self.bannerView,
-           let auctionBidListener = self.auctionBidListener {
-            let bannerAd = BannerAd(adView: bannerView, adNetworkAdapter: self)
-            self.bannerAd = bannerAd
-            bannerAd.adInfo["price"] = info.bidInfo.values
-            self.handleAdLoaded(ad: bannerAd, auctionBidListener: auctionBidListener, bidderPlacementId: self.bidderPlacementId ?? "inmobi_placement_id")
+        DispatchQueue.main.async {
+            if let bannerView = self.bannerView,
+               let auctionBidListener = self.auctionBidListener {
+                let bannerAd = BannerAd(adView: bannerView, adNetworkAdapter: self)
+                self.bannerAd = bannerAd
+                bannerAd.adInfo["price"] = 99.0//info.bidInfo.values
+                self.handleAdLoaded(ad: bannerAd, auctionBidListener: auctionBidListener, bidderPlacementId: self.bidderPlacementId ?? "inmobi_placement_id")
+            }
         }
     }
 
@@ -247,7 +254,7 @@ extension InmobiAdapter: IMNativeDelegate {
                                                     callToAction: native.adCtaText ?? "")
                 inmobiNativeAd.nativeAdItem = native
                 self.nativeAd = inmobiNativeAd
-                inmobiNativeAd.adInfo["price"] = native.getAdMetaInfo()?.values//adInfo.revenue
+                inmobiNativeAd.adInfo["price"] = 99.0//native.getAdMetaInfo()?.values//adInfo.revenue
 
                 //let mediaView = native.primaryView(ofWidth: <#T##CGFloat#>)
                 //mediaView?.translatesAutoresizingMaskIntoConstraints = false

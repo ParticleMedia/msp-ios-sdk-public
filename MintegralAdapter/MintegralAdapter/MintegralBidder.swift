@@ -20,7 +20,7 @@ public class MintegralBidder: MSPiOSCore.Bidder {
         self.adRequest = adRequest
 
         if let auctionBidListener = self.auctionBidListener {
-            adNetworkAdapter.loadAdCreative(bidResponse: self, auctionBidListener: auctionBidListener, adListener: adListener, context: self, adRequest: adRequest, bidderPlacementId: bidderPlacementId, bidderFormat: self.bidderFormat)
+            adNetworkAdapter.loadAdCreative(bidResponse: self, auctionBidListener: auctionBidListener, adListener: adListener, context: self, adRequest: adRequest, bidderPlacementId: bidderPlacementId, bidderFormat: self.bidderFormat, params: self.params)
         }
     }
 
