@@ -5,6 +5,10 @@ import MSPiOSCore
 import UIKit
 
 @objc public class PrebidAdapter : NSObject, AdNetworkAdapter {
+    public func getAdNetwork() -> MSPiOSCore.AdNetwork {
+        return .prebid
+    }
+    
     public func setAdMetricReporter(adMetricReporter: any MSPiOSCore.AdMetricReporter) {
         self.adMetricReporter = adMetricReporter
     }
@@ -68,7 +72,7 @@ import UIKit
     
     private var adMetricReporter: AdMetricReporter?
     
-    public func loadAdCreative(bidResponse: Any, auctionBidListener: AuctionBidListener, adListener: any AdListener, context: Any, adRequest: AdRequest, bidderPlacementId: String, bidderFormat: MSPiOSCore.AdFormat?) {
+    public func loadAdCreative(bidResponse: Any, auctionBidListener: AuctionBidListener, adListener: any AdListener, context: Any, adRequest: AdRequest, bidderPlacementId: String, bidderFormat: MSPiOSCore.AdFormat?, params: [String:String]?) {
         guard bidResponse is BidResponse,
               let mBidResponse = bidResponse as? BidResponse else {
             return

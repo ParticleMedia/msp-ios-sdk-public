@@ -15,6 +15,8 @@ import UIKit
 
 public class MSPAdNetworkAdapterProvider: AdNetworkAdapterProvider {
     public func getAdNetworkAdaptersCount() -> Int {
+        return adNetworkManagerDict.count
+        /*
         let managers: [AdNetworkManager?] = [googleManager, metaManager, novaManager]
         var num = 1 //default vaule is 1 for prebid sdk is alwasys in the dependency
         for adManager in managers {
@@ -23,10 +25,14 @@ public class MSPAdNetworkAdapterProvider: AdNetworkAdapterProvider {
             }
         }
         return num
+         */
     }
     
     public var rootViewController: UIViewController?
     
+    public var adNetworkManagerDict = [AdNetwork: AdNetworkManager]()
+    
+    /*
     public var googleManager: AdNetworkManager?
     
     public var novaManager: AdNetworkManager?
@@ -34,12 +40,14 @@ public class MSPAdNetworkAdapterProvider: AdNetworkAdapterProvider {
     public var metaManager: AdNetworkManager?
     
     public var unityManager: AdNetworkManager?
-    
+    */
     public init() {
         
     }
     
     public func getAdNetworkAdapter(adNetwork: AdNetwork) -> AdNetworkAdapter? {
+        return adNetworkManagerDict[adNetwork]?.getAdNetworkAdapter()
+        /*
         if adNetwork == .prebid {
             var prebidAdapter = PrebidAdapter()
             return prebidAdapter
@@ -57,9 +65,11 @@ public class MSPAdNetworkAdapterProvider: AdNetworkAdapterProvider {
             return unityManager
         }
         return nil
+         */
     }
     
     public func getAdNetworkAdapterByName(adNetworkName: String) -> AdNetworkAdapter? {
+        /*
         if adNetworkName == "Prebid" {
             var prebidAdapter = PrebidAdapter()
             return prebidAdapter
@@ -76,12 +86,13 @@ public class MSPAdNetworkAdapterProvider: AdNetworkAdapterProvider {
             var unityManager = unityManager?.getAdNetworkAdapter()
             return unityManager
         }
+         */
         return nil
     }
 }
 
 public class AdNetworkAdapterStandalone: AdNetworkAdapter {
-    public func loadAdCreative(bidResponse: Any, auctionBidListener: any MSPiOSCore.AuctionBidListener, adListener: any MSPiOSCore.AdListener, context: Any, adRequest: MSPiOSCore.AdRequest, bidderPlacementId: String, bidderFormat: MSPiOSCore.AdFormat?) {
+    public func loadAdCreative(bidResponse: Any, auctionBidListener: any MSPiOSCore.AuctionBidListener, adListener: any MSPiOSCore.AdListener, context: Any, adRequest: MSPiOSCore.AdRequest, bidderPlacementId: String, bidderFormat: MSPiOSCore.AdFormat?, params: [String: String]?) {
         
     }
     
@@ -103,5 +114,9 @@ public class AdNetworkAdapterStandalone: AdNetworkAdapter {
     
     public func destroyAd() {
         
+    }
+    
+    public func getAdNetwork() -> MSPiOSCore.AdNetwork {
+        return .unknown
     }
 }

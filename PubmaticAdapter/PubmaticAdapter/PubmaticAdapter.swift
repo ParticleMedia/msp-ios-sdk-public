@@ -31,7 +31,7 @@ import OpenWrapSDK
     
     private var adMetricReporter: AdMetricReporter?
 
-    public func loadAdCreative(bidResponse: Any, auctionBidListener: any MSPiOSCore.AuctionBidListener, adListener: any MSPiOSCore.AdListener, context: Any, adRequest: MSPiOSCore.AdRequest, bidderPlacementId: String, bidderFormat: MSPiOSCore.AdFormat?) {
+    public func loadAdCreative(bidResponse: Any, auctionBidListener: any MSPiOSCore.AuctionBidListener, adListener: any MSPiOSCore.AdListener, context: Any, adRequest: MSPiOSCore.AdRequest, bidderPlacementId: String, bidderFormat: MSPiOSCore.AdFormat?, params: [String:String]?) {
         DispatchQueue.main.async {
 
             self.auctionBidListener = auctionBidListener
@@ -41,8 +41,13 @@ import OpenWrapSDK
 
             let adFormat = bidderFormat ?? adRequest.adFormat
             
-            let publisherId = adRequest.customParams["pubmaticPublisherId"] as? String ?? ""
-            let profileId = adRequest.customParams["pubmaticProfileId"] as? NSNumber ?? 0
+            let publisherId = params?["pubmaticPublisherId"] as? String ?? ""
+            var profileId = NSNumber(value: 0)
+            
+            if let profileIdString = params?["pubmaticProfileId"] as? String,
+               let profileIdInt = Int(profileIdString){
+                profileId = NSNumber(value: profileIdInt)
+            }
 
             if adFormat == .interstitial {
                 self.interstitialAdItem = POBInterstitial(publisherId: publisherId,
@@ -77,11 +82,14 @@ import OpenWrapSDK
 
             // Set a valid App Store URL, containing the app id of your iOS app.
             let appInfo = POBApplicationInfo()
-            appInfo.storeURL = URL(string: initParams.getParameters()?["pubmaticStoreUrl"] as? String ?? "")!
+            if let storeUrl = URL(string: initParams.getParameters()?["pubmaticStoreUrl"] as? String ?? "") {
+                appInfo.storeURL = storeUrl
+            }
             // This application information is a global configuration & you
             // need not set this for every ad request(of any ad type)
             OpenWrapSDK.setApplicationInfo(appInfo)
             //OpenWrapSDK.setDSAComplianceStatus(.required)
+            adapterInitListener.onComplete(adNetwork: .pubmatic, adapterInitStatus: .SUCCESS, message: "")
         }
     }
 
@@ -164,6 +172,10 @@ import OpenWrapSDK
         AdCache.shared.saveAd(placementId: bidderPlacementId, ad: ad)
         let auctionBid = AuctionBid(bidderName: "pubmatic", bidderPlacementId: bidderPlacementId, ecpm: ad.adInfo["price"] as? Double ?? 0.0)
         auctionBidListener.onSuccess(bid: auctionBid)
+    }
+    
+    public func getAdNetwork() -> MSPiOSCore.AdNetwork {
+        return .pubmatic
     }
 
 }

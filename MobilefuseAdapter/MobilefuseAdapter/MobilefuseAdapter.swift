@@ -30,7 +30,7 @@ import MobileFuseSDK
     private var adMetricReporter: AdMetricReporter?
 
 
-    public func loadAdCreative(bidResponse: Any, auctionBidListener: any MSPiOSCore.AuctionBidListener, adListener: any MSPiOSCore.AdListener, context: Any, adRequest: MSPiOSCore.AdRequest, bidderPlacementId: String, bidderFormat: MSPiOSCore.AdFormat?) {
+    public func loadAdCreative(bidResponse: Any, auctionBidListener: any MSPiOSCore.AuctionBidListener, adListener: any MSPiOSCore.AdListener, context: Any, adRequest: MSPiOSCore.AdRequest, bidderPlacementId: String, bidderFormat: MSPiOSCore.AdFormat?, params: [String:String]?) {
         DispatchQueue.main.async {
 
             self.auctionBidListener = auctionBidListener
@@ -43,15 +43,25 @@ import MobileFuseSDK
             if adFormat == .interstitial {
                 self.interstitialAdItem = MFInterstitialAd(placementId: bidderPlacementId)
                 self.interstitialAdItem?.register(self)
+                
+                if (adRequest.testParams["mobilefuse"] as? String) == "true" {
+                    self.interstitialAdItem?.testMode = true
+                }
                 self.interstitialAdItem?.load()
             } else if adFormat == .native {
                 self.nativeAdItem = MFNativeAd(placementId: bidderPlacementId)
                 self.nativeAdItem?.register(self)
+                if (adRequest.testParams["mobilefuse"] as? String) == "true" {
+                    self.nativeAdItem?.testMode = true
+                }
                 self.nativeAdItem?.load()
 
             } else {
                 self.bannerView = MFBannerAd(placementId: bidderPlacementId, with: self.getMFBannerAdSize(adRequest: adRequest))
                 self.bannerView?.register(self)
+                if (adRequest.testParams["mobilefuse"] as? String) == "true" {
+                    self.bannerView?.testMode = true
+                }
                 self.bannerView?.load()
             }
         }
@@ -59,7 +69,7 @@ import MobileFuseSDK
 
     public func initialize(initParams: any MSPiOSCore.InitializationParameters, adapterInitListener: any MSPiOSCore.AdapterInitListener, context: Any?) {
         MobileFuse.initWithDelegate(self)
-
+        adapterInitListener.onComplete(adNetwork: .pubmatic, adapterInitStatus: .SUCCESS, message: "")
     }
 
     public func destroyAd() {
@@ -138,6 +148,10 @@ import MobileFuseSDK
         let auctionBid = AuctionBid(bidderName: "mobilefuse", bidderPlacementId: bidderPlacementId, ecpm: ad.adInfo["price"] as? Double ?? 0.0)
         auctionBidListener.onSuccess(bid: auctionBid)
     }
+    
+    public func getAdNetwork() -> MSPiOSCore.AdNetwork {
+        return .mobilefuse
+    }
 }
 
 extension MobilefuseAdapter: IMFInitializationCallbackReceiver {
@@ -162,7 +176,7 @@ extension MobilefuseAdapter: IMFAdCallbackReceiver {
             interstitialAd.rootViewController = self.adListener?.getRootViewController()
             self.interstitialAd = interstitialAd
             interstitialAd.adInfo["price"] = 99.0//adInfo.revenue
-            self.handleAdLoaded(ad: interstitialAd, auctionBidListener: auctionBidListener, bidderPlacementId: self.bidderPlacementId ?? "mobilefuse")
+            self.handleAdLoaded(ad: interstitialAd, auctionBidListener: auctionBidListener, bidderPlacementId: self.bidderPlacementId ?? "mobilefuse_placement_id")
         } else if ad is MFNativeAd,
                   let nativeAdItem = self.nativeAdItem {
             DispatchQueue.main.async {
@@ -180,7 +194,7 @@ extension MobilefuseAdapter: IMFAdCallbackReceiver {
                        let adRequest = self.adRequest,
                        let auctionBidListener = self.auctionBidListener {
                         //handleAdLoaded(ad: googleNativeAd, listener: adListener, adRequest: adRequest)
-                        self.handleAdLoaded(ad: mobilefuseNativeAd, auctionBidListener: auctionBidListener, bidderPlacementId: self.bidderPlacementId ?? adRequest.placementId)
+                        self.handleAdLoaded(ad: mobilefuseNativeAd, auctionBidListener: auctionBidListener, bidderPlacementId: self.bidderPlacementId ?? "mobilefuse_placement_id")
                         self.adMetricReporter?.logAdResult(placementId: adRequest.placementId, ad: mobilefuseNativeAd, fill: true, isFromCache: false)
                     }
 

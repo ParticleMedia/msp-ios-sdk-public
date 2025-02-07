@@ -5,6 +5,7 @@ import MSPCore
 import MSPiOSCore
 import AppTrackingTransparency
 import PrebidMobile
+import MobilefuseAdapter
 
 public enum AdType: String {
     case prebidBanner
@@ -48,11 +49,11 @@ class DemoAdViewController: UIViewController {
         case .facebookInterstitial:
             return "demo-ios-launch-fullscreen"
         case .unityBanner:
-            return "demo-ios-article-top-unity"
+            return "demo-ios-article-top-pubmatic"
         case .unityInterstitial:
-            return "demo-ios-launch-fullscreen-unity"
+            return "demo-ios-launch-fullscreen-pubmatic"
         case .unityNative:
-            return "demo-ios-article-top-unity"
+            return "demo-ios-foryou-large-pubmatic"
         case .clientBiddingBanner:
             return "demo-ios-article-top-client-bidding"
         }
@@ -98,7 +99,7 @@ class DemoAdViewController: UIViewController {
         } else if adType == .clientBiddingBanner {
             testParams["test"] = "{\"ad_network\":\"msp_google\",\"test_ad\":true}"
         }
-         
+        testParams["mobilefuse"] = "true"
         
         let adRequest = AdRequest(customParams: customParams,
                                   geo: nil,
@@ -170,7 +171,13 @@ extension DemoAdViewController: AdListener {
                 NSLayoutConstraint.activate([
                     adView.centerXAnchor.constraint(equalTo: self.view.centerXAnchor),
                     adView.topAnchor.constraint(equalTo: self.view.topAnchor, constant: 200),
+                    adView.widthAnchor.constraint(equalToConstant: 320),
+                    adView.heightAnchor.constraint(equalToConstant: 50)
                 ])
+            }
+            if bannerAd is MobilefuseBannerAd,
+               let mobilefuseBannerAd = bannerAd as? MobilefuseBannerAd {
+                mobilefuseBannerAd.show()
             }
         } else if ad is InterstitialAd,
                   let interstitialAd = ad as? InterstitialAd {

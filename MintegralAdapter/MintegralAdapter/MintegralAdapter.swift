@@ -35,7 +35,7 @@ import MTGSDKNewInterstitial
     private var adMetricReporter: AdMetricReporter?
 
 
-    public func loadAdCreative(bidResponse: Any, auctionBidListener: any MSPiOSCore.AuctionBidListener, adListener: any MSPiOSCore.AdListener, context: Any, adRequest: MSPiOSCore.AdRequest, bidderPlacementId: String, bidderFormat: MSPiOSCore.AdFormat?) {
+    public func loadAdCreative(bidResponse: Any, auctionBidListener: any MSPiOSCore.AuctionBidListener, adListener: any MSPiOSCore.AdListener, context: Any, adRequest: MSPiOSCore.AdRequest, bidderPlacementId: String, bidderFormat: MSPiOSCore.AdFormat?, params: [String:String]?) {
 
         DispatchQueue.main.async {
 
@@ -45,7 +45,7 @@ import MTGSDKNewInterstitial
             self.bidderPlacementId = bidderPlacementId
 
             let adFormat = bidderFormat ?? adRequest.adFormat
-            self.adUnitId = adRequest.customParams["mintegralAdUnitAd"] as? String
+            self.adUnitId = params?["mintegralAdUnitAd"] as? String
             if adFormat == .interstitial {
                 self.mintegralInterstitialAdManager = MTGNewInterstitialAdManager(placementId:bidderPlacementId,
                                                                                   unitId:self.adUnitId ?? "",
@@ -76,6 +76,7 @@ import MTGSDKNewInterstitial
     public func initialize(initParams: any MSPiOSCore.InitializationParameters, adapterInitListener: any MSPiOSCore.AdapterInitListener, context: Any?) {
         MTGSDK.sharedInstance().setAppID(initParams.getParameters()?["mintegralAppId"] as? String ?? "",
                                          apiKey: initParams.getParameters()?["mintegralApiKey"] as? String ?? "")
+        adapterInitListener.onComplete(adNetwork: .pubmatic, adapterInitStatus: .SUCCESS, message: "")
     }
 
     public func destroyAd() {
@@ -145,6 +146,10 @@ import MTGSDKNewInterstitial
         AdCache.shared.saveAd(placementId: bidderPlacementId, ad: ad)
         let auctionBid = AuctionBid(bidderName: "mintegral", bidderPlacementId: bidderPlacementId, ecpm: ad.adInfo["price"] as? Double ?? 0.0)
         auctionBidListener.onSuccess(bid: auctionBid)
+    }
+    
+    public func getAdNetwork() -> MSPiOSCore.AdNetwork {
+        return .mintegral
     }
 }
 

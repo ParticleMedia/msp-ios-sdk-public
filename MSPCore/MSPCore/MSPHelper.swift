@@ -29,7 +29,7 @@ public class MSP {
     public var email: String?
     public var prebidAPIKey: String?
     
-    public func initMSP(initParams: InitializationParameters, sdkInitListener: MSPInitListener?) {
+    public func initMSP(initParams: InitializationParameters, sdkInitListener: MSPInitListener?, adNetworkManagers: [AdNetworkManager]) {
         // This is a temporary solution to replace MSPManager class in kotlin to solve the Kotlin singleton issue
         MESMetricReporter.shared.logSDKInit()
         AdCache.shared.adMetricReporter = AdMetricReporterImp()
@@ -50,12 +50,14 @@ public class MSP {
             fetchMSPUserId()
         }
         
-        let managers: [AdNetworkManager?] = [adNetworkAdapterProvider.googleManager, adNetworkAdapterProvider.metaManager, adNetworkAdapterProvider.novaManager, adNetworkAdapterProvider.unityManager]
+        //let managers: [AdNetworkManager?] = [adNetworkAdapterProvider.googleManager, adNetworkAdapterProvider.metaManager, adNetworkAdapterProvider.novaManager, adNetworkAdapterProvider.unityManager]
         numInitWaitingForCallbacks = 1 //default vaule is 1 for prebid sdk is alwasys in the dependency
-        for adManager in managers {
-            if let manager = adManager {
+        for manager in adNetworkManagers {
+            if let adNetworkAdapter = manager.getAdNetworkAdapter() {
+                adNetworkAdapterProvider.adNetworkManagerDict[adNetworkAdapter.getAdNetwork()] = manager
                 numInitWaitingForCallbacks += 1
             }
+            
         }
         self.sdkInitListener = sdkInitListener
         var adapterInitListener = MSPAdapterInitListener()
@@ -86,10 +88,17 @@ public class MSP {
         }
          */
         MSPAdConfigManager.shared.initAdConfig()
+        /*
         adNetworkAdapterProvider.googleManager?.getAdNetworkAdapter()?.initialize(initParams: initParams, adapterInitListener: adapterInitListener, context: nil)
         adNetworkAdapterProvider.metaManager?.getAdNetworkAdapter()?.initialize(initParams: initParams, adapterInitListener: adapterInitListener, context: nil)
         adNetworkAdapterProvider.novaManager?.getAdNetworkAdapter()?.initialize(initParams: initParams, adapterInitListener: adapterInitListener, context: nil)
         adNetworkAdapterProvider.unityManager?.getAdNetworkAdapter()?.initialize(initParams: initParams, adapterInitListener: adapterInitListener, context: nil)
+         */
+        for manager in adNetworkManagers {
+            if let adNetworkAdapter = manager.getAdNetworkAdapter() {
+                adNetworkAdapter.initialize(initParams: initParams, adapterInitListener: adapterInitListener, context: nil)
+            }
+        }
         PrebidAdapter.initializePrebid(initParams: initParams, adapterInitListener: adapterInitListener, context: nil)
        
         if let initParamsImp = initParams as? InitializationParametersImp,
@@ -109,7 +118,7 @@ public class MSP {
             }
         }
     }
-    
+    /*
     public func setGoogleManager(googleManager: AdNetworkManager) {
         adNetworkAdapterProvider.googleManager = googleManager
     }
@@ -125,7 +134,7 @@ public class MSP {
     public func setUnityManager(unityManager: AdNetworkManager) {
         adNetworkAdapterProvider.unityManager = unityManager
     }
-    
+    */
     func fetchServerConfigData(completion: @escaping (Result<[String: String], Error>) -> Void) {
         let urlString = "https://35.160.18.119/mspconfig"
         

@@ -110,7 +110,7 @@ import PrebidMobile
     
     private var adMetricReporter: AdMetricReporter?
     
-    public func loadAdCreative(bidResponse: Any, auctionBidListener: AuctionBidListener, adListener: any AdListener, context: Any, adRequest: AdRequest, bidderPlacementId: String, bidderFormat: MSPiOSCore.AdFormat?) {
+    public func loadAdCreative(bidResponse: Any, auctionBidListener: AuctionBidListener, adListener: any AdListener, context: Any, adRequest: AdRequest, bidderPlacementId: String, bidderFormat: MSPiOSCore.AdFormat?, params: [String:String]?) {
         
         self.adRequest = adRequest
         
@@ -250,6 +250,10 @@ import PrebidMobile
             }
         }
         return GADAdSizeBanner
+    }
+    
+    public func getAdNetwork() -> MSPiOSCore.AdNetwork {
+        return .google
     }
 }
 

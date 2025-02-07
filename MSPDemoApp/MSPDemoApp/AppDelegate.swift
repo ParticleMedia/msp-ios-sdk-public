@@ -3,6 +3,10 @@ import MSPCore
 import GoogleAdapter
 import NovaAdapter
 import UnityAdapter
+import PubmaticAdapter
+import MintegralAdapter
+import MobilefuseAdapter
+import InmobiAdapter
 import AppTrackingTransparency
 
 import FacebookAdapter
@@ -19,18 +23,25 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                                                             sourceApp: "0000000000", // Your App's numeric ID on App Store
                                                             orgId: 1061,
                                                             appId: 1)
-        mspInitParameters.params = ["unityAppKey": "8545d445"]
-        MSP.shared.setNovaManager(novaManager: NovaManager())
+        mspInitParameters.params = ["unityAppKey": "8545d445",
+                                    "inmobiAccountId":"4028cb8b2c3a0b45012c406824e800ba",
+                                    "mintegralAppId":"150180",
+                                    "mintegralApiKey":"7c22942b749fe6a6e361b675e96b3ee9",
+                                    "pubmaticPublisherId": "156276",
+                                    "pubmaticProfileIds": [1165],
+                                    "pubmaticStoreUrl": "https://itunes.apple.com/us/app/pubmatic-sdk-app/id1175273098?mt=8"]
+        var adNetworkManagers = [NovaManager(), GoogleManager(), FacebookManager(), UnityManager(), PubmaticManager(), MintegralManager(), MobilefuseManager(), InmobiManager()]
+        //MSP.shared.setNovaManager(novaManager: NovaManager())
         
-        MSP.shared.setGoogleManager(googleManager: GoogleManager())
+        //MSP.shared.setGoogleManager(googleManager: GoogleManager())
         MSP.shared.bidLoaderProvider.googleQueryInfoFetcher = GoogleQueryInfoFetcherHelper()
         
-        MSP.shared.setMetaManager(metaManager: FacebookManager())
+        //MSP.shared.setMetaManager(metaManager: FacebookManager())
         MSP.shared.bidLoaderProvider.facebookBidTokenProvider = FacebookBidTokenProviderHelper()
         
-        MSP.shared.setUnityManager(unityManager: UnityManager())
+        //MSP.shared.setUnityManager(unityManager: UnityManager())
         
-        MSP.shared.initMSP(initParams: mspInitParameters, sdkInitListener: nil)
+        MSP.shared.initMSP(initParams: mspInitParameters, sdkInitListener: nil, adNetworkManagers: adNetworkManagers)
         window = UIWindow(frame: UIScreen.main.bounds)
         self.window?.makeKeyAndVisible()
         
