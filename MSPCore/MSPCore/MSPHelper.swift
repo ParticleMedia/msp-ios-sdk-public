@@ -50,7 +50,6 @@ public class MSP {
             fetchMSPUserId()
         }
         
-        //let managers: [AdNetworkManager?] = [adNetworkAdapterProvider.googleManager, adNetworkAdapterProvider.metaManager, adNetworkAdapterProvider.novaManager, adNetworkAdapterProvider.unityManager]
         numInitWaitingForCallbacks = 1 //default vaule is 1 for prebid sdk is alwasys in the dependency
         for manager in adNetworkManagers {
             if let adNetworkAdapter = manager.getAdNetworkAdapter() {
@@ -61,39 +60,8 @@ public class MSP {
         }
         self.sdkInitListener = sdkInitListener
         var adapterInitListener = MSPAdapterInitListener()
-        /*
-        fetchServerConfigData { result in
-            switch result {
-            case .success(let configData):
-                if let prebidHost = configData["prebid_host"] {
-                    self.prebidHost = prebidHost
-                }
-
-                if let mesHost = configData["mes_host"] {
-                    self.mesHost = mesHost
-                }
-
-                if let novaEventHost = configData["nova_event_host"] {
-                    self.novaEventHost = novaEventHost
-                }
-                
-            case .failure(let error):
-                print("Error fetching data: \(error)")
-            }
-            
-            self.adNetworkAdapterProvider.googleManager?.getAdNetworkAdapter()?.initialize(initParams: initParams, adapterInitListener: adapterInitListener, context: nil)
-            self.adNetworkAdapterProvider.metaManager?.getAdNetworkAdapter()?.initialize(initParams: initParams, adapterInitListener: adapterInitListener, context: nil)
-            self.adNetworkAdapterProvider.novaManager?.getAdNetworkAdapter()?.initialize(initParams: initParams, adapterInitListener: adapterInitListener, context: nil)
-            PrebidAdapter().initialize(initParams: initParams, adapterInitListener: adapterInitListener, context: nil)
-        }
-         */
+        
         MSPAdConfigManager.shared.initAdConfig()
-        /*
-        adNetworkAdapterProvider.googleManager?.getAdNetworkAdapter()?.initialize(initParams: initParams, adapterInitListener: adapterInitListener, context: nil)
-        adNetworkAdapterProvider.metaManager?.getAdNetworkAdapter()?.initialize(initParams: initParams, adapterInitListener: adapterInitListener, context: nil)
-        adNetworkAdapterProvider.novaManager?.getAdNetworkAdapter()?.initialize(initParams: initParams, adapterInitListener: adapterInitListener, context: nil)
-        adNetworkAdapterProvider.unityManager?.getAdNetworkAdapter()?.initialize(initParams: initParams, adapterInitListener: adapterInitListener, context: nil)
-         */
         for manager in adNetworkManagers {
             if let adNetworkAdapter = manager.getAdNetworkAdapter() {
                 adNetworkAdapter.initialize(initParams: initParams, adapterInitListener: adapterInitListener, context: nil)
@@ -118,23 +86,7 @@ public class MSP {
             }
         }
     }
-    /*
-    public func setGoogleManager(googleManager: AdNetworkManager) {
-        adNetworkAdapterProvider.googleManager = googleManager
-    }
     
-    public func setNovaManager(novaManager: AdNetworkManager) {
-        adNetworkAdapterProvider.novaManager = novaManager
-    }
-    
-    public func setMetaManager(metaManager: AdNetworkManager) {
-        adNetworkAdapterProvider.metaManager = metaManager
-    }
-    
-    public func setUnityManager(unityManager: AdNetworkManager) {
-        adNetworkAdapterProvider.unityManager = unityManager
-    }
-    */
     func fetchServerConfigData(completion: @escaping (Result<[String: String], Error>) -> Void) {
         let urlString = "https://35.160.18.119/mspconfig"
         
