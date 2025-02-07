@@ -189,14 +189,16 @@ extension PubmaticAdapter: POBBannerViewDelegate {
     }
 
     public func bannerViewDidReceiveAd(_ bannerView: POBBannerView) {
-        self.bannerView?.pauseAutoRefresh()
-        guard let auctionBidListener = self.auctionBidListener else {return}
-        if let bannerView = self.bannerView {
-
-            let bannerAd = BannerAd(adView: bannerView, adNetworkAdapter: self)
-            self.bannerAd = bannerAd
-            bannerAd.adInfo["price"] = 99.0//banner.getAdMetaInfo()
-            self.handleAdLoaded(ad: bannerAd, auctionBidListener: auctionBidListener, bidderPlacementId: self.bidderPlacementId ?? "pubmatic_placement_id")
+        DispatchQueue.main.async {
+            self.bannerView?.pauseAutoRefresh()
+            guard let auctionBidListener = self.auctionBidListener else {return}
+            if let bannerView = self.bannerView {
+                
+                let bannerAd = BannerAd(adView: bannerView, adNetworkAdapter: self)
+                self.bannerAd = bannerAd
+                bannerAd.adInfo["price"] = 99.0//banner.getAdMetaInfo()
+                self.handleAdLoaded(ad: bannerAd, auctionBidListener: auctionBidListener, bidderPlacementId: self.bidderPlacementId ?? "pubmatic_placement_id")
+            }
         }
     }
 
@@ -231,15 +233,18 @@ extension PubmaticAdapter: POBBannerViewDelegate {
 
 extension PubmaticAdapter: POBInterstitialDelegate {
     public func interstitialDidReceiveAd(_ interstitial: POBInterstitial) {
-        guard let auctionBidListener = self.auctionBidListener else {return}
 
-        if let interstitialAdItem = self.interstitialAdItem {
-            let interstitialAd = PubmaticInterstitialAd(adNetworkAdapter: self)
-            interstitialAd.interstitialAdItem = interstitialAdItem
-            interstitialAd.rootViewController = self.adListener?.getRootViewController()
-            self.interstitialAd = interstitialAd
-            interstitialAd.adInfo["price"] = 99.0//adInfo.revenue
-            self.handleAdLoaded(ad: interstitialAd, auctionBidListener: auctionBidListener, bidderPlacementId: self.bidderPlacementId ?? "pubmatic")
+        DispatchQueue.main.async {
+            guard let auctionBidListener = self.auctionBidListener else {return}
+            
+            if let interstitialAdItem = self.interstitialAdItem {
+                let interstitialAd = PubmaticInterstitialAd(adNetworkAdapter: self)
+                interstitialAd.interstitialAdItem = interstitialAdItem
+                interstitialAd.rootViewController = self.adListener?.getRootViewController()
+                self.interstitialAd = interstitialAd
+                interstitialAd.adInfo["price"] = 99.0//adInfo.revenue
+                self.handleAdLoaded(ad: interstitialAd, auctionBidListener: auctionBidListener, bidderPlacementId: self.bidderPlacementId ?? "pubmatic")
+            }
         }
     }
 
@@ -279,28 +284,28 @@ extension PubmaticAdapter: POBInterstitialDelegate {
 extension PubmaticAdapter: POBNativeAdLoaderDelegate {
 
     public func nativeAdLoader(_ adLoader: POBNativeAdLoader, didReceive nativeAd: POBNativeAd) {
-        print("Native : Ad received.")
-        self.nativeAdItem = nativeAd
-        self.nativeAdItem?.setAdDelegate(self)
-
-        if let auctionBidListener = self.auctionBidListener {
-            let pubmaticNativeAd = PubmaticNativeAd(adNetworkAdapter: self,
-                                                    title: "",
-                                                    body: "",
-                                                    advertiser: "",
-                                                    callToAction: "")
-            pubmaticNativeAd.nativeAdItem = nativeAd
-            self.nativeAd = pubmaticNativeAd
-            pubmaticNativeAd.adInfo["price"] = 99.0//adInfo.revenue
-
-            if let adListener = self.adListener,
-               let adRequest = self.adRequest,
-               let auctionBidListener = self.auctionBidListener {
-                //handleAdLoaded(ad: googleNativeAd, listener: adListener, adRequest: adRequest)
-                self.handleAdLoaded(ad: pubmaticNativeAd, auctionBidListener: auctionBidListener, bidderPlacementId: self.bidderPlacementId ?? adRequest.placementId)
-                //self.adMetricReporter?.logAdResult(placementId: adRequest.placementId, ad: pubmaticNativeAd, fill: true, isFromCache: false)
+        DispatchQueue.main.async {
+            self.nativeAdItem = nativeAd
+            self.nativeAdItem?.setAdDelegate(self)
+            
+            if let auctionBidListener = self.auctionBidListener {
+                let pubmaticNativeAd = PubmaticNativeAd(adNetworkAdapter: self,
+                                                        title: "",
+                                                        body: "",
+                                                        advertiser: "",
+                                                        callToAction: "")
+                pubmaticNativeAd.nativeAdItem = nativeAd
+                self.nativeAd = pubmaticNativeAd
+                pubmaticNativeAd.adInfo["price"] = 99.0//adInfo.revenue
+                
+                if let adListener = self.adListener,
+                   let adRequest = self.adRequest,
+                   let auctionBidListener = self.auctionBidListener {
+                    //handleAdLoaded(ad: googleNativeAd, listener: adListener, adRequest: adRequest)
+                    self.handleAdLoaded(ad: pubmaticNativeAd, auctionBidListener: auctionBidListener, bidderPlacementId: self.bidderPlacementId ?? adRequest.placementId)
+                    //self.adMetricReporter?.logAdResult(placementId: adRequest.placementId, ad: pubmaticNativeAd, fill: true, isFromCache: false)
+                }
             }
-
         }
     }
 

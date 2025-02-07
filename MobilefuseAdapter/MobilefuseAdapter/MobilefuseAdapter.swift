@@ -161,43 +161,45 @@ extension MobilefuseAdapter: IMFInitializationCallbackReceiver {
 extension MobilefuseAdapter: IMFAdCallbackReceiver {
 
     public func onAdLoaded(_ ad: MFAd) {
-        guard let auctionBidListener = self.auctionBidListener else {return}
-        if ad is MFBannerAd,
-           let bannerView = self.bannerView {
-
-            let bannerAd = MobilefuseBannerAd(adView: bannerView, adNetworkAdapter: self)
-            self.bannerAd = bannerAd
-            bannerAd.adInfo["price"] = 99.0//banner.getAdMetaInfo()
-            self.handleAdLoaded(ad: bannerAd, auctionBidListener: auctionBidListener, bidderPlacementId: self.bidderPlacementId ?? "mobilefuse_placement_id")
-        } else if ad is MFInterstitialAd,
-                  let interstitialAdItem = self.interstitialAdItem {
-            let interstitialAd = MobilefuseInterstitialAd(adNetworkAdapter: self)
-            interstitialAd.interstitialAdItem = interstitialAdItem
-            interstitialAd.rootViewController = self.adListener?.getRootViewController()
-            self.interstitialAd = interstitialAd
-            interstitialAd.adInfo["price"] = 99.0//adInfo.revenue
-            self.handleAdLoaded(ad: interstitialAd, auctionBidListener: auctionBidListener, bidderPlacementId: self.bidderPlacementId ?? "mobilefuse_placement_id")
-        } else if ad is MFNativeAd,
-                  let nativeAdItem = self.nativeAdItem {
-            DispatchQueue.main.async {
-                if let auctionBidListener = self.auctionBidListener {
-                    let mobilefuseNativeAd = MobilefuseNativeAd(adNetworkAdapter: self,
-                                                                title: nativeAdItem.getTitle() ?? "",
-                                                                body: nativeAdItem.getDescriptionText() ?? "",
-                                                                advertiser: nativeAdItem.getSponsoredText() ?? "",
-                                                                callToAction: nativeAdItem.getCtaButtonText() ?? "")
-                    mobilefuseNativeAd.nativeAdItem = nativeAdItem
-                    self.nativeAd = mobilefuseNativeAd
-                    mobilefuseNativeAd.adInfo["price"] = 99.0//adInfo.revenue
-
-                    if let adListener = self.adListener,
-                       let adRequest = self.adRequest,
-                       let auctionBidListener = self.auctionBidListener {
-                        //handleAdLoaded(ad: googleNativeAd, listener: adListener, adRequest: adRequest)
-                        self.handleAdLoaded(ad: mobilefuseNativeAd, auctionBidListener: auctionBidListener, bidderPlacementId: self.bidderPlacementId ?? "mobilefuse_placement_id")
-                        self.adMetricReporter?.logAdResult(placementId: adRequest.placementId, ad: mobilefuseNativeAd, fill: true, isFromCache: false)
+        DispatchQueue.main.async {
+            guard let auctionBidListener = self.auctionBidListener else {return}
+            if ad is MFBannerAd,
+               let bannerView = self.bannerView {
+                
+                let bannerAd = MobilefuseBannerAd(adView: bannerView, adNetworkAdapter: self)
+                self.bannerAd = bannerAd
+                bannerAd.adInfo["price"] = 99.0//banner.getAdMetaInfo()
+                self.handleAdLoaded(ad: bannerAd, auctionBidListener: auctionBidListener, bidderPlacementId: self.bidderPlacementId ?? "mobilefuse_placement_id")
+            } else if ad is MFInterstitialAd,
+                      let interstitialAdItem = self.interstitialAdItem {
+                let interstitialAd = MobilefuseInterstitialAd(adNetworkAdapter: self)
+                interstitialAd.interstitialAdItem = interstitialAdItem
+                interstitialAd.rootViewController = self.adListener?.getRootViewController()
+                self.interstitialAd = interstitialAd
+                interstitialAd.adInfo["price"] = 99.0//adInfo.revenue
+                self.handleAdLoaded(ad: interstitialAd, auctionBidListener: auctionBidListener, bidderPlacementId: self.bidderPlacementId ?? "mobilefuse_placement_id")
+            } else if ad is MFNativeAd,
+                      let nativeAdItem = self.nativeAdItem {
+                DispatchQueue.main.async {
+                    if let auctionBidListener = self.auctionBidListener {
+                        let mobilefuseNativeAd = MobilefuseNativeAd(adNetworkAdapter: self,
+                                                                    title: nativeAdItem.getTitle() ?? "",
+                                                                    body: nativeAdItem.getDescriptionText() ?? "",
+                                                                    advertiser: nativeAdItem.getSponsoredText() ?? "",
+                                                                    callToAction: nativeAdItem.getCtaButtonText() ?? "")
+                        mobilefuseNativeAd.nativeAdItem = nativeAdItem
+                        self.nativeAd = mobilefuseNativeAd
+                        mobilefuseNativeAd.adInfo["price"] = 99.0//adInfo.revenue
+                        
+                        if let adListener = self.adListener,
+                           let adRequest = self.adRequest,
+                           let auctionBidListener = self.auctionBidListener {
+                            //handleAdLoaded(ad: googleNativeAd, listener: adListener, adRequest: adRequest)
+                            self.handleAdLoaded(ad: mobilefuseNativeAd, auctionBidListener: auctionBidListener, bidderPlacementId: self.bidderPlacementId ?? "mobilefuse_placement_id")
+                            self.adMetricReporter?.logAdResult(placementId: adRequest.placementId, ad: mobilefuseNativeAd, fill: true, isFromCache: false)
+                        }
+                        
                     }
-
                 }
             }
         }

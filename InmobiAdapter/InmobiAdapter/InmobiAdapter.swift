@@ -199,14 +199,16 @@ extension InmobiAdapter: IMInterstitialDelegate {
     
 
     public func interstitialDidFinishLoading(_ interstitial: IMInterstitial) {
-        if let interstitialAdItem = self.interstitialAdItem,
-           let auctionBidListener = self.auctionBidListener {
-            let interstitialAd = InmobiInterstitialAd(adNetworkAdapter: self)
-            interstitialAd.interstitialAdItem = interstitialAdItem
-            interstitialAd.rootViewController = self.adListener?.getRootViewController()
-            self.interstitialAd = interstitialAd
-            interstitialAd.adInfo["price"] = 99.0//adInfo.revenue
-            self.handleAdLoaded(ad: interstitialAd, auctionBidListener: auctionBidListener, bidderPlacementId: self.bidderPlacementId ?? "inmobi")
+        DispatchQueue.main.async {
+            if let interstitialAdItem = self.interstitialAdItem,
+               let auctionBidListener = self.auctionBidListener {
+                let interstitialAd = InmobiInterstitialAd(adNetworkAdapter: self)
+                interstitialAd.interstitialAdItem = interstitialAdItem
+                interstitialAd.rootViewController = self.adListener?.getRootViewController()
+                self.interstitialAd = interstitialAd
+                interstitialAd.adInfo["price"] = 99.0//adInfo.revenue
+                self.handleAdLoaded(ad: interstitialAd, auctionBidListener: auctionBidListener, bidderPlacementId: self.bidderPlacementId ?? "inmobi")
+            }
         }
     }
 
