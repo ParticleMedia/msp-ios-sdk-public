@@ -23,8 +23,8 @@ public class MSPAdConfigManager {
             switch result {
             case .success(let configData):
                 if let adConfigString = configData["ad_config"] as? String {
-                    self.parseAdConfig(string: testAdConfigString)
-                    UserDefaults.standard.setValue(testAdConfigString, forKey: self.MSP_AD_CONFIG_KEY)
+                    self.parseAdConfig(string: adConfigString)
+                    UserDefaults.standard.setValue(adConfigString, forKey: self.MSP_AD_CONFIG_KEY)
                 }
                 
             case .failure(let error):
