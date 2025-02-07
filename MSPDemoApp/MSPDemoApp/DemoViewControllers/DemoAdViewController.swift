@@ -16,9 +16,27 @@ public enum AdType: String {
     case novaInterstitial
     case facebookNative
     case facebookInterstitial
+    
     case unityBanner
     case unityInterstitial
     case unityNative
+    
+    case inmobiBanner
+    case inmobiInterstitial
+    case inmobiNative
+    
+    case mobilefuseBanner
+    case mobilefuseInterstitial
+    case mobilefuseNative
+    
+    case pubmaticBanner
+    case pubmaticInterstitial
+    case pubmaticNative
+    
+    case mintegralBanner
+    case mintegralInterstitial
+    case mintegralNative
+    
     case clientBiddingBanner
 }
 
@@ -49,24 +67,48 @@ class DemoAdViewController: UIViewController {
         case .facebookInterstitial:
             return "demo-ios-launch-fullscreen"
         case .unityBanner:
-            return "demo-ios-article-top-pubmatic"
+            return "demo-ios-article-top-unity"
         case .unityInterstitial:
-            return "demo-ios-launch-fullscreen-pubmatic"
+            return "demo-ios-launch-fullscreen-unity"
         case .unityNative:
-            return "demo-ios-foryou-large-pubmatic"
+            return "demo-ios-foryou-large-unity"
         case .clientBiddingBanner:
             return "demo-ios-article-top-client-bidding"
+        case .inmobiBanner:
+            return "demo-ios-article-top-inmobi"
+        case .inmobiInterstitial:
+            return "demo-ios-launch-fullscreen-inmobi"
+        case .inmobiNative:
+            return "demo-ios-foryou-large-inmobi"
+        case .mobilefuseBanner:
+            return "demo-ios-article-top-mobilefuse"
+        case .mobilefuseInterstitial:
+            return "demo-ios-launch-fullscreen-mobilefuse"
+        case .mobilefuseNative:
+            return "demo-ios-foryou-large-mobilefuse"
+        case .pubmaticBanner:
+            return "demo-ios-article-top-pubmatic"
+        case .pubmaticInterstitial:
+            return "demo-ios-launch-fullscreen-pubmatic"
+        case .pubmaticNative:
+            return "demo-ios-foryou-large-pubmatic"
+        case .mintegralBanner:
+            return "demo-ios-article-top-mintegral"
+        case .mintegralInterstitial:
+            return "demo-ios-launch-fullscreen-mintegral"
+        case .mintegralNative:
+            return "demo-ios-foryou-large-mintegral"
         }
     }()
     
     private lazy var adFormat: MSPiOSCore.AdFormat = {
         switch adType {
-        case .prebidBanner, .googleBanner, .unityBanner, .clientBiddingBanner :
+        case .prebidBanner, .googleBanner, .unityBanner, .inmobiBanner,.pubmaticBanner,.mobilefuseBanner,.mintegralBanner,.clientBiddingBanner :
             return .banner
     
-        case .googleNative, .novaNative, .facebookNative, .unityNative:
+        case .googleNative, .novaNative, .facebookNative, .unityNative, .inmobiNative,.pubmaticNative,.mobilefuseNative,.mintegralNative:
             return .native
-        case .googleInterstitial, .novaInterstitial, .facebookInterstitial, .unityInterstitial:
+        case .googleInterstitial, .novaInterstitial, .facebookInterstitial, .unityInterstitial, .inmobiInterstitial,.pubmaticInterstitial,.mobilefuseInterstitial,.mintegralInterstitial:
             return .interstitial
         }
     }()
