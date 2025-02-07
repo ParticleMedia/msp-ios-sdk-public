@@ -32,61 +32,16 @@ public class MSPAdNetworkAdapterProvider: AdNetworkAdapterProvider {
     
     public var adNetworkManagerDict = [AdNetwork: AdNetworkManager]()
     
-    /*
-    public var googleManager: AdNetworkManager?
-    
-    public var novaManager: AdNetworkManager?
-    
-    public var metaManager: AdNetworkManager?
-    
-    public var unityManager: AdNetworkManager?
-    */
     public init() {
         
     }
     
     public func getAdNetworkAdapter(adNetwork: AdNetwork) -> AdNetworkAdapter? {
         return adNetworkManagerDict[adNetwork]?.getAdNetworkAdapter()
-        /*
-        if adNetwork == .prebid {
-            var prebidAdapter = PrebidAdapter()
-            return prebidAdapter
-        } else if adNetwork == .google {
-            var googleAdapter = googleManager?.getAdNetworkAdapter()
-            return googleAdapter
-        } else if adNetwork == .nova {
-            var novaAdapter = novaManager?.getAdNetworkAdapter()
-            return novaAdapter
-        } else if adNetwork == .facebook {
-            var facebookAdapter = metaManager?.getAdNetworkAdapter()
-            return facebookAdapter
-        } else if adNetwork == .unity {
-            var unityManager = unityManager?.getAdNetworkAdapter()
-            return unityManager
-        }
-        return nil
-         */
     }
     
     public func getAdNetworkAdapterByName(adNetworkName: String) -> AdNetworkAdapter? {
-        /*
-        if adNetworkName == "Prebid" {
-            var prebidAdapter = PrebidAdapter()
-            return prebidAdapter
-        } else if adNetworkName == "Google" {
-            var googleAdapter = googleManager?.getAdNetworkAdapter()
-            return googleAdapter
-        } else if adNetworkName == "Nova" {
-            var novaAdapter = novaManager?.getAdNetworkAdapter()
-            return novaAdapter
-        } else if adNetworkName == "Facebook" {
-            var facebookAdapter = metaManager?.getAdNetworkAdapter()
-            return facebookAdapter
-        } else if adNetworkName == "Unity" {
-            var unityManager = unityManager?.getAdNetworkAdapter()
-            return unityManager
-        }
-         */
+        
         return nil
     }
 }
