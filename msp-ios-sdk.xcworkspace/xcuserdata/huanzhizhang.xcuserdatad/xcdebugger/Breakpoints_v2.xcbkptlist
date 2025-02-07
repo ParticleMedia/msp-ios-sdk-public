@@ -416,36 +416,6 @@
             endingLineNumber = "208"
             landmarkName = "didFailToLoadAd(withAdUnitId:error:)"
             landmarkType = "7">
-            <Locations>
-               <Location
-                  uuid = "6B9D05B0-1F1B-472C-849D-C633A687BE25 - 8c38134ffde8b3c7"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "UnityAdapter.UnityAdapter.didFailToLoadAd(withAdUnitId: Swift.String, error: Swift.Error) -&gt; ()"
-                  moduleName = "MSPDemoApp.debug.dylib"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/huanzhizhang/Huanzhi/msp-ios-sdk/UnityAdapter/UnityAdapter/UnityAdapter.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "208"
-                  endingLineNumber = "208">
-               </Location>
-               <Location
-                  uuid = "6B9D05B0-1F1B-472C-849D-C633A687BE25 - 8c38134ffde8b3c7"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "UnityAdapter.UnityAdapter.didFailToLoadAd(withAdUnitId: Swift.String, error: Swift.Error) -&gt; ()"
-                  moduleName = "MSPDemoApp.debug.dylib"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/huanzhizhang/Huanzhi/msp-ios-sdk/UnityAdapter/UnityAdapter/UnityAdapter.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "208"
-                  endingLineNumber = "208">
-               </Location>
-            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -751,20 +721,6 @@
             landmarkName = "didClickAd(with:)"
             landmarkType = "7">
             <Locations>
-               <Location
-                  uuid = "C2ADA292-25A3-41A7-B86C-424B93325530 - 8a23f4735f9a80fd"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "UnityAdapter.UnityAdapter.didClickAd(with: __C.LPMAdInfo) -&gt; ()"
-                  moduleName = "MSPDemoApp.debug.dylib"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/huanzhizhang/Huanzhi/msp-ios-sdk/UnityAdapter/UnityAdapter/UnityAdapter.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "213"
-                  endingLineNumber = "213">
-               </Location>
                <Location
                   uuid = "C2ADA292-25A3-41A7-B86C-424B93325530 - 8a23f4735f9a80fd"
                   shouldBeEnabled = "Yes"
@@ -1178,36 +1134,6 @@
             endingLineNumber = "140"
             landmarkName = "handleAdLoaded(ad:auctionBidListener:bidderPlacementId:)"
             landmarkType = "7">
-            <Locations>
-               <Location
-                  uuid = "7CB1507B-DB65-4D92-8390-6EB2C9F3DB23 - 5e580c5a70555bf7"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "InmobiAdapter.InmobiAdapter.handleAdLoaded(ad: MSPiOSCore.MSPAd, auctionBidListener: MSPiOSCore.AuctionBidListener, bidderPlacementId: Swift.String) -&gt; ()"
-                  moduleName = "MSPDemoApp.debug.dylib"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/huanzhizhang/Huanzhi/msp-ios-sdk/InmobiAdapter/InmobiAdapter/InmobiAdapter.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "140"
-                  endingLineNumber = "140">
-               </Location>
-               <Location
-                  uuid = "7CB1507B-DB65-4D92-8390-6EB2C9F3DB23 - 5e580c5a70555bf7"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "InmobiAdapter.InmobiAdapter.handleAdLoaded(ad: MSPiOSCore.MSPAd, auctionBidListener: MSPiOSCore.AuctionBidListener, bidderPlacementId: Swift.String) -&gt; ()"
-                  moduleName = "MSPDemoApp.debug.dylib"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/huanzhizhang/Huanzhi/msp-ios-sdk/InmobiAdapter/InmobiAdapter/InmobiAdapter.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "140"
-                  endingLineNumber = "140">
-               </Location>
-            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -1224,36 +1150,6 @@
             endingLineNumber = "158"
             landmarkName = "banner(_:didReceiveWithMetaInfo:)"
             landmarkType = "7">
-            <Locations>
-               <Location
-                  uuid = "8D77DBE5-D820-4AA7-A646-DE5A81741159 - 636943a85bb23db9"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "closure #1 @Swift.MainActor () -&gt; () in InmobiAdapter.InmobiAdapter.banner(_: InMobiSDK.IMBanner, didReceiveWithMetaInfo: InMobiSDK.IMAdMetaInfo) -&gt; ()"
-                  moduleName = "MSPDemoApp.debug.dylib"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/huanzhizhang/Huanzhi/msp-ios-sdk/InmobiAdapter/InmobiAdapter/InmobiAdapter.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "158"
-                  endingLineNumber = "158">
-               </Location>
-               <Location
-                  uuid = "8D77DBE5-D820-4AA7-A646-DE5A81741159 - 636943a85bb23db9"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "closure #1 @Swift.MainActor () -&gt; () in InmobiAdapter.InmobiAdapter.banner(_: InMobiSDK.IMBanner, didReceiveWithMetaInfo: InMobiSDK.IMAdMetaInfo) -&gt; ()"
-                  moduleName = "MSPDemoApp.debug.dylib"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/huanzhizhang/Huanzhi/msp-ios-sdk/InmobiAdapter/InmobiAdapter/InmobiAdapter.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "158"
-                  endingLineNumber = "158">
-               </Location>
-            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -1266,25 +1162,11 @@
             filePath = "InmobiAdapter/InmobiAdapter/InmobiAdapter.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "249"
-            endingLineNumber = "249"
+            startingLineNumber = "251"
+            endingLineNumber = "251"
             landmarkName = "nativeDidFinishLoading(_:)"
             landmarkType = "7">
             <Locations>
-               <Location
-                  uuid = "8B54AAA4-2E15-4F96-A68A-5E17230BC72C - 11d01fd8369dff4c"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "closure #1 @Swift.MainActor () -&gt; () in InmobiAdapter.InmobiAdapter.nativeDidFinishLoading(InMobiSDK.IMNative) -&gt; ()"
-                  moduleName = "MSPDemoApp.debug.dylib"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/huanzhizhang/Huanzhi/msp-ios-sdk/InmobiAdapter/InmobiAdapter/InmobiAdapter.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "249"
-                  endingLineNumber = "249">
-               </Location>
                <Location
                   uuid = "8B54AAA4-2E15-4F96-A68A-5E17230BC72C - 11d01fd8369dff4c"
                   shouldBeEnabled = "Yes"
@@ -1358,8 +1240,8 @@
             filePath = "MobilefuseAdapter/MobilefuseAdapter/MobilefuseAdapter.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "183"
-            endingLineNumber = "183"
+            startingLineNumber = "184"
+            endingLineNumber = "184"
             landmarkName = "onAdLoaded(_:)"
             landmarkType = "7">
             <Locations>
@@ -1404,8 +1286,8 @@
             filePath = "MobilefuseAdapter/MobilefuseAdapter/MobilefuseAdapter.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "174"
-            endingLineNumber = "174"
+            startingLineNumber = "175"
+            endingLineNumber = "175"
             landmarkName = "onAdLoaded(_:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -1436,8 +1318,8 @@
             filePath = "MobilefuseAdapter/MobilefuseAdapter/MobilefuseAdapter.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "164"
-            endingLineNumber = "164"
+            startingLineNumber = "165"
+            endingLineNumber = "165"
             landmarkName = "onAdLoaded(_:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -1452,10 +1334,10 @@
             filePath = "MobilefuseAdapter/MobilefuseAdapter/MobilefuseAdapter.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "208"
-            endingLineNumber = "208"
+            startingLineNumber = "210"
+            endingLineNumber = "210"
             landmarkName = "onAdNotFilled(_:)"
-            landmarkType = "7">
+            landmarkType = "9">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -1471,38 +1353,6 @@
             startingLineNumber = "48"
             endingLineNumber = "48"
             landmarkName = "loadAdCreative(bidResponse:auctionBidListener:adListener:context:adRequest:bidderPlacementId:bidderFormat:params:)"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "E4F3EB21-999A-4D10-9FB1-775758962742"
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "PubmaticAdapter/PubmaticAdapter/PubmaticAdapter.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "52"
-            endingLineNumber = "52"
-            landmarkName = "loadAdCreative(bidResponse:auctionBidListener:adListener:context:adRequest:bidderPlacementId:bidderFormat:params:)"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "E7E743E6-BD48-4313-8E46-C06BEB9F3A9B"
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "MSPCore/MSPCore/MSPHelper.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "117"
-            endingLineNumber = "117"
-            landmarkName = "onComplete(adNetwork:adapterInitStatus:message:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>

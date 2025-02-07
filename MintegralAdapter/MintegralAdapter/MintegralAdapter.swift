@@ -155,13 +155,15 @@ import MTGSDKNewInterstitial
 
 extension MintegralAdapter: MTGBannerAdViewDelegate {
     public func adViewLoadSuccess(_ adView: MTGBannerAdView!) {
-        guard let auctionBidListener = self.auctionBidListener else {return}
-        if let bannerView = self.bannerView {
-
-            let bannerAd = BannerAd(adView: bannerView, adNetworkAdapter: self)
-            self.bannerAd = bannerAd
-            bannerAd.adInfo["price"] = 99.0//banner.getAdMetaInfo()
-            self.handleAdLoaded(ad: bannerAd, auctionBidListener: auctionBidListener, bidderPlacementId: self.bidderPlacementId ?? "mintegral_placement_id")
+        DispatchQueue.main.async {
+            guard let auctionBidListener = self.auctionBidListener else {return}
+            if let bannerView = self.bannerView {
+                
+                let bannerAd = BannerAd(adView: bannerView, adNetworkAdapter: self)
+                self.bannerAd = bannerAd
+                bannerAd.adInfo["price"] = 99.0//banner.getAdMetaInfo()
+                self.handleAdLoaded(ad: bannerAd, auctionBidListener: auctionBidListener, bidderPlacementId: self.bidderPlacementId ?? "mintegral_placement_id")
+            }
         }
     }
 
@@ -212,15 +214,17 @@ extension MintegralAdapter: MTGBannerAdViewDelegate {
 
 extension MintegralAdapter: MTGNewInterstitialAdDelegate {
     public func newInterstitialAdResourceLoadSuccess(_ adManager: MTGNewInterstitialAdManager) {
-        guard let auctionBidListener = self.auctionBidListener else {return}
-
-        if let mintegralInterstitialAdManager = self.mintegralInterstitialAdManager {
-            let interstitialAd = MintegralInterstitialAd(adNetworkAdapter: self)
-            interstitialAd.mintegralInterstitialAdManager = mintegralInterstitialAdManager
-            interstitialAd.rootViewController = self.adListener?.getRootViewController()
-            self.interstitialAd = interstitialAd
-            interstitialAd.adInfo["price"] = 99.0//adInfo.revenue
-            self.handleAdLoaded(ad: interstitialAd, auctionBidListener: auctionBidListener, bidderPlacementId: self.bidderPlacementId ?? "mintegral")
+        DispatchQueue.main.async {
+            guard let auctionBidListener = self.auctionBidListener else {return}
+            
+            if let mintegralInterstitialAdManager = self.mintegralInterstitialAdManager {
+                let interstitialAd = MintegralInterstitialAd(adNetworkAdapter: self)
+                interstitialAd.mintegralInterstitialAdManager = mintegralInterstitialAdManager
+                interstitialAd.rootViewController = self.adListener?.getRootViewController()
+                self.interstitialAd = interstitialAd
+                interstitialAd.adInfo["price"] = 99.0//adInfo.revenue
+                self.handleAdLoaded(ad: interstitialAd, auctionBidListener: auctionBidListener, bidderPlacementId: self.bidderPlacementId ?? "mintegral")
+            }
         }
     }
 
