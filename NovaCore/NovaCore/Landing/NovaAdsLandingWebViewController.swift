@@ -176,6 +176,7 @@ import Foundation
 
         unifiedWebViewHost.load(model.url, referer: "https://www.newsbreak.com/")
         smoothProgress.startUpdatingProgress()
+        NovaAdMetricReporter.logWebEvent(.novaLandingPageStart, encryptedAdToken: model.encryptedAdToken)
         //NovaAdOpenLandingLogger.logStart(adId: model.adId,
         //                                 requestId: model.requestId,
         //                                 adUnitId: model.adUnitId,
@@ -186,7 +187,7 @@ import Foundation
 
     override public func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
-
+        NovaAdMetricReporter.logWebEvent(.novaLandingPageClose, encryptedAdToken: model.encryptedAdToken)
         //NovaAdOpenLandingLogger.logClose(adId: model.adId,
         //                                 requestId: model.requestId,
         //                                 adUnitId: model.adUnitId,
@@ -224,6 +225,7 @@ private extension NovaAdsLandingWebViewController {
     }
     
     @objc func appWillResignActive() {
+        NovaAdMetricReporter.logWebEvent(.novaLandingPageJumpOut, encryptedAdToken: model.encryptedAdToken)
         /*
         NovaAdOpenLandingLogger.logJumpOut(
             adId: model.adId,
@@ -236,6 +238,7 @@ private extension NovaAdsLandingWebViewController {
     }
     
     @objc func appWillEnterForeground() {
+        NovaAdMetricReporter.logWebEvent(.novaLandingPageJumpIn, encryptedAdToken: model.encryptedAdToken)
         /*
         NovaAdOpenLandingLogger.logJumpIn(
             adId: model.adId,
@@ -284,6 +287,7 @@ extension NovaAdsLandingWebViewController: NovaUnifiedWebViewNavigationDelegate 
 
     public func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
         if !didLogFirstPage {
+            NovaAdMetricReporter.logWebEvent(.novaLandingPageAllLoad, encryptedAdToken: model.encryptedAdToken)
             /*
             NovaAdOpenLandingLogger.logLoaded(adId: model.adId,
                                               requestId: model.requestId,
@@ -305,6 +309,7 @@ extension NovaAdsLandingWebViewController: NovaUnifiedWebViewNavigationDelegate 
 
     public func webView(_ webView: WKWebView, didFailProvisionalNavigation navigation: WKNavigation!, withError error: Error) {
         if !didLogFirstPage {
+            NovaAdMetricReporter.logWebEvent(.novaLandingPageAllLoad, encryptedAdToken: model.encryptedAdToken)
             /*
             NovaAdOpenLandingLogger.logLoaded(adId: model.adId,
                                               requestId: model.requestId,
