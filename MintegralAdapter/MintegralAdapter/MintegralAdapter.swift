@@ -74,8 +74,8 @@ import MTGSDKNewInterstitial
     }
 
     public func initialize(initParams: any MSPiOSCore.InitializationParameters, adapterInitListener: any MSPiOSCore.AdapterInitListener, context: Any?) {
-        MTGSDK.sharedInstance().setAppID(initParams.getParameters()?["mintegralAppId"] as? String ?? "",
-                                         apiKey: initParams.getParameters()?["mintegralApiKey"] as? String ?? "")
+        MTGSDK.sharedInstance().setAppID(initParams.getParameters()?[InitializationParametersCustomKeys.MINTEGRAL_APP_ID] as? String ?? "",
+                                         apiKey: initParams.getParameters()?[InitializationParametersCustomKeys.MINTEGRAL_API_KEY] as? String ?? "")
         adapterInitListener.onComplete(adNetwork: .pubmatic, adapterInitStatus: .SUCCESS, message: "")
     }
 
@@ -111,6 +111,17 @@ import MTGSDKNewInterstitial
                         //mediaView.heightAnchor.constraint(equalTo: mediaContainer.heightAnchor)
                     ])
                 }
+                
+                let adChoiceView = MTGAdChoicesView()
+                adChoiceView.isHidden = false
+                nativeAdContainer.addSubview(adChoiceView)
+                NSLayoutConstraint.activate([
+                    adChoiceView.topAnchor.constraint(equalTo: nativeAdContainer.topAnchor),
+                    adChoiceView.trailingAnchor.constraint(equalTo: nativeAdContainer.trailingAnchor),
+                    adChoiceView.widthAnchor.constraint(equalToConstant: nativeAdItem.adChoiceIconSize.width),
+                    adChoiceView.heightAnchor.constraint(equalToConstant: nativeAdItem.adChoiceIconSize.height),
+                    //mediaView.heightAnchor.constraint(equalTo: mediaContainer.heightAnchor)
+                ])
 
                 var clickableViews = [UIView]()
 
@@ -158,7 +169,6 @@ extension MintegralAdapter: MTGBannerAdViewDelegate {
         DispatchQueue.main.async {
             guard let auctionBidListener = self.auctionBidListener else {return}
             if let bannerView = self.bannerView {
-                
                 let bannerAd = BannerAd(adView: bannerView, adNetworkAdapter: self)
                 self.bannerAd = bannerAd
                 bannerAd.adInfo["price"] = 99.0//banner.getAdMetaInfo()
@@ -187,8 +197,10 @@ extension MintegralAdapter: MTGBannerAdViewDelegate {
     }
 
     public func adViewDidClicked(_ adView: MTGBannerAdView!) {
-        if let bannerAd = self.bannerAd {
-            adListener?.onAdClick(ad: bannerAd)
+        DispatchQueue.main.async {
+            if let bannerAd = self.bannerAd {
+                self.adListener?.onAdClick(ad: bannerAd)
+            }
         }
     }
 
@@ -248,8 +260,11 @@ extension MintegralAdapter: MTGNewInterstitialAdDelegate {
     }
     
     public func newInterstitialAdClicked(_ adManager: MTGNewInterstitialAdManager) {
-        if let interstitialAd = self.interstitialAd {
-            adListener?.onAdClick(ad: interstitialAd)
+        // to do: investigate why it is called multiple times
+        DispatchQueue.main.async {
+            if let interstitialAd = self.interstitialAd {
+                self.adListener?.onAdClick(ad: interstitialAd)
+            }
         }
     }
     
@@ -292,12 +307,15 @@ extension MintegralAdapter: MTGNativeAdManagerDelegate {
     }
     
     public func nativeAdDidClick(_ nativeAd: MTGCampaign, nativeManager: MTGNativeAdManager) {
-        if let nativeAd = self.nativeAd {
-            adListener?.onAdClick(ad: nativeAd)
+        DispatchQueue.main.async {
+            if let nativeAd = self.nativeAd {
+                self.adListener?.onAdClick(ad: nativeAd)
+            }
         }
     }
     
     public func nativeAdImpression(with type: MTGAdSourceType, nativeManager: MTGNativeAdManager) {
+        //TO do: investigate why it is not working
         DispatchQueue.main.async {
             if let nativeAd = self.nativeAd,
                let adRequest = self.adRequest {

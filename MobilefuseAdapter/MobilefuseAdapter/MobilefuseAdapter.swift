@@ -123,7 +123,7 @@ import MobileFuseSDK
     }
 
     public func setAdMetricReporter(adMetricReporter: any MSPiOSCore.AdMetricReporter) {
-
+        self.adMetricReporter = adMetricReporter
     }
 
     private func getMFBannerAdSize(adRequest: AdRequest) -> MFBannerAdSize {
@@ -169,6 +169,7 @@ extension MobilefuseAdapter: IMFAdCallbackReceiver {
                 let bannerAd = MobilefuseBannerAd(adView: bannerView, adNetworkAdapter: self)
                 self.bannerAd = bannerAd
                 bannerAd.adInfo["price"] = 99.0//banner.getAdMetaInfo()
+                bannerAd.show()
                 self.handleAdLoaded(ad: bannerAd, auctionBidListener: auctionBidListener, bidderPlacementId: self.bidderPlacementId ?? "mobilefuse_placement_id")
             } else if ad is MFInterstitialAd,
                       let interstitialAdItem = self.interstitialAdItem {
@@ -235,22 +236,26 @@ extension MobilefuseAdapter: IMFAdCallbackReceiver {
     }
     
     public func onAdClicked(_ ad: MFAd) {
-        if ad is MFBannerAd,
-           let bannerAd = self.bannerAd {
-            self.adListener?.onAdClick(ad: bannerAd)
-        } else if ad is MFInterstitialAd,
-                  let interstitialAd = self.interstitialAd {
-            self.adListener?.onAdClick(ad: interstitialAd)
-        } else if ad is MFNativeAd,
-                  let nativeAd = self.nativeAd {
-            self.adListener?.onAdClick(ad: nativeAd)
+        DispatchQueue.main.async {
+            if ad is MFBannerAd,
+               let bannerAd = self.bannerAd {
+                self.adListener?.onAdClick(ad: bannerAd)
+            } else if ad is MFInterstitialAd,
+                      let interstitialAd = self.interstitialAd {
+                self.adListener?.onAdClick(ad: interstitialAd)
+            } else if ad is MFNativeAd,
+                      let nativeAd = self.nativeAd {
+                self.adListener?.onAdClick(ad: nativeAd)
+            }
         }
     }
     
     public func onAdClosed(_ ad: MFAd) {
-        if ad is MFInterstitialAd,
-                  let interstitialAd = self.interstitialAd {
-            self.adListener?.onAdDismissed(ad: interstitialAd)
+        DispatchQueue.main.async {
+            if ad is MFInterstitialAd,
+               let interstitialAd = self.interstitialAd {
+                self.adListener?.onAdDismissed(ad: interstitialAd)
+            }
         }
     }
 }

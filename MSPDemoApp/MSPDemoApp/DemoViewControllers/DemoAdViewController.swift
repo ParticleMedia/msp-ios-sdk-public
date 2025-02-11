@@ -164,7 +164,7 @@ extension DemoAdViewController: AdListener {
     }
     
     func onAdDismissed(ad: MSPiOSCore.InterstitialAd) {
-        
+        print("ad event: on ad dismissed")
     }
     
     func onAdLoaded(placementId: String) {
@@ -174,11 +174,11 @@ extension DemoAdViewController: AdListener {
     }
     
     func onAdClick(ad: MSPAd) {
-        
+        print("ad event: on ad click")
     }
     
     func onAdImpression(ad: MSPAd) {
-        
+        print("ad event: on ad impression")
     }
     
     func onAdLoaded(ad: MSPAd) {
@@ -216,10 +216,6 @@ extension DemoAdViewController: AdListener {
                     adView.widthAnchor.constraint(equalToConstant: 320),
                     adView.heightAnchor.constraint(equalToConstant: 50)
                 ])
-            }
-            if bannerAd is MobilefuseBannerAd,
-               let mobilefuseBannerAd = bannerAd as? MobilefuseBannerAd {
-                mobilefuseBannerAd.show()
             }
         } else if ad is InterstitialAd,
                   let interstitialAd = ad as? InterstitialAd {

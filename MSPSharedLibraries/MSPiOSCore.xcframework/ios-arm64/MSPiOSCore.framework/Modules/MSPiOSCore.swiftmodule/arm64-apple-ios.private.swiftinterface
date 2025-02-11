@@ -248,6 +248,15 @@ public protocol InitializationParameters : MSPiOSCore.AdapterParameters {
   func getPrebidAPIKey() -> Swift.String
   func getPrebidHostUrl() -> Swift.String
 }
+public struct InitializationParametersCustomKeys {
+  public static let UNITY_APP_KEY: Swift.String
+  public static let INMOBI_ACCOUNT_ID: Swift.String
+  public static let MINTEGRAL_APP_ID: Swift.String
+  public static let MINTEGRAL_API_KEY: Swift.String
+  public static let PUBMATIC_PUBLISHER_ID: Swift.String
+  public static let PUBMATIC_PROFILE_IDS: Swift.String
+  public static let PUBMATIC_STORE_URL: Swift.String
+}
 public class AuctionBid {
   public var bidderName: Swift.String
   public var bidderPlacementId: Swift.String

@@ -29,6 +29,8 @@ import OpenWrapSDK
     private var nativeAdItem: POBNativeAd?
     public weak var nativeAd: PubmaticNativeAd?
     
+    public var priceInDollar: Double?
+    
     private var adMetricReporter: AdMetricReporter?
 
     public func loadAdCreative(bidResponse: Any, auctionBidListener: any MSPiOSCore.AuctionBidListener, adListener: any MSPiOSCore.AdListener, context: Any, adRequest: MSPiOSCore.AdRequest, bidderPlacementId: String, bidderFormat: MSPiOSCore.AdFormat?, params: [String:String]?) {
@@ -59,6 +61,7 @@ import OpenWrapSDK
                 self.pubmaticNativeAdLoader = POBNativeAdLoader(publisherId: publisherId, profileId: profileId, adUnitId: bidderPlacementId, templateType: POBNativeTemplateType.medium)
 
                 self.pubmaticNativeAdLoader?.delegate = self
+                self.pubmaticNativeAdLoader?.bidEventDelegate = self
                 self.pubmaticNativeAdLoader?.loadAd()
 
             } else {
@@ -70,8 +73,8 @@ import OpenWrapSDK
     }
 
     public func initialize(initParams: any MSPiOSCore.InitializationParameters, adapterInitListener: any MSPiOSCore.AdapterInitListener, context: Any?) {
-        let openWrapSDKConfig = OpenWrapSDKConfig(publisherId: initParams.getParameters()?["pubmaticPublisherId"] as? String ?? "",
-                                                  andProfileIds: initParams.getParameters()?["pubmaticProfileIds"] as? [NSNumber] ?? [NSNumber]())
+        let openWrapSDKConfig = OpenWrapSDKConfig(publisherId: initParams.getParameters()?[InitializationParametersCustomKeys.PUBMATIC_PUBLISHER_ID] as? String ?? "",
+                                                  andProfileIds: initParams.getParameters()?[InitializationParametersCustomKeys.PUBMATIC_PROFILE_IDS] as? [NSNumber] ?? [NSNumber]())
 
         OpenWrapSDK.initialize(with: openWrapSDKConfig) { (success, error) in
             if success {
@@ -82,7 +85,7 @@ import OpenWrapSDK
 
             // Set a valid App Store URL, containing the app id of your iOS app.
             let appInfo = POBApplicationInfo()
-            if let storeUrl = URL(string: initParams.getParameters()?["pubmaticStoreUrl"] as? String ?? "") {
+            if let storeUrl = URL(string: initParams.getParameters()?[InitializationParametersCustomKeys.PUBMATIC_STORE_URL] as? String ?? "") {
                 appInfo.storeURL = storeUrl
             }
             // This application information is a global configuration & you
@@ -196,7 +199,7 @@ extension PubmaticAdapter: POBBannerViewDelegate {
                 
                 let bannerAd = BannerAd(adView: bannerView, adNetworkAdapter: self)
                 self.bannerAd = bannerAd
-                bannerAd.adInfo["price"] = 99.0//banner.getAdMetaInfo()
+                bannerAd.adInfo["price"] = bannerView.bid().price.doubleValue
                 self.handleAdLoaded(ad: bannerAd, auctionBidListener: auctionBidListener, bidderPlacementId: self.bidderPlacementId ?? "pubmatic_placement_id")
             }
         }
@@ -214,7 +217,7 @@ extension PubmaticAdapter: POBBannerViewDelegate {
                 var params = [String:Any?]()
                 params["seat"] = "pubmatic"
                 params["bidderPlacementId"] = self.bidderPlacementId
-                //params["price"] = banner.getAdMetaInfo()?.values
+                params["price"] = self.bannerAd?.adInfo["price"]
                 if let bannerAd = self.bannerAd {
                     self.adListener?.onAdImpression(ad: bannerAd)
                     self.adMetricReporter?.logAdImpression(ad: bannerAd, adRequest: adRequest, bidResponse: self, params: params)
@@ -224,8 +227,10 @@ extension PubmaticAdapter: POBBannerViewDelegate {
     }
     
     public func bannerViewDidClickAd(_ bannerView: POBBannerView) {
-        if let bannerAd = self.bannerAd {
-            adListener?.onAdClick(ad: bannerAd)
+        DispatchQueue.main.async {
+            if let bannerAd = self.bannerAd {
+                self.adListener?.onAdClick(ad: bannerAd)
+            }
         }
     }
 }
@@ -242,7 +247,7 @@ extension PubmaticAdapter: POBInterstitialDelegate {
                 interstitialAd.interstitialAdItem = interstitialAdItem
                 interstitialAd.rootViewController = self.adListener?.getRootViewController()
                 self.interstitialAd = interstitialAd
-                interstitialAd.adInfo["price"] = 99.0//adInfo.revenue
+                interstitialAd.adInfo["price"] = interstitial.bid().price.doubleValue
                 self.handleAdLoaded(ad: interstitialAd, auctionBidListener: auctionBidListener, bidderPlacementId: self.bidderPlacementId ?? "pubmatic")
             }
         }
@@ -259,7 +264,7 @@ extension PubmaticAdapter: POBInterstitialDelegate {
                 var params = [String:Any?]()
                 params["seat"] = "pubmatic"
                 params["bidderPlacementId"] = self.bidderPlacementId
-                //params["price"] = interstitial.getAdMetaInfo()?.values
+                params["price"] = self.interstitialAd?.adInfo["price"]
                 if let interstitialAd = self.interstitialAd {
                     self.adListener?.onAdImpression(ad: interstitialAd)
                     self.adMetricReporter?.logAdImpression(ad: interstitialAd, adRequest: adRequest, bidResponse: self, params: params)
@@ -269,14 +274,18 @@ extension PubmaticAdapter: POBInterstitialDelegate {
     }
     
     public func interstitialDidClickAd(_ interstitial: POBInterstitial) {
-        if let interstitialAd = self.interstitialAd {
-            adListener?.onAdClick(ad: interstitialAd)
+        DispatchQueue.main.async {
+            if let interstitialAd = self.interstitialAd {
+                self.adListener?.onAdClick(ad: interstitialAd)
+            }
         }
     }
     
     public func interstitialDidDismissAd(_ interstitial: POBInterstitial) {
-        if let interstitialAd = self.interstitialAd {
-            adListener?.onAdDismissed(ad: interstitialAd)
+        DispatchQueue.main.async {
+            if let interstitialAd = self.interstitialAd {
+                self.adListener?.onAdDismissed(ad: interstitialAd)
+            }
         }
     }
 }
@@ -296,7 +305,7 @@ extension PubmaticAdapter: POBNativeAdLoaderDelegate {
                                                         callToAction: "")
                 pubmaticNativeAd.nativeAdItem = nativeAd
                 self.nativeAd = pubmaticNativeAd
-                pubmaticNativeAd.adInfo["price"] = 99.0//adInfo.revenue
+                pubmaticNativeAd.adInfo["price"] = self.priceInDollar ?? 0.0
                 
                 if let adListener = self.adListener,
                    let adRequest = self.adRequest,
@@ -330,15 +339,41 @@ extension PubmaticAdapter: POBNativeAdDelegate {
                 var params = [String:Any?]()
                 params["seat"] = "pubmatic"
                 params["bidderPlacementId"] = self.bidderPlacementId
-                //params["price"] = native.getAdMetaInfo()?.values
+                params["price"] = self.nativeAd?.adInfo["price"]
                 self.adMetricReporter?.logAdImpression(ad: nativeAd, adRequest: adRequest, bidResponse: self, params: params)
             }
         }
     }
     
     public func nativeAdDidRecordClick(_ nativeAd: POBNativeAd) {
-        if let nativeAd = self.nativeAd {
-            adListener?.onAdClick(ad: nativeAd)
+        DispatchQueue.main.async {
+            if let nativeAd = self.nativeAd {
+                self.adListener?.onAdClick(ad: nativeAd)
+            }
         }
     }
+    
+    public func nativeAd(_ nativeAd: POBNativeAd, didRecordClickForAsset assetId: Int) {
+        DispatchQueue.main.async {
+            if let nativeAd = self.nativeAd {
+                self.adListener?.onAdClick(ad: nativeAd)
+            }
+        }
+    }
+}
+
+
+extension PubmaticAdapter: POBBidEventDelegate {
+    public func bidEvent(_ bidEventObject: (any POBBidEvent)!, didReceive bid: POBBid!) {
+        DispatchQueue.main.async {
+            self.priceInDollar = bid.price.doubleValue
+        }
+        bidEventObject.proceedToLoadAd()
+    }
+    
+    public func bidEvent(_ bidEventObject: (any POBBidEvent)!, didFailToReceiveBidWithError error: (any Error)!) {
+        
+    }
+    
+    
 }

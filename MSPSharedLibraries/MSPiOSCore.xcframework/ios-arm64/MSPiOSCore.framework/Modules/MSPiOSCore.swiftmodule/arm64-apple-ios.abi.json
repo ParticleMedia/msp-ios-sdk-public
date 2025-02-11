@@ -9714,6 +9714,365 @@
         ]
       },
       {
+        "kind": "TypeDecl",
+        "name": "InitializationParametersCustomKeys",
+        "printedName": "InitializationParametersCustomKeys",
+        "children": [
+          {
+            "kind": "Var",
+            "name": "UNITY_APP_KEY",
+            "printedName": "UNITY_APP_KEY",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "String",
+                "printedName": "Swift.String",
+                "usr": "s:SS"
+              }
+            ],
+            "declKind": "Var",
+            "usr": "s:10MSPiOSCore34InitializationParametersCustomKeysV13UNITY_APP_KEYSSvpZ",
+            "mangledName": "$s10MSPiOSCore34InitializationParametersCustomKeysV13UNITY_APP_KEYSSvpZ",
+            "moduleName": "MSPiOSCore",
+            "static": true,
+            "declAttributes": [
+              "HasInitialValue",
+              "HasStorage",
+              "AccessControl"
+            ],
+            "isLet": true,
+            "hasStorage": true,
+            "accessors": [
+              {
+                "kind": "Accessor",
+                "name": "Get",
+                "printedName": "Get()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "String",
+                    "printedName": "Swift.String",
+                    "usr": "s:SS"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:10MSPiOSCore34InitializationParametersCustomKeysV13UNITY_APP_KEYSSvgZ",
+                "mangledName": "$s10MSPiOSCore34InitializationParametersCustomKeysV13UNITY_APP_KEYSSvgZ",
+                "moduleName": "MSPiOSCore",
+                "static": true,
+                "implicit": true,
+                "accessorKind": "get"
+              }
+            ]
+          },
+          {
+            "kind": "Var",
+            "name": "INMOBI_ACCOUNT_ID",
+            "printedName": "INMOBI_ACCOUNT_ID",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "String",
+                "printedName": "Swift.String",
+                "usr": "s:SS"
+              }
+            ],
+            "declKind": "Var",
+            "usr": "s:10MSPiOSCore34InitializationParametersCustomKeysV17INMOBI_ACCOUNT_IDSSvpZ",
+            "mangledName": "$s10MSPiOSCore34InitializationParametersCustomKeysV17INMOBI_ACCOUNT_IDSSvpZ",
+            "moduleName": "MSPiOSCore",
+            "static": true,
+            "declAttributes": [
+              "HasInitialValue",
+              "HasStorage",
+              "AccessControl"
+            ],
+            "isLet": true,
+            "hasStorage": true,
+            "accessors": [
+              {
+                "kind": "Accessor",
+                "name": "Get",
+                "printedName": "Get()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "String",
+                    "printedName": "Swift.String",
+                    "usr": "s:SS"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:10MSPiOSCore34InitializationParametersCustomKeysV17INMOBI_ACCOUNT_IDSSvgZ",
+                "mangledName": "$s10MSPiOSCore34InitializationParametersCustomKeysV17INMOBI_ACCOUNT_IDSSvgZ",
+                "moduleName": "MSPiOSCore",
+                "static": true,
+                "implicit": true,
+                "accessorKind": "get"
+              }
+            ]
+          },
+          {
+            "kind": "Var",
+            "name": "MINTEGRAL_APP_ID",
+            "printedName": "MINTEGRAL_APP_ID",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "String",
+                "printedName": "Swift.String",
+                "usr": "s:SS"
+              }
+            ],
+            "declKind": "Var",
+            "usr": "s:10MSPiOSCore34InitializationParametersCustomKeysV16MINTEGRAL_APP_IDSSvpZ",
+            "mangledName": "$s10MSPiOSCore34InitializationParametersCustomKeysV16MINTEGRAL_APP_IDSSvpZ",
+            "moduleName": "MSPiOSCore",
+            "static": true,
+            "declAttributes": [
+              "HasInitialValue",
+              "HasStorage",
+              "AccessControl"
+            ],
+            "isLet": true,
+            "hasStorage": true,
+            "accessors": [
+              {
+                "kind": "Accessor",
+                "name": "Get",
+                "printedName": "Get()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "String",
+                    "printedName": "Swift.String",
+                    "usr": "s:SS"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:10MSPiOSCore34InitializationParametersCustomKeysV16MINTEGRAL_APP_IDSSvgZ",
+                "mangledName": "$s10MSPiOSCore34InitializationParametersCustomKeysV16MINTEGRAL_APP_IDSSvgZ",
+                "moduleName": "MSPiOSCore",
+                "static": true,
+                "implicit": true,
+                "accessorKind": "get"
+              }
+            ]
+          },
+          {
+            "kind": "Var",
+            "name": "MINTEGRAL_API_KEY",
+            "printedName": "MINTEGRAL_API_KEY",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "String",
+                "printedName": "Swift.String",
+                "usr": "s:SS"
+              }
+            ],
+            "declKind": "Var",
+            "usr": "s:10MSPiOSCore34InitializationParametersCustomKeysV17MINTEGRAL_API_KEYSSvpZ",
+            "mangledName": "$s10MSPiOSCore34InitializationParametersCustomKeysV17MINTEGRAL_API_KEYSSvpZ",
+            "moduleName": "MSPiOSCore",
+            "static": true,
+            "declAttributes": [
+              "HasInitialValue",
+              "HasStorage",
+              "AccessControl"
+            ],
+            "isLet": true,
+            "hasStorage": true,
+            "accessors": [
+              {
+                "kind": "Accessor",
+                "name": "Get",
+                "printedName": "Get()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "String",
+                    "printedName": "Swift.String",
+                    "usr": "s:SS"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:10MSPiOSCore34InitializationParametersCustomKeysV17MINTEGRAL_API_KEYSSvgZ",
+                "mangledName": "$s10MSPiOSCore34InitializationParametersCustomKeysV17MINTEGRAL_API_KEYSSvgZ",
+                "moduleName": "MSPiOSCore",
+                "static": true,
+                "implicit": true,
+                "accessorKind": "get"
+              }
+            ]
+          },
+          {
+            "kind": "Var",
+            "name": "PUBMATIC_PUBLISHER_ID",
+            "printedName": "PUBMATIC_PUBLISHER_ID",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "String",
+                "printedName": "Swift.String",
+                "usr": "s:SS"
+              }
+            ],
+            "declKind": "Var",
+            "usr": "s:10MSPiOSCore34InitializationParametersCustomKeysV21PUBMATIC_PUBLISHER_IDSSvpZ",
+            "mangledName": "$s10MSPiOSCore34InitializationParametersCustomKeysV21PUBMATIC_PUBLISHER_IDSSvpZ",
+            "moduleName": "MSPiOSCore",
+            "static": true,
+            "declAttributes": [
+              "HasInitialValue",
+              "HasStorage",
+              "AccessControl"
+            ],
+            "isLet": true,
+            "hasStorage": true,
+            "accessors": [
+              {
+                "kind": "Accessor",
+                "name": "Get",
+                "printedName": "Get()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "String",
+                    "printedName": "Swift.String",
+                    "usr": "s:SS"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:10MSPiOSCore34InitializationParametersCustomKeysV21PUBMATIC_PUBLISHER_IDSSvgZ",
+                "mangledName": "$s10MSPiOSCore34InitializationParametersCustomKeysV21PUBMATIC_PUBLISHER_IDSSvgZ",
+                "moduleName": "MSPiOSCore",
+                "static": true,
+                "implicit": true,
+                "accessorKind": "get"
+              }
+            ]
+          },
+          {
+            "kind": "Var",
+            "name": "PUBMATIC_PROFILE_IDS",
+            "printedName": "PUBMATIC_PROFILE_IDS",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "String",
+                "printedName": "Swift.String",
+                "usr": "s:SS"
+              }
+            ],
+            "declKind": "Var",
+            "usr": "s:10MSPiOSCore34InitializationParametersCustomKeysV20PUBMATIC_PROFILE_IDSSSvpZ",
+            "mangledName": "$s10MSPiOSCore34InitializationParametersCustomKeysV20PUBMATIC_PROFILE_IDSSSvpZ",
+            "moduleName": "MSPiOSCore",
+            "static": true,
+            "declAttributes": [
+              "HasInitialValue",
+              "HasStorage",
+              "AccessControl"
+            ],
+            "isLet": true,
+            "hasStorage": true,
+            "accessors": [
+              {
+                "kind": "Accessor",
+                "name": "Get",
+                "printedName": "Get()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "String",
+                    "printedName": "Swift.String",
+                    "usr": "s:SS"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:10MSPiOSCore34InitializationParametersCustomKeysV20PUBMATIC_PROFILE_IDSSSvgZ",
+                "mangledName": "$s10MSPiOSCore34InitializationParametersCustomKeysV20PUBMATIC_PROFILE_IDSSSvgZ",
+                "moduleName": "MSPiOSCore",
+                "static": true,
+                "implicit": true,
+                "accessorKind": "get"
+              }
+            ]
+          },
+          {
+            "kind": "Var",
+            "name": "PUBMATIC_STORE_URL",
+            "printedName": "PUBMATIC_STORE_URL",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "String",
+                "printedName": "Swift.String",
+                "usr": "s:SS"
+              }
+            ],
+            "declKind": "Var",
+            "usr": "s:10MSPiOSCore34InitializationParametersCustomKeysV18PUBMATIC_STORE_URLSSvpZ",
+            "mangledName": "$s10MSPiOSCore34InitializationParametersCustomKeysV18PUBMATIC_STORE_URLSSvpZ",
+            "moduleName": "MSPiOSCore",
+            "static": true,
+            "declAttributes": [
+              "HasInitialValue",
+              "HasStorage",
+              "AccessControl"
+            ],
+            "isLet": true,
+            "hasStorage": true,
+            "accessors": [
+              {
+                "kind": "Accessor",
+                "name": "Get",
+                "printedName": "Get()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "String",
+                    "printedName": "Swift.String",
+                    "usr": "s:SS"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:10MSPiOSCore34InitializationParametersCustomKeysV18PUBMATIC_STORE_URLSSvgZ",
+                "mangledName": "$s10MSPiOSCore34InitializationParametersCustomKeysV18PUBMATIC_STORE_URLSSvgZ",
+                "moduleName": "MSPiOSCore",
+                "static": true,
+                "implicit": true,
+                "accessorKind": "get"
+              }
+            ]
+          }
+        ],
+        "declKind": "Struct",
+        "usr": "s:10MSPiOSCore34InitializationParametersCustomKeysV",
+        "mangledName": "$s10MSPiOSCore34InitializationParametersCustomKeysV",
+        "moduleName": "MSPiOSCore",
+        "declAttributes": [
+          "AccessControl"
+        ],
+        "conformances": [
+          {
+            "kind": "Conformance",
+            "name": "Copyable",
+            "printedName": "Copyable",
+            "usr": "s:s8CopyableP",
+            "mangledName": "$ss8CopyableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Escapable",
+            "printedName": "Escapable",
+            "usr": "s:s9EscapableP",
+            "mangledName": "$ss9EscapableP"
+          }
+        ]
+      },
+      {
         "kind": "Import",
         "name": "Foundation",
         "printedName": "Foundation",
@@ -12198,6 +12557,55 @@
       "offset": 1565,
       "length": 2,
       "value": "\"\""
+    },
+    {
+      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-core\/MSPiOSCore\/MSPiOSCore\/adapter\/InitializationParameters.swift",
+      "kind": "StringLiteral",
+      "offset": 360,
+      "length": 13,
+      "value": "\"unityAppKey\""
+    },
+    {
+      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-core\/MSPiOSCore\/MSPiOSCore\/adapter\/InitializationParameters.swift",
+      "kind": "StringLiteral",
+      "offset": 416,
+      "length": 17,
+      "value": "\"inmobiAccountId\""
+    },
+    {
+      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-core\/MSPiOSCore\/MSPiOSCore\/adapter\/InitializationParameters.swift",
+      "kind": "StringLiteral",
+      "offset": 475,
+      "length": 16,
+      "value": "\"mintegralAppId\""
+    },
+    {
+      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-core\/MSPiOSCore\/MSPiOSCore\/adapter\/InitializationParameters.swift",
+      "kind": "StringLiteral",
+      "offset": 534,
+      "length": 17,
+      "value": "\"mintegralApiKey\""
+    },
+    {
+      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-core\/MSPiOSCore\/MSPiOSCore\/adapter\/InitializationParameters.swift",
+      "kind": "StringLiteral",
+      "offset": 598,
+      "length": 21,
+      "value": "\"pubmaticPublisherId\""
+    },
+    {
+      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-core\/MSPiOSCore\/MSPiOSCore\/adapter\/InitializationParameters.swift",
+      "kind": "StringLiteral",
+      "offset": 665,
+      "length": 20,
+      "value": "\"pubmaticProfileIds\""
+    },
+    {
+      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-core\/MSPiOSCore\/MSPiOSCore\/adapter\/InitializationParameters.swift",
+      "kind": "StringLiteral",
+      "offset": 729,
+      "length": 18,
+      "value": "\"pubmaticStoreUrl\""
     },
     {
       "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-core\/MSPiOSCore\/MSPiOSCore\/adapter\/AdNetwork.swift",

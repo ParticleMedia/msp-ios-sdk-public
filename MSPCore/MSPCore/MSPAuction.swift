@@ -67,16 +67,16 @@ public class MSPAuction: Auction {
     }
     
     private func getWinnerBid() -> AuctionBid? {
-        biddingDispatchQueue.sync {
-            guard let auctionBidList = self.auctionBidList,
-                  var winnerBid = auctionBidList.first else {return nil}
-            for auctionBid in auctionBidList {
-                if auctionBid.ecpm > winnerBid.ecpm {
-                    winnerBid = auctionBid
-                }
+       
+        guard let auctionBidList = self.auctionBidList,
+              var winnerBid = auctionBidList.first else {return nil}
+        for auctionBid in auctionBidList {
+            if auctionBid.ecpm > winnerBid.ecpm {
+                winnerBid = auctionBid
             }
-            return winnerBid
         }
+        return winnerBid
+        
     }
 }
 

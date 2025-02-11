@@ -8,6 +8,7 @@ import MintegralAdapter
 import MobilefuseAdapter
 import InmobiAdapter
 import AppTrackingTransparency
+import MSPiOSCore
 
 import FacebookAdapter
 
@@ -23,13 +24,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                                                             sourceApp: "0000000000", // Your App's numeric ID on App Store
                                                             orgId: 1061,
                                                             appId: 1)
-        mspInitParameters.params = ["unityAppKey": "8545d445",
-                                    "inmobiAccountId":"4028cb8b2c3a0b45012c406824e800ba",
-                                    "mintegralAppId":"150180",
-                                    "mintegralApiKey":"7c22942b749fe6a6e361b675e96b3ee9",
-                                    "pubmaticPublisherId": "156276",
-                                    "pubmaticProfileIds": [1165],
-                                    "pubmaticStoreUrl": "https://itunes.apple.com/us/app/pubmatic-sdk-app/id1175273098?mt=8"]
+        mspInitParameters.params = [InitializationParametersCustomKeys.UNITY_APP_KEY: "8545d445",
+                                    InitializationParametersCustomKeys.INMOBI_ACCOUNT_ID:"4028cb8b2c3a0b45012c406824e800ba",
+                                    InitializationParametersCustomKeys.MINTEGRAL_APP_ID:"150180",
+                                    InitializationParametersCustomKeys.MINTEGRAL_API_KEY:"7c22942b749fe6a6e361b675e96b3ee9",
+                                    InitializationParametersCustomKeys.PUBMATIC_PUBLISHER_ID: "156276",
+                                    InitializationParametersCustomKeys.PUBMATIC_PROFILE_IDS: [1165],
+                                    InitializationParametersCustomKeys.PUBMATIC_STORE_URL: "https://itunes.apple.com/us/app/pubmatic-sdk-app/id1175273098?mt=8"]
+        //Note: for pubmatic ad you may need to config your NSAllowsArbitraryLoads key in App's Info.list to get a full experience, see details in https://help.pubmatic.com/openwrap/docs/home-get-started-with-ios-openwrap-sdk-as-primary-ad-sdk#app-transport-security-ats
         var adNetworkManagers = [NovaManager(), GoogleManager(), FacebookManager(), UnityManager(), PubmaticManager(), MintegralManager(), MobilefuseManager(), InmobiManager()]
         //MSP.shared.setNovaManager(novaManager: NovaManager())
         

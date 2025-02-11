@@ -70,7 +70,7 @@ import IronSource
     
     public func initialize(initParams: any MSPiOSCore.InitializationParameters, adapterInitListener: any MSPiOSCore.AdapterInitListener, context: Any?) {
         if let params = initParams.getParameters(),
-           let appKey = params["unityAppKey"] as? String {
+           let appKey = params[InitializationParametersCustomKeys.UNITY_APP_KEY] as? String {
             let requestBuilder = LPMInitRequestBuilder(appKey: appKey)
                 .withLegacyAdFormats([IS_REWARDED_VIDEO, IS_NATIVE_AD])
                 .withUserId(UserDefaults.standard.string(forKey: "msp_user_id") ?? "")
@@ -210,10 +210,13 @@ extension UnityAdapter: LPMBannerAdViewDelegate, LPMInterstitialAdDelegate {
     }
     
     public func didClickAd(with adInfo: LPMAdInfo) {
-        if let bannerAd = self.bannerAd {
-            adListener?.onAdClick(ad: bannerAd)
-        } else if let interstitialAd = self.interstitialAd {
-            adListener?.onAdClick(ad: interstitialAd)
+        // to do: investigate why it is not triggered
+        DispatchQueue.main.async {
+            if let bannerAd = self.bannerAd {
+                self.adListener?.onAdClick(ad: bannerAd)
+            } else if let interstitialAd = self.interstitialAd {
+                self.adListener?.onAdClick(ad: interstitialAd)
+            }
         }
     }
     
@@ -236,8 +239,10 @@ extension UnityAdapter: LPMBannerAdViewDelegate, LPMInterstitialAdDelegate {
     }
     
     public func didCloseAd(with adInfo: LPMAdInfo) {
-        if let interstitialAd = self.interstitialAd {
-            adListener?.onAdDismissed(ad: interstitialAd)
+        DispatchQueue.main.async {
+            if let interstitialAd = self.interstitialAd {
+                self.adListener?.onAdDismissed(ad: interstitialAd)
+            }
         }
     }
 }
@@ -292,8 +297,10 @@ extension UnityAdapter: LevelPlayNativeAdDelegate {
     }
     
     public func didClick(_ nativeAd: LevelPlayNativeAd, with adInfo: ISAdInfo) {
-        if let nativeAd = self.nativeAd {
-            adListener?.onAdClick(ad: nativeAd)
+        DispatchQueue.main.async {
+            if let nativeAd = self.nativeAd {
+                self.adListener?.onAdClick(ad: nativeAd)
+            }
         }
     }
     
