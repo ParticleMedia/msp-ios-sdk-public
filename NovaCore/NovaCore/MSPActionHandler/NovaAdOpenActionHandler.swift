@@ -128,6 +128,7 @@ private extension NovaAdOpenActionHandler {
             assertionFailure("Invalid status, missing data model.")
             return
         }
+        NovaAdMetricReporter.logWebEvent(.novaLandingPageResignActive, encryptedAdToken: model.encryptedAdToken)
         /*
         NovaAdOpenLandingLogger.logResignActive(adId: model.adId,
                                                requestId: model.requestId,
@@ -139,17 +140,21 @@ private extension NovaAdOpenActionHandler {
 
     func checkIfAliveAfter5s(webType: NovaAdOpenLandingLogger.WebType) {
         DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 5) { [weak self] in
-            /*
+            
             if let self, let model = self.model {
+                NovaAdMetricReporter.logWebEvent(.novaLandingPageAliveAfter5s, encryptedAdToken: model.encryptedAdToken)
+                /*
                 NovaAdOpenLandingLogger.logAliveAfter5Seconds(adId: model.adId,
                                                              requestId: model.requestId,
                                                              adUnitId: model.adUnitId,
                                                              startTime: model.clickTime,
                                                              webType: webType)
+                 */
             } else {
-                NovaAdOpenLandingLogger.logRecycledAfter5Seconds(webType: webType)
+                NovaAdMetricReporter.logWebEvent(.novaLandingPageRecycledAfter5s, encryptedAdToken: self?.model?.encryptedAdToken ?? "")
+                //NovaAdOpenLandingLogger.logRecycledAfter5Seconds(webType: webType)
             }
-             */
+             
         }
     }
 }
