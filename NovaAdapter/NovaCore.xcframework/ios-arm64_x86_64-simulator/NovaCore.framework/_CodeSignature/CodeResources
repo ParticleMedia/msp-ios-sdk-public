@@ -6,11 +6,11 @@
 	<dict>
 		<key>Assets.car</key>
 		<data>
-		r6Zj0PZhJUnYIESsU2ELmlEWr/M=
+		UkIYFvf6GK5JDN5OoPqhkPAB7UU=
 		</data>
 		<key>Headers/NovaCore-Swift.h</key>
 		<data>
-		HgpMBXYjOpKOfneQg/wuiu3qieg=
+		yZ1oqUCBpJP0/MsWD2/bzBkqbIU=
 		</data>
 		<key>Headers/NovaCore.h</key>
 		<data>
@@ -34,47 +34,47 @@
 		</data>
 		<key>Info.plist</key>
 		<data>
-		SvgQJNK2s438RGHKMKxhsZMAQRU=
+		iWLFJAlSFqg7INQVoK/+hgRqv3A=
 		</data>
 		<key>Modules/NovaCore.swiftmodule/arm64-apple-ios-simulator.abi.json</key>
 		<data>
-		7MREi6IvKy2NuK7c3FKqyPm256g=
+		V6OAafP3aNHLVM3QTG1impt6lGo=
 		</data>
 		<key>Modules/NovaCore.swiftmodule/arm64-apple-ios-simulator.private.swiftinterface</key>
 		<data>
-		nIw/FXFPLhNuAru6iDe77xNSn9M=
+		8B/YceMFzoP9I1TB7dUA7nWtep8=
 		</data>
 		<key>Modules/NovaCore.swiftmodule/arm64-apple-ios-simulator.swiftdoc</key>
 		<data>
-		MBbIz0lZPEBVkVUM6gj0BDglgjw=
+		+DwkrXUBBJj5EyOns9vq0UfyDIo=
 		</data>
 		<key>Modules/NovaCore.swiftmodule/arm64-apple-ios-simulator.swiftinterface</key>
 		<data>
-		nIw/FXFPLhNuAru6iDe77xNSn9M=
+		8B/YceMFzoP9I1TB7dUA7nWtep8=
 		</data>
 		<key>Modules/NovaCore.swiftmodule/arm64-apple-ios-simulator.swiftmodule</key>
 		<data>
-		DGtPBibL11hL/7ECUCDhAwh+Gd4=
+		hQQ135kkUA0DxWXROHL8HMSKikM=
 		</data>
 		<key>Modules/NovaCore.swiftmodule/x86_64-apple-ios-simulator.abi.json</key>
 		<data>
-		7MREi6IvKy2NuK7c3FKqyPm256g=
+		V6OAafP3aNHLVM3QTG1impt6lGo=
 		</data>
 		<key>Modules/NovaCore.swiftmodule/x86_64-apple-ios-simulator.private.swiftinterface</key>
 		<data>
-		2z1p4XUErHh0gFvGAlK0OPheAyM=
+		WUj5hizXsM6kkM7MsUXwFB83KmQ=
 		</data>
 		<key>Modules/NovaCore.swiftmodule/x86_64-apple-ios-simulator.swiftdoc</key>
 		<data>
-		qYwrw699W4ZpHsimlaRKJmT8m0Q=
+		iHN6Kk43T93LBuLzNr6/Y1H7aDA=
 		</data>
 		<key>Modules/NovaCore.swiftmodule/x86_64-apple-ios-simulator.swiftinterface</key>
 		<data>
-		2z1p4XUErHh0gFvGAlK0OPheAyM=
+		WUj5hizXsM6kkM7MsUXwFB83KmQ=
 		</data>
 		<key>Modules/NovaCore.swiftmodule/x86_64-apple-ios-simulator.swiftmodule</key>
 		<data>
-		N9LiWJRhHpKB140yoRF/KIHY79Y=
+		llMbiLSmGVVOcEOLbWVx07zdH/o=
 		</data>
 		<key>Modules/module.modulemap</key>
 		<data>
@@ -95,14 +95,14 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			/xgLgCFwBVmJzZoBpMOvIOmiBGb2R39Efsp9JQNvLLc=
+			FOTnE+pUBxtBXPqV6n9T+7j/mTZpnGe7ZlukIB5yrM4=
 			</data>
 		</dict>
 		<key>Headers/NovaCore-Swift.h</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			fKg/a02WpQSemxgid1o8fW8CDA+qvutNNrzNOwm9OjM=
+			0hqOZoUPsLHqM1tN2MMfrZMDpN8O8AMg/DD3WPTdSno=
 			</data>
 		</dict>
 		<key>Headers/NovaCore.h</key>
@@ -144,70 +144,70 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			btvKRlczYCMf6NnWbLH4PrV4fxxEPZqU+K5CrJCzO80=
+			EIwh7VQ663nqKiAD36It0wBtXQIfoXEsgXHazCmr+kE=
 			</data>
 		</dict>
 		<key>Modules/NovaCore.swiftmodule/arm64-apple-ios-simulator.private.swiftinterface</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			4QGWKHOi0L1z8YId9p9VrL2GAkrVMmMPm95g/iQXfW8=
+			Rzw5zvfT/mbxSBqWGPqg+KoksrfuLrh0OpGZesf2Vb0=
 			</data>
 		</dict>
 		<key>Modules/NovaCore.swiftmodule/arm64-apple-ios-simulator.swiftdoc</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			K7SKfp5eE4hmc8pos3qjtFIFJ4+gOmsIZWL1hUsXSHQ=
+			6FtCPBlYikMxPNNb2SRJlzzxz+M1B+MthJaZciwhpZw=
 			</data>
 		</dict>
 		<key>Modules/NovaCore.swiftmodule/arm64-apple-ios-simulator.swiftinterface</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			4QGWKHOi0L1z8YId9p9VrL2GAkrVMmMPm95g/iQXfW8=
+			Rzw5zvfT/mbxSBqWGPqg+KoksrfuLrh0OpGZesf2Vb0=
 			</data>
 		</dict>
 		<key>Modules/NovaCore.swiftmodule/arm64-apple-ios-simulator.swiftmodule</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			1BAv6zD9+irU3LwUg5RRkmjN5XO9h8uavPtUHYwcBJo=
+			vsZs7uqikFa3osTCEzw2a84GbQhwhhTFsVjJKu7zHdw=
 			</data>
 		</dict>
 		<key>Modules/NovaCore.swiftmodule/x86_64-apple-ios-simulator.abi.json</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			btvKRlczYCMf6NnWbLH4PrV4fxxEPZqU+K5CrJCzO80=
+			EIwh7VQ663nqKiAD36It0wBtXQIfoXEsgXHazCmr+kE=
 			</data>
 		</dict>
 		<key>Modules/NovaCore.swiftmodule/x86_64-apple-ios-simulator.private.swiftinterface</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			FMgh953gqSGdUGjjmA0SUZaLU1t5sPqmuQ6WQ5ewgrE=
+			jrxGHTCGdHqBMuQnYytghs8qFpwtgh2+ZbxZDYm7Vx8=
 			</data>
 		</dict>
 		<key>Modules/NovaCore.swiftmodule/x86_64-apple-ios-simulator.swiftdoc</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			g5PJN1md6sGJwL0YiVf3JIs0XtdZl3hdYvve2i3HPlA=
+			li4IpYsk59hN2zTIUD+/T4+LAIOdLeya51BFSZFMG50=
 			</data>
 		</dict>
 		<key>Modules/NovaCore.swiftmodule/x86_64-apple-ios-simulator.swiftinterface</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			FMgh953gqSGdUGjjmA0SUZaLU1t5sPqmuQ6WQ5ewgrE=
+			jrxGHTCGdHqBMuQnYytghs8qFpwtgh2+ZbxZDYm7Vx8=
 			</data>
 		</dict>
 		<key>Modules/NovaCore.swiftmodule/x86_64-apple-ios-simulator.swiftmodule</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			FUUOzOjInfJDDRT+FYk5oLC3yUdI+vzeMLFgF43c0NA=
+			OTnFTJmD3qrx1fQiR0fef5q59+wYkFhUZiaS9o81Bx4=
 			</data>
 		</dict>
 		<key>Modules/module.modulemap</key>
