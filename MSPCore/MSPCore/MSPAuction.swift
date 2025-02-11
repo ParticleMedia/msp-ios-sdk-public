@@ -15,9 +15,14 @@ public class MSPAuction: Auction {
     private var auctionBidList: [AuctionBid]?
     
     private var isTimeout = false
+    private var remainingTaskCnt = 0
+    
+    private let taskLock = NSLock()
+
     
     public override func startAuction(auctionListener: any AuctionListener, adListener: (any AdListener)?) {
         auctionBidList = [AuctionBid]()
+        remainingTaskCnt = bidders.count
         for bidder in bidders {
             dispatchGroup.enter()
             fetchBid(bidder: bidder, cacheOnly: cacheOnly, auctionBidListener: self, adListener: adListener)
@@ -83,15 +88,24 @@ public class MSPAuction: Auction {
 extension MSPAuction: AuctionBidListener {
     public func onSuccess(bid: MSPiOSCore.AuctionBid) {
         self.biddingDispatchQueue.async {
-            self.auctionBidList?.append(bid)
-            self.dispatchGroup.leave()
+            self.taskLock.lock()
+            if self.remainingTaskCnt > 0 {
+                self.remainingTaskCnt = self.remainingTaskCnt - 1
+                self.auctionBidList?.append(bid)
+                self.dispatchGroup.leave()
+            }
+            self.taskLock.unlock()
         }
-        
     }
     
     public func onError(error: String) {
         self.biddingDispatchQueue.async {
-            self.dispatchGroup.leave()
+            self.taskLock.lock()
+            if self.remainingTaskCnt > 0 {
+                self.remainingTaskCnt = self.remainingTaskCnt - 1
+                self.dispatchGroup.leave()
+            }
+            self.taskLock.unlock()
         }
     }
 }
