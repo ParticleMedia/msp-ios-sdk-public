@@ -4,12 +4,12 @@ Pod::Spec.new do |spec|
 
   
 
-  spec.name         = "NovaAdapter"
-  spec.version      = "0.0.96"
-  spec.summary      = "an adapter for Google SDK"
-  spec.description  = "an adapter for Google SDK for MSP S2S"
+  spec.name         = "UnityAdapter"
+  spec.version      = "0.0.92"
+  spec.summary      = "an adapter for Meta SDK"
+  spec.description  = "an adapter for Meta SDK for MSP S2S"
 
-  spec.homepage     = "https://github.com/aimsp/msp-ios-sdk/GoogleAdapter"
+  spec.homepage     = "https://github.com/aimsp/msp-ios-sdk/MetaAdapter"
  
   spec.license      = "Copyright"
   
@@ -42,17 +42,19 @@ Pod::Spec.new do |spec|
   spec.ios.deployment_target = '13.0'
 
 
-  spec.source_files  = "NovaAdapter/NovaAdapter/**/*.{h,m,swift}"
+  spec.source_files  = "UnityAdapter/UnityAdapter/**/*.{h,m,swift}"
   spec.exclude_files = "Classes/Exclude"
 
-  #spec.dependency 'Google-Mobile-Ads-SDK', "10.14.0"
-  spec.dependency 'MSPSharedLibraries', '0.0.91'
+  #spec.dependency 'IronSourceSDK','8.5.1.0'
+  spec.dependency 'IronSourceSDK','8.6.0.0'
+  spec.dependency 'MSPSharedLibraries'
+  #spec.module_map = 'GoogleAdapter/GoogleAdapter.modulemap'
 
+  #spec.public_header_files = "GoogleAdapter//**/*.h"
+  #spec.vendored_frameworks= "GoogleAdapter/shared.xcframework"
 
-  spec.vendored_frameworks= "NovaAdapter/NovaCore.xcframework"
-
-  #spec.pod_target_xcconfig = { 'VALID_ARCHS' => 'x86_64 armv7 arm64' }
-  #spec.user_target_xcconfig = { 'EXCLUDED_ARCHS[sdk=iphonesimulator*]' => 'arm64' }
+  spec.pod_target_xcconfig = { 'VALID_ARCHS' => 'x86_64 armv7 arm64' }
+  spec.user_target_xcconfig = { 'EXCLUDED_ARCHS[sdk=iphonesimulator*]' => 'arm64' }
 
   spec.static_framework = true
   # ――― Resources ―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
