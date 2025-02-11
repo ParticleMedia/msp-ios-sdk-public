@@ -70,7 +70,7 @@ import InMobiSDK
         }
         //IMSdk.setLogLevel(IMSDKLogLevel.debug)
         if let params = initParams.getParameters(),
-           let accountId = params["inmobiAccountId"] as? String {
+           let accountId = params[InitializationParametersCustomKeys.INMOBI_ACCOUNT_ID] as? String {
             IMSdk.initWithAccountID(accountId,
                                     consentDictionary: conscentDict,
                                     andCompletionHandler: { (error) in
@@ -187,8 +187,10 @@ extension InmobiAdapter: IMBannerDelegate {
     }
     
     public func banner(_ banner: InMobiSDK.IMBanner, didInteractWithParams params: [String : Any]?) {
-        if let bannerAd = self.bannerAd {
-            adListener?.onAdClick(ad: bannerAd)
+        DispatchQueue.main.async {
+            if let bannerAd = self.bannerAd {
+                self.adListener?.onAdClick(ad: bannerAd)
+            }
         }
     }
     
@@ -232,14 +234,18 @@ extension InmobiAdapter: IMInterstitialDelegate {
     }
     
     public func interstitial(_ interstitial: InMobiSDK.IMInterstitial, didInteractWithParams params: [String : Any]?) {
-        if let interstitialAd = self.interstitialAd {
-            adListener?.onAdClick(ad: interstitialAd)
+        DispatchQueue.main.async {
+            if let interstitialAd = self.interstitialAd {
+                self.adListener?.onAdClick(ad: interstitialAd)
+            }
         }
     }
     
     public func interstitialDidDismiss(_ interstitial: InMobiSDK.IMInterstitial) {
-        if let interstitialAd = self.interstitialAd {
-            adListener?.onAdDismissed(ad: interstitialAd)
+        DispatchQueue.main.async {
+            if let interstitialAd = self.interstitialAd {
+                self.adListener?.onAdDismissed(ad: interstitialAd)
+            }
         }
     }
 }
@@ -293,8 +299,10 @@ extension InmobiAdapter: IMNativeDelegate {
     }
 
     public func native(_ native: InMobiSDK.IMNative, didInteractWithParams params: [String : Any]?) {
-        if let nativeAd = self.nativeAd {
-            adListener?.onAdClick(ad: nativeAd)
+        DispatchQueue.main.async {
+            if let nativeAd = self.nativeAd {
+                self.adListener?.onAdClick(ad: nativeAd)
+            }
         }
     }
 }
