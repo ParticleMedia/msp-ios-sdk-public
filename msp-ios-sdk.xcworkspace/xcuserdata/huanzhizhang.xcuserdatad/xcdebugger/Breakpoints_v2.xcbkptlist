@@ -1210,13 +1210,13 @@
             filePath = "MintegralAdapter/MintegralAdapter/MintegralAdapter.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "319"
-            endingLineNumber = "319"
+            startingLineNumber = "349"
+            endingLineNumber = "349"
             landmarkName = "nativeAdImpression(with:nativeManager:)"
             landmarkType = "7">
             <Locations>
                <Location
-                  uuid = "64744494-F86B-4142-B23B-DD206171C522 - 7ccccdf3b3e4ca45"
+                  uuid = "64744494-F86B-4142-B23B-DD206171C522 - 7ccccdf3b3e4cda7"
                   shouldBeEnabled = "Yes"
                   ignoreCount = "0"
                   continueAfterRunningActions = "No"
@@ -1226,11 +1226,11 @@
                   urlString = "file:///Users/huanzhizhang/Huanzhi/msp-ios-sdk/MintegralAdapter/MintegralAdapter/MintegralAdapter.swift"
                   startingColumnNumber = "9223372036854775807"
                   endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "319"
-                  endingLineNumber = "319">
+                  startingLineNumber = "349"
+                  endingLineNumber = "349">
                </Location>
                <Location
-                  uuid = "64744494-F86B-4142-B23B-DD206171C522 - 9092e78703bdc7c5"
+                  uuid = "64744494-F86B-4142-B23B-DD206171C522 - 9092e78703bdc027"
                   shouldBeEnabled = "Yes"
                   ignoreCount = "0"
                   continueAfterRunningActions = "No"
@@ -1240,10 +1240,26 @@
                   urlString = "file:///Users/huanzhizhang/Huanzhi/msp-ios-sdk/MintegralAdapter/MintegralAdapter/MintegralAdapter.swift"
                   startingColumnNumber = "9223372036854775807"
                   endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "319"
-                  endingLineNumber = "319">
+                  startingLineNumber = "349"
+                  endingLineNumber = "349">
                </Location>
             </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "7DC36FA5-79C5-4797-BCA3-6B454CA25ED2"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "NovaCore/NovaCore/Landing/NovaAdsLandingWebViewController.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "179"
+            endingLineNumber = "179"
+            landmarkName = "viewDidLoad()"
+            landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
    </Breakpoints>

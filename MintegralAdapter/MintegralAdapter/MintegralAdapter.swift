@@ -11,6 +11,7 @@ import PrebidMobile
 import MTGSDK
 import MTGSDKBanner
 import MTGSDKNewInterstitial
+import MTGSDKBidding
 
 
 @objc public class MintegralAdapter : NSObject, AdNetworkAdapter {
@@ -61,7 +62,36 @@ import MTGSDKNewInterstitial
                 self.mintegralNativeAdManager?.delegate = self
                 self.mintegralNativeAdManager?.loadAds()
 
-            } else {
+                
+                let bannerParam = MTGBiddingBannerRequestParameter(
+                    placementId: bidderPlacementId,
+                    unitId: self.adUnitId ?? "",
+                    basePrice: 0.1,
+                    unitSize: CGSize(width: 320, height: 50)
+                )
+                MTGBiddingRequest.getBidWith(bannerParam) {[weak self] bidResponse in
+                    if bidResponse.success {
+                        //self?.bidToken = bidResponse.bidToken
+                        //self?.log("bid success")
+                        bidResponse.notifyWin()
+                    } else {
+                       
+                    }
+                }
+                    
+                
+                /*
+                MTGBiddingRequest.getBid(with: bannerParam) { [weak self] bidResponse in
+                    if bidResponse.success {
+                        //self?.bidToken = bidResponse.bidToken
+                        //self?.log("bid success")
+                        bidResponse.notifyWin()
+                    } else {
+                       
+                    }
+                }
+                */
+                
                 self.bannerView = MTGBannerAdView(bannerAdViewWithAdSize: CGSize(width: adRequest.adSize?.width ?? 320, height: adRequest.adSize?.height ?? 50),
                                                   placementId: bidderPlacementId,
                                                   unitId: self.adUnitId ?? "",
