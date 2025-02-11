@@ -21,7 +21,7 @@ class NovaAdOpenLandingLogger: NSObject {
         ]
         MetricService.shared.logRegularAndRealTimeEvent(event: .novaLandingPageStart, parameters: parameters)
     }
-
+    
     static func logLoaded(adId: String,
                           requestId: String,
                           adUnitId: String,
