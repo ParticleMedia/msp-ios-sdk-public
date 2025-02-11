@@ -71,6 +71,10 @@ import Foundation
     static func logVideoEvent(_ event: NovaAdEvent, encryptedAdToken: String, params: [String: String] = [:]) {
         logNovaAdEvent(event, encryptedAdToken: encryptedAdToken, params: params)
     }
+    
+    static func logWebEvent(_ event: NovaAdEvent, encryptedAdToken: String, params: [String: String] = [:]) {
+        logNovaAdEvent(event, encryptedAdToken: encryptedAdToken, params: params)
+    }
 }
 
 // MARK: - Private methods

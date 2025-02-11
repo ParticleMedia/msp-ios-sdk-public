@@ -19,4 +19,16 @@ enum NovaAdEvent: String {
     case videoUnMute = "video_unmute"
 
     case videoProgess = "video_progress"
+    
+    // web events
+    case novaLandingPageLaunchFailed = "nova_landing_page_launch_failed"
+    case novaLandingPageStart = "nova_landing_page_start"
+    case novaLandingPageTextLoad = "nova_landing_page_text_load"
+    case novaLandingPageAllLoad = "nova_landing_page_all_load"
+    case novaLandingPageClose = "nova_landing_page_close"
+    case novaLandingPageJumpOut = "nova_landing_page_jump_out"
+    case novaLandingPageJumpIn = "nova_landing_page_jump_in"
+    case novaLandingPageResignActive = "nova_landing_page_resign_active"
+    case novaLandingPageAliveAfter5s = "nova_landing_page_alive_after_5s"
+    case novaLandingPageRecycledAfter5s = "nova_landing_page_recyclerd_after_5s"
 }
