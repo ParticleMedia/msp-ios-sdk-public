@@ -1045,22 +1045,6 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "8D77DBE5-D820-4AA7-A646-DE5A81741159"
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "InmobiAdapter/InmobiAdapter/InmobiAdapter.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "158"
-            endingLineNumber = "158"
-            landmarkName = "banner(_:didReceiveWithMetaInfo:)"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
             uuid = "BD33D748-415F-4F0F-AF69-77CFD6F132CD"
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
@@ -1171,22 +1155,6 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "D6638CCC-F63B-45D6-BA0A-1B00E78510F3"
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "MSPDemoApp/MSPDemoApp/DemoViewControllers/DemoAdViewController.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "78"
-            endingLineNumber = "78"
-            landmarkName = "placementId"
-            landmarkType = "24">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
             uuid = "64744494-F86B-4142-B23B-DD206171C522"
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
@@ -1194,40 +1162,10 @@
             filePath = "MintegralAdapter/MintegralAdapter/MintegralAdapter.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "349"
-            endingLineNumber = "349"
+            startingLineNumber = "386"
+            endingLineNumber = "386"
             landmarkName = "nativeAdImpression(with:nativeManager:)"
             landmarkType = "7">
-            <Locations>
-               <Location
-                  uuid = "64744494-F86B-4142-B23B-DD206171C522 - 7ccccdf3b3e4cda7"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "MintegralAdapter.MintegralAdapter.nativeAdImpression(with: __C.MTGAdSourceType, nativeManager: __C.MTGNativeAdManager) -&gt; ()"
-                  moduleName = "MSPDemoApp.debug.dylib"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/huanzhizhang/Huanzhi/msp-ios-sdk/MintegralAdapter/MintegralAdapter/MintegralAdapter.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "349"
-                  endingLineNumber = "349">
-               </Location>
-               <Location
-                  uuid = "64744494-F86B-4142-B23B-DD206171C522 - 9092e78703bdc027"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "closure #1 @Swift.MainActor () -&gt; () in MintegralAdapter.MintegralAdapter.nativeAdImpression(with: __C.MTGAdSourceType, nativeManager: __C.MTGNativeAdManager) -&gt; ()"
-                  moduleName = "MSPDemoApp.debug.dylib"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/huanzhizhang/Huanzhi/msp-ios-sdk/MintegralAdapter/MintegralAdapter/MintegralAdapter.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "349"
-                  endingLineNumber = "349">
-               </Location>
-            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy

@@ -159,7 +159,8 @@ extension InmobiAdapter: IMBannerDelegate {
                let auctionBidListener = self.auctionBidListener {
                 let bannerAd = BannerAd(adView: bannerView, adNetworkAdapter: self)
                 self.bannerAd = bannerAd
-                bannerAd.adInfo["price"] = 99.0//info.bidInfo.values
+                let price = info.getBid()
+                bannerAd.adInfo["price"] = info.getBid()//99.0//info.bidInfo.values
                 self.handleAdLoaded(ad: bannerAd, auctionBidListener: auctionBidListener, bidderPlacementId: self.bidderPlacementId ?? "inmobi_placement_id")
             }
         }
@@ -208,7 +209,7 @@ extension InmobiAdapter: IMInterstitialDelegate {
                 interstitialAd.interstitialAdItem = interstitialAdItem
                 interstitialAd.rootViewController = self.adListener?.getRootViewController()
                 self.interstitialAd = interstitialAd
-                interstitialAd.adInfo["price"] = 99.0//adInfo.revenue
+                interstitialAd.adInfo["price"] = interstitial.getAdMetaInfo()//99.0//adInfo.revenue
                 self.handleAdLoaded(ad: interstitialAd, auctionBidListener: auctionBidListener, bidderPlacementId: self.bidderPlacementId ?? "inmobi")
             }
         }

@@ -241,7 +241,7 @@ public let testAdConfigString = """
           "name": "mintegral",
           "bidder_format": "banner",
           "bidder_placement_id": "328859",
-          "params":{"mintegralAdUnitAd":"1541917"}
+          "params":{"mintegralAdUnitAd":"1541918"}
         }
       ]
     },
@@ -253,7 +253,7 @@ public let testAdConfigString = """
           "name": "mintegral",
           "bidder_format": "native",
           "bidder_placement_id": "328861",
-          "params":{"mintegralAdUnitAd":"1541925"}
+          "params":{"mintegralAdUnitAd":"1541926"}
         }
       ]
     },
@@ -265,7 +265,7 @@ public let testAdConfigString = """
           "name": "mintegral",
           "bidder_format": "interstitial",
           "bidder_placement_id": "328874",
-          "params":{"mintegralAdUnitAd":"1541950"}
+          "params":{"mintegralAdUnitAd":"1541952"}
         }
       ]
     },
