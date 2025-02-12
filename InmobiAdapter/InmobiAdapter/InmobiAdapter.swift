@@ -29,6 +29,8 @@ import InMobiSDK
     public var nativeAdView: NativeAdView?
 
     private var adMetricReporter: AdMetricReporter?
+    
+    private var price: Double?
 
 
     public func loadAdCreative(bidResponse: Any, auctionBidListener: any MSPiOSCore.AuctionBidListener, adListener: any MSPiOSCore.AdListener, context: Any, adRequest: MSPiOSCore.AdRequest, bidderPlacementId: String, bidderFormat: MSPiOSCore.AdFormat?, params: [String:String]?) {
@@ -40,6 +42,11 @@ import InMobiSDK
             self.adRequest = adRequest
             self.bidderPlacementId = bidderPlacementId
 
+            if let priceStr = params?["price"] {
+                self.price = Double(priceStr) ?? 0.0
+            } else {
+                self.price = 0.0
+            }
             let adFormat = bidderFormat ?? adRequest.adFormat
             guard let numPlacementId = Int64(bidderPlacementId) else {
                 auctionBidListener.onError(error: "invalid placement id")
@@ -160,7 +167,8 @@ extension InmobiAdapter: IMBannerDelegate {
                 let bannerAd = BannerAd(adView: bannerView, adNetworkAdapter: self)
                 self.bannerAd = bannerAd
                 let price = info.getBid()
-                bannerAd.adInfo["price"] = info.getBid()//99.0//info.bidInfo.values
+                self.price = info.getBid()
+                bannerAd.adInfo["price"] = info.getBid()
                 self.handleAdLoaded(ad: bannerAd, auctionBidListener: auctionBidListener, bidderPlacementId: self.bidderPlacementId ?? "inmobi_placement_id")
             }
         }
@@ -178,7 +186,7 @@ extension InmobiAdapter: IMBannerDelegate {
                 var params = [String:Any?]()
                 params["seat"] = "inmobi"
                 params["bidderPlacementId"] = self.bidderPlacementId
-                params["price"] = banner.getAdMetaInfo()?.values
+                params["price"] = self.price
                 if let bannerAd = self.bannerAd {
                     self.adListener?.onAdImpression(ad: bannerAd)
                     self.adMetricReporter?.logAdImpression(ad: bannerAd, adRequest: adRequest, bidResponse: self, params: params)
@@ -209,7 +217,7 @@ extension InmobiAdapter: IMInterstitialDelegate {
                 interstitialAd.interstitialAdItem = interstitialAdItem
                 interstitialAd.rootViewController = self.adListener?.getRootViewController()
                 self.interstitialAd = interstitialAd
-                interstitialAd.adInfo["price"] = interstitial.getAdMetaInfo()//99.0//adInfo.revenue
+                interstitialAd.adInfo["price"] = self.price
                 self.handleAdLoaded(ad: interstitialAd, auctionBidListener: auctionBidListener, bidderPlacementId: self.bidderPlacementId ?? "inmobi")
             }
         }
@@ -225,7 +233,7 @@ extension InmobiAdapter: IMInterstitialDelegate {
                 var params = [String:Any?]()
                 params["seat"] = "inmobi"
                 params["bidderPlacementId"] = self.bidderPlacementId
-                params["price"] = interstitial.getAdMetaInfo()?.values
+                params["price"] = self.price
                 if let interstitialAd = self.interstitialAd {
                     self.adListener?.onAdImpression(ad: interstitialAd)
                     self.adMetricReporter?.logAdImpression(ad: interstitialAd, adRequest: adRequest, bidResponse: self, params: params)
@@ -263,7 +271,7 @@ extension InmobiAdapter: IMNativeDelegate {
                                                     callToAction: native.adCtaText ?? "")
                 inmobiNativeAd.nativeAdItem = native
                 self.nativeAd = inmobiNativeAd
-                inmobiNativeAd.adInfo["price"] = 99.0//native.getAdMetaInfo()?.values//adInfo.revenue
+                inmobiNativeAd.adInfo["price"] = self.price
 
                 //let mediaView = native.primaryView(ofWidth: <#T##CGFloat#>)
                 //mediaView?.translatesAutoresizingMaskIntoConstraints = false
@@ -293,7 +301,7 @@ extension InmobiAdapter: IMNativeDelegate {
                 var params = [String:Any?]()
                 params["seat"] = "inmobi"
                 params["bidderPlacementId"] = self.bidderPlacementId
-                params["price"] = native.getAdMetaInfo()?.values
+                params["price"] = self.price
                 self.adMetricReporter?.logAdImpression(ad: nativeAd, adRequest: adRequest, bidResponse: self, params: params)
             }
         }

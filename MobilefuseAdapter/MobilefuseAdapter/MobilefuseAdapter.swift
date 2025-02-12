@@ -29,6 +29,7 @@ import MobileFuseSDK
 
     private var adMetricReporter: AdMetricReporter?
 
+    private var price: Double?
 
     public func loadAdCreative(bidResponse: Any, auctionBidListener: any MSPiOSCore.AuctionBidListener, adListener: any MSPiOSCore.AdListener, context: Any, adRequest: MSPiOSCore.AdRequest, bidderPlacementId: String, bidderFormat: MSPiOSCore.AdFormat?, params: [String:String]?) {
         DispatchQueue.main.async {
@@ -38,6 +39,12 @@ import MobileFuseSDK
             self.adRequest = adRequest
             self.bidderPlacementId = bidderPlacementId
 
+            if let priceStr = params?["price"] {
+                self.price = Double(priceStr) ?? 0.0
+            } else {
+                self.price = 0.0
+            }
+            
             let adFormat = bidderFormat ?? adRequest.adFormat
 
             if adFormat == .interstitial {
@@ -168,7 +175,7 @@ extension MobilefuseAdapter: IMFAdCallbackReceiver {
                 
                 let bannerAd = MobilefuseBannerAd(adView: bannerView, adNetworkAdapter: self)
                 self.bannerAd = bannerAd
-                bannerAd.adInfo["price"] = 99.0//banner.getAdMetaInfo()
+                bannerAd.adInfo["price"] = self.price
                 bannerAd.show()
                 self.handleAdLoaded(ad: bannerAd, auctionBidListener: auctionBidListener, bidderPlacementId: self.bidderPlacementId ?? "mobilefuse_placement_id")
             } else if ad is MFInterstitialAd,
@@ -177,7 +184,7 @@ extension MobilefuseAdapter: IMFAdCallbackReceiver {
                 interstitialAd.interstitialAdItem = interstitialAdItem
                 interstitialAd.rootViewController = self.adListener?.getRootViewController()
                 self.interstitialAd = interstitialAd
-                interstitialAd.adInfo["price"] = 99.0//adInfo.revenue
+                interstitialAd.adInfo["price"] = self.price
                 self.handleAdLoaded(ad: interstitialAd, auctionBidListener: auctionBidListener, bidderPlacementId: self.bidderPlacementId ?? "mobilefuse_placement_id")
             } else if ad is MFNativeAd,
                       let nativeAdItem = self.nativeAdItem {
@@ -190,7 +197,7 @@ extension MobilefuseAdapter: IMFAdCallbackReceiver {
                                                                     callToAction: nativeAdItem.getCtaButtonText() ?? "")
                         mobilefuseNativeAd.nativeAdItem = nativeAdItem
                         self.nativeAd = mobilefuseNativeAd
-                        mobilefuseNativeAd.adInfo["price"] = 99.0//adInfo.revenue
+                        mobilefuseNativeAd.adInfo["price"] = self.price
                         
                         if let adListener = self.adListener,
                            let adRequest = self.adRequest,
@@ -217,7 +224,7 @@ extension MobilefuseAdapter: IMFAdCallbackReceiver {
                 var params = [String:Any?]()
                 params["seat"] = "inmobi"
                 params["bidderPlacementId"] = self.bidderPlacementId
-                //params["price"] = interstitial.getAdMetaInfo()?.values
+                params["price"] = self.price
                 if ad is MFBannerAd,
                    let bannerAd = self.bannerAd {
                     self.adListener?.onAdImpression(ad: bannerAd)

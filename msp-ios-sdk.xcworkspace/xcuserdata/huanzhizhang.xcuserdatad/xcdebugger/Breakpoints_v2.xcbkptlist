@@ -1052,10 +1052,40 @@
             filePath = "MobilefuseAdapter/MobilefuseAdapter/MobilefuseAdapter.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "80"
-            endingLineNumber = "80"
+            startingLineNumber = "87"
+            endingLineNumber = "87"
             landmarkName = "prepareViewForInteraction(nativeAd:nativeAdView:)"
             landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "BD33D748-415F-4F0F-AF69-77CFD6F132CD - 448a13f83884846d"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "MobilefuseAdapter.MobilefuseAdapter.prepareViewForInteraction(nativeAd: MSPiOSCore.NativeAd, nativeAdView: Any) -&gt; ()"
+                  moduleName = "MSPDemoApp.debug.dylib"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/huanzhizhang/Huanzhi/msp-ios-sdk/MobilefuseAdapter/MobilefuseAdapter/MobilefuseAdapter.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "88"
+                  endingLineNumber = "88">
+               </Location>
+               <Location
+                  uuid = "BD33D748-415F-4F0F-AF69-77CFD6F132CD - 448a13f83884846d"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "MobilefuseAdapter.MobilefuseAdapter.prepareViewForInteraction(nativeAd: MSPiOSCore.NativeAd, nativeAdView: Any) -&gt; ()"
+                  moduleName = "MSPDemoApp.debug.dylib"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/huanzhizhang/Huanzhi/msp-ios-sdk/MobilefuseAdapter/MobilefuseAdapter/MobilefuseAdapter.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "88"
+                  endingLineNumber = "88">
+               </Location>
+            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -1068,13 +1098,13 @@
             filePath = "MobilefuseAdapter/MobilefuseAdapter/MobilefuseAdapter.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "185"
-            endingLineNumber = "185"
+            startingLineNumber = "192"
+            endingLineNumber = "192"
             landmarkName = "onAdLoaded(_:)"
             landmarkType = "7">
             <Locations>
                <Location
-                  uuid = "5E9A92AC-D9CD-4951-B657-B81B727CEDCC - b32a9a20c9aad777"
+                  uuid = "5E9A92AC-D9CD-4951-B657-B81B727CEDCC - b32a9a20c9aad65e"
                   shouldBeEnabled = "Yes"
                   ignoreCount = "0"
                   continueAfterRunningActions = "No"
@@ -1084,11 +1114,11 @@
                   urlString = "file:///Users/huanzhizhang/Huanzhi/msp-ios-sdk/MobilefuseAdapter/MobilefuseAdapter/MobilefuseAdapter.swift"
                   startingColumnNumber = "9223372036854775807"
                   endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "185"
-                  endingLineNumber = "185">
+                  startingLineNumber = "192"
+                  endingLineNumber = "192">
                </Location>
                <Location
-                  uuid = "5E9A92AC-D9CD-4951-B657-B81B727CEDCC - b32a9a20c9aad777"
+                  uuid = "5E9A92AC-D9CD-4951-B657-B81B727CEDCC - b32a9a20c9aad65e"
                   shouldBeEnabled = "Yes"
                   ignoreCount = "0"
                   continueAfterRunningActions = "No"
@@ -1098,8 +1128,8 @@
                   urlString = "file:///Users/huanzhizhang/Huanzhi/msp-ios-sdk/MobilefuseAdapter/MobilefuseAdapter/MobilefuseAdapter.swift"
                   startingColumnNumber = "9223372036854775807"
                   endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "185"
-                  endingLineNumber = "185">
+                  startingLineNumber = "192"
+                  endingLineNumber = "192">
                </Location>
             </Locations>
          </BreakpointContent>
@@ -1114,10 +1144,40 @@
             filePath = "MobilefuseAdapter/MobilefuseAdapter/MobilefuseAdapter.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "44"
-            endingLineNumber = "44"
+            startingLineNumber = "51"
+            endingLineNumber = "51"
             landmarkName = "loadAdCreative(bidResponse:auctionBidListener:adListener:context:adRequest:bidderPlacementId:bidderFormat:params:)"
             landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "2279F94F-6EB6-484C-A175-38DEFFA9979E - a457a389de599b49"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "closure #1 @Swift.MainActor () -&gt; () in MobilefuseAdapter.MobilefuseAdapter.loadAdCreative(bidResponse: Any, auctionBidListener: MSPiOSCore.AuctionBidListener, adListener: MSPiOSCore.AdListener, context: Any, adRequest: MSPiOSCore.AdRequest, bidderPlacementId: Swift.String, bidderFormat: Swift.Optional&lt;MSPiOSCore.AdFormat&gt;, params: Swift.Optional&lt;Swift.Dictionary&lt;Swift.String, Swift.String&gt;&gt;) -&gt; ()"
+                  moduleName = "MSPDemoApp.debug.dylib"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/huanzhizhang/Huanzhi/msp-ios-sdk/MobilefuseAdapter/MobilefuseAdapter/MobilefuseAdapter.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "51"
+                  endingLineNumber = "51">
+               </Location>
+               <Location
+                  uuid = "2279F94F-6EB6-484C-A175-38DEFFA9979E - a457a389de599b49"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "closure #1 @Swift.MainActor () -&gt; () in MobilefuseAdapter.MobilefuseAdapter.loadAdCreative(bidResponse: Any, auctionBidListener: MSPiOSCore.AuctionBidListener, adListener: MSPiOSCore.AdListener, context: Any, adRequest: MSPiOSCore.AdRequest, bidderPlacementId: Swift.String, bidderFormat: Swift.Optional&lt;MSPiOSCore.AdFormat&gt;, params: Swift.Optional&lt;Swift.Dictionary&lt;Swift.String, Swift.String&gt;&gt;) -&gt; ()"
+                  moduleName = "MSPDemoApp.debug.dylib"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/huanzhizhang/Huanzhi/msp-ios-sdk/MobilefuseAdapter/MobilefuseAdapter/MobilefuseAdapter.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "51"
+                  endingLineNumber = "51">
+               </Location>
+            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -1130,10 +1190,40 @@
             filePath = "MobilefuseAdapter/MobilefuseAdapter/MobilefuseAdapter.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "211"
-            endingLineNumber = "211"
+            startingLineNumber = "218"
+            endingLineNumber = "218"
             landmarkName = "onAdNotFilled(_:)"
             landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "2BB891F6-52DA-48FC-A76C-207158A9E7B9 - 3d3f4559ceab88f3"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "closure #1 @Swift.MainActor () -&gt; () in MobilefuseAdapter.MobilefuseAdapter.onAdRendered(__C.MFAd) -&gt; ()"
+                  moduleName = "MSPDemoApp.debug.dylib"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/huanzhizhang/Huanzhi/msp-ios-sdk/MobilefuseAdapter/MobilefuseAdapter/MobilefuseAdapter.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "218"
+                  endingLineNumber = "218">
+               </Location>
+               <Location
+                  uuid = "2BB891F6-52DA-48FC-A76C-207158A9E7B9 - 3d3f4559ceab88f3"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "closure #1 @Swift.MainActor () -&gt; () in MobilefuseAdapter.MobilefuseAdapter.onAdRendered(__C.MFAd) -&gt; ()"
+                  moduleName = "MSPDemoApp.debug.dylib"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/huanzhizhang/Huanzhi/msp-ios-sdk/MobilefuseAdapter/MobilefuseAdapter/MobilefuseAdapter.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "218"
+                  endingLineNumber = "218">
+               </Location>
+            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -1146,10 +1236,40 @@
             filePath = "MobilefuseAdapter/MobilefuseAdapter/MobilefuseAdapter.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "48"
-            endingLineNumber = "48"
+            startingLineNumber = "55"
+            endingLineNumber = "55"
             landmarkName = "loadAdCreative(bidResponse:auctionBidListener:adListener:context:adRequest:bidderPlacementId:bidderFormat:params:)"
             landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "9B22759F-6CED-4D62-B0B9-22C897146C0D - a457a389de599ad5"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "closure #1 @Swift.MainActor () -&gt; () in MobilefuseAdapter.MobilefuseAdapter.loadAdCreative(bidResponse: Any, auctionBidListener: MSPiOSCore.AuctionBidListener, adListener: MSPiOSCore.AdListener, context: Any, adRequest: MSPiOSCore.AdRequest, bidderPlacementId: Swift.String, bidderFormat: Swift.Optional&lt;MSPiOSCore.AdFormat&gt;, params: Swift.Optional&lt;Swift.Dictionary&lt;Swift.String, Swift.String&gt;&gt;) -&gt; ()"
+                  moduleName = "MSPDemoApp.debug.dylib"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/huanzhizhang/Huanzhi/msp-ios-sdk/MobilefuseAdapter/MobilefuseAdapter/MobilefuseAdapter.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "55"
+                  endingLineNumber = "55">
+               </Location>
+               <Location
+                  uuid = "9B22759F-6CED-4D62-B0B9-22C897146C0D - a457a389de599ad5"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "closure #1 @Swift.MainActor () -&gt; () in MobilefuseAdapter.MobilefuseAdapter.loadAdCreative(bidResponse: Any, auctionBidListener: MSPiOSCore.AuctionBidListener, adListener: MSPiOSCore.AdListener, context: Any, adRequest: MSPiOSCore.AdRequest, bidderPlacementId: Swift.String, bidderFormat: Swift.Optional&lt;MSPiOSCore.AdFormat&gt;, params: Swift.Optional&lt;Swift.Dictionary&lt;Swift.String, Swift.String&gt;&gt;) -&gt; ()"
+                  moduleName = "MSPDemoApp.debug.dylib"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/huanzhizhang/Huanzhi/msp-ios-sdk/MobilefuseAdapter/MobilefuseAdapter/MobilefuseAdapter.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "55"
+                  endingLineNumber = "55">
+               </Location>
+            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
