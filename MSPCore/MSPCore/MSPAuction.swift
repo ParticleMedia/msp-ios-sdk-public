@@ -34,7 +34,7 @@ public class MSPAuction: Auction {
                 if let winnerBid = self?.getWinnerBid() {
                     auctionListener.onSuccess(winningBid: winnerBid)
                 } else {
-                    auctionListener.onError(error: "client auction no winning bid")
+                    auctionListener.onError(error: "request time out: client auction no winning bid")
                 }
             }
         }
