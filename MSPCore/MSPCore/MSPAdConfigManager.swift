@@ -207,7 +207,8 @@ public let testAdConfigString = """
         {
           "name": "inmobi",
           "bidder_format": "banner",
-          "bidder_placement_id": "1672335615808"
+          "bidder_placement_id": "1672335615808",
+          "params":{"price":"1.0"}
         }
       ]
     },
@@ -218,7 +219,8 @@ public let testAdConfigString = """
         {
           "name": "inmobi",
           "bidder_format": "native",
-          "bidder_placement_id": "1681413960173"
+          "bidder_placement_id": "1681413960173",
+          "params":{"price":"1.0"}
         }
       ]
     },
@@ -229,7 +231,8 @@ public let testAdConfigString = """
         {
           "name": "inmobi",
           "bidder_format": "interstitial",
-          "bidder_placement_id": "1672200162238"
+          "bidder_placement_id": "1672200162238",
+          "params":{"price":"1.0"}
         }
       ]
     },
@@ -276,7 +279,8 @@ public let testAdConfigString = """
         {
           "name": "mobilefuse",
           "bidder_format": "banner",
-          "bidder_placement_id": "432097"
+          "bidder_placement_id": "432097",
+          "params":{"price":"1.0"}
         }
       ]
     },
@@ -287,7 +291,8 @@ public let testAdConfigString = """
         {
           "name": "mobilefuse",
           "bidder_format": "native",
-          "bidder_placement_id": "432097"
+          "bidder_placement_id": "432097",
+          "params":{"price":"1.0"}
         }
       ]
     },
@@ -298,7 +303,8 @@ public let testAdConfigString = """
         {
           "name": "mobilefuse",
           "bidder_format": "interstitial",
-          "bidder_placement_id": "432102"
+          "bidder_placement_id": "432102",
+          "params":{"price":"1.0"}
         }
       ]
     },
