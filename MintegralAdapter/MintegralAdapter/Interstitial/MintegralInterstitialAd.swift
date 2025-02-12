@@ -13,7 +13,7 @@ import MTGSDKNewInterstitial
 
 public class MintegralInterstitialAd: MSPiOSCore.InterstitialAd {
     public weak var rootViewController: UIViewController?
-    public var mintegralInterstitialAdManager: MTGNewInterstitialAdManager?
+    public var mintegralInterstitialAdManager: MTGNewInterstitialBidAdManager?
 
     public override func show() {
         if let mintegralInterstitialAdManager = self.mintegralInterstitialAdManager,
