@@ -14,7 +14,7 @@
     #import "MTGRewardAdInfo.h"
 #endif
 
-#define MTGRewardVideoSDKVersion @"7.7.5"
+#define MTGRewardVideoSDKVersion @"7.7.6"
 
 
 /**

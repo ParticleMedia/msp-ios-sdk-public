@@ -30,7 +30,7 @@
 		</data>
 		<key>ios-arm64/MTGSDKBidding.framework/Headers/MTGBiddingSDK.h</key>
 		<data>
-		MUODLf4QtCcsmqEr0PcesLUxIKg=
+		dz7/5uZkkASfg/0u4Oll0tDpJN0=
 		</data>
 		<key>ios-arm64/MTGSDKBidding.framework/Headers/MTGBiddingSplashRequestParameter.h</key>
 		<data>
@@ -42,7 +42,7 @@
 		</data>
 		<key>ios-arm64/MTGSDKBidding.framework/MTGSDKBidding</key>
 		<data>
-		LZ+j2KadfNujrmemMlE/zoqmBco=
+		oH0ExCPD8+eVCba9KtTYIe0Vxx8=
 		</data>
 		<key>ios-arm64/MTGSDKBidding.framework/Modules/module.modulemap</key>
 		<data>
@@ -50,7 +50,7 @@
 		</data>
 		<key>ios-arm64/MTGSDKBidding.framework/_CodeSignature/CodeDirectory</key>
 		<data>
-		94wwbDVQKIxD5+oMkHAXvlOR00g=
+		+/Yync2BU6ESnigBfR+zLYiP6VI=
 		</data>
 		<key>ios-arm64/MTGSDKBidding.framework/_CodeSignature/CodeRequirements</key>
 		<data>
@@ -58,15 +58,15 @@
 		</data>
 		<key>ios-arm64/MTGSDKBidding.framework/_CodeSignature/CodeRequirements-1</key>
 		<data>
-		I3qFq09dQ6ly9KYZmuwkk1tSh2c=
+		jmOcmfPvRzqljLBM79uKxFWq8bE=
 		</data>
 		<key>ios-arm64/MTGSDKBidding.framework/_CodeSignature/CodeResources</key>
 		<data>
-		fMzlcCdSgMXXi/FRVCs9QZx6gMU=
+		x5JZ9BDmdQ/vf2mQBC22yXvRro0=
 		</data>
 		<key>ios-arm64/MTGSDKBidding.framework/_CodeSignature/CodeSignature</key>
 		<data>
-		Ut3km1Nzb0sAuvcJTHMYdkADiEU=
+		PziO2G6jsYrQg8QPcslnZgjcc3c=
 		</data>
 		<key>ios-arm64_x86_64-simulator/MTGSDKBidding.framework/Headers/MTGBiddingBannerRequestParameter.h</key>
 		<data>
@@ -94,7 +94,7 @@
 		</data>
 		<key>ios-arm64_x86_64-simulator/MTGSDKBidding.framework/Headers/MTGBiddingSDK.h</key>
 		<data>
-		MUODLf4QtCcsmqEr0PcesLUxIKg=
+		dz7/5uZkkASfg/0u4Oll0tDpJN0=
 		</data>
 		<key>ios-arm64_x86_64-simulator/MTGSDKBidding.framework/Headers/MTGBiddingSplashRequestParameter.h</key>
 		<data>
@@ -106,7 +106,7 @@
 		</data>
 		<key>ios-arm64_x86_64-simulator/MTGSDKBidding.framework/MTGSDKBidding</key>
 		<data>
-		4EdJqXMiBxb/HsgBUG7dTw0KU3U=
+		9jN8XzDb98Mt2Y0UUfH46bHXOI8=
 		</data>
 		<key>ios-arm64_x86_64-simulator/MTGSDKBidding.framework/Modules/module.modulemap</key>
 		<data>
@@ -114,7 +114,7 @@
 		</data>
 		<key>ios-arm64_x86_64-simulator/MTGSDKBidding.framework/_CodeSignature/CodeDirectory</key>
 		<data>
-		HeyT6traFQmmeE1e6Xrsq2+OAUI=
+		e8yDU4Fd0TPxRIxKpm7YBHfkRIs=
 		</data>
 		<key>ios-arm64_x86_64-simulator/MTGSDKBidding.framework/_CodeSignature/CodeRequirements</key>
 		<data>
@@ -122,11 +122,11 @@
 		</data>
 		<key>ios-arm64_x86_64-simulator/MTGSDKBidding.framework/_CodeSignature/CodeRequirements-1</key>
 		<data>
-		4+zD4yxp5HY4DNFmumtVtm1vUgM=
+		zCgNvT+kp90rjecr4bUis3gDkVI=
 		</data>
 		<key>ios-arm64_x86_64-simulator/MTGSDKBidding.framework/_CodeSignature/CodeResources</key>
 		<data>
-		zJKUVdyszfr+KTLDNu7KAuVggGQ=
+		HZbTB2CaC2lObBOB5V0VOn5QxPA=
 		</data>
 		<key>ios-arm64_x86_64-simulator/MTGSDKBidding.framework/_CodeSignature/CodeSignature</key>
 		<data>
@@ -205,11 +205,11 @@
 		<dict>
 			<key>hash</key>
 			<data>
-			MUODLf4QtCcsmqEr0PcesLUxIKg=
+			dz7/5uZkkASfg/0u4Oll0tDpJN0=
 			</data>
 			<key>hash2</key>
 			<data>
-			DhmhOBNJgrFq5dcXKCnLYp1GxDdAgeykZCtpCpUcnUE=
+			3OdS+JZ5WjnWNxQHcBOoDUxI7vMtvsQbgQ0zwi0u6xs=
 			</data>
 		</dict>
 		<key>ios-arm64/MTGSDKBidding.framework/Headers/MTGBiddingSplashRequestParameter.h</key>
@@ -238,11 +238,11 @@
 		<dict>
 			<key>hash</key>
 			<data>
-			LZ+j2KadfNujrmemMlE/zoqmBco=
+			oH0ExCPD8+eVCba9KtTYIe0Vxx8=
 			</data>
 			<key>hash2</key>
 			<data>
-			oXlUIRvSQQVZFfK1vjeoeDRROb5CwUcRKcYRkCD252A=
+			pI0RTTsyF1Xdc89BDAsCWaMsiaEiWrxONjSzo/i5E60=
 			</data>
 		</dict>
 		<key>ios-arm64/MTGSDKBidding.framework/Modules/module.modulemap</key>
@@ -260,11 +260,11 @@
 		<dict>
 			<key>hash</key>
 			<data>
-			94wwbDVQKIxD5+oMkHAXvlOR00g=
+			+/Yync2BU6ESnigBfR+zLYiP6VI=
 			</data>
 			<key>hash2</key>
 			<data>
-			7nGjm0qZ1v9xGHqRkXkLnGsaG44r+jtR89Af5oSs9os=
+			2NtFfUVHutqahXECIwapZyKkiulJHIsHvEGEh4/ECqM=
 			</data>
 		</dict>
 		<key>ios-arm64/MTGSDKBidding.framework/_CodeSignature/CodeRequirements</key>
@@ -282,33 +282,33 @@
 		<dict>
 			<key>hash</key>
 			<data>
-			I3qFq09dQ6ly9KYZmuwkk1tSh2c=
+			jmOcmfPvRzqljLBM79uKxFWq8bE=
 			</data>
 			<key>hash2</key>
 			<data>
-			KpD5js1cUo2S0ueC8VX2WNHOOnawa1zA6OlZ5P+Fbio=
+			WRYJp3paxlh0nn0+0D14RHmtPypp2cHldpAM0pIsqQY=
 			</data>
 		</dict>
 		<key>ios-arm64/MTGSDKBidding.framework/_CodeSignature/CodeResources</key>
 		<dict>
 			<key>hash</key>
 			<data>
-			fMzlcCdSgMXXi/FRVCs9QZx6gMU=
+			x5JZ9BDmdQ/vf2mQBC22yXvRro0=
 			</data>
 			<key>hash2</key>
 			<data>
-			wScSsQjKOA090Jg+qaLfoorbqKhlIi/RJvkrlxnq8i8=
+			eppjY1HtRoMi2TW8ONHe0HGKZfjJYR3FyJhLspWnDHE=
 			</data>
 		</dict>
 		<key>ios-arm64/MTGSDKBidding.framework/_CodeSignature/CodeSignature</key>
 		<dict>
 			<key>hash</key>
 			<data>
-			Ut3km1Nzb0sAuvcJTHMYdkADiEU=
+			PziO2G6jsYrQg8QPcslnZgjcc3c=
 			</data>
 			<key>hash2</key>
 			<data>
-			ebs1Ht9DAD9v6YTE+J+D5y29u9Ml+wNZT165H0AC82k=
+			vD1Z3dAy69XTyDQTrYRzLbamsz4ZhrlQD+GXbbc7X1A=
 			</data>
 		</dict>
 		<key>ios-arm64_x86_64-simulator/MTGSDKBidding.framework/Headers/MTGBiddingBannerRequestParameter.h</key>
@@ -381,11 +381,11 @@
 		<dict>
 			<key>hash</key>
 			<data>
-			MUODLf4QtCcsmqEr0PcesLUxIKg=
+			dz7/5uZkkASfg/0u4Oll0tDpJN0=
 			</data>
 			<key>hash2</key>
 			<data>
-			DhmhOBNJgrFq5dcXKCnLYp1GxDdAgeykZCtpCpUcnUE=
+			3OdS+JZ5WjnWNxQHcBOoDUxI7vMtvsQbgQ0zwi0u6xs=
 			</data>
 		</dict>
 		<key>ios-arm64_x86_64-simulator/MTGSDKBidding.framework/Headers/MTGBiddingSplashRequestParameter.h</key>
@@ -414,11 +414,11 @@
 		<dict>
 			<key>hash</key>
 			<data>
-			4EdJqXMiBxb/HsgBUG7dTw0KU3U=
+			9jN8XzDb98Mt2Y0UUfH46bHXOI8=
 			</data>
 			<key>hash2</key>
 			<data>
-			o6hhvvSUIARqShlDjAZo7OgD+EoCL0FerNV/7u9Fl0g=
+			9oNx3W6fAF2LENV1zP1ets+fLpIkZtbGT8Fg8KZsPJs=
 			</data>
 		</dict>
 		<key>ios-arm64_x86_64-simulator/MTGSDKBidding.framework/Modules/module.modulemap</key>
@@ -436,11 +436,11 @@
 		<dict>
 			<key>hash</key>
 			<data>
-			HeyT6traFQmmeE1e6Xrsq2+OAUI=
+			e8yDU4Fd0TPxRIxKpm7YBHfkRIs=
 			</data>
 			<key>hash2</key>
 			<data>
-			dVAeSYGI7zZZQWWrK6egeHOYSHAr5HnWCx5u2Bd3FqQ=
+			4vex4j6w5kCXtWA4U5N41QM4+/7qZAcs0JhBTbr8Pwo=
 			</data>
 		</dict>
 		<key>ios-arm64_x86_64-simulator/MTGSDKBidding.framework/_CodeSignature/CodeRequirements</key>
@@ -458,22 +458,22 @@
 		<dict>
 			<key>hash</key>
 			<data>
-			4+zD4yxp5HY4DNFmumtVtm1vUgM=
+			zCgNvT+kp90rjecr4bUis3gDkVI=
 			</data>
 			<key>hash2</key>
 			<data>
-			eC5x6ezdTPe03rKtsGTOuKtC1Gd3DXtsYLnS5nzeCGw=
+			yHqrUvQtxn/elIl+2dMTvuw6tHcVfTSXYkf0cP4UUaY=
 			</data>
 		</dict>
 		<key>ios-arm64_x86_64-simulator/MTGSDKBidding.framework/_CodeSignature/CodeResources</key>
 		<dict>
 			<key>hash</key>
 			<data>
-			zJKUVdyszfr+KTLDNu7KAuVggGQ=
+			HZbTB2CaC2lObBOB5V0VOn5QxPA=
 			</data>
 			<key>hash2</key>
 			<data>
-			GWSK7co4u5hCFFRe3FzxoR74S9f/DNUkQ61244wlHJs=
+			SwoYK8Td86poNVGLKiwfQjoei0AIMmlhijYlyaAs7uk=
 			</data>
 		</dict>
 		<key>ios-arm64_x86_64-simulator/MTGSDKBidding.framework/_CodeSignature/CodeSignature</key>

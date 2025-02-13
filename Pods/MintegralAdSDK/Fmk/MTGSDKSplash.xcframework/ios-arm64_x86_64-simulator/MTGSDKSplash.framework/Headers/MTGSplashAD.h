@@ -14,7 +14,7 @@
     #import "MTGBool.h"
 #endif
 
-#define MTGSplashSDKVersion @"7.7.5"
+#define MTGSplashSDKVersion @"7.7.6"
 
 
 NS_ASSUME_NONNULL_BEGIN

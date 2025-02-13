@@ -201,6 +201,8 @@ extension PubmaticAdapter: POBBannerViewDelegate {
                 self.bannerAd = bannerAd
                 bannerAd.adInfo["price"] = bannerView.bid().price.doubleValue
                 self.handleAdLoaded(ad: bannerAd, auctionBidListener: auctionBidListener, bidderPlacementId: self.bidderPlacementId ?? "pubmatic_placement_id")
+            } else {
+                self.auctionBidListener?.onError(error: "fail to load ad")
             }
         }
     }
@@ -249,6 +251,8 @@ extension PubmaticAdapter: POBInterstitialDelegate {
                 self.interstitialAd = interstitialAd
                 interstitialAd.adInfo["price"] = interstitial.bid().price.doubleValue
                 self.handleAdLoaded(ad: interstitialAd, auctionBidListener: auctionBidListener, bidderPlacementId: self.bidderPlacementId ?? "pubmatic")
+            } else {
+                self.auctionBidListener?.onError(error: "fail to load ad")
             }
         }
     }
@@ -372,7 +376,7 @@ extension PubmaticAdapter: POBBidEventDelegate {
     }
     
     public func bidEvent(_ bidEventObject: (any POBBidEvent)!, didFailToReceiveBidWithError error: (any Error)!) {
-        
+        self.auctionBidListener?.onError(error: "fail to load ad")
     }
     
     

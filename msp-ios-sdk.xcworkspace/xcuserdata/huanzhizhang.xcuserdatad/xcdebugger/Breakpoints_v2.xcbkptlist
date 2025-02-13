@@ -1130,8 +1130,8 @@
             filePath = "MobilefuseAdapter/MobilefuseAdapter/MobilefuseAdapter.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "218"
-            endingLineNumber = "218"
+            startingLineNumber = "220"
+            endingLineNumber = "220"
             landmarkName = "onAdNotFilled(_:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -1203,22 +1203,6 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "4A610272-F094-42BA-AEA3-0FD6ABAE4C46"
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "MintegralAdapter/MintegralAdapter/MintegralAdapter.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "179"
-            endingLineNumber = "179"
-            landmarkName = "loadBanenrAd(auctionBidListener:adListener:adRequest:bidderPlacementId:params:)"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
             uuid = "AF3F27A5-1FD7-4CDF-9D7D-82F704B7445F"
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
@@ -1228,22 +1212,6 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "202"
             endingLineNumber = "202"
-            landmarkName = "loadNativeAd(auctionBidListener:adListener:adRequest:bidderPlacementId:params:)"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "211FED85-7015-4655-86C3-403B56B24454"
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "MintegralAdapter/MintegralAdapter/MintegralAdapter.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "194"
-            endingLineNumber = "194"
             landmarkName = "loadNativeAd(auctionBidListener:adListener:adRequest:bidderPlacementId:params:)"
             landmarkType = "7">
          </BreakpointContent>
