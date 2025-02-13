@@ -1,5 +1,5 @@
 // swift-interface-format-version: 1.0
-// swift-compiler-version: Apple Swift version 5.10 (swiftlang-5.10.0.13 clang-1500.3.9.4)
+// swift-compiler-version: Apple Swift version 6.0 effective-5.10 (swiftlang-6.0.0.9.10 clang-1600.0.26.2)
 // swift-module-flags: -target arm64-apple-ios13.0-simulator -enable-objc-interop -enable-library-evolution -swift-version 5 -enforce-exclusivity=checked -O -enable-bare-slash-regex -module-name MSPiOSCore
 import Foundation
 @_exported import MSPiOSCore
@@ -14,11 +14,14 @@ public protocol LoadAdParameters : MSPiOSCore.AdapterParameters {
   func getBidPayload() -> Swift.String
   func getBidExpirationMillis() -> Swift.UInt64
 }
-open class Bidder {
+@objc open class Bidder : ObjectiveC.NSObject {
   public var name: Swift.String
   public var bidderPlacementId: Swift.String
-  public init(name: Swift.String, bidderPlacementId: Swift.String)
+  public var bidderFormat: MSPiOSCore.AdFormat?
+  public var params: [Swift.String : Swift.String]?
+  public init(name: Swift.String, bidderPlacementId: Swift.String, bidderFormat: MSPiOSCore.AdFormat?)
   open func requestBid(adRequest: MSPiOSCore.AdRequest, bidListener: any MSPiOSCore.AuctionBidListener, adListener: any MSPiOSCore.AdListener)
+  open func setAdMetricReporter(adMetricReporter: any MSPiOSCore.AdMetricReporter)
   @objc deinit
 }
 public protocol AuctionListener : AnyObject {
@@ -110,11 +113,12 @@ public protocol AdListener : AnyObject {
   func getRootViewController() -> UIKit.UIViewController?
 }
 public protocol AdNetworkAdapter : AnyObject {
-  func loadAdCreative(bidResponse: Any, auctionBidListener: any MSPiOSCore.AuctionBidListener, adListener: any MSPiOSCore.AdListener, context: Any, adRequest: MSPiOSCore.AdRequest)
+  func loadAdCreative(bidResponse: Any, auctionBidListener: any MSPiOSCore.AuctionBidListener, adListener: any MSPiOSCore.AdListener, context: Any, adRequest: MSPiOSCore.AdRequest, bidderPlacementId: Swift.String, bidderFormat: MSPiOSCore.AdFormat?, params: [Swift.String : Swift.String]?)
   func initialize(initParams: any MSPiOSCore.InitializationParameters, adapterInitListener: any MSPiOSCore.AdapterInitListener, context: Any?)
   func destroyAd()
   func prepareViewForInteraction(nativeAd: MSPiOSCore.NativeAd, nativeAdView: Any)
   func setAdMetricReporter(adMetricReporter: any MSPiOSCore.AdMetricReporter)
+  func getAdNetwork() -> MSPiOSCore.AdNetwork
 }
 public protocol GoogleQueryInfoFetcher : AnyObject {
   func fetch(completeListener: any MSPiOSCore.GoogleQueryInfoListener, adRequest: MSPiOSCore.AdRequest)
@@ -129,7 +133,7 @@ public protocol BidLoaderProvider : AnyObject {
 open class AdNetworkManager {
   public init()
   open func getAdNetworkAdapter() -> (any MSPiOSCore.AdNetworkAdapter)?
-  open func getAdBidder() -> MSPiOSCore.Bidder?
+  open func getAdBidder(bidderPlacementId: Swift.String, bidderFormat: MSPiOSCore.AdFormat?) -> MSPiOSCore.Bidder?
   @objc deinit
 }
 open class NativeAd : MSPiOSCore.MSPAd {
@@ -176,14 +180,14 @@ open class NativeAd : MSPiOSCore.MSPAd {
 public protocol FacebookBidTokenProvider : AnyObject {
   func fetch(completeListener: any MSPiOSCore.FacebookBidTokenListener, context: Any)
 }
-@objc @_hasMissingDesignatedInitializers @_Concurrency.MainActor(unsafe) public class NativeAdView : UIKit.UIView {
-  @_Concurrency.MainActor(unsafe) weak public var nativeAd: MSPiOSCore.NativeAd?
-  @_Concurrency.MainActor(unsafe) weak public var rootViewController: UIKit.UIViewController?
-  @_Concurrency.MainActor(unsafe) public var nativeAdViewBinder: MSPiOSCore.NativeAdViewBinder?
-  @_Concurrency.MainActor(unsafe) public var nativeAdContainer: (any MSPiOSCore.MSPNativeAdContainer)?
-  @_Concurrency.MainActor(unsafe) public var mediaController: (any MSPiOSCore.MediaController)?
-  @_Concurrency.MainActor(unsafe) public init(nativeAd: MSPiOSCore.NativeAd, nativeAdViewBinder: MSPiOSCore.NativeAdViewBinder)
-  @_Concurrency.MainActor(unsafe) public init(nativeAd: MSPiOSCore.NativeAd, nativeAdContainer: any MSPiOSCore.MSPNativeAdContainer)
+@objc @_hasMissingDesignatedInitializers @_Concurrency.MainActor @preconcurrency public class NativeAdView : UIKit.UIView {
+  @_Concurrency.MainActor @preconcurrency weak public var nativeAd: MSPiOSCore.NativeAd?
+  @_Concurrency.MainActor @preconcurrency weak public var rootViewController: UIKit.UIViewController?
+  @_Concurrency.MainActor @preconcurrency public var nativeAdViewBinder: MSPiOSCore.NativeAdViewBinder?
+  @_Concurrency.MainActor @preconcurrency public var nativeAdContainer: (any MSPiOSCore.MSPNativeAdContainer)?
+  @_Concurrency.MainActor @preconcurrency public var mediaController: (any MSPiOSCore.MediaController)?
+  @_Concurrency.MainActor @preconcurrency public init(nativeAd: MSPiOSCore.NativeAd, nativeAdViewBinder: MSPiOSCore.NativeAdViewBinder)
+  @_Concurrency.MainActor @preconcurrency public init(nativeAd: MSPiOSCore.NativeAd, nativeAdContainer: any MSPiOSCore.MSPNativeAdContainer)
   @objc deinit
 }
 open class NativeAdViewBinder {
@@ -244,6 +248,15 @@ public protocol InitializationParameters : MSPiOSCore.AdapterParameters {
   func getPrebidAPIKey() -> Swift.String
   func getPrebidHostUrl() -> Swift.String
 }
+public struct InitializationParametersCustomKeys {
+  public static let UNITY_APP_KEY: Swift.String
+  public static let INMOBI_ACCOUNT_ID: Swift.String
+  public static let MINTEGRAL_APP_ID: Swift.String
+  public static let MINTEGRAL_API_KEY: Swift.String
+  public static let PUBMATIC_PUBLISHER_ID: Swift.String
+  public static let PUBMATIC_PROFILE_IDS: Swift.String
+  public static let PUBMATIC_STORE_URL: Swift.String
+}
 public class AuctionBid {
   public var bidderName: Swift.String
   public var bidderPlacementId: Swift.String
@@ -252,10 +265,16 @@ public class AuctionBid {
   @objc deinit
 }
 public enum AdNetwork : Swift.String {
+  case unknown
   case google
   case facebook
   case prebid
   case nova
+  case unity
+  case pubmatic
+  case mintegral
+  case mobilefuse
+  case inmobi
   public init?(rawValue: Swift.String)
   public typealias RawValue = Swift.String
   public var rawValue: Swift.String {

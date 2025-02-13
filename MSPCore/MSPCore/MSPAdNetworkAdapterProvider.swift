@@ -15,6 +15,8 @@ import UIKit
 
 public class MSPAdNetworkAdapterProvider: AdNetworkAdapterProvider {
     public func getAdNetworkAdaptersCount() -> Int {
+        return adNetworkManagerDict.count
+        /*
         let managers: [AdNetworkManager?] = [googleManager, metaManager, novaManager]
         var num = 1 //default vaule is 1 for prebid sdk is alwasys in the dependency
         for adManager in managers {
@@ -23,56 +25,32 @@ public class MSPAdNetworkAdapterProvider: AdNetworkAdapterProvider {
             }
         }
         return num
+         */
     }
     
     public var rootViewController: UIViewController?
     
-    public var googleManager: AdNetworkManager?
-    
-    public var novaManager: AdNetworkManager?
-    
-    public var metaManager: AdNetworkManager?
+    public var adNetworkManagerDict = [AdNetwork: AdNetworkManager]()
     
     public init() {
         
     }
     
     public func getAdNetworkAdapter(adNetwork: AdNetwork) -> AdNetworkAdapter? {
-        if adNetwork == .prebid {
-            var prebidAdapter = PrebidAdapter()
-            return prebidAdapter
-        } else if adNetwork == .google {
-            var googleAdapter = googleManager?.getAdNetworkAdapter()
-            return googleAdapter
-        } else if adNetwork == .nova {
-            var novaAdapter = novaManager?.getAdNetworkAdapter()
-            return novaAdapter
-        } else if adNetwork == .facebook {
-            var facebookAdapter = metaManager?.getAdNetworkAdapter()
-            return facebookAdapter
-        }
-        return nil
+        return adNetworkManagerDict[adNetwork]?.getAdNetworkAdapter()
     }
     
     public func getAdNetworkAdapterByName(adNetworkName: String) -> AdNetworkAdapter? {
-        if adNetworkName == "Prebid" {
-            var prebidAdapter = PrebidAdapter()
-            return prebidAdapter
-        } else if adNetworkName == "Google" {
-            var googleAdapter = googleManager?.getAdNetworkAdapter()
-            return googleAdapter
-        } else if adNetworkName == "Nova" {
-            var novaAdapter = novaManager?.getAdNetworkAdapter()
-            return novaAdapter
-        } else if adNetworkName == "Facebook" {
-            var facebookAdapter = metaManager?.getAdNetworkAdapter()
-            return facebookAdapter
-        }
+        
         return nil
     }
 }
 
 public class AdNetworkAdapterStandalone: AdNetworkAdapter {
+    public func loadAdCreative(bidResponse: Any, auctionBidListener: any MSPiOSCore.AuctionBidListener, adListener: any MSPiOSCore.AdListener, context: Any, adRequest: MSPiOSCore.AdRequest, bidderPlacementId: String, bidderFormat: MSPiOSCore.AdFormat?, params: [String: String]?) {
+        
+    }
+    
     public func setAdMetricReporter(adMetricReporter: any MSPiOSCore.AdMetricReporter) {
         
     }
@@ -81,7 +59,7 @@ public class AdNetworkAdapterStandalone: AdNetworkAdapter {
         
     }
     
-    public func loadAdCreative(bidResponse: Any, adListener: AdListener, context: Any, adRequest: AdRequest) {
+    public func loadAdCreative(bidResponse: Any, auctionBidListener: AuctionBidListener, adListener: AdListener, context: Any, adRequest: AdRequest, bidderPlacementId: String) {
         
     }
     
@@ -91,5 +69,9 @@ public class AdNetworkAdapterStandalone: AdNetworkAdapter {
     
     public func destroyAd() {
         
+    }
+    
+    public func getAdNetwork() -> MSPiOSCore.AdNetwork {
+        return .unknown
     }
 }

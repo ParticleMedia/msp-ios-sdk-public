@@ -24,6 +24,10 @@
 		66AFBBE72CB45FC8000D0DD3 /* sdk_init.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66AFBBE62CB45FC8000D0DD3 /* sdk_init.pb.swift */; };
 		66AFBBF12CB4B70F000D0DD3 /* AdMetricReporterImp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66AFBBF02CB4B70F000D0DD3 /* AdMetricReporterImp.swift */; };
 		66CA2E1A2BEAA159001EFD30 /* libGoogleAdapter.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 66CA2E192BEAA159001EFD30 /* libGoogleAdapter.a */; };
+		66EFCD9B2D123B00005E0135 /* MSPAdLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66EFCD9A2D123B00005E0135 /* MSPAdLoader.swift */; };
+		66EFCDB72D1378BA005E0135 /* MSPAuction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66EFCDB62D1378BA005E0135 /* MSPAuction.swift */; };
+		66EFCDBD2D13913B005E0135 /* MSPMultiFormatBidder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66EFCDBC2D13913B005E0135 /* MSPMultiFormatBidder.swift */; };
+		66EFCDC92D13A463005E0135 /* MSPAdConfigManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66EFCDC82D13A463005E0135 /* MSPAdConfigManager.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -80,6 +84,10 @@
 		66CA2E132BE9B683001EFD30 /* libGoogleAdapter.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libGoogleAdapter.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		66CA2E152BE9B68D001EFD30 /* libGoogleAdapter.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libGoogleAdapter.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		66CA2E192BEAA159001EFD30 /* libGoogleAdapter.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libGoogleAdapter.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		66EFCD9A2D123B00005E0135 /* MSPAdLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MSPAdLoader.swift; sourceTree = "<group>"; };
+		66EFCDB62D1378BA005E0135 /* MSPAuction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MSPAuction.swift; sourceTree = "<group>"; };
+		66EFCDBC2D13913B005E0135 /* MSPMultiFormatBidder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MSPMultiFormatBidder.swift; sourceTree = "<group>"; };
+		66EFCDC82D13A463005E0135 /* MSPAdConfigManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MSPAdConfigManager.swift; sourceTree = "<group>"; };
 		66F44F1B2B59B92500138384 /* GoogleAdapter.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; path = GoogleAdapter.xcframework; sourceTree = "<group>"; };
 		DB9A00C09162701FFB74F7C9 /* Pods-MSPCore.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MSPCore.debug.xcconfig"; path = "Target Support Files/Pods-MSPCore/Pods-MSPCore.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -136,6 +144,10 @@
 				6639ACAE2B4E0C2B00A248D2 /* MSPAdNetworkAdapterProvider.swift */,
 				660ED3E22CB45557002F237C /* MESMetricReporter.swift */,
 				66AFBBF02CB4B70F000D0DD3 /* AdMetricReporterImp.swift */,
+				66EFCD9A2D123B00005E0135 /* MSPAdLoader.swift */,
+				66EFCDB62D1378BA005E0135 /* MSPAuction.swift */,
+				66EFCDBC2D13913B005E0135 /* MSPMultiFormatBidder.swift */,
+				66EFCDC82D13A463005E0135 /* MSPAdConfigManager.swift */,
 			);
 			path = MSPCore;
 			sourceTree = "<group>";
@@ -365,9 +377,12 @@
 			buildActionMask = 2147483647;
 			files = (
 				660ED3E32CB45557002F237C /* MESMetricReporter.swift in Sources */,
+				66EFCDB72D1378BA005E0135 /* MSPAuction.swift in Sources */,
 				66AFBBDF2CB45FA9000D0DD3 /* ad_impression.pb.swift in Sources */,
+				66EFCDBD2D13913B005E0135 /* MSPMultiFormatBidder.swift in Sources */,
 				66AFBBF12CB4B70F000D0DD3 /* AdMetricReporterImp.swift in Sources */,
 				6639ACAB2B4DFDF700A248D2 /* MSPHelper.swift in Sources */,
+				66EFCD9B2D123B00005E0135 /* MSPAdLoader.swift in Sources */,
 				66AFBBE12CB45FB3000D0DD3 /* get_ad_from_cache.pb.swift in Sources */,
 				6639ACAF2B4E0C2B00A248D2 /* MSPAdNetworkAdapterProvider.swift in Sources */,
 				66AFBBDA2CB459B9000D0DD3 /* openrtb-v26.pb.swift in Sources */,
@@ -376,6 +391,7 @@
 				6639ACAD2B4E008B00A248D2 /* MSPBidLoaderProvider.swift in Sources */,
 				660ED3E12CB45513002F237C /* common.pb.swift in Sources */,
 				66AFBBE72CB45FC8000D0DD3 /* sdk_init.pb.swift in Sources */,
+				66EFCDC92D13A463005E0135 /* MSPAdConfigManager.swift in Sources */,
 				66AFBBE32CB45FBB000D0DD3 /* load_ad_request.pb.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
