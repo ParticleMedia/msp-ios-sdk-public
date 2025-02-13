@@ -29,7 +29,7 @@ public class MSP {
     public var email: String?
     public var prebidAPIKey: String?
     
-    public func initMSP(initParams: InitializationParameters, sdkInitListener: MSPInitListener?) {
+    public func initMSP(initParams: InitializationParameters, sdkInitListener: MSPInitListener?, adNetworkManagers: [AdNetworkManager]) {
         // This is a temporary solution to replace MSPManager class in kotlin to solve the Kotlin singleton issue
         MESMetricReporter.shared.logSDKInit()
         AdCache.shared.adMetricReporter = AdMetricReporterImp()
@@ -50,44 +50,23 @@ public class MSP {
             fetchMSPUserId()
         }
         
-        let managers: [AdNetworkManager?] = [adNetworkAdapterProvider.googleManager, adNetworkAdapterProvider.metaManager, adNetworkAdapterProvider.novaManager]
         numInitWaitingForCallbacks = 1 //default vaule is 1 for prebid sdk is alwasys in the dependency
-        for adManager in managers {
-            if let manager = adManager {
+        for manager in adNetworkManagers {
+            if let adNetworkAdapter = manager.getAdNetworkAdapter() {
+                adNetworkAdapterProvider.adNetworkManagerDict[adNetworkAdapter.getAdNetwork()] = manager
                 numInitWaitingForCallbacks += 1
             }
+            
         }
         self.sdkInitListener = sdkInitListener
         var adapterInitListener = MSPAdapterInitListener()
-        /*
-        fetchServerConfigData { result in
-            switch result {
-            case .success(let configData):
-                if let prebidHost = configData["prebid_host"] {
-                    self.prebidHost = prebidHost
-                }
-
-                if let mesHost = configData["mes_host"] {
-                    self.mesHost = mesHost
-                }
-
-                if let novaEventHost = configData["nova_event_host"] {
-                    self.novaEventHost = novaEventHost
-                }
-                
-            case .failure(let error):
-                print("Error fetching data: \(error)")
+        
+        MSPAdConfigManager.shared.initAdConfig()
+        for manager in adNetworkManagers {
+            if let adNetworkAdapter = manager.getAdNetworkAdapter() {
+                adNetworkAdapter.initialize(initParams: initParams, adapterInitListener: adapterInitListener, context: nil)
             }
-            
-            self.adNetworkAdapterProvider.googleManager?.getAdNetworkAdapter()?.initialize(initParams: initParams, adapterInitListener: adapterInitListener, context: nil)
-            self.adNetworkAdapterProvider.metaManager?.getAdNetworkAdapter()?.initialize(initParams: initParams, adapterInitListener: adapterInitListener, context: nil)
-            self.adNetworkAdapterProvider.novaManager?.getAdNetworkAdapter()?.initialize(initParams: initParams, adapterInitListener: adapterInitListener, context: nil)
-            PrebidAdapter().initialize(initParams: initParams, adapterInitListener: adapterInitListener, context: nil)
         }
-         */
-        adNetworkAdapterProvider.googleManager?.getAdNetworkAdapter()?.initialize(initParams: initParams, adapterInitListener: adapterInitListener, context: nil)
-        adNetworkAdapterProvider.metaManager?.getAdNetworkAdapter()?.initialize(initParams: initParams, adapterInitListener: adapterInitListener, context: nil)
-        adNetworkAdapterProvider.novaManager?.getAdNetworkAdapter()?.initialize(initParams: initParams, adapterInitListener: adapterInitListener, context: nil)
         PrebidAdapter.initializePrebid(initParams: initParams, adapterInitListener: adapterInitListener, context: nil)
        
         if let initParamsImp = initParams as? InitializationParametersImp,
@@ -106,18 +85,6 @@ public class MSP {
                 MSP.shared.sdkInitListener?.onComplete(status: .SUCCESS, message: "")
             }
         }
-    }
-    
-    public func setGoogleManager(googleManager: AdNetworkManager) {
-        adNetworkAdapterProvider.googleManager = googleManager
-    }
-    
-    public func setNovaManager(novaManager: AdNetworkManager) {
-        adNetworkAdapterProvider.novaManager = novaManager
-    }
-    
-    public func setMetaManager(metaManager: AdNetworkManager) {
-        adNetworkAdapterProvider.metaManager = metaManager
     }
     
     func fetchServerConfigData(completion: @escaping (Result<[String: String], Error>) -> Void) {
@@ -220,6 +187,8 @@ public class InitializationParametersImp: InitializationParameters {
     public var orgId: Int64?
     public var appId: Int64?
     
+    public var params: [String: Any]?
+    
     public init(prebidAPIKey: String, prebidHostUrl: String, sourceApp: String? = nil) {
         self.prebidAPIKey = prebidAPIKey
         self.prebidHostUrl = prebidHostUrl
@@ -265,7 +234,7 @@ public class InitializationParametersImp: InitializationParameters {
     }
     
     public func getParameters() -> [String : Any]? {
-        return [String : Any]()
+        return params
     }
     
     public func hasUserConsent() -> Bool {
@@ -282,51 +251,5 @@ public class InitializationParametersImp: InitializationParameters {
     
     public func isInTestMode() -> Bool {
         return false
-    }
-}
-
-public class MSPAdLoader: NSObject, BidListener {
-    weak var adListener: AdListener?
-    var adRequest: AdRequest?
-    
-    var bidLoader: BidLoader?
-    var adNetworkAdapter: AdNetworkAdapter?
-
-    
-    
-    public override init() {}
-    
-    public func loadAd(placementId: String, adListener: AdListener, adRequest: AdRequest) {
-        MESMetricReporter.shared.logAdRequest(adRequest: adRequest)
-        self.adListener = adListener
-        self.adRequest = adRequest
-        
-        if adRequest.isCacheSupported, let ad = AdCache.shared.peakAd(placementId: placementId) {
-            MESMetricReporter.shared.logAdResult(placementId: placementId, ad: ad, fill: true, isFromCache: true)
-            adListener.onAdLoaded(placementId: placementId)
-            return
-        }
-        
-        self.bidLoader = MSP.shared.bidLoaderProvider.getBidLoader()
-        bidLoader?.loadBid(placementId: placementId, adParams: adRequest.customParams, bidListener: self, adRequest: adRequest)
-    }
-    
-    public func onBidResponse(bidResponse: Any, adNetwork: AdNetwork) {
-        if let adListener = self.adListener,
-           let adRequest = self.adRequest {
-            if let adNetworkAdapter = MSP.shared.adNetworkAdapterProvider.getAdNetworkAdapter(adNetwork: adNetwork) {
-                self.adNetworkAdapter = adNetworkAdapter
-                adNetworkAdapter.setAdMetricReporter(adMetricReporter: AdMetricReporterImp())
-                adNetworkAdapter.loadAdCreative(bidResponse: bidResponse, adListener: adListener, context: self, adRequest: adRequest)
-            } else {
-                adListener.onError(msg: "Ad network is not supported")
-            }
-        } else {
-            adListener?.onError(msg: "Invalid request")
-        }
-    }
-    
-    public func onError(msg: String) {
-        adListener?.onError(msg: msg)
     }
 }

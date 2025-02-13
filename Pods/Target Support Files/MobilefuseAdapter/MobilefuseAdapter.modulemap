@@ -1,0 +1,6 @@
+module MobilefuseAdapter {
+  umbrella header "MobilefuseAdapter-umbrella.h"
+
+  export *
+  module * { export * }
+}

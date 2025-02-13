@@ -85,11 +85,14 @@ import Foundation
     public var priceInDollar: Double?
     
     private var nativeAdItem: FBNativeAd?
-    private var facebookNativeAd: FacebookNativeAd?
+    private weak var facebookNativeAd: FacebookNativeAd?
     private var adRequest: AdRequest?
     private var bidResponse: BidResponse?
     
-    private var facebookInterstitialAd: FacebookInterstitialAd?
+    public weak var auctionBidListener: AuctionBidListener?
+    public var bidderPlacementId: String?
+    
+    private weak var facebookInterstitialAd: FacebookInterstitialAd?
     private var interstitialAdItem: FBInterstitialAd?
     
     private var adMetricReporter: AdMetricReporter?
@@ -105,9 +108,11 @@ import Foundation
         })
     }
     
-    public func loadAdCreative(bidResponse: Any, adListener: any AdListener, context: Any, adRequest: AdRequest) {
+    public func loadAdCreative(bidResponse: Any, auctionBidListener: AuctionBidListener, adListener: any AdListener, context: Any, adRequest: AdRequest, bidderPlacementId: String, bidderFormat: MSPiOSCore.AdFormat?, params: [String:String]?) {
         self.adListener = adListener
         self.adRequest = adRequest
+        self.auctionBidListener = auctionBidListener
+        self.bidderPlacementId = bidderPlacementId
         
         guard bidResponse is BidResponse,
               let mBidResponse = bidResponse as? BidResponse else {
@@ -206,6 +211,17 @@ import Foundation
             return nil
         }
     }
+    
+    public func handleAdLoaded(ad: MSPAd, auctionBidListener: AuctionBidListener, bidderPlacementId: String) {
+        // to do: move this to ios core
+        AdCache.shared.saveAd(placementId: bidderPlacementId, ad: ad)
+        let auctionBid = AuctionBid(bidderName: "msp", bidderPlacementId: bidderPlacementId, ecpm: ad.adInfo["price"] as? Double ?? 0.0)
+        auctionBidListener.onSuccess(bid: auctionBid)
+    }
+    
+    public func getAdNetwork() -> MSPiOSCore.AdNetwork {
+        return .facebook
+    }
 }
 
 
@@ -227,8 +243,10 @@ extension FacebookAdapter: FBNativeAdDelegate {
             facebookNativeAd.adInfo["price"] = self.priceInDollar
             self.nativeAdItem = nativeAd
             if let adListener = self.adListener,
-               let adRequest = self.adRequest {
-                handleAdLoaded(ad: facebookNativeAd, listener: adListener, adRequest: adRequest)
+               let adRequest = self.adRequest,
+               let auctionBidListener = self.auctionBidListener {
+                //handleAdLoaded(ad: facebookNativeAd, listener: adListener, adRequest: adRequest)
+                self.handleAdLoaded(ad: facebookNativeAd, auctionBidListener: auctionBidListener, bidderPlacementId: self.bidderPlacementId ?? adRequest.placementId)
             }
         }
     }
@@ -269,8 +287,10 @@ extension FacebookAdapter: FBInterstitialAdDelegate {
             
             
             if let adListener = self.adListener,
-               let adRequest = self.adRequest {
-                handleAdLoaded(ad: facebookInterstitialAd, listener: adListener, adRequest: adRequest)
+               let adRequest = self.adRequest,
+               let auctionBidListener = self.auctionBidListener {
+                //handleAdLoaded(ad: facebookInterstitialAd, listener: adListener, adRequest: adRequest)
+                self.handleAdLoaded(ad: facebookInterstitialAd, auctionBidListener: auctionBidListener, bidderPlacementId: self.bidderPlacementId ?? adRequest.placementId)
                 self.adMetricReporter?.logAdResult(placementId: adRequest.placementId, ad: facebookInterstitialAd, fill: true, isFromCache: false)
             }
         }

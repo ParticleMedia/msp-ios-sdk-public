@@ -19,10 +19,10 @@
   "exclude_files": "Classes/Exclude",
   "dependencies": {
     "Google-Mobile-Ads-SDK": [
-      "11.2.0"
+      "11.7.0"
     ],
     "MSPSharedLibraries": [
-      "0.0.91"
+
     ]
   },
   "pod_target_xcconfig": {

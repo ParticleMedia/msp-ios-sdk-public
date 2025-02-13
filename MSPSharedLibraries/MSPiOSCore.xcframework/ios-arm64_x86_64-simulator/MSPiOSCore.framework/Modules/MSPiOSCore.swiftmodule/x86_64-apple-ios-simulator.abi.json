@@ -1,8 +1,8 @@
 {
   "ABIRoot": {
     "kind": "Root",
-    "name": "TopLevel",
-    "printedName": "TopLevel",
+    "name": "MSPiOSCore",
+    "printedName": "MSPiOSCore",
     "children": [
       {
         "kind": "Import",
@@ -120,10 +120,786 @@
         "conformances": [
           {
             "kind": "Conformance",
+            "name": "Escapable",
+            "printedName": "Escapable",
+            "usr": "s:s9EscapableP",
+            "mangledName": "$ss9EscapableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Copyable",
+            "printedName": "Copyable",
+            "usr": "s:s8CopyableP",
+            "mangledName": "$ss8CopyableP"
+          },
+          {
+            "kind": "Conformance",
             "name": "AdapterParameters",
             "printedName": "AdapterParameters",
             "usr": "s:10MSPiOSCore17AdapterParametersP",
             "mangledName": "$s10MSPiOSCore17AdapterParametersP"
+          }
+        ]
+      },
+      {
+        "kind": "Import",
+        "name": "Foundation",
+        "printedName": "Foundation",
+        "declKind": "Import",
+        "moduleName": "MSPiOSCore",
+        "declAttributes": [
+          "RawDocComment"
+        ]
+      },
+      {
+        "kind": "TypeDecl",
+        "name": "Bidder",
+        "printedName": "Bidder",
+        "children": [
+          {
+            "kind": "Var",
+            "name": "name",
+            "printedName": "name",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "String",
+                "printedName": "Swift.String",
+                "usr": "s:SS"
+              }
+            ],
+            "declKind": "Var",
+            "usr": "s:10MSPiOSCore6BidderC4nameSSvp",
+            "mangledName": "$s10MSPiOSCore6BidderC4nameSSvp",
+            "moduleName": "MSPiOSCore",
+            "declAttributes": [
+              "HasStorage",
+              "AccessControl"
+            ],
+            "hasStorage": true,
+            "accessors": [
+              {
+                "kind": "Accessor",
+                "name": "Get",
+                "printedName": "Get()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "String",
+                    "printedName": "Swift.String",
+                    "usr": "s:SS"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:10MSPiOSCore6BidderC4nameSSvg",
+                "mangledName": "$s10MSPiOSCore6BidderC4nameSSvg",
+                "moduleName": "MSPiOSCore",
+                "implicit": true,
+                "accessorKind": "get"
+              },
+              {
+                "kind": "Accessor",
+                "name": "Set",
+                "printedName": "Set()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Void",
+                    "printedName": "()"
+                  },
+                  {
+                    "kind": "TypeNominal",
+                    "name": "String",
+                    "printedName": "Swift.String",
+                    "usr": "s:SS"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:10MSPiOSCore6BidderC4nameSSvs",
+                "mangledName": "$s10MSPiOSCore6BidderC4nameSSvs",
+                "moduleName": "MSPiOSCore",
+                "implicit": true,
+                "accessorKind": "set"
+              },
+              {
+                "kind": "Accessor",
+                "name": "Modify",
+                "printedName": "Modify()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Void",
+                    "printedName": "()"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:10MSPiOSCore6BidderC4nameSSvM",
+                "mangledName": "$s10MSPiOSCore6BidderC4nameSSvM",
+                "moduleName": "MSPiOSCore",
+                "implicit": true,
+                "accessorKind": "_modify"
+              }
+            ]
+          },
+          {
+            "kind": "Var",
+            "name": "bidderPlacementId",
+            "printedName": "bidderPlacementId",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "String",
+                "printedName": "Swift.String",
+                "usr": "s:SS"
+              }
+            ],
+            "declKind": "Var",
+            "usr": "s:10MSPiOSCore6BidderC17bidderPlacementIdSSvp",
+            "mangledName": "$s10MSPiOSCore6BidderC17bidderPlacementIdSSvp",
+            "moduleName": "MSPiOSCore",
+            "declAttributes": [
+              "HasStorage",
+              "AccessControl"
+            ],
+            "hasStorage": true,
+            "accessors": [
+              {
+                "kind": "Accessor",
+                "name": "Get",
+                "printedName": "Get()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "String",
+                    "printedName": "Swift.String",
+                    "usr": "s:SS"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:10MSPiOSCore6BidderC17bidderPlacementIdSSvg",
+                "mangledName": "$s10MSPiOSCore6BidderC17bidderPlacementIdSSvg",
+                "moduleName": "MSPiOSCore",
+                "implicit": true,
+                "accessorKind": "get"
+              },
+              {
+                "kind": "Accessor",
+                "name": "Set",
+                "printedName": "Set()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Void",
+                    "printedName": "()"
+                  },
+                  {
+                    "kind": "TypeNominal",
+                    "name": "String",
+                    "printedName": "Swift.String",
+                    "usr": "s:SS"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:10MSPiOSCore6BidderC17bidderPlacementIdSSvs",
+                "mangledName": "$s10MSPiOSCore6BidderC17bidderPlacementIdSSvs",
+                "moduleName": "MSPiOSCore",
+                "implicit": true,
+                "accessorKind": "set"
+              },
+              {
+                "kind": "Accessor",
+                "name": "Modify",
+                "printedName": "Modify()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Void",
+                    "printedName": "()"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:10MSPiOSCore6BidderC17bidderPlacementIdSSvM",
+                "mangledName": "$s10MSPiOSCore6BidderC17bidderPlacementIdSSvM",
+                "moduleName": "MSPiOSCore",
+                "implicit": true,
+                "accessorKind": "_modify"
+              }
+            ]
+          },
+          {
+            "kind": "Var",
+            "name": "bidderFormat",
+            "printedName": "bidderFormat",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Optional",
+                "printedName": "MSPiOSCore.AdFormat?",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "AdFormat",
+                    "printedName": "MSPiOSCore.AdFormat",
+                    "usr": "s:10MSPiOSCore8AdFormatO"
+                  }
+                ],
+                "usr": "s:Sq"
+              }
+            ],
+            "declKind": "Var",
+            "usr": "s:10MSPiOSCore6BidderC12bidderFormatAA02AdE0OSgvp",
+            "mangledName": "$s10MSPiOSCore6BidderC12bidderFormatAA02AdE0OSgvp",
+            "moduleName": "MSPiOSCore",
+            "declAttributes": [
+              "HasInitialValue",
+              "HasStorage",
+              "AccessControl"
+            ],
+            "hasStorage": true,
+            "accessors": [
+              {
+                "kind": "Accessor",
+                "name": "Get",
+                "printedName": "Get()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Optional",
+                    "printedName": "MSPiOSCore.AdFormat?",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "AdFormat",
+                        "printedName": "MSPiOSCore.AdFormat",
+                        "usr": "s:10MSPiOSCore8AdFormatO"
+                      }
+                    ],
+                    "usr": "s:Sq"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:10MSPiOSCore6BidderC12bidderFormatAA02AdE0OSgvg",
+                "mangledName": "$s10MSPiOSCore6BidderC12bidderFormatAA02AdE0OSgvg",
+                "moduleName": "MSPiOSCore",
+                "implicit": true,
+                "accessorKind": "get"
+              },
+              {
+                "kind": "Accessor",
+                "name": "Set",
+                "printedName": "Set()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Void",
+                    "printedName": "()"
+                  },
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Optional",
+                    "printedName": "MSPiOSCore.AdFormat?",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "AdFormat",
+                        "printedName": "MSPiOSCore.AdFormat",
+                        "usr": "s:10MSPiOSCore8AdFormatO"
+                      }
+                    ],
+                    "usr": "s:Sq"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:10MSPiOSCore6BidderC12bidderFormatAA02AdE0OSgvs",
+                "mangledName": "$s10MSPiOSCore6BidderC12bidderFormatAA02AdE0OSgvs",
+                "moduleName": "MSPiOSCore",
+                "implicit": true,
+                "accessorKind": "set"
+              },
+              {
+                "kind": "Accessor",
+                "name": "Modify",
+                "printedName": "Modify()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Void",
+                    "printedName": "()"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:10MSPiOSCore6BidderC12bidderFormatAA02AdE0OSgvM",
+                "mangledName": "$s10MSPiOSCore6BidderC12bidderFormatAA02AdE0OSgvM",
+                "moduleName": "MSPiOSCore",
+                "implicit": true,
+                "accessorKind": "_modify"
+              }
+            ]
+          },
+          {
+            "kind": "Var",
+            "name": "params",
+            "printedName": "params",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Optional",
+                "printedName": "[Swift.String : Swift.String]?",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Dictionary",
+                    "printedName": "[Swift.String : Swift.String]",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "String",
+                        "printedName": "Swift.String",
+                        "usr": "s:SS"
+                      },
+                      {
+                        "kind": "TypeNominal",
+                        "name": "String",
+                        "printedName": "Swift.String",
+                        "usr": "s:SS"
+                      }
+                    ],
+                    "usr": "s:SD"
+                  }
+                ],
+                "usr": "s:Sq"
+              }
+            ],
+            "declKind": "Var",
+            "usr": "s:10MSPiOSCore6BidderC6paramsSDyS2SGSgvp",
+            "mangledName": "$s10MSPiOSCore6BidderC6paramsSDyS2SGSgvp",
+            "moduleName": "MSPiOSCore",
+            "declAttributes": [
+              "HasInitialValue",
+              "HasStorage",
+              "AccessControl"
+            ],
+            "hasStorage": true,
+            "accessors": [
+              {
+                "kind": "Accessor",
+                "name": "Get",
+                "printedName": "Get()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Optional",
+                    "printedName": "[Swift.String : Swift.String]?",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "Dictionary",
+                        "printedName": "[Swift.String : Swift.String]",
+                        "children": [
+                          {
+                            "kind": "TypeNominal",
+                            "name": "String",
+                            "printedName": "Swift.String",
+                            "usr": "s:SS"
+                          },
+                          {
+                            "kind": "TypeNominal",
+                            "name": "String",
+                            "printedName": "Swift.String",
+                            "usr": "s:SS"
+                          }
+                        ],
+                        "usr": "s:SD"
+                      }
+                    ],
+                    "usr": "s:Sq"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:10MSPiOSCore6BidderC6paramsSDyS2SGSgvg",
+                "mangledName": "$s10MSPiOSCore6BidderC6paramsSDyS2SGSgvg",
+                "moduleName": "MSPiOSCore",
+                "implicit": true,
+                "accessorKind": "get"
+              },
+              {
+                "kind": "Accessor",
+                "name": "Set",
+                "printedName": "Set()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Void",
+                    "printedName": "()"
+                  },
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Optional",
+                    "printedName": "[Swift.String : Swift.String]?",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "Dictionary",
+                        "printedName": "[Swift.String : Swift.String]",
+                        "children": [
+                          {
+                            "kind": "TypeNominal",
+                            "name": "String",
+                            "printedName": "Swift.String",
+                            "usr": "s:SS"
+                          },
+                          {
+                            "kind": "TypeNominal",
+                            "name": "String",
+                            "printedName": "Swift.String",
+                            "usr": "s:SS"
+                          }
+                        ],
+                        "usr": "s:SD"
+                      }
+                    ],
+                    "usr": "s:Sq"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:10MSPiOSCore6BidderC6paramsSDyS2SGSgvs",
+                "mangledName": "$s10MSPiOSCore6BidderC6paramsSDyS2SGSgvs",
+                "moduleName": "MSPiOSCore",
+                "implicit": true,
+                "accessorKind": "set"
+              },
+              {
+                "kind": "Accessor",
+                "name": "Modify",
+                "printedName": "Modify()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Void",
+                    "printedName": "()"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:10MSPiOSCore6BidderC6paramsSDyS2SGSgvM",
+                "mangledName": "$s10MSPiOSCore6BidderC6paramsSDyS2SGSgvM",
+                "moduleName": "MSPiOSCore",
+                "implicit": true,
+                "accessorKind": "_modify"
+              }
+            ]
+          },
+          {
+            "kind": "Constructor",
+            "name": "init",
+            "printedName": "init(name:bidderPlacementId:bidderFormat:)",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Bidder",
+                "printedName": "MSPiOSCore.Bidder",
+                "usr": "c:@M@MSPiOSCore@objc(cs)Bidder"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "String",
+                "printedName": "Swift.String",
+                "usr": "s:SS"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "String",
+                "printedName": "Swift.String",
+                "usr": "s:SS"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "Optional",
+                "printedName": "MSPiOSCore.AdFormat?",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "AdFormat",
+                    "printedName": "MSPiOSCore.AdFormat",
+                    "usr": "s:10MSPiOSCore8AdFormatO"
+                  }
+                ],
+                "usr": "s:Sq"
+              }
+            ],
+            "declKind": "Constructor",
+            "usr": "s:10MSPiOSCore6BidderC4name17bidderPlacementId0E6FormatACSS_SSAA02AdH0OSgtcfc",
+            "mangledName": "$s10MSPiOSCore6BidderC4name17bidderPlacementId0E6FormatACSS_SSAA02AdH0OSgtcfc",
+            "moduleName": "MSPiOSCore",
+            "declAttributes": [
+              "AccessControl"
+            ],
+            "init_kind": "Designated"
+          },
+          {
+            "kind": "Function",
+            "name": "requestBid",
+            "printedName": "requestBid(adRequest:bidListener:adListener:)",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Void",
+                "printedName": "()"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "AdRequest",
+                "printedName": "MSPiOSCore.AdRequest",
+                "usr": "s:10MSPiOSCore9AdRequestC"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "AuctionBidListener",
+                "printedName": "any MSPiOSCore.AuctionBidListener",
+                "usr": "s:10MSPiOSCore18AuctionBidListenerP"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "AdListener",
+                "printedName": "any MSPiOSCore.AdListener",
+                "usr": "s:10MSPiOSCore10AdListenerP"
+              }
+            ],
+            "declKind": "Func",
+            "usr": "s:10MSPiOSCore6BidderC10requestBid9adRequest11bidListener0fI0yAA02AdG0C_AA07AuctioneI0_pAA0jI0_ptF",
+            "mangledName": "$s10MSPiOSCore6BidderC10requestBid9adRequest11bidListener0fI0yAA02AdG0C_AA07AuctioneI0_pAA0jI0_ptF",
+            "moduleName": "MSPiOSCore",
+            "isOpen": true,
+            "declAttributes": [
+              "AccessControl"
+            ],
+            "funcSelfKind": "NonMutating"
+          },
+          {
+            "kind": "Function",
+            "name": "setAdMetricReporter",
+            "printedName": "setAdMetricReporter(adMetricReporter:)",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Void",
+                "printedName": "()"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "AdMetricReporter",
+                "printedName": "any MSPiOSCore.AdMetricReporter",
+                "usr": "s:10MSPiOSCore16AdMetricReporterP"
+              }
+            ],
+            "declKind": "Func",
+            "usr": "s:10MSPiOSCore6BidderC19setAdMetricReporter02adfG0yAA0efG0_p_tF",
+            "mangledName": "$s10MSPiOSCore6BidderC19setAdMetricReporter02adfG0yAA0efG0_p_tF",
+            "moduleName": "MSPiOSCore",
+            "isOpen": true,
+            "declAttributes": [
+              "AccessControl"
+            ],
+            "funcSelfKind": "NonMutating"
+          },
+          {
+            "kind": "Constructor",
+            "name": "init",
+            "printedName": "init()",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Bidder",
+                "printedName": "MSPiOSCore.Bidder",
+                "usr": "c:@M@MSPiOSCore@objc(cs)Bidder"
+              }
+            ],
+            "declKind": "Constructor",
+            "usr": "c:@M@MSPiOSCore@objc(cs)Bidder(im)init",
+            "mangledName": "$s10MSPiOSCore6BidderCACycfc",
+            "moduleName": "MSPiOSCore",
+            "overriding": true,
+            "implicit": true,
+            "objc_name": "init",
+            "declAttributes": [
+              "Dynamic",
+              "ObjC",
+              "Override"
+            ],
+            "init_kind": "Designated"
+          }
+        ],
+        "declKind": "Class",
+        "usr": "c:@M@MSPiOSCore@objc(cs)Bidder",
+        "mangledName": "$s10MSPiOSCore6BidderC",
+        "moduleName": "MSPiOSCore",
+        "isOpen": true,
+        "declAttributes": [
+          "AccessControl",
+          "ObjC"
+        ],
+        "superclassUsr": "c:objc(cs)NSObject",
+        "superclassNames": [
+          "ObjectiveC.NSObject"
+        ],
+        "conformances": [
+          {
+            "kind": "Conformance",
+            "name": "Copyable",
+            "printedName": "Copyable",
+            "usr": "s:s8CopyableP",
+            "mangledName": "$ss8CopyableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Escapable",
+            "printedName": "Escapable",
+            "usr": "s:s9EscapableP",
+            "mangledName": "$ss9EscapableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Equatable",
+            "printedName": "Equatable",
+            "usr": "s:SQ",
+            "mangledName": "$sSQ"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Hashable",
+            "printedName": "Hashable",
+            "usr": "s:SH",
+            "mangledName": "$sSH"
+          },
+          {
+            "kind": "Conformance",
+            "name": "CVarArg",
+            "printedName": "CVarArg",
+            "usr": "s:s7CVarArgP",
+            "mangledName": "$ss7CVarArgP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "_KeyValueCodingAndObservingPublishing",
+            "printedName": "_KeyValueCodingAndObservingPublishing",
+            "usr": "s:10Foundation37_KeyValueCodingAndObservingPublishingP",
+            "mangledName": "$s10Foundation37_KeyValueCodingAndObservingPublishingP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "_KeyValueCodingAndObserving",
+            "printedName": "_KeyValueCodingAndObserving",
+            "usr": "s:10Foundation27_KeyValueCodingAndObservingP",
+            "mangledName": "$s10Foundation27_KeyValueCodingAndObservingP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "CustomStringConvertible",
+            "printedName": "CustomStringConvertible",
+            "usr": "s:s23CustomStringConvertibleP",
+            "mangledName": "$ss23CustomStringConvertibleP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "CustomDebugStringConvertible",
+            "printedName": "CustomDebugStringConvertible",
+            "usr": "s:s28CustomDebugStringConvertibleP",
+            "mangledName": "$ss28CustomDebugStringConvertibleP"
+          }
+        ]
+      },
+      {
+        "kind": "Import",
+        "name": "Foundation",
+        "printedName": "Foundation",
+        "declKind": "Import",
+        "moduleName": "MSPiOSCore",
+        "declAttributes": [
+          "RawDocComment"
+        ]
+      },
+      {
+        "kind": "TypeDecl",
+        "name": "AuctionListener",
+        "printedName": "AuctionListener",
+        "children": [
+          {
+            "kind": "Function",
+            "name": "onSuccess",
+            "printedName": "onSuccess(winningBid:)",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Void",
+                "printedName": "()"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "AuctionBid",
+                "printedName": "MSPiOSCore.AuctionBid",
+                "usr": "s:10MSPiOSCore10AuctionBidC"
+              }
+            ],
+            "declKind": "Func",
+            "usr": "s:10MSPiOSCore15AuctionListenerP9onSuccess10winningBidyAA0cH0C_tF",
+            "mangledName": "$s10MSPiOSCore15AuctionListenerP9onSuccess10winningBidyAA0cH0C_tF",
+            "moduleName": "MSPiOSCore",
+            "genericSig": "<τ_0_0 where τ_0_0 : MSPiOSCore.AuctionListener>",
+            "sugared_genericSig": "<Self where Self : MSPiOSCore.AuctionListener>",
+            "protocolReq": true,
+            "reqNewWitnessTableEntry": true,
+            "funcSelfKind": "NonMutating"
+          },
+          {
+            "kind": "Function",
+            "name": "onError",
+            "printedName": "onError(error:)",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Void",
+                "printedName": "()"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "String",
+                "printedName": "Swift.String",
+                "usr": "s:SS"
+              }
+            ],
+            "declKind": "Func",
+            "usr": "s:10MSPiOSCore15AuctionListenerP7onError5errorySS_tF",
+            "mangledName": "$s10MSPiOSCore15AuctionListenerP7onError5errorySS_tF",
+            "moduleName": "MSPiOSCore",
+            "genericSig": "<τ_0_0 where τ_0_0 : MSPiOSCore.AuctionListener>",
+            "sugared_genericSig": "<Self where Self : MSPiOSCore.AuctionListener>",
+            "protocolReq": true,
+            "reqNewWitnessTableEntry": true,
+            "funcSelfKind": "NonMutating"
+          }
+        ],
+        "declKind": "Protocol",
+        "usr": "s:10MSPiOSCore15AuctionListenerP",
+        "mangledName": "$s10MSPiOSCore15AuctionListenerP",
+        "moduleName": "MSPiOSCore",
+        "genericSig": "<τ_0_0 : AnyObject>",
+        "sugared_genericSig": "<Self : AnyObject>",
+        "declAttributes": [
+          "AccessControl"
+        ],
+        "conformances": [
+          {
+            "kind": "Conformance",
+            "name": "Escapable",
+            "printedName": "Escapable",
+            "usr": "s:s9EscapableP",
+            "mangledName": "$ss9EscapableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Copyable",
+            "printedName": "Copyable",
+            "usr": "s:s8CopyableP",
+            "mangledName": "$ss8CopyableP"
           }
         ]
       },
@@ -308,6 +1084,22 @@
         "superclassUsr": "s:10MSPiOSCore5MSPAdC",
         "superclassNames": [
           "MSPiOSCore.MSPAd"
+        ],
+        "conformances": [
+          {
+            "kind": "Conformance",
+            "name": "Copyable",
+            "printedName": "Copyable",
+            "usr": "s:s8CopyableP",
+            "mangledName": "$ss8CopyableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Escapable",
+            "printedName": "Escapable",
+            "usr": "s:s9EscapableP",
+            "mangledName": "$ss9EscapableP"
+          }
         ]
       },
       {
@@ -594,6 +1386,22 @@
         "isOpen": true,
         "declAttributes": [
           "AccessControl"
+        ],
+        "conformances": [
+          {
+            "kind": "Conformance",
+            "name": "Copyable",
+            "printedName": "Copyable",
+            "usr": "s:s8CopyableP",
+            "mangledName": "$ss8CopyableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Escapable",
+            "printedName": "Escapable",
+            "usr": "s:s9EscapableP",
+            "mangledName": "$ss9EscapableP"
+          }
         ]
       },
       {
@@ -755,6 +1563,20 @@
         "conformances": [
           {
             "kind": "Conformance",
+            "name": "Copyable",
+            "printedName": "Copyable",
+            "usr": "s:s8CopyableP",
+            "mangledName": "$ss8CopyableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Escapable",
+            "printedName": "Escapable",
+            "usr": "s:s9EscapableP",
+            "mangledName": "$ss9EscapableP"
+          },
+          {
+            "kind": "Conformance",
             "name": "Equatable",
             "printedName": "Equatable",
             "usr": "s:SQ",
@@ -889,6 +1711,22 @@
         "inheritsConvenienceInitializers": true,
         "superclassNames": [
           "MSPiOSCore.MSPAd"
+        ],
+        "conformances": [
+          {
+            "kind": "Conformance",
+            "name": "Copyable",
+            "printedName": "Copyable",
+            "usr": "s:s8CopyableP",
+            "mangledName": "$ss8CopyableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Escapable",
+            "printedName": "Escapable",
+            "usr": "s:s9EscapableP",
+            "mangledName": "$ss9EscapableP"
+          }
         ]
       },
       {
@@ -975,6 +1813,22 @@
         "sugared_genericSig": "<Self : AnyObject>",
         "declAttributes": [
           "AccessControl"
+        ],
+        "conformances": [
+          {
+            "kind": "Conformance",
+            "name": "Escapable",
+            "printedName": "Escapable",
+            "usr": "s:s9EscapableP",
+            "mangledName": "$ss9EscapableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Copyable",
+            "printedName": "Copyable",
+            "usr": "s:s8CopyableP",
+            "mangledName": "$ss8CopyableP"
+          }
         ]
       },
       {
@@ -1028,6 +1882,22 @@
         "sugared_genericSig": "<Self : AnyObject>",
         "declAttributes": [
           "AccessControl"
+        ],
+        "conformances": [
+          {
+            "kind": "Conformance",
+            "name": "Escapable",
+            "printedName": "Escapable",
+            "usr": "s:s9EscapableP",
+            "mangledName": "$ss9EscapableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Copyable",
+            "printedName": "Copyable",
+            "usr": "s:s8CopyableP",
+            "mangledName": "$ss8CopyableP"
+          }
         ]
       },
       {
@@ -1164,6 +2034,20 @@
         ],
         "enumRawTypeName": "String",
         "conformances": [
+          {
+            "kind": "Conformance",
+            "name": "Copyable",
+            "printedName": "Copyable",
+            "usr": "s:s8CopyableP",
+            "mangledName": "$ss8CopyableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Escapable",
+            "printedName": "Escapable",
+            "usr": "s:s9EscapableP",
+            "mangledName": "$ss9EscapableP"
+          },
           {
             "kind": "Conformance",
             "name": "Equatable",
@@ -1950,91 +2834,6 @@
           },
           {
             "kind": "Var",
-            "name": "isCacheSupported",
-            "printedName": "isCacheSupported",
-            "children": [
-              {
-                "kind": "TypeNominal",
-                "name": "Bool",
-                "printedName": "Swift.Bool",
-                "usr": "s:Sb"
-              }
-            ],
-            "declKind": "Var",
-            "usr": "s:10MSPiOSCore9AdRequestC16isCacheSupportedSbvp",
-            "mangledName": "$s10MSPiOSCore9AdRequestC16isCacheSupportedSbvp",
-            "moduleName": "MSPiOSCore",
-            "declAttributes": [
-              "HasStorage",
-              "AccessControl"
-            ],
-            "hasStorage": true,
-            "accessors": [
-              {
-                "kind": "Accessor",
-                "name": "Get",
-                "printedName": "Get()",
-                "children": [
-                  {
-                    "kind": "TypeNominal",
-                    "name": "Bool",
-                    "printedName": "Swift.Bool",
-                    "usr": "s:Sb"
-                  }
-                ],
-                "declKind": "Accessor",
-                "usr": "s:10MSPiOSCore9AdRequestC16isCacheSupportedSbvg",
-                "mangledName": "$s10MSPiOSCore9AdRequestC16isCacheSupportedSbvg",
-                "moduleName": "MSPiOSCore",
-                "implicit": true,
-                "accessorKind": "get"
-              },
-              {
-                "kind": "Accessor",
-                "name": "Set",
-                "printedName": "Set()",
-                "children": [
-                  {
-                    "kind": "TypeNominal",
-                    "name": "Void",
-                    "printedName": "()"
-                  },
-                  {
-                    "kind": "TypeNominal",
-                    "name": "Bool",
-                    "printedName": "Swift.Bool",
-                    "usr": "s:Sb"
-                  }
-                ],
-                "declKind": "Accessor",
-                "usr": "s:10MSPiOSCore9AdRequestC16isCacheSupportedSbvs",
-                "mangledName": "$s10MSPiOSCore9AdRequestC16isCacheSupportedSbvs",
-                "moduleName": "MSPiOSCore",
-                "implicit": true,
-                "accessorKind": "set"
-              },
-              {
-                "kind": "Accessor",
-                "name": "Modify",
-                "printedName": "Modify()",
-                "children": [
-                  {
-                    "kind": "TypeNominal",
-                    "name": "Void",
-                    "printedName": "()"
-                  }
-                ],
-                "declKind": "Accessor",
-                "usr": "s:10MSPiOSCore9AdRequestC16isCacheSupportedSbvM",
-                "mangledName": "$s10MSPiOSCore9AdRequestC16isCacheSupportedSbvM",
-                "moduleName": "MSPiOSCore",
-                "implicit": true,
-                "accessorKind": "_modify"
-              }
-            ]
-          },
-          {
-            "kind": "Var",
             "name": "testParams",
             "printedName": "testParams",
             "children": [
@@ -2160,7 +2959,7 @@
           {
             "kind": "Constructor",
             "name": "init",
-            "printedName": "init(customParams:geo:context:adaptiveBannerSize:adSize:placementId:adFormat:isCacheSupported:testParams:)",
+            "printedName": "init(customParams:geo:context:adaptiveBannerSize:adSize:placementId:adFormat:testParams:)",
             "children": [
               {
                 "kind": "TypeNominal",
@@ -2256,13 +3055,6 @@
               },
               {
                 "kind": "TypeNominal",
-                "name": "Bool",
-                "printedName": "Swift.Bool",
-                "hasDefaultArg": true,
-                "usr": "s:Sb"
-              },
-              {
-                "kind": "TypeNominal",
                 "name": "Dictionary",
                 "printedName": "[Swift.String : Any]",
                 "children": [
@@ -2283,8 +3075,8 @@
               }
             ],
             "declKind": "Constructor",
-            "usr": "s:10MSPiOSCore9AdRequestC12customParams3geo7context18adaptiveBannerSize02adK011placementId0L6Format16isCacheSupported04testF0ACSDySSypG_AA3GeoVSgypSgAA0cK0VSgATSSAA0cO0OSbAMtcfc",
-            "mangledName": "$s10MSPiOSCore9AdRequestC12customParams3geo7context18adaptiveBannerSize02adK011placementId0L6Format16isCacheSupported04testF0ACSDySSypG_AA3GeoVSgypSgAA0cK0VSgATSSAA0cO0OSbAMtcfc",
+            "usr": "s:10MSPiOSCore9AdRequestC12customParams3geo7context18adaptiveBannerSize02adK011placementId0L6Format04testF0ACSDySSypG_AA3GeoVSgypSgAA0cK0VSgASSSAA0cO0OALtcfc",
+            "mangledName": "$s10MSPiOSCore9AdRequestC12customParams3geo7context18adaptiveBannerSize02adK011placementId0L6Format04testF0ACSDySSypG_AA3GeoVSgypSgAA0cK0VSgASSSAA0cO0OALtcfc",
             "moduleName": "MSPiOSCore",
             "declAttributes": [
               "AccessControl"
@@ -2298,6 +3090,22 @@
         "moduleName": "MSPiOSCore",
         "declAttributes": [
           "AccessControl"
+        ],
+        "conformances": [
+          {
+            "kind": "Conformance",
+            "name": "Copyable",
+            "printedName": "Copyable",
+            "usr": "s:s8CopyableP",
+            "mangledName": "$ss8CopyableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Escapable",
+            "printedName": "Escapable",
+            "usr": "s:s9EscapableP",
+            "mangledName": "$ss9EscapableP"
+          }
         ]
       },
       {
@@ -2535,6 +3343,22 @@
         "moduleName": "MSPiOSCore",
         "declAttributes": [
           "AccessControl"
+        ],
+        "conformances": [
+          {
+            "kind": "Conformance",
+            "name": "Copyable",
+            "printedName": "Copyable",
+            "usr": "s:s8CopyableP",
+            "mangledName": "$ss8CopyableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Escapable",
+            "printedName": "Escapable",
+            "usr": "s:s9EscapableP",
+            "mangledName": "$ss9EscapableP"
+          }
         ]
       },
       {
@@ -2588,6 +3412,22 @@
         "sugared_genericSig": "<Self : AnyObject>",
         "declAttributes": [
           "AccessControl"
+        ],
+        "conformances": [
+          {
+            "kind": "Conformance",
+            "name": "Escapable",
+            "printedName": "Escapable",
+            "usr": "s:s9EscapableP",
+            "mangledName": "$ss9EscapableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Copyable",
+            "printedName": "Copyable",
+            "usr": "s:s8CopyableP",
+            "mangledName": "$ss8CopyableP"
+          }
         ]
       },
       {
@@ -2787,6 +3627,22 @@
         "sugared_genericSig": "<Self : AnyObject>",
         "declAttributes": [
           "AccessControl"
+        ],
+        "conformances": [
+          {
+            "kind": "Conformance",
+            "name": "Escapable",
+            "printedName": "Escapable",
+            "usr": "s:s9EscapableP",
+            "mangledName": "$ss9EscapableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Copyable",
+            "printedName": "Copyable",
+            "usr": "s:s8CopyableP",
+            "mangledName": "$ss8CopyableP"
+          }
         ]
       },
       {
@@ -2930,6 +3786,22 @@
         "sugared_genericSig": "<Self : AnyObject>",
         "declAttributes": [
           "AccessControl"
+        ],
+        "conformances": [
+          {
+            "kind": "Conformance",
+            "name": "Escapable",
+            "printedName": "Escapable",
+            "usr": "s:s9EscapableP",
+            "mangledName": "$ss9EscapableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Copyable",
+            "printedName": "Copyable",
+            "usr": "s:s8CopyableP",
+            "mangledName": "$ss8CopyableP"
+          }
         ]
       },
       {
@@ -2983,6 +3855,22 @@
         "sugared_genericSig": "<Self : AnyObject>",
         "declAttributes": [
           "AccessControl"
+        ],
+        "conformances": [
+          {
+            "kind": "Conformance",
+            "name": "Escapable",
+            "printedName": "Escapable",
+            "usr": "s:s9EscapableP",
+            "mangledName": "$ss9EscapableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Copyable",
+            "printedName": "Copyable",
+            "usr": "s:s8CopyableP",
+            "mangledName": "$ss8CopyableP"
+          }
         ]
       },
       {
@@ -3009,33 +3897,6 @@
         "children": [
           {
             "kind": "Function",
-            "name": "onAdLoaded",
-            "printedName": "onAdLoaded(ad:)",
-            "children": [
-              {
-                "kind": "TypeNominal",
-                "name": "Void",
-                "printedName": "()"
-              },
-              {
-                "kind": "TypeNominal",
-                "name": "MSPAd",
-                "printedName": "MSPiOSCore.MSPAd",
-                "usr": "s:10MSPiOSCore5MSPAdC"
-              }
-            ],
-            "declKind": "Func",
-            "usr": "s:10MSPiOSCore10AdListenerP02onC6Loaded2adyAA5MSPAdC_tF",
-            "mangledName": "$s10MSPiOSCore10AdListenerP02onC6Loaded2adyAA5MSPAdC_tF",
-            "moduleName": "MSPiOSCore",
-            "genericSig": "<τ_0_0 where τ_0_0 : MSPiOSCore.AdListener>",
-            "sugared_genericSig": "<Self where Self : MSPiOSCore.AdListener>",
-            "protocolReq": true,
-            "reqNewWitnessTableEntry": true,
-            "funcSelfKind": "NonMutating"
-          },
-          {
-            "kind": "Function",
             "name": "onError",
             "printedName": "onError(msg:)",
             "children": [
@@ -3058,6 +3919,9 @@
             "genericSig": "<τ_0_0 where τ_0_0 : MSPiOSCore.AdListener>",
             "sugared_genericSig": "<Self where Self : MSPiOSCore.AdListener>",
             "protocolReq": true,
+            "declAttributes": [
+              "RawDocComment"
+            ],
             "reqNewWitnessTableEntry": true,
             "funcSelfKind": "NonMutating"
           },
@@ -3208,6 +4072,22 @@
         "sugared_genericSig": "<Self : AnyObject>",
         "declAttributes": [
           "AccessControl"
+        ],
+        "conformances": [
+          {
+            "kind": "Conformance",
+            "name": "Escapable",
+            "printedName": "Escapable",
+            "usr": "s:s9EscapableP",
+            "mangledName": "$ss9EscapableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Copyable",
+            "printedName": "Copyable",
+            "usr": "s:s8CopyableP",
+            "mangledName": "$ss8CopyableP"
+          }
         ]
       },
       {
@@ -3228,7 +4108,7 @@
           {
             "kind": "Function",
             "name": "loadAdCreative",
-            "printedName": "loadAdCreative(bidResponse:adListener:context:adRequest:)",
+            "printedName": "loadAdCreative(bidResponse:auctionBidListener:adListener:context:adRequest:bidderPlacementId:bidderFormat:params:)",
             "children": [
               {
                 "kind": "TypeNominal",
@@ -3239,6 +4119,12 @@
                 "kind": "TypeNominal",
                 "name": "ProtocolComposition",
                 "printedName": "Any"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "AuctionBidListener",
+                "printedName": "any MSPiOSCore.AuctionBidListener",
+                "usr": "s:10MSPiOSCore18AuctionBidListenerP"
               },
               {
                 "kind": "TypeNominal",
@@ -3256,15 +4142,66 @@
                 "name": "AdRequest",
                 "printedName": "MSPiOSCore.AdRequest",
                 "usr": "s:10MSPiOSCore9AdRequestC"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "String",
+                "printedName": "Swift.String",
+                "usr": "s:SS"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "Optional",
+                "printedName": "MSPiOSCore.AdFormat?",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "AdFormat",
+                    "printedName": "MSPiOSCore.AdFormat",
+                    "usr": "s:10MSPiOSCore8AdFormatO"
+                  }
+                ],
+                "usr": "s:Sq"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "Optional",
+                "printedName": "[Swift.String : Swift.String]?",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Dictionary",
+                    "printedName": "[Swift.String : Swift.String]",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "String",
+                        "printedName": "Swift.String",
+                        "usr": "s:SS"
+                      },
+                      {
+                        "kind": "TypeNominal",
+                        "name": "String",
+                        "printedName": "Swift.String",
+                        "usr": "s:SS"
+                      }
+                    ],
+                    "usr": "s:SD"
+                  }
+                ],
+                "usr": "s:Sq"
               }
             ],
             "declKind": "Func",
-            "usr": "s:10MSPiOSCore16AdNetworkAdapterP04loadC8Creative11bidResponse10adListener7context0J7Requestyyp_AA0cK0_pypAA0cM0CtF",
-            "mangledName": "$s10MSPiOSCore16AdNetworkAdapterP04loadC8Creative11bidResponse10adListener7context0J7Requestyyp_AA0cK0_pypAA0cM0CtF",
+            "usr": "s:10MSPiOSCore16AdNetworkAdapterP04loadC8Creative11bidResponse18auctionBidListener02adL07context0M7Request17bidderPlacementId0P6Format6paramsyyp_AA07AuctionkL0_pAA0cL0_pypAA0cO0CSSAA0cS0OSgSDyS2SGSgtF",
+            "mangledName": "$s10MSPiOSCore16AdNetworkAdapterP04loadC8Creative11bidResponse18auctionBidListener02adL07context0M7Request17bidderPlacementId0P6Format6paramsyyp_AA07AuctionkL0_pAA0cL0_pypAA0cO0CSSAA0cS0OSgSDyS2SGSgtF",
             "moduleName": "MSPiOSCore",
             "genericSig": "<τ_0_0 where τ_0_0 : MSPiOSCore.AdNetworkAdapter>",
             "sugared_genericSig": "<Self where Self : MSPiOSCore.AdNetworkAdapter>",
             "protocolReq": true,
+            "declAttributes": [
+              "RawDocComment"
+            ],
             "reqNewWitnessTableEntry": true,
             "funcSelfKind": "NonMutating"
           },
@@ -3393,6 +4330,28 @@
             "protocolReq": true,
             "reqNewWitnessTableEntry": true,
             "funcSelfKind": "NonMutating"
+          },
+          {
+            "kind": "Function",
+            "name": "getAdNetwork",
+            "printedName": "getAdNetwork()",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "AdNetwork",
+                "printedName": "MSPiOSCore.AdNetwork",
+                "usr": "s:10MSPiOSCore9AdNetworkO"
+              }
+            ],
+            "declKind": "Func",
+            "usr": "s:10MSPiOSCore16AdNetworkAdapterP03getcD0AA0cD0OyF",
+            "mangledName": "$s10MSPiOSCore16AdNetworkAdapterP03getcD0AA0cD0OyF",
+            "moduleName": "MSPiOSCore",
+            "genericSig": "<τ_0_0 where τ_0_0 : MSPiOSCore.AdNetworkAdapter>",
+            "sugared_genericSig": "<Self where Self : MSPiOSCore.AdNetworkAdapter>",
+            "protocolReq": true,
+            "reqNewWitnessTableEntry": true,
+            "funcSelfKind": "NonMutating"
           }
         ],
         "declKind": "Protocol",
@@ -3403,6 +4362,22 @@
         "sugared_genericSig": "<Self : AnyObject>",
         "declAttributes": [
           "AccessControl"
+        ],
+        "conformances": [
+          {
+            "kind": "Conformance",
+            "name": "Escapable",
+            "printedName": "Escapable",
+            "usr": "s:s9EscapableP",
+            "mangledName": "$ss9EscapableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Copyable",
+            "printedName": "Copyable",
+            "usr": "s:s8CopyableP",
+            "mangledName": "$ss8CopyableP"
+          }
         ]
       },
       {
@@ -3462,6 +4437,22 @@
         "sugared_genericSig": "<Self : AnyObject>",
         "declAttributes": [
           "AccessControl"
+        ],
+        "conformances": [
+          {
+            "kind": "Conformance",
+            "name": "Escapable",
+            "printedName": "Escapable",
+            "usr": "s:s9EscapableP",
+            "mangledName": "$ss9EscapableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Copyable",
+            "printedName": "Copyable",
+            "usr": "s:s8CopyableP",
+            "mangledName": "$ss8CopyableP"
+          }
         ]
       },
       {
@@ -3546,6 +4537,22 @@
         "sugared_genericSig": "<Self : AnyObject>",
         "declAttributes": [
           "AccessControl"
+        ],
+        "conformances": [
+          {
+            "kind": "Conformance",
+            "name": "Escapable",
+            "printedName": "Escapable",
+            "usr": "s:s9EscapableP",
+            "mangledName": "$ss9EscapableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Copyable",
+            "printedName": "Copyable",
+            "usr": "s:s8CopyableP",
+            "mangledName": "$ss8CopyableP"
+          }
         ]
       },
       {
@@ -3594,6 +4601,22 @@
         "sugared_genericSig": "<Self : AnyObject>",
         "declAttributes": [
           "AccessControl"
+        ],
+        "conformances": [
+          {
+            "kind": "Conformance",
+            "name": "Escapable",
+            "printedName": "Escapable",
+            "usr": "s:s9EscapableP",
+            "mangledName": "$ss9EscapableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Copyable",
+            "printedName": "Copyable",
+            "usr": "s:s8CopyableP",
+            "mangledName": "$ss8CopyableP"
+          }
         ]
       },
       {
@@ -3661,6 +4684,56 @@
               "AccessControl"
             ],
             "funcSelfKind": "NonMutating"
+          },
+          {
+            "kind": "Function",
+            "name": "getAdBidder",
+            "printedName": "getAdBidder(bidderPlacementId:bidderFormat:)",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Optional",
+                "printedName": "MSPiOSCore.Bidder?",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Bidder",
+                    "printedName": "MSPiOSCore.Bidder",
+                    "usr": "c:@M@MSPiOSCore@objc(cs)Bidder"
+                  }
+                ],
+                "usr": "s:Sq"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "String",
+                "printedName": "Swift.String",
+                "usr": "s:SS"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "Optional",
+                "printedName": "MSPiOSCore.AdFormat?",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "AdFormat",
+                    "printedName": "MSPiOSCore.AdFormat",
+                    "usr": "s:10MSPiOSCore8AdFormatO"
+                  }
+                ],
+                "usr": "s:Sq"
+              }
+            ],
+            "declKind": "Func",
+            "usr": "s:10MSPiOSCore16AdNetworkManagerC03getC6Bidder17bidderPlacementId0H6FormatAA0G0CSgSS_AA0cK0OSgtF",
+            "mangledName": "$s10MSPiOSCore16AdNetworkManagerC03getC6Bidder17bidderPlacementId0H6FormatAA0G0CSgSS_AA0cK0OSgtF",
+            "moduleName": "MSPiOSCore",
+            "isOpen": true,
+            "declAttributes": [
+              "AccessControl"
+            ],
+            "funcSelfKind": "NonMutating"
           }
         ],
         "declKind": "Class",
@@ -3670,6 +4743,22 @@
         "isOpen": true,
         "declAttributes": [
           "AccessControl"
+        ],
+        "conformances": [
+          {
+            "kind": "Conformance",
+            "name": "Copyable",
+            "printedName": "Copyable",
+            "usr": "s:s8CopyableP",
+            "mangledName": "$ss8CopyableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Escapable",
+            "printedName": "Escapable",
+            "usr": "s:s9EscapableP",
+            "mangledName": "$ss9EscapableP"
+          }
         ]
       },
       {
@@ -5537,6 +6626,22 @@
             "moduleName": "MSPiOSCore",
             "declAttributes": [
               "AccessControl"
+            ],
+            "conformances": [
+              {
+                "kind": "Conformance",
+                "name": "Copyable",
+                "printedName": "Copyable",
+                "usr": "s:s8CopyableP",
+                "mangledName": "$ss8CopyableP"
+              },
+              {
+                "kind": "Conformance",
+                "name": "Escapable",
+                "printedName": "Escapable",
+                "usr": "s:s9EscapableP",
+                "mangledName": "$ss9EscapableP"
+              }
             ]
           },
           {
@@ -5580,6 +6685,22 @@
         "superclassUsr": "s:10MSPiOSCore5MSPAdC",
         "superclassNames": [
           "MSPiOSCore.MSPAd"
+        ],
+        "conformances": [
+          {
+            "kind": "Conformance",
+            "name": "Copyable",
+            "printedName": "Copyable",
+            "usr": "s:s8CopyableP",
+            "mangledName": "$ss8CopyableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Escapable",
+            "printedName": "Escapable",
+            "usr": "s:s9EscapableP",
+            "mangledName": "$ss9EscapableP"
+          }
         ]
       },
       {
@@ -5638,6 +6759,22 @@
         "sugared_genericSig": "<Self : AnyObject>",
         "declAttributes": [
           "AccessControl"
+        ],
+        "conformances": [
+          {
+            "kind": "Conformance",
+            "name": "Escapable",
+            "printedName": "Escapable",
+            "usr": "s:s9EscapableP",
+            "mangledName": "$ss9EscapableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Copyable",
+            "printedName": "Copyable",
+            "usr": "s:s8CopyableP",
+            "mangledName": "$ss8CopyableP"
+          }
         ]
       },
       {
@@ -5676,8 +6813,9 @@
             "moduleName": "MSPiOSCore",
             "declAttributes": [
               "HasInitialValue",
-              "HasStorage",
+              "Preconcurrency",
               "Custom",
+              "HasStorage",
               "ReferenceOwnership",
               "AccessControl"
             ],
@@ -5780,8 +6918,9 @@
             "moduleName": "MSPiOSCore",
             "declAttributes": [
               "HasInitialValue",
-              "HasStorage",
+              "Preconcurrency",
               "Custom",
+              "HasStorage",
               "ReferenceOwnership",
               "AccessControl"
             ],
@@ -5893,8 +7032,9 @@
             "moduleName": "MSPiOSCore",
             "declAttributes": [
               "HasInitialValue",
-              "HasStorage",
+              "Preconcurrency",
               "Custom",
+              "HasStorage",
               "AccessControl"
             ],
             "hasStorage": true,
@@ -6004,8 +7144,9 @@
             "moduleName": "MSPiOSCore",
             "declAttributes": [
               "HasInitialValue",
-              "HasStorage",
+              "Preconcurrency",
               "Custom",
+              "HasStorage",
               "AccessControl"
             ],
             "hasStorage": true,
@@ -6115,8 +7256,9 @@
             "moduleName": "MSPiOSCore",
             "declAttributes": [
               "HasInitialValue",
-              "HasStorage",
+              "Preconcurrency",
               "Custom",
+              "HasStorage",
               "AccessControl"
             ],
             "hasStorage": true,
@@ -6229,6 +7371,7 @@
             "mangledName": "$s10MSPiOSCore12NativeAdViewC06nativeD00fdE6BinderAcA0cD0C_AA0cdeG0Ctcfc",
             "moduleName": "MSPiOSCore",
             "declAttributes": [
+              "Preconcurrency",
               "Custom",
               "AccessControl"
             ],
@@ -6263,6 +7406,7 @@
             "mangledName": "$s10MSPiOSCore12NativeAdViewC06nativeD00fD9ContainerAcA0cD0C_AA09MSPNativedG0_ptcfc",
             "moduleName": "MSPiOSCore",
             "declAttributes": [
+              "Preconcurrency",
               "Custom",
               "AccessControl"
             ],
@@ -6296,6 +7440,7 @@
             "declAttributes": [
               "Dynamic",
               "ObjC",
+              "Preconcurrency",
               "Custom",
               "Override"
             ],
@@ -6307,6 +7452,7 @@
         "mangledName": "$s10MSPiOSCore12NativeAdViewC",
         "moduleName": "MSPiOSCore",
         "declAttributes": [
+          "Preconcurrency",
           "Custom",
           "AccessControl",
           "ObjC"
@@ -6319,6 +7465,20 @@
           "ObjectiveC.NSObject"
         ],
         "conformances": [
+          {
+            "kind": "Conformance",
+            "name": "Copyable",
+            "printedName": "Copyable",
+            "usr": "s:s8CopyableP",
+            "mangledName": "$ss8CopyableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Escapable",
+            "printedName": "Escapable",
+            "usr": "s:s9EscapableP",
+            "mangledName": "$ss9EscapableP"
+          },
           {
             "kind": "Conformance",
             "name": "Equatable",
@@ -7111,6 +8271,22 @@
         "isOpen": true,
         "declAttributes": [
           "AccessControl"
+        ],
+        "conformances": [
+          {
+            "kind": "Conformance",
+            "name": "Copyable",
+            "printedName": "Copyable",
+            "usr": "s:s8CopyableP",
+            "mangledName": "$ss8CopyableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Escapable",
+            "printedName": "Escapable",
+            "usr": "s:s9EscapableP",
+            "mangledName": "$ss9EscapableP"
+          }
         ]
       },
       {
@@ -7290,6 +8466,22 @@
         "sugared_genericSig": "<Self : AnyObject>",
         "declAttributes": [
           "AccessControl"
+        ],
+        "conformances": [
+          {
+            "kind": "Conformance",
+            "name": "Escapable",
+            "printedName": "Escapable",
+            "usr": "s:s9EscapableP",
+            "mangledName": "$ss9EscapableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Copyable",
+            "printedName": "Copyable",
+            "usr": "s:s8CopyableP",
+            "mangledName": "$ss8CopyableP"
+          }
         ]
       },
       {
@@ -7562,6 +8754,20 @@
         "conformances": [
           {
             "kind": "Conformance",
+            "name": "Copyable",
+            "printedName": "Copyable",
+            "usr": "s:s8CopyableP",
+            "mangledName": "$ss8CopyableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Escapable",
+            "printedName": "Escapable",
+            "usr": "s:s9EscapableP",
+            "mangledName": "$ss9EscapableP"
+          },
+          {
+            "kind": "Conformance",
             "name": "Equatable",
             "printedName": "Equatable",
             "usr": "s:SQ",
@@ -7633,6 +8839,22 @@
         "sugared_genericSig": "<Self : AnyObject>",
         "declAttributes": [
           "AccessControl"
+        ],
+        "conformances": [
+          {
+            "kind": "Conformance",
+            "name": "Escapable",
+            "printedName": "Escapable",
+            "usr": "s:s9EscapableP",
+            "mangledName": "$ss9EscapableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Copyable",
+            "printedName": "Copyable",
+            "usr": "s:s8CopyableP",
+            "mangledName": "$ss8CopyableP"
+          }
         ]
       },
       {
@@ -7816,6 +9038,22 @@
         "sugared_genericSig": "<Self : UIKit.UIView>",
         "declAttributes": [
           "AccessControl"
+        ],
+        "conformances": [
+          {
+            "kind": "Conformance",
+            "name": "Escapable",
+            "printedName": "Escapable",
+            "usr": "s:s9EscapableP",
+            "mangledName": "$ss9EscapableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Copyable",
+            "printedName": "Copyable",
+            "usr": "s:s8CopyableP",
+            "mangledName": "$ss8CopyableP"
+          }
         ]
       },
       {
@@ -7844,6 +9082,20 @@
         "conformances": [
           {
             "kind": "Conformance",
+            "name": "Escapable",
+            "printedName": "Escapable",
+            "usr": "s:s9EscapableP",
+            "mangledName": "$ss9EscapableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Copyable",
+            "printedName": "Copyable",
+            "usr": "s:s8CopyableP",
+            "mangledName": "$ss8CopyableP"
+          },
+          {
+            "kind": "Conformance",
             "name": "InitializationParameters",
             "printedName": "InitializationParameters",
             "usr": "s:10MSPiOSCore24InitializationParametersP",
@@ -7870,8 +9122,17 @@
             "children": [
               {
                 "kind": "TypeNominal",
-                "name": "WeakStorage",
-                "printedName": "(any MSPiOSCore.AdNetworkAdapter)?"
+                "name": "Optional",
+                "printedName": "(any MSPiOSCore.AdNetworkAdapter)?",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "AdNetworkAdapter",
+                    "printedName": "any MSPiOSCore.AdNetworkAdapter",
+                    "usr": "s:10MSPiOSCore16AdNetworkAdapterP"
+                  }
+                ],
+                "usr": "s:Sq"
               }
             ],
             "declKind": "Var",
@@ -7881,10 +9142,8 @@
             "declAttributes": [
               "HasInitialValue",
               "HasStorage",
-              "ReferenceOwnership",
               "AccessControl"
             ],
-            "ownership": 1,
             "hasStorage": true,
             "accessors": [
               {
@@ -8249,6 +9508,22 @@
         "declAttributes": [
           "AccessControl",
           "RawDocComment"
+        ],
+        "conformances": [
+          {
+            "kind": "Conformance",
+            "name": "Copyable",
+            "printedName": "Copyable",
+            "usr": "s:s8CopyableP",
+            "mangledName": "$ss8CopyableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Escapable",
+            "printedName": "Escapable",
+            "usr": "s:s9EscapableP",
+            "mangledName": "$ss9EscapableP"
+          }
         ]
       },
       {
@@ -8327,6 +9602,22 @@
         "moduleName": "MSPiOSCore",
         "declAttributes": [
           "AccessControl"
+        ],
+        "conformances": [
+          {
+            "kind": "Conformance",
+            "name": "Escapable",
+            "printedName": "Escapable",
+            "usr": "s:s9EscapableP",
+            "mangledName": "$ss9EscapableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Copyable",
+            "printedName": "Copyable",
+            "usr": "s:s8CopyableP",
+            "mangledName": "$ss8CopyableP"
+          }
         ]
       },
       {
@@ -8401,10 +9692,717 @@
         "conformances": [
           {
             "kind": "Conformance",
+            "name": "Escapable",
+            "printedName": "Escapable",
+            "usr": "s:s9EscapableP",
+            "mangledName": "$ss9EscapableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Copyable",
+            "printedName": "Copyable",
+            "usr": "s:s8CopyableP",
+            "mangledName": "$ss8CopyableP"
+          },
+          {
+            "kind": "Conformance",
             "name": "AdapterParameters",
             "printedName": "AdapterParameters",
             "usr": "s:10MSPiOSCore17AdapterParametersP",
             "mangledName": "$s10MSPiOSCore17AdapterParametersP"
+          }
+        ]
+      },
+      {
+        "kind": "TypeDecl",
+        "name": "InitializationParametersCustomKeys",
+        "printedName": "InitializationParametersCustomKeys",
+        "children": [
+          {
+            "kind": "Var",
+            "name": "UNITY_APP_KEY",
+            "printedName": "UNITY_APP_KEY",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "String",
+                "printedName": "Swift.String",
+                "usr": "s:SS"
+              }
+            ],
+            "declKind": "Var",
+            "usr": "s:10MSPiOSCore34InitializationParametersCustomKeysV13UNITY_APP_KEYSSvpZ",
+            "mangledName": "$s10MSPiOSCore34InitializationParametersCustomKeysV13UNITY_APP_KEYSSvpZ",
+            "moduleName": "MSPiOSCore",
+            "static": true,
+            "declAttributes": [
+              "HasInitialValue",
+              "HasStorage",
+              "AccessControl"
+            ],
+            "isLet": true,
+            "hasStorage": true,
+            "accessors": [
+              {
+                "kind": "Accessor",
+                "name": "Get",
+                "printedName": "Get()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "String",
+                    "printedName": "Swift.String",
+                    "usr": "s:SS"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:10MSPiOSCore34InitializationParametersCustomKeysV13UNITY_APP_KEYSSvgZ",
+                "mangledName": "$s10MSPiOSCore34InitializationParametersCustomKeysV13UNITY_APP_KEYSSvgZ",
+                "moduleName": "MSPiOSCore",
+                "static": true,
+                "implicit": true,
+                "accessorKind": "get"
+              }
+            ]
+          },
+          {
+            "kind": "Var",
+            "name": "INMOBI_ACCOUNT_ID",
+            "printedName": "INMOBI_ACCOUNT_ID",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "String",
+                "printedName": "Swift.String",
+                "usr": "s:SS"
+              }
+            ],
+            "declKind": "Var",
+            "usr": "s:10MSPiOSCore34InitializationParametersCustomKeysV17INMOBI_ACCOUNT_IDSSvpZ",
+            "mangledName": "$s10MSPiOSCore34InitializationParametersCustomKeysV17INMOBI_ACCOUNT_IDSSvpZ",
+            "moduleName": "MSPiOSCore",
+            "static": true,
+            "declAttributes": [
+              "HasInitialValue",
+              "HasStorage",
+              "AccessControl"
+            ],
+            "isLet": true,
+            "hasStorage": true,
+            "accessors": [
+              {
+                "kind": "Accessor",
+                "name": "Get",
+                "printedName": "Get()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "String",
+                    "printedName": "Swift.String",
+                    "usr": "s:SS"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:10MSPiOSCore34InitializationParametersCustomKeysV17INMOBI_ACCOUNT_IDSSvgZ",
+                "mangledName": "$s10MSPiOSCore34InitializationParametersCustomKeysV17INMOBI_ACCOUNT_IDSSvgZ",
+                "moduleName": "MSPiOSCore",
+                "static": true,
+                "implicit": true,
+                "accessorKind": "get"
+              }
+            ]
+          },
+          {
+            "kind": "Var",
+            "name": "MINTEGRAL_APP_ID",
+            "printedName": "MINTEGRAL_APP_ID",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "String",
+                "printedName": "Swift.String",
+                "usr": "s:SS"
+              }
+            ],
+            "declKind": "Var",
+            "usr": "s:10MSPiOSCore34InitializationParametersCustomKeysV16MINTEGRAL_APP_IDSSvpZ",
+            "mangledName": "$s10MSPiOSCore34InitializationParametersCustomKeysV16MINTEGRAL_APP_IDSSvpZ",
+            "moduleName": "MSPiOSCore",
+            "static": true,
+            "declAttributes": [
+              "HasInitialValue",
+              "HasStorage",
+              "AccessControl"
+            ],
+            "isLet": true,
+            "hasStorage": true,
+            "accessors": [
+              {
+                "kind": "Accessor",
+                "name": "Get",
+                "printedName": "Get()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "String",
+                    "printedName": "Swift.String",
+                    "usr": "s:SS"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:10MSPiOSCore34InitializationParametersCustomKeysV16MINTEGRAL_APP_IDSSvgZ",
+                "mangledName": "$s10MSPiOSCore34InitializationParametersCustomKeysV16MINTEGRAL_APP_IDSSvgZ",
+                "moduleName": "MSPiOSCore",
+                "static": true,
+                "implicit": true,
+                "accessorKind": "get"
+              }
+            ]
+          },
+          {
+            "kind": "Var",
+            "name": "MINTEGRAL_API_KEY",
+            "printedName": "MINTEGRAL_API_KEY",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "String",
+                "printedName": "Swift.String",
+                "usr": "s:SS"
+              }
+            ],
+            "declKind": "Var",
+            "usr": "s:10MSPiOSCore34InitializationParametersCustomKeysV17MINTEGRAL_API_KEYSSvpZ",
+            "mangledName": "$s10MSPiOSCore34InitializationParametersCustomKeysV17MINTEGRAL_API_KEYSSvpZ",
+            "moduleName": "MSPiOSCore",
+            "static": true,
+            "declAttributes": [
+              "HasInitialValue",
+              "HasStorage",
+              "AccessControl"
+            ],
+            "isLet": true,
+            "hasStorage": true,
+            "accessors": [
+              {
+                "kind": "Accessor",
+                "name": "Get",
+                "printedName": "Get()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "String",
+                    "printedName": "Swift.String",
+                    "usr": "s:SS"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:10MSPiOSCore34InitializationParametersCustomKeysV17MINTEGRAL_API_KEYSSvgZ",
+                "mangledName": "$s10MSPiOSCore34InitializationParametersCustomKeysV17MINTEGRAL_API_KEYSSvgZ",
+                "moduleName": "MSPiOSCore",
+                "static": true,
+                "implicit": true,
+                "accessorKind": "get"
+              }
+            ]
+          },
+          {
+            "kind": "Var",
+            "name": "PUBMATIC_PUBLISHER_ID",
+            "printedName": "PUBMATIC_PUBLISHER_ID",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "String",
+                "printedName": "Swift.String",
+                "usr": "s:SS"
+              }
+            ],
+            "declKind": "Var",
+            "usr": "s:10MSPiOSCore34InitializationParametersCustomKeysV21PUBMATIC_PUBLISHER_IDSSvpZ",
+            "mangledName": "$s10MSPiOSCore34InitializationParametersCustomKeysV21PUBMATIC_PUBLISHER_IDSSvpZ",
+            "moduleName": "MSPiOSCore",
+            "static": true,
+            "declAttributes": [
+              "HasInitialValue",
+              "HasStorage",
+              "AccessControl"
+            ],
+            "isLet": true,
+            "hasStorage": true,
+            "accessors": [
+              {
+                "kind": "Accessor",
+                "name": "Get",
+                "printedName": "Get()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "String",
+                    "printedName": "Swift.String",
+                    "usr": "s:SS"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:10MSPiOSCore34InitializationParametersCustomKeysV21PUBMATIC_PUBLISHER_IDSSvgZ",
+                "mangledName": "$s10MSPiOSCore34InitializationParametersCustomKeysV21PUBMATIC_PUBLISHER_IDSSvgZ",
+                "moduleName": "MSPiOSCore",
+                "static": true,
+                "implicit": true,
+                "accessorKind": "get"
+              }
+            ]
+          },
+          {
+            "kind": "Var",
+            "name": "PUBMATIC_PROFILE_IDS",
+            "printedName": "PUBMATIC_PROFILE_IDS",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "String",
+                "printedName": "Swift.String",
+                "usr": "s:SS"
+              }
+            ],
+            "declKind": "Var",
+            "usr": "s:10MSPiOSCore34InitializationParametersCustomKeysV20PUBMATIC_PROFILE_IDSSSvpZ",
+            "mangledName": "$s10MSPiOSCore34InitializationParametersCustomKeysV20PUBMATIC_PROFILE_IDSSSvpZ",
+            "moduleName": "MSPiOSCore",
+            "static": true,
+            "declAttributes": [
+              "HasInitialValue",
+              "HasStorage",
+              "AccessControl"
+            ],
+            "isLet": true,
+            "hasStorage": true,
+            "accessors": [
+              {
+                "kind": "Accessor",
+                "name": "Get",
+                "printedName": "Get()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "String",
+                    "printedName": "Swift.String",
+                    "usr": "s:SS"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:10MSPiOSCore34InitializationParametersCustomKeysV20PUBMATIC_PROFILE_IDSSSvgZ",
+                "mangledName": "$s10MSPiOSCore34InitializationParametersCustomKeysV20PUBMATIC_PROFILE_IDSSSvgZ",
+                "moduleName": "MSPiOSCore",
+                "static": true,
+                "implicit": true,
+                "accessorKind": "get"
+              }
+            ]
+          },
+          {
+            "kind": "Var",
+            "name": "PUBMATIC_STORE_URL",
+            "printedName": "PUBMATIC_STORE_URL",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "String",
+                "printedName": "Swift.String",
+                "usr": "s:SS"
+              }
+            ],
+            "declKind": "Var",
+            "usr": "s:10MSPiOSCore34InitializationParametersCustomKeysV18PUBMATIC_STORE_URLSSvpZ",
+            "mangledName": "$s10MSPiOSCore34InitializationParametersCustomKeysV18PUBMATIC_STORE_URLSSvpZ",
+            "moduleName": "MSPiOSCore",
+            "static": true,
+            "declAttributes": [
+              "HasInitialValue",
+              "HasStorage",
+              "AccessControl"
+            ],
+            "isLet": true,
+            "hasStorage": true,
+            "accessors": [
+              {
+                "kind": "Accessor",
+                "name": "Get",
+                "printedName": "Get()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "String",
+                    "printedName": "Swift.String",
+                    "usr": "s:SS"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:10MSPiOSCore34InitializationParametersCustomKeysV18PUBMATIC_STORE_URLSSvgZ",
+                "mangledName": "$s10MSPiOSCore34InitializationParametersCustomKeysV18PUBMATIC_STORE_URLSSvgZ",
+                "moduleName": "MSPiOSCore",
+                "static": true,
+                "implicit": true,
+                "accessorKind": "get"
+              }
+            ]
+          }
+        ],
+        "declKind": "Struct",
+        "usr": "s:10MSPiOSCore34InitializationParametersCustomKeysV",
+        "mangledName": "$s10MSPiOSCore34InitializationParametersCustomKeysV",
+        "moduleName": "MSPiOSCore",
+        "declAttributes": [
+          "AccessControl"
+        ],
+        "conformances": [
+          {
+            "kind": "Conformance",
+            "name": "Copyable",
+            "printedName": "Copyable",
+            "usr": "s:s8CopyableP",
+            "mangledName": "$ss8CopyableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Escapable",
+            "printedName": "Escapable",
+            "usr": "s:s9EscapableP",
+            "mangledName": "$ss9EscapableP"
+          }
+        ]
+      },
+      {
+        "kind": "Import",
+        "name": "Foundation",
+        "printedName": "Foundation",
+        "declKind": "Import",
+        "moduleName": "MSPiOSCore",
+        "declAttributes": [
+          "RawDocComment"
+        ]
+      },
+      {
+        "kind": "TypeDecl",
+        "name": "AuctionBid",
+        "printedName": "AuctionBid",
+        "children": [
+          {
+            "kind": "Var",
+            "name": "bidderName",
+            "printedName": "bidderName",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "String",
+                "printedName": "Swift.String",
+                "usr": "s:SS"
+              }
+            ],
+            "declKind": "Var",
+            "usr": "s:10MSPiOSCore10AuctionBidC10bidderNameSSvp",
+            "mangledName": "$s10MSPiOSCore10AuctionBidC10bidderNameSSvp",
+            "moduleName": "MSPiOSCore",
+            "declAttributes": [
+              "HasStorage",
+              "AccessControl"
+            ],
+            "hasStorage": true,
+            "accessors": [
+              {
+                "kind": "Accessor",
+                "name": "Get",
+                "printedName": "Get()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "String",
+                    "printedName": "Swift.String",
+                    "usr": "s:SS"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:10MSPiOSCore10AuctionBidC10bidderNameSSvg",
+                "mangledName": "$s10MSPiOSCore10AuctionBidC10bidderNameSSvg",
+                "moduleName": "MSPiOSCore",
+                "implicit": true,
+                "accessorKind": "get"
+              },
+              {
+                "kind": "Accessor",
+                "name": "Set",
+                "printedName": "Set()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Void",
+                    "printedName": "()"
+                  },
+                  {
+                    "kind": "TypeNominal",
+                    "name": "String",
+                    "printedName": "Swift.String",
+                    "usr": "s:SS"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:10MSPiOSCore10AuctionBidC10bidderNameSSvs",
+                "mangledName": "$s10MSPiOSCore10AuctionBidC10bidderNameSSvs",
+                "moduleName": "MSPiOSCore",
+                "implicit": true,
+                "accessorKind": "set"
+              },
+              {
+                "kind": "Accessor",
+                "name": "Modify",
+                "printedName": "Modify()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Void",
+                    "printedName": "()"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:10MSPiOSCore10AuctionBidC10bidderNameSSvM",
+                "mangledName": "$s10MSPiOSCore10AuctionBidC10bidderNameSSvM",
+                "moduleName": "MSPiOSCore",
+                "implicit": true,
+                "accessorKind": "_modify"
+              }
+            ]
+          },
+          {
+            "kind": "Var",
+            "name": "bidderPlacementId",
+            "printedName": "bidderPlacementId",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "String",
+                "printedName": "Swift.String",
+                "usr": "s:SS"
+              }
+            ],
+            "declKind": "Var",
+            "usr": "s:10MSPiOSCore10AuctionBidC17bidderPlacementIdSSvp",
+            "mangledName": "$s10MSPiOSCore10AuctionBidC17bidderPlacementIdSSvp",
+            "moduleName": "MSPiOSCore",
+            "declAttributes": [
+              "HasStorage",
+              "AccessControl"
+            ],
+            "hasStorage": true,
+            "accessors": [
+              {
+                "kind": "Accessor",
+                "name": "Get",
+                "printedName": "Get()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "String",
+                    "printedName": "Swift.String",
+                    "usr": "s:SS"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:10MSPiOSCore10AuctionBidC17bidderPlacementIdSSvg",
+                "mangledName": "$s10MSPiOSCore10AuctionBidC17bidderPlacementIdSSvg",
+                "moduleName": "MSPiOSCore",
+                "implicit": true,
+                "accessorKind": "get"
+              },
+              {
+                "kind": "Accessor",
+                "name": "Set",
+                "printedName": "Set()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Void",
+                    "printedName": "()"
+                  },
+                  {
+                    "kind": "TypeNominal",
+                    "name": "String",
+                    "printedName": "Swift.String",
+                    "usr": "s:SS"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:10MSPiOSCore10AuctionBidC17bidderPlacementIdSSvs",
+                "mangledName": "$s10MSPiOSCore10AuctionBidC17bidderPlacementIdSSvs",
+                "moduleName": "MSPiOSCore",
+                "implicit": true,
+                "accessorKind": "set"
+              },
+              {
+                "kind": "Accessor",
+                "name": "Modify",
+                "printedName": "Modify()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Void",
+                    "printedName": "()"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:10MSPiOSCore10AuctionBidC17bidderPlacementIdSSvM",
+                "mangledName": "$s10MSPiOSCore10AuctionBidC17bidderPlacementIdSSvM",
+                "moduleName": "MSPiOSCore",
+                "implicit": true,
+                "accessorKind": "_modify"
+              }
+            ]
+          },
+          {
+            "kind": "Var",
+            "name": "ecpm",
+            "printedName": "ecpm",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Double",
+                "printedName": "Swift.Double",
+                "usr": "s:Sd"
+              }
+            ],
+            "declKind": "Var",
+            "usr": "s:10MSPiOSCore10AuctionBidC4ecpmSdvp",
+            "mangledName": "$s10MSPiOSCore10AuctionBidC4ecpmSdvp",
+            "moduleName": "MSPiOSCore",
+            "declAttributes": [
+              "HasStorage",
+              "AccessControl"
+            ],
+            "hasStorage": true,
+            "accessors": [
+              {
+                "kind": "Accessor",
+                "name": "Get",
+                "printedName": "Get()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Double",
+                    "printedName": "Swift.Double",
+                    "usr": "s:Sd"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:10MSPiOSCore10AuctionBidC4ecpmSdvg",
+                "mangledName": "$s10MSPiOSCore10AuctionBidC4ecpmSdvg",
+                "moduleName": "MSPiOSCore",
+                "implicit": true,
+                "accessorKind": "get"
+              },
+              {
+                "kind": "Accessor",
+                "name": "Set",
+                "printedName": "Set()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Void",
+                    "printedName": "()"
+                  },
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Double",
+                    "printedName": "Swift.Double",
+                    "usr": "s:Sd"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:10MSPiOSCore10AuctionBidC4ecpmSdvs",
+                "mangledName": "$s10MSPiOSCore10AuctionBidC4ecpmSdvs",
+                "moduleName": "MSPiOSCore",
+                "implicit": true,
+                "accessorKind": "set"
+              },
+              {
+                "kind": "Accessor",
+                "name": "Modify",
+                "printedName": "Modify()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Void",
+                    "printedName": "()"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:10MSPiOSCore10AuctionBidC4ecpmSdvM",
+                "mangledName": "$s10MSPiOSCore10AuctionBidC4ecpmSdvM",
+                "moduleName": "MSPiOSCore",
+                "implicit": true,
+                "accessorKind": "_modify"
+              }
+            ]
+          },
+          {
+            "kind": "Constructor",
+            "name": "init",
+            "printedName": "init(bidderName:bidderPlacementId:ecpm:)",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "AuctionBid",
+                "printedName": "MSPiOSCore.AuctionBid",
+                "usr": "s:10MSPiOSCore10AuctionBidC"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "String",
+                "printedName": "Swift.String",
+                "usr": "s:SS"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "String",
+                "printedName": "Swift.String",
+                "usr": "s:SS"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "Double",
+                "printedName": "Swift.Double",
+                "usr": "s:Sd"
+              }
+            ],
+            "declKind": "Constructor",
+            "usr": "s:10MSPiOSCore10AuctionBidC10bidderName0E11PlacementId4ecpmACSS_SSSdtcfc",
+            "mangledName": "$s10MSPiOSCore10AuctionBidC10bidderName0E11PlacementId4ecpmACSS_SSSdtcfc",
+            "moduleName": "MSPiOSCore",
+            "declAttributes": [
+              "AccessControl"
+            ],
+            "init_kind": "Designated"
+          }
+        ],
+        "declKind": "Class",
+        "usr": "s:10MSPiOSCore10AuctionBidC",
+        "mangledName": "$s10MSPiOSCore10AuctionBidC",
+        "moduleName": "MSPiOSCore",
+        "declAttributes": [
+          "AccessControl"
+        ],
+        "conformances": [
+          {
+            "kind": "Conformance",
+            "name": "Copyable",
+            "printedName": "Copyable",
+            "usr": "s:s8CopyableP",
+            "mangledName": "$ss8CopyableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Escapable",
+            "printedName": "Escapable",
+            "usr": "s:s9EscapableP",
+            "mangledName": "$ss9EscapableP"
           }
         ]
       },
@@ -8423,6 +10421,43 @@
         "name": "AdNetwork",
         "printedName": "AdNetwork",
         "children": [
+          {
+            "kind": "Var",
+            "name": "unknown",
+            "printedName": "unknown",
+            "children": [
+              {
+                "kind": "TypeFunc",
+                "name": "Function",
+                "printedName": "(MSPiOSCore.AdNetwork.Type) -> MSPiOSCore.AdNetwork",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "AdNetwork",
+                    "printedName": "MSPiOSCore.AdNetwork",
+                    "usr": "s:10MSPiOSCore9AdNetworkO"
+                  },
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Metatype",
+                    "printedName": "MSPiOSCore.AdNetwork.Type",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "AdNetwork",
+                        "printedName": "MSPiOSCore.AdNetwork",
+                        "usr": "s:10MSPiOSCore9AdNetworkO"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ],
+            "declKind": "EnumElement",
+            "usr": "s:10MSPiOSCore9AdNetworkO7unknownyA2CmF",
+            "mangledName": "$s10MSPiOSCore9AdNetworkO7unknownyA2CmF",
+            "moduleName": "MSPiOSCore"
+          },
           {
             "kind": "Var",
             "name": "google",
@@ -8572,6 +10607,191 @@
             "moduleName": "MSPiOSCore"
           },
           {
+            "kind": "Var",
+            "name": "unity",
+            "printedName": "unity",
+            "children": [
+              {
+                "kind": "TypeFunc",
+                "name": "Function",
+                "printedName": "(MSPiOSCore.AdNetwork.Type) -> MSPiOSCore.AdNetwork",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "AdNetwork",
+                    "printedName": "MSPiOSCore.AdNetwork",
+                    "usr": "s:10MSPiOSCore9AdNetworkO"
+                  },
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Metatype",
+                    "printedName": "MSPiOSCore.AdNetwork.Type",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "AdNetwork",
+                        "printedName": "MSPiOSCore.AdNetwork",
+                        "usr": "s:10MSPiOSCore9AdNetworkO"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ],
+            "declKind": "EnumElement",
+            "usr": "s:10MSPiOSCore9AdNetworkO5unityyA2CmF",
+            "mangledName": "$s10MSPiOSCore9AdNetworkO5unityyA2CmF",
+            "moduleName": "MSPiOSCore"
+          },
+          {
+            "kind": "Var",
+            "name": "pubmatic",
+            "printedName": "pubmatic",
+            "children": [
+              {
+                "kind": "TypeFunc",
+                "name": "Function",
+                "printedName": "(MSPiOSCore.AdNetwork.Type) -> MSPiOSCore.AdNetwork",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "AdNetwork",
+                    "printedName": "MSPiOSCore.AdNetwork",
+                    "usr": "s:10MSPiOSCore9AdNetworkO"
+                  },
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Metatype",
+                    "printedName": "MSPiOSCore.AdNetwork.Type",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "AdNetwork",
+                        "printedName": "MSPiOSCore.AdNetwork",
+                        "usr": "s:10MSPiOSCore9AdNetworkO"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ],
+            "declKind": "EnumElement",
+            "usr": "s:10MSPiOSCore9AdNetworkO8pubmaticyA2CmF",
+            "mangledName": "$s10MSPiOSCore9AdNetworkO8pubmaticyA2CmF",
+            "moduleName": "MSPiOSCore"
+          },
+          {
+            "kind": "Var",
+            "name": "mintegral",
+            "printedName": "mintegral",
+            "children": [
+              {
+                "kind": "TypeFunc",
+                "name": "Function",
+                "printedName": "(MSPiOSCore.AdNetwork.Type) -> MSPiOSCore.AdNetwork",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "AdNetwork",
+                    "printedName": "MSPiOSCore.AdNetwork",
+                    "usr": "s:10MSPiOSCore9AdNetworkO"
+                  },
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Metatype",
+                    "printedName": "MSPiOSCore.AdNetwork.Type",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "AdNetwork",
+                        "printedName": "MSPiOSCore.AdNetwork",
+                        "usr": "s:10MSPiOSCore9AdNetworkO"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ],
+            "declKind": "EnumElement",
+            "usr": "s:10MSPiOSCore9AdNetworkO9mintegralyA2CmF",
+            "mangledName": "$s10MSPiOSCore9AdNetworkO9mintegralyA2CmF",
+            "moduleName": "MSPiOSCore"
+          },
+          {
+            "kind": "Var",
+            "name": "mobilefuse",
+            "printedName": "mobilefuse",
+            "children": [
+              {
+                "kind": "TypeFunc",
+                "name": "Function",
+                "printedName": "(MSPiOSCore.AdNetwork.Type) -> MSPiOSCore.AdNetwork",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "AdNetwork",
+                    "printedName": "MSPiOSCore.AdNetwork",
+                    "usr": "s:10MSPiOSCore9AdNetworkO"
+                  },
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Metatype",
+                    "printedName": "MSPiOSCore.AdNetwork.Type",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "AdNetwork",
+                        "printedName": "MSPiOSCore.AdNetwork",
+                        "usr": "s:10MSPiOSCore9AdNetworkO"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ],
+            "declKind": "EnumElement",
+            "usr": "s:10MSPiOSCore9AdNetworkO10mobilefuseyA2CmF",
+            "mangledName": "$s10MSPiOSCore9AdNetworkO10mobilefuseyA2CmF",
+            "moduleName": "MSPiOSCore"
+          },
+          {
+            "kind": "Var",
+            "name": "inmobi",
+            "printedName": "inmobi",
+            "children": [
+              {
+                "kind": "TypeFunc",
+                "name": "Function",
+                "printedName": "(MSPiOSCore.AdNetwork.Type) -> MSPiOSCore.AdNetwork",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "AdNetwork",
+                    "printedName": "MSPiOSCore.AdNetwork",
+                    "usr": "s:10MSPiOSCore9AdNetworkO"
+                  },
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Metatype",
+                    "printedName": "MSPiOSCore.AdNetwork.Type",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "AdNetwork",
+                        "printedName": "MSPiOSCore.AdNetwork",
+                        "usr": "s:10MSPiOSCore9AdNetworkO"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ],
+            "declKind": "EnumElement",
+            "usr": "s:10MSPiOSCore9AdNetworkO6inmobiyA2CmF",
+            "mangledName": "$s10MSPiOSCore9AdNetworkO6inmobiyA2CmF",
+            "moduleName": "MSPiOSCore"
+          },
+          {
             "kind": "Constructor",
             "name": "init",
             "printedName": "init(rawValue:)",
@@ -8655,6 +10875,20 @@
         "conformances": [
           {
             "kind": "Conformance",
+            "name": "Copyable",
+            "printedName": "Copyable",
+            "usr": "s:s8CopyableP",
+            "mangledName": "$ss8CopyableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Escapable",
+            "printedName": "Escapable",
+            "usr": "s:s9EscapableP",
+            "mangledName": "$ss9EscapableP"
+          },
+          {
+            "kind": "Conformance",
             "name": "Equatable",
             "printedName": "Equatable",
             "usr": "s:SQ",
@@ -8688,6 +10922,102 @@
             ],
             "usr": "s:SY",
             "mangledName": "$sSY"
+          }
+        ]
+      },
+      {
+        "kind": "Import",
+        "name": "Foundation",
+        "printedName": "Foundation",
+        "declKind": "Import",
+        "moduleName": "MSPiOSCore",
+        "declAttributes": [
+          "RawDocComment"
+        ]
+      },
+      {
+        "kind": "TypeDecl",
+        "name": "AuctionBidListener",
+        "printedName": "AuctionBidListener",
+        "children": [
+          {
+            "kind": "Function",
+            "name": "onSuccess",
+            "printedName": "onSuccess(bid:)",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Void",
+                "printedName": "()"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "AuctionBid",
+                "printedName": "MSPiOSCore.AuctionBid",
+                "usr": "s:10MSPiOSCore10AuctionBidC"
+              }
+            ],
+            "declKind": "Func",
+            "usr": "s:10MSPiOSCore18AuctionBidListenerP9onSuccess3bidyAA0cD0C_tF",
+            "mangledName": "$s10MSPiOSCore18AuctionBidListenerP9onSuccess3bidyAA0cD0C_tF",
+            "moduleName": "MSPiOSCore",
+            "genericSig": "<τ_0_0 where τ_0_0 : MSPiOSCore.AuctionBidListener>",
+            "sugared_genericSig": "<Self where Self : MSPiOSCore.AuctionBidListener>",
+            "protocolReq": true,
+            "reqNewWitnessTableEntry": true,
+            "funcSelfKind": "NonMutating"
+          },
+          {
+            "kind": "Function",
+            "name": "onError",
+            "printedName": "onError(error:)",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Void",
+                "printedName": "()"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "String",
+                "printedName": "Swift.String",
+                "usr": "s:SS"
+              }
+            ],
+            "declKind": "Func",
+            "usr": "s:10MSPiOSCore18AuctionBidListenerP7onError5errorySS_tF",
+            "mangledName": "$s10MSPiOSCore18AuctionBidListenerP7onError5errorySS_tF",
+            "moduleName": "MSPiOSCore",
+            "genericSig": "<τ_0_0 where τ_0_0 : MSPiOSCore.AuctionBidListener>",
+            "sugared_genericSig": "<Self where Self : MSPiOSCore.AuctionBidListener>",
+            "protocolReq": true,
+            "reqNewWitnessTableEntry": true,
+            "funcSelfKind": "NonMutating"
+          }
+        ],
+        "declKind": "Protocol",
+        "usr": "s:10MSPiOSCore18AuctionBidListenerP",
+        "mangledName": "$s10MSPiOSCore18AuctionBidListenerP",
+        "moduleName": "MSPiOSCore",
+        "genericSig": "<τ_0_0 : AnyObject>",
+        "sugared_genericSig": "<Self : AnyObject>",
+        "declAttributes": [
+          "AccessControl"
+        ],
+        "conformances": [
+          {
+            "kind": "Conformance",
+            "name": "Escapable",
+            "printedName": "Escapable",
+            "usr": "s:s9EscapableP",
+            "mangledName": "$ss9EscapableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Copyable",
+            "printedName": "Copyable",
+            "usr": "s:s8CopyableP",
+            "mangledName": "$ss8CopyableP"
           }
         ]
       },
@@ -8754,6 +11084,22 @@
         "sugared_genericSig": "<Self : AnyObject>",
         "declAttributes": [
           "AccessControl"
+        ],
+        "conformances": [
+          {
+            "kind": "Conformance",
+            "name": "Escapable",
+            "printedName": "Escapable",
+            "usr": "s:s9EscapableP",
+            "mangledName": "$ss9EscapableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Copyable",
+            "printedName": "Copyable",
+            "usr": "s:s8CopyableP",
+            "mangledName": "$ss8CopyableP"
+          }
         ]
       },
       {
@@ -8915,6 +11261,20 @@
         "conformances": [
           {
             "kind": "Conformance",
+            "name": "Copyable",
+            "printedName": "Copyable",
+            "usr": "s:s8CopyableP",
+            "mangledName": "$ss8CopyableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Escapable",
+            "printedName": "Escapable",
+            "usr": "s:s9EscapableP",
+            "mangledName": "$ss9EscapableP"
+          },
+          {
+            "kind": "Conformance",
             "name": "Equatable",
             "printedName": "Equatable",
             "usr": "s:SQ",
@@ -8926,6 +11286,595 @@
             "printedName": "Hashable",
             "usr": "s:SH",
             "mangledName": "$sSH"
+          }
+        ]
+      },
+      {
+        "kind": "Import",
+        "name": "Foundation",
+        "printedName": "Foundation",
+        "declKind": "Import",
+        "moduleName": "MSPiOSCore",
+        "declAttributes": [
+          "RawDocComment"
+        ]
+      },
+      {
+        "kind": "TypeDecl",
+        "name": "Auction",
+        "printedName": "Auction",
+        "children": [
+          {
+            "kind": "Var",
+            "name": "bidders",
+            "printedName": "bidders",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Array",
+                "printedName": "[MSPiOSCore.Bidder]",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Bidder",
+                    "printedName": "MSPiOSCore.Bidder",
+                    "usr": "c:@M@MSPiOSCore@objc(cs)Bidder"
+                  }
+                ],
+                "usr": "s:Sa"
+              }
+            ],
+            "declKind": "Var",
+            "usr": "s:10MSPiOSCore7AuctionC7biddersSayAA6BidderCGvp",
+            "mangledName": "$s10MSPiOSCore7AuctionC7biddersSayAA6BidderCGvp",
+            "moduleName": "MSPiOSCore",
+            "declAttributes": [
+              "HasStorage",
+              "AccessControl"
+            ],
+            "hasStorage": true,
+            "accessors": [
+              {
+                "kind": "Accessor",
+                "name": "Get",
+                "printedName": "Get()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Array",
+                    "printedName": "[MSPiOSCore.Bidder]",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "Bidder",
+                        "printedName": "MSPiOSCore.Bidder",
+                        "usr": "c:@M@MSPiOSCore@objc(cs)Bidder"
+                      }
+                    ],
+                    "usr": "s:Sa"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:10MSPiOSCore7AuctionC7biddersSayAA6BidderCGvg",
+                "mangledName": "$s10MSPiOSCore7AuctionC7biddersSayAA6BidderCGvg",
+                "moduleName": "MSPiOSCore",
+                "implicit": true,
+                "accessorKind": "get"
+              },
+              {
+                "kind": "Accessor",
+                "name": "Set",
+                "printedName": "Set()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Void",
+                    "printedName": "()"
+                  },
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Array",
+                    "printedName": "[MSPiOSCore.Bidder]",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "Bidder",
+                        "printedName": "MSPiOSCore.Bidder",
+                        "usr": "c:@M@MSPiOSCore@objc(cs)Bidder"
+                      }
+                    ],
+                    "usr": "s:Sa"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:10MSPiOSCore7AuctionC7biddersSayAA6BidderCGvs",
+                "mangledName": "$s10MSPiOSCore7AuctionC7biddersSayAA6BidderCGvs",
+                "moduleName": "MSPiOSCore",
+                "implicit": true,
+                "accessorKind": "set"
+              },
+              {
+                "kind": "Accessor",
+                "name": "Modify",
+                "printedName": "Modify()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Void",
+                    "printedName": "()"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:10MSPiOSCore7AuctionC7biddersSayAA6BidderCGvM",
+                "mangledName": "$s10MSPiOSCore7AuctionC7biddersSayAA6BidderCGvM",
+                "moduleName": "MSPiOSCore",
+                "implicit": true,
+                "accessorKind": "_modify"
+              }
+            ]
+          },
+          {
+            "kind": "Var",
+            "name": "adRequest",
+            "printedName": "adRequest",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Optional",
+                "printedName": "MSPiOSCore.AdRequest?",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "AdRequest",
+                    "printedName": "MSPiOSCore.AdRequest",
+                    "usr": "s:10MSPiOSCore9AdRequestC"
+                  }
+                ],
+                "usr": "s:Sq"
+              }
+            ],
+            "declKind": "Var",
+            "usr": "s:10MSPiOSCore7AuctionC9adRequestAA02AdE0CSgvp",
+            "mangledName": "$s10MSPiOSCore7AuctionC9adRequestAA02AdE0CSgvp",
+            "moduleName": "MSPiOSCore",
+            "declAttributes": [
+              "HasInitialValue",
+              "HasStorage",
+              "AccessControl"
+            ],
+            "hasStorage": true,
+            "accessors": [
+              {
+                "kind": "Accessor",
+                "name": "Get",
+                "printedName": "Get()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Optional",
+                    "printedName": "MSPiOSCore.AdRequest?",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "AdRequest",
+                        "printedName": "MSPiOSCore.AdRequest",
+                        "usr": "s:10MSPiOSCore9AdRequestC"
+                      }
+                    ],
+                    "usr": "s:Sq"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:10MSPiOSCore7AuctionC9adRequestAA02AdE0CSgvg",
+                "mangledName": "$s10MSPiOSCore7AuctionC9adRequestAA02AdE0CSgvg",
+                "moduleName": "MSPiOSCore",
+                "implicit": true,
+                "accessorKind": "get"
+              },
+              {
+                "kind": "Accessor",
+                "name": "Set",
+                "printedName": "Set()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Void",
+                    "printedName": "()"
+                  },
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Optional",
+                    "printedName": "MSPiOSCore.AdRequest?",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "AdRequest",
+                        "printedName": "MSPiOSCore.AdRequest",
+                        "usr": "s:10MSPiOSCore9AdRequestC"
+                      }
+                    ],
+                    "usr": "s:Sq"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:10MSPiOSCore7AuctionC9adRequestAA02AdE0CSgvs",
+                "mangledName": "$s10MSPiOSCore7AuctionC9adRequestAA02AdE0CSgvs",
+                "moduleName": "MSPiOSCore",
+                "implicit": true,
+                "accessorKind": "set"
+              },
+              {
+                "kind": "Accessor",
+                "name": "Modify",
+                "printedName": "Modify()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Void",
+                    "printedName": "()"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:10MSPiOSCore7AuctionC9adRequestAA02AdE0CSgvM",
+                "mangledName": "$s10MSPiOSCore7AuctionC9adRequestAA02AdE0CSgvM",
+                "moduleName": "MSPiOSCore",
+                "implicit": true,
+                "accessorKind": "_modify"
+              }
+            ]
+          },
+          {
+            "kind": "Var",
+            "name": "cacheOnly",
+            "printedName": "cacheOnly",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Bool",
+                "printedName": "Swift.Bool",
+                "usr": "s:Sb"
+              }
+            ],
+            "declKind": "Var",
+            "usr": "s:10MSPiOSCore7AuctionC9cacheOnlySbvp",
+            "mangledName": "$s10MSPiOSCore7AuctionC9cacheOnlySbvp",
+            "moduleName": "MSPiOSCore",
+            "declAttributes": [
+              "HasStorage",
+              "AccessControl"
+            ],
+            "hasStorage": true,
+            "accessors": [
+              {
+                "kind": "Accessor",
+                "name": "Get",
+                "printedName": "Get()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Bool",
+                    "printedName": "Swift.Bool",
+                    "usr": "s:Sb"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:10MSPiOSCore7AuctionC9cacheOnlySbvg",
+                "mangledName": "$s10MSPiOSCore7AuctionC9cacheOnlySbvg",
+                "moduleName": "MSPiOSCore",
+                "implicit": true,
+                "accessorKind": "get"
+              },
+              {
+                "kind": "Accessor",
+                "name": "Set",
+                "printedName": "Set()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Void",
+                    "printedName": "()"
+                  },
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Bool",
+                    "printedName": "Swift.Bool",
+                    "usr": "s:Sb"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:10MSPiOSCore7AuctionC9cacheOnlySbvs",
+                "mangledName": "$s10MSPiOSCore7AuctionC9cacheOnlySbvs",
+                "moduleName": "MSPiOSCore",
+                "implicit": true,
+                "accessorKind": "set"
+              },
+              {
+                "kind": "Accessor",
+                "name": "Modify",
+                "printedName": "Modify()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Void",
+                    "printedName": "()"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:10MSPiOSCore7AuctionC9cacheOnlySbvM",
+                "mangledName": "$s10MSPiOSCore7AuctionC9cacheOnlySbvM",
+                "moduleName": "MSPiOSCore",
+                "implicit": true,
+                "accessorKind": "_modify"
+              }
+            ]
+          },
+          {
+            "kind": "Var",
+            "name": "timeout",
+            "printedName": "timeout",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Double",
+                "printedName": "Swift.Double",
+                "usr": "s:Sd"
+              }
+            ],
+            "declKind": "Var",
+            "usr": "s:10MSPiOSCore7AuctionC7timeoutSdvp",
+            "mangledName": "$s10MSPiOSCore7AuctionC7timeoutSdvp",
+            "moduleName": "MSPiOSCore",
+            "declAttributes": [
+              "HasStorage",
+              "AccessControl"
+            ],
+            "hasStorage": true,
+            "accessors": [
+              {
+                "kind": "Accessor",
+                "name": "Get",
+                "printedName": "Get()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Double",
+                    "printedName": "Swift.Double",
+                    "usr": "s:Sd"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:10MSPiOSCore7AuctionC7timeoutSdvg",
+                "mangledName": "$s10MSPiOSCore7AuctionC7timeoutSdvg",
+                "moduleName": "MSPiOSCore",
+                "implicit": true,
+                "accessorKind": "get"
+              },
+              {
+                "kind": "Accessor",
+                "name": "Set",
+                "printedName": "Set()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Void",
+                    "printedName": "()"
+                  },
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Double",
+                    "printedName": "Swift.Double",
+                    "usr": "s:Sd"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:10MSPiOSCore7AuctionC7timeoutSdvs",
+                "mangledName": "$s10MSPiOSCore7AuctionC7timeoutSdvs",
+                "moduleName": "MSPiOSCore",
+                "implicit": true,
+                "accessorKind": "set"
+              },
+              {
+                "kind": "Accessor",
+                "name": "Modify",
+                "printedName": "Modify()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Void",
+                    "printedName": "()"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:10MSPiOSCore7AuctionC7timeoutSdvM",
+                "mangledName": "$s10MSPiOSCore7AuctionC7timeoutSdvM",
+                "moduleName": "MSPiOSCore",
+                "implicit": true,
+                "accessorKind": "_modify"
+              }
+            ]
+          },
+          {
+            "kind": "Constructor",
+            "name": "init",
+            "printedName": "init(bidders:adRequest:cacheOnly:timeout:)",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Auction",
+                "printedName": "MSPiOSCore.Auction",
+                "usr": "s:10MSPiOSCore7AuctionC"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "Array",
+                "printedName": "[MSPiOSCore.Bidder]",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Bidder",
+                    "printedName": "MSPiOSCore.Bidder",
+                    "usr": "c:@M@MSPiOSCore@objc(cs)Bidder"
+                  }
+                ],
+                "usr": "s:Sa"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "Optional",
+                "printedName": "MSPiOSCore.AdRequest?",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "AdRequest",
+                    "printedName": "MSPiOSCore.AdRequest",
+                    "usr": "s:10MSPiOSCore9AdRequestC"
+                  }
+                ],
+                "hasDefaultArg": true,
+                "usr": "s:Sq"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "Bool",
+                "printedName": "Swift.Bool",
+                "usr": "s:Sb"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "Double",
+                "printedName": "Swift.Double",
+                "usr": "s:Sd"
+              }
+            ],
+            "declKind": "Constructor",
+            "usr": "s:10MSPiOSCore7AuctionC7bidders9adRequest9cacheOnly7timeoutACSayAA6BidderCG_AA02AdF0CSgSbSdtcfc",
+            "mangledName": "$s10MSPiOSCore7AuctionC7bidders9adRequest9cacheOnly7timeoutACSayAA6BidderCG_AA02AdF0CSgSbSdtcfc",
+            "moduleName": "MSPiOSCore",
+            "declAttributes": [
+              "AccessControl"
+            ],
+            "init_kind": "Designated"
+          },
+          {
+            "kind": "Function",
+            "name": "startAuction",
+            "printedName": "startAuction(auctionListener:adListener:)",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Void",
+                "printedName": "()"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "AuctionListener",
+                "printedName": "any MSPiOSCore.AuctionListener",
+                "usr": "s:10MSPiOSCore15AuctionListenerP"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "Optional",
+                "printedName": "(any MSPiOSCore.AdListener)?",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "AdListener",
+                    "printedName": "any MSPiOSCore.AdListener",
+                    "usr": "s:10MSPiOSCore10AdListenerP"
+                  }
+                ],
+                "usr": "s:Sq"
+              }
+            ],
+            "declKind": "Func",
+            "usr": "s:10MSPiOSCore7AuctionC05startC015auctionListener02adF0yAA0cF0_p_AA02AdF0_pSgtF",
+            "mangledName": "$s10MSPiOSCore7AuctionC05startC015auctionListener02adF0yAA0cF0_p_AA02AdF0_pSgtF",
+            "moduleName": "MSPiOSCore",
+            "isOpen": true,
+            "declAttributes": [
+              "AccessControl"
+            ],
+            "funcSelfKind": "NonMutating"
+          },
+          {
+            "kind": "Function",
+            "name": "fetchBid",
+            "printedName": "fetchBid(bidder:adListener:cacheOnly:)",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Optional",
+                "printedName": "MSPiOSCore.AuctionBid?",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "AuctionBid",
+                    "printedName": "MSPiOSCore.AuctionBid",
+                    "usr": "s:10MSPiOSCore10AuctionBidC"
+                  }
+                ],
+                "usr": "s:Sq"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "Bidder",
+                "printedName": "MSPiOSCore.Bidder",
+                "usr": "c:@M@MSPiOSCore@objc(cs)Bidder"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "Optional",
+                "printedName": "(any MSPiOSCore.AdListener)?",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "AdListener",
+                    "printedName": "any MSPiOSCore.AdListener",
+                    "usr": "s:10MSPiOSCore10AdListenerP"
+                  }
+                ],
+                "usr": "s:Sq"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "Bool",
+                "printedName": "Swift.Bool",
+                "usr": "s:Sb"
+              }
+            ],
+            "declKind": "Func",
+            "usr": "s:10MSPiOSCore7AuctionC8fetchBid6bidder10adListener9cacheOnlyAA0cE0CSgAA6BidderC_AA02AdH0_pSgSbtF",
+            "mangledName": "$s10MSPiOSCore7AuctionC8fetchBid6bidder10adListener9cacheOnlyAA0cE0CSgAA6BidderC_AA02AdH0_pSgSbtF",
+            "moduleName": "MSPiOSCore",
+            "isOpen": true,
+            "declAttributes": [
+              "AccessControl"
+            ],
+            "funcSelfKind": "NonMutating"
+          }
+        ],
+        "declKind": "Class",
+        "usr": "s:10MSPiOSCore7AuctionC",
+        "mangledName": "$s10MSPiOSCore7AuctionC",
+        "moduleName": "MSPiOSCore",
+        "isOpen": true,
+        "declAttributes": [
+          "AccessControl"
+        ],
+        "conformances": [
+          {
+            "kind": "Conformance",
+            "name": "Copyable",
+            "printedName": "Copyable",
+            "usr": "s:s8CopyableP",
+            "mangledName": "$ss8CopyableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Escapable",
+            "printedName": "Escapable",
+            "usr": "s:s9EscapableP",
+            "mangledName": "$ss9EscapableP"
           }
         ]
       },
@@ -9227,6 +12176,22 @@
         "moduleName": "MSPiOSCore",
         "declAttributes": [
           "AccessControl"
+        ],
+        "conformances": [
+          {
+            "kind": "Conformance",
+            "name": "Copyable",
+            "printedName": "Copyable",
+            "usr": "s:s8CopyableP",
+            "mangledName": "$ss8CopyableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Escapable",
+            "printedName": "Escapable",
+            "usr": "s:s9EscapableP",
+            "mangledName": "$ss9EscapableP"
+          }
         ]
       },
       {
@@ -9515,58 +12480,53 @@
         "declAttributes": [
           "AccessControl"
         ],
-        "hasMissingDesignatedInitializers": true
+        "hasMissingDesignatedInitializers": true,
+        "conformances": [
+          {
+            "kind": "Conformance",
+            "name": "Copyable",
+            "printedName": "Copyable",
+            "usr": "s:s8CopyableP",
+            "mangledName": "$ss8CopyableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Escapable",
+            "printedName": "Escapable",
+            "usr": "s:s9EscapableP",
+            "mangledName": "$ss9EscapableP"
+          }
+        ]
       }
     ],
     "json_format_version": 8
   },
   "ConstValues": [
     {
-      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-core\/MSPiOSCore\/MSPiOSCore\/api\/BannerAd.swift",
-      "kind": "StringLiteral",
-      "offset": 128,
-      "length": 8,
-      "value": "\"MSPiOSCore.BannerAd\""
-    },
-    {
       "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-core\/MSPiOSCore\/MSPiOSCore\/adapter\/AdapterInitStatus.swift",
       "kind": "StringLiteral",
       "offset": 171,
       "length": 30,
       "value": "\"adapter is successfully init\""
-    },
-    {
-      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-core\/MSPiOSCore\/MSPiOSCore\/adapter\/AdapterInitStatus.swift",
-      "kind": "StringLiteral",
-      "offset": 171,
-      "length": 30,
-      "value": "\"adapter is successfully init\""
-    },
-    {
-      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-core\/MSPiOSCore\/MSPiOSCore\/api\/AdRequest.swift",
-      "kind": "BooleanLiteral",
-      "offset": 636,
-      "length": 5,
-      "value": "false"
     },
     {
       "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-core\/MSPiOSCore\/MSPiOSCore\/api\/AdRequest.swift",
       "kind": "Dictionary",
-      "offset": 670,
+      "offset": 600,
       "length": 3,
       "value": "[]"
     },
     {
       "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-core\/MSPiOSCore\/MSPiOSCore\/api\/AdRequest.swift",
       "kind": "BooleanLiteral",
-      "offset": 1263,
+      "offset": 1144,
       "length": 5,
       "value": "false"
     },
     {
       "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-core\/MSPiOSCore\/MSPiOSCore\/api\/AdRequest.swift",
       "kind": "BooleanLiteral",
-      "offset": 1301,
+      "offset": 1182,
       "length": 5,
       "value": "false"
     },
@@ -9599,74 +12559,123 @@
       "value": "\"\""
     },
     {
-      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-core\/MSPiOSCore\/MSPiOSCore\/api\/NativeAd.swift",
+      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-core\/MSPiOSCore\/MSPiOSCore\/adapter\/InitializationParameters.swift",
       "kind": "StringLiteral",
-      "offset": 114,
-      "length": 8,
-      "value": "\"MSPiOSCore.NativeAd\""
+      "offset": 360,
+      "length": 13,
+      "value": "\"unityAppKey\""
     },
     {
-      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-core\/MSPiOSCore\/MSPiOSCore\/api\/NativeAdView.swift",
+      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-core\/MSPiOSCore\/MSPiOSCore\/adapter\/InitializationParameters.swift",
       "kind": "StringLiteral",
-      "offset": 45,
+      "offset": 416,
+      "length": 17,
+      "value": "\"inmobiAccountId\""
+    },
+    {
+      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-core\/MSPiOSCore\/MSPiOSCore\/adapter\/InitializationParameters.swift",
+      "kind": "StringLiteral",
+      "offset": 475,
+      "length": 16,
+      "value": "\"mintegralAppId\""
+    },
+    {
+      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-core\/MSPiOSCore\/MSPiOSCore\/adapter\/InitializationParameters.swift",
+      "kind": "StringLiteral",
+      "offset": 534,
+      "length": 17,
+      "value": "\"mintegralApiKey\""
+    },
+    {
+      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-core\/MSPiOSCore\/MSPiOSCore\/adapter\/InitializationParameters.swift",
+      "kind": "StringLiteral",
+      "offset": 598,
+      "length": 21,
+      "value": "\"pubmaticPublisherId\""
+    },
+    {
+      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-core\/MSPiOSCore\/MSPiOSCore\/adapter\/InitializationParameters.swift",
+      "kind": "StringLiteral",
+      "offset": 665,
+      "length": 20,
+      "value": "\"pubmaticProfileIds\""
+    },
+    {
+      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-core\/MSPiOSCore\/MSPiOSCore\/adapter\/InitializationParameters.swift",
+      "kind": "StringLiteral",
+      "offset": 729,
+      "length": 18,
+      "value": "\"pubmaticStoreUrl\""
+    },
+    {
+      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-core\/MSPiOSCore\/MSPiOSCore\/adapter\/AdNetwork.swift",
+      "kind": "StringLiteral",
+      "offset": 156,
+      "length": 9,
+      "value": "\"Unknown\""
+    },
+    {
+      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-core\/MSPiOSCore\/MSPiOSCore\/adapter\/AdNetwork.swift",
+      "kind": "StringLiteral",
+      "offset": 189,
+      "length": 8,
+      "value": "\"Google\""
+    },
+    {
+      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-core\/MSPiOSCore\/MSPiOSCore\/adapter\/AdNetwork.swift",
+      "kind": "StringLiteral",
+      "offset": 218,
+      "length": 10,
+      "value": "\"Facebook\""
+    },
+    {
+      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-core\/MSPiOSCore\/MSPiOSCore\/adapter\/AdNetwork.swift",
+      "kind": "StringLiteral",
+      "offset": 247,
+      "length": 8,
+      "value": "\"Prebid\""
+    },
+    {
+      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-core\/MSPiOSCore\/MSPiOSCore\/adapter\/AdNetwork.swift",
+      "kind": "StringLiteral",
+      "offset": 272,
+      "length": 6,
+      "value": "\"Nova\""
+    },
+    {
+      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-core\/MSPiOSCore\/MSPiOSCore\/adapter\/AdNetwork.swift",
+      "kind": "StringLiteral",
+      "offset": 296,
+      "length": 7,
+      "value": "\"Unity\""
+    },
+    {
+      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-core\/MSPiOSCore\/MSPiOSCore\/adapter\/AdNetwork.swift",
+      "kind": "StringLiteral",
+      "offset": 324,
+      "length": 10,
+      "value": "\"Pubmatic\""
+    },
+    {
+      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-core\/MSPiOSCore\/MSPiOSCore\/adapter\/AdNetwork.swift",
+      "kind": "StringLiteral",
+      "offset": 356,
+      "length": 11,
+      "value": "\"Mintegral\""
+    },
+    {
+      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-core\/MSPiOSCore\/MSPiOSCore\/adapter\/AdNetwork.swift",
+      "kind": "StringLiteral",
+      "offset": 390,
       "length": 12,
-      "value": "\"MSPiOSCore.NativeAdView\""
+      "value": "\"Mobilefuse\""
     },
     {
       "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-core\/MSPiOSCore\/MSPiOSCore\/adapter\/AdNetwork.swift",
       "kind": "StringLiteral",
-      "offset": 155,
+      "offset": 421,
       "length": 8,
-      "value": "\"Google\""
-    },
-    {
-      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-core\/MSPiOSCore\/MSPiOSCore\/adapter\/AdNetwork.swift",
-      "kind": "StringLiteral",
-      "offset": 184,
-      "length": 10,
-      "value": "\"Facebook\""
-    },
-    {
-      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-core\/MSPiOSCore\/MSPiOSCore\/adapter\/AdNetwork.swift",
-      "kind": "StringLiteral",
-      "offset": 213,
-      "length": 8,
-      "value": "\"Prebid\""
-    },
-    {
-      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-core\/MSPiOSCore\/MSPiOSCore\/adapter\/AdNetwork.swift",
-      "kind": "StringLiteral",
-      "offset": 238,
-      "length": 6,
-      "value": "\"Nova\""
-    },
-    {
-      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-core\/MSPiOSCore\/MSPiOSCore\/adapter\/AdNetwork.swift",
-      "kind": "StringLiteral",
-      "offset": 155,
-      "length": 8,
-      "value": "\"Google\""
-    },
-    {
-      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-core\/MSPiOSCore\/MSPiOSCore\/adapter\/AdNetwork.swift",
-      "kind": "StringLiteral",
-      "offset": 184,
-      "length": 10,
-      "value": "\"Facebook\""
-    },
-    {
-      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-core\/MSPiOSCore\/MSPiOSCore\/adapter\/AdNetwork.swift",
-      "kind": "StringLiteral",
-      "offset": 213,
-      "length": 8,
-      "value": "\"Prebid\""
-    },
-    {
-      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-core\/MSPiOSCore\/MSPiOSCore\/adapter\/AdNetwork.swift",
-      "kind": "StringLiteral",
-      "offset": 238,
-      "length": 6,
-      "value": "\"Nova\""
+      "value": "\"Inmobi\""
     },
     {
       "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-core\/MSPiOSCore\/MSPiOSCore\/api\/Geo.swift",

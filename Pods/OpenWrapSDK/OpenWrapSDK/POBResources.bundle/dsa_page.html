@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0, viewport-fit=cover" />
+    <style>
+        body {
+            background-color: #ffffff;
+            margin: 30px;
+            padding-top: env(safe-area-inset-top);
+            padding-bottom: env(safe-area-inset-bottom);
+            padding-left: env(safe-area-inset-left);
+            padding-right: env(safe-area-inset-right);
+        }
+        p {
+            margin: 0;
+        }
+        .info-section {
+            display: flex;
+            align-items: start;
+        }
+        .content-column {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-left: 7px;
+            margin-top: -4px;
+        }
+        #advertiser_info {
+            margin-top: 20px;
+        }
+        .icon-column {
+            display: flex;
+            align-items: center;
+            width: 22px;
+            height: 22px;
+        }
+        .info-icon {
+            width: 22px;
+            height: 22px;
+            object-fit: contain;
+        }
+        .main-heading {
+            text-align: left;
+            font-size: 22px;
+            font-weight: 600;
+        }
+        .sub-heading {
+            font-weight: bold;
+            font-size: 18px;
+        }
+        .params-container {
+            display: flex;
+            gap: 20px;
+            flex-direction: column;
+        }
+        .info-value {
+            margin-top: 5px;
+            font-size: 18px;
+        }
+        .info-container {
+            margin-top: 10px;
+        }
+        .param-text {
+            font-size: 18px;
+            display: none;
+            margin-top: 10px;
+        }
+    </style>
+    <body>
+        <div class="info-section" id="advertiser_info_params">
+            <div class="icon-column">
+                <img src="dsa-icon-placeholder" alt="" class="info-icon" />
+            </div>
+            <div class="content-column">
+                <p class="main-heading">WHY YOU'RE SEEING THIS AD</p>
+                <div class="params-container">
+                    <p class="param-text" id="param-1">
+                    Advertising presented to you on this service can be
+                    based on your advertising profiles, which can reflect
+                    your activity on this service or other websites or apps
+                    (like the forms you submit, content you look at),
+                    possible interests and personal aspects.
+                    </p>
+                    <p class="param-text" id="param-2">
+                    Advertising presented to you on this service can be
+                    based on limited data, such as the website or app you
+                    are using, your non-precise location, your device type
+                    or which content you are (or have been) interacting with
+                    (for example, to limit the number of times an ad is
+                    presented to you).
+                    </p>
+                    <p class="param-text" id="param-3">
+                    With your acceptance, your precise location (within a radius of less than 500 metres)
+                    may be used in support of the purposes explained in this notice.
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div class="info-section" id="advertiser_info">
+            <div class="icon-column">
+                <img src="advertiser-icon-placeholder" alt="" class="info-icon" />
+            </div>
+            <div class="content-column">
+                <p class="main-heading">ABOUT THIS ADVERTISER</p>
+                <div id="advertiser_container" id="advertiser_container">
+                    <p class="sub-heading">Advertiser</p>
+                    <p class="info-value" id="advertiser"></p>
+                </div>
+                <div class="info-container" id="paidBy_container">
+                    <p class="sub-heading">Paid By</p>
+                    <p class="info-value" id="paidBy"></p>
+                </div>
+            </div>
+        </div>
+        <script>
+            /**
+             * MethodName: getQueryParams
+             * Description: Method to extract the query params from the url, extracts the value and returns an object
+             * Parameters: None
+             * Return: Object
+             * @returns {Object} - Object containing advertiser, paidBy and params
+             */
+            function getQueryParams() {
+                // Extract the query parameters
+                const params = new URLSearchParams(window.location.search);
+                const lowerCaseParams = {};
+                // Convert the keys to lowercase
+                params.forEach((value, key) => {
+                    lowerCaseParams[key.toLowerCase()] = value;
+                });
+                // Return the object containing advertiser, paidBy and params
+                return {
+                    advertiser: lowerCaseParams["advertiser"],
+                    paidBy: lowerCaseParams["paidby"],
+                    params:
+                    lowerCaseParams["params"] !== undefined
+                    ? lowerCaseParams["params"]?.split(",")
+                    : [],
+                };
+            }
+
+            /**
+             * MethodName: isNullOrEmpty
+             * Description: Checks if a value is null, undefined, or an empty string (after trimming)
+             * Parameters: value - The value to check
+             * Return: Boolean
+             * @param {*} value - The value to be checked
+             * @returns {boolean} - True if the value is null, undefined, or an empty string; false otherwise
+             */
+            function isNullOrEmpty(value) {
+                return value === null || value === undefined || value.trim() === "";
+            }
+
+            /**
+             * MethodName: updateContent
+             * Description: Method to update the content based on the query params. Hide the elements if the value is not present
+             * Parameters: Array
+             * Return: None
+             * @param {Array} params - Array containing advertiser, paidBy and params
+             */
+            function updateContent(params) {
+                const advertiser = params[0];
+                const paidBy = params[1];
+                const adParams = params[2];
+                // Update the advertiser and paidBy values
+                if (!isNullOrEmpty(advertiser) && !isNullOrEmpty(paidBy)) {
+                    // Show both advertiser and paidBy field when both values are available
+                    document.getElementById("advertiser").innerText = advertiser;
+                    document.getElementById("paidBy").innerText = paidBy;
+                } else if (!isNullOrEmpty(advertiser)) {
+                    document.getElementById("advertiser").innerText = advertiser;
+                    // If paidBy field is unavailable, then set it to advertiser value.
+                    document.getElementById("paidBy").innerText = advertiser;
+                } else if (!isNullOrEmpty(paidBy)) {
+                    // If advertiser field is unavailable, then set it to paidBy value.
+                    document.getElementById("advertiser").innerText = paidBy;
+                    document.getElementById("paidBy").innerText = paidBy;
+                } else {
+                    // Hide the advertiser_info div when bon paidBy and advertiser values are unavailable
+                    document.getElementById("advertiser_info").style.display = "none";
+                }
+
+                // Update the ad params based on transparency info data params passed in the query.
+                adParams.forEach((param) => {
+                    const paramElement = document.getElementById(`param-${param}`);
+                    if (paramElement && param) {
+                        paramElement.style.display = "block";
+                    }
+                });
+                const param1Visible = document.getElementById("param-1").style.display === "block";
+                const param2Visible = document.getElementById("param-2").style.display === "block";
+                const param3Visible = document.getElementById("param-3").style.display === "block";
+                if (!param1Visible && !param2Visible && !param3Visible) {
+                    document.getElementById("advertiser_info_params").style.display = "none";
+                }
+            }
+            // Get the query params
+            const queryParams = getQueryParams();
+            const params = [
+                            queryParams.advertiser,
+                            queryParams.paidBy,
+                            queryParams.params,
+                            ];
+            // Update the content based on the query params
+            updateContent(params);
+        </script>
+    </body>
+</html>

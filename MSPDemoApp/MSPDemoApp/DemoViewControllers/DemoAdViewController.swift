@@ -5,6 +5,7 @@ import MSPCore
 import MSPiOSCore
 import AppTrackingTransparency
 import PrebidMobile
+import MobilefuseAdapter
 
 public enum AdType: String {
     case prebidBanner
@@ -15,6 +16,28 @@ public enum AdType: String {
     case novaInterstitial
     case facebookNative
     case facebookInterstitial
+    
+    case unityBanner
+    case unityInterstitial
+    case unityNative
+    
+    case inmobiBanner
+    case inmobiInterstitial
+    case inmobiNative
+    
+    case mobilefuseBanner
+    case mobilefuseInterstitial
+    case mobilefuseNative
+    
+    case pubmaticBanner
+    case pubmaticInterstitial
+    case pubmaticNative
+    
+    case mintegralBanner
+    case mintegralInterstitial
+    case mintegralNative
+    
+    case clientBiddingBanner
 }
 
 class DemoAdViewController: UIViewController {
@@ -22,6 +45,8 @@ class DemoAdViewController: UIViewController {
     public var adLoader: MSPAdLoader?
     public var nativeAdView: NativeAdView?
     public var isCtaShown = false
+    
+    public var ad: MSPAd?
     
     private lazy var placementId = {
         switch adType {
@@ -41,17 +66,49 @@ class DemoAdViewController: UIViewController {
             return "demo-ios-foryou-large"
         case .facebookInterstitial:
             return "demo-ios-launch-fullscreen"
+        case .unityBanner:
+            return "demo-ios-article-top-unity"
+        case .unityInterstitial:
+            return "demo-ios-launch-fullscreen-unity"
+        case .unityNative:
+            return "demo-ios-foryou-large-unity"
+        case .clientBiddingBanner:
+            return "demo-ios-article-top-client-bidding"
+        case .inmobiBanner:
+            return "demo-ios-article-top-inmobi"
+        case .inmobiInterstitial:
+            return "demo-ios-launch-fullscreen-inmobi"
+        case .inmobiNative:
+            return "demo-ios-foryou-large-inmobi"
+        case .mobilefuseBanner:
+            return "demo-ios-article-top-mobilefuse"
+        case .mobilefuseInterstitial:
+            return "demo-ios-launch-fullscreen-mobilefuse"
+        case .mobilefuseNative:
+            return "demo-ios-foryou-large-mobilefuse"
+        case .pubmaticBanner:
+            return "demo-ios-article-top-pubmatic"
+        case .pubmaticInterstitial:
+            return "demo-ios-launch-fullscreen-pubmatic"
+        case .pubmaticNative:
+            return "demo-ios-foryou-large-pubmatic"
+        case .mintegralBanner:
+            return "demo-ios-article-top-mintegral"
+        case .mintegralInterstitial:
+            return "demo-ios-launch-fullscreen-mintegral"
+        case .mintegralNative:
+            return "demo-ios-foryou-large-mintegral"
         }
     }()
     
     private lazy var adFormat: MSPiOSCore.AdFormat = {
         switch adType {
-        case .prebidBanner, .googleBanner :
+        case .prebidBanner, .googleBanner, .unityBanner, .inmobiBanner,.pubmaticBanner,.mobilefuseBanner,.mintegralBanner,.clientBiddingBanner :
             return .banner
     
-        case .googleNative, .novaNative, .facebookNative:
+        case .googleNative, .novaNative, .facebookNative, .unityNative, .inmobiNative,.pubmaticNative,.mobilefuseNative,.mintegralNative:
             return .native
-        case .googleInterstitial, .novaInterstitial, .facebookInterstitial:
+        case .googleInterstitial, .novaInterstitial, .facebookInterstitial, .unityInterstitial, .inmobiInterstitial,.pubmaticInterstitial,.mobilefuseInterstitial,.mintegralInterstitial:
             return .interstitial
         }
     }()
@@ -81,8 +138,10 @@ class DemoAdViewController: UIViewController {
             testParams["test"] = "{\"ad_network\":\"msp_google\",\"test_ad\":true}"
         } else if adType == .facebookNative || adType == .facebookInterstitial {
             testParams["test"] = "{\"ad_network\":\"msp_fb\",\"test_ad\":true}"
+        } else if adType == .clientBiddingBanner {
+            testParams["test"] = "{\"ad_network\":\"msp_google\",\"test_ad\":true}"
         }
-         
+        testParams["mobilefuse"] = "true"
         
         let adRequest = AdRequest(customParams: customParams,
                                   geo: nil,
@@ -91,7 +150,6 @@ class DemoAdViewController: UIViewController {
                                   adSize: AdSize(width: 320, height: 50, isInlineAdaptiveBanner: false, isAnchorAdaptiveBanner: false),
                                   placementId: placementId,
                                   adFormat: adFormat,
-                                  isCacheSupported: true,
                                   testParams: testParams)
         adLoader.loadAd(placementId: placementId,
                         adListener: self,
@@ -106,24 +164,25 @@ extension DemoAdViewController: AdListener {
     }
     
     func onAdDismissed(ad: MSPiOSCore.InterstitialAd) {
-        
+        print("ad event: on ad dismissed")
     }
     
     func onAdLoaded(placementId: String) {
-        if let ad = AdCache.shared.getAd(placementId: placementId) {
+        if let ad = self.adLoader?.getAd(placementId: placementId) {
             self.onAdLoaded(ad: ad)
         }
     }
     
     func onAdClick(ad: MSPAd) {
-        
+        print("ad event: on ad click")
     }
     
     func onAdImpression(ad: MSPAd) {
-        
+        print("ad event: on ad impression")
     }
     
     func onAdLoaded(ad: MSPAd) {
+        self.ad = ad
         if let priceInDollar = ad.adInfo["price"],
            let priceInDollarValue = priceInDollar as? Double {
             print("demo price: \(priceInDollarValue)")
@@ -131,7 +190,7 @@ extension DemoAdViewController: AdListener {
         if ad is MSPiOSCore.NativeAd,
            let nativeAd = ad as? MSPiOSCore.NativeAd {
             
-            DispatchQueue.main.async{
+            DispatchQueue.main.async {
                 let nativeAdContainer = DemoNativeAdContainer(frame: CGRect(x: 0, y: 0, width: 300, height: 250))
                 let nativeAdView = NativeAdView(nativeAd: nativeAd, nativeAdContainer: nativeAdContainer)
                 self.nativeAdView = nativeAdView
@@ -147,13 +206,17 @@ extension DemoAdViewController: AdListener {
              
         } else if ad is BannerAd,
                 let bannerAd = ad as? BannerAd {
-            let adView = bannerAd.adView
-            adView.translatesAutoresizingMaskIntoConstraints = false
-            self.view.addSubview(adView)
-            NSLayoutConstraint.activate([
-                adView.centerXAnchor.constraint(equalTo: self.view.centerXAnchor),
-                adView.topAnchor.constraint(equalTo: self.view.topAnchor, constant: 200),
-            ])
+            DispatchQueue.main.async{
+                let adView = bannerAd.adView
+                adView.translatesAutoresizingMaskIntoConstraints = false
+                self.view.addSubview(adView)
+                NSLayoutConstraint.activate([
+                    adView.centerXAnchor.constraint(equalTo: self.view.centerXAnchor),
+                    adView.topAnchor.constraint(equalTo: self.view.topAnchor, constant: 200),
+                    adView.widthAnchor.constraint(equalToConstant: 320),
+                    adView.heightAnchor.constraint(equalToConstant: 50)
+                ])
+            }
         } else if ad is InterstitialAd,
                   let interstitialAd = ad as? InterstitialAd {
             DispatchQueue.main.async {

@@ -19,13 +19,13 @@
   "exclude_files": "Classes/Exclude",
   "dependencies": {
     "MSPSharedLibraries": [
-      "0.0.91"
+
     ],
     "PrebidAdapter": [
-      "0.0.92"
+
     ],
     "SwiftProtobuf": [
-      "1.21.0"
+
     ]
   },
   "static_framework": true

@@ -1,0 +1,517 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		66EBE2552D54349C00AF18FA /* MintegralAdapter.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 66EBE24A2D54349B00AF18FA /* MintegralAdapter.framework */; };
+		66EBE2682D5434A200AF18FA /* MintegralAdapter.h in Headers */ = {isa = PBXBuildFile; fileRef = 66EBE2652D5434A200AF18FA /* MintegralAdapter.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		66EBE2692D5434A200AF18FA /* MintegralAdapter.docc in Sources */ = {isa = PBXBuildFile; fileRef = 66EBE2662D5434A200AF18FA /* MintegralAdapter.docc */; };
+		66EBE26C2D5434A500AF18FA /* MintegralAdapterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66EBE26A2D5434A500AF18FA /* MintegralAdapterTests.swift */; };
+		66EBE26E2D54351300AF18FA /* MintegralAdapter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66EBE26D2D54350800AF18FA /* MintegralAdapter.swift */; };
+		66EBE2712D54354200AF18FA /* MintegralNativeAd.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66EBE2702D54353C00AF18FA /* MintegralNativeAd.swift */; };
+		66EBE2742D54356700AF18FA /* MintegralInterstitialAd.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66EBE2732D54355300AF18FA /* MintegralInterstitialAd.swift */; };
+		66EBE2782D54377A00AF18FA /* MintegralBidder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66EBE2772D54376A00AF18FA /* MintegralBidder.swift */; };
+		66EBE27A2D5437A000AF18FA /* MintegralManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66EBE2792D54379800AF18FA /* MintegralManager.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		66EBE2562D54349C00AF18FA /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 66EBE2412D54349B00AF18FA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 66EBE2492D54349B00AF18FA;
+			remoteInfo = MintegralAdapter;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		66EBE24A2D54349B00AF18FA /* MintegralAdapter.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = MintegralAdapter.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		66EBE2542D54349C00AF18FA /* MintegralAdapterTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MintegralAdapterTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		66EBE2652D5434A200AF18FA /* MintegralAdapter.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MintegralAdapter.h; sourceTree = "<group>"; };
+		66EBE2662D5434A200AF18FA /* MintegralAdapter.docc */ = {isa = PBXFileReference; lastKnownFileType = folder.documentationcatalog; path = MintegralAdapter.docc; sourceTree = "<group>"; };
+		66EBE26A2D5434A500AF18FA /* MintegralAdapterTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MintegralAdapterTests.swift; sourceTree = "<group>"; };
+		66EBE26D2D54350800AF18FA /* MintegralAdapter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MintegralAdapter.swift; sourceTree = "<group>"; };
+		66EBE2702D54353C00AF18FA /* MintegralNativeAd.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MintegralNativeAd.swift; sourceTree = "<group>"; };
+		66EBE2732D54355300AF18FA /* MintegralInterstitialAd.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MintegralInterstitialAd.swift; sourceTree = "<group>"; };
+		66EBE2772D54376A00AF18FA /* MintegralBidder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MintegralBidder.swift; sourceTree = "<group>"; };
+		66EBE2792D54379800AF18FA /* MintegralManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MintegralManager.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		66EBE2472D54349B00AF18FA /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		66EBE2512D54349C00AF18FA /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				66EBE2552D54349C00AF18FA /* MintegralAdapter.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		66EBE2402D54349B00AF18FA = {
+			isa = PBXGroup;
+			children = (
+				66EBE2672D5434A200AF18FA /* MintegralAdapter */,
+				66EBE26B2D5434A500AF18FA /* MintegralAdapterTests */,
+				66EBE24B2D54349B00AF18FA /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		66EBE24B2D54349B00AF18FA /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				66EBE24A2D54349B00AF18FA /* MintegralAdapter.framework */,
+				66EBE2542D54349C00AF18FA /* MintegralAdapterTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		66EBE2672D5434A200AF18FA /* MintegralAdapter */ = {
+			isa = PBXGroup;
+			children = (
+				66EBE2792D54379800AF18FA /* MintegralManager.swift */,
+				66EBE2772D54376A00AF18FA /* MintegralBidder.swift */,
+				66EBE2722D54354700AF18FA /* Interstitial */,
+				66EBE26F2D54352D00AF18FA /* Native */,
+				66EBE26D2D54350800AF18FA /* MintegralAdapter.swift */,
+				66EBE2652D5434A200AF18FA /* MintegralAdapter.h */,
+				66EBE2662D5434A200AF18FA /* MintegralAdapter.docc */,
+			);
+			path = MintegralAdapter;
+			sourceTree = "<group>";
+		};
+		66EBE26B2D5434A500AF18FA /* MintegralAdapterTests */ = {
+			isa = PBXGroup;
+			children = (
+				66EBE26A2D5434A500AF18FA /* MintegralAdapterTests.swift */,
+			);
+			path = MintegralAdapterTests;
+			sourceTree = "<group>";
+		};
+		66EBE26F2D54352D00AF18FA /* Native */ = {
+			isa = PBXGroup;
+			children = (
+				66EBE2702D54353C00AF18FA /* MintegralNativeAd.swift */,
+			);
+			path = Native;
+			sourceTree = "<group>";
+		};
+		66EBE2722D54354700AF18FA /* Interstitial */ = {
+			isa = PBXGroup;
+			children = (
+				66EBE2732D54355300AF18FA /* MintegralInterstitialAd.swift */,
+			);
+			path = Interstitial;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		66EBE2452D54349B00AF18FA /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				66EBE2682D5434A200AF18FA /* MintegralAdapter.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		66EBE2492D54349B00AF18FA /* MintegralAdapter */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 66EBE25D2D54349C00AF18FA /* Build configuration list for PBXNativeTarget "MintegralAdapter" */;
+			buildPhases = (
+				66EBE2452D54349B00AF18FA /* Headers */,
+				66EBE2462D54349B00AF18FA /* Sources */,
+				66EBE2472D54349B00AF18FA /* Frameworks */,
+				66EBE2482D54349B00AF18FA /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = MintegralAdapter;
+			packageProductDependencies = (
+			);
+			productName = MintegralAdapter;
+			productReference = 66EBE24A2D54349B00AF18FA /* MintegralAdapter.framework */;
+			productType = "com.apple.product-type.framework";
+		};
+		66EBE2532D54349C00AF18FA /* MintegralAdapterTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 66EBE2622D54349C00AF18FA /* Build configuration list for PBXNativeTarget "MintegralAdapterTests" */;
+			buildPhases = (
+				66EBE2502D54349C00AF18FA /* Sources */,
+				66EBE2512D54349C00AF18FA /* Frameworks */,
+				66EBE2522D54349C00AF18FA /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				66EBE2572D54349C00AF18FA /* PBXTargetDependency */,
+			);
+			name = MintegralAdapterTests;
+			packageProductDependencies = (
+			);
+			productName = MintegralAdapterTests;
+			productReference = 66EBE2542D54349C00AF18FA /* MintegralAdapterTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		66EBE2412D54349B00AF18FA /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1600;
+				LastUpgradeCheck = 1600;
+				TargetAttributes = {
+					66EBE2492D54349B00AF18FA = {
+						CreatedOnToolsVersion = 16.0;
+					};
+					66EBE2532D54349C00AF18FA = {
+						CreatedOnToolsVersion = 16.0;
+					};
+				};
+			};
+			buildConfigurationList = 66EBE2442D54349B00AF18FA /* Build configuration list for PBXProject "MintegralAdapter" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 66EBE2402D54349B00AF18FA;
+			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 77;
+			productRefGroup = 66EBE24B2D54349B00AF18FA /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				66EBE2492D54349B00AF18FA /* MintegralAdapter */,
+				66EBE2532D54349C00AF18FA /* MintegralAdapterTests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		66EBE2482D54349B00AF18FA /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		66EBE2522D54349C00AF18FA /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		66EBE2462D54349B00AF18FA /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				66EBE2742D54356700AF18FA /* MintegralInterstitialAd.swift in Sources */,
+				66EBE2692D5434A200AF18FA /* MintegralAdapter.docc in Sources */,
+				66EBE2782D54377A00AF18FA /* MintegralBidder.swift in Sources */,
+				66EBE27A2D5437A000AF18FA /* MintegralManager.swift in Sources */,
+				66EBE2712D54354200AF18FA /* MintegralNativeAd.swift in Sources */,
+				66EBE26E2D54351300AF18FA /* MintegralAdapter.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		66EBE2502D54349C00AF18FA /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				66EBE26C2D5434A500AF18FA /* MintegralAdapterTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		66EBE2572D54349C00AF18FA /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 66EBE2492D54349B00AF18FA /* MintegralAdapter */;
+			targetProxy = 66EBE2562D54349C00AF18FA /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		66EBE25E2D54349C00AF18FA /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUILD_LIBRARY_FOR_DISTRIBUTION = YES;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DEVELOPMENT_TEAM = 4PEHUZX8QH;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				ENABLE_MODULE_VERIFIER = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				MODULE_VERIFIER_SUPPORTED_LANGUAGES = "objective-c objective-c++";
+				MODULE_VERIFIER_SUPPORTED_LANGUAGE_STANDARDS = "gnu17 gnu++20";
+				PRODUCT_BUNDLE_IDENTIFIER = msp.MintegralAdapter;
+				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_INSTALL_OBJC_HEADER = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		66EBE25F2D54349C00AF18FA /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUILD_LIBRARY_FOR_DISTRIBUTION = YES;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DEVELOPMENT_TEAM = 4PEHUZX8QH;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				ENABLE_MODULE_VERIFIER = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				MODULE_VERIFIER_SUPPORTED_LANGUAGES = "objective-c objective-c++";
+				MODULE_VERIFIER_SUPPORTED_LANGUAGE_STANDARDS = "gnu17 gnu++20";
+				PRODUCT_BUNDLE_IDENTIFIER = msp.MintegralAdapter;
+				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_INSTALL_OBJC_HEADER = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		66EBE2602D54349C00AF18FA /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Debug;
+		};
+		66EBE2612D54349C00AF18FA /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				VALIDATE_PRODUCT = YES;
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Release;
+		};
+		66EBE2632D54349C00AF18FA /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 4PEHUZX8QH;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = msp.MintegralAdapterTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		66EBE2642D54349C00AF18FA /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 4PEHUZX8QH;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = msp.MintegralAdapterTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		66EBE2442D54349B00AF18FA /* Build configuration list for PBXProject "MintegralAdapter" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				66EBE2602D54349C00AF18FA /* Debug */,
+				66EBE2612D54349C00AF18FA /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		66EBE25D2D54349C00AF18FA /* Build configuration list for PBXNativeTarget "MintegralAdapter" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				66EBE25E2D54349C00AF18FA /* Debug */,
+				66EBE25F2D54349C00AF18FA /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		66EBE2622D54349C00AF18FA /* Build configuration list for PBXNativeTarget "MintegralAdapterTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				66EBE2632D54349C00AF18FA /* Debug */,
+				66EBE2642D54349C00AF18FA /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 66EBE2412D54349B00AF18FA /* Project object */;
+}
