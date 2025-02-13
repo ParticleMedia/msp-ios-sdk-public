@@ -3,10 +3,10 @@ PODS:
     - FBAudienceNetwork (= 6.15.2)
     - MSPSharedLibraries
   - FBAudienceNetwork (6.15.2)
-  - Google-Mobile-Ads-SDK (11.7.0):
+  - Google-Mobile-Ads-SDK (11.9.0):
     - GoogleUserMessagingPlatform (>= 1.1)
   - GoogleAdapter (0.0.92):
-    - Google-Mobile-Ads-SDK (= 11.7.0)
+    - Google-Mobile-Ads-SDK (= 11.9.0)
     - MSPSharedLibraries
   - GoogleUserMessagingPlatform (2.7.0)
   - InmobiAdapter (0.0.92):
@@ -114,8 +114,8 @@ EXTERNAL SOURCES:
 SPEC CHECKSUMS:
   FacebookAdapter: aaf8a65ffc225053fa60d65069215b5e434484f3
   FBAudienceNetwork: 2457a89b45e2596241fd81b0c2fd8cb6f6053869
-  Google-Mobile-Ads-SDK: 204b517c9765169144cf39763c7f5d23c57a9db0
-  GoogleAdapter: 9bfac17cca0a122e54f823743e8a8d0238f47e9f
+  Google-Mobile-Ads-SDK: 6a3cdd892fd87c8b2a388c1cc74d2b7df2570f0b
+  GoogleAdapter: bda331f36c5aee2cf3d01ebdecf2e9c330433ada
   GoogleUserMessagingPlatform: a8b56893477f67212fbc8411c139e61d463349f5
   InmobiAdapter: 10899618680d3793b6b4ebce115d47fdf65a176d
   InMobiSDK: 0cfb1a1eb5112fa0236ae1fab549e31fb96c9566
