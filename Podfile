@@ -101,16 +101,22 @@ target 'MSPDemoApp' do
   #pod 'MSPCore', '0.0.59', :modular_headers => true
   pod 'MSPCore', :path => './', :modular_headers => true
   pod 'NovaAdapter', :path => './', :modular_headers => true
-  #pod 'PrebidAdapter', :path => './', :modular_headers => true
+  pod 'PrebidAdapter', :path => './', :modular_headers => true
   pod 'GoogleAdapter', :path => './', :modular_headers => true
   pod 'FacebookAdapter', :path => './', :modular_headers => true
+  #pod 'IronSourceSDK','8.6.0.0', :modular_headers => true
+  pod 'UnityAdapter', :path => './', :modular_headers => true
+  pod 'InmobiAdapter', :path => './', :modular_headers => true
+  pod 'MobilefuseAdapter', :path => './', :modular_headers => true
+  pod 'MintegralAdapter', :path => './', :modular_headers => true
+  pod 'PubmaticAdapter', :path => './', :modular_headers => true
   #pod 'GoogleMobileAds', :modular_headers => true
   #pod 'NovaAdapter', :path => './', :modular_headers => true
   #pod 'MetaAdapter', :path => './', :modular_headers => true
   #pod 'SDWebImage', '5.18.8', :modular_headers => true
   #pod 'SDWebImageWebPCoder', '0.14.2', :modular_headers => true
   #pod 'NBDesignSystem', :git => 'https://github.com/ParticleMedia/LAFoundation', :branch => 'main', :commit => 'b94a948', :modular_headers => true
-  #pod 'MSPSharedLibraries', :path => './', :modular_headers => true
+  pod 'MSPSharedLibraries', :path => './', :modular_headers => true
  
 end
 

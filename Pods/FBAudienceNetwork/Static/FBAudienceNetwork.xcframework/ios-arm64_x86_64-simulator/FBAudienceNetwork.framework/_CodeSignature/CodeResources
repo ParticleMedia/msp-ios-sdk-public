@@ -18,7 +18,7 @@
 		</data>
 		<key>Headers/FBAdCompanionView.h</key>
 		<data>
-		nPor4UpY2+3HUmWaWaOcMYRhfJs=
+		cpyiNaY0Asj3JUgjlcUwXv84IwE=
 		</data>
 		<key>Headers/FBAdDefines.h</key>
 		<data>
@@ -26,7 +26,7 @@
 		</data>
 		<key>Headers/FBAdExperienceConfig.h</key>
 		<data>
-		IWXtxQr66bLlIaz0MZEx+GTWdmg=
+		NfEqhbv/FsZ25U+XMOKBF6ICjTg=
 		</data>
 		<key>Headers/FBAdExtraHint.h</key>
 		<data>
@@ -38,7 +38,7 @@
 		</data>
 		<key>Headers/FBAdImage.h</key>
 		<data>
-		OaVQV9ZKvcm0C1JBmeTqdWCw7mA=
+		qLDh8PDZdoJJ1t2Ghm+I+rsKruY=
 		</data>
 		<key>Headers/FBAdOptionsView.h</key>
 		<data>
@@ -54,7 +54,7 @@
 		</data>
 		<key>Headers/FBAdSettingsBridge.h</key>
 		<data>
-		otXXaNl3ivITTXmQnbVsH+2bqoU=
+		LLHLMVqTnmtt0bqlPbPmlnx7fAs=
 		</data>
 		<key>Headers/FBAdSize.h</key>
 		<data>
@@ -72,9 +72,13 @@
 		<data>
 		OodJ7CV+yZ7t4qMfaw+Kf28t8b8=
 		</data>
+		<key>Headers/FBAudienceNetwork-Swift.h</key>
+		<data>
+		Zxn8rfAlUb0S3CRXwSdjiykcIJo=
+		</data>
 		<key>Headers/FBAudienceNetwork.h</key>
 		<data>
-		Koz9Fi0nOjJ9WWjoAb1uqzgktNE=
+		MPcTmXsBN/wVLIyUKGHzZjVWq7M=
 		</data>
 		<key>Headers/FBAudienceNetworkAds.h</key>
 		<data>
@@ -86,7 +90,7 @@
 		</data>
 		<key>Headers/FBInterstitialAd.h</key>
 		<data>
-		lIlaP5u77Wek+3RM2x88LAnpVVk=
+		noBZmEVHRoBciNdEsFGiw84oR9Q=
 		</data>
 		<key>Headers/FBInterstitialAdBridge.h</key>
 		<data>
@@ -106,7 +110,7 @@
 		</data>
 		<key>Headers/FBNativeAdBase.h</key>
 		<data>
-		l+lfH5qJMxJy03BevlHJnaMbrhQ=
+		g34RE67oLf/P46zpckHxFWertnc=
 		</data>
 		<key>Headers/FBNativeAdBaseView.h</key>
 		<data>
@@ -138,7 +142,7 @@
 		</data>
 		<key>Headers/FBNativeAdViewAttributes.h</key>
 		<data>
-		+02NIOY5GtfKVtV9WR6ELAKv6gU=
+		T0HcOHtUBX2l32OqECLmEecJQfw=
 		</data>
 		<key>Headers/FBNativeAdsManager.h</key>
 		<data>
@@ -158,7 +162,7 @@
 		</data>
 		<key>Headers/FBRewardedVideoAd.h</key>
 		<data>
-		HTglpeO2IlcK2Sy2WyZsyyu/w+s=
+		GuMsRQAMePGfj8qiUqZbEIeJfq0=
 		</data>
 		<key>Headers/FBRewardedVideoAdBridge.h</key>
 		<data>
@@ -170,7 +174,31 @@
 		</data>
 		<key>Info.plist</key>
 		<data>
-		wKdTzmnW6sqCoBYsT65FPonYqWg=
+		lGAT4EjVavkoKpbf7znCJCNVlac=
+		</data>
+		<key>Modules/FBAudienceNetwork.swiftmodule/arm64-apple-ios-simulator.private.swiftinterface</key>
+		<data>
+		1Gh586ICjHNKpB6kBNMm62BYKpA=
+		</data>
+		<key>Modules/FBAudienceNetwork.swiftmodule/arm64-apple-ios-simulator.swiftdoc</key>
+		<data>
+		Kgq4MOauNReCKXKkQnwe2pX7gHM=
+		</data>
+		<key>Modules/FBAudienceNetwork.swiftmodule/arm64-apple-ios-simulator.swiftinterface</key>
+		<data>
+		1Gh586ICjHNKpB6kBNMm62BYKpA=
+		</data>
+		<key>Modules/FBAudienceNetwork.swiftmodule/x86_64-apple-ios-simulator.private.swiftinterface</key>
+		<data>
+		6mdK5mhcZ2eWwNNeydDd3t6FIi0=
+		</data>
+		<key>Modules/FBAudienceNetwork.swiftmodule/x86_64-apple-ios-simulator.swiftdoc</key>
+		<data>
+		rtb436ne1tY9Ew0OHYxquRMrWJs=
+		</data>
+		<key>Modules/FBAudienceNetwork.swiftmodule/x86_64-apple-ios-simulator.swiftinterface</key>
+		<data>
+		6mdK5mhcZ2eWwNNeydDd3t6FIi0=
 		</data>
 		<key>Modules/module.modulemap</key>
 		<data>
@@ -224,11 +252,11 @@
 		<dict>
 			<key>hash</key>
 			<data>
-			nPor4UpY2+3HUmWaWaOcMYRhfJs=
+			cpyiNaY0Asj3JUgjlcUwXv84IwE=
 			</data>
 			<key>hash2</key>
 			<data>
-			8+MrQaycGt04NRbtNxtiwHUsctGnmJA2VRB4+7LZgYQ=
+			hugsI0/mqdhQDhdb3vQ0pp7ynSjWBvCnmXvt64XbSgQ=
 			</data>
 		</dict>
 		<key>Headers/FBAdDefines.h</key>
@@ -246,11 +274,11 @@
 		<dict>
 			<key>hash</key>
 			<data>
-			IWXtxQr66bLlIaz0MZEx+GTWdmg=
+			NfEqhbv/FsZ25U+XMOKBF6ICjTg=
 			</data>
 			<key>hash2</key>
 			<data>
-			lPW2X42jJ+W9PGhaZaXOH/nyAJfv0maGZl/zrf7N5Hs=
+			kQ9JRt+Yn7a9fTtG8ni5lLld3sFMEK6gzF205EirKC0=
 			</data>
 		</dict>
 		<key>Headers/FBAdExtraHint.h</key>
@@ -279,11 +307,11 @@
 		<dict>
 			<key>hash</key>
 			<data>
-			OaVQV9ZKvcm0C1JBmeTqdWCw7mA=
+			qLDh8PDZdoJJ1t2Ghm+I+rsKruY=
 			</data>
 			<key>hash2</key>
 			<data>
-			9BvTeQ5iGpHNNil5K/TmAhTchYnsaVDRhclDTgoB7Zg=
+			EmKYSHgUOH8799guXHlnYHZxyWlTVPQr95nd1eJFIOU=
 			</data>
 		</dict>
 		<key>Headers/FBAdOptionsView.h</key>
@@ -323,11 +351,11 @@
 		<dict>
 			<key>hash</key>
 			<data>
-			otXXaNl3ivITTXmQnbVsH+2bqoU=
+			LLHLMVqTnmtt0bqlPbPmlnx7fAs=
 			</data>
 			<key>hash2</key>
 			<data>
-			UI+J0a95m7Ys7K0cPLtq7WLECIlE530mF+igVHk+JIE=
+			2lUgpHmkOM9ruNNNWjYjF7WMfyqdDU7ERsSvkAd2LlY=
 			</data>
 		</dict>
 		<key>Headers/FBAdSize.h</key>
@@ -374,15 +402,26 @@
 			6af6A0ZYL2djXooZTlBkHbvifK1+LfujFaneIDf12qM=
 			</data>
 		</dict>
+		<key>Headers/FBAudienceNetwork-Swift.h</key>
+		<dict>
+			<key>hash</key>
+			<data>
+			Zxn8rfAlUb0S3CRXwSdjiykcIJo=
+			</data>
+			<key>hash2</key>
+			<data>
+			nTEmugX15PHDAdDCDNni1aCFTzduvwSWeH7uMCdKoso=
+			</data>
+		</dict>
 		<key>Headers/FBAudienceNetwork.h</key>
 		<dict>
 			<key>hash</key>
 			<data>
-			Koz9Fi0nOjJ9WWjoAb1uqzgktNE=
+			MPcTmXsBN/wVLIyUKGHzZjVWq7M=
 			</data>
 			<key>hash2</key>
 			<data>
-			4JhdtxBNiqqFmzn8zNXa2FymFRWkfEpevEcbvzT80CQ=
+			QRpnvXGDN7TqrlRMg0Qw5/vdEZrBoUmQn4TMs0K+BUc=
 			</data>
 		</dict>
 		<key>Headers/FBAudienceNetworkAds.h</key>
@@ -411,11 +450,11 @@
 		<dict>
 			<key>hash</key>
 			<data>
-			lIlaP5u77Wek+3RM2x88LAnpVVk=
+			noBZmEVHRoBciNdEsFGiw84oR9Q=
 			</data>
 			<key>hash2</key>
 			<data>
-			c4yQYqi0krH8w3Lgio+oX5bvMdjzOhzIAv1J3CrMfDc=
+			pEGZHPdQKyruIIAJirW7aAx35Ej+99IiwnZOoT0D0v8=
 			</data>
 		</dict>
 		<key>Headers/FBInterstitialAdBridge.h</key>
@@ -466,11 +505,11 @@
 		<dict>
 			<key>hash</key>
 			<data>
-			l+lfH5qJMxJy03BevlHJnaMbrhQ=
+			g34RE67oLf/P46zpckHxFWertnc=
 			</data>
 			<key>hash2</key>
 			<data>
-			rYE2lIFgnjzYrp0OEDhWQCnPiwJkCuAOScq160xRySw=
+			vbh3TLXAvmn6PZebzV09AEnEqBDNFeRA0VE0iVmyoVU=
 			</data>
 		</dict>
 		<key>Headers/FBNativeAdBaseView.h</key>
@@ -554,11 +593,11 @@
 		<dict>
 			<key>hash</key>
 			<data>
-			+02NIOY5GtfKVtV9WR6ELAKv6gU=
+			T0HcOHtUBX2l32OqECLmEecJQfw=
 			</data>
 			<key>hash2</key>
 			<data>
-			1qAkpo1/MuwX5jD2vqzoOuNdGRVFHcnZ4OwAHq9HUPY=
+			FE0eVYYlJIMM2yus4YIuhGN5WWGbBtG3hssvjiHaCUY=
 			</data>
 		</dict>
 		<key>Headers/FBNativeAdsManager.h</key>
@@ -609,11 +648,11 @@
 		<dict>
 			<key>hash</key>
 			<data>
-			HTglpeO2IlcK2Sy2WyZsyyu/w+s=
+			GuMsRQAMePGfj8qiUqZbEIeJfq0=
 			</data>
 			<key>hash2</key>
 			<data>
-			Y2OUHTfxuwWRs9C41o0hoGV4CBfnkdprZOYY7XS/Jts=
+			97A5a5pB57vyuW76J0TJbbAGOve9XpYyaLc68T7Dg1k=
 			</data>
 		</dict>
 		<key>Headers/FBRewardedVideoAdBridge.h</key>
@@ -636,6 +675,72 @@
 			<key>hash2</key>
 			<data>
 			+MnUlXhK83jI9ajQxYZoLkV1ou3hSilb1idDllCkq6E=
+			</data>
+		</dict>
+		<key>Modules/FBAudienceNetwork.swiftmodule/arm64-apple-ios-simulator.private.swiftinterface</key>
+		<dict>
+			<key>hash</key>
+			<data>
+			1Gh586ICjHNKpB6kBNMm62BYKpA=
+			</data>
+			<key>hash2</key>
+			<data>
+			aBgF4ollw7ZtBIzJ9a4iigehk1OX5KeuFlADX6EEo84=
+			</data>
+		</dict>
+		<key>Modules/FBAudienceNetwork.swiftmodule/arm64-apple-ios-simulator.swiftdoc</key>
+		<dict>
+			<key>hash</key>
+			<data>
+			Kgq4MOauNReCKXKkQnwe2pX7gHM=
+			</data>
+			<key>hash2</key>
+			<data>
+			/JrDRAyMYANgBeMLUfQKfuliE8ZvvTWsmBWNBeDLQ+k=
+			</data>
+		</dict>
+		<key>Modules/FBAudienceNetwork.swiftmodule/arm64-apple-ios-simulator.swiftinterface</key>
+		<dict>
+			<key>hash</key>
+			<data>
+			1Gh586ICjHNKpB6kBNMm62BYKpA=
+			</data>
+			<key>hash2</key>
+			<data>
+			aBgF4ollw7ZtBIzJ9a4iigehk1OX5KeuFlADX6EEo84=
+			</data>
+		</dict>
+		<key>Modules/FBAudienceNetwork.swiftmodule/x86_64-apple-ios-simulator.private.swiftinterface</key>
+		<dict>
+			<key>hash</key>
+			<data>
+			6mdK5mhcZ2eWwNNeydDd3t6FIi0=
+			</data>
+			<key>hash2</key>
+			<data>
+			7JT9/5qCYOVeyLW18ypR0Q1Cq+FUfgmcXFWSeVkVLqk=
+			</data>
+		</dict>
+		<key>Modules/FBAudienceNetwork.swiftmodule/x86_64-apple-ios-simulator.swiftdoc</key>
+		<dict>
+			<key>hash</key>
+			<data>
+			rtb436ne1tY9Ew0OHYxquRMrWJs=
+			</data>
+			<key>hash2</key>
+			<data>
+			CaSlQdpKfhZXSF6PALNf0l8+OeknB7Veq4H0xz9StWw=
+			</data>
+		</dict>
+		<key>Modules/FBAudienceNetwork.swiftmodule/x86_64-apple-ios-simulator.swiftinterface</key>
+		<dict>
+			<key>hash</key>
+			<data>
+			6mdK5mhcZ2eWwNNeydDd3t6FIi0=
+			</data>
+			<key>hash2</key>
+			<data>
+			7JT9/5qCYOVeyLW18ypR0Q1Cq+FUfgmcXFWSeVkVLqk=
 			</data>
 		</dict>
 		<key>Modules/module.modulemap</key>

@@ -1,0 +1,6 @@
+framework module MobileFuseSDK {
+  umbrella header "MobileFuseSDK.h"
+  export *
+
+  module * { export * }
+}

@@ -103,6 +103,9 @@ import PrebidMobile
            let mBidResponse = bidResponse as? BidResponse {
             eventModel.requestContext = generateRequestContext(request: adRequest, bidResponse: mBidResponse)
             eventModel.ad = generateAdContext(ad: ad, request: adRequest, bidResponse: mBidResponse)
+        } else {
+            eventModel.requestContext = generateRequestContext(request: adRequest, params: params)
+            eventModel.ad = generateAdContext(ad: ad, request: adRequest, params: params)
         }
         
         eventModel.os = .ios
@@ -119,7 +122,6 @@ import PrebidMobile
                
             }
         } catch {
-            
         }
     }
     
@@ -181,6 +183,25 @@ import PrebidMobile
         return eventModel
     }
     
+    func generateRequestContext(request: AdRequest, params: [String : Any?]?) -> Com_Newsbreak_Monetization_Common_RequestContext {
+        var eventModel = Com_Newsbreak_Monetization_Common_RequestContext()
+        eventModel.tsMs = UInt64(Date().timeIntervalSince1970 * 1000)
+        eventModel.bidRequest = Com_Google_Openrtb_BidRequest()
+        eventModel.ext = Com_Newsbreak_Monetization_Common_RequestContextExt()
+        
+        eventModel.bidRequest.id = UUID().uuidString
+        eventModel.ext.source = request.placementId
+        if let params = params,
+           let bidderPlacementId = params["bidderPlacementId"] as? String {
+            eventModel.ext.placementID = bidderPlacementId
+        } else {
+            eventModel.ext.placementID = ""
+        }
+        eventModel.ext.userID = UserDefaults.standard.string(forKey: "msp_user_id") ?? ""
+         
+        return eventModel
+    }
+    
     func generateBidRequest(request: AdRequest, bidResponse: BidResponse) -> Com_Google_Openrtb_BidRequest {
         var eventModel = Com_Google_Openrtb_BidRequest()
         
@@ -214,6 +235,44 @@ import PrebidMobile
         }
         
         eventModel.seatBid = generateSeatBid(ad: ad, request: request, bidResponse: bidResponse)
+        
+        return eventModel
+    }
+    
+    func generateAdContext(ad: MSPAd, request: AdRequest, params: [String : Any?]?) -> Com_Newsbreak_Monetization_Common_Ad {
+        var eventModel = Com_Newsbreak_Monetization_Common_Ad()
+        eventModel.tsMs = UInt64(Date().timeIntervalSince1970 * 1000)
+        if ad is MSPiOSCore.NativeAd,
+           let nativeAd = ad as? MSPiOSCore.NativeAd {
+            eventModel.title = nativeAd.title
+            eventModel.body = nativeAd.body
+            eventModel.advertiser = nativeAd.advertiser
+            eventModel.type = .native
+        } else if ad is InterstitialAd {
+            eventModel.type = .interstitial
+        } else if ad is BannerAd {
+            eventModel.type = .display
+        }
+        
+        var seatBid = Com_Google_Openrtb_BidResponse.SeatBid()
+        if let params = params,
+           let seat = params["seat"] as? String {
+            seatBid.seat = seat
+        }
+        var bid = Com_Google_Openrtb_BidResponse.SeatBid.Bid()
+        bid.adid = ""
+        bid.adm = ""
+        bid.crid = ""
+        bid.cid = ""
+        bid.id = ""
+        bid.lurl = ""
+        bid.nurl = ""
+        bid.price = params?["price"] as? Double ?? 0
+        bid.adomain = [""]
+        bid.impid = ""
+        seatBid.bid = [bid]
+        
+        eventModel.seatBid = seatBid
         
         return eventModel
     }

@@ -99,15 +99,18 @@ import PrebidMobile
     private var adRequest: AdRequest?
     private var bidResponse: BidResponse?
     
-    private var bannerAd: BannerAd?
-    private var nativeAd: MSPiOSCore.NativeAd?
-    private var interstitialAd: MSPiOSCore.InterstitialAd?
+    public weak var auctionBidListener: AuctionBidListener?
+    public var bidderPlacementId: String?
+    
+    private weak var bannerAd: BannerAd?
+    private weak var nativeAd: MSPiOSCore.NativeAd?
+    private weak var interstitialAd: MSPiOSCore.InterstitialAd?
     
     public var nativeAdItem: GADNativeAd?
     
     private var adMetricReporter: AdMetricReporter?
     
-    public func loadAdCreative(bidResponse: Any, adListener: any AdListener, context: Any, adRequest: AdRequest) {
+    public func loadAdCreative(bidResponse: Any, auctionBidListener: AuctionBidListener, adListener: any AdListener, context: Any, adRequest: AdRequest, bidderPlacementId: String, bidderFormat: MSPiOSCore.AdFormat?, params: [String:String]?) {
         
         self.adRequest = adRequest
         
@@ -120,6 +123,8 @@ import PrebidMobile
         
         self.adListener = adListener
         self.bidResponse = mBidResponse
+        self.auctionBidListener = auctionBidListener
+        self.bidderPlacementId = bidderPlacementId
         
         guard let adString = mBidResponse.winningBid?.bid.adm,
               let rawBidDict = SafeAs(mBidResponse.winningBid?.bid.rawJsonDictionary, [String: Any].self),
@@ -164,8 +169,10 @@ import PrebidMobile
                         self.interstitialAd = googleInterstitialAd
                         googleInterstitialAd.adInfo["price"] = self.priceInDollar
                         if let adListener = self.adListener,
-                           let adRequest = self.adRequest {
-                            handleAdLoaded(ad: googleInterstitialAd, listener: adListener, adRequest: adRequest)
+                           let adRequest = self.adRequest,
+                           let auctionBidListener = self.auctionBidListener {
+                            //handleAdLoaded(ad: googleInterstitialAd, listener: adListener, adRequest: adRequest)
+                            self.handleAdLoaded(ad: googleInterstitialAd, auctionBidListener: auctionBidListener, bidderPlacementId: self.bidderPlacementId ?? adRequest.placementId)
                             self.adMetricReporter?.logAdResult(placementId: adRequest.placementId, ad: googleInterstitialAd, fill: true, isFromCache: false)
                         }
                     }
@@ -244,6 +251,10 @@ import PrebidMobile
         }
         return GADAdSizeBanner
     }
+    
+    public func getAdNetwork() -> MSPiOSCore.AdNetwork {
+        return .google
+    }
 }
 
 extension GoogleAdapter : GADBannerViewDelegate {
@@ -256,8 +267,10 @@ extension GoogleAdapter : GADBannerViewDelegate {
             }
             
             if let adListener = self.adListener,
-               let adRequest = self.adRequest {
-                handleAdLoaded(ad: bannerAd, listener: adListener, adRequest: adRequest)
+               let adRequest = self.adRequest,
+               let auctionBidListener = self.auctionBidListener {
+                //handleAdLoaded(ad: bannerAd, listener: adListener, adRequest: adRequest)
+                self.handleAdLoaded(ad: bannerAd, auctionBidListener: auctionBidListener, bidderPlacementId: self.bidderPlacementId ?? adRequest.placementId)
                 self.adMetricReporter?.logAdResult(placementId: adRequest.placementId, ad: bannerAd, fill: true, isFromCache: false)
             }
         }
@@ -282,6 +295,13 @@ extension GoogleAdapter : GADBannerViewDelegate {
                 self.adMetricReporter?.logAdImpression(ad: googleAd, adRequest: adRequest, bidResponse: bidResponse, params: nil)
             }
         }
+    }
+    
+    public func handleAdLoaded(ad: MSPAd, auctionBidListener: AuctionBidListener, bidderPlacementId: String) {
+        // to do: move this to ios core
+        AdCache.shared.saveAd(placementId: bidderPlacementId, ad: ad)
+        let auctionBid = AuctionBid(bidderName: "msp", bidderPlacementId: bidderPlacementId, ecpm: ad.adInfo["price"] as? Double ?? 0.0)
+        auctionBidListener.onSuccess(bid: auctionBid)
     }
 }
 
@@ -308,8 +328,10 @@ extension GoogleAdapter: GADNativeAdLoaderDelegate {
             self.nativeAd = googleNativeAd
             googleNativeAd.priceInDollar = self.priceInDollar
             if let adListener = self.adListener,
-               let adRequest = self.adRequest {
-                handleAdLoaded(ad: googleNativeAd, listener: adListener, adRequest: adRequest)
+               let adRequest = self.adRequest,
+               let auctionBidListener = self.auctionBidListener {
+                //handleAdLoaded(ad: googleNativeAd, listener: adListener, adRequest: adRequest)
+                self.handleAdLoaded(ad: googleNativeAd, auctionBidListener: auctionBidListener, bidderPlacementId: self.bidderPlacementId ?? adRequest.placementId)
                 self.adMetricReporter?.logAdResult(placementId: adRequest.placementId, ad: googleNativeAd, fill: true, isFromCache: false)
             }
         }
@@ -384,8 +406,10 @@ extension GoogleAdapter: GAMBannerAdLoaderDelegate {
             }
             
             if let adListener = self.adListener,
-               let adRequest = self.adRequest {
-                handleAdLoaded(ad: bannerAd, listener: adListener, adRequest: adRequest)
+               let adRequest = self.adRequest,
+               let auctionBidListener = self.auctionBidListener {
+                //handleAdLoaded(ad: bannerAd, listener: adListener, adRequest: adRequest)
+                self.handleAdLoaded(ad: bannerAd, auctionBidListener: auctionBidListener, bidderPlacementId: self.bidderPlacementId ?? adRequest.placementId)
                 self.adMetricReporter?.logAdResult(placementId: adRequest.placementId, ad: bannerAd, fill: true, isFromCache: false)
             }
         }

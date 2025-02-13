@@ -19,10 +19,10 @@
   "exclude_files": "Classes/Exclude",
   "dependencies": {
     "FBAudienceNetwork": [
-      "6.15.0"
+      "6.15.2"
     ],
     "MSPSharedLibraries": [
-      "0.0.91"
+
     ]
   },
   "pod_target_xcconfig": {
