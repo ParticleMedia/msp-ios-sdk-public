@@ -222,6 +222,12 @@ extension InmobiAdapter: IMInterstitialDelegate {
             }
         }
     }
+    
+    public func interstitial(_ interstitial: InMobiSDK.IMInterstitial, didReceiveWithMetaInfo metaInfo: InMobiSDK.IMAdMetaInfo) {
+        DispatchQueue.main.async {
+            self.price = metaInfo.getBid()
+        }
+    }
 
     public func interstitial(_ interstitial: IMInterstitial, didFailToLoadWithError error: IMRequestStatus) {
         self.auctionBidListener?.onError(error: "fail to load ad")
