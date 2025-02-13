@@ -105,6 +105,7 @@ if [[ "$CONFIGURATION" == "Debug" ]]; then
   install_resource "${PODS_CONFIGURATION_BUILD_DIR}/OpenWrapSDK/OpenWrapSDKPrivacyManifest.bundle"
   install_resource "${PODS_ROOT}/OpenWrapSDK/OpenWrapSDK/POBResources.bundle"
   install_resource "${PODS_ROOT}/OpenWrapSDK/OpenWrapSDK/POBNativeResources.bundle"
+  install_resource "${PODS_CONFIGURATION_BUILD_DIR}/SwiftProtobuf/SwiftProtobuf.bundle"
 fi
 if [[ "$CONFIGURATION" == "Release" ]]; then
   install_resource "${PODS_CONFIGURATION_BUILD_DIR}/FBAudienceNetwork/FBAudienceNetwork.bundle"
@@ -115,6 +116,7 @@ if [[ "$CONFIGURATION" == "Release" ]]; then
   install_resource "${PODS_CONFIGURATION_BUILD_DIR}/OpenWrapSDK/OpenWrapSDKPrivacyManifest.bundle"
   install_resource "${PODS_ROOT}/OpenWrapSDK/OpenWrapSDK/POBResources.bundle"
   install_resource "${PODS_ROOT}/OpenWrapSDK/OpenWrapSDK/POBNativeResources.bundle"
+  install_resource "${PODS_CONFIGURATION_BUILD_DIR}/SwiftProtobuf/SwiftProtobuf.bundle"
 fi
 
 mkdir -p "${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}"

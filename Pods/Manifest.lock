@@ -1,12 +1,12 @@
 PODS:
   - FacebookAdapter (0.0.92):
-    - FBAudienceNetwork (= 6.15.0)
+    - FBAudienceNetwork (= 6.15.2)
     - MSPSharedLibraries
-  - FBAudienceNetwork (6.15.0)
-  - Google-Mobile-Ads-SDK (11.2.0):
+  - FBAudienceNetwork (6.15.2)
+  - Google-Mobile-Ads-SDK (11.7.0):
     - GoogleUserMessagingPlatform (>= 1.1)
   - GoogleAdapter (0.0.92):
-    - Google-Mobile-Ads-SDK (= 11.2.0)
+    - Google-Mobile-Ads-SDK (= 11.7.0)
     - MSPSharedLibraries
   - GoogleUserMessagingPlatform (2.7.0)
   - InmobiAdapter (0.0.92):
@@ -19,20 +19,20 @@ PODS:
     - MintegralAdSDK/BidNativeAd
     - MintegralAdSDK/BidNewInterstitialAd
     - MSPSharedLibraries
-  - MintegralAdSDK/BannerAd (7.7.5):
+  - MintegralAdSDK/BannerAd (7.7.6):
     - MintegralAdSDK/NativeAd
-  - MintegralAdSDK/BidBannerAd (7.7.5):
+  - MintegralAdSDK/BidBannerAd (7.7.6):
     - MintegralAdSDK/BannerAd
     - MintegralAdSDK/BidNativeAd
-  - MintegralAdSDK/BidNativeAd (7.7.5):
+  - MintegralAdSDK/BidNativeAd (7.7.6):
     - MintegralAdSDK/NativeAd
-  - MintegralAdSDK/BidNewInterstitialAd (7.7.5):
+  - MintegralAdSDK/BidNewInterstitialAd (7.7.6):
     - MintegralAdSDK/BidNativeAd
     - MintegralAdSDK/NewInterstitialAd
-  - MintegralAdSDK/InterstitialVideoAd (7.7.5):
+  - MintegralAdSDK/InterstitialVideoAd (7.7.6):
     - MintegralAdSDK/NativeAd
-  - MintegralAdSDK/NativeAd (7.7.5)
-  - MintegralAdSDK/NewInterstitialAd (7.7.5):
+  - MintegralAdSDK/NativeAd (7.7.6)
+  - MintegralAdSDK/NewInterstitialAd (7.7.6):
     - MintegralAdSDK/InterstitialVideoAd
     - MintegralAdSDK/NativeAd
   - MobilefuseAdapter (0.0.92):
@@ -42,7 +42,7 @@ PODS:
   - MSPCore (0.0.93):
     - MSPSharedLibraries
     - PrebidAdapter
-    - SwiftProtobuf (= 1.21.0)
+    - SwiftProtobuf
   - MSPSharedLibraries (0.0.96)
   - NovaAdapter (0.0.95):
     - MSPSharedLibraries
@@ -55,7 +55,7 @@ PODS:
     - MSPSharedLibraries
     - OpenWrapSDK (= 4.0.0)
   - Shimmer (1.0.2)
-  - SwiftProtobuf (1.21.0)
+  - SwiftProtobuf (1.28.2)
   - UnityAdapter (0.0.92):
     - IronSourceSDK (= 8.6.0.0)
     - MSPSharedLibraries
@@ -112,26 +112,26 @@ EXTERNAL SOURCES:
     :path: "./"
 
 SPEC CHECKSUMS:
-  FacebookAdapter: 520042d7038b7e0ff6b8675e9f8357bc3fc30b94
-  FBAudienceNetwork: 80a035aa69cc3a71c99e44cb5c2874e4cef9909f
-  Google-Mobile-Ads-SDK: 5a6d005a6cb5b5e8f4c7b69ca05cdea79c181139
-  GoogleAdapter: 9c1f31f37c6bd649a88a4d6354be3159582a426e
+  FacebookAdapter: aaf8a65ffc225053fa60d65069215b5e434484f3
+  FBAudienceNetwork: 2457a89b45e2596241fd81b0c2fd8cb6f6053869
+  Google-Mobile-Ads-SDK: 204b517c9765169144cf39763c7f5d23c57a9db0
+  GoogleAdapter: 9bfac17cca0a122e54f823743e8a8d0238f47e9f
   GoogleUserMessagingPlatform: a8b56893477f67212fbc8411c139e61d463349f5
   InmobiAdapter: 10899618680d3793b6b4ebce115d47fdf65a176d
   InMobiSDK: 0cfb1a1eb5112fa0236ae1fab549e31fb96c9566
   IronSourceSDK: ae03a5aef5cc17a9868540aa409098e9614dfd48
   MintegralAdapter: 5773a19978e710d2c384317f9d939811d4661952
-  MintegralAdSDK: 88cc19314a1424a5d7f976c834030879017ed5f9
+  MintegralAdSDK: 81febc34aafe94f744f0526bfbd421eda325722e
   MobilefuseAdapter: 7ee61b673714e1cc0e4b0e37e1b1a81b4c606e83
   MobileFuseSDK: e0b927c961317444d0140322caddf5f944912e4b
-  MSPCore: 17e487644c7e847b715a2bd41eb3326b3f02a7e8
+  MSPCore: 632e258a0c1d6a06488091861ed607de86c6b23b
   MSPSharedLibraries: b94b7149e712d215a38a9eff261e012f1bde2d66
   NovaAdapter: 988ba259ef433c28ccb2ed6d337362549936802a
   OpenWrapSDK: b01d82f549472b23094dac1645a3eaa28b9830ce
   PrebidAdapter: b468910148971e7487425c82a2251c79959e3f18
   PubmaticAdapter: fcd022a8f46da2ab6f32582e39b8b61da0bdfcc6
   Shimmer: c5374be1c2b0c9e292fb05b339a513cf291cac86
-  SwiftProtobuf: afced68785854575756db965e9da52bbf3dc45e7
+  SwiftProtobuf: 4dbaffec76a39a8dc5da23b40af1a5dc01a4c02d
   UnityAdapter: 1cbd3be5c5635006db1c2b8dfcac34a7f247843e
 
 PODFILE CHECKSUM: c25e9924340db210e19cd690f591b5d1ba8114da

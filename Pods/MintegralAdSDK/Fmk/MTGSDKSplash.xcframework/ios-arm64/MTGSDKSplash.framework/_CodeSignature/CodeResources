@@ -6,7 +6,7 @@
 	<dict>
 		<key>Headers/MTGSplashAD.h</key>
 		<data>
-		qQc9G+73r+4UhrRVVISW51tHdPs=
+		2SXz55GqYdq0ENGdbyt3+DYBBb8=
 		</data>
 		<key>Info.plist</key>
 		<data>
@@ -23,11 +23,11 @@
 		<dict>
 			<key>hash</key>
 			<data>
-			qQc9G+73r+4UhrRVVISW51tHdPs=
+			2SXz55GqYdq0ENGdbyt3+DYBBb8=
 			</data>
 			<key>hash2</key>
 			<data>
-			rAb0JzLAbgev25lG/oPLYK6tnuB2evddAe45I/awo6o=
+			uZSXXG0/gsN1p6xlhvPmifQUK1tzjSZc8XzfpcSFzKE=
 			</data>
 		</dict>
 		<key>Modules/module.modulemap</key>

@@ -10,7 +10,7 @@
 		</data>
 		<key>ios-arm64/MTGSDKReward.framework/Headers/MTGRewardAd.h</key>
 		<data>
-		eG5lN26hfK+WLboPIGU608IJVII=
+		tfjlIu6VbziMK2fW7b4DQ836nVY=
 		</data>
 		<key>ios-arm64/MTGSDKReward.framework/Headers/MTGRewardAdManager.h</key>
 		<data>
@@ -22,7 +22,7 @@
 		</data>
 		<key>ios-arm64/MTGSDKReward.framework/MTGSDKReward</key>
 		<data>
-		RjEep5jqo6wakArdN5u0CxGdGh0=
+		5Ew8Dtyhs4Dkr0Nfg2dDrBplkwo=
 		</data>
 		<key>ios-arm64/MTGSDKReward.framework/Modules/module.modulemap</key>
 		<data>
@@ -30,7 +30,7 @@
 		</data>
 		<key>ios-arm64/MTGSDKReward.framework/_CodeSignature/CodeDirectory</key>
 		<data>
-		od1YnhFgFbId9feVJxMr+QDOpkM=
+		D+bMqmGm78X1p/qcuAV/IQ8wag8=
 		</data>
 		<key>ios-arm64/MTGSDKReward.framework/_CodeSignature/CodeRequirements</key>
 		<data>
@@ -38,15 +38,15 @@
 		</data>
 		<key>ios-arm64/MTGSDKReward.framework/_CodeSignature/CodeRequirements-1</key>
 		<data>
-		mQcNSjkSFx/21b4IE2rMSRNQ+bI=
+		3P0BBgCarqUHtq0fIAg6t+ruUgA=
 		</data>
 		<key>ios-arm64/MTGSDKReward.framework/_CodeSignature/CodeResources</key>
 		<data>
-		9nwwvLEgSzGyp0LMWgWiIBvJ4d0=
+		/LDRhGrFcdaXYnt4xDiEEgy2Sp0=
 		</data>
 		<key>ios-arm64/MTGSDKReward.framework/_CodeSignature/CodeSignature</key>
 		<data>
-		wPAZj14zlqw57VdCY6iQ4TRUbdQ=
+		U0OLN/k7ftOFsSHNG2G2wuI0rgs=
 		</data>
 		<key>ios-arm64_x86_64-simulator/MTGSDKReward.framework/Headers/MTGBidRewardAdManager.h</key>
 		<data>
@@ -54,7 +54,7 @@
 		</data>
 		<key>ios-arm64_x86_64-simulator/MTGSDKReward.framework/Headers/MTGRewardAd.h</key>
 		<data>
-		eG5lN26hfK+WLboPIGU608IJVII=
+		tfjlIu6VbziMK2fW7b4DQ836nVY=
 		</data>
 		<key>ios-arm64_x86_64-simulator/MTGSDKReward.framework/Headers/MTGRewardAdManager.h</key>
 		<data>
@@ -66,7 +66,7 @@
 		</data>
 		<key>ios-arm64_x86_64-simulator/MTGSDKReward.framework/MTGSDKReward</key>
 		<data>
-		YWnCnO583ht4n8BQEMq0xkw1vzU=
+		YN8i6barpCVdXk0oEj3Na/yT8t8=
 		</data>
 		<key>ios-arm64_x86_64-simulator/MTGSDKReward.framework/Modules/module.modulemap</key>
 		<data>
@@ -74,7 +74,7 @@
 		</data>
 		<key>ios-arm64_x86_64-simulator/MTGSDKReward.framework/_CodeSignature/CodeDirectory</key>
 		<data>
-		Y5Sla+2mSMouSaLae7jPo6hhLEw=
+		Gvyevr1Qj3ZNOosg4qsI2ovr9n4=
 		</data>
 		<key>ios-arm64_x86_64-simulator/MTGSDKReward.framework/_CodeSignature/CodeRequirements</key>
 		<data>
@@ -82,11 +82,11 @@
 		</data>
 		<key>ios-arm64_x86_64-simulator/MTGSDKReward.framework/_CodeSignature/CodeRequirements-1</key>
 		<data>
-		fg/8spROm2UbC6kf+PUCVAl4zJA=
+		z4qN927JAj4YDHSlCrrNYSirYTU=
 		</data>
 		<key>ios-arm64_x86_64-simulator/MTGSDKReward.framework/_CodeSignature/CodeResources</key>
 		<data>
-		xj+BcI6I2Z5Vf/BL30N+oEptlHo=
+		Zl7n/cPJROeNrVk5LDItb5jKdds=
 		</data>
 		<key>ios-arm64_x86_64-simulator/MTGSDKReward.framework/_CodeSignature/CodeSignature</key>
 		<data>
@@ -110,11 +110,11 @@
 		<dict>
 			<key>hash</key>
 			<data>
-			eG5lN26hfK+WLboPIGU608IJVII=
+			tfjlIu6VbziMK2fW7b4DQ836nVY=
 			</data>
 			<key>hash2</key>
 			<data>
-			+zspejEpTNlNBzbVcU3Vh9woPSWFURW17i9UdHbOXhY=
+			1UkmUhnixRcn+UQ734AbWs4zjoQhhfpDIWDssaWDno0=
 			</data>
 		</dict>
 		<key>ios-arm64/MTGSDKReward.framework/Headers/MTGRewardAdManager.h</key>
@@ -143,11 +143,11 @@
 		<dict>
 			<key>hash</key>
 			<data>
-			RjEep5jqo6wakArdN5u0CxGdGh0=
+			5Ew8Dtyhs4Dkr0Nfg2dDrBplkwo=
 			</data>
 			<key>hash2</key>
 			<data>
-			ymdjPyLRvBVVb3R9/73J5aMNx1PcTxp7pst6VBSIR8Q=
+			8WQlalfDz5QYp9IjU+9GQYFd82MfOZNhdIGN2thPwt8=
 			</data>
 		</dict>
 		<key>ios-arm64/MTGSDKReward.framework/Modules/module.modulemap</key>
@@ -165,11 +165,11 @@
 		<dict>
 			<key>hash</key>
 			<data>
-			od1YnhFgFbId9feVJxMr+QDOpkM=
+			D+bMqmGm78X1p/qcuAV/IQ8wag8=
 			</data>
 			<key>hash2</key>
 			<data>
-			NCsniwdwRJPhPdPsOXCu8TcqzV4EOufPJo8nUXXzCVE=
+			U/WzjyR4a9GClJwoJuc+XbRKLKaIdkGe5hc8dQfvPn8=
 			</data>
 		</dict>
 		<key>ios-arm64/MTGSDKReward.framework/_CodeSignature/CodeRequirements</key>
@@ -187,33 +187,33 @@
 		<dict>
 			<key>hash</key>
 			<data>
-			mQcNSjkSFx/21b4IE2rMSRNQ+bI=
+			3P0BBgCarqUHtq0fIAg6t+ruUgA=
 			</data>
 			<key>hash2</key>
 			<data>
-			yXmKoEAI5mrHnoMfow+U81YSHl1jtMdodj+IVtE0yxM=
+			cTelAKnfZI3+Qzw2QjmcKTpEgU/h2cliaszL9Ado+8E=
 			</data>
 		</dict>
 		<key>ios-arm64/MTGSDKReward.framework/_CodeSignature/CodeResources</key>
 		<dict>
 			<key>hash</key>
 			<data>
-			9nwwvLEgSzGyp0LMWgWiIBvJ4d0=
+			/LDRhGrFcdaXYnt4xDiEEgy2Sp0=
 			</data>
 			<key>hash2</key>
 			<data>
-			fI1BCP/xcjdeM1byEjY+mllj0CDSKWzbiRR6mr6j54E=
+			w1DV1+8FvnmaaYf0hHnOccXdW/IrPK5I+ZWu49B9GKs=
 			</data>
 		</dict>
 		<key>ios-arm64/MTGSDKReward.framework/_CodeSignature/CodeSignature</key>
 		<dict>
 			<key>hash</key>
 			<data>
-			wPAZj14zlqw57VdCY6iQ4TRUbdQ=
+			U0OLN/k7ftOFsSHNG2G2wuI0rgs=
 			</data>
 			<key>hash2</key>
 			<data>
-			XJcD8eYi2jm+2qa0WRmMma+9AB+yk3w8dc94tdLR8n8=
+			ZwjKiAAZWWX5XwUiSl0Ixp+M82tRhsbcsHXnNXssMeA=
 			</data>
 		</dict>
 		<key>ios-arm64_x86_64-simulator/MTGSDKReward.framework/Headers/MTGBidRewardAdManager.h</key>
@@ -231,11 +231,11 @@
 		<dict>
 			<key>hash</key>
 			<data>
-			eG5lN26hfK+WLboPIGU608IJVII=
+			tfjlIu6VbziMK2fW7b4DQ836nVY=
 			</data>
 			<key>hash2</key>
 			<data>
-			+zspejEpTNlNBzbVcU3Vh9woPSWFURW17i9UdHbOXhY=
+			1UkmUhnixRcn+UQ734AbWs4zjoQhhfpDIWDssaWDno0=
 			</data>
 		</dict>
 		<key>ios-arm64_x86_64-simulator/MTGSDKReward.framework/Headers/MTGRewardAdManager.h</key>
@@ -264,11 +264,11 @@
 		<dict>
 			<key>hash</key>
 			<data>
-			YWnCnO583ht4n8BQEMq0xkw1vzU=
+			YN8i6barpCVdXk0oEj3Na/yT8t8=
 			</data>
 			<key>hash2</key>
 			<data>
-			554tl79vLclr4ar2ysjPiuoM+34cuB7FPWszLXl+Vic=
+			2hUCbA5G+laQx5aWRDQo6xr1iT2abzBrQxw32oXL6Ns=
 			</data>
 		</dict>
 		<key>ios-arm64_x86_64-simulator/MTGSDKReward.framework/Modules/module.modulemap</key>
@@ -286,11 +286,11 @@
 		<dict>
 			<key>hash</key>
 			<data>
-			Y5Sla+2mSMouSaLae7jPo6hhLEw=
+			Gvyevr1Qj3ZNOosg4qsI2ovr9n4=
 			</data>
 			<key>hash2</key>
 			<data>
-			3g5Jp9OZCIJan4YSpS3VT0MEx2Fjsmbb4oPeF409zEM=
+			wmyP5RzfV1ho0rDqs8RO4LxCQ+RuS6EC9kP40d1dyQo=
 			</data>
 		</dict>
 		<key>ios-arm64_x86_64-simulator/MTGSDKReward.framework/_CodeSignature/CodeRequirements</key>
@@ -308,22 +308,22 @@
 		<dict>
 			<key>hash</key>
 			<data>
-			fg/8spROm2UbC6kf+PUCVAl4zJA=
+			z4qN927JAj4YDHSlCrrNYSirYTU=
 			</data>
 			<key>hash2</key>
 			<data>
-			6j05+dJP6/2NIsJeNi5M0n7KqA+Ri2MSgeTThajGuNQ=
+			uXa2sJKImYc4h4qhoOWv3ylN1hwSJEGDvu8AgrOReM8=
 			</data>
 		</dict>
 		<key>ios-arm64_x86_64-simulator/MTGSDKReward.framework/_CodeSignature/CodeResources</key>
 		<dict>
 			<key>hash</key>
 			<data>
-			xj+BcI6I2Z5Vf/BL30N+oEptlHo=
+			Zl7n/cPJROeNrVk5LDItb5jKdds=
 			</data>
 			<key>hash2</key>
 			<data>
-			nXaKY4lCZUA2VelEgn86qO5GNUuc6MEu9MY0E7rlqqQ=
+			t+pSvU62v9I5GX0SzbDJmVnJPiRgH5uWm5YHl4WPka0=
 			</data>
 		</dict>
 		<key>ios-arm64_x86_64-simulator/MTGSDKReward.framework/_CodeSignature/CodeSignature</key>

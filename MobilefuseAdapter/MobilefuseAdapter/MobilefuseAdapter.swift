@@ -209,6 +209,8 @@ extension MobilefuseAdapter: IMFAdCallbackReceiver {
                         
                     }
                 }
+            } else {
+                self.auctionBidListener?.onError(error: "fail to load ad")
             }
         }
 

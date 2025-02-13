@@ -7,3 +7,4 @@ ${PODS_CONFIGURATION_BUILD_DIR}/MintegralAdSDK/MTGSDK.bundle
 ${PODS_CONFIGURATION_BUILD_DIR}/OpenWrapSDK/OpenWrapSDKPrivacyManifest.bundle
 ${PODS_ROOT}/OpenWrapSDK/OpenWrapSDK/POBResources.bundle
 ${PODS_ROOT}/OpenWrapSDK/OpenWrapSDK/POBNativeResources.bundle
+${PODS_CONFIGURATION_BUILD_DIR}/SwiftProtobuf/SwiftProtobuf.bundle
