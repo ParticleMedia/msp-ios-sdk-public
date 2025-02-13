@@ -5,8 +5,3 @@ framework module NovaCore {
     
     
 }
-
-module NovaCore.Swift {
-  header "NovaCore-Swift.h"
-  requires objc
-}

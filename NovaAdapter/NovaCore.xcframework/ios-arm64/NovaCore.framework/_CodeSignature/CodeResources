@@ -8,10 +8,6 @@
 		<data>
 		0JrW6Vra6pNRY6hMzdBurOapgk4=
 		</data>
-		<key>Headers/NovaCore-Swift.h</key>
-		<data>
-		KnNsBKYKCmLu9iOgcRXaGvr8PRo=
-		</data>
 		<key>Headers/NovaCore.h</key>
 		<data>
 		+s07ZhRZYN1RHaDKgTTbp50TNZw=
@@ -42,7 +38,7 @@
 		</data>
 		<key>Modules/NovaCore.swiftmodule/arm64-apple-ios.private.swiftinterface</key>
 		<data>
-		J50d7iDoLEy1hGCzTTj0I4xsetw=
+		q7bRyi9d2/lzWJ7VIHKA0hFMnkc=
 		</data>
 		<key>Modules/NovaCore.swiftmodule/arm64-apple-ios.swiftdoc</key>
 		<data>
@@ -50,15 +46,15 @@
 		</data>
 		<key>Modules/NovaCore.swiftmodule/arm64-apple-ios.swiftinterface</key>
 		<data>
-		J50d7iDoLEy1hGCzTTj0I4xsetw=
+		q7bRyi9d2/lzWJ7VIHKA0hFMnkc=
 		</data>
 		<key>Modules/NovaCore.swiftmodule/arm64-apple-ios.swiftmodule</key>
 		<data>
-		kVq9U9jhuNE0+jQCchRHzAl6qOE=
+		5CX8UB64OF4q/ylDfF6qdHhkevA=
 		</data>
 		<key>Modules/module.modulemap</key>
 		<data>
-		ISuw/KxZQCtSGzA71N1DgaktPFM=
+		p1gReCozyZ/Sw7kjIAR45sJxN3Q=
 		</data>
 		<key>NBResourceBundle.bundle/Assets.car</key>
 		<data>
@@ -76,13 +72,6 @@
 			<key>hash2</key>
 			<data>
 			j5BVS6Dr2ZkwnCHMPC89d4Isak7cjtWmV0ojhoQa5vY=
-			</data>
-		</dict>
-		<key>Headers/NovaCore-Swift.h</key>
-		<dict>
-			<key>hash2</key>
-			<data>
-			kBZDjBJK8yYa54c9/oCS4NRJHN6wY4RyDeMK/IKw9aU=
 			</data>
 		</dict>
 		<key>Headers/NovaCore.h</key>
@@ -131,7 +120,7 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			gs/p1cqstwWf0qVqmj41lymIDUz6uG8TSzooTcshpWs=
+			TPFrTgk4tPdARUyPCezoN6r0QiNM8hHNorBnP90Y9+s=
 			</data>
 		</dict>
 		<key>Modules/NovaCore.swiftmodule/arm64-apple-ios.swiftdoc</key>
@@ -145,21 +134,21 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			gs/p1cqstwWf0qVqmj41lymIDUz6uG8TSzooTcshpWs=
+			TPFrTgk4tPdARUyPCezoN6r0QiNM8hHNorBnP90Y9+s=
 			</data>
 		</dict>
 		<key>Modules/NovaCore.swiftmodule/arm64-apple-ios.swiftmodule</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			YCOf0X0owZKUDyMSwq5BpfhYRR1gi54u0jdTnfMf1IU=
+			gPVwEhQnpQMkiNgnlBHE/vhCMw7CYrqoA9Gk2WdWABU=
 			</data>
 		</dict>
 		<key>Modules/module.modulemap</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			sHn5aJyTgggeGyjI1D3pS+bs/o9OOlFBPHl3HRkLoyU=
+			DxOE5+E7GvP2nnNwMXJGuvLcsWnLwcyIlLJPjyn0x6s=
 			</data>
 		</dict>
 		<key>NBResourceBundle.bundle/Assets.car</key>
