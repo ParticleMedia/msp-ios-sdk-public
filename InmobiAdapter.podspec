@@ -4,12 +4,12 @@ Pod::Spec.new do |spec|
 
   
 
-  spec.name         = "GoogleAdapter"
+  spec.name         = "InmobiAdapter"
   spec.version      = "0.0.99"
-  spec.summary      = "an adapter for Google SDK"
-  spec.description  = "an adapter for Google SDK for MSP S2S"
+  spec.summary      = "an adapter for Inmobi SDK"
+  spec.description  = "an adapter for Inmobi SDK for MSP C2S"
 
-  spec.homepage     = "https://github.com/aimsp/msp-ios-sdk/GoogleAdapter"
+  spec.homepage     = "https://github.com/aimsp/msp-ios-sdk/MetaAdapter"
  
   spec.license      = "Copyright"
   
@@ -42,10 +42,11 @@ Pod::Spec.new do |spec|
   spec.ios.deployment_target = '13.0'
 
 
-  spec.source_files  = "GoogleAdapter/GoogleAdapter/**/*.{h,m,swift}"
+  spec.source_files  = "InmobiAdapter/InmobiAdapter/**/*.{h,m,swift}"
   spec.exclude_files = "Classes/Exclude"
 
-  spec.dependency 'Google-Mobile-Ads-SDK', "11.9.0"
+  #spec.dependency 'IronSourceSDK','8.5.1.0'
+  spec.dependency 'InMobiSDK', '10.8.0'
   spec.dependency 'MSPSharedLibraries', '0.0.99'
   #spec.module_map = 'GoogleAdapter/GoogleAdapter.modulemap'
 

@@ -5,7 +5,7 @@ Pod::Spec.new do |spec|
   
 
   spec.name         = "FacebookAdapter"
-  spec.version      = "0.0.98"
+  spec.version      = "0.0.99"
   spec.summary      = "an adapter for Meta SDK"
   spec.description  = "an adapter for Meta SDK for MSP S2S"
 
@@ -46,7 +46,7 @@ Pod::Spec.new do |spec|
   spec.exclude_files = "Classes/Exclude"
 
   spec.dependency 'FBAudienceNetwork', '6.15.2'
-  spec.dependency 'MSPSharedLibraries', '0.0.98'
+  spec.dependency 'MSPSharedLibraries', '0.0.99'
   #spec.module_map = 'GoogleAdapter/GoogleAdapter.modulemap'
 
   #spec.public_header_files = "GoogleAdapter//**/*.h"
