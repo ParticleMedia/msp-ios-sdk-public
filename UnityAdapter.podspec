@@ -5,7 +5,7 @@ Pod::Spec.new do |spec|
   
 
   spec.name         = "UnityAdapter"
-  spec.version      = "0.0.92"
+  spec.version      = "0.0.100"
   spec.summary      = "an adapter for Meta SDK"
   spec.description  = "an adapter for Meta SDK for MSP S2S"
 
@@ -47,7 +47,7 @@ Pod::Spec.new do |spec|
 
   #spec.dependency 'IronSourceSDK','8.5.1.0'
   spec.dependency 'IronSourceSDK','8.6.0.0'
-  spec.dependency 'MSPSharedLibraries'
+  spec.dependency 'MSPSharedLibraries', '0.0.99'
   #spec.module_map = 'GoogleAdapter/GoogleAdapter.modulemap'
 
   #spec.public_header_files = "GoogleAdapter//**/*.h"

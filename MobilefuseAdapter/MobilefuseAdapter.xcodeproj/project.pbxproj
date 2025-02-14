@@ -1,0 +1,521 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		66EBE2182D5426A500AF18FA /* MobilefuseAdapter.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 66EBE20D2D5426A500AF18FA /* MobilefuseAdapter.framework */; };
+		66EBE22C2D5427BC00AF18FA /* MobilefuseAdapter.docc in Sources */ = {isa = PBXBuildFile; fileRef = 66EBE22A2D5427BC00AF18FA /* MobilefuseAdapter.docc */; };
+		66EBE22D2D5427BC00AF18FA /* MobilefuseAdapter.h in Headers */ = {isa = PBXBuildFile; fileRef = 66EBE2292D5427BC00AF18FA /* MobilefuseAdapter.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		66EBE2302D5427C000AF18FA /* MobilefuseAdapterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66EBE22E2D5427C000AF18FA /* MobilefuseAdapterTests.swift */; };
+		66EBE2322D5427CA00AF18FA /* MobilefuseAdapter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66EBE2312D5427C400AF18FA /* MobilefuseAdapter.swift */; };
+		66EBE2352D54289800AF18FA /* MobilefuseNativeAd.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66EBE2342D54289200AF18FA /* MobilefuseNativeAd.swift */; };
+		66EBE2382D5428EF00AF18FA /* MobilefuseInterstitialAd.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66EBE2372D5428DD00AF18FA /* MobilefuseInterstitialAd.swift */; };
+		66EBE23A2D54293800AF18FA /* MobilefuseManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66EBE2392D54292B00AF18FA /* MobilefuseManager.swift */; };
+		66EBE23C2D54296300AF18FA /* MobilefuseBannerAd.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66EBE23B2D54295700AF18FA /* MobilefuseBannerAd.swift */; };
+		66EBE23E2D5429A900AF18FA /* MobilefuseBidder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66EBE23D2D54299B00AF18FA /* MobilefuseBidder.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		66EBE2192D5426A500AF18FA /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 66EBE2042D5426A500AF18FA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 66EBE20C2D5426A500AF18FA;
+			remoteInfo = MobilefuseAdapter;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		66EBE20D2D5426A500AF18FA /* MobilefuseAdapter.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = MobilefuseAdapter.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		66EBE2172D5426A500AF18FA /* MobilefuseAdapterTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MobilefuseAdapterTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		66EBE2292D5427BC00AF18FA /* MobilefuseAdapter.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MobilefuseAdapter.h; sourceTree = "<group>"; };
+		66EBE22A2D5427BC00AF18FA /* MobilefuseAdapter.docc */ = {isa = PBXFileReference; lastKnownFileType = folder.documentationcatalog; path = MobilefuseAdapter.docc; sourceTree = "<group>"; };
+		66EBE22E2D5427C000AF18FA /* MobilefuseAdapterTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MobilefuseAdapterTests.swift; sourceTree = "<group>"; };
+		66EBE2312D5427C400AF18FA /* MobilefuseAdapter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MobilefuseAdapter.swift; sourceTree = "<group>"; };
+		66EBE2342D54289200AF18FA /* MobilefuseNativeAd.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MobilefuseNativeAd.swift; sourceTree = "<group>"; };
+		66EBE2372D5428DD00AF18FA /* MobilefuseInterstitialAd.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MobilefuseInterstitialAd.swift; sourceTree = "<group>"; };
+		66EBE2392D54292B00AF18FA /* MobilefuseManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MobilefuseManager.swift; sourceTree = "<group>"; };
+		66EBE23B2D54295700AF18FA /* MobilefuseBannerAd.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MobilefuseBannerAd.swift; sourceTree = "<group>"; };
+		66EBE23D2D54299B00AF18FA /* MobilefuseBidder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MobilefuseBidder.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		66EBE20A2D5426A500AF18FA /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		66EBE2142D5426A500AF18FA /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				66EBE2182D5426A500AF18FA /* MobilefuseAdapter.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		66EBE2032D5426A500AF18FA = {
+			isa = PBXGroup;
+			children = (
+				66EBE22B2D5427BC00AF18FA /* MobilefuseAdapter */,
+				66EBE22F2D5427C000AF18FA /* MobilefuseAdapterTests */,
+				66EBE20E2D5426A500AF18FA /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		66EBE20E2D5426A500AF18FA /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				66EBE20D2D5426A500AF18FA /* MobilefuseAdapter.framework */,
+				66EBE2172D5426A500AF18FA /* MobilefuseAdapterTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		66EBE22B2D5427BC00AF18FA /* MobilefuseAdapter */ = {
+			isa = PBXGroup;
+			children = (
+				66EBE23D2D54299B00AF18FA /* MobilefuseBidder.swift */,
+				66EBE23B2D54295700AF18FA /* MobilefuseBannerAd.swift */,
+				66EBE2392D54292B00AF18FA /* MobilefuseManager.swift */,
+				66EBE2362D5428C500AF18FA /* Interstitial */,
+				66EBE2332D54288A00AF18FA /* Native */,
+				66EBE2312D5427C400AF18FA /* MobilefuseAdapter.swift */,
+				66EBE2292D5427BC00AF18FA /* MobilefuseAdapter.h */,
+				66EBE22A2D5427BC00AF18FA /* MobilefuseAdapter.docc */,
+			);
+			path = MobilefuseAdapter;
+			sourceTree = "<group>";
+		};
+		66EBE22F2D5427C000AF18FA /* MobilefuseAdapterTests */ = {
+			isa = PBXGroup;
+			children = (
+				66EBE22E2D5427C000AF18FA /* MobilefuseAdapterTests.swift */,
+			);
+			path = MobilefuseAdapterTests;
+			sourceTree = "<group>";
+		};
+		66EBE2332D54288A00AF18FA /* Native */ = {
+			isa = PBXGroup;
+			children = (
+				66EBE2342D54289200AF18FA /* MobilefuseNativeAd.swift */,
+			);
+			path = Native;
+			sourceTree = "<group>";
+		};
+		66EBE2362D5428C500AF18FA /* Interstitial */ = {
+			isa = PBXGroup;
+			children = (
+				66EBE2372D5428DD00AF18FA /* MobilefuseInterstitialAd.swift */,
+			);
+			path = Interstitial;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		66EBE2082D5426A500AF18FA /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				66EBE22D2D5427BC00AF18FA /* MobilefuseAdapter.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		66EBE20C2D5426A500AF18FA /* MobilefuseAdapter */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 66EBE2202D5426A500AF18FA /* Build configuration list for PBXNativeTarget "MobilefuseAdapter" */;
+			buildPhases = (
+				66EBE2082D5426A500AF18FA /* Headers */,
+				66EBE2092D5426A500AF18FA /* Sources */,
+				66EBE20A2D5426A500AF18FA /* Frameworks */,
+				66EBE20B2D5426A500AF18FA /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = MobilefuseAdapter;
+			packageProductDependencies = (
+			);
+			productName = MobilefuseAdapter;
+			productReference = 66EBE20D2D5426A500AF18FA /* MobilefuseAdapter.framework */;
+			productType = "com.apple.product-type.framework";
+		};
+		66EBE2162D5426A500AF18FA /* MobilefuseAdapterTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 66EBE2252D5426A500AF18FA /* Build configuration list for PBXNativeTarget "MobilefuseAdapterTests" */;
+			buildPhases = (
+				66EBE2132D5426A500AF18FA /* Sources */,
+				66EBE2142D5426A500AF18FA /* Frameworks */,
+				66EBE2152D5426A500AF18FA /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				66EBE21A2D5426A500AF18FA /* PBXTargetDependency */,
+			);
+			name = MobilefuseAdapterTests;
+			packageProductDependencies = (
+			);
+			productName = MobilefuseAdapterTests;
+			productReference = 66EBE2172D5426A500AF18FA /* MobilefuseAdapterTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		66EBE2042D5426A500AF18FA /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1600;
+				LastUpgradeCheck = 1600;
+				TargetAttributes = {
+					66EBE20C2D5426A500AF18FA = {
+						CreatedOnToolsVersion = 16.0;
+					};
+					66EBE2162D5426A500AF18FA = {
+						CreatedOnToolsVersion = 16.0;
+					};
+				};
+			};
+			buildConfigurationList = 66EBE2072D5426A500AF18FA /* Build configuration list for PBXProject "MobilefuseAdapter" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 66EBE2032D5426A500AF18FA;
+			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 77;
+			productRefGroup = 66EBE20E2D5426A500AF18FA /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				66EBE20C2D5426A500AF18FA /* MobilefuseAdapter */,
+				66EBE2162D5426A500AF18FA /* MobilefuseAdapterTests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		66EBE20B2D5426A500AF18FA /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		66EBE2152D5426A500AF18FA /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		66EBE2092D5426A500AF18FA /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				66EBE2352D54289800AF18FA /* MobilefuseNativeAd.swift in Sources */,
+				66EBE2382D5428EF00AF18FA /* MobilefuseInterstitialAd.swift in Sources */,
+				66EBE23A2D54293800AF18FA /* MobilefuseManager.swift in Sources */,
+				66EBE2322D5427CA00AF18FA /* MobilefuseAdapter.swift in Sources */,
+				66EBE23E2D5429A900AF18FA /* MobilefuseBidder.swift in Sources */,
+				66EBE22C2D5427BC00AF18FA /* MobilefuseAdapter.docc in Sources */,
+				66EBE23C2D54296300AF18FA /* MobilefuseBannerAd.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		66EBE2132D5426A500AF18FA /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				66EBE2302D5427C000AF18FA /* MobilefuseAdapterTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		66EBE21A2D5426A500AF18FA /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 66EBE20C2D5426A500AF18FA /* MobilefuseAdapter */;
+			targetProxy = 66EBE2192D5426A500AF18FA /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		66EBE2212D5426A500AF18FA /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUILD_LIBRARY_FOR_DISTRIBUTION = YES;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DEVELOPMENT_TEAM = 4PEHUZX8QH;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				ENABLE_MODULE_VERIFIER = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				MODULE_VERIFIER_SUPPORTED_LANGUAGES = "objective-c objective-c++";
+				MODULE_VERIFIER_SUPPORTED_LANGUAGE_STANDARDS = "gnu17 gnu++20";
+				PRODUCT_BUNDLE_IDENTIFIER = msp.MobilefuseAdapter;
+				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_INSTALL_OBJC_HEADER = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		66EBE2222D5426A500AF18FA /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUILD_LIBRARY_FOR_DISTRIBUTION = YES;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DEVELOPMENT_TEAM = 4PEHUZX8QH;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				ENABLE_MODULE_VERIFIER = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				MODULE_VERIFIER_SUPPORTED_LANGUAGES = "objective-c objective-c++";
+				MODULE_VERIFIER_SUPPORTED_LANGUAGE_STANDARDS = "gnu17 gnu++20";
+				PRODUCT_BUNDLE_IDENTIFIER = msp.MobilefuseAdapter;
+				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_INSTALL_OBJC_HEADER = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		66EBE2232D5426A500AF18FA /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Debug;
+		};
+		66EBE2242D5426A500AF18FA /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				VALIDATE_PRODUCT = YES;
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Release;
+		};
+		66EBE2262D5426A500AF18FA /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 4PEHUZX8QH;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = msp.MobilefuseAdapterTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		66EBE2272D5426A500AF18FA /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 4PEHUZX8QH;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = msp.MobilefuseAdapterTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		66EBE2072D5426A500AF18FA /* Build configuration list for PBXProject "MobilefuseAdapter" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				66EBE2232D5426A500AF18FA /* Debug */,
+				66EBE2242D5426A500AF18FA /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		66EBE2202D5426A500AF18FA /* Build configuration list for PBXNativeTarget "MobilefuseAdapter" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				66EBE2212D5426A500AF18FA /* Debug */,
+				66EBE2222D5426A500AF18FA /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		66EBE2252D5426A500AF18FA /* Build configuration list for PBXNativeTarget "MobilefuseAdapterTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				66EBE2262D5426A500AF18FA /* Debug */,
+				66EBE2272D5426A500AF18FA /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 66EBE2042D5426A500AF18FA /* Project object */;
+}

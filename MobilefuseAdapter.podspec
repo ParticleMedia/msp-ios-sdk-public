@@ -4,12 +4,12 @@ Pod::Spec.new do |spec|
 
   
 
-  spec.name         = "InmobiAdapter"
+  spec.name         = "MobilefuseAdapter"
   spec.version      = "0.0.100"
-  spec.summary      = "an adapter for Inmobi SDK"
-  spec.description  = "an adapter for Inmobi SDK for MSP C2S"
+  spec.summary      = "an adapter for Mobilefuse SDK"
+  spec.description  = "an adapter for Mobilefuse SDK for MSP C2S"
 
-  spec.homepage     = "https://github.com/aimsp/msp-ios-sdk/MetaAdapter"
+  spec.homepage     = "https://github.com/aimsp/msp-ios-sdk/MobilefuseAdapter"
  
   spec.license      = "Copyright"
   
@@ -42,11 +42,11 @@ Pod::Spec.new do |spec|
   spec.ios.deployment_target = '13.0'
 
 
-  spec.source_files  = "InmobiAdapter/InmobiAdapter/**/*.{h,m,swift}"
+  spec.source_files  = "MobilefuseAdapter/MobilefuseAdapter/**/*.{h,m,swift}"
   spec.exclude_files = "Classes/Exclude"
 
   #spec.dependency 'IronSourceSDK','8.5.1.0'
-  spec.dependency 'InMobiSDK', '10.8.0'
+  spec.dependency 'MobileFuseSDK', '1.8.2'
   spec.dependency 'MSPSharedLibraries', '0.0.99'
   #spec.module_map = 'GoogleAdapter/GoogleAdapter.modulemap'
 

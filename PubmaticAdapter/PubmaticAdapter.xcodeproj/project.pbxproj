@@ -1,0 +1,517 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		66EBE2902D54445700AF18FA /* PubmaticAdapter.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 66EBE2852D54445700AF18FA /* PubmaticAdapter.framework */; };
+		66EBE2A32D54446000AF18FA /* PubmaticAdapter.h in Headers */ = {isa = PBXBuildFile; fileRef = 66EBE2A02D54446000AF18FA /* PubmaticAdapter.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		66EBE2A42D54446000AF18FA /* PubmaticAdapter.docc in Sources */ = {isa = PBXBuildFile; fileRef = 66EBE2A12D54446000AF18FA /* PubmaticAdapter.docc */; };
+		66EBE2A72D54446300AF18FA /* PubmaticAdapterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66EBE2A52D54446300AF18FA /* PubmaticAdapterTests.swift */; };
+		66EBE2A92D54449F00AF18FA /* PubmaticAdapter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66EBE2A82D54449A00AF18FA /* PubmaticAdapter.swift */; };
+		66EBE2AD2D54464B00AF18FA /* PubmaticNativeAd.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66EBE2AC2D54464000AF18FA /* PubmaticNativeAd.swift */; };
+		66EBE2B02D54466900AF18FA /* PubmaticInterstitialAd.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66EBE2AF2D54466000AF18FA /* PubmaticInterstitialAd.swift */; };
+		66EBE2B22D54468400AF18FA /* PubmaticManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66EBE2B12D54467A00AF18FA /* PubmaticManager.swift */; };
+		66EBE2B42D54469400AF18FA /* PubmaticBidder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66EBE2B32D54468C00AF18FA /* PubmaticBidder.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		66EBE2912D54445700AF18FA /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 66EBE27C2D54445700AF18FA /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 66EBE2842D54445700AF18FA;
+			remoteInfo = PubmaticAdapter;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		66EBE2852D54445700AF18FA /* PubmaticAdapter.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = PubmaticAdapter.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		66EBE28F2D54445700AF18FA /* PubmaticAdapterTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = PubmaticAdapterTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		66EBE2A02D54446000AF18FA /* PubmaticAdapter.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PubmaticAdapter.h; sourceTree = "<group>"; };
+		66EBE2A12D54446000AF18FA /* PubmaticAdapter.docc */ = {isa = PBXFileReference; lastKnownFileType = folder.documentationcatalog; path = PubmaticAdapter.docc; sourceTree = "<group>"; };
+		66EBE2A52D54446300AF18FA /* PubmaticAdapterTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PubmaticAdapterTests.swift; sourceTree = "<group>"; };
+		66EBE2A82D54449A00AF18FA /* PubmaticAdapter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PubmaticAdapter.swift; sourceTree = "<group>"; };
+		66EBE2AC2D54464000AF18FA /* PubmaticNativeAd.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PubmaticNativeAd.swift; sourceTree = "<group>"; };
+		66EBE2AF2D54466000AF18FA /* PubmaticInterstitialAd.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PubmaticInterstitialAd.swift; sourceTree = "<group>"; };
+		66EBE2B12D54467A00AF18FA /* PubmaticManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PubmaticManager.swift; sourceTree = "<group>"; };
+		66EBE2B32D54468C00AF18FA /* PubmaticBidder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PubmaticBidder.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		66EBE2822D54445700AF18FA /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		66EBE28C2D54445700AF18FA /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				66EBE2902D54445700AF18FA /* PubmaticAdapter.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		66EBE27B2D54445700AF18FA = {
+			isa = PBXGroup;
+			children = (
+				66EBE2A22D54446000AF18FA /* PubmaticAdapter */,
+				66EBE2A62D54446300AF18FA /* PubmaticAdapterTests */,
+				66EBE2862D54445700AF18FA /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		66EBE2862D54445700AF18FA /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				66EBE2852D54445700AF18FA /* PubmaticAdapter.framework */,
+				66EBE28F2D54445700AF18FA /* PubmaticAdapterTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		66EBE2A22D54446000AF18FA /* PubmaticAdapter */ = {
+			isa = PBXGroup;
+			children = (
+				66EBE2B32D54468C00AF18FA /* PubmaticBidder.swift */,
+				66EBE2B12D54467A00AF18FA /* PubmaticManager.swift */,
+				66EBE2AE2D54465900AF18FA /* Interstitial */,
+				66EBE2AB2D54463400AF18FA /* Native */,
+				66EBE2A82D54449A00AF18FA /* PubmaticAdapter.swift */,
+				66EBE2A02D54446000AF18FA /* PubmaticAdapter.h */,
+				66EBE2A12D54446000AF18FA /* PubmaticAdapter.docc */,
+			);
+			path = PubmaticAdapter;
+			sourceTree = "<group>";
+		};
+		66EBE2A62D54446300AF18FA /* PubmaticAdapterTests */ = {
+			isa = PBXGroup;
+			children = (
+				66EBE2A52D54446300AF18FA /* PubmaticAdapterTests.swift */,
+			);
+			path = PubmaticAdapterTests;
+			sourceTree = "<group>";
+		};
+		66EBE2AB2D54463400AF18FA /* Native */ = {
+			isa = PBXGroup;
+			children = (
+				66EBE2AC2D54464000AF18FA /* PubmaticNativeAd.swift */,
+			);
+			path = Native;
+			sourceTree = "<group>";
+		};
+		66EBE2AE2D54465900AF18FA /* Interstitial */ = {
+			isa = PBXGroup;
+			children = (
+				66EBE2AF2D54466000AF18FA /* PubmaticInterstitialAd.swift */,
+			);
+			path = Interstitial;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		66EBE2802D54445700AF18FA /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				66EBE2A32D54446000AF18FA /* PubmaticAdapter.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		66EBE2842D54445700AF18FA /* PubmaticAdapter */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 66EBE2982D54445700AF18FA /* Build configuration list for PBXNativeTarget "PubmaticAdapter" */;
+			buildPhases = (
+				66EBE2802D54445700AF18FA /* Headers */,
+				66EBE2812D54445700AF18FA /* Sources */,
+				66EBE2822D54445700AF18FA /* Frameworks */,
+				66EBE2832D54445700AF18FA /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = PubmaticAdapter;
+			packageProductDependencies = (
+			);
+			productName = PubmaticAdapter;
+			productReference = 66EBE2852D54445700AF18FA /* PubmaticAdapter.framework */;
+			productType = "com.apple.product-type.framework";
+		};
+		66EBE28E2D54445700AF18FA /* PubmaticAdapterTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 66EBE29D2D54445700AF18FA /* Build configuration list for PBXNativeTarget "PubmaticAdapterTests" */;
+			buildPhases = (
+				66EBE28B2D54445700AF18FA /* Sources */,
+				66EBE28C2D54445700AF18FA /* Frameworks */,
+				66EBE28D2D54445700AF18FA /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				66EBE2922D54445700AF18FA /* PBXTargetDependency */,
+			);
+			name = PubmaticAdapterTests;
+			packageProductDependencies = (
+			);
+			productName = PubmaticAdapterTests;
+			productReference = 66EBE28F2D54445700AF18FA /* PubmaticAdapterTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		66EBE27C2D54445700AF18FA /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1600;
+				LastUpgradeCheck = 1600;
+				TargetAttributes = {
+					66EBE2842D54445700AF18FA = {
+						CreatedOnToolsVersion = 16.0;
+					};
+					66EBE28E2D54445700AF18FA = {
+						CreatedOnToolsVersion = 16.0;
+					};
+				};
+			};
+			buildConfigurationList = 66EBE27F2D54445700AF18FA /* Build configuration list for PBXProject "PubmaticAdapter" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 66EBE27B2D54445700AF18FA;
+			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 77;
+			productRefGroup = 66EBE2862D54445700AF18FA /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				66EBE2842D54445700AF18FA /* PubmaticAdapter */,
+				66EBE28E2D54445700AF18FA /* PubmaticAdapterTests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		66EBE2832D54445700AF18FA /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		66EBE28D2D54445700AF18FA /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		66EBE2812D54445700AF18FA /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				66EBE2A92D54449F00AF18FA /* PubmaticAdapter.swift in Sources */,
+				66EBE2B02D54466900AF18FA /* PubmaticInterstitialAd.swift in Sources */,
+				66EBE2B22D54468400AF18FA /* PubmaticManager.swift in Sources */,
+				66EBE2A42D54446000AF18FA /* PubmaticAdapter.docc in Sources */,
+				66EBE2B42D54469400AF18FA /* PubmaticBidder.swift in Sources */,
+				66EBE2AD2D54464B00AF18FA /* PubmaticNativeAd.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		66EBE28B2D54445700AF18FA /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				66EBE2A72D54446300AF18FA /* PubmaticAdapterTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		66EBE2922D54445700AF18FA /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 66EBE2842D54445700AF18FA /* PubmaticAdapter */;
+			targetProxy = 66EBE2912D54445700AF18FA /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		66EBE2992D54445700AF18FA /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUILD_LIBRARY_FOR_DISTRIBUTION = YES;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DEVELOPMENT_TEAM = 4PEHUZX8QH;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				ENABLE_MODULE_VERIFIER = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				MODULE_VERIFIER_SUPPORTED_LANGUAGES = "objective-c objective-c++";
+				MODULE_VERIFIER_SUPPORTED_LANGUAGE_STANDARDS = "gnu17 gnu++20";
+				PRODUCT_BUNDLE_IDENTIFIER = msp.PubmaticAdapter;
+				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_INSTALL_OBJC_HEADER = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		66EBE29A2D54445700AF18FA /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUILD_LIBRARY_FOR_DISTRIBUTION = YES;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DEVELOPMENT_TEAM = 4PEHUZX8QH;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				ENABLE_MODULE_VERIFIER = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				MODULE_VERIFIER_SUPPORTED_LANGUAGES = "objective-c objective-c++";
+				MODULE_VERIFIER_SUPPORTED_LANGUAGE_STANDARDS = "gnu17 gnu++20";
+				PRODUCT_BUNDLE_IDENTIFIER = msp.PubmaticAdapter;
+				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_INSTALL_OBJC_HEADER = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		66EBE29B2D54445700AF18FA /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Debug;
+		};
+		66EBE29C2D54445700AF18FA /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				VALIDATE_PRODUCT = YES;
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Release;
+		};
+		66EBE29E2D54445700AF18FA /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 4PEHUZX8QH;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = msp.PubmaticAdapterTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		66EBE29F2D54445700AF18FA /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 4PEHUZX8QH;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = msp.PubmaticAdapterTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		66EBE27F2D54445700AF18FA /* Build configuration list for PBXProject "PubmaticAdapter" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				66EBE29B2D54445700AF18FA /* Debug */,
+				66EBE29C2D54445700AF18FA /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		66EBE2982D54445700AF18FA /* Build configuration list for PBXNativeTarget "PubmaticAdapter" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				66EBE2992D54445700AF18FA /* Debug */,
+				66EBE29A2D54445700AF18FA /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		66EBE29D2D54445700AF18FA /* Build configuration list for PBXNativeTarget "PubmaticAdapterTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				66EBE29E2D54445700AF18FA /* Debug */,
+				66EBE29F2D54445700AF18FA /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 66EBE27C2D54445700AF18FA /* Project object */;
+}
