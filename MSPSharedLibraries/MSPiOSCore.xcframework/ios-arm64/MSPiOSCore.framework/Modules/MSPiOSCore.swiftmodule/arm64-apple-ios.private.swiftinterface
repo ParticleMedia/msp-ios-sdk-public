@@ -14,7 +14,7 @@ public protocol LoadAdParameters : MSPiOSCore.AdapterParameters {
   func getBidPayload() -> Swift.String
   func getBidExpirationMillis() -> Swift.UInt64
 }
-@objc open class Bidder : ObjectiveC.NSObject {
+open class Bidder {
   public var name: Swift.String
   public var bidderPlacementId: Swift.String
   public var bidderFormat: MSPiOSCore.AdFormat?

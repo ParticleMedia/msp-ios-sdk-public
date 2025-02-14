@@ -597,7 +597,7 @@
                 "kind": "TypeNominal",
                 "name": "Bidder",
                 "printedName": "MSPiOSCore.Bidder",
-                "usr": "c:@M@MSPiOSCore@objc(cs)Bidder"
+                "usr": "s:10MSPiOSCore6BidderC"
               },
               {
                 "kind": "TypeNominal",
@@ -700,46 +700,15 @@
               "AccessControl"
             ],
             "funcSelfKind": "NonMutating"
-          },
-          {
-            "kind": "Constructor",
-            "name": "init",
-            "printedName": "init()",
-            "children": [
-              {
-                "kind": "TypeNominal",
-                "name": "Bidder",
-                "printedName": "MSPiOSCore.Bidder",
-                "usr": "c:@M@MSPiOSCore@objc(cs)Bidder"
-              }
-            ],
-            "declKind": "Constructor",
-            "usr": "c:@M@MSPiOSCore@objc(cs)Bidder(im)init",
-            "mangledName": "$s10MSPiOSCore6BidderCACycfc",
-            "moduleName": "MSPiOSCore",
-            "overriding": true,
-            "implicit": true,
-            "objc_name": "init",
-            "declAttributes": [
-              "Dynamic",
-              "ObjC",
-              "Override"
-            ],
-            "init_kind": "Designated"
           }
         ],
         "declKind": "Class",
-        "usr": "c:@M@MSPiOSCore@objc(cs)Bidder",
+        "usr": "s:10MSPiOSCore6BidderC",
         "mangledName": "$s10MSPiOSCore6BidderC",
         "moduleName": "MSPiOSCore",
         "isOpen": true,
         "declAttributes": [
-          "AccessControl",
-          "ObjC"
-        ],
-        "superclassUsr": "c:objc(cs)NSObject",
-        "superclassNames": [
-          "ObjectiveC.NSObject"
+          "AccessControl"
         ],
         "conformances": [
           {
@@ -755,55 +724,6 @@
             "printedName": "Escapable",
             "usr": "s:s9EscapableP",
             "mangledName": "$ss9EscapableP"
-          },
-          {
-            "kind": "Conformance",
-            "name": "Equatable",
-            "printedName": "Equatable",
-            "usr": "s:SQ",
-            "mangledName": "$sSQ"
-          },
-          {
-            "kind": "Conformance",
-            "name": "Hashable",
-            "printedName": "Hashable",
-            "usr": "s:SH",
-            "mangledName": "$sSH"
-          },
-          {
-            "kind": "Conformance",
-            "name": "CVarArg",
-            "printedName": "CVarArg",
-            "usr": "s:s7CVarArgP",
-            "mangledName": "$ss7CVarArgP"
-          },
-          {
-            "kind": "Conformance",
-            "name": "_KeyValueCodingAndObservingPublishing",
-            "printedName": "_KeyValueCodingAndObservingPublishing",
-            "usr": "s:10Foundation37_KeyValueCodingAndObservingPublishingP",
-            "mangledName": "$s10Foundation37_KeyValueCodingAndObservingPublishingP"
-          },
-          {
-            "kind": "Conformance",
-            "name": "_KeyValueCodingAndObserving",
-            "printedName": "_KeyValueCodingAndObserving",
-            "usr": "s:10Foundation27_KeyValueCodingAndObservingP",
-            "mangledName": "$s10Foundation27_KeyValueCodingAndObservingP"
-          },
-          {
-            "kind": "Conformance",
-            "name": "CustomStringConvertible",
-            "printedName": "CustomStringConvertible",
-            "usr": "s:s23CustomStringConvertibleP",
-            "mangledName": "$ss23CustomStringConvertibleP"
-          },
-          {
-            "kind": "Conformance",
-            "name": "CustomDebugStringConvertible",
-            "printedName": "CustomDebugStringConvertible",
-            "usr": "s:s28CustomDebugStringConvertibleP",
-            "mangledName": "$ss28CustomDebugStringConvertibleP"
           }
         ]
       },
@@ -4699,7 +4619,7 @@
                     "kind": "TypeNominal",
                     "name": "Bidder",
                     "printedName": "MSPiOSCore.Bidder",
-                    "usr": "c:@M@MSPiOSCore@objc(cs)Bidder"
+                    "usr": "s:10MSPiOSCore6BidderC"
                   }
                 ],
                 "usr": "s:Sq"
@@ -11318,7 +11238,7 @@
                     "kind": "TypeNominal",
                     "name": "Bidder",
                     "printedName": "MSPiOSCore.Bidder",
-                    "usr": "c:@M@MSPiOSCore@objc(cs)Bidder"
+                    "usr": "s:10MSPiOSCore6BidderC"
                   }
                 ],
                 "usr": "s:Sa"
@@ -11348,7 +11268,7 @@
                         "kind": "TypeNominal",
                         "name": "Bidder",
                         "printedName": "MSPiOSCore.Bidder",
-                        "usr": "c:@M@MSPiOSCore@objc(cs)Bidder"
+                        "usr": "s:10MSPiOSCore6BidderC"
                       }
                     ],
                     "usr": "s:Sa"
@@ -11380,7 +11300,7 @@
                         "kind": "TypeNominal",
                         "name": "Bidder",
                         "printedName": "MSPiOSCore.Bidder",
-                        "usr": "c:@M@MSPiOSCore@objc(cs)Bidder"
+                        "usr": "s:10MSPiOSCore6BidderC"
                       }
                     ],
                     "usr": "s:Sa"
@@ -11713,7 +11633,7 @@
                     "kind": "TypeNominal",
                     "name": "Bidder",
                     "printedName": "MSPiOSCore.Bidder",
-                    "usr": "c:@M@MSPiOSCore@objc(cs)Bidder"
+                    "usr": "s:10MSPiOSCore6BidderC"
                   }
                 ],
                 "usr": "s:Sa"
@@ -11819,7 +11739,7 @@
                 "kind": "TypeNominal",
                 "name": "Bidder",
                 "printedName": "MSPiOSCore.Bidder",
-                "usr": "c:@M@MSPiOSCore@objc(cs)Bidder"
+                "usr": "s:10MSPiOSCore6BidderC"
               },
               {
                 "kind": "TypeNominal",
