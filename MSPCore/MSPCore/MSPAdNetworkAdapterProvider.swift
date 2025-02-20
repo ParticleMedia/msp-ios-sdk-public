@@ -37,6 +37,9 @@ public class MSPAdNetworkAdapterProvider: AdNetworkAdapterProvider {
     }
     
     public func getAdNetworkAdapter(adNetwork: AdNetwork) -> AdNetworkAdapter? {
+        if adNetwork == .prebid {
+            return PrebidAdapter()
+        }
         return adNetworkManagerDict[adNetwork]?.getAdNetworkAdapter()
     }
     
