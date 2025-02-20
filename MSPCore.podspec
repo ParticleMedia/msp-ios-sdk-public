@@ -16,7 +16,7 @@ Pod::Spec.new do |spec|
   #
 
   spec.name         = "MSPCore"
-  spec.version      = "0.0.99"
+  spec.version      = "0.0.101"
   spec.summary      = "An utility helper for MSP"
 
   spec.ios.deployment_target = '13.0'
