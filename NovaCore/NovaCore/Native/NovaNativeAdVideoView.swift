@@ -447,7 +447,7 @@ private extension NovaNativeAdVideoView {
 
         videoPlayer.delegate = self
         videoPlayer.play()
-        //iabReporter?.logVideoResume()
+        iabReporter?.logVideoResume()
         let resumeTime = CACurrentMediaTime()
         if let encryptedAdToken = self.encryptedAdToken,
            let lastPauseTime {
@@ -462,7 +462,7 @@ private extension NovaNativeAdVideoView {
             return
         }
         videoPlayer.pause(endKind: endKind)
-        //iabReporter?.logVideoPause()
+        iabReporter?.logVideoPause()
         let pauseTime = CACurrentMediaTime()
         if let encryptedAdToken = self.encryptedAdToken,
            let lastResumeTime {
@@ -485,7 +485,7 @@ private extension NovaNativeAdVideoView {
             videoInfo?.state = NovaNativeAdVideoState(playState: playState, isMute: isMute)
         }
         muteButton.setImage(isMute ? volumnOffImage : volumnOnImage, for: .normal)
-        //iabReporter?.logVideoVolumeChange(to: isMute ? 0.0 : 1.0)
+        iabReporter?.logVideoVolumeChange(to: isMute ? 0.0 : 1.0)
     }
 
     private func stringOf(timeInterval: Int?) -> String {
@@ -727,12 +727,12 @@ extension NovaNativeAdVideoView: NovaVideoPlayerDelegate {
                                                     videoLength: videoLength,
                                                     latency: latency,
                                                     duration: duration)
-            //iabReporter?.logVideoStart(duration: videoCurrent, volume: videoPlayer.isPlayerMuted() ? 0.0 : 1.0)
+            iabReporter?.logVideoStart(duration: videoCurrent, volume: videoPlayer.isPlayerMuted() ? 0.0 : 1.0)
         }
         NovaAdVideoMetricReporter.logVideoProgress(encryptedAdToken: encryptedAdToken,
                                                    percentage: videoCurrent / videoLength,
                                                    duration: videoCurrent)
-        //iabReporter?.logVideoProgress(percentage: videoCurrent / videoLength)
+        iabReporter?.logVideoProgress(percentage: videoCurrent / videoLength)
         novaNativeAdVideoDelegate?.playerCurrentTimeDidChange(currentTime: videoPlayer.currentTimeInterval(), durationTime: videoLength)
     }
 

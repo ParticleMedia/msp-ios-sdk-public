@@ -139,7 +139,7 @@ class DemoAdViewController: UIViewController {
         } else if adType == .facebookNative || adType == .facebookInterstitial {
             testParams["test"] = "{\"ad_network\":\"msp_fb\",\"test_ad\":true}"
         } else if adType == .clientBiddingBanner {
-            testParams["test"] = "{\"ad_network\":\"msp_google\",\"test_ad\":true}"
+            testParams["test"] = "{\"ad_network\":\"msp_nova\",\"test_ad\":true}"
         }
         testParams["mobilefuse"] = "true"
         
@@ -149,7 +149,7 @@ class DemoAdViewController: UIViewController {
                                   adaptiveBannerSize: AdSize(width: 320, height: 50, isInlineAdaptiveBanner: false, isAnchorAdaptiveBanner: false),
                                   adSize: AdSize(width: 320, height: 50, isInlineAdaptiveBanner: false, isAnchorAdaptiveBanner: false),
                                   placementId: placementId,
-                                  adFormat: adFormat,
+                                  adFormat: .multi_format,
                                   testParams: testParams)
         adLoader.loadAd(placementId: placementId,
                         adListener: self,

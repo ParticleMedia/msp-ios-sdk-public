@@ -1,3 +1,4 @@
 ${PODS_ROOT}/Target Support Files/MSPSharedLibraries/MSPSharedLibraries-xcframeworks.sh
 ${PODS_ROOT}/../MSPSharedLibraries/PrebidMobile.xcframework
 ${PODS_ROOT}/../MSPSharedLibraries/MSPiOSCore.xcframework
+${PODS_ROOT}/../MSPSharedLibraries/OMSDK_Newsbreak1.xcframework
