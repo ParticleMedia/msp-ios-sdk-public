@@ -29,6 +29,18 @@ variant_for_slice()
   "MSPiOSCore.xcframework/ios-arm64_x86_64-simulator")
     echo "simulator"
     ;;
+  "OMSDK_Newsbreak1.xcframework/ios-arm64")
+    echo ""
+    ;;
+  "OMSDK_Newsbreak1.xcframework/ios-arm64_x86_64-simulator")
+    echo "simulator"
+    ;;
+  "OMSDK_Newsbreak1.xcframework/tvos-arm64")
+    echo ""
+    ;;
+  "OMSDK_Newsbreak1.xcframework/tvos-arm64_x86_64-simulator")
+    echo "simulator"
+    ;;
   esac
 }
 
@@ -45,6 +57,18 @@ archs_for_slice()
     echo "arm64"
     ;;
   "MSPiOSCore.xcframework/ios-arm64_x86_64-simulator")
+    echo "arm64 x86_64"
+    ;;
+  "OMSDK_Newsbreak1.xcframework/ios-arm64")
+    echo "arm64"
+    ;;
+  "OMSDK_Newsbreak1.xcframework/ios-arm64_x86_64-simulator")
+    echo "arm64 x86_64"
+    ;;
+  "OMSDK_Newsbreak1.xcframework/tvos-arm64")
+    echo "arm64"
+    ;;
+  "OMSDK_Newsbreak1.xcframework/tvos-arm64_x86_64-simulator")
     echo "arm64 x86_64"
     ;;
   esac
@@ -131,4 +155,5 @@ install_xcframework() {
 
 install_xcframework "${PODS_ROOT}/../MSPSharedLibraries/PrebidMobile.xcframework" "MSPSharedLibraries" "framework" "ios-arm64" "ios-arm64_x86_64-simulator"
 install_xcframework "${PODS_ROOT}/../MSPSharedLibraries/MSPiOSCore.xcframework" "MSPSharedLibraries" "framework" "ios-arm64" "ios-arm64_x86_64-simulator"
+install_xcframework "${PODS_ROOT}/../MSPSharedLibraries/OMSDK_Newsbreak1.xcframework" "MSPSharedLibraries" "framework" "ios-arm64" "ios-arm64_x86_64-simulator"
 

@@ -19,7 +19,8 @@
   "exclude_files": "Classes/Exclude",
   "vendored_frameworks": [
     "MSPSharedLibraries/PrebidMobile.xcframework",
-    "MSPSharedLibraries/MSPiOSCore.xcframework"
+    "MSPSharedLibraries/MSPiOSCore.xcframework",
+    "MSPSharedLibraries/OMSDK_Newsbreak1.xcframework"
   ],
   "pod_target_xcconfig": {
     "VALID_ARCHS": "x86_64 armv7 arm64"

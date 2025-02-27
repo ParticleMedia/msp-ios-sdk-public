@@ -142,8 +142,8 @@
             filePath = "NovaCore/NovaCore/Native/NovaNativeAdVideoView.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "623"
-            endingLineNumber = "623"
+            startingLineNumber = "625"
+            endingLineNumber = "625"
             landmarkName = "didTabMuteButton()"
             landmarkType = "7">
          </BreakpointContent>
@@ -194,20 +194,6 @@
             endingLineNumber = "126"
             landmarkName = "parseNovaAdString(adString:adType:adUnitId:eCPMInDollar:)"
             landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "A1160995-F86B-488B-A234-ABCA63560991"
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "MSPDemoApp/MSPDemoApp/DemoViewControllers/DemoAdViewController.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "232"
-            endingLineNumber = "232">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -406,7 +392,7 @@
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
             uuid = "6B9D05B0-1F1B-472C-849D-C633A687BE25"
-            shouldBeEnabled = "Yes"
+            shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "UnityAdapter/UnityAdapter/UnityAdapter.swift"
@@ -694,7 +680,7 @@
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
             uuid = "6671521B-D4FC-497D-8E18-72EE4032D16E"
-            shouldBeEnabled = "Yes"
+            shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "GoogleAdapter/GoogleAdapter/AmazonAdapter.swift"
@@ -710,7 +696,7 @@
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
             uuid = "6BC3F4CC-513D-422F-95EE-4302B0B1D4A7"
-            shouldBeEnabled = "Yes"
+            shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "GoogleAdapter/GoogleAdapter/AmazonAdapter.swift"
@@ -726,7 +712,7 @@
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
             uuid = "BF17FDA3-846C-4B4B-A877-3F0FB0C02F1D"
-            shouldBeEnabled = "Yes"
+            shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "GoogleAdapter/GoogleAdapter/AmazonAdapter.swift"
@@ -742,7 +728,7 @@
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
             uuid = "7FC9D342-EE41-45EE-9A55-AA8DB8B7071D"
-            shouldBeEnabled = "Yes"
+            shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "GoogleAdapter/GoogleAdapter/AmazonAdapter.swift"
@@ -758,7 +744,7 @@
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
             uuid = "9D5B5F21-77C4-49B1-9B70-AA563F2C05A5"
-            shouldBeEnabled = "Yes"
+            shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "GoogleAdapter/GoogleAdapter/AmazonAdapter.swift"
@@ -774,7 +760,7 @@
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
             uuid = "0EB8C707-DCF9-42F6-9199-147AE04FC4D0"
-            shouldBeEnabled = "Yes"
+            shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "GoogleAdapter/GoogleAdapter/AmazonAdapter.swift"
@@ -790,7 +776,7 @@
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
             uuid = "F85E02D8-9FF9-4938-98C1-34F9755FE76B"
-            shouldBeEnabled = "Yes"
+            shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "GoogleAdapter/GoogleAdapter/AmazonAdapter.swift"
@@ -805,24 +791,8 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "8B6542A3-6BFC-4F9D-8AF9-54465745DC6A"
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "MSPDemoApp/MSPDemoApp/DemoViewControllers/DemoAdViewController.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "231"
-            endingLineNumber = "231"
-            landmarkName = "DemoAdViewController"
-            landmarkType = "21">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
             uuid = "6B88E4FF-3CFA-4EF5-ADD3-10D8D0249287"
-            shouldBeEnabled = "Yes"
+            shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "GoogleAdapter/GoogleAdapter/InmobiInterstitialAd.swift"
@@ -838,7 +808,7 @@
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
             uuid = "9BF40E9D-80B3-400F-9C10-7F02118146CB"
-            shouldBeEnabled = "Yes"
+            shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "GoogleAdapter/GoogleAdapter/MobilefuseAdapter.swift"
@@ -854,7 +824,7 @@
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
             uuid = "3BC5D67A-4F8C-4675-9FA4-5B7A797FD308"
-            shouldBeEnabled = "Yes"
+            shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "GoogleAdapter/GoogleAdapter/MobilefuseAdapter.swift"
@@ -870,7 +840,7 @@
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
             uuid = "E6960973-5CFC-4E1F-AC49-273FCDE5A9B9"
-            shouldBeEnabled = "Yes"
+            shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "GoogleAdapter/GoogleAdapter/MobilefuseAdapter.swift"
@@ -886,7 +856,7 @@
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
             uuid = "E0A241B5-BB9E-4F99-9E1E-B9EDB8C1B05A"
-            shouldBeEnabled = "Yes"
+            shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "GoogleAdapter/GoogleAdapter/MobilefuseBannerAd.swift"
@@ -902,7 +872,7 @@
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
             uuid = "CA1B1A78-D992-4BC5-95A7-0DB7827191FE"
-            shouldBeEnabled = "Yes"
+            shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "GoogleAdapter/GoogleAdapter/PubmaticAdapter.swift"
@@ -918,7 +888,7 @@
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
             uuid = "2594C31B-32BF-4BFA-B0BB-76B49BD25E8F"
-            shouldBeEnabled = "Yes"
+            shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "GoogleAdapter/GoogleAdapter/PubmaticAdapter.swift"
@@ -934,7 +904,7 @@
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
             uuid = "3CB31479-514F-45D9-9001-9C62BF35B263"
-            shouldBeEnabled = "Yes"
+            shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "GoogleAdapter/GoogleAdapter/PubmaticAdapter.swift"
@@ -950,7 +920,7 @@
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
             uuid = "213E6B1A-0268-4BB8-9DB5-26B4C5C608A5"
-            shouldBeEnabled = "Yes"
+            shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "GoogleAdapter/GoogleAdapter/MintegralAdapter.swift"
@@ -966,7 +936,7 @@
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
             uuid = "BA5EF96F-AC2A-405E-872E-CC6F08C0D440"
-            shouldBeEnabled = "Yes"
+            shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "GoogleAdapter/GoogleAdapter/MintegralAdapter.swift"
@@ -982,7 +952,7 @@
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
             uuid = "94398D20-E430-4A3F-8A32-F31545C05ABA"
-            shouldBeEnabled = "Yes"
+            shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "GoogleAdapter/GoogleAdapter/MintegralInterstitialAd.swift"
@@ -998,7 +968,7 @@
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
             uuid = "5F6CAF2D-7188-49AC-83A1-4EE428D1D20C"
-            shouldBeEnabled = "Yes"
+            shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "GoogleAdapter/GoogleAdapter/MintegralAdapter.swift"
@@ -1014,7 +984,7 @@
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
             uuid = "AFC51296-0C28-4C26-8462-FEBB938886BA"
-            shouldBeEnabled = "Yes"
+            shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "GoogleAdapter/GoogleAdapter/MintegralAdapter.swift"
@@ -1030,7 +1000,7 @@
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
             uuid = "81FE136C-FED2-46E5-8C75-BFA325B95AD4"
-            shouldBeEnabled = "Yes"
+            shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "GoogleAdapter/GoogleAdapter/MintegralAdapter.swift"
@@ -1046,7 +1016,7 @@
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
             uuid = "BD33D748-415F-4F0F-AF69-77CFD6F132CD"
-            shouldBeEnabled = "Yes"
+            shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "MobilefuseAdapter/MobilefuseAdapter/MobilefuseAdapter.swift"
@@ -1062,7 +1032,7 @@
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
             uuid = "5E9A92AC-D9CD-4951-B657-B81B727CEDCC"
-            shouldBeEnabled = "Yes"
+            shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "MobilefuseAdapter/MobilefuseAdapter/MobilefuseAdapter.swift"
@@ -1072,43 +1042,13 @@
             endingLineNumber = "192"
             landmarkName = "onAdLoaded(_:)"
             landmarkType = "7">
-            <Locations>
-               <Location
-                  uuid = "5E9A92AC-D9CD-4951-B657-B81B727CEDCC - b32a9a20c9aad65e"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "closure #1 @Swift.MainActor () -&gt; () in closure #1 @Swift.MainActor () -&gt; () in MobilefuseAdapter.MobilefuseAdapter.onAdLoaded(__C.MFAd) -&gt; ()"
-                  moduleName = "MSPDemoApp.debug.dylib"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/huanzhizhang/Huanzhi/msp-ios-sdk/MobilefuseAdapter/MobilefuseAdapter/MobilefuseAdapter.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "192"
-                  endingLineNumber = "192">
-               </Location>
-               <Location
-                  uuid = "5E9A92AC-D9CD-4951-B657-B81B727CEDCC - b32a9a20c9aad65e"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "closure #1 @Swift.MainActor () -&gt; () in closure #1 @Swift.MainActor () -&gt; () in MobilefuseAdapter.MobilefuseAdapter.onAdLoaded(__C.MFAd) -&gt; ()"
-                  moduleName = "MSPDemoApp.debug.dylib"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/huanzhizhang/Huanzhi/msp-ios-sdk/MobilefuseAdapter/MobilefuseAdapter/MobilefuseAdapter.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "192"
-                  endingLineNumber = "192">
-               </Location>
-            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
             uuid = "2279F94F-6EB6-484C-A175-38DEFFA9979E"
-            shouldBeEnabled = "Yes"
+            shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "MobilefuseAdapter/MobilefuseAdapter/MobilefuseAdapter.swift"
@@ -1124,7 +1064,7 @@
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
             uuid = "2BB891F6-52DA-48FC-A76C-207158A9E7B9"
-            shouldBeEnabled = "Yes"
+            shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "MobilefuseAdapter/MobilefuseAdapter/MobilefuseAdapter.swift"
@@ -1140,7 +1080,7 @@
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
             uuid = "9B22759F-6CED-4D62-B0B9-22C897146C0D"
-            shouldBeEnabled = "Yes"
+            shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "MobilefuseAdapter/MobilefuseAdapter/MobilefuseAdapter.swift"
@@ -1156,7 +1096,7 @@
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
             uuid = "64744494-F86B-4142-B23B-DD206171C522"
-            shouldBeEnabled = "Yes"
+            shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "MintegralAdapter/MintegralAdapter/MintegralAdapter.swift"
@@ -1171,24 +1111,8 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "7DC36FA5-79C5-4797-BCA3-6B454CA25ED2"
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "NovaCore/NovaCore/Landing/NovaAdsLandingWebViewController.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "179"
-            endingLineNumber = "179"
-            landmarkName = "viewDidLoad()"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
             uuid = "D717CDE9-CBE9-4BB0-9EBC-C3B5DCFED5C1"
-            shouldBeEnabled = "Yes"
+            shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "MintegralAdapter/MintegralAdapter/MintegralAdapter.swift"
@@ -1204,7 +1128,7 @@
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
             uuid = "AF3F27A5-1FD7-4CDF-9D7D-82F704B7445F"
-            shouldBeEnabled = "Yes"
+            shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "MintegralAdapter/MintegralAdapter/MintegralAdapter.swift"
@@ -1220,7 +1144,7 @@
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
             uuid = "183E085D-F766-4F31-A7A3-DB453F7EB3BC"
-            shouldBeEnabled = "Yes"
+            shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "MintegralAdapter/MintegralAdapter/MintegralAdapter.swift"
@@ -1230,43 +1154,13 @@
             endingLineNumber = "349"
             landmarkName = "nativeAdsLoaded(_:bidNativeManager:)"
             landmarkType = "7">
-            <Locations>
-               <Location
-                  uuid = "183E085D-F766-4F31-A7A3-DB453F7EB3BC - c4389b9c82a0bc12"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "MintegralAdapter.MintegralAdapter.nativeAdsLoaded(_: Swift.Optional&lt;Swift.Array&lt;Any&gt;&gt;, bidNativeManager: __C.MTGBidNativeAdManager) -&gt; ()"
-                  moduleName = "MSPDemoApp.debug.dylib"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/huanzhizhang/Huanzhi/msp-ios-sdk/MintegralAdapter/MintegralAdapter/MintegralAdapter.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "349"
-                  endingLineNumber = "349">
-               </Location>
-               <Location
-                  uuid = "183E085D-F766-4F31-A7A3-DB453F7EB3BC - c4389b9c82a0bc12"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "MintegralAdapter.MintegralAdapter.nativeAdsLoaded(_: Swift.Optional&lt;Swift.Array&lt;Any&gt;&gt;, bidNativeManager: __C.MTGBidNativeAdManager) -&gt; ()"
-                  moduleName = "MSPDemoApp.debug.dylib"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/huanzhizhang/Huanzhi/msp-ios-sdk/MintegralAdapter/MintegralAdapter/MintegralAdapter.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "349"
-                  endingLineNumber = "349">
-               </Location>
-            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
             uuid = "BCF0A967-CBDD-4357-8968-1547F9C9AB17"
-            shouldBeEnabled = "Yes"
+            shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "MintegralAdapter/MintegralAdapter/MintegralAdapter.swift"
@@ -1282,7 +1176,7 @@
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
             uuid = "3DEAD137-3DE1-492B-B056-7E0BA671AAA4"
-            shouldBeEnabled = "Yes"
+            shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "MintegralAdapter/MintegralAdapter/MintegralAdapter.swift"
@@ -1298,7 +1192,7 @@
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
             uuid = "E5C55DBE-CEC1-4C0A-98E2-F3A5B3681F1F"
-            shouldBeEnabled = "Yes"
+            shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "MintegralAdapter/MintegralAdapter/MintegralAdapter.swift"
@@ -1314,7 +1208,7 @@
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
             uuid = "BA2526CC-CD52-425E-8497-DB988B5496AF"
-            shouldBeEnabled = "Yes"
+            shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "MintegralAdapter/MintegralAdapter/MintegralAdapter.swift"
@@ -1330,7 +1224,7 @@
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
             uuid = "97A39D75-67AB-492B-838A-765640A2EF6D"
-            shouldBeEnabled = "Yes"
+            shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "MintegralAdapter/MintegralAdapter/MintegralAdapter.swift"
@@ -1346,7 +1240,7 @@
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
             uuid = "5D2C3029-A62E-4A72-83D9-87D3F547EF96"
-            shouldBeEnabled = "Yes"
+            shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "MintegralAdapter/MintegralAdapter/MintegralAdapter.swift"
@@ -1356,50 +1250,20 @@
             endingLineNumber = "298"
             landmarkName = "newInterstitialBidAdResourceLoadSuccess(_:)"
             landmarkType = "7">
-            <Locations>
-               <Location
-                  uuid = "5D2C3029-A62E-4A72-83D9-87D3F547EF96 - f8d169d94705a3ca"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "MintegralAdapter.MintegralAdapter.newInterstitialBidAdResourceLoadSuccess(__C.MTGNewInterstitialBidAdManager) -&gt; ()"
-                  moduleName = "MSPDemoApp.debug.dylib"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/huanzhizhang/Huanzhi/msp-ios-sdk/MintegralAdapter/MintegralAdapter/MintegralAdapter.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "298"
-                  endingLineNumber = "298">
-               </Location>
-               <Location
-                  uuid = "5D2C3029-A62E-4A72-83D9-87D3F547EF96 - 836c68a3a97ab00f"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "closure #1 @Swift.MainActor () -&gt; () in MintegralAdapter.MintegralAdapter.newInterstitialBidAdResourceLoadSuccess(__C.MTGNewInterstitialBidAdManager) -&gt; ()"
-                  moduleName = "MSPDemoApp.debug.dylib"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/huanzhizhang/Huanzhi/msp-ios-sdk/MintegralAdapter/MintegralAdapter/MintegralAdapter.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "298"
-                  endingLineNumber = "298">
-               </Location>
-            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
             uuid = "74E5B993-8291-41D7-B9BD-7EE2236B66A8"
-            shouldBeEnabled = "Yes"
+            shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "InmobiAdapter/InmobiAdapter/InmobiAdapter.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "228"
-            endingLineNumber = "228"
+            startingLineNumber = "231"
+            endingLineNumber = "231"
             landmarkName = "interstitial(_:didReceiveWithMetaInfo:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -1408,14 +1272,14 @@
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
             uuid = "4CFC405A-39CF-4CEA-AFBC-D896A67826BB"
-            shouldBeEnabled = "Yes"
+            shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "InmobiAdapter/InmobiAdapter/InmobiAdapter.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "220"
-            endingLineNumber = "220"
+            startingLineNumber = "223"
+            endingLineNumber = "223"
             landmarkName = "interstitialDidFinishLoading(_:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -1423,70 +1287,8 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "D724EA28-872F-46F3-8FBE-A006A2F0DCE3"
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "InmobiAdapter/InmobiAdapter/InmobiAdapter.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "164"
-            endingLineNumber = "164"
-            landmarkName = "banner(_:didReceiveWithMetaInfo:)"
-            landmarkType = "7">
-            <Locations>
-               <Location
-                  uuid = "D724EA28-872F-46F3-8FBE-A006A2F0DCE3 - bb6d36b2a41edcde"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "InmobiAdapter.InmobiAdapter.banner(_: InMobiSDK.IMBanner, didReceiveWithMetaInfo: InMobiSDK.IMAdMetaInfo) -&gt; ()"
-                  moduleName = "MSPDemoApp.debug.dylib"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/huanzhizhang/Huanzhi/msp-ios-sdk/InmobiAdapter/InmobiAdapter/InmobiAdapter.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "164"
-                  endingLineNumber = "164">
-               </Location>
-               <Location
-                  uuid = "D724EA28-872F-46F3-8FBE-A006A2F0DCE3 - 636943a85bb23e77"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "closure #1 @Swift.MainActor () -&gt; () in InmobiAdapter.InmobiAdapter.banner(_: InMobiSDK.IMBanner, didReceiveWithMetaInfo: InMobiSDK.IMAdMetaInfo) -&gt; ()"
-                  moduleName = "MSPDemoApp.debug.dylib"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/huanzhizhang/Huanzhi/msp-ios-sdk/InmobiAdapter/InmobiAdapter/InmobiAdapter.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "164"
-                  endingLineNumber = "164">
-               </Location>
-            </Locations>
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "6EC99D91-AE7F-4248-A33E-FDEB8436DDBC"
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "InmobiAdapter/InmobiAdapter/InmobiAdapter.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "179"
-            endingLineNumber = "179"
-            landmarkName = "banner(_:didFailToLoadWithError:)"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
             uuid = "81385FB5-249F-481C-ABC2-06D8A0588965"
-            shouldBeEnabled = "Yes"
+            shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "InmobiAdapter/InmobiAdapter/InmobiAdapter.swift"
@@ -1501,192 +1303,46 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "BE4F9865-1DBF-4066-ABEF-06A1CE82CAEE"
+            uuid = "645224D7-8C08-4BCA-AA21-35003F7518CC"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "NovaCore/NovaCore/Native/NovaNativeAdVideoView.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "420"
+            endingLineNumber = "420"
+            landmarkName = "startCover()"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "35A3C29F-44F7-473A-809B-69642FB381CB"
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "NovaCore/NovaCore/Metrics/IABMetricReporter.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "47"
-            endingLineNumber = "47"
-            landmarkName = "init()"
-            landmarkType = "7">
+            startingLineNumber = "175"
+            endingLineNumber = "175">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "AE6AFC1E-1F75-4A10-8868-667672FC25AF"
+            uuid = "7D4CE682-4D15-434D-91D3-926DDB52882E"
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "NovaCore/NovaCore/Native/NovaNativeAdView.swift"
+            filePath = "NovaAdapter/NovaAdapter/NovaAdapter.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "105"
-            endingLineNumber = "105"
-            landmarkName = "register(_:)"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "2CCD63C4-012E-4B61-BFE5-3E829E318B52"
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "NovaCore/NovaCore/Native/NovaNativeAdView.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "123"
-            endingLineNumber = "123"
-            landmarkName = "buildIABMetricReporterFor(nativeAd:adView:)"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "C23D0CD7-1266-432A-84E7-EE35D180E810"
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "NovaCore/NovaCore/Metrics/IABMetricReporter.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "33"
-            endingLineNumber = "33"
-            landmarkName = "IABMetricReporter"
-            landmarkType = "3">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "FC5A2768-BA08-427A-8CC3-6CC2AE25DCC1"
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "PrebidAdapter/PrebidAdapter/PrebidAdapter.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "135"
-            endingLineNumber = "135"
-            landmarkName = "bannerView(_:didReceiveAdWithAdSize:)"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "2A375CEE-4E7A-42D1-8AE7-D44A22E915BD"
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "PrebidAdapter/PrebidAdapter/PrebidAdapter.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "144"
-            endingLineNumber = "144"
-            landmarkName = "handleAdLoaded(ad:auctionBidListener:bidderPlacementId:)"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "4460A6D4-516E-4795-8F80-5404FE853F98"
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "MSPCore/MSPCore/MSPAuction.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "76"
-            endingLineNumber = "76"
-            landmarkName = "getWinnerBid()"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "D928710B-2D16-4358-A072-DD6CDB4EBF9C"
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "MSPCore/MSPCore/MSPAuction.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "28"
-            endingLineNumber = "28"
-            landmarkName = "startAuction(auctionListener:adListener:)"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "2CDFCBB3-0BFD-49CC-A5BD-05760813E88D"
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "PrebidAdapter/PrebidAdapter/PrebidAdapter.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "96"
-            endingLineNumber = "96"
+            startingLineNumber = "42"
+            endingLineNumber = "42"
             landmarkName = "loadAdCreative(bidResponse:auctionBidListener:adListener:context:adRequest:bidderPlacementId:bidderFormat:params:)"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "ECF8CFF7-CA89-4A9D-90E8-87B8E90C1C3E"
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "MSPCore/MSPCore/MSPMultiFormatBidder.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "25"
-            endingLineNumber = "25"
-            landmarkName = "requestBid(adRequest:bidListener:adListener:)"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "30F5C0E5-6C94-4491-A848-84B7CC28D66C"
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "PrebidAdapter/PrebidAdapter/PrebidBidLoader.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "87"
-            endingLineNumber = "87"
-            landmarkName = "loadBidWithTokens(googleQueryInfo:facebookBidToken:adRequest:)"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "2A3D9B84-86FD-408F-9DBE-8BA69B9493F1"
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "MSPCore/MSPCore/MSPMultiFormatBidder.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "31"
-            endingLineNumber = "31"
-            landmarkName = "onBidResponse(bidResponse:adNetwork:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
