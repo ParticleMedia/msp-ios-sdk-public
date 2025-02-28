@@ -142,8 +142,8 @@
             filePath = "NovaCore/NovaCore/Native/NovaNativeAdVideoView.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "625"
-            endingLineNumber = "625"
+            startingLineNumber = "627"
+            endingLineNumber = "627"
             landmarkName = "didTabMuteButton()"
             landmarkType = "7">
          </BreakpointContent>
@@ -318,8 +318,8 @@
             filePath = "NovaCore/NovaCore/Native/NovaNativeAdVideoView.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "350"
-            endingLineNumber = "350"
+            startingLineNumber = "352"
+            endingLineNumber = "352"
             landmarkName = "handleVideoOffScreen()"
             landmarkType = "7">
          </BreakpointContent>
@@ -334,8 +334,8 @@
             filePath = "NovaCore/NovaCore/Native/NovaNativeAdVideoView.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "357"
-            endingLineNumber = "357"
+            startingLineNumber = "359"
+            endingLineNumber = "359"
             landmarkName = "handleVideoOffScreen()"
             landmarkType = "7">
          </BreakpointContent>
@@ -350,8 +350,8 @@
             filePath = "NovaCore/NovaCore/Native/NovaNativeAdVideoView.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "301"
-            endingLineNumber = "301"
+            startingLineNumber = "303"
+            endingLineNumber = "303"
             landmarkName = "prepareForReuse()"
             landmarkType = "7">
          </BreakpointContent>
@@ -382,8 +382,8 @@
             filePath = "NovaCore/NovaCore/Native/NovaNativeAdVideoView.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "337"
-            endingLineNumber = "337"
+            startingLineNumber = "339"
+            endingLineNumber = "339"
             landmarkName = "NovaNativeAdVideoView"
             landmarkType = "21">
          </BreakpointContent>
@@ -1310,8 +1310,8 @@
             filePath = "NovaCore/NovaCore/Native/NovaNativeAdVideoView.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "420"
-            endingLineNumber = "420"
+            startingLineNumber = "422"
+            endingLineNumber = "422"
             landmarkName = "startCover()"
             landmarkType = "7">
          </BreakpointContent>
@@ -1327,22 +1327,24 @@
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "175"
-            endingLineNumber = "175">
+            endingLineNumber = "175"
+            landmarkName = "logVideoProgress(percentage:)"
+            landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "7D4CE682-4D15-434D-91D3-926DDB52882E"
+            uuid = "8C9F3EB7-B50F-4173-A22F-ADF734600FE0"
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "NovaAdapter/NovaAdapter/NovaAdapter.swift"
+            filePath = "NovaCore/NovaCore/AppOpen/NovaAppOpenVerticalVideoAdView.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "42"
-            endingLineNumber = "42"
-            landmarkName = "loadAdCreative(bidResponse:auctionBidListener:adListener:context:adRequest:bidderPlacementId:bidderFormat:params:)"
+            startingLineNumber = "468"
+            endingLineNumber = "468"
+            landmarkName = "didTapVolumeButton()"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>

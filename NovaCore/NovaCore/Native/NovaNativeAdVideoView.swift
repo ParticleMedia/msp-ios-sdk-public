@@ -16,6 +16,8 @@ public final class NovaNativeAdVideoView: UIView {
     
     private let inLandingPage: Bool
     private var inLandingViewsHideBlock: DispatchCancelableBlock?
+    
+    public var inInterstitial: Bool = false
 
     private let coverImage: UIImageView = {
         let imageView = UIImageView()
@@ -617,7 +619,7 @@ private extension NovaNativeAdVideoView {
         }
     }
 
-    @objc func didTabMuteButton() {
+    @objc public func didTabMuteButton() {
         guard let videoPlayer = videoPlayer else {
             return
         }
@@ -669,7 +671,7 @@ extension NovaNativeAdVideoView: NovaVideoPlayerDelegate {
         if videoPlayer.isVideoPlaying() {
             if !inLandingPage && countText.isHidden {
                 let time = videoPlayer.currentTimeInterval()
-                if time <= 5 {
+                if time <= 5 && !inInterstitial {
                     countText.isHidden = false
                     countText.text = stringOf(timeInterval: Int(player.maximumDuration - time))
                 }
