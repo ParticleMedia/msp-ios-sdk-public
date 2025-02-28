@@ -284,7 +284,7 @@ private extension NovaAppOpenVerticalVideoAdView {
         ])
         
         feedbackButton.isHidden = true
-        volumeButton.isHidden = true
+        volumeButton.isHidden = false
     }
 
     func configAdLabels(for openAd: NovaAppOpenAd) {
@@ -333,6 +333,7 @@ private extension NovaAppOpenVerticalVideoAdView {
 
         guard let mediaView else { return }
         
+        mediaView.videoView.inInterstitial = true
         let mediaVM = NovaNativeAdMediaViewModel(encryptedAdToken: openAd.encryptedAdToken,
                                                  imageUrlStr: openAd.imageUrlStr,
                                                  videoInfo: openAd.videoInfo)
@@ -383,7 +384,6 @@ private extension NovaAppOpenVerticalVideoAdView {
     func setPlayerVolume(muted: Bool) {
         let volumnOnImage = UIImage.Nova.volumeOnLine?.withTintColor(NovaColorPalettes.White)
         let volumnOffImage = UIImage.Nova.volumeOffLine?.withTintColor(NovaColorPalettes.White)
-        //mediaView?.setPlayerVolume(muted: muted)
         volumeButton.setImage(muted ? volumnOffImage : volumnOnImage, for: .normal)
     }
 
@@ -463,5 +463,10 @@ private extension NovaAppOpenVerticalVideoAdView {
         //let muted = mediaView?.getPlayerMutedState() ?? true
         //setPlayerVolume(muted: !muted)
         //NovaAdVideoMetricReporter.logVideoMute(encryptedAdToken: appOpenAd.encryptedAdToken, isMute: !muted)
+        
+        let muted = mediaView?.videoView.videoPlayer?.isPlayerMuted() ?? true//appOpenVideoInfo.isMute ?? true
+        setPlayerVolume(muted: !muted)
+        mediaView?.videoView.didTabMuteButton()
+        NovaAdVideoMetricReporter.logVideoMute(encryptedAdToken: appOpenAd.encryptedAdToken, isMute: !muted)
     }
 }

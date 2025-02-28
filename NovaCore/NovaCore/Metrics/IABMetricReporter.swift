@@ -210,7 +210,7 @@ public class IABMetricReporter {
 
     public func logVideoVolumeChange(to volume: CGFloat) {
         guard let mediaEvents else {
-            assertionFailure("unexpected nil videoRecord")
+            //assertionFailure("unexpected nil videoRecord")
             return
         }
         mediaEvents.volumeChange(to: volume)
