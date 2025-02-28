@@ -99,7 +99,7 @@ private extension NovaNativeAdView {
         nativeAd.hasImpressionLogged = true
 
         // IAB impression tracking
-        //iABMetricReporter?.logImpression()
+        iABMetricReporter?.logImpression()
 
         NovaAdMetricReporter.logAdImpression(
             thirdPartyImpressionTrackingUrls: nativeAd.thirdPartyImpressionTrackingUrls,
@@ -119,6 +119,6 @@ private extension NovaNativeAdView {
         nativeAd.hasLoadedLogged = true
 
         // IAB loaded tracking
-        //iABMetricReporter?.logLoaded()
+        iABMetricReporter?.logLoaded()
     }
 }

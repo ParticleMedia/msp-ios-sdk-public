@@ -242,7 +242,7 @@ public class NovaAdapter: AdNetworkAdapter {
                             }
                         } else {
                             DispatchQueue.main.async {
-                                self.auctionBidListener?.onError(error: "fail to get ad")
+                                self.handleAdLoaded(ad: novaInterstitialAd, auctionBidListener: auctionBidListener, bidderPlacementId: self.bidderPlacementId  ?? adRequest.placementId)
                             }
                         }
                     }
