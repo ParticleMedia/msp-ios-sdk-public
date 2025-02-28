@@ -102,8 +102,8 @@ public extension NovaNativeAdView {
         self.nativeAd = nativeAd
 
         // In case previous OMIDSDK's session is left started without a stop.
-        //iABMetricReporter?.stopSession()
-        //iABMetricReporter = Self.buildIABMetricReporterFor(nativeAd: nativeAd, adView: self)
+        iABMetricReporter?.stopSession()
+        iABMetricReporter = Self.buildIABMetricReporterFor(nativeAd: nativeAd, adView: self)
 
         startTimerIfNeeded()
     }
@@ -112,7 +112,7 @@ public extension NovaNativeAdView {
         nativeAd = nil
 
         stopTimerIfNeeded()
-        //iABMetricReporter?.stopSession()
+        iABMetricReporter?.stopSession()
     }
 }
 
@@ -125,11 +125,11 @@ private extension NovaNativeAdView {
         else { return nil }
 
         let reporter = IABMetricReporter()
-        //reporter.startSession(
-        //    adView: adView,
-        //    contentUrl: ctrUrlStr,
-        //    thirdPartyViewTrackingUrls: nativeAd.thirdPartyViewTrackingUrls,
-        //    hasVideo: nativeAd.videoInfo != nil)
+        reporter.startSession(
+            adView: adView,
+            contentUrl: ctrUrlStr,
+            thirdPartyViewTrackingUrls: nativeAd.thirdPartyViewTrackingUrls,
+            hasVideo: nativeAd.videoInfo != nil)
         return reporter
     }
 

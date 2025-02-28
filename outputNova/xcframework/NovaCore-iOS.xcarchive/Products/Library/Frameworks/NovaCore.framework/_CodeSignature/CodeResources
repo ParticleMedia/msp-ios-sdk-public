@@ -34,11 +34,11 @@
 		</data>
 		<key>Modules/NovaCore.swiftmodule/arm64-apple-ios.abi.json</key>
 		<data>
-		8Pfr1sp/xXwPTfqOm2CeGjZRmyM=
+		FaXQIUlxYm6Vhqw+kyL1HZyMDt0=
 		</data>
 		<key>Modules/NovaCore.swiftmodule/arm64-apple-ios.private.swiftinterface</key>
 		<data>
-		q7bRyi9d2/lzWJ7VIHKA0hFMnkc=
+		8PzUL7RbcnaPLRwfSyRXdVXfYww=
 		</data>
 		<key>Modules/NovaCore.swiftmodule/arm64-apple-ios.swiftdoc</key>
 		<data>
@@ -46,11 +46,11 @@
 		</data>
 		<key>Modules/NovaCore.swiftmodule/arm64-apple-ios.swiftinterface</key>
 		<data>
-		q7bRyi9d2/lzWJ7VIHKA0hFMnkc=
+		8PzUL7RbcnaPLRwfSyRXdVXfYww=
 		</data>
 		<key>Modules/NovaCore.swiftmodule/arm64-apple-ios.swiftmodule</key>
 		<data>
-		bs681z6+BLfzllz++WfMvWX8ZLs=
+		3u2v/jrGQLGCOYLzHtYX+Twi2s4=
 		</data>
 		<key>Modules/module.modulemap</key>
 		<data>
@@ -63,6 +63,10 @@
 		<key>NBResourceBundle.bundle/Info.plist</key>
 		<data>
 		fTKH0SBXC2KDwUuF/HNGcgPT/vQ=
+		</data>
+		<key>NBResourceBundle.bundle/omsdk-v1.js</key>
+		<data>
+		aye2vic2HXgFkBiG4GSBmiMKEs0=
 		</data>
 	</dict>
 	<key>files2</key>
@@ -113,14 +117,14 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			Sg9t6j3xjddsegyAuFS8AK1Nfl1rPwYXIuslpLVdb2M=
+			KT/eCyMwzqWejkmypvKS/7ytma0OvyoWjmXRLcs0bW8=
 			</data>
 		</dict>
 		<key>Modules/NovaCore.swiftmodule/arm64-apple-ios.private.swiftinterface</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			TPFrTgk4tPdARUyPCezoN6r0QiNM8hHNorBnP90Y9+s=
+			Xtz+KVNXkHD41LDtHWebE8vhdd2iQWcFueka3Myh5mI=
 			</data>
 		</dict>
 		<key>Modules/NovaCore.swiftmodule/arm64-apple-ios.swiftdoc</key>
@@ -134,14 +138,14 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			TPFrTgk4tPdARUyPCezoN6r0QiNM8hHNorBnP90Y9+s=
+			Xtz+KVNXkHD41LDtHWebE8vhdd2iQWcFueka3Myh5mI=
 			</data>
 		</dict>
 		<key>Modules/NovaCore.swiftmodule/arm64-apple-ios.swiftmodule</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			eIdtN8CSghLNqomjQIiWjSJCOPXDn5zKc6dn5dsG7bs=
+			WzIU9Gt0SqzuG2bsmJamBkww2xpa8HYh6Usim6cuxzA=
 			</data>
 		</dict>
 		<key>Modules/module.modulemap</key>
@@ -163,6 +167,13 @@
 			<key>hash2</key>
 			<data>
 			6LF+lZkwp8pkE5YWMyYAJw3DO3SpWWUbHdfs0fLuz2o=
+			</data>
+		</dict>
+		<key>NBResourceBundle.bundle/omsdk-v1.js</key>
+		<dict>
+			<key>hash2</key>
+			<data>
+			Qd/uUl82OOmNIRBYD9Rw3Smn8nPpac3VEYi9xTaBlu4=
 			</data>
 		</dict>
 	</dict>
