@@ -162,8 +162,6 @@ extension InmobiAdapter: IMBannerDelegate {
 
     public func banner(_ banner: IMBanner, didReceiveWithMetaInfo info: InMobiSDK.IMAdMetaInfo) {
         DispatchQueue.main.async {
-            self.auctionBidListener?.onError(error: "fail to load ad")
-            /*
             if let bannerView = self.bannerView,
                let auctionBidListener = self.auctionBidListener {
                 let bannerAd = BannerAd(adView: bannerView, adNetworkAdapter: self)
@@ -173,7 +171,6 @@ extension InmobiAdapter: IMBannerDelegate {
                 bannerAd.adInfo["price"] = info.getBid()
                 self.handleAdLoaded(ad: bannerAd, auctionBidListener: auctionBidListener, bidderPlacementId: self.bidderPlacementId ?? "inmobi_placement_id")
             }
-             */
         }
     }
 
