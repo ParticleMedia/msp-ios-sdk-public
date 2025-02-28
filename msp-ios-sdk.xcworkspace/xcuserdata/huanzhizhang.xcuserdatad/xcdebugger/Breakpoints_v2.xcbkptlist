@@ -1262,8 +1262,8 @@
             filePath = "InmobiAdapter/InmobiAdapter/InmobiAdapter.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "231"
-            endingLineNumber = "231"
+            startingLineNumber = "228"
+            endingLineNumber = "228"
             landmarkName = "interstitial(_:didReceiveWithMetaInfo:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -1278,8 +1278,8 @@
             filePath = "InmobiAdapter/InmobiAdapter/InmobiAdapter.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "223"
-            endingLineNumber = "223"
+            startingLineNumber = "220"
+            endingLineNumber = "220"
             landmarkName = "interstitialDidFinishLoading(_:)"
             landmarkType = "7">
          </BreakpointContent>
