@@ -45,7 +45,7 @@ Pod::Spec.new do |spec|
   spec.source_files  = "FacebookAdapter/FacebookAdapter/**/*.{h,m,swift}"
   spec.exclude_files = "Classes/Exclude"
 
-  spec.dependency 'FBAudienceNetwork', '>= 6.15.0'
+  spec.dependency 'FBAudienceNetwork', '~> 6.15.0'
   spec.dependency 'MSPSharedLibraries', '0.0.91'
   #spec.module_map = 'GoogleAdapter/GoogleAdapter.modulemap'
 
