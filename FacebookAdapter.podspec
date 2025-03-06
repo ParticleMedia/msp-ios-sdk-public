@@ -5,7 +5,7 @@ Pod::Spec.new do |spec|
   
 
   spec.name         = "FacebookAdapter"
-  spec.version      = "0.0.102"
+  spec.version      = "0.0.103"
   spec.summary      = "an adapter for Meta SDK"
   spec.description  = "an adapter for Meta SDK for MSP S2S"
 
