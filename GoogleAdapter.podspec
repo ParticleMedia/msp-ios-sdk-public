@@ -5,7 +5,7 @@ Pod::Spec.new do |spec|
   
 
   spec.name         = "GoogleAdapter"
-  spec.version      = "0.0.102"
+  spec.version      = "0.0.103"
   spec.summary      = "an adapter for Google SDK"
   spec.description  = "an adapter for Google SDK for MSP S2S"
 
@@ -45,7 +45,7 @@ Pod::Spec.new do |spec|
   spec.source_files  = "GoogleAdapter/GoogleAdapter/**/*.{h,m,swift}"
   spec.exclude_files = "Classes/Exclude"
 
-  spec.dependency 'Google-Mobile-Ads-SDK', "~> 11.2.0"
+  spec.dependency 'Google-Mobile-Ads-SDK', "~> 11.0"
   spec.dependency 'MSPSharedLibraries', '0.0.91'
   #spec.module_map = 'GoogleAdapter/GoogleAdapter.modulemap'
 
