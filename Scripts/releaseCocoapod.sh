@@ -2,9 +2,10 @@
 
 # Variables
 REPO="ParticleMedia/msp-ios-sdk-public"           # Replace with your GitHub repo (e.g., "username/my-app")
-TAG="0.0.104"                          # Replace with the version tag you want to use
-SOURCE_DIRS=("MSPSharedLibraries")  # Array of source directories to be compressed
-ZIP_NAME="MSPSharedLibraries-${TAG}.zip"      # Name of the zip file for the release assets
+TAG="Your release version"                          # Replace with the version tag you want to use
+POD_NAME = "Your pod name"   #Replace with the Pod you want to publish
+SOURCE_DIRS=("${POD_NAME}")  # Array of source directories to be compressed, in our project, the directories are usually the Pod's name
+ZIP_NAME="${POD_NAME}-${TAG}.zip"      # Name of the zip file for the release assets
 ASSETS_DIR="output"           # Directory where assets like zip will be stored
 #GITHUB_TOKEN="your_github_token"      # Optionally, set your GitHub token for authentication
 
