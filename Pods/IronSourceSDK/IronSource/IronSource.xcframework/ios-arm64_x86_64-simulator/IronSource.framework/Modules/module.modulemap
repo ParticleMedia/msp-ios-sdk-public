@@ -1,6 +1,0 @@
-framework module IronSource {
-  umbrella header "IronSource.h"
-
-  export *
-  module * { export * }
-}

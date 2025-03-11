@@ -1,1 +1,0 @@
-../../../Target Support Files/PubmaticAdapter/PubmaticAdapter-umbrella.h
