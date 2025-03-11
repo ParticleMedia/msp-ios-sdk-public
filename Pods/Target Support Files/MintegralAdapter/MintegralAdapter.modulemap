@@ -1,6 +1,0 @@
-module MintegralAdapter {
-  umbrella header "MintegralAdapter-umbrella.h"
-
-  export *
-  module * { export * }
-}

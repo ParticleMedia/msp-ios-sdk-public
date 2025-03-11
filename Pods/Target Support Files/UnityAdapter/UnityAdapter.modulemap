@@ -1,6 +1,0 @@
-module UnityAdapter {
-  umbrella header "UnityAdapter-umbrella.h"
-
-  export *
-  module * { export * }
-}

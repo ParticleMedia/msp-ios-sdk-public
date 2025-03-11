@@ -1,6 +1,0 @@
-module GoogleAdapter {
-  umbrella header "GoogleAdapter-umbrella.h"
-
-  export *
-  module * { export * }
-}
