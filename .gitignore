@@ -13,4 +13,5 @@ node_modules/
 Podfile.lock
 *.xcuserdatad/
 *.xcuserdata/
-
+Pods/
+Podfile.lock
