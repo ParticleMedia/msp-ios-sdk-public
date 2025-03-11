@@ -2,7 +2,10 @@
 output/
 outputNova/
 *.xcworkspace
-!default.xcworkspace
+*.xcscmblueprint
+*.xccheckout
+*.xcodeproj/*.xcworkspace/
+*.xcworkspace/
 xcuserdata
 DerivedData
 node_modules/
