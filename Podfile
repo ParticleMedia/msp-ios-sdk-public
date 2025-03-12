@@ -11,6 +11,13 @@ project 'NovaAdapter/NovaAdapter'
 project 'MSPSharedLibraries/MSPSharedLibraries'
 project 'FacebookAdapter/FacebookAdapter'
 
+project 'InmobiAdapter/InmobiAdapter'
+project 'MintegralAdapter/MintegralAdapter'
+project 'MobilefuseAdapter/MobilefuseAdapter'
+project 'PubmaticAdapter/PubmaticAdapter'
+project 'UnityAdapter/UnityAdapter'
+
+
 target 'PrebidAdapter' do
   project 'PrebidAdapter/PrebidAdapter'
   # Comment the next line if you don't want to use dynamic frameworks
