@@ -1,9 +1,40 @@
 #!/bin/bash
 
 # Variables
-REPO="ParticleMedia/msp-ios-sdk-public"           # Replace with your GitHub repo (e.g., "username/my-app")
-TAG="Your release version"                          # Replace with the version tag you want to use
-POD_NAME = "Your pod name"   #Replace with the Pod you want to publish
+
+# Allowed Pod names
+ALLOWED_PODS=("MSPCore" "MSPSharedLibraries" "GoogleAdapter" "FacebookAdapter" "NovaAdapter" "PrebidAdapter" "UnityAdapter" "MintegralAdapter" "MobilefuseAdapter" "PubmaticAdapter" "InmobiAdapter")
+
+# Function to check if a value exists in an array
+is_valid_pod() {
+  local pod="$1"
+  for allowed_pod in "${ALLOWED_PODS[@]}"; do
+    if [[ "$pod" == "$allowed_pod" ]]; then
+      return 0  # Found, valid pod
+    fi
+  done
+  return 1  # Not found, invalid pod
+}
+
+# Prompt user for the Pod name
+read -p "Enter the Pod name: " POD_NAME
+
+# Validate the Pod name
+if ! is_valid_pod "$POD_NAME"; then
+  echo "Error: Invalid Pod name! Choose from: ${ALLOWED_PODS[*]}"
+  exit 1
+fi
+
+# Prompt user for the release version tag
+read -p "Enter the release version (e.g., 0.0.104): " TAG
+if [[ -z "$TAG" ]]; then
+  echo "Error: You must provide a release version!"
+  exit 1
+fi
+
+REPO="ParticleMedia/msp-ios-sdk-public"
+#TAG="Your release version"   # Replace with the version tag you want to use
+#POD_NAME = "Your pod name"   #Replace with the Pod you want to publish
 SOURCE_DIRS=("${POD_NAME}")  # Array of source directories to be compressed, in our project, the directories are usually the Pod's name
 ZIP_NAME="${POD_NAME}-${TAG}.zip"      # Name of the zip file for the release assets
 ASSETS_DIR="output"           # Directory where assets like zip will be stored

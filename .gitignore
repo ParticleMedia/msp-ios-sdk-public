@@ -1,11 +1,8 @@
 .DS_Store
 output/
 outputNova/
-*.xcworkspace
 *.xcscmblueprint
 *.xccheckout
-*.xcodeproj/*.xcworkspace/
-*.xcworkspace/
 xcuserdata
 DerivedData
 node_modules/
