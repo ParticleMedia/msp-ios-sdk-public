@@ -14,7 +14,7 @@ public protocol LoadAdParameters : MSPiOSCore.AdapterParameters {
   func getBidPayload() -> Swift.String
   func getBidExpirationMillis() -> Swift.UInt64
 }
-@objc open class Bidder : ObjectiveC.NSObject {
+open class Bidder {
   public var name: Swift.String
   public var bidderPlacementId: Swift.String
   public var bidderFormat: MSPiOSCore.AdFormat?
@@ -243,6 +243,9 @@ open class MSPAd {
 public protocol MediaController {
   func addMediaListener(listener: any MSPiOSCore.MediaListener)
   func removeMediaListener(listener: any MSPiOSCore.MediaListener)
+}
+public struct MSPConstants {
+  public static let GOOGLE_AD_MULTI_CONTENT_URLS: Swift.String
 }
 public protocol InitializationParameters : MSPiOSCore.AdapterParameters {
   func getPrebidAPIKey() -> Swift.String
