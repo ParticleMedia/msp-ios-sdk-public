@@ -1,1 +1,0 @@
-../../../../MintegralAdapter/MintegralAdapter/MintegralAdapter.h

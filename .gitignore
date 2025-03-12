@@ -1,0 +1,14 @@
+.DS_Store
+output/
+outputNova/
+*.xcscmblueprint
+*.xccheckout
+xcuserdata
+DerivedData
+node_modules/
+.idea/
+Podfile.lock
+*.xcuserdatad/
+*.xcuserdata/
+Pods/
+Podfile.lock

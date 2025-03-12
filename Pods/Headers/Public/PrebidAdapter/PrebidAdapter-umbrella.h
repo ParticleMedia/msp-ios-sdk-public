@@ -1,1 +1,0 @@
-../../../Target Support Files/PrebidAdapter/PrebidAdapter-umbrella.h
