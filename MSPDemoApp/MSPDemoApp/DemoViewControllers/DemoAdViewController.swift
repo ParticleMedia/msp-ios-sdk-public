@@ -128,7 +128,7 @@ class DemoAdViewController: UIViewController {
         
         var adLoader = MSPAdLoader()
         self.adLoader = adLoader
-        var customParams = [String: String]()
+        var customParams = [String: Any]()
         var testParams = [String: String]()
         if adType == .novaNative || adType == .novaInterstitial {
             testParams["test"] = "{\"ad_network\":\"msp_nova\",\"test_ad\":true}"
@@ -142,6 +142,7 @@ class DemoAdViewController: UIViewController {
             testParams["test"] = "{\"ad_network\":\"msp_google\",\"test_ad\":true}"
         }
         testParams["mobilefuse"] = "true"
+        customParams[MSPConstants.GOOGLE_AD_MULTI_CONTENT_URLS] = ["https://www.google.com", "https://newsbreak.com"]
         
         let adRequest = AdRequest(customParams: customParams,
                                   geo: nil,
