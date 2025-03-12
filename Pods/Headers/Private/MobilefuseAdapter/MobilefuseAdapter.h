@@ -1,1 +1,0 @@
-../../../../MobilefuseAdapter/MobilefuseAdapter/MobilefuseAdapter.h

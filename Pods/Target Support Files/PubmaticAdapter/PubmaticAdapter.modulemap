@@ -1,6 +1,0 @@
-module PubmaticAdapter {
-  umbrella header "PubmaticAdapter-umbrella.h"
-
-  export *
-  module * { export * }
-}

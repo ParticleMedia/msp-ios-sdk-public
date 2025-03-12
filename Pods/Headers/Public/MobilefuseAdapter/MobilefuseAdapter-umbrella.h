@@ -1,1 +1,0 @@
-../../../Target Support Files/MobilefuseAdapter/MobilefuseAdapter-umbrella.h

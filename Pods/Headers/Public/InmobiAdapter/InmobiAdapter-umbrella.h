@@ -1,1 +1,0 @@
-../../../Target Support Files/InmobiAdapter/InmobiAdapter-umbrella.h
