@@ -11554,6 +11554,104 @@
           },
           {
             "kind": "Var",
+            "name": "inInterstitial",
+            "printedName": "inInterstitial",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Bool",
+                "printedName": "Swift.Bool",
+                "usr": "s:Sb"
+              }
+            ],
+            "declKind": "Var",
+            "usr": "s:8NovaCore0A17NativeAdVideoViewC14inInterstitialSbvp",
+            "mangledName": "$s8NovaCore0A17NativeAdVideoViewC14inInterstitialSbvp",
+            "moduleName": "NovaCore",
+            "declAttributes": [
+              "HasInitialValue",
+              "Final",
+              "Preconcurrency",
+              "Custom",
+              "HasStorage",
+              "AccessControl"
+            ],
+            "hasStorage": true,
+            "accessors": [
+              {
+                "kind": "Accessor",
+                "name": "Get",
+                "printedName": "Get()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Bool",
+                    "printedName": "Swift.Bool",
+                    "usr": "s:Sb"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:8NovaCore0A17NativeAdVideoViewC14inInterstitialSbvg",
+                "mangledName": "$s8NovaCore0A17NativeAdVideoViewC14inInterstitialSbvg",
+                "moduleName": "NovaCore",
+                "implicit": true,
+                "declAttributes": [
+                  "Final"
+                ],
+                "accessorKind": "get"
+              },
+              {
+                "kind": "Accessor",
+                "name": "Set",
+                "printedName": "Set()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Void",
+                    "printedName": "()"
+                  },
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Bool",
+                    "printedName": "Swift.Bool",
+                    "usr": "s:Sb"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:8NovaCore0A17NativeAdVideoViewC14inInterstitialSbvs",
+                "mangledName": "$s8NovaCore0A17NativeAdVideoViewC14inInterstitialSbvs",
+                "moduleName": "NovaCore",
+                "implicit": true,
+                "declAttributes": [
+                  "Final"
+                ],
+                "accessorKind": "set"
+              },
+              {
+                "kind": "Accessor",
+                "name": "Modify",
+                "printedName": "Modify()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Void",
+                    "printedName": "()"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:8NovaCore0A17NativeAdVideoViewC14inInterstitialSbvM",
+                "mangledName": "$s8NovaCore0A17NativeAdVideoViewC14inInterstitialSbvM",
+                "moduleName": "NovaCore",
+                "implicit": true,
+                "declAttributes": [
+                  "Final"
+                ],
+                "accessorKind": "_modify"
+              }
+            ]
+          },
+          {
+            "kind": "Var",
             "name": "videoPlayer",
             "printedName": "videoPlayer",
             "children": [
@@ -12035,6 +12133,31 @@
               "Preconcurrency",
               "Custom",
               "Final"
+            ],
+            "isFromExtension": true,
+            "funcSelfKind": "NonMutating"
+          },
+          {
+            "kind": "Function",
+            "name": "didTabMuteButton",
+            "printedName": "didTabMuteButton()",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Void",
+                "printedName": "()"
+              }
+            ],
+            "declKind": "Func",
+            "usr": "c:@CM@NovaCore@objc(cs)NovaNativeAdVideoView(im)didTabMuteButton",
+            "mangledName": "$s8NovaCore0A17NativeAdVideoViewC16didTabMuteButtonyyF",
+            "moduleName": "NovaCore",
+            "declAttributes": [
+              "Final",
+              "Preconcurrency",
+              "Custom",
+              "AccessControl",
+              "ObjC"
             ],
             "isFromExtension": true,
             "funcSelfKind": "NonMutating"
@@ -39464,9 +39587,278 @@
         ]
       },
       {
+        "kind": "Import",
+        "name": "OMSDK_Newsbreak1",
+        "printedName": "OMSDK_Newsbreak1",
+        "declKind": "Import",
+        "moduleName": "NovaCore",
+        "declAttributes": [
+          "RawDocComment"
+        ]
+      },
+      {
         "kind": "TypeDecl",
         "name": "IABMetricReporter",
         "printedName": "IABMetricReporter",
+        "children": [
+          {
+            "kind": "Constructor",
+            "name": "init",
+            "printedName": "init()",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "IABMetricReporter",
+                "printedName": "NovaCore.IABMetricReporter",
+                "usr": "s:8NovaCore17IABMetricReporterC"
+              }
+            ],
+            "declKind": "Constructor",
+            "usr": "s:8NovaCore17IABMetricReporterCACycfc",
+            "mangledName": "$s8NovaCore17IABMetricReporterCACycfc",
+            "moduleName": "NovaCore",
+            "declAttributes": [
+              "AccessControl"
+            ],
+            "init_kind": "Designated"
+          },
+          {
+            "kind": "Function",
+            "name": "startSession",
+            "printedName": "startSession(adView:contentUrl:thirdPartyViewTrackingUrls:hasVideo:)",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Void",
+                "printedName": "()"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "UIView",
+                "printedName": "UIKit.UIView",
+                "usr": "c:objc(cs)UIView"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "String",
+                "printedName": "Swift.String",
+                "usr": "s:SS"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "Array",
+                "printedName": "[Swift.String]",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "String",
+                    "printedName": "Swift.String",
+                    "usr": "s:SS"
+                  }
+                ],
+                "usr": "s:Sa"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "Bool",
+                "printedName": "Swift.Bool",
+                "usr": "s:Sb"
+              }
+            ],
+            "declKind": "Func",
+            "usr": "s:8NovaCore17IABMetricReporterC12startSession6adView10contentUrl010thirdPartyH12TrackingUrls8hasVideoySo6UIViewC_SSSaySSGSbtF",
+            "mangledName": "$s8NovaCore17IABMetricReporterC12startSession6adView10contentUrl010thirdPartyH12TrackingUrls8hasVideoySo6UIViewC_SSSaySSGSbtF",
+            "moduleName": "NovaCore",
+            "declAttributes": [
+              "AccessControl"
+            ],
+            "funcSelfKind": "NonMutating"
+          },
+          {
+            "kind": "Function",
+            "name": "logImpression",
+            "printedName": "logImpression()",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Void",
+                "printedName": "()"
+              }
+            ],
+            "declKind": "Func",
+            "usr": "s:8NovaCore17IABMetricReporterC13logImpressionyyF",
+            "mangledName": "$s8NovaCore17IABMetricReporterC13logImpressionyyF",
+            "moduleName": "NovaCore",
+            "declAttributes": [
+              "AccessControl"
+            ],
+            "funcSelfKind": "NonMutating"
+          },
+          {
+            "kind": "Function",
+            "name": "logLoaded",
+            "printedName": "logLoaded()",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Void",
+                "printedName": "()"
+              }
+            ],
+            "declKind": "Func",
+            "usr": "s:8NovaCore17IABMetricReporterC9logLoadedyyF",
+            "mangledName": "$s8NovaCore17IABMetricReporterC9logLoadedyyF",
+            "moduleName": "NovaCore",
+            "declAttributes": [
+              "AccessControl"
+            ],
+            "funcSelfKind": "NonMutating"
+          },
+          {
+            "kind": "Function",
+            "name": "stopSession",
+            "printedName": "stopSession()",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Void",
+                "printedName": "()"
+              }
+            ],
+            "declKind": "Func",
+            "usr": "s:8NovaCore17IABMetricReporterC11stopSessionyyF",
+            "mangledName": "$s8NovaCore17IABMetricReporterC11stopSessionyyF",
+            "moduleName": "NovaCore",
+            "declAttributes": [
+              "AccessControl"
+            ],
+            "funcSelfKind": "NonMutating"
+          },
+          {
+            "kind": "Function",
+            "name": "logVideoStart",
+            "printedName": "logVideoStart(duration:volume:)",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Void",
+                "printedName": "()"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "CGFloat",
+                "printedName": "CoreGraphics.CGFloat",
+                "usr": "s:14CoreFoundation7CGFloatV"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "CGFloat",
+                "printedName": "CoreGraphics.CGFloat",
+                "usr": "s:14CoreFoundation7CGFloatV"
+              }
+            ],
+            "declKind": "Func",
+            "usr": "s:8NovaCore17IABMetricReporterC13logVideoStart8duration6volumey0B10Foundation7CGFloatV_AItF",
+            "mangledName": "$s8NovaCore17IABMetricReporterC13logVideoStart8duration6volumey0B8Graphics7CGFloatV_AItF",
+            "moduleName": "NovaCore",
+            "declAttributes": [
+              "AccessControl"
+            ],
+            "funcSelfKind": "NonMutating"
+          },
+          {
+            "kind": "Function",
+            "name": "logVideoProgress",
+            "printedName": "logVideoProgress(percentage:)",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Void",
+                "printedName": "()"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "Double",
+                "printedName": "Swift.Double",
+                "usr": "s:Sd"
+              }
+            ],
+            "declKind": "Func",
+            "usr": "s:8NovaCore17IABMetricReporterC16logVideoProgress10percentageySd_tF",
+            "mangledName": "$s8NovaCore17IABMetricReporterC16logVideoProgress10percentageySd_tF",
+            "moduleName": "NovaCore",
+            "declAttributes": [
+              "AccessControl"
+            ],
+            "funcSelfKind": "NonMutating"
+          },
+          {
+            "kind": "Function",
+            "name": "logVideoPause",
+            "printedName": "logVideoPause()",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Void",
+                "printedName": "()"
+              }
+            ],
+            "declKind": "Func",
+            "usr": "s:8NovaCore17IABMetricReporterC13logVideoPauseyyF",
+            "mangledName": "$s8NovaCore17IABMetricReporterC13logVideoPauseyyF",
+            "moduleName": "NovaCore",
+            "declAttributes": [
+              "AccessControl"
+            ],
+            "funcSelfKind": "NonMutating"
+          },
+          {
+            "kind": "Function",
+            "name": "logVideoResume",
+            "printedName": "logVideoResume()",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Void",
+                "printedName": "()"
+              }
+            ],
+            "declKind": "Func",
+            "usr": "s:8NovaCore17IABMetricReporterC14logVideoResumeyyF",
+            "mangledName": "$s8NovaCore17IABMetricReporterC14logVideoResumeyyF",
+            "moduleName": "NovaCore",
+            "declAttributes": [
+              "AccessControl"
+            ],
+            "funcSelfKind": "NonMutating"
+          },
+          {
+            "kind": "Function",
+            "name": "logVideoVolumeChange",
+            "printedName": "logVideoVolumeChange(to:)",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Void",
+                "printedName": "()"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "CGFloat",
+                "printedName": "CoreGraphics.CGFloat",
+                "usr": "s:14CoreFoundation7CGFloatV"
+              }
+            ],
+            "declKind": "Func",
+            "usr": "s:8NovaCore17IABMetricReporterC20logVideoVolumeChange2toy0B10Foundation7CGFloatV_tF",
+            "mangledName": "$s8NovaCore17IABMetricReporterC20logVideoVolumeChange2toy0B8Graphics7CGFloatV_tF",
+            "moduleName": "NovaCore",
+            "declAttributes": [
+              "AccessControl"
+            ],
+            "funcSelfKind": "NonMutating"
+          }
+        ],
         "declKind": "Class",
         "usr": "s:8NovaCore17IABMetricReporterC",
         "mangledName": "$s8NovaCore17IABMetricReporterC",
@@ -39474,7 +39866,6 @@
         "declAttributes": [
           "AccessControl"
         ],
-        "hasMissingDesignatedInitializers": true,
         "conformances": [
           {
             "kind": "Conformance",
@@ -91171,217 +91562,224 @@
     {
       "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-sdk\/NovaCore\/NovaCore\/Native\/NovaNativeAdVideoView.swift",
       "kind": "BooleanLiteral",
-      "offset": 562,
+      "offset": 440,
+      "length": 5,
+      "value": "false"
+    },
+    {
+      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-sdk\/NovaCore\/NovaCore\/Native\/NovaNativeAdVideoView.swift",
+      "kind": "BooleanLiteral",
+      "offset": 611,
       "length": 4,
       "value": "true"
     },
     {
       "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-sdk\/NovaCore\/NovaCore\/Native\/NovaNativeAdVideoView.swift",
       "kind": "BooleanLiteral",
-      "offset": 629,
+      "offset": 678,
       "length": 5,
       "value": "false"
     },
     {
       "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-sdk\/NovaCore\/NovaCore\/Native\/NovaNativeAdVideoView.swift",
       "kind": "BooleanLiteral",
-      "offset": 803,
+      "offset": 852,
       "length": 5,
       "value": "false"
     },
     {
       "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-sdk\/NovaCore\/NovaCore\/Native\/NovaNativeAdVideoView.swift",
       "kind": "IntegerLiteral",
-      "offset": 858,
+      "offset": 907,
       "length": 2,
       "value": "12"
     },
     {
       "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-sdk\/NovaCore\/NovaCore\/Native\/NovaNativeAdVideoView.swift",
       "kind": "IntegerLiteral",
-      "offset": 868,
+      "offset": 917,
       "length": 2,
       "value": "12"
     },
     {
       "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-sdk\/NovaCore\/NovaCore\/Native\/NovaNativeAdVideoView.swift",
       "kind": "IntegerLiteral",
-      "offset": 880,
+      "offset": 929,
       "length": 2,
       "value": "12"
     },
     {
       "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-sdk\/NovaCore\/NovaCore\/Native\/NovaNativeAdVideoView.swift",
       "kind": "IntegerLiteral",
-      "offset": 891,
+      "offset": 940,
       "length": 2,
       "value": "12"
     },
     {
       "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-sdk\/NovaCore\/NovaCore\/Native\/NovaNativeAdVideoView.swift",
       "kind": "IntegerLiteral",
-      "offset": 1099,
+      "offset": 1148,
       "length": 2,
       "value": "24"
     },
     {
       "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-sdk\/NovaCore\/NovaCore\/Native\/NovaNativeAdVideoView.swift",
       "kind": "BooleanLiteral",
-      "offset": 1365,
+      "offset": 1414,
       "length": 5,
       "value": "false"
     },
     {
       "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-sdk\/NovaCore\/NovaCore\/Native\/NovaNativeAdVideoView.swift",
       "kind": "IntegerLiteral",
-      "offset": 1474,
+      "offset": 1523,
       "length": 1,
       "value": "4"
     },
     {
       "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-sdk\/NovaCore\/NovaCore\/Native\/NovaNativeAdVideoView.swift",
       "kind": "BooleanLiteral",
-      "offset": 1647,
+      "offset": 1696,
       "length": 5,
       "value": "false"
     },
     {
       "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-sdk\/NovaCore\/NovaCore\/Native\/NovaNativeAdVideoView.swift",
       "kind": "BooleanLiteral",
-      "offset": 2033,
+      "offset": 2082,
       "length": 5,
       "value": "false"
     },
     {
       "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-sdk\/NovaCore\/NovaCore\/Native\/NovaNativeAdVideoView.swift",
       "kind": "IntegerLiteral",
-      "offset": 2088,
+      "offset": 2137,
       "length": 1,
       "value": "6"
     },
     {
       "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-sdk\/NovaCore\/NovaCore\/Native\/NovaNativeAdVideoView.swift",
       "kind": "IntegerLiteral",
-      "offset": 2097,
+      "offset": 2146,
       "length": 1,
       "value": "8"
     },
     {
       "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-sdk\/NovaCore\/NovaCore\/Native\/NovaNativeAdVideoView.swift",
       "kind": "IntegerLiteral",
-      "offset": 2108,
+      "offset": 2157,
       "length": 1,
       "value": "6"
     },
     {
       "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-sdk\/NovaCore\/NovaCore\/Native\/NovaNativeAdVideoView.swift",
       "kind": "IntegerLiteral",
-      "offset": 2118,
+      "offset": 2167,
       "length": 1,
       "value": "8"
     },
     {
       "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-sdk\/NovaCore\/NovaCore\/Native\/NovaNativeAdVideoView.swift",
       "kind": "BooleanLiteral",
-      "offset": 2392,
+      "offset": 2441,
       "length": 5,
       "value": "false"
     },
     {
       "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-sdk\/NovaCore\/NovaCore\/Native\/NovaNativeAdVideoView.swift",
       "kind": "IntegerLiteral",
-      "offset": 2479,
+      "offset": 2528,
       "length": 1,
       "value": "6"
     },
     {
       "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-sdk\/NovaCore\/NovaCore\/Native\/NovaNativeAdVideoView.swift",
       "kind": "IntegerLiteral",
-      "offset": 2488,
+      "offset": 2537,
       "length": 1,
       "value": "8"
     },
     {
       "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-sdk\/NovaCore\/NovaCore\/Native\/NovaNativeAdVideoView.swift",
       "kind": "IntegerLiteral",
-      "offset": 2499,
+      "offset": 2548,
       "length": 1,
       "value": "6"
     },
     {
       "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-sdk\/NovaCore\/NovaCore\/Native\/NovaNativeAdVideoView.swift",
       "kind": "IntegerLiteral",
-      "offset": 2509,
+      "offset": 2558,
       "length": 1,
       "value": "8"
     },
     {
       "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-sdk\/NovaCore\/NovaCore\/Native\/NovaNativeAdVideoView.swift",
       "kind": "BooleanLiteral",
-      "offset": 2790,
+      "offset": 2839,
       "length": 5,
       "value": "false"
     },
     {
       "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-sdk\/NovaCore\/NovaCore\/Native\/NovaNativeAdVideoView.swift",
       "kind": "IntegerLiteral",
-      "offset": 2909,
+      "offset": 2958,
       "length": 1,
       "value": "1"
     },
     {
       "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-sdk\/NovaCore\/NovaCore\/Native\/NovaNativeAdVideoView.swift",
       "kind": "IntegerLiteral",
-      "offset": 3014,
+      "offset": 3063,
       "length": 1,
       "value": "4"
     },
     {
       "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-sdk\/NovaCore\/NovaCore\/Native\/NovaNativeAdVideoView.swift",
       "kind": "IntegerLiteral",
-      "offset": 3209,
+      "offset": 3258,
       "length": 2,
       "value": "10"
     },
     {
       "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-sdk\/NovaCore\/NovaCore\/Native\/NovaNativeAdVideoView.swift",
       "kind": "IntegerLiteral",
-      "offset": 3293,
+      "offset": 3342,
       "length": 1,
       "value": "1"
     },
     {
       "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-sdk\/NovaCore\/NovaCore\/Native\/NovaNativeAdVideoView.swift",
       "kind": "IntegerLiteral",
-      "offset": 3527,
+      "offset": 3576,
       "length": 2,
       "value": "10"
     },
     {
       "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-sdk\/NovaCore\/NovaCore\/Native\/NovaNativeAdVideoView.swift",
       "kind": "IntegerLiteral",
-      "offset": 3611,
+      "offset": 3660,
       "length": 1,
       "value": "1"
     },
     {
       "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-sdk\/NovaCore\/NovaCore\/Native\/NovaNativeAdVideoView.swift",
       "kind": "BooleanLiteral",
-      "offset": 5424,
+      "offset": 5473,
       "length": 5,
       "value": "false"
     },
     {
       "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-sdk\/NovaCore\/NovaCore\/Native\/NovaNativeAdVideoView.swift",
       "kind": "BooleanLiteral",
-      "offset": 5661,
+      "offset": 5710,
       "length": 5,
       "value": "false"
     },
     {
       "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-sdk\/NovaCore\/NovaCore\/Native\/NovaNativeAdVideoView.swift",
       "kind": "BooleanLiteral",
-      "offset": 5706,
+      "offset": 5755,
       "length": 5,
       "value": "false"
     },
@@ -96816,6 +97214,104 @@
       "offset": 2158,
       "length": 5,
       "value": "false"
+    },
+    {
+      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-sdk\/NovaCore\/NovaCore\/Metrics\/IABMetricReporter.swift",
+      "kind": "StringLiteral",
+      "offset": 182,
+      "length": 25,
+      "value": "\"NBResourceBundle.bundle\""
+    },
+    {
+      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-sdk\/NovaCore\/NovaCore\/Metrics\/IABMetricReporter.swift",
+      "kind": "StringLiteral",
+      "offset": 240,
+      "length": 10,
+      "value": "\"omsdk-v1\""
+    },
+    {
+      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-sdk\/NovaCore\/NovaCore\/Metrics\/IABMetricReporter.swift",
+      "kind": "StringLiteral",
+      "offset": 285,
+      "length": 11,
+      "value": "\"Newsbreak\""
+    },
+    {
+      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-sdk\/NovaCore\/NovaCore\/Metrics\/IABMetricReporter.swift",
+      "kind": "BooleanLiteral",
+      "offset": 397,
+      "length": 5,
+      "value": "false"
+    },
+    {
+      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-sdk\/NovaCore\/NovaCore\/Metrics\/IABMetricReporter.swift",
+      "kind": "BooleanLiteral",
+      "offset": 442,
+      "length": 5,
+      "value": "false"
+    },
+    {
+      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-sdk\/NovaCore\/NovaCore\/Metrics\/IABMetricReporter.swift",
+      "kind": "BooleanLiteral",
+      "offset": 521,
+      "length": 5,
+      "value": "false"
+    },
+    {
+      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-sdk\/NovaCore\/NovaCore\/Metrics\/IABMetricReporter.swift",
+      "kind": "BooleanLiteral",
+      "offset": 570,
+      "length": 5,
+      "value": "false"
+    },
+    {
+      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-sdk\/NovaCore\/NovaCore\/Metrics\/IABMetricReporter.swift",
+      "kind": "BooleanLiteral",
+      "offset": 614,
+      "length": 5,
+      "value": "false"
+    },
+    {
+      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-sdk\/NovaCore\/NovaCore\/Metrics\/IABMetricReporter.swift",
+      "kind": "BooleanLiteral",
+      "offset": 663,
+      "length": 5,
+      "value": "false"
+    },
+    {
+      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-sdk\/NovaCore\/NovaCore\/Metrics\/IABMetricReporter.swift",
+      "kind": "BooleanLiteral",
+      "offset": 707,
+      "length": 5,
+      "value": "false"
+    },
+    {
+      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-sdk\/NovaCore\/NovaCore\/Metrics\/IABMetricReporter.swift",
+      "kind": "StringLiteral",
+      "offset": 990,
+      "length": 18,
+      "value": "\"NBResourceBundle\""
+    },
+    {
+      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-sdk\/NovaCore\/NovaCore\/Metrics\/IABMetricReporter.swift",
+      "kind": "StringLiteral",
+      "offset": 1025,
+      "length": 8,
+      "value": "\"bundle\""
+    },
+    {
+      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-sdk\/NovaCore\/NovaCore\/Metrics\/IABMetricReporter.swift",
+      "kind": "StringLiteral",
+      "offset": 1302,
+      "length": 4,
+      "value": "\"js\""
+    },
+    {
+      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-sdk\/NovaCore\/NovaCore\/Metrics\/IABMetricReporter.swift",
+      "kind": "StringLiteral",
+      "offset": 1441,
+      "length": 2,
+      "value": "\"\""
     },
     {
       "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-sdk\/NovaCore\/NovaCore\/WebView\/NovaWebViewBottomView.swift",

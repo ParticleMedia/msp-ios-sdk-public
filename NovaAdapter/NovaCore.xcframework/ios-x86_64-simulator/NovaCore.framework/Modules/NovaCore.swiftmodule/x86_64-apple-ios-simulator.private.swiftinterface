@@ -1,7 +1,6 @@
 // swift-interface-format-version: 1.0
 // swift-compiler-version: Apple Swift version 6.0 effective-5.10 (swiftlang-6.0.0.9.10 clang-1600.0.26.2)
 // swift-module-flags: -target x86_64-apple-ios13.0-simulator -enable-objc-interop -enable-library-evolution -swift-version 5 -enforce-exclusivity=checked -O -enable-bare-slash-regex -module-name NovaCore
-// swift-module-flags-ignorable: -no-verify-emitted-module-interface
 import AVFoundation
 import AdSupport
 import AppTrackingTransparency
@@ -10,6 +9,7 @@ import CoreMedia
 import DeveloperToolsSupport
 import Foundation
 @_exported import NovaCore
+import OMSDK_Newsbreak1
 import SafariServices
 import Swift
 import SwiftUI
@@ -697,6 +697,7 @@ extension NovaCore.NovaNativeAdView {
 }
 @objc @_hasMissingDesignatedInitializers @_Concurrency.MainActor @preconcurrency final public class NovaNativeAdVideoView : UIKit.UIView {
   @_Concurrency.MainActor @preconcurrency final public var didTapCloseButtonCallback: (() -> Swift.Void)?
+  @_Concurrency.MainActor @preconcurrency final public var inInterstitial: Swift.Bool
   @_Concurrency.MainActor @preconcurrency final public var videoPlayer: NovaCore.NovaVideoPlayer?
   @_Concurrency.MainActor @preconcurrency final public var novaNativeAdVideoDelegate: (any NovaCore.NovaNativeAdVideoDelegate)?
   @_Concurrency.MainActor @preconcurrency public init(inLandingPage: Swift.Bool = false)
@@ -709,6 +710,9 @@ extension NovaCore.NovaNativeAdVideoView {
   @_Concurrency.MainActor @preconcurrency final public func setPlayerBackOnView(view: UIKit.UIView)
   @_Concurrency.MainActor @preconcurrency final public func handleVideoOnScreen()
   @_Concurrency.MainActor @preconcurrency final public func handleVideoOffScreen()
+}
+extension NovaCore.NovaNativeAdVideoView {
+  @objc @_Concurrency.MainActor @preconcurrency final public func didTabMuteButton()
 }
 extension NovaCore.NovaNativeAdVideoView : NovaCore.NovaVideoPlayerDelegate {
   @_Concurrency.MainActor @preconcurrency final public func playerReady(_ player: NovaCore.NovaPlayer)
@@ -1969,7 +1973,17 @@ extension NovaCore.NovaAdsLandingWebViewController : UIKit.UIScrollViewDelegate 
   @_Concurrency.MainActor @preconcurrency @objc dynamic public func scrollViewDidScroll(_ scrollView: UIKit.UIScrollView)
   @_Concurrency.MainActor @preconcurrency @objc dynamic public func scrollViewDidEndDragging(_ scrollView: UIKit.UIScrollView, willDecelerate decelerate: Swift.Bool)
 }
-@_hasMissingDesignatedInitializers public class IABMetricReporter {
+public class IABMetricReporter {
+  public init()
+  public func startSession(adView: UIKit.UIView, contentUrl: Swift.String, thirdPartyViewTrackingUrls: [Swift.String], hasVideo: Swift.Bool)
+  public func logImpression()
+  public func logLoaded()
+  public func stopSession()
+  public func logVideoStart(duration: CoreFoundation.CGFloat, volume: CoreFoundation.CGFloat)
+  public func logVideoProgress(percentage: Swift.Double)
+  public func logVideoPause()
+  public func logVideoResume()
+  public func logVideoVolumeChange(to volume: CoreFoundation.CGFloat)
   @objc deinit
 }
 public protocol NovaWebViewBottomViewDelegate : AnyObject {
