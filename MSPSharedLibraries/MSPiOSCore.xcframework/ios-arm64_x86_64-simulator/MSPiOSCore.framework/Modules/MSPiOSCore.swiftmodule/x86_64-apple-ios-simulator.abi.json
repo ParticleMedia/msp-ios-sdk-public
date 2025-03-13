@@ -12501,217 +12501,217 @@
   },
   "ConstValues": [
     {
-      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-core\/MSPiOSCore\/MSPiOSCore\/adapter\/AdapterInitStatus.swift",
+      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-sdk\/MSPiOSCore\/MSPiOSCore\/adapter\/AdapterInitStatus.swift",
       "kind": "StringLiteral",
       "offset": 171,
       "length": 30,
       "value": "\"adapter is successfully init\""
     },
     {
-      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-core\/MSPiOSCore\/MSPiOSCore\/api\/AdRequest.swift",
+      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-sdk\/MSPiOSCore\/MSPiOSCore\/api\/AdRequest.swift",
       "kind": "Dictionary",
       "offset": 600,
       "length": 3,
       "value": "[]"
     },
     {
-      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-core\/MSPiOSCore\/MSPiOSCore\/api\/AdRequest.swift",
+      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-sdk\/MSPiOSCore\/MSPiOSCore\/api\/AdRequest.swift",
       "kind": "BooleanLiteral",
       "offset": 1144,
       "length": 5,
       "value": "false"
     },
     {
-      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-core\/MSPiOSCore\/MSPiOSCore\/api\/AdRequest.swift",
+      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-sdk\/MSPiOSCore\/MSPiOSCore\/api\/AdRequest.swift",
       "kind": "BooleanLiteral",
       "offset": 1182,
       "length": 5,
       "value": "false"
     },
     {
-      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-core\/MSPiOSCore\/MSPiOSCore\/api\/NativeAd.swift",
+      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-sdk\/MSPiOSCore\/MSPiOSCore\/api\/NativeAd.swift",
       "kind": "StringLiteral",
       "offset": 1440,
       "length": 2,
       "value": "\"\""
     },
     {
-      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-core\/MSPiOSCore\/MSPiOSCore\/api\/NativeAd.swift",
+      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-sdk\/MSPiOSCore\/MSPiOSCore\/api\/NativeAd.swift",
       "kind": "StringLiteral",
       "offset": 1477,
       "length": 2,
       "value": "\"\""
     },
     {
-      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-core\/MSPiOSCore\/MSPiOSCore\/api\/NativeAd.swift",
+      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-sdk\/MSPiOSCore\/MSPiOSCore\/api\/NativeAd.swift",
       "kind": "StringLiteral",
       "offset": 1520,
       "length": 2,
       "value": "\"\""
     },
     {
-      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-core\/MSPiOSCore\/MSPiOSCore\/api\/NativeAd.swift",
+      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-sdk\/MSPiOSCore\/MSPiOSCore\/api\/NativeAd.swift",
       "kind": "StringLiteral",
       "offset": 1565,
       "length": 2,
       "value": "\"\""
     },
     {
-      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-core\/MSPiOSCore\/MSPiOSCore\/api\/MSPConstants.swift",
+      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-sdk\/MSPiOSCore\/MSPiOSCore\/api\/MSPConstants.swift",
       "kind": "StringLiteral",
       "offset": 171,
       "length": 31,
       "value": "\"google_ads_multi_content_urls\""
     },
     {
-      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-core\/MSPiOSCore\/MSPiOSCore\/adapter\/InitializationParameters.swift",
+      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-sdk\/MSPiOSCore\/MSPiOSCore\/adapter\/InitializationParameters.swift",
       "kind": "StringLiteral",
       "offset": 360,
       "length": 13,
       "value": "\"unityAppKey\""
     },
     {
-      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-core\/MSPiOSCore\/MSPiOSCore\/adapter\/InitializationParameters.swift",
+      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-sdk\/MSPiOSCore\/MSPiOSCore\/adapter\/InitializationParameters.swift",
       "kind": "StringLiteral",
       "offset": 416,
       "length": 17,
       "value": "\"inmobiAccountId\""
     },
     {
-      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-core\/MSPiOSCore\/MSPiOSCore\/adapter\/InitializationParameters.swift",
+      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-sdk\/MSPiOSCore\/MSPiOSCore\/adapter\/InitializationParameters.swift",
       "kind": "StringLiteral",
       "offset": 475,
       "length": 16,
       "value": "\"mintegralAppId\""
     },
     {
-      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-core\/MSPiOSCore\/MSPiOSCore\/adapter\/InitializationParameters.swift",
+      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-sdk\/MSPiOSCore\/MSPiOSCore\/adapter\/InitializationParameters.swift",
       "kind": "StringLiteral",
       "offset": 534,
       "length": 17,
       "value": "\"mintegralApiKey\""
     },
     {
-      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-core\/MSPiOSCore\/MSPiOSCore\/adapter\/InitializationParameters.swift",
+      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-sdk\/MSPiOSCore\/MSPiOSCore\/adapter\/InitializationParameters.swift",
       "kind": "StringLiteral",
       "offset": 598,
       "length": 21,
       "value": "\"pubmaticPublisherId\""
     },
     {
-      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-core\/MSPiOSCore\/MSPiOSCore\/adapter\/InitializationParameters.swift",
+      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-sdk\/MSPiOSCore\/MSPiOSCore\/adapter\/InitializationParameters.swift",
       "kind": "StringLiteral",
       "offset": 665,
       "length": 20,
       "value": "\"pubmaticProfileIds\""
     },
     {
-      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-core\/MSPiOSCore\/MSPiOSCore\/adapter\/InitializationParameters.swift",
+      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-sdk\/MSPiOSCore\/MSPiOSCore\/adapter\/InitializationParameters.swift",
       "kind": "StringLiteral",
       "offset": 729,
       "length": 18,
       "value": "\"pubmaticStoreUrl\""
     },
     {
-      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-core\/MSPiOSCore\/MSPiOSCore\/adapter\/AdNetwork.swift",
+      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-sdk\/MSPiOSCore\/MSPiOSCore\/adapter\/AdNetwork.swift",
       "kind": "StringLiteral",
       "offset": 156,
       "length": 9,
       "value": "\"Unknown\""
     },
     {
-      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-core\/MSPiOSCore\/MSPiOSCore\/adapter\/AdNetwork.swift",
+      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-sdk\/MSPiOSCore\/MSPiOSCore\/adapter\/AdNetwork.swift",
       "kind": "StringLiteral",
       "offset": 189,
       "length": 8,
       "value": "\"Google\""
     },
     {
-      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-core\/MSPiOSCore\/MSPiOSCore\/adapter\/AdNetwork.swift",
+      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-sdk\/MSPiOSCore\/MSPiOSCore\/adapter\/AdNetwork.swift",
       "kind": "StringLiteral",
       "offset": 218,
       "length": 10,
       "value": "\"Facebook\""
     },
     {
-      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-core\/MSPiOSCore\/MSPiOSCore\/adapter\/AdNetwork.swift",
+      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-sdk\/MSPiOSCore\/MSPiOSCore\/adapter\/AdNetwork.swift",
       "kind": "StringLiteral",
       "offset": 247,
       "length": 8,
       "value": "\"Prebid\""
     },
     {
-      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-core\/MSPiOSCore\/MSPiOSCore\/adapter\/AdNetwork.swift",
+      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-sdk\/MSPiOSCore\/MSPiOSCore\/adapter\/AdNetwork.swift",
       "kind": "StringLiteral",
       "offset": 272,
       "length": 6,
       "value": "\"Nova\""
     },
     {
-      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-core\/MSPiOSCore\/MSPiOSCore\/adapter\/AdNetwork.swift",
+      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-sdk\/MSPiOSCore\/MSPiOSCore\/adapter\/AdNetwork.swift",
       "kind": "StringLiteral",
       "offset": 296,
       "length": 7,
       "value": "\"Unity\""
     },
     {
-      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-core\/MSPiOSCore\/MSPiOSCore\/adapter\/AdNetwork.swift",
+      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-sdk\/MSPiOSCore\/MSPiOSCore\/adapter\/AdNetwork.swift",
       "kind": "StringLiteral",
       "offset": 324,
       "length": 10,
       "value": "\"Pubmatic\""
     },
     {
-      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-core\/MSPiOSCore\/MSPiOSCore\/adapter\/AdNetwork.swift",
+      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-sdk\/MSPiOSCore\/MSPiOSCore\/adapter\/AdNetwork.swift",
       "kind": "StringLiteral",
       "offset": 356,
       "length": 11,
       "value": "\"Mintegral\""
     },
     {
-      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-core\/MSPiOSCore\/MSPiOSCore\/adapter\/AdNetwork.swift",
+      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-sdk\/MSPiOSCore\/MSPiOSCore\/adapter\/AdNetwork.swift",
       "kind": "StringLiteral",
       "offset": 390,
       "length": 12,
       "value": "\"Mobilefuse\""
     },
     {
-      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-core\/MSPiOSCore\/MSPiOSCore\/adapter\/AdNetwork.swift",
+      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-sdk\/MSPiOSCore\/MSPiOSCore\/adapter\/AdNetwork.swift",
       "kind": "StringLiteral",
       "offset": 421,
       "length": 8,
       "value": "\"Inmobi\""
     },
     {
-      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-core\/MSPiOSCore\/MSPiOSCore\/api\/Geo.swift",
+      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-sdk\/MSPiOSCore\/MSPiOSCore\/api\/Geo.swift",
       "kind": "StringLiteral",
       "offset": 302,
       "length": 2,
       "value": "\"\""
     },
     {
-      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-core\/MSPiOSCore\/MSPiOSCore\/api\/Geo.swift",
+      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-sdk\/MSPiOSCore\/MSPiOSCore\/api\/Geo.swift",
       "kind": "StringLiteral",
       "offset": 326,
       "length": 2,
       "value": "\"\""
     },
     {
-      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-core\/MSPiOSCore\/MSPiOSCore\/api\/Geo.swift",
+      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-sdk\/MSPiOSCore\/MSPiOSCore\/api\/Geo.swift",
       "kind": "StringLiteral",
       "offset": 348,
       "length": 2,
       "value": "\"\""
     },
     {
-      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-core\/MSPiOSCore\/MSPiOSCore\/api\/Geo.swift",
+      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-sdk\/MSPiOSCore\/MSPiOSCore\/api\/Geo.swift",
       "kind": "StringLiteral",
       "offset": 366,
       "length": 2,
       "value": "\"\""
     },
     {
-      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-core\/MSPiOSCore\/MSPiOSCore\/api\/Geo.swift",
+      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-sdk\/MSPiOSCore\/MSPiOSCore\/api\/Geo.swift",
       "kind": "StringLiteral",
       "offset": 384,
       "length": 2,
