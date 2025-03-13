@@ -12,13 +12,15 @@ public class NovaAdapter: AdNetworkAdapter {
     
     
     public weak var adListener: AdListener?
+    public weak var auctionBidListener: AuctionBidListener?
+    public var bidderPlacementId: String?
     public var priceInDollar: Double?
     public var adUnitId: String?
     
-    public var nativeAd: MSPAd?
+    public weak var nativeAd: MSPAd?
     public var nativeAdItem: NovaNativeAdItem?
     
-    public var interstitialAd: InterstitialAd?
+    public weak var interstitialAd: InterstitialAd?
     
     public var nativeAdView: NativeAdView?
     public var novaNativeAdView: NovaNativeAdView?
@@ -36,7 +38,7 @@ public class NovaAdapter: AdNetworkAdapter {
         adapterInitListener.onComplete(adNetwork: .nova, adapterInitStatus: .SUCCESS, message: "")
     }
     
-    public func loadAdCreative(bidResponse: Any, adListener: any AdListener, context: Any, adRequest: AdRequest) {
+    public func loadAdCreative(bidResponse: Any, auctionBidListener: AuctionBidListener, adListener: any AdListener, context: Any, adRequest: AdRequest, bidderPlacementId: String, bidderFormat: MSPiOSCore.AdFormat?, params: [String:String]?) {
         guard bidResponse is BidResponse,
               let mBidResponse = bidResponse as? BidResponse else {
             self.adListener?.onError(msg: "no valid response")
@@ -45,6 +47,8 @@ public class NovaAdapter: AdNetworkAdapter {
         }
  
         self.adListener = adListener
+        self.auctionBidListener = auctionBidListener
+        self.bidderPlacementId = bidderPlacementId
         self.adRequest = adRequest
         self.bidResponse = mBidResponse
         
@@ -199,8 +203,9 @@ public class NovaAdapter: AdNetworkAdapter {
                     self.nativeAd = nativeAd
                     nativeAdItem.delegate = self
                     if let adListener = self.adListener,
-                       let adRequest = self.adRequest {
-                        handleAdLoaded(ad: nativeAd, listener: adListener, adRequest: adRequest)
+                       let adRequest = self.adRequest,
+                       let auctionBidListener = self.auctionBidListener {
+                        self.handleAdLoaded(ad: nativeAd, auctionBidListener: auctionBidListener, bidderPlacementId: self.bidderPlacementId  ?? adRequest.placementId)
                         self.adMetricReporter?.logAdResult(placementId: adRequest.placementId, ad: nativeAd, fill: true, isFromCache: false)
                     }
                 }
@@ -220,12 +225,14 @@ public class NovaAdapter: AdNetworkAdapter {
                     appOpenAd?.delegate = self
                 
                     if let adListener = self.adListener,
-                       let adRequest = self.adRequest {
+                       let adRequest = self.adRequest,
+                       let auctionBidListener = self.auctionBidListener {
                         if appOpenAd?.creativeType == .nativeImage {
                             appOpenAd?.preloadAdImage() { image in
                                 DispatchQueue.main.async {
                                     if let image = image {
-                                        handleAdLoaded(ad: novaInterstitialAd, listener: adListener, adRequest: adRequest)
+                                       
+                                        self.handleAdLoaded(ad: novaInterstitialAd, auctionBidListener: auctionBidListener, bidderPlacementId: self.bidderPlacementId  ?? adRequest.placementId)
                                         self.adMetricReporter?.logAdResult(placementId: adRequest.placementId, ad: novaInterstitialAd, fill: true, isFromCache: false)
                                     } else {
                                         self.adListener?.onError(msg: "fail to load ad media")
@@ -235,7 +242,7 @@ public class NovaAdapter: AdNetworkAdapter {
                             }
                         } else {
                             DispatchQueue.main.async {
-                                handleAdLoaded(ad: novaInterstitialAd, listener: adListener, adRequest: adRequest)
+                                self.handleAdLoaded(ad: novaInterstitialAd, auctionBidListener: auctionBidListener, bidderPlacementId: self.bidderPlacementId  ?? adRequest.placementId)
                             }
                         }
                     }
@@ -273,6 +280,17 @@ public class NovaAdapter: AdNetworkAdapter {
         let eCPMInDollar = Decimal(priceInDollar ?? 0.0)
         let adType = adRequest.adFormat == .interstitial ? "app_open" : "native"
         parseNovaAdString(adString: adString, adType: adType, adUnitId: "dummy_id", eCPMInDollar: eCPMInDollar)
+    }
+    
+    public func handleAdLoaded(ad: MSPAd, auctionBidListener: AuctionBidListener, bidderPlacementId: String) {
+        // to do: move this to ios core
+        AdCache.shared.saveAd(placementId: bidderPlacementId, ad: ad)
+        let auctionBid = AuctionBid(bidderName: "msp", bidderPlacementId: bidderPlacementId, ecpm: ad.adInfo["price"] as? Double ?? 0.0)
+        auctionBidListener.onSuccess(bid: auctionBid)
+    }
+    
+    public func getAdNetwork() -> MSPiOSCore.AdNetwork {
+        return .nova
     }
 }
 
