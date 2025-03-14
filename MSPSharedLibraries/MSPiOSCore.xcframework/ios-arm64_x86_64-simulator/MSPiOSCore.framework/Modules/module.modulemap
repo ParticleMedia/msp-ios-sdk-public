@@ -1,5 +1,0 @@
-framework module MSPiOSCore {
-    
-    // Versions
-    header "MSPiOSCore.h"
-}

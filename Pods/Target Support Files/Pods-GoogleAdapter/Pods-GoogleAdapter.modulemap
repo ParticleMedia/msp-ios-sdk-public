@@ -1,6 +1,0 @@
-module Pods_GoogleAdapter {
-  umbrella header "Pods-GoogleAdapter-umbrella.h"
-
-  export *
-  module * { export * }
-}
