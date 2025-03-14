@@ -1,0 +1,10 @@
+//
+//  MSPConstants.swift
+//  MSPiOSCore
+//
+//  Created by Huanzhi Zhang on 3/12/25.
+//
+
+public struct MSPConstants {
+    public static let GOOGLE_AD_MULTI_CONTENT_URLS = "google_ads_multi_content_urls"
+}
