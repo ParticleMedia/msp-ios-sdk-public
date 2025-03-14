@@ -2,6 +2,9 @@
 <Workspace
    version = "1.0">
    <FileRef
+      location = "group:MSPiOSCore/MSPiOSCore.xcodeproj">
+   </FileRef>
+   <FileRef
       location = "group:UnityAdapter/UnityAdapter.xcodeproj">
    </FileRef>
    <FileRef
