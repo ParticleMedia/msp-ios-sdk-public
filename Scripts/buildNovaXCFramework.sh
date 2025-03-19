@@ -1,3 +1,4 @@
+rm -rf "$PWD/outputNova/xcframework"
 # Create directories for output
 mkdir -p "$PWD/outputNova/xcframework"
 
@@ -35,3 +36,16 @@ xcodebuild -create-xcframework \
     -framework "$PWD/outputNova/xcframework/NovaCore-iOS.xcarchive/Products/Library/Frameworks/NovaCore.framework" \
     -framework "$PWD/outputNova/xcframework/NovaCore-Simulator.xcarchive/Products/Library/Frameworks/NovaCore.framework" \
     -output "$PWD/outputNova/xcframework/NovaCore.xcframework"
+
+# Define source and destination paths
+SOURCE_XCFRAMEWORK="$PWD/outputNova/xcframework/NovaCore.xcframework"
+DESTINATION_DIR="$PWD/NovaAdapter"
+
+# Remove the previous xcframework if it exists
+rm -rf "$DESTINATION_DIR/NovaCore.xcframework"
+
+# Copy the new xcframework
+cp -R "$SOURCE_XCFRAMEWORK" "$DESTINATION_DIR/"
+
+# Success message
+echo -e "\n${GREEN}✅ NovaCore.xcframework has been replaced in NovaAdapter.${NC}\n"
