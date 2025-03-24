@@ -181,6 +181,7 @@ public class NovaAdapter: AdNetworkAdapter {
                 
 
             case "native":
+                MSPLogger.shared.info(message: "[Adapter: Nova] successfully loaded Nova Native ad")
                 let nativeAdItem = NovaAdBuilder.buildNativeAd(adItem: adItem, adUnitId: adUnitId, eCPMInDollar: eCPMInDollar)
                 let nativeAd = NovaNativeAd(adNetworkAdapter: self,
                                             title: nativeAdItem.headline ?? "",
@@ -211,6 +212,7 @@ public class NovaAdapter: AdNetworkAdapter {
                 }
                 
             case "app_open":
+                MSPLogger.shared.info(message: "[Adapter: Nova] successfully loaded Nova Interstitial ad")
                 let appOpenAds = NovaAdBuilder.buildAppOpenAds(adItems: ads, adUnitId: adUnitId)
                 let appOpenAd = appOpenAds.first
                 
@@ -249,10 +251,12 @@ public class NovaAdapter: AdNetworkAdapter {
                 }
                 
             default:
+                MSPLogger.shared.info(message: "[Adapter: Nova] Fail to load Nova ad")
                 self.adListener?.onError(msg: "unknown adType")
                 self.adMetricReporter?.logAdResult(placementId: adRequest?.placementId ?? "", ad: nil, fill: false, isFromCache: false)
             }
         } catch {
+            MSPLogger.shared.info(message: "[Adapter: Nova] Fail to load Nova ad")
             self.adListener?.onError(msg: "error decode nova ad string")
             self.adMetricReporter?.logAdResult(placementId: adRequest?.placementId ?? "", ad: nil, fill: false, isFromCache: false)
         }

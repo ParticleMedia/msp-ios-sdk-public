@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		6614C9AE2D820D0F00FC85DF /* MSPConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6614C9AD2D820D0800FC85DF /* MSPConstants.swift */; };
+		662D913E2D8E16F500251DC3 /* MSPLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 662D913D2D8E16E700251DC3 /* MSPLogger.swift */; };
 		664F33432C4992E60014E1BA /* NativeAdView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 664F33422C4992E60014E1BA /* NativeAdView.swift */; };
 		664F33512C4EDAAF0014E1BA /* AdCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 664F33502C4EDAAF0014E1BA /* AdCache.swift */; };
 		664F33542C4EDD2E0014E1BA /* utilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = 664F33532C4EDD2E0014E1BA /* utilities.swift */; };
@@ -68,6 +69,7 @@
 
 /* Begin PBXFileReference section */
 		6614C9AD2D820D0800FC85DF /* MSPConstants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MSPConstants.swift; sourceTree = "<group>"; };
+		662D913D2D8E16E700251DC3 /* MSPLogger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MSPLogger.swift; sourceTree = "<group>"; };
 		664F33422C4992E60014E1BA /* NativeAdView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NativeAdView.swift; sourceTree = "<group>"; };
 		664F33502C4EDAAF0014E1BA /* AdCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdCache.swift; sourceTree = "<group>"; };
 		664F33532C4EDD2E0014E1BA /* utilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = utilities.swift; sourceTree = "<group>"; };
@@ -139,6 +141,7 @@
 		664F33522C4EDD040014E1BA /* util */ = {
 			isa = PBXGroup;
 			children = (
+				662D913D2D8E16E700251DC3 /* MSPLogger.swift */,
 				664F33532C4EDD2E0014E1BA /* utilities.swift */,
 			);
 			path = util;
@@ -395,6 +398,7 @@
 				665753642BF0B4BD00338B1C /* AdNetwork.swift in Sources */,
 				66EFCDA92D1244BC005E0135 /* AuctionBidListener.swift in Sources */,
 				665753622BF0B47C00338B1C /* AdapterInitListener.swift in Sources */,
+				662D913E2D8E16F500251DC3 /* MSPLogger.swift in Sources */,
 				665753742BF1A44700338B1C /* MSPInitStatus.swift in Sources */,
 				66EFCDAF2D124817005E0135 /* Auction.swift in Sources */,
 				665753702BF1A26C00338B1C /* Geo.swift in Sources */,

@@ -227,6 +227,7 @@ import Foundation
 
 extension FacebookAdapter: FBNativeAdDelegate {
     public func nativeAdDidLoad(_ nativeAd: FBNativeAd) {
+        MSPLogger.shared.info(message: "[Adapter: Facebook] successfully loaded Facebook Native ad")
         DispatchQueue.main.async {
             let mediaView = FBMediaView(frame: .zero)
             mediaView.translatesAutoresizingMaskIntoConstraints = false
@@ -252,6 +253,7 @@ extension FacebookAdapter: FBNativeAdDelegate {
     }
     
     public func nativeAd(_ nativeAd: FBNativeAd, didFailWithError error: Error) {
+        MSPLogger.shared.info(message: "[Adapter: Facebook] Fail to load Facebook Native ad")
         self.adListener?.onError(msg: error.localizedDescription)
     }
     
@@ -276,6 +278,7 @@ extension FacebookAdapter: FBNativeAdDelegate {
 extension FacebookAdapter: FBInterstitialAdDelegate {
     public func interstitialAdDidLoad(_ interstitialAd: FBInterstitialAd) {
         DispatchQueue.main.async {
+            MSPLogger.shared.info(message: "[Adapter: Facebook] successfully loaded Facebook Interstitial ad")
             var facebookInterstitialAd = FacebookInterstitialAd(adNetworkAdapter: self)
             facebookInterstitialAd.interstitialAdItem = interstitialAd
             interstitialAd.delegate = self
@@ -297,6 +300,7 @@ extension FacebookAdapter: FBInterstitialAdDelegate {
     }
     
     public func interstitialAd(_ interstitialAd: FBInterstitialAd, didFailWithError error: Error) {
+        MSPLogger.shared.info(message: "[Adapter: Facebook] Fail to load Facebook Interstitial ad")
         self.adListener?.onError(msg: error.localizedDescription)
         self.adMetricReporter?.logAdResult(placementId: adRequest?.placementId ?? "", ad: nil, fill: false, isFromCache: false)
     }

@@ -238,6 +238,7 @@ extension MintegralAdapter: MTGBannerAdViewDelegate {
         DispatchQueue.main.async {
             guard let auctionBidListener = self.auctionBidListener else {return}
             if let bannerView = self.bannerView {
+                MSPLogger.shared.info(message: "[Adapter: Mintegral] successfully loaded Mintegral Banner ad")
                 let bannerAd = BannerAd(adView: bannerView, adNetworkAdapter: self)
                 self.bannerAd = bannerAd
                 bannerAd.adInfo["price"] = self.mtgBidResponse?.price ?? 0.0
@@ -247,6 +248,7 @@ extension MintegralAdapter: MTGBannerAdViewDelegate {
     }
 
     public func adViewLoadFailedWithError(_ error: (any Error)!, adView: MTGBannerAdView!) {
+        MSPLogger.shared.info(message: "[Adapter: Mintegral] Fail to load Mintegral banner ad")
         self.auctionBidListener?.onError(error: "fail to load ad")
     }
 
@@ -299,6 +301,7 @@ extension MintegralAdapter: MTGNewInterstitialBidAdDelegate {
             guard let auctionBidListener = self.auctionBidListener else {return}
             
             if let mintegralInterstitialAdManager = self.mintegralInterstitialAdManager {
+                MSPLogger.shared.info(message: "[Adapter: Mintegral] successfully loaded Mintegral Interstitial ad")
                 let interstitialAd = MintegralInterstitialAd(adNetworkAdapter: self)
                 interstitialAd.mintegralInterstitialAdManager = mintegralInterstitialAdManager
                 interstitialAd.rootViewController = self.adListener?.getRootViewController()
@@ -310,6 +313,7 @@ extension MintegralAdapter: MTGNewInterstitialBidAdDelegate {
     }
 
     public func newInterstitialAdLoadFail(_ error: NSError, _ adManager: MTGNewInterstitialAdManager) {
+        MSPLogger.shared.info(message: "[Adapter: Mintegral] Fail to load Mintegral Interstitial ad")
         self.auctionBidListener?.onError(error: "fail to load ad")
     }
     
@@ -347,6 +351,7 @@ extension MintegralAdapter: MTGNewInterstitialBidAdDelegate {
 extension MintegralAdapter: MTGBidNativeAdManagerDelegate, MTGMediaViewDelegate {
     public func nativeAdsLoaded(_ nativeAds: [Any]?, bidNativeManager: MTGBidNativeAdManager) {
         if let nativeAdItem = nativeAds?[0] as? MTGCampaign {
+            MSPLogger.shared.info(message: "[Adapter: Mintegral] successfully loaded Mintegral Native ad")
             DispatchQueue.main.async{
                 self.nativeAdItem = nativeAdItem
                 if let auctionBidListener = self.auctionBidListener {
@@ -371,6 +376,7 @@ extension MintegralAdapter: MTGBidNativeAdManagerDelegate, MTGMediaViewDelegate 
     }
     
     public func nativeAdsFailedToLoadWithError(_ error: Error, bidNativeManager: MTGBidNativeAdManager) {
+        MSPLogger.shared.info(message: "[Adapter: Mintegral] Fail to load Mintegral Native ad")
         self.auctionBidListener?.onError(error: "fail to load ad")
     }
     
