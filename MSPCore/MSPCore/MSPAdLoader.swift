@@ -110,9 +110,10 @@ public class MSPAdLoader: NSObject {
     }
     
     public func getAd(placementId: String) -> MSPAd? {
-        
+        MSPLogger.shared.info(message: "[Auction: Get Ad] started.")
         var winnerPlacementId = ""
         var winnerPrice = 0.0
+        var winnerBidderName = ""
         if let placement = getPlacement(placementId: placementId),
            let bidderInfoList = placement.bidders {
             for bidderInfo in bidderInfoList {
@@ -122,9 +123,11 @@ public class MSPAdLoader: NSObject {
                    price > winnerPrice {
                     winnerPrice = price
                     winnerPlacementId = bidderPlacementId
+                    winnerBidderName = bidderInfo.name
                 }
             }
             if let ad = AdCache.shared.getAd(placementId: winnerPlacementId) {
+                MSPLogger.shared.info(message: "[Auction: Get Ad] complete, winner: \(winnerBidderName),\(winnerPrice),\(winnerPlacementId)")
                 return ad
             }
         }

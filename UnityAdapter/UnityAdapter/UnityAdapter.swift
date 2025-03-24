@@ -191,6 +191,7 @@ extension UnityAdapter: LPMBannerAdViewDelegate, LPMInterstitialAdDelegate {
                 let bannerAd = BannerAd(adView: bannerView, adNetworkAdapter: self)
                 self.bannerAd = bannerAd
                 bannerAd.adInfo["price"] = adInfo.revenue
+                MSPLogger.shared.info(message: "[Adapter: Unity] successfully loaded Unity Banner ad")
                 self.handleAdLoaded(ad: bannerAd, auctionBidListener: auctionBidListener, bidderPlacementId: self.bidderPlacementId ?? "unity_placement_id")
             } else if let interstitialAdItem = self.interstitialAdItem,
                       let auctionBidListener = self.auctionBidListener {
@@ -199,6 +200,7 @@ extension UnityAdapter: LPMBannerAdViewDelegate, LPMInterstitialAdDelegate {
                 interstitialAd.rootViewController = self.adListener?.getRootViewController()
                 self.interstitialAd = interstitialAd
                 interstitialAd.adInfo["price"] = adInfo.revenue
+                MSPLogger.shared.info(message: "[Adapter: Unity] successfully loaded Unity Interstitial ad")
                 self.handleAdLoaded(ad: interstitialAd, auctionBidListener: auctionBidListener, bidderPlacementId: self.bidderPlacementId ?? "unity_placement_id")
             }
         }
@@ -206,6 +208,7 @@ extension UnityAdapter: LPMBannerAdViewDelegate, LPMInterstitialAdDelegate {
     
     public func didFailToLoadAd(withAdUnitId adUnitId: String, error: any Error) {
         self.bannerView?.pauseAutoRefresh()
+        MSPLogger.shared.info(message: "[Adapter: Unity] Failed to loaded Unity Banner ad")
         self.auctionBidListener?.onError(error: "fail to load ad")
     }
     
@@ -269,6 +272,7 @@ extension UnityAdapter: LevelPlayNativeAdDelegate {
                    let adRequest = self.adRequest,
                    let auctionBidListener = self.auctionBidListener {
                     //handleAdLoaded(ad: googleNativeAd, listener: adListener, adRequest: adRequest)
+                    MSPLogger.shared.info(message: "[Adapter: Unity] successfully loaded Unity Native ad")
                     self.handleAdLoaded(ad: unityNativeAd, auctionBidListener: auctionBidListener, bidderPlacementId: self.bidderPlacementId ?? adRequest.placementId)
                     self.adMetricReporter?.logAdResult(placementId: adRequest.placementId, ad: unityNativeAd, fill: true, isFromCache: false)
                 }
@@ -279,6 +283,7 @@ extension UnityAdapter: LevelPlayNativeAdDelegate {
     
     public func didFail(toLoad nativeAd: LevelPlayNativeAd, withError error: any Error) {
         print(error.localizedDescription)
+        MSPLogger.shared.info(message: "[Adapter: Unity] Failed to load Unity Native ad")
         self.auctionBidListener?.onError(error: "fail to load ad")
     }
     

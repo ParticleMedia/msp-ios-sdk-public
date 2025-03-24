@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import MSPiOSCore
 
 
 public class MSPAdConfigManager {
@@ -17,6 +18,7 @@ public class MSPAdConfigManager {
     public func initAdConfig() {
         if let configString = UserDefaults.standard.string(forKey: MSP_AD_CONFIG_KEY) {
             parseAdConfig(string: configString)
+            MSPLogger.shared.info(message: "ad config loaded from local file: \(configString)")
         }
         
         fetchAdConfigData { result in
@@ -45,6 +47,7 @@ public class MSPAdConfigManager {
     }
     
     func fetchAdConfigData(completion: @escaping (Result<[String: Any], Error>) -> Void) {
+        MSPLogger.shared.info(message: "Fetching ad config from remote server....")
         let urlString = "https://msp-platform.newsbreak.com/getAdConfig"
         
         guard let url = URL(string: urlString) else {
