@@ -82,6 +82,7 @@ public class MSP {
         public func onComplete(adNetwork: AdNetwork, adapterInitStatus: AdapterInitStatus, message: String) {
             MSP.shared.numInitWaitingForCallbacks = MSP.shared.numInitWaitingForCallbacks - 1
             if MSP.shared.numInitWaitingForCallbacks == 0 {
+                MSPLogger.shared.info(message: "MSP SDK is initialized successfully")
                 MSP.shared.sdkInitListener?.onComplete(status: .SUCCESS, message: "")
             }
         }

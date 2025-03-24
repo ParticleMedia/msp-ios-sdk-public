@@ -164,6 +164,7 @@ extension InmobiAdapter: IMBannerDelegate {
         DispatchQueue.main.async {
             if let bannerView = self.bannerView,
                let auctionBidListener = self.auctionBidListener {
+                MSPLogger.shared.info(message: "[Adapter: Inmobi] successfully loaded Inmobi Banner ad")
                 let bannerAd = BannerAd(adView: bannerView, adNetworkAdapter: self)
                 self.bannerAd = bannerAd
                 let price = info.getBid()
@@ -176,6 +177,7 @@ extension InmobiAdapter: IMBannerDelegate {
 
 
     public func banner(_ banner: IMBanner, didFailToLoadWithError error: IMRequestStatus) {
+        MSPLogger.shared.info(message: "[Adapter: Inmobi] Fail to load Inmobi Banner ad")
         self.auctionBidListener?.onError(error: "fail to load ad")
         
     }
@@ -213,6 +215,7 @@ extension InmobiAdapter: IMInterstitialDelegate {
         DispatchQueue.main.async {
             if let interstitialAdItem = self.interstitialAdItem,
                let auctionBidListener = self.auctionBidListener {
+                MSPLogger.shared.info(message: "[Adapter: Inmobi] successfully loaded Inmobi Interstitial ad")
                 let interstitialAd = InmobiInterstitialAd(adNetworkAdapter: self)
                 interstitialAd.interstitialAdItem = interstitialAdItem
                 interstitialAd.rootViewController = self.adListener?.getRootViewController()
@@ -230,6 +233,7 @@ extension InmobiAdapter: IMInterstitialDelegate {
     }
 
     public func interstitial(_ interstitial: IMInterstitial, didFailToLoadWithError error: IMRequestStatus) {
+        MSPLogger.shared.info(message: "[Adapter: Inmobi] Fail to load Inmobi Interstitial ad")
         self.auctionBidListener?.onError(error: "fail to load ad")
     }
     
@@ -270,6 +274,7 @@ extension InmobiAdapter: IMNativeDelegate {
         DispatchQueue.main.async {
             self.nativeAdItem = native
             if let auctionBidListener = self.auctionBidListener {
+                MSPLogger.shared.info(message: "[Adapter: Inmobi] successfully loaded Inmobi Native ad")
                 let inmobiNativeAd = InmobiNativeAd(adNetworkAdapter: self,
                                                     title: native.adTitle ?? "",
                                                     body: native.adDescription ?? "",
@@ -296,6 +301,7 @@ extension InmobiAdapter: IMNativeDelegate {
     }
 
     public func native(_ native: IMNative, didFailToLoadWithError error: IMRequestStatus) {
+        MSPLogger.shared.info(message: "[Adapter: Inmobi] Fail to load Inmobi Native ad")
         self.auctionBidListener?.onError(error: "fail to load ad")
     }
 

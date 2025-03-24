@@ -8,6 +8,7 @@ import UIKit
 import _Concurrency
 import _StringProcessing
 import _SwiftConcurrencyShims
+import os
 public protocol LoadAdParameters : MSPiOSCore.AdapterParameters {
   func getAdUnitId() -> Swift.String
   func getThirdPartyAdPlacementId() -> Swift.String
@@ -290,6 +291,24 @@ public protocol AuctionBidListener : AnyObject {
 }
 public protocol AdapterInitListener : AnyObject {
   func onComplete(adNetwork: MSPiOSCore.AdNetwork, adapterInitStatus: MSPiOSCore.AdapterInitStatus, message: Swift.String)
+}
+@_hasMissingDesignatedInitializers public class MSPLogger {
+  public static let shared: MSPiOSCore.MSPLogger
+  public static let DEBUG: Swift.Int
+  public static let INFO: Swift.Int
+  public static let ERROR: Swift.Int
+  public static let FAULT: Swift.Int
+  public static let NONE: Swift.Int
+  public func setLogLevel(level: Swift.Int)
+  public func debug(message: Swift.String)
+  public func info(message: Swift.String)
+  public func error(message: Swift.String)
+  public func fault(message: Swift.String)
+  public func debug(tag: Swift.String, message: Swift.String)
+  public func info(tag: Swift.String, message: Swift.String)
+  public func error(tag: Swift.String, message: Swift.String)
+  public func fault(tag: Swift.String, message: Swift.String)
+  @objc deinit
 }
 public enum MSPInitStatus {
   case SUCCESS
