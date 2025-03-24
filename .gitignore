@@ -1,6 +1,6 @@
 .DS_Store
 output/
-outputMSPiOSCore
+outputMSPiOSCore/
 outputNova/
 *.xcscmblueprint
 *.xccheckout
