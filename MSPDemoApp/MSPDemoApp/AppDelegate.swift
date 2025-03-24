@@ -42,7 +42,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         MSP.shared.bidLoaderProvider.facebookBidTokenProvider = FacebookBidTokenProviderHelper()
         
         //MSP.shared.setUnityManager(unityManager: UnityManager())
-        
+        MSPLogger.shared.setLogLevel(level: MSPLogger.DEBUG)
         MSP.shared.initMSP(initParams: mspInitParameters, sdkInitListener: nil, adNetworkManagers: adNetworkManagers)
         window = UIWindow(frame: UIScreen.main.bounds)
         self.window?.makeKeyAndVisible()

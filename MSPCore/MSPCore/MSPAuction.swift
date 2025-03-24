@@ -21,6 +21,7 @@ public class MSPAuction: Auction {
 
     
     public override func startAuction(auctionListener: any AuctionListener, adListener: (any AdListener)?) {
+        MSPLogger.shared.info(message: "[Auction: Load Ad] started")
         auctionBidList = [AuctionBid]()
         remainingTaskCnt = bidders.count
         for bidder in bidders {
@@ -32,8 +33,10 @@ public class MSPAuction: Auction {
             self?.isTimeout = true
             self?.biddingDispatchQueue.async {
                 if let winnerBid = self?.getWinnerBid() {
+                    MSPLogger.shared.info(message: "[Auction: Load Ad] time out. winner: \(winnerBid.bidderName),\(winnerBid.ecpm),\(winnerBid.bidderPlacementId)")
                     auctionListener.onSuccess(winningBid: winnerBid)
                 } else {
+                    MSPLogger.shared.info(message: "[Auction: Load Ad] time out. No winning bid")
                     auctionListener.onError(error: "request time out: client auction no winning bid")
                 }
             }
@@ -49,8 +52,10 @@ public class MSPAuction: Auction {
             }
             timeoutWorkItem.cancel()
             if let winnerBid = self?.getWinnerBid() {
+                MSPLogger.shared.info(message: "[Auction: Load Ad] completed. winner: \(winnerBid.bidderName),\(winnerBid.ecpm),\(winnerBid.bidderPlacementId)")
                 auctionListener.onSuccess(winningBid: winnerBid)
             } else {
+                MSPLogger.shared.info(message: "[Auction: Load Ad] completed. No winning bid")
                 auctionListener.onError(error: "client auction no winning bid")
             }
             
@@ -58,7 +63,9 @@ public class MSPAuction: Auction {
     }
     
     private func fetchBid(bidder: Bidder, cacheOnly: Bool, auctionBidListener: AuctionBidListener, adListener: AdListener?) {
+        MSPLogger.shared.info(message: "[Auction: Load Ad] Fetching bid from bidder: \(bidder.name). bidderPlacementId: \(bidder.bidderPlacementId)")
         if let cachedAd = AdCache.shared.peakAd(placementId: bidder.bidderPlacementId) {
+            MSPLogger.shared.info(message: "[Auction: Load Ad] Ad filled from cache: \(bidder.name), price: \(cachedAd.adInfo["price"]), bidderPlacementId:\(bidder.bidderPlacementId)")
             let auctionBid = AuctionBid(bidderName: bidder.name, bidderPlacementId: bidder.bidderPlacementId, ecpm: cachedAd.adInfo["price"] as? Double ?? 0.0)
             auctionBidListener.onSuccess(bid: auctionBid)
         } else if cacheOnly {
@@ -87,6 +94,7 @@ public class MSPAuction: Auction {
 
 extension MSPAuction: AuctionBidListener {
     public func onSuccess(bid: MSPiOSCore.AuctionBid) {
+        MSPLogger.shared.info(message: "[Auction] Ads filled from bidder: \(bid.bidderName). bidderPlacementId: \(bid.bidderPlacementId)")
         self.biddingDispatchQueue.async {
             self.taskLock.lock()
             if self.remainingTaskCnt > 0 {

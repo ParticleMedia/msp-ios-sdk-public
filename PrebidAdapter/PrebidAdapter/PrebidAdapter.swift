@@ -121,6 +121,7 @@ extension PrebidAdapter: BannerViewDelegate {
     }
     
     @objc public func bannerView(_ bannerView: BannerView, didReceiveAdWithAdSize adSize: CGSize) {
+        MSPLogger.shared.info(message: "[Adapter: Prebid] successfully loaded Prebid Banner ad")
         DispatchQueue.main.async {
             var prebidAd = BannerAd(adView: bannerView, adNetworkAdapter: self)
             self.bannerAd = prebidAd
@@ -146,7 +147,7 @@ extension PrebidAdapter: BannerViewDelegate {
     }
     
     @objc public func bannerView(_ bannerView: BannerView, didFailToReceiveAdWith error: Error) {
-        //adListener?.onError(msg: error.localizedDescription)
+        MSPLogger.shared.info(message: "[Adapter: Prebid] Fail to load Prebid Banner ad")
         self.auctionBidListener?.onError(error: "fail to get ad")
         adMetricReporter?.logAdResult(placementId: adRequest?.placementId ?? "", ad: nil, fill: false, isFromCache: false)
     }

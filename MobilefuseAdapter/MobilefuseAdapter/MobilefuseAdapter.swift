@@ -172,7 +172,7 @@ extension MobilefuseAdapter: IMFAdCallbackReceiver {
             guard let auctionBidListener = self.auctionBidListener else {return}
             if ad is MFBannerAd,
                let bannerView = self.bannerView {
-                
+                MSPLogger.shared.info(message: "[Adapter: Mobilefuse] successfully loaded Mobilefuse Banner ad")
                 let bannerAd = MobilefuseBannerAd(adView: bannerView, adNetworkAdapter: self)
                 self.bannerAd = bannerAd
                 bannerAd.adInfo["price"] = self.price
@@ -180,6 +180,7 @@ extension MobilefuseAdapter: IMFAdCallbackReceiver {
                 self.handleAdLoaded(ad: bannerAd, auctionBidListener: auctionBidListener, bidderPlacementId: self.bidderPlacementId ?? "mobilefuse_placement_id")
             } else if ad is MFInterstitialAd,
                       let interstitialAdItem = self.interstitialAdItem {
+                MSPLogger.shared.info(message: "[Adapter: Mobilefuse] successfully loaded Mobilefuse Interstitial ad")
                 let interstitialAd = MobilefuseInterstitialAd(adNetworkAdapter: self)
                 interstitialAd.interstitialAdItem = interstitialAdItem
                 interstitialAd.rootViewController = self.adListener?.getRootViewController()
@@ -188,6 +189,7 @@ extension MobilefuseAdapter: IMFAdCallbackReceiver {
                 self.handleAdLoaded(ad: interstitialAd, auctionBidListener: auctionBidListener, bidderPlacementId: self.bidderPlacementId ?? "mobilefuse_placement_id")
             } else if ad is MFNativeAd,
                       let nativeAdItem = self.nativeAdItem {
+                MSPLogger.shared.info(message: "[Adapter: Mobilefuse] successfully loaded Mobilefuse Native ad")
                 DispatchQueue.main.async {
                     if let auctionBidListener = self.auctionBidListener {
                         let mobilefuseNativeAd = MobilefuseNativeAd(adNetworkAdapter: self,
@@ -217,6 +219,13 @@ extension MobilefuseAdapter: IMFAdCallbackReceiver {
     }
 
     public func onAdNotFilled(_ ad: MFAd) {
+        if ad is MFBannerAd {
+            MSPLogger.shared.info(message: "[Adapter: Mobilefuse] Fail to load Mobilefuse Banner ad")
+        } else if ad is MFInterstitialAd {
+            MSPLogger.shared.info(message: "[Adapter: Mobilefuse] Fail to load Mobilefuse Interstitial ad")
+        } else if ad is MFNativeAd {
+            MSPLogger.shared.info(message: "[Adapter: Mobilefuse] Fail to load Mobilefuse Native ad")
+        }
         self.auctionBidListener?.onError(error: "fail to load ad")
     }
     

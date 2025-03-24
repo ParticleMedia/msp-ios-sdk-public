@@ -149,17 +149,21 @@ import PrebidMobile
                     guard let self else { return }
 
                     if let error {
+                        MSPLogger.shared.info(message: "[Adapter: Google] Fail to load Google Interstitial ad")
                         self.adListener?.onError(msg: error.localizedDescription)
                         self.adMetricReporter?.logAdResult(placementId: adRequest.placementId ?? "", ad: nil, fill: false, isFromCache: false)
                         return
                     }
 
                     guard let ad else {
+                        MSPLogger.shared.info(message: "[Adapter: Google] Fail to load Google Interstitial ad")
                         self.adListener?.onError(msg: "Missing ad")
                         self.adMetricReporter?.logAdResult(placementId: adRequest.placementId ?? "", ad: nil, fill: false, isFromCache: false)
                         return
                     }
-
+                    
+                    MSPLogger.shared.info(message: "[Adapter: Google] successfully loaded Google Interstitial ad")
+                    
                     DispatchQueue.main.async {
                         self.priceInDollar = Double(mBidResponse.winningBid?.price ?? 0)
                         var googleInterstitialAd = GoogleInterstitialAd(adNetworkAdapter: self)
@@ -259,6 +263,7 @@ import PrebidMobile
 
 extension GoogleAdapter : GADBannerViewDelegate {
     public func bannerViewDidReceiveAd(_ bannerView: GADBannerView) {
+        MSPLogger.shared.info(message: "[Adapter: Google] successfully loaded Google Banner ad")
         DispatchQueue.main.async {
             var bannerAd = BannerAd(adView: bannerView, adNetworkAdapter: self)
             self.bannerAd = bannerAd
@@ -277,6 +282,7 @@ extension GoogleAdapter : GADBannerViewDelegate {
     }
     
     public func bannerView(_ bannerView: GADBannerView, didFailToReceiveAdWithError error: Error) {
+        MSPLogger.shared.info(message: "[Adapter: Google] Fail to load Google Banner ad")
         self.adListener?.onError(msg: error.localizedDescription)
         self.adMetricReporter?.logAdResult(placementId: adRequest?.placementId ?? "", ad: nil, fill: false, isFromCache: false)
     }
@@ -307,6 +313,7 @@ extension GoogleAdapter : GADBannerViewDelegate {
 
 extension GoogleAdapter: GADNativeAdLoaderDelegate {
     public func adLoader(_ adLoader: GADAdLoader, didReceive nativeAd: GADNativeAd) {
+        MSPLogger.shared.info(message: "[Adapter: Google] successfully loaded Google Native ad")
         DispatchQueue.main.async {
             let mediaView = GADMediaView()
             mediaView.translatesAutoresizingMaskIntoConstraints = false
@@ -338,6 +345,7 @@ extension GoogleAdapter: GADNativeAdLoaderDelegate {
     }
     
     public func adLoader(_ adLoader: GADAdLoader, didFailToReceiveAdWithError error: any Error) {
+        MSPLogger.shared.info(message: "[Adapter: Google] Fail to load Google Native ad")
         self.adListener?.onError(msg: error.localizedDescription)
         self.adMetricReporter?.logAdResult(placementId: adRequest?.placementId ?? "", ad: nil, fill: false, isFromCache: false)
     }
@@ -398,6 +406,7 @@ extension GoogleAdapter: GAMBannerAdLoaderDelegate {
     }
     
     public func adLoader(_ adLoader: GADAdLoader, didReceive bannerView: GAMBannerView) {
+        MSPLogger.shared.info(message: "[Adapter: Google] successfully loaded Google Banner ad")
         DispatchQueue.main.async {
             var bannerAd = BannerAd(adView: bannerView, adNetworkAdapter: self)
             self.bannerAd = bannerAd

@@ -200,6 +200,7 @@ extension PubmaticAdapter: POBBannerViewDelegate {
                 let bannerAd = BannerAd(adView: bannerView, adNetworkAdapter: self)
                 self.bannerAd = bannerAd
                 bannerAd.adInfo["price"] = bannerView.bid().price.doubleValue
+                MSPLogger.shared.info(message: "[Adapter: Pubmatic] successfully loaded Pubmatic Banner ad")
                 self.handleAdLoaded(ad: bannerAd, auctionBidListener: auctionBidListener, bidderPlacementId: self.bidderPlacementId ?? "pubmatic_placement_id")
             } else {
                 self.auctionBidListener?.onError(error: "fail to load ad")
@@ -210,6 +211,7 @@ extension PubmaticAdapter: POBBannerViewDelegate {
 
     public func bannerView(_ bannerView: POBBannerView, didFailToReceiveAdWithError error: Error) {
         self.bannerView?.pauseAutoRefresh()
+        MSPLogger.shared.info(message: "[Adapter: Pubmatic] Fail to load Pubmatic Banner ad")
         self.auctionBidListener?.onError(error: "fail to load ad")
     }
     
@@ -250,6 +252,7 @@ extension PubmaticAdapter: POBInterstitialDelegate {
                 interstitialAd.rootViewController = self.adListener?.getRootViewController()
                 self.interstitialAd = interstitialAd
                 interstitialAd.adInfo["price"] = interstitial.bid().price.doubleValue
+                MSPLogger.shared.info(message: "[Adapter: Pubmatic] successfully loaded Pubmatic Interstitial ad")
                 self.handleAdLoaded(ad: interstitialAd, auctionBidListener: auctionBidListener, bidderPlacementId: self.bidderPlacementId ?? "pubmatic")
             } else {
                 self.auctionBidListener?.onError(error: "fail to load ad")
@@ -259,6 +262,7 @@ extension PubmaticAdapter: POBInterstitialDelegate {
 
     // Notifies the delegate an error occurred while loading an ad.
     public func interstitial(_ interstitial: POBInterstitial, didFailToReceiveAdWithError error: Error) {
+        MSPLogger.shared.info(message: "[Adapter: Pubmatic] Fail to load Pubmatic Banner ad")
         self.auctionBidListener?.onError(error: "fail to load ad")
     }
     
@@ -314,15 +318,15 @@ extension PubmaticAdapter: POBNativeAdLoaderDelegate {
                 if let adListener = self.adListener,
                    let adRequest = self.adRequest,
                    let auctionBidListener = self.auctionBidListener {
-                    //handleAdLoaded(ad: googleNativeAd, listener: adListener, adRequest: adRequest)
+                    MSPLogger.shared.info(message: "[Adapter: Pubmatic] successfully loaded Pubmatic Native ad")
                     self.handleAdLoaded(ad: pubmaticNativeAd, auctionBidListener: auctionBidListener, bidderPlacementId: self.bidderPlacementId ?? adRequest.placementId)
-                    //self.adMetricReporter?.logAdResult(placementId: adRequest.placementId, ad: pubmaticNativeAd, fill: true, isFromCache: false)
                 }
             }
         }
     }
 
     public func nativeAdLoader(_ adLoader: POBNativeAdLoader, didFailToReceiveAdWithError error: Error) {
+        MSPLogger.shared.info(message: "[Adapter: Pubmatic] Fail to load Pubmatic Native ad")
         self.auctionBidListener?.onError(error: "fail to load ad")
     }
 
