@@ -218,7 +218,7 @@ import PrebidMobile
         
         do {
             let tracingData = try eventModel.serializedData()
-            report(event: .adHide, with: tracingData) { success, error in
+            report(event: .adReport, with: tracingData) { success, error in
                
             }
         } catch {
