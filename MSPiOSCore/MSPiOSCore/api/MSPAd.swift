@@ -4,6 +4,7 @@
 //
 //  Created by Huanzhi Zhang on 5/11/24.
 //
+import Foundation
 
 open class MSPAd {
     
@@ -19,5 +20,13 @@ open class MSPAd {
 
     public func destroy() {
         adNetworkAdapter?.destroyAd()
+    }
+    
+    public func sendHideAdEvent(reason: String, adScreenShot: Data? = nil, fullScreenShot: Data? = nil) {
+        adNetworkAdapter?.sendHideAdEvent(reason: reason, adScreenShot: adScreenShot, fullScreenShot: fullScreenShot)
+    }
+    
+    public func sendReportAdEvent(reason: String, description: String?, adScreenShot: Data? = nil, fullScreenShot: Data? = nil) {
+        adNetworkAdapter?.sendReportAdEvent(reason: reason, description: description, adScreenShot: adScreenShot, fullScreenShot: fullScreenShot)
     }
 }

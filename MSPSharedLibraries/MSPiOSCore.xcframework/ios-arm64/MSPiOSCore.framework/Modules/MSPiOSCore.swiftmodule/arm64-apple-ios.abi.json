@@ -3537,6 +3537,164 @@
             "protocolReq": true,
             "reqNewWitnessTableEntry": true,
             "funcSelfKind": "NonMutating"
+          },
+          {
+            "kind": "Function",
+            "name": "logAdHide",
+            "printedName": "logAdHide(ad:adRequest:bidResponse:reason:adScreenShot:fullScreenShot:)",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Void",
+                "printedName": "()"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "MSPAd",
+                "printedName": "MSPiOSCore.MSPAd",
+                "usr": "s:10MSPiOSCore5MSPAdC"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "AdRequest",
+                "printedName": "MSPiOSCore.AdRequest",
+                "usr": "s:10MSPiOSCore9AdRequestC"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "ProtocolComposition",
+                "printedName": "Any"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "String",
+                "printedName": "Swift.String",
+                "usr": "s:SS"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "Optional",
+                "printedName": "Foundation.Data?",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Data",
+                    "printedName": "Foundation.Data",
+                    "usr": "s:10Foundation4DataV"
+                  }
+                ],
+                "usr": "s:Sq"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "Optional",
+                "printedName": "Foundation.Data?",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Data",
+                    "printedName": "Foundation.Data",
+                    "usr": "s:10Foundation4DataV"
+                  }
+                ],
+                "usr": "s:Sq"
+              }
+            ],
+            "declKind": "Func",
+            "usr": "s:10MSPiOSCore16AdMetricReporterP03logC4Hide2ad0H7Request11bidResponse6reason0H10ScreenShot04fullmN0yAA5MSPAdC_AA0cI0CypSS10Foundation4DataVSgARtF",
+            "mangledName": "$s10MSPiOSCore16AdMetricReporterP03logC4Hide2ad0H7Request11bidResponse6reason0H10ScreenShot04fullmN0yAA5MSPAdC_AA0cI0CypSS10Foundation4DataVSgARtF",
+            "moduleName": "MSPiOSCore",
+            "genericSig": "<τ_0_0 where τ_0_0 : MSPiOSCore.AdMetricReporter>",
+            "sugared_genericSig": "<Self where Self : MSPiOSCore.AdMetricReporter>",
+            "protocolReq": true,
+            "reqNewWitnessTableEntry": true,
+            "funcSelfKind": "NonMutating"
+          },
+          {
+            "kind": "Function",
+            "name": "logAdReport",
+            "printedName": "logAdReport(ad:adRequest:bidResponse:reason:description:adScreenShot:fullScreenShot:)",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Void",
+                "printedName": "()"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "MSPAd",
+                "printedName": "MSPiOSCore.MSPAd",
+                "usr": "s:10MSPiOSCore5MSPAdC"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "AdRequest",
+                "printedName": "MSPiOSCore.AdRequest",
+                "usr": "s:10MSPiOSCore9AdRequestC"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "ProtocolComposition",
+                "printedName": "Any"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "String",
+                "printedName": "Swift.String",
+                "usr": "s:SS"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "Optional",
+                "printedName": "Swift.String?",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "String",
+                    "printedName": "Swift.String",
+                    "usr": "s:SS"
+                  }
+                ],
+                "usr": "s:Sq"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "Optional",
+                "printedName": "Foundation.Data?",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Data",
+                    "printedName": "Foundation.Data",
+                    "usr": "s:10Foundation4DataV"
+                  }
+                ],
+                "usr": "s:Sq"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "Optional",
+                "printedName": "Foundation.Data?",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Data",
+                    "printedName": "Foundation.Data",
+                    "usr": "s:10Foundation4DataV"
+                  }
+                ],
+                "usr": "s:Sq"
+              }
+            ],
+            "declKind": "Func",
+            "usr": "s:10MSPiOSCore16AdMetricReporterP03logC6Report2ad0H7Request11bidResponse6reason11description0H10ScreenShot04fullnO0yAA5MSPAdC_AA0cI0CypS2SSg10Foundation4DataVSgATtF",
+            "mangledName": "$s10MSPiOSCore16AdMetricReporterP03logC6Report2ad0H7Request11bidResponse6reason11description0H10ScreenShot04fullnO0yAA5MSPAdC_AA0cI0CypS2SSg10Foundation4DataVSgATtF",
+            "moduleName": "MSPiOSCore",
+            "genericSig": "<τ_0_0 where τ_0_0 : MSPiOSCore.AdMetricReporter>",
+            "sugared_genericSig": "<Self where Self : MSPiOSCore.AdMetricReporter>",
+            "protocolReq": true,
+            "reqNewWitnessTableEntry": true,
+            "funcSelfKind": "NonMutating"
           }
         ],
         "declKind": "Protocol",
@@ -4266,6 +4424,130 @@
             "declKind": "Func",
             "usr": "s:10MSPiOSCore16AdNetworkAdapterP03getcD0AA0cD0OyF",
             "mangledName": "$s10MSPiOSCore16AdNetworkAdapterP03getcD0AA0cD0OyF",
+            "moduleName": "MSPiOSCore",
+            "genericSig": "<τ_0_0 where τ_0_0 : MSPiOSCore.AdNetworkAdapter>",
+            "sugared_genericSig": "<Self where Self : MSPiOSCore.AdNetworkAdapter>",
+            "protocolReq": true,
+            "reqNewWitnessTableEntry": true,
+            "funcSelfKind": "NonMutating"
+          },
+          {
+            "kind": "Function",
+            "name": "sendHideAdEvent",
+            "printedName": "sendHideAdEvent(reason:adScreenShot:fullScreenShot:)",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Void",
+                "printedName": "()"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "String",
+                "printedName": "Swift.String",
+                "usr": "s:SS"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "Optional",
+                "printedName": "Foundation.Data?",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Data",
+                    "printedName": "Foundation.Data",
+                    "usr": "s:10Foundation4DataV"
+                  }
+                ],
+                "usr": "s:Sq"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "Optional",
+                "printedName": "Foundation.Data?",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Data",
+                    "printedName": "Foundation.Data",
+                    "usr": "s:10Foundation4DataV"
+                  }
+                ],
+                "usr": "s:Sq"
+              }
+            ],
+            "declKind": "Func",
+            "usr": "s:10MSPiOSCore16AdNetworkAdapterP08sendHideC5Event6reason12adScreenShot04fullkL0ySS_10Foundation4DataVSgAKtF",
+            "mangledName": "$s10MSPiOSCore16AdNetworkAdapterP08sendHideC5Event6reason12adScreenShot04fullkL0ySS_10Foundation4DataVSgAKtF",
+            "moduleName": "MSPiOSCore",
+            "genericSig": "<τ_0_0 where τ_0_0 : MSPiOSCore.AdNetworkAdapter>",
+            "sugared_genericSig": "<Self where Self : MSPiOSCore.AdNetworkAdapter>",
+            "protocolReq": true,
+            "reqNewWitnessTableEntry": true,
+            "funcSelfKind": "NonMutating"
+          },
+          {
+            "kind": "Function",
+            "name": "sendReportAdEvent",
+            "printedName": "sendReportAdEvent(reason:description:adScreenShot:fullScreenShot:)",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Void",
+                "printedName": "()"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "String",
+                "printedName": "Swift.String",
+                "usr": "s:SS"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "Optional",
+                "printedName": "Swift.String?",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "String",
+                    "printedName": "Swift.String",
+                    "usr": "s:SS"
+                  }
+                ],
+                "usr": "s:Sq"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "Optional",
+                "printedName": "Foundation.Data?",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Data",
+                    "printedName": "Foundation.Data",
+                    "usr": "s:10Foundation4DataV"
+                  }
+                ],
+                "usr": "s:Sq"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "Optional",
+                "printedName": "Foundation.Data?",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Data",
+                    "printedName": "Foundation.Data",
+                    "usr": "s:10Foundation4DataV"
+                  }
+                ],
+                "usr": "s:Sq"
+              }
+            ],
+            "declKind": "Func",
+            "usr": "s:10MSPiOSCore16AdNetworkAdapterP010sendReportC5Event6reason11description12adScreenShot04fulllM0ySS_SSSg10Foundation4DataVSgAMtF",
+            "mangledName": "$s10MSPiOSCore16AdNetworkAdapterP010sendReportC5Event6reason11description12adScreenShot04fulllM0ySS_SSSg10Foundation4DataVSgAMtF",
             "moduleName": "MSPiOSCore",
             "genericSig": "<τ_0_0 where τ_0_0 : MSPiOSCore.AdNetworkAdapter>",
             "sugared_genericSig": "<Self where Self : MSPiOSCore.AdNetworkAdapter>",
@@ -9031,6 +9313,16 @@
         ]
       },
       {
+        "kind": "Import",
+        "name": "Foundation",
+        "printedName": "Foundation",
+        "declKind": "Import",
+        "moduleName": "MSPiOSCore",
+        "declAttributes": [
+          "RawDocComment"
+        ]
+      },
+      {
         "kind": "TypeDecl",
         "name": "MSPAd",
         "printedName": "MSPAd",
@@ -9418,6 +9710,132 @@
               "AccessControl"
             ],
             "funcSelfKind": "NonMutating"
+          },
+          {
+            "kind": "Function",
+            "name": "sendHideAdEvent",
+            "printedName": "sendHideAdEvent(reason:adScreenShot:fullScreenShot:)",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Void",
+                "printedName": "()"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "String",
+                "printedName": "Swift.String",
+                "usr": "s:SS"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "Optional",
+                "printedName": "Foundation.Data?",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Data",
+                    "printedName": "Foundation.Data",
+                    "usr": "s:10Foundation4DataV"
+                  }
+                ],
+                "hasDefaultArg": true,
+                "usr": "s:Sq"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "Optional",
+                "printedName": "Foundation.Data?",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Data",
+                    "printedName": "Foundation.Data",
+                    "usr": "s:10Foundation4DataV"
+                  }
+                ],
+                "hasDefaultArg": true,
+                "usr": "s:Sq"
+              }
+            ],
+            "declKind": "Func",
+            "usr": "s:10MSPiOSCore5MSPAdC15sendHideAdEvent6reason12adScreenShot04fulljK0ySS_10Foundation4DataVSgAKtF",
+            "mangledName": "$s10MSPiOSCore5MSPAdC15sendHideAdEvent6reason12adScreenShot04fulljK0ySS_10Foundation4DataVSgAKtF",
+            "moduleName": "MSPiOSCore",
+            "declAttributes": [
+              "AccessControl"
+            ],
+            "funcSelfKind": "NonMutating"
+          },
+          {
+            "kind": "Function",
+            "name": "sendReportAdEvent",
+            "printedName": "sendReportAdEvent(reason:description:adScreenShot:fullScreenShot:)",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Void",
+                "printedName": "()"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "String",
+                "printedName": "Swift.String",
+                "usr": "s:SS"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "Optional",
+                "printedName": "Swift.String?",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "String",
+                    "printedName": "Swift.String",
+                    "usr": "s:SS"
+                  }
+                ],
+                "usr": "s:Sq"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "Optional",
+                "printedName": "Foundation.Data?",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Data",
+                    "printedName": "Foundation.Data",
+                    "usr": "s:10Foundation4DataV"
+                  }
+                ],
+                "hasDefaultArg": true,
+                "usr": "s:Sq"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "Optional",
+                "printedName": "Foundation.Data?",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Data",
+                    "printedName": "Foundation.Data",
+                    "usr": "s:10Foundation4DataV"
+                  }
+                ],
+                "hasDefaultArg": true,
+                "usr": "s:Sq"
+              }
+            ],
+            "declKind": "Func",
+            "usr": "s:10MSPiOSCore5MSPAdC17sendReportAdEvent6reason11description12adScreenShot04fullkL0ySS_SSSg10Foundation4DataVSgAMtF",
+            "mangledName": "$s10MSPiOSCore5MSPAdC17sendReportAdEvent6reason11description12adScreenShot04fullkL0ySS_SSSg10Foundation4DataVSgAMtF",
+            "moduleName": "MSPiOSCore",
+            "declAttributes": [
+              "AccessControl"
+            ],
+            "funcSelfKind": "NonMutating"
           }
         ],
         "declKind": "Class",
@@ -9426,8 +9844,7 @@
         "moduleName": "MSPiOSCore",
         "isOpen": true,
         "declAttributes": [
-          "AccessControl",
-          "RawDocComment"
+          "AccessControl"
         ],
         "conformances": [
           {

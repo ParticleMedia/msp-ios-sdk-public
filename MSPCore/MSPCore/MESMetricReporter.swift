@@ -20,6 +20,8 @@ import PrebidMobile
         case loadAdRequest = "load_ad_request"
         case getAdFromCache = "get_ad_from_cache"
         case loadAdResult = "load_ad_result"
+        case adHide = "ad_hide"
+        case adReport = "ad_report"
     }
     
     func report(event type: AdEventType, with data: Data, completion: @escaping (Bool, Error?) -> Void) {
@@ -174,6 +176,55 @@ import PrebidMobile
         }
     }
     
+    public func logAdHide(ad: MSPiOSCore.MSPAd, adRequest: MSPiOSCore.AdRequest, bidResponse: Any, reason: String, adScreenshot: Data?, fullScreenShot: Data?) {
+        var eventModel = Com_Newsbreak_Mes_Events_AdHideEvent()
+        eventModel.tsMs = UInt64(Date().timeIntervalSince1970 * 1000)
+        eventModel.reason = reason
+        eventModel.requestContext = generateRequestContext(request: adRequest, params: nil)
+        eventModel.ad = generateAdContext(ad: ad, request: adRequest, params: nil, adScreenShot: adScreenshot, fullScreenShot: fullScreenShot)
+        eventModel.os = .ios
+        if let org = MSP.shared.org {
+            eventModel.org = org
+        }
+        if let app = MSP.shared.app {
+            eventModel.app = app
+        }
+        
+        do {
+            let tracingData = try eventModel.serializedData()
+            report(event: .adHide, with: tracingData) { success, error in
+               
+            }
+        } catch {
+        }
+    }
+    
+    public func logAdReport(ad: MSPiOSCore.MSPAd, adRequest: MSPiOSCore.AdRequest, bidResponse: Any, reason: String, description: String?, adScreenshot: Data?, fullScreenShot: Data?) {
+        var eventModel = Com_Newsbreak_Mes_Events_AdReportEvent()
+        eventModel.tsMs = UInt64(Date().timeIntervalSince1970 * 1000)
+        eventModel.reason = reason
+        if let description = description {
+            eventModel.description_p = description
+        }
+        eventModel.requestContext = generateRequestContext(request: adRequest, params: nil)
+        eventModel.ad = generateAdContext(ad: ad, request: adRequest, params: nil, adScreenShot: adScreenshot, fullScreenShot: fullScreenShot)
+        eventModel.os = .ios
+        if let org = MSP.shared.org {
+            eventModel.org = org
+        }
+        if let app = MSP.shared.app {
+            eventModel.app = app
+        }
+        
+        do {
+            let tracingData = try eventModel.serializedData()
+            report(event: .adHide, with: tracingData) { success, error in
+               
+            }
+        } catch {
+        }
+    }
+    
     func generateRequestContext(request: AdRequest, bidResponse: BidResponse) -> Com_Newsbreak_Monetization_Common_RequestContext {
         var eventModel = Com_Newsbreak_Monetization_Common_RequestContext()
         eventModel.tsMs = UInt64(Date().timeIntervalSince1970 * 1000)
@@ -239,7 +290,7 @@ import PrebidMobile
         return eventModel
     }
     
-    func generateAdContext(ad: MSPAd, request: AdRequest, params: [String : Any?]?) -> Com_Newsbreak_Monetization_Common_Ad {
+    func generateAdContext(ad: MSPAd, request: AdRequest, params: [String : Any?]?, adScreenShot: Data? = nil, fullScreenShot: Data? = nil) -> Com_Newsbreak_Monetization_Common_Ad {
         var eventModel = Com_Newsbreak_Monetization_Common_Ad()
         eventModel.tsMs = UInt64(Date().timeIntervalSince1970 * 1000)
         if ad is MSPiOSCore.NativeAd,
@@ -254,10 +305,19 @@ import PrebidMobile
             eventModel.type = .display
         }
         
+        if let adScreenShot = adScreenShot {
+            eventModel.adScreenshot = adScreenShot
+        }
+        if let fullScreenShot = fullScreenShot {
+            eventModel.fullScreenshot = fullScreenShot
+        }
+        
         var seatBid = Com_Google_Openrtb_BidResponse.SeatBid()
         if let params = params,
            let seat = params["seat"] as? String {
             seatBid.seat = seat
+        } else {
+            seatBid.seat = ad.adNetworkAdapter?.getAdNetwork().rawValue ?? ""
         }
         var bid = Com_Google_Openrtb_BidResponse.SeatBid.Bid()
         bid.adid = ""

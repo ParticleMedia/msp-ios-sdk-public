@@ -10,6 +10,8 @@
 		3F6DED87947F36F6685255A0 /* libPods-MSPCore.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3BEFDC62A992B10540FF1C8C /* libPods-MSPCore.a */; };
 		660ED3E12CB45513002F237C /* common.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = 660ED3E02CB45513002F237C /* common.pb.swift */; };
 		660ED3E32CB45557002F237C /* MESMetricReporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 660ED3E22CB45557002F237C /* MESMetricReporter.swift */; };
+		662D914B2D934C8900251DC3 /* ad_hide.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = 662D914A2D934C8900251DC3 /* ad_hide.pb.swift */; };
+		662D914D2D934C9000251DC3 /* ad_report.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = 662D914C2D934C9000251DC3 /* ad_report.pb.swift */; };
 		6639AC8A2B4DFAE300A248D2 /* MSPCore.docc in Sources */ = {isa = PBXBuildFile; fileRef = 6639AC892B4DFAE300A248D2 /* MSPCore.docc */; };
 		6639AC952B4DFAE400A248D2 /* MSPUtilityTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6639AC942B4DFAE400A248D2 /* MSPUtilityTests.swift */; };
 		6639AC962B4DFAE400A248D2 /* MSPCore.h in Headers */ = {isa = PBXBuildFile; fileRef = 6639AC882B4DFAE300A248D2 /* MSPCore.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -59,6 +61,8 @@
 		3BEFDC62A992B10540FF1C8C /* libPods-MSPCore.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-MSPCore.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		660ED3E02CB45513002F237C /* common.pb.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = common.pb.swift; sourceTree = "<group>"; };
 		660ED3E22CB45557002F237C /* MESMetricReporter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MESMetricReporter.swift; sourceTree = "<group>"; };
+		662D914A2D934C8900251DC3 /* ad_hide.pb.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ad_hide.pb.swift; sourceTree = "<group>"; };
+		662D914C2D934C9000251DC3 /* ad_report.pb.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ad_report.pb.swift; sourceTree = "<group>"; };
 		6639AC852B4DFAE300A248D2 /* MSPCore.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = MSPCore.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		6639AC882B4DFAE300A248D2 /* MSPCore.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MSPCore.h; sourceTree = "<group>"; };
 		6639AC892B4DFAE300A248D2 /* MSPCore.docc */ = {isa = PBXFileReference; lastKnownFileType = folder.documentationcatalog; path = MSPCore.docc; sourceTree = "<group>"; };
@@ -191,6 +195,8 @@
 		66AFBBDC2CB45EF2000D0DD3 /* MESRawFiles */ = {
 			isa = PBXGroup;
 			children = (
+				662D914A2D934C8900251DC3 /* ad_hide.pb.swift */,
+				662D914C2D934C9000251DC3 /* ad_report.pb.swift */,
 				66AFBBDE2CB45FA9000D0DD3 /* ad_impression.pb.swift */,
 				66AFBBE62CB45FC8000D0DD3 /* sdk_init.pb.swift */,
 				66AFBBE22CB45FBB000D0DD3 /* load_ad_request.pb.swift */,
@@ -383,6 +389,8 @@
 				66AFBBF12CB4B70F000D0DD3 /* AdMetricReporterImp.swift in Sources */,
 				6639ACAB2B4DFDF700A248D2 /* MSPHelper.swift in Sources */,
 				66EFCD9B2D123B00005E0135 /* MSPAdLoader.swift in Sources */,
+				662D914B2D934C8900251DC3 /* ad_hide.pb.swift in Sources */,
+				662D914D2D934C9000251DC3 /* ad_report.pb.swift in Sources */,
 				66AFBBE12CB45FB3000D0DD3 /* get_ad_from_cache.pb.swift in Sources */,
 				6639ACAF2B4E0C2B00A248D2 /* MSPAdNetworkAdapterProvider.swift in Sources */,
 				66AFBBDA2CB459B9000D0DD3 /* openrtb-v26.pb.swift in Sources */,
