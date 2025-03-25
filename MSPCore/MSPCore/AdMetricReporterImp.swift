@@ -10,6 +10,14 @@ import MSPiOSCore
 import PrebidMobile
 
 public class AdMetricReporterImp: AdMetricReporter {
+    public func logAdHide(ad: MSPiOSCore.MSPAd, adRequest: MSPiOSCore.AdRequest, bidResponse: Any, reason: String, adScreenShot: Data?, fullScreenShot: Data?) {
+        MESMetricReporter.shared.logAdHide(ad: ad, adRequest: adRequest, bidResponse: bidResponse, reason: reason, adScreenshot: adScreenShot, fullScreenShot: fullScreenShot)
+    }
+    
+    public func logAdReport(ad: MSPiOSCore.MSPAd, adRequest: MSPiOSCore.AdRequest, bidResponse: Any, reason: String, description: String?, adScreenShot: Data?, fullScreenShot: Data?) {
+        MESMetricReporter.shared.logAdReport(ad: ad, adRequest: adRequest, bidResponse: bidResponse, reason: reason, description: description, adScreenshot: adScreenShot, fullScreenShot: fullScreenShot)
+    }
+    
     public func logAdImpression(ad: MSPiOSCore.MSPAd, adRequest: MSPiOSCore.AdRequest, bidResponse: Any, params: [String : Any?]?) {
         MESMetricReporter.shared.logAdImpression(ad: ad, adRequest: adRequest, bidResponse: bidResponse, params: params)
     }

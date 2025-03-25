@@ -102,6 +102,21 @@ import UIKit
         }
    }
     
+    public func sendHideAdEvent(reason: String, adScreenShot: Data?, fullScreenShot: Data?)
+    {
+        if let adRequest = self.adRequest,
+           let ad = self.bannerAd {
+            self.adMetricReporter?.logAdHide(ad: ad, adRequest: adRequest, bidResponse: self, reason: reason, adScreenShot: adScreenShot, fullScreenShot: fullScreenShot)
+        }
+    }
+    
+    public func sendReportAdEvent(reason: String, description: String?, adScreenShot: Data?, fullScreenShot: Data?) {
+        if let adRequest = self.adRequest,
+           let ad = self.bannerAd {
+            self.adMetricReporter?.logAdReport(ad: ad, adRequest: adRequest, bidResponse: self, reason: reason, description: description, adScreenShot: adScreenShot, fullScreenShot: fullScreenShot)
+        }
+    }
+    
 }
 
 extension PrebidAdapter: BannerViewDelegate {
