@@ -50,6 +50,14 @@ public class MSPAdNetworkAdapterProvider: AdNetworkAdapterProvider {
 }
 
 public class AdNetworkAdapterStandalone: AdNetworkAdapter {
+    public func sendHideAdEvent(reason: String, adScreenShot: Data?, fullScreenShot: Data?) {
+        
+    }
+    
+    public func sendReportAdEvent(reason: String, description: String?, adScreenShot: Data?, fullScreenShot: Data?) {
+        
+    }
+    
     public func loadAdCreative(bidResponse: Any, auctionBidListener: any MSPiOSCore.AuctionBidListener, adListener: any MSPiOSCore.AdListener, context: Any, adRequest: MSPiOSCore.AdRequest, bidderPlacementId: String, bidderFormat: MSPiOSCore.AdFormat?, params: [String: String]?) {
         
     }

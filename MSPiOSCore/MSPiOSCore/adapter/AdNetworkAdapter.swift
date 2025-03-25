@@ -23,4 +23,8 @@ public protocol AdNetworkAdapter: AnyObject {
     func setAdMetricReporter(adMetricReporter: AdMetricReporter)
     
     func getAdNetwork() -> AdNetwork
+    
+    func sendHideAdEvent(reason: String, adScreenShot: Data?, fullScreenShot: Data?)
+    
+    func sendReportAdEvent(reason: String, description: String?, adScreenShot: Data?, fullScreenShot: Data?)
 }

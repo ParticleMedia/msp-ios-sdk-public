@@ -96,6 +96,8 @@ public protocol AdMetricReporter : AnyObject {
   func logAdImpression(ad: MSPiOSCore.MSPAd, adRequest: MSPiOSCore.AdRequest, bidResponse: Any, params: [Swift.String : Any?]?)
   func logGetAdFromCache(cacheKey: Swift.String, fill: Swift.Bool, ad: MSPiOSCore.MSPAd?)
   func logAdResult(placementId: Swift.String, ad: MSPiOSCore.MSPAd?, fill: Swift.Bool, isFromCache: Swift.Bool)
+  func logAdHide(ad: MSPiOSCore.MSPAd, adRequest: MSPiOSCore.AdRequest, bidResponse: Any, reason: Swift.String, adScreenShot: Foundation.Data?, fullScreenShot: Foundation.Data?)
+  func logAdReport(ad: MSPiOSCore.MSPAd, adRequest: MSPiOSCore.AdRequest, bidResponse: Any, reason: Swift.String, description: Swift.String?, adScreenShot: Foundation.Data?, fullScreenShot: Foundation.Data?)
 }
 public func handleAdLoaded(ad: MSPiOSCore.MSPAd, listener: any MSPiOSCore.AdListener, adRequest: MSPiOSCore.AdRequest)
 public protocol BidListener : AnyObject {
@@ -120,6 +122,8 @@ public protocol AdNetworkAdapter : AnyObject {
   func prepareViewForInteraction(nativeAd: MSPiOSCore.NativeAd, nativeAdView: Any)
   func setAdMetricReporter(adMetricReporter: any MSPiOSCore.AdMetricReporter)
   func getAdNetwork() -> MSPiOSCore.AdNetwork
+  func sendHideAdEvent(reason: Swift.String, adScreenShot: Foundation.Data?, fullScreenShot: Foundation.Data?)
+  func sendReportAdEvent(reason: Swift.String, description: Swift.String?, adScreenShot: Foundation.Data?, fullScreenShot: Foundation.Data?)
 }
 public protocol GoogleQueryInfoFetcher : AnyObject {
   func fetch(completeListener: any MSPiOSCore.GoogleQueryInfoListener, adRequest: MSPiOSCore.AdRequest)
@@ -239,6 +243,8 @@ open class MSPAd {
   weak public var adListener: (any MSPiOSCore.AdListener)?
   public init(adNetworkAdapter: any MSPiOSCore.AdNetworkAdapter)
   public func destroy()
+  public func sendHideAdEvent(reason: Swift.String, adScreenShot: Foundation.Data? = nil, fullScreenShot: Foundation.Data? = nil)
+  public func sendReportAdEvent(reason: Swift.String, description: Swift.String?, adScreenShot: Foundation.Data? = nil, fullScreenShot: Foundation.Data? = nil)
   @objc deinit
 }
 public protocol MediaController {
