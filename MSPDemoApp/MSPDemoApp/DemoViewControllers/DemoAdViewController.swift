@@ -180,7 +180,6 @@ extension DemoAdViewController: AdListener {
     
     func onAdImpression(ad: MSPAd) {
         print("ad event: on ad impression")
-        ad.sendHideAdEvent(reason: "test")
     }
     
     func onAdLoaded(ad: MSPAd) {
