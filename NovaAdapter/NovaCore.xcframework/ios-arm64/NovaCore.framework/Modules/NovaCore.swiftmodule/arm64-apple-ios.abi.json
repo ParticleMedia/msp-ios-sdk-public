@@ -91772,14 +91772,21 @@
     {
       "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-sdk\/NovaCore\/NovaCore\/Native\/NovaNativeAdVideoView.swift",
       "kind": "BooleanLiteral",
-      "offset": 5710,
+      "offset": 5516,
       "length": 5,
       "value": "false"
     },
     {
       "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-sdk\/NovaCore\/NovaCore\/Native\/NovaNativeAdVideoView.swift",
       "kind": "BooleanLiteral",
-      "offset": 5755,
+      "offset": 5855,
+      "length": 5,
+      "value": "false"
+    },
+    {
+      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-sdk\/NovaCore\/NovaCore\/Native\/NovaNativeAdVideoView.swift",
+      "kind": "BooleanLiteral",
+      "offset": 5900,
       "length": 5,
       "value": "false"
     },

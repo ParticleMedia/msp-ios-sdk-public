@@ -75,7 +75,7 @@ public class NovaAdapter: AdNetworkAdapter {
         } else {
             novaAdType = "native"
         }
-        parseNovaAdString(adString: adString, adType: novaAdType, adUnitId: adUnitId, eCPMInDollar: eCPMInDollar)
+        parseNovaAdString(adString: testAdImmersiveString, adType: novaAdType, adUnitId: adUnitId, eCPMInDollar: eCPMInDollar)
     }
     
     public func prepareViewForInteraction(nativeAd: MSPiOSCore.NativeAd, nativeAdView: Any) {
@@ -369,3 +369,53 @@ extension NovaAdapter: NovaAppOpenAdDelegate {
         }
     }
 }
+
+public let testAdImmersiveString = """
+{
+"ad": [
+{
+  "creative": {
+    "ctrUrl": "https://go.policyratecut.com/66425981dc881000015afc3b?sub1=1790795014683475970&sub2=Auto+1&sub3=1790797296852135937&sub4=AUTO2&sub5=1790802978053681154&sub6=ad2&sub7=ios&sub8=0&ref_id=nvss_8E24B110A57B410A86E2FE40E0C0C8CE_1790802978053681154&is_nova=true&utm_content=nvss_8E24B110A57B410A86E2FE40E0C0C8CE_1790802978053681154&nb_cid=8E24B110A57B410A86E2FE40E0C0C8CE_1790802978053681154",
+    "headline": "CA Drivers Shocked! Pay 70% Less on Car Insurance With Secret Hack",
+    "body": "I used to pay $193/mo, but Now I only pay $22/mo using this Car Insurance hack.",
+    "callToAction": "Learn More",
+    "imageUrl": "https://static.particlenews.com/nova/assets/1790058089464029185/99f569348e959a785611c7bbf927773e33a1ac91_trans.mp4/720_30_6mbps_h264.mp4",
+    "imageUrl": "https://static.particlenews.com/nova/assets/1790058089464029185/99f569348e959a785611c7bbf927773e33a1ac91_trans.mp4/720_30_6mbps_h264.mp4",
+    "address": "",
+    "creativeType": "VIDEO",
+    "image": "",
+    "thirdPartyImpressionTrackingUrls": [],
+    "thirdPartyViewTrackingUrls": [],
+    "thirdPartyClickTrackingUrls": [],
+    "launchOption": "LAUNCH_WEBVIEW",
+    "advertiser": "Lisa Write",
+    "adm": "",
+    "carouselItems": [],
+    "iconUrl": "https://static.particlenews.com/nova/assets/1790058089464029185/b1098dfe756c3ab4f9d0c8e52c22f8850995fc03.png",
+    "videoItem": {
+      "videoUrl": "https://static.particlenews.com/nova/assets/1790058089464029185/99f569348e959a785611c7bbf927773e33a1ac91_trans.mp4/720_30_6mbps_h264.mp4",
+      "coverUrl": "",
+      "isPlayAutomatically": true,
+      "isLoop": true,
+      "isMute": false,
+      "isVideoClickable": true,
+      "isVertical": true,
+      "isPlayOnLandingPage": false
+    },
+    "channelId": "",
+    "isImageClickable": false
+  },
+  "expirationMs": "1719449896205",
+  "encryptedAdToken": "8E24B110-A57B-410A-86E2-FE40E0C0C8CE.CjIIipbesoUyFcOcqMAaJDhFMjRCMTEwLUE1N0ItNDEwQS04NkUyLUZFNDBFMEMwQzhDRRCBwMWukovk6xgYgoD/3b7Si+0YIIHg57z0lIztGCiCwIPitJeggRkwguDnzKC6je0YOgVDTElDS0gBUg9JTU1FUlNJVkVfVklERU9aJm5vdmEtaW9zLWltbWVyc2l2ZS1mbG93LW5hdGl2ZS1wcm9kLW9iaoADaHR0cHM6Ly9nby5wb2xpY3lyYXRlY3V0LmNvbS82NjQyNTk4MWRjODgxMDAwMDE1YWZjM2I/c3ViMT0xNzkwNzk1MDE0NjgzNDc1OTcwJnN1YjI9QXV0bysxJnN1YjM9MTc5MDc5NzI5Njg1MjEzNTkzNyZzdWI0PUFVVE8yJnN1YjU9MTc5MDgwMjk3ODA1MzY4MTE1NCZzdWI2PWFkMiZzdWI3PWlvcyZzdWI4PTAmcmVmX2lkPW52c3NfOEUyNEIxMTBBNTdCNDEwQTg2RTJGRTQwRTBDMEM4Q0VfMTc5MDgwMjk3ODA1MzY4MTE1NCZpc19ub3ZhPXRydWUmdXRtX2NvbnRlbnQ9bnZzc184RTI0QjExMEE1N0I0MTBBODZFMkZFNDBFMEMwQzhDRV8xNzkwODAyOTc4MDUzNjgxMTU0Jm5iX2NpZD04RTI0QjExMEE1N0I0MTBBODZFMkZFNDBFMEMwQzhDRV8xNzkwODAyOTc4MDUzNjgxMTU0cVTAQoPSYwJAkQEAAADAceWtP5kBAAAAIAX2qj+gAcC1A6gBgOHzi/gxsAGNis25hTK6AQQIARABwgEFREFJTFnKASQzQjA2QzQ3OC04NDNGLTQ4NDktQTYwMy0yRjZFOTkxQjY0N0PSAQ5NQVhfQ09OVkVSU0lPTtkBa/DbzkFUQ0DiAQhQUkVfUEFJROgBgcDFrpKL5OsY8AH///////////8BiQIAAABAIdmtP5ECAAAAwBuVqj+ZAlTAQoPSYwJA",
+  "startTimeMs": "1715864400000",
+  "requestId": "8E24B110-A57B-410A-86E2-FE40E0C0C8CE",
+  "adId": "1790802978053681154",
+  "adsetId": "1790797296852135937",
+  "price": 22.987413649316668
+}
+],
+"status": "success",
+"code": 0,
+"abConfig": {}
+}
+"""

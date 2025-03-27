@@ -153,6 +153,7 @@ public final class NovaNativeAdVideoView: UIView {
     private var lastPauseTime: Double? = nil
 
     private var isOnScreen: Bool = false
+    private var userPausedAd: Bool = false // True: user tapped pause button on the ad, thus should not autolay the video even if it's on screen
 
     private var videoTapRecognizer: UITapGestureRecognizer?
 
@@ -332,6 +333,10 @@ public extension NovaNativeAdVideoView {
     func handleVideoOnScreen() {
         isOnScreen = true
         setPlayerBackOnView(view: self)
+        if self.videoPlayer?.isVideoPlaying() ?? false ||
+            userPausedAd {
+            return
+        }
         if let videoInfo, let state = videoInfo.state {
             syncVideoPlayingState(with: state.playState)
         }
@@ -376,7 +381,8 @@ private extension NovaNativeAdVideoView {
         case .loading(let hideCover):
             startButton.isHidden = hideCover
             coverImage.isHidden = hideCover
-            panel.isHidden = true
+            updatePlayButton(true)
+            panel.isHidden = false
         case .playing(_):
             updatePlayButton(true)
             startButton.isHidden = true
@@ -613,8 +619,14 @@ private extension NovaNativeAdVideoView {
             .playing(currentTime: videoPlayer.currentTime())
         updateUI(with: playState)
         if videoPlayer.isVideoPlaying() {
+            if !inLandingPage {
+                userPausedAd = true
+            }
             pauseVideo(endKind: .pause)
         } else {
+            if !inLandingPage {
+                userPausedAd = false
+            }
             resumeVideo()
         }
     }
