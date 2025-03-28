@@ -4,4 +4,13 @@
    <FileRef
       location = "group:Pods/Pods.xcodeproj">
    </FileRef>
+   <FileRef
+      location = "group:GoogleAdapter/GoogleAdapter.xcodeproj">
+   </FileRef>
+   <FileRef
+      location = "group:MSPCore/MSPCore.xcodeproj">
+   </FileRef>
+   <FileRef
+      location = "group:MSPDemoApp.xcodeproj">
+   </FileRef>
 </Workspace>
