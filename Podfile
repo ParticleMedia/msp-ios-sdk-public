@@ -6,6 +6,8 @@ workspace 'msp-ios-sdk'
 #project 'PrebidAdapter/PrebidAdapter'
 project 'GoogleAdapter/GoogleAdapter'
 project 'MSPCore/MSPCore'
+
+project 'MSPDemoApp'
 #project 'MSPSharedLibraries/MSPSharedLibraries'
 
 #target 'PrebidAdapter' do
@@ -56,4 +58,12 @@ end
   #  pod 'Google-Mobile-Ads-SDK'
   #end
   
-
+target 'MSPDemoApp' do
+  project 'MSPDemoApp'
+  
+  pod 'MSPCore', :path => './', :modular_headers => true
+  pod 'NovaAdapter', :path => './', :modular_headers => true
+  pod 'PrebidAdapter', :path => './', :modular_headers => true
+  pod 'GoogleAdapter', :path => './', :modular_headers => true
+  pod 'FacebookAdapter', :path => './', :modular_headers => true
+end

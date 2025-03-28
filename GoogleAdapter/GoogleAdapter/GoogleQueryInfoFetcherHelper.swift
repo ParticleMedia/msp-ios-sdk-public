@@ -16,25 +16,25 @@ public class GoogleQueryInfoFetcherHelper: GoogleQueryInfoFetcher {
     }
     
     public func fetch(completeListener: GoogleQueryInfoListener, adRequest: AdRequest) {
-        let request = GAMRequest()
+        let request = AdManagerRequest()
         // Specify the "query_info_type" as "requester_type_8" to
         // denote that the usage of QueryInfo is for Ad Manager S2S.
         let extras = getExtras(adRequest: adRequest)
         //extras.additionalParameters = ["query_info_type" : "requester_type_8"]
         request.register(extras)
-        let googleAdFormat: GADAdFormat
+        let googleAdFormat: GoogleMobileAds.AdFormat
         switch adRequest.adFormat {
         case .banner:
-            googleAdFormat = GADAdFormat.banner
+            googleAdFormat = GoogleMobileAds.AdFormat.banner
         case .native:
-            googleAdFormat = GADAdFormat.native
+            googleAdFormat = GoogleMobileAds.AdFormat.native
         case .interstitial:
-            googleAdFormat = GADAdFormat.interstitial
+            googleAdFormat = GoogleMobileAds.AdFormat.interstitial
         default:
-            googleAdFormat = GADAdFormat.native
+            googleAdFormat = GoogleMobileAds.AdFormat.native
         }
         //= adRequest.adFormat == .banner ? GADAdFormat.banner : GADAdFormat.native
-        GADQueryInfo.createQueryInfo(with: request, adFormat: googleAdFormat) { [weak self] queryInfo, error in
+        QueryInfo.createQueryInfo(with: request, adFormat: googleAdFormat) { [weak self] queryInfo, error in
             guard let self = self else {
                 completeListener.onComplete(queryInfo: "")
                 return
@@ -52,8 +52,8 @@ public class GoogleQueryInfoFetcherHelper: GoogleQueryInfoFetcher {
         }
     }
     
-    private func getExtras(adRequest: AdRequest) -> GADExtras {
-        let extras = GADExtras()
+    private func getExtras(adRequest: AdRequest) -> Extras {
+        let extras = Extras()
         if let adapterBannerSize = adRequest.adaptiveBannerSize,
            adapterBannerSize.isInlineAdaptiveBanner {
             extras.additionalParameters = ["query_info_type" : "requester_type_8",

@@ -1,0 +1,6 @@
+module FacebookAdapter {
+  umbrella header "FacebookAdapter-umbrella.h"
+
+  export *
+  module * { export * }
+}
