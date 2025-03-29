@@ -335,6 +335,7 @@ public extension NovaNativeAdVideoView {
         setPlayerBackOnView(view: self)
         if self.videoPlayer?.isVideoPlaying() ?? false ||
             userPausedAd {
+            // if user clicked the pause button, do not resume video
             return
         }
         if let videoInfo, let state = videoInfo.state {
