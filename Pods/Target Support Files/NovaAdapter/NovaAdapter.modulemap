@@ -1,0 +1,6 @@
+module NovaAdapter {
+  umbrella header "NovaAdapter-umbrella.h"
+
+  export *
+  module * { export * }
+}

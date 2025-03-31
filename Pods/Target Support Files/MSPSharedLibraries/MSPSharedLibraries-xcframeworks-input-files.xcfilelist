@@ -1,0 +1,3 @@
+${PODS_ROOT}/Target Support Files/MSPSharedLibraries/MSPSharedLibraries-xcframeworks.sh
+${PODS_ROOT}/MSPSharedLibraries/MSPSharedLibraries/PrebidMobile.xcframework
+${PODS_ROOT}/MSPSharedLibraries/MSPSharedLibraries/MSPiOSCore.xcframework

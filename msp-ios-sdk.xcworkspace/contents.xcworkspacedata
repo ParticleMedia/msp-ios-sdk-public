@@ -2,6 +2,18 @@
 <Workspace
    version = "1.0">
    <FileRef
+      location = "group:FacebookAdapter/FacebookAdapter.xcodeproj">
+   </FileRef>
+   <FileRef
       location = "group:Pods/Pods.xcodeproj">
+   </FileRef>
+   <FileRef
+      location = "group:GoogleAdapter/GoogleAdapter.xcodeproj">
+   </FileRef>
+   <FileRef
+      location = "group:MSPCore/MSPCore.xcodeproj">
+   </FileRef>
+   <FileRef
+      location = "group:MSPDemoApp.xcodeproj">
    </FileRef>
 </Workspace>
