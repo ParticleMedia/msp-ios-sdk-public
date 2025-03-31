@@ -5,6 +5,7 @@ workspace 'msp-ios-sdk'
 
 #project 'PrebidAdapter/PrebidAdapter'
 project 'GoogleAdapter/GoogleAdapter'
+project 'FacebookAdapter/FacebookAdapter'
 project 'MSPCore/MSPCore'
 
 project 'MSPDemoApp'
@@ -66,4 +67,5 @@ target 'MSPDemoApp' do
   pod 'PrebidAdapter', :path => './', :modular_headers => true
   pod 'GoogleAdapter', :path => './', :modular_headers => true
   pod 'FacebookAdapter', :path => './', :modular_headers => true
+  pod 'FBAudienceNetwork', '6.17.1'
 end

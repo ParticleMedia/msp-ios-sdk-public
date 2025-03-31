@@ -1,13 +1,11 @@
 import UIKit
-import MSPCore
-import MSPiOSCore
+//import MSPCore
+//import MSPiOSCore
 import AppTrackingTransparency
 
 class ViewController: UIViewController {
     
     @IBOutlet var appBannerView: UIView!
-    weak var adLoader: MSPAdLoader?
-    public var nativeAdView: NativeAdView?
     public var isCtaShown = false
 
     override func viewDidLoad() {

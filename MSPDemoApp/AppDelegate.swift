@@ -27,8 +27,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         MSP.shared.bidLoaderProvider.facebookBidTokenProvider = FacebookBidTokenProviderHelper()
         
         MSP.shared.initMSP(initParams: mspInitParameters, sdkInitListener: nil)
-        window = UIWindow(frame: UIScreen.main.bounds)
-        self.window?.makeKeyAndVisible()
+        //window = UIWindow(frame: UIScreen.main.bounds)
+        //self.window?.makeKeyAndVisible()
         
         
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
