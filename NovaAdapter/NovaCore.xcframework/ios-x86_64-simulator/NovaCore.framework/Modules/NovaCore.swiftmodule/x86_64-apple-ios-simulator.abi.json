@@ -91583,203 +91583,210 @@
     {
       "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-sdk\/NovaCore\/NovaCore\/Native\/NovaNativeAdVideoView.swift",
       "kind": "BooleanLiteral",
-      "offset": 852,
+      "offset": 858,
       "length": 5,
       "value": "false"
     },
     {
       "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-sdk\/NovaCore\/NovaCore\/Native\/NovaNativeAdVideoView.swift",
       "kind": "IntegerLiteral",
-      "offset": 907,
+      "offset": 913,
       "length": 2,
       "value": "12"
     },
     {
       "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-sdk\/NovaCore\/NovaCore\/Native\/NovaNativeAdVideoView.swift",
       "kind": "IntegerLiteral",
-      "offset": 917,
+      "offset": 923,
       "length": 2,
       "value": "12"
     },
     {
       "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-sdk\/NovaCore\/NovaCore\/Native\/NovaNativeAdVideoView.swift",
       "kind": "IntegerLiteral",
-      "offset": 929,
+      "offset": 935,
       "length": 2,
       "value": "12"
     },
     {
       "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-sdk\/NovaCore\/NovaCore\/Native\/NovaNativeAdVideoView.swift",
       "kind": "IntegerLiteral",
-      "offset": 940,
+      "offset": 946,
       "length": 2,
       "value": "12"
     },
     {
       "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-sdk\/NovaCore\/NovaCore\/Native\/NovaNativeAdVideoView.swift",
       "kind": "IntegerLiteral",
-      "offset": 1148,
+      "offset": 1154,
       "length": 2,
       "value": "24"
     },
     {
       "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-sdk\/NovaCore\/NovaCore\/Native\/NovaNativeAdVideoView.swift",
       "kind": "BooleanLiteral",
-      "offset": 1414,
+      "offset": 1426,
       "length": 5,
       "value": "false"
     },
     {
       "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-sdk\/NovaCore\/NovaCore\/Native\/NovaNativeAdVideoView.swift",
       "kind": "IntegerLiteral",
-      "offset": 1523,
+      "offset": 1535,
       "length": 1,
       "value": "4"
     },
     {
       "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-sdk\/NovaCore\/NovaCore\/Native\/NovaNativeAdVideoView.swift",
       "kind": "BooleanLiteral",
-      "offset": 1696,
+      "offset": 1708,
       "length": 5,
       "value": "false"
     },
     {
       "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-sdk\/NovaCore\/NovaCore\/Native\/NovaNativeAdVideoView.swift",
       "kind": "BooleanLiteral",
-      "offset": 2082,
+      "offset": 2094,
       "length": 5,
       "value": "false"
     },
     {
       "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-sdk\/NovaCore\/NovaCore\/Native\/NovaNativeAdVideoView.swift",
       "kind": "IntegerLiteral",
-      "offset": 2137,
+      "offset": 2149,
       "length": 1,
       "value": "6"
     },
     {
       "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-sdk\/NovaCore\/NovaCore\/Native\/NovaNativeAdVideoView.swift",
       "kind": "IntegerLiteral",
-      "offset": 2146,
+      "offset": 2158,
       "length": 1,
       "value": "8"
     },
     {
       "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-sdk\/NovaCore\/NovaCore\/Native\/NovaNativeAdVideoView.swift",
       "kind": "IntegerLiteral",
-      "offset": 2157,
+      "offset": 2169,
       "length": 1,
       "value": "6"
     },
     {
       "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-sdk\/NovaCore\/NovaCore\/Native\/NovaNativeAdVideoView.swift",
       "kind": "IntegerLiteral",
-      "offset": 2167,
+      "offset": 2179,
       "length": 1,
       "value": "8"
     },
     {
       "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-sdk\/NovaCore\/NovaCore\/Native\/NovaNativeAdVideoView.swift",
       "kind": "BooleanLiteral",
-      "offset": 2441,
+      "offset": 2453,
       "length": 5,
       "value": "false"
     },
     {
       "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-sdk\/NovaCore\/NovaCore\/Native\/NovaNativeAdVideoView.swift",
       "kind": "IntegerLiteral",
-      "offset": 2528,
+      "offset": 2540,
       "length": 1,
       "value": "6"
     },
     {
       "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-sdk\/NovaCore\/NovaCore\/Native\/NovaNativeAdVideoView.swift",
       "kind": "IntegerLiteral",
-      "offset": 2537,
+      "offset": 2549,
       "length": 1,
       "value": "8"
     },
     {
       "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-sdk\/NovaCore\/NovaCore\/Native\/NovaNativeAdVideoView.swift",
       "kind": "IntegerLiteral",
-      "offset": 2548,
+      "offset": 2560,
       "length": 1,
       "value": "6"
     },
     {
       "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-sdk\/NovaCore\/NovaCore\/Native\/NovaNativeAdVideoView.swift",
       "kind": "IntegerLiteral",
-      "offset": 2558,
+      "offset": 2570,
       "length": 1,
       "value": "8"
     },
     {
       "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-sdk\/NovaCore\/NovaCore\/Native\/NovaNativeAdVideoView.swift",
       "kind": "BooleanLiteral",
-      "offset": 2839,
+      "offset": 2851,
       "length": 5,
       "value": "false"
     },
     {
       "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-sdk\/NovaCore\/NovaCore\/Native\/NovaNativeAdVideoView.swift",
       "kind": "IntegerLiteral",
-      "offset": 2958,
+      "offset": 2970,
       "length": 1,
       "value": "1"
     },
     {
       "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-sdk\/NovaCore\/NovaCore\/Native\/NovaNativeAdVideoView.swift",
       "kind": "IntegerLiteral",
-      "offset": 3063,
+      "offset": 3075,
       "length": 1,
       "value": "4"
     },
     {
       "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-sdk\/NovaCore\/NovaCore\/Native\/NovaNativeAdVideoView.swift",
       "kind": "IntegerLiteral",
-      "offset": 3258,
+      "offset": 3270,
       "length": 2,
       "value": "10"
     },
     {
       "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-sdk\/NovaCore\/NovaCore\/Native\/NovaNativeAdVideoView.swift",
       "kind": "IntegerLiteral",
-      "offset": 3342,
+      "offset": 3354,
       "length": 1,
       "value": "1"
     },
     {
       "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-sdk\/NovaCore\/NovaCore\/Native\/NovaNativeAdVideoView.swift",
       "kind": "IntegerLiteral",
-      "offset": 3576,
+      "offset": 3588,
       "length": 2,
       "value": "10"
     },
     {
       "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-sdk\/NovaCore\/NovaCore\/Native\/NovaNativeAdVideoView.swift",
       "kind": "IntegerLiteral",
-      "offset": 3660,
+      "offset": 3672,
       "length": 1,
       "value": "1"
     },
     {
       "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-sdk\/NovaCore\/NovaCore\/Native\/NovaNativeAdVideoView.swift",
       "kind": "BooleanLiteral",
-      "offset": 5473,
+      "offset": 5485,
       "length": 5,
       "value": "false"
     },
     {
       "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-sdk\/NovaCore\/NovaCore\/Native\/NovaNativeAdVideoView.swift",
       "kind": "BooleanLiteral",
-      "offset": 5710,
+      "offset": 5528,
       "length": 5,
       "value": "false"
     },
     {
       "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-sdk\/NovaCore\/NovaCore\/Native\/NovaNativeAdVideoView.swift",
       "kind": "BooleanLiteral",
-      "offset": 5755,
+      "offset": 5867,
+      "length": 5,
+      "value": "false"
+    },
+    {
+      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-sdk\/NovaCore\/NovaCore\/Native\/NovaNativeAdVideoView.swift",
+      "kind": "BooleanLiteral",
+      "offset": 5912,
       "length": 5,
       "value": "false"
     },
