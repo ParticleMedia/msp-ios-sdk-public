@@ -27,14 +27,14 @@ public final class NovaNativeAdVideoView: UIView {
         return imageView
     }()
 
-    private lazy var startButton: UIButton = {
+    private lazy var centralPlayButton: UIButton = {
         let view = UIButton()
         view.translatesAutoresizingMaskIntoConstraints = false
         view.imageEdgeInsets = UIEdgeInsets(top: 12, left: 12, bottom: 12, right: 12)
         view.setImage(UIImage.Nova.playFilled?.withTintColor(NovaColorPalettes.White), for: .normal)
         view.backgroundColor = NovaColorPalettes.Black.nb_opacity5()
         view.layer.cornerRadius = 24
-        view.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(didTapStartButton)))
+        view.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(didTapCentralPlayButton)))
         return view
     }()
 
@@ -153,6 +153,7 @@ public final class NovaNativeAdVideoView: UIView {
     private var lastPauseTime: Double? = nil
 
     private var isOnScreen: Bool = false
+    private var userPausedAd: Bool = false // True: user tapped pause button on the ad, thus should not autolay the video even if it's on screen
 
     private var videoTapRecognizer: UITapGestureRecognizer?
 
@@ -219,7 +220,7 @@ public final class NovaNativeAdVideoView: UIView {
             ])
         } else {
             panel.addSubviews(playButton, muteButton)
-            addSubviews(coverImage, startButton, panel, countText)
+            addSubviews(coverImage, centralPlayButton, panel, countText)
             NSLayoutConstraint.activate([
                 coverImage.topAnchor.constraint(equalTo: topAnchor),
                 coverImage.leadingAnchor.constraint(equalTo: leadingAnchor),
@@ -227,10 +228,10 @@ public final class NovaNativeAdVideoView: UIView {
                 coverImage.trailingAnchor.constraint(equalTo: trailingAnchor),
             ])
             NSLayoutConstraint.activate([
-                startButton.widthAnchor.constraint(equalToConstant: 48),
-                startButton.heightAnchor.constraint(equalToConstant: 48),
-                startButton.centerXAnchor.constraint(equalTo: centerXAnchor),
-                startButton.centerYAnchor.constraint(equalTo: centerYAnchor),
+                centralPlayButton.widthAnchor.constraint(equalToConstant: 48),
+                centralPlayButton.heightAnchor.constraint(equalToConstant: 48),
+                centralPlayButton.centerXAnchor.constraint(equalTo: centerXAnchor),
+                centralPlayButton.centerYAnchor.constraint(equalTo: centerYAnchor),
             ])
             NSLayoutConstraint.activate([
                 panel.widthAnchor.constraint(equalToConstant: 64),
@@ -281,7 +282,7 @@ public extension NovaNativeAdVideoView {
             addGestureRecognizer(videoTapRecognizer!)
         } else {
             if !videoInfo.isAuto && !videoInfo.didStart {
-                videoTapRecognizer = UITapGestureRecognizer(target: self, action: #selector(didTapStartButton))
+                videoTapRecognizer = UITapGestureRecognizer(target: self, action: #selector(didTapCentralPlayButton))
                 addGestureRecognizer(videoTapRecognizer!)
             }
         }
@@ -332,8 +333,14 @@ public extension NovaNativeAdVideoView {
     func handleVideoOnScreen() {
         isOnScreen = true
         setPlayerBackOnView(view: self)
+        if self.videoPlayer?.isVideoPlaying() ?? false ||
+            userPausedAd {
+            // if user clicked the pause button, do not resume video
+            return
+        }
         if let videoInfo, let state = videoInfo.state {
             syncVideoPlayingState(with: state.playState)
+            updateUI(with: state.playState)
         }
     }
 
@@ -370,25 +377,31 @@ private extension NovaNativeAdVideoView {
         guard let playState else { return }
         switch playState {
         case .showCover(_):
-            startButton.isHidden = false
+            centralPlayButton.isHidden = false
             coverImage.isHidden = false
             panel.isHidden = true
         case .loading(let hideCover):
-            startButton.isHidden = hideCover
+            centralPlayButton.isHidden = hideCover
             coverImage.isHidden = hideCover
             panel.isHidden = true
         case .playing(_):
             updatePlayButton(true)
-            startButton.isHidden = true
+            centralPlayButton.isHidden = true
             coverImage.isHidden = true
-            panel.isHidden = false
+            updatePlayButton(true)
+            if (videoInfo?.isVideoClickable ?? true) {
+                panel.isHidden = false
+            }
         case .paused(_):
             updatePlayButton(false)
-            startButton.isHidden = true
             coverImage.isHidden = true
-            panel.isHidden = false
+            if (videoInfo?.isVideoClickable ?? true) {
+                panel.isHidden = false
+            } else {
+                centralPlayButton.isHidden = false
+            }
         case .complete:
-            startButton.isHidden = false
+            centralPlayButton.isHidden = false
             coverImage.isHidden = true
             panel.isHidden = true
         }
@@ -426,7 +439,6 @@ private extension NovaNativeAdVideoView {
                 return
             }
             if let videoPlayer = self?.videoPlayer {
-                self?.playState = .playing(currentTime: videoPlayer.currentTime())
                 self?.startVideo()
             }
         }
@@ -439,6 +451,9 @@ private extension NovaNativeAdVideoView {
 
         startTime = CACurrentMediaTime()
         lastResumeTime = startTime
+        let playState: NovaNativeAdVideoState.PlayState = .playing(currentTime: videoPlayer.currentTime())
+        self.playState = playState
+        self.updateUI(with: playState)
         videoPlayer.play()
     }
 
@@ -601,6 +616,8 @@ private extension NovaNativeAdVideoView {
                     self?.updateLandingSubviews(isHidden: true)
                 }))
             }
+        } else if !(videoInfo?.isVideoClickable ?? true) {
+            self.didTapPlayButton()
         }
     }
 
@@ -613,8 +630,14 @@ private extension NovaNativeAdVideoView {
             .playing(currentTime: videoPlayer.currentTime())
         updateUI(with: playState)
         if videoPlayer.isVideoPlaying() {
+            if !inLandingPage {
+                userPausedAd = true
+            }
             pauseVideo(endKind: .pause)
         } else {
+            if !inLandingPage {
+                userPausedAd = false
+            }
             resumeVideo()
         }
     }
@@ -630,10 +653,18 @@ private extension NovaNativeAdVideoView {
         }
     }
 
-    @objc func didTapStartButton() {
-        playState = .loading(hideCover: true)
+    @objc func didTapCentralPlayButton() {
+        guard let videoPlayer = videoPlayer else {
+            return
+        }
+        
+        playState = .playing(currentTime: videoPlayer.currentTime())
         updateUI(with: playState)
-        startVideo()
+        
+        if !inLandingPage {
+            userPausedAd = false
+        }
+        resumeVideo()
     }
     
     @objc func didTapCloseButton() {
