@@ -13,4 +13,5 @@ public enum NovaAppOpenAdViewActionKey: String {
     case feedbackReport
     case launchBrowser
     case launchWebView
+    case launchStore
 }

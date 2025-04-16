@@ -11,6 +11,7 @@ import Foundation
 @_exported import NovaCore
 import OMSDK_Newsbreak1
 import SafariServices
+import StoreKit
 import Swift
 import SwiftUI
 import UIKit
@@ -31,6 +32,7 @@ import _SwiftConcurrencyShims
 public enum NovaAdOpenActionKey : Swift.String {
   case launchBrowser
   case launchWebView
+  case launchStore
   public init?(rawValue: Swift.String)
   public typealias RawValue = Swift.String
   public var rawValue: Swift.String {
@@ -43,6 +45,7 @@ public enum NovaAppOpenAdViewActionKey : Swift.String {
   case feedbackReport
   case launchBrowser
   case launchWebView
+  case launchStore
   public init?(rawValue: Swift.String)
   public typealias RawValue = Swift.String
   public var rawValue: Swift.String {
@@ -1750,6 +1753,7 @@ public struct NovaWebViewNavigationViewModel {
   final public let iconUrlStr: Swift.String?
   final public let addOnItem: NovaCore.NovaNativeAdInteractiveBanner?
   @objc weak final public var delegate: (any NovaCore.NovaNativeAdDelegate)?
+  final public let appStoreId: Swift.String?
   @objc final public let eCPMInDollar: Foundation.Decimal
   @objc final public var cellIndexPath: Foundation.IndexPath?
   @objc final public var dedupUUID: Swift.String?
@@ -2032,6 +2036,7 @@ final public class NovaJSBridgeHandlerMaster {
   final public let isImageClickable: Swift.Bool?
   final public let iconUrl: Swift.String?
   final public var image: UIKit.UIImage?
+  final public let appStoreId: Swift.String?
   @objc weak final public var delegate: (any NovaCore.NovaAppOpenAdDelegate)?
   override final public func encode(to encoder: any Swift.Encoder) throws
   final public func present(rootViewController: UIKit.UIViewController)
@@ -2039,14 +2044,17 @@ final public class NovaJSBridgeHandlerMaster {
   final public func requestToDisplay(rootViewController: UIKit.UIViewController, adResource: NovaCore.NovaAppOpenAdResource)
   @objc deinit
 }
-@objc @_inheritsConvenienceInitializers final public class NovaAdOpenActionHandler : ObjectiveC.NSObject {
+@objc final public class NovaAdOpenActionHandler : ObjectiveC.NSObject {
+  public init(viewController: UIKit.UIViewController?)
   @objc deinit
-  @objc override dynamic public init()
 }
 extension NovaCore.NovaAdOpenActionHandler : NovaCore.ActionHandling {
   final public func supportedActions() -> [Swift.String : any Any.Type]
   final public func performAction(actionModel: NovaCore.ActionModel)
   final public func SafeAs<T, U>(_ object: T?, _ objectType: U.Type) -> U?
+}
+extension NovaCore.NovaAdOpenActionHandler : StoreKit.SKStoreProductViewControllerDelegate {
+  @objc final public func productViewControllerDidFinish(_ viewController: StoreKit.SKStoreProductViewController)
 }
 @objc public class NovaAppOpenAdViewActionHandler : ObjectiveC.NSObject {
   public init(viewController: UIKit.UIViewController)
@@ -2058,6 +2066,9 @@ extension NovaCore.NovaAppOpenAdViewActionHandler : NovaCore.ActionHandling {
 }
 extension NovaCore.NovaAppOpenAdViewActionHandler {
   public func SafeAs<T, U>(_ object: T?, _ objectType: U.Type) -> U?
+}
+extension NovaCore.NovaAppOpenAdViewActionHandler : StoreKit.SKStoreProductViewControllerDelegate {
+  @objc dynamic public func productViewControllerDidFinish(_ viewController: StoreKit.SKStoreProductViewController)
 }
 @objc @_inheritsConvenienceInitializers final public class ActionHandlerMaster : ObjectiveC.NSObject {
   @objc override dynamic public init()
