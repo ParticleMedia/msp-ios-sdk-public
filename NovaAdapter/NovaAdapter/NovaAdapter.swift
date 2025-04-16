@@ -79,7 +79,7 @@ public class NovaAdapter: AdNetworkAdapter {
     }
     
     public func prepareViewForInteraction(nativeAd: MSPiOSCore.NativeAd, nativeAdView: Any) {
-        let adOpenActionHandler = NovaAdOpenActionHandler()
+        let adOpenActionHandler = NovaAdOpenActionHandler(viewController: adListener?.getRootViewController())
         let actionHandlerMaster = ActionHandlerMaster(actionHandlers: [adOpenActionHandler])
         DispatchQueue.main.async {
             guard let nativeAdView = nativeAdView as? NativeAdView,

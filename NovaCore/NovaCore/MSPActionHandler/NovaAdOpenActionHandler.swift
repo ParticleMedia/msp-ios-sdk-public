@@ -7,6 +7,7 @@
 
 import Foundation
 import UIKit
+import StoreKit
 
 
 public final class NovaAdOpenActionHandler: NSObject {
@@ -17,6 +18,12 @@ public final class NovaAdOpenActionHandler: NSObject {
 
     private var model: NovaAdOpenActionDataModel?
     private var webType: NovaAdOpenLandingLogger.WebType?
+    
+    private weak var viewController: UIViewController?
+    
+    public init(viewController: UIViewController?) {
+        self.viewController = viewController
+    }
 
     deinit {
         NotificationCenter.default.removeObserver(self,
@@ -32,6 +39,7 @@ extension NovaAdOpenActionHandler: ActionHandling {
         return [
             NovaAdOpenActionKey.launchBrowser.rawValue: NovaAdOpenActionDataModel.self,
             NovaAdOpenActionKey.launchWebView.rawValue: NovaAdOpenActionDataModel.self,
+            NovaAdOpenActionKey.launchStore.rawValue: NovaAdOpenActionDataModel.self
         ]
     }
 
@@ -47,6 +55,15 @@ extension NovaAdOpenActionHandler: ActionHandling {
 
         case NovaAdOpenActionKey.launchWebView:
             launchWebView(with: actionDataModel.url, model: actionDataModel)
+            
+        case NovaAdOpenActionKey.launchStore:
+            if let appStoreId = actionDataModel.appStoreId,
+               !appStoreId.isEmpty,
+                let appStoreIdInInt = Int(appStoreId) {
+                launchStore(with: actionDataModel.url, appStoreId: appStoreIdInInt)
+            } else {
+                launchWebView(with: actionDataModel.url, model: actionDataModel)
+            }
         }
     }
     
@@ -107,6 +124,28 @@ private extension NovaAdOpenActionHandler {
                                                object: nil)
         checkIfAliveAfter5s(webType: webType!)
     }
+    
+    func launchStore(with url: URL, appStoreId: Int) {
+        let storeViewController = SKStoreProductViewController()
+        storeViewController.delegate = self
+        let parameters = [SKStoreProductParameterITunesItemIdentifier: appStoreId]
+        storeViewController.loadProduct(withParameters: parameters) { [weak self] result, error in
+            guard let vc = self?.viewController ?? UIApplication.novakeyRootViewController else {
+                return
+            }
+            if result {
+                self?.appInstallConversionTracking(to: url)
+                vc.present(storeViewController, animated: true)
+            } else {
+                // possible skerror: https://adapty.io/blog/ios-skerrordomain-error-codes/
+               
+                guard let model = self?.model else {
+                    return
+                }
+                self?.launchUnified(vc: vc, model: model)
+            }
+        }
+    }
 
     func launchUnified(vc: UIViewController, model: NovaAdOpenActionDataModel) {
         let webViewController = {
@@ -156,5 +195,15 @@ private extension NovaAdOpenActionHandler {
             }
              
         }
+    }
+    
+    func appInstallConversionTracking(to thirdPartyUrl: URL) {
+        URLSession.shared.dataTask(with: thirdPartyUrl, completionHandler: {_, _, _ in }).resume()
+    }
+}
+
+extension NovaAdOpenActionHandler: SKStoreProductViewControllerDelegate {
+    public func productViewControllerDidFinish(_ viewController: SKStoreProductViewController) {
+        viewController.dismiss(animated: true, completion: nil)
     }
 }

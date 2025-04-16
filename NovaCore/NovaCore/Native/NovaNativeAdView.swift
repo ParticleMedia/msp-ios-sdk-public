@@ -162,7 +162,11 @@ private extension NovaNativeAdView {
         case .launchBrowser:
             actionKey = NovaAdOpenActionKey.launchBrowser.rawValue
         case .launchWebView:
-            actionKey = NovaAdOpenActionKey.launchWebView.rawValue
+            if nativeAd.appStoreId != nil {
+                actionKey = NovaAdOpenActionKey.launchStore.rawValue
+            } else {
+                actionKey = NovaAdOpenActionKey.launchWebView.rawValue
+            }
         }
 
         let actionDataModel = NovaAdOpenActionDataModel(

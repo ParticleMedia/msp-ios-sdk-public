@@ -415,6 +415,43 @@
             "moduleName": "NovaCore"
           },
           {
+            "kind": "Var",
+            "name": "launchStore",
+            "printedName": "launchStore",
+            "children": [
+              {
+                "kind": "TypeFunc",
+                "name": "Function",
+                "printedName": "(NovaCore.NovaAdOpenActionKey.Type) -> NovaCore.NovaAdOpenActionKey",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "NovaAdOpenActionKey",
+                    "printedName": "NovaCore.NovaAdOpenActionKey",
+                    "usr": "s:8NovaCore0A15AdOpenActionKeyO"
+                  },
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Metatype",
+                    "printedName": "NovaCore.NovaAdOpenActionKey.Type",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "NovaAdOpenActionKey",
+                        "printedName": "NovaCore.NovaAdOpenActionKey",
+                        "usr": "s:8NovaCore0A15AdOpenActionKeyO"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ],
+            "declKind": "EnumElement",
+            "usr": "s:8NovaCore0A15AdOpenActionKeyO11launchStoreyA2CmF",
+            "mangledName": "$s8NovaCore0A15AdOpenActionKeyO11launchStoreyA2CmF",
+            "moduleName": "NovaCore"
+          },
+          {
             "kind": "Constructor",
             "name": "init",
             "printedName": "init(rawValue:)",
@@ -746,6 +783,43 @@
             "declKind": "EnumElement",
             "usr": "s:8NovaCore0A22AppOpenAdViewActionKeyO09launchWebF0yA2CmF",
             "mangledName": "$s8NovaCore0A22AppOpenAdViewActionKeyO09launchWebF0yA2CmF",
+            "moduleName": "NovaCore"
+          },
+          {
+            "kind": "Var",
+            "name": "launchStore",
+            "printedName": "launchStore",
+            "children": [
+              {
+                "kind": "TypeFunc",
+                "name": "Function",
+                "printedName": "(NovaCore.NovaAppOpenAdViewActionKey.Type) -> NovaCore.NovaAppOpenAdViewActionKey",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "NovaAppOpenAdViewActionKey",
+                    "printedName": "NovaCore.NovaAppOpenAdViewActionKey",
+                    "usr": "s:8NovaCore0A22AppOpenAdViewActionKeyO"
+                  },
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Metatype",
+                    "printedName": "NovaCore.NovaAppOpenAdViewActionKey.Type",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "NovaAppOpenAdViewActionKey",
+                        "printedName": "NovaCore.NovaAppOpenAdViewActionKey",
+                        "usr": "s:8NovaCore0A22AppOpenAdViewActionKeyO"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ],
+            "declKind": "EnumElement",
+            "usr": "s:8NovaCore0A22AppOpenAdViewActionKeyO11launchStoreyA2CmF",
+            "mangledName": "$s8NovaCore0A22AppOpenAdViewActionKeyO11launchStoreyA2CmF",
             "moduleName": "NovaCore"
           },
           {
@@ -33838,6 +33912,71 @@
           },
           {
             "kind": "Var",
+            "name": "appStoreId",
+            "printedName": "appStoreId",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Optional",
+                "printedName": "Swift.String?",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "String",
+                    "printedName": "Swift.String",
+                    "usr": "s:SS"
+                  }
+                ],
+                "usr": "s:Sq"
+              }
+            ],
+            "declKind": "Var",
+            "usr": "s:8NovaCore0A12NativeAdItemC10appStoreIdSSSgvp",
+            "mangledName": "$s8NovaCore0A12NativeAdItemC10appStoreIdSSSgvp",
+            "moduleName": "NovaCore",
+            "declAttributes": [
+              "Final",
+              "HasStorage",
+              "AccessControl",
+              "RawDocComment"
+            ],
+            "isLet": true,
+            "hasStorage": true,
+            "accessors": [
+              {
+                "kind": "Accessor",
+                "name": "Get",
+                "printedName": "Get()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Optional",
+                    "printedName": "Swift.String?",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "String",
+                        "printedName": "Swift.String",
+                        "usr": "s:SS"
+                      }
+                    ],
+                    "usr": "s:Sq"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:8NovaCore0A12NativeAdItemC10appStoreIdSSSgvg",
+                "mangledName": "$s8NovaCore0A12NativeAdItemC10appStoreIdSSSgvg",
+                "moduleName": "NovaCore",
+                "implicit": true,
+                "declAttributes": [
+                  "Final"
+                ],
+                "accessorKind": "get"
+              }
+            ]
+          },
+          {
+            "kind": "Var",
             "name": "eCPMInDollar",
             "printedName": "eCPMInDollar",
             "children": [
@@ -41859,6 +41998,71 @@
           },
           {
             "kind": "Var",
+            "name": "appStoreId",
+            "printedName": "appStoreId",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Optional",
+                "printedName": "Swift.String?",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "String",
+                    "printedName": "Swift.String",
+                    "usr": "s:SS"
+                  }
+                ],
+                "usr": "s:Sq"
+              }
+            ],
+            "declKind": "Var",
+            "usr": "s:8NovaCore0A9AppOpenAdC10appStoreIdSSSgvp",
+            "mangledName": "$s8NovaCore0A9AppOpenAdC10appStoreIdSSSgvp",
+            "moduleName": "NovaCore",
+            "declAttributes": [
+              "Final",
+              "HasStorage",
+              "AccessControl",
+              "RawDocComment"
+            ],
+            "isLet": true,
+            "hasStorage": true,
+            "accessors": [
+              {
+                "kind": "Accessor",
+                "name": "Get",
+                "printedName": "Get()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Optional",
+                    "printedName": "Swift.String?",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "String",
+                        "printedName": "Swift.String",
+                        "usr": "s:SS"
+                      }
+                    ],
+                    "usr": "s:Sq"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:8NovaCore0A9AppOpenAdC10appStoreIdSSSgvg",
+                "mangledName": "$s8NovaCore0A9AppOpenAdC10appStoreIdSSSgvg",
+                "moduleName": "NovaCore",
+                "implicit": true,
+                "declAttributes": [
+                  "Final"
+                ],
+                "accessorKind": "get"
+              }
+            ]
+          },
+          {
+            "kind": "Var",
             "name": "delegate",
             "printedName": "delegate",
             "children": [
@@ -42232,10 +42436,52 @@
         "moduleName": "NovaCore"
       },
       {
+        "kind": "Import",
+        "name": "StoreKit",
+        "printedName": "StoreKit",
+        "declKind": "Import",
+        "moduleName": "NovaCore"
+      },
+      {
         "kind": "TypeDecl",
         "name": "NovaAdOpenActionHandler",
         "printedName": "NovaAdOpenActionHandler",
         "children": [
+          {
+            "kind": "Constructor",
+            "name": "init",
+            "printedName": "init(viewController:)",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "NovaAdOpenActionHandler",
+                "printedName": "NovaCore.NovaAdOpenActionHandler",
+                "usr": "c:@M@NovaCore@objc(cs)NovaAdOpenActionHandler"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "Optional",
+                "printedName": "UIKit.UIViewController?",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "UIViewController",
+                    "printedName": "UIKit.UIViewController",
+                    "usr": "c:objc(cs)UIViewController"
+                  }
+                ],
+                "usr": "s:Sq"
+              }
+            ],
+            "declKind": "Constructor",
+            "usr": "s:8NovaCore0A19AdOpenActionHandlerC14viewControllerACSo06UIViewH0CSg_tcfc",
+            "mangledName": "$s8NovaCore0A19AdOpenActionHandlerC14viewControllerACSo06UIViewH0CSg_tcfc",
+            "moduleName": "NovaCore",
+            "declAttributes": [
+              "AccessControl"
+            ],
+            "init_kind": "Designated"
+          },
           {
             "kind": "Constructor",
             "name": "init",
@@ -42389,6 +42635,36 @@
             ],
             "isFromExtension": true,
             "funcSelfKind": "NonMutating"
+          },
+          {
+            "kind": "Function",
+            "name": "productViewControllerDidFinish",
+            "printedName": "productViewControllerDidFinish(_:)",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Void",
+                "printedName": "()"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "SKStoreProductViewController",
+                "printedName": "StoreKit.SKStoreProductViewController",
+                "usr": "c:objc(cs)SKStoreProductViewController"
+              }
+            ],
+            "declKind": "Func",
+            "usr": "c:@CM@NovaCore@objc(cs)NovaAdOpenActionHandler(im)productViewControllerDidFinish:",
+            "mangledName": "$s8NovaCore0A19AdOpenActionHandlerC30productViewControllerDidFinishyySo014SKStoreProducthI0CF",
+            "moduleName": "NovaCore",
+            "objc_name": "productViewControllerDidFinish:",
+            "declAttributes": [
+              "Final",
+              "ObjC",
+              "AccessControl"
+            ],
+            "isFromExtension": true,
+            "funcSelfKind": "NonMutating"
           }
         ],
         "declKind": "Class",
@@ -42401,7 +42677,6 @@
           "ObjC"
         ],
         "superclassUsr": "c:objc(cs)NSObject",
-        "inheritsConvenienceInitializers": true,
         "superclassNames": [
           "ObjectiveC.NSObject"
         ],
@@ -42492,6 +42767,13 @@
         "kind": "Import",
         "name": "UIKit",
         "printedName": "UIKit",
+        "declKind": "Import",
+        "moduleName": "NovaCore"
+      },
+      {
+        "kind": "Import",
+        "name": "StoreKit",
+        "printedName": "StoreKit",
         "declKind": "Import",
         "moduleName": "NovaCore"
       },
@@ -42674,6 +42956,36 @@
             "genericSig": "<τ_0_0, τ_0_1>",
             "sugared_genericSig": "<T, U>",
             "declAttributes": [
+              "AccessControl"
+            ],
+            "isFromExtension": true,
+            "funcSelfKind": "NonMutating"
+          },
+          {
+            "kind": "Function",
+            "name": "productViewControllerDidFinish",
+            "printedName": "productViewControllerDidFinish(_:)",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Void",
+                "printedName": "()"
+              },
+              {
+                "kind": "TypeNominal",
+                "name": "SKStoreProductViewController",
+                "printedName": "StoreKit.SKStoreProductViewController",
+                "usr": "c:objc(cs)SKStoreProductViewController"
+              }
+            ],
+            "declKind": "Func",
+            "usr": "c:@CM@NovaCore@objc(cs)NovaAppOpenAdViewActionHandler(im)productViewControllerDidFinish:",
+            "mangledName": "$s8NovaCore0A26AppOpenAdViewActionHandlerC07productF19ControllerDidFinishyySo014SKStoreProductfJ0CF",
+            "moduleName": "NovaCore",
+            "objc_name": "productViewControllerDidFinish:",
+            "declAttributes": [
+              "Dynamic",
+              "ObjC",
               "AccessControl"
             ],
             "isFromExtension": true,
@@ -96588,7 +96900,7 @@
     {
       "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-sdk\/NovaCore\/NovaCore\/Native\/NovaNativeAdItem.swift",
       "kind": "FloatLiteral",
-      "offset": 1506,
+      "offset": 1615,
       "length": 3,
       "value": "0.0"
     },
@@ -97449,28 +97761,28 @@
     {
       "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-sdk\/NovaCore\/NovaCore\/MSPActionHandler\/NovaAdOpenActionHandler.swift",
       "kind": "Array",
-      "offset": 267,
+      "offset": 283,
       "length": 30,
       "value": "[\"http\", \"https\", \"newsbreak\"]"
     },
     {
       "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-sdk\/NovaCore\/NovaCore\/MSPActionHandler\/NovaAdOpenActionHandler.swift",
       "kind": "Array",
-      "offset": 345,
+      "offset": 361,
       "length": 17,
       "value": "[\"http\", \"https\"]"
     },
     {
       "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-sdk\/NovaCore\/NovaCore\/AppOpen\/NovaAppOpenAdViewActionHandler.swift",
       "kind": "Array",
-      "offset": 616,
+      "offset": 631,
       "length": 30,
       "value": "[\"http\", \"https\", \"newsbreak\"]"
     },
     {
       "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-sdk\/NovaCore\/NovaCore\/AppOpen\/NovaAppOpenAdViewActionHandler.swift",
       "kind": "Array",
-      "offset": 694,
+      "offset": 709,
       "length": 17,
       "value": "[\"http\", \"https\"]"
     },
