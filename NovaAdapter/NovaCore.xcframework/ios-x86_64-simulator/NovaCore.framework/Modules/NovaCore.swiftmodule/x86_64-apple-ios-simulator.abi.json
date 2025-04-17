@@ -10131,6 +10131,52 @@
       },
       {
         "kind": "Import",
+        "name": "UIKit",
+        "printedName": "UIKit",
+        "declKind": "Import",
+        "moduleName": "NovaCore",
+        "declAttributes": [
+          "RawDocComment"
+        ]
+      },
+      {
+        "kind": "Import",
+        "name": "StoreKit",
+        "printedName": "StoreKit",
+        "declKind": "Import",
+        "moduleName": "NovaCore"
+      },
+      {
+        "kind": "TypeDecl",
+        "name": "NovaAdOpenActionHandleUtil",
+        "printedName": "NovaAdOpenActionHandleUtil",
+        "declKind": "Class",
+        "usr": "s:8NovaCore0A22AdOpenActionHandleUtilC",
+        "mangledName": "$s8NovaCore0A22AdOpenActionHandleUtilC",
+        "moduleName": "NovaCore",
+        "declAttributes": [
+          "AccessControl"
+        ],
+        "hasMissingDesignatedInitializers": true,
+        "conformances": [
+          {
+            "kind": "Conformance",
+            "name": "Copyable",
+            "printedName": "Copyable",
+            "usr": "s:s8CopyableP",
+            "mangledName": "$ss8CopyableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Escapable",
+            "printedName": "Escapable",
+            "usr": "s:s9EscapableP",
+            "mangledName": "$ss9EscapableP"
+          }
+        ]
+      },
+      {
+        "kind": "Import",
         "name": "Foundation",
         "printedName": "Foundation",
         "declKind": "Import",
@@ -42635,36 +42681,6 @@
             ],
             "isFromExtension": true,
             "funcSelfKind": "NonMutating"
-          },
-          {
-            "kind": "Function",
-            "name": "productViewControllerDidFinish",
-            "printedName": "productViewControllerDidFinish(_:)",
-            "children": [
-              {
-                "kind": "TypeNominal",
-                "name": "Void",
-                "printedName": "()"
-              },
-              {
-                "kind": "TypeNominal",
-                "name": "SKStoreProductViewController",
-                "printedName": "StoreKit.SKStoreProductViewController",
-                "usr": "c:objc(cs)SKStoreProductViewController"
-              }
-            ],
-            "declKind": "Func",
-            "usr": "c:@CM@NovaCore@objc(cs)NovaAdOpenActionHandler(im)productViewControllerDidFinish:",
-            "mangledName": "$s8NovaCore0A19AdOpenActionHandlerC30productViewControllerDidFinishyySo014SKStoreProducthI0CF",
-            "moduleName": "NovaCore",
-            "objc_name": "productViewControllerDidFinish:",
-            "declAttributes": [
-              "Final",
-              "ObjC",
-              "AccessControl"
-            ],
-            "isFromExtension": true,
-            "funcSelfKind": "NonMutating"
           }
         ],
         "declKind": "Class",
@@ -42956,36 +42972,6 @@
             "genericSig": "<τ_0_0, τ_0_1>",
             "sugared_genericSig": "<T, U>",
             "declAttributes": [
-              "AccessControl"
-            ],
-            "isFromExtension": true,
-            "funcSelfKind": "NonMutating"
-          },
-          {
-            "kind": "Function",
-            "name": "productViewControllerDidFinish",
-            "printedName": "productViewControllerDidFinish(_:)",
-            "children": [
-              {
-                "kind": "TypeNominal",
-                "name": "Void",
-                "printedName": "()"
-              },
-              {
-                "kind": "TypeNominal",
-                "name": "SKStoreProductViewController",
-                "printedName": "StoreKit.SKStoreProductViewController",
-                "usr": "c:objc(cs)SKStoreProductViewController"
-              }
-            ],
-            "declKind": "Func",
-            "usr": "c:@CM@NovaCore@objc(cs)NovaAppOpenAdViewActionHandler(im)productViewControllerDidFinish:",
-            "mangledName": "$s8NovaCore0A26AppOpenAdViewActionHandlerC07productF19ControllerDidFinishyySo014SKStoreProductfJ0CF",
-            "moduleName": "NovaCore",
-            "objc_name": "productViewControllerDidFinish:",
-            "declAttributes": [
-              "Dynamic",
-              "ObjC",
               "AccessControl"
             ],
             "isFromExtension": true,

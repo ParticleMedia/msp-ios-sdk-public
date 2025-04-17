@@ -669,6 +669,9 @@ extension NovaCore.ActionModel : Swift.Equatable {
   @_Concurrency.MainActor @preconcurrency @objc override dynamic public init(frame: CoreFoundation.CGRect)
   @objc deinit
 }
+@_hasMissingDesignatedInitializers public class NovaAdOpenActionHandleUtil {
+  @objc deinit
+}
 @objc @_Concurrency.MainActor @preconcurrency open class NovaNativeAdView : UIKit.UIView {
   @_Concurrency.MainActor @preconcurrency public var titleLabel: UIKit.UILabel?
   @_Concurrency.MainActor @preconcurrency public var bodyLabel: UIKit.UILabel?
@@ -2053,9 +2056,6 @@ extension NovaCore.NovaAdOpenActionHandler : NovaCore.ActionHandling {
   final public func performAction(actionModel: NovaCore.ActionModel)
   final public func SafeAs<T, U>(_ object: T?, _ objectType: U.Type) -> U?
 }
-extension NovaCore.NovaAdOpenActionHandler : StoreKit.SKStoreProductViewControllerDelegate {
-  @objc final public func productViewControllerDidFinish(_ viewController: StoreKit.SKStoreProductViewController)
-}
 @objc public class NovaAppOpenAdViewActionHandler : ObjectiveC.NSObject {
   public init(viewController: UIKit.UIViewController)
   @objc deinit
@@ -2066,9 +2066,6 @@ extension NovaCore.NovaAppOpenAdViewActionHandler : NovaCore.ActionHandling {
 }
 extension NovaCore.NovaAppOpenAdViewActionHandler {
   public func SafeAs<T, U>(_ object: T?, _ objectType: U.Type) -> U?
-}
-extension NovaCore.NovaAppOpenAdViewActionHandler : StoreKit.SKStoreProductViewControllerDelegate {
-  @objc dynamic public func productViewControllerDidFinish(_ viewController: StoreKit.SKStoreProductViewController)
 }
 @objc @_inheritsConvenienceInitializers final public class ActionHandlerMaster : ObjectiveC.NSObject {
   @objc override dynamic public init()
