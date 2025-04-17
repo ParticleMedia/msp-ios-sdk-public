@@ -107,6 +107,8 @@ import PrebidMobile
     
     private var adMetricReporter: AdMetricReporter?
     
+    private var adUnitId: String?
+    
     public func loadAdCreative(bidResponse: Any, adListener: any AdListener, context: Any, adRequest: AdRequest) {
         
         self.adRequest = adRequest
@@ -163,6 +165,9 @@ import PrebidMobile
                         googleInterstitialAd.rootViewController = self.adListener?.getRootViewController()
                         self.interstitialAd = googleInterstitialAd
                         googleInterstitialAd.adInfo["price"] = self.priceInDollar
+                        googleInterstitialAd.adInfo["networkName"] = "google"
+                        googleInterstitialAd.adInfo["networkAdUnitId"] = self.adUnitId
+                        googleInterstitialAd.adInfo["networkCreativeId"] = self.bidResponse?.winningBid?.bid.crid
                         if let adListener = self.adListener,
                            let adRequest = self.adRequest {
                             handleAdLoaded(ad: googleInterstitialAd, listener: adListener, adRequest: adRequest)
@@ -254,7 +259,9 @@ extension GoogleAdapter : GoogleMobileAds.BannerViewDelegate {
             if let priceInDollar = self.priceInDollar {
                 bannerAd.adInfo["price"] = priceInDollar
             }
-            
+            bannerAd.adInfo["networkName"] = "google"
+            bannerAd.adInfo["networkAdUnitId"] = self.adUnitId
+            bannerAd.adInfo["networkCreativeId"] = self.bidResponse?.winningBid?.bid.crid
             if let adListener = self.adListener,
                let adRequest = self.adRequest {
                 handleAdLoaded(ad: bannerAd, listener: adListener, adRequest: adRequest)
@@ -303,6 +310,9 @@ extension GoogleAdapter: GoogleMobileAds.NativeAdLoaderDelegate {
             googleNativeAd.mediaView = mediaView
             googleNativeAd.priceInDollar = self.priceInDollar
             googleNativeAd.adInfo["price"] = self.priceInDollar
+            googleNativeAd.adInfo["networkName"] = "google"
+            googleNativeAd.adInfo["networkAdUnitId"] = self.adUnitId
+            googleNativeAd.adInfo["networkCreativeId"] = self.bidResponse?.winningBid?.bid.crid
             nativeAd.delegate = self
             self.nativeAdItem = nativeAd
             self.nativeAd = googleNativeAd

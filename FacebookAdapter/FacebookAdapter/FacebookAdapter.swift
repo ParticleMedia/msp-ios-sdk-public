@@ -225,6 +225,9 @@ extension FacebookAdapter: FBNativeAdDelegate {
             facebookNativeAd.nativeAdItem = nativeAd
             facebookNativeAd.mediaView = mediaView
             facebookNativeAd.adInfo["price"] = self.priceInDollar
+            facebookNativeAd.adInfo["networkName"] = "facebook"
+            facebookNativeAd.adInfo["networkAdUnitId"] = nativeAd.placementID
+            facebookNativeAd.adInfo["networkCreativeId"] = self.bidResponse?.winningBid?.bid.crid
             self.nativeAdItem = nativeAd
             if let adListener = self.adListener,
                let adRequest = self.adRequest {
@@ -266,7 +269,9 @@ extension FacebookAdapter: FBInterstitialAdDelegate {
             if let priceInDollar = self.priceInDollar {
                 facebookInterstitialAd.adInfo["price"] = priceInDollar
             }
-            
+            facebookInterstitialAd.adInfo["networkName"] = "facebook"
+            facebookInterstitialAd.adInfo["networkAdUnitId"] = interstitialAd.placementID
+            facebookInterstitialAd.adInfo["networkCreativeId"] = self.bidResponse?.winningBid?.bid.crid
             
             if let adListener = self.adListener,
                let adRequest = self.adRequest {

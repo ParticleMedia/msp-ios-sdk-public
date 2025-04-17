@@ -118,7 +118,8 @@ extension PrebidAdapter: BannerViewDelegate {
             if let priceInDollar = self.priceInDollar {
                 prebidAd.adInfo["price"] = priceInDollar
             }
-            
+            prebidAd.adInfo["networkName"] = self.bidResponse?.winningBidSeat
+            prebidAd.adInfo["networkCreativeId"] = self.bidResponse?.winningBid?.bid.crid
             if let adListener = self.adListener,
                let adRequest = self.adRequest {
                 handleAdLoaded(ad: prebidAd, listener: adListener, adRequest: adRequest)

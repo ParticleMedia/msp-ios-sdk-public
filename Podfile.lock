@@ -1,9 +1,9 @@
 PODS:
-  - FacebookAdapter (0.0.103):
+  - FacebookAdapter (0.0.106):
     - FBAudienceNetwork (~> 6.15)
     - MSPSharedLibraries (= 0.0.91)
   - FBAudienceNetwork (6.17.1)
-  - Google-Mobile-Ads-SDK (12.2.0):
+  - Google-Mobile-Ads-SDK (12.3.0):
     - GoogleUserMessagingPlatform (>= 1.1)
   - GoogleAdapter (0.0.106):
     - Google-Mobile-Ads-SDK (~> 12.0)
@@ -49,9 +49,9 @@ EXTERNAL SOURCES:
     :path: "./"
 
 SPEC CHECKSUMS:
-  FacebookAdapter: ae3d260725c7bfcb73328b27af53503e4fbac5ec
+  FacebookAdapter: 3f6fc2e7f3c091b7de8c537b68632d5a9d853d6d
   FBAudienceNetwork: eb3ffbf2b35df25e21e163657044ffef66616a40
-  Google-Mobile-Ads-SDK: 1dfb0c3cb46c7e2b00b0f4de74a1e06d9ea25d67
+  Google-Mobile-Ads-SDK: 01b1b77e0bdba8b4027ae62e9bd52e5a95d930aa
   GoogleAdapter: a7f8cf8a88af8b9da02b378ea54fb7c55d6aa658
   GoogleUserMessagingPlatform: f8d0cdad3ca835406755d0a69aa634f00e76d576
   MSPCore: d4509d0f11b06c1934e5e5e151b77264b9988f5f

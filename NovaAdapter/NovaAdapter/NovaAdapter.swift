@@ -194,6 +194,9 @@ public class NovaAdapter: AdNetworkAdapter {
                     nativeAd.priceInDollar = self.priceInDollar
                     nativeAd.adInfo["price"] = self.priceInDollar
                     nativeAd.adInfo["isVideo"] = (nativeAdItem.creativeType == .nativeVideo)
+                    nativeAd.adInfo["networkName"] = "nova"
+                    nativeAd.adInfo["networkAdUnitId"] = self.adUnitId
+                    nativeAd.adInfo["networkCreativeId"] = self.bidResponse?.winningBid?.bid.crid
                     nativeAd.nativeAdItem = nativeAdItem
                     self.nativeAdItem = nativeAdItem
                     self.nativeAd = nativeAd
@@ -217,6 +220,9 @@ public class NovaAdapter: AdNetworkAdapter {
                 
                     self.interstitialAd = novaInterstitialAd
                     novaInterstitialAd.adInfo["price"] = self.priceInDollar
+                    novaInterstitialAd.adInfo["networkName"] = "nova"
+                    novaInterstitialAd.adInfo["networkAdUnitId"] = self.adUnitId
+                    novaInterstitialAd.adInfo["networkCreativeId"] = self.bidResponse?.winningBid?.bid.crid
                     appOpenAd?.delegate = self
                 
                     if let adListener = self.adListener,
