@@ -8,6 +8,7 @@ public struct NovaAdOpenActionDataModel {
     let clickTime: Double
     let videoInfo: NovaNativeAdVideoInfo?
     let encryptedAdToken: String
+    let appStoreId: String?
 
     public init(url: URL, clickTime: Double, ad: NovaBaseAd) {
         self.url = url
@@ -17,5 +18,10 @@ public struct NovaAdOpenActionDataModel {
         self.adUnitId = ad.adUnitId
         self.encryptedAdToken = ad.encryptedAdToken
         self.videoInfo = (ad as? NovaNativeAdItem)?.videoInfo
+        if ad is NovaNativeAdItem {
+            self.appStoreId = (ad as? NovaNativeAdItem)?.appStoreId
+        } else {
+            self.appStoreId = (ad as? NovaAppOpenAd)?.appStoreId
+        }
     }
 }

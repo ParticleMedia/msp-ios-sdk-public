@@ -8,7 +8,6 @@
 import Foundation
 import UIKit
 
-
 @objc public class NovaAppOpenAdViewActionHandler: NSObject {
     private weak var viewController: UIViewController?
     //private var feedbackHandler: AdsFeedbackActionHandler?
@@ -34,6 +33,8 @@ extension NovaAppOpenAdViewActionHandler: ActionHandling {
             NovaAppOpenAdViewActionKey.manualSkip.rawValue: EmptyActionDataModel.self,
             NovaAppOpenAdViewActionKey.launchBrowser.rawValue: NovaAdOpenActionDataModel.self,
             NovaAppOpenAdViewActionKey.launchWebView.rawValue: NovaAdOpenActionDataModel.self,
+            NovaAppOpenAdViewActionKey.launchStore.rawValue:
+                NovaAdOpenActionDataModel.self,
             //NovaAppOpenAdViewActionKey.feedbackReport.rawValue: NovaAppOpenAdFeedBackReportActionModel.self,
         ]
     }
@@ -63,6 +64,18 @@ extension NovaAppOpenAdViewActionHandler: ActionHandling {
             //if let dataModel = actionModel.actionDataModel as? NovaAppOpenAdFeedBackReportActionModel {
             //    didTapReportAd(with: dataModel.appOpenAd)
             //}
+            
+        case NovaAppOpenAdViewActionKey.launchStore.rawValue:
+            guard let actionDataModel = SafeAs(actionModel.actionDataModel, NovaAdOpenActionDataModel.self) else {
+                return
+            }
+            if let appStoreId = actionDataModel.appStoreId,
+               !appStoreId.isEmpty,
+                let appStoreIdInInt = Int(appStoreId) {
+                NovaAdOpenActionHandleUtil.launchStore(with: actionDataModel.url, appStoreId: appStoreIdInInt, viewController: self.viewController, model: self.model)
+            } else {
+                launchWebView(with: actionDataModel.url, model: actionDataModel)
+            }
 
         default:
             break
@@ -163,20 +176,8 @@ private extension NovaAppOpenAdViewActionHandler {
         self.model = model
         webType = .unified
         DispatchQueue.main.async {
-            self.launchUnified(vc: vc, model: model)
+            NovaAdOpenActionHandleUtil.launchUnified(vc: vc, model: model)
         }
-    }
-
-    func launchUnified(vc: UIViewController, model: NovaAdOpenActionDataModel) {
-        let webViewController = {
-            if let videoInfo = model.videoInfo, videoInfo.isPlayOnLandingPage {
-                NovaAdsVideoLandingWebViewController(model: model)
-            } else {
-                NovaAdsLandingWebViewController(dataModel: model)
-            }
-        }()
-        webViewController.modalPresentationStyle = .fullScreen
-        vc.present(webViewController, animated: true)
     }
     
     public func SafeAs<T, U>(_ object: T?, _ objectType: U.Type) -> U? {

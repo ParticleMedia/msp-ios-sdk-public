@@ -168,7 +168,7 @@ public class NovaAppOpenVerticalVideoAdView: UIView {
         self.startTime = CACurrentMediaTime()
         self.viewController = viewController
         
-        let adOpenActionHandler = NovaAdOpenActionHandler()
+        let adOpenActionHandler = NovaAdOpenActionHandler(viewController: viewController)
         let actionHandlerMaster = ActionHandlerMaster(actionHandlers: [adOpenActionHandler])
 
         self.nativeAdView = NovaNativeAdView(actionHandler: actionHandlerMaster)
@@ -441,7 +441,11 @@ private extension NovaAppOpenVerticalVideoAdView {
         case .launchBrowser:
             actionKey = NovaAdOpenActionKey.launchBrowser.rawValue
         case .launchWebView:
-            actionKey = NovaAdOpenActionKey.launchWebView.rawValue
+            if let addStoreId = appOpenAd.appStoreId {
+                actionKey = NovaAdOpenActionKey.launchStore.rawValue
+            } else {
+                actionKey = NovaAdOpenActionKey.launchWebView.rawValue
+            }
         }
 
         let tapActionModel = ActionModel(
