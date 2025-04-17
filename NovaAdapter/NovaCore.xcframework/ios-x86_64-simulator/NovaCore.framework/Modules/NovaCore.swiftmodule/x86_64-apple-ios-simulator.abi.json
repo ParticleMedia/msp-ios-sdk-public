@@ -42482,13 +42482,6 @@
         "moduleName": "NovaCore"
       },
       {
-        "kind": "Import",
-        "name": "StoreKit",
-        "printedName": "StoreKit",
-        "declKind": "Import",
-        "moduleName": "NovaCore"
-      },
-      {
         "kind": "TypeDecl",
         "name": "NovaAdOpenActionHandler",
         "printedName": "NovaAdOpenActionHandler",
@@ -42783,13 +42776,6 @@
         "kind": "Import",
         "name": "UIKit",
         "printedName": "UIKit",
-        "declKind": "Import",
-        "moduleName": "NovaCore"
-      },
-      {
-        "kind": "Import",
-        "name": "StoreKit",
-        "printedName": "StoreKit",
         "declKind": "Import",
         "moduleName": "NovaCore"
       },
@@ -97747,28 +97733,28 @@
     {
       "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-sdk\/NovaCore\/NovaCore\/MSPActionHandler\/NovaAdOpenActionHandler.swift",
       "kind": "Array",
-      "offset": 283,
+      "offset": 267,
       "length": 30,
       "value": "[\"http\", \"https\", \"newsbreak\"]"
     },
     {
       "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-sdk\/NovaCore\/NovaCore\/MSPActionHandler\/NovaAdOpenActionHandler.swift",
       "kind": "Array",
-      "offset": 361,
+      "offset": 345,
       "length": 17,
       "value": "[\"http\", \"https\"]"
     },
     {
       "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-sdk\/NovaCore\/NovaCore\/AppOpen\/NovaAppOpenAdViewActionHandler.swift",
       "kind": "Array",
-      "offset": 631,
+      "offset": 615,
       "length": 30,
       "value": "[\"http\", \"https\", \"newsbreak\"]"
     },
     {
       "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-sdk\/NovaCore\/NovaCore\/AppOpen\/NovaAppOpenAdViewActionHandler.swift",
       "kind": "Array",
-      "offset": 709,
+      "offset": 693,
       "length": 17,
       "value": "[\"http\", \"https\"]"
     },
