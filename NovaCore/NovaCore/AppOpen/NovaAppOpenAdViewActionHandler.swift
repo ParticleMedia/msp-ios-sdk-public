@@ -7,7 +7,6 @@
 
 import Foundation
 import UIKit
-import StoreKit
 
 @objc public class NovaAppOpenAdViewActionHandler: NSObject {
     private weak var viewController: UIViewController?

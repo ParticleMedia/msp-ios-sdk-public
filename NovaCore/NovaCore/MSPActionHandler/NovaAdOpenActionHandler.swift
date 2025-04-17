@@ -7,7 +7,6 @@
 
 import Foundation
 import UIKit
-import StoreKit
 
 
 public final class NovaAdOpenActionHandler: NSObject {
@@ -161,9 +160,5 @@ private extension NovaAdOpenActionHandler {
             }
              
         }
-    }
-    
-    func appInstallConversionTracking(to thirdPartyUrl: URL) {
-        URLSession.shared.dataTask(with: thirdPartyUrl, completionHandler: {_, _, _ in }).resume()
     }
 }
