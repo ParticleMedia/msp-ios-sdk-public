@@ -157,16 +157,18 @@ public class NovaAppOpenVerticalImageAdView: UIView {
 
     private let appOpenAd: NovaAppOpenAd
     private let startTime: CFTimeInterval
+    private let viewController: UIViewController
 
     // MARK: -
 
-    init(with media: NovaNativeAdMedia, appOpenAd: NovaAppOpenAd, actionHandler: ActionHandling) {
+    init(with media: NovaNativeAdMedia, appOpenAd: NovaAppOpenAd, actionHandler: ActionHandling, viewController: UIViewController) {
         self.actionHandler = actionHandler
         self.appOpenAd = appOpenAd
         self.startTime = CACurrentMediaTime()
         self.media = media
+        self.viewController = viewController
         
-        let adOpenActionHandler = NovaAdOpenActionHandler()
+        let adOpenActionHandler = NovaAdOpenActionHandler(viewController: viewController)
         let actionHandlerMaster = ActionHandlerMaster(actionHandlers: [adOpenActionHandler])
 
         self.nativeAdView = NovaNativeAdView(actionHandler: actionHandlerMaster)
@@ -397,7 +399,11 @@ private extension NovaAppOpenVerticalImageAdView {
         case .launchBrowser:
             actionKey = NovaAdOpenActionKey.launchBrowser.rawValue
         case .launchWebView:
-            actionKey = NovaAdOpenActionKey.launchWebView.rawValue
+            if let appStoreId = appOpenAd.appStoreId {
+                actionKey = NovaAdOpenActionKey.launchStore.rawValue
+            } else {
+                actionKey = NovaAdOpenActionKey.launchWebView.rawValue
+            }
         }
 
         let tapActionModel = ActionModel(

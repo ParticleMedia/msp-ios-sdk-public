@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		37975389D929094082150DF7 /* libPods-NovaCore.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 116EB80EEAD425BF5D47DE4F /* libPods-NovaCore.a */; };
 		6639FC032CB0A9880051C764 /* NovaConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6639FC022CB0A9880051C764 /* NovaConstants.swift */; };
+		663BDEEE2DB075FA00FE7BE2 /* NovaAdOpenActionHandleUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = 663BDEED2DB075E600FE7BE2 /* NovaAdOpenActionHandleUtil.swift */; };
 		6647D0E72C6D74490048F0D2 /* NovaNativeAdVideoDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6647D0E62C6D74490048F0D2 /* NovaNativeAdVideoDelegate.swift */; };
 		664F33282C45C5020014E1BA /* NovaNativeAdMediaViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 664F33272C45C5020014E1BA /* NovaNativeAdMediaViewController.swift */; };
 		668ACAB92CDC34DA00F45803 /* NovaUIUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 668ACAB82CDC34DA00F45803 /* NovaUIUtils.swift */; };
@@ -124,6 +125,7 @@
 /* Begin PBXFileReference section */
 		116EB80EEAD425BF5D47DE4F /* libPods-NovaCore.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-NovaCore.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		6639FC022CB0A9880051C764 /* NovaConstants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NovaConstants.swift; sourceTree = "<group>"; };
+		663BDEED2DB075E600FE7BE2 /* NovaAdOpenActionHandleUtil.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NovaAdOpenActionHandleUtil.swift; sourceTree = "<group>"; };
 		6647D0E62C6D74490048F0D2 /* NovaNativeAdVideoDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NovaNativeAdVideoDelegate.swift; sourceTree = "<group>"; };
 		664F33272C45C5020014E1BA /* NovaNativeAdMediaViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NovaNativeAdMediaViewController.swift; sourceTree = "<group>"; };
 		668ACAB82CDC34DA00F45803 /* NovaUIUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NovaUIUtils.swift; sourceTree = "<group>"; };
@@ -417,6 +419,7 @@
 		66E5348E2C24CBF200255D15 /* MSPActionHandler */ = {
 			isa = PBXGroup;
 			children = (
+				663BDEED2DB075E600FE7BE2 /* NovaAdOpenActionHandleUtil.swift */,
 				66E534872C24CBF200255D15 /* ActionHandlerMaster.swift */,
 				66E534882C24CBF200255D15 /* ActionHandling.swift */,
 				66E534892C24CBF200255D15 /* ActionModel.swift */,
@@ -663,6 +666,7 @@
 				66E534B62C24CBF200255D15 /* NovaNativeAdVideoInfo.swift in Sources */,
 				66E534CD2C24CBF200255D15 /* ActionModel.swift in Sources */,
 				66E535222C250A8900255D15 /* CheckBoxButton.swift in Sources */,
+				663BDEEE2DB075FA00FE7BE2 /* NovaAdOpenActionHandleUtil.swift in Sources */,
 				66E534B92C24CBF200255D15 /* NovaNativeAdView.swift in Sources */,
 				66F48C4D2CAE008200902F4D /* NovaAppOpenAdViewV3.swift in Sources */,
 				66E534B82C24CBF200255D15 /* NovaNativeAdVideoView.swift in Sources */,

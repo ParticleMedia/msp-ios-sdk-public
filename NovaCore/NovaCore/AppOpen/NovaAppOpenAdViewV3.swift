@@ -267,7 +267,11 @@ private extension NovaAppOpenAdViewV3 {
         case .launchBrowser:
             actionKey = NovaAdOpenActionKey.launchBrowser.rawValue
         case .launchWebView:
-            actionKey = NovaAdOpenActionKey.launchWebView.rawValue
+            if let appStoreId = appOpenAd.appStoreId {
+                actionKey = NovaAdOpenActionKey.launchStore.rawValue
+            } else {
+                actionKey = NovaAdOpenActionKey.launchWebView.rawValue
+            }
         }
 
         let tapActionModel = ActionModel(

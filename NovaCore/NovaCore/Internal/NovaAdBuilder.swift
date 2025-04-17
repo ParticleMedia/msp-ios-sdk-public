@@ -52,7 +52,8 @@ public enum NovaAdBuilder {
             thirdPartyClickTrackingUrls: thirdPartyClickTrackingUrls,
             priceInDollar: adItem.price,
             encryptedAdToken: adItem.encryptedAdToken,
-            isParallax: isParallax)
+            isParallax: isParallax,
+            appStoreId: adItem.creative.appStoreId)
     }
     
     public static func buildAppOpenAds(adItems: [AdItem], adUnitId: String) -> [NovaAppOpenAd] {
@@ -99,7 +100,8 @@ public enum NovaAdBuilder {
                 priceInDollar: adItem.price,
                 startTimeInMs: startTimeInMs,
                 expirationTimeInMs: expirationTimeInMs,
-                encryptedAdToken: adItem.encryptedAdToken)
+                encryptedAdToken: adItem.encryptedAdToken,
+                appStoreId: adItem.creative.appStoreId)
         }
     }
 

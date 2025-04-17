@@ -34,6 +34,9 @@ import UIKit
     public let iconUrl: String?
     
     public var image: UIImage?
+    
+    /// The app store id of the advertised product (if there is any)
+    public let appStoreId: String?
 
     /// Delegate used to handle ad click event logging
     @objc public weak var delegate: NovaAppOpenAdDelegate?
@@ -63,7 +66,8 @@ import UIKit
         priceInDollar: Double?,
         startTimeInMs: Double?,
         expirationTimeInMs: Double?,
-        encryptedAdToken: String
+        encryptedAdToken: String,
+        appStoreId: String?
     ) {
         self.creativeType = creativeType
         self.launchOption = launchOption
@@ -78,6 +82,7 @@ import UIKit
         self.isImageClickable = isImageClickable
         self.isVerticalImage = isVerticalImage
         self.iconUrl = iconUrl
+        self.appStoreId = appStoreId
 
         super.init(adUnitId: adUnitId,
                    requestId: requestId,
@@ -108,6 +113,7 @@ import UIKit
         iconUrl = try container.decodeIfPresent(String.self, forKey: .iconUrl)
         isImageClickable = try container.decodeIfPresent(Bool.self, forKey: .isImageClickable)
         isVerticalImage = try container.decodeIfPresent(Bool.self, forKey: .isVerticalImage)
+        appStoreId = try container.decodeIfPresent(String.self, forKey: .appStoreId)
         let superDecoder = try container.superDecoder()
         try super.init(from: superDecoder)
     }
@@ -127,6 +133,7 @@ import UIKit
         case isImageClickable
         case isVerticalImage
         case iconUrl
+        case appStoreId
     }
 
     override public func encode(to encoder: Encoder) throws {

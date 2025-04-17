@@ -17,6 +17,12 @@ public final class NovaAdOpenActionHandler: NSObject {
 
     private var model: NovaAdOpenActionDataModel?
     private var webType: NovaAdOpenLandingLogger.WebType?
+    
+    private weak var viewController: UIViewController?
+    
+    public init(viewController: UIViewController?) {
+        self.viewController = viewController
+    }
 
     deinit {
         NotificationCenter.default.removeObserver(self,
@@ -32,6 +38,7 @@ extension NovaAdOpenActionHandler: ActionHandling {
         return [
             NovaAdOpenActionKey.launchBrowser.rawValue: NovaAdOpenActionDataModel.self,
             NovaAdOpenActionKey.launchWebView.rawValue: NovaAdOpenActionDataModel.self,
+            NovaAdOpenActionKey.launchStore.rawValue: NovaAdOpenActionDataModel.self
         ]
     }
 
@@ -47,6 +54,15 @@ extension NovaAdOpenActionHandler: ActionHandling {
 
         case NovaAdOpenActionKey.launchWebView:
             launchWebView(with: actionDataModel.url, model: actionDataModel)
+            
+        case NovaAdOpenActionKey.launchStore:
+            if let appStoreId = actionDataModel.appStoreId,
+               !appStoreId.isEmpty,
+                let appStoreIdInInt = Int(appStoreId) {
+                NovaAdOpenActionHandleUtil.launchStore(with: actionDataModel.url, appStoreId: appStoreIdInInt, viewController: self.viewController, model: self.model)
+            } else {
+                launchWebView(with: actionDataModel.url, model: actionDataModel)
+            }
         }
     }
     
@@ -98,7 +114,7 @@ private extension NovaAdOpenActionHandler {
         self.model = model
         webType = .unified
         DispatchQueue.main.async {
-            self.launchUnified(vc: vc, model: model)
+            NovaAdOpenActionHandleUtil.launchUnified(vc: vc, model: model)
         }
 
         NotificationCenter.default.addObserver(self,
@@ -106,18 +122,6 @@ private extension NovaAdOpenActionHandler {
                                                name: UIApplication.willResignActiveNotification,
                                                object: nil)
         checkIfAliveAfter5s(webType: webType!)
-    }
-
-    func launchUnified(vc: UIViewController, model: NovaAdOpenActionDataModel) {
-        let webViewController = {
-            if let videoInfo = model.videoInfo, videoInfo.isPlayOnLandingPage {
-                NovaAdsVideoLandingWebViewController(model: model)
-            } else {
-                NovaAdsLandingWebViewController(dataModel: model)
-            }
-        }()
-        webViewController.modalPresentationStyle = .fullScreen
-        vc.present(webViewController, animated: true)
     }
 
     @objc func handleApplicationWillResignActive(_ aNoticiation: Notification) {

@@ -35,6 +35,9 @@ import Foundation
 
     /// Delegate used to handle ad state update. For example, ad impression or ad click.
     @objc public weak var delegate: NovaNativeAdDelegate?
+    
+    /// The app store id of the advertised product (if there is any)
+    public let appStoreId: String?
 
     /*
      * Note (Wayne)
@@ -78,7 +81,8 @@ import Foundation
         thirdPartyClickTrackingUrls: [String],
         priceInDollar: Double?,
         encryptedAdToken: String,
-        isParallax: Bool
+        isParallax: Bool,
+        appStoreId: String?
     ) {
         self.eCPMInDollar = eCPMInDollar
         self.headline = headline
@@ -92,6 +96,7 @@ import Foundation
         self.videoInfo = videoInfo
         self.isParallax = isParallax
         self.addOnItem = addOnItem
+        self.appStoreId = appStoreId
 
         super.init(adUnitId: adUnitId,
                    requestId: requestId,
