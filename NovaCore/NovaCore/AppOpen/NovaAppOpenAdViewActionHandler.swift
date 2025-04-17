@@ -73,7 +73,7 @@ extension NovaAppOpenAdViewActionHandler: ActionHandling {
             if let appStoreId = actionDataModel.appStoreId,
                !appStoreId.isEmpty,
                 let appStoreIdInInt = Int(appStoreId) {
-                launchStore(with: actionDataModel.url, appStoreId: appStoreIdInInt)
+                NovaAdOpenActionHandleUtil.launchStore(with: actionDataModel.url, appStoreId: appStoreIdInInt, viewController: self.viewController, model: self.model)
             } else {
                 launchWebView(with: actionDataModel.url, model: actionDataModel)
             }
@@ -177,41 +177,7 @@ private extension NovaAppOpenAdViewActionHandler {
         self.model = model
         webType = .unified
         DispatchQueue.main.async {
-            self.launchUnified(vc: vc, model: model)
-        }
-    }
-
-    func launchUnified(vc: UIViewController, model: NovaAdOpenActionDataModel) {
-        let webViewController = {
-            if let videoInfo = model.videoInfo, videoInfo.isPlayOnLandingPage {
-                NovaAdsVideoLandingWebViewController(model: model)
-            } else {
-                NovaAdsLandingWebViewController(dataModel: model)
-            }
-        }()
-        webViewController.modalPresentationStyle = .fullScreen
-        vc.present(webViewController, animated: true)
-    }
-    
-    func launchStore(with url: URL, appStoreId: Int) {
-        let storeViewController = SKStoreProductViewController()
-        storeViewController.delegate = self
-        let parameters = [SKStoreProductParameterITunesItemIdentifier: appStoreId]
-        storeViewController.loadProduct(withParameters: parameters) { [weak self] result, error in
-            guard let vc = self?.viewController ?? UIApplication.novakeyRootViewController else {
-                return
-            }
-            if result {
-                self?.appInstallConversionTracking(to: url)
-                vc.present(storeViewController, animated: true)
-            } else {
-                // possible skerror: https://adapty.io/blog/ios-skerrordomain-error-codes/
-               
-                guard let model = self?.model else {
-                    return
-                }
-                self?.launchUnified(vc: vc, model: model)
-            }
+            NovaAdOpenActionHandleUtil.launchUnified(vc: vc, model: model)
         }
     }
     
@@ -227,15 +193,6 @@ private extension NovaAppOpenAdViewActionHandler {
             // It's always OK to cast nil to nil
             return nil
         }
-    }
-    
-    func appInstallConversionTracking(to thirdPartyUrl: URL) {
-        URLSession.shared.dataTask(with: thirdPartyUrl, completionHandler: {_, _, _ in }).resume()
-    }
-}
-extension NovaAppOpenAdViewActionHandler: SKStoreProductViewControllerDelegate {
-    public func productViewControllerDidFinish(_ viewController: SKStoreProductViewController) {
-        viewController.dismiss(animated: true, completion: nil)
     }
 }
 
