@@ -192,11 +192,11 @@ public class NovaAdapter: AdNetworkAdapter {
                     }()
                     nativeAd.mediaView = mediaView
                     nativeAd.priceInDollar = self.priceInDollar
-                    nativeAd.adInfo["price"] = self.priceInDollar
+                    nativeAd.adInfo[MSPConstants.AD_INFO_PRICE] = self.priceInDollar
                     nativeAd.adInfo["isVideo"] = (nativeAdItem.creativeType == .nativeVideo)
-                    nativeAd.adInfo["networkName"] = "nova"
-                    nativeAd.adInfo["networkAdUnitId"] = self.adUnitId
-                    nativeAd.adInfo["networkCreativeId"] = self.bidResponse?.winningBid?.bid.crid
+                    nativeAd.adInfo[MSPConstants.AD_INFO_NETWORK_NAME] = "nova"
+                    nativeAd.adInfo[MSPConstants.AD_INFO_NETWORK_AD_UNIT_ID] = self.adUnitId
+                    nativeAd.adInfo[MSPConstants.AD_INFO_NETWORK_CREATIVE_ID] = self.bidResponse?.winningBid?.bid.crid
                     nativeAd.nativeAdItem = nativeAdItem
                     self.nativeAdItem = nativeAdItem
                     self.nativeAd = nativeAd
@@ -219,10 +219,10 @@ public class NovaAdapter: AdNetworkAdapter {
                     novaInterstitialAd.rootViewController = self.adListener?.getRootViewController()
                 
                     self.interstitialAd = novaInterstitialAd
-                    novaInterstitialAd.adInfo["price"] = self.priceInDollar
-                    novaInterstitialAd.adInfo["networkName"] = "nova"
-                    novaInterstitialAd.adInfo["networkAdUnitId"] = self.adUnitId
-                    novaInterstitialAd.adInfo["networkCreativeId"] = self.bidResponse?.winningBid?.bid.crid
+                    novaInterstitialAd.adInfo[MSPConstants.AD_INFO_PRICE] = self.priceInDollar
+                    novaInterstitialAd.adInfo[MSPConstants.AD_INFO_NETWORK_NAME] = "nova"
+                    novaInterstitialAd.adInfo[MSPConstants.AD_INFO_NETWORK_AD_UNIT_ID] = self.adUnitId
+                    novaInterstitialAd.adInfo[MSPConstants.AD_INFO_NETWORK_CREATIVE_ID] = self.bidResponse?.winningBid?.bid.crid
                     appOpenAd?.delegate = self
                 
                     if let adListener = self.adListener,

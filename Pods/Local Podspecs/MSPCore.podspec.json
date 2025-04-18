@@ -19,7 +19,7 @@
   "exclude_files": "Classes/Exclude",
   "dependencies": {
     "MSPSharedLibraries": [
-      "0.0.91"
+
     ],
     "PrebidAdapter": [
       "0.0.109"

@@ -166,10 +166,10 @@ import PrebidMobile
                         ad.fullScreenContentDelegate = self
                         googleInterstitialAd.rootViewController = self.adListener?.getRootViewController()
                         self.interstitialAd = googleInterstitialAd
-                        googleInterstitialAd.adInfo["price"] = self.priceInDollar
-                        googleInterstitialAd.adInfo["networkName"] = "google"
-                        googleInterstitialAd.adInfo["networkAdUnitId"] = self.adUnitId
-                        googleInterstitialAd.adInfo["networkCreativeId"] = self.bidResponse?.winningBid?.bid.crid
+                        googleInterstitialAd.adInfo[MSPConstants.AD_INFO_PRICE] = self.priceInDollar
+                        googleInterstitialAd.adInfo[MSPConstants.AD_INFO_NETWORK_NAME] = "google"
+                        googleInterstitialAd.adInfo[MSPConstants.AD_INFO_NETWORK_AD_UNIT_ID] = self.adUnitId
+                        googleInterstitialAd.adInfo[MSPConstants.AD_INFO_NETWORK_CREATIVE_ID] = self.bidResponse?.winningBid?.bid.crid
                         if let adListener = self.adListener,
                            let adRequest = self.adRequest {
                             handleAdLoaded(ad: googleInterstitialAd, listener: adListener, adRequest: adRequest)
@@ -259,11 +259,11 @@ extension GoogleAdapter : GoogleMobileAds.BannerViewDelegate {
             var bannerAd = BannerAd(adView: bannerView, adNetworkAdapter: self)
             self.bannerAd = bannerAd
             if let priceInDollar = self.priceInDollar {
-                bannerAd.adInfo["price"] = priceInDollar
+                bannerAd.adInfo[MSPConstants.AD_INFO_PRICE] = priceInDollar
             }
-            bannerAd.adInfo["networkName"] = "google"
-            bannerAd.adInfo["networkAdUnitId"] = self.adUnitId
-            bannerAd.adInfo["networkCreativeId"] = self.bidResponse?.winningBid?.bid.crid
+            bannerAd.adInfo[MSPConstants.AD_INFO_NETWORK_NAME] = "google"
+            bannerAd.adInfo[MSPConstants.AD_INFO_NETWORK_AD_UNIT_ID] = self.adUnitId
+            bannerAd.adInfo[MSPConstants.AD_INFO_NETWORK_CREATIVE_ID] = self.bidResponse?.winningBid?.bid.crid
             if let adListener = self.adListener,
                let adRequest = self.adRequest {
                 handleAdLoaded(ad: bannerAd, listener: adListener, adRequest: adRequest)
@@ -311,10 +311,10 @@ extension GoogleAdapter: GoogleMobileAds.NativeAdLoaderDelegate {
             googleNativeAd.nativeAdItem = nativeAd
             googleNativeAd.mediaView = mediaView
             googleNativeAd.priceInDollar = self.priceInDollar
-            googleNativeAd.adInfo["price"] = self.priceInDollar
-            googleNativeAd.adInfo["networkName"] = "google"
-            googleNativeAd.adInfo["networkAdUnitId"] = self.adUnitId
-            googleNativeAd.adInfo["networkCreativeId"] = self.bidResponse?.winningBid?.bid.crid
+            googleNativeAd.adInfo[MSPConstants.AD_INFO_PRICE] = self.priceInDollar
+            googleNativeAd.adInfo[MSPConstants.AD_INFO_NETWORK_NAME] = "google"
+            googleNativeAd.adInfo[MSPConstants.AD_INFO_NETWORK_AD_UNIT_ID] = self.adUnitId
+            googleNativeAd.adInfo[MSPConstants.AD_INFO_NETWORK_CREATIVE_ID] = self.bidResponse?.winningBid?.bid.crid
             nativeAd.delegate = self
             self.nativeAdItem = nativeAd
             self.nativeAd = googleNativeAd
@@ -392,8 +392,11 @@ extension GoogleAdapter: AdManagerBannerAdLoaderDelegate {
             var bannerAd = BannerAd(adView: bannerView, adNetworkAdapter: self)
             self.bannerAd = bannerAd
             if let priceInDollar = self.priceInDollar {
-                bannerAd.adInfo["price"] = priceInDollar
+                bannerAd.adInfo[MSPConstants.AD_INFO_PRICE] = priceInDollar
             }
+            bannerAd.adInfo[MSPConstants.AD_INFO_NETWORK_NAME] = "google"
+            bannerAd.adInfo[MSPConstants.AD_INFO_NETWORK_AD_UNIT_ID] = self.adUnitId
+            bannerAd.adInfo[MSPConstants.AD_INFO_NETWORK_CREATIVE_ID] = self.bidResponse?.winningBid?.bid.crid
             
             if let adListener = self.adListener,
                let adRequest = self.adRequest {
