@@ -136,6 +136,8 @@ import PrebidMobile
             return
         }
         
+        self.adUnitId = adUnitId
+        
         switch adType {
         case "banner":
             if adRequest.adFormat == .interstitial {
