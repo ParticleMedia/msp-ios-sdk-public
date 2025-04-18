@@ -167,7 +167,7 @@ import PrebidMobile
                         googleInterstitialAd.rootViewController = self.adListener?.getRootViewController()
                         self.interstitialAd = googleInterstitialAd
                         googleInterstitialAd.adInfo[MSPConstants.AD_INFO_PRICE] = self.priceInDollar
-                        googleInterstitialAd.adInfo[MSPConstants.AD_INFO_NETWORK_NAME] = "google"
+                        googleInterstitialAd.adInfo[MSPConstants.AD_INFO_NETWORK_NAME] = AdNetwork.google
                         googleInterstitialAd.adInfo[MSPConstants.AD_INFO_NETWORK_AD_UNIT_ID] = self.adUnitId
                         googleInterstitialAd.adInfo[MSPConstants.AD_INFO_NETWORK_CREATIVE_ID] = self.bidResponse?.winningBid?.bid.crid
                         if let adListener = self.adListener,
@@ -261,7 +261,7 @@ extension GoogleAdapter : GoogleMobileAds.BannerViewDelegate {
             if let priceInDollar = self.priceInDollar {
                 bannerAd.adInfo[MSPConstants.AD_INFO_PRICE] = priceInDollar
             }
-            bannerAd.adInfo[MSPConstants.AD_INFO_NETWORK_NAME] = "google"
+            bannerAd.adInfo[MSPConstants.AD_INFO_NETWORK_NAME] = AdNetwork.google
             bannerAd.adInfo[MSPConstants.AD_INFO_NETWORK_AD_UNIT_ID] = self.adUnitId
             bannerAd.adInfo[MSPConstants.AD_INFO_NETWORK_CREATIVE_ID] = self.bidResponse?.winningBid?.bid.crid
             if let adListener = self.adListener,
@@ -312,7 +312,7 @@ extension GoogleAdapter: GoogleMobileAds.NativeAdLoaderDelegate {
             googleNativeAd.mediaView = mediaView
             googleNativeAd.priceInDollar = self.priceInDollar
             googleNativeAd.adInfo[MSPConstants.AD_INFO_PRICE] = self.priceInDollar
-            googleNativeAd.adInfo[MSPConstants.AD_INFO_NETWORK_NAME] = "google"
+            googleNativeAd.adInfo[MSPConstants.AD_INFO_NETWORK_NAME] = AdNetwork.google
             googleNativeAd.adInfo[MSPConstants.AD_INFO_NETWORK_AD_UNIT_ID] = self.adUnitId
             googleNativeAd.adInfo[MSPConstants.AD_INFO_NETWORK_CREATIVE_ID] = self.bidResponse?.winningBid?.bid.crid
             nativeAd.delegate = self
@@ -394,7 +394,7 @@ extension GoogleAdapter: AdManagerBannerAdLoaderDelegate {
             if let priceInDollar = self.priceInDollar {
                 bannerAd.adInfo[MSPConstants.AD_INFO_PRICE] = priceInDollar
             }
-            bannerAd.adInfo[MSPConstants.AD_INFO_NETWORK_NAME] = "google"
+            bannerAd.adInfo[MSPConstants.AD_INFO_NETWORK_NAME] = AdNetwork.google
             bannerAd.adInfo[MSPConstants.AD_INFO_NETWORK_AD_UNIT_ID] = self.adUnitId
             bannerAd.adInfo[MSPConstants.AD_INFO_NETWORK_CREATIVE_ID] = self.bidResponse?.winningBid?.bid.crid
             
