@@ -224,7 +224,10 @@ extension FacebookAdapter: FBNativeAdDelegate {
             facebookNativeAd.priceInDollar = self.priceInDollar
             facebookNativeAd.nativeAdItem = nativeAd
             facebookNativeAd.mediaView = mediaView
-            facebookNativeAd.adInfo["price"] = self.priceInDollar
+            facebookNativeAd.adInfo[MSPConstants.AD_INFO_PRICE] = self.priceInDollar
+            facebookNativeAd.adInfo[MSPConstants.AD_INFO_NETWORK_NAME] = AdNetwork.facebook.rawValue
+            facebookNativeAd.adInfo[MSPConstants.AD_INFO_NETWORK_AD_UNIT_ID] = nativeAd.placementID
+            facebookNativeAd.adInfo[MSPConstants.AD_INFO_NETWORK_CREATIVE_ID] = self.bidResponse?.winningBid?.bid.crid
             self.nativeAdItem = nativeAd
             if let adListener = self.adListener,
                let adRequest = self.adRequest {
@@ -264,9 +267,11 @@ extension FacebookAdapter: FBInterstitialAdDelegate {
             self.interstitialAdItem = interstitialAd
             self.facebookInterstitialAd = facebookInterstitialAd
             if let priceInDollar = self.priceInDollar {
-                facebookInterstitialAd.adInfo["price"] = priceInDollar
+                facebookInterstitialAd.adInfo[MSPConstants.AD_INFO_PRICE] = priceInDollar
             }
-            
+            facebookInterstitialAd.adInfo[MSPConstants.AD_INFO_NETWORK_NAME] = AdNetwork.facebook.rawValue
+            facebookInterstitialAd.adInfo[MSPConstants.AD_INFO_NETWORK_AD_UNIT_ID] = interstitialAd.placementID
+            facebookInterstitialAd.adInfo[MSPConstants.AD_INFO_NETWORK_CREATIVE_ID] = self.bidResponse?.winningBid?.bid.crid
             
             if let adListener = self.adListener,
                let adRequest = self.adRequest {

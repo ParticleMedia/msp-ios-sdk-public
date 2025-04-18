@@ -5,7 +5,7 @@ Pod::Spec.new do |spec|
   
 
   spec.name         = "PrebidAdapter"
-  spec.version      = "0.0.92"
+  spec.version      = "0.0.109"
   spec.summary      = "an adapter for Google SDK"
   spec.description  = "an adapter for Google SDK for MSP S2S"
 
@@ -46,7 +46,7 @@ Pod::Spec.new do |spec|
   spec.exclude_files = "Classes/Exclude"
 
   #spec.dependency 'Google-Mobile-Ads-SDK', "10.14.0"
-  spec.dependency 'MSPSharedLibraries', '0.0.91'
+  spec.dependency 'MSPSharedLibraries', '0.0.109'
 
 
   #spec.pod_target_xcconfig = { 'VALID_ARCHS' => 'x86_64 armv7 arm64' }

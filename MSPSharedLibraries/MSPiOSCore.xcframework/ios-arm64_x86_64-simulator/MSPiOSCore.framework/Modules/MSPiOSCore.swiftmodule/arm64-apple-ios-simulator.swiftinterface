@@ -1,5 +1,5 @@
 // swift-interface-format-version: 1.0
-// swift-compiler-version: Apple Swift version 5.10 (swiftlang-5.10.0.13 clang-1500.3.9.4)
+// swift-compiler-version: Apple Swift version 6.0 effective-5.10 (swiftlang-6.0.0.9.10 clang-1600.0.26.2)
 // swift-module-flags: -target arm64-apple-ios13.0-simulator -enable-objc-interop -enable-library-evolution -swift-version 5 -enforce-exclusivity=checked -O -enable-bare-slash-regex -module-name MSPiOSCore
 import Foundation
 @_exported import MSPiOSCore
@@ -8,22 +8,17 @@ import UIKit
 import _Concurrency
 import _StringProcessing
 import _SwiftConcurrencyShims
+public struct MSPConstants {
+  public static let AD_INFO_PRICE: Swift.String
+  public static let AD_INFO_NETWORK_NAME: Swift.String
+  public static let AD_INFO_NETWORK_AD_UNIT_ID: Swift.String
+  public static let AD_INFO_NETWORK_CREATIVE_ID: Swift.String
+}
 public protocol LoadAdParameters : MSPiOSCore.AdapterParameters {
   func getAdUnitId() -> Swift.String
   func getThirdPartyAdPlacementId() -> Swift.String
   func getBidPayload() -> Swift.String
   func getBidExpirationMillis() -> Swift.UInt64
-}
-open class Bidder {
-  public var name: Swift.String
-  public var bidderPlacementId: Swift.String
-  public init(name: Swift.String, bidderPlacementId: Swift.String)
-  open func requestBid(adRequest: MSPiOSCore.AdRequest, bidListener: any MSPiOSCore.AuctionBidListener, adListener: any MSPiOSCore.AdListener)
-  @objc deinit
-}
-public protocol AuctionListener : AnyObject {
-  func onSuccess(winningBid: MSPiOSCore.AuctionBid)
-  func onError(error: Swift.String)
 }
 open class BannerAd : MSPiOSCore.MSPAd {
   public var adView: UIKit.UIView
@@ -74,8 +69,9 @@ public class AdRequest {
   public var adSize: MSPiOSCore.AdSize?
   public var placementId: Swift.String
   public var adFormat: MSPiOSCore.AdFormat
+  public var isCacheSupported: Swift.Bool
   public var testParams: [Swift.String : Any]
-  public init(customParams: [Swift.String : Any], geo: MSPiOSCore.Geo?, context: Any?, adaptiveBannerSize: MSPiOSCore.AdSize?, adSize: MSPiOSCore.AdSize?, placementId: Swift.String, adFormat: MSPiOSCore.AdFormat, testParams: [Swift.String : Any] = [:])
+  public init(customParams: [Swift.String : Any], geo: MSPiOSCore.Geo?, context: Any?, adaptiveBannerSize: MSPiOSCore.AdSize?, adSize: MSPiOSCore.AdSize?, placementId: Swift.String, adFormat: MSPiOSCore.AdFormat, isCacheSupported: Swift.Bool = false, testParams: [Swift.String : Any] = [:])
   @objc deinit
 }
 public struct AdSize {
@@ -102,6 +98,7 @@ public protocol AdapterAdLoadListener : AnyObject {
   func onAdLoadedFailed(error: MSPiOSCore.AdapterAdLoadError)
 }
 public protocol AdListener : AnyObject {
+  func onAdLoaded(ad: MSPiOSCore.MSPAd)
   func onError(msg: Swift.String)
   func onAdImpression(ad: MSPiOSCore.MSPAd)
   func onAdClick(ad: MSPiOSCore.MSPAd)
@@ -110,7 +107,7 @@ public protocol AdListener : AnyObject {
   func getRootViewController() -> UIKit.UIViewController?
 }
 public protocol AdNetworkAdapter : AnyObject {
-  func loadAdCreative(bidResponse: Any, auctionBidListener: any MSPiOSCore.AuctionBidListener, adListener: any MSPiOSCore.AdListener, context: Any, adRequest: MSPiOSCore.AdRequest)
+  func loadAdCreative(bidResponse: Any, adListener: any MSPiOSCore.AdListener, context: Any, adRequest: MSPiOSCore.AdRequest)
   func initialize(initParams: any MSPiOSCore.InitializationParameters, adapterInitListener: any MSPiOSCore.AdapterInitListener, context: Any?)
   func destroyAd()
   func prepareViewForInteraction(nativeAd: MSPiOSCore.NativeAd, nativeAdView: Any)
@@ -129,7 +126,6 @@ public protocol BidLoaderProvider : AnyObject {
 open class AdNetworkManager {
   public init()
   open func getAdNetworkAdapter() -> (any MSPiOSCore.AdNetworkAdapter)?
-  open func getAdBidder() -> MSPiOSCore.Bidder?
   @objc deinit
 }
 open class NativeAd : MSPiOSCore.MSPAd {
@@ -176,14 +172,14 @@ open class NativeAd : MSPiOSCore.MSPAd {
 public protocol FacebookBidTokenProvider : AnyObject {
   func fetch(completeListener: any MSPiOSCore.FacebookBidTokenListener, context: Any)
 }
-@objc @_hasMissingDesignatedInitializers @_Concurrency.MainActor(unsafe) public class NativeAdView : UIKit.UIView {
-  @_Concurrency.MainActor(unsafe) weak public var nativeAd: MSPiOSCore.NativeAd?
-  @_Concurrency.MainActor(unsafe) weak public var rootViewController: UIKit.UIViewController?
-  @_Concurrency.MainActor(unsafe) public var nativeAdViewBinder: MSPiOSCore.NativeAdViewBinder?
-  @_Concurrency.MainActor(unsafe) public var nativeAdContainer: (any MSPiOSCore.MSPNativeAdContainer)?
-  @_Concurrency.MainActor(unsafe) public var mediaController: (any MSPiOSCore.MediaController)?
-  @_Concurrency.MainActor(unsafe) public init(nativeAd: MSPiOSCore.NativeAd, nativeAdViewBinder: MSPiOSCore.NativeAdViewBinder)
-  @_Concurrency.MainActor(unsafe) public init(nativeAd: MSPiOSCore.NativeAd, nativeAdContainer: any MSPiOSCore.MSPNativeAdContainer)
+@objc @_hasMissingDesignatedInitializers @_Concurrency.MainActor @preconcurrency public class NativeAdView : UIKit.UIView {
+  @_Concurrency.MainActor @preconcurrency weak public var nativeAd: MSPiOSCore.NativeAd?
+  @_Concurrency.MainActor @preconcurrency weak public var rootViewController: UIKit.UIViewController?
+  @_Concurrency.MainActor @preconcurrency public var nativeAdViewBinder: MSPiOSCore.NativeAdViewBinder?
+  @_Concurrency.MainActor @preconcurrency public var nativeAdContainer: (any MSPiOSCore.MSPNativeAdContainer)?
+  @_Concurrency.MainActor @preconcurrency public var mediaController: (any MSPiOSCore.MediaController)?
+  @_Concurrency.MainActor @preconcurrency public init(nativeAd: MSPiOSCore.NativeAd, nativeAdViewBinder: MSPiOSCore.NativeAdViewBinder)
+  @_Concurrency.MainActor @preconcurrency public init(nativeAd: MSPiOSCore.NativeAd, nativeAdContainer: any MSPiOSCore.MSPNativeAdContainer)
   @objc deinit
 }
 open class NativeAdViewBinder {
@@ -229,7 +225,7 @@ public protocol MSPNativeAdContainer : UIKit.UIView {
 public protocol MSPInitializationParameters : MSPiOSCore.InitializationParameters {
 }
 open class MSPAd {
-  public var adNetworkAdapter: (any MSPiOSCore.AdNetworkAdapter)?
+  weak public var adNetworkAdapter: (any MSPiOSCore.AdNetworkAdapter)?
   public var adInfo: [Swift.String : Any]
   weak public var adListener: (any MSPiOSCore.AdListener)?
   public init(adNetworkAdapter: any MSPiOSCore.AdNetworkAdapter)
@@ -244,13 +240,6 @@ public protocol InitializationParameters : MSPiOSCore.AdapterParameters {
   func getPrebidAPIKey() -> Swift.String
   func getPrebidHostUrl() -> Swift.String
 }
-public class AuctionBid {
-  public var bidderName: Swift.String
-  public var bidderPlacementId: Swift.String
-  public var ecpm: Swift.Double
-  public init(bidderName: Swift.String, bidderPlacementId: Swift.String, ecpm: Swift.Double)
-  @objc deinit
-}
 public enum AdNetwork : Swift.String {
   case google
   case facebook
@@ -262,10 +251,6 @@ public enum AdNetwork : Swift.String {
     get
   }
 }
-public protocol AuctionBidListener : AnyObject {
-  func onSuccess(bid: MSPiOSCore.AuctionBid)
-  func onError(error: Swift.String)
-}
 public protocol AdapterInitListener : AnyObject {
   func onComplete(adNetwork: MSPiOSCore.AdNetwork, adapterInitStatus: MSPiOSCore.AdapterInitStatus, message: Swift.String)
 }
@@ -276,16 +261,6 @@ public enum MSPInitStatus {
   public var hashValue: Swift.Int {
     get
   }
-}
-open class Auction {
-  public var bidders: [MSPiOSCore.Bidder]
-  public var adRequest: MSPiOSCore.AdRequest?
-  public var cacheOnly: Swift.Bool
-  public var timeout: Foundation.TimeInterval
-  public init(bidders: [MSPiOSCore.Bidder], adRequest: MSPiOSCore.AdRequest? = nil, cacheOnly: Swift.Bool, timeout: Foundation.TimeInterval)
-  open func startAuction(auctionListener: any MSPiOSCore.AuctionListener, adListener: (any MSPiOSCore.AdListener)?)
-  open func fetchBid(bidder: MSPiOSCore.Bidder, adListener: (any MSPiOSCore.AdListener)?, cacheOnly: Swift.Bool) -> MSPiOSCore.AuctionBid?
-  @objc deinit
 }
 public struct Geo {
   public let city: Swift.String

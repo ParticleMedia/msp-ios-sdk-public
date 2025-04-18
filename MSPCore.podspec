@@ -16,7 +16,7 @@ Pod::Spec.new do |spec|
   #
 
   spec.name         = "MSPCore"
-  spec.version      = "0.0.93"
+  spec.version      = "0.0.109"
   spec.summary      = "An utility helper for MSP"
 
   spec.ios.deployment_target = '13.0'
@@ -94,8 +94,8 @@ Pod::Spec.new do |spec|
   spec.source_files  = "MSPCore/MSPCore/**/*.{h,m,swift}"
   spec.exclude_files = "Classes/Exclude"
 
-  spec.dependency 'MSPSharedLibraries', '0.0.91'
-  spec.dependency 'PrebidAdapter', '0.0.92'
+  spec.dependency 'MSPSharedLibraries', '0.0.109'
+  spec.dependency 'PrebidAdapter', '0.0.109'
   spec.dependency 'SwiftProtobuf', '1.21.0'
   #spec.vendored_frameworks= "MSPCore/PrebidAdapter.xcframework"#, "PrebidMobile.xcframework", "MSPiOSCore.xcframework"
 
