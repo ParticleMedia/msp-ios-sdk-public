@@ -2,6 +2,8 @@
 output/
 outputMSPiOSCore/
 outputNova/
+NovaAdapter/NovaCore.xcframework/
+MSPSharedLibraries/MSPiOSCore.xcframework
 *.xcscmblueprint
 *.xccheckout
 xcuserdata
@@ -11,5 +13,6 @@ node_modules/
 Podfile.lock
 *.xcuserdatad/
 *.xcuserdata/
+*.xcuserstate
 Pods/
 Podfile.lock
