@@ -1,3 +1,4 @@
+rm -rf "$PWD/outputMSPiOSCore/xcframework"
 # Create directories for output
 mkdir -p "$PWD/outputMSPiOSCore/xcframework"
 
