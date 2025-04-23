@@ -103,14 +103,21 @@ import UIKit
         return button
     }()
     
-    private let topRightCloseButton: UIButton = {
+    public let topRightCloseButton: UIButton = {
         let button = UIButton()
         //button.setImage(UIImage.Nova.crossCircleLine?.withTintColor(UIColor(light: NovaColorPalettes.Gray.tint600, dark: NovaColorPalettes.Gray.tint200)), for: .normal)
-        
+        button.titleLabel?.font = .systemFont(ofSize: 16, weight: .regular)
+        button.setTitleColor(UIColor(light: NovaColorPalettes.Gray.tint600, dark: NovaColorPalettes.Gray.tint200), for: .normal)
+        button.layer.borderWidth = 1.5
+        button.layer.cornerRadius = 12
+        button.layer.borderColor = UIColor(light: NovaColorPalettes.Gray.tint600, dark: NovaColorPalettes.Gray.tint200).cgColor
+        button.widthAnchor.constraint(equalToConstant: 24).isActive = true
+        button.heightAnchor.constraint(equalToConstant: 24).isActive = true
+        button.isUserInteractionEnabled = false
         return button
     }()
     
-    private let topRightCloseButtonArea: UIView = {
+    public let topRightCloseButtonArea: UIView = {
         let view = UIView()
         view.widthAnchor.constraint(equalToConstant: 48).isActive = true
         view.heightAnchor.constraint(equalToConstant: 48).isActive = true
@@ -144,28 +151,6 @@ import UIKit
     func mediaEndShown() {
         mediaView.mediaEndShown()
     }
-    
-    public func topRightCloseButtonStartCountDown() {
-        countdownTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { _ in
-            if self.countdownSecondRemaining > 0 {
-                self.topRightCloseButton.titleLabel?.font = .systemFont(ofSize: 16, weight: .semibold)
-                self.topRightCloseButton.setTitleColor(UIColor(light: NovaColorPalettes.Gray.tint600, dark: NovaColorPalettes.Gray.tint200), for: .normal)
-                self.topRightCloseButton.setTitle("\(self.countdownSecondRemaining)", for: .normal)
-                self.topRightCloseButton.layer.borderWidth = 1.5
-                self.topRightCloseButton.layer.cornerRadius = 12
-                self.topRightCloseButton.layer.borderColor = UIColor(light: NovaColorPalettes.Gray.tint600, dark: NovaColorPalettes.Gray.tint200).cgColor
-                self.topRightCloseButton.widthAnchor.constraint(equalToConstant: 24).isActive = true
-                self.topRightCloseButton.heightAnchor.constraint(equalToConstant: 24).isActive = true
-            } else {
-                self.countdownTimer?.invalidate()
-                self.topRightCloseButton.setTitle(nil, for: .normal)
-                let config = UIImage.SymbolConfiguration(pointSize: 16, weight: .bold)
-                self.topRightCloseButton.setImage(UIImage(systemName: "xmark", withConfiguration: nil)?.withTintColor(UIColor(light: NovaColorPalettes.Gray.tint600, dark: NovaColorPalettes.Gray.tint200), renderingMode: .alwaysOriginal), for: .normal)
-                self.topRightCloseButton.imageEdgeInsets = UIEdgeInsets(top: 6, left: 6, bottom: 6, right: 6)
-            }
-            self.countdownSecondRemaining -= 1
-        }
-    }
 }
 
 // MARK: - Private functions
@@ -192,7 +177,12 @@ private extension NovaAppOpenAdViewV3 {
         closeButton.addTarget(self, action: #selector(didTapCloseButton), for: .touchUpInside)
         feedbackButton.addTarget(self, action: #selector(didTapReportButton), for: .touchUpInside)
         topRightCloseButtonArea.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(didTapCloseButton)))
-        topRightCloseButtonArea.isUserInteractionEnabled = true
+        if let novaAppOpenAdLayout = novaAppOpenAdLayout,
+           novaAppOpenAdLayout == .horizontalCancelTopRight {
+            self.isUserInteractionEnabled = true
+            self.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(didTapAd(sender:))))
+        }
+
 
         let tappableViews = [mediaView, advertiserLabel, headlineLabel, bodyLabel, ctaButton]
         for view in tappableViews {

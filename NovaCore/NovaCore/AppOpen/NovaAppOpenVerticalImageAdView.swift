@@ -151,6 +151,27 @@ public class NovaAppOpenVerticalImageAdView: UIView {
         button.translatesAutoresizingMaskIntoConstraints = false
         return button
     }()
+    
+    public let topRightCloseButton: UIButton = {
+        let button = UIButton()
+        button.titleLabel?.font = .systemFont(ofSize: 16, weight: .regular)
+        button.setTitleColor(UIColor(light: NovaColorPalettes.Gray.tint600, dark: NovaColorPalettes.Gray.tint200), for: .normal)
+        button.layer.borderWidth = 0
+        button.layer.cornerRadius = 12
+        button.backgroundColor = NovaColorPalettes.White
+        
+        button.widthAnchor.constraint(equalToConstant: 24).isActive = true
+        button.heightAnchor.constraint(equalToConstant: 24).isActive = true
+        button.isUserInteractionEnabled = false
+        return button
+    }()
+    
+    public let topRightCloseButtonArea: UIView = {
+        let view = UIView()
+        view.widthAnchor.constraint(equalToConstant: 48).isActive = true
+        view.heightAnchor.constraint(equalToConstant: 48).isActive = true
+        return view
+    }()
 
     private var mediaView: NovaNativeAdMediaViewV2?
     private let media: NovaNativeAdMedia
@@ -158,15 +179,18 @@ public class NovaAppOpenVerticalImageAdView: UIView {
     private let appOpenAd: NovaAppOpenAd
     private let startTime: CFTimeInterval
     private let viewController: UIViewController
+    
+    private let novaAppOpenAdLayout: NovaAppOpenAdLayout?
 
     // MARK: -
 
-    init(with media: NovaNativeAdMedia, appOpenAd: NovaAppOpenAd, actionHandler: ActionHandling, viewController: UIViewController) {
+    init(with media: NovaNativeAdMedia, appOpenAd: NovaAppOpenAd, actionHandler: ActionHandling, viewController: UIViewController, novaAppOpenAdLayout: NovaAppOpenAdLayout?) {
         self.actionHandler = actionHandler
         self.appOpenAd = appOpenAd
         self.startTime = CACurrentMediaTime()
         self.media = media
         self.viewController = viewController
+        self.novaAppOpenAdLayout = novaAppOpenAdLayout
         
         let adOpenActionHandler = NovaAdOpenActionHandler(viewController: viewController)
         let actionHandlerMaster = ActionHandlerMaster(actionHandlers: [adOpenActionHandler])
@@ -217,6 +241,44 @@ private extension NovaAppOpenVerticalImageAdView {
             volumeButton
         )
         let totalButtonBottomMargin = LayoutMetrics.bottomButtonBottomMargin + LayoutMetrics.progressBarBottomMargin
+        
+        if let novaAppOpenAdLayout = self.novaAppOpenAdLayout,
+        novaAppOpenAdLayout == .verticalCancelTopRight {
+            closeButton.isHidden = true
+            NSLayoutConstraint.activate([
+                // ctaButton constraints
+                ctaButton.leadingAnchor.constraint(equalTo: nativeAdView.leadingAnchor, constant: LayoutMetrics.horizontalMargin),
+                ctaButton.trailingAnchor.constraint(equalTo: nativeAdView.trailingAnchor, constant: -LayoutMetrics.horizontalMargin),
+                ctaButton.bottomAnchor.constraint(equalTo: nativeAdView.bottomAnchor, constant: -totalButtonBottomMargin),
+                ctaButton.heightAnchor.constraint(equalToConstant: LayoutMetrics.bottomButtonHeight),
+                ctaButton.widthAnchor.constraint(equalToConstant: LayoutMetrics.bottomButtonWidth)
+            ])
+            addSubview(topRightCloseButtonArea)
+            topRightCloseButtonArea.translatesAutoresizingMaskIntoConstraints = false
+            topRightCloseButton.translatesAutoresizingMaskIntoConstraints = false
+            topRightCloseButtonArea.addSubview(topRightCloseButton)
+            NSLayoutConstraint.activate([
+                topRightCloseButtonArea.topAnchor.constraint(equalTo: self.safeAreaLayoutGuide.topAnchor, constant: self.safeAreaInsets.top + 4),
+                topRightCloseButtonArea.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -4),
+                topRightCloseButton.centerXAnchor.constraint(equalTo: topRightCloseButtonArea.centerXAnchor),
+                topRightCloseButton.centerYAnchor.constraint(equalTo: topRightCloseButtonArea.centerYAnchor)
+            ])
+           
+        } else {
+            NSLayoutConstraint.activate([
+                // closeButton constraints
+                closeButton.leadingAnchor.constraint(equalTo: nativeAdView.leadingAnchor, constant: LayoutMetrics.horizontalMargin),
+                closeButton.bottomAnchor.constraint(equalTo: nativeAdView.bottomAnchor, constant: -totalButtonBottomMargin),
+                closeButton.heightAnchor.constraint(equalToConstant: LayoutMetrics.bottomButtonHeight),
+                closeButton.widthAnchor.constraint(equalToConstant: LayoutMetrics.bottomButtonWidth),
+                
+                // ctaButton constraints
+                ctaButton.trailingAnchor.constraint(equalTo: nativeAdView.trailingAnchor, constant: -LayoutMetrics.horizontalMargin),
+                ctaButton.bottomAnchor.constraint(equalTo: nativeAdView.bottomAnchor, constant: -totalButtonBottomMargin),
+                ctaButton.heightAnchor.constraint(equalToConstant: LayoutMetrics.bottomButtonHeight),
+                ctaButton.widthAnchor.constraint(equalToConstant: LayoutMetrics.bottomButtonWidth)
+            ])
+        }
         // Activate native constraints
         NSLayoutConstraint.activate([
             // nativeAdView constraints
@@ -231,22 +293,10 @@ private extension NovaAppOpenVerticalImageAdView {
             bottomShadow.bottomAnchor.constraint(equalTo: nativeAdView.bottomAnchor),
             bottomShadow.heightAnchor.constraint(equalToConstant: UIScreen.main.bounds.width * 280 / 375),
             
-            // closeButton constraints
-            closeButton.leadingAnchor.constraint(equalTo: nativeAdView.leadingAnchor, constant: LayoutMetrics.horizontalMargin),
-            closeButton.bottomAnchor.constraint(equalTo: nativeAdView.bottomAnchor, constant: -totalButtonBottomMargin),
-            closeButton.heightAnchor.constraint(equalToConstant: LayoutMetrics.bottomButtonHeight),
-            closeButton.widthAnchor.constraint(equalToConstant: LayoutMetrics.bottomButtonWidth),
-            
-            // ctaButton constraints
-            ctaButton.trailingAnchor.constraint(equalTo: nativeAdView.trailingAnchor, constant: -LayoutMetrics.horizontalMargin),
-            ctaButton.bottomAnchor.constraint(equalTo: nativeAdView.bottomAnchor, constant: -totalButtonBottomMargin),
-            ctaButton.heightAnchor.constraint(equalToConstant: LayoutMetrics.bottomButtonHeight),
-            ctaButton.widthAnchor.constraint(equalToConstant: LayoutMetrics.bottomButtonWidth),
-            
             // adTagLabel constraints
             adTagLabel.leadingAnchor.constraint(equalTo: nativeAdView.leadingAnchor, constant: LayoutMetrics.horizontalMargin),
             adTagLabel.trailingAnchor.constraint(lessThanOrEqualTo: nativeAdView.trailingAnchor, constant: -LayoutMetrics.horizontalMargin),
-            adTagLabel.bottomAnchor.constraint(equalTo: closeButton.topAnchor, constant: -16.0),
+            adTagLabel.bottomAnchor.constraint(equalTo: ctaButton.topAnchor, constant: -16.0),
             
             // bodyLabel constraints
             bodyLabel.leadingAnchor.constraint(equalTo: nativeAdView.leadingAnchor, constant: LayoutMetrics.horizontalMargin),
@@ -287,6 +337,7 @@ private extension NovaAppOpenVerticalImageAdView {
     func configTapGesture(for openAd: NovaAppOpenAd) {
         closeButton.addTarget(self, action: #selector(didTapCloseButton), for: .touchUpInside)
         feedbackButton.addTarget(self, action: #selector(didTapReportButton), for: .touchUpInside)
+        topRightCloseButtonArea.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(didTapCloseButton)))
         let tappableViews = [bottomShadow,
                              ctaButton,
                              adTagLabel,

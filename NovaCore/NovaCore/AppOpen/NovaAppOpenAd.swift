@@ -30,6 +30,8 @@ import UIKit
     public let isVerticalImage: Bool?
     /// if the image media is clickable
     public let isImageClickable: Bool?
+    /// the count down time of the close button
+    public let closeCountDownTimeSecond: Int?
     
     public let iconUrl: String?
     
@@ -71,7 +73,8 @@ import UIKit
         expirationTimeInMs: Double?,
         encryptedAdToken: String,
         appStoreId: String?,
-        novaAppOpenAdLayout: NovaAppOpenAdLayout?
+        novaAppOpenAdLayout: NovaAppOpenAdLayout?,
+        closeCountDownTimeSecond: Int?
     ) {
         self.creativeType = creativeType
         self.launchOption = launchOption
@@ -88,6 +91,7 @@ import UIKit
         self.iconUrl = iconUrl
         self.appStoreId = appStoreId
         self.novaAppOpenAdLayout = novaAppOpenAdLayout
+        self.closeCountDownTimeSecond = closeCountDownTimeSecond
 
         super.init(adUnitId: adUnitId,
                    requestId: requestId,
@@ -120,6 +124,7 @@ import UIKit
         isVerticalImage = try container.decodeIfPresent(Bool.self, forKey: .isVerticalImage)
         appStoreId = try container.decodeIfPresent(String.self, forKey: .appStoreId)
         novaAppOpenAdLayout = try container.decodeIfPresent(NovaAppOpenAdLayout.self, forKey: .novaAppOpenAdLayout)
+        closeCountDownTimeSecond = try container.decodeIfPresent(Int.self, forKey: .closeCountDownTimeSecond)
         let superDecoder = try container.superDecoder()
         try super.init(from: superDecoder)
     }
@@ -141,6 +146,7 @@ import UIKit
         case iconUrl
         case appStoreId
         case novaAppOpenAdLayout
+        case closeCountDownTimeSecond
     }
 
     override public func encode(to encoder: Encoder) throws {
