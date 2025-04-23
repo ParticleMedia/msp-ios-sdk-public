@@ -45,15 +45,19 @@ public enum NovaAppOpenAdResource {
         switch adResource {
         case let .image(image):
             let media = NovaNativeAdMedia.image(.image(image))
-            if appOpenAd.isVerticalImage ?? false {
-                adView = NovaAppOpenVerticalImageAdView(with: media, appOpenAd: appOpenAd, actionHandler: actionHandler, viewController: self)
+            if let novaAppOpenAdLayout = appOpenAd.novaAppOpenAdLayout {
+                adView = NovaAppOpenAdViewV3(with: media, openAd: appOpenAd, actionHandler: actionHandler, novaAppOpenAdLayout: novaAppOpenAdLayout)
             } else {
-                adView = NovaAppOpenAdViewV3(with: media, openAd: appOpenAd, actionHandler: actionHandler)
+                if appOpenAd.isVerticalImage ?? false {
+                    adView = NovaAppOpenVerticalImageAdView(with: media, appOpenAd: appOpenAd, actionHandler: actionHandler, viewController: self)
+                } else {
+                    adView = NovaAppOpenAdViewV3(with: media, openAd: appOpenAd, actionHandler: actionHandler, novaAppOpenAdLayout: nil)
+                }
             }
             
         case let .imageURL(imageURL):
             let media = NovaNativeAdMedia.image(.imageURLStr(imageURL))
-            adView = NovaAppOpenAdViewV3(with: media, openAd: appOpenAd, actionHandler: actionHandler)
+            adView = NovaAppOpenAdViewV3(with: media, openAd: appOpenAd, actionHandler: actionHandler, novaAppOpenAdLayout: nil)
             
 
         case .video(let videoInfo):
@@ -61,7 +65,7 @@ public enum NovaAppOpenAdResource {
                 adView = NovaAppOpenVerticalVideoAdView(appOpenAd: appOpenAd, videoInfo: videoInfo, actionHandler: actionHandler, viewController: self)
             } else {
                 let media = NovaNativeAdMedia.video(NovaNativeAdVideoResource(videoInfo: videoInfo, adToken: appOpenAd.encryptedAdToken, reporter: nil))
-                adView = NovaAppOpenAdViewV3(with: media, openAd: appOpenAd, actionHandler: actionHandler)
+                adView = NovaAppOpenAdViewV3(with: media, openAd: appOpenAd, actionHandler: actionHandler, novaAppOpenAdLayout: nil)
                 
             }
         }
@@ -79,6 +83,9 @@ public enum NovaAppOpenAdResource {
                 (view as? NovaAppOpenAdViewV3)?.mediaStartShown()
             }
         }
+        
+        (self.view as? NovaAppOpenAdViewV3)?.topRightCloseButtonStartCountDown()
+        
         
         if !hasImpressionLogged {
             hasImpressionLogged = true

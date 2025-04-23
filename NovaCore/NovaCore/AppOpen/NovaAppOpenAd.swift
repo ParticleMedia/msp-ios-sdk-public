@@ -40,6 +40,9 @@ import UIKit
 
     /// Delegate used to handle ad click event logging
     @objc public weak var delegate: NovaAppOpenAdDelegate?
+    
+    /// decide which layout to use
+    public let novaAppOpenAdLayout: NovaAppOpenAdLayout?
 
     // MARK: -
 
@@ -67,7 +70,8 @@ import UIKit
         startTimeInMs: Double?,
         expirationTimeInMs: Double?,
         encryptedAdToken: String,
-        appStoreId: String?
+        appStoreId: String?,
+        novaAppOpenAdLayout: NovaAppOpenAdLayout?
     ) {
         self.creativeType = creativeType
         self.launchOption = launchOption
@@ -83,6 +87,7 @@ import UIKit
         self.isVerticalImage = isVerticalImage
         self.iconUrl = iconUrl
         self.appStoreId = appStoreId
+        self.novaAppOpenAdLayout = novaAppOpenAdLayout
 
         super.init(adUnitId: adUnitId,
                    requestId: requestId,
@@ -114,6 +119,7 @@ import UIKit
         isImageClickable = try container.decodeIfPresent(Bool.self, forKey: .isImageClickable)
         isVerticalImage = try container.decodeIfPresent(Bool.self, forKey: .isVerticalImage)
         appStoreId = try container.decodeIfPresent(String.self, forKey: .appStoreId)
+        novaAppOpenAdLayout = try container.decodeIfPresent(NovaAppOpenAdLayout.self, forKey: .novaAppOpenAdLayout)
         let superDecoder = try container.superDecoder()
         try super.init(from: superDecoder)
     }
@@ -134,6 +140,7 @@ import UIKit
         case isVerticalImage
         case iconUrl
         case appStoreId
+        case novaAppOpenAdLayout
     }
 
     override public func encode(to encoder: Encoder) throws {
