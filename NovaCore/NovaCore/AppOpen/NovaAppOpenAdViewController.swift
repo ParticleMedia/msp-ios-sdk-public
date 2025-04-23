@@ -147,7 +147,8 @@ public enum NovaAppOpenAdResource {
         self.countdownTimer?.invalidate()
         button.setTitle(nil, for: .normal)
         let config = UIImage.SymbolConfiguration(pointSize: 12, weight: .semibold)
-        button.setImage(UIImage(systemName: "xmark", withConfiguration: config)?.withTintColor(UIColor(light: NovaColorPalettes.Gray.tint600, dark: NovaColorPalettes.Gray.tint200), renderingMode: .alwaysOriginal), for: .normal)
+        let darkColor = self.appOpenAd.novaAppOpenAdLayout == .verticalCancelTopRight ? NovaColorPalettes.Gray.tint600 : NovaColorPalettes.Gray.tint200
+        button.setImage(UIImage(systemName: "xmark", withConfiguration: config)?.withTintColor(UIColor(light: NovaColorPalettes.Gray.tint600, dark: darkColor), renderingMode: .alwaysOriginal), for: .normal)
     }
     
 
@@ -161,7 +162,6 @@ public enum NovaAppOpenAdResource {
                 (view as? NovaAppOpenAdViewV3)?.mediaStartShown()
             }
         }
-        
         
         if !hasImpressionLogged {
             hasImpressionLogged = true

@@ -156,7 +156,7 @@ public class NovaAppOpenVerticalVideoAdView: UIView {
     public let topRightCloseButton: UIButton = {
         let button = UIButton()
         button.titleLabel?.font = .systemFont(ofSize: 16, weight: .regular)
-        button.setTitleColor(UIColor(light: NovaColorPalettes.Gray.tint600, dark: NovaColorPalettes.Gray.tint200), for: .normal)
+        button.setTitleColor(UIColor(light: NovaColorPalettes.Gray.tint600, dark: NovaColorPalettes.Gray.tint600), for: .normal)
         button.layer.borderWidth = 0
         button.layer.cornerRadius = 12
         button.backgroundColor = NovaColorPalettes.White
@@ -335,9 +335,8 @@ private extension NovaAppOpenVerticalVideoAdView {
             feedbackButton.centerYAnchor.constraint(equalTo: advertiserInfoStackView.centerYAnchor),
             feedbackButton.trailingAnchor.constraint(equalTo: nativeAdView.trailingAnchor, constant: -LayoutMetrics.horizontalMargin),
             feedbackButton.widthAnchor.constraint(equalToConstant: 24),
-            feedbackButton.heightAnchor.constraint(equalToConstant: 24),
-            
-            
+            feedbackButton.heightAnchor.constraint(equalToConstant: 24)
+ 
         ])
         
         feedbackButton.isHidden = true
