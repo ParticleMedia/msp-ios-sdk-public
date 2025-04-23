@@ -102,7 +102,8 @@ public enum NovaAdBuilder {
                 expirationTimeInMs: expirationTimeInMs,
                 encryptedAdToken: adItem.encryptedAdToken,
                 appStoreId: adItem.creative.appStoreId,
-                novaAppOpenAdLayout: adItem.creative.layout)
+                novaAppOpenAdLayout: adItem.creative.layout,
+                closeCountDownTimeSecond: adItem.creative.closeCountDownTimeSecond)
         }
     }
 
