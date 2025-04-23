@@ -155,7 +155,7 @@ public class NovaAppOpenVerticalImageAdView: UIView {
     public let topRightCloseButton: UIButton = {
         let button = UIButton()
         button.titleLabel?.font = .systemFont(ofSize: 16, weight: .regular)
-        button.setTitleColor(UIColor(light: NovaColorPalettes.Gray.tint600, dark: NovaColorPalettes.Gray.tint200), for: .normal)
+        button.setTitleColor(UIColor(light: NovaColorPalettes.Gray.tint600, dark: NovaColorPalettes.Gray.tint600), for: .normal)
         button.layer.borderWidth = 0
         button.layer.cornerRadius = 12
         button.backgroundColor = NovaColorPalettes.White
