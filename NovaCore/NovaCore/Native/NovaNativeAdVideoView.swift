@@ -30,10 +30,8 @@ public final class NovaNativeAdVideoView: UIView {
     private lazy var centralPlayButton: UIButton = {
         let view = UIButton()
         view.translatesAutoresizingMaskIntoConstraints = false
-        view.imageEdgeInsets = UIEdgeInsets(top: 12, left: 12, bottom: 12, right: 12)
-        view.setImage(UIImage.Nova.playFilled?.withTintColor(NovaColorPalettes.White), for: .normal)
-        view.backgroundColor = NovaColorPalettes.Black.nb_opacity5()
-        view.layer.cornerRadius = 24
+        let image = UIImage.Nova.playFilledNew
+        view.setImage(image, for: .normal)
         view.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(didTapCentralPlayButton)))
         return view
     }()
@@ -228,8 +226,8 @@ public final class NovaNativeAdVideoView: UIView {
                 coverImage.trailingAnchor.constraint(equalTo: trailingAnchor),
             ])
             NSLayoutConstraint.activate([
-                centralPlayButton.widthAnchor.constraint(equalToConstant: 48),
-                centralPlayButton.heightAnchor.constraint(equalToConstant: 48),
+                centralPlayButton.widthAnchor.constraint(equalToConstant: 50),
+                centralPlayButton.heightAnchor.constraint(equalToConstant: 50),
                 centralPlayButton.centerXAnchor.constraint(equalTo: centerXAnchor),
                 centralPlayButton.centerYAnchor.constraint(equalTo: centerYAnchor),
             ])
@@ -390,13 +388,13 @@ private extension NovaNativeAdVideoView {
             coverImage.isHidden = true
             updatePlayButton(true)
             if (videoInfo?.isVideoClickable ?? true) {
-                panel.isHidden = false
+                panel.isHidden = true
             }
         case .paused(_):
             updatePlayButton(false)
             coverImage.isHidden = true
             if (videoInfo?.isVideoClickable ?? true) {
-                panel.isHidden = false
+                panel.isHidden = true
             } else {
                 centralPlayButton.isHidden = false
             }
@@ -700,13 +698,6 @@ extension NovaNativeAdVideoView: NovaVideoPlayerDelegate {
         }
         guard let videoInfo = self.videoInfo else { return }
         if videoPlayer.isVideoPlaying() {
-            if !inLandingPage && countText.isHidden {
-                let time = videoPlayer.currentTimeInterval()
-                if time <= 5 && !inInterstitial {
-                    countText.isHidden = false
-                    countText.text = stringOf(timeInterval: Int(player.maximumDuration - time))
-                }
-            }
             if videoInfo.isVideoClickable && !inLandingPage, let videoTapRecognizer = videoTapRecognizer {
                 videoInfo.didStart = true
                 removeGestureRecognizer(videoTapRecognizer)
