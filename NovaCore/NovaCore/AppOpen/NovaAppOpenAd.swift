@@ -30,6 +30,8 @@ import UIKit
     public let isVerticalImage: Bool?
     /// if the image media is clickable
     public let isImageClickable: Bool?
+    /// the count down time of the close button
+    public let closeCountDownTimeSecond: Int?
     
     public let iconUrl: String?
     
@@ -40,6 +42,9 @@ import UIKit
 
     /// Delegate used to handle ad click event logging
     @objc public weak var delegate: NovaAppOpenAdDelegate?
+    
+    /// decide which layout to use
+    public let novaAppOpenAdLayout: NovaAppOpenAdLayout?
 
     // MARK: -
 
@@ -67,7 +72,9 @@ import UIKit
         startTimeInMs: Double?,
         expirationTimeInMs: Double?,
         encryptedAdToken: String,
-        appStoreId: String?
+        appStoreId: String?,
+        novaAppOpenAdLayout: NovaAppOpenAdLayout?,
+        closeCountDownTimeSecond: Int?
     ) {
         self.creativeType = creativeType
         self.launchOption = launchOption
@@ -83,6 +90,8 @@ import UIKit
         self.isVerticalImage = isVerticalImage
         self.iconUrl = iconUrl
         self.appStoreId = appStoreId
+        self.novaAppOpenAdLayout = novaAppOpenAdLayout
+        self.closeCountDownTimeSecond = closeCountDownTimeSecond
 
         super.init(adUnitId: adUnitId,
                    requestId: requestId,
@@ -114,6 +123,8 @@ import UIKit
         isImageClickable = try container.decodeIfPresent(Bool.self, forKey: .isImageClickable)
         isVerticalImage = try container.decodeIfPresent(Bool.self, forKey: .isVerticalImage)
         appStoreId = try container.decodeIfPresent(String.self, forKey: .appStoreId)
+        novaAppOpenAdLayout = try container.decodeIfPresent(NovaAppOpenAdLayout.self, forKey: .novaAppOpenAdLayout)
+        closeCountDownTimeSecond = try container.decodeIfPresent(Int.self, forKey: .closeCountDownTimeSecond)
         let superDecoder = try container.superDecoder()
         try super.init(from: superDecoder)
     }
@@ -134,6 +145,8 @@ import UIKit
         case isVerticalImage
         case iconUrl
         case appStoreId
+        case novaAppOpenAdLayout
+        case closeCountDownTimeSecond
     }
 
     override public func encode(to encoder: Encoder) throws {
