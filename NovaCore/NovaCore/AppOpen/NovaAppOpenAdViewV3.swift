@@ -22,6 +22,10 @@ import UIKit
     private let actionHandler: ActionHandling
 
     private let startTime: CFTimeInterval
+    
+    private let novaAppOpenAdLayout: NovaAppOpenAdLayout?
+    var countdownTimer: Timer?
+    var countdownSecondRemaining: Int
 
     private let adLabel: UILabel = {
         let label = UILabel()
@@ -98,12 +102,35 @@ import UIKit
         button.setTitleColor(UIColor(light: NovaColorPalettes.Black.nb_opacity8(), dark: NovaColorPalettes.White.nb_opacity9()), for: .normal)
         return button
     }()
+    
+    public let topRightCloseButton: UIButton = {
+        let button = UIButton()
+        //button.setImage(UIImage.Nova.crossCircleLine?.withTintColor(UIColor(light: NovaColorPalettes.Gray.tint600, dark: NovaColorPalettes.Gray.tint200)), for: .normal)
+        button.titleLabel?.font = .systemFont(ofSize: 16, weight: .regular)
+        button.setTitleColor(UIColor(light: NovaColorPalettes.Gray.tint600, dark: NovaColorPalettes.Gray.tint200), for: .normal)
+        button.layer.borderWidth = 1.5
+        button.layer.cornerRadius = 12
+        button.layer.borderColor = UIColor(light: NovaColorPalettes.Gray.tint600, dark: NovaColorPalettes.Gray.tint200).cgColor
+        button.widthAnchor.constraint(equalToConstant: 24).isActive = true
+        button.heightAnchor.constraint(equalToConstant: 24).isActive = true
+        button.isUserInteractionEnabled = false
+        return button
+    }()
+    
+    public let topRightCloseButtonArea: UIView = {
+        let view = UIView()
+        view.widthAnchor.constraint(equalToConstant: 48).isActive = true
+        view.heightAnchor.constraint(equalToConstant: 48).isActive = true
+        return view
+    }()
 
-    init(with media: NovaNativeAdMedia, openAd: NovaAppOpenAd, actionHandler: ActionHandling) {
+    init(with media: NovaNativeAdMedia, openAd: NovaAppOpenAd, actionHandler: ActionHandling, novaAppOpenAdLayout: NovaAppOpenAdLayout?) {
         self.media = media
         self.appOpenAd = openAd
         self.actionHandler = actionHandler
         self.startTime = CACurrentMediaTime()
+        self.novaAppOpenAdLayout = novaAppOpenAdLayout
+        self.countdownSecondRemaining = 5
 
         super.init(frame: .zero)
 
@@ -149,6 +176,13 @@ private extension NovaAppOpenAdViewV3 {
     func setupGestures() {
         closeButton.addTarget(self, action: #selector(didTapCloseButton), for: .touchUpInside)
         feedbackButton.addTarget(self, action: #selector(didTapReportButton), for: .touchUpInside)
+        topRightCloseButtonArea.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(didTapCloseButton)))
+        if let novaAppOpenAdLayout = novaAppOpenAdLayout,
+           novaAppOpenAdLayout == .horizontalCancelTopRight {
+            self.isUserInteractionEnabled = true
+            self.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(didTapAd(sender:))))
+        }
+
 
         let tappableViews = [mediaView, advertiserLabel, headlineLabel, bodyLabel, ctaButton]
         for view in tappableViews {
@@ -200,19 +234,45 @@ private extension NovaAppOpenAdViewV3 {
             bodyLabel.topAnchor.constraint(equalTo: headlineLabel.bottomAnchor, constant: 36),
             bodyLabel.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 16),
             bodyLabel.trailingAnchor.constraint(lessThanOrEqualTo: self.trailingAnchor, constant: -16),
-            
-            // closeButton constraints
-            closeButton.topAnchor.constraint(equalTo: bodyLabel.bottomAnchor, constant: 72),
-            closeButton.heightAnchor.constraint(equalToConstant: 40),
-            closeButton.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 16),
-            closeButton.trailingAnchor.constraint(equalTo: self.centerXAnchor, constant: -8),
-            
-            // ctaButton constraints
-            ctaButton.topAnchor.constraint(equalTo: closeButton.topAnchor),
-            ctaButton.leadingAnchor.constraint(equalTo: self.centerXAnchor, constant: 8),
-            ctaButton.heightAnchor.constraint(equalToConstant: 40),
-            ctaButton.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -16)
         ])
+        
+        if let novaAppOpenAdLayout = novaAppOpenAdLayout,
+           novaAppOpenAdLayout == .horizontalCancelTopRight {
+            closeButton.isHidden = true
+            NSLayoutConstraint.activate([
+                // ctaButton constraints
+                ctaButton.topAnchor.constraint(equalTo: bodyLabel.bottomAnchor, constant: 72),
+                ctaButton.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 16),
+                ctaButton.heightAnchor.constraint(equalToConstant: 40),
+                ctaButton.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -16)
+            ])
+            
+            addSubview(topRightCloseButtonArea)
+            topRightCloseButtonArea.translatesAutoresizingMaskIntoConstraints = false
+            topRightCloseButton.translatesAutoresizingMaskIntoConstraints = false
+            topRightCloseButtonArea.addSubview(topRightCloseButton)
+            NSLayoutConstraint.activate([
+                topRightCloseButtonArea.topAnchor.constraint(equalTo: self.safeAreaLayoutGuide.topAnchor, constant: self.safeAreaInsets.top + 4),
+                topRightCloseButtonArea.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -4),
+                topRightCloseButton.centerXAnchor.constraint(equalTo: topRightCloseButtonArea.centerXAnchor),
+                topRightCloseButton.centerYAnchor.constraint(equalTo: topRightCloseButtonArea.centerYAnchor)
+            ])
+                
+        } else {
+            NSLayoutConstraint.activate([
+                // closeButton constraints
+                closeButton.topAnchor.constraint(equalTo: bodyLabel.bottomAnchor, constant: 72),
+                closeButton.heightAnchor.constraint(equalToConstant: 40),
+                closeButton.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 16),
+                closeButton.trailingAnchor.constraint(equalTo: self.centerXAnchor, constant: -8),
+                
+                // ctaButton constraints
+                ctaButton.topAnchor.constraint(equalTo: closeButton.topAnchor),
+                ctaButton.leadingAnchor.constraint(equalTo: self.centerXAnchor, constant: 8),
+                ctaButton.heightAnchor.constraint(equalToConstant: 40),
+                ctaButton.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -16)
+            ])
+        }
         feedbackButton.isHidden = true
     }
     
