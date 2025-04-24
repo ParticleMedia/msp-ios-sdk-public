@@ -278,6 +278,7 @@ public extension UIImage {
         public let playLine = UIImage(named: "play_line", in: NovaAsset.getBundle(), compatibleWith: nil)
         public let plusCircleFilled = UIImage(named: "plus_circle_filled", in: NovaAsset.getBundle(), compatibleWith: nil)
         public let plusCircleLine = UIImage(named: "plus_circle_line", in: NovaAsset.getBundle(), compatibleWith: nil)
+        public let playFilledNew = UIImage(named: "video_pause", in: NovaAsset.getBundle(), compatibleWith: nil)
         public let plusFilled = UIImage(named: "plus_filled", in: NovaAsset.getBundle(), compatibleWith: nil)
         public let plusLine = UIImage(named: "plus_line", in: NovaAsset.getBundle(), compatibleWith: nil)
         public let plusSquareFilled = UIImage(named: "plus_square_filled", in: NovaAsset.getBundle(), compatibleWith: nil)
