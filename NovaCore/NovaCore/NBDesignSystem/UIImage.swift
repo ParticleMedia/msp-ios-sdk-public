@@ -82,6 +82,7 @@ public extension UIImage {
         public let bookmarkLine = UIImage(named: "bookmark_line", in: NovaAsset.getBundle(), compatibleWith: nil)
         public let bookmarkPageFilled = UIImage(named: "bookmark_page_filled", in: NovaAsset.getBundle(), compatibleWith: nil)
         public let bookmarkPageLine = UIImage(named: "bookmark_page_line", in: NovaAsset.getBundle(), compatibleWith: nil)
+        public let bottomShadow = UIImage(named: "bottom_shadow", in: NovaAsset.getBundle(), compatibleWith: nil)
         public let calendarFilled = UIImage(named: "calendar_filled", in: NovaAsset.getBundle(), compatibleWith: nil)
         public let calendarLine = UIImage(named: "calendar_line", in: NovaAsset.getBundle(), compatibleWith: nil)
         public let callFilled = UIImage(named: "call_filled", in: NovaAsset.getBundle(), compatibleWith: nil)

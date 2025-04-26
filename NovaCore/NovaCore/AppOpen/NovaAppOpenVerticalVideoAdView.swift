@@ -131,7 +131,7 @@ public class NovaAppOpenVerticalVideoAdView: UIView {
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFill
         imageView.clipsToBounds = true
-        imageView.image = AppOpenAdResource.image("bottom_shadow")
+        imageView.image = UIImage.Nova.bottomShadow
         return imageView
     }()
 
