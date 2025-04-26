@@ -203,7 +203,7 @@ public enum NovaAppOpenAdResource {
     }
     
     public override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
-        return .portrait // or .landscape
+        return .portrait
     }
     
     public override var shouldAutorotate: Bool {
