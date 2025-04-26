@@ -1,9 +1,12 @@
 {
-  "name": "GoogleAdapter",
+  "name": "MSPSharedLibraries",
   "version": "0.0.109",
-  "summary": "an adapter for Google SDK",
-  "description": "an adapter for Google SDK for MSP S2S",
-  "homepage": "https://github.com/aimsp/msp-ios-sdk/GoogleAdapter",
+  "summary": "An utility helper for MSP",
+  "platforms": {
+    "ios": "13.0"
+  },
+  "description": "An utility for MSP settings",
+  "homepage": "https://github.com/aimsp/msp-ios-sdk/MSPSharedLibraries",
   "license": "Copyright",
   "authors": {
     "huanzhiNB": "huanzhi.zhang@newsbreak.com"
@@ -12,19 +15,12 @@
     "git": "https://github.com/ParticleMedia/msp-ios-sdk-public.git",
     "tag": "0.0.109"
   },
-  "platforms": {
-    "ios": "13.0"
-  },
-  "source_files": "GoogleAdapter/GoogleAdapter/**/*.{h,m,swift}",
+  "source_files": "MSPSharedLibraries/MSPSharedLibraries/**/*.{h,m,swift}",
   "exclude_files": "Classes/Exclude",
-  "dependencies": {
-    "Google-Mobile-Ads-SDK": [
-      "~> 12.0"
-    ],
-    "MSPSharedLibraries": [
-      "0.0.109"
-    ]
-  },
+  "vendored_frameworks": [
+    "MSPSharedLibraries/PrebidMobile.xcframework",
+    "MSPSharedLibraries/MSPiOSCore.xcframework"
+  ],
   "pod_target_xcconfig": {
     "VALID_ARCHS": "x86_64 armv7 arm64"
   },

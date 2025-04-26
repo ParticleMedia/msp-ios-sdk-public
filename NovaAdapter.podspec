@@ -5,7 +5,7 @@ Pod::Spec.new do |spec|
   
 
   spec.name         = "NovaAdapter"
-  spec.version      = "0.0.109"
+  spec.version      = "0.0.111"
   spec.summary      = "an adapter for Google SDK"
   spec.description  = "an adapter for Google SDK for MSP S2S"
 
@@ -51,8 +51,8 @@ Pod::Spec.new do |spec|
 
   spec.vendored_frameworks= "NovaAdapter/NovaCore.xcframework"
 
-  #spec.pod_target_xcconfig = { 'VALID_ARCHS' => 'x86_64 armv7 arm64' }
-  #spec.user_target_xcconfig = { 'EXCLUDED_ARCHS[sdk=iphonesimulator*]' => 'arm64' }
+  spec.pod_target_xcconfig = { 'VALID_ARCHS' => 'x86_64 armv7 arm64' }
+  spec.user_target_xcconfig = { 'EXCLUDED_ARCHS[sdk=iphonesimulator*]' => 'arm64' }
 
   spec.static_framework = true
   # ――― Resources ―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
