@@ -9,7 +9,6 @@ import CoreMedia
 import DeveloperToolsSupport
 import Foundation
 @_exported import NovaCore
-import OMSDK_Newsbreak1
 import SafariServices
 import StoreKit
 import Swift

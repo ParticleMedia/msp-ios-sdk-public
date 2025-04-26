@@ -40700,8 +40700,8 @@
       },
       {
         "kind": "Import",
-        "name": "OMSDK_Newsbreak1",
-        "printedName": "OMSDK_Newsbreak1",
+        "name": "UIKit",
+        "printedName": "UIKit",
         "declKind": "Import",
         "moduleName": "NovaCore",
         "declAttributes": [
@@ -40730,7 +40730,8 @@
             "mangledName": "$s8NovaCore17IABMetricReporterCACycfc",
             "moduleName": "NovaCore",
             "declAttributes": [
-              "AccessControl"
+              "AccessControl",
+              "RawDocComment"
             ],
             "init_kind": "Designated"
           },
@@ -98944,104 +98945,6 @@
       "offset": 2158,
       "length": 5,
       "value": "false"
-    },
-    {
-      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-sdk\/NovaCore\/NovaCore\/Metrics\/IABMetricReporter.swift",
-      "kind": "StringLiteral",
-      "offset": 182,
-      "length": 25,
-      "value": "\"NBResourceBundle.bundle\""
-    },
-    {
-      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-sdk\/NovaCore\/NovaCore\/Metrics\/IABMetricReporter.swift",
-      "kind": "StringLiteral",
-      "offset": 240,
-      "length": 10,
-      "value": "\"omsdk-v1\""
-    },
-    {
-      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-sdk\/NovaCore\/NovaCore\/Metrics\/IABMetricReporter.swift",
-      "kind": "StringLiteral",
-      "offset": 285,
-      "length": 11,
-      "value": "\"Newsbreak\""
-    },
-    {
-      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-sdk\/NovaCore\/NovaCore\/Metrics\/IABMetricReporter.swift",
-      "kind": "BooleanLiteral",
-      "offset": 397,
-      "length": 5,
-      "value": "false"
-    },
-    {
-      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-sdk\/NovaCore\/NovaCore\/Metrics\/IABMetricReporter.swift",
-      "kind": "BooleanLiteral",
-      "offset": 442,
-      "length": 5,
-      "value": "false"
-    },
-    {
-      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-sdk\/NovaCore\/NovaCore\/Metrics\/IABMetricReporter.swift",
-      "kind": "BooleanLiteral",
-      "offset": 521,
-      "length": 5,
-      "value": "false"
-    },
-    {
-      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-sdk\/NovaCore\/NovaCore\/Metrics\/IABMetricReporter.swift",
-      "kind": "BooleanLiteral",
-      "offset": 570,
-      "length": 5,
-      "value": "false"
-    },
-    {
-      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-sdk\/NovaCore\/NovaCore\/Metrics\/IABMetricReporter.swift",
-      "kind": "BooleanLiteral",
-      "offset": 614,
-      "length": 5,
-      "value": "false"
-    },
-    {
-      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-sdk\/NovaCore\/NovaCore\/Metrics\/IABMetricReporter.swift",
-      "kind": "BooleanLiteral",
-      "offset": 663,
-      "length": 5,
-      "value": "false"
-    },
-    {
-      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-sdk\/NovaCore\/NovaCore\/Metrics\/IABMetricReporter.swift",
-      "kind": "BooleanLiteral",
-      "offset": 707,
-      "length": 5,
-      "value": "false"
-    },
-    {
-      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-sdk\/NovaCore\/NovaCore\/Metrics\/IABMetricReporter.swift",
-      "kind": "StringLiteral",
-      "offset": 990,
-      "length": 18,
-      "value": "\"NBResourceBundle\""
-    },
-    {
-      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-sdk\/NovaCore\/NovaCore\/Metrics\/IABMetricReporter.swift",
-      "kind": "StringLiteral",
-      "offset": 1025,
-      "length": 8,
-      "value": "\"bundle\""
-    },
-    {
-      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-sdk\/NovaCore\/NovaCore\/Metrics\/IABMetricReporter.swift",
-      "kind": "StringLiteral",
-      "offset": 1302,
-      "length": 4,
-      "value": "\"js\""
-    },
-    {
-      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-sdk\/NovaCore\/NovaCore\/Metrics\/IABMetricReporter.swift",
-      "kind": "StringLiteral",
-      "offset": 1441,
-      "length": 2,
-      "value": "\"\""
     },
     {
       "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-sdk\/NovaCore\/NovaCore\/WebView\/NovaWebViewBottomView.swift",

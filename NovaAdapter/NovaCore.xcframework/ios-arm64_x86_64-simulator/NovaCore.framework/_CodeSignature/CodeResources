@@ -6,7 +6,7 @@
 	<dict>
 		<key>Assets.car</key>
 		<data>
-		hi5JOVOwyz08NAYFScg5vQOvuJ8=
+		IgD4IWzPxjByUZ17LRcNvH1qaqc=
 		</data>
 		<key>Headers/NovaCore.h</key>
 		<data>
@@ -32,13 +32,33 @@
 		<data>
 		iWLFJAlSFqg7INQVoK/+hgRqv3A=
 		</data>
+		<key>Modules/NovaCore.swiftmodule/arm64-apple-ios-simulator.abi.json</key>
+		<data>
+		ukcTeKeqlerBLUJ/+7/DNJRuNqY=
+		</data>
+		<key>Modules/NovaCore.swiftmodule/arm64-apple-ios-simulator.private.swiftinterface</key>
+		<data>
+		Sq3krAAB5xQn7XuZpJKC3fU1pCg=
+		</data>
+		<key>Modules/NovaCore.swiftmodule/arm64-apple-ios-simulator.swiftdoc</key>
+		<data>
+		ZVCzrvNx19Yh117tfmJAZEeqWag=
+		</data>
+		<key>Modules/NovaCore.swiftmodule/arm64-apple-ios-simulator.swiftinterface</key>
+		<data>
+		Sq3krAAB5xQn7XuZpJKC3fU1pCg=
+		</data>
+		<key>Modules/NovaCore.swiftmodule/arm64-apple-ios-simulator.swiftmodule</key>
+		<data>
+		pq+p6Jfm3zwSfUQ2wzvrIVjDQpw=
+		</data>
 		<key>Modules/NovaCore.swiftmodule/x86_64-apple-ios-simulator.abi.json</key>
 		<data>
-		hAG0O0USqu257wkinZqrza3R2w0=
+		ukcTeKeqlerBLUJ/+7/DNJRuNqY=
 		</data>
 		<key>Modules/NovaCore.swiftmodule/x86_64-apple-ios-simulator.private.swiftinterface</key>
 		<data>
-		yJ6E4VCOo8uqcDDv57cnzSwFfQU=
+		wd7TMzNJlP8cQMDaSQ/ijjcVf4g=
 		</data>
 		<key>Modules/NovaCore.swiftmodule/x86_64-apple-ios-simulator.swiftdoc</key>
 		<data>
@@ -46,11 +66,11 @@
 		</data>
 		<key>Modules/NovaCore.swiftmodule/x86_64-apple-ios-simulator.swiftinterface</key>
 		<data>
-		yJ6E4VCOo8uqcDDv57cnzSwFfQU=
+		wd7TMzNJlP8cQMDaSQ/ijjcVf4g=
 		</data>
 		<key>Modules/NovaCore.swiftmodule/x86_64-apple-ios-simulator.swiftmodule</key>
 		<data>
-		ZPQGpaQED23GbCyi0d1kSQlTjqk=
+		dUG5ilkWAQ/ylUz47LQYObyyf38=
 		</data>
 		<key>Modules/module.modulemap</key>
 		<data>
@@ -75,7 +95,7 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			cBsYtGShPyRUjXVOg3Lh2PONHzcZ57eRG5nk3GTzRms=
+			yBEDGKi2t+CpjiNXjozhqX61QmnrhwWFXO+sVQT+fkE=
 			</data>
 		</dict>
 		<key>Headers/NovaCore.h</key>
@@ -113,18 +133,53 @@
 			c2IMetftQUdNPq9KhRUktrSkQKuG10HOFt6vhlyvP1o=
 			</data>
 		</dict>
+		<key>Modules/NovaCore.swiftmodule/arm64-apple-ios-simulator.abi.json</key>
+		<dict>
+			<key>hash2</key>
+			<data>
+			LVl35PKrzoULuv5q6wkS7kz6XAZrmfg0ZqIt1r7tV3Q=
+			</data>
+		</dict>
+		<key>Modules/NovaCore.swiftmodule/arm64-apple-ios-simulator.private.swiftinterface</key>
+		<dict>
+			<key>hash2</key>
+			<data>
+			z8IzFfTMazF0LZS8XMQ0sCij0/E/6WGQ0UQXz9B0ZKc=
+			</data>
+		</dict>
+		<key>Modules/NovaCore.swiftmodule/arm64-apple-ios-simulator.swiftdoc</key>
+		<dict>
+			<key>hash2</key>
+			<data>
+			amx/901ZIGU5/Mx+83UFI/V/FBZdiOyYKe9B4pkQL3s=
+			</data>
+		</dict>
+		<key>Modules/NovaCore.swiftmodule/arm64-apple-ios-simulator.swiftinterface</key>
+		<dict>
+			<key>hash2</key>
+			<data>
+			z8IzFfTMazF0LZS8XMQ0sCij0/E/6WGQ0UQXz9B0ZKc=
+			</data>
+		</dict>
+		<key>Modules/NovaCore.swiftmodule/arm64-apple-ios-simulator.swiftmodule</key>
+		<dict>
+			<key>hash2</key>
+			<data>
+			/+HSv4Wbbw5VyW2ZjaeJ+wa/9oam3ZxXvc0DiHOanWM=
+			</data>
+		</dict>
 		<key>Modules/NovaCore.swiftmodule/x86_64-apple-ios-simulator.abi.json</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			pCULs58UQpNMzlLYEdVbW1boJJYTanKjpSf6UEBKSqg=
+			LVl35PKrzoULuv5q6wkS7kz6XAZrmfg0ZqIt1r7tV3Q=
 			</data>
 		</dict>
 		<key>Modules/NovaCore.swiftmodule/x86_64-apple-ios-simulator.private.swiftinterface</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			qTcUDaEYtiyREWDhmPlpJf0o82P1uHRK3mrv0bQfnMk=
+			NxzxB7inti+6o7JBX+O0qvIPQR8euWK8/A2CJgTELdY=
 			</data>
 		</dict>
 		<key>Modules/NovaCore.swiftmodule/x86_64-apple-ios-simulator.swiftdoc</key>
@@ -138,14 +193,14 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			qTcUDaEYtiyREWDhmPlpJf0o82P1uHRK3mrv0bQfnMk=
+			NxzxB7inti+6o7JBX+O0qvIPQR8euWK8/A2CJgTELdY=
 			</data>
 		</dict>
 		<key>Modules/NovaCore.swiftmodule/x86_64-apple-ios-simulator.swiftmodule</key>
 		<dict>
 			<key>hash2</key>
 			<data>
-			FnhTp5z+WKAeiQH0KAQt0ZJBeuJlkmbR/JRwZJz//P0=
+			FB7BeKOJSAE0AqDlteUql/hA3uYz1Jn8xja4aizmKRw=
 			</data>
 		</dict>
 		<key>Modules/module.modulemap</key>
