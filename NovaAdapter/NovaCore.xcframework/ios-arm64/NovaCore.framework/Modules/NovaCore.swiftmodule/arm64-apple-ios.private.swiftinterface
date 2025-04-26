@@ -1,7 +1,6 @@
 // swift-interface-format-version: 1.0
 // swift-compiler-version: Apple Swift version 6.0 effective-5.10 (swiftlang-6.0.0.9.10 clang-1600.0.26.2)
 // swift-module-flags: -target arm64-apple-ios13.0 -enable-objc-interop -enable-library-evolution -swift-version 5 -enforce-exclusivity=checked -O -enable-bare-slash-regex -module-name NovaCore
-// swift-module-flags-ignorable: -no-verify-emitted-module-interface
 import AVFoundation
 import AdSupport
 import AppTrackingTransparency
@@ -10,7 +9,9 @@ import CoreMedia
 import DeveloperToolsSupport
 import Foundation
 @_exported import NovaCore
+import OMSDK_Newsbreak1
 import SafariServices
+import StoreKit
 import Swift
 import SwiftUI
 import UIKit
@@ -31,6 +32,7 @@ import _SwiftConcurrencyShims
 public enum NovaAdOpenActionKey : Swift.String {
   case launchBrowser
   case launchWebView
+  case launchStore
   public init?(rawValue: Swift.String)
   public typealias RawValue = Swift.String
   public var rawValue: Swift.String {
@@ -43,6 +45,7 @@ public enum NovaAppOpenAdViewActionKey : Swift.String {
   case feedbackReport
   case launchBrowser
   case launchWebView
+  case launchStore
   public init?(rawValue: Swift.String)
   public typealias RawValue = Swift.String
   public var rawValue: Swift.String {
@@ -183,6 +186,8 @@ extension UIKit.UIImage {
   @objc convenience dynamic public init?(novasystemName: NovaCore.NovaIcon.NovaSystem, tintColor: UIKit.UIColor)
 }
 @objc @_hasMissingDesignatedInitializers @_Concurrency.MainActor @preconcurrency public class NovaAppOpenVerticalImageAdView : UIKit.UIView {
+  @_Concurrency.MainActor @preconcurrency final public let topRightCloseButton: UIKit.UIButton
+  @_Concurrency.MainActor @preconcurrency final public let topRightCloseButtonArea: UIKit.UIView
   @objc deinit
 }
 public enum AdsMediaConstants {
@@ -255,11 +260,21 @@ public enum NovaAppOpenAdResource {
 }
 @_hasMissingDesignatedInitializers @objc @_Concurrency.MainActor @preconcurrency public class NovaAppOpenAdViewController : UIKit.UIViewController {
   @_Concurrency.MainActor @preconcurrency @objc override dynamic public func loadView()
+  @_Concurrency.MainActor @preconcurrency @objc override dynamic public func viewWillAppear(_ animated: Swift.Bool)
+  @_Concurrency.MainActor @preconcurrency public func topRightCloseButtonStartCountDown(button: UIKit.UIButton, clickableArea: UIKit.UIView)
+  @_Concurrency.MainActor @preconcurrency public func enableTopRightCloseButton(button: UIKit.UIButton, clickableArea: UIKit.UIView)
   @_Concurrency.MainActor @preconcurrency @objc override dynamic public func viewDidAppear(_ animated: Swift.Bool)
   @_Concurrency.MainActor @preconcurrency @objc override dynamic public func viewDidDisappear(_ animated: Swift.Bool)
   @_Concurrency.MainActor @preconcurrency @objc override dynamic public var preferredStatusBarStyle: UIKit.UIStatusBarStyle {
     @objc get
   }
+  @_Concurrency.MainActor @preconcurrency @objc override dynamic public var supportedInterfaceOrientations: UIKit.UIInterfaceOrientationMask {
+    @objc get
+  }
+  @_Concurrency.MainActor @preconcurrency @objc override dynamic public var shouldAutorotate: Swift.Bool {
+    @objc get
+  }
+  @_Concurrency.MainActor @preconcurrency @objc override dynamic public func viewWillTransition(to size: CoreFoundation.CGSize, with coordinator: any UIKit.UIViewControllerTransitionCoordinator)
   @objc deinit
 }
 public struct NovaResponseDataModel : Swift.Codable {
@@ -270,6 +285,17 @@ public struct NovaResponseDataModel : Swift.Codable {
 public struct AdItem : Swift.Codable {
   public func encode(to encoder: any Swift.Encoder) throws
   public init(from decoder: any Swift.Decoder) throws
+}
+public enum NovaAppOpenAdLayout : Swift.String, Swift.Codable {
+  case horizontal
+  case vertical
+  case horizontalCancelTopRight
+  case verticalCancelTopRight
+  public init?(rawValue: Swift.String)
+  public typealias RawValue = Swift.String
+  public var rawValue: Swift.String {
+    get
+  }
 }
 @objc @_hasMissingDesignatedInitializers @_Concurrency.MainActor @preconcurrency public class NovaVideoProgressView : UIKit.UIView {
   @_Concurrency.MainActor @preconcurrency @objc dynamic public init()
@@ -666,6 +692,9 @@ extension NovaCore.ActionModel : Swift.Equatable {
   @_Concurrency.MainActor @preconcurrency @objc override dynamic public init(frame: CoreFoundation.CGRect)
   @objc deinit
 }
+@_hasMissingDesignatedInitializers public class NovaAdOpenActionHandleUtil {
+  @objc deinit
+}
 @objc @_Concurrency.MainActor @preconcurrency open class NovaNativeAdView : UIKit.UIView {
   @_Concurrency.MainActor @preconcurrency public var titleLabel: UIKit.UILabel?
   @_Concurrency.MainActor @preconcurrency public var bodyLabel: UIKit.UILabel?
@@ -693,10 +722,17 @@ extension NovaCore.NovaNativeAdView {
   @_Concurrency.MainActor @preconcurrency public func unregisterAd()
 }
 @_hasMissingDesignatedInitializers @objc @_Concurrency.MainActor @preconcurrency public class NovaAppOpenAdViewV3 : UIKit.UIView {
+  @_Concurrency.MainActor @preconcurrency final public let mediaView: NovaCore.NovaNativeAdMediaViewV2
+  @_Concurrency.MainActor @preconcurrency final public let topRightCloseButton: UIKit.UIButton
+  @_Concurrency.MainActor @preconcurrency final public let topRightCloseButtonArea: UIKit.UIView
   @objc deinit
+}
+extension NovaCore.NovaAppOpenAdViewV3 {
+  @_Concurrency.MainActor @preconcurrency public func setupSubviews()
 }
 @objc @_hasMissingDesignatedInitializers @_Concurrency.MainActor @preconcurrency final public class NovaNativeAdVideoView : UIKit.UIView {
   @_Concurrency.MainActor @preconcurrency final public var didTapCloseButtonCallback: (() -> Swift.Void)?
+  @_Concurrency.MainActor @preconcurrency final public var inInterstitial: Swift.Bool
   @_Concurrency.MainActor @preconcurrency final public var videoPlayer: NovaCore.NovaVideoPlayer?
   @_Concurrency.MainActor @preconcurrency final public var novaNativeAdVideoDelegate: (any NovaCore.NovaNativeAdVideoDelegate)?
   @_Concurrency.MainActor @preconcurrency public init(inLandingPage: Swift.Bool = false)
@@ -709,6 +745,9 @@ extension NovaCore.NovaNativeAdVideoView {
   @_Concurrency.MainActor @preconcurrency final public func setPlayerBackOnView(view: UIKit.UIView)
   @_Concurrency.MainActor @preconcurrency final public func handleVideoOnScreen()
   @_Concurrency.MainActor @preconcurrency final public func handleVideoOffScreen()
+}
+extension NovaCore.NovaNativeAdVideoView {
+  @objc @_Concurrency.MainActor @preconcurrency final public func didTabMuteButton()
 }
 extension NovaCore.NovaNativeAdVideoView : NovaCore.NovaVideoPlayerDelegate {
   @_Concurrency.MainActor @preconcurrency final public func playerReady(_ player: NovaCore.NovaPlayer)
@@ -1124,6 +1163,8 @@ extension NovaCore.NovaUnifiedWebViewHost : WebKit.WKUIDelegate {
 }
 @objc @_hasMissingDesignatedInitializers @_Concurrency.MainActor @preconcurrency public class NovaAppOpenVerticalVideoAdView : UIKit.UIView {
   @_Concurrency.MainActor @preconcurrency public var viewController: UIKit.UIViewController
+  @_Concurrency.MainActor @preconcurrency final public let topRightCloseButton: UIKit.UIButton
+  @_Concurrency.MainActor @preconcurrency final public let topRightCloseButtonArea: UIKit.UIView
   @objc deinit
 }
 extension SwiftUICore.Image {
@@ -1439,6 +1480,7 @@ extension UIKit.UIImage {
     final public let bookmarkLine: UIKit.UIImage?
     final public let bookmarkPageFilled: UIKit.UIImage?
     final public let bookmarkPageLine: UIKit.UIImage?
+    final public let bottomShadow: UIKit.UIImage?
     final public let calendarFilled: UIKit.UIImage?
     final public let calendarLine: UIKit.UIImage?
     final public let callFilled: UIKit.UIImage?
@@ -1635,6 +1677,7 @@ extension UIKit.UIImage {
     final public let playLine: UIKit.UIImage?
     final public let plusCircleFilled: UIKit.UIImage?
     final public let plusCircleLine: UIKit.UIImage?
+    final public let playFilledNew: UIKit.UIImage?
     final public let plusFilled: UIKit.UIImage?
     final public let plusLine: UIKit.UIImage?
     final public let plusSquareFilled: UIKit.UIImage?
@@ -1746,6 +1789,7 @@ public struct NovaWebViewNavigationViewModel {
   final public let iconUrlStr: Swift.String?
   final public let addOnItem: NovaCore.NovaNativeAdInteractiveBanner?
   @objc weak final public var delegate: (any NovaCore.NovaNativeAdDelegate)?
+  final public let appStoreId: Swift.String?
   @objc final public let eCPMInDollar: Foundation.Decimal
   @objc final public var cellIndexPath: Foundation.IndexPath?
   @objc final public var dedupUUID: Swift.String?
@@ -1969,7 +2013,17 @@ extension NovaCore.NovaAdsLandingWebViewController : UIKit.UIScrollViewDelegate 
   @_Concurrency.MainActor @preconcurrency @objc dynamic public func scrollViewDidScroll(_ scrollView: UIKit.UIScrollView)
   @_Concurrency.MainActor @preconcurrency @objc dynamic public func scrollViewDidEndDragging(_ scrollView: UIKit.UIScrollView, willDecelerate decelerate: Swift.Bool)
 }
-@_hasMissingDesignatedInitializers public class IABMetricReporter {
+public class IABMetricReporter {
+  public init()
+  public func startSession(adView: UIKit.UIView, contentUrl: Swift.String, thirdPartyViewTrackingUrls: [Swift.String], hasVideo: Swift.Bool)
+  public func logImpression()
+  public func logLoaded()
+  public func stopSession()
+  public func logVideoStart(duration: CoreFoundation.CGFloat, volume: CoreFoundation.CGFloat)
+  public func logVideoProgress(percentage: Swift.Double)
+  public func logVideoPause()
+  public func logVideoResume()
+  public func logVideoVolumeChange(to volume: CoreFoundation.CGFloat)
   @objc deinit
 }
 public protocol NovaWebViewBottomViewDelegate : AnyObject {
@@ -2016,18 +2070,21 @@ final public class NovaJSBridgeHandlerMaster {
   final public let videoInfo: NovaCore.NovaNativeAdVideoInfo?
   final public let isVerticalImage: Swift.Bool?
   final public let isImageClickable: Swift.Bool?
+  final public let closeCountDownTimeSecond: Swift.Int?
   final public let iconUrl: Swift.String?
   final public var image: UIKit.UIImage?
+  final public let appStoreId: Swift.String?
   @objc weak final public var delegate: (any NovaCore.NovaAppOpenAdDelegate)?
+  final public let novaAppOpenAdLayout: NovaCore.NovaAppOpenAdLayout?
   override final public func encode(to encoder: any Swift.Encoder) throws
   final public func present(rootViewController: UIKit.UIViewController)
   final public func preloadAdImage(completion: @escaping (UIKit.UIImage?) -> Swift.Void)
   final public func requestToDisplay(rootViewController: UIKit.UIViewController, adResource: NovaCore.NovaAppOpenAdResource)
   @objc deinit
 }
-@objc @_inheritsConvenienceInitializers final public class NovaAdOpenActionHandler : ObjectiveC.NSObject {
+@objc final public class NovaAdOpenActionHandler : ObjectiveC.NSObject {
+  public init(viewController: UIKit.UIViewController?)
   @objc deinit
-  @objc override dynamic public init()
 }
 extension NovaCore.NovaAdOpenActionHandler : NovaCore.ActionHandling {
   final public func supportedActions() -> [Swift.String : any Any.Type]
@@ -2159,6 +2216,9 @@ extension NovaCore.NovaIcon.NovaSystem : Swift.RawRepresentable {}
 extension NovaCore.NovaCreativeType : Swift.Equatable {}
 extension NovaCore.NovaCreativeType : Swift.Hashable {}
 extension NovaCore.NovaCreativeType : Swift.RawRepresentable {}
+extension NovaCore.NovaAppOpenAdLayout : Swift.Equatable {}
+extension NovaCore.NovaAppOpenAdLayout : Swift.Hashable {}
+extension NovaCore.NovaAppOpenAdLayout : Swift.RawRepresentable {}
 extension NovaCore.NovaAdType : Swift.Equatable {}
 extension NovaCore.NovaAdType : Swift.Hashable {}
 extension NovaCore.NovaAdType : Swift.RawRepresentable {}
