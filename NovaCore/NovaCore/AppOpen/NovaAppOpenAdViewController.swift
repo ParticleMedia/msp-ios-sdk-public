@@ -201,4 +201,24 @@ public enum NovaAppOpenAdResource {
     @objc internal func handleApplicationWillEnterForeground(_ aNoticiation: Notification) {
         //dismiss(animated: false)
     }
+    
+    public override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
+        return .portrait
+    }
+    
+    public override var shouldAutorotate: Bool {
+        return false
+    }
+    
+    public override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+        super.viewWillTransition(to: size, with: coordinator)
+         
+        guard let adView = self.view as? NovaAppOpenAdViewV3,
+              UIDevice.current.userInterfaceIdiom == .pad else {
+            return
+        }
+        coordinator.animate(alongsideTransition: { _ in
+            adView.setupSubviews()
+        })
+    }
 }
