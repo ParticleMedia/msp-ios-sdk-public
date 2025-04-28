@@ -33,7 +33,7 @@ struct Creative: Codable {
     let launchOption: String?
     let creativeType: String?
     let adm: String?
-    let layout: NovaAppOpenAdLayout?
+    let layout: String?
     let closeCountDownTimeSecond: Int?
 
     let thirdPartyViewTrackingUrls: [String]?
