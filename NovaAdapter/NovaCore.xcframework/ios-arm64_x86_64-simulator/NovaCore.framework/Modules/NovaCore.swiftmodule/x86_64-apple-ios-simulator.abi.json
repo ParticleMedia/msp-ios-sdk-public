@@ -40730,8 +40730,7 @@
             "mangledName": "$s8NovaCore17IABMetricReporterCACycfc",
             "moduleName": "NovaCore",
             "declAttributes": [
-              "AccessControl",
-              "RawDocComment"
+              "AccessControl"
             ],
             "init_kind": "Designated"
           },
@@ -90689,7 +90688,7 @@
     {
       "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-sdk\/NovaCore\/NovaCore\/AppOpen\/NovaAppOpenAdViewController.swift",
       "kind": "BooleanLiteral",
-      "offset": 9499,
+      "offset": 9482,
       "length": 5,
       "value": "false"
     },
@@ -90703,28 +90702,28 @@
     {
       "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-sdk\/NovaCore\/NovaCore\/NovaResponseDataModel.swift",
       "kind": "StringLiteral",
-      "offset": 1218,
+      "offset": 1205,
       "length": 12,
       "value": "\"horizontal\""
     },
     {
       "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-sdk\/NovaCore\/NovaCore\/NovaResponseDataModel.swift",
       "kind": "StringLiteral",
-      "offset": 1251,
+      "offset": 1238,
       "length": 10,
       "value": "\"vertical\""
     },
     {
       "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-sdk\/NovaCore\/NovaCore\/NovaResponseDataModel.swift",
       "kind": "StringLiteral",
-      "offset": 1298,
+      "offset": 1285,
       "length": 29,
       "value": "\"horizontal_cancel_top_right\""
     },
     {
       "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-sdk\/NovaCore\/NovaCore\/NovaResponseDataModel.swift",
       "kind": "StringLiteral",
-      "offset": 1362,
+      "offset": 1349,
       "length": 27,
       "value": "\"vertical_cancel_top_right\""
     },
@@ -98945,6 +98944,104 @@
       "offset": 2158,
       "length": 5,
       "value": "false"
+    },
+    {
+      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-sdk\/NovaCore\/NovaCore\/Metrics\/IABMetricReporter.swift",
+      "kind": "StringLiteral",
+      "offset": 196,
+      "length": 25,
+      "value": "\"NBResourceBundle.bundle\""
+    },
+    {
+      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-sdk\/NovaCore\/NovaCore\/Metrics\/IABMetricReporter.swift",
+      "kind": "StringLiteral",
+      "offset": 254,
+      "length": 10,
+      "value": "\"omsdk-v1\""
+    },
+    {
+      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-sdk\/NovaCore\/NovaCore\/Metrics\/IABMetricReporter.swift",
+      "kind": "StringLiteral",
+      "offset": 299,
+      "length": 11,
+      "value": "\"Newsbreak\""
+    },
+    {
+      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-sdk\/NovaCore\/NovaCore\/Metrics\/IABMetricReporter.swift",
+      "kind": "BooleanLiteral",
+      "offset": 413,
+      "length": 5,
+      "value": "false"
+    },
+    {
+      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-sdk\/NovaCore\/NovaCore\/Metrics\/IABMetricReporter.swift",
+      "kind": "BooleanLiteral",
+      "offset": 458,
+      "length": 5,
+      "value": "false"
+    },
+    {
+      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-sdk\/NovaCore\/NovaCore\/Metrics\/IABMetricReporter.swift",
+      "kind": "BooleanLiteral",
+      "offset": 537,
+      "length": 5,
+      "value": "false"
+    },
+    {
+      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-sdk\/NovaCore\/NovaCore\/Metrics\/IABMetricReporter.swift",
+      "kind": "BooleanLiteral",
+      "offset": 586,
+      "length": 5,
+      "value": "false"
+    },
+    {
+      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-sdk\/NovaCore\/NovaCore\/Metrics\/IABMetricReporter.swift",
+      "kind": "BooleanLiteral",
+      "offset": 630,
+      "length": 5,
+      "value": "false"
+    },
+    {
+      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-sdk\/NovaCore\/NovaCore\/Metrics\/IABMetricReporter.swift",
+      "kind": "BooleanLiteral",
+      "offset": 679,
+      "length": 5,
+      "value": "false"
+    },
+    {
+      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-sdk\/NovaCore\/NovaCore\/Metrics\/IABMetricReporter.swift",
+      "kind": "BooleanLiteral",
+      "offset": 723,
+      "length": 5,
+      "value": "false"
+    },
+    {
+      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-sdk\/NovaCore\/NovaCore\/Metrics\/IABMetricReporter.swift",
+      "kind": "StringLiteral",
+      "offset": 1010,
+      "length": 18,
+      "value": "\"NBResourceBundle\""
+    },
+    {
+      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-sdk\/NovaCore\/NovaCore\/Metrics\/IABMetricReporter.swift",
+      "kind": "StringLiteral",
+      "offset": 1045,
+      "length": 8,
+      "value": "\"bundle\""
+    },
+    {
+      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-sdk\/NovaCore\/NovaCore\/Metrics\/IABMetricReporter.swift",
+      "kind": "StringLiteral",
+      "offset": 1322,
+      "length": 4,
+      "value": "\"js\""
+    },
+    {
+      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-sdk\/NovaCore\/NovaCore\/Metrics\/IABMetricReporter.swift",
+      "kind": "StringLiteral",
+      "offset": 1461,
+      "length": 2,
+      "value": "\"\""
     },
     {
       "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-sdk\/NovaCore\/NovaCore\/WebView\/NovaWebViewBottomView.swift",
