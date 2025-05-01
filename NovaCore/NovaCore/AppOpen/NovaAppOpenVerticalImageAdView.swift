@@ -249,7 +249,6 @@ private extension NovaAppOpenVerticalImageAdView {
                 ctaButton.heightAnchor.constraint(equalToConstant: LayoutMetrics.bottomButtonHeight),
                 
                 // closeButton constraints
-                //closeButton.leadingAnchor.constraint(equalTo: nativeAdView.leadingAnchor, constant: LayoutMetrics.horizontalMargin),
                 closeButton.leadingAnchor.constraint(equalTo: nativeAdView.centerXAnchor, constant: LayoutMetrics.horizontalMargin),
                 closeButton.trailingAnchor.constraint(equalTo: ctaButton.leadingAnchor, constant: -LayoutMetrics.horizontalMargin),
                 closeButton.bottomAnchor.constraint(equalTo: nativeAdView.bottomAnchor, constant: -totalButtonBottomMargin),
