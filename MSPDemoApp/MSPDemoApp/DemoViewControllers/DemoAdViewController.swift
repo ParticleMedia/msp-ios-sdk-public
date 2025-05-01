@@ -137,7 +137,7 @@ class DemoAdViewController: UIViewController {
         var customParams = [String: Any]()
         var testParams = [String: String]()
         if adType == .novaNative {
-            testParams["test"] = "{\"ad_network\":\"msp_nova\",\"test_ad\":true}"
+            testParams["test"] = "{\"ad_network\":\"msp_nova\",\"test_ad\":true,\"creative_type\":\"video\",\"is_vertical\":true}"
         } else if adType == .novaInterstitialHorizontalImage {
             testParams["test"] = "{\"ad_network\":\"msp_nova\",\"test_ad\":true,\"creative_type\":\"image\",\"is_vertical\":false}"
         } else if adType == .novaInterstitialVerticalImage {

@@ -241,85 +241,141 @@ private extension NovaAppOpenVerticalImageAdView {
             volumeButton
         )
         let totalButtonBottomMargin = LayoutMetrics.bottomButtonBottomMargin + LayoutMetrics.progressBarBottomMargin
-        
-        if let novaAppOpenAdLayout = self.novaAppOpenAdLayout,
-        novaAppOpenAdLayout == .verticalCancelTopRight {
-            closeButton.isHidden = true
+        if UIDevice.current.userInterfaceIdiom == .pad {
             NSLayoutConstraint.activate([
                 // ctaButton constraints
-                ctaButton.leadingAnchor.constraint(equalTo: nativeAdView.leadingAnchor, constant: LayoutMetrics.horizontalMargin),
                 ctaButton.trailingAnchor.constraint(equalTo: nativeAdView.trailingAnchor, constant: -LayoutMetrics.horizontalMargin),
                 ctaButton.bottomAnchor.constraint(equalTo: nativeAdView.bottomAnchor, constant: -totalButtonBottomMargin),
                 ctaButton.heightAnchor.constraint(equalToConstant: LayoutMetrics.bottomButtonHeight),
-                ctaButton.widthAnchor.constraint(equalToConstant: LayoutMetrics.bottomButtonWidth)
-            ])
-            addSubview(topRightCloseButtonArea)
-            topRightCloseButtonArea.translatesAutoresizingMaskIntoConstraints = false
-            topRightCloseButton.translatesAutoresizingMaskIntoConstraints = false
-            topRightCloseButtonArea.addSubview(topRightCloseButton)
-            NSLayoutConstraint.activate([
-                topRightCloseButtonArea.topAnchor.constraint(equalTo: self.safeAreaLayoutGuide.topAnchor, constant: self.safeAreaInsets.top + 4),
-                topRightCloseButtonArea.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -4),
-                topRightCloseButton.centerXAnchor.constraint(equalTo: topRightCloseButtonArea.centerXAnchor),
-                topRightCloseButton.centerYAnchor.constraint(equalTo: topRightCloseButtonArea.centerYAnchor)
-            ])
-           
-        } else {
-            NSLayoutConstraint.activate([
+                
                 // closeButton constraints
-                closeButton.leadingAnchor.constraint(equalTo: nativeAdView.leadingAnchor, constant: LayoutMetrics.horizontalMargin),
+                //closeButton.leadingAnchor.constraint(equalTo: nativeAdView.leadingAnchor, constant: LayoutMetrics.horizontalMargin),
+                closeButton.leadingAnchor.constraint(equalTo: nativeAdView.centerXAnchor, constant: LayoutMetrics.horizontalMargin),
+                closeButton.trailingAnchor.constraint(equalTo: ctaButton.leadingAnchor, constant: -LayoutMetrics.horizontalMargin),
                 closeButton.bottomAnchor.constraint(equalTo: nativeAdView.bottomAnchor, constant: -totalButtonBottomMargin),
                 closeButton.heightAnchor.constraint(equalToConstant: LayoutMetrics.bottomButtonHeight),
-                closeButton.widthAnchor.constraint(equalToConstant: LayoutMetrics.bottomButtonWidth),
+                closeButton.widthAnchor.constraint(equalTo: ctaButton.widthAnchor),
                 
-                // ctaButton constraints
-                ctaButton.trailingAnchor.constraint(equalTo: nativeAdView.trailingAnchor, constant: -LayoutMetrics.horizontalMargin),
-                ctaButton.bottomAnchor.constraint(equalTo: nativeAdView.bottomAnchor, constant: -totalButtonBottomMargin),
-                ctaButton.heightAnchor.constraint(equalToConstant: LayoutMetrics.bottomButtonHeight),
-                ctaButton.widthAnchor.constraint(equalToConstant: LayoutMetrics.bottomButtonWidth)
+                // nativeAdView constraints
+                nativeAdView.topAnchor.constraint(equalTo: self.topAnchor),
+                nativeAdView.leadingAnchor.constraint(equalTo: self.leadingAnchor),
+                nativeAdView.trailingAnchor.constraint(equalTo: self.trailingAnchor),
+                nativeAdView.bottomAnchor.constraint(equalTo: self.bottomAnchor),
+                
+                // bottomShadow constraints
+                bottomShadow.leadingAnchor.constraint(equalTo: nativeAdView.leadingAnchor),
+                bottomShadow.trailingAnchor.constraint(equalTo: nativeAdView.trailingAnchor),
+                bottomShadow.bottomAnchor.constraint(equalTo: nativeAdView.bottomAnchor),
+                bottomShadow.heightAnchor.constraint(equalToConstant: UIScreen.main.bounds.width * 280 / 375),
+                
+                // adTagLabel constraints
+                adTagLabel.leadingAnchor.constraint(equalTo: nativeAdView.leadingAnchor, constant: LayoutMetrics.horizontalMargin),
+                adTagLabel.trailingAnchor.constraint(lessThanOrEqualTo: closeButton.leadingAnchor, constant: -LayoutMetrics.horizontalMargin),
+                adTagLabel.bottomAnchor.constraint(equalTo: nativeAdView.bottomAnchor, constant: -totalButtonBottomMargin),
+                
+                // bodyLabel constraints
+                bodyLabel.leadingAnchor.constraint(equalTo: nativeAdView.leadingAnchor, constant: LayoutMetrics.horizontalMargin),
+                bodyLabel.trailingAnchor.constraint(equalTo: closeButton.leadingAnchor, constant: -LayoutMetrics.horizontalMargin),
+                bodyLabel.bottomAnchor.constraint(equalTo: adTagLabel.topAnchor, constant: -8.0),
+                
+                // advertiserInfoStackView constraints
+                advertiserInfoStackView.leadingAnchor.constraint(equalTo: nativeAdView.leadingAnchor, constant: LayoutMetrics.horizontalMargin),
+                advertiserInfoStackView.trailingAnchor.constraint(lessThanOrEqualTo: feedbackButton.leadingAnchor, constant: -LayoutMetrics.horizontalMargin),
+                advertiserInfoStackView.bottomAnchor.constraint(equalTo: bodyLabel.topAnchor, constant: -8.0),
+                
+                // feedbackButton constraints
+                feedbackButton.centerYAnchor.constraint(equalTo: advertiserInfoStackView.centerYAnchor),
+                feedbackButton.trailingAnchor.constraint(equalTo: nativeAdView.trailingAnchor, constant: -LayoutMetrics.horizontalMargin),
+                feedbackButton.widthAnchor.constraint(equalToConstant: 24),
+                feedbackButton.heightAnchor.constraint(equalToConstant: 24),
+                
+                // volumeButton constraints
+                volumeButton.leadingAnchor.constraint(equalTo: nativeAdView.leadingAnchor, constant: LayoutMetrics.horizontalMargin),
+                volumeButton.heightAnchor.constraint(equalToConstant: LayoutMetrics.volumeButtonWidth),
+                volumeButton.widthAnchor.constraint(equalToConstant: LayoutMetrics.volumeButtonWidth),
+                volumeButton.bottomAnchor.constraint(equalTo: advertiserInfoStackView.topAnchor, constant: -LayoutMetrics.volumeButtonBottomMargin)
+                
+            ])
+        } else {
+            if let novaAppOpenAdLayout = self.novaAppOpenAdLayout,
+               novaAppOpenAdLayout == .verticalCancelTopRight {
+                closeButton.isHidden = true
+                NSLayoutConstraint.activate([
+                    // ctaButton constraints
+                    ctaButton.leadingAnchor.constraint(equalTo: nativeAdView.leadingAnchor, constant: LayoutMetrics.horizontalMargin),
+                    ctaButton.trailingAnchor.constraint(equalTo: nativeAdView.trailingAnchor, constant: -LayoutMetrics.horizontalMargin),
+                    ctaButton.bottomAnchor.constraint(equalTo: nativeAdView.bottomAnchor, constant: -totalButtonBottomMargin),
+                    ctaButton.heightAnchor.constraint(equalToConstant: LayoutMetrics.bottomButtonHeight),
+                    ctaButton.widthAnchor.constraint(equalToConstant: LayoutMetrics.bottomButtonWidth)
+                ])
+                addSubview(topRightCloseButtonArea)
+                topRightCloseButtonArea.translatesAutoresizingMaskIntoConstraints = false
+                topRightCloseButton.translatesAutoresizingMaskIntoConstraints = false
+                topRightCloseButtonArea.addSubview(topRightCloseButton)
+                NSLayoutConstraint.activate([
+                    topRightCloseButtonArea.topAnchor.constraint(equalTo: self.safeAreaLayoutGuide.topAnchor, constant: self.safeAreaInsets.top + 4),
+                    topRightCloseButtonArea.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -4),
+                    topRightCloseButton.centerXAnchor.constraint(equalTo: topRightCloseButtonArea.centerXAnchor),
+                    topRightCloseButton.centerYAnchor.constraint(equalTo: topRightCloseButtonArea.centerYAnchor)
+                ])
+                
+            } else {
+                NSLayoutConstraint.activate([
+                    // closeButton constraints
+                    closeButton.leadingAnchor.constraint(equalTo: nativeAdView.leadingAnchor, constant: LayoutMetrics.horizontalMargin),
+                    closeButton.bottomAnchor.constraint(equalTo: nativeAdView.bottomAnchor, constant: -totalButtonBottomMargin),
+                    closeButton.heightAnchor.constraint(equalToConstant: LayoutMetrics.bottomButtonHeight),
+                    closeButton.trailingAnchor.constraint(equalTo: self.centerXAnchor, constant: -8),
+                    
+                    // ctaButton constraints
+                    ctaButton.leadingAnchor.constraint(equalTo: self.centerXAnchor, constant: 8),
+                    ctaButton.trailingAnchor.constraint(equalTo: nativeAdView.trailingAnchor, constant: -LayoutMetrics.horizontalMargin),
+                    ctaButton.bottomAnchor.constraint(equalTo: nativeAdView.bottomAnchor, constant: -totalButtonBottomMargin),
+                    ctaButton.heightAnchor.constraint(equalToConstant: LayoutMetrics.bottomButtonHeight)
+                ])
+            }
+            // Activate native constraints
+            NSLayoutConstraint.activate([
+                // nativeAdView constraints
+                nativeAdView.topAnchor.constraint(equalTo: self.topAnchor),
+                nativeAdView.leadingAnchor.constraint(equalTo: self.leadingAnchor),
+                nativeAdView.trailingAnchor.constraint(equalTo: self.trailingAnchor),
+                nativeAdView.bottomAnchor.constraint(equalTo: self.bottomAnchor),
+                
+                // bottomShadow constraints
+                bottomShadow.leadingAnchor.constraint(equalTo: nativeAdView.leadingAnchor),
+                bottomShadow.trailingAnchor.constraint(equalTo: nativeAdView.trailingAnchor),
+                bottomShadow.bottomAnchor.constraint(equalTo: nativeAdView.bottomAnchor),
+                bottomShadow.heightAnchor.constraint(equalToConstant: UIScreen.main.bounds.width * 280 / 375),
+                
+                // adTagLabel constraints
+                adTagLabel.leadingAnchor.constraint(equalTo: nativeAdView.leadingAnchor, constant: LayoutMetrics.horizontalMargin),
+                adTagLabel.trailingAnchor.constraint(lessThanOrEqualTo: nativeAdView.trailingAnchor, constant: -LayoutMetrics.horizontalMargin),
+                adTagLabel.bottomAnchor.constraint(equalTo: ctaButton.topAnchor, constant: -16.0),
+                
+                // bodyLabel constraints
+                bodyLabel.leadingAnchor.constraint(equalTo: nativeAdView.leadingAnchor, constant: LayoutMetrics.horizontalMargin),
+                bodyLabel.trailingAnchor.constraint(equalTo: nativeAdView.trailingAnchor, constant: -LayoutMetrics.horizontalMargin),
+                bodyLabel.bottomAnchor.constraint(equalTo: adTagLabel.topAnchor, constant: -8.0),
+                
+                // advertiserInfoStackView constraints
+                advertiserInfoStackView.leadingAnchor.constraint(equalTo: nativeAdView.leadingAnchor, constant: LayoutMetrics.horizontalMargin),
+                advertiserInfoStackView.trailingAnchor.constraint(lessThanOrEqualTo: feedbackButton.leadingAnchor, constant: -LayoutMetrics.horizontalMargin),
+                advertiserInfoStackView.bottomAnchor.constraint(equalTo: bodyLabel.topAnchor, constant: -8.0),
+                
+                // feedbackButton constraints
+                feedbackButton.centerYAnchor.constraint(equalTo: advertiserInfoStackView.centerYAnchor),
+                feedbackButton.trailingAnchor.constraint(equalTo: nativeAdView.trailingAnchor, constant: -LayoutMetrics.horizontalMargin),
+                feedbackButton.widthAnchor.constraint(equalToConstant: 24),
+                feedbackButton.heightAnchor.constraint(equalToConstant: 24),
+                
+                // volumeButton constraints
+                volumeButton.leadingAnchor.constraint(equalTo: nativeAdView.leadingAnchor, constant: LayoutMetrics.horizontalMargin),
+                volumeButton.heightAnchor.constraint(equalToConstant: LayoutMetrics.volumeButtonWidth),
+                volumeButton.widthAnchor.constraint(equalToConstant: LayoutMetrics.volumeButtonWidth),
+                volumeButton.bottomAnchor.constraint(equalTo: advertiserInfoStackView.topAnchor, constant: -LayoutMetrics.volumeButtonBottomMargin)
             ])
         }
-        // Activate native constraints
-        NSLayoutConstraint.activate([
-            // nativeAdView constraints
-            nativeAdView.topAnchor.constraint(equalTo: self.topAnchor),
-            nativeAdView.leadingAnchor.constraint(equalTo: self.leadingAnchor),
-            nativeAdView.trailingAnchor.constraint(equalTo: self.trailingAnchor),
-            nativeAdView.bottomAnchor.constraint(equalTo: self.bottomAnchor),
-            
-            // bottomShadow constraints
-            bottomShadow.leadingAnchor.constraint(equalTo: nativeAdView.leadingAnchor),
-            bottomShadow.trailingAnchor.constraint(equalTo: nativeAdView.trailingAnchor),
-            bottomShadow.bottomAnchor.constraint(equalTo: nativeAdView.bottomAnchor),
-            bottomShadow.heightAnchor.constraint(equalToConstant: UIScreen.main.bounds.width * 280 / 375),
-            
-            // adTagLabel constraints
-            adTagLabel.leadingAnchor.constraint(equalTo: nativeAdView.leadingAnchor, constant: LayoutMetrics.horizontalMargin),
-            adTagLabel.trailingAnchor.constraint(lessThanOrEqualTo: nativeAdView.trailingAnchor, constant: -LayoutMetrics.horizontalMargin),
-            adTagLabel.bottomAnchor.constraint(equalTo: ctaButton.topAnchor, constant: -16.0),
-            
-            // bodyLabel constraints
-            bodyLabel.leadingAnchor.constraint(equalTo: nativeAdView.leadingAnchor, constant: LayoutMetrics.horizontalMargin),
-            bodyLabel.trailingAnchor.constraint(equalTo: nativeAdView.trailingAnchor, constant: -LayoutMetrics.horizontalMargin),
-            bodyLabel.bottomAnchor.constraint(equalTo: adTagLabel.topAnchor, constant: -8.0),
-            
-            // advertiserInfoStackView constraints
-            advertiserInfoStackView.leadingAnchor.constraint(equalTo: nativeAdView.leadingAnchor, constant: LayoutMetrics.horizontalMargin),
-            advertiserInfoStackView.trailingAnchor.constraint(lessThanOrEqualTo: feedbackButton.leadingAnchor, constant: -LayoutMetrics.horizontalMargin),
-            advertiserInfoStackView.bottomAnchor.constraint(equalTo: bodyLabel.topAnchor, constant: -8.0),
-            
-            // feedbackButton constraints
-            feedbackButton.centerYAnchor.constraint(equalTo: advertiserInfoStackView.centerYAnchor),
-            feedbackButton.trailingAnchor.constraint(equalTo: nativeAdView.trailingAnchor, constant: -LayoutMetrics.horizontalMargin),
-            feedbackButton.widthAnchor.constraint(equalToConstant: 24),
-            feedbackButton.heightAnchor.constraint(equalToConstant: 24),
-            
-            // volumeButton constraints
-            volumeButton.leadingAnchor.constraint(equalTo: nativeAdView.leadingAnchor, constant: LayoutMetrics.horizontalMargin),
-            volumeButton.heightAnchor.constraint(equalToConstant: LayoutMetrics.volumeButtonWidth),
-            volumeButton.widthAnchor.constraint(equalToConstant: LayoutMetrics.volumeButtonWidth),
-            volumeButton.bottomAnchor.constraint(equalTo: advertiserInfoStackView.topAnchor, constant: -LayoutMetrics.volumeButtonBottomMargin)
-        ])
         
         feedbackButton.isHidden = true
         volumeButton.isHidden = true
@@ -370,7 +426,9 @@ private extension NovaAppOpenVerticalImageAdView {
         }
 
         guard let mediaView else { return }
-        
+        if UIDevice.current.userInterfaceIdiom == .pad {
+            mediaView.imageView.contentMode = .scaleAspectFit
+        }
         mediaView.config(with: media)
     }
 
