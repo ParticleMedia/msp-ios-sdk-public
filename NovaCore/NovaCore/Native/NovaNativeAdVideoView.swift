@@ -598,9 +598,11 @@ private extension NovaNativeAdVideoView {
     
     private func shouldShowVideoController() -> Bool {
         if !(videoInfo?.isVideoClickable ?? true) {
+            //do not show buttons when view is in immersive flow (video not clickable)
             return false
         }
         if (inInterstitial && (videoInfo?.isVertical ?? false)) {
+            //do not show buttons when it is vertical interstitial
             return false
         }
         return true
