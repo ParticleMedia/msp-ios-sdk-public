@@ -171,6 +171,7 @@ private extension NovaAppOpenAdViewV3 {
         closeButton.setTitle(NSLocalizedString("Close", comment: ""), for: .normal)
         
         mediaView.config(with: media)
+        mediaView.videoView.inInterstitial = true
     }
     
     func setupGestures() {
