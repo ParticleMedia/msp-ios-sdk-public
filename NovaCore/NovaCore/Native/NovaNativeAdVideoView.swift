@@ -389,6 +389,8 @@ private extension NovaNativeAdVideoView {
             updatePlayButton(true)
             if shouldShowVideoController() {
                 panel.isHidden = false
+            } else {
+                panel.isHidden = true
             }
         case .paused(_):
             updatePlayButton(false)
@@ -396,6 +398,7 @@ private extension NovaNativeAdVideoView {
             if shouldShowVideoController() {
                 panel.isHidden = false
             } else {
+                panel.isHidden = true
                 centralPlayButton.isHidden = false
             }
         case .complete:
