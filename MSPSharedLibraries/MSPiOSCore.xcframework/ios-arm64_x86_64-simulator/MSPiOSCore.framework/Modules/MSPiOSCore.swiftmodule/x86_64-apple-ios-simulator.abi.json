@@ -10435,28 +10435,28 @@
       "kind": "StringLiteral",
       "offset": 155,
       "length": 8,
-      "value": "\"Google\""
+      "value": "\"google\""
     },
     {
       "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-core\/MSPiOSCore\/MSPiOSCore\/adapter\/AdNetwork.swift",
       "kind": "StringLiteral",
       "offset": 184,
       "length": 10,
-      "value": "\"Facebook\""
+      "value": "\"facebook\""
     },
     {
       "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-core\/MSPiOSCore\/MSPiOSCore\/adapter\/AdNetwork.swift",
       "kind": "StringLiteral",
       "offset": 213,
       "length": 8,
-      "value": "\"Prebid\""
+      "value": "\"prebid\""
     },
     {
       "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-core\/MSPiOSCore\/MSPiOSCore\/adapter\/AdNetwork.swift",
       "kind": "StringLiteral",
       "offset": 238,
       "length": 6,
-      "value": "\"Nova\""
+      "value": "\"nova\""
     },
     {
       "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-core\/MSPiOSCore\/MSPiOSCore\/api\/Geo.swift",
