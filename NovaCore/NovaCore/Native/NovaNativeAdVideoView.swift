@@ -387,15 +387,18 @@ private extension NovaNativeAdVideoView {
             centralPlayButton.isHidden = true
             coverImage.isHidden = true
             updatePlayButton(true)
-            if (videoInfo?.isVideoClickable ?? true) {
+            if shouldShowVideoController() {
+                panel.isHidden = false
+            } else {
                 panel.isHidden = true
             }
         case .paused(_):
             updatePlayButton(false)
             coverImage.isHidden = true
-            if (videoInfo?.isVideoClickable ?? true) {
-                panel.isHidden = true
+            if shouldShowVideoController() {
+                panel.isHidden = false
             } else {
+                panel.isHidden = true
                 centralPlayButton.isHidden = false
             }
         case .complete:
@@ -594,6 +597,18 @@ private extension NovaNativeAdVideoView {
         progressView.isHidden = isHidden
         videoLengthText.isHidden = isHidden
         playButton.isHidden = isHidden
+    }
+    
+    private func shouldShowVideoController() -> Bool {
+        if !(videoInfo?.isVideoClickable ?? true) {
+            //do not show buttons when view is in immersive flow (video not clickable)
+            return false
+        }
+        if (inInterstitial && (videoInfo?.isVertical ?? false)) {
+            //do not show buttons when it is vertical interstitial
+            return false
+        }
+        return true
     }
 }
 
