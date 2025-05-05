@@ -20,7 +20,7 @@ public final class NovaNativeAdVideoInfo: Codable {
 
     public var state: NovaNativeAdVideoState? {
         didSet {
-            print("state has changed")
+            
         }
     }
 

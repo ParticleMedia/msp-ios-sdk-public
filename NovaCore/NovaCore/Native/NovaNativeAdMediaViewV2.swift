@@ -12,14 +12,14 @@ import UIKit
 @objc public final class NovaNativeAdMediaViewV2: UIView {
     // MARK: - Properties
 
-    private lazy var imageView: UIImageView = {
+    public lazy var imageView: UIImageView = {
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFill
         imageView.clipsToBounds = true
         return imageView
     }()
 
-    private lazy var videoView: NovaNativeAdVideoView = {
+    public lazy var videoView: NovaNativeAdVideoView = {
         let videoView = NovaNativeAdVideoView()
         return videoView
     }()
