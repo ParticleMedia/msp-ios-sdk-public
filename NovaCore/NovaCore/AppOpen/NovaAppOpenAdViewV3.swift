@@ -378,7 +378,7 @@ private extension NovaAppOpenAdViewV3 {
             case NovaAppOpenAdClickableComponent.icon.rawValue:
                 break
             case NovaAppOpenAdClickableComponent.all.rawValue:
-                tappableViews.append(self)
+                tappableViews = [mediaView, advertiserLabel, headlineLabel, bodyLabel, ctaButton, self]
             default:
                 break
             }
