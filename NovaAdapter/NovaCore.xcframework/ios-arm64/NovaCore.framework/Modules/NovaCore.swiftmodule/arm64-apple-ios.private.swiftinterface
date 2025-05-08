@@ -52,6 +52,14 @@ public enum NovaAppOpenAdViewActionKey : Swift.String {
   }
 }
 @_hasMissingDesignatedInitializers @objc @_Concurrency.MainActor @preconcurrency final public class NovaNativeAdMediaViewV2 : UIKit.UIView {
+  @_Concurrency.MainActor @preconcurrency final public var imageView: UIKit.UIImageView {
+    get
+    set
+  }
+  @_Concurrency.MainActor @preconcurrency final public var videoView: NovaCore.NovaNativeAdVideoView {
+    get
+    set
+  }
   @_Concurrency.MainActor @preconcurrency @objc dynamic public init()
   @objc deinit
 }
@@ -290,6 +298,21 @@ public enum NovaAppOpenAdLayout : Swift.String, Swift.Codable {
   case vertical
   case horizontalCancelTopRight
   case verticalCancelTopRight
+  public init?(rawValue: Swift.String)
+  public typealias RawValue = Swift.String
+  public var rawValue: Swift.String {
+    get
+  }
+}
+public enum NovaAppOpenAdClickableComponent : Swift.String {
+  case title
+  case body
+  case media
+  case advertiserName
+  case adTag
+  case cta
+  case icon
+  case all
   public init?(rawValue: Swift.String)
   public typealias RawValue = Swift.String
   public var rawValue: Swift.String {
@@ -2070,6 +2093,7 @@ final public class NovaJSBridgeHandlerMaster {
   final public let isVerticalImage: Swift.Bool?
   final public let isImageClickable: Swift.Bool?
   final public let closeCountDownTimeSecond: Swift.Int?
+  final public let clickableComponents: [Swift.String]?
   final public let iconUrl: Swift.String?
   final public var image: UIKit.UIImage?
   final public let appStoreId: Swift.String?
@@ -2218,6 +2242,9 @@ extension NovaCore.NovaCreativeType : Swift.RawRepresentable {}
 extension NovaCore.NovaAppOpenAdLayout : Swift.Equatable {}
 extension NovaCore.NovaAppOpenAdLayout : Swift.Hashable {}
 extension NovaCore.NovaAppOpenAdLayout : Swift.RawRepresentable {}
+extension NovaCore.NovaAppOpenAdClickableComponent : Swift.Equatable {}
+extension NovaCore.NovaAppOpenAdClickableComponent : Swift.Hashable {}
+extension NovaCore.NovaAppOpenAdClickableComponent : Swift.RawRepresentable {}
 extension NovaCore.NovaAdType : Swift.Equatable {}
 extension NovaCore.NovaAdType : Swift.Hashable {}
 extension NovaCore.NovaAdType : Swift.RawRepresentable {}
