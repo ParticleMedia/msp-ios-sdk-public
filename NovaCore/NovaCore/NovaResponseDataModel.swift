@@ -35,6 +35,8 @@ struct Creative: Codable {
     let adm: String?
     let layout: String?
     let closeCountDownTimeSecond: Int?
+    
+    let clickableComponents: [String]?
 
     let thirdPartyViewTrackingUrls: [String]?
     let thirdPartyImpressionTrackingUrls: [String]?
@@ -49,6 +51,17 @@ public enum NovaAppOpenAdLayout: String, Codable {
     case vertical = "vertical"
     case horizontalCancelTopRight = "horizontal_cancel_top_right"
     case verticalCancelTopRight = "vertical_cancel_top_right"
+}
+
+public enum NovaAppOpenAdClickableComponent: String {
+    case title = "title"
+    case body = "body"
+    case media = "media"
+    case advertiserName = "advertiser_name"
+    case adTag = "ad_tag"
+    case cta = "cta"
+    case icon = "icon"
+    case all = "all"
 }
 
 struct VideoItem: Codable {

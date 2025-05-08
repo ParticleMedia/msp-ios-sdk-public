@@ -746,6 +746,8 @@ extension NovaNativeAdVideoView: NovaVideoPlayerDelegate {
         if inLandingPage {
             videoProgressText.text = stringOf(timeInterval: Int(videoCurrent.truncatingRemainder(dividingBy: videoLength)))
             progressView.setProgress(Float(videoPlayer.getRealProgress().truncatingRemainder(dividingBy: 1.0)), animated: false)
+        } else if inInterstitial {
+            countText.isHidden = true
         } else if !countText.isHidden {
             countText.text = stringOf(timeInterval: Int(videoLength - videoCurrent))
             if videoCurrent > 5 {
