@@ -32,6 +32,8 @@ import UIKit
     public let isImageClickable: Bool?
     /// the count down time of the close button
     public let closeCountDownTimeSecond: Int?
+    /// decide which part of ad is clickable:
+    public let clickableComponents: [String]?
     
     public let iconUrl: String?
     
@@ -74,7 +76,8 @@ import UIKit
         encryptedAdToken: String,
         appStoreId: String?,
         novaAppOpenAdLayout: NovaAppOpenAdLayout?,
-        closeCountDownTimeSecond: Int?
+        closeCountDownTimeSecond: Int?,
+        clickableComponents: [String]?
     ) {
         self.creativeType = creativeType
         self.launchOption = launchOption
@@ -92,6 +95,7 @@ import UIKit
         self.appStoreId = appStoreId
         self.novaAppOpenAdLayout = novaAppOpenAdLayout
         self.closeCountDownTimeSecond = closeCountDownTimeSecond
+        self.clickableComponents = clickableComponents
 
         super.init(adUnitId: adUnitId,
                    requestId: requestId,
@@ -125,6 +129,7 @@ import UIKit
         appStoreId = try container.decodeIfPresent(String.self, forKey: .appStoreId)
         novaAppOpenAdLayout = try container.decodeIfPresent(NovaAppOpenAdLayout.self, forKey: .novaAppOpenAdLayout)
         closeCountDownTimeSecond = try container.decodeIfPresent(Int.self, forKey: .closeCountDownTimeSecond)
+        clickableComponents = try container.decodeIfPresent([String].self, forKey: .clickableComponents)
         let superDecoder = try container.superDecoder()
         try super.init(from: superDecoder)
     }
@@ -147,6 +152,7 @@ import UIKit
         case appStoreId
         case novaAppOpenAdLayout
         case closeCountDownTimeSecond
+        case clickableComponents
     }
 
     override public func encode(to encoder: Encoder) throws {
