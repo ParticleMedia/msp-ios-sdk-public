@@ -103,7 +103,8 @@ public enum NovaAdBuilder {
                 encryptedAdToken: adItem.encryptedAdToken,
                 appStoreId: adItem.creative.appStoreId,
                 novaAppOpenAdLayout: NovaAppOpenAdLayout(rawValue: adItem.creative.layout ?? ""),
-                closeCountDownTimeSecond: adItem.creative.closeCountDownTimeSecond)
+                closeCountDownTimeSecond: adItem.creative.closeCountDownTimeSecond,
+                clickableComponents: adItem.creative.clickableComponents)
         }
     }
 

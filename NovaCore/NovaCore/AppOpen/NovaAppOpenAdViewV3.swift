@@ -178,14 +178,8 @@ private extension NovaAppOpenAdViewV3 {
         closeButton.addTarget(self, action: #selector(didTapCloseButton), for: .touchUpInside)
         feedbackButton.addTarget(self, action: #selector(didTapReportButton), for: .touchUpInside)
         topRightCloseButtonArea.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(didTapCloseButton)))
-        if let novaAppOpenAdLayout = novaAppOpenAdLayout,
-           novaAppOpenAdLayout == .horizontalCancelTopRight {
-            self.isUserInteractionEnabled = true
-            self.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(didTapAd(sender:))))
-        }
 
-
-        let tappableViews = [mediaView, advertiserLabel, headlineLabel, bodyLabel, ctaButton]
+        let tappableViews = getTappableViews()
         for view in tappableViews {
             view.isUserInteractionEnabled = true
             view.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(didTapAd(sender:))))
@@ -203,18 +197,26 @@ private extension NovaAppOpenAdViewV3 {
         bodyLabel.translatesAutoresizingMaskIntoConstraints = false
         closeButton.translatesAutoresizingMaskIntoConstraints = false
         ctaButton.translatesAutoresizingMaskIntoConstraints = false
-        let mediaWidthAnchor = UIDevice.current.orientation == .portrait ? self.widthAnchor : self.heightAnchor
         NSLayoutConstraint.activate([
-            // adLabel constraints
             adLabel.topAnchor.constraint(equalTo: self.safeAreaLayoutGuide.topAnchor, constant: self.safeAreaInsets.top + 16),
             
-            // mediaView constraints
             mediaView.topAnchor.constraint(equalTo: adLabel.bottomAnchor, constant: 16),
             mediaView.centerXAnchor.constraint(equalTo: self.centerXAnchor),
-            mediaView.leadingAnchor.constraint(greaterThanOrEqualTo: self.leadingAnchor, constant: 16),
-            mediaView.trailingAnchor.constraint(lessThanOrEqualTo: self.trailingAnchor, constant: -16),
-            mediaView.widthAnchor.constraint(lessThanOrEqualTo: mediaWidthAnchor),
-            mediaView.heightAnchor.constraint(equalTo: mediaView.widthAnchor, multiplier: CGFloat(1.0 / AdsMediaConstants.defaultAspectRatio)),
+            mediaView.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 16),
+            mediaView.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -16),
+        ])
+        if UIDevice.current.userInterfaceIdiom == .pad,
+           (UIDevice.current.orientation == .landscapeLeft || UIDevice.current.orientation == .landscapeRight) {
+            NSLayoutConstraint.activate([
+                mediaView.heightAnchor.constraint(equalTo: self.heightAnchor, multiplier: CGFloat(1.0/3)),
+            ])
+        } else {
+            NSLayoutConstraint.activate([
+                mediaView.heightAnchor.constraint(equalTo: mediaView.widthAnchor, multiplier: CGFloat(1.0 / AdsMediaConstants.defaultAspectRatio))
+            ])
+        }
+        
+        NSLayoutConstraint.activate([
             adLabel.leadingAnchor.constraint(equalTo: mediaView.leadingAnchor),
             // advertiserLabel constraints
             advertiserLabel.topAnchor.constraint(equalTo: mediaView.bottomAnchor, constant: 24),
@@ -350,6 +352,40 @@ private extension NovaAppOpenAdViewV3 {
             durationInMs: Int((clickTime - startTime) * 1000),
             clickArea: sender.view?.accessibilityIdentifier
         )
+    }
+    
+    private func getTappableViews() -> [UIView] {
+        var tappableViews = [UIView]()
+        guard let clickableComponents = appOpenAd.clickableComponents, !clickableComponents.isEmpty else {
+            tappableViews = [mediaView, advertiserLabel, headlineLabel, bodyLabel, ctaButton]
+            return tappableViews
+        }
+        
+        for componentString in clickableComponents {
+            switch componentString {
+            case NovaAppOpenAdClickableComponent.title.rawValue:
+                tappableViews.append(headlineLabel)
+            case NovaAppOpenAdClickableComponent.body.rawValue:
+                tappableViews.append(bodyLabel)
+            case NovaAppOpenAdClickableComponent.media.rawValue:
+                tappableViews.append(mediaView)
+            case NovaAppOpenAdClickableComponent.advertiserName.rawValue:
+                tappableViews.append(advertiserLabel)
+            case NovaAppOpenAdClickableComponent.adTag.rawValue:
+                tappableViews.append(adLabel)
+            case NovaAppOpenAdClickableComponent.cta.rawValue:
+                tappableViews.append(ctaButton)
+            case NovaAppOpenAdClickableComponent.icon.rawValue:
+                break
+            case NovaAppOpenAdClickableComponent.all.rawValue:
+                tappableViews = [mediaView, advertiserLabel, headlineLabel, bodyLabel, ctaButton, self]
+            default:
+                break
+            }
+            
+        }
+        
+        return tappableViews
     }
 }
 

@@ -68,6 +68,7 @@ public class NovaAppOpenVerticalVideoAdView: UIView {
         label.numberOfLines = 1
         label.translatesAutoresizingMaskIntoConstraints = false
         label.accessibilityIdentifier = "advertiser"
+        label.isUserInteractionEnabled = true
         return label
     }()
 
@@ -79,6 +80,7 @@ public class NovaAppOpenVerticalVideoAdView: UIView {
         label.translatesAutoresizingMaskIntoConstraints = false
         label.setContentCompressionResistancePriority(.required, for: .vertical)
         label.accessibilityIdentifier = "body"
+        label.isUserInteractionEnabled = true
         return label
     }()
 
@@ -254,19 +256,44 @@ private extension NovaAppOpenVerticalVideoAdView {
         let totalButtonBottomMargin = LayoutMetrics.bottomButtonBottomMargin + LayoutMetrics.progressBarBottomMargin
         // Activate native constraints
         if UIDevice.current.userInterfaceIdiom == .pad {
+            if let novaAppOpenAdLayout = self.novaAppOpenAdLayout,
+               novaAppOpenAdLayout == .verticalCancelTopRight {
+                closeButton.isHidden = true
+                NSLayoutConstraint.activate([
+                    // ctaButton constraints
+                    ctaButton.leadingAnchor.constraint(equalTo: nativeAdView.centerXAnchor, constant: LayoutMetrics.horizontalMargin),
+                    ctaButton.trailingAnchor.constraint(equalTo: nativeAdView.trailingAnchor, constant: -LayoutMetrics.horizontalMargin),
+                    ctaButton.bottomAnchor.constraint(equalTo: nativeAdView.bottomAnchor, constant: -totalButtonBottomMargin),
+                    ctaButton.heightAnchor.constraint(equalToConstant: LayoutMetrics.bottomButtonHeight)
+                ])
+                
+                addSubview(topRightCloseButtonArea)
+                topRightCloseButtonArea.translatesAutoresizingMaskIntoConstraints = false
+                topRightCloseButton.translatesAutoresizingMaskIntoConstraints = false
+                topRightCloseButtonArea.addSubview(topRightCloseButton)
+                NSLayoutConstraint.activate([
+                    topRightCloseButtonArea.topAnchor.constraint(equalTo: self.safeAreaLayoutGuide.topAnchor, constant: self.safeAreaInsets.top + 4),
+                    topRightCloseButtonArea.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -4),
+                    topRightCloseButton.centerXAnchor.constraint(equalTo: topRightCloseButtonArea.centerXAnchor),
+                    topRightCloseButton.centerYAnchor.constraint(equalTo: topRightCloseButtonArea.centerYAnchor)
+                ])
+                
+            } else {
+                NSLayoutConstraint.activate([
+                    // ctaButton constraints
+                    ctaButton.trailingAnchor.constraint(equalTo: nativeAdView.trailingAnchor, constant: -LayoutMetrics.horizontalMargin),
+                    ctaButton.bottomAnchor.constraint(equalTo: nativeAdView.bottomAnchor, constant: -totalButtonBottomMargin),
+                    ctaButton.heightAnchor.constraint(equalToConstant: LayoutMetrics.bottomButtonHeight),
+                    
+                    // closeButton constraints
+                    closeButton.leadingAnchor.constraint(equalTo: nativeAdView.centerXAnchor, constant: LayoutMetrics.horizontalMargin),
+                    closeButton.trailingAnchor.constraint(equalTo: ctaButton.leadingAnchor, constant: -LayoutMetrics.horizontalMargin),
+                    closeButton.bottomAnchor.constraint(equalTo: nativeAdView.bottomAnchor, constant: -totalButtonBottomMargin),
+                    closeButton.heightAnchor.constraint(equalToConstant: LayoutMetrics.bottomButtonHeight),
+                    closeButton.widthAnchor.constraint(equalTo: ctaButton.widthAnchor)])
+            }
+            
             NSLayoutConstraint.activate([
-                // ctaButton constraints
-                ctaButton.trailingAnchor.constraint(equalTo: nativeAdView.trailingAnchor, constant: -LayoutMetrics.horizontalMargin),
-                ctaButton.bottomAnchor.constraint(equalTo: nativeAdView.bottomAnchor, constant: -totalButtonBottomMargin),
-                ctaButton.heightAnchor.constraint(equalToConstant: LayoutMetrics.bottomButtonHeight),
-                
-                // closeButton constraints
-                closeButton.leadingAnchor.constraint(equalTo: nativeAdView.centerXAnchor, constant: LayoutMetrics.horizontalMargin),
-                closeButton.trailingAnchor.constraint(equalTo: ctaButton.leadingAnchor, constant: -LayoutMetrics.horizontalMargin),
-                closeButton.bottomAnchor.constraint(equalTo: nativeAdView.bottomAnchor, constant: -totalButtonBottomMargin),
-                closeButton.heightAnchor.constraint(equalToConstant: LayoutMetrics.bottomButtonHeight),
-                closeButton.widthAnchor.constraint(equalTo: ctaButton.widthAnchor),
-                
                 // nativeAdView constraints
                 nativeAdView.topAnchor.constraint(equalTo: self.topAnchor),
                 nativeAdView.leadingAnchor.constraint(equalTo: self.leadingAnchor),
@@ -281,12 +308,12 @@ private extension NovaAppOpenVerticalVideoAdView {
                 
                 // adTagLabel constraints
                 adTagLabel.leadingAnchor.constraint(equalTo: nativeAdView.leadingAnchor, constant: LayoutMetrics.horizontalMargin),
-                adTagLabel.trailingAnchor.constraint(lessThanOrEqualTo: closeButton.leadingAnchor, constant: -LayoutMetrics.horizontalMargin),
+                adTagLabel.trailingAnchor.constraint(lessThanOrEqualTo: nativeAdView.centerXAnchor, constant: -LayoutMetrics.horizontalMargin),
                 adTagLabel.bottomAnchor.constraint(equalTo: nativeAdView.bottomAnchor, constant: -totalButtonBottomMargin),
                 
                 // bodyLabel constraints
                 bodyLabel.leadingAnchor.constraint(equalTo: nativeAdView.leadingAnchor, constant: LayoutMetrics.horizontalMargin),
-                bodyLabel.trailingAnchor.constraint(equalTo: closeButton.leadingAnchor, constant: -LayoutMetrics.horizontalMargin),
+                bodyLabel.trailingAnchor.constraint(equalTo: nativeAdView.centerXAnchor, constant: -LayoutMetrics.horizontalMargin),
                 bodyLabel.bottomAnchor.constraint(equalTo: adTagLabel.topAnchor, constant: -8.0),
                 
                 // advertiserInfoStackView constraints
@@ -413,17 +440,9 @@ private extension NovaAppOpenVerticalVideoAdView {
         closeButton.addTarget(self, action: #selector(didTapCloseButton), for: .touchUpInside)
         feedbackButton.addTarget(self, action: #selector(didTapReportButton), for: .touchUpInside)
         topRightCloseButtonArea.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(didTapCloseButton)))
-        let tappableViews = [bottomShadow,
-                             ctaButton,
-                             adTagLabel,
-                             advertiserInfoStackView,
-                             bodyLabel,
-                             adTagLabel]
+        let tappableViews = getTappableViews()
         for view in tappableViews {
             view.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(didTapAd(sender:))))
-        }
-        if openAd.videoInfo?.isVideoClickable ?? false {
-            mediaView?.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(didTapAd(sender:))))
         }
     }
 
@@ -586,4 +605,50 @@ private extension NovaAppOpenVerticalVideoAdView {
         mediaView?.videoView.didTabMuteButton()
         NovaAdVideoMetricReporter.logVideoMute(encryptedAdToken: appOpenAd.encryptedAdToken, isMute: !muted)
     }
+    
+    private func getTappableViews() -> [UIView] {
+        var tappableViews = [UIView]()
+        guard let clickableComponents = appOpenAd.clickableComponents, !clickableComponents.isEmpty else {
+            tappableViews = [bottomShadow, ctaButton, adTagLabel, advertiserInfoStackView, bodyLabel, adTagLabel, advertiserLabel, advertiserAvatar]
+            if appOpenAd.videoInfo?.isVideoClickable ?? false,
+               let mediaView = mediaView {
+                tappableViews.append(mediaView)
+            }
+            
+            return tappableViews
+        }
+        
+        for componentString in clickableComponents {
+            switch componentString {
+            case NovaAppOpenAdClickableComponent.title.rawValue:
+                break
+            case NovaAppOpenAdClickableComponent.body.rawValue:
+                tappableViews.append(bodyLabel)
+            case NovaAppOpenAdClickableComponent.media.rawValue:
+                if let mediaView = self.mediaView {
+                    tappableViews.append(mediaView)
+                }
+            case NovaAppOpenAdClickableComponent.advertiserName.rawValue:
+                tappableViews.append(advertiserLabel)
+            case NovaAppOpenAdClickableComponent.adTag.rawValue:
+                tappableViews.append(adTagLabel)
+            case NovaAppOpenAdClickableComponent.cta.rawValue:
+                tappableViews.append(ctaButton)
+            case NovaAppOpenAdClickableComponent.icon.rawValue:
+                tappableViews.append(advertiserAvatar)
+            case NovaAppOpenAdClickableComponent.all.rawValue:
+                tappableViews = [bottomShadow, ctaButton, adTagLabel, advertiserInfoStackView, bodyLabel, adTagLabel, advertiserLabel, advertiserAvatar]
+                if let mediaView = self.mediaView {
+                    tappableViews.append(mediaView)
+                }
+                tappableViews.append(self)
+            default:
+                break
+            }
+            
+        }
+        
+        return tappableViews
+    }
+ 
 }

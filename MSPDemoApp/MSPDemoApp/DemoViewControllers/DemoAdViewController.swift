@@ -147,7 +147,7 @@ class DemoAdViewController: UIViewController {
         } else if adType == .novaInterstitialVerticalVideo {
             testParams["test"] = "{\"ad_network\":\"msp_nova\",\"test_ad\":true,\"creative_type\":\"video\",\"is_vertical\":true}"
         } else if adType == .novaInterstitialHighEngagement {
-            testParams["test"] = "{\"ad_network\":\"msp_nova\",\"test_ad\":true,\"creative_type\":\"video\",\"is_vertical\":true,\"layout\": \"cancel_top_right\"}"
+            testParams["test"] = "{\"ad_network\":\"msp_nova\",\"test_ad\":true,\"creative_type\":\"video\",\"is_vertical\":false,\"layout\": \"cancel_top_right\"}"
         } else if adType == .prebidBanner {
             testParams["test"] = "{\"ad_network\":\"pubmatic\",\"test_ad\":true}"
         } else if adType == .googleBanner || adType == .googleInterstitial || adType == .googleNative {
