@@ -7,4 +7,5 @@
 
 public struct MSPConstants {
     public static let GOOGLE_AD_MULTI_CONTENT_URLS = "google_ads_multi_content_urls"
+    public static let USER_ID = "user_id"
 }
