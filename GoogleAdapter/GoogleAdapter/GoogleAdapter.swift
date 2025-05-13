@@ -105,6 +105,7 @@ import PrebidMobile
     private weak var bannerAd: BannerAd?
     private weak var nativeAd: MSPiOSCore.NativeAd?
     private weak var interstitialAd: MSPiOSCore.InterstitialAd?
+    public var adUnitId: String?
     
     public var nativeAdItem: GoogleMobileAds.NativeAd?
     
@@ -138,6 +139,8 @@ import PrebidMobile
             self.adMetricReporter?.logAdResult(placementId: adRequest.placementId ?? "", ad: nil, fill: false, isFromCache: false)
             return
         }
+        
+        self.adUnitId = adUnitId
         
         switch adType {
         case "banner":
@@ -313,7 +316,11 @@ extension GoogleAdapter : GoogleMobileAds.BannerViewDelegate  {
             self.adListener?.onAdImpression(ad: googleAd)
             if let adRequest = adRequest,
                let bidResponse = bidResponse {
-                self.adMetricReporter?.logAdImpression(ad: googleAd, adRequest: adRequest, bidResponse: bidResponse, params: nil)
+                var params = [String:Any?]()
+                if let adUnitId = self.adUnitId {
+                    params["adUnitId"] = adUnitId
+                }
+                self.adMetricReporter?.logAdImpression(ad: googleAd, adRequest: adRequest, bidResponse: bidResponse, params: params)
             }
         }
     }
@@ -373,7 +380,11 @@ extension GoogleAdapter: GoogleMobileAds.NativeAdDelegate  {
             self.adListener?.onAdImpression(ad: nativeAd)
             if let adRequest = adRequest,
                let bidResponse = bidResponse {
-                self.adMetricReporter?.logAdImpression(ad: nativeAd, adRequest: adRequest, bidResponse: bidResponse, params: nil)
+                var params = [String:Any?]()
+                if let adUnitId = self.adUnitId {
+                    params["adUnitId"] = adUnitId
+                }
+                self.adMetricReporter?.logAdImpression(ad: nativeAd, adRequest: adRequest, bidResponse: bidResponse, params: params)
             }
         }
     }
@@ -392,7 +403,11 @@ extension GoogleAdapter: FullScreenContentDelegate {
             self.adListener?.onAdImpression(ad: interstitialAd)
             if let adRequest = adRequest,
                let bidResponse = bidResponse {
-                self.adMetricReporter?.logAdImpression(ad: interstitialAd, adRequest: adRequest, bidResponse: bidResponse, params: nil)
+                var params = [String:Any?]()
+                if let adUnitId = self.adUnitId {
+                    params["adUnitId"] = adUnitId
+                }
+                self.adMetricReporter?.logAdImpression(ad: interstitialAd, adRequest: adRequest, bidResponse: bidResponse, params: params)
             }
         }
     }
