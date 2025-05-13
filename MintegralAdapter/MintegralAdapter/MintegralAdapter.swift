@@ -15,6 +15,10 @@ import MTGSDKBidding
 
 
 @objc public class MintegralAdapter : NSObject, AdNetworkAdapter {
+    public func getSDKVersion() -> String {
+        return ""
+    }
+    
 
     public weak var adListener: AdListener?
     public var adRequest: AdRequest?

@@ -13,6 +13,10 @@ import OpenWrapSDK
 
 
 @objc public class PubmaticAdapter : NSObject, AdNetworkAdapter {
+    public func getSDKVersion() -> String {
+        return "4.0.0"
+    }
+    
 
     public weak var adListener: AdListener?
     public var adRequest: AdRequest?
