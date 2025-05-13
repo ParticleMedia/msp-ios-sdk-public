@@ -319,7 +319,11 @@ extension NovaAdapter: NovaNativeAdDelegate {
             self.adListener?.onAdImpression(ad: nativeAd)
             if let adRequest = adRequest,
                let bidResponse = bidResponse {
-                self.adMetricReporter?.logAdImpression(ad: nativeAd, adRequest: adRequest, bidResponse: bidResponse, params: nil)
+                var params = [String:Any?]()
+                if let adUnitId = self.adUnitId {
+                    params["adUnitId"] = adUnitId
+                }
+                self.adMetricReporter?.logAdImpression(ad: nativeAd, adRequest: adRequest, bidResponse: bidResponse, params: params)
             }
         }
     }
@@ -358,7 +362,11 @@ extension NovaAdapter: NovaAppOpenAdDelegate {
             self.adListener?.onAdImpression(ad: interstitialAd)
             if let adRequest = adRequest,
                let bidResponse = bidResponse {
-                self.adMetricReporter?.logAdImpression(ad: interstitialAd, adRequest: adRequest, bidResponse: bidResponse, params: nil)
+                var params = [String:Any?]()
+                if let adUnitId = self.adUnitId {
+                    params["adUnitId"] = adUnitId
+                }
+                self.adMetricReporter?.logAdImpression(ad: interstitialAd, adRequest: adRequest, bidResponse: bidResponse, params: params)
             }
         }
     }
