@@ -20,4 +20,6 @@ public protocol MSPNativeAdContainer: UIView {
     
     func getMedia() -> UIView?
     
+    func getIcon() -> UIImageView?
+    
 }
