@@ -11,6 +11,10 @@ import PrebidMobile
 import InMobiSDK
 
 @objc public class InmobiAdapter : NSObject, AdNetworkAdapter {
+    public func getSDKVersion() -> String {
+        "10.8.0"
+    }
+    
     // to do: check if click call back correct, check if ad price is correct
     public weak var adListener: AdListener?
     public var adRequest: AdRequest?

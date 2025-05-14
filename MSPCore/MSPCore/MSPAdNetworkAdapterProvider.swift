@@ -50,6 +50,10 @@ public class MSPAdNetworkAdapterProvider: AdNetworkAdapterProvider {
 }
 
 public class AdNetworkAdapterStandalone: AdNetworkAdapter {
+    public func getSDKVersion() -> String {
+        return ""
+    }
+    
     public func sendHideAdEvent(reason: String, adScreenShot: Data?, fullScreenShot: Data?) {
         
     }

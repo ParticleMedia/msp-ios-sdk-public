@@ -12,6 +12,10 @@ import PrebidMobile
 import MobileFuseSDK
 
 @objc public class MobilefuseAdapter : NSObject, AdNetworkAdapter {
+    public func getSDKVersion() -> String {
+        return "1.8.2"
+    }
+    
 
     public weak var adListener: AdListener?
     public var adRequest: AdRequest?

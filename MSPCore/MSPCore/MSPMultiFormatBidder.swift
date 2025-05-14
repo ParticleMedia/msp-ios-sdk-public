@@ -22,7 +22,22 @@ public class MSPMultiFormatBidder: MSPiOSCore.Bidder {
         self.adListener = adListener
         self.adRequest = adRequest
         self.bidLoader = prebidBidLoader
+        adRequest.customParams["adn_sdk_versions"] = getSDKVersions()
         prebidBidLoader.loadBid(placementId: bidderPlacementId, adParams: adRequest.customParams, bidListener: self, adRequest: adRequest)
+    }
+    
+    private func getSDKVersions() -> String {
+        let versions: [String: String] = [
+            "google": MSP.shared.adNetworkAdapterProvider.getAdNetworkAdapter(adNetwork: .google)?.getSDKVersion() ?? "",
+            "facebook": MSP.shared.adNetworkAdapterProvider.getAdNetworkAdapter(adNetwork: .facebook)?.getSDKVersion() ?? "",
+            "nova": MSP.shared.adNetworkAdapterProvider.getAdNetworkAdapter(adNetwork: .nova)?.getSDKVersion() ?? "" // Your method returning a version string
+        ]
+
+        if let jsonData = try? JSONSerialization.data(withJSONObject: versions, options: []),
+           let jsonString = String(data: jsonData, encoding: .utf8) {
+            return jsonString
+        }
+        return ""
     }
 }
 
