@@ -103,7 +103,7 @@ import PrebidMobile
         eventModel.tsMs = UInt64(Date().timeIntervalSince1970 * 1000)
         if bidResponse is BidResponse,
            let mBidResponse = bidResponse as? BidResponse {
-            eventModel.requestContext = generateRequestContext(request: adRequest, bidResponse: mBidResponse)
+            eventModel.requestContext = generateRequestContext(request: adRequest, bidResponse: mBidResponse, params: params)
             eventModel.ad = generateAdContext(ad: ad, request: adRequest, bidResponse: mBidResponse)
         } else {
             eventModel.requestContext = generateRequestContext(request: adRequest, params: params)
@@ -225,11 +225,11 @@ import PrebidMobile
         }
     }
     
-    func generateRequestContext(request: AdRequest, bidResponse: BidResponse) -> Com_Newsbreak_Monetization_Common_RequestContext {
+    func generateRequestContext(request: AdRequest, bidResponse: BidResponse, params: [String : Any?]?) -> Com_Newsbreak_Monetization_Common_RequestContext {
         var eventModel = Com_Newsbreak_Monetization_Common_RequestContext()
         eventModel.tsMs = UInt64(Date().timeIntervalSince1970 * 1000)
         eventModel.bidRequest = generateBidRequest(request: request, bidResponse: bidResponse)
-        eventModel.ext = generateRequestContextExt(request: request, bidResponse: bidResponse)
+        eventModel.ext = generateRequestContextExt(request: request, bidResponse: bidResponse, params: params)
         
         return eventModel
     }
@@ -245,6 +245,10 @@ import PrebidMobile
         if let params = params,
            let bidderPlacementId = params["bidderPlacementId"] as? String {
             eventModel.ext.placementID = bidderPlacementId
+        } else if let params = params,
+                  let adUnitId = params["adUnitId"] as? String,
+                  !adUnitId.isEmpty {
+            eventModel.ext.placementID = adUnitId
         } else {
             eventModel.ext.placementID = ""
         }
@@ -261,10 +265,16 @@ import PrebidMobile
         return eventModel
     }
     
-    func generateRequestContextExt(request: AdRequest, bidResponse: BidResponse) -> Com_Newsbreak_Monetization_Common_RequestContextExt {
+    func generateRequestContextExt(request: AdRequest, bidResponse: BidResponse, params: [String : Any?]?) -> Com_Newsbreak_Monetization_Common_RequestContextExt {
         var eventModel = Com_Newsbreak_Monetization_Common_RequestContextExt()
         eventModel.source = request.placementId
-        eventModel.placementID = bidResponse.adUnitId ?? request.placementId
+        if let params = params,
+           let adUnitId = params["adUnitId"] as? String,
+           !adUnitId.isEmpty {
+            eventModel.placementID = adUnitId
+        } else {
+            eventModel.placementID = bidResponse.adUnitId ?? request.placementId
+        }
         eventModel.userID = UserDefaults.standard.string(forKey: "msp_user_id") ?? ""
         
         return eventModel
