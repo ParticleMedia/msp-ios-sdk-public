@@ -53,6 +53,12 @@ import Foundation
                 ])
             }
             
+            if let iconView = nativeAdContainer.getIcon(),
+               let image = fbNativeAdItem.iconImage {
+                //gadNativeAdView.iconView = iconView
+                iconView.image = image
+            }
+            
             NSLayoutConstraint.activate([
                 //novaNativeAdView.centerYAnchor.constraint(equalTo: nativeAdView.centerYAnchor),
                 nativeAdContainer.leadingAnchor.constraint(equalTo: nativeAdView.leadingAnchor),
@@ -66,7 +72,7 @@ import Foundation
             let fbSubViews = [nativeAdContainer.getTitle(), nativeAdContainer.getbody(), nativeAdContainer.getAdvertiser(), nativeAdContainer.getCallToAction(), mediaView]
             fbNativeAdItem.registerView(forInteraction: nativeAdView,
                                         mediaView: mediaView,
-                                        iconImageView: nil,
+                                        iconImageView: nativeAdContainer.getIcon(),
                                         viewController: nil,
                                         clickableViews: fbSubViews.compactMap{ $0 })
         }
