@@ -10,6 +10,10 @@ import MSPiOSCore
 import IronSource
 
 @objc public class UnityAdapter : NSObject, AdNetworkAdapter {
+    public func getSDKVersion() -> String {
+        return "8.6.0.0"
+    }
+    
     public weak var adListener: AdListener?
     public var adRequest: AdRequest?
     public weak var auctionBidListener: AuctionBidListener?
