@@ -130,6 +130,18 @@ public class NovaAdapter: AdNetworkAdapter {
                     ])
                 }
                 
+                if let iconView = nativeAdContainer.getIcon(),
+                   let imageUrlStr = novaNativeAdItem.iconUrlStr,
+                   let url = URL(string: imageUrlStr) {
+                    //gadNativeAdView.iconView = iconView
+                    
+                    NovaUIUtils.setImage(from: url, to: iconView) {
+                        
+                    }
+                    
+                }
+                
+                
                 nativeAdContainer.translatesAutoresizingMaskIntoConstraints = false
                 
                 novaNativeAdView.addSubview(nativeAdContainer)
