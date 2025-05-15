@@ -196,6 +196,100 @@
                 "accessorKind": "get"
               }
             ]
+          },
+          {
+            "kind": "Var",
+            "name": "AD_INFO_OPENRTB_NURL",
+            "printedName": "AD_INFO_OPENRTB_NURL",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "String",
+                "printedName": "Swift.String",
+                "usr": "s:SS"
+              }
+            ],
+            "declKind": "Var",
+            "usr": "s:10MSPiOSCore12MSPConstantsV20AD_INFO_OPENRTB_NURLSSvpZ",
+            "mangledName": "$s10MSPiOSCore12MSPConstantsV20AD_INFO_OPENRTB_NURLSSvpZ",
+            "moduleName": "MSPiOSCore",
+            "static": true,
+            "declAttributes": [
+              "HasInitialValue",
+              "HasStorage",
+              "AccessControl"
+            ],
+            "isLet": true,
+            "hasStorage": true,
+            "accessors": [
+              {
+                "kind": "Accessor",
+                "name": "Get",
+                "printedName": "Get()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "String",
+                    "printedName": "Swift.String",
+                    "usr": "s:SS"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:10MSPiOSCore12MSPConstantsV20AD_INFO_OPENRTB_NURLSSvgZ",
+                "mangledName": "$s10MSPiOSCore12MSPConstantsV20AD_INFO_OPENRTB_NURLSSvgZ",
+                "moduleName": "MSPiOSCore",
+                "static": true,
+                "implicit": true,
+                "accessorKind": "get"
+              }
+            ]
+          },
+          {
+            "kind": "Var",
+            "name": "AD_INFO_OPENRTB_BURL",
+            "printedName": "AD_INFO_OPENRTB_BURL",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "String",
+                "printedName": "Swift.String",
+                "usr": "s:SS"
+              }
+            ],
+            "declKind": "Var",
+            "usr": "s:10MSPiOSCore12MSPConstantsV20AD_INFO_OPENRTB_BURLSSvpZ",
+            "mangledName": "$s10MSPiOSCore12MSPConstantsV20AD_INFO_OPENRTB_BURLSSvpZ",
+            "moduleName": "MSPiOSCore",
+            "static": true,
+            "declAttributes": [
+              "HasInitialValue",
+              "HasStorage",
+              "AccessControl"
+            ],
+            "isLet": true,
+            "hasStorage": true,
+            "accessors": [
+              {
+                "kind": "Accessor",
+                "name": "Get",
+                "printedName": "Get()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "String",
+                    "printedName": "Swift.String",
+                    "usr": "s:SS"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "s:10MSPiOSCore12MSPConstantsV20AD_INFO_OPENRTB_BURLSSvgZ",
+                "mangledName": "$s10MSPiOSCore12MSPConstantsV20AD_INFO_OPENRTB_BURLSSvgZ",
+                "moduleName": "MSPiOSCore",
+                "static": true,
+                "implicit": true,
+                "accessorKind": "get"
+              }
+            ]
           }
         ],
         "declKind": "Struct",
@@ -10368,6 +10462,20 @@
       "value": "\"networkCreativeId\""
     },
     {
+      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-core\/MSPiOSCore\/MSPiOSCore\/api\/MSPConstants.swift",
+      "kind": "StringLiteral",
+      "offset": 409,
+      "length": 6,
+      "value": "\"nurl\""
+    },
+    {
+      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-core\/MSPiOSCore\/MSPiOSCore\/api\/MSPConstants.swift",
+      "kind": "StringLiteral",
+      "offset": 461,
+      "length": 6,
+      "value": "\"burl\""
+    },
+    {
       "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-core\/MSPiOSCore\/MSPiOSCore\/adapter\/AdapterInitStatus.swift",
       "kind": "StringLiteral",
       "offset": 171,
@@ -10435,28 +10543,28 @@
       "kind": "StringLiteral",
       "offset": 155,
       "length": 8,
-      "value": "\"Google\""
+      "value": "\"google\""
     },
     {
       "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-core\/MSPiOSCore\/MSPiOSCore\/adapter\/AdNetwork.swift",
       "kind": "StringLiteral",
       "offset": 184,
       "length": 10,
-      "value": "\"Facebook\""
+      "value": "\"facebook\""
     },
     {
       "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-core\/MSPiOSCore\/MSPiOSCore\/adapter\/AdNetwork.swift",
       "kind": "StringLiteral",
       "offset": 213,
       "length": 8,
-      "value": "\"Prebid\""
+      "value": "\"prebid\""
     },
     {
       "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-core\/MSPiOSCore\/MSPiOSCore\/adapter\/AdNetwork.swift",
       "kind": "StringLiteral",
       "offset": 238,
       "length": 6,
-      "value": "\"Nova\""
+      "value": "\"nova\""
     },
     {
       "filePath": "\/Users\/huanzhizhang\/Huanzhi\/msp-ios-core\/MSPiOSCore\/MSPiOSCore\/api\/Geo.swift",

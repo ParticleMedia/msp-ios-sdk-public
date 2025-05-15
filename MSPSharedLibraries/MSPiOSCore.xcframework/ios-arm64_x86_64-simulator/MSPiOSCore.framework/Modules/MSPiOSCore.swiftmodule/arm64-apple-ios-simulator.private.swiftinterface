@@ -13,6 +13,8 @@ public struct MSPConstants {
   public static let AD_INFO_NETWORK_NAME: Swift.String
   public static let AD_INFO_NETWORK_AD_UNIT_ID: Swift.String
   public static let AD_INFO_NETWORK_CREATIVE_ID: Swift.String
+  public static let AD_INFO_OPENRTB_NURL: Swift.String
+  public static let AD_INFO_OPENRTB_BURL: Swift.String
 }
 public protocol LoadAdParameters : MSPiOSCore.AdapterParameters {
   func getAdUnitId() -> Swift.String
