@@ -120,6 +120,11 @@ extension PrebidAdapter: BannerViewDelegate {
             }
             prebidAd.adInfo[MSPConstants.AD_INFO_NETWORK_NAME] = self.bidResponse?.winningBidSeat
             prebidAd.adInfo[MSPConstants.AD_INFO_NETWORK_CREATIVE_ID] = self.bidResponse?.winningBid?.bid.crid
+            if let burl = self.bidResponse?.winningBid?.bid.burl {
+                prebidAd.adInfo[MSPConstants.AD_INFO_OPENRTB_BURL] = self.replaceMacroAuctionPrice(url: burl, price: self.priceInDollar)
+            }
+            prebidAd.adInfo[MSPConstants.AD_INFO_OPENRTB_BURL] = self.bidResponse?.winningBid?.bid.burl
+            prebidAd.adInfo[MSPConstants.AD_INFO_OPENRTB_NURL] = self.bidResponse?.winningBid?.bid.nurl
             if let adListener = self.adListener,
                let adRequest = self.adRequest {
                 handleAdLoaded(ad: prebidAd, listener: adListener, adRequest: adRequest)
@@ -143,6 +148,13 @@ extension PrebidAdapter: BannerViewDelegate {
         if let prebidAd = self.bannerAd {
             adListener?.onAdClick(ad: prebidAd)
         }
+    }
+    
+    private func replaceMacroAuctionPrice(url: String?, price: Double?) -> String? {
+        guard let price = price else {
+            return url
+        }
+        return url?.replacingOccurrences(of: "${AUCTION_PRICE}", with: String(price))
     }
 }
 
