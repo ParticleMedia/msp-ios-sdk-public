@@ -46,9 +46,7 @@ import PrebidMobile
                let image = gadNativeAdItem.icon?.image {
                 gadNativeAdView.iconView = iconView
                 iconView.image = image
-            }
-            
-            
+            } 
             
             if let mediaContainer = nativeAdContainer.getMedia(),
                let mediaView =  nativeAd.mediaView as? GoogleMobileAds.MediaView {

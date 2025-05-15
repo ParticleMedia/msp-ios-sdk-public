@@ -69,7 +69,7 @@ import Foundation
                 nativeAdContainer.heightAnchor.constraint(lessThanOrEqualTo: nativeAdView.heightAnchor),
             ])
             
-            let fbSubViews = [nativeAdContainer.getTitle(), nativeAdContainer.getbody(), nativeAdContainer.getAdvertiser(), nativeAdContainer.getCallToAction(), mediaView]
+            let fbSubViews = [nativeAdContainer.getTitle(), nativeAdContainer.getbody(), nativeAdContainer.getAdvertiser(), nativeAdContainer.getCallToAction(), nativeAdContainer.getIcon(), mediaView]
             fbNativeAdItem.registerView(forInteraction: nativeAdView,
                                         mediaView: mediaView,
                                         iconImageView: nativeAdContainer.getIcon(),
