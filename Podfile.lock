@@ -1,23 +1,23 @@
 PODS:
-  - FacebookAdapter (0.0.109):
+  - FacebookAdapter (0.0.116):
     - FBAudienceNetwork (~> 6.15)
-    - MSPSharedLibraries (= 0.0.109)
+    - MSPSharedLibraries (= 0.0.116)
   - FBAudienceNetwork (6.17.1)
   - Google-Mobile-Ads-SDK (12.4.0):
     - GoogleUserMessagingPlatform (>= 1.1)
-  - GoogleAdapter (0.0.109):
+  - GoogleAdapter (0.0.116):
     - Google-Mobile-Ads-SDK (~> 12.0)
-    - MSPSharedLibraries (= 0.0.109)
+    - MSPSharedLibraries (= 0.0.116)
   - GoogleUserMessagingPlatform (3.0.0)
-  - MSPCore (0.0.109):
-    - MSPSharedLibraries (= 0.0.109)
-    - PrebidAdapter (= 0.0.109)
+  - MSPCore (0.0.116):
+    - MSPSharedLibraries (= 0.0.116)
+    - PrebidAdapter (= 0.0.116)
     - SwiftProtobuf (= 1.21.0)
-  - MSPSharedLibraries (0.0.109)
-  - NovaAdapter (0.0.114):
-    - MSPSharedLibraries (= 0.0.109)
-  - PrebidAdapter (0.0.109):
-    - MSPSharedLibraries (= 0.0.109)
+  - MSPSharedLibraries (0.0.116)
+  - NovaAdapter (0.0.116):
+    - MSPSharedLibraries (= 0.0.116)
+  - PrebidAdapter (0.0.116):
+    - MSPSharedLibraries (= 0.0.116)
   - SwiftProtobuf (1.21.0)
 
 DEPENDENCIES:
@@ -51,15 +51,15 @@ EXTERNAL SOURCES:
     :path: "./"
 
 SPEC CHECKSUMS:
-  FacebookAdapter: 86ebe43dff8b1b1159ff35f4f8c5fcdda6fa2a77
+  FacebookAdapter: 2d3793b591e74dd4bba0980bc5699237784af023
   FBAudienceNetwork: eb3ffbf2b35df25e21e163657044ffef66616a40
   Google-Mobile-Ads-SDK: db00a3836f288f94e52114f312b56fe066699d82
-  GoogleAdapter: 3f7e89a29ff5eafb489193b5d776ff956a2cbc8a
+  GoogleAdapter: 357bed971046d2a76f6cfa62d3b5ec1014b19eb5
   GoogleUserMessagingPlatform: f8d0cdad3ca835406755d0a69aa634f00e76d576
-  MSPCore: acb759fc4c3aa4019d7455a5a89d6acb26206985
-  MSPSharedLibraries: f595cebc1deff5c8554c3e6801b3e85339ae7f97
-  NovaAdapter: a290a66eb53bd62b3370b892f22daeec26ba5ef6
-  PrebidAdapter: d710e6a90ed5910205ad028d7db97b6015272712
+  MSPCore: e624082255e7e0fa6bcea7b02cfb948c5349e204
+  MSPSharedLibraries: 5d25c7965477550580bc1eca955d14f40be0a4ab
+  NovaAdapter: 06ca58abd04a94a7215d418bdd332a0977ba2fd1
+  PrebidAdapter: 391ab4e91c6a170adb347c973e46dea92732ef84
   SwiftProtobuf: afced68785854575756db965e9da52bbf3dc45e7
 
 PODFILE CHECKSUM: e3615574a7d5d17d19d5ff457963274d4e114980

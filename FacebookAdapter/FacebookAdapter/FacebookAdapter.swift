@@ -8,6 +8,10 @@ import PrebidMobile
 import Foundation
 
 @objc public class FacebookAdapter : NSObject, AdNetworkAdapter {
+    public func getSDKVersion() -> String {
+        return "6.15"
+    }
+    
     public func setAdMetricReporter(adMetricReporter: any MSPiOSCore.AdMetricReporter) {
         self.adMetricReporter = adMetricReporter
     }

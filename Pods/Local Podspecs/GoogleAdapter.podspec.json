@@ -1,6 +1,6 @@
 {
   "name": "GoogleAdapter",
-  "version": "0.0.109",
+  "version": "0.0.116",
   "summary": "an adapter for Google SDK",
   "description": "an adapter for Google SDK for MSP S2S",
   "homepage": "https://github.com/aimsp/msp-ios-sdk/GoogleAdapter",
@@ -10,7 +10,7 @@
   },
   "source": {
     "git": "https://github.com/ParticleMedia/msp-ios-sdk-public.git",
-    "tag": "0.0.109"
+    "tag": "0.0.116"
   },
   "platforms": {
     "ios": "13.0"
@@ -22,7 +22,7 @@
       "~> 12.0"
     ],
     "MSPSharedLibraries": [
-      "0.0.109"
+      "0.0.116"
     ]
   },
   "pod_target_xcconfig": {

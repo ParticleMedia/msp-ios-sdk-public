@@ -1,3 +1,14 @@
+## 05/15/2025 (Non-SDK bidding)
+1. add nurl and burl into adInfo
+2. add experiment bucket info in the MES log
+3. add SDK version info into ad request
+- `pod 'MSPSharedLibraries', '0.0.116'`
+- `pod 'PrebidAdatper', '0.0.116'`
+- `pod 'GoogleAdatper', '0.0.116'`
+- `pod 'FacebookAdatper', '0.0.116'`
+- `pod 'NovaAdatper', '0.0.116'`
+- `pod 'MSPCore', '0.0.116'`
+
 ## 05/08/2025 (Non-SDK bidding)
 1. Nova interstitial ad vertical UI improve for ipad
 2. Nova interstitial horizontal ad add video controller for video media

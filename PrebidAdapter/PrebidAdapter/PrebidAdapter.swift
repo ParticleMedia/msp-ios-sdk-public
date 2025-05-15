@@ -5,6 +5,10 @@ import MSPiOSCore
 import UIKit
 
 @objc public class PrebidAdapter : NSObject, AdNetworkAdapter {
+    public func getSDKVersion() -> String {
+        return ""
+    }
+    
     public func setAdMetricReporter(adMetricReporter: any MSPiOSCore.AdMetricReporter) {
         self.adMetricReporter = adMetricReporter
     }
