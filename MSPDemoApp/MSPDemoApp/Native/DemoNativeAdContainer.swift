@@ -130,7 +130,7 @@ public class DemoNativeAdContainer: UIView, MSPNativeAdContainer {
             bodyLabel.leadingAnchor.constraint(equalTo: icon.trailingAnchor, constant: Constants.paddingSmall),
             bodyLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 4),
             bodyLabelTrailingConstraint,
-                      
+            
             advertiserLabel.leadingAnchor.constraint(
                 equalTo: self.leadingAnchor,
                 constant: Constants.paddingSmall),
