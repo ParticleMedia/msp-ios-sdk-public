@@ -1,6 +1,7 @@
 // swift-interface-format-version: 1.0
-// swift-compiler-version: Apple Swift version 5.10 (swiftlang-5.10.0.13 clang-1500.3.9.4)
+// swift-compiler-version: Apple Swift version 6.0 effective-5.10 (swiftlang-6.0.0.9.10 clang-1600.0.26.2)
 // swift-module-flags: -target x86_64-apple-ios10.0-simulator -enable-objc-interop -enable-library-evolution -swift-version 5 -enforce-exclusivity=checked -O -enable-bare-slash-regex -module-name PrebidMobile
+// swift-module-flags-ignorable: -no-verify-emitted-module-interface
 import CoreLocation
 import DeveloperToolsSupport
 import Foundation
@@ -653,7 +654,7 @@ public typealias NetworkReachableBlock = (PrebidMobile.Reachability?) -> Swift.V
   @objc deinit
 }
 extension UIKit.UIView {
-  @_Concurrency.MainActor(unsafe) public func allSubViewsOf<T>(type: T.Type) -> [T] where T : UIKit.UIView
+  @_Concurrency.MainActor @preconcurrency public func allSubViewsOf<T>(type: T.Type) -> [T] where T : UIKit.UIView
 }
 @objc public enum Position : Swift.Int {
   case undefined = -1
@@ -703,6 +704,9 @@ extension UIKit.UIView {
     get
   }
   @objc public var rawResponse: PrebidMobile.RawBidResponse<PrebidMobile.PBMORTBBidResponseExt, Foundation.NSDictionary, PrebidMobile.PBMORTBBidExt>? {
+    get
+  }
+  @objc public var rawResponseInJson: PrebidMobile.JsonDictionary? {
     get
   }
   @objc convenience public init(adUnitId: Swift.String?, targetingInfo: [Swift.String : Swift.String]?)
@@ -938,79 +942,79 @@ extension UIKit.UIView {
   @objc override dynamic public init()
   @objc deinit
 }
-@objc @_Concurrency.MainActor(unsafe) open class BannerView : UIKit.UIView, PrebidMobile.BannerAdLoaderDelegate, PrebidMobile.AdLoadFlowControllerDelegate, PrebidMobile.BannerEventInteractionDelegate, PrebidMobile.DisplayViewInteractionDelegate {
-  @_Concurrency.MainActor(unsafe) @objc final public let adUnitConfig: PrebidMobile.AdUnitConfig
-  @_Concurrency.MainActor(unsafe) @objc weak public var eventHandler: (any PrebidMobile.BannerEventHandler)?
-  @objc @_Concurrency.MainActor(unsafe) public var bannerParameters: PrebidMobile.BannerParameters {
+@objc @_Concurrency.MainActor @preconcurrency open class BannerView : UIKit.UIView, PrebidMobile.BannerAdLoaderDelegate, PrebidMobile.AdLoadFlowControllerDelegate, PrebidMobile.BannerEventInteractionDelegate, PrebidMobile.DisplayViewInteractionDelegate {
+  @_Concurrency.MainActor @preconcurrency @objc final public let adUnitConfig: PrebidMobile.AdUnitConfig
+  @_Concurrency.MainActor @preconcurrency @objc weak public var eventHandler: (any PrebidMobile.BannerEventHandler)?
+  @objc @_Concurrency.MainActor @preconcurrency public var bannerParameters: PrebidMobile.BannerParameters {
     @objc get
   }
-  @objc @_Concurrency.MainActor(unsafe) public var videoParameters: PrebidMobile.VideoParameters {
+  @objc @_Concurrency.MainActor @preconcurrency public var videoParameters: PrebidMobile.VideoParameters {
     @objc get
   }
-  @objc @_Concurrency.MainActor(unsafe) public var lastBidResponse: PrebidMobile.BidResponse? {
+  @objc @_Concurrency.MainActor @preconcurrency public var lastBidResponse: PrebidMobile.BidResponse? {
     @objc get
   }
-  @objc @_Concurrency.MainActor(unsafe) public var configID: Swift.String {
+  @objc @_Concurrency.MainActor @preconcurrency public var configID: Swift.String {
     @objc get
   }
-  @objc @_Concurrency.MainActor(unsafe) public var refreshInterval: Foundation.TimeInterval {
-    @objc get
-    @objc set
-  }
-  @objc @_Concurrency.MainActor(unsafe) public var additionalSizes: [CoreFoundation.CGSize]? {
+  @objc @_Concurrency.MainActor @preconcurrency public var refreshInterval: Foundation.TimeInterval {
     @objc get
     @objc set
   }
-  @objc @_Concurrency.MainActor(unsafe) public var adFormat: PrebidMobile.AdFormat {
+  @objc @_Concurrency.MainActor @preconcurrency public var additionalSizes: [CoreFoundation.CGSize]? {
     @objc get
     @objc set
   }
-  @objc @_Concurrency.MainActor(unsafe) public var adPosition: PrebidMobile.AdPosition {
+  @objc @_Concurrency.MainActor @preconcurrency public var adFormat: PrebidMobile.AdFormat {
     @objc get
     @objc set
   }
-  @objc @_Concurrency.MainActor(unsafe) weak public var delegate: (any PrebidMobile.BannerViewDelegate)?
-  @_Concurrency.MainActor(unsafe) public var appEventHandler: (([Swift.String : Any]) -> Swift.Void)?
-  @objc @_Concurrency.MainActor(unsafe) public init(frame: CoreFoundation.CGRect, configID: Swift.String, adSize: CoreFoundation.CGSize, eventHandler: any PrebidMobile.BannerEventHandler)
-  @objc @_Concurrency.MainActor(unsafe) convenience public init(configID: Swift.String, eventHandler: any PrebidMobile.BannerEventHandler)
-  @objc @_Concurrency.MainActor(unsafe) convenience public init(frame: CoreFoundation.CGRect, configID: Swift.String, adSize: CoreFoundation.CGSize)
+  @objc @_Concurrency.MainActor @preconcurrency public var adPosition: PrebidMobile.AdPosition {
+    @objc get
+    @objc set
+  }
+  @objc @_Concurrency.MainActor @preconcurrency weak public var delegate: (any PrebidMobile.BannerViewDelegate)?
+  @_Concurrency.MainActor @preconcurrency public var appEventHandler: (([Swift.String : Any]) -> Swift.Void)?
+  @objc @_Concurrency.MainActor @preconcurrency public init(frame: CoreFoundation.CGRect, configID: Swift.String, adSize: CoreFoundation.CGSize, eventHandler: any PrebidMobile.BannerEventHandler)
+  @objc @_Concurrency.MainActor @preconcurrency convenience public init(configID: Swift.String, eventHandler: any PrebidMobile.BannerEventHandler)
+  @objc @_Concurrency.MainActor @preconcurrency convenience public init(frame: CoreFoundation.CGRect, configID: Swift.String, adSize: CoreFoundation.CGSize)
   @objc deinit
-  @_Concurrency.MainActor(unsafe) @objc required dynamic public init?(coder: Foundation.NSCoder)
-  @objc @_Concurrency.MainActor(unsafe) public func loadAd()
-  @objc @_Concurrency.MainActor(unsafe) public func setStoredAuctionResponse(storedAuction: Swift.String)
-  @objc @_Concurrency.MainActor(unsafe) public func stopRefresh()
-  @objc @_Concurrency.MainActor(unsafe) public func loadAdContent()
-  @objc @_Concurrency.MainActor(unsafe) public func notifyLoseBidding()
-  @objc @_Concurrency.MainActor(unsafe) public func notifyThirdPartyViewDidLoad()
-  @objc @_Concurrency.MainActor(unsafe) public func handleBidResponse(response: PrebidMobile.BidResponse)
-  @objc @_Concurrency.MainActor(unsafe) public func addContextData(_ data: Swift.String, forKey key: Swift.String)
-  @objc @_Concurrency.MainActor(unsafe) public func updateContextData(_ data: Swift.Set<Swift.String>, forKey key: Swift.String)
-  @objc @_Concurrency.MainActor(unsafe) public func removeContextDate(forKey key: Swift.String)
-  @objc @_Concurrency.MainActor(unsafe) public func clearContextData()
-  @objc @_Concurrency.MainActor(unsafe) public func setAppContent(_ appContent: PrebidMobile.PBMORTBAppContent)
-  @objc @_Concurrency.MainActor(unsafe) public func clearAppContent()
-  @objc @_Concurrency.MainActor(unsafe) public func addAppContentData(_ dataObjects: [PrebidMobile.PBMORTBContentData])
-  @objc @_Concurrency.MainActor(unsafe) public func removeAppContentDataObject(_ dataObject: PrebidMobile.PBMORTBContentData)
-  @objc @_Concurrency.MainActor(unsafe) public func clearAppContentDataObjects()
-  @objc @_Concurrency.MainActor(unsafe) public func addUserData(_ userDataObjects: [PrebidMobile.PBMORTBContentData])
-  @objc @_Concurrency.MainActor(unsafe) public func removeUserData(_ userDataObject: PrebidMobile.PBMORTBContentData)
-  @objc @_Concurrency.MainActor(unsafe) public func clearUserData()
-  @_Concurrency.MainActor(unsafe) @objc public func trackImpression(forDisplayView: PrebidMobile.PBMDisplayView)
-  @_Concurrency.MainActor(unsafe) @objc public func viewControllerForModalPresentation(fromDisplayView: PrebidMobile.PBMDisplayView) -> UIKit.UIViewController?
-  @_Concurrency.MainActor(unsafe) @objc public func didLeaveApp(from displayView: PrebidMobile.PBMDisplayView)
-  @_Concurrency.MainActor(unsafe) @objc public func willPresentModal(from displayView: PrebidMobile.PBMDisplayView, url: Swift.String?)
-  @_Concurrency.MainActor(unsafe) @objc public func didDismissModal(from displayView: PrebidMobile.PBMDisplayView)
-  @_Concurrency.MainActor(unsafe) @objc public func bannerAdLoader(_ bannerAdLoader: PrebidMobile.PBMBannerAdLoader, loadedAdView adView: UIKit.UIView, adSize: CoreFoundation.CGSize)
-  @_Concurrency.MainActor(unsafe) @objc public func bannerAdLoader(_ bannerAdLoader: PrebidMobile.PBMBannerAdLoader, createdDisplayView displayView: PrebidMobile.PBMDisplayView)
-  @_Concurrency.MainActor(unsafe) @objc public func adLoadFlowController(_ adLoadFlowController: PrebidMobile.PBMAdLoadFlowController, failedWithError error: (any Swift.Error)?)
-  @_Concurrency.MainActor(unsafe) @objc public func adLoadFlowControllerWillSendBidRequest(_ adLoadFlowController: PrebidMobile.PBMAdLoadFlowController)
-  @_Concurrency.MainActor(unsafe) @objc public func adLoadFlowControllerWillRequestPrimaryAd(_ adLoadFlowController: PrebidMobile.PBMAdLoadFlowController)
-  @_Concurrency.MainActor(unsafe) @objc public func adLoadFlowControllerShouldContinue(_ adLoadFlowController: PrebidMobile.PBMAdLoadFlowController) -> Swift.Bool
-  @_Concurrency.MainActor(unsafe) @objc public func adLoadFlowControllerDidReceiveBidResponse(_ adLoadFlowController: PrebidMobile.PBMAdLoadFlowController)
-  @_Concurrency.MainActor(unsafe) @objc public func willPresentModal()
-  @_Concurrency.MainActor(unsafe) @objc public func didDismissModal()
-  @_Concurrency.MainActor(unsafe) @objc public func willLeaveApp()
-  @_Concurrency.MainActor(unsafe) @objc public var viewControllerForPresentingModal: UIKit.UIViewController? {
+  @_Concurrency.MainActor @preconcurrency @objc required dynamic public init?(coder: Foundation.NSCoder)
+  @objc @_Concurrency.MainActor @preconcurrency public func loadAd()
+  @objc @_Concurrency.MainActor @preconcurrency public func setStoredAuctionResponse(storedAuction: Swift.String)
+  @objc @_Concurrency.MainActor @preconcurrency public func stopRefresh()
+  @objc @_Concurrency.MainActor @preconcurrency public func loadAdContent()
+  @objc @_Concurrency.MainActor @preconcurrency public func notifyLoseBidding()
+  @objc @_Concurrency.MainActor @preconcurrency public func notifyThirdPartyViewDidLoad()
+  @objc @_Concurrency.MainActor @preconcurrency public func handleBidResponse(response: PrebidMobile.BidResponse)
+  @objc @_Concurrency.MainActor @preconcurrency public func addContextData(_ data: Swift.String, forKey key: Swift.String)
+  @objc @_Concurrency.MainActor @preconcurrency public func updateContextData(_ data: Swift.Set<Swift.String>, forKey key: Swift.String)
+  @objc @_Concurrency.MainActor @preconcurrency public func removeContextDate(forKey key: Swift.String)
+  @objc @_Concurrency.MainActor @preconcurrency public func clearContextData()
+  @objc @_Concurrency.MainActor @preconcurrency public func setAppContent(_ appContent: PrebidMobile.PBMORTBAppContent)
+  @objc @_Concurrency.MainActor @preconcurrency public func clearAppContent()
+  @objc @_Concurrency.MainActor @preconcurrency public func addAppContentData(_ dataObjects: [PrebidMobile.PBMORTBContentData])
+  @objc @_Concurrency.MainActor @preconcurrency public func removeAppContentDataObject(_ dataObject: PrebidMobile.PBMORTBContentData)
+  @objc @_Concurrency.MainActor @preconcurrency public func clearAppContentDataObjects()
+  @objc @_Concurrency.MainActor @preconcurrency public func addUserData(_ userDataObjects: [PrebidMobile.PBMORTBContentData])
+  @objc @_Concurrency.MainActor @preconcurrency public func removeUserData(_ userDataObject: PrebidMobile.PBMORTBContentData)
+  @objc @_Concurrency.MainActor @preconcurrency public func clearUserData()
+  @_Concurrency.MainActor @preconcurrency @objc public func trackImpression(forDisplayView: PrebidMobile.PBMDisplayView)
+  @_Concurrency.MainActor @preconcurrency @objc public func viewControllerForModalPresentation(fromDisplayView: PrebidMobile.PBMDisplayView) -> UIKit.UIViewController?
+  @_Concurrency.MainActor @preconcurrency @objc public func didLeaveApp(from displayView: PrebidMobile.PBMDisplayView)
+  @_Concurrency.MainActor @preconcurrency @objc public func willPresentModal(from displayView: PrebidMobile.PBMDisplayView, url: Swift.String?)
+  @_Concurrency.MainActor @preconcurrency @objc public func didDismissModal(from displayView: PrebidMobile.PBMDisplayView)
+  @_Concurrency.MainActor @preconcurrency @objc public func bannerAdLoader(_ bannerAdLoader: PrebidMobile.PBMBannerAdLoader, loadedAdView adView: UIKit.UIView, adSize: CoreFoundation.CGSize)
+  @_Concurrency.MainActor @preconcurrency @objc public func bannerAdLoader(_ bannerAdLoader: PrebidMobile.PBMBannerAdLoader, createdDisplayView displayView: PrebidMobile.PBMDisplayView)
+  @_Concurrency.MainActor @preconcurrency @objc public func adLoadFlowController(_ adLoadFlowController: PrebidMobile.PBMAdLoadFlowController, failedWithError error: (any Swift.Error)?)
+  @_Concurrency.MainActor @preconcurrency @objc public func adLoadFlowControllerWillSendBidRequest(_ adLoadFlowController: PrebidMobile.PBMAdLoadFlowController)
+  @_Concurrency.MainActor @preconcurrency @objc public func adLoadFlowControllerWillRequestPrimaryAd(_ adLoadFlowController: PrebidMobile.PBMAdLoadFlowController)
+  @_Concurrency.MainActor @preconcurrency @objc public func adLoadFlowControllerShouldContinue(_ adLoadFlowController: PrebidMobile.PBMAdLoadFlowController) -> Swift.Bool
+  @_Concurrency.MainActor @preconcurrency @objc public func adLoadFlowControllerDidReceiveBidResponse(_ adLoadFlowController: PrebidMobile.PBMAdLoadFlowController)
+  @_Concurrency.MainActor @preconcurrency @objc public func willPresentModal()
+  @_Concurrency.MainActor @preconcurrency @objc public func didDismissModal()
+  @_Concurrency.MainActor @preconcurrency @objc public func willLeaveApp()
+  @_Concurrency.MainActor @preconcurrency @objc public var viewControllerForPresentingModal: UIKit.UIViewController? {
     @objc get
   }
 }
@@ -1777,6 +1781,9 @@ public typealias AdRequestCallback = (PrebidMobile.ServerResponse?, (any Swift.E
   @objc public var adm: Swift.String? {
     get
   }
+  @objc public var burl: Swift.String? {
+    get
+  }
   @objc public var size: CoreFoundation.CGSize {
     @objc get
   }
@@ -1806,6 +1813,7 @@ public typealias AdRequestCallback = (PrebidMobile.ServerResponse?, (any Swift.E
   }
   @objc public init(bid: PrebidMobile.PBMORTBBid<PrebidMobile.PBMORTBBidExt>)
   @objc public func notifyAuctionLoss(lossCode: Swift.String)
+  @objc public func notifyBillingWin()
   @objc deinit
 }
 @objc @_inheritsConvenienceInitializers @objcMembers public class AdConfiguration : PrebidMobile.AutoRefreshCountConfig {
