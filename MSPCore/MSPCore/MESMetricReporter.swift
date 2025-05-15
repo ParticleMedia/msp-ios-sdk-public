@@ -195,6 +195,13 @@ import PrebidMobile
         eventModel.placementID = bidResponse.adUnitId ?? request.placementId
         eventModel.userID = UserDefaults.standard.string(forKey: "msp_user_id") ?? ""
         
+        if let rawResponseJson = bidResponse.rawResponseInJson,
+           let extDict = rawResponseJson["ext"] as? [String:Any],
+           let bucketInfoDict = extDict["msp_exp_bucket_info"] as? [String:Any],
+           let bucketList = bucketInfoDict["exp_bucket_list"] as? [String] {
+            eventModel.buckets = bucketList
+        }
+        
         return eventModel
     }
     
