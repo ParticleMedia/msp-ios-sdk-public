@@ -3940,6 +3940,28 @@
             "protocolReq": true,
             "reqNewWitnessTableEntry": true,
             "funcSelfKind": "NonMutating"
+          },
+          {
+            "kind": "Function",
+            "name": "getSDKVersion",
+            "printedName": "getSDKVersion()",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "String",
+                "printedName": "Swift.String",
+                "usr": "s:SS"
+              }
+            ],
+            "declKind": "Func",
+            "usr": "s:10MSPiOSCore16AdNetworkAdapterP13getSDKVersionSSyF",
+            "mangledName": "$s10MSPiOSCore16AdNetworkAdapterP13getSDKVersionSSyF",
+            "moduleName": "MSPiOSCore",
+            "genericSig": "<τ_0_0 where τ_0_0 : MSPiOSCore.AdNetworkAdapter>",
+            "sugared_genericSig": "<Self where Self : MSPiOSCore.AdNetworkAdapter>",
+            "protocolReq": true,
+            "reqNewWitnessTableEntry": true,
+            "funcSelfKind": "NonMutating"
           }
         ],
         "declKind": "Protocol",

@@ -1,6 +1,6 @@
 {
   "name": "NovaAdapter",
-  "version": "0.0.114",
+  "version": "0.0.116",
   "summary": "an adapter for Google SDK",
   "description": "an adapter for Google SDK for MSP S2S",
   "homepage": "https://github.com/aimsp/msp-ios-sdk/GoogleAdapter",
@@ -10,7 +10,7 @@
   },
   "source": {
     "git": "https://github.com/ParticleMedia/msp-ios-sdk-public.git",
-    "tag": "0.0.114"
+    "tag": "0.0.116"
   },
   "platforms": {
     "ios": "13.0"
@@ -19,7 +19,7 @@
   "exclude_files": "Classes/Exclude",
   "dependencies": {
     "MSPSharedLibraries": [
-      "0.0.109"
+      "0.0.116"
     ]
   },
   "vendored_frameworks": "NovaAdapter/NovaCore.xcframework",

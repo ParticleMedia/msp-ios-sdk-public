@@ -306,7 +306,7 @@ public class MSPAdLoader: NSObject, BidListener {
             adListener.onAdLoaded(placementId: placementId)
             return
         }
-        
+        adRequest.customParams["adn_sdk_versions"] = getSDKVersions()
         self.bidLoader = MSP.shared.bidLoaderProvider.getBidLoader()
         bidLoader?.loadBid(placementId: placementId, adParams: adRequest.customParams, bidListener: self, adRequest: adRequest)
     }
@@ -328,5 +328,19 @@ public class MSPAdLoader: NSObject, BidListener {
     
     public func onError(msg: String) {
         adListener?.onError(msg: msg)
+    }
+    
+    private func getSDKVersions() -> String {
+        let versions: [String: String] = [
+            "google": MSP.shared.adNetworkAdapterProvider.getAdNetworkAdapter(adNetwork: .google)?.getSDKVersion() ?? "",
+            "facebook": MSP.shared.adNetworkAdapterProvider.getAdNetworkAdapter(adNetwork: .facebook)?.getSDKVersion() ?? "",
+            "nova": MSP.shared.adNetworkAdapterProvider.getAdNetworkAdapter(adNetwork: .nova)?.getSDKVersion() ?? "" // Your method returning a version string
+        ]
+
+        if let jsonData = try? JSONSerialization.data(withJSONObject: versions, options: []),
+           let jsonString = String(data: jsonData, encoding: .utf8) {
+            return jsonString
+        }
+        return ""
     }
 }
