@@ -6,6 +6,10 @@ import NovaCore
 import UIKit
 
 public class NovaAdapter: AdNetworkAdapter {
+    public func getSDKVersion() -> String {
+        return "0.0.116"
+    }
+    
     public func setAdMetricReporter(adMetricReporter: any MSPiOSCore.AdMetricReporter) {
         self.adMetricReporter = adMetricReporter
     }

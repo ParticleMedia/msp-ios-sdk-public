@@ -114,6 +114,7 @@ public protocol AdNetworkAdapter : AnyObject {
   func destroyAd()
   func prepareViewForInteraction(nativeAd: MSPiOSCore.NativeAd, nativeAdView: Any)
   func setAdMetricReporter(adMetricReporter: any MSPiOSCore.AdMetricReporter)
+  func getSDKVersion() -> Swift.String
 }
 public protocol GoogleQueryInfoFetcher : AnyObject {
   func fetch(completeListener: any MSPiOSCore.GoogleQueryInfoListener, adRequest: MSPiOSCore.AdRequest)

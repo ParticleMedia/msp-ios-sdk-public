@@ -1,6 +1,7 @@
 ## 05/15/2025 (Non-SDK bidding)
 1. add nurl and burl into adInfo
 2. add experiment bucket info in the MES log
+3. add SDK version info into ad request
 - `pod 'MSPSharedLibraries', '0.0.116'`
 - `pod 'PrebidAdatper', '0.0.116'`
 - `pod 'GoogleAdatper', '0.0.116'`
