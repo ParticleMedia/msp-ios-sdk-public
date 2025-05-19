@@ -213,12 +213,7 @@ extension DemoAdViewController: AdListener {
         if let creativeId = ad.adInfo[MSPConstants.AD_INFO_NETWORK_CREATIVE_ID] {
             print("creative id: \(creativeId)")
         }
-            /*
-            [MSPConstants.AD_INFO_PRICE] = self.priceInDollar
-            interstitialAd.adInfo[MSPConstants.AD_INFO_NETWORK_NAME] = AdNetwork.inmobi.rawValue
-            interstitialAd.adInfo[MSPConstants.AD_INFO_NETWORK_AD_UNIT_ID] = self.bidderPlacementId
-            interstitialAd.adInfo[MSPConstants.AD_INFO_NETWORK_CREATIVE_ID] = interstitial.creativeId
-             */
+        
         if ad is MSPiOSCore.NativeAd,
            let nativeAd = ad as? MSPiOSCore.NativeAd {
             
