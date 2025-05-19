@@ -117,6 +117,7 @@ public class NovaAdapter: AdNetworkAdapter {
                 novaNativeAdView.bodyLabel = nativeAdContainer.getbody()
                 novaNativeAdView.advertiserLabel = nativeAdContainer.getAdvertiser()
                 novaNativeAdView.callToActionButton = nativeAdContainer.getCallToAction()
+                novaNativeAdView.icon = nativeAdContainer.getIcon()
                 novaNativeAdView.prepareViewForInteraction(nativeAd: novaNativeAdItem)
                 
                 if let mediaContainer = nativeAdContainer.getMedia() {
@@ -130,11 +131,24 @@ public class NovaAdapter: AdNetworkAdapter {
                     ])
                 }
                 
+                if let iconView = nativeAdContainer.getIcon(),
+                   let imageUrlStr = novaNativeAdItem.iconUrlStr,
+                   let url = URL(string: imageUrlStr) {
+                    NovaUIUtils.setImage(from: url, to: iconView) {
+                        
+                    }
+                }
+                
                 nativeAdContainer.translatesAutoresizingMaskIntoConstraints = false
                 
                 novaNativeAdView.addSubview(nativeAdContainer)
                 novaNativeAdView.tappableViews = [UIView]()
-                novaNativeAdView.tappableViews?.append(mediaView)
+                let novaSubViews = [novaNativeAdView.titleLabel, novaNativeAdView.bodyLabel, novaNativeAdView.advertiserLabel, novaNativeAdView.callToActionButton, novaNativeAdView.icon, mediaView]
+                for view in novaSubViews {
+                    if let view = view {
+                        novaNativeAdView.tappableViews?.append(view)
+                    }
+                }
                 novaNativeAdView.tappableViews?.append(nativeAdContainer)
                 if let button = novaNativeAdView.callToActionButton {
                     novaNativeAdView.tappableViews?.append(button)
@@ -200,6 +214,7 @@ public class NovaAdapter: AdNetworkAdapter {
                         return view
                     }()
                     nativeAd.mediaView = mediaView
+                    nativeAd.icon = nativeAdItem.iconUrlStr
                     nativeAd.priceInDollar = self.priceInDollar
                     nativeAd.adInfo["price"] = self.priceInDollar
                     nativeAd.adInfo["isVideo"] = (nativeAdItem.creativeType == .nativeVideo)

@@ -14,6 +14,7 @@ open class NativeAd: MSPAd {
     public var callToAction: String
     public var optionsView: Any?
     public var mediaView: Any?
+    public var icon: Any?
     public var mediaController: MediaController?
     public var nativeAdView: Any?
     
@@ -24,6 +25,7 @@ open class NativeAd: MSPAd {
         self.callToAction = builder.callToAction
         self.optionsView = builder.optionsView
         self.mediaView = builder.mediaView
+        self.icon = builder.icon
         self.mediaController = builder.mediaController
         super.init(adNetworkAdapter: adNetworkAdapter)
     }
@@ -52,6 +54,7 @@ open class NativeAd: MSPAd {
         public var callToAction: String = ""
         public var optionsView: Any?
         public var mediaView: Any?
+        public var icon: Any?
         public var mediaController: MediaController?
         
         public init(adNetworkAdapter: AdNetworkAdapter) {
@@ -91,6 +94,12 @@ open class NativeAd: MSPAd {
         @discardableResult
         public func mediaView(_ mediaView: Any) -> Builder {
             self.mediaView = mediaView
+            return self
+        }
+        
+        @discardableResult
+        public func icon(_ icon: Any) -> Builder {
+            self.icon = icon
             return self
         }
         

@@ -13,6 +13,7 @@ public class NativeAdView: UIView {
     private var callToActionButton: UIButton?
     private var optionView: UIView?
     private var mediaView: UIView?
+    private var icon: UIImageView?
     
     public var mediaController: MediaController?
     
@@ -46,6 +47,7 @@ public class NativeAdView: UIView {
         self.bodyLabel = nativeAdContainer.getbody()
         self.advertiserLabel = nativeAdContainer.getAdvertiser()
         self.callToActionButton = nativeAdContainer.getCallToAction()
+        self.icon = nativeAdContainer.getIcon()
         
         self.titleLabel?.text = nativeAd.title
         self.bodyLabel?.text = nativeAd.body

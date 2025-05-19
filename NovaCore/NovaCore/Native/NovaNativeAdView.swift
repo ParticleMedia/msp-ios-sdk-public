@@ -7,6 +7,7 @@ open class NovaNativeAdView: UIView {
     public var bodyLabel: UILabel?
     public var advertiserLabel: UILabel?
     public var callToActionButton: UIButton?
+    public var icon: UIImageView?
     //public let mediaView: NovaNativeAdMediaView = {
     //    let view = NovaNativeAdMediaView()
     //    view.accessibilityIdentifier = "media"

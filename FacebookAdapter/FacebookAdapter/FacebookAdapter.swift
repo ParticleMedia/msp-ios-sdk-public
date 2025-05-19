@@ -53,6 +53,12 @@ import Foundation
                 ])
             }
             
+            if let iconView = nativeAdContainer.getIcon(),
+               let image = fbNativeAdItem.iconImage {
+                //gadNativeAdView.iconView = iconView
+                iconView.image = image
+            }
+            
             NSLayoutConstraint.activate([
                 //novaNativeAdView.centerYAnchor.constraint(equalTo: nativeAdView.centerYAnchor),
                 nativeAdContainer.leadingAnchor.constraint(equalTo: nativeAdView.leadingAnchor),
@@ -63,10 +69,10 @@ import Foundation
                 nativeAdContainer.heightAnchor.constraint(lessThanOrEqualTo: nativeAdView.heightAnchor),
             ])
             
-            let fbSubViews = [nativeAdContainer.getTitle(), nativeAdContainer.getbody(), nativeAdContainer.getAdvertiser(), nativeAdContainer.getCallToAction(), mediaView]
+            let fbSubViews = [nativeAdContainer.getTitle(), nativeAdContainer.getbody(), nativeAdContainer.getAdvertiser(), nativeAdContainer.getCallToAction(), nativeAdContainer.getIcon(), mediaView]
             fbNativeAdItem.registerView(forInteraction: nativeAdView,
                                         mediaView: mediaView,
-                                        iconImageView: nil,
+                                        iconImageView: nativeAdContainer.getIcon(),
                                         viewController: nil,
                                         clickableViews: fbSubViews.compactMap{ $0 })
         }
@@ -260,6 +266,7 @@ extension FacebookAdapter: FBNativeAdDelegate {
             facebookNativeAd.priceInDollar = self.priceInDollar
             facebookNativeAd.nativeAdItem = nativeAd
             facebookNativeAd.mediaView = mediaView
+            facebookNativeAd.icon = nativeAd.iconImage
             facebookNativeAd.adInfo["price"] = self.priceInDollar
             self.nativeAdItem = nativeAd
             if let adListener = self.adListener,
