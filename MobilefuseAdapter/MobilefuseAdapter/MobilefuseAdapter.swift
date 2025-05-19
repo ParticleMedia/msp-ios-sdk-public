@@ -33,7 +33,7 @@ import MobileFuseSDK
 
     private var adMetricReporter: AdMetricReporter?
 
-    private var price: Double?
+    private var priceInDollar: Double?
 
     public func loadAdCreative(bidResponse: Any, auctionBidListener: any MSPiOSCore.AuctionBidListener, adListener: any MSPiOSCore.AdListener, context: Any, adRequest: MSPiOSCore.AdRequest, bidderPlacementId: String, bidderFormat: MSPiOSCore.AdFormat?, params: [String:String]?) {
         DispatchQueue.main.async {
@@ -44,9 +44,9 @@ import MobileFuseSDK
             self.bidderPlacementId = bidderPlacementId
 
             if let priceStr = params?["price"] {
-                self.price = Double(priceStr) ?? 0.0
+                self.priceInDollar = Double(priceStr) ?? 0.0
             } else {
-                self.price = 0.0
+                self.priceInDollar = 0.0
             }
             
             let adFormat = bidderFormat ?? adRequest.adFormat
@@ -194,7 +194,9 @@ extension MobilefuseAdapter: IMFAdCallbackReceiver {
                 MSPLogger.shared.info(message: "[Adapter: Mobilefuse] successfully loaded Mobilefuse Banner ad")
                 let bannerAd = MobilefuseBannerAd(adView: bannerView, adNetworkAdapter: self)
                 self.bannerAd = bannerAd
-                bannerAd.adInfo["price"] = self.price
+                bannerAd.adInfo[MSPConstants.AD_INFO_PRICE] = self.priceInDollar
+                bannerAd.adInfo[MSPConstants.AD_INFO_NETWORK_NAME] = AdNetwork.mobilefuse.rawValue
+                bannerAd.adInfo[MSPConstants.AD_INFO_NETWORK_AD_UNIT_ID] = self.bidderPlacementId
                 bannerAd.show()
                 self.handleAdLoaded(ad: bannerAd, auctionBidListener: auctionBidListener, bidderPlacementId: self.bidderPlacementId ?? "mobilefuse_placement_id")
             } else if ad is MFInterstitialAd,
@@ -204,7 +206,9 @@ extension MobilefuseAdapter: IMFAdCallbackReceiver {
                 interstitialAd.interstitialAdItem = interstitialAdItem
                 interstitialAd.rootViewController = self.adListener?.getRootViewController()
                 self.interstitialAd = interstitialAd
-                interstitialAd.adInfo["price"] = self.price
+                interstitialAd.adInfo[MSPConstants.AD_INFO_PRICE] = self.priceInDollar
+                interstitialAd.adInfo[MSPConstants.AD_INFO_NETWORK_NAME] = AdNetwork.mobilefuse.rawValue
+                interstitialAd.adInfo[MSPConstants.AD_INFO_NETWORK_AD_UNIT_ID] = self.bidderPlacementId
                 self.handleAdLoaded(ad: interstitialAd, auctionBidListener: auctionBidListener, bidderPlacementId: self.bidderPlacementId ?? "mobilefuse_placement_id")
             } else if ad is MFNativeAd,
                       let nativeAdItem = self.nativeAdItem {
@@ -218,7 +222,9 @@ extension MobilefuseAdapter: IMFAdCallbackReceiver {
                                                                     callToAction: nativeAdItem.getCtaButtonText() ?? "")
                         mobilefuseNativeAd.nativeAdItem = nativeAdItem
                         self.nativeAd = mobilefuseNativeAd
-                        mobilefuseNativeAd.adInfo["price"] = self.price
+                        mobilefuseNativeAd.adInfo[MSPConstants.AD_INFO_PRICE] = self.priceInDollar
+                        mobilefuseNativeAd.adInfo[MSPConstants.AD_INFO_NETWORK_NAME] = AdNetwork.mobilefuse.rawValue
+                        mobilefuseNativeAd.adInfo[MSPConstants.AD_INFO_NETWORK_AD_UNIT_ID] = self.bidderPlacementId
                         
                         if let adListener = self.adListener,
                            let adRequest = self.adRequest,
@@ -254,7 +260,7 @@ extension MobilefuseAdapter: IMFAdCallbackReceiver {
                 var params = [String:Any?]()
                 params["seat"] = "inmobi"
                 params["bidderPlacementId"] = self.bidderPlacementId
-                params["price"] = self.price
+                params["price"] = self.priceInDollar
                 if ad is MFBannerAd,
                    let bannerAd = self.bannerAd {
                     self.adListener?.onAdImpression(ad: bannerAd)
