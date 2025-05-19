@@ -200,10 +200,25 @@ extension DemoAdViewController: AdListener {
     
     func onAdLoaded(ad: MSPAd) {
         self.ad = ad
-        if let priceInDollar = ad.adInfo["price"],
+        if let priceInDollar = ad.adInfo[MSPConstants.AD_INFO_PRICE],
            let priceInDollarValue = priceInDollar as? Double {
-            print("demo price: \(priceInDollarValue)")
+            print("ad price: \(priceInDollarValue)")
         }
+        if let adNetworkName = ad.adInfo[MSPConstants.AD_INFO_NETWORK_NAME] as? String {
+            print("adnetwork name: " + adNetworkName)
+        }
+        if let adUnitId = ad.adInfo[MSPConstants.AD_INFO_NETWORK_AD_UNIT_ID] {
+            print("ad unit id: \(adUnitId)")
+        }
+        if let creativeId = ad.adInfo[MSPConstants.AD_INFO_NETWORK_CREATIVE_ID] {
+            print("creative id: \(creativeId)")
+        }
+            /*
+            [MSPConstants.AD_INFO_PRICE] = self.priceInDollar
+            interstitialAd.adInfo[MSPConstants.AD_INFO_NETWORK_NAME] = AdNetwork.inmobi.rawValue
+            interstitialAd.adInfo[MSPConstants.AD_INFO_NETWORK_AD_UNIT_ID] = self.bidderPlacementId
+            interstitialAd.adInfo[MSPConstants.AD_INFO_NETWORK_CREATIVE_ID] = interstitial.creativeId
+             */
         if ad is MSPiOSCore.NativeAd,
            let nativeAd = ad as? MSPiOSCore.NativeAd {
             

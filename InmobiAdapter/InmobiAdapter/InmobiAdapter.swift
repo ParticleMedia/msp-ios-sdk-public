@@ -34,7 +34,7 @@ import InMobiSDK
 
     private var adMetricReporter: AdMetricReporter?
     
-    private var price: Double?
+    private var priceInDollar: Double?
 
 
     public func loadAdCreative(bidResponse: Any, auctionBidListener: any MSPiOSCore.AuctionBidListener, adListener: any MSPiOSCore.AdListener, context: Any, adRequest: MSPiOSCore.AdRequest, bidderPlacementId: String, bidderFormat: MSPiOSCore.AdFormat?, params: [String:String]?) {
@@ -47,9 +47,9 @@ import InMobiSDK
             self.bidderPlacementId = bidderPlacementId
 
             if let priceStr = params?["price"] {
-                self.price = Double(priceStr) ?? 0.0
+                self.priceInDollar = Double(priceStr) ?? 0.0
             } else {
-                self.price = 0.0
+                self.priceInDollar = 0.0
             }
             let adFormat = bidderFormat ?? adRequest.adFormat
             guard let numPlacementId = Int64(bidderPlacementId) else {
@@ -186,9 +186,11 @@ extension InmobiAdapter: IMBannerDelegate {
                 MSPLogger.shared.info(message: "[Adapter: Inmobi] successfully loaded Inmobi Banner ad")
                 let bannerAd = BannerAd(adView: bannerView, adNetworkAdapter: self)
                 self.bannerAd = bannerAd
-                let price = info.getBid()
-                self.price = info.getBid()
-                bannerAd.adInfo["price"] = info.getBid()
+                self.priceInDollar = info.getBid()
+                bannerAd.adInfo[MSPConstants.AD_INFO_PRICE] = info.getBid()
+                bannerAd.adInfo[MSPConstants.AD_INFO_NETWORK_NAME] = AdNetwork.inmobi.rawValue
+                bannerAd.adInfo[MSPConstants.AD_INFO_NETWORK_AD_UNIT_ID] = self.bidderPlacementId
+                bannerAd.adInfo[MSPConstants.AD_INFO_NETWORK_CREATIVE_ID] = banner.creativeId
                 self.handleAdLoaded(ad: bannerAd, auctionBidListener: auctionBidListener, bidderPlacementId: self.bidderPlacementId ?? "inmobi_placement_id")
             }
         }
@@ -207,7 +209,7 @@ extension InmobiAdapter: IMBannerDelegate {
                 var params = [String:Any?]()
                 params["seat"] = "inmobi"
                 params["bidderPlacementId"] = self.bidderPlacementId
-                params["price"] = self.price
+                params["price"] = self.priceInDollar
                 if let bannerAd = self.bannerAd {
                     self.adListener?.onAdImpression(ad: bannerAd)
                     self.adMetricReporter?.logAdImpression(ad: bannerAd, adRequest: adRequest, bidResponse: self, params: params)
@@ -239,7 +241,10 @@ extension InmobiAdapter: IMInterstitialDelegate {
                 interstitialAd.interstitialAdItem = interstitialAdItem
                 interstitialAd.rootViewController = self.adListener?.getRootViewController()
                 self.interstitialAd = interstitialAd
-                interstitialAd.adInfo["price"] = self.price
+                interstitialAd.adInfo[MSPConstants.AD_INFO_PRICE] = self.priceInDollar
+                interstitialAd.adInfo[MSPConstants.AD_INFO_NETWORK_NAME] = AdNetwork.inmobi.rawValue
+                interstitialAd.adInfo[MSPConstants.AD_INFO_NETWORK_AD_UNIT_ID] = self.bidderPlacementId
+                interstitialAd.adInfo[MSPConstants.AD_INFO_NETWORK_CREATIVE_ID] = interstitial.creativeId
                 self.handleAdLoaded(ad: interstitialAd, auctionBidListener: auctionBidListener, bidderPlacementId: self.bidderPlacementId ?? "inmobi")
             }
         }
@@ -247,7 +252,7 @@ extension InmobiAdapter: IMInterstitialDelegate {
     
     public func interstitial(_ interstitial: InMobiSDK.IMInterstitial, didReceiveWithMetaInfo metaInfo: InMobiSDK.IMAdMetaInfo) {
         DispatchQueue.main.async {
-            self.price = metaInfo.getBid()
+            self.priceInDollar = metaInfo.getBid()
         }
     }
 
@@ -262,7 +267,7 @@ extension InmobiAdapter: IMInterstitialDelegate {
                 var params = [String:Any?]()
                 params["seat"] = "inmobi"
                 params["bidderPlacementId"] = self.bidderPlacementId
-                params["price"] = self.price
+                params["price"] = self.priceInDollar
                 if let interstitialAd = self.interstitialAd {
                     self.adListener?.onAdImpression(ad: interstitialAd)
                     self.adMetricReporter?.logAdImpression(ad: interstitialAd, adRequest: adRequest, bidResponse: self, params: params)
@@ -301,11 +306,10 @@ extension InmobiAdapter: IMNativeDelegate {
                                                     callToAction: native.adCtaText ?? "")
                 inmobiNativeAd.nativeAdItem = native
                 self.nativeAd = inmobiNativeAd
-                inmobiNativeAd.adInfo["price"] = self.price
-
-                //let mediaView = native.primaryView(ofWidth: <#T##CGFloat#>)
-                //mediaView?.translatesAutoresizingMaskIntoConstraints = false
-                //inmobiNativeAd.mediaView = mediaView
+                inmobiNativeAd.adInfo[MSPConstants.AD_INFO_PRICE] = self.priceInDollar
+                inmobiNativeAd.adInfo[MSPConstants.AD_INFO_NETWORK_NAME] = AdNetwork.inmobi.rawValue
+                inmobiNativeAd.adInfo[MSPConstants.AD_INFO_NETWORK_AD_UNIT_ID] = self.bidderPlacementId
+                inmobiNativeAd.adInfo[MSPConstants.AD_INFO_NETWORK_CREATIVE_ID] = native.creativeId
 
                 if let adListener = self.adListener,
                    let adRequest = self.adRequest,
@@ -332,7 +336,7 @@ extension InmobiAdapter: IMNativeDelegate {
                 var params = [String:Any?]()
                 params["seat"] = "inmobi"
                 params["bidderPlacementId"] = self.bidderPlacementId
-                params["price"] = self.price
+                params["price"] = self.priceInDollar
                 self.adMetricReporter?.logAdImpression(ad: nativeAd, adRequest: adRequest, bidResponse: self, params: params)
             }
         }
