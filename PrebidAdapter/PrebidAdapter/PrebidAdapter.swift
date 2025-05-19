@@ -145,14 +145,19 @@ extension PrebidAdapter: BannerViewDelegate {
             var prebidAd = BannerAd(adView: bannerView, adNetworkAdapter: self)
             self.bannerAd = prebidAd
             if let priceInDollar = self.priceInDollar {
-                prebidAd.adInfo["price"] = priceInDollar
+                prebidAd.adInfo[MSPConstants.AD_INFO_PRICE] = priceInDollar
             }
+
             if let burl = self.bidResponse?.winningBid?.bid.burl {
                 prebidAd.adInfo[MSPConstants.AD_INFO_OPENRTB_BURL] = self.replaceMacroAuctionPrice(url: burl, price: self.priceInDollar)
             }
             if let nurl = self.bidResponse?.winningBid?.bid.nurl {
                 prebidAd.adInfo[MSPConstants.AD_INFO_OPENRTB_NURL] = self.replaceMacroAuctionPrice(url: nurl, price: self.priceInDollar)
             }
+            
+            prebidAd.adInfo[MSPConstants.AD_INFO_NETWORK_NAME] = self.bidResponse?.winningBidSeat
+            prebidAd.adInfo[MSPConstants.AD_INFO_NETWORK_CREATIVE_ID] = self.bidResponse?.winningBid?.bid.crid
+            
             if let adListener = self.adListener,
                let adRequest = self.adRequest,
                let auctionBidListener = self.auctionBidListener {
