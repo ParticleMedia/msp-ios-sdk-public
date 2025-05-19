@@ -209,7 +209,10 @@ extension UnityAdapter: LPMBannerAdViewDelegate, LPMInterstitialAdDelegate {
                let auctionBidListener = self.auctionBidListener {
                 let bannerAd = BannerAd(adView: bannerView, adNetworkAdapter: self)
                 self.bannerAd = bannerAd
-                bannerAd.adInfo["price"] = adInfo.revenue
+                bannerAd.adInfo[MSPConstants.AD_INFO_PRICE] = adInfo.revenue
+                bannerAd.adInfo[MSPConstants.AD_INFO_NETWORK_NAME] = AdNetwork.unity.rawValue
+                bannerAd.adInfo[MSPConstants.AD_INFO_NETWORK_AD_UNIT_ID] = self.bidderPlacementId
+                bannerAd.adInfo[MSPConstants.AD_INFO_NETWORK_CREATIVE_ID] = adInfo.creativeId
                 MSPLogger.shared.info(message: "[Adapter: Unity] successfully loaded Unity Banner ad")
                 self.handleAdLoaded(ad: bannerAd, auctionBidListener: auctionBidListener, bidderPlacementId: self.bidderPlacementId ?? "unity_placement_id")
             } else if let interstitialAdItem = self.interstitialAdItem,
@@ -218,7 +221,10 @@ extension UnityAdapter: LPMBannerAdViewDelegate, LPMInterstitialAdDelegate {
                 interstitialAd.interstitialAdItem = interstitialAdItem
                 interstitialAd.rootViewController = self.adListener?.getRootViewController()
                 self.interstitialAd = interstitialAd
-                interstitialAd.adInfo["price"] = adInfo.revenue
+                interstitialAd.adInfo[MSPConstants.AD_INFO_PRICE] = adInfo.revenue
+                interstitialAd.adInfo[MSPConstants.AD_INFO_NETWORK_NAME] = AdNetwork.unity.rawValue
+                interstitialAd.adInfo[MSPConstants.AD_INFO_NETWORK_AD_UNIT_ID] = self.bidderPlacementId
+                interstitialAd.adInfo[MSPConstants.AD_INFO_NETWORK_CREATIVE_ID] = adInfo.creativeId
                 MSPLogger.shared.info(message: "[Adapter: Unity] successfully loaded Unity Interstitial ad")
                 self.handleAdLoaded(ad: interstitialAd, auctionBidListener: auctionBidListener, bidderPlacementId: self.bidderPlacementId ?? "unity_placement_id")
             }
@@ -281,7 +287,9 @@ extension UnityAdapter: LevelPlayNativeAdDelegate {
                                                   callToAction: nativeAd.callToAction ?? "")
                 unityNativeAd.nativeAdItem = nativeAd
                 self.nativeAd = unityNativeAd
-                unityNativeAd.adInfo["price"] = adInfo.revenue
+                unityNativeAd.adInfo[MSPConstants.AD_INFO_PRICE] = adInfo.revenue
+                unityNativeAd.adInfo[MSPConstants.AD_INFO_NETWORK_NAME] = AdNetwork.unity.rawValue
+                unityNativeAd.adInfo[MSPConstants.AD_INFO_NETWORK_AD_UNIT_ID] = self.bidderPlacementId
                 
                 let mediaView = LevelPlayMediaView()
                 mediaView.translatesAutoresizingMaskIntoConstraints = false

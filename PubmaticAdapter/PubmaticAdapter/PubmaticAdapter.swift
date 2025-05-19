@@ -218,7 +218,9 @@ extension PubmaticAdapter: POBBannerViewDelegate {
                 
                 let bannerAd = BannerAd(adView: bannerView, adNetworkAdapter: self)
                 self.bannerAd = bannerAd
-                bannerAd.adInfo["price"] = bannerView.bid().price.doubleValue
+                bannerAd.adInfo[MSPConstants.AD_INFO_PRICE] = bannerView.bid().price.doubleValue
+                bannerAd.adInfo[MSPConstants.AD_INFO_NETWORK_NAME] = AdNetwork.pubmatic.rawValue
+                bannerAd.adInfo[MSPConstants.AD_INFO_NETWORK_AD_UNIT_ID] = self.bidderPlacementId
                 MSPLogger.shared.info(message: "[Adapter: Pubmatic] successfully loaded Pubmatic Banner ad")
                 self.handleAdLoaded(ad: bannerAd, auctionBidListener: auctionBidListener, bidderPlacementId: self.bidderPlacementId ?? "pubmatic_placement_id")
             } else {
@@ -270,7 +272,9 @@ extension PubmaticAdapter: POBInterstitialDelegate {
                 interstitialAd.interstitialAdItem = interstitialAdItem
                 interstitialAd.rootViewController = self.adListener?.getRootViewController()
                 self.interstitialAd = interstitialAd
-                interstitialAd.adInfo["price"] = interstitial.bid().price.doubleValue
+                interstitialAd.adInfo[MSPConstants.AD_INFO_PRICE] = interstitial.bid().price.doubleValue
+                interstitialAd.adInfo[MSPConstants.AD_INFO_NETWORK_NAME] = AdNetwork.pubmatic.rawValue
+                interstitialAd.adInfo[MSPConstants.AD_INFO_NETWORK_AD_UNIT_ID] = self.bidderPlacementId
                 MSPLogger.shared.info(message: "[Adapter: Pubmatic] successfully loaded Pubmatic Interstitial ad")
                 self.handleAdLoaded(ad: interstitialAd, auctionBidListener: auctionBidListener, bidderPlacementId: self.bidderPlacementId ?? "pubmatic")
             } else {
@@ -332,7 +336,9 @@ extension PubmaticAdapter: POBNativeAdLoaderDelegate {
                                                         callToAction: "")
                 pubmaticNativeAd.nativeAdItem = nativeAd
                 self.nativeAd = pubmaticNativeAd
-                pubmaticNativeAd.adInfo["price"] = self.priceInDollar ?? 0.0
+                pubmaticNativeAd.adInfo[MSPConstants.AD_INFO_PRICE] = self.priceInDollar ?? 0.0
+                pubmaticNativeAd.adInfo[MSPConstants.AD_INFO_NETWORK_NAME] = AdNetwork.pubmatic.rawValue
+                pubmaticNativeAd.adInfo[MSPConstants.AD_INFO_NETWORK_AD_UNIT_ID] = self.bidderPlacementId
                 
                 if let adListener = self.adListener,
                    let adRequest = self.adRequest,
