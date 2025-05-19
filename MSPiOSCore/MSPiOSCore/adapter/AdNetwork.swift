@@ -10,13 +10,13 @@ import Foundation
 public enum AdNetwork: String {
     case unknown = "Unknown"
     
-    case google = "Google"
-    case facebook = "Facebook"
-    case prebid = "Prebid"
-    case nova = "Nova"
-    case unity = "Unity"
-    case pubmatic = "Pubmatic"
-    case mintegral = "Mintegral"
-    case mobilefuse = "Mobilefuse"
-    case inmobi = "Inmobi"
+    case google = "google"
+    case facebook = "facebook"
+    case prebid = "prebid"
+    case nova = "nova"
+    case unity = "unity"
+    case pubmatic = "pubmatic"
+    case mintegral = "mintegral"
+    case mobilefuse = "mobilefuse"
+    case inmobi = "inmobi"
 }
