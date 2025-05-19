@@ -260,7 +260,10 @@ extension MintegralAdapter: MTGBannerAdViewDelegate {
                 MSPLogger.shared.info(message: "[Adapter: Mintegral] successfully loaded Mintegral Banner ad")
                 let bannerAd = BannerAd(adView: bannerView, adNetworkAdapter: self)
                 self.bannerAd = bannerAd
-                bannerAd.adInfo["price"] = self.mtgBidResponse?.price ?? 0.0
+                bannerAd.adInfo[MSPConstants.AD_INFO_PRICE] = self.mtgBidResponse?.price ?? 0.0
+                bannerAd.adInfo[MSPConstants.AD_INFO_NETWORK_NAME] = AdNetwork.mintegral.rawValue
+                bannerAd.adInfo[MSPConstants.AD_INFO_NETWORK_AD_UNIT_ID] = self.bidderPlacementId
+                bannerAd.adInfo[MSPConstants.AD_INFO_NETWORK_CREATIVE_ID] = adView.creativeId
                 self.handleAdLoaded(ad: bannerAd, auctionBidListener: auctionBidListener, bidderPlacementId: self.bidderPlacementId ?? "mintegral_placement_id")
             }
         }
@@ -325,7 +328,10 @@ extension MintegralAdapter: MTGNewInterstitialBidAdDelegate {
                 interstitialAd.mintegralInterstitialAdManager = mintegralInterstitialAdManager
                 interstitialAd.rootViewController = self.adListener?.getRootViewController()
                 self.interstitialAd = interstitialAd
-                interstitialAd.adInfo["price"] = self.mtgBidResponse?.price ?? 0.0
+                interstitialAd.adInfo[MSPConstants.AD_INFO_PRICE] = self.mtgBidResponse?.price ?? 0.0
+                interstitialAd.adInfo[MSPConstants.AD_INFO_NETWORK_NAME] = AdNetwork.mintegral.rawValue
+                interstitialAd.adInfo[MSPConstants.AD_INFO_NETWORK_AD_UNIT_ID] = self.bidderPlacementId
+                interstitialAd.adInfo[MSPConstants.AD_INFO_NETWORK_CREATIVE_ID] = adManager.getCreativeId(withUnitId: adManager.currentUnitId)
                 self.handleAdLoaded(ad: interstitialAd, auctionBidListener: auctionBidListener, bidderPlacementId: self.bidderPlacementId ?? "mintegral")
             }
         }
@@ -381,7 +387,10 @@ extension MintegralAdapter: MTGBidNativeAdManagerDelegate, MTGMediaViewDelegate 
                                                               callToAction: nativeAdItem.adCall)
                     mintegralNativeAd.nativeAdItem = nativeAdItem
                     self.nativeAd = mintegralNativeAd
-                    mintegralNativeAd.adInfo["price"] = self.mtgBidResponse?.price ?? 0.0
+                    mintegralNativeAd.adInfo[MSPConstants.AD_INFO_PRICE] = self.mtgBidResponse?.price ?? 0.0
+                    mintegralNativeAd.adInfo[MSPConstants.AD_INFO_NETWORK_NAME] = AdNetwork.mintegral.rawValue
+                    mintegralNativeAd.adInfo[MSPConstants.AD_INFO_NETWORK_AD_UNIT_ID] = self.bidderPlacementId
+                    mintegralNativeAd.adInfo[MSPConstants.AD_INFO_NETWORK_CREATIVE_ID] = nativeAdItem.creativeId
                     if let adListener = self.adListener,
                        let adRequest = self.adRequest,
                        let auctionBidListener = self.auctionBidListener {

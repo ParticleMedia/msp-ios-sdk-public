@@ -183,7 +183,10 @@ import PrebidMobile
                         ad.fullScreenContentDelegate = self
                         googleInterstitialAd.rootViewController = self.adListener?.getRootViewController()
                         self.interstitialAd = googleInterstitialAd
-                        googleInterstitialAd.adInfo["price"] = self.priceInDollar
+                        googleInterstitialAd.adInfo[MSPConstants.AD_INFO_PRICE] = self.priceInDollar
+                        googleInterstitialAd.adInfo[MSPConstants.AD_INFO_NETWORK_NAME] = AdNetwork.google.rawValue
+                        googleInterstitialAd.adInfo[MSPConstants.AD_INFO_NETWORK_AD_UNIT_ID] = self.adUnitId
+                        googleInterstitialAd.adInfo[MSPConstants.AD_INFO_NETWORK_CREATIVE_ID] = self.bidResponse?.winningBid?.bid.crid
                         if let adListener = self.adListener,
                            let adRequest = self.adRequest,
                            let auctionBidListener = self.auctionBidListener {
@@ -295,9 +298,12 @@ extension GoogleAdapter : GoogleMobileAds.BannerViewDelegate  {
             var bannerAd = BannerAd(adView: bannerView, adNetworkAdapter: self)
             self.bannerAd = bannerAd
             if let priceInDollar = self.priceInDollar {
-                bannerAd.adInfo["price"] = priceInDollar
+                bannerAd.adInfo[MSPConstants.AD_INFO_PRICE] = priceInDollar
             }
             
+            bannerAd.adInfo[MSPConstants.AD_INFO_NETWORK_NAME] = AdNetwork.google.rawValue
+            bannerAd.adInfo[MSPConstants.AD_INFO_NETWORK_AD_UNIT_ID] = self.adUnitId
+            bannerAd.adInfo[MSPConstants.AD_INFO_NETWORK_CREATIVE_ID] = self.bidResponse?.winningBid?.bid.crid
             if let adListener = self.adListener,
                let adRequest = self.adRequest,
                let auctionBidListener = self.auctionBidListener {
@@ -361,7 +367,10 @@ extension GoogleAdapter: GoogleMobileAds.NativeAdLoaderDelegate {
             googleNativeAd.mediaView = mediaView
             googleNativeAd.icon = nativeAd.icon?.image
             googleNativeAd.priceInDollar = self.priceInDollar
-            googleNativeAd.adInfo["price"] = self.priceInDollar
+            googleNativeAd.adInfo[MSPConstants.AD_INFO_PRICE] = self.priceInDollar
+            googleNativeAd.adInfo[MSPConstants.AD_INFO_NETWORK_NAME] = AdNetwork.google.rawValue
+            googleNativeAd.adInfo[MSPConstants.AD_INFO_NETWORK_AD_UNIT_ID] = self.adUnitId
+            googleNativeAd.adInfo[MSPConstants.AD_INFO_NETWORK_CREATIVE_ID] = self.bidResponse?.winningBid?.bid.crid
             nativeAd.delegate = self
             self.nativeAdItem = nativeAd
             self.nativeAd = googleNativeAd
@@ -451,8 +460,11 @@ extension GoogleAdapter: AdManagerBannerAdLoaderDelegate {
             var bannerAd = BannerAd(adView: bannerView, adNetworkAdapter: self)
             self.bannerAd = bannerAd
             if let priceInDollar = self.priceInDollar {
-                bannerAd.adInfo["price"] = priceInDollar
+                bannerAd.adInfo[MSPConstants.AD_INFO_PRICE] = priceInDollar
             }
+            bannerAd.adInfo[MSPConstants.AD_INFO_NETWORK_NAME] = AdNetwork.google.rawValue
+            bannerAd.adInfo[MSPConstants.AD_INFO_NETWORK_AD_UNIT_ID] = self.adUnitId
+            bannerAd.adInfo[MSPConstants.AD_INFO_NETWORK_CREATIVE_ID] = self.bidResponse?.winningBid?.bid.crid
             
             if let adListener = self.adListener,
                let adRequest = self.adRequest,
