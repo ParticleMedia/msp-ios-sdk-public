@@ -266,6 +266,7 @@ extension FacebookAdapter: FBNativeAdDelegate {
             facebookNativeAd.priceInDollar = self.priceInDollar
             facebookNativeAd.nativeAdItem = nativeAd
             facebookNativeAd.mediaView = mediaView
+            facebookNativeAd.icon = nativeAd.iconImage
             facebookNativeAd.adInfo["price"] = self.priceInDollar
             self.nativeAdItem = nativeAd
             if let adListener = self.adListener,
