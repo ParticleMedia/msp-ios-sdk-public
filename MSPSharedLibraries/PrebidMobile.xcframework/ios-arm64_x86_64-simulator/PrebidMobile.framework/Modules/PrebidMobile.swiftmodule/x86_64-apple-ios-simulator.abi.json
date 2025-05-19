@@ -1,8 +1,8 @@
 {
   "ABIRoot": {
     "kind": "Root",
-    "name": "TopLevel",
-    "printedName": "TopLevel",
+    "name": "PrebidMobile",
+    "printedName": "PrebidMobile",
     "children": [
       {
         "kind": "Import",
@@ -295,6 +295,20 @@
           "ObjectiveC.NSObject"
         ],
         "conformances": [
+          {
+            "kind": "Conformance",
+            "name": "Copyable",
+            "printedName": "Copyable",
+            "usr": "s:s8CopyableP",
+            "mangledName": "$ss8CopyableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Escapable",
+            "printedName": "Escapable",
+            "usr": "s:s9EscapableP",
+            "mangledName": "$ss9EscapableP"
+          },
           {
             "kind": "Conformance",
             "name": "Equatable",
@@ -821,6 +835,20 @@
           },
           {
             "kind": "Conformance",
+            "name": "Copyable",
+            "printedName": "Copyable",
+            "usr": "s:s8CopyableP",
+            "mangledName": "$ss8CopyableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Escapable",
+            "printedName": "Escapable",
+            "usr": "s:s9EscapableP",
+            "mangledName": "$ss9EscapableP"
+          },
+          {
+            "kind": "Conformance",
             "name": "Equatable",
             "printedName": "Equatable",
             "usr": "s:SQ",
@@ -1126,6 +1154,20 @@
             ],
             "usr": "s:s27ExpressibleByIntegerLiteralP",
             "mangledName": "$ss27ExpressibleByIntegerLiteralP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Copyable",
+            "printedName": "Copyable",
+            "usr": "s:s8CopyableP",
+            "mangledName": "$ss8CopyableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Escapable",
+            "printedName": "Escapable",
+            "usr": "s:s9EscapableP",
+            "mangledName": "$ss9EscapableP"
           },
           {
             "kind": "Conformance",
@@ -1639,6 +1681,20 @@
               },
               {
                 "kind": "Conformance",
+                "name": "Copyable",
+                "printedName": "Copyable",
+                "usr": "s:s8CopyableP",
+                "mangledName": "$ss8CopyableP"
+              },
+              {
+                "kind": "Conformance",
+                "name": "Escapable",
+                "printedName": "Escapable",
+                "usr": "s:s9EscapableP",
+                "mangledName": "$ss9EscapableP"
+              },
+              {
+                "kind": "Conformance",
                 "name": "Equatable",
                 "printedName": "Equatable",
                 "usr": "s:SQ",
@@ -2087,6 +2143,20 @@
                 ],
                 "usr": "s:s27ExpressibleByIntegerLiteralP",
                 "mangledName": "$ss27ExpressibleByIntegerLiteralP"
+              },
+              {
+                "kind": "Conformance",
+                "name": "Copyable",
+                "printedName": "Copyable",
+                "usr": "s:s8CopyableP",
+                "mangledName": "$ss8CopyableP"
+              },
+              {
+                "kind": "Conformance",
+                "name": "Escapable",
+                "printedName": "Escapable",
+                "usr": "s:s9EscapableP",
+                "mangledName": "$ss9EscapableP"
               },
               {
                 "kind": "Conformance",
@@ -2757,6 +2827,20 @@
               },
               {
                 "kind": "Conformance",
+                "name": "Copyable",
+                "printedName": "Copyable",
+                "usr": "s:s8CopyableP",
+                "mangledName": "$ss8CopyableP"
+              },
+              {
+                "kind": "Conformance",
+                "name": "Escapable",
+                "printedName": "Escapable",
+                "usr": "s:s9EscapableP",
+                "mangledName": "$ss9EscapableP"
+              },
+              {
+                "kind": "Conformance",
                 "name": "Equatable",
                 "printedName": "Equatable",
                 "usr": "s:SQ",
@@ -3043,6 +3127,20 @@
                 ],
                 "usr": "s:s27ExpressibleByIntegerLiteralP",
                 "mangledName": "$ss27ExpressibleByIntegerLiteralP"
+              },
+              {
+                "kind": "Conformance",
+                "name": "Copyable",
+                "printedName": "Copyable",
+                "usr": "s:s8CopyableP",
+                "mangledName": "$ss8CopyableP"
+              },
+              {
+                "kind": "Conformance",
+                "name": "Escapable",
+                "printedName": "Escapable",
+                "usr": "s:s9EscapableP",
+                "mangledName": "$ss9EscapableP"
               },
               {
                 "kind": "Conformance",
@@ -3589,6 +3687,20 @@
               },
               {
                 "kind": "Conformance",
+                "name": "Copyable",
+                "printedName": "Copyable",
+                "usr": "s:s8CopyableP",
+                "mangledName": "$ss8CopyableP"
+              },
+              {
+                "kind": "Conformance",
+                "name": "Escapable",
+                "printedName": "Escapable",
+                "usr": "s:s9EscapableP",
+                "mangledName": "$ss9EscapableP"
+              },
+              {
+                "kind": "Conformance",
                 "name": "Equatable",
                 "printedName": "Equatable",
                 "usr": "s:SQ",
@@ -3679,6 +3791,20 @@
           "ObjectiveC.NSObject"
         ],
         "conformances": [
+          {
+            "kind": "Conformance",
+            "name": "Copyable",
+            "printedName": "Copyable",
+            "usr": "s:s8CopyableP",
+            "mangledName": "$ss8CopyableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Escapable",
+            "printedName": "Escapable",
+            "usr": "s:s9EscapableP",
+            "mangledName": "$ss9EscapableP"
+          },
           {
             "kind": "Conformance",
             "name": "Equatable",
@@ -3947,6 +4073,22 @@
         "declAttributes": [
           "AccessControl",
           "ObjC"
+        ],
+        "conformances": [
+          {
+            "kind": "Conformance",
+            "name": "Escapable",
+            "printedName": "Escapable",
+            "usr": "s:s9EscapableP",
+            "mangledName": "$ss9EscapableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Copyable",
+            "printedName": "Copyable",
+            "usr": "s:s8CopyableP",
+            "mangledName": "$ss8CopyableP"
+          }
         ]
       },
       {
@@ -4189,6 +4331,20 @@
           "ObjectiveC.NSObject"
         ],
         "conformances": [
+          {
+            "kind": "Conformance",
+            "name": "Copyable",
+            "printedName": "Copyable",
+            "usr": "s:s8CopyableP",
+            "mangledName": "$ss8CopyableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Escapable",
+            "printedName": "Escapable",
+            "usr": "s:s9EscapableP",
+            "mangledName": "$ss9EscapableP"
+          },
           {
             "kind": "Conformance",
             "name": "Equatable",
@@ -4653,6 +4809,20 @@
             "printedName": "RewardedEventHandlerProtocol",
             "usr": "c:@M@PrebidMobile@objc(pl)RewardedEventHandlerProtocol",
             "mangledName": "$s12PrebidMobile28RewardedEventHandlerProtocolP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Copyable",
+            "printedName": "Copyable",
+            "usr": "s:s8CopyableP",
+            "mangledName": "$ss8CopyableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Escapable",
+            "printedName": "Escapable",
+            "usr": "s:s9EscapableP",
+            "mangledName": "$ss9EscapableP"
           },
           {
             "kind": "Conformance",
@@ -6218,6 +6388,20 @@
             "conformances": [
               {
                 "kind": "Conformance",
+                "name": "Copyable",
+                "printedName": "Copyable",
+                "usr": "s:s8CopyableP",
+                "mangledName": "$ss8CopyableP"
+              },
+              {
+                "kind": "Conformance",
+                "name": "Escapable",
+                "printedName": "Escapable",
+                "usr": "s:s9EscapableP",
+                "mangledName": "$ss9EscapableP"
+              },
+              {
+                "kind": "Conformance",
                 "name": "Equatable",
                 "printedName": "Equatable",
                 "usr": "s:SQ",
@@ -6283,6 +6467,20 @@
           "ObjectiveC.NSObject"
         ],
         "conformances": [
+          {
+            "kind": "Conformance",
+            "name": "Copyable",
+            "printedName": "Copyable",
+            "usr": "s:s8CopyableP",
+            "mangledName": "$ss8CopyableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Escapable",
+            "printedName": "Escapable",
+            "usr": "s:s9EscapableP",
+            "mangledName": "$ss9EscapableP"
+          },
           {
             "kind": "Conformance",
             "name": "Equatable",
@@ -7202,6 +7400,20 @@
         "conformances": [
           {
             "kind": "Conformance",
+            "name": "Copyable",
+            "printedName": "Copyable",
+            "usr": "s:s8CopyableP",
+            "mangledName": "$ss8CopyableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Escapable",
+            "printedName": "Escapable",
+            "usr": "s:s9EscapableP",
+            "mangledName": "$ss9EscapableP"
+          },
+          {
+            "kind": "Conformance",
             "name": "Equatable",
             "printedName": "Equatable",
             "usr": "s:SQ",
@@ -7478,6 +7690,22 @@
         "declAttributes": [
           "AccessControl",
           "ObjC"
+        ],
+        "conformances": [
+          {
+            "kind": "Conformance",
+            "name": "Escapable",
+            "printedName": "Escapable",
+            "usr": "s:s9EscapableP",
+            "mangledName": "$ss9EscapableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Copyable",
+            "printedName": "Copyable",
+            "usr": "s:s8CopyableP",
+            "mangledName": "$ss8CopyableP"
+          }
         ]
       },
       {
@@ -7570,6 +7798,20 @@
           "ObjectiveC.NSObject"
         ],
         "conformances": [
+          {
+            "kind": "Conformance",
+            "name": "Copyable",
+            "printedName": "Copyable",
+            "usr": "s:s8CopyableP",
+            "mangledName": "$ss8CopyableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Escapable",
+            "printedName": "Escapable",
+            "usr": "s:s9EscapableP",
+            "mangledName": "$ss9EscapableP"
+          },
           {
             "kind": "Conformance",
             "name": "Equatable",
@@ -7764,6 +8006,20 @@
           "ObjectiveC.NSObject"
         ],
         "conformances": [
+          {
+            "kind": "Conformance",
+            "name": "Copyable",
+            "printedName": "Copyable",
+            "usr": "s:s8CopyableP",
+            "mangledName": "$ss8CopyableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Escapable",
+            "printedName": "Escapable",
+            "usr": "s:s9EscapableP",
+            "mangledName": "$ss9EscapableP"
+          },
           {
             "kind": "Conformance",
             "name": "Equatable",
@@ -8413,6 +8669,20 @@
         "conformances": [
           {
             "kind": "Conformance",
+            "name": "Copyable",
+            "printedName": "Copyable",
+            "usr": "s:s8CopyableP",
+            "mangledName": "$ss8CopyableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Escapable",
+            "printedName": "Escapable",
+            "usr": "s:s9EscapableP",
+            "mangledName": "$ss9EscapableP"
+          },
+          {
+            "kind": "Conformance",
             "name": "Equatable",
             "printedName": "Equatable",
             "usr": "s:SQ",
@@ -8519,6 +8789,20 @@
           "ObjectiveC.NSObject"
         ],
         "conformances": [
+          {
+            "kind": "Conformance",
+            "name": "Copyable",
+            "printedName": "Copyable",
+            "usr": "s:s8CopyableP",
+            "mangledName": "$ss8CopyableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Escapable",
+            "printedName": "Escapable",
+            "usr": "s:s9EscapableP",
+            "mangledName": "$ss9EscapableP"
+          },
           {
             "kind": "Conformance",
             "name": "Equatable",
@@ -8640,6 +8924,20 @@
           "ObjectiveC.NSObject"
         ],
         "conformances": [
+          {
+            "kind": "Conformance",
+            "name": "Copyable",
+            "printedName": "Copyable",
+            "usr": "s:s8CopyableP",
+            "mangledName": "$ss8CopyableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Escapable",
+            "printedName": "Escapable",
+            "usr": "s:s9EscapableP",
+            "mangledName": "$ss9EscapableP"
+          },
           {
             "kind": "Conformance",
             "name": "Equatable",
@@ -10166,6 +10464,20 @@
         "conformances": [
           {
             "kind": "Conformance",
+            "name": "Copyable",
+            "printedName": "Copyable",
+            "usr": "s:s8CopyableP",
+            "mangledName": "$ss8CopyableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Escapable",
+            "printedName": "Escapable",
+            "usr": "s:s9EscapableP",
+            "mangledName": "$ss9EscapableP"
+          },
+          {
+            "kind": "Conformance",
             "name": "Equatable",
             "printedName": "Equatable",
             "usr": "s:SQ",
@@ -10709,6 +11021,20 @@
         "conformances": [
           {
             "kind": "Conformance",
+            "name": "Copyable",
+            "printedName": "Copyable",
+            "usr": "s:s8CopyableP",
+            "mangledName": "$ss8CopyableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Escapable",
+            "printedName": "Escapable",
+            "usr": "s:s9EscapableP",
+            "mangledName": "$ss9EscapableP"
+          },
+          {
+            "kind": "Conformance",
             "name": "Equatable",
             "printedName": "Equatable",
             "usr": "s:SQ",
@@ -11001,6 +11327,20 @@
         "conformances": [
           {
             "kind": "Conformance",
+            "name": "Copyable",
+            "printedName": "Copyable",
+            "usr": "s:s8CopyableP",
+            "mangledName": "$ss8CopyableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Escapable",
+            "printedName": "Escapable",
+            "usr": "s:s9EscapableP",
+            "mangledName": "$ss9EscapableP"
+          },
+          {
+            "kind": "Conformance",
             "name": "Equatable",
             "printedName": "Equatable",
             "usr": "s:SQ",
@@ -11183,6 +11523,20 @@
           "ObjectiveC.NSObject"
         ],
         "conformances": [
+          {
+            "kind": "Conformance",
+            "name": "Copyable",
+            "printedName": "Copyable",
+            "usr": "s:s8CopyableP",
+            "mangledName": "$ss8CopyableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Escapable",
+            "printedName": "Escapable",
+            "usr": "s:s9EscapableP",
+            "mangledName": "$ss9EscapableP"
+          },
           {
             "kind": "Conformance",
             "name": "Equatable",
@@ -11439,6 +11793,22 @@
         "declAttributes": [
           "AccessControl",
           "ObjC"
+        ],
+        "conformances": [
+          {
+            "kind": "Conformance",
+            "name": "Escapable",
+            "printedName": "Escapable",
+            "usr": "s:s9EscapableP",
+            "mangledName": "$ss9EscapableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Copyable",
+            "printedName": "Copyable",
+            "usr": "s:s8CopyableP",
+            "mangledName": "$ss8CopyableP"
+          }
         ]
       },
       {
@@ -12370,6 +12740,20 @@
         "conformances": [
           {
             "kind": "Conformance",
+            "name": "Copyable",
+            "printedName": "Copyable",
+            "usr": "s:s8CopyableP",
+            "mangledName": "$ss8CopyableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Escapable",
+            "printedName": "Escapable",
+            "usr": "s:s9EscapableP",
+            "mangledName": "$ss9EscapableP"
+          },
+          {
+            "kind": "Conformance",
             "name": "Equatable",
             "printedName": "Equatable",
             "usr": "s:SQ",
@@ -12440,7 +12824,23 @@
         "declAttributes": [
           "AccessControl"
         ],
-        "hasMissingDesignatedInitializers": true
+        "hasMissingDesignatedInitializers": true,
+        "conformances": [
+          {
+            "kind": "Conformance",
+            "name": "Copyable",
+            "printedName": "Copyable",
+            "usr": "s:s8CopyableP",
+            "mangledName": "$ss8CopyableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Escapable",
+            "printedName": "Escapable",
+            "usr": "s:s9EscapableP",
+            "mangledName": "$ss9EscapableP"
+          }
+        ]
       },
       {
         "kind": "Import",
@@ -13136,6 +13536,20 @@
           "ObjectiveC.NSObject"
         ],
         "conformances": [
+          {
+            "kind": "Conformance",
+            "name": "Copyable",
+            "printedName": "Copyable",
+            "usr": "s:s8CopyableP",
+            "mangledName": "$ss8CopyableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Escapable",
+            "printedName": "Escapable",
+            "usr": "s:s9EscapableP",
+            "mangledName": "$ss9EscapableP"
+          },
           {
             "kind": "Conformance",
             "name": "Equatable",
@@ -14624,6 +15038,20 @@
         "conformances": [
           {
             "kind": "Conformance",
+            "name": "Copyable",
+            "printedName": "Copyable",
+            "usr": "s:s8CopyableP",
+            "mangledName": "$ss8CopyableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Escapable",
+            "printedName": "Escapable",
+            "usr": "s:s9EscapableP",
+            "mangledName": "$ss9EscapableP"
+          },
+          {
+            "kind": "Conformance",
             "name": "Equatable",
             "printedName": "Equatable",
             "usr": "s:SQ",
@@ -14779,6 +15207,22 @@
         "declAttributes": [
           "AccessControl",
           "ObjC"
+        ],
+        "conformances": [
+          {
+            "kind": "Conformance",
+            "name": "Escapable",
+            "printedName": "Escapable",
+            "usr": "s:s9EscapableP",
+            "mangledName": "$ss9EscapableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Copyable",
+            "printedName": "Copyable",
+            "usr": "s:s8CopyableP",
+            "mangledName": "$ss8CopyableP"
+          }
         ]
       },
       {
@@ -14905,6 +15349,22 @@
         "declAttributes": [
           "AccessControl",
           "ObjC"
+        ],
+        "conformances": [
+          {
+            "kind": "Conformance",
+            "name": "Escapable",
+            "printedName": "Escapable",
+            "usr": "s:s9EscapableP",
+            "mangledName": "$ss9EscapableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Copyable",
+            "printedName": "Copyable",
+            "usr": "s:s8CopyableP",
+            "mangledName": "$ss8CopyableP"
+          }
         ]
       },
       {
@@ -15534,6 +15994,20 @@
           },
           {
             "kind": "Conformance",
+            "name": "Copyable",
+            "printedName": "Copyable",
+            "usr": "s:s8CopyableP",
+            "mangledName": "$ss8CopyableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Escapable",
+            "printedName": "Escapable",
+            "usr": "s:s9EscapableP",
+            "mangledName": "$ss9EscapableP"
+          },
+          {
+            "kind": "Conformance",
             "name": "Equatable",
             "printedName": "Equatable",
             "usr": "s:SQ",
@@ -15759,6 +16233,22 @@
         "declAttributes": [
           "AccessControl",
           "ObjC"
+        ],
+        "conformances": [
+          {
+            "kind": "Conformance",
+            "name": "Escapable",
+            "printedName": "Escapable",
+            "usr": "s:s9EscapableP",
+            "mangledName": "$ss9EscapableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Copyable",
+            "printedName": "Copyable",
+            "usr": "s:s8CopyableP",
+            "mangledName": "$ss8CopyableP"
+          }
         ]
       },
       {
@@ -16447,6 +16937,20 @@
         "conformances": [
           {
             "kind": "Conformance",
+            "name": "Copyable",
+            "printedName": "Copyable",
+            "usr": "s:s8CopyableP",
+            "mangledName": "$ss8CopyableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Escapable",
+            "printedName": "Escapable",
+            "usr": "s:s9EscapableP",
+            "mangledName": "$ss9EscapableP"
+          },
+          {
+            "kind": "Conformance",
             "name": "Equatable",
             "printedName": "Equatable",
             "usr": "s:SQ",
@@ -16737,6 +17241,20 @@
         "conformances": [
           {
             "kind": "Conformance",
+            "name": "Copyable",
+            "printedName": "Copyable",
+            "usr": "s:s8CopyableP",
+            "mangledName": "$ss8CopyableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Escapable",
+            "printedName": "Escapable",
+            "usr": "s:s9EscapableP",
+            "mangledName": "$ss9EscapableP"
+          },
+          {
+            "kind": "Conformance",
             "name": "Equatable",
             "printedName": "Equatable",
             "usr": "s:SQ",
@@ -16877,6 +17395,22 @@
         "declAttributes": [
           "AccessControl",
           "ObjC"
+        ],
+        "conformances": [
+          {
+            "kind": "Conformance",
+            "name": "Escapable",
+            "printedName": "Escapable",
+            "usr": "s:s9EscapableP",
+            "mangledName": "$ss9EscapableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Copyable",
+            "printedName": "Copyable",
+            "usr": "s:s8CopyableP",
+            "mangledName": "$ss8CopyableP"
+          }
         ]
       },
       {
@@ -17632,6 +18166,20 @@
           "ObjectiveC.NSObject"
         ],
         "conformances": [
+          {
+            "kind": "Conformance",
+            "name": "Copyable",
+            "printedName": "Copyable",
+            "usr": "s:s8CopyableP",
+            "mangledName": "$ss8CopyableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Escapable",
+            "printedName": "Escapable",
+            "usr": "s:s9EscapableP",
+            "mangledName": "$ss9EscapableP"
+          },
           {
             "kind": "Conformance",
             "name": "Equatable",
@@ -18562,6 +19110,20 @@
         "conformances": [
           {
             "kind": "Conformance",
+            "name": "Copyable",
+            "printedName": "Copyable",
+            "usr": "s:s8CopyableP",
+            "mangledName": "$ss8CopyableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Escapable",
+            "printedName": "Escapable",
+            "usr": "s:s9EscapableP",
+            "mangledName": "$ss9EscapableP"
+          },
+          {
+            "kind": "Conformance",
             "name": "Equatable",
             "printedName": "Equatable",
             "usr": "s:SQ",
@@ -18836,6 +19398,20 @@
         "conformances": [
           {
             "kind": "Conformance",
+            "name": "Copyable",
+            "printedName": "Copyable",
+            "usr": "s:s8CopyableP",
+            "mangledName": "$ss8CopyableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Escapable",
+            "printedName": "Escapable",
+            "usr": "s:s9EscapableP",
+            "mangledName": "$ss9EscapableP"
+          },
+          {
+            "kind": "Conformance",
             "name": "Equatable",
             "printedName": "Equatable",
             "usr": "s:SQ",
@@ -19054,6 +19630,20 @@
         "conformances": [
           {
             "kind": "Conformance",
+            "name": "Copyable",
+            "printedName": "Copyable",
+            "usr": "s:s8CopyableP",
+            "mangledName": "$ss8CopyableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Escapable",
+            "printedName": "Escapable",
+            "usr": "s:s9EscapableP",
+            "mangledName": "$ss9EscapableP"
+          },
+          {
+            "kind": "Conformance",
             "name": "Equatable",
             "printedName": "Equatable",
             "usr": "s:SQ",
@@ -19216,6 +19806,20 @@
           "ObjectiveC.NSObject"
         ],
         "conformances": [
+          {
+            "kind": "Conformance",
+            "name": "Copyable",
+            "printedName": "Copyable",
+            "usr": "s:s8CopyableP",
+            "mangledName": "$ss8CopyableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Escapable",
+            "printedName": "Escapable",
+            "usr": "s:s9EscapableP",
+            "mangledName": "$ss9EscapableP"
+          },
           {
             "kind": "Conformance",
             "name": "Equatable",
@@ -24321,6 +24925,20 @@
         "conformances": [
           {
             "kind": "Conformance",
+            "name": "Copyable",
+            "printedName": "Copyable",
+            "usr": "s:s8CopyableP",
+            "mangledName": "$ss8CopyableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Escapable",
+            "printedName": "Escapable",
+            "usr": "s:s9EscapableP",
+            "mangledName": "$ss9EscapableP"
+          },
+          {
+            "kind": "Conformance",
             "name": "Equatable",
             "printedName": "Equatable",
             "usr": "s:SQ",
@@ -24507,6 +25125,22 @@
           "AccessControl",
           "ObjC",
           "RawDocComment"
+        ],
+        "conformances": [
+          {
+            "kind": "Conformance",
+            "name": "Escapable",
+            "printedName": "Escapable",
+            "usr": "s:s9EscapableP",
+            "mangledName": "$ss9EscapableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Copyable",
+            "printedName": "Copyable",
+            "usr": "s:s8CopyableP",
+            "mangledName": "$ss8CopyableP"
+          }
         ]
       },
       {
@@ -24652,6 +25286,20 @@
           "ObjectiveC.NSObject"
         ],
         "conformances": [
+          {
+            "kind": "Conformance",
+            "name": "Copyable",
+            "printedName": "Copyable",
+            "usr": "s:s8CopyableP",
+            "mangledName": "$ss8CopyableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Escapable",
+            "printedName": "Escapable",
+            "usr": "s:s9EscapableP",
+            "mangledName": "$ss9EscapableP"
+          },
           {
             "kind": "Conformance",
             "name": "Equatable",
@@ -24871,6 +25519,20 @@
           "ObjectiveC.NSObject"
         ],
         "conformances": [
+          {
+            "kind": "Conformance",
+            "name": "Copyable",
+            "printedName": "Copyable",
+            "usr": "s:s8CopyableP",
+            "mangledName": "$ss8CopyableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Escapable",
+            "printedName": "Escapable",
+            "usr": "s:s9EscapableP",
+            "mangledName": "$ss9EscapableP"
+          },
           {
             "kind": "Conformance",
             "name": "Equatable",
@@ -25122,6 +25784,20 @@
           "ObjectiveC.NSObject"
         ],
         "conformances": [
+          {
+            "kind": "Conformance",
+            "name": "Copyable",
+            "printedName": "Copyable",
+            "usr": "s:s8CopyableP",
+            "mangledName": "$ss8CopyableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Escapable",
+            "printedName": "Escapable",
+            "usr": "s:s9EscapableP",
+            "mangledName": "$ss9EscapableP"
+          },
           {
             "kind": "Conformance",
             "name": "Equatable",
@@ -26080,6 +26756,20 @@
         "conformances": [
           {
             "kind": "Conformance",
+            "name": "Copyable",
+            "printedName": "Copyable",
+            "usr": "s:s8CopyableP",
+            "mangledName": "$ss8CopyableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Escapable",
+            "printedName": "Escapable",
+            "usr": "s:s9EscapableP",
+            "mangledName": "$ss9EscapableP"
+          },
+          {
+            "kind": "Conformance",
             "name": "Equatable",
             "printedName": "Equatable",
             "usr": "s:SQ",
@@ -26441,6 +27131,20 @@
         "conformances": [
           {
             "kind": "Conformance",
+            "name": "Copyable",
+            "printedName": "Copyable",
+            "usr": "s:s8CopyableP",
+            "mangledName": "$ss8CopyableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Escapable",
+            "printedName": "Escapable",
+            "usr": "s:s9EscapableP",
+            "mangledName": "$ss9EscapableP"
+          },
+          {
+            "kind": "Conformance",
             "name": "Equatable",
             "printedName": "Equatable",
             "usr": "s:SQ",
@@ -26722,6 +27426,20 @@
             ],
             "usr": "s:s27ExpressibleByIntegerLiteralP",
             "mangledName": "$ss27ExpressibleByIntegerLiteralP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Copyable",
+            "printedName": "Copyable",
+            "usr": "s:s8CopyableP",
+            "mangledName": "$ss8CopyableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Escapable",
+            "printedName": "Escapable",
+            "usr": "s:s9EscapableP",
+            "mangledName": "$ss9EscapableP"
           },
           {
             "kind": "Conformance",
@@ -27481,6 +28199,20 @@
         "conformances": [
           {
             "kind": "Conformance",
+            "name": "Copyable",
+            "printedName": "Copyable",
+            "usr": "s:s8CopyableP",
+            "mangledName": "$ss8CopyableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Escapable",
+            "printedName": "Escapable",
+            "usr": "s:s9EscapableP",
+            "mangledName": "$ss9EscapableP"
+          },
+          {
+            "kind": "Conformance",
             "name": "Equatable",
             "printedName": "Equatable",
             "usr": "s:SQ",
@@ -27743,6 +28475,20 @@
           "ObjectiveC.NSObject"
         ],
         "conformances": [
+          {
+            "kind": "Conformance",
+            "name": "Copyable",
+            "printedName": "Copyable",
+            "usr": "s:s8CopyableP",
+            "mangledName": "$ss8CopyableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Escapable",
+            "printedName": "Escapable",
+            "usr": "s:s9EscapableP",
+            "mangledName": "$ss9EscapableP"
+          },
           {
             "kind": "Conformance",
             "name": "Equatable",
@@ -28309,6 +29055,20 @@
         "conformances": [
           {
             "kind": "Conformance",
+            "name": "Copyable",
+            "printedName": "Copyable",
+            "usr": "s:s8CopyableP",
+            "mangledName": "$ss8CopyableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Escapable",
+            "printedName": "Escapable",
+            "usr": "s:s9EscapableP",
+            "mangledName": "$ss9EscapableP"
+          },
+          {
+            "kind": "Conformance",
             "name": "Equatable",
             "printedName": "Equatable",
             "usr": "s:SQ",
@@ -28718,6 +29478,20 @@
           "ObjectiveC.NSObject"
         ],
         "conformances": [
+          {
+            "kind": "Conformance",
+            "name": "Copyable",
+            "printedName": "Copyable",
+            "usr": "s:s8CopyableP",
+            "mangledName": "$ss8CopyableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Escapable",
+            "printedName": "Escapable",
+            "usr": "s:s9EscapableP",
+            "mangledName": "$ss9EscapableP"
+          },
           {
             "kind": "Conformance",
             "name": "Equatable",
@@ -29538,6 +30312,71 @@
             ]
           },
           {
+            "kind": "Var",
+            "name": "rawResponseInJson",
+            "printedName": "rawResponseInJson",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Optional",
+                "printedName": "Foundation.NSDictionary?",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "NSDictionary",
+                    "printedName": "Foundation.NSDictionary",
+                    "usr": "c:objc(cs)NSDictionary"
+                  }
+                ],
+                "usr": "s:Sq"
+              }
+            ],
+            "declKind": "Var",
+            "usr": "c:@M@PrebidMobile@objc(cs)BidResponse(py)rawResponseInJson",
+            "mangledName": "$s12PrebidMobile11BidResponseC03rawD6InJsonSo12NSDictionaryCSgvp",
+            "moduleName": "PrebidMobile",
+            "declAttributes": [
+              "HasInitialValue",
+              "HasStorage",
+              "SetterAccess",
+              "AccessControl",
+              "ObjC"
+            ],
+            "hasStorage": true,
+            "accessors": [
+              {
+                "kind": "Accessor",
+                "name": "Get",
+                "printedName": "Get()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Optional",
+                    "printedName": "Foundation.NSDictionary?",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "NSDictionary",
+                        "printedName": "Foundation.NSDictionary",
+                        "usr": "c:objc(cs)NSDictionary"
+                      }
+                    ],
+                    "usr": "s:Sq"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "c:@M@PrebidMobile@objc(cs)BidResponse(im)rawResponseInJson",
+                "mangledName": "$s12PrebidMobile11BidResponseC03rawD6InJsonSo12NSDictionaryCSgvg",
+                "moduleName": "PrebidMobile",
+                "implicit": true,
+                "declAttributes": [
+                  "ObjC"
+                ],
+                "accessorKind": "get"
+              }
+            ]
+          },
+          {
             "kind": "Constructor",
             "name": "init",
             "printedName": "init(adUnitId:targetingInfo:)",
@@ -29714,6 +30553,20 @@
           "ObjectiveC.NSObject"
         ],
         "conformances": [
+          {
+            "kind": "Conformance",
+            "name": "Copyable",
+            "printedName": "Copyable",
+            "usr": "s:s8CopyableP",
+            "mangledName": "$ss8CopyableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Escapable",
+            "printedName": "Escapable",
+            "usr": "s:s9EscapableP",
+            "mangledName": "$ss9EscapableP"
+          },
           {
             "kind": "Conformance",
             "name": "Equatable",
@@ -30453,6 +31306,20 @@
           "ObjectiveC.NSObject"
         ],
         "conformances": [
+          {
+            "kind": "Conformance",
+            "name": "Copyable",
+            "printedName": "Copyable",
+            "usr": "s:s8CopyableP",
+            "mangledName": "$ss8CopyableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Escapable",
+            "printedName": "Escapable",
+            "usr": "s:s9EscapableP",
+            "mangledName": "$ss9EscapableP"
+          },
           {
             "kind": "Conformance",
             "name": "Equatable",
@@ -31515,6 +32382,20 @@
           },
           {
             "kind": "Conformance",
+            "name": "Copyable",
+            "printedName": "Copyable",
+            "usr": "s:s8CopyableP",
+            "mangledName": "$ss8CopyableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Escapable",
+            "printedName": "Escapable",
+            "usr": "s:s9EscapableP",
+            "mangledName": "$ss9EscapableP"
+          },
+          {
+            "kind": "Conformance",
             "name": "Equatable",
             "printedName": "Equatable",
             "usr": "s:SQ",
@@ -31561,6 +32442,13 @@
             "printedName": "CustomDebugStringConvertible",
             "usr": "s:s28CustomDebugStringConvertibleP",
             "mangledName": "$ss28CustomDebugStringConvertibleP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Sendable",
+            "printedName": "Sendable",
+            "usr": "s:s8SendableP",
+            "mangledName": "$ss8SendableP"
           }
         ]
       },
@@ -31779,6 +32667,20 @@
           "ObjectiveC.NSObject"
         ],
         "conformances": [
+          {
+            "kind": "Conformance",
+            "name": "Copyable",
+            "printedName": "Copyable",
+            "usr": "s:s8CopyableP",
+            "mangledName": "$ss8CopyableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Escapable",
+            "printedName": "Escapable",
+            "usr": "s:s9EscapableP",
+            "mangledName": "$ss9EscapableP"
+          },
           {
             "kind": "Conformance",
             "name": "Equatable",
@@ -32094,6 +32996,20 @@
         "conformances": [
           {
             "kind": "Conformance",
+            "name": "Copyable",
+            "printedName": "Copyable",
+            "usr": "s:s8CopyableP",
+            "mangledName": "$ss8CopyableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Escapable",
+            "printedName": "Escapable",
+            "usr": "s:s9EscapableP",
+            "mangledName": "$ss9EscapableP"
+          },
+          {
+            "kind": "Conformance",
             "name": "Equatable",
             "printedName": "Equatable",
             "usr": "s:SQ",
@@ -32376,6 +33292,20 @@
           "ObjectiveC.NSObject"
         ],
         "conformances": [
+          {
+            "kind": "Conformance",
+            "name": "Copyable",
+            "printedName": "Copyable",
+            "usr": "s:s8CopyableP",
+            "mangledName": "$ss8CopyableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Escapable",
+            "printedName": "Escapable",
+            "usr": "s:s9EscapableP",
+            "mangledName": "$ss9EscapableP"
+          },
           {
             "kind": "Conformance",
             "name": "Equatable",
@@ -33074,6 +34004,20 @@
           },
           {
             "kind": "Conformance",
+            "name": "Copyable",
+            "printedName": "Copyable",
+            "usr": "s:s8CopyableP",
+            "mangledName": "$ss8CopyableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Escapable",
+            "printedName": "Escapable",
+            "usr": "s:s9EscapableP",
+            "mangledName": "$ss9EscapableP"
+          },
+          {
+            "kind": "Conformance",
             "name": "Equatable",
             "printedName": "Equatable",
             "usr": "s:SQ",
@@ -33225,6 +34169,20 @@
           "ObjectiveC.NSObject"
         ],
         "conformances": [
+          {
+            "kind": "Conformance",
+            "name": "Copyable",
+            "printedName": "Copyable",
+            "usr": "s:s8CopyableP",
+            "mangledName": "$ss8CopyableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Escapable",
+            "printedName": "Escapable",
+            "usr": "s:s9EscapableP",
+            "mangledName": "$ss9EscapableP"
+          },
           {
             "kind": "Conformance",
             "name": "Equatable",
@@ -34122,8 +35080,8 @@
             "objc_name": "adUnitConfig",
             "declAttributes": [
               "ObjC",
-              "HasStorage",
               "Final",
+              "HasStorage",
               "AccessControl"
             ],
             "isLet": true,
@@ -34936,8 +35894,8 @@
             "objc_name": "eventHandler",
             "declAttributes": [
               "HasInitialValue",
-              "HasStorage",
               "ObjC",
+              "HasStorage",
               "AccessControl"
             ],
             "hasStorage": true,
@@ -35904,6 +36862,20 @@
           },
           {
             "kind": "Conformance",
+            "name": "Copyable",
+            "printedName": "Copyable",
+            "usr": "s:s8CopyableP",
+            "mangledName": "$ss8CopyableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Escapable",
+            "printedName": "Escapable",
+            "usr": "s:s9EscapableP",
+            "mangledName": "$ss9EscapableP"
+          },
+          {
+            "kind": "Conformance",
             "name": "Equatable",
             "printedName": "Equatable",
             "usr": "s:SQ",
@@ -36054,6 +37026,22 @@
         "declAttributes": [
           "AccessControl",
           "ObjC"
+        ],
+        "conformances": [
+          {
+            "kind": "Conformance",
+            "name": "Escapable",
+            "printedName": "Escapable",
+            "usr": "s:s9EscapableP",
+            "mangledName": "$ss9EscapableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Copyable",
+            "printedName": "Copyable",
+            "usr": "s:s8CopyableP",
+            "mangledName": "$ss8CopyableP"
+          }
         ]
       },
       {
@@ -36302,6 +37290,20 @@
         "conformances": [
           {
             "kind": "Conformance",
+            "name": "Copyable",
+            "printedName": "Copyable",
+            "usr": "s:s8CopyableP",
+            "mangledName": "$ss8CopyableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Escapable",
+            "printedName": "Escapable",
+            "usr": "s:s9EscapableP",
+            "mangledName": "$ss9EscapableP"
+          },
+          {
+            "kind": "Conformance",
             "name": "Equatable",
             "printedName": "Equatable",
             "usr": "s:SQ",
@@ -36463,6 +37465,20 @@
           "ObjectiveC.NSObject"
         ],
         "conformances": [
+          {
+            "kind": "Conformance",
+            "name": "Copyable",
+            "printedName": "Copyable",
+            "usr": "s:s8CopyableP",
+            "mangledName": "$ss8CopyableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Escapable",
+            "printedName": "Escapable",
+            "usr": "s:s9EscapableP",
+            "mangledName": "$ss9EscapableP"
+          },
           {
             "kind": "Conformance",
             "name": "Equatable",
@@ -36637,6 +37653,20 @@
           "ObjC"
         ],
         "conformances": [
+          {
+            "kind": "Conformance",
+            "name": "Escapable",
+            "printedName": "Escapable",
+            "usr": "s:s9EscapableP",
+            "mangledName": "$ss9EscapableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Copyable",
+            "printedName": "Copyable",
+            "usr": "s:s8CopyableP",
+            "mangledName": "$ss8CopyableP"
+          },
           {
             "kind": "Conformance",
             "name": "InterstitialEventLoadingDelegate",
@@ -37355,6 +38385,20 @@
         "conformances": [
           {
             "kind": "Conformance",
+            "name": "Copyable",
+            "printedName": "Copyable",
+            "usr": "s:s8CopyableP",
+            "mangledName": "$ss8CopyableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Escapable",
+            "printedName": "Escapable",
+            "usr": "s:s9EscapableP",
+            "mangledName": "$ss9EscapableP"
+          },
+          {
+            "kind": "Conformance",
             "name": "Equatable",
             "printedName": "Equatable",
             "usr": "s:SQ",
@@ -37439,8 +38483,9 @@
             "declAttributes": [
               "Final",
               "ObjC",
-              "HasStorage",
+              "Preconcurrency",
               "Custom",
+              "HasStorage",
               "AccessControl"
             ],
             "isLet": true,
@@ -37491,8 +38536,9 @@
             "declAttributes": [
               "HasInitialValue",
               "ObjC",
-              "HasStorage",
+              "Preconcurrency",
               "Custom",
+              "HasStorage",
               "ReferenceOwnership",
               "AccessControl"
             ],
@@ -37602,6 +38648,7 @@
             "mangledName": "$s12PrebidMobile10BannerViewC16bannerParametersAA0cF0Cvp",
             "moduleName": "PrebidMobile",
             "declAttributes": [
+              "Preconcurrency",
               "Custom",
               "AccessControl",
               "ObjC",
@@ -37648,6 +38695,7 @@
             "mangledName": "$s12PrebidMobile10BannerViewC15videoParametersAA05VideoF0Cvp",
             "moduleName": "PrebidMobile",
             "declAttributes": [
+              "Preconcurrency",
               "Custom",
               "AccessControl",
               "ObjC"
@@ -37701,6 +38749,7 @@
             "mangledName": "$s12PrebidMobile10BannerViewC15lastBidResponseAA0fG0CSgvp",
             "moduleName": "PrebidMobile",
             "declAttributes": [
+              "Preconcurrency",
               "Custom",
               "AccessControl",
               "ObjC"
@@ -37754,6 +38803,7 @@
             "mangledName": "$s12PrebidMobile10BannerViewC8configIDSSvp",
             "moduleName": "PrebidMobile",
             "declAttributes": [
+              "Preconcurrency",
               "Custom",
               "AccessControl",
               "ObjC"
@@ -37799,6 +38849,7 @@
             "mangledName": "$s12PrebidMobile10BannerViewC15refreshIntervalSdvp",
             "moduleName": "PrebidMobile",
             "declAttributes": [
+              "Preconcurrency",
               "Custom",
               "AccessControl",
               "ObjC"
@@ -37904,6 +38955,7 @@
             "mangledName": "$s12PrebidMobile10BannerViewC15additionalSizesSaySo6CGSizeVGSgvp",
             "moduleName": "PrebidMobile",
             "declAttributes": [
+              "Preconcurrency",
               "Custom",
               "AccessControl",
               "ObjC"
@@ -38025,6 +39077,7 @@
             "mangledName": "$s12PrebidMobile10BannerViewC8adFormatAA02AdF0Cvp",
             "moduleName": "PrebidMobile",
             "declAttributes": [
+              "Preconcurrency",
               "Custom",
               "AccessControl",
               "ObjC"
@@ -38114,6 +39167,7 @@
             "mangledName": "$s12PrebidMobile10BannerViewC10adPositionAA02AdF0Ovp",
             "moduleName": "PrebidMobile",
             "declAttributes": [
+              "Preconcurrency",
               "Custom",
               "AccessControl",
               "ObjC"
@@ -38203,8 +39257,9 @@
             "moduleName": "PrebidMobile",
             "declAttributes": [
               "HasInitialValue",
-              "HasStorage",
+              "Preconcurrency",
               "Custom",
+              "HasStorage",
               "ReferenceOwnership",
               "AccessControl",
               "ObjC"
@@ -38348,8 +39403,9 @@
             "moduleName": "PrebidMobile",
             "declAttributes": [
               "HasInitialValue",
-              "HasStorage",
+              "Preconcurrency",
               "Custom",
+              "HasStorage",
               "AccessControl"
             ],
             "hasStorage": true,
@@ -38525,6 +39581,7 @@
             "moduleName": "PrebidMobile",
             "objc_name": "initWithFrame:configID:adSize:eventHandler:",
             "declAttributes": [
+              "Preconcurrency",
               "Custom",
               "AccessControl",
               "ObjC",
@@ -38562,6 +39619,7 @@
             "moduleName": "PrebidMobile",
             "objc_name": "initWithConfigID:eventHandler:",
             "declAttributes": [
+              "Preconcurrency",
               "Custom",
               "Convenience",
               "AccessControl",
@@ -38605,6 +39663,7 @@
             "moduleName": "PrebidMobile",
             "objc_name": "initWithFrame:configID:adSize:",
             "declAttributes": [
+              "Preconcurrency",
               "Custom",
               "Convenience",
               "AccessControl",
@@ -38647,6 +39706,7 @@
             "declAttributes": [
               "Dynamic",
               "ObjC",
+              "Preconcurrency",
               "Custom",
               "Required",
               "AccessControl"
@@ -38669,6 +39729,7 @@
             "mangledName": "$s12PrebidMobile10BannerViewC6loadAdyyF",
             "moduleName": "PrebidMobile",
             "declAttributes": [
+              "Preconcurrency",
               "Custom",
               "AccessControl",
               "ObjC"
@@ -38698,6 +39759,7 @@
             "moduleName": "PrebidMobile",
             "objc_name": "setStoredAuctionResponseWithStoredAuction:",
             "declAttributes": [
+              "Preconcurrency",
               "Custom",
               "AccessControl",
               "ObjC"
@@ -38720,6 +39782,7 @@
             "mangledName": "$s12PrebidMobile10BannerViewC11stopRefreshyyF",
             "moduleName": "PrebidMobile",
             "declAttributes": [
+              "Preconcurrency",
               "Custom",
               "AccessControl",
               "ObjC"
@@ -38742,6 +39805,7 @@
             "mangledName": "$s12PrebidMobile10BannerViewC13loadAdContentyyF",
             "moduleName": "PrebidMobile",
             "declAttributes": [
+              "Preconcurrency",
               "Custom",
               "AccessControl",
               "ObjC"
@@ -38764,6 +39828,7 @@
             "mangledName": "$s12PrebidMobile10BannerViewC17notifyLoseBiddingyyF",
             "moduleName": "PrebidMobile",
             "declAttributes": [
+              "Preconcurrency",
               "Custom",
               "AccessControl",
               "ObjC"
@@ -38786,6 +39851,7 @@
             "mangledName": "$s12PrebidMobile10BannerViewC016notifyThirdPartyD7DidLoadyyF",
             "moduleName": "PrebidMobile",
             "declAttributes": [
+              "Preconcurrency",
               "Custom",
               "AccessControl",
               "ObjC"
@@ -38815,6 +39881,7 @@
             "moduleName": "PrebidMobile",
             "objc_name": "handleBidResponseWithResponse:",
             "declAttributes": [
+              "Preconcurrency",
               "Custom",
               "AccessControl",
               "ObjC"
@@ -38849,6 +39916,7 @@
             "mangledName": "$s12PrebidMobile10BannerViewC14addContextData_6forKeyySS_SStF",
             "moduleName": "PrebidMobile",
             "declAttributes": [
+              "Preconcurrency",
               "Custom",
               "AccessControl",
               "ObjC",
@@ -38892,6 +39960,7 @@
             "mangledName": "$s12PrebidMobile10BannerViewC17updateContextData_6forKeyyShySSG_SStF",
             "moduleName": "PrebidMobile",
             "declAttributes": [
+              "Preconcurrency",
               "Custom",
               "AccessControl",
               "ObjC"
@@ -38921,6 +39990,7 @@
             "moduleName": "PrebidMobile",
             "objc_name": "removeContextDateForKey:",
             "declAttributes": [
+              "Preconcurrency",
               "Custom",
               "AccessControl",
               "ObjC"
@@ -38943,6 +40013,7 @@
             "mangledName": "$s12PrebidMobile10BannerViewC16clearContextDatayyF",
             "moduleName": "PrebidMobile",
             "declAttributes": [
+              "Preconcurrency",
               "Custom",
               "AccessControl",
               "ObjC"
@@ -38971,6 +40042,7 @@
             "mangledName": "$s12PrebidMobile10BannerViewC13setAppContentyySo010PBMORTBAppG0CF",
             "moduleName": "PrebidMobile",
             "declAttributes": [
+              "Preconcurrency",
               "Custom",
               "AccessControl",
               "ObjC",
@@ -38994,6 +40066,7 @@
             "mangledName": "$s12PrebidMobile10BannerViewC15clearAppContentyyF",
             "moduleName": "PrebidMobile",
             "declAttributes": [
+              "Preconcurrency",
               "Custom",
               "AccessControl",
               "ObjC"
@@ -39030,6 +40103,7 @@
             "mangledName": "$s12PrebidMobile10BannerViewC17addAppContentDatayySaySo014PBMORTBContentH0CGF",
             "moduleName": "PrebidMobile",
             "declAttributes": [
+              "Preconcurrency",
               "Custom",
               "AccessControl",
               "ObjC"
@@ -39058,6 +40132,7 @@
             "mangledName": "$s12PrebidMobile10BannerViewC26removeAppContentDataObjectyySo014PBMORTBContentH0CF",
             "moduleName": "PrebidMobile",
             "declAttributes": [
+              "Preconcurrency",
               "Custom",
               "AccessControl",
               "ObjC"
@@ -39080,6 +40155,7 @@
             "mangledName": "$s12PrebidMobile10BannerViewC26clearAppContentDataObjectsyyF",
             "moduleName": "PrebidMobile",
             "declAttributes": [
+              "Preconcurrency",
               "Custom",
               "AccessControl",
               "ObjC"
@@ -39116,6 +40192,7 @@
             "mangledName": "$s12PrebidMobile10BannerViewC11addUserDatayySaySo014PBMORTBContentG0CGF",
             "moduleName": "PrebidMobile",
             "declAttributes": [
+              "Preconcurrency",
               "Custom",
               "AccessControl",
               "ObjC",
@@ -39145,6 +40222,7 @@
             "mangledName": "$s12PrebidMobile10BannerViewC14removeUserDatayySo014PBMORTBContentG0CF",
             "moduleName": "PrebidMobile",
             "declAttributes": [
+              "Preconcurrency",
               "Custom",
               "AccessControl",
               "ObjC"
@@ -39167,6 +40245,7 @@
             "mangledName": "$s12PrebidMobile10BannerViewC13clearUserDatayyF",
             "moduleName": "PrebidMobile",
             "declAttributes": [
+              "Preconcurrency",
               "Custom",
               "AccessControl",
               "ObjC"
@@ -39197,6 +40276,7 @@
             "objc_name": "trackImpressionForDisplayView:",
             "declAttributes": [
               "ObjC",
+              "Preconcurrency",
               "Custom",
               "AccessControl",
               "RawDocComment"
@@ -39236,6 +40316,7 @@
             "objc_name": "viewControllerForModalPresentationFromDisplayView:",
             "declAttributes": [
               "ObjC",
+              "Preconcurrency",
               "Custom",
               "AccessControl"
             ],
@@ -39265,6 +40346,7 @@
             "objc_name": "didLeaveAppFrom:",
             "declAttributes": [
               "ObjC",
+              "Preconcurrency",
               "Custom",
               "AccessControl"
             ],
@@ -39308,6 +40390,7 @@
             "objc_name": "willPresentModalFrom:url:",
             "declAttributes": [
               "ObjC",
+              "Preconcurrency",
               "Custom",
               "AccessControl"
             ],
@@ -39337,6 +40420,7 @@
             "objc_name": "didDismissModalFrom:",
             "declAttributes": [
               "ObjC",
+              "Preconcurrency",
               "Custom",
               "AccessControl"
             ],
@@ -39378,6 +40462,7 @@
             "objc_name": "bannerAdLoader:loadedAdView:adSize:",
             "declAttributes": [
               "ObjC",
+              "Preconcurrency",
               "Custom",
               "AccessControl",
               "RawDocComment"
@@ -39414,6 +40499,7 @@
             "objc_name": "bannerAdLoader:createdDisplayView:",
             "declAttributes": [
               "ObjC",
+              "Preconcurrency",
               "Custom",
               "AccessControl"
             ],
@@ -39457,6 +40543,7 @@
             "objc_name": "adLoadFlowController:failedWithError:",
             "declAttributes": [
               "ObjC",
+              "Preconcurrency",
               "Custom",
               "AccessControl",
               "RawDocComment"
@@ -39487,6 +40574,7 @@
             "objc_name": "adLoadFlowControllerWillSendBidRequest:",
             "declAttributes": [
               "ObjC",
+              "Preconcurrency",
               "Custom",
               "AccessControl"
             ],
@@ -39516,6 +40604,7 @@
             "objc_name": "adLoadFlowControllerWillRequestPrimaryAd:",
             "declAttributes": [
               "ObjC",
+              "Preconcurrency",
               "Custom",
               "AccessControl"
             ],
@@ -39546,6 +40635,7 @@
             "objc_name": "adLoadFlowControllerShouldContinue:",
             "declAttributes": [
               "ObjC",
+              "Preconcurrency",
               "Custom",
               "AccessControl"
             ],
@@ -39575,6 +40665,7 @@
             "objc_name": "adLoadFlowControllerDidReceiveBidResponse:",
             "declAttributes": [
               "ObjC",
+              "Preconcurrency",
               "Custom",
               "AccessControl"
             ],
@@ -39598,6 +40689,7 @@
             "objc_name": "willPresentModal",
             "declAttributes": [
               "ObjC",
+              "Preconcurrency",
               "Custom",
               "AccessControl",
               "RawDocComment"
@@ -39622,6 +40714,7 @@
             "objc_name": "didDismissModal",
             "declAttributes": [
               "ObjC",
+              "Preconcurrency",
               "Custom",
               "AccessControl"
             ],
@@ -39645,6 +40738,7 @@
             "objc_name": "willLeaveApp",
             "declAttributes": [
               "ObjC",
+              "Preconcurrency",
               "Custom",
               "AccessControl"
             ],
@@ -39677,6 +40771,7 @@
             "objc_name": "viewControllerForPresentingModal",
             "declAttributes": [
               "ObjC",
+              "Preconcurrency",
               "Custom",
               "AccessControl"
             ],
@@ -39741,6 +40836,7 @@
             "declAttributes": [
               "Dynamic",
               "ObjC",
+              "Preconcurrency",
               "Custom",
               "Override"
             ],
@@ -39753,6 +40849,7 @@
         "moduleName": "PrebidMobile",
         "isOpen": true,
         "declAttributes": [
+          "Preconcurrency",
           "Custom",
           "AccessControl",
           "ObjC"
@@ -39791,6 +40888,20 @@
             "printedName": "DisplayViewInteractionDelegate",
             "usr": "c:@M@PrebidMobile@objc(pl)DisplayViewInteractionDelegate",
             "mangledName": "$s12PrebidMobile30DisplayViewInteractionDelegateP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Copyable",
+            "printedName": "Copyable",
+            "usr": "s:s8CopyableP",
+            "mangledName": "$ss8CopyableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Escapable",
+            "printedName": "Escapable",
+            "usr": "s:s9EscapableP",
+            "mangledName": "$ss9EscapableP"
           },
           {
             "kind": "Conformance",
@@ -39982,6 +41093,20 @@
           "ObjectiveC.NSObject"
         ],
         "conformances": [
+          {
+            "kind": "Conformance",
+            "name": "Copyable",
+            "printedName": "Copyable",
+            "usr": "s:s8CopyableP",
+            "mangledName": "$ss8CopyableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Escapable",
+            "printedName": "Escapable",
+            "usr": "s:s9EscapableP",
+            "mangledName": "$ss9EscapableP"
+          },
           {
             "kind": "Conformance",
             "name": "Equatable",
@@ -41091,6 +42216,20 @@
           "ObjectiveC.NSObject"
         ],
         "conformances": [
+          {
+            "kind": "Conformance",
+            "name": "Copyable",
+            "printedName": "Copyable",
+            "usr": "s:s8CopyableP",
+            "mangledName": "$ss8CopyableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Escapable",
+            "printedName": "Escapable",
+            "usr": "s:s9EscapableP",
+            "mangledName": "$ss9EscapableP"
+          },
           {
             "kind": "Conformance",
             "name": "Equatable",
@@ -43784,6 +44923,20 @@
         "conformances": [
           {
             "kind": "Conformance",
+            "name": "Copyable",
+            "printedName": "Copyable",
+            "usr": "s:s8CopyableP",
+            "mangledName": "$ss8CopyableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Escapable",
+            "printedName": "Escapable",
+            "usr": "s:s9EscapableP",
+            "mangledName": "$ss9EscapableP"
+          },
+          {
+            "kind": "Conformance",
             "name": "Equatable",
             "printedName": "Equatable",
             "usr": "s:SQ",
@@ -44585,6 +45738,20 @@
           "ObjectiveC.NSObject"
         ],
         "conformances": [
+          {
+            "kind": "Conformance",
+            "name": "Copyable",
+            "printedName": "Copyable",
+            "usr": "s:s8CopyableP",
+            "mangledName": "$ss8CopyableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Escapable",
+            "printedName": "Escapable",
+            "usr": "s:s9EscapableP",
+            "mangledName": "$ss9EscapableP"
+          },
           {
             "kind": "Conformance",
             "name": "Equatable",
@@ -45696,6 +46863,20 @@
         "conformances": [
           {
             "kind": "Conformance",
+            "name": "Copyable",
+            "printedName": "Copyable",
+            "usr": "s:s8CopyableP",
+            "mangledName": "$ss8CopyableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Escapable",
+            "printedName": "Escapable",
+            "usr": "s:s9EscapableP",
+            "mangledName": "$ss9EscapableP"
+          },
+          {
+            "kind": "Conformance",
             "name": "Equatable",
             "printedName": "Equatable",
             "usr": "s:SQ",
@@ -45925,6 +47106,20 @@
         ],
         "enumRawTypeName": "Int",
         "conformances": [
+          {
+            "kind": "Conformance",
+            "name": "Copyable",
+            "printedName": "Copyable",
+            "usr": "s:s8CopyableP",
+            "mangledName": "$ss8CopyableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Escapable",
+            "printedName": "Escapable",
+            "usr": "s:s9EscapableP",
+            "mangledName": "$ss9EscapableP"
+          },
           {
             "kind": "Conformance",
             "name": "Equatable",
@@ -46273,6 +47468,20 @@
         "conformances": [
           {
             "kind": "Conformance",
+            "name": "Copyable",
+            "printedName": "Copyable",
+            "usr": "s:s8CopyableP",
+            "mangledName": "$ss8CopyableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Escapable",
+            "printedName": "Escapable",
+            "usr": "s:s9EscapableP",
+            "mangledName": "$ss9EscapableP"
+          },
+          {
+            "kind": "Conformance",
             "name": "Equatable",
             "printedName": "Equatable",
             "usr": "s:SQ",
@@ -46605,6 +47814,20 @@
             ],
             "usr": "s:s27ExpressibleByIntegerLiteralP",
             "mangledName": "$ss27ExpressibleByIntegerLiteralP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Copyable",
+            "printedName": "Copyable",
+            "usr": "s:s8CopyableP",
+            "mangledName": "$ss8CopyableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Escapable",
+            "printedName": "Escapable",
+            "usr": "s:s9EscapableP",
+            "mangledName": "$ss9EscapableP"
           },
           {
             "kind": "Conformance",
@@ -47786,6 +49009,20 @@
         "conformances": [
           {
             "kind": "Conformance",
+            "name": "Copyable",
+            "printedName": "Copyable",
+            "usr": "s:s8CopyableP",
+            "mangledName": "$ss8CopyableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Escapable",
+            "printedName": "Escapable",
+            "usr": "s:s9EscapableP",
+            "mangledName": "$ss9EscapableP"
+          },
+          {
+            "kind": "Conformance",
             "name": "Equatable",
             "printedName": "Equatable",
             "usr": "s:SQ",
@@ -48105,6 +49342,22 @@
         "declAttributes": [
           "AccessControl",
           "ObjC"
+        ],
+        "conformances": [
+          {
+            "kind": "Conformance",
+            "name": "Escapable",
+            "printedName": "Escapable",
+            "usr": "s:s9EscapableP",
+            "mangledName": "$ss9EscapableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Copyable",
+            "printedName": "Copyable",
+            "usr": "s:s8CopyableP",
+            "mangledName": "$ss8CopyableP"
+          }
         ]
       },
       {
@@ -48251,6 +49504,22 @@
           "AccessControl",
           "ObjC",
           "RawDocComment"
+        ],
+        "conformances": [
+          {
+            "kind": "Conformance",
+            "name": "Escapable",
+            "printedName": "Escapable",
+            "usr": "s:s9EscapableP",
+            "mangledName": "$ss9EscapableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Copyable",
+            "printedName": "Copyable",
+            "usr": "s:s8CopyableP",
+            "mangledName": "$ss8CopyableP"
+          }
         ]
       },
       {
@@ -49032,6 +50301,20 @@
           },
           {
             "kind": "Conformance",
+            "name": "Copyable",
+            "printedName": "Copyable",
+            "usr": "s:s8CopyableP",
+            "mangledName": "$ss8CopyableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Escapable",
+            "printedName": "Escapable",
+            "usr": "s:s9EscapableP",
+            "mangledName": "$ss9EscapableP"
+          },
+          {
+            "kind": "Conformance",
             "name": "Equatable",
             "printedName": "Equatable",
             "usr": "s:SQ",
@@ -49211,6 +50494,20 @@
           "ObjectiveC.NSObject"
         ],
         "conformances": [
+          {
+            "kind": "Conformance",
+            "name": "Copyable",
+            "printedName": "Copyable",
+            "usr": "s:s8CopyableP",
+            "mangledName": "$ss8CopyableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Escapable",
+            "printedName": "Escapable",
+            "usr": "s:s9EscapableP",
+            "mangledName": "$ss9EscapableP"
+          },
           {
             "kind": "Conformance",
             "name": "Equatable",
@@ -49896,6 +51193,20 @@
           "ObjectiveC.NSObject"
         ],
         "conformances": [
+          {
+            "kind": "Conformance",
+            "name": "Copyable",
+            "printedName": "Copyable",
+            "usr": "s:s8CopyableP",
+            "mangledName": "$ss8CopyableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Escapable",
+            "printedName": "Escapable",
+            "usr": "s:s9EscapableP",
+            "mangledName": "$ss9EscapableP"
+          },
           {
             "kind": "Conformance",
             "name": "Equatable",
@@ -50972,6 +52283,20 @@
           "ObjectiveC.NSObject"
         ],
         "conformances": [
+          {
+            "kind": "Conformance",
+            "name": "Copyable",
+            "printedName": "Copyable",
+            "usr": "s:s8CopyableP",
+            "mangledName": "$ss8CopyableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Escapable",
+            "printedName": "Escapable",
+            "usr": "s:s9EscapableP",
+            "mangledName": "$ss9EscapableP"
+          },
           {
             "kind": "Conformance",
             "name": "Equatable",
@@ -52706,6 +54031,20 @@
         "conformances": [
           {
             "kind": "Conformance",
+            "name": "Copyable",
+            "printedName": "Copyable",
+            "usr": "s:s8CopyableP",
+            "mangledName": "$ss8CopyableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Escapable",
+            "printedName": "Escapable",
+            "usr": "s:s9EscapableP",
+            "mangledName": "$ss9EscapableP"
+          },
+          {
+            "kind": "Conformance",
             "name": "Equatable",
             "printedName": "Equatable",
             "usr": "s:SQ",
@@ -52853,6 +54192,20 @@
           "ObjectiveC.NSObject"
         ],
         "conformances": [
+          {
+            "kind": "Conformance",
+            "name": "Copyable",
+            "printedName": "Copyable",
+            "usr": "s:s8CopyableP",
+            "mangledName": "$ss8CopyableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Escapable",
+            "printedName": "Escapable",
+            "usr": "s:s9EscapableP",
+            "mangledName": "$ss9EscapableP"
+          },
           {
             "kind": "Conformance",
             "name": "Equatable",
@@ -53245,6 +54598,20 @@
           },
           {
             "kind": "Conformance",
+            "name": "Copyable",
+            "printedName": "Copyable",
+            "usr": "s:s8CopyableP",
+            "mangledName": "$ss8CopyableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Escapable",
+            "printedName": "Escapable",
+            "usr": "s:s9EscapableP",
+            "mangledName": "$ss9EscapableP"
+          },
+          {
+            "kind": "Conformance",
             "name": "Equatable",
             "printedName": "Equatable",
             "usr": "s:SQ",
@@ -53526,6 +54893,20 @@
             ],
             "usr": "s:s27ExpressibleByIntegerLiteralP",
             "mangledName": "$ss27ExpressibleByIntegerLiteralP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Copyable",
+            "printedName": "Copyable",
+            "usr": "s:s8CopyableP",
+            "mangledName": "$ss8CopyableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Escapable",
+            "printedName": "Escapable",
+            "usr": "s:s9EscapableP",
+            "mangledName": "$ss9EscapableP"
           },
           {
             "kind": "Conformance",
@@ -54396,6 +55777,20 @@
         "conformances": [
           {
             "kind": "Conformance",
+            "name": "Copyable",
+            "printedName": "Copyable",
+            "usr": "s:s8CopyableP",
+            "mangledName": "$ss8CopyableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Escapable",
+            "printedName": "Escapable",
+            "usr": "s:s9EscapableP",
+            "mangledName": "$ss9EscapableP"
+          },
+          {
+            "kind": "Conformance",
             "name": "Equatable",
             "printedName": "Equatable",
             "usr": "s:SQ",
@@ -54683,6 +56078,22 @@
         "declAttributes": [
           "AccessControl",
           "ObjC"
+        ],
+        "conformances": [
+          {
+            "kind": "Conformance",
+            "name": "Escapable",
+            "printedName": "Escapable",
+            "usr": "s:s9EscapableP",
+            "mangledName": "$ss9EscapableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Copyable",
+            "printedName": "Copyable",
+            "usr": "s:s8CopyableP",
+            "mangledName": "$ss8CopyableP"
+          }
         ]
       },
       {
@@ -54985,6 +56396,20 @@
             "conformances": [
               {
                 "kind": "Conformance",
+                "name": "Copyable",
+                "printedName": "Copyable",
+                "usr": "s:s8CopyableP",
+                "mangledName": "$ss8CopyableP"
+              },
+              {
+                "kind": "Conformance",
+                "name": "Escapable",
+                "printedName": "Escapable",
+                "usr": "s:s9EscapableP",
+                "mangledName": "$ss9EscapableP"
+              },
+              {
+                "kind": "Conformance",
                 "name": "Equatable",
                 "printedName": "Equatable",
                 "usr": "s:SQ",
@@ -55093,6 +56518,20 @@
           "ObjectiveC.NSObject"
         ],
         "conformances": [
+          {
+            "kind": "Conformance",
+            "name": "Copyable",
+            "printedName": "Copyable",
+            "usr": "s:s8CopyableP",
+            "mangledName": "$ss8CopyableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Escapable",
+            "printedName": "Escapable",
+            "usr": "s:s9EscapableP",
+            "mangledName": "$ss9EscapableP"
+          },
           {
             "kind": "Conformance",
             "name": "Equatable",
@@ -55496,6 +56935,20 @@
           },
           {
             "kind": "Conformance",
+            "name": "Copyable",
+            "printedName": "Copyable",
+            "usr": "s:s8CopyableP",
+            "mangledName": "$ss8CopyableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Escapable",
+            "printedName": "Escapable",
+            "usr": "s:s9EscapableP",
+            "mangledName": "$ss9EscapableP"
+          },
+          {
+            "kind": "Conformance",
             "name": "Equatable",
             "printedName": "Equatable",
             "usr": "s:SQ",
@@ -55766,6 +57219,20 @@
         ],
         "enumRawTypeName": "Int",
         "conformances": [
+          {
+            "kind": "Conformance",
+            "name": "Copyable",
+            "printedName": "Copyable",
+            "usr": "s:s8CopyableP",
+            "mangledName": "$ss8CopyableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Escapable",
+            "printedName": "Escapable",
+            "usr": "s:s9EscapableP",
+            "mangledName": "$ss9EscapableP"
+          },
           {
             "kind": "Conformance",
             "name": "Equatable",
@@ -56756,6 +58223,20 @@
         "conformances": [
           {
             "kind": "Conformance",
+            "name": "Copyable",
+            "printedName": "Copyable",
+            "usr": "s:s8CopyableP",
+            "mangledName": "$ss8CopyableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Escapable",
+            "printedName": "Escapable",
+            "usr": "s:s9EscapableP",
+            "mangledName": "$ss9EscapableP"
+          },
+          {
+            "kind": "Conformance",
             "name": "Equatable",
             "printedName": "Equatable",
             "usr": "s:SQ",
@@ -56958,6 +58439,20 @@
           "ObjectiveC.NSObject"
         ],
         "conformances": [
+          {
+            "kind": "Conformance",
+            "name": "Copyable",
+            "printedName": "Copyable",
+            "usr": "s:s8CopyableP",
+            "mangledName": "$ss8CopyableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Escapable",
+            "printedName": "Escapable",
+            "usr": "s:s9EscapableP",
+            "mangledName": "$ss9EscapableP"
+          },
           {
             "kind": "Conformance",
             "name": "Equatable",
@@ -57252,6 +58747,22 @@
         "declAttributes": [
           "AccessControl",
           "ObjC"
+        ],
+        "conformances": [
+          {
+            "kind": "Conformance",
+            "name": "Escapable",
+            "printedName": "Escapable",
+            "usr": "s:s9EscapableP",
+            "mangledName": "$ss9EscapableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Copyable",
+            "printedName": "Copyable",
+            "usr": "s:s8CopyableP",
+            "mangledName": "$ss8CopyableP"
+          }
         ]
       },
       {
@@ -57427,6 +58938,22 @@
           "AccessControl",
           "ObjC",
           "RawDocComment"
+        ],
+        "conformances": [
+          {
+            "kind": "Conformance",
+            "name": "Escapable",
+            "printedName": "Escapable",
+            "usr": "s:s9EscapableP",
+            "mangledName": "$ss9EscapableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Copyable",
+            "printedName": "Copyable",
+            "usr": "s:s8CopyableP",
+            "mangledName": "$ss8CopyableP"
+          }
         ]
       },
       {
@@ -59526,6 +61053,20 @@
         "conformances": [
           {
             "kind": "Conformance",
+            "name": "Copyable",
+            "printedName": "Copyable",
+            "usr": "s:s8CopyableP",
+            "mangledName": "$ss8CopyableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Escapable",
+            "printedName": "Escapable",
+            "usr": "s:s9EscapableP",
+            "mangledName": "$ss9EscapableP"
+          },
+          {
+            "kind": "Conformance",
             "name": "Equatable",
             "printedName": "Equatable",
             "usr": "s:SQ",
@@ -59807,6 +61348,22 @@
           "AccessControl",
           "ObjC",
           "RawDocComment"
+        ],
+        "conformances": [
+          {
+            "kind": "Conformance",
+            "name": "Escapable",
+            "printedName": "Escapable",
+            "usr": "s:s9EscapableP",
+            "mangledName": "$ss9EscapableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Copyable",
+            "printedName": "Copyable",
+            "usr": "s:s8CopyableP",
+            "mangledName": "$ss8CopyableP"
+          }
         ]
       },
       {
@@ -60073,6 +61630,22 @@
           "AccessControl",
           "ObjC",
           "RawDocComment"
+        ],
+        "conformances": [
+          {
+            "kind": "Conformance",
+            "name": "Escapable",
+            "printedName": "Escapable",
+            "usr": "s:s9EscapableP",
+            "mangledName": "$ss9EscapableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Copyable",
+            "printedName": "Copyable",
+            "usr": "s:s8CopyableP",
+            "mangledName": "$ss8CopyableP"
+          }
         ]
       },
       {
@@ -60193,6 +61766,20 @@
           "ObjectiveC.NSObject"
         ],
         "conformances": [
+          {
+            "kind": "Conformance",
+            "name": "Copyable",
+            "printedName": "Copyable",
+            "usr": "s:s8CopyableP",
+            "mangledName": "$ss8CopyableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Escapable",
+            "printedName": "Escapable",
+            "usr": "s:s9EscapableP",
+            "mangledName": "$ss9EscapableP"
+          },
           {
             "kind": "Conformance",
             "name": "Equatable",
@@ -61020,6 +62607,20 @@
           },
           {
             "kind": "Conformance",
+            "name": "Copyable",
+            "printedName": "Copyable",
+            "usr": "s:s8CopyableP",
+            "mangledName": "$ss8CopyableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Escapable",
+            "printedName": "Escapable",
+            "usr": "s:s9EscapableP",
+            "mangledName": "$ss9EscapableP"
+          },
+          {
+            "kind": "Conformance",
             "name": "Equatable",
             "printedName": "Equatable",
             "usr": "s:SQ",
@@ -61184,6 +62785,22 @@
           "AccessControl",
           "ObjC",
           "RawDocComment"
+        ],
+        "conformances": [
+          {
+            "kind": "Conformance",
+            "name": "Escapable",
+            "printedName": "Escapable",
+            "usr": "s:s9EscapableP",
+            "mangledName": "$ss9EscapableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Copyable",
+            "printedName": "Copyable",
+            "usr": "s:s8CopyableP",
+            "mangledName": "$ss8CopyableP"
+          }
         ]
       },
       {
@@ -62163,6 +63780,20 @@
         "conformances": [
           {
             "kind": "Conformance",
+            "name": "Copyable",
+            "printedName": "Copyable",
+            "usr": "s:s8CopyableP",
+            "mangledName": "$ss8CopyableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Escapable",
+            "printedName": "Escapable",
+            "usr": "s:s9EscapableP",
+            "mangledName": "$ss9EscapableP"
+          },
+          {
+            "kind": "Conformance",
             "name": "Equatable",
             "printedName": "Equatable",
             "usr": "s:SQ",
@@ -62622,6 +64253,22 @@
         "declAttributes": [
           "AccessControl",
           "ObjC"
+        ],
+        "conformances": [
+          {
+            "kind": "Conformance",
+            "name": "Escapable",
+            "printedName": "Escapable",
+            "usr": "s:s9EscapableP",
+            "mangledName": "$ss9EscapableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Copyable",
+            "printedName": "Copyable",
+            "usr": "s:s8CopyableP",
+            "mangledName": "$ss8CopyableP"
+          }
         ]
       },
       {
@@ -62949,6 +64596,20 @@
           "ObjectiveC.NSObject"
         ],
         "conformances": [
+          {
+            "kind": "Conformance",
+            "name": "Copyable",
+            "printedName": "Copyable",
+            "usr": "s:s8CopyableP",
+            "mangledName": "$ss8CopyableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Escapable",
+            "printedName": "Escapable",
+            "usr": "s:s9EscapableP",
+            "mangledName": "$ss9EscapableP"
+          },
           {
             "kind": "Conformance",
             "name": "Equatable",
@@ -63479,6 +65140,20 @@
             ],
             "usr": "s:s9OptionSetP",
             "mangledName": "$ss9OptionSetP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Copyable",
+            "printedName": "Copyable",
+            "usr": "s:s8CopyableP",
+            "mangledName": "$ss8CopyableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Escapable",
+            "printedName": "Escapable",
+            "usr": "s:s9EscapableP",
+            "mangledName": "$ss9EscapableP"
           },
           {
             "kind": "Conformance",
@@ -64014,6 +65689,20 @@
           },
           {
             "kind": "Conformance",
+            "name": "Copyable",
+            "printedName": "Copyable",
+            "usr": "s:s8CopyableP",
+            "mangledName": "$ss8CopyableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Escapable",
+            "printedName": "Escapable",
+            "usr": "s:s9EscapableP",
+            "mangledName": "$ss9EscapableP"
+          },
+          {
+            "kind": "Conformance",
             "name": "Equatable",
             "printedName": "Equatable",
             "usr": "s:SQ",
@@ -64129,6 +65818,20 @@
           "ObjC"
         ],
         "conformances": [
+          {
+            "kind": "Conformance",
+            "name": "Escapable",
+            "printedName": "Escapable",
+            "usr": "s:s9EscapableP",
+            "mangledName": "$ss9EscapableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Copyable",
+            "printedName": "Copyable",
+            "usr": "s:s8CopyableP",
+            "mangledName": "$ss8CopyableP"
+          },
           {
             "kind": "Conformance",
             "name": "InterstitialEventInteractionDelegate",
@@ -64264,7 +65967,23 @@
         "declAttributes": [
           "AccessControl"
         ],
-        "hasMissingDesignatedInitializers": true
+        "hasMissingDesignatedInitializers": true,
+        "conformances": [
+          {
+            "kind": "Conformance",
+            "name": "Copyable",
+            "printedName": "Copyable",
+            "usr": "s:s8CopyableP",
+            "mangledName": "$ss8CopyableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Escapable",
+            "printedName": "Escapable",
+            "usr": "s:s9EscapableP",
+            "mangledName": "$ss9EscapableP"
+          }
+        ]
       },
       {
         "kind": "Import",
@@ -65063,6 +66782,20 @@
           "ObjectiveC.NSObject"
         ],
         "conformances": [
+          {
+            "kind": "Conformance",
+            "name": "Copyable",
+            "printedName": "Copyable",
+            "usr": "s:s8CopyableP",
+            "mangledName": "$ss8CopyableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Escapable",
+            "printedName": "Escapable",
+            "usr": "s:s9EscapableP",
+            "mangledName": "$ss9EscapableP"
+          },
           {
             "kind": "Conformance",
             "name": "Equatable",
@@ -66780,6 +68513,20 @@
         "conformances": [
           {
             "kind": "Conformance",
+            "name": "Copyable",
+            "printedName": "Copyable",
+            "usr": "s:s8CopyableP",
+            "mangledName": "$ss8CopyableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Escapable",
+            "printedName": "Escapable",
+            "usr": "s:s9EscapableP",
+            "mangledName": "$ss9EscapableP"
+          },
+          {
+            "kind": "Conformance",
             "name": "Equatable",
             "printedName": "Equatable",
             "usr": "s:SQ",
@@ -67160,6 +68907,20 @@
         "conformances": [
           {
             "kind": "Conformance",
+            "name": "Copyable",
+            "printedName": "Copyable",
+            "usr": "s:s8CopyableP",
+            "mangledName": "$ss8CopyableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Escapable",
+            "printedName": "Escapable",
+            "usr": "s:s9EscapableP",
+            "mangledName": "$ss9EscapableP"
+          },
+          {
+            "kind": "Conformance",
             "name": "Equatable",
             "printedName": "Equatable",
             "usr": "s:SQ",
@@ -67522,6 +69283,22 @@
         "declAttributes": [
           "AccessControl",
           "ObjC"
+        ],
+        "conformances": [
+          {
+            "kind": "Conformance",
+            "name": "Escapable",
+            "printedName": "Escapable",
+            "usr": "s:s9EscapableP",
+            "mangledName": "$ss9EscapableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Copyable",
+            "printedName": "Copyable",
+            "usr": "s:s8CopyableP",
+            "mangledName": "$ss8CopyableP"
+          }
         ]
       },
       {
@@ -67628,6 +69405,20 @@
           "ObjectiveC.NSObject"
         ],
         "conformances": [
+          {
+            "kind": "Conformance",
+            "name": "Copyable",
+            "printedName": "Copyable",
+            "usr": "s:s8CopyableP",
+            "mangledName": "$ss8CopyableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Escapable",
+            "printedName": "Escapable",
+            "usr": "s:s9EscapableP",
+            "mangledName": "$ss9EscapableP"
+          },
           {
             "kind": "Conformance",
             "name": "Equatable",
@@ -67824,6 +69615,22 @@
         "declAttributes": [
           "AccessControl",
           "ObjC"
+        ],
+        "conformances": [
+          {
+            "kind": "Conformance",
+            "name": "Escapable",
+            "printedName": "Escapable",
+            "usr": "s:s9EscapableP",
+            "mangledName": "$ss9EscapableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Copyable",
+            "printedName": "Copyable",
+            "usr": "s:s8CopyableP",
+            "mangledName": "$ss8CopyableP"
+          }
         ]
       },
       {
@@ -68089,6 +69896,71 @@
                 "declKind": "Accessor",
                 "usr": "c:@M@PrebidMobile@objc(cs)Bid(im)adm",
                 "mangledName": "$s12PrebidMobile3BidC3admSSSgvg",
+                "moduleName": "PrebidMobile",
+                "implicit": true,
+                "declAttributes": [
+                  "ObjC"
+                ],
+                "accessorKind": "get"
+              }
+            ]
+          },
+          {
+            "kind": "Var",
+            "name": "burl",
+            "printedName": "burl",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Optional",
+                "printedName": "Swift.String?",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "String",
+                    "printedName": "Swift.String",
+                    "usr": "s:SS"
+                  }
+                ],
+                "usr": "s:Sq"
+              }
+            ],
+            "declKind": "Var",
+            "usr": "c:@M@PrebidMobile@objc(cs)Bid(py)burl",
+            "mangledName": "$s12PrebidMobile3BidC4burlSSSgvp",
+            "moduleName": "PrebidMobile",
+            "declAttributes": [
+              "HasInitialValue",
+              "HasStorage",
+              "SetterAccess",
+              "AccessControl",
+              "ObjC"
+            ],
+            "hasStorage": true,
+            "accessors": [
+              {
+                "kind": "Accessor",
+                "name": "Get",
+                "printedName": "Get()",
+                "children": [
+                  {
+                    "kind": "TypeNominal",
+                    "name": "Optional",
+                    "printedName": "Swift.String?",
+                    "children": [
+                      {
+                        "kind": "TypeNominal",
+                        "name": "String",
+                        "printedName": "Swift.String",
+                        "usr": "s:SS"
+                      }
+                    ],
+                    "usr": "s:Sq"
+                  }
+                ],
+                "declKind": "Accessor",
+                "usr": "c:@M@PrebidMobile@objc(cs)Bid(im)burl",
+                "mangledName": "$s12PrebidMobile3BidC4burlSSSgvg",
                 "moduleName": "PrebidMobile",
                 "implicit": true,
                 "declAttributes": [
@@ -68698,6 +70570,27 @@
             "funcSelfKind": "NonMutating"
           },
           {
+            "kind": "Function",
+            "name": "notifyBillingWin",
+            "printedName": "notifyBillingWin()",
+            "children": [
+              {
+                "kind": "TypeNominal",
+                "name": "Void",
+                "printedName": "()"
+              }
+            ],
+            "declKind": "Func",
+            "usr": "c:@M@PrebidMobile@objc(cs)Bid(im)notifyBillingWin",
+            "mangledName": "$s12PrebidMobile3BidC16notifyBillingWinyyF",
+            "moduleName": "PrebidMobile",
+            "declAttributes": [
+              "AccessControl",
+              "ObjC"
+            ],
+            "funcSelfKind": "NonMutating"
+          },
+          {
             "kind": "Constructor",
             "name": "init",
             "printedName": "init()",
@@ -68737,6 +70630,20 @@
           "ObjectiveC.NSObject"
         ],
         "conformances": [
+          {
+            "kind": "Conformance",
+            "name": "Copyable",
+            "printedName": "Copyable",
+            "usr": "s:s8CopyableP",
+            "mangledName": "$ss8CopyableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Escapable",
+            "printedName": "Escapable",
+            "usr": "s:s9EscapableP",
+            "mangledName": "$ss9EscapableP"
+          },
           {
             "kind": "Conformance",
             "name": "Equatable",
@@ -70581,6 +72488,20 @@
         "conformances": [
           {
             "kind": "Conformance",
+            "name": "Copyable",
+            "printedName": "Copyable",
+            "usr": "s:s8CopyableP",
+            "mangledName": "$ss8CopyableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Escapable",
+            "printedName": "Escapable",
+            "usr": "s:s9EscapableP",
+            "mangledName": "$ss9EscapableP"
+          },
+          {
+            "kind": "Conformance",
             "name": "Equatable",
             "printedName": "Equatable",
             "usr": "s:SQ",
@@ -71117,6 +73038,20 @@
         "conformances": [
           {
             "kind": "Conformance",
+            "name": "Copyable",
+            "printedName": "Copyable",
+            "usr": "s:s8CopyableP",
+            "mangledName": "$ss8CopyableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Escapable",
+            "printedName": "Escapable",
+            "usr": "s:s9EscapableP",
+            "mangledName": "$ss9EscapableP"
+          },
+          {
+            "kind": "Conformance",
             "name": "Equatable",
             "printedName": "Equatable",
             "usr": "s:SQ",
@@ -71321,6 +73256,20 @@
           "ObjectiveC.NSObject"
         ],
         "conformances": [
+          {
+            "kind": "Conformance",
+            "name": "Copyable",
+            "printedName": "Copyable",
+            "usr": "s:s8CopyableP",
+            "mangledName": "$ss8CopyableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Escapable",
+            "printedName": "Escapable",
+            "usr": "s:s9EscapableP",
+            "mangledName": "$ss9EscapableP"
+          },
           {
             "kind": "Conformance",
             "name": "Equatable",
@@ -71675,6 +73624,20 @@
         ],
         "enumRawTypeName": "Int",
         "conformances": [
+          {
+            "kind": "Conformance",
+            "name": "Copyable",
+            "printedName": "Copyable",
+            "usr": "s:s8CopyableP",
+            "mangledName": "$ss8CopyableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Escapable",
+            "printedName": "Escapable",
+            "usr": "s:s9EscapableP",
+            "mangledName": "$ss9EscapableP"
+          },
           {
             "kind": "Conformance",
             "name": "Equatable",
@@ -72233,6 +74196,22 @@
         "declAttributes": [
           "AccessControl",
           "ObjC"
+        ],
+        "conformances": [
+          {
+            "kind": "Conformance",
+            "name": "Escapable",
+            "printedName": "Escapable",
+            "usr": "s:s9EscapableP",
+            "mangledName": "$ss9EscapableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Copyable",
+            "printedName": "Copyable",
+            "usr": "s:s8CopyableP",
+            "mangledName": "$ss8CopyableP"
+          }
         ]
       },
       {
@@ -72512,6 +74491,20 @@
           "ObjectiveC.NSObject"
         ],
         "conformances": [
+          {
+            "kind": "Conformance",
+            "name": "Copyable",
+            "printedName": "Copyable",
+            "usr": "s:s8CopyableP",
+            "mangledName": "$ss8CopyableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Escapable",
+            "printedName": "Escapable",
+            "usr": "s:s9EscapableP",
+            "mangledName": "$ss9EscapableP"
+          },
           {
             "kind": "Conformance",
             "name": "Equatable",
@@ -72839,6 +74832,20 @@
         "conformances": [
           {
             "kind": "Conformance",
+            "name": "Copyable",
+            "printedName": "Copyable",
+            "usr": "s:s8CopyableP",
+            "mangledName": "$ss8CopyableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Escapable",
+            "printedName": "Escapable",
+            "usr": "s:s9EscapableP",
+            "mangledName": "$ss9EscapableP"
+          },
+          {
+            "kind": "Conformance",
             "name": "Equatable",
             "printedName": "Equatable",
             "usr": "s:SQ",
@@ -72959,6 +74966,7 @@
             "genericSig": "<τ_0_0 where τ_0_0 : UIKit.UIView>",
             "sugared_genericSig": "<T where T : UIKit.UIView>",
             "declAttributes": [
+              "Preconcurrency",
               "Custom",
               "AccessControl",
               "RawDocComment"
@@ -72974,6 +74982,7 @@
         "intro_iOS": "2.0",
         "objc_name": "UIView",
         "declAttributes": [
+          "Preconcurrency",
           "Available",
           "ObjC",
           "NonSendable",
@@ -72988,6 +74997,20 @@
           "ObjectiveC.NSObject"
         ],
         "conformances": [
+          {
+            "kind": "Conformance",
+            "name": "Copyable",
+            "printedName": "Copyable",
+            "usr": "s:s8CopyableP",
+            "mangledName": "$ss8CopyableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Escapable",
+            "printedName": "Escapable",
+            "usr": "s:s9EscapableP",
+            "mangledName": "$ss9EscapableP"
+          },
           {
             "kind": "Conformance",
             "name": "Equatable",
@@ -73124,6 +75147,20 @@
           },
           {
             "kind": "Conformance",
+            "name": "Copyable",
+            "printedName": "Copyable",
+            "usr": "s:s8CopyableP",
+            "mangledName": "$ss8CopyableP"
+          },
+          {
+            "kind": "Conformance",
+            "name": "Escapable",
+            "printedName": "Escapable",
+            "usr": "s:s9EscapableP",
+            "mangledName": "$ss9EscapableP"
+          },
+          {
+            "kind": "Conformance",
             "name": "Equatable",
             "printedName": "Equatable",
             "usr": "s:SQ",
@@ -73185,25 +75222,11 @@
   },
   "ConstValues": [
     {
-      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/prebid-mobile-ios-newsbreak\/PrebidMobile\/PrebidMobileRendering\/Prebid\/Integrations\/PBMStandaloneSDK\/DemandResponseInfo.swift",
-      "kind": "StringLiteral",
-      "offset": 620,
-      "length": 18,
-      "value": "\"PrebidMobile.DemandResponseInfo\""
-    },
-    {
       "filePath": "\/Users\/huanzhizhang\/Huanzhi\/prebid-mobile-ios-newsbreak\/PrebidMobile\/PrebidMobileRendering\/Prebid\/Integrations\/PBMStandaloneSDK\/EventHandlers\/BannerEventHandlerStandalone.swift",
       "kind": "Array",
       "offset": 877,
       "length": 2,
       "value": "[]"
-    },
-    {
-      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/prebid-mobile-ios-newsbreak\/PrebidMobile\/AdUnits\/Signals.swift",
-      "kind": "StringLiteral",
-      "offset": 599,
-      "length": 18,
-      "value": "\"PrebidMobile.SingleContainerInt\""
     },
     {
       "filePath": "\/Users\/huanzhizhang\/Huanzhi\/prebid-mobile-ios-newsbreak\/PrebidMobile\/AdUnits\/Signals.swift",
@@ -73444,6 +75467,13 @@
       "value": "300"
     },
     {
+      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/prebid-mobile-ios-newsbreak\/PrebidMobile\/PrebidMobileRendering\/Prebid\/Integrations\/PBMStandaloneSDK\/EventHandlers\/RewardedEventHandlerStandalone.swift",
+      "kind": "BooleanLiteral",
+      "offset": 897,
+      "length": 5,
+      "value": "false"
+    },
+    {
       "filePath": "\/Users\/huanzhizhang\/Huanzhi\/prebid-mobile-ios-newsbreak\/PrebidMobile\/Logging\/Log.swift",
       "kind": "StringLiteral",
       "offset": 712,
@@ -73470,20 +75500,6 @@
       "offset": 5555,
       "length": 6,
       "value": "\".txt\""
-    },
-    {
-      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/prebid-mobile-ios-newsbreak\/PrebidMobile\/PrebidMobileRendering\/ServerEvent.swift",
-      "kind": "StringLiteral",
-      "offset": 633,
-      "length": 11,
-      "value": "\"PrebidMobile.ServerEvent\""
-    },
-    {
-      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/prebid-mobile-ios-newsbreak\/PrebidMobile\/AdUnits\/VideoAdUnit.swift",
-      "kind": "StringLiteral",
-      "offset": 604,
-      "length": 11,
-      "value": "\"PrebidMobile.VideoAdUnit\""
     },
     {
       "filePath": "\/Users\/huanzhizhang\/Huanzhi\/prebid-mobile-ios-newsbreak\/PrebidMobile\/AdUnits\/Native\/NativeMarkupRequestObject.swift",
@@ -73519,6 +75535,83 @@
       "offset": 2846,
       "length": 1,
       "value": "0"
+    },
+    {
+      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/prebid-mobile-ios-newsbreak\/PrebidMobile\/AdUnits\/Native\/NativeMarkupRequestObject.swift",
+      "kind": "StringLiteral",
+      "offset": 3828,
+      "length": 9,
+      "value": "\"context\""
+    },
+    {
+      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/prebid-mobile-ios-newsbreak\/PrebidMobile\/AdUnits\/Native\/NativeMarkupRequestObject.swift",
+      "kind": "StringLiteral",
+      "offset": 3877,
+      "length": 16,
+      "value": "\"contextsubtype\""
+    },
+    {
+      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/prebid-mobile-ios-newsbreak\/PrebidMobile\/AdUnits\/Native\/NativeMarkupRequestObject.swift",
+      "kind": "StringLiteral",
+      "offset": 3933,
+      "length": 11,
+      "value": "\"plcmttype\""
+    },
+    {
+      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/prebid-mobile-ios-newsbreak\/PrebidMobile\/AdUnits\/Native\/NativeMarkupRequestObject.swift",
+      "kind": "StringLiteral",
+      "offset": 3984,
+      "length": 5,
+      "value": "\"seq\""
+    },
+    {
+      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/prebid-mobile-ios-newsbreak\/PrebidMobile\/AdUnits\/Native\/NativeMarkupRequestObject.swift",
+      "kind": "StringLiteral",
+      "offset": 4022,
+      "length": 8,
+      "value": "\"assets\""
+    },
+    {
+      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/prebid-mobile-ios-newsbreak\/PrebidMobile\/AdUnits\/Native\/NativeMarkupRequestObject.swift",
+      "kind": "StringLiteral",
+      "offset": 4069,
+      "length": 10,
+      "value": "\"plcmtcnt\""
+    },
+    {
+      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/prebid-mobile-ios-newsbreak\/PrebidMobile\/AdUnits\/Native\/NativeMarkupRequestObject.swift",
+      "kind": "StringLiteral",
+      "offset": 4112,
+      "length": 13,
+      "value": "\"aurlsupport\""
+    },
+    {
+      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/prebid-mobile-ios-newsbreak\/PrebidMobile\/AdUnits\/Native\/NativeMarkupRequestObject.swift",
+      "kind": "StringLiteral",
+      "offset": 4158,
+      "length": 13,
+      "value": "\"durlsupport\""
+    },
+    {
+      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/prebid-mobile-ios-newsbreak\/PrebidMobile\/AdUnits\/Native\/NativeMarkupRequestObject.swift",
+      "kind": "StringLiteral",
+      "offset": 4204,
+      "length": 15,
+      "value": "\"eventtrackers\""
+    },
+    {
+      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/prebid-mobile-ios-newsbreak\/PrebidMobile\/AdUnits\/Native\/NativeMarkupRequestObject.swift",
+      "kind": "StringLiteral",
+      "offset": 4253,
+      "length": 9,
+      "value": "\"privacy\""
+    },
+    {
+      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/prebid-mobile-ios-newsbreak\/PrebidMobile\/AdUnits\/Native\/NativeMarkupRequestObject.swift",
+      "kind": "StringLiteral",
+      "offset": 4295,
+      "length": 5,
+      "value": "\"ext\""
     },
     {
       "filePath": "\/Users\/huanzhizhang\/Huanzhi\/prebid-mobile-ios-newsbreak\/PrebidMobile\/PrebidMobileRendering\/Prebid\/Integrations\/MediationAPI\/MediationConstants.swift",
@@ -73752,27 +75845,6 @@
       "value": "2"
     },
     {
-      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/prebid-mobile-ios-newsbreak\/PrebidMobile\/Addendum\/IMAUtils.swift",
-      "kind": "IntegerLiteral",
-      "offset": 678,
-      "length": 11,
-      "value": "1"
-    },
-    {
-      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/prebid-mobile-ios-newsbreak\/PrebidMobile\/Addendum\/IMAUtils.swift",
-      "kind": "IntegerLiteral",
-      "offset": 704,
-      "length": 11,
-      "value": "2"
-    },
-    {
-      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/prebid-mobile-ios-newsbreak\/PrebidMobile\/PrebidMobileRendering\/Prebid\/Integrations\/MediationAPI\/MediationBaseInterstitialAdUnit.swift",
-      "kind": "StringLiteral",
-      "offset": 645,
-      "length": 31,
-      "value": "\"PrebidMobile.MediationBaseInterstitialAdUnit\""
-    },
-    {
       "filePath": "\/Users\/huanzhizhang\/Huanzhi\/prebid-mobile-ios-newsbreak\/PrebidMobile\/PrebidMobileRendering\/ImpressionTasksExecutor.swift",
       "kind": "StringLiteral",
       "offset": 767,
@@ -73780,221 +75852,109 @@
       "value": "\"impressionQueue\""
     },
     {
-      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/prebid-mobile-ios-newsbreak\/PrebidMobile\/ExternalUserId.swift",
+      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/prebid-mobile-ios-newsbreak\/PrebidMobile\/AdUnits\/Native\/NativeDataAssetType.swift",
+      "kind": "IntegerLiteral",
+      "offset": 674,
+      "length": 1,
+      "value": "0"
+    },
+    {
+      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/prebid-mobile-ios-newsbreak\/PrebidMobile\/AdUnits\/Native\/NativeDataAssetType.swift",
+      "kind": "IntegerLiteral",
+      "offset": 698,
+      "length": 1,
+      "value": "1"
+    },
+    {
+      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/prebid-mobile-ios-newsbreak\/PrebidMobile\/AdUnits\/Native\/NativeDataAssetType.swift",
+      "kind": "IntegerLiteral",
+      "offset": 808,
+      "length": 1,
+      "value": "2"
+    },
+    {
+      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/prebid-mobile-ios-newsbreak\/PrebidMobile\/AdUnits\/Native\/NativeDataAssetType.swift",
+      "kind": "IntegerLiteral",
+      "offset": 990,
+      "length": 1,
+      "value": "3"
+    },
+    {
+      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/prebid-mobile-ios-newsbreak\/PrebidMobile\/AdUnits\/Native\/NativeDataAssetType.swift",
+      "kind": "IntegerLiteral",
+      "offset": 1123,
+      "length": 1,
+      "value": "4"
+    },
+    {
+      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/prebid-mobile-ios-newsbreak\/PrebidMobile\/AdUnits\/Native\/NativeDataAssetType.swift",
+      "kind": "IntegerLiteral",
+      "offset": 1233,
+      "length": 1,
+      "value": "5"
+    },
+    {
+      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/prebid-mobile-ios-newsbreak\/PrebidMobile\/AdUnits\/Native\/NativeDataAssetType.swift",
+      "kind": "IntegerLiteral",
+      "offset": 1303,
+      "length": 1,
+      "value": "6"
+    },
+    {
+      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/prebid-mobile-ios-newsbreak\/PrebidMobile\/AdUnits\/Native\/NativeDataAssetType.swift",
+      "kind": "IntegerLiteral",
+      "offset": 1432,
+      "length": 1,
+      "value": "7"
+    },
+    {
+      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/prebid-mobile-ios-newsbreak\/PrebidMobile\/AdUnits\/Native\/NativeDataAssetType.swift",
+      "kind": "IntegerLiteral",
+      "offset": 1626,
+      "length": 1,
+      "value": "8"
+    },
+    {
+      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/prebid-mobile-ios-newsbreak\/PrebidMobile\/AdUnits\/Native\/NativeDataAssetType.swift",
+      "kind": "IntegerLiteral",
+      "offset": 1667,
+      "length": 1,
+      "value": "9"
+    },
+    {
+      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/prebid-mobile-ios-newsbreak\/PrebidMobile\/AdUnits\/Native\/NativeDataAssetType.swift",
+      "kind": "IntegerLiteral",
+      "offset": 1703,
+      "length": 2,
+      "value": "10"
+    },
+    {
+      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/prebid-mobile-ios-newsbreak\/PrebidMobile\/AdUnits\/Native\/NativeDataAssetType.swift",
+      "kind": "IntegerLiteral",
+      "offset": 1821,
+      "length": 2,
+      "value": "11"
+    },
+    {
+      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/prebid-mobile-ios-newsbreak\/PrebidMobile\/AdUnits\/Native\/NativeDataAssetType.swift",
+      "kind": "IntegerLiteral",
+      "offset": 2013,
+      "length": 2,
+      "value": "12"
+    },
+    {
+      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/prebid-mobile-ios-newsbreak\/PrebidMobile\/AdUnits\/Native\/NativeDataAssetType.swift",
+      "kind": "IntegerLiteral",
+      "offset": 2148,
+      "length": 3,
+      "value": "500"
+    },
+    {
+      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/prebid-mobile-ios-newsbreak\/PrebidMobile\/PrebidMobileRendering\/Utilities\/Reachability.swift",
       "kind": "StringLiteral",
-      "offset": 679,
-      "length": 14,
-      "value": "\"PrebidMobile.ExternalUserId\""
-    },
-    {
-      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/prebid-mobile-ios-newsbreak\/PrebidMobile\/AdUnits\/Native\/NativeDataAssetType.swift",
-      "kind": "IntegerLiteral",
-      "offset": 674,
-      "length": 1,
-      "value": "0"
-    },
-    {
-      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/prebid-mobile-ios-newsbreak\/PrebidMobile\/AdUnits\/Native\/NativeDataAssetType.swift",
-      "kind": "IntegerLiteral",
-      "offset": 698,
-      "length": 1,
-      "value": "1"
-    },
-    {
-      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/prebid-mobile-ios-newsbreak\/PrebidMobile\/AdUnits\/Native\/NativeDataAssetType.swift",
-      "kind": "IntegerLiteral",
-      "offset": 808,
-      "length": 1,
-      "value": "2"
-    },
-    {
-      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/prebid-mobile-ios-newsbreak\/PrebidMobile\/AdUnits\/Native\/NativeDataAssetType.swift",
-      "kind": "IntegerLiteral",
-      "offset": 990,
-      "length": 1,
-      "value": "3"
-    },
-    {
-      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/prebid-mobile-ios-newsbreak\/PrebidMobile\/AdUnits\/Native\/NativeDataAssetType.swift",
-      "kind": "IntegerLiteral",
-      "offset": 1123,
-      "length": 1,
-      "value": "4"
-    },
-    {
-      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/prebid-mobile-ios-newsbreak\/PrebidMobile\/AdUnits\/Native\/NativeDataAssetType.swift",
-      "kind": "IntegerLiteral",
-      "offset": 1233,
-      "length": 1,
-      "value": "5"
-    },
-    {
-      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/prebid-mobile-ios-newsbreak\/PrebidMobile\/AdUnits\/Native\/NativeDataAssetType.swift",
-      "kind": "IntegerLiteral",
-      "offset": 1303,
-      "length": 1,
-      "value": "6"
-    },
-    {
-      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/prebid-mobile-ios-newsbreak\/PrebidMobile\/AdUnits\/Native\/NativeDataAssetType.swift",
-      "kind": "IntegerLiteral",
-      "offset": 1432,
-      "length": 1,
-      "value": "7"
-    },
-    {
-      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/prebid-mobile-ios-newsbreak\/PrebidMobile\/AdUnits\/Native\/NativeDataAssetType.swift",
-      "kind": "IntegerLiteral",
-      "offset": 1626,
-      "length": 1,
-      "value": "8"
-    },
-    {
-      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/prebid-mobile-ios-newsbreak\/PrebidMobile\/AdUnits\/Native\/NativeDataAssetType.swift",
-      "kind": "IntegerLiteral",
-      "offset": 1667,
-      "length": 1,
-      "value": "9"
-    },
-    {
-      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/prebid-mobile-ios-newsbreak\/PrebidMobile\/AdUnits\/Native\/NativeDataAssetType.swift",
-      "kind": "IntegerLiteral",
-      "offset": 1703,
-      "length": 2,
-      "value": "10"
-    },
-    {
-      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/prebid-mobile-ios-newsbreak\/PrebidMobile\/AdUnits\/Native\/NativeDataAssetType.swift",
-      "kind": "IntegerLiteral",
-      "offset": 1821,
-      "length": 2,
-      "value": "11"
-    },
-    {
-      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/prebid-mobile-ios-newsbreak\/PrebidMobile\/AdUnits\/Native\/NativeDataAssetType.swift",
-      "kind": "IntegerLiteral",
-      "offset": 2013,
-      "length": 2,
-      "value": "12"
-    },
-    {
-      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/prebid-mobile-ios-newsbreak\/PrebidMobile\/AdUnits\/Native\/NativeDataAssetType.swift",
-      "kind": "IntegerLiteral",
-      "offset": 2148,
-      "length": 3,
-      "value": "500"
-    },
-    {
-      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/prebid-mobile-ios-newsbreak\/PrebidMobile\/AdUnits\/Native\/NativeDataAssetType.swift",
-      "kind": "IntegerLiteral",
-      "offset": 674,
-      "length": 1,
-      "value": "0"
-    },
-    {
-      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/prebid-mobile-ios-newsbreak\/PrebidMobile\/AdUnits\/Native\/NativeDataAssetType.swift",
-      "kind": "IntegerLiteral",
-      "offset": 698,
-      "length": 1,
-      "value": "1"
-    },
-    {
-      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/prebid-mobile-ios-newsbreak\/PrebidMobile\/AdUnits\/Native\/NativeDataAssetType.swift",
-      "kind": "IntegerLiteral",
-      "offset": 808,
-      "length": 1,
-      "value": "2"
-    },
-    {
-      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/prebid-mobile-ios-newsbreak\/PrebidMobile\/AdUnits\/Native\/NativeDataAssetType.swift",
-      "kind": "IntegerLiteral",
-      "offset": 990,
-      "length": 1,
-      "value": "3"
-    },
-    {
-      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/prebid-mobile-ios-newsbreak\/PrebidMobile\/AdUnits\/Native\/NativeDataAssetType.swift",
-      "kind": "IntegerLiteral",
-      "offset": 1123,
-      "length": 1,
-      "value": "4"
-    },
-    {
-      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/prebid-mobile-ios-newsbreak\/PrebidMobile\/AdUnits\/Native\/NativeDataAssetType.swift",
-      "kind": "IntegerLiteral",
-      "offset": 1233,
-      "length": 1,
-      "value": "5"
-    },
-    {
-      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/prebid-mobile-ios-newsbreak\/PrebidMobile\/AdUnits\/Native\/NativeDataAssetType.swift",
-      "kind": "IntegerLiteral",
-      "offset": 1303,
-      "length": 1,
-      "value": "6"
-    },
-    {
-      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/prebid-mobile-ios-newsbreak\/PrebidMobile\/AdUnits\/Native\/NativeDataAssetType.swift",
-      "kind": "IntegerLiteral",
-      "offset": 1432,
-      "length": 1,
-      "value": "7"
-    },
-    {
-      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/prebid-mobile-ios-newsbreak\/PrebidMobile\/AdUnits\/Native\/NativeDataAssetType.swift",
-      "kind": "IntegerLiteral",
-      "offset": 1626,
-      "length": 1,
-      "value": "8"
-    },
-    {
-      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/prebid-mobile-ios-newsbreak\/PrebidMobile\/AdUnits\/Native\/NativeDataAssetType.swift",
-      "kind": "IntegerLiteral",
-      "offset": 1667,
-      "length": 1,
-      "value": "9"
-    },
-    {
-      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/prebid-mobile-ios-newsbreak\/PrebidMobile\/AdUnits\/Native\/NativeDataAssetType.swift",
-      "kind": "IntegerLiteral",
-      "offset": 1703,
-      "length": 2,
-      "value": "10"
-    },
-    {
-      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/prebid-mobile-ios-newsbreak\/PrebidMobile\/AdUnits\/Native\/NativeDataAssetType.swift",
-      "kind": "IntegerLiteral",
-      "offset": 1821,
-      "length": 2,
-      "value": "11"
-    },
-    {
-      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/prebid-mobile-ios-newsbreak\/PrebidMobile\/AdUnits\/Native\/NativeDataAssetType.swift",
-      "kind": "IntegerLiteral",
-      "offset": 2013,
-      "length": 2,
-      "value": "12"
-    },
-    {
-      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/prebid-mobile-ios-newsbreak\/PrebidMobile\/AdUnits\/Native\/NativeDataAssetType.swift",
-      "kind": "IntegerLiteral",
-      "offset": 2148,
-      "length": 3,
-      "value": "500"
-    },
-    {
-      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/prebid-mobile-ios-newsbreak\/PrebidMobile\/Host.swift",
-      "kind": "IntegerLiteral",
-      "offset": 822,
-      "length": 7,
-      "value": "1"
-    },
-    {
-      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/prebid-mobile-ios-newsbreak\/PrebidMobile\/Host.swift",
-      "kind": "IntegerLiteral",
-      "offset": 844,
-      "length": 6,
-      "value": "2"
+      "offset": 1087,
+      "length": 69,
+      "value": "\"currentReachabilityStatus called with NULL SCNetworkReachabilityRef\""
     },
     {
       "filePath": "\/Users\/huanzhizhang\/Huanzhi\/prebid-mobile-ios-newsbreak\/PrebidMobile\/Host.swift",
@@ -74046,13 +76006,6 @@
       "value": "0"
     },
     {
-      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/prebid-mobile-ios-newsbreak\/PrebidMobile\/AdUnits\/BannerAdUnit.swift",
-      "kind": "StringLiteral",
-      "offset": 604,
-      "length": 12,
-      "value": "\"PrebidMobile.BannerAdUnit\""
-    },
-    {
       "filePath": "\/Users\/huanzhizhang\/Huanzhi\/prebid-mobile-ios-newsbreak\/PrebidMobile\/AdUnits\/Native\/NativeAsset.swift",
       "kind": "BooleanLiteral",
       "offset": 678,
@@ -74061,31 +76014,10 @@
     },
     {
       "filePath": "\/Users\/huanzhizhang\/Huanzhi\/prebid-mobile-ios-newsbreak\/PrebidMobile\/AdUnits\/Native\/NativeAsset.swift",
-      "kind": "StringLiteral",
-      "offset": 594,
-      "length": 11,
-      "value": "\"PrebidMobile.NativeAsset\""
-    },
-    {
-      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/prebid-mobile-ios-newsbreak\/PrebidMobile\/AdUnits\/Native\/NativeAsset.swift",
       "kind": "IntegerLiteral",
       "offset": 1576,
       "length": 2,
       "value": "25"
-    },
-    {
-      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/prebid-mobile-ios-newsbreak\/PrebidMobile\/AdUnits\/Native\/NativeAsset.swift",
-      "kind": "StringLiteral",
-      "offset": 1510,
-      "length": 16,
-      "value": "\"PrebidMobile.NativeAssetTitle\""
-    },
-    {
-      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/prebid-mobile-ios-newsbreak\/PrebidMobile\/AdUnits\/Native\/NativeAsset.swift",
-      "kind": "StringLiteral",
-      "offset": 2961,
-      "length": 15,
-      "value": "\"PrebidMobile.NativeAssetData\""
     },
     {
       "filePath": "\/Users\/huanzhizhang\/Huanzhi\/prebid-mobile-ios-newsbreak\/PrebidMobile\/AdUnits\/Native\/NativeAsset.swift",
@@ -74207,171 +76139,10 @@
       "value": "500"
     },
     {
-      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/prebid-mobile-ios-newsbreak\/PrebidMobile\/AdUnits\/Native\/NativeAsset.swift",
-      "kind": "IntegerLiteral",
-      "offset": 3731,
-      "length": 1,
-      "value": "1"
-    },
-    {
-      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/prebid-mobile-ios-newsbreak\/PrebidMobile\/AdUnits\/Native\/NativeAsset.swift",
-      "kind": "IntegerLiteral",
-      "offset": 3756,
-      "length": 1,
-      "value": "2"
-    },
-    {
-      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/prebid-mobile-ios-newsbreak\/PrebidMobile\/AdUnits\/Native\/NativeAsset.swift",
-      "kind": "IntegerLiteral",
-      "offset": 3776,
-      "length": 1,
-      "value": "3"
-    },
-    {
-      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/prebid-mobile-ios-newsbreak\/PrebidMobile\/AdUnits\/Native\/NativeAsset.swift",
-      "kind": "IntegerLiteral",
-      "offset": 3795,
-      "length": 1,
-      "value": "4"
-    },
-    {
-      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/prebid-mobile-ios-newsbreak\/PrebidMobile\/AdUnits\/Native\/NativeAsset.swift",
-      "kind": "IntegerLiteral",
-      "offset": 3818,
-      "length": 1,
-      "value": "5"
-    },
-    {
-      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/prebid-mobile-ios-newsbreak\/PrebidMobile\/AdUnits\/Native\/NativeAsset.swift",
-      "kind": "IntegerLiteral",
-      "offset": 3837,
-      "length": 1,
-      "value": "6"
-    },
-    {
-      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/prebid-mobile-ios-newsbreak\/PrebidMobile\/AdUnits\/Native\/NativeAsset.swift",
-      "kind": "IntegerLiteral",
-      "offset": 3860,
-      "length": 1,
-      "value": "7"
-    },
-    {
-      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/prebid-mobile-ios-newsbreak\/PrebidMobile\/AdUnits\/Native\/NativeAsset.swift",
-      "kind": "IntegerLiteral",
-      "offset": 3879,
-      "length": 1,
-      "value": "8"
-    },
-    {
-      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/prebid-mobile-ios-newsbreak\/PrebidMobile\/AdUnits\/Native\/NativeAsset.swift",
-      "kind": "IntegerLiteral",
-      "offset": 3900,
-      "length": 1,
-      "value": "9"
-    },
-    {
-      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/prebid-mobile-ios-newsbreak\/PrebidMobile\/AdUnits\/Native\/NativeAsset.swift",
-      "kind": "IntegerLiteral",
-      "offset": 3926,
-      "length": 2,
-      "value": "10"
-    },
-    {
-      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/prebid-mobile-ios-newsbreak\/PrebidMobile\/AdUnits\/Native\/NativeAsset.swift",
-      "kind": "IntegerLiteral",
-      "offset": 3951,
-      "length": 2,
-      "value": "11"
-    },
-    {
-      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/prebid-mobile-ios-newsbreak\/PrebidMobile\/AdUnits\/Native\/NativeAsset.swift",
-      "kind": "IntegerLiteral",
-      "offset": 3973,
-      "length": 2,
-      "value": "12"
-    },
-    {
-      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/prebid-mobile-ios-newsbreak\/PrebidMobile\/AdUnits\/Native\/NativeAsset.swift",
-      "kind": "IntegerLiteral",
-      "offset": 3985,
-      "length": 6,
-      "value": "13"
-    },
-    {
-      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/prebid-mobile-ios-newsbreak\/PrebidMobile\/PrebidMobileRendering\/SkadnEventTracker.swift",
-      "kind": "StringLiteral",
-      "offset": 662,
-      "length": 17,
-      "value": "\"PrebidMobile.SkadnEventTracker\""
-    },
-    {
       "filePath": "\/Users\/huanzhizhang\/Huanzhi\/prebid-mobile-ios-newsbreak\/PrebidMobile\/PrebidMobileRendering\/AdTypes\/AdView\/Position.swift",
       "kind": "IntegerLiteral",
       "offset": 662,
       "length": 2,
-      "value": "-1"
-    },
-    {
-      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/prebid-mobile-ios-newsbreak\/PrebidMobile\/PrebidMobileRendering\/AdTypes\/AdView\/Position.swift",
-      "kind": "IntegerLiteral",
-      "offset": 674,
-      "length": 7,
-      "value": "0"
-    },
-    {
-      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/prebid-mobile-ios-newsbreak\/PrebidMobile\/PrebidMobileRendering\/AdTypes\/AdView\/Position.swift",
-      "kind": "IntegerLiteral",
-      "offset": 691,
-      "length": 9,
-      "value": "1"
-    },
-    {
-      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/prebid-mobile-ios-newsbreak\/PrebidMobile\/PrebidMobileRendering\/AdTypes\/AdView\/Position.swift",
-      "kind": "IntegerLiteral",
-      "offset": 710,
-      "length": 8,
-      "value": "2"
-    },
-    {
-      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/prebid-mobile-ios-newsbreak\/PrebidMobile\/PrebidMobileRendering\/AdTypes\/AdView\/Position.swift",
-      "kind": "IntegerLiteral",
-      "offset": 728,
-      "length": 6,
-      "value": "3"
-    },
-    {
-      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/prebid-mobile-ios-newsbreak\/PrebidMobile\/PrebidMobileRendering\/AdTypes\/AdView\/Position.swift",
-      "kind": "IntegerLiteral",
-      "offset": 744,
-      "length": 10,
-      "value": "4"
-    },
-    {
-      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/prebid-mobile-ios-newsbreak\/PrebidMobile\/PrebidMobileRendering\/AdTypes\/AdView\/Position.swift",
-      "kind": "IntegerLiteral",
-      "offset": 764,
-      "length": 12,
-      "value": "5"
-    },
-    {
-      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/prebid-mobile-ios-newsbreak\/PrebidMobile\/PrebidMobileRendering\/AdTypes\/AdView\/Position.swift",
-      "kind": "IntegerLiteral",
-      "offset": 786,
-      "length": 11,
-      "value": "6"
-    },
-    {
-      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/prebid-mobile-ios-newsbreak\/PrebidMobile\/PrebidMobileRendering\/AdTypes\/AdView\/Position.swift",
-      "kind": "IntegerLiteral",
-      "offset": 807,
-      "length": 6,
-      "value": "7"
-    },
-    {
-      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/prebid-mobile-ios-newsbreak\/PrebidMobile\/PrebidMobileRendering\/AdTypes\/AdView\/Position.swift",
-      "kind": "IntegerLiteral",
-      "offset": 662,
-      "length": 1,
       "value": "-1"
     },
     {
@@ -74445,13 +76216,6 @@
       "value": "0"
     },
     {
-      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/prebid-mobile-ios-newsbreak\/PrebidMobile\/PrebidMobileRendering\/Prebid\/PBMCore\/BidResponse.swift",
-      "kind": "StringLiteral",
-      "offset": 623,
-      "length": 11,
-      "value": "\"PrebidMobile.BidResponse\""
-    },
-    {
       "filePath": "\/Users\/huanzhizhang\/Huanzhi\/prebid-mobile-ios-newsbreak\/PrebidMobile\/PrebidMobileRendering\/Networking\/ServerConnection.swift",
       "kind": "StringLiteral",
       "offset": 653,
@@ -74480,6 +76244,41 @@
       "value": "[]"
     },
     {
+      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/prebid-mobile-ios-newsbreak\/PrebidMobile\/PrebidMobileRendering\/Networking\/ServerConnection.swift",
+      "kind": "StringLiteral",
+      "offset": 1138,
+      "length": 12,
+      "value": "\"User-Agent\""
+    },
+    {
+      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/prebid-mobile-ios-newsbreak\/PrebidMobile\/PrebidMobileRendering\/Networking\/ServerConnection.swift",
+      "kind": "StringLiteral",
+      "offset": 1217,
+      "length": 14,
+      "value": "\"Content-Type\""
+    },
+    {
+      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/prebid-mobile-ios-newsbreak\/PrebidMobile\/PrebidMobileRendering\/Networking\/ServerConnection.swift",
+      "kind": "StringLiteral",
+      "offset": 1298,
+      "length": 18,
+      "value": "\"application\/json\""
+    },
+    {
+      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/prebid-mobile-ios-newsbreak\/PrebidMobile\/PrebidMobileRendering\/Networking\/ServerConnection.swift",
+      "kind": "StringLiteral",
+      "offset": 1494,
+      "length": 17,
+      "value": "\"PBMConnectionID\""
+    },
+    {
+      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/prebid-mobile-ios-newsbreak\/PrebidMobile\/PrebidMobileRendering\/Networking\/ServerConnection.swift",
+      "kind": "StringLiteral",
+      "offset": 1683,
+      "length": 17,
+      "value": "\"PBMIsPBMRequest\""
+    },
+    {
       "filePath": "\/Users\/huanzhizhang\/Huanzhi\/prebid-mobile-ios-newsbreak\/PrebidMobile\/ConfigurationAndTargeting\/Gender.swift",
       "kind": "IntegerLiteral",
       "offset": 666,
@@ -74499,48 +76298,6 @@
       "offset": 696,
       "length": 5,
       "value": "3"
-    },
-    {
-      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/prebid-mobile-ios-newsbreak\/PrebidMobile\/ConfigurationAndTargeting\/Gender.swift",
-      "kind": "IntegerLiteral",
-      "offset": 666,
-      "length": 4,
-      "value": "1"
-    },
-    {
-      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/prebid-mobile-ios-newsbreak\/PrebidMobile\/ConfigurationAndTargeting\/Gender.swift",
-      "kind": "IntegerLiteral",
-      "offset": 680,
-      "length": 6,
-      "value": "2"
-    },
-    {
-      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/prebid-mobile-ios-newsbreak\/PrebidMobile\/ConfigurationAndTargeting\/Gender.swift",
-      "kind": "IntegerLiteral",
-      "offset": 696,
-      "length": 5,
-      "value": "3"
-    },
-    {
-      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/prebid-mobile-ios-newsbreak\/PrebidMobile\/ConfigurationAndTargeting\/Gender.swift",
-      "kind": "StringLiteral",
-      "offset": 761,
-      "length": 3,
-      "value": "\"M\""
-    },
-    {
-      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/prebid-mobile-ios-newsbreak\/PrebidMobile\/ConfigurationAndTargeting\/Gender.swift",
-      "kind": "StringLiteral",
-      "offset": 787,
-      "length": 3,
-      "value": "\"F\""
-    },
-    {
-      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/prebid-mobile-ios-newsbreak\/PrebidMobile\/ConfigurationAndTargeting\/Gender.swift",
-      "kind": "StringLiteral",
-      "offset": 813,
-      "length": 3,
-      "value": "\"O\""
     },
     {
       "filePath": "\/Users\/huanzhizhang\/Huanzhi\/prebid-mobile-ios-newsbreak\/PrebidMobile\/ConfigurationAndTargeting\/Gender.swift",
@@ -74655,25 +76412,11 @@
       "value": "5"
     },
     {
-      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/prebid-mobile-ios-newsbreak\/PrebidMobile\/Logging\/LogLevel.swift",
-      "kind": "StringLiteral",
-      "offset": 633,
-      "length": 8,
-      "value": "\"PrebidMobile.LogLevel\""
-    },
-    {
-      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/prebid-mobile-ios-newsbreak\/PrebidMobile\/AdUnits\/VideoInterstitialAdUnit.swift",
-      "kind": "StringLiteral",
-      "offset": 604,
-      "length": 23,
-      "value": "\"PrebidMobile.VideoInterstitialAdUnit\""
-    },
-    {
       "filePath": "\/Users\/huanzhizhang\/Huanzhi\/prebid-mobile-ios-newsbreak\/PrebidMobile\/PrebidMobileRendering\/Prebid\/Integrations\/GAM\/BaseInterstitialAdUnit.swift",
-      "kind": "StringLiteral",
-      "offset": 633,
-      "length": 22,
-      "value": "\"PrebidMobile.BaseInterstitialAdUnit\""
+      "kind": "BooleanLiteral",
+      "offset": 1795,
+      "length": 5,
+      "value": "false"
     },
     {
       "filePath": "\/Users\/huanzhizhang\/Huanzhi\/prebid-mobile-ios-newsbreak\/PrebidMobile\/AdUnits\/Native\/NativeAdConfiguration.swift",
@@ -74681,13 +76424,6 @@
       "offset": 758,
       "length": 5,
       "value": "\"1.2\""
-    },
-    {
-      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/prebid-mobile-ios-newsbreak\/PrebidMobile\/AdUnits\/RewardedVideoAdUnit.swift",
-      "kind": "StringLiteral",
-      "offset": 594,
-      "length": 19,
-      "value": "\"PrebidMobile.RewardedVideoAdUnit\""
     },
     {
       "filePath": "\/Users\/huanzhizhang\/Huanzhi\/prebid-mobile-ios-newsbreak\/PrebidMobile\/PrebidMobileRendering\/Prebid\/Integrations\/GAM\/BannerView.swift",
@@ -74709,13 +76445,6 @@
       "offset": 2464,
       "length": 5,
       "value": "false"
-    },
-    {
-      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/prebid-mobile-ios-newsbreak\/PrebidMobile\/PrebidMobileRendering\/Prebid\/Integrations\/GAM\/BannerView.swift",
-      "kind": "StringLiteral",
-      "offset": 700,
-      "length": 10,
-      "value": "\"PrebidMobile.BannerView\""
     },
     {
       "filePath": "\/Users\/huanzhizhang\/Huanzhi\/prebid-mobile-ios-newsbreak\/PrebidMobile\/PrebidMobileRendering\/Networking\/URLBuilding\/PathBuilder.swift",
@@ -74772,6 +76501,27 @@
       "offset": 1267,
       "length": 5,
       "value": "false"
+    },
+    {
+      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/prebid-mobile-ios-newsbreak\/PrebidMobile\/AdUnits\/Native\/NativeAd.swift",
+      "kind": "Array",
+      "offset": 1615,
+      "length": 2,
+      "value": "[]"
+    },
+    {
+      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/prebid-mobile-ios-newsbreak\/PrebidMobile\/AdUnits\/Native\/NativeAd.swift",
+      "kind": "Array",
+      "offset": 1743,
+      "length": 2,
+      "value": "[]"
+    },
+    {
+      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/prebid-mobile-ios-newsbreak\/PrebidMobile\/AdUnits\/Native\/NativeAd.swift",
+      "kind": "Array",
+      "offset": 1866,
+      "length": 2,
+      "value": "[]"
     },
     {
       "filePath": "\/Users\/huanzhizhang\/Huanzhi\/prebid-mobile-ios-newsbreak\/PrebidMobile\/ConfigurationAndTargeting\/Prebid.swift",
@@ -74886,60 +76636,11 @@
       "value": "false"
     },
     {
-      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/prebid-mobile-ios-newsbreak\/PrebidMobile\/PrebidMobileRendering\/Prebid\/Integrations\/MediationAPI\/MediationNativeAdUnit.swift",
-      "kind": "StringLiteral",
-      "offset": 646,
-      "length": 21,
-      "value": "\"PrebidMobile.MediationNativeAdUnit\""
-    },
-    {
       "filePath": "\/Users\/huanzhizhang\/Huanzhi\/prebid-mobile-ios-newsbreak\/PrebidMobile\/ConfigurationAndTargeting\/PrebidInitializationStatus.swift",
       "kind": "IntegerLiteral",
       "offset": 687,
       "length": 6,
       "value": "1"
-    },
-    {
-      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/prebid-mobile-ios-newsbreak\/PrebidMobile\/ConfigurationAndTargeting\/PrebidInitializationStatus.swift",
-      "kind": "IntegerLiteral",
-      "offset": 687,
-      "length": 6,
-      "value": "1"
-    },
-    {
-      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/prebid-mobile-ios-newsbreak\/PrebidMobile\/PrebidMobileRendering\/AdPosition.swift",
-      "kind": "IntegerLiteral",
-      "offset": 1287,
-      "length": 1,
-      "value": "0"
-    },
-    {
-      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/prebid-mobile-ios-newsbreak\/PrebidMobile\/PrebidMobileRendering\/AdPosition.swift",
-      "kind": "IntegerLiteral",
-      "offset": 1323,
-      "length": 1,
-      "value": "4"
-    },
-    {
-      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/prebid-mobile-ios-newsbreak\/PrebidMobile\/PrebidMobileRendering\/AdPosition.swift",
-      "kind": "IntegerLiteral",
-      "offset": 1358,
-      "length": 1,
-      "value": "5"
-    },
-    {
-      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/prebid-mobile-ios-newsbreak\/PrebidMobile\/PrebidMobileRendering\/AdPosition.swift",
-      "kind": "IntegerLiteral",
-      "offset": 1393,
-      "length": 1,
-      "value": "6"
-    },
-    {
-      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/prebid-mobile-ios-newsbreak\/PrebidMobile\/PrebidMobileRendering\/AdPosition.swift",
-      "kind": "IntegerLiteral",
-      "offset": 1429,
-      "length": 1,
-      "value": "7"
     },
     {
       "filePath": "\/Users\/huanzhizhang\/Huanzhi\/prebid-mobile-ios-newsbreak\/PrebidMobile\/PrebidMobileRendering\/AdPosition.swift",
@@ -75012,13 +76713,6 @@
       "value": "false"
     },
     {
-      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/prebid-mobile-ios-newsbreak\/PrebidMobile\/PrebidMobileRendering\/Prebid\/Integrations\/MediationAPI\/MediationBannerAdUnit.swift",
-      "kind": "StringLiteral",
-      "offset": 659,
-      "length": 21,
-      "value": "\"PrebidMobile.MediationBannerAdUnit\""
-    },
-    {
       "filePath": "\/Users\/huanzhizhang\/Huanzhi\/prebid-mobile-ios-newsbreak\/PrebidMobile\/AdUnits\/AdUnit.swift",
       "kind": "FloatLiteral",
       "offset": 867,
@@ -75045,20 +76739,6 @@
       "offset": 2186,
       "length": 5,
       "value": "false"
-    },
-    {
-      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/prebid-mobile-ios-newsbreak\/PrebidMobile\/AdUnits\/AdUnit.swift",
-      "kind": "StringLiteral",
-      "offset": 640,
-      "length": 6,
-      "value": "\"PrebidMobile.AdUnit\""
-    },
-    {
-      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/prebid-mobile-ios-newsbreak\/PrebidMobile\/AdUnits\/Native\/NativeEventTracker.swift",
-      "kind": "StringLiteral",
-      "offset": 600,
-      "length": 18,
-      "value": "\"PrebidMobile.NativeEventTracker\""
     },
     {
       "filePath": "\/Users\/huanzhizhang\/Huanzhi\/prebid-mobile-ios-newsbreak\/PrebidMobile\/AdUnits\/Native\/NativeEventTracker.swift",
@@ -75236,125 +76916,6 @@
       "value": "8001"
     },
     {
-      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/prebid-mobile-ios-newsbreak\/PrebidMobile\/ResultCode.swift",
-      "kind": "IntegerLiteral",
-      "offset": 680,
-      "length": 1,
-      "value": "0"
-    },
-    {
-      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/prebid-mobile-ios-newsbreak\/PrebidMobile\/ResultCode.swift",
-      "kind": "IntegerLiteral",
-      "offset": 691,
-      "length": 24,
-      "value": "1"
-    },
-    {
-      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/prebid-mobile-ios-newsbreak\/PrebidMobile\/ResultCode.swift",
-      "kind": "IntegerLiteral",
-      "offset": 725,
-      "length": 22,
-      "value": "2"
-    },
-    {
-      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/prebid-mobile-ios-newsbreak\/PrebidMobile\/ResultCode.swift",
-      "kind": "IntegerLiteral",
-      "offset": 757,
-      "length": 21,
-      "value": "3"
-    },
-    {
-      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/prebid-mobile-ios-newsbreak\/PrebidMobile\/ResultCode.swift",
-      "kind": "IntegerLiteral",
-      "offset": 788,
-      "length": 17,
-      "value": "4"
-    },
-    {
-      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/prebid-mobile-ios-newsbreak\/PrebidMobile\/ResultCode.swift",
-      "kind": "IntegerLiteral",
-      "offset": 815,
-      "length": 18,
-      "value": "5"
-    },
-    {
-      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/prebid-mobile-ios-newsbreak\/PrebidMobile\/ResultCode.swift",
-      "kind": "IntegerLiteral",
-      "offset": 843,
-      "length": 17,
-      "value": "6"
-    },
-    {
-      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/prebid-mobile-ios-newsbreak\/PrebidMobile\/ResultCode.swift",
-      "kind": "IntegerLiteral",
-      "offset": 870,
-      "length": 18,
-      "value": "7"
-    },
-    {
-      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/prebid-mobile-ios-newsbreak\/PrebidMobile\/ResultCode.swift",
-      "kind": "IntegerLiteral",
-      "offset": 898,
-      "length": 20,
-      "value": "8"
-    },
-    {
-      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/prebid-mobile-ios-newsbreak\/PrebidMobile\/ResultCode.swift",
-      "kind": "IntegerLiteral",
-      "offset": 928,
-      "length": 22,
-      "value": "9"
-    },
-    {
-      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/prebid-mobile-ios-newsbreak\/PrebidMobile\/ResultCode.swift",
-      "kind": "IntegerLiteral",
-      "offset": 960,
-      "length": 18,
-      "value": "10"
-    },
-    {
-      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/prebid-mobile-ios-newsbreak\/PrebidMobile\/ResultCode.swift",
-      "kind": "IntegerLiteral",
-      "offset": 1026,
-      "length": 4,
-      "value": "1000"
-    },
-    {
-      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/prebid-mobile-ios-newsbreak\/PrebidMobile\/ResultCode.swift",
-      "kind": "IntegerLiteral",
-      "offset": 1070,
-      "length": 4,
-      "value": "7000"
-    },
-    {
-      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/prebid-mobile-ios-newsbreak\/PrebidMobile\/ResultCode.swift",
-      "kind": "IntegerLiteral",
-      "offset": 1084,
-      "length": 20,
-      "value": "7001"
-    },
-    {
-      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/prebid-mobile-ios-newsbreak\/PrebidMobile\/ResultCode.swift",
-      "kind": "IntegerLiteral",
-      "offset": 1114,
-      "length": 26,
-      "value": "7002"
-    },
-    {
-      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/prebid-mobile-ios-newsbreak\/PrebidMobile\/ResultCode.swift",
-      "kind": "IntegerLiteral",
-      "offset": 1169,
-      "length": 4,
-      "value": "8000"
-    },
-    {
-      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/prebid-mobile-ios-newsbreak\/PrebidMobile\/ResultCode.swift",
-      "kind": "IntegerLiteral",
-      "offset": 1183,
-      "length": 43,
-      "value": "8001"
-    },
-    {
       "filePath": "\/Users\/huanzhizhang\/Huanzhi\/prebid-mobile-ios-newsbreak\/PrebidMobile\/AdUnits\/Native\/PlacementType.swift",
       "kind": "IntegerLiteral",
       "offset": 733,
@@ -75411,27 +76972,6 @@
       "value": "500"
     },
     {
-      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/prebid-mobile-ios-newsbreak\/PrebidMobile\/AdUnits\/Native\/NativeImageAssetType.swift",
-      "kind": "IntegerLiteral",
-      "offset": 669,
-      "length": 1,
-      "value": "1"
-    },
-    {
-      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/prebid-mobile-ios-newsbreak\/PrebidMobile\/AdUnits\/Native\/NativeImageAssetType.swift",
-      "kind": "IntegerLiteral",
-      "offset": 687,
-      "length": 1,
-      "value": "3"
-    },
-    {
-      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/prebid-mobile-ios-newsbreak\/PrebidMobile\/AdUnits\/Native\/NativeImageAssetType.swift",
-      "kind": "IntegerLiteral",
-      "offset": 712,
-      "length": 3,
-      "value": "500"
-    },
-    {
       "filePath": "\/Users\/huanzhizhang\/Huanzhi\/prebid-mobile-ios-newsbreak\/PrebidMobile\/TrackerManager.swift",
       "kind": "BooleanLiteral",
       "offset": 680,
@@ -75453,25 +76993,11 @@
       "value": "3"
     },
     {
-      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/prebid-mobile-ios-newsbreak\/PrebidMobile\/AdUnits\/InterstitialAdUnit.swift",
-      "kind": "StringLiteral",
-      "offset": 604,
-      "length": 18,
-      "value": "\"PrebidMobile.InterstitialAdUnit\""
-    },
-    {
       "filePath": "\/Users\/huanzhizhang\/Huanzhi\/prebid-mobile-ios-newsbreak\/PrebidMobile\/Dispatcher.swift",
       "kind": "IntegerLiteral",
       "offset": 942,
       "length": 1,
       "value": "0"
-    },
-    {
-      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/prebid-mobile-ios-newsbreak\/PrebidMobile\/Dispatcher.swift",
-      "kind": "StringLiteral",
-      "offset": 671,
-      "length": 10,
-      "value": "\"PrebidMobile.Dispatcher\""
     },
     {
       "filePath": "\/Users\/huanzhizhang\/Huanzhi\/prebid-mobile-ios-newsbreak\/PrebidMobile\/PrebidMobileRendering\/Prebid\/PBMCore\/AdUnitConfig.swift",
@@ -75493,20 +77019,6 @@
       "offset": 771,
       "length": 2,
       "value": "60"
-    },
-    {
-      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/prebid-mobile-ios-newsbreak\/PrebidMobile\/PrebidMobileRendering\/Prebid\/PBMCore\/AdUnitConfig.swift",
-      "kind": "StringLiteral",
-      "offset": 801,
-      "length": 12,
-      "value": "\"PrebidMobile.AdUnitConfig\""
-    },
-    {
-      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/prebid-mobile-ios-newsbreak\/PrebidMobile\/PrebidMobileRendering\/AdTypes\/AdView\/HiddenWebViewManager.swift",
-      "kind": "StringLiteral",
-      "offset": 663,
-      "length": 20,
-      "value": "\"PrebidMobile.HiddenWebViewManager\""
     },
     {
       "filePath": "\/Users\/huanzhizhang\/Huanzhi\/prebid-mobile-ios-newsbreak\/PrebidMobile\/AdUnits\/Native\/ContextSubType.swift",
@@ -75614,13 +77126,6 @@
       "value": "[]"
     },
     {
-      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/prebid-mobile-ios-newsbreak\/PrebidMobile\/PrebidMobileRendering\/PrebidServerEventTracker.swift",
-      "kind": "StringLiteral",
-      "offset": 628,
-      "length": 24,
-      "value": "\"PrebidMobile.PrebidServerEventTracker\""
-    },
-    {
       "filePath": "\/Users\/huanzhizhang\/Huanzhi\/prebid-mobile-ios-newsbreak\/PrebidMobile\/PrebidMobileRendering\/AdFormat.swift",
       "kind": "IntegerLiteral",
       "offset": 1141,
@@ -75684,11 +77189,11 @@
       "value": "\"native\""
     },
     {
-      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/prebid-mobile-ios-newsbreak\/PrebidMobile\/PrebidMobileRendering\/AdFormat.swift",
-      "kind": "StringLiteral",
-      "offset": 633,
-      "length": 8,
-      "value": "\"PrebidMobile.AdFormat\""
+      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/prebid-mobile-ios-newsbreak\/PrebidMobile\/PrebidMobileRendering\/Prebid\/Integrations\/PBMStandaloneSDK\/EventHandlers\/InterstitialEventHandlerStandalone.swift",
+      "kind": "BooleanLiteral",
+      "offset": 951,
+      "length": 5,
+      "value": "false"
     },
     {
       "filePath": "\/Users\/huanzhizhang\/Huanzhi\/prebid-mobile-ios-newsbreak\/PrebidMobile\/PrebidMobileRendering\/AdTypes\/AdView\/VideoControlsConfiguration.swift",
@@ -75703,13 +77208,6 @@
       "offset": 3859,
       "length": 5,
       "value": "false"
-    },
-    {
-      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/prebid-mobile-ios-newsbreak\/PrebidMobile\/AdUnits\/Native\/NativeRequest.swift",
-      "kind": "StringLiteral",
-      "offset": 594,
-      "length": 13,
-      "value": "\"PrebidMobile.NativeRequest\""
     },
     {
       "filePath": "\/Users\/huanzhizhang\/Huanzhi\/prebid-mobile-ios-newsbreak\/PrebidMobile\/Addendum\/AdViewUtils.swift",
@@ -75810,23 +77308,58 @@
       "value": "3600"
     },
     {
-      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/prebid-mobile-ios-newsbreak\/PrebidMobile\/TrackerInfo.swift",
+      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/prebid-mobile-ios-newsbreak\/PrebidMobile\/PrebidMobileRendering\/Prebid\/PBMCore\/Bid.swift",
       "kind": "StringLiteral",
-      "offset": 587,
-      "length": 11,
-      "value": "\"PrebidMobile.TrackerInfo\""
+      "offset": 2962,
+      "length": 17,
+      "value": "\"prebidmobilesdk\""
+    },
+    {
+      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/prebid-mobile-ios-newsbreak\/PrebidMobile\/PrebidMobileRendering\/Prebid\/PBMCore\/Bid.swift",
+      "kind": "BooleanLiteral",
+      "offset": 3547,
+      "length": 5,
+      "value": "false"
+    },
+    {
+      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/prebid-mobile-ios-newsbreak\/PrebidMobile\/PrebidMobileRendering\/Prebid\/PBMCore\/Bid.swift",
+      "kind": "Array",
+      "offset": 3604,
+      "length": 22,
+      "value": "[\"hb_pb\", \"hb_bidder\"]"
     },
     {
       "filePath": "\/Users\/huanzhizhang\/Huanzhi\/prebid-mobile-ios-newsbreak\/PrebidMobile\/PrebidMobileRendering\/Prebid\/PBMCore\/Bid.swift",
       "kind": "StringLiteral",
-      "offset": 640,
-      "length": 3,
-      "value": "\"PrebidMobile.Bid\""
+      "offset": 3737,
+      "length": 13,
+      "value": "\"hb_cache_id\""
+    },
+    {
+      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/prebid-mobile-ios-newsbreak\/PrebidMobile\/PrebidMobileRendering\/Prebid\/PBMCore\/Bid.swift",
+      "kind": "BooleanLiteral",
+      "offset": 3880,
+      "length": 5,
+      "value": "false"
+    },
+    {
+      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/prebid-mobile-ios-newsbreak\/PrebidMobile\/PrebidMobileRendering\/Prebid\/PBMCore\/Bid.swift",
+      "kind": "BooleanLiteral",
+      "offset": 3925,
+      "length": 4,
+      "value": "true"
     },
     {
       "filePath": "\/Users\/huanzhizhang\/Huanzhi\/prebid-mobile-ios-newsbreak\/PrebidMobile\/PrebidMobileRendering\/AdTypes\/AdView\/AdConfiguration.swift",
       "kind": "BooleanLiteral",
       "offset": 1272,
+      "length": 5,
+      "value": "false"
+    },
+    {
+      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/prebid-mobile-ios-newsbreak\/PrebidMobile\/PrebidMobileRendering\/AdTypes\/AdView\/AdConfiguration.swift",
+      "kind": "BooleanLiteral",
+      "offset": 1927,
       "length": 5,
       "value": "false"
     },
@@ -75864,34 +77397,6 @@
       "offset": 2873,
       "length": 1,
       "value": "0"
-    },
-    {
-      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/prebid-mobile-ios-newsbreak\/PrebidMobile\/PrebidMobileRendering\/Utilities\/NetworkType.swift",
-      "kind": "IntegerLiteral",
-      "offset": 854,
-      "length": 1,
-      "value": "0"
-    },
-    {
-      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/prebid-mobile-ios-newsbreak\/PrebidMobile\/PrebidMobileRendering\/Utilities\/NetworkType.swift",
-      "kind": "IntegerLiteral",
-      "offset": 872,
-      "length": 1,
-      "value": "2"
-    },
-    {
-      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/prebid-mobile-ios-newsbreak\/PrebidMobile\/PrebidMobileRendering\/Utilities\/NetworkType.swift",
-      "kind": "IntegerLiteral",
-      "offset": 893,
-      "length": 1,
-      "value": "3"
-    },
-    {
-      "filePath": "\/Users\/huanzhizhang\/Huanzhi\/prebid-mobile-ios-newsbreak\/PrebidMobile\/PrebidMobileRendering\/Utilities\/NetworkType.swift",
-      "kind": "IntegerLiteral",
-      "offset": 904,
-      "length": 7,
-      "value": "4"
     },
     {
       "filePath": "\/Users\/huanzhizhang\/Huanzhi\/prebid-mobile-ios-newsbreak\/PrebidMobile\/PrebidMobileRendering\/Utilities\/NetworkType.swift",
