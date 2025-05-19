@@ -62,11 +62,11 @@ end
 target 'MSPDemoApp' do
   project 'MSPDemoApp'
   
-  pod 'MSPCore', :path => './', :modular_headers => true
-  pod 'NovaAdapter', :path => './', :modular_headers => true
-  pod 'PrebidAdapter', :path => './', :modular_headers => true
-  pod 'GoogleAdapter', :path => './', :modular_headers => true
-  pod 'FacebookAdapter', :path => './', :modular_headers => true
-  pod 'MSPSharedLibraries', :path => './', :modular_headers => true
-  pod 'FBAudienceNetwork', '6.17.1'
+  pod 'MSPCore', '0.0.116', :modular_headers => true
+  pod 'NovaAdapter', '0.0.116', :modular_headers => true
+#pod 'PrebidAdapter', '0.0.116', :modular_headers => true
+  pod 'GoogleAdapter', '0.0.116', :modular_headers => true
+  pod 'FacebookAdapter', '0.0.116', :modular_headers => true
+  #pod 'MSPSharedLibraries', :path => './', :modular_headers => true
+  #pod 'FBAudienceNetwork', '6.17.1'
 end

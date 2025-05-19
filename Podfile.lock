@@ -21,34 +21,23 @@ PODS:
   - SwiftProtobuf (1.21.0)
 
 DEPENDENCIES:
-  - FacebookAdapter (from `./`)
-  - FBAudienceNetwork (= 6.17.1)
-  - GoogleAdapter (from `./`)
-  - MSPCore (from `./`)
-  - MSPSharedLibraries (from `./`)
-  - NovaAdapter (from `./`)
-  - PrebidAdapter (from `./`)
+  - FacebookAdapter (= 0.0.116)
+  - GoogleAdapter (= 0.0.116)
+  - MSPCore (= 0.0.116)
+  - NovaAdapter (= 0.0.116)
 
 SPEC REPOS:
   trunk:
+    - FacebookAdapter
     - FBAudienceNetwork
     - Google-Mobile-Ads-SDK
+    - GoogleAdapter
     - GoogleUserMessagingPlatform
+    - MSPCore
+    - MSPSharedLibraries
+    - NovaAdapter
+    - PrebidAdapter
     - SwiftProtobuf
-
-EXTERNAL SOURCES:
-  FacebookAdapter:
-    :path: "./"
-  GoogleAdapter:
-    :path: "./"
-  MSPCore:
-    :path: "./"
-  MSPSharedLibraries:
-    :path: "./"
-  NovaAdapter:
-    :path: "./"
-  PrebidAdapter:
-    :path: "./"
 
 SPEC CHECKSUMS:
   FacebookAdapter: 2d3793b591e74dd4bba0980bc5699237784af023
@@ -62,6 +51,6 @@ SPEC CHECKSUMS:
   PrebidAdapter: 391ab4e91c6a170adb347c973e46dea92732ef84
   SwiftProtobuf: afced68785854575756db965e9da52bbf3dc45e7
 
-PODFILE CHECKSUM: e3615574a7d5d17d19d5ff457963274d4e114980
+PODFILE CHECKSUM: ee6856a47fb46faca17a3b12ca2076b729201e9a
 
 COCOAPODS: 1.15.2

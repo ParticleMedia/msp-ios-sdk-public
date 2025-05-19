@@ -18,6 +18,7 @@
 		668480842BE03D800025018B /* MSPDemoAppUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 668480832BE03D800025018B /* MSPDemoAppUITests.swift */; };
 		668480862BE03D800025018B /* MSPDemoAppUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 668480852BE03D800025018B /* MSPDemoAppUITestsLaunchTests.swift */; };
 		668ACA922CD58A8800F45803 /* DemoNativeAdContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 668ACA912CD58A8800F45803 /* DemoNativeAdContainer.swift */; };
+		66C79B882DD7D62E0012F57F /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 6684806D2BE03D800025018B /* LaunchScreen.storyboard */; };
 		66CC4E562C8FB6AE0005CCF6 /* DemoAdViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66CC4E552C8FB6AE0005CCF6 /* DemoAdViewController.swift */; };
 		66E5334E2C1BC1E700255D15 /* Colors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E5334D2C1BC1E700255D15 /* Colors.swift */; };
 		E0D4098C6B103253761A220B /* libPods-MSPDemoApp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 865DA71BB2BB723F7DC9E210 /* libPods-MSPDemoApp.a */; };
@@ -298,6 +299,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				667DD3AC2D971BBD00E17DEE /* Main.storyboard in Resources */,
+				66C79B882DD7D62E0012F57F /* LaunchScreen.storyboard in Resources */,
 				6684806C2BE03D800025018B /* Assets.xcassets in Resources */,
 				6684806A2BE03D7D0025018B /* Base in Resources */,
 			);
@@ -571,7 +573,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 2;
 				DEVELOPMENT_TEAM = 4PEHUZX8QH;
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -602,7 +604,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 2;
 				DEVELOPMENT_TEAM = 4PEHUZX8QH;
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GENERATE_INFOPLIST_FILE = YES;

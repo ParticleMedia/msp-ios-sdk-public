@@ -1,1 +1,1 @@
-../../../../FacebookAdapter/FacebookAdapter/FacebookAdapter.h
+../../../FacebookAdapter/FacebookAdapter/FacebookAdapter/FacebookAdapter.h

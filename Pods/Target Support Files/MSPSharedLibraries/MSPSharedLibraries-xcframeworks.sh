@@ -129,6 +129,6 @@ install_xcframework() {
   echo "Copied $source to $destination"
 }
 
-install_xcframework "${PODS_ROOT}/../MSPSharedLibraries/PrebidMobile.xcframework" "MSPSharedLibraries" "framework" "ios-arm64" "ios-arm64_x86_64-simulator"
-install_xcframework "${PODS_ROOT}/../MSPSharedLibraries/MSPiOSCore.xcframework" "MSPSharedLibraries" "framework" "ios-arm64" "ios-arm64_x86_64-simulator"
+install_xcframework "${PODS_ROOT}/MSPSharedLibraries/MSPSharedLibraries/PrebidMobile.xcframework" "MSPSharedLibraries" "framework" "ios-arm64" "ios-arm64_x86_64-simulator"
+install_xcframework "${PODS_ROOT}/MSPSharedLibraries/MSPSharedLibraries/MSPiOSCore.xcframework" "MSPSharedLibraries" "framework" "ios-arm64" "ios-arm64_x86_64-simulator"
 
