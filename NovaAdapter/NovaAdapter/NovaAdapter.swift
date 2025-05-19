@@ -214,6 +214,7 @@ public class NovaAdapter: AdNetworkAdapter {
                         return view
                     }()
                     nativeAd.mediaView = mediaView
+                    nativeAd.icon = nativeAdItem.iconUrlStr
                     nativeAd.priceInDollar = self.priceInDollar
                     nativeAd.adInfo["price"] = self.priceInDollar
                     nativeAd.adInfo["isVideo"] = (nativeAdItem.creativeType == .nativeVideo)

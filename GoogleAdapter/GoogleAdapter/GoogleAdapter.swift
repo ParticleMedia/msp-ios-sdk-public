@@ -359,6 +359,7 @@ extension GoogleAdapter: GoogleMobileAds.NativeAdLoaderDelegate {
             
             googleNativeAd.nativeAdItem = nativeAd
             googleNativeAd.mediaView = mediaView
+            googleNativeAd.icon = nativeAd.icon?.image
             googleNativeAd.priceInDollar = self.priceInDollar
             googleNativeAd.adInfo["price"] = self.priceInDollar
             nativeAd.delegate = self
