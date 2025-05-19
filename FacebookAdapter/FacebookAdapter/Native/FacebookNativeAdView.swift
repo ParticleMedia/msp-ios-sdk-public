@@ -9,6 +9,7 @@ open class FacebookNativeAdView: UIView {
     public var bodyLabel: UILabel?
     public var advertiserLabel: UILabel?
     public var callToActionButton: UIButton?
+    public var icon: UIImageView?
     
     public let fbMediaView: FBMediaView = {
         let view = FBMediaView(frame: .zero)
@@ -44,6 +45,7 @@ open class FacebookNativeAdView: UIView {
             self.bodyLabel,
             self.callToActionButton,
             self.titleLabel,
+            self.icon
         ]
         nativeAd.registerView(forInteraction: self,
                               mediaView: self.fbMediaView,

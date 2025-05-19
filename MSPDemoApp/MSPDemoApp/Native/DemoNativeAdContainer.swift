@@ -41,6 +41,12 @@ public class DemoNativeAdContainer: UIView, MSPNativeAdContainer {
         return label
     }()
     
+    let icon: UIImageView = {
+        let view = UIImageView()
+        view.translatesAutoresizingMaskIntoConstraints = false
+        return view
+    }()
+    
     lazy var ctaButton: UIButton = {
         let button = UIButton()
         button.translatesAutoresizingMaskIntoConstraints = false
@@ -75,7 +81,7 @@ public class DemoNativeAdContainer: UIView, MSPNativeAdContainer {
     }
     
     private func setUpViews() {
-        let subViews = [titleLabel, bodyLabel, advertiserLabel, ctaButton, mediaView]
+        let subViews = [titleLabel, bodyLabel, advertiserLabel, ctaButton, mediaView, icon]
         for view in subViews {
             self.addSubview(view)
         }
@@ -116,7 +122,12 @@ public class DemoNativeAdContainer: UIView, MSPNativeAdContainer {
             titleLabel.topAnchor.constraint(equalTo: mediaView.bottomAnchor, constant: Constants.paddingSmall),
             titleLabelTrailingConstraint,
             
-            bodyLabel.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: Constants.paddingSmall),
+            icon.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: Constants.paddingSmall),
+            icon.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 4),
+            icon.widthAnchor.constraint(equalToConstant: 17),
+            icon.heightAnchor.constraint(equalToConstant: 17),
+            
+            bodyLabel.leadingAnchor.constraint(equalTo: icon.trailingAnchor, constant: Constants.paddingSmall),
             bodyLabel.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 4),
             bodyLabelTrailingConstraint,
             
@@ -169,5 +180,7 @@ public class DemoNativeAdContainer: UIView, MSPNativeAdContainer {
         return mediaView
     }
     
-    
+    public func getIcon() -> UIImageView? {
+        return self.icon
+    }
 }
