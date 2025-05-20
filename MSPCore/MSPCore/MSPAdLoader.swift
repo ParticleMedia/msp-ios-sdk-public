@@ -27,12 +27,11 @@ public class MSPAdLoader: NSObject {
         self.adListener = adListener
         self.adRequest = adRequest
         
-        //let bidders = getBidders(placement: <#T##Placement#>)
         let bidders: [MSPiOSCore.Bidder]
         let timeout: Double
         if let placement = getPlacement(placementId: placementId) {
             let adConfigBidders = getBidders(placement: placement)
-            if adConfigBidders .isEmpty {
+            if adConfigBidders.isEmpty {
                 bidders = getDefaultBidders(adRequest: adRequest)
             } else {
                 bidders = adConfigBidders
@@ -47,16 +46,6 @@ public class MSPAdLoader: NSObject {
         self.mspAuction = mspAuction
         mspAuction.adRequest = adRequest
         mspAuction.startAuction(auctionListener: self, adListener: adListener)
-        /*
-        if let placement = getPlacement(placementId: placementId) {
-            let mspAuction = MSPAuction(bidders: getBidders(placement: placement), cacheOnly: false, timeout: Double(placement.auctionTimeout ?? 8))
-            self.mspAuction = mspAuction
-            mspAuction.adRequest = adRequest
-            mspAuction.startAuction(auctionListener: self, adListener: adListener)
-        } else {
-            adListener.onError(msg: "invalid placement")
-        }
-         */
     }
     
     public func getPlacement(placementId: String) -> Placement? {
