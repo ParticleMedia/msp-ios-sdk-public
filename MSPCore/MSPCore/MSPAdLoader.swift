@@ -27,6 +27,27 @@ public class MSPAdLoader: NSObject {
         self.adListener = adListener
         self.adRequest = adRequest
         
+        //let bidders = getBidders(placement: <#T##Placement#>)
+        let bidders: [MSPiOSCore.Bidder]
+        let timeout: Double
+        if let placement = getPlacement(placementId: placementId) {
+            let adConfigBidders = getBidders(placement: placement)
+            if adConfigBidders .isEmpty {
+                bidders = getDefaultBidders(adRequest: adRequest)
+            } else {
+                bidders = adConfigBidders
+            }
+            timeout = Double(placement.auctionTimeout ?? 8)
+        } else {
+            bidders = getDefaultBidders(adRequest: adRequest)
+            timeout = 8.0 // default timeout when placement is missing
+        }
+        
+        let mspAuction = MSPAuction(bidders: bidders, cacheOnly: false, timeout: timeout)
+        self.mspAuction = mspAuction
+        mspAuction.adRequest = adRequest
+        mspAuction.startAuction(auctionListener: self, adListener: adListener)
+        /*
         if let placement = getPlacement(placementId: placementId) {
             let mspAuction = MSPAuction(bidders: getBidders(placement: placement), cacheOnly: false, timeout: Double(placement.auctionTimeout ?? 8))
             self.mspAuction = mspAuction
@@ -35,6 +56,7 @@ public class MSPAdLoader: NSObject {
         } else {
             adListener.onError(msg: "invalid placement")
         }
+         */
     }
     
     public func getPlacement(placementId: String) -> Placement? {
@@ -47,6 +69,13 @@ public class MSPAdLoader: NSObject {
             }
         }
         return nil
+    }
+    
+    private func getDefaultBidders(adRequest: AdRequest) -> [MSPiOSCore.Bidder] {
+        var bidders = [MSPiOSCore.Bidder]()
+        let bidder = MSPMultiFormatBidder(name: "msp", bidderPlacementId: adRequest.placementId, bidderFormat: adRequest.adFormat)
+        bidders.append(bidder)
+        return bidders
     }
     
     public func getBidders(placement: Placement) -> [MSPiOSCore.Bidder] {
