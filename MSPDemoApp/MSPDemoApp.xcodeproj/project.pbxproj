@@ -589,7 +589,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 24.30.0;
+				MARKETING_VERSION = 0.0.117;
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = MSPDemoApp.MSPDemoApp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -620,7 +620,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 24.30.0;
+				MARKETING_VERSION = 0.0.117;
 				PRODUCT_BUNDLE_IDENTIFIER = MSPDemoApp.MSPDemoApp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
