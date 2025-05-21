@@ -240,7 +240,7 @@ import PrebidMobile
         eventModel.bidRequest = Com_Google_Openrtb_BidRequest()
         eventModel.ext = Com_Newsbreak_Monetization_Common_RequestContextExt()
         
-        eventModel.bidRequest.id = UUID().uuidString
+        eventModel.bidRequest.id = request.requestId
         eventModel.ext.source = request.placementId
         if let params = params,
            let bidderPlacementId = params["bidderPlacementId"] as? String {
