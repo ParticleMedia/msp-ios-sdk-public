@@ -55,7 +55,7 @@ public class PrebidBidLoader : BidLoader {
         var adUnitConfig = getAdUnitConfig(configId: configId ?? "demo-ios-article-top",
                                            gadQueryInfo: googleQueryInfo,
                                            facebookBidToken: facebookBidToken,
-                                           requestUUID: UUID().uuidString,
+                                           requestUUID: adRequest.requestId,
                                            prebidBannerAdSize: adSize,
                                            adRequest: adRequest)
         
