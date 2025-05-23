@@ -133,7 +133,8 @@ public class MSPAdLoader: NSObject {
         var winnerPrice = 0.0
         var winnerBidderName = ""
         if let placement = getPlacement(placementId: placementId),
-           let bidderInfoList = placement.bidders {
+           let bidderInfoList = placement.bidders,
+           !bidderInfoList.isEmpty {
             for bidderInfo in bidderInfoList {
                 let bidderPlacementId = bidderInfo.bidderPlacementId
                 if let ad = AdCache.shared.peakAd(placementId: bidderPlacementId),
@@ -145,6 +146,11 @@ public class MSPAdLoader: NSObject {
                 }
             }
             if let ad = AdCache.shared.getAd(placementId: winnerPlacementId) {
+                MSPLogger.shared.info(message: "[Auction: Get Ad] complete, winner: \(winnerBidderName),\(winnerPrice),\(winnerPlacementId)")
+                return ad
+            }
+        } else {
+            if let ad = AdCache.shared.getAd(placementId: placementId) {
                 MSPLogger.shared.info(message: "[Auction: Get Ad] complete, winner: \(winnerBidderName),\(winnerPrice),\(winnerPlacementId)")
                 return ad
             }
