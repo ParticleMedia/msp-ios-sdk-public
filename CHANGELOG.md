@@ -4,7 +4,7 @@
 3. add experiment bucket info in the MES log
 4. add SDK version info into ad request
 5. sync google and facebook sdk version from non-sdk repo
-6. fix uer id is not correct in mes log
+6. fix user id is not correct in mes log
 7. fix ad unit id not correct in mes log
 8. support icon in native ad
 9. fix request id not correct in request and log
