@@ -12,15 +12,9 @@ public enum AdType: String {
     case googleNative
     case novaNative
     case googleInterstitial
-    //case novaInterstitial
+    case novaInterstitial
     case facebookNative
     case facebookInterstitial
-    
-    case novaInterstitialHorizontalImage
-    case novaInterstitialVerticalImage
-    case novaInterstitialHorizontalVideo
-    case novaInterstitialVerticalVideo
-    case novaInterstitialHighEngagement
 }
 
 class DemoAdViewController: UIViewController {
@@ -41,7 +35,7 @@ class DemoAdViewController: UIViewController {
             return "demo-ios-foryou-large"
         case .googleInterstitial:
             return "demo-ios-article-top"
-        case .novaInterstitialHorizontalImage, .novaInterstitialVerticalImage, .novaInterstitialHorizontalVideo, .novaInterstitialVerticalVideo, .novaInterstitialHighEngagement:
+        case .novaInterstitial:
             return "demo-ios-launch-fullscreen"
         case .facebookNative:
             return "demo-ios-foryou-large"
@@ -57,7 +51,7 @@ class DemoAdViewController: UIViewController {
     
         case .googleNative, .novaNative, .facebookNative:
             return .native
-        case .googleInterstitial, .novaInterstitialHorizontalImage,.novaInterstitialVerticalImage,.novaInterstitialHorizontalVideo,.novaInterstitialVerticalVideo, .novaInterstitialHighEngagement, .facebookInterstitial:
+        case .googleInterstitial, .novaInterstitial, .facebookInterstitial:
             return .interstitial
         }
     }()
@@ -79,24 +73,14 @@ class DemoAdViewController: UIViewController {
         self.adLoader = adLoader
         var customParams = [String: String]()
         var testParams = [String: String]()
-        if adType == .novaNative {
-            testParams["test"] = "{\"ad_network\":\"msp_nova\",\"test_ad\":true,\"creative_type\":\"video\",\"is_vertical\":true}"
+        if adType == .novaNative || adType == .novaInterstitial {
+            testParams["test"] = "{\"ad_network\":\"msp_nova\",\"test_ad\":true}"
         } else if adType == .prebidBanner {
             testParams["test"] = "{\"ad_network\":\"pubmatic\",\"test_ad\":true}"
         } else if adType == .googleBanner || adType == .googleInterstitial || adType == .googleNative {
             testParams["test"] = "{\"ad_network\":\"msp_google\",\"test_ad\":true}"
         } else if adType == .facebookNative || adType == .facebookInterstitial {
             testParams["test"] = "{\"ad_network\":\"msp_fb\",\"test_ad\":true}"
-        } else if adType == .novaInterstitialHorizontalImage {
-            testParams["test"] = "{\"ad_network\":\"msp_nova\",\"test_ad\":true,\"creative_type\":\"image\",\"is_vertical\":false}"
-        } else if adType == .novaInterstitialVerticalImage {
-            testParams["test"] = "{\"ad_network\":\"msp_nova\",\"test_ad\":true,\"creative_type\":\"image\",\"is_vertical\":true}"
-        } else if adType == .novaInterstitialHorizontalVideo {
-            testParams["test"] = "{\"ad_network\":\"msp_nova\",\"test_ad\":true,\"creative_type\":\"video\",\"is_vertical\":false}"
-        } else if adType == .novaInterstitialVerticalVideo {
-            testParams["test"] = "{\"ad_network\":\"msp_nova\",\"test_ad\":true,\"creative_type\":\"video\",\"is_vertical\":true}"
-        } else if adType == .novaInterstitialHighEngagement {
-            testParams["test"] = "{\"ad_network\":\"msp_nova\",\"test_ad\":true,\"creative_type\":\"video\",\"is_vertical\":false,\"layout\": \"cancel_top_right\"}"
         }
          
         

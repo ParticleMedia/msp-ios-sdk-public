@@ -1,1 +1,1 @@
-../../../GoogleAdapter/GoogleAdapter/GoogleAdapter/GoogleAdapter.h
+../../../../GoogleAdapter/GoogleAdapter/GoogleAdapter.h
