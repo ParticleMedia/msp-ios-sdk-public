@@ -104,15 +104,12 @@ import UIKit
         let actionHandlerMaster = ActionHandlerMaster(actionHandlers: [adOpenActionHandler])
         self.startTime = CACurrentMediaTime()
         
-        
         super.init(frame: .zero)
 
         setupSubviews()
         configAdLabels(for: appOpenAd)
         configAdAvatar(for: appOpenAd)
         configTapGesture(for: appOpenAd)
-        
-        
     }
     
     @available(*, unavailable)
@@ -232,9 +229,6 @@ import UIKit
             actionKey: actionKey,
             actionDataModel: openActionDataModel)
         actionHandler.performAction(actionModel: tapActionModel)
-
-        //let openActionModel = ActionModel(actionKey: actionKey, actionDataModel: openActionDataModel)
-        //actionHandler.performAction(actionModel: openActionModel)
 
         NovaAdMetricReporter.logAdClick(
             thirdPartyClickTrackingUrls: appOpenAd.thirdPartyClickTrackingUrls,
