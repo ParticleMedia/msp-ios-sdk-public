@@ -272,7 +272,6 @@ private extension NovaAppOpenVerticalVideoAdView {
             let config = UIImage.SymbolConfiguration(pointSize: 12, weight: .semibold)
             topRightCloseButton.setImage(UIImage(systemName: "chevron.right", withConfiguration: config)?.withTintColor(UIColor(light: NovaColorPalettes.White, dark: NovaColorPalettes.White), renderingMode: .alwaysOriginal), for: .normal)
         }
-            
         
         if UIDevice.current.userInterfaceIdiom == .pad {
             if let novaAppOpenAdLayout = self.novaAppOpenAdLayout,
@@ -661,9 +660,7 @@ private extension NovaAppOpenVerticalVideoAdView {
             endOverLay.bottomAnchor.constraint(equalTo: nativeAdView.bottomAnchor),
             
             endCardView.centerXAnchor.constraint(equalTo: nativeAdView.centerXAnchor),
-            endCardView.centerYAnchor.constraint(equalTo: nativeAdView.centerYAnchor),
-            
-            
+            endCardView.centerYAnchor.constraint(equalTo: nativeAdView.centerYAnchor)
         ])
         endOverLay.isUserInteractionEnabled = false
         let config = UIImage.SymbolConfiguration(pointSize: 12, weight: .semibold)
