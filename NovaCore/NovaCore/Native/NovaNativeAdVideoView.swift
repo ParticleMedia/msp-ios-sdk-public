@@ -634,7 +634,7 @@ private extension NovaNativeAdVideoView {
         }
     }
 
-    @objc func didTapPlayButton() {
+    @objc public func didTapPlayButton() {
         guard let videoPlayer = videoPlayer else {
             return
         }
