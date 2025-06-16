@@ -629,7 +629,10 @@ private extension NovaAppOpenVerticalVideoAdView {
     }
     
     @objc func didTapSkipButton() {
-        self.mediaView?.videoView.didTapPlayButton()
+        if let userPausedAd = self.mediaView?.videoView.userPausedAd,
+           !userPausedAd {
+            self.mediaView?.videoView.didTapPlayButton()
+        }
         topRightCloseButtonArea.gestureRecognizers?.forEach { topRightCloseButtonArea.removeGestureRecognizer($0) }
         topRightCloseButtonArea.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(didTapCloseButton)))
         setUpEndCardView()
