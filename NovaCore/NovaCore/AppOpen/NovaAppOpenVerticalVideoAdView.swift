@@ -175,6 +175,14 @@ public class NovaAppOpenVerticalVideoAdView: UIView {
         view.heightAnchor.constraint(equalToConstant: 48).isActive = true
         return view
     }()
+    
+    private lazy var endCardView = NovaAppOpenAdEndCardView(appOpenAd: appOpenAd, actionHandler: actionHandler, viewController: viewController)
+    
+    private lazy var endOverLay = {
+        let view = UIView()
+        view.backgroundColor = NovaColorPalettes.Gray.tint600.withAlphaComponent(0.9)
+        return view
+    }()
 
     private var mediaView: NovaNativeAdMediaView?//(UIView & NovaNativeAdImmersiveMediaView)?
 
@@ -255,9 +263,19 @@ private extension NovaAppOpenVerticalVideoAdView {
         )
         let totalButtonBottomMargin = LayoutMetrics.bottomButtonBottomMargin + LayoutMetrics.progressBarBottomMargin
         // Activate native constraints
+        if let novaAppOpenAdLayout = self.novaAppOpenAdLayout, novaAppOpenAdLayout == .endCard {
+            
+            topRightCloseButton.layer.borderWidth = 1.5
+            topRightCloseButton.layer.cornerRadius = 12
+            topRightCloseButton.layer.borderColor = UIColor(light: NovaColorPalettes.White, dark: NovaColorPalettes.White).cgColor
+            topRightCloseButton.backgroundColor = nil
+            let config = UIImage.SymbolConfiguration(pointSize: 12, weight: .semibold)
+            topRightCloseButton.setImage(UIImage(systemName: "chevron.right", withConfiguration: config)?.withTintColor(UIColor(light: NovaColorPalettes.White, dark: NovaColorPalettes.White), renderingMode: .alwaysOriginal), for: .normal)
+        }
+        
         if UIDevice.current.userInterfaceIdiom == .pad {
             if let novaAppOpenAdLayout = self.novaAppOpenAdLayout,
-               novaAppOpenAdLayout == .verticalCancelTopRight {
+               (novaAppOpenAdLayout == .verticalCancelTopRight || novaAppOpenAdLayout == .endCard) {
                 closeButton.isHidden = true
                 NSLayoutConstraint.activate([
                     // ctaButton constraints
@@ -336,7 +354,7 @@ private extension NovaAppOpenVerticalVideoAdView {
             ])
         } else {
             if let novaAppOpenAdLayout = self.novaAppOpenAdLayout,
-               novaAppOpenAdLayout == .verticalCancelTopRight {
+               (novaAppOpenAdLayout == .verticalCancelTopRight || novaAppOpenAdLayout == .endCard) {
                 closeButton.isHidden = true
                 NSLayoutConstraint.activate([
                     // ctaButton constraints
@@ -439,7 +457,11 @@ private extension NovaAppOpenVerticalVideoAdView {
         volumeButton.addTarget(self, action: #selector(didTapVolumeButton), for: .touchUpInside)
         closeButton.addTarget(self, action: #selector(didTapCloseButton), for: .touchUpInside)
         feedbackButton.addTarget(self, action: #selector(didTapReportButton), for: .touchUpInside)
-        topRightCloseButtonArea.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(didTapCloseButton)))
+        if novaAppOpenAdLayout == .endCard {
+            topRightCloseButtonArea.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(didTapSkipButton)))
+        } else {
+            topRightCloseButtonArea.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(didTapCloseButton)))
+        }
         let tappableViews = getTappableViews()
         for view in tappableViews {
             view.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(didTapAd(sender:))))
@@ -604,6 +626,48 @@ private extension NovaAppOpenVerticalVideoAdView {
         setPlayerVolume(muted: !muted)
         mediaView?.videoView.didTabMuteButton()
         NovaAdVideoMetricReporter.logVideoMute(encryptedAdToken: appOpenAd.encryptedAdToken, isMute: !muted)
+    }
+    
+    @objc func didTapSkipButton() {
+        if let userPausedAd = self.mediaView?.videoView.userPausedAd,
+           !userPausedAd {
+            self.mediaView?.videoView.didTapPlayButton()
+        }
+        topRightCloseButtonArea.gestureRecognizers?.forEach { topRightCloseButtonArea.removeGestureRecognizer($0) }
+        topRightCloseButtonArea.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(didTapCloseButton)))
+        setUpEndCardView()
+    }
+    
+    func setUpEndCardView() {
+        endOverLay.translatesAutoresizingMaskIntoConstraints = false
+        nativeAdView.addSubview(endOverLay)
+        nativeAdView.bringSubviewToFront(topRightCloseButtonArea)
+        nativeAdView.bringSubviewToFront(bottomShadow)
+        
+        for view in [closeButton,
+                     ctaButton,
+                     adTagLabel,
+                     advertiserInfoStackView,
+                     feedbackButton,
+                     bodyLabel,
+                     adTagLabel,
+                     volumeButton] {
+            view.removeFromSuperview()
+        }
+        nativeAdView.addSubview(endCardView)
+        endCardView.backgroundColor = NovaColorPalettes.White
+        NSLayoutConstraint.activate([
+            endOverLay.leadingAnchor.constraint(equalTo: nativeAdView.leadingAnchor),
+            endOverLay.trailingAnchor.constraint(equalTo: nativeAdView.trailingAnchor),
+            endOverLay.topAnchor.constraint(equalTo: nativeAdView.topAnchor),
+            endOverLay.bottomAnchor.constraint(equalTo: nativeAdView.bottomAnchor),
+            
+            endCardView.centerXAnchor.constraint(equalTo: nativeAdView.centerXAnchor),
+            endCardView.centerYAnchor.constraint(equalTo: nativeAdView.centerYAnchor)
+        ])
+        endOverLay.isUserInteractionEnabled = false
+        let config = UIImage.SymbolConfiguration(pointSize: 12, weight: .semibold)
+        topRightCloseButton.setImage(UIImage(systemName: "xmark", withConfiguration: config)?.withTintColor(UIColor(light: NovaColorPalettes.White, dark: NovaColorPalettes.White), renderingMode: .alwaysOriginal), for: .normal)
     }
     
     private func getTappableViews() -> [UIView] {
