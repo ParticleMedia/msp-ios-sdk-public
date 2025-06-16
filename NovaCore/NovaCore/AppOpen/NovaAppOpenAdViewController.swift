@@ -57,7 +57,7 @@ public enum NovaAppOpenAdResource {
                 media = NovaNativeAdMedia.video(NovaNativeAdVideoResource(videoInfo: videoInfo, adToken: appOpenAd.encryptedAdToken, reporter: nil))
             }
             switch novaAppOpenAdLayout {
-            case .vertical, .verticalCancelTopRight:
+            case .vertical, .verticalCancelTopRight, .endCard:
                 if case let .video(videoInfo) = adResource {
                     adView = NovaAppOpenVerticalVideoAdView(appOpenAd: appOpenAd, videoInfo: videoInfo, actionHandler: actionHandler, viewController: self, novaAppOpenAdLayout: novaAppOpenAdLayout)
                 } else {

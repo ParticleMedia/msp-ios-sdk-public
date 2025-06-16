@@ -51,6 +51,7 @@ public enum NovaAppOpenAdLayout: String, Codable {
     case vertical = "vertical"
     case horizontalCancelTopRight = "horizontal_cancel_top_right"
     case verticalCancelTopRight = "vertical_cancel_top_right"
+    case endCard = "end_card_2_part"
 }
 
 public enum NovaAppOpenAdClickableComponent: String {
