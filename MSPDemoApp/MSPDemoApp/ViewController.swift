@@ -58,7 +58,8 @@ class ViewController: UIViewController {
                     UIAction(title: "Vertical Image", handler: { _ in self.openDemoAdPage(adType: .novaInterstitialVerticalImage) }),
                     UIAction(title: "Horizontal Video", handler: { _ in self.openDemoAdPage(adType: .novaInterstitialHorizontalVideo) }),
                     UIAction(title: "Vertical Video", handler: { _ in self.openDemoAdPage(adType: .novaInterstitialVerticalVideo) }),
-                    UIAction(title: "High Engagement", handler: { _ in self.openDemoAdPage(adType: .novaInterstitialHighEngagement) })
+                    UIAction(title: "High Engagement", handler: { _ in self.openDemoAdPage(adType: .novaInterstitialHighEngagement) }),
+                    UIAction(title: "End Card 2 Parts", handler: { _ in self.openDemoAdPage(adType: .novaInterstitialEndCard) })
                 ]
                 button6.menu = UIMenu(title: "Choose an option", children: novaInterstitialMenuItems)
                 button6.showsMenuAsPrimaryAction = true
