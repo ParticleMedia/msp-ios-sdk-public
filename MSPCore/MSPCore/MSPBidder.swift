@@ -1,5 +1,5 @@
 //
-//  MSPMultiFormatBidder.swift
+//  MSPBidder.swift
 //  MSPCore
 //
 //  Created by Huanzhi Zhang on 12/18/24.
@@ -9,7 +9,7 @@ import Foundation
 import MSPiOSCore
 import PrebidMobile
 
-public class MSPMultiFormatBidder: MSPiOSCore.Bidder {
+public class MSPBidder: MSPiOSCore.Bidder {
     public weak var auctionBidListener: AuctionBidListener?
     public weak var adListener: AdListener?
     public var adRequest: AdRequest?
@@ -41,7 +41,7 @@ public class MSPMultiFormatBidder: MSPiOSCore.Bidder {
     }
 }
 
-extension MSPMultiFormatBidder: BidListener {
+extension MSPBidder: BidListener {
     public func onBidResponse(bidResponse: Any, adNetwork: MSPiOSCore.AdNetwork) {
         if let adListener = self.adListener,
            let adRequest = self.adRequest,
