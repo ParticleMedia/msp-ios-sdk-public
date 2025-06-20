@@ -507,6 +507,11 @@ private extension NovaAppOpenVerticalVideoAdView {
         mediaView.config(viewModel: mediaViewModel, delegate: nil, iabMetricReporter: nativeAdView.iABMetricReporter)
          */
         setPlayerVolume(muted: openAd.videoInfo?.state?.isMute ?? true)
+        
+        mediaView.videoView.novaNativeAdVideoDelegate = self
+        if let novaAppOpenAdLayout = self.novaAppOpenAdLayout, novaAppOpenAdLayout == .endCard {
+            mediaView.videoView.videoPlayer?.player.playbackLoops = false
+        }
     }
 
     func createMediaView(for openAd: NovaAppOpenAd) {
@@ -715,4 +720,12 @@ private extension NovaAppOpenVerticalVideoAdView {
         return tappableViews
     }
  
+}
+
+extension NovaAppOpenVerticalVideoAdView: NovaNativeAdVideoDelegate {
+    public func playerDidPlayToEndTime() {
+        if let novaAppOpenAdLayout = self.novaAppOpenAdLayout, novaAppOpenAdLayout == .endCard {
+            didTapSkipButton()
+        }
+    }
 }

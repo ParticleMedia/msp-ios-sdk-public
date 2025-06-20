@@ -774,7 +774,7 @@ extension NovaNativeAdVideoView: NovaVideoPlayerDelegate {
                                                    percentage: videoCurrent / videoLength,
                                                    duration: videoCurrent)
         iabReporter?.logVideoProgress(percentage: videoCurrent / videoLength)
-        novaNativeAdVideoDelegate?.playerCurrentTimeDidChange(currentTime: videoPlayer.currentTimeInterval(), durationTime: videoLength)
+        novaNativeAdVideoDelegate?.playerCurrentTimeDidChange?(currentTime: videoPlayer.currentTimeInterval(), durationTime: videoLength)
     }
 
     public func playerTimePassed60sAfterPlay(_ player: NovaPlayer) {
@@ -788,7 +788,12 @@ extension NovaNativeAdVideoView: NovaVideoPlayerDelegate {
         }
     }
 
+    public func playerDidPlayToEndTime(_ player: NovaPlayer) {
+        novaNativeAdVideoDelegate?.playerDidPlayToEndTime?()
+    }
+    
     public func playerPlaybackWillLoop(_ player: NovaPlayer) {
+        
     }
 
     public func playerPlaybackDidLoop(_ player: NovaPlayer) {
