@@ -62,7 +62,7 @@ public class MSPAdLoader: NSObject {
     
     private func getDefaultBidders(adRequest: AdRequest) -> [MSPiOSCore.Bidder] {
         var bidders = [MSPiOSCore.Bidder]()
-        let bidder = MSPMultiFormatBidder(name: "msp", bidderPlacementId: adRequest.placementId, bidderFormat: adRequest.adFormat)
+        let bidder = MSPBidder(name: "msp", bidderPlacementId: adRequest.placementId, bidderFormat: adRequest.adFormat)
         bidders.append(bidder)
         return bidders
     }
@@ -100,7 +100,7 @@ public class MSPAdLoader: NSObject {
         
         switch bidderInfo.name {
         case "msp":
-            return MSPMultiFormatBidder(name: "msp", bidderPlacementId: bidderInfo.bidderPlacementId, bidderFormat: bidderFormat)
+            return MSPBidder(name: "msp", bidderPlacementId: bidderInfo.bidderPlacementId, bidderFormat: bidderFormat)
         case "unity":
             //let bidder = MSP.shared.adNetworkAdapterProvider.unityManager?.getAdBidder(bidderPlacementId: bidderInfo.bidderPlacementId, bidderFormat: bidderFormat)
             let bidder = MSP.shared.adNetworkAdapterProvider.adNetworkManagerDict[.unity]?.getAdBidder(bidderPlacementId: bidderInfo.bidderPlacementId, bidderFormat: bidderFormat)
