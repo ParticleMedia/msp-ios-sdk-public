@@ -71,6 +71,7 @@ public protocol NovaPlayerPlaybackDelegate: AnyObject {
     func playerPlaybackDidEnd(_ player: NovaPlayer)
     func playerPlaybackWillLoop(_ player: NovaPlayer)
     func playerPlaybackDidLoop(_ player: NovaPlayer)
+    func playerDidPlayToEndTime(_ player: NovaPlayer)
 }
 
 // MARK: - Player
@@ -726,6 +727,7 @@ extension NovaPlayer {
 
     @objc internal func playerItemDidPlayToEndTime(_ aNotification: Notification) {
         self.executeClosureOnMainQueueIfNecessary {
+            self.playbackDelegate?.playerDidPlayToEndTime(self)
             if self.playbackLoops {
                 self.playbackDelegate?.playerPlaybackWillLoop(self)
                 self._avplayer.seek(to: CMTime.zero)

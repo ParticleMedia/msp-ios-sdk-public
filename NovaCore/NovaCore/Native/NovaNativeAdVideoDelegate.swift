@@ -8,5 +8,7 @@
 import Foundation
 
 @objc public protocol NovaNativeAdVideoDelegate: AnyObject {
-    func playerCurrentTimeDidChange(currentTime: Double, durationTime: Double)
+    @objc optional func playerCurrentTimeDidChange(currentTime: Double, durationTime: Double)
+    
+    @objc optional func playerDidPlayToEndTime()
 }
