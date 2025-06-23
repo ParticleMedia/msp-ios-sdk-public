@@ -19,6 +19,8 @@ public class AdRequest {
     
     public var requestId = UUID().uuidString
     
+    public var requestStartTime: Double?
+    
     public init(customParams: [String : Any], geo: Geo?, context: Any?, adaptiveBannerSize: AdSize?, adSize: AdSize?, placementId: String, adFormat: AdFormat, testParams: [String:Any] = [:] ) {
         self.customParams = customParams
         self.geo = geo

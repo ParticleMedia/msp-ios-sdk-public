@@ -151,6 +151,9 @@ import MTGSDKBidding
         AdCache.shared.saveAd(placementId: bidderPlacementId, ad: ad)
         let auctionBid = AuctionBid(bidderName: "mintegral", bidderPlacementId: bidderPlacementId, ecpm: ad.adInfo["price"] as? Double ?? 0.0)
         auctionBidListener.onSuccess(bid: auctionBid)
+        if let adRequest = self.adRequest {
+            self.adMetricReporter?.logAdResponse(ad: ad, adRequest: adRequest, errorCode: .ERROR_CODE_SUCCESS, errorMessage: nil)
+        }
     }
     
     public func getAdNetwork() -> MSPiOSCore.AdNetwork {
@@ -272,6 +275,9 @@ extension MintegralAdapter: MTGBannerAdViewDelegate {
     public func adViewLoadFailedWithError(_ error: (any Error)!, adView: MTGBannerAdView!) {
         MSPLogger.shared.info(message: "[Adapter: Mintegral] Fail to load Mintegral banner ad")
         self.auctionBidListener?.onError(error: "fail to load ad")
+        if let adRequest = self.adRequest {
+            self.adMetricReporter?.logAdResponse(ad: nil, adRequest: adRequest, errorCode: .ERROR_CODE_INTERNAL_ERROR, errorMessage: error.localizedDescription)
+        }
     }
 
     public func adViewWillLogImpression(_ adView: MTGBannerAdView!) {

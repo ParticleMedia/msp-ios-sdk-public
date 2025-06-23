@@ -157,6 +157,56 @@ enum Com_Newsbreak_Monetization_Common_OsType: SwiftProtobuf.Enum, Swift.CaseIte
 
 }
 
+enum Com_Newsbreak_Monetization_Common_ErrorCode: SwiftProtobuf.Enum, Swift.CaseIterable {
+  typealias RawValue = Int
+  case unspecified // = 0
+  case success // = 1
+  case noFill // = 2
+  case invalidRequest // = 3
+  case internalError // = 4
+  case networkError // = 5
+  case UNRECOGNIZED(Int)
+
+  init() {
+    self = .unspecified
+  }
+
+  init?(rawValue: Int) {
+    switch rawValue {
+    case 0: self = .unspecified
+    case 1: self = .success
+    case 2: self = .noFill
+    case 3: self = .invalidRequest
+    case 4: self = .internalError
+    case 5: self = .networkError
+    default: self = .UNRECOGNIZED(rawValue)
+    }
+  }
+
+  var rawValue: Int {
+    switch self {
+    case .unspecified: return 0
+    case .success: return 1
+    case .noFill: return 2
+    case .invalidRequest: return 3
+    case .internalError: return 4
+    case .networkError: return 5
+    case .UNRECOGNIZED(let i): return i
+    }
+  }
+
+  // The compiler won't synthesize support with the UNRECOGNIZED case.
+  static let allCases: [Com_Newsbreak_Monetization_Common_ErrorCode] = [
+    .unspecified,
+    .success,
+    .noFill,
+    .invalidRequest,
+    .internalError,
+    .networkError,
+  ]
+
+}
+
 struct Com_Newsbreak_Monetization_Common_RequestContext: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
@@ -185,6 +235,10 @@ struct Com_Newsbreak_Monetization_Common_RequestContext: Sendable {
   var hasExt: Bool {return self._ext != nil}
   /// Clears the value of `ext`. Subsequent reads from it will return its default value.
   mutating func clearExt() {self._ext = nil}
+
+  /// The AuctionID is used to chain requests (both s2s and c2s), response,
+  /// impression, click, hide, report all together
+  var auctionID: String = String()
 
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
@@ -221,6 +275,10 @@ struct Com_Newsbreak_Monetization_Common_RequestContextExt: Sendable {
   var adSlotID: String = String()
 
   var userID: String = String()
+
+  var clientCache: Bool = false
+
+  var serverCache: Bool = false
 
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
@@ -304,6 +362,17 @@ extension Com_Newsbreak_Monetization_Common_OsType: SwiftProtobuf._ProtoNameProv
   ]
 }
 
+extension Com_Newsbreak_Monetization_Common_ErrorCode: SwiftProtobuf._ProtoNameProviding {
+  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    0: .same(proto: "ERROR_CODE_UNSPECIFIED"),
+    1: .same(proto: "ERROR_CODE_SUCCESS"),
+    2: .same(proto: "ERROR_CODE_NO_FILL"),
+    3: .same(proto: "ERROR_CODE_INVALID_REQUEST"),
+    4: .same(proto: "ERROR_CODE_INTERNAL_ERROR"),
+    5: .same(proto: "ERROR_CODE_NETWORK_ERROR"),
+  ]
+}
+
 extension Com_Newsbreak_Monetization_Common_RequestContext: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".RequestContext"
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
@@ -311,6 +380,7 @@ extension Com_Newsbreak_Monetization_Common_RequestContext: SwiftProtobuf.Messag
     2: .standard(proto: "bid_request"),
     3: .standard(proto: "is_open_rtb_request"),
     17: .same(proto: "ext"),
+    18: .standard(proto: "auction_id"),
   ]
 
   public var isInitialized: Bool {
@@ -328,6 +398,7 @@ extension Com_Newsbreak_Monetization_Common_RequestContext: SwiftProtobuf.Messag
       case 2: try { try decoder.decodeSingularMessageField(value: &self._bidRequest) }()
       case 3: try { try decoder.decodeSingularBoolField(value: &self.isOpenRtbRequest) }()
       case 17: try { try decoder.decodeSingularMessageField(value: &self._ext) }()
+      case 18: try { try decoder.decodeSingularStringField(value: &self.auctionID) }()
       default: break
       }
     }
@@ -350,6 +421,9 @@ extension Com_Newsbreak_Monetization_Common_RequestContext: SwiftProtobuf.Messag
     try { if let v = self._ext {
       try visitor.visitSingularMessageField(value: v, fieldNumber: 17)
     } }()
+    if !self.auctionID.isEmpty {
+      try visitor.visitSingularStringField(value: self.auctionID, fieldNumber: 18)
+    }
     try unknownFields.traverse(visitor: &visitor)
   }
 
@@ -358,6 +432,7 @@ extension Com_Newsbreak_Monetization_Common_RequestContext: SwiftProtobuf.Messag
     if lhs._bidRequest != rhs._bidRequest {return false}
     if lhs.isOpenRtbRequest != rhs.isOpenRtbRequest {return false}
     if lhs._ext != rhs._ext {return false}
+    if lhs.auctionID != rhs.auctionID {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
@@ -374,6 +449,8 @@ extension Com_Newsbreak_Monetization_Common_RequestContextExt: SwiftProtobuf.Mes
     6: .same(proto: "buckets"),
     7: .standard(proto: "ad_slot_id"),
     8: .standard(proto: "user_id"),
+    9: .standard(proto: "client_cache"),
+    10: .standard(proto: "server_cache"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -390,6 +467,8 @@ extension Com_Newsbreak_Monetization_Common_RequestContextExt: SwiftProtobuf.Mes
       case 6: try { try decoder.decodeRepeatedStringField(value: &self.buckets) }()
       case 7: try { try decoder.decodeSingularStringField(value: &self.adSlotID) }()
       case 8: try { try decoder.decodeSingularStringField(value: &self.userID) }()
+      case 9: try { try decoder.decodeSingularBoolField(value: &self.clientCache) }()
+      case 10: try { try decoder.decodeSingularBoolField(value: &self.serverCache) }()
       default: break
       }
     }
@@ -420,6 +499,12 @@ extension Com_Newsbreak_Monetization_Common_RequestContextExt: SwiftProtobuf.Mes
     if !self.userID.isEmpty {
       try visitor.visitSingularStringField(value: self.userID, fieldNumber: 8)
     }
+    if self.clientCache != false {
+      try visitor.visitSingularBoolField(value: self.clientCache, fieldNumber: 9)
+    }
+    if self.serverCache != false {
+      try visitor.visitSingularBoolField(value: self.serverCache, fieldNumber: 10)
+    }
     try unknownFields.traverse(visitor: &visitor)
   }
 
@@ -432,6 +517,8 @@ extension Com_Newsbreak_Monetization_Common_RequestContextExt: SwiftProtobuf.Mes
     if lhs.buckets != rhs.buckets {return false}
     if lhs.adSlotID != rhs.adSlotID {return false}
     if lhs.userID != rhs.userID {return false}
+    if lhs.clientCache != rhs.clientCache {return false}
+    if lhs.serverCache != rhs.serverCache {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }

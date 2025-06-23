@@ -65,6 +65,11 @@ struct Com_Newsbreak_Mes_Events_AdImpressionEvent: @unchecked Sendable {
     set {_uniqueStorage()._app = newValue}
   }
 
+  var mspSdkVersion: String {
+    get {return _storage._mspSdkVersion}
+    set {_uniqueStorage()._mspSdkVersion = newValue}
+  }
+
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
   init() {}
@@ -85,6 +90,7 @@ extension Com_Newsbreak_Mes_Events_AdImpressionEvent: SwiftProtobuf.Message, Swi
     4: .same(proto: "os"),
     5: .same(proto: "org"),
     6: .same(proto: "app"),
+    7: .standard(proto: "msp_sdk_version"),
   ]
 
   fileprivate class _StorageClass {
@@ -94,6 +100,7 @@ extension Com_Newsbreak_Mes_Events_AdImpressionEvent: SwiftProtobuf.Message, Swi
     var _os: Com_Newsbreak_Monetization_Common_OsType = .unspecified
     var _org: String = String()
     var _app: String = String()
+    var _mspSdkVersion: String = String()
 
     #if swift(>=5.10)
       // This property is used as the initial default value for new instances of the type.
@@ -114,6 +121,7 @@ extension Com_Newsbreak_Mes_Events_AdImpressionEvent: SwiftProtobuf.Message, Swi
       _os = source._os
       _org = source._org
       _app = source._app
+      _mspSdkVersion = source._mspSdkVersion
     }
   }
 
@@ -146,6 +154,7 @@ extension Com_Newsbreak_Mes_Events_AdImpressionEvent: SwiftProtobuf.Message, Swi
         case 4: try { try decoder.decodeSingularEnumField(value: &_storage._os) }()
         case 5: try { try decoder.decodeSingularStringField(value: &_storage._org) }()
         case 6: try { try decoder.decodeSingularStringField(value: &_storage._app) }()
+        case 7: try { try decoder.decodeSingularStringField(value: &_storage._mspSdkVersion) }()
         default: break
         }
       }
@@ -176,6 +185,9 @@ extension Com_Newsbreak_Mes_Events_AdImpressionEvent: SwiftProtobuf.Message, Swi
       if !_storage._app.isEmpty {
         try visitor.visitSingularStringField(value: _storage._app, fieldNumber: 6)
       }
+      if !_storage._mspSdkVersion.isEmpty {
+        try visitor.visitSingularStringField(value: _storage._mspSdkVersion, fieldNumber: 7)
+      }
     }
     try unknownFields.traverse(visitor: &visitor)
   }
@@ -191,6 +203,7 @@ extension Com_Newsbreak_Mes_Events_AdImpressionEvent: SwiftProtobuf.Message, Swi
         if _storage._os != rhs_storage._os {return false}
         if _storage._org != rhs_storage._org {return false}
         if _storage._app != rhs_storage._app {return false}
+        if _storage._mspSdkVersion != rhs_storage._mspSdkVersion {return false}
         return true
       }
       if !storagesAreEqual {return false}

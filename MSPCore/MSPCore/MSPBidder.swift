@@ -61,6 +61,6 @@ extension MSPBidder: BidListener {
     }
     
     public func onError(msg: String) {
-        auctionBidListener?.onError(error: "Prebid bid load fail to get a bidResponse")
+        auctionBidListener?.onError(error: msg)
     }
 }

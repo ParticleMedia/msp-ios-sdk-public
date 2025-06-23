@@ -30,5 +30,8 @@ public class AdMetricReporterImp: AdMetricReporter {
         MESMetricReporter.shared.logAdResult(placementId: placementId, ad: ad, fill: fill, isFromCache: isFromCache)
     }
     
+    public func logAdResponse(ad: MSPiOSCore.MSPAd?, adRequest: MSPiOSCore.AdRequest, errorCode: MSPErrorCode, errorMessage: String?) {
+        MESMetricReporter.shared.logAdResponse(ad: ad, adRequest: adRequest, errorCode: errorCode, errorMessage: errorMessage)
+    }
     
 }

@@ -21,6 +21,7 @@ fileprivate struct _GeneratedWithProtocGenSwiftVersion: SwiftProtobuf.ProtobufAP
 }
 
 /// this event is called before request sent, enabled only if sampling flag is on
+/// this event is DEPRECATED
 struct Com_Newsbreak_Mes_Events_LoadAdRequest: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for

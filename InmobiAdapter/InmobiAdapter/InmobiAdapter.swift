@@ -151,6 +151,9 @@ import InMobiSDK
         AdCache.shared.saveAd(placementId: bidderPlacementId, ad: ad)
         let auctionBid = AuctionBid(bidderName: "inmobi", bidderPlacementId: bidderPlacementId, ecpm: ad.adInfo["price"] as? Double ?? 0.0)
         auctionBidListener.onSuccess(bid: auctionBid)
+        if let adRequest = self.adRequest {
+            self.adMetricReporter?.logAdResponse(ad: ad, adRequest: adRequest, errorCode: .ERROR_CODE_SUCCESS, errorMessage: nil)
+        }
     }
 
     @objc private func handleNativeAdClick() {
@@ -200,7 +203,9 @@ extension InmobiAdapter: IMBannerDelegate {
     public func banner(_ banner: IMBanner, didFailToLoadWithError error: IMRequestStatus) {
         MSPLogger.shared.info(message: "[Adapter: Inmobi] Fail to load Inmobi Banner ad")
         self.auctionBidListener?.onError(error: "fail to load ad")
-        
+        if let adRequest = self.adRequest {
+            self.adMetricReporter?.logAdResponse(ad: nil, adRequest: adRequest, errorCode: .ERROR_CODE_INTERNAL_ERROR, errorMessage: error.localizedDescription)
+        }
     }
     
     public func bannerAdImpressed(_ banner: InMobiSDK.IMBanner) {
@@ -259,6 +264,9 @@ extension InmobiAdapter: IMInterstitialDelegate {
     public func interstitial(_ interstitial: IMInterstitial, didFailToLoadWithError error: IMRequestStatus) {
         MSPLogger.shared.info(message: "[Adapter: Inmobi] Fail to load Inmobi Interstitial ad")
         self.auctionBidListener?.onError(error: "fail to load ad")
+        if let adRequest = self.adRequest {
+            self.adMetricReporter?.logAdResponse(ad: nil, adRequest: adRequest, errorCode: .ERROR_CODE_INTERNAL_ERROR, errorMessage: error.localizedDescription)
+        }
     }
     
     public func interstitialAdImpressed(_ interstitial: IMInterstitial) {
@@ -326,6 +334,9 @@ extension InmobiAdapter: IMNativeDelegate {
     public func native(_ native: IMNative, didFailToLoadWithError error: IMRequestStatus) {
         MSPLogger.shared.info(message: "[Adapter: Inmobi] Fail to load Inmobi Native ad")
         self.auctionBidListener?.onError(error: "fail to load ad")
+        if let adRequest = self.adRequest {
+            self.adMetricReporter?.logAdResponse(ad: nil, adRequest: adRequest, errorCode: .ERROR_CODE_INTERNAL_ERROR, errorMessage: error.localizedDescription)
+        }
     }
 
     public func nativeAdImpressed(_ native: InMobiSDK.IMNative) {

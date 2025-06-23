@@ -21,6 +21,7 @@ public class MSPBidLoaderProvider: BidLoaderProvider {
     
     public func getBidLoader() -> BidLoader {
         let bidLoader = PrebidBidLoader(googleQueryInfoFetcher: googleQueryInfoFetcher ?? GoogleQueryInfoFetcherStandalone(), facebookBidTokenProvider: facebookBidTokenProvider ?? FacebookBidTokenProviderStandalone())
+        bidLoader.adMetricReporter = AdMetricReporterImp()
         self.bidLoader = bidLoader
         return bidLoader
     }

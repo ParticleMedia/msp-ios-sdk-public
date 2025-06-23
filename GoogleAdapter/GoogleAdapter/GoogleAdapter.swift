@@ -164,6 +164,7 @@ import PrebidMobile
                         MSPLogger.shared.info(message: "[Adapter: Google] Fail to load Google Interstitial ad")
                         self.adListener?.onError(msg: error.localizedDescription)
                         self.adMetricReporter?.logAdResult(placementId: adRequest.placementId ?? "", ad: nil, fill: false, isFromCache: false)
+                        self.adMetricReporter?.logAdResponse(ad: nil, adRequest: adRequest, errorCode: .ERROR_CODE_INTERNAL_ERROR, errorMessage: error.localizedDescription)
                         return
                     }
 
@@ -318,6 +319,9 @@ extension GoogleAdapter : GoogleMobileAds.BannerViewDelegate  {
         MSPLogger.shared.info(message: "[Adapter: Google] Fail to load Google Banner ad")
         self.adListener?.onError(msg: error.localizedDescription)
         self.adMetricReporter?.logAdResult(placementId: adRequest?.placementId ?? "", ad: nil, fill: false, isFromCache: false)
+        if let adRequest = self.adRequest {
+            self.adMetricReporter?.logAdResponse(ad: nil, adRequest: adRequest, errorCode: .ERROR_CODE_INTERNAL_ERROR, errorMessage: error.localizedDescription)
+        }
     }
     
     public func bannerViewDidRecordClick(_ bannerView: GoogleMobileAds.BannerView) {
@@ -345,6 +349,9 @@ extension GoogleAdapter : GoogleMobileAds.BannerViewDelegate  {
         AdCache.shared.saveAd(placementId: bidderPlacementId, ad: ad)
         let auctionBid = AuctionBid(bidderName: "msp", bidderPlacementId: bidderPlacementId, ecpm: ad.adInfo["price"] as? Double ?? 0.0)
         auctionBidListener.onSuccess(bid: auctionBid)
+        if let adRequest = self.adRequest {
+            self.adMetricReporter?.logAdResponse(ad: ad, adRequest: adRequest, errorCode: .ERROR_CODE_SUCCESS, errorMessage: nil)
+        }
     }
 }
 
@@ -389,6 +396,9 @@ extension GoogleAdapter: GoogleMobileAds.NativeAdLoaderDelegate {
         MSPLogger.shared.info(message: "[Adapter: Google] Fail to load Google Native ad")
         self.adListener?.onError(msg: error.localizedDescription)
         self.adMetricReporter?.logAdResult(placementId: adRequest?.placementId ?? "", ad: nil, fill: false, isFromCache: false)
+        if let adRequest = self.adRequest {
+            self.adMetricReporter?.logAdResponse(ad: nil, adRequest: adRequest, errorCode: .ERROR_CODE_INTERNAL_ERROR, errorMessage: error.localizedDescription)
+        }
     }
 }
 
