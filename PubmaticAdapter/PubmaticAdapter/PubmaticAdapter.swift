@@ -179,6 +179,9 @@ import OpenWrapSDK
         AdCache.shared.saveAd(placementId: bidderPlacementId, ad: ad)
         let auctionBid = AuctionBid(bidderName: "pubmatic", bidderPlacementId: bidderPlacementId, ecpm: ad.adInfo["price"] as? Double ?? 0.0)
         auctionBidListener.onSuccess(bid: auctionBid)
+        if let adRequest = self.adRequest {
+            self.adMetricReporter?.logAdResponse(ad: ad, adRequest: adRequest, errorCode: .ERROR_CODE_SUCCESS, errorMessage: nil)
+        }
     }
     
     public func getAdNetwork() -> MSPiOSCore.AdNetwork {
@@ -234,6 +237,9 @@ extension PubmaticAdapter: POBBannerViewDelegate {
         self.bannerView?.pauseAutoRefresh()
         MSPLogger.shared.info(message: "[Adapter: Pubmatic] Fail to load Pubmatic Banner ad")
         self.auctionBidListener?.onError(error: "fail to load ad")
+        if let adRequest = self.adRequest {
+            self.adMetricReporter?.logAdResponse(ad: nil, adRequest: adRequest, errorCode: .ERROR_CODE_INTERNAL_ERROR, errorMessage: error.localizedDescription)
+        }
     }
     
     public func bannerViewDidRecordImpression(_ bannerView: POBBannerView) {
@@ -287,6 +293,9 @@ extension PubmaticAdapter: POBInterstitialDelegate {
     public func interstitial(_ interstitial: POBInterstitial, didFailToReceiveAdWithError error: Error) {
         MSPLogger.shared.info(message: "[Adapter: Pubmatic] Fail to load Pubmatic Banner ad")
         self.auctionBidListener?.onError(error: "fail to load ad")
+        if let adRequest = self.adRequest {
+            self.adMetricReporter?.logAdResponse(ad: nil, adRequest: adRequest, errorCode: .ERROR_CODE_INTERNAL_ERROR, errorMessage: error.localizedDescription)
+        }
     }
     
     public func interstitialDidRecordImpression(_ interstitial: POBInterstitial) {
@@ -353,6 +362,9 @@ extension PubmaticAdapter: POBNativeAdLoaderDelegate {
     public func nativeAdLoader(_ adLoader: POBNativeAdLoader, didFailToReceiveAdWithError error: Error) {
         MSPLogger.shared.info(message: "[Adapter: Pubmatic] Fail to load Pubmatic Native ad")
         self.auctionBidListener?.onError(error: "fail to load ad")
+        if let adRequest = self.adRequest {
+            self.adMetricReporter?.logAdResponse(ad: nil, adRequest: adRequest, errorCode: .ERROR_CODE_INTERNAL_ERROR, errorMessage: error.localizedDescription)
+        }
     }
 
     public func viewControllerForPresentingModal() -> UIViewController {

@@ -227,6 +227,9 @@ import Foundation
         AdCache.shared.saveAd(placementId: bidderPlacementId, ad: ad)
         let auctionBid = AuctionBid(bidderName: "msp", bidderPlacementId: bidderPlacementId, ecpm: ad.adInfo["price"] as? Double ?? 0.0)
         auctionBidListener.onSuccess(bid: auctionBid)
+        if let adRequest = self.adRequest {
+            self.adMetricReporter?.logAdResponse(ad: ad, adRequest: adRequest, errorCode: .ERROR_CODE_SUCCESS, errorMessage: nil)
+        }
     }
     
     public func getAdNetwork() -> MSPiOSCore.AdNetwork {
@@ -284,6 +287,9 @@ extension FacebookAdapter: FBNativeAdDelegate {
     public func nativeAd(_ nativeAd: FBNativeAd, didFailWithError error: Error) {
         MSPLogger.shared.info(message: "[Adapter: Facebook] Fail to load Facebook Native ad")
         self.adListener?.onError(msg: error.localizedDescription)
+        if let adRequest = self.adRequest {
+            self.adMetricReporter?.logAdResponse(ad: nil, adRequest: adRequest, errorCode: .ERROR_CODE_INTERNAL_ERROR, errorMessage: error.localizedDescription)
+        }
     }
     
     public func nativeAdWillLogImpression(_ nativeAd: FBNativeAd) {
@@ -334,6 +340,9 @@ extension FacebookAdapter: FBInterstitialAdDelegate {
         MSPLogger.shared.info(message: "[Adapter: Facebook] Fail to load Facebook Interstitial ad")
         self.adListener?.onError(msg: error.localizedDescription)
         self.adMetricReporter?.logAdResult(placementId: adRequest?.placementId ?? "", ad: nil, fill: false, isFromCache: false)
+        if let adRequest = self.adRequest {
+            self.adMetricReporter?.logAdResponse(ad: nil, adRequest: adRequest, errorCode: .ERROR_CODE_INTERNAL_ERROR, errorMessage: error.localizedDescription)
+        }
     }
     
     public func interstitialAdDidClick(_ interstitialAd: FBInterstitialAd) {

@@ -14,6 +14,7 @@ public class PrebidBidLoader : BidLoader {
     public var googleQueryInfo: String?
     public var facebookBidToken: String?
     private let dispatchGroup = DispatchGroup()
+    public var adMetricReporter: AdMetricReporter?
     
     public override init(googleQueryInfoFetcher: GoogleQueryInfoFetcher, facebookBidTokenProvider: FacebookBidTokenProvider) {
         
@@ -74,7 +75,12 @@ public class PrebidBidLoader : BidLoader {
             }
             
             if let bidResponse = bidResponse {
-                let seat = bidResponse.winningBidSeat
+                guard let seat = bidResponse.winningBidSeat else {
+                    var errorMessage = "no fill"
+                    bidListener?.onError(msg: errorMessage)
+                    adMetricReporter?.logAdResponse(ad: nil, adRequest: adRequest, errorCode: .ERROR_CODE_NO_FILL, errorMessage: errorMessage)
+                    return
+                }
                 if self.bidListener == nil {
                 }
                 if seat == "msp_google" {
@@ -83,11 +89,13 @@ public class PrebidBidLoader : BidLoader {
                     self.bidListener?.onBidResponse(bidResponse: bidResponse, adNetwork: AdNetwork.facebook)
                 } else if seat == "msp_nova" {
                     self.bidListener?.onBidResponse(bidResponse: bidResponse, adNetwork: AdNetwork.nova)
-                }else {
+                } else {
                     self.bidListener?.onBidResponse(bidResponse: bidResponse, adNetwork: AdNetwork.prebid)
                 }
             } else {
-                bidListener?.onError(msg: "missing response")
+                var errorMessage = "missing response"
+                bidListener?.onError(msg: errorMessage)
+                adMetricReporter?.logAdResponse(ad: nil, adRequest: adRequest, errorCode: .ERROR_CODE_NETWORK_ERROR, errorMessage: errorMessage)
             }
         }
     }

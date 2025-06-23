@@ -20,4 +20,16 @@ public protocol AdMetricReporter: AnyObject {
     
     func logAdReport(ad: MSPAd, adRequest: AdRequest, bidResponse: Any, reason: String, description: String?, adScreenShot: Data?, fullScreenShot: Data?)
     
+    func logAdResponse(ad: MSPiOSCore.MSPAd?, adRequest: MSPiOSCore.AdRequest, errorCode: MSPErrorCode, errorMessage: String?)
+    
 }
+
+public enum MSPErrorCode: Int {
+    case ERROR_CODE_UNSPECIFIED = 0
+    case ERROR_CODE_SUCCESS = 1
+    case ERROR_CODE_NO_FILL = 2
+    case ERROR_CODE_INVALID_REQUEST = 3
+    case ERROR_CODE_INTERNAL_ERROR = 4
+    case ERROR_CODE_NETWORK_ERROR = 5
+}
+

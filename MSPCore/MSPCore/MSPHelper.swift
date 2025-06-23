@@ -14,6 +14,7 @@ public class MSP {
     public static let shared = MSP()
     public var numInitWaitingForCallbacks = 0;
     public weak var sdkInitListener: MSPInitListener?
+    public var initStartTime: Double?
     
     public var adNetworkAdapterProvider = MSPAdNetworkAdapterProvider()
     public var bidLoaderProvider = MSPBidLoaderProvider()
@@ -31,7 +32,7 @@ public class MSP {
     
     public func initMSP(initParams: InitializationParameters, sdkInitListener: MSPInitListener?, adNetworkManagers: [AdNetworkManager]) {
         // This is a temporary solution to replace MSPManager class in kotlin to solve the Kotlin singleton issue
-        MESMetricReporter.shared.logSDKInit()
+        self.initStartTime = Date().timeIntervalSince1970
         AdCache.shared.adMetricReporter = AdMetricReporterImp()
         if initParams is InitializationParametersImp {
             let params = initParams as? InitializationParametersImp
@@ -83,6 +84,11 @@ public class MSP {
             MSP.shared.numInitWaitingForCallbacks = MSP.shared.numInitWaitingForCallbacks - 1
             if MSP.shared.numInitWaitingForCallbacks == 0 {
                 MSPLogger.shared.info(message: "MSP SDK is initialized successfully")
+                var latencyInMs: Int?
+                if let initStartTime = MSP.shared.initStartTime {
+                    latencyInMs = Int((Date().timeIntervalSince1970 - initStartTime) * 1000)
+                }
+                MESMetricReporter.shared.logSDKInit(latencyInMs: latencyInMs)
                 MSP.shared.sdkInitListener?.onComplete(status: .SUCCESS, message: "")
             }
         }

@@ -21,6 +21,7 @@ fileprivate struct _GeneratedWithProtocGenSwiftVersion: SwiftProtobuf.ProtobufAP
 }
 
 /// read ad from cache and then display the ad
+/// this event is DEPRECATED
 struct Com_Newsbreak_Mes_Events_GetAdFromCacheEvent: Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
