@@ -27,14 +27,25 @@ public class MSPAdLoader: NSObject {
         self.adListener = adListener
         self.adRequest = adRequest
         
+        let bidders: [MSPiOSCore.Bidder]
+        let timeout: Double
         if let placement = getPlacement(placementId: placementId) {
-            let mspAuction = MSPAuction(bidders: getBidders(placement: placement), cacheOnly: false, timeout: Double(placement.auctionTimeout ?? 8))
-            self.mspAuction = mspAuction
-            mspAuction.adRequest = adRequest
-            mspAuction.startAuction(auctionListener: self, adListener: adListener)
+            let adConfigBidders = getBidders(placement: placement)
+            if adConfigBidders.isEmpty {
+                bidders = getDefaultBidders(adRequest: adRequest)
+            } else {
+                bidders = adConfigBidders
+            }
+            timeout = Double(placement.auctionTimeout ?? 8)
         } else {
-            adListener.onError(msg: "invalid placement")
+            bidders = getDefaultBidders(adRequest: adRequest)
+            timeout = 8.0 // default timeout when placement is missing
         }
+        
+        let mspAuction = MSPAuction(bidders: bidders, cacheOnly: false, timeout: timeout)
+        self.mspAuction = mspAuction
+        mspAuction.adRequest = adRequest
+        mspAuction.startAuction(auctionListener: self, adListener: adListener)
     }
     
     public func getPlacement(placementId: String) -> Placement? {
@@ -47,6 +58,13 @@ public class MSPAdLoader: NSObject {
             }
         }
         return nil
+    }
+    
+    private func getDefaultBidders(adRequest: AdRequest) -> [MSPiOSCore.Bidder] {
+        var bidders = [MSPiOSCore.Bidder]()
+        let bidder = MSPBidder(name: "msp", bidderPlacementId: adRequest.placementId, bidderFormat: adRequest.adFormat)
+        bidders.append(bidder)
+        return bidders
     }
     
     public func getBidders(placement: Placement) -> [MSPiOSCore.Bidder] {
@@ -82,7 +100,7 @@ public class MSPAdLoader: NSObject {
         
         switch bidderInfo.name {
         case "msp":
-            return MSPMultiFormatBidder(name: "msp", bidderPlacementId: bidderInfo.bidderPlacementId, bidderFormat: bidderFormat)
+            return MSPBidder(name: "msp", bidderPlacementId: bidderInfo.bidderPlacementId, bidderFormat: bidderFormat)
         case "unity":
             //let bidder = MSP.shared.adNetworkAdapterProvider.unityManager?.getAdBidder(bidderPlacementId: bidderInfo.bidderPlacementId, bidderFormat: bidderFormat)
             let bidder = MSP.shared.adNetworkAdapterProvider.adNetworkManagerDict[.unity]?.getAdBidder(bidderPlacementId: bidderInfo.bidderPlacementId, bidderFormat: bidderFormat)
@@ -115,7 +133,8 @@ public class MSPAdLoader: NSObject {
         var winnerPrice = 0.0
         var winnerBidderName = ""
         if let placement = getPlacement(placementId: placementId),
-           let bidderInfoList = placement.bidders {
+           let bidderInfoList = placement.bidders,
+           !bidderInfoList.isEmpty {
             for bidderInfo in bidderInfoList {
                 let bidderPlacementId = bidderInfo.bidderPlacementId
                 if let ad = AdCache.shared.peakAd(placementId: bidderPlacementId),
@@ -127,6 +146,11 @@ public class MSPAdLoader: NSObject {
                 }
             }
             if let ad = AdCache.shared.getAd(placementId: winnerPlacementId) {
+                MSPLogger.shared.info(message: "[Auction: Get Ad] complete, winner: \(winnerBidderName),\(winnerPrice),\(winnerPlacementId)")
+                return ad
+            }
+        } else {
+            if let ad = AdCache.shared.getAd(placementId: placementId) {
                 MSPLogger.shared.info(message: "[Auction: Get Ad] complete, winner: \(winnerBidderName),\(winnerPrice),\(winnerPlacementId)")
                 return ad
             }
