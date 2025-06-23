@@ -459,6 +459,10 @@ extension NovaVideoPlayerController: NovaPlayerDelegate {
 }
 
 extension NovaVideoPlayerController: NovaPlayerPlaybackDelegate {
+    public func playerDidPlayToEndTime(_ player: NovaPlayer) {
+        self.delegate?.playerDidPlayToEndTime(player)
+    }
+    
     public func playerCurrentTimeDidChange(_ player: NovaPlayer) {
         if player.currentTimeInterval > 0 {
             self.configDisplay(true)

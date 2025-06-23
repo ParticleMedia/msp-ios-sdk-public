@@ -12,7 +12,7 @@ import UIKit
     private let startTime: CFTimeInterval
     
     private enum LayoutMetrics {
-        static let avatarSize = 48.0
+        static let avatarSize = 60.0
         static let horizontalMargin = 16.0
         static let progressBarBottomMargin = 22.0 //+ bottomRoundAreaHeight
         static let bottomButtonBottomMargin = 24.0

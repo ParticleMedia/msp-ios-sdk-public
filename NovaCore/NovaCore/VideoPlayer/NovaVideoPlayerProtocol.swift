@@ -43,6 +43,7 @@ public protocol NovaVideoPlayerDelegate: NSObjectProtocol {
     func player(_ player: NovaPlayer, didFailWithError error: Error?)
     func playerPlaybackWillLoop(_ player: NovaPlayer)
     func playerPlaybackDidLoop(_ player: NovaPlayer)
+    func playerDidPlayToEndTime(_ player: NovaPlayer)
 }
 
 protocol NovaVideoPlayerProtocol {

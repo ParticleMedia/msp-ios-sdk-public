@@ -7,7 +7,7 @@ public class NovaVideoPlayer: NSObject {
     static let urlToStopLoading = "https://www.newsbreak.com"
 
     public weak var delegate: NovaVideoPlayerDelegate?
-    private let player = NovaPlayer()
+    public let player = NovaPlayer()
     private var url: URL?
     private var actionHandler: ActionHandling?
 
@@ -402,5 +402,9 @@ extension NovaVideoPlayer: NovaPlayerPlaybackDelegate {
     public func playerPlaybackDidLoop(_ player: NovaPlayer) {
         videoStart = Date()
         self.delegate?.playerPlaybackDidLoop(player)
+    }
+    
+    public func playerDidPlayToEndTime(_ player: NovaPlayer) {
+        self.delegate?.playerDidPlayToEndTime(player)
     }
 }
