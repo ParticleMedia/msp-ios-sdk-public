@@ -1,5 +1,6 @@
 import UIKit
 import SnapKit
+import Combine
 
 private enum UIConfig {
     // Layout
@@ -40,6 +41,8 @@ class DebugAdLoadViewController: UIViewController, UITableViewDataSource, UITabl
         btn.isEnabled = false
         return btn
     }()
+    private var visibleSections: [DebugAdLoadSectionViewModel] = []
+    private var cancellables = Set<AnyCancellable>()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -47,6 +50,7 @@ class DebugAdLoadViewController: UIViewController, UITableViewDataSource, UITabl
         view.backgroundColor = .white
         setupTableView()
         setupButtons()
+        bindViewModel()
     }
     
     private func setupTableView() {
@@ -78,21 +82,33 @@ class DebugAdLoadViewController: UIViewController, UITableViewDataSource, UITabl
         }
     }
     
+    private func bindViewModel() {
+        viewModel.visibleSectionsPublisher
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] sections in
+                self?.visibleSections = sections
+                self?.tableView.reloadData()
+            }
+            .store(in: &cancellables)
+        // Set initial value
+        visibleSections = viewModel.sections.filter { $0.isVisible }
+    }
+    
     // MARK: - UITableViewDataSource
     func numberOfSections(in tableView: UITableView) -> Int {
-        return viewModel.visibleSections().count
+        return visibleSections.count
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return viewModel.visibleSections()[section].cellViewModels.count
+        return visibleSections[section].cellViewModels.count
     }
     
     func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-        return viewModel.visibleSections()[section].title
+        return visibleSections[section].title
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cellVM = viewModel.visibleSections()[indexPath.section].cellViewModels[indexPath.row]
+        let cellVM = visibleSections[indexPath.section].cellViewModels[indexPath.row]
         let cell = tableView.dequeueReusableCell(withIdentifier: UIConfig.radioCellReuseId, for: indexPath)
         cell.textLabel?.text = cellVM.title
         cell.accessoryType = cellVM.isSelected ? .checkmark : .none
@@ -103,9 +119,7 @@ class DebugAdLoadViewController: UIViewController, UITableViewDataSource, UITabl
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let sectionIdx = indexPath.section
         let rowIdx = indexPath.row
-        let visibleSections = viewModel.visibleSections()
         guard let realSectionIdx = viewModel.sections.firstIndex(where: { $0 === visibleSections[sectionIdx] }) else { return }
         viewModel.selectOption(section: realSectionIdx, row: rowIdx)
-        tableView.reloadData()
     }
 } 
