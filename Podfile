@@ -41,6 +41,8 @@ target 'MSPCore' do
   #pod 'Google-Mobile-Ads-SDK', "10.14.0", :modular_headers => true
   #pod 'GoogleAdapter',  :path => 'GoogleAdapter', :modular_headers => true
 
+  pod 'SnapKit', '~> 5.6.0', :modular_headers => true
+
   #target 'MSPUtilityTests' do
     # Pods for testing
   #end
