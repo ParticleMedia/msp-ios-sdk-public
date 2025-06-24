@@ -2,10 +2,10 @@ import Foundation
 
 class DebugAdLoadSectionViewModel {
     let title: String
-    var cellViewModels: [DebugAdLoadCellViewModel]
+    var cellViewModels: [DebugRadioCellViewModel]
     var isVisible: Bool
     
-    init(title: String, cellViewModels: [DebugAdLoadCellViewModel], isVisible: Bool = true) {
+    init(title: String, cellViewModels: [DebugRadioCellViewModel], isVisible: Bool = true) {
         self.title = title
         self.cellViewModels = cellViewModels
         self.isVisible = isVisible
@@ -13,7 +13,7 @@ class DebugAdLoadSectionViewModel {
     
     func selectCell(at index: Int) {
         for (i, cell) in cellViewModels.enumerated() {
-            cell.isSelected = (i == index)
+            cell.setSelected(i == index)
         }
     }
     
@@ -21,7 +21,7 @@ class DebugAdLoadSectionViewModel {
         return cellViewModels.firstIndex(where: { $0.isSelected })
     }
     
-    func selectedCell() -> DebugAdLoadCellViewModel? {
+    func selectedCell() -> DebugRadioCellViewModel? {
         return cellViewModels.first(where: { $0.isSelected })
     }
 } 
