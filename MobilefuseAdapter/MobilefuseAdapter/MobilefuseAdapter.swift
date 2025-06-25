@@ -80,7 +80,7 @@ import MobileFuseSDK
 
     public func initialize(initParams: any MSPiOSCore.InitializationParameters, adapterInitListener: any MSPiOSCore.AdapterInitListener, context: Any?) {
         MobileFuse.initWithDelegate(self)
-        adapterInitListener.onComplete(adNetwork: .pubmatic, adapterInitStatus: .SUCCESS, message: "")
+        adapterInitListener.onComplete(adNetwork: .mobilefuse, adapterInitStatus: .SUCCESS, message: "")
     }
 
     public func destroyAd() {

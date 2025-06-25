@@ -92,7 +92,7 @@ import IronSource
                 }
             }
         }
-        adapterInitListener.onComplete(adNetwork: .pubmatic, adapterInitStatus: .SUCCESS, message: "")
+        adapterInitListener.onComplete(adNetwork: .unity, adapterInitStatus: .SUCCESS, message: "")
     }
     
     public func destroyAd() {

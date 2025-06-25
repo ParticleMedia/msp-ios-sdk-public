@@ -69,7 +69,7 @@ import MTGSDKBidding
     public func initialize(initParams: any MSPiOSCore.InitializationParameters, adapterInitListener: any MSPiOSCore.AdapterInitListener, context: Any?) {
         MTGSDK.sharedInstance().setAppID(initParams.getParameters()?[InitializationParametersCustomKeys.MINTEGRAL_APP_ID] as? String ?? "",
                                          apiKey: initParams.getParameters()?[InitializationParametersCustomKeys.MINTEGRAL_API_KEY] as? String ?? "")
-        adapterInitListener.onComplete(adNetwork: .pubmatic, adapterInitStatus: .SUCCESS, message: "")
+        adapterInitListener.onComplete(adNetwork: .mintegral, adapterInitStatus: .SUCCESS, message: "")
     }
 
     public func destroyAd() {

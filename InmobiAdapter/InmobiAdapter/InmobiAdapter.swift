@@ -90,7 +90,7 @@ import InMobiSDK
                 }
             })
         }
-        adapterInitListener.onComplete(adNetwork: .pubmatic, adapterInitStatus: .SUCCESS, message: "")
+        adapterInitListener.onComplete(adNetwork: .inmobi, adapterInitStatus: .SUCCESS, message: "")
     }
 
     public func destroyAd() {
