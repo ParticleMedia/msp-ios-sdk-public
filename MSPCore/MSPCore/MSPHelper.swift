@@ -33,7 +33,6 @@ public class MSP {
     public var ppid: String?
     public var email: String?
     public var prebidAPIKey: String?
-    public let syncQueue = DispatchQueue(label: "com.msp.init.sync")
     public func initMSP(initParams: InitializationParameters, sdkInitListener: MSPInitListener?, adNetworkManagers: [AdNetworkManager]) {
         // This is a temporary solution to replace MSPManager class in kotlin to solve the Kotlin singleton issue
         let initStartTime = Date().timeIntervalSince1970
