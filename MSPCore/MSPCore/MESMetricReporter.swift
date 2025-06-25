@@ -50,7 +50,7 @@ import PrebidMobile
         task.resume()
     }
     
-    public func logSDKInit(latencyInMs: Int?) {
+    public func logSDKInit(totalCompleteTimeInMs: Int32?, blockLatencyInMs: Int32?, adNetworkCompleteTimeInMs: [String: Int32]) {
         var eventModel = Com_Newsbreak_Mes_Events_SdkInitEvent()
         eventModel.clientTsMs = UInt64(Date().timeIntervalSince1970 * 1000)
         eventModel.os = .ios
@@ -60,10 +60,18 @@ import PrebidMobile
         if let app = MSP.shared.app {
             eventModel.app = app
         }
-        if let latencyInMs = latencyInMs,
-           let latencyInt32 = Int32(exactly: latencyInMs) {
-               eventModel.latency = latencyInt32
+        
+        if let blockLatencyInMs = blockLatencyInMs {
+            eventModel.latency = blockLatencyInMs
         }
+        
+        if let totalCompleteTimeInMs = totalCompleteTimeInMs {
+            eventModel.totalCompleteTime = totalCompleteTimeInMs
+        }
+        
+        eventModel.completeTimeByAdNetwork = adNetworkCompleteTimeInMs
+        
+        eventModel.mspSdkVersion = MSP.shared.version
         
         do {
             let tracingData = try eventModel.serializedData()
@@ -181,6 +189,8 @@ import PrebidMobile
         if let requestStartTime = adRequest.requestStartTime {
             eventModel.latency = Int32((Date().timeIntervalSince1970 - requestStartTime) * 1000)
         }
+        
+        eventModel.mspSdkVersion = MSP.shared.version
         
         do {
             let tracingData = try eventModel.serializedData()
