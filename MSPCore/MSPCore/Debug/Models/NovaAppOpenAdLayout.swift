@@ -1,7 +1,7 @@
 import Foundation
 
 // copied from NovaCore
-enum NovaAppOpenAdLayout: String, Codable {
+enum NovaAppOpenAdLayout: String, Codable, CaseIterable {
     case horizontal = "horizontal"
     case vertical = "vertical"
     case horizontalCancelTopRight = "horizontal_cancel_top_right"

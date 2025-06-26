@@ -7,7 +7,7 @@
 
 import Foundation
 
-public enum AdNetwork: String {
+public enum AdNetwork: String, CaseIterable {
     case unknown = "Unknown"
     
     case google = "google"

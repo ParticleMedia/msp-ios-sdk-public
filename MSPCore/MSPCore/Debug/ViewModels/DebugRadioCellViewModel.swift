@@ -1,18 +1,28 @@
 import Foundation
 import Combine
+import MSPiOSCore
 
 class DebugRadioCellViewModel {
-    let id: String
-    let title: String
+    let debugOption: DebugOptionable
     
+    var id: String {
+        debugOption.id
+    }
+    
+    var title: String {
+        debugOption.displayTitle
+    }
+
     @Published private(set) var isSelected: Bool
     var isSelectedPublisher: AnyPublisher<Bool, Never> {
         $isSelected.eraseToAnyPublisher()
     }
     
-    init(id: String, title: String, isSelected: Bool = false) {
-        self.id = id
-        self.title = title
+    init(
+        debugOption: DebugOptionable,
+        isSelected: Bool = false
+    ) {
+        self.debugOption = debugOption
         self.isSelected = isSelected
     }
     

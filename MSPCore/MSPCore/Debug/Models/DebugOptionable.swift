@@ -105,3 +105,16 @@ extension NovaAppOpenAdLayout: DebugOptionable {
     
     var isVisible: Bool { true }
 }
+
+extension HighEngagementOption: DebugOptionable {
+    var id: String { rawValue }
+    
+    var displayTitle: String {
+        switch self {
+        case .yes: return "Yes"
+        case .no: return "No"
+        }
+    }
+    
+    var isVisible: Bool { true }
+}

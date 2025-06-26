@@ -1,62 +1,90 @@
 import Foundation
 import Combine
+import MSPiOSCore
 
 class DebugAdLoadViewModel {
-    enum SectionType: Int, CaseIterable {
-        case adNetwork, adFormat, creativeType, layout, highEngagement, placements
-    }
-    
     @Published private(set) var sections: [DebugAdLoadSectionViewModel] = []
+    private let originalSectionData: [DebugSection]
     let placements: [String]
     var visibleSectionsPublisher: AnyPublisher<[DebugAdLoadSectionViewModel], Never> {
-        $sections.map { $0.filter { $0.isVisible } }.eraseToAnyPublisher()
+        $sections.map { $0.filter { $0.visible } }.eraseToAnyPublisher()
     }
     
-    init(placementsRepository: PlacementsRepository = TestPlacementsService()) {
+    private let repository: DebugSectionsRepository
+    
+    init(
+        repository: DebugSectionsRepository,
+        placementsRepository: PlacementsRepository = TestPlacementsService()
+    ) {
+        self.repository = repository
         self.placements = placementsRepository.fetchPlacements()
-        setupSections()
+        // Store original model data
+        self.originalSectionData = repository.fetchDebugSections(placements: self.placements)
+        // Assemble SectionViewModel from original model data and set initial visibility
+        self.sections = createSectionViewModels()
+        // Set default selections
+        setDefaultSelections()
+        updateSectionVisibility()
     }
     
-    private func setupSections() {
-        // Ad Network
-        let adNetworkOptions = [
-            DebugRadioCellViewModel(id: "msp_fb", title: "msp_fb", isSelected: true),
-            DebugRadioCellViewModel(id: "msp_google", title: "msp_google"),
-            DebugRadioCellViewModel(id: "msp_nova", title: "msp_nova"),
-            DebugRadioCellViewModel(id: "moloco", title: "moloco")
-        ]
-        let adNetworkSection = DebugAdLoadSectionViewModel(title: "Ad Network", cellViewModels: adNetworkOptions)
-        // Ad Format
-        let adFormatOptions = [
-            DebugRadioCellViewModel(id: "native", title: "native", isSelected: true),
-            DebugRadioCellViewModel(id: "interstitial", title: "interstitial")
-        ]
-        let adFormatSection = DebugAdLoadSectionViewModel(title: "Ad Format", cellViewModels: adFormatOptions)
-        // Creative Type (Nova only)
-        let creativeTypeOptions = [
-            DebugRadioCellViewModel(id: "video", title: "video", isSelected: true),
-            DebugRadioCellViewModel(id: "image", title: "image")
-        ]
-        let creativeTypeSection = DebugAdLoadSectionViewModel(title: "Creative Type (Nova only)", cellViewModels: creativeTypeOptions, isVisible: false)
-        // Layout (Nova interstitial only)
-        let layoutOptions = [
-            DebugRadioCellViewModel(id: "vertical", title: "vertical", isSelected: true),
-            DebugRadioCellViewModel(id: "horizontal", title: "horizontal")
-        ]
-        let layoutSection = DebugAdLoadSectionViewModel(title: "Layout (Nova interstitial only)", cellViewModels: layoutOptions, isVisible: false)
-        // High Engagement (Nova interstitial only)
-        let highEngagementOptions = [
-            DebugRadioCellViewModel(id: "yes", title: "yes"),
-            DebugRadioCellViewModel(id: "no", title: "no", isSelected: true)
-        ]
-        let highEngagementSection = DebugAdLoadSectionViewModel(title: "High Engagement (Nova interstitial only)", cellViewModels: highEngagementOptions, isVisible: false)
-        // Placements
-        let placementOptions = placements.map { DebugRadioCellViewModel(id: $0, title: $0) }
-        if let first = placementOptions.first { first.setSelected(true) }
-        let placementsSection = DebugAdLoadSectionViewModel(title: "Placements", cellViewModels: placementOptions)
+    private func createSectionViewModels() -> [DebugAdLoadSectionViewModel] {
+        return originalSectionData.enumerated().map { index, data in
+            let sectionViewModel = DebugAdLoadSectionViewModel(from: data)
+            
+            // Set initial visibility based on section type and business rules
+            switch index {
+            case 0, 1: // Ad Network and Ad Format sections
+                sectionViewModel.visible = true
+            case 2, 3, 4: // Creative Type, Layout, and High Engagement sections
+                sectionViewModel.visible = false
+            default:
+                sectionViewModel.visible = true
+            }
+            
+            return sectionViewModel
+        }
+    }
+    
+    private func setDefaultSelections() {
+        // Set Facebook as default for Ad Network
+        for i in 0..<sections[0].numberOfCells {
+            if let cell = sections[0].cellViewModel(at: i), cell.id == "facebook" {
+                sections[0].selectCell(at: i)
+                break
+            }
+        }
         
-        sections = [adNetworkSection, adFormatSection, creativeTypeSection, layoutSection, highEngagementSection, placementsSection]
-        updateSectionVisibility()
+        // Set Native as default for Ad Format
+        for i in 0..<sections[1].numberOfCells {
+            if let cell = sections[1].cellViewModel(at: i), cell.id == "native" {
+                sections[1].selectCell(at: i)
+                break
+            }
+        }
+        
+        // Set Native Video as default for Creative Type
+        for i in 0..<sections[2].numberOfCells {
+            if let cell = sections[2].cellViewModel(at: i), cell.id == "nativeVideo" {
+                sections[2].selectCell(at: i)
+                break
+            }
+        }
+        
+        // Set Vertical as default for Layout
+        for i in 0..<sections[3].numberOfCells {
+            if let cell = sections[3].cellViewModel(at: i), cell.id == "vertical" {
+                sections[3].selectCell(at: i)
+                break
+            }
+        }
+        
+        // Set No as default for High Engagement
+        for i in 0..<sections[4].numberOfCells {
+            if let cell = sections[4].cellViewModel(at: i), cell.id == "no" {
+                sections[4].selectCell(at: i)
+                break
+            }
+        }
     }
     
     func selectOption(section: Int, row: Int) {
@@ -70,11 +98,46 @@ class DebugAdLoadViewModel {
     func updateSectionVisibility() {
         let adNetwork = sections[0].selectedCell()?.id
         let adFormat = sections[1].selectedCell()?.id
-        // Creative Type only for msp_nova
-        sections[2].isVisible = (adNetwork == "msp_nova")
-        // Layout and High Engagement only for msp_nova + interstitial
-        let showLayout = (adNetwork == "msp_nova" && adFormat == "interstitial")
-        sections[3].isVisible = showLayout
-        sections[4].isVisible = showLayout
+        // Creative Type only for nova
+        sections[2].visible = (adNetwork == "nova")
+        // Layout and High Engagement only for nova + interstitial
+        let showLayout = (adNetwork == "nova" && adFormat == "interstitial")
+        sections[3].visible = showLayout
+        sections[4].visible = showLayout
+    }
+    
+    // Get test parameters from selected options
+    func getTestParameters() -> [String: String] {
+        var params: [String: String] = [:]
+        
+        // Add parameters from each selected option
+        for (index, section) in sections.enumerated() {
+            if let selectedCell = section.selectedCell(),
+               index < originalSectionData.count {
+                let originalOptions = originalSectionData[index].options
+                if let selectedOption = originalOptions.first(where: { $0.id == selectedCell.id }) {
+                    // Check if the option conforms to TestParamPresentable
+                    if let testParamOption = selectedOption as? TestParamPresentable {
+                        for (key, value) in testParamOption.keyValuePairs {
+                            params[key] = value
+                        }
+                    }
+                }
+            }
+        }
+        
+        return params
+    }
+    
+    func getSelectedOptions() -> [String: DebugOptionable] {
+        var selectedOptions: [String: DebugOptionable] = [:]
+        
+        for section in sections {
+            if let selectedCell = section.selectedCell() {
+                selectedOptions[section.title] = selectedCell.debugOption
+            }
+        }
+        
+        return selectedOptions
     }
 } 
