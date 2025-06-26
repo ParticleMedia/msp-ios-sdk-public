@@ -128,8 +128,8 @@ class DebugAdLoadViewModel {
         return params
     }
     
-    func getSelectedOptions() -> [String: DebugOptionable] {
-        var selectedOptions: [String: DebugOptionable] = [:]
+    func getSelectedOptions() -> [String: DebugOption] {
+        var selectedOptions: [String: DebugOption] = [:]
         
         for section in sections {
             if let selectedCell = section.selectedCell() {
@@ -138,5 +138,22 @@ class DebugAdLoadViewModel {
         }
         
         return selectedOptions
+    }
+    
+    /// Generates placement ID based on current selections
+    func generatePlacementId() -> String? {
+        let selectedOptions = Array(getSelectedOptions().values)
+        return TestPlacementsService().fetchPlacements(from: selectedOptions)
+    }
+    
+    /// Loads an ad using the current selections
+    /// - Returns: Result containing either the placement ID or an error
+    func loadAd() -> Result<String, Error> {
+        guard let placementId = generatePlacementId() else {
+            return .failure(DebugError.failedToGeneratePlacementId)
+        }
+        
+        // TODO: Use the placement ID to load the ad
+        return .success(placementId)
     }
 } 
