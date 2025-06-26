@@ -67,6 +67,10 @@ class DebugAdLoadViewController: UIViewController, UITableViewDataSource, UITabl
     private func setupButtons() {
         view.addSubview(loadAdButton)
         view.addSubview(destroyButton)
+        
+        // Add action handlers
+        loadAdButton.addTarget(self, action: #selector(loadAdButtonTapped), for: .touchUpInside)
+        
         loadAdButton.snp.makeConstraints { make in
             make.leading.equalToSuperview().offset(UIConfig.buttonLeading)
             make.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom).inset(UIConfig.buttonBottom)
@@ -79,6 +83,16 @@ class DebugAdLoadViewController: UIViewController, UITableViewDataSource, UITabl
             make.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom).inset(UIConfig.buttonBottom)
             make.height.equalTo(UIConfig.buttonHeight)
             make.width.equalTo(loadAdButton)
+        }
+    }
+    
+    @objc private func loadAdButtonTapped() {
+        let result = viewModel.loadAd()
+        switch result {
+        case .success(let placementId):
+            print("Generated placement ID: \(placementId)")
+        case .failure(let error):
+            print("Error: \(error.localizedDescription)")
         }
     }
     

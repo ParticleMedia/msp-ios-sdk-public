@@ -3,7 +3,7 @@ import Combine
 import MSPiOSCore
 
 class DebugRadioCellViewModel {
-    let debugOption: DebugOptionable
+    let debugOption: DebugOption
     
     var id: String {
         debugOption.id
@@ -19,7 +19,7 @@ class DebugRadioCellViewModel {
     }
     
     init(
-        debugOption: DebugOptionable,
+        debugOption: DebugOption,
         isSelected: Bool = false
     ) {
         self.debugOption = debugOption

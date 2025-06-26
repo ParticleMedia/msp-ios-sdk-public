@@ -13,10 +13,10 @@ private enum SectionTitles {
 // Concrete implementation
 struct DebugSectionData: DebugSection {
     let title: String
-    let options: [DebugOptionable]
+    let options: [DebugOption]
     let showCondition: Set<String>?
     
-    init(title: String, options: [DebugOptionable], showCondition: Set<String>? = nil) {
+    init(title: String, options: [DebugOption], showCondition: Set<String>? = nil) {
         self.title = title
         self.options = options
         self.showCondition = showCondition
