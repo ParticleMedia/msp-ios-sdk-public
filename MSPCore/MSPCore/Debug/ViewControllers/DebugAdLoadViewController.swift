@@ -13,14 +13,14 @@ private enum UIConfig {
     static let buttonFontSize: CGFloat = 18
     static let buttonCornerRadius: CGFloat = 6
     // Strings
-    static let title = "msp-ios"
-    static let loadAdTitle = "LOAD AD"
-    static let destroyTitle = "DESTROY!"
+    static let title = "MSP Debug"
+    static let loadAdTitle = "Load Ad"
+    static let destroyTitle = "Destroy!"
     static let radioCellReuseId = "RadioCell"
 }
 
 class DebugAdLoadViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
-    private let viewModel = DebugAdLoadViewModel()
+    private let viewModel = DebugAdLoadViewModel(repository: TestDebugSectionsService())
     private let tableView = UITableView(frame: .zero, style: .grouped)
     private let loadAdButton: UIButton = {
         let btn = UIButton(type: .system)
@@ -91,7 +91,7 @@ class DebugAdLoadViewController: UIViewController, UITableViewDataSource, UITabl
             }
             .store(in: &cancellables)
         // Set initial value
-        visibleSections = viewModel.sections.filter { $0.isVisible }
+        visibleSections = viewModel.sections.filter { $0.visible }
     }
     
     // MARK: - UITableViewDataSource
@@ -100,7 +100,7 @@ class DebugAdLoadViewController: UIViewController, UITableViewDataSource, UITabl
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return visibleSections[section].cellViewModels.count
+        return visibleSections[section].numberOfCells
     }
     
     func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
@@ -108,7 +108,7 @@ class DebugAdLoadViewController: UIViewController, UITableViewDataSource, UITabl
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cellVM = visibleSections[indexPath.section].cellViewModels[indexPath.row]
+        let cellVM = visibleSections[indexPath.section].cellViewModel(at: indexPath.row)!
         let cell = tableView.dequeueReusableCell(withIdentifier: UIConfig.radioCellReuseId, for: indexPath)
         cell.textLabel?.text = cellVM.title
         cell.accessoryType = cellVM.isSelected ? .checkmark : .none
