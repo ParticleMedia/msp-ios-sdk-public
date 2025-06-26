@@ -176,6 +176,69 @@ public class MSP {
 
     }
     
+    /// Shows the mediation debugger interface as a modal presentation.
+    /// This method automatically finds the top-most view controller and presents the debugger modally.
+    /// 
+    /// - Note: This method can be called from anywhere in your app, regardless of the current view controller hierarchy.
+    /// - Warning: The debugger will be presented modally and can be dismissed by the user.
+    /// 
+    /// ## Usage Example:
+    /// ```swift
+    /// MSP.shared.showMediationDebugger()
+    /// ```
+    public func showMediationDebugger() {
+        DispatchQueue.main.async {
+            if let topViewController = self.getTopViewController() {
+                let debugViewController = DebugAdLoadViewController()
+                let navigationController = UINavigationController(rootViewController: debugViewController)
+                topViewController.present(navigationController, animated: true, completion: nil)
+            }
+        }
+    }
+    
+    /// Shows the mediation debugger interface by pushing it onto the navigation stack.
+    /// This method requires the caller to be embedded in a navigation controller.
+    /// 
+    /// - Parameter rootViewController: The view controller from which to push the debugger. 
+    ///   This view controller must be embedded in a UINavigationController.
+    /// - Note: If the rootViewController is not embedded in a navigation controller, this method will have no effect.
+    /// - Warning: The debugger will be pushed onto the navigation stack and can be popped back by the user.
+    /// 
+    /// ## Usage Example:
+    /// ```swift
+    /// // From within a view controller that's embedded in a navigation controller
+    /// MSP.shared.showMediationDebugger(from: self)
+    /// ```
+    public func showMediationDebugger(from rootViewController: UIViewController) {
+        let debugViewController = DebugAdLoadViewController()
+        rootViewController.navigationController?.pushViewController(debugViewController, animated: true)
+    }
+    
+    /// Helper method to find the top-most view controller in the app's view hierarchy.
+    /// This method traverses through presented view controllers, navigation controllers, and tab bar controllers.
+    /// 
+    /// - Returns: The top-most view controller, or nil if no view controller is found.
+    private func getTopViewController() -> UIViewController? {
+        guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+              let window = windowScene.windows.first else {
+            return nil
+        }
+        
+        var topViewController = window.rootViewController
+        while let presentedViewController = topViewController?.presentedViewController {
+            topViewController = presentedViewController
+        }
+        
+        if let navigationController = topViewController as? UINavigationController {
+            topViewController = navigationController.visibleViewController
+        }
+        
+        if let tabBarController = topViewController as? UITabBarController {
+            topViewController = tabBarController.selectedViewController
+        }
+        
+        return topViewController
+    }
 }
 
 public class InitializationParametersImp: InitializationParameters {
