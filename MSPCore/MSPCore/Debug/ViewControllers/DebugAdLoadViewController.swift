@@ -112,6 +112,7 @@ class DebugAdLoadViewController: UIViewController, UITableViewDataSource, UITabl
         let cell = tableView.dequeueReusableCell(withIdentifier: UIConfig.radioCellReuseId, for: indexPath)
         cell.textLabel?.text = cellVM.title
         cell.accessoryType = cellVM.isSelected ? .checkmark : .none
+        cell.selectionStyle = .none
         return cell
     }
     
@@ -121,5 +122,6 @@ class DebugAdLoadViewController: UIViewController, UITableViewDataSource, UITabl
         let rowIdx = indexPath.row
         guard let realSectionIdx = viewModel.sections.firstIndex(where: { $0 === visibleSections[sectionIdx] }) else { return }
         viewModel.selectOption(section: realSectionIdx, row: rowIdx)
+        tableView.deselectRow(at: indexPath, animated: true)
     }
 } 
