@@ -2,7 +2,7 @@ import Foundation
 
 class DebugAdLoadSectionViewModel {
     let title: String
-    private var cellViewModels: [DebugRadioCellViewModel]
+    private(set) var cellViewModels: [DebugRadioCellViewModel]
     private var isVisible: Bool
     
     init(title: String, cellViewModels: [DebugRadioCellViewModel], isVisible: Bool = true) {
