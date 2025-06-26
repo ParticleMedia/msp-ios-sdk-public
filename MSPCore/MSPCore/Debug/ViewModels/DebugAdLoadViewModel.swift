@@ -31,58 +31,58 @@ class DebugAdLoadViewModel {
         return originalSectionData.enumerated().map { index, data in
             let sectionViewModel = DebugAdLoadSectionViewModel(from: data)
             
-            // Set initial visibility based on section type and business rules
-            switch index {
-            case 0, 1: // Ad Network and Ad Format sections
-                sectionViewModel.visible = true
-            case 2, 3, 4: // Creative Type, Layout, and High Engagement sections
-                sectionViewModel.visible = false
-            default:
-                sectionViewModel.visible = true
-            }
+            // Set initial visibility based on showCondition
+            sectionViewModel.visible = shouldShowSection(data)
             
             return sectionViewModel
         }
     }
     
+    private func shouldShowSection(_ section: DebugSection) -> Bool {
+        guard let showCondition = section.showCondition else {
+            // If showCondition is nil, section is always visible
+            return true
+        }
+        
+        // Check if all required option IDs are in the current selection
+        let selectedOptionIds = getSelectedOptionIds()
+        return showCondition.isSubset(of: selectedOptionIds)
+    }
+    
+    private func getSelectedOptionIds() -> Set<String> {
+        var selectedIds: Set<String> = []
+        
+        for section in sections {
+            if let selectedCell = section.selectedCell() {
+                selectedIds.insert(selectedCell.id)
+            }
+        }
+        
+        return selectedIds
+    }
+    
     private func setDefaultSelections() {
-        // Set Facebook as default for Ad Network
-        for i in 0..<sections[0].numberOfCells {
-            if let cell = sections[0].cellViewModel(at: i), cell.id == "facebook" {
-                sections[0].selectCell(at: i)
-                break
-            }
-        }
-        
-        // Set Native as default for Ad Format
-        for i in 0..<sections[1].numberOfCells {
-            if let cell = sections[1].cellViewModel(at: i), cell.id == "native" {
-                sections[1].selectCell(at: i)
-                break
-            }
-        }
-        
-        // Set Native Video as default for Creative Type
-        for i in 0..<sections[2].numberOfCells {
-            if let cell = sections[2].cellViewModel(at: i), cell.id == "nativeVideo" {
-                sections[2].selectCell(at: i)
-                break
-            }
-        }
-        
-        // Set Vertical as default for Layout
-        for i in 0..<sections[3].numberOfCells {
-            if let cell = sections[3].cellViewModel(at: i), cell.id == "vertical" {
-                sections[3].selectCell(at: i)
-                break
-            }
-        }
-        
-        // Set No as default for High Engagement
-        for i in 0..<sections[4].numberOfCells {
-            if let cell = sections[4].cellViewModel(at: i), cell.id == "no" {
-                sections[4].selectCell(at: i)
-                break
+        // Set default selections based on showCondition requirements
+        for (index, section) in sections.enumerated() {
+            if index < originalSectionData.count {
+                let sectionData = originalSectionData[index]
+                
+                // If this section has a showCondition, set the first available option as default
+                if let showCondition = sectionData.showCondition {
+                    for requiredId in showCondition {
+                        for i in 0..<section.numberOfCells {
+                            if let cell = section.cellViewModel(at: i), cell.id == requiredId {
+                                section.selectCell(at: i)
+                                break
+                            }
+                        }
+                    }
+                } else {
+                    // For sections without showCondition, set the first option as default
+                    if section.numberOfCells > 0 {
+                        section.selectCell(at: 0)
+                    }
+                }
             }
         }
     }
@@ -96,14 +96,13 @@ class DebugAdLoadViewModel {
     }
     
     func updateSectionVisibility() {
-        let adNetwork = sections[0].selectedCell()?.id
-        let adFormat = sections[1].selectedCell()?.id
-        // Creative Type only for nova
-        sections[2].visible = (adNetwork == "nova")
-        // Layout and High Engagement only for nova + interstitial
-        let showLayout = (adNetwork == "nova" && adFormat == "interstitial")
-        sections[3].visible = showLayout
-        sections[4].visible = showLayout
+        // Update visibility for all sections based on their showCondition
+        for (index, section) in sections.enumerated() {
+            if index < originalSectionData.count {
+                let shouldShow = shouldShowSection(originalSectionData[index])
+                section.visible = shouldShow
+            }
+        }
     }
     
     // Get test parameters from selected options
