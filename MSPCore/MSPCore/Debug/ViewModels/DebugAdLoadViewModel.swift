@@ -45,7 +45,6 @@ class DebugAdLoadViewModel: AdListener {
     private let repository: DebugSectionsRepository
     private let placementsRepository: PlacementsRepository
     private let loadAdRepository: LoadAdRepository
-    private var adLoader: MSPAdLoader?
     private(set) var ad: MSPAd?
     private weak var debugAdLoadViewController: DebugAdLoadViewController?
     
@@ -63,7 +62,7 @@ class DebugAdLoadViewModel: AdListener {
     init(
         repository: DebugSectionsRepository = TestDebugSectionsService(),
         placementsRepository: PlacementsRepository = TestPlacementsService(),
-        loadAdRepository: LoadAdRepository = LoadAdService()
+        loadAdRepository: LoadAdRepository = TestLoadAdService()
     ) {
         self.repository = repository
         self.placementsRepository = placementsRepository
@@ -155,25 +154,33 @@ class DebugAdLoadViewModel: AdListener {
     
     // Get test parameters from selected options
     func getTestParameters() -> [String: String] {
-        var params: [String: String] = [:]
-        
-        // Add parameters from each selected option
+        var testParamsDict: [String: Any] = [:]
         for (index, section) in sections.enumerated() {
             if let selectedCell = section.selectedCell(),
                index < originalSectionData.count {
                 let originalOptions = originalSectionData[index].options
                 if let selectedOption = originalOptions.first(where: { $0.id == selectedCell.id }) {
-                    // Check if the option conforms to TestParamPresentable
                     if let testParamOption = selectedOption as? TestParamPresentable {
                         for (key, value) in testParamOption.keyValuePairs {
-                            params[key] = value
+                            // Try to convert "true"/"false" to Bool, otherwise keep as String
+                            if value == "true" {
+                                testParamsDict[key] = true
+                            } else if value == "false" {
+                                testParamsDict[key] = false
+                            } else {
+                                testParamsDict[key] = value
+                            }
                         }
                     }
                 }
             }
         }
-        
-        return params
+        testParamsDict["test_ad"] = true
+        guard let jsonData = try? JSONSerialization.data(withJSONObject: testParamsDict, options: []),
+              let jsonString = String(data: jsonData, encoding: .utf8) else {
+            return [:]
+        }
+        return ["test": jsonString]
     }
     
     func getSelectedOptions() -> [String: DebugOption] {
@@ -203,8 +210,6 @@ class DebugAdLoadViewModel: AdListener {
         let selectedOptions = getSelectedOptions()
         let adFormat = selectedOptions.values.compactMap { $0 as? AdFormat }.first ?? .banner
         let testParams = getTestParameters()
-        let adLoader = MSPAdLoader()
-        self.adLoader = adLoader
         toastSignalSubject.send(ToastSignal(message: Strings.loading, style: .loading, duration: nil))
         loadAdRepository.loadAd(
             placementId: placementId,
@@ -227,7 +232,7 @@ class DebugAdLoadViewModel: AdListener {
         print(Strings.adClick + "\(ad)")
     }
     func onAdLoaded(placementId: String) {
-        guard let ad = self.adLoader?.getAd(placementId: placementId) else {
+        guard let ad = loadAdRepository.getAd(placementId: placementId) else {
             print(Strings.noAdFound + placementId)
             toastSignalSubject.send(ToastSignal(message: Strings.noAdFoundForPlacementId, style: .error, duration: nil))
             return

@@ -9,4 +9,6 @@ protocol LoadAdRepository {
         adListener: AdListener,
         customParams: [String: Any]?
     )
+
+    func getAd(placementId: String) -> MSPAd?
 } 
