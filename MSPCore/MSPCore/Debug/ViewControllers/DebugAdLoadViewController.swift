@@ -13,6 +13,9 @@ private enum UIConfig {
     static let buttonSpacing: CGFloat = 16
     static let buttonFontSize: CGFloat = 18
     static let buttonCornerRadius: CGFloat = 6
+    // Ad Sizes
+    static let nativeAdSize = CGSize(width: 300, height: 250)
+    static let bannerAdSize = CGSize(width: 320, height: 50)
     // Strings
     static let title = "MSP Debug"
     static let loadAdTitle = "Load Ad"
@@ -49,6 +52,7 @@ class DebugAdLoadViewController: UIViewController, UITableViewDataSource, UITabl
         super.viewDidLoad()
         title = UIConfig.title
         view.backgroundColor = .white
+        viewModel.setViewController(self)
         setupTableView()
         setupButtons()
         bindViewModel()
@@ -117,13 +121,13 @@ class DebugAdLoadViewController: UIViewController, UITableViewDataSource, UITabl
                 DispatchQueue.main.async {
                     switch signal {
                     case .native(let nativeAd):
-                        let container = DebugNativeAdContainer(frame: CGRect(x: 0, y: 0, width: 300, height: 250))
+                        let container = DebugNativeAdContainer(frame: CGRect(origin: .zero, size: UIConfig.nativeAdSize))
                         let adView = NativeAdView(nativeAd: nativeAd, nativeAdContainer: container)
-                        let adVC = DebugAdContainerViewController(adView: adView, preferredSize: CGSize(width: 300, height: 250))
+                        let adVC = DebugAdContainerViewController(adView: adView, preferredSize: UIConfig.nativeAdSize)
                         self.navigationController?.pushViewController(adVC, animated: true)
                     case .banner(let bannerAd):
                         let adView = bannerAd.adView
-                        let adVC = DebugAdContainerViewController(adView: adView, preferredSize: CGSize(width: 320, height: 50))
+                        let adVC = DebugAdContainerViewController(adView: adView, preferredSize: UIConfig.bannerAdSize)
                         self.navigationController?.pushViewController(adVC, animated: true)
                     case .interstitial(let interstitialAd):
                         interstitialAd.show(rootViewController: self)

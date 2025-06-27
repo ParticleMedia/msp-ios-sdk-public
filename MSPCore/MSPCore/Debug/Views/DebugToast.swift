@@ -1,5 +1,24 @@
 import UIKit
 
+private enum UIConfig {
+    static let fontSize: CGFloat = 15
+    static let fontWeight: UIFont.Weight = .medium
+    static let loadingSpacing: CGFloat = 8
+    static let nonLoadingSpacing: CGFloat = 0
+    static let cornerRadius: CGFloat = 12
+    static let stackInset: CGFloat = 16
+    static let toastBottomOffset: CGFloat = -80
+    static let toastWidthMultiplier: CGFloat = 0.9
+    static let animationDuration: TimeInterval = 0.2
+    static let defaultDuration: TimeInterval = 2.0
+    // Colors
+    static let loadingBackground = UIColor(white: 0, alpha: 0.6)
+    static let successBackground = UIColor(red: 0.65, green: 0.85, blue: 0.65, alpha: 0.95)
+    static let errorBackground = UIColor(red: 0.95, green: 0.65, blue: 0.65, alpha: 0.95)
+    static let textColor = UIColor.white
+    static let indicatorColor = UIColor.white
+}
+
 enum DebugToastStyle {
     case loading
     case success
@@ -10,7 +29,7 @@ class DebugToast: UIView {
     private lazy var messageLabel: UILabel = {
         let label = UILabel()
         label.textColor = .white
-        label.font = .systemFont(ofSize: 15, weight: .medium)
+        label.font = .systemFont(ofSize: UIConfig.fontSize, weight: UIConfig.fontWeight)
         label.numberOfLines = 0
         label.textAlignment = .center
         return label
@@ -18,7 +37,7 @@ class DebugToast: UIView {
     
     private lazy var activityIndicator: UIActivityIndicatorView = {
         let indicator = UIActivityIndicatorView(style: .medium)
-        indicator.color = .white
+        indicator.color = UIConfig.indicatorColor
         return indicator
     }()
     
@@ -26,10 +45,10 @@ class DebugToast: UIView {
         let s: UIStackView
         if style == .loading {
             s = UIStackView(arrangedSubviews: [activityIndicator, messageLabel])
-            s.spacing = 8
+            s.spacing = UIConfig.loadingSpacing
         } else {
             s = UIStackView(arrangedSubviews: [messageLabel])
-            s.spacing = 0
+            s.spacing = UIConfig.nonLoadingSpacing
         }
         s.axis = .horizontal
         s.alignment = .center
@@ -48,17 +67,17 @@ class DebugToast: UIView {
     private func setView(message: String) {
         backgroundColor = {
             switch style {
-            case .loading: return UIColor(white: 0, alpha: 0.6)
-            case .success: return UIColor(red: 0.65, green: 0.85, blue: 0.65, alpha: 0.95) // subtle green
-            case .error: return UIColor(red: 0.95, green: 0.65, blue: 0.65, alpha: 0.95) // subtle red
+            case .loading: return UIConfig.loadingBackground
+            case .success: return UIConfig.successBackground
+            case .error: return UIConfig.errorBackground
             }
         }()
-        layer.cornerRadius = 12
+        layer.cornerRadius = UIConfig.cornerRadius
         layer.masksToBounds = true
         messageLabel.text = message
         addSubview(stack)
         stack.snp.makeConstraints { make in
-            make.edges.equalToSuperview().inset(16)
+            make.edges.equalToSuperview().inset(UIConfig.stackInset)
         }
         if style == .loading {
             activityIndicator.startAnimating()
@@ -93,12 +112,13 @@ class ToastManager {
         view.addSubview(toast)
         toast.snp.makeConstraints { make in
             make.centerX.equalToSuperview()
-            make.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom).offset(-80)
-            make.width.lessThanOrEqualTo(view.snp.width).multipliedBy(0.9)
+            make.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom).offset(UIConfig.toastBottomOffset)
+            make.width.lessThanOrEqualTo(view.snp.width).multipliedBy(UIConfig.toastWidthMultiplier)
         }
-        UIView.animate(withDuration: 0.2) {
+        UIView.animate(withDuration: UIConfig.animationDuration) {
             toast.alpha = 1
         }
+        let displayDuration = (duration == 2.0) ? UIConfig.defaultDuration : duration
         if style != .loading {
             let workItem = DispatchWorkItem { [weak self, weak toast] in
                 toast?.dismiss()
@@ -107,7 +127,7 @@ class ToastManager {
                 }
             }
             dismissWorkItem = workItem
-            DispatchQueue.main.asyncAfter(deadline: .now() + duration, execute: workItem)
+            DispatchQueue.main.asyncAfter(deadline: .now() + displayDuration, execute: workItem)
         }
         return toast
     }
