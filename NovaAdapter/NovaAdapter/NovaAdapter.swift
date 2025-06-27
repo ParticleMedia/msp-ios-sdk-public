@@ -277,13 +277,21 @@ public class NovaAdapter: AdNetworkAdapter {
                 
             default:
                 MSPLogger.shared.info(message: "[Adapter: Nova] Fail to load Nova ad")
-                self.adListener?.onError(msg: "unknown adType")
+                let errorMessage = "unknown adType"
+                self.adListener?.onError(msg: errorMessage)
                 self.adMetricReporter?.logAdResult(placementId: adRequest?.placementId ?? "", ad: nil, fill: false, isFromCache: false)
+                if let adRequest = self.adRequest {
+                    self.adMetricReporter?.logAdResponse(ad: nil, adRequest: adRequest, errorCode: .ERROR_CODE_INTERNAL_ERROR, errorMessage: errorMessage)
+                }
             }
         } catch {
             MSPLogger.shared.info(message: "[Adapter: Nova] Fail to load Nova ad")
-            self.adListener?.onError(msg: "error decode nova ad string")
+            let errorMessage = "error decode nova ad string"
+            self.adListener?.onError(msg: errorMessage)
             self.adMetricReporter?.logAdResult(placementId: adRequest?.placementId ?? "", ad: nil, fill: false, isFromCache: false)
+            if let adRequest = self.adRequest {
+                self.adMetricReporter?.logAdResponse(ad: nil, adRequest: adRequest, errorCode: .ERROR_CODE_INTERNAL_ERROR, errorMessage: errorMessage)
+            }
         }
         
     }
@@ -316,6 +324,9 @@ public class NovaAdapter: AdNetworkAdapter {
         AdCache.shared.saveAd(placementId: bidderPlacementId, ad: ad)
         let auctionBid = AuctionBid(bidderName: "msp", bidderPlacementId: bidderPlacementId, ecpm: ad.adInfo["price"] as? Double ?? 0.0)
         auctionBidListener.onSuccess(bid: auctionBid)
+        if let adRequest = self.adRequest {
+            self.adMetricReporter?.logAdResponse(ad: ad, adRequest: adRequest, errorCode: .ERROR_CODE_SUCCESS, errorMessage: nil)
+        }
     }
     
     public func getAdNetwork() -> MSPiOSCore.AdNetwork {

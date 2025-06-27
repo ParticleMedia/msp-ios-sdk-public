@@ -36,9 +36,42 @@ struct Com_Newsbreak_Mes_Events_SdkInitEvent: Sendable {
 
   var app: String = String()
 
+  var mspSdkVersion: String {
+    get {return _mspSdkVersion ?? String()}
+    set {_mspSdkVersion = newValue}
+  }
+  /// Returns true if `mspSdkVersion` has been explicitly set.
+  var hasMspSdkVersion: Bool {return self._mspSdkVersion != nil}
+  /// Clears the value of `mspSdkVersion`. Subsequent reads from it will return its default value.
+  mutating func clearMspSdkVersion() {self._mspSdkVersion = nil}
+
+  var latency: Int32 {
+    get {return _latency ?? 0}
+    set {_latency = newValue}
+  }
+  /// Returns true if `latency` has been explicitly set.
+  var hasLatency: Bool {return self._latency != nil}
+  /// Clears the value of `latency`. Subsequent reads from it will return its default value.
+  mutating func clearLatency() {self._latency = nil}
+
+  var totalCompleteTime: Int32 {
+    get {return _totalCompleteTime ?? 0}
+    set {_totalCompleteTime = newValue}
+  }
+  /// Returns true if `totalCompleteTime` has been explicitly set.
+  var hasTotalCompleteTime: Bool {return self._totalCompleteTime != nil}
+  /// Clears the value of `totalCompleteTime`. Subsequent reads from it will return its default value.
+  mutating func clearTotalCompleteTime() {self._totalCompleteTime = nil}
+
+  var completeTimeByAdNetwork: Dictionary<String,Int32> = [:]
+
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
   init() {}
+
+  fileprivate var _mspSdkVersion: String? = nil
+  fileprivate var _latency: Int32? = nil
+  fileprivate var _totalCompleteTime: Int32? = nil
 }
 
 // MARK: - Code below here is support for the SwiftProtobuf runtime.
@@ -53,6 +86,10 @@ extension Com_Newsbreak_Mes_Events_SdkInitEvent: SwiftProtobuf.Message, SwiftPro
     3: .same(proto: "os"),
     4: .same(proto: "org"),
     5: .same(proto: "app"),
+    6: .standard(proto: "msp_sdk_version"),
+    7: .same(proto: "latency"),
+    8: .standard(proto: "total_complete_time"),
+    9: .standard(proto: "complete_time_by_ad_network"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -66,12 +103,20 @@ extension Com_Newsbreak_Mes_Events_SdkInitEvent: SwiftProtobuf.Message, SwiftPro
       case 3: try { try decoder.decodeSingularEnumField(value: &self.os) }()
       case 4: try { try decoder.decodeSingularStringField(value: &self.org) }()
       case 5: try { try decoder.decodeSingularStringField(value: &self.app) }()
+      case 6: try { try decoder.decodeSingularStringField(value: &self._mspSdkVersion) }()
+      case 7: try { try decoder.decodeSingularInt32Field(value: &self._latency) }()
+      case 8: try { try decoder.decodeSingularInt32Field(value: &self._totalCompleteTime) }()
+      case 9: try { try decoder.decodeMapField(fieldType: SwiftProtobuf._ProtobufMap<SwiftProtobuf.ProtobufString,SwiftProtobuf.ProtobufInt32>.self, value: &self.completeTimeByAdNetwork) }()
       default: break
       }
     }
   }
 
   func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    // The use of inline closures is to circumvent an issue where the compiler
+    // allocates stack space for every if/case branch local when no optimizations
+    // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
+    // https://github.com/apple/swift-protobuf/issues/1182
     if self.clientTsMs != 0 {
       try visitor.visitSingularUInt64Field(value: self.clientTsMs, fieldNumber: 1)
     }
@@ -87,6 +132,18 @@ extension Com_Newsbreak_Mes_Events_SdkInitEvent: SwiftProtobuf.Message, SwiftPro
     if !self.app.isEmpty {
       try visitor.visitSingularStringField(value: self.app, fieldNumber: 5)
     }
+    try { if let v = self._mspSdkVersion {
+      try visitor.visitSingularStringField(value: v, fieldNumber: 6)
+    } }()
+    try { if let v = self._latency {
+      try visitor.visitSingularInt32Field(value: v, fieldNumber: 7)
+    } }()
+    try { if let v = self._totalCompleteTime {
+      try visitor.visitSingularInt32Field(value: v, fieldNumber: 8)
+    } }()
+    if !self.completeTimeByAdNetwork.isEmpty {
+      try visitor.visitMapField(fieldType: SwiftProtobuf._ProtobufMap<SwiftProtobuf.ProtobufString,SwiftProtobuf.ProtobufInt32>.self, value: self.completeTimeByAdNetwork, fieldNumber: 9)
+    }
     try unknownFields.traverse(visitor: &visitor)
   }
 
@@ -96,6 +153,10 @@ extension Com_Newsbreak_Mes_Events_SdkInitEvent: SwiftProtobuf.Message, SwiftPro
     if lhs.os != rhs.os {return false}
     if lhs.org != rhs.org {return false}
     if lhs.app != rhs.app {return false}
+    if lhs._mspSdkVersion != rhs._mspSdkVersion {return false}
+    if lhs._latency != rhs._latency {return false}
+    if lhs._totalCompleteTime != rhs._totalCompleteTime {return false}
+    if lhs.completeTimeByAdNetwork != rhs.completeTimeByAdNetwork {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }

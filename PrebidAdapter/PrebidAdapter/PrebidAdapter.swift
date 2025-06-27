@@ -173,12 +173,18 @@ extension PrebidAdapter: BannerViewDelegate {
         AdCache.shared.saveAd(placementId: bidderPlacementId, ad: ad)
         let auctionBid = AuctionBid(bidderName: "msp", bidderPlacementId: bidderPlacementId, ecpm: ad.adInfo["price"] as? Double ?? 0.0)
         auctionBidListener.onSuccess(bid: auctionBid)
+        if let adRequest = self.adRequest {
+            self.adMetricReporter?.logAdResponse(ad: ad, adRequest: adRequest, errorCode: .ERROR_CODE_SUCCESS, errorMessage: nil)
+        }
     }
     
     @objc public func bannerView(_ bannerView: BannerView, didFailToReceiveAdWith error: Error) {
         MSPLogger.shared.info(message: "[Adapter: Prebid] Fail to load Prebid Banner ad")
         self.auctionBidListener?.onError(error: "fail to get ad")
         adMetricReporter?.logAdResult(placementId: adRequest?.placementId ?? "", ad: nil, fill: false, isFromCache: false)
+        if let adRequest = self.adRequest {
+            self.adMetricReporter?.logAdResponse(ad: nil, adRequest: adRequest, errorCode: .ERROR_CODE_INTERNAL_ERROR, errorMessage: error.localizedDescription)
+        }
     }
     
     @objc public func bannerViewWillPresentModal(_ bannerView: BannerView) {

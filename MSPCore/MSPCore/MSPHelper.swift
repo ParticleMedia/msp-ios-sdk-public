@@ -10,10 +10,15 @@ import AppTrackingTransparency
 import SwiftProtobuf
 
 public class MSP {
+    public let version = "" // please config version number in release branch
     
     public static let shared = MSP()
     public var numInitWaitingForCallbacks = 0;
     public weak var sdkInitListener: MSPInitListener?
+    public var initStartTime: Double?
+    public var adNetworkInitStartTime: [String: Double] = [:]
+    public var adNetworkInitLatencyInMs: [String: Int32] = [:]
+    public var blockLatencyInMs: Int32?
     
     public var adNetworkAdapterProvider = MSPAdNetworkAdapterProvider()
     public var bidLoaderProvider = MSPBidLoaderProvider()
@@ -28,10 +33,10 @@ public class MSP {
     public var ppid: String?
     public var email: String?
     public var prebidAPIKey: String?
-    
     public func initMSP(initParams: InitializationParameters, sdkInitListener: MSPInitListener?, adNetworkManagers: [AdNetworkManager]) {
         // This is a temporary solution to replace MSPManager class in kotlin to solve the Kotlin singleton issue
-        MESMetricReporter.shared.logSDKInit()
+        let initStartTime = Date().timeIntervalSince1970
+        self.initStartTime = initStartTime
         AdCache.shared.adMetricReporter = AdMetricReporterImp()
         if initParams is InitializationParametersImp {
             let params = initParams as? InitializationParametersImp
@@ -64,6 +69,7 @@ public class MSP {
         MSPAdConfigManager.shared.initAdConfig()
         for manager in adNetworkManagers {
             if let adNetworkAdapter = manager.getAdNetworkAdapter() {
+                self.adNetworkInitStartTime[adNetworkAdapter.getAdNetwork().rawValue] = Date().timeIntervalSince1970
                 adNetworkAdapter.initialize(initParams: initParams, adapterInitListener: adapterInitListener, context: nil)
             }
         }
@@ -76,13 +82,22 @@ public class MSP {
         Prebid.shared.shareGeoLocation = true
         
         UserDefaults.standard.setValue(String(Date().timeIntervalSince1970 * 1000), forKey: "FirstLaunchTime")
+        self.blockLatencyInMs = Int32((Date().timeIntervalSince1970 - initStartTime) * 1000)
     }
     
     public class MSPAdapterInitListener: NSObject, AdapterInitListener {
         public func onComplete(adNetwork: AdNetwork, adapterInitStatus: AdapterInitStatus, message: String) {
             MSP.shared.numInitWaitingForCallbacks = MSP.shared.numInitWaitingForCallbacks - 1
+            if let startTime = MSP.shared.adNetworkInitStartTime[adNetwork.rawValue] {
+                MSP.shared.adNetworkInitLatencyInMs[adNetwork.rawValue] = Int32((Date().timeIntervalSince1970 - startTime) * 1000)
+            }
             if MSP.shared.numInitWaitingForCallbacks == 0 {
                 MSPLogger.shared.info(message: "MSP SDK is initialized successfully")
+                var totalCompleteTimeInMs: Int32?
+                if let initStartTime = MSP.shared.initStartTime {
+                    totalCompleteTimeInMs = Int32((Date().timeIntervalSince1970 - initStartTime) * 1000)
+                }
+                MESMetricReporter.shared.logSDKInit(totalCompleteTimeInMs: totalCompleteTimeInMs, blockLatencyInMs: MSP.shared.blockLatencyInMs, adNetworkCompleteTimeInMs: MSP.shared.adNetworkInitLatencyInMs)
                 MSP.shared.sdkInitListener?.onComplete(status: .SUCCESS, message: "")
             }
         }

@@ -66,7 +66,9 @@ import IronSource
                 if let viewController = adListener.getRootViewController() {
                     self.bannerView?.loadAd(with: viewController)
                 } else {
-                    auctionBidListener.onError(error: "unity banner no valid UIViewController")
+                    let errorMessage = "unity banner no valid UIViewController"
+                    auctionBidListener.onError(error: errorMessage)
+                    self.adMetricReporter?.logAdResponse(ad: nil, adRequest: adRequest, errorCode: .ERROR_CODE_INTERNAL_ERROR, errorMessage: errorMessage)
                 }
             }
         }
@@ -90,7 +92,7 @@ import IronSource
                 }
             }
         }
-        adapterInitListener.onComplete(adNetwork: .pubmatic, adapterInitStatus: .SUCCESS, message: "")
+        adapterInitListener.onComplete(adNetwork: .unity, adapterInitStatus: .SUCCESS, message: "")
     }
     
     public func destroyAd() {
@@ -179,6 +181,9 @@ import IronSource
         AdCache.shared.saveAd(placementId: bidderPlacementId, ad: ad)
         let auctionBid = AuctionBid(bidderName: "unity", bidderPlacementId: bidderPlacementId, ecpm: ad.adInfo["price"] as? Double ?? 0.0)
         auctionBidListener.onSuccess(bid: auctionBid)
+        if let adRequest = adRequest {
+            self.adMetricReporter?.logAdResponse(ad: ad, adRequest: adRequest, errorCode: .ERROR_CODE_SUCCESS, errorMessage: nil)
+        }
     }
     
     public func getAdNetwork() -> MSPiOSCore.AdNetwork {
@@ -235,6 +240,9 @@ extension UnityAdapter: LPMBannerAdViewDelegate, LPMInterstitialAdDelegate {
         self.bannerView?.pauseAutoRefresh()
         MSPLogger.shared.info(message: "[Adapter: Unity] Failed to loaded Unity Banner ad")
         self.auctionBidListener?.onError(error: "fail to load ad")
+        if let adRequest = self.adRequest {
+            self.adMetricReporter?.logAdResponse(ad: nil, adRequest: adRequest, errorCode: .ERROR_CODE_INTERNAL_ERROR, errorMessage: error.localizedDescription)
+        }
     }
     
     public func didClickAd(with adInfo: LPMAdInfo) {
@@ -312,6 +320,9 @@ extension UnityAdapter: LevelPlayNativeAdDelegate {
         print(error.localizedDescription)
         MSPLogger.shared.info(message: "[Adapter: Unity] Failed to load Unity Native ad")
         self.auctionBidListener?.onError(error: "fail to load ad")
+        if let adRequest = self.adRequest {
+            self.adMetricReporter?.logAdResponse(ad: nil, adRequest: adRequest, errorCode: .ERROR_CODE_INTERNAL_ERROR, errorMessage: error.localizedDescription)
+        }
     }
     
     public func didRecordImpression(_ nativeAd: LevelPlayNativeAd, with adInfo: ISAdInfo) {

@@ -45,6 +45,7 @@ public class MSPAdLoader: NSObject {
         let mspAuction = MSPAuction(bidders: bidders, cacheOnly: false, timeout: timeout)
         self.mspAuction = mspAuction
         mspAuction.adRequest = adRequest
+        adRequest.requestStartTime = Date().timeIntervalSince1970
         mspAuction.startAuction(auctionListener: self, adListener: adListener)
     }
     
