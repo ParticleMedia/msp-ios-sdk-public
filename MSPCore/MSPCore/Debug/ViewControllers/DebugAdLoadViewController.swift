@@ -1,4 +1,5 @@
 import UIKit
+import MSPiOSCore
 import SnapKit
 import Combine
 
@@ -20,7 +21,7 @@ private enum UIConfig {
 }
 
 class DebugAdLoadViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
-    private let viewModel = DebugAdLoadViewModel(repository: TestDebugSectionsService())
+    private let viewModel = DebugAdLoadViewModel()
     private let tableView = UITableView(frame: .zero, style: .grouped)
     private let loadAdButton: UIButton = {
         let btn = UIButton(type: .system)
@@ -87,13 +88,7 @@ class DebugAdLoadViewController: UIViewController, UITableViewDataSource, UITabl
     }
     
     @objc private func loadAdButtonTapped() {
-        let result = viewModel.loadAd()
-        switch result {
-        case .success(let placementId):
-            print("Generated placement ID: \(placementId)")
-        case .failure(let error):
-            print("Error: \(error.localizedDescription)")
-        }
+        viewModel.loadAd()
     }
     
     private func bindViewModel() {
@@ -106,6 +101,36 @@ class DebugAdLoadViewController: UIViewController, UITableViewDataSource, UITabl
             .store(in: &cancellables)
         // Set initial value
         visibleSections = viewModel.sections.filter { $0.visible }
+
+        viewModel.toastSignalPublisher
+            .sink { [weak self] signal in
+                guard let self = self else { return }
+                let duration = signal.duration ?? 2.0
+                ToastManager.shared.dismiss()
+                ToastManager.shared.show(message: signal.message, style: signal.style, in: self.view, duration: duration)
+            }
+            .store(in: &cancellables)
+
+        viewModel.adPresentationPublisher
+            .sink { [weak self] signal in
+                guard let self = self else { return }
+                DispatchQueue.main.async {
+                    switch signal {
+                    case .native(let nativeAd):
+                        let container = DebugNativeAdContainer(frame: CGRect(x: 0, y: 0, width: 300, height: 250))
+                        let adView = NativeAdView(nativeAd: nativeAd, nativeAdContainer: container)
+                        let adVC = DebugAdContainerViewController(adView: adView, preferredSize: CGSize(width: 300, height: 250))
+                        self.navigationController?.pushViewController(adVC, animated: true)
+                    case .banner(let bannerAd):
+                        let adView = bannerAd.adView
+                        let adVC = DebugAdContainerViewController(adView: adView, preferredSize: CGSize(width: 320, height: 50))
+                        self.navigationController?.pushViewController(adVC, animated: true)
+                    case .interstitial(let interstitialAd):
+                        interstitialAd.show(rootViewController: self)
+                    }
+                }
+            }
+            .store(in: &cancellables)
     }
     
     // MARK: - UITableViewDataSource
