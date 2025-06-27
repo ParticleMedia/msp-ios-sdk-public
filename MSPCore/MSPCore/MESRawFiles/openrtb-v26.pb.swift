@@ -21,73 +21,35 @@ fileprivate struct _GeneratedWithProtocGenSwiftVersion: SwiftProtobuf.ProtobufAP
 }
 
 /// ***** OpenRTB Core enums ****************************************************
-enum Com_Google_Openrtb_AuctionType: SwiftProtobuf.Enum, Swift.CaseIterable {
-  typealias RawValue = Int
-  case firstPrice // = 1
-  case secondPrice // = 2
-  case fixedPrice // = 3
+enum Com_Google_Openrtb_AuctionType: Int, SwiftProtobuf.Enum, Swift.CaseIterable {
+  case firstPrice = 1
+  case secondPrice = 2
+  case fixedPrice = 3
 
   init() {
     self = .firstPrice
-  }
-
-  init?(rawValue: Int) {
-    switch rawValue {
-    case 1: self = .firstPrice
-    case 2: self = .secondPrice
-    case 3: self = .fixedPrice
-    default: return nil
-    }
-  }
-
-  var rawValue: Int {
-    switch self {
-    case .firstPrice: return 1
-    case .secondPrice: return 2
-    case .fixedPrice: return 3
-    }
   }
 
 }
 
 /// OpenRTB 2.0: types of ads that can be accepted by the exchange unless
 /// restricted by publisher site settings.
-enum Com_Google_Openrtb_BannerAdType: SwiftProtobuf.Enum, Swift.CaseIterable {
-  typealias RawValue = Int
+enum Com_Google_Openrtb_BannerAdType: Int, SwiftProtobuf.Enum, Swift.CaseIterable {
 
   /// "Usually mobile".
-  case xhtmlTextAd // = 1
+  case xhtmlTextAd = 1
 
   /// "Usually mobile".
-  case xhtmlBannerAd // = 2
+  case xhtmlBannerAd = 2
 
   /// Javascript must be valid XHTML (ie, script tags included).
-  case javascriptAd // = 3
+  case javascriptAd = 3
 
   /// Iframe.
-  case iframe // = 4
+  case iframe = 4
 
   init() {
     self = .xhtmlTextAd
-  }
-
-  init?(rawValue: Int) {
-    switch rawValue {
-    case 1: self = .xhtmlTextAd
-    case 2: self = .xhtmlBannerAd
-    case 3: self = .javascriptAd
-    case 4: self = .iframe
-    default: return nil
-    }
-  }
-
-  var rawValue: Int {
-    switch self {
-    case .xhtmlTextAd: return 1
-    case .xhtmlBannerAd: return 2
-    case .javascriptAd: return 3
-    case .iframe: return 4
-    }
   }
 
 }
@@ -95,94 +57,44 @@ enum Com_Google_Openrtb_BannerAdType: SwiftProtobuf.Enum, Swift.CaseIterable {
 /// OpenRTB 2.0: The following table specifies a standard list of creative
 /// attributes that can describe an ad being served or serve as restrictions
 /// of thereof.
-enum Com_Google_Openrtb_CreativeAttribute: SwiftProtobuf.Enum, Swift.CaseIterable {
-  typealias RawValue = Int
-  case audioAutoPlay // = 1
-  case audioUserInitiated // = 2
-  case expandableAutomatic // = 3
-  case expandableClickInitiated // = 4
-  case expandableRolloverInitiated // = 5
-  case videoInBannerAutoPlay // = 6
-  case videoInBannerUserInitiated // = 7
+enum Com_Google_Openrtb_CreativeAttribute: Int, SwiftProtobuf.Enum, Swift.CaseIterable {
+  case audioAutoPlay = 1
+  case audioUserInitiated = 2
+  case expandableAutomatic = 3
+  case expandableClickInitiated = 4
+  case expandableRolloverInitiated = 5
+  case videoInBannerAutoPlay = 6
+  case videoInBannerUserInitiated = 7
 
   /// Pop (for example, Over, Under, or upon Exit).
-  case pop // = 8
-  case provocativeOrSuggestive // = 9
+  case pop = 8
+  case provocativeOrSuggestive = 9
 
   /// Defined as "Shaky, Flashing, Flickering, Extreme Animation, Smileys".
-  case annoying // = 10
-  case surveys // = 11
-  case textOnly // = 12
+  case annoying = 10
+  case surveys = 11
+  case textOnly = 12
 
   /// For example, embedded games.
-  case userInteractive // = 13
-  case windowsDialogOrAlertStyle // = 14
-  case hasAudioOnOffButton // = 15
+  case userInteractive = 13
+  case windowsDialogOrAlertStyle = 14
+  case hasAudioOnOffButton = 15
 
   /// Ad provides skip button (for example, VPAID-rendered skip button
   /// on pre-roll video).
-  case adCanBeSkipped // = 16
+  case adCanBeSkipped = 16
 
   /// Adobe Flash
-  case flash // = 17
+  case flash = 17
 
   /// Responsive, sizeless and fluid. Dynamically resizes to environment.
-  case responsive // = 18
+  case responsive = 18
 
   /// Placeholders
-  case placeholderAttr53 // = 53
+  case placeholderAttr53 = 53
 
   init() {
     self = .audioAutoPlay
-  }
-
-  init?(rawValue: Int) {
-    switch rawValue {
-    case 1: self = .audioAutoPlay
-    case 2: self = .audioUserInitiated
-    case 3: self = .expandableAutomatic
-    case 4: self = .expandableClickInitiated
-    case 5: self = .expandableRolloverInitiated
-    case 6: self = .videoInBannerAutoPlay
-    case 7: self = .videoInBannerUserInitiated
-    case 8: self = .pop
-    case 9: self = .provocativeOrSuggestive
-    case 10: self = .annoying
-    case 11: self = .surveys
-    case 12: self = .textOnly
-    case 13: self = .userInteractive
-    case 14: self = .windowsDialogOrAlertStyle
-    case 15: self = .hasAudioOnOffButton
-    case 16: self = .adCanBeSkipped
-    case 17: self = .flash
-    case 18: self = .responsive
-    case 53: self = .placeholderAttr53
-    default: return nil
-    }
-  }
-
-  var rawValue: Int {
-    switch self {
-    case .audioAutoPlay: return 1
-    case .audioUserInitiated: return 2
-    case .expandableAutomatic: return 3
-    case .expandableClickInitiated: return 4
-    case .expandableRolloverInitiated: return 5
-    case .videoInBannerAutoPlay: return 6
-    case .videoInBannerUserInitiated: return 7
-    case .pop: return 8
-    case .provocativeOrSuggestive: return 9
-    case .annoying: return 10
-    case .surveys: return 11
-    case .textOnly: return 12
-    case .userInteractive: return 13
-    case .windowsDialogOrAlertStyle: return 14
-    case .hasAudioOnOffButton: return 15
-    case .adCanBeSkipped: return 16
-    case .flash: return 17
-    case .responsive: return 18
-    case .placeholderAttr53: return 53
-    }
   }
 
 }
@@ -193,76 +105,46 @@ enum Com_Google_Openrtb_CreativeAttribute: SwiftProtobuf.Enum, Swift.CaseIterabl
 /// MRAID capable APIs understand MRAID-2 features and as such the only
 /// safe interpretation of value "3" is MRAID-1. In OpenRTB 2.2, this was
 /// made explicit and MRAID-2 has been added as value "5".
-enum Com_Google_Openrtb_APIFramework: SwiftProtobuf.Enum, Swift.CaseIterable {
-  typealias RawValue = Int
+enum Com_Google_Openrtb_APIFramework: Int, SwiftProtobuf.Enum, Swift.CaseIterable {
 
   /// Video Player-Ad Interface Definition Version 1.0. See
   /// https://iabtechlab.com/wp-content/uploads/2016/03/VPAID_1.0_Final.pdf
-  case vpaid1 // = 1
+  case vpaid1 = 1
 
   /// Video Player-Ad Interface Definition Version 2.0. See
   /// https://iabtechlab.com/wp-content/uploads/2016/04/VPAID_2_0_Final_04-10-2012.pdf
-  case vpaid2 // = 2
+  case vpaid2 = 2
 
   /// Mobile Rich Media Ad Interface Definitions Version 1.0. See
   /// https://www.iab.com/guidelines/mraid/.
-  case mraid1 // = 3
+  case mraid1 = 3
 
   /// Open Rich Media Mobile Advertising. See
   /// https://code.google.com/archive/p/ormma/
-  case ormma // = 4
+  case ormma = 4
 
   /// Mobile Rich Media Ad Interface Definitions Version 2.0. See
   /// https://www.iab.com/guidelines/mraid/.
-  case mraid2 // = 5
+  case mraid2 = 5
 
   /// Mobile Rich Media Ad Interface Definitions Version 3.0. See
   /// https://www.iab.com/guidelines/mraid/.
-  case mraid3 // = 6
+  case mraid3 = 6
 
   /// Open Measurement Interface Definition Version 1.0. See
   /// https://iabtechlab.com/standards/open-measurement-sdk/.
-  case omid1 // = 7
+  case omid1 = 7
 
   /// Secure Interactive Media Interface Definition Version 1.0.
   /// See https://iabtechlab.com/simid/.
-  case simid10 // = 8
+  case simid10 = 8
 
   /// Secure Interactive Media Interface Definition Version 1.1.
   /// See https://iabtechlab.com/simid/.
-  case simid11 // = 9
+  case simid11 = 9
 
   init() {
     self = .vpaid1
-  }
-
-  init?(rawValue: Int) {
-    switch rawValue {
-    case 1: self = .vpaid1
-    case 2: self = .vpaid2
-    case 3: self = .mraid1
-    case 4: self = .ormma
-    case 5: self = .mraid2
-    case 6: self = .mraid3
-    case 7: self = .omid1
-    case 8: self = .simid10
-    case 9: self = .simid11
-    default: return nil
-    }
-  }
-
-  var rawValue: Int {
-    switch self {
-    case .vpaid1: return 1
-    case .vpaid2: return 2
-    case .mraid1: return 3
-    case .ormma: return 4
-    case .mraid2: return 5
-    case .mraid3: return 6
-    case .omid1: return 7
-    case .simid10: return 8
-    case .simid11: return 9
-    }
   }
 
 }
@@ -274,54 +156,26 @@ enum Com_Google_Openrtb_APIFramework: SwiftProtobuf.Enum, Swift.CaseIterable {
 /// Guidelines (QAG). Practitioners should keep in sync with updates to the
 /// QAG values as published on IAB.net. Values "3" - "6" apply to apps
 /// per the mobile addendum to QAG version 1.5.
-enum Com_Google_Openrtb_AdPosition: SwiftProtobuf.Enum, Swift.CaseIterable {
-  typealias RawValue = Int
-  case unknown // = 0
-  case aboveTheFold // = 1
+enum Com_Google_Openrtb_AdPosition: Int, SwiftProtobuf.Enum, Swift.CaseIterable {
+  case unknown = 0
+  case aboveTheFold = 1
 
   /// Fixed position.
-  case locked // = 2
-  case belowTheFold // = 3
+  case locked = 2
+  case belowTheFold = 3
 
   /// Horizontal slot that sticks on the top of the screen when user scrolls.
-  case header // = 4
+  case header = 4
 
   /// Horizontal slot that sticks on the bottom of the screen when user scrolls.
-  case footer // = 5
+  case footer = 5
 
   /// Sidebar that sticks on screen when user scrolls.
-  case sidebar // = 6
-  case fullscreen // = 7
+  case sidebar = 6
+  case fullscreen = 7
 
   init() {
     self = .unknown
-  }
-
-  init?(rawValue: Int) {
-    switch rawValue {
-    case 0: self = .unknown
-    case 1: self = .aboveTheFold
-    case 2: self = .locked
-    case 3: self = .belowTheFold
-    case 4: self = .header
-    case 5: self = .footer
-    case 6: self = .sidebar
-    case 7: self = .fullscreen
-    default: return nil
-    }
-  }
-
-  var rawValue: Int {
-    switch self {
-    case .unknown: return 0
-    case .aboveTheFold: return 1
-    case .locked: return 2
-    case .belowTheFold: return 3
-    case .header: return 4
-    case .footer: return 5
-    case .sidebar: return 6
-    case .fullscreen: return 7
-    }
   }
 
 }
@@ -342,155 +196,73 @@ enum Com_Google_Openrtb_AdPosition: SwiftProtobuf.Enum, Swift.CaseIterable {
 /// This OpenRTB table has values derived from the IAB Quality Assurance
 /// Guidelines (QAG). Practitioners should keep in sync with updates to the
 /// QAG values as published on IAB.net.
-enum Com_Google_Openrtb_VideoLinearity: SwiftProtobuf.Enum, Swift.CaseIterable {
-  typealias RawValue = Int
+enum Com_Google_Openrtb_VideoLinearity: Int, SwiftProtobuf.Enum, Swift.CaseIterable {
 
   /// Linear/In-stream
-  case linear // = 1
+  case linear = 1
 
   /// Non-linear/Overlay
-  case nonLinear // = 2
+  case nonLinear = 2
 
   init() {
     self = .linear
-  }
-
-  init?(rawValue: Int) {
-    switch rawValue {
-    case 1: self = .linear
-    case 2: self = .nonLinear
-    default: return nil
-    }
-  }
-
-  var rawValue: Int {
-    switch self {
-    case .linear: return 1
-    case .nonLinear: return 2
-    }
   }
 
 }
 
 /// OpenRTB 2.0: The following table lists the options for the various
 /// bid response protocols that could be supported by an exchange.
-enum Com_Google_Openrtb_Protocol: SwiftProtobuf.Enum, Swift.CaseIterable {
-  typealias RawValue = Int
-  case vast10 // = 1
-  case vast20 // = 2
-  case vast30 // = 3
-  case vast10Wrapper // = 4
-  case vast20Wrapper // = 5
-  case vast30Wrapper // = 6
-  case vast40 // = 7
-  case vast40Wrapper // = 8
-  case daast10 // = 9
-  case daast10Wrapper // = 10
-  case vast41 // = 11
-  case vast41Wrapper // = 12
-  case vast42 // = 13
-  case vast42Wrapper // = 14
+enum Com_Google_Openrtb_Protocol: Int, SwiftProtobuf.Enum, Swift.CaseIterable {
+  case vast10 = 1
+  case vast20 = 2
+  case vast30 = 3
+  case vast10Wrapper = 4
+  case vast20Wrapper = 5
+  case vast30Wrapper = 6
+  case vast40 = 7
+  case vast40Wrapper = 8
+  case daast10 = 9
+  case daast10Wrapper = 10
+  case vast41 = 11
+  case vast41Wrapper = 12
+  case vast42 = 13
+  case vast42Wrapper = 14
 
   init() {
     self = .vast10
   }
 
-  init?(rawValue: Int) {
-    switch rawValue {
-    case 1: self = .vast10
-    case 2: self = .vast20
-    case 3: self = .vast30
-    case 4: self = .vast10Wrapper
-    case 5: self = .vast20Wrapper
-    case 6: self = .vast30Wrapper
-    case 7: self = .vast40
-    case 8: self = .vast40Wrapper
-    case 9: self = .daast10
-    case 10: self = .daast10Wrapper
-    case 11: self = .vast41
-    case 12: self = .vast41Wrapper
-    case 13: self = .vast42
-    case 14: self = .vast42Wrapper
-    default: return nil
-    }
-  }
-
-  var rawValue: Int {
-    switch self {
-    case .vast10: return 1
-    case .vast20: return 2
-    case .vast30: return 3
-    case .vast10Wrapper: return 4
-    case .vast20Wrapper: return 5
-    case .vast30Wrapper: return 6
-    case .vast40: return 7
-    case .vast40Wrapper: return 8
-    case .daast10: return 9
-    case .daast10Wrapper: return 10
-    case .vast41: return 11
-    case .vast41Wrapper: return 12
-    case .vast42: return 13
-    case .vast42Wrapper: return 14
-    }
-  }
-
 }
 
 /// OpenRTB 2.0: The following table lists the various playback methods.
-enum Com_Google_Openrtb_PlaybackMethod: SwiftProtobuf.Enum, Swift.CaseIterable {
-  typealias RawValue = Int
+enum Com_Google_Openrtb_PlaybackMethod: Int, SwiftProtobuf.Enum, Swift.CaseIterable {
 
   /// Initiates on Page Load with Sound On.
-  case autoPlaySoundOn // = 1
+  case autoPlaySoundOn = 1
 
   /// Initiates on Page Load with Sound Off by Default.
-  case autoPlaySoundOff // = 2
+  case autoPlaySoundOff = 2
 
   /// Initiates on Click with Sound On.
-  case clickToPlay // = 3
+  case clickToPlay = 3
 
   /// Initiates on Mouse-Over with Sound On.
-  case mouseOver // = 4
+  case mouseOver = 4
 
   /// Initiates on Entering Viewport with Sound On.
-  case enterSoundOn // = 5
+  case enterSoundOn = 5
 
   /// Initiates on Entering Viewport with Sound Off by Default.
-  case enterSoundOff // = 6
+  case enterSoundOff = 6
 
   /// Media playback is set to play additional media automatically without
   /// user interaction. The media player will keep playing additional media
   /// (playlist or generated) for the user until the user actively stops this
   /// from happening.
-  case continuous // = 7
+  case continuous = 7
 
   init() {
     self = .autoPlaySoundOn
-  }
-
-  init?(rawValue: Int) {
-    switch rawValue {
-    case 1: self = .autoPlaySoundOn
-    case 2: self = .autoPlaySoundOff
-    case 3: self = .clickToPlay
-    case 4: self = .mouseOver
-    case 5: self = .enterSoundOn
-    case 6: self = .enterSoundOff
-    case 7: self = .continuous
-    default: return nil
-    }
-  }
-
-  var rawValue: Int {
-    switch self {
-    case .autoPlaySoundOn: return 1
-    case .autoPlaySoundOff: return 2
-    case .clickToPlay: return 3
-    case .mouseOver: return 4
-    case .enterSoundOn: return 5
-    case .enterSoundOff: return 6
-    case .continuous: return 7
-    }
   }
 
 }
@@ -498,62 +270,43 @@ enum Com_Google_Openrtb_PlaybackMethod: SwiftProtobuf.Enum, Swift.CaseIterable {
 /// OpenRTB 2.0: The following table lists the various options for the
 /// audio/video start delay. If the start delay value is greater than 0,
 /// then the position is mid-roll and the value indicates the start delay.
-enum Com_Google_Openrtb_StartDelay: SwiftProtobuf.Enum, Swift.CaseIterable {
-  typealias RawValue = Int
-  case preRoll // = 0
-  case genericMidRoll // = -1
-  case genericPostRoll // = -2
+enum Com_Google_Openrtb_StartDelay: Int, SwiftProtobuf.Enum, Swift.CaseIterable {
+  case preRoll = 0
+  case genericMidRoll = -1
+  case genericPostRoll = -2
 
   init() {
     self = .preRoll
-  }
-
-  init?(rawValue: Int) {
-    switch rawValue {
-    case -2: self = .genericPostRoll
-    case -1: self = .genericMidRoll
-    case 0: self = .preRoll
-    default: return nil
-    }
-  }
-
-  var rawValue: Int {
-    switch self {
-    case .genericPostRoll: return -2
-    case .genericMidRoll: return -1
-    case .preRoll: return 0
-    }
   }
 
 }
 
 /// OpenRTB 2.5: The following table lists the various types of video placements
 /// derived largely from the IAB Digital Video Guidelines.
-enum Com_Google_Openrtb_VideoPlacementType: SwiftProtobuf.Enum, Swift.CaseIterable {
-  typealias RawValue = Int
+enum Com_Google_Openrtb_VideoPlacementType: Int, SwiftProtobuf.Enum, Swift.CaseIterable {
 
   /// The video placement is not defined.
   /// Default value.
-  case undefinedVideoPlacement // = 0
+  case undefinedVideoPlacement = 0
 
   /// Played before, during or after the streaming video content
   /// that the consumer has requested.
   /// For example: Pre-roll, Mid-roll, Post-roll.
-  case inStreamPlacement // = 1
+  case inStreamPlacement = 1
 
   /// Exists within a web banner that leverages the banner space
   /// to deliver a video experience as opposed to another static
   /// or rich media format.
   /// The format relies on the existence of display ad inventory
   /// on the page for its delivery.
-  case inBannerPlacement // = 2
+  case inBannerPlacement = 2
 
   /// Loads and plays dynamically between paragraphs of editorial content;
   /// existing as a standalone branded message.
-  case inArticlePlacement // = 3
+  case inArticlePlacement = 3
 
   /// In-Feed - Found in content, social, or product feeds.
-  case inFeedPlacement // = 4
+  case inFeedPlacement = 4
 
   /// Interstitial/Slider/Floating.
   /// Covers the entire or a portion of screen area,
@@ -561,42 +314,18 @@ enum Com_Google_Openrtb_VideoPlacementType: SwiftProtobuf.Enum, Swift.CaseIterab
   /// (for example, cannot be scrolled out of view).
   /// Note that a full-screen interstitial (for example, in mobile)
   /// can be distinguished from a floating/slider unit by the imp.instl field.
-  case floatingPlacement // = 5
+  case floatingPlacement = 5
 
   init() {
     self = .undefinedVideoPlacement
-  }
-
-  init?(rawValue: Int) {
-    switch rawValue {
-    case 0: self = .undefinedVideoPlacement
-    case 1: self = .inStreamPlacement
-    case 2: self = .inBannerPlacement
-    case 3: self = .inArticlePlacement
-    case 4: self = .inFeedPlacement
-    case 5: self = .floatingPlacement
-    default: return nil
-    }
-  }
-
-  var rawValue: Int {
-    switch self {
-    case .undefinedVideoPlacement: return 0
-    case .inStreamPlacement: return 1
-    case .inBannerPlacement: return 2
-    case .inArticlePlacement: return 3
-    case .inFeedPlacement: return 4
-    case .floatingPlacement: return 5
-    }
   }
 
 }
 
 /// Possible video placement types. See:
 /// https://github.com/InteractiveAdvertisingBureau/AdCOM/blob/master/AdCOM%20v1.0%20FINAL.md#list--plcmt-subtypes---video-
-enum Com_Google_Openrtb_Plcmt: SwiftProtobuf.Enum, Swift.CaseIterable {
-  typealias RawValue = Int
-  case unknown // = 0
+enum Com_Google_Openrtb_Plcmt: Int, SwiftProtobuf.Enum, Swift.CaseIterable {
+  case unknown = 0
 
   /// Pre-roll, mid-roll, and post-roll ads that are played before, during or
   /// after the streaming video content that the consumer has requested. Instream
@@ -607,7 +336,7 @@ enum Com_Google_Openrtb_Plcmt: SwiftProtobuf.Enum, Swift.CaseIterable {
   /// the only video player in-view capable of audio when playing. If the player
   /// converts to floating/sticky, subsequent ad calls should accurately convey
   /// the updated player size.
-  case instream // = 1
+  case instream = 1
 
   /// Pre-roll, mid-roll, and post-roll ads that are played before, during, or
   /// after streaming video content. The video player loads and plays before,
@@ -615,216 +344,111 @@ enum Com_Google_Openrtb_Plcmt: SwiftProtobuf.Enum, Swift.CaseIterable {
   /// playing only when it enters the viewport. Accompanying content should only
   /// start playback upon entering the viewport. It may convert to a
   /// floating/sticky player as it scrolls off the page.
-  case accompanyingContent // = 2
+  case accompanyingContent = 2
 
   /// Video ads that are played without video content. During playback, it must
   /// be the primary focus of the page and take up the majority of the viewport
   /// and cannot be scrolled out of view. This can be in placements like in-app
   /// video or slideshows.
-  case interstitial // = 3
+  case interstitial = 3
 
   /// Video ads that are played without streaming video content. This can be in
   /// placements like slideshows, native feeds, in-content or sticky/floating.
-  case noContentStandalone // = 4
+  case noContentStandalone = 4
 
   init() {
     self = .unknown
   }
 
-  init?(rawValue: Int) {
-    switch rawValue {
-    case 0: self = .unknown
-    case 1: self = .instream
-    case 2: self = .accompanyingContent
-    case 3: self = .interstitial
-    case 4: self = .noContentStandalone
-    default: return nil
-    }
-  }
-
-  var rawValue: Int {
-    switch self {
-    case .unknown: return 0
-    case .instream: return 1
-    case .accompanyingContent: return 2
-    case .interstitial: return 3
-    case .noContentStandalone: return 4
-    }
-  }
-
 }
 
 /// OpenRTB 2.5: The various modes for when playback terminates.
-enum Com_Google_Openrtb_PlaybackCessationMode: SwiftProtobuf.Enum, Swift.CaseIterable {
-  typealias RawValue = Int
+enum Com_Google_Openrtb_PlaybackCessationMode: Int, SwiftProtobuf.Enum, Swift.CaseIterable {
 
   /// On Video Completion or when Terminated by User
-  case completionOrUser // = 1
+  case completionOrUser = 1
 
   /// On Leaving Viewport or when Terminated by User
-  case leavingOrUser // = 2
+  case leavingOrUser = 2
 
   /// On Leaving Viewport Continues as a Floating/Slider Unit until
   /// Video Completion or when Terminated by User
-  case leavingContinuesOrUser // = 3
+  case leavingContinuesOrUser = 3
 
   init() {
     self = .completionOrUser
   }
 
-  init?(rawValue: Int) {
-    switch rawValue {
-    case 1: self = .completionOrUser
-    case 2: self = .leavingOrUser
-    case 3: self = .leavingContinuesOrUser
-    default: return nil
-    }
-  }
-
-  var rawValue: Int {
-    switch self {
-    case .completionOrUser: return 1
-    case .leavingOrUser: return 2
-    case .leavingContinuesOrUser: return 3
-    }
-  }
-
 }
 
 /// OpenRTB 2.6: Slot Position in Pod.
-enum Com_Google_Openrtb_SlotPositionInPod: SwiftProtobuf.Enum, Swift.CaseIterable {
-  typealias RawValue = Int
+enum Com_Google_Openrtb_SlotPositionInPod: Int, SwiftProtobuf.Enum, Swift.CaseIterable {
 
   /// Any position in the pod.
-  case slotPositionPodAny // = 0
+  case slotPositionPodAny = 0
 
   /// Last position in the pod.
-  case slotPositionPodLast // = -1
+  case slotPositionPodLast = -1
 
   /// First position in the pod.
-  case slotPositionPodFirst // = 1
+  case slotPositionPodFirst = 1
 
   /// First or last position in the pod.
-  case slotPositionPodFirstOrLast // = 2
+  case slotPositionPodFirstOrLast = 2
 
   init() {
     self = .slotPositionPodAny
-  }
-
-  init?(rawValue: Int) {
-    switch rawValue {
-    case -1: self = .slotPositionPodLast
-    case 0: self = .slotPositionPodAny
-    case 1: self = .slotPositionPodFirst
-    case 2: self = .slotPositionPodFirstOrLast
-    default: return nil
-    }
-  }
-
-  var rawValue: Int {
-    switch self {
-    case .slotPositionPodLast: return -1
-    case .slotPositionPodAny: return 0
-    case .slotPositionPodFirst: return 1
-    case .slotPositionPodFirstOrLast: return 2
-    }
   }
 
 }
 
 /// OpenRTB 2.6: The values for the pod sequence field, for use in audio and
 /// video content streams with one or more ad pods.
-enum Com_Google_Openrtb_PodSequence: SwiftProtobuf.Enum, Swift.CaseIterable {
-  typealias RawValue = Int
+enum Com_Google_Openrtb_PodSequence: Int, SwiftProtobuf.Enum, Swift.CaseIterable {
 
   /// Any pod in the content stream
-  case any // = 0
+  case any = 0
 
   /// Last pod in the content stream
-  case last // = -1
+  case last = -1
 
   /// First pod in the content stream
-  case first // = 1
+  case first = 1
 
   init() {
     self = .any
-  }
-
-  init?(rawValue: Int) {
-    switch rawValue {
-    case -1: self = .last
-    case 0: self = .any
-    case 1: self = .first
-    default: return nil
-    }
-  }
-
-  var rawValue: Int {
-    switch self {
-    case .last: return -1
-    case .any: return 0
-    case .first: return 1
-    }
   }
 
 }
 
 /// OpenRTB 2.0: The following table lists the various options for the
 /// type of device connectivity.
-enum Com_Google_Openrtb_ConnectionType: SwiftProtobuf.Enum, Swift.CaseIterable {
-  typealias RawValue = Int
-  case connectionUnknown // = 0
+enum Com_Google_Openrtb_ConnectionType: Int, SwiftProtobuf.Enum, Swift.CaseIterable {
+  case connectionUnknown = 0
 
   /// Ethernet; Wired Connection
-  case ethernet // = 1
+  case ethernet = 1
 
   /// WiFi
-  case wifi // = 2
+  case wifi = 2
 
   /// Mobile Network - Unknown Generation
-  case cellUnknown // = 3
+  case cellUnknown = 3
 
   /// Mobile Network - 2G
-  case cell2G // = 4
+  case cell2G = 4
 
   /// Mobile Network - 3G
-  case cell3G // = 5
+  case cell3G = 5
 
   /// Mobile Network - 4G
-  case cell4G // = 6
+  case cell4G = 6
 
   /// Mobile Network - 5G
-  case cell5G // = 7
+  case cell5G = 7
 
   init() {
     self = .connectionUnknown
-  }
-
-  init?(rawValue: Int) {
-    switch rawValue {
-    case 0: self = .connectionUnknown
-    case 1: self = .ethernet
-    case 2: self = .wifi
-    case 3: self = .cellUnknown
-    case 4: self = .cell2G
-    case 5: self = .cell3G
-    case 6: self = .cell4G
-    case 7: self = .cell5G
-    default: return nil
-    }
-  }
-
-  var rawValue: Int {
-    switch self {
-    case .connectionUnknown: return 0
-    case .ethernet: return 1
-    case .wifi: return 2
-    case .cellUnknown: return 3
-    case .cell2G: return 4
-    case .cell3G: return 5
-    case .cell4G: return 6
-    case .cell5G: return 7
-    }
   }
 
 }
@@ -832,42 +456,18 @@ enum Com_Google_Openrtb_ConnectionType: SwiftProtobuf.Enum, Swift.CaseIterable {
 /// OpenRTB 2.0: The following table lists the directions in which an
 /// expandable ad may expand, given the positioning of the ad unit on the
 /// page and constraints imposed by the content.
-enum Com_Google_Openrtb_ExpandableDirection: SwiftProtobuf.Enum, Swift.CaseIterable {
-  typealias RawValue = Int
-  case left // = 1
-  case right // = 2
-  case up // = 3
-  case down // = 4
-  case expandableFullscreen // = 5
+enum Com_Google_Openrtb_ExpandableDirection: Int, SwiftProtobuf.Enum, Swift.CaseIterable {
+  case left = 1
+  case right = 2
+  case up = 3
+  case down = 4
+  case expandableFullscreen = 5
 
   /// Resize/Minimize (make smaller).
-  case resizeMinimize // = 6
+  case resizeMinimize = 6
 
   init() {
     self = .left
-  }
-
-  init?(rawValue: Int) {
-    switch rawValue {
-    case 1: self = .left
-    case 2: self = .right
-    case 3: self = .up
-    case 4: self = .down
-    case 5: self = .expandableFullscreen
-    case 6: self = .resizeMinimize
-    default: return nil
-    }
-  }
-
-  var rawValue: Int {
-    switch self {
-    case .left: return 1
-    case .right: return 2
-    case .up: return 3
-    case .down: return 4
-    case .expandableFullscreen: return 5
-    case .resizeMinimize: return 6
-    }
   }
 
 }
@@ -875,41 +475,23 @@ enum Com_Google_Openrtb_ExpandableDirection: SwiftProtobuf.Enum, Swift.CaseItera
 /// OpenRTB 2.0: The following table lists the various options for the
 /// delivery of video content. These values are defined by the IAB -
 /// https://github.com/InteractiveAdvertisingBureau/AdCOM/blob/main/AdCOM%20v1.0%20FINAL.md#list--delivery-methods-.
-enum Com_Google_Openrtb_ContentDeliveryMethod: SwiftProtobuf.Enum, Swift.CaseIterable {
-  typealias RawValue = Int
+enum Com_Google_Openrtb_ContentDeliveryMethod: Int, SwiftProtobuf.Enum, Swift.CaseIterable {
 
   /// Content is transferred continuously by the network; clients receive
   /// real-time content for playback while connected. Example: broadcast TV.
-  case streaming // = 1
+  case streaming = 1
 
   /// Content is transferred incrementally as client's playback requires.
   /// Example: on-demand movies, podcasts, or music.
-  case progressive // = 2
+  case progressive = 2
 
   /// Content should be transferred completely prior to use/playback.
   /// Example: content downloaded to the user's device for offline
   /// consumption.
-  case download // = 3
+  case download = 3
 
   init() {
     self = .streaming
-  }
-
-  init?(rawValue: Int) {
-    switch rawValue {
-    case 1: self = .streaming
-    case 2: self = .progressive
-    case 3: self = .download
-    default: return nil
-    }
-  }
-
-  var rawValue: Int {
-    switch self {
-    case .streaming: return 1
-    case .progressive: return 2
-    case .download: return 3
-    }
   }
 
 }
@@ -920,43 +502,17 @@ enum Com_Google_Openrtb_ContentDeliveryMethod: SwiftProtobuf.Enum, Swift.CaseIte
 /// This OpenRTB table has values derived from the IAB Quality Assurance
 /// Guidelines (QAG). Practitioners should keep in sync with updates to the
 /// QAG values as published on IAB.net.
-enum Com_Google_Openrtb_ContentContext: SwiftProtobuf.Enum, Swift.CaseIterable {
-  typealias RawValue = Int
-  case video // = 1
-  case game // = 2
-  case music // = 3
-  case application // = 4
-  case text // = 5
-  case other // = 6
-  case contextUnknown // = 7
+enum Com_Google_Openrtb_ContentContext: Int, SwiftProtobuf.Enum, Swift.CaseIterable {
+  case video = 1
+  case game = 2
+  case music = 3
+  case application = 4
+  case text = 5
+  case other = 6
+  case contextUnknown = 7
 
   init() {
     self = .video
-  }
-
-  init?(rawValue: Int) {
-    switch rawValue {
-    case 1: self = .video
-    case 2: self = .game
-    case 3: self = .music
-    case 4: self = .application
-    case 5: self = .text
-    case 6: self = .other
-    case 7: self = .contextUnknown
-    default: return nil
-    }
-  }
-
-  var rawValue: Int {
-    switch self {
-    case .video: return 1
-    case .game: return 2
-    case .music: return 3
-    case .application: return 4
-    case .text: return 5
-    case .other: return 6
-    case .contextUnknown: return 7
-    }
   }
 
 }
@@ -964,116 +520,58 @@ enum Com_Google_Openrtb_ContentContext: SwiftProtobuf.Enum, Swift.CaseIterable {
 /// OpenRTB 2.0: The following table lists the options for content quality.
 /// These values are defined by the IAB -
 /// https://github.com/InteractiveAdvertisingBureau/AdCOM/blob/main/AdCOM%20v1.0%20FINAL.md#list--production-qualities-.
-enum Com_Google_Openrtb_ProductionQuality: SwiftProtobuf.Enum, Swift.CaseIterable {
-  typealias RawValue = Int
-  case qualityUnknown // = 0
+enum Com_Google_Openrtb_ProductionQuality: Int, SwiftProtobuf.Enum, Swift.CaseIterable {
+  case qualityUnknown = 0
 
   /// Content that is usually created or produced by media and entertainment
   /// companies using professional-grade equipment, talent, and production
   /// crews that hold or maintain the rights for distribution and syndication.
-  case professional // = 1
+  case professional = 1
 
   /// Consumer or user-generated content that has professional or industrial
   /// qualities (e.g. shot with professional-grade equipment, using
   /// professional talent, etc.).
-  case prosumer // = 2
+  case prosumer = 2
 
   /// Publicly available video content that is created or produced by
   /// end users.
-  case userGenerated // = 3
+  case userGenerated = 3
 
   init() {
     self = .qualityUnknown
-  }
-
-  init?(rawValue: Int) {
-    switch rawValue {
-    case 0: self = .qualityUnknown
-    case 1: self = .professional
-    case 2: self = .prosumer
-    case 3: self = .userGenerated
-    default: return nil
-    }
-  }
-
-  var rawValue: Int {
-    switch self {
-    case .qualityUnknown: return 0
-    case .professional: return 1
-    case .prosumer: return 2
-    case .userGenerated: return 3
-    }
   }
 
 }
 
 /// OpenRTB 2.0: The following table lists the options to indicate how the
 /// geographic information was determined.
-enum Com_Google_Openrtb_LocationType: SwiftProtobuf.Enum, Swift.CaseIterable {
-  typealias RawValue = Int
+enum Com_Google_Openrtb_LocationType: Int, SwiftProtobuf.Enum, Swift.CaseIterable {
 
   /// GPS / Location Services.
-  case gpsLocation // = 1
+  case gpsLocation = 1
 
   /// IP Geolocation.
-  case ip // = 2
+  case ip = 2
 
   /// User-provided, for example, registration data.
-  case userProvided // = 3
+  case userProvided = 3
 
   init() {
     self = .gpsLocation
-  }
-
-  init?(rawValue: Int) {
-    switch rawValue {
-    case 1: self = .gpsLocation
-    case 2: self = .ip
-    case 3: self = .userProvided
-    default: return nil
-    }
-  }
-
-  var rawValue: Int {
-    switch self {
-    case .gpsLocation: return 1
-    case .ip: return 2
-    case .userProvided: return 3
-    }
   }
 
 }
 
 /// OpenRTB 2.4: The following table lists the services and/or vendors used for
 /// resolving IP addresses to geolocations.
-enum Com_Google_Openrtb_LocationService: SwiftProtobuf.Enum, Swift.CaseIterable {
-  typealias RawValue = Int
-  case ip2Location // = 1
-  case neustar // = 2
-  case maxmind // = 3
-  case netacuity // = 4
+enum Com_Google_Openrtb_LocationService: Int, SwiftProtobuf.Enum, Swift.CaseIterable {
+  case ip2Location = 1
+  case neustar = 2
+  case maxmind = 3
+  case netacuity = 4
 
   init() {
     self = .ip2Location
-  }
-
-  init?(rawValue: Int) {
-    switch rawValue {
-    case 1: self = .ip2Location
-    case 2: self = .neustar
-    case 3: self = .maxmind
-    case 4: self = .netacuity
-    default: return nil
-    }
-  }
-
-  var rawValue: Int {
-    switch self {
-    case .ip2Location: return 1
-    case .neustar: return 2
-    case .maxmind: return 3
-    case .netacuity: return 4
-    }
   }
 
 }
@@ -1088,62 +586,34 @@ enum Com_Google_Openrtb_LocationService: SwiftProtobuf.Enum, Swift.CaseIterable 
 /// This OpenRTB table has values derived from the IAB Quality Assurance
 /// Guidelines (QAG). Practitioners should keep in sync with updates to the
 /// QAG values as published on IAB.net.
-enum Com_Google_Openrtb_DeviceType: SwiftProtobuf.Enum, Swift.CaseIterable {
-  typealias RawValue = Int
+enum Com_Google_Openrtb_DeviceType: Int, SwiftProtobuf.Enum, Swift.CaseIterable {
 
   /// Mobile (OpenRTB 2.2+: obsolete, alias for PHONE or TABLET).
-  case mobile // = 1
+  case mobile = 1
 
   /// Personal Computer.
-  case personalComputer // = 2
+  case personalComputer = 2
 
   /// Connected TV.
-  case connectedTv // = 3
+  case connectedTv = 3
 
   /// Phone.
-  case highendPhone // = 4
+  case highendPhone = 4
 
   /// Tablet.
-  case tablet // = 5
+  case tablet = 5
 
   /// Connected device.
-  case connectedDevice // = 6
+  case connectedDevice = 6
 
   /// Set top box.
-  case setTopBox // = 7
+  case setTopBox = 7
 
   /// Out-of-home advertising, for example digital billboards.
-  case oohDevice // = 8
+  case oohDevice = 8
 
   init() {
     self = .mobile
-  }
-
-  init?(rawValue: Int) {
-    switch rawValue {
-    case 1: self = .mobile
-    case 2: self = .personalComputer
-    case 3: self = .connectedTv
-    case 4: self = .highendPhone
-    case 5: self = .tablet
-    case 6: self = .connectedDevice
-    case 7: self = .setTopBox
-    case 8: self = .oohDevice
-    default: return nil
-    }
-  }
-
-  var rawValue: Int {
-    switch self {
-    case .mobile: return 1
-    case .personalComputer: return 2
-    case .connectedTv: return 3
-    case .highendPhone: return 4
-    case .tablet: return 5
-    case .connectedDevice: return 6
-    case .setTopBox: return 7
-    case .oohDevice: return 8
-    }
   }
 
 }
@@ -1151,31 +621,13 @@ enum Com_Google_Openrtb_DeviceType: SwiftProtobuf.Enum, Swift.CaseIterable {
 /// OpenRTB 2.1: The following table lists the options for the
 /// video quality. These values are defined by the IAB -
 /// http://www.iab.net/media/file/long-form-video-final.pdf.
-enum Com_Google_Openrtb_CompanionType: SwiftProtobuf.Enum, Swift.CaseIterable {
-  typealias RawValue = Int
-  case `static` // = 1
-  case html // = 2
-  case companionIframe // = 3
+enum Com_Google_Openrtb_CompanionType: Int, SwiftProtobuf.Enum, Swift.CaseIterable {
+  case `static` = 1
+  case html = 2
+  case companionIframe = 3
 
   init() {
     self = .static
-  }
-
-  init?(rawValue: Int) {
-    switch rawValue {
-    case 1: self = .static
-    case 2: self = .html
-    case 3: self = .companionIframe
-    default: return nil
-    }
-  }
-
-  var rawValue: Int {
-    switch self {
-    case .static: return 1
-    case .html: return 2
-    case .companionIframe: return 3
-    }
   }
 
 }
@@ -1183,198 +635,74 @@ enum Com_Google_Openrtb_CompanionType: SwiftProtobuf.Enum, Swift.CaseIterable {
 /// OpenRTB 2.1: The following table lists the media ratings used in
 /// describing content based on the QAG categorization.
 /// Refer to http://www.iab.net/ne_guidelines for more information.
-enum Com_Google_Openrtb_QAGMediaRating: SwiftProtobuf.Enum, Swift.CaseIterable {
-  typealias RawValue = Int
-  case allAudiences // = 1
-  case everyoneOver12 // = 2
-  case mature // = 3
+enum Com_Google_Openrtb_QAGMediaRating: Int, SwiftProtobuf.Enum, Swift.CaseIterable {
+  case allAudiences = 1
+  case everyoneOver12 = 2
+  case mature = 3
 
   init() {
     self = .allAudiences
-  }
-
-  init?(rawValue: Int) {
-    switch rawValue {
-    case 1: self = .allAudiences
-    case 2: self = .everyoneOver12
-    case 3: self = .mature
-    default: return nil
-    }
-  }
-
-  var rawValue: Int {
-    switch self {
-    case .allAudiences: return 1
-    case .everyoneOver12: return 2
-    case .mature: return 3
-    }
   }
 
 }
 
 /// OpenRTB 2.2: The following table lists the options for a bidder to signal
 /// the exchange as to why it did not offer a bid for the impression.
-enum Com_Google_Openrtb_NoBidReason: SwiftProtobuf.Enum, Swift.CaseIterable {
-  typealias RawValue = Int
-  case unknownError // = 0
-  case technicalError // = 1
-  case invalidRequest // = 2
-  case knownWebSpider // = 3
-  case suspectedNonhumanTraffic // = 4
-  case cloudDatacenterProxyip // = 5
-  case unsupportedDevice // = 6
-  case blockedPublisher // = 7
-  case unmatchedUser // = 8
-  case dailyReaderCap // = 9
-  case dailyDomainCap // = 10
+enum Com_Google_Openrtb_NoBidReason: Int, SwiftProtobuf.Enum, Swift.CaseIterable {
+  case unknownError = 0
+  case technicalError = 1
+  case invalidRequest = 2
+  case knownWebSpider = 3
+  case suspectedNonhumanTraffic = 4
+  case cloudDatacenterProxyip = 5
+  case unsupportedDevice = 6
+  case blockedPublisher = 7
+  case unmatchedUser = 8
+  case dailyReaderCap = 9
+  case dailyDomainCap = 10
 
   init() {
     self = .unknownError
-  }
-
-  init?(rawValue: Int) {
-    switch rawValue {
-    case 0: self = .unknownError
-    case 1: self = .technicalError
-    case 2: self = .invalidRequest
-    case 3: self = .knownWebSpider
-    case 4: self = .suspectedNonhumanTraffic
-    case 5: self = .cloudDatacenterProxyip
-    case 6: self = .unsupportedDevice
-    case 7: self = .blockedPublisher
-    case 8: self = .unmatchedUser
-    case 9: self = .dailyReaderCap
-    case 10: self = .dailyDomainCap
-    default: return nil
-    }
-  }
-
-  var rawValue: Int {
-    switch self {
-    case .unknownError: return 0
-    case .technicalError: return 1
-    case .invalidRequest: return 2
-    case .knownWebSpider: return 3
-    case .suspectedNonhumanTraffic: return 4
-    case .cloudDatacenterProxyip: return 5
-    case .unsupportedDevice: return 6
-    case .blockedPublisher: return 7
-    case .unmatchedUser: return 8
-    case .dailyReaderCap: return 9
-    case .dailyDomainCap: return 10
-    }
   }
 
 }
 
 /// OpenRTB 2.5: The following table lists the options for an exchange
 /// to inform a bidder as to the reason why they did not win an impression.
-enum Com_Google_Openrtb_LossReason: SwiftProtobuf.Enum, Swift.CaseIterable {
-  typealias RawValue = Int
-  case bidWon // = 0
-  case internalError // = 1
-  case impExpired // = 2
-  case invalidBid // = 3
-  case invalidDealID // = 4
-  case invalidAuctionID // = 5
-  case invalidAdomain // = 6
-  case missingMarkup // = 7
-  case missingCreativeID // = 8
-  case missingPrice // = 9
-  case missingMinCreativeApprovalData // = 10
-  case bidBelowFloor // = 100
-  case bidBelowDealFloor // = 101
-  case lostHigherBid // = 102
-  case lostPmpDeal // = 103
-  case seatBlocked // = 104
-  case creativeReasonUnknown // = 200
-  case creativePending // = 201
-  case creativeDisapproved // = 202
-  case creativeSize // = 203
-  case creativeFormat // = 204
-  case creativeAdvertiserExclusion // = 205
-  case creativeAppExclusion // = 206
-  case creativeNotSecure // = 207
-  case creativeLanguageExclusion // = 208
-  case creativeCategoryExclusion // = 209
-  case creativeAttributeExclusion // = 210
-  case creativeAdtypeExclusion // = 211
-  case creativeAnimationLong // = 212
-  case creativeNotAllowedPmp // = 213
+enum Com_Google_Openrtb_LossReason: Int, SwiftProtobuf.Enum, Swift.CaseIterable {
+  case bidWon = 0
+  case internalError = 1
+  case impExpired = 2
+  case invalidBid = 3
+  case invalidDealID = 4
+  case invalidAuctionID = 5
+  case invalidAdomain = 6
+  case missingMarkup = 7
+  case missingCreativeID = 8
+  case missingPrice = 9
+  case missingMinCreativeApprovalData = 10
+  case bidBelowFloor = 100
+  case bidBelowDealFloor = 101
+  case lostHigherBid = 102
+  case lostPmpDeal = 103
+  case seatBlocked = 104
+  case creativeReasonUnknown = 200
+  case creativePending = 201
+  case creativeDisapproved = 202
+  case creativeSize = 203
+  case creativeFormat = 204
+  case creativeAdvertiserExclusion = 205
+  case creativeAppExclusion = 206
+  case creativeNotSecure = 207
+  case creativeLanguageExclusion = 208
+  case creativeCategoryExclusion = 209
+  case creativeAttributeExclusion = 210
+  case creativeAdtypeExclusion = 211
+  case creativeAnimationLong = 212
+  case creativeNotAllowedPmp = 213
 
   init() {
     self = .bidWon
-  }
-
-  init?(rawValue: Int) {
-    switch rawValue {
-    case 0: self = .bidWon
-    case 1: self = .internalError
-    case 2: self = .impExpired
-    case 3: self = .invalidBid
-    case 4: self = .invalidDealID
-    case 5: self = .invalidAuctionID
-    case 6: self = .invalidAdomain
-    case 7: self = .missingMarkup
-    case 8: self = .missingCreativeID
-    case 9: self = .missingPrice
-    case 10: self = .missingMinCreativeApprovalData
-    case 100: self = .bidBelowFloor
-    case 101: self = .bidBelowDealFloor
-    case 102: self = .lostHigherBid
-    case 103: self = .lostPmpDeal
-    case 104: self = .seatBlocked
-    case 200: self = .creativeReasonUnknown
-    case 201: self = .creativePending
-    case 202: self = .creativeDisapproved
-    case 203: self = .creativeSize
-    case 204: self = .creativeFormat
-    case 205: self = .creativeAdvertiserExclusion
-    case 206: self = .creativeAppExclusion
-    case 207: self = .creativeNotSecure
-    case 208: self = .creativeLanguageExclusion
-    case 209: self = .creativeCategoryExclusion
-    case 210: self = .creativeAttributeExclusion
-    case 211: self = .creativeAdtypeExclusion
-    case 212: self = .creativeAnimationLong
-    case 213: self = .creativeNotAllowedPmp
-    default: return nil
-    }
-  }
-
-  var rawValue: Int {
-    switch self {
-    case .bidWon: return 0
-    case .internalError: return 1
-    case .impExpired: return 2
-    case .invalidBid: return 3
-    case .invalidDealID: return 4
-    case .invalidAuctionID: return 5
-    case .invalidAdomain: return 6
-    case .missingMarkup: return 7
-    case .missingCreativeID: return 8
-    case .missingPrice: return 9
-    case .missingMinCreativeApprovalData: return 10
-    case .bidBelowFloor: return 100
-    case .bidBelowDealFloor: return 101
-    case .lostHigherBid: return 102
-    case .lostPmpDeal: return 103
-    case .seatBlocked: return 104
-    case .creativeReasonUnknown: return 200
-    case .creativePending: return 201
-    case .creativeDisapproved: return 202
-    case .creativeSize: return 203
-    case .creativeFormat: return 204
-    case .creativeAdvertiserExclusion: return 205
-    case .creativeAppExclusion: return 206
-    case .creativeNotSecure: return 207
-    case .creativeLanguageExclusion: return 208
-    case .creativeCategoryExclusion: return 209
-    case .creativeAttributeExclusion: return 210
-    case .creativeAdtypeExclusion: return 211
-    case .creativeAnimationLong: return 212
-    case .creativeNotAllowedPmp: return 213
-    }
   }
 
 }
@@ -1382,309 +710,165 @@ enum Com_Google_Openrtb_LossReason: SwiftProtobuf.Enum, Swift.CaseIterable {
 /// OpenRTB 2.4: The following table lists the types of feeds,
 /// typically for audio. These values are defined by the IAB -
 /// https://github.com/InteractiveAdvertisingBureau/AdCOM/blob/master/AdCOM%20v1.0%20FINAL.md#list--feed-types-.
-enum Com_Google_Openrtb_FeedType: SwiftProtobuf.Enum, Swift.CaseIterable {
-  typealias RawValue = Int
+enum Com_Google_Openrtb_FeedType: Int, SwiftProtobuf.Enum, Swift.CaseIterable {
 
   /// Music streaming service.
-  case musicService // = 1
+  case musicService = 1
 
   /// Live content broadcast over the air but also available through online
   /// streaming.
-  case broadcast // = 2
+  case broadcast = 2
 
   /// Original, pre-recorded content distributed as episodes in a series.
-  case podcast // = 3
+  case podcast = 3
 
   init() {
     self = .musicService
-  }
-
-  init?(rawValue: Int) {
-    switch rawValue {
-    case 1: self = .musicService
-    case 2: self = .broadcast
-    case 3: self = .podcast
-    default: return nil
-    }
-  }
-
-  var rawValue: Int {
-    switch self {
-    case .musicService: return 1
-    case .broadcast: return 2
-    case .podcast: return 3
-    }
   }
 
 }
 
 /// OpenRTB 2.4: The following table lists the types of volume normalization
 /// modes, typically for audio.
-enum Com_Google_Openrtb_VolumeNormalizationMode: SwiftProtobuf.Enum, Swift.CaseIterable {
-  typealias RawValue = Int
-  case none // = 0
-  case averageVolume // = 1
-  case peakVolume // = 2
-  case loudness // = 3
-  case customVolume // = 4
+enum Com_Google_Openrtb_VolumeNormalizationMode: Int, SwiftProtobuf.Enum, Swift.CaseIterable {
+  case none = 0
+  case averageVolume = 1
+  case peakVolume = 2
+  case loudness = 3
+  case customVolume = 4
 
   init() {
     self = .none
   }
 
-  init?(rawValue: Int) {
-    switch rawValue {
-    case 0: self = .none
-    case 1: self = .averageVolume
-    case 2: self = .peakVolume
-    case 3: self = .loudness
-    case 4: self = .customVolume
-    default: return nil
-    }
-  }
-
-  var rawValue: Int {
-    switch self {
-    case .none: return 0
-    case .averageVolume: return 1
-    case .peakVolume: return 2
-    case .loudness: return 3
-    case .customVolume: return 4
-    }
-  }
-
 }
 
 /// Possible sources for User-Agent data.
-enum Com_Google_Openrtb_UserAgentSource: SwiftProtobuf.Enum, Swift.CaseIterable {
-  typealias RawValue = Int
-  case unknownSource // = 0
+enum Com_Google_Openrtb_UserAgentSource: Int, SwiftProtobuf.Enum, Swift.CaseIterable {
+  case unknownSource = 0
 
   /// User-Agent Client Hints (only low-entropy headers were available).
-  case clientHintsLowEntropy // = 1
+  case clientHintsLowEntropy = 1
 
   /// User-Agent Client Hints (with high-entropy headers available).
-  case clientHintsHighEntropy // = 2
+  case clientHintsHighEntropy = 2
 
   /// Parsed from User-Agent header.
-  case userAgentString // = 3
+  case userAgentString = 3
 
   init() {
     self = .unknownSource
   }
 
-  init?(rawValue: Int) {
-    switch rawValue {
-    case 0: self = .unknownSource
-    case 1: self = .clientHintsLowEntropy
-    case 2: self = .clientHintsHighEntropy
-    case 3: self = .userAgentString
-    default: return nil
-    }
-  }
-
-  var rawValue: Int {
-    switch self {
-    case .unknownSource: return 0
-    case .clientHintsLowEntropy: return 1
-    case .clientHintsHighEntropy: return 2
-    case .userAgentString: return 3
-    }
-  }
-
 }
 
 /// OpenRTB 2.6: Creative markup types.
-enum Com_Google_Openrtb_CreativeMarkupType: SwiftProtobuf.Enum, Swift.CaseIterable {
-  typealias RawValue = Int
+enum Com_Google_Openrtb_CreativeMarkupType: Int, SwiftProtobuf.Enum, Swift.CaseIterable {
 
   /// Ad markup returned as HTML code in response to the BidRequest.imp.banner
   /// object specification.
-  case creativeMarkupBanner // = 1
+  case creativeMarkupBanner = 1
 
   /// VAST URL or inline VAST XML document returned that represents a video ad in
   /// response to the BidRequest.imp.video object specification.
-  case creativeMarkupVideo // = 2
+  case creativeMarkupVideo = 2
 
   /// VAST URL or inline VAST XML document that represents an audio ad returned
   /// in response to the BidRequest.imp.audio object specification.
-  case creativeMarkupAudio // = 3
+  case creativeMarkupAudio = 3
 
   /// Native markup response object returned as per for the BidRequest.imp.native
   /// object specification.
-  case creativeMarkupNative // = 4
+  case creativeMarkupNative = 4
 
   init() {
     self = .creativeMarkupBanner
   }
 
-  init?(rawValue: Int) {
-    switch rawValue {
-    case 1: self = .creativeMarkupBanner
-    case 2: self = .creativeMarkupVideo
-    case 3: self = .creativeMarkupAudio
-    case 4: self = .creativeMarkupNative
-    default: return nil
-    }
-  }
-
-  var rawValue: Int {
-    switch self {
-    case .creativeMarkupBanner: return 1
-    case .creativeMarkupVideo: return 2
-    case .creativeMarkupAudio: return 3
-    case .creativeMarkupNative: return 4
-    }
-  }
-
 }
 
 /// OpenRTB 2.6: Server-side ad insertion type.
-enum Com_Google_Openrtb_ServerSideAdInsertionType: SwiftProtobuf.Enum, Swift.CaseIterable {
-  typealias RawValue = Int
+enum Com_Google_Openrtb_ServerSideAdInsertionType: Int, SwiftProtobuf.Enum, Swift.CaseIterable {
 
   /// Status unknown.
-  case unknown // = 0
+  case unknown = 0
 
   /// All clientside (not server-side).
-  case clientSideOnly // = 1
+  case clientSideOnly = 1
 
   /// Assets stitched server-side but tracking pixels fired client-side.
-  case serverSideStitchedClientTracker // = 2
+  case serverSideStitchedClientTracker = 2
 
   /// All server-side.
-  case serverSideOnly // = 3
+  case serverSideOnly = 3
 
   init() {
     self = .unknown
-  }
-
-  init?(rawValue: Int) {
-    switch rawValue {
-    case 0: self = .unknown
-    case 1: self = .clientSideOnly
-    case 2: self = .serverSideStitchedClientTracker
-    case 3: self = .serverSideOnly
-    default: return nil
-    }
-  }
-
-  var rawValue: Int {
-    switch self {
-    case .unknown: return 0
-    case .clientSideOnly: return 1
-    case .serverSideStitchedClientTracker: return 2
-    case .serverSideOnly: return 3
-    }
   }
 
 }
 
 /// OpenRTB 2.6: The user agent types a user identifier is from.
 /// Not supported by Google.
-enum Com_Google_Openrtb_AgentType: SwiftProtobuf.Enum, Swift.CaseIterable {
-  typealias RawValue = Int
+enum Com_Google_Openrtb_AgentType: Int, SwiftProtobuf.Enum, Swift.CaseIterable {
 
   /// An ID which is tied to a specific web browser or device (cookie-based,
   /// probabilistic, or other).
-  case browserOrDevice // = 1
+  case browserOrDevice = 1
 
   /// In-app impressions, which will typically contain a type of device ID
   /// (or rather, the privacy-compliant versions of device IDs).
-  case inAppImpression // = 2
+  case inAppImpression = 2
 
   /// An identifier that is the same across devices.
-  case stableID // = 3
+  case stableID = 3
 
   init() {
     self = .browserOrDevice
-  }
-
-  init?(rawValue: Int) {
-    switch rawValue {
-    case 1: self = .browserOrDevice
-    case 2: self = .inAppImpression
-    case 3: self = .stableID
-    default: return nil
-    }
-  }
-
-  var rawValue: Int {
-    switch self {
-    case .browserOrDevice: return 1
-    case .inAppImpression: return 2
-    case .stableID: return 3
-    }
   }
 
 }
 
 /// OpenRTB 2.6: The options for taxonomies that can be used to describe content,
 /// audience, and ad creative categories.
-enum Com_Google_Openrtb_CategoryTaxonomy: SwiftProtobuf.Enum, Swift.CaseIterable {
-  typealias RawValue = Int
+enum Com_Google_Openrtb_CategoryTaxonomy: Int, SwiftProtobuf.Enum, Swift.CaseIterable {
 
   /// DEPRECATED in OpenRTB 2.6+.
   /// IAB Tech Lab Content Category Taxonomy 1.0.
   ///
   /// NOTE: This enum value was marked as deprecated in the .proto file
-  case iabContent10 // = 1
+  case iabContent10 = 1
 
   /// DEPRECATED in OpenRTB 2.6+.
   /// IAB Tech Lab Content Category Taxonomy 2.0.
   ///
   /// NOTE: This enum value was marked as deprecated in the .proto file
-  case iabContent20 // = 2
+  case iabContent20 = 2
 
   /// IAB Tech Lab Ad Product Taxonomy 1.0. See:
   /// https://iabtechlab.com/wp-content/uploads/2020/10/IABTL-Ad-Product-Taxonomy-1.0-Final.xlsx
-  case iabProduct10 // = 3
+  case iabProduct10 = 3
 
   /// IAB Tech Lab Audience Taxonomy 1.1. See:
   /// https://iabtechlab.com/standards/audience-taxonomy/
-  case iabAudience11 // = 4
+  case iabAudience11 = 4
 
   /// IAB Tech Lab Content Taxonomy 2.1. See:
   /// https://iabtechlab.com/standards/content-taxonomy/
-  case iabContent21 // = 5
+  case iabContent21 = 5
 
   /// IAB Tech Lab Content Taxonomy 2.2. See:
   /// https://iabtechlab.com/standards/content-taxonomy/
-  case iabContent22 // = 6
+  case iabContent22 = 6
 
   /// Exchange-specific values above 500.
   ///
   /// Chromium Topics API taxonomy. See:
   /// https://github.com/patcg-individual-drafts/topics/blob/main/taxonomy_v1.md
-  case chromeTopics // = 600
+  case chromeTopics = 600
 
   init() {
     self = .iabContent10
-  }
-
-  init?(rawValue: Int) {
-    switch rawValue {
-    case 1: self = .iabContent10
-    case 2: self = .iabContent20
-    case 3: self = .iabProduct10
-    case 4: self = .iabAudience11
-    case 5: self = .iabContent21
-    case 6: self = .iabContent22
-    case 600: self = .chromeTopics
-    default: return nil
-    }
-  }
-
-  var rawValue: Int {
-    switch self {
-    case .iabContent10: return 1
-    case .iabContent20: return 2
-    case .iabProduct10: return 3
-    case .iabAudience11: return 4
-    case .iabContent21: return 5
-    case .iabContent22: return 6
-    case .chromeTopics: return 600
-    }
   }
 
 }
@@ -1692,79 +876,31 @@ enum Com_Google_Openrtb_CategoryTaxonomy: SwiftProtobuf.Enum, Swift.CaseIterable
 /// ***** OpenRTB Native enums **************************************************
 ///
 /// DEPRECATED in OpenRTB Native 1.1, REMOVED in 1.2+.
-enum Com_Google_Openrtb_LayoutId: SwiftProtobuf.Enum, Swift.CaseIterable {
-  typealias RawValue = Int
-  case contentWall // = 1
-  case appWall // = 2
-  case newsFeed // = 3
-  case chatList // = 4
-  case carousel // = 5
-  case contentStream // = 6
-  case grid // = 7
+enum Com_Google_Openrtb_LayoutId: Int, SwiftProtobuf.Enum, Swift.CaseIterable {
+  case contentWall = 1
+  case appWall = 2
+  case newsFeed = 3
+  case chatList = 4
+  case carousel = 5
+  case contentStream = 6
+  case grid = 7
 
   init() {
     self = .contentWall
   }
 
-  init?(rawValue: Int) {
-    switch rawValue {
-    case 1: self = .contentWall
-    case 2: self = .appWall
-    case 3: self = .newsFeed
-    case 4: self = .chatList
-    case 5: self = .carousel
-    case 6: self = .contentStream
-    case 7: self = .grid
-    default: return nil
-    }
-  }
-
-  var rawValue: Int {
-    switch self {
-    case .contentWall: return 1
-    case .appWall: return 2
-    case .newsFeed: return 3
-    case .chatList: return 4
-    case .carousel: return 5
-    case .contentStream: return 6
-    case .grid: return 7
-    }
-  }
-
 }
 
 /// DEPRECATED in OpenRTB Native 1.1, REMOVED in 1.2+.
-enum Com_Google_Openrtb_AdUnitId: SwiftProtobuf.Enum, Swift.CaseIterable {
-  typealias RawValue = Int
-  case paidSearchUnit // = 1
-  case recommendationWidget // = 2
-  case promotedListing // = 3
-  case iabInAdNative // = 4
-  case custom // = 5
+enum Com_Google_Openrtb_AdUnitId: Int, SwiftProtobuf.Enum, Swift.CaseIterable {
+  case paidSearchUnit = 1
+  case recommendationWidget = 2
+  case promotedListing = 3
+  case iabInAdNative = 4
+  case custom = 5
 
   init() {
     self = .paidSearchUnit
-  }
-
-  init?(rawValue: Int) {
-    switch rawValue {
-    case 1: self = .paidSearchUnit
-    case 2: self = .recommendationWidget
-    case 3: self = .promotedListing
-    case 4: self = .iabInAdNative
-    case 5: self = .custom
-    default: return nil
-    }
-  }
-
-  var rawValue: Int {
-    switch self {
-    case .paidSearchUnit: return 1
-    case .recommendationWidget: return 2
-    case .promotedListing: return 3
-    case .iabInAdNative: return 4
-    case .custom: return 5
-    }
   }
 
 }
@@ -1775,40 +911,22 @@ enum Com_Google_Openrtb_AdUnitId: SwiftProtobuf.Enum, Swift.CaseIterable {
 /// This denotes the primary context, but does not imply other content
 /// may not exist on the page - for example, it's expected that most
 /// content platforms have some social components.
-enum Com_Google_Openrtb_ContextType: SwiftProtobuf.Enum, Swift.CaseIterable {
-  typealias RawValue = Int
+enum Com_Google_Openrtb_ContextType: Int, SwiftProtobuf.Enum, Swift.CaseIterable {
 
   /// Content-centric context such as newsfeed, article, image gallery,
   /// video gallery, or similar.
-  case content // = 1
+  case content = 1
 
   /// Social-centric context such as social network feed, email,
   /// chat, or similar.
-  case social // = 2
+  case social = 2
 
   /// Product context such as product listings, details, recommendations,
   /// reviews, or similar.
-  case product // = 3
+  case product = 3
 
   init() {
     self = .content
-  }
-
-  init?(rawValue: Int) {
-    switch rawValue {
-    case 1: self = .content
-    case 2: self = .social
-    case 3: self = .product
-    default: return nil
-    }
-  }
-
-  var rawValue: Int {
-    switch self {
-    case .content: return 1
-    case .social: return 2
-    case .product: return 3
-    }
   }
 
 }
@@ -1819,105 +937,49 @@ enum Com_Google_Openrtb_ContextType: SwiftProtobuf.Enum, Swift.CaseIterable {
 /// but is still first and foremost an article. SubType should only be
 /// combined with the primary context type as indicated (ie for a context
 /// type of 1, only context subtypes that start with 1 are valid).
-enum Com_Google_Openrtb_ContextSubtype: SwiftProtobuf.Enum, Swift.CaseIterable {
-  typealias RawValue = Int
-  case contentGeneralOrMixed // = 10
-  case contentArticle // = 11
-  case contentVideo // = 12
-  case contentAudio // = 13
-  case contentImage // = 14
-  case contentUserGenerated // = 15
-  case socialGeneral // = 20
-  case socialEmail // = 21
-  case socialChatIm // = 22
-  case productSelling // = 30
-  case productMarketplace // = 31
-  case productReview // = 32
+enum Com_Google_Openrtb_ContextSubtype: Int, SwiftProtobuf.Enum, Swift.CaseIterable {
+  case contentGeneralOrMixed = 10
+  case contentArticle = 11
+  case contentVideo = 12
+  case contentAudio = 13
+  case contentImage = 14
+  case contentUserGenerated = 15
+  case socialGeneral = 20
+  case socialEmail = 21
+  case socialChatIm = 22
+  case productSelling = 30
+  case productMarketplace = 31
+  case productReview = 32
 
   init() {
     self = .contentGeneralOrMixed
-  }
-
-  init?(rawValue: Int) {
-    switch rawValue {
-    case 10: self = .contentGeneralOrMixed
-    case 11: self = .contentArticle
-    case 12: self = .contentVideo
-    case 13: self = .contentAudio
-    case 14: self = .contentImage
-    case 15: self = .contentUserGenerated
-    case 20: self = .socialGeneral
-    case 21: self = .socialEmail
-    case 22: self = .socialChatIm
-    case 30: self = .productSelling
-    case 31: self = .productMarketplace
-    case 32: self = .productReview
-    default: return nil
-    }
-  }
-
-  var rawValue: Int {
-    switch self {
-    case .contentGeneralOrMixed: return 10
-    case .contentArticle: return 11
-    case .contentVideo: return 12
-    case .contentAudio: return 13
-    case .contentImage: return 14
-    case .contentUserGenerated: return 15
-    case .socialGeneral: return 20
-    case .socialEmail: return 21
-    case .socialChatIm: return 22
-    case .productSelling: return 30
-    case .productMarketplace: return 31
-    case .productReview: return 32
-    }
   }
 
 }
 
 /// OpenRTB Native 1.1: The FORMAT of the ad you are purchasing,
 /// separate from the surrounding context.
-enum Com_Google_Openrtb_PlacementType: SwiftProtobuf.Enum, Swift.CaseIterable {
-  typealias RawValue = Int
+enum Com_Google_Openrtb_PlacementType: Int, SwiftProtobuf.Enum, Swift.CaseIterable {
 
   /// In the feed of content - for example as an item inside the organic
   /// feed/grid/listing/carousel.
-  case inFeed // = 1
+  case inFeed = 1
 
   /// In the atomic unit of the content - IE in the article page
   /// or single image page.
-  case atomicUnit // = 2
+  case atomicUnit = 2
 
   /// Outside the core content - for example in the ads section on the
   /// right rail, as a banner-style placement near the content, or another
   /// placement type.
-  case outside // = 3
+  case outside = 3
 
   /// Recommendation widget, most commonly presented below
   /// the article content.
-  case recommendation // = 4
+  case recommendation = 4
 
   init() {
     self = .inFeed
-  }
-
-  init?(rawValue: Int) {
-    switch rawValue {
-    case 1: self = .inFeed
-    case 2: self = .atomicUnit
-    case 3: self = .outside
-    case 4: self = .recommendation
-    default: return nil
-    }
-  }
-
-  var rawValue: Int {
-    switch self {
-    case .inFeed: return 1
-    case .atomicUnit: return 2
-    case .outside: return 3
-    case .recommendation: return 4
-    }
   }
 
 }
@@ -1926,100 +988,64 @@ enum Com_Google_Openrtb_PlacementType: SwiftProtobuf.Enum, Swift.CaseIterable {
 /// This list is non-exhaustive and intended to be extended by the buyers
 /// and sellers as the format evolves. An implementing exchange may not
 /// support all asset variants or introduce new ones unique to that system.
-enum Com_Google_Openrtb_DataAssetType: SwiftProtobuf.Enum, Swift.CaseIterable {
-  typealias RawValue = Int
+enum Com_Google_Openrtb_DataAssetType: Int, SwiftProtobuf.Enum, Swift.CaseIterable {
 
   /// Sponsored By message where response should contain the brand name
   /// of the sponsor.
   /// Format: Text; Max length: 25 or longer.
-  case sponsored // = 1
+  case sponsored = 1
 
   /// Descriptive text associated with the product or service being advertised.
   /// Format: Text; Max length: 140 or longer.
-  case desc // = 2
+  case desc = 2
 
   /// Rating of the product being offered to the user.
   /// For example an app's rating in an app store from 0-5.
   /// Format: Number (1-5 digits) formatted as string.
-  case rating // = 3
+  case rating = 3
 
   /// Number of social ratings or "likes" of product being offered to the user.
   /// Format: Number formatted as string.
-  case likes // = 4
+  case likes = 4
 
   /// Number downloads/installs of this product.
   /// Format: Number formatted as string.
-  case downloads // = 5
+  case downloads = 5
 
   /// Price for product / app / in-app purchase.
   /// Value should include currency symbol in localised format.
   /// Format: Number formatted as string.
-  case price // = 6
+  case price = 6
 
   /// Sale price that can be used together with price to indicate a discounted
   /// price compared to a regular price. Value should include currency symbol
   /// in localised format.
   /// Format: Number formatted as string.
-  case saleprice // = 7
+  case saleprice = 7
 
   /// Phone number.
   /// Format: Formatted string.
-  case phone // = 8
+  case phone = 8
 
   /// Address.
   /// Format: Text.
-  case address // = 9
+  case address = 9
 
   /// Additional descriptive text associated with the product or service
   /// being advertised.
   /// Format: Text.
-  case desc2 // = 10
+  case desc2 = 10
 
   /// Display URL for the text ad.
   /// Format: Text.
-  case displayurl // = 11
+  case displayurl = 11
 
   /// Text describing a 'call to action' button for the destination URL.
   /// Format: Text.
-  case ctatext // = 12
+  case ctatext = 12
 
   init() {
     self = .sponsored
-  }
-
-  init?(rawValue: Int) {
-    switch rawValue {
-    case 1: self = .sponsored
-    case 2: self = .desc
-    case 3: self = .rating
-    case 4: self = .likes
-    case 5: self = .downloads
-    case 6: self = .price
-    case 7: self = .saleprice
-    case 8: self = .phone
-    case 9: self = .address
-    case 10: self = .desc2
-    case 11: self = .displayurl
-    case 12: self = .ctatext
-    default: return nil
-    }
-  }
-
-  var rawValue: Int {
-    switch self {
-    case .sponsored: return 1
-    case .desc: return 2
-    case .rating: return 3
-    case .likes: return 4
-    case .downloads: return 5
-    case .price: return 6
-    case .saleprice: return 7
-    case .phone: return 8
-    case .address: return 9
-    case .desc2: return 10
-    case .displayurl: return 11
-    case .ctatext: return 12
-    }
   }
 
 }
@@ -2027,18 +1053,17 @@ enum Com_Google_Openrtb_DataAssetType: SwiftProtobuf.Enum, Swift.CaseIterable {
 /// OpenRTB Native 1.0: Common image asset element types of native advertising
 /// at the time of writing this spec. This list is non-exhaustive and intended
 /// to be extended by the buyers and sellers as the format evolves.
-enum Com_Google_Openrtb_ImageAssetType: SwiftProtobuf.Enum, Swift.CaseIterable {
-  typealias RawValue = Int
+enum Com_Google_Openrtb_ImageAssetType: Int, SwiftProtobuf.Enum, Swift.CaseIterable {
 
   /// Icon image.
   /// Max height: at least 50; Aspect ratio: 1:1.
-  case icon // = 1
+  case icon = 1
 
   /// DEPRECATED in OpenRTB Native 1.2+. Prefer type <code>ICON</code>.
   /// Logo image for the brand/app.
   ///
   /// NOTE: This enum value was marked as deprecated in the .proto file
-  case logo // = 2
+  case logo = 2
 
   /// Large image preview for the ad.
   /// At least one of 2 size variants required:
@@ -2046,102 +1071,49 @@ enum Com_Google_Openrtb_ImageAssetType: SwiftProtobuf.Enum, Swift.CaseIterable {
   ///                aspect ratio: 1:1, 4:3, or 1.91:1.
   /// Large Variant: max height: 627+, max width: 627+, 836, or 1198,
   ///                aspect ratio: 1:1, 4:3, or 1.91:1.
-  case main // = 3
+  case main = 3
 
   init() {
     self = .icon
   }
 
-  init?(rawValue: Int) {
-    switch rawValue {
-    case 1: self = .icon
-    case 2: self = .logo
-    case 3: self = .main
-    default: return nil
-    }
-  }
-
-  var rawValue: Int {
-    switch self {
-    case .icon: return 1
-    case .logo: return 2
-    case .main: return 3
-    }
-  }
-
 }
 
 /// OpenRTB Native 1.2.
-enum Com_Google_Openrtb_EventType: SwiftProtobuf.Enum, Swift.CaseIterable {
-  typealias RawValue = Int
+enum Com_Google_Openrtb_EventType: Int, SwiftProtobuf.Enum, Swift.CaseIterable {
 
   /// Impression
-  case impression // = 1
+  case impression = 1
 
   /// Visible impression using MRC definition at 50% in view for 1 second.
-  case viewableMrc50 // = 2
+  case viewableMrc50 = 2
 
   /// 100% in view for 1 second (ie GroupM standard).
-  case viewableMrc100 // = 3
+  case viewableMrc100 = 3
 
   /// Visible impression for video using MRC definition at 50% in view
   /// for 2 seconds.
-  case viewableVideo50 // = 4
+  case viewableVideo50 = 4
 
   init() {
     self = .impression
   }
 
-  init?(rawValue: Int) {
-    switch rawValue {
-    case 1: self = .impression
-    case 2: self = .viewableMrc50
-    case 3: self = .viewableMrc100
-    case 4: self = .viewableVideo50
-    default: return nil
-    }
-  }
-
-  var rawValue: Int {
-    switch self {
-    case .impression: return 1
-    case .viewableMrc50: return 2
-    case .viewableMrc100: return 3
-    case .viewableVideo50: return 4
-    }
-  }
-
 }
 
 /// OpenRTB Native 1.2.
-enum Com_Google_Openrtb_EventTrackingMethod: SwiftProtobuf.Enum, Swift.CaseIterable {
-  typealias RawValue = Int
+enum Com_Google_Openrtb_EventTrackingMethod: Int, SwiftProtobuf.Enum, Swift.CaseIterable {
 
   /// Image-pixel tracking - URL provided will be insterted as a 1x1 pixel at the
   /// time of the event.
-  case img // = 1
+  case img = 1
 
   /// Javascript-based tracking - URL provided will be insterted as a js tag at
   /// the time of the event.
-  case js // = 2
+  case js = 2
 
   init() {
     self = .img
-  }
-
-  init?(rawValue: Int) {
-    switch rawValue {
-    case 1: self = .img
-    case 2: self = .js
-    default: return nil
-    }
-  }
-
-  var rawValue: Int {
-    switch self {
-    case .img: return 1
-    case .js: return 2
-    }
   }
 
 }
@@ -5758,82 +4730,46 @@ struct Com_Google_Openrtb_BidRequest: SwiftProtobuf.ExtensibleMessage, @unchecke
 
     /// Each section represents a unique privacy signal, usually a unique
     /// jurisdiction. Below are the supported discrete sections.
-    enum GppSectionId: SwiftProtobuf.Enum, Swift.CaseIterable {
-      typealias RawValue = Int
+    enum GppSectionId: Int, SwiftProtobuf.Enum, Swift.CaseIterable {
 
       /// EU TCF v1 section (deprecated)
-      case tcfeuv1 // = 1
+      case tcfeuv1 = 1
 
       /// EU TCF v2 section (see note below)
-      case tcfeuv2 // = 2
+      case tcfeuv2 = 2
 
       /// GPP Header section (REQUIRED, see note below)
-      case gppHeader // = 3
+      case gppHeader = 3
 
       /// GPP signal integrity section
-      case gppSignal // = 4
+      case gppSignal = 4
 
       /// Canadian TCF section
-      case tcfca // = 5
+      case tcfca = 5
 
       /// USPrivacy String (Unencoded Format)
-      case uspv1 // = 6
+      case uspv1 = 6
 
       /// US - national section
-      case usnat // = 7
+      case usnat = 7
 
       /// US - California section
-      case usca // = 8
+      case usca = 8
 
       /// US - Virginia section
-      case usva // = 9
+      case usva = 9
 
       /// US - Colorado section
-      case usco // = 10
+      case usco = 10
 
       /// US - Utah section
-      case usut // = 11
+      case usut = 11
 
       /// US - Connecticut section
-      case usct // = 12
+      case usct = 12
 
       init() {
         self = .tcfeuv1
-      }
-
-      init?(rawValue: Int) {
-        switch rawValue {
-        case 1: self = .tcfeuv1
-        case 2: self = .tcfeuv2
-        case 3: self = .gppHeader
-        case 4: self = .gppSignal
-        case 5: self = .tcfca
-        case 6: self = .uspv1
-        case 7: self = .usnat
-        case 8: self = .usca
-        case 9: self = .usva
-        case 10: self = .usco
-        case 11: self = .usut
-        case 12: self = .usct
-        default: return nil
-        }
-      }
-
-      var rawValue: Int {
-        switch self {
-        case .tcfeuv1: return 1
-        case .tcfeuv2: return 2
-        case .gppHeader: return 3
-        case .gppSignal: return 4
-        case .tcfca: return 5
-        case .uspv1: return 6
-        case .usnat: return 7
-        case .usca: return 8
-        case .usva: return 9
-        case .usco: return 10
-        case .usut: return 11
-        case .usct: return 12
-        }
       }
 
     }

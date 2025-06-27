@@ -80,7 +80,7 @@ import MobileFuseSDK
 
     public func initialize(initParams: any MSPiOSCore.InitializationParameters, adapterInitListener: any MSPiOSCore.AdapterInitListener, context: Any?) {
         MobileFuse.initWithDelegate(self)
-        adapterInitListener.onComplete(adNetwork: .pubmatic, adapterInitStatus: .SUCCESS, message: "")
+        adapterInitListener.onComplete(adNetwork: .mobilefuse, adapterInitStatus: .SUCCESS, message: "")
     }
 
     public func destroyAd() {
@@ -158,6 +158,9 @@ import MobileFuseSDK
         AdCache.shared.saveAd(placementId: bidderPlacementId, ad: ad)
         let auctionBid = AuctionBid(bidderName: "mobilefuse", bidderPlacementId: bidderPlacementId, ecpm: ad.adInfo["price"] as? Double ?? 0.0)
         auctionBidListener.onSuccess(bid: auctionBid)
+        if let adRequest = self.adRequest {
+            self.adMetricReporter?.logAdResponse(ad: ad, adRequest: adRequest, errorCode: .ERROR_CODE_SUCCESS, errorMessage: nil)
+        }
     }
     
     public func getAdNetwork() -> MSPiOSCore.AdNetwork {
@@ -252,6 +255,9 @@ extension MobilefuseAdapter: IMFAdCallbackReceiver {
             MSPLogger.shared.info(message: "[Adapter: Mobilefuse] Fail to load Mobilefuse Native ad")
         }
         self.auctionBidListener?.onError(error: "fail to load ad")
+        if let adRequest = self.adRequest {
+            self.adMetricReporter?.logAdResponse(ad: nil, adRequest: adRequest, errorCode: .ERROR_CODE_INTERNAL_ERROR, errorMessage: nil)
+        }
     }
     
     public func onAdRendered(_ ad: MFAd) {
