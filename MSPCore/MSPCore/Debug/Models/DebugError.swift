@@ -5,6 +5,7 @@ enum DebugError: Error, LocalizedError {
     case failedToGeneratePlacementId
     case invalidSelection
     case missingRequiredOptions
+    case sdkError(String)
     
     var errorDescription: String? {
         switch self {
@@ -14,6 +15,8 @@ enum DebugError: Error, LocalizedError {
             return "Invalid selection"
         case .missingRequiredOptions:
             return "Missing required options"
+        case .sdkError(let message):
+            return "SDK Error: \(message)"
         }
     }
 } 

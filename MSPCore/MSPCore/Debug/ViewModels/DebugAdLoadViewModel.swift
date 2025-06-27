@@ -1,8 +1,21 @@
 import Foundation
 import Combine
 import MSPiOSCore
+import UIKit
 
-class DebugAdLoadViewModel {
+struct ToastSignal {
+    let message: String
+    let style: DebugToastStyle
+    let duration: TimeInterval?
+}
+
+enum DebugAdPresentationSignal {
+    case native(nativeAd: NativeAd)
+    case banner(bannerAd: BannerAd)
+    case interstitial(interstitialAd: InterstitialAd)
+}
+
+class DebugAdLoadViewModel: AdListener {
     @Published private(set) var sections: [DebugAdLoadSectionViewModel] = []
     private let originalSectionData: [DebugSection]
     let placements: [String]
@@ -11,18 +24,31 @@ class DebugAdLoadViewModel {
     }
     
     private let repository: DebugSectionsRepository
+    private let loadAdRepository: LoadAdRepository
+    private var adLoader: MSPAdLoader?
+    private(set) var ad: MSPAd?
+    
+    // Toast signal publisher
+    private let toastSignalSubject = PassthroughSubject<ToastSignal, Never>()
+    var toastSignalPublisher: AnyPublisher<ToastSignal, Never> {
+        toastSignalSubject.receive(on: DispatchQueue.main).eraseToAnyPublisher()
+    }
+    // Ad presentation signal publisher
+    private let adPresentationSubject = PassthroughSubject<DebugAdPresentationSignal, Never>()
+    var adPresentationPublisher: AnyPublisher<DebugAdPresentationSignal, Never> {
+        adPresentationSubject.receive(on: DispatchQueue.main).eraseToAnyPublisher()
+    }
     
     init(
-        repository: DebugSectionsRepository,
-        placementsRepository: PlacementsRepository = TestPlacementsService()
+        repository: DebugSectionsRepository = TestDebugSectionsService(),
+        placementsRepository: PlacementsRepository = TestPlacementsService(),
+        loadAdRepository: LoadAdRepository = LoadAdService()
     ) {
         self.repository = repository
         self.placements = placementsRepository.fetchPlacements()
-        // Store original model data
         self.originalSectionData = repository.fetchDebugSections(placements: self.placements)
-        // Assemble SectionViewModel from original model data and set initial visibility
+        self.loadAdRepository = loadAdRepository
         self.sections = createSectionViewModels()
-        // Set default selections
         setDefaultSelections()
         updateSectionVisibility()
     }
@@ -147,13 +173,71 @@ class DebugAdLoadViewModel {
     }
     
     /// Loads an ad using the current selections
-    /// - Returns: Result containing either the placement ID or an error
-    func loadAd() -> Result<String, Error> {
+    func loadAd() {
         guard let placementId = generatePlacementId() else {
-            return .failure(DebugError.failedToGeneratePlacementId)
+            toastSignalSubject.send(ToastSignal(message: "Failed to generate placement ID", style: .error, duration: nil))
+            return
         }
-        
-        // TODO: Use the placement ID to load the ad
-        return .success(placementId)
+        let selectedOptions = getSelectedOptions()
+        let adFormat = selectedOptions.values.compactMap { $0 as? AdFormat }.first ?? .banner
+        let testParams = getTestParameters()
+        let adLoader = MSPAdLoader()
+        self.adLoader = adLoader
+        toastSignalSubject.send(ToastSignal(message: "Loading...", style: .loading, duration: nil))
+        loadAdRepository.loadAd(
+            placementId: placementId,
+            adFormat: adFormat,
+            testParams: testParams,
+            adListener: self,
+            customParams: nil
+        )
+    }
+    
+    // MARK: - AdListener
+    func onError(msg: String) {
+        print("[DebugAdLoadViewModel] Ad error: \(msg)")
+        toastSignalSubject.send(ToastSignal(message: msg, style: .error, duration: nil))
+    }
+    func onAdImpression(ad: MSPAd) {
+        print("[DebugAdLoadViewModel] Ad impression: \(ad)")
+    }
+    func onAdClick(ad: MSPAd) {
+        print("[DebugAdLoadViewModel] Ad click: \(ad)")
+    }
+    func onAdLoaded(placementId: String) {
+        guard let ad = self.adLoader?.getAd(placementId: placementId) else {
+            print("[DebugAdLoadViewModel] No ad found for placementId: \(placementId)")
+            toastSignalSubject.send(ToastSignal(message: "No ad found for placementId", style: .error, duration: nil))
+            return
+        }
+        self.ad = ad
+        print("[DebugAdLoadViewModel] Ad loaded for placementId: \(placementId)")
+        toastSignalSubject.send(ToastSignal(message: "Ad loaded successfully", style: .success, duration: 2.0))
+        if let price = ad.adInfo[MSPConstants.AD_INFO_PRICE] as? Double {
+            print("[DebugAdLoadViewModel] Ad price: \(price)")
+        }
+        if let adNetworkName = ad.adInfo[MSPConstants.AD_INFO_NETWORK_NAME] as? String {
+            print("[DebugAdLoadViewModel] Ad network: \(adNetworkName)")
+        }
+        if let adUnitId = ad.adInfo[MSPConstants.AD_INFO_NETWORK_AD_UNIT_ID] {
+            print("[DebugAdLoadViewModel] Ad unit id: \(adUnitId)")
+        }
+        if let creativeId = ad.adInfo[MSPConstants.AD_INFO_NETWORK_CREATIVE_ID] {
+            print("[DebugAdLoadViewModel] Creative id: \(creativeId)")
+        }
+        if let nativeAd = ad as? NativeAd {
+            adPresentationSubject.send(.native(nativeAd: nativeAd))
+        } else if let bannerAd = ad as? BannerAd {
+            adPresentationSubject.send(.banner(bannerAd: bannerAd))
+        } else if let interstitialAd = ad as? InterstitialAd {
+            adPresentationSubject.send(.interstitial(interstitialAd: interstitialAd))
+        }
+    }
+    func onAdDismissed(ad: InterstitialAd) {
+        print("[DebugAdLoadViewModel] Interstitial ad dismissed: \(ad)")
+    }
+    func getRootViewController() -> UIViewController? {
+        // This should be set by the view controller if needed
+        return nil
     }
 } 
