@@ -23,7 +23,6 @@ class DebugAdContainerViewController: UIViewController {
     
     private func setupAdView() {
         view.addSubview(adView)
-        adView.translatesAutoresizingMaskIntoConstraints = false
         adView.snp.makeConstraints { make in
             make.center.equalToSuperview()
             make.width.equalTo(preferredSize.width)

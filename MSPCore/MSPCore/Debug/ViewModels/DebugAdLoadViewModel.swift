@@ -42,7 +42,7 @@ class DebugAdLoadViewModel: AdListener {
         $sections.map { $0.filter { $0.visible } }.eraseToAnyPublisher()
     }
     
-    private let repository: DebugSectionsRepository
+    private let debugSectionsRepository: DebugSectionsRepository
     private let placementsRepository: PlacementsRepository
     private let loadAdRepository: LoadAdRepository
     private(set) var ad: MSPAd?
@@ -60,14 +60,14 @@ class DebugAdLoadViewModel: AdListener {
     }
     
     init(
-        repository: DebugSectionsRepository = TestDebugSectionsService(),
+        debugSectionsRepository: DebugSectionsRepository = TestDebugSectionsService(),
         placementsRepository: PlacementsRepository = TestPlacementsService(),
         loadAdRepository: LoadAdRepository = TestLoadAdService()
     ) {
-        self.repository = repository
+        self.debugSectionsRepository = debugSectionsRepository
         self.placementsRepository = placementsRepository
         self.placements = placementsRepository.fetchPlacements()
-        self.originalSectionData = repository.fetchDebugSections(placements: self.placements)
+        self.originalSectionData = debugSectionsRepository.fetchDebugSections(placements: self.placements)
         self.loadAdRepository = loadAdRepository
         self.sections = createSectionViewModels()
         setDefaultSelections()
