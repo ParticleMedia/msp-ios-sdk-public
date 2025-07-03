@@ -7,7 +7,7 @@
 
 import Foundation
 
-public enum AdFormat {
+public enum AdFormat: CaseIterable {
     case banner
     case native
     case multi_format
