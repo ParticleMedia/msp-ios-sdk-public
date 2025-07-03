@@ -1,3 +1,13 @@
+## 06/30/2025 (SDK bidding)
+1. add sdk_init and ad_response MES log
+2. support interstitial end card layout
+- `pod 'MSPSharedLibraries', '2.1.0'`
+- `pod 'PrebidAdatper', '2.1.0'`
+- `pod 'GoogleAdatper', '2.1.0'`
+- `pod 'FacebookAdatper', '2.1.0'`
+- `pod 'NovaAdatper', '2.1.0'`
+- `pod 'MSPCore', '2.1.0'`
+
 ## 05/22/2025 (SDK bidding)
 1. Nova interstitial ui 
 2. add nurl and burl into adInfo
