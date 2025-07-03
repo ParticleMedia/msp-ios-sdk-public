@@ -159,6 +159,9 @@ public final class NovaNativeAdVideoView: UIView {
     
     public var novaNativeAdVideoDelegate: NovaNativeAdVideoDelegate?
     
+    // pop over button, default is nil
+    public var popOverCtaController: NovaAdPopOverCtaController?
+    
     private var isVideoStartLogged = false
 
     public init(inLandingPage: Bool = false) {
@@ -273,10 +276,9 @@ public extension NovaNativeAdVideoView {
         self.videoInfo = videoInfo
         self.encryptedAdToken = encryptedAdToken
         self.iabReporter = iabReporter
-
         if !videoInfo.isVideoClickable || inLandingPage {
             // Add an empty gesture recognizer to disable click on parent media view
-            videoTapRecognizer = UITapGestureRecognizer(target: self, action: #selector(didTapVideo))
+            videoTapRecognizer = UITapGestureRecognizer(target: self, action: #selector(didTapVideo(_:)))
             addGestureRecognizer(videoTapRecognizer!)
         } else {
             if !videoInfo.isAuto && !videoInfo.didStart {
@@ -616,7 +618,7 @@ private extension NovaNativeAdVideoView {
 
 private extension NovaNativeAdVideoView {
 
-    @objc func didTapVideo() {
+    @objc func didTapVideo(_ gesture: UITapGestureRecognizer) {
         // Do nothing
         if inLandingPage {
             let currentHiddenStatus = muteButton.isHidden
@@ -630,6 +632,8 @@ private extension NovaNativeAdVideoView {
                 }))
             }
         } else if !(videoInfo?.isVideoClickable ?? true) {
+            let locationRect = CGRect(origin: gesture.location(in: self), size: .zero)
+            self.popOverCtaController?.changeState(to: .pop(source: (self, locationRect)))
             self.didTapPlayButton()
         }
     }
