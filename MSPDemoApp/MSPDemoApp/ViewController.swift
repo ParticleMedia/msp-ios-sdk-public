@@ -135,6 +135,17 @@ class ViewController: UIViewController {
                 }, for: .touchUpInside)
                 button12.frame = CGRect(x: 100, y: 650, width: 200, height: 50)
                 view.addSubview(button12)
+        
+        let debugButton = UIButton(type: .system)
+                debugButton.setTitle("Debug Ad Load", for: .normal)
+                debugButton.backgroundColor = .systemOrange
+                debugButton.setTitleColor(.white, for: .normal)
+                debugButton.layer.cornerRadius = 8
+                debugButton.addAction(UIAction {_ in
+                    MSP.shared.showMediationDebugger()
+                }, for: .touchUpInside)
+                debugButton.frame = CGRect(x: 100, y: 700, width: 200, height: 50)
+                view.addSubview(debugButton)
     }
 
     
@@ -142,5 +153,4 @@ class ViewController: UIViewController {
         let demoAdVC = DemoAdViewController(adType: adType)
         navigationController?.pushViewController(demoAdVC, animated: true)
     }
-
 }
