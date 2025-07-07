@@ -633,7 +633,11 @@ private extension NovaNativeAdVideoView {
             }
         } else if !(videoInfo?.isVideoClickable ?? true) {
             let locationRect = CGRect(origin: gesture.location(in: self), size: .zero)
-            self.popOverCtaController?.changeState(to: .pop(source: (self, locationRect)))
+            if !userPausedAd {
+                self.popOverCtaController?.changeState(to: .pop(source: (self, locationRect)))
+            } else {
+                self.popOverCtaController?.changeState(to: .hide)
+            }
             self.didTapPlayButton()
         }
     }
@@ -680,6 +684,7 @@ private extension NovaNativeAdVideoView {
         
         if !inLandingPage {
             userPausedAd = false
+            self.popOverCtaController?.changeState(to: .hide)
         }
         resumeVideo()
     }
