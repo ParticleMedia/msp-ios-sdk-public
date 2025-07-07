@@ -88,6 +88,10 @@ public class NovaAdPopOverCtaController: UIViewController {
         }
     }
     
+    public var tappableView: UIView {
+        return self.view
+    }
+    
     // MARK: Private
     var passthroughViews: [UIView]
     

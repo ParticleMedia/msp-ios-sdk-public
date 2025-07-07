@@ -6,6 +6,7 @@ import MSPiOSCore
 import AppTrackingTransparency
 import PrebidMobile
 import MobilefuseAdapter
+import NovaCore
 
 public enum AdType: String {
     case prebidBanner
@@ -222,6 +223,14 @@ extension DemoAdViewController: AdListener {
             
             DispatchQueue.main.async {
                 let nativeAdContainer = DemoNativeAdContainer(frame: CGRect(x: 0, y: 0, width: 300, height: 250))
+                if let mediaContentView = nativeAd.mediaView,
+                   let novaNativeAdMediaView = mediaContentView as? NovaNativeAdMediaView {
+                    let popOverCtaController = NovaAdPopOverCtaController(passthroughViews: [nativeAdContainer.getAdvertiser(),nativeAdContainer.getbody(),nativeAdContainer.getTitle(),nativeAdContainer.getAdvertiser(),nativeAdContainer.getCallToAction(),nativeAdContainer.getMedia(), nativeAdContainer, nativeAdContainer, novaNativeAdMediaView].compactMap{ $0 })
+                    //mediaView.
+                    popOverCtaController.rootViewController = self
+                    popOverCtaController.config(with: nativeAd.callToAction ?? "Learn More")
+                    novaNativeAdMediaView.videoView.popOverCtaController = popOverCtaController
+                }
                 let nativeAdView = NativeAdView(nativeAd: nativeAd, nativeAdContainer: nativeAdContainer)
                 self.nativeAdView = nativeAdView
                 self.view.addSubview(nativeAdView)
