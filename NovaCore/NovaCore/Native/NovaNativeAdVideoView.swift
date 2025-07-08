@@ -276,6 +276,7 @@ public extension NovaNativeAdVideoView {
         self.videoInfo = videoInfo
         self.encryptedAdToken = encryptedAdToken
         self.iabReporter = iabReporter
+        
         if !videoInfo.isVideoClickable || inLandingPage {
             // Add an empty gesture recognizer to disable click on parent media view
             videoTapRecognizer = UITapGestureRecognizer(target: self, action: #selector(didTapVideo(_:)))
