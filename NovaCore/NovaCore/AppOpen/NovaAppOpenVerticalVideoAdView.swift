@@ -191,8 +191,6 @@ public class NovaAppOpenVerticalVideoAdView: UIView {
     private let startTime: CFTimeInterval
 
     private let novaAppOpenAdLayout: NovaAppOpenAdLayout?
-
-    private var popOverCtaController: NovaAdPopOverCtaController?
     // MARK: -
 
     init(appOpenAd: NovaAppOpenAd, videoInfo: NovaNativeAdVideoInfo, actionHandler: ActionHandling, viewController: UIViewController, novaAppOpenAdLayout: NovaAppOpenAdLayout?) {
@@ -215,7 +213,6 @@ public class NovaAppOpenVerticalVideoAdView: UIView {
         configAdAvatar(for: appOpenAd)
         configMediaView(for: appOpenAd)
         configTapGesture(for: appOpenAd)
-        
     }
 
     @available(*, unavailable)
@@ -512,11 +509,6 @@ private extension NovaAppOpenVerticalVideoAdView {
         setPlayerVolume(muted: openAd.videoInfo?.state?.isMute ?? true)
         
         mediaView.videoView.novaNativeAdVideoDelegate = self
-        popOverCtaController = NovaAdPopOverCtaController(passthroughViews: [advertiserAvatar,advertiserLabel,advertiserInfoStackView,bodyLabel,closeButton,topRightCloseButton,topRightCloseButtonArea,bottomShadow,mediaView,endOverLay,endCardView].compactMap{ $0 })
-        //mediaView.
-        popOverCtaController?.rootViewController = self.viewController
-        popOverCtaController?.config(with: self.appOpenAd.callToAction ?? "Learn More")
-        mediaView.videoView.popOverCtaController = self.popOverCtaController
         if let novaAppOpenAdLayout = self.novaAppOpenAdLayout, novaAppOpenAdLayout == .endCard {
             mediaView.videoView.videoPlayer?.player.playbackLoops = false
         }
