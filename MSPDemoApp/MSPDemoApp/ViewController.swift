@@ -136,6 +136,14 @@ class ViewController: UIViewController {
                 button12.frame = CGRect(x: 100, y: 650, width: 200, height: 50)
                 view.addSubview(button12)
         
+        let button13 = UIButton(type: .system)
+                button13.setTitle("Prebid Interstitial", for: .normal)
+                button13.addAction(UIAction { [weak self] _ in
+                    self?.openDemoAdPage(adType: .prebidInterstitial)
+                }, for: .touchUpInside)
+                button13.frame = CGRect(x: 100, y: 700, width: 200, height: 50)
+                view.addSubview(button13)
+        
         let debugButton = UIButton(type: .system)
                 debugButton.setTitle("Debug Ad Load", for: .normal)
                 debugButton.backgroundColor = .systemOrange
@@ -144,7 +152,7 @@ class ViewController: UIViewController {
                 debugButton.addAction(UIAction {_ in
                     MSP.shared.showMediationDebugger()
                 }, for: .touchUpInside)
-                debugButton.frame = CGRect(x: 100, y: 700, width: 200, height: 50)
+                debugButton.frame = CGRect(x: 100, y: 750, width: 200, height: 50)
                 view.addSubview(debugButton)
     }
 
