@@ -864,6 +864,7 @@ extension UIKit.UIView {
   convenience public init(configID: Swift.String)
   @objc public func loadAd()
   @objc public func show(from controller: UIKit.UIViewController)
+  @objc public func handleBidResponse(response: PrebidMobile.BidResponse)
   @objc public func addContextData(_ data: Swift.String, forKey key: Swift.String)
   @objc public func updateContextData(_ data: Swift.Set<Swift.String>, forKey key: Swift.String)
   @objc public func removeContextDate(forKey key: Swift.String)
