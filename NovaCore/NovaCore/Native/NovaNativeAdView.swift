@@ -49,6 +49,9 @@ open class NovaNativeAdView: UIView {
             return view
         }()
         super.init(frame: .zero)
+        if let popUpView = mediaView?.videoView.popOverCtaController?.tappableView {
+            self.seTappableView(view: popUpView)
+        }
     }
 
     @available(*, unavailable)
@@ -114,6 +117,13 @@ public extension NovaNativeAdView {
 
         stopTimerIfNeeded()
         iABMetricReporter?.stopSession()
+    }
+    
+    public func seTappableView(view: UIView) {
+        view.isUserInteractionEnabled = true
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(didTapAdView(sender:)))
+        tapGesture.accessibilityLabel = view.accessibilityIdentifier
+        view.addGestureRecognizer(tapGesture)
     }
 }
 
