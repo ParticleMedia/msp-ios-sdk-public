@@ -765,6 +765,7 @@ SWIFT_CLASS("_TtC12PrebidMobile22BaseInterstitialAdUnit")
 @property (nonatomic, readonly, strong) AdUnitConfig * _Nonnull adUnitConfig;
 - (void)loadAd;
 - (void)showFrom:(UIViewController * _Nonnull)controller;
+- (void)handleBidResponseWithResponse:(BidResponse * _Nonnull)response;
 - (void)addContextData:(NSString * _Nonnull)data forKey:(NSString * _Nonnull)key;
 - (void)updateContextData:(NSSet<NSString *> * _Nonnull)data forKey:(NSString * _Nonnull)key;
 - (void)removeContextDateForKey:(NSString * _Nonnull)key;

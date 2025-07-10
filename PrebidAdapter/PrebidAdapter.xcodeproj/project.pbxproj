@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		1FAD4CF4DA9A5F4F6FF39485 /* Pods_PrebidAdapter.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8A11CB79D7872D1A49043475 /* Pods_PrebidAdapter.framework */; };
 		5E351931D3F6D56A60BE2F9D /* Pods_PrebidAdapter_PrebidAdapterTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 64BFBFF1962FABF7FA1D080A /* Pods_PrebidAdapter_PrebidAdapterTests.framework */; };
+		667A642F2E1EE20500A9B954 /* PrebidInterstitialAd.swift in Sources */ = {isa = PBXBuildFile; fileRef = 667A642E2E1EE1FB00A9B954 /* PrebidInterstitialAd.swift */; };
 		66D6C3A42B322B44006EBBF3 /* PrebidAdapter.docc in Sources */ = {isa = PBXBuildFile; fileRef = 66D6C3A32B322B44006EBBF3 /* PrebidAdapter.docc */; };
 		66D6C3AA2B322B44006EBBF3 /* PrebidAdapter.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 66D6C39F2B322B44006EBBF3 /* PrebidAdapter.framework */; };
 		66D6C3AF2B322B44006EBBF3 /* PrebidAdapterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66D6C3AE2B322B44006EBBF3 /* PrebidAdapterTests.swift */; };
@@ -32,6 +33,7 @@
 		520CD0FAE42A5653AA1BB6DF /* Pods-PrebidAdapter-PrebidAdapterTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PrebidAdapter-PrebidAdapterTests.debug.xcconfig"; path = "Target Support Files/Pods-PrebidAdapter-PrebidAdapterTests/Pods-PrebidAdapter-PrebidAdapterTests.debug.xcconfig"; sourceTree = "<group>"; };
 		64BFBFF1962FABF7FA1D080A /* Pods_PrebidAdapter_PrebidAdapterTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_PrebidAdapter_PrebidAdapterTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		6657537F2BF1A9DA00338B1C /* MSPiOSCore.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; path = MSPiOSCore.xcframework; sourceTree = "<group>"; };
+		667A642E2E1EE1FB00A9B954 /* PrebidInterstitialAd.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrebidInterstitialAd.swift; sourceTree = "<group>"; };
 		66D6C39F2B322B44006EBBF3 /* PrebidAdapter.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = PrebidAdapter.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		66D6C3A22B322B44006EBBF3 /* PrebidAdapter.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PrebidAdapter.h; sourceTree = "<group>"; };
 		66D6C3A32B322B44006EBBF3 /* PrebidAdapter.docc */ = {isa = PBXFileReference; lastKnownFileType = folder.documentationcatalog; path = PrebidAdapter.docc; sourceTree = "<group>"; };
@@ -86,6 +88,14 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+		667A642D2E1EE1E900A9B954 /* Interstitial */ = {
+			isa = PBXGroup;
+			children = (
+				667A642E2E1EE1FB00A9B954 /* PrebidInterstitialAd.swift */,
+			);
+			path = Interstitial;
+			sourceTree = "<group>";
+		};
 		66D6C3952B322B44006EBBF3 = {
 			isa = PBXGroup;
 			children = (
@@ -110,6 +120,7 @@
 		66D6C3A12B322B44006EBBF3 /* PrebidAdapter */ = {
 			isa = PBXGroup;
 			children = (
+				667A642D2E1EE1E900A9B954 /* Interstitial */,
 				66D6C3F42B339BB0006EBBF3 /* PrebidAdapter.modulemap */,
 				66D6C3A22B322B44006EBBF3 /* PrebidAdapter.h */,
 				66D6C3A32B322B44006EBBF3 /* PrebidAdapter.docc */,
@@ -296,6 +307,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				667A642F2E1EE20500A9B954 /* PrebidInterstitialAd.swift in Sources */,
 				66D6C3A42B322B44006EBBF3 /* PrebidAdapter.docc in Sources */,
 				66D6C3E62B323F76006EBBF3 /* PrebidAdapter.swift in Sources */,
 				66D6C3F22B33996A006EBBF3 /* PrebidBidLoader.swift in Sources */,

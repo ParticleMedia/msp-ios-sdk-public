@@ -10,6 +10,7 @@ import NovaCore
 
 public enum AdType: String {
     case prebidBanner
+    case prebidInterstitial
     case googleBanner
     case googleNative
     case novaNative
@@ -60,6 +61,8 @@ class DemoAdViewController: UIViewController {
         switch adType {
         case .prebidBanner:
             return "demo-ios-article-top"
+        case .prebidInterstitial:
+            return "demo-ios-launch-fullscreen"
         case .googleBanner:
             return "demo-ios-article-top"
         case .googleNative:
@@ -116,7 +119,7 @@ class DemoAdViewController: UIViewController {
     
         case .googleNative, .novaNative, .facebookNative, .unityNative, .inmobiNative,.pubmaticNative,.mobilefuseNative,.mintegralNative:
             return .native
-        case .googleInterstitial, .novaInterstitialHorizontalImage,.novaInterstitialVerticalImage,.novaInterstitialHorizontalVideo,.novaInterstitialVerticalVideo, .novaInterstitialHighEngagement, .facebookInterstitial, .unityInterstitial, .inmobiInterstitial,.pubmaticInterstitial,.mobilefuseInterstitial,.mintegralInterstitial, .novaInterstitialEndCard:
+        case .prebidInterstitial, .googleInterstitial, .novaInterstitialHorizontalImage,.novaInterstitialVerticalImage,.novaInterstitialHorizontalVideo,.novaInterstitialVerticalVideo, .novaInterstitialHighEngagement, .facebookInterstitial, .unityInterstitial, .inmobiInterstitial,.pubmaticInterstitial,.mobilefuseInterstitial,.mintegralInterstitial, .novaInterstitialEndCard:
             return .interstitial
         }
     }()
@@ -160,6 +163,8 @@ class DemoAdViewController: UIViewController {
             testParams["test"] = "{\"ad_network\":\"msp_fb\",\"test_ad\":true}"
         } else if adType == .clientBiddingBanner {
             testParams["test"] = "{\"ad_network\":\"msp_google\",\"test_ad\":true}"
+        } else if adType == .prebidInterstitial {
+            testParams["test"] = "{\"ad_network\":\"pubmatic\",\"test_ad\":true}"
         }
         testParams["mobilefuse"] = "true"
         customParams[MSPConstants.GOOGLE_AD_MULTI_CONTENT_URLS] = ["https://www.google.com", "https://newsbreak.com"]
