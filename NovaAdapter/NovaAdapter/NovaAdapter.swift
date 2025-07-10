@@ -413,3 +413,4 @@ extension NovaAdapter: NovaAppOpenAdDelegate {
         }
     }
 }
+

@@ -24,7 +24,11 @@ public extension UIApplication {
     }
 
     class var novakeyRootViewController: UIViewController? {
-        novasharedKeyWindow?.rootViewController
+        let vc = novasharedKeyWindow?.rootViewController
+        if vc?.presentedViewController != nil {
+            return vc?.presentedViewController
+        }
+        return vc
     }
 
 }
