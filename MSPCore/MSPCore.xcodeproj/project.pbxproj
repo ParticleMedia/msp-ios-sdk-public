@@ -15,6 +15,44 @@
 		6639ACAB2B4DFDF700A248D2 /* MSPHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6639ACAA2B4DFDF700A248D2 /* MSPHelper.swift */; };
 		6639ACAD2B4E008B00A248D2 /* MSPBidLoaderProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6639ACAC2B4E008B00A248D2 /* MSPBidLoaderProvider.swift */; };
 		6639ACAF2B4E0C2B00A248D2 /* MSPAdNetworkAdapterProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6639ACAE2B4E0C2B00A248D2 /* MSPAdNetworkAdapterProvider.swift */; };
+		667A64682E20950000A9B954 /* AdNetwork+TestParamPresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 667A643D2E20950000A9B954 /* AdNetwork+TestParamPresentable.swift */; };
+		667A64692E20950000A9B954 /* LoadAdRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 667A64542E20950000A9B954 /* LoadAdRepository.swift */; };
+		667A646A2E20950000A9B954 /* DebugNativeAdContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 667A64612E20950000A9B954 /* DebugNativeAdContainer.swift */; };
+		667A646B2E20950000A9B954 /* AdFormat+DebugOption.swift in Sources */ = {isa = PBXBuildFile; fileRef = 667A64392E20950000A9B954 /* AdFormat+DebugOption.swift */; };
+		667A646C2E20950000A9B954 /* HighEngagementOption+DebugOption.swift in Sources */ = {isa = PBXBuildFile; fileRef = 667A643E2E20950000A9B954 /* HighEngagementOption+DebugOption.swift */; };
+		667A646D2E20950000A9B954 /* NovaAppOpenAdLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 667A644F2E20950000A9B954 /* NovaAppOpenAdLayout.swift */; };
+		667A646E2E20950000A9B954 /* DebugRadioView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 667A64632E20950000A9B954 /* DebugRadioView.swift */; };
+		667A646F2E20950000A9B954 /* PlacementsRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 667A64552E20950000A9B954 /* PlacementsRepository.swift */; };
+		667A64702E20950000A9B954 /* HighEngagementOption.swift in Sources */ = {isa = PBXBuildFile; fileRef = 667A644E2E20950000A9B954 /* HighEngagementOption.swift */; };
+		667A64712E20950000A9B954 /* NovaAppOpenAdLayout+DebugOption.swift in Sources */ = {isa = PBXBuildFile; fileRef = 667A64402E20950000A9B954 /* NovaAppOpenAdLayout+DebugOption.swift */; };
+		667A64722E20950000A9B954 /* DebugDisplayable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 667A64452E20950000A9B954 /* DebugDisplayable.swift */; };
+		667A64732E20950000A9B954 /* AdNetwork+PlacementPresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 667A643C2E20950000A9B954 /* AdNetwork+PlacementPresentable.swift */; };
+		667A64742E20950000A9B954 /* DebugSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 667A64482E20950000A9B954 /* DebugSection.swift */; };
+		667A64752E20950000A9B954 /* DebugAdLoadViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 667A645E2E20950000A9B954 /* DebugAdLoadViewModel.swift */; };
+		667A64762E20950000A9B954 /* AdFormat+PlacementPresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 667A643A2E20950000A9B954 /* AdFormat+PlacementPresentable.swift */; };
+		667A64772E20950000A9B954 /* TestLoadAdService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 667A64572E20950000A9B954 /* TestLoadAdService.swift */; };
+		667A64782E20950000A9B954 /* DebugAdContainerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 667A645A2E20950000A9B954 /* DebugAdContainerViewController.swift */; };
+		667A64792E20950000A9B954 /* DebugError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 667A644C2E20950000A9B954 /* DebugError.swift */; };
+		667A647A2E20950000A9B954 /* DebugOptionIdentifiable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 667A64472E20950000A9B954 /* DebugOptionIdentifiable.swift */; };
+		667A647B2E20950000A9B954 /* DebugOption.swift in Sources */ = {isa = PBXBuildFile; fileRef = 667A64462E20950000A9B954 /* DebugOption.swift */; };
+		667A647C2E20950000A9B954 /* NovaAppOpenAdLayout+TestParamPresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 667A64412E20950000A9B954 /* NovaAppOpenAdLayout+TestParamPresentable.swift */; };
+		667A647D2E20950000A9B954 /* PlacementPresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 667A64492E20950000A9B954 /* PlacementPresentable.swift */; };
+		667A647E2E20950000A9B954 /* HighEngagementOption+TestParamPresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 667A643F2E20950000A9B954 /* HighEngagementOption+TestParamPresentable.swift */; };
+		667A647F2E20950000A9B954 /* DebugAdLoadViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 667A645B2E20950000A9B954 /* DebugAdLoadViewController.swift */; };
+		667A64802E20950000A9B954 /* TestPlacementsService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 667A64582E20950000A9B954 /* TestPlacementsService.swift */; };
+		667A64812E20950000A9B954 /* DebugAdLoadSectionViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 667A645D2E20950000A9B954 /* DebugAdLoadSectionViewModel.swift */; };
+		667A64822E20950000A9B954 /* DebugRadioCellViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 667A645F2E20950000A9B954 /* DebugRadioCellViewModel.swift */; };
+		667A64832E20950000A9B954 /* NovaCreativeType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 667A64502E20950000A9B954 /* NovaCreativeType.swift */; };
+		667A64842E20950000A9B954 /* AdNetwork+DebugOption.swift in Sources */ = {isa = PBXBuildFile; fileRef = 667A643B2E20950000A9B954 /* AdNetwork+DebugOption.swift */; };
+		667A64852E20950000A9B954 /* DebugToast.swift in Sources */ = {isa = PBXBuildFile; fileRef = 667A64642E20950000A9B954 /* DebugToast.swift */; };
+		667A64872E20950000A9B954 /* DebugSectionData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 667A644D2E20950000A9B954 /* DebugSectionData.swift */; };
+		667A64882E20950000A9B954 /* NovaCreativeType+TestParamPresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 667A64432E20950000A9B954 /* NovaCreativeType+TestParamPresentable.swift */; };
+		667A64892E20950000A9B954 /* TestDebugSectionsService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 667A64562E20950000A9B954 /* TestDebugSectionsService.swift */; };
+		667A648A2E20950000A9B954 /* NovaCreativeType+DebugOption.swift in Sources */ = {isa = PBXBuildFile; fileRef = 667A64422E20950000A9B954 /* NovaCreativeType+DebugOption.swift */; };
+		667A648B2E20950000A9B954 /* TestParamsPresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 667A64512E20950000A9B954 /* TestParamsPresentable.swift */; };
+		667A648C2E20950000A9B954 /* DebugRadioCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 667A64622E20950000A9B954 /* DebugRadioCell.swift */; };
+		667A648D2E20950000A9B954 /* DebugSectionsRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 667A64532E20950000A9B954 /* DebugSectionsRepository.swift */; };
+		667A648E2E20950000A9B954 /* .swiftlint.yml in Resources */ = {isa = PBXBuildFile; fileRef = 667A64662E20950000A9B954 /* .swiftlint.yml */; };
 		668DA2882E09D5E100E12314 /* load_ad.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = 668DA2852E09D5E100E12314 /* load_ad.pb.swift */; };
 		668DA2892E09D5E100E12314 /* common.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = 668DA2802E09D5E100E12314 /* common.pb.swift */; };
 		668DA28A2E09D5E100E12314 /* openrtb-v26.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = 668DA2862E09D5E100E12314 /* openrtb-v26.pb.swift */; };
@@ -79,6 +117,44 @@
 		664DCF8C2B4F3D9700BF19B6 /* PrebidAdapter.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = PrebidAdapter.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		664DCF902B4F3EA800BF19B6 /* PrebidAdapter.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; path = PrebidAdapter.xcframework; sourceTree = "<group>"; };
 		664DCF942B4F3FA900BF19B6 /* PrebidMobile.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; path = PrebidMobile.xcframework; sourceTree = "<group>"; };
+		667A64392E20950000A9B954 /* AdFormat+DebugOption.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AdFormat+DebugOption.swift"; sourceTree = "<group>"; };
+		667A643A2E20950000A9B954 /* AdFormat+PlacementPresentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AdFormat+PlacementPresentable.swift"; sourceTree = "<group>"; };
+		667A643B2E20950000A9B954 /* AdNetwork+DebugOption.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AdNetwork+DebugOption.swift"; sourceTree = "<group>"; };
+		667A643C2E20950000A9B954 /* AdNetwork+PlacementPresentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AdNetwork+PlacementPresentable.swift"; sourceTree = "<group>"; };
+		667A643D2E20950000A9B954 /* AdNetwork+TestParamPresentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AdNetwork+TestParamPresentable.swift"; sourceTree = "<group>"; };
+		667A643E2E20950000A9B954 /* HighEngagementOption+DebugOption.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "HighEngagementOption+DebugOption.swift"; sourceTree = "<group>"; };
+		667A643F2E20950000A9B954 /* HighEngagementOption+TestParamPresentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "HighEngagementOption+TestParamPresentable.swift"; sourceTree = "<group>"; };
+		667A64402E20950000A9B954 /* NovaAppOpenAdLayout+DebugOption.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NovaAppOpenAdLayout+DebugOption.swift"; sourceTree = "<group>"; };
+		667A64412E20950000A9B954 /* NovaAppOpenAdLayout+TestParamPresentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NovaAppOpenAdLayout+TestParamPresentable.swift"; sourceTree = "<group>"; };
+		667A64422E20950000A9B954 /* NovaCreativeType+DebugOption.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NovaCreativeType+DebugOption.swift"; sourceTree = "<group>"; };
+		667A64432E20950000A9B954 /* NovaCreativeType+TestParamPresentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NovaCreativeType+TestParamPresentable.swift"; sourceTree = "<group>"; };
+		667A64452E20950000A9B954 /* DebugDisplayable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebugDisplayable.swift; sourceTree = "<group>"; };
+		667A64462E20950000A9B954 /* DebugOption.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebugOption.swift; sourceTree = "<group>"; };
+		667A64472E20950000A9B954 /* DebugOptionIdentifiable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebugOptionIdentifiable.swift; sourceTree = "<group>"; };
+		667A64482E20950000A9B954 /* DebugSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebugSection.swift; sourceTree = "<group>"; };
+		667A64492E20950000A9B954 /* PlacementPresentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlacementPresentable.swift; sourceTree = "<group>"; };
+		667A644C2E20950000A9B954 /* DebugError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebugError.swift; sourceTree = "<group>"; };
+		667A644D2E20950000A9B954 /* DebugSectionData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebugSectionData.swift; sourceTree = "<group>"; };
+		667A644E2E20950000A9B954 /* HighEngagementOption.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HighEngagementOption.swift; sourceTree = "<group>"; };
+		667A644F2E20950000A9B954 /* NovaAppOpenAdLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NovaAppOpenAdLayout.swift; sourceTree = "<group>"; };
+		667A64502E20950000A9B954 /* NovaCreativeType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NovaCreativeType.swift; sourceTree = "<group>"; };
+		667A64512E20950000A9B954 /* TestParamsPresentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestParamsPresentable.swift; sourceTree = "<group>"; };
+		667A64532E20950000A9B954 /* DebugSectionsRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebugSectionsRepository.swift; sourceTree = "<group>"; };
+		667A64542E20950000A9B954 /* LoadAdRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadAdRepository.swift; sourceTree = "<group>"; };
+		667A64552E20950000A9B954 /* PlacementsRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlacementsRepository.swift; sourceTree = "<group>"; };
+		667A64562E20950000A9B954 /* TestDebugSectionsService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestDebugSectionsService.swift; sourceTree = "<group>"; };
+		667A64572E20950000A9B954 /* TestLoadAdService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestLoadAdService.swift; sourceTree = "<group>"; };
+		667A64582E20950000A9B954 /* TestPlacementsService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestPlacementsService.swift; sourceTree = "<group>"; };
+		667A645A2E20950000A9B954 /* DebugAdContainerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebugAdContainerViewController.swift; sourceTree = "<group>"; };
+		667A645B2E20950000A9B954 /* DebugAdLoadViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebugAdLoadViewController.swift; sourceTree = "<group>"; };
+		667A645D2E20950000A9B954 /* DebugAdLoadSectionViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebugAdLoadSectionViewModel.swift; sourceTree = "<group>"; };
+		667A645E2E20950000A9B954 /* DebugAdLoadViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebugAdLoadViewModel.swift; sourceTree = "<group>"; };
+		667A645F2E20950000A9B954 /* DebugRadioCellViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebugRadioCellViewModel.swift; sourceTree = "<group>"; };
+		667A64612E20950000A9B954 /* DebugNativeAdContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebugNativeAdContainer.swift; sourceTree = "<group>"; };
+		667A64622E20950000A9B954 /* DebugRadioCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebugRadioCell.swift; sourceTree = "<group>"; };
+		667A64632E20950000A9B954 /* DebugRadioView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebugRadioView.swift; sourceTree = "<group>"; };
+		667A64642E20950000A9B954 /* DebugToast.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebugToast.swift; sourceTree = "<group>"; };
+		667A64662E20950000A9B954 /* .swiftlint.yml */ = {isa = PBXFileReference; lastKnownFileType = text.yaml; path = .swiftlint.yml; sourceTree = "<group>"; };
 		6684804A2BE03CE30025018B /* MSPDemoApp.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = MSPDemoApp.xcodeproj; path = ../MSPDemoApp/MSPDemoApp/MSPDemoApp.xcodeproj; sourceTree = "<group>"; };
 		668DA27A2E09D5E100E12314 /* ad_click.pb.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ad_click.pb.swift; sourceTree = "<group>"; };
 		668DA27B2E09D5E100E12314 /* ad_hide.pb.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ad_hide.pb.swift; sourceTree = "<group>"; };
@@ -150,6 +226,7 @@
 		6639AC872B4DFAE300A248D2 /* MSPCore */ = {
 			isa = PBXGroup;
 			children = (
+				667A64672E20950000A9B954 /* Debug */,
 				66AFBBDC2CB45EF2000D0DD3 /* MESRawFiles */,
 				6639AC882B4DFAE300A248D2 /* MSPCore.h */,
 				6639AC892B4DFAE300A248D2 /* MSPCore.docc */,
@@ -190,6 +267,107 @@
 				3BEFDC62A992B10540FF1C8C /* libPods-MSPCore.a */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		667A64442E20950000A9B954 /* Extensions */ = {
+			isa = PBXGroup;
+			children = (
+				667A64392E20950000A9B954 /* AdFormat+DebugOption.swift */,
+				667A643A2E20950000A9B954 /* AdFormat+PlacementPresentable.swift */,
+				667A643B2E20950000A9B954 /* AdNetwork+DebugOption.swift */,
+				667A643C2E20950000A9B954 /* AdNetwork+PlacementPresentable.swift */,
+				667A643D2E20950000A9B954 /* AdNetwork+TestParamPresentable.swift */,
+				667A643E2E20950000A9B954 /* HighEngagementOption+DebugOption.swift */,
+				667A643F2E20950000A9B954 /* HighEngagementOption+TestParamPresentable.swift */,
+				667A64402E20950000A9B954 /* NovaAppOpenAdLayout+DebugOption.swift */,
+				667A64412E20950000A9B954 /* NovaAppOpenAdLayout+TestParamPresentable.swift */,
+				667A64422E20950000A9B954 /* NovaCreativeType+DebugOption.swift */,
+				667A64432E20950000A9B954 /* NovaCreativeType+TestParamPresentable.swift */,
+			);
+			path = Extensions;
+			sourceTree = "<group>";
+		};
+		667A644A2E20950000A9B954 /* Protocols */ = {
+			isa = PBXGroup;
+			children = (
+				667A64452E20950000A9B954 /* DebugDisplayable.swift */,
+				667A64462E20950000A9B954 /* DebugOption.swift */,
+				667A64472E20950000A9B954 /* DebugOptionIdentifiable.swift */,
+				667A64482E20950000A9B954 /* DebugSection.swift */,
+				667A64492E20950000A9B954 /* PlacementPresentable.swift */,
+			);
+			path = Protocols;
+			sourceTree = "<group>";
+		};
+		667A64522E20950000A9B954 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				667A64442E20950000A9B954 /* Extensions */,
+				667A644A2E20950000A9B954 /* Protocols */,
+				667A644C2E20950000A9B954 /* DebugError.swift */,
+				667A644D2E20950000A9B954 /* DebugSectionData.swift */,
+				667A644E2E20950000A9B954 /* HighEngagementOption.swift */,
+				667A644F2E20950000A9B954 /* NovaAppOpenAdLayout.swift */,
+				667A64502E20950000A9B954 /* NovaCreativeType.swift */,
+				667A64512E20950000A9B954 /* TestParamsPresentable.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		667A64592E20950000A9B954 /* Repositorys */ = {
+			isa = PBXGroup;
+			children = (
+				667A64532E20950000A9B954 /* DebugSectionsRepository.swift */,
+				667A64542E20950000A9B954 /* LoadAdRepository.swift */,
+				667A64552E20950000A9B954 /* PlacementsRepository.swift */,
+				667A64562E20950000A9B954 /* TestDebugSectionsService.swift */,
+				667A64572E20950000A9B954 /* TestLoadAdService.swift */,
+				667A64582E20950000A9B954 /* TestPlacementsService.swift */,
+			);
+			path = Repositorys;
+			sourceTree = "<group>";
+		};
+		667A645C2E20950000A9B954 /* ViewControllers */ = {
+			isa = PBXGroup;
+			children = (
+				667A645A2E20950000A9B954 /* DebugAdContainerViewController.swift */,
+				667A645B2E20950000A9B954 /* DebugAdLoadViewController.swift */,
+			);
+			path = ViewControllers;
+			sourceTree = "<group>";
+		};
+		667A64602E20950000A9B954 /* ViewModels */ = {
+			isa = PBXGroup;
+			children = (
+				667A645D2E20950000A9B954 /* DebugAdLoadSectionViewModel.swift */,
+				667A645E2E20950000A9B954 /* DebugAdLoadViewModel.swift */,
+				667A645F2E20950000A9B954 /* DebugRadioCellViewModel.swift */,
+			);
+			path = ViewModels;
+			sourceTree = "<group>";
+		};
+		667A64652E20950000A9B954 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				667A64612E20950000A9B954 /* DebugNativeAdContainer.swift */,
+				667A64622E20950000A9B954 /* DebugRadioCell.swift */,
+				667A64632E20950000A9B954 /* DebugRadioView.swift */,
+				667A64642E20950000A9B954 /* DebugToast.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		667A64672E20950000A9B954 /* Debug */ = {
+			isa = PBXGroup;
+			children = (
+				667A64522E20950000A9B954 /* Models */,
+				667A64592E20950000A9B954 /* Repositorys */,
+				667A645C2E20950000A9B954 /* ViewControllers */,
+				667A64602E20950000A9B954 /* ViewModels */,
+				667A64652E20950000A9B954 /* Views */,
+				667A64662E20950000A9B954 /* .swiftlint.yml */,
+			);
+			path = Debug;
 			sourceTree = "<group>";
 		};
 		6684804B2BE03CE30025018B /* Products */ = {
@@ -355,6 +533,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				667A648E2E20950000A9B954 /* .swiftlint.yml in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -407,6 +586,43 @@
 				668DA28B2E09D5E100E12314 /* ad_response.pb.swift in Sources */,
 				668DA28C2E09D5E100E12314 /* get_ad_from_cache.pb.swift in Sources */,
 				668DA28D2E09D5E100E12314 /* ad_report.pb.swift in Sources */,
+				667A64682E20950000A9B954 /* AdNetwork+TestParamPresentable.swift in Sources */,
+				667A64692E20950000A9B954 /* LoadAdRepository.swift in Sources */,
+				667A646A2E20950000A9B954 /* DebugNativeAdContainer.swift in Sources */,
+				667A646B2E20950000A9B954 /* AdFormat+DebugOption.swift in Sources */,
+				667A646C2E20950000A9B954 /* HighEngagementOption+DebugOption.swift in Sources */,
+				667A646D2E20950000A9B954 /* NovaAppOpenAdLayout.swift in Sources */,
+				667A646E2E20950000A9B954 /* DebugRadioView.swift in Sources */,
+				667A646F2E20950000A9B954 /* PlacementsRepository.swift in Sources */,
+				667A64702E20950000A9B954 /* HighEngagementOption.swift in Sources */,
+				667A64712E20950000A9B954 /* NovaAppOpenAdLayout+DebugOption.swift in Sources */,
+				667A64722E20950000A9B954 /* DebugDisplayable.swift in Sources */,
+				667A64732E20950000A9B954 /* AdNetwork+PlacementPresentable.swift in Sources */,
+				667A64742E20950000A9B954 /* DebugSection.swift in Sources */,
+				667A64752E20950000A9B954 /* DebugAdLoadViewModel.swift in Sources */,
+				667A64762E20950000A9B954 /* AdFormat+PlacementPresentable.swift in Sources */,
+				667A64772E20950000A9B954 /* TestLoadAdService.swift in Sources */,
+				667A64782E20950000A9B954 /* DebugAdContainerViewController.swift in Sources */,
+				667A64792E20950000A9B954 /* DebugError.swift in Sources */,
+				667A647A2E20950000A9B954 /* DebugOptionIdentifiable.swift in Sources */,
+				667A647B2E20950000A9B954 /* DebugOption.swift in Sources */,
+				667A647C2E20950000A9B954 /* NovaAppOpenAdLayout+TestParamPresentable.swift in Sources */,
+				667A647D2E20950000A9B954 /* PlacementPresentable.swift in Sources */,
+				667A647E2E20950000A9B954 /* HighEngagementOption+TestParamPresentable.swift in Sources */,
+				667A647F2E20950000A9B954 /* DebugAdLoadViewController.swift in Sources */,
+				667A64802E20950000A9B954 /* TestPlacementsService.swift in Sources */,
+				667A64812E20950000A9B954 /* DebugAdLoadSectionViewModel.swift in Sources */,
+				667A64822E20950000A9B954 /* DebugRadioCellViewModel.swift in Sources */,
+				667A64832E20950000A9B954 /* NovaCreativeType.swift in Sources */,
+				667A64842E20950000A9B954 /* AdNetwork+DebugOption.swift in Sources */,
+				667A64852E20950000A9B954 /* DebugToast.swift in Sources */,
+				667A64872E20950000A9B954 /* DebugSectionData.swift in Sources */,
+				667A64882E20950000A9B954 /* NovaCreativeType+TestParamPresentable.swift in Sources */,
+				667A64892E20950000A9B954 /* TestDebugSectionsService.swift in Sources */,
+				667A648A2E20950000A9B954 /* NovaCreativeType+DebugOption.swift in Sources */,
+				667A648B2E20950000A9B954 /* TestParamsPresentable.swift in Sources */,
+				667A648C2E20950000A9B954 /* DebugRadioCell.swift in Sources */,
+				667A648D2E20950000A9B954 /* DebugSectionsRepository.swift in Sources */,
 				668DA28E2E09D5E100E12314 /* get_ad.pb.swift in Sources */,
 				668DA28F2E09D5E100E12314 /* load_ad_result.pb.swift in Sources */,
 				668DA2902E09D5E100E12314 /* sdk_init.pb.swift in Sources */,
