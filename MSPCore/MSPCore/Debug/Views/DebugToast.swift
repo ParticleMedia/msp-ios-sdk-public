@@ -35,9 +35,8 @@ class DebugToast: UIView {
         return label
     }()
     
-    private lazy var activityIndicator: UIActivityIndicatorView = {
-        let indicator = UIActivityIndicatorView(style: .medium)
-        indicator.color = UIConfig.indicatorColor
+    private lazy var activityIndicator: CustomSpinnerView = {
+        let indicator = CustomSpinnerView(frame: CGRect(x: 0, y: 0, width: 24, height: 24))
         return indicator
     }()
     
@@ -80,6 +79,9 @@ class DebugToast: UIView {
             make.edges.equalToSuperview().inset(UIConfig.stackInset)
         }
         if style == .loading {
+            activityIndicator.snp.makeConstraints { make in
+                make.width.height.equalTo(24)
+            }
             activityIndicator.startAnimating()
         }
     }
@@ -140,5 +142,58 @@ class ToastManager {
     
     func dismiss() {
         dismissCurrentToast()
+    }
+} 
+
+// Add CustomSpinnerView
+class CustomSpinnerView: UIView {
+    private let spinnerLayer = CAShapeLayer()
+    private let animationKey = "rotation"
+    private var isAnimating = false
+
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        spinnerLayer.strokeColor = UIColor.white.cgColor
+        spinnerLayer.fillColor = UIColor.clear.cgColor
+        layer.addSublayer(spinnerLayer)
+    }
+
+    required init?(coder: NSCoder) {
+        super.init(coder: coder)
+        spinnerLayer.strokeColor = UIColor.white.cgColor
+        spinnerLayer.fillColor = UIColor.clear.cgColor
+        layer.addSublayer(spinnerLayer)
+    }
+
+    private func updateSpinnerPath() {
+        let lineWidth: CGFloat = 2.5
+        let size = min(bounds.width, bounds.height)
+        let radius = size / 2 - lineWidth
+        let center = CGPoint(x: bounds.midX, y: bounds.midY)
+        let circularPath = UIBezierPath(arcCenter: center, radius: radius, startAngle: 0, endAngle: .pi * 1.5, clockwise: true)
+        spinnerLayer.path = circularPath.cgPath
+        spinnerLayer.lineWidth = lineWidth
+        spinnerLayer.frame = bounds
+    }
+
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        updateSpinnerPath()
+    }
+
+    func startAnimating() {
+        guard !isAnimating else { return }
+        isAnimating = true
+        let rotation = CABasicAnimation(keyPath: "transform.rotation")
+        rotation.fromValue = 0
+        rotation.toValue = 2 * Double.pi
+        rotation.duration = 1
+        rotation.repeatCount = .infinity
+        layer.add(rotation, forKey: animationKey)
+    }
+
+    func stopAnimating() {
+        isAnimating = false
+        layer.removeAnimation(forKey: animationKey)
     }
 } 
