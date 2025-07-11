@@ -1,4 +1,15 @@
-## 06/30/2025 (SDK bidding)
+## v2.2.0 (07/10/2025)
+1. support MSP debug page
+2. support Prebid Interstitial
+3. support pop up cta for video native ad
+- `pod 'MSPSharedLibraries', '2.2.0'`
+- `pod 'PrebidAdatper', '2.2.0'`
+- `pod 'GoogleAdatper', '2.2.0'`
+- `pod 'FacebookAdatper', '2.2.0'`
+- `pod 'NovaAdatper', '2.2.0'`
+- `pod 'MSPCore', '2.2.0'`
+
+## v2.1.0 (06/30/2025)
 1. add sdk_init and ad_response MES log
 2. support interstitial end card layout
 - `pod 'MSPSharedLibraries', '2.1.0'`
