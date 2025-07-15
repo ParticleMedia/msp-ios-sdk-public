@@ -15,6 +15,7 @@
 		6639ACAB2B4DFDF700A248D2 /* MSPHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6639ACAA2B4DFDF700A248D2 /* MSPHelper.swift */; };
 		6639ACAD2B4E008B00A248D2 /* MSPBidLoaderProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6639ACAC2B4E008B00A248D2 /* MSPBidLoaderProvider.swift */; };
 		6639ACAF2B4E0C2B00A248D2 /* MSPAdNetworkAdapterProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6639ACAE2B4E0C2B00A248D2 /* MSPAdNetworkAdapterProvider.swift */; };
+		6643E2B42E25B00300BAADD7 /* MSPDevice.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6643E2B32E25AFFE00BAADD7 /* MSPDevice.swift */; };
 		667A64682E20950000A9B954 /* AdNetwork+TestParamPresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 667A643D2E20950000A9B954 /* AdNetwork+TestParamPresentable.swift */; };
 		667A64692E20950000A9B954 /* LoadAdRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 667A64542E20950000A9B954 /* LoadAdRepository.swift */; };
 		667A646A2E20950000A9B954 /* DebugNativeAdContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 667A64612E20950000A9B954 /* DebugNativeAdContainer.swift */; };
@@ -114,6 +115,7 @@
 		6639ACAA2B4DFDF700A248D2 /* MSPHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MSPHelper.swift; sourceTree = "<group>"; };
 		6639ACAC2B4E008B00A248D2 /* MSPBidLoaderProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MSPBidLoaderProvider.swift; sourceTree = "<group>"; };
 		6639ACAE2B4E0C2B00A248D2 /* MSPAdNetworkAdapterProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MSPAdNetworkAdapterProvider.swift; sourceTree = "<group>"; };
+		6643E2B32E25AFFE00BAADD7 /* MSPDevice.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MSPDevice.swift; sourceTree = "<group>"; };
 		664DCF8C2B4F3D9700BF19B6 /* PrebidAdapter.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = PrebidAdapter.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		664DCF902B4F3EA800BF19B6 /* PrebidAdapter.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; path = PrebidAdapter.xcframework; sourceTree = "<group>"; };
 		664DCF942B4F3FA900BF19B6 /* PrebidMobile.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; path = PrebidMobile.xcframework; sourceTree = "<group>"; };
@@ -226,6 +228,7 @@
 		6639AC872B4DFAE300A248D2 /* MSPCore */ = {
 			isa = PBXGroup;
 			children = (
+				6643E2B32E25AFFE00BAADD7 /* MSPDevice.swift */,
 				667A64672E20950000A9B954 /* Debug */,
 				66AFBBDC2CB45EF2000D0DD3 /* MESRawFiles */,
 				6639AC882B4DFAE300A248D2 /* MSPCore.h */,
@@ -630,6 +633,7 @@
 				668DA2922E09D5E100E12314 /* ad_impression.pb.swift in Sources */,
 				668DA2932E09D5E100E12314 /* ad_hide.pb.swift in Sources */,
 				668DA2942E09D5E100E12314 /* ad_click.pb.swift in Sources */,
+				6643E2B42E25B00300BAADD7 /* MSPDevice.swift in Sources */,
 				668DA2952E09D5E100E12314 /* ad_request.pb.swift in Sources */,
 				6639ACAB2B4DFDF700A248D2 /* MSPHelper.swift in Sources */,
 				66EFCD9B2D123B00005E0135 /* MSPAdLoader.swift in Sources */,
