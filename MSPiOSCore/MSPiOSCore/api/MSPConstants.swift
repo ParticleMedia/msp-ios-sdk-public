@@ -16,4 +16,8 @@ public struct MSPConstants {
     public static let AD_INFO_NETWORK_NAME = "networkName"
     public static let AD_INFO_NETWORK_AD_UNIT_ID = "networkAdUnitId"
     public static let AD_INFO_NETWORK_CREATIVE_ID = "networkCreativeId"
+    
+    public static let USER_SIGNAL_APP_INSTALL_TIME = "app_install_time"
+    public static let USER_SIGNAL_IS_FIRST_INSTALL = "is_first_install"
+    public static let USER_SIGNAL_PPID = "ppid"
 }
