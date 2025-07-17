@@ -24,26 +24,26 @@ public class MSPDevice {
     private(set) var fontSize: UIContentSizeCategory?
     private(set) var availableMemory: Int?
     
-    private let CONTEXT_KEY_ORIENTATION = "orientation"
-    private let CONTEXT_KEY_IS_IN_FOREGROUND = "isInForeground"
-    private let CONTEXT_KEY_BATTERY_LEVEL = "batteryLevel"
-    private let CONTEXT_KEY_BATTERY_STATUS = "batteryStatus"
-    private let CONTEXT_KEY_IS_LOW_POWER_MODE = "isLowPowerMode"
-    private let CONTEXT_KEY_IS_LOW_DATA_MODE = "isLowDataMode"
-    private let CONTEXT_KEY_FONT_SIZE = "fontSize"
-    private let CONTEXT_KEY_AVAILABLE_MEMORY = "availableMemory"
+    private let DEIVCE_SIGNAL_ORIENTATION = "orientation"
+    private let DEIVCE_SIGNAL_IS_IN_FOREGROUND = "is_in_foreground"
+    private let DEIVCE_SIGNAL_BATTERY_LEVEL = "battery_level"
+    private let DEIVCE_SIGNAL_BATTERY_STATUS = "battery_status"
+    private let DEIVCE_SIGNAL_IS_LOW_POWER_MODE = "is_low_power_mode"
+    private let DEIVCE_SIGNAL_IS_LOW_DATA_MODE = "is_low_data_mode"
+    private let DEIVCE_SIGNAL_FONT_SIZE = "font_size"
+    private let DEIVCE_SIGNAL_AVAILABLE_MEMORY = "available_memory"
     
-    public func getContextDictionary() -> [String:String] {
+    public func getDeviceSignalsDictionary() -> [String:String] {
         self.collectDeviceInfo()
         var dict = [String:String]()
-        dict[CONTEXT_KEY_ORIENTATION] = getOrientationString(orientation: orientation)
-        dict[CONTEXT_KEY_IS_IN_FOREGROUND] = getStringFromStatusInBool(state: self.isInForeground)
-        dict[CONTEXT_KEY_BATTERY_LEVEL] = getBatteryLevelString()
-        dict[CONTEXT_KEY_BATTERY_STATUS] = getBatteryStatusString()
-        dict[CONTEXT_KEY_IS_LOW_POWER_MODE] = getStringFromStatusInBool(state: self.isLowPowerMode)
-        dict[CONTEXT_KEY_IS_LOW_DATA_MODE] = getStringFromStatusInBool(state: self.isLowDataMode)
-        dict[CONTEXT_KEY_FONT_SIZE] = getFontSizeString()
-        dict[CONTEXT_KEY_AVAILABLE_MEMORY] = getAvailableMemoryString()
+        dict[DEIVCE_SIGNAL_ORIENTATION] = getOrientationString(orientation: orientation)
+        dict[DEIVCE_SIGNAL_IS_IN_FOREGROUND] = getStringFromStatusInBool(state: self.isInForeground)
+        dict[DEIVCE_SIGNAL_BATTERY_LEVEL] = getBatteryLevelString()
+        dict[DEIVCE_SIGNAL_BATTERY_STATUS] = getBatteryStatusString()
+        dict[DEIVCE_SIGNAL_IS_LOW_POWER_MODE] = getStringFromStatusInBool(state: self.isLowPowerMode)
+        dict[DEIVCE_SIGNAL_IS_LOW_DATA_MODE] = getStringFromStatusInBool(state: self.isLowDataMode)
+        dict[DEIVCE_SIGNAL_FONT_SIZE] = getFontSizeString()
+        dict[DEIVCE_SIGNAL_AVAILABLE_MEMORY] = getAvailableMemoryString()
         
         return dict
     }
