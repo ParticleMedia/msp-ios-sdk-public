@@ -8,6 +8,7 @@
 import Foundation
 import MSPiOSCore
 import PrebidMobile
+import UIKit
 
 public class MSPBidder: MSPiOSCore.Bidder {
     public weak var auctionBidListener: AuctionBidListener?
@@ -23,6 +24,9 @@ public class MSPBidder: MSPiOSCore.Bidder {
         self.adRequest = adRequest
         self.bidLoader = prebidBidLoader
         adRequest.customParams["adn_sdk_versions"] = getSDKVersions()
+        for (key,value) in MSPDevice.shared.getDeviceSignalsDictionary() {
+            adRequest.customParams[key] = value
+        }
         prebidBidLoader.loadBid(placementId: bidderPlacementId, adParams: adRequest.customParams, bidListener: self, adRequest: adRequest)
     }
     
