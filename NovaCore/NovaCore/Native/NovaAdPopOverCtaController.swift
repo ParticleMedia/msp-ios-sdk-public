@@ -36,6 +36,7 @@ public class NovaAdPopOverCtaController: UIViewController {
 
         
         view.addSubviews(label, arrowImageView)
+        view.adClickArea = .cta_popover
         
         label.translatesAutoresizingMaskIntoConstraints = false
         arrowImageView.translatesAutoresizingMaskIntoConstraints = false

@@ -55,7 +55,7 @@ public class NovaAppOpenVerticalImageAdView: UIView {
             imageView.widthAnchor.constraint(equalToConstant: LayoutMetrics.avatarSize),
             imageView.heightAnchor.constraint(equalToConstant: LayoutMetrics.avatarSize)
         ])
-        imageView.accessibilityIdentifier = "icon"
+        imageView.adClickArea = .icon
 
         return imageView
     }()
@@ -66,7 +66,7 @@ public class NovaAppOpenVerticalImageAdView: UIView {
         label.textColor = NovaColorPalettes.White
         label.numberOfLines = 1
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.accessibilityIdentifier = "advertiser"
+        label.adClickArea = .advertiser
         label.isUserInteractionEnabled = true
         return label
     }()
@@ -79,7 +79,7 @@ public class NovaAppOpenVerticalImageAdView: UIView {
         label.translatesAutoresizingMaskIntoConstraints = false
         label.setContentCompressionResistancePriority(.required, for: .vertical)
         label.isUserInteractionEnabled = true
-        label.accessibilityIdentifier = "body"
+        label.adClickArea = .body
         return label
     }()
 
@@ -93,7 +93,7 @@ public class NovaAppOpenVerticalImageAdView: UIView {
         button.contentEdgeInsets = UIEdgeInsets(top: 2.0, left: 6.0, bottom: 2.0, right: 6.0)
         button.backgroundColor = NovaColorPalettes.White.nb_opacity4()
         button.layer.cornerRadius = 2.0
-        button.accessibilityIdentifier = "badge"
+        button.adClickArea = .badge
         return button
     }()
 
@@ -123,7 +123,7 @@ public class NovaAppOpenVerticalImageAdView: UIView {
             dark: NovaColorPalettes.Gray.tint200).cgColor
         button.layer.cornerRadius = 8.0
 
-        button.accessibilityIdentifier = "cta"
+        button.adClickArea = .cta
 
         return button
     }()
@@ -133,6 +133,7 @@ public class NovaAppOpenVerticalImageAdView: UIView {
         imageView.contentMode = .scaleAspectFill
         imageView.clipsToBounds = true
         imageView.image = UIImage.Nova.bottomShadow
+        imageView.adClickArea = .shadow
         return imageView
     }()
 
@@ -454,7 +455,7 @@ private extension NovaAppOpenVerticalImageAdView {
     func createMediaView(for openAd: NovaAppOpenAd) {
 
         let mediaView = NovaNativeAdMediaViewV2()
-        mediaView.accessibilityIdentifier = "media"
+        mediaView.adClickArea = .media
         mediaView.translatesAutoresizingMaskIntoConstraints = false
         
         self.mediaView = mediaView
@@ -546,7 +547,7 @@ private extension NovaAppOpenVerticalImageAdView {
             thirdPartyClickTrackingUrls: appOpenAd.thirdPartyClickTrackingUrls,
             encryptedAdToken: appOpenAd.encryptedAdToken,
             durationInMs: Int((clickTime - startTime) * 1000),
-            clickArea: sender.view?.accessibilityIdentifier)
+            clickArea: sender.view?.adClickArea)
     }
 
     private func getTappableViews() -> [UIView] {
