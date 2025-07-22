@@ -35,8 +35,7 @@ import UIKit
             imageView.widthAnchor.constraint(equalToConstant: LayoutMetrics.avatarSize),
             imageView.heightAnchor.constraint(equalToConstant: LayoutMetrics.avatarSize)
         ])
-        imageView.accessibilityIdentifier = "icon"
-
+        imageView.adClickArea = .icon_endcard
         return imageView
     }()
 
@@ -46,7 +45,7 @@ import UIKit
         label.textColor = NovaColorPalettes.Black
         label.numberOfLines = 1
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.accessibilityIdentifier = "advertiser"
+        label.adClickArea = .advertiser_endcard
         label.isUserInteractionEnabled = true
         label.textAlignment = .center
         return label
@@ -59,7 +58,7 @@ import UIKit
         label.numberOfLines = 2
         label.translatesAutoresizingMaskIntoConstraints = false
         label.setContentCompressionResistancePriority(.required, for: .vertical)
-        label.accessibilityIdentifier = "body"
+        label.adClickArea = .body_endcard
         label.isUserInteractionEnabled = true
         label.textAlignment = .center
         return label
@@ -72,7 +71,7 @@ import UIKit
         label.numberOfLines = 3
         label.translatesAutoresizingMaskIntoConstraints = false
         label.setContentCompressionResistancePriority(.required, for: .vertical)
-        label.accessibilityIdentifier = "body"
+        label.adClickArea = .body_endcard
         label.isUserInteractionEnabled = true
         label.textAlignment = .center
         return label
@@ -90,7 +89,7 @@ import UIKit
             dark: NovaColorPalettes.Gray.tint200).cgColor
         button.layer.cornerRadius = 8.0
 
-        button.accessibilityIdentifier = "cta"
+        button.adClickArea = .cta_endcard
 
         return button
     }()
@@ -234,6 +233,6 @@ import UIKit
             thirdPartyClickTrackingUrls: appOpenAd.thirdPartyClickTrackingUrls,
             encryptedAdToken: appOpenAd.encryptedAdToken,
             durationInMs: Int((clickTime - startTime) * 1000),
-            clickArea: sender.view?.accessibilityIdentifier)
+            clickArea: sender.view?.adClickArea)
     }
 }

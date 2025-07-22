@@ -209,7 +209,7 @@ public class NovaAdapter: AdNetworkAdapter {
                 DispatchQueue.main.async{
                     let mediaView = {
                         let view = NovaNativeAdMediaView()
-                        view.accessibilityIdentifier = "media"
+                        view.adClickArea = .media
                         view.translatesAutoresizingMaskIntoConstraints = false
                         return view
                     }()
