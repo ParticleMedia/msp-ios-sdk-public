@@ -3,6 +3,9 @@ import Combine
 import MSPiOSCore
 import UIKit
 
+// Import SectionTitles from DebugSectionData
+private typealias SectionTitles = DebugSectionData.SectionTitles
+
 private enum Strings {
     // Toast messages
     static let failedToGeneratePlacementId = "Failed to generate placement ID"
@@ -61,12 +64,12 @@ class DebugAdLoadViewModel: AdListener {
     
     init(
         debugSectionsRepository: DebugSectionsRepository = TestDebugSectionsService(),
-        placementsRepository: PlacementsRepository = TestPlacementsService(),
+        placementsRepository: PlacementsRepository = AdConfigPlacementsService(),
         loadAdRepository: LoadAdRepository = TestLoadAdService()
     ) {
         self.debugSectionsRepository = debugSectionsRepository
         self.placementsRepository = placementsRepository
-        self.placements = placementsRepository.fetchPlacements()
+        self.placements = placementsRepository.fetchPlacementIDs()
         self.originalSectionData = debugSectionsRepository.fetchDebugSections(placements: self.placements)
         self.loadAdRepository = loadAdRepository
         self.sections = createSectionViewModels()
@@ -195,24 +198,21 @@ class DebugAdLoadViewModel: AdListener {
         return selectedOptions
     }
     
-    /// Generates placement ID based on current selections
-    func generatePlacementId() -> String? {
-        let selectedOptions = Array(getSelectedOptions().values)
-        return placementsRepository.fetchPlacements(from: selectedOptions)
-    }
-    
     /// Loads an ad using the current selections
     func loadAd() {
-        guard let placementId = generatePlacementId() else {
-            toastSignalSubject.send(ToastSignal(message: Strings.failedToGeneratePlacementId, style: .error, duration: nil))
+        // Check if placement is selected
+        let hasSelectedPlacement = getSelectedOptions().contains { $0.key == SectionTitles.placement }
+        guard hasSelectedPlacement else {
+            toastSignalSubject.send(ToastSignal(message: "You must choose a placement", style: .error, duration: nil))
             return
         }
+        
         let selectedOptions = getSelectedOptions()
         let adFormat = selectedOptions.values.compactMap { $0 as? AdFormat }.first ?? .banner
         let testParams = getTestParameters()
         toastSignalSubject.send(ToastSignal(message: Strings.loading, style: .loading, duration: nil))
         loadAdRepository.loadAd(
-            placementId: placementId,
+            placementId: "",
             adFormat: adFormat,
             testParams: testParams,
             adListener: self,
@@ -270,4 +270,4 @@ class DebugAdLoadViewModel: AdListener {
     func setViewController(_ viewController: DebugAdLoadViewController) {
         self.debugAdLoadViewController = viewController
     }
-} 
+}
