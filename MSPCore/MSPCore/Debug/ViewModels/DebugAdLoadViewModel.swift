@@ -5,6 +5,7 @@ import UIKit
 
 // Import SectionTitles from DebugSectionData
 private typealias SectionTitles = DebugSectionData.SectionTitles
+private typealias SectionIds = DebugSectionData.SectionIds
 
 private enum Strings {
     // Toast messages
@@ -41,6 +42,7 @@ class DebugAdLoadViewModel: AdListener {
     @Published private(set) var sections: [DebugAdLoadSectionViewModel] = []
     private let originalSectionData: [DebugSection]
     let placements: [String]
+    private(set) var isPlacementSectionVisible = true // Toggle state for placement section
     var visibleSectionsPublisher: AnyPublisher<[DebugAdLoadSectionViewModel], Never> {
         $sections.map { $0.filter { $0.visible } }.eraseToAnyPublisher()
     }
@@ -117,6 +119,11 @@ class DebugAdLoadViewModel: AdListener {
             if index < originalSectionData.count {
                 let sectionData = originalSectionData[index]
                 
+                // Skip default selection for placement section
+                guard sectionData.id != SectionIds.placement else {
+                    continue
+                }
+                
                 // If this section has a showCondition, set the first available option as default
                 if let showCondition = sectionData.showCondition {
                     for requiredId in showCondition {
@@ -145,12 +152,17 @@ class DebugAdLoadViewModel: AdListener {
         sections = sections
     }
     
-    func updateSectionVisibility() {
+    private func updateSectionVisibility() {
         // Update visibility for all sections based on their showCondition
         for (index, section) in sections.enumerated() {
             if index < originalSectionData.count {
                 let shouldShow = shouldShowSection(originalSectionData[index])
-                section.visible = shouldShow
+                // Never hide placement section
+                if originalSectionData[index].id != SectionIds.placement {
+                    section.visible = shouldShow
+                } else {
+                    section.visible = true // Always show placement section
+                }
             }
         }
     }
@@ -200,19 +212,18 @@ class DebugAdLoadViewModel: AdListener {
     
     /// Loads an ad using the current selections
     func loadAd() {
-        // Check if placement is selected
-        let hasSelectedPlacement = getSelectedOptions().contains { $0.key == SectionTitles.placement }
-        guard hasSelectedPlacement else {
+        // Get selected placement option
+        let selectedOptions = getSelectedOptions()
+        guard let placementOption = selectedOptions.values.compactMap({ $0 as? PlacementOption }).first else {
             toastSignalSubject.send(ToastSignal(message: "You must choose a placement", style: .error, duration: nil))
             return
         }
         
-        let selectedOptions = getSelectedOptions()
         let adFormat = selectedOptions.values.compactMap { $0 as? AdFormat }.first ?? .banner
         let testParams = getTestParameters()
         toastSignalSubject.send(ToastSignal(message: Strings.loading, style: .loading, duration: nil))
         loadAdRepository.loadAd(
-            placementId: "",
+            placementId: placementOption.placementId,
             adFormat: adFormat,
             testParams: testParams,
             adListener: self,
@@ -269,5 +280,12 @@ class DebugAdLoadViewModel: AdListener {
     
     func setViewController(_ viewController: DebugAdLoadViewController) {
         self.debugAdLoadViewController = viewController
+    }
+    
+    // Toggle placement section visibility
+    func togglePlacementSection() {
+        isPlacementSectionVisible.toggle()
+        // Update the section's visible cells without affecting section visibility
+        sections = sections // Trigger Combine update
     }
 }

@@ -143,11 +143,35 @@ class DebugAdLoadViewController: UIViewController, UITableViewDataSource, UITabl
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        // For placement section, return 0 rows when collapsed
+        if visibleSections[section].title == DebugSectionData.SectionTitles.placement && !viewModel.isPlacementSectionVisible {
+            return 0
+        }
         return visibleSections[section].numberOfCells
     }
     
-    func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-        return visibleSections[section].title
+    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+        let isPlacementSection = visibleSections[section].title == DebugSectionData.SectionTitles.placement
+        let headerView = DebugSectionHeaderView(isPlacementSection: isPlacementSection)
+        headerView.title = visibleSections[section].title
+        
+        if isPlacementSection {
+            headerView.isExpanded = viewModel.isPlacementSectionVisible
+            headerView.tapAction = {
+                [weak self] in
+                self?.placementSectionHeaderTapped()
+            }
+        }
+        
+        return headerView
+    }
+    
+    @objc private func placementSectionHeaderTapped() {
+        viewModel.togglePlacementSection()
+    }
+    
+    func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        return 44
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -167,4 +191,4 @@ class DebugAdLoadViewController: UIViewController, UITableViewDataSource, UITabl
         viewModel.selectOption(section: realSectionIdx, row: rowIdx)
         tableView.deselectRow(at: indexPath, animated: true)
     }
-} 
+}
