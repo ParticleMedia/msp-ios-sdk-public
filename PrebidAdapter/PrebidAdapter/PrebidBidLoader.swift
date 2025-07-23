@@ -141,6 +141,10 @@ public class PrebidBidLoader : BidLoader {
             if value is String {
                 adUnitConfig.removeContextData(for: key)
                 adUnitConfig.addContextData(key: key, value: value as? String ?? "")
+                if key == MSPConstants.USER_ID,
+                   let appUserId = value as? String {
+                    UserDefaults.standard.setValue(appUserId, forKey: "msp_user_id")
+                }
             }
         }
         
