@@ -186,6 +186,10 @@ import PrebidMobile
         }
         eventModel.requestContext = generateRequestContext(request: adRequest, params: nil)
         
+        if let adUnitId = ad?.adInfo[MSPConstants.AD_INFO_NETWORK_AD_UNIT_ID] as? String {
+            eventModel.requestContext.ext.placementID = adUnitId
+        }
+        
         if let requestStartTime = adRequest.requestStartTime {
             eventModel.latency = Int32((Date().timeIntervalSince1970 - requestStartTime) * 1000)
         }
