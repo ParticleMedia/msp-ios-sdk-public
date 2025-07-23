@@ -33,12 +33,13 @@ import UIKit
         label.textColor = UIColor(light: NovaColorPalettes.Black.nb_opacity6(), dark: NovaColorPalettes.White.nb_opacity6())
         label.numberOfLines = 1
         label.text = NSLocalizedString("Advertisement ", comment: "")
+        label.adClickArea = .badge
         return label
     }()
 
     public let mediaView: NovaNativeAdMediaViewV2 = {
         let view = NovaNativeAdMediaViewV2()
-        view.accessibilityIdentifier = "media"
+        view.adClickArea = .media
         return view
     }()
 
@@ -47,7 +48,7 @@ import UIKit
         label.font = .systemFont(ofSize: 18)
         label.textColor = UIColor(light: NovaColorPalettes.Black.nb_opacity6(), dark: NovaColorPalettes.White.nb_opacity6())
         label.numberOfLines = 1
-        label.accessibilityIdentifier = "advertiser"
+        label.adClickArea = .advertiser
         return label
     }()
     
@@ -69,7 +70,7 @@ import UIKit
         if #available(iOS 14.0, *) {
             label.lineBreakStrategy = []
         } else {}
-        label.accessibilityIdentifier = "headline"
+        label.adClickArea = .headline
         return label
     }()
 
@@ -78,7 +79,7 @@ import UIKit
         label.font = .systemFont(ofSize: 18)
         label.textColor = UIColor(light: NovaColorPalettes.Black.nb_opacity6(), dark: NovaColorPalettes.White.nb_opacity6())
         label.numberOfLines = 4
-        label.accessibilityIdentifier = "body"
+        label.adClickArea = .body
         return label
     }()
 
@@ -88,7 +89,7 @@ import UIKit
         button.layer.cornerRadius = 8
         button.clipsToBounds = true
         button.titleLabel?.font = .systemFont(ofSize: 16, weight: .semibold)
-        button.accessibilityIdentifier = "cta"
+        button.adClickArea = .cta
         return button
     }()
     
@@ -350,7 +351,7 @@ private extension NovaAppOpenAdViewV3 {
             thirdPartyClickTrackingUrls: appOpenAd.thirdPartyClickTrackingUrls,
             encryptedAdToken: appOpenAd.encryptedAdToken,
             durationInMs: Int((clickTime - startTime) * 1000),
-            clickArea: sender.view?.accessibilityIdentifier
+            clickArea: sender.view?.adClickArea
         )
     }
     
