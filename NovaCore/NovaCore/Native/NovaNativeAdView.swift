@@ -44,7 +44,7 @@ open class NovaNativeAdView: UIView {
         self.actionHandler = actionHandler
         self.mediaView = mediaView ?? {
             let view = NovaNativeAdMediaView()
-            view.accessibilityIdentifier = "media"
+            view.adClickArea = .media
             view.translatesAutoresizingMaskIntoConstraints = false
             return view
         }()
@@ -104,6 +104,13 @@ open class NovaNativeAdView: UIView {
 public extension NovaNativeAdView {
     @objc func register(_ nativeAd: NovaNativeAdItem) {
         self.nativeAd = nativeAd
+        
+        titleLabel?.adClickArea = .headline
+        bodyLabel?.adClickArea = .body
+        advertiserLabel?.adClickArea = .advertiser
+        callToActionButton?.adClickArea = .cta
+        mediaView.adClickArea = .media
+        icon?.adClickArea = .icon
 
         // In case previous OMIDSDK's session is left started without a stop.
         iABMetricReporter?.stopSession()
@@ -155,7 +162,7 @@ private extension NovaNativeAdView {
             return
         }
 
-        let clickArea = sender.view?.accessibilityIdentifier
+        let clickArea = sender.view?.adClickArea
         NovaAdMetricReporter.logAdClick(
             thirdPartyClickTrackingUrls: nativeAd.thirdPartyClickTrackingUrls,
             encryptedAdToken: nativeAd.encryptedAdToken,
@@ -164,7 +171,7 @@ private extension NovaNativeAdView {
 
         nativeAd.delegate?.nativeAdDidLogClick(
             nativeAd,
-            clickAreaName: NovaAdMetricReporter.convertNovaClickAreaNameToMetric(clickArea: clickArea) ?? ""
+            clickAreaName: NovaAdMetricReporter.convertNovaClickAreaNameToMetric(clickArea: clickArea?.rawValue) ?? ""
         )
 
         let actionKey: String

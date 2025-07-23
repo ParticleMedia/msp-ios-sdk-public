@@ -32,6 +32,17 @@ public extension UIView {
 }
 
 extension UIView {
+    
+    private static var adClickAreaKey: UInt8 = 0
+    public var adClickArea: ClickableAdArea? {
+        get {
+            return objc_getAssociatedObject(self, &Self.adClickAreaKey) as? ClickableAdArea
+        }
+        set {
+            objc_setAssociatedObject(self, &Self.adClickAreaKey, newValue, .OBJC_ASSOCIATION_RETAIN)
+        }
+    }
+    
     public var nova_isFullyVisibleOnScreen: Bool {
         return novaisVisibleOnScreen(partially: false)
     }
@@ -134,4 +145,33 @@ extension UIView {
     public func novapinToSuperView() {
         NSLayoutConstraint.activate(novapinConstraints())
     }
+}
+
+public enum ClickableAdArea: String {
+    case icon
+    case advertiser
+    case sponsor
+    case headline
+    case body
+    case cta
+    case media
+    case badge
+    case shadow
+    // engagement signal
+    case like
+    case comment
+    case share
+    // end card
+    case advertiser_endcard
+    case body_endcard
+    case cta_endcard
+    case icon_endcard
+    case blank_endcard
+    // playable ad
+    case tap_to_try
+    case playable
+    // using to simulate a click action
+    case auto_jump
+    // immersive popover
+    case cta_popover
 }

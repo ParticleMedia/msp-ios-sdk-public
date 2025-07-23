@@ -30,7 +30,7 @@ import Foundation
         thirdPartyClickTrackingUrls: [String],
         encryptedAdToken: String,
         durationInMs: Int? = nil,
-        clickArea: String? = nil
+        clickArea: ClickableAdArea? = nil
     ) {
         // Third party click tracking
         AdsThirdPartyMetricReporter.logClick(thirdPartyClickTrackingUrls: thirdPartyClickTrackingUrls)
@@ -41,7 +41,7 @@ import Foundation
             params["duration_ms"] = "\(durationInMs)"
         }
         if let clickArea {
-            params["click_area_name"] = clickArea
+            params["click_area_name"] = clickArea.rawValue
         }
 
         logNovaAdEvent(.click, encryptedAdToken: encryptedAdToken, params: params)
