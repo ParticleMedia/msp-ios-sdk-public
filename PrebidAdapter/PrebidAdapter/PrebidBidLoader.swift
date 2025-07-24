@@ -141,6 +141,11 @@ public class PrebidBidLoader : BidLoader {
             if value is String {
                 adUnitConfig.removeContextData(for: key)
                 adUnitConfig.addContextData(key: key, value: value as? String ?? "")
+                if key == MSPConstants.USER_ID,
+                   let appUserId = value as? String {
+                    // override user id in bid context and local cache with provided in the ad request
+                    UserDefaults.standard.setValue(appUserId, forKey: "msp_user_id")
+                }
             }
         }
         
