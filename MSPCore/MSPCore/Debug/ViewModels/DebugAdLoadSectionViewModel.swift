@@ -1,11 +1,13 @@
 import Foundation
 
 class DebugAdLoadSectionViewModel {
+    let id: String
     let title: String
     private(set) var cellViewModels: [DebugRadioCellViewModel]
     private var isVisible: Bool
     
-    init(title: String, cellViewModels: [DebugRadioCellViewModel], isVisible: Bool = true) {
+    init(id: String, title: String, cellViewModels: [DebugRadioCellViewModel], isVisible: Bool = true) {
+        self.id = id
         self.title = title
         self.cellViewModels = cellViewModels
         self.isVisible = isVisible
@@ -16,7 +18,7 @@ class DebugAdLoadSectionViewModel {
         let cellViewModels = sectionData.options.map { option in
             DebugRadioCellViewModel(debugOption: option)
         }
-        self.init(title: sectionData.title, cellViewModels: cellViewModels)
+        self.init(id: sectionData.id, title: sectionData.title, cellViewModels: cellViewModels)
     }
     
     // MARK: - Public Access Methods
@@ -48,4 +50,4 @@ class DebugAdLoadSectionViewModel {
     func selectedCell() -> DebugRadioCellViewModel? {
         return cellViewModels.first(where: { $0.isSelected })
     }
-} 
+}
