@@ -116,11 +116,12 @@ public extension NovaNativeAdMediaView {
             
             isVideoDisplayed = true
             videoView.handleVideoOnScreen()
-            
+            print("handle video on screen")
         } else {
             
             isVideoDisplayed = false
             videoView.handleVideoOffScreen()
+            print("handle video off screen")
         }
     }
     
