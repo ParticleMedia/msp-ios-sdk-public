@@ -23,6 +23,8 @@ import Foundation
             params["expiration_ms"] = "\(expirationTimeInMs)"
             params["current_ms"] = "\(Date().timeIntervalSince1970 * 1000)"
         }
+        params["ad_unit_id"] = adUnitId
+        params["user_id"] = UserDefaults.standard.string(forKey: "msp_user_id") ?? ""
         // Nova platform impression tracking
         logNovaAdEvent(.impression, encryptedAdToken: encryptedAdToken, params: params)
     }
@@ -45,7 +47,8 @@ import Foundation
         if let clickArea {
             params["click_area_name"] = clickArea.rawValue
         }
-
+        params["ad_unit_id"] = adUnitId
+        params["user_id"] = UserDefaults.standard.string(forKey: "msp_user_id") ?? ""
         logNovaAdEvent(.click, encryptedAdToken: encryptedAdToken, params: params)
     }
 
