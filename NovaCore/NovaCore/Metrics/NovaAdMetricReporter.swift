@@ -11,6 +11,7 @@ import Foundation
 @objc public class NovaAdMetricReporter: NSObject {
     public static func logAdImpression(thirdPartyImpressionTrackingUrls: [String],
                                        encryptedAdToken: String,
+                                       adUnitId: String,
                                        startTimeInMs: Double? = nil,
                                        expirationTimeInMs: Double? = nil) {
         // Third party impression tracking
@@ -29,6 +30,7 @@ import Foundation
     public static func logAdClick(
         thirdPartyClickTrackingUrls: [String],
         encryptedAdToken: String,
+        adUnitId: String,
         durationInMs: Int? = nil,
         clickArea: ClickableAdArea? = nil
     ) {

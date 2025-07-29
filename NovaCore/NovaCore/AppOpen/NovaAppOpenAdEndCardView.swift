@@ -232,6 +232,7 @@ import UIKit
         NovaAdMetricReporter.logAdClick(
             thirdPartyClickTrackingUrls: appOpenAd.thirdPartyClickTrackingUrls,
             encryptedAdToken: appOpenAd.encryptedAdToken,
+            adUnitId: appOpenAd.adUnitId,
             durationInMs: Int((clickTime - startTime) * 1000),
             clickArea: sender.view?.adClickArea)
     }

@@ -168,6 +168,7 @@ public enum NovaAppOpenAdResource {
             NovaAdMetricReporter.logAdImpression(
                 thirdPartyImpressionTrackingUrls: appOpenAd.thirdPartyImpressionTrackingUrls,
                 encryptedAdToken: appOpenAd.encryptedAdToken,
+                adUnitId: appOpenAd.adUnitId,
                 startTimeInMs: appOpenAd.startTimeInMs,
                 expirationTimeInMs: appOpenAd.expirationTimeInMs)
             

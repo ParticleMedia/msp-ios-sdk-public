@@ -166,6 +166,7 @@ private extension NovaNativeAdView {
         NovaAdMetricReporter.logAdClick(
             thirdPartyClickTrackingUrls: nativeAd.thirdPartyClickTrackingUrls,
             encryptedAdToken: nativeAd.encryptedAdToken,
+            adUnitId: nativeAd.adUnitId,
             clickArea: clickArea
         )
 
