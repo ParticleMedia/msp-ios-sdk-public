@@ -364,7 +364,7 @@ public extension NovaNativeAdVideoView {
             showCoverKey = nil
         case .loading(_), .playing(_):
             // NOTE(SHANYU): pause video here do not need to be sync to video info, or video won't auto play next time entering
-            pauseVideo(endKind: .stopAutoPlayInFeed)
+            pauseVideo(endKind: .stopAutoPlayInFeed, reason: .auto)
         default:
             break
         }
@@ -429,7 +429,7 @@ private extension NovaNativeAdVideoView {
             if !currentTime.isIndefinite {
                 videoPlayer?.seek(to: currentTime, completionHandler: nil)
             }
-            self.pauseVideo(endKind: .none)
+            self.pauseVideo(endKind: .none, reason: .auto)
         case .complete:
             break
         }
@@ -473,12 +473,16 @@ private extension NovaNativeAdVideoView {
         if let encryptedAdToken = self.encryptedAdToken,
            let lastPauseTime {
             NovaAdVideoMetricReporter.logVideoResume(encryptedAdToken: encryptedAdToken,
-                                                     duration: resumeTime - lastPauseTime)
+                                                     duration: resumeTime - lastPauseTime,
+                                                     videoInfo: self.videoInfo,
+                                                     startTime: self.startTime,
+                                                     configTime: self.configTime,
+                                                     novaVideoPlayer: self.videoPlayer)
         }
         lastResumeTime = resumeTime
     }
 
-    func pauseVideo(endKind: NovaVideoEndKind) {
+    func pauseVideo(endKind: NovaVideoEndKind, reason: NovaAdVideoMetricReporter.NovaAdEventPauseReason) {
         guard let videoPlayer = videoPlayer else {
             return
         }
@@ -488,7 +492,12 @@ private extension NovaNativeAdVideoView {
         if let encryptedAdToken = self.encryptedAdToken,
            let lastResumeTime {
             NovaAdVideoMetricReporter.logVideoPause(encryptedAdToken: encryptedAdToken,
-                                                    duration: pauseTime - lastResumeTime)
+                                                    duration: pauseTime - lastResumeTime,
+                                                    reason: reason,
+                                                    videoInfo: self.videoInfo,
+                                                    startTime: self.startTime,
+                                                    configTime: self.configTime,
+                                                    novaVideoPlayer: self.videoPlayer)
         }
         lastPauseTime = pauseTime
     }
@@ -655,7 +664,7 @@ private extension NovaNativeAdVideoView {
             if !inLandingPage {
                 userPausedAd = true
             }
-            pauseVideo(endKind: .pause)
+            pauseVideo(endKind: .pause, reason: .manual)
         } else {
             if !inLandingPage {
                 userPausedAd = false
@@ -766,18 +775,9 @@ extension NovaNativeAdVideoView: NovaVideoPlayerDelegate {
         }
         guard let videoInfo = self.videoInfo else { return }
         guard let encryptedAdToken = self.encryptedAdToken else { return }
-        if let startTime, let configTime, !isVideoStartLogged {
+        if !isVideoStartLogged {
             isVideoStartLogged = true
-            let time = CACurrentMediaTime()
-            let duration = time - configTime
-            let latency = time - startTime
-            NovaAdVideoMetricReporter.logVideoStart(encryptedAdToken: encryptedAdToken,
-                                                    isAuto: videoInfo.isAuto,
-                                                    isMute: videoInfo.isMute,
-                                                    isLoop: videoInfo.isLoop,
-                                                    videoLength: videoLength,
-                                                    latency: latency,
-                                                    duration: duration)
+            NovaAdVideoMetricReporter.logVideoStart(encryptedAdToken: encryptedAdToken, videoInfo: videoInfo, startTime: startTime, configTime: configTime, novaVideoPlayer: self.videoPlayer)
             iabReporter?.logVideoStart(duration: videoCurrent, volume: videoPlayer.isPlayerMuted() ? 0.0 : 1.0)
         }
         NovaAdVideoMetricReporter.logVideoProgress(encryptedAdToken: encryptedAdToken,
