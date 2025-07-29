@@ -23,7 +23,7 @@ public class NovaAdVideoMetricReporter {
     public struct ProgressDurationPoint {
         let duration: Double
         let event: NovaAdEvent
-        let params: [String:String]
+        var params: [String:String]
     }
 
     public class LogRecord {
@@ -82,11 +82,16 @@ public class NovaAdVideoMetricReporter {
 
         if let point = record.ratioPoints.first, percentage >= point.percentage {
             record.ratioPoints.removeFirst()
-            NovaAdMetricReporter.logVideoEvent(point.event, encryptedAdToken: encryptedAdToken)
+            NovaAdMetricReporter.logVideoEvent(point.event, encryptedAdToken: encryptedAdToken, params:["duration_ms": "\(Int(duration * 1000))"])
         }
         if let point = record.timePoints.first, duration >= point.duration {
             record.timePoints.removeFirst()
-            NovaAdMetricReporter.logVideoEvent(point.event, encryptedAdToken: encryptedAdToken, params: point.params)
+            var params = [String: String]()
+            for (key, value) in point.params {
+                params[key] = value
+            }
+            params["duration_ms"] = "\(Int(duration * 1000))"
+            NovaAdMetricReporter.logVideoEvent(point.event, encryptedAdToken: encryptedAdToken, params: params)
         }
     }
 
