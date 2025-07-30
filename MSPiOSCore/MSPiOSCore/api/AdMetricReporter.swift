@@ -12,6 +12,8 @@ public protocol AdMetricReporter: AnyObject {
     
     func logAdImpression(ad: MSPAd, adRequest: AdRequest, bidResponse: Any, params: [String: Any?]?)
     
+    func logAdClick(ad: MSPAd, adRequest: AdRequest, bidResponse: Any?, params: [String: Any?]?)
+    
     func logGetAdFromCache(cacheKey: String, fill: Bool ,ad: MSPAd?)
     
     func logAdResult(placementId: String, ad: MSPAd?, fill: Bool, isFromCache: Bool)

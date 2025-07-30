@@ -23,6 +23,7 @@ import PrebidMobile
         case adHide = "ad_hide"
         case adReport = "ad_report"
         case adResponse = "ad_response"
+        case adClick = "ad_click"
     }
     
     func report(event type: AdEventType, with data: Data, completion: @escaping (Bool, Error?) -> Void) {
@@ -134,6 +135,36 @@ import PrebidMobile
         do {
             let tracingData = try eventModel.serializedData()
             report(event: .adImpression, with: tracingData) { success, error in
+               
+            }
+        } catch {
+        }
+    }
+    
+    public func logAdClick(ad: MSPiOSCore.MSPAd, adRequest: MSPiOSCore.AdRequest, bidResponse: Any?, params: [String : Any?]?) {
+        var eventModel = Com_Newsbreak_Mes_Events_AdClickEvent()
+        eventModel.tsMs = UInt64(Date().timeIntervalSince1970 * 1000)
+        if let bidResponse = bidResponse,
+           bidResponse is BidResponse,
+           let mBidResponse = bidResponse as? BidResponse {
+            eventModel.requestContext = generateRequestContext(request: adRequest, bidResponse: mBidResponse, params: params)
+            eventModel.ad = generateAdContext(ad: ad, request: adRequest, bidResponse: mBidResponse)
+        } else {
+            eventModel.requestContext = generateRequestContext(request: adRequest, params: params)
+            eventModel.ad = generateAdContext(ad: ad, request: adRequest, params: params)
+        }
+        
+        eventModel.os = .ios
+        if let org = MSP.shared.org {
+            eventModel.org = org
+        }
+        if let app = MSP.shared.app {
+            eventModel.app = app
+        }
+        
+        do {
+            let tracingData = try eventModel.serializedData()
+            report(event: .adClick, with: tracingData) { success, error in
                
             }
         } catch {

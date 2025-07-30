@@ -290,6 +290,13 @@ import PrebidMobile
             self.adMetricReporter?.logAdReport(ad: ad, adRequest: adRequest, bidResponse: self, reason: reason, description: description, adScreenShot: adScreenShot, fullScreenShot: fullScreenShot)
         }
     }
+    
+    public func sendClickAdEvent(ad: MSPAd) {
+        if let adRequest = adRequest,
+           let bidResponse = bidResponse {
+            self.adMetricReporter?.logAdClick(ad: ad, adRequest: adRequest, bidResponse: bidResponse, params: nil)
+        }
+    }
 }
 
 extension GoogleAdapter : GoogleMobileAds.BannerViewDelegate  {
@@ -327,6 +334,7 @@ extension GoogleAdapter : GoogleMobileAds.BannerViewDelegate  {
     public func bannerViewDidRecordClick(_ bannerView: GoogleMobileAds.BannerView) {
         if let googleAd = self.bannerAd {
             self.adListener?.onAdClick(ad: googleAd)
+            self.sendClickAdEvent(ad: googleAd)
         }
     }
     
@@ -421,6 +429,7 @@ extension GoogleAdapter: GoogleMobileAds.NativeAdDelegate  {
     public func nativeAdDidRecordClick(_ nativeAd: GoogleMobileAds.NativeAd) {
         if let nativeAd = self.nativeAd {
             self.adListener?.onAdClick(ad: nativeAd)
+            self.sendClickAdEvent(ad: nativeAd)
         }
     }
 }
@@ -444,6 +453,7 @@ extension GoogleAdapter: FullScreenContentDelegate {
     public func adDidRecordClick(_ ad: FullScreenPresentingAd) {
         if let interstitialAd = self.interstitialAd {
             self.adListener?.onAdClick(ad: interstitialAd)
+            self.sendClickAdEvent(ad: interstitialAd)
         }
     }
     
