@@ -23,7 +23,7 @@ public class NovaAdVideoMetricReporter {
     public struct ProgressDurationPoint {
         let duration: Double
         let event: NovaAdEvent
-        var params: [String:String]
+        let params: [String:String]
     }
 
     public class LogRecord {
