@@ -178,6 +178,16 @@ import InMobiSDK
             self.adMetricReporter?.logAdReport(ad: ad, adRequest: adRequest, bidResponse: self, reason: reason, description: description, adScreenShot: adScreenShot, fullScreenShot: fullScreenShot)
         }
     }
+    
+    private func sendClickAdEvent(ad: MSPAd) {
+        if let adRequest = self.adRequest {
+            var params = [String:Any?]()
+            params["seat"] = "inmobi"
+            params["bidderPlacementId"] = self.bidderPlacementId
+            params["price"] = self.priceInDollar
+            self.adMetricReporter?.logAdClick(ad: ad, adRequest: adRequest, bidResponse: nil, params: params)
+        }
+    }
 }
 
 extension InmobiAdapter: IMBannerDelegate {

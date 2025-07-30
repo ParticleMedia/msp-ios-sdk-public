@@ -202,6 +202,16 @@ import OpenWrapSDK
             self.adMetricReporter?.logAdReport(ad: ad, adRequest: adRequest, bidResponse: self, reason: reason, description: description, adScreenShot: adScreenShot, fullScreenShot: fullScreenShot)
         }
     }
+    
+    private func sendClickAdEvent(ad: MSPAd) {
+        if let adRequest = self.adRequest {
+            var params = [String:Any?]()
+            params["seat"] = "pubmatic"
+            params["bidderPlacementId"] = self.bidderPlacementId
+            params["price"] = ad.adInfo[MSPConstants.AD_INFO_PRICE]
+            self.adMetricReporter?.logAdClick(ad: ad, adRequest: adRequest, bidResponse: nil, params: params)
+        }
+    }
 
 }
 
@@ -261,6 +271,7 @@ extension PubmaticAdapter: POBBannerViewDelegate {
         DispatchQueue.main.async {
             if let bannerAd = self.bannerAd {
                 self.adListener?.onAdClick(ad: bannerAd)
+                self.sendClickAdEvent(ad: bannerAd)
             }
         }
     }
@@ -317,6 +328,7 @@ extension PubmaticAdapter: POBInterstitialDelegate {
         DispatchQueue.main.async {
             if let interstitialAd = self.interstitialAd {
                 self.adListener?.onAdClick(ad: interstitialAd)
+                self.sendClickAdEvent(ad: interstitialAd)
             }
         }
     }
@@ -394,6 +406,7 @@ extension PubmaticAdapter: POBNativeAdDelegate {
         DispatchQueue.main.async {
             if let nativeAd = self.nativeAd {
                 self.adListener?.onAdClick(ad: nativeAd)
+                self.sendClickAdEvent(ad: nativeAd)
             }
         }
     }
@@ -402,6 +415,7 @@ extension PubmaticAdapter: POBNativeAdDelegate {
         DispatchQueue.main.async {
             if let nativeAd = self.nativeAd {
                 self.adListener?.onAdClick(ad: nativeAd)
+                self.sendClickAdEvent(ad: nativeAd)
             }
         }
     }

@@ -347,6 +347,13 @@ public class NovaAdapter: AdNetworkAdapter {
             self.adMetricReporter?.logAdReport(ad: ad, adRequest: adRequest, bidResponse: self, reason: reason, description: description, adScreenShot: adScreenShot, fullScreenShot: fullScreenShot)
         }
     }
+    
+    private func sendClickAdEvent(ad: MSPAd) {
+        if let adRequest = adRequest,
+           let bidResponse = bidResponse {
+            self.adMetricReporter?.logAdClick(ad: ad, adRequest: adRequest, bidResponse: bidResponse, params: nil)
+        }
+    }
 }
 
 extension NovaAdapter: NovaNativeAdDelegate {
@@ -367,6 +374,7 @@ extension NovaAdapter: NovaNativeAdDelegate {
     public func nativeAdDidLogClick(_ nativeAd: NovaCore.NovaNativeAdItem, clickAreaName: String) {
         if let nativeAd = self.nativeAd {
             self.adListener?.onAdClick(ad: nativeAd)
+            self.sendClickAdEvent(ad: nativeAd)
         }
     }
     
@@ -410,6 +418,7 @@ extension NovaAdapter: NovaAppOpenAdDelegate {
     public func appOpenAdDidLogClick(_ appOpenAd: NovaCore.NovaAppOpenAd) {
         if let interstitialAd = self.interstitialAd {
             self.adListener?.onAdClick(ad: interstitialAd)
+            self.sendClickAdEvent(ad: interstitialAd)
         }
     }
 }

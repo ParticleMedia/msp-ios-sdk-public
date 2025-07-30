@@ -22,6 +22,10 @@ public class AdMetricReporterImp: AdMetricReporter {
         MESMetricReporter.shared.logAdImpression(ad: ad, adRequest: adRequest, bidResponse: bidResponse, params: params)
     }
     
+    public func logAdClick(ad: MSPAd, adRequest: AdRequest, bidResponse: Any?, params: [String: Any?]?) {
+        MESMetricReporter.shared.logAdClick(ad: ad, adRequest: adRequest, bidResponse: bidResponse, params: params)
+    }
+    
     public func logGetAdFromCache(cacheKey: String, fill: Bool, ad: MSPiOSCore.MSPAd?) {
         MESMetricReporter.shared.logGetAdFromCache(cacheKey: cacheKey, fill: fill, ad: ad)
     }
