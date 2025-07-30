@@ -36,7 +36,7 @@ public class NovaAdVideoMetricReporter {
             ProgressPercentagePoint(percentage: 1.00, event: .videoComplete),
         ]
         var timePoints: [ProgressDurationPoint] = [
-            ProgressDurationPoint(duration: 3.0, event: .videoProgess, params: ["offset":"3.0"])
+            ProgressDurationPoint(duration: 3.0, event: .videoProgess, params: [NovaAdMetricKeys.OFFSET:"3.0"])
         ]
     }
 
@@ -51,8 +51,8 @@ public class NovaAdVideoMetricReporter {
 
     public static func logVideoError(encryptedAdToken: String, error: String, duration: Double) {
         let params: [String: String] = [
-            "error": error,
-            "duration_ms": "\(Int(duration * 1000))",
+            NovaAdMetricKeys.ERROR: error,
+            NovaAdMetricKeys.DURATION_MS: "\(Int(duration * 1000))",
         ]
         NovaAdMetricReporter.logVideoEvent(.videoError, encryptedAdToken: encryptedAdToken, params: params)
     }
@@ -90,7 +90,7 @@ public class NovaAdVideoMetricReporter {
             for (key, value) in point.params {
                 params[key] = value
             }
-            params["duration_ms"] = "\(Int(duration * 1000))"
+            params[NovaAdMetricKeys.DURATION_MS] = "\(Int(duration * 1000))"
             NovaAdMetricReporter.logVideoEvent(point.event, encryptedAdToken: encryptedAdToken, params: params)
         }
     }
@@ -103,7 +103,7 @@ public class NovaAdVideoMetricReporter {
                                      configTime: Double?,
                                      novaVideoPlayer: NovaVideoPlayer?) {
         var params = NovaAdVideoMetricReporter.getVideoParams(videoInfo: videoInfo, startTime: startTime, configTime: configTime, novaVideoPlayer: novaVideoPlayer, duration: duration)
-        params["reason"] = reason.rawValue
+        params[NovaAdMetricKeys.REASON] = reason.rawValue
         NovaAdMetricReporter.logVideoEvent(.videoPause, encryptedAdToken: encryptedAdToken, params: params)
     }
 
@@ -130,27 +130,27 @@ public class NovaAdVideoMetricReporter {
         var params = [String: String]()
         let currentTime = CACurrentMediaTime()
         if let duration = duration {
-            params["duration_ms"] = "\(Int(duration * 1000))"
+            params[NovaAdMetricKeys.DURATION_MS] = "\(Int(duration * 1000))"
         } else if let configTime = configTime {
             let duration = currentTime - configTime
-            params["duration_ms"] = "\(Int(duration * 1000))"
+            params[NovaAdMetricKeys.DURATION_MS] = "\(Int(duration * 1000))"
         }
         if let startTime = startTime {
             let latency = currentTime - startTime
-            params["latency_ms"] = "\(Int(latency * 1000))"
+            params[NovaAdMetricKeys.LATENCY_MS] = "\(Int(latency * 1000))"
         }
         if let videoInfo = videoInfo {
-            params["is_play_automatically"] = String(videoInfo.isAuto)
-            params["is_mute"] = String(videoInfo.isMute)
-            params["is_loop"] = String(videoInfo.isLoop)
+            params[NovaAdMetricKeys.IS_PLAY_AUTOMATICALLY] = String(videoInfo.isAuto)
+            params[NovaAdMetricKeys.IS_MUTE] = String(videoInfo.isMute)
+            params[NovaAdMetricKeys.IS_LOOP] = String(videoInfo.isLoop)
         }
         if let novaVideoPlayer = novaVideoPlayer {
             let player = novaVideoPlayer.player
             let videoLength = player.maximumDuration
             let currentTimeInterval = player.currentTimeInterval
-            params["video_length_ms"] = "\(Int(videoLength * 1000))"
-            params["position_ms"] = "\(Int(currentTimeInterval * 1000))"
-            params["loop_count"] = String(player.loopCount)
+            params[NovaAdMetricKeys.VIDEO_LENGTH_MS] = "\(Int(videoLength * 1000))"
+            params[NovaAdMetricKeys.POSITION_MS] = "\(Int(currentTimeInterval * 1000))"
+            params[NovaAdMetricKeys.LOOP_COUNT] = String(player.loopCount)
         }
         return params
     }
