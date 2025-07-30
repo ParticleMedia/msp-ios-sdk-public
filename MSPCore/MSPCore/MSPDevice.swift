@@ -158,12 +158,12 @@ public class MSPDevice {
         let hoursFromGMT = secondsFromGMT / 3600
         let hoursAbs = abs(hoursFromGMT)
         
-        let sign = hoursFromGMT >= 0 ? "+" : "-"
-        if hoursAbs < 10 {
-            return sign + "0" + String(hoursAbs) + ":00"
-        } else {
-            return sign + String(hoursAbs) + ":00"
-        }
+        // Convert to hours and minutes
+       let hours = secondsFromGMT / 3600
+       let minutes = abs((secondsFromGMT % 3600) / 60)
+       
+       // Format the string with +HH:mm or -HH:mm
+       return String(format: "%+03d:%02d", hours, minutes)
     }
     
 }
