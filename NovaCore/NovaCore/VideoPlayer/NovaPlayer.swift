@@ -229,6 +229,8 @@ open class NovaPlayer: UIViewController {
             }
         }
     }
+    
+    open var loopCount: Int = 0
 
     /// Playback freezes on last frame frame when true and does not reset seek position timestamp..
     open var playbackFreezesAtEnd: Bool = false
@@ -733,6 +735,7 @@ extension NovaPlayer {
                 self._avplayer.seek(to: CMTime.zero)
                 self._avplayer.play()
                 self.playbackDelegate?.playerPlaybackDidLoop(self)
+                self.loopCount += 1
             } else if self.playbackFreezesAtEnd {
                 self.stop()
             } else {

@@ -103,7 +103,8 @@ private extension NovaNativeAdView {
 
         NovaAdMetricReporter.logAdImpression(
             thirdPartyImpressionTrackingUrls: nativeAd.thirdPartyImpressionTrackingUrls,
-            encryptedAdToken: nativeAd.encryptedAdToken)
+            encryptedAdToken: nativeAd.encryptedAdToken,
+            adUnitId: nativeAd.adUnitId)
 
         nativeAd.delegate?.nativeAdDidLogImpression(nativeAd)
     }
