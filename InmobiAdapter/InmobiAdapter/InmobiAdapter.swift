@@ -237,6 +237,7 @@ extension InmobiAdapter: IMBannerDelegate {
         DispatchQueue.main.async {
             if let bannerAd = self.bannerAd {
                 self.adListener?.onAdClick(ad: bannerAd)
+                self.sendClickAdEvent(ad: bannerAd)
             }
         }
     }
@@ -298,6 +299,7 @@ extension InmobiAdapter: IMInterstitialDelegate {
         DispatchQueue.main.async {
             if let interstitialAd = self.interstitialAd {
                 self.adListener?.onAdClick(ad: interstitialAd)
+                self.sendClickAdEvent(ad: interstitialAd)
             }
         }
     }
@@ -367,6 +369,7 @@ extension InmobiAdapter: IMNativeDelegate {
         DispatchQueue.main.async {
             if let nativeAd = self.nativeAd {
                 self.adListener?.onAdClick(ad: nativeAd)
+                self.sendClickAdEvent(ad: nativeAd)
             }
         }
     }
