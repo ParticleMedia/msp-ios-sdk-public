@@ -194,6 +194,14 @@ public class NovaVideoPlayer: NSObject {
     private func setProgress(_ progress: Float) {
 
     }
+    
+    public func isValid() -> Bool {
+        if let playerItem = self.player._playerItem,
+           playerItem.status != .failed {
+            return true
+        }
+        return false
+    }
 }
 
 extension NovaVideoPlayer {
