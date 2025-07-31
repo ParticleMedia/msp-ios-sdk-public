@@ -32,6 +32,7 @@ public class MSPDevice {
     private let DEIVCE_SIGNAL_IS_LOW_DATA_MODE = "is_low_data_mode"
     private let DEIVCE_SIGNAL_FONT_SIZE = "font_size"
     private let DEIVCE_SIGNAL_AVAILABLE_MEMORY = "available_memory"
+    private let DEVICE_SIGNAL_TIMEZONE = "timezone"
     
     public func getDeviceSignalsDictionary() -> [String:String] {
         self.collectDeviceInfo()
@@ -44,6 +45,7 @@ public class MSPDevice {
         dict[DEIVCE_SIGNAL_IS_LOW_DATA_MODE] = getStringFromStatusInBool(state: self.isLowDataMode)
         dict[DEIVCE_SIGNAL_FONT_SIZE] = getFontSizeString()
         dict[DEIVCE_SIGNAL_AVAILABLE_MEMORY] = getAvailableMemoryString()
+        dict[DEVICE_SIGNAL_TIMEZONE] = getTimezoneString()
         
         return dict
     }
@@ -149,6 +151,19 @@ public class MSPDevice {
         } else {
             return "unknown"
         }
+    }
+    
+    private func getTimezoneString() -> String {
+        let secondsFromGMT = TimeZone.current.secondsFromGMT()
+        let hoursFromGMT = secondsFromGMT / 3600
+        let hoursAbs = abs(hoursFromGMT)
+        
+        // Convert to hours and minutes
+       let hours = secondsFromGMT / 3600
+       let minutes = abs((secondsFromGMT % 3600) / 60)
+       
+       // Format the string with +HH:mm or -HH:mm
+       return String(format: "%+03d:%02d", hours, minutes)
     }
     
 }
