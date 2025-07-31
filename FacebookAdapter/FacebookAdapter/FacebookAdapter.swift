@@ -254,7 +254,7 @@ import Foundation
     private func sendClickAdEvent(ad: MSPAd) {
         if let adRequest = adRequest,
            let bidResponse = bidResponse {
-            self.adMetricReporter?.logAdClick(ad: ad, adRequest: adRequest, bidResponse: bidResponse, params: nil)
+            self.adMetricReporter?.logAdClick(ad: ad, adRequest: adRequest, bidResponse: bidResponse)
         }
     }
 }
@@ -305,7 +305,7 @@ extension FacebookAdapter: FBNativeAdDelegate {
             
             if let adRequest = adRequest,
                let bidResponse = bidResponse {
-                self.adMetricReporter?.logAdImpression(ad: facebookNativeAd, adRequest: adRequest, bidResponse: bidResponse, params: nil)
+                self.adMetricReporter?.logAdImpression(ad: facebookNativeAd, adRequest: adRequest, bidResponse: bidResponse)
             }
         }
     }
@@ -372,7 +372,7 @@ extension FacebookAdapter: FBInterstitialAdDelegate {
             
             if let adRequest = adRequest,
                let bidResponse = bidResponse {
-                self.adMetricReporter?.logAdImpression(ad: facebookInterstitialAd, adRequest: adRequest, bidResponse: bidResponse, params: nil)
+                self.adMetricReporter?.logAdImpression(ad: facebookInterstitialAd, adRequest: adRequest, bidResponse: bidResponse)
             }
         }
     }

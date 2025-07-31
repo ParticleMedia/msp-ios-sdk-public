@@ -294,7 +294,7 @@ import PrebidMobile
     public func sendClickAdEvent(ad: MSPAd) {
         if let adRequest = adRequest,
            let bidResponse = bidResponse {
-            self.adMetricReporter?.logAdClick(ad: ad, adRequest: adRequest, bidResponse: bidResponse, params: nil)
+            self.adMetricReporter?.logAdClick(ad: ad, adRequest: adRequest, bidResponse: bidResponse)
         }
     }
 }
@@ -343,11 +343,7 @@ extension GoogleAdapter : GoogleMobileAds.BannerViewDelegate  {
             self.adListener?.onAdImpression(ad: googleAd)
             if let adRequest = adRequest,
                let bidResponse = bidResponse {
-                var params = [String:Any?]()
-                if let adUnitId = self.adUnitId {
-                    params["adUnitId"] = adUnitId
-                }
-                self.adMetricReporter?.logAdImpression(ad: googleAd, adRequest: adRequest, bidResponse: bidResponse, params: params)
+                self.adMetricReporter?.logAdImpression(ad: googleAd, adRequest: adRequest, bidResponse: bidResponse)
             }
         }
     }
@@ -417,11 +413,7 @@ extension GoogleAdapter: GoogleMobileAds.NativeAdDelegate  {
             self.adListener?.onAdImpression(ad: nativeAd)
             if let adRequest = adRequest,
                let bidResponse = bidResponse {
-                var params = [String:Any?]()
-                if let adUnitId = self.adUnitId {
-                    params["adUnitId"] = adUnitId
-                }
-                self.adMetricReporter?.logAdImpression(ad: nativeAd, adRequest: adRequest, bidResponse: bidResponse, params: params)
+                self.adMetricReporter?.logAdImpression(ad: nativeAd, adRequest: adRequest, bidResponse: bidResponse)
             }
         }
     }
@@ -441,11 +433,7 @@ extension GoogleAdapter: FullScreenContentDelegate {
             self.adListener?.onAdImpression(ad: interstitialAd)
             if let adRequest = adRequest,
                let bidResponse = bidResponse {
-                var params = [String:Any?]()
-                if let adUnitId = self.adUnitId {
-                    params["adUnitId"] = adUnitId
-                }
-                self.adMetricReporter?.logAdImpression(ad: interstitialAd, adRequest: adRequest, bidResponse: bidResponse, params: params)
+                self.adMetricReporter?.logAdImpression(ad: interstitialAd, adRequest: adRequest, bidResponse: bidResponse)
             }
         }
     }
