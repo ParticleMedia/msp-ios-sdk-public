@@ -256,11 +256,7 @@ import MTGSDKBidding
     
     public func sendClickAdEvent(ad: MSPAd) {
         if let adRequest = self.adRequest {
-            var params = [String:Any?]()
-            params["seat"] = "mintegral"
-            params["bidderPlacementId"] = self.bidderPlacementId
-            params["price"] = self.mtgBidResponse?.price ?? 0.0
-            self.adMetricReporter?.logAdClick(ad: ad, adRequest: adRequest, bidResponse: nil, params: params)
+            self.adMetricReporter?.logAdClick(ad: ad, adRequest: adRequest, bidResponse: nil)
         }
     }
 }
@@ -293,13 +289,9 @@ extension MintegralAdapter: MTGBannerAdViewDelegate {
     public func adViewWillLogImpression(_ adView: MTGBannerAdView!) {
         DispatchQueue.main.async {
             if let adRequest = self.adRequest {
-                var params = [String:Any?]()
-                params["seat"] = "mintegral"
-                params["bidderPlacementId"] = self.bidderPlacementId
-                params["price"] = self.mtgBidResponse?.price ?? 0.0
                 if let bannerAd = self.bannerAd {
                     self.adListener?.onAdImpression(ad: bannerAd)
-                    self.adMetricReporter?.logAdImpression(ad: bannerAd, adRequest: adRequest, bidResponse: self, params: params)
+                    self.adMetricReporter?.logAdImpression(ad: bannerAd, adRequest: adRequest, bidResponse: self)
                 }
             }
         }
@@ -362,13 +354,9 @@ extension MintegralAdapter: MTGNewInterstitialBidAdDelegate {
     public func newInterstitialBidAdShowSuccess(_ adManager: MTGNewInterstitialBidAdManager) {
         DispatchQueue.main.async {
             if let adRequest = self.adRequest {
-                var params = [String:Any?]()
-                params["seat"] = "inmobi"
-                params["bidderPlacementId"] = self.bidderPlacementId
-                params["price"] = self.mtgBidResponse?.price ?? 0.0
                 if let interstitialAd = self.interstitialAd {
                     self.adListener?.onAdImpression(ad: interstitialAd)
-                    self.adMetricReporter?.logAdImpression(ad: interstitialAd, adRequest: adRequest, bidResponse: self, params: params)
+                    self.adMetricReporter?.logAdImpression(ad: interstitialAd, adRequest: adRequest, bidResponse: self)
                 }
             }
         }
@@ -457,11 +445,7 @@ extension MintegralAdapter: MTGBidNativeAdManagerDelegate, MTGMediaViewDelegate 
             if let nativeAd = self.nativeAd,
                let adRequest = self.adRequest {
                 self.adListener?.onAdImpression(ad: nativeAd)
-                var params = [String:Any?]()
-                params["seat"] = "mintegral"
-                params["bidderPlacementId"] = self.bidderPlacementId
-                params["price"] = self.mtgBidResponse?.price ?? 0.0
-                self.adMetricReporter?.logAdImpression(ad: nativeAd, adRequest: adRequest, bidResponse: self, params: params)
+                self.adMetricReporter?.logAdImpression(ad: nativeAd, adRequest: adRequest, bidResponse: self)
             }
         }
     }

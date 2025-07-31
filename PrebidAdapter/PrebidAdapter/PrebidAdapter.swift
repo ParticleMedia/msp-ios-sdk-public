@@ -133,7 +133,7 @@ import UIKit
     private func sendClickAdEvent(ad: MSPAd) {
         if let adRequest = adRequest,
            let bidResponse = bidResponse {
-            self.adMetricReporter?.logAdClick(ad: ad, adRequest: adRequest, bidResponse: bidResponse, params: nil)
+            self.adMetricReporter?.logAdClick(ad: ad, adRequest: adRequest, bidResponse: bidResponse)
         }
     }
     
@@ -236,7 +236,7 @@ extension PrebidAdapter: BannerEventHandler {
             adListener?.onAdImpression(ad: prebidAd)
             if let adRequest = adRequest,
                let bidResponse = bidResponse {
-                self.adMetricReporter?.logAdImpression(ad: prebidAd, adRequest: adRequest, bidResponse: bidResponse, params: nil)
+                self.adMetricReporter?.logAdImpression(ad: prebidAd, adRequest: adRequest, bidResponse: bidResponse)
             }
         }
     }
@@ -290,7 +290,7 @@ extension PrebidAdapter: InterstitialAdUnitDelegate {
             
             if let adRequest = adRequest,
                let bidResponse = bidResponse {
-                self.adMetricReporter?.logAdImpression(ad: interstitialAd, adRequest: adRequest, bidResponse: bidResponse, params: nil)
+                self.adMetricReporter?.logAdImpression(ad: interstitialAd, adRequest: adRequest, bidResponse: bidResponse)
             }
         }
     }

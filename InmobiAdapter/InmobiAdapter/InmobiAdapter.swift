@@ -181,11 +181,7 @@ import InMobiSDK
     
     private func sendClickAdEvent(ad: MSPAd) {
         if let adRequest = self.adRequest {
-            var params = [String:Any?]()
-            params["seat"] = "inmobi"
-            params["bidderPlacementId"] = self.bidderPlacementId
-            params["price"] = self.priceInDollar
-            self.adMetricReporter?.logAdClick(ad: ad, adRequest: adRequest, bidResponse: nil, params: params)
+            self.adMetricReporter?.logAdClick(ad: ad, adRequest: adRequest, bidResponse: nil)
         }
     }
 }
@@ -221,13 +217,9 @@ extension InmobiAdapter: IMBannerDelegate {
     public func bannerAdImpressed(_ banner: InMobiSDK.IMBanner) {
         DispatchQueue.main.async {
             if let adRequest = self.adRequest {
-                var params = [String:Any?]()
-                params["seat"] = "inmobi"
-                params["bidderPlacementId"] = self.bidderPlacementId
-                params["price"] = self.priceInDollar
                 if let bannerAd = self.bannerAd {
                     self.adListener?.onAdImpression(ad: bannerAd)
-                    self.adMetricReporter?.logAdImpression(ad: bannerAd, adRequest: adRequest, bidResponse: self, params: params)
+                    self.adMetricReporter?.logAdImpression(ad: bannerAd, adRequest: adRequest, bidResponse: self)
                 }
             }
         }
@@ -284,12 +276,9 @@ extension InmobiAdapter: IMInterstitialDelegate {
         DispatchQueue.main.async {
             if let adRequest = self.adRequest {
                 var params = [String:Any?]()
-                params["seat"] = "inmobi"
-                params["bidderPlacementId"] = self.bidderPlacementId
-                params["price"] = self.priceInDollar
                 if let interstitialAd = self.interstitialAd {
                     self.adListener?.onAdImpression(ad: interstitialAd)
-                    self.adMetricReporter?.logAdImpression(ad: interstitialAd, adRequest: adRequest, bidResponse: self, params: params)
+                    self.adMetricReporter?.logAdImpression(ad: interstitialAd, adRequest: adRequest, bidResponse: self)
                 }
             }
         }
@@ -356,11 +345,7 @@ extension InmobiAdapter: IMNativeDelegate {
             if let nativeAd = self.nativeAd,
                let adRequest = self.adRequest {
                 self.adListener?.onAdImpression(ad: nativeAd)
-                var params = [String:Any?]()
-                params["seat"] = "inmobi"
-                params["bidderPlacementId"] = self.bidderPlacementId
-                params["price"] = self.priceInDollar
-                self.adMetricReporter?.logAdImpression(ad: nativeAd, adRequest: adRequest, bidResponse: self, params: params)
+                self.adMetricReporter?.logAdImpression(ad: nativeAd, adRequest: adRequest, bidResponse: self)
             }
         }
     }

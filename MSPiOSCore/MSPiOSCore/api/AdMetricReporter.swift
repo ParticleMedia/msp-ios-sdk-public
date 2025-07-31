@@ -10,9 +10,9 @@ import Foundation
 
 public protocol AdMetricReporter: AnyObject {
     
-    func logAdImpression(ad: MSPAd, adRequest: AdRequest, bidResponse: Any, params: [String: Any?]?)
+    func logAdImpression(ad: MSPAd, adRequest: AdRequest, bidResponse: Any)
     
-    func logAdClick(ad: MSPAd, adRequest: AdRequest, bidResponse: Any?, params: [String: Any?]?)
+    func logAdClick(ad: MSPAd, adRequest: AdRequest, bidResponse: Any?)
     
     func logGetAdFromCache(cacheKey: String, fill: Bool ,ad: MSPAd?)
     
