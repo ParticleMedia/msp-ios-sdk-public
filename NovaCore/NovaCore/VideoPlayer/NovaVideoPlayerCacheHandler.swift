@@ -8,7 +8,8 @@ import Foundation
 
     //get the video player for url
     public func getCachedVideoControllerForURL(_ url: URL, cacheKey: String) -> NovaVideoPlayer? {
-        if let playerController = videoMap[cacheKey] {
+        if let playerController = videoMap[cacheKey],
+           playerController.isValid() {
             return playerController
         } else {
             getControllerToPreload(cacheKey: cacheKey, url: url)
@@ -20,7 +21,8 @@ import Foundation
     @objc public func getControllerToPreload(cacheKey: String, url: URL) {
         let controller: NovaVideoPlayer
 
-        if let c = videoMap[cacheKey] {
+        if let c = videoMap[cacheKey],
+           c.isValid() {
             controller = c
         } else {
             controller = NovaVideoPlayer()
