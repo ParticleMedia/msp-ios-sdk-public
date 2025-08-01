@@ -36,10 +36,10 @@ public class MSPAdLoader: NSObject {
             } else {
                 bidders = adConfigBidders
             }
-            timeout = Double(placement.auctionTimeout ?? 8)
+            timeout = Double(placement.auctionTimeout ?? 8000)
         } else {
             bidders = getDefaultBidders(adRequest: adRequest)
-            timeout = 8.0 // default timeout when placement is missing
+            timeout = 8000.0 // default timeout when placement is missing
         }
         
         let mspAuction = MSPAuction(bidders: bidders, cacheOnly: false, timeout: timeout)

@@ -43,7 +43,8 @@ public class MSPAuction: Auction {
         }
         
         // Wait for all responses or timeout
-        DispatchQueue.global().asyncAfter(deadline: .now() + timeout, execute: timeoutWorkItem)
+        // timeout is in millisecond
+        DispatchQueue.global().asyncAfter(deadline: .now() + (timeout / 1000.0), execute: timeoutWorkItem)
         
         dispatchGroup.notify(queue: biddingDispatchQueue) { [weak self] in
             if let isTimeout = self?.isTimeout,
