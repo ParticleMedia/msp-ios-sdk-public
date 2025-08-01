@@ -347,6 +347,13 @@ public class NovaAdapter: AdNetworkAdapter {
             self.adMetricReporter?.logAdReport(ad: ad, adRequest: adRequest, bidResponse: self, reason: reason, description: description, adScreenShot: adScreenShot, fullScreenShot: fullScreenShot)
         }
     }
+    
+    private func sendClickAdEvent(ad: MSPAd) {
+        if let adRequest = adRequest,
+           let bidResponse = bidResponse {
+            self.adMetricReporter?.logAdClick(ad: ad, adRequest: adRequest, bidResponse: bidResponse)
+        }
+    }
 }
 
 extension NovaAdapter: NovaNativeAdDelegate {
@@ -355,11 +362,7 @@ extension NovaAdapter: NovaNativeAdDelegate {
             self.adListener?.onAdImpression(ad: nativeAd)
             if let adRequest = adRequest,
                let bidResponse = bidResponse {
-                var params = [String:Any?]()
-                if let adUnitId = self.adUnitId {
-                    params["adUnitId"] = adUnitId
-                }
-                self.adMetricReporter?.logAdImpression(ad: nativeAd, adRequest: adRequest, bidResponse: bidResponse, params: params)
+                self.adMetricReporter?.logAdImpression(ad: nativeAd, adRequest: adRequest, bidResponse: bidResponse)
             }
         }
     }
@@ -367,6 +370,7 @@ extension NovaAdapter: NovaNativeAdDelegate {
     public func nativeAdDidLogClick(_ nativeAd: NovaCore.NovaNativeAdItem, clickAreaName: String) {
         if let nativeAd = self.nativeAd {
             self.adListener?.onAdClick(ad: nativeAd)
+            self.sendClickAdEvent(ad: nativeAd)
         }
     }
     
@@ -398,11 +402,7 @@ extension NovaAdapter: NovaAppOpenAdDelegate {
             self.adListener?.onAdImpression(ad: interstitialAd)
             if let adRequest = adRequest,
                let bidResponse = bidResponse {
-                var params = [String:Any?]()
-                if let adUnitId = self.adUnitId {
-                    params["adUnitId"] = adUnitId
-                }
-                self.adMetricReporter?.logAdImpression(ad: interstitialAd, adRequest: adRequest, bidResponse: bidResponse, params: params)
+                self.adMetricReporter?.logAdImpression(ad: interstitialAd, adRequest: adRequest, bidResponse: bidResponse)
             }
         }
     }
@@ -410,6 +410,7 @@ extension NovaAdapter: NovaAppOpenAdDelegate {
     public func appOpenAdDidLogClick(_ appOpenAd: NovaCore.NovaAppOpenAd) {
         if let interstitialAd = self.interstitialAd {
             self.adListener?.onAdClick(ad: interstitialAd)
+            self.sendClickAdEvent(ad: interstitialAd)
         }
     }
 }

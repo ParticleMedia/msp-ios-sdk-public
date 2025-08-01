@@ -202,6 +202,12 @@ import OpenWrapSDK
             self.adMetricReporter?.logAdReport(ad: ad, adRequest: adRequest, bidResponse: self, reason: reason, description: description, adScreenShot: adScreenShot, fullScreenShot: fullScreenShot)
         }
     }
+    
+    private func sendClickAdEvent(ad: MSPAd) {
+        if let adRequest = self.adRequest {
+            self.adMetricReporter?.logAdClick(ad: ad, adRequest: adRequest, bidResponse: nil)
+        }
+    }
 
 }
 
@@ -245,13 +251,9 @@ extension PubmaticAdapter: POBBannerViewDelegate {
     public func bannerViewDidRecordImpression(_ bannerView: POBBannerView) {
         DispatchQueue.main.async {
             if let adRequest = self.adRequest {
-                var params = [String:Any?]()
-                params["seat"] = "pubmatic"
-                params["bidderPlacementId"] = self.bidderPlacementId
-                params["price"] = self.bannerAd?.adInfo["price"]
                 if let bannerAd = self.bannerAd {
                     self.adListener?.onAdImpression(ad: bannerAd)
-                    self.adMetricReporter?.logAdImpression(ad: bannerAd, adRequest: adRequest, bidResponse: self, params: params)
+                    self.adMetricReporter?.logAdImpression(ad: bannerAd, adRequest: adRequest, bidResponse: self)
                 }
             }
         }
@@ -261,6 +263,7 @@ extension PubmaticAdapter: POBBannerViewDelegate {
         DispatchQueue.main.async {
             if let bannerAd = self.bannerAd {
                 self.adListener?.onAdClick(ad: bannerAd)
+                self.sendClickAdEvent(ad: bannerAd)
             }
         }
     }
@@ -301,13 +304,9 @@ extension PubmaticAdapter: POBInterstitialDelegate {
     public func interstitialDidRecordImpression(_ interstitial: POBInterstitial) {
         DispatchQueue.main.async {
             if let adRequest = self.adRequest {
-                var params = [String:Any?]()
-                params["seat"] = "pubmatic"
-                params["bidderPlacementId"] = self.bidderPlacementId
-                params["price"] = self.interstitialAd?.adInfo["price"]
                 if let interstitialAd = self.interstitialAd {
                     self.adListener?.onAdImpression(ad: interstitialAd)
-                    self.adMetricReporter?.logAdImpression(ad: interstitialAd, adRequest: adRequest, bidResponse: self, params: params)
+                    self.adMetricReporter?.logAdImpression(ad: interstitialAd, adRequest: adRequest, bidResponse: self)
                 }
             }
         }
@@ -317,6 +316,7 @@ extension PubmaticAdapter: POBInterstitialDelegate {
         DispatchQueue.main.async {
             if let interstitialAd = self.interstitialAd {
                 self.adListener?.onAdClick(ad: interstitialAd)
+                self.sendClickAdEvent(ad: interstitialAd)
             }
         }
     }
@@ -381,11 +381,7 @@ extension PubmaticAdapter: POBNativeAdDelegate {
             if let nativeAd = self.nativeAd,
                let adRequest = self.adRequest {
                 self.adListener?.onAdImpression(ad: nativeAd)
-                var params = [String:Any?]()
-                params["seat"] = "pubmatic"
-                params["bidderPlacementId"] = self.bidderPlacementId
-                params["price"] = self.nativeAd?.adInfo["price"]
-                self.adMetricReporter?.logAdImpression(ad: nativeAd, adRequest: adRequest, bidResponse: self, params: params)
+                self.adMetricReporter?.logAdImpression(ad: nativeAd, adRequest: adRequest, bidResponse: self)
             }
         }
     }
@@ -394,6 +390,7 @@ extension PubmaticAdapter: POBNativeAdDelegate {
         DispatchQueue.main.async {
             if let nativeAd = self.nativeAd {
                 self.adListener?.onAdClick(ad: nativeAd)
+                self.sendClickAdEvent(ad: nativeAd)
             }
         }
     }
@@ -402,6 +399,7 @@ extension PubmaticAdapter: POBNativeAdDelegate {
         DispatchQueue.main.async {
             if let nativeAd = self.nativeAd {
                 self.adListener?.onAdClick(ad: nativeAd)
+                self.sendClickAdEvent(ad: nativeAd)
             }
         }
     }

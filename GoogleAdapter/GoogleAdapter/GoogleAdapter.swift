@@ -290,6 +290,13 @@ import PrebidMobile
             self.adMetricReporter?.logAdReport(ad: ad, adRequest: adRequest, bidResponse: self, reason: reason, description: description, adScreenShot: adScreenShot, fullScreenShot: fullScreenShot)
         }
     }
+    
+    public func sendClickAdEvent(ad: MSPAd) {
+        if let adRequest = adRequest,
+           let bidResponse = bidResponse {
+            self.adMetricReporter?.logAdClick(ad: ad, adRequest: adRequest, bidResponse: bidResponse)
+        }
+    }
 }
 
 extension GoogleAdapter : GoogleMobileAds.BannerViewDelegate  {
@@ -327,6 +334,7 @@ extension GoogleAdapter : GoogleMobileAds.BannerViewDelegate  {
     public func bannerViewDidRecordClick(_ bannerView: GoogleMobileAds.BannerView) {
         if let googleAd = self.bannerAd {
             self.adListener?.onAdClick(ad: googleAd)
+            self.sendClickAdEvent(ad: googleAd)
         }
     }
     
@@ -335,11 +343,7 @@ extension GoogleAdapter : GoogleMobileAds.BannerViewDelegate  {
             self.adListener?.onAdImpression(ad: googleAd)
             if let adRequest = adRequest,
                let bidResponse = bidResponse {
-                var params = [String:Any?]()
-                if let adUnitId = self.adUnitId {
-                    params["adUnitId"] = adUnitId
-                }
-                self.adMetricReporter?.logAdImpression(ad: googleAd, adRequest: adRequest, bidResponse: bidResponse, params: params)
+                self.adMetricReporter?.logAdImpression(ad: googleAd, adRequest: adRequest, bidResponse: bidResponse)
             }
         }
     }
@@ -409,11 +413,7 @@ extension GoogleAdapter: GoogleMobileAds.NativeAdDelegate  {
             self.adListener?.onAdImpression(ad: nativeAd)
             if let adRequest = adRequest,
                let bidResponse = bidResponse {
-                var params = [String:Any?]()
-                if let adUnitId = self.adUnitId {
-                    params["adUnitId"] = adUnitId
-                }
-                self.adMetricReporter?.logAdImpression(ad: nativeAd, adRequest: adRequest, bidResponse: bidResponse, params: params)
+                self.adMetricReporter?.logAdImpression(ad: nativeAd, adRequest: adRequest, bidResponse: bidResponse)
             }
         }
     }
@@ -421,6 +421,7 @@ extension GoogleAdapter: GoogleMobileAds.NativeAdDelegate  {
     public func nativeAdDidRecordClick(_ nativeAd: GoogleMobileAds.NativeAd) {
         if let nativeAd = self.nativeAd {
             self.adListener?.onAdClick(ad: nativeAd)
+            self.sendClickAdEvent(ad: nativeAd)
         }
     }
 }
@@ -432,11 +433,7 @@ extension GoogleAdapter: FullScreenContentDelegate {
             self.adListener?.onAdImpression(ad: interstitialAd)
             if let adRequest = adRequest,
                let bidResponse = bidResponse {
-                var params = [String:Any?]()
-                if let adUnitId = self.adUnitId {
-                    params["adUnitId"] = adUnitId
-                }
-                self.adMetricReporter?.logAdImpression(ad: interstitialAd, adRequest: adRequest, bidResponse: bidResponse, params: params)
+                self.adMetricReporter?.logAdImpression(ad: interstitialAd, adRequest: adRequest, bidResponse: bidResponse)
             }
         }
     }
@@ -444,6 +441,7 @@ extension GoogleAdapter: FullScreenContentDelegate {
     public func adDidRecordClick(_ ad: FullScreenPresentingAd) {
         if let interstitialAd = self.interstitialAd {
             self.adListener?.onAdClick(ad: interstitialAd)
+            self.sendClickAdEvent(ad: interstitialAd)
         }
     }
     
