@@ -157,6 +157,11 @@ private extension NovaNativeAdView {
             return
         }
 
+        guard let ctrUrl = nativeAd.ctrUrl else {
+            assertionFailure("Native ad click url cannot be nil")
+            return
+        }
+
         let clickArea = sender.view?.adClickArea
         NovaAdMetricReporter.logAdClick(
             thirdPartyClickTrackingUrls: nativeAd.thirdPartyClickTrackingUrls,
@@ -169,11 +174,6 @@ private extension NovaNativeAdView {
             nativeAd,
             clickAreaName: NovaAdMetricReporter.convertNovaClickAreaNameToMetric(clickArea: clickArea?.rawValue) ?? ""
         )
-        
-        guard let ctrUrl = nativeAd.ctrUrl else {
-            assertionFailure("Native ad click url cannot be nil")
-            return
-        }
 
         let actionKey: String
 
