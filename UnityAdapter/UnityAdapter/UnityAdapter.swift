@@ -204,6 +204,12 @@ import IronSource
             self.adMetricReporter?.logAdReport(ad: ad, adRequest: adRequest, bidResponse: self, reason: reason, description: description, adScreenShot: adScreenShot, fullScreenShot: fullScreenShot)
         }
     }
+    
+    private func sendClickAdEvent(ad: MSPAd) {
+        if let adRequest = self.adRequest {
+            self.adMetricReporter?.logAdClick(ad: ad, adRequest: adRequest, bidResponse: nil)
+        }
+    }
 }
 
 extension UnityAdapter: LPMBannerAdViewDelegate, LPMInterstitialAdDelegate {
@@ -250,8 +256,10 @@ extension UnityAdapter: LPMBannerAdViewDelegate, LPMInterstitialAdDelegate {
         DispatchQueue.main.async {
             if let bannerAd = self.bannerAd {
                 self.adListener?.onAdClick(ad: bannerAd)
+                self.sendClickAdEvent(ad: bannerAd)
             } else if let interstitialAd = self.interstitialAd {
                 self.adListener?.onAdClick(ad: interstitialAd)
+                self.sendClickAdEvent(ad: interstitialAd)
             }
         }
     }
@@ -259,16 +267,12 @@ extension UnityAdapter: LPMBannerAdViewDelegate, LPMInterstitialAdDelegate {
     public func didDisplayAd(with adInfo: LPMAdInfo) {
         DispatchQueue.main.async {
             if let adRequest = self.adRequest {
-                var params = [String:Any?]()
-                params["seat"] = "unity"
-                params["bidderPlacementId"] = self.bidderPlacementId
-                params["price"] = adInfo.revenue
                 if let bannerAd = self.bannerAd {
                     self.adListener?.onAdImpression(ad: bannerAd)
-                    self.adMetricReporter?.logAdImpression(ad: bannerAd, adRequest: adRequest, bidResponse: self, params: params)
+                    self.adMetricReporter?.logAdImpression(ad: bannerAd, adRequest: adRequest, bidResponse: self)
                 } else if let interstitialAd = self.interstitialAd {
                     self.adListener?.onAdImpression(ad: interstitialAd)
-                    self.adMetricReporter?.logAdImpression(ad: interstitialAd, adRequest: adRequest, bidResponse: self, params: params)
+                    self.adMetricReporter?.logAdImpression(ad: interstitialAd, adRequest: adRequest, bidResponse: self)
                 }
             }
         }
@@ -330,11 +334,7 @@ extension UnityAdapter: LevelPlayNativeAdDelegate {
             if let nativeAd = self.nativeAd,
                let adRequest = self.adRequest {
                 self.adListener?.onAdImpression(ad: nativeAd)
-                var params = [String:Any?]()
-                params["seat"] = "unity"
-                params["bidderPlacementId"] = self.bidderPlacementId
-                params["price"] = adInfo.revenue
-                self.adMetricReporter?.logAdImpression(ad: nativeAd, adRequest: adRequest, bidResponse: self, params: params)
+                self.adMetricReporter?.logAdImpression(ad: nativeAd, adRequest: adRequest, bidResponse: self)
             }
         }
     }
@@ -343,6 +343,7 @@ extension UnityAdapter: LevelPlayNativeAdDelegate {
         DispatchQueue.main.async {
             if let nativeAd = self.nativeAd {
                 self.adListener?.onAdClick(ad: nativeAd)
+                self.sendClickAdEvent(ad: nativeAd)
             }
         }
     }

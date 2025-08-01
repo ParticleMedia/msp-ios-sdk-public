@@ -23,6 +23,7 @@ import PrebidMobile
         case adHide = "ad_hide"
         case adReport = "ad_report"
         case adResponse = "ad_response"
+        case adClick = "ad_click"
     }
     
     func report(event type: AdEventType, with data: Data, completion: @escaping (Bool, Error?) -> Void) {
@@ -111,16 +112,16 @@ import PrebidMobile
         }
     }
     
-    public func logAdImpression(ad: MSPiOSCore.MSPAd, adRequest: MSPiOSCore.AdRequest, bidResponse: Any, params: [String : Any?]?) {
+    public func logAdImpression(ad: MSPiOSCore.MSPAd, adRequest: MSPiOSCore.AdRequest, bidResponse: Any) {
         var eventModel = Com_Newsbreak_Mes_Events_AdImpressionEvent()
         eventModel.tsMs = UInt64(Date().timeIntervalSince1970 * 1000)
         if bidResponse is BidResponse,
            let mBidResponse = bidResponse as? BidResponse {
-            eventModel.requestContext = generateRequestContext(request: adRequest, bidResponse: mBidResponse, params: params)
+            eventModel.requestContext = generateRequestContext(ad: ad, request: adRequest, bidResponse: mBidResponse)
             eventModel.ad = generateAdContext(ad: ad, request: adRequest, bidResponse: mBidResponse)
         } else {
-            eventModel.requestContext = generateRequestContext(request: adRequest, params: params)
-            eventModel.ad = generateAdContext(ad: ad, request: adRequest, params: params)
+            eventModel.requestContext = generateRequestContext(ad: ad, request: adRequest)
+            eventModel.ad = generateAdContext(ad: ad, request: adRequest)
         }
         
         eventModel.os = .ios
@@ -134,6 +135,36 @@ import PrebidMobile
         do {
             let tracingData = try eventModel.serializedData()
             report(event: .adImpression, with: tracingData) { success, error in
+               
+            }
+        } catch {
+        }
+    }
+    
+    public func logAdClick(ad: MSPiOSCore.MSPAd, adRequest: MSPiOSCore.AdRequest, bidResponse: Any?) {
+        var eventModel = Com_Newsbreak_Mes_Events_AdClickEvent()
+        eventModel.tsMs = UInt64(Date().timeIntervalSince1970 * 1000)
+        if let bidResponse = bidResponse,
+           bidResponse is BidResponse,
+           let mBidResponse = bidResponse as? BidResponse {
+            eventModel.requestContext = generateRequestContext(ad: ad, request: adRequest, bidResponse: mBidResponse)
+            eventModel.ad = generateAdContext(ad: ad, request: adRequest, bidResponse: mBidResponse)
+        } else {
+            eventModel.requestContext = generateRequestContext(ad: ad, request: adRequest)
+            eventModel.ad = generateAdContext(ad: ad, request: adRequest)
+        }
+        
+        eventModel.os = .ios
+        if let org = MSP.shared.org {
+            eventModel.org = org
+        }
+        if let app = MSP.shared.app {
+            eventModel.app = app
+        }
+        
+        do {
+            let tracingData = try eventModel.serializedData()
+            report(event: .adClick, with: tracingData) { success, error in
                
             }
         } catch {
@@ -182,9 +213,9 @@ import PrebidMobile
             eventModel.errorMessage = errorMessage
         }
         if let ad = ad {
-            eventModel.ad = generateAdContext(ad: ad, request: adRequest, params: nil)
+            eventModel.ad = generateAdContext(ad: ad, request: adRequest)
         }
-        eventModel.requestContext = generateRequestContext(request: adRequest, params: nil)
+        eventModel.requestContext = generateRequestContext(ad: ad, request: adRequest)
         
         if let requestStartTime = adRequest.requestStartTime {
             eventModel.latency = Int32((Date().timeIntervalSince1970 - requestStartTime) * 1000)
@@ -230,8 +261,8 @@ import PrebidMobile
         var eventModel = Com_Newsbreak_Mes_Events_AdHideEvent()
         eventModel.tsMs = UInt64(Date().timeIntervalSince1970 * 1000)
         eventModel.reason = reason
-        eventModel.requestContext = generateRequestContext(request: adRequest, params: nil)
-        eventModel.ad = generateAdContext(ad: ad, request: adRequest, params: nil, adScreenShot: adScreenshot, fullScreenShot: fullScreenShot)
+        eventModel.requestContext = generateRequestContext(ad: ad, request: adRequest)
+        eventModel.ad = generateAdContext(ad: ad, request: adRequest, adScreenShot: adScreenshot, fullScreenShot: fullScreenShot)
         eventModel.os = .ios
         if let org = MSP.shared.org {
             eventModel.org = org
@@ -256,8 +287,8 @@ import PrebidMobile
         if let description = description {
             eventModel.description_p = description
         }
-        eventModel.requestContext = generateRequestContext(request: adRequest, params: nil)
-        eventModel.ad = generateAdContext(ad: ad, request: adRequest, params: nil, adScreenShot: adScreenshot, fullScreenShot: fullScreenShot)
+        eventModel.requestContext = generateRequestContext(ad: ad, request: adRequest)
+        eventModel.ad = generateAdContext(ad: ad, request: adRequest, adScreenShot: adScreenshot, fullScreenShot: fullScreenShot)
         eventModel.os = .ios
         if let org = MSP.shared.org {
             eventModel.org = org
@@ -275,16 +306,16 @@ import PrebidMobile
         }
     }
     
-    func generateRequestContext(request: AdRequest, bidResponse: BidResponse, params: [String : Any?]?) -> Com_Newsbreak_Monetization_Common_RequestContext {
+    func generateRequestContext(ad: MSPAd, request: AdRequest, bidResponse: BidResponse) -> Com_Newsbreak_Monetization_Common_RequestContext {
         var eventModel = Com_Newsbreak_Monetization_Common_RequestContext()
         eventModel.tsMs = UInt64(Date().timeIntervalSince1970 * 1000)
         eventModel.bidRequest = generateBidRequest(request: request, bidResponse: bidResponse)
-        eventModel.ext = generateRequestContextExt(request: request, bidResponse: bidResponse, params: params)
+        eventModel.ext = generateRequestContextExt(ad: ad, request: request, bidResponse: bidResponse)
         
         return eventModel
     }
     
-    func generateRequestContext(request: AdRequest, params: [String : Any?]?) -> Com_Newsbreak_Monetization_Common_RequestContext {
+    func generateRequestContext(ad: MSPAd?, request: AdRequest) -> Com_Newsbreak_Monetization_Common_RequestContext {
         var eventModel = Com_Newsbreak_Monetization_Common_RequestContext()
         eventModel.tsMs = UInt64(Date().timeIntervalSince1970 * 1000)
         eventModel.bidRequest = Com_Google_Openrtb_BidRequest()
@@ -292,16 +323,7 @@ import PrebidMobile
         
         eventModel.bidRequest.id = request.requestId
         eventModel.ext.source = request.placementId
-        if let params = params,
-           let bidderPlacementId = params["bidderPlacementId"] as? String {
-            eventModel.ext.placementID = bidderPlacementId
-        } else if let params = params,
-                  let adUnitId = params["adUnitId"] as? String,
-                  !adUnitId.isEmpty {
-            eventModel.ext.placementID = adUnitId
-        } else {
-            eventModel.ext.placementID = ""
-        }
+        eventModel.ext.placementID = ad?.adInfo[MSPConstants.AD_INFO_NETWORK_AD_UNIT_ID] as? String ?? ""
         eventModel.ext.userID = UserDefaults.standard.string(forKey: "msp_user_id") ?? ""
          
         return eventModel
@@ -315,11 +337,10 @@ import PrebidMobile
         return eventModel
     }
     
-    func generateRequestContextExt(request: AdRequest, bidResponse: BidResponse, params: [String : Any?]?) -> Com_Newsbreak_Monetization_Common_RequestContextExt {
+    func generateRequestContextExt(ad: MSPAd, request: AdRequest, bidResponse: BidResponse) -> Com_Newsbreak_Monetization_Common_RequestContextExt {
         var eventModel = Com_Newsbreak_Monetization_Common_RequestContextExt()
         eventModel.source = request.placementId
-        if let params = params,
-           let adUnitId = params["adUnitId"] as? String,
+        if let adUnitId = ad.adInfo[MSPConstants.AD_INFO_NETWORK_AD_UNIT_ID] as? String,
            !adUnitId.isEmpty {
             eventModel.placementID = adUnitId
         } else {
@@ -357,7 +378,7 @@ import PrebidMobile
         return eventModel
     }
     
-    func generateAdContext(ad: MSPAd, request: AdRequest, params: [String : Any?]?, adScreenShot: Data? = nil, fullScreenShot: Data? = nil) -> Com_Newsbreak_Monetization_Common_Ad {
+    func generateAdContext(ad: MSPAd, request: AdRequest, adScreenShot: Data? = nil, fullScreenShot: Data? = nil) -> Com_Newsbreak_Monetization_Common_Ad {
         var eventModel = Com_Newsbreak_Monetization_Common_Ad()
         eventModel.tsMs = UInt64(Date().timeIntervalSince1970 * 1000)
         if ad is MSPiOSCore.NativeAd,
@@ -380,8 +401,7 @@ import PrebidMobile
         }
         
         var seatBid = Com_Google_Openrtb_BidResponse.SeatBid()
-        if let params = params,
-           let seat = params["seat"] as? String {
+        if let seat = ad.adInfo[MSPConstants.AD_INFO_NETWORK_NAME] as? String {
             seatBid.seat = seat
         } else {
             seatBid.seat = ad.adNetworkAdapter?.getAdNetwork().rawValue ?? ""
@@ -394,7 +414,7 @@ import PrebidMobile
         bid.id = ""
         bid.lurl = ""
         bid.nurl = ""
-        bid.price = params?["price"] as? Double ?? 0
+        bid.price = ad.adInfo[MSPConstants.AD_INFO_PRICE] as? Double ?? 0
         bid.adomain = [""]
         bid.impid = ""
         seatBid.bid = [bid]

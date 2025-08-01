@@ -130,6 +130,13 @@ import UIKit
         }
     }
     
+    private func sendClickAdEvent(ad: MSPAd) {
+        if let adRequest = adRequest,
+           let bidResponse = bidResponse {
+            self.adMetricReporter?.logAdClick(ad: ad, adRequest: adRequest, bidResponse: bidResponse)
+        }
+    }
+    
 }
 
 extension PrebidAdapter: BannerViewDelegate {
@@ -199,12 +206,14 @@ extension PrebidAdapter: BannerViewDelegate {
     @objc public func bannerViewWillPresentModal(_ bannerView: BannerView) {
         if let prebidAd = self.bannerAd {
             adListener?.onAdClick(ad: prebidAd)
+            self.sendClickAdEvent(ad: prebidAd)
         }
     }
     
-    @objc public func bannerViewDidDismissModal(_ bannerView: BannerView) {
+    @objc public func bannerViewWillLeaveApplication (_ bannerView: BannerView) {
         if let prebidAd = self.bannerAd {
             adListener?.onAdClick(ad: prebidAd)
+            self.sendClickAdEvent(ad: prebidAd)
         }
     }
     
@@ -227,7 +236,7 @@ extension PrebidAdapter: BannerEventHandler {
             adListener?.onAdImpression(ad: prebidAd)
             if let adRequest = adRequest,
                let bidResponse = bidResponse {
-                self.adMetricReporter?.logAdImpression(ad: prebidAd, adRequest: adRequest, bidResponse: bidResponse, params: nil)
+                self.adMetricReporter?.logAdImpression(ad: prebidAd, adRequest: adRequest, bidResponse: bidResponse)
             }
         }
     }
@@ -281,7 +290,7 @@ extension PrebidAdapter: InterstitialAdUnitDelegate {
             
             if let adRequest = adRequest,
                let bidResponse = bidResponse {
-                self.adMetricReporter?.logAdImpression(ad: interstitialAd, adRequest: adRequest, bidResponse: bidResponse, params: nil)
+                self.adMetricReporter?.logAdImpression(ad: interstitialAd, adRequest: adRequest, bidResponse: bidResponse)
             }
         }
     }
@@ -297,6 +306,7 @@ extension PrebidAdapter: InterstitialAdUnitDelegate {
     @objc public func interstitialDidClickAd(_ interstitial: PrebidMobile.InterstitialRenderingAdUnit) {
         if let interstitialAd = self.interstitialAd {
             self.adListener?.onAdClick(ad: interstitialAd)
+            self.sendClickAdEvent(ad: interstitialAd)
         }
     }
 }

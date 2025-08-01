@@ -250,6 +250,13 @@ import Foundation
             self.adMetricReporter?.logAdReport(ad: ad, adRequest: adRequest, bidResponse: self, reason: reason, description: description, adScreenShot: adScreenShot, fullScreenShot: fullScreenShot)
         }
     }
+    
+    private func sendClickAdEvent(ad: MSPAd) {
+        if let adRequest = adRequest,
+           let bidResponse = bidResponse {
+            self.adMetricReporter?.logAdClick(ad: ad, adRequest: adRequest, bidResponse: bidResponse)
+        }
+    }
 }
 
 
@@ -298,7 +305,7 @@ extension FacebookAdapter: FBNativeAdDelegate {
             
             if let adRequest = adRequest,
                let bidResponse = bidResponse {
-                self.adMetricReporter?.logAdImpression(ad: facebookNativeAd, adRequest: adRequest, bidResponse: bidResponse, params: nil)
+                self.adMetricReporter?.logAdImpression(ad: facebookNativeAd, adRequest: adRequest, bidResponse: bidResponse)
             }
         }
     }
@@ -306,6 +313,7 @@ extension FacebookAdapter: FBNativeAdDelegate {
     public func nativeAdDidClick(_ nativeAd: FBNativeAd) {
         if let facebookNativeAd = self.facebookNativeAd {
             self.adListener?.onAdClick(ad: facebookNativeAd)
+            self.sendClickAdEvent(ad: facebookNativeAd)
         }
     }
 }
@@ -348,6 +356,7 @@ extension FacebookAdapter: FBInterstitialAdDelegate {
     public func interstitialAdDidClick(_ interstitialAd: FBInterstitialAd) {
         if let facebookInterstitialAd = self.facebookInterstitialAd {
             self.adListener?.onAdClick(ad: facebookInterstitialAd)
+            self.sendClickAdEvent(ad: facebookInterstitialAd)
         }
     }
     
@@ -363,7 +372,7 @@ extension FacebookAdapter: FBInterstitialAdDelegate {
             
             if let adRequest = adRequest,
                let bidResponse = bidResponse {
-                self.adMetricReporter?.logAdImpression(ad: facebookInterstitialAd, adRequest: adRequest, bidResponse: bidResponse, params: nil)
+                self.adMetricReporter?.logAdImpression(ad: facebookInterstitialAd, adRequest: adRequest, bidResponse: bidResponse)
             }
         }
     }

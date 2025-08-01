@@ -181,6 +181,12 @@ import MobileFuseSDK
             self.adMetricReporter?.logAdReport(ad: ad, adRequest: adRequest, bidResponse: self, reason: reason, description: description, adScreenShot: adScreenShot, fullScreenShot: fullScreenShot)
         }
     }
+    
+    private func sendClickAdEvent(ad: MSPAd) {
+        if let adRequest = self.adRequest {
+            self.adMetricReporter?.logAdClick(ad: ad, adRequest: adRequest, bidResponse: nil)
+        }
+    }
 }
 
 extension MobilefuseAdapter: IMFInitializationCallbackReceiver {
@@ -263,22 +269,18 @@ extension MobilefuseAdapter: IMFAdCallbackReceiver {
     public func onAdRendered(_ ad: MFAd) {
         DispatchQueue.main.async {
             if let adRequest = self.adRequest {
-                var params = [String:Any?]()
-                params["seat"] = "inmobi"
-                params["bidderPlacementId"] = self.bidderPlacementId
-                params["price"] = self.priceInDollar
                 if ad is MFBannerAd,
                    let bannerAd = self.bannerAd {
                     self.adListener?.onAdImpression(ad: bannerAd)
-                    self.adMetricReporter?.logAdImpression(ad: bannerAd, adRequest: adRequest, bidResponse: self, params: params)
+                    self.adMetricReporter?.logAdImpression(ad: bannerAd, adRequest: adRequest, bidResponse: self)
                 } else if ad is MFInterstitialAd,
                           let interstitialAd = self.interstitialAd {
                     self.adListener?.onAdImpression(ad: interstitialAd)
-                    self.adMetricReporter?.logAdImpression(ad: interstitialAd, adRequest: adRequest, bidResponse: self, params: params)
+                    self.adMetricReporter?.logAdImpression(ad: interstitialAd, adRequest: adRequest, bidResponse: self)
                 } else if ad is MFNativeAd,
                           let nativeAd = self.nativeAd {
                     self.adListener?.onAdImpression(ad: nativeAd)
-                    self.adMetricReporter?.logAdImpression(ad: nativeAd, adRequest: adRequest, bidResponse: self, params: params)
+                    self.adMetricReporter?.logAdImpression(ad: nativeAd, adRequest: adRequest, bidResponse: self)
                 }
             }
         }
@@ -289,12 +291,15 @@ extension MobilefuseAdapter: IMFAdCallbackReceiver {
             if ad is MFBannerAd,
                let bannerAd = self.bannerAd {
                 self.adListener?.onAdClick(ad: bannerAd)
+                self.sendClickAdEvent(ad: bannerAd)
             } else if ad is MFInterstitialAd,
                       let interstitialAd = self.interstitialAd {
                 self.adListener?.onAdClick(ad: interstitialAd)
+                self.sendClickAdEvent(ad: interstitialAd)
             } else if ad is MFNativeAd,
                       let nativeAd = self.nativeAd {
                 self.adListener?.onAdClick(ad: nativeAd)
+                self.sendClickAdEvent(ad: nativeAd)
             }
         }
     }
