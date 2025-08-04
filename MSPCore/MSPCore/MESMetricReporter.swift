@@ -131,7 +131,7 @@ import PrebidMobile
         if let app = MSP.shared.app {
             eventModel.app = app
         }
-        
+        eventModel.mspSdkVersion = MSP.shared.version
         do {
             let tracingData = try eventModel.serializedData()
             report(event: .adImpression, with: tracingData) { success, error in
@@ -161,7 +161,7 @@ import PrebidMobile
         if let app = MSP.shared.app {
             eventModel.app = app
         }
-        
+        eventModel.mspSdkVersion = MSP.shared.version
         do {
             let tracingData = try eventModel.serializedData()
             report(event: .adClick, with: tracingData) { success, error in
