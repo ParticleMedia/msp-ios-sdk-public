@@ -1,7 +1,8 @@
 
 //import OMSDK_Static_Newsbreak1
 //import OMID
-import OMSDK_Newsbreak1
+@_implementationOnly import OMSDK_Newsbreak1
+import UIKit
 
 public class IABMetricReporter {
     
