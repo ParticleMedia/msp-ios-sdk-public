@@ -52,7 +52,7 @@ public class NovaAdVideoMetricReporter {
     public static func logVideoError(encryptedAdToken: String, error: String, duration: Double) {
         let params: [String: String] = [
             NovaAdMetricKeys.ERROR: error,
-            NovaAdMetricKeys.DURATION_MS: "\(Int(duration * 1000))",
+            NovaAdMetricKeys.DURATION_MS: NovaAdVideoMetricReporter.msString(from: duration),
         ]
         NovaAdMetricReporter.logVideoEvent(.videoError, encryptedAdToken: encryptedAdToken, params: params)
     }
@@ -82,7 +82,7 @@ public class NovaAdVideoMetricReporter {
 
         if let point = record.ratioPoints.first, percentage >= point.percentage {
             record.ratioPoints.removeFirst()
-            NovaAdMetricReporter.logVideoEvent(point.event, encryptedAdToken: encryptedAdToken, params:["duration_ms": "\(Int(duration * 1000))"])
+            NovaAdMetricReporter.logVideoEvent(point.event, encryptedAdToken: encryptedAdToken, params:["duration_ms": NovaAdVideoMetricReporter.msString(from: duration)])
         }
         if let point = record.timePoints.first, duration >= point.duration {
             record.timePoints.removeFirst()
@@ -90,7 +90,7 @@ public class NovaAdVideoMetricReporter {
             for (key, value) in point.params {
                 params[key] = value
             }
-            params[NovaAdMetricKeys.DURATION_MS] = "\(Int(duration * 1000))"
+            params[NovaAdMetricKeys.DURATION_MS] = NovaAdVideoMetricReporter.msString(from: duration)
             NovaAdMetricReporter.logVideoEvent(point.event, encryptedAdToken: encryptedAdToken, params: params)
         }
     }
@@ -130,14 +130,14 @@ public class NovaAdVideoMetricReporter {
         var params = [String: String]()
         let currentTime = CACurrentMediaTime()
         if let duration = duration {
-            params[NovaAdMetricKeys.DURATION_MS] = "\(Int(duration * 1000))"
+            params[NovaAdMetricKeys.DURATION_MS] = NovaAdVideoMetricReporter.msString(from: duration)
         } else if let configTime = configTime {
             let duration = currentTime - configTime
-            params[NovaAdMetricKeys.DURATION_MS] = "\(Int(duration * 1000))"
+            params[NovaAdMetricKeys.DURATION_MS] = NovaAdVideoMetricReporter.msString(from: duration)
         }
         if let startTime = startTime {
             let latency = currentTime - startTime
-            params[NovaAdMetricKeys.LATENCY_MS] = "\(Int(latency * 1000))"
+            params[NovaAdMetricKeys.LATENCY_MS] = NovaAdVideoMetricReporter.msString(from: latency)
         }
         if let videoInfo = videoInfo {
             params[NovaAdMetricKeys.IS_PLAY_AUTOMATICALLY] = String(videoInfo.isAuto)
@@ -148,11 +148,19 @@ public class NovaAdVideoMetricReporter {
             let player = novaVideoPlayer.player
             let videoLength = player.maximumDuration
             let currentTimeInterval = player.currentTimeInterval
-            params[NovaAdMetricKeys.VIDEO_LENGTH_MS] = "\(Int(videoLength * 1000))"
-            params[NovaAdMetricKeys.POSITION_MS] = "\(Int(currentTimeInterval * 1000))"
+            params[NovaAdMetricKeys.VIDEO_LENGTH_MS] = NovaAdVideoMetricReporter.msString(from: videoLength)
+            params[NovaAdMetricKeys.POSITION_MS] = NovaAdVideoMetricReporter.msString(from: currentTimeInterval)
             params[NovaAdMetricKeys.LOOP_COUNT] = String(player.loopCount)
         }
         return params
+    }
+    
+    private static func msString(from seconds: TimeInterval?) -> String {
+        guard let s = seconds, s.isFinite, !s.isNaN else { return "0" }
+        let ms = s * 1000
+        if ms >= Double(Int64.max) { return String(Int64.max) }
+        if ms <= Double(Int64.min) { return String(Int64.min) }
+        return String(Int64(ms))
     }
 }
 
