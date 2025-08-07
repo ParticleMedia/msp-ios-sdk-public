@@ -238,21 +238,17 @@ import PrebidMobile
             }
         } else {
             // client-to-server load ad
+            let priceInDollar: Double
             if let priceStr = params?["price"] {
-                self.priceInDollar = Double(priceStr) ?? 0.0
+                priceInDollar = Double(priceStr) ?? 0.0
             } else {
-                self.priceInDollar = 0.0
+                priceInDollar = 0.0
             }
+            self.priceInDollar = priceInDollar
             
             let adFormat = bidderFormat ?? adRequest.adFormat
             
-            if adFormat == .interstitial {
-               
-            } else if adFormat == .native {
-
-            } else {
-                
-            }
+            loadGoogleAd(adFormat: adFormat, priceInDollar: priceInDollar, adRequest: adRequest, adString: nil)
         }
     }
     
