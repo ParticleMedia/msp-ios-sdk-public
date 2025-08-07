@@ -147,91 +147,20 @@ import PrebidMobile
             }
             
             self.adUnitId = adUnitId
+            let priceInDollar = Double(mBidResponse.winningBid?.price ?? 0)
+            self.priceInDollar = priceInDollar
             
             switch adType {
             case "banner":
                 if adRequest.adFormat == .interstitial {
-                    let request = AdManagerRequest()
-                    request.adString = adString
-                    
-                    GoogleMobileAds.InterstitialAd.load(with: adUnitId, request: request) { [weak self] ad, error in
-                        guard let self else { return }
-                        
-                        if let error {
-                            MSPLogger.shared.info(message: "[Adapter: Google] Fail to load Google Interstitial ad")
-                            self.adListener?.onError(msg: error.localizedDescription)
-                            self.adMetricReporter?.logAdResult(placementId: adRequest.placementId ?? "", ad: nil, fill: false, isFromCache: false)
-                            self.adMetricReporter?.logAdResponse(ad: nil, adRequest: adRequest, errorCode: .ERROR_CODE_INTERNAL_ERROR, errorMessage: error.localizedDescription)
-                            return
-                        }
-                        
-                        guard let ad else {
-                            MSPLogger.shared.info(message: "[Adapter: Google] Fail to load Google Interstitial ad")
-                            self.adListener?.onError(msg: "Missing ad")
-                            self.adMetricReporter?.logAdResult(placementId: adRequest.placementId ?? "", ad: nil, fill: false, isFromCache: false)
-                            return
-                        }
-                        
-                        MSPLogger.shared.info(message: "[Adapter: Google] successfully loaded Google Interstitial ad")
-                        
-                        DispatchQueue.main.async {
-                            self.priceInDollar = Double(mBidResponse.winningBid?.price ?? 0)
-                            var googleInterstitialAd = GoogleInterstitialAd(adNetworkAdapter: self)
-                            googleInterstitialAd.interstitialAdItem = ad
-                            ad.fullScreenContentDelegate = self
-                            googleInterstitialAd.rootViewController = self.adListener?.getRootViewController()
-                            self.interstitialAd = googleInterstitialAd
-                            googleInterstitialAd.adInfo[MSPConstants.AD_INFO_PRICE] = self.priceInDollar
-                            googleInterstitialAd.adInfo[MSPConstants.AD_INFO_NETWORK_NAME] = AdNetwork.google.rawValue
-                            googleInterstitialAd.adInfo[MSPConstants.AD_INFO_NETWORK_AD_UNIT_ID] = self.adUnitId
-                            googleInterstitialAd.adInfo[MSPConstants.AD_INFO_NETWORK_CREATIVE_ID] = self.bidResponse?.winningBid?.bid.crid
-                            if let adListener = self.adListener,
-                               let adRequest = self.adRequest,
-                               let auctionBidListener = self.auctionBidListener {
-                                //handleAdLoaded(ad: googleInterstitialAd, listener: adListener, adRequest: adRequest)
-                                self.handleAdLoaded(ad: googleInterstitialAd, auctionBidListener: auctionBidListener, bidderPlacementId: self.bidderPlacementId ?? adRequest.placementId)
-                                self.adMetricReporter?.logAdResult(placementId: adRequest.placementId, ad: googleInterstitialAd, fill: true, isFromCache: false)
-                            }
-                        }
-                    }
+                    self.loadGoogleAd(adFormat: .interstitial, adUnitId: adUnitId, priceInDollar: priceInDollar, adRequest: adRequest, adString: adString)
                     
                 } else {
-                    DispatchQueue.main.async {
-                        self.priceInDollar = Double(mBidResponse.winningBid?.price ?? 0)
-                        let gadBannerView = AdManagerBannerView(adSize: self.getGADAdSize(adRequest: adRequest))
-                        self.gadBannerView = gadBannerView
-                        gadBannerView.isAutoloadEnabled = false
-                        let request = AdManagerRequest()
-                        request.adString = adString
-                        gadBannerView.adUnitID = adUnitId
-                        gadBannerView.delegate = self
-                        gadBannerView.rootViewController = self.adListener?.getRootViewController()
-                        gadBannerView.load(request)
-                    }
+                    self.loadGoogleAd(adFormat: .banner, adUnitId: adUnitId, priceInDollar: priceInDollar, adRequest: adRequest, adString: adString)
                 }
                 
             case "native":
-                DispatchQueue.main.async {
-                    self.priceInDollar = Double(mBidResponse.winningBid?.price ?? 0)
-                    let adTypes: [AdLoaderAdType]
-                    if adRequest.adFormat == .native {
-                        adTypes = [.native]
-                    } else {
-                        adTypes = [.native, .adManagerBanner]
-                    }
-                    let videoOptions = VideoOptions()
-                    videoOptions.shouldStartMuted = true
-                    let adLoader = GoogleMobileAds.AdLoader(
-                        adUnitID: adUnitId,
-                        rootViewController: self.adListener?.getRootViewController(),
-                        adTypes: adTypes,
-                        options: [videoOptions])
-                    adLoader.delegate = self
-                    self.adLoader = adLoader
-                    let gamRequest = AdManagerRequest()
-                    gamRequest.adString = adString
-                    adLoader.load(gamRequest)
-                }
+                self.loadGoogleAd(adFormat: .native, adUnitId: adUnitId, priceInDollar: priceInDollar, adRequest: adRequest, adString: adString)
                 
             default:
                 self.adListener?.onError(msg: "unknown adType")
@@ -245,15 +174,15 @@ import PrebidMobile
                 priceInDollar = 0.0
             }
             self.priceInDollar = priceInDollar
+            self.adUnitId = bidderPlacementId
             
             let adFormat = bidderFormat ?? adRequest.adFormat
             
-            loadGoogleAd(adFormat: adFormat, priceInDollar: priceInDollar, adRequest: adRequest, adString: nil)
+            loadGoogleAd(adFormat: adFormat, adUnitId: bidderPlacementId, priceInDollar: priceInDollar, adRequest: adRequest, adString: nil)
         }
     }
     
-    private func loadGoogleAd(adFormat: MSPiOSCore.AdFormat, priceInDollar: Double, adRequest: MSPiOSCore.AdRequest ,adString: String?) {
-        let adUnitId = (self.adUnitId ?? self.bidderPlacementId) ?? adRequest.placementId
+    private func loadGoogleAd(adFormat: MSPiOSCore.AdFormat, adUnitId: String, priceInDollar: Double, adRequest: MSPiOSCore.AdRequest ,adString: String?) {
         switch adFormat {
         case .banner:
             DispatchQueue.main.async {
@@ -305,7 +234,7 @@ import PrebidMobile
                 
                 if let error {
                     MSPLogger.shared.info(message: "[Adapter: Google] Fail to load Google Interstitial ad")
-                    self.adListener?.onError(msg: error.localizedDescription)
+                    self.auctionBidListener?.onError(error: error.localizedDescription)
                     self.adMetricReporter?.logAdResult(placementId: adRequest.placementId ?? "", ad: nil, fill: false, isFromCache: false)
                     self.adMetricReporter?.logAdResponse(ad: nil, adRequest: adRequest, errorCode: .ERROR_CODE_INTERNAL_ERROR, errorMessage: error.localizedDescription)
                     return
@@ -313,7 +242,7 @@ import PrebidMobile
                 
                 guard let ad else {
                     MSPLogger.shared.info(message: "[Adapter: Google] Fail to load Google Interstitial ad")
-                    self.adListener?.onError(msg: "Missing ad")
+                    self.auctionBidListener?.onError(error: "missing ad")
                     self.adMetricReporter?.logAdResult(placementId: adRequest.placementId ?? "", ad: nil, fill: false, isFromCache: false)
                     return
                 }
@@ -340,6 +269,8 @@ import PrebidMobile
                     }
                 }
             }
+        @unknown default:
+            auctionBidListener?.onError(error: "unknown ad format")
         }
     }
     
