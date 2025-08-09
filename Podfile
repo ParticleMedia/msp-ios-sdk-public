@@ -89,6 +89,11 @@ target 'FacebookAdapter' do
   
 end
 
+target 'AmazonAdapter' do
+  project 'AmazonAdapter/AmazonAdapter'
+  
+end
+
 target 'NovaCore' do
   project 'NovaCore/NovaCore'
   # Comment the next line if you don't want to use dynamic frameworks
@@ -125,6 +130,7 @@ target 'MSPDemoApp' do
   pod 'MobilefuseAdapter', :path => './', :modular_headers => true
   pod 'MintegralAdapter', :path => './', :modular_headers => true
   pod 'PubmaticAdapter', :path => './', :modular_headers => true
+  pod 'AmazonAdapter', :path => './', :modular_headers => true
   #pod 'GoogleMobileAds', :modular_headers => true
   #pod 'NovaAdapter', :path => './', :modular_headers => true
   #pod 'MetaAdapter', :path => './', :modular_headers => true
