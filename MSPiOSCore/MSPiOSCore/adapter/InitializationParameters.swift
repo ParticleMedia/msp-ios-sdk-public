@@ -23,4 +23,5 @@ public struct InitializationParametersCustomKeys {
     public static let PUBMATIC_PUBLISHER_ID = "pubmaticPublisherId"
     public static let PUBMATIC_PROFILE_IDS = "pubmaticProfileIds"
     public static let PUBMATIC_STORE_URL = "pubmaticStoreUrl"
+    public static let AMAZON_APP_KEY = "amazonAppKey"
 }

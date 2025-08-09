@@ -19,4 +19,5 @@ public enum AdNetwork: String, CaseIterable {
     case mintegral = "mintegral"
     case mobilefuse = "mobilefuse"
     case inmobi = "inmobi"
+    case amazon = "amazon"
 }
