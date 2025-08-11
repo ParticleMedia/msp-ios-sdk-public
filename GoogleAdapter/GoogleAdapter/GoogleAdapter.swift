@@ -141,7 +141,7 @@ import PrebidMobile
                   let prebidExtDict = SafeAs(bidExtDict["prebid"], [String: Any].self),
                   let adType = SafeAs(prebidExtDict["type"], String.self)
             else {
-                self.adListener?.onError(msg: "no valid response")
+                auctionBidListener.onError(error: "no valid response")
                 self.adMetricReporter?.logAdResult(placementId: adRequest.placementId ?? "", ad: nil, fill: false, isFromCache: false)
                 return
             }
@@ -163,7 +163,7 @@ import PrebidMobile
                 self.loadGoogleAd(adFormat: .native, adUnitId: adUnitId, priceInDollar: priceInDollar, adRequest: adRequest, adString: adString)
                 
             default:
-                self.adListener?.onError(msg: "unknown adType")
+                auctionBidListener.onError(error: "unknown adType")
             }
         } else {
             // client-to-server load ad
@@ -357,7 +357,7 @@ extension GoogleAdapter : GoogleMobileAds.BannerViewDelegate  {
     
     public func bannerView(_ bannerView: GoogleMobileAds.BannerView, didFailToReceiveAdWithError error: Error) {
         MSPLogger.shared.info(message: "[Adapter: Google] Fail to load Google Banner ad")
-        self.adListener?.onError(msg: error.localizedDescription)
+        self.auctionBidListener?.onError(error: error.localizedDescription)
         self.adMetricReporter?.logAdResult(placementId: adRequest?.placementId ?? "", ad: nil, fill: false, isFromCache: false)
         if let adRequest = self.adRequest {
             self.adMetricReporter?.logAdResponse(ad: nil, adRequest: adRequest, errorCode: .ERROR_CODE_INTERNAL_ERROR, errorMessage: error.localizedDescription)
@@ -431,7 +431,7 @@ extension GoogleAdapter: GoogleMobileAds.NativeAdLoaderDelegate {
     
     public func adLoader(_ adLoader: GoogleMobileAds.AdLoader, didFailToReceiveAdWithError error: any Error) {
         MSPLogger.shared.info(message: "[Adapter: Google] Fail to load Google Native ad")
-        self.adListener?.onError(msg: error.localizedDescription)
+        self.auctionBidListener?.onError(error: error.localizedDescription)
         self.adMetricReporter?.logAdResult(placementId: adRequest?.placementId ?? "", ad: nil, fill: false, isFromCache: false)
         if let adRequest = self.adRequest {
             self.adMetricReporter?.logAdResponse(ad: nil, adRequest: adRequest, errorCode: .ERROR_CODE_INTERNAL_ERROR, errorMessage: error.localizedDescription)
