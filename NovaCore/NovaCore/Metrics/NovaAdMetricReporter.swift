@@ -90,6 +90,7 @@ private extension NovaAdMetricReporter {
 
         params[NovaAdMetricKeys.EVENT_TYPE] = event.rawValue
         params[NovaAdMetricKeys.ENCRYPTED_AD_TOKEN] = encryptedAdToken
+        params[NovaAdMetricKeys.EVENT_TIME] = "\(Date().timeIntervalSince1970 * 1000)"
         //params["session_id"] = "\(HpEngine.sharedInstance().nbSessionId)"
 
         //let user = HpEngine.sharedInstance().user
@@ -153,4 +154,5 @@ public struct NovaAdMetricKeys {
     
     public static let EVENT_TYPE = "event_type"
     public static let ENCRYPTED_AD_TOKEN = "encrypted_ad_token"
+    public static let EVENT_TIME = "event_time"
 }
