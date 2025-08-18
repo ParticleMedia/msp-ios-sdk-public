@@ -39,6 +39,10 @@ public enum NovaAppOpenAdResource {
         fatalError("init(coder:) has not been implemented")
     }
 
+    deinit {
+        NotificationCenter.default.removeObserver(self)
+    }
+    
     public override func loadView() {
 
         let viewActionHandler = NovaAppOpenAdViewActionHandler(viewController: self)
