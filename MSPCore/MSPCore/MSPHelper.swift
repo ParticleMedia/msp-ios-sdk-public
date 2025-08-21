@@ -33,6 +33,10 @@ public class MSP {
     public var ppid: String?
     public var email: String?
     public var prebidAPIKey: String?
+    
+    private var adapterInitListener: MSPAdapterInitListener?
+    private var initAdapters: [AdNetworkAdapter] = []
+    
     public func initMSP(initParams: InitializationParameters, sdkInitListener: MSPInitListener?, adNetworkManagers: [AdNetworkManager]) {
         // This is a temporary solution to replace MSPManager class in kotlin to solve the Kotlin singleton issue
         let initStartTime = Date().timeIntervalSince1970
@@ -65,10 +69,12 @@ public class MSP {
         }
         self.sdkInitListener = sdkInitListener
         var adapterInitListener = MSPAdapterInitListener()
+        self.adapterInitListener = adapterInitListener
         
         MSPAdConfigManager.shared.initAdConfig()
         for manager in adNetworkManagers {
             if let adNetworkAdapter = manager.getAdNetworkAdapter() {
+                self.initAdapters.append(adNetworkAdapter)
                 self.adNetworkInitStartTime[adNetworkAdapter.getAdNetwork().rawValue] = Date().timeIntervalSince1970
                 adNetworkAdapter.initialize(initParams: initParams, adapterInitListener: adapterInitListener, context: nil)
             }
