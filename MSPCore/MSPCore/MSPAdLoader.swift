@@ -30,7 +30,7 @@ public class MSPAdLoader: NSObject {
         let bidders: [MSPiOSCore.Bidder]
         let timeout: Double
         
-        if let placementString = adRequest.customParams[MSPConstants.AD_REQUEST_CUSTOM_PARAM_KEY_AD_CONFIG] as? String {
+        if let placementString = adRequest.customParams["msp_ad_config"] as? String {
             MSPAdConfigManager.shared.parseExrernalPlacement(string: placementString)
         }
         
