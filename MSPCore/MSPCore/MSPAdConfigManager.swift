@@ -53,9 +53,9 @@ public class MSPAdConfigManager {
     }
     
     public func parseLogConfig(data: [String: Any]) {
-        if let logSampleRate = data[MSP_LOG_SAMPLE_RATE_KEY] as? Double {
-            MSP.shared.updateLogSample(sampleRate: logSampleRate)
-        }
+        let logSampleRate = (data[MSP_LOG_SAMPLE_RATE_KEY] as? Double) ?? 0.01
+        MSP.shared.updateLogSample(sampleRate: logSampleRate)
+        
         if let whiteList = data[MSP_LOG_WHITELIST_KEY] as? [String] {
             MSP.shared.logWhiteList = whiteList
         }
