@@ -13,7 +13,7 @@ public class MSPAdConfigManager {
     public static let shared = MSPAdConfigManager()
     
     public var adConfig: AdConfig?
-    public var externalAdConfigPlacements: [Placement] = []
+    public var externalAdConfigPlacements: [String: Placement] = [:]
     public var MSP_AD_CONFIG_KEY = "map_ad_config"
     
     public func initAdConfig() {
@@ -49,7 +49,7 @@ public class MSPAdConfigManager {
     
     public func parseExrernalPlacement(string: String) {
         if let placement = getAdPlacementFromString(string: string) {
-            self.externalAdConfigPlacements.append(placement)
+            self.externalAdConfigPlacements[placement.placementId] = placement
         }
     }
     

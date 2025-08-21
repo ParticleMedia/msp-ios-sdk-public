@@ -55,10 +55,8 @@ public class MSPAdLoader: NSObject {
     }
     
     public func getPlacement(placementId: String) -> Placement? {
-        for placement in MSPAdConfigManager.shared.externalAdConfigPlacements {
-            if placement.placementId == placementId {
-                return placement
-            }
+        if let placement = MSPAdConfigManager.shared.externalAdConfigPlacements[placementId] {
+            return placement
         }
         if let adConfig = MSPAdConfigManager.shared.adConfig,
            let placements = adConfig.placements {
