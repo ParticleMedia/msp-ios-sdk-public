@@ -20,4 +20,6 @@ public struct MSPConstants {
     public static let USER_SIGNAL_APP_INSTALL_TIME = "app_install_time"
     public static let USER_SIGNAL_IS_FIRST_INSTALL = "is_first_install"
     public static let USER_SIGNAL_PPID = "ppid"
+    
+    public static let AD_REQUEST_CUSTOM_PARAM_KEY_AD_CONFIG = "msp_ad_config"
 }
