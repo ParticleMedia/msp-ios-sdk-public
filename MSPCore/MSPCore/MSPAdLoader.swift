@@ -29,6 +29,11 @@ public class MSPAdLoader: NSObject {
         
         let bidders: [MSPiOSCore.Bidder]
         let timeout: Double
+        
+        if let placementString = adRequest.customParams["msp_ad_config"] as? String {
+            MSPAdConfigManager.shared.parseExrernalPlacement(string: placementString)
+        }
+        
         if let placement = getPlacement(placementId: placementId) {
             let adConfigBidders = getBidders(placement: placement)
             if adConfigBidders.isEmpty {
@@ -50,6 +55,9 @@ public class MSPAdLoader: NSObject {
     }
     
     public func getPlacement(placementId: String) -> Placement? {
+        if let placement = MSPAdConfigManager.shared.externalAdConfigPlacements[placementId] {
+            return placement
+        }
         if let adConfig = MSPAdConfigManager.shared.adConfig,
            let placements = adConfig.placements {
             for placement in placements {
