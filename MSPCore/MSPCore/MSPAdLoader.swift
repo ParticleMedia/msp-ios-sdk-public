@@ -131,6 +131,10 @@ public class MSPAdLoader: NSObject {
             let bidder = MSP.shared.adNetworkAdapterProvider.adNetworkManagerDict[.mintegral]?.getAdBidder(bidderPlacementId: bidderInfo.bidderPlacementId, bidderFormat: bidderFormat)
             bidder?.setAdMetricReporter(adMetricReporter: AdMetricReporterImp())
             return bidder
+        case AdNetwork.amazon.rawValue:
+            let bidder = MSP.shared.adNetworkAdapterProvider.adNetworkManagerDict[.amazon]?.getAdBidder(bidderPlacementId: bidderInfo.bidderPlacementId, bidderFormat: bidderFormat)
+            bidder?.setAdMetricReporter(adMetricReporter: AdMetricReporterImp())
+            return bidder
         case AdNetwork.google.rawValue:
             let bidder = MSP.shared.adNetworkAdapterProvider.adNetworkManagerDict[.google]?.getAdBidder(bidderPlacementId: bidderInfo.bidderPlacementId, bidderFormat: bidderFormat)
             bidder?.setAdMetricReporter(adMetricReporter: AdMetricReporterImp())
