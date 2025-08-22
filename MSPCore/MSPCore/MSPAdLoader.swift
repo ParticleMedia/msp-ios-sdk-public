@@ -110,25 +110,29 @@ public class MSPAdLoader: NSObject {
         switch bidderInfo.name {
         case "msp":
             return MSPBidder(name: "msp", bidderPlacementId: bidderInfo.bidderPlacementId, bidderFormat: bidderFormat)
-        case "unity":
+        case AdNetwork.unity.rawValue:
             //let bidder = MSP.shared.adNetworkAdapterProvider.unityManager?.getAdBidder(bidderPlacementId: bidderInfo.bidderPlacementId, bidderFormat: bidderFormat)
             let bidder = MSP.shared.adNetworkAdapterProvider.adNetworkManagerDict[.unity]?.getAdBidder(bidderPlacementId: bidderInfo.bidderPlacementId, bidderFormat: bidderFormat)
             bidder?.setAdMetricReporter(adMetricReporter: AdMetricReporterImp())
             return bidder
-        case "pubmatic":
+        case AdNetwork.pubmatic.rawValue:
             let bidder = MSP.shared.adNetworkAdapterProvider.adNetworkManagerDict[.pubmatic]?.getAdBidder(bidderPlacementId: bidderInfo.bidderPlacementId, bidderFormat: bidderFormat)
             bidder?.setAdMetricReporter(adMetricReporter: AdMetricReporterImp())
             return bidder
-        case "inmobi":
+        case AdNetwork.inmobi.rawValue:
             let bidder = MSP.shared.adNetworkAdapterProvider.adNetworkManagerDict[.inmobi]?.getAdBidder(bidderPlacementId: bidderInfo.bidderPlacementId, bidderFormat: bidderFormat)
             bidder?.setAdMetricReporter(adMetricReporter: AdMetricReporterImp())
             return bidder
-        case "mobilefuse":
+        case AdNetwork.mobilefuse.rawValue:
             let bidder = MSP.shared.adNetworkAdapterProvider.adNetworkManagerDict[.mobilefuse]?.getAdBidder(bidderPlacementId: bidderInfo.bidderPlacementId, bidderFormat: bidderFormat)
             bidder?.setAdMetricReporter(adMetricReporter: AdMetricReporterImp())
             return bidder
-        case "mintegral":
+        case AdNetwork.mintegral.rawValue:
             let bidder = MSP.shared.adNetworkAdapterProvider.adNetworkManagerDict[.mintegral]?.getAdBidder(bidderPlacementId: bidderInfo.bidderPlacementId, bidderFormat: bidderFormat)
+            bidder?.setAdMetricReporter(adMetricReporter: AdMetricReporterImp())
+            return bidder
+        case AdNetwork.google.rawValue:
+            let bidder = MSP.shared.adNetworkAdapterProvider.adNetworkManagerDict[.google]?.getAdBidder(bidderPlacementId: bidderInfo.bidderPlacementId, bidderFormat: bidderFormat)
             bidder?.setAdMetricReporter(adMetricReporter: AdMetricReporterImp())
             return bidder
         default:
