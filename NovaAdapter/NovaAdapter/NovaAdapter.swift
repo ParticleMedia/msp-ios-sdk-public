@@ -49,37 +49,37 @@ public class NovaAdapter: AdNetworkAdapter {
             self.adMetricReporter?.logAdResult(placementId: adRequest.placementId, ad: nil, fill: false, isFromCache: false)
             return
         }
- 
-        self.adListener = adListener
-        self.auctionBidListener = auctionBidListener
-        self.bidderPlacementId = bidderPlacementId
-        self.adRequest = adRequest
-        self.bidResponse = mBidResponse
-        
-        guard let adString = mBidResponse.winningBid?.bid.adm,
-              let rawBidDict = SafeAs(mBidResponse.winningBid?.bid.rawJsonDictionary, [String: Any].self),
-              let bidExtDict = SafeAs(rawBidDict["ext"], [String: Any].self),
-              let novaExtDict = SafeAs(bidExtDict["nova"], [String: Any].self),
-              let adUnitId = SafeAs(novaExtDict["ad_unit_id"], String.self),
-              let prebidExtDict = SafeAs(bidExtDict["prebid"], [String: Any].self),
-              let adType = SafeAs(prebidExtDict["type"], String.self)
-        else {
-            self.adListener?.onError(msg: "no valid response")
-            self.adMetricReporter?.logAdResult(placementId: adRequest.placementId, ad: nil, fill: false, isFromCache: false)
-            return
-        }
         DispatchQueue.main.async {
+            self.adListener = adListener
+            self.auctionBidListener = auctionBidListener
+            self.bidderPlacementId = bidderPlacementId
+            self.adRequest = adRequest
+            self.bidResponse = mBidResponse
+            
+            guard let adString = mBidResponse.winningBid?.bid.adm,
+                  let rawBidDict = self.SafeAs(mBidResponse.winningBid?.bid.rawJsonDictionary, [String: Any].self),
+                  let bidExtDict = self.SafeAs(rawBidDict["ext"], [String: Any].self),
+                  let novaExtDict = self.SafeAs(bidExtDict["nova"], [String: Any].self),
+                  let adUnitId = self.SafeAs(novaExtDict["ad_unit_id"], String.self),
+                  let prebidExtDict = self.SafeAs(bidExtDict["prebid"], [String: Any].self),
+                  let adType = self.SafeAs(prebidExtDict["type"], String.self)
+            else {
+                self.adListener?.onError(msg: "no valid response")
+                self.adMetricReporter?.logAdResult(placementId: adRequest.placementId, ad: nil, fill: false, isFromCache: false)
+                return
+            }
+
             self.priceInDollar = Double(mBidResponse.winningBid?.price ?? 0)
+            self.adUnitId = adUnitId
+            let eCPMInDollar = Decimal(self.priceInDollar ?? 0.0)
+            let novaAdType: String
+            if adRequest.adFormat == .interstitial {
+                novaAdType = "app_open"
+            } else {
+                novaAdType = "native"
+            }
+            self.parseNovaAdString(adString: adString, adType: novaAdType, adUnitId: adUnitId, eCPMInDollar: eCPMInDollar)
         }
-        self.adUnitId = adUnitId
-        let eCPMInDollar = Decimal(priceInDollar ?? 0.0)
-        let novaAdType: String
-        if adRequest.adFormat == .interstitial {
-            novaAdType = "app_open"
-        } else {
-            novaAdType = "native"
-        }
-        parseNovaAdString(adString: adString, adType: novaAdType, adUnitId: adUnitId, eCPMInDollar: eCPMInDollar)
     }
     
     public func prepareViewForInteraction(nativeAd: MSPiOSCore.NativeAd, nativeAdView: Any) {
@@ -398,11 +398,13 @@ extension NovaAdapter: NovaAppOpenAdDelegate {
     }
     
     public func appOpenAdDidDisplay(_ appOpenAd: NovaCore.NovaAppOpenAd) {
-        if let interstitialAd = self.interstitialAd {
-            self.adListener?.onAdImpression(ad: interstitialAd)
-            if let adRequest = adRequest,
-               let bidResponse = bidResponse {
-                self.adMetricReporter?.logAdImpression(ad: interstitialAd, adRequest: adRequest, bidResponse: bidResponse)
+        DispatchQueue.main.async {
+            if let interstitialAd = self.interstitialAd {
+                if let adRequest = self.adRequest,
+                   let bidResponse = self.bidResponse {
+                    self.adMetricReporter?.logAdImpression(ad: interstitialAd, adRequest: adRequest, bidResponse: bidResponse)
+                }
+                self.adListener?.onAdImpression(ad: interstitialAd)
             }
         }
     }
