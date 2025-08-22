@@ -119,59 +119,56 @@ import Foundation
     }
     
     public func loadAdCreative(bidResponse: Any, auctionBidListener: AuctionBidListener, adListener: any AdListener, context: Any, adRequest: AdRequest, bidderPlacementId: String, bidderFormat: MSPiOSCore.AdFormat?, params: [String:String]?) {
-        self.adListener = adListener
-        self.adRequest = adRequest
-        self.auctionBidListener = auctionBidListener
-        self.bidderPlacementId = bidderPlacementId
-        
-        guard bidResponse is BidResponse,
-              let mBidResponse = bidResponse as? BidResponse else {
-            self.adListener?.onError(msg: "no valid response")
-            return
-        }
-        
-        self.bidResponse = mBidResponse
-        
-        guard let adString = mBidResponse.winningBid?.bid.adm,
-              let rawBidDict = SafeAs(mBidResponse.winningBid?.bid.rawJsonDictionary, [String: Any].self),
-              let bidExtDict = SafeAs(rawBidDict["ext"], [String: Any].self),
-              let prebidExtDict = SafeAs(bidExtDict["prebid"], [String: Any].self),
-              let adType = SafeAs(prebidExtDict["type"], String.self)
-        else {
-            self.adListener?.onError(msg: "no valid response")
-            return
-        }
-        
-        switch adType {
-        case "native":
-            guard let placementId = self.getFBPlacementId(from: adString) else {
-                self.adListener?.onError(msg: "Missing FB payload or placementId")
+        DispatchQueue.main.async {
+            self.adListener = adListener
+            self.adRequest = adRequest
+            self.auctionBidListener = auctionBidListener
+            self.bidderPlacementId = bidderPlacementId
+            
+            guard bidResponse is BidResponse,
+                  let mBidResponse = bidResponse as? BidResponse else {
+                self.adListener?.onError(msg: "no valid response")
                 return
             }
-            nativeAdItem = FBNativeAd(placementID: placementId)
-            nativeAdItem?.delegate = self
-
-            DispatchQueue.main.async {
-                self.priceInDollar = Double(mBidResponse.winningBid?.price ?? 0)
-                self.nativeAdItem?.loadAd(withBidPayload: adString)
+            
+            self.bidResponse = mBidResponse
+            
+            guard let adString = mBidResponse.winningBid?.bid.adm,
+                  let rawBidDict = self.SafeAs(mBidResponse.winningBid?.bid.rawJsonDictionary, [String: Any].self),
+                  let bidExtDict = self.SafeAs(rawBidDict["ext"], [String: Any].self),
+                  let prebidExtDict = self.SafeAs(bidExtDict["prebid"], [String: Any].self),
+                  let adType = self.SafeAs(prebidExtDict["type"], String.self)
+            else {
+                self.adListener?.onError(msg: "no valid response")
+                return
             }
-        case "banner":
-            if adRequest.adFormat == .interstitial {
+            
+            switch adType {
+            case "native":
                 guard let placementId = self.getFBPlacementId(from: adString) else {
                     self.adListener?.onError(msg: "Missing FB payload or placementId")
                     return
                 }
-                let facebookInterstitialAdItem = FBInterstitialAd(placementID: placementId)
-                self.interstitialAdItem = facebookInterstitialAdItem
-                facebookInterstitialAdItem.delegate = self
-                DispatchQueue.main.async {
+                self.nativeAdItem = FBNativeAd(placementID: placementId)
+                self.nativeAdItem?.delegate = self
+                self.priceInDollar = Double(mBidResponse.winningBid?.price ?? 0)
+                self.nativeAdItem?.loadAd(withBidPayload: adString)
+
+            case "banner":
+                if adRequest.adFormat == .interstitial {
+                    guard let placementId = self.getFBPlacementId(from: adString) else {
+                        self.adListener?.onError(msg: "Missing FB payload or placementId")
+                        return
+                    }
+                    let facebookInterstitialAdItem = FBInterstitialAd(placementID: placementId)
+                    self.interstitialAdItem = facebookInterstitialAdItem
+                    facebookInterstitialAdItem.delegate = self
                     self.priceInDollar = Double(mBidResponse.winningBid?.price ?? 0)
                     facebookInterstitialAdItem.load(withBidPayload: adString)
                 }
-                
+            default:
+                self.adListener?.onError(msg: "unknown adType")
             }
-        default:
-            self.adListener?.onError(msg: "unknown adType")
         }
     }
     
@@ -300,12 +297,13 @@ extension FacebookAdapter: FBNativeAdDelegate {
     }
     
     public func nativeAdWillLogImpression(_ nativeAd: FBNativeAd) {
-        if let facebookNativeAd = self.facebookNativeAd {
-            self.adListener?.onAdImpression(ad: facebookNativeAd)
-            
-            if let adRequest = adRequest,
-               let bidResponse = bidResponse {
-                self.adMetricReporter?.logAdImpression(ad: facebookNativeAd, adRequest: adRequest, bidResponse: bidResponse)
+        DispatchQueue.main.async {
+            if let facebookNativeAd = self.facebookNativeAd {
+                if let adRequest = self.adRequest,
+                   let bidResponse = self.bidResponse {
+                    self.adMetricReporter?.logAdImpression(ad: facebookNativeAd, adRequest: adRequest, bidResponse: bidResponse)
+                }
+                self.adListener?.onAdImpression(ad: facebookNativeAd)
             }
         }
     }
@@ -367,12 +365,13 @@ extension FacebookAdapter: FBInterstitialAdDelegate {
     }
     
     public func interstitialAdWillLogImpression(_ interstitialAd: FBInterstitialAd) {
-        if let facebookInterstitialAd = self.facebookInterstitialAd {
-            self.adListener?.onAdImpression(ad: facebookInterstitialAd)
-            
-            if let adRequest = adRequest,
-               let bidResponse = bidResponse {
-                self.adMetricReporter?.logAdImpression(ad: facebookInterstitialAd, adRequest: adRequest, bidResponse: bidResponse)
+        DispatchQueue.main.async {
+            if let facebookInterstitialAd = self.facebookInterstitialAd {
+                if let adRequest = self.adRequest,
+                   let bidResponse = self.bidResponse {
+                    self.adMetricReporter?.logAdImpression(ad: facebookInterstitialAd, adRequest: adRequest, bidResponse: bidResponse)
+                }
+                self.adListener?.onAdImpression(ad: facebookInterstitialAd)
             }
         }
     }
