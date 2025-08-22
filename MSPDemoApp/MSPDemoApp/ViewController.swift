@@ -23,18 +23,26 @@ class ViewController: UIViewController {
         
         let button2 = UIButton(type: .system)
                 button2.setTitle("Google Banner View", for: .normal)
-                button2.addAction(UIAction { [weak self] _ in
-                    self?.openDemoAdPage(adType: .googleBanner)
-                }, for: .touchUpInside)
                 button2.frame = CGRect(x: 100, y: 150, width: 200, height: 50)
                 view.addSubview(button2)
+                let googleBannerMenuItems = [
+                    UIAction(title: "s2s", handler: { _ in self.openDemoAdPage(adType: .googleBanner) }),
+                    UIAction(title: "c2s", handler: { _ in self.openDemoAdPage(adType: .googleBannerC2S)})
+                ]
+               
+                button2.menu = UIMenu(title: "Choose an option", children: googleBannerMenuItems)
+                button2.showsMenuAsPrimaryAction = true
         let button3 = UIButton(type: .system)
                 button3.setTitle("Google Native View", for: .normal)
-                button3.addAction(UIAction { [weak self] _ in
-                    self?.openDemoAdPage(adType: .googleNative)
-                }, for: .touchUpInside)
                 button3.frame = CGRect(x: 100, y: 200, width: 200, height: 50)
                 view.addSubview(button3)
+                let googleNativeMenuItems = [
+                    UIAction(title: "s2s", handler: { _ in self.openDemoAdPage(adType: .googleNative) }),
+                    UIAction(title: "c2s", handler: { _ in self.openDemoAdPage(adType: .googleNativeC2S)})
+                ]
+               
+                button3.menu = UIMenu(title: "Choose an option", children: googleNativeMenuItems)
+                button3.showsMenuAsPrimaryAction = true
         let button4 = UIButton(type: .system)
                 button4.setTitle("Nova Native View", for: .normal)
                 button4.addAction(UIAction { [weak self] _ in
@@ -44,11 +52,15 @@ class ViewController: UIViewController {
                 view.addSubview(button4)
         let button5 = UIButton(type: .system)
                 button5.setTitle("Google Interstitial View", for: .normal)
-                button5.addAction(UIAction { [weak self] _ in
-                    self?.openDemoAdPage(adType: .googleInterstitial)
-                }, for: .touchUpInside)
                 button5.frame = CGRect(x: 100, y: 300, width: 200, height: 50)
                 view.addSubview(button5)
+                let googleInterstitialMenuItems = [
+                    UIAction(title: "s2s", handler: { _ in self.openDemoAdPage(adType: .googleInterstitial) }),
+                    UIAction(title: "c2s", handler: { _ in self.openDemoAdPage(adType: .googleInterstitialC2S)})
+                ]
+               
+                button5.menu = UIMenu(title: "Choose an option", children: googleInterstitialMenuItems)
+                button5.showsMenuAsPrimaryAction = true
         let button6 = UIButton(type: .system)
                 button6.setTitle("Nova Interstitial View", for: .normal)
                 button6.frame = CGRect(x: 100, y: 350, width: 200, height: 50)
