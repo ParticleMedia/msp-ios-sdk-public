@@ -13,9 +13,12 @@ public enum AdType: String {
     case prebidInterstitial
     case googleBanner
     case googleNative
-    case novaNative
     case googleInterstitial
+    case googleBannerC2S
+    case googleNativeC2S
+    case googleInterstitialC2S
     
+    case novaNative
     case novaInterstitialHorizontalImage
     case novaInterstitialVerticalImage
     case novaInterstitialHorizontalVideo
@@ -109,17 +112,23 @@ class DemoAdViewController: UIViewController {
             return "demo-ios-launch-fullscreen-mintegral"
         case .mintegralNative:
             return "demo-ios-foryou-large-mintegral"
+        case .googleBannerC2S:
+            return "demo-ios-article-top-google-c2s"
+        case .googleNativeC2S:
+            return "demo-ios-foryou-large-google-c2s"
+        case .googleInterstitialC2S:
+            return "demo-ios-launch-fullscreen-google-c2s"
         }
     }()
     
     private lazy var adFormat: MSPiOSCore.AdFormat = {
         switch adType {
-        case .prebidBanner, .googleBanner, .unityBanner, .inmobiBanner,.pubmaticBanner,.mobilefuseBanner,.mintegralBanner,.clientBiddingBanner :
+        case .prebidBanner, .googleBanner, .googleBannerC2S, .unityBanner, .inmobiBanner,.pubmaticBanner,.mobilefuseBanner,.mintegralBanner,.clientBiddingBanner :
             return .banner
     
-        case .googleNative, .novaNative, .facebookNative, .unityNative, .inmobiNative,.pubmaticNative,.mobilefuseNative,.mintegralNative:
+        case .googleNative, .googleNativeC2S, .novaNative, .facebookNative, .unityNative, .inmobiNative,.pubmaticNative,.mobilefuseNative,.mintegralNative:
             return .native
-        case .prebidInterstitial, .googleInterstitial, .novaInterstitialHorizontalImage,.novaInterstitialVerticalImage,.novaInterstitialHorizontalVideo,.novaInterstitialVerticalVideo, .novaInterstitialHighEngagement, .facebookInterstitial, .unityInterstitial, .inmobiInterstitial,.pubmaticInterstitial,.mobilefuseInterstitial,.mintegralInterstitial, .novaInterstitialEndCard:
+        case .prebidInterstitial, .googleInterstitial, .googleInterstitialC2S, .novaInterstitialHorizontalImage,.novaInterstitialVerticalImage,.novaInterstitialHorizontalVideo,.novaInterstitialVerticalVideo, .novaInterstitialHighEngagement, .facebookInterstitial, .unityInterstitial, .inmobiInterstitial,.pubmaticInterstitial,.mobilefuseInterstitial,.mintegralInterstitial, .novaInterstitialEndCard:
             return .interstitial
         }
     }()
