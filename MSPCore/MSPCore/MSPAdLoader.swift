@@ -19,13 +19,17 @@ public class MSPAdLoader: NSObject {
     var winnerBidderPlacementId: String?
 
     var mspAuction: MSPAuction?
+    var loadStartTime: TimeInterval?
     
     public override init() {}
     
     public func loadAd(placementId: String, adListener: AdListener, adRequest: AdRequest) {
-        MESMetricReporter.shared.logAdRequest(adRequest: adRequest)
+        if MSP.shared.isLogSampled {
+            MESMetricReporter.shared.logAdRequest(adRequest: adRequest)
+        }
         self.adListener = adListener
         self.adRequest = adRequest
+        self.loadStartTime = Date().timeIntervalSince1970
         
         let bidders: [MSPiOSCore.Bidder]
         let timeout: Double
@@ -148,13 +152,22 @@ public class MSPAdLoader: NSObject {
             }
             if let ad = AdCache.shared.getAd(placementId: winnerPlacementId) {
                 MSPLogger.shared.info(message: "[Auction: Get Ad] complete, winner: \(winnerBidderName),\(winnerPrice),\(winnerPlacementId)")
+                if MSP.shared.isLogSampled {
+                    MESMetricReporter.shared.logGetAd(ad: ad, placementId: placementId)
+                }
                 return ad
             }
         } else {
             if let ad = AdCache.shared.getAd(placementId: placementId) {
                 MSPLogger.shared.info(message: "[Auction: Get Ad] complete, winner: \(winnerBidderName),\(winnerPrice),\(winnerPlacementId)")
+                if MSP.shared.isLogSampled {
+                    MESMetricReporter.shared.logGetAd(ad: nil, placementId: placementId)
+                }
                 return ad
             }
+        }
+        if MSP.shared.isLogSampled {
+            MESMetricReporter.shared.logGetAd(ad: nil, placementId: placementId)
         }
         return nil
     }
@@ -168,12 +181,23 @@ extension MSPAdLoader: AuctionListener {
             self.winnerBidderPlacementId = winningBid.bidderPlacementId
             if let placementId = self.adRequest?.placementId {
                 self.adListener?.onAdLoaded(placementId: placementId)
+                if MSP.shared.isLogSampled,
+                   let adRequest = self.adRequest,
+                   let ad = AdCache.shared.getAd(placementId: winningBid.bidderPlacementId),
+                   let loadStartTime = self.loadStartTime {
+                    MESMetricReporter.shared.logLoadAd(adRequest: adRequest, ad: ad, filledFromCache: winningBid.fromCache, latency: (Date().timeIntervalSince1970 - loadStartTime) * 1000 , errorMessage: nil)
+                }
             }
         }
     }
     
     public func onError(error: String) {
         adListener?.onError(msg: error)
+        if MSP.shared.isLogSampled,
+           let adRequest = self.adRequest,
+           let loadStartTime = self.loadStartTime {
+            MESMetricReporter.shared.logLoadAd(adRequest: adRequest, ad: nil, filledFromCache: false, latency: (Date().timeIntervalSince1970 - loadStartTime) * 1000, errorMessage: error)
+        }
     }
     
     
