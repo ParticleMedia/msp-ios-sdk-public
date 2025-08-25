@@ -13,6 +13,8 @@ public class AuctionBid {
     public var ecpm: Double
     public var fromCache: Bool
     
+    public var ad: MSPAd?
+    
     public init(bidderName: String, bidderPlacementId: String, ecpm: Double, fromCache: Bool = false) {
         self.bidderName = bidderName
         self.bidderPlacementId = bidderPlacementId

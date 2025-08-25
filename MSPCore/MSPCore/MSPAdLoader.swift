@@ -183,7 +183,7 @@ extension MSPAdLoader: AuctionListener {
                 self.adListener?.onAdLoaded(placementId: placementId)
                 if MSP.shared.isLogSampled,
                    let adRequest = self.adRequest,
-                   let ad = AdCache.shared.getAd(placementId: winningBid.bidderPlacementId),
+                   let ad = winningBid.ad,
                    let loadStartTime = self.loadStartTime {
                     MESMetricReporter.shared.logLoadAd(adRequest: adRequest, ad: ad, filledFromCache: winningBid.fromCache, latency: (Date().timeIntervalSince1970 - loadStartTime) * 1000 , errorMessage: nil)
                 }
