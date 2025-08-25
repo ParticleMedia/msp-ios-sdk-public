@@ -161,7 +161,7 @@ public class MSPAdLoader: NSObject {
             if let ad = AdCache.shared.getAd(placementId: placementId) {
                 MSPLogger.shared.info(message: "[Auction: Get Ad] complete, winner: \(winnerBidderName),\(winnerPrice),\(winnerPlacementId)")
                 if MSP.shared.isLogSampled {
-                    MESMetricReporter.shared.logGetAd(ad: nil, placementId: placementId)
+                    MESMetricReporter.shared.logGetAd(ad: ad, placementId: placementId)
                 }
                 return ad
             }
