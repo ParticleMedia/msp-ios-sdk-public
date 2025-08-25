@@ -63,6 +63,10 @@ public final class NovaNativeAdMediaView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
     
+    deinit {
+        NotificationCenter.default.removeObserver(self)
+    }
+    
     public func setNovaNativeAdVideoDelegate(delegate: NovaNativeAdVideoDelegate) {
         self.novaNativeAdVideoDelegate = delegate
         self.videoView.novaNativeAdVideoDelegate = delegate

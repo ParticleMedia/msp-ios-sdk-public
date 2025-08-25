@@ -17,13 +17,15 @@ import PrebidMobile
     enum AdEventType: String {
         case adImpression = "ad_impression"
         case sdkInit = "sdk_init"
-        case loadAdRequest = "load_ad_request"
+        case adRequest = "ad_request"
         case getAdFromCache = "get_ad_from_cache"
         case loadAdResult = "load_ad_result"
         case adHide = "ad_hide"
         case adReport = "ad_report"
         case adResponse = "ad_response"
         case adClick = "ad_click"
+        case loadAd = "load_ad"
+        case getAd = "get_ad"
     }
     
     func report(event type: AdEventType, with data: Data, completion: @escaping (Bool, Error?) -> Void) {
@@ -121,7 +123,7 @@ import PrebidMobile
             eventModel.ad = generateAdContext(ad: ad, request: adRequest, bidResponse: mBidResponse)
         } else {
             eventModel.requestContext = generateRequestContext(ad: ad, request: adRequest)
-            eventModel.ad = generateAdContext(ad: ad, request: adRequest)
+            eventModel.ad = generateAdContext(ad: ad)
         }
         
         eventModel.os = .ios
@@ -151,7 +153,7 @@ import PrebidMobile
             eventModel.ad = generateAdContext(ad: ad, request: adRequest, bidResponse: mBidResponse)
         } else {
             eventModel.requestContext = generateRequestContext(ad: ad, request: adRequest)
-            eventModel.ad = generateAdContext(ad: ad, request: adRequest)
+            eventModel.ad = generateAdContext(ad: ad)
         }
         
         eventModel.os = .ios
@@ -197,6 +199,7 @@ import PrebidMobile
     }
     
     public func logAdResponse(ad: MSPiOSCore.MSPAd?, adRequest: MSPiOSCore.AdRequest, errorCode: MSPErrorCode, errorMessage: String?) {
+        guard shouldLogSampledMESEvent() else { return }
         var eventModel = Com_Newsbreak_Mes_Events_AdResponse()
         eventModel.clientTsMs = UInt64(Date().timeIntervalSince1970 * 1000)
         eventModel.os = .ios
@@ -213,7 +216,7 @@ import PrebidMobile
             eventModel.errorMessage = errorMessage
         }
         if let ad = ad {
-            eventModel.ad = generateAdContext(ad: ad, request: adRequest)
+            eventModel.ad = generateAdContext(ad: ad)
         }
         eventModel.requestContext = generateRequestContext(ad: ad, request: adRequest)
         
@@ -237,11 +240,10 @@ import PrebidMobile
         }
     }
     
-    public func logAdRequest(adRequest: AdRequest) {
-        var eventModel = Com_Newsbreak_Mes_Events_LoadAdRequest()
+    public func logLoadAd(adRequest: AdRequest, ad: MSPAd?, filledFromCache: Bool, latency: Double, errorMessage: String?) {
+        guard shouldLogSampledMESEvent() else { return }
+        var eventModel = Com_Newsbreak_Mes_Events_LoadAd()
         eventModel.clientTsMs = UInt64(Date().timeIntervalSince1970 * 1000)
-        eventModel.placementID = adRequest.placementId
-    
         eventModel.os = .ios
         if let org = MSP.shared.org {
             eventModel.org = org
@@ -249,11 +251,82 @@ import PrebidMobile
         if let app = MSP.shared.app {
             eventModel.app = app
         }
+        eventModel.mspSdkVersion = MSP.shared.version
+        eventModel.filledFromCache = filledFromCache
         
+        if let ad = ad {
+            eventModel.ad = generateAdContext(ad: ad)
+            eventModel.errorCode = .success
+        }
+        if let errorMessage = errorMessage {
+            eventModel.errorMessage = errorMessage
+        }
+        if latency.isFinite, !latency.isNaN {
+            eventModel.latency = Int32(latency)
+        }
         
         do {
             let tracingData = try eventModel.serializedData()
-            report(event: .loadAdRequest, with: tracingData) { success, error in
+            report(event: .loadAd, with: tracingData) { success, error in
+               
+            }
+        } catch {
+            
+        }
+    }
+    
+    public func logGetAd(ad: MSPAd?, placementId: String, errorMessage: String? = nil) {
+        guard shouldLogSampledMESEvent() else { return }
+        var eventModel = Com_Newsbreak_Mes_Events_GetAdEvent()
+        eventModel.clientTsMs = UInt64(Date().timeIntervalSince1970 * 1000)
+        eventModel.os = .ios
+        if let org = MSP.shared.org {
+            eventModel.org = org
+        }
+        if let app = MSP.shared.app {
+            eventModel.app = app
+        }
+        eventModel.mspSdkVersion = MSP.shared.version
+        
+        if let ad = ad {
+            eventModel.ad = generateAdContext(ad: ad)
+            eventModel.errorCode = .success
+        } else {
+            eventModel.errorCode = .noFill
+        }
+        
+        if let errorMessage = errorMessage {
+            eventModel.errorMessage = errorMessage
+        }
+        
+        do {
+            let tracingData = try eventModel.serializedData()
+            report(event: .getAd, with: tracingData) { success, error in
+               
+            }
+        } catch {
+            
+        }
+    }
+    
+    public func logAdRequest(adRequest: AdRequest) {
+        guard shouldLogSampledMESEvent() else { return }
+        var eventModel = Com_Newsbreak_Mes_Events_AdRequest()
+        
+        eventModel.clientTsMs = UInt64(Date().timeIntervalSince1970 * 1000)
+        eventModel.os = .ios
+        if let org = MSP.shared.org {
+            eventModel.org = org
+        }
+        if let app = MSP.shared.app {
+            eventModel.app = app
+        }
+        eventModel.mspSdkVersion = MSP.shared.version
+        eventModel.requestContext = generateRequestContext(ad: nil, request: adRequest)
+        
+        do {
+            let tracingData = try eventModel.serializedData()
+            report(event: .adRequest, with: tracingData) { success, error in
                
             }
         } catch {
@@ -266,7 +339,7 @@ import PrebidMobile
         eventModel.tsMs = UInt64(Date().timeIntervalSince1970 * 1000)
         eventModel.reason = reason
         eventModel.requestContext = generateRequestContext(ad: ad, request: adRequest)
-        eventModel.ad = generateAdContext(ad: ad, request: adRequest, adScreenShot: adScreenshot, fullScreenShot: fullScreenShot)
+        eventModel.ad = generateAdContext(ad: ad, adScreenShot: adScreenshot, fullScreenShot: fullScreenShot)
         eventModel.os = .ios
         if let org = MSP.shared.org {
             eventModel.org = org
@@ -292,7 +365,7 @@ import PrebidMobile
             eventModel.description_p = description
         }
         eventModel.requestContext = generateRequestContext(ad: ad, request: adRequest)
-        eventModel.ad = generateAdContext(ad: ad, request: adRequest, adScreenShot: adScreenshot, fullScreenShot: fullScreenShot)
+        eventModel.ad = generateAdContext(ad: ad, adScreenShot: adScreenshot, fullScreenShot: fullScreenShot)
         eventModel.os = .ios
         if let org = MSP.shared.org {
             eventModel.org = org
@@ -382,7 +455,7 @@ import PrebidMobile
         return eventModel
     }
     
-    func generateAdContext(ad: MSPAd, request: AdRequest, adScreenShot: Data? = nil, fullScreenShot: Data? = nil) -> Com_Newsbreak_Monetization_Common_Ad {
+    func generateAdContext(ad: MSPAd, adScreenShot: Data? = nil, fullScreenShot: Data? = nil) -> Com_Newsbreak_Monetization_Common_Ad {
         var eventModel = Com_Newsbreak_Monetization_Common_Ad()
         eventModel.tsMs = UInt64(Date().timeIntervalSince1970 * 1000)
         if ad is MSPiOSCore.NativeAd,
@@ -451,6 +524,16 @@ import PrebidMobile
         return eventModel
     }
     
-    
+    func shouldLogSampledMESEvent() -> Bool {
+        if MSP.shared.isLogSampled {
+            return true
+        }
+        if let mspUserId = UserDefaults.standard.string(forKey: "msp_user_id"),
+           let whiteList = MSP.shared.logWhiteList,
+           whiteList.contains(mspUserId) {
+            return true
+        }
+        return false
+    }
 }
 

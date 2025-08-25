@@ -14,6 +14,8 @@ public class MSPAdConfigManager {
     
     public var adConfig: AdConfig?
     public var MSP_AD_CONFIG_KEY = "map_ad_config"
+    public var MSP_LOG_SAMPLE_RATE_KEY = "log_sample_rate"
+    public var MSP_LOG_WHITELIST_KEY = "msp_id_whitelist"
     
     public func initAdConfig() {
         if let configString = UserDefaults.standard.string(forKey: MSP_AD_CONFIG_KEY) {
@@ -24,9 +26,13 @@ public class MSPAdConfigManager {
         fetchAdConfigData { result in
             switch result {
             case .success(let configData):
-                if let adConfigString = configData["ad_config"] as? String {
+                if let adConfigJson = configData["ad_config_settings"] as? [String: Any],
+                   let adConfigString = adConfigJson["ad_config"] as? String {
                     self.parseAdConfig(string: adConfigString)
                     UserDefaults.standard.setValue(adConfigString, forKey: self.MSP_AD_CONFIG_KEY)
+                }
+                if let logConfigJson = configData["log_config"] as? [String: Any] {
+                    self.parseLogConfig(data: logConfigJson)
                 }
                 
             case .failure(let error):
@@ -43,6 +49,15 @@ public class MSPAdConfigManager {
             
         } catch {
             
+        }
+    }
+    
+    public func parseLogConfig(data: [String: Any]) {
+        let logSampleRate = (data[MSP_LOG_SAMPLE_RATE_KEY] as? Double) ?? 0.01
+        MSP.shared.updateLogSample(sampleRate: logSampleRate)
+        
+        if let whiteList = data[MSP_LOG_WHITELIST_KEY] as? [String] {
+            MSP.shared.logWhiteList = whiteList
         }
     }
     
@@ -84,9 +99,9 @@ public class MSPAdConfigManager {
             }
             
             do {
-                if let json = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any],
-                   let adConfigJson = json["ad_config_settings"] as? [String: Any] {
-                    completion(.success(adConfigJson))
+                if let json = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any] {
+                    
+                    completion(.success(json))
                 } else {
                     let parsingError = NSError(domain: "Invalid JSON format", code: -2, userInfo: nil)
                     completion(.failure(parsingError))
