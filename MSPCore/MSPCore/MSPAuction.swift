@@ -67,7 +67,8 @@ public class MSPAuction: Auction {
         MSPLogger.shared.info(message: "[Auction: Load Ad] Fetching bid from bidder: \(bidder.name). bidderPlacementId: \(bidder.bidderPlacementId)")
         if let cachedAd = AdCache.shared.peakAd(placementId: bidder.bidderPlacementId) {
             MSPLogger.shared.info(message: "[Auction: Load Ad] Ad filled from cache: \(bidder.name), price: \(cachedAd.adInfo["price"]), bidderPlacementId:\(bidder.bidderPlacementId)")
-            let auctionBid = AuctionBid(bidderName: bidder.name, bidderPlacementId: bidder.bidderPlacementId, ecpm: cachedAd.adInfo["price"] as? Double ?? 0.0)
+            let auctionBid = AuctionBid(bidderName: bidder.name, bidderPlacementId: bidder.bidderPlacementId, ecpm: cachedAd.adInfo["price"] as? Double ?? 0.0, fromCache: true)
+            auctionBid.ad = cachedAd
             auctionBidListener.onSuccess(bid: auctionBid)
         } else if cacheOnly {
             auctionBidListener.onError(error: "no cached ad in cache")
