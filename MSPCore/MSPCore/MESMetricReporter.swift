@@ -199,6 +199,7 @@ import PrebidMobile
     }
     
     public func logAdResponse(ad: MSPiOSCore.MSPAd?, adRequest: MSPiOSCore.AdRequest, errorCode: MSPErrorCode, errorMessage: String?) {
+        guard shouldLogSampledMESEvent() else { return }
         var eventModel = Com_Newsbreak_Mes_Events_AdResponse()
         eventModel.clientTsMs = UInt64(Date().timeIntervalSince1970 * 1000)
         eventModel.os = .ios
@@ -240,6 +241,7 @@ import PrebidMobile
     }
     
     public func logLoadAd(adRequest: AdRequest, ad: MSPAd?, filledFromCache: Bool, latency: Double, errorMessage: String?) {
+        guard shouldLogSampledMESEvent() else { return }
         var eventModel = Com_Newsbreak_Mes_Events_LoadAd()
         eventModel.clientTsMs = UInt64(Date().timeIntervalSince1970 * 1000)
         eventModel.os = .ios
@@ -274,6 +276,7 @@ import PrebidMobile
     }
     
     public func logGetAd(ad: MSPAd?, placementId: String, errorMessage: String? = nil) {
+        guard shouldLogSampledMESEvent() else { return }
         var eventModel = Com_Newsbreak_Mes_Events_GetAdEvent()
         eventModel.clientTsMs = UInt64(Date().timeIntervalSince1970 * 1000)
         eventModel.os = .ios
@@ -307,6 +310,7 @@ import PrebidMobile
     }
     
     public func logAdRequest(adRequest: AdRequest) {
+        guard shouldLogSampledMESEvent() else { return }
         var eventModel = Com_Newsbreak_Mes_Events_AdRequest()
         
         eventModel.clientTsMs = UInt64(Date().timeIntervalSince1970 * 1000)
@@ -520,6 +524,16 @@ import PrebidMobile
         return eventModel
     }
     
-    
+    func shouldLogSampledMESEvent() -> Bool {
+        if MSP.shared.isLogSampled {
+            return true
+        }
+        if let mspUserId = UserDefaults.standard.string(forKey: "msp_user_id"),
+           let whiteList = MSP.shared.logWhiteList,
+           whiteList.contains(mspUserId) {
+            return true
+        }
+        return false
+    }
 }
 

@@ -35,21 +35,7 @@ public class AdMetricReporterImp: AdMetricReporter {
     }
     
     public func logAdResponse(ad: MSPiOSCore.MSPAd?, adRequest: MSPiOSCore.AdRequest, errorCode: MSPErrorCode, errorMessage: String?) {
-        if shouldLogSampledMESEvent() {
-            MESMetricReporter.shared.logAdResponse(ad: ad, adRequest: adRequest, errorCode: errorCode, errorMessage: errorMessage)
-        }
-    }
-    
-    public func shouldLogSampledMESEvent() -> Bool {
-        if MSP.shared.isLogSampled {
-            return true
-        }
-        if let mspUserId = UserDefaults.standard.string(forKey: "msp_user_id"),
-           let whiteList = MSP.shared.logWhiteList,
-           whiteList.contains(mspUserId) {
-            return true
-        }
-        return false
+        MESMetricReporter.shared.logAdResponse(ad: ad, adRequest: adRequest, errorCode: errorCode, errorMessage: errorMessage)
     }
     
 }
