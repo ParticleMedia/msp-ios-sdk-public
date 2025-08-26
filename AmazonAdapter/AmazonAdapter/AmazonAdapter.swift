@@ -38,7 +38,7 @@ import GoogleMobileAds
         }
         let dtbAdLoader = DTBAdLoader()
         self.dtbAdLoader = dtbAdLoader
-        let dtbAdSize = DTBAdSize(bannerAdSizeWithWidth: 320, height: 50, andSlotUUID: bidderPlacementId)
+        let dtbAdSize = DTBAdSize(bannerAdSizeWithWidth: adRequest.adSize?.width ?? 320, height: adRequest.adSize?.height ?? 50, andSlotUUID: bidderPlacementId)
         self.dtbAdSize = dtbAdSize
         dtbAdLoader.setAdSizes([dtbAdSize])
         dtbAdLoader.loadAd(self)
@@ -543,7 +543,7 @@ extension AmazonAdapter: DTBAdCallback {
     public func onSuccess(_ adResponse: DTBAdResponse!) {
         
         self.dtbAdResponse = adResponse
-        let bannerView = AdManagerBannerView(adSize: AdSizeBanner)
+        let bannerView = AdManagerBannerView(adSize: getGADAdSize())
         self.bannerView = bannerView
         if let dtbAdSize = self.dtbAdSize,
            let pricePoint = adResponse.pricePoints(dtbAdSize){
@@ -566,6 +566,18 @@ extension AmazonAdapter: DTBAdCallback {
         if let adRequest = self.adRequest {
             self.adMetricReporter?.logAdResponse(ad: nil, adRequest: adRequest, errorCode: .ERROR_CODE_INTERNAL_ERROR, errorMessage: String(error.rawValue))
         }
+    }
+    
+    func getGADAdSize() -> GoogleMobileAds.AdSize {
+        if let adRequest = adRequest {
+            if let width = adRequest.adSize?.width,
+               let height = adRequest.adSize?.height {
+                if width == 300, height == 250 {
+                    return AdSizeMediumRectangle
+                }
+            }
+        }
+        return AdSizeBanner
     }
     
 }
