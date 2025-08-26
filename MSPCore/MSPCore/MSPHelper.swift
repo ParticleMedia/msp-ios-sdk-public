@@ -32,7 +32,11 @@ public class MSP {
     public var app: String?
     public var ppid: String?
     public var email: String?
-    public var prebidAPIKey: String?
+    public var prebidAPIKey: String?    
+
+    public var isLogSampled = false
+    public var logWhiteList: [String]?
+    
     public func initMSP(initParams: InitializationParameters, sdkInitListener: MSPInitListener?, adNetworkManagers: [AdNetworkManager]) {
         // This is a temporary solution to replace MSPManager class in kotlin to solve the Kotlin singleton issue
         let initStartTime = Date().timeIntervalSince1970
@@ -87,18 +91,20 @@ public class MSP {
     
     public class MSPAdapterInitListener: NSObject, AdapterInitListener {
         public func onComplete(adNetwork: AdNetwork, adapterInitStatus: AdapterInitStatus, message: String) {
-            MSP.shared.numInitWaitingForCallbacks = MSP.shared.numInitWaitingForCallbacks - 1
-            if let startTime = MSP.shared.adNetworkInitStartTime[adNetwork.rawValue] {
-                MSP.shared.adNetworkInitLatencyInMs[adNetwork.rawValue] = Int32((Date().timeIntervalSince1970 - startTime) * 1000)
-            }
-            if MSP.shared.numInitWaitingForCallbacks == 0 {
-                MSPLogger.shared.info(message: "MSP SDK is initialized successfully")
-                var totalCompleteTimeInMs: Int32?
-                if let initStartTime = MSP.shared.initStartTime {
-                    totalCompleteTimeInMs = Int32((Date().timeIntervalSince1970 - initStartTime) * 1000)
+            DispatchQueue.main.async {
+                MSP.shared.numInitWaitingForCallbacks = MSP.shared.numInitWaitingForCallbacks - 1
+                if let startTime = MSP.shared.adNetworkInitStartTime[adNetwork.rawValue] {
+                    MSP.shared.adNetworkInitLatencyInMs[adNetwork.rawValue] = Int32((Date().timeIntervalSince1970 - startTime) * 1000)
                 }
-                MESMetricReporter.shared.logSDKInit(totalCompleteTimeInMs: totalCompleteTimeInMs, blockLatencyInMs: MSP.shared.blockLatencyInMs, adNetworkCompleteTimeInMs: MSP.shared.adNetworkInitLatencyInMs)
-                MSP.shared.sdkInitListener?.onComplete(status: .SUCCESS, message: "")
+                if MSP.shared.numInitWaitingForCallbacks == 0 {
+                    MSPLogger.shared.info(message: "MSP SDK is initialized successfully")
+                    var totalCompleteTimeInMs: Int32?
+                    if let initStartTime = MSP.shared.initStartTime {
+                        totalCompleteTimeInMs = Int32((Date().timeIntervalSince1970 - initStartTime) * 1000)
+                    }
+                    MESMetricReporter.shared.logSDKInit(totalCompleteTimeInMs: totalCompleteTimeInMs, blockLatencyInMs: MSP.shared.blockLatencyInMs, adNetworkCompleteTimeInMs: MSP.shared.adNetworkInitLatencyInMs)
+                    MSP.shared.sdkInitListener?.onComplete(status: .SUCCESS, message: "")
+                }
             }
         }
     }
@@ -253,6 +259,22 @@ public class MSP {
         }
         
         return topViewController
+    }
+    
+    public func updateLogSample(sampleRate: Double) {
+        guard sampleRate.isFinite else {
+            self.isLogSampled = false
+            return
+        }
+        if sampleRate <= 0 {
+            self.isLogSampled = false
+            return
+        }
+        if sampleRate >= 1 {
+            self.isLogSampled = true
+            return
+        }
+        return self.isLogSampled = Double.random(in: 0..<1) < sampleRate
     }
 }
 
