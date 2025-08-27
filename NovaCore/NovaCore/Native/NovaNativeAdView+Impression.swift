@@ -40,6 +40,7 @@ extension NovaNativeAdView {
 
         timer.invalidate()
         self.timer = nil
+        self.mediaView.updateVideoDisplayState(fullyDisplayed: false)
     }
 }
 
@@ -61,7 +62,7 @@ private extension NovaNativeAdView {
     }
     
     func detectVideoOnScreen() {
-        if mediaView.videoView.nova_isPartiallyVisibleOnScreen, isViewOnTop(view: mediaView.videoView) {
+        if mediaView.videoView.nova_isPartiallyVisibleOnScreen, isViewOnTop(view: mediaView.videoView), UIApplication.shared.applicationState == .active {
             mediaView.updateVideoDisplayState(fullyDisplayed: true)
         } else {
             
