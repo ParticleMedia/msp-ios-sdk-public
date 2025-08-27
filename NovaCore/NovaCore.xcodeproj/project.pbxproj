@@ -88,18 +88,7 @@
 		66E534DC2C24CBF200255D15 /* NovaAdUrlTransformer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E5349A2C24CBF200255D15 /* NovaAdUrlTransformer.swift */; };
 		66E534DD2C24CBF200255D15 /* NovaDedupeManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E5349B2C24CBF200255D15 /* NovaDedupeManager.swift */; };
 		66E535202C250A8900255D15 /* NBAssets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 66E535152C250A8900255D15 /* NBAssets.xcassets */; };
-		66E535212C250A8900255D15 /* NovaAsset.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E535162C250A8900255D15 /* NovaAsset.swift */; };
-		66E535222C250A8900255D15 /* CheckBoxButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E535172C250A8900255D15 /* CheckBoxButton.swift */; };
-		66E535232C250A8900255D15 /* Colors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E535182C250A8900255D15 /* Colors.swift */; };
-		66E535242C250A8900255D15 /* Fonts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E535192C250A8900255D15 /* Fonts.swift */; };
-		66E535252C250A8900255D15 /* Image.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E5351A2C250A8900255D15 /* Image.swift */; };
-		66E535262C250A8900255D15 /* Image+Emoji.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E5351B2C250A8900255D15 /* Image+Emoji.swift */; };
-		66E535272C250A8900255D15 /* UIColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E5351C2C250A8900255D15 /* UIColor.swift */; };
-		66E535282C250A8900255D15 /* UIFont.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E5351D2C250A8900255D15 /* UIFont.swift */; };
-		66E535292C250A8900255D15 /* UIImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E5351E2C250A8900255D15 /* UIImage.swift */; };
 		66E535392C263FEB00255D15 /* NBResourceBundle.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 66E535382C263FEB00255D15 /* NBResourceBundle.bundle */; };
-		66E535412C26453100255D15 /* ImageResourceBundle.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 66E5353F2C26453100255D15 /* ImageResourceBundle.bundle */; };
-		66E535422C26453100255D15 /* IconResourceBundle.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 66E535402C26453100255D15 /* IconResourceBundle.bundle */; };
 		66EFCD652D03BC5F005E0135 /* NovaAppOpenVerticalImageAdView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66EFCD642D03BC5F005E0135 /* NovaAppOpenVerticalImageAdView.swift */; };
 		66F48C3F2CADCD0700902F4D /* NovaAppOpenAd.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66F48C3E2CADCD0700902F4D /* NovaAppOpenAd.swift */; };
 		66F48C412CADCE6800902F4D /* NovaAppOpenAdDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66F48C402CADCE6800902F4D /* NovaAppOpenAdDelegate.swift */; };
@@ -110,8 +99,13 @@
 		66F48C4B2CADFFF800902F4D /* NovaNativeAdMediaViewV2.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66F48C4A2CADFFF800902F4D /* NovaNativeAdMediaViewV2.swift */; };
 		66F48C4D2CAE008200902F4D /* NovaAppOpenAdViewV3.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66F48C4C2CAE008200902F4D /* NovaAppOpenAdViewV3.swift */; };
 		66F48C4F2CAE02FD00902F4D /* NovaAppOpenVerticalVideoAdView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66F48C4E2CAE02FD00902F4D /* NovaAppOpenVerticalVideoAdView.swift */; };
-		66F48C512CAE11B600902F4D /* AppOpenAd.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 66F48C502CAE11B500902F4D /* AppOpenAd.xcassets */; };
 		66F48C532CAE11DE00902F4D /* AppOpenAdResource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66F48C522CAE11DE00902F4D /* AppOpenAdResource.swift */; };
+		8EDBFC892E5C6074009AEFD0 /* NovaUIImages.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8EDBFC882E5C6074009AEFD0 /* NovaUIImages.swift */; };
+		8EDBFC8A2E5C6074009AEFD0 /* NovaImages.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8EDBFC852E5C6074009AEFD0 /* NovaImages.swift */; };
+		8EDBFC8B2E5C6074009AEFD0 /* NovaFonts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8EDBFC842E5C6074009AEFD0 /* NovaFonts.swift */; };
+		8EDBFC8C2E5C6074009AEFD0 /* NovaUIFonts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8EDBFC872E5C6074009AEFD0 /* NovaUIFonts.swift */; };
+		8EDBFC8D2E5C6074009AEFD0 /* NovaUIColors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8EDBFC862E5C6074009AEFD0 /* NovaUIColors.swift */; };
+		8EDBFC8F2E5C607B009AEFD0 /* NovaAssets.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8EDBFC8E2E5C607B009AEFD0 /* NovaAssets.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -207,18 +201,7 @@
 		66E5349A2C24CBF200255D15 /* NovaAdUrlTransformer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NovaAdUrlTransformer.swift; sourceTree = "<group>"; };
 		66E5349B2C24CBF200255D15 /* NovaDedupeManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NovaDedupeManager.swift; sourceTree = "<group>"; };
 		66E535152C250A8900255D15 /* NBAssets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = NBAssets.xcassets; sourceTree = "<group>"; };
-		66E535162C250A8900255D15 /* NovaAsset.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NovaAsset.swift; sourceTree = "<group>"; };
-		66E535172C250A8900255D15 /* CheckBoxButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CheckBoxButton.swift; sourceTree = "<group>"; };
-		66E535182C250A8900255D15 /* Colors.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Colors.swift; sourceTree = "<group>"; };
-		66E535192C250A8900255D15 /* Fonts.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Fonts.swift; sourceTree = "<group>"; };
-		66E5351A2C250A8900255D15 /* Image.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Image.swift; sourceTree = "<group>"; };
-		66E5351B2C250A8900255D15 /* Image+Emoji.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Image+Emoji.swift"; sourceTree = "<group>"; };
-		66E5351C2C250A8900255D15 /* UIColor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIColor.swift; sourceTree = "<group>"; };
-		66E5351D2C250A8900255D15 /* UIFont.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIFont.swift; sourceTree = "<group>"; };
-		66E5351E2C250A8900255D15 /* UIImage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIImage.swift; sourceTree = "<group>"; };
 		66E535382C263FEB00255D15 /* NBResourceBundle.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = NBResourceBundle.bundle; sourceTree = "<group>"; };
-		66E5353F2C26453100255D15 /* ImageResourceBundle.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = ImageResourceBundle.bundle; sourceTree = "<group>"; };
-		66E535402C26453100255D15 /* IconResourceBundle.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = IconResourceBundle.bundle; sourceTree = "<group>"; };
 		66EFCD642D03BC5F005E0135 /* NovaAppOpenVerticalImageAdView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NovaAppOpenVerticalImageAdView.swift; sourceTree = "<group>"; };
 		66F48C3E2CADCD0700902F4D /* NovaAppOpenAd.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NovaAppOpenAd.swift; sourceTree = "<group>"; };
 		66F48C402CADCE6800902F4D /* NovaAppOpenAdDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NovaAppOpenAdDelegate.swift; sourceTree = "<group>"; };
@@ -229,9 +212,14 @@
 		66F48C4A2CADFFF800902F4D /* NovaNativeAdMediaViewV2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NovaNativeAdMediaViewV2.swift; sourceTree = "<group>"; };
 		66F48C4C2CAE008200902F4D /* NovaAppOpenAdViewV3.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NovaAppOpenAdViewV3.swift; sourceTree = "<group>"; };
 		66F48C4E2CAE02FD00902F4D /* NovaAppOpenVerticalVideoAdView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NovaAppOpenVerticalVideoAdView.swift; sourceTree = "<group>"; };
-		66F48C502CAE11B500902F4D /* AppOpenAd.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = AppOpenAd.xcassets; path = ../../../iOS/Features/Ads/NBNovaAppOpenAd/AppOpenAd.xcassets; sourceTree = "<group>"; };
 		66F48C522CAE11DE00902F4D /* AppOpenAdResource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppOpenAdResource.swift; sourceTree = "<group>"; };
 		782A0D4A6DFC4D6D978FA699 /* Pods-NovaCore.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-NovaCore.release.xcconfig"; path = "Target Support Files/Pods-NovaCore/Pods-NovaCore.release.xcconfig"; sourceTree = "<group>"; };
+		8EDBFC842E5C6074009AEFD0 /* NovaFonts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NovaFonts.swift; sourceTree = "<group>"; };
+		8EDBFC852E5C6074009AEFD0 /* NovaImages.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NovaImages.swift; sourceTree = "<group>"; };
+		8EDBFC862E5C6074009AEFD0 /* NovaUIColors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NovaUIColors.swift; sourceTree = "<group>"; };
+		8EDBFC872E5C6074009AEFD0 /* NovaUIFonts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NovaUIFonts.swift; sourceTree = "<group>"; };
+		8EDBFC882E5C6074009AEFD0 /* NovaUIImages.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NovaUIImages.swift; sourceTree = "<group>"; };
+		8EDBFC8E2E5C607B009AEFD0 /* NovaAssets.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NovaAssets.swift; sourceTree = "<group>"; };
 		A7278CCCE62DB4171E27ED0A /* Pods-NovaCore.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-NovaCore.debug.xcconfig"; path = "Target Support Files/Pods-NovaCore/Pods-NovaCore.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -296,10 +284,7 @@
 		66E534362C24CAAE00255D15 /* NovaCore */ = {
 			isa = PBXGroup;
 			children = (
-				66F48C502CAE11B500902F4D /* AppOpenAd.xcassets */,
 				66F48C3D2CADCCE900902F4D /* AppOpen */,
-				66E535402C26453100255D15 /* IconResourceBundle.bundle */,
-				66E5353F2C26453100255D15 /* ImageResourceBundle.bundle */,
 				66E535382C263FEB00255D15 /* NBResourceBundle.bundle */,
 				66E535152C250A8900255D15 /* NBAssets.xcassets */,
 				66E5351F2C250A8900255D15 /* NBDesignSystem */,
@@ -441,7 +426,6 @@
 			isa = PBXGroup;
 			children = (
 				66E5348F2C24CBF200255D15 /* AdsMediaConstants.swift */,
-				66E534902C24CBF200255D15 /* NovaColorPalettes.swift */,
 				66E534912C24CBF200255D15 /* Icon.swift */,
 				66E534922C24CBF200255D15 /* UIApplication+Extensions.swift */,
 				66E534932C24CBF200255D15 /* UIDevice+Extensions.swift */,
@@ -467,15 +451,13 @@
 		66E5351F2C250A8900255D15 /* NBDesignSystem */ = {
 			isa = PBXGroup;
 			children = (
-				66E535162C250A8900255D15 /* NovaAsset.swift */,
-				66E535172C250A8900255D15 /* CheckBoxButton.swift */,
-				66E535182C250A8900255D15 /* Colors.swift */,
-				66E535192C250A8900255D15 /* Fonts.swift */,
-				66E5351A2C250A8900255D15 /* Image.swift */,
-				66E5351B2C250A8900255D15 /* Image+Emoji.swift */,
-				66E5351C2C250A8900255D15 /* UIColor.swift */,
-				66E5351D2C250A8900255D15 /* UIFont.swift */,
-				66E5351E2C250A8900255D15 /* UIImage.swift */,
+				8EDBFC8E2E5C607B009AEFD0 /* NovaAssets.swift */,
+				8EDBFC842E5C6074009AEFD0 /* NovaFonts.swift */,
+				8EDBFC852E5C6074009AEFD0 /* NovaImages.swift */,
+				8EDBFC862E5C6074009AEFD0 /* NovaUIColors.swift */,
+				8EDBFC872E5C6074009AEFD0 /* NovaUIFonts.swift */,
+				8EDBFC882E5C6074009AEFD0 /* NovaUIImages.swift */,
+				66E534902C24CBF200255D15 /* NovaColorPalettes.swift */,
 			);
 			path = NBDesignSystem;
 			sourceTree = "<group>";
@@ -591,10 +573,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				66E535422C26453100255D15 /* IconResourceBundle.bundle in Resources */,
-				66E535412C26453100255D15 /* ImageResourceBundle.bundle in Resources */,
 				66E535202C250A8900255D15 /* NBAssets.xcassets in Resources */,
-				66F48C512CAE11B600902F4D /* AppOpenAd.xcassets in Resources */,
 				66E535392C263FEB00255D15 /* NBResourceBundle.bundle in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -641,6 +620,11 @@
 				66E534AC2C24CBF200255D15 /* NovaAdsVideoLandingWebViewController.swift in Sources */,
 				66E534D12C24CBF200255D15 /* NovaAdOpenActionKey.swift in Sources */,
 				66F48C472CADF5E100902F4D /* NovaAppOpenAdViewActionKey.swift in Sources */,
+				8EDBFC892E5C6074009AEFD0 /* NovaUIImages.swift in Sources */,
+				8EDBFC8A2E5C6074009AEFD0 /* NovaImages.swift in Sources */,
+				8EDBFC8B2E5C6074009AEFD0 /* NovaFonts.swift in Sources */,
+				8EDBFC8C2E5C6074009AEFD0 /* NovaUIFonts.swift in Sources */,
+				8EDBFC8D2E5C6074009AEFD0 /* NovaUIColors.swift in Sources */,
 				66F48C4B2CADFFF800902F4D /* NovaNativeAdMediaViewV2.swift in Sources */,
 				66E534BA2C24CBF200255D15 /* NovaNativeAdView+Impression.swift in Sources */,
 				6639FC032CB0A9880051C764 /* NovaConstants.swift in Sources */,
@@ -659,7 +643,6 @@
 				66E5349F2C24CBF200255D15 /* NovaJSBridgeHandling.swift in Sources */,
 				66E534AF2C24CBF200255D15 /* NovaCreativeType.swift in Sources */,
 				66F48C412CADCE6800902F4D /* NovaAppOpenAdDelegate.swift in Sources */,
-				66E535232C250A8900255D15 /* Colors.swift in Sources */,
 				66E534AA2C24CBF200255D15 /* NovaAdOpenLandingStatus.swift in Sources */,
 				66E534CA2C24CBF200255D15 /* RegularMetricLogger.swift in Sources */,
 				66E534C32C24CBF200255D15 /* AdsThirdPartyMetricReporter.swift in Sources */,
@@ -667,12 +650,10 @@
 				66E534A82C24CBF200255D15 /* NovaResponseDataModel.swift in Sources */,
 				66E534C12C24CBF200255D15 /* NovaVideoProgressView.swift in Sources */,
 				66E534C62C24CBF200255D15 /* NovaAdMetricReporter.swift in Sources */,
-				66E535252C250A8900255D15 /* Image.swift in Sources */,
 				66E534A42C24CBF200255D15 /* NovaUnifiedWebViewNavigationDelegate.swift in Sources */,
 				6647D0E72C6D74490048F0D2 /* NovaNativeAdVideoDelegate.swift in Sources */,
 				66E534B62C24CBF200255D15 /* NovaNativeAdVideoInfo.swift in Sources */,
 				66E534CD2C24CBF200255D15 /* ActionModel.swift in Sources */,
-				66E535222C250A8900255D15 /* CheckBoxButton.swift in Sources */,
 				663BDEEE2DB075FA00FE7BE2 /* NovaAdOpenActionHandleUtil.swift in Sources */,
 				66E534B92C24CBF200255D15 /* NovaNativeAdView.swift in Sources */,
 				66F48C4D2CAE008200902F4D /* NovaAppOpenAdViewV3.swift in Sources */,
@@ -683,7 +664,6 @@
 				66E534DA2C24CBF200255D15 /* NovaAdsRequestUtils.swift in Sources */,
 				66E534CF2C24CBF200255D15 /* NovaAdOpenActionDataModel.swift in Sources */,
 				66E534D82C24CBF200255D15 /* UIView+Extensions.swift in Sources */,
-				66E535272C250A8900255D15 /* UIColor.swift in Sources */,
 				66B730532C38B84A0042E4FF /* MetricEvent.swift in Sources */,
 				663FCEED2E15E02500A0FFAC /* NovaAdPopOverCtaController.swift in Sources */,
 				66E534B22C24CBF200255D15 /* NovaNativeAdInteractiveBanner.swift in Sources */,
@@ -692,13 +672,13 @@
 				66E534A32C24CBF200255D15 /* NovaUnifiedWebViewHost.swift in Sources */,
 				66E534BD2C24CBF200255D15 /* NovaVideoPlayerCacheHandler.swift in Sources */,
 				66F48C4F2CAE02FD00902F4D /* NovaAppOpenVerticalVideoAdView.swift in Sources */,
-				66E535262C250A8900255D15 /* Image+Emoji.swift in Sources */,
 				66E534AE2C24CBF200255D15 /* SmoothProgress.swift in Sources */,
 				664F33282C45C5020014E1BA /* NovaNativeAdMediaViewController.swift in Sources */,
 				66E534DD2C24CBF200255D15 /* NovaDedupeManager.swift in Sources */,
 				66F48C492CADFA9800902F4D /* NovaNativeAdMedia.swift in Sources */,
 				66E534392C24CAAE00255D15 /* NovaCore.docc in Sources */,
 				66E534BC2C24CBF200255D15 /* NovaVideoPlayer.swift in Sources */,
+				8EDBFC8F2E5C607B009AEFD0 /* NovaAssets.swift in Sources */,
 				668ACAB92CDC34DA00F45803 /* NovaUIUtils.swift in Sources */,
 				66E534C22C24CBF200255D15 /* NovaAdLaunchOption.swift in Sources */,
 				66E534AD2C24CBF200255D15 /* ShimmerLoadingView.swift in Sources */,
@@ -707,18 +687,15 @@
 				66E534BB2C24CBF200255D15 /* NovaPlayer.swift in Sources */,
 				66E534DC2C24CBF200255D15 /* NovaAdUrlTransformer.swift in Sources */,
 				66E534B02C24CBF200255D15 /* CancelBlocks.swift in Sources */,
-				66E535292C250A8900255D15 /* UIImage.swift in Sources */,
 				66E534CC2C24CBF200255D15 /* ActionHandling.swift in Sources */,
 				66E534A72C24CBF200255D15 /* NovaWebViewNavigationViewModel.swift in Sources */,
 				66E534B32C24CBF200255D15 /* NovaNativeAdItem.swift in Sources */,
-				66E535282C250A8900255D15 /* UIFont.swift in Sources */,
 				669179362CE53974008F3AEF /* NovaAppOpenAdActionDataModel.swift in Sources */,
 				66E534D92C24CBF200255D15 /* NovaAdBuilder.swift in Sources */,
 				66E534C72C24CBF200255D15 /* NovaAdOpenLandingLogger.swift in Sources */,
 				66E534A92C24CBF200255D15 /* NovaBaseAd.swift in Sources */,
 				66E534B12C24CBF200255D15 /* NovaNativeAdDelegate.swift in Sources */,
 				66E534C82C24CBF200255D15 /* NovaAdSkipReason.swift in Sources */,
-				66E535242C250A8900255D15 /* Fonts.swift in Sources */,
 				66E534BF2C24CBF200255D15 /* NovaVideoPlayerProtocol.swift in Sources */,
 				66E534BE2C24CBF200255D15 /* NovaVideoPlayerController.swift in Sources */,
 				66E534AB2C24CBF200255D15 /* NovaAdsLandingWebViewController.swift in Sources */,
@@ -728,7 +705,6 @@
 				66E534B42C24CBF200255D15 /* NovaNativeAdMediaView.swift in Sources */,
 				66E5349E2C24CBF200255D15 /* NovaJSBridgeHandlerMaster.swift in Sources */,
 				66F48C3F2CADCD0700902F4D /* NovaAppOpenAd.swift in Sources */,
-				66E535212C250A8900255D15 /* NovaAsset.swift in Sources */,
 				66E534D02C24CBF200255D15 /* NovaAdOpenActionHandler.swift in Sources */,
 				66F48C452CADF4AB00902F4D /* NovaAppOpenAdViewActionHandler.swift in Sources */,
 				66E534CB2C24CBF200255D15 /* ActionHandlerMaster.swift in Sources */,

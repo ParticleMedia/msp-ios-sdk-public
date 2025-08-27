@@ -147,9 +147,7 @@ public class NovaAppOpenVerticalImageAdView: UIView {
     
     private lazy var feedbackButton: UIButton = {
         let button = UIButton()
-        let image = UIImage(
-            novasystemName: .ellipsisHorizontalOutline,
-            tintColor: NovaColorPalettes.White)
+        let image = UIImage.Nova.ellipsisHorizontalOutline?.withTintColor(NovaColorPalettes.White)
         button.setImage(image, for: .normal)
         button.translatesAutoresizingMaskIntoConstraints = false
         return button

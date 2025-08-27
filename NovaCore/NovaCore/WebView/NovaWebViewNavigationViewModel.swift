@@ -1,14 +1,15 @@
 
 
 import Foundation
+import UIKit
 
 public struct NovaWebViewNavigationViewModel {
     public let includingStatusBar: Bool
     public let title: String?
     public var titleFontSize: CGFloat = 16
     public let hideLeftButton: Bool
-    public let leftButtonIcon: NovaIcon.NovaSystem?
-    public let rightButtonIcon: NovaIcon.NovaSystem?
+    public let leftButtonIcon: UIImage?
+    public let rightButtonIcon: UIImage?
     public let leftButtonTapActionHandler: (() -> Void)?
     public let rightButtonTapActionHandler: (() -> Void)?
     
@@ -19,9 +20,9 @@ public struct NovaWebViewNavigationViewModel {
         title: String?,
         titleFontSize: CGFloat? = nil,
         hideLeftButton: Bool = false,
-        leftButtonIcon: NovaIcon.NovaSystem? = nil,
+        leftButtonIcon: UIImage? = nil,
         leftButtonTapActionHandler: @escaping () -> Void,
-        rightButtonIcon: NovaIcon.NovaSystem? = nil,
+        rightButtonIcon: UIImage? = nil,
         rightButtonTapActionHandler: @escaping () -> Void
     ) {
         self.includingStatusBar = includingStatusBar

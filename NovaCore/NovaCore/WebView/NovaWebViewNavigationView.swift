@@ -23,7 +23,7 @@ public class NovaWebViewNavigationView: UIView {
 
     private let divider: UIView = {
         let view = UIView()
-        view.backgroundColor = .Nova.secondaryDividerDeprecated
+        view.backgroundColor = NovaColorPalettes.secondaryDivider
         return view
     }()
 
@@ -89,19 +89,15 @@ public class NovaWebViewNavigationView: UIView {
         ])
 
         if let icon = viewModel.leftButtonIcon {
-            let leftButtonImage = UIImage(
-                novasystemName: icon,
-                tintColor: .Nova.primaryText)
-            leftButton.setImage(leftButtonImage, for: .normal)
+            let leftButtonIcon = icon.withTintColor(NovaColorPalettes.primaryText)
+            leftButton.setImage(leftButtonIcon, for: .normal)
             leftButton.addTarget(self, action: #selector(didTapLeftButton), for: .touchUpInside)
         }
         leftButton.isHidden = viewModel.hideLeftButton
 
         if let icon = viewModel.rightButtonIcon {
-            let rightButtonImage = UIImage(
-                novasystemName: icon,
-                tintColor: .Nova.primaryText)
-            rightButton.setImage(rightButtonImage, for: .normal)
+            let rightButtonIcon = icon.withTintColor(NovaColorPalettes.primaryText)
+            rightButton.setImage(rightButtonIcon, for: .normal)
             rightButton.addTarget(self, action: #selector(didTapRightButton), for: .touchUpInside)
             backgroundColor = .clear
             divider.isHidden = true

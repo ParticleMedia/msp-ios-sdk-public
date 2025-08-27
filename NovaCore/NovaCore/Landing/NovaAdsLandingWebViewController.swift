@@ -122,7 +122,7 @@ import Foundation
 
         let naviViewModel = self.navigationModel ?? NovaWebViewNavigationViewModel(
             title: nil,
-            leftButtonIcon: .crossOutline,
+            leftButtonIcon: UIImage.Nova.crossOutline,
             leftButtonTapActionHandler: { [weak self] in
                 self?.navigationViewDidClickBackButton()
             },

@@ -54,9 +54,10 @@ import UIKit
     
     private let feedbackButton: UIButton = {
         let button = UIButton()
-        let image = UIImage(
-            novasystemName: .ellipsisHorizontalOutline,
-            tintColor: UIColor(light: NovaColorPalettes.Gray.tint500, dark: NovaColorPalettes.Gray.tint200))
+        let image = UIImage.Nova.ellipsisHorizontalOutline?.withTintColor(UIColor(
+            light: NovaColorPalettes.Gray.tint500,
+            dark: NovaColorPalettes.Gray.tint200
+        ))
         button.setImage(image, for: .normal)
         return button
     }()
