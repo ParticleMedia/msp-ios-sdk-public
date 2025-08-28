@@ -42,7 +42,7 @@ Pod::Spec.new do |spec|
   spec.ios.deployment_target = '13.0'
 
 
-  spec.source_files  = "./GoogleAdapter/**/*.{h,m,swift}"
+  spec.source_files  = "GoogleAdapter/**/*.{h,m,swift}"
   spec.exclude_files = "Classes/Exclude"
 
   spec.dependency 'Google-Mobile-Ads-SDK', "~> 12.0"
