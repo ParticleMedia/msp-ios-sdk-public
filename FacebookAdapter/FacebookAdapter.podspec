@@ -42,7 +42,7 @@ Pod::Spec.new do |spec|
   spec.ios.deployment_target = '13.0'
 
 
-  spec.source_files  = "./FacebookAdapter/**/*.{h,m,swift}"
+  spec.source_files  = "FacebookAdapter/**/*.{h,m,swift}"
   spec.exclude_files = "Classes/Exclude"
 
   spec.dependency 'FBAudienceNetwork', '~> 6.15.0'
