@@ -33,6 +33,7 @@ public class MSPDevice {
     private let DEIVCE_SIGNAL_FONT_SIZE = "font_size"
     private let DEIVCE_SIGNAL_AVAILABLE_MEMORY = "available_memory"
     private let DEVICE_SIGNAL_TIMEZONE = "timezone"
+    private let DEVICE_SIGNAL_LAST_SYSTEM_BOOT_TIME = "last_system_boot_time"
     
     public func getDeviceSignalsDictionary() -> [String:String] {
         self.collectDeviceInfo()
@@ -46,6 +47,7 @@ public class MSPDevice {
         dict[DEIVCE_SIGNAL_FONT_SIZE] = getFontSizeString()
         dict[DEIVCE_SIGNAL_AVAILABLE_MEMORY] = getAvailableMemoryString()
         dict[DEVICE_SIGNAL_TIMEZONE] = getTimezoneString()
+        dict[DEVICE_SIGNAL_LAST_SYSTEM_BOOT_TIME] = getSystemBootTimeString()
         
         return dict
     }
@@ -164,6 +166,15 @@ public class MSPDevice {
        
        // Format the string with +HH:mm or -HH:mm
        return String(format: "%+03d:%02d", hours, minutes)
+    }
+    
+    private func getSystemBootTimeString() -> String {
+        let bootTimeInMilis = (Date().timeIntervalSince1970 - ProcessInfo.processInfo.systemUptime) * 1000
+        if bootTimeInMilis.isFinite, !bootTimeInMilis.isNaN {
+            let bootTime = Int64(bootTimeInMilis)
+            return String(bootTime)
+        }
+        return ""
     }
     
 }
