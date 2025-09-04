@@ -16,3 +16,14 @@ Podfile.lock
 *.xcuserstate
 Pods/
 Podfile.lock
+
+# Bundle install files
+bin/
+cache/
+extensions/
+gems/
+specifications/
+Gemfile.lock
+.bundle/
+vendor/
+*.gem
