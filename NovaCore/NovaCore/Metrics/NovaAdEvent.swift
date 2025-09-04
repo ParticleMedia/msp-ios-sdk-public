@@ -18,7 +18,7 @@ enum NovaAdEvent: String {
     case videoMute = "video_mute"
     case videoUnMute = "video_unmute"
 
-    case videoProgess = "video_progress"
+    case videoProgress = "video_progress"
     
     // web events
     case novaLandingPageLaunchFailed = "nova_landing_page_launch_failed"
@@ -31,4 +31,7 @@ enum NovaAdEvent: String {
     case novaLandingPageResignActive = "nova_landing_page_resign_active"
     case novaLandingPageAliveAfter5s = "nova_landing_page_alive_after_5s"
     case novaLandingPageRecycledAfter5s = "nova_landing_page_recyclerd_after_5s"
+
+    // playable
+    case playableTapToTry = "playable_tap_to_try"
 }

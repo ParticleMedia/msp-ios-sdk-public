@@ -61,7 +61,7 @@ extension DebugSectionData {
     }
     
     static func layoutSection() -> DebugSectionData {
-        let options = NovaAppOpenAdLayout.allCases
+        let options = NovaInterstitialAdLayout.allCases
             .filter { $0.isVisible }
         return DebugSectionData(
             id: SectionIds.layout,

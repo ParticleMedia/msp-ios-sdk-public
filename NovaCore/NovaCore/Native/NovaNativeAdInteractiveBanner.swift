@@ -1,16 +1,16 @@
 import UIKit
 
-public enum InteractiveBannerType: String {
+enum InteractiveBannerType: String {
     case displayCard = "display_card"
 }
 
-public final class NovaNativeAdInteractiveBanner {
-    public let type: InteractiveBannerType
-    public let imageUrl: URL
-    public let displayTime: DispatchTimeInterval
-    public var hasShown: Bool
+final class NovaNativeAdInteractiveBanner {
+    let type: InteractiveBannerType
+    let imageUrl: URL
+    let displayTime: DispatchTimeInterval
+    var hasShown: Bool
     
-    public init(
+    init(
         type: InteractiveBannerType,
         imageUrl: URL,
         displayTime: DispatchTimeInterval,

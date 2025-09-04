@@ -4,8 +4,8 @@
 @_implementationOnly import OMSDK_Newsbreak1
 import UIKit
 
-public class IABMetricReporter {
-    
+class IABMetricReporter {
+
     private struct Constants {
         static let resourceBundleName = "NBResourceBundle.bundle"
         static let jsFileName = "omsdk-v1"
@@ -43,13 +43,13 @@ public class IABMetricReporter {
          
     }()
 
-    public init() {
+    init() {
         if !OMIDNewsbreak1SDK.shared.isActive {
             OMIDNewsbreak1SDK.shared.activate()
         }
     }
 
-    public func startSession(adView: UIView,
+    func startSession(adView: UIView,
                              contentUrl: String,
                              thirdPartyViewTrackingUrls: [String],
                              hasVideo: Bool) {
@@ -104,7 +104,7 @@ public class IABMetricReporter {
         }
     }
 
-    public func logImpression() {
+    func logImpression() {
         guard OMIDNewsbreak1SDK.shared.isActive else {
             assertionFailure("failed to active IAB SDK")
             return
@@ -126,7 +126,7 @@ public class IABMetricReporter {
         }
     }
 
-    public func logLoaded() {
+    func logLoaded() {
         guard OMIDNewsbreak1SDK.shared.isActive else {
             assertionFailure("failed to active IAB SDK")
             return
@@ -148,7 +148,7 @@ public class IABMetricReporter {
         }
     }
 
-    public func stopSession() {
+    func stopSession() {
         videoRecord = nil
         mediaEvents = nil
         adEvents = nil
@@ -156,7 +156,7 @@ public class IABMetricReporter {
         session = nil
     }
 
-    public func logVideoStart(duration: CGFloat, volume: CGFloat) {
+    func logVideoStart(duration: CGFloat, volume: CGFloat) {
         guard let videoRecord, let mediaEvents else {
             assertionFailure("unexpected nil videoRecord")
             return
@@ -167,7 +167,7 @@ public class IABMetricReporter {
         //DebugLogging.info(.ads, "iAB SDK video start reported")
     }
 
-    public func logVideoProgress(percentage: Double) {
+    func logVideoProgress(percentage: Double) {
         guard let videoRecord, let mediaEvents else {
             assertionFailure("unexpected nil videoRecord")
             return
@@ -191,7 +191,7 @@ public class IABMetricReporter {
         }
     }
 
-    public func logVideoPause() {
+    func logVideoPause() {
         guard let mediaEvents else {
             assertionFailure("unexpected nil videoRecord")
             return
@@ -200,7 +200,7 @@ public class IABMetricReporter {
         //DebugLogging.info(.ads, "iAB SDK video pause reported")
     }
 
-    public func logVideoResume() {
+    func logVideoResume() {
         guard let mediaEvents else {
             assertionFailure("unexpected nil videoRecord")
             return
@@ -209,7 +209,7 @@ public class IABMetricReporter {
         //DebugLogging.info(.ads, "iAB SDK video resume reported")
     }
 
-    public func logVideoVolumeChange(to volume: CGFloat) {
+    func logVideoVolumeChange(to volume: CGFloat) {
         guard let mediaEvents else {
             //assertionFailure("unexpected nil videoRecord")
             return

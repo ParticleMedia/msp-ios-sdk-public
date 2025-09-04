@@ -1,6 +1,6 @@
 import Foundation
 
-public protocol ActionHandling: AnyObject {
+protocol ActionHandling: AnyObject {
     func supportedActions() -> [String: Any.Type]
 
     func performAction(actionModel: ActionModel)

@@ -20,7 +20,7 @@
 		66C79B942DDD36C90012F57F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 66C79B932DDD36C90012F57F /* Assets.xcassets */; };
 		66CC4E562C8FB6AE0005CCF6 /* DemoAdViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66CC4E552C8FB6AE0005CCF6 /* DemoAdViewController.swift */; };
 		66E5334E2C1BC1E700255D15 /* Colors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E5334D2C1BC1E700255D15 /* Colors.swift */; };
-		E0D4098C6B103253761A220B /* libPods-MSPDemoApp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 865DA71BB2BB723F7DC9E210 /* libPods-MSPDemoApp.a */; };
+		CB0BFD0E52A75DB20773D1E8 /* libPods-MSPDemoApp.a in Frameworks */ = {isa = PBXBuildFile; fileRef = ED7F396EB93590EA78694359 /* libPods-MSPDemoApp.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -64,8 +64,8 @@
 		66F4F0CA2BE055360026CAB8 /* PrebidMobile.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = PrebidMobile.xcframework; path = ../MSPUtility/PrebidMobile.xcframework; sourceTree = "<group>"; };
 		66F4F0CE2BE0569C0026CAB8 /* shared.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = shared.xcframework; path = ../PrebidAdapter/shared.xcframework; sourceTree = "<group>"; };
 		7D28AF188F67939620E30F42 /* Pods-MSPDemoApp.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MSPDemoApp.debug.xcconfig"; path = "Target Support Files/Pods-MSPDemoApp/Pods-MSPDemoApp.debug.xcconfig"; sourceTree = "<group>"; };
-		865DA71BB2BB723F7DC9E210 /* libPods-MSPDemoApp.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-MSPDemoApp.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		E28AB29591E557D754243851 /* Pods-MSPDemoApp.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MSPDemoApp.release.xcconfig"; path = "Target Support Files/Pods-MSPDemoApp/Pods-MSPDemoApp.release.xcconfig"; sourceTree = "<group>"; };
+		ED7F396EB93590EA78694359 /* libPods-MSPDemoApp.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-MSPDemoApp.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -73,7 +73,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E0D4098C6B103253761A220B /* libPods-MSPDemoApp.a in Frameworks */,
+				CB0BFD0E52A75DB20773D1E8 /* libPods-MSPDemoApp.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -185,7 +185,7 @@
 				66F4F0CA2BE055360026CAB8 /* PrebidMobile.xcframework */,
 				66F4F0C72BE0550E0026CAB8 /* PrebidAdapter.xcframework */,
 				66F4F0C22BE054800026CAB8 /* MSPUtility.xcframework */,
-				865DA71BB2BB723F7DC9E210 /* libPods-MSPDemoApp.a */,
+				ED7F396EB93590EA78694359 /* libPods-MSPDemoApp.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";

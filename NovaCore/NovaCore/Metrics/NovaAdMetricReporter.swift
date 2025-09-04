@@ -8,12 +8,13 @@
 import Foundation
 
 
-@objc public class NovaAdMetricReporter: NSObject {
-    public static func logAdImpression(thirdPartyImpressionTrackingUrls: [String],
-                                       encryptedAdToken: String,
-                                       adUnitId: String,
-                                       startTimeInMs: Double? = nil,
-                                       expirationTimeInMs: Double? = nil) {
+class NovaAdMetricReporter: NSObject {
+    static func logAdImpression(thirdPartyImpressionTrackingUrls: [String],
+                                encryptedAdToken: String,
+                                adUnitId: String,
+                                startTimeInMs: Double? = nil,
+                                expirationTimeInMs: Double? = nil)
+    {
         // Third party impression tracking
         AdsThirdPartyMetricReporter.logImpression(thirdPartyImpressionTrackingUrls: thirdPartyImpressionTrackingUrls)
 
@@ -29,7 +30,7 @@ import Foundation
         logNovaAdEvent(.impression, encryptedAdToken: encryptedAdToken, params: params)
     }
 
-    public static func logAdClick(
+    static func logAdClick(
         thirdPartyClickTrackingUrls: [String],
         encryptedAdToken: String,
         adUnitId: String,
@@ -52,16 +53,16 @@ import Foundation
         logNovaAdEvent(.click, encryptedAdToken: encryptedAdToken, params: params)
     }
 
-    public static func logAdSkip(reason: NovaAdSkipReason, encryptedAdToken: String, durationInMs: Int) {
+    static func logAdSkip(reason: NovaAdSkipReason, encryptedAdToken: String, durationInMs: String) {
         let params: [String: String] = [
             NovaAdMetricKeys.ACTION: reason.rawValue,
-            NovaAdMetricKeys.DURATION_MS: "\(durationInMs)",
+            NovaAdMetricKeys.DURATION_MS: durationInMs,
         ]
 
         logNovaAdEvent(.skipAd, encryptedAdToken: encryptedAdToken, params: params)
     }
 
-    @objc public static func logAdHide(reason: String, encryptedAdToken: String) {
+    static func logAdHide(reason: String, encryptedAdToken: String) {
         let params: [String: String] = [
             NovaAdMetricKeys.REASON: reason,
         ]
@@ -69,7 +70,30 @@ import Foundation
         logNovaAdEvent(.hideAd, encryptedAdToken: encryptedAdToken, params: params)
     }
 
-    @objc public static func logAdUnhide(encryptedAdToken: String) {
+    enum PlayableTapReason: String {
+        case click
+        case auto
+    }
+
+    static func logPlayableTapToTry(
+        encryptedAdToken: String,
+        reason: PlayableTapReason,
+        durationInMs: Int? = nil,
+        clickArea: ClickableAdArea? = nil
+    ) {
+        var params: [String: String] = [:]
+        params["reason"] = reason.rawValue
+        if let durationInMs {
+            params["duration_ms"] = "\(durationInMs)"
+        }
+        if let clickArea {
+            params[NovaAdMetricKeys.CLICK_AREA_NAME] = clickArea.rawValue
+        }
+
+        logNovaAdEvent(.playableTapToTry, encryptedAdToken: encryptedAdToken, params: params)
+    }
+
+    static func logAdUnhide(encryptedAdToken: String) {
         logNovaAdEvent(.unhideAd, encryptedAdToken: encryptedAdToken)
     }
 
@@ -109,7 +133,7 @@ private extension NovaAdMetricReporter {
     }
 }
 
-public extension NovaAdMetricReporter {
+extension NovaAdMetricReporter {
     static func convertNovaClickAreaNameToMetric(clickArea: String?) -> String? {
         guard let clickArea else {
             return nil
@@ -132,27 +156,27 @@ public extension NovaAdMetricReporter {
     }
 }
 
-public struct NovaAdMetricKeys {
-    public static let START_MS = "start_ms"
-    public static let EXPIRATION_MS = "expiration_ms"
-    public static let CURRENT_MS = "current_ms"
-    public static let DURATION_MS = "duration_ms"
-    public static let LATENCY_MS = "latency_ms"
-    public static let VIDEO_LENGTH_MS = "video_length_ms"
-    public static let POSITION_MS = "position_ms"
-    public static let LOOP_COUNT = "loop_count"
-    public static let IS_PLAY_AUTOMATICALLY = "is_play_automatically"
-    public static let IS_MUTE = "is_mute"
-    public static let IS_LOOP = "is_loop"
-    public static let AD_UNIT_ID = "ad_unit_id"
-    public static let USER_ID = "user_id"
-    public static let CLICK_AREA_NAME = "click_area_name"
-    public static let ACTION = "action"
-    public static let REASON = "reason"
-    public static let ERROR = "error"
-    public static let OFFSET = "offset"
+struct NovaAdMetricKeys {
+    static let START_MS = "start_ms"
+    static let EXPIRATION_MS = "expiration_ms"
+    static let CURRENT_MS = "current_ms"
+    static let DURATION_MS = "duration_ms"
+    static let LATENCY_MS = "latency_ms"
+    static let VIDEO_LENGTH_MS = "video_length_ms"
+    static let POSITION_MS = "position_ms"
+    static let LOOP_COUNT = "loop_count"
+    static let IS_PLAY_AUTOMATICALLY = "is_play_automatically"
+    static let IS_MUTE = "is_mute"
+    static let IS_LOOP = "is_loop"
+    static let AD_UNIT_ID = "ad_unit_id"
+    static let USER_ID = "user_id"
+    static let CLICK_AREA_NAME = "click_area_name"
+    static let ACTION = "action"
+    static let REASON = "reason"
+    static let ERROR = "error"
+    static let OFFSET = "offset"
     
-    public static let EVENT_TYPE = "event_type"
-    public static let ENCRYPTED_AD_TOKEN = "encrypted_ad_token"
-    public static let EVENT_TIME = "event_time"
+    static let EVENT_TYPE = "event_type"
+    static let ENCRYPTED_AD_TOKEN = "encrypted_ad_token"
+    static let EVENT_TIME = "event_time"
 }

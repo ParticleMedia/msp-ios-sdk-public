@@ -1,6 +1,6 @@
 import WebKit
 
-public protocol NovaUnifiedWebViewNavigationDelegate: NSObject {
+protocol NovaUnifiedWebViewNavigationDelegate: NSObject {
 
     func openWebPage(_ url: URL)
 
@@ -26,7 +26,7 @@ public protocol NovaUnifiedWebViewNavigationDelegate: NSObject {
     
 }
 
-public extension NovaUnifiedWebViewNavigationDelegate {
+extension NovaUnifiedWebViewNavigationDelegate {
 
     func webView(_ webView: WKWebView, didStartProvisionalNavigation navigation: WKNavigation!) { }
 

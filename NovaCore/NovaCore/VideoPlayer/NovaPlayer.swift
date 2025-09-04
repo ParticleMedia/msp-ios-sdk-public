@@ -32,13 +32,13 @@ import CoreGraphics
 // MARK: - error types
 
 /// Error domain for all Player errors.
-public let NovaPlayerErrorDomain = "PlayerErrorDomain"
+let NovaPlayerErrorDomain = "PlayerErrorDomain"
 
 /// Error types.
-public enum NovaPlayerError: Error, CustomStringConvertible {
+enum NovaPlayerError: Error, CustomStringConvertible {
     case failed
 
-    public var description: String {
+    var description: String {
         get {
             switch self {
             case .failed:
@@ -51,7 +51,7 @@ public enum NovaPlayerError: Error, CustomStringConvertible {
 // MARK: - PlayerDelegate
 
 /// Player delegate protocol
-public protocol NovaPlayerDelegate: AnyObject {
+protocol NovaPlayerDelegate: AnyObject {
     func playerReady(_ player: NovaPlayer)
     func playerPlaybackStateDidChange(_ player: NovaPlayer)
     func playerBufferingStateDidChange(_ player: NovaPlayer)
@@ -65,7 +65,7 @@ public protocol NovaPlayerDelegate: AnyObject {
 
 
 /// Player playback protocol
-public protocol NovaPlayerPlaybackDelegate: AnyObject {
+protocol NovaPlayerPlaybackDelegate: AnyObject {
     func playerCurrentTimeDidChange(_ player: NovaPlayer)
     func playerPlaybackWillStartFromBeginning(_ player: NovaPlayer)
     func playerPlaybackDidEnd(_ player: NovaPlayer)
@@ -77,7 +77,7 @@ public protocol NovaPlayerPlaybackDelegate: AnyObject {
 // MARK: - Player
 
 /// ▶️ Player, simple way to play and stream media
-open class NovaPlayer: UIViewController {
+class NovaPlayer: UIViewController {
 
     // types
     
@@ -86,16 +86,16 @@ open class NovaPlayer: UIViewController {
     /// - resize: Stretch to fill.
     /// - resizeAspectFill: Preserve aspect ratio, filling bounds.
     /// - resizeAspectFit: Preserve aspect ratio, fill within bounds.
-    public typealias FillMode = AVLayerVideoGravity
+    typealias FillMode = AVLayerVideoGravity
 
     /// Asset playback states.
-    public enum PlaybackState: Int, CustomStringConvertible {
+    enum PlaybackState: Int, CustomStringConvertible {
         case stopped = 0
         case playing
         case paused
         case failed
 
-        public var description: String {
+        var description: String {
             get {
                 switch self {
                 case .stopped:
@@ -112,12 +112,12 @@ open class NovaPlayer: UIViewController {
     }
 
     /// Asset buffering states.
-    public enum BufferingState: Int, CustomStringConvertible {
+    enum BufferingState: Int, CustomStringConvertible {
         case unknown = 0
         case ready
         case delayed
 
-        public var description: String {
+        var description: String {
             get {
                 switch self {
                 case .unknown:
@@ -134,17 +134,17 @@ open class NovaPlayer: UIViewController {
     // properties
     
     /// Player delegate.
-    open weak var playerDelegate: NovaPlayerDelegate?
+    weak var playerDelegate: NovaPlayerDelegate?
 
     /// Playback delegate.
-    open weak var playbackDelegate: NovaPlayerPlaybackDelegate?
+    weak var playbackDelegate: NovaPlayerPlaybackDelegate?
 
     // configuration
 
     /// Local or remote URL for the file asset to be played.
     ///
     /// - Parameter url: URL of the asset.
-    open var url: URL? {
+    var url: URL? {
         didSet {
             if let url = self.url {
                 setup(url: url)
@@ -154,14 +154,14 @@ open class NovaPlayer: UIViewController {
 
     /// For setting up with AVAsset instead of URL
     /// Note: This will reset the `url` property. (cannot set both)
-    open var asset: AVAsset? {
+    var asset: AVAsset? {
         get { return _asset }
         set { _ = newValue.map { setupAsset($0) } }
     }
 
     /// Specifies how the video is displayed within a player layer’s bounds.
     /// The default value is `AVLayerVideoGravityResizeAspect`. See `PlayerFillMode`.
-    open var fillMode: NovaPlayer.FillMode {
+    var fillMode: NovaPlayer.FillMode {
         get {
             return self._playerView.playerFillMode
         }
@@ -171,10 +171,10 @@ open class NovaPlayer: UIViewController {
     }
 
     /// Determines if the video should autoplay when streaming a URL.
-    open var autoplay: Bool = true
+    var autoplay: Bool = true
 
     /// Mutes audio playback when true.
-    open var muted: Bool {
+    var muted: Bool {
         get {
             return self._avplayer.isMuted
         }
@@ -184,7 +184,7 @@ open class NovaPlayer: UIViewController {
     }
 
     /// Volume for the player, ranging from 0.0 to 1.0 on a linear scale.
-    open var volume: Float {
+    var volume: Float {
         get {
             return self._avplayer.volume
         }
@@ -194,20 +194,20 @@ open class NovaPlayer: UIViewController {
     }
 
     /// Pauses playback automatically when resigning active.
-    open var playbackPausesWhenResigningActive: Bool = true
+    var playbackPausesWhenResigningActive: Bool = true
 
     /// Pauses playback automatically when backgrounded.
-    open var playbackPausesWhenBackgrounded: Bool = true
+    var playbackPausesWhenBackgrounded: Bool = true
 
     /// Resumes playback when became active.
-    open var playbackResumesWhenBecameActive: Bool = true
+    var playbackResumesWhenBecameActive: Bool = true
 
     /// Resumes playback when entering foreground.
-    open var playbackResumesWhenEnteringForeground: Bool = true
+    var playbackResumesWhenEnteringForeground: Bool = true
 
     // state
     
-    open var isPlayingVideo: Bool {
+    var isPlayingVideo: Bool {
         get {
             guard let asset = self._asset else {
                 return false
@@ -217,7 +217,7 @@ open class NovaPlayer: UIViewController {
     }
 
     /// Playback automatically loops continuously when true.
-    open var playbackLoops: Bool {
+    var playbackLoops: Bool {
         get {
             return self._avplayer.actionAtItemEnd == .none
         }
@@ -230,13 +230,13 @@ open class NovaPlayer: UIViewController {
         }
     }
     
-    open var loopCount: Int = 0
+    var loopCount: Int = 0
 
     /// Playback freezes on last frame frame when true and does not reset seek position timestamp..
-    open var playbackFreezesAtEnd: Bool = false
+    var playbackFreezesAtEnd: Bool = false
 
     /// Current playback state of the Player.
-    open var playbackState: PlaybackState = .stopped {
+    var playbackState: PlaybackState = .stopped {
         didSet {
             if playbackState != oldValue || !playbackEdgeTriggered {
                 self.executeClosureOnMainQueueIfNecessary {
@@ -247,7 +247,7 @@ open class NovaPlayer: UIViewController {
     }
 
     /// Current buffering state of the Player.
-    open var bufferingState: BufferingState = .unknown {
+    var bufferingState: BufferingState = .unknown {
         didSet {
             if bufferingState != oldValue || !playbackEdgeTriggered {
                 self.executeClosureOnMainQueueIfNecessary {
@@ -258,13 +258,13 @@ open class NovaPlayer: UIViewController {
     }
 
     /// Playback buffering size in seconds.
-    open var bufferSizeInSeconds: Double = 10
+    var bufferSizeInSeconds: Double = 10
 
     /// Playback is not automatically triggered from state changes when true.
-    open var playbackEdgeTriggered: Bool = true
+    var playbackEdgeTriggered: Bool = true
 
     /// Maximum duration of playback.
-    open var maximumDuration: TimeInterval {
+    var maximumDuration: TimeInterval {
         get {
             if let playerItem = self._playerItem {
                 return CMTimeGetSeconds(playerItem.duration)
@@ -275,7 +275,7 @@ open class NovaPlayer: UIViewController {
     }
 
     /// Media playback's current time interval in seconds.
-    open var currentTimeInterval: TimeInterval {
+    var currentTimeInterval: TimeInterval {
         get {
             if let playerItem = self._playerItem {
                 return CMTimeGetSeconds(playerItem.currentTime())
@@ -286,7 +286,7 @@ open class NovaPlayer: UIViewController {
     }
     
     /// Media playback's current time.
-    open var currentTime: CMTime {
+    var currentTime: CMTime {
         get {
             if let playerItem = self._playerItem {
                 return playerItem.currentTime()
@@ -297,7 +297,7 @@ open class NovaPlayer: UIViewController {
     }
 
     /// The natural dimensions of the media.
-    open var naturalSize: CGSize {
+    var naturalSize: CGSize {
         get {
             if let playerItem = self._playerItem,
                 let track = playerItem.asset.tracks(withMediaType: .video).first {
@@ -311,19 +311,19 @@ open class NovaPlayer: UIViewController {
     }
 
     /// self.view as PlayerView type
-    public var playerView: NovaPlayerView {
+    var playerView: NovaPlayerView {
         get {
             return self._playerView
         }
     }
 
     /// Return the av player layer for consumption by things such as Picture in Picture
-    open func playerLayer() -> AVPlayerLayer? {
+    func playerLayer() -> AVPlayerLayer? {
         return self._playerView.playerLayer
     }
 
     /// Indicates the desired limit of network bandwidth consumption for this item.
-    open var preferredPeakBitRate: Double = 0 {
+    var preferredPeakBitRate: Double = 0 {
         didSet {
             self._playerItem?.preferredPeakBitRate = self.preferredPeakBitRate
         }
@@ -331,7 +331,7 @@ open class NovaPlayer: UIViewController {
 
     /// Indicates a preferred upper limit on the resolution of the video to be downloaded.
     @available(iOS 11.0, tvOS 11.0, *)
-    open var preferredMaximumResolution: CGSize {
+    var preferredMaximumResolution: CGSize {
         get {
             return self._playerItem?.preferredMaximumResolution ?? CGSize.zero
         }
@@ -372,15 +372,15 @@ open class NovaPlayer: UIViewController {
 
     // MARK: - object lifecycle
 
-    public convenience init() {
+    convenience init() {
         self.init(nibName: nil, bundle: nil)
     }
 
-    public required init?(coder aDecoder: NSCoder) {
+    required public init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
     }
 
-    public override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
+    override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
         super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
     }
 
@@ -401,13 +401,13 @@ open class NovaPlayer: UIViewController {
 
     // MARK: - view lifecycle
 
-    open override func loadView() {
+    override func loadView() {
         super.loadView()
         self._playerView.frame = self.view.bounds
         self.view = self._playerView
     }
 
-    open override func viewDidLoad() {
+    override func viewDidLoad() {
         super.viewDidLoad()
         self._playerView.player = self._avplayer
 
@@ -422,7 +422,7 @@ open class NovaPlayer: UIViewController {
         self.addApplicationObservers()
     }
 
-    open override func viewDidDisappear(_ animated: Bool) {
+    override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
         if self.playbackState == .playing {
             self.pause()
@@ -436,7 +436,7 @@ open class NovaPlayer: UIViewController {
 extension NovaPlayer {
 
     /// Total time spent playing.
-    public var totalDurationWatched: TimeInterval {
+    var totalDurationWatched: TimeInterval {
         get {
             var totalDurationWatched = 0.0
             if let accessLog = self._playerItem?.accessLog(), accessLog.events.isEmpty == false {
@@ -477,7 +477,7 @@ extension NovaPlayer {
         return Double(totalNumberOfStalls) / totalHoursWatched
     }
     
-    public func setPlayImmediately(atRate rate: Float) {
+    func setPlayImmediately(atRate rate: Float) {
         DispatchQueue.main.async {
             self._avplayer.playImmediately(atRate: rate)
         }
@@ -489,14 +489,14 @@ extension NovaPlayer {
 extension NovaPlayer {
 
     /// Begins playback of the media from the beginning.
-    open func playFromBeginning() {
+    func playFromBeginning() {
         self.playbackDelegate?.playerPlaybackWillStartFromBeginning(self)
         self._avplayer.seek(to: CMTime.zero)
         self.playFromCurrentTime()
     }
 
     /// Begins playback of the media from the current time.
-    open func playFromCurrentTime() {
+    func playFromCurrentTime() {
         if !self.autoplay {
             // External call to this method with autoplay disabled. Re-activate it before calling play.
             self._hasAutoplayActivated = true
@@ -512,7 +512,7 @@ extension NovaPlayer {
     }
 
     /// Pauses playback of the media.
-    open func pause() {
+    func pause() {
         if self.playbackState != .playing {
             return
         }
@@ -522,7 +522,7 @@ extension NovaPlayer {
     }
 
     /// Stops playback of the media.
-    open func stop() {
+    func stop() {
         if self.playbackState == .stopped {
             return
         }
@@ -537,7 +537,7 @@ extension NovaPlayer {
     /// - Parameters:
     ///   - time: The time to switch to move the playback.
     ///   - completionHandler: Call block handler after seeking/
-    open func seek(to time: CMTime, completionHandler: ((Bool) -> Swift.Void)? = nil) {
+    func seek(to time: CMTime, completionHandler: ((Bool) -> Swift.Void)? = nil) {
         if let playerItem = self._playerItem {
             return playerItem.seek(to: time, completionHandler: completionHandler)
         } else {
@@ -552,7 +552,12 @@ extension NovaPlayer {
     ///   - toleranceBefore: The tolerance allowed before time.
     ///   - toleranceAfter: The tolerance allowed after time.
     ///   - completionHandler: call block handler after seeking
-    open func seekToTime(to time: CMTime, toleranceBefore: CMTime, toleranceAfter: CMTime, completionHandler: ((Bool) -> Swift.Void)? = nil) {
+    func seekToTime(
+        to time: CMTime,
+        toleranceBefore: CMTime,
+        toleranceAfter: CMTime,
+        completionHandler: ((Bool) -> Swift.Void)? = nil
+    ) {
         if let playerItem = self._playerItem {
             return playerItem.seek(to: time, toleranceBefore: toleranceBefore, toleranceAfter: toleranceAfter, completionHandler: completionHandler)
         }
@@ -561,7 +566,7 @@ extension NovaPlayer {
     /// Captures a snapshot of the current Player asset.
     ///
     /// - Parameter completionHandler: Returns a UIImage of the requested video frame. (Great for thumbnails!)
-    open func takeSnapshot(completionHandler: ((_ image: UIImage?, _ error: Error?) -> Void)? ) {
+    func takeSnapshot(completionHandler: ((_ image: UIImage?, _ error: Error?) -> Void)? ) {
         guard let asset = self._playerItem?.asset else {
             DispatchQueue.main.async {
                 completionHandler?(nil, nil)
@@ -930,11 +935,11 @@ extension NovaPlayer {
 
 // MARK: - PlayerView
 
-public class NovaPlayerView: UIView {
+class NovaPlayerView: UIView {
 
     // MARK: - overrides
 
-    public override class var layerClass: AnyClass {
+    override class var layerClass: AnyClass {
         get {
             return AVPlayerLayer.self
         }
@@ -958,9 +963,9 @@ public class NovaPlayerView: UIView {
         }
     }
 
-    // MARK: - public properties
+    // MARK: - properties
 
-    public var playerBackgroundColor: UIColor? {
+    var playerBackgroundColor: UIColor? {
         get {
             if let cgColor = self.playerLayer.backgroundColor {
                 return UIColor(cgColor: cgColor)
@@ -972,7 +977,7 @@ public class NovaPlayerView: UIView {
         }
     }
 
-    public var playerFillMode: NovaPlayer.FillMode {
+    var playerFillMode: NovaPlayer.FillMode {
         get {
             return self.playerLayer.videoGravity
         }
@@ -981,7 +986,7 @@ public class NovaPlayerView: UIView {
         }
     }
 
-    public var isReadyForDisplay: Bool {
+    var isReadyForDisplay: Bool {
         get {
             return self.playerLayer.isReadyForDisplay
         }
@@ -989,13 +994,13 @@ public class NovaPlayerView: UIView {
 
     // MARK: - object lifecycle
 
-    public override init(frame: CGRect) {
+    override init(frame: CGRect) {
         super.init(frame: frame)
         self.playerLayer.isHidden = true
         self.playerFillMode = .resizeAspect
     }
 
-    required public init?(coder aDecoder: NSCoder) {
+    required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
         self.playerLayer.isHidden = true
         self.playerFillMode = .resizeAspect

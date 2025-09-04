@@ -1,0 +1,28 @@
+# This file contains the fastlane.tools configuration
+# You can find the documentation at https://docs.fastlane.tools
+#
+# For a list of all available actions, check out
+#
+#     https://docs.fastlane.tools/actions
+#
+# For a list of all available plugins, check out
+#
+#     https://docs.fastlane.tools/plugins/available-plugins
+#
+
+# Uncomment the line if you want fastlane to automatically update itself
+# update_fastlane
+
+# The bundle identifier of your app
+app_identifier("com.newsbreak.msp-ios-sdk")
+
+# Your Apple Developer Portal username
+# apple_id("your.apple.id@example.com")
+
+# It is recommended to store your Apple ID password in an environment variable
+# Please check: https://docs.fastlane.tools/advanced/#environment-variables
+# apple_id_password(ENV["APPLE_ID_PASSWORD"])
+
+# For more information about the Appfile, see:
+#     https://docs.fastlane.tools/advanced/#appfile
+

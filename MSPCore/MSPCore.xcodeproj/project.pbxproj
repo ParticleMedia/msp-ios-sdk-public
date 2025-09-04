@@ -21,22 +21,20 @@
 		667A646A2E20950000A9B954 /* DebugNativeAdContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 667A64612E20950000A9B954 /* DebugNativeAdContainer.swift */; };
 		667A646B2E20950000A9B954 /* AdFormat+DebugOption.swift in Sources */ = {isa = PBXBuildFile; fileRef = 667A64392E20950000A9B954 /* AdFormat+DebugOption.swift */; };
 		667A646C2E20950000A9B954 /* HighEngagementOption+DebugOption.swift in Sources */ = {isa = PBXBuildFile; fileRef = 667A643E2E20950000A9B954 /* HighEngagementOption+DebugOption.swift */; };
-		667A646D2E20950000A9B954 /* NovaAppOpenAdLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 667A644F2E20950000A9B954 /* NovaAppOpenAdLayout.swift */; };
+		667A646D2E20950000A9B954 /* NovaInterstitialAdLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 667A644F2E20950000A9B954 /* NovaInterstitialAdLayout.swift */; };
 		667A646E2E20950000A9B954 /* DebugRadioView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 667A64632E20950000A9B954 /* DebugRadioView.swift */; };
 		667A646F2E20950000A9B954 /* PlacementsRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 667A64552E20950000A9B954 /* PlacementsRepository.swift */; };
 		667A64702E20950000A9B954 /* HighEngagementOption.swift in Sources */ = {isa = PBXBuildFile; fileRef = 667A644E2E20950000A9B954 /* HighEngagementOption.swift */; };
-		667A64712E20950000A9B954 /* NovaAppOpenAdLayout+DebugOption.swift in Sources */ = {isa = PBXBuildFile; fileRef = 667A64402E20950000A9B954 /* NovaAppOpenAdLayout+DebugOption.swift */; };
+		667A64712E20950000A9B954 /* NovaInterstitialAdLayout+DebugOption.swift in Sources */ = {isa = PBXBuildFile; fileRef = 667A64402E20950000A9B954 /* NovaInterstitialAdLayout+DebugOption.swift */; };
 		667A64722E20950000A9B954 /* DebugDisplayable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 667A64452E20950000A9B954 /* DebugDisplayable.swift */; };
-		667A64732E20950000A9B954 /* AdNetwork+PlacementPresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 667A643C2E20950000A9B954 /* AdNetwork+PlacementPresentable.swift */; };
 		667A64742E20950000A9B954 /* DebugSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 667A64482E20950000A9B954 /* DebugSection.swift */; };
 		667A64752E20950000A9B954 /* DebugAdLoadViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 667A645E2E20950000A9B954 /* DebugAdLoadViewModel.swift */; };
-		667A64762E20950000A9B954 /* AdFormat+PlacementPresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 667A643A2E20950000A9B954 /* AdFormat+PlacementPresentable.swift */; };
 		667A64772E20950000A9B954 /* TestLoadAdService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 667A64572E20950000A9B954 /* TestLoadAdService.swift */; };
 		667A64782E20950000A9B954 /* DebugAdContainerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 667A645A2E20950000A9B954 /* DebugAdContainerViewController.swift */; };
 		667A64792E20950000A9B954 /* DebugError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 667A644C2E20950000A9B954 /* DebugError.swift */; };
 		667A647A2E20950000A9B954 /* DebugOptionIdentifiable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 667A64472E20950000A9B954 /* DebugOptionIdentifiable.swift */; };
 		667A647B2E20950000A9B954 /* DebugOption.swift in Sources */ = {isa = PBXBuildFile; fileRef = 667A64462E20950000A9B954 /* DebugOption.swift */; };
-		667A647C2E20950000A9B954 /* NovaAppOpenAdLayout+TestParamPresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 667A64412E20950000A9B954 /* NovaAppOpenAdLayout+TestParamPresentable.swift */; };
+		667A647C2E20950000A9B954 /* NovaInterstitialAdLayout+TestParamPresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 667A64412E20950000A9B954 /* NovaInterstitialAdLayout+TestParamPresentable.swift */; };
 		667A647D2E20950000A9B954 /* PlacementPresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 667A64492E20950000A9B954 /* PlacementPresentable.swift */; };
 		667A647E2E20950000A9B954 /* HighEngagementOption+TestParamPresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 667A643F2E20950000A9B954 /* HighEngagementOption+TestParamPresentable.swift */; };
 		667A647F2E20950000A9B954 /* DebugAdLoadViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 667A645B2E20950000A9B954 /* DebugAdLoadViewController.swift */; };
@@ -120,14 +118,12 @@
 		664DCF902B4F3EA800BF19B6 /* PrebidAdapter.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; path = PrebidAdapter.xcframework; sourceTree = "<group>"; };
 		664DCF942B4F3FA900BF19B6 /* PrebidMobile.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; path = PrebidMobile.xcframework; sourceTree = "<group>"; };
 		667A64392E20950000A9B954 /* AdFormat+DebugOption.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AdFormat+DebugOption.swift"; sourceTree = "<group>"; };
-		667A643A2E20950000A9B954 /* AdFormat+PlacementPresentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AdFormat+PlacementPresentable.swift"; sourceTree = "<group>"; };
 		667A643B2E20950000A9B954 /* AdNetwork+DebugOption.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AdNetwork+DebugOption.swift"; sourceTree = "<group>"; };
-		667A643C2E20950000A9B954 /* AdNetwork+PlacementPresentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AdNetwork+PlacementPresentable.swift"; sourceTree = "<group>"; };
 		667A643D2E20950000A9B954 /* AdNetwork+TestParamPresentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AdNetwork+TestParamPresentable.swift"; sourceTree = "<group>"; };
 		667A643E2E20950000A9B954 /* HighEngagementOption+DebugOption.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "HighEngagementOption+DebugOption.swift"; sourceTree = "<group>"; };
 		667A643F2E20950000A9B954 /* HighEngagementOption+TestParamPresentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "HighEngagementOption+TestParamPresentable.swift"; sourceTree = "<group>"; };
-		667A64402E20950000A9B954 /* NovaAppOpenAdLayout+DebugOption.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NovaAppOpenAdLayout+DebugOption.swift"; sourceTree = "<group>"; };
-		667A64412E20950000A9B954 /* NovaAppOpenAdLayout+TestParamPresentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NovaAppOpenAdLayout+TestParamPresentable.swift"; sourceTree = "<group>"; };
+		667A64402E20950000A9B954 /* NovaInterstitialAdLayout+DebugOption.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NovaInterstitialAdLayout+DebugOption.swift"; sourceTree = "<group>"; };
+		667A64412E20950000A9B954 /* NovaInterstitialAdLayout+TestParamPresentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NovaInterstitialAdLayout+TestParamPresentable.swift"; sourceTree = "<group>"; };
 		667A64422E20950000A9B954 /* NovaCreativeType+DebugOption.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NovaCreativeType+DebugOption.swift"; sourceTree = "<group>"; };
 		667A64432E20950000A9B954 /* NovaCreativeType+TestParamPresentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NovaCreativeType+TestParamPresentable.swift"; sourceTree = "<group>"; };
 		667A64452E20950000A9B954 /* DebugDisplayable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebugDisplayable.swift; sourceTree = "<group>"; };
@@ -138,7 +134,7 @@
 		667A644C2E20950000A9B954 /* DebugError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebugError.swift; sourceTree = "<group>"; };
 		667A644D2E20950000A9B954 /* DebugSectionData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebugSectionData.swift; sourceTree = "<group>"; };
 		667A644E2E20950000A9B954 /* HighEngagementOption.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HighEngagementOption.swift; sourceTree = "<group>"; };
-		667A644F2E20950000A9B954 /* NovaAppOpenAdLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NovaAppOpenAdLayout.swift; sourceTree = "<group>"; };
+		667A644F2E20950000A9B954 /* NovaInterstitialAdLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NovaInterstitialAdLayout.swift; sourceTree = "<group>"; };
 		667A64502E20950000A9B954 /* NovaCreativeType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NovaCreativeType.swift; sourceTree = "<group>"; };
 		667A64512E20950000A9B954 /* TestParamsPresentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestParamsPresentable.swift; sourceTree = "<group>"; };
 		667A64532E20950000A9B954 /* DebugSectionsRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebugSectionsRepository.swift; sourceTree = "<group>"; };
@@ -276,14 +272,12 @@
 			isa = PBXGroup;
 			children = (
 				667A64392E20950000A9B954 /* AdFormat+DebugOption.swift */,
-				667A643A2E20950000A9B954 /* AdFormat+PlacementPresentable.swift */,
 				667A643B2E20950000A9B954 /* AdNetwork+DebugOption.swift */,
-				667A643C2E20950000A9B954 /* AdNetwork+PlacementPresentable.swift */,
 				667A643D2E20950000A9B954 /* AdNetwork+TestParamPresentable.swift */,
 				667A643E2E20950000A9B954 /* HighEngagementOption+DebugOption.swift */,
 				667A643F2E20950000A9B954 /* HighEngagementOption+TestParamPresentable.swift */,
-				667A64402E20950000A9B954 /* NovaAppOpenAdLayout+DebugOption.swift */,
-				667A64412E20950000A9B954 /* NovaAppOpenAdLayout+TestParamPresentable.swift */,
+				667A64402E20950000A9B954 /* NovaInterstitialAdLayout+DebugOption.swift */,
+				667A64412E20950000A9B954 /* NovaInterstitialAdLayout+TestParamPresentable.swift */,
 				667A64422E20950000A9B954 /* NovaCreativeType+DebugOption.swift */,
 				667A64432E20950000A9B954 /* NovaCreativeType+TestParamPresentable.swift */,
 			);
@@ -310,7 +304,7 @@
 				667A644C2E20950000A9B954 /* DebugError.swift */,
 				667A644D2E20950000A9B954 /* DebugSectionData.swift */,
 				667A644E2E20950000A9B954 /* HighEngagementOption.swift */,
-				667A644F2E20950000A9B954 /* NovaAppOpenAdLayout.swift */,
+				667A644F2E20950000A9B954 /* NovaInterstitialAdLayout.swift */,
 				667A64502E20950000A9B954 /* NovaCreativeType.swift */,
 				667A64512E20950000A9B954 /* TestParamsPresentable.swift */,
 			);
@@ -437,6 +431,7 @@
 				6639AC812B4DFAE300A248D2 /* Sources */,
 				6639AC822B4DFAE300A248D2 /* Frameworks */,
 				6639AC832B4DFAE300A248D2 /* Resources */,
+				AA16F1A98939076FAC641A3D /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -572,6 +567,23 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
+		AA16F1A98939076FAC641A3D /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-MSPCore/Pods-MSPCore-resources-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Copy Pods Resources";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-MSPCore/Pods-MSPCore-resources-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-MSPCore/Pods-MSPCore-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
@@ -594,22 +606,20 @@
 				667A646A2E20950000A9B954 /* DebugNativeAdContainer.swift in Sources */,
 				667A646B2E20950000A9B954 /* AdFormat+DebugOption.swift in Sources */,
 				667A646C2E20950000A9B954 /* HighEngagementOption+DebugOption.swift in Sources */,
-				667A646D2E20950000A9B954 /* NovaAppOpenAdLayout.swift in Sources */,
+				667A646D2E20950000A9B954 /* NovaInterstitialAdLayout.swift in Sources */,
 				667A646E2E20950000A9B954 /* DebugRadioView.swift in Sources */,
 				667A646F2E20950000A9B954 /* PlacementsRepository.swift in Sources */,
 				667A64702E20950000A9B954 /* HighEngagementOption.swift in Sources */,
-				667A64712E20950000A9B954 /* NovaAppOpenAdLayout+DebugOption.swift in Sources */,
+				667A64712E20950000A9B954 /* NovaInterstitialAdLayout+DebugOption.swift in Sources */,
 				667A64722E20950000A9B954 /* DebugDisplayable.swift in Sources */,
-				667A64732E20950000A9B954 /* AdNetwork+PlacementPresentable.swift in Sources */,
 				667A64742E20950000A9B954 /* DebugSection.swift in Sources */,
 				667A64752E20950000A9B954 /* DebugAdLoadViewModel.swift in Sources */,
-				667A64762E20950000A9B954 /* AdFormat+PlacementPresentable.swift in Sources */,
 				667A64772E20950000A9B954 /* TestLoadAdService.swift in Sources */,
 				667A64782E20950000A9B954 /* DebugAdContainerViewController.swift in Sources */,
 				667A64792E20950000A9B954 /* DebugError.swift in Sources */,
 				667A647A2E20950000A9B954 /* DebugOptionIdentifiable.swift in Sources */,
 				667A647B2E20950000A9B954 /* DebugOption.swift in Sources */,
-				667A647C2E20950000A9B954 /* NovaAppOpenAdLayout+TestParamPresentable.swift in Sources */,
+				667A647C2E20950000A9B954 /* NovaInterstitialAdLayout+TestParamPresentable.swift in Sources */,
 				667A647D2E20950000A9B954 /* PlacementPresentable.swift in Sources */,
 				667A647E2E20950000A9B954 /* HighEngagementOption+TestParamPresentable.swift in Sources */,
 				667A647F2E20950000A9B954 /* DebugAdLoadViewController.swift in Sources */,

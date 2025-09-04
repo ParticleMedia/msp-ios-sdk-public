@@ -1,134 +1,130 @@
-//import NBVideoPlayer
 import Foundation
 
-@objc public final class NovaNativeAdItem: NovaBaseAd {
-    // MARK: - Properties
-
-    /// Headline.
-    @objc public let headline: String?
-
-    /// Description.
-    @objc public let body: String?
-
-    /// Whether to use static image in immersive video
-    public let isImageClickable: Bool
-
-    /// video info
-    public let videoInfo: NovaNativeAdVideoInfo?
-
-    /// CTA button text.
-    @objc public let callToAction: String?
-
-    /// Identify the advertiser. For example, advertiser's name or visible url.
-    @objc public let advertiser: String?
-
-    /// Creative Type.
-    public let creativeType: NovaCreativeType?
-
-    public let iconUrlStr: String?
-    
-    /// interactive banner on immersive video
-    public let addOnItem: NovaNativeAdInteractiveBanner?
-
-    /// Decide how to open ad. For example, using browser or in-app web view.
-    let launchOption: NovaAdLaunchOption
-
-    /// Delegate used to handle ad state update. For example, ad impression or ad click.
-    @objc public weak var delegate: NovaNativeAdDelegate?
-    
-    /// The app store id of the advertised product (if there is any)
-    public let appStoreId: String?
-
-    /*
-     * Note (Wayne)
-     * The following variables are used for ad loggings for in-feed unit.
-     * Will remove these once we migrate to use master coordinator.
-     */
-
-    @objc public let eCPMInDollar: Decimal
-
-    @objc public var cellIndexPath: IndexPath?
-
-    @objc public var dedupUUID: String?
-
-    /// Time to load this ad after placehoder shows, measured in ms.
-    @objc public var impressionLatency: Double = 0.0
-
-    public let isParallax: Bool
-
-    // MARK: -
+public final class NovaNativeAdItem: NovaNativeBaseAd {
+    // MARK: Lifecycle
 
     init(
         adUnitId: String,
         requestId: String,
         adId: String,
         adSetId: String,
-        eCPMInDollar: Decimal,
-        headline: String?,
-        body: String?,
-        callToAction: String?,
-        creativeType: NovaCreativeType?,
         imageUrlStr: String?,
-        isImageClickable: Bool,
-        videoInfo: NovaNativeAdVideoInfo?,
-        advertiser: String?,
-        iconUrlStr: String?,
-        addOnItem: NovaNativeAdInteractiveBanner?,
-        ctrUrl: URL?,
-        launchOption: NovaAdLaunchOption,
+        adCtrType: AdCtrType,
         thirdPartyViewTrackingUrls: [String],
         thirdPartyImpressionTrackingUrls: [String],
         thirdPartyClickTrackingUrls: [String],
         priceInDollar: Double?,
         encryptedAdToken: String,
-        isParallax: Bool,
-        appStoreId: String?
-    ) {
-        self.eCPMInDollar = eCPMInDollar
-        self.headline = headline
-        self.body = body
-        self.callToAction = callToAction
-        self.advertiser = advertiser
-        self.creativeType = creativeType
-        self.iconUrlStr = iconUrlStr
-        self.launchOption = launchOption
-        self.isImageClickable = isImageClickable
-        self.videoInfo = videoInfo
-        self.isParallax = isParallax
+        creativeType: NovaCreativeType,
+        headline: String?,
+        body: String?,
+        callToAction: String?,
+        advertiser: String?,
+        iconUrlStr: String?,
+        isImageLayoutVertical: Bool?,
+        isImageClickable: Bool,
+        imageURLs: [String]?,
+        imageContentMode: NovaNativeImageContentMode?,
+        videoInfo: NovaNativeAdVideoInfo?,
+        multipleItemsInfo: NovaAdMultipleItemsInfo?,
+        adDiscountTagInfo: NovaAdDiscountTagInfo?,
+        layoutStyle: NovaNativeLayoutStyle?,
+        marketingType: NovaAdMarketingType,
+        playableInfo: NovaAdPlayableInfo?,
+        addOnItem: NovaNativeAdInteractiveBanner?,
+        eCPMInDollar: Decimal,
+        isParallax: Bool
+    ) throws {
         self.addOnItem = addOnItem
-        self.appStoreId = appStoreId
+        self.eCPMInDollar = eCPMInDollar
+        self.isParallax = isParallax
 
-        super.init(adUnitId: adUnitId,
-                   requestId: requestId,
-                   adId: adId,
-                   adSetId: adSetId,
-                   imageUrlStr: imageUrlStr,
-                   ctrUrl: ctrUrl,
-                   thirdPartyViewTrackingUrls: thirdPartyViewTrackingUrls,
-                   thirdPartyImpressionTrackingUrls: thirdPartyImpressionTrackingUrls,
-                   thirdPartyClickTrackingUrls: thirdPartyClickTrackingUrls,
-                   priceInDollar: priceInDollar,
-                   encryptedAdToken: encryptedAdToken)
+        try super.init(
+            adUnitId: adUnitId,
+            requestId: requestId,
+            adId: adId,
+            adSetId: adSetId,
+            imageUrlStr: imageUrlStr,
+            adCtrType: adCtrType,
+            thirdPartyViewTrackingUrls: thirdPartyViewTrackingUrls,
+            thirdPartyImpressionTrackingUrls: thirdPartyImpressionTrackingUrls,
+            thirdPartyClickTrackingUrls: thirdPartyClickTrackingUrls,
+            priceInDollar: priceInDollar,
+            encryptedAdToken: encryptedAdToken,
+            creativeType: creativeType,
+            headline: headline,
+            body: body,
+            callToAction: callToAction,
+            advertiser: advertiser,
+            iconUrlStr: iconUrlStr,
+            isImageLayoutVertical: isImageLayoutVertical,
+            isImageClickable: isImageClickable,
+            imageURLs: imageURLs,
+            imageContentMode: imageContentMode,
+            videoInfo: videoInfo,
+            multipleItemsInfo: multipleItemsInfo,
+            adDiscountTagInfo: adDiscountTagInfo,
+            layoutStyle: layoutStyle,
+            marketingType: marketingType,
+            playableInfo: playableInfo
+        )
     }
 
     required init(from decoder: Decoder) throws {
         fatalError("init(from:) has not been implemented")
     }
 
-    deinit {
-        if let videoInfo = videoInfo {
-            DispatchQueue.main.async {
-                NovaVideoPlayerCacheHandler.shared.removePlayer(cacheKey: videoInfo.cacheKey)
+    // MARK: Internal
+
+    /// Delegate used to handle ad state update. For example, ad impression or ad click.
+    public weak var delegate: NovaNativeAdDelegate?
+
+    /// interactive banner on immersive video
+    let addOnItem: NovaNativeAdInteractiveBanner?
+
+    // Note (Wayne)
+    // The following variables are used for ad loggings for in-feed unit.
+    // Will remove these once we migrate to use master coordinator.
+
+    let eCPMInDollar: Decimal
+
+    var cellIndexPath: IndexPath?
+
+    var dedupUUID: String?
+
+    /// Time to load this ad after placehoder shows, measured in ms.
+    var impressionLatency: Double = 0.0
+
+    let isParallax: Bool
+
+    var layoutStyle: NovaNativeLayoutStyle {
+        if let _layoutStyle {
+            return _layoutStyle
+        }
+
+        switch creativeType {
+        case .nativeVideo, .playableVideo:
+            return _videoInfo?.isLayoutVertical == true ? .vertical : .horizontal
+        case .nativeImage, .businessProfile, .fullImage, .playableImage:
+            return _isImageLayoutVertical == true ? .vertical : .horizontal
+        case .sponsoredContent:
+            return .sponsor
+        case .carousel:
+            switch _multipleItemsInfo?.style {
+            case .carousel:
+                return .carousel
+            case .collection:
+                return .collection
+            case .none:
+                return .unknown
             }
         }
     }
 
-    @objc public func downloadMedia() {
-        if let videoInfo = videoInfo,
-           let videoUrl = URL(string: videoInfo.videoUrlStr) {
-            DispatchQueue.main.async {
-                NovaVideoPlayerCacheHandler.shared.getControllerToPreload(cacheKey: videoInfo.cacheKey, url: videoUrl)
-            }
-        }
-    }
+
+    // MARK: Private
+
+    // MARK: - Layout
+
+    private var _layoutStyle: NovaNativeLayoutStyle?
 }

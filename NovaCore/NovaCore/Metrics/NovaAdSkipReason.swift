@@ -1,4 +1,4 @@
-public enum NovaAdSkipReason: String {
+enum NovaAdSkipReason: String {
     case timeout
     case error
     case skipButton = "skip_btn"

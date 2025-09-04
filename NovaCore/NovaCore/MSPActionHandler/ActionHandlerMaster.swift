@@ -1,18 +1,18 @@
 import Foundation
 
-public final class ActionHandlerMaster: NSObject {
+final class ActionHandlerMaster: NSObject {
     private var actionMapping: [String: (actionModelDataType: Any.Type, actionHandler: ActionHandling)] = [:]
 
-    @objc override public init() {
+    override init() {
         super.init()
     }
 
-    public init(actionHandlers: [ActionHandling]) {
+    init(actionHandlers: [ActionHandling]) {
         super.init()
         self.generateActionMapping(actionHandlers: actionHandlers)
     }
 
-    public func addActionHandlers(actionHandlers: [ActionHandling]) {
+    func addActionHandlers(actionHandlers: [ActionHandling]) {
         self.generateActionMapping(actionHandlers: actionHandlers)
     }
 
@@ -38,7 +38,7 @@ public final class ActionHandlerMaster: NSObject {
 }
 
 extension ActionHandlerMaster: ActionHandling {
-    public func supportedActions() -> [String: Any.Type] {
+    func supportedActions() -> [String: Any.Type] {
         var result: [String: Any.Type] = [:]
 
         for (actionKey, tupleValue) in actionMapping {
@@ -48,7 +48,7 @@ extension ActionHandlerMaster: ActionHandling {
         return result
     }
 
-    public func performAction(actionModel: ActionModel) {
+    func performAction(actionModel: ActionModel) {
         let actionKey = actionModel.actionKey
         let actionDataModel = actionModel.actionDataModel
 

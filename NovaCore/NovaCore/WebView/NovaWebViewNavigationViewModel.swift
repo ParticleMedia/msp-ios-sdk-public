@@ -1,28 +1,31 @@
 
 
 import Foundation
+import UIKit
 
-public struct NovaWebViewNavigationViewModel {
-    public let includingStatusBar: Bool
-    public let title: String?
-    public var titleFontSize: CGFloat = 16
-    public let hideLeftButton: Bool
-    public let leftButtonIcon: NovaIcon.NovaSystem?
-    public let rightButtonIcon: NovaIcon.NovaSystem?
-    public let leftButtonTapActionHandler: (() -> Void)?
-    public let rightButtonTapActionHandler: (() -> Void)?
-    
+struct NovaWebViewNavigationViewModel {
+    let includingStatusBar: Bool
+    let title: String?
+    var titleFontSize: CGFloat = 16
+    let hideLeftButton: Bool
+    let leftButtonIcon: UIImage?
+    let rightButtonIcon: UIImage?
+    let leftButtonTapActionHandler: (() -> Void)?
+    let rightButtonTapActionHandler: (() -> Void)?
+    let navigationBarHeight: Double?
+
     /// - Parameters:
     ///   - includingStatusBar: If `true`, the icon and title will constraint to the bottom of navigation bar, if `false`, the icon and title will constraint to the middle Y of navigation bar
-    public init(
+    init(
         includingStatusBar: Bool = true,
         title: String?,
         titleFontSize: CGFloat? = nil,
         hideLeftButton: Bool = false,
-        leftButtonIcon: NovaIcon.NovaSystem? = nil,
+        leftButtonIcon: UIImage? = nil,
         leftButtonTapActionHandler: @escaping () -> Void,
-        rightButtonIcon: NovaIcon.NovaSystem? = nil,
-        rightButtonTapActionHandler: @escaping () -> Void
+        rightButtonIcon: UIImage? = nil,
+        rightButtonTapActionHandler: @escaping () -> Void,
+        navigationBarHeight: Double? = nil
     ) {
         self.includingStatusBar = includingStatusBar
         self.title = title
@@ -34,5 +37,6 @@ public struct NovaWebViewNavigationViewModel {
         self.leftButtonTapActionHandler = leftButtonTapActionHandler
         self.rightButtonIcon = rightButtonIcon
         self.rightButtonTapActionHandler = rightButtonTapActionHandler
+        self.navigationBarHeight = navigationBarHeight
     }
 }

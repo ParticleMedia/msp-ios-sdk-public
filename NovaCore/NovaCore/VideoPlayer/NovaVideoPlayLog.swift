@@ -1,6 +1,6 @@
 import Foundation
 
-public enum NovaVideoLogActionKey: String {
+enum NovaVideoLogActionKey: String {
     case videoPlay      = "log_videoPlay"
     case videoPlaying   = "log_videoPlaying"
     case videoEnd       = "log_video_End"
@@ -9,21 +9,21 @@ public enum NovaVideoLogActionKey: String {
     case videoLoadTime  = "log_video_load_time"
 }
 
-public struct NovaVideoLogActionDataModel {
-    public let docid: String
-    public let timeElapsed: Int
-    public let timeElapsedFloat: CGFloat
-    public let progress: CGFloat
-    public let duration: Int
-    public let videoLoadDuration: Int
-    public let source: String
-    public let isLoadSuccess: Bool
-    public let meta: String
-    public let loadingTime: Int
-    public let playStyle: NovaVideoPlayStyle
-    public let reason: String
+struct NovaVideoLogActionDataModel {
+    let docid: String
+    let timeElapsed: Int
+    let timeElapsedFloat: CGFloat
+    let progress: CGFloat
+    let duration: Int
+    let videoLoadDuration: Int
+    let source: String
+    let isLoadSuccess: Bool
+    let meta: String
+    let loadingTime: Int
+    let playStyle: NovaVideoPlayStyle
+    let reason: String
 
-    public init(docid: String,
+    init(docid: String,
                 timeElapsed: Int,
                 timeElapsedFloat: CGFloat,
                 progress: CGFloat,

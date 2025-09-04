@@ -6,5 +6,5 @@
 //
 
 import Foundation
-public protocol NovaJSBridgeHandling: AnyObject {
+protocol NovaJSBridgeHandling: AnyObject {
 }

@@ -2,7 +2,12 @@
 import AVFoundation
 import UIKit
 
-public enum NovaVideoEndKind: String {
+enum VideoResumeKind: String {
+    case resume
+    case startAutoPlayInFeed
+}
+
+enum NovaVideoEndKind: String {
     case none
     case pause
     case stopLoadingCache
@@ -14,7 +19,7 @@ public enum NovaVideoEndKind: String {
     case pull
     case pageInvisible
     
-    public func loggingString() -> String {
+    func loggingString() -> String {
         switch self {
         case .none, .pause, .stopLoadingCache, .stopAutoPlayInFeed, .prepareForReuse, .seek:
             return "other_pause"
@@ -30,7 +35,7 @@ public enum NovaVideoEndKind: String {
     }
 }
 
-public class NovaVideoPlayerController: NSObject {
+class NovaVideoPlayerController: NSObject {
 
     static let urlToStopLoading = "https://www.newsbreak.com"
 
@@ -80,13 +85,13 @@ public class NovaVideoPlayerController: NSObject {
     private let loadingIndicatorView: UIActivityIndicatorView = {
         let indicator = UIActivityIndicatorView()
         indicator.translatesAutoresizingMaskIntoConstraints = false
-        indicator.style = .whiteLarge
+        indicator.style = .large
         return indicator
     }()
 
     private let indicatorWidth = 37.0
 
-    public let progressBackgroundBar: NovaVideoProgressView = {
+    let progressBackgroundBar: NovaVideoProgressView = {
         let view = NovaVideoProgressView()
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
@@ -124,7 +129,7 @@ public class NovaVideoPlayerController: NSObject {
 
     private var callingStop = false
 
-    override public init() {
+    override init() {
         super.init()
         player.autoplay = false
         player.playerDelegate = self
@@ -173,31 +178,31 @@ public class NovaVideoPlayerController: NSObject {
         ])
     }
 
-    public func configDisplay(_ display: Bool) {
+    func configDisplay(_ display: Bool) {
         if player.view.isHidden == display {
             player.view.isHidden = !display
         }
     }
 
-    public func configPlayImage(image: UIImage?, size: CGSize) {
+    func configPlayImage(image: UIImage?, size: CGSize) {
         playImageView.image = image
         playImageWidth.constant = size.width
         playImageHeight.constant = size.height
     }
 
-    public func currentTimeInterval() -> TimeInterval {
+    func currentTimeInterval() -> TimeInterval {
         return player.currentTimeInterval
     }
 
-    public func isVideoPlaying() -> Bool {
+    func isVideoPlaying() -> Bool {
         return isPlaying
     }
 
-    public func toggleVideoPlay() {
+    func toggleVideoPlay() {
         self.adjustVideoPlayerStatus()
     }
 
-    public func videoPlayedTimeElapsed() -> TimeInterval {
+    func videoPlayedTimeElapsed() -> TimeInterval {
         return localTimeElapsed
     }
 
@@ -259,7 +264,7 @@ public class NovaVideoPlayerController: NSObject {
 }
 
 extension NovaVideoPlayerController: UIGestureRecognizerDelegate {
-    public func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
+    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
         if gestureRecognizer == self.progressPanGestrue {
             let pos = touch.location(in: progressBackgroundBar)
             return progressBackgroundBar.shouldReceivePanGesture(with: pos)
@@ -283,20 +288,20 @@ extension NovaVideoPlayerController: NovaVideoPlayerProtocol {
         player.muted = mute
     }
 
-    public func play() {
+    func play() {
         isloading = player.bufferingState != .ready
         //DebugLogging.info(.video, "VideoPlayer Inside playFromCurrentTime")
         videoEndKind = .none
         player.playFromCurrentTime()
     }
 
-    public func pause(endKind: NovaVideoEndKind) {
+    func pause(endKind: NovaVideoEndKind) {
         //DebugLogging.info(.video, "VideoPlayer Inside pause")
         videoEndKind = endKind
         player.pause()
     }
 
-    public func stop(endKind: NovaVideoEndKind) {
+    func stop(endKind: NovaVideoEndKind) {
         //DebugLogging.info(.video, "VideoPlayer Inside stop")
         callingStop = true
         videoEndKind = endKind
@@ -305,7 +310,7 @@ extension NovaVideoPlayerController: NovaVideoPlayerProtocol {
         localTimeElapsed = 0
     }
 
-    public func endPlay(endKind: NovaVideoEndKind) {
+    func endPlay(endKind: NovaVideoEndKind) {
         //DebugLogging.info(.video, "VideoPlayer Inside stop")
         videoEndKind = endKind
         if player.playbackState == .stopped { return }
@@ -324,16 +329,16 @@ extension NovaVideoPlayerController: NovaVideoPlayerProtocol {
         }
     }
 
-    public func isPlaying(urlString: String) -> Bool {
+    func isPlaying(urlString: String) -> Bool {
         return player.url?.absoluteString == urlString
     }
 
-    public func seek(to time: CMTime, completionHandler: ((Bool) -> Void)?) {
+    func seek(to time: CMTime, completionHandler: ((Bool) -> Void)?) {
         isLoadSuccess = false
         player.seek(to: time, completionHandler: completionHandler)
     }
 
-    public func play(with info: NovaPlayInfo,
+    func play(with info: NovaPlayInfo,
                      actionHandler: ActionHandling?,
                      delegate: NovaVideoPlayerDelegate) {
 
@@ -361,14 +366,14 @@ extension NovaVideoPlayerController: NovaVideoPlayerProtocol {
         self.playImageView.isHidden = true
     }
 
-    public func update(fillMode: AVLayerVideoGravity) {
+    func update(fillMode: AVLayerVideoGravity) {
         CATransaction.begin()
         CATransaction.setDisableActions(true)
         player.fillMode = fillMode
         CATransaction.commit()
     }
 
-    public func preload(with url: URL) {
+    func preload(with url: URL) {
         shouldSendVideoLog = false
         self.url = url
         player.url = url
@@ -378,19 +383,17 @@ extension NovaVideoPlayerController: NovaVideoPlayerProtocol {
         player.stop()
     }
 
-    public func getPlayerView() -> UIView {
+    func getPlayerView() -> UIView {
         return self.player.view
     }
 
     private func _playerStateDidChange(_ player: NovaPlayer) {
         let videoLoadDuration = Double(player.maximumDuration)
-        var actionKey = NovaVideoLogActionKey.videoFailed.rawValue
 
         switch player.playbackState {
         case .playing:
             isLoadSuccess = true
             consumptionTimeStart = Date()
-            actionKey = NovaVideoLogActionKey.videoPlay.rawValue
 
             if let videoStartToload = videoStartToload,
                self.shouldSendVideoLog {
@@ -405,7 +408,6 @@ extension NovaVideoPlayerController: NovaVideoPlayerProtocol {
             isPlaying = false
             videoPlayingTimer?.invalidate()
             playImageView.isHidden = self.isSeeking
-            actionKey = NovaVideoLogActionKey.videoPaused.rawValue
             break
 
         case .stopped:
@@ -413,13 +415,11 @@ extension NovaVideoPlayerController: NovaVideoPlayerProtocol {
             isPlaying = false
             videoPlayingTimer?.invalidate()
             self.setProgress(0)
-            actionKey = NovaVideoLogActionKey.videoEnd.rawValue
             if videoEndKind == .prepareForReuse { return }
             break
 
         case .failed:
             isLoadSuccess = false
-            actionKey = NovaVideoLogActionKey.videoFailed.rawValue
         }
 
         guard self.shouldSendVideoLog else { return }
@@ -433,37 +433,37 @@ extension NovaVideoPlayerController: NovaVideoPlayerProtocol {
 }
 
 extension NovaVideoPlayerController: NovaPlayerDelegate {
-    public func playerReady(_ player: NovaPlayer) {
+    func playerReady(_ player: NovaPlayer) {
         self.delegate?.playerReady(player)
     }
 
-    public func playerPlaybackStateDidChange(_ player: NovaPlayer) {
+    func playerPlaybackStateDidChange(_ player: NovaPlayer) {
         if player.playbackState != .playing {
             _playerStateDidChange(player)
         }
     }
 
-    public func playerBufferingStateDidChange(_ player: NovaPlayer) {
+    func playerBufferingStateDidChange(_ player: NovaPlayer) {
         if player.bufferingState == .ready {
             isLoadSuccess = true
         }
     }
 
-    public func playerBufferTimeDidChange(_ bufferTime: Double) {
+    func playerBufferTimeDidChange(_ bufferTime: Double) {
         self.delegate?.playerBufferTimeDidChange(bufferTime)
     }
 
-    public func player(_ player: NovaPlayer, didFailWithError error: Error?) {
+    func player(_ player: NovaPlayer, didFailWithError error: Error?) {
         self.delegate?.player(player, didFailWithError: error)
     }
 }
 
 extension NovaVideoPlayerController: NovaPlayerPlaybackDelegate {
-    public func playerDidPlayToEndTime(_ player: NovaPlayer) {
+    func playerDidPlayToEndTime(_ player: NovaPlayer) {
         self.delegate?.playerDidPlayToEndTime(player)
     }
     
-    public func playerCurrentTimeDidChange(_ player: NovaPlayer) {
+    func playerCurrentTimeDidChange(_ player: NovaPlayer) {
         if player.currentTimeInterval > 0 {
             self.configDisplay(true)
         }
@@ -486,22 +486,22 @@ extension NovaVideoPlayerController: NovaPlayerPlaybackDelegate {
         self.delegate?.playerCurrentTimeDidChange(player)
     }
 
-    public func playerPlaybackWillStartFromBeginning(_ player: NovaPlayer) {
+    func playerPlaybackWillStartFromBeginning(_ player: NovaPlayer) {
 
     }
 
-    public func playerPlaybackDidEnd(_ player: NovaPlayer) {
+    func playerPlaybackDidEnd(_ player: NovaPlayer) {
 
     }
 
-    public func playerPlaybackWillLoop(_ player: NovaPlayer) {
+    func playerPlaybackWillLoop(_ player: NovaPlayer) {
         localProgress = 1.0
         
         self.delegate?.playerPlaybackWillLoop(player)
 
     }
 
-    public func playerPlaybackDidLoop(_ player: NovaPlayer) {
+    func playerPlaybackDidLoop(_ player: NovaPlayer) {
        
         self.delegate?.playerPlaybackDidLoop(player)
     }

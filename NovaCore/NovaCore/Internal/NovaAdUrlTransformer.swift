@@ -1,8 +1,8 @@
 import AdSupport
 import AppTrackingTransparency
 
-public enum NovaAdUrlTransformer {
-    public static func replaceMacro(in urlString: String) -> String {
+enum NovaAdUrlTransformer {
+    static func replaceMacro(in urlString: String) -> String {
         var result = urlString
 
         let replacementByMacro = createReplacementByMacroDict()

@@ -120,7 +120,6 @@ public extension NovaNativeAdMediaView {
             
             isVideoDisplayed = true
             videoView.handleVideoOnScreen()
-            
         } else {
             
             isVideoDisplayed = false

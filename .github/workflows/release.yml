@@ -1,0 +1,116 @@
+name: Release - Automated Publishing
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      pod_name:
+        description: 'Pod name to release'
+        required: true
+        default: 'MSPCore'
+        type: choice
+        options:
+          - MSPCore
+          - NovaCore
+          - MSPSharedLibraries
+          - GoogleAdapter
+          - FacebookAdapter
+          - NovaAdapter
+          - PrebidAdapter
+          - UnityAdapter
+          - InmobiAdapter
+          - MintegralAdapter
+          - MobilefuseAdapter
+          - PubmaticAdapter
+      version:
+        description: 'Version to release'
+        required: true
+        type: string
+      skip_cocoapods:
+        description: 'Skip CocoaPods publishing'
+        required: false
+        default: false
+        type: boolean
+
+env:
+  DEVELOPER_DIR: /Applications/Xcode_15.2.app/Contents/Developer
+  RUBY_VERSION: '3.0'
+
+jobs:
+  release:
+    name: Release iOS SDK
+    runs-on: macos-14
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: ${{ env.RUBY_VERSION }}
+          bundler-cache: true
+          
+      - name: Install dependencies
+        run: |
+          bundle install
+          pod install
+          
+      - name: Setup code signing
+        uses: apple-actions/import-codesigning-certs@v1
+        with:
+          p12-file-base64: ${{ secrets.CODE_SIGNING_P12 }}
+          p12-password: ${{ secrets.CODE_SIGNING_PASSWORD }}
+          
+      - name: Build frameworks (production)
+        env:
+          SKIP_CODE_SIGN: 0
+        run: |
+          bundle exec fastlane build_all
+          
+      - name: Validate CocoaPods specs
+        run: |
+          bundle exec fastlane validate_podspecs
+          
+      - name: Create GitHub release
+        if: github.event_name == 'workflow_dispatch'
+        run: |
+          bundle exec fastlane create_github_release \
+            pod_name:"${{ github.event.inputs.pod_name }}" \
+            version:"${{ github.event.inputs.version }}"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          
+      - name: Publish to CocoaPods
+        if: github.event_name == 'workflow_dispatch' && github.event.inputs.skip_cocoapods != 'true'
+        run: |
+          bundle exec fastlane publish_to_cocoapods \
+            pod_name:"${{ github.event.inputs.pod_name }}" \
+            version:"${{ github.event.inputs.version }}"
+        env:
+          COCOAPODS_TRUNK_TOKEN: ${{ secrets.COCOAPODS_TRUNK_TOKEN }}
+          
+      - name: Upload release artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-xcframeworks
+          path: |
+            MSPSharedLibraries/MSPiOSCore.xcframework
+            NovaAdapter/NovaCore.xcframework
+          retention-days: 30
+          
+      - name: Notify success
+        if: success()
+        run: |
+          echo "🎉 Release completed successfully!"
+          echo "Pod: ${{ github.event.inputs.pod_name || 'N/A' }}"
+          echo "Version: ${{ github.event.inputs.version || 'N/A' }}"
+          
+      - name: Notify failure
+        if: failure()
+        run: |
+          echo "❌ Release failed!"
+          echo "Pod: ${{ github.event.inputs.pod_name || 'N/A' }}"
+          echo "Version: ${{ github.event.inputs.version || 'N/A' }}"
+
