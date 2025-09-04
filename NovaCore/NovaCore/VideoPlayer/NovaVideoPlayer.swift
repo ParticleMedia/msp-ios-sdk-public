@@ -2,12 +2,12 @@
 import AVFoundation
 import UIKit
 
-public class NovaVideoPlayer: NSObject {
+class NovaVideoPlayer: NSObject {
 
     static let urlToStopLoading = "https://www.newsbreak.com"
 
-    public weak var delegate: NovaVideoPlayerDelegate?
-    public let player = NovaPlayer()
+    weak var delegate: NovaVideoPlayerDelegate?
+    let player = NovaPlayer()
     private var url: URL?
     private var actionHandler: ActionHandling?
 
@@ -27,7 +27,7 @@ public class NovaVideoPlayer: NSObject {
 
     private let loadingIndicatorView: UIActivityIndicatorView = {
         let indicator = UIActivityIndicatorView()
-        indicator.style = .whiteLarge
+        indicator.style = .large
         indicator.translatesAutoresizingMaskIntoConstraints = false
         return indicator
     }()
@@ -63,7 +63,7 @@ public class NovaVideoPlayer: NSObject {
 
     private var callingStop = false
 
-    override public init() {
+    override init() {
         super.init()
         player.autoplay = false
         player.playerDelegate = self
@@ -93,45 +93,45 @@ public class NovaVideoPlayer: NSObject {
         ])
     }
 
-    public func configDisplay(_ display: Bool) {
+    func configDisplay(_ display: Bool) {
         if player.view.isHidden == display {
             player.view.isHidden = !display
         }
     }
 
-    public func currentTime() -> CMTime {
+    func currentTime() -> CMTime {
         return player.currentTime
     }
 
-    public func currentTimeInterval() -> TimeInterval {
+    func currentTimeInterval() -> TimeInterval {
         return player.currentTimeInterval
     }
     
-    public func maximumTimeDuration() -> TimeInterval {
+    func maximumTimeDuration() -> TimeInterval {
         return player.maximumDuration
     }
 
-    public func isVideoPlaying() -> Bool {
+    func isVideoPlaying() -> Bool {
         return isPlaying
     }
 
-    public func isVideoLoading() -> Bool {
+    func isVideoLoading() -> Bool {
         return isloading
     }
 
-    public func toggleVideoPlay() {
+    func toggleVideoPlay() {
         self.adjustVideoPlayerStatus()
     }
 
-    public func videoPlayedTimeElapsed() -> TimeInterval {
+    func videoPlayedTimeElapsed() -> TimeInterval {
         return localTimeElapsed
     }
 
-    public func getVideoStartTime() -> Date? {
+    func getVideoStartTime() -> Date? {
         return videoStart
     }
 
-    public func getCurrentProgress() -> Double {
+    func getCurrentProgress() -> Double {
         let duration = player.maximumDuration
         var progress: CGFloat = 0.0
         let currentTime = CMTimeGetSeconds(player.currentTime)
@@ -150,13 +150,13 @@ public class NovaVideoPlayer: NSObject {
         return progress
     }
     
-    public func getRealProgress() -> Double {
+    func getRealProgress() -> Double {
         let duration = player.maximumDuration
         let currentTime = CMTimeGetSeconds(player.currentTime)
         return Double(currentTime).truncatingRemainder(dividingBy: duration) / Double(duration)
     }
 
-    public func addUpLocalTimeElapsed(){
+    func addUpLocalTimeElapsed(){
         if let videoStart = videoStart {
             let time = Date().timeIntervalSince(videoStart)
             if time > 0.001 {
@@ -165,11 +165,11 @@ public class NovaVideoPlayer: NSObject {
         }
     }
 
-    public func getVideoEndKind() -> NovaVideoEndKind {
+    func getVideoEndKind() -> NovaVideoEndKind {
         return self.videoEndKind
     }
 
-    public func getLoadingTimeElapsed() -> Int {
+    func getLoadingTimeElapsed() -> Int {
         return localLoadingTimeElapsed
     }
 
@@ -194,6 +194,14 @@ public class NovaVideoPlayer: NSObject {
     private func setProgress(_ progress: Float) {
 
     }
+    
+    func isValid() -> Bool {
+        if let playerItem = self.player._playerItem,
+           playerItem.status != .failed {
+            return true
+        }
+        return false
+    }
 }
 
 extension NovaVideoPlayer {
@@ -207,28 +215,28 @@ extension NovaVideoPlayer {
 }
 
 extension NovaVideoPlayer: NovaVideoPlayerProtocol {
-    public func isPlayerMuted() -> Bool {
+    func isPlayerMuted() -> Bool {
         return player.muted
     }
 
-    public func setPlayerMute(_ mute: Bool) {
+    func setPlayerMute(_ mute: Bool) {
         player.muted = mute
     }
 
-    public func play() {
+    func play() {
         isloading = player.bufferingState != .ready
         //DebugLogging.info(.video, "VideoPlayer Inside playFromCurrentTime")
         videoEndKind = .none
         player.playFromCurrentTime()
     }
 
-    public func pause(endKind: NovaVideoEndKind) {
+    func pause(endKind: NovaVideoEndKind) {
         //DebugLogging.info(.video, "VideoPlayer Inside pause")
         videoEndKind = endKind
         player.pause()
     }
 
-    public func stop(endKind: NovaVideoEndKind) {
+    func stop(endKind: NovaVideoEndKind) {
         //DebugLogging.info(.video, "VideoPlayer Inside stop")
         callingStop = true
         videoEndKind = endKind
@@ -237,7 +245,7 @@ extension NovaVideoPlayer: NovaVideoPlayerProtocol {
         localTimeElapsed = 0
     }
 
-    public func endPlay(endKind: NovaVideoEndKind) {
+    func endPlay(endKind: NovaVideoEndKind) {
         //DebugLogging.info(.video, "VideoPlayer Inside stop")
         if player.playbackState == .stopped { return }
         callingStop = true
@@ -252,20 +260,24 @@ extension NovaVideoPlayer: NovaVideoPlayerProtocol {
         }
     }
 
-    public func isPlaying(urlString: String) -> Bool {
+    func isPlaying(urlString: String) -> Bool {
         return player.url?.absoluteString == urlString
     }
 
-    public func seek(to time: CMTime, completionHandler: ((Bool) -> Void)?) {
+    func seek(to time: CMTime, completionHandler: ((Bool) -> Void)?) {
         player.seek(to: time, completionHandler: completionHandler)
     }
 
-    public func play(with info: NovaPlayInfo,
+    func play(with info: NovaPlayInfo,
                      actionHandler: ActionHandling?,
                      delegate: NovaVideoPlayerDelegate) {
         //DebugLogging.info(.video, "VideoPlayer Inside play")
         self.actionHandler = actionHandler
-        if player.url?.absoluteString != info.url.absoluteString {
+        if let asset = info.asset {
+            url = info.url
+            player.asset = asset
+            localTimeElapsed = 0
+        } else if player.url?.absoluteString != info.url.absoluteString {
             url = info.url
             player.url = url
             localTimeElapsed = 0
@@ -286,11 +298,11 @@ extension NovaVideoPlayer: NovaVideoPlayerProtocol {
         configPlayerImageView(isHidden: true)
     }
 
-    public func update(fillMode: AVLayerVideoGravity) {
+    func update(fillMode: AVLayerVideoGravity) {
         player.fillMode = fillMode
     }
 
-    public func preload(with url: URL) {
+    func preload(with url: URL) {
         shouldSendVideoLog = false
         self.url = url
         player.url = url
@@ -299,7 +311,7 @@ extension NovaVideoPlayer: NovaVideoPlayerProtocol {
         player.stop()
     }
 
-    public func getPlayerView() -> UIView {
+    func getPlayerView() -> UIView {
         return self.player.view
     }
 
@@ -342,29 +354,29 @@ extension NovaVideoPlayer: NovaVideoPlayerProtocol {
 }
 
 extension NovaVideoPlayer: NovaPlayerDelegate {
-    public func playerReady(_ player: NovaPlayer) {
+    func playerReady(_ player: NovaPlayer) {
         self.delegate?.playerReady(player)
     }
 
-    public func playerPlaybackStateDidChange(_ player: NovaPlayer) {
+    func playerPlaybackStateDidChange(_ player: NovaPlayer) {
         _playerStateDidChange(player)
     }
 
-    public func playerBufferingStateDidChange(_ player: NovaPlayer) {
+    func playerBufferingStateDidChange(_ player: NovaPlayer) {
 
     }
 
-    public func playerBufferTimeDidChange(_ bufferTime: Double) {
+    func playerBufferTimeDidChange(_ bufferTime: Double) {
         self.delegate?.playerBufferTimeDidChange(bufferTime)
     }
 
-    public func player(_ player: NovaPlayer, didFailWithError error: Error?) {
+    func player(_ player: NovaPlayer, didFailWithError error: Error?) {
         self.delegate?.player(player, didFailWithError: error)
     }
 }
 
 extension NovaVideoPlayer: NovaPlayerPlaybackDelegate {
-    public func playerCurrentTimeDidChange(_ player: NovaPlayer) {
+    func playerCurrentTimeDidChange(_ player: NovaPlayer) {
         if player.currentTimeInterval > 0 {
             self.configDisplay(true)
         }
@@ -385,26 +397,26 @@ extension NovaVideoPlayer: NovaPlayerPlaybackDelegate {
         self.delegate?.playerCurrentTimeDidChange(player)
     }
 
-    public func playerPlaybackWillStartFromBeginning(_ player: NovaPlayer) {
+    func playerPlaybackWillStartFromBeginning(_ player: NovaPlayer) {
 
     }
 
-    public func playerPlaybackDidEnd(_ player: NovaPlayer) {
+    func playerPlaybackDidEnd(_ player: NovaPlayer) {
 
     }
 
-    public func playerPlaybackWillLoop(_ player: NovaPlayer) {
+    func playerPlaybackWillLoop(_ player: NovaPlayer) {
         localProgress = 1.0
         self.delegate?.playerPlaybackWillLoop(player)
 
     }
 
-    public func playerPlaybackDidLoop(_ player: NovaPlayer) {
+    func playerPlaybackDidLoop(_ player: NovaPlayer) {
         videoStart = Date()
         self.delegate?.playerPlaybackDidLoop(player)
     }
     
-    public func playerDidPlayToEndTime(_ player: NovaPlayer) {
+    func playerDidPlayToEndTime(_ player: NovaPlayer) {
         self.delegate?.playerDidPlayToEndTime(player)
     }
 }

@@ -346,9 +346,6 @@ public extension NovaNativeAdVideoView {
     }
 
     func handleVideoOffScreen() {
-        if !isOnScreen {
-            return
-        }
         isOnScreen = false
         
         if let playerView = self.videoPlayer?.getPlayerView(),

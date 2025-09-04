@@ -2,7 +2,7 @@ import Foundation
 import UIKit
 //import NBColorPalettes
 
-public class NovaVideoProgressView: UIView {
+class NovaVideoProgressView: UIView {
 
     private let progressTrackWidth: CGFloat = 8.0
 
@@ -33,7 +33,7 @@ public class NovaVideoProgressView: UIView {
     private var trackViewLeftConstraint: NSLayoutConstraint!
     private var containerHeight: NSLayoutConstraint!
 
-    public init() {
+    init() {
         super.init(frame: .zero)
 
         self.addSubview(containerView)
@@ -70,35 +70,35 @@ public class NovaVideoProgressView: UIView {
         progressTrackView.layer.cornerRadius = progressTrackWidth * 0.5
         progressTrackView.isHidden = true
 
-        self.configProgressColor(progressTintColor: NovaColorPalettes.White.nb_opacity6(),
-                                 trackTintColor: NovaColorPalettes.White.nb_opacity4())
+        self.configProgressColor(progressTintColor: NovaColorPalettes.White.withAlphaComponent(0.6),
+                                 trackTintColor: NovaColorPalettes.White.withAlphaComponent(0.2))
     }
 
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 
-    public func setTrackView(hidden: Bool) {
+    func setTrackView(hidden: Bool) {
         progressTrackView.isHidden = hidden
         if hidden {
             containerHeight.constant = 1
-            self.configProgressColor(progressTintColor: NovaColorPalettes.White.nb_opacity6(),
-                                     trackTintColor: NovaColorPalettes.White.nb_opacity5())
+            self.configProgressColor(progressTintColor: NovaColorPalettes.White.withAlphaComponent(0.6),
+                                     trackTintColor: NovaColorPalettes.White.withAlphaComponent(0.3))
         } else {
             containerHeight.constant = 2
             self.configProgressColor(progressTintColor: NovaColorPalettes.White,
-                                     trackTintColor: NovaColorPalettes.White.nb_opacity4())
+                                     trackTintColor: NovaColorPalettes.White.withAlphaComponent(0.2))
         }
     }
 
-    public func configProgressColor(progressTintColor: UIColor, trackTintColor: UIColor) {
+    func configProgressColor(progressTintColor: UIColor, trackTintColor: UIColor) {
         progressBar.progressTintColor = progressTintColor
         progressTrackView.backgroundColor = progressTintColor
         progressBar.trackTintColor = .clear
         unplayedProgressView.backgroundColor = trackTintColor
     }
 
-    public func updateProgress(_ progress: Float) {
+    func updateProgress(_ progress: Float) {
         guard progress >= 0 else {
             progressBar.setProgress(0, animated: false)
             trackViewLeftConstraint.constant = -progressTrackWidth
@@ -113,7 +113,7 @@ public class NovaVideoProgressView: UIView {
         progressBar.setProgress(progress, animated: false)
     }
 
-    public func shouldReceivePanGesture(with position: CGPoint) -> Bool {
+    func shouldReceivePanGesture(with position: CGPoint) -> Bool {
         let current = CGFloat(self.progressBar.progress) * self.frame.width
         return (current - position.x) <= 40
     }

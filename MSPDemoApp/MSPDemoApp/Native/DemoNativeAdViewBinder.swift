@@ -20,18 +20,18 @@ public class DemoNativeAdViewBinder: NativeAdViewBinder {
         titleLabel?.translatesAutoresizingMaskIntoConstraints = false
         titleLabel?.font = UIFont.systemFont(ofSize: 16, weight: .semibold)
         titleLabel?.textColor = UIColor(light: UIColor(hex: "000000")!.withAlphaComponent(0.9), dark: UIColor(hex: "FFFFFF")!.withAlphaComponent(0.85))
-        
+
         bodyLabel?.font = UIFont.systemFont(ofSize: 14, weight: .regular)
         bodyLabel?.textColor = UIColor(hex:"9B9B9B")
         bodyLabel?.numberOfLines = 2
         bodyLabel?.textAlignment = .natural
         bodyLabel?.translatesAutoresizingMaskIntoConstraints = false
-        
+
         advertiserLabel?.translatesAutoresizingMaskIntoConstraints = false
         advertiserLabel?.font = UIFont.systemFont(ofSize: 12, weight: .regular)
         advertiserLabel?.numberOfLines = 1
         advertiserLabel?.textColor = UIColor(light: UIColor(hex: "000000")!.withAlphaComponent(0.3), dark: UIColor(hex: "FFFFFF")!.withAlphaComponent(0.6))
-        
+
         callToActionButton?.translatesAutoresizingMaskIntoConstraints = false
         callToActionButton?.semanticContentAttribute = .forceRightToLeft
         callToActionButton?.contentHorizontalAlignment = .right
@@ -41,7 +41,7 @@ public class DemoNativeAdViewBinder: NativeAdViewBinder {
         callToActionButton?.setTitleColor(UIColor(hex: "3498FA"), for: .normal)
         callToActionButton?.setImage(UIImage(named: "article_ad_cta"), for: .normal)
         callToActionButton?.setContentCompressionResistancePriority(.required, for: .horizontal)
-        
+
         mediaView?.translatesAutoresizingMaskIntoConstraints = false
         
         

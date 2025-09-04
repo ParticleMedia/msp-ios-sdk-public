@@ -55,6 +55,7 @@
 		66EFCDAD2D1244E5005E0135 /* Bidder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66EFCDAC2D1244E5005E0135 /* Bidder.swift */; };
 		66EFCDAF2D124817005E0135 /* Auction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66EFCDAE2D124817005E0135 /* Auction.swift */; };
 		66F48C272CAB5B0A00902F4D /* InterstitialAd.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66F48C262CAB5B0A00902F4D /* InterstitialAd.swift */; };
+		BC31E09F9B61FFC1792C8E98 /* libPods-MSPiOSCore.a in Frameworks */ = {isa = PBXBuildFile; fileRef = BFE30F0B7CE2208BF0DD31AA /* libPods-MSPiOSCore.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -117,6 +118,7 @@
 		66EFCDAC2D1244E5005E0135 /* Bidder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Bidder.swift; sourceTree = "<group>"; };
 		66EFCDAE2D124817005E0135 /* Auction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Auction.swift; sourceTree = "<group>"; };
 		66F48C262CAB5B0A00902F4D /* InterstitialAd.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InterstitialAd.swift; sourceTree = "<group>"; };
+
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -138,6 +140,7 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+
 		664F33522C4EDD040014E1BA /* util */ = {
 			isa = PBXGroup;
 			children = (
@@ -153,6 +156,7 @@
 				6657533B2BF085C100338B1C /* MSPiOSCore */,
 				665753472BF085C100338B1C /* MSPiOSCoreTests */,
 				6657533A2BF085C100338B1C /* Products */,
+				97AA995111D2180B72C3D72E /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -247,6 +251,13 @@
 				66EFCDAE2D124817005E0135 /* Auction.swift */,
 			);
 			path = Auction;
+			sourceTree = "<group>";
+		};
+		97AA995111D2180B72C3D72E /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -352,6 +363,8 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+
 
 /* Begin PBXSourcesBuildPhase section */
 		665753352BF085C100338B1C /* Sources */ = {

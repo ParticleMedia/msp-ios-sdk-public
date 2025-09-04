@@ -1,12 +1,12 @@
 import Foundation
 import UIKit
 
-public protocol NovaWebViewBottomViewDelegate: AnyObject {
+protocol NovaWebViewBottomViewDelegate: AnyObject {
     func bottomViewDidTapBackButton()
     func bottomViewDidTapForwardButton()
 }
 
-public class NovaWebViewBottomView: UIView {
+class NovaWebViewBottomView: UIView {
     // MARK: - Constants
 
     private enum Constants {
@@ -16,23 +16,25 @@ public class NovaWebViewBottomView: UIView {
 
     // MARK: - Properties
 
-    public weak var delegate: NovaWebViewBottomViewDelegate?
+    weak var delegate: NovaWebViewBottomViewDelegate?
 
     private let backButton: UIButton = {
-        let button = UIButton()
+        var configuration = UIButton.Configuration.plain()
+        configuration.contentInsets = NSDirectionalEdgeInsets(top: 10, leading: 10, bottom: 10, trailing: 10)
+        let button = UIButton(configuration: configuration)
         button.setImage(.Nova.chevronLeftLine?.withTintColor(Constants.buttonDisableColor), for: .disabled)
         button.setImage(.Nova.chevronLeftLine?.withTintColor(Constants.buttonEnableColor), for: .normal)
-        button.imageEdgeInsets = UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
         button.isEnabled = false
         button.translatesAutoresizingMaskIntoConstraints = false
         return button
     }()
 
     private let forwardButton: UIButton = {
-        let button = UIButton()
+        var configuration = UIButton.Configuration.plain()
+        configuration.contentInsets = NSDirectionalEdgeInsets(top: 10, leading: 10, bottom: 10, trailing: 10)
+        let button = UIButton(configuration: configuration)
         button.setImage(.Nova.chevronRightLine?.withTintColor(Constants.buttonDisableColor), for: .disabled)
         button.setImage(.Nova.chevronRightLine?.withTintColor(Constants.buttonEnableColor), for: .normal)
-        button.imageEdgeInsets = UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
         button.isEnabled = false
         button.translatesAutoresizingMaskIntoConstraints = false
         return button
@@ -47,7 +49,7 @@ public class NovaWebViewBottomView: UIView {
         return view
     }()
 
-    public override init(frame: CGRect) {
+    override init(frame: CGRect) {
         super.init(frame: frame)
 
         backButton.addTarget(self, action: #selector(didTapBackButton), for: .touchUpInside)
@@ -79,9 +81,9 @@ public class NovaWebViewBottomView: UIView {
     }
 }
 
-// MARK: - Public functions
+// MARK: - functions
 
-public extension NovaWebViewBottomView {
+extension NovaWebViewBottomView {
     func configButton(canGoBack: Bool? = nil, canGoForward: Bool? = nil) {
         if let canGoBack {
             backButton.isEnabled = canGoBack

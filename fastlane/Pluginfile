@@ -1,0 +1,30 @@
+# Fastlane Plugins
+# Uncomment the plugins you want to use
+
+# Automatically manage code signing
+# fastlane_require 'fastlane-plugin-code_signing'
+
+# Automatically manage provisioning profiles
+# fastlane_require 'fastlane-plugin-provisioning'
+
+# Automatically manage certificates
+# fastlane_require 'fastlane-plugin-certificates'
+
+# CocoaPods integration
+# fastlane_require 'fastlane-plugin-cocoapods'
+
+# Xcode project manipulation
+# fastlane_require 'fastlane-plugin-xcodegen'
+
+# Version management
+# fastlane_require 'fastlane-plugin-versioning'
+
+# Slack notifications
+# fastlane_require 'fastlane-plugin-slack'
+
+# Jira integration
+# fastlane_require 'fastlane-plugin-jira'
+
+# For more information about plugins, see:
+# https://docs.fastlane.tools/plugins/using-plugins/
+

@@ -8,9 +8,9 @@
 import Foundation
 import UIKit
 
-public class NovaUnifiedWebViewBuilder {
+class NovaUnifiedWebViewBuilder {
     /*
-    public static func buildWebViewController(urlString: String,
+    static func buildWebViewController(urlString: String,
                                               jsBridgeHandlers: [JSBridgeHandling],
                                               headers: [String: String] = [:],
                                               displayNavigationHeader: Bool = true,
@@ -56,7 +56,7 @@ public class NovaUnifiedWebViewBuilder {
     }
      */
 
-    public static func buildWebViewHost(enableNBUserAgent: Bool,
+    static func buildWebViewHost(enableNBUserAgent: Bool,
                                         enableJSBridge: Bool = true,
                                         jsBridgeHandlers: [NovaJSBridgeHandling] = [],
                                         blockedURLPrefixes: [String] = [],

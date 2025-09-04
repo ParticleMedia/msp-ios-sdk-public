@@ -1,6 +1,6 @@
 import AVFoundation
 
-public enum NovaVideoPlayStyle: String {
+enum NovaVideoPlayStyle: String {
     case none = "none"
     case feed = "feed"
     case immersiveFeed = "immersive_feed"
@@ -8,8 +8,9 @@ public enum NovaVideoPlayStyle: String {
     case adInFeed = "ad_in_feed"
 }
 
-public struct NovaPlayInfo {
+struct NovaPlayInfo {
     let url: URL
+    let asset: AVAsset?
     let playLoops: Bool
     let videoDataModel: Any?
     let playStyle: NovaVideoPlayStyle
@@ -17,7 +18,8 @@ public struct NovaPlayInfo {
     let disableGesture: Bool
     let enableLogging: Bool
 
-    public init(url: URL,
+    init(url: URL,
+                asset: AVAsset?,
                 playLoops: Bool,
                 videoDataModel: Any?,
                 playStyle: NovaVideoPlayStyle,
@@ -25,6 +27,7 @@ public struct NovaPlayInfo {
                 disableGesture: Bool,
                 enableLogging: Bool = true) {
         self.url = url
+        self.asset = asset
         self.playLoops = playLoops
         self.videoDataModel = videoDataModel
         self.playStyle = playStyle
@@ -34,7 +37,7 @@ public struct NovaPlayInfo {
     }
 }
 
-public protocol NovaVideoPlayerDelegate: NSObjectProtocol {
+protocol NovaVideoPlayerDelegate: NSObjectProtocol {
     func playerReady(_ player: NovaPlayer)
     func playerPlaybackStateDidChange(_ player: NovaPlayer)
     func playerBufferTimeDidChange(_ bufferTime: Double)

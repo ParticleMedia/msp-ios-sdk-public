@@ -8,7 +8,7 @@
 import Foundation
 import WebKit
 
-public class NovaUnifiedWebViewHost: NSObject {
+class NovaUnifiedWebViewHost: NSObject {
     private let config: NovaUnifiedWebViewConfig
     private let jsBridgeHandlerMaster: NovaJSBridgeHandlerMaster?
     private var isGoingBackForward = false
@@ -28,10 +28,10 @@ public class NovaUnifiedWebViewHost: NSObject {
         "sms",
         "newsbreak",
         "com.amazon.mobile.shopping.web",
-        "itms-appss",
+        "itms-apps",
     ]
 
-    public init(config: NovaUnifiedWebViewConfig,
+    init(config: NovaUnifiedWebViewConfig,
                 jsBridgeHandlerMaster: NovaJSBridgeHandlerMaster?,
                 navigationDelegate: NovaUnifiedWebViewNavigationDelegate?) {
         self.config = config
@@ -74,20 +74,20 @@ public class NovaUnifiedWebViewHost: NSObject {
         wkWebView?.uiDelegate = self
     }
 
-    //public func addJSBridgeHandler(jsBridgeHandlers: [JSBridgeHandling]) {
+    //func addJSBridgeHandler(jsBridgeHandlers: [JSBridgeHandling]) {
     //    self.jsBridgeHandlerMaster?.addActionHandlers(jsBridgeHandlers: jsBridgeHandlers)
     //}
 
-    public func injectJavaScript(_ js: String, injectionTime: WKUserScriptInjectionTime) {
+    func injectJavaScript(_ js: String, injectionTime: WKUserScriptInjectionTime) {
         let wkUserScript = WKUserScript(source: js, injectionTime: injectionTime, forMainFrameOnly: true)
         self.wkWebView?.configuration.userContentController.addUserScript(wkUserScript)
     }
 
-    public func webView() -> WKWebView {
+    func webView() -> WKWebView {
         return wkWebView!
     }
 
-    public func load(_ url: URL, referer: String? = nil) {
+    func load(_ url: URL, referer: String? = nil) {
         var request = URLRequest(url: url)
         if let referer = referer {
             request.setValue(referer, forHTTPHeaderField: "Referer")
@@ -99,7 +99,7 @@ public class NovaUnifiedWebViewHost: NSObject {
         self.wkWebView?.load(request)
     }
     
-    public var scrollDepth: Double? {
+    var scrollDepth: Double? {
         guard let scrollView = wkWebView?.scrollView else {
             return nil
         }
@@ -107,7 +107,7 @@ public class NovaUnifiedWebViewHost: NSObject {
         return Double(scrollView.contentOffset.y) / Double(scrollView.contentSize.height)
     }
     
-    public var pageIndex: Int? {
+    var pageIndex: Int? {
         wkWebView?.backForwardList.backList.count
     }
 
@@ -125,17 +125,6 @@ public class NovaUnifiedWebViewHost: NSObject {
             navigationDelegate?.webViewInitialLoadDidRedirect(webView)
         }
         isGoingBackForward = navigationAction.navigationType == .backForward
-        
-        if navigationAction.navigationType == .linkActivated {
-            let domain: String
-            if #available(iOS 16.0, *) {
-                domain = url.host()?.lowercased() ?? "nil"
-            } else {
-                domain = url.host?.lowercased() ?? "nil"
-            }
-            let isVideoSite = domain.contains("tiktok") || domain.contains("youtube")
-            //MetricService.shared.logAmpliEvent(ExternalLinkClick.build(isVideoSite: isVideoSite, linkUrl: domain))
-        }
 
         if let scheme = url.scheme,
            nativeSchemes.contains(scheme),
@@ -180,7 +169,7 @@ public class NovaUnifiedWebViewHost: NSObject {
         return .allow
     }
     
-    public func SafeAs<T, U>(_ object: T?, _ objectType: U.Type) -> U? {
+    func SafeAs<T, U>(_ object: T?, _ objectType: U.Type) -> U? {
         if let object = object {
             if let temp = object as? U {
                 return temp
@@ -196,44 +185,23 @@ public class NovaUnifiedWebViewHost: NSObject {
 }
 
 extension NovaUnifiedWebViewHost: WKScriptMessageHandler {
-
-    public func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
-        assert(message.name == Constants.jsMessageName, "unexpected message.name=\(message.name)")
-
-        guard config.enableJSBridge else { return }
-        guard let jsonStr = SafeAs(message.body, String.self) else { return }
-
-        //DebugLogging.info(.jsBridge, "jsBridge call with jsonStr=\(jsonStr), URL=\(message.frameInfo.request)")
-
-        guard let data = jsonStr.data(using: .utf8) else { return }
-        guard let dict = try? JSONSerialization.jsonObject(with: data, options: []) as? [String: Any] else { return }
-        guard let jsActionKey = SafeAs(dict[Constants.jsBridgeAction], String.self) else { return }
-        let callbackName = SafeAs(dict[Constants.jsBridgeCallback], String.self)
-
-        /*
-        guard let jsActionModel = self.jsBridgeHandlerMaster?.buildActionModel(jsActionKey: jsActionKey,
-                                                                               callbackName: callbackName,
-                                                                               dict: dict) else {
-            return
-        }
-
-        self.jsBridgeHandlerMaster?.performAction(actionModel: jsActionModel, callbackDelegate: self)
-         */
-    }
-
+    func userContentController(
+        _ userContentController: WKUserContentController,
+        didReceive message: WKScriptMessage
+    ) {}
 }
 
 extension NovaUnifiedWebViewHost: WKNavigationDelegate {
 
-    public func webView(_ webView: WKWebView, didCommit navigation: WKNavigation!) {
+    func webView(_ webView: WKWebView, didCommit navigation: WKNavigation!) {
         self.navigationDelegate?.webView(webView, didCommit: navigation)
     }
 
-    public func webView(_ webView: WKWebView, didStartProvisionalNavigation navigation: WKNavigation!) {
+    func webView(_ webView: WKWebView, didStartProvisionalNavigation navigation: WKNavigation!) {
         self.navigationDelegate?.webView(webView, didStartProvisionalNavigation: navigation)
     }
 
-    public func webView(_ webView: WKWebView,
+    func webView(_ webView: WKWebView,
                         decidePolicyFor navigationAction: WKNavigationAction,
                         preferences: WKWebpagePreferences,
                         decisionHandler: @escaping (WKNavigationActionPolicy, WKWebpagePreferences) -> Void) {
@@ -245,18 +213,18 @@ extension NovaUnifiedWebViewHost: WKNavigationDelegate {
         }
     }
 
-    public func webView(_ webView: WKWebView,
+    func webView(_ webView: WKWebView,
                         decidePolicyFor navigationAction: WKNavigationAction,
                         decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
         let actionPolicy = self.webView(webView, policyFor: navigationAction)
         decisionHandler(actionPolicy)
     }
 
-    public func webView(_ webView: WKWebView, decidePolicyFor navigationResponse: WKNavigationResponse, decisionHandler: @escaping (WKNavigationResponsePolicy) -> Void) {
+    func webView(_ webView: WKWebView, decidePolicyFor navigationResponse: WKNavigationResponse, decisionHandler: @escaping (WKNavigationResponsePolicy) -> Void) {
         self.navigationDelegate?.webView(webView, decidePolicyFor: navigationResponse, decisionHandler: decisionHandler)
     }
 
-    public func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
+    func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
         self.navigationDelegate?.webView(webView, didFinish: navigation)
         let currentIsInitialLoad = webView.canGoForward && !webView.canGoBack
         if isGoingBackForward && currentIsInitialLoad {
@@ -265,18 +233,18 @@ extension NovaUnifiedWebViewHost: WKNavigationDelegate {
         }
     }
 
-    public func webView(_ webView: WKWebView, didFailProvisionalNavigation navigation: WKNavigation!, withError error: Error) {
+    func webView(_ webView: WKWebView, didFailProvisionalNavigation navigation: WKNavigation!, withError error: Error) {
         self.navigationDelegate?.webView(webView, didFailProvisionalNavigation: navigation, withError: error)
     }
 
-    public func webViewWebContentProcessDidTerminate(_ webView: WKWebView) {
+    func webViewWebContentProcessDidTerminate(_ webView: WKWebView) {
         self.navigationDelegate?.webViewWebContentProcessDidTerminate(webView)
     }
 
 }
 
 extension NovaUnifiedWebViewHost: WKUIDelegate {
-    public func webView(_ webView: WKWebView, createWebViewWith configuration: WKWebViewConfiguration, for navigationAction: WKNavigationAction, windowFeatures: WKWindowFeatures) -> WKWebView? {
+    func webView(_ webView: WKWebView, createWebViewWith configuration: WKWebViewConfiguration, for navigationAction: WKNavigationAction, windowFeatures: WKWindowFeatures) -> WKWebView? {
         guard let url = navigationAction.request.url else {
             return nil
         }
@@ -293,7 +261,7 @@ extension NovaUnifiedWebViewHost: WKUIDelegate {
 
 /*
  extension UnifiedWebViewHost: JSBridgeCallbackDelegate {
- public func jsCallback(callbackName: String, parameters: [String: Any]) {
+ func jsCallback(callbackName: String, parameters: [String: Any]) {
  var parameterStr: String = ""
  if let data = try? JSONSerialization.data(withJSONObject: parameters, options: []) {
  parameterStr = String(data: data, encoding: .utf8) ?? ""

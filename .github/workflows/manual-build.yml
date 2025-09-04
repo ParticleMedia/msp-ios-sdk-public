@@ -1,0 +1,99 @@
+name: Manual Build - On-Demand Framework Building
+
+on:
+  workflow_dispatch:
+    inputs:
+      framework:
+        description: 'Framework to build'
+        required: true
+        default: 'all'
+        type: choice
+        options:
+          - all
+          - MSPiOSCore
+          - NovaCore
+      code_signing:
+        description: 'Enable code signing'
+        required: false
+        default: false
+        type: boolean
+      upload_artifacts:
+        description: 'Upload build artifacts'
+        required: false
+        default: true
+        type: boolean
+
+env:
+  DEVELOPER_DIR: /Applications/Xcode_15.2.app/Contents/Developer
+  RUBY_VERSION: '3.0'
+
+jobs:
+  build:
+    name: Build iOS Frameworks
+    runs-on: macos-14
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: ${{ env.RUBY_VERSION }}
+          bundler-cache: true
+          
+      - name: Install dependencies
+        run: |
+          bundle install
+          pod install
+          
+      - name: Setup code signing (if enabled)
+        if: ${{ inputs.code_signing }}
+        uses: apple-actions/import-codesigning-certs@v1
+        with:
+          p12-file-base64: ${{ secrets.CODE_SIGNING_P12 }}
+          p12-password: ${{ secrets.CODE_SIGNING_PASSWORD }}
+          
+      - name: Build frameworks
+        env:
+          SKIP_CODE_SIGN: ${{ inputs.code_signing == false && '1' || '0' }}
+        run: |
+          if [ "${{ inputs.framework }}" = "all" ]; then
+            bundle exec fastlane build_all
+          elif [ "${{ inputs.framework }}" = "MSPiOSCore" ]; then
+            bundle exec fastlane build_msp_ios_core
+          elif [ "${{ inputs.framework }}" = "NovaCore" ]; then
+            bundle exec fastlane build_nova_core
+          fi
+          
+      - name: Validate build output
+        run: |
+          bundle exec fastlane status
+          
+      - name: Upload build artifacts
+        if: ${{ inputs.upload_artifacts }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: manual-build-${{ inputs.framework }}-${{ github.run_id }}
+          path: |
+            MSPSharedLibraries/MSPiOSCore.xcframework
+            NovaAdapter/NovaCore.xcframework
+          retention-days: 30
+          
+      - name: Build summary
+        run: |
+          echo "🏗️ Build completed!"
+          echo "Framework: ${{ inputs.framework }}"
+          echo "Code signing: ${{ inputs.code_signing }}"
+          echo "Artifacts uploaded: ${{ inputs.upload_artifacts }}"
+          
+          if [ -d "MSPSharedLibraries/MSPiOSCore.xcframework" ]; then
+            MSP_SIZE=$(du -sh "MSPSharedLibraries/MSPiOSCore.xcframework" 2>/dev/null | cut -f1)
+            echo "📦 MSPiOSCore.xcframework size: $MSP_SIZE"
+          fi
+          
+          if [ -d "NovaAdapter/NovaCore.xcframework" ]; then
+            NOVA_SIZE=$(du -sh "NovaAdapter/NovaCore.xcframework" 2>/dev/null | cut -f1)
+            echo "📦 NovaCore.xcframework size: $NOVA_SIZE"
+          fi
+

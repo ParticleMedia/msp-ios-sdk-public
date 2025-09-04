@@ -36,10 +36,11 @@ extension NovaNativeAdView {
     }
 
     func stopTimerIfNeeded() {
-        guard let timer = self.timer else { return }
+        guard let timer else { return }
 
         timer.invalidate()
         self.timer = nil
+        nativeAd?.mediaContent.videoController?.stop()
     }
 }
 
@@ -47,49 +48,28 @@ extension NovaNativeAdView {
 
 private extension NovaNativeAdView {
     func detectImpression() {
+        guard nativeAd?.hasImpressionLogged != true else { return }
         guard let window = self.window else { return }
 
         let frameInWindow = convert(frame, to: window.screen.fixedCoordinateSpace)
         let intersection = frameInWindow.intersection(window.frame)
 
         if Constants.visibleAreaThreshold.isLessThanOrEqualTo(intersection.height) {
-            if let nativeAd = self.nativeAd,
-               !nativeAd.hasImpressionLogged {
-                logAdImpression()
-            }
+            logAdImpression()
         }
     }
-    
+
+    // TODO: lsy, 这个可能导致开始和暂停的时机和 newsbreak 上略有不同，我记得 nb 上更加严格
     func detectVideoOnScreen() {
-        if mediaView.videoView.nova_isPartiallyVisibleOnScreen, isViewOnTop(view: mediaView.videoView) {
-            mediaView.updateVideoDisplayState(fullyDisplayed: true)
+        if mediaView.novaIsPartiallyVisibleOnScreen, mediaView.onTop {
+            nativeAd?.mediaContent.videoController?.play()
         } else {
-            
-            mediaView.updateVideoDisplayState(fullyDisplayed: false)
+            nativeAd?.mediaContent.videoController?.pause()
         }
     }
     
-    func isViewOnTop(view: UIView?) -> Bool {
-        
-        guard let view = view,
-              let window = view.window else {
-            return false
-        }
-
-        // Convert the center point of the view to the window's coordinate space
-        let centerPointInWindow = view.convert(CGPoint(x: view.bounds.midX, y: view.bounds.midY), to: window)
-        
-        // Check which view is at the center point
-        if let hitView = window.hitTest(centerPointInWindow, with: nil) {
-            // Check if the hit view is the view itself or a subview of it
-            return hitView.isDescendant(of: view)
-        }
-        
-        return false
-    }
-
     func logAdImpression() {
-        guard let nativeAd = self.nativeAd else {
+        guard let nativeAd else {
             assertionFailure("Native ad view should have an associated ad")
             return
         }

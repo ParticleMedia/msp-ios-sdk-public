@@ -32,7 +32,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                                     InitializationParametersCustomKeys.PUBMATIC_PROFILE_IDS: [1165],
                                     InitializationParametersCustomKeys.PUBMATIC_STORE_URL: "https://itunes.apple.com/us/app/pubmatic-sdk-app/id1175273098?mt=8"]
         //Note: for pubmatic ad you may need to config your NSAllowsArbitraryLoads key in App's Info.list to get a full experience, see details in https://help.pubmatic.com/openwrap/docs/home-get-started-with-ios-openwrap-sdk-as-primary-ad-sdk#app-transport-security-ats
-        var adNetworkManagers = [NovaManager(), GoogleManager(), FacebookManager(), UnityManager(), PubmaticManager(), MintegralManager(), MobilefuseManager(), InmobiManager()]
+        var adNetworkManagers = [GoogleManager(), FacebookManager(), UnityManager(), PubmaticManager(), MintegralManager(), MobilefuseManager(), InmobiManager(), NovaManager()]
         //MSP.shared.setNovaManager(novaManager: NovaManager())
         
         //MSP.shared.setGoogleManager(googleManager: GoogleManager())

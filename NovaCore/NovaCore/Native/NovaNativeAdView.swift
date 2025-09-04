@@ -8,50 +8,45 @@ open class NovaNativeAdView: UIView {
     public var advertiserLabel: UILabel?
     public var callToActionButton: UIButton?
     public var icon: UIImageView?
-    //public let mediaView: NovaNativeAdMediaView = {
-    //    let view = NovaNativeAdMediaView()
-    //    view.accessibilityIdentifier = "media"
-    //    view.translatesAutoresizingMaskIntoConstraints = false
-    //    return view
-    //}()
-    public let mediaView: NovaNativeAdMediaView
-    
-    public var novaNativeAdVideoDelegate: NovaNativeAdVideoDelegate?
-    
-    @objc public var tappableViews: [UIView]? {
+    public let mediaView: NovaAdMediaView
+
+    public var novaAdMediaViewDelegate: NovaAdMediaViewDelegate?
+
+    // TODO: lsy, 外界最后是直接使用的这个？not good enough
+    public var tappableViews: [UIView]? {
         didSet {
             tappableViews?.forEach {
                 $0.isUserInteractionEnabled = true
                 let tapGesture = UITapGestureRecognizer(target: self, action: #selector(didTapAdView(sender:)))
                 tapGesture.accessibilityLabel = $0.accessibilityIdentifier
                 $0.addGestureRecognizer(tapGesture)
+                // TODO: - GPY now container has no adClickArea, maybe add in the future
+//                assert($0.adClickArea != nil)
             }
         }
     }
 
-    private let actionHandler: ActionHandling
+    private var actionHelper: NovaActionHelper<NovaActionState.Init>?
 
     private(set) var nativeAd: NovaNativeAdItem?
 
     // Used to trigger impression check repeatedly until logged.
     var timer: Timer?
+    
+    // Track start time for click events
+    private var startTime: CFTimeInterval = 0
 
-    public private(set) var iABMetricReporter: IABMetricReporter?
+    private(set) var iABMetricReporter: IABMetricReporter?
 
     // MARK: -
 
-    public init(actionHandler: ActionHandling, mediaView: NovaNativeAdMediaView? = nil) {
-        self.actionHandler = actionHandler
+    public init(mediaView: NovaAdMediaView? = nil) {
         self.mediaView = mediaView ?? {
-            let view = NovaNativeAdMediaView()
+            let view = NovaAdMediaView()
             view.adClickArea = .media
-            view.translatesAutoresizingMaskIntoConstraints = false
             return view
         }()
         super.init(frame: .zero)
-        if let popUpView = mediaView?.videoView.popOverCtaController?.tappableView {
-            self.seTappableView(view: popUpView)
-        }
     }
 
     @available(*, unavailable)
@@ -64,46 +59,64 @@ open class NovaNativeAdView: UIView {
         //iABMetricReporter?.stopSession()
     }
     
-    open func bindView(nativeAd: NovaNativeAdItem) {
+    func bindView(nativeAd: NovaNativeAdItem) {
         titleLabel = UILabel()
         bodyLabel = UILabel()
         advertiserLabel = UILabel()
         callToActionButton = UIButton(type: .custom)
     }
     
-    open func setUpView(nativeAd: NovaNativeAdItem) {
-        
-        
+    public func setUpView(nativeAd: NovaNativeAdItem) {
         titleLabel?.text = nativeAd.headline
         bodyLabel?.text = nativeAd.body
         advertiserLabel?.text = nativeAd.advertiser
         callToActionButton?.setTitle(nativeAd.callToAction, for: .normal)
-        
-        let mediaVM = NovaNativeAdMediaViewModel(encryptedAdToken: nativeAd.encryptedAdToken,
-                                                 imageUrlStr: nativeAd.imageUrlStr,
-                                                 videoInfo: nativeAd.videoInfo)
-        mediaView.config(with: mediaVM, iabReporter: self.iABMetricReporter) {
-            nativeAd.delegate?.nativeAdDidFinishRender(nativeAd)
-        }
+
+        // Create action context for the media view
+        let actionContext = NovaAdMediaActionContext(
+            adActionTracingInfo: nativeAd.actionTracingInfo,
+            adActionExtraInfo: nativeAd.actionExtraInfo,
+            viewController: nil
+        )
+        mediaView
+            .config(
+                with: nativeAd.mediaContent,
+                actionContext: actionContext,
+                iabReporter: self.iABMetricReporter
+            ) {
+                nativeAd.delegate?.nativeAdDidFinishRender(nativeAd)
+            }
         register(nativeAd)
     }
-    
+
+    // TODO: lsy, 这个方法和上面那个有什么区别
     public func prepareViewForInteraction(nativeAd: NovaNativeAdItem) {
-        let mediaVM = NovaNativeAdMediaViewModel(encryptedAdToken: nativeAd.encryptedAdToken,
-                                                 imageUrlStr: nativeAd.imageUrlStr,
-                                                 videoInfo: nativeAd.videoInfo)
-        mediaView.config(with: mediaVM, iabReporter: self.iABMetricReporter) {
-            nativeAd.delegate?.nativeAdDidFinishRender(nativeAd)
-        }
+        // Create action context for the media view
+        let actionContext = NovaAdMediaActionContext(
+            adActionTracingInfo: nativeAd.actionTracingInfo,
+            adActionExtraInfo: nativeAd.actionExtraInfo,
+            viewController: nil
+        )
+        mediaView
+            .config(
+                with: nativeAd.mediaContent,
+                actionContext: actionContext,
+                iabReporter: self.iABMetricReporter
+            ) {
+                nativeAd.delegate?.nativeAdDidFinishRender(nativeAd)
+            }
         register(nativeAd)
     }
 }
 
 // MARK: - Public methods
 
-public extension NovaNativeAdView {
-    @objc func register(_ nativeAd: NovaNativeAdItem) {
+extension NovaNativeAdView {
+    func register(_ nativeAd: NovaNativeAdItem) {
         self.nativeAd = nativeAd
+        
+        // Initialize start time for click tracking
+        startTime = CACurrentMediaTime()
         
         titleLabel?.adClickArea = .headline
         bodyLabel?.adClickArea = .body
@@ -111,6 +124,16 @@ public extension NovaNativeAdView {
         callToActionButton?.adClickArea = .cta
         mediaView.adClickArea = .media
         icon?.adClickArea = .icon
+        
+        actionHelper = NovaActionHelper.build(
+            with: .adInView(
+                model: AdActionModel(
+                    tracingInfo: nativeAd.actionTracingInfo,
+                    extraInfo: nativeAd.actionExtraInfo,
+                    ctrType: nativeAd.adCtrType
+                    )
+                )
+        )
 
         // In case previous OMIDSDK's session is left started without a stop.
         iABMetricReporter?.stopSession()
@@ -125,29 +148,22 @@ public extension NovaNativeAdView {
         stopTimerIfNeeded()
         iABMetricReporter?.stopSession()
     }
-    
-    public func seTappableView(view: UIView) {
-        view.isUserInteractionEnabled = true
-        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(didTapAdView(sender:)))
-        tapGesture.accessibilityLabel = view.accessibilityIdentifier
-        view.addGestureRecognizer(tapGesture)
-    }
 }
 
 // MARK: - Private methods
 
 private extension NovaNativeAdView {
     static func buildIABMetricReporterFor(nativeAd: NovaNativeAdItem, adView: UIView) -> IABMetricReporter? {
-        guard let ctrUrlStr = nativeAd.ctrUrl?.absoluteString,
-              !nativeAd.thirdPartyViewTrackingUrls.isEmpty
-        else { return nil }
+        let ctrUrlStr = nativeAd.adCtrType.url.absoluteString
+        
+        guard !nativeAd.thirdPartyViewTrackingUrls.isEmpty else { return nil }
 
         let reporter = IABMetricReporter()
         reporter.startSession(
             adView: adView,
             contentUrl: ctrUrlStr,
             thirdPartyViewTrackingUrls: nativeAd.thirdPartyViewTrackingUrls,
-            hasVideo: nativeAd.videoInfo != nil)
+            hasVideo: nativeAd._videoInfo != nil)
         return reporter
     }
 
@@ -157,43 +173,17 @@ private extension NovaNativeAdView {
             return
         }
 
-        let clickArea = sender.view?.adClickArea
-        NovaAdMetricReporter.logAdClick(
-            thirdPartyClickTrackingUrls: nativeAd.thirdPartyClickTrackingUrls,
-            encryptedAdToken: nativeAd.encryptedAdToken,
-            adUnitId: nativeAd.adUnitId,
-            clickArea: clickArea
-        )
-
+        let clickArea = sender.view?.adClickArea ?? .cta
+        
+        if let actionHelper = actionHelper {
+            self.actionHelper = actionHelper
+                .logNovaClickEvent(with: CACurrentMediaTime() - startTime, in: clickArea)
+                .handleAdTap(in: sender.view)
+        }
+        
         nativeAd.delegate?.nativeAdDidLogClick(
             nativeAd,
-            clickAreaName: NovaAdMetricReporter.convertNovaClickAreaNameToMetric(clickArea: clickArea?.rawValue) ?? ""
+            clickAreaName: NovaAdMetricReporter.convertNovaClickAreaNameToMetric(clickArea: clickArea.rawValue) ?? ""
         )
-        
-        guard let ctrUrl = nativeAd.ctrUrl else {
-            assertionFailure("Native ad click url cannot be nil")
-            return
-        }
-
-        let actionKey: String
-
-        switch nativeAd.launchOption {
-        case .launchBrowser:
-            actionKey = NovaAdOpenActionKey.launchBrowser.rawValue
-        case .launchWebView:
-            if nativeAd.appStoreId != nil {
-                actionKey = NovaAdOpenActionKey.launchStore.rawValue
-            } else {
-                actionKey = NovaAdOpenActionKey.launchWebView.rawValue
-            }
-        }
-
-        let actionDataModel = NovaAdOpenActionDataModel(
-            url: ctrUrl,
-            clickTime: CACurrentMediaTime(),
-            ad: nativeAd)
-
-        let actionModel = ActionModel(actionKey: actionKey, actionDataModel: actionDataModel)
-        actionHandler.performAction(actionModel: actionModel)
     }
 }

@@ -52,4 +52,10 @@
    <FileRef
       location = "group:Pods/Pods.xcodeproj">
    </FileRef>
+   <FileRef
+      location = "group:MSPiOSCore/MSPiOSCore.xcodeproj">
+   </FileRef>
+   <FileRef
+      location = "group:MSPOMSDK/MSPOMSDK.xcodeproj">
+   </FileRef>
 </Workspace>
