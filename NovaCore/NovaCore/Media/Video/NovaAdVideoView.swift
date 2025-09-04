@@ -228,6 +228,10 @@ extension NovaAdVideoView {
     }
 
     func play(with playStrategy: PlayStrategy) {
+        guard !videoPlayer.isVideoPlaying() else {
+            return
+        }
+
         playVersion += 1
         let playVersionAtStart = playVersion
         Task(priority: .userInitiated) {
