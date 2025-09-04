@@ -133,6 +133,7 @@ target 'MSPDemoApp' do
   pod 'MintegralAdapter', :path => './MintegralAdapter', :modular_headers => true
   pod 'PubmaticAdapter', :path => './PubmaticAdapter', :modular_headers => true
   pod 'AmazonAdapter', :path => './', :modular_headers => true
+  pod 'SwiftProtobuf', '1.30.0', :modular_headers => true
   #pod 'GoogleMobileAds', :modular_headers => true
   #pod 'NovaAdapter', :path => './', :modular_headers => true
   #pod 'MetaAdapter', :path => './', :modular_headers => true
@@ -147,13 +148,7 @@ post_install do |installer|
   installer.pods_project.targets.each do |target|
     target.build_configurations.each do |config|
       config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '15.0'
-      
-      # Fix SwiftProtobuf package access level issues
-      if target.name == 'SwiftProtobuf'
-        config.build_settings['OTHER_SWIFT_FLAGS'] = '-no-verify-emitted-module-interface -package-name SwiftProtobuf'
-      else
-        config.build_settings['OTHER_SWIFT_FLAGS'] = '-no-verify-emitted-module-interface'
-      end
+      config.build_settings['OTHER_SWIFT_FLAGS'] = '-no-verify-emitted-module-interface'
     end
   end
 end

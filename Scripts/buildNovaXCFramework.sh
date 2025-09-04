@@ -236,7 +236,7 @@ print_success "Build directory cleaned and created"
 # Install pods
 print_section "Installing CocoaPods Dependencies"
 print_step "Running pod install..."
-if pod install --repo-update; then
+if bundle exec pod install --repo-update; then
     print_success "CocoaPods dependencies installed successfully"
     
     # Check for problematic dependencies in CI
