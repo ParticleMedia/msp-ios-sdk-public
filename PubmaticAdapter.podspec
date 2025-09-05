@@ -42,7 +42,7 @@ Pod::Spec.new do |spec|
   spec.ios.deployment_target = '15.0'
 
 
-  spec.source_files  = "PubmaticAdapter/**/*.{h,m,swift}"
+  spec.source_files  = "PubmaticAdapter/PubmaticAdapter/**/*.{h,m,swift}"
   spec.exclude_files = "Classes/Exclude"
 
   #spec.dependency 'IronSourceSDK','8.5.1.0'
