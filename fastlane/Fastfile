@@ -139,18 +139,18 @@ platform :ios do
     
     # List of podspec files to validate
     podspecs = [
-      "MSPCore/MSPCore.podspec",
+      "MSPCore.podspec",
       "NovaCore/NovaCore.podspec",
-      "MSPSharedLibraries/MSPSharedLibraries.podspec",
-      "GoogleAdapter/GoogleAdapter.podspec",
-      "FacebookAdapter/FacebookAdapter.podspec",
-      "NovaAdapter/NovaAdapter.podspec",
-      "PrebidAdapter/PrebidAdapter.podspec",
-      "UnityAdapter/UnityAdapter.podspec",
-      "InmobiAdapter/InmobiAdapter.podspec",
-      "MintegralAdapter/MintegralAdapter.podspec",
-      "MobilefuseAdapter/MobilefuseAdapter.podspec",
-      "PubmaticAdapter/PubmaticAdapter.podspec"
+      "MSPSharedLibraries.podspec",
+      "GoogleAdapter.podspec",
+      "FacebookAdapter.podspec",
+      "NovaAdapter.podspec",
+      "PrebidAdapter.podspec",
+      "UnityAdapter.podspec",
+      "InmobiAdapter.podspec",
+      "MintegralAdapter.podspec",
+      "MobilefuseAdapter.podspec",
+      "PubmaticAdapter.podspec"
     ]
     
     podspecs.each do |podspec|
@@ -174,18 +174,18 @@ platform :ios do
     
     # List of podspec files to validate
     podspecs = [
-      "MSPCore/MSPCore.podspec",
+      "MSPCore.podspec",
       "NovaCore/NovaCore.podspec",
-      "MSPSharedLibraries/MSPSharedLibraries.podspec",
-      "GoogleAdapter/GoogleAdapter.podspec",
-      "FacebookAdapter/FacebookAdapter.podspec",
-      "NovaAdapter/NovaAdapter.podspec",
-      "PrebidAdapter/PrebidAdapter.podspec",
-      "UnityAdapter/UnityAdapter.podspec",
-      "InmobiAdapter/InmobiAdapter.podspec",
-      "MintegralAdapter/MintegralAdapter.podspec",
-      "MobilefuseAdapter/MobilefuseAdapter.podspec",
-      "PubmaticAdapter/PubmaticAdapter.podspec"
+      "MSPSharedLibraries.podspec",
+      "GoogleAdapter.podspec",
+      "FacebookAdapter.podspec",
+      "NovaAdapter.podspec",
+      "PrebidAdapter.podspec",
+      "UnityAdapter.podspec",
+      "InmobiAdapter.podspec",
+      "MintegralAdapter.podspec",
+      "MobilefuseAdapter.podspec",
+      "PubmaticAdapter.podspec"
     ]
     
     failed_podspecs = []
@@ -409,9 +409,9 @@ platform :ios do
       
       required_files = [
         "../msp-ios-sdk.xcworkspace",
-        "../MSPCore/MSPCore.podspec",
+        "../MSPCore.podspec",
         "../NovaCore/NovaCore.podspec",
-        "../MSPSharedLibraries/MSPSharedLibraries.podspec"
+        "../MSPSharedLibraries.podspec"
       ]
       
       missing_files = []
