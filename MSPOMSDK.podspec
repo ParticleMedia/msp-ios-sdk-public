@@ -1,5 +1,5 @@
 #
-#  Be sure to run `pod spec lint MSPSharedLibraries.podspec' to ensure this is a
+#  Be sure to run `pod spec lint MSPOMSDK.podspec' to ensure this is a
 #  valid spec and to remove all comments including this before submitting the spec.
 #
 #  To learn more about Podspec attributes see https://guides.cocoapods.org/syntax/podspec.html
@@ -15,7 +15,7 @@ Pod::Spec.new do |spec|
   #  summary should be tweet-length, and the description more in depth.
   #
 
-  spec.name         = "MSPSharedLibraries"
+  spec.name         = "MSPOMSDK"
   spec.version      = "0.0.96"
   spec.summary      = "An utility helper for MSP"
 
@@ -27,7 +27,7 @@ Pod::Spec.new do |spec|
   #   * Write the description between the DESC delimiters below.
   #   * Finally, don't worry about the indent, CocoaPods strips it!
   spec.description  = "An utility for MSP settings"
-  spec.homepage     = "https://github.com/aimsp/msp-ios-sdk/MSPSharedLibraries"
+  spec.homepage     = "https://github.com/aimsp/msp-ios-sdk/MSPOMSDK"
   # spec.screenshots  = "www.example.com/screenshots_1.gif", "www.example.com/screenshots_2.gif"
 
 
@@ -90,11 +90,11 @@ Pod::Spec.new do |spec|
   #  Not including the public_header_files will make all headers public.
   #
 
-  spec.source_files  = "MSPSharedLibraries/**/*.{h,m,swift}"
+  spec.source_files  = "MSPOMSDK/MSPOMSDK/**/*.{h,m,swift}"
   spec.exclude_files = "Classes/Exclude"
 
   #spec.dependency 'GoogleAdapter'
-  spec.vendored_frameworks = "PrebidMobile.xcframework", "MSPiOSCore.xcframework"
+  spec.vendored_frameworks = "MSPOMSDK/OMSDK_Newsbreak1.xcframework"
 
   # spec.public_header_files = "Classes/**/*.h"
   # s.pod_target_xcconfig = { 'HEADER_SEARCH_PATHS' => '$(PODS_TARGET_SRCROOT)/PrebidMobile.xcframework/Headers $(PODS_TARGET_SRCROOT)/MSPiOSCore.xcframework/Headers' }
