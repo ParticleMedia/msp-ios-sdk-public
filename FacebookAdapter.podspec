@@ -4,12 +4,12 @@ Pod::Spec.new do |spec|
 
   
 
-  spec.name         = "GoogleAdapter"
+  spec.name         = "FacebookAdapter"
   spec.version      = "0.0.92"
-  spec.summary      = "an adapter for Google SDK"
-  spec.description  = "an adapter for Google SDK for MSP S2S"
+  spec.summary      = "an adapter for Meta SDK"
+  spec.description  = "an adapter for Meta SDK for MSP S2S"
 
-  spec.homepage     = "https://github.com/aimsp/msp-ios-sdk/GoogleAdapter"
+  spec.homepage     = "https://github.com/aimsp/msp-ios-sdk/MetaAdapter"
  
   spec.license      = "Copyright"
   
@@ -42,10 +42,10 @@ Pod::Spec.new do |spec|
   spec.ios.deployment_target = '13.0'
 
 
-  spec.source_files  = "GoogleAdapter/**/*.{h,m,swift}"
+  spec.source_files  = "FacebookAdapter/FacebookAdapter/**/*.{h,m,swift}"
   spec.exclude_files = "Classes/Exclude"
 
-  spec.dependency 'Google-Mobile-Ads-SDK', "~> 12.0"
+  spec.dependency 'FBAudienceNetwork', '~> 6.15.0'
   spec.dependency 'MSPSharedLibraries'
   #spec.module_map = 'GoogleAdapter/GoogleAdapter.modulemap'
 

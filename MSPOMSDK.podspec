@@ -1,5 +1,5 @@
 #
-#  Be sure to run `pod spec lint MSPCore.podspec' to ensure this is a
+#  Be sure to run `pod spec lint MSPOMSDK.podspec' to ensure this is a
 #  valid spec and to remove all comments including this before submitting the spec.
 #
 #  To learn more about Podspec attributes see https://guides.cocoapods.org/syntax/podspec.html
@@ -15,8 +15,8 @@ Pod::Spec.new do |spec|
   #  summary should be tweet-length, and the description more in depth.
   #
 
-  spec.name         = "MSPCore"
-  spec.version      = "0.0.93"
+  spec.name         = "MSPOMSDK"
+  spec.version      = "0.0.96"
   spec.summary      = "An utility helper for MSP"
 
   spec.ios.deployment_target = '13.0'
@@ -27,7 +27,7 @@ Pod::Spec.new do |spec|
   #   * Write the description between the DESC delimiters below.
   #   * Finally, don't worry about the indent, CocoaPods strips it!
   spec.description  = "An utility for MSP settings"
-  spec.homepage     = "https://github.com/aimsp/msp-ios-sdk/MSPCore"
+  spec.homepage     = "https://github.com/aimsp/msp-ios-sdk/MSPOMSDK"
   # spec.screenshots  = "www.example.com/screenshots_1.gif", "www.example.com/screenshots_2.gif"
 
 
@@ -82,7 +82,6 @@ Pod::Spec.new do |spec|
 
   spec.source       = { :git => "https://github.com/ParticleMedia/msp-ios-sdk-public.git", :tag => "#{spec.version}" }
 
-
   # ――― Source Code ―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
   #
   #  CocoaPods is smart about how it includes source code. For source files
@@ -91,25 +90,20 @@ Pod::Spec.new do |spec|
   #  Not including the public_header_files will make all headers public.
   #
 
-  spec.source_files  = "MSPCore/**/*.{h,m,swift}"
+  spec.source_files  = "MSPOMSDK/MSPOMSDK/**/*.{h,m,swift}"
   spec.exclude_files = "Classes/Exclude"
 
-  spec.dependency 'MSPSharedLibraries'
-  spec.dependency 'PrebidAdapter'#, '0.0.92'
-  spec.dependency 'SwiftProtobuf'#, '1.21.0'
-  spec.dependency 'SnapKit'
-  #spec.vendored_frameworks= "MSPCore/PrebidAdapter.xcframework"#, "PrebidMobile.xcframework", "MSPiOSCore.xcframework"
+  #spec.dependency 'GoogleAdapter'
+  spec.vendored_frameworks = "MSPOMSDK/OMSDK_Newsbreak1.xcframework"
 
-  #spec.pod_target_xcconfig = {
-  #  'HEADER_SEARCH_PATHS' => '$(PODS_TARGET_SRCROOT)/PrebidMobile.xcframework/Headers $(PODS_TARGET_SRCROOT)/MSPiOSCore.xcframework/Headers'
-  #}
+  # spec.public_header_files = "Classes/**/*.h"
+  # s.pod_target_xcconfig = { 'HEADER_SEARCH_PATHS' => '$(PODS_TARGET_SRCROOT)/PrebidMobile.xcframework/Headers $(PODS_TARGET_SRCROOT)/MSPiOSCore.xcframework/Headers' }
 
-  #spec.pod_target_xcconfig = { 'VALID_ARCHS' => 'x86_64 armv7 arm64' }
-  #spec.user_target_xcconfig = { 'EXCLUDED_ARCHS[sdk=iphonesimulator*]' => 'arm64' }
+  spec.pod_target_xcconfig = { 'VALID_ARCHS' => 'x86_64 armv7 arm64' }
+  spec.user_target_xcconfig = { 'EXCLUDED_ARCHS[sdk=iphonesimulator*]' => 'arm64' }
 
   spec.static_framework = true
 
-  # spec.public_header_files = "Classes/**/*.h"
 
 
   # ――― Resources ―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― #

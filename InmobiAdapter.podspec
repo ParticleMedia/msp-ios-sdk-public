@@ -4,12 +4,12 @@ Pod::Spec.new do |spec|
 
   
 
-  spec.name         = "PrebidAdapter"
+  spec.name         = "InmobiAdapter"
   spec.version      = "0.0.92"
-  spec.summary      = "an adapter for Google SDK"
-  spec.description  = "an adapter for Google SDK for MSP S2S"
+  spec.summary      = "an adapter for Inmobi SDK"
+  spec.description  = "an adapter for Inmobi SDK for MSP C2S"
 
-  spec.homepage     = "https://github.com/aimsp/msp-ios-sdk/GoogleAdapter"
+  spec.homepage     = "https://github.com/aimsp/msp-ios-sdk/MetaAdapter"
  
   spec.license      = "Copyright"
   
@@ -42,15 +42,19 @@ Pod::Spec.new do |spec|
   spec.ios.deployment_target = '13.0'
 
 
-  spec.source_files  = "PrebidAdapter/**/*.{h,m,swift}"
+  spec.source_files  = "InmobiAdapter/InmobiAdapter/**/*.{h,m,swift}"
   spec.exclude_files = "Classes/Exclude"
 
-  #spec.dependency 'Google-Mobile-Ads-SDK', "10.14.0"
+  #spec.dependency 'IronSourceSDK','8.5.1.0'
+  spec.dependency 'InMobiSDK', '10.8.0'
   spec.dependency 'MSPSharedLibraries'
+  #spec.module_map = 'GoogleAdapter/GoogleAdapter.modulemap'
 
+  #spec.public_header_files = "GoogleAdapter//**/*.h"
+  #spec.vendored_frameworks= "GoogleAdapter/shared.xcframework"
 
-  #spec.pod_target_xcconfig = { 'VALID_ARCHS' => 'x86_64 armv7 arm64' }
-  #spec.user_target_xcconfig = { 'EXCLUDED_ARCHS[sdk=iphonesimulator*]' => 'arm64' }
+  spec.pod_target_xcconfig = { 'VALID_ARCHS' => 'x86_64 armv7 arm64' }
+  spec.user_target_xcconfig = { 'EXCLUDED_ARCHS[sdk=iphonesimulator*]' => 'arm64' }
 
   spec.static_framework = true
   # ――― Resources ―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― #

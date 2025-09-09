@@ -4,12 +4,12 @@ Pod::Spec.new do |spec|
 
   
 
-  spec.name         = "PubmaticAdapter"
+  spec.name         = "GoogleAdapter"
   spec.version      = "0.0.92"
-  spec.summary      = "an adapter for Pubmatic SDK"
-  spec.description  = "an adapter for Pubmatic SDK for MSP C2S"
+  spec.summary      = "an adapter for Google SDK"
+  spec.description  = "an adapter for Google SDK for MSP S2S"
 
-  spec.homepage     = "https://github.com/aimsp/msp-ios-sdk/MetaAdapter"
+  spec.homepage     = "https://github.com/aimsp/msp-ios-sdk/GoogleAdapter"
  
   spec.license      = "Copyright"
   
@@ -42,11 +42,10 @@ Pod::Spec.new do |spec|
   spec.ios.deployment_target = '13.0'
 
 
-  spec.source_files  = "PubmaticAdapter/**/*.{h,m,swift}"
+  spec.source_files  = "GoogleAdapter/GoogleAdapter/**/*.{h,m,swift}"
   spec.exclude_files = "Classes/Exclude"
 
-  #spec.dependency 'IronSourceSDK','8.5.1.0'
-  spec.dependency 'OpenWrapSDK', '4.0.0'
+  spec.dependency 'Google-Mobile-Ads-SDK', "~> 12.0"
   spec.dependency 'MSPSharedLibraries'
   #spec.module_map = 'GoogleAdapter/GoogleAdapter.modulemap'
 

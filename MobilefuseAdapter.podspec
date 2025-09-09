@@ -4,12 +4,12 @@ Pod::Spec.new do |spec|
 
   
 
-  spec.name         = "FacebookAdapter"
+  spec.name         = "MobilefuseAdapter"
   spec.version      = "0.0.92"
-  spec.summary      = "an adapter for Meta SDK"
-  spec.description  = "an adapter for Meta SDK for MSP S2S"
+  spec.summary      = "an adapter for Mobilefuse SDK"
+  spec.description  = "an adapter for Mobilefuse SDK for MSP C2S"
 
-  spec.homepage     = "https://github.com/aimsp/msp-ios-sdk/MetaAdapter"
+  spec.homepage     = "https://github.com/aimsp/msp-ios-sdk/MobilefuseAdapter"
  
   spec.license      = "Copyright"
   
@@ -42,10 +42,11 @@ Pod::Spec.new do |spec|
   spec.ios.deployment_target = '13.0'
 
 
-  spec.source_files  = "FacebookAdapter/**/*.{h,m,swift}"
+  spec.source_files  = "MobilefuseAdapter/MobilefuseAdapter/**/*.{h,m,swift}"
   spec.exclude_files = "Classes/Exclude"
 
-  spec.dependency 'FBAudienceNetwork', '~> 6.15.0'
+  #spec.dependency 'IronSourceSDK','8.5.1.0'
+  spec.dependency 'MobileFuseSDK', '1.8.2'
   spec.dependency 'MSPSharedLibraries'
   #spec.module_map = 'GoogleAdapter/GoogleAdapter.modulemap'
 

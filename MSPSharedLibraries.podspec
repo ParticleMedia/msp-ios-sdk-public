@@ -90,11 +90,11 @@ Pod::Spec.new do |spec|
   #  Not including the public_header_files will make all headers public.
   #
 
-  spec.source_files  = "MSPSharedLibraries/**/*.{h,m,swift}"
+  spec.source_files  = "MSPSharedLibraries/MSPSharedLibraries/**/*.{h,m,swift}"
   spec.exclude_files = "Classes/Exclude"
 
   #spec.dependency 'GoogleAdapter'
-  spec.vendored_frameworks = "PrebidMobile.xcframework", "MSPiOSCore.xcframework"
+  spec.vendored_frameworks = "MSPSharedLibraries/PrebidMobile.xcframework", "MSPSharedLibraries/MSPiOSCore.xcframework"
 
   # spec.public_header_files = "Classes/**/*.h"
   # s.pod_target_xcconfig = { 'HEADER_SEARCH_PATHS' => '$(PODS_TARGET_SRCROOT)/PrebidMobile.xcframework/Headers $(PODS_TARGET_SRCROOT)/MSPiOSCore.xcframework/Headers' }
