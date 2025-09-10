@@ -23,6 +23,7 @@ public class MSPDevice {
     private(set) var isLowDataMode: Bool?
     private(set) var fontSize: UIContentSizeCategory?
     private(set) var availableMemory: Int?
+    private(set) var lastSystemBootTime: Double?
     
     private let DEIVCE_SIGNAL_ORIENTATION = "orientation"
     private let DEIVCE_SIGNAL_IS_IN_FOREGROUND = "is_in_foreground"
@@ -52,7 +53,7 @@ public class MSPDevice {
         return dict
     }
     
-    private func collectDeviceInfo() {
+    public func collectDeviceInfo() {
         self.orientation = UIDevice.current.orientation
         self.isInForeground = UIApplication.shared.applicationState == .active
         UIDevice.current.isBatteryMonitoringEnabled = true
@@ -64,6 +65,7 @@ public class MSPDevice {
         }
         self.fontSize = UIApplication.shared.preferredContentSizeCategory
         self.availableMemory = os_proc_available_memory()
+        self.lastSystemBootTime = (Date().timeIntervalSince1970 - ProcessInfo.processInfo.systemUptime) * 1000
     }
     
     private func fetchLowDataModeStatus(completion: @escaping (Bool) -> Void) {
@@ -112,7 +114,7 @@ public class MSPDevice {
         return "unknown"
     }
     
-    private func getBatteryStatusString() -> String {
+    public func getBatteryStatusString() -> String {
         guard let batteryStatus = self.batteryStatus else { return "unknown" }
         switch batteryStatus {
         case .unknown:
@@ -128,7 +130,7 @@ public class MSPDevice {
         }
     }
     
-    private func getFontSizeString() -> String {
+    public func getFontSizeString() -> String {
         guard let fontSize = self.fontSize else { return "unknown" }
         switch fontSize {
         case .extraSmall: return "xs"
@@ -147,7 +149,7 @@ public class MSPDevice {
         }
     }
     
-    private func getAvailableMemoryString() -> String {
+    public func getAvailableMemoryString() -> String {
         if let availableMemory = self.availableMemory {
             return String(availableMemory)
         } else {
@@ -155,7 +157,7 @@ public class MSPDevice {
         }
     }
     
-    private func getTimezoneString() -> String {
+    public func getTimezoneString() -> String {
         let secondsFromGMT = TimeZone.current.secondsFromGMT()
         let hoursFromGMT = secondsFromGMT / 3600
         let hoursAbs = abs(hoursFromGMT)
@@ -169,10 +171,11 @@ public class MSPDevice {
     }
     
     private func getSystemBootTimeString() -> String {
-        let bootTimeInMilis = (Date().timeIntervalSince1970 - ProcessInfo.processInfo.systemUptime) * 1000
-        if bootTimeInMilis.isFinite, !bootTimeInMilis.isNaN {
-            let bootTime = Int64(bootTimeInMilis)
-            return String(bootTime)
+        if let bootTimeInMilis = self.lastSystemBootTime {
+            if bootTimeInMilis.isFinite, !bootTimeInMilis.isNaN {
+                let bootTime = Int64(bootTimeInMilis)
+                return String(bootTime)
+            }
         }
         return ""
     }
