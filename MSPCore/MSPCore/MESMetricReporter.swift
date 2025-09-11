@@ -83,9 +83,6 @@ import AdSupport
         } else if let mspId = UserDefaults.standard.string(forKey: "msp_user_id") {
             eventModel.mspID = mspId
         }
-        if let lastSystemBootTime = MSPDevice.shared.lastSystemBootTime {
-            eventModel.lastSystemBootTimeMs = UInt64(lastSystemBootTime)
-        }
         eventModel.ifa = ASIdentifierManager.shared().advertisingIdentifier.uuidString
         if let batteryLevel = MSPDevice.shared.batteryLevel {
             eventModel.batteryLevel = batteryLevel

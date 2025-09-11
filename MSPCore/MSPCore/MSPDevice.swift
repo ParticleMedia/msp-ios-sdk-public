@@ -23,7 +23,6 @@ public class MSPDevice {
     private(set) var isLowDataMode: Bool?
     private(set) var fontSize: UIContentSizeCategory?
     private(set) var availableMemory: Int?
-    private(set) var lastSystemBootTime: Double?
     
     private let DEIVCE_SIGNAL_ORIENTATION = "orientation"
     private let DEIVCE_SIGNAL_IS_IN_FOREGROUND = "is_in_foreground"
@@ -48,7 +47,6 @@ public class MSPDevice {
         dict[DEIVCE_SIGNAL_FONT_SIZE] = getFontSizeString()
         dict[DEIVCE_SIGNAL_AVAILABLE_MEMORY] = getAvailableMemoryString()
         dict[DEVICE_SIGNAL_TIMEZONE] = getTimezoneString()
-        dict[DEVICE_SIGNAL_LAST_SYSTEM_BOOT_TIME] = getSystemBootTimeString()
         
         return dict
     }
@@ -65,7 +63,6 @@ public class MSPDevice {
         }
         self.fontSize = UIApplication.shared.preferredContentSizeCategory
         self.availableMemory = os_proc_available_memory()
-        self.lastSystemBootTime = (Date().timeIntervalSince1970 - ProcessInfo.processInfo.systemUptime) * 1000
     }
     
     private func fetchLowDataModeStatus(completion: @escaping (Bool) -> Void) {
@@ -168,16 +165,6 @@ public class MSPDevice {
        
        // Format the string with +HH:mm or -HH:mm
        return String(format: "%+03d:%02d", hours, minutes)
-    }
-    
-    private func getSystemBootTimeString() -> String {
-        if let bootTimeInMilis = self.lastSystemBootTime {
-            if bootTimeInMilis.isFinite, !bootTimeInMilis.isNaN {
-                let bootTime = Int64(bootTimeInMilis)
-                return String(bootTime)
-            }
-        }
-        return ""
     }
     
 }
