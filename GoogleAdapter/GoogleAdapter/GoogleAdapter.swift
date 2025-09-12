@@ -6,7 +6,7 @@ import PrebidMobile
 
 @objc public class GoogleAdapter : NSObject, AdNetworkAdapter {
     public func getSDKVersion() -> String {
-        return "12.0"
+        return "0.0.2-migration-test-concurrent"
     }
     
     public func setAdMetricReporter(adMetricReporter: any MSPiOSCore.AdMetricReporter) {
