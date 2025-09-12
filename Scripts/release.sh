@@ -517,7 +517,6 @@ publish_to_cocoapods() {
     
     # Use the working 0.0.1-migration approach: Git format with complete podspec
     # Create a temporary podspec with Git format and complete content
-<<<<<<< HEAD
     # Use the correct filename that matches the spec name
     local temp_podspec="${pod_name}.podspec"
     cp "$podspec_path" "$temp_podspec"
