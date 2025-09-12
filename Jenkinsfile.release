@@ -59,8 +59,8 @@ pipeline {
         
         choice(
             name: 'POD_NAME',
-            choices: ['MSPiOSCore', 'NovaCore', 'MSPCore'],
-            description: 'Pod to release'
+            choices: ['MSPiOSCore', 'NovaCore', 'MSPCore', 'Sequential'],
+            description: 'Pod to release (Sequential = release all adapters + MSPCore)'
         )
         
         string(
@@ -296,8 +296,13 @@ pipeline {
                 script {
                     echo "🚀 Executing release process..."
                     
-                    // Build release command
-                    def releaseCmd = "./Scripts/release.sh"
+                    // Choose release script based on pod name
+                    def releaseCmd = ""
+                    if (params.POD_NAME == 'Sequential') {
+                        releaseCmd = "./Scripts/release-sequential.sh"
+                    } else {
+                        releaseCmd = "./Scripts/release.sh"
+                    }
                     
                     // Add parameters based on release type
                     if (params.RELEASE_TYPE == 'dry-run') {
@@ -324,11 +329,17 @@ pipeline {
                         releaseCmd += " --skip-github"
                     }
                     
-                    // Add pod name and version
+                    // Add pod name and version (only for single pod releases)
                     if (params.RELEASE_TYPE == 'rollback') {
-                        releaseCmd += " --rollback ${params.POD_NAME} ${params.ROLLBACK_VERSION}"
-                    } else {
+                        if (params.POD_NAME == 'Sequential') {
+                            releaseCmd += " --rollback ${params.ROLLBACK_VERSION}"
+                        } else {
+                            releaseCmd += " --rollback ${params.POD_NAME} ${params.ROLLBACK_VERSION}"
+                        }
+                    } else if (params.POD_NAME != 'Sequential') {
                         releaseCmd += " ${params.POD_NAME} ${params.VERSION}"
+                    } else {
+                        releaseCmd += " ${params.VERSION}"
                     }
                     
                     echo "🔧 Release command: ${releaseCmd}"
@@ -366,19 +377,34 @@ pipeline {
                         # Create artifacts directory
                         mkdir -p "${ARTIFACTS_DIR}"
                         
-                        # Collect podspec
-                        if [[ -f "${POD_NAME}/${POD_NAME}.podspec" ]]; then
-                            cp "${POD_NAME}/${POD_NAME}.podspec" "${ARTIFACTS_DIR}/"
-                            echo "📄 Collected: ${POD_NAME}.podspec"
-                        elif [[ -f "${POD_NAME}.podspec" ]]; then
-                            cp "${POD_NAME}.podspec" "${ARTIFACTS_DIR}/"
-                            echo "📄 Collected: ${POD_NAME}.podspec"
-                        fi
-                        
-                        # Collect source files
-                        if [[ -d "${POD_NAME}" ]]; then
-                            tar -czf "${ARTIFACTS_DIR}/${POD_NAME}-source.tar.gz" "${POD_NAME}/"
-                            echo "📁 Collected: ${POD_NAME} source"
+                        # Collect podspecs and source files
+                        if [[ "${POD_NAME}" == "Sequential" ]]; then
+                            # Collect all podspecs for sequential release
+                            for pod in FacebookAdapter GoogleAdapter NovaAdapter MSPCore; do
+                                if [[ -f "${pod}.podspec" ]]; then
+                                    cp "${pod}.podspec" "${ARTIFACTS_DIR}/"
+                                    echo "📄 Collected: ${pod}.podspec"
+                                fi
+                                
+                                if [[ -d "${pod}" ]]; then
+                                    tar -czf "${ARTIFACTS_DIR}/${pod}-source.tar.gz" "${pod}/"
+                                    echo "📁 Collected: ${pod} source"
+                                fi
+                            done
+                        else
+                            # Collect single pod artifacts
+                            if [[ -f "${POD_NAME}/${POD_NAME}.podspec" ]]; then
+                                cp "${POD_NAME}/${POD_NAME}.podspec" "${ARTIFACTS_DIR}/"
+                                echo "📄 Collected: ${POD_NAME}.podspec"
+                            elif [[ -f "${POD_NAME}.podspec" ]]; then
+                                cp "${POD_NAME}.podspec" "${ARTIFACTS_DIR}/"
+                                echo "📄 Collected: ${POD_NAME}.podspec"
+                            fi
+                            
+                            if [[ -d "${POD_NAME}" ]]; then
+                                tar -czf "${ARTIFACTS_DIR}/${POD_NAME}-source.tar.gz" "${POD_NAME}/"
+                                echo "📁 Collected: ${POD_NAME} source"
+                            fi
                         fi
                         
                         # Collect built frameworks if they exist
@@ -396,7 +422,25 @@ pipeline {
                         find . -name "*.log" -type f -exec cp {} "${ARTIFACTS_DIR}/" \\;
                         
                         # Create release info
-                        cat > "${ARTIFACTS_DIR}/release-info.txt" << EOF
+                        if [[ "${POD_NAME}" == "Sequential" ]]; then
+                            cat > "${ARTIFACTS_DIR}/release-info.txt" << EOF
+Sequential Release Information
+=============================
+Release Type: ${RELEASE_TYPE}
+Pods Released: FacebookAdapter, GoogleAdapter, NovaAdapter, MSPCore
+Version: ${VERSION}
+Git Commit: ${GIT_COMMIT_SHORT}
+Git Branch: ${GIT_BRANCH_NAME}
+Release Date: $(date -u +%Y-%m-%dT%H:%M:%SZ)
+Jenkins Build: ${BUILD_NUMBER}
+Jenkins Job: ${JOB_NAME}
+Publish to CocoaPods: ${PUBLISH_TO_COCOAPODS}
+Create GitHub Release: ${CREATE_GITHUB_RELEASE}
+Release Order: FacebookAdapter -> GoogleAdapter -> NovaAdapter -> MSPCore
+CocoaPods Sync: Enabled with exponential backoff
+EOF
+                        else
+                            cat > "${ARTIFACTS_DIR}/release-info.txt" << EOF
 Release Information
 ==================
 Release Type: ${RELEASE_TYPE}
@@ -410,6 +454,7 @@ Jenkins Job: ${JOB_NAME}
 Publish to CocoaPods: ${PUBLISH_TO_COCOAPODS}
 Create GitHub Release: ${CREATE_GITHUB_RELEASE}
 EOF
+                        fi
                         
                         echo "✅ Release artifacts collected successfully"
                     '''
@@ -447,12 +492,24 @@ EOF
                 
                 // Send success notification
                 if (params.RELEASE_TYPE == 'release') {
-                    echo "🚀 ${params.POD_NAME} version ${params.VERSION} has been released successfully!"
-                    if (params.PUBLISH_TO_COCOAPODS) {
-                        echo "📦 Published to CocoaPods trunk"
-                    }
-                    if (params.CREATE_GITHUB_RELEASE) {
-                        echo "🐙 GitHub release created"
+                    if (params.POD_NAME == 'Sequential') {
+                        echo "🚀 Sequential release completed successfully!"
+                        echo "📦 Released pods: FacebookAdapter, GoogleAdapter, NovaAdapter, MSPCore"
+                        echo "🏷️ Version: ${params.VERSION}"
+                        if (params.PUBLISH_TO_COCOAPODS) {
+                            echo "📦 Published to CocoaPods trunk with sync verification"
+                        }
+                        if (params.CREATE_GITHUB_RELEASE) {
+                            echo "🐙 GitHub releases created for all pods"
+                        }
+                    } else {
+                        echo "🚀 ${params.POD_NAME} version ${params.VERSION} has been released successfully!"
+                        if (params.PUBLISH_TO_COCOAPODS) {
+                            echo "📦 Published to CocoaPods trunk"
+                        }
+                        if (params.CREATE_GITHUB_RELEASE) {
+                            echo "🐙 GitHub release created"
+                        }
                     }
                 } else if (params.RELEASE_TYPE == 'dry-run') {
                     echo "🔍 Dry run completed successfully"
@@ -467,19 +524,37 @@ EOF
                 echo "❌ Release failed!"
                 
                 // Send failure notification
-                echo "💥 Release failed for ${params.POD_NAME}"
-                if (params.RELEASE_TYPE == 'rollback') {
-                    echo "   Rollback version: ${params.ROLLBACK_VERSION}"
+                if (params.POD_NAME == 'Sequential') {
+                    echo "💥 Sequential release failed!"
+                    echo "   Pods: FacebookAdapter, GoogleAdapter, NovaAdapter, MSPCore"
+                    if (params.RELEASE_TYPE == 'rollback') {
+                        echo "   Rollback version: ${params.ROLLBACK_VERSION}"
+                    } else {
+                        echo "   Version: ${params.VERSION}"
+                    }
+                    echo "   Commit: ${env.GIT_COMMIT_SHORT}"
+                    echo "   Branch: ${env.GIT_BRANCH_NAME}"
+                    
+                    // Provide rollback instructions
+                    if (params.RELEASE_TYPE == 'release') {
+                        echo "🔄 To rollback this release, run:"
+                        echo "   ./Scripts/release-sequential.sh --rollback ${params.VERSION}"
+                    }
                 } else {
-                    echo "   Version: ${params.VERSION}"
-                }
-                echo "   Commit: ${env.GIT_COMMIT_SHORT}"
-                echo "   Branch: ${env.GIT_BRANCH_NAME}"
-                
-                // Provide rollback instructions
-                if (params.RELEASE_TYPE == 'release') {
-                    echo "🔄 To rollback this release, run:"
-                    echo "   ./Scripts/release.sh --rollback ${params.POD_NAME} ${params.VERSION}"
+                    echo "💥 Release failed for ${params.POD_NAME}"
+                    if (params.RELEASE_TYPE == 'rollback') {
+                        echo "   Rollback version: ${params.ROLLBACK_VERSION}"
+                    } else {
+                        echo "   Version: ${params.VERSION}"
+                    }
+                    echo "   Commit: ${env.GIT_COMMIT_SHORT}"
+                    echo "   Branch: ${env.GIT_BRANCH_NAME}"
+                    
+                    // Provide rollback instructions
+                    if (params.RELEASE_TYPE == 'release') {
+                        echo "🔄 To rollback this release, run:"
+                        echo "   ./Scripts/release.sh --rollback ${params.POD_NAME} ${params.VERSION}"
+                    }
                 }
             }
         }

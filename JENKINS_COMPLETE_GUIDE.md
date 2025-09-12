@@ -26,8 +26,8 @@ The Jenkins setup provides two complementary pipelines:
 ### **Release Job** (`MSP-iOS-SDK-Release`)
 - **Purpose**: Release pods to CocoaPods and GitHub
 - **Pipeline**: `Jenkinsfile.release`
-- **Script**: `Scripts/release.sh` (reused completely)
-- **Features**: Release, dry-run, rollback, publishing
+- **Scripts**: `Scripts/release.sh` (single pod) + `Scripts/release-sequential.sh` (dependencies)
+- **Features**: Single pod release, sequential release, dry-run, rollback, publishing
 
 ### **Key Benefits**
 - ✅ **Complete Script Reuse**: Leverages existing `Scripts/` infrastructure
@@ -216,7 +216,7 @@ curl -X POST -H "Content-Type: application/xml" \
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
 | `RELEASE_TYPE` | Choice | `release` | Type of release operation |
-| `POD_NAME` | Choice | - | Pod to release (MSPiOSCore, NovaCore, MSPCore) |
+| `POD_NAME` | Choice | - | Pod to release (MSPiOSCore, NovaCore, MSPCore, Sequential) |
 | `VERSION` | String | - | Version to release (e.g., 1.2.3) |
 | `PUBLISH_TO_COCOAPODS` | Boolean | `false` | Publish to CocoaPods trunk |
 | `CREATE_GITHUB_RELEASE` | Boolean | `true` | Create GitHub release |
@@ -225,6 +225,22 @@ curl -X POST -H "Content-Type: application/xml" \
 | `FORCE_RELEASE` | Boolean | `false` | Force release with validation issues |
 | `ROLLBACK_VERSION` | String | - | Version to rollback (rollback only) |
 | `RELEASE_NOTES` | Text | - | Release notes for GitHub |
+
+### Sequential Release Process
+
+When `POD_NAME` is set to `Sequential`, the release process follows this order:
+
+1. **FacebookAdapter** - Released first
+2. **GoogleAdapter** - Released second  
+3. **NovaAdapter** - Released third
+4. **MSPCore** - Released last (depends on all adapters)
+
+**Key Features:**
+- **Version Consistency**: All pods must have the same version number
+- **CocoaPods Sync**: Waits for each adapter to be available on CocoaPods before proceeding
+- **Exponential Backoff**: Uses exponential backoff (30s → 45s → 67s → ... → max 10min) for sync verification
+- **Error Handling**: Stops on first failure and provides rollback instructions
+- **Comprehensive Logging**: Detailed logs for each step of the process
 
 ### Release Process
 
@@ -282,7 +298,17 @@ curl -X POST -H "Content-Type: application/xml" \
 
 ### Release Job Examples
 
-#### 1. Release MSPCore Version 1.2.3
+#### 1. Sequential Release Version 1.2.3
+**Parameters**:
+- `RELEASE_TYPE`: `release`
+- `POD_NAME`: `Sequential`
+- `VERSION`: `1.2.3`
+- `PUBLISH_TO_COCOAPODS`: `true`
+- `CREATE_GITHUB_RELEASE`: `true`
+
+**Result**: Releases FacebookAdapter → GoogleAdapter → NovaAdapter → MSPCore with CocoaPods sync verification
+
+#### 2. Single Pod Release MSPCore Version 1.2.3
 **Parameters**:
 - `RELEASE_TYPE`: `release`
 - `POD_NAME`: `MSPCore`
@@ -290,25 +316,25 @@ curl -X POST -H "Content-Type: application/xml" \
 - `PUBLISH_TO_COCOAPODS`: `true`
 - `CREATE_GITHUB_RELEASE`: `true`
 
-**Result**: Full release with CocoaPods publishing and GitHub release
+**Result**: Single pod release with CocoaPods publishing and GitHub release
 
-#### 2. Dry Run Release
+#### 3. Dry Run Sequential Release
 **Parameters**:
 - `RELEASE_TYPE`: `dry-run`
-- `POD_NAME`: `MSPCore`
+- `POD_NAME`: `Sequential`
 - `VERSION`: `2.0.0`
 
-**Result**: Preview what would be released without making changes
+**Result**: Preview what would be released in sequential order without making changes
 
-#### 3. Rollback Release
+#### 4. Rollback Sequential Release
 **Parameters**:
 - `RELEASE_TYPE`: `rollback`
-- `POD_NAME`: `MSPCore`
+- `POD_NAME`: `Sequential`
 - `ROLLBACK_VERSION`: `1.2.3`
 
-**Result**: Rollback the specified release
+**Result**: Rollback all pods in the sequential release
 
-#### 4. Release Without CocoaPods Publishing
+#### 5. Release Without CocoaPods Publishing
 **Parameters**:
 - `RELEASE_TYPE`: `release`
 - `POD_NAME`: `NovaCore`
@@ -454,7 +480,8 @@ Check these log locations:
 - `Scripts/buildMSPCore.sh`: MSPCore-specific build script
 
 #### Release Job Integration
-- `Scripts/release.sh`: Main release script (reused completely)
+- `Scripts/release.sh`: Single pod release script (reused completely)
+- `Scripts/release-sequential.sh`: Sequential release script for dependencies
 - `Scripts/build.sh`: Framework building
 - `Scripts/buildiOSCoreXCFramework.sh`: MSPiOSCore build
 - `Scripts/buildNovaXCFramework.sh`: NovaCore build
