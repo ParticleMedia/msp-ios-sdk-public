@@ -534,11 +534,14 @@ publish_to_cocoapods() {
     sed -i.bak '/^$/N;/^\\n$/d' "$temp_podspec"
     rm -f "${temp_podspec}.bak"
     
-    # Convert to Git format for CocoaPods publishing
-    # Use the public repository URL for CocoaPods access
-    local git_repo_url="https://github.com/ParticleMedia/msp-ios-sdk-public.git"
+    # Convert to zip format for CocoaPods publishing (like 0.0.1-migration working approach)
+    # Use zip files from GitHub releases for CocoaPods access
+    local zip_url="https://github.com/ParticleMedia/msp-ios-sdk-public/releases/download/$version/${pod_name}-${version}.zip"
     sed -i.bak "/spec\.source = {/,/}/c\\
-  spec.source = { :git => \"$git_repo_url\", :tag => \"$version\" }" "$temp_podspec"
+  spec.source = {\\
+    http: \"$zip_url\",\\
+    type: \"zip\"\\
+  }" "$temp_podspec"
     rm -f "${temp_podspec}.bak"
     
     # Use the original podspec as-is without adding extra sections
