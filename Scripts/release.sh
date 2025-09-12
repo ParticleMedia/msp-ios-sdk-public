@@ -4,7 +4,7 @@
 # This script provides comprehensive release automation with rollback capabilities
 
 # Script metadata
-SCRIPT_VERSION="2.0.0"
+SCRIPT_VERSION="3.0.0"
 SCRIPT_NAME="MSP iOS SDK Release System"
 
 # Colors for output
@@ -70,6 +70,9 @@ ensure_project_root() {
 MSPIOSSCORE_CONFIG="name=MSPiOSCore;scheme=MSPiOSCore;output_dir=outputMSPiOSCore;deploy_dir=MSPSharedLibraries;xcframework_name=MSPiOSCore.xcframework;source_only=false;podspec=MSPiOSCore/MSPiOSCore.podspec"
 NOVACORE_CONFIG="name=NovaCore;scheme=NovaCore;output_dir=outputNova;deploy_dir=NovaAdapter;xcframework_name=NovaCore.xcframework;source_only=false;podspec=NovaCore/NovaCore.podspec"
 MSPCORE_CONFIG="name=MSPCore;scheme=MSPCore;output_dir=;deploy_dir=;xcframework_name=;source_only=true;podspec=MSPCore/MSPCore.podspec"
+
+# Supported pods for automatic version updating
+SUPPORTED_PODS=("MSPiOSCore" "NovaCore" "MSPCore" "FacebookAdapter" "GoogleAdapter" "NovaAdapter")
 
 # Parse config value
 parse_config_value() {
@@ -137,6 +140,29 @@ validate_release_environment() {
     return 0
 }
 
+update_podspec_version() {
+    local pod_name="$1"
+    local version="$2"
+    
+    log_step "Updating $pod_name podspec version to $version..."
+    
+    local podspec_file="${pod_name}.podspec"
+    if [[ ! -f "$podspec_file" ]]; then
+        log_error "Podspec not found: $podspec_file"
+        return 1
+    fi
+    
+    # Update version in podspec
+    if sed -i.bak "s/spec\.version.*=.*\".*\"/spec.version      = \"$version\"/" "$podspec_file"; then
+        rm -f "${podspec_file}.bak"
+        log_success "Updated $pod_name podspec version to $version"
+        return 0
+    else
+        log_error "Failed to update $pod_name podspec version"
+        return 1
+    fi
+}
+
 validate_pod_name() {
     local pod_name="$1"
     
@@ -145,21 +171,32 @@ validate_pod_name() {
         return 1
     fi
     
+    # Check if pod is in supported list
+    local is_supported=false
+    for pod in "${SUPPORTED_PODS[@]}"; do
+        if [[ "$pod" == "$pod_name" ]]; then
+            is_supported=true
+            break
+        fi
+    done
+    
+    if [[ "$is_supported" != "true" ]]; then
+        log_error "Unsupported pod: $pod_name. Supported pods: ${SUPPORTED_PODS[*]}"
+        return 1
+    fi
+    
     # Check if podspec exists
+    local podspec_file="${pod_name}.podspec"
+    if [[ ! -f "$podspec_file" ]]; then
+        log_error "Podspec not found: $podspec_file"
+        return 1
+    fi
+    
+    # Try to load framework config (for build configuration)
     if ! load_framework_config "$pod_name" 2>/dev/null; then
-        log_error "Unknown pod: $pod_name"
-        return 1
-    fi
-    
-    local podspec_path="$FRAMEWORK_PODSPEC"
-    if [[ -z "$podspec_path" ]]; then
-        log_error "No podspec configured for $pod_name"
-        return 1
-    fi
-    
-    if [[ ! -f "$podspec_path" ]]; then
-        log_error "Podspec not found: $podspec_path"
-        return 1
+        log_info "No framework config found for $pod_name, using default settings"
+        FRAMEWORK_SOURCE_ONLY="true"
+        FRAMEWORK_PODSPEC="$podspec_file"
     fi
     
     log_success "Pod validation passed: $pod_name"
@@ -191,18 +228,40 @@ validate_version() {
 }
 
 # Build functions
+is_source_only_pod() {
+    local pod_name="$1"
+    
+    # Check if it's in the source-only list
+    local source_only_pods=("MSPCore" "FacebookAdapter" "GoogleAdapter" "NovaAdapter")
+    for source_pod in "${source_only_pods[@]}"; do
+        if [[ "$pod_name" == "$source_pod" ]]; then
+            return 0
+        fi
+    done
+    
+    # Check framework config
+    if load_framework_config "$pod_name" 2>/dev/null; then
+        if [[ "$FRAMEWORK_SOURCE_ONLY" == "true" ]]; then
+            return 0
+        fi
+    fi
+    
+    return 1
+}
+
 build_framework_for_release() {
     local framework_name="$1"
+    
+    # Check if this is a source-only pod
+    if is_source_only_pod "$framework_name"; then
+        log_info "Framework $framework_name is source-only, skipping build"
+        return 0
+    fi
     
     log_step "Building $framework_name for release..."
     
     if ! load_framework_config "$framework_name"; then
         return 1
-    fi
-    
-    if [[ "$FRAMEWORK_SOURCE_ONLY" == "true" ]]; then
-        log_info "Framework $framework_name is source-only, skipping build"
-        return 0
     fi
     
     # Use the unified build script
@@ -361,30 +420,36 @@ upload_release_assets() {
 
 # Git operations
 create_git_tag() {
-    local version="$1"
-    local message="$2"
+    local pod_name="$1"
+    local version="$2"
+    local message="$3"
     
-    log_step "Creating git tag: $version"
+    local tag_name="${pod_name}-${version}"
     
-    if git tag -a "$version" -m "$message"; then
-        log_success "Git tag created: $version"
+    log_step "Creating git tag: $tag_name"
+    
+    if git tag -a "$tag_name" -m "$message"; then
+        log_success "Git tag created: $tag_name"
         return 0
     else
-        log_error "Failed to create git tag: $version"
+        log_error "Failed to create git tag: $tag_name"
         return 1
     fi
 }
 
 push_git_tag() {
-    local version="$1"
+    local pod_name="$1"
+    local version="$2"
     
-    log_step "Pushing git tag: $version"
+    local tag_name="${pod_name}-${version}"
     
-    if git push origin "$version"; then
-        log_success "Git tag pushed: $version"
+    log_step "Pushing git tag: $tag_name"
+    
+    if git push origin "$tag_name"; then
+        log_success "Git tag pushed: $tag_name"
         return 0
     else
-        log_error "Failed to push git tag: $version"
+        log_error "Failed to push git tag: $tag_name"
         return 1
     fi
 }
@@ -395,23 +460,25 @@ rollback_release() {
     local version="$2"
     local reason="$3"
     
+    local tag_name="${pod_name}-${version}"
+    
     log_error "Rolling back release: $pod_name version $version"
     log_error "Reason: $reason"
     
     # Delete git tag
-    if git tag -d "$version" 2>/dev/null; then
-        log_info "Deleted local git tag: $version"
+    if git tag -d "$tag_name" 2>/dev/null; then
+        log_info "Deleted local git tag: $tag_name"
     fi
     
     # Push deletion to remote
-    if git push origin ":refs/tags/$version" 2>/dev/null; then
-        log_info "Deleted remote git tag: $version"
+    if git push origin ":refs/tags/$tag_name" 2>/dev/null; then
+        log_info "Deleted remote git tag: $tag_name"
     fi
     
     # Delete GitHub release if it exists
     if command -v gh >/dev/null 2>&1; then
-        if gh release delete "$version" --yes 2>/dev/null; then
-            log_info "Deleted GitHub release: $version"
+        if gh release delete "$tag_name" --yes 2>/dev/null; then
+            log_info "Deleted GitHub release: $tag_name"
         fi
     fi
     
@@ -507,6 +574,12 @@ perform_release() {
         return 1
     fi
     
+    # Auto-update podspec version
+    if ! update_podspec_version "$pod_name" "$version"; then
+        rollback_release "$pod_name" "$version" "Podspec version update failed"
+        return 1
+    fi
+    
     # Build framework
     if ! build_framework_for_release "$pod_name"; then
         rollback_release "$pod_name" "$version" "Build failed"
@@ -521,13 +594,13 @@ perform_release() {
     
     # Create git tag
     local tag_message="Release $pod_name version $version"
-    if ! create_git_tag "$version" "$tag_message"; then
+    if ! create_git_tag "$pod_name" "$version" "$tag_message"; then
         rollback_release "$pod_name" "$version" "Git tag creation failed"
         return 1
     fi
     
     # Push git tag
-    if ! push_git_tag "$version"; then
+    if ! push_git_tag "$pod_name" "$version"; then
         rollback_release "$pod_name" "$version" "Git tag push failed"
         return 1
     fi
@@ -604,6 +677,9 @@ POD NAMES:
     MSPiOSCore                    MSP iOS Core framework
     NovaCore                      Nova Core framework
     MSPCore                       MSP Core framework
+    FacebookAdapter               Facebook Adapter (source-only)
+    GoogleAdapter                 Google Adapter (source-only)
+    NovaAdapter                   Nova Adapter (source-only)
 
 EXAMPLES:
     # Release MSPiOSCore version 1.2.3
