@@ -193,7 +193,9 @@ validate_pod_name() {
     fi
     
     # Try to load framework config (for build configuration)
-    if ! load_framework_config "$pod_name" 2>/dev/null; then
+    if load_framework_config "$pod_name" 2>/dev/null; then
+        log_info "Loaded framework config for $pod_name"
+    else
         log_info "No framework config found for $pod_name, using default settings"
         FRAMEWORK_SOURCE_ONLY="true"
         FRAMEWORK_PODSPEC="$podspec_file"
