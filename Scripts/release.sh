@@ -166,6 +166,29 @@ update_podspec_version() {
     fi
 }
 
+update_podspec_repository_url() {
+    local pod_name="$1"
+    local repository_url="$2"
+    
+    log_step "Updating $pod_name podspec repository URL to $repository_url..."
+    
+    local podspec_file="${pod_name}.podspec"
+    if [[ ! -f "$podspec_file" ]]; then
+        log_error "Podspec not found: $podspec_file"
+        return 1
+    fi
+    
+    # Update repository URL in podspec
+    if sed -i.bak "s|spec\.source.*=.*{ :git => \".*\", :tag => \"#{spec\.version}\" }|spec.source       = { :git => \"$repository_url\", :tag => \"#{spec.version}\" }|" "$podspec_file"; then
+        rm -f "${podspec_file}.bak"
+        log_success "Updated $pod_name podspec repository URL to $repository_url"
+        return 0
+    else
+        log_error "Failed to update $pod_name podspec repository URL"
+        return 1
+    fi
+}
+
 validate_pod_name() {
     local pod_name="$1"
     
@@ -230,6 +253,24 @@ validate_version() {
     fi
     
     log_success "Version validation passed: $version"
+    return 0
+}
+
+validate_repository_url() {
+    local repository_url="$1"
+    
+    if [[ -z "$repository_url" ]]; then
+        log_error "Repository URL is required"
+        return 1
+    fi
+    
+    # Check if it's a valid GitHub URL
+    if [[ ! "$repository_url" =~ ^https://github\.com/[^/]+/[^/]+\.git$ ]]; then
+        log_error "Invalid repository URL format: $repository_url. Expected: https://github.com/owner/repo.git"
+        return 1
+    fi
+    
+    log_success "Repository URL validation passed: $repository_url"
     return 0
 }
 
@@ -589,9 +630,21 @@ perform_release() {
         return 1
     fi
     
+    # Validate repository URL if provided
+    if [[ -n "$repository_url" ]] && ! validate_repository_url "$repository_url"; then
+        rollback_release "$pod_name" "$version" "Repository URL validation failed"
+        return 1
+    fi
+    
     # Auto-update podspec version
     if ! update_podspec_version "$pod_name" "$version"; then
         rollback_release "$pod_name" "$version" "Podspec version update failed"
+        return 1
+    fi
+    
+    # Auto-update podspec repository URL if provided
+    if [[ -n "$repository_url" ]] && ! update_podspec_repository_url "$pod_name" "$repository_url"; then
+        rollback_release "$pod_name" "$version" "Podspec repository URL update failed"
         return 1
     fi
     
@@ -676,6 +729,7 @@ OPTIONS:
     --skip-validation             Skip podspec validation
     --skip-cocoapods              Skip CocoaPods publishing
     --skip-github                 Skip GitHub release creation
+    --repository URL              Set repository URL for podspec source
     --publish-cocoapods           Enable CocoaPods publishing
     --backup                      Create backup before release
     --restore BACKUP_DIR          Restore from backup directory
@@ -758,6 +812,7 @@ main() {
     local rollback_mode=false
     local rollback_pod=""
     local rollback_version=""
+    local repository_url="https://github.com/ParticleMedia/msp-ios-sdk.git"
     
     while [[ $# -gt 0 ]]; do
         case $1 in
@@ -793,6 +848,10 @@ main() {
             --skip-github)
                 skip_github=true
                 shift
+                ;;
+            --repository)
+                repository_url="$2"
+                shift 2
                 ;;
             --publish-cocoapods)
                 publish_cocoapods=true
@@ -878,6 +937,7 @@ main() {
         log_info "Skip validation: $skip_validation"
         log_info "Skip CocoaPods: $skip_cocoapods"
         log_info "Skip GitHub: $skip_github"
+        log_info "Repository URL: $repository_url"
         log_info "Publish to CocoaPods: $publish_cocoapods"
         log_info "Force mode: $force_mode"
         exit 0

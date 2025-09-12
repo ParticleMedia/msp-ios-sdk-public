@@ -84,6 +84,7 @@ SKIP_GITHUB="false"
 DRY_RUN="false"
 FORCE="false"
 VERBOSE="false"
+REPOSITORY_URL="https://github.com/ParticleMedia/msp-ios-sdk.git"
 
 # Parse command line arguments
 parse_arguments() {
@@ -120,6 +121,10 @@ parse_arguments() {
             --publish-shared-libraries)
                 PUBLISH_SHARED_LIBRARIES="true"
                 shift
+                ;;
+            --repository)
+                REPOSITORY_URL="$2"
+                shift 2
                 ;;
             --verbose)
                 VERBOSE="true"
@@ -165,6 +170,7 @@ OPTIONS:
     --skip-cocoapods              Skip CocoaPods publishing
     --skip-github                 Skip GitHub release creation
     --publish-shared-libraries    Publish MSPSharedLibraries and PrebidAdapter
+    --repository URL              Set repository URL for podspec source
     --verbose                     Enable verbose output
 
 ENVIRONMENT VARIABLES:
@@ -244,6 +250,24 @@ validate_version() {
     return 0
 }
 
+validate_repository_url() {
+    local repository_url="$1"
+    
+    if [[ -z "$repository_url" ]]; then
+        log_error "Repository URL is required"
+        return 1
+    fi
+    
+    # Check if it's a valid GitHub URL
+    if [[ ! "$repository_url" =~ ^https://github\.com/[^/]+/[^/]+\.git$ ]]; then
+        log_error "Invalid repository URL format: $repository_url. Expected: https://github.com/owner/repo.git"
+        return 1
+    fi
+    
+    log_success "Repository URL validation passed: $repository_url"
+    return 0
+}
+
 # Branch management
 create_release_branch() {
     local version="$1"
@@ -294,6 +318,29 @@ update_podspec_version() {
     fi
 }
 
+update_podspec_repository_url() {
+    local pod_name="$1"
+    local repository_url="$2"
+    
+    log_step "Updating $pod_name podspec repository URL to $repository_url..."
+    
+    local podspec_file="${pod_name}.podspec"
+    if [[ ! -f "$podspec_file" ]]; then
+        log_error "Podspec not found: $podspec_file"
+        return 1
+    fi
+    
+    # Update repository URL in podspec
+    if sed -i.bak "s|spec\.source.*=.*{ :git => \".*\", :tag => \"#{spec\.version}\" }|spec.source       = { :git => \"$repository_url\", :tag => \"#{spec.version}\" }|" "$podspec_file"; then
+        rm -f "${podspec_file}.bak"
+        log_success "Updated $pod_name podspec repository URL to $repository_url"
+        return 0
+    else
+        log_error "Failed to update $pod_name podspec repository URL"
+        return 1
+    fi
+}
+
 update_mspcore_dependencies() {
     local msp_shared_version="$1"
     local prebid_version="$2"
@@ -339,6 +386,11 @@ release_single_pod() {
         return 1
     fi
     
+    # Update podspec repository URL if provided
+    if [[ -n "$REPOSITORY_URL" ]] && ! update_podspec_repository_url "$pod_name" "$REPOSITORY_URL"; then
+        return 1
+    fi
+    
     # Use release.sh for the actual release
     local release_cmd="./Scripts/release.sh --force"
     
@@ -352,6 +404,10 @@ release_single_pod() {
     
     if [[ "$SKIP_GITHUB" == "true" ]]; then
         release_cmd="$release_cmd --skip-github"
+    fi
+    
+    if [[ -n "$REPOSITORY_URL" ]]; then
+        release_cmd="$release_cmd --repository $REPOSITORY_URL"
     fi
     
     release_cmd="$release_cmd $pod_name $version"
