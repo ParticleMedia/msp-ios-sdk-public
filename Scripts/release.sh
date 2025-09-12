@@ -69,7 +69,7 @@ ensure_project_root() {
 # Framework configurations
 MSPIOSSCORE_CONFIG="name=MSPiOSCore;scheme=MSPiOSCore;output_dir=outputMSPiOSCore;deploy_dir=MSPSharedLibraries;xcframework_name=MSPiOSCore.xcframework;source_only=false;podspec=MSPiOSCore/MSPiOSCore.podspec"
 NOVACORE_CONFIG="name=NovaCore;scheme=NovaCore;output_dir=outputNova;deploy_dir=NovaAdapter;xcframework_name=NovaCore.xcframework;source_only=false;podspec=NovaCore/NovaCore.podspec"
-MSPCORE_CONFIG="name=MSPCore;scheme=MSPCore;output_dir=;deploy_dir=;xcframework_name=;source_only=true;podspec=MSPCore/MSPCore.podspec"
+MSPCORE_CONFIG="name=MSPCore;scheme=MSPCore;output_dir=;deploy_dir=;xcframework_name=;source_only=true;podspec=MSPCore.podspec"
 
 # Supported pods for automatic version updating
 SUPPORTED_PODS=("MSPiOSCore" "NovaCore" "MSPCore" "FacebookAdapter" "GoogleAdapter" "NovaAdapter" "MSPSharedLibraries" "PrebidAdapter" "AmazonAdapter" "UnityAdapter" "MintegralAdapter" "MobilefuseAdapter" "PubmaticAdapter" "InmobiAdapter" "MSPOMSDK")
@@ -525,23 +525,12 @@ publish_to_cocoapods() {
     sed -i.bak '/^$/N;/^\\n$/d' "$temp_podspec"
     rm -f "${temp_podspec}.bak"
     
-    # Convert to Git format for CocoaPods publishing
-    # Use the correct filename that matches the spec name
-    local temp_podspec="${pod_name}.podspec"
-    cp "$podspec_path" "$temp_podspec"
-    
-    # Clean up the podspec (remove extra blank lines at the beginning)
-    sed -i.bak '/^$/N;/^\\n$/d' "$temp_podspec"
-    rm -f "${temp_podspec}.bak"
-    
     # Convert to zip format for CocoaPods publishing (like 0.0.1-migration working approach)
     # Use zip files from GitHub releases for CocoaPods access
     local zip_url="https://github.com/ParticleMedia/msp-ios-sdk-public/releases/download/$version/${pod_name}-${version}.zip"
-    sed -i.bak "/spec\.source = {/,/}/c\\
-  spec.source = {\\
-    http: \"$zip_url\",\\
-    type: \"zip\"\\
-  }" "$temp_podspec"
+    # Replace the source line with zip format
+    sed -i.bak "s|:git => \"[^\"]*\"|http: \"$zip_url\"|" "$temp_podspec"
+    sed -i.bak "s|:tag => \"[^\"]*\"|type: \"zip\"|" "$temp_podspec"
     rm -f "${temp_podspec}.bak"
     
     # Use the original podspec as-is without adding extra sections
