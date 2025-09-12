@@ -16,10 +16,10 @@ Pod::Spec.new do |spec|
   #
 
   spec.name         = "MSPCore"
-  spec.version      = "0.0.2-test-shared2"
+  spec.version      = "0.0.93"
   spec.summary      = "An utility helper for MSP"
 
-  spec.ios.deployment_target = '15.0'
+  spec.ios.deployment_target = '13.0'
 
   # This description is used to generate tags and improve search results.
   #   * Think: What does it do? Why did you write it? What is the focus?
@@ -94,8 +94,8 @@ Pod::Spec.new do |spec|
   spec.source_files  = "MSPCore/MSPCore/**/*.{h,m,swift}"
   spec.exclude_files = "Classes/Exclude"
 
-  spec.dependency 'MSPSharedLibraries', '0.0.2-test-shared2'
-  spec.dependency 'PrebidAdapter', '0.0.2-test-shared2''0.0.92'
+  spec.dependency 'MSPSharedLibraries'
+  spec.dependency 'PrebidAdapter'#, '0.0.92'
   spec.dependency 'SwiftProtobuf'#, '1.21.0'
   spec.dependency 'SnapKit'
   #spec.vendored_frameworks= "MSPCore/PrebidAdapter.xcframework"#, "PrebidMobile.xcframework", "MSPiOSCore.xcframework"
