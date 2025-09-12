@@ -1,0 +1,7 @@
+framework module NovaCore {
+    
+    // Versions
+    header "NovaCore.h"
+    
+    
+}

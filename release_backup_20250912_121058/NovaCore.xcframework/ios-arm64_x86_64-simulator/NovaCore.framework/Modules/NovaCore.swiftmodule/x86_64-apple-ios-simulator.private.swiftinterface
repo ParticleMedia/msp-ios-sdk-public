@@ -1,0 +1,187 @@
+// swift-interface-format-version: 1.0
+// swift-compiler-version: Apple Swift version 6.1.2 effective-5.10 (swiftlang-6.1.2.1.2 clang-1700.0.13.5)
+// swift-module-flags: -target x86_64-apple-ios15.0-simulator -enable-objc-interop -enable-library-evolution -swift-version 5 -enforce-exclusivity=checked -O -enable-experimental-feature DebugDescriptionMacro -enable-bare-slash-regex -module-name NovaCore
+// swift-module-flags-ignorable: -no-verify-emitted-module-interface -interface-compiler-version 6.1.2
+import AVFoundation
+import AdSupport
+import AppTrackingTransparency
+import CoreImage.CIFilterBuiltins
+import Combine
+import CoreFoundation
+import CoreGraphics
+import CoreImage
+import CoreMedia
+import DeveloperToolsSupport
+import Foundation
+import Kingfisher
+@_exported import NovaCore
+import OSLog
+import SafariServices
+import SnapKit
+import StoreKit
+import Swift
+import SwiftUI
+import UIKit
+import WebKit
+import _Concurrency
+import _StringProcessing
+import _SwiftConcurrencyShims
+public enum NovaCreativeType : Swift.String, Swift.Codable {
+  case businessProfile
+  case fullImage
+  case nativeImage
+  case nativeVideo
+  case sponsoredContent
+  case carousel
+  case playableImage
+  case playableVideo
+  public init?(rawValue: Swift.String)
+  public typealias RawValue = Swift.String
+  public var rawValue: Swift.String {
+    get
+  }
+}
+@objc @_Concurrency.MainActor @preconcurrency open class NovaNativeAdView : UIKit.UIView {
+  @_Concurrency.MainActor @preconcurrency public var titleLabel: UIKit.UILabel?
+  @_Concurrency.MainActor @preconcurrency public var bodyLabel: UIKit.UILabel?
+  @_Concurrency.MainActor @preconcurrency public var advertiserLabel: UIKit.UILabel?
+  @_Concurrency.MainActor @preconcurrency public var callToActionButton: UIKit.UIButton?
+  @_Concurrency.MainActor @preconcurrency public var icon: UIKit.UIImageView?
+  @_Concurrency.MainActor @preconcurrency final public let mediaView: NovaCore.NovaAdMediaView
+  @_Concurrency.MainActor @preconcurrency public var novaAdMediaViewDelegate: (any NovaCore.NovaAdMediaViewDelegate)?
+  @_Concurrency.MainActor @preconcurrency public var tappableViews: [UIKit.UIView]? {
+    get
+    set
+  }
+  @_Concurrency.MainActor @preconcurrency public init(mediaView: NovaCore.NovaAdMediaView? = nil)
+  @available(*, unavailable)
+  @_Concurrency.MainActor @preconcurrency @objc required dynamic public init?(coder: Foundation.NSCoder)
+  @objc deinit
+  @_Concurrency.MainActor @preconcurrency public func setUpView(nativeAd: NovaCore.NovaNativeAdItem)
+  @_Concurrency.MainActor @preconcurrency public func prepareViewForInteraction(nativeAd: NovaCore.NovaNativeAdItem)
+}
+@objc @_hasMissingDesignatedInitializers @_Concurrency.MainActor @preconcurrency final public class NovaAdVideoView : UIKit.UIView {
+  public enum Style : Swift.Equatable {
+    case clear
+    case playButtonOnLeftBottom
+    case playButtonOnCenter(progressBarStyle: NovaCore.NovaAdVideoView.Style.ProgressBarStyle)
+    case landingPage
+    public enum ProgressBarStyle : Swift.Equatable {
+      case hide
+      case show(bottomMargin: CoreFoundation.CGFloat)
+      public static func == (lhs: NovaCore.NovaAdVideoView.Style.ProgressBarStyle, rhs: NovaCore.NovaAdVideoView.Style.ProgressBarStyle) -> Swift.Bool
+    }
+    public static func == (lhs: NovaCore.NovaAdVideoView.Style, rhs: NovaCore.NovaAdVideoView.Style) -> Swift.Bool
+  }
+  @objc deinit
+}
+public protocol NovaAdMediaViewDelegate : AnyObject {
+  func mediaViewPlayingDidEndPlaying()
+  func mediaViewDidFinishFirstLoop()
+}
+@objc @_hasMissingDesignatedInitializers @_Concurrency.MainActor @preconcurrency final public class NovaAdMediaView : UIKit.UIView {
+  @_Concurrency.MainActor @preconcurrency public init(delegate: (any NovaCore.NovaAdMediaViewDelegate)? = nil)
+  @objc deinit
+}
+@_hasMissingDesignatedInitializers public class NovaAdVideoController {
+  public var style: NovaCore.NovaAdVideoView.Style
+  public var muted: Swift.Bool {
+    get
+    set
+  }
+  @objc deinit
+}
+@_hasMissingDesignatedInitializers public class NovaAdPlayableController {
+  public enum RenderOption {
+    case auto
+    case imageOrVideo
+    case playable
+    public static func == (a: NovaCore.NovaAdPlayableController.RenderOption, b: NovaCore.NovaAdPlayableController.RenderOption) -> Swift.Bool
+    public func hash(into hasher: inout Swift.Hasher)
+    public var hashValue: Swift.Int {
+      get
+    }
+  }
+  public var renderOption: NovaCore.NovaAdPlayableController.RenderOption
+  @objc deinit
+}
+@_hasMissingDesignatedInitializers public class NovaAdMediaContent {
+  public enum NovaAdMediaRenderRecommendation {
+    case aspectRatio(CoreFoundation.CGFloat)
+    case aspectRatioAndOffset(CoreFoundation.CGFloat, CoreFoundation.CGFloat)
+    case minHeight(CoreFoundation.CGFloat)
+    case free
+  }
+  public var videoController: NovaCore.NovaAdVideoController? {
+    get
+    set
+  }
+  public var playableController: NovaCore.NovaAdPlayableController? {
+    get
+    set
+  }
+  public var renderRecommendation: NovaCore.NovaAdMediaContent.NovaAdMediaRenderRecommendation? {
+    get
+  }
+  @objc deinit
+}
+@objc @_hasMissingDesignatedInitializers final public class NovaNativeAdItem : NovaCore.NovaNativeBaseAd {
+  weak final public var delegate: (any NovaCore.NovaNativeAdDelegate)?
+  @objc deinit
+}
+public enum NovaAdBuilder {
+  public static func buildNativeAd(adItem: NovaCore.AdItem, adUnitId: Swift.String, eCPMInDollar: Foundation.Decimal, abConfig: [Swift.String : Swift.String]? = nil, isParallax: Swift.Bool = false) throws -> NovaCore.NovaNativeAdItem
+  public static func buildInterstitialAd(adItem: NovaCore.AdItem, adUnitId: Swift.String, eCPMInDollar: Foundation.Decimal, abConfig: [Swift.String : Swift.String]? = nil) -> NovaCore.NovaInterstitialAdItem?
+  public static func buildInterstitialAds(adItems: [NovaCore.AdItem], adUnitId: Swift.String, abConfig: [Swift.String : Swift.String]?) -> [NovaCore.NovaInterstitialAdItem]
+}
+@objc @_hasMissingDesignatedInitializers public class NovaBaseAd : ObjectiveC.NSObject, Swift.Codable {
+  required public init(from decoder: any Swift.Decoder) throws
+  public func encode(to encoder: any Swift.Encoder) throws
+  @objc deinit
+}
+public protocol NovaNativeAdDelegate : AnyObject {
+  func nativeAdDidLogImpression(_ nativeAd: NovaCore.NovaNativeAdItem)
+  func nativeAdDidLogClick(_ nativeAd: NovaCore.NovaNativeAdItem, clickAreaName: Swift.String)
+  func nativeAdDidFinishRender(_ nativeAd: NovaCore.NovaNativeAdItem)
+  func nativeAdRootViewController() -> UIKit.UIViewController?
+}
+@objc @_hasMissingDesignatedInitializers public class NovaNativeBaseAd : NovaCore.NovaBaseAd {
+  public var creativeType: NovaCore.NovaCreativeType
+  public var headline: Swift.String?
+  public var body: Swift.String?
+  public var callToAction: Swift.String?
+  public var advertiser: Swift.String?
+  public var iconUrlStr: Swift.String?
+  override public func encode(to encoder: any Swift.Encoder) throws
+  @objc deinit
+}
+public struct NovaResponseDataModel : Swift.Codable {
+  public let ads: [NovaCore.AdItem]?
+  public let abConfig: [Swift.String : Swift.String]?
+  public func encode(to encoder: any Swift.Encoder) throws
+  public init(from decoder: any Swift.Decoder) throws
+}
+public struct AdItem : Swift.Codable {
+  public func encode(to encoder: any Swift.Encoder) throws
+  public init(from decoder: any Swift.Decoder) throws
+}
+@objc @_hasMissingDesignatedInitializers final public class NovaInterstitialAdItem : NovaCore.NovaNativeBaseAd {
+  weak final public var delegate: (any NovaCore.NovaInterstitialAdDelegate)?
+  override final public func encode(to encoder: any Swift.Encoder) throws
+  final public func present(rootViewController: UIKit.UIViewController)
+  @objc deinit
+}
+public protocol NovaInterstitialAdDelegate : AnyObject {
+  func interstitialAdDidDisplay(_ interstitialAd: NovaCore.NovaInterstitialAdItem)
+  func interstitialAdDidDismiss(_ interstitialAd: NovaCore.NovaInterstitialAdItem)
+  func interstitialAdDidLogClick(_ interstitialAd: NovaCore.NovaInterstitialAdItem)
+  func interstitialAdDidFailToDisplay(_ interstitialAd: NovaCore.NovaInterstitialAdItem)
+}
+extension NovaCore.NovaInterstitialAdDelegate {
+  public func interstitialAdDidFailToDisplay(_ interstitialAd: NovaCore.NovaInterstitialAdItem)
+}
+extension NovaCore.NovaCreativeType : Swift.Equatable {}
+extension NovaCore.NovaCreativeType : Swift.Hashable {}
+extension NovaCore.NovaCreativeType : Swift.RawRepresentable {}
+extension NovaCore.NovaAdPlayableController.RenderOption : Swift.Equatable {}
+extension NovaCore.NovaAdPlayableController.RenderOption : Swift.Hashable {}

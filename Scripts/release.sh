@@ -72,7 +72,7 @@ NOVACORE_CONFIG="name=NovaCore;scheme=NovaCore;output_dir=outputNova;deploy_dir=
 MSPCORE_CONFIG="name=MSPCore;scheme=MSPCore;output_dir=;deploy_dir=;xcframework_name=;source_only=true;podspec=MSPCore/MSPCore.podspec"
 
 # Supported pods for automatic version updating
-SUPPORTED_PODS=("MSPiOSCore" "NovaCore" "MSPCore" "FacebookAdapter" "GoogleAdapter" "NovaAdapter")
+SUPPORTED_PODS=("MSPiOSCore" "NovaCore" "MSPCore" "FacebookAdapter" "GoogleAdapter" "NovaAdapter" "MSPSharedLibraries" "PrebidAdapter")
 
 # Parse config value
 parse_config_value() {
@@ -238,7 +238,7 @@ is_source_only_pod() {
     local pod_name="$1"
     
     # Check if it's in the source-only list
-    local source_only_pods=("MSPCore" "FacebookAdapter" "GoogleAdapter" "NovaAdapter")
+    local source_only_pods=("MSPCore" "FacebookAdapter" "GoogleAdapter" "NovaAdapter" "MSPSharedLibraries" "PrebidAdapter")
     for source_pod in "${source_only_pods[@]}"; do
         if [[ "$pod_name" == "$source_pod" ]]; then
             return 0
@@ -695,6 +695,8 @@ POD NAMES:
     FacebookAdapter               Facebook Adapter (source-only)
     GoogleAdapter                 Google Adapter (source-only)
     NovaAdapter                   Nova Adapter (source-only)
+    MSPSharedLibraries            MSP Shared Libraries (source-only)
+    PrebidAdapter                 Prebid Adapter (source-only)
 
 EXAMPLES:
     # Release MSPiOSCore version 1.2.3
