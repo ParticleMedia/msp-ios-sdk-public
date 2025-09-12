@@ -536,7 +536,7 @@ publish_to_cocoapods() {
     add_complete_podspec_sections "$temp_podspec" "$pod_name"
     
     # Publish to CocoaPods trunk
-    if pod trunk push "$temp_podspec" --allow-warnings --skip-import-validation; then
+    if pod trunk push "$temp_podspec" --allow-warnings --skip-import-validation --skip-tests --use-libraries; then
         log_success "Successfully published $pod_name version $version to CocoaPods"
         rm -f "$temp_podspec"
         return 0
