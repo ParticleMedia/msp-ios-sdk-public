@@ -274,6 +274,34 @@ validate_repository_url() {
     return 0
 }
 
+# Check if a pod version is already published to CocoaPods
+check_pod_version_published() {
+    local pod_name="$1"
+    local version="$2"
+    
+    log_step "Checking if $pod_name version $version is already published to CocoaPods..."
+    
+    # Check if pod search command is available
+    if ! command -v pod >/dev/null 2>&1; then
+        log_warn "CocoaPods not available, cannot check if version is published"
+        return 1
+    fi
+    
+    # Update pod repo to get latest information
+    if ! pod repo update >/dev/null 2>&1; then
+        log_warn "Failed to update pod repo, using cached information"
+    fi
+    
+    # Check if the specific version exists
+    if pod search "$pod_name" --simple 2>/dev/null | grep -q "$version"; then
+        log_warn "Version $version of $pod_name is already published to CocoaPods"
+        return 0
+    else
+        log_info "Version $version of $pod_name is not published to CocoaPods"
+        return 1
+    fi
+}
+
 # Branch management
 create_release_branch() {
     local version="$1"
@@ -386,6 +414,12 @@ release_single_pod() {
     local skip_validation="$3"
     
     log_release "Releasing $pod_name version $version"
+    
+    # Check if version is already published to CocoaPods
+    if check_pod_version_published "$pod_name" "$version"; then
+        log_warn "Version $version of $pod_name is already published to CocoaPods, skipping release"
+        return 0
+    fi
     
     # Update podspec version
     if ! update_podspec_version "$pod_name" "$version"; then
