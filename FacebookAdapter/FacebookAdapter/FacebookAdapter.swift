@@ -9,7 +9,7 @@ import Foundation
 
 @objc public class FacebookAdapter : NSObject, AdNetworkAdapter {
     public func getSDKVersion() -> String {
-        return "6.15.0"
+        return "0.0.2-migration-test-concurrent"
     }
     
     public func setAdMetricReporter(adMetricReporter: any MSPiOSCore.AdMetricReporter) {
