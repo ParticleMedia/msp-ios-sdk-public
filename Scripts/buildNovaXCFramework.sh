@@ -261,6 +261,26 @@ else
     exit 1
 fi
 
+# Synchronize assets
+print_section "Synchronizing Assets"
+print_step "Synchronizing assets from NBAssets.xcassets to NBResourceBundle.bundle..."
+if ./Scripts/lib/asset_sync.sh; then
+    print_success "Assets synchronized successfully"
+else
+    color_error "❌ ERROR: Failed to synchronize assets"
+    exit 1
+fi
+
+# Validate asset synchronization
+print_step "Validating asset synchronization..."
+if ./Scripts/lib/asset_validation.sh --quiet; then
+    print_success "Asset validation passed - all assets are synchronized"
+else
+    color_error "❌ ERROR: Asset validation failed - assets are out of sync"
+    color_error "Please run './Scripts/lib/asset_sync.sh' to fix asset synchronization"
+    exit 1
+fi
+
 # Build for iOS device
 print_section "Building NovaCore for iOS Device"
 print_step "Building iOS device archive..."
