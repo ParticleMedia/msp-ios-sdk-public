@@ -48,6 +48,8 @@ Pod::Spec.new do |spec|
   #spec.dependency 'Google-Mobile-Ads-SDK', "10.14.0"
   spec.dependency 'MSPSharedLibraries'
   spec.dependency 'MSPOMSDK'
+  spec.dependency 'Kingfisher', '~> 7.0'
+  spec.dependency 'SnapKit'
 
   spec.vendored_frameworks= "NovaAdapter/NovaCore.xcframework"
 
