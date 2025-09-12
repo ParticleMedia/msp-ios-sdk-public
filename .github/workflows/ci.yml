@@ -40,6 +40,14 @@ jobs:
         run: |
           bundle exec fastlane verify_pod_installation
           
+      - name: Validate asset synchronization
+        run: |
+          echo "🔍 Validating asset synchronization..."
+          chmod +x Scripts/lib/asset_validation.sh
+          
+          # Validate that assets are properly synchronized
+          ./Scripts/lib/asset_validation.sh --verbose --json --ci-mode
+          
       - name: Validate CocoaPods specs (comprehensive)
         run: |
           bundle exec fastlane validate_podspecs_comprehensive
