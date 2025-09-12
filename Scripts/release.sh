@@ -202,16 +202,16 @@ update_podspec_to_github_release() {
         return 1
     fi
     
-    # Extract repository name from URL
-    local repo_name=$(echo "$repository_url" | sed 's|.*github\.com/||' | sed 's|\.git$||')
+    # Use public repository URL for CocoaPods access
+    local public_repo_url="https://github.com/ParticleMedia/msp-ios-sdk-public.git"
     
-    # Update podspec to use GitHub release format
+    # Update podspec to use Git format with public repository
     # Create a temporary file with the new source format
     local temp_file=$(mktemp)
     cat > "$temp_file" << EOF
   spec.source = {
-    http: "https://github.com/$repo_name/releases/download/$version/$pod_name-$version.zip",
-    type: "zip"
+    git: "$public_repo_url",
+    tag: "$version"
   }
 EOF
     
@@ -517,12 +517,17 @@ publish_to_cocoapods() {
     
     # Use the working 0.0.1-migration approach: Git format with complete podspec
     # Create a temporary podspec with Git format and complete content
-    local temp_podspec="${podspec_path%.podspec}_cocoapods.podspec"
+    # Use the correct filename that matches the spec name
+    local temp_podspec="${pod_name}.podspec"
     cp "$podspec_path" "$temp_podspec"
     
+    # Clean up the podspec (remove extra blank lines at the beginning)
+    sed -i.bak '/^$/N;/^\\n$/d' "$temp_podspec"
+    rm -f "${temp_podspec}.bak"
+    
     # Convert to Git format for CocoaPods publishing
-    # Use the full version for tags (like 0.0.1-migration approach)
-    local git_repo_url="${repository_url:-https://github.com/ParticleMedia/msp-ios-sdk.git}"
+    # Use the public repository URL for CocoaPods access
+    local git_repo_url="https://github.com/ParticleMedia/msp-ios-sdk-public.git"
     sed -i.bak "/spec\.source = {/,/}/c\\
   spec.source = { :git => \"$git_repo_url\", :tag => \"$version\" }" "$temp_podspec"
     rm -f "${temp_podspec}.bak"
@@ -727,7 +732,8 @@ create_git_tag() {
     local version="$2"
     local message="$3"
     
-    local tag_name="${pod_name}-${version}"
+    # Use simple version tag (like 0.0.1-migration approach)
+    local tag_name="$version"
     
     log_step "Creating git tag: $tag_name"
     
@@ -744,17 +750,40 @@ push_git_tag() {
     local pod_name="$1"
     local version="$2"
     
-    local tag_name="${pod_name}-${version}"
+    # Use simple version tag (like 0.0.1-migration approach)
+    local tag_name="$version"
     
     log_step "Pushing git tag: $tag_name"
     
+    # Push to private repository first
     if git push origin "$tag_name"; then
-        log_success "Git tag pushed: $tag_name"
-        return 0
+        log_success "Git tag pushed to private repo: $tag_name"
     else
-        log_error "Failed to push git tag: $tag_name"
+        log_error "Failed to push git tag to private repo: $tag_name"
         return 1
     fi
+    
+    # Push to public repository for CocoaPods access
+    if git remote get-url public >/dev/null 2>&1; then
+        if git push public "$tag_name"; then
+            log_success "Git tag pushed to public repo: $tag_name"
+        else
+            log_warn "Failed to push git tag to public repo: $tag_name"
+        fi
+    else
+        log_info "Adding public repository remote..."
+        if git remote add public https://github.com/ParticleMedia/msp-ios-sdk-public.git; then
+            if git push public "$tag_name"; then
+                log_success "Git tag pushed to public repo: $tag_name"
+            else
+                log_warn "Failed to push git tag to public repo: $tag_name"
+            fi
+        else
+            log_warn "Failed to add public repository remote"
+        fi
+    fi
+    
+    return 0
 }
 
 # Rollback functions
@@ -763,7 +792,8 @@ rollback_release() {
     local version="$2"
     local reason="$3"
     
-    local tag_name="${pod_name}-${version}"
+    # Use simple version tag (like 0.0.1-migration approach)
+    local tag_name="$version"
     
     log_error "Rolling back release: $pod_name version $version"
     log_error "Reason: $reason"
@@ -776,6 +806,13 @@ rollback_release() {
     # Push deletion to remote
     if git push origin ":refs/tags/$tag_name" 2>/dev/null; then
         log_info "Deleted remote git tag: $tag_name"
+    fi
+    
+    # Delete from public repository if it exists
+    if git remote get-url public >/dev/null 2>&1; then
+        if git push public ":refs/tags/$tag_name" 2>/dev/null; then
+            log_info "Deleted public git tag: $tag_name"
+        fi
     fi
     
     # Delete GitHub release if it exists
