@@ -7,9 +7,10 @@ This document describes the automated CI/CD pipeline for the MSP iOS SDK using *
 The CI/CD pipeline automates:
 - **Testing**: Automated testing on pull requests
 - **Building**: XCFramework generation with optional code signing
-- **Validation**: CocoaPods spec validation
+- **Validation**: CocoaPods spec validation and asset synchronization
 - **Releasing**: Automated GitHub releases and CocoaPods publishing
 - **Quality**: Code linting and formatting checks
+- **Asset Management**: Automated asset synchronization and validation
 
 ## 🏗️ Architecture
 
@@ -135,11 +136,22 @@ bundle exec fastlane status
 - ✅ Artifact upload and sharing between jobs
 - ✅ Code quality checks (RuboCop, SwiftFormat)
 
-### 2. Release - Automated Publishing (`release.yml`)
+### 2. Asset Validation (`asset-validation.yml`)
+**Triggers**: Asset changes, manual workflow dispatch
+**Purpose**: Validate and synchronize assets between NBAssets.xcassets and NBResourceBundle.bundle
+
+**Features**:
+- ✅ Automatic asset synchronization
+- ✅ Asset validation and comparison
+- ✅ Detailed validation reports
+- ✅ PR comments on validation failures
+- ✅ Manual asset sync with PR creation
+
+### 3. Release - Automated Publishing (`release.yml`)
 **Triggers**: GitHub releases, manual workflow dispatch
 **Purpose**: Automated publishing and distribution
 
-### 3. Manual Build - On-Demand (`manual-build.yml`)
+### 4. Manual Build - On-Demand (`manual-build.yml`)
 **Triggers**: Manual workflow dispatch
 **Purpose**: On-demand framework building
 
@@ -156,6 +168,42 @@ bundle exec fastlane status
 - 🔐 Optional code signing
 - 📤 Configurable artifact upload
 - 📊 Build summary and reporting
+
+## 🎨 Asset Management
+
+### Asset Synchronization
+The SDK includes automated asset synchronization to prevent production bugs caused by out-of-sync assets between `NBAssets.xcassets` and `NBResourceBundle.bundle`.
+
+#### How It Works
+1. **Source of Truth**: `NBAssets.xcassets` contains the original image assets
+2. **Compiled Bundle**: `NBResourceBundle.bundle` contains the compiled `Assets.car` file
+3. **Synchronization**: Scripts automatically sync assets from source to bundle
+4. **Validation**: CI/CD validates that both sources contain the same assets
+
+#### Available Scripts
+```bash
+# Synchronize assets from NBAssets.xcassets to NBResourceBundle.bundle
+./Scripts/lib/asset_sync.sh
+
+# Validate that assets are synchronized
+./Scripts/lib/asset_validation.sh --verbose
+
+# Validate with JSON output for CI/CD
+./Scripts/lib/asset_validation.sh --json
+```
+
+#### CI/CD Integration
+- **Automatic Validation**: Every PR and push validates asset synchronization
+- **Build Integration**: Asset sync runs automatically during framework building
+- **Failure Prevention**: Build fails if assets are out of sync
+- **Detailed Reports**: Validation reports are uploaded as artifacts
+
+#### Manual Asset Sync
+You can manually trigger asset synchronization:
+1. Go to **Actions** tab in GitHub
+2. Select **Asset Validation** workflow
+3. Click **Run workflow**
+4. Choose whether to sync assets or just validate
 
 ## 🔧 CI-Specific Features
 
