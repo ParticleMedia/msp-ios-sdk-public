@@ -88,16 +88,8 @@ struct Com_Newsbreak_Mes_Events_SdkInitEvent: @unchecked Sendable {
     set {_uniqueStorage()._mspID = newValue}
   }
 
-  var lastSystemBootTimeMs: UInt64 {
-    get {return _storage._lastSystemBootTimeMs}
-    set {_uniqueStorage()._lastSystemBootTimeMs = newValue}
-  }
-
-  var lastSystemUpdateTimeMs: UInt64 {
-    get {return _storage._lastSystemUpdateTimeMs}
-    set {_uniqueStorage()._lastSystemUpdateTimeMs = newValue}
-  }
-
+  /// 11 and 12 are reserved for some deprecated fields
+  /// DO NOT USE THEM ANYMORE
   var ifa: String {
     get {return _storage._ifa}
     set {_uniqueStorage()._ifa = newValue}
@@ -162,8 +154,6 @@ extension Com_Newsbreak_Mes_Events_SdkInitEvent: SwiftProtobuf.Message, SwiftPro
     8: .standard(proto: "total_complete_time"),
     9: .standard(proto: "complete_time_by_ad_network"),
     10: .standard(proto: "msp_id"),
-    11: .standard(proto: "last_system_boot_time_ms"),
-    12: .standard(proto: "last_system_update_time_ms"),
     13: .same(proto: "ifa"),
     14: .standard(proto: "battery_level"),
     15: .standard(proto: "battery_status"),
@@ -185,8 +175,6 @@ extension Com_Newsbreak_Mes_Events_SdkInitEvent: SwiftProtobuf.Message, SwiftPro
     var _totalCompleteTime: Int32? = nil
     var _completeTimeByAdNetwork: Dictionary<String,Int32> = [:]
     var _mspID: String = String()
-    var _lastSystemBootTimeMs: UInt64 = 0
-    var _lastSystemUpdateTimeMs: UInt64 = 0
     var _ifa: String = String()
     var _batteryLevel: Float = 0
     var _batteryStatus: String = String()
@@ -215,8 +203,6 @@ extension Com_Newsbreak_Mes_Events_SdkInitEvent: SwiftProtobuf.Message, SwiftPro
       _totalCompleteTime = source._totalCompleteTime
       _completeTimeByAdNetwork = source._completeTimeByAdNetwork
       _mspID = source._mspID
-      _lastSystemBootTimeMs = source._lastSystemBootTimeMs
-      _lastSystemUpdateTimeMs = source._lastSystemUpdateTimeMs
       _ifa = source._ifa
       _batteryLevel = source._batteryLevel
       _batteryStatus = source._batteryStatus
@@ -253,8 +239,6 @@ extension Com_Newsbreak_Mes_Events_SdkInitEvent: SwiftProtobuf.Message, SwiftPro
         case 8: try { try decoder.decodeSingularInt32Field(value: &_storage._totalCompleteTime) }()
         case 9: try { try decoder.decodeMapField(fieldType: SwiftProtobuf._ProtobufMap<SwiftProtobuf.ProtobufString,SwiftProtobuf.ProtobufInt32>.self, value: &_storage._completeTimeByAdNetwork) }()
         case 10: try { try decoder.decodeSingularStringField(value: &_storage._mspID) }()
-        case 11: try { try decoder.decodeSingularUInt64Field(value: &_storage._lastSystemBootTimeMs) }()
-        case 12: try { try decoder.decodeSingularUInt64Field(value: &_storage._lastSystemUpdateTimeMs) }()
         case 13: try { try decoder.decodeSingularStringField(value: &_storage._ifa) }()
         case 14: try { try decoder.decodeSingularFloatField(value: &_storage._batteryLevel) }()
         case 15: try { try decoder.decodeSingularStringField(value: &_storage._batteryStatus) }()
@@ -305,12 +289,6 @@ extension Com_Newsbreak_Mes_Events_SdkInitEvent: SwiftProtobuf.Message, SwiftPro
       if !_storage._mspID.isEmpty {
         try visitor.visitSingularStringField(value: _storage._mspID, fieldNumber: 10)
       }
-      if _storage._lastSystemBootTimeMs != 0 {
-        try visitor.visitSingularUInt64Field(value: _storage._lastSystemBootTimeMs, fieldNumber: 11)
-      }
-      if _storage._lastSystemUpdateTimeMs != 0 {
-        try visitor.visitSingularUInt64Field(value: _storage._lastSystemUpdateTimeMs, fieldNumber: 12)
-      }
       if !_storage._ifa.isEmpty {
         try visitor.visitSingularStringField(value: _storage._ifa, fieldNumber: 13)
       }
@@ -354,8 +332,6 @@ extension Com_Newsbreak_Mes_Events_SdkInitEvent: SwiftProtobuf.Message, SwiftPro
         if _storage._totalCompleteTime != rhs_storage._totalCompleteTime {return false}
         if _storage._completeTimeByAdNetwork != rhs_storage._completeTimeByAdNetwork {return false}
         if _storage._mspID != rhs_storage._mspID {return false}
-        if _storage._lastSystemBootTimeMs != rhs_storage._lastSystemBootTimeMs {return false}
-        if _storage._lastSystemUpdateTimeMs != rhs_storage._lastSystemUpdateTimeMs {return false}
         if _storage._ifa != rhs_storage._ifa {return false}
         if _storage._batteryLevel != rhs_storage._batteryLevel {return false}
         if _storage._batteryStatus != rhs_storage._batteryStatus {return false}
