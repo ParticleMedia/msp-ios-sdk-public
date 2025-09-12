@@ -496,6 +496,84 @@ wait_for_cocoapods_sync() {
     return 1
 }
 
+# Concurrent publishing functions
+publish_pod_concurrent() {
+    local pod_name="$1"
+    local version="$2"
+    local skip_validation="$3"
+    local log_file="/tmp/release_${pod_name}_${version}.log"
+    
+    log_info "Starting concurrent release of $pod_name version $version (log: $log_file)"
+    
+    # Run release in background and capture output
+    {
+        echo "=== Starting release of $pod_name version $version at $(date) ==="
+        release_single_pod "$pod_name" "$version" "$skip_validation"
+        local exit_code=$?
+        echo "=== Release of $pod_name version $version completed with exit code $exit_code at $(date) ==="
+        exit $exit_code
+    } > "$log_file" 2>&1 &
+    
+    local pid=$!
+    echo "$pid:$log_file:$pod_name:$version"
+}
+
+wait_for_concurrent_releases() {
+    local release_info=("$@")
+    local failed_pods=()
+    local success_pods=()
+    
+    log_step "Waiting for all concurrent releases to complete..."
+    
+    # Wait for all background processes
+    for info in "${release_info[@]}"; do
+        IFS=':' read -r pid log_file pod_name version <<< "$info"
+        
+        log_info "Waiting for $pod_name (PID: $pid)..."
+        if wait $pid; then
+            log_success "✅ $pod_name version $version released successfully"
+            success_pods+=("$pod_name")
+        else
+            log_error "❌ $pod_name version $version failed to release"
+            failed_pods+=("$pod_name")
+            log_error "Check log file for details: $log_file"
+        fi
+    done
+    
+    # Report results
+    if [[ ${#failed_pods[@]} -eq 0 ]]; then
+        log_success "All concurrent releases completed successfully: ${success_pods[*]}"
+        return 0
+    else
+        log_error "Some releases failed: ${failed_pods[*]}"
+        log_error "Successful releases: ${success_pods[*]}"
+        return 1
+    fi
+}
+
+check_all_pods_published() {
+    local version="$1"
+    shift
+    local pods=("$@")
+    
+    log_step "Verifying all pods are published to CocoaPods..."
+    
+    local failed_checks=()
+    for pod in "${pods[@]}"; do
+        if ! check_pod_version_published "$pod" "$version"; then
+            failed_checks+=("$pod")
+        fi
+    done
+    
+    if [[ ${#failed_checks[@]} -eq 0 ]]; then
+        log_success "All pods verified as published: ${pods[*]}"
+        return 0
+    else
+        log_error "Some pods not found in CocoaPods: ${failed_checks[*]}"
+        return 1
+    fi
+}
+
 # Main release process
 perform_sequential_release() {
     local version="$1"
@@ -517,24 +595,30 @@ perform_sequential_release() {
         fi
     done
     
-    # Step 2: Conditionally publish shared libraries
+    # Step 2: Conditionally publish shared libraries (concurrently)
     if [[ "$PUBLISH_SHARED_LIBRARIES" == "true" ]]; then
-        print_section "Step 2: Publishing Shared Library Pods"
+        print_section "Step 2: Publishing Shared Library Pods (Concurrently)"
         
+        # Start all conditional pods concurrently
+        local release_info=()
         for pod in "${CONDITIONAL_PUBLISH_PODS[@]}"; do
-            if ! release_single_pod "$pod" "$version" "$SKIP_VALIDATION"; then
-                log_error "Failed to release $pod. Aborting sequential release."
+            local info=$(publish_pod_concurrent "$pod" "$version" "$SKIP_VALIDATION")
+            release_info+=("$info")
+        done
+        
+        # Wait for all concurrent releases to complete
+        if ! wait_for_concurrent_releases "${release_info[@]}"; then
+            log_error "Some concurrent releases failed. Aborting sequential release."
+            return 1
+        fi
+        
+        # Verify all pods are published to CocoaPods
+        if [[ "$SKIP_COCOAPODS" != "true" ]]; then
+            if ! check_all_pods_published "$version" "${CONDITIONAL_PUBLISH_PODS[@]}"; then
+                log_error "Not all conditional pods are available in CocoaPods. Aborting sequential release."
                 return 1
             fi
-            
-            # Wait for CocoaPods sync
-            if [[ "$SKIP_COCOAPODS" != "true" ]]; then
-                if ! wait_for_cocoapods_sync "$pod" "$version"; then
-                    log_error "CocoaPods sync failed for $pod. Aborting sequential release."
-                    return 1
-                fi
-            fi
-        done
+        fi
         
         # Update MSPCore dependencies
         if ! update_mspcore_dependencies "$version" "$version"; then
@@ -597,15 +681,17 @@ perform_dry_run() {
     echo "2. Always publish: ${ALWAYS_PUBLISH_PODS[*]} (version $version)"
     
     if [[ "$PUBLISH_SHARED_LIBRARIES" == "true" ]]; then
-        echo "3. Publish shared libraries: ${CONDITIONAL_PUBLISH_PODS[*]} (version $version)"
-        echo "4. Wait for CocoaPods sync with exponential backoff"
-        echo "5. Update MSPCore dependencies to version $version"
+        echo "3. Publish shared libraries concurrently: ${CONDITIONAL_PUBLISH_PODS[*]} (version $version)"
+        echo "4. Wait for all concurrent releases to complete"
+        echo "5. Verify all pods are published to CocoaPods"
+        echo "6. Update MSPCore dependencies to version $version"
+        echo "7. Publish: $MAIN_POD (version $version)"
+        echo "8. Commit and push all changes"
     else
         echo "3. Skip shared libraries publishing"
+        echo "4. Publish: $MAIN_POD (version $version)"
+        echo "5. Commit and push all changes"
     fi
-    
-    echo "6. Publish: $MAIN_POD (version $version)"
-    echo "7. Commit and push all changes"
     
     return 0
 }
