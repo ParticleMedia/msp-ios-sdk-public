@@ -33,7 +33,6 @@ public class MSPDevice {
     private let DEIVCE_SIGNAL_FONT_SIZE = "font_size"
     private let DEIVCE_SIGNAL_AVAILABLE_MEMORY = "available_memory"
     private let DEVICE_SIGNAL_TIMEZONE = "timezone"
-    private let DEVICE_SIGNAL_LAST_SYSTEM_BOOT_TIME = "last_system_boot_time"
     
     public func getDeviceSignalsDictionary() -> [String:String] {
         self.collectDeviceInfo()
