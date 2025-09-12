@@ -523,12 +523,19 @@ wait_for_concurrent_releases() {
     
     log_step "Waiting for all concurrent releases to complete..."
     
-    # Wait for all background processes
+    # Wait for all background processes by checking if they're still running
     for info in "${release_info[@]}"; do
         IFS=':' read -r pid log_file pod_name version <<< "$info"
         
         log_info "Waiting for $pod_name (PID: $pid)..."
-        if wait $pid; then
+        
+        # Wait for the process to complete by checking if it's still running
+        while kill -0 "$pid" 2>/dev/null; do
+            sleep 2
+        done
+        
+        # Check if the process completed successfully by looking at the log
+        if grep -q "Release.*completed with exit code 0" "$log_file" 2>/dev/null; then
             log_success "✅ $pod_name version $version released successfully"
             success_pods+=("$pod_name")
         else
