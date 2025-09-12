@@ -790,7 +790,7 @@ rollback_release() {
 
 # Backup and restore functions
 create_backup() {
-    local backup_dir="release_backup_$(date +%Y%m%d_%H%M%S)"
+    local backup_dir="/tmp/release_backup_$(date +%Y%m%d_%H%M%S)"
     
     log_step "Creating release backup: $backup_dir" >&2
     
