@@ -503,8 +503,6 @@ publish_pod_concurrent() {
     local skip_validation="$3"
     local log_file="/tmp/release_${pod_name}_${version}.log"
     
-    log_info "Starting concurrent release of $pod_name version $version (log: $log_file)"
-    
     # Run release in background and capture output
     {
         echo "=== Starting release of $pod_name version $version at $(date) ==="
@@ -602,6 +600,7 @@ perform_sequential_release() {
         # Start all conditional pods concurrently
         local release_info=()
         for pod in "${CONDITIONAL_PUBLISH_PODS[@]}"; do
+            log_info "Starting concurrent release of $pod version $version"
             local info=$(publish_pod_concurrent "$pod" "$version" "$SKIP_VALIDATION")
             release_info+=("$info")
         done

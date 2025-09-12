@@ -6,7 +6,7 @@ import UIKit
 
 @objc public class PrebidAdapter : NSObject, AdNetworkAdapter {
     public func getSDKVersion() -> String {
-        return ""
+        return "0.0.2-migration-test-concurrent"
     }
     
     public func getAdNetwork() -> MSPiOSCore.AdNetwork {
