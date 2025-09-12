@@ -85,6 +85,7 @@ DRY_RUN="false"
 FORCE="false"
 VERBOSE="false"
 REPOSITORY_URL="https://github.com/ParticleMedia/msp-ios-sdk.git"
+USE_GITHUB_RELEASE="false"
 
 # Parse command line arguments
 parse_arguments() {
@@ -125,6 +126,10 @@ parse_arguments() {
             --repository)
                 REPOSITORY_URL="$2"
                 shift 2
+                ;;
+            --github-release)
+                USE_GITHUB_RELEASE="true"
+                shift
                 ;;
             --verbose)
                 VERBOSE="true"
@@ -171,6 +176,7 @@ OPTIONS:
     --skip-github                 Skip GitHub release creation
     --publish-shared-libraries    Publish MSPSharedLibraries and PrebidAdapter
     --repository URL              Set repository URL for podspec source
+    --github-release              Use GitHub releases with zip files (like 0.0.1-migration)
     --verbose                     Enable verbose output
 
 ENVIRONMENT VARIABLES:
@@ -408,6 +414,10 @@ release_single_pod() {
     
     if [[ -n "$REPOSITORY_URL" ]]; then
         release_cmd="$release_cmd --repository $REPOSITORY_URL"
+    fi
+    
+    if [[ "$USE_GITHUB_RELEASE" == "true" ]]; then
+        release_cmd="$release_cmd --github-release"
     fi
     
     release_cmd="$release_cmd $pod_name $version"
