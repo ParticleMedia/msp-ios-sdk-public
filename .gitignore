@@ -27,3 +27,9 @@ Gemfile.lock
 .bundle/
 vendor/
 *.gem
+
+# Release backup directories and test files
+release_backup_*/
+*_test*
+*test_*
+*_cocoapods.podspec

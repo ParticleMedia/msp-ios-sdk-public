@@ -72,7 +72,7 @@ NOVACORE_CONFIG="name=NovaCore;scheme=NovaCore;output_dir=outputNova;deploy_dir=
 MSPCORE_CONFIG="name=MSPCore;scheme=MSPCore;output_dir=;deploy_dir=;xcframework_name=;source_only=true;podspec=MSPCore/MSPCore.podspec"
 
 # Supported pods for automatic version updating
-SUPPORTED_PODS=("MSPiOSCore" "NovaCore" "MSPCore" "FacebookAdapter" "GoogleAdapter" "NovaAdapter" "MSPSharedLibraries" "PrebidAdapter")
+SUPPORTED_PODS=("MSPiOSCore" "NovaCore" "MSPCore" "FacebookAdapter" "GoogleAdapter" "NovaAdapter" "MSPSharedLibraries" "PrebidAdapter" "AmazonAdapter" "UnityAdapter" "MintegralAdapter" "MobilefuseAdapter" "PubmaticAdapter" "InmobiAdapter" "MSPOMSDK")
 
 # Parse config value
 parse_config_value() {
@@ -189,6 +189,118 @@ update_podspec_repository_url() {
     fi
 }
 
+update_podspec_to_github_release() {
+    local pod_name="$1"
+    local version="$2"
+    local repository_url="$3"
+    
+    log_step "Updating $pod_name podspec to use GitHub release format..."
+    
+    local podspec_file="${pod_name}.podspec"
+    if [[ ! -f "$podspec_file" ]]; then
+        log_error "Podspec not found: $podspec_file"
+        return 1
+    fi
+    
+    # Extract repository name from URL
+    local repo_name=$(echo "$repository_url" | sed 's|.*github\.com/||' | sed 's|\.git$||')
+    
+    # Update podspec to use GitHub release format
+    # Create a temporary file with the new source format
+    local temp_file=$(mktemp)
+    cat > "$temp_file" << EOF
+  spec.source = {
+    http: "https://github.com/$repo_name/releases/download/$version/$pod_name-$version.zip",
+    type: "zip"
+  }
+EOF
+    
+    # Use awk to replace the source section
+    awk '
+    /spec\.source[[:space:]]*=/ && !/spec\.source_files/ {
+        in_source = 1
+        while ((getline line < "'$temp_file'") > 0) {
+            print line
+        }
+        close("'$temp_file'")
+        next
+    }
+    in_source && /^[[:space:]]*}/ {
+        in_source = 0
+        next
+    }
+    !in_source {
+        print
+    }
+    ' "$podspec_file" > "${podspec_file}.new" && mv "${podspec_file}.new" "$podspec_file"
+    
+    rm -f "$temp_file"
+    
+    if [[ $? -eq 0 ]]; then
+        log_success "Updated $pod_name podspec to use GitHub release format"
+        return 0
+    else
+        log_error "Failed to update $pod_name podspec to GitHub release format"
+        return 1
+    fi
+}
+
+update_swift_version() {
+    local pod_name="$1"
+    local version="$2"
+    
+    log_step "Updating $pod_name Swift version strings..."
+    
+    # Find Swift files in the pod directory
+    local swift_files=()
+    if [[ -d "$pod_name" ]]; then
+        while IFS= read -r -d '' file; do
+            swift_files+=("$file")
+        done < <(find "$pod_name" -name "*.swift" -print0)
+    fi
+    
+    if [[ ${#swift_files[@]} -eq 0 ]]; then
+        log_warn "No Swift files found for $pod_name"
+        return 0
+    fi
+    
+    local updated_files=0
+    
+    for swift_file in "${swift_files[@]}"; do
+        local file_updated=false
+        
+        # Update MSPCore version property
+        if [[ "$pod_name" == "MSPCore" ]] && [[ "$swift_file" == *"MSPHelper.swift" ]]; then
+            if sed -i.bak "s|public let version = \".*\"|public let version = \"$version\"|" "$swift_file"; then
+                file_updated=true
+                rm -f "${swift_file}.bak"
+            fi
+        fi
+        
+        # Update getSDKVersion() functions in adapters
+        if [[ "$swift_file" == *"Adapter.swift" ]]; then
+            # Update getSDKVersion() return statements
+            if sed -i.bak "s|return \"[^\"]*\"|return \"$version\"|g" "$swift_file"; then
+                file_updated=true
+                rm -f "${swift_file}.bak"
+            fi
+        fi
+        
+        if [[ "$file_updated" == true ]]; then
+            ((updated_files++))
+            log_info "Updated version in: $swift_file"
+        fi
+    done
+    
+    if [[ $updated_files -gt 0 ]]; then
+        log_success "Updated version strings in $updated_files Swift files for $pod_name"
+        return 0
+    else
+        log_warn "No version strings found to update in $pod_name Swift files"
+        return 0
+    fi
+}
+
 validate_pod_name() {
     local pod_name="$1"
     
@@ -279,7 +391,7 @@ is_source_only_pod() {
     local pod_name="$1"
     
     # Check if it's in the source-only list
-    local source_only_pods=("MSPCore" "FacebookAdapter" "GoogleAdapter" "NovaAdapter" "MSPSharedLibraries" "PrebidAdapter")
+    local source_only_pods=("MSPCore" "FacebookAdapter" "GoogleAdapter" "NovaAdapter" "MSPSharedLibraries" "PrebidAdapter" "AmazonAdapter" "UnityAdapter" "MintegralAdapter" "MobilefuseAdapter" "PubmaticAdapter" "InmobiAdapter" "MSPOMSDK")
     for source_pod in "${source_only_pods[@]}"; do
         if [[ "$pod_name" == "$source_pod" ]]; then
             return 0
@@ -380,29 +492,117 @@ validate_podspec() {
 publish_to_cocoapods() {
     local pod_name="$1"
     local version="$2"
+    local repository_url="$3"
     
     log_step "Publishing $pod_name version $version to CocoaPods..."
     
-    if ! load_framework_config "$pod_name"; then
+    # Try to load framework config, but don't fail if it doesn't exist
+    local podspec_path
+    if load_framework_config "$pod_name" 2>/dev/null; then
+        podspec_path="$FRAMEWORK_PODSPEC"
+    else
+        # Use default podspec path for unsupported pods
+        podspec_path="${pod_name}.podspec"
+    fi
+    
+    # Check if user is authenticated with CocoaPods trunk
+    if ! pod trunk me >/dev/null 2>&1; then
+        log_error "Not authenticated with CocoaPods trunk. Cannot publish to CocoaPods."
+        log_info "To authenticate:"
+        log_info "1. Run: pod trunk register your-email@company.com 'Your Name'"
+        log_info "2. Check your email and click the verification link"
+        log_info "3. Run: pod trunk me (to verify authentication)"
         return 1
     fi
     
-    local podspec_path="$FRAMEWORK_PODSPEC"
+    # Use the working 0.0.1-migration approach: Git format with complete podspec
+    # Create a temporary podspec with Git format and complete content
+    local temp_podspec="${podspec_path%.podspec}_cocoapods.podspec"
+    cp "$podspec_path" "$temp_podspec"
     
-    # Check if trunk token is available
-    if [[ -z "$COCOAPODS_TRUNK_TOKEN" ]]; then
-        log_warn "COCOAPODS_TRUNK_TOKEN not set. Skipping CocoaPods publishing."
-        return 0
-    fi
+    # Convert to Git format for CocoaPods publishing
+    # Use the full version for tags (like 0.0.1-migration approach)
+    local git_repo_url="${repository_url:-https://github.com/ParticleMedia/msp-ios-sdk.git}"
+    sed -i.bak "/spec\.source = {/,/}/c\\
+  spec.source = { :git => \"$git_repo_url\", :tag => \"$version\" }" "$temp_podspec"
+    rm -f "${temp_podspec}.bak"
+    
+    # Add missing required sections to make it complete like 0.0.1-migration
+    add_complete_podspec_sections "$temp_podspec" "$pod_name"
     
     # Publish to CocoaPods trunk
-    if pod trunk push "$podspec_path" --allow-warnings; then
+    if pod trunk push "$temp_podspec" --allow-warnings; then
         log_success "Successfully published $pod_name version $version to CocoaPods"
+        rm -f "$temp_podspec"
         return 0
     else
         log_error "Failed to publish $pod_name version $version to CocoaPods"
+        log_info "Debug: Temporary podspec saved as $temp_podspec for inspection"
         return 1
     fi
+}
+
+# Function to add complete podspec sections based on 0.0.1-migration working format
+add_complete_podspec_sections() {
+    local podspec_file="$1"
+    local pod_name="$2"
+    
+    log_step "Adding complete podspec sections for $pod_name..."
+    
+    # Add required sections before the end statement
+    local temp_file=$(mktemp)
+    
+    # Get pod-specific dependencies
+    local dependencies=""
+    case "$pod_name" in
+        "AmazonAdapter")
+            dependencies="spec.dependency 'Google-Mobile-Ads-SDK', \"~> 12.0\"
+  spec.dependency \"AmazonPublisherServicesSDK\", \"4.5.5\"
+  spec.dependency \"AmazonPublisherServicesAdMobAdapter\", \"2.2.0\"
+  spec.dependency 'MSPSharedLibraries'"
+            ;;
+        "FacebookAdapter"|"GoogleAdapter"|"NovaAdapter")
+            dependencies="spec.dependency 'Google-Mobile-Ads-SDK', \"~> 12.0\"
+  spec.dependency 'MSPSharedLibraries'"
+            ;;
+        "MSPCore")
+            dependencies="spec.dependency 'MSPSharedLibraries'
+  spec.dependency 'PrebidAdapter'"
+            ;;
+        "PrebidAdapter")
+            dependencies="spec.dependency 'MSPSharedLibraries'"
+            ;;
+        "MSPSharedLibraries")
+            dependencies=""
+            ;;
+        *)
+            dependencies="spec.dependency 'MSPSharedLibraries'"
+            ;;
+    esac
+    
+    cat > "$temp_file" << EOF
+
+  spec.ios.deployment_target = '13.0'
+
+  spec.source_files  = "${pod_name}/${pod_name}/**/*.{h,m,swift}"
+  spec.exclude_files = "Classes/Exclude"
+
+  $dependencies
+
+  spec.pod_target_xcconfig = { 'VALID_ARCHS' => 'x86_64 armv7 arm64' }
+  spec.user_target_xcconfig = { 'EXCLUDED_ARCHS[sdk=iphonesimulator*]' => 'arm64' }
+
+  spec.static_framework = true
+
+end
+EOF
+    
+    # Insert the content before the final 'end'
+    sed -i.bak '/^end$/d' "$podspec_file"
+    cat "$temp_file" >> "$podspec_file"
+    rm -f "$temp_file" "${podspec_file}.bak"
+    
+    log_success "Added complete podspec sections for $pod_name"
 }
 
 # GitHub release functions
@@ -434,6 +634,53 @@ create_github_release() {
     else
         log_error "Failed to create GitHub release: $version"
         return 1
+    fi
+}
+
+create_github_release_with_zip() {
+    local pod_name="$1"
+    local version="$2"
+    
+    log_step "Creating GitHub release with zip for $pod_name version $version..."
+    
+    # Check if GitHub CLI is available
+    if ! command -v gh >/dev/null 2>&1; then
+        log_warn "GitHub CLI not available. Skipping GitHub release creation."
+        return 0
+    fi
+    
+    # Check if authenticated
+    if ! gh auth status >/dev/null 2>&1; then
+        log_warn "GitHub CLI not authenticated. Skipping GitHub release creation."
+        return 0
+    fi
+    
+    # Create zip file for the pod
+    local zip_name="${pod_name}-${version}.zip"
+    local source_dir="$pod_name"
+    
+    if [[ -d "$source_dir" ]]; then
+        if zip -r "$zip_name" "$source_dir" -x "*.DS_Store" "*.git*" "*.xcuserstate" "*.xcworkspace/xcuserdata/*" "*.xcodeproj/xcuserdata/*" "*.xcodeproj/project.xcworkspace/xcuserdata/*"; then
+            # Create release with zip file
+            local release_title="$pod_name v$version"
+            local release_notes="Release of $pod_name version $version"
+            
+            if gh release create "$version" "$zip_name" --title "$release_title" --notes "$release_notes"; then
+                log_success "GitHub release created with zip: $version"
+                rm -f "$zip_name"
+                return 0
+            else
+                log_error "Failed to create GitHub release: $version"
+                rm -f "$zip_name"
+                return 1
+            fi
+        else
+            log_error "Failed to create zip file: $zip_name"
+            return 1
+        fi
+    else
+        log_warn "Source directory not found: $source_dir"
+        return 0
     fi
 }
 
@@ -642,10 +889,25 @@ perform_release() {
         return 1
     fi
     
-    # Auto-update podspec repository URL if provided
-    if [[ -n "$repository_url" ]] && ! update_podspec_repository_url "$pod_name" "$repository_url"; then
-        rollback_release "$pod_name" "$version" "Podspec repository URL update failed"
+    # Auto-update Swift version strings
+    if ! update_swift_version "$pod_name" "$version"; then
+        rollback_release "$pod_name" "$version" "Swift version update failed"
         return 1
+    fi
+    
+    # Auto-update podspec repository URL if provided
+    if [[ -n "$repository_url" ]]; then
+        if [[ "$use_github_release" == "true" ]]; then
+            if ! update_podspec_to_github_release "$pod_name" "$version" "$repository_url"; then
+                rollback_release "$pod_name" "$version" "Podspec GitHub release format update failed"
+                return 1
+            fi
+        else
+            if ! update_podspec_repository_url "$pod_name" "$repository_url"; then
+                rollback_release "$pod_name" "$version" "Podspec repository URL update failed"
+                return 1
+            fi
+        fi
     fi
     
     # Build framework
@@ -674,8 +936,14 @@ perform_release() {
     fi
     
     # Create GitHub release
-    if ! create_github_release "$pod_name" "$version"; then
-        log_warn "GitHub release creation failed, but continuing with other steps"
+    if [[ "$use_github_release" == "true" ]]; then
+        if ! create_github_release_with_zip "$pod_name" "$version"; then
+            log_warn "GitHub release with zip creation failed, but continuing with other steps"
+        fi
+    else
+        if ! create_github_release "$pod_name" "$version"; then
+            log_warn "GitHub release creation failed, but continuing with other steps"
+        fi
     fi
     
     # Upload release assets
@@ -684,8 +952,8 @@ perform_release() {
     fi
     
     # Publish to CocoaPods (if enabled)
-    if [[ "$PUBLISH_TO_COCOAPODS" == "true" ]]; then
-        if ! publish_to_cocoapods "$pod_name" "$version"; then
+    if [[ "$publish_cocoapods" == "true" ]]; then
+        if ! publish_to_cocoapods "$pod_name" "$version" "$repository_url"; then
             rollback_release "$pod_name" "$version" "CocoaPods publishing failed"
             return 1
         fi
@@ -703,7 +971,7 @@ perform_release() {
     log_success "🎉 $pod_name version $version has been released!"
     log_info "Git tag: $version"
     log_info "GitHub release: $version"
-    if [[ "$PUBLISH_TO_COCOAPODS" == "true" ]]; then
+    if [[ "$publish_cocoapods" == "true" ]]; then
         log_info "CocoaPods: Published"
     fi
     
@@ -730,6 +998,7 @@ OPTIONS:
     --skip-cocoapods              Skip CocoaPods publishing
     --skip-github                 Skip GitHub release creation
     --repository URL              Set repository URL for podspec source
+    --github-release              Use GitHub releases with zip files (like 0.0.1-migration)
     --publish-cocoapods           Enable CocoaPods publishing
     --backup                      Create backup before release
     --restore BACKUP_DIR          Restore from backup directory
@@ -806,13 +1075,14 @@ main() {
     local skip_validation=false
     local skip_cocoapods=false
     local skip_github=false
-    local publish_cocoapods=false
+    local publish_cocoapods=true
     local backup_mode=false
     local restore_backup_dir=""
     local rollback_mode=false
     local rollback_pod=""
     local rollback_version=""
     local repository_url="https://github.com/ParticleMedia/msp-ios-sdk.git"
+    local use_github_release="false"
     
     while [[ $# -gt 0 ]]; do
         case $1 in
@@ -852,6 +1122,10 @@ main() {
             --repository)
                 repository_url="$2"
                 shift 2
+                ;;
+            --github-release)
+                use_github_release="true"
+                shift
                 ;;
             --publish-cocoapods)
                 publish_cocoapods=true
