@@ -541,8 +541,7 @@ publish_to_cocoapods() {
   spec.source = { :git => \"$git_repo_url\", :tag => \"$version\" }" "$temp_podspec"
     rm -f "${temp_podspec}.bak"
     
-    # Add missing required sections to make it complete like 0.0.1-migration
-    add_complete_podspec_sections "$temp_podspec" "$pod_name"
+    # Use the original podspec as-is without adding extra sections
     
     # Publish to CocoaPods trunk
     if pod trunk push "$temp_podspec" --allow-warnings; then
@@ -556,68 +555,6 @@ publish_to_cocoapods() {
     fi
 }
 
-# Function to add complete podspec sections based on 0.0.1-migration working format
-add_complete_podspec_sections() {
-    local podspec_file="$1"
-    local pod_name="$2"
-    
-    log_step "Adding complete podspec sections for $pod_name..."
-    
-    # Add required sections before the end statement
-    local temp_file=$(mktemp)
-    
-    # Get pod-specific dependencies
-    local dependencies=""
-    case "$pod_name" in
-        "AmazonAdapter")
-            dependencies="spec.dependency 'Google-Mobile-Ads-SDK', \"~> 12.0\"
-  spec.dependency \"AmazonPublisherServicesSDK\", \"4.5.5\"
-  spec.dependency \"AmazonPublisherServicesAdMobAdapter\", \"2.2.0\"
-  spec.dependency 'MSPSharedLibraries'"
-            ;;
-        "FacebookAdapter"|"GoogleAdapter"|"NovaAdapter")
-            dependencies="spec.dependency 'Google-Mobile-Ads-SDK', \"~> 12.0\"
-  spec.dependency 'MSPSharedLibraries'"
-            ;;
-        "MSPCore")
-            dependencies="spec.dependency 'MSPSharedLibraries'
-  spec.dependency 'PrebidAdapter'"
-            ;;
-        "PrebidAdapter")
-            dependencies="spec.dependency 'MSPSharedLibraries'"
-            ;;
-        "MSPSharedLibraries")
-            dependencies=""
-            ;;
-        *)
-            dependencies="spec.dependency 'MSPSharedLibraries'"
-            ;;
-    esac
-    
-    cat > "$temp_file" << EOF
-
-  spec.ios.deployment_target = '13.0'
-
-  spec.source_files  = "${pod_name}/${pod_name}/**/*.{h,m,swift}"
-  spec.exclude_files = "Classes/Exclude"
-
-  $dependencies
-
-  spec.pod_target_xcconfig = { 'VALID_ARCHS' => 'x86_64 armv7 arm64' }
-  spec.user_target_xcconfig = { 'EXCLUDED_ARCHS[sdk=iphonesimulator*]' => 'arm64' }
-
-  spec.static_framework = true
-
-end
-EOF
-    
-    # Insert the content before the final 'end'
-    sed -i.bak '/^end$/d' "$podspec_file"
-    cat "$temp_file" >> "$podspec_file"
-    rm -f "$temp_file" "${podspec_file}.bak"
-    
-    log_success "Added complete podspec sections for $pod_name"
-}
 
 # GitHub release functions
 create_github_release() {
