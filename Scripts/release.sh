@@ -494,7 +494,7 @@ rollback_release() {
 create_backup() {
     local backup_dir="release_backup_$(date +%Y%m%d_%H%M%S)"
     
-    log_step "Creating release backup: $backup_dir"
+    log_step "Creating release backup: $backup_dir" >&2
     
     mkdir -p "$backup_dir"
     
