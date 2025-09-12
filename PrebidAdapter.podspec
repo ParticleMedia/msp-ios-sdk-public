@@ -39,7 +39,7 @@ Pod::Spec.new do |spec|
 
   spec.source       = { :git => "https://github.com/ParticleMedia/msp-ios-sdk-public.git", :tag => "#{spec.version}" }
 
-  spec.ios.deployment_target = '13.0'
+  spec.ios.deployment_target = '15.0'
 
 
   spec.source_files  = "PrebidAdapter/PrebidAdapter/**/*.{h,m,swift}"
