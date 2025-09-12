@@ -88,7 +88,10 @@ load_framework_config() {
     local config_value="${!config_var}"
     
     if [[ -z "$config_value" ]]; then
-        log_error "Configuration not found for framework: $framework_name"
+        # Only log error if not being called from validation (stderr not redirected)
+        if [[ -t 2 ]]; then
+            log_error "Configuration not found for framework: $framework_name"
+        fi
         return 1
     fi
     
