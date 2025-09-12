@@ -360,8 +360,8 @@ validate_version() {
     
     # Check if version already exists
     if git tag -l | grep -q "^$version$"; then
-        log_error "Version $version already exists as a git tag"
-        return 1
+        log_warn "Version $version already exists as a git tag, continuing with existing tag"
+        # Don't return 1, just continue with the existing tag
     fi
     
     log_success "Version validation passed: $version"
@@ -744,6 +744,12 @@ create_git_tag() {
     # Use simple version tag (like 0.0.1-migration approach)
     local tag_name="$version"
     
+    # Check if tag already exists
+    if git tag -l | grep -q "^$tag_name$"; then
+        log_warn "Git tag already exists: $tag_name, using existing tag"
+        return 0
+    fi
+    
     log_step "Creating git tag: $tag_name"
     
     if git tag -a "$tag_name" -m "$message"; then
@@ -765,8 +771,10 @@ push_git_tag() {
     log_step "Pushing git tag: $tag_name"
     
     # Push to private repository first
-    if git push origin "$tag_name"; then
+    if git push origin "$tag_name" 2>/dev/null; then
         log_success "Git tag pushed to private repo: $tag_name"
+    elif git push origin "$tag_name" 2>&1 | grep -q "already exists"; then
+        log_warn "Git tag already exists in private repo: $tag_name, continuing"
     else
         log_error "Failed to push git tag to private repo: $tag_name"
         return 1
@@ -774,16 +782,20 @@ push_git_tag() {
     
     # Push to public repository for CocoaPods access
     if git remote get-url public >/dev/null 2>&1; then
-        if git push public "$tag_name"; then
+        if git push public "$tag_name" 2>/dev/null; then
             log_success "Git tag pushed to public repo: $tag_name"
+        elif git push public "$tag_name" 2>&1 | grep -q "already exists"; then
+            log_warn "Git tag already exists in public repo: $tag_name, continuing"
         else
             log_warn "Failed to push git tag to public repo: $tag_name"
         fi
     else
         log_info "Adding public repository remote..."
         if git remote add public https://github.com/ParticleMedia/msp-ios-sdk-public.git; then
-            if git push public "$tag_name"; then
+            if git push public "$tag_name" 2>/dev/null; then
                 log_success "Git tag pushed to public repo: $tag_name"
+            elif git push public "$tag_name" 2>&1 | grep -q "already exists"; then
+                log_warn "Git tag already exists in public repo: $tag_name, continuing"
             else
                 log_warn "Failed to push git tag to public repo: $tag_name"
             fi
