@@ -84,7 +84,7 @@ parse_config_value() {
 # Load framework config
 load_framework_config() {
     local framework_name="$1"
-    local config_var="${framework_name^^}_CONFIG"
+    local config_var="$(echo "$framework_name" | tr '[:lower:]' '[:upper:]')_CONFIG"
     local config_value="${!config_var}"
     
     if [[ -z "$config_value" ]]; then
@@ -196,7 +196,8 @@ validate_pod_name() {
     fi
     
     # Try to load framework config (for build configuration)
-    if load_framework_config "$pod_name" 2>/dev/null; then
+    # Use a subshell to prevent the function from causing the script to exit
+    if (load_framework_config "$pod_name" 2>/dev/null); then
         log_info "Loaded framework config for $pod_name"
     else
         log_info "No framework config found for $pod_name, using default settings"
@@ -306,11 +307,20 @@ validate_podspec() {
     
     log_step "Validating podspec for $pod_name..."
     
-    if ! load_framework_config "$pod_name"; then
-        return 1
+    # Check if validation should be skipped
+    if [[ "$skip_validation" == "true" ]]; then
+        log_info "Skipping podspec validation (--skip-validation flag)"
+        return 0
     fi
     
-    local podspec_path="$FRAMEWORK_PODSPEC"
+    # Try to load framework config, but don't fail if it doesn't exist
+    if load_framework_config "$pod_name" 2>/dev/null; then
+        local podspec_path="$FRAMEWORK_PODSPEC"
+    else
+        # Use default podspec path for unsupported pods
+        local podspec_path="${pod_name}.podspec"
+    fi
+    
     if [[ ! -f "$podspec_path" ]]; then
         log_error "Podspec not found: $podspec_path"
         return 1
