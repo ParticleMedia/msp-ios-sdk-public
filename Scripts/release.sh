@@ -847,6 +847,54 @@ restore_backup() {
     return 0
 }
 
+# Commit and push release branch changes
+commit_and_push_release_branch() {
+    local pod_name="$1"
+    local version="$2"
+    
+    log_step "Committing and pushing release branch changes..."
+    
+    # Check if we're on a release branch
+    local current_branch=$(git branch --show-current)
+    if [[ ! "$current_branch" =~ ^release/ ]]; then
+        log_info "Not on a release branch ($current_branch), skipping commit and push"
+        return 0
+    fi
+    
+    # Check if there are any changes to commit
+    if git diff --quiet && git diff --cached --quiet; then
+        log_info "No changes to commit"
+        return 0
+    fi
+    
+    # Add all changes
+    git add .
+    
+    # Commit changes
+    local commit_message="Release $pod_name version $version
+
+- Updated podspec version to $version
+- Updated Swift version strings
+- Updated repository URL for CocoaPods publishing
+- Created and pushed git tag $version"
+    
+    if git commit -m "$commit_message"; then
+        log_success "Committed release changes"
+    else
+        log_error "Failed to commit release changes"
+        return 1
+    fi
+    
+    # Push to remote
+    if git push origin "$current_branch"; then
+        log_success "Pushed release branch $current_branch to remote"
+        return 0
+    else
+        log_error "Failed to push release branch $current_branch to remote"
+        return 1
+    fi
+}
+
 # Main release function
 perform_release() {
     local pod_name="$1"
@@ -963,6 +1011,11 @@ perform_release() {
     if [[ -d "$backup_dir" ]]; then
         rm -rf "$backup_dir"
         log_debug "Cleaned up backup: $backup_dir"
+    fi
+    
+    # Commit and push release branch changes
+    if ! commit_and_push_release_branch "$pod_name" "$version"; then
+        log_warn "Failed to commit and push release branch changes, but release was successful"
     fi
     
     print_section "Release Completed Successfully"
