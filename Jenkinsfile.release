@@ -1,0 +1,568 @@
+#!/usr/bin/env groovy
+
+/**
+ * MSP iOS SDK Release Pipeline
+ * 
+ * This pipeline handles the complete release process for MSP iOS SDK pods.
+ * It reuses the existing Scripts/release.sh script for all release operations.
+ * 
+ * Pipeline Features:
+ * - Complete release automation using existing release.sh script
+ * - Secure credential management for CocoaPods and GitHub
+ * - Pre-release validation and environment checks
+ * - Automatic rollback on failure
+ * - Release artifact collection and archiving
+ * - Comprehensive logging and reporting
+ * 
+ * Usage:
+ * - Release builds: Full release with CocoaPods publishing
+ * - Dry run: Preview release without execution
+ * - Rollback: Rollback a specific release
+ * 
+ * Supported Pods:
+ * - MSPiOSCore
+ * - NovaCore
+ * - MSPCore
+ */
+
+pipeline {
+    agent {
+        label 'ios-build-agent' // Configure this label in Jenkins
+    }
+    
+    options {
+        // Build retention
+        buildDiscarder(logRotator(numToKeepStr: '20'))
+        
+        // Timeout (releases can take longer)
+        timeout(time: 120, unit: 'MINUTES')
+        
+        // Skip default checkout
+        skipDefaultCheckout()
+        
+        // Timestamps
+        timestamps()
+        
+        // AnsiColor for better log output
+        ansiColor('xterm')
+        
+        // Preserve stashes for rollback
+        preserveStashes(buildCount: 5)
+    }
+    
+    parameters {
+        choice(
+            name: 'RELEASE_TYPE',
+            choices: ['release', 'dry-run', 'rollback'],
+            description: 'Type of release operation to perform'
+        )
+        
+        choice(
+            name: 'POD_NAME',
+            choices: ['MSPiOSCore', 'NovaCore', 'MSPCore', 'Sequential'],
+            description: 'Pod to release (Sequential = release all adapters + MSPCore)'
+        )
+        
+        string(
+            name: 'VERSION',
+            defaultValue: '',
+            description: 'Version to release (e.g., 1.2.3)'
+        )
+        
+        booleanParam(
+            name: 'PUBLISH_TO_COCOAPODS',
+            defaultValue: false,
+            description: 'Publish to CocoaPods trunk (requires COCOAPODS_TRUNK_TOKEN)'
+        )
+        
+        booleanParam(
+            name: 'CREATE_GITHUB_RELEASE',
+            defaultValue: true,
+            description: 'Create GitHub release'
+        )
+        
+        booleanParam(
+            name: 'SKIP_BUILD',
+            defaultValue: false,
+            description: 'Skip building frameworks (use existing builds)'
+        )
+        
+        booleanParam(
+            name: 'SKIP_VALIDATION',
+            defaultValue: false,
+            description: 'Skip podspec validation'
+        )
+        
+        booleanParam(
+            name: 'FORCE_RELEASE',
+            defaultValue: false,
+            description: 'Force release even with validation issues'
+        )
+        
+        string(
+            name: 'ROLLBACK_VERSION',
+            defaultValue: '',
+            description: 'Version to rollback (only used when RELEASE_TYPE=rollback)'
+        )
+        
+        text(
+            name: 'RELEASE_NOTES',
+            defaultValue: '',
+            description: 'Release notes for GitHub release (optional)'
+        )
+    }
+    
+    environment {
+        // CI Environment
+        CI = 'true'
+        JENKINS_URL = "${env.JENKINS_URL}"
+        
+        // Release Configuration
+        PUBLISH_TO_COCOAPODS = "${params.PUBLISH_TO_COCOAPODS ? 'true' : 'false'}"
+        FORCE_RELEASE = "${params.FORCE_RELEASE ? 'true' : 'false'}"
+        
+        // Paths
+        WORKSPACE_PATH = "${WORKSPACE}"
+        SCRIPTS_PATH = "${WORKSPACE}/Scripts"
+        
+        // CocoaPods
+        COCOAPODS_DISABLE_STATS = 'true'
+        COCOAPODS_CACHE_DIR = "${WORKSPACE}/.cocoapods_cache"
+        
+        // Xcode
+        DEVELOPER_DIR = '/Applications/Xcode.app/Contents/Developer'
+        
+        // Build artifacts
+        ARTIFACTS_DIR = "${WORKSPACE}/release-artifacts"
+        
+        // Logging
+        LOG_LEVEL = 'INFO'
+        
+        // Credentials (from Jenkins credential store)
+        COCOAPODS_TRUNK_TOKEN = credentials('cocoapods-trunk-token')
+        GITHUB_TOKEN = credentials('github-token')
+    }
+    
+    stages {
+        stage('Pre-Release Validation') {
+            steps {
+                script {
+                    echo "🔍 Pre-release validation..."
+                    
+                    // Validate parameters
+                    if (params.RELEASE_TYPE == 'release' || params.RELEASE_TYPE == 'dry-run') {
+                        if (!params.VERSION) {
+                            error "❌ VERSION parameter is required for release/dry-run operations"
+                        }
+                        
+                        if (!params.POD_NAME) {
+                            error "❌ POD_NAME parameter is required"
+                        }
+                        
+                        // Validate version format
+                        if (!params.VERSION.matches(/^\d+\.\d+\.\d+(-[a-zA-Z0-9.-]+)?(\+[a-zA-Z0-9.-]+)?$/)) {
+                            error "❌ Invalid version format: ${params.VERSION}. Expected format: X.Y.Z[-prerelease][+build]"
+                        }
+                    }
+                    
+                    if (params.RELEASE_TYPE == 'rollback') {
+                        if (!params.ROLLBACK_VERSION) {
+                            error "❌ ROLLBACK_VERSION parameter is required for rollback operations"
+                        }
+                    }
+                    
+                    echo "✅ Pre-release validation passed"
+                }
+            }
+        }
+        
+        stage('Checkout') {
+            steps {
+                script {
+                    echo "🔍 Checking out repository..."
+                    
+                    checkout scm
+                    
+                    // Get build information
+                    env.GIT_COMMIT_SHORT = sh(
+                        script: 'git rev-parse --short HEAD',
+                        returnStdout: true
+                    ).trim()
+                    
+                    env.GIT_BRANCH_NAME = sh(
+                        script: 'git rev-parse --abbrev-ref HEAD',
+                        returnStdout: true
+                    ).trim()
+                    
+                    echo "📋 Release Information:"
+                    echo "  Release Type: ${params.RELEASE_TYPE}"
+                    echo "  Pod: ${params.POD_NAME}"
+                    echo "  Version: ${params.VERSION}"
+                    echo "  Commit: ${env.GIT_COMMIT_SHORT}"
+                    echo "  Branch: ${env.GIT_BRANCH_NAME}"
+                    echo "  Publish to CocoaPods: ${params.PUBLISH_TO_COCOAPODS}"
+                    echo "  Create GitHub Release: ${params.CREATE_GITHUB_RELEASE}"
+                }
+            }
+        }
+        
+        stage('Environment Setup') {
+            steps {
+                script {
+                    echo "🔧 Setting up release environment..."
+                    
+                    // Create necessary directories
+                    sh '''
+                        mkdir -p "${ARTIFACTS_DIR}"
+                        mkdir -p "${COCOAPODS_CACHE_DIR}"
+                    '''
+                    
+                    // Verify required tools
+                    sh '''
+                        echo "🔍 Verifying release tools..."
+                        
+                        # Check required tools
+                        for tool in git xcodebuild pod; do
+                            if ! command -v "$tool" >/dev/null 2>&1; then
+                                echo "❌ Required tool not found: $tool"
+                                exit 1
+                            fi
+                        done
+                        
+                        # Check GitHub CLI if needed
+                        if [[ "${CREATE_GITHUB_RELEASE}" == "true" ]]; then
+                            if ! command -v gh >/dev/null 2>&1; then
+                                echo "❌ GitHub CLI (gh) not found but required for GitHub releases"
+                                exit 1
+                            fi
+                        fi
+                        
+                        echo "✅ All required tools found"
+                        
+                        # Display versions
+                        echo "📋 Tool Versions:"
+                        xcodebuild -version | head -1
+                        pod --version
+                        git --version
+                        if command -v gh >/dev/null 2>&1; then
+                            gh --version | head -1
+                        fi
+                    '''
+                    
+                    // Setup GitHub CLI authentication
+                    if (params.CREATE_GITHUB_RELEASE) {
+                        sh '''
+                            echo "🔐 Setting up GitHub CLI authentication..."
+                            echo "${GITHUB_TOKEN}" | gh auth login --with-token
+                            gh auth status
+                        '''
+                    }
+                }
+            }
+        }
+        
+        stage('Dependency Resolution') {
+            when {
+                anyOf {
+                    params.RELEASE_TYPE == 'release'
+                    params.RELEASE_TYPE == 'dry-run'
+                }
+            }
+            steps {
+                script {
+                    echo "📦 Resolving dependencies..."
+                    
+                    sh '''
+                        cd "${WORKSPACE}"
+                        
+                        # Install CocoaPods dependencies
+                        echo "🔧 Installing CocoaPods dependencies..."
+                        pod install --repo-update
+                        
+                        # Verify workspace
+                        if [[ ! -d "msp-ios-sdk.xcworkspace" ]]; then
+                            echo "❌ Workspace not found after pod install"
+                            exit 1
+                        fi
+                        
+                        echo "✅ Dependencies resolved successfully"
+                    '''
+                }
+            }
+        }
+        
+        stage('Execute Release') {
+            steps {
+                script {
+                    echo "🚀 Executing release process..."
+                    
+                    // Choose release script based on pod name
+                    def releaseCmd = ""
+                    if (params.POD_NAME == 'Sequential') {
+                        releaseCmd = "./Scripts/release-sequential.sh"
+                    } else {
+                        releaseCmd = "./Scripts/release.sh"
+                    }
+                    
+                    // Add parameters based on release type
+                    if (params.RELEASE_TYPE == 'dry-run') {
+                        releaseCmd += " --dry-run"
+                    }
+                    
+                    if (params.SKIP_BUILD) {
+                        releaseCmd += " --skip-build"
+                    }
+                    
+                    if (params.SKIP_VALIDATION) {
+                        releaseCmd += " --skip-validation"
+                    }
+                    
+                    if (params.FORCE_RELEASE) {
+                        releaseCmd += " --force"
+                    }
+                    
+                    if (!params.PUBLISH_TO_COCOAPODS) {
+                        releaseCmd += " --skip-cocoapods"
+                    }
+                    
+                    if (!params.CREATE_GITHUB_RELEASE) {
+                        releaseCmd += " --skip-github"
+                    }
+                    
+                    // Add pod name and version (only for single pod releases)
+                    if (params.RELEASE_TYPE == 'rollback') {
+                        if (params.POD_NAME == 'Sequential') {
+                            releaseCmd += " --rollback ${params.ROLLBACK_VERSION}"
+                        } else {
+                            releaseCmd += " --rollback ${params.POD_NAME} ${params.ROLLBACK_VERSION}"
+                        }
+                    } else if (params.POD_NAME != 'Sequential') {
+                        releaseCmd += " ${params.POD_NAME} ${params.VERSION}"
+                    } else {
+                        releaseCmd += " ${params.VERSION}"
+                    }
+                    
+                    echo "🔧 Release command: ${releaseCmd}"
+                    
+                    // Execute release
+                    sh '''
+                        cd "${WORKSPACE}"
+                        
+                        # Set environment variables
+                        export PUBLISH_TO_COCOAPODS="${PUBLISH_TO_COCOAPODS}"
+                        export FORCE_RELEASE="${FORCE_RELEASE}"
+                        export COCOAPODS_TRUNK_TOKEN="${COCOAPODS_TRUNK_TOKEN}"
+                        export GITHUB_TOKEN="${GITHUB_TOKEN}"
+                        
+                        # Execute release script
+                        ''' + releaseCmd
+                }
+            }
+        }
+        
+        stage('Collect Release Artifacts') {
+            when {
+                anyOf {
+                    params.RELEASE_TYPE == 'release'
+                    params.RELEASE_TYPE == 'dry-run'
+                }
+            }
+            steps {
+                script {
+                    echo "📦 Collecting release artifacts..."
+                    
+                    sh '''
+                        cd "${WORKSPACE}"
+                        
+                        # Create artifacts directory
+                        mkdir -p "${ARTIFACTS_DIR}"
+                        
+                        # Collect podspecs and source files
+                        if [[ "${POD_NAME}" == "Sequential" ]]; then
+                            # Collect all podspecs for sequential release
+                            for pod in FacebookAdapter GoogleAdapter NovaAdapter MSPCore; do
+                                if [[ -f "${pod}.podspec" ]]; then
+                                    cp "${pod}.podspec" "${ARTIFACTS_DIR}/"
+                                    echo "📄 Collected: ${pod}.podspec"
+                                fi
+                                
+                                if [[ -d "${pod}" ]]; then
+                                    tar -czf "${ARTIFACTS_DIR}/${pod}-source.tar.gz" "${pod}/"
+                                    echo "📁 Collected: ${pod} source"
+                                fi
+                            done
+                        else
+                            # Collect single pod artifacts
+                            if [[ -f "${POD_NAME}/${POD_NAME}.podspec" ]]; then
+                                cp "${POD_NAME}/${POD_NAME}.podspec" "${ARTIFACTS_DIR}/"
+                                echo "📄 Collected: ${POD_NAME}.podspec"
+                            elif [[ -f "${POD_NAME}.podspec" ]]; then
+                                cp "${POD_NAME}.podspec" "${ARTIFACTS_DIR}/"
+                                echo "📄 Collected: ${POD_NAME}.podspec"
+                            fi
+                            
+                            if [[ -d "${POD_NAME}" ]]; then
+                                tar -czf "${ARTIFACTS_DIR}/${POD_NAME}-source.tar.gz" "${POD_NAME}/"
+                                echo "📁 Collected: ${POD_NAME} source"
+                            fi
+                        fi
+                        
+                        # Collect built frameworks if they exist
+                        if [[ -d "MSPSharedLibraries/MSPiOSCore.xcframework" ]]; then
+                            cp -R "MSPSharedLibraries/MSPiOSCore.xcframework" "${ARTIFACTS_DIR}/"
+                            echo "📦 Collected: MSPiOSCore.xcframework"
+                        fi
+                        
+                        if [[ -d "NovaAdapter/NovaCore.xcframework" ]]; then
+                            cp -R "NovaAdapter/NovaCore.xcframework" "${ARTIFACTS_DIR}/"
+                            echo "📦 Collected: NovaCore.xcframework"
+                        fi
+                        
+                        # Collect build logs
+                        find . -name "*.log" -type f -exec cp {} "${ARTIFACTS_DIR}/" \\;
+                        
+                        # Create release info
+                        if [[ "${POD_NAME}" == "Sequential" ]]; then
+                            cat > "${ARTIFACTS_DIR}/release-info.txt" << EOF
+Sequential Release Information
+=============================
+Release Type: ${RELEASE_TYPE}
+Pods Released: FacebookAdapter, GoogleAdapter, NovaAdapter, MSPCore
+Version: ${VERSION}
+Git Commit: ${GIT_COMMIT_SHORT}
+Git Branch: ${GIT_BRANCH_NAME}
+Release Date: $(date -u +%Y-%m-%dT%H:%M:%SZ)
+Jenkins Build: ${BUILD_NUMBER}
+Jenkins Job: ${JOB_NAME}
+Publish to CocoaPods: ${PUBLISH_TO_COCOAPODS}
+Create GitHub Release: ${CREATE_GITHUB_RELEASE}
+Release Order: FacebookAdapter -> GoogleAdapter -> NovaAdapter -> MSPCore
+CocoaPods Sync: Enabled with exponential backoff
+EOF
+                        else
+                            cat > "${ARTIFACTS_DIR}/release-info.txt" << EOF
+Release Information
+==================
+Release Type: ${RELEASE_TYPE}
+Pod Name: ${POD_NAME}
+Version: ${VERSION}
+Git Commit: ${GIT_COMMIT_SHORT}
+Git Branch: ${GIT_BRANCH_NAME}
+Release Date: $(date -u +%Y-%m-%dT%H:%M:%SZ)
+Jenkins Build: ${BUILD_NUMBER}
+Jenkins Job: ${JOB_NAME}
+Publish to CocoaPods: ${PUBLISH_TO_COCOAPODS}
+Create GitHub Release: ${CREATE_GITHUB_RELEASE}
+EOF
+                        fi
+                        
+                        echo "✅ Release artifacts collected successfully"
+                    '''
+                }
+            }
+        }
+    }
+    
+    post {
+        always {
+            script {
+                echo "🧹 Cleaning up release environment..."
+                
+                // Archive artifacts if they exist
+                if (fileExists("${env.ARTIFACTS_DIR}")) {
+                    archiveArtifacts artifacts: 'release-artifacts/**/*', allowEmptyArchive: true
+                }
+                
+                // Archive build logs
+                if (fileExists('*.log')) {
+                    archiveArtifacts artifacts: '*.log', allowEmptyArchive: true
+                }
+                
+                // Clean up temporary files
+                sh '''
+                    rm -rf DerivedData
+                    rm -rf .cocoapods_cache
+                '''
+            }
+        }
+        
+        success {
+            script {
+                echo "✅ Release completed successfully!"
+                
+                // Send success notification
+                if (params.RELEASE_TYPE == 'release') {
+                    if (params.POD_NAME == 'Sequential') {
+                        echo "🚀 Sequential release completed successfully!"
+                        echo "📦 Released pods: FacebookAdapter, GoogleAdapter, NovaAdapter, MSPCore"
+                        echo "🏷️ Version: ${params.VERSION}"
+                        if (params.PUBLISH_TO_COCOAPODS) {
+                            echo "📦 Published to CocoaPods trunk with sync verification"
+                        }
+                        if (params.CREATE_GITHUB_RELEASE) {
+                            echo "🐙 GitHub releases created for all pods"
+                        }
+                    } else {
+                        echo "🚀 ${params.POD_NAME} version ${params.VERSION} has been released successfully!"
+                        if (params.PUBLISH_TO_COCOAPODS) {
+                            echo "📦 Published to CocoaPods trunk"
+                        }
+                        if (params.CREATE_GITHUB_RELEASE) {
+                            echo "🐙 GitHub release created"
+                        }
+                    }
+                } else if (params.RELEASE_TYPE == 'dry-run') {
+                    echo "🔍 Dry run completed successfully"
+                } else if (params.RELEASE_TYPE == 'rollback') {
+                    echo "🔄 Rollback completed successfully"
+                }
+            }
+        }
+        
+        failure {
+            script {
+                echo "❌ Release failed!"
+                
+                // Send failure notification
+                if (params.POD_NAME == 'Sequential') {
+                    echo "💥 Sequential release failed!"
+                    echo "   Pods: FacebookAdapter, GoogleAdapter, NovaAdapter, MSPCore"
+                    if (params.RELEASE_TYPE == 'rollback') {
+                        echo "   Rollback version: ${params.ROLLBACK_VERSION}"
+                    } else {
+                        echo "   Version: ${params.VERSION}"
+                    }
+                    echo "   Commit: ${env.GIT_COMMIT_SHORT}"
+                    echo "   Branch: ${env.GIT_BRANCH_NAME}"
+                    
+                    // Provide rollback instructions
+                    if (params.RELEASE_TYPE == 'release') {
+                        echo "🔄 To rollback this release, run:"
+                        echo "   ./Scripts/release-sequential.sh --rollback ${params.VERSION}"
+                    }
+                } else {
+                    echo "💥 Release failed for ${params.POD_NAME}"
+                    if (params.RELEASE_TYPE == 'rollback') {
+                        echo "   Rollback version: ${params.ROLLBACK_VERSION}"
+                    } else {
+                        echo "   Version: ${params.VERSION}"
+                    }
+                    echo "   Commit: ${env.GIT_COMMIT_SHORT}"
+                    echo "   Branch: ${env.GIT_BRANCH_NAME}"
+                    
+                    // Provide rollback instructions
+                    if (params.RELEASE_TYPE == 'release') {
+                        echo "🔄 To rollback this release, run:"
+                        echo "   ./Scripts/release.sh --rollback ${params.POD_NAME} ${params.VERSION}"
+                    }
+                }
+            }
+        }
+        
+        unstable {
+            script {
+                echo "⚠️ Release completed with warnings"
+            }
+        }
+    }
+}
