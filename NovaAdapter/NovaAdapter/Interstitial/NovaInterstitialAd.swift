@@ -26,4 +26,8 @@ public class NovaInterstitialAd: MSPiOSCore.InterstitialAd {
             interstitialAdItem?.present(rootViewController: rootViewController)
         }
     }
+    
+    public override func isValid() -> Bool {
+        return interstitialAdItem != nil
+    }
 }
