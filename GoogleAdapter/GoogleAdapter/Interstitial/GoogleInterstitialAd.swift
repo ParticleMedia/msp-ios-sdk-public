@@ -21,4 +21,8 @@ public class GoogleInterstitialAd: MSPiOSCore.InterstitialAd {
     public override func show(rootViewController: UIViewController?) {
         interstitialAdItem?.present(from: rootViewController)
     }
+    
+    public override func isValid() -> Bool {
+        return interstitialAdItem != nil
+    }
 }
