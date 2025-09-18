@@ -236,23 +236,29 @@ import Foundation
     
     public func sendHideAdEvent(reason: String, adScreenShot: Data?, fullScreenShot: Data?)
     {
-        if let adRequest = self.adRequest,
-           let ad = self.facebookNativeAd ?? self.facebookInterstitialAd {
-            self.adMetricReporter?.logAdHide(ad: ad, adRequest: adRequest, bidResponse: self, reason: reason, adScreenShot: adScreenShot, fullScreenShot: fullScreenShot)
+        DispatchQueue.main.async {
+            if let adRequest = self.adRequest,
+               let ad = self.facebookNativeAd ?? self.facebookInterstitialAd {
+                self.adMetricReporter?.logAdHide(ad: ad, adRequest: adRequest, bidResponse: self, reason: reason, adScreenShot: adScreenShot, fullScreenShot: fullScreenShot)
+            }
         }
     }
     
     public func sendReportAdEvent(reason: String, description: String?, adScreenShot: Data?, fullScreenShot: Data?) {
-        if let adRequest = self.adRequest,
-           let ad = self.facebookNativeAd ?? self.facebookInterstitialAd {
-            self.adMetricReporter?.logAdReport(ad: ad, adRequest: adRequest, bidResponse: self, reason: reason, description: description, adScreenShot: adScreenShot, fullScreenShot: fullScreenShot)
+        DispatchQueue.main.async {
+            if let adRequest = self.adRequest,
+               let ad = self.facebookNativeAd ?? self.facebookInterstitialAd {
+                self.adMetricReporter?.logAdReport(ad: ad, adRequest: adRequest, bidResponse: self, reason: reason, description: description, adScreenShot: adScreenShot, fullScreenShot: fullScreenShot)
+            }
         }
     }
     
     private func sendClickAdEvent(ad: MSPAd) {
-        if let adRequest = adRequest,
-           let bidResponse = bidResponse {
-            self.adMetricReporter?.logAdClick(ad: ad, adRequest: adRequest, bidResponse: bidResponse)
+        DispatchQueue.main.async {
+            if let adRequest = self.adRequest,
+               let bidResponse = self.bidResponse {
+                self.adMetricReporter?.logAdClick(ad: ad, adRequest: adRequest, bidResponse: bidResponse)
+            }
         }
     }
 }
@@ -290,10 +296,12 @@ extension FacebookAdapter: FBNativeAdDelegate {
     }
     
     public func nativeAd(_ nativeAd: FBNativeAd, didFailWithError error: Error) {
-        MSPLogger.shared.info(message: "[Adapter: Facebook] Fail to load Facebook Native ad")
-        self.adListener?.onError(msg: error.localizedDescription)
-        if let adRequest = self.adRequest {
-            self.adMetricReporter?.logAdResponse(ad: nil, adRequest: adRequest, errorCode: .ERROR_CODE_INTERNAL_ERROR, errorMessage: error.localizedDescription)
+        DispatchQueue.main.async {
+            MSPLogger.shared.info(message: "[Adapter: Facebook] Fail to load Facebook Native ad")
+            self.adListener?.onError(msg: error.localizedDescription)
+            if let adRequest = self.adRequest {
+                self.adMetricReporter?.logAdResponse(ad: nil, adRequest: adRequest, errorCode: .ERROR_CODE_INTERNAL_ERROR, errorMessage: error.localizedDescription)
+            }
         }
     }
     
@@ -344,11 +352,13 @@ extension FacebookAdapter: FBInterstitialAdDelegate {
     }
     
     public func interstitialAd(_ interstitialAd: FBInterstitialAd, didFailWithError error: Error) {
-        MSPLogger.shared.info(message: "[Adapter: Facebook] Fail to load Facebook Interstitial ad")
-        self.adListener?.onError(msg: error.localizedDescription)
-        self.adMetricReporter?.logAdResult(placementId: adRequest?.placementId ?? "", ad: nil, fill: false, isFromCache: false)
-        if let adRequest = self.adRequest {
-            self.adMetricReporter?.logAdResponse(ad: nil, adRequest: adRequest, errorCode: .ERROR_CODE_INTERNAL_ERROR, errorMessage: error.localizedDescription)
+        DispatchQueue.main.async {
+            MSPLogger.shared.info(message: "[Adapter: Facebook] Fail to load Facebook Interstitial ad")
+            self.adListener?.onError(msg: error.localizedDescription)
+            self.adMetricReporter?.logAdResult(placementId: self.adRequest?.placementId ?? "", ad: nil, fill: false, isFromCache: false)
+            if let adRequest = self.adRequest {
+                self.adMetricReporter?.logAdResponse(ad: nil, adRequest: adRequest, errorCode: .ERROR_CODE_INTERNAL_ERROR, errorMessage: error.localizedDescription)
+            }
         }
     }
     

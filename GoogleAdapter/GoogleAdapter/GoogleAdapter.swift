@@ -122,13 +122,14 @@ import PrebidMobile
     
     public func loadAdCreative(bidResponse: Any, auctionBidListener: AuctionBidListener, adListener: any AdListener, context: Any, adRequest: AdRequest, bidderPlacementId: String, bidderFormat: MSPiOSCore.AdFormat?, params: [String:String]?) {
         
-        guard bidResponse is BidResponse,
-              let mBidResponse = bidResponse as? BidResponse else {
-            self.adListener?.onError(msg: "no valid response")
-            self.adMetricReporter?.logAdResult(placementId: adRequest.placementId ?? "", ad: nil, fill: false, isFromCache: false)
-            return
-        }
         DispatchQueue.main.async {
+            guard bidResponse is BidResponse,
+                  let mBidResponse = bidResponse as? BidResponse else {
+                auctionBidListener.onError(error: "no valid response")
+                self.adMetricReporter?.logAdResult(placementId: adRequest.placementId ?? "", ad: nil, fill: false, isFromCache: false)
+                return
+            }
+            
             self.adRequest = adRequest
             self.adListener = adListener
             self.bidResponse = mBidResponse
@@ -274,23 +275,29 @@ import PrebidMobile
     
     public func sendHideAdEvent(reason: String, adScreenShot: Data?, fullScreenShot: Data?)
     {
-        if let adRequest = self.adRequest,
-           let ad = (self.bannerAd ?? self.nativeAd) ?? self.interstitialAd {
-            self.adMetricReporter?.logAdHide(ad: ad, adRequest: adRequest, bidResponse: self, reason: reason, adScreenShot: adScreenShot, fullScreenShot: fullScreenShot)
+        DispatchQueue.main.async {
+            if let adRequest = self.adRequest,
+               let ad = (self.bannerAd ?? self.nativeAd) ?? self.interstitialAd {
+                self.adMetricReporter?.logAdHide(ad: ad, adRequest: adRequest, bidResponse: self, reason: reason, adScreenShot: adScreenShot, fullScreenShot: fullScreenShot)
+            }
         }
     }
     
     public func sendReportAdEvent(reason: String, description: String?, adScreenShot: Data?, fullScreenShot: Data?) {
-        if let adRequest = self.adRequest,
-           let ad = (self.bannerAd ?? self.nativeAd) ?? self.interstitialAd {
-            self.adMetricReporter?.logAdReport(ad: ad, adRequest: adRequest, bidResponse: self, reason: reason, description: description, adScreenShot: adScreenShot, fullScreenShot: fullScreenShot)
+        DispatchQueue.main.async {
+            if let adRequest = self.adRequest,
+               let ad = (self.bannerAd ?? self.nativeAd) ?? self.interstitialAd {
+                self.adMetricReporter?.logAdReport(ad: ad, adRequest: adRequest, bidResponse: self, reason: reason, description: description, adScreenShot: adScreenShot, fullScreenShot: fullScreenShot)
+            }
         }
     }
     
     public func sendClickAdEvent(ad: MSPAd) {
-        if let adRequest = adRequest,
-           let bidResponse = bidResponse {
-            self.adMetricReporter?.logAdClick(ad: ad, adRequest: adRequest, bidResponse: bidResponse)
+        DispatchQueue.main.async {
+            if let adRequest = self.adRequest,
+               let bidResponse = self.bidResponse {
+                self.adMetricReporter?.logAdClick(ad: ad, adRequest: adRequest, bidResponse: bidResponse)
+            }
         }
     }
 }
@@ -319,11 +326,13 @@ extension GoogleAdapter : GoogleMobileAds.BannerViewDelegate  {
     }
     
     public func bannerView(_ bannerView: GoogleMobileAds.BannerView, didFailToReceiveAdWithError error: Error) {
-        MSPLogger.shared.info(message: "[Adapter: Google] Fail to load Google Banner ad")
-        self.adListener?.onError(msg: error.localizedDescription)
-        self.adMetricReporter?.logAdResult(placementId: adRequest?.placementId ?? "", ad: nil, fill: false, isFromCache: false)
-        if let adRequest = self.adRequest {
-            self.adMetricReporter?.logAdResponse(ad: nil, adRequest: adRequest, errorCode: .ERROR_CODE_INTERNAL_ERROR, errorMessage: error.localizedDescription)
+        DispatchQueue.main.async {
+            MSPLogger.shared.info(message: "[Adapter: Google] Fail to load Google Banner ad")
+            self.adListener?.onError(msg: error.localizedDescription)
+            self.adMetricReporter?.logAdResult(placementId: self.adRequest?.placementId ?? "", ad: nil, fill: false, isFromCache: false)
+            if let adRequest = self.adRequest {
+                self.adMetricReporter?.logAdResponse(ad: nil, adRequest: adRequest, errorCode: .ERROR_CODE_INTERNAL_ERROR, errorMessage: error.localizedDescription)
+            }
         }
     }
     
@@ -396,11 +405,13 @@ extension GoogleAdapter: GoogleMobileAds.NativeAdLoaderDelegate {
     }
     
     public func adLoader(_ adLoader: GoogleMobileAds.AdLoader, didFailToReceiveAdWithError error: any Error) {
-        MSPLogger.shared.info(message: "[Adapter: Google] Fail to load Google Native ad")
-        self.adListener?.onError(msg: error.localizedDescription)
-        self.adMetricReporter?.logAdResult(placementId: adRequest?.placementId ?? "", ad: nil, fill: false, isFromCache: false)
-        if let adRequest = self.adRequest {
-            self.adMetricReporter?.logAdResponse(ad: nil, adRequest: adRequest, errorCode: .ERROR_CODE_INTERNAL_ERROR, errorMessage: error.localizedDescription)
+        DispatchQueue.main.async {
+            MSPLogger.shared.info(message: "[Adapter: Google] Fail to load Google Native ad")
+            self.adListener?.onError(msg: error.localizedDescription)
+            self.adMetricReporter?.logAdResult(placementId: self.adRequest?.placementId ?? "", ad: nil, fill: false, isFromCache: false)
+            if let adRequest = self.adRequest {
+                self.adMetricReporter?.logAdResponse(ad: nil, adRequest: adRequest, errorCode: .ERROR_CODE_INTERNAL_ERROR, errorMessage: error.localizedDescription)
+            }
         }
     }
 }
