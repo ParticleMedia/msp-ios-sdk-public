@@ -195,7 +195,8 @@ class NovaVideoPlayer: NSObject {
 
     }
     
-    func isValid() -> Bool {
+
+    public func isValid() -> Bool {
         if let playerItem = self.player._playerItem,
            playerItem.status != .failed {
             return true

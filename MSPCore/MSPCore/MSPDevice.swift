@@ -33,7 +33,6 @@ public class MSPDevice {
     private let DEIVCE_SIGNAL_FONT_SIZE = "font_size"
     private let DEIVCE_SIGNAL_AVAILABLE_MEMORY = "available_memory"
     private let DEVICE_SIGNAL_TIMEZONE = "timezone"
-    private let DEVICE_SIGNAL_LAST_SYSTEM_BOOT_TIME = "last_system_boot_time"
     
     public func getDeviceSignalsDictionary() -> [String:String] {
         self.collectDeviceInfo()
@@ -47,12 +46,11 @@ public class MSPDevice {
         dict[DEIVCE_SIGNAL_FONT_SIZE] = getFontSizeString()
         dict[DEIVCE_SIGNAL_AVAILABLE_MEMORY] = getAvailableMemoryString()
         dict[DEVICE_SIGNAL_TIMEZONE] = getTimezoneString()
-        dict[DEVICE_SIGNAL_LAST_SYSTEM_BOOT_TIME] = getSystemBootTimeString()
         
         return dict
     }
     
-    private func collectDeviceInfo() {
+    public func collectDeviceInfo() {
         self.orientation = UIDevice.current.orientation
         self.isInForeground = UIApplication.shared.applicationState == .active
         UIDevice.current.isBatteryMonitoringEnabled = true
@@ -112,7 +110,7 @@ public class MSPDevice {
         return "unknown"
     }
     
-    private func getBatteryStatusString() -> String {
+    public func getBatteryStatusString() -> String {
         guard let batteryStatus = self.batteryStatus else { return "unknown" }
         switch batteryStatus {
         case .unknown:
@@ -128,7 +126,7 @@ public class MSPDevice {
         }
     }
     
-    private func getFontSizeString() -> String {
+    public func getFontSizeString() -> String {
         guard let fontSize = self.fontSize else { return "unknown" }
         switch fontSize {
         case .extraSmall: return "xs"
@@ -147,7 +145,7 @@ public class MSPDevice {
         }
     }
     
-    private func getAvailableMemoryString() -> String {
+    public func getAvailableMemoryString() -> String {
         if let availableMemory = self.availableMemory {
             return String(availableMemory)
         } else {
@@ -155,7 +153,7 @@ public class MSPDevice {
         }
     }
     
-    private func getTimezoneString() -> String {
+    public func getTimezoneString() -> String {
         let secondsFromGMT = TimeZone.current.secondsFromGMT()
         let hoursFromGMT = secondsFromGMT / 3600
         let hoursAbs = abs(hoursFromGMT)
@@ -166,15 +164,6 @@ public class MSPDevice {
        
        // Format the string with +HH:mm or -HH:mm
        return String(format: "%+03d:%02d", hours, minutes)
-    }
-    
-    private func getSystemBootTimeString() -> String {
-        let bootTimeInMilis = (Date().timeIntervalSince1970 - ProcessInfo.processInfo.systemUptime) * 1000
-        if bootTimeInMilis.isFinite, !bootTimeInMilis.isNaN {
-            let bootTime = Int64(bootTimeInMilis)
-            return String(bootTime)
-        }
-        return ""
     }
     
 }

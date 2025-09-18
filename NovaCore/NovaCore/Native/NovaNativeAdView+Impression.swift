@@ -61,7 +61,7 @@ private extension NovaNativeAdView {
 
     // TODO: lsy, 这个可能导致开始和暂停的时机和 newsbreak 上略有不同，我记得 nb 上更加严格
     func detectVideoOnScreen() {
-        if mediaView.novaIsPartiallyVisibleOnScreen, mediaView.onTop {
+        if mediaView.novaIsPartiallyVisibleOnScreen, mediaView.onTop, UIApplication.shared.applicationState == .active {
             nativeAd?.mediaContent.videoController?.play()
         } else {
             nativeAd?.mediaContent.videoController?.pause()
