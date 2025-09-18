@@ -21,4 +21,8 @@ public class FacebookInterstitialAd: MSPiOSCore.InterstitialAd {
     public override func show(rootViewController: UIViewController?) {
         interstitialAdItem?.show(fromRootViewController: rootViewController)
     }
+    
+    public override func isValid() -> Bool {
+        return interstitialAdItem?.isAdValid ?? false
+    }
 }

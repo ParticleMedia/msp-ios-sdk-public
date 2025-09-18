@@ -483,20 +483,24 @@ private extension NovaNativeAdVideoView {
         guard let videoPlayer = videoPlayer else {
             return
         }
-        videoPlayer.pause(endKind: endKind)
-        iabReporter?.logVideoPause()
-        let pauseTime = CACurrentMediaTime()
-        if let encryptedAdToken = self.encryptedAdToken,
-           let lastResumeTime {
-            NovaAdVideoMetricReporter.logVideoPause(encryptedAdToken: encryptedAdToken,
-                                                    duration: pauseTime - lastResumeTime,
-                                                    reason: reason,
-                                                    videoInfo: self.videoInfo,
-                                                    startTime: self.startTime,
-                                                    configTime: self.configTime,
-                                                    novaVideoPlayer: self.videoPlayer)
+        
+        if videoPlayer.player.playbackState == .playing {
+            //only send video pause event when video was actually playing
+            let pauseTime = CACurrentMediaTime()
+            iabReporter?.logVideoPause()
+            if let encryptedAdToken = self.encryptedAdToken,
+               let lastResumeTime {
+                NovaAdVideoMetricReporter.logVideoPause(encryptedAdToken: encryptedAdToken,
+                                                        duration: pauseTime - lastResumeTime,
+                                                        reason: reason,
+                                                        videoInfo: self.videoInfo,
+                                                        startTime: self.startTime,
+                                                        configTime: self.configTime,
+                                                        novaVideoPlayer: self.videoPlayer)
+            }
+            lastPauseTime = pauseTime
         }
-        lastPauseTime = pauseTime
+        videoPlayer.pause(endKind: endKind)
     }
 
     private func updatePlayButton(_ isPlaying: Bool) {

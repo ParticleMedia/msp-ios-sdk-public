@@ -29,4 +29,8 @@ open class MSPAd {
     public func sendReportAdEvent(reason: String, description: String?, adScreenShot: Data? = nil, fullScreenShot: Data? = nil) {
         adNetworkAdapter?.sendReportAdEvent(reason: reason, description: description, adScreenShot: adScreenShot, fullScreenShot: fullScreenShot)
     }
+    
+    open func isValid() -> Bool {
+        return true
+    }
 }
