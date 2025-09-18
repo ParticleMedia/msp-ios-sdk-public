@@ -117,23 +117,29 @@ import UIKit
     
     public func sendHideAdEvent(reason: String, adScreenShot: Data?, fullScreenShot: Data?)
     {
-        if let adRequest = self.adRequest,
-           let ad = self.bannerAd {
-            self.adMetricReporter?.logAdHide(ad: ad, adRequest: adRequest, bidResponse: self, reason: reason, adScreenShot: adScreenShot, fullScreenShot: fullScreenShot)
+        DispatchQueue.main.async {
+            if let adRequest = self.adRequest,
+               let ad = self.bannerAd {
+                self.adMetricReporter?.logAdHide(ad: ad, adRequest: adRequest, bidResponse: self, reason: reason, adScreenShot: adScreenShot, fullScreenShot: fullScreenShot)
+            }
         }
     }
     
     public func sendReportAdEvent(reason: String, description: String?, adScreenShot: Data?, fullScreenShot: Data?) {
-        if let adRequest = self.adRequest,
-           let ad = self.bannerAd {
-            self.adMetricReporter?.logAdReport(ad: ad, adRequest: adRequest, bidResponse: self, reason: reason, description: description, adScreenShot: adScreenShot, fullScreenShot: fullScreenShot)
+        DispatchQueue.main.async {
+            if let adRequest = self.adRequest,
+               let ad = self.bannerAd {
+                self.adMetricReporter?.logAdReport(ad: ad, adRequest: adRequest, bidResponse: self, reason: reason, description: description, adScreenShot: adScreenShot, fullScreenShot: fullScreenShot)
+            }
         }
     }
     
     private func sendClickAdEvent(ad: MSPAd) {
-        if let adRequest = adRequest,
-           let bidResponse = bidResponse {
-            self.adMetricReporter?.logAdClick(ad: ad, adRequest: adRequest, bidResponse: bidResponse)
+        DispatchQueue.main.async {
+            if let adRequest = self.adRequest,
+               let bidResponse = self.bidResponse {
+                self.adMetricReporter?.logAdClick(ad: ad, adRequest: adRequest, bidResponse: bidResponse)
+            }
         }
     }
     
@@ -196,11 +202,13 @@ extension PrebidAdapter: BannerViewDelegate {
     }
     
     @objc public func bannerView(_ bannerView: BannerView, didFailToReceiveAdWith error: Error) {
-        MSPLogger.shared.info(message: "[Adapter: Prebid] Fail to load Prebid Banner ad")
-        self.auctionBidListener?.onError(error: "fail to get ad")
-        adMetricReporter?.logAdResult(placementId: adRequest?.placementId ?? "", ad: nil, fill: false, isFromCache: false)
-        if let adRequest = self.adRequest {
-            self.adMetricReporter?.logAdResponse(ad: nil, adRequest: adRequest, errorCode: .ERROR_CODE_INTERNAL_ERROR, errorMessage: error.localizedDescription)
+        DispatchQueue.main.async {
+            MSPLogger.shared.info(message: "[Adapter: Prebid] Fail to load Prebid Banner ad")
+            self.auctionBidListener?.onError(error: "fail to get ad")
+            self.adMetricReporter?.logAdResult(placementId: self.adRequest?.placementId ?? "", ad: nil, fill: false, isFromCache: false)
+            if let adRequest = self.adRequest {
+                self.adMetricReporter?.logAdResponse(ad: nil, adRequest: adRequest, errorCode: .ERROR_CODE_INTERNAL_ERROR, errorMessage: error.localizedDescription)
+            }
         }
     }
     
@@ -233,11 +241,13 @@ extension PrebidAdapter: BannerEventHandler {
     }
 
     public func trackImpression() {
-        if let prebidAd = self.bannerAd {
-            adListener?.onAdImpression(ad: prebidAd)
-            if let adRequest = adRequest,
-               let bidResponse = bidResponse {
-                self.adMetricReporter?.logAdImpression(ad: prebidAd, adRequest: adRequest, bidResponse: bidResponse)
+        DispatchQueue.main.async {
+            if let prebidAd = self.bannerAd {
+                self.adListener?.onAdImpression(ad: prebidAd)
+                if let adRequest = self.adRequest,
+                   let bidResponse = self.bidResponse {
+                    self.adMetricReporter?.logAdImpression(ad: prebidAd, adRequest: adRequest, bidResponse: bidResponse)
+                }
             }
         }
     }
@@ -276,22 +286,26 @@ extension PrebidAdapter: InterstitialAdUnitDelegate {
 
     /// Called when the load process fails to produce a viable ad
     @objc public func interstitial(_ interstitial: PrebidMobile.InterstitialRenderingAdUnit, didFailToReceiveAdWithError error: (any Error)?) {
-        MSPLogger.shared.info(message: "[Adapter: Prebid] Fail to load Prebid Interstitial ad")
-        self.adListener?.onError(msg: error?.localizedDescription ?? "")
-        self.adMetricReporter?.logAdResult(placementId: adRequest?.placementId ?? "", ad: nil, fill: false, isFromCache: false)
-        if let adRequest = self.adRequest {
-            self.adMetricReporter?.logAdResponse(ad: nil, adRequest: adRequest, errorCode: .ERROR_CODE_INTERNAL_ERROR, errorMessage: error?.localizedDescription ?? "")
+        DispatchQueue.main.async {
+            MSPLogger.shared.info(message: "[Adapter: Prebid] Fail to load Prebid Interstitial ad")
+            self.adListener?.onError(msg: error?.localizedDescription ?? "")
+            self.adMetricReporter?.logAdResult(placementId: self.adRequest?.placementId ?? "", ad: nil, fill: false, isFromCache: false)
+            if let adRequest = self.adRequest {
+                self.adMetricReporter?.logAdResponse(ad: nil, adRequest: adRequest, errorCode: .ERROR_CODE_INTERNAL_ERROR, errorMessage: error?.localizedDescription ?? "")
+            }
         }
     }
 
     /// Called when the interstitial view will be launched,  as a result of show() method.
     @objc public func interstitialWillPresentAd(_ interstitial: PrebidMobile.InterstitialRenderingAdUnit) {
-        if let interstitialAd = self.interstitialAd {
-            self.adListener?.onAdImpression(ad: interstitialAd)
-            
-            if let adRequest = adRequest,
-               let bidResponse = bidResponse {
-                self.adMetricReporter?.logAdImpression(ad: interstitialAd, adRequest: adRequest, bidResponse: bidResponse)
+        DispatchQueue.main.async {
+            if let interstitialAd = self.interstitialAd {
+                self.adListener?.onAdImpression(ad: interstitialAd)
+                
+                if let adRequest = self.adRequest,
+                   let bidResponse = self.bidResponse {
+                    self.adMetricReporter?.logAdImpression(ad: interstitialAd, adRequest: adRequest, bidResponse: bidResponse)
+                }
             }
         }
     }
