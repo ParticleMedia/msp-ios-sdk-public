@@ -8,6 +8,7 @@
 import Foundation
 import MSPiOSCore
 import PrebidMobile
+import AdSupport
 //import SwiftProtobuf
 
 @objc public class MESMetricReporter: NSObject {
@@ -75,6 +76,30 @@ import PrebidMobile
         eventModel.completeTimeByAdNetwork = adNetworkCompleteTimeInMs
         
         eventModel.mspSdkVersion = MSP.shared.version
+        
+        MSPDevice.shared.collectDeviceInfo()
+        if let ppid = MSP.shared.ppid {
+            eventModel.mspID = ppid
+        } else if let mspId = UserDefaults.standard.string(forKey: "msp_user_id") {
+            eventModel.mspID = mspId
+        }
+        eventModel.ifa = ASIdentifierManager.shared().advertisingIdentifier.uuidString
+        if let batteryLevel = MSPDevice.shared.batteryLevel {
+            eventModel.batteryLevel = batteryLevel
+        }
+        eventModel.batteryStatus = MSPDevice.shared.getBatteryStatusString()
+        eventModel.fontSize = MSPDevice.shared.getFontSizeString()
+        eventModel.timezone = MSPDevice.shared.getTimezoneString()
+        if let availableMemoryBytes = MSPDevice.shared.availableMemory {
+            eventModel.availableMemoryBytes = UInt64(availableMemoryBytes)
+        }
+        if let isLowPowerMode = MSPDevice.shared.isLowPowerMode {
+            eventModel.isLowDataMode = isLowPowerMode
+        }
+        if let isLowDataMode = MSPDevice.shared.isLowDataMode {
+            eventModel.isLowDataMode = isLowDataMode
+        }
+        
         
         do {
             let tracingData = try eventModel.serializedData()

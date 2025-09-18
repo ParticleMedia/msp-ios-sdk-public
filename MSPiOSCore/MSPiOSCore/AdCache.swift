@@ -14,19 +14,28 @@ public class AdCache {
     public var adMetricReporter: AdMetricReporter?
     
     public func peakAd(placementId: String) -> MSPAd? {
-        return adCache[placementId]
+        guard let ad = adCache[placementId] else {
+            return nil
+        }
+        if ad.isValid() {
+            return ad
+        } else {
+            adCache.removeValue(forKey: placementId)
+            return nil
+        }
     }
     
     public func getAd(placementId: String) -> MSPAd? {
         let value = adCache.removeValue(forKey: placementId)
         
-        if let ad = value {
+        if let ad = value,
+           ad.isValid() {
             adMetricReporter?.logGetAdFromCache(cacheKey: placementId, fill: true, ad: ad)
+            return ad
         } else {
             adMetricReporter?.logGetAdFromCache(cacheKey: placementId, fill: false, ad: nil)
+            return nil
         }
-        
-        return value
     }
     
     public func saveAd(placementId: String, ad: MSPAd) {

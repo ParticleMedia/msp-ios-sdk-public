@@ -39,54 +39,56 @@ public class MSP {
     
     public func initMSP(initParams: InitializationParameters, sdkInitListener: MSPInitListener?, adNetworkManagers: [AdNetworkManager]) {
         // This is a temporary solution to replace MSPManager class in kotlin to solve the Kotlin singleton issue
-        let initStartTime = Date().timeIntervalSince1970
-        self.initStartTime = initStartTime
-        AdCache.shared.adMetricReporter = AdMetricReporterImp()
-        if initParams is InitializationParametersImp {
-            let params = initParams as? InitializationParametersImp
-            self.orgId = params?.orgId
-            self.appId = params?.appId
-            if let orgId = orgId {
-                self.org = String(orgId)
-            }
-            if let appId = appId {
-                self.app = String(appId)
-            }
-            self.prebidAPIKey = initParams.getPrebidAPIKey()
-        }
-        
-        if UserDefaults.standard.string(forKey: "msp_user_id") == nil {
-            fetchMSPUserId()
-        }
-        
-        numInitWaitingForCallbacks = 1 //default vaule is 1 for prebid sdk is alwasys in the dependency
-        for manager in adNetworkManagers {
-            if let adNetworkAdapter = manager.getAdNetworkAdapter() {
-                adNetworkAdapterProvider.adNetworkManagerDict[adNetworkAdapter.getAdNetwork()] = manager
-                numInitWaitingForCallbacks += 1
+        DispatchQueue.main.async {
+            let initStartTime = Date().timeIntervalSince1970
+            self.initStartTime = initStartTime
+            AdCache.shared.adMetricReporter = AdMetricReporterImp()
+            if initParams is InitializationParametersImp {
+                let params = initParams as? InitializationParametersImp
+                self.orgId = params?.orgId
+                self.appId = params?.appId
+                if let orgId = self.orgId {
+                    self.org = String(orgId)
+                }
+                if let appId = self.appId {
+                    self.app = String(appId)
+                }
+                self.prebidAPIKey = initParams.getPrebidAPIKey()
             }
             
-        }
-        self.sdkInitListener = sdkInitListener
-        var adapterInitListener = MSPAdapterInitListener()
-        
-        MSPAdConfigManager.shared.initAdConfig()
-        for manager in adNetworkManagers {
-            if let adNetworkAdapter = manager.getAdNetworkAdapter() {
-                self.adNetworkInitStartTime[adNetworkAdapter.getAdNetwork().rawValue] = Date().timeIntervalSince1970
-                adNetworkAdapter.initialize(initParams: initParams, adapterInitListener: adapterInitListener, context: nil)
+            if UserDefaults.standard.string(forKey: "msp_user_id") == nil {
+                self.fetchMSPUserId()
             }
+            
+            self.numInitWaitingForCallbacks = 1 //default vaule is 1 for prebid sdk is alwasys in the dependency
+            for manager in adNetworkManagers {
+                if let adNetworkAdapter = manager.getAdNetworkAdapter() {
+                    self.adNetworkAdapterProvider.adNetworkManagerDict[adNetworkAdapter.getAdNetwork()] = manager
+                    self.numInitWaitingForCallbacks += 1
+                }
+                
+            }
+            self.sdkInitListener = sdkInitListener
+            var adapterInitListener = MSPAdapterInitListener()
+            
+            MSPAdConfigManager.shared.initAdConfig()
+            for manager in adNetworkManagers {
+                if let adNetworkAdapter = manager.getAdNetworkAdapter() {
+                    self.adNetworkInitStartTime[adNetworkAdapter.getAdNetwork().rawValue] = Date().timeIntervalSince1970
+                    adNetworkAdapter.initialize(initParams: initParams, adapterInitListener: adapterInitListener, context: nil)
+                }
+            }
+            PrebidAdapter.initializePrebid(initParams: initParams, adapterInitListener: adapterInitListener, context: nil)
+            
+            if let initParamsImp = initParams as? InitializationParametersImp,
+               let sourceApp = initParamsImp.sourceApp {
+                Targeting.shared.sourceapp = sourceApp
+            }
+            Prebid.shared.shareGeoLocation = true
+            
+            UserDefaults.standard.setValue(String(Date().timeIntervalSince1970 * 1000), forKey: "FirstLaunchTime")
+            self.blockLatencyInMs = Int32((Date().timeIntervalSince1970 - initStartTime) * 1000)
         }
-        PrebidAdapter.initializePrebid(initParams: initParams, adapterInitListener: adapterInitListener, context: nil)
-       
-        if let initParamsImp = initParams as? InitializationParametersImp,
-           let sourceApp = initParamsImp.sourceApp {
-            Targeting.shared.sourceapp = sourceApp
-        }
-        Prebid.shared.shareGeoLocation = true
-        
-        UserDefaults.standard.setValue(String(Date().timeIntervalSince1970 * 1000), forKey: "FirstLaunchTime")
-        self.blockLatencyInMs = Int32((Date().timeIntervalSince1970 - initStartTime) * 1000)
     }
     
     public class MSPAdapterInitListener: NSObject, AdapterInitListener {

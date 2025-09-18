@@ -21,57 +21,120 @@ fileprivate struct _GeneratedWithProtocGenSwiftVersion: SwiftProtobuf.ProtobufAP
 }
 
 /// sent when app starts up
-struct Com_Newsbreak_Mes_Events_SdkInitEvent: Sendable {
+struct Com_Newsbreak_Mes_Events_SdkInitEvent: @unchecked Sendable {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  var clientTsMs: UInt64 = 0
+  var clientTsMs: UInt64 {
+    get {return _storage._clientTsMs}
+    set {_uniqueStorage()._clientTsMs = newValue}
+  }
 
-  var serverTsMs: UInt64 = 0
+  var serverTsMs: UInt64 {
+    get {return _storage._serverTsMs}
+    set {_uniqueStorage()._serverTsMs = newValue}
+  }
 
-  var os: Com_Newsbreak_Monetization_Common_OsType = .unspecified
+  var os: Com_Newsbreak_Monetization_Common_OsType {
+    get {return _storage._os}
+    set {_uniqueStorage()._os = newValue}
+  }
 
-  var org: String = String()
+  var org: String {
+    get {return _storage._org}
+    set {_uniqueStorage()._org = newValue}
+  }
 
-  var app: String = String()
+  var app: String {
+    get {return _storage._app}
+    set {_uniqueStorage()._app = newValue}
+  }
 
   var mspSdkVersion: String {
-    get {return _mspSdkVersion ?? String()}
-    set {_mspSdkVersion = newValue}
+    get {return _storage._mspSdkVersion ?? String()}
+    set {_uniqueStorage()._mspSdkVersion = newValue}
   }
   /// Returns true if `mspSdkVersion` has been explicitly set.
-  var hasMspSdkVersion: Bool {return self._mspSdkVersion != nil}
+  var hasMspSdkVersion: Bool {return _storage._mspSdkVersion != nil}
   /// Clears the value of `mspSdkVersion`. Subsequent reads from it will return its default value.
-  mutating func clearMspSdkVersion() {self._mspSdkVersion = nil}
+  mutating func clearMspSdkVersion() {_uniqueStorage()._mspSdkVersion = nil}
 
   var latency: Int32 {
-    get {return _latency ?? 0}
-    set {_latency = newValue}
+    get {return _storage._latency ?? 0}
+    set {_uniqueStorage()._latency = newValue}
   }
   /// Returns true if `latency` has been explicitly set.
-  var hasLatency: Bool {return self._latency != nil}
+  var hasLatency: Bool {return _storage._latency != nil}
   /// Clears the value of `latency`. Subsequent reads from it will return its default value.
-  mutating func clearLatency() {self._latency = nil}
+  mutating func clearLatency() {_uniqueStorage()._latency = nil}
 
   var totalCompleteTime: Int32 {
-    get {return _totalCompleteTime ?? 0}
-    set {_totalCompleteTime = newValue}
+    get {return _storage._totalCompleteTime ?? 0}
+    set {_uniqueStorage()._totalCompleteTime = newValue}
   }
   /// Returns true if `totalCompleteTime` has been explicitly set.
-  var hasTotalCompleteTime: Bool {return self._totalCompleteTime != nil}
+  var hasTotalCompleteTime: Bool {return _storage._totalCompleteTime != nil}
   /// Clears the value of `totalCompleteTime`. Subsequent reads from it will return its default value.
-  mutating func clearTotalCompleteTime() {self._totalCompleteTime = nil}
+  mutating func clearTotalCompleteTime() {_uniqueStorage()._totalCompleteTime = nil}
 
-  var completeTimeByAdNetwork: Dictionary<String,Int32> = [:]
+  var completeTimeByAdNetwork: Dictionary<String,Int32> {
+    get {return _storage._completeTimeByAdNetwork}
+    set {_uniqueStorage()._completeTimeByAdNetwork = newValue}
+  }
+
+  var mspID: String {
+    get {return _storage._mspID}
+    set {_uniqueStorage()._mspID = newValue}
+  }
+
+  /// 11 and 12 are reserved for some deprecated fields
+  /// DO NOT USE THEM ANYMORE
+  var ifa: String {
+    get {return _storage._ifa}
+    set {_uniqueStorage()._ifa = newValue}
+  }
+
+  var batteryLevel: Float {
+    get {return _storage._batteryLevel}
+    set {_uniqueStorage()._batteryLevel = newValue}
+  }
+
+  var batteryStatus: String {
+    get {return _storage._batteryStatus}
+    set {_uniqueStorage()._batteryStatus = newValue}
+  }
+
+  var fontSize: String {
+    get {return _storage._fontSize}
+    set {_uniqueStorage()._fontSize = newValue}
+  }
+
+  var timezone: String {
+    get {return _storage._timezone}
+    set {_uniqueStorage()._timezone = newValue}
+  }
+
+  var availableMemoryBytes: UInt64 {
+    get {return _storage._availableMemoryBytes}
+    set {_uniqueStorage()._availableMemoryBytes = newValue}
+  }
+
+  var isLowPowerMode: Bool {
+    get {return _storage._isLowPowerMode}
+    set {_uniqueStorage()._isLowPowerMode = newValue}
+  }
+
+  var isLowDataMode: Bool {
+    get {return _storage._isLowDataMode}
+    set {_uniqueStorage()._isLowDataMode = newValue}
+  }
 
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
   init() {}
 
-  fileprivate var _mspSdkVersion: String? = nil
-  fileprivate var _latency: Int32? = nil
-  fileprivate var _totalCompleteTime: Int32? = nil
+  fileprivate var _storage = _StorageClass.defaultInstance
 }
 
 // MARK: - Code below here is support for the SwiftProtobuf runtime.
@@ -90,73 +153,197 @@ extension Com_Newsbreak_Mes_Events_SdkInitEvent: SwiftProtobuf.Message, SwiftPro
     7: .same(proto: "latency"),
     8: .standard(proto: "total_complete_time"),
     9: .standard(proto: "complete_time_by_ad_network"),
+    10: .standard(proto: "msp_id"),
+    13: .same(proto: "ifa"),
+    14: .standard(proto: "battery_level"),
+    15: .standard(proto: "battery_status"),
+    16: .standard(proto: "font_size"),
+    17: .same(proto: "timezone"),
+    18: .standard(proto: "available_memory_bytes"),
+    19: .standard(proto: "is_low_power_mode"),
+    20: .standard(proto: "is_low_data_mode"),
   ]
 
+  fileprivate class _StorageClass {
+    var _clientTsMs: UInt64 = 0
+    var _serverTsMs: UInt64 = 0
+    var _os: Com_Newsbreak_Monetization_Common_OsType = .unspecified
+    var _org: String = String()
+    var _app: String = String()
+    var _mspSdkVersion: String? = nil
+    var _latency: Int32? = nil
+    var _totalCompleteTime: Int32? = nil
+    var _completeTimeByAdNetwork: Dictionary<String,Int32> = [:]
+    var _mspID: String = String()
+    var _ifa: String = String()
+    var _batteryLevel: Float = 0
+    var _batteryStatus: String = String()
+    var _fontSize: String = String()
+    var _timezone: String = String()
+    var _availableMemoryBytes: UInt64 = 0
+    var _isLowPowerMode: Bool = false
+    var _isLowDataMode: Bool = false
+
+      // This property is used as the initial default value for new instances of the type.
+      // The type itself is protecting the reference to its storage via CoW semantics.
+      // This will force a copy to be made of this reference when the first mutation occurs;
+      // hence, it is safe to mark this as `nonisolated(unsafe)`.
+      static nonisolated(unsafe) let defaultInstance = _StorageClass()
+
+    private init() {}
+
+    init(copying source: _StorageClass) {
+      _clientTsMs = source._clientTsMs
+      _serverTsMs = source._serverTsMs
+      _os = source._os
+      _org = source._org
+      _app = source._app
+      _mspSdkVersion = source._mspSdkVersion
+      _latency = source._latency
+      _totalCompleteTime = source._totalCompleteTime
+      _completeTimeByAdNetwork = source._completeTimeByAdNetwork
+      _mspID = source._mspID
+      _ifa = source._ifa
+      _batteryLevel = source._batteryLevel
+      _batteryStatus = source._batteryStatus
+      _fontSize = source._fontSize
+      _timezone = source._timezone
+      _availableMemoryBytes = source._availableMemoryBytes
+      _isLowPowerMode = source._isLowPowerMode
+      _isLowDataMode = source._isLowDataMode
+    }
+  }
+
+  fileprivate mutating func _uniqueStorage() -> _StorageClass {
+    if !isKnownUniquelyReferenced(&_storage) {
+      _storage = _StorageClass(copying: _storage)
+    }
+    return _storage
+  }
+
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
-    while let fieldNumber = try decoder.nextFieldNumber() {
-      // The use of inline closures is to circumvent an issue where the compiler
-      // allocates stack space for every case branch when no optimizations are
-      // enabled. https://github.com/apple/swift-protobuf/issues/1034
-      switch fieldNumber {
-      case 1: try { try decoder.decodeSingularUInt64Field(value: &self.clientTsMs) }()
-      case 2: try { try decoder.decodeSingularUInt64Field(value: &self.serverTsMs) }()
-      case 3: try { try decoder.decodeSingularEnumField(value: &self.os) }()
-      case 4: try { try decoder.decodeSingularStringField(value: &self.org) }()
-      case 5: try { try decoder.decodeSingularStringField(value: &self.app) }()
-      case 6: try { try decoder.decodeSingularStringField(value: &self._mspSdkVersion) }()
-      case 7: try { try decoder.decodeSingularInt32Field(value: &self._latency) }()
-      case 8: try { try decoder.decodeSingularInt32Field(value: &self._totalCompleteTime) }()
-      case 9: try { try decoder.decodeMapField(fieldType: SwiftProtobuf._ProtobufMap<SwiftProtobuf.ProtobufString,SwiftProtobuf.ProtobufInt32>.self, value: &self.completeTimeByAdNetwork) }()
-      default: break
+    _ = _uniqueStorage()
+    try withExtendedLifetime(_storage) { (_storage: _StorageClass) in
+      while let fieldNumber = try decoder.nextFieldNumber() {
+        // The use of inline closures is to circumvent an issue where the compiler
+        // allocates stack space for every case branch when no optimizations are
+        // enabled. https://github.com/apple/swift-protobuf/issues/1034
+        switch fieldNumber {
+        case 1: try { try decoder.decodeSingularUInt64Field(value: &_storage._clientTsMs) }()
+        case 2: try { try decoder.decodeSingularUInt64Field(value: &_storage._serverTsMs) }()
+        case 3: try { try decoder.decodeSingularEnumField(value: &_storage._os) }()
+        case 4: try { try decoder.decodeSingularStringField(value: &_storage._org) }()
+        case 5: try { try decoder.decodeSingularStringField(value: &_storage._app) }()
+        case 6: try { try decoder.decodeSingularStringField(value: &_storage._mspSdkVersion) }()
+        case 7: try { try decoder.decodeSingularInt32Field(value: &_storage._latency) }()
+        case 8: try { try decoder.decodeSingularInt32Field(value: &_storage._totalCompleteTime) }()
+        case 9: try { try decoder.decodeMapField(fieldType: SwiftProtobuf._ProtobufMap<SwiftProtobuf.ProtobufString,SwiftProtobuf.ProtobufInt32>.self, value: &_storage._completeTimeByAdNetwork) }()
+        case 10: try { try decoder.decodeSingularStringField(value: &_storage._mspID) }()
+        case 13: try { try decoder.decodeSingularStringField(value: &_storage._ifa) }()
+        case 14: try { try decoder.decodeSingularFloatField(value: &_storage._batteryLevel) }()
+        case 15: try { try decoder.decodeSingularStringField(value: &_storage._batteryStatus) }()
+        case 16: try { try decoder.decodeSingularStringField(value: &_storage._fontSize) }()
+        case 17: try { try decoder.decodeSingularStringField(value: &_storage._timezone) }()
+        case 18: try { try decoder.decodeSingularUInt64Field(value: &_storage._availableMemoryBytes) }()
+        case 19: try { try decoder.decodeSingularBoolField(value: &_storage._isLowPowerMode) }()
+        case 20: try { try decoder.decodeSingularBoolField(value: &_storage._isLowDataMode) }()
+        default: break
+        }
       }
     }
   }
 
   func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
-    // The use of inline closures is to circumvent an issue where the compiler
-    // allocates stack space for every if/case branch local when no optimizations
-    // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
-    // https://github.com/apple/swift-protobuf/issues/1182
-    if self.clientTsMs != 0 {
-      try visitor.visitSingularUInt64Field(value: self.clientTsMs, fieldNumber: 1)
-    }
-    if self.serverTsMs != 0 {
-      try visitor.visitSingularUInt64Field(value: self.serverTsMs, fieldNumber: 2)
-    }
-    if self.os != .unspecified {
-      try visitor.visitSingularEnumField(value: self.os, fieldNumber: 3)
-    }
-    if !self.org.isEmpty {
-      try visitor.visitSingularStringField(value: self.org, fieldNumber: 4)
-    }
-    if !self.app.isEmpty {
-      try visitor.visitSingularStringField(value: self.app, fieldNumber: 5)
-    }
-    try { if let v = self._mspSdkVersion {
-      try visitor.visitSingularStringField(value: v, fieldNumber: 6)
-    } }()
-    try { if let v = self._latency {
-      try visitor.visitSingularInt32Field(value: v, fieldNumber: 7)
-    } }()
-    try { if let v = self._totalCompleteTime {
-      try visitor.visitSingularInt32Field(value: v, fieldNumber: 8)
-    } }()
-    if !self.completeTimeByAdNetwork.isEmpty {
-      try visitor.visitMapField(fieldType: SwiftProtobuf._ProtobufMap<SwiftProtobuf.ProtobufString,SwiftProtobuf.ProtobufInt32>.self, value: self.completeTimeByAdNetwork, fieldNumber: 9)
+    try withExtendedLifetime(_storage) { (_storage: _StorageClass) in
+      // The use of inline closures is to circumvent an issue where the compiler
+      // allocates stack space for every if/case branch local when no optimizations
+      // are enabled. https://github.com/apple/swift-protobuf/issues/1034 and
+      // https://github.com/apple/swift-protobuf/issues/1182
+      if _storage._clientTsMs != 0 {
+        try visitor.visitSingularUInt64Field(value: _storage._clientTsMs, fieldNumber: 1)
+      }
+      if _storage._serverTsMs != 0 {
+        try visitor.visitSingularUInt64Field(value: _storage._serverTsMs, fieldNumber: 2)
+      }
+      if _storage._os != .unspecified {
+        try visitor.visitSingularEnumField(value: _storage._os, fieldNumber: 3)
+      }
+      if !_storage._org.isEmpty {
+        try visitor.visitSingularStringField(value: _storage._org, fieldNumber: 4)
+      }
+      if !_storage._app.isEmpty {
+        try visitor.visitSingularStringField(value: _storage._app, fieldNumber: 5)
+      }
+      try { if let v = _storage._mspSdkVersion {
+        try visitor.visitSingularStringField(value: v, fieldNumber: 6)
+      } }()
+      try { if let v = _storage._latency {
+        try visitor.visitSingularInt32Field(value: v, fieldNumber: 7)
+      } }()
+      try { if let v = _storage._totalCompleteTime {
+        try visitor.visitSingularInt32Field(value: v, fieldNumber: 8)
+      } }()
+      if !_storage._completeTimeByAdNetwork.isEmpty {
+        try visitor.visitMapField(fieldType: SwiftProtobuf._ProtobufMap<SwiftProtobuf.ProtobufString,SwiftProtobuf.ProtobufInt32>.self, value: _storage._completeTimeByAdNetwork, fieldNumber: 9)
+      }
+      if !_storage._mspID.isEmpty {
+        try visitor.visitSingularStringField(value: _storage._mspID, fieldNumber: 10)
+      }
+      if !_storage._ifa.isEmpty {
+        try visitor.visitSingularStringField(value: _storage._ifa, fieldNumber: 13)
+      }
+      if _storage._batteryLevel.bitPattern != 0 {
+        try visitor.visitSingularFloatField(value: _storage._batteryLevel, fieldNumber: 14)
+      }
+      if !_storage._batteryStatus.isEmpty {
+        try visitor.visitSingularStringField(value: _storage._batteryStatus, fieldNumber: 15)
+      }
+      if !_storage._fontSize.isEmpty {
+        try visitor.visitSingularStringField(value: _storage._fontSize, fieldNumber: 16)
+      }
+      if !_storage._timezone.isEmpty {
+        try visitor.visitSingularStringField(value: _storage._timezone, fieldNumber: 17)
+      }
+      if _storage._availableMemoryBytes != 0 {
+        try visitor.visitSingularUInt64Field(value: _storage._availableMemoryBytes, fieldNumber: 18)
+      }
+      if _storage._isLowPowerMode != false {
+        try visitor.visitSingularBoolField(value: _storage._isLowPowerMode, fieldNumber: 19)
+      }
+      if _storage._isLowDataMode != false {
+        try visitor.visitSingularBoolField(value: _storage._isLowDataMode, fieldNumber: 20)
+      }
     }
     try unknownFields.traverse(visitor: &visitor)
   }
 
   static func ==(lhs: Com_Newsbreak_Mes_Events_SdkInitEvent, rhs: Com_Newsbreak_Mes_Events_SdkInitEvent) -> Bool {
-    if lhs.clientTsMs != rhs.clientTsMs {return false}
-    if lhs.serverTsMs != rhs.serverTsMs {return false}
-    if lhs.os != rhs.os {return false}
-    if lhs.org != rhs.org {return false}
-    if lhs.app != rhs.app {return false}
-    if lhs._mspSdkVersion != rhs._mspSdkVersion {return false}
-    if lhs._latency != rhs._latency {return false}
-    if lhs._totalCompleteTime != rhs._totalCompleteTime {return false}
-    if lhs.completeTimeByAdNetwork != rhs.completeTimeByAdNetwork {return false}
+    if lhs._storage !== rhs._storage {
+      let storagesAreEqual: Bool = withExtendedLifetime((lhs._storage, rhs._storage)) { (_args: (_StorageClass, _StorageClass)) in
+        let _storage = _args.0
+        let rhs_storage = _args.1
+        if _storage._clientTsMs != rhs_storage._clientTsMs {return false}
+        if _storage._serverTsMs != rhs_storage._serverTsMs {return false}
+        if _storage._os != rhs_storage._os {return false}
+        if _storage._org != rhs_storage._org {return false}
+        if _storage._app != rhs_storage._app {return false}
+        if _storage._mspSdkVersion != rhs_storage._mspSdkVersion {return false}
+        if _storage._latency != rhs_storage._latency {return false}
+        if _storage._totalCompleteTime != rhs_storage._totalCompleteTime {return false}
+        if _storage._completeTimeByAdNetwork != rhs_storage._completeTimeByAdNetwork {return false}
+        if _storage._mspID != rhs_storage._mspID {return false}
+        if _storage._ifa != rhs_storage._ifa {return false}
+        if _storage._batteryLevel != rhs_storage._batteryLevel {return false}
+        if _storage._batteryStatus != rhs_storage._batteryStatus {return false}
+        if _storage._fontSize != rhs_storage._fontSize {return false}
+        if _storage._timezone != rhs_storage._timezone {return false}
+        if _storage._availableMemoryBytes != rhs_storage._availableMemoryBytes {return false}
+        if _storage._isLowPowerMode != rhs_storage._isLowPowerMode {return false}
+        if _storage._isLowDataMode != rhs_storage._isLowDataMode {return false}
+        return true
+      }
+      if !storagesAreEqual {return false}
+    }
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
