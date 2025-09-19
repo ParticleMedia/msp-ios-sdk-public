@@ -49,9 +49,9 @@ public class MSPBidder: MSPiOSCore.Bidder {
         let bundle = Bundle(for: MSPBidder.self)
         if let url = bundle.url(forResource: "MSPCoreResources", withExtension: "bundle"),
            let resourceBundle = Bundle(url: url),
-           let plistURL = resourceBundle.url(forResource: "Info", withExtension: "plist"),
+           let plistURL = resourceBundle.url(forResource: "Config", withExtension: "plist"),
            let dict = NSDictionary(contentsOf: plistURL),
-           let version = dict["CFBundleShortVersionString"] as? String {
+           let version = dict["SDKVersion"] as? String {
             return version
         }
         return ""

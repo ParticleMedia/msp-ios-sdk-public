@@ -109,7 +109,7 @@ Pod::Spec.new do |spec|
 
   spec.static_framework = true
   spec.resource_bundles = {
-    'MSPCoreResources' => ['MSPCore/Resources/Info.plist']
+    'MSPCoreResources' => ['MSPCore/MSPCore/Resources/Config.plist']
   }
 
   # spec.public_header_files = "Classes/**/*.h"
