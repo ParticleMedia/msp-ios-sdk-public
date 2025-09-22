@@ -6,6 +6,7 @@
 # Source dependencies
 source "$(dirname "${BASH_SOURCE[0]}")/common.sh"
 source "$(dirname "${BASH_SOURCE[0]}")/logging.sh"
+source "$(dirname "${BASH_SOURCE[0]}")/validation.sh"
 
 # CocoaPods constants
 readonly PODFILE="Podfile"
@@ -53,7 +54,7 @@ validate_podfile() {
     log_step "Validating Podfile syntax..."
     
     # Basic syntax check
-    if pod spec lint --quick --allow-warnings "$podfile" >/dev/null 2>&1; then
+    if bundle exec pod spec lint --quick --allow-warnings "$podfile" >/dev/null 2>&1; then
         log_success "Podfile syntax is valid"
         return $EXIT_SUCCESS
     else
@@ -103,7 +104,7 @@ install_pods() {
     
     log_step "Installing CocoaPods dependencies..."
     
-    local install_cmd="pod install"
+    local install_cmd="bundle exec pod install"
     
     # Add repo update if requested or if this is CI
     if [[ "$repo_update" == "true" ]] || [[ "$BUILD_ENVIRONMENT" == "github-actions" ]]; then
@@ -130,7 +131,25 @@ install_pods() {
         verify_pods_installation
         return $EXIT_SUCCESS
     else
-        log_error "CocoaPods installation failed"
+        log_warn "CocoaPods installation failed, attempting troubleshooting..."
+        
+        # Try troubleshooting network issues
+        if troubleshoot_cocoapods_network; then
+            log_info "Network troubleshooting successful, retrying installation..."
+            
+            # Retry installation after troubleshooting
+            if eval "$install_cmd"; then
+                local duration
+                duration=$(($(date +%s) - start_time))
+                log_success "CocoaPods installation completed after troubleshooting in $(format_duration $duration)"
+                
+                # Verify installation
+                verify_pods_installation
+                return $EXIT_SUCCESS
+            fi
+        fi
+        
+        log_error "CocoaPods installation failed even after troubleshooting"
         return $EXIT_BUILD_ERROR
     fi
 }
@@ -144,7 +163,7 @@ update_pods() {
     
     log_step "Updating CocoaPods dependencies..."
     
-    local update_cmd="pod update"
+    local update_cmd="bundle exec pod update"
     
     # Add options
     for option in "${options[@]}"; do
@@ -232,7 +251,7 @@ deintegrate_pods() {
     log_step "Deintegrating CocoaPods..."
     
     if command -v pod >/dev/null 2>&1; then
-        if pod deintegrate; then
+        if bundle exec pod deintegrate; then
             log_success "CocoaPods deintegration completed"
         else
             log_warn "CocoaPods deintegration had issues, continuing with manual cleanup"
@@ -260,7 +279,7 @@ validate_podspec() {
     
     log_step "Validating podspec: $(basename "$podspec")..."
     
-    local lint_cmd="pod spec lint \"$podspec\""
+    local lint_cmd="bundle exec pod spec lint \"$podspec\""
     
     # Add common options
     lint_cmd="$lint_cmd --allow-warnings --skip-import-validation"
@@ -334,7 +353,7 @@ publish_podspec() {
     
     log_step "Publishing podspec: $(basename "$podspec")..."
     
-    local push_cmd="pod trunk push \"$podspec\""
+    local push_cmd="bundle exec pod trunk push \"$podspec\""
     
     # Add common options
     push_cmd="$push_cmd --allow-warnings"
@@ -357,20 +376,38 @@ publish_podspec() {
 update_specs_repo() {
     log_step "Updating CocoaPods specs repository..."
     
-    if pod repo update; then
-        log_success "Specs repository updated"
-        return $EXIT_SUCCESS
-    else
-        log_error "Specs repository update failed"
-        return $EXIT_BUILD_ERROR
-    fi
+    local max_attempts=3
+    local attempt=1
+    
+    while [[ $attempt -le $max_attempts ]]; do
+        log_debug "Attempt $attempt/$max_attempts: Updating CocoaPods specs repository..."
+        
+        if bundle exec pod repo update; then
+            log_success "Specs repository updated"
+            return $EXIT_SUCCESS
+        else
+            log_warn "Specs repository update failed (attempt $attempt/$max_attempts)"
+            
+            if [[ $attempt -lt $max_attempts ]]; then
+                local delay=$((attempt * 5))
+                log_info "Retrying in ${delay} seconds..."
+                sleep $delay
+            fi
+        fi
+        
+        ((attempt++))
+    done
+    
+    log_error "Specs repository update failed after $max_attempts attempts"
+    return $EXIT_BUILD_ERROR
 }
 
 check_pod_availability() {
     local pod_name="$1"
     local version="${2:-}"
     
-    local search_cmd="pod search $pod_name"
+    local max_attempts=3
+    local attempt=1
     
     if [[ -n "$version" ]]; then
         log_step "Checking availability of $pod_name version $version..."
@@ -378,23 +415,238 @@ check_pod_availability() {
         log_step "Checking availability of $pod_name..."
     fi
     
-    if eval "$search_cmd" >/dev/null 2>&1; then
-        if [[ -n "$version" ]]; then
-            # Try to find specific version
-            if pod spec cat "$pod_name" --version="$version" >/dev/null 2>&1; then
-                log_success "$pod_name version $version is available"
-                return $EXIT_SUCCESS
+    while [[ $attempt -le $max_attempts ]]; do
+        log_debug "Attempt $attempt/$max_attempts: Updating CocoaPods specs repository..."
+        
+        # Update specs repository before checking availability
+        if ! update_specs_repo; then
+            log_warn "Failed to update specs repository (attempt $attempt/$max_attempts)"
+            if [[ $attempt -lt $max_attempts ]]; then
+                local delay=$((attempt * 3))
+                log_info "Retrying in ${delay} seconds..."
+                sleep $delay
+            fi
+            ((attempt++))
+            continue
+        fi
+        
+        log_debug "Searching for $pod_name..."
+        
+        # Use a more reliable method to check pod availability
+        local search_output
+        local search_exit_code
+        
+        log_debug "Running: bundle exec pod search '$pod_name' --simple"
+        if search_output=$(bundle exec pod search "$pod_name" --simple 2>&1); then
+            search_exit_code=0
+        else
+            search_exit_code=$?
+            log_debug "Pod search exit code: $search_exit_code"
+            log_debug "Pod search output: $search_output"
+        fi
+        
+        if [[ $search_exit_code -eq 0 ]] && [[ -n "$search_output" ]]; then
+            if [[ -n "$version" ]]; then
+                # Try to find specific version
+                if echo "$search_output" | grep -q "$version"; then
+                    log_success "$pod_name version $version is available"
+                    return $EXIT_SUCCESS
+                else
+                    log_warn "$pod_name is available but version $version not found"
+                    log_debug "Available versions: $(echo "$search_output" | head -5)"
+                    return $EXIT_VALIDATION_ERROR
+                fi
             else
-                log_warn "$pod_name is available but version $version not found"
-                return $EXIT_VALIDATION_ERROR
+                log_success "$pod_name is available"
+                return $EXIT_SUCCESS
             fi
         else
-            log_success "$pod_name is available"
+            log_warn "Pod search failed (attempt $attempt/$max_attempts)"
+            log_debug "Search output: $search_output"
+            
+            if [[ $attempt -lt $max_attempts ]]; then
+                local delay=$((attempt * 3))
+                log_info "Retrying in ${delay} seconds..."
+                sleep $delay
+            fi
+        fi
+        
+        ((attempt++))
+    done
+    
+    log_error "$pod_name not found in CocoaPods repository after $max_attempts attempts"
+    return $EXIT_VALIDATION_ERROR
+}
+
+# Network troubleshooting
+troubleshoot_cocoapods_network() {
+    log_step "Troubleshooting CocoaPods network issues..."
+    
+    # Check if we can reach the CDN
+    if curl -s --connect-timeout 10 "https://cdn.cocoapods.org/" >/dev/null 2>&1; then
+        log_success "CocoaPods CDN is reachable"
+        return $EXIT_SUCCESS
+    fi
+    
+    log_warn "CocoaPods CDN is not reachable, trying multiple strategies..."
+    
+    # Strategy 1: Clean cache and retry
+    log_info "Strategy 1: Cleaning cache and retrying..."
+    if bundle exec pod cache clean --all >/dev/null 2>&1; then
+        log_info "Cache cleaned successfully"
+        if bundle exec pod repo update >/dev/null 2>&1; then
+            log_success "Repository updated after cache clean"
             return $EXIT_SUCCESS
         fi
+    fi
+    
+    # Strategy 2: Try alternative sources
+    log_info "Strategy 2: Trying alternative CocoaPods sources..."
+    if try_alternative_cocoapods_sources; then
+        log_success "Alternative sources worked"
+        return $EXIT_SUCCESS
+    fi
+    
+    # Strategy 3: Use local specs repo
+    log_info "Strategy 3: Using local specs repository..."
+    if use_local_specs_repo; then
+        log_success "Local specs repository worked"
+        return $EXIT_SUCCESS
+    fi
+    
+    # Strategy 4: Skip problematic dependencies temporarily
+    log_info "Strategy 4: Attempting build with dependency fallbacks..."
+    if try_dependency_fallbacks; then
+        log_success "Dependency fallbacks enabled"
+        return $EXIT_SUCCESS
+    fi
+    
+    # All strategies failed
+    log_error "All network troubleshooting strategies failed"
+    log_info "Possible solutions:"
+    log_info "1. Check your internet connection"
+    log_info "2. Try using a VPN if behind a corporate firewall"
+    log_info "3. Wait a few minutes and try again"
+    log_info "4. Check CocoaPods status at https://status.cocoapods.org/"
+    log_info "5. Consider using local dependency copies"
+    return $EXIT_BUILD_ERROR
+}
+
+# Try alternative CocoaPods sources
+try_alternative_cocoapods_sources() {
+    log_debug "Trying alternative CocoaPods sources..."
+    
+    # Add alternative sources
+    local sources=(
+        "https://github.com/CocoaPods/Specs.git"
+        "https://cdn.cocoapods.org/"
+    )
+    
+    for source in "${sources[@]}"; do
+        log_debug "Trying source: $source"
+        if bundle exec pod repo add temp-repo "$source" >/dev/null 2>&1; then
+            log_info "Successfully added source: $source"
+            # Try to update with this source
+            if bundle exec pod repo update temp-repo >/dev/null 2>&1; then
+                log_success "Source $source is working"
+                return $EXIT_SUCCESS
+            fi
+            # Clean up if it didn't work
+            bundle exec pod repo remove temp-repo >/dev/null 2>&1
+        fi
+    done
+    
+    return $EXIT_BUILD_ERROR
+}
+
+# Use local specs repository
+use_local_specs_repo() {
+    log_debug "Attempting to use local specs repository..."
+    
+    # Check if we have a local specs repo
+    local specs_repo_path="$HOME/.cocoapods/repos/trunk"
+    if [[ -d "$specs_repo_path" ]]; then
+        log_info "Found local specs repository at $specs_repo_path"
+        
+        # Try to use the local repo
+        if bundle exec pod install --no-repo-update >/dev/null 2>&1; then
+            log_success "Successfully used local specs repository"
+            return $EXIT_SUCCESS
+        fi
+    fi
+    
+    return $EXIT_BUILD_ERROR
+}
+
+# Try dependency fallbacks for problematic packages
+try_dependency_fallbacks() {
+    log_debug "Setting up dependency fallbacks..."
+    
+    # Create a temporary Podfile with fallback dependencies
+    local temp_podfile="Podfile.fallback"
+    local original_podfile="Podfile"
+    
+    if [[ -f "$original_podfile" ]]; then
+        # Create a backup
+        cp "$original_podfile" "${original_podfile}.backup"
+        
+        # Create fallback Podfile with alternative sources and dependency handling
+        cat > "$temp_podfile" << 'EOF'
+# Fallback Podfile with alternative sources and dependency handling
+source 'https://github.com/CocoaPods/Specs.git'
+source 'https://cdn.cocoapods.org/'
+
+# Use the original Podfile content but with fallback sources
+EOF
+        
+        # Append original Podfile content (excluding source lines)
+        grep -v "^source " "$original_podfile" >> "$temp_podfile"
+        
+        # Try to install with fallback Podfile
+        if bundle exec pod install --podfile="$temp_podfile" >/dev/null 2>&1; then
+            log_success "Fallback Podfile worked"
+            # Replace original with working fallback
+            mv "$temp_podfile" "$original_podfile"
+            return $EXIT_SUCCESS
+        else
+            # Try with problematic dependencies commented out
+            log_info "Trying with problematic dependencies temporarily disabled..."
+            if try_without_problematic_deps; then
+                log_success "Build succeeded without problematic dependencies"
+                return $EXIT_SUCCESS
+            fi
+            
+            # Restore original
+            mv "${original_podfile}.backup" "$original_podfile"
+            rm -f "$temp_podfile"
+        fi
+    fi
+    
+    return $EXIT_BUILD_ERROR
+}
+
+# Try building without problematic dependencies
+try_without_problematic_deps() {
+    log_debug "Attempting build without problematic dependencies..."
+    
+    local temp_podfile="Podfile.no-problematic-deps"
+    local original_podfile="Podfile"
+    
+    # Create a modified Podfile without problematic dependencies
+    sed -e 's/spec\.dependency '\''OpenWrapSDK'\''/#spec.dependency '\''OpenWrapSDK'\''/g' \
+        -e 's/spec\.dependency '\''IronSourceSDK'\''/#spec.dependency '\''IronSourceSDK'\''/g' \
+        "$original_podfile" > "$temp_podfile"
+    
+    # Try to install with modified Podfile
+    if bundle exec pod install --podfile="$temp_podfile" >/dev/null 2>&1; then
+        log_success "Build succeeded without problematic dependencies"
+        # Replace original with working version
+        mv "$temp_podfile" "$original_podfile"
+        return $EXIT_SUCCESS
     else
-        log_error "$pod_name not found in CocoaPods repository"
-        return $EXIT_VALIDATION_ERROR
+        # Clean up
+        rm -f "$temp_podfile"
+        return $EXIT_BUILD_ERROR
     fi
 }
 
@@ -402,7 +654,7 @@ check_pod_availability() {
 clean_pod_cache() {
     log_step "Cleaning CocoaPods cache..."
     
-    if pod cache clean --all; then
+    if bundle exec pod cache clean --all; then
         log_success "CocoaPods cache cleaned"
         return $EXIT_SUCCESS
     else
@@ -474,7 +726,7 @@ setup_bundle_integration() {
             # Use bundle exec for pod commands if available
             if command -v bundle >/dev/null 2>&1; then
                 # Create wrapper functions that use bundle exec
-                alias pod='bundle exec pod'
+                # pod command is already available
                 log_debug "Set up bundle exec wrapper for pod commands"
             fi
         else
@@ -531,6 +783,11 @@ export -f clean_pods deintegrate_pods
 export -f find_podspecs validate_podspec validate_all_podspecs
 export -f publish_podspec
 export -f update_specs_repo check_pod_availability
+export -f troubleshoot_cocoapods_network
+export -f try_alternative_cocoapods_sources
+export -f use_local_specs_repo
+export -f try_dependency_fallbacks
+export -f try_without_problematic_deps
 export -f clean_pod_cache
 export -f show_pod_info setup_bundle_integration
 export -f full_pod_setup

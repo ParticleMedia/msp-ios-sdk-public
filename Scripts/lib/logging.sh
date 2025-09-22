@@ -6,24 +6,24 @@
 # Source common utilities
 source "$(dirname "${BASH_SOURCE[0]}")/common.sh"
 
-# Color definitions
-readonly COLOR_RED='\033[0;31m'
-readonly COLOR_GREEN='\033[0;32m'
-readonly COLOR_YELLOW='\033[1;33m'
-readonly COLOR_BLUE='\033[0;34m'
-readonly COLOR_PURPLE='\033[0;35m'
-readonly COLOR_CYAN='\033[0;36m'
-readonly COLOR_WHITE='\033[1;37m'
-readonly COLOR_GRAY='\033[0;37m'
-readonly COLOR_NC='\033[0m' # No Color
+# Color definitions (conditional to avoid readonly conflicts)
+[[ -z "${COLOR_RED:-}" ]] && readonly COLOR_RED='\033[0;31m'
+[[ -z "${COLOR_GREEN:-}" ]] && readonly COLOR_GREEN='\033[0;32m'
+[[ -z "${COLOR_YELLOW:-}" ]] && readonly COLOR_YELLOW='\033[1;33m'
+[[ -z "${COLOR_BLUE:-}" ]] && readonly COLOR_BLUE='\033[0;34m'
+[[ -z "${COLOR_PURPLE:-}" ]] && readonly COLOR_PURPLE='\033[0;35m'
+[[ -z "${COLOR_CYAN:-}" ]] && readonly COLOR_CYAN='\033[0;36m'
+[[ -z "${COLOR_WHITE:-}" ]] && readonly COLOR_WHITE='\033[1;37m'
+[[ -z "${COLOR_GRAY:-}" ]] && readonly COLOR_GRAY='\033[0;37m'
+[[ -z "${COLOR_NC:-}" ]] && readonly COLOR_NC='\033[0m' # No Color
 
-# Log levels
-readonly LOG_LEVEL_TRACE=0
-readonly LOG_LEVEL_DEBUG=1
-readonly LOG_LEVEL_INFO=2
-readonly LOG_LEVEL_WARN=3
-readonly LOG_LEVEL_ERROR=4
-readonly LOG_LEVEL_FATAL=5
+# Log levels (conditional to avoid readonly conflicts)
+[[ -z "${LOG_LEVEL_TRACE:-}" ]] && readonly LOG_LEVEL_TRACE=0
+[[ -z "${LOG_LEVEL_DEBUG:-}" ]] && readonly LOG_LEVEL_DEBUG=1
+[[ -z "${LOG_LEVEL_INFO:-}" ]] && readonly LOG_LEVEL_INFO=2
+[[ -z "${LOG_LEVEL_WARN:-}" ]] && readonly LOG_LEVEL_WARN=3
+[[ -z "${LOG_LEVEL_ERROR:-}" ]] && readonly LOG_LEVEL_ERROR=4
+[[ -z "${LOG_LEVEL_FATAL:-}" ]] && readonly LOG_LEVEL_FATAL=5
 
 # Current log level (can be overridden by environment variable)
 LOG_LEVEL=${LOG_LEVEL:-$LOG_LEVEL_INFO}
