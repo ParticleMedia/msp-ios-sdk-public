@@ -3,7 +3,7 @@
 # Variables
 
 # Allowed Pod names
-ALLOWED_PODS=("MSPCore" "MSPSharedLibraries" "GoogleAdapter" "FacebookAdapter" "NovaAdapter" "PrebidAdapter" "UnityAdapter" "MintegralAdapter" "MobilefuseAdapter" "PubmaticAdapter" "InmobiAdapter")
+ALLOWED_PODS=("MSPCore" "MSPSharedLibraries" "GoogleAdapter" "FacebookAdapter" "NovaAdapter" "PrebidAdapter" "UnityAdapter" "MintegralAdapter" "MobilefuseAdapter" "PubmaticAdapter" "InmobiAdapter" "AmazonAdapter")
 
 # Function to check if a value exists in an array
 is_valid_pod() {

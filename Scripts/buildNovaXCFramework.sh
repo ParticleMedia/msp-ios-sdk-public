@@ -100,6 +100,11 @@ print_warning() {
     color_warning "⚠️  $1"
 }
 
+# Function to print info message
+print_info() {
+    color_info "ℹ️  $1"
+}
+
 # Function to check if command exists
 check_command() {
     if ! command -v $1 &> /dev/null; then
@@ -235,30 +240,121 @@ print_success "Build directory cleaned and created"
 
 # Install pods
 print_section "Installing CocoaPods Dependencies"
-print_step "Running pod install..."
-if bundle exec pod install --repo-update; then
-    print_success "CocoaPods dependencies installed successfully"
+
+# Install CocoaPods dependencies with enhanced retry logic
+print_step "Installing CocoaPods dependencies with retry logic..."
+
+# Try multiple strategies for CocoaPods installation
+install_cocoapods_with_retry() {
+    local max_attempts=3
+    local attempt=1
     
-    # Check for problematic dependencies in CI
-    if [ "$CI" = "true" ]; then
-        print_step "Checking for problematic dependencies in CI environment..."
+    while [[ $attempt -le $max_attempts ]]; do
+        print_step "Attempt $attempt/$max_attempts: Installing CocoaPods dependencies..."
         
-        # Check if MarketplaceKit is available (NewsBreak-specific framework)
-        if ! find Pods -name "*MarketplaceKit*" -type d >/dev/null 2>&1; then
-            color_warning "⚠️  WARNING: MarketplaceKit not found in CI environment"
-            color_warning "   This may cause linking issues with GoogleAdapter and FacebookAdapter"
-            color_warning "   Consider adding MarketplaceKit.xcframework to CI environment"
+        if bundle exec pod install --repo-update; then
+            print_success "CocoaPods dependencies installed successfully"
+            return 0
+        else
+            print_warning "CocoaPods installation failed (attempt $attempt/$max_attempts)"
+            
+            if [[ $attempt -lt $max_attempts ]]; then
+                # Try troubleshooting strategies
+                print_step "Applying troubleshooting strategies..."
+                
+                # Strategy 1: Clean cache
+                if bundle exec pod cache clean --all >/dev/null 2>&1; then
+                    print_info "Cache cleaned successfully"
+                fi
+                
+                # Strategy 2: Try without repo update
+                if [[ $attempt -eq 2 ]]; then
+                    print_step "Trying without repository update..."
+                    if bundle exec pod install --no-repo-update; then
+                        print_success "CocoaPods dependencies installed without repo update"
+                        return 0
+                    fi
+                fi
+                
+                # Strategy 3: Try with alternative sources
+                if [[ $attempt -eq 3 ]]; then
+                    print_step "Trying with alternative sources..."
+                    if try_alternative_sources; then
+                        print_success "CocoaPods dependencies installed with alternative sources"
+                        return 0
+                    fi
+                fi
+                
+                local delay=$((attempt * 5))
+                print_info "Retrying in ${delay} seconds..."
+                sleep $delay
+            fi
         fi
         
-        # Check Swift runtime libraries
-        if ! find Pods -name "*swiftXPC*" -o -name "*swift_Builtin_float*" >/dev/null 2>&1; then
-            color_warning "⚠️  WARNING: Some Swift runtime libraries may be missing"
-            color_warning "   This may cause linking issues in CI environment"
+        ((attempt++))
+    done
+    
+    print_error "Failed to install CocoaPods dependencies after $max_attempts attempts"
+    return 1
+}
+
+# Try alternative CocoaPods sources
+try_alternative_sources() {
+    # Create a temporary Podfile with alternative sources
+    local temp_podfile="Podfile.temp"
+    local original_podfile="Podfile"
+    
+    if [[ -f "$original_podfile" ]]; then
+        # Create fallback Podfile with alternative sources
+        cat > "$temp_podfile" << 'EOF'
+# Fallback Podfile with alternative sources
+source 'https://github.com/CocoaPods/Specs.git'
+source 'https://cdn.cocoapods.org/'
+
+# Use the original Podfile content but with fallback sources
+EOF
+        
+        # Append original Podfile content (excluding source lines)
+        grep -v "^source " "$original_podfile" >> "$temp_podfile"
+        
+        # Try to install with fallback Podfile
+        if bundle exec pod install --podfile="$temp_podfile" --no-repo-update; then
+            # Replace original with working fallback
+            mv "$temp_podfile" "$original_podfile"
+            return 0
+        else
+            # Clean up
+            rm -f "$temp_podfile"
         fi
     fi
+    
+    return 1
+}
+
+# Execute the installation
+if install_cocoapods_with_retry; then
+    print_success "CocoaPods installation completed successfully"
 else
-    color_error "❌ ERROR: Failed to install CocoaPods dependencies"
+    print_error "Failed to install CocoaPods dependencies after all retry attempts"
     exit 1
+fi
+
+# Check for problematic dependencies in CI
+if [ "$CI" = "true" ]; then
+    print_step "Checking for problematic dependencies in CI environment..."
+    
+    # Check if MarketplaceKit is available (NewsBreak-specific framework)
+    if ! find Pods -name "*MarketplaceKit*" -type d >/dev/null 2>&1; then
+        color_warning "⚠️  WARNING: MarketplaceKit not found in CI environment"
+        color_warning "   This may cause linking issues with GoogleAdapter and FacebookAdapter"
+        color_warning "   Consider adding MarketplaceKit.xcframework to CI environment"
+    fi
+    
+    # Check Swift runtime libraries
+    if ! find Pods -name "*swiftXPC*" -o -name "*swift_Builtin_float*" >/dev/null 2>&1; then
+        color_warning "⚠️  WARNING: Some Swift runtime libraries may be missing"
+        color_warning "   This may cause linking issues in CI environment"
+    fi
 fi
 
 # Synchronize assets

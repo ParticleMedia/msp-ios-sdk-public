@@ -4,22 +4,22 @@
 # This module provides shared functionality used across all build scripts
 
 # Script metadata
-readonly SCRIPT_VERSION="2.0.0"
-readonly SCRIPT_NAME="MSP iOS SDK Build System"
+[[ -z "${SCRIPT_VERSION:-}" ]] && readonly SCRIPT_VERSION="2.0.0"
+[[ -z "${SCRIPT_NAME:-}" ]] && readonly SCRIPT_NAME="MSP iOS SDK Build System"
 
 # Exit codes
-readonly EXIT_SUCCESS=0
-readonly EXIT_GENERAL_ERROR=1
-readonly EXIT_COMMAND_NOT_FOUND=2
-readonly EXIT_VALIDATION_ERROR=3
-readonly EXIT_BUILD_ERROR=4
-readonly EXIT_DEPLOY_ERROR=5
-readonly EXIT_CONFIG_ERROR=6
+[[ -z "${EXIT_SUCCESS:-}" ]] && readonly EXIT_SUCCESS=0
+[[ -z "${EXIT_GENERAL_ERROR:-}" ]] && readonly EXIT_GENERAL_ERROR=1
+[[ -z "${EXIT_COMMAND_NOT_FOUND:-}" ]] && readonly EXIT_COMMAND_NOT_FOUND=2
+[[ -z "${EXIT_VALIDATION_ERROR:-}" ]] && readonly EXIT_VALIDATION_ERROR=3
+[[ -z "${EXIT_BUILD_ERROR:-}" ]] && readonly EXIT_BUILD_ERROR=4
+[[ -z "${EXIT_DEPLOY_ERROR:-}" ]] && readonly EXIT_DEPLOY_ERROR=5
+[[ -z "${EXIT_CONFIG_ERROR:-}" ]] && readonly EXIT_CONFIG_ERROR=6
 
 # Default configuration
-readonly DEFAULT_SKIP_CODE_SIGN=0
-readonly DEFAULT_CONFIGURATION="Release"
-readonly DEFAULT_IOS_DEPLOYMENT_TARGET="15.0"
+[[ -z "${DEFAULT_SKIP_CODE_SIGN:-}" ]] && readonly DEFAULT_SKIP_CODE_SIGN=0
+[[ -z "${DEFAULT_CONFIGURATION:-}" ]] && readonly DEFAULT_CONFIGURATION="Release"
+[[ -z "${DEFAULT_IOS_DEPLOYMENT_TARGET:-}" ]] && readonly DEFAULT_IOS_DEPLOYMENT_TARGET="15.0"
 
 # Environment detection
 detect_environment() {
@@ -35,7 +35,7 @@ detect_environment() {
 }
 
 # Global environment variable
-readonly BUILD_ENVIRONMENT=$(detect_environment)
+[[ -z "${BUILD_ENVIRONMENT:-}" ]] && readonly BUILD_ENVIRONMENT=$(detect_environment)
 
 # Timing functions
 start_timer() {
