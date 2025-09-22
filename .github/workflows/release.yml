@@ -103,14 +103,21 @@ jobs:
       - name: Notify success
         if: success()
         run: |
-          echo "🎉 Release completed successfully!"
-          echo "Pod: ${{ github.event.inputs.pod_name || 'N/A' }}"
-          echo "Version: ${{ github.event.inputs.version || 'N/A' }}"
+          # Source the common library and send success notification
+          source Scripts/lib/release-common.sh
+          notify_release_success "GitHub Actions Release" "${{ github.event.inputs.version }}" "${{ github.event.inputs.pod_name }}" "Completed via GitHub Actions"
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          SLACK_CHANNEL: ${{ vars.SLACK_CHANNEL || '#releases' }}
           
       - name: Notify failure
         if: failure()
         run: |
-          echo "❌ Release failed!"
-          echo "Pod: ${{ github.event.inputs.pod_name || 'N/A' }}"
-          echo "Version: ${{ github.event.inputs.version || 'N/A' }}"
+          # Source the common library and send failure notification
+          source Scripts/lib/release-common.sh
+          notify_release_failure "GitHub Actions Release" "${{ github.event.inputs.version }}" "Release workflow failed" "GitHub Actions"
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          SLACK_CHANNEL: ${{ vars.SLACK_CHANNEL || '#releases' }}
+          
 

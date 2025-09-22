@@ -383,7 +383,7 @@ case $choice in
     9) Scripts/validate.sh --podspecs ;;
     10) Scripts/build.sh --status ;;
     11) Scripts/build.sh --clean ;;
-    12) pod install --repo-update ;;
+    12) bundle exec pod install --repo-update ;;
     13) Scripts/build.sh --env-info ;;
     0) echo "Goodbye!" ;;
     *) echo "Invalid option" ;;

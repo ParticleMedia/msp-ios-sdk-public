@@ -266,7 +266,7 @@ validate_podspec() {
     fi
     
     # Validate podspec
-    if pod spec lint "$MSPCORE_PODSPEC" --allow-warnings; then
+    if bundle exec pod spec lint "$MSPCORE_PODSPEC" --allow-warnings; then
         log_success "MSPCore podspec validation passed"
         return $EXIT_SUCCESS
     else

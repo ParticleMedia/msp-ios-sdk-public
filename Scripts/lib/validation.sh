@@ -7,27 +7,39 @@
 source "$(dirname "${BASH_SOURCE[0]}")/common.sh"
 source "$(dirname "${BASH_SOURCE[0]}")/logging.sh"
 
-# Required commands for different operations
-declare -A REQUIRED_COMMANDS
-REQUIRED_COMMANDS[base]="bash grep sed awk cut tr"
-REQUIRED_COMMANDS[xcode]="xcodebuild xcrun xcode-select"
-REQUIRED_COMMANDS[cocoapods]="pod bundle"
-REQUIRED_COMMANDS[git]="git"
-REQUIRED_COMMANDS[archive]="zip unzip tar"
-REQUIRED_COMMANDS[github]="gh"
+# Required commands for different operations (using functions for bash 3.x compatibility)
+get_required_commands() {
+    case "$1" in
+        "base") echo "bash grep sed awk cut tr" ;;
+        "xcode") echo "xcodebuild xcrun xcode-select" ;;
+        "cocoapods") echo "pod bundle" ;;
+        "git") echo "git" ;;
+        "archive") echo "zip unzip tar" ;;
+        "github") echo "gh" ;;
+        *) echo "" ;;
+    esac
+}
 
-# Required files for different operations
-declare -A REQUIRED_FILES
-REQUIRED_FILES[ios_project]="msp-ios-sdk.xcworkspace Podfile"
-REQUIRED_FILES[build_scripts]="Scripts/buildiOSCoreXCFramework.sh Scripts/buildNovaXCFramework.sh"
-REQUIRED_FILES[fastlane]="Gemfile fastlane/Fastfile"
+# Required files for different operations (using functions for bash 3.x compatibility)
+get_required_files() {
+    case "$1" in
+        "ios_project") echo "msp-ios-sdk.xcworkspace Podfile" ;;
+        "build_scripts") echo "Scripts/buildiOSCoreXCFramework.sh Scripts/buildNovaXCFramework.sh" ;;
+        "fastlane") echo "Gemfile fastlane/Fastfile" ;;
+        *) echo "" ;;
+    esac
+}
 
-# Minimum version requirements
-declare -A MIN_VERSIONS
-MIN_VERSIONS[xcode]="15.0"
-MIN_VERSIONS[cocoapods]="1.12.0"
-MIN_VERSIONS[ruby]="3.0.0"
-MIN_VERSIONS[bundle]="2.0.0"
+# Minimum version requirements (using functions for bash 3.x compatibility)
+get_min_version() {
+    case "$1" in
+        "xcode") echo "15.0" ;;
+        "cocoapods") echo "1.12.0" ;;
+        "ruby") echo "3.0.0" ;;
+        "bundle") echo "2.0.0" ;;
+        *) echo "" ;;
+    esac
+}
 
 # Command validation functions
 check_command_exists() {
@@ -45,7 +57,7 @@ check_command_exists() {
 
 check_command_group() {
     local group="$1"
-    local commands="${REQUIRED_COMMANDS[$group]:-}"
+    local commands=$(get_required_commands "$group")
     local failed_commands=()
     
     if [[ -z "$commands" ]]; then
@@ -98,7 +110,7 @@ get_command_version() {
 
 check_command_version() {
     local command="$1"
-    local min_version="${2:-${MIN_VERSIONS[$command]:-}}"
+    local min_version="${2:-$(get_min_version "$command")}"
     
     if [[ -z "$min_version" ]]; then
         log_debug "No minimum version specified for $command"
@@ -164,7 +176,7 @@ check_path_exists() {
 
 check_file_group() {
     local group="$1"
-    local files="${REQUIRED_FILES[$group]:-}"
+    local files=$(get_required_files "$group")
     local failed_files=()
     
     if [[ -z "$files" ]]; then
@@ -310,7 +322,7 @@ validate_cocoapods_installation() {
     fi
     
     # Check if we can access CocoaPods specs repo
-    if ! pod repo list >/dev/null 2>&1; then
+    if ! bundle exec pod repo list >/dev/null 2>&1; then
         log_warn "CocoaPods specs repo may need updating"
     fi
     
