@@ -668,23 +668,23 @@ notify_release_success_with_summary() {
     local fields=""
     
     # Add version field
-    fields+="{\"title\": \"Version\", \"value\": \"$version\", \"short\": true},"
+    fields+="{\"title\": \"Version\", \"value\": \"$version\", \"short\": true}"
     
     # Add release branch field if provided
     if [[ -n "$release_branch" ]]; then
-        fields+="{\"title\": \"Release Branch\", \"value\": \"$release_branch\", \"short\": true},"
+        fields+=",{\"title\": \"Release Branch\", \"value\": \"$release_branch\", \"short\": true}"
     fi
     
     # Add duration field
-    fields+="{\"title\": \"Duration\", \"value\": \"$duration\", \"short\": true},"
+    fields+=",{\"title\": \"Duration\", \"value\": \"$duration\", \"short\": true}"
     
     # Add released pods field
     if [[ -n "$pods" ]]; then
-        fields+="{\"title\": \"Released Pods\", \"value\": \"$pods\", \"short\": true},"
+        fields+=",{\"title\": \"Released Pods\", \"value\": \"$pods\", \"short\": true}"
     fi
     
     # Add environment field
-    fields+="{\"title\": \"Environment\", \"value\": \"$(get_environment_info)\", \"short\": true},"
+    fields+=",{\"title\": \"Environment\", \"value\": \"$(get_environment_info)\", \"short\": true}"
     
     # Add release notes if provided
     if [[ -n "$release_notes" ]]; then
@@ -693,9 +693,9 @@ notify_release_success_with_summary() {
     fi
     
     # Add summary statistics
-    fields+=",{\"title\": \"Total Pods\", \"value\": \"$total_pods\", \"short\": true},"
-    fields+="{\"title\": \"Successful\", \"value\": \"$successful_pods\", \"short\": true},"
-    fields+="{\"title\": \"Failed\", \"value\": \"$failed_pods\", \"short\": true}"
+    fields+=",{\"title\": \"Total Pods\", \"value\": \"$total_pods\", \"short\": true}"
+    fields+=",{\"title\": \"Successful\", \"value\": \"$successful_pods\", \"short\": true}"
+    fields+=",{\"title\": \"Failed\", \"value\": \"$failed_pods\", \"short\": true}"
     
     local color="good"
     if [[ "$failed_pods" -gt 0 ]]; then
