@@ -6,7 +6,7 @@
 //
 
 import UIKit
-import Kingfisher
+@_implementationOnly import Kingfisher
 
 enum NovaAdImageResource {
     case imageURLStr(String)

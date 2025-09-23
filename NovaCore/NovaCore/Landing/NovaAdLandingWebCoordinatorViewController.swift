@@ -8,7 +8,7 @@
 import UIKit
 
 import Foundation
-import SnapKit
+@_implementationOnly import SnapKit
 
 class NovaAdLandingWebCoordinatorViewController: UIViewController {
     struct LandingVideoContext {

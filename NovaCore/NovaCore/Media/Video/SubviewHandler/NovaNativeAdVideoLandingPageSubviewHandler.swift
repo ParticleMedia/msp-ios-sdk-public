@@ -4,7 +4,7 @@
 //  Created by Shanyu Li on 2025/2/5.
 //
 
-import SnapKit
+@_implementationOnly import SnapKit
 import CoreMedia
 import UIKit
 

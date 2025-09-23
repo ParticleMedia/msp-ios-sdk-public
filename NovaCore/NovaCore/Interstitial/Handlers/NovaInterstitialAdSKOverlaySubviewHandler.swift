@@ -8,7 +8,7 @@
 import Foundation
 import UIKit
 import StoreKit
-import SnapKit
+@_implementationOnly import SnapKit
 
 class NovaInterstitialAdSKOverlaySubviewHandler: NSObject, NovaInterstitialAdSubviewHandler {
     private let interstitialAd: NovaInterstitialAdItem
