@@ -8,7 +8,7 @@
 import CoreImage
 import CoreImage.CIFilterBuiltins
 import UIKit
-import SnapKit
+@_implementationOnly import SnapKit
 
 class NovaAdImageView: UIView {
     // MARK: Lifecycle

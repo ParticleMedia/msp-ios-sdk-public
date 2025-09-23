@@ -5,8 +5,8 @@
 //  Created by Shanyu Li on 2025/3/6.
 //
 
-import Kingfisher
-import SnapKit
+@_implementationOnly import Kingfisher
+@_implementationOnly import SnapKit
 import UIKit
 
 // MARK: - NovaAdCollectionView

@@ -5,8 +5,8 @@
 //  Created by Shanyu Li on 2024/7/17.
 //
 
-import Kingfisher
-import SnapKit
+@_implementationOnly import Kingfisher
+@_implementationOnly import SnapKit
 import UIKit
 
 // MARK: - NovaAdCarouselCellDelegate
