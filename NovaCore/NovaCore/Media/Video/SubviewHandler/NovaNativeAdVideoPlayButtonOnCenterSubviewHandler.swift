@@ -6,7 +6,7 @@
 //
 
 import CoreMedia
-import SnapKit
+@_implementationOnly import SnapKit
 import UIKit
 
 // MARK: - NovaNativeAdVideoPlayButtonOnCenterSubviewHandler

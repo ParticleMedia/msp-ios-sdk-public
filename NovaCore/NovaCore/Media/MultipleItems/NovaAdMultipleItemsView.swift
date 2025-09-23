@@ -5,8 +5,6 @@
 //  Created by Shanyu Li on 2025/3/6.
 //
 
-import SnapKit
-
 // MARK: - NovaAdMultipleItemsViewProvider
 
 enum NovaAdMultipleItemsViewProvider {

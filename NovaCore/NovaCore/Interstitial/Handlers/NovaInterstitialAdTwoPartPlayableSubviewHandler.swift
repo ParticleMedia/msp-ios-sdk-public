@@ -7,7 +7,7 @@
 
 import Foundation
 import UIKit
-import SnapKit
+@_implementationOnly import SnapKit
 import WebKit
 
 class NovaInterstitialAdTwoPartPlayableSubviewHandler: NovaInterstitialAdSubviewHandler {

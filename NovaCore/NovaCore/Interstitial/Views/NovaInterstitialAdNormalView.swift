@@ -7,7 +7,7 @@
 
 import Foundation
 import UIKit
-import SnapKit
+@_implementationOnly import SnapKit
 
 // MARK: - NovaInterstitialAdNormalView
 

@@ -6,7 +6,7 @@
 //
 
 import Foundation
-import SnapKit
+@_implementationOnly import SnapKit
 import UIKit
 
 // MARK: - NovaAdsFeedbackActionDelegate

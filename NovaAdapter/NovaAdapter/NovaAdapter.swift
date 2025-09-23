@@ -3,6 +3,7 @@ import Foundation
 import MSPiOSCore
 import PrebidMobile
 import NovaCore
+import Kingfisher
 import UIKit
 
 public class NovaAdapter: AdNetworkAdapter {
