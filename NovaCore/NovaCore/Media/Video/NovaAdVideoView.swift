@@ -15,7 +15,7 @@ struct NovaNativeAdVideoViewExtraConfig: Codable {
 
 // MARK: - NovaAdVideoViewDelegate
 
-protocol NovaAdVideoViewDelegate: AnyObject {
+public protocol NovaAdVideoViewDelegate: AnyObject {
     // MARK: Optional Methods
 
     func videoViewDidTapCloseButton()
@@ -27,7 +27,7 @@ protocol NovaAdVideoViewDelegate: AnyObject {
     func videoViewDidChangeToPlay()
 }
 
-extension NovaAdVideoViewDelegate {
+public extension NovaAdVideoViewDelegate {
     func videoViewDidTapCloseButton() {}
 
     func videoViewCurrentTimeDidChange(loopCount: Int, currentTime: TimeInterval, videoLength: TimeInterval) {}
@@ -40,9 +40,8 @@ extension NovaAdVideoViewDelegate {
 public final class NovaAdVideoView: UIView {
     // MARK: Lifecycle
 
-    init(with style: Style = .clear, delegate: (any NovaAdVideoViewDelegate)? = nil) {
+    init(with style: Style = .clear) {
         self.style = style
-        self.delegate = delegate
         super.init(frame: CGRectZero)
         let playerView = videoPlayer.getPlayerView()
         insertSubview(playerView, at: 0)
@@ -74,7 +73,7 @@ public final class NovaAdVideoView: UIView {
             case hide
             case show(bottomMargin: CGFloat)
 
-            // MARK: Internal
+            // MARK: Public
 
             public static func == (lhs: ProgressBarStyle, rhs: ProgressBarStyle) -> Bool {
                 switch (lhs, rhs) {
@@ -87,8 +86,6 @@ public final class NovaAdVideoView: UIView {
                 }
             }
         }
-
-        // MARK: Internal
 
         public static func == (lhs: NovaAdVideoView.Style, rhs: NovaAdVideoView.Style) -> Bool {
             switch (lhs, rhs) {
@@ -108,6 +105,8 @@ public final class NovaAdVideoView: UIView {
 
     // MARK: Internal
 
+    weak var delegate: (any NovaAdVideoViewDelegate)?
+
     var muted: Bool = true {
         didSet {
             videoPlayer.setPlayerMute(muted)
@@ -118,8 +117,6 @@ public final class NovaAdVideoView: UIView {
     }
 
     // MARK: Private
-
-    private weak var delegate: (any NovaAdVideoViewDelegate)?
 
     private var style: Style
     private var subviewHandler: (any NovaNativeAdVideoSubviewHandler)? = nil
@@ -201,7 +198,8 @@ extension NovaAdVideoView {
         setupActionHelper()
         setupTapGesture()
         configEndCard()
-        subviewHandler?.config(with: model)}
+        subviewHandler?.config(with: model)
+    }
 
     func resetStyle(_ style: Style?) {
         guard let style, self.style != style else {
@@ -460,6 +458,7 @@ private extension NovaAdVideoView {
             DebugLogger.ui.info("video media model is not set, but ad tapped")
             return
         }
+
         switch mediaModel.adCtrType {
         case .openWeb, .appInstall:
             actionHelper = actionHelper?.logNovaClickEvent(in: .media).handleAdTap(in: self)
@@ -499,6 +498,7 @@ private extension NovaAdVideoView {
 
     private func setupTapGesture() {
         guard let mediaModel else { return }
+
         switch style {
         case .landingPage:
             isUserInteractionEnabled = true

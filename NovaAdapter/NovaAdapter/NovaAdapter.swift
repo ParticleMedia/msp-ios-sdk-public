@@ -5,6 +5,7 @@ import PrebidMobile
 import NovaCore
 import Kingfisher
 import UIKit
+import SnapKit
 
 public class NovaAdapter: AdNetworkAdapter {
     public func getSDKVersion() -> String {
@@ -14,8 +15,7 @@ public class NovaAdapter: AdNetworkAdapter {
     public func setAdMetricReporter(adMetricReporter: any MSPiOSCore.AdMetricReporter) {
         self.adMetricReporter = adMetricReporter
     }
-    
-    
+
     public weak var adListener: AdListener?
     public weak var auctionBidListener: AuctionBidListener?
     public var bidderPlacementId: String?
@@ -28,7 +28,7 @@ public class NovaAdapter: AdNetworkAdapter {
     public weak var interstitialAd: InterstitialAd?
     
     public var nativeAdView: NativeAdView?
-    public var novaNativeAdView: NovaNativeAdView?
+    public var novaNativeAdViews: [NovaNativeAdView] = []
     
     private var adRequest: AdRequest?
     private var bidResponse: BidResponse?
@@ -86,25 +86,36 @@ public class NovaAdapter: AdNetworkAdapter {
 
     // TODO: lsy, 其实我感觉这种解析逻辑应该全部扔进 nova core 里面
     public func prepareViewForInteraction(nativeAd: MSPiOSCore.NativeAd, nativeAdView: Any) {
+        // TODO: lsy, 我看了下调用，这个不是已经在主线程了吗
         DispatchQueue.main.async {
             guard let nativeAdView = nativeAdView as? NativeAdView,
-                  let mediaView = nativeAd.mediaView as? NovaAdMediaView,
-                  let novaNativeAdItem = self.nativeAdItem else {
+                  let novaNativeAd = nativeAd as? NovaNativeAd,
+                  let novaNativeAdItem = novaNativeAd.nativeAdItem
+            else {
                 self.adListener?.onError(msg: "fail to render native view")
                 return
             }
-            let novaNativeAdView = NovaNativeAdView(mediaView: mediaView)
+
+            let novaNativeAdView = NovaNativeAdView()
+            self.novaNativeAdViews.append(novaNativeAdView)
             
             if let nativeAdViewBinder = nativeAdView.nativeAdViewBinder {
                 novaNativeAdView.titleLabel = nativeAdView.nativeAdViewBinder?.titleLabel
                 novaNativeAdView.bodyLabel = nativeAdView.nativeAdViewBinder?.bodyLabel
                 novaNativeAdView.advertiserLabel = nativeAdView.nativeAdViewBinder?.advertiserLabel
                 novaNativeAdView.callToActionButton = nativeAdView.nativeAdViewBinder?.callToActionButton
-                novaNativeAdView.prepareViewForInteraction(nativeAd: novaNativeAdItem)
-                
-                let novaSubViews: [UIView] = [novaNativeAdView.titleLabel, novaNativeAdView.bodyLabel, novaNativeAdView.advertiserLabel, novaNativeAdView.callToActionButton, mediaView].compactMap { $0 }
-                novaNativeAdView.tappableViews = novaSubViews
-                novaNativeAdView.translatesAutoresizingMaskIntoConstraints = false
+
+                var clickableViews: [UIView] = [
+                    novaNativeAdView.titleLabel,
+                    novaNativeAdView.bodyLabel,
+                    novaNativeAdView.advertiserLabel,
+                    novaNativeAdView.callToActionButton,
+                    novaNativeAdView.icon
+                ].compactMap {
+                    $0
+                }
+                novaNativeAdView.setupViews(with: novaNativeAdItem, clickableViews: clickableViews)
+
                 nativeAdView.nativeAdViewBinder?.setUpViews(parentView: novaNativeAdView)
             } else if let nativeAdContainer = nativeAdView.nativeAdContainer {
                 novaNativeAdView.titleLabel = nativeAdContainer.getTitle()
@@ -112,58 +123,38 @@ public class NovaAdapter: AdNetworkAdapter {
                 novaNativeAdView.advertiserLabel = nativeAdContainer.getAdvertiser()
                 novaNativeAdView.callToActionButton = nativeAdContainer.getCallToAction()
                 novaNativeAdView.icon = nativeAdContainer.getIcon()
-                novaNativeAdView.prepareViewForInteraction(nativeAd: novaNativeAdItem)
-                
-                if let mediaContainer = nativeAdContainer.getMedia() {
-                    mediaContainer.addSubview(mediaView)
-                    NSLayoutConstraint.activate([
-                        //novaNativeAdView.centerYAnchor.constraint(equalTo: nativeAdView.centerYAnchor),
-                        mediaView.leadingAnchor.constraint(equalTo: mediaContainer.leadingAnchor),
-                        mediaView.trailingAnchor.constraint(equalTo: mediaContainer.trailingAnchor),
-                        mediaView.topAnchor.constraint(equalTo: mediaContainer.topAnchor),
-                        mediaView.bottomAnchor.constraint(equalTo: mediaContainer.bottomAnchor)
-                    ])
-                }
-                
-                if let iconView = nativeAdContainer.getIcon(),
-                   let imageUrlStr = novaNativeAdItem.iconUrlStr,
-                   let url = URL(string: imageUrlStr) {
-                    iconView.kf.setImage(with: url)
-                }
-                
-                nativeAdContainer.translatesAutoresizingMaskIntoConstraints = false
-                
-                novaNativeAdView.addSubview(nativeAdContainer)
-                // TODO: lsy, 如果 container 也能点击，isVideoClickable 就不会生效了
-                var tappableViews: [UIView] = [novaNativeAdView.titleLabel, novaNativeAdView.bodyLabel, novaNativeAdView.advertiserLabel, novaNativeAdView.callToActionButton, novaNativeAdView.icon].compactMap {
+
+                var clickableViews: [UIView] = [
+                    novaNativeAdView.titleLabel,
+                    novaNativeAdView.bodyLabel,
+                    novaNativeAdView.advertiserLabel,
+                    novaNativeAdView.callToActionButton,
+                    novaNativeAdView.icon
+                ].compactMap {
                     $0
                 }
-                if let button = novaNativeAdView.callToActionButton {
-                     tappableViews.append(button)
+                novaNativeAdView.setupViews(with: novaNativeAdItem, clickableViews: clickableViews)
+
+                if let mediaContainer = nativeAdContainer.getMedia() {
+                    mediaContainer.addSubview(novaNativeAdView.mediaView)
+                    novaNativeAdView.mediaView.snp.makeConstraints { make in
+                        make.directionalEdges.equalToSuperview()
+                    }
                 }
-                novaNativeAdView.tappableViews = tappableViews
-                novaNativeAdView.translatesAutoresizingMaskIntoConstraints = false
-                NSLayoutConstraint.activate([
-                    //novaNativeAdView.centerYAnchor.constraint(equalTo: nativeAdView.centerYAnchor),
-                    nativeAdContainer.leadingAnchor.constraint(equalTo: novaNativeAdView.leadingAnchor),
-                    nativeAdContainer.trailingAnchor.constraint(equalTo: novaNativeAdView.trailingAnchor),
-                    nativeAdContainer.topAnchor.constraint(equalTo: novaNativeAdView.topAnchor),
-                    nativeAdContainer.bottomAnchor.constraint(equalTo: novaNativeAdView.bottomAnchor),
-                    nativeAdContainer.widthAnchor.constraint(lessThanOrEqualTo: novaNativeAdView.widthAnchor),
-                    nativeAdContainer.heightAnchor.constraint(lessThanOrEqualTo: novaNativeAdView.heightAnchor),
-                ])
+
+                novaNativeAdView.addSubview(nativeAdContainer)
+                nativeAdContainer.snp.makeConstraints { make in
+                    make.directionalEdges.equalToSuperview()
+                    make.size.equalToSuperview()
+                }
             }
             
             nativeAdView.addSubview(novaNativeAdView)
-            NSLayoutConstraint.activate([
-                //novaNativeAdView.centerYAnchor.constraint(equalTo: nativeAdView.centerYAnchor),
-                novaNativeAdView.leadingAnchor.constraint(equalTo: nativeAdView.leadingAnchor),
-                novaNativeAdView.trailingAnchor.constraint(equalTo: nativeAdView.trailingAnchor),
-                novaNativeAdView.topAnchor.constraint(equalTo: nativeAdView.topAnchor),
-                novaNativeAdView.bottomAnchor.constraint(equalTo: nativeAdView.bottomAnchor),
-                novaNativeAdView.widthAnchor.constraint(lessThanOrEqualTo: nativeAdView.widthAnchor),
-                novaNativeAdView.heightAnchor.constraint(lessThanOrEqualTo: nativeAdView.heightAnchor),
-            ])
+            novaNativeAdView.snp.makeConstraints { make in
+                make.directionalEdges.equalToSuperview()
+                make.width.lessThanOrEqualToSuperview()
+                make.height.lessThanOrEqualToSuperview()
+            }
         }
     }
     
@@ -201,13 +192,6 @@ public class NovaAdapter: AdNetworkAdapter {
                                             advertiser: nativeAdItem.advertiser ?? "",
                                             callToAction:nativeAdItem.callToAction ?? "")
                 DispatchQueue.main.async{
-                    let mediaView = {
-                        let view = NovaAdMediaView()
-                        // TODO: lsy
-                        view.translatesAutoresizingMaskIntoConstraints = false
-                        return view
-                    }()
-                    nativeAd.mediaView = mediaView
                     nativeAd.icon = nativeAdItem.iconUrlStr
                     nativeAd.priceInDollar = self.priceInDollar
                     nativeAd.adInfo[MSPConstants.AD_INFO_PRICE] = self.priceInDollar

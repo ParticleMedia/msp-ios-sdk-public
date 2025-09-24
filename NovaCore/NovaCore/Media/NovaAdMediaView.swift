@@ -7,14 +7,6 @@
 
 import UIKit
 
-// MARK: - NovaAdMediaViewDelegate
-
-public protocol NovaAdMediaViewDelegate: AnyObject {
-    func mediaViewPlayingDidEndPlaying()
-
-    func mediaViewDidFinishFirstLoop()
-}
-
 // MARK: - NovaAdMediaView
 
 public final class NovaAdMediaView: UIView {
@@ -22,10 +14,8 @@ public final class NovaAdMediaView: UIView {
 
     // MARK: - Initializer
 
-    public init(delegate: (any NovaAdMediaViewDelegate)? = nil) {
+    init() {
         super.init(frame: .zero)
-
-        self.delegate = delegate
     }
 
     @available(*, unavailable)
@@ -36,7 +26,6 @@ public final class NovaAdMediaView: UIView {
     // MARK: Private
 
     private var mediaContent: NovaAdMediaContent?
-    private weak var delegate: (any NovaAdMediaViewDelegate)?
 
     private lazy var imageView: NovaAdImageView = .init()
 
@@ -212,18 +201,6 @@ private extension NovaAdMediaView {
             case nil:
                 return false
             }
-        }
-    }
-}
-
-extension NovaAdMediaView: NovaAdVideoViewDelegate {
-    func videoViewPlayingDidEndPlaying() {
-        delegate?.mediaViewPlayingDidEndPlaying()
-    }
-
-    func videoViewCurrentTimeDidChange(loopCount: Int, currentTime: TimeInterval, videoLength: TimeInterval) {
-        if (loopCount == 0 && currentTime >= videoLength - 0.01) || (loopCount == 1 && currentTime <= 0.01) {
-            delegate?.mediaViewDidFinishFirstLoop()
         }
     }
 }

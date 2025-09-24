@@ -74,30 +74,12 @@ public final class NovaNativeAdItem: NovaNativeBaseAd {
         fatalError("init(from:) has not been implemented")
     }
 
-    // MARK: Internal
+    // MARK: Public
 
     /// Delegate used to handle ad state update. For example, ad impression or ad click.
     public weak var delegate: NovaNativeAdDelegate?
 
-    /// interactive banner on immersive video
-    let addOnItem: NovaNativeAdInteractiveBanner?
-
-    // Note (Wayne)
-    // The following variables are used for ad loggings for in-feed unit.
-    // Will remove these once we migrate to use master coordinator.
-
-    let eCPMInDollar: Decimal
-
-    var cellIndexPath: IndexPath?
-
-    var dedupUUID: String?
-
-    /// Time to load this ad after placehoder shows, measured in ms.
-    var impressionLatency: Double = 0.0
-
-    let isParallax: Bool
-
-    var layoutStyle: NovaNativeLayoutStyle {
+    public var layoutStyle: NovaNativeLayoutStyle {
         if let _layoutStyle {
             return _layoutStyle
         }
@@ -121,6 +103,25 @@ public final class NovaNativeAdItem: NovaNativeBaseAd {
         }
     }
 
+    // MARK: Internal
+
+    /// interactive banner on immersive video
+    let addOnItem: NovaNativeAdInteractiveBanner?
+
+    // Note (Wayne)
+    // The following variables are used for ad loggings for in-feed unit.
+    // Will remove these once we migrate to use master coordinator.
+
+    let eCPMInDollar: Decimal
+
+    var cellIndexPath: IndexPath?
+
+    var dedupUUID: String?
+
+    /// Time to load this ad after placehoder shows, measured in ms.
+    var impressionLatency: Double = 0.0
+
+    let isParallax: Bool
 
     // MARK: Private
 
