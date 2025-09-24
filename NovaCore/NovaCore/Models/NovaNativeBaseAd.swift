@@ -154,7 +154,7 @@ public class NovaNativeBaseAd: NovaBaseAd {
     public var iconUrlStr: String?
 
     // media used to render media view
-    private(set) var mediaContent: NovaAdMediaContent
+    public private(set) var mediaContent: NovaAdMediaContent
 
     // MARK: - Discount Tag
 

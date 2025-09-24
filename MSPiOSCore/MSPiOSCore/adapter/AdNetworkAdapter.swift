@@ -17,9 +17,9 @@ public protocol AdNetworkAdapter: AnyObject {
                     context: Any?)
     
     func destroyAd()
-    
+
     func prepareViewForInteraction(nativeAd: NativeAd, nativeAdView: Any)
-    
+
     func setAdMetricReporter(adMetricReporter: AdMetricReporter)
     
     func getAdNetwork() -> AdNetwork

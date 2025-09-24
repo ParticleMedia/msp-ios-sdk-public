@@ -1,5 +1,6 @@
 import Foundation
 import UIKit
+@_implementationOnly import Kingfisher
 
 open class NovaNativeAdView: UIView {
     // MARK: - Properties
@@ -10,10 +11,7 @@ open class NovaNativeAdView: UIView {
     public var icon: UIImageView?
     public let mediaView: NovaAdMediaView
 
-    public var novaAdMediaViewDelegate: NovaAdMediaViewDelegate?
-
-    // TODO: lsy, 外界最后是直接使用的这个？not good enough
-    public var tappableViews: [UIView]? {
+    private var tappableViews: [UIView]? {
         didSet {
             tappableViews?.forEach {
                 $0.isUserInteractionEnabled = true
@@ -66,18 +64,23 @@ open class NovaNativeAdView: UIView {
         callToActionButton = UIButton(type: .custom)
     }
     
-    public func setUpView(nativeAd: NovaNativeAdItem) {
+    public func setupViews(with nativeAd: NovaNativeAdItem, clickableViews: [UIView]? = nil) {
+        register(nativeAd)
+        // Create action context for the media view
+        let actionContext = NovaAdMediaActionContext(
+            adActionTracingInfo: nativeAd.actionTracingInfo,
+            adActionExtraInfo: nativeAd.actionExtraInfo,
+            viewController: nil
+        )
+
         titleLabel?.text = nativeAd.headline
         bodyLabel?.text = nativeAd.body
         advertiserLabel?.text = nativeAd.advertiser
         callToActionButton?.setTitle(nativeAd.callToAction, for: .normal)
+        if let iconImage = nativeAd.iconUrlStr, let iconUrl = URL(string: iconImage) {
+            icon?.kf.setImage(with: iconUrl)
+        }
 
-        // Create action context for the media view
-        let actionContext = NovaAdMediaActionContext(
-            adActionTracingInfo: nativeAd.actionTracingInfo,
-            adActionExtraInfo: nativeAd.actionExtraInfo,
-            viewController: nil
-        )
         mediaView
             .config(
                 with: nativeAd.mediaContent,
@@ -86,26 +89,7 @@ open class NovaNativeAdView: UIView {
             ) {
                 nativeAd.delegate?.nativeAdDidFinishRender(nativeAd)
             }
-        register(nativeAd)
-    }
-
-    // TODO: lsy, 这个方法和上面那个有什么区别
-    public func prepareViewForInteraction(nativeAd: NovaNativeAdItem) {
-        // Create action context for the media view
-        let actionContext = NovaAdMediaActionContext(
-            adActionTracingInfo: nativeAd.actionTracingInfo,
-            adActionExtraInfo: nativeAd.actionExtraInfo,
-            viewController: nil
-        )
-        mediaView
-            .config(
-                with: nativeAd.mediaContent,
-                actionContext: actionContext,
-                iabReporter: self.iABMetricReporter
-            ) {
-                nativeAd.delegate?.nativeAdDidFinishRender(nativeAd)
-            }
-        register(nativeAd)
+        tappableViews = clickableViews
     }
 }
 

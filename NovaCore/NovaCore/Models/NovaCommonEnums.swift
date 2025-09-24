@@ -14,7 +14,7 @@ enum NovaNativeImageContentMode: String, Codable {
     }
 }
 
-enum NovaNativeLayoutStyle: String, Codable {
+public enum NovaNativeLayoutStyle: String, Codable {
     case unknown
     case sponsor
     case horizontal

@@ -47,15 +47,14 @@
 		66B730632C3DBEA90042E4FF /* MSPInitializationParameters.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66B730622C3DBEA90042E4FF /* MSPInitializationParameters.swift */; };
 		66B730652C3DBF150042E4FF /* NativeAd.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66B730642C3DBF150042E4FF /* NativeAd.swift */; };
 		66B7306A2C3DD46C0042E4FF /* AdFormat.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66B730692C3DD46C0042E4FF /* AdFormat.swift */; };
-		66B7306C2C3DD5BA0042E4FF /* MediaController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66B7306B2C3DD5BA0042E4FF /* MediaController.swift */; };
-		66B7306E2C3DD5FF0042E4FF /* MediaListener.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66B7306D2C3DD5FF0042E4FF /* MediaListener.swift */; };
+		66B7306C2C3DD5BA0042E4FF /* AdMediaContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66B7306B2C3DD5BA0042E4FF /* AdMediaContainer.swift */; };
 		66EFCDA72D1244A4005E0135 /* AuctionBid.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66EFCDA62D1244A4005E0135 /* AuctionBid.swift */; };
 		66EFCDA92D1244BC005E0135 /* AuctionBidListener.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66EFCDA82D1244BC005E0135 /* AuctionBidListener.swift */; };
 		66EFCDAB2D1244D2005E0135 /* AuctionListener.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66EFCDAA2D1244D2005E0135 /* AuctionListener.swift */; };
 		66EFCDAD2D1244E5005E0135 /* Bidder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66EFCDAC2D1244E5005E0135 /* Bidder.swift */; };
 		66EFCDAF2D124817005E0135 /* Auction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66EFCDAE2D124817005E0135 /* Auction.swift */; };
 		66F48C272CAB5B0A00902F4D /* InterstitialAd.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66F48C262CAB5B0A00902F4D /* InterstitialAd.swift */; };
-		BC31E09F9B61FFC1792C8E98 /* libPods-MSPiOSCore.a in Frameworks */ = {isa = PBXBuildFile; fileRef = BFE30F0B7CE2208BF0DD31AA /* libPods-MSPiOSCore.a */; };
+		8EBDBE832E829BF200A0AAE2 /* VideoController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8EBDBE822E829BF200A0AAE2 /* VideoController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -110,15 +109,14 @@
 		66B730622C3DBEA90042E4FF /* MSPInitializationParameters.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MSPInitializationParameters.swift; sourceTree = "<group>"; };
 		66B730642C3DBF150042E4FF /* NativeAd.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NativeAd.swift; sourceTree = "<group>"; };
 		66B730692C3DD46C0042E4FF /* AdFormat.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdFormat.swift; sourceTree = "<group>"; };
-		66B7306B2C3DD5BA0042E4FF /* MediaController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaController.swift; sourceTree = "<group>"; };
-		66B7306D2C3DD5FF0042E4FF /* MediaListener.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaListener.swift; sourceTree = "<group>"; };
+		66B7306B2C3DD5BA0042E4FF /* AdMediaContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdMediaContainer.swift; sourceTree = "<group>"; };
 		66EFCDA62D1244A4005E0135 /* AuctionBid.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuctionBid.swift; sourceTree = "<group>"; };
 		66EFCDA82D1244BC005E0135 /* AuctionBidListener.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuctionBidListener.swift; sourceTree = "<group>"; };
 		66EFCDAA2D1244D2005E0135 /* AuctionListener.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuctionListener.swift; sourceTree = "<group>"; };
 		66EFCDAC2D1244E5005E0135 /* Bidder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Bidder.swift; sourceTree = "<group>"; };
 		66EFCDAE2D124817005E0135 /* Auction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Auction.swift; sourceTree = "<group>"; };
 		66F48C262CAB5B0A00902F4D /* InterstitialAd.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InterstitialAd.swift; sourceTree = "<group>"; };
-
+		8EBDBE822E829BF200A0AAE2 /* VideoController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -140,7 +138,6 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-
 		664F33522C4EDD040014E1BA /* util */ = {
 			isa = PBXGroup;
 			children = (
@@ -199,24 +196,19 @@
 			isa = PBXGroup;
 			children = (
 				6614C9AD2D820D0800FC85DF /* MSPConstants.swift */,
-				668ACA8A2CD5587E00F45803 /* MSPNativeAdContainer.swift */,
-				665753542BF0868500338B1C /* AdListener.swift */,
+				8E313C062E813733009F7B54 /* Delegates */,
 				665753562BF086CA00338B1C /* MSPAd.swift */,
 				6657535B2BF0B24900338B1C /* AdRequest.swift */,
 				6657536F2BF1A26C00338B1C /* Geo.swift */,
-				665753712BF1A3D500338B1C /* MSPInitListener.swift */,
 				665753732BF1A44700338B1C /* MSPInitStatus.swift */,
 				66B7305C2C3DBC7A0042E4FF /* AdLoader.swift */,
 				66B7305E2C3DBCBE0042E4FF /* AdNetworkManager.swift */,
 				66B730622C3DBEA90042E4FF /* MSPInitializationParameters.swift */,
 				66B730642C3DBF150042E4FF /* NativeAd.swift */,
 				66B730692C3DD46C0042E4FF /* AdFormat.swift */,
-				66B7306B2C3DD5BA0042E4FF /* MediaController.swift */,
-				66B7306D2C3DD5FF0042E4FF /* MediaListener.swift */,
 				664F33422C4992E60014E1BA /* NativeAdView.swift */,
 				665833412C812F32003F52AA /* BannerAd.swift */,
 				66F48C262CAB5B0A00902F4D /* InterstitialAd.swift */,
-				66AFBBE82CB49E30000D0DD3 /* AdMetricReporter.swift */,
 			);
 			path = api;
 			sourceTree = "<group>";
@@ -251,6 +243,19 @@
 				66EFCDAE2D124817005E0135 /* Auction.swift */,
 			);
 			path = Auction;
+			sourceTree = "<group>";
+		};
+		8E313C062E813733009F7B54 /* Delegates */ = {
+			isa = PBXGroup;
+			children = (
+				668ACA8A2CD5587E00F45803 /* MSPNativeAdContainer.swift */,
+				665753542BF0868500338B1C /* AdListener.swift */,
+				66AFBBE82CB49E30000D0DD3 /* AdMetricReporter.swift */,
+				665753712BF1A3D500338B1C /* MSPInitListener.swift */,
+				66B7306B2C3DD5BA0042E4FF /* AdMediaContainer.swift */,
+				8EBDBE822E829BF200A0AAE2 /* VideoController.swift */,
+			);
+			path = Delegates;
 			sourceTree = "<group>";
 		};
 		97AA995111D2180B72C3D72E /* Frameworks */ = {
@@ -364,8 +369,6 @@
 		};
 /* End PBXResourcesBuildPhase section */
 
-
-
 /* Begin PBXSourcesBuildPhase section */
 		665753352BF085C100338B1C /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
@@ -378,10 +381,10 @@
 				6657537A2BF1A58500338B1C /* BidLoader.swift in Sources */,
 				66B730572C3DAF020042E4FF /* AdapterAdLoadError.swift in Sources */,
 				66F48C272CAB5B0A00902F4D /* InterstitialAd.swift in Sources */,
-				66B7306E2C3DD5FF0042E4FF /* MediaListener.swift in Sources */,
 				665753682BF19F3100338B1C /* GoogleQueryInfoListener.swift in Sources */,
 				66B730592C3DAFDE0042E4FF /* AdapterInitStatus.swift in Sources */,
 				6657535C2BF0B24900338B1C /* AdRequest.swift in Sources */,
+				8EBDBE832E829BF200A0AAE2 /* VideoController.swift in Sources */,
 				6657536C2BF1A0C000338B1C /* FacebookBidTokenListener.swift in Sources */,
 				66AFBBE92CB49E30000D0DD3 /* AdMetricReporter.swift in Sources */,
 				664F33542C4EDD2E0014E1BA /* utilities.swift in Sources */,
@@ -404,7 +407,7 @@
 				668ACA8B2CD5587E00F45803 /* MSPNativeAdContainer.swift in Sources */,
 				66B730632C3DBEA90042E4FF /* MSPInitializationParameters.swift in Sources */,
 				665753572BF086CB00338B1C /* MSPAd.swift in Sources */,
-				66B7306C2C3DD5BA0042E4FF /* MediaController.swift in Sources */,
+				66B7306C2C3DD5BA0042E4FF /* AdMediaContainer.swift in Sources */,
 				6614C9AE2D820D0F00FC85DF /* MSPConstants.swift in Sources */,
 				6657535E2BF0B32D00338B1C /* InitializationParameters.swift in Sources */,
 				66EFCDA72D1244A4005E0135 /* AuctionBid.swift in Sources */,
