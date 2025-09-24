@@ -65,7 +65,8 @@ class NovaAdLandingWebCoordinatorViewController: UIViewController {
             assertionFailure("media view will only be used in half screen detent style")
             return nil
         }
-        let videoView = NovaAdVideoView(with: .landingPage, delegate: self)
+        let videoView = NovaAdVideoView(with: .landingPage)
+        videoView.delegate = self
         videoView
             .config(
                 with: landingVideoContext.videoMediaModel,

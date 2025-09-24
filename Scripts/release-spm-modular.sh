@@ -223,6 +223,7 @@ release_novaadapter_spm() {
     log_success "NovaAdapter SPM package released"
 }
 
+
 # Main function
 main() {
     # Parse arguments
@@ -245,7 +246,7 @@ main() {
     # Skip individual start notifications - only send final success/failure
     
     # Track release statistics
-    local total_packages=2
+    local total_packages=3
     local successful_packages=0
     local failed_packages=0
     local failed_package_names=()
@@ -274,6 +275,7 @@ main() {
         exit 1
     fi
     
+    
     # Push all tags
     if push_spm_tags; then
         log_success "All SPM tags pushed successfully"
@@ -297,8 +299,8 @@ main() {
     
     # Send single comprehensive success notification (skip in dry-run mode)
     if [[ "$DRY_RUN" != "true" ]]; then
-        local spm_packages="NovaCore, NovaAdapter"
-        notify_release_success_with_summary "SPM" "$VERSION" "$spm_packages" "$duration_formatted" "" "$total_packages" "$successful_packages" "$failed_packages" "$RELEASE_BRANCH"
+        local smp_packages="NovaCore, NovaAdapter"
+        notify_release_success_with_summary "SPM" "$VERSION" "$smp_packages" "$duration_formatted" "" "$total_packages" "$successful_packages" "$failed_packages" "$RELEASE_BRANCH"
     fi
 }
 

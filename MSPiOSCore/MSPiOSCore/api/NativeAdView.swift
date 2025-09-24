@@ -6,17 +6,15 @@ public class NativeAdView: UIView {
     public weak var rootViewController: UIViewController?
     public var nativeAdViewBinder: NativeAdViewBinder?
     public var nativeAdContainer: MSPNativeAdContainer?
-    
+
     private var titleLabel: UILabel?
     private var bodyLabel: UILabel?
     private var advertiserLabel: UILabel?
     private var callToActionButton: UIButton?
     private var optionView: UIView?
-    private var mediaView: UIView?
+    private var mediaViewContainerView: UIView?
     private var icon: UIImageView?
-    
-    public var mediaController: MediaController?
-    
+
     public init(nativeAd: NativeAd, nativeAdViewBinder: NativeAdViewBinder) {
         self.nativeAd = nativeAd
         self.nativeAdViewBinder = nativeAdViewBinder
@@ -30,10 +28,10 @@ public class NativeAdView: UIView {
         self.bodyLabel?.text = nativeAd.body
         self.advertiserLabel?.text = nativeAd.advertiser
         self.callToActionButton?.setTitle(nativeAd.callToAction, for: .normal)
-        
-        self.mediaView = nativeAdViewBinder.mediaView
-        self.mediaController = nativeAd.mediaController
-        
+
+
+        self.mediaViewContainerView = nativeAdViewBinder.mediaView
+
         super.init(frame: .zero)
         
         nativeAd.adNetworkAdapter?.prepareViewForInteraction(nativeAd: nativeAd, nativeAdView: self)
@@ -42,23 +40,22 @@ public class NativeAdView: UIView {
     public init(nativeAd: NativeAd, nativeAdContainer: MSPNativeAdContainer) {
         self.nativeAd = nativeAd
         self.nativeAdContainer = nativeAdContainer
-        
+
+        super.init(frame: .zero)
+
+        // TODO: lsy, 最好把所有的渲染逻辑都放进各个 adapter 里面去，这里的 nativeview 也不需要去持有 titleLabel 这些
         self.titleLabel = nativeAdContainer.getTitle()
         self.bodyLabel = nativeAdContainer.getbody()
         self.advertiserLabel = nativeAdContainer.getAdvertiser()
         self.callToActionButton = nativeAdContainer.getCallToAction()
         self.icon = nativeAdContainer.getIcon()
-        
+
         self.titleLabel?.text = nativeAd.title
         self.bodyLabel?.text = nativeAd.body
         self.advertiserLabel?.text = nativeAd.advertiser
         self.callToActionButton?.setTitle(nativeAd.callToAction, for: .normal)
-        
-        self.mediaView = nativeAdContainer.getMedia()
-        self.mediaController = nativeAd.mediaController
-        
-        super.init(frame: .zero)
-        
+
+        self.mediaViewContainerView = nativeAdContainer.getMedia()
         nativeAd.adNetworkAdapter?.prepareViewForInteraction(nativeAd: nativeAd, nativeAdView: self)
     }
     

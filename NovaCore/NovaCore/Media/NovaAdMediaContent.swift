@@ -7,14 +7,10 @@
 
 import Foundation
 
+// MARK: - NovaAdVideoController
+
 public class NovaAdVideoController {
-    let videoView: NovaAdVideoView
-    public var style: NovaAdVideoView.Style
-    public var muted: Bool {
-        didSet {
-            videoView.muted = muted
-        }
-    }
+    // MARK: Lifecycle
 
     init(muted: Bool) {
         videoView = NovaAdVideoView()
@@ -22,20 +18,51 @@ public class NovaAdVideoController {
         self.muted = muted
     }
 
-    func play() {
+    // MARK: Public
+
+    public var style: NovaAdVideoView.Style
+
+    public weak var delegate: NovaAdVideoViewDelegate? {
+        didSet {
+            videoView.delegate = delegate
+        }
+    }
+
+    public var muted: Bool {
+        didSet {
+            videoView.muted = muted
+        }
+    }
+
+    public func play() {
         videoView.play(with: .continueFromLast)
     }
 
-    func pause() {
+    public func pause() {
         videoView.pause()
     }
 
-    func stop() {
+    public func stop() {
         videoView.stop()
     }
+
+    // MARK: Internal
+
+    let videoView: NovaAdVideoView
 }
 
+// MARK: - NovaAdPlayableController
+
 public class NovaAdPlayableController {
+    // MARK: Lifecycle
+
+    init(renderOption: RenderOption) {
+        self.renderOption = renderOption
+        self.playableView = .init()
+    }
+
+    // MARK: Public
+
     public enum RenderOption {
         case auto
         case imageOrVideo
@@ -44,22 +71,22 @@ public class NovaAdPlayableController {
 
     public var renderOption: RenderOption
 
-    let playableView: NovaAdPlayableView
+    // MARK: Internal
 
-    init(renderOption: RenderOption) {
-        self.renderOption = renderOption
-        self.playableView = .init()
-    }
+    let playableView: NovaAdPlayableView
 }
 
+// MARK: - NovaAdMediaContent
+
 public class NovaAdMediaContent {
-    private enum Constants {
-        static let verticalMediaRatio: CGFloat = 9.0 / 16.0
-        static let horizontalMediaRatio: CGFloat = 1200.0 / 627.0
-        static let carouselMinHeight: CGFloat = 283.0
-        static let collectionMediaRatio: CGFloat = 6.0 / 5.0
-        static let collectionMediaOffset: CGFloat = 4.0 / 3.0
+    // MARK: Lifecycle
+
+    init(adMedia: NovaAdMedia, discountTagInfo: NovaAdDiscountTagInfo? = nil) {
+        self.adMedia = adMedia
+        self.discountTagInfo = discountTagInfo
     }
+
+    // MARK: Public
 
     public enum NovaAdMediaRenderRecommendation {
         /// height = width / aspectRatio
@@ -69,8 +96,6 @@ public class NovaAdMediaContent {
         case minHeight(CGFloat)
         case free
     }
-    let adMedia: NovaAdMedia
-    let discountTagInfo: NovaAdDiscountTagInfo?
 
     public lazy var videoController: NovaAdVideoController? = {
         switch adMedia {
@@ -139,7 +164,6 @@ public class NovaAdMediaContent {
             case .playable:
                 return .free
             }
-
         case .videoPlayable(let videoModel, let playableModel):
             switch playableController?.renderOption {
             case .auto, .none:
@@ -161,8 +185,18 @@ public class NovaAdMediaContent {
         }
     }
 
-    init(adMedia: NovaAdMedia, discountTagInfo: NovaAdDiscountTagInfo? = nil) {
-        self.adMedia = adMedia
-        self.discountTagInfo = discountTagInfo
+    // MARK: Internal
+
+    let adMedia: NovaAdMedia
+    let discountTagInfo: NovaAdDiscountTagInfo?
+
+    // MARK: Private
+
+    private enum Constants {
+        static let verticalMediaRatio: CGFloat = 9.0 / 16.0
+        static let horizontalMediaRatio: CGFloat = 1200.0 / 627.0
+        static let carouselMinHeight: CGFloat = 283.0
+        static let collectionMediaRatio: CGFloat = 6.0 / 5.0
+        static let collectionMediaOffset: CGFloat = 4.0 / 3.0
     }
 }

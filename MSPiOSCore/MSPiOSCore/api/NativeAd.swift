@@ -13,11 +13,15 @@ open class NativeAd: MSPAd {
     public var advertiser: String
     public var callToAction: String
     public var optionsView: Any?
+    // TODO: lsy, 现在只有 builder 里面再用了，是不是能删了
     public var mediaView: Any?
     public var icon: Any?
-    public var mediaController: MediaController?
     public var nativeAdView: Any?
-    
+
+    // TODO: lsy, 这个需要单独抽出来变成一个协议吗
+    open var mediaContainer: (any AdMediaContainer)? {
+        nil
+    }
     public init(adNetworkAdapter: AdNetworkAdapter, builder: Builder) {
         self.title = builder.title
         self.body = builder.body
@@ -26,7 +30,6 @@ open class NativeAd: MSPAd {
         self.optionsView = builder.optionsView
         self.mediaView = builder.mediaView
         self.icon = builder.icon
-        self.mediaController = builder.mediaController
         super.init(adNetworkAdapter: adNetworkAdapter)
     }
     
@@ -55,8 +58,8 @@ open class NativeAd: MSPAd {
         public var optionsView: Any?
         public var mediaView: Any?
         public var icon: Any?
-        public var mediaController: MediaController?
-        
+        public var mediaContainer: (any AdMediaContainer)?
+
         public init(adNetworkAdapter: AdNetworkAdapter) {
             self.adNetworkAdapter = adNetworkAdapter
         }
@@ -102,13 +105,7 @@ open class NativeAd: MSPAd {
             self.icon = icon
             return self
         }
-        
-        @discardableResult
-        public func mediaController(_ mediaController: MediaController) -> Builder {
-            self.mediaController = mediaController
-            return self
-        }
-        
+
         public func build() -> NativeAd {
             return NativeAd(adNetworkAdapter: adNetworkAdapter, builder: self)
         }
