@@ -8,7 +8,7 @@ public protocol NovaNativeAdLayoutProviding {
 extension MSPiOSCore.NativeAd: NovaNativeAdLayoutProviding {
     public var layout: NovaNativeLayoutStyle? {
         if let novaAd = self as? NovaNativeAd {
-            return novaAd.layout
+            return novaAd.nativeAdItem?.layoutStyle
         }
         return nil
     }

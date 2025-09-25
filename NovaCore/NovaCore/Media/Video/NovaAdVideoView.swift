@@ -127,6 +127,8 @@ public final class NovaAdVideoView: UIView {
     // to make sure if you use `stop` after `play`, the final state of video is `end`
     private var playVersion: Int = 0
 
+    private var willAutoPlayingAfterShowCover: Bool = false
+
     private var mediaModel: NovaAdVideoMediaModel?
     private var actionContext: NovaAdMediaActionContext?
 
@@ -149,6 +151,10 @@ public final class NovaAdVideoView: UIView {
     private var state: NovaAdVideoState? {
         didSet {
             if let state {
+                if case .showCover = state.playState {
+                } else {
+                    willAutoPlayingAfterShowCover = false
+                }
                 mediaModel?.videoInfo.state = state
                 subviewHandler?.sync(with: state)
             }
@@ -315,7 +321,10 @@ private extension NovaAdVideoView {
         videoPlayer.setPlayerMute(state.isMute)
         switch state.playState {
         case .showCover(let autoPlay, _):
-            if autoPlay { startPlaying(after: 1.0) }
+            if autoPlay && !willAutoPlayingAfterShowCover {
+                willAutoPlayingAfterShowCover = true
+                startPlaying(after: 1.0)
+            }
         case .loading:
             startPlaying()
         case .playing(let currentTime, _):
