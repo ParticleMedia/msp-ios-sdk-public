@@ -53,7 +53,7 @@ open class NovaNativeAdView: UIView {
     }
 
     deinit {
-        stopTimerIfNeeded()
+        unregisterAd()
         //iABMetricReporter?.stopSession()
     }
     
