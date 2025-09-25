@@ -28,7 +28,6 @@ public class NovaAdapter: AdNetworkAdapter {
     public weak var interstitialAd: InterstitialAd?
     
     public var nativeAdView: NativeAdView?
-    public var novaNativeAdViews: [NovaNativeAdView] = []
     
     private var adRequest: AdRequest?
     private var bidResponse: BidResponse?
@@ -97,8 +96,7 @@ public class NovaAdapter: AdNetworkAdapter {
             }
 
             let novaNativeAdView = NovaNativeAdView()
-            self.novaNativeAdViews.append(novaNativeAdView)
-            
+
             if let nativeAdViewBinder = nativeAdView.nativeAdViewBinder {
                 novaNativeAdView.titleLabel = nativeAdView.nativeAdViewBinder?.titleLabel
                 novaNativeAdView.bodyLabel = nativeAdView.nativeAdViewBinder?.bodyLabel
@@ -124,7 +122,7 @@ public class NovaAdapter: AdNetworkAdapter {
                 novaNativeAdView.callToActionButton = nativeAdContainer.getCallToAction()
                 novaNativeAdView.icon = nativeAdContainer.getIcon()
 
-                var clickableViews: [UIView] = [
+                let clickableViews: [UIView] = [
                     novaNativeAdView.titleLabel,
                     novaNativeAdView.bodyLabel,
                     novaNativeAdView.advertiserLabel,
@@ -140,6 +138,12 @@ public class NovaAdapter: AdNetworkAdapter {
                     novaNativeAdView.mediaView.snp.makeConstraints { make in
                         make.directionalEdges.equalToSuperview()
                     }
+                }
+
+                if let iconView = nativeAdContainer.getIcon(),
+                   let imageUrlStr = novaNativeAdItem.iconUrlStr,
+                   let url = URL(string: imageUrlStr) {
+                    iconView.kf.setImage(with: url)
                 }
 
                 novaNativeAdView.addSubview(nativeAdContainer)
