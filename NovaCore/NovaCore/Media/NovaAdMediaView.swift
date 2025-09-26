@@ -6,6 +6,8 @@
 //
 
 import UIKit
+internal import Lottie
+@_implementationOnly import SnapKit
 
 // MARK: - NovaAdMediaView
 
@@ -42,6 +44,20 @@ public final class NovaAdMediaView: UIView {
     private var currentView: UIView?
 
     private lazy var discountTag: NovaAdDiscountTag = .init()
+
+    private lazy var tapToTryAnimationView: LottieAnimationView? = {
+        let view = LottieAnimationView()
+        if let animationPath = LottieAsset.getAssetURL("tap_to_try")?.path {
+            DebugLogger.data.info("load lottie file success")
+            view.animation = LottieAnimation.filepath(animationPath)
+            view.loopMode = .loop
+            view.adClickArea = .tap_to_try
+            return view
+        } else {
+            DebugLogger.data.error("can not load lottie file")
+            return nil
+        }
+    }()
 }
 
 // MARK: - methods
@@ -108,6 +124,7 @@ extension NovaAdMediaView {
                 make.directionalEdges.equalToSuperview()
             }
             currentView = newMediaView
+            currentView?.adClickArea = .media
         }
         switch mediaContent.adMedia {
         case .image(let model):
@@ -129,6 +146,14 @@ extension NovaAdMediaView {
             switch (renderOption, layout) {
             case (.auto, .showMedia), (.auto, .twoPart), (.none, .showMedia), (.none, .twoPart), (.imageOrVideo, _):
                 imageView.config(with: imageModel, actionContext: actionContext, completion: completion)
+                if let tapToTryAnimationView {
+                    imageView.addSubview(tapToTryAnimationView)
+                    tapToTryAnimationView.snp.makeConstraints { make in
+                        make.center.equalToSuperview()
+                        make.size.equalTo(72.0)
+                    }
+                    tapToTryAnimationView.play()
+                }
             case (.auto, .showPlayable), (.none, .showPlayable), (.playable, _):
                 playableView.config(with: playableModel.playableActionModel, actionContext: actionContext)
             }
@@ -138,6 +163,14 @@ extension NovaAdMediaView {
             switch (renderOption, layout) {
             case (.auto, .showMedia), (.auto, .twoPart), (.none, .showMedia), (.none, .twoPart), (.imageOrVideo, _):
                 videoView.config(with: videoModel, actionContext: actionContext, iabReporter: iabReporter)
+                if let tapToTryAnimationView {
+                    videoView.addSubview(tapToTryAnimationView)
+                    tapToTryAnimationView.snp.makeConstraints { make in
+                        make.center.equalToSuperview()
+                        make.size.equalTo(72.0)
+                    }
+                    tapToTryAnimationView.play()
+                }
             case (.auto, .showPlayable), (.none, .showPlayable), (.playable, _):
                 playableView.config(with: playableModel.playableActionModel, actionContext: actionContext)
             }
@@ -155,6 +188,8 @@ extension NovaAdMediaView {
         videoView.prepareForReuse()
 
         discountTag.removeFromSuperview()
+        tapToTryAnimationView?.stop()
+        tapToTryAnimationView?.removeFromSuperview()
     }
 }
 

@@ -148,7 +148,38 @@ verify_compiled_assets() {
     if [[ $file_size -eq 0 ]]; then
         print_warning "Assets.car is empty - no assets were compiled"
     else
-        print_success "Assets.car created successfully ($file_size bytes)"
+    print_success "Assets.car created successfully ($file_size bytes)"
+    fi
+}
+
+# Copy Lottie files from Resources directory
+copy_lottie_files() {
+    local output_dir="$TEMP_DIR/NBResourceBundle.bundle"
+    local lottie_source="$NOVACORE_DIR/Resources/Lottie"
+    
+    print_info "Copying Lottie files..."
+    
+    if [[ -d "$lottie_source" ]]; then
+        # Create Lottie directory in bundle
+        mkdir -p "$output_dir/Lottie"
+        
+        # Copy all files from Lottie source directory
+        if find "$lottie_source" -type f \( -name "*.json" -o -name "*.lottie" \) -exec cp {} "$output_dir/Lottie/" \; ; then
+            local lottie_count=$(find "$lottie_source" -type f \( -name "*.json" -o -name "*.lottie" \) | wc -l | xargs)
+            print_success "Copied $lottie_count Lottie file(s) to bundle"
+            
+            # List copied files
+            print_info "Lottie files in bundle:"
+            find "$output_dir/Lottie" -type f | while read -r file; do
+                local filename=$(basename "$file")
+                local file_size=$(stat -f%z "$file" 2>/dev/null || echo "0")
+                print_info "  - $filename ($file_size bytes)"
+            done
+        else
+            print_warning "No Lottie files found to copy"
+        fi
+    else
+        print_warning "Lottie source directory not found: $lottie_source"
     fi
 }
 
@@ -183,6 +214,18 @@ generate_asset_report() {
         done
         
         echo ""
+        echo "Lottie files found in source:"
+        if [[ -d "$NOVACORE_DIR/Resources/Lottie" ]]; then
+            find "$NOVACORE_DIR/Resources/Lottie" -type f \( -name "*.json" -o -name "*.lottie" \) | while read -r lottie_file; do
+                local filename=$(basename "$lottie_file")
+                local file_size=$(stat -f%z "$lottie_file" 2>/dev/null || echo "0")
+                echo "  - $filename ($file_size bytes)"
+            done
+        else
+            echo "  - No Lottie directory found"
+        fi
+        
+        echo ""
         echo "Bundle contents after sync:"
         if [[ -d "$BUNDLE_TARGET" ]]; then
             find "$BUNDLE_TARGET" -type f | while read -r file; do
@@ -210,6 +253,7 @@ main() {
     create_temp_bundle
     compile_assets
     verify_compiled_assets
+    copy_lottie_files
     update_target_bundle
     generate_asset_report
     

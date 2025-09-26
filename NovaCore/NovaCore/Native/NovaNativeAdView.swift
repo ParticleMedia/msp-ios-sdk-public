@@ -39,11 +39,7 @@ open class NovaNativeAdView: UIView {
     // MARK: -
 
     public init(mediaView: NovaAdMediaView? = nil) {
-        self.mediaView = mediaView ?? {
-            let view = NovaAdMediaView()
-            view.adClickArea = .media
-            return view
-        }()
+        self.mediaView = mediaView ?? .init()
         super.init(frame: .zero)
     }
 
@@ -98,7 +94,6 @@ extension NovaNativeAdView {
         bodyLabel?.adClickArea = .body
         advertiserLabel?.adClickArea = .advertiser
         callToActionButton?.adClickArea = .cta
-        mediaView.adClickArea = .media
         icon?.adClickArea = .icon
         
         actionHelper = NovaActionHelper.build(
