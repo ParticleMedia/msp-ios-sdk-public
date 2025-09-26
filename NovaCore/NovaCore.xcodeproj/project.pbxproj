@@ -69,6 +69,8 @@
 		8E8C73112E5EE483007BBEE9 /* NovaImages.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E8C730A2E5EE483007BBEE9 /* NovaImages.swift */; };
 		8E8C73122E5EE483007BBEE9 /* NovaFonts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E8C73092E5EE483007BBEE9 /* NovaFonts.swift */; };
 		8E8C73222E6006DF007BBEE9 /* NovaAdMediaContent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E8C73212E6006D8007BBEE9 /* NovaAdMediaContent.swift */; };
+		F24349B52E87086100694ABD /* tap_to_try.json in Resources */ = {isa = PBXBuildFile; fileRef = F24349B22E87086100694ABD /* tap_to_try.json */; };
+		F24349B62E87086100694ABD /* LottieAsset.swift in Sources */ = {isa = PBXBuildFile; fileRef = F24349B12E87086100694ABD /* LottieAsset.swift */; };
 		F2A9886B2E55A4C700EAEDB8 /* TimeInterval+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2A988692E55A4C700EAEDB8 /* TimeInterval+Extension.swift */; };
 		F2A9886C2E55A4C700EAEDB8 /* Collection+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2A988682E55A4C700EAEDB8 /* Collection+Extension.swift */; };
 		F2A988922E55A4E000EAEDB8 /* NovaTopRightClosable.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2A988872E55A4E000EAEDB8 /* NovaTopRightClosable.swift */; };
@@ -232,6 +234,8 @@
 		8E8C73212E6006D8007BBEE9 /* NovaAdMediaContent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NovaAdMediaContent.swift; sourceTree = "<group>"; };
 		A7278CCCE62DB4171E27ED0A /* Pods-NovaCore.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-NovaCore.debug.xcconfig"; path = "Target Support Files/Pods-NovaCore/Pods-NovaCore.debug.xcconfig"; sourceTree = "<group>"; };
 		E6422D26A0200EC155CCF2E8 /* libPods-NovaCore.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-NovaCore.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		F24349B12E87086100694ABD /* LottieAsset.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LottieAsset.swift; sourceTree = "<group>"; };
+		F24349B22E87086100694ABD /* tap_to_try.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = tap_to_try.json; sourceTree = "<group>"; };
 		F2A988682E55A4C700EAEDB8 /* Collection+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Collection+Extension.swift"; sourceTree = "<group>"; };
 		F2A988692E55A4C700EAEDB8 /* TimeInterval+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TimeInterval+Extension.swift"; sourceTree = "<group>"; };
 		F2A9886E2E55A4E000EAEDB8 /* NovaInterstitialAdViewFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NovaInterstitialAdViewFactory.swift; sourceTree = "<group>"; };
@@ -384,6 +388,7 @@
 		66E534362C24CAAE00255D15 /* NovaCore */ = {
 			isa = PBXGroup;
 			children = (
+				F24349B42E87086100694ABD /* Resources */,
 				F2A988902E55A4E000EAEDB8 /* Interstitial */,
 				F2A9886A2E55A4C700EAEDB8 /* Foundation */,
 				F2A9885D2E55A4B400EAEDB8 /* DesignSystem */,
@@ -551,6 +556,23 @@
 				66E534952C24CBF200255D15 /* UIView+Extensions.swift */,
 			);
 			path = Extensions;
+			sourceTree = "<group>";
+		};
+		F24349B32E87086100694ABD /* Lottie */ = {
+			isa = PBXGroup;
+			children = (
+				F24349B12E87086100694ABD /* LottieAsset.swift */,
+				F24349B22E87086100694ABD /* tap_to_try.json */,
+			);
+			path = Lottie;
+			sourceTree = "<group>";
+		};
+		F24349B42E87086100694ABD /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				F24349B32E87086100694ABD /* Lottie */,
+			);
+			path = Resources;
 			sourceTree = "<group>";
 		};
 		F2A9885D2E55A4B400EAEDB8 /* DesignSystem */ = {
@@ -875,6 +897,7 @@
 			files = (
 				66E535202C250A8900255D15 /* NBAssets.xcassets in Resources */,
 				66E535392C263FEB00255D15 /* NBResourceBundle.bundle in Resources */,
+				F24349B52E87086100694ABD /* tap_to_try.json in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1020,6 +1043,7 @@
 				66E534A92C24CBF200255D15 /* NovaBaseAd.swift in Sources */,
 				66E534B12C24CBF200255D15 /* NovaNativeAdDelegate.swift in Sources */,
 				66E534C82C24CBF200255D15 /* NovaAdSkipReason.swift in Sources */,
+				F24349B62E87086100694ABD /* LottieAsset.swift in Sources */,
 				66E534BF2C24CBF200255D15 /* NovaVideoPlayerProtocol.swift in Sources */,
 				66E534BE2C24CBF200255D15 /* NovaVideoPlayerController.swift in Sources */,
 				66E534C42C24CBF200255D15 /* IABMetricReporter.swift in Sources */,
