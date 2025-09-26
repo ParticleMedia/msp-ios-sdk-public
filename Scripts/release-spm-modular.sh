@@ -12,6 +12,7 @@ source "$SCRIPT_DIR/lib/release-common.sh"
 # Default values
 VERSION=""
 RELEASE_BRANCH=""
+RELEASE_NOTES=""
 DRY_RUN="false"
 VERBOSE="false"
 
@@ -39,6 +40,10 @@ parse_arguments() {
                 VERBOSE="true"
                 shift
                 ;;
+            --release-notes)
+                RELEASE_NOTES="$2"
+                shift 2
+                ;;
             *)
                 if [[ -z "$VERSION" ]]; then
                     VERSION="$1"
@@ -62,6 +67,7 @@ show_help() {
     echo ""
     echo "Options:"
     echo "  --release-branch BRANCH Release branch to work on (default: release/VERSION)"
+    echo "  --release-notes NOTES   Release notes for this version"
     echo "  --dry-run               Show what would be done without executing"
     echo "  --verbose               Enable verbose output"
     echo "  --help, -h              Show this help message"
@@ -300,7 +306,7 @@ main() {
     # Send single comprehensive success notification (skip in dry-run mode)
     if [[ "$DRY_RUN" != "true" ]]; then
         local spm_packages="NovaCore, NovaAdapter"
-        notify_release_success_with_summary "SPM" "$VERSION" "$spm_packages" "$duration_formatted" "" "$total_packages" "$successful_packages" "$failed_packages" "$RELEASE_BRANCH"
+        notify_release_success_with_summary "SPM" "$VERSION" "$spm_packages" "$duration_formatted" "$RELEASE_NOTES" "$total_packages" "$successful_packages" "$failed_packages" "$RELEASE_BRANCH"
     fi
 }
 
