@@ -73,14 +73,6 @@ open class NovaNativeAdView: UIView {
             viewController: nil
         )
 
-        titleLabel?.text = nativeAd.headline
-        bodyLabel?.text = nativeAd.body
-        advertiserLabel?.text = nativeAd.advertiser
-        callToActionButton?.setTitle(nativeAd.callToAction, for: .normal)
-        if let iconImage = nativeAd.iconUrlStr, let iconUrl = URL(string: iconImage) {
-            icon?.kf.setImage(with: iconUrl)
-        }
-
         mediaView
             .config(
                 with: nativeAd.mediaContent,
