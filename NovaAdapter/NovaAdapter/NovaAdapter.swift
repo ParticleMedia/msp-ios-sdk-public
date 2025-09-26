@@ -89,7 +89,7 @@ public class NovaAdapter: AdNetworkAdapter {
         DispatchQueue.main.async {
             guard let nativeAdView = nativeAdView as? NativeAdView,
                   let novaNativeAd = nativeAd as? NovaNativeAd,
-                  var novaNativeAdItem = novaNativeAd.nativeAdItem
+                  let novaNativeAdItem = novaNativeAd.nativeAdItem
             else {
                 self.adListener?.onError(msg: "fail to render native view")
                 return
@@ -97,9 +97,6 @@ public class NovaAdapter: AdNetworkAdapter {
 
             let novaNativeAdView = NovaNativeAdView()
             
-            novaNativeAdItem.headline = novaNativeAd.title
-            novaNativeAdItem.body = novaNativeAd.body
-
             if let nativeAdViewBinder = nativeAdView.nativeAdViewBinder {
                 novaNativeAdView.titleLabel = nativeAdView.nativeAdViewBinder?.titleLabel
                 novaNativeAdView.bodyLabel = nativeAdView.nativeAdViewBinder?.bodyLabel
