@@ -38,6 +38,7 @@ public final class NovaNativeAdItem: NovaNativeBaseAd {
         self.addOnItem = addOnItem
         self.eCPMInDollar = eCPMInDollar
         self.isParallax = isParallax
+        self._layoutStyle = layoutStyle
 
         try super.init(
             adUnitId: adUnitId,

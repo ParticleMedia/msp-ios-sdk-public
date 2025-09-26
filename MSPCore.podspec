@@ -98,6 +98,7 @@ Pod::Spec.new do |spec|
   spec.dependency 'PrebidAdapter'#, '0.0.92'
   spec.dependency 'SwiftProtobuf'#, '1.21.0'
   spec.dependency 'SnapKit'
+  spec.dependency 'lottie-ios'
   #spec.vendored_frameworks= "MSPCore/PrebidAdapter.xcframework"#, "PrebidMobile.xcframework", "MSPiOSCore.xcframework"
 
   #spec.pod_target_xcconfig = {
