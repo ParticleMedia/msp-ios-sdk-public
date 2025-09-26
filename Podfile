@@ -100,6 +100,7 @@ target 'NovaCore' do
   #use_frameworks!
 
   # Pods for NovaAdapter
+  pod 'lottie-ios', :modular_headers => true
   pod 'Kingfisher', '~> 7.0', :modular_headers => true
   pod 'SnapKit', :modular_headers => true
   #pod 'SDWebImage', '5.18.8', :modular_headers => true
