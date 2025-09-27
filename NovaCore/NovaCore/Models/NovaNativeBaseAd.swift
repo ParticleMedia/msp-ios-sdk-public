@@ -248,7 +248,10 @@ public class NovaNativeBaseAd: NovaBaseAd {
             guard oldValue != videoStyle else { return }
             
             do {
-                self.mediaContent = try NovaAdMediaContent(adMedia: getAdMedia(), discountTagInfo: self.adDiscountTagInfo)
+                self.mediaContent = try NovaAdMediaContent(
+                    adMedia: getAdMedia(),
+                    discountTagInfo: self.adDiscountTagInfo
+                )
             } catch {
                 // Log the error with context information for debugging
                 DebugLogger.data.error("Failed to recreate media content after video style change \(error.localizedDescription)")
