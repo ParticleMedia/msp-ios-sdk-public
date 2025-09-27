@@ -12,12 +12,14 @@ class NovaAdVideoMediaModel {
         videoInfo: NovaNativeAdVideoInfo,
         adCtrType: AdCtrType,
         callToAction: String?,
-        endCardModel: NovaAdEndCardViewModel?
+        endCardModel: NovaAdEndCardViewModel?,
+        style: NovaAdVideoView.Style
     ) {
         self.videoInfo = videoInfo
         self.adCtrType = adCtrType
         self.callToAction = callToAction
         self.endCardModel = endCardModel
+        self.style = style
     }
 
     // MARK: Internal
@@ -26,4 +28,5 @@ class NovaAdVideoMediaModel {
     let adCtrType: AdCtrType
     let callToAction: String?
     let endCardModel: NovaAdEndCardViewModel?
+    let style: NovaAdVideoView.Style
 }

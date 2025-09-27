@@ -85,6 +85,8 @@ public class NovaAdapter: AdNetworkAdapter {
 
     // TODO: lsy, 其实我感觉这种解析逻辑应该全部扔进 nova core 里面
     public func prepareViewForInteraction(nativeAd: MSPiOSCore.NativeAd, nativeAdView: Any) {
+        // "video_use_control": default true, for immersive-video, video will not show controller if set to false
+        let videoUseControl = adRequest?.customParams["video_use_control"] as? Bool ?? true
         // TODO: lsy, 我看了下调用，这个不是已经在主线程了吗
         DispatchQueue.main.async {
             guard let nativeAdView = nativeAdView as? NativeAdView,
@@ -96,6 +98,7 @@ public class NovaAdapter: AdNetworkAdapter {
             }
 
             let novaNativeAdView = NovaNativeAdView()
+            novaNativeAdItem.videoStyle = videoUseControl ? .playButtonOnLeftBottom : .playButtonOnCenter(progressBarStyle: .hide)
             
             if let nativeAdViewBinder = nativeAdView.nativeAdViewBinder {
                 novaNativeAdView.titleLabel = nativeAdView.nativeAdViewBinder?.titleLabel
