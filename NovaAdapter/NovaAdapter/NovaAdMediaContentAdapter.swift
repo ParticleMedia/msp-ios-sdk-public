@@ -41,6 +41,7 @@ class NovaAdVideoControllerAdapter: VideoController {
     init(videoController: NovaAdVideoController) {
         self.videoController = videoController
         self.delegateAdapter = NovaAdVideoControllerDelegateAdapter(videoController: nil)
+        videoController.delegate = delegateAdapter
         self.delegateAdapter.videoController = self
     }
 
