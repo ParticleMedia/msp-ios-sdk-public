@@ -143,6 +143,8 @@ public final class NovaAdVideoView: UIView {
     private var actionHelper: NovaActionHelper<NovaActionState.Init>?
 
     private weak var iabReporter: IABMetricReporter?
+    
+    private var isPausedByUser = false
 
     // MARK: - Subviews
 
@@ -232,6 +234,10 @@ extension NovaAdVideoView {
     }
 
     func play(with playStrategy: PlayStrategy) {
+        guard !isPausedByUser else {
+            return
+        }
+        
         guard !videoPlayer.isVideoPlaying() else {
             return
         }
@@ -494,9 +500,11 @@ private extension NovaAdVideoView {
         case .playButtonOnCenter(progressBarStyle: _):
             let location = gesture.location(in: self)
             if videoPlayer.isVideoPlaying() {
+                isPausedByUser = true
                 pauseVideo(endKind: .pause)
                 subviewHandler?.tapVideo(on: self, at: location, isPlaying: false)
             } else {
+                isPausedByUser = false
                 resumeVideo(resumeKind: .resume)
                 subviewHandler?.tapVideo(on: self, at: location, isPlaying: true)
             }
@@ -741,8 +749,10 @@ extension NovaAdVideoView: NovaAdVideoSubviewBehaviorDelegate {
 
     func didTapPlayButton(_ gesture: UITapGestureRecognizer) {
         if videoPlayer.isVideoPlaying() {
+            isPausedByUser = true
             pauseVideo(endKind: .pause)
         } else {
+            isPausedByUser = false
             resumeVideo(resumeKind: .resume)
         }
     }

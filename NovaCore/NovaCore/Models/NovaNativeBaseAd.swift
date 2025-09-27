@@ -58,6 +58,8 @@ public class NovaNativeBaseAd: NovaBaseAd {
         self._playableInfo = playableInfo
         // give it a default value to make it compile
         self.mediaContent = NovaAdMediaContent(adMedia: Self.defaultAdMedia)
+        // default is playButtonOnLeftBottom
+        self.videoStyle = .playButtonOnLeftBottom
 
         super.init(
             adUnitId: adUnitId,
@@ -107,6 +109,8 @@ public class NovaNativeBaseAd: NovaBaseAd {
         marketingType = try container.decode(NovaAdMarketingType.self, forKey: .marketingType)
         _playableInfo = try container.decodeIfPresent(NovaAdPlayableInfo.self, forKey: .playableInfo)
         mediaContent = NovaAdMediaContent(adMedia: Self.defaultAdMedia)
+        // default is playButtonOnLeftBottom
+        videoStyle = .playButtonOnLeftBottom
 
         let superDecoder = try container.superDecoder()
         try super.init(from: superDecoder)
@@ -235,6 +239,22 @@ public class NovaNativeBaseAd: NovaBaseAd {
     // MARK: - Playable Ad
 
     var _playableInfo: NovaAdPlayableInfo?
+    
+    // MAKR: - VideoStyle(set by Adapter)
+    
+    public var videoStyle: NovaAdVideoView.Style {
+        didSet {
+            // Performance optimization: Skip recreation if style hasn't actually changed
+            guard oldValue != videoStyle else { return }
+            
+            do {
+                self.mediaContent = try NovaAdMediaContent(adMedia: getAdMedia(), discountTagInfo: self.adDiscountTagInfo)
+            } catch {
+                // Log the error with context information for debugging
+                DebugLogger.data.error("Failed to recreate media content after video style change \(error.localizedDescription)")
+            }
+        }
+    }
 }
 
 // MARK: - Media Extension
@@ -320,7 +340,8 @@ extension NovaNativeBaseAd {
                 videoInfo: _videoInfo,
                 adCtrType: adCtrType,
                 callToAction: callToAction,
-                endCardModel: endCardModel
+                endCardModel: endCardModel,
+                style: videoStyle
             )
         } else {
             throw NovaAdMediaError.invalid(adId: adId, creativeType: creativeType, message: "missing video info")
