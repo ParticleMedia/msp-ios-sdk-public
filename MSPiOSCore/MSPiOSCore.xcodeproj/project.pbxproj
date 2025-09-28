@@ -55,6 +55,7 @@
 		66EFCDAF2D124817005E0135 /* Auction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66EFCDAE2D124817005E0135 /* Auction.swift */; };
 		66F48C272CAB5B0A00902F4D /* InterstitialAd.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66F48C262CAB5B0A00902F4D /* InterstitialAd.swift */; };
 		8EBDBE832E829BF200A0AAE2 /* VideoController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8EBDBE822E829BF200A0AAE2 /* VideoController.swift */; };
+		8ED580EB2E897CAC00BD73B9 /* PlayableController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8ED580EA2E897CA700BD73B9 /* PlayableController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -117,6 +118,7 @@
 		66EFCDAE2D124817005E0135 /* Auction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Auction.swift; sourceTree = "<group>"; };
 		66F48C262CAB5B0A00902F4D /* InterstitialAd.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InterstitialAd.swift; sourceTree = "<group>"; };
 		8EBDBE822E829BF200A0AAE2 /* VideoController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoController.swift; sourceTree = "<group>"; };
+		8ED580EA2E897CA700BD73B9 /* PlayableController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayableController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -253,6 +255,7 @@
 				66AFBBE82CB49E30000D0DD3 /* AdMetricReporter.swift */,
 				665753712BF1A3D500338B1C /* MSPInitListener.swift */,
 				66B7306B2C3DD5BA0042E4FF /* AdMediaContainer.swift */,
+				8ED580EA2E897CA700BD73B9 /* PlayableController.swift */,
 				8EBDBE822E829BF200A0AAE2 /* VideoController.swift */,
 			);
 			path = Delegates;
@@ -395,6 +398,7 @@
 				6657535A2BF087F700338B1C /* AdNetworkAdapter.swift in Sources */,
 				665753662BF19EFB00338B1C /* GoogleQueryInfoFetcher.swift in Sources */,
 				6657533E2BF085C100338B1C /* MSPiOSCore.docc in Sources */,
+				8ED580EB2E897CAC00BD73B9 /* PlayableController.swift in Sources */,
 				665753762BF1A4A200338B1C /* AdNetworkAdapterProvider.swift in Sources */,
 				6657537C2BF1A5ED00338B1C /* BidLoaderProvider.swift in Sources */,
 				66B7305F2C3DBCBE0042E4FF /* AdNetworkManager.swift in Sources */,

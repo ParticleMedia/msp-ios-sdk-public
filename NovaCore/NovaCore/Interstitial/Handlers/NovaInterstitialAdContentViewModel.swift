@@ -16,7 +16,7 @@ struct NovaInterstitialAdContentViewModel {
     // MARK: Lifecycle
 
     init(interstitialAd: NovaInterstitialAdItem, vcEmbedded: UIViewController) {
-        self.advertiserLogoUrlStr = interstitialAd.iconUrlStr
+        self.advertiserLogoUrl = interstitialAd.iconURL
         self.advertiserText = interstitialAd.advertiser?.trimmingCharacters(in: .whitespacesAndNewlines)
         self.headlineText = interstitialAd.headline?.trimmingCharacters(in: .whitespacesAndNewlines)
         self.bodyText = interstitialAd.body?.trimmingCharacters(in: .whitespacesAndNewlines)
@@ -29,7 +29,7 @@ struct NovaInterstitialAdContentViewModel {
 
     // MARK: Internal
 
-    let advertiserLogoUrlStr: String?
+    let advertiserLogoUrl: URL?
     let advertiserText: String?
     let headlineText: String?
     let bodyText: String?

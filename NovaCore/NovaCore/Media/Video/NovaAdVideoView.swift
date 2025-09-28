@@ -40,7 +40,7 @@ public extension NovaAdVideoViewDelegate {
 public final class NovaAdVideoView: UIView {
     // MARK: Lifecycle
 
-    init(with style: Style = .clear) {
+    init(with style: Style = .playButtonOnLeftBottom) {
         self.style = style
         super.init(frame: CGRectZero)
         let playerView = videoPlayer.getPlayerView()
@@ -60,12 +60,12 @@ public final class NovaAdVideoView: UIView {
     // MARK: Public
 
     public enum Style: Equatable {
-        // no subviews, only player
-        case clear
         case playButtonOnLeftBottom
         case playButtonOnCenter(progressBarStyle: ProgressBarStyle)
         // only use for landing page
         case landingPage
+        // no subviews, only player
+        case clear
 
         // MARK: Public
 
@@ -107,6 +107,14 @@ public final class NovaAdVideoView: UIView {
 
     weak var delegate: (any NovaAdVideoViewDelegate)?
 
+    var style: Style {
+        willSet {
+            if newValue != style {
+                resetStyle(newValue)
+            }
+        }
+    }
+
     var muted: Bool = true {
         didSet {
             videoPlayer.setPlayerMute(muted)
@@ -118,7 +126,6 @@ public final class NovaAdVideoView: UIView {
 
     // MARK: Private
 
-    private var style: Style
     private var subviewHandler: (any NovaNativeAdVideoSubviewHandler)? = nil
     private var delayedHideViewBlock: DispatchCancelableBlock?
 
@@ -143,7 +150,7 @@ public final class NovaAdVideoView: UIView {
     private var actionHelper: NovaActionHelper<NovaActionState.Init>?
 
     private weak var iabReporter: IABMetricReporter?
-    
+
     private var isPausedByUser = false
 
     // MARK: - Subviews
@@ -209,18 +216,6 @@ extension NovaAdVideoView {
         subviewHandler?.config(with: model)
     }
 
-    func resetStyle(_ style: Style?) {
-        guard let style, self.style != style else {
-            return
-        }
-
-        self.style = style
-        self.subviewHandler?.removeViewsFromSuperview()
-        subviewHandler = NovaNativeAdVideoSubviewHandlerCreator.create(with: style, delegate: self)
-        subviewHandler?.setup(on: self)
-        setupTapGesture()
-    }
-
     func prepareForReuse() {
         videoPlayer.stop(endKind: .none)
         state = nil
@@ -237,7 +232,6 @@ extension NovaAdVideoView {
         guard !isPausedByUser else {
             return
         }
-        
         guard !videoPlayer.isVideoPlaying() else {
             return
         }
@@ -327,7 +321,7 @@ private extension NovaAdVideoView {
         videoPlayer.setPlayerMute(state.isMute)
         switch state.playState {
         case .showCover(let autoPlay, _):
-            if autoPlay && !willAutoPlayingAfterShowCover {
+            if autoPlay, !willAutoPlayingAfterShowCover {
                 willAutoPlayingAfterShowCover = true
                 startPlaying(after: 1.0)
             }
@@ -466,6 +460,13 @@ private extension NovaAdVideoView {
                     )
                 )
         }
+    }
+
+    func resetStyle(_ style: Style) {
+        self.subviewHandler?.removeViewsFromSuperview()
+        subviewHandler = NovaNativeAdVideoSubviewHandlerCreator.create(with: style, delegate: self)
+        subviewHandler?.setup(on: self)
+        setupTapGesture()
     }
 
     @objc func didClickAd() {

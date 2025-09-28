@@ -29,7 +29,7 @@ public class NovaNativeBaseAd: NovaBaseAd {
         body: String?,
         callToAction: String?,
         advertiser: String?,
-        iconUrlStr: String?,
+        iconURL: URL?,
         isImageLayoutVertical: Bool?,
         isImageClickable: Bool,
         imageURLs: [String]?,
@@ -46,7 +46,7 @@ public class NovaNativeBaseAd: NovaBaseAd {
         self.body = body
         self.callToAction = callToAction
         self.advertiser = advertiser
-        self.iconUrlStr = iconUrlStr
+        self.iconURL = iconURL
         self._isImageClickable = isImageClickable
         self._videoInfo = videoInfo
         self._isImageLayoutVertical = isImageLayoutVertical
@@ -58,8 +58,6 @@ public class NovaNativeBaseAd: NovaBaseAd {
         self._playableInfo = playableInfo
         // give it a default value to make it compile
         self.mediaContent = NovaAdMediaContent(adMedia: Self.defaultAdMedia)
-        // default is playButtonOnLeftBottom
-        self.videoStyle = .playButtonOnLeftBottom
 
         super.init(
             adUnitId: adUnitId,
@@ -98,7 +96,7 @@ public class NovaNativeBaseAd: NovaBaseAd {
         body = try container.decodeIfPresent(String.self, forKey: .body)
         callToAction = try container.decodeIfPresent(String.self, forKey: .callToAction)
         advertiser = try container.decodeIfPresent(String.self, forKey: .advertiser)
-        iconUrlStr = try container.decodeIfPresent(String.self, forKey: .iconUrlStr)
+        iconURL = try container.decodeIfPresent(URL.self, forKey: .iconURL)
         _isImageLayoutVertical = try container.decodeIfPresent(Bool.self, forKey: .isVerticalImage)
         _isImageClickable = try container.decodeIfPresent(Bool.self, forKey: .isImageClickable) ?? true
         _imageURLs = try container.decodeIfPresent([String].self, forKey: .imageURLs)
@@ -109,8 +107,6 @@ public class NovaNativeBaseAd: NovaBaseAd {
         marketingType = try container.decode(NovaAdMarketingType.self, forKey: .marketingType)
         _playableInfo = try container.decodeIfPresent(NovaAdPlayableInfo.self, forKey: .playableInfo)
         mediaContent = NovaAdMediaContent(adMedia: Self.defaultAdMedia)
-        // default is playButtonOnLeftBottom
-        videoStyle = .playButtonOnLeftBottom
 
         let superDecoder = try container.superDecoder()
         try super.init(from: superDecoder)
@@ -127,7 +123,7 @@ public class NovaNativeBaseAd: NovaBaseAd {
         case body
         case callToAction
         case advertiser
-        case iconUrlStr
+        case iconURL
         case isVerticalImage
         case isImageClickable
         case imageURLs
@@ -155,7 +151,7 @@ public class NovaNativeBaseAd: NovaBaseAd {
     public var advertiser: String?
 
     /// Icon URL.
-    public var iconUrlStr: String?
+    public var iconURL: URL?
 
     // media used to render media view
     public private(set) var mediaContent: NovaAdMediaContent
@@ -190,7 +186,7 @@ public class NovaNativeBaseAd: NovaBaseAd {
         try container.encodeIfPresent(body, forKey: .body)
         try container.encodeIfPresent(callToAction, forKey: .callToAction)
         try container.encodeIfPresent(advertiser, forKey: .advertiser)
-        try container.encodeIfPresent(iconUrlStr, forKey: .iconUrlStr)
+        try container.encodeIfPresent(iconURL, forKey: .iconURL)
         try container.encodeIfPresent(_isImageLayoutVertical, forKey: .isVerticalImage)
         try container.encodeIfPresent(_imageContentMode, forKey: .imageContentMode)
         try container.encodeIfPresent(_videoInfo, forKey: .videoInfo)
@@ -239,25 +235,6 @@ public class NovaNativeBaseAd: NovaBaseAd {
     // MARK: - Playable Ad
 
     var _playableInfo: NovaAdPlayableInfo?
-    
-    // MAKR: - VideoStyle(set by Adapter)
-    
-    public var videoStyle: NovaAdVideoView.Style {
-        didSet {
-            // Performance optimization: Skip recreation if style hasn't actually changed
-            guard oldValue != videoStyle else { return }
-            
-            do {
-                self.mediaContent = try NovaAdMediaContent(
-                    adMedia: getAdMedia(),
-                    discountTagInfo: self.adDiscountTagInfo
-                )
-            } catch {
-                // Log the error with context information for debugging
-                DebugLogger.data.error("Failed to recreate media content after video style change \(error.localizedDescription)")
-            }
-        }
-    }
 }
 
 // MARK: - Media Extension
@@ -344,7 +321,6 @@ extension NovaNativeBaseAd {
                 adCtrType: adCtrType,
                 callToAction: callToAction,
                 endCardModel: endCardModel,
-                style: videoStyle
             )
         } else {
             throw NovaAdMediaError.invalid(adId: adId, creativeType: creativeType, message: "missing video info")

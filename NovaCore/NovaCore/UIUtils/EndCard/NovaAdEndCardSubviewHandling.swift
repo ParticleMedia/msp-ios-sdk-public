@@ -69,7 +69,7 @@ struct NovaAdEndCardViewModel {
 
         return .init(
             style: style,
-            iconUrl: ad.appInfo?.appIconUrl ?? URL(string: ad.iconUrlStr ?? ""),
+            iconUrl: ad.appInfo?.appIconUrl ?? ad.iconURL,
             advertiser: ad.appInfo?.appName ?? ad.advertiser,
             description: ad.headline,
             body: ad.body,

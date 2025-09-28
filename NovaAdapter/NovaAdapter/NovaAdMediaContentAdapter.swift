@@ -21,15 +21,26 @@ class NovaAdMediaContainerAdapter: AdMediaContainer {
         } else {
             self.videoControllerAdapter = nil
         }
+
+        if let playableController = mediaContent.playableController {
+            self.playableControllerAdapter = NovaAdPlayableControllerAdapter(playableController: playableController)
+        } else {
+            self.playableControllerAdapter = nil
+        }
     }
 
     // MARK: Internal
 
     let mediaContent: NovaAdMediaContent
     let videoControllerAdapter: NovaAdVideoControllerAdapter?
+    let playableControllerAdapter: NovaAdPlayableControllerAdapter?
 
     var videoController: (any MSPiOSCore.VideoController)? {
         return videoControllerAdapter
+    }
+
+    var playableController: (any MSPiOSCore.PlayableController)? {
+        return playableControllerAdapter
     }
 }
 
@@ -103,5 +114,42 @@ class NovaAdVideoControllerDelegateAdapter: NovaAdVideoViewDelegate {
                 didUpdateProgress: currentTime,
                 videoLength: videoLength
             )
+    }
+}
+
+class NovaAdPlayableControllerAdapter: PlayableController {
+    init(playableController: NovaAdPlayableController) {
+        self.playableController = playableController
+    }
+
+    // MARK: Internal
+
+    let playableController: NovaAdPlayableController
+
+    var renderMode: PlayableRenderMode {
+        get {
+            switch playableController.renderOption {
+            case .auto:
+                return .auto
+            case .imageOrVideo:
+                return .imageOrVideo
+            case .playable:
+                return .playable
+            @unknown default:
+                return .auto
+            }
+        }
+        set {
+            switch newValue {
+            case .auto:
+                playableController.renderOption = .auto
+            case .imageOrVideo:
+                playableController.renderOption = .imageOrVideo
+            case .playable:
+                playableController.renderOption = .playable
+            @unknown default:
+                playableController.renderOption = .auto
+            }
+        }
     }
 }

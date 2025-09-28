@@ -174,9 +174,9 @@ class NovaInterstitialAdTwoPartPlayableSubviewHandler: NovaInterstitialAdSubview
         }
         
         // Configure advertiser avatar
-        if let iconUrlStr = interstitialAd.iconUrlStr, let iconUrl = URL(string: iconUrlStr) {
+        if let iconURL = interstitialAd.iconURL {
             advertiserAvatar.isHidden = false
-            advertiserAvatar.kf.setImage(with: iconUrl)
+            advertiserAvatar.kf.setImage(with: iconURL)
         } else {
             advertiserAvatar.isHidden = true
         }
