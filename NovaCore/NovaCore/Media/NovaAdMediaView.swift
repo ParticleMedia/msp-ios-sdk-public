@@ -130,7 +130,6 @@ extension NovaAdMediaView {
         case .image(let model):
             imageView.config(with: model, actionContext: actionContext, completion: completion)
         case .video(let model):
-            videoView.resetStyle(mediaContent.videoController?.style)
             videoView.config(with: model, actionContext: actionContext, iabReporter: iabReporter)
         case .multipleImages(let model):
             multipleImagesComponentsProvider.config(with: model, actionContext: actionContext)

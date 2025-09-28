@@ -56,13 +56,13 @@ enum ClickableAdArea: String {
 }
 
 extension UIView {
-    private static var adClickAreaKey: UInt8 = 0
+    private static var msp_adClickAreaKey: UInt8 = 0
     var adClickArea: ClickableAdArea? {
         get {
-            return objc_getAssociatedObject(self, &Self.adClickAreaKey) as? ClickableAdArea
+            return objc_getAssociatedObject(self, &Self.msp_adClickAreaKey) as? ClickableAdArea
         }
         set {
-            objc_setAssociatedObject(self, &Self.adClickAreaKey, newValue, .OBJC_ASSOCIATION_RETAIN)
+            objc_setAssociatedObject(self, &Self.msp_adClickAreaKey, newValue, .OBJC_ASSOCIATION_RETAIN)
         }
     }
 }
