@@ -141,7 +141,7 @@ class NovaInterstitialAdSKOverlaySubviewHandler: NSObject, NovaInterstitialAdSub
 
     func config() {
         // Configure media view
-        interstitialAd.mediaContent.videoController?.style = .playButtonOnCenter(progressBarStyle: .hide)
+        interstitialAd.mediaContent.videoController?.style = .playButtonOnCenter(progressBarStyle: .hide, popupCTAStyle: .show)
         mediaView.config(
             with: interstitialAd.mediaContent,
             actionContext: .init(

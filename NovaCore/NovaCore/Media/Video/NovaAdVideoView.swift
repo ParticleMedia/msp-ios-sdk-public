@@ -61,7 +61,7 @@ public final class NovaAdVideoView: UIView {
 
     public enum Style: Equatable {
         case playButtonOnLeftBottom
-        case playButtonOnCenter(progressBarStyle: ProgressBarStyle)
+        case playButtonOnCenter(progressBarStyle: ProgressBarStyle, popupCTAStyle: PopupCTAStyle)
         // only use for landing page
         case landingPage
         // no subviews, only player
@@ -86,6 +86,11 @@ public final class NovaAdVideoView: UIView {
                 }
             }
         }
+        
+        public enum PopupCTAStyle: Equatable {
+            case hide
+            case show
+        }
 
         public static func == (lhs: NovaAdVideoView.Style, rhs: NovaAdVideoView.Style) -> Bool {
             switch (lhs, rhs) {
@@ -93,8 +98,8 @@ public final class NovaAdVideoView: UIView {
                 return true
             case (.playButtonOnLeftBottom, .playButtonOnLeftBottom):
                 return true
-            case (.playButtonOnCenter(let lhsProgressBarStyle), .playButtonOnCenter(let rhsProgressBarStyle)):
-                return lhsProgressBarStyle == rhsProgressBarStyle
+            case (.playButtonOnCenter(let lhsProgressBarStyle, let lhsPopupCTAStyle), .playButtonOnCenter(let rhsProgressBarStyle, let rhsPopupCTAStyle)):
+                return lhsProgressBarStyle == rhsProgressBarStyle && lhsPopupCTAStyle == rhsPopupCTAStyle
             case (.landingPage, .landingPage):
                 return true
             default:

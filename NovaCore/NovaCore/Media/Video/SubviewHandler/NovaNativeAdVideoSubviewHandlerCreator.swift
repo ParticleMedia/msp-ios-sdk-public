@@ -17,10 +17,11 @@ enum NovaNativeAdVideoSubviewHandlerCreator {
             return NovaNativeAdVideoClearSubviewHandler()
         case .playButtonOnLeftBottom:
             return NovaNativeAdVideoPlayButtonOnLeftBottomSubviewHandler(delegate: delegate)
-        case .playButtonOnCenter(let progressBarStyle):
+        case .playButtonOnCenter(let progressBarStyle, let popupCTAStyle):
             return NovaNativeAdVideoPlayButtonOnCenterSubviewHandler(
                 delegate: delegate,
-                progressBarStyle: progressBarStyle
+                progressBarStyle: progressBarStyle,
+                popupCTAStyle: popupCTAStyle
             )
         case .landingPage:
             return NovaNativeAdVideoLandingPageSubviewHandler(delegate: delegate)
