@@ -87,6 +87,8 @@ public class NovaAdapter: AdNetworkAdapter {
     public func prepareViewForInteraction(nativeAd: MSPiOSCore.NativeAd, nativeAdView: Any) {
         // "video_use_control": default true, for immersive-video, video will not show controller if set to false
         let videoUseControl = adRequest?.customParams["video_use_control"] as? Bool ?? true
+        // default false, popup cta will be enabled if set to true
+        let popupCTAEnabled = adRequest?.customParams["popup_cta_enabled"] as? Bool ?? false
         // TODO: lsy, 我看了下调用，这个不是已经在主线程了吗
         DispatchQueue.main.async {
             guard let nativeAdView = nativeAdView as? NativeAdView,
@@ -98,7 +100,8 @@ public class NovaAdapter: AdNetworkAdapter {
             }
 
             let novaNativeAdView = NovaNativeAdView()
-            let newVideoStyle: NovaAdVideoView.Style = videoUseControl ? .playButtonOnLeftBottom : .playButtonOnCenter(progressBarStyle: .hide)
+            let popupCTAStyle: NovaAdVideoView.Style.PopupCTAStyle = popupCTAEnabled ? .show : .hide
+            let newVideoStyle: NovaAdVideoView.Style = videoUseControl ? .playButtonOnLeftBottom : .playButtonOnCenter(progressBarStyle: .hide, popupCTAStyle: popupCTAStyle)
             novaNativeAdItem.mediaContent.videoController?.style = newVideoStyle
             if let nativeAdViewBinder = nativeAdView.nativeAdViewBinder {
                 novaNativeAdView.titleLabel = nativeAdView.nativeAdViewBinder?.titleLabel

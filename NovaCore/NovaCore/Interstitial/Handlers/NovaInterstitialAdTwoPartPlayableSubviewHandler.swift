@@ -184,7 +184,7 @@ class NovaInterstitialAdTwoPartPlayableSubviewHandler: NovaInterstitialAdSubview
         setupVolumeIcon(muted: interstitialAd.mediaContent.videoController?.muted ?? true)
 
         // Configure media view
-        interstitialAd.mediaContent.videoController?.style = .playButtonOnCenter(progressBarStyle: .hide)
+        interstitialAd.mediaContent.videoController?.style = .playButtonOnCenter(progressBarStyle: .hide, popupCTAStyle: .show)
         interstitialAd.mediaContent.playableController?.renderOption = .imageOrVideo
         mediaView.config(
             with: interstitialAd.mediaContent,
