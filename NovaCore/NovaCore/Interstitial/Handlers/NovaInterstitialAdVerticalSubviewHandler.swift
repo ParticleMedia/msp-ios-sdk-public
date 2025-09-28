@@ -149,7 +149,7 @@ class NovaInterstitialAdVerticalSubviewHandler: NovaInterstitialAdSubviewHandler
         adTagLabel.setTitle("SPONSORED", for: .normal)
         
         // Configure media view
-        interstitialAd.mediaContent.videoController?.style = .playButtonOnCenter(progressBarStyle: .hide)
+        interstitialAd.mediaContent.videoController?.style = .playButtonOnCenter(progressBarStyle: .hide, popupCTAStyle: .show)
         mediaView.config(
             with: interstitialAd.mediaContent,
             actionContext: .init(

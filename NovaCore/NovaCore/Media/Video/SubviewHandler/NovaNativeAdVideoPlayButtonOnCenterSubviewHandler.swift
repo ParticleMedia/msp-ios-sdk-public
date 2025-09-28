@@ -16,10 +16,12 @@ final class NovaNativeAdVideoPlayButtonOnCenterSubviewHandler: NSObject {
 
     init(
         delegate: (any NovaAdVideoSubviewBehaviorDelegate)? = nil,
-        progressBarStyle: NovaAdVideoView.Style.ProgressBarStyle? = nil
+        progressBarStyle: NovaAdVideoView.Style.ProgressBarStyle? = nil,
+        popupCTAStyle: NovaAdVideoView.Style.PopupCTAStyle? = nil
     ) {
         self.delegate = delegate
         self.progressBarStyle = progressBarStyle
+        self.popupCTAStyle = popupCTAStyle
     }
 
     // MARK: Private
@@ -29,6 +31,7 @@ final class NovaNativeAdVideoPlayButtonOnCenterSubviewHandler: NSObject {
 
     private weak var delegate: (any NovaAdVideoSubviewBehaviorDelegate)?
     private let progressBarStyle: NovaAdVideoView.Style.ProgressBarStyle?
+    private let popupCTAStyle: NovaAdVideoView.Style.PopupCTAStyle?
 
     private lazy var coverImageView: UIImageView = {
         let imageView = UIImageView()
@@ -83,7 +86,8 @@ extension NovaNativeAdVideoPlayButtonOnCenterSubviewHandler: NovaNativeAdVideoSu
     }
 
     func config(with videoModel: NovaAdVideoMediaModel) {
-        if let callToAction = videoModel.callToAction {
+        if let callToAction = videoModel.callToAction,
+           case .show = popupCTAStyle {
             ctaPopoverView.config(with: callToAction)
             ctaPopoverView.addGestureRecognizer(
                 UITapGestureRecognizer(target: self, action: #selector(didTapPopoverView(_:)))
@@ -97,17 +101,23 @@ extension NovaNativeAdVideoPlayButtonOnCenterSubviewHandler: NovaNativeAdVideoSu
             coverImageView.kf.setImage(with: coverURL)
             coverImageView.isHidden = false
             playImageView.isHidden = false
-            ctaPopoverView.changeState(to: .hide)
+            if case .show = popupCTAStyle {
+                ctaPopoverView.changeState(to: .hide)
+            }
         case .loading:
             coverImageView.isHidden = true
             playImageView.isHidden = true
-            ctaPopoverView.changeState(to: .hide)
+            if case .show = popupCTAStyle {
+                ctaPopoverView.changeState(to: .hide)
+            }
         case .playing(currentTime: let currentTime, videoLength: let videoLength):
             let currentTimeInterval = CMTimeGetSeconds(currentTime)
             coverImageView.isHidden = true
             playImageView.isHidden = true
             progressView.updateProgress(Float(currentTimeInterval / videoLength))
-            ctaPopoverView.changeState(to: .hide)
+            if case .show = popupCTAStyle {
+                ctaPopoverView.changeState(to: .hide)
+            }
         case .paused(currentTime: let currentTime, videoLength: let videoLength, _):
             let currentTimeInterval = CMTimeGetSeconds(currentTime)
             coverImageView.isHidden = true
@@ -116,7 +126,9 @@ extension NovaNativeAdVideoPlayButtonOnCenterSubviewHandler: NovaNativeAdVideoSu
         case .endPlaying(shouldShowPlayButton: let shouldShowPlayButton):
             coverImageView.isHidden = true
             playImageView.isHidden = !shouldShowPlayButton
-            ctaPopoverView.changeState(to: .hide)
+            if case .show = popupCTAStyle {
+                ctaPopoverView.changeState(to: .hide)
+            }
         }
     }
 
@@ -127,8 +139,10 @@ extension NovaNativeAdVideoPlayButtonOnCenterSubviewHandler: NovaNativeAdVideoSu
     }
 
     func tapVideo(on view: UIView, at location: CGPoint, isPlaying: Bool) {
-        if !isPlaying {
-            ctaPopoverView.changeState(to: .pop(sourceView: view, sourcePoint: location))
+        if case .show = popupCTAStyle {
+            if !isPlaying {
+                ctaPopoverView.changeState(to: .pop(sourceView: view, sourcePoint: location))
+            }
         }
     }
 }
