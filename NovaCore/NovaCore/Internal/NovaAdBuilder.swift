@@ -49,6 +49,7 @@ public enum NovaAdBuilder {
 
         let adCtrType = try NovaAdBuilder.buildCtrType(creative: adItem.creative)
 
+        let iconURL = adItem.creative.iconUrl.flatMap(URL.init(string:))
         let videoInfo = NovaAdBuilder.buildVideoInfo(adItem.creative.videoItem, adId: adItem.adId)
 
         let thirdPartyViewTrackingUrls = adItem.creative.thirdPartyViewTrackingUrls?.map {
@@ -78,7 +79,7 @@ public enum NovaAdBuilder {
             body: adItem.creative.body,
             callToAction: adItem.creative.callToAction,
             advertiser: adItem.creative.advertiser,
-            iconUrlStr: adItem.creative.iconUrl,
+            iconURL: iconURL,
             isImageLayoutVertical: adItem.creative.isVerticalImage,
             isImageClickable: adItem.creative.isImageClickable ?? false,
             imageURLs: adItem.creative.imageUrls,
@@ -117,6 +118,7 @@ public enum NovaAdBuilder {
         }
 
         let videoInfo = buildVideoInfo(adItem.creative.videoItem, adId: adItem.adId)
+        let iconURL = adItem.creative.iconUrl.flatMap(URL.init(string:))
 
         let thirdPartyViewTrackingUrls = adItem.creative.thirdPartyViewTrackingUrls?.map {
             NovaAdUrlTransformer.replaceMacro(in: $0)
@@ -151,7 +153,7 @@ public enum NovaAdBuilder {
                 body: adItem.creative.body,
                 callToAction: adItem.creative.callToAction,
                 advertiser: adItem.creative.advertiser,
-                iconUrl: adItem.creative.iconUrl,
+                iconUrl: iconURL,
                 isVerticalImage: adItem.creative.isVerticalImage,
                 isImageClickable: adItem.creative.isImageClickable ?? false,
                 imageContentMode: NovaNativeImageContentMode(rawValue: adItem.creative.imageScaleMode ?? ""),
@@ -196,6 +198,8 @@ public enum NovaAdBuilder {
                 return nil
             }
 
+            let iconURL = adItem.creative.iconUrl.flatMap(URL.init(string:))
+
             let videoInfo = buildVideoInfo(adItem.creative.videoItem, adId: adItem.adId)
 
             let thirdPartyViewTrackingUrls = adItem.creative.thirdPartyViewTrackingUrls?.map {
@@ -231,7 +235,7 @@ public enum NovaAdBuilder {
                     body: adItem.creative.body,
                     callToAction: adItem.creative.callToAction,
                     advertiser: adItem.creative.advertiser,
-                    iconUrl: adItem.creative.iconUrl,
+                    iconUrl: iconURL,
                     isVerticalImage: adItem.creative.isVerticalImage,
                     isImageClickable: adItem.creative.isImageClickable ?? false,
                     imageContentMode: NovaNativeImageContentMode(rawValue: adItem.creative.imageScaleMode ?? ""),

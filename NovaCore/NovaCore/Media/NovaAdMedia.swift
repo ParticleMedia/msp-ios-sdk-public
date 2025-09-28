@@ -37,3 +37,13 @@ enum NovaAdMedia {
     case imagePlayable(imageModel: NovaAdImageMediaModel, playableModel: NovaAdPlayableMediaModel)
     case videoPlayable(videoModel: NovaAdVideoMediaModel, playableModel: NovaAdPlayableMediaModel)
 }
+
+// MARK: - NovaAdMediaType
+// For public use
+public enum NovaAdMediaType {
+    case image
+    case video
+    case multipleImages
+    case multipleItems
+    case playable
+}

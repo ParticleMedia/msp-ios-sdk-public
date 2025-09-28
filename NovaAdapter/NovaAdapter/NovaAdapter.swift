@@ -98,13 +98,8 @@ public class NovaAdapter: AdNetworkAdapter {
             }
 
             let novaNativeAdView = NovaNativeAdView()
-            let originalVideoStyle = novaNativeAdItem.videoStyle
             let newVideoStyle: NovaAdVideoView.Style = videoUseControl ? .playButtonOnLeftBottom : .playButtonOnCenter(progressBarStyle: .hide)
-            if originalVideoStyle != newVideoStyle {
-                novaNativeAdItem.videoStyle = newVideoStyle
-                novaNativeAd.nativeAdItem = novaNativeAdItem
-            }
-            
+            novaNativeAdItem.mediaContent.videoController?.style = newVideoStyle
             if let nativeAdViewBinder = nativeAdView.nativeAdViewBinder {
                 novaNativeAdView.titleLabel = nativeAdView.nativeAdViewBinder?.titleLabel
                 novaNativeAdView.bodyLabel = nativeAdView.nativeAdViewBinder?.bodyLabel
@@ -149,9 +144,8 @@ public class NovaAdapter: AdNetworkAdapter {
                 }
 
                 if let iconView = nativeAdContainer.getIcon(),
-                   let imageUrlStr = novaNativeAdItem.iconUrlStr,
-                   let url = URL(string: imageUrlStr) {
-                    iconView.kf.setImage(with: url)
+                   let iconURL = novaNativeAdItem.iconURL {
+                    iconView.kf.setImage(with: iconURL)
                 }
 
                 novaNativeAdView.addSubview(nativeAdContainer)
@@ -204,7 +198,7 @@ public class NovaAdapter: AdNetworkAdapter {
                                             advertiser: nativeAdItem.advertiser ?? "",
                                             callToAction:nativeAdItem.callToAction ?? "")
                 DispatchQueue.main.async{
-                    nativeAd.icon = nativeAdItem.iconUrlStr
+                    nativeAd.icon = nativeAdItem.iconURL
                     nativeAd.priceInDollar = self.priceInDollar
                     nativeAd.adInfo[MSPConstants.AD_INFO_PRICE] = self.priceInDollar
                     nativeAd.adInfo["isVideo"] = (nativeAdItem.creativeType == .nativeVideo)

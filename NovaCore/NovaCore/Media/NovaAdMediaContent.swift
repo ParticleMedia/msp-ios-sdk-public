@@ -12,15 +12,21 @@ import Foundation
 public class NovaAdVideoController {
     // MARK: Lifecycle
 
-    init(muted: Bool, style: NovaAdVideoView.Style) {
-        videoView = NovaAdVideoView(with: style)
-        self.style = style
+    init(muted: Bool) {
+        videoView = NovaAdVideoView()
         self.muted = muted
     }
 
     // MARK: Public
 
-    public var style: NovaAdVideoView.Style
+    public var style: NovaAdVideoView.Style {
+        get {
+            videoView.style
+        }
+        set {
+            videoView.style = newValue
+        }
+    }
 
     public weak var delegate: NovaAdVideoViewDelegate? {
         didSet {
@@ -100,9 +106,9 @@ public class NovaAdMediaContent {
     public lazy var videoController: NovaAdVideoController? = {
         switch adMedia {
         case .video(let model):
-            return .init(muted: model.videoInfo.isMute, style: model.style)
+            return .init(muted: model.videoInfo.isMute)
         case .videoPlayable(let videoModel, _):
-            return .init(muted: videoModel.videoInfo.isMute, style: videoModel.style)
+            return .init(muted: videoModel.videoInfo.isMute)
         case .image, .multipleItems, .multipleImages, .imagePlayable:
             return nil
         }
@@ -182,6 +188,21 @@ public class NovaAdMediaContent {
             case .playable:
                 return .free
             }
+        }
+    }
+
+    public var mediaType: NovaAdMediaType {
+        switch adMedia {
+        case .image:
+            return .image
+        case .video:
+            return .video
+        case .multipleImages:
+            return .multipleImages
+        case .multipleItems:
+            return .multipleItems
+        case .imagePlayable, .videoPlayable:
+            return .playable
         }
     }
 
