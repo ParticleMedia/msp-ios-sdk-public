@@ -11,9 +11,13 @@ public class NovaNativeAd: NativeAd {
         return mediaContainerAdapter
     }
 
-    public var priceInDollar: Double?
+    public private(set) var priceInDollar: Double?
+    
+    public var novaAdReportContext: NovaAdReportContext? {
+        return nativeAdItem?.novaAdReportContext
+    }
 
-    public var nativeAdItem: NovaNativeAdItem? {
+    var nativeAdItem: NovaNativeAdItem? {
         didSet {
             if let mediaContent = nativeAdItem?.mediaContent {
                 mediaContainerAdapter = NovaAdMediaContainerAdapter(mediaContent: mediaContent)
@@ -23,6 +27,10 @@ public class NovaNativeAd: NativeAd {
 
     override public func isValid() -> Bool {
         return nativeAdItem != nil
+    }
+    
+    func setPriceInDollar(_ priceInDollar: Double?) {
+        self.priceInDollar = priceInDollar
     }
 
     // MARK: Private
