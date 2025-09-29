@@ -125,6 +125,8 @@ public final class NovaInterstitialAdItem: NovaNativeBaseAd {
         try super.init(from: superDecoder)
     }
 
+    private weak var viewController: UIViewController?
+
     // MARK: - Codable
 
     enum CodingKeys: String, CodingKey {
@@ -145,17 +147,24 @@ public final class NovaInterstitialAdItem: NovaNativeBaseAd {
         try super.encode(to: superEncoder)
     }
     
-    public func present(rootViewController: UIViewController) {
-        requestToDisplay(rootViewController: rootViewController)
+    public func present(rootViewController: UIViewController, reportHandling: NovaInterstitialAdReportHandling) {
+        requestToDisplay(rootViewController: rootViewController, reportHandling: reportHandling)
     }
 
     func requestToDisplay(
-        rootViewController: UIViewController
+        rootViewController: UIViewController,
+        reportHandling: NovaInterstitialAdReportHandling
     ) {
         dispatchPrecondition(condition: .onQueue(.main))
-        let viewController = NovaInterstitialAdViewController(interstitialAd: self)
+        let viewController = NovaInterstitialAdViewController(interstitialAd: self, reportHandling: reportHandling)
+        self.viewController = viewController
         viewController.modalPresentationStyle = .fullScreen
         viewController.modalTransitionStyle = .crossDissolve
+
         rootViewController.present(viewController, animated: true)
     }
-} 
+
+    public func dismiss(animated: Bool) {
+        viewController?.dismiss(animated: animated)
+    }
+}

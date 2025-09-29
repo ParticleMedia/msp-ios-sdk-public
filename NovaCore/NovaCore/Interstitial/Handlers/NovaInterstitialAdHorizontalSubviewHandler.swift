@@ -30,13 +30,12 @@ class NovaInterstitialAdHorizontalSubviewHandler: NovaInterstitialAdSubviewHandl
 
     // MARK: Internal
 
-    func setupSubviews(in containerView: UIView) {
+    func setupSubviews(in containerView: UIView, showReportButton: Bool) {
         self.parentView = containerView
         
         containerView.addSubview(adTagLabel)
         containerView.addSubview(mediaView)
         containerView.addSubview(advertiserLabel)
-        containerView.addSubview(feedbackButton)
         containerView.addSubview(titleLabel)
         containerView.addSubview(bodyLabel)
         containerView.addSubview(closeButton)
@@ -85,18 +84,25 @@ class NovaInterstitialAdHorizontalSubviewHandler: NovaInterstitialAdSubviewHandl
             }
         }
 
+        if showReportButton {
+            containerView.addSubview(feedbackButton)
+            feedbackButton.snp.makeConstraints { make in
+                make.centerY.equalTo(advertiserLabel)
+                make.trailing.equalTo(-16)
+                make.width.height.equalTo(24)
+            }
+        }
+
         advertiserLabel.snp.makeConstraints { make in
             make.top.equalTo(mediaView.snp.bottom).offset(20)
             make.leading.equalTo(16)
-            make.trailing.lessThanOrEqualTo(feedbackButton.snp.leading).offset(-16)
+            if showReportButton {
+                make.trailing.lessThanOrEqualTo(feedbackButton.snp.leading).offset(-16)
+            } else {
+                make.trailing.lessThanOrEqualToSuperview().offset(-16)
+            }
         }
-        
-        feedbackButton.snp.makeConstraints { make in
-            make.centerY.equalTo(advertiserLabel)
-            make.trailing.equalTo(-16)
-            make.width.height.equalTo(24)
-        }
-        
+
         titleLabel.snp.makeConstraints { make in
             make.top.equalTo(advertiserLabel.snp.bottom).offset(16)
             make.leading.equalTo(16)
