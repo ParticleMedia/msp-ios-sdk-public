@@ -130,3 +130,17 @@ public final class NovaNativeAdItem: NovaNativeBaseAd {
 
     private var _layoutStyle: NovaNativeLayoutStyle?
 }
+
+extension NovaNativeAdItem {
+    public var novaAdReportContext: NovaAdReportContext {
+        return .init(
+            advertiser: advertiser,
+            headline: headline,
+            body: body,
+            adId: adId,
+            adSetId: adSetId,
+            adRequestId: requestId,
+            encryptedToken: encryptedAdToken
+        )
+    }
+}
