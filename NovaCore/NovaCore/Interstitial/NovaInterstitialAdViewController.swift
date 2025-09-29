@@ -5,22 +5,66 @@
 //  Created by Huanzhi Zhang on 10/2/24.
 //
 
+// MARK: - NovaInterstitialAdReportHandling
+
 import Foundation
 @_implementationOnly import SnapKit
 import UIKit
 
-// MARK: - NovaAdsFeedbackActionDelegate
+public struct NovaAdReportContext {
+    public let advertiser: String?
+    public let headline: String?
+    public let body: String?
+    public let adId: String
+    public let adSetId: String
+    public let adRequestId: String
+    public let encryptedToken: String
+    public let extra: [String: Any]
 
-protocol NovaAdsFeedbackActionDelegate: AnyObject {
-    func updateAdFeedbackViewForViewType(_ viewType: Int)
+    public init(
+        advertiser: String?,
+        headline: String?,
+        body: String?,
+        adId: String,
+        adSetId: String,
+        adRequestId: String,
+        encryptedToken: String,
+        extra: [String : Any] = [:]
+    ) {
+        self.advertiser = advertiser
+        self.headline = headline
+        self.body = body
+        self.adId = adId
+        self.adSetId = adSetId
+        self.adRequestId = adRequestId
+        self.encryptedToken = encryptedToken
+        self.extra = extra
+    }
 }
 
-// MARK: - NovaAdFeedbackViewType
+extension NovaInterstitialAdItem {
+    var novaAdReportContext: NovaAdReportContext {
+        return .init(
+            advertiser: advertiser,
+            headline: headline,
+            body: body,
+            adId: adId,
+            adSetId: adSetId,
+            adRequestId: requestId,
+            encryptedToken: encryptedAdToken
+        )
+    }
+}
 
-enum NovaAdFeedbackViewType: Int {
-    case reportAdView = 0
-    case hideAdView = 1
-    case other = 2
+public protocol NovaInterstitialAdReportHandling {
+    func novaStartReportFlow(from presentingVC: UIViewController?, context: NovaAdReportContext)
+
+    // optional methods
+    func novaCanShowReportButton(with context: NovaAdReportContext) -> Bool
+}
+
+public extension NovaInterstitialAdReportHandling {
+    func novaCanShowReportButton(with context: NovaAdReportContext) -> Bool { false }
 }
 
 // MARK: - NovaInterstitialAdViewController
@@ -28,8 +72,9 @@ enum NovaAdFeedbackViewType: Int {
 class NovaInterstitialAdViewController: UIViewController {
     // MARK: Lifecycle
 
-    init(interstitialAd: NovaInterstitialAdItem) {
+    init(interstitialAd: NovaInterstitialAdItem, reportHandling: (any NovaInterstitialAdReportHandling)) {
         self.interstitialAd = interstitialAd
+        self.reportHandling = reportHandling
 
         super.init(nibName: nil, bundle: nil)
     }
@@ -58,10 +103,6 @@ class NovaInterstitialAdViewController: UIViewController {
         // Allow rotation on iPad, disable on iPhone
         return UIDevice.current.userInterfaceIdiom == .pad
     }
-
-    // MARK: - Feedback delegate
-
-    weak var feedbackDelegate: NovaAdsFeedbackActionDelegate?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -141,21 +182,10 @@ class NovaInterstitialAdViewController: UIViewController {
         dismiss(animated: false)
     }
 
-    // MARK: - Feedback Methods
-
-    func updateAdFeedbackViewForViewType(_ viewType: Int) {
-        switch viewType {
-        case NovaAdFeedbackViewType.reportAdView.rawValue, NovaAdFeedbackViewType.hideAdView.rawValue:
-            dismiss(animated: true)
-            interstitialAd.delegate?.interstitialAdDidDismiss(interstitialAd)
-        default:
-            break
-        }
-    }
-
     // MARK: Private
 
     private let interstitialAd: NovaInterstitialAdItem
+    private let reportHandling: any NovaInterstitialAdReportHandling
     private var didAppear: Bool = false
 
     private var adView: NovaInterstitialAdViewProtocol?
@@ -167,7 +197,8 @@ private extension NovaInterstitialAdViewController {
     private func setupSubviews() {
         let adView = NovaInterstitialAdViewFactory.createAdView(
             interstitialAd: interstitialAd,
-            viewController: self
+            viewController: self,
+            reportHandling: reportHandling
         )
 
         // Add the view to the view hierarchy

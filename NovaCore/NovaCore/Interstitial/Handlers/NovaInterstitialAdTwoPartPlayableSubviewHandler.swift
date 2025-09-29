@@ -144,7 +144,7 @@ class NovaInterstitialAdTwoPartPlayableSubviewHandler: NovaInterstitialAdSubview
         self.viewController = viewController
     }
 
-    func setupSubviews(in containerView: UIView) {
+    func setupSubviews(in containerView: UIView, showReportButton: Bool) {
         self.parentView = containerView
         
         // Add first part views
@@ -154,13 +154,15 @@ class NovaInterstitialAdTwoPartPlayableSubviewHandler: NovaInterstitialAdSubview
         containerView.addSubview(toPlayableButton)
         containerView.addSubview(bottomShadowView)
         containerView.addSubview(advertiserStackView)
-        containerView.addSubview(moreActionButton)
-        
+        if showReportButton {
+            containerView.addSubview(moreActionButton)
+        }
+
         // Add second part views (initially hidden)
         containerView.addSubview(playableTopBar)
         containerView.addSubview(playableView)
 
-        setupFirstPartConstraints(in: containerView)
+        setupFirstPartConstraints(in: containerView, showReportButton: showReportButton)
         setupSecondPartConstraints(in: containerView)
         
         // Initially show first part
@@ -250,7 +252,7 @@ class NovaInterstitialAdTwoPartPlayableSubviewHandler: NovaInterstitialAdSubview
         ]
     }
 
-    private func setupFirstPartConstraints(in containerView: UIView) {
+    private func setupFirstPartConstraints(in containerView: UIView, showReportButton: Bool) {
         mediaView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
         }
@@ -279,14 +281,20 @@ class NovaInterstitialAdTwoPartPlayableSubviewHandler: NovaInterstitialAdSubview
         
         advertiserStackView.snp.makeConstraints { make in
             make.leading.equalToSuperview().offset(20)
-            make.trailing.lessThanOrEqualTo(moreActionButton.snp.leading).offset(-20)
+            if showReportButton {
+                make.trailing.lessThanOrEqualTo(moreActionButton.snp.leading).offset(-20)
+            } else {
+                make.trailing.lessThanOrEqualToSuperview().offset(-20)
+            }
             make.bottom.equalToSuperview().offset(-40)
         }
-        
-        moreActionButton.snp.makeConstraints { make in
-            make.centerY.equalTo(advertiserStackView)
-            make.trailing.equalToSuperview().offset(-20)
-            make.width.height.equalTo(24)
+
+        if showReportButton {
+            moreActionButton.snp.makeConstraints { make in
+                make.centerY.equalTo(advertiserStackView)
+                make.trailing.equalToSuperview().offset(-20)
+                make.width.height.equalTo(24)
+            }
         }
     }
 
