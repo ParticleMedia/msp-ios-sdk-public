@@ -104,7 +104,7 @@ class NovaInterstitialAdSKOverlaySubviewHandler: NSObject, NovaInterstitialAdSub
         self.thirdPartyTrackingURL = thirdPartyTrackingURL
     }
 
-    func setupSubviews(in containerView: UIView) {
+    func setupSubviews(in containerView: UIView, showReportButton: Bool) {
         containerView.addSubview(mediaView)
         containerView.addSubview(topGradientView)
         containerView.addSubview(closeButton)

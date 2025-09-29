@@ -8,6 +8,21 @@
 import Foundation
 import UIKit
 
+public protocol InterstitialAdReportHandling: AnyObject {
+    func startReportFlow(
+        from presentingVC: UIViewController?,
+        for ad: InterstitialAd,
+        metadata: [String: Any]?
+    )
+
+    // MARK: Optional Methods
+    func canShowReportButton(for ad: InterstitialAd) -> Bool
+}
+
+extension InterstitialAdReportHandling {
+    public func canShowReportButton(for ad: InterstitialAd) -> Bool { false }
+}
+
 open class InterstitialAd: MSPAd {
     
     open func show() {
@@ -15,6 +30,14 @@ open class InterstitialAd: MSPAd {
     }
     
     open func show(rootViewController: UIViewController?) {
-        
+
+    }
+
+    open func show(rootViewController: UIViewController?, interstitialAdReportHandling: InterstitialAdReportHandling?) {
+
+    }
+
+    open func dismiss(animated: Bool) {
+
     }
 }

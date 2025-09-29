@@ -11,7 +11,7 @@ import UIKit
 // MARK: - NovaInterstitialAdSubviewHandler
 
 protocol NovaInterstitialAdSubviewHandler {
-    func setupSubviews(in containerView: UIView)
+    func setupSubviews(in containerView: UIView, showReportButton: Bool)
     func config()
     var clickableViews: [UIView] { get }
     

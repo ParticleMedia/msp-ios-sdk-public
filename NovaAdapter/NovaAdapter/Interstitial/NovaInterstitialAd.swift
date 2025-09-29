@@ -17,17 +17,34 @@ public class NovaInterstitialAd: MSPiOSCore.InterstitialAd {
     
     public override func show() {
         if let rootViewController = rootViewController {
-            interstitialAdItem?.present(rootViewController: rootViewController)
+            let reportAdapter = ReportHandlerAdapter(outer: nil, ad: self)
+            interstitialAdItem?.present(rootViewController: rootViewController, reportHandling: reportAdapter)
         }
     }
     
     public override func show(rootViewController: UIViewController?) {
         if let rootViewController = rootViewController {
-            interstitialAdItem?.present(rootViewController: rootViewController)
+            let reportAdapter = ReportHandlerAdapter(outer: nil, ad: self)
+            interstitialAdItem?.present(rootViewController: rootViewController, reportHandling: reportAdapter)
         }
     }
-    
+
+    public override func show(
+        rootViewController: UIViewController?,
+        interstitialAdReportHandling: (any InterstitialAdReportHandling)?
+    ) {
+        if let rootViewController {
+            let reportAdapter = ReportHandlerAdapter(outer: interstitialAdReportHandling, ad: self)
+            interstitialAdItem?
+                .present(rootViewController: rootViewController, reportHandling: reportAdapter)
+        }
+    }
+
     public override func isValid() -> Bool {
         return interstitialAdItem != nil
+    }
+
+    public override func dismiss(animated: Bool) {
+        interstitialAdItem?.dismiss(animated: animated)
     }
 }

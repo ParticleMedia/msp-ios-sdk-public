@@ -15,7 +15,8 @@ class NovaInterstitialAdViewFactory: NSObject {
 
     static func createAdView(
         interstitialAd: NovaInterstitialAdItem,
-        viewController: UIViewController
+        viewController: UIViewController,
+        reportHandling: any NovaInterstitialAdReportHandling
     ) -> NovaInterstitialAdViewProtocol {
         let context = NovaInterstitialAdContext(
             interstitialAd: interstitialAd,
@@ -25,7 +26,8 @@ class NovaInterstitialAdViewFactory: NSObject {
         
         return NovaInterstitialAdNormalView(
             context: context,
-            viewController: viewController
+            viewController: viewController,
+            reportHandling: reportHandling
         )
     }
 } 

@@ -17,10 +17,15 @@ class NovaInterstitialAdNormalView: UIView, NovaInterstitialAdViewProtocol {
     
     // MARK: Lifecycle
 
-    init(context: NovaInterstitialAdContext, viewController: UIViewController) {
+    init(
+        context: NovaInterstitialAdContext,
+        viewController: UIViewController,
+        reportHandling: (any NovaInterstitialAdReportHandling)
+    ) {
         self.context = context
         self.viewController = viewController
         self.startTime = CACurrentMediaTime()
+        self.reportHandling = reportHandling
 
         // Initialize NovaActionHelper
         self.actionHelper = NovaActionHelper.build(
@@ -53,7 +58,11 @@ class NovaInterstitialAdNormalView: UIView, NovaInterstitialAdViewProtocol {
         )
 
         // Setup subviews in this view
-        subviewHandler.setupSubviews(in: self)
+        subviewHandler
+            .setupSubviews(
+                in: self,
+                showReportButton: reportHandling.novaCanShowReportButton(with: context.interstitialAd.novaAdReportContext)
+            )
         subviewHandler.config()
 
         // Setup tap gesture
@@ -105,7 +114,8 @@ class NovaInterstitialAdNormalView: UIView, NovaInterstitialAdViewProtocol {
 
     private let context: NovaInterstitialAdContext
     private var actionHelper: NovaActionHelper<NovaActionState.Init>
-    
+    private let reportHandling: any NovaInterstitialAdReportHandling
+
     private var playableActionHelper: NovaActionHelper<NovaActionState.Init>?
     
     private weak var viewController: UIViewController?
@@ -116,12 +126,13 @@ extension NovaInterstitialAdNormalView: NovaInterstitialAdSubviewBehaviorDelegat
     // MARK: - NovaInterstitialAdSubviewBehaviorDelegate
 
     func didTapFeedbackButton() {
-        // TODO: - GPY check report logic
-        actionHelper = actionHelper
-            .logNovaReportEvent()
-            .handleReportTap()
+        reportHandling
+            .novaStartReportFlow(
+                from: viewController,
+                context: context.interstitialAd.novaAdReportContext
+            )
     }
-    
+
     func didTapCloseButton() {
         actionHelper = actionHelper
             .logNovaSkipEvent(with: .skipButton, duration: CACurrentMediaTime() - CACurrentMediaTime())

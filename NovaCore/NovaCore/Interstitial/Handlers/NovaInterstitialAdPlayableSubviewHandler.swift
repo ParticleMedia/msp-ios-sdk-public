@@ -94,7 +94,7 @@ class NovaInterstitialAdPlayableSubviewHandler: NovaInterstitialAdSubviewHandler
         self.interstitialAd = interstitialAd
     }
 
-    func setupSubviews(in containerView: UIView) {
+    func setupSubviews(in containerView: UIView, showReportButton: Bool) {
         self.parentView = containerView
 
         containerView.addSubview(mediaView)

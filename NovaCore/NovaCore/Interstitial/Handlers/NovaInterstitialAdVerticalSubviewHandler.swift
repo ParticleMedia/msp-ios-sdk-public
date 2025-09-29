@@ -29,7 +29,7 @@ class NovaInterstitialAdVerticalSubviewHandler: NovaInterstitialAdSubviewHandler
 
     // MARK: Internal
 
-    func setupSubviews(in containerView: UIView) {
+    func setupSubviews(in containerView: UIView, showReportButton: Bool) {
         // TODO: - GPY need ipad layout
         self.parentView = containerView
         
@@ -39,7 +39,6 @@ class NovaInterstitialAdVerticalSubviewHandler: NovaInterstitialAdSubviewHandler
         containerView.addSubview(ctaButton)
         containerView.addSubview(adTagLabel)
         containerView.addSubview(advertiserInfoStackView)
-        containerView.addSubview(feedbackButton)
         containerView.addSubview(bodyLabel)
         containerView.addSubview(volumeButton)
 
@@ -106,14 +105,21 @@ class NovaInterstitialAdVerticalSubviewHandler: NovaInterstitialAdSubviewHandler
 
         advertiserInfoStackView.snp.makeConstraints { make in
             make.leading.equalTo(LayoutMetrics.horizontalMargin)
-            make.trailing.lessThanOrEqualTo(feedbackButton.snp.leading).offset(-LayoutMetrics.horizontalMargin)
+            if showReportButton {
+                make.trailing.lessThanOrEqualTo(feedbackButton.snp.leading).offset(-LayoutMetrics.horizontalMargin)
+            } else {
+                make.trailing.lessThanOrEqualToSuperview().offset(-LayoutMetrics.horizontalMargin)
+            }
             make.bottom.equalTo(bodyLabel.snp.top).offset(-8.0)
         }
 
-        feedbackButton.snp.makeConstraints { make in
-            make.centerY.equalTo(advertiserInfoStackView)
-            make.trailing.equalTo(-LayoutMetrics.horizontalMargin)
-            make.width.height.equalTo(24)
+        if showReportButton {
+            containerView.addSubview(feedbackButton)
+            feedbackButton.snp.makeConstraints { make in
+                make.centerY.equalTo(advertiserInfoStackView)
+                make.trailing.equalTo(-LayoutMetrics.horizontalMargin)
+                make.width.height.equalTo(24)
+            }
         }
 
         volumeButton.snp.makeConstraints { make in
