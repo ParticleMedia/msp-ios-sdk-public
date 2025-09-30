@@ -354,11 +354,10 @@ private extension NovaAdVideoView {
     }
 
     func startPlaying(after seconds: TimeInterval? = nil) {
-        let startVideoPlaying = {
-            if self.startTime == nil {
-                self.startTime = CACurrentMediaTime()
-                self.lastResumeTime = self.startTime
-            }
+        setupStartTime(delayTime: seconds)
+        let startVideoPlaying = { [weak self] in
+            guard let self else { return }
+            guard !self.videoPlayer.isVideoPlaying() else { return }
             self.videoPlayer.delegate = self
             self.videoPlayer.play()
         }
@@ -378,6 +377,7 @@ private extension NovaAdVideoView {
     }
 
     func resumeVideo(resumeKind: VideoResumeKind) {
+        setupStartTime()
         videoPlayer.delegate = self
         videoPlayer.play()
         iabReporter?.logVideoResume()
@@ -395,6 +395,13 @@ private extension NovaAdVideoView {
             )
         }
         lastResumeTime = resumeTime
+    }
+    
+    private func setupStartTime(delayTime: TimeInterval? = nil) {
+        if startTime == nil {
+            startTime = CACurrentMediaTime() + (delayTime ?? 0.0)
+            lastResumeTime = startTime
+        }
     }
 
     func pauseVideo(endKind: NovaVideoEndKind) {
@@ -693,16 +700,31 @@ extension NovaAdVideoView: NovaVideoPlayerDelegate {
         guard let videoInfo = mediaModel?.videoInfo else { return }
         guard let encryptedAdToken = self.actionContext?.adActionTracingInfo.encryptedAdToken else { return }
 
-        if let startTime, let configTime {
-            NovaAdVideoMetricReporter.logVideoStart(
-                encryptedAdToken: encryptedAdToken,
-                videoInfo: videoInfo,
-                startTime: startTime,
-                configTime: configTime,
-                novaVideoPlayer: videoPlayer
-            )
-            iabReporter?.logVideoStart(duration: videoCurrentTimeInterval, volume: videoPlayer.isPlayerMuted() ? 0.0 : 1.0)
-        }
+        // Log Start
+        
+        NovaAdVideoMetricReporter.logVideoStart(
+            encryptedAdToken: encryptedAdToken,
+            videoInfo: videoInfo,
+            startTime: startTime,
+            configTime: configTime,
+            novaVideoPlayer: videoPlayer
+        )
+        
+        iabReporter?.logVideoStart(duration: videoCurrentTimeInterval, volume: videoPlayer.isPlayerMuted() ? 0.0 : 1.0)
+        
+        // Log End
+        
+        NovaAdVideoMetricReporter.logVideoEnd(
+            encryptedAdToken: encryptedAdToken,
+            percentage: videoCurrentTimeInterval / videoLength,
+            videoInfo: videoInfo,
+            startTime: startTime,
+            configTime: configTime,
+            novaVideoPlayer: videoPlayer
+        )
+        
+        // Log Progress
+        
         NovaAdVideoMetricReporter.logVideoProgress(encryptedAdToken: encryptedAdToken,
                                                    percentage: videoCurrentTimeInterval / videoLength,
                                                    duration: videoCurrentTimeInterval)
@@ -730,6 +752,19 @@ extension NovaAdVideoView: NovaVideoPlayerDelegate {
             endCard.isHidden = false
             // TODO: lsy, should we stop the video player here?
         }
+        
+        if let videoInfo = mediaModel?.videoInfo,
+           let encryptedAdToken = self.actionContext?.adActionTracingInfo.encryptedAdToken {
+            NovaAdVideoMetricReporter.logVideoEnd(
+                encryptedAdToken: encryptedAdToken,
+                percentage: 1.0,
+                videoInfo: videoInfo,
+                startTime: startTime,
+                configTime: configTime,
+                novaVideoPlayer: videoPlayer
+            )
+        }
+        
         delegate?.videoViewDidPlayToEndTime()
     }
 }
@@ -780,5 +815,11 @@ extension NovaAdVideoView: NovaAdEndCardDelegate {
     func endCardDidTapWatchAgainButton() {
         endCard.isHidden = true
         startPlayingFromBeginning()
+    }
+}
+
+extension CMTime {
+    var timeInterval: TimeInterval {
+        return CMTimeGetSeconds(self)
     }
 }
