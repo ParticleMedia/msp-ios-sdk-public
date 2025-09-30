@@ -113,11 +113,20 @@ class NovaUnifiedWebViewHost: NSObject {
 
     // MARK: - Private
 
+    private func canonicalizeAppStoreURL(_ url: URL) -> URL {
+        guard var comps = URLComponents(url: url, resolvingAgainstBaseURL: false),
+              let scheme = comps.scheme?.lowercased() else { return url }
+        // scheme could be `itms-appss`
+        if scheme.hasPrefix("itms-apps") { comps.scheme = "itms-apps" }
+        if scheme.hasPrefix("itms-services") { comps.scheme = "itms-services" }
+        return comps.url ?? url
+    }
+
     private func webView(_ webView: WKWebView, policyFor navigationAction: WKNavigationAction) -> WKNavigationActionPolicy {
         let sourceFrame: WKFrameInfo? = navigationAction.sourceFrame
         let targetFrame: WKFrameInfo? = navigationAction.targetFrame
 
-        guard let url = navigationAction.request.url else {
+        guard let originalUrl = navigationAction.request.url else {
             return .allow
         }
         
@@ -126,6 +135,7 @@ class NovaUnifiedWebViewHost: NSObject {
         }
         isGoingBackForward = navigationAction.navigationType == .backForward
 
+        let url = canonicalizeAppStoreURL(originalUrl)
         if let scheme = url.scheme,
            nativeSchemes.contains(scheme),
            UIApplication.shared.canOpenURL(url) {
