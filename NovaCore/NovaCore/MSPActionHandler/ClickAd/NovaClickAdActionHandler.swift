@@ -396,7 +396,9 @@ private extension NovaClickAdActionHandler {
 extension NovaClickAdActionHandler: SKStoreProductViewControllerDelegate {
     func productViewControllerDidFinish(_ viewController: SKStoreProductViewController) {
         Task { @MainActor in
-            viewController.dismiss(animated: true, completion: nil)
+            viewController.dismiss(animated: true) { [weak self] in
+                self?.storeVCIsShowing = false
+            }
         }
     }
 }

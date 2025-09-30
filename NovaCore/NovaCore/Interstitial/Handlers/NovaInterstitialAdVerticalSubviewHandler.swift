@@ -103,6 +103,15 @@ class NovaInterstitialAdVerticalSubviewHandler: NovaInterstitialAdSubviewHandler
             make.bottom.equalTo(adTagLabel.snp.top).offset(-8.0)
         }
 
+        if showReportButton {
+            containerView.addSubview(feedbackButton)
+            feedbackButton.snp.makeConstraints { make in
+                make.centerY.equalTo(advertiserInfoStackView)
+                make.trailing.equalTo(-LayoutMetrics.horizontalMargin)
+                make.width.height.equalTo(24)
+            }
+        }
+
         advertiserInfoStackView.snp.makeConstraints { make in
             make.leading.equalTo(LayoutMetrics.horizontalMargin)
             if showReportButton {
@@ -111,15 +120,6 @@ class NovaInterstitialAdVerticalSubviewHandler: NovaInterstitialAdSubviewHandler
                 make.trailing.lessThanOrEqualToSuperview().offset(-LayoutMetrics.horizontalMargin)
             }
             make.bottom.equalTo(bodyLabel.snp.top).offset(-8.0)
-        }
-
-        if showReportButton {
-            containerView.addSubview(feedbackButton)
-            feedbackButton.snp.makeConstraints { make in
-                make.centerY.equalTo(advertiserInfoStackView)
-                make.trailing.equalTo(-LayoutMetrics.horizontalMargin)
-                make.width.height.equalTo(24)
-            }
         }
 
         volumeButton.snp.makeConstraints { make in
@@ -376,7 +376,7 @@ extension NovaInterstitialAdVerticalSubviewHandler {
         static let bottomButtonBottomMargin = 24.0
         static let bottomButtonHeight = 48.0
         static let bottomButtonWidth = 156.0
-        static let volumeButtonWidth = 24.0
+        static let volumeButtonWidth = 32.0
         static let volumeButtonBottomMargin = 28.0
     }
 }
