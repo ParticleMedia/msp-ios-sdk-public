@@ -278,6 +278,15 @@ extension NovaNativeBaseAd {
             )
         }
     }
+    
+    public var isVideo: Bool {
+        switch creativeType {
+        case .playableVideo, .nativeVideo:
+            return true
+        default:
+            return false
+        }
+    }
 
     func getImageModel() throws -> NovaAdImageMediaModel {
         if let _imageURLs {

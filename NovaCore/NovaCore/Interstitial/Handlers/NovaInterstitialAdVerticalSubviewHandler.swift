@@ -301,7 +301,7 @@ class NovaInterstitialAdVerticalSubviewHandler: NovaInterstitialAdSubviewHandler
 
     private lazy var feedbackButton: UIButton = {
         let button = UIButton()
-        let image = UIImage.Nova.contextFilled?.withTintColor(NovaColorPalettes.White, renderingMode: .alwaysOriginal)
+        let image = UIImage.Nova.ellipsisHorizontalOutline?.withTintColor(NovaColorPalettes.White, renderingMode: .alwaysOriginal)
         button.setImage(image, for: .normal)
         button.tintColor = UIColor.white
         button.addTarget(self, action: #selector(didTapFeedbackButton), for: .touchUpInside)
