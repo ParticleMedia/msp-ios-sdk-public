@@ -333,15 +333,11 @@ private extension NovaAdVideoView {
         case .loading:
             startPlaying()
         case .playing(let currentTime, _):
-            if !currentTime.isIndefinite {
-                videoPlayer.seek(to: currentTime, completionHandler: nil)
-            }
+            videoPlayerSeekTo(currentTime)
             // TODO: lsy, 感觉这个后面不一定是 `startAutoPlayInFeed` 了
             resumeVideo(resumeKind: .startAutoPlayInFeed)
         case .paused(let currentTime, _, _):
-            if !currentTime.isIndefinite {
-                videoPlayer.seek(to: currentTime, completionHandler: nil)
-            }
+            videoPlayerSeekTo(currentTime)
             resumeVideo(resumeKind: .resume)
         case .endPlaying:
             break
@@ -351,6 +347,58 @@ private extension NovaAdVideoView {
     func startPlayingFromBeginning() {
         videoPlayer.seek(to: .zero, completionHandler: nil)
         startPlaying()
+    }
+    
+    private func videoPlayerSeekTo(_ currentTime: CMTime) {
+        // Normalize CMTime to valid bounds before seeking
+        let normalizedTime = normalizeSeekTime(currentTime)
+        videoPlayer.seek(to: normalizedTime, completionHandler: nil)
+    }
+    
+    /// Normalizes a CMTime to valid bounds for seeking operations
+    ///
+    /// - Parameter time: The CMTime to normalize
+    /// - Returns: A valid CMTime within bounds
+    private func normalizeSeekTime(_ time: CMTime) -> CMTime {
+        // Handle invalid times (check if time is kCMTimeInvalid)
+        if CMTimeCompare(time, CMTime.invalid) == 0 {
+            // Fallback to current playback position or zero
+            let currentTime = videoPlayer.currentTime()
+            if CMTimeCompare(currentTime, CMTime.invalid) != 0 && CMTimeCompare(currentTime, CMTime.indefinite) != 0 {
+                return currentTime
+            }
+            return .zero
+        }
+        
+        // Handle indefinite times (check if time is kCMTimeIndefinite)
+        if CMTimeCompare(time, CMTime.indefinite) == 0 {
+            // Fallback to current playback position or zero
+            let currentTime = videoPlayer.currentTime()
+            if CMTimeCompare(currentTime, CMTime.invalid) != 0 && CMTimeCompare(currentTime, CMTime.indefinite) != 0 {
+                return currentTime
+            }
+            return .zero
+        }
+        
+        // Only clamp negative times to zero (preserve precision for valid times)
+        if CMTimeCompare(time, .zero) < 0 {
+            return .zero
+        }
+        
+        // For times beyond duration, use the original time if it's close to duration
+        // Only clamp if significantly beyond duration
+        let duration = videoPlayer.maximumTimeDuration()
+        if duration > 0 {
+            let maxTime = CMTime(value: Int64(duration * 1000), timescale: 1000)
+            // Only clamp if significantly beyond (more than 1 second beyond)
+            let oneSecond = CMTime(value: 1000, timescale: 1000)
+            let threshold = CMTimeAdd(maxTime, oneSecond)
+            if CMTimeCompare(time, threshold) > 0 {
+                return maxTime
+            }
+        }
+        
+        return time
     }
 
     func startPlaying(after seconds: TimeInterval? = nil) {
