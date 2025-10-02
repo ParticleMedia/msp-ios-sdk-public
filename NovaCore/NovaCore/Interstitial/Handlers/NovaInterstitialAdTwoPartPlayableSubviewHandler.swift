@@ -106,7 +106,7 @@ class NovaInterstitialAdTwoPartPlayableSubviewHandler: NovaInterstitialAdSubview
     private lazy var moreActionButton: UIButton = {
         let button = UIButton()
         button.contentMode = .scaleAspectFill
-        let image = UIImage.Nova.contextFilled?.withTintColor(NovaColorPalettes.White, renderingMode: .alwaysOriginal)
+        let image = UIImage.Nova.ellipsisHorizontalOutline?.withTintColor(NovaColorPalettes.White, renderingMode: .alwaysOriginal)
         button.setImage(image, for: .normal)
         button.addTarget(self, action: #selector(didTapMoreButton), for: .touchUpInside)
         return button

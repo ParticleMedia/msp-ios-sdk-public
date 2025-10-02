@@ -237,7 +237,7 @@ class NovaVideoPlayerController: NSObject {
         case .cancelled, .failed, .ended:
             isDragging = false
             let seektime = Int64(duration * percentage * 1000)
-            let time = CMTimeMake(value: seektime, timescale: 1000)
+            let time = CMTime(value: seektime, timescale: 1000)
 
             self.playImageView.isHidden = true
             self.isloading = true

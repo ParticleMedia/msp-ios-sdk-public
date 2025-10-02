@@ -883,7 +883,7 @@ extension NovaPlayer {
     // MARK: - AVPlayerObservers
 
     internal func addPlayerObservers() {
-        self._playerTimeObserver = self._avplayer.addPeriodicTimeObserver(forInterval: CMTimeMake(value: 1, timescale: 100), queue: DispatchQueue.main, using: { [weak self] timeInterval in
+        self._playerTimeObserver = self._avplayer.addPeriodicTimeObserver(forInterval: CMTime(value: 1, timescale: 100), queue: DispatchQueue.main, using: { [weak self] timeInterval in
             guard let strongSelf = self else {
                 return
             }
