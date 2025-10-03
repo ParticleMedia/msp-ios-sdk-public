@@ -436,6 +436,15 @@ import AdSupport
         
         eventModel.id = bidResponse.winningBid?.bid.impid ?? ""
         
+        if let country = bidResponse.inferredCountry {
+            var device = Com_Google_Openrtb_BidRequest.Device()
+            var geo = Com_Google_Openrtb_BidRequest.Geo()
+            geo.country = country
+            device.geo = geo
+            eventModel.device = device
+        }
+        
+        
         return eventModel
     }
     
