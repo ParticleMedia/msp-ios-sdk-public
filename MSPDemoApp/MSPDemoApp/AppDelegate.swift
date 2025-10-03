@@ -1,6 +1,6 @@
 import UIKit
 import MSPCore
-import GoogleAdapter
+import MSPGoogleAdapter
 import NovaAdapter
 import UnityAdapter
 import PubmaticAdapter
@@ -10,7 +10,7 @@ import InmobiAdapter
 import AppTrackingTransparency
 import MSPiOSCore
 
-import FacebookAdapter
+import MSPFacebookAdapter
 
 
 @main
