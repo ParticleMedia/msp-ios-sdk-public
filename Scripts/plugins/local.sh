@@ -1,5 +1,9 @@
 #!/bin/bash
 
+# Fix Unicode encoding issues for CocoaPods
+export LANG=en_US.UTF-8
+export LC_ALL=en_US.UTF-8
+
 # Local Development Environment Plugin for MSP iOS SDK build system
 # This plugin provides local development optimizations and user-friendly features
 
@@ -383,7 +387,12 @@ case $choice in
     9) Scripts/validate.sh --podspecs ;;
     10) Scripts/build.sh --status ;;
     11) Scripts/build.sh --clean ;;
-    12) bundle exec pod install --repo-update ;;
+    12) if ! bundle exec pod install --repo-update; then echo "Primary pod install failed, trying with GitHub source backup..."; cp Podfile Podfile.backup; cat > Podfile.temp << 'EOF'
+# Fallback Podfile with GitHub source
+source 'https://github.com/CocoaPods/Specs.git'
+source 'https://cdn.cocoapods.org/'
+EOF
+grep -v "^source " Podfile.backup >> Podfile.temp; if bundle exec pod install --podfile=Podfile.temp --no-repo-update; then echo "Pod install succeeded with GitHub source backup"; mv Podfile.temp Podfile; else echo "Pod install failed even with GitHub source backup"; mv Podfile.backup Podfile; rm -f Podfile.temp; fi; fi ;;
     13) Scripts/build.sh --env-info ;;
     0) echo "Goodbye!" ;;
     *) echo "Invalid option" ;;
