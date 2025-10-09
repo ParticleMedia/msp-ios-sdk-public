@@ -27,7 +27,11 @@ final class NovaNativeAdVideoPlayButtonOnCenterSubviewHandler: NSObject {
     // MARK: Private
 
     private lazy var progressView: NovaVideoProgressView = .init()
-    private lazy var ctaPopoverView: NovaAdPopOverView = .init(frame: .zero)
+    private lazy var ctaPopoverView: NovaAdPopOverView = {
+        let popoverView = NovaAdPopOverView()
+        popoverView.adClickArea = .cta_popover
+        return popoverView
+    }()
 
     private weak var delegate: (any NovaAdVideoSubviewBehaviorDelegate)?
     private let progressBarStyle: NovaAdVideoView.Style.ProgressBarStyle?
@@ -57,7 +61,7 @@ private extension NovaNativeAdVideoPlayButtonOnCenterSubviewHandler {
     }
 
     @objc func didTapPopoverView(_ gesture: UITapGestureRecognizer) {
-        delegate?.didTapAd(on: .cta_popover)
+        delegate?.didTapAd(on: ctaPopoverView)
     }
 }
 

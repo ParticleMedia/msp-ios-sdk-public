@@ -187,6 +187,7 @@ class NovaInterstitialAdTwoPartPlayableSubviewHandler: NovaInterstitialAdSubview
 
         // Configure media view
         interstitialAd.mediaContent.videoController?.style = .playButtonOnCenter(progressBarStyle: .hide, popupCTAStyle: .show)
+        interstitialAd.mediaContent.videoController?.delegate = self
         interstitialAd.mediaContent.playableController?.renderOption = .imageOrVideo
         mediaView.config(
             with: interstitialAd.mediaContent,
@@ -316,11 +317,12 @@ class NovaInterstitialAdTwoPartPlayableSubviewHandler: NovaInterstitialAdSubview
         isInPlayableMode = false
     }
 
-    private func showSecondPart() {
+    private func showSecondPart(with reason: NovaAdMetricReporter.PlayableTapReason) {
         firstPartViews.forEach { $0.isHidden = true }
         interstitialAd.mediaContent.videoController?.stop()
         secondPartViews.forEach { $0.isHidden = false }
         isInPlayableMode = true
+        NovaAdMetricReporter.logPlayableTapToTry(encryptedAdToken: interstitialAd.encryptedAdToken, reason: reason)
     }
 
     @objc private func didTapVolumeButton() {
@@ -333,7 +335,7 @@ class NovaInterstitialAdTwoPartPlayableSubviewHandler: NovaInterstitialAdSubview
     }
 
     @objc private func didTapToPlayable() {
-        showSecondPart()
+        showSecondPart(with: .click)
     }
 
     @objc private func didTapMoreButton() {
@@ -345,6 +347,12 @@ class NovaInterstitialAdTwoPartPlayableSubviewHandler: NovaInterstitialAdSubview
         let volumeOffImage = UIImage.Nova.volumeOffLine?.withTintColor(NovaColorPalettes.White)
         volumeButton.setImage(muted ? volumeOffImage : volumeOnImage, for: .normal)
         volumeButton.tintColor = UIColor.white
+    }
+}
+
+extension NovaInterstitialAdTwoPartPlayableSubviewHandler: NovaAdVideoViewDelegate {
+    func videoViewDidPlayToEndTime() {
+        showSecondPart(with: .auto)
     }
 }
 
