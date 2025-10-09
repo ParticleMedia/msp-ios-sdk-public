@@ -538,7 +538,7 @@ private extension NovaAdVideoView {
         switch mediaModel.adCtrType {
         case .openWeb, .appInstall:
             actionHelper = actionHelper?.logNovaClickEvent(in: .media).handleAdTap(in: self)
-        case .playable(let model):
+        case .playable(_):
             actionHelper = actionHelper?.logNovaPlayableAdTapToTryEvent(reason: .click).handleAdTap(in: self)
         }
     }
@@ -850,8 +850,8 @@ extension NovaAdVideoView: NovaAdVideoSubviewBehaviorDelegate {
         delegate?.videoViewDidTapCloseButton()
     }
 
-    func didTapAd(on clickArea: ClickableAdArea) {
-        actionHelper = actionHelper?.logNovaClickEvent(in: clickArea).handleAdTap(in: self)
+    func didTapAd(on view: UIView) {
+        actionHelper = actionHelper?.logNovaClickEvent(in: view.adClickArea).handleAdTap(in: view)
     }
 }
 

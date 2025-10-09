@@ -17,5 +17,5 @@ protocol NovaAdVideoSubviewBehaviorDelegate: AnyObject {
 
     func didTapCloseButton()
 
-    func didTapAd(on clickArea: ClickableAdArea)
+    func didTapAd(on view: UIView)
 }
