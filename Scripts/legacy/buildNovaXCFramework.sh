@@ -1,3 +1,16 @@
+#!/bin/bash
+
+# Fix Unicode encoding issues for CocoaPods
+export LANG=en_US.UTF-8
+export LC_ALL=en_US.UTF-8
+
+# Colors for output
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
+NC='\033[0m' # No Color
+
 rm -rf "$PWD/outputNova/xcframework"
 # Create directories for output
 mkdir -p "$PWD/outputNova/xcframework"
@@ -5,7 +18,31 @@ mkdir -p "$PWD/outputNova/xcframework"
 echo -e "\n\n${GREEN}INSTALL PODS${NC}\n\n"
 
 #gem install cocoapods --user-install
-pod install --repo-update
+# Try pod install with retry logic and GitHub source backup
+if ! pod install --repo-update; then
+    echo -e "${YELLOW}⚠️  Primary pod install failed, trying with GitHub source backup...${NC}"
+    
+    # Create temporary Podfile with GitHub source
+    cp Podfile Podfile.backup
+    cat > Podfile.temp << 'EOF'
+# Fallback Podfile with GitHub source
+source 'https://github.com/CocoaPods/Specs.git'
+source 'https://cdn.cocoapods.org/'
+
+EOF
+    # Append original Podfile content (excluding source lines)
+    grep -v "^source " Podfile.backup >> Podfile.temp
+    
+    if pod install --podfile=Podfile.temp --no-repo-update; then
+        echo -e "${GREEN}✅ Pod install succeeded with GitHub source backup${NC}"
+        mv Podfile.temp Podfile
+    else
+        echo -e "${RED}❌ Pod install failed even with GitHub source backup${NC}"
+        mv Podfile.backup Podfile
+        rm -f Podfile.temp
+        exit 1
+    fi
+fi
 
 echo -e "\n\n${GREEN}BUILD ADAPTERS${NC}\n\n"
 
