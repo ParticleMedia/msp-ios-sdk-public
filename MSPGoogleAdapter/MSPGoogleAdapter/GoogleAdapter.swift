@@ -6,7 +6,7 @@ import PrebidMobile
 
 @objc public class GoogleAdapter : NSObject, AdNetworkAdapter {
     public func getSDKVersion() -> String {
-        return "12.0"
+        return string(for: MobileAds.shared.versionNumber)
     }
     
     public func setAdMetricReporter(adMetricReporter: any MSPiOSCore.AdMetricReporter) {
