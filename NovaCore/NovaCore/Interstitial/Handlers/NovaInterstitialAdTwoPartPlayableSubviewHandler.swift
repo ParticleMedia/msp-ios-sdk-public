@@ -214,7 +214,7 @@ class NovaInterstitialAdTwoPartPlayableSubviewHandler: NovaInterstitialAdSubview
     }
 
     var clickableViews: [UIView] { 
-        getClickableViewsFromConfiguration() ?? [advertiserStackView]
+        getClickableViewsFromConfiguration() ?? [advertiserAvatar, advertiserLabel, adTagLabel]
     }
     
     func didAppear() {

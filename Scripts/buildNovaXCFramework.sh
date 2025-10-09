@@ -1,5 +1,9 @@
 #!/bin/bash
 
+# Fix Unicode encoding issues for CocoaPods
+export LANG=en_US.UTF-8
+export LC_ALL=en_US.UTF-8
+
 # Source shared color library
 source "Scripts/lib/colors.sh"
 
@@ -294,7 +298,7 @@ install_cocoapods_with_retry() {
         ((attempt++))
     done
     
-    print_error "Failed to install CocoaPods dependencies after $max_attempts attempts"
+    color_error "Failed to install CocoaPods dependencies after $max_attempts attempts"
     return 1
 }
 
@@ -305,10 +309,12 @@ try_alternative_sources() {
     local original_podfile="Podfile"
     
     if [[ -f "$original_podfile" ]]; then
-        # Create fallback Podfile with alternative sources
+        # Create fallback Podfile with alternative sources (GitHub as primary backup)
         cat > "$temp_podfile" << 'EOF'
 # Fallback Podfile with alternative sources
+# Primary backup: GitHub CocoaPods Specs repository
 source 'https://github.com/CocoaPods/Specs.git'
+# Secondary backup: CDN
 source 'https://cdn.cocoapods.org/'
 
 # Use the original Podfile content but with fallback sources
@@ -317,14 +323,34 @@ EOF
         # Append original Podfile content (excluding source lines)
         grep -v "^source " "$original_podfile" >> "$temp_podfile"
         
+        print_info "Trying CocoaPods installation with GitHub source as backup..."
+        
         # Try to install with fallback Podfile
         if bundle exec pod install --podfile="$temp_podfile" --no-repo-update; then
             # Replace original with working fallback
             mv "$temp_podfile" "$original_podfile"
+            print_success "CocoaPods installation succeeded using GitHub source backup"
             return 0
         else
-            # Clean up
-            rm -f "$temp_podfile"
+            print_warning "GitHub source backup also failed, trying CDN fallback..."
+            
+            # Try with CDN only as last resort
+            cat > "$temp_podfile" << 'EOF'
+# Last resort Podfile with CDN source only
+source 'https://cdn.cocoapods.org/'
+
+# Use the original Podfile content but with CDN source
+EOF
+            grep -v "^source " "$original_podfile" >> "$temp_podfile"
+            
+            if bundle exec pod install --podfile="$temp_podfile" --no-repo-update; then
+                mv "$temp_podfile" "$original_podfile"
+                print_success "CocoaPods installation succeeded using CDN fallback"
+                return 0
+            else
+                # Clean up
+                rm -f "$temp_podfile"
+            fi
         fi
     fi
     
@@ -335,7 +361,7 @@ EOF
 if install_cocoapods_with_retry; then
     print_success "CocoaPods installation completed successfully"
 else
-    print_error "Failed to install CocoaPods dependencies after all retry attempts"
+    color_error "Failed to install CocoaPods dependencies after all retry attempts"
     exit 1
 fi
 
