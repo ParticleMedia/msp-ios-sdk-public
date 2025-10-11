@@ -8,6 +8,7 @@
 import Foundation
 import MSPiOSCore
 import NovaCore
+import UIKit
 
 // MARK: - NovaAdMediaContentAdapter
 
@@ -16,6 +17,12 @@ class NovaAdMediaContainerAdapter: AdMediaContainer {
 
     init(mediaContent: NovaAdMediaContent) {
         self.mediaContent = mediaContent
+        if let imageController = mediaContent.imageController {
+            self.imageControllerAdapter = NovaAdImageControllerAdapter(imageController: imageController)
+        } else {
+            self.imageControllerAdapter = nil
+        }
+
         if let videoController = mediaContent.videoController {
             self.videoControllerAdapter = NovaAdVideoControllerAdapter(videoController: videoController)
         } else {
@@ -32,8 +39,13 @@ class NovaAdMediaContainerAdapter: AdMediaContainer {
     // MARK: Internal
 
     let mediaContent: NovaAdMediaContent
+    let imageControllerAdapter: NovaAdImageControllerAdapter?
     let videoControllerAdapter: NovaAdVideoControllerAdapter?
     let playableControllerAdapter: NovaAdPlayableControllerAdapter?
+
+    var imageController: (any MSPiOSCore.ImageController)? {
+        return imageControllerAdapter
+    }
 
     var videoController: (any MSPiOSCore.VideoController)? {
         return videoControllerAdapter
@@ -41,6 +53,23 @@ class NovaAdMediaContainerAdapter: AdMediaContainer {
 
     var playableController: (any MSPiOSCore.PlayableController)? {
         return playableControllerAdapter
+    }
+}
+
+class NovaAdImageControllerAdapter: ImageController {
+    init(imageController: NovaAdImageController) {
+        self.imageController = imageController
+    }
+
+    let imageController: NovaAdImageController
+
+    var contentMode: UIView.ContentMode {
+        get {
+            imageController.contentMode
+        }
+        set {
+            imageController.contentMode = newValue
+        }
     }
 }
 
