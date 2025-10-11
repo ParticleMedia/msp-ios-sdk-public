@@ -6,6 +6,27 @@
 //
 
 import Foundation
+import UIKit
+
+public class NovaAdImageController {
+    public var contentMode: UIView.ContentMode {
+        get {
+            imageView.contentMode
+        }
+        set {
+            imageView.contentMode = newValue
+        }
+    }
+
+    let imageView: NovaAdImageView
+
+    init(contentMode: UIView.ContentMode? = nil) {
+        imageView = NovaAdImageView()
+        if let contentMode {
+            imageView.contentMode = contentMode
+        }
+    }
+}
 
 // MARK: - NovaAdVideoController
 
@@ -29,14 +50,20 @@ public class NovaAdVideoController {
     }
 
     public weak var delegate: NovaAdVideoViewDelegate? {
-        didSet {
-            videoView.delegate = delegate
+        get {
+            videoView.delegate
+        }
+        set {
+            videoView.delegate = newValue
         }
     }
 
     public var muted: Bool {
-        didSet {
-            videoView.muted = muted
+        get {
+            videoView.muted
+        }
+        set {
+            videoView.muted = newValue
         }
     }
 
@@ -102,6 +129,15 @@ public class NovaAdMediaContent {
         case minHeight(CGFloat)
         case free
     }
+
+    public lazy var imageController: NovaAdImageController? = {
+        switch adMedia {
+        case .image(let model), .imagePlayable(let model, _):
+            return .init(contentMode: model.imageContentMode)
+        default:
+            return nil
+        }
+    }()
 
     public lazy var videoController: NovaAdVideoController? = {
         switch adMedia {

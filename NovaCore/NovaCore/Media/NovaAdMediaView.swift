@@ -29,7 +29,9 @@ public final class NovaAdMediaView: UIView {
 
     private var mediaContent: NovaAdMediaContent?
 
-    private lazy var imageView: NovaAdImageView = .init()
+    private lazy var imageView: NovaAdImageView = {
+        mediaContent?.imageController?.imageView ?? .init()
+    }()
 
     private lazy var videoView: NovaAdVideoView = {
         mediaContent?.videoController?.videoView ?? .init()
