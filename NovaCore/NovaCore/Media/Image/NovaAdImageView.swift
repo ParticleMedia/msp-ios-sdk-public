@@ -36,6 +36,11 @@ class NovaAdImageView: UIView {
 
     // MARK: Internal
 
+    override var contentMode: UIView.ContentMode {
+        get { contentImageView.contentMode }
+        set { contentImageView.contentMode = newValue }
+    }
+
     func config(
         with mediaModel: NovaAdImageMediaModel,
         actionContext: NovaAdMediaActionContext?,

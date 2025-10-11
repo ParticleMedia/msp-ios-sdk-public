@@ -8,6 +8,7 @@
 import Foundation
 
 public protocol AdMediaContainer: AnyObject {
+    var imageController: (any ImageController)? { get }
     var videoController: (any VideoController)? { get }
     var playableController: (any PlayableController)? { get }
 }
