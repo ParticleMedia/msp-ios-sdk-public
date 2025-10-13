@@ -123,8 +123,11 @@ public final class NovaAdVideoView: UIView {
     var muted: Bool = true {
         didSet {
             videoPlayer.setPlayerMute(muted)
-            if oldValue != muted, let state {
-                self.state = .init(playState: state.playState, isMute: muted)
+            if oldValue != muted {
+                reportMute(currentMuteState: muted)
+                if let state {
+                    self.state = .init(playState: state.playState, isMute: muted)
+                }
             }
         }
     }
@@ -828,12 +831,15 @@ extension NovaAdVideoView: NovaAdVideoSubviewBehaviorDelegate {
         guard state != nil else {
             return
         }
-
+        
         let currentMuteState = videoPlayer.isPlayerMuted()
         muted = !currentMuteState
+    }
+    
+    func reportMute(currentMuteState: Bool) {
         if let encryptedAdToken = actionContext?.adActionTracingInfo.encryptedAdToken {
             NovaAdVideoMetricReporter.logVideoMute(encryptedAdToken: encryptedAdToken,
-                                                   isMute: videoPlayer.isPlayerMuted())
+                                                   isMute: currentMuteState)
         }
         iabReporter?.logVideoVolumeChange(to: !currentMuteState ? 0.0 : 1.0)
     }
