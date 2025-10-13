@@ -204,11 +204,12 @@ public class NovaAdapter: AdNetworkAdapter {
                 DispatchQueue.main.async{
                     nativeAd.icon = nativeAdItem.iconURL
                     nativeAd.setPriceInDollar(self.priceInDollar)
+
                     nativeAd.adInfo[MSPConstants.AD_INFO_PRICE] = self.priceInDollar
-                    nativeAd.adInfo["isVideo"] = (nativeAdItem.creativeType == .nativeVideo)
                     nativeAd.adInfo[MSPConstants.AD_INFO_NETWORK_NAME] = AdNetwork.nova.rawValue
                     nativeAd.adInfo[MSPConstants.AD_INFO_NETWORK_AD_UNIT_ID] = self.adUnitId
                     nativeAd.adInfo[MSPConstants.AD_INFO_NETWORK_CREATIVE_ID] = self.bidResponse?.winningBid?.bid.crid
+
                     nativeAd.nativeAdItem = nativeAdItem
                     self.nativeAdItem = nativeAdItem
                     self.nativeAd = nativeAd

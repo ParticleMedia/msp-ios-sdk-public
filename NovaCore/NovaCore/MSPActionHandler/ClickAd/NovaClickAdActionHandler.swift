@@ -150,7 +150,7 @@ private extension NovaClickAdActionHandler {
             return
         }
 
-        _ = await getLandingContext(of: actionDataModel)
+        let detentStyle = await getLandingContext(of: actionDataModel)
         let webViewController: NovaAdLandingWebCoordinatorViewController = {
             let context = NovaAdsLandingWebContext(
                 url: url,
@@ -161,7 +161,7 @@ private extension NovaClickAdActionHandler {
                 ),
                 clickTime: actionDataModel.clickTime
             )
-            return NovaAdLandingWebCoordinatorViewController(webContext: context, detentStyle: .fullscreen)
+            return NovaAdLandingWebCoordinatorViewController(webContext: context, detentStyle: detentStyle)
         }()
         webViewController.present(from: vc)
     }

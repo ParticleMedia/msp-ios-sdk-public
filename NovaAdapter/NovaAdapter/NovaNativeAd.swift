@@ -12,16 +12,17 @@ public class NovaNativeAd: NativeAd {
     }
 
     public private(set) var priceInDollar: Double?
-    
-    public var novaAdReportContext: NovaAdReportContext? {
-        return nativeAdItem?.novaAdReportContext
-    }
 
     var nativeAdItem: NovaNativeAdItem? {
         didSet {
             if let mediaContent = nativeAdItem?.mediaContent {
                 mediaContainerAdapter = NovaAdMediaContainerAdapter(mediaContent: mediaContent)
             }
+
+            adInfo[MSPConstants.AD_INFO_NOVA_AD_ID] = nativeAdItem?.novaAdReportContext.adId
+            adInfo[MSPConstants.AD_INFO_NOVA_AD_SET_ID] = nativeAdItem?.novaAdReportContext.adSetId
+            adInfo[MSPConstants.AD_INFO_NOVA_AD_REQUEST_ID] = nativeAdItem?.novaAdReportContext.adRequestId
+            adInfo[MSPConstants.AD_INFO_NOVA_AD_ENCRYPTED_TOKEN] = nativeAdItem?.novaAdReportContext.encryptedToken
         }
     }
 
