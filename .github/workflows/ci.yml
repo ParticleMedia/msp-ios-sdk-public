@@ -10,13 +10,12 @@ on:
     # Manual trigger for testing
 
 env:
-  DEVELOPER_DIR: /Applications/Xcode_15.2.app/Contents/Developer
+  DEVELOPER_DIR: /Applications/Xcode_16.4.app/Contents/Developer
   RUBY_VERSION: '3.1'
 
 jobs:
   validate:
-    name: Validate iOS SDK
-    runs-on: macos-14
+    runs-on: macos-15
     
     steps:
       - name: Checkout code
@@ -59,14 +58,14 @@ jobs:
           bundle exec fastlane validate_ci_minimal
         env:
           CI: true
-          DEVELOPER_DIR: /Applications/Xcode_15.2.app/Contents/Developer
+          DEVELOPER_DIR: /Applications/Xcode_16.4.app/Contents/Developer
           SKIP_CODE_SIGN: "1"
           
       - name: Build frameworks (CI-optimized)
         run: |
           # Set CI environment variables
           export CI=true
-          export DEVELOPER_DIR="/Applications/Xcode_15.2.app/Contents/Developer"
+          export DEVELOPER_DIR="/Applications/Xcode_16.4.app/Contents/Developer"
           export SKIP_CODE_SIGN="1"
           
           echo "🔧 Building XCFrameworks with CI optimizations..."
@@ -94,7 +93,7 @@ jobs:
           git checkout -- Podfile
         env:
           CI: true
-          DEVELOPER_DIR: /Applications/Xcode_15.2.app/Contents/Developer
+          DEVELOPER_DIR: /Applications/Xcode_16.4.app/Contents/Developer
           SKIP_CODE_SIGN: "1"
           
       - name: Upload build artifacts
@@ -108,7 +107,7 @@ jobs:
 
   demo-app:
     name: MSPDemoApp Compilation Check
-    runs-on: macos-14
+    runs-on: macos-15
     needs: validate
     
     steps:
@@ -167,7 +166,7 @@ jobs:
         run: |
           # Set CI environment variables
           export CI=true
-          export DEVELOPER_DIR="/Applications/Xcode_15.2.app/Contents/Developer"
+          export DEVELOPER_DIR="/Applications/Xcode_16.4.app/Contents/Developer"
           export SKIP_CODE_SIGN="1"
           
           echo "🔧 Building MSPDemoApp with CI optimizations..."
@@ -262,7 +261,7 @@ jobs:
           fi
         env:
           CI: true
-          DEVELOPER_DIR: /Applications/Xcode_15.2.app/Contents/Developer
+          DEVELOPER_DIR: /Applications/Xcode_16.4.app/Contents/Developer
           SKIP_CODE_SIGN: "1"
           
       - name: Upload demo app artifacts
