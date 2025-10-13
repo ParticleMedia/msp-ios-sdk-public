@@ -281,6 +281,8 @@ extension NovaAdVideoView {
     func stop() {
         playVersion += 1
         videoPlayer.stop(endKind: .none)
+        videoPlayer.player.playbackLoops = false
+        videoPlayer.player.playbackFreezesAtEnd = true
         lastPauseTime = CACurrentMediaTime()
     }
 
