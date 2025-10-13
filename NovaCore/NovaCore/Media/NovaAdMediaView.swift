@@ -71,6 +71,7 @@ extension NovaAdMediaView {
         iabReporter: IABMetricReporter? = nil,
         completion: @escaping (() -> Void) = {}
     ) {
+        cleanupBusinessSubviews()
         self.mediaContent = mediaContent
         if !adMediaAndCurrentViewTypeMatches(mediaContent) {
             currentView?.removeFromSuperview()
@@ -188,6 +189,10 @@ extension NovaAdMediaView {
         videoView.isHidden = true
         videoView.prepareForReuse()
 
+        cleanupBusinessSubviews()
+    }
+
+    func cleanupBusinessSubviews() {
         discountTag.removeFromSuperview()
         tapToTryAnimationView?.stop()
         tapToTryAnimationView?.removeFromSuperview()
