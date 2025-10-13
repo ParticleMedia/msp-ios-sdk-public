@@ -169,15 +169,9 @@ extension NovaNativeAdVideoLandingPageSubviewHandler: NovaNativeAdVideoSubviewHa
             playButton.setImage(pauseImage, for: .normal)
             if let text = videoLength.toMMSSString() {
                 videoLengthText.text = text
-                videoLengthText.isHidden = false
-            } else {
-                videoLengthText.isHidden = true
             }
             if let text = currentTimeInterval.toMMSSString() {
                 videoProgressText.text = text
-                videoProgressText.isHidden = false
-            } else {
-                videoProgressText.isHidden = true
             }
 
             progressView
@@ -188,15 +182,9 @@ extension NovaNativeAdVideoLandingPageSubviewHandler: NovaNativeAdVideoSubviewHa
             playButton.isHidden = false
             if let text = videoLength.toMMSSString() {
                 videoLengthText.text = text
-                videoLengthText.isHidden = false
-            } else {
-                videoLengthText.isHidden = true
             }
             if let text = currentTimeInterval.toMMSSString() {
                 videoProgressText.text = text
-                videoProgressText.isHidden = false
-            } else {
-                videoProgressText.isHidden = true
             }
 
             progressView
