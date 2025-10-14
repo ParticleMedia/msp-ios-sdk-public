@@ -20,6 +20,10 @@ public final class NovaAdMediaView: UIView {
         super.init(frame: .zero)
     }
 
+    deinit {
+        cleanupBusinessSubviews()
+    }
+
     @available(*, unavailable)
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
@@ -71,7 +75,6 @@ extension NovaAdMediaView {
         iabReporter: IABMetricReporter? = nil,
         completion: @escaping (() -> Void) = {}
     ) {
-        cleanupBusinessSubviews()
         self.mediaContent = mediaContent
         if !adMediaAndCurrentViewTypeMatches(mediaContent) {
             currentView?.removeFromSuperview()
