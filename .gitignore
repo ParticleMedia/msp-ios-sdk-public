@@ -4,6 +4,12 @@ outputMSPiOSCore/
 outputNova/
 NovaAdapter/NovaCore.xcframework/
 MSPSharedLibraries/MSPiOSCore.xcframework
+
+# MSP Adapter build artifacts
+MSPFacebookAdapter/build/
+MSPGoogleAdapter/build/
+MSPFacebookAdapter/*.xcframework/
+MSPGoogleAdapter/*.xcframework/
 *.xcscmblueprint
 *.xccheckout
 xcuserdata
