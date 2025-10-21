@@ -877,6 +877,7 @@ SWIFT_CLASS("_TtC12PrebidMobile11BidResponse")
 @property (nonatomic, readonly, copy) NSArray<NSString *> * _Nullable monetizationCategories;
 @property (nonatomic, readonly, strong) RawBidResponse<PBMORTBBidResponseExt *, NSDictionary *, PBMORTBBidExt *> * _Nullable rawResponse;
 @property (nonatomic, readonly, strong) JsonDictionary * _Nullable rawResponseInJson;
+@property (nonatomic, readonly, copy) NSString * _Nullable inferredCountry;
 - (nonnull instancetype)initWithAdUnitId:(NSString * _Nullable)adUnitId targetingInfo:(NSDictionary<NSString *, NSString *> * _Nullable)targetingInfo;
 - (nonnull instancetype)initWithJsonDictionary:(JsonDictionary * _Nonnull)jsonDictionary;
 - (void)setTargetingInfoWith:(NSDictionary<NSString *, NSString *> * _Nonnull)newValue;

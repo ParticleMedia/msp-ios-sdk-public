@@ -709,6 +709,9 @@ extension UIKit.UIView {
   @objc public var rawResponseInJson: PrebidMobile.JsonDictionary? {
     get
   }
+  @objc public var inferredCountry: Swift.String? {
+    get
+  }
   @objc convenience public init(adUnitId: Swift.String?, targetingInfo: [Swift.String : Swift.String]?)
   @objc convenience public init(jsonDictionary: PrebidMobile.JsonDictionary)
   @objc public func setTargetingInfo(with newValue: [Swift.String : Swift.String])
