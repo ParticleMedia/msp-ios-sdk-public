@@ -7,11 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		4539DAE4B98B7ABD251EC5F8 /* libPods-GoogleAdapter.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 7491E0BAA0019779B4ABCF95 /* libPods-GoogleAdapter.a */; };
 		6617089E2BF54DF100DFB7DD /* GoogleManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6617089D2BF54DF100DFB7DD /* GoogleManager.swift */; };
 		669C44792E441C7600C53A82 /* GoogleBidder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 669C44782E441C6800C53A82 /* GoogleBidder.swift */; };
 		66D6C3C82B322CEE006EBBF3 /* GoogleAdapter.docc in Sources */ = {isa = PBXBuildFile; fileRef = 66D6C3C72B322CEE006EBBF3 /* GoogleAdapter.docc */; };
-		66D6C3CE2B322CEE006EBBF3 /* GoogleAdapter.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 66D6C3C32B322CEE006EBBF3 /* GoogleAdapter.framework */; };
+		66D6C3CE2B322CEE006EBBF3 /* MSPGoogleAdapter.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 66D6C3C32B322CEE006EBBF3 /* MSPGoogleAdapter.framework */; };
 		66D6C3D32B322CEE006EBBF3 /* GoogleAdapterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66D6C3D22B322CEE006EBBF3 /* GoogleAdapterTests.swift */; };
 		66D6C3D42B322CEE006EBBF3 /* GoogleAdapter.h in Headers */ = {isa = PBXBuildFile; fileRef = 66D6C3C62B322CEE006EBBF3 /* GoogleAdapter.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		66D6C3DE2B322E01006EBBF3 /* GoogleAdapter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66D6C3DD2B322E01006EBBF3 /* GoogleAdapter.swift */; };
@@ -20,6 +19,7 @@
 		66E533442C1B7AA600255D15 /* GoogleNativeAdView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E533432C1B7AA600255D15 /* GoogleNativeAdView.swift */; };
 		66E533472C1B929000255D15 /* GoogleNativeAdViewBinder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E533462C1B929000255D15 /* GoogleNativeAdViewBinder.swift */; };
 		66F48C322CACA43000902F4D /* GoogleInterstitialAd.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66F48C312CACA43000902F4D /* GoogleInterstitialAd.swift */; };
+		A54B8EBDE0825CBFF998CEC6 /* libPods-MSPGoogleAdapter.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4BD076A96EF64DFF1E2D6ACE /* libPods-MSPGoogleAdapter.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -33,14 +33,14 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		4BD076A96EF64DFF1E2D6ACE /* libPods-MSPGoogleAdapter.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-MSPGoogleAdapter.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		56AE8C6A016083B4B1583123 /* Pods-GoogleAdapter.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-GoogleAdapter.release.xcconfig"; path = "Target Support Files/Pods-GoogleAdapter/Pods-GoogleAdapter.release.xcconfig"; sourceTree = "<group>"; };
 		6318455D9378DBD845EF00DF /* Pods-GoogleAdapter.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-GoogleAdapter.debug.xcconfig"; path = "Target Support Files/Pods-GoogleAdapter/Pods-GoogleAdapter.debug.xcconfig"; sourceTree = "<group>"; };
 		6617089D2BF54DF100DFB7DD /* GoogleManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoogleManager.swift; sourceTree = "<group>"; };
-		669C44782E441C6800C53A82 /* GoogleBidder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoogleBidder.swift; sourceTree = "<group>"; };
-		66D6C3C32B322CEE006EBBF3 /* GoogleAdapter.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = GoogleAdapter.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		66D6C3C32B322CEE006EBBF3 /* MSPGoogleAdapter.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = MSPGoogleAdapter.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		66D6C3C62B322CEE006EBBF3 /* GoogleAdapter.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GoogleAdapter.h; sourceTree = "<group>"; };
 		66D6C3C72B322CEE006EBBF3 /* GoogleAdapter.docc */ = {isa = PBXFileReference; lastKnownFileType = folder.documentationcatalog; path = GoogleAdapter.docc; sourceTree = "<group>"; };
-		66D6C3CD2B322CEE006EBBF3 /* GoogleAdapterTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = GoogleAdapterTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		66D6C3CD2B322CEE006EBBF3 /* MSPGoogleAdapterTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MSPGoogleAdapterTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		66D6C3D22B322CEE006EBBF3 /* GoogleAdapterTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoogleAdapterTests.swift; sourceTree = "<group>"; };
 		66D6C3DD2B322E01006EBBF3 /* GoogleAdapter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoogleAdapter.swift; sourceTree = "<group>"; };
 		66D6C4072B34DD8E006EBBF3 /* GoogleAdapter */ = {isa = PBXFileReference; lastKnownFileType = folder; path = GoogleAdapter; sourceTree = "<group>"; };
@@ -58,7 +58,8 @@
 		66E533432C1B7AA600255D15 /* GoogleNativeAdView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoogleNativeAdView.swift; sourceTree = "<group>"; };
 		66E533462C1B929000255D15 /* GoogleNativeAdViewBinder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoogleNativeAdViewBinder.swift; sourceTree = "<group>"; };
 		66F48C312CACA43000902F4D /* GoogleInterstitialAd.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoogleInterstitialAd.swift; sourceTree = "<group>"; };
-		7491E0BAA0019779B4ABCF95 /* libPods-GoogleAdapter.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-GoogleAdapter.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		73F370C0E9E2436F5CCC42A6 /* Pods-MSPGoogleAdapter.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MSPGoogleAdapter.release.xcconfig"; path = "Target Support Files/Pods-MSPGoogleAdapter/Pods-MSPGoogleAdapter.release.xcconfig"; sourceTree = "<group>"; };
+		B9DC535E1A9DC3B7A6C90B50 /* Pods-MSPGoogleAdapter.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MSPGoogleAdapter.debug.xcconfig"; path = "Target Support Files/Pods-MSPGoogleAdapter/Pods-MSPGoogleAdapter.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -66,7 +67,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				4539DAE4B98B7ABD251EC5F8 /* libPods-GoogleAdapter.a in Frameworks */,
+				A54B8EBDE0825CBFF998CEC6 /* libPods-MSPGoogleAdapter.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -74,7 +75,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				66D6C3CE2B322CEE006EBBF3 /* GoogleAdapter.framework in Frameworks */,
+				66D6C3CE2B322CEE006EBBF3 /* MSPGoogleAdapter.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -94,7 +95,7 @@
 				66D6C4072B34DD8E006EBBF3 /* GoogleAdapter */,
 				66D6C40D2B34DFB3006EBBF3 /* PrebidMobile.xcframework */,
 				66D6C4092B34DDCB006EBBF3 /* shared.xcframework */,
-				7491E0BAA0019779B4ABCF95 /* libPods-GoogleAdapter.a */,
+				4BD076A96EF64DFF1E2D6ACE /* libPods-MSPGoogleAdapter.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -113,8 +114,8 @@
 		66D6C3C42B322CEE006EBBF3 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				66D6C3C32B322CEE006EBBF3 /* GoogleAdapter.framework */,
-				66D6C3CD2B322CEE006EBBF3 /* GoogleAdapterTests.xctest */,
+				66D6C3C32B322CEE006EBBF3 /* MSPGoogleAdapter.framework */,
+				66D6C3CD2B322CEE006EBBF3 /* MSPGoogleAdapterTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -165,6 +166,8 @@
 			children = (
 				6318455D9378DBD845EF00DF /* Pods-GoogleAdapter.debug.xcconfig */,
 				56AE8C6A016083B4B1583123 /* Pods-GoogleAdapter.release.xcconfig */,
+				B9DC535E1A9DC3B7A6C90B50 /* Pods-MSPGoogleAdapter.debug.xcconfig */,
+				73F370C0E9E2436F5CCC42A6 /* Pods-MSPGoogleAdapter.release.xcconfig */,
 			);
 			name = Pods;
 			path = ../Pods;
@@ -184,9 +187,9 @@
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
-		66D6C3C22B322CEE006EBBF3 /* GoogleAdapter */ = {
+		66D6C3C22B322CEE006EBBF3 /* MSPGoogleAdapter */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 66D6C3D72B322CEE006EBBF3 /* Build configuration list for PBXNativeTarget "GoogleAdapter" */;
+			buildConfigurationList = 66D6C3D72B322CEE006EBBF3 /* Build configuration list for PBXNativeTarget "MSPGoogleAdapter" */;
 			buildPhases = (
 				B7C22D3E172D14449A40D939 /* [CP] Check Pods Manifest.lock */,
 				66D6C3BE2B322CEE006EBBF3 /* Headers */,
@@ -198,14 +201,14 @@
 			);
 			dependencies = (
 			);
-			name = GoogleAdapter;
+			name = MSPGoogleAdapter;
 			productName = GoogleAdapter;
-			productReference = 66D6C3C32B322CEE006EBBF3 /* GoogleAdapter.framework */;
+			productReference = 66D6C3C32B322CEE006EBBF3 /* MSPGoogleAdapter.framework */;
 			productType = "com.apple.product-type.framework";
 		};
-		66D6C3CC2B322CEE006EBBF3 /* GoogleAdapterTests */ = {
+		66D6C3CC2B322CEE006EBBF3 /* MSPGoogleAdapterTests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 66D6C3DA2B322CEE006EBBF3 /* Build configuration list for PBXNativeTarget "GoogleAdapterTests" */;
+			buildConfigurationList = 66D6C3DA2B322CEE006EBBF3 /* Build configuration list for PBXNativeTarget "MSPGoogleAdapterTests" */;
 			buildPhases = (
 				66D6C3C92B322CEE006EBBF3 /* Sources */,
 				66D6C3CA2B322CEE006EBBF3 /* Frameworks */,
@@ -216,9 +219,9 @@
 			dependencies = (
 				66D6C3D02B322CEE006EBBF3 /* PBXTargetDependency */,
 			);
-			name = GoogleAdapterTests;
+			name = MSPGoogleAdapterTests;
 			productName = GoogleAdapterTests;
-			productReference = 66D6C3CD2B322CEE006EBBF3 /* GoogleAdapterTests.xctest */;
+			productReference = 66D6C3CD2B322CEE006EBBF3 /* MSPGoogleAdapterTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
 /* End PBXNativeTarget section */
@@ -239,7 +242,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 66D6C3BD2B322CED006EBBF3 /* Build configuration list for PBXProject "GoogleAdapter" */;
+			buildConfigurationList = 66D6C3BD2B322CED006EBBF3 /* Build configuration list for PBXProject "MSPGoogleAdapter" */;
 			compatibilityVersion = "Xcode 14.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -252,8 +255,8 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				66D6C3C22B322CEE006EBBF3 /* GoogleAdapter */,
-				66D6C3CC2B322CEE006EBBF3 /* GoogleAdapterTests */,
+				66D6C3C22B322CEE006EBBF3 /* MSPGoogleAdapter */,
+				66D6C3CC2B322CEE006EBBF3 /* MSPGoogleAdapterTests */,
 			);
 		};
 /* End PBXProject section */
@@ -291,7 +294,7 @@
 			outputFileListPaths = (
 			);
 			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-GoogleAdapter-checkManifestLockResult.txt",
+				"$(DERIVED_FILE_DIR)/Pods-MSPGoogleAdapter-checkManifestLockResult.txt",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -330,7 +333,7 @@
 /* Begin PBXTargetDependency section */
 		66D6C3D02B322CEE006EBBF3 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 66D6C3C22B322CEE006EBBF3 /* GoogleAdapter */;
+			target = 66D6C3C22B322CEE006EBBF3 /* MSPGoogleAdapter */;
 			targetProxy = 66D6C3CF2B322CEE006EBBF3 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
@@ -458,7 +461,7 @@
 		};
 		66D6C3D82B322CEE006EBBF3 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 6318455D9378DBD845EF00DF /* Pods-GoogleAdapter.debug.xcconfig */;
+			baseConfigurationReference = B9DC535E1A9DC3B7A6C90B50 /* Pods-MSPGoogleAdapter.debug.xcconfig */;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
@@ -492,7 +495,7 @@
 		};
 		66D6C3D92B322CEE006EBBF3 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 56AE8C6A016083B4B1583123 /* Pods-GoogleAdapter.release.xcconfig */;
+			baseConfigurationReference = 73F370C0E9E2436F5CCC42A6 /* Pods-MSPGoogleAdapter.release.xcconfig */;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
@@ -562,7 +565,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		66D6C3BD2B322CED006EBBF3 /* Build configuration list for PBXProject "GoogleAdapter" */ = {
+		66D6C3BD2B322CED006EBBF3 /* Build configuration list for PBXProject "MSPGoogleAdapter" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				66D6C3D52B322CEE006EBBF3 /* Debug */,
@@ -571,7 +574,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		66D6C3D72B322CEE006EBBF3 /* Build configuration list for PBXNativeTarget "GoogleAdapter" */ = {
+		66D6C3D72B322CEE006EBBF3 /* Build configuration list for PBXNativeTarget "MSPGoogleAdapter" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				66D6C3D82B322CEE006EBBF3 /* Debug */,
@@ -580,7 +583,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		66D6C3DA2B322CEE006EBBF3 /* Build configuration list for PBXNativeTarget "GoogleAdapterTests" */ = {
+		66D6C3DA2B322CEE006EBBF3 /* Build configuration list for PBXNativeTarget "MSPGoogleAdapterTests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				66D6C3DB2B322CEE006EBBF3 /* Debug */,

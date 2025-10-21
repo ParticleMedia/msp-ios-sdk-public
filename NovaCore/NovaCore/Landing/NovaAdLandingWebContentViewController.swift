@@ -118,7 +118,7 @@ class NovaAdLandingWebContentViewController: UIViewController {
 
         let naviViewModel = self.navigationModel ?? NovaWebViewNavigationViewModel(
             title: webContext.extraInfo.advertiser,
-            leftButtonIcon: .crossOutline,
+            leftButtonIcon: UIImage.Nova.crossOutline,
             leftButtonTapActionHandler: { [weak self] in
                 self?.navigationViewDidClickBackButton()
             },

@@ -10,7 +10,9 @@ import AppTrackingTransparency
 import SwiftProtobuf
 
 public class MSP {
-    public let version = "" // please config version number in release branch
+    public let version = {
+        return MSP.getMSPVersion()
+    }()
     
     public static let shared = MSP()
     public var numInitWaitingForCallbacks = 0;
@@ -277,6 +279,19 @@ public class MSP {
             return
         }
         return self.isLogSampled = Double.random(in: 0..<1) < sampleRate
+    }
+    
+    static func getMSPVersion() -> String {
+        let bundle = Bundle(for: MSP.self)
+        if let url = bundle.url(forResource: "MSPCoreResources", withExtension: "bundle"),
+           let resourceBundle = Bundle(url: url),
+           let plistURL = resourceBundle.url(forResource: "Config", withExtension: "plist"),
+           let data = try? Data(contentsOf: plistURL),
+           let plist = try? PropertyListSerialization.propertyList(from: data, options: [], format: nil) as? [String: Any],
+           let version = plist["SDKVersion"] as? String {
+            return version
+        }
+        return ""
     }
 }
 

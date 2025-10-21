@@ -43,13 +43,15 @@ public class NovaAdapter: AdNetworkAdapter {
     }
     
     public func loadAdCreative(bidResponse: Any, auctionBidListener: AuctionBidListener, adListener: any AdListener, context: Any, adRequest: AdRequest, bidderPlacementId: String, bidderFormat: MSPiOSCore.AdFormat?, params: [String:String]?) {
-        guard bidResponse is BidResponse,
-              let mBidResponse = bidResponse as? BidResponse else {
-            self.adListener?.onError(msg: "no valid response")
-            self.adMetricReporter?.logAdResult(placementId: adRequest.placementId, ad: nil, fill: false, isFromCache: false)
-            return
-        }
+        
         DispatchQueue.main.async {
+            guard bidResponse is BidResponse,
+                  let mBidResponse = bidResponse as? BidResponse else {
+                auctionBidListener.onError(error: "no valid response")
+                self.adMetricReporter?.logAdResult(placementId: adRequest.placementId, ad: nil, fill: false, isFromCache: false)
+                return
+            }
+            
             self.adListener = adListener
             self.auctionBidListener = auctionBidListener
             self.bidderPlacementId = bidderPlacementId
@@ -320,34 +322,42 @@ public class NovaAdapter: AdNetworkAdapter {
     
     public func sendHideAdEvent(reason: String, adScreenShot: Data?, fullScreenShot: Data?)
     {
-        if let adRequest = self.adRequest,
-           let ad = self.nativeAd ?? self.interstitialAd {
-            self.adMetricReporter?.logAdHide(ad: ad, adRequest: adRequest, bidResponse: self, reason: reason, adScreenShot: adScreenShot, fullScreenShot: fullScreenShot)
+        DispatchQueue.main.async {
+            if let adRequest = self.adRequest,
+               let ad = self.nativeAd ?? self.interstitialAd {
+                self.adMetricReporter?.logAdHide(ad: ad, adRequest: adRequest, bidResponse: self, reason: reason, adScreenShot: adScreenShot, fullScreenShot: fullScreenShot)
+            }
         }
     }
     
     public func sendReportAdEvent(reason: String, description: String?, adScreenShot: Data?, fullScreenShot: Data?) {
-        if let adRequest = self.adRequest,
-           let ad = self.nativeAd ?? self.interstitialAd {
-            self.adMetricReporter?.logAdReport(ad: ad, adRequest: adRequest, bidResponse: self, reason: reason, description: description, adScreenShot: adScreenShot, fullScreenShot: fullScreenShot)
+        DispatchQueue.main.async {
+            if let adRequest = self.adRequest,
+               let ad = self.nativeAd ?? self.interstitialAd {
+                self.adMetricReporter?.logAdReport(ad: ad, adRequest: adRequest, bidResponse: self, reason: reason, description: description, adScreenShot: adScreenShot, fullScreenShot: fullScreenShot)
+            }
         }
     }
     
     private func sendClickAdEvent(ad: MSPAd) {
-        if let adRequest = adRequest,
-           let bidResponse = bidResponse {
-            self.adMetricReporter?.logAdClick(ad: ad, adRequest: adRequest, bidResponse: bidResponse)
+        DispatchQueue.main.async {
+            if let adRequest = self.adRequest,
+               let bidResponse = self.bidResponse {
+                self.adMetricReporter?.logAdClick(ad: ad, adRequest: adRequest, bidResponse: bidResponse)
+            }
         }
     }
 }
 
 extension NovaAdapter: NovaNativeAdDelegate {
     public func nativeAdDidLogImpression(_ nativeAd: NovaCore.NovaNativeAdItem) {
-        if let nativeAd = self.nativeAd {
-            self.adListener?.onAdImpression(ad: nativeAd)
-            if let adRequest = adRequest,
-               let bidResponse = bidResponse {
-                self.adMetricReporter?.logAdImpression(ad: nativeAd, adRequest: adRequest, bidResponse: bidResponse)
+        DispatchQueue.main.async {
+            if let nativeAd = self.nativeAd {
+                self.adListener?.onAdImpression(ad: nativeAd)
+                if let adRequest = self.adRequest,
+                   let bidResponse = self.bidResponse {
+                    self.adMetricReporter?.logAdImpression(ad: nativeAd, adRequest: adRequest, bidResponse: bidResponse)
+                }
             }
         }
     }
