@@ -4,12 +4,12 @@
 workspace 'msp-ios-sdk'
 
 project 'PrebidAdapter/PrebidAdapter'
-project 'GoogleAdapter/GoogleAdapter'
+project 'MSPGoogleAdapter/MSPGoogleAdapter'
 project 'MSPCore/MSPCore'
 project 'MSPDemoApp/MSPDemoApp'
 project 'NovaAdapter/NovaAdapter'
 project 'MSPSharedLibraries/MSPSharedLibraries'
-project 'FacebookAdapter/FacebookAdapter'
+project 'MSPFacebookAdapter/MSPFacebookAdapter'
 
 project 'InmobiAdapter/InmobiAdapter'
 project 'MintegralAdapter/MintegralAdapter'
@@ -60,8 +60,8 @@ target 'MSPOMSDK' do
 end
 
 
-target 'GoogleAdapter' do
-  project 'GoogleAdapter/GoogleAdapter'
+target 'MSPGoogleAdapter' do
+  project 'MSPGoogleAdapter/MSPGoogleAdapter'
   # Comment the next line if you don't want to use dynamic frameworks
   # use_frameworks!
 
@@ -84,8 +84,8 @@ target 'NovaAdapter' do
   #pod 'MSPSharedLibraries', :path => './MSPSharedLibraries', :modular_headers => true
 end
 
-target 'FacebookAdapter' do
-  project 'FacebookAdapter/FacebookAdapter'
+target 'MSPFacebookAdapter' do
+  project 'MSPFacebookAdapter/MSPFacebookAdapter'
   
 end
 
@@ -125,8 +125,8 @@ target 'MSPDemoApp' do
   pod 'MSPCore', :path => './', :modular_headers => true
   pod 'NovaAdapter', :path => './', :modular_headers => true
   pod 'PrebidAdapter', :path => './', :modular_headers => true
-  pod 'GoogleAdapter', :path => './', :modular_headers => true
-  pod 'FacebookAdapter', :path => './', :modular_headers => true
+  pod 'MSPGoogleAdapter', :path => './', :modular_headers => true
+  pod 'MSPFacebookAdapter', :path => './', :modular_headers => true
   #pod 'IronSourceSDK','8.6.0.0', :modular_headers => true
   pod 'UnityAdapter', :path => './', :modular_headers => true
   pod 'InmobiAdapter', :path => './', :modular_headers => true

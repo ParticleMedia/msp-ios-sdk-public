@@ -26,10 +26,10 @@
       location = "group:InmobiAdapter/InmobiAdapter.xcodeproj">
    </FileRef>
    <FileRef
-      location = "group:FacebookAdapter/FacebookAdapter.xcodeproj">
+      location = "container:MSPGoogleAdapter/MSPGoogleAdapter.xcodeproj">
    </FileRef>
    <FileRef
-      location = "group:GoogleAdapter/GoogleAdapter.xcodeproj">
+      location = "group:MSPFacebookAdapter/MSPFacebookAdapter.xcodeproj">
    </FileRef>
    <FileRef
       location = "group:MSPCore/MSPCore.xcodeproj">
@@ -50,10 +50,7 @@
       location = "group:Pods/Pods.xcodeproj">
    </FileRef>
    <FileRef
-      location = "group:MSPiOSCore/MSPiOSCore.xcodeproj">
-   </FileRef>
-   <FileRef
-      location = "group:MSPOMSDK/MSPOMSDK.xcodeproj">
+      location = "group:MSPGoogleAdapter/MSPGoogleAdapter.xcodeproj">
    </FileRef>
    <FileRef
       location = "group:NovaCore/NovaCore.xcodeproj">

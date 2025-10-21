@@ -28,6 +28,7 @@ NS_ASSUME_NONNULL_BEGIN
 /// [String]
 @property (nonatomic, copy, nullable) NSArray <NSString *> *articleCategories;
 @property (nonatomic, copy, nullable) NSArray <NSString *> *monetizationCategories;
+@property (nonatomic, copy, nullable) NSString* inferredCountry;
 
 @end
 

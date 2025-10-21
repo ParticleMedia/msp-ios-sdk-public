@@ -434,7 +434,16 @@ import AdSupport
     func generateBidRequest(request: AdRequest, bidResponse: BidResponse) -> Com_Google_Openrtb_BidRequest {
         var eventModel = Com_Google_Openrtb_BidRequest()
         
-        eventModel.id = bidResponse.winningBid?.bid.impid ?? ""
+        eventModel.id = bidResponse.rawResponse?.requestID ?? ""
+        
+        if let country = bidResponse.inferredCountry {
+            var device = Com_Google_Openrtb_BidRequest.Device()
+            var geo = Com_Google_Openrtb_BidRequest.Geo()
+            geo.country = country
+            device.geo = geo
+            eventModel.device = device
+        }
+        
         
         return eventModel
     }

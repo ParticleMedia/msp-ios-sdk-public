@@ -35,7 +35,7 @@ public class MSPBidder: MSPiOSCore.Bidder {
             "google": MSP.shared.adNetworkAdapterProvider.getAdNetworkAdapter(adNetwork: .google)?.getSDKVersion() ?? "",
             "facebook": MSP.shared.adNetworkAdapterProvider.getAdNetworkAdapter(adNetwork: .facebook)?.getSDKVersion() ?? "",
             "nova": MSP.shared.adNetworkAdapterProvider.getAdNetworkAdapter(adNetwork: .nova)?.getSDKVersion() ?? "",
-            "msp": getMSPVersion()
+            "msp": MSP.shared.version
         ]
 
         if let jsonData = try? JSONSerialization.data(withJSONObject: versions, options: []),
@@ -66,8 +66,10 @@ extension MSPBidder: BidListener {
             if let adNetworkAdapter = MSP.shared.adNetworkAdapterProvider.getAdNetworkAdapter(adNetwork: adNetwork) {
                 MSPLogger.shared.info(message: "\(adNetwork): adapter instance created successfully")
                 self.adNetworkAdapter = adNetworkAdapter
-                adNetworkAdapter.setAdMetricReporter(adMetricReporter: AdMetricReporterImp())
-                adNetworkAdapter.loadAdCreative(bidResponse: bidResponse, auctionBidListener: auctionBidListener, adListener: adListener, context: self, adRequest: adRequest, bidderPlacementId: bidderPlacementId, bidderFormat: nil, params: self.params)
+                DispatchQueue.main.async {
+                    adNetworkAdapter.setAdMetricReporter(adMetricReporter: AdMetricReporterImp())
+                    adNetworkAdapter.loadAdCreative(bidResponse: bidResponse, auctionBidListener: auctionBidListener, adListener: adListener, context: self, adRequest: adRequest, bidderPlacementId: self.bidderPlacementId, bidderFormat: nil, params: self.params)
+                }
             } else {
                 MSPLogger.shared.info(message: "\(adNetwork): adapter not found")
                 auctionBidListener.onError(error: "Ad network is not supported")
