@@ -12,6 +12,7 @@ public class NativeAdView: UIView {
     private var advertiserLabel: UILabel?
     private var callToActionButton: UIButton?
     private var optionView: UIView?
+    private var customClickableViews: [UIView]?
     private var mediaViewContainerView: UIView?
     private var icon: UIImageView?
 
@@ -49,6 +50,7 @@ public class NativeAdView: UIView {
         self.advertiserLabel = nativeAdContainer.getAdvertiser()
         self.callToActionButton = nativeAdContainer.getCallToAction()
         self.icon = nativeAdContainer.getIcon()
+        self.customClickableViews = nativeAdContainer.getCustomClickableViews()
 
         self.titleLabel?.text = nativeAd.title
         self.bodyLabel?.text = nativeAd.body
@@ -72,6 +74,7 @@ open class NativeAdViewBinder {
     public var callToActionButton: UIButton?
     public var optionView: UIView?
     public var mediaView: UIView?
+    public var customClickableViews: [UIView]?
     
     public init(nativeAd: NativeAd) {
         titleLabel = UILabel()
@@ -79,6 +82,7 @@ open class NativeAdViewBinder {
         advertiserLabel = UILabel()
         callToActionButton = UIButton(type: .custom)
         mediaView = (nativeAd.mediaView as? UIView)
+        customClickableViews = []
     }
     
     open func setUpViews(parentView: UIView) {

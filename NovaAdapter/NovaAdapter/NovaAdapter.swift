@@ -111,8 +111,9 @@ public class NovaAdapter: AdNetworkAdapter {
                 novaNativeAdView.bodyLabel = nativeAdView.nativeAdViewBinder?.bodyLabel
                 novaNativeAdView.advertiserLabel = nativeAdView.nativeAdViewBinder?.advertiserLabel
                 novaNativeAdView.callToActionButton = nativeAdView.nativeAdViewBinder?.callToActionButton
+                novaNativeAdView.customClickableViews = nativeAdView.nativeAdViewBinder?.customClickableViews
 
-                let clickableViews: [UIView] = [
+                var clickableViews: [UIView] = [
                     novaNativeAdView.titleLabel,
                     novaNativeAdView.bodyLabel,
                     novaNativeAdView.advertiserLabel,
@@ -121,6 +122,11 @@ public class NovaAdapter: AdNetworkAdapter {
                 ].compactMap {
                     $0
                 }
+                
+                if let customClickableViews = novaNativeAdView.customClickableViews {
+                    clickableViews.append(contentsOf: customClickableViews)
+                }
+                
                 novaNativeAdView.setupViews(with: novaNativeAdItem, clickableViews: clickableViews)
 
                 nativeAdView.nativeAdViewBinder?.setUpViews(parentView: novaNativeAdView)
@@ -130,8 +136,9 @@ public class NovaAdapter: AdNetworkAdapter {
                 novaNativeAdView.advertiserLabel = nativeAdContainer.getAdvertiser()
                 novaNativeAdView.callToActionButton = nativeAdContainer.getCallToAction()
                 novaNativeAdView.icon = nativeAdContainer.getIcon()
+                novaNativeAdView.customClickableViews = nativeAdContainer.getCustomClickableViews()
 
-                let clickableViews: [UIView] = [
+                var clickableViews: [UIView] = [
                     novaNativeAdView.titleLabel,
                     novaNativeAdView.bodyLabel,
                     novaNativeAdView.advertiserLabel,
@@ -140,6 +147,11 @@ public class NovaAdapter: AdNetworkAdapter {
                 ].compactMap {
                     $0
                 }
+                
+                if let customClickableViews = novaNativeAdView.customClickableViews {
+                    clickableViews.append(contentsOf: customClickableViews)
+                }
+                
                 novaNativeAdView.setupViews(with: novaNativeAdItem, clickableViews: clickableViews)
 
                 if let mediaContainer = nativeAdContainer.getMedia() {

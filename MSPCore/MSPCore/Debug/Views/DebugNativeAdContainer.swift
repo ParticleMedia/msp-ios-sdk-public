@@ -133,4 +133,7 @@ class DebugNativeAdContainer: UIView, MSPNativeAdContainer {
     func getIcon() -> UIImageView? {
         return self.icon
     }
-} 
+    func getCustomClickableViews() -> [UIView]? {
+        return nil
+    }
+}
