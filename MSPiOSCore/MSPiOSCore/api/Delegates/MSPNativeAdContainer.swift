@@ -9,7 +9,6 @@ import UIKit
 
 
 public protocol MSPNativeAdContainer: UIView {
-    
     func getTitle() -> UILabel?
     
     func getbody() -> UILabel?
@@ -22,4 +21,5 @@ public protocol MSPNativeAdContainer: UIView {
     
     func getIcon() -> UIImageView?
     
+    func getCustomClickableViews() -> [UIView]?
 }

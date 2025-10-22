@@ -183,4 +183,8 @@ public class DemoNativeAdContainer: UIView, MSPNativeAdContainer {
     public func getIcon() -> UIImageView? {
         return self.icon
     }
+    
+    public func getCustomClickableViews() -> [UIView]? {
+        return nil
+    }
 }
