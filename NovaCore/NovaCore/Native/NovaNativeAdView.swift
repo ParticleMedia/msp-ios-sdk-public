@@ -9,6 +9,7 @@ open class NovaNativeAdView: UIView {
     public var advertiserLabel: UILabel?
     public var callToActionButton: UIButton?
     public var icon: UIImageView?
+    public var customClickableViews: [UIView]?
     public let mediaView: NovaAdMediaView
 
     private var tappableViews: [UIView]? {
