@@ -59,8 +59,8 @@ print_subsection() {
 POD_RELEASE_ORDER=(
     "MSPSharedLibraries"    # No dependencies
     "MSPOMSDK"              # Depends on MSPSharedLibraries
-    "FacebookAdapter"       # Depends on MSPSharedLibraries
-    "GoogleAdapter"         # Depends on MSPSharedLibraries
+    "MSPFacebookAdapter"    # Depends on MSPSharedLibraries
+    "MSPGoogleAdapter"      # Depends on MSPSharedLibraries
     "NovaAdapter"           # Depends on MSPSharedLibraries, MSPOMSDK
     "AmazonAdapter"         # Depends on MSPSharedLibraries
     "PrebidAdapter"         # Depends on MSPSharedLibraries
@@ -68,15 +68,15 @@ POD_RELEASE_ORDER=(
 )
 
 # All pods to be released
-ALL_PODS=("MSPSharedLibraries" "PrebidAdapter" "NovaAdapter" "FacebookAdapter" "GoogleAdapter" "AmazonAdapter" "MSPCore")
+ALL_PODS=("MSPSharedLibraries" "PrebidAdapter" "NovaAdapter" "MSPFacebookAdapter" "MSPGoogleAdapter" "AmazonAdapter" "MSPCore")
 
 # Dependency mapping (using functions instead of associative arrays for bash 3.x compatibility)
 get_pod_dependencies_internal() {
     case "$1" in
         "MSPSharedLibraries") echo "" ;;
         "MSPOMSDK") echo "MSPSharedLibraries" ;;
-        "FacebookAdapter") echo "MSPSharedLibraries" ;;
-        "GoogleAdapter") echo "MSPSharedLibraries" ;;
+        "MSPFacebookAdapter") echo "MSPSharedLibraries" ;;
+        "MSPGoogleAdapter") echo "MSPSharedLibraries" ;;
         "NovaAdapter") echo "MSPSharedLibraries MSPOMSDK" ;;
         "AmazonAdapter") echo "MSPSharedLibraries" ;;
         "PrebidAdapter") echo "MSPSharedLibraries" ;;
@@ -914,6 +914,27 @@ get_release_notes() {
     esac
 }
 
+# Update Config.plist version
+update_config_plist_version() {
+    local version="$1"
+    local config_plist="MSPCore/MSPCore/Resources/Config.plist"
+    
+    if [[ ! -f "$config_plist" ]]; then
+        log_error "Config.plist not found: $config_plist"
+        return 1
+    fi
+    
+    log_step "Updating SDKVersion in Config.plist to $version"
+    
+    # Create backup
+    cp "$config_plist" "${config_plist}.backup"
+    
+    # Update SDKVersion in Config.plist
+    sed -i '' "s|<string>.*</string>|<string>${version}</string>|g" "$config_plist"
+    
+    log_success "Updated SDKVersion in Config.plist to $version"
+}
+
 # Export functions for use in other scripts
 export -f log_info log_success log_warning log_error log_step log_release log_debug print_section print_subsection
 export -f get_pod_dependencies is_valid_pod get_release_order_for_pod validate_release_order
@@ -925,3 +946,4 @@ export -f get_environment get_environment_info format_release_notes_for_slack se
 export -f notify_release_success notify_release_failure notify_release_warning notify_release_start notify_release_success_with_summary
 export -f notify_pod_release notify_release_summary test_slack_notification
 export -f generate_release_notes_from_git generate_release_notes_from_template generate_simple_release_notes prompt_for_release_notes get_release_notes
+export -f update_config_plist_version
