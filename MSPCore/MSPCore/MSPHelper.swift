@@ -288,7 +288,8 @@ public class MSP {
            let plistURL = resourceBundle.url(forResource: "Config", withExtension: "plist"),
            let data = try? Data(contentsOf: plistURL),
            let plist = try? PropertyListSerialization.propertyList(from: data, options: [], format: nil) as? [String: Any],
-           let version = plist["SDKVersion"] as? String {
+           let plistDict = plist,
+           let version = plistDict["SDKVersion"] as? String {
             return version
         }
         return ""

@@ -95,7 +95,7 @@ show_help() {
     echo "Release Workflow:"
     echo "  1. Publish MSPSharedLibraries (foundation dependency)"
     echo "  2. Wait for MSPSharedLibraries to be released"
-    echo "  3. Publish Adapters (FacebookAdapter, GoogleAdapter, NovaAdapter, AmazonAdapter, PrebidAdapter)"
+    echo "  3. Publish Adapters (MSPFacebookAdapter, MSPGoogleAdapter, NovaAdapter, AmazonAdapter, PrebidAdapter)"
     echo "  4. Wait for Adapters to be released"
     echo "  5. Publish MSPCore (main framework)"
     echo "  6. Commit all changes to release branch"
@@ -177,6 +177,12 @@ update_adapter_sdk_version() {
     local adapter="$1"
     local version="$2"
     
+    # Skip MSPGoogleAdapter and MSPFacebookAdapter as they read SDK version from external sources
+    if [[ "$adapter" == "MSPGoogleAdapter" || "$adapter" == "MSPFacebookAdapter" ]]; then
+        log_info "Skipping getSDKVersion() update for $adapter (reads from external sources)"
+        return 0
+    fi
+    
     log_step "Updating getSDKVersion() in $adapter"
     
     # Find Swift files in the adapter directory
@@ -196,17 +202,9 @@ update_adapter_sdk_version() {
 update_mspcore_version() {
     local version="$1"
     
-    log_step "Updating MSPCore version property"
-    
-    # Only update MSPHelper.swift specifically
-    local msphelper_file="MSPCore/MSPCore/MSPHelper.swift"
-    if [[ -f "$msphelper_file" ]]; then
-        # Update version property in MSPHelper.swift only
-        sed -i '' "s|version.*=.*\".*\"|version = \"${version}\"|g" "$msphelper_file"
-        log_info "Updated version in $msphelper_file"
-    else
-        log_warning "MSPHelper.swift not found at $msphelper_file"
-    fi
+    log_info "Skipping MSPCore version property update (reads from Config.plist)"
+    # MSP class version is read from Config.plist, so we don't need to update the code
+    # The version will be updated via update_config_plist_version function instead
 }
 
 # Update podspec dependencies
@@ -410,7 +408,7 @@ release_single_adapter() {
 release_adapters() {
     log_release "Step 2: Releasing Adapters that depend on MSPSharedLibraries (in parallel)"
     
-    local adapters=("FacebookAdapter" "GoogleAdapter" "NovaAdapter" "AmazonAdapter" "PrebidAdapter")
+    local adapters=("MSPFacebookAdapter" "MSPGoogleAdapter" "NovaAdapter" "AmazonAdapter" "PrebidAdapter")
     local pids=()
     local result_files=()
     local temp_dir="/tmp/msp_parallel_release_$$"
@@ -528,8 +526,8 @@ release_msp_core() {
     # Update dependencies
     update_podspec_dependencies "MSPCore" "$VERSION"
     
-    # Update MSPCore version property
-    update_mspcore_version "$VERSION"
+    # Update MSPCore version in Config.plist
+    update_config_plist_version "$VERSION"
     
     # Create GitHub release
     create_github_release_for_pod "MSPCore" "$VERSION"
@@ -599,7 +597,7 @@ main() {
     fi
     
     # Create CocoaPods-specific pod list (exclude MSPOMSDK which is SPM-only)
-    local cocoapods_pods=("MSPSharedLibraries" "FacebookAdapter" "GoogleAdapter" "NovaAdapter" "AmazonAdapter" "PrebidAdapter" "MSPCore")
+    local cocoapods_pods=("MSPSharedLibraries" "MSPFacebookAdapter" "MSPGoogleAdapter" "NovaAdapter" "AmazonAdapter" "PrebidAdapter" "MSPCore")
     
     # Skip individual start notifications - only send final success/failure
     
