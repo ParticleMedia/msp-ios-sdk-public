@@ -19,12 +19,19 @@ enum NovaActionContext {
 
     var tracingInfo: AdActionTracingInfo {
         switch self {
-        case .adInView(let model):
-            return model.tracingInfo
-        case .adInViewController(let model, _):
+        case .adInView(let model), .adInViewController(let model, _):
             return model.tracingInfo
         case .adMultipleItems(let model):
             return model.tracingInfo
+        }
+    }
+
+    var onAdViewClick: ((UIView?) -> Void)? {
+        switch self {
+        case .adInView(let model), .adInViewController(let model, _):
+            return model.extraInfo.onAdViewClick
+        case .adMultipleItems(let model):
+            return model.extraInfo.onAdViewClick
         }
     }
 }
@@ -105,6 +112,7 @@ extension NovaActionHelper where T == NovaActionState.NovaEventSent {
     /// NovaActionHelper should be kept alive until the action is performed
     func handleAdTap(in tapView: UIView?) -> NovaActionHelper<NovaActionState.Init> {
         handleTapAction(in: tapView)
+        context.onAdViewClick?(tapView)
         return NovaActionHelper<NovaActionState.Init>(from: self)
     }
 

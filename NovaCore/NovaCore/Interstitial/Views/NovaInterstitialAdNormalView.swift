@@ -85,13 +85,6 @@ class NovaInterstitialAdNormalView: UIView, NovaInterstitialAdViewProtocol {
         subviewHandler.willDisappear()
     }
 
-    func didTapAd() {
-        actionHelper = actionHelper
-            .logNovaClickEvent(with: CACurrentMediaTime() - CACurrentMediaTime(), in: .cta)
-            .handleAdTap(in: nil)
-        context.interstitialAd.delegate?.interstitialAdDidLogClick(context.interstitialAd)
-    }
-
     // MARK: Private
 
     private func setupTapGesture() {
@@ -108,8 +101,6 @@ class NovaInterstitialAdNormalView: UIView, NovaInterstitialAdViewProtocol {
         actionHelper = actionHelper
             .logNovaClickEvent(with: CACurrentMediaTime() - startTime, in: nbClickArea)
             .handleAdTap(in: sender.view)
-
-        context.interstitialAd.delegate?.interstitialAdDidLogClick(context.interstitialAd)
     }
 
     private let context: NovaInterstitialAdContext
@@ -156,7 +147,5 @@ extension NovaInterstitialAdNormalView: NovaInterstitialAdSubviewBehaviorDelegat
         playableActionHelper = playableActionHelper?
             .logNovaClickEvent(with: CACurrentMediaTime() - CACurrentMediaTime(), in: .playable)
             .handleAdTap(in: nil)
-        
-        context.interstitialAd.delegate?.interstitialAdDidLogClick(context.interstitialAd)
     }
 }

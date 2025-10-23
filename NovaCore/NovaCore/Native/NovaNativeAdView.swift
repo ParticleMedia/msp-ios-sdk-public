@@ -152,10 +152,5 @@ private extension NovaNativeAdView {
                 .logNovaClickEvent(with: CACurrentMediaTime() - startTime, in: clickArea)
                 .handleAdTap(in: sender.view)
         }
-        
-        nativeAd.delegate?.nativeAdDidLogClick(
-            nativeAd,
-            clickAreaName: NovaAdMetricReporter.convertNovaClickAreaNameToMetric(clickArea: clickArea.rawValue) ?? ""
-        )
     }
 }
