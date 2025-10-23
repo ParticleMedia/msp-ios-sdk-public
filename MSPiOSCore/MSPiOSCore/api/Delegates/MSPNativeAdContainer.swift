@@ -7,6 +7,14 @@
 import Foundation
 import UIKit
 
+public enum MSPNativeElement: Equatable {
+    case title
+    case body
+    case advertiser
+    case CTAButton
+    case media
+    case icon
+}
 
 public protocol MSPNativeAdContainer: UIView {
     func getTitle() -> UILabel?
@@ -22,4 +30,12 @@ public protocol MSPNativeAdContainer: UIView {
     func getIcon() -> UIImageView?
     
     func getCustomClickableViews() -> [UIView]?
+    
+    func getDisplayContext() -> [MSPNativeElement: MSPNativeDisplayContext]?
+}
+
+extension MSPNativeAdContainer {
+    public func getDisplayContext() -> [MSPNativeElement: MSPNativeDisplayContext]? {
+        return nil
+    }
 }
