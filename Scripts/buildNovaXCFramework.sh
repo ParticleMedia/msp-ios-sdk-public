@@ -372,7 +372,7 @@ if [ "$CI" = "true" ]; then
     # Check if MarketplaceKit is available (NewsBreak-specific framework)
     if ! find Pods -name "*MarketplaceKit*" -type d >/dev/null 2>&1; then
         color_warning "⚠️  WARNING: MarketplaceKit not found in CI environment"
-        color_warning "   This may cause linking issues with GoogleAdapter and FacebookAdapter"
+        color_warning "   This may cause linking issues with MSPGoogleAdapter and MSPFacebookAdapter"
         color_warning "   Consider adding MarketplaceKit.xcframework to CI environment"
     fi
     
