@@ -6,15 +6,21 @@
 //
 
 import Foundation
+import UIKit
 
 // MARK: - AdActionExtraInfo
 
 struct AdActionExtraInfo {
     // MARK: Lifecycle
 
-    init(videoMediaModel: NovaAdVideoMediaModel? = nil, advertiser: String? = nil) {
+    init(
+        videoMediaModel: NovaAdVideoMediaModel? = nil,
+        advertiser: String? = nil,
+        onAdViewClick: ((UIView?) -> Void)? = nil
+    ) {
         self.videoMediaModel = videoMediaModel
         self.advertiser = advertiser
+        self.onAdViewClick = onAdViewClick
     }
 
     // MARK: Internal
@@ -23,6 +29,8 @@ struct AdActionExtraInfo {
     let videoMediaModel: NovaAdVideoMediaModel?
     // needed for some ads missing landing page title
     let advertiser: String?
+
+    let onAdViewClick: ((UIView?) -> Void)?
 }
 
 // MARK: - AdActionTracingInfo
@@ -100,7 +108,22 @@ extension NovaBaseAd {
 
         let advertiser = (self as? NovaNativeBaseAd)?.advertiser
 
-        return AdActionExtraInfo(videoMediaModel: videoMediaModel, advertiser: advertiser)
+        return AdActionExtraInfo(videoMediaModel: videoMediaModel, advertiser: advertiser) { adView in
+            switch self {
+            case let nativeAd as NovaNativeAdItem:
+                nativeAd.delegate?
+                    .nativeAdDidLogClick(
+                        nativeAd,
+                        clickAreaName: NovaAdMetricReporter
+                            .convertNovaClickAreaNameToMetric(clickArea: adView?.adClickArea?.rawValue) ?? ""
+                    )
+            case let interstitialAd as NovaInterstitialAdItem:
+                interstitialAd.delegate?.interstitialAdDidLogClick(interstitialAd)
+            default:
+                // TODO: lsy, banner nova ad has no delegate now
+                break
+            }
+        }
     }
 
     var actionTracingInfo: AdActionTracingInfo {
