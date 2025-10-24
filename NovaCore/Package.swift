@@ -6,19 +6,20 @@ import PackageDescription
 let package = Package(
     name: "NovaCore",
     platforms: [
-        .iOS(.v15)
+        .iOS(.v15),
     ],
     products: [
         // Products define the executables and libraries a package produces, making them visible to other packages.
         .library(
             name: "NovaCore",
-            targets: ["NovaCore"]),
+            targets: ["NovaCore"]
+        ),
     ],
     dependencies: [
         // External dependencies
         .package(url: "https://github.com/onevcat/Kingfisher.git", from: "7.0.0"),
         .package(url: "https://github.com/SnapKit/SnapKit.git", from: "5.6.0"),
-        
+
         // Internal dependencies
         .package(path: "../MSPiOSCore"),
     ],
@@ -29,14 +30,16 @@ let package = Package(
             dependencies: [
                 "MSPiOSCore",
                 .product(name: "Kingfisher", package: "Kingfisher"),
-                .product(name: "SnapKit", package: "SnapKit")
+                .product(name: "SnapKit", package: "SnapKit"),
             ],
             path: "NovaCore",
-            publicHeadersPath: ".",
+            exclude: [],
+            sources: nil,
             resources: [
                 .process("NBAssets.xcassets"),
-                .process("NBResourceBundle.bundle")
+                .process("NBResourceBundle.bundle"),
             ],
+            publicHeadersPath: ".",
             cSettings: [
                 .headerSearchPath("."),
             ],
