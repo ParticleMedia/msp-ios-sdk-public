@@ -49,15 +49,7 @@ extension NovaInterstitialAdItem {
             case .horizontal:
                 return .horizontal(showTopRightCancelButton: false)
             case .vertical:
-                // TODO: lsy, sk overlay is not rollout yet, need to confirm with product
-                if case .appInstall(let appInstallModel) = adCtrType {
-                    return .skOverlay(
-                        appStoreId: appInstallModel.storeId,
-                        thirdPartyTrackingURL: appInstallModel.fallbackWebModel.url
-                    )
-                } else {
-                    return .vertical(showTopRightCancelButton: false)
-                }
+                return .vertical(showTopRightCancelButton: false)
             case .horizontalCancelTopRight:
                 return .horizontal(showTopRightCancelButton: true)
             case .verticalCancelTopRight:
