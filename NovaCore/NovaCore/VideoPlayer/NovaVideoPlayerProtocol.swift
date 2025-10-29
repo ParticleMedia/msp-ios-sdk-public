@@ -10,7 +10,6 @@ enum NovaVideoPlayStyle: String {
 
 struct NovaPlayInfo {
     let url: URL
-    let asset: AVAsset?
     let playLoops: Bool
     let videoDataModel: Any?
     let playStyle: NovaVideoPlayStyle
@@ -19,15 +18,14 @@ struct NovaPlayInfo {
     let enableLogging: Bool
 
     init(url: URL,
-                asset: AVAsset?,
-                playLoops: Bool,
-                videoDataModel: Any?,
-                playStyle: NovaVideoPlayStyle,
-                isMute: Bool,
-                disableGesture: Bool,
-                enableLogging: Bool = true) {
+         playLoops: Bool,
+         videoDataModel: Any?,
+         playStyle: NovaVideoPlayStyle,
+         isMute: Bool,
+         disableGesture: Bool,
+         enableLogging: Bool = true)
+    {
         self.url = url
-        self.asset = asset
         self.playLoops = playLoops
         self.videoDataModel = videoDataModel
         self.playStyle = playStyle
