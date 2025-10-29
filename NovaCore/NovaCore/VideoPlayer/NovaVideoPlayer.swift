@@ -273,11 +273,7 @@ extension NovaVideoPlayer: NovaVideoPlayerProtocol {
                      delegate: NovaVideoPlayerDelegate) {
         //DebugLogging.info(.video, "VideoPlayer Inside play")
         self.actionHandler = actionHandler
-        if let asset = info.asset {
-            url = info.url
-            player.asset = asset
-            localTimeElapsed = 0
-        } else if player.url?.absoluteString != info.url.absoluteString {
+        if player.url?.absoluteString != info.url.absoluteString {
             url = info.url
             player.url = url
             localTimeElapsed = 0

@@ -138,9 +138,6 @@ public final class NovaAdVideoView: UIView {
     private var delayedHideViewBlock: DispatchCancelableBlock?
 
     private var videoPlayer: NovaVideoPlayer = .init()
-    private var videoPlayerConfigTask: Task<Void, Never>?
-    // to make sure if you use `stop` after `play`, the final state of video is `end`
-    private var playVersion: Int = 0
 
     private var willAutoPlayingAfterShowCover: Bool = false
 
@@ -200,9 +197,7 @@ extension NovaAdVideoView {
         self.iabReporter = iabReporter
         self.loopCount = mediaModel?.videoInfo.state?.loopCount ?? 0
 
-        videoPlayerConfigTask = Task(priority: .high) {
-            await setupPlayer(videoInfo: model.videoInfo)
-        }
+        setupPlayer(videoInfo: model.videoInfo)
 
         state = {
             if let state = model.videoInfo.state {
@@ -244,21 +239,12 @@ extension NovaAdVideoView {
             return
         }
 
-        playVersion += 1
-        let playVersionAtStart = playVersion
-        Task(priority: .userInitiated) {
-            await videoPlayerConfigTask?.value
-            guard playVersionAtStart == playVersion else {
-                return
-            }
-
-            switch playStrategy {
-            case .fromBeginning:
-                startPlayingFromBeginning()
-            case .continueFromLast:
-                if let state {
-                    syncVideoPlayerState(state)
-                }
+        switch playStrategy {
+        case .fromBeginning:
+            startPlayingFromBeginning()
+        case .continueFromLast:
+            if let state {
+                syncVideoPlayerState(state)
             }
         }
     }
@@ -269,7 +255,6 @@ extension NovaAdVideoView {
             return
         }
 
-        playVersion += 1
         switch playState {
         case .showCover:
             showCoverKey = nil
@@ -282,7 +267,6 @@ extension NovaAdVideoView {
 
     // TODO: lsy, check 一下实现对不对
     func stop() {
-        playVersion += 1
         videoPlayer.stop(endKind: .none)
         videoPlayer.player.playbackLoops = false
         videoPlayer.player.playbackFreezesAtEnd = true
@@ -463,20 +447,18 @@ private extension NovaAdVideoView {
         lastPauseTime = CACurrentMediaTime()
     }
 
-    func setupPlayer(videoInfo: NovaNativeAdVideoInfo) async {
+    func setupPlayer(videoInfo: NovaNativeAdVideoInfo) {
         guard let videoUrl = URL(string: videoInfo.videoUrlStr) else {
             assertionFailure("Invalid video url: \(videoInfo.videoUrlStr)")
             return
         }
 
-        let asset = await NovaAdVideoCacheManager.shared.loadAsset(url: videoUrl)
         self.configTime = CACurrentMediaTime()
         if let encryptedAdToken = self.actionContext?.adActionTracingInfo.encryptedAdToken {
             NovaAdVideoMetricReporter.makeRecord(encryptedAdToken: encryptedAdToken)
         }
         let playInfo = NovaPlayInfo(
             url: videoUrl,
-            asset: asset,
             playLoops: videoInfo.isLoop,
             videoDataModel: nil,
             playStyle: .feed,

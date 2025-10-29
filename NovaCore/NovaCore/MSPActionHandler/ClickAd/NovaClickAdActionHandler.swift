@@ -5,6 +5,7 @@
 //  Created by Huanzhi Zhang on 6/19/24.
 //
 
+import AVFoundation
 import Foundation
 import StoreKit
 import UIKit
@@ -344,7 +345,9 @@ private extension NovaClickAdActionHandler {
             return nil
         }
 
-        if let size = await NovaAdVideoCacheManager.shared.getAssetNaturalSize(url: videoUrl), size.height >= size.width {
+        let size = try? await AVURLAsset(url: videoUrl).load(.tracks).first?.load(.naturalSize)
+
+        if let size, size.height >= size.width {
             return screenWidth
         } else {
             return screenWidth / AdsMediaConstants.defaultAspectRatio
