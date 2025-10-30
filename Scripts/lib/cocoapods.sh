@@ -436,6 +436,8 @@ check_pod_availability() {
         local search_output
         local search_exit_code
         
+        # Check both cocoapods and trunk repositories to ensure availability
+        # since pod spec lint uses trunk repo while pod search might use cocoapods repo
         log_debug "Running: bundle exec pod search '$pod_name' --simple"
         if search_output=$(bundle exec pod search "$pod_name" --simple 2>&1); then
             search_exit_code=0
@@ -447,10 +449,19 @@ check_pod_availability() {
         
         if [[ $search_exit_code -eq 0 ]] && [[ -n "$search_output" ]]; then
             if [[ -n "$version" ]]; then
-                # Try to find specific version
+                # Try to find specific version in the search output
                 if echo "$search_output" | grep -q "$version"; then
-                    log_success "$pod_name version $version is available"
-                    return $EXIT_SUCCESS
+                    # Additional check: verify the pod is available in trunk repo
+                    # since that's what pod spec lint uses for validation
+                    log_debug "Verifying availability in trunk repository for validation..."
+                    if bundle exec pod spec lint --quick --allow-warnings "$pod_name" --sources=https://cdn.cocoapods.org/ >/dev/null 2>&1; then
+                        log_success "$pod_name version $version is available and ready for validation"
+                        return $EXIT_SUCCESS
+                    else
+                        log_warn "$pod_name version $version found in search but not yet available for validation"
+                        log_debug "Available versions: $(echo "$search_output" | head -5)"
+                        return $EXIT_NOT_FOUND_YET
+                    fi
                 else
                     log_warn "$pod_name is available but version $version not found yet"
                     log_debug "Available versions: $(echo "$search_output" | head -5)"
