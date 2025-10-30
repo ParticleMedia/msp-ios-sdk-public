@@ -408,6 +408,13 @@ release_single_adapter() {
 release_adapters() {
     log_release "Step 2: Releasing Adapters that depend on MSPSharedLibraries (in parallel)"
     
+    # Ensure MSPSharedLibraries is available before adapter releases
+    log_step "Verifying MSPSharedLibraries availability before adapter releases..."
+    if ! wait_for_pod_availability "MSPSharedLibraries" "$VERSION"; then
+        log_error "MSPSharedLibraries $VERSION not available, cannot proceed with adapter releases"
+        return 1
+    fi
+    
     local adapters=("MSPFacebookAdapter" "MSPGoogleAdapter" "NovaAdapter" "AmazonAdapter" "PrebidAdapter")
     local pids=()
     local result_files=()
