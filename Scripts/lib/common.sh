@@ -11,6 +11,7 @@
 [[ -z "${EXIT_SUCCESS:-}" ]] && readonly EXIT_SUCCESS=0
 [[ -z "${EXIT_GENERAL_ERROR:-}" ]] && readonly EXIT_GENERAL_ERROR=1
 [[ -z "${EXIT_COMMAND_NOT_FOUND:-}" ]] && readonly EXIT_COMMAND_NOT_FOUND=2
+[[ -z "${EXIT_NOT_FOUND_YET:-}" ]] && readonly EXIT_NOT_FOUND_YET=7
 [[ -z "${EXIT_VALIDATION_ERROR:-}" ]] && readonly EXIT_VALIDATION_ERROR=3
 [[ -z "${EXIT_BUILD_ERROR:-}" ]] && readonly EXIT_BUILD_ERROR=4
 [[ -z "${EXIT_DEPLOY_ERROR:-}" ]] && readonly EXIT_DEPLOY_ERROR=5
