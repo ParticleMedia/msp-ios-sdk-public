@@ -283,15 +283,20 @@ public class MSP {
     
     static func getMSPVersion() -> String {
         let bundle = Bundle(for: MSP.self)
-        if let url = bundle.url(forResource: "MSPCoreResources", withExtension: "bundle"),
-           let resourceBundle = Bundle(url: url),
-           let plistURL = resourceBundle.url(forResource: "Config", withExtension: "plist"),
-           let data = try? Data(contentsOf: plistURL),
-           let plist = try? PropertyListSerialization.propertyList(from: data, options: [], format: nil) as? [String: Any],
-           let version = plist["SDKVersion"] as? String {
-            return version
+        guard let url = bundle.url(forResource: "MSPCoreResources", withExtension: "bundle"),
+              let resourceBundle = Bundle(url: url),
+              let plistURL = resourceBundle.url(forResource: "Config", withExtension: "plist"),
+              let data = try? Data(contentsOf: plistURL) else {
+            return ""
         }
-        return ""
+        
+        guard let plistData = try? PropertyListSerialization.propertyList(from: data, options: [], format: nil),
+              let plist = plistData as? [String: Any],
+              let version = plist["SDKVersion"] as? String else {
+            return ""
+        }
+        
+        return version
     }
 }
 
