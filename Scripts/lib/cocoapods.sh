@@ -452,9 +452,9 @@ check_pod_availability() {
                     log_success "$pod_name version $version is available"
                     return $EXIT_SUCCESS
                 else
-                    log_warn "$pod_name is available but version $version not found"
+                    log_warn "$pod_name is available but version $version not found yet"
                     log_debug "Available versions: $(echo "$search_output" | head -5)"
-                    return $EXIT_VALIDATION_ERROR
+                    return $EXIT_NOT_FOUND_YET  # Return proper constant for "not found yet"
                 fi
             else
                 log_success "$pod_name is available"
@@ -468,6 +468,9 @@ check_pod_availability() {
                 local delay=$((attempt * 3))
                 log_info "Retrying in ${delay} seconds..."
                 sleep $delay
+            else
+                # Return proper constant for "not found yet" instead of validation error
+                return $EXIT_NOT_FOUND_YET
             fi
         fi
         
@@ -475,7 +478,7 @@ check_pod_availability() {
     done
     
     log_error "$pod_name not found in CocoaPods repository after $max_attempts attempts"
-    return $EXIT_VALIDATION_ERROR
+    return $EXIT_NOT_FOUND_YET  # Return proper constant for "not found yet"
 }
 
 # Network troubleshooting
