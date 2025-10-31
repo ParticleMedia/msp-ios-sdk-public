@@ -451,16 +451,21 @@ check_pod_availability() {
             if [[ -n "$version" ]]; then
                 # Try to find specific version in the search output
                 if echo "$search_output" | grep -q "$version"; then
-                    # Additional check: verify the pod is available in trunk repo
-                    # since that's what pod spec lint uses for validation
-                    log_debug "Verifying availability in trunk repository for validation..."
-                    if bundle exec pod spec lint --quick --allow-warnings "$pod_name" --sources=https://cdn.cocoapods.org/ >/dev/null 2>&1; then
+                    # Additional verification: check if the podspec is actually available in trunk repo
+                    # This ensures it's available for pod spec lint validation
+                    # Use find to locate the podspec file (trunk repo uses hash-based directory structure)
+                    log_debug "Version found in search, verifying availability in trunk repo for validation..."
+                    local trunk_spec_path="${HOME}/.cocoapods/repos/trunk/Specs"
+                    local spec_file_pattern="${pod_name}/${version}/${pod_name}.podspec.json"
+                    
+                    # Check if podspec file exists in trunk repo (verify CDN propagation)
+                    if find "$trunk_spec_path" -path "*/${spec_file_pattern}" -type f -print -quit 2>/dev/null | grep -q "${pod_name}\.podspec\.json"; then
                         log_success "$pod_name version $version is available and ready for validation"
                         return $EXIT_SUCCESS
                     else
                         log_warn "$pod_name version $version found in search but not yet available for validation"
-                        log_debug "Available versions: $(echo "$search_output" | head -5)"
-                        return $EXIT_NOT_FOUND_YET
+                        log_debug "Available versions in search: $(echo "$search_output" | head -5)"
+                        return $EXIT_NOT_FOUND_YET  # Return proper constant for "not found yet"
                     fi
                 else
                     log_warn "$pod_name is available but version $version not found yet"
