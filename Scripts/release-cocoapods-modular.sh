@@ -314,8 +314,8 @@ publish_pod_to_cocoapods() {
 wait_for_pod_availability() {
     local pod="$1"
     local version="$2"
-    local max_attempts=8
-    local base_delay=15  # Start with 15 seconds for better balance
+    local max_attempts=12  # Increased from 8 to 12 for longer waiting period
+    local base_delay=20  # Increased from 15 to 20 seconds for better CDN propagation coverage
     
     log_step "Waiting for $pod version $version to be available"
     
