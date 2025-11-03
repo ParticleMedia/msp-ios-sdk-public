@@ -25,6 +25,7 @@ enum AbConfigKeys {
     static let discountTagStyle = "ios_discount_tag_style"
     static let multipleItemsStyle = "ios_carousel_style"
     static let immersivePlayableUIStyle = "immersive_playable_ui"
+    static let enableOCPMShadow = "enable_ocpm_shadow"
 }
 
 // MARK: - AdScene
@@ -62,6 +63,8 @@ public enum NovaAdBuilder {
             NovaAdUrlTransformer.replaceMacro(in: $0)
         } ?? []
 
+        let supportOCPM = parseSupportOCPM(from: abConfig)
+
         return try NovaNativeAdItem(
             adUnitId: adUnitId,
             requestId: adItem.requestId,
@@ -74,6 +77,7 @@ public enum NovaAdBuilder {
             thirdPartyClickTrackingUrls: thirdPartyClickTrackingUrls,
             priceInDollar: adItem.price,
             encryptedAdToken: adItem.encryptedAdToken,
+            supportOCPM: supportOCPM,
             creativeType: creativeType,
             headline: adItem.creative.headline,
             body: adItem.creative.body,
@@ -132,6 +136,7 @@ public enum NovaAdBuilder {
 
         let startTimeInMs = Double(adItem.startTimeMs ?? "")
         let expirationTimeInMs = Double(adItem.expirationMs ?? "")
+        let supportOCPM = parseSupportOCPM(from: abConfig)
 
         do {
             let adItem = try NovaInterstitialAdItem(
@@ -146,6 +151,7 @@ public enum NovaAdBuilder {
                 thirdPartyClickTrackingUrls: thirdPartyClickTrackingUrls,
                 priceInDollar: adItem.price,
                 encryptedAdToken: adItem.encryptedAdToken,
+                supportOCPM: supportOCPM,
                 creativeType: creativeType,
                 startTimeInMs: startTimeInMs,
                 expirationTimeInMs: expirationTimeInMs,
@@ -214,6 +220,7 @@ public enum NovaAdBuilder {
 
             let startTimeInMs = Double(adItem.startTimeMs ?? "")
             let expirationTimeInMs = Double(adItem.expirationMs ?? "")
+            let supportOCPM = parseSupportOCPM(from: abConfig)
 
             do {
                 let adItem = try NovaInterstitialAdItem(
@@ -228,6 +235,7 @@ public enum NovaAdBuilder {
                     thirdPartyClickTrackingUrls: thirdPartyClickTrackingUrls,
                     priceInDollar: adItem.price,
                     encryptedAdToken: adItem.encryptedAdToken,
+                    supportOCPM: supportOCPM,
                     creativeType: creativeType,
                     startTimeInMs: startTimeInMs,
                     expirationTimeInMs: expirationTimeInMs,
@@ -458,5 +466,12 @@ private extension NovaAdBuilder {
             playableArea: AdPlayableArea(rawValue: playableItem.clickAreaMode ?? "") ?? .all,
             layout: layout
         )
+    }
+
+    static func parseSupportOCPM(from abConfig: [String: String]?) -> Bool {
+        guard let value = abConfig?[AbConfigKeys.enableOCPMShadow] else {
+            return false
+        }
+        return value.lowercased() == "true"
     }
 }

@@ -96,4 +96,4 @@ struct AddOnItem: Codable {
 struct AdFormatSpec: Codable {
     let backgroundColor: String?
     let textColor: String?
-} 
+}
