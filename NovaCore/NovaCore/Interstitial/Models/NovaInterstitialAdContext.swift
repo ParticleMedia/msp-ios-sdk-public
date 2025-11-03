@@ -49,7 +49,14 @@ extension NovaInterstitialAdItem {
             case .horizontal:
                 return .horizontal(showTopRightCancelButton: false)
             case .vertical:
-                return .vertical(showTopRightCancelButton: false)
+                if case let .appInstall(appInstallModel) = adCtrType, supportOCPM {
+                    return .skOverlay(
+                        appStoreId: appInstallModel.storeId,
+                        thirdPartyTrackingURL: appInstallModel.fallbackWebModel.url
+                    )
+                } else {
+                    return .vertical(showTopRightCancelButton: false)
+                }
             case .horizontalCancelTopRight:
                 return .horizontal(showTopRightCancelButton: true)
             case .verticalCancelTopRight:
