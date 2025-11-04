@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import UIKit
 import WebKit
 
 // MARK: - NovaAdPlayableView
@@ -27,6 +28,27 @@ class NovaAdPlayableView: UIView {
     @available(*, unavailable)
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+
+    deinit {
+        playableWebView.configuration.userContentController.removeScriptMessageHandler(forName: "mraidBridge")
+    }
+
+    // MARK: Internal
+
+    override func didMoveToWindow() {
+        super.didMoveToWindow()
+        updateMraidViewable()
+    }
+
+    override func didMoveToSuperview() {
+        super.didMoveToSuperview()
+        updateMraidViewable()
+    }
+
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        updateMraidViewable()
     }
 
     func config(with playableModel: PlayableModel, actionContext: NovaAdMediaActionContext?) {
@@ -64,10 +86,8 @@ class NovaAdPlayableView: UIView {
                         )
                     )
             }
-
         }()
     }
-
 
     // MARK: Private
 
@@ -91,7 +111,14 @@ class NovaAdPlayableView: UIView {
         configuration.allowsInlineMediaPlayback = true
         configuration.preferences.javaScriptCanOpenWindowsAutomatically = true
         let userContentController = WKUserContentController()
-        userContentController.addUserScript(WKUserScript(source: mraidShimSource, injectionTime: .atDocumentStart, forMainFrameOnly: true))
+        userContentController.addUserScript(
+            WKUserScript(
+                source: mraidShimSource,
+                injectionTime: .atDocumentStart,
+                forMainFrameOnly: true
+            )
+        )
+        userContentController.add(self, name: "mraidBridge")
         configuration.userContentController = userContentController
         let webView = WKWebView(frame: .zero, configuration: configuration)
         webView.allowsBackForwardNavigationGestures = true
@@ -107,96 +134,117 @@ class NovaAdPlayableView: UIView {
         return webView
     }()
 
-    private lazy var mraidShimSource: String = // Minimal MRAID 3.0-compatible surface for playable creatives
-        """
-        (function () {
-            if (window.mraid) return;
-        
-            var listeners = {};
-        
-            window.mraid = {
-                getState: function () {
-                    return 'default';
-                },
-                getVersion: function () {
-                    return '2.0';
-                },
-                isViewable: function () {
-                    return true;
-                },
-        
-                addEventListener: function (event, listener) {
-                    if (!listeners[event]) listeners[event] = [];
-                    listeners[event].push(listener);
-                },
-                removeEventListener: function (event, listener) {
-                    if (!listeners[event]) return;
-                    var idx = listeners[event].indexOf(listener);
-                    if (idx !== -1) listeners[event].splice(idx, 1);
-                },
-        
-                open: function (url) {
-                    window.location = 'mraid://open?url=' + encodeURIComponent(url);
-                },
-                close: function () {
-                    window.location = 'mraid://close';
-                },
-                expand: function (url) {
-                    window.location =
-                        'mraid://expand' + (url ? ('?url=' + encodeURIComponent(url)) : '');
-                },
-                useCustomClose: function (use) {
-                    window.location = 'mraid://useCustomClose?value=' + (use ? 'true' : 'false');
-                },
-        
-                fireEvent: function (event, args) {
-                    if (!listeners[event]) return;
-                    listeners[event].forEach(function (fn) {
-                        try {
-                            fn(args);
-                        } catch (e) { }
-                    });
+    private lazy var mraidShimSource: String = {
+        if let script = loadScriptResource(named: "novaMraid") {
+            return script
+        }
+        assertionFailure("Failed to load novaMraid.js from bundle")
+        return ""
+    }()
+
+    private var isMraidViewable: Bool = false {
+        didSet {
+            guard oldValue != isMraidViewable else { return }
+            let boolString = isMraidViewable ? "true" : "false"
+            let js = """
+                if (window.mraid && window.mraid._setIsViewable) {
+                    window.mraid._setIsViewable(\(boolString));
                 }
-            };
-        })();
-        """
+            """
+            playableWebView.evaluateJavaScript(js, completionHandler: nil)
+        }
+    }
 
     private var actionHelper: NovaActionHelper<NovaActionState.Init>?
     private var startTime: CFTimeInterval?
     private var userDidClick: Bool = false
+
+    private func updateMraidViewable() {
+        let currentlyViewable = window != nil && alpha > 0.01 && !isHidden
+        isMraidViewable = currentlyViewable
+    }
+
+    private func initializeMraidState(in webView: WKWebView) {
+        guard let initScript = loadScriptResource(named: "novaMraidInit") else {
+            assertionFailure("Failed to load novaMraidInit.js from bundle")
+            return
+        }
+
+        webView.evaluateJavaScript(initScript, completionHandler: nil)
+    }
+
+    private func handleMraidOpen() {
+        let duration: CFTimeInterval? = {
+            if let startTime { return CACurrentMediaTime() - startTime } else { return nil }
+        }()
+        actionHelper = actionHelper?
+            .logNovaClickEvent(with: duration, in: .playable)
+            .handleAdTap(in: nil)
+    }
+
+    private func loadScriptResource(named resourceName: String) -> String? {
+        if let scriptURL = NovaResource.getJSScriptResourceURL(resourceName),
+           let script = try? String(contentsOf: scriptURL, encoding: .utf8)
+        {
+            return script
+        }
+
+        if let scriptURL = Bundle.main.url(forResource: resourceName, withExtension: "js"),
+           let script = try? String(contentsOf: scriptURL, encoding: .utf8)
+        {
+            return script
+        }
+
+        return nil
+    }
 }
 
 // MARK: WKUIDelegate
 
 extension NovaAdPlayableView: WKUIDelegate {
     func webView(
-        _ webView: WKWebView,
-        createWebViewWith configuration: WKWebViewConfiguration,
-        for navigationAction: WKNavigationAction,
-        windowFeatures: WKWindowFeatures
+        _: WKWebView,
+        createWebViewWith _: WKWebViewConfiguration,
+        for _: WKNavigationAction,
+        windowFeatures _: WKWindowFeatures
     ) -> WKWebView? {
         guard userDidClick else {
             return nil
         }
 
-        let duration: CFTimeInterval? = {
-            if let startTime {
-                return CACurrentMediaTime() - startTime
-            } else {
-                return nil
-            }
-        }()
-        self.actionHelper = self.actionHelper?
-            .logNovaClickEvent(with: duration, in: .playable)
-            .handleAdTap(in: nil)
+        handleMraidOpen()
         return nil
+    }
+}
+
+// MARK: WKScriptMessageHandler
+
+extension NovaAdPlayableView: WKScriptMessageHandler {
+    func userContentController(_: WKUserContentController, didReceive message: WKScriptMessage) {
+        guard message.name == "mraidBridge" else { return }
+        guard let jsonString = message.body as? String,
+              let jsonData = jsonString.data(using: .utf8),
+              let jsonObject = try? JSONSerialization.jsonObject(with: jsonData) as? [String: Any],
+              let action = jsonObject["action"] as? String
+        else {
+            return
+        }
+
+        switch action {
+        case "open":
+            handleMraidOpen()
+        case "expand", "close", "unload", "resize":
+            break
+        default:
+            break
+        }
     }
 }
 
 // MARK: WKNavigationDelegate
 
 extension NovaAdPlayableView: WKNavigationDelegate {
-    public func webView(
+    func webView(
         _: WKWebView,
         decidePolicyFor navigationAction: WKNavigationAction,
         decisionHandler: @escaping (WKNavigationActionPolicy) -> Void
@@ -205,30 +253,21 @@ extension NovaAdPlayableView: WKNavigationDelegate {
             decisionHandler(.allow)
             return
         }
+
         if url.scheme == "mraid" {
             let command = url.host ?? ""
-            switch command {
-            case "open":
+            if command == "open" {
                 handleMraidOpen()
-            default:
-                break
             }
             decisionHandler(.cancel)
             return
         }
+
         decisionHandler(.allow)
     }
-}
 
-// MARK: - MRAID Helpers
-
-private extension NovaAdPlayableView {
-    func handleMraidOpen() {
-        let duration: CFTimeInterval? = {
-            if let startTime { return CACurrentMediaTime() - startTime } else { return nil }
-        }()
-        actionHelper = actionHelper?
-            .logNovaClickEvent(with: duration, in: .playable)
-            .handleAdTap(in: nil)
+    func webView(_ webView: WKWebView, didFinish _: WKNavigation!) {
+        initializeMraidState(in: webView)
+        updateMraidViewable()
     }
 }
