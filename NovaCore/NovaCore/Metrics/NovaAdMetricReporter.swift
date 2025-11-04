@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import UIKit
 
 
 class NovaAdMetricReporter: NSObject {
@@ -115,6 +116,11 @@ private extension NovaAdMetricReporter {
         params[NovaAdMetricKeys.EVENT_TYPE] = event.rawValue
         params[NovaAdMetricKeys.ENCRYPTED_AD_TOKEN] = encryptedAdToken
         params[NovaAdMetricKeys.EVENT_TIME] = "\(Int64(Date().timeIntervalSince1970 * 1000))"
+        params[NovaAdMetricKeys.OS] = "ios"
+        params[NovaAdMetricKeys.OSV] =  UIDevice.current.systemVersion
+        if let cv = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String {
+            params[NovaAdMetricKeys.CV] = cv
+        }
         //params["session_id"] = "\(HpEngine.sharedInstance().nbSessionId)"
 
         //let user = HpEngine.sharedInstance().user
@@ -179,4 +185,8 @@ struct NovaAdMetricKeys {
     static let EVENT_TYPE = "event_type"
     static let ENCRYPTED_AD_TOKEN = "encrypted_ad_token"
     static let EVENT_TIME = "event_time"
+    
+    static let OS = "os"
+    static let CV = "cv"
+    static let OSV = "osv"
 }
