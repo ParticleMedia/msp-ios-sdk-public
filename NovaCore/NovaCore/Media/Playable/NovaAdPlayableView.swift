@@ -29,27 +29,6 @@ class NovaAdPlayableView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
 
-    deinit {
-        playableWebView.configuration.userContentController.removeScriptMessageHandler(forName: "mraid")
-    }
-
-    // MARK: Internal
-
-    override func didMoveToWindow() {
-        super.didMoveToWindow()
-        updateMraidViewable()
-    }
-
-    override func didMoveToSuperview() {
-        super.didMoveToSuperview()
-        updateMraidViewable()
-    }
-
-    override func layoutSubviews() {
-        super.layoutSubviews()
-        updateMraidViewable()
-    }
-
     func config(with playableModel: PlayableModel, actionContext: NovaAdMediaActionContext?) {
         playableWebView.load(URLRequest(url: playableModel.playableUrl))
         startTime = CACurrentMediaTime()
@@ -111,9 +90,7 @@ class NovaAdPlayableView: UIView {
         let configuration = WKWebViewConfiguration()
         configuration.allowsInlineMediaPlayback = true
         configuration.preferences.javaScriptCanOpenWindowsAutomatically = true
-        // Inject minimal MRAID bridge
         let userContentController = WKUserContentController()
-        userContentController.add(self, name: "mraid")
         userContentController.addUserScript(WKUserScript(source: mraidShimSource, injectionTime: .atDocumentStart, forMainFrameOnly: true))
         configuration.userContentController = userContentController
         let webView = WKWebView(frame: .zero, configuration: configuration)
@@ -132,68 +109,61 @@ class NovaAdPlayableView: UIView {
 
     private lazy var mraidShimSource: String = // Minimal MRAID 3.0-compatible surface for playable creatives
         """
-        (function() {
-            if (window.mraid) { return; }
-            var listeners = { ready: [], stateChange: [], viewableChange: [] };
-            var state = 'loading';
-            var placementType = 'inline';
-            var viewable = false;
-            function fire(event, args) {
-                var list = listeners[event];
-                for (var i = 0; i < list.length; i++) {
-                    try { list[i].apply(null, args || []); } catch (e) {}
-                }
-            }
+        (function () {
+            if (window.mraid) return;
+        
+            var listeners = {};
+        
             window.mraid = {
-                getVersion: function() { return '3.0'; },
-                getState: function() { return state; },
-                getPlacementType: function() { return placementType; },
-                isViewable: function() { return viewable; },
-                addEventListener: function(event, listener) {
-                    if (!listeners[event]) { return; }
-                    var list = listeners[event];
-                    if (list.indexOf(listener) === -1) { list.push(listener); }
+                getState: function () {
+                    return 'default';
                 },
-                removeEventListener: function(event, listener) {
-                    if (!listeners[event]) { return; }
-                    var list = listeners[event];
-                    var idx = list.indexOf(listener);
-                    if (idx !== -1) { list.splice(idx, 1); }
+                getVersion: function () {
+                    return '2.0';
                 },
-                open: function(url) {
-                    if (!url) { return; }
-                    window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.mraid && window.webkit.messageHandlers.mraid.postMessage({ command: 'open', url: String(url) });
+                isViewable: function () {
+                    return true;
                 },
-                close: function() {
-                    window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.mraid && window.webkit.messageHandlers.mraid.postMessage({ command: 'close' });
+        
+                addEventListener: function (event, listener) {
+                    if (!listeners[event]) listeners[event] = [];
+                    listeners[event].push(listener);
                 },
-                expand: function() {
-                    window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.mraid && window.webkit.messageHandlers.mraid.postMessage({ command: 'expand' });
+                removeEventListener: function (event, listener) {
+                    if (!listeners[event]) return;
+                    var idx = listeners[event].indexOf(listener);
+                    if (idx !== -1) listeners[event].splice(idx, 1);
+                },
+        
+                open: function (url) {
+                    window.location = 'mraid://open?url=' + encodeURIComponent(url);
+                },
+                close: function () {
+                    window.location = 'mraid://close';
+                },
+                expand: function (url) {
+                    window.location =
+                        'mraid://expand' + (url ? ('?url=' + encodeURIComponent(url)) : '');
+                },
+                useCustomClose: function (use) {
+                    window.location = 'mraid://useCustomClose?value=' + (use ? 'true' : 'false');
+                },
+        
+                fireEvent: function (event, args) {
+                    if (!listeners[event]) return;
+                    listeners[event].forEach(function (fn) {
+                        try {
+                            fn(args);
+                        } catch (e) { }
+                    });
                 }
-            };
-            window.mraidBridge = {
-                setState: function(s) { state = s; fire('stateChange', [s]); },
-                setViewable: function(v) { var b = (v === true || v === 'true'); if (viewable !== b) { viewable = b; fire('viewableChange', [b]); } },
-                fireReady: function() { fire('ready'); }
             };
         })();
         """
 
-    private var isMraidViewable: Bool = false {
-        didSet {
-            let js = "window.mraidBridge && window.mraidBridge.setViewable(\(isMraidViewable ? "true" : "false"));"
-            playableWebView.evaluateJavaScript(js, completionHandler: nil)
-        }
-    }
-
     private var actionHelper: NovaActionHelper<NovaActionState.Init>?
     private var startTime: CFTimeInterval?
     private var userDidClick: Bool = false
-
-    private func updateMraidViewable() {
-        let currentlyViewable = window != nil && alpha > 0.01 && !isHidden
-        isMraidViewable = currentlyViewable
-    }
 }
 
 // MARK: WKUIDelegate
@@ -226,39 +196,38 @@ extension NovaAdPlayableView: WKUIDelegate {
 // MARK: WKNavigationDelegate
 
 extension NovaAdPlayableView: WKNavigationDelegate {
-    public func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
-        // MRAID ready, default state, set viewable
-        let js = "window.mraidBridge && (window.mraidBridge.setState('default'), window.mraidBridge.fireReady());"
-        webView.evaluateJavaScript(js, completionHandler: nil)
-        updateMraidViewable()
-    }
-}
-
-// MARK: WKScriptMessageHandler
-
-extension NovaAdPlayableView: WKScriptMessageHandler {
-    public func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
-        guard message.name == "mraid" else { return }
-        guard let body = message.body as? [String: Any], let command = body["command"] as? String else { return }
-
-        switch command {
-        case "open":
-            let urlString = body["url"] as? String
-            handleMraidOpen(urlString: urlString)
-        default:
-            break
+    public func webView(
+        _: WKWebView,
+        decidePolicyFor navigationAction: WKNavigationAction,
+        decisionHandler: @escaping (WKNavigationActionPolicy) -> Void
+    ) {
+        guard let url = navigationAction.request.url else {
+            decisionHandler(.allow)
+            return
         }
+        if url.scheme == "mraid" {
+            let command = url.host ?? ""
+            switch command {
+            case "open":
+                handleMraidOpen()
+            default:
+                break
+            }
+            decisionHandler(.cancel)
+            return
+        }
+        decisionHandler(.allow)
     }
 }
 
 // MARK: - MRAID Helpers
 
 private extension NovaAdPlayableView {
-    func handleMraidOpen(urlString: String?) {
+    func handleMraidOpen() {
         let duration: CFTimeInterval? = {
             if let startTime { return CACurrentMediaTime() - startTime } else { return nil }
         }()
-        self.actionHelper = self.actionHelper?
+        actionHelper = actionHelper?
             .logNovaClickEvent(with: duration, in: .playable)
             .handleAdTap(in: nil)
     }
