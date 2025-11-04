@@ -53,7 +53,7 @@ public final class NovaAdMediaView: UIView {
 
     private lazy var tapToTryAnimationView: LottieAnimationView? = {
         let view = LottieAnimationView()
-        if let animationPath = LottieAsset.getAssetURL("tap_to_try")?.path {
+        if let animationPath = NovaResource.getLottieResourceURL("tap_to_try")?.path {
             DebugLogger.data.info("load lottie file success")
             view.animation = LottieAnimation.filepath(animationPath)
             view.loopMode = .loop

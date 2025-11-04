@@ -152,34 +152,46 @@ verify_compiled_assets() {
     fi
 }
 
-# Copy Lottie files from Resources directory
-copy_lottie_files() {
+# Mirror arbitrary resource directories into bundle, skipping unwanted files
+copy_resource_tree() {
     local output_dir="$TEMP_DIR/NBResourceBundle.bundle"
-    local lottie_source="$NOVACORE_DIR/Resources/Lottie"
-    
-    print_info "Copying Lottie files..."
-    
-    if [[ -d "$lottie_source" ]]; then
-        # Create Lottie directory in bundle
-        mkdir -p "$output_dir/Lottie"
-        
-        # Copy all files from Lottie source directory
-        if find "$lottie_source" -type f \( -name "*.json" -o -name "*.lottie" \) -exec cp {} "$output_dir/Lottie/" \; ; then
-            local lottie_count=$(find "$lottie_source" -type f \( -name "*.json" -o -name "*.lottie" \) | wc -l | xargs)
-            print_success "Copied $lottie_count Lottie file(s) to bundle"
-            
-            # List copied files
-            print_info "Lottie files in bundle:"
-            find "$output_dir/Lottie" -type f | while read -r file; do
-                local filename=$(basename "$file")
-                local file_size=$(stat -f%z "$file" 2>/dev/null || echo "0")
-                print_info "  - $filename ($file_size bytes)"
+    local resource_root="$NOVACORE_DIR/Resources"
+
+    print_info "Copying supplemental resources..."
+
+    if [[ ! -d "$resource_root" ]]; then
+        print_warning "Resource directory not found: $resource_root"
+        return
+    fi
+
+    # rsync-style path filtering using find while avoiding Swift code and editor cruft
+    local copied=false
+    while IFS= read -r -d '' source_path; do
+        local rel_path="${source_path#$resource_root/}"
+        local dest_path="$output_dir/$rel_path"
+
+        mkdir -p "$(dirname "$dest_path")"
+        cp "$source_path" "$dest_path"
+        copied=true
+    done < <(find "$resource_root" -type f \
+        ! -name "*.swift" \
+        ! -name "*.DS_Store" \
+        ! -name "*.xcassets" \
+        -print0)
+
+    if [[ "$copied" == true ]]; then
+        print_success "Copied supplemental resources into bundle"
+
+        print_info "Bundle resource files:"
+        find "$output_dir" -type f \
+            ! -name "Assets.car" \
+            -print | while read -r file; do
+                local relative_path="${file#$output_dir/}"
+                local size=$(stat -f%z "$file" 2>/dev/null || echo "0")
+                print_info "  - $relative_path ($size bytes)"
             done
-        else
-            print_warning "No Lottie files found to copy"
-        fi
     else
-        print_warning "Lottie source directory not found: $lottie_source"
+        print_warning "No supplemental resources copied"
     fi
 }
 
@@ -253,7 +265,7 @@ main() {
     create_temp_bundle
     compile_assets
     verify_compiled_assets
-    copy_lottie_files
+    copy_resource_tree
     update_target_bundle
     generate_asset_report
     
