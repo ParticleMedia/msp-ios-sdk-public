@@ -123,12 +123,7 @@ import PrebidMobile
     public func loadAdCreative(bidResponse: Any, auctionBidListener: AuctionBidListener, adListener: any AdListener, context: Any, adRequest: AdRequest, bidderPlacementId: String, bidderFormat: MSPiOSCore.AdFormat?, params: [String:String]?) {
         
         DispatchQueue.main.async {
-            guard bidResponse is BidResponse,
-                  let mBidResponse = bidResponse as? BidResponse else {
-                auctionBidListener.onError(error: "no valid response")
-                self.adMetricReporter?.logAdResult(placementId: adRequest.placementId ?? "", ad: nil, fill: false, isFromCache: false)
-                return
-            }
+            
             
             self.adRequest = adRequest
             self.auctionBidListener = auctionBidListener
