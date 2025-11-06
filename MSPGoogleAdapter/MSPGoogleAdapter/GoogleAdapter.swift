@@ -371,7 +371,7 @@ extension GoogleAdapter : GoogleMobileAds.BannerViewDelegate  {
     public func bannerView(_ bannerView: GoogleMobileAds.BannerView, didFailToReceiveAdWithError error: Error) {
         DispatchQueue.main.async {
             MSPLogger.shared.info(message: "[Adapter: Google] Fail to load Google Banner ad")
-            self.adListener?.onError(msg: error.localizedDescription)
+            self.auctionBidListener?.onError(error: error.localizedDescription)
             self.adMetricReporter?.logAdResult(placementId: self.adRequest?.placementId ?? "", ad: nil, fill: false, isFromCache: false)
             if let adRequest = self.adRequest {
                 self.adMetricReporter?.logAdResponse(ad: nil, adRequest: adRequest, errorCode: .ERROR_CODE_INTERNAL_ERROR, errorMessage: error.localizedDescription)
@@ -450,7 +450,7 @@ extension GoogleAdapter: GoogleMobileAds.NativeAdLoaderDelegate {
     public func adLoader(_ adLoader: GoogleMobileAds.AdLoader, didFailToReceiveAdWithError error: any Error) {
         DispatchQueue.main.async {
             MSPLogger.shared.info(message: "[Adapter: Google] Fail to load Google Native ad")
-            self.adListener?.onError(msg: error.localizedDescription)
+            self.auctionBidListener?.onError(error: error.localizedDescription)
             self.adMetricReporter?.logAdResult(placementId: self.adRequest?.placementId ?? "", ad: nil, fill: false, isFromCache: false)
             if let adRequest = self.adRequest {
                 self.adMetricReporter?.logAdResponse(ad: nil, adRequest: adRequest, errorCode: .ERROR_CODE_INTERNAL_ERROR, errorMessage: error.localizedDescription)
