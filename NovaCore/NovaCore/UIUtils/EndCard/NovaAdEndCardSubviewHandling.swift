@@ -114,7 +114,7 @@ extension NovaNativeAdItem: NovaEndCardStylable {
             return .horizontalDefault
         case .vertical, .taller, .interscroller:
             return .verticalDefault
-        case .unknown, .carousel, .collection:
+        case .unknown, .carousel, .downloadBanner, .collection:
             return nil
         }
     }
@@ -127,7 +127,7 @@ extension NovaInterstitialAdItem: NovaEndCardStylable {
         switch layoutStyle {
         case .vertical, .verticalCancelTopRight, .endCard:
             return .center
-        case .horizontal, .horizontalCancelTopRight, .sponsor, .unknown:
+        case .horizontal, .horizontalCancelTopRight, .sponsor, .downloadBanner, .unknown:
             return nil
         }
     }

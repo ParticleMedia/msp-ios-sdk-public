@@ -7,10 +7,11 @@ enum NovaInterstitialAdLayout: String, Codable, CaseIterable {
     case horizontalCancelTopRight = "horizontal_cancel_top_right"
     case verticalCancelTopRight = "vertical_cancel_top_right"
     case endCard = "end_card_2_part"
-    
+    case downloadBanner = "downloadBanner"
+
     var isVertical: Bool {
         switch self {
-        case .vertical, .verticalCancelTopRight, .endCard:
+        case .vertical, .verticalCancelTopRight, .endCard, .downloadBanner:
             return true
         case .horizontal, .horizontalCancelTopRight:
             return false

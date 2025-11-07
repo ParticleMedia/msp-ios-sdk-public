@@ -23,6 +23,7 @@ public enum NovaNativeLayoutStyle: String, Codable {
     case taller
     case carousel
     case collection
+    case downloadBanner = "downloadBanner"
 }
 
 enum NovaInterstitialAdLayout: String, Codable, CaseIterable {
@@ -32,6 +33,7 @@ enum NovaInterstitialAdLayout: String, Codable, CaseIterable {
     case horizontalCancelTopRight = "horizontal_cancel_top_right"
     case verticalCancelTopRight = "vertical_cancel_top_right"
     case endCard = "end_card_2_part"
+    case downloadBanner = "download_banner"
     case sponsor
 }
 
