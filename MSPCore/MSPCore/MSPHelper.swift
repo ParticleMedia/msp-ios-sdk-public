@@ -15,6 +15,7 @@ public class MSP {
     }()
     
     public static let shared = MSP()
+    internal static let KEY_MES_USER_SIGNAL_ATTRIBUTION = "key_mes_user_signal_attribution"
     public var numInitWaitingForCallbacks = 0;
     public weak var sdkInitListener: MSPInitListener?
     public var initStartTime: Double?
@@ -34,8 +35,8 @@ public class MSP {
     public var app: String?
     public var ppid: String?
     public var email: String?
-    public var prebidAPIKey: String?    
-
+    public var prebidAPIKey: String?
+    
     public var isLogSampled = false
     public var logWhiteList: [String]?
     
@@ -60,6 +61,9 @@ public class MSP {
             
             if UserDefaults.standard.string(forKey: "msp_user_id") == nil {
                 self.fetchMSPUserId()
+            } else if UserDefaults.standard.string(forKey: "msp_id") == nil {
+                let mspUserId = UserDefaults.standard.string(forKey: "msp_user_id")
+                UserDefaults.standard.setValue(mspUserId, forKey: "msp_id")
             }
             
             self.numInitWaitingForCallbacks = 1 //default vaule is 1 for prebid sdk is alwasys in the dependency
@@ -90,7 +94,20 @@ public class MSP {
             
             UserDefaults.standard.setValue(String(Date().timeIntervalSince1970 * 1000), forKey: "FirstLaunchTime")
             self.blockLatencyInMs = Int32((Date().timeIntervalSince1970 - initStartTime) * 1000)
+            
+            NotificationCenter.default.addObserver(self, selector: #selector(self.appDidBecomeActive), name: UIApplication.didBecomeActiveNotification, object: nil)
+            NotificationCenter.default.addObserver(self, selector: #selector(self.appDidEnterBackground), name: UIApplication.didEnterBackgroundNotification, object: nil)
         }
+    }
+    
+    @objc private func appDidBecomeActive() {
+        MSPLogger.shared.info(message: "App becomes active")
+        MESMetricReporter.shared.tryLogUserSignal(type: Com_Newsbreak_Mes_Events_UserSignalType.intoForeground)
+    }
+    
+    @objc private func appDidEnterBackground() {
+        MSPLogger.shared.info(message: "App enters background")
+        MESMetricReporter.shared.tryLogUserSignal(type: Com_Newsbreak_Mes_Events_UserSignalType.intoBackground)
     }
     
     public class MSPAdapterInitListener: NSObject, AdapterInitListener {
@@ -108,6 +125,10 @@ public class MSP {
                     }
                     MESMetricReporter.shared.logSDKInit(totalCompleteTimeInMs: totalCompleteTimeInMs, blockLatencyInMs: MSP.shared.blockLatencyInMs, adNetworkCompleteTimeInMs: MSP.shared.adNetworkInitLatencyInMs)
                     MSP.shared.sdkInitListener?.onComplete(status: .SUCCESS, message: "")
+                    
+                    if !UserDefaults.standard.bool(forKey: KEY_MES_USER_SIGNAL_ATTRIBUTION) {
+                        MESMetricReporter.shared.tryLogUserSignal(type: Com_Newsbreak_Mes_Events_UserSignalType.attribution)
+                    }
                 }
             }
         }
@@ -187,6 +208,7 @@ public class MSP {
                         if let responseDict = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any],
                            let id = responseDict["id"] as? Int64 {
                             UserDefaults.standard.setValue(String(id), forKey: "msp_user_id")
+                            UserDefaults.standard.setValue(String(id), forKey: "msp_id")
                         }
                     } catch {
                         print("Error parsing response: \(error)")
@@ -203,10 +225,10 @@ public class MSP {
     
     /// Shows the mediation debugger interface as a modal presentation.
     /// This method automatically finds the top-most view controller and presents the debugger modally.
-    /// 
+    ///
     /// - Note: This method can be called from anywhere in your app, regardless of the current view controller hierarchy.
     /// - Warning: The debugger will be presented modally and can be dismissed by the user.
-    /// 
+    ///
     /// ## Usage Example:
     /// ```swift
     /// MSP.shared.showMediationDebugger()
@@ -223,12 +245,12 @@ public class MSP {
     
     /// Shows the mediation debugger interface by pushing it onto the navigation stack.
     /// This method requires the caller to be embedded in a navigation controller.
-    /// 
-    /// - Parameter rootViewController: The view controller from which to push the debugger. 
+    ///
+    /// - Parameter rootViewController: The view controller from which to push the debugger.
     ///   This view controller must be embedded in a UINavigationController.
     /// - Note: If the rootViewController is not embedded in a navigation controller, this method will have no effect.
     /// - Warning: The debugger will be pushed onto the navigation stack and can be popped back by the user.
-    /// 
+    ///
     /// ## Usage Example:
     /// ```swift
     /// // From within a view controller that's embedded in a navigation controller
@@ -241,7 +263,7 @@ public class MSP {
     
     /// Helper method to find the top-most view controller in the app's view hierarchy.
     /// This method traverses through presented view controllers, navigation controllers, and tab bar controllers.
-    /// 
+    ///
     /// - Returns: The top-most view controller, or nil if no view controller is found.
     private func getTopViewController() -> UIViewController? {
         guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,

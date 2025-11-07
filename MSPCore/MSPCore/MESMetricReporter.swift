@@ -9,6 +9,7 @@ import Foundation
 import MSPiOSCore
 import PrebidMobile
 import AdSupport
+import UIKit
 //import SwiftProtobuf
 
 @objc public class MESMetricReporter: NSObject {
@@ -27,6 +28,7 @@ import AdSupport
         case adClick = "ad_click"
         case loadAd = "load_ad"
         case getAd = "get_ad"
+        case userSignal = "user_signal"
     }
     
     func report(event type: AdEventType, with data: Data, completion: @escaping (Bool, Error?) -> Void) {
@@ -79,8 +81,9 @@ import AdSupport
         
         MSPDevice.shared.collectDeviceInfo()
         if let ppid = MSP.shared.ppid {
-            eventModel.mspID = ppid
-        } else if let mspId = UserDefaults.standard.string(forKey: "msp_user_id") {
+            eventModel.ppid = ppid
+        }
+        if let mspId = UserDefaults.standard.string(forKey: "msp_user_id") {
             eventModel.mspID = mspId
         }
         eventModel.ifa = ASIdentifierManager.shared().advertisingIdentifier.uuidString
@@ -100,6 +103,9 @@ import AdSupport
             eventModel.isLowDataMode = isLowDataMode
         }
         
+        eventModel.appSignal = getAppSignal()
+        eventModel.sdkSignal = getSdkSignal()
+        eventModel.deviceSignal = getDeviceSignal()
         
         do {
             let tracingData = try eventModel.serializedData()
@@ -109,6 +115,75 @@ import AdSupport
         } catch {
             
         }
+    }
+    
+    private func getAppSignal() -> Com_Newsbreak_Monetization_Signals_AppSignal {
+        var appSignal = Com_Newsbreak_Monetization_Signals_AppSignal()
+        
+        let info = Bundle.main.infoDictionary ?? [:]
+        
+        appSignal.name = info["CFBundleDisplayName"] as? String ?? info["CFBundleName"] as? String ?? ""
+        appSignal.bundle = Bundle.main.bundleIdentifier ?? ""
+        appSignal.ver = info["CFBundleShortVersionString"] as? String ?? ""
+        appSignal.domain = ""
+        appSignal.page = ""
+        appSignal.ppid = MSP.shared.ppid ?? ""
+        
+        return appSignal
+    }
+    
+    private func getSdkSignal() -> Com_Newsbreak_Monetization_Signals_SDKSignal {
+        var sdkSignal = Com_Newsbreak_Monetization_Signals_SDKSignal()
+        
+        if let appId = MSP.shared.appId {
+            sdkSignal.appID = Int32(appId)
+        }
+        if let orgId = MSP.shared.orgId {
+            sdkSignal.orgID = Int32(orgId)
+        }
+        if let mspId = UserDefaults.standard.string(forKey: "msp_id") {
+            sdkSignal.mspID = mspId
+        }
+        sdkSignal.sdkVersion = MSP.shared.version
+        sdkSignal.platform = Com_Newsbreak_Monetization_Signals_SdkPlatform.ios
+        sdkSignal.uuid = getSDKSignalUUID()
+        
+        return sdkSignal
+    }
+    
+    private func getSDKSignalUUID() -> String {
+        let keyUUID = "device_signal_uuid"
+        if let uuid = UserDefaults.standard.string(forKey: keyUUID) {
+            return uuid
+        } else {
+            let newId = UUID().uuidString
+            UserDefaults.standard.setValue(newId, forKey: keyUUID)
+            return newId
+        }
+    }
+    
+    private func getDeviceSignal() -> Com_Newsbreak_Monetization_Signals_DeviceSignal {
+        var deviceSignal = Com_Newsbreak_Monetization_Signals_DeviceSignal()
+        
+        deviceSignal.make = "Apple"
+        deviceSignal.model = MSPDevice.shared.getDeviceModel()
+        deviceSignal.os = UIDevice.current.systemName
+        deviceSignal.osv = UIDevice.current.systemVersion
+        
+        let scale = UIScreen.main.nativeScale
+        let size = UIScreen.main.bounds.size
+        deviceSignal.w = Int32(size.width * scale)
+        deviceSignal.h = Int32(size.height * scale)
+        
+        deviceSignal.carrier = MSPDevice.shared.getCarrier()
+        deviceSignal.mccmnc = MSPDevice.shared.getMccMnc()
+
+        UserAgentManager.shared.start()
+        deviceSignal.ua = UserAgentManager.shared.userAgent
+        
+        deviceSignal.lmt = MSPDevice.shared.isIDFAAuthorized()
+        
+        return deviceSignal
     }
     
     public func logGetAdFromCache(cacheKey: String, fill: Bool ,ad: MSPAd?) {
@@ -569,5 +644,45 @@ import AdSupport
         }
         return false
     }
+    
+    func tryLogUserSignal(type: Com_Newsbreak_Mes_Events_UserSignalType) {
+        let isAttribution = type == Com_Newsbreak_Mes_Events_UserSignalType.attribution
+        let attributionSentBefore = UserDefaults.standard.bool(forKey: MSP.KEY_MES_USER_SIGNAL_ATTRIBUTION) == true
+        
+        if isAttribution && attributionSentBefore {
+            MSPLogger.shared.info(message: "Try log user_signal event failed: user_signal event with type Attribution was sent before")
+            return
+        }
+        
+        logUserSignal(type: type)
+    }
+    
+    private func logUserSignal(type: Com_Newsbreak_Mes_Events_UserSignalType) {
+        var eventModel = Com_Newsbreak_Mes_Events_UserSignal()
+        
+        eventModel.type = type
+        eventModel.sdkSignal = getSdkSignal()
+        eventModel.deviceSignal = getDeviceSignal()
+        eventModel.appSignal = getAppSignal()
+        
+        do {
+            let tracingData = try eventModel.serializedData()
+            
+            let isAttribution = type == Com_Newsbreak_Mes_Events_UserSignalType.attribution
+            
+            report(event: .userSignal, with: tracingData) { success, error in
+                if success && error == nil && isAttribution {
+                    MSPLogger.shared.info(message: "Logging user signal succeeded")
+                    if isAttribution {
+                        UserDefaults.standard.set(true, forKey: MSP.KEY_MES_USER_SIGNAL_ATTRIBUTION)
+                    }
+                }
+                
+                if let error = error {
+                    MSPLogger.shared.info(message: "Logging user signal failed: \(error)")
+                }
+            }
+        } catch {
+        }
+    }
 }
-

@@ -130,6 +130,48 @@ struct Com_Newsbreak_Mes_Events_SdkInitEvent: @unchecked Sendable {
     set {_uniqueStorage()._isLowDataMode = newValue}
   }
 
+  var ppid: String {
+    get {return _storage._ppid}
+    set {_uniqueStorage()._ppid = newValue}
+  }
+
+  var sdkSignal: Com_Newsbreak_Monetization_Signals_SDKSignal {
+    get {return _storage._sdkSignal ?? Com_Newsbreak_Monetization_Signals_SDKSignal()}
+    set {_uniqueStorage()._sdkSignal = newValue}
+  }
+  /// Returns true if `sdkSignal` has been explicitly set.
+  var hasSdkSignal: Bool {return _storage._sdkSignal != nil}
+  /// Clears the value of `sdkSignal`. Subsequent reads from it will return its default value.
+  mutating func clearSdkSignal() {_uniqueStorage()._sdkSignal = nil}
+
+  var deviceSignal: Com_Newsbreak_Monetization_Signals_DeviceSignal {
+    get {return _storage._deviceSignal ?? Com_Newsbreak_Monetization_Signals_DeviceSignal()}
+    set {_uniqueStorage()._deviceSignal = newValue}
+  }
+  /// Returns true if `deviceSignal` has been explicitly set.
+  var hasDeviceSignal: Bool {return _storage._deviceSignal != nil}
+  /// Clears the value of `deviceSignal`. Subsequent reads from it will return its default value.
+  mutating func clearDeviceSignal() {_uniqueStorage()._deviceSignal = nil}
+
+  var appSignal: Com_Newsbreak_Monetization_Signals_AppSignal {
+    get {return _storage._appSignal ?? Com_Newsbreak_Monetization_Signals_AppSignal()}
+    set {_uniqueStorage()._appSignal = newValue}
+  }
+  /// Returns true if `appSignal` has been explicitly set.
+  var hasAppSignal: Bool {return _storage._appSignal != nil}
+  /// Clears the value of `appSignal`. Subsequent reads from it will return its default value.
+  mutating func clearAppSignal() {_uniqueStorage()._appSignal = nil}
+
+  /// DO NOT POPULATE THIS FIELD AT FRONTEND
+  var serverSignal: Com_Newsbreak_Monetization_Signals_ServerSignal {
+    get {return _storage._serverSignal ?? Com_Newsbreak_Monetization_Signals_ServerSignal()}
+    set {_uniqueStorage()._serverSignal = newValue}
+  }
+  /// Returns true if `serverSignal` has been explicitly set.
+  var hasServerSignal: Bool {return _storage._serverSignal != nil}
+  /// Clears the value of `serverSignal`. Subsequent reads from it will return its default value.
+  mutating func clearServerSignal() {_uniqueStorage()._serverSignal = nil}
+
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
   init() {}
@@ -162,6 +204,11 @@ extension Com_Newsbreak_Mes_Events_SdkInitEvent: SwiftProtobuf.Message, SwiftPro
     18: .standard(proto: "available_memory_bytes"),
     19: .standard(proto: "is_low_power_mode"),
     20: .standard(proto: "is_low_data_mode"),
+    21: .same(proto: "ppid"),
+    22: .standard(proto: "sdk_signal"),
+    23: .standard(proto: "device_signal"),
+    24: .standard(proto: "app_signal"),
+    25: .standard(proto: "server_signal"),
   ]
 
   fileprivate class _StorageClass {
@@ -183,6 +230,11 @@ extension Com_Newsbreak_Mes_Events_SdkInitEvent: SwiftProtobuf.Message, SwiftPro
     var _availableMemoryBytes: UInt64 = 0
     var _isLowPowerMode: Bool = false
     var _isLowDataMode: Bool = false
+    var _ppid: String = String()
+    var _sdkSignal: Com_Newsbreak_Monetization_Signals_SDKSignal? = nil
+    var _deviceSignal: Com_Newsbreak_Monetization_Signals_DeviceSignal? = nil
+    var _appSignal: Com_Newsbreak_Monetization_Signals_AppSignal? = nil
+    var _serverSignal: Com_Newsbreak_Monetization_Signals_ServerSignal? = nil
 
       // This property is used as the initial default value for new instances of the type.
       // The type itself is protecting the reference to its storage via CoW semantics.
@@ -211,6 +263,11 @@ extension Com_Newsbreak_Mes_Events_SdkInitEvent: SwiftProtobuf.Message, SwiftPro
       _availableMemoryBytes = source._availableMemoryBytes
       _isLowPowerMode = source._isLowPowerMode
       _isLowDataMode = source._isLowDataMode
+      _ppid = source._ppid
+      _sdkSignal = source._sdkSignal
+      _deviceSignal = source._deviceSignal
+      _appSignal = source._appSignal
+      _serverSignal = source._serverSignal
     }
   }
 
@@ -247,6 +304,11 @@ extension Com_Newsbreak_Mes_Events_SdkInitEvent: SwiftProtobuf.Message, SwiftPro
         case 18: try { try decoder.decodeSingularUInt64Field(value: &_storage._availableMemoryBytes) }()
         case 19: try { try decoder.decodeSingularBoolField(value: &_storage._isLowPowerMode) }()
         case 20: try { try decoder.decodeSingularBoolField(value: &_storage._isLowDataMode) }()
+        case 21: try { try decoder.decodeSingularStringField(value: &_storage._ppid) }()
+        case 22: try { try decoder.decodeSingularMessageField(value: &_storage._sdkSignal) }()
+        case 23: try { try decoder.decodeSingularMessageField(value: &_storage._deviceSignal) }()
+        case 24: try { try decoder.decodeSingularMessageField(value: &_storage._appSignal) }()
+        case 25: try { try decoder.decodeSingularMessageField(value: &_storage._serverSignal) }()
         default: break
         }
       }
@@ -313,6 +375,21 @@ extension Com_Newsbreak_Mes_Events_SdkInitEvent: SwiftProtobuf.Message, SwiftPro
       if _storage._isLowDataMode != false {
         try visitor.visitSingularBoolField(value: _storage._isLowDataMode, fieldNumber: 20)
       }
+      if !_storage._ppid.isEmpty {
+        try visitor.visitSingularStringField(value: _storage._ppid, fieldNumber: 21)
+      }
+      try { if let v = _storage._sdkSignal {
+        try visitor.visitSingularMessageField(value: v, fieldNumber: 22)
+      } }()
+      try { if let v = _storage._deviceSignal {
+        try visitor.visitSingularMessageField(value: v, fieldNumber: 23)
+      } }()
+      try { if let v = _storage._appSignal {
+        try visitor.visitSingularMessageField(value: v, fieldNumber: 24)
+      } }()
+      try { if let v = _storage._serverSignal {
+        try visitor.visitSingularMessageField(value: v, fieldNumber: 25)
+      } }()
     }
     try unknownFields.traverse(visitor: &visitor)
   }
@@ -340,6 +417,11 @@ extension Com_Newsbreak_Mes_Events_SdkInitEvent: SwiftProtobuf.Message, SwiftPro
         if _storage._availableMemoryBytes != rhs_storage._availableMemoryBytes {return false}
         if _storage._isLowPowerMode != rhs_storage._isLowPowerMode {return false}
         if _storage._isLowDataMode != rhs_storage._isLowDataMode {return false}
+        if _storage._ppid != rhs_storage._ppid {return false}
+        if _storage._sdkSignal != rhs_storage._sdkSignal {return false}
+        if _storage._deviceSignal != rhs_storage._deviceSignal {return false}
+        if _storage._appSignal != rhs_storage._appSignal {return false}
+        if _storage._serverSignal != rhs_storage._serverSignal {return false}
         return true
       }
       if !storagesAreEqual {return false}
