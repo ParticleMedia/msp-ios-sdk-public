@@ -6,6 +6,10 @@
 //
 import UIKit
 import Network
+import CoreTelephony
+import AppTrackingTransparency
+import AVFAudio
+import MSPiOSCore
 
 public class MSPDevice {
     
@@ -52,32 +56,36 @@ public class MSPDevice {
     
     public func collectDeviceInfo() {
         self.orientation = UIDevice.current.orientation
-        self.isInForeground = UIApplication.shared.applicationState == .active
         UIDevice.current.isBatteryMonitoringEnabled = true
         self.batteryLevel = UIDevice.current.batteryLevel
         self.batteryStatus = UIDevice.current.batteryState
         self.isLowPowerMode = ProcessInfo.processInfo.isLowPowerModeEnabled
-        fetchLowDataModeStatus { isLowDataMode in
-            self.isLowDataMode = isLowDataMode
+        fetchLowDataModeStatus { path in
+            self.isLowDataMode = path.isConstrained
         }
-        self.fontSize = UIApplication.shared.preferredContentSizeCategory
+
         self.availableMemory = os_proc_available_memory()
+        
+        DispatchQueue.main.async {
+            self.isInForeground = UIApplication.shared.applicationState == .active
+            self.fontSize = UIApplication.shared.preferredContentSizeCategory
+        }
     }
     
-    private func fetchLowDataModeStatus(completion: @escaping (Bool) -> Void) {
+    private func fetchLowDataModeStatus(completion: @escaping (NWPath) -> Void) {
         let monitor = NWPathMonitor()
         monitor.pathUpdateHandler = { path in
-            completion(path.isConstrained)
+            completion(path)
             monitor.cancel()
         }
         monitor.start(queue: DispatchQueue.global(qos: .background))
     }
     
-    private func getOrientationString(orientation: UIDeviceOrientation?) -> String {
-        guard let orientation = self.orientation else {return "unknown"}
+    internal func getOrientationString(orientation: UIDeviceOrientation?) -> String {
+        guard let orientation = self.orientation else {return ""}
         switch orientation {
         case .unknown:
-            return "unknown"
+            return ""
         case .portrait:
             return "portrait"
         case .portraitUpsideDown:
@@ -91,7 +99,7 @@ public class MSPDevice {
         case .faceDown:
             return "faceDown"
         default:
-            return "unknown"
+            return ""
         }
     }
     
@@ -99,7 +107,7 @@ public class MSPDevice {
         if let state = state {
             return state ? "true" : "false"
         } else {
-            return "unknown"
+            return ""
         }
     }
     
@@ -107,14 +115,14 @@ public class MSPDevice {
         if let batteryLevel = self.batteryLevel {
             return String(batteryLevel)
         }
-        return "unknown"
+        return ""
     }
     
     public func getBatteryStatusString() -> String {
-        guard let batteryStatus = self.batteryStatus else { return "unknown" }
+        guard let batteryStatus = self.batteryStatus else { return "" }
         switch batteryStatus {
         case .unknown:
-            return "unknown"
+            return ""
         case .unplugged:
             return "unplugged"
         case .charging:
@@ -122,7 +130,7 @@ public class MSPDevice {
         case .full:
             return "full"
         default:
-            return "unknown"
+            return ""
         }
     }
     
@@ -141,7 +149,7 @@ public class MSPDevice {
         case .accessibilityExtraLarge: return "a-xl"
         case .accessibilityExtraExtraLarge: return "a-xxl"
         case .accessibilityExtraExtraExtraLarge: return "a-xxxl"
-        default: return "unknown"
+        default: return ""
         }
     }
     
@@ -149,7 +157,7 @@ public class MSPDevice {
         if let availableMemory = self.availableMemory {
             return String(availableMemory)
         } else {
-            return "unknown"
+            return ""
         }
     }
     
@@ -166,4 +174,57 @@ public class MSPDevice {
        return String(format: "%+03d:%02d", hours, minutes)
     }
     
+    internal func getDeviceModel() -> String {
+        var sysInfo = utsname()
+        guard uname(&sysInfo) == 0 else {
+            MSPLogger.shared.info(message: "Failed to get device model via uname")
+            return ""
+        }
+        
+        return withUnsafePointer(to: &sysInfo.machine) {
+            $0.withMemoryRebound(to: CChar.self, capacity: 1) {
+                String(cString: $0)
+            }
+        }
+    }
+    
+    private func getCarrierInfo(_ mapper: (CTCarrier) -> String) -> String {
+        let networkInfo = CTTelephonyNetworkInfo()
+        if let carriers = networkInfo.serviceSubscriberCellularProviders?.values,
+           let carrier = carriers.first(where: { carrier in
+            carrier.carrierName?.isEmpty == false
+        }) {
+            return mapper(carrier)
+        }
+        
+        return ""
+    }
+    
+    internal func getCarrier() -> String {
+        return getCarrierInfo { carrier in
+            return carrier.carrierName ?? ""
+        }
+    }
+    
+    internal func getMccMnc() -> String {
+        return getCarrierInfo { carrier in
+            return merge(carrier)
+        }
+    }
+    
+    private func merge(_ carrier: CTCarrier) -> String {
+        guard let mcc = carrier.mobileCountryCode,
+              let mnc = carrier.mobileNetworkCode,
+              !mcc.isEmpty, !mnc.isEmpty else { return "" }
+        
+        return "\(mcc)-\(mnc)"
+    }
+    
+    internal func isIDFAAuthorized() -> Bool {
+        if #available(iOS 14, *), case .authorized = ATTrackingManager.trackingAuthorizationStatus {
+            return true
+        } else {
+            return false
+        }
+    }
 }

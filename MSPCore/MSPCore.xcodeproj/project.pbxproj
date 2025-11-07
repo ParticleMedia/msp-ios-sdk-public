@@ -8,6 +8,9 @@
 
 /* Begin PBXBuildFile section */
 		3F6DED87947F36F6685255A0 /* libPods-MSPCore.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3BEFDC62A992B10540FF1C8C /* libPods-MSPCore.a */; };
+		5D65763B2EBDD1CD0006666E /* user_signal.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D65763A2EBDD1CD0006666E /* user_signal.pb.swift */; };
+		5D65763D2EBDD1DE0006666E /* signals.pb.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D65763C2EBDD1DE0006666E /* signals.pb.swift */; };
+		5D65763F2EBDD21B0006666E /* UserAgentManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D65763E2EBDD21B0006666E /* UserAgentManager.swift */; };
 		660ED3E32CB45557002F237C /* MESMetricReporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 660ED3E22CB45557002F237C /* MESMetricReporter.swift */; };
 		6639AC8A2B4DFAE300A248D2 /* MSPCore.docc in Sources */ = {isa = PBXBuildFile; fileRef = 6639AC892B4DFAE300A248D2 /* MSPCore.docc */; };
 		6639AC952B4DFAE400A248D2 /* MSPUtilityTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6639AC942B4DFAE400A248D2 /* MSPUtilityTests.swift */; };
@@ -101,6 +104,9 @@
 /* Begin PBXFileReference section */
 		20D75C3E9C5E96F27754B64D /* Pods-MSPCore.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MSPCore.release.xcconfig"; path = "Target Support Files/Pods-MSPCore/Pods-MSPCore.release.xcconfig"; sourceTree = "<group>"; };
 		3BEFDC62A992B10540FF1C8C /* libPods-MSPCore.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-MSPCore.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		5D65763A2EBDD1CD0006666E /* user_signal.pb.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = user_signal.pb.swift; sourceTree = "<group>"; };
+		5D65763C2EBDD1DE0006666E /* signals.pb.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = signals.pb.swift; sourceTree = "<group>"; };
+		5D65763E2EBDD21B0006666E /* UserAgentManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserAgentManager.swift; sourceTree = "<group>"; };
 		660ED3E22CB45557002F237C /* MESMetricReporter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MESMetricReporter.swift; sourceTree = "<group>"; };
 		6639AC852B4DFAE300A248D2 /* MSPCore.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = MSPCore.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		6639AC882B4DFAE300A248D2 /* MSPCore.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MSPCore.h; sourceTree = "<group>"; };
@@ -238,6 +244,7 @@
 				66EFCDB62D1378BA005E0135 /* MSPAuction.swift */,
 				66EFCDBC2D13913B005E0135 /* MSPBidder.swift */,
 				66EFCDC82D13A463005E0135 /* MSPAdConfigManager.swift */,
+				5D65763E2EBDD21B0006666E /* UserAgentManager.swift */,
 			);
 			path = MSPCore;
 			sourceTree = "<group>";
@@ -380,6 +387,8 @@
 		66AFBBDC2CB45EF2000D0DD3 /* MESRawFiles */ = {
 			isa = PBXGroup;
 			children = (
+				5D65763C2EBDD1DE0006666E /* signals.pb.swift */,
+				5D65763A2EBDD1CD0006666E /* user_signal.pb.swift */,
 				668DA27A2E09D5E100E12314 /* ad_click.pb.swift */,
 				668DA27B2E09D5E100E12314 /* ad_hide.pb.swift */,
 				668DA27C2E09D5E100E12314 /* ad_impression.pb.swift */,
@@ -431,7 +440,6 @@
 				6639AC812B4DFAE300A248D2 /* Sources */,
 				6639AC822B4DFAE300A248D2 /* Frameworks */,
 				6639AC832B4DFAE300A248D2 /* Resources */,
-				214E79C5E363597957E6DC53 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -545,23 +553,6 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		214E79C5E363597957E6DC53 /* [CP] Copy Pods Resources */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-MSPCore/Pods-MSPCore-resources-${CONFIGURATION}-input-files.xcfilelist",
-			);
-			name = "[CP] Copy Pods Resources";
-			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-MSPCore/Pods-MSPCore-resources-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-MSPCore/Pods-MSPCore-resources.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
 		46C84CAF55D6A15AAB223DF8 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -593,6 +584,7 @@
 			files = (
 				660ED3E32CB45557002F237C /* MESMetricReporter.swift in Sources */,
 				66EFCDB72D1378BA005E0135 /* MSPAuction.swift in Sources */,
+				5D65763B2EBDD1CD0006666E /* user_signal.pb.swift in Sources */,
 				66EFCDBD2D13913B005E0135 /* MSPBidder.swift in Sources */,
 				66AFBBF12CB4B70F000D0DD3 /* AdMetricReporterImp.swift in Sources */,
 				668DA2882E09D5E100E12314 /* load_ad.pb.swift in Sources */,
@@ -640,11 +632,13 @@
 				668DA28F2E09D5E100E12314 /* load_ad_result.pb.swift in Sources */,
 				668DA2902E09D5E100E12314 /* sdk_init.pb.swift in Sources */,
 				668DA2912E09D5E100E12314 /* load_ad_request.pb.swift in Sources */,
+				5D65763D2EBDD1DE0006666E /* signals.pb.swift in Sources */,
 				668DA2922E09D5E100E12314 /* ad_impression.pb.swift in Sources */,
 				668DA2932E09D5E100E12314 /* ad_hide.pb.swift in Sources */,
 				668DA2942E09D5E100E12314 /* ad_click.pb.swift in Sources */,
 				6643E2B42E25B00300BAADD7 /* MSPDevice.swift in Sources */,
 				668DA2952E09D5E100E12314 /* ad_request.pb.swift in Sources */,
+				5D65763F2EBDD21B0006666E /* UserAgentManager.swift in Sources */,
 				6639ACAB2B4DFDF700A248D2 /* MSPHelper.swift in Sources */,
 				66EFCD9B2D123B00005E0135 /* MSPAdLoader.swift in Sources */,
 				6639ACAF2B4E0C2B00A248D2 /* MSPAdNetworkAdapterProvider.swift in Sources */,
