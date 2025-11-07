@@ -49,14 +49,15 @@ extension NovaInterstitialAdItem {
             case .horizontal:
                 return .horizontal(showTopRightCancelButton: false)
             case .vertical:
-                if case let .appInstall(appInstallModel) = adCtrType, supportOCPM {
+                return .vertical(showTopRightCancelButton: false)
+            case .downloadBanner:
+                if case let .appInstall(appInstallModel) = adCtrType {
                     return .skOverlay(
                         appStoreId: appInstallModel.storeId,
                         thirdPartyTrackingURL: appInstallModel.fallbackWebModel.url
                     )
-                } else {
-                    return .vertical(showTopRightCancelButton: false)
                 }
+                return .horizontal(showTopRightCancelButton: false)
             case .horizontalCancelTopRight:
                 return .horizontal(showTopRightCancelButton: true)
             case .verticalCancelTopRight:
@@ -68,22 +69,6 @@ extension NovaInterstitialAdItem {
                 DebugLogger.ui.error("missing interstitial layout: \(self.adId)")
                 return .horizontal(showTopRightCancelButton: false)
             }
-        }
-    }
-}
-
-// MARK: - NovaInterstitialSubviewError
-
-enum NovaInterstitialSubviewError: LocalizedError {
-    case layoutNotSupported(layout: NovaInterstitialAdLayout)
-    case playableInfoNotFound
-
-    func errorDescription() -> String? {
-        switch self {
-        case .layoutNotSupported(let layout):
-            return "\(layout.rawValue) layout is not supported in app open ad"
-        case .playableInfoNotFound:
-            return "Playable info not found"
         }
     }
 }
