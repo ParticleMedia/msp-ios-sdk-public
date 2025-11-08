@@ -591,7 +591,7 @@ extension AmazonAdapter: GoogleMobileAds.BannerViewDelegate {
                 bannerAd.adInfo[MSPConstants.AD_INFO_PRICE] = priceInDollar
             }
             
-            bannerAd.adInfo[MSPConstants.AD_INFO_NETWORK_NAME] = AdNetwork.google.rawValue
+            bannerAd.adInfo[MSPConstants.AD_INFO_NETWORK_NAME] = AdNetwork.amazon.rawValue
             bannerAd.adInfo[MSPConstants.AD_INFO_NETWORK_AD_UNIT_ID] = self.bidderPlacementId
             if let adListener = self.adListener,
                let adRequest = self.adRequest,
