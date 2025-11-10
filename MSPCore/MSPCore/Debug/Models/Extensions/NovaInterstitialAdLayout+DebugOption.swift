@@ -11,7 +11,6 @@ extension NovaInterstitialAdLayout: DebugOption {
         case .horizontalCancelTopRight: return "Horizontal Cancel TopRight"
         case .verticalCancelTopRight: return "Vertical Cancel TopRight"
         case .endCard: return "End Card"
-        case .downloadBanner: return "Download Banner"
         }
     }
     

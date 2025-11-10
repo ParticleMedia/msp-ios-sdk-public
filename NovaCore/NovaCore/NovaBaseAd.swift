@@ -43,6 +43,9 @@ public class NovaBaseAd: NSObject, Codable {
     /// Encoded ids for server tracking.
     let encryptedAdToken: String
 
+    /// Support OCPM Billing
+    let supportOCPM: Bool
+
     // Indicate if a nova ad has logged impression
     var hasImpressionLogged: Bool = false
     var hasLoadedLogged: Bool = false
@@ -62,7 +65,8 @@ public class NovaBaseAd: NSObject, Codable {
         thirdPartyImpressionTrackingUrls: [String],
         thirdPartyClickTrackingUrls: [String],
         priceInDollar: Double?,
-        encryptedAdToken: String
+        encryptedAdToken: String,
+        supportOCPM: Bool
     ) {
         self.adUnitId = adUnitId
         self.requestId = requestId
@@ -75,6 +79,7 @@ public class NovaBaseAd: NSObject, Codable {
         self.thirdPartyClickTrackingUrls = thirdPartyClickTrackingUrls
         self.priceInDollar = priceInDollar
         self.encryptedAdToken = encryptedAdToken
+        self.supportOCPM = supportOCPM
     }
 
     public required init(from decoder: Decoder) throws {
@@ -90,6 +95,7 @@ public class NovaBaseAd: NSObject, Codable {
         thirdPartyClickTrackingUrls = try container.decode([String].self, forKey: .thirdPartyClickTrackingUrls)
         encryptedAdToken = try container.decode(String.self, forKey: .encryptedAdToken)
         priceInDollar = try container.decodeIfPresent(Double.self, forKey: .priceInDollar)
+        supportOCPM = try container.decodeIfPresent(Bool.self, forKey: .supportOCPM) ?? false
     }
 
     // MARK: - Codable
@@ -106,6 +112,7 @@ public class NovaBaseAd: NSObject, Codable {
         case thirdPartyClickTrackingUrls
         case encryptedAdToken
         case priceInDollar
+        case supportOCPM
     }
 
     public func encode(to encoder: Encoder) throws {
@@ -121,6 +128,7 @@ public class NovaBaseAd: NSObject, Codable {
         try container.encode(thirdPartyClickTrackingUrls, forKey: .thirdPartyClickTrackingUrls)
         try container.encode(encryptedAdToken, forKey: .encryptedAdToken)
         try container.encodeIfPresent(priceInDollar, forKey: .priceInDollar)
+        try container.encode(supportOCPM, forKey: .supportOCPM)
     }
 
     func priceInCents() -> Float {
