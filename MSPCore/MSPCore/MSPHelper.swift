@@ -97,17 +97,25 @@ public class MSP {
             
             NotificationCenter.default.addObserver(self, selector: #selector(self.appDidBecomeActive), name: UIApplication.didBecomeActiveNotification, object: nil)
             NotificationCenter.default.addObserver(self, selector: #selector(self.appDidEnterBackground), name: UIApplication.didEnterBackgroundNotification, object: nil)
+            NotificationCenter.default.addObserver(self, selector: #selector(self.sizeCategoryDidChange), name: UIContentSizeCategory.didChangeNotification, object: nil)
         }
     }
     
     @objc private func appDidBecomeActive() {
         MSPLogger.shared.info(message: "App becomes active")
+        MSPDevice.shared.isInForeground = true
+        MSPDevice.shared.fontSize = UIApplication.shared.preferredContentSizeCategory
         MESMetricReporter.shared.tryLogUserSignal(type: Com_Newsbreak_Mes_Events_UserSignalType.intoForeground)
     }
     
     @objc private func appDidEnterBackground() {
         MSPLogger.shared.info(message: "App enters background")
         MESMetricReporter.shared.tryLogUserSignal(type: Com_Newsbreak_Mes_Events_UserSignalType.intoBackground)
+        MSPDevice.shared.isInForeground = false
+    }
+    
+    @objc private func sizeCategoryDidChange() {
+        MSPDevice.shared.fontSize = UIApplication.shared.preferredContentSizeCategory
     }
     
     public class MSPAdapterInitListener: NSObject, AdapterInitListener {

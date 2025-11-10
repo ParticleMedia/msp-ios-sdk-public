@@ -175,12 +175,24 @@ import UIKit
         deviceSignal.w = Int32(size.width * scale)
         deviceSignal.h = Int32(size.height * scale)
         
+        deviceSignal.orientation = MSPDevice.shared.getOrientationString(orientation: UIDevice.current.orientation)
+        deviceSignal.fontSize = MSPDevice.shared.getFontSizeString()
+        
         deviceSignal.carrier = MSPDevice.shared.getCarrier()
         deviceSignal.mccmnc = MSPDevice.shared.getMccMnc()
+        
+        if let connectionType = MSPDevice.shared.connectionType {
+            deviceSignal.connectionType = connectionType
+        }
 
+        deviceSignal.country = MSPDevice.shared.getCountry()
+        deviceSignal.locale = Locale.preferredLanguages.first ?? ""
+        
         UserAgentManager.shared.start()
         deviceSignal.ua = UserAgentManager.shared.userAgent
         
+        deviceSignal.ifa = ASIdentifierManager.shared().advertisingIdentifier.uuidString
+        deviceSignal.ifv = UIDevice.current.identifierForVendor?.uuidString ?? ""
         deviceSignal.lmt = MSPDevice.shared.isIDFAAuthorized()
         
         return deviceSignal
