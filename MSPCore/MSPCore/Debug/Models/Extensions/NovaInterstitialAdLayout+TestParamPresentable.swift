@@ -9,7 +9,6 @@ extension NovaInterstitialAdLayout: TestParamPresentable {
         case .endCard: return [("is_vertical", "true"), ("layout", rawValue)]
         case .verticalCancelTopRight: return [("is_vertical", "true"), ("layout", rawValue)]
         case .horizontalCancelTopRight: return [("is_vertical", "false"), ("layout", rawValue)]
-        case .downloadBanner: return [("is_vertical", "true"), ("layout", rawValue)]
         }
     }
 } 
