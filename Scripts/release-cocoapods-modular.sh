@@ -3,6 +3,9 @@
 # Modular CocoaPods Release Script
 # Follows the exact release workflow: MSPSharedLibraries → Adapters → MSPCore
 
+# Ensure UTF-8 encoding for CocoaPods
+export LANG=en_US.UTF-8
+
 set -e
 
 # Source the common library

@@ -1,0 +1,13 @@
+# Slack Notification Configuration
+# Copy this file to slack.conf and fill in your actual values
+# The slack.conf file is gitignored and will not be committed
+
+# Slack Webhook URL (required for Slack notifications)
+# Get this from: https://api.slack.com/apps -> Your App -> Incoming Webhooks
+SLACK_WEBHOOK_URL=https://hooks.slack.com/services/REDACTED
+
+# Optional Slack Configuration
+# SLACK_CHANNEL=#releases
+# SLACK_USERNAME=MSP iOS SDK Bot
+# SLACK_ICON_EMOJI=:rocket:
+
