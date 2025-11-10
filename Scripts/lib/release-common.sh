@@ -325,7 +325,72 @@ create_github_release_internal() {
 # Slack Notification Functions
 # =============================
 
-# Slack configuration
+# Load Slack configuration from config file if it exists
+# Falls back to environment variables if config file is not found
+# Environment variables take precedence over config file values
+load_slack_config() {
+    # Get the directory where this script is located
+    local script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+    # Resolve the config file path relative to the script directory
+    # Script is in Scripts/lib/, config is in Scripts/config/
+    local config_dir="$(cd "$script_dir/../config" 2>/dev/null && pwd)"
+    if [[ -z "$config_dir" ]]; then
+        # Fallback: try to find config directory from project root
+        local project_root="$(cd "$script_dir/../.." 2>/dev/null && pwd)"
+        if [[ -n "$project_root" ]]; then
+            config_dir="$project_root/Scripts/config"
+        fi
+    fi
+    local config_file="${config_dir}/slack.conf"
+    
+    if [[ -f "$config_file" ]]; then
+        log_debug "Loading Slack configuration from: $config_file"
+        
+        # Read the config file line by line
+        while IFS= read -r line || [[ -n "$line" ]]; do
+            # Skip comments and empty lines
+            [[ "$line" =~ ^[[:space:]]*# ]] && continue
+            [[ -z "${line// }" ]] && continue
+            
+            # Parse key=value pairs
+            if [[ "$line" =~ ^[[:space:]]*([^=]+)=(.*)$ ]]; then
+                local key="${BASH_REMATCH[1]}"
+                local value="${BASH_REMATCH[2]}"
+                
+                # Remove leading/trailing whitespace from key
+                key=$(echo "$key" | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
+                
+                # Remove leading/trailing whitespace and quotes from value
+                value=$(echo "$value" | sed 's/^[[:space:]]*//;s/[[:space:]]*$//' | sed 's/^"\(.*\)"$/\1/' | sed "s/^'\(.*\)'$/\1/")
+                
+                # Only set if not already set in environment (environment takes precedence)
+                if [[ -n "$key" ]] && [[ -n "$value" ]]; then
+                    case "$key" in
+                        SLACK_WEBHOOK_URL)
+                            [[ -z "${SLACK_WEBHOOK_URL:-}" ]] && export SLACK_WEBHOOK_URL="$value"
+                            ;;
+                        SLACK_CHANNEL)
+                            [[ -z "${SLACK_CHANNEL:-}" ]] && export SLACK_CHANNEL="$value"
+                            ;;
+                        SLACK_USERNAME)
+                            [[ -z "${SLACK_USERNAME:-}" ]] && export SLACK_USERNAME="$value"
+                            ;;
+                        SLACK_ICON_EMOJI)
+                            [[ -z "${SLACK_ICON_EMOJI:-}" ]] && export SLACK_ICON_EMOJI="$value"
+                            ;;
+                    esac
+                fi
+            fi
+        done < "$config_file"
+    else
+        log_debug "Slack config file not found: $config_file (using environment variables or defaults)"
+    fi
+}
+
+# Load Slack configuration (environment variables take precedence)
+load_slack_config
+
+# Slack configuration with defaults
 SLACK_WEBHOOK_URL="${SLACK_WEBHOOK_URL:-}"
 SLACK_CHANNEL="${SLACK_CHANNEL:-#releases}"
 SLACK_USERNAME="${SLACK_USERNAME:-MSP iOS SDK Bot}"
