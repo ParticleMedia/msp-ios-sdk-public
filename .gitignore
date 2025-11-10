@@ -42,3 +42,6 @@ release_backup_*/
 *_cocoapods.podspec
 *.build/
 .build/
+
+# Slack configuration (contains sensitive webhook URL)
+Scripts/config/slack.conf
