@@ -338,6 +338,7 @@ public class NovaAdapter: AdNetworkAdapter {
             if let adRequest = self.adRequest,
                let ad = self.nativeAd ?? self.interstitialAd {
                 self.adMetricReporter?.logAdHide(ad: ad, adRequest: adRequest, bidResponse: self, reason: reason, adScreenShot: adScreenShot, fullScreenShot: fullScreenShot)
+                self.nativeAdItem?.logAdHide(reason: reason)
             }
         }
     }
@@ -347,6 +348,7 @@ public class NovaAdapter: AdNetworkAdapter {
             if let adRequest = self.adRequest,
                let ad = self.nativeAd ?? self.interstitialAd {
                 self.adMetricReporter?.logAdReport(ad: ad, adRequest: adRequest, bidResponse: self, reason: reason, description: description, adScreenShot: adScreenShot, fullScreenShot: fullScreenShot)
+                self.nativeAdItem?.logAdHide(reason: reason)
             }
         }
     }
