@@ -511,6 +511,7 @@ import UIKit
         eventModel.ext = Com_Newsbreak_Monetization_Common_RequestContextExt()
         
         eventModel.bidRequest.id = request.requestId
+        eventModel.bidRequest.test = !request.testParams.isEmpty
         eventModel.ext.source = request.placementId
         eventModel.ext.placementID = ad?.adInfo[MSPConstants.AD_INFO_NETWORK_AD_UNIT_ID] as? String ?? ""
         eventModel.ext.userID = UserDefaults.standard.string(forKey: "msp_user_id") ?? ""
@@ -531,6 +532,7 @@ import UIKit
             eventModel.device = device
         }
         
+        eventModel.test = !request.testParams.isEmpty
         
         return eventModel
     }
