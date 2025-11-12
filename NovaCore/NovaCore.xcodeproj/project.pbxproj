@@ -147,6 +147,7 @@
 		F2A989322E55AE4500EAEDB8 /* ActionModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2A989312E55AE4500EAEDB8 /* ActionModel.swift */; };
 		F2A989342E55AF8C00EAEDB8 /* Weak.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2A989332E55AF8C00EAEDB8 /* Weak.swift */; };
 		F2A989382E55AFFD00EAEDB8 /* NovaAdPassThroughTapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2A989372E55AFFD00EAEDB8 /* NovaAdPassThroughTapView.swift */; };
+		F2FBE6772EC46221006FEFBA /* NovaBaseAd+Log.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2FBE6762EC46221006FEFBA /* NovaBaseAd+Log.swift */; };
 		MODELS_BUILD_1 /* NovaNativeBaseAd.swift in Sources */ = {isa = PBXBuildFile; fileRef = MODELS_REF_1 /* NovaNativeBaseAd.swift */; };
 		MODELS_BUILD_10 /* AdCtrType.swift in Sources */ = {isa = PBXBuildFile; fileRef = MODELS_REF_10 /* AdCtrType.swift */; };
 		MODELS_BUILD_2 /* NovaCommonEnums.swift in Sources */ = {isa = PBXBuildFile; fileRef = MODELS_REF_2 /* NovaCommonEnums.swift */; };
@@ -312,6 +313,7 @@
 		F2A989312E55AE4500EAEDB8 /* ActionModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActionModel.swift; sourceTree = "<group>"; };
 		F2A989332E55AF8C00EAEDB8 /* Weak.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Weak.swift; sourceTree = "<group>"; };
 		F2A989372E55AFFD00EAEDB8 /* NovaAdPassThroughTapView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NovaAdPassThroughTapView.swift; sourceTree = "<group>"; };
+		F2FBE6762EC46221006FEFBA /* NovaBaseAd+Log.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NovaBaseAd+Log.swift"; sourceTree = "<group>"; };
 		MODELS_REF_1 /* NovaNativeBaseAd.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NovaNativeBaseAd.swift; sourceTree = "<group>"; };
 		MODELS_REF_10 /* AdCtrType.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AdCtrType.swift; sourceTree = "<group>"; };
 		MODELS_REF_2 /* NovaCommonEnums.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NovaCommonEnums.swift; sourceTree = "<group>"; };
@@ -507,6 +509,7 @@
 				66E534812C24CBF200255D15 /* NovaAdMetricReporter.swift */,
 				66E534832C24CBF200255D15 /* NovaAdSkipReason.swift */,
 				66E534842C24CBF200255D15 /* NovaAdVideoMetricReporter.swift */,
+				F2FBE6762EC46221006FEFBA /* NovaBaseAd+Log.swift */,
 			);
 			path = Metrics;
 			sourceTree = "<group>";
@@ -1075,6 +1078,7 @@
 				F2A989222E55AA1B00EAEDB8 /* CenterEndCardSubviewHandler.swift in Sources */,
 				F2A9892A2E55AA6200EAEDB8 /* NovaAdPlayableViewController.swift in Sources */,
 				F2A989232E55AA1B00EAEDB8 /* NovaAdEndCard.swift in Sources */,
+				F2FBE6772EC46221006FEFBA /* NovaBaseAd+Log.swift in Sources */,
 				F2A989242E55AA1B00EAEDB8 /* ImmersiveEndCardSubviewHandler.swift in Sources */,
 				F2A989252E55AA1B00EAEDB8 /* HorizontalEndCardSubviewHandler.swift in Sources */,
 				F2A989262E55AA1B00EAEDB8 /* VerticalEndCardSubviewHandler.swift in Sources */,
