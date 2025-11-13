@@ -167,6 +167,8 @@ public final class NovaInterstitialAdItem: NovaNativeBaseAd {
     }
 
     public func dismiss(animated: Bool) {
-        viewController?.dismiss(animated: animated)
+        viewController?.dismiss(animated: animated) {
+            self.delegate?.interstitialAdDidDismiss(self)
+        }
     }
 }
