@@ -261,13 +261,13 @@ class NovaInterstitialAdVerticalSubviewHandler: NovaInterstitialAdSubviewHandler
     }()
 
     private lazy var closeButton: UIButton = {
-        let button = UIButton(type: .system)
-        button.backgroundColor = UIColor.systemGray.withAlphaComponent(0.6)
-        button.titleLabel?.font = .systemFont(ofSize: 16)
-        button.setTitleColor(UIColor.white.withAlphaComponent(0.9), for: .normal)
-        button.layer.cornerRadius = 8.0
-        button.layer.borderWidth = 1.0
-        button.layer.borderColor = UIColor.systemGray3.cgColor
+        let button = UIButton()
+        button.layer.borderWidth = 1
+        button.layer.borderColor = NovaColorPalettes.Gray.tint300.cgColor
+        button.layer.cornerRadius = 8
+        button.clipsToBounds = true
+        button.titleLabel?.font = .systemFont(ofSize: 16, weight: .semibold)
+        button.setTitleColor(NovaColorPalettes.White.withAlphaComponent(0.9), for: .normal)
         button.addTarget(self, action: #selector(didTapCloseButton), for: .touchUpInside)
         button.accessibilityIdentifier = "close"
         return button
@@ -317,10 +317,10 @@ class NovaInterstitialAdVerticalSubviewHandler: NovaInterstitialAdSubviewHandler
     private(set) lazy var topRightCloseButton: UIButton = {
         let button = UIButton()
         button.titleLabel?.font = .systemFont(ofSize: 16, weight: .regular)
-        button.setTitleColor(UIColor(light: NovaColorPalettes.Gray.tint600, dark: NovaColorPalettes.Gray.tint200), for: .normal)
-        button.layer.borderWidth = 1.5
+        button.setTitleColor(UIColor(light: NovaColorPalettes.Gray.tint600, dark: NovaColorPalettes.Gray.tint600), for: .normal)
+        button.layer.borderWidth = 0
         button.layer.cornerRadius = 12
-        button.layer.borderColor = UIColor(light: NovaColorPalettes.Gray.tint600, dark: NovaColorPalettes.Gray.tint200).cgColor
+        button.backgroundColor = NovaColorPalettes.White
         button.isUserInteractionEnabled = false
         return button
     }()
@@ -337,9 +337,15 @@ class NovaInterstitialAdVerticalSubviewHandler: NovaInterstitialAdSubviewHandler
     private weak var delegate: NovaInterstitialAdSubviewBehaviorDelegate?
     private weak var viewController: UIViewController?
     
+    // MARK: - NovaTopRightClosable
+    
     var countdownTimer: Timer?
     let countdownSecondRemaining: Int
     private let showTopRightCloseButton: Bool
+    
+    var darkColor: UIColor {
+        interstitialAd.layoutStyle == .verticalCancelTopRight ? NovaColorPalettes.Gray.tint600 : NovaColorPalettes.Gray.tint200
+    }
 
     private func setupVolumeIcon(muted: Bool) {
         let volumeOnImage = UIImage.Nova.volumeOnLine?.withTintColor(NovaColorPalettes.White)
