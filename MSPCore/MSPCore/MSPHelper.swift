@@ -106,6 +106,10 @@ public class MSP {
         MSPDevice.shared.isInForeground = true
         MSPDevice.shared.fontSize = UIApplication.shared.preferredContentSizeCategory
         MESMetricReporter.shared.tryLogUserSignal(type: Com_Newsbreak_Mes_Events_UserSignalType.intoForeground)
+        
+        if !UserDefaults.standard.bool(forKey: MSP.KEY_MES_USER_SIGNAL_ATTRIBUTION) {
+            MESMetricReporter.shared.tryLogUserSignal(type: Com_Newsbreak_Mes_Events_UserSignalType.attribution)
+        }
     }
     
     @objc private func appDidEnterBackground() {
@@ -133,10 +137,6 @@ public class MSP {
                     }
                     MESMetricReporter.shared.logSDKInit(totalCompleteTimeInMs: totalCompleteTimeInMs, blockLatencyInMs: MSP.shared.blockLatencyInMs, adNetworkCompleteTimeInMs: MSP.shared.adNetworkInitLatencyInMs)
                     MSP.shared.sdkInitListener?.onComplete(status: .SUCCESS, message: "")
-                    
-                    if !UserDefaults.standard.bool(forKey: KEY_MES_USER_SIGNAL_ATTRIBUTION) {
-                        MESMetricReporter.shared.tryLogUserSignal(type: Com_Newsbreak_Mes_Events_UserSignalType.attribution)
-                    }
                 }
             }
         }
@@ -214,7 +214,7 @@ public class MSP {
                     do {
                         // Handle JSON response
                         if let responseDict = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any],
-                           let id = responseDict["id"] as? Int64 {
+                           let id = responseDict["id"] as? Int64, id != 0 {
                             UserDefaults.standard.setValue(String(id), forKey: "msp_user_id")
                             UserDefaults.standard.setValue(String(id), forKey: "msp_id")
                         }

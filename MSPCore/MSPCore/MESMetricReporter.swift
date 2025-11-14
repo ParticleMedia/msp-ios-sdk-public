@@ -141,9 +141,8 @@ import UIKit
         if let orgId = MSP.shared.orgId {
             sdkSignal.orgID = Int32(orgId)
         }
-        if let mspId = UserDefaults.standard.string(forKey: "msp_id") {
-            sdkSignal.mspID = mspId
-        }
+        sdkSignal.mspID = UserDefaults.standard.string(forKey: "msp_id") ?? ""
+        sdkSignal.clientTs = Int64(Date().timeIntervalSince1970 * 1000)
         sdkSignal.sdkVersion = MSP.shared.version
         sdkSignal.platform = Com_Newsbreak_Monetization_Signals_SdkPlatform.ios
         sdkSignal.uuid = getSDKSignalUUID()
@@ -181,12 +180,10 @@ import UIKit
         deviceSignal.carrier = MSPDevice.shared.getCarrier()
         deviceSignal.mccmnc = MSPDevice.shared.getMccMnc()
         
-        if let connectionType = MSPDevice.shared.connectionType {
-            deviceSignal.connectionType = connectionType
-        }
+        deviceSignal.connectionType = MSPDevice.shared.getConnectionType()
 
         deviceSignal.country = MSPDevice.shared.getCountry()
-        deviceSignal.locale = Locale.preferredLanguages.first ?? ""
+        deviceSignal.locale = Locale.current.identifier
         
         UserAgentManager.shared.start()
         deviceSignal.ua = UserAgentManager.shared.userAgent
