@@ -15,6 +15,7 @@ protocol NovaTopRightClosable: AnyObject {
     var countdownSecondRemaining: Int { get }
     var topRightCloseButton: UIButton  { get }
     var topRightCloseButtonArea: UIView { get }
+    var darkColor: UIColor { get }
     func setupCountdownTimerIfNeeded()
     func enableCloseButtonIfNeeded()
 }
@@ -50,6 +51,7 @@ extension NovaTopRightClosable {
         clickableArea.isUserInteractionEnabled = true
         self.countdownTimer?.invalidate()
         button.setTitle(nil, for: .normal)
-        button.setImage(.Nova.crossCircleFilled?.withTintColor(NovaColorPalettes.Gray.tint600), for: .normal)
+        let config = UIImage.SymbolConfiguration(pointSize: 12, weight: .semibold)
+        button.setImage(UIImage(systemName: "xmark", withConfiguration: config)?.withTintColor(UIColor(light: NovaColorPalettes.Gray.tint600, dark: darkColor), renderingMode: .alwaysOriginal), for: .normal)
     }
 }
