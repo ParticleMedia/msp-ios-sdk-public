@@ -299,9 +299,13 @@ class NovaInterstitialAdHorizontalSubviewHandler: NovaInterstitialAdSubviewHandl
     private weak var delegate: NovaInterstitialAdSubviewBehaviorDelegate?
     private weak var viewController: UIViewController?
     
+    // MARK: - NovaTopRightClosable
+    
     var countdownTimer: Timer?
     let countdownSecondRemaining: Int
     private let showTopRightCloseButton: Bool
+    
+    var darkColor: UIColor { NovaColorPalettes.Gray.tint200 }
 
     @objc private func didTapCloseButton() {
         delegate?.didTapCloseButton()
