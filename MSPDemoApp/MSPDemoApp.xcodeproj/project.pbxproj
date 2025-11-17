@@ -63,9 +63,16 @@
 		66F4F0C72BE0550E0026CAB8 /* PrebidAdapter.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = PrebidAdapter.xcframework; path = ../output/xcframework/PrebidAdapter.xcframework; sourceTree = "<group>"; };
 		66F4F0CA2BE055360026CAB8 /* PrebidMobile.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = PrebidMobile.xcframework; path = ../MSPUtility/PrebidMobile.xcframework; sourceTree = "<group>"; };
 		66F4F0CE2BE0569C0026CAB8 /* shared.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = shared.xcframework; path = ../PrebidAdapter/shared.xcframework; sourceTree = "<group>"; };
+		79E05D155D05D910E5F8BC84 /* Pods-MSPDemoApp.release-pods.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MSPDemoApp.release-pods.xcconfig"; path = "Target Support Files/Pods-MSPDemoApp/Pods-MSPDemoApp.release-pods.xcconfig"; sourceTree = "<group>"; };
 		7D28AF188F67939620E30F42 /* Pods-MSPDemoApp.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MSPDemoApp.debug.xcconfig"; path = "Target Support Files/Pods-MSPDemoApp/Pods-MSPDemoApp.debug.xcconfig"; sourceTree = "<group>"; };
+		8582A55502FD455B95E8BF0E /* MSPDemoApp-Release-SPM.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = "MSPDemoApp-Release-SPM.xcconfig"; path = "../Configs/MSPDemoApp-Release-SPM.xcconfig"; sourceTree = "<group>"; };
+		8D782B963E214DC8A54A6362 /* MSPDemoApp-SPM-Shared.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = "MSPDemoApp-SPM-Shared.xcconfig"; path = "../Configs/MSPDemoApp-SPM-Shared.xcconfig"; sourceTree = "<group>"; };
+		9E0D5668C7DC3131BAE5280D /* Pods-MSPDemoApp.release-spm.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MSPDemoApp.release-spm.xcconfig"; path = "Target Support Files/Pods-MSPDemoApp/Pods-MSPDemoApp.release-spm.xcconfig"; sourceTree = "<group>"; };
+		A77E016889EDCEAECED45195 /* Pods-MSPDemoApp.debug-pods.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MSPDemoApp.debug-pods.xcconfig"; path = "Target Support Files/Pods-MSPDemoApp/Pods-MSPDemoApp.debug-pods.xcconfig"; sourceTree = "<group>"; };
+		C551BA63D79D4E7A97C432ED /* MSPDemoApp-Debug-SPM.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = "MSPDemoApp-Debug-SPM.xcconfig"; path = "../Configs/MSPDemoApp-Debug-SPM.xcconfig"; sourceTree = "<group>"; };
 		E28AB29591E557D754243851 /* Pods-MSPDemoApp.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MSPDemoApp.release.xcconfig"; path = "Target Support Files/Pods-MSPDemoApp/Pods-MSPDemoApp.release.xcconfig"; sourceTree = "<group>"; };
 		ED7F396EB93590EA78694359 /* libPods-MSPDemoApp.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-MSPDemoApp.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		F901F668ABC0F6EF12BD11B2 /* Pods-MSPDemoApp.debug-spm.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MSPDemoApp.debug-spm.xcconfig"; path = "Target Support Files/Pods-MSPDemoApp/Pods-MSPDemoApp.debug-spm.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -100,6 +107,10 @@
 				6684806B2BE03D800025018B /* Assets.xcassets */,
 				7D28AF188F67939620E30F42 /* Pods-MSPDemoApp.debug.xcconfig */,
 				E28AB29591E557D754243851 /* Pods-MSPDemoApp.release.xcconfig */,
+				A77E016889EDCEAECED45195 /* Pods-MSPDemoApp.debug-pods.xcconfig */,
+				79E05D155D05D910E5F8BC84 /* Pods-MSPDemoApp.release-pods.xcconfig */,
+				F901F668ABC0F6EF12BD11B2 /* Pods-MSPDemoApp.debug-spm.xcconfig */,
+				9E0D5668C7DC3131BAE5280D /* Pods-MSPDemoApp.release-spm.xcconfig */,
 			);
 			name = Pods;
 			path = ../Pods;
@@ -113,6 +124,7 @@
 				668480822BE03D800025018B /* MSPDemoAppUITests */,
 				668480602BE03D7D0025018B /* Products */,
 				04C52D41A26178099ABC1C12 /* Pods */,
+				7C4D8A415C1C4FB59D8ED23F /* Configs */,
 				872BA9AE6FA9B4F214308302 /* Frameworks */,
 			);
 			sourceTree = "<group>";
@@ -177,6 +189,17 @@
 			path = Native;
 			sourceTree = "<group>";
 		};
+		7C4D8A415C1C4FB59D8ED23F /* Configs */ = {
+			isa = PBXGroup;
+			children = (
+				8D782B963E214DC8A54A6362 /* MSPDemoApp-SPM-Shared.xcconfig */,
+				C551BA63D79D4E7A97C432ED /* MSPDemoApp-Debug-SPM.xcconfig */,
+				8582A55502FD455B95E8BF0E /* MSPDemoApp-Release-SPM.xcconfig */,
+			);
+			name = Configs;
+			path = ../Configs;
+			sourceTree = "<group>";
+		};
 		872BA9AE6FA9B4F214308302 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
@@ -201,8 +224,8 @@
 				6684805B2BE03D7D0025018B /* Sources */,
 				6684805C2BE03D7D0025018B /* Frameworks */,
 				6684805D2BE03D7D0025018B /* Resources */,
-				EA3FA77C9BFF509C8562FCED /* [CP] Embed Pods Frameworks */,
-				86CDF00B2340694C8D2BC517 /* [CP] Copy Pods Resources */,
+				952491D21602353A79890214 /* [CP] Embed Pods Frameworks */,
+				E93C53A6950E8BE8596E73EB /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -342,24 +365,7 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
-		86CDF00B2340694C8D2BC517 /* [CP] Copy Pods Resources */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-MSPDemoApp/Pods-MSPDemoApp-resources-${CONFIGURATION}-input-files.xcfilelist",
-			);
-			name = "[CP] Copy Pods Resources";
-			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-MSPDemoApp/Pods-MSPDemoApp-resources-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-MSPDemoApp/Pods-MSPDemoApp-resources.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		EA3FA77C9BFF509C8562FCED /* [CP] Embed Pods Frameworks */ = {
+		952491D21602353A79890214 /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -374,6 +380,23 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-MSPDemoApp/Pods-MSPDemoApp-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		E93C53A6950E8BE8596E73EB /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-MSPDemoApp/Pods-MSPDemoApp-resources-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Copy Pods Resources";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-MSPDemoApp/Pods-MSPDemoApp-resources-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-MSPDemoApp/Pods-MSPDemoApp-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */
@@ -437,7 +460,7 @@
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
-		668480872BE03D800025018B /* Debug */ = {
+		554DF6B7D99B42DD84C17148 /* Debug-SPM */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -498,9 +521,72 @@
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
-			name = Debug;
+			name = "Debug-SPM";
 		};
-		668480882BE03D800025018B /* Release */ = {
+		668480872BE03D800025018B /* Debug-Pods */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = "Debug-Pods";
+		};
+		668480882BE03D800025018B /* Release-Pods */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -554,11 +640,11 @@
 				SWIFT_COMPILATION_MODE = wholemodule;
 				VALIDATE_PRODUCT = YES;
 			};
-			name = Release;
+			name = "Release-Pods";
 		};
-		6684808A2BE03D800025018B /* Debug */ = {
+		6684808A2BE03D800025018B /* Debug-Pods */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 7D28AF188F67939620E30F42 /* Pods-MSPDemoApp.debug.xcconfig */;
+			baseConfigurationReference = A77E016889EDCEAECED45195 /* Pods-MSPDemoApp.debug-pods.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -585,11 +671,11 @@
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
-			name = Debug;
+			name = "Debug-Pods";
 		};
-		6684808B2BE03D800025018B /* Release */ = {
+		6684808B2BE03D800025018B /* Release-Pods */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = E28AB29591E557D754243851 /* Pods-MSPDemoApp.release.xcconfig */;
+			baseConfigurationReference = 79E05D155D05D910E5F8BC84 /* Pods-MSPDemoApp.release-pods.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -615,7 +701,7 @@
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
-			name = Release;
+			name = "Release-Pods";
 		};
 		6684808D2BE03D800025018B /* Debug */ = {
 			isa = XCBuildConfiguration;
@@ -693,26 +779,147 @@
 			};
 			name = Release;
 		};
+		6CD6724FEA21401F990ACBFB /* Release-SPM */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 8582A55502FD455B95E8BF0E /* MSPDemoApp-Release-SPM.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 4PEHUZX8QH;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = MSPDemoApp/Info.plist;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
+				INFOPLIST_KEY_UIMainStoryboardFile = Main;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 0.0.117;
+				PRODUCT_BUNDLE_IDENTIFIER = MSPDemoApp.MSPDemoApp;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = "Release-SPM";
+		};
+		865EE985308E40ABB18203EA /* Debug-SPM */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = C551BA63D79D4E7A97C432ED /* MSPDemoApp-Debug-SPM.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 4PEHUZX8QH;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = MSPDemoApp/Info.plist;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
+				INFOPLIST_KEY_UIMainStoryboardFile = Main;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 0.0.117;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = MSPDemoApp.MSPDemoApp;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = "Debug-SPM";
+		};
+		C192F6011B6042B0B36B4B50 /* Release-SPM */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = "Release-SPM";
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
 		6684805A2BE03D7D0025018B /* Build configuration list for PBXProject "MSPDemoApp" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				668480872BE03D800025018B /* Debug */,
-				668480882BE03D800025018B /* Release */,
+				668480872BE03D800025018B /* Debug-Pods */,
+				668480882BE03D800025018B /* Release-Pods */,
+				554DF6B7D99B42DD84C17148 /* Debug-SPM */,
+				C192F6011B6042B0B36B4B50 /* Release-SPM */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
+			defaultConfigurationName = "Debug-Pods";
 		};
 		668480892BE03D800025018B /* Build configuration list for PBXNativeTarget "MSPDemoApp" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				6684808A2BE03D800025018B /* Debug */,
-				6684808B2BE03D800025018B /* Release */,
+				6684808A2BE03D800025018B /* Debug-Pods */,
+				6684808B2BE03D800025018B /* Release-Pods */,
+				865EE985308E40ABB18203EA /* Debug-SPM */,
+				6CD6724FEA21401F990ACBFB /* Release-SPM */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
+			defaultConfigurationName = "Debug-Pods";
 		};
 		6684808C2BE03D800025018B /* Build configuration list for PBXNativeTarget "MSPDemoAppTests" */ = {
 			isa = XCConfigurationList;

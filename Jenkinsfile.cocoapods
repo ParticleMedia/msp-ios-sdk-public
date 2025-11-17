@@ -1,0 +1,108 @@
+pipeline {
+    agent any
+
+    options {
+        ansiColor('xterm')
+        timestamps()
+    }
+
+    parameters {
+        string(name: 'VERSION', defaultValue: '', description: 'Release version (e.g. 1.2.3). Leave blank for dry runs.')
+        string(name: 'PODS_SPECS_REPO', defaultValue: 'git@github.com:ParticleMedia/private-specs.git', description: 'Specs repo for pod repo push.')
+    }
+
+    environment {
+        DEVELOPER_DIR = '/Applications/Xcode_15.4.app/Contents/Developer'
+        SLACK_CHANNEL = '#msp-ios-sdk'
+        SLACK_CONFIG  = 'Scripts/config/slack.conf'
+        LANG = 'en_US.UTF-8'
+        LC_ALL = 'en_US.UTF-8'
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }
+
+        stage('Install Ruby dependencies') {
+            steps {
+                sh '''
+                    set -euo pipefail
+                    bundle install
+                '''
+            }
+        }
+
+        stage('Generate Workspace') {
+            steps {
+                sh '''
+                    set -euo pipefail
+                    ./Scripts/update-workspace.sh
+                '''
+            }
+        }
+
+        stage('Install Pods') {
+            steps {
+                sh '''
+                    set -euo pipefail
+                    bundle exec pod install
+                '''
+            }
+        }
+
+        stage('Lint Podspecs (no warnings)') {
+            steps {
+                sh '''
+                    set -euo pipefail
+                    SPECS="MSPCore MSPSharedLibraries MSPOMSDK PrebidAdapter NovaAdapter NovaCore MSPGoogleAdapter MSPFacebookAdapter AmazonAdapter InmobiAdapter MintegralAdapter MobilefuseAdapter PubmaticAdapter UnityAdapter"
+                    for spec in $SPECS; do
+                        bundle exec pod lib lint ${spec}.podspec --fail-fast --verbose --use-libraries
+                    done
+                '''
+            }
+        }
+
+        stage('Build XCFrameworks') {
+            steps {
+                sh '''
+                    set -euo pipefail
+                    ./Scripts/build.sh --skip-code-sign
+                '''
+            }
+        }
+
+        stage('Publish Podspecs') {
+            when {
+                expression { params.VERSION?.trim() }
+            }
+            steps {
+                sh '''
+                    set -euo pipefail
+                    SPECS="MSPCore MSPSharedLibraries MSPOMSDK PrebidAdapter NovaAdapter NovaCore MSPGoogleAdapter MSPFacebookAdapter AmazonAdapter InmobiAdapter MintegralAdapter MobilefuseAdapter PubmaticAdapter UnityAdapter"
+                    for spec in $SPECS; do
+                        bundle exec pod repo push ${PODS_SPECS_REPO} ${spec}.podspec --verbose --use-libraries --allow-warnings=false
+                    done
+
+                    git tag ${VERSION}
+                    git push origin ${VERSION}
+                '''
+            }
+        }
+    }
+
+    post {
+        success {
+            slackSend channel: env.SLACK_CHANNEL,
+                      color: 'good',
+                      message: "✅ CocoaPods pipeline succeeded: ${env.BUILD_TAG}"
+        }
+        failure {
+            slackSend channel: env.SLACK_CHANNEL,
+                      color: 'danger',
+                      message: "❌ CocoaPods pipeline failed: ${env.BUILD_TAG}"
+        }
+    }
+}

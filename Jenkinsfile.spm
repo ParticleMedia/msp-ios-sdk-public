@@ -1,0 +1,114 @@
+pipeline {
+    agent any
+
+    options {
+        ansiColor('xterm')
+        timestamps()
+    }
+
+    parameters {
+        string(name: 'VERSION', defaultValue: '', description: 'Release version for tagging (e.g. 1.2.3). Leave blank to skip tagging.')
+    }
+
+    environment {
+        DEVELOPER_DIR = '/Applications/Xcode_15.4.app/Contents/Developer'
+        SLACK_CHANNEL = '#msp-ios-sdk'
+        SLACK_CONFIG  = 'Scripts/config/slack.conf'
+        LANG = 'en_US.UTF-8'
+        LC_ALL = 'en_US.UTF-8'
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }
+
+        stage('Install Ruby dependencies') {
+            steps {
+                sh '''
+                    set -euo pipefail
+                    bundle install
+                '''
+            }
+        }
+
+        stage('Generate Workspace') {
+            steps {
+                sh '''
+                    set -euo pipefail
+                    ./Scripts/update-workspace.sh
+                '''
+            }
+        }
+
+        stage('Swift Package Resolve') {
+            steps {
+                sh '''
+                    set -euo pipefail
+                    swift package reset
+                    swift package resolve
+                '''
+            }
+        }
+
+        stage('Swift Package Build') {
+            steps {
+                sh '''
+                    set -euo pipefail
+                    swift build --configuration release
+                '''
+            }
+        }
+
+        stage('Validate Dependency Graph') {
+            steps {
+                sh '''
+                    set -euo pipefail
+                    swift package describe --type json > build/spm-graph.json
+                '''
+            }
+        }
+
+        stage('Build MSPDemoApp-SPM scheme') {
+            steps {
+                sh '''
+                    set -euo pipefail
+                    xcodebuild \
+                        -workspace msp-ios-sdk.xcworkspace \
+                        -scheme MSPDemoApp-SPM \
+                        -destination 'platform=iOS Simulator,name=iPhone 15' \
+                        SKIP_CODE_SIGN=YES \
+                        build
+                '''
+            }
+        }
+
+        stage('Tag Release') {
+            when {
+                expression { params.VERSION?.trim() }
+            }
+            steps {
+                sh '''
+                    set -euo pipefail
+                    git tag ${VERSION}
+                    git push origin ${VERSION}
+                '''
+            }
+        }
+    }
+
+    post {
+        success {
+            slackSend channel: env.SLACK_CHANNEL,
+                      color: 'good',
+                      message: "✅ SPM pipeline succeeded: ${env.BUILD_TAG}"
+        }
+        failure {
+            slackSend channel: env.SLACK_CHANNEL,
+                      color: 'danger',
+                      message: "❌ SPM pipeline failed: ${env.BUILD_TAG}"
+        }
+    }
+}

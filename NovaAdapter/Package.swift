@@ -41,12 +41,6 @@ let package = Package(
                 "NovaCore"
             ],
             path: "NovaAdapter",
-            sources: [
-                "NovaAdapter.swift",
-                "NovaManager.swift",
-                "NovaNativeAd.swift",
-                "Interstitial/"
-            ],
             publicHeadersPath: ".",
             cSettings: [
                 .headerSearchPath("."),

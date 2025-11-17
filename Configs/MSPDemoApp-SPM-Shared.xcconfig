@@ -1,0 +1,5 @@
+// Shared settings for DemoApp SPM configurations
+GCC_PREPROCESSOR_DEFINITIONS = $(inherited) MSP_INTEGRATION_SPM=1
+OTHER_SWIFT_FLAGS = $(inherited)
+FRAMEWORK_SEARCH_PATHS = $(inherited)
+LIBRARY_SEARCH_PATHS = $(inherited)

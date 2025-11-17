@@ -1,237 +1,146 @@
 # MSP iOS SDK
 
-A comprehensive iOS SDK for mobile advertising and monetization, featuring multiple ad network adapters and a unified interface for developers.
+Modular advertising SDK for iOS that ships multiple adapters, shared libraries, and a dual‑integration demo app. The demo application is generated entirely from Xcodegen specs so CocoaPods and Swift Package Manager paths can be validated without hand‑editing Xcode projects.
 
-## 🚀 Features
+## Requirements
 
-- **Multiple Ad Network Support**: Google, Facebook, InMobi, Mintegral, MobileFuse, Pubmatic, Unity, and more
-- **Unified Interface**: Consistent API across all ad networks
-- **XCFramework Support**: Modern binary distribution format
-- **CocoaPods Integration**: Easy dependency management
-- **Comprehensive Testing**: Unit tests and UI tests included
-- **CI/CD Pipeline**: Automated building, testing, and releasing
+| Tool | Version | Notes |
+| ---- | ------- | ----- |
+| Xcode | 15.2+ | Install from App Store or developer.apple.com |
+| Xcodegen | 2.38.0+ | `brew install xcodegen` |
+| Ruby | 3.0+ with Bundler | run `bundle install` |
+| CocoaPods | 1.14+ | required for adapter dependencies |
 
-## 🏗️ Architecture
-
-The SDK is organized into several key components:
-
-- **MSPCore**: Core utility framework and common functionality
-- **MSPiOSCore**: iOS-specific core framework
-- **NovaCore**: Advanced UI and interaction framework
-- **Adapters**: Network-specific implementations for various ad platforms
-- **MSPDemoApp**: Example application demonstrating SDK usage
-
-## 📦 Installation
-
-### CocoaPods
-
-```ruby
-# Core framework
-pod 'MSPCore', '~> 0.0.93'
-
-# UI framework
-pod 'NovaCore', '~> 0.0.95'
-
-# Specific adapters
-pod 'GoogleAdapter', '~> 0.0.1'
-pod 'FacebookAdapter', '~> 0.0.1'
-pod 'NovaAdapter', '~> 0.0.1'
-```
-
-### Manual Installation
-
-1. Clone the repository
-2. Run `pod install` to install dependencies
-3. Build the XCFrameworks using the provided scripts
-4. Integrate the frameworks into your project
-
-## 🔧 Build Scripts
-
-The project includes a comprehensive modular build system for creating XCFrameworks:
-
-### New Modular System (v2.0.0)
-
-The project now features a modern, modular script architecture with:
-- **Unified Build Script**: Single command to build all frameworks
-- **Enhanced Release Script**: Automated releases with rollback capabilities
-- **Demo App Builder**: Dedicated script for building and testing the demo app
-- **Library Modules**: Reusable components for common operations
-- **Plugin System**: Environment-specific optimizations
-- **Configuration Management**: Flexible settings for different environments
-- **Backward Compatibility**: Legacy scripts still available
+## Initial Setup
 
 ```bash
-# Build all frameworks (recommended)
-./Scripts/build.sh
-
-# Build specific framework
-./Scripts/build.sh MSPiOSCore
-./Scripts/build.sh NovaCore
-
-# Build multiple frameworks
-./Scripts/build.sh --frameworks "MSPiOSCore NovaCore"
-
-# Build demo app
-./Scripts/buildDemoApp.sh
-
-# Development builds (no code signing)
-./Scripts/build.sh --skip-code-sign
-
-# Check build status
-./Scripts/build.sh --status
-
-# Dry run to preview
-./Scripts/build.sh --dry-run all
-
-# Legacy scripts (for backward compatibility)
-./Scripts/buildiOSCoreXCFramework.sh
-./Scripts/buildNovaXCFramework.sh
-```
-
-## 🚀 CI/CD Pipeline
-
-This project includes a comprehensive CI/CD pipeline using **GitHub Actions** and **Fastlane**:
-
-### Automated Workflows
-
-- **CI Validation**: Automated testing and validation on pull requests
-- **Demo App Compilation**: Full demo app building and validation in CI
-- **Release Automation**: Automated framework building and publishing
-- **Manual Builds**: On-demand framework building with configurable options
-
-### Quick Setup
-
-```bash
-# Install dependencies
+git clone <repo-url>
+cd msp-ios-sdk
 bundle install
-pod install
-
-# Or use the new modular build system
-./Scripts/build.sh --info
-
-# Build and test demo app
-./Scripts/buildDemoApp.sh
+brew install xcodegen          # or brew upgrade xcodegen
 ```
 
-### Fastlane Commands
+## Workspace Generation Workflow
+
+1. **Regenerate specs / workspace**
+   ```bash
+   ./Scripts/update-workspace.sh
+   ```
+   - Scans every `Package.swift`.
+   - Rewrites `MSPDemoApp/project.yml`, `workspace.yml`, and `msp-ios-sdk.xcworkspace/xcshareddata/swiftpm/local-packages.json`.
+   - Runs `xcodegen generate` when available.
+2. **Install Pods (outside the sandbox)**
+   ```bash
+   bundle exec pod install
+   ```
+   Run on your Mac or on GitHub Actions runners; the Codex sandbox cannot write to CocoaPods caches.
+3. **Open the workspace**
+   ```bash
+   xed msp-ios-sdk.xcworkspace
+   ```
+
+> Never edit `MSPDemoApp.xcodeproj` or `msp-ios-sdk.xcworkspace` manually—they are generated artifacts.
+
+## Demo App Schemes
+
+| Scheme | Target | Dependency Stack | Purpose |
+| ------ | ------ | ---------------- | ------- |
+| `MSPDemoApp` | MSPDemoApp | CocoaPods | Validates adapters linked through Pods. |
+| `MSPDemoApp-SPM` | MSPDemoApp-SPM | Swift Package Manager | Validates all local Swift packages. |
+
+Select the scheme that matches the integration you need to validate.
+
+## Build & Test Commands
 
 ```bash
-# Check project status
-bundle exec fastlane status
+# Pods scheme: build + unit/UI tests
+xcodebuild \
+  -workspace msp-ios-sdk.xcworkspace \
+  -scheme MSPDemoApp \
+  -destination 'platform=iOS Simulator,name=iPhone 15' \
+  SKIP_CODE_SIGN=YES \
+  test
 
-# Run tests
-bundle exec fastlane test
+# SwiftPM scheme: build only
+xcodebuild \
+  -workspace msp-ios-sdk.xcworkspace \
+  -scheme MSPDemoApp-SPM \
+  -destination 'platform=iOS Simulator,name=iPhone 15' \
+  SKIP_CODE_SIGN=YES \
+  build
 
-# Build frameworks
-bundle exec fastlane build_all
-
-# Complete release process
-bundle exec fastlane release pod_name:MSPCore version:1.0.0
+# Package validation loop
+for pkg in MSPCore MSPSharedLibraries MSPOMSDK PrebidAdapter NovaAdapter NovaCore MSPGoogleAdapter MSPFacebookAdapter MSPiOSCore; do
+  (cd "$pkg" && swift build --configuration release)
+done
 ```
 
-📚 **For detailed CI/CD documentation, see [CI_CD_README.md](CI_CD_README.md)**
+## Jenkins Pipelines Overview
 
-## 🧪 Testing
+Three declarative Jenkins pipelines live at the repo root:
 
-The project includes comprehensive testing:
+| Jenkinsfile | Purpose |
+| ----------- | ------- |
+| `Jenkinsfile.cocoapods` | Publishes all CocoaPods (lint → build → repo push → tagging). |
+| `Jenkinsfile.spm` | Builds/validates the Swift Package Manager distribution and tags releases. |
+| `Jenkinsfile.demoapp` | Builds both demo app schemes, exports unsigned IPAs, and prepares for a future Firebase upload. |
 
-```bash
-# Run all tests
-bundle exec fastlane test
+Each pipeline assumes Slack notifications are configured via `Scripts/config/slack.conf` and that Jenkins has access to macOS builders with Xcode 15.4+.
 
-# Run specific test targets
-xcodebuild test -workspace msp-ios-sdk.xcworkspace -scheme MSPiOSCore
-xcodebuild test -workspace msp-ios-sdk.xcworkspace -scheme NovaCore
-```
+### How to Publish via Jenkins (CocoaPods)
 
-## 📱 Requirements
+1. Open Jenkins and create a new pipeline pointing to `Jenkinsfile.cocoapods`.
+2. Provide:
+   - `VERSION` – semantic version used for git tags.
+   - `PODS_SPECS_REPO` – SSH URL for the private spec repo (defaults to `git@github.com:ParticleMedia/private-specs.git`).
+3. Pipeline stages:
+   - Checkout → `bundle install`
+   - `./Scripts/update-workspace.sh`
+   - `bundle exec pod install`
+   - Strict `pod lib lint` over every adapter (warnings fail the build)
+   - `./Scripts/build.sh --skip-code-sign`
+   - `pod repo push` + git tagging (only if `VERSION` is provided)
+4. Slack feedback is delivered on success/failure.
 
-- **iOS**: 15.0+
-- **Xcode**: 15.2+
-- **Ruby**: 3.0+ (for CI/CD tools)
-- **CocoaPods**: 1.14+
+### How to Publish via Jenkins (SPM)
 
-## 🔐 Code Signing
+1. Configure a Jenkins pipeline that references `Jenkinsfile.spm`.
+2. Supply `VERSION` only when you intend to push release tags.
+3. Pipeline stages:
+   - Checkout + `bundle install`
+   - `./Scripts/update-workspace.sh`
+   - `swift package resolve` / `swift build --configuration release`
+   - `swift package describe` (graph validation)
+   - `xcodebuild ... -scheme MSPDemoApp-SPM`
+   - Optional git tagging/push
+4. Slack notifications mirror CocoaPods pipeline behavior.
 
-The project supports both development and production builds:
+### DemoApp CI Build (Future: Firebase Upload)
 
-- **Development**: No code signing required, suitable for testing
-- **Production**: Code signing enabled for App Store distribution
+`Jenkinsfile.demoapp` builds both demo schemes and exports unsigned IPAs into `artifacts/`. A TODO block marks where Firebase upload logic will be added once credentials are finalized. Artifacts are automatically archived with the Jenkins build for manual distribution/testing.
 
-Set the `SKIP_CODE_SIGN` environment variable to control signing behavior.
+### Local vs Automated CI
 
-## 📊 Project Structure
+- **Local development**: run `./Scripts/update-workspace.sh`, `bundle exec pod install`, and the build/test commands above.
+- **GitHub Actions**: `.github/workflows/demoapp-dual.yml` reproduces the full dual-target build for every PR.
+- **Jenkins**: use the new Jenkinsfiles for publishing or demo app artifact creation. All of them rely on the same script workflow used locally to avoid drift.
 
-```
-msp-ios-sdk/
-├── MSPCore/                 # Core utility framework
-├── MSPiOSCore/             # iOS-specific core
-├── NovaCore/               # Advanced UI framework
-├── Adapters/               # Network-specific adapters
-│   ├── GoogleAdapter/
-│   ├── FacebookAdapter/
-│   ├── NovaAdapter/
-│   └── ...
-├── MSPDemoApp/             # Example application
-├── Scripts/                # Modular build system
-│   ├── build.sh            # Unified build script (v2.0.0)
-│   ├── release.sh          # Enhanced release script (v2.0.0)
-│   ├── buildDemoApp.sh     # Demo app builder script
-│   ├── buildAndTest.sh     # Build and test script
-│   ├── lib/                # Shared library modules
-│   ├── config/             # Configuration files
-│   ├── plugins/            # Environment plugins
-│   └── Legacy scripts      # Backward compatibility
-├── fastlane/               # CI/CD automation
-├── .github/workflows/      # GitHub Actions workflows
-└── Gemfile                 # Ruby dependencies
-```
+## Repository Scripts
 
-## 🤝 Contributing
+| Script | Description |
+| ------ | ----------- |
+| `Scripts/update-workspace.sh` | Generates project/workspace specs, SwiftPM metadata, and (optionally) runs Xcodegen + `pod install`. |
+| `Scripts/build.sh`, `buildDemoApp.sh`, etc. | Adapter build/test helpers (see `Scripts/README.md`). |
 
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Add tests for new functionality
-5. Ensure all tests pass
-6. Submit a pull request
+## Additional Documentation
 
-### Development Workflow
+- `Docs/DemoAppIntegration.md` – Dual-target integration, troubleshooting, validation commands.
+- `fastlane/README.md` – Fastlane lanes used by CI/release automation.
 
-```bash
-# Setup development environment
-bundle exec fastlane setup_dev
+## Contribution Checklist
 
-# Make changes and test
-bundle exec fastlane test
-
-# Build and verify
-bundle exec fastlane build_all
-
-# Check project status
-bundle exec fastlane status
-```
-
-## 📚 Documentation
-
-- [Build Scripts Documentation](Scripts/README.md) - Complete guide to the modular build system
-- [Quick Reference](Scripts/QUICK_REFERENCE.md) - Quick commands and troubleshooting
-- [CI/CD Pipeline Guide](CI_CD_README.md) - Complete CI/CD automation guide
-- [API Documentation](MSPCore/MSPCore.docc/) - Framework API reference
-- [Example App](MSPDemoApp/) - Usage examples and demos
-
-## 🔗 Links
-
-- **Repository**: [GitHub](https://github.com/ParticleMedia/msp-ios-sdk)
-- **Public Repository**: [msp-ios-sdk-public](https://github.com/ParticleMedia/msp-ios-sdk-public)
-- **Issues**: [GitHub Issues](https://github.com/ParticleMedia/msp-ios-sdk/issues)
-
-## 📄 License
-
-Copyright © 2025 NewsBreak. All rights reserved.
-
----
-
-**Maintainer**: MSP iOS SDK Team  
-**Last Updated**: January 2025  
-**Version**: 2.1.0 (Enhanced CI/CD & Demo App Support)
+1. Run `./Scripts/update-workspace.sh`.
+2. Run `bundle exec pod install` on a macOS host.
+3. Build/test both demo app schemes.
+4. Commit only source/spec files—generated `.xcodeproj`/`.xcworkspace` files are ignored.
+5. Submit pull requests with logs for both schemes.

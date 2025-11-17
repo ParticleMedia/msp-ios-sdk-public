@@ -34,19 +34,8 @@ let package = Package(
                 "PrebidAdapter"
             ],
             path: "MSPCore",
-            sources: [
-                "MSPHelper.swift",
-                "MSPBidLoaderProvider.swift", 
-                "MSPAdNetworkAdapterProvider.swift",
-                "MESMetricReporter.swift",
-                "AdMetricReporterImp.swift",
-                "MSPAdLoader.swift",
-                "MSPAuction.swift",
-                "MSPBidder.swift",
-                "MSPAdConfigManager.swift",
-                "MSPDevice.swift",
-                "Debug/",
-                "MESRawFiles/"
+            resources: [
+                .process("Resources/Config.plist")
             ],
             publicHeadersPath: ".",
             cSettings: [

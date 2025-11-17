@@ -1,29 +1,46 @@
 .DS_Store
+
+# XcodeGen generated outputs
+*.xcodeproj/
+*.xcworkspace/
+*.xcscmblueprint
+*.xccheckout
+xcuserdata/
+*.xcuserdatad/
+*.xcuserdata/
+*.xcuserstate
+DerivedData/
+build/
+
+# Swift Package Manager artifacts
+.swiftpm/
+Packages/
+Package.resolved
+.build/
+*.build/
+msp-ios-sdk.xcworkspace/xcshareddata/swiftpm/local-packages.json
+msp-ios-sdk.xcworkspace/contents.xcworkspacedata
+
+# CocoaPods
+Pods/
+Podfile.lock
+
+# Generated XCFrameworks / build outputs
 output/
 outputMSPiOSCore/
 outputNova/
 NovaAdapter/NovaCore.xcframework/
 MSPSharedLibraries/MSPiOSCore.xcframework
-
-# MSP Adapter build artifacts
 MSPFacebookAdapter/build/
 MSPGoogleAdapter/build/
 MSPFacebookAdapter/*.xcframework/
 MSPGoogleAdapter/*.xcframework/
-*.xcscmblueprint
-*.xccheckout
-xcuserdata
-DerivedData
+
+# Node / editor
 node_modules/
 .idea/
-Podfile.lock
-*.xcuserdatad/
-*.xcuserdata/
-*.xcuserstate
-Pods/
-Podfile.lock
 
-# Bundle install files
+# Ruby / Bundler artifacts
 bin/
 cache/
 extensions/
@@ -34,14 +51,12 @@ Gemfile.lock
 vendor/
 *.gem
 
-# Release backup directories and test files
+# Release backup directories and temporary tests
 release_backup_*/
 /tmp/release_backup_*/
 *_test*
 *test_*
 *_cocoapods.podspec
-*.build/
-.build/
 
 # Slack configuration (contains sensitive webhook URL)
 Scripts/config/slack.conf
