@@ -9,7 +9,7 @@ import UIKit
 
 // MARK: - NovaNativeBaseAd
 
-public class NovaNativeBaseAd: NovaBaseAd {
+public class NovaNativeBaseAd: NovaBaseAd, NovaNativeMediaProviding {
     // MARK: Lifecycle
 
     init(
@@ -180,6 +180,16 @@ public class NovaNativeBaseAd: NovaBaseAd {
         }
     }
 
+    // MARK: - Media Model Hooks
+
+    func makeImageModel() throws -> NovaAdImageMediaModel {
+        fatalError("\(Self.self) must override makeImageModel()")
+    }
+
+    func makeVideoModel() throws -> NovaAdVideoMediaModel {
+        fatalError("\(Self.self) must override makeVideoModel()")
+    }
+
     public override func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
 
@@ -207,7 +217,7 @@ public class NovaNativeBaseAd: NovaBaseAd {
         resource: .imageURLStr(""),
         isImageClickable: false,
         adCtrType: .openWeb(model: .init(url: URL(string: "https://example.com")!, openBrowser: false)),
-        isVerticalImage: nil,
+        imageLayoutOrientation: .unknown,
         shouldShowImageBorder: false
     ))
 
@@ -245,7 +255,7 @@ extension NovaNativeBaseAd {
     func getAdMedia() throws -> NovaAdMedia {
         switch creativeType {
         case .nativeVideo:
-            return try .video(model: getVideoModel())
+            return try .video(model: makeVideoModel())
         case .nativeImage, .businessProfile, .sponsoredContent, .fullImage:
             if let _imageURLs {
                 let urls = _imageURLs.compactMap { URL(string: $0) }
@@ -253,7 +263,7 @@ extension NovaNativeBaseAd {
                     return .multipleImages(model: .init(imageURLs: urls, adCtrType: adCtrType, timerInterval: 3.0))
                 }
             }
-            return try .image(model: getImageModel())
+            return try .image(model: makeImageModel())
         case .carousel:
             if let _multipleItemsInfo {
                 return .multipleItems(model: .init(info: _multipleItemsInfo))
@@ -266,7 +276,7 @@ extension NovaNativeBaseAd {
             }
 
             return try .imagePlayable(
-                imageModel: getImageModel(),
+                imageModel: makeImageModel(),
                 playableModel: .init(playableActionModel: model, layout: _playableInfo?.layout)
             )
         case .playableVideo:
@@ -275,7 +285,7 @@ extension NovaNativeBaseAd {
             }
 
             return try .videoPlayable(
-                videoModel: getVideoModel(),
+                videoModel: makeVideoModel(),
                 playableModel: .init(playableActionModel: model, layout: _playableInfo?.layout)
             )
         }
@@ -290,7 +300,12 @@ extension NovaNativeBaseAd {
         }
     }
 
-    func getImageModel() throws -> NovaAdImageMediaModel {
+    func makeImageModel(with orientation: NovaNativeMediaLayoutOrientation?) throws -> NovaAdImageMediaModel {
+        let imageFallbackOrientation: NovaNativeMediaLayoutOrientation = if let _isImageLayoutVertical {
+            _isImageLayoutVertical ? .vertical : .horizontal
+        } else {
+            .unknown
+        }
         if let _imageURLs {
             let urls = _imageURLs.compactMap { URL(string: $0) }
             if let first = urls.first {
@@ -299,7 +314,7 @@ extension NovaNativeBaseAd {
                     isImageClickable: _isImageClickable,
                     adCtrType: adCtrType,
                     imageContentMode: _imageContentMode?.toUIViewContentMode(),
-                    isVerticalImage: _isImageLayoutVertical,
+                    imageLayoutOrientation: orientation ?? imageFallbackOrientation,
                     shouldShowImageBorder: marketingType == .dpa
                 )
             }
@@ -310,7 +325,7 @@ extension NovaNativeBaseAd {
                 isImageClickable: _isImageClickable,
                 adCtrType: adCtrType,
                 imageContentMode: _imageContentMode?.toUIViewContentMode(),
-                isVerticalImage: _isImageLayoutVertical,
+                imageLayoutOrientation: orientation ?? imageFallbackOrientation,
                 shouldShowImageBorder: marketingType == .dpa
             )
         } else {
@@ -318,7 +333,7 @@ extension NovaNativeBaseAd {
         }
     }
 
-    func getVideoModel() throws -> NovaAdVideoMediaModel {
+    func makeVideoModel(with orientation: NovaNativeMediaLayoutOrientation?) throws -> NovaAdVideoMediaModel {
         if let _videoInfo {
             let endCardModel: NovaAdEndCardViewModel? = {
                 if _videoInfo.endCardStyle != nil, let endCardStyle = getEndCardStyle() {
@@ -329,6 +344,7 @@ extension NovaNativeBaseAd {
             }()
             return .init(
                 videoInfo: _videoInfo,
+                videoLayoutOrientation: orientation ?? (_videoInfo.isLayoutVertical ? .vertical : .horizontal),
                 adCtrType: adCtrType,
                 callToAction: callToAction,
                 endCardModel: endCardModel,

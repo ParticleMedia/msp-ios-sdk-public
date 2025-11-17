@@ -162,15 +162,23 @@ public class NovaAdMediaContent {
     public var renderRecommendation: NovaAdMediaRenderRecommendation? {
         switch adMedia {
         case .image(let model):
-            if let isVerticalImage = model.isVerticalImage {
-                let aspectRatio = isVerticalImage ? Constants.verticalMediaRatio : Constants.horizontalMediaRatio
-                return .aspectRatio(aspectRatio)
-            } else {
-                return nil
+            switch model.imageLayoutOrientation {
+            case .horizontal:
+                return .aspectRatio(Constants.horizontalMediaRatio)
+            case .vertical:
+                return .aspectRatio(Constants.verticalMediaRatio)
+            case .unknown:
+                return .free
             }
         case .video(let model):
-            let aspectRatio = model.videoInfo.isVertical ? Constants.verticalMediaRatio : Constants.horizontalMediaRatio
-            return .aspectRatio(aspectRatio)
+            switch model.videoLayoutOrientation {
+            case .horizontal:
+                return .aspectRatio(Constants.horizontalMediaRatio)
+            case .vertical:
+                return .aspectRatio(Constants.verticalMediaRatio)
+            case .unknown:
+                return .free
+            }
         case .multipleImages:
             return .free
         case .multipleItems(let model):
@@ -185,23 +193,25 @@ public class NovaAdMediaContent {
             case .auto, .none:
                 switch playableModel.layout {
                 case .showMedia, .twoPart:
-                    if let isVerticalImage = imageModel.isVerticalImage {
-                        return isVerticalImage ?
-                            .aspectRatio(Constants.verticalMediaRatio) :
-                            .aspectRatio(Constants.horizontalMediaRatio)
-                    } else {
-                        return nil
+                    switch imageModel.imageLayoutOrientation {
+                    case .horizontal:
+                        return .aspectRatio(Constants.horizontalMediaRatio)
+                    case .vertical:
+                        return .aspectRatio(Constants.verticalMediaRatio)
+                    case .unknown:
+                        return .free
                     }
                 case .showPlayable:
                     return .free
                 }
             case .imageOrVideo:
-                if let isVerticalImage = imageModel.isVerticalImage {
-                    return isVerticalImage ?
-                        .aspectRatio(Constants.verticalMediaRatio) :
-                        .aspectRatio(Constants.horizontalMediaRatio)
-                } else {
-                    return nil
+                switch imageModel.imageLayoutOrientation {
+                case .horizontal:
+                    return .aspectRatio(Constants.horizontalMediaRatio)
+                case .vertical:
+                    return .aspectRatio(Constants.verticalMediaRatio)
+                case .unknown:
+                    return .free
                 }
             case .playable:
                 return .free
@@ -211,16 +221,26 @@ public class NovaAdMediaContent {
             case .auto, .none:
                 switch playableModel.layout {
                 case .showMedia, .twoPart:
-                    return videoModel.videoInfo.isVertical ?
-                        .aspectRatio(Constants.verticalMediaRatio) :
-                        .aspectRatio(Constants.horizontalMediaRatio)
+                    switch videoModel.videoLayoutOrientation {
+                    case .horizontal:
+                        return .aspectRatio(Constants.horizontalMediaRatio)
+                    case .vertical:
+                        return .aspectRatio(Constants.verticalMediaRatio)
+                    case .unknown:
+                        return .free
+                    }
                 case .showPlayable:
                     return .free
                 }
             case .imageOrVideo:
-                return videoModel.videoInfo.isVertical ?
-                    .aspectRatio(Constants.verticalMediaRatio) :
-                    .aspectRatio(Constants.horizontalMediaRatio)
+                switch videoModel.videoLayoutOrientation {
+                case .horizontal:
+                    return .aspectRatio(Constants.horizontalMediaRatio)
+                case .vertical:
+                    return .aspectRatio(Constants.verticalMediaRatio)
+                case .unknown:
+                    return .free
+                }
             case .playable:
                 return .free
             }

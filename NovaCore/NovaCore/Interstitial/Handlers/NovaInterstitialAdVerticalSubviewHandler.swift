@@ -74,7 +74,12 @@ class NovaInterstitialAdVerticalSubviewHandler: NovaInterstitialAdSubviewHandler
                 make.size.equalTo(24.0)
                 make.center.equalToSuperview()
             }
-            
+
+            volumeButton.snp.makeConstraints { make in
+                make.leading.equalTo(LayoutMetrics.horizontalMargin)
+                make.height.width.equalTo(LayoutMetrics.volumeButtonWidth)
+                make.centerY.equalTo(topRightCloseButton)
+            }
         } else {
             closeButton.snp.makeConstraints { make in
                 make.leading.equalTo(containerView.snp.leading).offset(LayoutMetrics.horizontalMargin)
@@ -88,6 +93,12 @@ class NovaInterstitialAdVerticalSubviewHandler: NovaInterstitialAdSubviewHandler
                 make.trailing.equalTo(containerView.snp.trailing).offset(-LayoutMetrics.horizontalMargin)
                 make.bottom.equalTo(containerView.snp.bottom).offset(-totalButtonBottomMargin)
                 make.height.equalTo(LayoutMetrics.bottomButtonHeight)
+            }
+
+            volumeButton.snp.makeConstraints { make in
+                make.leading.equalTo(LayoutMetrics.horizontalMargin)
+                make.height.width.equalTo(LayoutMetrics.volumeButtonWidth)
+                make.bottom.equalTo(advertiserInfoStackView.snp.top).offset(-LayoutMetrics.volumeButtonBottomMargin)
             }
         }
 
@@ -120,12 +131,6 @@ class NovaInterstitialAdVerticalSubviewHandler: NovaInterstitialAdSubviewHandler
                 make.trailing.lessThanOrEqualToSuperview().offset(-LayoutMetrics.horizontalMargin)
             }
             make.bottom.equalTo(bodyLabel.snp.top).offset(-8.0)
-        }
-
-        volumeButton.snp.makeConstraints { make in
-            make.leading.equalTo(LayoutMetrics.horizontalMargin)
-            make.height.width.equalTo(LayoutMetrics.volumeButtonWidth)
-            make.bottom.equalTo(advertiserInfoStackView.snp.top).offset(-LayoutMetrics.volumeButtonBottomMargin)
         }
     }
 
@@ -275,7 +280,7 @@ class NovaInterstitialAdVerticalSubviewHandler: NovaInterstitialAdSubviewHandler
 
     private lazy var ctaButton: UIButton = {
         let button = UIButton(type: .system)
-        button.titleLabel?.font = .systemFont(ofSize: 16)
+        button.titleLabel?.font = .Nova.deprecated16Semibold
         button.setTitleColor(UIColor.white, for: .normal)
         button.layer.backgroundColor = UIColor.systemBlue.cgColor
         button.layer.cornerRadius = 8.0
