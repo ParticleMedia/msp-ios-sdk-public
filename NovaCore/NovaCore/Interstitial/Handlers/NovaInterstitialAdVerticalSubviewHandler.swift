@@ -189,7 +189,10 @@ class NovaInterstitialAdVerticalSubviewHandler: NovaInterstitialAdSubviewHandler
         ]
     }
 
-    func didAppear() {
+    func willAppear() {
+        if showTopRightCloseButton {
+            setupCountdownTimerIfNeeded()
+        }
         interstitialAd.mediaContent.videoController?.play()
     }
 
@@ -197,11 +200,6 @@ class NovaInterstitialAdVerticalSubviewHandler: NovaInterstitialAdSubviewHandler
         interstitialAd.mediaContent.videoController?.pause()
     }
     
-    func willAppear() {
-        guard showTopRightCloseButton else { return }
-        setupCountdownTimerIfNeeded()
-    }
-
     private lazy var volumeButton: UIButton = {
         var configuration = UIButton.Configuration.plain()
         configuration.background.backgroundInsets = NSDirectionalEdgeInsets(

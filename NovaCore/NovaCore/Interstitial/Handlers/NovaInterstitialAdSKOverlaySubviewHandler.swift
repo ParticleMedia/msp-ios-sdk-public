@@ -163,9 +163,12 @@ class NovaInterstitialAdSKOverlaySubviewHandler: NSObject, NovaInterstitialAdSub
     var clickableViews: [UIView] { 
         getClickableViewsFromConfiguration() ?? [bottomShadow, adTagLabel]
     }
-    
-    func didAppear() {
+
+    func willAppear() {
         interstitialAd.mediaContent.videoController?.play()
+    }
+
+    func didAppear() {
         showSkOverlay()
     }
     
