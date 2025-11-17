@@ -258,7 +258,7 @@ class NovaInterstitialAdHorizontalSubviewHandler: NovaInterstitialAdSubviewHandl
         button.backgroundColor = NovaColorPalettes.Blue.tint500
         button.layer.cornerRadius = 8
         button.clipsToBounds = true
-        button.titleLabel?.font = .Nova.subtitle1
+        button.titleLabel?.font = .Nova.deprecated16Semibold
         button.setTitleColor(NovaColorPalettes.White, for: .normal)
         button.adClickArea = .cta
         return button

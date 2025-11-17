@@ -106,6 +106,16 @@ public final class NovaNativeAdItem: NovaNativeBaseAd {
         }
     }
 
+    // MARK: - NovaNativeMediaProviding
+
+    override func makeImageModel() throws -> NovaAdImageMediaModel {
+        try makeImageModel(with: layoutStyle.mediaOrientation)
+    }
+
+    override func makeVideoModel() throws -> NovaAdVideoMediaModel {
+        try makeVideoModel(with: layoutStyle.mediaOrientation)
+    }
+
     // MARK: Internal
 
     /// interactive banner on immersive video

@@ -15,14 +15,14 @@ struct NovaAdImageMediaModel {
         isImageClickable: Bool,
         adCtrType: AdCtrType,
         imageContentMode: UIView.ContentMode? = nil,
-        isVerticalImage: Bool?,
+        imageLayoutOrientation: NovaNativeMediaLayoutOrientation,
         shouldShowImageBorder: Bool
     ) {
         self.resource = resource
         self.isImageClickable = isImageClickable
         self.adCtrType = adCtrType
         self.imageContentMode = imageContentMode
-        self.isVerticalImage = isVerticalImage
+        self.imageLayoutOrientation = imageLayoutOrientation
         self.shouldShowImageBorder = shouldShowImageBorder
     }
 
@@ -32,6 +32,6 @@ struct NovaAdImageMediaModel {
     let isImageClickable: Bool
     let adCtrType: AdCtrType
     let imageContentMode: UIView.ContentMode?
-    let isVerticalImage: Bool?
+    let imageLayoutOrientation: NovaNativeMediaLayoutOrientation
     let shouldShowImageBorder: Bool
 }
