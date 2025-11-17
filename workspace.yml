@@ -1,7 +1,9 @@
 workspace:
   name: msp-ios-sdk
   projects:
-    - MSPDemoApp/project.yml
+    - name: MSPDemoApp
+      path: MSPDemoApp/project.yml
+      type: file
     - name: AmazonAdapter
       path: AmazonAdapter/AmazonAdapter.xcodeproj
       type: file

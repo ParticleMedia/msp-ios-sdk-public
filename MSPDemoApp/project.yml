@@ -19,22 +19,31 @@ settings:
     INFOPLIST_FILE: MSPDemoApp/Info.plist
 packages:
   MSPCore:
+    name: MSPCore
     path: ../MSPCore
   MSPFacebookAdapter:
+    name: MSPFacebookAdapter
     path: ../MSPFacebookAdapter
   MSPGoogleAdapter:
+    name: MSPGoogleAdapter
     path: ../MSPGoogleAdapter
   MSPOMSDK:
+    name: MSPOMSDK
     path: ../MSPOMSDK
   MSPSharedLibraries:
+    name: MSPSharedLibraries
     path: ../MSPSharedLibraries
   MSPiOSCore:
+    name: MSPiOSCore
     path: ../MSPiOSCore
   NovaAdapter:
+    name: NovaAdapter
     path: ../NovaAdapter
   NovaCore:
+    name: NovaCore
     path: ../NovaCore
   PrebidAdapter:
+    name: PrebidAdapter
     path: ../PrebidAdapter
 targetTemplates:
   BaseAppTarget:

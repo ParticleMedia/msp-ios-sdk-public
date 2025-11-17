@@ -4,7 +4,9 @@ set -euo pipefail
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 PROJECT_SPEC="$ROOT_DIR/MSPDemoApp/project.yml"
 WORKSPACE_SPEC="$ROOT_DIR/workspace.yml"
-SWIFTPM_DIR="$ROOT_DIR/msp-ios-sdk.xcworkspace/xcshareddata/swiftpm"
+WORKSPACE_PATH="$ROOT_DIR/msp-ios-sdk.xcworkspace"
+WORKSPACE_DATA="$WORKSPACE_PATH/contents.xcworkspacedata"
+SWIFTPM_DIR="$WORKSPACE_PATH/xcshareddata/swiftpm"
 SWIFTPM_JSON="$SWIFTPM_DIR/local-packages.json"
 LOG_PREFIX="[update-workspace]"
 
@@ -102,6 +104,7 @@ else
     rel="../${PACKAGE_REL_PATHS[$i]}"
     cat >> "$PROJECT_SPEC" <<YAML
   ${name}:
+    name: ${name}
     path: ${rel}
 YAML
   done
@@ -258,7 +261,9 @@ pods_detected=0
   echo "workspace:"
   echo "  name: msp-ios-sdk"
   echo "  projects:"
-  echo "    - MSPDemoApp/project.yml"
+  echo "    - name: MSPDemoApp"
+  echo "      path: MSPDemoApp/project.yml"
+  echo "      type: file"
   for proj in "${PROJECTS[@]}"; do
     rel="${proj#$ROOT_DIR/}"
     # Skip the generated MSPDemoApp project - it will be created from the spec above.
@@ -275,17 +280,45 @@ pods_detected=0
   done
   # Include Pods project if it exists.
   if [[ $pods_detected -eq 0 ]]; then
-    echo "    - path: Pods/Pods.xcodeproj"
+    echo "    - name: Pods"
+    echo "      path: Pods/Pods.xcodeproj"
     echo "      type: file"
   fi
 } > "$WORKSPACE_SPEC"
+
+# Regenerate the .xcworkspace XML for Xcode consumers
+mkdir -p "$WORKSPACE_PATH"
+{
+  cat <<'XML'
+<?xml version="1.0" encoding="UTF-8"?>
+<Workspace
+   version = "1.0">
+XML
+  cat <<'XML'
+   <FileRef
+      location = "group:MSPDemoApp/MSPDemoApp.xcodeproj">
+   </FileRef>
+XML
+  for proj in "${PROJECTS[@]}"; do
+    rel="${proj#$ROOT_DIR/}"
+    if [[ "$rel" == "MSPDemoApp/MSPDemoApp.xcodeproj" ]]; then
+      continue
+    fi
+    cat <<XML
+   <FileRef
+      location = "group:${rel}">
+   </FileRef>
+XML
+  done
+  echo "</Workspace>"
+} > "$WORKSPACE_DATA"
 
 XCODEGEN_BIN="$(command -v xcodegen || true)"
 if [[ -z "$XCODEGEN_BIN" ]]; then
   echo "$LOG_PREFIX xcodegen is not installed. Install via 'brew install xcodegen' (2.38.0+ required) and re-run this script." >&2
 else
   echo "$LOG_PREFIX Running xcodegen generate"
-  if ! "$XCODEGEN_BIN" generate --spec "$WORKSPACE_SPEC"; then
+  if ! "$XCODEGEN_BIN" generate --spec "$PROJECT_SPEC"; then
     echo "$LOG_PREFIX xcodegen failed. Ensure version 2.38.0+ is installed (run 'brew upgrade xcodegen')." >&2
   fi
 fi

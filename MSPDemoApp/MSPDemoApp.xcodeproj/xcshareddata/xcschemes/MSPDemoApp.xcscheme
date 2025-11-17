@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Scheme
-   LastUpgradeVersion = "1530"
+   LastUpgradeVersion = "1430"
    version = "1.7">
    <BuildAction
       parallelizeBuildables = "YES"
       buildImplicitDependencies = "YES"
-      buildArchitectures = "Automatic">
+      runPostActionsOnFailure = "NO">
       <BuildActionEntries>
          <BuildActionEntry
             buildForTesting = "YES"
@@ -15,9 +15,37 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "6684805E2BE03D7D0025018B"
+               BlueprintIdentifier = "929660A66D39E1B70C8188D1"
                BuildableName = "MSPDemoApp.app"
                BlueprintName = "MSPDemoApp"
+               ReferencedContainer = "container:MSPDemoApp.xcodeproj">
+            </BuildableReference>
+         </BuildActionEntry>
+         <BuildActionEntry
+            buildForTesting = "YES"
+            buildForRunning = "YES"
+            buildForProfiling = "YES"
+            buildForArchiving = "YES"
+            buildForAnalyzing = "YES">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "F6673E356D4C78BE69305E4A"
+               BuildableName = "MSPDemoAppTests.xctest"
+               BlueprintName = "MSPDemoAppTests"
+               ReferencedContainer = "container:MSPDemoApp.xcodeproj">
+            </BuildableReference>
+         </BuildActionEntry>
+         <BuildActionEntry
+            buildForTesting = "YES"
+            buildForRunning = "YES"
+            buildForProfiling = "YES"
+            buildForArchiving = "YES"
+            buildForAnalyzing = "YES">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "3B39426B8673CE9EE4A585B4"
+               BuildableName = "MSPDemoAppUITests.xctest"
+               BlueprintName = "MSPDemoAppUITests"
                ReferencedContainer = "container:MSPDemoApp.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -28,30 +56,17 @@
       selectedDebuggerIdentifier = "Xcode.DebuggerFoundation.Debugger.LLDB"
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
       shouldUseLaunchSchemeArgsEnv = "YES"
-      shouldAutocreateTestPlan = "YES">
+      onlyGenerateCoverageForSpecifiedTargets = "NO">
+      <MacroExpansion>
+         <BuildableReference
+            BuildableIdentifier = "primary"
+            BlueprintIdentifier = "929660A66D39E1B70C8188D1"
+            BuildableName = "MSPDemoApp.app"
+            BlueprintName = "MSPDemoApp"
+            ReferencedContainer = "container:MSPDemoApp.xcodeproj">
+         </BuildableReference>
+      </MacroExpansion>
       <Testables>
-         <TestableReference
-            skipped = "NO"
-            parallelizable = "YES">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "668480742BE03D800025018B"
-               BuildableName = "MSPDemoAppTests.xctest"
-               BlueprintName = "MSPDemoAppTests"
-               ReferencedContainer = "container:MSPDemoApp.xcodeproj">
-            </BuildableReference>
-         </TestableReference>
-         <TestableReference
-            skipped = "NO"
-            parallelizable = "YES">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "6684807E2BE03D800025018B"
-               BuildableName = "MSPDemoAppUITests.xctest"
-               BlueprintName = "MSPDemoAppUITests"
-               ReferencedContainer = "container:MSPDemoApp.xcodeproj">
-            </BuildableReference>
-         </TestableReference>
       </Testables>
    </TestAction>
    <LaunchAction
@@ -68,12 +83,14 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "6684805E2BE03D7D0025018B"
+            BlueprintIdentifier = "929660A66D39E1B70C8188D1"
             BuildableName = "MSPDemoApp.app"
             BlueprintName = "MSPDemoApp"
             ReferencedContainer = "container:MSPDemoApp.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
+      <CommandLineArguments>
+      </CommandLineArguments>
    </LaunchAction>
    <ProfileAction
       buildConfiguration = "Release"
@@ -85,12 +102,14 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "6684805E2BE03D7D0025018B"
+            BlueprintIdentifier = "929660A66D39E1B70C8188D1"
             BuildableName = "MSPDemoApp.app"
             BlueprintName = "MSPDemoApp"
             ReferencedContainer = "container:MSPDemoApp.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
+      <CommandLineArguments>
+      </CommandLineArguments>
    </ProfileAction>
    <AnalyzeAction
       buildConfiguration = "Debug">
