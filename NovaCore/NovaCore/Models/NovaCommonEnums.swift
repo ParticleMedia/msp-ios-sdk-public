@@ -23,6 +23,14 @@ public enum NovaNativeLayoutStyle: String, Codable {
     case taller
     case carousel
     case collection
+
+    var mediaOrientation: NovaNativeMediaLayoutOrientation? {
+        switch self {
+        case .horizontal: return .horizontal
+        case .vertical: return .vertical
+        default: return nil
+        }
+    }
 }
 
 enum NovaInterstitialAdLayout: String, Codable, CaseIterable {
@@ -33,6 +41,14 @@ enum NovaInterstitialAdLayout: String, Codable, CaseIterable {
     case verticalCancelTopRight = "vertical_cancel_top_right"
     case endCard = "end_card_2_part"
     case sponsor
+
+    var mediaOrientation: NovaNativeMediaLayoutOrientation? {
+        switch self {
+        case .horizontal, .horizontalCancelTopRight: return .horizontal
+        case .vertical, .verticalCancelTopRight: return .vertical
+        default: return nil
+        }
+    }
 }
 
 enum NovaAdMarketingType: String, Codable {
