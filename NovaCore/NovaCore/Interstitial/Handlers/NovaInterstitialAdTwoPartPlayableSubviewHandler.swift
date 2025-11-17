@@ -218,7 +218,7 @@ class NovaInterstitialAdTwoPartPlayableSubviewHandler: NovaInterstitialAdSubview
         getClickableViewsFromConfiguration() ?? [advertiserAvatar, advertiserLabel, adTagLabel]
     }
     
-    func didAppear() {
+    func willAppear() {
         interstitialAd.mediaContent.videoController?.play()
     }
     

@@ -104,7 +104,13 @@ public class NovaAdapter: AdNetworkAdapter {
             let novaNativeAdView = NovaNativeAdView()
             let popupCTAStyle: NovaAdVideoView.Style.PopupCTAStyle = popupCTAEnabled ? .show : .hide
             let progressBarStyle: NovaAdVideoView.Style.ProgressBarStyle = novaNativeAdItem.isVideo ? .show(bottomMargin: 0) : .hide
-            let newVideoStyle: NovaAdVideoView.Style = videoUseControl ? .playButtonOnLeftBottom : .playButtonOnCenter(progressBarStyle: progressBarStyle, popupCTAStyle: popupCTAStyle)
+            let newVideoStyle: NovaAdVideoView.Style = if videoUseControl {
+                .playButtonOnLeftBottom
+            } else if novaNativeAdItem.mediaContent.mediaType == .playable {
+                .clear
+            } else {
+                .playButtonOnCenter(progressBarStyle: progressBarStyle, popupCTAStyle: popupCTAStyle)
+            }
             novaNativeAdItem.mediaContent.videoController?.style = newVideoStyle
             if let nativeAdViewBinder = nativeAdView.nativeAdViewBinder {
                 novaNativeAdView.titleLabel = nativeAdView.nativeAdViewBinder?.titleLabel

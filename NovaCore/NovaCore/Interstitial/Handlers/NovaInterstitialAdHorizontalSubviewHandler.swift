@@ -179,17 +179,15 @@ class NovaInterstitialAdHorizontalSubviewHandler: NovaInterstitialAdSubviewHandl
         return getClickableViewsFromConfiguration() ?? [advertiserLabel, titleLabel, bodyLabel, ctaButton]
     }
 
-    func didAppear() {
+    func willAppear() {
+        if showTopRightCloseButton {
+            setupCountdownTimerIfNeeded()
+        }
         interstitialAd.mediaContent.videoController?.play()
     }
 
     func didDisappear() {
         interstitialAd.mediaContent.videoController?.pause()
-    }
-
-    func willAppear() {
-        guard showTopRightCloseButton else { return }
-        setupCountdownTimerIfNeeded()
     }
 
     // MARK: Private
