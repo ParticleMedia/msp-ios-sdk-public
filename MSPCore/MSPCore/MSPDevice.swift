@@ -218,38 +218,6 @@ public class MSPDevice {
         }
     }
     
-    private func getCarrierInfo(_ mapper: (CTCarrier) -> String) -> String {
-        let networkInfo = CTTelephonyNetworkInfo()
-        if let carriers = networkInfo.serviceSubscriberCellularProviders?.values,
-           let carrier = carriers.first(where: { carrier in
-            carrier.carrierName?.isEmpty == false
-        }) {
-            return mapper(carrier)
-        }
-        
-        return ""
-    }
-    
-    internal func getCarrier() -> String {
-        return getCarrierInfo { carrier in
-            return carrier.carrierName ?? ""
-        }
-    }
-    
-    internal func getMccMnc() -> String {
-        return getCarrierInfo { carrier in
-            return merge(carrier)
-        }
-    }
-    
-    private func merge(_ carrier: CTCarrier) -> String {
-        guard let mcc = carrier.mobileCountryCode,
-              let mnc = carrier.mobileNetworkCode,
-              !mcc.isEmpty, !mnc.isEmpty else { return "" }
-        
-        return "\(mcc)-\(mnc)"
-    }
-    
     internal func isIDFAAuthorized() -> Bool {
         if #available(iOS 14, *), case .authorized = ATTrackingManager.trackingAuthorizationStatus {
             return true
@@ -276,6 +244,18 @@ public class MSPDevice {
             return Com_Newsbreak_Monetization_Signals_ConnectionType.unspecified
         @unknown default:
             return Com_Newsbreak_Monetization_Signals_ConnectionType.unspecified
+        }
+    }
+    
+    internal func getVolumeLevel() -> Int32 {
+        let audioSession = AVAudioSession.sharedInstance()
+        do {
+            try audioSession.setActive(false)
+            try audioSession.setActive(true)
+            let volume = audioSession.outputVolume
+            return Int32(volume * 100)
+        } catch {
+            return -1
         }
     }
 }
