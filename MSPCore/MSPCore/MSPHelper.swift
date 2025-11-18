@@ -40,6 +40,24 @@ public class MSP {
     public var isLogSampled = false
     public var logWhiteList: [String]?
     
+    // When system permission popup appears, no didEnterBackgroundNotification will be
+    // triggered. But after quitting the popup, a didBecomeActiveNotification will
+    // be triggered. We don't want to handle didBecomeActiveNotification caused by
+    // system permission popup. So use this flag to filter it out.
+    private var appEnterBackgroundFlag = true
+    
+    private init() {
+        NotificationCenter.default.addObserver(self, selector: #selector(self.appDidBecomeActive), name: UIApplication.didBecomeActiveNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.appDidEnterBackground), name: UIApplication.didEnterBackgroundNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.sizeCategoryDidChange), name: UIContentSizeCategory.didChangeNotification, object: nil)
+    }
+    
+    deinit {
+        NotificationCenter.default.removeObserver(self, name: UIApplication.didBecomeActiveNotification, object: nil)
+        NotificationCenter.default.removeObserver(self, name: UIApplication.didEnterBackgroundNotification, object: nil)
+        NotificationCenter.default.removeObserver(self, name: UIContentSizeCategory.didChangeNotification, object: nil)
+    }
+    
     public func initMSP(initParams: InitializationParameters, sdkInitListener: MSPInitListener?, adNetworkManagers: [AdNetworkManager]) {
         // This is a temporary solution to replace MSPManager class in kotlin to solve the Kotlin singleton issue
         DispatchQueue.main.async {
@@ -94,14 +112,17 @@ public class MSP {
             
             UserDefaults.standard.setValue(String(Date().timeIntervalSince1970 * 1000), forKey: "FirstLaunchTime")
             self.blockLatencyInMs = Int32((Date().timeIntervalSince1970 - initStartTime) * 1000)
-            
-            NotificationCenter.default.addObserver(self, selector: #selector(self.appDidBecomeActive), name: UIApplication.didBecomeActiveNotification, object: nil)
-            NotificationCenter.default.addObserver(self, selector: #selector(self.appDidEnterBackground), name: UIApplication.didEnterBackgroundNotification, object: nil)
-            NotificationCenter.default.addObserver(self, selector: #selector(self.sizeCategoryDidChange), name: UIContentSizeCategory.didChangeNotification, object: nil)
         }
     }
     
     @objc private func appDidBecomeActive() {
+        guard appEnterBackgroundFlag else {
+            MSPLogger.shared.info(message: "App didn't enter background before")
+            return
+        }
+        
+        appEnterBackgroundFlag = false
+        
         MSPLogger.shared.info(message: "App becomes active")
         MSPDevice.shared.isInForeground = true
         MSPDevice.shared.fontSize = UIApplication.shared.preferredContentSizeCategory
@@ -114,6 +135,7 @@ public class MSP {
     
     @objc private func appDidEnterBackground() {
         MSPLogger.shared.info(message: "App enters background")
+        appEnterBackgroundFlag = true
         MESMetricReporter.shared.tryLogUserSignal(type: Com_Newsbreak_Mes_Events_UserSignalType.intoBackground)
         MSPDevice.shared.isInForeground = false
     }

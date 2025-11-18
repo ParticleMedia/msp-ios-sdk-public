@@ -174,11 +174,9 @@ import UIKit
         deviceSignal.w = Int32(size.width * scale)
         deviceSignal.h = Int32(size.height * scale)
         
+        deviceSignal.volumeLevel = MSPDevice.shared.getVolumeLevel()
         deviceSignal.orientation = MSPDevice.shared.getOrientationString(orientation: UIDevice.current.orientation)
         deviceSignal.fontSize = MSPDevice.shared.getFontSizeString()
-        
-        deviceSignal.carrier = MSPDevice.shared.getCarrier()
-        deviceSignal.mccmnc = MSPDevice.shared.getMccMnc()
         
         deviceSignal.connectionType = MSPDevice.shared.getConnectionType()
 
