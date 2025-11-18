@@ -6,13 +6,14 @@
 //
 
 import Foundation
+import UIKit
 import GoogleMobileAds
 import MSPiOSCore
 
 
 public class GoogleInterstitialAd: MSPiOSCore.InterstitialAd {
     public weak var rootViewController: UIViewController?
-    public var interstitialAdItem: GoogleMobileAds.InterstitialAd?
+    public var interstitialAdItem: MSPGADInterstitialAd?
     
     public override func show() {
         interstitialAdItem?.present(from: rootViewController)
