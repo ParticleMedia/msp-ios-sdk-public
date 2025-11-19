@@ -11,7 +11,9 @@
 #   2 - Build failure or missing artifacts
 #
 
-set -euo pipefail
+set -eo pipefail
+# Note: We use set -e (not -u) because we handle empty arrays explicitly
+# with safe expansion patterns throughout the script
 
 # Colors for output
 RED='\033[0;31m'
@@ -121,13 +123,21 @@ analyze_wrapper_frameworks() {
     for wrapper in ShimmerWrapper FBAudienceNetworkWrapper IronSourceSDKWrapper \
                    OpenWrapSDKWrapper MintegralAdSDKWrapper MobileFuseSDKWrapper \
                    InMobiSDKWrapper; do
-        local xcframework="$wrapper_dir/$wrapper/Frameworks"/*.xcframework
-        if [ -d "$xcframework" ]; then
-            frameworks+=("$xcframework")
-        fi
+        # Use safe glob expansion to avoid errors when no files match
+        for xcframework in "$wrapper_dir/$wrapper/Frameworks"/*.xcframework; do
+            # Check if glob matched actual files (not literal *)
+            if [ -d "$xcframework" ] && [ "$xcframework" != "$wrapper_dir/$wrapper/Frameworks/*.xcframework" ]; then
+                frameworks+=("$xcframework")
+            fi
+        done
     done
     
-    echo "${frameworks[@]}"
+    # Safe expansion: return empty string if array is empty
+    if [ ${#frameworks[@]} -eq 0 ]; then
+        echo ""
+    else
+        echo "${frameworks[@]}"
+    fi
 }
 
 # Function to format size
@@ -146,24 +156,34 @@ echo ""
 
 # Analyze wrapper xcframeworks
 echo -e "${BLUE}📊 Analyzing wrapper xcframeworks...${NC}"
-WRAPPER_FRAMEWORKS=($(analyze_wrapper_frameworks))
+WRAPPER_FRAMEWORKS_RESULT=$(analyze_wrapper_frameworks)
 WRAPPER_TOTAL_SIZE=0
 LARGE_FRAMEWORKS=()
 
-for framework in "${WRAPPER_FRAMEWORKS[@]}"; do
-    if [ -d "$framework" ]; then
-        local size_mb=$(get_framework_size "$framework")
-        local framework_name=$(basename "$framework" .xcframework)
-        WRAPPER_TOTAL_SIZE=$((WRAPPER_TOTAL_SIZE + size_mb))
-        
-        if [ "$size_mb" -gt "$THRESHOLD_MB" ]; then
-            LARGE_FRAMEWORKS+=("$framework_name:$size_mb")
-            echo -e "  ${YELLOW}⚠️  $framework_name: $(format_size $size_mb)${NC}"
-        else
-            echo -e "  ${GREEN}✓  $framework_name: $(format_size $size_mb)${NC}"
+# Safely handle empty result
+if [ -z "$WRAPPER_FRAMEWORKS_RESULT" ]; then
+    echo -e "  ${YELLOW}⚠️  No wrapper xcframeworks found${NC}"
+else
+    # Convert space-separated string to array safely
+    set +u  # Temporarily disable unbound variable check for array expansion
+    WRAPPER_FRAMEWORKS=($WRAPPER_FRAMEWORKS_RESULT)
+    set -u  # Re-enable unbound variable check
+    
+    for framework in "${WRAPPER_FRAMEWORKS[@]}"; do
+        if [ -d "$framework" ]; then
+            size_mb=$(get_framework_size "$framework")
+            framework_name=$(basename "$framework" .xcframework)
+            WRAPPER_TOTAL_SIZE=$((WRAPPER_TOTAL_SIZE + size_mb))
+            
+            if [ "$size_mb" -gt "$THRESHOLD_MB" ]; then
+                LARGE_FRAMEWORKS+=("$framework_name:$size_mb")
+                echo -e "  ${YELLOW}⚠️  $framework_name: $(format_size $size_mb)${NC}"
+            else
+                echo -e "  ${GREEN}✓  $framework_name: $(format_size $size_mb)${NC}"
+            fi
         fi
-    fi
-done
+    done
+fi
 
 echo ""
 echo -e "${BLUE}Total wrapper frameworks size: $(format_size $WRAPPER_TOTAL_SIZE)${NC}"
@@ -248,6 +268,7 @@ fi
     echo "    \"total_size_formatted\": \"$(format_size $WRAPPER_TOTAL_SIZE)\","
     echo "    \"large_frameworks\": ["
     if [ ${#LARGE_FRAMEWORKS[@]} -gt 0 ]; then
+        set +u  # Temporarily disable for array access
         for i in "${!LARGE_FRAMEWORKS[@]}"; do
             IFS=':' read -r name size <<< "${LARGE_FRAMEWORKS[$i]}"
             echo "      {"
@@ -260,6 +281,7 @@ fi
                 echo "      }"
             fi
         done
+        set -u  # Re-enable
     fi
     echo "    ]"
     echo "  },"
