@@ -26,18 +26,16 @@ if [[ "$FORCE" != "--force" ]]; then
     read -p "Continue with SwiftPM cleanup? (y/N): " -n 1 -r
     echo
     if [[ ! $REPLY =~ ^[Yy]$ ]]; then
-        echo "Cleanup cancelled."
+        log_info "Cleanup cancelled."
         exit 0
     fi
 fi
 
-printf "============================================================================\n"
-printf "SwiftPM Environment Cleanup\n"
-printf "============================================================================\n"
-printf "\n"
+log_title "SwiftPM Environment Cleanup"
 
 # Step 1: Remove .swiftpm directories (but not inside .xcodeproj)
-log_step "1" "Removing .swiftpm directories"
+log_section "Removing .swiftpm Directories"
+log_step "Scanning for .swiftpm directories"
 SWIFTPM_COUNT=0
 while IFS= read -r -d '' dir; do
     # Skip if inside .xcodeproj bundle
@@ -54,11 +52,12 @@ done < <(find "$ROOT_DIR" -type d -name ".swiftpm" ! -path "*/Pods/*" ! -path "*
 if [[ $SWIFTPM_COUNT -gt 0 ]]; then
     log_success "Removed $SWIFTPM_COUNT .swiftpm directory/ies"
 else
-    log_warning "No .swiftpm directories found"
+    log_info "No .swiftpm directories found"
 fi
 
 # Step 2: Remove SourcePackages directories
-log_step "2" "Removing SourcePackages directories"
+log_section "Removing SourcePackages Directories"
+log_step "Scanning for SourcePackages directories"
 SOURCEPACKAGES_COUNT=0
 while IFS= read -r -d '' dir; do
     # Skip if inside .xcodeproj bundle
@@ -75,11 +74,12 @@ done < <(find "$ROOT_DIR" -type d -name "SourcePackages" ! -path "*/Pods/*" ! -p
 if [[ $SOURCEPACKAGES_COUNT -gt 0 ]]; then
     log_success "Removed $SOURCEPACKAGES_COUNT SourcePackages directory/ies"
 else
-    log_warning "No SourcePackages directories found"
+    log_info "No SourcePackages directories found"
 fi
 
 # Step 3: Remove .build directories
-log_step "3" "Removing .build directories"
+log_section "Removing .build Directories"
+log_step "Scanning for .build directories"
 BUILD_COUNT=0
 while IFS= read -r -d '' dir; do
     # Skip if inside .xcodeproj bundle
@@ -96,31 +96,28 @@ done < <(find "$ROOT_DIR" -type d -name ".build" ! -path "*/Pods/*" ! -path "*/.
 if [[ $BUILD_COUNT -gt 0 ]]; then
     log_success "Removed $BUILD_COUNT .build directory/ies"
 else
-    log_warning "No .build directories found"
+    log_info "No .build directories found"
 fi
 
 # Step 4: Remove SPM workspace (but only if it's the main one)
-log_step "4" "Removing SPM workspace"
+log_section "Removing SPM Workspace"
+log_step "Removing SPM workspace"
 if safe_remove_workspace "$SPM_WORKSPACE"; then
     log_success "SPM workspace removed"
 else
-    log_warning "SPM workspace not found or already removed"
+    log_info "SPM workspace not found or already removed"
 fi
 
 # Step 5: Clean DerivedData
-log_step "5" "Cleaning DerivedData"
+log_section "Cleaning DerivedData"
+log_step "Cleaning DerivedData cache"
 DERIVED_DATA_DIR="$HOME/Library/Developer/Xcode/DerivedData"
 if [[ -d "$DERIVED_DATA_DIR" ]]; then
     rm -rf "$DERIVED_DATA_DIR"/*
     log_success "DerivedData cleaned"
 else
-    log_warning "DerivedData directory not found"
+    log_info "DerivedData directory not found"
 fi
 
-printf "\n"
-printf "============================================================================\n"
-printf "Cleanup Complete\n"
-printf "============================================================================\n"
-printf "\n"
+log_title "Cleanup Complete"
 log_success "SwiftPM environment cleaned"
-

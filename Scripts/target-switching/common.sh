@@ -17,6 +17,8 @@ ROOT_DIR="$(cd "$SCRIPT_DIR/../.." && pwd)"
 source "$ROOT_DIR/Scripts/lib/paths.sh"
 # shellcheck source=Scripts/lib/colors.sh
 source "$ROOT_DIR/Scripts/lib/colors.sh"
+# shellcheck source=Scripts/lib/ui.sh
+source "$ROOT_DIR/Scripts/lib/ui.sh"
 
 # Initialize paths
 init_paths
@@ -34,30 +36,13 @@ readonly WORKSPACE_SPEC="$ROOT_DIR/workspace.yml"
 readonly PROJECT_SPEC="$ROOT_DIR/MSPDemoApp/project.yml"
 
 # ============================================================================
-# Logging Functions
+# Logging Functions (UI system)
 # ============================================================================
-
-log_step() {
-    local step_num="$1"
-    local step_name="$2"
-    printf "\n"
-    printf "Step %s: %s...\n" "$step_num" "$step_name"
-}
-
-log_success() {
-    printf "  ${GREEN}✓${NC} %s\n" "$1"
-}
+# All logging functions are now provided by lib/ui.sh
+# These are kept for backward compatibility during migration
 
 log_warning() {
-    printf "  ${YELLOW}⚠${NC} %s\n" "$1"
-}
-
-log_error() {
-    printf "  ${RED}✗${NC} %s\n" "$1" >&2
-}
-
-log_info() {
-    printf "  %s\n" "$1"
+    log_warn "$1"
 }
 
 # ============================================================================

@@ -23,7 +23,7 @@ ensure_repo_root
 TARGET="${1:-}"
 
 if [[ -z "$TARGET" ]]; then
-    echo "Usage: $0 [spm|pods]"
+    log_error "Usage: $0 [spm|pods]"
     exit 1
 fi
 
@@ -32,10 +32,7 @@ if [[ "$TARGET" != "spm" ]] && [[ "$TARGET" != "pods" ]]; then
     exit 1
 fi
 
-printf "============================================================================\n"
-printf "Environment Validation: %s\n" "$TARGET"
-printf "============================================================================\n"
-printf "\n"
+log_title "Environment Validation: $TARGET"
 
 ERRORS=0
 
@@ -46,8 +43,8 @@ else
     ERRORS=$?
 fi
 
-printf "\n"
-printf "============================================================================\n"
+log_title "Validation Complete"
+
 if [[ $ERRORS -eq 0 ]]; then
     log_success "Environment validation PASSED"
     exit 0
@@ -55,4 +52,3 @@ else
     log_error "Environment validation FAILED ($ERRORS error(s))"
     exit 1
 fi
-

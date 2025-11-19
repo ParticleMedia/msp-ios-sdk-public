@@ -21,11 +21,11 @@ ensure_repo_root
 TARGET="${1:-}"
 
 if [[ -z "$TARGET" ]]; then
-    printf "Usage: %s [spm|pods]\n" "$0"
-    printf "\n"
-    printf "Examples:\n"
-    printf "  %s spm    # Switch to Swift Package Manager\n" "$0"
-    printf "  %s pods   # Switch to CocoaPods\n" "$0"
+    log_info "Usage: $0 [spm|pods]"
+    log_info ""
+    log_info "Examples:"
+    log_info "  $0 spm    # Switch to Swift Package Manager"
+    log_info "  $0 pods   # Switch to CocoaPods"
     exit 1
 fi
 
@@ -34,27 +34,29 @@ if [[ "$TARGET" != "spm" ]] && [[ "$TARGET" != "pods" ]]; then
     exit 1
 fi
 
-printf "============================================================================\n"
-printf "Target Switching: %s\n" "$TARGET"
-printf "============================================================================\n"
-printf "\n"
-printf "Repository: %s\n" "$ROOT_DIR"
-printf "\n"
+# Display title
+if [[ "$TARGET" == "spm" ]]; then
+    log_title "Switching to Swift Package Manager (SPM)"
+else
+    log_title "Switching to CocoaPods"
+fi
+
+log_info "Repository: $ROOT_DIR"
 
 # ============================================================================
 # SPM TARGET SWITCHING
 # ============================================================================
 
 if [[ "$TARGET" == "spm" ]]; then
-    log_info "Switching to Swift Package Manager (SPM)..."
+    log_section "Environment Cleanup"
     
     # Step 1: Clean CocoaPods
-    log_step "1" "Cleaning CocoaPods environment"
+    log_step "Cleaning CocoaPods environment"
     if [[ -d "$PODS_DIR" ]]; then
         safe_remove_directory "$PODS_DIR" "Pods"
         log_success "Pods/ removed"
     else
-        log_warning "Pods/ already removed"
+        log_info "Pods/ already removed"
     fi
     
     # Remove CocoaPods workspace (if it exists)
@@ -69,26 +71,27 @@ if [[ "$TARGET" == "spm" ]]; then
             log_success "Stale workspace removed"
         fi
     else
-        log_warning "CocoaPods workspace already removed"
+        log_info "CocoaPods workspace already removed"
     fi
     
     # Step 2: Clean SPM
-    log_step "2" "Cleaning SwiftPM environment"
+    log_step "Cleaning SwiftPM environment"
     if "$SCRIPT_DIR/cleanup_spm.sh" --force; then
         log_success "SPM cleanup completed"
     else
-        log_warning "SPM cleanup had warnings (continuing)"
+        log_warn "SPM cleanup had warnings (continuing)"
     fi
     
     # Step 3: Check xcframeworks (warn only, don't build)
-    log_step "3" "Checking wrapper xcframeworks"
+    log_section "XCFramework Validation"
+    log_step "Checking wrapper xcframeworks"
     if check_xcframeworks_exist; then
         missing=0
     else
         missing=$?
     fi
     if [[ $missing -gt 0 ]]; then
-        log_warning "$missing wrapper(s) missing xcframeworks"
+        log_warn "$missing wrapper(s) missing xcframeworks"
         log_info "To build xcframeworks, run:"
         log_info "  1. bundle exec pod install"
         log_info "  2. Scripts/target-switching/build-xcframeworks.sh"
@@ -97,7 +100,8 @@ if [[ "$TARGET" == "spm" ]]; then
     fi
     
     # Step 4: Generate YAML specs (only)
-    log_step "4" "Generating YAML specs"
+    log_section "YAML Generation"
+    log_step "Generating YAML specs"
     if "$SCRIPT_DIR/generate_workspace.sh" spm; then
         log_success "YAML specs generated"
     else
@@ -106,7 +110,8 @@ if [[ "$TARGET" == "spm" ]]; then
     fi
     
     # Step 5: Validate environment
-    log_step "5" "Validating environment"
+    log_section "Environment Validation"
+    log_step "Validating environment"
     if validate_environment "spm"; then
         log_success "Environment validation passed"
     else
@@ -116,7 +121,8 @@ if [[ "$TARGET" == "spm" ]]; then
     fi
     
     # Step 6: Open Xcode (workspace will be created by Xcode if needed)
-    log_step "6" "Opening Xcode"
+    log_section "Opening Xcode"
+    log_step "Opening Xcode"
     if [[ -f "$PROJECT_SPEC" ]]; then
         # Open the project spec - Xcode will handle workspace creation
         PROJECT_DIR="$(dirname "$PROJECT_SPEC")"
@@ -124,7 +130,7 @@ if [[ "$TARGET" == "spm" ]]; then
             open "$PROJECT_DIR/MSPDemoApp.xcodeproj"
             log_success "Xcode opened with SPM project"
         else
-            log_warning "Xcode project not found. Run 'xcodegen generate' to create it."
+            log_warn "Xcode project not found. Run 'xcodegen generate' to create it."
             log_info "Opening project directory instead..."
             open "$PROJECT_DIR"
         fi
@@ -138,14 +144,14 @@ if [[ "$TARGET" == "spm" ]]; then
 # ============================================================================
 
 elif [[ "$TARGET" == "pods" ]]; then
-    log_info "Switching to CocoaPods..."
+    log_section "Environment Cleanup"
     
     # Step 1: Clean SPM
-    log_step "1" "Cleaning SwiftPM environment"
+    log_step "Cleaning SwiftPM environment"
     if "$SCRIPT_DIR/cleanup_spm.sh" --force; then
         log_success "SPM cleanup completed"
     else
-        log_warning "SPM cleanup had warnings (continuing)"
+        log_warn "SPM cleanup had warnings (continuing)"
     fi
     
     # Remove SPM workspace (if it exists and is SPM-only)
@@ -155,14 +161,14 @@ elif [[ "$TARGET" == "pods" ]]; then
             safe_remove_workspace "$SPM_WORKSPACE"
             log_success "SPM workspace removed"
         else
-            log_warning "Workspace contains Pods (will be regenerated by pod install)"
+            log_info "Workspace contains Pods (will be regenerated by pod install)"
         fi
     else
-        log_warning "SPM workspace already removed"
+        log_info "SPM workspace already removed"
     fi
     
     # Step 2: Clean and install CocoaPods
-    log_step "2" "Cleaning and installing CocoaPods"
+    log_step "Cleaning and installing CocoaPods"
     if "$SCRIPT_DIR/cleanup_pods.sh"; then
         log_success "CocoaPods environment cleaned and reinstalled"
     else
@@ -171,7 +177,8 @@ elif [[ "$TARGET" == "pods" ]]; then
     fi
     
     # Step 3: Generate YAML specs (only)
-    log_step "3" "Generating YAML specs"
+    log_section "YAML Generation"
+    log_step "Generating YAML specs"
     if "$SCRIPT_DIR/generate_workspace.sh" pods; then
         log_success "YAML specs generated"
     else
@@ -180,24 +187,26 @@ elif [[ "$TARGET" == "pods" ]]; then
     fi
     
     # Step 4: Validate wrappers (if Pods exist)
-    log_step "4" "Validating wrapper xcframeworks"
+    log_section "Wrapper Validation"
+    log_step "Validating wrapper xcframeworks"
     if [[ -d "$PODS_DIR" ]]; then
         VALIDATE_SCRIPT="$ROOT_DIR/Scripts/xcframeworks/validate-wrappers.sh"
         if [[ -f "$VALIDATE_SCRIPT" ]]; then
             if "$VALIDATE_SCRIPT" 2>/dev/null; then
                 log_success "Wrapper validation passed"
             else
-                log_warning "Wrapper validation had warnings or failures"
+                log_warn "Wrapper validation had warnings or failures"
             fi
         else
-            log_warning "Wrapper validation script not found"
+            log_warn "Wrapper validation script not found"
         fi
     else
-        log_warning "Pods/ not found, skipping wrapper validation"
+        log_warn "Pods/ not found, skipping wrapper validation"
     fi
     
     # Step 5: Validate environment
-    log_step "5" "Validating environment"
+    log_section "Environment Validation"
+    log_step "Validating environment"
     if validate_environment "pods"; then
         log_success "Environment validation passed"
     else
@@ -207,12 +216,13 @@ elif [[ "$TARGET" == "pods" ]]; then
     fi
     
     # Step 6: Open Xcode (workspace created by pod install)
-    log_step "6" "Opening Xcode"
+    log_section "Opening Xcode"
+    log_step "Opening Xcode"
     if [[ -d "$PODS_WORKSPACE" ]]; then
         open "$PODS_WORKSPACE"
         log_success "Xcode opened with CocoaPods workspace"
     else
-        log_warning "CocoaPods workspace not found. Opening project directory instead..."
+        log_warn "CocoaPods workspace not found. Opening project directory instead..."
         PROJECT_DIR="$(dirname "$PROJECT_SPEC")"
         if [[ -d "$PROJECT_DIR/MSPDemoApp.xcodeproj" ]]; then
             open "$PROJECT_DIR/MSPDemoApp.xcodeproj"
@@ -226,24 +236,22 @@ fi
 # SUMMARY
 # ============================================================================
 
-printf "\n"
-printf "============================================================================\n"
-printf "Switching Complete\n"
-printf "============================================================================\n"
-printf "\n"
+log_title "Switching Complete"
+
 log_success "Successfully switched to: $TARGET"
-printf "\n"
-printf "Next steps:\n"
+
+log_section "Next Steps"
+
 if [[ "$TARGET" == "spm" ]]; then
-    printf "  1. If needed, run 'xcodegen generate' to regenerate Xcode project from YAML\n"
-    printf "  2. Wait for Xcode to resolve packages (File → Packages → Resolve Package Versions)\n"
-    printf "  3. Build MSPDemoApp-SPM target\n"
+    log_info "1. If needed, run 'xcodegen generate' to regenerate Xcode project from YAML"
+    log_info "2. Wait for Xcode to resolve packages (File → Packages → Resolve Package Versions)"
+    log_info "3. Build MSPDemoApp-SPM target"
 else
-    printf "  1. If needed, run 'xcodegen generate' to regenerate Xcode project from YAML\n"
-    printf "  2. Build MSPDemoApp target\n"
-    printf "  3. Verify all adapters are working\n"
+    log_info "1. If needed, run 'xcodegen generate' to regenerate Xcode project from YAML"
+    log_info "2. Build MSPDemoApp target"
+    log_info "3. Verify all adapters are working"
 fi
-printf "\n"
+
+log_info ""
 log_info "Note: Only YAML files (project.yml, workspace.yml) were modified"
 log_info "      Xcode project files (.pbxproj, .xcscheme) are NOT modified by switching"
-printf "\n"

@@ -7,30 +7,30 @@ set -euo pipefail
 
 # Source the common library
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+ROOT_DIR="$(cd "$SCRIPT_DIR/../.." && pwd)"
 source "$SCRIPT_DIR/lib/release-common.sh"
 
-# Source shared colors
+# Source shared libraries
 # shellcheck source=Scripts/lib/colors.sh
-source "$SCRIPT_DIR/../lib/colors.sh"
+source "$ROOT_DIR/Scripts/lib/colors.sh"
+# shellcheck source=Scripts/lib/ui.sh
+source "$ROOT_DIR/Scripts/lib/ui.sh"
 
 # Test configuration
 TEST_VERSION="1.0.0-test"
 TEST_RELEASE_TYPE="CocoaPods"
 
-# Additional colors
-BLUE='\033[0;34m'
-
-# Test logging functions
+# Test logging functions (use UI system)
 test_log() {
-    echo -e "${BLUE}🧪 $1${NC}"
+    log_step "🧪 $1"
 }
 
 test_success() {
-    echo -e "${GREEN}✅ $1${NC}"
+    log_success "$1"
 }
 
 test_failure() {
-    echo -e "${RED}❌ $1${NC}"
+    log_error "$1"
 }
 
 # Test 1: Generate release notes from git

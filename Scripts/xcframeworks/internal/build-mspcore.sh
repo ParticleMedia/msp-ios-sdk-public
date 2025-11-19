@@ -10,9 +10,12 @@
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT_DIR="$(cd "$SCRIPT_DIR/../.." && pwd)"
 
-# Source only essential library functions to avoid conflicts
+# Source essential library functions
 if [[ -f "$ROOT_DIR/Scripts/lib/colors.sh" ]]; then
     source "$ROOT_DIR/Scripts/lib/colors.sh"
+fi
+if [[ -f "$ROOT_DIR/Scripts/lib/ui.sh" ]]; then
+    source "$ROOT_DIR/Scripts/lib/ui.sh"
 fi
 
 # Script metadata
@@ -25,38 +28,44 @@ readonly EXIT_GENERAL_ERROR=1
 readonly EXIT_VALIDATION_ERROR=3
 readonly EXIT_BUILD_ERROR=4
 
-# Enhanced logging functions using library colors
-log_info() {
-    if [[ -n "${BLUE:-}" ]]; then
-        echo -e "${BLUE}ℹ️  $1${NC}"
-    else
-        echo "INFO: $1"
-    fi
-}
+# Enhanced logging functions (use UI system if available, fallback to simple)
+if command -v log_info &>/dev/null; then
+    # UI system available, use it
+    :
+else
+    # Fallback logging functions
+    log_info() {
+        if [[ -n "${BLUE:-}" ]]; then
+            echo -e "${BLUE}ℹ️  $1${NC}"
+        else
+            echo "INFO: $1"
+        fi
+    }
 
-log_success() {
-    if [[ -n "${GREEN:-}" ]]; then
-        echo -e "${GREEN}✅ $1${NC}"
-    else
-        echo "SUCCESS: $1"
-    fi
-}
+    log_success() {
+        if [[ -n "${GREEN:-}" ]]; then
+            echo -e "${GREEN}✅ $1${NC}"
+        else
+            echo "SUCCESS: $1"
+        fi
+    }
 
-log_warn() {
-    if [[ -n "${YELLOW:-}" ]]; then
-        echo -e "${YELLOW}⚠️  $1${NC}"
-    else
-        echo "WARNING: $1"
-    fi
-}
+    log_warn() {
+        if [[ -n "${YELLOW:-}" ]]; then
+            echo -e "${YELLOW}⚠️  $1${NC}"
+        else
+            echo "WARNING: $1"
+        fi
+    }
 
-log_error() {
-    if [[ -n "${RED:-}" ]]; then
-        echo -e "${RED}❌ $1${NC}" >&2
-    else
-        echo "ERROR: $1" >&2
-    fi
-}
+    log_error() {
+        if [[ -n "${RED:-}" ]]; then
+            echo -e "${RED}❌ $1${NC}" >&2
+        else
+            echo "ERROR: $1" >&2
+        fi
+    }
+fi
 
 log_step() {
     if [[ -n "${BLUE:-}" ]]; then

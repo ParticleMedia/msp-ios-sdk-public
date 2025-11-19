@@ -25,52 +25,54 @@ if [[ ! -f "$ROOT_DIR/Podfile" ]]; then
     exit 1
 fi
 
-printf "============================================================================\n"
-printf "CocoaPods Environment Cleanup\n"
-printf "============================================================================\n"
-printf "\n"
+log_title "CocoaPods Environment Cleanup"
 
 # Step 1: Deintegrate CocoaPods (must be in repo root)
-log_step "1" "Deintegrating CocoaPods"
+log_section "Deintegrating CocoaPods"
+log_step "Running pod deintegrate"
 cd "$ROOT_DIR"
 if command -v bundle &>/dev/null && [[ -f "$ROOT_DIR/Gemfile" ]]; then
     if bundle exec pod deintegrate 2>/dev/null; then
         log_success "CocoaPods deintegrated"
     else
-        log_warning "pod deintegrate failed (may not be integrated)"
+        log_info "pod deintegrate failed (may not be integrated)"
     fi
 else
-    log_warning "bundle not available, skipping deintegrate"
+    log_warn "bundle not available, skipping deintegrate"
 fi
 
 # Step 2: Remove Pods directory
-log_step "2" "Removing Pods directory"
+log_section "Removing Pods Directory"
+log_step "Removing Pods directory"
 if safe_remove_directory "$PODS_DIR" "Pods"; then
     log_success "Pods directory removed"
 else
-    log_warning "Pods directory not found"
+    log_info "Pods directory not found"
 fi
 
 # Step 3: Remove CocoaPods workspace
-log_step "3" "Removing CocoaPods workspace"
+log_section "Removing CocoaPods Workspace"
+log_step "Removing CocoaPods workspace"
 if safe_remove_workspace "$PODS_WORKSPACE"; then
     log_success "CocoaPods workspace removed"
 else
-    log_warning "CocoaPods workspace not found"
+    log_info "CocoaPods workspace not found"
 fi
 
 # Step 4: Clean DerivedData
-log_step "4" "Cleaning DerivedData"
+log_section "Cleaning DerivedData"
+log_step "Cleaning DerivedData cache"
 DERIVED_DATA_DIR="$HOME/Library/Developer/Xcode/DerivedData"
 if [[ -d "$DERIVED_DATA_DIR" ]]; then
     rm -rf "$DERIVED_DATA_DIR"/*
     log_success "DerivedData cleaned"
 else
-    log_warning "DerivedData directory not found"
+    log_info "DerivedData directory not found"
 fi
 
 # Step 5: Install CocoaPods
-log_step "5" "Installing CocoaPods"
+log_section "Installing CocoaPods"
+log_step "Running pod install"
 cd "$ROOT_DIR"
 if command -v bundle &>/dev/null && [[ -f "$ROOT_DIR/Gemfile" ]]; then
     # Ensure UTF-8 encoding for CocoaPods
@@ -88,10 +90,5 @@ else
     exit 1
 fi
 
-printf "\n"
-printf "============================================================================\n"
-printf "Cleanup Complete\n"
-printf "============================================================================\n"
-printf "\n"
+log_title "Cleanup Complete"
 log_success "CocoaPods environment cleaned and reinstalled"
-

@@ -20,11 +20,27 @@ readonly EXIT_VALIDATION_FAILED=1
 readonly EXIT_MISSING_FILES=2
 readonly EXIT_INVALID_ARGS=3
 
-# Color output functions
-print_info() { echo -e "\033[0;34m[INFO]\033[0m $1"; }
-print_success() { echo -e "\033[0;32m[SUCCESS]\033[0m $1"; }
-print_warning() { echo -e "\033[0;33m[WARNING]\033[0m $1"; }
-print_error() { echo -e "\033[0;31m[ERROR]\033[0m $1"; }
+# Source UI system
+readonly ROOT_DIR="$(cd "$SCRIPT_DIR/../.." && pwd)"
+# shellcheck source=Scripts/lib/paths.sh
+source "$ROOT_DIR/Scripts/lib/paths.sh" 2>/dev/null || true
+# shellcheck source=Scripts/lib/colors.sh
+source "$ROOT_DIR/Scripts/lib/colors.sh" 2>/dev/null || true
+# shellcheck source=Scripts/lib/ui.sh
+source "$ROOT_DIR/Scripts/lib/ui.sh" 2>/dev/null || true
+
+# Color output functions (use UI system if available, fallback to simple functions)
+if command -v log_info &>/dev/null; then
+    print_info() { log_info "[INFO] $1"; }
+    print_success() { log_success "[SUCCESS] $1"; }
+    print_warning() { log_warn "[WARNING] $1"; }
+    print_error() { log_error "[ERROR] $1"; }
+else
+    print_info() { echo "[INFO] $1"; }
+    print_success() { echo "[SUCCESS] $1"; }
+    print_warning() { echo "[WARNING] $1"; }
+    print_error() { echo "[ERROR] $1" >&2; }
+fi
 
 # Cleanup function
 cleanup() {

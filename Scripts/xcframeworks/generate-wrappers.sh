@@ -11,6 +11,10 @@ ROOT_DIR="$(cd "$SCRIPT_DIR/../.." && pwd)"
 
 # shellcheck source=Scripts/lib/paths.sh
 source "$ROOT_DIR/Scripts/lib/paths.sh"
+# shellcheck source=Scripts/lib/colors.sh
+source "$ROOT_DIR/Scripts/lib/colors.sh"
+# shellcheck source=Scripts/lib/ui.sh
+source "$ROOT_DIR/Scripts/lib/ui.sh"
 
 # Initialize paths
 init_paths
@@ -69,7 +73,7 @@ let package = Package(
 )
 PACKAGE_SWIFT
     
-    echo "Generated: $package_path"
+    log_info "Generated: $package_path"
 }
 
 # Function to generate wrapper source file
@@ -86,7 +90,7 @@ generate_wrapper_source() {
 @_exported import ${module_name}
 SWIFT_SOURCE
     
-    echo "Generated: $source_file"
+    log_info "Generated: $source_file"
 }
 
 # Function to create wrapper directory structure
@@ -96,7 +100,7 @@ create_wrapper_structure() {
     mkdir -p "$ROOT_DIR/${wrapper_name}/Frameworks"
     mkdir -p "$ROOT_DIR/${wrapper_name}/Sources/${wrapper_name}/include"
     
-    echo "Created directory structure for $wrapper_name"
+    log_info "Created directory structure for $wrapper_name"
 }
 
 # Function to process a single wrapper
@@ -105,19 +109,16 @@ process_wrapper() {
     local wrapper_config="${WRAPPERS[$wrapper_key]}"
     
     if [[ -z "$wrapper_config" ]]; then
-        echo "ERROR: Unknown wrapper: $wrapper_key" >&2
+        log_error "Unknown wrapper: $wrapper_key"
         return 1
     fi
     
     IFS=':' read -r scheme output_wrapper sdk_name source_path pods_dir <<< "$wrapper_config" || {
-        echo "ERROR: Failed to parse wrapper config for: $wrapper_key" >&2
+        log_error "Failed to parse wrapper config for: $wrapper_key"
         return 1
     }
     
-    echo ""
-    echo "=========================================="
-    echo "Processing: $wrapper_key"
-    echo "=========================================="
+    log_section "Processing: $wrapper_key"
     echo "Scheme: $scheme"
     echo "Output: $output_wrapper"
     echo "SDK Name: $sdk_name"
@@ -146,29 +147,29 @@ process_wrapper() {
     
     # Build xcframework if source path is provided (copy mode) or scheme is provided (build mode)
     if [[ -n "$source_path" ]]; then
-        echo "Building xcframework (copy mode)..."
+        log_step "Building xcframework (copy mode)"
         "$SCRIPT_DIR/builder.sh" \
             --copy \
             --source-path "$ROOT_DIR/$source_path" \
             --output "$output_wrapper" \
             --sdk-name "$sdk_name" \
             --pods-dir "$ROOT_DIR/$pods_dir" || {
-            echo "WARNING: Failed to build xcframework for $wrapper_key" >&2
+            log_warn "Failed to build xcframework for $wrapper_key"
         }
     elif [[ -n "$scheme" ]]; then
-        echo "Building xcframework (build mode)..."
+        log_step "Building xcframework (build mode)"
         "$SCRIPT_DIR/builder.sh" \
             --scheme "$scheme" \
             --output "$output_wrapper" \
             --sdk-name "$sdk_name" \
             --pods-dir "$ROOT_DIR/$pods_dir" || {
-            echo "WARNING: Failed to build xcframework for $wrapper_key" >&2
+            log_warn "Failed to build xcframework for $wrapper_key"
         }
     else
-        echo "WARNING: No build method specified for $wrapper_key" >&2
+        log_warn "No build method specified for $wrapper_key"
     fi
     
-    echo "✓ Completed: $wrapper_key"
+    log_success "Completed: $wrapper_key"
 }
 
 # Main execution
@@ -188,34 +189,29 @@ MAIN() {
                 shift 2
                 ;;
             *)
-                echo "ERROR: Unknown option: $1" >&2
-                echo "Usage: $0 [--all] [--wrapper <name>]" >&2
+                log_error "Unknown option: $1"
+                log_info "Usage: $0 [--all] [--wrapper <name>]"
                 exit 1
                 ;;
         esac
     done
     
-    echo "=========================================="
-    echo "Wrapper Generator"
-    echo "=========================================="
-    echo ""
+    log_title "Wrapper Generator"
     
     if [[ "$process_all" == true ]]; then
-        echo "Processing all wrappers..."
+        log_info "Processing all wrappers..."
         for wrapper_key in "${!WRAPPERS[@]}"; do
             process_wrapper "$wrapper_key"
         done
     elif [[ -n "$specific_wrapper" ]]; then
         process_wrapper "$specific_wrapper"
     else
-        echo "ERROR: Must specify --all or --wrapper <name>" >&2
+        log_error "Must specify --all or --wrapper <name>"
         exit 1
     fi
     
-    echo ""
-    echo "=========================================="
-    echo "Wrapper generation complete"
-    echo "=========================================="
+    log_title "Wrapper Generation Complete"
+    log_success "All wrappers processed successfully"
 }
 
 MAIN "$@"

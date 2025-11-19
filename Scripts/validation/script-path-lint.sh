@@ -20,6 +20,8 @@ ROOT_DIR="$(cd "$SCRIPT_DIR/../.." && pwd)"
 source "$ROOT_DIR/Scripts/lib/paths.sh"
 # shellcheck source=Scripts/lib/colors.sh
 source "$ROOT_DIR/Scripts/lib/colors.sh"
+# shellcheck source=Scripts/lib/ui.sh
+source "$ROOT_DIR/Scripts/lib/ui.sh"
 
 # Initialize paths
 init_paths
@@ -33,9 +35,7 @@ ISSUES=()
 OUTPUT_DIR="$SCRIPT_DIR/output"
 mkdir -p "$OUTPUT_DIR"
 
-echo "🔍 Script Path Lint Validator"
-echo "=============================="
-echo ""
+log_title "Script Path Lint Validator"
 
 # Function to check if script should be excluded from checks
 should_exclude_script() {

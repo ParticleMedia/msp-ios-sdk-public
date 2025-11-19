@@ -13,30 +13,21 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT_DIR="$(cd "$SCRIPT_DIR/../.." && pwd)"
 
-# shellcheck source=Scripts/lib/paths.sh
-source "$ROOT_DIR/Scripts/lib/paths.sh"
-# shellcheck source=Scripts/lib/colors.sh
-source "$ROOT_DIR/Scripts/lib/colors.sh"
+# shellcheck source=Scripts/target-switching/common.sh
+source "$SCRIPT_DIR/common.sh"
 
-# Initialize paths
-init_paths
-
-echo "============================================================================"
-echo "Building All XCFrameworks"
-echo "============================================================================"
-echo ""
+log_title "Building All XCFrameworks"
 
 # Call the main build-all script
 BUILD_SCRIPT="$ROOT_DIR/Scripts/xcframeworks/build-all.sh"
 
 if [[ ! -f "$BUILD_SCRIPT" ]]; then
-    echo "ERROR: build-all.sh not found: $BUILD_SCRIPT" >&2
+    log_error "build-all.sh not found: $BUILD_SCRIPT"
     exit 1
 fi
 
+log_step "Running build-all.sh"
 "$BUILD_SCRIPT"
 
-echo ""
-echo -e "${GREEN}✓${NC} All xcframeworks built successfully"
-echo ""
-
+log_title "Build Complete"
+log_success "All xcframeworks built successfully"

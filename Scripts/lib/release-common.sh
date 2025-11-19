@@ -3,52 +3,93 @@
 # Release Common Library
 # Shared functions and configurations for all release scripts
 
-# Colors for output
-RED='\033[0;31m'
-GREEN='\033[0;32m'
-YELLOW='\033[1;33m'
-BLUE='\033[0;34m'
-PURPLE='\033[0;35m'
-NC='\033[0m' # No Color
+# Try to source UI system (if available)
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+ROOT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 
-# Logging functions
-log_info() {
-    echo -e "${BLUE}ℹ️  $1${NC}"
-}
+# Source colors and UI system if available
+if [[ -f "$ROOT_DIR/Scripts/lib/colors.sh" ]]; then
+    # shellcheck source=Scripts/lib/colors.sh
+    source "$ROOT_DIR/Scripts/lib/colors.sh" 2>/dev/null || true
+fi
 
-log_success() {
-    echo -e "${GREEN}✅ $1${NC}"
-}
+if [[ -f "$ROOT_DIR/Scripts/lib/ui.sh" ]]; then
+    # shellcheck source=Scripts/lib/ui.sh
+    source "$ROOT_DIR/Scripts/lib/ui.sh" 2>/dev/null || true
+fi
 
-log_warning() {
-    echo -e "${YELLOW}⚠️  $1${NC}"
-}
+# Fallback color definitions (if colors.sh not available)
+: "${RED:=\033[0;31m}"
+: "${GREEN:=\033[0;32m}"
+: "${YELLOW:=\033[1;33m}"
+: "${BLUE:=\033[0;34m}"
+: "${PURPLE:=\033[0;35m}"
+: "${NC:=\033[0m}"
 
-log_error() {
-    echo -e "${RED}❌ $1${NC}"
-}
+# Logging functions (use UI system if available, fallback to simple functions)
+if command -v log_info &>/dev/null && command -v log_success &>/dev/null; then
+    # UI system available - use it but keep function names for compatibility
+    log_warning() {
+        log_warn "$1"
+    }
+    
+    log_release() {
+        if should_use_colors; then
+            printf "${PURPLE}🚀${NC} %s\n" "$1"
+        else
+            printf "🚀 %s\n" "$1"
+        fi
+    }
+    
+    log_debug() {
+        if [[ "$VERBOSE" == "true" ]]; then
+            log_info "🔍 $1"
+        fi
+    }
+    
+    print_section() {
+        log_section "$1"
+    }
+else
+    # Fallback logging functions
+    log_info() {
+        echo -e "${BLUE}ℹ️  $1${NC}"
+    }
 
-log_step() {
-    echo -e "${BLUE}🔧 $1${NC}"
-}
+    log_success() {
+        echo -e "${GREEN}✅ $1${NC}"
+    }
 
-log_release() {
-    echo -e "${PURPLE}🚀 $1${NC}"
-}
+    log_warning() {
+        echo -e "${YELLOW}⚠️  $1${NC}"
+    }
 
-log_debug() {
-    if [[ "$VERBOSE" == "true" ]]; then
-        echo -e "${BLUE}🔍 $1${NC}"
-    fi
-}
+    log_error() {
+        echo -e "${RED}❌ $1${NC}"
+    }
 
-print_section() {
-    echo ""
-    echo "═══════════════════════════════════════════════════════════════════"
-    echo "$1"
-    echo "═══════════════════════════════════════════════════════════════════"
-    echo ""
-}
+    log_step() {
+        echo -e "${BLUE}🔧 $1${NC}"
+    }
+
+    log_release() {
+        echo -e "${PURPLE}🚀 $1${NC}"
+    }
+
+    log_debug() {
+        if [[ "$VERBOSE" == "true" ]]; then
+            echo -e "${BLUE}🔍 $1${NC}"
+        fi
+    }
+
+    print_section() {
+        echo ""
+        echo "═══════════════════════════════════════════════════════════════════"
+        echo "$1"
+        echo "═══════════════════════════════════════════════════════════════════"
+        echo ""
+    }
+fi
 
 print_subsection() {
     echo -e "${BLUE}--- $1 ---${NC}"

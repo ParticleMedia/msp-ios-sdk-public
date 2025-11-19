@@ -35,10 +35,7 @@ if [[ "$TARGET_MODE" != "spm" ]] && [[ "$TARGET_MODE" != "pods" ]]; then
     exit 1
 fi
 
-printf "============================================================================\n"
-printf "Generating YAML Specs: %s mode\n" "$TARGET_MODE"
-printf "============================================================================\n"
-printf "\n"
+log_title "Generating YAML Specs: $TARGET_MODE mode"
 
 # Find all Package.swift files (sorted for determinism)
 PACKAGE_FILES=()
@@ -94,7 +91,8 @@ package_exists() {
 }
 
 # Generate project.yml deterministically
-log_step "1" "Generating project.yml"
+log_section "Generating project.yml"
+log_step "Generating project.yml"
 mkdir -p "$(dirname "$PROJECT_SPEC")"
 
 # Generate to temporary file first for comparison
@@ -324,7 +322,8 @@ else
 fi
 
 # Generate workspace.yml deterministically
-log_step "2" "Generating workspace.yml"
+log_section "Generating workspace.yml"
+log_step "Generating workspace.yml"
 
 # Find all .xcodeproj files (excluding Pods and build artifacts, sorted for determinism)
 PROJECTS=()
@@ -389,11 +388,7 @@ else
     log_success "workspace.yml generated"
 fi
 
-printf "\n"
-printf "============================================================================\n"
-printf "YAML Generation Complete\n"
-printf "============================================================================\n"
-printf "\n"
+log_title "YAML Generation Complete"
 log_success "YAML specs generated for $TARGET_MODE mode"
 log_info "Note: Xcode project files are NOT modified by this script"
 log_info "Run 'xcodegen generate' manually if you need to regenerate Xcode projects"

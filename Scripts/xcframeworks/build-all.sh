@@ -11,31 +11,29 @@ ROOT_DIR="$(cd "$SCRIPT_DIR/../.." && pwd)"
 
 # shellcheck source=Scripts/lib/paths.sh
 source "$ROOT_DIR/Scripts/lib/paths.sh"
+# shellcheck source=Scripts/lib/colors.sh
+source "$ROOT_DIR/Scripts/lib/colors.sh"
+# shellcheck source=Scripts/lib/ui.sh
+source "$ROOT_DIR/Scripts/lib/ui.sh"
 
 # Initialize paths
 init_paths
 
-echo "=========================================="
-echo "Building All XCFrameworks"
-echo "=========================================="
-echo ""
+log_title "Building All XCFrameworks"
 
 # Clean all temporary build directories
-echo "Cleaning temporary build directories..."
+log_section "Cleaning Temporary Build Directories"
+log_step "Cleaning temporary build directories"
 find "$ROOT_DIR" -type d -name ".build-*-tmp" -exec rm -rf {} + 2>/dev/null || true
-echo "✓ Cleaned temporary directories"
+log_success "Cleaned temporary directories"
 
 # Build all wrappers using generate-wrappers.sh
-echo ""
-echo "Building all wrapper xcframeworks..."
+log_section "Building Wrapper XCFrameworks"
+log_step "Building all wrapper xcframeworks"
 "$SCRIPT_DIR/generate-wrappers.sh" --all
 
-echo ""
-echo "=========================================="
-echo "Verifying xcframeworks..."
-echo "=========================================="
-
 # Verify all xcframeworks exist
+log_section "Verifying XCFrameworks"
 declare -a WRAPPER_NAMES=(
     "ShimmerWrapper"
     "FBAudienceNetworkWrapper"
@@ -52,23 +50,20 @@ for wrapper in "${WRAPPER_NAMES[@]}"; do
     temp_path="$ROOT_DIR/Scripts/xcframeworks/output-temp/$wrapper/Frameworks"
     final_path="$ROOT_DIR/$wrapper/Frameworks"
     if [[ -d "$temp_path" ]] && [[ -n "$(find "$temp_path" -name "*.xcframework" -type d 2>/dev/null)" ]]; then
-        echo "✓ $wrapper: xcframework found (temp)"
+        log_success "$wrapper: xcframework found (temp)"
     elif [[ -d "$final_path" ]] && [[ -n "$(find "$final_path" -name "*.xcframework" -type d 2>/dev/null)" ]]; then
-        echo "✓ $wrapper: xcframework found (final)"
+        log_success "$wrapper: xcframework found (final)"
     else
-        echo "✗ $wrapper: xcframework missing"
+        log_error "$wrapper: xcframework missing"
         ((ERRORS++))
     fi
 done
 
 if [[ $ERRORS -gt 0 ]]; then
-    echo ""
-    echo "ERROR: $ERRORS xcframeworks are missing" >&2
+    log_error "$ERRORS xcframeworks are missing"
     exit 1
 fi
 
-echo ""
-echo "=========================================="
-echo "All xcframeworks built successfully"
-echo "=========================================="
+log_title "Build Complete"
+log_success "All xcframeworks built successfully"
 

@@ -29,9 +29,6 @@ source "$ROOT_DIR/Scripts/lib/wrapper-config.sh"
 init_paths
 init_validation_counters
 
-# Bold text
-BOLD='\033[1m'
-
 # ============================================================================
 # 1. CHECK FOR ILLEGAL MIXED ENVIRONMENT
 # ============================================================================
@@ -420,18 +417,32 @@ check_stale_caches() {
 # ============================================================================
 
 main() {
-    echo "============================================================================"
-    echo "${BOLD}Target Switching Validator${NC}"
-    echo "============================================================================"
-    echo ""
-    echo "Repository: $ROOT_DIR"
-    echo ""
+    # Note: This script uses validation-helpers.sh functions (print_section, print_ok, print_fail)
+    # which are separate from the target-switching UI system
+    # shellcheck source=Scripts/target-switching/common.sh
+    source "$SCRIPT_DIR/common.sh" 2>/dev/null || true
     
-# Safety check
-if ! validate_repo_root "$ROOT_DIR"; then
-    echo -e "${RED}ERROR: Not in MSP iOS SDK repository. Aborting.${NC}" >&2
-    exit 1
-fi
+    if command -v log_title &>/dev/null; then
+        log_title "Target Switching Validator"
+        log_info "Repository: $ROOT_DIR"
+    else
+        echo "============================================================================"
+        echo "Target Switching Validator"
+        echo "============================================================================"
+        echo ""
+        echo "Repository: $ROOT_DIR"
+        echo ""
+    fi
+    
+    # Safety check
+    if ! validate_repo_root "$ROOT_DIR"; then
+        if command -v log_error &>/dev/null; then
+            log_error "Not in MSP iOS SDK repository. Aborting."
+        else
+            echo -e "${RED}ERROR: Not in MSP iOS SDK repository. Aborting.${NC}" >&2
+        fi
+        exit 1
+    fi
     
     # Run all checks
     check_mixed_environment

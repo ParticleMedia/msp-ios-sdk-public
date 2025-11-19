@@ -19,6 +19,8 @@ ROOT_DIR="$(cd "$SCRIPT_DIR/../.." && pwd)"
 source "$ROOT_DIR/Scripts/lib/paths.sh"
 # shellcheck source=Scripts/lib/colors.sh
 source "$ROOT_DIR/Scripts/lib/colors.sh"
+# shellcheck source=Scripts/lib/ui.sh
+source "$ROOT_DIR/Scripts/lib/ui.sh"
 # shellcheck source=Scripts/lib/validation-helpers.sh
 source "$ROOT_DIR/Scripts/lib/validation-helpers.sh"
 # shellcheck source=Scripts/lib/wrapper-config.sh
@@ -27,9 +29,6 @@ source "$ROOT_DIR/Scripts/lib/wrapper-config.sh"
 # Initialize paths and counters
 init_paths
 init_validation_counters
-
-# Bold text
-BOLD='\033[1m'
 
 # ============================================================================
 # 1. DIRECTORY CHECKS
@@ -315,16 +314,12 @@ check_stale_files() {
 # ============================================================================
 
 main() {
-    echo "============================================================================"
-    echo "${BOLD}Wrapper Package Validator${NC}"
-    echo "============================================================================"
-    echo ""
-    echo "Repository: $ROOT_DIR"
-    echo ""
+    log_title "Wrapper Package Validator"
+    log_info "Repository: $ROOT_DIR"
     
     # Safety check
     if ! validate_repo_root "$ROOT_DIR"; then
-        echo -e "${RED}ERROR: Not in MSP iOS SDK repository. Aborting.${NC}" >&2
+        log_error "Not in MSP iOS SDK repository. Aborting."
         exit 1
     fi
     

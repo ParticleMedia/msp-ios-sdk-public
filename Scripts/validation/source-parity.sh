@@ -13,6 +13,8 @@ ROOT_DIR="$(cd "$SCRIPT_DIR/../.." && pwd)"
 source "$ROOT_DIR/Scripts/lib/paths.sh"
 # shellcheck source=Scripts/lib/colors.sh
 source "$ROOT_DIR/Scripts/lib/colors.sh"
+# shellcheck source=Scripts/lib/ui.sh
+source "$ROOT_DIR/Scripts/lib/ui.sh"
 
 # Initialize paths
 init_paths
@@ -204,10 +206,7 @@ validate_module() {
     local spm_path="${4:-$ROOT_DIR/$module_name}"
     local spm_sources="${5:-}"
     
-    echo ""
-    echo "=========================================="
-    echo "Validating: $module_name"
-    echo "=========================================="
+    log_section "Validating: $module_name"
     
     # Extract Xcode sources
     echo "Extracting Xcode project source files..."
@@ -246,10 +245,7 @@ validate_module() {
 }
 
 # Validate all modules
-echo "=========================================="
-echo "Source Parity Validation"
-echo "=========================================="
-echo ""
+log_title "Source Parity Validation"
 
 # Validate NovaCore (local pod, uses NovaCore.xcodeproj)
 validate_module "NovaCore" "$ROOT_DIR/NovaCore/NovaCore.xcodeproj" "NovaCore" "$ROOT_DIR/NovaCore" "NovaCore/NovaCore"
@@ -265,17 +261,14 @@ if [[ -f "$ROOT_DIR/MSPiOSCore/MSPiOSCore.xcodeproj/project.pbxproj" ]]; then
 fi
 
 # Summary
-echo ""
-echo "=========================================="
-echo "Validation Summary"
-echo "=========================================="
-echo "Errors: $ERRORS"
-echo "Warnings: $WARNINGS"
+log_title "Validation Summary"
+log_info "Errors: $ERRORS"
+log_info "Warnings: $WARNINGS"
 
 if [[ $ERRORS -gt 0 ]]; then
-    echo -e "${RED}✗ Validation FAILED${NC}"
+    log_error "Validation FAILED"
     exit 1
 else
-    echo -e "${GREEN}✓ Validation PASSED${NC}"
+    log_success "Validation PASSED"
     exit 0
 fi

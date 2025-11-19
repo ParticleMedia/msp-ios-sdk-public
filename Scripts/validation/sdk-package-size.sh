@@ -21,12 +21,11 @@ ROOT_DIR="$(cd "$SCRIPT_DIR/../.." && pwd)"
 source "$ROOT_DIR/Scripts/lib/paths.sh"
 # shellcheck source=Scripts/lib/colors.sh
 source "$ROOT_DIR/Scripts/lib/colors.sh"
+# shellcheck source=Scripts/lib/ui.sh
+source "$ROOT_DIR/Scripts/lib/ui.sh"
 
 # Initialize paths
 init_paths
-
-# Additional colors
-BLUE='\033[0;34m'
 
 # Configuration
 THRESHOLD_MB=30  # Warn if any xcframework > 30MB
@@ -38,9 +37,7 @@ trap "rm -rf $TEMP_DIR" EXIT
 
 mkdir -p "$OUTPUT_DIR"
 
-echo "📦 SDK Package Size Comparison Tool"
-echo "===================================="
-echo ""
+log_title "SDK Package Size Comparison Tool"
 
 # Function to get framework size in MB
 get_framework_size() {
@@ -60,7 +57,7 @@ find_xcframeworks() {
 
 # Function to build CocoaPods archive
 build_cocoapods_archive() {
-    echo -e "${BLUE}🔨 Building CocoaPods archive...${NC}"
+    log_step "Building CocoaPods archive"
     
     local build_dir="$TEMP_DIR/cocoapods"
     mkdir -p "$build_dir"
@@ -73,8 +70,8 @@ build_cocoapods_archive() {
         -derivedDataPath "$build_dir/DerivedData" \
         clean build \
         > "$build_dir/build.log" 2>&1 || {
-        echo -e "${RED}❌ CocoaPods build failed${NC}"
-        cat "$build_dir/build.log" | tail -20
+        log_error "CocoaPods build failed"
+        tail -20 "$build_dir/build.log"
         return 1
     }
     
@@ -89,7 +86,7 @@ build_cocoapods_archive() {
 
 # Function to build SwiftPM archive
 build_spm_archive() {
-    echo -e "${BLUE}🔨 Building SwiftPM archive...${NC}"
+    log_step "Building SwiftPM archive"
     
     local build_dir="$TEMP_DIR/spm"
     mkdir -p "$build_dir"

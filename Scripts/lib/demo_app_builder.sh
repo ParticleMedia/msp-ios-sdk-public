@@ -4,19 +4,48 @@
 # This script provides reusable functions for building the demo app
 # Source this script in other scripts to use these functions
 
-# Colors for output
-RED='\033[0;31m'
-GREEN='\033[0;32m'
-YELLOW='\033[1;33m'
-BLUE='\033[0;34m'
-NC='\033[0m' # No Color
+# Try to source UI system (if available)
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+ROOT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 
-# Function to print colored output
-print_status() {
-    local color=$1
-    local message=$2
-    echo -e "${color}${message}${NC}"
-}
+# Source colors and UI system if available
+if [[ -f "$ROOT_DIR/Scripts/lib/colors.sh" ]]; then
+    # shellcheck source=Scripts/lib/colors.sh
+    source "$ROOT_DIR/Scripts/lib/colors.sh" 2>/dev/null || true
+fi
+
+if [[ -f "$ROOT_DIR/Scripts/lib/ui.sh" ]]; then
+    # shellcheck source=Scripts/lib/ui.sh
+    source "$ROOT_DIR/Scripts/lib/ui.sh" 2>/dev/null || true
+fi
+
+# Fallback color definitions (if colors.sh not available)
+: "${RED:=\033[0;31m}"
+: "${GREEN:=\033[0;32m}"
+: "${YELLOW:=\033[1;33m}"
+: "${BLUE:=\033[0;34m}"
+: "${NC:=\033[0m}"
+
+# Function to print colored output (use UI system if available)
+if command -v log_info &>/dev/null; then
+    print_status() {
+        local color=$1
+        local message=$2
+        case "$color" in
+            "$GREEN") log_success "$message" ;;
+            "$RED") log_error "$message" ;;
+            "$YELLOW") log_warn "$message" ;;
+            "$BLUE") log_info "$message" ;;
+            *) log_info "$message" ;;
+        esac
+    }
+else
+    print_status() {
+        local color=$1
+        local message=$2
+        echo -e "${color}${message}${NC}"
+    }
+fi
 
 # Function to detect linking mode based on available artifacts
 detect_linking_mode() {
