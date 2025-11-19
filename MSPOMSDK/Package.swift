@@ -25,8 +25,9 @@ let package = Package(
                 "OMSDK_Newsbreak1"
             ],
             path: "MSPOMSDK",
+            exclude: ["MSPOMSDK.docc"],
             sources: [
-                "MSPOMSDK/"
+                "Shim.swift"
             ],
             publicHeadersPath: ".",
             cSettings: [

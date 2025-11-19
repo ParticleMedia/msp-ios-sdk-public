@@ -26,7 +26,7 @@ let package = Package(
     targets: [
         // Binary target for NovaCore XCFramework
         .binaryTarget(
-            name: "NovaCore",
+            name: "NovaCoreBinary",
             path: "NovaCore.xcframework"
         ),
         
@@ -38,7 +38,7 @@ let package = Package(
                 .product(name: "SnapKit", package: "SnapKit"),
                 .product(name: "MSPSharedLibraries", package: "mspsharedlibraries"),
                 "MSPOMSDK",
-                "NovaCore"
+                "NovaCoreBinary"
             ],
             path: "NovaAdapter",
             publicHeadersPath: ".",

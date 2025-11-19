@@ -33,8 +33,9 @@ let package = Package(
                 .product(name: "MSPiOSCore", package: "mspioscore")
             ],
             path: "MSPSharedLibraries",
+            exclude: ["MSPSharedLibraries.docc"],
             sources: [
-                "MSPSharedLibraries.swift"
+                "Shim.swift"
             ],
             publicHeadersPath: ".",
             cSettings: [
