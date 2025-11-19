@@ -1,0 +1,241 @@
+#!/usr/bin/env bash
+#
+# Script Path Lint Validator
+#
+# Validates that all scripts in Scripts/ directory use correct ROOT_DIR patterns
+# and do not reference obsolete paths.
+#
+# Exit codes:
+#   0 - All checks passed
+#   1 - Violations found
+#
+
+set -euo pipefail
+
+# Colors for output
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+NC='\033[0m' # No Color
+
+# Get script directory
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+ROOT_DIR="$(cd "$SCRIPT_DIR/../.." && pwd)"
+
+# Track violations
+VIOLATIONS=0
+TOTAL_FILES=0
+ISSUES=()
+
+# Output directory for reports
+OUTPUT_DIR="$SCRIPT_DIR/output"
+mkdir -p "$OUTPUT_DIR"
+
+echo "🔍 Script Path Lint Validator"
+echo "=============================="
+echo ""
+
+# Function to check ROOT_DIR pattern
+check_root_dir_pattern() {
+    local script_path="$1"
+    local script_dir="$(dirname "$script_path")"
+    local relative_path="${script_dir#$ROOT_DIR/}"
+    
+    # Determine expected ROOT_DIR pattern based on directory depth
+    local depth=$(echo "$relative_path" | tr -cd '/' | wc -c)
+    local expected_pattern=""
+    
+    # Skip lib/ scripts - they are sourced, not executed directly
+    if [[ "$relative_path" == Scripts/lib/* ]]; then
+        return 0
+    fi
+    
+    # Skip plugins/ scripts - they are sourced, not executed directly
+    if [[ "$relative_path" == Scripts/plugins/* ]]; then
+        return 0
+    fi
+    
+    # Skip legacy/ scripts - they are deprecated
+    if [[ "$relative_path" == Scripts/legacy/* ]]; then
+        return 0
+    fi
+    
+    case "$relative_path" in
+        Scripts)
+            # Top-level scripts should use ../
+            expected_pattern="\\.\\./"
+            ;;
+        Scripts/xcframeworks/wrappers|Scripts/xcframeworks/internal|Scripts/workspace|Scripts/environment|Scripts/release|Scripts/build|Scripts/ci|Scripts/validation)
+            # Second-level scripts should use ../../
+            expected_pattern="\\.\\./\\.\\./"
+            ;;
+        Scripts/*/*/*)
+            # Third-level scripts should use ../../../
+            expected_pattern="\\.\\./\\.\\./\\.\\./"
+            ;;
+        *)
+            # Default: count depth
+            if [ "$depth" -eq 1 ]; then
+                expected_pattern="\\.\\./"
+            elif [ "$depth" -eq 2 ]; then
+                expected_pattern="\\.\\./\\.\\./"
+            else
+                expected_pattern="\\.\\./\\.\\./\\.\\./"
+            fi
+            ;;
+    esac
+    
+    # Check if script calculates ROOT_DIR (only for executable scripts)
+    if ! grep -q "ROOT_DIR.*pwd" "$script_path" 2>/dev/null; then
+        # Only flag if it's not a library/plugin script
+        ISSUES+=("⚠️  $script_path: Missing ROOT_DIR calculation (may be intentional for sourced scripts)")
+        return 0  # Don't fail for this
+    fi
+    
+    # Check if ROOT_DIR uses correct pattern
+    local actual_pattern=$(grep -o "ROOT_DIR.*pwd" "$script_path" | grep -o "\\.\\./" | head -1 || echo "")
+    if [ -n "$actual_pattern" ] && ! echo "$actual_pattern" | grep -qE "^$expected_pattern"; then
+        ISSUES+=("⚠️  $script_path: ROOT_DIR pattern may be incorrect (expected depth: $depth)")
+        return 1
+    fi
+    
+    return 0
+}
+
+# Function to check for obsolete paths
+check_obsolete_paths() {
+    local script_path="$1"
+    local basename=$(basename "$script_path")
+    
+    # List of obsolete paths to detect
+    local obsolete_patterns=(
+        "Scripts/build-.*-xcframework\\.sh"
+        "Scripts/update-workspace\\.sh"
+        "Scripts/setup-spm-environment\\.sh"
+        "Scripts/build-xcframework\\.sh"
+        "Scripts/build-all-xcframeworks\\.sh"
+        "Scripts/generate-wrappers\\.sh"
+        "Scripts/validate-source-parity\\.sh"
+    )
+    
+    for pattern in "${obsolete_patterns[@]}"; do
+        if grep -qE "$pattern" "$script_path" 2>/dev/null; then
+            ISSUES+=("❌ $script_path: References obsolete path pattern: $pattern")
+            return 1
+        fi
+    done
+    
+    return 0
+}
+
+# Function to check for hard-coded relative paths
+check_hardcoded_paths() {
+    local script_path="$1"
+    
+    # Check for hard-coded Scripts/ paths that should use ROOT_DIR
+    if grep -qE '(\.\./)+Scripts/' "$script_path" 2>/dev/null && ! grep -q "ROOT_DIR" "$script_path" 2>/dev/null; then
+        ISSUES+=("⚠️  $script_path: Uses hard-coded relative paths instead of ROOT_DIR")
+        return 1
+    fi
+    
+    return 0
+}
+
+# Function to check executable permissions
+check_permissions() {
+    local script_path="$1"
+    
+    if [ ! -x "$script_path" ]; then
+        ISSUES+=("❌ $script_path: Missing executable permission (chmod +x)")
+        return 1
+    fi
+    
+    return 0
+}
+
+# Function to check wrapper script references
+check_wrapper_references() {
+    local script_path="$1"
+    
+    # Wrapper scripts should reference builder.sh
+    if [[ "$script_path" == *"xcframeworks/wrappers/build-"*".sh" ]]; then
+        if ! grep -q "xcframeworks/builder.sh\|builder.sh" "$script_path" 2>/dev/null; then
+            ISSUES+=("⚠️  $script_path: Wrapper script should reference builder.sh")
+            return 1
+        fi
+    fi
+    
+    return 0
+}
+
+# Main validation loop
+echo "Scanning Scripts/ directory..."
+echo ""
+
+# Find all shell scripts
+while IFS= read -r -d '' script_path; do
+    TOTAL_FILES=$((TOTAL_FILES + 1))
+    
+    # Skip this script itself
+    if [ "$script_path" = "$SCRIPT_DIR/script-path-lint.sh" ]; then
+        continue
+    fi
+    
+    # Run all checks
+    check_root_dir_pattern "$script_path" || VIOLATIONS=$((VIOLATIONS + 1))
+    check_obsolete_paths "$script_path" || VIOLATIONS=$((VIOLATIONS + 1))
+    check_hardcoded_paths "$script_path" || VIOLATIONS=$((VIOLATIONS + 1))
+    check_permissions "$script_path" || VIOLATIONS=$((VIOLATIONS + 1))
+    check_wrapper_references "$script_path" || VIOLATIONS=$((VIOLATIONS + 1))
+    
+done < <(find "$ROOT_DIR/Scripts" -type f -name "*.sh" -print0)
+
+# Print summary
+echo ""
+echo "=============================="
+echo "📊 Validation Summary"
+echo "=============================="
+echo ""
+echo "Total files checked: $TOTAL_FILES"
+echo "Violations found: $VIOLATIONS"
+echo ""
+
+if [ $VIOLATIONS -eq 0 ]; then
+    echo -e "${GREEN}✅ All checks passed!${NC}"
+    echo ""
+    exit 0
+else
+    echo -e "${RED}❌ Violations detected:${NC}"
+    echo ""
+    for issue in "${ISSUES[@]}"; do
+        echo "  $issue"
+    done
+    echo ""
+    echo -e "${YELLOW}💡 Suggested fixes:${NC}"
+    echo "  1. Update ROOT_DIR calculation to match directory depth"
+    echo "  2. Replace obsolete path references with new paths"
+    echo "  3. Use ROOT_DIR instead of hard-coded relative paths"
+    echo "  4. Run: chmod +x <script> for scripts missing executable permission"
+    echo "  5. Update wrapper scripts to reference builder.sh correctly"
+    echo ""
+    
+    # Write detailed report
+    REPORT_FILE="$OUTPUT_DIR/script-path-lint-report.txt"
+    {
+        echo "Script Path Lint Report"
+        echo "Generated: $(date)"
+        echo ""
+        echo "Total files checked: $TOTAL_FILES"
+        echo "Violations found: $VIOLATIONS"
+        echo ""
+        echo "Issues:"
+        for issue in "${ISSUES[@]}"; do
+            echo "  $issue"
+        done
+    } > "$REPORT_FILE"
+    
+    echo "📄 Detailed report saved to: $REPORT_FILE"
+    echo ""
+    exit 1
+fi
+
