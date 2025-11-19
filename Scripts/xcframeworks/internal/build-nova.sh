@@ -61,8 +61,7 @@ fi
 # 4. If Release builds fail, the issue should be fixed rather than worked around
 
 # Enable strict error handling
-set -e  # Exit immediately if a command exits with a non-zero status
-set -o pipefail  # Exit if any command in a pipeline fails
+set -euo pipefail  # Exit on error, undefined vars, and pipe failures
 
 # Error handling function
 handle_error() {
