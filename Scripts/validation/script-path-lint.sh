@@ -12,15 +12,17 @@
 
 set -euo pipefail
 
-# Colors for output
-RED='\033[0;31m'
-GREEN='\033[0;32m'
-YELLOW='\033[1;33m'
-NC='\033[0m' # No Color
-
-# Get script directory
+# Source shared libraries
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT_DIR="$(cd "$SCRIPT_DIR/../.." && pwd)"
+
+# shellcheck source=Scripts/lib/paths.sh
+source "$ROOT_DIR/Scripts/lib/paths.sh"
+# shellcheck source=Scripts/lib/colors.sh
+source "$ROOT_DIR/Scripts/lib/colors.sh"
+
+# Initialize paths
+init_paths
 
 # Track violations
 VIOLATIONS=0

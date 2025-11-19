@@ -1,7 +1,15 @@
 #!/bin/bash
 set -euo pipefail
 
-ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
+# Source shared libraries
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+ROOT_DIR="$(cd "$SCRIPT_DIR/../.." && pwd)"
+
+# shellcheck source=Scripts/lib/paths.sh
+source "$ROOT_DIR/Scripts/lib/paths.sh"
+
+# Initialize paths
+init_paths
 PROJECT_SPEC="$ROOT_DIR/MSPDemoApp/project.yml"
 WORKSPACE_SPEC="$ROOT_DIR/workspace.yml"
 WORKSPACE_PATH="$ROOT_DIR/msp-ios-sdk.xcworkspace"

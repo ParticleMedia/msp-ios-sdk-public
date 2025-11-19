@@ -10,7 +10,16 @@
 
 set -euo pipefail
 
-ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
+# Source shared libraries
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+ROOT_DIR="$(cd "$SCRIPT_DIR/../.." && pwd)"
+
+# shellcheck source=Scripts/lib/paths.sh
+source "$ROOT_DIR/Scripts/lib/paths.sh"
+
+# Initialize paths
+init_paths
+
 PODS_PROJECT="${PODS_PROJECT:-$ROOT_DIR/Pods/Pods.xcodeproj}"
 MODE=""
 SCHEME=""

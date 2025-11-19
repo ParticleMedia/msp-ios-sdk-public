@@ -11,20 +11,22 @@
 #   2 - Build failure or missing artifacts
 #
 
-set -eo pipefail
-# Note: We use set -e (not -u) because we handle empty arrays explicitly
-# with safe expansion patterns throughout the script
+set -euo pipefail
 
-# Colors for output
-RED='\033[0;31m'
-GREEN='\033[0;32m'
-YELLOW='\033[1;33m'
-BLUE='\033[0;34m'
-NC='\033[0m' # No Color
-
-# Get script directory
+# Source shared libraries
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT_DIR="$(cd "$SCRIPT_DIR/../.." && pwd)"
+
+# shellcheck source=Scripts/lib/paths.sh
+source "$ROOT_DIR/Scripts/lib/paths.sh"
+# shellcheck source=Scripts/lib/colors.sh
+source "$ROOT_DIR/Scripts/lib/colors.sh"
+
+# Initialize paths
+init_paths
+
+# Additional colors
+BLUE='\033[0;34m'
 
 # Configuration
 THRESHOLD_MB=30  # Warn if any xcframework > 30MB

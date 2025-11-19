@@ -3,22 +3,22 @@
 # Slack Integration Test Script
 # Tests the Slack notification system across different environments
 
-set -e
+set -euo pipefail
 
 # Source the common library
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$SCRIPT_DIR/lib/release-common.sh"
 
+# Source shared colors
+# shellcheck source=Scripts/lib/colors.sh
+source "$SCRIPT_DIR/../lib/colors.sh"
+
 # Test configuration
 TEST_VERSION="1.0.0-test"
 TEST_PODS="MSPCore, NovaCore, FacebookAdapter"
 
-# Colors for test output
-RED='\033[0;31m'
-GREEN='\033[0;32m'
-YELLOW='\033[1;33m'
+# Additional colors
 BLUE='\033[0;34m'
-NC='\033[0m' # No Color
 
 # Test result tracking
 TESTS_PASSED=0
