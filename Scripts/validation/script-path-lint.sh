@@ -43,9 +43,19 @@ should_exclude_script() {
     local basename=$(basename "$script_path")
     
     # Exclude compatibility shims (build-*-xcframework.sh in Scripts root)
-    if [[ "$relative_path" == Scripts ]] && [[ "$basename" == build-*-xcframework.sh ]]; then
-        echo "Excluded compatibility shim: $script_path"
+    if [[ "$relative_path" == Scripts ]] && [[ "$basename" =~ ^build-.*-xcframework\.sh$ ]]; then
+        echo "Excluded compatibility shim: $script_path" >&2
         return 0  # Should exclude
+    fi
+    
+    # Exclude other compatibility shims in Scripts root
+    if [[ "$relative_path" == Scripts ]]; then
+        case "$basename" in
+            build-xcframework.sh|build-all-xcframeworks.sh|setup-spm-environment.sh|update-workspace.sh|validate-source-parity.sh|generate-wrappers.sh)
+                echo "Excluded compatibility shim: $script_path" >&2
+                return 0  # Should exclude
+                ;;
+        esac
     fi
     
     # Exclude legacy scripts
