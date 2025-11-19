@@ -36,6 +36,24 @@ MSPGoogleAdapter/build/
 MSPFacebookAdapter/*.xcframework/
 MSPGoogleAdapter/*.xcframework/
 
+# Swift Package Manager artifacts
+.swiftpm/
+.build/
+**/*.xcframework
+Scripts/xcframeworks/output-temp/
+ExtractedFrameworks/
+
+# Wrapper xcframeworks (generated, not source-controlled)
+**/Wrapper/Frameworks/*.xcframework
+ShimmerWrapper/Frameworks/*.xcframework
+FBAudienceNetworkWrapper/Frameworks/*.xcframework
+IronSourceSDKWrapper/Frameworks/*.xcframework
+OpenWrapSDKWrapper/Frameworks/*.xcframework
+MintegralAdSDKWrapper/Frameworks/*.xcframework
+MobileFuseSDKWrapper/Frameworks/*.xcframework
+InMobiSDKWrapper/Frameworks/*.xcframework
+MSPSharedLibraries/PrebidMobile.xcframework
+
 # Node / editor
 node_modules/
 .idea/
