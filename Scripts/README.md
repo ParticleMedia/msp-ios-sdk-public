@@ -5,7 +5,7 @@ Automation in this repository is driven by Xcodegen + CocoaPods; no manual Xcode
 ## update-workspace.sh
 
 ```
-./Scripts/update-workspace.sh
+./Scripts/workspace/update.sh
 ```
 
 What it does:
@@ -29,4 +29,4 @@ Environment notes:
 | `release-*.sh` | CocoaPods/SPM release orchestration. |
 | `lib/*.sh` | Shared shell helpers used by CI and release scripts. |
 
-All scripts assume that `./Scripts/update-workspace.sh` has been run and that the Pod install exists on disk. Use the same sequence locally before invoking Fastlane or the release tooling.
+All scripts assume that `./Scripts/workspace/update.sh` has been run and that the Pod install exists on disk. Use the same sequence locally before invoking Fastlane or the release tooling.
