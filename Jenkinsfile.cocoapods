@@ -39,7 +39,7 @@ pipeline {
             steps {
                 sh '''
                     set -euo pipefail
-                    ./Scripts/update-workspace.sh
+                    ./Scripts/workspace/update.sh
                 '''
             }
         }
