@@ -3,6 +3,8 @@
 # XcodeGen generated outputs
 *.xcodeproj/
 *.xcworkspace/
+*.xcworkspace/contents.xcworkspacedata
+*.xcworkspace/xcshareddata/
 *.xcscmblueprint
 *.xccheckout
 xcuserdata/
@@ -11,6 +13,10 @@ xcuserdata/
 *.xcuserstate
 DerivedData/
 build/
+
+# Internal Xcode project workspaces (never track these)
+**/*.xcodeproj/project.xcworkspace/
+**/*.xcodeproj/project.xcworkspace/**
 
 # Swift Package Manager artifacts
 .swiftpm/
