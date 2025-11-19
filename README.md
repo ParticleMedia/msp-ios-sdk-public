@@ -2,6 +2,60 @@
 
 Modular advertising SDK for iOS that ships multiple adapters, shared libraries, and a dual‑integration demo app. The demo application is generated entirely from Xcodegen specs so CocoaPods and Swift Package Manager paths can be validated without hand‑editing Xcode projects.
 
+## Target Switching (CocoaPods ↔︎ Swift Package Manager)
+
+The MSP iOS SDK supports both CocoaPods and Swift Package Manager (SPM). The repository includes a Target Switching Framework that safely switches between the two environments, preventing mixed states and ensuring both dependency managers always build correctly.
+
+### Quick Start
+
+**Switch to SPM:**
+```bash
+./Scripts/target-switching/switch-target.sh spm
+```
+This removes CocoaPods artifacts, cleans SwiftPM caches, builds wrapper XCFrameworks (if needed), regenerates the SPM workspace, and opens Xcode in SPM mode.
+
+**Switch to CocoaPods:**
+```bash
+./Scripts/target-switching/switch-target.sh pods
+```
+This removes SwiftPM artifacts, deintegrates and reinstalls pods, validates wrappers, and opens Xcode in CocoaPods mode.
+
+### When to Switch
+
+- When testing both package managers
+- When updating wrappers or Pods
+- When preparing a release
+- When debugging environment-specific issues
+
+### Troubleshooting
+
+**Duplicate GUID errors:**
+```bash
+./Scripts/cleanup-swiftpm-caches.sh
+```
+
+**"binary target could not be mapped" errors:**
+```bash
+git ls-files | grep xcframework   # Should output nothing
+./Scripts/target-switching/build-xcframeworks.sh
+```
+
+**Build errors after switching:**
+```bash
+rm -rf ~/Library/Developer/Xcode/DerivedData/*
+./Scripts/target-switching/cleanup-spm.sh
+./Scripts/target-switching/cleanup-cocoapods.sh
+./Scripts/target-switching/switch-target.sh [spm|pods]
+```
+
+### Best Practices
+
+- Always use `switch-target.sh` to change environments
+- Commit or stash changes before switching
+- Validate after switching: `./Scripts/target-switching/switch-target-validator.sh`
+- Never commit generated xcframeworks
+- Use CI to verify both environments build
+
 ## Requirements
 
 | Tool | Version | Notes |
@@ -24,7 +78,7 @@ brew install xcodegen          # or brew upgrade xcodegen
 
 1. **Regenerate specs / workspace**
    ```bash
-   ./Scripts/update-workspace.sh
+   ./Scripts/workspace/update.sh
    ```
    - Scans every `Package.swift`.
    - Rewrites `MSPDemoApp/project.yml`, `workspace.yml`, and `msp-ios-sdk.xcworkspace/xcshareddata/swiftpm/local-packages.json`.
@@ -95,7 +149,7 @@ Each pipeline assumes Slack notifications are configured via `Scripts/config/sla
    - `PODS_SPECS_REPO` – SSH URL for the private spec repo (defaults to `git@github.com:ParticleMedia/private-specs.git`).
 3. Pipeline stages:
    - Checkout → `bundle install`
-   - `./Scripts/update-workspace.sh`
+   - `./Scripts/workspace/update.sh`
    - `bundle exec pod install`
    - Strict `pod lib lint` over every adapter (warnings fail the build)
    - `./Scripts/build.sh --skip-code-sign`
@@ -108,7 +162,7 @@ Each pipeline assumes Slack notifications are configured via `Scripts/config/sla
 2. Supply `VERSION` only when you intend to push release tags.
 3. Pipeline stages:
    - Checkout + `bundle install`
-   - `./Scripts/update-workspace.sh`
+   - `./Scripts/workspace/update.sh`
    - `swift package resolve` / `swift build --configuration release`
    - `swift package describe` (graph validation)
    - `xcodebuild ... -scheme MSPDemoApp-SPM`
@@ -121,7 +175,7 @@ Each pipeline assumes Slack notifications are configured via `Scripts/config/sla
 
 ### Local vs Automated CI
 
-- **Local development**: run `./Scripts/update-workspace.sh`, `bundle exec pod install`, and the build/test commands above.
+- **Local development**: run `./Scripts/workspace/update.sh`, `bundle exec pod install`, and the build/test commands above.
 - **GitHub Actions**: `.github/workflows/demoapp-dual.yml` reproduces the full dual-target build for every PR.
 - **Jenkins**: use the new Jenkinsfiles for publishing or demo app artifact creation. All of them rely on the same script workflow used locally to avoid drift.
 
@@ -129,7 +183,8 @@ Each pipeline assumes Slack notifications are configured via `Scripts/config/sla
 
 | Script | Description |
 | ------ | ----------- |
-| `Scripts/update-workspace.sh` | Generates project/workspace specs, SwiftPM metadata, and (optionally) runs Xcodegen + `pod install`. |
+| `Scripts/workspace/update.sh` | Generates project/workspace specs, SwiftPM metadata, and (optionally) runs Xcodegen + `pod install`. |
+| `Scripts/target-switching/switch-target.sh` | Switches between CocoaPods and Swift Package Manager environments. |
 | `Scripts/build.sh`, `buildDemoApp.sh`, etc. | Adapter build/test helpers (see `Scripts/README.md`). |
 
 ## Additional Documentation
@@ -139,7 +194,7 @@ Each pipeline assumes Slack notifications are configured via `Scripts/config/sla
 
 ## Contribution Checklist
 
-1. Run `./Scripts/update-workspace.sh`.
+1. Run `./Scripts/workspace/update.sh`.
 2. Run `bundle exec pod install` on a macOS host.
 3. Build/test both demo app schemes.
 4. Commit only source/spec files—generated `.xcodeproj`/`.xcworkspace` files are ignored.
