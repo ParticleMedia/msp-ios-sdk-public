@@ -95,7 +95,7 @@ class NovaAdLandingWebCoordinatorViewController: UIViewController {
                     includingStatusBar: false,
                     title: nil,
                     hideLeftButton: true,
-                    leftButtonIcon: .crossFilled,
+                    leftButtonIcon: UIImage.Nova.crossFilled,
                     leftButtonTapActionHandler: { [weak self] in
                         self?.dismissAndRestoreVideoViewToInitialFrameIfNeeded()
                     },

@@ -7,7 +7,7 @@ import Foundation
     private var videoMap = [String: NovaVideoPlayer]()
 
     //get the video player for url
-    public func getCachedVideoControllerForURL(_ url: URL, cacheKey: String) -> NovaVideoPlayer? {
+    func getCachedVideoControllerForURL(_ url: URL, cacheKey: String) -> NovaVideoPlayer? {
         if let playerController = videoMap[cacheKey],
            playerController.isValid() {
             return playerController
@@ -34,7 +34,7 @@ import Foundation
         }
     }
 
-    public func removePlayer(cacheKey: String) {
+    func removePlayer(cacheKey: String) {
         videoMap.removeValue(forKey: cacheKey)
     }
 }

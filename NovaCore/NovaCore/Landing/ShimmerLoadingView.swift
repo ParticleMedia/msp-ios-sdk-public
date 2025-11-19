@@ -1,5 +1,10 @@
-@_implementationOnly import Shimmer
+#if SWIFT_PACKAGE
 import UIKit
+import ShimmerWrapper
+#else
+import UIKit
+@_implementationOnly import Shimmer
+#endif
 
 class ShimmerLoadingView: UIView {
 
@@ -92,4 +97,3 @@ class ShimmerLoadingView: UIView {
     }
 
 }
-

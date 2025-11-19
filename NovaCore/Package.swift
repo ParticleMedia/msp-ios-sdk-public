@@ -19,6 +19,8 @@ let package = Package(
         // External dependencies
         .package(url: "https://github.com/onevcat/Kingfisher.git", from: "7.0.0"),
         .package(url: "https://github.com/SnapKit/SnapKit.git", from: "5.6.0"),
+        .package(url: "https://github.com/airbnb/lottie-ios.git", from: "4.0.0"),
+        .package(path: "../ShimmerWrapper"),
 
         // Internal dependencies
         .package(path: "../MSPiOSCore"),
@@ -31,13 +33,16 @@ let package = Package(
                 "MSPiOSCore",
                 .product(name: "Kingfisher", package: "Kingfisher"),
                 .product(name: "SnapKit", package: "SnapKit"),
+                .product(name: "Lottie", package: "lottie-ios"),
+                .product(name: "ShimmerWrapper", package: "ShimmerWrapper"),
             ],
             path: "NovaCore",
-            exclude: [],
+            exclude: [
+                "NBResourceBundle.bundle/Info.plist"
+            ],
             sources: nil,
             resources: [
-                .process("NBAssets.xcassets"),
-                .process("NBResourceBundle.bundle"),
+                .copy("NBResourceBundle.bundle"),
             ],
             publicHeadersPath: ".",
             cSettings: [
