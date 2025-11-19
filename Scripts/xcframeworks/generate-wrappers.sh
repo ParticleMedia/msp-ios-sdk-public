@@ -20,14 +20,46 @@ source "$ROOT_DIR/Scripts/lib/ui.sh"
 init_paths
 
 # Wrapper definitions: scheme_name:output_wrapper:sdk_name:source_path:pods_dir
-declare -A WRAPPERS=(
-    ["Shimmer"]="Shimmer:ShimmerWrapper:Shimmer::Pods/Shimmer"
-    ["FBAudienceNetwork"]="FBAudienceNetwork:FBAudienceNetworkWrapper:FBAudienceNetwork::Pods/FBAudienceNetwork"
-    ["IronSourceSDK"]=":IronSourceSDKWrapper:IronSourceSDK:Pods/IronSourceSDK/IronSource/IronSource.xcframework:Pods/IronSourceSDK"
-    ["OpenWrapSDK"]=":OpenWrapSDKWrapper:OpenWrapSDK:Pods/OpenWrapSDK/OpenWrapSDK/OpenWrapSDK.xcframework:Pods/OpenWrapSDK"
-    ["MintegralAdSDK"]=":MintegralAdSDKWrapper:MintegralAdSDK:Pods/MintegralAdSDK/Fmk/MTGSDK.xcframework:Pods/MintegralAdSDK"
-    ["MobileFuseSDK"]=":MobileFuseSDKWrapper:MobileFuseSDK:Pods/MobileFuseSDK/MobileFuseSDK.xcframework:Pods/MobileFuseSDK"
-    ["InMobiSDK"]=":InMobiSDKWrapper:InMobiSDK:Pods/InMobiSDK/InMobiSDK.xcframework:Pods/InMobiSDK"
+# Using case statement instead of associative array for bash 3.2 compatibility
+get_wrapper_config() {
+    local wrapper_key="$1"
+    case "$wrapper_key" in
+        "Shimmer")
+            echo "Shimmer:ShimmerWrapper:Shimmer::Pods/Shimmer"
+            ;;
+        "FBAudienceNetwork")
+            echo "FBAudienceNetwork:FBAudienceNetworkWrapper:FBAudienceNetwork::Pods/FBAudienceNetwork"
+            ;;
+        "IronSourceSDK")
+            echo ":IronSourceSDKWrapper:IronSourceSDK:Pods/IronSourceSDK/IronSource/IronSource.xcframework:Pods/IronSourceSDK"
+            ;;
+        "OpenWrapSDK")
+            echo ":OpenWrapSDKWrapper:OpenWrapSDK:Pods/OpenWrapSDK/OpenWrapSDK/OpenWrapSDK.xcframework:Pods/OpenWrapSDK"
+            ;;
+        "MintegralAdSDK")
+            echo ":MintegralAdSDKWrapper:MintegralAdSDK:Pods/MintegralAdSDK/Fmk/MTGSDK.xcframework:Pods/MintegralAdSDK"
+            ;;
+        "MobileFuseSDK")
+            echo ":MobileFuseSDKWrapper:MobileFuseSDK:Pods/MobileFuseSDK/MobileFuseSDK.xcframework:Pods/MobileFuseSDK"
+            ;;
+        "InMobiSDK")
+            echo ":InMobiSDKWrapper:InMobiSDK:Pods/InMobiSDK/InMobiSDK.xcframework:Pods/InMobiSDK"
+            ;;
+        *)
+            echo ""
+            ;;
+    esac
+}
+
+# List of all wrapper keys
+WRAPPER_KEYS=(
+    "Shimmer"
+    "FBAudienceNetwork"
+    "IronSourceSDK"
+    "OpenWrapSDK"
+    "MintegralAdSDK"
+    "MobileFuseSDK"
+    "InMobiSDK"
 )
 
 # Function to generate Package.swift for a wrapper
@@ -106,7 +138,8 @@ create_wrapper_structure() {
 # Function to process a single wrapper
 process_wrapper() {
     local wrapper_key="$1"
-    local wrapper_config="${WRAPPERS[$wrapper_key]}"
+    local wrapper_config
+    wrapper_config=$(get_wrapper_config "$wrapper_key")
     
     if [[ -z "$wrapper_config" ]]; then
         log_error "Unknown wrapper: $wrapper_key"
@@ -200,7 +233,7 @@ MAIN() {
     
     if [[ "$process_all" == true ]]; then
         log_info "Processing all wrappers..."
-        for wrapper_key in "${!WRAPPERS[@]}"; do
+        for wrapper_key in "${WRAPPER_KEYS[@]}"; do
             process_wrapper "$wrapper_key"
         done
     elif [[ -n "$specific_wrapper" ]]; then

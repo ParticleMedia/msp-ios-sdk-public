@@ -26,6 +26,19 @@ brew install xcodegen
 
 ### Switch to Swift Package Manager (SPM)
 
+**Important:** XCFrameworks must be built before using SPM mode. If this is your first time, you need to build them first:
+
+```bash
+# 0. Build xcframeworks (requires CocoaPods - see below)
+./Scripts/xcframeworks/build-all.sh
+```
+
+**If xcframeworks are missing, build them first:**
+1. Switch to Pods mode temporarily: `./Scripts/target-switching/switch-target.sh pods`
+2. Build xcframeworks: `./Scripts/xcframeworks/build-all.sh`
+3. Switch to SPM mode: `./Scripts/target-switching/switch-target.sh spm`
+
+**Then continue with SPM setup:**
 ```bash
 # 1. Switch to SPM mode (generates YAML only)
 ./Scripts/target-switching/switch-target.sh spm
