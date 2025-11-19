@@ -17,9 +17,6 @@
       location = "group:MSPFacebookAdapter/MSPFacebookAdapter.xcodeproj">
    </FileRef>
    <FileRef
-      location = "group:MSPGoogleAdapter/.build/checkouts/promises/Promises.xcodeproj">
-   </FileRef>
-   <FileRef
       location = "group:MSPGoogleAdapter/MSPGoogleAdapter.xcodeproj">
    </FileRef>
    <FileRef
@@ -41,118 +38,7 @@
       location = "group:NovaAdapter/NovaAdapter.xcodeproj">
    </FileRef>
    <FileRef
-      location = "group:NovaCore/.build/checkouts/Kingfisher/Demo/Kingfisher-Demo.xcodeproj">
-   </FileRef>
-   <FileRef
-      location = "group:NovaCore/.build/checkouts/Kingfisher/Kingfisher.xcodeproj">
-   </FileRef>
-   <FileRef
-      location = "group:NovaCore/.build/checkouts/SnapKit/Example-iOS/Example-iOS.xcodeproj">
-   </FileRef>
-   <FileRef
-      location = "group:NovaCore/.build/checkouts/SnapKit/SnapKit.xcodeproj">
-   </FileRef>
-   <FileRef
-      location = "group:NovaCore/.build/checkouts/lottie-ios/Example/Example.xcodeproj">
-   </FileRef>
-   <FileRef
-      location = "group:NovaCore/.build/checkouts/lottie-ios/Lottie.xcodeproj">
-   </FileRef>
-   <FileRef
-      location = "group:NovaCore/.build/checkouts/lottie-ios/script/SizeTest/SizeTest.xcodeproj">
-   </FileRef>
-   <FileRef
-      location = "group:NovaCore/.build/checkouts/lottie-ios/script/test-carthage/CarthageTest.xcodeproj">
-   </FileRef>
-   <FileRef
       location = "group:NovaCore/NovaCore.xcodeproj">
-   </FileRef>
-   <FileRef
-      location = "group:Pods/AmazonAdapter.xcodeproj">
-   </FileRef>
-   <FileRef
-      location = "group:Pods/AmazonPublisherServicesAdMobAdapter.xcodeproj">
-   </FileRef>
-   <FileRef
-      location = "group:Pods/AmazonPublisherServicesSDK.xcodeproj">
-   </FileRef>
-   <FileRef
-      location = "group:Pods/FBAudienceNetwork.xcodeproj">
-   </FileRef>
-   <FileRef
-      location = "group:Pods/Google-Mobile-Ads-SDK.xcodeproj">
-   </FileRef>
-   <FileRef
-      location = "group:Pods/GoogleUserMessagingPlatform.xcodeproj">
-   </FileRef>
-   <FileRef
-      location = "group:Pods/InMobiSDK.xcodeproj">
-   </FileRef>
-   <FileRef
-      location = "group:Pods/InmobiAdapter.xcodeproj">
-   </FileRef>
-   <FileRef
-      location = "group:Pods/IronSourceSDK.xcodeproj">
-   </FileRef>
-   <FileRef
-      location = "group:Pods/Kingfisher.xcodeproj">
-   </FileRef>
-   <FileRef
-      location = "group:Pods/MSPCore.xcodeproj">
-   </FileRef>
-   <FileRef
-      location = "group:Pods/MSPFacebookAdapter.xcodeproj">
-   </FileRef>
-   <FileRef
-      location = "group:Pods/MSPGoogleAdapter.xcodeproj">
-   </FileRef>
-   <FileRef
-      location = "group:Pods/MSPOMSDK.xcodeproj">
-   </FileRef>
-   <FileRef
-      location = "group:Pods/MSPSharedLibraries.xcodeproj">
-   </FileRef>
-   <FileRef
-      location = "group:Pods/MintegralAdSDK.xcodeproj">
-   </FileRef>
-   <FileRef
-      location = "group:Pods/MintegralAdapter.xcodeproj">
-   </FileRef>
-   <FileRef
-      location = "group:Pods/MobileFuseSDK.xcodeproj">
-   </FileRef>
-   <FileRef
-      location = "group:Pods/MobilefuseAdapter.xcodeproj">
-   </FileRef>
-   <FileRef
-      location = "group:Pods/NovaAdapter.xcodeproj">
-   </FileRef>
-   <FileRef
-      location = "group:Pods/OpenWrapSDK.xcodeproj">
-   </FileRef>
-   <FileRef
-      location = "group:Pods/Pods.xcodeproj">
-   </FileRef>
-   <FileRef
-      location = "group:Pods/PrebidAdapter.xcodeproj">
-   </FileRef>
-   <FileRef
-      location = "group:Pods/PubmaticAdapter.xcodeproj">
-   </FileRef>
-   <FileRef
-      location = "group:Pods/Shimmer.xcodeproj">
-   </FileRef>
-   <FileRef
-      location = "group:Pods/SnapKit.xcodeproj">
-   </FileRef>
-   <FileRef
-      location = "group:Pods/SwiftProtobuf.xcodeproj">
-   </FileRef>
-   <FileRef
-      location = "group:Pods/UnityAdapter.xcodeproj">
-   </FileRef>
-   <FileRef
-      location = "group:Pods/lottie-ios.xcodeproj">
    </FileRef>
    <FileRef
       location = "group:PrebidAdapter/PrebidAdapter.xcodeproj">
