@@ -9,7 +9,11 @@ import Foundation
 import MSPiOSCore
 //import shared
 import PrebidMobile
+#if SWIFT_PACKAGE
+import MobileFuseSDKWrapper
+#else
 import MobileFuseSDK
+#endif
 
 @objc public class MobilefuseAdapter : NSObject, AdNetworkAdapter {
     public func getSDKVersion() -> String {

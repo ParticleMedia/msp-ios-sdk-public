@@ -8,10 +8,14 @@ import Foundation
 import MSPiOSCore
 //import shared
 import PrebidMobile
+#if SWIFT_PACKAGE
+import MintegralAdSDKWrapper
+#else
 import MTGSDK
 import MTGSDKBanner
 import MTGSDKNewInterstitial
 import MTGSDKBidding
+#endif
 
 
 @objc public class MintegralAdapter : NSObject, AdNetworkAdapter {

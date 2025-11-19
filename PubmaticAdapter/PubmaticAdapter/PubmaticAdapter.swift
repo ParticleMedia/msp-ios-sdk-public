@@ -9,7 +9,11 @@ import Foundation
 import MSPiOSCore
 //import shared
 import PrebidMobile
+#if SWIFT_PACKAGE
+import OpenWrapSDKWrapper
+#else
 import OpenWrapSDK
+#endif
 
 
 @objc public class PubmaticAdapter : NSObject, AdNetworkAdapter {

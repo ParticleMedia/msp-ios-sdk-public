@@ -7,7 +7,11 @@
 
 import Foundation
 import MSPiOSCore
+#if SWIFT_PACKAGE
+import MobileFuseSDKWrapper
+#else
 import MobileFuseSDK
+#endif
 
 public class MobilefuseBannerAd: MSPiOSCore.BannerAd {
     public func show() {

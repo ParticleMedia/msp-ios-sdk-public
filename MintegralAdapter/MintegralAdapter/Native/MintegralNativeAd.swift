@@ -7,7 +7,11 @@
 
 import Foundation
 import MSPiOSCore
+#if SWIFT_PACKAGE
+import MintegralAdSDKWrapper
+#else
 import MTGSDK
+#endif
 
 public class MintegralNativeAd: NativeAd {
     public var nativeAdItem: MTGCampaign?
