@@ -75,8 +75,13 @@ if [[ -z "$PODS_DIR" ]]; then
   PODS_DIR="$ROOT_DIR/Pods/$SDK_NAME"
 fi
 
-OUTPUT_DIR="$ROOT_DIR/$OUTPUT_WRAPPER/Frameworks"
+# Output to temp directory to avoid git tracking
+OUTPUT_TEMP_DIR="$ROOT_DIR/Scripts/xcframeworks/output-temp"
+OUTPUT_DIR="$OUTPUT_TEMP_DIR/$OUTPUT_WRAPPER/Frameworks"
 XCFRAMEWORK_PATH="$OUTPUT_DIR/$SDK_NAME.xcframework"
+# Final destination in wrapper package (for Package.swift reference)
+FINAL_DIR="$ROOT_DIR/$OUTPUT_WRAPPER/Frameworks"
+FINAL_XCFRAMEWORK_PATH="$FINAL_DIR/$SDK_NAME.xcframework"
 
 echo "== $SDK_NAME XCFramework Builder =="
 
@@ -125,8 +130,14 @@ if [[ "$MODE" == "copy" ]]; then
   # Copy mode: Simply copy the pre-built xcframework
   echo "-- Copying pre-built xcframework"
   cp -R "$SOURCE_XCFRAMEWORK" "$XCFRAMEWORK_PATH"
+  # Copy to final destination (Frameworks/ in wrapper package)
+  echo "-- Copying to final destination"
+  mkdir -p "$FINAL_DIR"
+  rm -rf "$FINAL_XCFRAMEWORK_PATH"
+  cp -R "$XCFRAMEWORK_PATH" "$FINAL_XCFRAMEWORK_PATH"
   echo "== Done =="
-  echo "Output: $XCFRAMEWORK_PATH"
+  echo "Temp output: $XCFRAMEWORK_PATH"
+  echo "Final output: $FINAL_XCFRAMEWORK_PATH"
   exit 0
 fi
 
@@ -293,10 +304,18 @@ xcodebuild -create-xcframework \
   -framework "$SIM_FRAMEWORK_DIR" \
   -output "$XCFRAMEWORK_PATH"
 
+# Copy to final destination (Frameworks/ in wrapper package)
+# This location is referenced by Package.swift but is gitignored
+echo "-- Copying to final destination"
+mkdir -p "$FINAL_DIR"
+rm -rf "$FINAL_XCFRAMEWORK_PATH"
+cp -R "$XCFRAMEWORK_PATH" "$FINAL_XCFRAMEWORK_PATH"
+
 # Clean up temporary build artifacts
 echo "-- Cleaning up temporary files"
 rm -rf "$TMP_DIR"
 
 echo "== Done =="
-echo "Output: $XCFRAMEWORK_PATH"
+echo "Temp output: $XCFRAMEWORK_PATH"
+echo "Final output: $FINAL_XCFRAMEWORK_PATH"
 

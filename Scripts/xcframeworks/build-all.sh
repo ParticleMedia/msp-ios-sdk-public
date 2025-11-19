@@ -41,9 +41,13 @@ declare -a WRAPPER_NAMES=(
 
 ERRORS=0
 for wrapper in "${WRAPPER_NAMES[@]}"; do
-    xcframework_path="$ROOT_DIR/$wrapper/Frameworks"
-    if [[ -d "$xcframework_path" ]] && [[ -n "$(find "$xcframework_path" -name "*.xcframework" -type d)" ]]; then
-        echo "✓ $wrapper: xcframework found"
+    # Check both temp and final locations
+    temp_path="$ROOT_DIR/Scripts/xcframeworks/output-temp/$wrapper/Frameworks"
+    final_path="$ROOT_DIR/$wrapper/Frameworks"
+    if [[ -d "$temp_path" ]] && [[ -n "$(find "$temp_path" -name "*.xcframework" -type d 2>/dev/null)" ]]; then
+        echo "✓ $wrapper: xcframework found (temp)"
+    elif [[ -d "$final_path" ]] && [[ -n "$(find "$final_path" -name "*.xcframework" -type d 2>/dev/null)" ]]; then
+        echo "✓ $wrapper: xcframework found (final)"
     else
         echo "✗ $wrapper: xcframework missing"
         ((ERRORS++))
