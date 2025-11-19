@@ -44,6 +44,7 @@ Pod::Spec.new do |spec|
 
 
   spec.source_files  = "PrebidAdapter/PrebidAdapter/**/*.{h,m,swift}"
+  spec.public_header_files = "PrebidAdapter/PrebidAdapter/PrebidAdapter.h"
   spec.exclude_files = "Classes/Exclude"
 
   #spec.dependency 'Google-Mobile-Ads-SDK', "10.14.0"
