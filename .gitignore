@@ -1,17 +1,22 @@
 .DS_Store
 
-# XcodeGen generated outputs
-*.xcodeproj/
-*.xcworkspace/
+# Xcode generated files (NEVER commit these)
+*.pbxproj
+*.xcscheme
+*.xcworkspace
 *.xcworkspace/contents.xcworkspacedata
 *.xcworkspace/xcshareddata/
 *.xcscmblueprint
 *.xccheckout
 xcuserdata/
+xcshareddata/
 *.xcuserdatad/
 *.xcuserdata/
 *.xcuserstate
 DerivedData/
+*.mode1v3
+*.mode2v3
+project.xcworkspace/
 build/
 
 # Internal Xcode project workspaces (never track these)
@@ -20,9 +25,11 @@ build/
 
 # Swift Package Manager artifacts
 .swiftpm/
+SourcePackages/
 Packages/
 Package.resolved
 .build/
+/.build/
 *.build/
 msp-ios-sdk.xcworkspace/xcshareddata/swiftpm/local-packages.json
 msp-ios-sdk.xcworkspace/contents.xcworkspacedata

@@ -75,6 +75,17 @@ open msp-ios-sdk.xcworkspace
 
 ## 🎯 Developer Workflow
 
+### Engineering Workflow (Target Switching + Xcodegen)
+
+**Critical Understanding:**
+- `switch-target.sh` produces **ONLY YAML diffs** (`project.yml` + `workspace.yml`)
+- Xcode **DOES NOT auto-update** project files anymore
+- Developers **MUST** run `xcodegen generate --spec MSPDemoApp/project.yml` manually
+- Developers **MUST NEVER commit** generated Xcode files:
+  - `*.pbxproj`
+  - `*.xcscheme`
+  - `*.xcworkspace`
+
 ### Target Switching Flow
 
 ```
@@ -131,6 +142,70 @@ open msp-ios-sdk.xcworkspace
 2. Run `xcodegen generate --spec MSPDemoApp/project.yml` (regenerates Xcode project from YAML)
 3. Open `msp-ios-sdk.xcworkspace` in Xcode
 4. Select scheme `MSPDemoApp` and build
+
+---
+
+## 🔄 Working with Pods Mode / SPM Mode
+
+### Pods Mode
+
+**When to use:**
+- Developing with CocoaPods dependencies
+- Testing CocoaPods integration
+- Building for CocoaPods release
+
+**Workflow:**
+```bash
+# 1. Switch to Pods mode
+./Scripts/target-switching/switch-target.sh pods
+
+# 2. Regenerate Xcode project (REQUIRED)
+xcodegen generate --spec MSPDemoApp/project.yml
+
+# 3. Open workspace
+open msp-ios-sdk.xcworkspace
+
+# 4. Build MSPDemoApp scheme
+```
+
+**What happens:**
+- `Pods/` directory is created/updated
+- `msp-ios-sdk.xcworkspace` is created by CocoaPods
+- `project.yml` includes Pods xcconfig references
+- `workspace.yml` includes Pods project
+
+### SPM Mode
+
+**When to use:**
+- Developing with Swift Package Manager
+- Testing SPM integration
+- Building for SPM release
+
+**Prerequisites:**
+- XCFrameworks must be built first (see "Building XCFrameworks" section)
+
+**Workflow:**
+```bash
+# 1. Build xcframeworks (if not already built)
+./Scripts/xcframeworks/build-all.sh
+
+# 2. Switch to SPM mode
+./Scripts/target-switching/switch-target.sh spm
+
+# 3. Regenerate Xcode project (REQUIRED)
+xcodegen generate --spec MSPDemoApp/project.yml
+
+# 4. Open project
+open MSPDemoApp/MSPDemoApp.xcodeproj
+
+# 5. Build MSPDemoApp-SPM scheme
+```
+
+**What happens:**
+- `Pods/` directory is removed (if exists)
+- `project.yml` includes only SPM target definitions
+- `workspace.yml` includes only SPM workspace definitions
+- Local wrapper packages are referenced via `path:` dependencies
 
 ---
 
@@ -270,7 +345,7 @@ When switching **to** Pods:
 
 ---
 
-## 🧪 Zero-Diff Guarantee
+## 🧪 Zero-Diff Switching Guarantee
 
 ### What Changes
 
@@ -285,6 +360,12 @@ After running `switch-target.sh`, these files **never** change:
 - ❌ `.xcscheme` files (Xcode scheme files)
 - ❌ Workspace contents (xcworkspace/contents.xcworkspacedata)
 - ❌ Any files inside `.xcodeproj` bundles
+
+**Why this matters:**
+- Prevents merge conflicts in generated files
+- Ensures consistent project state across developers
+- Enables deterministic CI/CD builds
+- Maintains clean git history
 
 ### Round-Trip Determinism
 
@@ -363,6 +444,68 @@ git diff  # Shows zero changes (or only expected YAML changes)
 - Target switching only modifies YAML files
 - Xcode projects must be regenerated manually
 - Run `xcodegen generate --spec MSPDemoApp/project.yml` after each switch
+
+---
+
+## 🛠 Common Mistakes and How to Avoid Them
+
+### ❌ Committing Generated Xcode Files
+
+**Mistake:** Committing `.pbxproj`, `.xcscheme`, or `.xcworkspace` files
+
+**Why it's bad:**
+- Causes merge conflicts
+- Breaks zero-diff switching guarantee
+- Pollutes git history
+- Creates inconsistent project states
+
+**How to avoid:**
+- Pre-commit hook automatically blocks these files (see below)
+- Always check `git status` before committing
+- If you see these files, run: `git restore MSPDemoApp/**/*.pbxproj MSPDemoApp/**/*.xcscheme`
+
+**What to commit instead:**
+- Only `project.yml` and `workspace.yml`
+- Source code files (`.swift`, `.m`, `.h`)
+- Configuration files
+
+### ❌ Forgetting to Run `xcodegen generate`
+
+**Mistake:** Switching targets but not regenerating Xcode project
+
+**Symptoms:**
+- Build errors about missing targets
+- Scheme not found errors
+- Outdated project structure
+
+**How to avoid:**
+- Always run `xcodegen generate --spec MSPDemoApp/project.yml` after switching
+- The `check-project-diff.sh` script will warn you if project files are out of sync
+
+### ❌ Building XCFrameworks in Wrong Mode
+
+**Mistake:** Trying to build xcframeworks in SPM mode without Pods
+
+**Symptoms:**
+- `build-all.sh` fails with "Pods directory not found"
+- Missing xcframework errors in SPM builds
+
+**How to avoid:**
+- Always build xcframeworks in Pods mode first
+- Workflow: `switch-target.sh pods` → `build-all.sh` → `switch-target.sh spm`
+
+### ❌ Mixed Environment State
+
+**Mistake:** Having both `Pods/` and `.swiftpm/` directories
+
+**Symptoms:**
+- Validation errors
+- Conflicting dependencies
+- Build failures
+
+**How to avoid:**
+- Always use `switch-target.sh` to switch modes (never manually mix)
+- Run validation: `./Scripts/target-switching/validate_environment.sh [spm|pods]`
 
 ---
 

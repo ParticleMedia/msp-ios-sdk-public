@@ -255,3 +255,10 @@ fi
 log_info ""
 log_info "Note: Only YAML files (project.yml, workspace.yml) were modified"
 log_info "      Xcode project files (.pbxproj, .xcscheme) are NOT modified by switching"
+log_info ""
+
+# Check for generated file changes (warning only, non-blocking)
+if [[ -f "$ROOT_DIR/Scripts/tools/check-project-diff.sh" ]]; then
+    log_section "Checking for Generated File Changes"
+    "$ROOT_DIR/Scripts/tools/check-project-diff.sh" || true
+fi
