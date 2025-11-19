@@ -16,6 +16,9 @@ workspace:
     - name: MSPFacebookAdapter
       path: MSPFacebookAdapter/MSPFacebookAdapter.xcodeproj
       type: file
+    - name: Promises
+      path: MSPGoogleAdapter/.build/checkouts/promises/Promises.xcodeproj
+      type: file
     - name: MSPGoogleAdapter
       path: MSPGoogleAdapter/MSPGoogleAdapter.xcodeproj
       type: file
@@ -37,11 +40,119 @@ workspace:
     - name: NovaAdapter
       path: NovaAdapter/NovaAdapter.xcodeproj
       type: file
+    - name: Kingfisher-Demo
+      path: NovaCore/.build/checkouts/Kingfisher/Demo/Kingfisher-Demo.xcodeproj
+      type: file
+    - name: Kingfisher
+      path: NovaCore/.build/checkouts/Kingfisher/Kingfisher.xcodeproj
+      type: file
+    - name: Example-iOS
+      path: NovaCore/.build/checkouts/SnapKit/Example-iOS/Example-iOS.xcodeproj
+      type: file
+    - name: SnapKit
+      path: NovaCore/.build/checkouts/SnapKit/SnapKit.xcodeproj
+      type: file
+    - name: Example
+      path: NovaCore/.build/checkouts/lottie-ios/Example/Example.xcodeproj
+      type: file
+    - name: Lottie
+      path: NovaCore/.build/checkouts/lottie-ios/Lottie.xcodeproj
+      type: file
+    - name: SizeTest
+      path: NovaCore/.build/checkouts/lottie-ios/script/SizeTest/SizeTest.xcodeproj
+      type: file
+    - name: CarthageTest
+      path: NovaCore/.build/checkouts/lottie-ios/script/test-carthage/CarthageTest.xcodeproj
+      type: file
     - name: NovaCore
       path: NovaCore/NovaCore.xcodeproj
       type: file
+    - name: AmazonAdapter
+      path: Pods/AmazonAdapter.xcodeproj
+      type: file
+    - name: AmazonPublisherServicesAdMobAdapter
+      path: Pods/AmazonPublisherServicesAdMobAdapter.xcodeproj
+      type: file
+    - name: AmazonPublisherServicesSDK
+      path: Pods/AmazonPublisherServicesSDK.xcodeproj
+      type: file
+    - name: FBAudienceNetwork
+      path: Pods/FBAudienceNetwork.xcodeproj
+      type: file
+    - name: Google-Mobile-Ads-SDK
+      path: Pods/Google-Mobile-Ads-SDK.xcodeproj
+      type: file
+    - name: GoogleUserMessagingPlatform
+      path: Pods/GoogleUserMessagingPlatform.xcodeproj
+      type: file
+    - name: InMobiSDK
+      path: Pods/InMobiSDK.xcodeproj
+      type: file
+    - name: InmobiAdapter
+      path: Pods/InmobiAdapter.xcodeproj
+      type: file
+    - name: IronSourceSDK
+      path: Pods/IronSourceSDK.xcodeproj
+      type: file
+    - name: Kingfisher
+      path: Pods/Kingfisher.xcodeproj
+      type: file
+    - name: MSPCore
+      path: Pods/MSPCore.xcodeproj
+      type: file
+    - name: MSPFacebookAdapter
+      path: Pods/MSPFacebookAdapter.xcodeproj
+      type: file
+    - name: MSPGoogleAdapter
+      path: Pods/MSPGoogleAdapter.xcodeproj
+      type: file
+    - name: MSPOMSDK
+      path: Pods/MSPOMSDK.xcodeproj
+      type: file
+    - name: MSPSharedLibraries
+      path: Pods/MSPSharedLibraries.xcodeproj
+      type: file
+    - name: MintegralAdSDK
+      path: Pods/MintegralAdSDK.xcodeproj
+      type: file
+    - name: MintegralAdapter
+      path: Pods/MintegralAdapter.xcodeproj
+      type: file
+    - name: MobileFuseSDK
+      path: Pods/MobileFuseSDK.xcodeproj
+      type: file
+    - name: MobilefuseAdapter
+      path: Pods/MobilefuseAdapter.xcodeproj
+      type: file
+    - name: NovaAdapter
+      path: Pods/NovaAdapter.xcodeproj
+      type: file
+    - name: OpenWrapSDK
+      path: Pods/OpenWrapSDK.xcodeproj
+      type: file
     - name: Pods
       path: Pods/Pods.xcodeproj
+      type: file
+    - name: PrebidAdapter
+      path: Pods/PrebidAdapter.xcodeproj
+      type: file
+    - name: PubmaticAdapter
+      path: Pods/PubmaticAdapter.xcodeproj
+      type: file
+    - name: Shimmer
+      path: Pods/Shimmer.xcodeproj
+      type: file
+    - name: SnapKit
+      path: Pods/SnapKit.xcodeproj
+      type: file
+    - name: SwiftProtobuf
+      path: Pods/SwiftProtobuf.xcodeproj
+      type: file
+    - name: UnityAdapter
+      path: Pods/UnityAdapter.xcodeproj
+      type: file
+    - name: lottie-ios
+      path: Pods/lottie-ios.xcodeproj
       type: file
     - name: PrebidAdapter
       path: PrebidAdapter/PrebidAdapter.xcodeproj
