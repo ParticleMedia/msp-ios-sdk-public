@@ -8,68 +8,150 @@ Modular advertising SDK for iOS that ships multiple adapters, shared libraries, 
 
 ### Prerequisites
 
+Before you begin, ensure you have the following installed:
+
 | Tool | Version | Installation |
 |------|---------|--------------|
-| Xcode | 15.2+ | App Store or developer.apple.com |
+| Xcode | 15.2+ | App Store or [developer.apple.com](https://developer.apple.com/xcode/) |
 | Xcodegen | 2.38.0+ | `brew install xcodegen` |
-| Ruby | 3.0+ with Bundler | `bundle install` |
-| CocoaPods | 1.14+ | Required for CocoaPods target |
+| Ruby | 3.0+ | Usually pre-installed on macOS. Verify with `ruby --version` |
+| Bundler | Latest | `gem install bundler` (installed via Ruby) |
+| CocoaPods | 1.14+ | Installed via `bundle install` (see Setup below) |
 
-### Setup
+### Initial Setup
 
+**Step 1: Clone the repository**
 ```bash
 git clone <repo-url>
 cd msp-ios-sdk
+```
+
+**Step 2: Install Ruby dependencies**
+```bash
+# Install Bundler gems (includes CocoaPods)
 bundle install
+```
+
+**Step 3: Install Xcodegen**
+```bash
+# Install Xcodegen (required for generating Xcode projects from YAML)
 brew install xcodegen
+
+# Verify installation
+xcodegen --version  # Should be 2.38.0+
 ```
 
-### Switch to Swift Package Manager (SPM)
+**Step 4: Choose your development mode**
 
-**Important:** XCFrameworks must be built before using SPM mode. If this is your first time, you need to build them first:
+This project supports two integration modes. Choose one based on your needs:
 
-```bash
-# 0. Build xcframeworks (requires CocoaPods - see below)
-./Scripts/xcframeworks/build-all.sh
-```
+- **CocoaPods Mode** (Recommended for most developers)
+  - Uses CocoaPods for dependency management
+  - Easier setup, no pre-build steps required
+  - See "Setup: CocoaPods Mode" below
 
-**If xcframeworks are missing, build them first:**
-1. Switch to Pods mode temporarily: `./Scripts/target-switching/switch-target.sh pods`
-2. Build xcframeworks: `./Scripts/xcframeworks/build-all.sh`
-3. Switch to SPM mode: `./Scripts/target-switching/switch-target.sh spm`
+- **Swift Package Manager (SPM) Mode**
+  - Uses Swift Package Manager for dependencies
+  - Requires building XCFrameworks first
+  - See "Setup: SPM Mode" below
 
-**Then continue with SPM setup:**
-```bash
-# 1. Switch to SPM mode (generates YAML only)
-./Scripts/target-switching/switch-target.sh spm
+---
 
-# 2. Regenerate Xcode project from YAML
-xcodegen generate --spec MSPDemoApp/project.yml
+### Setup: CocoaPods Mode
 
-# 3. Open Xcode and build
-open MSPDemoApp/MSPDemoApp.xcodeproj
-```
-
-**Build the SPM target:**
-- Select scheme: `MSPDemoApp-SPM`
-- Press `⌘B` to build
-
-### Switch to CocoaPods
+**Complete setup workflow:**
 
 ```bash
-# 1. Switch to CocoaPods mode (generates YAML + installs Pods)
+# 1. Switch to CocoaPods mode (installs Pods and generates YAML)
 ./Scripts/target-switching/switch-target.sh pods
 
-# 2. Regenerate Xcode project from YAML
+# 2. Generate Xcode project from YAML
 xcodegen generate --spec MSPDemoApp/project.yml
 
-# 3. Open workspace and build
+# 3. Generate workspace (includes all projects + Pods)
+./Scripts/tools/generate-workspace.sh
+
+# 4. Open workspace in Xcode
 open msp-ios-sdk.xcworkspace
 ```
 
-**Build the CocoaPods target:**
-- Select scheme: `MSPDemoApp`
+**What this does:**
+- Installs CocoaPods dependencies (`Pods/` directory)
+- Generates `project.yml` and `workspace.yml` configuration files
+- Creates `MSPDemoApp.xcodeproj` from YAML
+- Creates `msp-ios-sdk.xcworkspace` with all projects
+
+**Build the demo app:**
+- In Xcode, select scheme: `MSPDemoApp`
 - Press `⌘B` to build
+
+---
+
+### Setup: Swift Package Manager (SPM) Mode
+
+**Important:** SPM mode requires XCFrameworks to be built first. These are built from CocoaPods dependencies.
+
+**Complete setup workflow:**
+
+```bash
+# 1. First-time setup: Build XCFrameworks (requires Pods)
+#    Switch to Pods mode temporarily to install dependencies
+./Scripts/target-switching/switch-target.sh pods
+
+# 2. Build all wrapper XCFrameworks (this step only needed once)
+./Scripts/xcframeworks/build-all.sh
+
+# 3. Switch to SPM mode (removes Pods, generates SPM YAML)
+./Scripts/target-switching/switch-target.sh spm
+
+# 4. Generate Xcode project from YAML
+xcodegen generate --spec MSPDemoApp/project.yml
+
+# 5. Open project in Xcode
+open MSPDemoApp/MSPDemoApp.xcodeproj
+```
+
+**What this does:**
+- Builds wrapper XCFrameworks for SPM (Shimmer, FBAudienceNetwork, etc.)
+- Removes `Pods/` directory
+- Generates `project.yml` with SPM target definitions
+- Creates `MSPDemoApp.xcodeproj` with SPM dependencies
+
+**Build the demo app:**
+- In Xcode, select scheme: `MSPDemoApp-SPM`
+- Press `⌘B` to build
+- Wait for Xcode to resolve packages (File → Packages → Resolve Package Versions)
+
+**Note:** After the first setup, you can skip steps 1-2. Just run steps 3-5 when switching to SPM mode.
+
+---
+
+### Quick Reference: Switching Between Modes
+
+Once you've completed initial setup, you can switch between modes:
+
+**Switch to CocoaPods Mode:**
+```bash
+./Scripts/target-switching/switch-target.sh pods
+xcodegen generate --spec MSPDemoApp/project.yml
+./Scripts/tools/generate-workspace.sh
+open msp-ios-sdk.xcworkspace
+```
+
+**Switch to SPM Mode:**
+```bash
+# If XCFrameworks are already built, just switch:
+./Scripts/target-switching/switch-target.sh spm
+xcodegen generate --spec MSPDemoApp/project.yml
+open MSPDemoApp/MSPDemoApp.xcodeproj
+
+# If XCFrameworks are missing, build them first:
+./Scripts/target-switching/switch-target.sh pods  # Temporary switch
+./Scripts/xcframeworks/build-all.sh              # Build XCFrameworks
+./Scripts/target-switching/switch-target.sh spm   # Switch to SPM
+xcodegen generate --spec MSPDemoApp/project.yml
+open MSPDemoApp/MSPDemoApp.xcodeproj
+```
 
 ---
 
@@ -139,9 +221,10 @@ open msp-ios-sdk.xcworkspace
 
 **For CocoaPods Development:**
 1. Run `./Scripts/target-switching/switch-target.sh pods`
-2. Run `xcodegen generate --spec MSPDemoApp/project.yml` (regenerates Xcode project from YAML)
-3. Open `msp-ios-sdk.xcworkspace` in Xcode
-4. Select scheme `MSPDemoApp` and build
+2. Run `xcodegen generate --spec MSPDemoApp/project.yml` (regenerates Xcode project)
+3. Run `./Scripts/tools/generate-workspace.sh` (generates workspace)
+4. Open `msp-ios-sdk.xcworkspace` in Xcode
+5. Select scheme `MSPDemoApp` and build
 
 ---
 
@@ -162,15 +245,18 @@ open msp-ios-sdk.xcworkspace
 # 2. Regenerate Xcode project (REQUIRED)
 xcodegen generate --spec MSPDemoApp/project.yml
 
-# 3. Open workspace
+# 3. Generate workspace (REQUIRED)
+./Scripts/tools/generate-workspace.sh
+
+# 4. Open workspace
 open msp-ios-sdk.xcworkspace
 
-# 4. Build MSPDemoApp scheme
+# 5. Build MSPDemoApp scheme
 ```
 
 **What happens:**
 - `Pods/` directory is created/updated
-- `msp-ios-sdk.xcworkspace` is created by CocoaPods
+- `msp-ios-sdk.xcworkspace` is created by `generate-workspace.sh` script
 - `project.yml` includes Pods xcconfig references
 - `workspace.yml` includes Pods project
 
@@ -479,7 +565,8 @@ git diff  # Shows zero changes (or only expected YAML changes)
 - Outdated project structure
 
 **How to avoid:**
-- Always run `xcodegen generate --spec MSPDemoApp/project.yml` after switching
+- Always run `xcodegen generate --spec MSPDemoApp/project.yml` after switching (generates project)
+- Then run `./Scripts/tools/generate-workspace.sh` to generate the workspace (Pods mode only)
 - The `check-project-diff.sh` script will warn you if project files are out of sync
 
 ### ❌ Building XCFrameworks in Wrong Mode
