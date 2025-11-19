@@ -1,2 +1,2 @@
-// Re-export Shimmer module to make FBShimmeringView and other Shimmer APIs available
+// Re-export Shimmer module to make all Shimmer APIs available
 @_exported import Shimmer

@@ -20,8 +20,11 @@ let package = Package(
         .target(
             name: "FBAudienceNetworkWrapper",
             dependencies: ["FBAudienceNetwork"],
-            path: "Sources/FBAudienceNetworkWrapper"
+            path: "Sources/FBAudienceNetworkWrapper",
+            publicHeadersPath: "include",
+            cSettings: [
+                .headerSearchPath("include"),
+            ]
         )
     ]
 )
-
