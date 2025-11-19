@@ -6,7 +6,7 @@ import PrebidMobile
 
 @objc public class GoogleAdapter : NSObject, AdNetworkAdapter {
     public func getSDKVersion() -> String {
-        return string(for: MobileAds.shared.versionNumber)
+        return MSPGADMobileAdsSDKVersion()
     }
     
     public func setAdMetricReporter(adMetricReporter: any MSPiOSCore.AdMetricReporter) {
@@ -16,7 +16,7 @@ import PrebidMobile
     public func prepareViewForInteraction(nativeAd: MSPiOSCore.NativeAd, nativeAdView: Any) {
         guard let nativeAdView = nativeAdView as? MSPiOSCore.NativeAdView,
               let gadNativeAdItem = self.nativeAdItem else {return}
-        let gadNativeAdView = GoogleMobileAds.NativeAdView()
+        let gadNativeAdView = MSPGADNativeAdView()
         gadNativeAdView.translatesAutoresizingMaskIntoConstraints = false
         gadNativeAdView.nativeAd = gadNativeAdItem
         
@@ -25,7 +25,7 @@ import PrebidMobile
             gadNativeAdView.bodyView = nativeAdView.nativeAdViewBinder?.bodyLabel
             gadNativeAdView.advertiserView = nativeAdView.nativeAdViewBinder?.advertiserLabel
             gadNativeAdView.callToActionView = nativeAdView.nativeAdViewBinder?.callToActionButton
-            gadNativeAdView.mediaView = nativeAdView.nativeAdViewBinder?.mediaView as? GoogleMobileAds.MediaView
+            gadNativeAdView.mediaView = nativeAdView.nativeAdViewBinder?.mediaView as? MSPGADMediaView
             
             let gadSubViews = [gadNativeAdView.headlineView, gadNativeAdView.bodyView, gadNativeAdView.advertiserView, gadNativeAdView.callToActionView, gadNativeAdView.mediaView]
             for view in gadSubViews {
@@ -49,7 +49,7 @@ import PrebidMobile
             } 
             
             if let mediaContainer = nativeAdContainer.getMedia(),
-               let mediaView =  nativeAd.mediaView as? GoogleMobileAds.MediaView {
+               let mediaView = nativeAd.mediaView as? MSPGADMediaView {
                 gadNativeAdView.mediaView = mediaView
                 mediaContainer.addSubview(mediaView)
                 NSLayoutConstraint.activate([
@@ -91,20 +91,21 @@ import PrebidMobile
     }
     
     @objc public static func initializeGAD() {
-        MobileAds.shared.start()
+        MSPGADMobileAdsStart(completionHandler: nil)
     }
     
     public func initialize(initParams: InitializationParameters, adapterInitListener: AdapterInitListener, context: Any?) {
-        MobileAds.shared.start(completionHandler: {_ in
+        MSPGADMobileAdsStart(completionHandler: {_ in
             adapterInitListener.onComplete(adNetwork: .google, adapterInitStatus: .SUCCESS, message: "")
         })
     }
     
-    public var gadBannerView: AdManagerBannerView?
+    public var gadBannerView: MSPGAMBannerView?
+    private var adLoader: MSPGADAdLoader?
+    public var nativeAdItem: MSPGADNativeAd?
     public weak var adListener: AdListener?
     public var priceInDollar: Double?
     
-    private var adLoader: GoogleMobileAds.AdLoader?
     private var adRequest: AdRequest?
     private var bidResponse: BidResponse?
     
@@ -115,8 +116,6 @@ import PrebidMobile
     private weak var nativeAd: MSPiOSCore.NativeAd?
     private weak var interstitialAd: MSPiOSCore.InterstitialAd?
     public var adUnitId: String?
-    
-    public var nativeAdItem: GoogleMobileAds.NativeAd?
     
     private var adMetricReporter: AdMetricReporter?
     
@@ -191,13 +190,11 @@ import PrebidMobile
         case .banner:
             
             self.priceInDollar = priceInDollar
-            let gadBannerView = AdManagerBannerView(adSize: self.getGADAdSize(adRequest: adRequest))
+            let gadBannerView = MSPGAMBannerView(adSize: self.getGADAdSize(adRequest: adRequest))
             self.gadBannerView = gadBannerView
             gadBannerView.isAutoloadEnabled = false
-            let request = AdManagerRequest()
-            if let adString = adString {
-                request.adString = adString
-            }
+            let request = MSPGADRequest()
+            MSPGADRequestSetAdString(request, adString: adString)
             gadBannerView.adUnitID = adUnitId
             gadBannerView.delegate = self
             gadBannerView.rootViewController = self.adListener?.getRootViewController()
@@ -207,35 +204,30 @@ import PrebidMobile
             
             self.priceInDollar = priceInDollar
             
-            let adTypes: [AdLoaderAdType]
+            let adTypes: [MSPGADAdLoaderAdType]
             if adFormat == .native {
                 adTypes = [.native]
             } else {
-                adTypes = [.native, .adManagerBanner]
+                adTypes = MSPGADAdLoaderAdTypesForMultiFormat()
             }
-            let videoOptions = VideoOptions()
-            videoOptions.shouldStartMuted = true
-            let adLoader = GoogleMobileAds.AdLoader(
+            let videoOptions = MSPGADVideoOptions()
+            MSPGADVideoOptionsSetStartMuted(videoOptions, muted: true)
+            let adLoader = MSPGADAdLoader(
                 adUnitID: adUnitId,
                 rootViewController: self.adListener?.getRootViewController(),
                 adTypes: adTypes,
                 options: [videoOptions])
             adLoader.delegate = self
             self.adLoader = adLoader
-            let gamRequest = AdManagerRequest()
-            if let adString = adString {
-                gamRequest.adString = adString
-            }
+            let gamRequest = MSPGADRequest()
+            MSPGADRequestSetAdString(gamRequest, adString: adString)
             adLoader.load(gamRequest)
             
                 
         case .interstitial:
-            let request = AdManagerRequest()
-            if let adString = adString {
-                request.adString = adString
-            }
-            
-            GoogleMobileAds.InterstitialAd.load(with: adUnitId, request: request) { [weak self] ad, error in
+            let request = MSPGADRequest()
+            MSPGADRequestSetAdString(request, adString: adString)
+            MSPGADInterstitialAdLoad(adUnitID: adUnitId, request: request) { [weak self] ad, error in
                 guard let self else { return }
                 
                 if let error {
@@ -295,21 +287,21 @@ import PrebidMobile
     }
 
     
-    private func getGADAdSize(adRequest: AdRequest) -> GoogleMobileAds.AdSize {
+    private func getGADAdSize(adRequest: AdRequest) -> MSPGADAdSize {
         if let adaptiveBannerAdSize = adRequest.adaptiveBannerSize {
             if adaptiveBannerAdSize.isAnchorAdaptiveBanner {
-                return currentOrientationAnchoredAdaptiveBanner(width: CGFloat(adaptiveBannerAdSize.width))
+                return MSPGADCurrentOrientationAnchoredAdaptiveBanner(width: CGFloat(adaptiveBannerAdSize.width))
             } else if adaptiveBannerAdSize.isInlineAdaptiveBanner {
-                return inlineAdaptiveBanner(width: CGFloat(adaptiveBannerAdSize.width), maxHeight: CGFloat(adaptiveBannerAdSize.height))
+                return MSPGADInlineAdaptiveBanner(width: CGFloat(adaptiveBannerAdSize.width), maxHeight: CGFloat(adaptiveBannerAdSize.height))
             }
         }
         if let width = adRequest.adSize?.width,
            let height = adRequest.adSize?.height {
             if width == 300, height == 250 {
-                return AdSizeMediumRectangle
+                return MSPGADAdSizeMediumRectangle
             }
         }
-        return AdSizeBanner
+        return MSPGADAdSizeBanner
     }
     
     public func getAdNetwork() -> MSPiOSCore.AdNetwork {
@@ -343,10 +335,21 @@ import PrebidMobile
             }
         }
     }
+    
+    public func handleAdLoaded(ad: MSPAd, auctionBidListener: AuctionBidListener, bidderPlacementId: String) {
+        // to do: move this to ios core
+        AdCache.shared.saveAd(placementId: bidderPlacementId, ad: ad)
+        let auctionBid = AuctionBid(bidderName: "msp", bidderPlacementId: bidderPlacementId, ecpm: ad.adInfo["price"] as? Double ?? 0.0)
+        auctionBid.ad = ad
+        auctionBidListener.onSuccess(bid: auctionBid)
+        if let adRequest = self.adRequest {
+            self.adMetricReporter?.logAdResponse(ad: ad, adRequest: adRequest, errorCode: .ERROR_CODE_SUCCESS, errorMessage: nil)
+        }
+    }
 }
 
-extension GoogleAdapter : GoogleMobileAds.BannerViewDelegate  {
-    public func bannerViewDidReceiveAd(_ bannerView: GoogleMobileAds.BannerView) {
+extension GoogleAdapter : MSPGADBannerViewDelegate  {
+    public func bannerViewDidReceiveAd(_ bannerView: MSPGADBannerView) {
         MSPLogger.shared.info(message: "[Adapter: Google] successfully loaded Google Banner ad")
         DispatchQueue.main.async {
             var bannerAd = BannerAd(adView: bannerView, adNetworkAdapter: self)
@@ -368,7 +371,7 @@ extension GoogleAdapter : GoogleMobileAds.BannerViewDelegate  {
         }
     }
     
-    public func bannerView(_ bannerView: GoogleMobileAds.BannerView, didFailToReceiveAdWithError error: Error) {
+    public func bannerView(_ bannerView: MSPGADBannerView, didFailToReceiveAdWithError error: Error) {
         DispatchQueue.main.async {
             MSPLogger.shared.info(message: "[Adapter: Google] Fail to load Google Banner ad")
             self.auctionBidListener?.onError(error: error.localizedDescription)
@@ -379,14 +382,14 @@ extension GoogleAdapter : GoogleMobileAds.BannerViewDelegate  {
         }
     }
     
-    public func bannerViewDidRecordClick(_ bannerView: GoogleMobileAds.BannerView) {
+    public func bannerViewDidRecordClick(_ bannerView: MSPGADBannerView) {
         if let googleAd = self.bannerAd {
             self.adListener?.onAdClick(ad: googleAd)
             self.sendClickAdEvent(ad: googleAd)
         }
     }
     
-    public func bannerViewDidRecordImpression(_ bannerView: GoogleMobileAds.BannerView) {
+    public func bannerViewDidRecordImpression(_ bannerView: MSPGADBannerView) {
         DispatchQueue.main.async {
             if let googleAd = self.bannerAd {
                 if let adRequest = self.adRequest,
@@ -397,24 +400,13 @@ extension GoogleAdapter : GoogleMobileAds.BannerViewDelegate  {
             }
         }
     }
-    
-    public func handleAdLoaded(ad: MSPAd, auctionBidListener: AuctionBidListener, bidderPlacementId: String) {
-        // to do: move this to ios core
-        AdCache.shared.saveAd(placementId: bidderPlacementId, ad: ad)
-        let auctionBid = AuctionBid(bidderName: "msp", bidderPlacementId: bidderPlacementId, ecpm: ad.adInfo["price"] as? Double ?? 0.0)
-        auctionBid.ad = ad
-        auctionBidListener.onSuccess(bid: auctionBid)
-        if let adRequest = self.adRequest {
-            self.adMetricReporter?.logAdResponse(ad: ad, adRequest: adRequest, errorCode: .ERROR_CODE_SUCCESS, errorMessage: nil)
-        }
-    }
 }
 
-extension GoogleAdapter: GoogleMobileAds.NativeAdLoaderDelegate {
-    public func adLoader(_ adLoader: GoogleMobileAds.AdLoader, didReceive nativeAd: GoogleMobileAds.NativeAd) {
+extension GoogleAdapter: MSPGADNativeAdLoaderDelegate {
+    public func adLoader(_ adLoader: MSPGADAdLoader, didReceive nativeAd: MSPGADNativeAd) {
         MSPLogger.shared.info(message: "[Adapter: Google] successfully loaded Google Native ad")
         DispatchQueue.main.async {
-            let mediaView = GoogleMobileAds.MediaView()
+            let mediaView = MSPGADMediaView()
             mediaView.translatesAutoresizingMaskIntoConstraints = false
             mediaView.contentMode = .scaleAspectFill
             mediaView.mediaContent = nativeAd.mediaContent
@@ -447,7 +439,7 @@ extension GoogleAdapter: GoogleMobileAds.NativeAdLoaderDelegate {
         }
     }
     
-    public func adLoader(_ adLoader: GoogleMobileAds.AdLoader, didFailToReceiveAdWithError error: any Error) {
+    public func adLoader(_ adLoader: MSPGADAdLoader, didFailToReceiveAdWithError error: any Error) {
         DispatchQueue.main.async {
             MSPLogger.shared.info(message: "[Adapter: Google] Fail to load Google Native ad")
             self.auctionBidListener?.onError(error: error.localizedDescription)
@@ -459,9 +451,8 @@ extension GoogleAdapter: GoogleMobileAds.NativeAdLoaderDelegate {
     }
 }
 
-extension GoogleAdapter: GoogleMobileAds.NativeAdDelegate  {
-
-    public func nativeAdDidRecordImpression(_ nativeAd: GoogleMobileAds.NativeAd) {
+extension GoogleAdapter: MSPGADNativeAdDelegate  {
+    public func nativeAdDidRecordImpression(_ nativeAd: MSPGADNativeAd) {
         DispatchQueue.main.async {
             if let nativeAd = self.nativeAd {
                 if let adRequest = self.adRequest,
@@ -473,7 +464,7 @@ extension GoogleAdapter: GoogleMobileAds.NativeAdDelegate  {
         }
     }
 
-    public func nativeAdDidRecordClick(_ nativeAd: GoogleMobileAds.NativeAd) {
+    public func nativeAdDidRecordClick(_ nativeAd: MSPGADNativeAd) {
         if let nativeAd = self.nativeAd {
             self.adListener?.onAdClick(ad: nativeAd)
             self.sendClickAdEvent(ad: nativeAd)
@@ -481,9 +472,8 @@ extension GoogleAdapter: GoogleMobileAds.NativeAdDelegate  {
     }
 }
 
-extension GoogleAdapter: FullScreenContentDelegate {
-    
-    public func adDidRecordImpression(_ ad: FullScreenPresentingAd) {
+extension GoogleAdapter: MSPGADFullScreenContentDelegate {
+    public func adDidRecordImpression(_ ad: MSPGADFullScreenPresentingAd) {
         DispatchQueue.main.async {
             if let interstitialAd = self.interstitialAd {
                 if let adRequest = self.adRequest,
@@ -495,31 +485,30 @@ extension GoogleAdapter: FullScreenContentDelegate {
         }
     }
 
-    public func adDidRecordClick(_ ad: FullScreenPresentingAd) {
+    public func adDidRecordClick(_ ad: MSPGADFullScreenPresentingAd) {
         if let interstitialAd = self.interstitialAd {
             self.adListener?.onAdClick(ad: interstitialAd)
             self.sendClickAdEvent(ad: interstitialAd)
         }
     }
     
-    public func adDidDismissFullScreenContent(_ ad: any FullScreenPresentingAd) {
+    public func adDidDismissFullScreenContent(_ ad: any MSPGADFullScreenPresentingAd) {
         if let interstitialAd = self.interstitialAd {
             self.adListener?.onAdDismissed(ad: interstitialAd)
         }
     }
-
 }
 
-extension GoogleAdapter: AdManagerBannerAdLoaderDelegate {
-    public func validBannerSizes(for adLoader: GoogleMobileAds.AdLoader) -> [NSValue] {
+extension GoogleAdapter: MSPGAMBannerAdLoaderDelegate {
+    public func validBannerSizes(for adLoader: MSPGADAdLoader) -> [NSValue] {
         if let adRequest = adRequest {
             let adSize = self.getGADAdSize(adRequest: adRequest)
-            return [nsValue(for: adSize)]
+            return [MSPNSValueFromGADAdSize(adSize)]
         }
-        return [nsValue(for: AdSizeMediumRectangle)] //default size: 300 * 250
+        return [MSPNSValueFromGADAdSize(MSPGADAdSizeMediumRectangle)] //default size: 300 * 250
     }
     
-    public func adLoader(_ adLoader: GoogleMobileAds.AdLoader, didReceive bannerView: AdManagerBannerView) {
+    public func adLoader(_ adLoader: MSPGADAdLoader, didReceive bannerView: MSPGAMBannerView) {
         MSPLogger.shared.info(message: "[Adapter: Google] successfully loaded Google Banner ad")
         DispatchQueue.main.async {
             var bannerAd = BannerAd(adView: bannerView, adNetworkAdapter: self)

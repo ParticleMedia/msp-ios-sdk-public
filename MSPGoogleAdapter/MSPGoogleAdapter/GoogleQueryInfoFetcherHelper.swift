@@ -16,6 +16,11 @@ public class GoogleQueryInfoFetcherHelper: GoogleQueryInfoFetcher {
     }
     
     public func fetch(completeListener: GoogleQueryInfoListener, adRequest: AdRequest) {
+        #if SWIFT_PACKAGE
+        // AdManagerRequest and AdFormat are not available in SPM GoogleMobileAds package
+        // Return empty query info for SPM builds
+        completeListener.onComplete(queryInfo: "")
+        #else
         let request = AdManagerRequest()
         // Specify the "query_info_type" as "requester_type_8" to
         // denote that the usage of QueryInfo is for Ad Manager S2S.
@@ -52,10 +57,11 @@ public class GoogleQueryInfoFetcherHelper: GoogleQueryInfoFetcher {
                 completeListener.onComplete(queryInfo: "")
             }
         }
+        #endif
     }
     
-    private func getExtras(adRequest: AdRequest) -> Extras {
-        let extras = Extras()
+    private func getExtras(adRequest: AdRequest) -> MSPGADExtras {
+        let extras = MSPGADExtras()
         if let adapterBannerSize = adRequest.adaptiveBannerSize,
            adapterBannerSize.isInlineAdaptiveBanner {
             extras.additionalParameters = ["query_info_type" : "requester_type_8",

@@ -11,7 +11,7 @@ import MSPiOSCore
 import GoogleMobileAds
 
 public class GoogleNativeAd: MSPiOSCore.NativeAd {
-    public var nativeAdItem: GoogleMobileAds.NativeAd?
+    public var nativeAdItem: MSPGADNativeAd?
     public var priceInDollar: Double?
     
     public override func isValid() -> Bool {
