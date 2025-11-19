@@ -96,12 +96,12 @@ if [[ "$TARGET" == "spm" ]]; then
         log_success "All xcframeworks present"
     fi
     
-    # Step 4: Generate workspace
-    log_step "4" "Generating workspace"
+    # Step 4: Generate YAML specs (only)
+    log_step "4" "Generating YAML specs"
     if "$SCRIPT_DIR/generate_workspace.sh" spm; then
-        log_success "Workspace generated"
+        log_success "YAML specs generated"
     else
-        log_error "Workspace generation failed"
+        log_error "YAML generation failed"
         exit 1
     fi
     
@@ -115,13 +115,21 @@ if [[ "$TARGET" == "spm" ]]; then
         exit 1
     fi
     
-    # Step 6: Open Xcode
+    # Step 6: Open Xcode (workspace will be created by Xcode if needed)
     log_step "6" "Opening Xcode"
-    if [[ -d "$SPM_WORKSPACE" ]]; then
-        open "$SPM_WORKSPACE"
-        log_success "Xcode opened with SPM workspace"
+    if [[ -f "$PROJECT_SPEC" ]]; then
+        # Open the project spec - Xcode will handle workspace creation
+        PROJECT_DIR="$(dirname "$PROJECT_SPEC")"
+        if [[ -d "$PROJECT_DIR/MSPDemoApp.xcodeproj" ]]; then
+            open "$PROJECT_DIR/MSPDemoApp.xcodeproj"
+            log_success "Xcode opened with SPM project"
+        else
+            log_warning "Xcode project not found. Run 'xcodegen generate' to create it."
+            log_info "Opening project directory instead..."
+            open "$PROJECT_DIR"
+        fi
     else
-        log_error "SPM workspace not found: $SPM_WORKSPACE"
+        log_error "project.yml not found: $PROJECT_SPEC"
         exit 1
     fi
 
@@ -162,12 +170,12 @@ elif [[ "$TARGET" == "pods" ]]; then
         exit 1
     fi
     
-    # Step 3: Generate workspace (for xcodegen reference)
-    log_step "3" "Generating workspace.yml (for xcodegen reference)"
+    # Step 3: Generate YAML specs (only)
+    log_step "3" "Generating YAML specs"
     if "$SCRIPT_DIR/generate_workspace.sh" pods; then
-        log_success "workspace.yml generated"
+        log_success "YAML specs generated"
     else
-        log_error "workspace.yml generation failed"
+        log_error "YAML generation failed"
         exit 1
     fi
     
@@ -198,14 +206,19 @@ elif [[ "$TARGET" == "pods" ]]; then
         exit 1
     fi
     
-    # Step 6: Open Xcode
+    # Step 6: Open Xcode (workspace created by pod install)
     log_step "6" "Opening Xcode"
     if [[ -d "$PODS_WORKSPACE" ]]; then
         open "$PODS_WORKSPACE"
         log_success "Xcode opened with CocoaPods workspace"
     else
-        log_error "CocoaPods workspace not found: $PODS_WORKSPACE"
-        exit 1
+        log_warning "CocoaPods workspace not found. Opening project directory instead..."
+        PROJECT_DIR="$(dirname "$PROJECT_SPEC")"
+        if [[ -d "$PROJECT_DIR/MSPDemoApp.xcodeproj" ]]; then
+            open "$PROJECT_DIR/MSPDemoApp.xcodeproj"
+        else
+            open "$PROJECT_DIR"
+        fi
     fi
 fi
 
@@ -222,11 +235,15 @@ log_success "Successfully switched to: $TARGET"
 printf "\n"
 printf "Next steps:\n"
 if [[ "$TARGET" == "spm" ]]; then
-    printf "  1. Wait for Xcode to resolve packages (File → Packages → Resolve Package Versions)\n"
-    printf "  2. Build MSPDemoApp-SPM target\n"
-    printf "  3. Run: Scripts/target-switching/switch-target-validator.sh (optional)\n"
+    printf "  1. If needed, run 'xcodegen generate' to regenerate Xcode project from YAML\n"
+    printf "  2. Wait for Xcode to resolve packages (File → Packages → Resolve Package Versions)\n"
+    printf "  3. Build MSPDemoApp-SPM target\n"
 else
-    printf "  1. Build MSPDemoApp target\n"
-    printf "  2. Verify all adapters are working\n"
+    printf "  1. If needed, run 'xcodegen generate' to regenerate Xcode project from YAML\n"
+    printf "  2. Build MSPDemoApp target\n"
+    printf "  3. Verify all adapters are working\n"
 fi
+printf "\n"
+log_info "Note: Only YAML files (project.yml, workspace.yml) were modified"
+log_info "      Xcode project files (.pbxproj, .xcscheme) are NOT modified by switching"
 printf "\n"

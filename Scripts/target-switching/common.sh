@@ -193,23 +193,44 @@ validate_environment() {
     local target="$1"
     local errors=0
     
-    # Note: Both SPM and Pods modes use msp-ios-sdk.xcworkspace (per Podfile configuration)
-    # We distinguish them by checking for Pods/ directory and workspace contents
+    # Validate YAML files exist
+    if [[ ! -f "$PROJECT_SPEC" ]]; then
+        log_error "project.yml missing: $PROJECT_SPEC"
+        ((errors++))
+    fi
     
+    if [[ ! -f "$WORKSPACE_SPEC" ]]; then
+        log_error "workspace.yml missing: $WORKSPACE_SPEC"
+        ((errors++))
+    fi
+    
+    # Validate YAML content matches target mode
     if [[ "$target" == "spm" ]]; then
         if [[ -d "$PODS_DIR" ]]; then
             log_error "Pods/ directory exists (should be removed for SPM)"
             ((errors++))
         fi
         
-        if [[ ! -d "$SPM_WORKSPACE" ]]; then
-            log_error "SPM workspace missing: msp-ios-sdk.xcworkspace"
+        # Check project.yml has SPM target, not Pods target
+        if grep -q "^  MSPDemoApp:$" "$PROJECT_SPEC" 2>/dev/null; then
+            log_error "project.yml contains MSPDemoApp target (should be MSPDemoApp-SPM for SPM mode)"
             ((errors++))
         fi
         
-        # Check if workspace contains Pods (should not in SPM mode)
-        if [[ -d "$SPM_WORKSPACE" ]] && grep -q "Pods/Pods.xcodeproj" "$SPM_WORKSPACE/contents.xcworkspacedata" 2>/dev/null; then
-            log_error "SPM workspace contains Pods reference (should not)"
+        if ! grep -q "^  MSPDemoApp-SPM:$" "$PROJECT_SPEC" 2>/dev/null; then
+            log_error "project.yml missing MSPDemoApp-SPM target (required for SPM mode)"
+            ((errors++))
+        fi
+        
+        # Check for Pods xcconfig references
+        if grep -q "Pods.*xcconfig\|Pods-MSPDemoApp" "$PROJECT_SPEC" 2>/dev/null; then
+            log_error "project.yml contains Pods xcconfig references (should not in SPM mode)"
+            ((errors++))
+        fi
+        
+        # Check workspace.yml doesn't include Pods project
+        if grep -q "Pods/Pods.xcodeproj" "$WORKSPACE_SPEC" 2>/dev/null; then
+            log_error "workspace.yml contains Pods project (should not in SPM mode)"
             ((errors++))
         fi
         
@@ -219,14 +240,22 @@ validate_environment() {
             ((errors++))
         fi
         
-        if [[ ! -d "$PODS_WORKSPACE" ]]; then
-            log_error "CocoaPods workspace missing: msp-ios-sdk.xcworkspace"
+        # Check project.yml has Pods target, not SPM target
+        if ! grep -q "^  MSPDemoApp:$" "$PROJECT_SPEC" 2>/dev/null; then
+            log_error "project.yml missing MSPDemoApp target (required for Pods mode)"
             ((errors++))
         fi
         
-        # Note: With :integrate_targets => false in Podfile, CocoaPods doesn't add Pods/Pods.xcodeproj
-        # to the workspace. The workspace.yml includes it for xcodegen reference, but the actual
-        # workspace created by pod install may not have it. So we don't check for Pods in workspace.
+        if grep -q "^  MSPDemoApp-SPM:$" "$PROJECT_SPEC" 2>/dev/null; then
+            log_error "project.yml contains MSPDemoApp-SPM target (should be MSPDemoApp for Pods mode)"
+            ((errors++))
+        fi
+        
+        # Check for Pods xcconfig references
+        if ! grep -q "Pods.*xcconfig\|Pods-MSPDemoApp" "$PROJECT_SPEC" 2>/dev/null; then
+            log_error "project.yml missing Pods xcconfig references (required for Pods mode)"
+            ((errors++))
+        fi
     fi
     
     return $errors
