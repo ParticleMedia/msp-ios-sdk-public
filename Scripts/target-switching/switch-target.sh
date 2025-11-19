@@ -9,133 +9,119 @@
 
 set -euo pipefail
 
-# Get script directory and repo root
+# Source common functions
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT_DIR="$(cd "$SCRIPT_DIR/../.." && pwd)"
 
-# Source shared libraries
-# shellcheck source=Scripts/lib/paths.sh
-source "$ROOT_DIR/Scripts/lib/paths.sh"
-# shellcheck source=Scripts/lib/colors.sh
-source "$ROOT_DIR/Scripts/lib/colors.sh"
+# shellcheck source=Scripts/target-switching/common.sh
+source "$SCRIPT_DIR/common.sh"
 
-# Initialize paths
-init_paths
-
-# Bold text
-BOLD='\033[1m'
+ensure_repo_root
 
 TARGET="${1:-}"
 
 if [[ -z "$TARGET" ]]; then
-    echo "Usage: $0 [spm|pods]"
-    echo ""
-    echo "Examples:"
-    echo "  $0 spm    # Switch to Swift Package Manager"
-    echo "  $0 pods   # Switch to CocoaPods"
+    printf "Usage: %s [spm|pods]\n" "$0"
+    printf "\n"
+    printf "Examples:\n"
+    printf "  %s spm    # Switch to Swift Package Manager\n" "$0"
+    printf "  %s pods   # Switch to CocoaPods\n" "$0"
     exit 1
 fi
 
 if [[ "$TARGET" != "spm" ]] && [[ "$TARGET" != "pods" ]]; then
-    echo -e "${RED}ERROR: Invalid target. Must be 'spm' or 'pods'${NC}" >&2
+    log_error "Invalid target. Must be 'spm' or 'pods'"
     exit 1
 fi
 
-echo "============================================================================"
-echo "${BOLD}Target Switching: $TARGET${NC}"
-echo "============================================================================"
-echo ""
-echo "Repository: $ROOT_DIR"
-echo ""
-
-# Safety check
-if [[ ! -f "$ROOT_DIR/.git/config" ]] && [[ ! -f "$ROOT_DIR/Podfile" ]]; then
-    echo -e "${RED}ERROR: Not in MSP iOS SDK repository. Aborting.${NC}" >&2
-    exit 1
-fi
+printf "============================================================================\n"
+printf "Target Switching: %s\n" "$TARGET"
+printf "============================================================================\n"
+printf "\n"
+printf "Repository: %s\n" "$ROOT_DIR"
+printf "\n"
 
 # ============================================================================
 # SPM TARGET SWITCHING
 # ============================================================================
 
 if [[ "$TARGET" == "spm" ]]; then
-    echo "Switching to Swift Package Manager (SPM)..."
-    echo ""
+    log_info "Switching to Swift Package Manager (SPM)..."
     
     # Step 1: Clean CocoaPods
-    echo "Step 1: Cleaning CocoaPods environment..."
-    if [[ -d "$ROOT_DIR/Pods" ]]; then
-        echo "  Removing Pods/ directory..."
-        rm -rf "$ROOT_DIR/Pods"
-        echo -e "  ${GREEN}✓${NC} Pods/ removed"
+    log_step "1" "Cleaning CocoaPods environment"
+    if [[ -d "$PODS_DIR" ]]; then
+        safe_remove_directory "$PODS_DIR" "Pods"
+        log_success "Pods/ removed"
     else
-        echo -e "  ${YELLOW}⚠${NC} Pods/ already removed"
+        log_warning "Pods/ already removed"
     fi
     
-    if [[ -d "$ROOT_DIR/MSPDemoApp.xcworkspace" ]]; then
-        echo "  Removing CocoaPods workspace..."
-        rm -rf "$ROOT_DIR/MSPDemoApp.xcworkspace"
-        echo -e "  ${GREEN}✓${NC} CocoaPods workspace removed"
+    # Remove CocoaPods workspace (if it exists)
+    if [[ -d "$PODS_WORKSPACE" ]]; then
+        # Check if it's a CocoaPods workspace (has Pods reference)
+        if grep -q "Pods/Pods.xcodeproj" "$PODS_WORKSPACE/contents.xcworkspacedata" 2>/dev/null; then
+            safe_remove_workspace "$PODS_WORKSPACE"
+            log_success "CocoaPods workspace removed"
+        else
+            # It might be an SPM workspace, we'll regenerate it
+            safe_remove_workspace "$PODS_WORKSPACE"
+            log_success "Stale workspace removed"
+        fi
     else
-        echo -e "  ${YELLOW}⚠${NC} CocoaPods workspace already removed"
+        log_warning "CocoaPods workspace already removed"
     fi
     
     # Step 2: Clean SPM
-    echo ""
-    echo "Step 2: Cleaning SwiftPM environment..."
-    "$SCRIPT_DIR/cleanup-spm.sh" <<< "y" || {
-        echo -e "${YELLOW}⚠${NC} SPM cleanup had warnings (continuing)"
-    }
-    
-    # Step 3: Build xcframeworks
-    echo ""
-    echo "Step 3: Building wrapper xcframeworks..."
-    if [[ -d "$ROOT_DIR/Pods" ]]; then
-        echo -e "${YELLOW}⚠${NC} Pods/ still exists. Building xcframeworks requires CocoaPods."
-        echo "  Skipping xcframework build. Run manually after pod install if needed."
+    log_step "2" "Cleaning SwiftPM environment"
+    if "$SCRIPT_DIR/cleanup_spm.sh" --force; then
+        log_success "SPM cleanup completed"
     else
-        echo -e "${YELLOW}⚠${NC} Pods/ not found. Cannot build xcframeworks."
-        echo "  If xcframeworks are missing, run:"
-        echo "    1. bundle exec pod install"
-        echo "    2. Scripts/target-switching/build-xcframeworks.sh"
+        log_warning "SPM cleanup had warnings (continuing)"
     fi
     
-    # Step 4: Update workspace
-    echo ""
-    echo "Step 4: Updating workspace..."
-    UPDATE_SCRIPT="$ROOT_DIR/Scripts/workspace/update.sh"
-    if [[ -f "$UPDATE_SCRIPT" ]]; then
-        "$UPDATE_SCRIPT"
-        echo -e "${GREEN}✓${NC} Workspace updated"
+    # Step 3: Check xcframeworks (warn only, don't build)
+    log_step "3" "Checking wrapper xcframeworks"
+    if check_xcframeworks_exist; then
+        missing=0
     else
-        echo -e "${RED}✗${NC} Workspace update script not found: $UPDATE_SCRIPT"
+        missing=$?
+    fi
+    if [[ $missing -gt 0 ]]; then
+        log_warning "$missing wrapper(s) missing xcframeworks"
+        log_info "To build xcframeworks, run:"
+        log_info "  1. bundle exec pod install"
+        log_info "  2. Scripts/target-switching/build-xcframeworks.sh"
+    else
+        log_success "All xcframeworks present"
+    fi
+    
+    # Step 4: Generate workspace
+    log_step "4" "Generating workspace"
+    if "$SCRIPT_DIR/generate_workspace.sh" spm; then
+        log_success "Workspace generated"
+    else
+        log_error "Workspace generation failed"
         exit 1
     fi
     
     # Step 5: Validate environment
-    echo ""
-    echo "Step 5: Validating environment..."
-    "$SCRIPT_DIR/switch-target-validator.sh" || {
-        echo -e "${YELLOW}⚠${NC} Validation had warnings or failures"
-    }
-    
-    # Step 6: Verify environment
-    echo ""
-    echo "Step 6: Verifying environment..."
-    "$SCRIPT_DIR/verify-environment.sh" spm || {
-        echo -e "${RED}✗${NC} Environment verification failed"
-        exit 1
-    }
-    
-    # Step 7: Open Xcode
-    echo ""
-    echo "Step 7: Opening Xcode..."
-    WORKSPACE="$ROOT_DIR/msp-ios-sdk.xcworkspace"
-    if [[ -d "$WORKSPACE" ]]; then
-        open "$WORKSPACE"
-        echo -e "${GREEN}✓${NC} Xcode opened with SPM workspace"
+    log_step "5" "Validating environment"
+    if validate_environment "spm"; then
+        log_success "Environment validation passed"
     else
-        echo -e "${RED}✗${NC} Workspace not found: $WORKSPACE"
+        errors=$?
+        log_error "Environment validation failed ($errors error(s))"
+        exit 1
+    fi
+    
+    # Step 6: Open Xcode
+    log_step "6" "Opening Xcode"
+    if [[ -d "$SPM_WORKSPACE" ]]; then
+        open "$SPM_WORKSPACE"
+        log_success "Xcode opened with SPM workspace"
+    else
+        log_error "SPM workspace not found: $SPM_WORKSPACE"
         exit 1
     fi
 
@@ -144,53 +130,81 @@ if [[ "$TARGET" == "spm" ]]; then
 # ============================================================================
 
 elif [[ "$TARGET" == "pods" ]]; then
-    echo "Switching to CocoaPods..."
-    echo ""
+    log_info "Switching to CocoaPods..."
     
     # Step 1: Clean SPM
-    echo "Step 1: Cleaning SwiftPM environment..."
-    "$SCRIPT_DIR/cleanup-spm.sh" <<< "y" || {
-        echo -e "${YELLOW}⚠${NC} SPM cleanup had warnings (continuing)"
-    }
-    
-    # Step 2: Clean and install CocoaPods
-    echo ""
-    echo "Step 2: Cleaning and installing CocoaPods..."
-    "$SCRIPT_DIR/cleanup-cocoapods.sh"
-    
-    # Step 3: Validate wrappers (if Pods exist)
-    echo ""
-    echo "Step 3: Validating wrapper xcframeworks..."
-    if [[ -d "$ROOT_DIR/Pods" ]]; then
-        VALIDATE_SCRIPT="$ROOT_DIR/Scripts/xcframeworks/validate-wrappers.sh"
-        if [[ -f "$VALIDATE_SCRIPT" ]]; then
-            "$VALIDATE_SCRIPT" || {
-                echo -e "${YELLOW}⚠${NC} Wrapper validation had warnings or failures"
-            }
-        else
-            echo -e "${YELLOW}⚠${NC} Wrapper validation script not found"
-        fi
+    log_step "1" "Cleaning SwiftPM environment"
+    if "$SCRIPT_DIR/cleanup_spm.sh" --force; then
+        log_success "SPM cleanup completed"
     else
-        echo -e "${YELLOW}⚠${NC} Pods/ not found, skipping wrapper validation"
+        log_warning "SPM cleanup had warnings (continuing)"
     fi
     
-    # Step 4: Verify environment
-    echo ""
-    echo "Step 4: Verifying environment..."
-    "$SCRIPT_DIR/verify-environment.sh" pods || {
-        echo -e "${RED}✗${NC} Environment verification failed"
-        exit 1
-    }
-    
-    # Step 5: Open Xcode
-    echo ""
-    echo "Step 5: Opening Xcode..."
-    WORKSPACE="$ROOT_DIR/MSPDemoApp.xcworkspace"
-    if [[ -d "$WORKSPACE" ]]; then
-        open "$WORKSPACE"
-        echo -e "${GREEN}✓${NC} Xcode opened with CocoaPods workspace"
+    # Remove SPM workspace (if it exists and is SPM-only)
+    if [[ -d "$SPM_WORKSPACE" ]]; then
+        # Check if it's an SPM workspace (no Pods reference)
+        if ! grep -q "Pods/Pods.xcodeproj" "$SPM_WORKSPACE/contents.xcworkspacedata" 2>/dev/null; then
+            safe_remove_workspace "$SPM_WORKSPACE"
+            log_success "SPM workspace removed"
+        else
+            log_warning "Workspace contains Pods (will be regenerated by pod install)"
+        fi
     else
-        echo -e "${RED}✗${NC} Workspace not found: $WORKSPACE"
+        log_warning "SPM workspace already removed"
+    fi
+    
+    # Step 2: Clean and install CocoaPods
+    log_step "2" "Cleaning and installing CocoaPods"
+    if "$SCRIPT_DIR/cleanup_pods.sh"; then
+        log_success "CocoaPods environment cleaned and reinstalled"
+    else
+        log_error "CocoaPods cleanup and install failed"
+        exit 1
+    fi
+    
+    # Step 3: Generate workspace (for xcodegen reference)
+    log_step "3" "Generating workspace.yml (for xcodegen reference)"
+    if "$SCRIPT_DIR/generate_workspace.sh" pods; then
+        log_success "workspace.yml generated"
+    else
+        log_error "workspace.yml generation failed"
+        exit 1
+    fi
+    
+    # Step 4: Validate wrappers (if Pods exist)
+    log_step "4" "Validating wrapper xcframeworks"
+    if [[ -d "$PODS_DIR" ]]; then
+        VALIDATE_SCRIPT="$ROOT_DIR/Scripts/xcframeworks/validate-wrappers.sh"
+        if [[ -f "$VALIDATE_SCRIPT" ]]; then
+            if "$VALIDATE_SCRIPT" 2>/dev/null; then
+                log_success "Wrapper validation passed"
+            else
+                log_warning "Wrapper validation had warnings or failures"
+            fi
+        else
+            log_warning "Wrapper validation script not found"
+        fi
+    else
+        log_warning "Pods/ not found, skipping wrapper validation"
+    fi
+    
+    # Step 5: Validate environment
+    log_step "5" "Validating environment"
+    if validate_environment "pods"; then
+        log_success "Environment validation passed"
+    else
+        errors=$?
+        log_error "Environment validation failed ($errors error(s))"
+        exit 1
+    fi
+    
+    # Step 6: Open Xcode
+    log_step "6" "Opening Xcode"
+    if [[ -d "$PODS_WORKSPACE" ]]; then
+        open "$PODS_WORKSPACE"
+        log_success "Xcode opened with CocoaPods workspace"
+    else
+        log_error "CocoaPods workspace not found: $PODS_WORKSPACE"
         exit 1
     fi
 fi
@@ -199,21 +213,20 @@ fi
 # SUMMARY
 # ============================================================================
 
-echo ""
-echo "============================================================================"
-echo "${BOLD}Switching Complete${NC}"
-echo "============================================================================"
-echo ""
-echo -e "${GREEN}✓${NC} Successfully switched to: ${BOLD}$TARGET${NC}"
-echo ""
-echo "Next steps:"
+printf "\n"
+printf "============================================================================\n"
+printf "Switching Complete\n"
+printf "============================================================================\n"
+printf "\n"
+log_success "Successfully switched to: $TARGET"
+printf "\n"
+printf "Next steps:\n"
 if [[ "$TARGET" == "spm" ]]; then
-    echo "  1. Wait for Xcode to resolve packages (File → Packages → Resolve Package Versions)"
-    echo "  2. Build MSPDemoApp-SPM target"
-    echo "  3. Run: Scripts/target-switching/switch-target-validator.sh (if needed)"
+    printf "  1. Wait for Xcode to resolve packages (File → Packages → Resolve Package Versions)\n"
+    printf "  2. Build MSPDemoApp-SPM target\n"
+    printf "  3. Run: Scripts/target-switching/switch-target-validator.sh (optional)\n"
 else
-    echo "  1. Build MSPDemoApp target"
-    echo "  2. Verify all adapters are working"
+    printf "  1. Build MSPDemoApp target\n"
+    printf "  2. Verify all adapters are working\n"
 fi
-echo ""
-
+printf "\n"

@@ -34,17 +34,10 @@ if [[ "$TARGET_MODE" != "spm" ]] && [[ "$TARGET_MODE" != "pods" ]]; then
     exit 1
 fi
 
-echo "============================================================================"
-echo "Generating Workspace: $TARGET_MODE mode"
-echo "============================================================================"
-echo ""
-
-# Source the original update script's logic
-UPDATE_SCRIPT="$ROOT_DIR/Scripts/workspace/update.sh"
-if [[ ! -f "$UPDATE_SCRIPT" ]]; then
-    log_error "Workspace update script not found: $UPDATE_SCRIPT"
-    exit 1
-fi
+printf "============================================================================\n"
+printf "Generating Workspace: %s mode\n" "$TARGET_MODE"
+printf "============================================================================\n"
+printf "\n"
 
 # Find all Package.swift files
 PACKAGE_FILES=()
@@ -162,6 +155,14 @@ targetTemplates:
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
         ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
         SWIFT_VERSION: 5.0
+YAML
+    # Add PODS_ROOT only in Pods mode (for BaseAppTarget template)
+    if [[ "$TARGET_MODE" == "pods" ]]; then
+        cat <<'YAML'
+        PODS_ROOT: "$(SRCROOT)/../Pods"
+YAML
+    fi
+    cat <<'YAML'
         LD_RUNPATH_SEARCH_PATHS:
           - "$(inherited)"
           - "@executable_path/Frameworks"
@@ -174,9 +175,6 @@ YAML
   MSPDemoApp:
     templates:
       - BaseAppTarget
-    settings:
-      base:
-        PODS_ROOT: "$(SRCROOT)/../Pods"
     configFiles:
       Debug: ../Pods/Target Support Files/Pods-MSPDemoApp/Pods-MSPDemoApp.debug.xcconfig
       Release: ../Pods/Target Support Files/Pods-MSPDemoApp/Pods-MSPDemoApp.release.xcconfig
@@ -441,10 +439,10 @@ else
     fi
 fi
 
-echo ""
-echo "============================================================================"
-echo "Workspace Generation Complete"
-echo "============================================================================"
-echo ""
+printf "\n"
+printf "============================================================================\n"
+printf "Workspace Generation Complete\n"
+printf "============================================================================\n"
+printf "\n"
 log_success "Workspace generated for $TARGET_MODE mode"
 

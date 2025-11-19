@@ -25,10 +25,10 @@ if [[ ! -f "$ROOT_DIR/Podfile" ]]; then
     exit 1
 fi
 
-echo "============================================================================"
-echo "CocoaPods Environment Cleanup"
-echo "============================================================================"
-echo ""
+printf "============================================================================\n"
+printf "CocoaPods Environment Cleanup\n"
+printf "============================================================================\n"
+printf "\n"
 
 # Step 1: Deintegrate CocoaPods (must be in repo root)
 log_step "1" "Deintegrating CocoaPods"
@@ -88,10 +88,10 @@ else
     exit 1
 fi
 
-echo ""
-echo "============================================================================"
-echo "Cleanup Complete"
-echo "============================================================================"
-echo ""
+printf "\n"
+printf "============================================================================\n"
+printf "Cleanup Complete\n"
+printf "============================================================================\n"
+printf "\n"
 log_success "CocoaPods environment cleaned and reinstalled"
 

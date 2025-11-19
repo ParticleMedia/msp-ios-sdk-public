@@ -31,10 +31,10 @@ if [[ "$FORCE" != "--force" ]]; then
     fi
 fi
 
-echo "============================================================================"
-echo "SwiftPM Environment Cleanup"
-echo "============================================================================"
-echo ""
+printf "============================================================================\n"
+printf "SwiftPM Environment Cleanup\n"
+printf "============================================================================\n"
+printf "\n"
 
 # Step 1: Remove .swiftpm directories (but not inside .xcodeproj)
 log_step "1" "Removing .swiftpm directories"
@@ -117,10 +117,10 @@ else
     log_warning "DerivedData directory not found"
 fi
 
-echo ""
-echo "============================================================================"
-echo "Cleanup Complete"
-echo "============================================================================"
-echo ""
+printf "\n"
+printf "============================================================================\n"
+printf "Cleanup Complete\n"
+printf "============================================================================\n"
+printf "\n"
 log_success "SwiftPM environment cleaned"
 

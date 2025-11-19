@@ -32,10 +32,10 @@ if [[ "$TARGET" != "spm" ]] && [[ "$TARGET" != "pods" ]]; then
     exit 1
 fi
 
-echo "============================================================================"
-echo "Environment Validation: $TARGET"
-echo "============================================================================"
-echo ""
+printf "============================================================================\n"
+printf "Environment Validation: %s\n" "$TARGET"
+printf "============================================================================\n"
+printf "\n"
 
 ERRORS=0
 
@@ -46,13 +46,13 @@ else
     ERRORS=$?
 fi
 
-echo ""
-echo "============================================================================"
+printf "\n"
+printf "============================================================================\n"
 if [[ $ERRORS -eq 0 ]]; then
-    echo -e "${GREEN}✓${NC} Environment validation PASSED"
+    log_success "Environment validation PASSED"
     exit 0
 else
-    echo -e "${RED}✗${NC} Environment validation FAILED ($ERRORS error(s))"
+    log_error "Environment validation FAILED ($ERRORS error(s))"
     exit 1
 fi
 

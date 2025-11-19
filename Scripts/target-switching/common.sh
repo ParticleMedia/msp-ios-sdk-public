@@ -40,24 +40,24 @@ readonly PROJECT_SPEC="$ROOT_DIR/MSPDemoApp/project.yml"
 log_step() {
     local step_num="$1"
     local step_name="$2"
-    echo ""
-    echo "Step $step_num: $step_name..."
+    printf "\n"
+    printf "Step %s: %s...\n" "$step_num" "$step_name"
 }
 
 log_success() {
-    echo -e "  ${GREEN}✓${NC} $1"
+    printf "  ${GREEN}✓${NC} %s\n" "$1"
 }
 
 log_warning() {
-    echo -e "  ${YELLOW}⚠${NC} $1"
+    printf "  ${YELLOW}⚠${NC} %s\n" "$1"
 }
 
 log_error() {
-    echo -e "  ${RED}✗${NC} $1" >&2
+    printf "  ${RED}✗${NC} %s\n" "$1" >&2
 }
 
 log_info() {
-    echo "  $1"
+    printf "  %s\n" "$1"
 }
 
 # ============================================================================
