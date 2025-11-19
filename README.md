@@ -31,7 +31,7 @@ brew install xcodegen
 ./Scripts/target-switching/switch-target.sh spm
 
 # 2. Regenerate Xcode project from YAML
-xcodegen generate
+xcodegen generate --spec MSPDemoApp/project.yml
 
 # 3. Open Xcode and build
 open MSPDemoApp/MSPDemoApp.xcodeproj
@@ -48,7 +48,7 @@ open MSPDemoApp/MSPDemoApp.xcodeproj
 ./Scripts/target-switching/switch-target.sh pods
 
 # 2. Regenerate Xcode project from YAML
-xcodegen generate
+xcodegen generate --spec MSPDemoApp/project.yml
 
 # 3. Open workspace and build
 open msp-ios-sdk.xcworkspace
@@ -93,7 +93,7 @@ open msp-ios-sdk.xcworkspace
                      │
                      ▼
 ┌─────────────────────────────────────────────────────────┐
-│  4. Developer runs: xcodegen generate                    │
+│  4. Developer runs: xcodegen generate --spec ...         │
 │     (Manual step - not automatic)                       │
 └────────────────────┬────────────────────────────────────┘
                      │
@@ -109,13 +109,13 @@ open msp-ios-sdk.xcworkspace
 
 **For SPM Development:**
 1. Run `./Scripts/target-switching/switch-target.sh spm`
-2. Run `xcodegen generate` (regenerates Xcode project from YAML)
+2. Run `xcodegen generate --spec MSPDemoApp/project.yml` (regenerates Xcode project from YAML)
 3. Open `MSPDemoApp/MSPDemoApp.xcodeproj` in Xcode
 4. Select scheme `MSPDemoApp-SPM` and build
 
 **For CocoaPods Development:**
 1. Run `./Scripts/target-switching/switch-target.sh pods`
-2. Run `xcodegen generate` (regenerates Xcode project from YAML)
+2. Run `xcodegen generate --spec MSPDemoApp/project.yml` (regenerates Xcode project from YAML)
 3. Open `msp-ios-sdk.xcworkspace` in Xcode
 4. Select scheme `MSPDemoApp` and build
 
@@ -349,7 +349,7 @@ git diff  # Shows zero changes (or only expected YAML changes)
 ⚠️ **Always run xcodegen after switching:**
 - Target switching only modifies YAML files
 - Xcode projects must be regenerated manually
-- Run `xcodegen generate` after each switch
+- Run `xcodegen generate --spec MSPDemoApp/project.yml` after each switch
 
 ---
 
@@ -362,7 +362,7 @@ git diff  # Shows zero changes (or only expected YAML changes)
 **Solution:**
 ```bash
 # 1. Regenerate Xcode project from YAML
-xcodegen generate
+xcodegen generate --spec MSPDemoApp/project.yml
 
 # 2. Clean DerivedData
 rm -rf ~/Library/Developer/Xcode/DerivedData/*
@@ -529,9 +529,9 @@ Before releasing a new version:
 
 ### Contribution Guidelines
 
-1. Switch to your target: `./Scripts/target-switching/switch-target.sh [spm|pods]`
-2. Regenerate Xcode projects: `xcodegen generate`
-3. For CocoaPods target: `bundle exec pod install`
+        1. Switch to your target: `./Scripts/target-switching/switch-target.sh [spm|pods]`
+        2. Regenerate Xcode projects: `xcodegen generate --spec MSPDemoApp/project.yml`
+        3. For CocoaPods target: `bundle exec pod install`
 4. Build/test both demo app schemes (`MSPDemoApp` and `MSPDemoApp-SPM`)
 5. Commit only source/spec files—**never commit** `.pbxproj`, `.xcscheme`, or generated workspace files
 6. Verify zero-diff switching: run round-trip test and confirm only YAML files change
@@ -562,7 +562,7 @@ The `generate_workspace.sh` script generates deterministic YAML files:
 Xcode projects are generated **manually** using:
 
 ```bash
-xcodegen generate
+xcodegen generate --spec MSPDemoApp/project.yml
 ```
 
 This command:
