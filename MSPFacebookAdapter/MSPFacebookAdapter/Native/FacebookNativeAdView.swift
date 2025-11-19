@@ -1,7 +1,12 @@
 
 
 import Foundation
+import UIKit
+#if SWIFT_PACKAGE
+import FBAudienceNetworkWrapper
+#else
 import FBAudienceNetwork
+#endif
 
 open class FacebookNativeAdView: UIView {
     

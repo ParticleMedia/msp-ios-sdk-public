@@ -1,11 +1,15 @@
 
 //import shared
+import Foundation
+import UIKit
 import MSPiOSCore
+#if SWIFT_PACKAGE
+import FBAudienceNetworkWrapper
+#else
 import FBAudienceNetwork
+#endif
 import AppTrackingTransparency
 import PrebidMobile
-
-import Foundation
 
 @objc public class FacebookAdapter : NSObject, AdNetworkAdapter {
     public func getSDKVersion() -> String {
