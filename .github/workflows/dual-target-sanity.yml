@@ -1,0 +1,182 @@
+name: Dual Target Sanity Check
+
+on:
+  pull_request:
+    branches:
+      - main
+      - develop
+  push:
+    branches:
+      - main
+      - develop
+
+jobs:
+  sanity-spm:
+    name: SPM Target Build & Validation
+    runs-on: macos-14
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.0'
+          bundler-cache: true
+      
+      - name: Cache SwiftPM dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/Library/Caches/org.swift.swiftpm
+            ~/.swiftpm
+          key: ${{ runner.os }}-swiftpm-${{ hashFiles('**/Package.swift') }}
+          restore-keys: |
+            ${{ runner.os }}-swiftpm-
+      
+      - name: Clean environment
+        run: |
+          echo "Cleaning build environment..."
+          rm -rf ~/Library/Developer/Xcode/DerivedData/*
+          rm -rf .swiftpm SourcePackages .build
+      
+      - name: Run SwiftPM cleanup
+        run: |
+          chmod +x Scripts/cleanup-swiftpm-caches.sh
+          echo "y" | Scripts/cleanup-swiftpm-caches.sh || true
+      
+      - name: Run script path lint
+        run: |
+          chmod +x Scripts/validation/script-path-lint.sh
+          Scripts/validation/script-path-lint.sh || {
+            echo "Script path lint found issues (non-blocking)"
+          }
+        continue-on-error: true
+      
+      - name: Run SDK package size check
+        run: |
+          chmod +x Scripts/validation/sdk-package-size.sh
+          Scripts/validation/sdk-package-size.sh --dry-run || {
+            echo "Package size check had issues (non-blocking)"
+          }
+        continue-on-error: true
+      
+      - name: Build SPM target
+        run: |
+          xcodebuild -workspace msp-ios-sdk.xcworkspace \
+            -scheme MSPDemoApp-SPM \
+            -destination 'platform=iOS Simulator,name=iPhone 15' \
+            -configuration Debug \
+            clean build \
+            CODE_SIGN_IDENTITY="" \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGNING_ALLOWED=NO \
+            2>&1 | tee build-spm.log
+        env:
+          DEVELOPER_DIR: /Applications/Xcode_15.4.app/Contents/Developer
+      
+      - name: Archive SPM build logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: spm-build-logs
+          path: |
+            build-spm.log
+            ~/Library/Developer/Xcode/DerivedData/*/Logs/Build/*.xcactivitylog
+          retention-days: 7
+
+  sanity-cocoapods:
+    name: CocoaPods Target Build & Validation
+    runs-on: macos-14
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.0'
+          bundler-cache: true
+      
+      - name: Cache CocoaPods
+        uses: actions/cache@v4
+        with:
+          path: |
+            Pods
+            ~/Library/Caches/CocoaPods
+          key: ${{ runner.os }}-pods-${{ hashFiles('Podfile.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-pods-
+      
+      - name: Deintegrate CocoaPods
+        run: |
+          bundle exec pod deintegrate || true
+      
+      - name: Install CocoaPods
+        run: |
+          bundle exec pod install --repo-update
+      
+      - name: Run CocoaPods cleanup
+        run: |
+          chmod +x Scripts/target-switching/cleanup-cocoapods.sh
+          Scripts/target-switching/cleanup-cocoapods.sh || true
+        continue-on-error: true
+      
+      - name: Validate wrapper xcframeworks
+        run: |
+          chmod +x Scripts/xcframeworks/validate-wrappers.sh
+          Scripts/xcframeworks/validate-wrappers.sh || {
+            echo "Wrapper validation had issues (non-blocking)"
+          }
+        continue-on-error: true
+      
+      - name: Build CocoaPods target
+        run: |
+          xcodebuild -workspace MSPDemoApp.xcworkspace \
+            -scheme MSPDemoApp \
+            -destination 'platform=iOS Simulator,name=iPhone 15' \
+            -configuration Debug \
+            clean build \
+            CODE_SIGN_IDENTITY="" \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGNING_ALLOWED=NO \
+            2>&1 | tee build-pods.log
+        env:
+          DEVELOPER_DIR: /Applications/Xcode_15.4.app/Contents/Developer
+      
+      - name: Archive CocoaPods build logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cocoapods-build-logs
+          path: |
+            build-pods.log
+            ~/Library/Developer/Xcode/DerivedData/*/Logs/Build/*.xcactivitylog
+          retention-days: 7
+
+  summary:
+    name: Build Summary
+    runs-on: macos-14
+    needs: [sanity-spm, sanity-cocoapods]
+    if: always()
+    
+    steps:
+      - name: Check build results
+        run: |
+          if [ "${{ needs.sanity-spm.result }}" != "success" ]; then
+            echo "❌ SPM target build failed"
+            exit 1
+          fi
+          
+          if [ "${{ needs.sanity-cocoapods.result }}" != "success" ]; then
+            echo "❌ CocoaPods target build failed"
+            exit 1
+          fi
+          
+          echo "✅ Both targets built successfully"
+          echo ""
+          echo "SPM Target: ${{ needs.sanity-spm.result }}"
+          echo "CocoaPods Target: ${{ needs.sanity-cocoapods.result }}"
+
