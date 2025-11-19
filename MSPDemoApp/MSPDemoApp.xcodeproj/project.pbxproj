@@ -7,14 +7,20 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		05B9DE88CC049BCE85FEFBB4 /* ShimmerWrapper in Frameworks */ = {isa = PBXBuildFile; productRef = 893C254868A6BA3EBE252B58 /* ShimmerWrapper */; };
+		069FFB3779DF84DF21BED62C /* MintegralAdSDKWrapper in Frameworks */ = {isa = PBXBuildFile; productRef = F845BDFBF15E4708310D8356 /* MintegralAdSDKWrapper */; };
 		0A918A7A44AAD8F996A9A328 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 42783941D1AB9C1F69E5002F /* Main.storyboard */; };
 		11A962A3908B3F1AEB977F92 /* MSPDemoAppTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2EA2F6BCEAF91000B39FA37 /* MSPDemoAppTests.swift */; };
+		1434B587C5311FD49C22B6B6 /* UnityAdapter in Frameworks */ = {isa = PBXBuildFile; productRef = 0182E9F363603E34650D4FA1 /* UnityAdapter */; };
 		1681CCC9317575732FC2C8A7 /* Colors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70DF6E8E47E7A89D68BC7CE7 /* Colors.swift */; };
 		1A326680E04030F9EDC53AFE /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C04ED10FC1CB234DA8F0148B /* LaunchScreen.storyboard */; };
+		1D7D15C2BA380B4F625417F0 /* IronSourceSDKWrapper in Frameworks */ = {isa = PBXBuildFile; productRef = EFFD6F67A8D9DD271E3C2A0F /* IronSourceSDKWrapper */; };
 		30A62A3394AE1E132AB65BBD /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = BE92F5F66DFDED73927CCF46 /* Assets.xcassets */; };
 		32F617611F5D632E924843CE /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 42783941D1AB9C1F69E5002F /* Main.storyboard */; };
 		35E6B429BC334B4868C5CA63 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 996F387EA1EB70D6655EA6F3 /* AppDelegate.swift */; };
 		35EE7FEC36E62F5FA1A794C6 /* NovaCore in Frameworks */ = {isa = PBXBuildFile; productRef = BA9B23A58E43F5F0BEE996C4 /* NovaCore */; };
+		42EB5E1867A9951F51643A3E /* MobileFuseSDKWrapper in Frameworks */ = {isa = PBXBuildFile; productRef = 88DD1CE3DC34BFF271D9BEC6 /* MobileFuseSDKWrapper */; };
+		44294B7774CC0A00107449D9 /* PubmaticAdapter in Frameworks */ = {isa = PBXBuildFile; productRef = 978A422CCEC10AFA2A8A02B2 /* PubmaticAdapter */; };
 		46CB8ECE39687D6B96375CAE /* DemoNativeAdContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ED128E7AB4E1D10E5181173 /* DemoNativeAdContainer.swift */; };
 		491217BD76A09990F6C16163 /* DemoAdViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD6400A65FB55CC3143C0BA8 /* DemoAdViewController.swift */; };
 		4C9B23E6B679C4D07CEA3876 /* DemoNativeAdContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0ED128E7AB4E1D10E5181173 /* DemoNativeAdContainer.swift */; };
@@ -23,7 +29,10 @@
 		5CDAC37018C729FEAF2B34B2 /* MSPSharedLibraries in Frameworks */ = {isa = PBXBuildFile; productRef = D69EE3C07EF58C20428348F6 /* MSPSharedLibraries */; };
 		63F87CA3205B62AC0248914A /* Colors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70DF6E8E47E7A89D68BC7CE7 /* Colors.swift */; };
 		6D598CD114D69F6BA92B7D68 /* MSPDemoAppUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED930CB34B9159B3F423877E /* MSPDemoAppUITests.swift */; };
+		7A2759EB15A1C53ED29BC25A /* InmobiAdapter in Frameworks */ = {isa = PBXBuildFile; productRef = 05CA361568E79AC59F335993 /* InmobiAdapter */; };
 		89B37E1B6B13F865B4B3D932 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F405B597DF8A60F0E38BFC66 /* ViewController.swift */; };
+		8F0ACD886ACEDDDE9B440E73 /* MobilefuseAdapter in Frameworks */ = {isa = PBXBuildFile; productRef = AD19961253E5CF2EBDE66426 /* MobilefuseAdapter */; };
+		998CB321458DD3A818CCEC36 /* InMobiSDKWrapper in Frameworks */ = {isa = PBXBuildFile; productRef = CF0B6BDC3DE98204330B97FA /* InMobiSDKWrapper */; };
 		A2B17F80B2E0297D4015669C /* DemoAdViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CD6400A65FB55CC3143C0BA8 /* DemoAdViewController.swift */; };
 		AC8F3A17AA59C989C770AF64 /* DemoNativeAdViewBinder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 86CA2FD8F7513F8A5A92412C /* DemoNativeAdViewBinder.swift */; };
 		BCA60730F343D8AEBE257F03 /* MSPOMSDK in Frameworks */ = {isa = PBXBuildFile; productRef = 59A8D2FD0C54B7F45DBD6099 /* MSPOMSDK */; };
@@ -32,9 +41,12 @@
 		C38C51EFA7C7B70E77E2E07C /* DemoNativeAdViewBinder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 86CA2FD8F7513F8A5A92412C /* DemoNativeAdViewBinder.swift */; };
 		C8D7141497F4F803DE77D1CA /* MSPDemoAppUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B38755BC8D4B0FCDBEFDDDA /* MSPDemoAppUITestsLaunchTests.swift */; };
 		CF48C667880F871DDD83C3B0 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C04ED10FC1CB234DA8F0148B /* LaunchScreen.storyboard */; };
+		D02B5E7C49341458FD2B8CAE /* MintegralAdapter in Frameworks */ = {isa = PBXBuildFile; productRef = 56428D4624ED8FC761CE06BF /* MintegralAdapter */; };
 		D3E42EEE3A0EE119E5CBF6B2 /* MSPFacebookAdapter in Frameworks */ = {isa = PBXBuildFile; productRef = D49C675D3894BF3ACB54F3B6 /* MSPFacebookAdapter */; };
 		D56BCA972EEF420E9E7D879E /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F405B597DF8A60F0E38BFC66 /* ViewController.swift */; };
 		DACB0FA8067692B52A80F142 /* MSPCore in Frameworks */ = {isa = PBXBuildFile; productRef = 316BE11DC84EF8A3F89C986C /* MSPCore */; };
+		E045A552CF24EDE85C795DCF /* OpenWrapSDKWrapper in Frameworks */ = {isa = PBXBuildFile; productRef = 6C0CDF3F749748051267BD68 /* OpenWrapSDKWrapper */; };
+		E8224B811CEF1D3B88BD4F6C /* FBAudienceNetworkWrapper in Frameworks */ = {isa = PBXBuildFile; productRef = 9B89C3C2BFAEDF5A6CD80661 /* FBAudienceNetworkWrapper */; };
 		EA96CB7D073383382AE218CA /* PrebidAdapter in Frameworks */ = {isa = PBXBuildFile; productRef = 52CB56450F0F8FA3734EFF38 /* PrebidAdapter */; };
 		F215BE9D1D92E81198F0D154 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A0A126DB0B7F6A0DFE1BE7A /* SceneDelegate.swift */; };
 		F65BA62FDD6DB82112EE7449 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 996F387EA1EB70D6655EA6F3 /* AppDelegate.swift */; };
@@ -59,37 +71,49 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		053145BD3AEBBDCA458F91A9 /* InMobiSDKWrapper */ = {isa = PBXFileReference; lastKnownFileType = folder; name = InMobiSDKWrapper; path = ../InMobiSDKWrapper; sourceTree = SOURCE_ROOT; };
 		063E3B4857FA9526730AA87F /* MSPSharedLibraries */ = {isa = PBXFileReference; lastKnownFileType = folder; name = MSPSharedLibraries; path = ../MSPSharedLibraries; sourceTree = SOURCE_ROOT; };
 		08D3867368EAC8AEF9F77E20 /* MSPGoogleAdapter */ = {isa = PBXFileReference; lastKnownFileType = folder; name = MSPGoogleAdapter; path = ../MSPGoogleAdapter; sourceTree = SOURCE_ROOT; };
 		0D4515BBC01AA2EBC60BFD70 /* MSPiOSCore */ = {isa = PBXFileReference; lastKnownFileType = folder; name = MSPiOSCore; path = ../MSPiOSCore; sourceTree = SOURCE_ROOT; };
 		0ED128E7AB4E1D10E5181173 /* DemoNativeAdContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DemoNativeAdContainer.swift; sourceTree = "<group>"; };
+		1863562D00F88F7594E585C3 /* MintegralAdSDKWrapper */ = {isa = PBXFileReference; lastKnownFileType = folder; name = MintegralAdSDKWrapper; path = ../MintegralAdSDKWrapper; sourceTree = SOURCE_ROOT; };
+		251CBAB1F4D08C0C5C711C98 /* PubmaticAdapter */ = {isa = PBXFileReference; lastKnownFileType = folder; name = PubmaticAdapter; path = ../PubmaticAdapter; sourceTree = SOURCE_ROOT; };
 		25A6111E310535DCAC9A29BE /* MSPFacebookAdapter */ = {isa = PBXFileReference; lastKnownFileType = folder; name = MSPFacebookAdapter; path = ../MSPFacebookAdapter; sourceTree = SOURCE_ROOT; };
 		4B38755BC8D4B0FCDBEFDDDA /* MSPDemoAppUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MSPDemoAppUITestsLaunchTests.swift; sourceTree = "<group>"; };
 		526D4D5FFDA81795C09B6B64 /* MSPDemoApp-SPM.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = "MSPDemoApp-SPM.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		535EDBA97761D17F3FEDF959 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		59989F54D54BDB771A356619 /* InmobiAdapter */ = {isa = PBXFileReference; lastKnownFileType = folder; name = InmobiAdapter; path = ../InmobiAdapter; sourceTree = SOURCE_ROOT; };
 		5A0A126DB0B7F6A0DFE1BE7A /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
 		5C5F890673E42A713DD414DE /* MSPCore */ = {isa = PBXFileReference; lastKnownFileType = folder; name = MSPCore; path = ../MSPCore; sourceTree = SOURCE_ROOT; };
+		64F9D3B8F5F17CAF3A74CC26 /* ShimmerWrapper */ = {isa = PBXFileReference; lastKnownFileType = folder; name = ShimmerWrapper; path = ../ShimmerWrapper; sourceTree = SOURCE_ROOT; };
 		6CDE798D7027273A2734DCB3 /* MSPDemoAppUITests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = MSPDemoAppUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		70DF6E8E47E7A89D68BC7CE7 /* Colors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Colors.swift; sourceTree = "<group>"; };
 		86CA2FD8F7513F8A5A92412C /* DemoNativeAdViewBinder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DemoNativeAdViewBinder.swift; sourceTree = "<group>"; };
 		8B1235EA9CE50004AB5895DF /* MSPDemoApp-Debug-SPM.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "MSPDemoApp-Debug-SPM.xcconfig"; sourceTree = "<group>"; };
 		996F387EA1EB70D6655EA6F3 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		9A652755DB632EB7AD8DE92A /* IronSourceSDKWrapper */ = {isa = PBXFileReference; lastKnownFileType = folder; name = IronSourceSDKWrapper; path = ../IronSourceSDKWrapper; sourceTree = SOURCE_ROOT; };
 		AA3F8D0900548011AE70BFC0 /* MSPOMSDK */ = {isa = PBXFileReference; lastKnownFileType = folder; name = MSPOMSDK; path = ../MSPOMSDK; sourceTree = SOURCE_ROOT; };
+		BA66A735835DFFBAB15310A6 /* MintegralAdapter */ = {isa = PBXFileReference; lastKnownFileType = folder; name = MintegralAdapter; path = ../MintegralAdapter; sourceTree = SOURCE_ROOT; };
+		BA9486A84A88C617C4EE5C02 /* FBAudienceNetworkWrapper */ = {isa = PBXFileReference; lastKnownFileType = folder; name = FBAudienceNetworkWrapper; path = ../FBAudienceNetworkWrapper; sourceTree = SOURCE_ROOT; };
 		BC2DB6948B6839C5C9C1AC04 /* Pods-MSPDemoApp.release.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "Pods-MSPDemoApp.release.xcconfig"; sourceTree = "<group>"; };
 		BE92F5F66DFDED73927CCF46 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		C216C558E466E83AB3E7FB26 /* MSPDemoApp-Release-SPM.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "MSPDemoApp-Release-SPM.xcconfig"; sourceTree = "<group>"; };
 		C5A2E0C8524337B5AC95FC4D /* Pods-MSPDemoApp.debug.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "Pods-MSPDemoApp.debug.xcconfig"; sourceTree = "<group>"; };
+		C9CF99B91A5CDF25B31F8B14 /* UnityAdapter */ = {isa = PBXFileReference; lastKnownFileType = folder; name = UnityAdapter; path = ../UnityAdapter; sourceTree = SOURCE_ROOT; };
+		CCF751F0B7B6A08B4BEA17E8 /* MobileFuseSDKWrapper */ = {isa = PBXFileReference; lastKnownFileType = folder; name = MobileFuseSDKWrapper; path = ../MobileFuseSDKWrapper; sourceTree = SOURCE_ROOT; };
 		CD6400A65FB55CC3143C0BA8 /* DemoAdViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DemoAdViewController.swift; sourceTree = "<group>"; };
 		D2EA2F6BCEAF91000B39FA37 /* MSPDemoAppTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MSPDemoAppTests.swift; sourceTree = "<group>"; };
 		D3860D9E579BECC18BFB5B02 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		D663F18E4BD5DAB1232B155F /* MSPDemoAppTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = MSPDemoAppTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		D96E7805274DBD8F64E9900E /* NovaAdapter */ = {isa = PBXFileReference; lastKnownFileType = folder; name = NovaAdapter; path = ../NovaAdapter; sourceTree = SOURCE_ROOT; };
 		DAA28E78CD867C772146EAFD /* NovaCore */ = {isa = PBXFileReference; lastKnownFileType = folder; name = NovaCore; path = ../NovaCore; sourceTree = SOURCE_ROOT; };
+		DE63EF4FFC1E0510A6E526BC /* MobilefuseAdapter */ = {isa = PBXFileReference; lastKnownFileType = folder; name = MobilefuseAdapter; path = ../MobilefuseAdapter; sourceTree = SOURCE_ROOT; };
 		E578A9572B57C324CC28EFFF /* MSPDemoApp.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = MSPDemoApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		EAACE79969D571E76819DD7F /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		ED930CB34B9159B3F423877E /* MSPDemoAppUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MSPDemoAppUITests.swift; sourceTree = "<group>"; };
 		F405B597DF8A60F0E38BFC66 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
 		F9CB7868052958A10ED5B906 /* PrebidAdapter */ = {isa = PBXFileReference; lastKnownFileType = folder; name = PrebidAdapter; path = ../PrebidAdapter; sourceTree = SOURCE_ROOT; };
+		FE7AF3134E4657F061B4C821 /* OpenWrapSDKWrapper */ = {isa = PBXFileReference; lastKnownFileType = folder; name = OpenWrapSDKWrapper; path = ../OpenWrapSDKWrapper; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -106,6 +130,18 @@
 				BCA60730F343D8AEBE257F03 /* MSPOMSDK in Frameworks */,
 				C38292A7D31D4CA282711C3D /* MSPiOSCore in Frameworks */,
 				35EE7FEC36E62F5FA1A794C6 /* NovaCore in Frameworks */,
+				05B9DE88CC049BCE85FEFBB4 /* ShimmerWrapper in Frameworks */,
+				E8224B811CEF1D3B88BD4F6C /* FBAudienceNetworkWrapper in Frameworks */,
+				1D7D15C2BA380B4F625417F0 /* IronSourceSDKWrapper in Frameworks */,
+				E045A552CF24EDE85C795DCF /* OpenWrapSDKWrapper in Frameworks */,
+				069FFB3779DF84DF21BED62C /* MintegralAdSDKWrapper in Frameworks */,
+				42EB5E1867A9951F51643A3E /* MobileFuseSDKWrapper in Frameworks */,
+				998CB321458DD3A818CCEC36 /* InMobiSDKWrapper in Frameworks */,
+				1434B587C5311FD49C22B6B6 /* UnityAdapter in Frameworks */,
+				44294B7774CC0A00107449D9 /* PubmaticAdapter in Frameworks */,
+				D02B5E7C49341458FD2B8CAE /* MintegralAdapter in Frameworks */,
+				8F0ACD886ACEDDDE9B440E73 /* MobilefuseAdapter in Frameworks */,
+				7A2759EB15A1C53ED29BC25A /* InmobiAdapter in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -126,6 +162,14 @@
 		49CC7518F7B899139068F9C2 /* Packages */ = {
 			isa = PBXGroup;
 			children = (
+				BA9486A84A88C617C4EE5C02 /* FBAudienceNetworkWrapper */,
+				59989F54D54BDB771A356619 /* InmobiAdapter */,
+				053145BD3AEBBDCA458F91A9 /* InMobiSDKWrapper */,
+				9A652755DB632EB7AD8DE92A /* IronSourceSDKWrapper */,
+				BA66A735835DFFBAB15310A6 /* MintegralAdapter */,
+				1863562D00F88F7594E585C3 /* MintegralAdSDKWrapper */,
+				DE63EF4FFC1E0510A6E526BC /* MobilefuseAdapter */,
+				CCF751F0B7B6A08B4BEA17E8 /* MobileFuseSDKWrapper */,
 				5C5F890673E42A713DD414DE /* MSPCore */,
 				25A6111E310535DCAC9A29BE /* MSPFacebookAdapter */,
 				08D3867368EAC8AEF9F77E20 /* MSPGoogleAdapter */,
@@ -134,7 +178,11 @@
 				063E3B4857FA9526730AA87F /* MSPSharedLibraries */,
 				D96E7805274DBD8F64E9900E /* NovaAdapter */,
 				DAA28E78CD867C772146EAFD /* NovaCore */,
+				FE7AF3134E4657F061B4C821 /* OpenWrapSDKWrapper */,
 				F9CB7868052958A10ED5B906 /* PrebidAdapter */,
+				251CBAB1F4D08C0C5C711C98 /* PubmaticAdapter */,
+				64F9D3B8F5F17CAF3A74CC26 /* ShimmerWrapper */,
+				C9CF99B91A5CDF25B31F8B14 /* UnityAdapter */,
 			);
 			name = Packages;
 			sourceTree = "<group>";
@@ -249,6 +297,18 @@
 				59A8D2FD0C54B7F45DBD6099 /* MSPOMSDK */,
 				A464BB25F77583D4B5553B94 /* MSPiOSCore */,
 				BA9B23A58E43F5F0BEE996C4 /* NovaCore */,
+				893C254868A6BA3EBE252B58 /* ShimmerWrapper */,
+				9B89C3C2BFAEDF5A6CD80661 /* FBAudienceNetworkWrapper */,
+				EFFD6F67A8D9DD271E3C2A0F /* IronSourceSDKWrapper */,
+				6C0CDF3F749748051267BD68 /* OpenWrapSDKWrapper */,
+				F845BDFBF15E4708310D8356 /* MintegralAdSDKWrapper */,
+				88DD1CE3DC34BFF271D9BEC6 /* MobileFuseSDKWrapper */,
+				CF0B6BDC3DE98204330B97FA /* InMobiSDKWrapper */,
+				0182E9F363603E34650D4FA1 /* UnityAdapter */,
+				978A422CCEC10AFA2A8A02B2 /* PubmaticAdapter */,
+				56428D4624ED8FC761CE06BF /* MintegralAdapter */,
+				AD19961253E5CF2EBDE66426 /* MobilefuseAdapter */,
+				05CA361568E79AC59F335993 /* InmobiAdapter */,
 			);
 			productName = "MSPDemoApp-SPM";
 			productReference = 526D4D5FFDA81795C09B6B64 /* MSPDemoApp-SPM.app */;
@@ -346,15 +406,27 @@
 			mainGroup = 881A2012174FCE7025D6E9E9;
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
+				00F357E0F5D8916CB9620CFF /* XCLocalSwiftPackageReference "../FBAudienceNetworkWrapper" */,
+				3700C60A0ACA66F887EB0C96 /* XCLocalSwiftPackageReference "../InMobiSDKWrapper" */,
+				68E365D25AB495CCFAB84369 /* XCLocalSwiftPackageReference "../InmobiAdapter" */,
+				92136324C556F54991ED4B56 /* XCLocalSwiftPackageReference "../IronSourceSDKWrapper" */,
 				9D737C4B5FF042AB2258C530 /* XCLocalSwiftPackageReference "../MSPCore" */,
 				8167D38F268956F16134AF3F /* XCLocalSwiftPackageReference "../MSPFacebookAdapter" */,
 				E877056EA32EF1667C7EC5C7 /* XCLocalSwiftPackageReference "../MSPGoogleAdapter" */,
 				F611A477DB1529D44EA6ED7B /* XCLocalSwiftPackageReference "../MSPOMSDK" */,
 				A9C165F276BE0E1265DCC8C9 /* XCLocalSwiftPackageReference "../MSPSharedLibraries" */,
 				2DFB51DF535A7920F2240BD4 /* XCLocalSwiftPackageReference "../MSPiOSCore" */,
+				070FBB33BBA9DC028646E9EB /* XCLocalSwiftPackageReference "../MintegralAdSDKWrapper" */,
+				D595268A1CD69130016AB4DB /* XCLocalSwiftPackageReference "../MintegralAdapter" */,
+				0F054735417B0D4CEB51533F /* XCLocalSwiftPackageReference "../MobileFuseSDKWrapper" */,
+				A5BD9EB31EB02801204EE163 /* XCLocalSwiftPackageReference "../MobilefuseAdapter" */,
 				3EA082F1DEBAF6A19D8E7D0A /* XCLocalSwiftPackageReference "../NovaAdapter" */,
 				8127839665E0C1512C656AC2 /* XCLocalSwiftPackageReference "../NovaCore" */,
+				120C8A47B467D39971B57DBD /* XCLocalSwiftPackageReference "../OpenWrapSDKWrapper" */,
 				6117C4698FE437D81B690A25 /* XCLocalSwiftPackageReference "../PrebidAdapter" */,
+				1FB9E0AF87E23AB0B3CF7171 /* XCLocalSwiftPackageReference "../PubmaticAdapter" */,
+				B2E11F35A10F1760B361B54E /* XCLocalSwiftPackageReference "../ShimmerWrapper" */,
+				B23C2A4CE7ABF2A7C2CBA597 /* XCLocalSwiftPackageReference "../UnityAdapter" */,
 			);
 			preferredProjectObjectVersion = 77;
 			projectDirPath = "";
@@ -398,13 +470,11 @@
 			files = (
 			);
 			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-MSPDemoApp/Pods-MSPDemoApp-frameworks-${CONFIGURATION}-input-files.xcfilelist",
 			);
 			inputPaths = (
 			);
 			name = "[CP] Embed Pods Frameworks";
 			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-MSPDemoApp/Pods-MSPDemoApp-frameworks-${CONFIGURATION}-output-files.xcfilelist",
 			);
 			outputPaths = (
 			);
@@ -436,13 +506,11 @@
 			files = (
 			);
 			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-MSPDemoApp/Pods-MSPDemoApp-resources-${CONFIGURATION}-input-files.xcfilelist",
 			);
 			inputPaths = (
 			);
 			name = "[CP] Copy Pods Resources";
 			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-MSPDemoApp/Pods-MSPDemoApp-resources-${CONFIGURATION}-output-files.xcfilelist",
 			);
 			outputPaths = (
 			);
@@ -561,7 +629,9 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
+				PODS_ROOT = "$(SRCROOT)/../Pods";
 				SDKROOT = iphoneos;
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
@@ -578,8 +648,10 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
+				PODS_ROOT = "$(SRCROOT)/../Pods";
 				PRODUCT_BUNDLE_IDENTIFIER = MSPDemoApp.MSPDemoAppSPM;
 				SDKROOT = iphoneos;
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
@@ -681,8 +753,10 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
+				PODS_ROOT = "$(SRCROOT)/../Pods";
 				PRODUCT_BUNDLE_IDENTIFIER = MSPDemoApp.MSPDemoAppSPM;
 				SDKROOT = iphoneos;
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
@@ -699,7 +773,9 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
+				PODS_ROOT = "$(SRCROOT)/../Pods";
 				SDKROOT = iphoneos;
+				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
@@ -849,9 +925,33 @@
 /* End XCConfigurationList section */
 
 /* Begin XCLocalSwiftPackageReference section */
+		00F357E0F5D8916CB9620CFF /* XCLocalSwiftPackageReference "../FBAudienceNetworkWrapper" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = ../FBAudienceNetworkWrapper;
+		};
+		070FBB33BBA9DC028646E9EB /* XCLocalSwiftPackageReference "../MintegralAdSDKWrapper" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = ../MintegralAdSDKWrapper;
+		};
+		0F054735417B0D4CEB51533F /* XCLocalSwiftPackageReference "../MobileFuseSDKWrapper" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = ../MobileFuseSDKWrapper;
+		};
+		120C8A47B467D39971B57DBD /* XCLocalSwiftPackageReference "../OpenWrapSDKWrapper" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = ../OpenWrapSDKWrapper;
+		};
+		1FB9E0AF87E23AB0B3CF7171 /* XCLocalSwiftPackageReference "../PubmaticAdapter" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = ../PubmaticAdapter;
+		};
 		2DFB51DF535A7920F2240BD4 /* XCLocalSwiftPackageReference "../MSPiOSCore" */ = {
 			isa = XCLocalSwiftPackageReference;
 			relativePath = ../MSPiOSCore;
+		};
+		3700C60A0ACA66F887EB0C96 /* XCLocalSwiftPackageReference "../InMobiSDKWrapper" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = ../InMobiSDKWrapper;
 		};
 		3EA082F1DEBAF6A19D8E7D0A /* XCLocalSwiftPackageReference "../NovaAdapter" */ = {
 			isa = XCLocalSwiftPackageReference;
@@ -861,6 +961,10 @@
 			isa = XCLocalSwiftPackageReference;
 			relativePath = ../PrebidAdapter;
 		};
+		68E365D25AB495CCFAB84369 /* XCLocalSwiftPackageReference "../InmobiAdapter" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = ../InmobiAdapter;
+		};
 		8127839665E0C1512C656AC2 /* XCLocalSwiftPackageReference "../NovaCore" */ = {
 			isa = XCLocalSwiftPackageReference;
 			relativePath = ../NovaCore;
@@ -869,13 +973,33 @@
 			isa = XCLocalSwiftPackageReference;
 			relativePath = ../MSPFacebookAdapter;
 		};
+		92136324C556F54991ED4B56 /* XCLocalSwiftPackageReference "../IronSourceSDKWrapper" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = ../IronSourceSDKWrapper;
+		};
 		9D737C4B5FF042AB2258C530 /* XCLocalSwiftPackageReference "../MSPCore" */ = {
 			isa = XCLocalSwiftPackageReference;
 			relativePath = ../MSPCore;
 		};
+		A5BD9EB31EB02801204EE163 /* XCLocalSwiftPackageReference "../MobilefuseAdapter" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = ../MobilefuseAdapter;
+		};
 		A9C165F276BE0E1265DCC8C9 /* XCLocalSwiftPackageReference "../MSPSharedLibraries" */ = {
 			isa = XCLocalSwiftPackageReference;
 			relativePath = ../MSPSharedLibraries;
+		};
+		B23C2A4CE7ABF2A7C2CBA597 /* XCLocalSwiftPackageReference "../UnityAdapter" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = ../UnityAdapter;
+		};
+		B2E11F35A10F1760B361B54E /* XCLocalSwiftPackageReference "../ShimmerWrapper" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = ../ShimmerWrapper;
+		};
+		D595268A1CD69130016AB4DB /* XCLocalSwiftPackageReference "../MintegralAdapter" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = ../MintegralAdapter;
 		};
 		E877056EA32EF1667C7EC5C7 /* XCLocalSwiftPackageReference "../MSPGoogleAdapter" */ = {
 			isa = XCLocalSwiftPackageReference;
@@ -888,6 +1012,14 @@
 /* End XCLocalSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		0182E9F363603E34650D4FA1 /* UnityAdapter */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = UnityAdapter;
+		};
+		05CA361568E79AC59F335993 /* InmobiAdapter */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = InmobiAdapter;
+		};
 		316BE11DC84EF8A3F89C986C /* MSPCore */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = MSPCore;
@@ -896,13 +1028,41 @@
 			isa = XCSwiftPackageProductDependency;
 			productName = PrebidAdapter;
 		};
+		56428D4624ED8FC761CE06BF /* MintegralAdapter */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = MintegralAdapter;
+		};
 		59A8D2FD0C54B7F45DBD6099 /* MSPOMSDK */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = MSPOMSDK;
 		};
+		6C0CDF3F749748051267BD68 /* OpenWrapSDKWrapper */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = OpenWrapSDKWrapper;
+		};
+		88DD1CE3DC34BFF271D9BEC6 /* MobileFuseSDKWrapper */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = MobileFuseSDKWrapper;
+		};
+		893C254868A6BA3EBE252B58 /* ShimmerWrapper */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = ShimmerWrapper;
+		};
+		978A422CCEC10AFA2A8A02B2 /* PubmaticAdapter */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = PubmaticAdapter;
+		};
+		9B89C3C2BFAEDF5A6CD80661 /* FBAudienceNetworkWrapper */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = FBAudienceNetworkWrapper;
+		};
 		A464BB25F77583D4B5553B94 /* MSPiOSCore */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = MSPiOSCore;
+		};
+		AD19961253E5CF2EBDE66426 /* MobilefuseAdapter */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = MobilefuseAdapter;
 		};
 		BA9B23A58E43F5F0BEE996C4 /* NovaCore */ = {
 			isa = XCSwiftPackageProductDependency;
@@ -911,6 +1071,10 @@
 		C2BAD4F0E0B1569B461FDD97 /* NovaAdapter */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = NovaAdapter;
+		};
+		CF0B6BDC3DE98204330B97FA /* InMobiSDKWrapper */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = InMobiSDKWrapper;
 		};
 		CF21BC28449106ABBAA13117 /* MSPGoogleAdapter */ = {
 			isa = XCSwiftPackageProductDependency;
@@ -923,6 +1087,14 @@
 		D69EE3C07EF58C20428348F6 /* MSPSharedLibraries */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = MSPSharedLibraries;
+		};
+		EFFD6F67A8D9DD271E3C2A0F /* IronSourceSDKWrapper */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = IronSourceSDKWrapper;
+		};
+		F845BDFBF15E4708310D8356 /* MintegralAdSDKWrapper */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = MintegralAdSDKWrapper;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

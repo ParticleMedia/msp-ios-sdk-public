@@ -18,6 +18,18 @@ settings:
     IPHONEOS_DEPLOYMENT_TARGET: "15.0"
     INFOPLIST_FILE: MSPDemoApp/Info.plist
 packages:
+  FBAudienceNetworkWrapper:
+    name: FBAudienceNetworkWrapper
+    path: ../FBAudienceNetworkWrapper
+  InMobiSDKWrapper:
+    name: InMobiSDKWrapper
+    path: ../InMobiSDKWrapper
+  InmobiAdapter:
+    name: InmobiAdapter
+    path: ../InmobiAdapter
+  IronSourceSDKWrapper:
+    name: IronSourceSDKWrapper
+    path: ../IronSourceSDKWrapper
   MSPCore:
     name: MSPCore
     path: ../MSPCore
@@ -36,15 +48,39 @@ packages:
   MSPiOSCore:
     name: MSPiOSCore
     path: ../MSPiOSCore
+  MintegralAdSDKWrapper:
+    name: MintegralAdSDKWrapper
+    path: ../MintegralAdSDKWrapper
+  MintegralAdapter:
+    name: MintegralAdapter
+    path: ../MintegralAdapter
+  MobileFuseSDKWrapper:
+    name: MobileFuseSDKWrapper
+    path: ../MobileFuseSDKWrapper
+  MobilefuseAdapter:
+    name: MobilefuseAdapter
+    path: ../MobilefuseAdapter
   NovaAdapter:
     name: NovaAdapter
     path: ../NovaAdapter
   NovaCore:
     name: NovaCore
     path: ../NovaCore
+  OpenWrapSDKWrapper:
+    name: OpenWrapSDKWrapper
+    path: ../OpenWrapSDKWrapper
   PrebidAdapter:
     name: PrebidAdapter
     path: ../PrebidAdapter
+  PubmaticAdapter:
+    name: PubmaticAdapter
+    path: ../PubmaticAdapter
+  ShimmerWrapper:
+    name: ShimmerWrapper
+    path: ../ShimmerWrapper
+  UnityAdapter:
+    name: UnityAdapter
+    path: ../UnityAdapter
 targetTemplates:
   BaseAppTarget:
     type: application
@@ -60,6 +96,8 @@ targetTemplates:
       base:
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
         ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
+        SWIFT_VERSION: 5.0
+        PODS_ROOT: "$(SRCROOT)/../Pods"
         LD_RUNPATH_SEARCH_PATHS:
           - "$(inherited)"
           - "@executable_path/Frameworks"
@@ -89,16 +127,10 @@ targets:
     postbuildScripts:
       - name: "[CP] Embed Pods Frameworks"
         script: "\"${PODS_ROOT}/Target Support Files/Pods-MSPDemoApp/Pods-MSPDemoApp-frameworks.sh\""
-        inputFileLists:
-          - "${PODS_ROOT}/Target Support Files/Pods-MSPDemoApp/Pods-MSPDemoApp-frameworks-${CONFIGURATION}-input-files.xcfilelist"
-        outputFileLists:
-          - "${PODS_ROOT}/Target Support Files/Pods-MSPDemoApp/Pods-MSPDemoApp-frameworks-${CONFIGURATION}-output-files.xcfilelist"
+        shell: /bin/sh
       - name: "[CP] Copy Pods Resources"
         script: "\"${PODS_ROOT}/Target Support Files/Pods-MSPDemoApp/Pods-MSPDemoApp-resources.sh\""
-        inputFileLists:
-          - "${PODS_ROOT}/Target Support Files/Pods-MSPDemoApp/Pods-MSPDemoApp-resources-${CONFIGURATION}-input-files.xcfilelist"
-        outputFileLists:
-          - "${PODS_ROOT}/Target Support Files/Pods-MSPDemoApp/Pods-MSPDemoApp-resources-${CONFIGURATION}-output-files.xcfilelist"
+        shell: /bin/sh
   MSPDemoApp-SPM:
     templates:
       - BaseAppTarget
@@ -127,6 +159,30 @@ targets:
         product: MSPiOSCore
       - package: NovaCore
         product: NovaCore
+      - package: ShimmerWrapper
+        product: ShimmerWrapper
+      - package: FBAudienceNetworkWrapper
+        product: FBAudienceNetworkWrapper
+      - package: IronSourceSDKWrapper
+        product: IronSourceSDKWrapper
+      - package: OpenWrapSDKWrapper
+        product: OpenWrapSDKWrapper
+      - package: MintegralAdSDKWrapper
+        product: MintegralAdSDKWrapper
+      - package: MobileFuseSDKWrapper
+        product: MobileFuseSDKWrapper
+      - package: InMobiSDKWrapper
+        product: InMobiSDKWrapper
+      - package: UnityAdapter
+        product: UnityAdapter
+      - package: PubmaticAdapter
+        product: PubmaticAdapter
+      - package: MintegralAdapter
+        product: MintegralAdapter
+      - package: MobilefuseAdapter
+        product: MobilefuseAdapter
+      - package: InmobiAdapter
+        product: InmobiAdapter
   MSPDemoAppTests:
     type: bundle.unit-test
     platform: iOS
