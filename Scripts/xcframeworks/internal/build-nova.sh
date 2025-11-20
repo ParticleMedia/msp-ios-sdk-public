@@ -464,15 +464,24 @@ fi
 print_section "Deploying NovaCore.xcframework to NovaAdapter"
 SOURCE_XCFRAMEWORK="$PWD/outputNova/xcframework/NovaCore.xcframework"
 DESTINATION_DIR="$PWD/NovaAdapter"
+DESTINATION_XCFRAMEWORK="$DESTINATION_DIR/NovaCore.xcframework"
+TEMP_XCFRAMEWORK="$DESTINATION_DIR/NovaCore.xcframework.tmp"
 
-print_step "Removing previous NovaCore.xcframework from NovaAdapter..."
-rm -rf "$DESTINATION_DIR/NovaCore.xcframework"
+print_step "Copying new NovaCore.xcframework to temporary location..."
+if [[ -d "$DESTINATION_XCFRAMEWORK" ]]; then
+    # Backup existing XCFramework before atomic replacement
+    mv "$DESTINATION_XCFRAMEWORK" "$TEMP_XCFRAMEWORK.backup" 2>/dev/null || true
+fi
 
-print_step "Copying new NovaCore.xcframework to NovaAdapter..."
-if cp -R "$SOURCE_XCFRAMEWORK" "$DESTINATION_DIR/"; then
+if cp -R "$SOURCE_XCFRAMEWORK" "$TEMP_XCFRAMEWORK"; then
+    # Atomic move: replace old XCFramework with new one
+    mv "$TEMP_XCFRAMEWORK" "$DESTINATION_XCFRAMEWORK"
+    rm -rf "$TEMP_XCFRAMEWORK.backup" 2>/dev/null || true
     print_success "NovaCore.xcframework copied to NovaAdapter successfully"
 else
     color_error "❌ ERROR: Failed to copy NovaCore.xcframework to NovaAdapter"
+    # Restore backup if copy failed
+    mv "$TEMP_XCFRAMEWORK.backup" "$DESTINATION_XCFRAMEWORK" 2>/dev/null || true
     exit 1
 fi
 

@@ -47,7 +47,7 @@ while IFS= read -r -d '' dir; do
         rm -rf "$dir"
         ((SWIFTPM_COUNT++))
     fi
-done < <(find "$ROOT_DIR" -type d -name ".swiftpm" ! -path "*/Pods/*" ! -path "*/.git/*" -print0 2>/dev/null || true)
+done < <(find "$ROOT_DIR" -type d -name ".swiftpm" ! -path "*/Pods/*" ! -path "*/.git/*" ! -path "*/MSPSharedLibraries/*" ! -path "*/MSPOMSDK/*" ! -path "*/NovaAdapter/*" -print0 2>/dev/null || true)
 
 if [[ $SWIFTPM_COUNT -gt 0 ]]; then
     log_success "Removed $SWIFTPM_COUNT .swiftpm directory/ies"
@@ -69,7 +69,7 @@ while IFS= read -r -d '' dir; do
         rm -rf "$dir"
         ((SOURCEPACKAGES_COUNT++))
     fi
-done < <(find "$ROOT_DIR" -type d -name "SourcePackages" ! -path "*/Pods/*" ! -path "*/.git/*" -print0 2>/dev/null || true)
+done < <(find "$ROOT_DIR" -type d -name "SourcePackages" ! -path "*/Pods/*" ! -path "*/.git/*" ! -path "*/MSPSharedLibraries/*" ! -path "*/MSPOMSDK/*" ! -path "*/NovaAdapter/*" -print0 2>/dev/null || true)
 
 if [[ $SOURCEPACKAGES_COUNT -gt 0 ]]; then
     log_success "Removed $SOURCEPACKAGES_COUNT SourcePackages directory/ies"
@@ -91,7 +91,7 @@ while IFS= read -r -d '' dir; do
         rm -rf "$dir"
         ((BUILD_COUNT++))
     fi
-done < <(find "$ROOT_DIR" -type d -name ".build" ! -path "*/Pods/*" ! -path "*/.git/*" -print0 2>/dev/null || true)
+done < <(find "$ROOT_DIR" -type d -name ".build" ! -path "*/Pods/*" ! -path "*/.git/*" ! -path "*/MSPSharedLibraries/*" ! -path "*/MSPOMSDK/*" ! -path "*/NovaAdapter/*" -print0 2>/dev/null || true)
 
 if [[ $BUILD_COUNT -gt 0 ]]; then
     log_success "Removed $BUILD_COUNT .build directory/ies"

@@ -154,6 +154,31 @@ safe_remove_directory() {
     local dir_path="$1"
     local description="${2:-directory}"
     
+    # Protect critical XCFrameworks - NEVER delete these directories or their contents
+    local protected_paths=(
+        "MSPSharedLibraries/PrebidMobile.xcframework"
+        "MSPSharedLibraries/OMSDK_Newsbreak1.xcframework"
+        "MSPOMSDK/OMSDK_Newsbreak1.xcframework"
+        "NovaAdapter/NovaCore.xcframework"
+    )
+    
+    # Check if the directory path matches any protected XCFramework
+    for protected in "${protected_paths[@]}"; do
+        if [[ "$dir_path" == *"$protected"* ]] || [[ "$dir_path" == "$ROOT_DIR/$protected" ]]; then
+            log_error "Refusing to delete protected XCFramework: $protected"
+            log_error "Path: $dir_path"
+            return 1
+        fi
+    done
+    
+    # Also protect parent directories that contain protected XCFrameworks
+    if [[ "$dir_path" == "$ROOT_DIR/MSPSharedLibraries" ]] || \
+       [[ "$dir_path" == "$ROOT_DIR/MSPOMSDK" ]] || \
+       [[ "$dir_path" == "$ROOT_DIR/NovaAdapter" ]]; then
+        log_error "Refusing to delete directory containing protected XCFrameworks: $dir_path"
+        return 1
+    fi
+    
     if [[ ! -d "$dir_path" ]]; then
         return 0
     fi
