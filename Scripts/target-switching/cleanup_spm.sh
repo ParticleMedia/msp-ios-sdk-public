@@ -113,7 +113,8 @@ log_section "Cleaning DerivedData"
 log_step "Cleaning DerivedData cache"
 DERIVED_DATA_DIR="$HOME/Library/Developer/Xcode/DerivedData"
 if [[ -d "$DERIVED_DATA_DIR" ]]; then
-    rm -rf "$DERIVED_DATA_DIR"/*
+    # Use find to remove contents, ignoring errors for locked files
+    find "$DERIVED_DATA_DIR" -mindepth 1 -maxdepth 1 -exec rm -rf {} + 2>/dev/null || true
     log_success "DerivedData cleaned"
 else
     log_info "DerivedData directory not found"

@@ -52,26 +52,40 @@ if [[ "$TARGET" == "spm" ]]; then
     
     # Step 1: Clean CocoaPods
     log_step "Cleaning CocoaPods environment"
-    if [[ -d "$PODS_DIR" ]]; then
-        safe_remove_directory "$PODS_DIR" "Pods"
-        log_success "Pods/ removed"
-    else
-        log_info "Pods/ already removed"
-    fi
     
-    # Remove CocoaPods workspace (if it exists)
+    # Remove CocoaPods workspace first (may hold references to Pods)
     if [[ -d "$PODS_WORKSPACE" ]]; then
         # Check if it's a CocoaPods workspace (has Pods reference)
         if grep -q "Pods/Pods.xcodeproj" "$PODS_WORKSPACE/contents.xcworkspacedata" 2>/dev/null; then
-            safe_remove_workspace "$PODS_WORKSPACE"
-            log_success "CocoaPods workspace removed"
+            if safe_remove_workspace "$PODS_WORKSPACE"; then
+                log_success "CocoaPods workspace removed"
+            else
+                log_error "Failed to remove CocoaPods workspace"
+                exit 1
+            fi
         else
             # It might be an SPM workspace, we'll regenerate it
-            safe_remove_workspace "$PODS_WORKSPACE"
-            log_success "Stale workspace removed"
+            if safe_remove_workspace "$PODS_WORKSPACE"; then
+                log_success "Stale workspace removed"
+            else
+                log_warn "Failed to remove workspace (may not be CocoaPods workspace)"
+            fi
         fi
     else
         log_info "CocoaPods workspace already removed"
+    fi
+    
+    # Remove Pods directory (after workspace to avoid lock issues)
+    if [[ -d "$PODS_DIR" ]]; then
+        if safe_remove_directory "$PODS_DIR" "Pods"; then
+            log_success "Pods/ removed"
+        else
+            log_error "Failed to remove Pods/ directory"
+            log_info "This may be due to file locks. Try closing Xcode and retrying."
+            exit 1
+        fi
+    else
+        log_info "Pods/ already removed"
     fi
     
     # Step 2: Clean SPM
@@ -190,8 +204,14 @@ elif [[ "$TARGET" == "pods" ]]; then
     if "$SCRIPT_DIR/cleanup_pods.sh"; then
         log_success "CocoaPods environment cleaned and reinstalled"
     else
-        log_error "CocoaPods cleanup and install failed"
-        exit 1
+        local cleanup_exit=$?
+        log_warn "CocoaPods cleanup had issues (exit code: $cleanup_exit)"
+        # Check if Pods directory exists (critical for Pods mode)
+        if [[ ! -d "$PODS_DIR" ]]; then
+            log_error "Pods/ directory missing after cleanup - Pods mode cannot continue"
+            exit 1
+        fi
+        log_info "Continuing despite cleanup warnings (Pods/ exists)"
     fi
     
     # Step 3: Generate YAML specs

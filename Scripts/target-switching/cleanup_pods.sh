@@ -64,7 +64,8 @@ log_section "Cleaning DerivedData"
 log_step "Cleaning DerivedData cache"
 DERIVED_DATA_DIR="$HOME/Library/Developer/Xcode/DerivedData"
 if [[ -d "$DERIVED_DATA_DIR" ]]; then
-    rm -rf "$DERIVED_DATA_DIR"/*
+    # Use find to remove contents, ignoring errors for locked files
+    find "$DERIVED_DATA_DIR" -mindepth 1 -maxdepth 1 -exec rm -rf {} + 2>/dev/null || true
     log_success "DerivedData cleaned"
 else
     log_info "DerivedData directory not found"
@@ -78,12 +79,16 @@ if command -v bundle &>/dev/null && [[ -f "$ROOT_DIR/Gemfile" ]]; then
     # Ensure UTF-8 encoding for CocoaPods
     export LANG=en_US.UTF-8
     export LC_ALL=en_US.UTF-8
-    if bundle exec pod install; then
+    if bundle exec pod install 2>&1; then
         log_success "CocoaPods installed"
     else
-        log_error "pod install failed"
-        log_info "Try setting: export LANG=en_US.UTF-8"
-        exit 1
+        local pod_exit=$?
+        log_error "pod install failed (exit code: $pod_exit)"
+        log_info "This may be due to network issues or dependency conflicts"
+        log_info "Try running manually: bundle exec pod install"
+        # Don't exit - allow script to continue for validation
+        # The validate_environment function will catch missing Pods
+        return $pod_exit
     fi
 else
     log_error "bundle not available or Gemfile missing"

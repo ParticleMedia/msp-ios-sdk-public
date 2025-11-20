@@ -91,6 +91,12 @@ safe_remove_workspace() {
         return 0
     fi
     
+    # Verify path is within repo root (safety check)
+    if [[ "$workspace_path" != "$ROOT_DIR"* ]]; then
+        log_error "Refusing to remove workspace outside repo root: $workspace_path"
+        return 1
+    fi
+    
     # Verify it's actually a workspace (has contents.xcworkspacedata)
     if [[ ! -f "$workspace_path/contents.xcworkspacedata" ]]; then
         log_warning "Path does not appear to be a workspace: $workspace_path"
@@ -104,7 +110,39 @@ safe_remove_workspace() {
     fi
     
     log_info "Removing workspace: $(basename "$workspace_path")"
-    rm -rf "$workspace_path"
+    
+    # Try standard rm -rf first
+    if rm -rf "$workspace_path" 2>/dev/null; then
+        # Verify removal succeeded
+        if [[ ! -d "$workspace_path" ]]; then
+            return 0
+        fi
+    fi
+    
+    # Fallback: Use find -delete
+    log_warn "Standard removal failed, trying find -delete method"
+    if find "$workspace_path" -delete 2>/dev/null; then
+        if [[ ! -d "$workspace_path" ]]; then
+            return 0
+        fi
+    fi
+    
+    # Last resort: Retry with force
+    log_warn "Attempting forced removal with retry"
+    local retry_count=0
+    local max_retries=3
+    while [[ $retry_count -lt $max_retries ]] && [[ -d "$workspace_path" ]]; do
+        sleep 1
+        rm -rf "$workspace_path" 2>/dev/null || true
+        ((retry_count++))
+    done
+    
+    # Final check
+    if [[ -d "$workspace_path" ]]; then
+        log_error "Failed to remove workspace after $max_retries attempts: $workspace_path"
+        return 1
+    fi
+    
     return 0
 }
 
@@ -120,8 +158,47 @@ safe_remove_directory() {
         return 0
     fi
     
+    # Verify path is within repo root (safety check)
+    if [[ "$dir_path" != "$ROOT_DIR"* ]]; then
+        log_error "Refusing to remove directory outside repo root: $dir_path"
+        return 1
+    fi
+    
     log_info "Removing $description: $(basename "$dir_path")"
-    rm -rf "$dir_path"
+    
+    # Try standard rm -rf first
+    if rm -rf "$dir_path" 2>/dev/null; then
+        # Verify removal succeeded
+        if [[ ! -d "$dir_path" ]]; then
+            return 0
+        fi
+    fi
+    
+    # Fallback: Use find -delete for stubborn directories
+    log_warn "Standard removal failed, trying find -delete method"
+    if find "$dir_path" -delete 2>/dev/null; then
+        if [[ ! -d "$dir_path" ]]; then
+            return 0
+        fi
+    fi
+    
+    # Last resort: Try with force and wait
+    log_warn "Attempting forced removal with retry"
+    local retry_count=0
+    local max_retries=3
+    while [[ $retry_count -lt $max_retries ]] && [[ -d "$dir_path" ]]; do
+        sleep 1
+        rm -rf "$dir_path" 2>/dev/null || true
+        ((retry_count++))
+    done
+    
+    # Final check
+    if [[ -d "$dir_path" ]]; then
+        log_error "Failed to remove $description after $max_retries attempts: $dir_path"
+        log_info "Directory may be locked or in use. Try closing Xcode and retrying."
+        return 1
+    fi
+    
     return 0
 }
 
