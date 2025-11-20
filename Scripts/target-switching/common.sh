@@ -318,6 +318,17 @@ validate_environment() {
             log_error "project.yml missing Pods xcconfig references (required for Pods mode)"
             ((errors++))
         fi
+        
+        # Check that packages section is empty (no SwiftPM packages in Pods mode)
+        if grep -q "^packages:" "$PROJECT_SPEC" 2>/dev/null; then
+            if ! grep -q "^packages: {}$" "$PROJECT_SPEC" 2>/dev/null; then
+                # Check if there are any package entries (not just empty)
+                if grep -A 1 "^packages:" "$PROJECT_SPEC" 2>/dev/null | grep -qE "^  [A-Za-z]"; then
+                    log_error "project.yml contains SwiftPM packages (should be empty in Pods mode)"
+                    ((errors++))
+                fi
+            fi
+        fi
     fi
     
     return $errors

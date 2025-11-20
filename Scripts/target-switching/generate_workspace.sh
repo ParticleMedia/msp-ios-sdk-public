@@ -123,9 +123,16 @@ settings:
 YAML
 
     # Add packages section (sorted alphabetically)
-    if [[ ${#PACKAGE_NAMES[@]} -eq 0 ]]; then
+    # In Pods mode: DO NOT include SwiftPM packages (empty packages block)
+    # In SPM mode: Include all discovered local packages
+    if [[ "$TARGET_MODE" == "pods" ]]; then
+        # Pods mode: empty packages to prevent SwiftPM resolution
+        echo "packages: {}"
+    elif [[ ${#PACKAGE_NAMES[@]} -eq 0 ]]; then
+        # SPM mode but no packages found
         echo "packages: {}"
     else
+        # SPM mode: include all discovered packages
         echo "packages:"
         # Sort package names for determinism
         IFS=$'\n' sorted_packages=($(printf '%s\n' "${PACKAGE_NAMES[@]}" | LC_ALL=C sort))
@@ -335,11 +342,12 @@ if [[ "$TARGET_MODE" == "spm" ]]; then
         ! -path '*/DerivedData/*' ! -path '*/Pods/*' \
         -print | LC_ALL=C sort)
 else
-    # Pods mode: exclude only Pods/Pods.xcodeproj internals, but include individual pod projects
+    # Pods mode: exclude ALL Pods projects (including individual pod projects)
+    # We'll add Pods/Pods.xcodeproj separately at the end
     while IFS= read -r proj; do
         PROJECTS+=("$proj")
     done < <(find "$ROOT_DIR" -name '*.xcodeproj' \
-        ! -path '*/DerivedData/*' ! -path '*/Pods/Pods.xcodeproj/*' \
+        ! -path '*/DerivedData/*' ! -path '*/Pods/*' \
         -print | LC_ALL=C sort)
 fi
 
@@ -370,6 +378,7 @@ YAML
     done
     
     # Only include Pods project if in Pods mode AND it exists
+    # Make sure it's not already included (shouldn't be, since we exclude all Pods/*)
     if [[ "$TARGET_MODE" == "pods" ]] && [[ -d "$PODS_DIR/Pods.xcodeproj" ]]; then
         cat <<'YAML'
     - name: Pods

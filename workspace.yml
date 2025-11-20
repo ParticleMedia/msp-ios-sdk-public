@@ -51,3 +51,6 @@ workspace:
     - name: UnityAdapter
       path: UnityAdapter/UnityAdapter.xcodeproj
       type: file
+    - name: Pods
+      path: Pods/Pods.xcodeproj
+      type: file

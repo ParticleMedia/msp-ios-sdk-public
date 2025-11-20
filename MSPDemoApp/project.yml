@@ -18,70 +18,7 @@ settings:
     PRODUCT_BUNDLE_IDENTIFIER: MSPDemoApp.MSPDemoApp
     SWIFT_VERSION: 5.0
     TARGETED_DEVICE_FAMILY: "1,2"
-packages:
-  FBAudienceNetworkWrapper:
-    name: FBAudienceNetworkWrapper
-    path: ../FBAudienceNetworkWrapper
-  InMobiSDKWrapper:
-    name: InMobiSDKWrapper
-    path: ../InMobiSDKWrapper
-  InmobiAdapter:
-    name: InmobiAdapter
-    path: ../InmobiAdapter
-  IronSourceSDKWrapper:
-    name: IronSourceSDKWrapper
-    path: ../IronSourceSDKWrapper
-  MSPCore:
-    name: MSPCore
-    path: ../MSPCore
-  MSPFacebookAdapter:
-    name: MSPFacebookAdapter
-    path: ../MSPFacebookAdapter
-  MSPGoogleAdapter:
-    name: MSPGoogleAdapter
-    path: ../MSPGoogleAdapter
-  MSPOMSDK:
-    name: MSPOMSDK
-    path: ../MSPOMSDK
-  MSPSharedLibraries:
-    name: MSPSharedLibraries
-    path: ../MSPSharedLibraries
-  MSPiOSCore:
-    name: MSPiOSCore
-    path: ../MSPiOSCore
-  MintegralAdSDKWrapper:
-    name: MintegralAdSDKWrapper
-    path: ../MintegralAdSDKWrapper
-  MintegralAdapter:
-    name: MintegralAdapter
-    path: ../MintegralAdapter
-  MobileFuseSDKWrapper:
-    name: MobileFuseSDKWrapper
-    path: ../MobileFuseSDKWrapper
-  MobilefuseAdapter:
-    name: MobilefuseAdapter
-    path: ../MobilefuseAdapter
-  NovaAdapter:
-    name: NovaAdapter
-    path: ../NovaAdapter
-  NovaCore:
-    name: NovaCore
-    path: ../NovaCore
-  OpenWrapSDKWrapper:
-    name: OpenWrapSDKWrapper
-    path: ../OpenWrapSDKWrapper
-  PrebidAdapter:
-    name: PrebidAdapter
-    path: ../PrebidAdapter
-  PubmaticAdapter:
-    name: PubmaticAdapter
-    path: ../PubmaticAdapter
-  ShimmerWrapper:
-    name: ShimmerWrapper
-    path: ../ShimmerWrapper
-  UnityAdapter:
-    name: UnityAdapter
-    path: ../UnityAdapter
+packages: {}
 targetTemplates:
   BaseAppTarget:
     type: application
@@ -98,70 +35,74 @@ targetTemplates:
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
         ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
         SWIFT_VERSION: 5.0
+        PODS_ROOT: "$(SRCROOT)/../Pods"
         LD_RUNPATH_SEARCH_PATHS:
           - "$(inherited)"
           - "@executable_path/Frameworks"
 targets:
-  MSPDemoApp-SPM:
+  MSPDemoApp:
     templates:
       - BaseAppTarget
+    configFiles:
+      Debug: ../Pods/Target Support Files/Pods-MSPDemoApp/Pods-MSPDemoApp.debug.xcconfig
+      Release: ../Pods/Target Support Files/Pods-MSPDemoApp/Pods-MSPDemoApp.release.xcconfig
+    prebuildScripts:
+      - name: "[CP] Check Pods Manifest.lock"
+        script: |
+          if [ -z "${PODS_PODFILE_DIR_PATH}" ] || [ -z "${PODS_ROOT}" ]; then
+            echo "error: CocoaPods environment variables are not set." >&2
+            exit 1
+          fi
+          if [ ! -e "${PODS_ROOT}/Manifest.lock" ] || [ ! -e "${PODS_PODFILE_DIR_PATH}/Podfile.lock" ]; then
+            echo "error: Run 'pod install' to generate Pods/Manifest.lock." >&2
+            exit 1
+          fi
+          if ! diff "${PODS_PODFILE_DIR_PATH}/Podfile.lock" "${PODS_ROOT}/Manifest.lock" >/dev/null; then
+            echo "error: Podfile.lock and Manifest.lock are out of sync. Run 'pod install'." >&2
+            exit 1
+          fi
+        shell: /bin/sh
+    postbuildScripts:
+      - name: "[CP] Copy Pods Resources"
+        script: "\"${PODS_ROOT}/Target Support Files/Pods-MSPDemoApp/Pods-MSPDemoApp-resources.sh\""
+        shell: /bin/sh
+      - name: "[CP] Embed Pods Frameworks"
+        script: "\"${PODS_ROOT}/Target Support Files/Pods-MSPDemoApp/Pods-MSPDemoApp-frameworks.sh\""
+        shell: /bin/sh
+  MSPDemoAppTests:
+    type: bundle.unit-test
+    platform: iOS
+    sources:
+      - path: MSPDemoAppTests
     settings:
       base:
-        PRODUCT_BUNDLE_IDENTIFIER: MSPDemoApp.MSPDemoAppSPM
-    configFiles:
-      Debug: ../Configs/MSPDemoApp-Debug-SPM.xcconfig
-      Release: ../Configs/MSPDemoApp-Release-SPM.xcconfig
+        ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES: YES
+        TEST_HOST: "$(BUILT_PRODUCTS_DIR)/MSPDemoApp.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/MSPDemoApp"
     dependencies:
-      - package: FBAudienceNetworkWrapper
-        product: FBAudienceNetworkWrapper
-      - package: InMobiSDKWrapper
-        product: InMobiSDKWrapper
-      - package: InmobiAdapter
-        product: InmobiAdapter
-      - package: IronSourceSDKWrapper
-        product: IronSourceSDKWrapper
-      - package: MSPCore
-        product: MSPCore
-      - package: MSPFacebookAdapter
-        product: MSPFacebookAdapter
-      - package: MSPGoogleAdapter
-        product: MSPGoogleAdapter
-      - package: MSPOMSDK
-        product: MSPOMSDK
-      - package: MSPSharedLibraries
-        product: MSPSharedLibraries
-      - package: MSPiOSCore
-        product: MSPiOSCore
-      - package: MintegralAdSDKWrapper
-        product: MintegralAdSDKWrapper
-      - package: MintegralAdapter
-        product: MintegralAdapter
-      - package: MobileFuseSDKWrapper
-        product: MobileFuseSDKWrapper
-      - package: MobilefuseAdapter
-        product: MobilefuseAdapter
-      - package: NovaAdapter
-        product: NovaAdapter
-      - package: NovaCore
-        product: NovaCore
-      - package: OpenWrapSDKWrapper
-        product: OpenWrapSDKWrapper
-      - package: PrebidAdapter
-        product: PrebidAdapter
-      - package: PubmaticAdapter
-        product: PubmaticAdapter
-      - package: ShimmerWrapper
-        product: ShimmerWrapper
-      - package: UnityAdapter
-        product: UnityAdapter
+      - target: MSPDemoApp
+  MSPDemoAppUITests:
+    type: bundle.ui-testing
+    platform: iOS
+    sources:
+      - path: MSPDemoAppUITests
+    settings:
+      base:
+        ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES: YES
+    dependencies:
+      - target: MSPDemoApp
 schemes:
-  MSPDemoApp-SPM:
+  MSPDemoApp:
     build:
       targets:
-        MSPDemoApp-SPM: all
+        MSPDemoApp: all
+        MSPDemoAppTests: test
+        MSPDemoAppUITests: test
     test:
       config: Debug
-      targets: []
+      gatherCoverageData: false
+      targets:
+        - target: MSPDemoAppTests
+        - target: MSPDemoAppUITests
     run:
       config: Debug
     profile:
