@@ -62,24 +62,21 @@ This project supports two integration modes. Choose one based on your needs:
 **Complete setup workflow:**
 
 ```bash
-# 1. Switch to CocoaPods mode (installs Pods and generates YAML)
+# Switch to CocoaPods mode (fully automated)
 ./Scripts/target-switching/switch-target.sh pods
 
-# 2. Generate Xcode project from YAML
-xcodegen generate --spec MSPDemoApp/project.yml
-
-# 3. Generate workspace (includes all projects + Pods)
-./Scripts/tools/generate-workspace.sh
-
-# 4. Open workspace in Xcode
-open msp-ios-sdk.xcworkspace
+# Xcode opens automatically with workspace
+# Build MSPDemoApp scheme
 ```
 
-**What this does:**
+**What this does automatically:**
+- Cleans SPM environment
 - Installs CocoaPods dependencies (`Pods/` directory)
 - Generates `project.yml` and `workspace.yml` configuration files
-- Creates `MSPDemoApp.xcodeproj` from YAML
-- Creates `msp-ios-sdk.xcworkspace` with all projects
+- **Automatically runs `xcodegen generate`** to create `MSPDemoApp.xcodeproj`
+- **Automatically generates** `msp-ios-sdk.xcworkspace` with all projects
+- Validates environment
+- Opens Xcode
 
 **Build the demo app:**
 - In Xcode, select scheme: `MSPDemoApp`
@@ -94,28 +91,28 @@ open msp-ios-sdk.xcworkspace
 **Complete setup workflow:**
 
 ```bash
-# 1. First-time setup: Build XCFrameworks (requires Pods)
-#    Switch to Pods mode temporarily to install dependencies
+# First-time setup: Build XCFrameworks (requires Pods)
+# 1. Switch to Pods mode temporarily to install dependencies
 ./Scripts/target-switching/switch-target.sh pods
 
 # 2. Build all wrapper XCFrameworks (this step only needed once)
 ./Scripts/xcframeworks/build-all.sh
 
-# 3. Switch to SPM mode (removes Pods, generates SPM YAML)
+# 3. Switch to SPM mode (fully automated)
 ./Scripts/target-switching/switch-target.sh spm
 
-# 4. Generate Xcode project from YAML
-xcodegen generate --spec MSPDemoApp/project.yml
-
-# 5. Open project in Xcode
-open MSPDemoApp/MSPDemoApp.xcodeproj
+# Xcode opens automatically with project
+# Build MSPDemoApp-SPM scheme
 ```
 
-**What this does:**
+**What this does automatically:**
 - Builds wrapper XCFrameworks for SPM (Shimmer, FBAudienceNetwork, etc.)
 - Removes `Pods/` directory
 - Generates `project.yml` with SPM target definitions
-- Creates `MSPDemoApp.xcodeproj` with SPM dependencies
+- **Automatically runs `xcodegen generate`** to create `MSPDemoApp.xcodeproj`
+- **Automatically generates** workspace
+- Validates environment
+- Opens Xcode
 
 **Build the demo app:**
 - In Xcode, select scheme: `MSPDemoApp-SPM`
@@ -199,15 +196,17 @@ The script **automatically** performs:
                      │
                      ▼
 ┌─────────────────────────────────────────────────────────┐
-│  3. Validate Environment                                │
-│     - Check YAML matches target mode                    │
-│     - Verify no mixed state                             │
+│  3. Auto-Generate Xcode Project                        │
+│     - Automatically runs: xcodegen generate             │
+│     - Creates .xcodeproj from YAML                      │
+│     - Generates workspace (Pods mode)                   │
 └────────────────────┬────────────────────────────────────┘
                      │
                      ▼
 ┌─────────────────────────────────────────────────────────┐
-│  4. Developer runs: xcodegen generate --spec ...         │
-│     (Manual step - not automatic)                       │
+│  4. Validate Environment                                │
+│     - Check YAML matches target mode                    │
+│     - Verify no mixed state                             │
 └────────────────────┬────────────────────────────────────┘
                      │
                      ▼
@@ -245,26 +244,21 @@ The script **automatically** performs:
 
 **Workflow:**
 ```bash
-# 1. Switch to Pods mode
+# Switch to Pods mode (fully automated)
 ./Scripts/target-switching/switch-target.sh pods
 
-# 2. Regenerate Xcode project (REQUIRED)
-xcodegen generate --spec MSPDemoApp/project.yml
-
-# 3. Generate workspace (REQUIRED)
-./Scripts/tools/generate-workspace.sh
-
-# 4. Open workspace
-open msp-ios-sdk.xcworkspace
-
-# 5. Build MSPDemoApp scheme
+# Xcode opens automatically
+# Build MSPDemoApp scheme
 ```
 
-**What happens:**
+**What happens automatically:**
+- Cleans SPM environment
 - `Pods/` directory is created/updated
-- `msp-ios-sdk.xcworkspace` is created by `generate-workspace.sh` script
-- `project.yml` includes Pods xcconfig references
-- `workspace.yml` includes Pods project
+- `project.yml` and `workspace.yml` are generated
+- **Automatically runs `xcodegen generate`** to create `MSPDemoApp.xcodeproj`
+- **Automatically generates** `msp-ios-sdk.xcworkspace` with all projects
+- Validates environment
+- Opens Xcode
 
 ### SPM Mode
 
@@ -278,26 +272,24 @@ open msp-ios-sdk.xcworkspace
 
 **Workflow:**
 ```bash
-# 1. Build xcframeworks (if not already built)
+# Build xcframeworks (if not already built)
 ./Scripts/xcframeworks/build-all.sh
 
-# 2. Switch to SPM mode
+# Switch to SPM mode (fully automated)
 ./Scripts/target-switching/switch-target.sh spm
 
-# 3. Regenerate Xcode project (REQUIRED)
-xcodegen generate --spec MSPDemoApp/project.yml
-
-# 4. Open project
-open MSPDemoApp/MSPDemoApp.xcodeproj
-
-# 5. Build MSPDemoApp-SPM scheme
+# Xcode opens automatically
+# Build MSPDemoApp-SPM scheme
 ```
 
-**What happens:**
+**What happens automatically:**
 - `Pods/` directory is removed (if exists)
 - `project.yml` includes only SPM target definitions
 - `workspace.yml` includes only SPM workspace definitions
-- Local wrapper packages are referenced via `path:` dependencies
+- **Automatically runs `xcodegen generate`** to create `MSPDemoApp.xcodeproj`
+- **Automatically generates** workspace
+- Validates environment
+- Opens Xcode
 
 ---
 
@@ -328,11 +320,10 @@ Scripts/target-switching/
 - Validates environment matches target mode
 - Opens Xcode (project or workspace)
 
-**Does NOT:**
-- Run xcodegen (manual step)
-- Modify .pbxproj files
-- Modify .xcscheme files
-- Generate workspace files
+**Automatically:**
+- Runs `xcodegen generate` to create Xcode project
+- Generates workspace files (for Pods mode)
+- Opens Xcode with correct project/workspace
 
 #### `generate_workspace.sh`
 **Purpose:** Generate deterministic YAML specs
@@ -342,7 +333,7 @@ Scripts/target-switching/
 - Generates `workspace.yml` (mode-aware: includes/excludes Pods)
 - Sorts packages and products alphabetically
 - Compares with existing files (only writes if changed)
-- **Never runs xcodegen**
+- **Note:** `xcodegen generate` is run automatically by `switch-target.sh`
 
 **Output:**
 - `MSPDemoApp/project.yml` - Xcodegen project spec
@@ -625,16 +616,13 @@ git diff  # Shows zero changes (or only expected YAML changes)
 
 **Solution:**
 ```bash
-# 1. Regenerate Xcode project from YAML
-xcodegen generate --spec MSPDemoApp/project.yml
+# 1. Re-run switch-target.sh (automatically regenerates project)
+./Scripts/target-switching/switch-target.sh [spm|pods]
 
 # 2. Clean DerivedData
 rm -rf ~/Library/Developer/Xcode/DerivedData/*
 
-# 3. For CocoaPods target, ensure Pods are installed
-bundle exec pod install
-
-# 4. Rebuild in Xcode
+# 3. Rebuild in Xcode
 ```
 
 ### YAML Files Not Updating
@@ -696,11 +684,11 @@ bundle exec pod install
 
 **Solution:**
 ```bash
-# For SPM mode: Open project directly
-open MSPDemoApp/MSPDemoApp.xcodeproj
+# Re-run switch-target.sh (automatically generates workspace)
+./Scripts/target-switching/switch-target.sh [spm|pods]
 
-# For Pods mode: Ensure pod install completed
-bundle exec pod install
+# Or manually generate workspace (Pods mode only)
+./Scripts/tools/generate-workspace.sh
 open msp-ios-sdk.xcworkspace
 ```
 
@@ -728,14 +716,12 @@ Before releasing a new version:
 
 1. **Test both targets:**
    ```bash
-   # Test SPM target
+   # Test SPM target (fully automated)
    ./Scripts/target-switching/switch-target.sh spm
-   xcodegen generate
    # Build in Xcode: Product → Build (⌘B)
    
-   # Test CocoaPods target
+   # Test CocoaPods target (fully automated)
    ./Scripts/target-switching/switch-target.sh pods
-   xcodegen generate
    # Build in Xcode: Product → Build (⌘B)
    ```
 
@@ -793,12 +779,10 @@ Before releasing a new version:
 ### Contribution Guidelines
 
         1. Switch to your target: `./Scripts/target-switching/switch-target.sh [spm|pods]`
-        2. Regenerate Xcode projects: `xcodegen generate --spec MSPDemoApp/project.yml`
-        3. For CocoaPods target: `bundle exec pod install`
-4. Build/test both demo app schemes (`MSPDemoApp` and `MSPDemoApp-SPM`)
-5. Commit only source/spec files—**never commit** `.pbxproj`, `.xcscheme`, or generated workspace files
-6. Verify zero-diff switching: run round-trip test and confirm only YAML files change
-7. Submit pull requests with build logs for both schemes
+        2. Build/test both demo app schemes (`MSPDemoApp` and `MSPDemoApp-SPM`)
+        3. Commit only source/spec files—**never commit** `.pbxproj`, `.xcscheme`, or generated workspace files
+        4. Verify zero-diff switching: run round-trip test and confirm only YAML files change
+        5. Submit pull requests with build logs for both schemes
 
 ---
 
@@ -822,26 +806,29 @@ The `generate_workspace.sh` script generates deterministic YAML files:
 
 ### Xcode Project Generation
 
-Xcode projects are generated **manually** using:
+Xcode projects are generated **automatically** by `switch-target.sh`:
 
 ```bash
-xcodegen generate --spec MSPDemoApp/project.yml
+# Automatically runs: xcodegen generate --spec MSPDemoApp/project.yml
+./Scripts/target-switching/switch-target.sh [spm|pods]
 ```
 
-This command:
+This process:
 - Reads `MSPDemoApp/project.yml`
 - Reads `workspace.yml`
 - Generates `.xcodeproj` and `.xcscheme` files
-- **Never** run automatically by target switching
+- **Always** runs automatically during target switching
+- No manual steps required
 
 ### Workspace Creation
 
 **SPM Mode:**
-- Workspace created by Xcode when opening project
-- Or manually created by developer
+- Workspace automatically generated by `switch-target.sh`
+- Located at `msp-ios-sdk.xcworkspace`
 
 **Pods Mode:**
-- Workspace created by `pod install`
+- Workspace automatically generated by `switch-target.sh`
+- Includes all projects + Pods project
 - Located at `msp-ios-sdk.xcworkspace`
 
 ---
