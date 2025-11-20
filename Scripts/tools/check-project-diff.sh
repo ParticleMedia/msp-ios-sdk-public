@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Check if generated Xcode project files have changed
-# This script warns developers if .pbxproj or .xcscheme files were modified
+# This script provides informational awareness about project file changes
 # Usage: Scripts/tools/check-project-diff.sh
 
 set -euo pipefail
@@ -19,55 +19,29 @@ source "$ROOT_DIR/Scripts/lib/ui.sh"
 # Initialize paths
 init_paths
 
-# Patterns to check for generated Xcode files
-CHECK_PATTERNS=(
-    "MSPDemoApp/**/*.pbxproj"
-    "MSPDemoApp/**/*.xcscheme"
-)
-
-# Check if any generated files have changed
+# Check for changed Xcode project files
 CHANGED_FILES=()
-for pattern in "${CHECK_PATTERNS[@]}"; do
-    while IFS= read -r file; do
-        if [[ -n "$file" ]]; then
-            CHANGED_FILES+=("$file")
-        fi
-    done < <(git diff --name-only | grep -E "$pattern" || true)
-done
+while IFS= read -r file; do
+    if [[ -n "$file" ]]; then
+        CHANGED_FILES+=("$file")
+    fi
+done < <(git diff --name-only | grep -E "(\.pbxproj$|\.xcscheme$|\.xcworkspace$)" || true)
 
 if [[ ${#CHANGED_FILES[@]} -gt 0 ]]; then
-    echo ""
-    log_warn "Generated Xcode files have changed"
-    echo ""
-    log_info "The following generated files were modified:"
-    echo ""
+    log_info "Xcode project files changed. This is expected after regeneration."
+    log_info ""
+    log_info "Changed files:"
     for file in "${CHANGED_FILES[@]}"; do
-        echo -e "  ${YELLOW}⚠${NC}  $file"
+        log_info "  • $file"
     done
-    echo ""
-    log_warn "These files should NOT be committed!"
-    echo ""
-    log_info "These files are generated from YAML specs. If you need to update them:"
-    echo ""
-    log_info "  1. Run: ${CYAN}xcodegen generate --spec MSPDemoApp/project.yml${NC}"
-    echo ""
-    log_info "  2. Review the changes to ensure they're expected"
-    echo ""
-    log_info "  3. If changes are unexpected, revert them:"
-    echo ""
-    for file in "${CHANGED_FILES[@]}"; do
-        echo -e "     ${CYAN}git restore $file${NC}"
-    done
-    echo ""
-    log_info "  4. Only commit source files (project.yml, workspace.yml, .swift, etc.)"
-    echo ""
-    log_warn "The pre-commit hook will block committing these files."
-    echo ""
+    log_info ""
+    log_info "These files are auto-generated and nondeterministic."
+    log_info "YAML files (project.yml, workspace.yml) are the source of truth."
 else
-    # Silent success - no need to spam output if everything is fine
-    exit 0
+    # Silent success - no changes detected
+    :
 fi
 
-# Exit with 0 (non-blocking warning)
+# Always exit 0 (informational only)
 exit 0
 
