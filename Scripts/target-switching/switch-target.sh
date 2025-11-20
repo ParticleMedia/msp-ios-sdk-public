@@ -96,21 +96,67 @@ if [[ "$TARGET" == "spm" ]]; then
         log_warn "SPM cleanup had warnings (continuing)"
     fi
     
-    # Step 3: Check xcframeworks (warn only, don't build)
+    # Step 3: Check and build required XCFrameworks
     log_section "XCFramework Validation"
+    
+    # Check wrapper XCFrameworks
     log_step "Checking wrapper xcframeworks"
-    if check_xcframeworks_exist; then
-        missing=0
-    else
-        missing=$?
+    wrapper_missing=0
+    if ! check_xcframeworks_exist; then
+        wrapper_missing=$?
     fi
-    if [[ $missing -gt 0 ]]; then
-        log_warn "$missing wrapper(s) missing xcframeworks"
-        log_info "To build xcframeworks, run:"
+    if [[ $wrapper_missing -gt 0 ]]; then
+        log_warn "$wrapper_missing wrapper(s) missing xcframeworks"
+        log_info "To build wrapper xcframeworks, run:"
         log_info "  1. bundle exec pod install"
         log_info "  2. Scripts/target-switching/build-xcframeworks.sh"
     else
-        log_success "All xcframeworks present"
+        log_success "All wrapper xcframeworks present"
+    fi
+    
+    # Check required XCFrameworks
+    log_step "Checking required XCFrameworks"
+    required_missing=0
+    if ! check_required_xcframeworks; then
+        required_missing=$?
+    fi
+    
+    if [[ $required_missing -gt 0 ]]; then
+        log_warn "$required_missing required XCFramework(s) missing"
+        
+        # Build NovaCore if missing
+        if [[ ! -d "$ROOT_DIR/NovaAdapter/NovaCore.xcframework" ]]; then
+            log_step "Building NovaCore.xcframework"
+            BUILD_NOVA_SCRIPT="$ROOT_DIR/Scripts/xcframeworks/internal/build-nova.sh"
+            if [[ -f "$BUILD_NOVA_SCRIPT" ]]; then
+                if SKIP_CODE_SIGN="${SKIP_CODE_SIGN:-1}" bash "$BUILD_NOVA_SCRIPT" 2>&1; then
+                    log_success "NovaCore.xcframework built successfully"
+                    ((required_missing--))
+                else
+                    log_error "Failed to build NovaCore.xcframework"
+                    log_info "Build script: $BUILD_NOVA_SCRIPT"
+                fi
+            else
+                log_error "NovaCore build script not found: $BUILD_NOVA_SCRIPT"
+            fi
+        fi
+        
+        # Re-check after build
+        if ! check_required_xcframeworks; then
+            remaining=$?
+            if [[ $remaining -gt 0 ]]; then
+                log_error "$remaining required XCFramework(s) still missing"
+                log_info "Missing XCFrameworks must be built or copied manually:"
+                log_info "  - MSPSharedLibraries/PrebidMobile.xcframework"
+                log_info "  - MSPSharedLibraries/OMSDK_Newsbreak1.xcframework"
+                log_info "  - MSPOMSDK/OMSDK_Newsbreak1.xcframework"
+                exit 1
+            fi
+        else
+            log_success "All required XCFrameworks present"
+        fi
+    else
+        log_success "All required XCFrameworks present"
     fi
     
     # Step 4: Generate YAML specs
@@ -148,7 +194,17 @@ if [[ "$TARGET" == "spm" ]]; then
         fi
     fi
     
-    # Step 7: Validate environment
+    # Step 7: Final XCFramework verification
+    log_section "Final Verification"
+    log_step "Verifying all required XCFrameworks"
+    if ! check_required_xcframeworks; then
+        errors=$?
+        log_error "$errors required XCFramework(s) missing - SPM mode cannot proceed"
+        exit 1
+    fi
+    log_success "All required XCFrameworks verified"
+    
+    # Step 8: Validate environment
     log_section "Environment Validation"
     log_step "Validating environment"
     if validate_environment "spm"; then
@@ -159,7 +215,7 @@ if [[ "$TARGET" == "spm" ]]; then
         exit 1
     fi
     
-    # Step 8: Open Xcode
+    # Step 9: Open Xcode
     log_section "Opening Xcode"
     log_step "Opening Xcode"
     PROJECT_DIR="$(dirname "$PROJECT_SPEC")"
@@ -267,7 +323,20 @@ elif [[ "$TARGET" == "pods" ]]; then
         log_warn "Pods/ not found, skipping wrapper validation"
     fi
     
-    # Step 7: Validate environment
+    # Step 7: Verify no SPM packages in project.yml
+    log_section "SPM Isolation Check"
+    log_step "Verifying SPM packages are excluded"
+    if grep -q "^packages: {}$" "$PROJECT_SPEC" 2>/dev/null; then
+        log_success "SPM packages correctly excluded (packages: {})"
+    elif grep -q "^packages:$" "$PROJECT_SPEC" 2>/dev/null && ! grep -A 1 "^packages:" "$PROJECT_SPEC" | grep -qE "^  [A-Za-z]"; then
+        log_success "SPM packages correctly excluded (empty packages)"
+    else
+        log_error "project.yml contains SPM packages - Pods mode should not include packages"
+        log_info "This may cause SwiftPM resolution errors in Pods mode"
+        exit 1
+    fi
+    
+    # Step 8: Validate environment
     log_section "Environment Validation"
     log_step "Validating environment"
     if validate_environment "pods"; then
@@ -278,7 +347,7 @@ elif [[ "$TARGET" == "pods" ]]; then
         exit 1
     fi
     
-    # Step 8: Open Xcode (workspace created by pod install or generate-workspace.sh)
+    # Step 9: Open Xcode (workspace created by pod install or generate-workspace.sh)
     log_section "Opening Xcode"
     log_step "Opening Xcode"
     if [[ -d "$PODS_WORKSPACE" ]]; then

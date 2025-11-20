@@ -272,6 +272,30 @@ check_xcframeworks_exist() {
     return $missing
 }
 
+# Check required XCFrameworks for SPM mode
+check_required_xcframeworks() {
+    local missing=0
+    local required_xcframeworks=(
+        "MSPSharedLibraries/PrebidMobile.xcframework"
+        "MSPSharedLibraries/OMSDK_Newsbreak1.xcframework"
+        "MSPOMSDK/OMSDK_Newsbreak1.xcframework"
+        "NovaAdapter/NovaCore.xcframework"
+    )
+    
+    for xcf in "${required_xcframeworks[@]}"; do
+        local xcf_path="$ROOT_DIR/$xcf"
+        if [[ ! -d "$xcf_path" ]]; then
+            log_warning "Required XCFramework missing: $xcf"
+            ((missing++))
+        elif [[ ! -f "$xcf_path/Info.plist" ]]; then
+            log_warning "Required XCFramework invalid (missing Info.plist): $xcf"
+            ((missing++))
+        fi
+    done
+    
+    return $missing
+}
+
 # ============================================================================
 # Validation
 # ============================================================================
@@ -318,6 +342,13 @@ validate_environment() {
         # Check workspace.yml doesn't include Pods project
         if grep -q "Pods/Pods.xcodeproj" "$WORKSPACE_SPEC" 2>/dev/null; then
             log_error "workspace.yml contains Pods project (should not in SPM mode)"
+            ((errors++))
+        fi
+        
+        # Verify required XCFrameworks exist
+        if ! check_required_xcframeworks >/dev/null 2>&1; then
+            local xcf_missing=$?
+            log_error "$xcf_missing required XCFramework(s) missing for SPM mode"
             ((errors++))
         fi
         
