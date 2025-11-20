@@ -133,40 +133,47 @@ Once you've completed initial setup, you can switch between modes:
 **Switch to CocoaPods Mode:**
 ```bash
 ./Scripts/target-switching/switch-target.sh pods
-xcodegen generate --spec MSPDemoApp/project.yml
-./Scripts/tools/generate-workspace.sh
-open msp-ios-sdk.xcworkspace
+# Everything is automatic - Xcode opens automatically
 ```
 
 **Switch to SPM Mode:**
 ```bash
-# If XCFrameworks are already built, just switch:
+# If XCFrameworks are already built:
 ./Scripts/target-switching/switch-target.sh spm
-xcodegen generate --spec MSPDemoApp/project.yml
-open MSPDemoApp/MSPDemoApp.xcodeproj
+# Everything is automatic - Xcode opens automatically
 
 # If XCFrameworks are missing, build them first:
 ./Scripts/target-switching/switch-target.sh pods  # Temporary switch
 ./Scripts/xcframeworks/build-all.sh              # Build XCFrameworks
 ./Scripts/target-switching/switch-target.sh spm   # Switch to SPM
-xcodegen generate --spec MSPDemoApp/project.yml
-open MSPDemoApp/MSPDemoApp.xcodeproj
+# Everything is automatic - Xcode opens automatically
 ```
 
 ---
 
 ## 🎯 Developer Workflow
 
-### Engineering Workflow (Target Switching + Xcodegen)
+### Simplified Engineering Workflow
 
-**Critical Understanding:**
-- `switch-target.sh` produces **ONLY YAML diffs** (`project.yml` + `workspace.yml`)
-- Xcode **DOES NOT auto-update** project files anymore
-- Developers **MUST** run `xcodegen generate --spec MSPDemoApp/project.yml` manually
-- Developers **MUST NEVER commit** generated Xcode files:
-  - `*.pbxproj`
-  - `*.xcscheme`
-  - `*.xcworkspace`
+**Switching Targets (Automatic Project Generation):**
+
+```bash
+# Switch to SPM mode
+./Scripts/target-switching/switch-target.sh spm
+
+# Switch to CocoaPods mode
+./Scripts/target-switching/switch-target.sh pods
+```
+
+The script **automatically** performs:
+- Environment cleanup (Pods or SPM)
+- Deterministic YAML generation (`project.yml`, `workspace.yml`)
+- **Automatic `xcodegen generate`** (Xcode project regeneration)
+- Workspace generation (for Pods mode)
+- Environment validation
+- Opens Xcode
+
+**No manual steps required.** The workflow is fully automated.
 
 ### Target Switching Flow
 
@@ -215,16 +222,15 @@ open MSPDemoApp/MSPDemoApp.xcodeproj
 
 **For SPM Development:**
 1. Run `./Scripts/target-switching/switch-target.sh spm`
-2. Run `xcodegen generate --spec MSPDemoApp/project.yml` (regenerates Xcode project from YAML)
-3. Open `MSPDemoApp/MSPDemoApp.xcodeproj` in Xcode
-4. Select scheme `MSPDemoApp-SPM` and build
+2. Xcode opens automatically with `MSPDemoApp.xcodeproj`
+3. Select scheme `MSPDemoApp-SPM` and build
 
 **For CocoaPods Development:**
 1. Run `./Scripts/target-switching/switch-target.sh pods`
-2. Run `xcodegen generate --spec MSPDemoApp/project.yml` (regenerates Xcode project)
-3. Run `./Scripts/tools/generate-workspace.sh` (generates workspace)
-4. Open `msp-ios-sdk.xcworkspace` in Xcode
-5. Select scheme `MSPDemoApp` and build
+2. Xcode opens automatically with `msp-ios-sdk.xcworkspace`
+3. Select scheme `MSPDemoApp` and build
+
+**All steps are automatic** - no manual `xcodegen` or workspace generation required.
 
 ---
 
@@ -431,27 +437,34 @@ When switching **to** Pods:
 
 ---
 
-## 🧪 Zero-Diff Switching Guarantee
+## 🧪 Deterministic YAML, Nondeterministic Project Files
 
-### What Changes
+### What Changes (Deterministic)
 
-After running `switch-target.sh`, **only** these files change:
+After running `switch-target.sh`, these files change deterministically:
 - ✅ `MSPDemoApp/project.yml` (mode-aware target definitions)
 - ✅ `workspace.yml` (mode-aware project references)
 
-### What Never Changes
+**YAML files are the single source of truth** and are fully deterministic.
 
-After running `switch-target.sh`, these files **never** change:
-- ❌ `.pbxproj` files (Xcode project files)
-- ❌ `.xcscheme` files (Xcode scheme files)
-- ❌ Workspace contents (xcworkspace/contents.xcworkspacedata)
-- ❌ Any files inside `.xcodeproj` bundles
+### What Also Changes (Nondeterministic)
 
-**Why this matters:**
-- Prevents merge conflicts in generated files
-- Ensures consistent project state across developers
-- Enables deterministic CI/CD builds
-- Maintains clean git history
+After running `switch-target.sh`, these files are **auto-generated** and may change:
+- `.pbxproj` files (Xcode project files)
+- `.xcscheme` files (Xcode scheme files)
+- Workspace contents (xcworkspace/contents.xcworkspacedata)
+
+**Why project files are nondeterministic:**
+- Xcode constantly rewrites project files when opening/editing
+- SwiftPM rewrites workspace files when resolving packages
+- CocoaPods regenerates integration sections on `pod install`
+- Build tools update metadata automatically
+- These files are inherently nondeterministic
+
+**Therefore:**
+- ➡️ **YAML files are the only "source of truth"**
+- ➡️ **PBXProj diffs are normal and acceptable**
+- ➡️ **Project files are expected to change and can be committed**
 
 ### Round-Trip Determinism
 
@@ -499,7 +512,7 @@ git diff  # Shows zero changes (or only expected YAML changes)
    brew install xcodegen
    ```
    - Used to generate Xcode projects from YAML specs
-   - Must be run manually after switching targets
+   - Automatically run by `switch-target.sh` (no manual steps required)
 
 2. **Ruby + Bundler**
    ```bash
@@ -520,16 +533,24 @@ git diff  # Shows zero changes (or only expected YAML changes)
 
 ### Important Notes
 
-⚠️ **Never commit Xcode project files:**
-- `.pbxproj` files are generated from YAML
-- `.xcscheme` files are generated from YAML
-- Workspace files are generated by Xcode or CocoaPods
-- Only commit `project.yml` and `workspace.yml`
+✅ **What SHOULD be committed:**
+- `project.yml` and `workspace.yml` (source of truth)
+- Wrapper source files (Swift + Package.swift)
+- Generated `.pbxproj` files (when Xcode project legitimately changes)
+- Generated `.xcscheme` files (when schemes legitimately change)
+- Workspace files (when workspace structure changes)
 
-⚠️ **Always run xcodegen after switching:**
-- Target switching only modifies YAML files
-- Xcode projects must be regenerated manually
-- Run `xcodegen generate --spec MSPDemoApp/project.yml` after each switch
+❌ **What SHOULD NOT be committed:**
+- `DerivedData/` (build artifacts)
+- `SourcePackages/` (SwiftPM cache)
+- `xcuserdata/` (user-specific settings)
+- `build/` directories (build outputs)
+- `.swiftpm/` directories (SwiftPM cache)
+
+**Automatic project generation:**
+- `switch-target.sh` automatically runs `xcodegen generate`
+- No manual steps required
+- Project files are regenerated from YAML on every switch
 
 ---
 
@@ -555,19 +576,19 @@ git diff  # Shows zero changes (or only expected YAML changes)
 - Source code files (`.swift`, `.m`, `.h`)
 - Configuration files
 
-### ❌ Forgetting to Run `xcodegen generate`
+### ✅ Automatic Project Generation
 
-**Mistake:** Switching targets but not regenerating Xcode project
+**Good news:** `xcodegen generate` now runs automatically!
 
-**Symptoms:**
-- Build errors about missing targets
-- Scheme not found errors
-- Outdated project structure
+**What happens:**
+- `switch-target.sh` automatically runs `xcodegen generate` after YAML generation
+- No manual steps required
+- Project files are always up-to-date after switching
 
-**How to avoid:**
-- Always run `xcodegen generate --spec MSPDemoApp/project.yml` after switching (generates project)
-- Then run `./Scripts/tools/generate-workspace.sh` to generate the workspace (Pods mode only)
-- The `check-project-diff.sh` script will warn you if project files are out of sync
+**If you see build errors:**
+- Clean DerivedData: `rm -rf ~/Library/Developer/Xcode/DerivedData/*`
+- Rebuild in Xcode
+- For SPM: Wait for package resolution (File → Packages → Resolve Package Versions)
 
 ### ❌ Building XCFrameworks in Wrong Mode
 
@@ -636,11 +657,10 @@ rm MSPDemoApp/project.yml workspace.yml
 
 **Solution:**
 ```bash
-# Clean everything and re-switch
+# Clean everything and re-switch (automatically regenerates project)
 ./Scripts/target-switching/cleanup_spm.sh --force
 ./Scripts/target-switching/cleanup_pods.sh
 ./Scripts/target-switching/switch-target.sh [spm|pods]
-xcodegen generate
 ```
 
 ### Xcodegen Not Found
