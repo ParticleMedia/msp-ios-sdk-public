@@ -99,7 +99,7 @@ if [[ "$TARGET" == "spm" ]]; then
         log_success "All xcframeworks present"
     fi
     
-    # Step 4: Generate YAML specs (only)
+    # Step 4: Generate YAML specs
     log_section "YAML Generation"
     log_step "Generating YAML specs"
     if "$SCRIPT_DIR/generate_workspace.sh" spm; then
@@ -109,7 +109,32 @@ if [[ "$TARGET" == "spm" ]]; then
         exit 1
     fi
     
-    # Step 5: Validate environment
+    # Step 5: Generate Xcode project from YAML
+    log_section "Xcode Project Generation"
+    log_step "Generating Xcode project from YAML"
+    if command -v xcodegen &>/dev/null; then
+        if xcodegen generate --spec "$PROJECT_SPEC" 2>&1; then
+            log_success "Xcode project regenerated successfully"
+        else
+            log_fatal "Xcode project generation failed"
+            exit 1
+        fi
+    else
+        log_fatal "xcodegen not found. Install via: brew install xcodegen"
+        exit 1
+    fi
+    
+    # Step 6: Generate workspace (for Pods mode, but also useful for SPM)
+    if [[ -f "$ROOT_DIR/Scripts/tools/generate-workspace.sh" ]]; then
+        log_step "Generating workspace"
+        if "$ROOT_DIR/Scripts/tools/generate-workspace.sh" 2>&1; then
+            log_success "Workspace generated"
+        else
+            log_warn "Workspace generation had issues (continuing)"
+        fi
+    fi
+    
+    # Step 7: Validate environment
     log_section "Environment Validation"
     log_step "Validating environment"
     if validate_environment "spm"; then
@@ -120,22 +145,15 @@ if [[ "$TARGET" == "spm" ]]; then
         exit 1
     fi
     
-    # Step 6: Open Xcode (workspace will be created by Xcode if needed)
+    # Step 8: Open Xcode
     log_section "Opening Xcode"
     log_step "Opening Xcode"
-    if [[ -f "$PROJECT_SPEC" ]]; then
-        # Open the project spec - Xcode will handle workspace creation
-        PROJECT_DIR="$(dirname "$PROJECT_SPEC")"
-        if [[ -d "$PROJECT_DIR/MSPDemoApp.xcodeproj" ]]; then
-            open "$PROJECT_DIR/MSPDemoApp.xcodeproj"
-            log_success "Xcode opened with SPM project"
-        else
-            log_warn "Xcode project not found. Run 'xcodegen generate' to create it."
-            log_info "Opening project directory instead..."
-            open "$PROJECT_DIR"
-        fi
+    PROJECT_DIR="$(dirname "$PROJECT_SPEC")"
+    if [[ -d "$PROJECT_DIR/MSPDemoApp.xcodeproj" ]]; then
+        open "$PROJECT_DIR/MSPDemoApp.xcodeproj"
+        log_success "Xcode opened with SPM project"
     else
-        log_error "project.yml not found: $PROJECT_SPEC"
+        log_error "Xcode project not found: $PROJECT_DIR/MSPDemoApp.xcodeproj"
         exit 1
     fi
 
@@ -176,7 +194,7 @@ elif [[ "$TARGET" == "pods" ]]; then
         exit 1
     fi
     
-    # Step 3: Generate YAML specs (only)
+    # Step 3: Generate YAML specs
     log_section "YAML Generation"
     log_step "Generating YAML specs"
     if "$SCRIPT_DIR/generate_workspace.sh" pods; then
@@ -186,7 +204,32 @@ elif [[ "$TARGET" == "pods" ]]; then
         exit 1
     fi
     
-    # Step 4: Validate wrappers (if Pods exist)
+    # Step 4: Generate Xcode project from YAML
+    log_section "Xcode Project Generation"
+    log_step "Generating Xcode project from YAML"
+    if command -v xcodegen &>/dev/null; then
+        if xcodegen generate --spec "$PROJECT_SPEC" 2>&1; then
+            log_success "Xcode project regenerated successfully"
+        else
+            log_fatal "Xcode project generation failed"
+            exit 1
+        fi
+    else
+        log_fatal "xcodegen not found. Install via: brew install xcodegen"
+        exit 1
+    fi
+    
+    # Step 5: Generate workspace
+    if [[ -f "$ROOT_DIR/Scripts/tools/generate-workspace.sh" ]]; then
+        log_step "Generating workspace"
+        if "$ROOT_DIR/Scripts/tools/generate-workspace.sh" 2>&1; then
+            log_success "Workspace generated"
+        else
+            log_warn "Workspace generation had issues (continuing)"
+        fi
+    fi
+    
+    # Step 6: Validate wrappers (if Pods exist)
     log_section "Wrapper Validation"
     log_step "Validating wrapper xcframeworks"
     if [[ -d "$PODS_DIR" ]]; then
@@ -204,7 +247,7 @@ elif [[ "$TARGET" == "pods" ]]; then
         log_warn "Pods/ not found, skipping wrapper validation"
     fi
     
-    # Step 5: Validate environment
+    # Step 7: Validate environment
     log_section "Environment Validation"
     log_step "Validating environment"
     if validate_environment "pods"; then
@@ -215,7 +258,7 @@ elif [[ "$TARGET" == "pods" ]]; then
         exit 1
     fi
     
-    # Step 6: Open Xcode (workspace created by pod install)
+    # Step 8: Open Xcode (workspace created by pod install or generate-workspace.sh)
     log_section "Opening Xcode"
     log_step "Opening Xcode"
     if [[ -d "$PODS_WORKSPACE" ]]; then
@@ -243,22 +286,20 @@ log_success "Successfully switched to: $TARGET"
 log_section "Next Steps"
 
 if [[ "$TARGET" == "spm" ]]; then
-    log_info "1. If needed, run 'xcodegen generate' to regenerate Xcode project from YAML"
-    log_info "2. Wait for Xcode to resolve packages (File → Packages → Resolve Package Versions)"
-    log_info "3. Build MSPDemoApp-SPM target"
+    log_info "1. Wait for Xcode to resolve packages (File → Packages → Resolve Package Versions)"
+    log_info "2. Build MSPDemoApp-SPM target"
 else
-    log_info "1. If needed, run 'xcodegen generate' to regenerate Xcode project from YAML"
-    log_info "2. Build MSPDemoApp target"
-    log_info "3. Verify all adapters are working"
+    log_info "1. Build MSPDemoApp target"
+    log_info "2. Verify all adapters are working"
 fi
 
 log_info ""
-log_info "Note: Only YAML files (project.yml, workspace.yml) were modified"
-log_info "      Xcode project files (.pbxproj, .xcscheme) are NOT modified by switching"
+log_info "Note: YAML files (project.yml, workspace.yml) are the source of truth"
+log_info "      Xcode project files (.pbxproj, .xcscheme) are auto-generated and may change"
 log_info ""
 
-# Check for generated file changes (warning only, non-blocking)
+# Check for generated file changes (informational only)
 if [[ -f "$ROOT_DIR/Scripts/tools/check-project-diff.sh" ]]; then
-    log_section "Checking for Generated File Changes"
+    log_section "Project File Status"
     "$ROOT_DIR/Scripts/tools/check-project-diff.sh" || true
 fi
