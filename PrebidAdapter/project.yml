@@ -10,9 +10,9 @@ name: PrebidAdapter
 settings:
   base:
     # Product Configuration
-    PRODUCT_NAME: PrebidAdapter
+    PRODUCT_NAME: MSPPrebidAdapter
     PRODUCT_BUNDLE_IDENTIFIER: msp.PrebidAdapter
-    PRODUCT_MODULE_NAME: PrebidAdapter
+    PRODUCT_MODULE_NAME: MSPPrebidAdapter
 
 targets:
   PrebidAdapter:

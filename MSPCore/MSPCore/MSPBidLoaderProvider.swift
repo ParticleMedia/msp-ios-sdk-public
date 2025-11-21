@@ -6,7 +6,7 @@
 //
 
 import Foundation
-import PrebidAdapter
+import MSPPrebidAdapter
 import MSPiOSCore
 //import shared
 

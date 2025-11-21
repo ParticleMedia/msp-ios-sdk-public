@@ -129,14 +129,26 @@ if [[ ! -d "$SIMULATOR_ARCHIVE" ]]; then
     exit 1
 fi
 
+# Extract PRODUCT_NAME from project.yml (fallback to MODULE_NAME if not found)
+# First try global settings
+PRODUCT_NAME=$(grep -E "^\s+PRODUCT_NAME:" "$PROJECT_YML" | head -1 | sed -E 's/.*PRODUCT_NAME:\s*["'\'']?([^"'\'']+)["'\'']?.*/\1/' | xargs || echo "")
+# If not found, try target-specific settings
+if [[ -z "$PRODUCT_NAME" ]]; then
+    PRODUCT_NAME=$(grep -A 30 "targets:" "$PROJECT_YML" | grep -E "^\s+PRODUCT_NAME:" | head -1 | sed -E 's/.*PRODUCT_NAME:\s*["'\'']?([^"'\'']+)["'\'']?.*/\1/' | xargs || echo "")
+fi
+# Fallback to MODULE_NAME if still not found
+PRODUCT_NAME="${PRODUCT_NAME:-$MODULE_NAME}"
+log_info "Using PRODUCT_NAME: $PRODUCT_NAME (module: $MODULE_NAME)"
+
 # Create XCFramework
 log_step "Creating XCFramework"
-XCFRAMEWORK_OUTPUT="$XCFRAMEWORKS_DIR/$MODULE_NAME.xcframework"
+# Use PRODUCT_NAME for XCFramework output name (matches framework name)
+XCFRAMEWORK_OUTPUT="$XCFRAMEWORKS_DIR/$PRODUCT_NAME.xcframework"
 rm -rf "$XCFRAMEWORK_OUTPUT"
 
 xcodebuild -create-xcframework \
-    -framework "$IOS_ARCHIVE/Products/Library/Frameworks/$MODULE_NAME.framework" \
-    -framework "$SIMULATOR_ARCHIVE/Products/Library/Frameworks/$MODULE_NAME.framework" \
+    -framework "$IOS_ARCHIVE/Products/Library/Frameworks/$PRODUCT_NAME.framework" \
+    -framework "$SIMULATOR_ARCHIVE/Products/Library/Frameworks/$PRODUCT_NAME.framework" \
     -output "$XCFRAMEWORK_OUTPUT"
 
 if [[ ! -d "$XCFRAMEWORK_OUTPUT" ]]; then
@@ -152,7 +164,16 @@ if [[ ! -d "$XCFRAMEWORK_OUTPUT/ios-arm64" ]] && [[ ! -d "$XCFRAMEWORK_OUTPUT/io
 fi
 
 # Verify Swift module exists
-SWIFT_MODULE="$XCFRAMEWORK_OUTPUT/ios-arm64/$MODULE_NAME.framework/Modules/$MODULE_NAME.swiftmodule"
+# Extract PRODUCT_MODULE_NAME from project.yml (fallback to PRODUCT_NAME)
+PRODUCT_MODULE_NAME=$(grep -E "^\s*PRODUCT_MODULE_NAME:" "$PROJECT_YML" | head -1 | sed -E 's/.*PRODUCT_MODULE_NAME:\s*["'\'']?([^"'\'']+)["'\'']?.*/\1/' || echo "$PRODUCT_NAME")
+if [[ -z "$PRODUCT_MODULE_NAME" ]] || [[ "$PRODUCT_MODULE_NAME" == "$MODULE_NAME" ]]; then
+    # Try to get from target settings
+    PRODUCT_MODULE_NAME=$(grep -A 20 "targets:" "$PROJECT_YML" | grep -E "^\s*PRODUCT_MODULE_NAME:" | head -1 | sed -E 's/.*PRODUCT_MODULE_NAME:\s*["'\'']?([^"'\'']+)["'\'']?.*/\1/' || echo "$PRODUCT_NAME")
+fi
+# Fallback to PRODUCT_NAME if still not found
+PRODUCT_MODULE_NAME="${PRODUCT_MODULE_NAME:-$PRODUCT_NAME}"
+
+SWIFT_MODULE="$XCFRAMEWORK_OUTPUT/ios-arm64/$PRODUCT_NAME.framework/Modules/$PRODUCT_MODULE_NAME.swiftmodule"
 if [[ ! -d "$SWIFT_MODULE" ]] && [[ ! -f "$SWIFT_MODULE/arm64.swiftmodule" ]]; then
     log_warn "Swift module directory not found (may be normal for some modules)"
 fi

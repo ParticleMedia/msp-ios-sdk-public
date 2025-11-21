@@ -2,7 +2,7 @@ import Foundation
 import AdSupport
 import MSPiOSCore
 //import shared
-import PrebidAdapter
+import MSPPrebidAdapter
 import PrebidMobile
 import UIKit
 import AppTrackingTransparency

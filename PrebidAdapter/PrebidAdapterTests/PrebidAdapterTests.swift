@@ -6,7 +6,7 @@
 //
 
 import XCTest
-@testable import PrebidAdapter
+@testable import MSPPrebidAdapter
 
 final class PrebidAdapterTests: XCTestCase {
 

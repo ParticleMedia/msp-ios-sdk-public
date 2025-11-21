@@ -43,7 +43,7 @@ Pod::Spec.new do |spec|
   spec.swift_version = '5.0'
   spec.requires_arc  = true
 
-  spec.vendored_frameworks = 'build/XCFrameworks/PrebidAdapter.xcframework'
+  spec.vendored_frameworks = 'build/XCFrameworks/MSPPrebidAdapter.xcframework'
 
   spec.dependency 'MSPSharedLibraries'
 

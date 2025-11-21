@@ -68,7 +68,7 @@ log_step "Generating build report"
 
 ### Adapter Modules
 - NovaAdapter: ✅
-- PrebidAdapter: ✅
+- MSPPrebidAdapter: ✅
 - MSPGoogleAdapter: ✅
 - MSPFacebookAdapter: ✅
 - InmobiAdapter: ✅
@@ -91,7 +91,7 @@ build/XCFrameworks/
 ├── MSPOMSDK.xcframework
 ├── MSPSharedLibraries.xcframework
 ├── NovaAdapter.xcframework
-├── PrebidAdapter.xcframework
+├── MSPPrebidAdapter.xcframework
 ├── MSPGoogleAdapter.xcframework
 ├── MSPFacebookAdapter.xcframework
 ├── InmobiAdapter.xcframework
