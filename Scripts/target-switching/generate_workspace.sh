@@ -341,12 +341,19 @@ XCODEGEN_PROJECTS=()
 if [[ -f "$ROOT_DIR/NovaCore/project.yml" ]]; then
     XCODEGEN_PROJECTS+=("NovaCore/project.yml")
 fi
+if [[ -f "$ROOT_DIR/MSPCore/project.yml" ]]; then
+    XCODEGEN_PROJECTS+=("MSPCore/project.yml")
+fi
 
 if [[ "$TARGET_MODE" == "spm" ]]; then
     # SPM mode: exclude all Pods projects
     while IFS= read -r proj; do
         # Skip NovaCore.xcodeproj if NovaCore/project.yml exists (XcodeGen-managed)
         if [[ "$proj" == *"NovaCore/NovaCore.xcodeproj" ]] && [[ -f "$ROOT_DIR/NovaCore/project.yml" ]]; then
+            continue
+        fi
+        # Skip MSPCore.xcodeproj if MSPCore/project.yml exists (XcodeGen-managed)
+        if [[ "$proj" == *"MSPCore/MSPCore.xcodeproj" ]] && [[ -f "$ROOT_DIR/MSPCore/project.yml" ]]; then
             continue
         fi
         PROJECTS+=("$proj")
@@ -359,6 +366,10 @@ else
     while IFS= read -r proj; do
         # Skip NovaCore.xcodeproj if NovaCore/project.yml exists (XcodeGen-managed)
         if [[ "$proj" == *"NovaCore/NovaCore.xcodeproj" ]] && [[ -f "$ROOT_DIR/NovaCore/project.yml" ]]; then
+            continue
+        fi
+        # Skip MSPCore.xcodeproj if MSPCore/project.yml exists (XcodeGen-managed)
+        if [[ "$proj" == *"MSPCore/MSPCore.xcodeproj" ]] && [[ -f "$ROOT_DIR/MSPCore/project.yml" ]]; then
             continue
         fi
         PROJECTS+=("$proj")
@@ -398,6 +409,13 @@ YAML
         # Skip if this module has a project.yml (already included above)
         project_dir="$(dirname "$rel")"
         if [[ -f "$ROOT_DIR/$project_dir/project.yml" ]]; then
+            continue
+        fi
+        # Skip NovaCore and MSPCore if they have project.yml (already included above)
+        if [[ "$rel" == "NovaCore/NovaCore.xcodeproj" ]] && [[ -f "$ROOT_DIR/NovaCore/project.yml" ]]; then
+            continue
+        fi
+        if [[ "$rel" == "MSPCore/MSPCore.xcodeproj" ]] && [[ -f "$ROOT_DIR/MSPCore/project.yml" ]]; then
             continue
         fi
         project_name="$(basename "${rel%.*}")"

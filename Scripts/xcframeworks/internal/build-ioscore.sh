@@ -107,13 +107,39 @@ main() {
     fi
     echo "✅ All required commands are available"
     
-    # Check required files - MSPiOSCore can be built from its own project
-    echo "🔧 Checking required project files..."
-    if [[ ! -d "MSPiOSCore/MSPiOSCore.xcodeproj" ]]; then
-        color_error "❌ ERROR: MSPiOSCore project not found"
+    # Check required files and generate MSPCore project from XcodeGen
+    echo "🔧 Checking required project files and generating MSPCore project..."
+    
+    # Check if XcodeGen is available
+    if ! command -v xcodegen &> /dev/null; then
+        color_error "❌ ERROR: xcodegen command not found"
+        color_error "Please install XcodeGen: brew install xcodegen"
         exit 1
     fi
-    echo "✅ MSPiOSCore project found"
+    
+    # Generate MSPCore project from project.yml (XcodeGen-managed)
+    MSPCORE_PROJECT_SPEC="$ROOT_DIR/MSPCore/project.yml"
+    if [[ ! -f "$MSPCORE_PROJECT_SPEC" ]]; then
+        color_error "❌ ERROR: MSPCore/project.yml not found"
+        color_error "MSPCore migration to XcodeGen requires project.yml"
+        exit 1
+    fi
+    
+    echo "🔧 Generating MSPCore.xcodeproj from project.yml..."
+    if xcodegen generate --spec "$MSPCORE_PROJECT_SPEC"; then
+        echo "✅ MSPCore.xcodeproj generated successfully from project.yml"
+    else
+        color_error "❌ ERROR: Failed to generate MSPCore.xcodeproj from project.yml"
+        exit 1
+    fi
+    
+    # Verify generated project exists
+    if [[ ! -d "MSPCore/MSPCore.xcodeproj" ]]; then
+        color_error "❌ ERROR: Generated MSPCore.xcodeproj not found"
+        color_error "Expected: MSPCore/MSPCore.xcodeproj"
+        exit 1
+    fi
+    echo "✅ MSPCore project found (generated from project.yml)"
     
     # Clean previous build artifacts
     echo "🔧 Cleaning previous build artifacts..."
@@ -122,10 +148,11 @@ main() {
     echo "✅ Build directory cleaned and created"
     
     # Build XCFramework using shared library
+    # Note: MSPCore source builds MSPiOSCore.xcframework (output name differs from source)
     if build_xcframework \
-        "MSPiOSCore" \
-        "MSPiOSCore" \
-        "MSPiOSCore/MSPiOSCore" \
+        "MSPCore" \
+        "MSPCore" \
+        "MSPCore/MSPCore" \
         "outputMSPiOSCore/xcframework" \
         "MSPSharedLibraries" \
         "MSPiOSCore.xcframework"; then
