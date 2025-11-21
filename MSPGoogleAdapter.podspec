@@ -39,22 +39,14 @@ Pod::Spec.new do |spec|
 
   spec.source       = { :git => "https://github.com/ParticleMedia/msp-ios-sdk-public.git", :tag => "#{spec.version}" }
 
-  spec.ios.deployment_target = '15.0'
+  spec.platform     = :ios, '15.0'
   spec.swift_version = '5.0'
+  spec.requires_arc  = true
 
-
-  spec.source_files  = "MSPGoogleAdapter/MSPGoogleAdapter/**/*.{h,m,swift}"
-  spec.exclude_files = "Classes/Exclude"
+  spec.vendored_frameworks = 'build/XCFrameworks/MSPGoogleAdapter.xcframework'
 
   spec.dependency 'Google-Mobile-Ads-SDK', "~> 12.0"
   spec.dependency 'MSPSharedLibraries'
-  #spec.module_map = 'GoogleAdapter/GoogleAdapter.modulemap'
-
-  #spec.public_header_files = "GoogleAdapter//**/*.h"
-  #spec.vendored_frameworks= "GoogleAdapter/shared.xcframework"
-
-  spec.pod_target_xcconfig = { 'VALID_ARCHS' => 'x86_64 armv7 arm64' }
-  spec.user_target_xcconfig = { 'EXCLUDED_ARCHS[sdk=iphonesimulator*]' => 'arm64' }
 
   spec.static_framework = true
   # ――― Resources ―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― #

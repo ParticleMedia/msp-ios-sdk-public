@@ -91,17 +91,10 @@ Pod::Spec.new do |spec|
   #  Not including the public_header_files will make all headers public.
   #
 
-  spec.source_files  = "MSPSharedLibraries/MSPSharedLibraries/**/*.{h,m,swift}"
-  spec.exclude_files = "Classes/Exclude"
+  spec.platform     = :ios, '15.0'
+  spec.requires_arc  = true
 
-  #spec.dependency 'GoogleAdapter'
-  spec.vendored_frameworks = "MSPSharedLibraries/PrebidMobile.xcframework", "MSPSharedLibraries/MSPiOSCore.xcframework"
-
-  # spec.public_header_files = "Classes/**/*.h"
-  # s.pod_target_xcconfig = { 'HEADER_SEARCH_PATHS' => '$(PODS_TARGET_SRCROOT)/PrebidMobile.xcframework/Headers $(PODS_TARGET_SRCROOT)/MSPiOSCore.xcframework/Headers' }
-
-  spec.pod_target_xcconfig = { 'VALID_ARCHS' => 'x86_64 armv7 arm64' }
-  spec.user_target_xcconfig = { 'EXCLUDED_ARCHS[sdk=iphonesimulator*]' => 'arm64' }
+  spec.vendored_frameworks = 'build/XCFrameworks/MSPSharedLibraries.xcframework', "MSPSharedLibraries/PrebidMobile.xcframework", "MSPSharedLibraries/MSPiOSCore.xcframework"
 
   spec.static_framework = true
 

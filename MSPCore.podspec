@@ -92,8 +92,10 @@ Pod::Spec.new do |spec|
   #  Not including the public_header_files will make all headers public.
   #
 
-  spec.source_files  = "MSPCore/MSPCore/**/*.{h,m,swift}"
-  spec.exclude_files = "Classes/Exclude"
+  spec.platform     = :ios, '15.0'
+  spec.requires_arc  = true
+
+  spec.vendored_frameworks = 'build/XCFrameworks/MSPCore.xcframework'
 
   spec.dependency 'MSPSharedLibraries'
   spec.dependency 'PrebidAdapter'#, '0.0.92'
@@ -102,19 +104,12 @@ Pod::Spec.new do |spec|
   spec.dependency 'lottie-ios'
   #spec.vendored_frameworks= "MSPCore/PrebidAdapter.xcframework"#, "PrebidMobile.xcframework", "MSPiOSCore.xcframework"
 
-  #spec.pod_target_xcconfig = {
-  #  'HEADER_SEARCH_PATHS' => '$(PODS_TARGET_SRCROOT)/PrebidMobile.xcframework/Headers $(PODS_TARGET_SRCROOT)/MSPiOSCore.xcframework/Headers'
-  #}
-
-  #spec.pod_target_xcconfig = { 'VALID_ARCHS' => 'x86_64 armv7 arm64' }
-  #spec.user_target_xcconfig = { 'EXCLUDED_ARCHS[sdk=iphonesimulator*]' => 'arm64' }
 
   spec.static_framework = true
   spec.resource_bundles = {
     'MSPCoreResources' => ['MSPCore/MSPCore/Resources/Config.plist']
   }
 
-  # spec.public_header_files = "Classes/**/*.h"
 
 
   # ――― Resources ―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
