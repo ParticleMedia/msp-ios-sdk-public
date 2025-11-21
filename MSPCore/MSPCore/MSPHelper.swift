@@ -41,9 +41,12 @@ public class MSP {
     public var logWhiteList: [String]?
     
     private init() {
-        NotificationCenter.default.addObserver(self, selector: #selector(self.appDidBecomeActive), name: UIApplication.willEnterForegroundNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.appWillEnterForeground), name: UIApplication.willEnterForegroundNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.appDidEnterBackground), name: UIApplication.didEnterBackgroundNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.sizeCategoryDidChange), name: UIContentSizeCategory.didChangeNotification, object: nil)
+        DispatchQueue.main.async {
+            self.appWillEnterForeground()
+        }
     }
     
     deinit {
@@ -109,7 +112,7 @@ public class MSP {
         }
     }
     
-    @objc private func appDidBecomeActive() {
+    @objc private func appWillEnterForeground() {
         MSPLogger.shared.info(message: "App becomes active")
         MSPDevice.shared.isInForeground = true
         MSPDevice.shared.fontSize = UIApplication.shared.preferredContentSizeCategory
