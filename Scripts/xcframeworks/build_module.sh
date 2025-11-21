@@ -180,3 +180,27 @@ fi
 
 log_success "XCFramework created: $XCFRAMEWORK_OUTPUT"
 
+# Special handling for NovaCore: Copy to NovaAdapter/ folder (legacy compatibility)
+# This ensures compatibility with scripts that expect NovaCore.xcframework in NovaAdapter/
+if [[ "$MODULE_NAME" == "NovaCore" ]]; then
+    log_step "Deploying NovaCore.xcframework to NovaAdapter (legacy compatibility)"
+    NOVA_ADAPTER_DEST="$ROOT_DIR/NovaAdapter/NovaCore.xcframework"
+    TEMP_DEST="$ROOT_DIR/NovaAdapter/NovaCore.xcframework.tmp"
+    
+    # Backup existing if present
+    if [[ -d "$NOVA_ADAPTER_DEST" ]]; then
+        mv "$NOVA_ADAPTER_DEST" "${NOVA_ADAPTER_DEST}.backup" 2>/dev/null || true
+    fi
+    
+    # Atomic copy: copy to temp, then move
+    if cp -R "$XCFRAMEWORK_OUTPUT" "$TEMP_DEST"; then
+        mv "$TEMP_DEST" "$NOVA_ADAPTER_DEST"
+        rm -rf "${NOVA_ADAPTER_DEST}.backup" 2>/dev/null || true
+        log_success "NovaCore.xcframework deployed to NovaAdapter/"
+    else
+        log_warn "Failed to copy NovaCore.xcframework to NovaAdapter (continuing anyway)"
+        # Restore backup if copy failed
+        mv "${NOVA_ADAPTER_DEST}.backup" "$NOVA_ADAPTER_DEST" 2>/dev/null || true
+    fi
+fi
+
