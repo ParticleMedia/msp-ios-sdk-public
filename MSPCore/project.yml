@@ -46,6 +46,27 @@ targets:
           - $(SRCROOT)/../MSPSharedLibraries/MSPiOSCore.xcframework
           - $(SRCROOT)/../MSPSharedLibraries/PrebidMobile.xcframework
           - $(SRCROOT)/../build/XCFrameworks/MSPPrebidAdapter.xcframework
+        
+        # Swift Module Search Paths - Include SwiftProtobuf
+        # SwiftProtobuf is a Pod dependency required by MSPCore
+        # The xcconfig may not include SwiftProtobuf in SWIFT_INCLUDE_PATHS,
+        # so we explicitly add it here to ensure the Swift compiler can find it during archive
+        # Note: Pre-built Pods are in DerivedData/Build/Products, not in ArchiveIntermediates/BuildProductsPath
+        # BUILD_DIR points to ArchiveIntermediates/MSPCore/BuildProductsPath
+        # Products is at: BUILD_DIR/../../../../Products/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)
+        SWIFT_INCLUDE_PATHS: $(inherited) $(PODS_CONFIGURATION_BUILD_DIR)/SwiftProtobuf $(BUILD_DIR)/../../../../Products/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)/SwiftProtobuf
+        
+        # Library Search Paths - Include SwiftProtobuf static library
+        # SwiftProtobuf is a static library (libSwiftProtobuf.a) that needs to be linked
+        # Add the path where libSwiftProtobuf.a is located
+        LIBRARY_SEARCH_PATHS:
+          - $(inherited)
+          - $(PODS_CONFIGURATION_BUILD_DIR)/SwiftProtobuf
+          - $(BUILD_DIR)/../../../../Products/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)/SwiftProtobuf
+        
+        # Link SwiftProtobuf static library
+        # This is required for the module to be loadable during archive builds
+        OTHER_LDFLAGS: $(inherited) -lSwiftProtobuf
     configFiles:
       Debug: "../Pods/Target Support Files/Pods-MSPCore/Pods-MSPCore.debug.xcconfig"
       Release: "../Pods/Target Support Files/Pods-MSPCore/Pods-MSPCore.release.xcconfig"

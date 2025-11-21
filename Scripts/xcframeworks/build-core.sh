@@ -38,9 +38,9 @@ if [[ -d "$WORKSPACE_FILE" ]]; then
     # Build key Pods dependencies using regular build (not archive)
     # This ensures module interfaces are verified during regular build,
     # preventing verification failures during MSP module archives
-    # Key dependencies: SnapKit, Kingfisher, lottie-ios, Shimmer
-    # Note: Shimmer is required by NovaCore, so it must be pre-built
-    PODS_DEPENDENCIES=("SnapKit" "Kingfisher" "lottie-ios" "Shimmer")
+    # Key dependencies: SnapKit, Kingfisher, lottie-ios, Shimmer, SwiftProtobuf
+    # Note: Shimmer is required by NovaCore, SwiftProtobuf is required by MSPCore
+    PODS_DEPENDENCIES=("SnapKit" "Kingfisher" "lottie-ios" "Shimmer" "SwiftProtobuf")
     
     # Use a shared DerivedData path so pre-built Pods are available to archive builds
     SHARED_DERIVED_DATA="$ROOT_DIR/DerivedData/build-shared"
