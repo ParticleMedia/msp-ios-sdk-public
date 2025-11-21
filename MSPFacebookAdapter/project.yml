@@ -26,14 +26,31 @@ targets:
           - "**/*.test.swift"
           - "**/*.spec.swift"
           - "FacebookAdapter.docc/**"
+    dependencies:
+      - framework: ../MSPSharedLibraries/MSPiOSCore.xcframework
+        embed: false
+      - framework: ../MSPSharedLibraries/PrebidMobile.xcframework
+        embed: false
+      - framework: ../Pods/FBAudienceNetwork/Static/FBAudienceNetwork.xcframework
+        embed: false
     settings:
       base:
         # CRITICAL: Override PODS_ROOT and PODS_PODFILE_DIR_PATH from xcconfig
         PODS_ROOT: $(SRCROOT)/../Pods
         PODS_PODFILE_DIR_PATH: $(SRCROOT)/..
         
-        # Framework Search Paths - Include $(PROJECT_DIR) to find local XCFrameworks
-        FRAMEWORK_SEARCH_PATHS: $(inherited) $(PROJECT_DIR)
+        # Framework Search Paths - Include MSPiOSCore and PrebidMobile XCFrameworks
+        # MSPFacebookAdapter depends on MSPiOSCore and PrebidMobile, which are located in MSPSharedLibraries
+        # Xcode will automatically resolve the correct architecture slice from the XCFramework
+        FRAMEWORK_SEARCH_PATHS:
+          - $(inherited)
+          - $(SRCROOT)/../MSPSharedLibraries/MSPiOSCore.xcframework
+          - $(SRCROOT)/../MSPSharedLibraries/PrebidMobile.xcframework
+          - $(PODS_ROOT)/FBAudienceNetwork/Static/FBAudienceNetwork.xcframework
+        
+        # Link zlib library (required by FBAudienceNetwork)
+        # FBAudienceNetwork uses zlib functions (deflateInit2_, inflateEnd, etc.) that require linking against zlib
+        OTHER_LDFLAGS: $(inherited) -lz
     configFiles:
       Debug: "../Pods/Target Support Files/Pods-MSPFacebookAdapter/Pods-MSPFacebookAdapter.debug.xcconfig"
       Release: "../Pods/Target Support Files/Pods-MSPFacebookAdapter/Pods-MSPFacebookAdapter.release.xcconfig"
