@@ -26,14 +26,27 @@ targets:
           - "**/*.test.swift"
           - "**/*.spec.swift"
           - "NovaAdapter.docc/**"
+    dependencies:
+      - framework: ../MSPSharedLibraries/MSPiOSCore.xcframework
+        embed: false
+      - framework: ../MSPSharedLibraries/PrebidMobile.xcframework
+        embed: false
+      - framework: ../build/XCFrameworks/NovaCore.xcframework
+        embed: false
     settings:
       base:
         # CRITICAL: Override PODS_ROOT and PODS_PODFILE_DIR_PATH from xcconfig
         PODS_ROOT: $(SRCROOT)/../Pods
         PODS_PODFILE_DIR_PATH: $(SRCROOT)/..
         
-        # Framework Search Paths - Include $(PROJECT_DIR) to find NovaCore.xcframework
-        FRAMEWORK_SEARCH_PATHS: $(inherited) $(PROJECT_DIR)
+        # Framework Search Paths - Include MSPiOSCore, PrebidMobile, and NovaCore XCFrameworks
+        # NovaAdapter depends on MSPiOSCore and PrebidMobile (in MSPSharedLibraries) and NovaCore (in build/XCFrameworks)
+        # Xcode will automatically resolve the correct architecture slice from the XCFramework
+        FRAMEWORK_SEARCH_PATHS:
+          - $(inherited)
+          - $(SRCROOT)/../MSPSharedLibraries/MSPiOSCore.xcframework
+          - $(SRCROOT)/../MSPSharedLibraries/PrebidMobile.xcframework
+          - $(SRCROOT)/../build/XCFrameworks/NovaCore.xcframework
     configFiles:
       Debug: "../Pods/Target Support Files/Pods-NovaAdapter/Pods-NovaAdapter.debug.xcconfig"
       Release: "../Pods/Target Support Files/Pods-NovaAdapter/Pods-NovaAdapter.release.xcconfig"
