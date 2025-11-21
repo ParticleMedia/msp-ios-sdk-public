@@ -81,6 +81,11 @@ targets:
         
         # Header Search Paths - inherit from CocoaPods xcconfig
         HEADER_SEARCH_PATHS: $(inherited)
+        
+        # CRITICAL: Override PODS_ROOT and PODS_PODFILE_DIR_PATH from xcconfig
+        # xcconfig defines these relative to NovaCore/, but we need repo root
+        PODS_ROOT: $(SRCROOT)/../Pods
+        PODS_PODFILE_DIR_PATH: $(SRCROOT)/..
     configFiles:
       Debug: "../Pods/Target Support Files/Pods-NovaCore/Pods-NovaCore.debug.xcconfig"
       Release: "../Pods/Target Support Files/Pods-NovaCore/Pods-NovaCore.release.xcconfig"
