@@ -1,6 +1,7 @@
 #!/bin/bash
 # Pre-Commit Cleanup Script
 # Removes report files and temporary artifacts before committing
+# Reports are visible in working directory but never committed
 
 set -e
 
@@ -23,5 +24,27 @@ git reset -- 'BuildReports/' 2>/dev/null || true
 git reset -- 'MigrationReports/' 2>/dev/null || true
 git reset -- 'Tmp/' 2>/dev/null || true
 
+# Clean all generated validation & migration reports from MigrationReports/
+if [ -d "MigrationReports" ]; then
+    echo "[pre-commit] Cleaning MigrationReports..."
+    
+    # Remove all files except .gitkeep
+    find MigrationReports -type f ! -name ".gitkeep" -delete 2>/dev/null || true
+    
+    # Remove empty directories
+    find MigrationReports -type d -empty -delete 2>/dev/null || true
+    
+    # Ensure MigrationReports/ directory exists with .gitkeep
+    if [ ! -d "MigrationReports" ]; then
+        mkdir -p MigrationReports
+    fi
+    if [ ! -f "MigrationReports/.gitkeep" ]; then
+        touch MigrationReports/.gitkeep
+    fi
+    
+    echo "[pre-commit] ✅ MigrationReports/ cleaned (preserved .gitkeep)"
+fi
+
 echo "✅ Report files removed from staging area"
-echo "ℹ️  Report files are still in working directory but will not be committed"
+echo "✅ MigrationReports/ cleaned (files removed, directory preserved)"
+echo "ℹ️  Report files are visible in working directory but will not be committed"
