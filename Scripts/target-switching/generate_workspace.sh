@@ -350,6 +350,9 @@ fi
 if [[ -f "$ROOT_DIR/MSPSharedLibraries/project.yml" ]]; then
     XCODEGEN_PROJECTS+=("MSPSharedLibraries/project.yml")
 fi
+if [[ -f "$ROOT_DIR/NovaAdapter/project.yml" ]]; then
+    XCODEGEN_PROJECTS+=("NovaAdapter/project.yml")
+fi
 
 if [[ "$TARGET_MODE" == "spm" ]]; then
     # SPM mode: exclude all Pods projects
@@ -368,6 +371,10 @@ if [[ "$TARGET_MODE" == "spm" ]]; then
         fi
         # Skip MSPSharedLibraries.xcodeproj if MSPSharedLibraries/project.yml exists (XcodeGen-managed)
         if [[ "$proj" == *"MSPSharedLibraries/MSPSharedLibraries.xcodeproj" ]] && [[ -f "$ROOT_DIR/MSPSharedLibraries/project.yml" ]]; then
+            continue
+        fi
+        # Skip NovaAdapter.xcodeproj if NovaAdapter/project.yml exists (XcodeGen-managed)
+        if [[ "$proj" == *"NovaAdapter/NovaAdapter.xcodeproj" ]] && [[ -f "$ROOT_DIR/NovaAdapter/project.yml" ]]; then
             continue
         fi
         PROJECTS+=("$proj")
@@ -392,6 +399,10 @@ else
         fi
         # Skip MSPSharedLibraries.xcodeproj if MSPSharedLibraries/project.yml exists (XcodeGen-managed)
         if [[ "$proj" == *"MSPSharedLibraries/MSPSharedLibraries.xcodeproj" ]] && [[ -f "$ROOT_DIR/MSPSharedLibraries/project.yml" ]]; then
+            continue
+        fi
+        # Skip NovaAdapter.xcodeproj if NovaAdapter/project.yml exists (XcodeGen-managed)
+        if [[ "$proj" == *"NovaAdapter/NovaAdapter.xcodeproj" ]] && [[ -f "$ROOT_DIR/NovaAdapter/project.yml" ]]; then
             continue
         fi
         PROJECTS+=("$proj")
@@ -444,6 +455,9 @@ YAML
             continue
         fi
         if [[ "$rel" == "MSPSharedLibraries/MSPSharedLibraries.xcodeproj" ]] && [[ -f "$ROOT_DIR/MSPSharedLibraries/project.yml" ]]; then
+            continue
+        fi
+        if [[ "$rel" == "NovaAdapter/NovaAdapter.xcodeproj" ]] && [[ -f "$ROOT_DIR/NovaAdapter/project.yml" ]]; then
             continue
         fi
         project_name="$(basename "${rel%.*}")"
