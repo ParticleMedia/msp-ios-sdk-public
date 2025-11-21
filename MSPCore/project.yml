@@ -25,11 +25,21 @@ targets:
           - "**/Tests/**"
           - "**/*.test.swift"
           - "**/*.spec.swift"
+    dependencies:
+      - framework: ../MSPSharedLibraries/MSPiOSCore.xcframework
+        embed: false
     settings:
       base:
         # CRITICAL: Override PODS_ROOT and PODS_PODFILE_DIR_PATH from xcconfig
         PODS_ROOT: $(SRCROOT)/../Pods
         PODS_PODFILE_DIR_PATH: $(SRCROOT)/..
+        
+        # Framework Search Paths - Include MSPiOSCore.xcframework
+        # MSPCore depends on MSPiOSCore, which is located in MSPSharedLibraries
+        # Xcode will automatically resolve the correct architecture slice from the XCFramework
+        FRAMEWORK_SEARCH_PATHS:
+          - $(inherited)
+          - $(SRCROOT)/../MSPSharedLibraries/MSPiOSCore.xcframework
     configFiles:
       Debug: "../Pods/Target Support Files/Pods-MSPCore/Pods-MSPCore.debug.xcconfig"
       Release: "../Pods/Target Support Files/Pods-MSPCore/Pods-MSPCore.release.xcconfig"
