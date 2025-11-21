@@ -1,5 +1,5 @@
 # MSPOMSDK XcodeGen Project Specification
-# This file uses the shared module template and adds MSPOMSDK-specific overrides
+# Uses shared template and adds MSPOMSDK-specific overrides
 # Template: Config/xcodegen/module.project_template.yml
 
 include:
@@ -13,9 +13,6 @@ settings:
     PRODUCT_NAME: MSPOMSDK
     PRODUCT_BUNDLE_IDENTIFIER: msp.MSPOMSDK
     PRODUCT_MODULE_NAME: MSPOMSDK
-    
-    # Framework Search Paths - Include OMSDK_Newsbreak1.xcframework
-    FRAMEWORK_SEARCH_PATHS: $(inherited) $(SRCROOT)/OMSDK_Newsbreak1.xcframework
 
 targets:
   MSPOMSDK:
@@ -28,20 +25,13 @@ targets:
           - "**/Tests/**"
           - "**/*.test.swift"
           - "**/*.spec.swift"
-          - "MSPOMSDK.docc/**"
     settings:
       base:
-        # Header Search Paths - inherit from CocoaPods xcconfig
-        HEADER_SEARCH_PATHS: $(inherited)
-        
         # CRITICAL: Override PODS_ROOT and PODS_PODFILE_DIR_PATH from xcconfig
-        # xcconfig defines these relative to MSPOMSDK/, but we need repo root
         PODS_ROOT: $(SRCROOT)/../Pods
         PODS_PODFILE_DIR_PATH: $(SRCROOT)/..
         
-        # Module Interface Verification
-        # Disable for MSPOMSDK to avoid "underlying Objective-C module not found" errors
-        # This is safe because MSPOMSDK is a mixed Swift/ObjC module and the ObjC module is available at runtime
+        # Module-specific Swift flags for module interface verification
         OTHER_SWIFT_FLAGS: $(inherited) -no-verify-emitted-module-interface
         
         # Framework Search Paths - Include OMSDK_Newsbreak1.xcframework

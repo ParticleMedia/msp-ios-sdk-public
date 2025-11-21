@@ -1,5 +1,5 @@
 # MSPSharedLibraries XcodeGen Project Specification
-# This file uses the shared module template and adds MSPSharedLibraries-specific overrides
+# Uses shared template and adds MSPSharedLibraries-specific overrides
 # Template: Config/xcodegen/module.project_template.yml
 
 include:
@@ -14,12 +14,7 @@ settings:
     PRODUCT_BUNDLE_IDENTIFIER: msp.MSPSharedLibraries
     PRODUCT_MODULE_NAME: MSPSharedLibraries
     
-    # Framework Search Paths - Include $(PROJECT_DIR) to find local XCFrameworks
-    # PrebidMobile.xcframework, OMSDK_Newsbreak1.xcframework, MSPiOSCore.xcframework are in $(PROJECT_DIR)
-    FRAMEWORK_SEARCH_PATHS: $(inherited) $(PROJECT_DIR)
-    
-    # SWIFT_INSTALL_OBJC_HEADER override
-    # MSPSharedLibraries does not install ObjC headers
+    # Module-specific override: Do not install ObjC header
     SWIFT_INSTALL_OBJC_HEADER: NO
 
 targets:
@@ -33,14 +28,9 @@ targets:
           - "**/Tests/**"
           - "**/*.test.swift"
           - "**/*.spec.swift"
-          - "MSPSharedLibraries.docc/**"
     settings:
       base:
-        # Header Search Paths - inherit from CocoaPods xcconfig
-        HEADER_SEARCH_PATHS: $(inherited)
-        
         # CRITICAL: Override PODS_ROOT and PODS_PODFILE_DIR_PATH from xcconfig
-        # xcconfig defines these relative to MSPSharedLibraries/, but we need repo root
         PODS_ROOT: $(SRCROOT)/../Pods
         PODS_PODFILE_DIR_PATH: $(SRCROOT)/..
         
@@ -73,12 +63,16 @@ targets:
         script: |
           if [ -f "${PODS_ROOT}/Target Support Files/Pods-MSPSharedLibraries/Pods-MSPSharedLibraries-resources.sh" ]; then
             "${PODS_ROOT}/Target Support Files/Pods-MSPSharedLibraries/Pods-MSPSharedLibraries-resources.sh"
+          else
+            echo "Warning: Pods-MSPSharedLibraries-resources.sh not found. Skipping resource copying."
           fi
         shell: /bin/sh
       - name: "[CP] Embed Pods Frameworks"
         script: |
           if [ -f "${PODS_ROOT}/Target Support Files/Pods-MSPSharedLibraries/Pods-MSPSharedLibraries-frameworks.sh" ]; then
             "${PODS_ROOT}/Target Support Files/Pods-MSPSharedLibraries/Pods-MSPSharedLibraries-frameworks.sh"
+          else
+            echo "Warning: Pods-MSPSharedLibraries-frameworks.sh not found. Skipping framework embedding."
           fi
         shell: /bin/sh
 

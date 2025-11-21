@@ -1,5 +1,5 @@
 # NovaCore XcodeGen Project Specification
-# This file uses the shared module template and adds NovaCore-specific overrides
+# Uses shared template and adds NovaCore-specific overrides
 # Template: Config/xcodegen/module.project_template.yml
 
 include:
@@ -25,22 +25,15 @@ targets:
           - "**/Tests/**"
           - "**/*.test.swift"
           - "**/*.spec.swift"
-    resources:
-      - path: NovaCore/NBAssets.xcassets
-      - path: NovaCore/NBResourceBundle.bundle
+          - "NovaCore.docc/**"
     settings:
       base:
-        # Header Search Paths - inherit from CocoaPods xcconfig
-        HEADER_SEARCH_PATHS: $(inherited)
-        
         # CRITICAL: Override PODS_ROOT and PODS_PODFILE_DIR_PATH from xcconfig
         # xcconfig defines these relative to NovaCore/, but we need repo root
         PODS_ROOT: $(SRCROOT)/../Pods
         PODS_PODFILE_DIR_PATH: $(SRCROOT)/..
         
-        # Module Interface Verification
-        # Disable for NovaCore to avoid "underlying Objective-C module not found" errors
-        # This is safe because NovaCore is a mixed Swift/ObjC module
+        # Module-specific Swift flags
         OTHER_SWIFT_FLAGS: $(inherited) -no-verify-emitted-module-interface
     configFiles:
       Debug: "../Pods/Target Support Files/Pods-NovaCore/Pods-NovaCore.debug.xcconfig"
