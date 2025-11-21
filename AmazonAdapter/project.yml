@@ -26,14 +26,27 @@ targets:
           - "**/*.test.swift"
           - "**/*.spec.swift"
           - "AmazonAdapter.docc/**"
+    dependencies:
+      - framework: ../MSPSharedLibraries/MSPiOSCore.xcframework
+        embed: false
+      - framework: ../Pods/AmazonPublisherServicesSDK/APS_iOS_SDK-4.5.5/DTBiOSSDK.xcframework
+        embed: false
+      - framework: ../Pods/Google-Mobile-Ads-SDK/Frameworks/GoogleMobileAdsFramework/GoogleMobileAds.xcframework
+        embed: false
     settings:
       base:
         # CRITICAL: Override PODS_ROOT and PODS_PODFILE_DIR_PATH from xcconfig
         PODS_ROOT: $(SRCROOT)/../Pods
         PODS_PODFILE_DIR_PATH: $(SRCROOT)/..
         
-        # Framework Search Paths - Include $(PROJECT_DIR) to find local XCFrameworks
-        FRAMEWORK_SEARCH_PATHS: $(inherited) $(PROJECT_DIR)
+        # Framework Search Paths - Include MSPiOSCore XCFramework
+        # AmazonAdapter depends on MSPiOSCore, which is located in MSPSharedLibraries
+        # Xcode will automatically resolve the correct architecture slice from the XCFramework
+        FRAMEWORK_SEARCH_PATHS:
+          - $(inherited)
+          - $(SRCROOT)/../MSPSharedLibraries/MSPiOSCore.xcframework
+          - $(PODS_ROOT)/AmazonPublisherServicesSDK/APS_iOS_SDK-4.5.5/DTBiOSSDK.xcframework
+          - $(PODS_ROOT)/Google-Mobile-Ads-SDK/Frameworks/GoogleMobileAdsFramework/GoogleMobileAds.xcframework
     configFiles:
       Debug: "../Pods/Target Support Files/Pods-AmazonAdapter/Pods-AmazonAdapter.debug.xcconfig"
       Release: "../Pods/Target Support Files/Pods-AmazonAdapter/Pods-AmazonAdapter.release.xcconfig"
