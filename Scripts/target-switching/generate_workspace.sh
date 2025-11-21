@@ -347,6 +347,9 @@ fi
 if [[ -f "$ROOT_DIR/MSPOMSDK/project.yml" ]]; then
     XCODEGEN_PROJECTS+=("MSPOMSDK/project.yml")
 fi
+if [[ -f "$ROOT_DIR/MSPSharedLibraries/project.yml" ]]; then
+    XCODEGEN_PROJECTS+=("MSPSharedLibraries/project.yml")
+fi
 
 if [[ "$TARGET_MODE" == "spm" ]]; then
     # SPM mode: exclude all Pods projects
@@ -361,6 +364,10 @@ if [[ "$TARGET_MODE" == "spm" ]]; then
         fi
         # Skip MSPOMSDK.xcodeproj if MSPOMSDK/project.yml exists (XcodeGen-managed)
         if [[ "$proj" == *"MSPOMSDK/MSPOMSDK.xcodeproj" ]] && [[ -f "$ROOT_DIR/MSPOMSDK/project.yml" ]]; then
+            continue
+        fi
+        # Skip MSPSharedLibraries.xcodeproj if MSPSharedLibraries/project.yml exists (XcodeGen-managed)
+        if [[ "$proj" == *"MSPSharedLibraries/MSPSharedLibraries.xcodeproj" ]] && [[ -f "$ROOT_DIR/MSPSharedLibraries/project.yml" ]]; then
             continue
         fi
         PROJECTS+=("$proj")
@@ -381,6 +388,10 @@ else
         fi
         # Skip MSPOMSDK.xcodeproj if MSPOMSDK/project.yml exists (XcodeGen-managed)
         if [[ "$proj" == *"MSPOMSDK/MSPOMSDK.xcodeproj" ]] && [[ -f "$ROOT_DIR/MSPOMSDK/project.yml" ]]; then
+            continue
+        fi
+        # Skip MSPSharedLibraries.xcodeproj if MSPSharedLibraries/project.yml exists (XcodeGen-managed)
+        if [[ "$proj" == *"MSPSharedLibraries/MSPSharedLibraries.xcodeproj" ]] && [[ -f "$ROOT_DIR/MSPSharedLibraries/project.yml" ]]; then
             continue
         fi
         PROJECTS+=("$proj")
@@ -422,7 +433,7 @@ YAML
         if [[ -f "$ROOT_DIR/$project_dir/project.yml" ]]; then
             continue
         fi
-        # Skip NovaCore, MSPCore, and MSPOMSDK if they have project.yml (already included above)
+        # Skip NovaCore, MSPCore, MSPOMSDK, and MSPSharedLibraries if they have project.yml (already included above)
         if [[ "$rel" == "NovaCore/NovaCore.xcodeproj" ]] && [[ -f "$ROOT_DIR/NovaCore/project.yml" ]]; then
             continue
         fi
@@ -430,6 +441,9 @@ YAML
             continue
         fi
         if [[ "$rel" == "MSPOMSDK/MSPOMSDK.xcodeproj" ]] && [[ -f "$ROOT_DIR/MSPOMSDK/project.yml" ]]; then
+            continue
+        fi
+        if [[ "$rel" == "MSPSharedLibraries/MSPSharedLibraries.xcodeproj" ]] && [[ -f "$ROOT_DIR/MSPSharedLibraries/project.yml" ]]; then
             continue
         fi
         project_name="$(basename "${rel%.*}")"

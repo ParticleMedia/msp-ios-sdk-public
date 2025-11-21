@@ -1,0 +1,138 @@
+# MSPSharedLibraries XcodeGen Project Specification
+# This file replaces the manually maintained MSPSharedLibraries.xcodeproj
+# Generated projects will have correct PODS_ROOT paths for Pods mode integration
+
+name: MSPSharedLibraries
+options:
+  minimumXcodeGenVersion: 2.38.0
+  deploymentTarget:
+    iOS: "15.0"
+  bundleIdPrefix: msp
+  developmentLanguage: en
+
+configs:
+  Debug: debug
+  Release: release
+
+settings:
+  base:
+    # Product Configuration
+    PRODUCT_NAME: MSPSharedLibraries
+    PRODUCT_BUNDLE_IDENTIFIER: msp.MSPSharedLibraries
+    PRODUCT_MODULE_NAME: MSPSharedLibraries
+    
+    # Platform Configuration
+    IPHONEOS_DEPLOYMENT_TARGET: "15.0"
+    TARGETED_DEVICE_FAMILY: "1,2"
+    
+    # Swift Configuration
+    SWIFT_VERSION: "5.0"
+    SWIFT_OPTIMIZATION_LEVEL: -O
+    SWIFT_COMPILATION_MODE: wholemodule
+    
+    # Module Configuration
+    DEFINES_MODULE: YES
+    CLANG_ENABLE_MODULES: YES
+    SWIFT_INSTALL_OBJC_HEADER: NO
+    
+    # Info.plist (auto-generated)
+    GENERATE_INFOPLIST_FILE: YES
+    INFOPLIST_FILE: ""
+    
+    # CocoaPods Integration - CRITICAL: These paths point to repo root Pods, not MSPSharedLibraries/Pods
+    PODS_ROOT: $(SRCROOT)/../Pods
+    PODS_PODFILE_DIR_PATH: $(SRCROOT)/..
+    SRCROOT: $(PROJECT_DIR)
+    
+    # Build for Distribution (required for framework distribution)
+    BUILD_LIBRARY_FOR_DISTRIBUTION: YES
+    
+    # Framework Settings
+    MACH_O_TYPE: mh_dylib
+    DYLIB_INSTALL_NAME_BASE: "@rpath"
+    INSTALL_PATH: $(LOCAL_LIBRARY_DIR)/Frameworks
+    SKIP_INSTALL: NO
+    
+    # Code Signing (can be overridden)
+    CODE_SIGN_IDENTITY: ""
+    CODE_SIGNING_REQUIRED: NO
+    CODE_SIGNING_ALLOWED: NO
+    
+    # Framework Search Paths - Include $(PROJECT_DIR) to find local XCFrameworks
+    # PrebidMobile.xcframework, OMSDK_Newsbreak1.xcframework, MSPiOSCore.xcframework are in $(PROJECT_DIR)
+    FRAMEWORK_SEARCH_PATHS: $(inherited) $(PROJECT_DIR)
+
+targets:
+  MSPSharedLibraries:
+    type: framework
+    platform: iOS
+    sources:
+      - path: MSPSharedLibraries
+        excludes:
+          - "**/*.md"
+          - "**/Tests/**"
+          - "**/*.test.swift"
+          - "**/*.spec.swift"
+          - "MSPSharedLibraries.docc/**"
+    settings:
+      base:
+        # Header Search Paths - inherit from CocoaPods xcconfig
+        HEADER_SEARCH_PATHS: $(inherited)
+        
+        # CRITICAL: Override PODS_ROOT and PODS_PODFILE_DIR_PATH from xcconfig
+        # xcconfig defines these relative to MSPSharedLibraries/, but we need repo root
+        PODS_ROOT: $(SRCROOT)/../Pods
+        PODS_PODFILE_DIR_PATH: $(SRCROOT)/..
+        
+        # Framework Search Paths - Include $(PROJECT_DIR) to find local XCFrameworks
+        FRAMEWORK_SEARCH_PATHS: $(inherited) $(PROJECT_DIR)
+    configFiles:
+      Debug: "../Pods/Target Support Files/Pods-MSPSharedLibraries/Pods-MSPSharedLibraries.debug.xcconfig"
+      Release: "../Pods/Target Support Files/Pods-MSPSharedLibraries/Pods-MSPSharedLibraries.release.xcconfig"
+    prebuildScripts:
+      - name: "[CP] Check Pods Manifest.lock"
+        script: |
+          if [ -z "${PODS_PODFILE_DIR_PATH}" ] || [ -z "${PODS_ROOT}" ]; then
+            echo "error: CocoaPods environment variables are not set." >&2
+            exit 1
+          fi
+          if [ ! -e "${PODS_ROOT}/Manifest.lock" ] || [ ! -e "${PODS_PODFILE_DIR_PATH}/Podfile.lock" ]; then
+            echo "error: Run 'pod install' to generate Pods/Manifest.lock." >&2
+            exit 1
+          fi
+          if ! diff "${PODS_PODFILE_DIR_PATH}/Podfile.lock" "${PODS_ROOT}/Manifest.lock" >/dev/null; then
+            echo "error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation." >&2
+            exit 1
+          fi
+        shell: /bin/sh
+        inputFiles:
+          - ${PODS_PODFILE_DIR_PATH}/Podfile.lock
+          - ${PODS_ROOT}/Manifest.lock
+    postbuildScripts:
+      - name: "[CP] Copy Pods Resources"
+        script: |
+          if [ -f "${PODS_ROOT}/Target Support Files/Pods-MSPSharedLibraries/Pods-MSPSharedLibraries-resources.sh" ]; then
+            "${PODS_ROOT}/Target Support Files/Pods-MSPSharedLibraries/Pods-MSPSharedLibraries-resources.sh"
+          fi
+        shell: /bin/sh
+      - name: "[CP] Embed Pods Frameworks"
+        script: |
+          if [ -f "${PODS_ROOT}/Target Support Files/Pods-MSPSharedLibraries/Pods-MSPSharedLibraries-frameworks.sh" ]; then
+            "${PODS_ROOT}/Target Support Files/Pods-MSPSharedLibraries/Pods-MSPSharedLibraries-frameworks.sh"
+          fi
+        shell: /bin/sh
+
+schemes:
+  MSPSharedLibraries:
+    build:
+      targets:
+        MSPSharedLibraries: all
+    run:
+      config: Debug
+    profile:
+      config: Release
+    analyze:
+      config: Debug
+    archive:
+      config: Release
+
