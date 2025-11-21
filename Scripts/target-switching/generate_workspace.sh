@@ -356,6 +356,9 @@ fi
 if [[ -f "$ROOT_DIR/PrebidAdapter/project.yml" ]]; then
     XCODEGEN_PROJECTS+=("PrebidAdapter/project.yml")
 fi
+if [[ -f "$ROOT_DIR/MSPGoogleAdapter/project.yml" ]]; then
+    XCODEGEN_PROJECTS+=("MSPGoogleAdapter/project.yml")
+fi
 
 if [[ "$TARGET_MODE" == "spm" ]]; then
     # SPM mode: exclude all Pods projects
@@ -382,6 +385,10 @@ if [[ "$TARGET_MODE" == "spm" ]]; then
         fi
         # Skip PrebidAdapter.xcodeproj if PrebidAdapter/project.yml exists (XcodeGen-managed)
         if [[ "$proj" == *"PrebidAdapter/PrebidAdapter.xcodeproj" ]] && [[ -f "$ROOT_DIR/PrebidAdapter/project.yml" ]]; then
+            continue
+        fi
+        # Skip MSPGoogleAdapter.xcodeproj if MSPGoogleAdapter/project.yml exists (XcodeGen-managed)
+        if [[ "$proj" == *"MSPGoogleAdapter/MSPGoogleAdapter.xcodeproj" ]] && [[ -f "$ROOT_DIR/MSPGoogleAdapter/project.yml" ]]; then
             continue
         fi
         PROJECTS+=("$proj")
@@ -414,6 +421,10 @@ else
         fi
         # Skip PrebidAdapter.xcodeproj if PrebidAdapter/project.yml exists (XcodeGen-managed)
         if [[ "$proj" == *"PrebidAdapter/PrebidAdapter.xcodeproj" ]] && [[ -f "$ROOT_DIR/PrebidAdapter/project.yml" ]]; then
+            continue
+        fi
+        # Skip MSPGoogleAdapter.xcodeproj if MSPGoogleAdapter/project.yml exists (XcodeGen-managed)
+        if [[ "$proj" == *"MSPGoogleAdapter/MSPGoogleAdapter.xcodeproj" ]] && [[ -f "$ROOT_DIR/MSPGoogleAdapter/project.yml" ]]; then
             continue
         fi
         PROJECTS+=("$proj")
@@ -472,6 +483,9 @@ YAML
             continue
         fi
         if [[ "$rel" == "PrebidAdapter/PrebidAdapter.xcodeproj" ]] && [[ -f "$ROOT_DIR/PrebidAdapter/project.yml" ]]; then
+            continue
+        fi
+        if [[ "$rel" == "MSPGoogleAdapter/MSPGoogleAdapter.xcodeproj" ]] && [[ -f "$ROOT_DIR/MSPGoogleAdapter/project.yml" ]]; then
             continue
         fi
         project_name="$(basename "${rel%.*}")"
