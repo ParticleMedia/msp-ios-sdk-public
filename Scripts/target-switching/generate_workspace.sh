@@ -623,7 +623,101 @@ else
     log_success "workspace.yml generated"
 fi
 
+log_info "[generate_workspace] workspace.yml generation complete"
+
+log_info "[xcodegen] Generating .xcworkspace via XcodeGen..."
+
+# Ensure workspace.yml exists
+if [[ ! -f "workspace.yml" ]]; then
+    log_error "[xcodegen] workspace.yml not found — cannot generate workspace"
+    exit 1
+fi
+
+# Step 1: Generate all project.yml files referenced in workspace.yml
+log_step "Generating project files from project.yml specs"
+PROJECT_YML_FILES=()
+while IFS= read -r line; do
+    # Match lines like "path: MSPDemoApp/project.yml" or "path: NovaCore/project.yml"
+    if [[ "$line" =~ ^[[:space:]]*path:[[:space:]]*(.+\.yml)$ ]]; then
+        project_path="${BASH_REMATCH[1]}"
+        if [[ -f "$ROOT_DIR/$project_path" ]]; then
+            PROJECT_YML_FILES+=("$project_path")
+        fi
+    fi
+done < <(grep -E "^[[:space:]]*path:" "$WORKSPACE_SPEC" || true)
+
+# Generate each project.yml file
+# Note: Some projects may fail if Pods aren't installed yet - that's OK, they'll be generated after pod install
+FAILED_PROJECTS=()
+for project_yml in "${PROJECT_YML_FILES[@]}"; do
+    log_info "[xcodegen] Generating project from $project_yml"
+    if ! xcodegen generate --spec "$project_yml" 2>&1; then
+        log_warn "[xcodegen] Failed to generate project from $project_yml (may need pod install first)"
+        FAILED_PROJECTS+=("$project_yml")
+    fi
+done
+
+# Step 2: Generate MSPDemoApp project.yml (if in Pods mode)
+if [[ "$TARGET_MODE" == "pods" ]] && [[ -f "$PROJECT_SPEC" ]]; then
+    log_info "[xcodegen] Generating MSPDemoApp project"
+    if ! xcodegen generate --spec "$PROJECT_SPEC" 2>&1; then
+        log_warn "[xcodegen] Failed to generate MSPDemoApp project (may need pod install first)"
+        FAILED_PROJECTS+=("$PROJECT_SPEC")
+    fi
+fi
+
+if [[ ${#FAILED_PROJECTS[@]} -gt 0 ]]; then
+    log_warn "[xcodegen] ${#FAILED_PROJECTS[@]} project(s) failed to generate (will be generated after pod install)"
+fi
+
+# Step 3: Create the .xcworkspace file manually from workspace.yml
+log_step "Creating .xcworkspace file"
+WORKSPACE_PATH="$ROOT_DIR/msp-ios-sdk.xcworkspace"
+WORKSPACE_DATA="$WORKSPACE_PATH/contents.xcworkspacedata"
+mkdir -p "$WORKSPACE_PATH"
+
+# Extract project paths from workspace.yml
+PROJECT_PATHS=()
+while IFS= read -r line; do
+    if [[ "$line" =~ ^[[:space:]]*path:[[:space:]]*(.+)$ ]]; then
+        project_path="${BASH_REMATCH[1]}"
+        PROJECT_PATHS+=("$project_path")
+    fi
+done < <(grep -E "^[[:space:]]*path:" "$WORKSPACE_SPEC" || true)
+
+# Generate workspace XML
+{
+    cat <<'XML'
+<?xml version="1.0" encoding="UTF-8"?>
+<Workspace
+   version = "1.0">
+XML
+    
+    for project_path in "${PROJECT_PATHS[@]}"; do
+        if [[ "$project_path" == *.xcodeproj ]]; then
+            # Direct .xcodeproj reference
+            cat <<XML
+   <FileRef
+      location = "group:${project_path}">
+   </FileRef>
+XML
+        elif [[ "$project_path" == *.yml ]]; then
+            # YAML spec - reference the generated .xcodeproj
+            project_dir="$(dirname "$project_path")"
+            project_name="$(basename "$project_dir")"
+            xcodeproj_path="${project_dir}/${project_name}.xcodeproj"
+            cat <<XML
+   <FileRef
+      location = "group:${xcodeproj_path}">
+   </FileRef>
+XML
+        fi
+    done
+    
+    echo "</Workspace>"
+} > "$WORKSPACE_DATA"
+
+log_success "[xcodegen] Successfully generated .xcworkspace"
+
 log_title "YAML Generation Complete"
 log_success "YAML specs generated for $TARGET_MODE mode"
-log_info "Note: Xcode project files are NOT modified by this script"
-log_info "Run 'xcodegen generate' manually if you need to regenerate Xcode projects"
