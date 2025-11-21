@@ -1,3 +1,4 @@
+
 # Uncomment the next line to define a global platform for your project
  platform :ios, '15.0'
 
@@ -160,9 +161,29 @@ post_install do |installer|
       # Remove any existing -no-verify-emitted-module-interface if present, then add it
       config.build_settings['OTHER_SWIFT_FLAGS'] = config.build_settings['OTHER_SWIFT_FLAGS'].to_s.gsub(/\s*-no-verify-emitted-module-interface\s*/, '').strip
       config.build_settings['OTHER_SWIFT_FLAGS'] << ' -no-verify-emitted-module-interface' unless config.build_settings['OTHER_SWIFT_FLAGS'].include?('-no-verify-emitted-module-interface')
+
+      # --- Enable Swift module generation for Shimmer ---
+      # Fix "no such module 'Shimmer'" during XCFramework archive
+      # Enable Swift import for Shimmer (Obj-C pod) by generating Shimmer.swiftmodule
+      if target.name == "Shimmer"
+        puts "⚙️  [post_install] Enabling Swift module generation for Shimmer"
+        config.build_settings["DEFINES_MODULE"] = "YES"
+        config.build_settings["CLANG_ENABLE_MODULES"] = "YES"
+        config.build_settings["SWIFT_OBJC_BRIDGING_HEADER"] = ""
     end
-    
-    # Remove SwiftVerifyEmittedModuleInterface build phases from Pods targets
+  end
+  
+  # Create module.modulemap symlink for Shimmer to make it discoverable by Swift
+  # Swift requires modulemap to be named 'module.modulemap' in the include directory
+  shimmer_modulemap_dir = File.join(installer.sandbox.root, "Headers/Public/Shimmer")
+  shimmer_modulemap = File.join(shimmer_modulemap_dir, "Shimmer.modulemap")
+  module_modulemap = File.join(shimmer_modulemap_dir, "module.modulemap")
+  if File.exist?(shimmer_modulemap) && !File.exist?(module_modulemap)
+    puts "⚙️  [post_install] Creating module.modulemap symlink for Shimmer"
+    File.symlink("Shimmer.modulemap", module_modulemap)
+  end
+  
+  # Remove SwiftVerifyEmittedModuleInterface build phases from Pods targets
     target.build_phases.each do |phase|
       if phase.respond_to?(:name) && phase.name == 'SwiftVerifyEmittedModuleInterface'
         target.build_phases.delete(phase)

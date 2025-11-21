@@ -31,6 +31,9 @@ targets:
           - "**/*.test.swift"
           - "**/*.spec.swift"
           - "NovaCore.docc/**"
+    dependencies:
+      - framework: ../MSPOMSDK/OMSDK_Newsbreak1.xcframework
+        embed: false
     settings:
       base:
         # CRITICAL: Override PODS_ROOT and PODS_PODFILE_DIR_PATH from xcconfig
@@ -40,6 +43,12 @@ targets:
         
         # Module-specific Swift flags
         OTHER_SWIFT_FLAGS: $(inherited) -no-verify-emitted-module-interface
+        
+        # Swift Module Search Paths - Include Shimmer's modulemap location
+        # Shimmer is an Objective-C static library pod that needs to be accessible to Swift
+        # The modulemap is in Pods/Headers/Public/Shimmer/, not in BuildProductsPath
+        # This ensures Shimmer.modulemap is found by Swift compiler
+        SWIFT_INCLUDE_PATHS: $(inherited) $(PODS_ROOT)/Headers/Public/Shimmer
     configFiles:
       Debug: "../Pods/Target Support Files/Pods-NovaCore/Pods-NovaCore.debug.xcconfig"
       Release: "../Pods/Target Support Files/Pods-NovaCore/Pods-NovaCore.release.xcconfig"
