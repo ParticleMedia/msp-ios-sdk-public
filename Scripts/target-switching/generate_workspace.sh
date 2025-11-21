@@ -374,6 +374,9 @@ fi
 if [[ -f "$ROOT_DIR/PubmaticAdapter/project.yml" ]]; then
     XCODEGEN_PROJECTS+=("PubmaticAdapter/project.yml")
 fi
+if [[ -f "$ROOT_DIR/UnityAdapter/project.yml" ]]; then
+    XCODEGEN_PROJECTS+=("UnityAdapter/project.yml")
+fi
 
 if [[ "$TARGET_MODE" == "spm" ]]; then
     # SPM mode: exclude all Pods projects
@@ -424,6 +427,10 @@ if [[ "$TARGET_MODE" == "spm" ]]; then
         fi
         # Skip PubmaticAdapter.xcodeproj if PubmaticAdapter/project.yml exists (XcodeGen-managed)
         if [[ "$proj" == *"PubmaticAdapter/PubmaticAdapter.xcodeproj" ]] && [[ -f "$ROOT_DIR/PubmaticAdapter/project.yml" ]]; then
+            continue
+        fi
+        # Skip UnityAdapter.xcodeproj if UnityAdapter/project.yml exists (XcodeGen-managed)
+        if [[ "$proj" == *"UnityAdapter/UnityAdapter.xcodeproj" ]] && [[ -f "$ROOT_DIR/UnityAdapter/project.yml" ]]; then
             continue
         fi
         PROJECTS+=("$proj")
@@ -480,6 +487,10 @@ else
         fi
         # Skip PubmaticAdapter.xcodeproj if PubmaticAdapter/project.yml exists (XcodeGen-managed)
         if [[ "$proj" == *"PubmaticAdapter/PubmaticAdapter.xcodeproj" ]] && [[ -f "$ROOT_DIR/PubmaticAdapter/project.yml" ]]; then
+            continue
+        fi
+        # Skip UnityAdapter.xcodeproj if UnityAdapter/project.yml exists (XcodeGen-managed)
+        if [[ "$proj" == *"UnityAdapter/UnityAdapter.xcodeproj" ]] && [[ -f "$ROOT_DIR/UnityAdapter/project.yml" ]]; then
             continue
         fi
         PROJECTS+=("$proj")
@@ -556,6 +567,9 @@ YAML
             continue
         fi
         if [[ "$rel" == "PubmaticAdapter/PubmaticAdapter.xcodeproj" ]] && [[ -f "$ROOT_DIR/PubmaticAdapter/project.yml" ]]; then
+            continue
+        fi
+        if [[ "$rel" == "UnityAdapter/UnityAdapter.xcodeproj" ]] && [[ -f "$ROOT_DIR/UnityAdapter/project.yml" ]]; then
             continue
         fi
         project_name="$(basename "${rel%.*}")"
