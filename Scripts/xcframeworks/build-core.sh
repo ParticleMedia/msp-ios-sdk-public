@@ -75,6 +75,25 @@ else
 fi
 
 # -----------------------------------------------------------
+# Step 1 — Build MSPPrebidAdapter first (required by MSPCore)
+# -----------------------------------------------------------
+BUILD_MODULE_SCRIPT="$XCFRAMEWORKS_SCRIPT_DIR/build_module.sh"
+PREBID_ADAPTER_XCFRAMEWORK="$ROOT_DIR/build/XCFrameworks/MSPPrebidAdapter.xcframework"
+
+if [[ ! -d "$PREBID_ADAPTER_XCFRAMEWORK" ]]; then
+    log_section "Building MSPPrebidAdapter (required by MSPCore)"
+    if "$BUILD_MODULE_SCRIPT" "PrebidAdapter"; then
+        log_success "MSPPrebidAdapter: BUILD SUCCEEDED"
+    else
+        log_error "MSPPrebidAdapter: BUILD FAILED"
+        log_error "MSPCore depends on MSPPrebidAdapter - cannot continue"
+        exit 1
+    fi
+else
+    log_info "MSPPrebidAdapter.xcframework already exists, skipping build"
+fi
+
+# -----------------------------------------------------------
 # Continue with MSP core modules archive (NovaCore → MSPCore → MSPOMSDK → MSPSharedLibraries)
 # -----------------------------------------------------------
 
