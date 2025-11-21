@@ -48,6 +48,33 @@ targets:
           - $(SRCROOT)/../MSPSharedLibraries/MSPiOSCore.xcframework
           - $(SRCROOT)/../MSPSharedLibraries/PrebidMobile.xcframework
           - $(SRCROOT)/NovaCore.xcframework
+        
+        # Swift Module Search Paths - Include Kingfisher
+        # Kingfisher is a Pod dependency required by NovaAdapter (declared for NovaCore target)
+        # The xcconfig may not include Kingfisher in SWIFT_INCLUDE_PATHS,
+        # so we explicitly add it here to ensure the Swift compiler can find it during archive
+        # Note: Pre-built Pods are in DerivedData/Build/Products, not in ArchiveIntermediates/BuildProductsPath
+        # BUILD_DIR points to ArchiveIntermediates/NovaAdapter/BuildProductsPath
+        # Products is at: BUILD_DIR/../../../../Products/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)
+        SWIFT_INCLUDE_PATHS:
+          - $(inherited)
+          - $(PODS_CONFIGURATION_BUILD_DIR)/Kingfisher
+          - $(BUILD_DIR)/../../../../Products/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)/Kingfisher
+          - $(PODS_CONFIGURATION_BUILD_DIR)/SnapKit
+          - $(BUILD_DIR)/../../../../Products/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)/SnapKit
+        
+        # Library Search Paths - Include Kingfisher and SnapKit static libraries
+        # Kingfisher and SnapKit are static libraries that need to be linked
+        # Add the paths where libKingfisher.a and libSnapKit.a are located
+        LIBRARY_SEARCH_PATHS:
+          - $(inherited)
+          - $(PODS_CONFIGURATION_BUILD_DIR)/Kingfisher
+          - $(PODS_CONFIGURATION_BUILD_DIR)/SnapKit
+          - $(BUILD_DIR)/../../../../Products/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)
+        
+        # Link Kingfisher and SnapKit static libraries
+        # This is required for the modules to be loadable during archive builds
+        OTHER_LDFLAGS: $(inherited) -l"Kingfisher" -l"SnapKit"
     configFiles:
       Debug: "../Pods/Target Support Files/Pods-NovaAdapter/Pods-NovaAdapter.debug.xcconfig"
       Release: "../Pods/Target Support Files/Pods-NovaAdapter/Pods-NovaAdapter.release.xcconfig"
