@@ -9,15 +9,15 @@
 set -euo pipefail
 
 # Source common functions
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-ROOT_DIR="$(cd "$SCRIPT_DIR/../.." && pwd)"
+XCFRAMEWORKS_SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+ROOT_DIR="$(cd "$XCFRAMEWORKS_SCRIPT_DIR/../.." && pwd)"
 
 # shellcheck source=Scripts/target-switching/common.sh
-source "$SCRIPT_DIR/../target-switching/common.sh"
+source "$XCFRAMEWORKS_SCRIPT_DIR/../target-switching/common.sh"
 
 ensure_repo_root
 
-BUILD_MODULE_SCRIPT="$SCRIPT_DIR/build_module.sh"
+BUILD_MODULE_SCRIPT="$XCFRAMEWORKS_SCRIPT_DIR/build_module.sh"
 if [[ ! -f "$BUILD_MODULE_SCRIPT" ]]; then
     log_error "build_module.sh not found: $BUILD_MODULE_SCRIPT"
     exit 1

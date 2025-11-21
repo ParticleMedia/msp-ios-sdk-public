@@ -39,6 +39,7 @@ if [[ -d "$WORKSPACE_FILE" ]]; then
     # This ensures module interfaces are verified during regular build,
     # preventing verification failures during MSP module archives
     # Key dependencies: SnapKit, Kingfisher, lottie-ios, Shimmer
+    # Note: Shimmer is required by NovaCore, so it must be pre-built
     PODS_DEPENDENCIES=("SnapKit" "Kingfisher" "lottie-ios" "Shimmer")
     
     # Use a shared DerivedData path so pre-built Pods are available to archive builds

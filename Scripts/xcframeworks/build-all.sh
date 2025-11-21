@@ -9,16 +9,16 @@
 set -euo pipefail
 
 # Source common functions
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-ROOT_DIR="$(cd "$SCRIPT_DIR/../.." && pwd)"
+XCFRAMEWORKS_SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+ROOT_DIR="$(cd "$XCFRAMEWORKS_SCRIPT_DIR/../.." && pwd)"
 
 # shellcheck source=Scripts/target-switching/common.sh
-source "$SCRIPT_DIR/../target-switching/common.sh"
+source "$XCFRAMEWORKS_SCRIPT_DIR/../target-switching/common.sh"
 
 ensure_repo_root
 
-BUILD_CORE_SCRIPT="$SCRIPT_DIR/build-core.sh"
-BUILD_ADAPTERS_SCRIPT="$SCRIPT_DIR/build-adapters.sh"
+BUILD_CORE_SCRIPT="$XCFRAMEWORKS_SCRIPT_DIR/build-core.sh"
+BUILD_ADAPTERS_SCRIPT="$XCFRAMEWORKS_SCRIPT_DIR/build-adapters.sh"
 REPORT_FILE="$ROOT_DIR/build/XCFrameworks/BuildReport.md"
 
 log_title "Building All XCFrameworks"
