@@ -365,6 +365,9 @@ fi
 if [[ -f "$ROOT_DIR/InmobiAdapter/project.yml" ]]; then
     XCODEGEN_PROJECTS+=("InmobiAdapter/project.yml")
 fi
+if [[ -f "$ROOT_DIR/MintegralAdapter/project.yml" ]]; then
+    XCODEGEN_PROJECTS+=("MintegralAdapter/project.yml")
+fi
 
 if [[ "$TARGET_MODE" == "spm" ]]; then
     # SPM mode: exclude all Pods projects
@@ -403,6 +406,10 @@ if [[ "$TARGET_MODE" == "spm" ]]; then
         fi
         # Skip InmobiAdapter.xcodeproj if InmobiAdapter/project.yml exists (XcodeGen-managed)
         if [[ "$proj" == *"InmobiAdapter/InmobiAdapter.xcodeproj" ]] && [[ -f "$ROOT_DIR/InmobiAdapter/project.yml" ]]; then
+            continue
+        fi
+        # Skip MintegralAdapter.xcodeproj if MintegralAdapter/project.yml exists (XcodeGen-managed)
+        if [[ "$proj" == *"MintegralAdapter/MintegralAdapter.xcodeproj" ]] && [[ -f "$ROOT_DIR/MintegralAdapter/project.yml" ]]; then
             continue
         fi
         PROJECTS+=("$proj")
@@ -447,6 +454,10 @@ else
         fi
         # Skip InmobiAdapter.xcodeproj if InmobiAdapter/project.yml exists (XcodeGen-managed)
         if [[ "$proj" == *"InmobiAdapter/InmobiAdapter.xcodeproj" ]] && [[ -f "$ROOT_DIR/InmobiAdapter/project.yml" ]]; then
+            continue
+        fi
+        # Skip MintegralAdapter.xcodeproj if MintegralAdapter/project.yml exists (XcodeGen-managed)
+        if [[ "$proj" == *"MintegralAdapter/MintegralAdapter.xcodeproj" ]] && [[ -f "$ROOT_DIR/MintegralAdapter/project.yml" ]]; then
             continue
         fi
         PROJECTS+=("$proj")
@@ -514,6 +525,9 @@ YAML
             continue
         fi
         if [[ "$rel" == "InmobiAdapter/InmobiAdapter.xcodeproj" ]] && [[ -f "$ROOT_DIR/InmobiAdapter/project.yml" ]]; then
+            continue
+        fi
+        if [[ "$rel" == "MintegralAdapter/MintegralAdapter.xcodeproj" ]] && [[ -f "$ROOT_DIR/MintegralAdapter/project.yml" ]]; then
             continue
         fi
         project_name="$(basename "${rel%.*}")"
