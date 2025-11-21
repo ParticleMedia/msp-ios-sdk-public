@@ -377,6 +377,9 @@ fi
 if [[ -f "$ROOT_DIR/UnityAdapter/project.yml" ]]; then
     XCODEGEN_PROJECTS+=("UnityAdapter/project.yml")
 fi
+if [[ -f "$ROOT_DIR/AmazonAdapter/project.yml" ]]; then
+    XCODEGEN_PROJECTS+=("AmazonAdapter/project.yml")
+fi
 
 if [[ "$TARGET_MODE" == "spm" ]]; then
     # SPM mode: exclude all Pods projects
@@ -431,6 +434,10 @@ if [[ "$TARGET_MODE" == "spm" ]]; then
         fi
         # Skip UnityAdapter.xcodeproj if UnityAdapter/project.yml exists (XcodeGen-managed)
         if [[ "$proj" == *"UnityAdapter/UnityAdapter.xcodeproj" ]] && [[ -f "$ROOT_DIR/UnityAdapter/project.yml" ]]; then
+            continue
+        fi
+        # Skip AmazonAdapter.xcodeproj if AmazonAdapter/project.yml exists (XcodeGen-managed)
+        if [[ "$proj" == *"AmazonAdapter/AmazonAdapter.xcodeproj" ]] && [[ -f "$ROOT_DIR/AmazonAdapter/project.yml" ]]; then
             continue
         fi
         PROJECTS+=("$proj")
@@ -491,6 +498,10 @@ else
         fi
         # Skip UnityAdapter.xcodeproj if UnityAdapter/project.yml exists (XcodeGen-managed)
         if [[ "$proj" == *"UnityAdapter/UnityAdapter.xcodeproj" ]] && [[ -f "$ROOT_DIR/UnityAdapter/project.yml" ]]; then
+            continue
+        fi
+        # Skip AmazonAdapter.xcodeproj if AmazonAdapter/project.yml exists (XcodeGen-managed)
+        if [[ "$proj" == *"AmazonAdapter/AmazonAdapter.xcodeproj" ]] && [[ -f "$ROOT_DIR/AmazonAdapter/project.yml" ]]; then
             continue
         fi
         PROJECTS+=("$proj")
@@ -570,6 +581,9 @@ YAML
             continue
         fi
         if [[ "$rel" == "UnityAdapter/UnityAdapter.xcodeproj" ]] && [[ -f "$ROOT_DIR/UnityAdapter/project.yml" ]]; then
+            continue
+        fi
+        if [[ "$rel" == "AmazonAdapter/AmazonAdapter.xcodeproj" ]] && [[ -f "$ROOT_DIR/AmazonAdapter/project.yml" ]]; then
             continue
         fi
         project_name="$(basename "${rel%.*}")"
