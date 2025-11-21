@@ -268,23 +268,46 @@ check_command "xcodebuild"
 # pod command is optional - only needed if Podfile exists and Pods not installed
 print_success "All required commands are available"
 
-# Check required files - NovaCore can be built from its own project (no Pods needed)
-print_step "Checking required project files..."
+# Check required files and generate NovaCore project from XcodeGen
+print_step "Checking required project files and generating NovaCore project..."
+
+# Check if XcodeGen is available
+if ! command -v xcodegen &> /dev/null; then
+    color_error "❌ ERROR: xcodegen command not found"
+    color_error "Please install XcodeGen: brew install xcodegen"
+    exit 1
+fi
+
+# Generate NovaCore project from project.yml (XcodeGen-managed)
+NOVA_PROJECT_SPEC="$ROOT_DIR/NovaCore/project.yml"
+if [[ ! -f "$NOVA_PROJECT_SPEC" ]]; then
+    color_error "❌ ERROR: NovaCore/project.yml not found"
+    color_error "NovaCore migration to XcodeGen requires project.yml"
+    exit 1
+fi
+
+print_step "Generating NovaCore.xcodeproj from project.yml..."
+if xcodegen generate --spec "$NOVA_PROJECT_SPEC"; then
+    print_success "NovaCore.xcodeproj generated successfully from project.yml"
+else
+    color_error "❌ ERROR: Failed to generate NovaCore.xcodeproj from project.yml"
+    exit 1
+fi
+
+# Verify generated project exists
 NOVA_WORKSPACE=""
 NOVA_PROJECT=""
 
-# Prefer workspace if available, but NovaCore project works too (NovaCore doesn't use Pods)
+# Prefer workspace if available, otherwise use generated project
 if [[ -d "$ROOT_DIR/msp-ios-sdk.xcworkspace" ]]; then
     NOVA_WORKSPACE="$ROOT_DIR/msp-ios-sdk.xcworkspace"
     print_success "Workspace found: msp-ios-sdk.xcworkspace (will use for build)"
 elif [[ -d "$ROOT_DIR/NovaCore/NovaCore.xcodeproj" ]]; then
     NOVA_PROJECT="$ROOT_DIR/NovaCore/NovaCore.xcodeproj"
-    print_success "NovaCore project found: NovaCore/NovaCore.xcodeproj (NovaCore uses XCFramework, not Pods)"
+    print_success "NovaCore project found: NovaCore/NovaCore.xcodeproj (generated from project.yml)"
 else
-    color_error "❌ ERROR: Neither workspace nor NovaCore project found"
-    color_error "NovaCore build requires:"
-    color_error "  - msp-ios-sdk.xcworkspace, or"
-    color_error "  - NovaCore/NovaCore.xcodeproj"
+    color_error "❌ ERROR: Generated NovaCore.xcodeproj not found"
+    color_error "Expected: NovaCore/NovaCore.xcodeproj"
     exit 1
 fi
 

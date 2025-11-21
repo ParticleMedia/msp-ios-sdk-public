@@ -333,10 +333,22 @@ log_section "Generating workspace.yml"
 log_step "Generating workspace.yml"
 
 # Find all .xcodeproj files (excluding Pods and build artifacts, sorted for determinism)
+# NOTE: Modules with project.yml (XcodeGen-managed) should use project.yml, not .xcodeproj
 PROJECTS=()
+XCODEGEN_PROJECTS=()
+
+# Check for XcodeGen-managed modules (project.yml takes precedence over .xcodeproj)
+if [[ -f "$ROOT_DIR/NovaCore/project.yml" ]]; then
+    XCODEGEN_PROJECTS+=("NovaCore/project.yml")
+fi
+
 if [[ "$TARGET_MODE" == "spm" ]]; then
     # SPM mode: exclude all Pods projects
     while IFS= read -r proj; do
+        # Skip NovaCore.xcodeproj if NovaCore/project.yml exists (XcodeGen-managed)
+        if [[ "$proj" == *"NovaCore/NovaCore.xcodeproj" ]] && [[ -f "$ROOT_DIR/NovaCore/project.yml" ]]; then
+            continue
+        fi
         PROJECTS+=("$proj")
     done < <(find "$ROOT_DIR" -name '*.xcodeproj' \
         ! -path '*/DerivedData/*' ! -path '*/Pods/*' \
@@ -345,6 +357,10 @@ else
     # Pods mode: exclude ALL Pods projects (including individual pod projects)
     # We'll add Pods/Pods.xcodeproj separately at the end
     while IFS= read -r proj; do
+        # Skip NovaCore.xcodeproj if NovaCore/project.yml exists (XcodeGen-managed)
+        if [[ "$proj" == *"NovaCore/NovaCore.xcodeproj" ]] && [[ -f "$ROOT_DIR/NovaCore/project.yml" ]]; then
+            continue
+        fi
         PROJECTS+=("$proj")
     done < <(find "$ROOT_DIR" -name '*.xcodeproj' \
         ! -path '*/DerivedData/*' ! -path '*/Pods/*' \
@@ -365,10 +381,23 @@ workspace:
       type: file
 YAML
     
-    # Add all found projects (excluding generated MSPDemoApp, sorted for determinism)
+    # Add XcodeGen-managed projects (project.yml files) first
+    for proj_yml in "${XCODEGEN_PROJECTS[@]}"; do
+        project_name="$(basename "$(dirname "$proj_yml")")"
+        printf "    - name: %s\n" "$project_name"
+        printf "      path: %s\n" "$proj_yml"
+        printf "      type: file\n"
+    done
+    
+    # Add all found .xcodeproj projects (excluding generated MSPDemoApp and XcodeGen-managed modules, sorted for determinism)
     for proj in "${PROJECTS[@]}"; do
         rel="${proj#$ROOT_DIR/}"
         if [[ "$rel" == "MSPDemoApp/MSPDemoApp.xcodeproj" ]]; then
+            continue
+        fi
+        # Skip if this module has a project.yml (already included above)
+        project_dir="$(dirname "$rel")"
+        if [[ -f "$ROOT_DIR/$project_dir/project.yml" ]]; then
             continue
         fi
         project_name="$(basename "${rel%.*}")"
