@@ -1,0 +1,65 @@
+# Global XcodeGen Project Template for MSP iOS SDK Modules
+# This template provides the shared foundation for all module project.yml files
+# 
+# Usage:
+#   Individual modules should include this template and override:
+#   - name: <ModuleName>
+#   - targets.<ModuleName> with module-specific settings
+#
+# Note: This template does NOT define a name or target name - those must be
+# provided by the including project.yml file.
+
+options:
+  minimumXcodeGenVersion: 2.38.0
+  deploymentTarget:
+    iOS: "15.0"
+  bundleIdPrefix: msp
+  developmentLanguage: en
+
+configs:
+  Debug: debug
+  Release: release
+
+settings:
+  base:
+    # Platform Configuration
+    IPHONEOS_DEPLOYMENT_TARGET: "15.0"
+    TARGETED_DEVICE_FAMILY: "1,2"
+    
+    # Swift Configuration
+    SWIFT_VERSION: "5.0"
+    SWIFT_OPTIMIZATION_LEVEL: -O
+    SWIFT_COMPILATION_MODE: wholemodule
+    
+    # Module Configuration
+    DEFINES_MODULE: YES
+    CLANG_ENABLE_MODULES: YES
+    SWIFT_INSTALL_OBJC_HEADER: YES
+    
+    # Info.plist (auto-generated)
+    GENERATE_INFOPLIST_FILE: YES
+    INFOPLIST_FILE: ""
+    
+    # CocoaPods Integration - CRITICAL: These paths point to repo root Pods, not module/Pods
+    PODS_ROOT: $(SRCROOT)/../Pods
+    PODS_PODFILE_DIR_PATH: $(SRCROOT)/..
+    SRCROOT: $(PROJECT_DIR)
+    
+    # Build for Distribution (required for framework distribution)
+    BUILD_LIBRARY_FOR_DISTRIBUTION: YES
+    
+    # Framework Settings
+    MACH_O_TYPE: mh_dylib
+    DYLIB_INSTALL_NAME_BASE: "@rpath"
+    INSTALL_PATH: $(LOCAL_LIBRARY_DIR)/Frameworks
+    SKIP_INSTALL: NO
+    
+    # Code Signing (can be overridden)
+    CODE_SIGN_IDENTITY: ""
+    CODE_SIGNING_REQUIRED: NO
+    CODE_SIGNING_ALLOWED: NO
+
+# Note: Individual project.yml files must define:
+# - name: <ModuleName>
+# - targets.<ModuleName> with type, platform, sources, settings, configFiles, script phases
+# This template only provides the shared settings and options.

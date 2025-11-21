@@ -1,18 +1,11 @@
 # MSPSharedLibraries XcodeGen Project Specification
-# This file replaces the manually maintained MSPSharedLibraries.xcodeproj
-# Generated projects will have correct PODS_ROOT paths for Pods mode integration
+# This file uses the shared module template and adds MSPSharedLibraries-specific overrides
+# Template: Config/xcodegen/module.project_template.yml
+
+include:
+  - ../Config/xcodegen/module.project_template.yml
 
 name: MSPSharedLibraries
-options:
-  minimumXcodeGenVersion: 2.38.0
-  deploymentTarget:
-    iOS: "15.0"
-  bundleIdPrefix: msp
-  developmentLanguage: en
-
-configs:
-  Debug: debug
-  Release: release
 
 settings:
   base:
@@ -21,46 +14,13 @@ settings:
     PRODUCT_BUNDLE_IDENTIFIER: msp.MSPSharedLibraries
     PRODUCT_MODULE_NAME: MSPSharedLibraries
     
-    # Platform Configuration
-    IPHONEOS_DEPLOYMENT_TARGET: "15.0"
-    TARGETED_DEVICE_FAMILY: "1,2"
-    
-    # Swift Configuration
-    SWIFT_VERSION: "5.0"
-    SWIFT_OPTIMIZATION_LEVEL: -O
-    SWIFT_COMPILATION_MODE: wholemodule
-    
-    # Module Configuration
-    DEFINES_MODULE: YES
-    CLANG_ENABLE_MODULES: YES
-    SWIFT_INSTALL_OBJC_HEADER: NO
-    
-    # Info.plist (auto-generated)
-    GENERATE_INFOPLIST_FILE: YES
-    INFOPLIST_FILE: ""
-    
-    # CocoaPods Integration - CRITICAL: These paths point to repo root Pods, not MSPSharedLibraries/Pods
-    PODS_ROOT: $(SRCROOT)/../Pods
-    PODS_PODFILE_DIR_PATH: $(SRCROOT)/..
-    SRCROOT: $(PROJECT_DIR)
-    
-    # Build for Distribution (required for framework distribution)
-    BUILD_LIBRARY_FOR_DISTRIBUTION: YES
-    
-    # Framework Settings
-    MACH_O_TYPE: mh_dylib
-    DYLIB_INSTALL_NAME_BASE: "@rpath"
-    INSTALL_PATH: $(LOCAL_LIBRARY_DIR)/Frameworks
-    SKIP_INSTALL: NO
-    
-    # Code Signing (can be overridden)
-    CODE_SIGN_IDENTITY: ""
-    CODE_SIGNING_REQUIRED: NO
-    CODE_SIGNING_ALLOWED: NO
-    
     # Framework Search Paths - Include $(PROJECT_DIR) to find local XCFrameworks
     # PrebidMobile.xcframework, OMSDK_Newsbreak1.xcframework, MSPiOSCore.xcframework are in $(PROJECT_DIR)
     FRAMEWORK_SEARCH_PATHS: $(inherited) $(PROJECT_DIR)
+    
+    # SWIFT_INSTALL_OBJC_HEADER override
+    # MSPSharedLibraries does not install ObjC headers
+    SWIFT_INSTALL_OBJC_HEADER: NO
 
 targets:
   MSPSharedLibraries:
@@ -135,4 +95,3 @@ schemes:
       config: Debug
     archive:
       config: Release
-

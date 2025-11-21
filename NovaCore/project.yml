@@ -1,18 +1,11 @@
 # NovaCore XcodeGen Project Specification
-# This file replaces the manually maintained NovaCore.xcodeproj
-# Generated projects will have correct PODS_ROOT paths for Pods mode integration
+# This file uses the shared module template and adds NovaCore-specific overrides
+# Template: Config/xcodegen/module.project_template.yml
+
+include:
+  - ../Config/xcodegen/module.project_template.yml
 
 name: NovaCore
-options:
-  minimumXcodeGenVersion: 2.38.0
-  deploymentTarget:
-    iOS: "15.0"
-  bundleIdPrefix: msp
-  developmentLanguage: en
-
-configs:
-  Debug: debug
-  Release: release
 
 settings:
   base:
@@ -20,43 +13,6 @@ settings:
     PRODUCT_NAME: NovaCore
     PRODUCT_BUNDLE_IDENTIFIER: msp.NovaCore
     PRODUCT_MODULE_NAME: NovaCore
-    
-    # Platform Configuration
-    IPHONEOS_DEPLOYMENT_TARGET: "15.0"
-    TARGETED_DEVICE_FAMILY: "1,2"
-    
-    # Swift Configuration
-    SWIFT_VERSION: "5.0"
-    SWIFT_OPTIMIZATION_LEVEL: -O
-    SWIFT_COMPILATION_MODE: wholemodule
-    
-    # Module Configuration
-    DEFINES_MODULE: YES
-    CLANG_ENABLE_MODULES: YES
-    SWIFT_INSTALL_OBJC_HEADER: YES
-    
-    # Info.plist (auto-generated)
-    GENERATE_INFOPLIST_FILE: YES
-    INFOPLIST_FILE: ""
-    
-    # CocoaPods Integration - CRITICAL: These paths point to repo root Pods, not NovaCore/Pods
-    PODS_ROOT: $(SRCROOT)/../Pods
-    PODS_PODFILE_DIR_PATH: $(SRCROOT)/..
-    SRCROOT: $(PROJECT_DIR)
-    
-    # Build for Distribution (required for XCFramework)
-    BUILD_LIBRARY_FOR_DISTRIBUTION: YES
-    
-    # Framework Settings
-    MACH_O_TYPE: mh_dylib
-    DYLIB_INSTALL_NAME_BASE: "@rpath"
-    INSTALL_PATH: $(LOCAL_LIBRARY_DIR)/Frameworks
-    SKIP_INSTALL: NO
-    
-    # Code Signing (can be overridden)
-    CODE_SIGN_IDENTITY: ""
-    CODE_SIGNING_REQUIRED: NO
-    CODE_SIGNING_ALLOWED: NO
 
 targets:
   NovaCore:
@@ -74,11 +30,6 @@ targets:
       - path: NovaCore/NBResourceBundle.bundle
     settings:
       base:
-        # Module Interface Verification
-        # Disable for MSPOMSDK to avoid "underlying Objective-C module not found" errors
-        # This is safe because MSPOMSDK is a mixed Swift/ObjC module
-        OTHER_SWIFT_FLAGS: $(inherited) -no-verify-emitted-module-interface
-        
         # Header Search Paths - inherit from CocoaPods xcconfig
         HEADER_SEARCH_PATHS: $(inherited)
         
@@ -86,6 +37,11 @@ targets:
         # xcconfig defines these relative to NovaCore/, but we need repo root
         PODS_ROOT: $(SRCROOT)/../Pods
         PODS_PODFILE_DIR_PATH: $(SRCROOT)/..
+        
+        # Module Interface Verification
+        # Disable for NovaCore to avoid "underlying Objective-C module not found" errors
+        # This is safe because NovaCore is a mixed Swift/ObjC module
+        OTHER_SWIFT_FLAGS: $(inherited) -no-verify-emitted-module-interface
     configFiles:
       Debug: "../Pods/Target Support Files/Pods-NovaCore/Pods-NovaCore.debug.xcconfig"
       Release: "../Pods/Target Support Files/Pods-NovaCore/Pods-NovaCore.release.xcconfig"
@@ -110,10 +66,16 @@ targets:
           - ${PODS_ROOT}/Manifest.lock
     postbuildScripts:
       - name: "[CP] Copy Pods Resources"
-        script: "${PODS_ROOT}/Target Support Files/Pods-NovaCore/Pods-NovaCore-resources.sh"
+        script: |
+          if [ -f "${PODS_ROOT}/Target Support Files/Pods-NovaCore/Pods-NovaCore-resources.sh" ]; then
+            "${PODS_ROOT}/Target Support Files/Pods-NovaCore/Pods-NovaCore-resources.sh"
+          fi
         shell: /bin/sh
       - name: "[CP] Embed Pods Frameworks"
-        script: "${PODS_ROOT}/Target Support Files/Pods-NovaCore/Pods-NovaCore-frameworks.sh"
+        script: |
+          if [ -f "${PODS_ROOT}/Target Support Files/Pods-NovaCore/Pods-NovaCore-frameworks.sh" ]; then
+            "${PODS_ROOT}/Target Support Files/Pods-NovaCore/Pods-NovaCore-frameworks.sh"
+          fi
         shell: /bin/sh
 
 schemes:
