@@ -91,3 +91,18 @@ release_backup_*/
 
 # Slack configuration (contains sensitive webhook URL)
 Scripts/config/slack.conf
+
+# Ignore all auto-generated migration / validation reports
+BuildReports/
+MigrationReports/
+Tmp/
+*.md.tmp
+*.log
+*.tmp
+
+# Ignore migration report files (generated during migration, not committed)
+*_Migration_Summary.md
+*_Project_Fix_Summary.md
+*_Validation_Checklist.md
+*_Migration_Report.md
+*_Fix_Report.md
