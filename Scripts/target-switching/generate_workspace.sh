@@ -353,6 +353,9 @@ fi
 if [[ -f "$ROOT_DIR/NovaAdapter/project.yml" ]]; then
     XCODEGEN_PROJECTS+=("NovaAdapter/project.yml")
 fi
+if [[ -f "$ROOT_DIR/PrebidAdapter/project.yml" ]]; then
+    XCODEGEN_PROJECTS+=("PrebidAdapter/project.yml")
+fi
 
 if [[ "$TARGET_MODE" == "spm" ]]; then
     # SPM mode: exclude all Pods projects
@@ -375,6 +378,10 @@ if [[ "$TARGET_MODE" == "spm" ]]; then
         fi
         # Skip NovaAdapter.xcodeproj if NovaAdapter/project.yml exists (XcodeGen-managed)
         if [[ "$proj" == *"NovaAdapter/NovaAdapter.xcodeproj" ]] && [[ -f "$ROOT_DIR/NovaAdapter/project.yml" ]]; then
+            continue
+        fi
+        # Skip PrebidAdapter.xcodeproj if PrebidAdapter/project.yml exists (XcodeGen-managed)
+        if [[ "$proj" == *"PrebidAdapter/PrebidAdapter.xcodeproj" ]] && [[ -f "$ROOT_DIR/PrebidAdapter/project.yml" ]]; then
             continue
         fi
         PROJECTS+=("$proj")
@@ -403,6 +410,10 @@ else
         fi
         # Skip NovaAdapter.xcodeproj if NovaAdapter/project.yml exists (XcodeGen-managed)
         if [[ "$proj" == *"NovaAdapter/NovaAdapter.xcodeproj" ]] && [[ -f "$ROOT_DIR/NovaAdapter/project.yml" ]]; then
+            continue
+        fi
+        # Skip PrebidAdapter.xcodeproj if PrebidAdapter/project.yml exists (XcodeGen-managed)
+        if [[ "$proj" == *"PrebidAdapter/PrebidAdapter.xcodeproj" ]] && [[ -f "$ROOT_DIR/PrebidAdapter/project.yml" ]]; then
             continue
         fi
         PROJECTS+=("$proj")
@@ -458,6 +469,9 @@ YAML
             continue
         fi
         if [[ "$rel" == "NovaAdapter/NovaAdapter.xcodeproj" ]] && [[ -f "$ROOT_DIR/NovaAdapter/project.yml" ]]; then
+            continue
+        fi
+        if [[ "$rel" == "PrebidAdapter/PrebidAdapter.xcodeproj" ]] && [[ -f "$ROOT_DIR/PrebidAdapter/project.yml" ]]; then
             continue
         fi
         project_name="$(basename "${rel%.*}")"
