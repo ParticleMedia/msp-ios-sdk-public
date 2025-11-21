@@ -344,6 +344,9 @@ fi
 if [[ -f "$ROOT_DIR/MSPCore/project.yml" ]]; then
     XCODEGEN_PROJECTS+=("MSPCore/project.yml")
 fi
+if [[ -f "$ROOT_DIR/MSPOMSDK/project.yml" ]]; then
+    XCODEGEN_PROJECTS+=("MSPOMSDK/project.yml")
+fi
 
 if [[ "$TARGET_MODE" == "spm" ]]; then
     # SPM mode: exclude all Pods projects
@@ -354,6 +357,10 @@ if [[ "$TARGET_MODE" == "spm" ]]; then
         fi
         # Skip MSPCore.xcodeproj if MSPCore/project.yml exists (XcodeGen-managed)
         if [[ "$proj" == *"MSPCore/MSPCore.xcodeproj" ]] && [[ -f "$ROOT_DIR/MSPCore/project.yml" ]]; then
+            continue
+        fi
+        # Skip MSPOMSDK.xcodeproj if MSPOMSDK/project.yml exists (XcodeGen-managed)
+        if [[ "$proj" == *"MSPOMSDK/MSPOMSDK.xcodeproj" ]] && [[ -f "$ROOT_DIR/MSPOMSDK/project.yml" ]]; then
             continue
         fi
         PROJECTS+=("$proj")
@@ -370,6 +377,10 @@ else
         fi
         # Skip MSPCore.xcodeproj if MSPCore/project.yml exists (XcodeGen-managed)
         if [[ "$proj" == *"MSPCore/MSPCore.xcodeproj" ]] && [[ -f "$ROOT_DIR/MSPCore/project.yml" ]]; then
+            continue
+        fi
+        # Skip MSPOMSDK.xcodeproj if MSPOMSDK/project.yml exists (XcodeGen-managed)
+        if [[ "$proj" == *"MSPOMSDK/MSPOMSDK.xcodeproj" ]] && [[ -f "$ROOT_DIR/MSPOMSDK/project.yml" ]]; then
             continue
         fi
         PROJECTS+=("$proj")
@@ -411,11 +422,14 @@ YAML
         if [[ -f "$ROOT_DIR/$project_dir/project.yml" ]]; then
             continue
         fi
-        # Skip NovaCore and MSPCore if they have project.yml (already included above)
+        # Skip NovaCore, MSPCore, and MSPOMSDK if they have project.yml (already included above)
         if [[ "$rel" == "NovaCore/NovaCore.xcodeproj" ]] && [[ -f "$ROOT_DIR/NovaCore/project.yml" ]]; then
             continue
         fi
         if [[ "$rel" == "MSPCore/MSPCore.xcodeproj" ]] && [[ -f "$ROOT_DIR/MSPCore/project.yml" ]]; then
+            continue
+        fi
+        if [[ "$rel" == "MSPOMSDK/MSPOMSDK.xcodeproj" ]] && [[ -f "$ROOT_DIR/MSPOMSDK/project.yml" ]]; then
             continue
         fi
         project_name="$(basename "${rel%.*}")"
