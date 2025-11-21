@@ -147,16 +147,29 @@ post_install do |installer|
     target.build_configurations.each do |config|
       config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '15.0'
       
-      # Fix MSPOMSDK module interface verification issues
-      if target.name == 'MSPOMSDK'
-        config.build_settings['DEFINES_MODULE'] = 'YES'
-        config.build_settings['CLANG_ENABLE_MODULES'] = 'YES'
-        config.build_settings['SWIFT_INSTALL_OBJC_HEADER'] = 'YES'
-        # Disable module interface verification to avoid "underlying Objective-C module not found" errors
-        # This is safe because MSPOMSDK is a mixed Swift/ObjC module and the ObjC module is available at runtime
-        config.build_settings['OTHER_SWIFT_FLAGS'] = '$(inherited) -no-verify-emitted-module-interface'
-      else
-        config.build_settings['OTHER_SWIFT_FLAGS'] = '$(inherited) -no-verify-emitted-module-interface'
+      # Disable Swift module interface verification for Pods targets only
+      # This fixes archive-time errors: "SwiftVerifyEmittedModuleInterface: underlying Objective-C module 'SnapKit' not found"
+      # MSP modules keep verification enabled (they are not in installer.pods_project.targets)
+      # 
+      # Approach: Disable module interface emission and remove verification build phases
+      # This is safe because Pods are pre-built or built separately, and MSP modules don't need Pod interfaces
+      config.build_settings['SWIFT_EMIT_MODULE_INTERFACE'] = 'NO'
+      config.build_settings['SWIFT_INSTALL_MODULE_FOR_DEPLOYMENT'] = 'NO'
+      config.build_settings['BUILD_LIBRARY_FOR_DISTRIBUTION'] = 'NO'
+      config.build_settings['OTHER_SWIFT_FLAGS'] ||= ''
+      # Remove any existing -no-verify-emitted-module-interface if present, then add it
+      config.build_settings['OTHER_SWIFT_FLAGS'] = config.build_settings['OTHER_SWIFT_FLAGS'].to_s.gsub(/\s*-no-verify-emitted-module-interface\s*/, '').strip
+      config.build_settings['OTHER_SWIFT_FLAGS'] << ' -no-verify-emitted-module-interface' unless config.build_settings['OTHER_SWIFT_FLAGS'].include?('-no-verify-emitted-module-interface')
+    end
+    
+    # Remove SwiftVerifyEmittedModuleInterface build phases from Pods targets
+    target.build_phases.each do |phase|
+      if phase.respond_to?(:name) && phase.name == 'SwiftVerifyEmittedModuleInterface'
+        target.build_phases.delete(phase)
+      elsif phase.is_a?(Xcodeproj::Project::Object::PBXShellScriptBuildPhase)
+        if phase.shell_script && phase.shell_script.include?('SwiftVerifyEmittedModuleInterface')
+          target.build_phases.delete(phase)
+        end
       end
     end
   end

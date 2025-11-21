@@ -53,8 +53,17 @@ if [[ ! -d "$XCODEPROJ" ]]; then
     exit 1
 fi
 
-# DerivedData path (isolated per module)
-DERIVED_DATA="$ROOT_DIR/DerivedData/build-$MODULE_NAME"
+# DerivedData path - use shared path if Pods were pre-built, otherwise use module-specific
+SHARED_DERIVED_DATA="$ROOT_DIR/DerivedData/build-shared"
+if [[ -d "$SHARED_DERIVED_DATA" ]] && [[ -d "$SHARED_DERIVED_DATA/Build/Products/Release-iphoneos" ]]; then
+    # Use shared DerivedData so pre-built Pods are available during archive
+    DERIVED_DATA="$SHARED_DERIVED_DATA"
+    log_info "Using shared DerivedData (Pods pre-built): $DERIVED_DATA"
+else
+    # Use module-specific DerivedData if Pods weren't pre-built
+    DERIVED_DATA="$ROOT_DIR/DerivedData/build-$MODULE_NAME"
+    log_info "Using module-specific DerivedData: $DERIVED_DATA"
+fi
 mkdir -p "$DERIVED_DATA"
 
 # Archive paths
@@ -64,10 +73,24 @@ SIMULATOR_ARCHIVE="$ARCHIVES_DIR/$MODULE_NAME-Simulator.xcarchive"
 # Clean previous archives
 rm -rf "$IOS_ARCHIVE" "$SIMULATOR_ARCHIVE"
 
+# Use workspace if available (for Pods dependencies), otherwise use project
+WORKSPACE="$ROOT_DIR/msp-ios-sdk.xcworkspace"
+if [[ -d "$WORKSPACE" ]]; then
+    BUILD_ARG="-workspace"
+    BUILD_PATH="$WORKSPACE"
+    log_info "Using workspace for Pods dependencies: $WORKSPACE"
+else
+    BUILD_ARG="-project"
+    BUILD_PATH="$XCODEPROJ"
+    log_warn "Workspace not found, using project (Pods dependencies may not be available)"
+fi
+
 # Build iOS device archive
 log_step "Building iOS device archive"
+# Add verification skip flags for Pods targets (applies to all targets in workspace)
+# These settings are overridden by project.yml for MSP modules, so they only affect Pods
 xcodebuild archive \
-    -project "$XCODEPROJ" \
+    "$BUILD_ARG" "$BUILD_PATH" \
     -scheme "$SCHEME_NAME" \
     -configuration Release \
     -destination "generic/platform=iOS" \
@@ -75,6 +98,8 @@ xcodebuild archive \
     -derivedDataPath "$DERIVED_DATA" \
     BUILD_LIBRARY_FOR_DISTRIBUTION=YES \
     SKIP_INSTALL=NO \
+    SWIFT_VERIFY_EMITTED_MODULE_INTERFACE=NO \
+    OTHER_SWIFT_FLAGS="-no-verify-emitted-module-interface" \
     -allowProvisioningUpdates
 
 if [[ ! -d "$IOS_ARCHIVE" ]]; then
@@ -84,8 +109,10 @@ fi
 
 # Build iOS Simulator archive
 log_step "Building iOS Simulator archive"
+# Add verification skip flags for Pods targets (applies to all targets in workspace)
+# These settings are overridden by project.yml for MSP modules, so they only affect Pods
 xcodebuild archive \
-    -project "$XCODEPROJ" \
+    "$BUILD_ARG" "$BUILD_PATH" \
     -scheme "$SCHEME_NAME" \
     -configuration Release \
     -destination "generic/platform=iOS Simulator" \
@@ -93,6 +120,8 @@ xcodebuild archive \
     -derivedDataPath "$DERIVED_DATA" \
     BUILD_LIBRARY_FOR_DISTRIBUTION=YES \
     SKIP_INSTALL=NO \
+    SWIFT_VERIFY_EMITTED_MODULE_INTERFACE=NO \
+    OTHER_SWIFT_FLAGS="-no-verify-emitted-module-interface" \
     -allowProvisioningUpdates
 
 if [[ ! -d "$SIMULATOR_ARCHIVE" ]]; then

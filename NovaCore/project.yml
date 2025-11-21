@@ -13,6 +13,11 @@ settings:
     PRODUCT_NAME: NovaCore
     PRODUCT_BUNDLE_IDENTIFIER: msp.NovaCore
     PRODUCT_MODULE_NAME: NovaCore
+    
+    # Framework Search Paths
+    FRAMEWORK_SEARCH_PATHS:
+      - $(inherited)
+      - $(SRCROOT)/../MSPOMSDK/OMSDK_Newsbreak1.xcframework
 
 targets:
   NovaCore:
