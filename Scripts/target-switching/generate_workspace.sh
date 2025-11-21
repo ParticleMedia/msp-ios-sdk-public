@@ -359,6 +359,9 @@ fi
 if [[ -f "$ROOT_DIR/MSPGoogleAdapter/project.yml" ]]; then
     XCODEGEN_PROJECTS+=("MSPGoogleAdapter/project.yml")
 fi
+if [[ -f "$ROOT_DIR/MSPFacebookAdapter/project.yml" ]]; then
+    XCODEGEN_PROJECTS+=("MSPFacebookAdapter/project.yml")
+fi
 
 if [[ "$TARGET_MODE" == "spm" ]]; then
     # SPM mode: exclude all Pods projects
@@ -389,6 +392,10 @@ if [[ "$TARGET_MODE" == "spm" ]]; then
         fi
         # Skip MSPGoogleAdapter.xcodeproj if MSPGoogleAdapter/project.yml exists (XcodeGen-managed)
         if [[ "$proj" == *"MSPGoogleAdapter/MSPGoogleAdapter.xcodeproj" ]] && [[ -f "$ROOT_DIR/MSPGoogleAdapter/project.yml" ]]; then
+            continue
+        fi
+        # Skip MSPFacebookAdapter.xcodeproj if MSPFacebookAdapter/project.yml exists (XcodeGen-managed)
+        if [[ "$proj" == *"MSPFacebookAdapter/MSPFacebookAdapter.xcodeproj" ]] && [[ -f "$ROOT_DIR/MSPFacebookAdapter/project.yml" ]]; then
             continue
         fi
         PROJECTS+=("$proj")
@@ -425,6 +432,10 @@ else
         fi
         # Skip MSPGoogleAdapter.xcodeproj if MSPGoogleAdapter/project.yml exists (XcodeGen-managed)
         if [[ "$proj" == *"MSPGoogleAdapter/MSPGoogleAdapter.xcodeproj" ]] && [[ -f "$ROOT_DIR/MSPGoogleAdapter/project.yml" ]]; then
+            continue
+        fi
+        # Skip MSPFacebookAdapter.xcodeproj if MSPFacebookAdapter/project.yml exists (XcodeGen-managed)
+        if [[ "$proj" == *"MSPFacebookAdapter/MSPFacebookAdapter.xcodeproj" ]] && [[ -f "$ROOT_DIR/MSPFacebookAdapter/project.yml" ]]; then
             continue
         fi
         PROJECTS+=("$proj")
@@ -486,6 +497,9 @@ YAML
             continue
         fi
         if [[ "$rel" == "MSPGoogleAdapter/MSPGoogleAdapter.xcodeproj" ]] && [[ -f "$ROOT_DIR/MSPGoogleAdapter/project.yml" ]]; then
+            continue
+        fi
+        if [[ "$rel" == "MSPFacebookAdapter/MSPFacebookAdapter.xcodeproj" ]] && [[ -f "$ROOT_DIR/MSPFacebookAdapter/project.yml" ]]; then
             continue
         fi
         project_name="$(basename "${rel%.*}")"
