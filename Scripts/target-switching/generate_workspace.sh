@@ -383,7 +383,12 @@ fi
 
 if [[ "$TARGET_MODE" == "spm" ]]; then
     # SPM mode: exclude all Pods projects
+    log_info "[generate_workspace] SPM mode: excluded Pods/Pods.xcodeproj"
     while IFS= read -r proj; do
+        # Defensive check: skip any Pods-related paths
+        if [[ "$proj" == *"Pods"* ]] || [[ "$proj" == *"Pods.xcodeproj" ]] || [[ "$proj" == */Pods/* ]]; then
+            continue
+        fi
         # Skip NovaCore.xcodeproj if NovaCore/project.yml exists (XcodeGen-managed)
         if [[ "$proj" == *"NovaCore/NovaCore.xcodeproj" ]] && [[ -f "$ROOT_DIR/NovaCore/project.yml" ]]; then
             continue
@@ -535,6 +540,12 @@ YAML
     # Add all found .xcodeproj projects (excluding generated MSPDemoApp and XcodeGen-managed modules, sorted for determinism)
     for proj in "${PROJECTS[@]}"; do
         rel="${proj#$ROOT_DIR/}"
+        # Defensive check: skip any Pods-related paths in SPM mode
+        if [[ "$TARGET_MODE" == "spm" ]]; then
+            if [[ "$rel" == *"Pods"* ]] || [[ "$rel" == *"Pods.xcodeproj" ]] || [[ "$rel" == */Pods/* ]]; then
+                continue
+            fi
+        fi
         if [[ "$rel" == "MSPDemoApp/MSPDemoApp.xcodeproj" ]]; then
             continue
         fi
