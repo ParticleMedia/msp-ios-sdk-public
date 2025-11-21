@@ -102,15 +102,19 @@ build_for_platform() {
     local derived_data_path="/tmp/${scheme}-${platform}-DerivedData"
     local archive_path="/tmp/${scheme}-${platform}.xcarchive"
     
-    # For projects that need CocoaPods (like NovaCore), always use the main workspace
+    # Determine build command - prefer workspace if available, otherwise use project
     local build_command
     if [[ -f "msp-ios-sdk.xcworkspace" ]]; then
         build_command="xcodebuild -workspace msp-ios-sdk.xcworkspace"
-        echo "🔧 Using main workspace for build (CocoaPods integration)"
+        echo "🔧 Using main workspace for build"
     elif [[ -f "$project_path.xcworkspace" ]]; then
         build_command="xcodebuild -workspace $project_path.xcworkspace"
-    else
+    elif [[ -d "$project_path.xcodeproj" ]]; then
         build_command="xcodebuild -project $project_path.xcodeproj"
+        echo "🔧 Using project file for build (no workspace needed)"
+    else
+        echo "❌ ERROR: No workspace or project found at: $project_path"
+        return 1
     fi
     
         # Execute build with retry logic

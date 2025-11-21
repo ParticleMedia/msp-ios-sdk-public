@@ -5,9 +5,28 @@
 
 # Source the shared libraries
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-ROOT_DIR="$(cd "$SCRIPT_DIR/../.." && pwd)"
-source "$ROOT_DIR/Scripts/lib/colors.sh"
-source "$ROOT_DIR/Scripts/lib/xcframework_builder.sh"
+ROOT_DIR="$(cd "$SCRIPT_DIR/../../.." && pwd)"
+
+# Ensure we're in repo root
+cd "$ROOT_DIR" || exit 1
+
+# Source with fallback
+if [[ -f "$ROOT_DIR/Scripts/lib/colors.sh" ]]; then
+    source "$ROOT_DIR/Scripts/lib/colors.sh"
+else
+    color_highlight() { echo "== $1 =="; }
+    color_info() { echo "INFO: $1"; }
+    color_success() { echo "✓ $1"; }
+    color_warning() { echo "⚠ $1"; }
+    color_error() { echo "✗ $1" >&2; }
+fi
+
+if [[ -f "$ROOT_DIR/Scripts/lib/xcframework_builder.sh" ]]; then
+    source "$ROOT_DIR/Scripts/lib/xcframework_builder.sh"
+else
+    color_error "xcframework_builder.sh not found"
+    exit 1
+fi
 
 # Usage function
 show_usage() {
@@ -58,8 +77,10 @@ set -o pipefail
 # Utility functions
 ensure_project_root() {
     # Simple function to ensure we're in the right directory
-    if [[ ! -d "msp-ios-sdk.xcworkspace" ]]; then
-        echo "❌ ERROR: Please run this script from the project root directory"
+    if [[ ! -f ".git/config" ]] && [[ ! -d "MSPDemoApp" ]] && [[ ! -d "MSPiOSCore" ]]; then
+        color_error "❌ ERROR: Not in project root directory"
+        color_error "Current directory: $(pwd)"
+        color_error "ROOT_DIR: $ROOT_DIR"
         exit 1
     fi
 }
@@ -86,13 +107,13 @@ main() {
     fi
     echo "✅ All required commands are available"
     
-    # Check required files
+    # Check required files - MSPiOSCore can be built from its own project
     echo "🔧 Checking required project files..."
-    if [[ ! -d "msp-ios-sdk.xcworkspace" ]]; then
-        echo "❌ ERROR: msp-ios-sdk.xcworkspace not found"
+    if [[ ! -d "MSPiOSCore/MSPiOSCore.xcodeproj" ]]; then
+        color_error "❌ ERROR: MSPiOSCore project not found"
         exit 1
     fi
-    echo "✅ All required project files found"
+    echo "✅ MSPiOSCore project found"
     
     # Clean previous build artifacts
     echo "🔧 Cleaning previous build artifacts..."

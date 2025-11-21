@@ -6,8 +6,22 @@ export LC_ALL=en_US.UTF-8
 
 # Source shared color library
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-ROOT_DIR="$(cd "$SCRIPT_DIR/../.." && pwd)"
-source "$ROOT_DIR/Scripts/lib/colors.sh"
+ROOT_DIR="$(cd "$SCRIPT_DIR/../../.." && pwd)"
+
+# Ensure we're in repo root
+cd "$ROOT_DIR" || exit 1
+
+# Source colors with fallback
+if [[ -f "$ROOT_DIR/Scripts/lib/colors.sh" ]]; then
+    source "$ROOT_DIR/Scripts/lib/colors.sh"
+else
+    # Fallback color functions
+    color_highlight() { echo "== $1 =="; }
+    color_info() { echo "INFO: $1"; }
+    color_success() { echo "✓ $1"; }
+    color_warning() { echo "⚠ $1"; }
+    color_error() { echo "✗ $1" >&2; }
+fi
 
 # Usage function
 show_usage() {
@@ -132,7 +146,7 @@ build_archive() {
     local destination=$2
     local archive_path=$3
     local sdk=$4
-    local additional_flags=$5
+    local additional_flags="${5:-}"
     
     # CI-specific optimizations
     local ci_flags=""
@@ -149,16 +163,38 @@ build_archive() {
         GCC_OPTIMIZATION_LEVEL=0"
     fi
     
-    local build_command="xcodebuild archive \
-        -workspace msp-ios-sdk.xcworkspace \
-        -scheme \"$scheme\" \
-        -destination=\"$destination\" \
-        -archivePath \"$archive_path\" \
-        SKIP_INSTALL=NO \
-        -configuration Release \
-        -sdk \"$sdk\" \
-        BUILD_LIBRARY_FOR_DISTRIBUTION=YES \
-        $ci_flags"
+    # Build with BUILD_LIBRARY_FOR_DISTRIBUTION=YES for NovaCore
+    # Disable module interface verification for MSPOMSDK to avoid "underlying Objective-C module not found" errors
+    # We pass this as a build setting override for the MSPOMSDK target
+    local build_command=""
+    if [[ -n "$NOVA_WORKSPACE" ]]; then
+        build_command="xcodebuild archive \
+            -workspace \"$NOVA_WORKSPACE\" \
+            -scheme \"$scheme\" \
+            -destination=\"$destination\" \
+            -archivePath \"$archive_path\" \
+            SKIP_INSTALL=NO \
+            -configuration Release \
+            -sdk \"$sdk\" \
+            BUILD_LIBRARY_FOR_DISTRIBUTION=YES \
+            OTHER_SWIFT_FLAGS[MSPOMSDK]=\"\$(inherited) -no-verify-emitted-module-interface\" \
+            $ci_flags"
+    elif [[ -n "$NOVA_PROJECT" ]]; then
+        build_command="xcodebuild archive \
+            -project \"$NOVA_PROJECT\" \
+            -scheme \"$scheme\" \
+            -destination=\"$destination\" \
+            -archivePath \"$archive_path\" \
+            SKIP_INSTALL=NO \
+            -configuration Release \
+            -sdk \"$sdk\" \
+            BUILD_LIBRARY_FOR_DISTRIBUTION=YES \
+            OTHER_SWIFT_FLAGS[MSPOMSDK]=\"\$(inherited) -no-verify-emitted-module-interface\" \
+            $ci_flags"
+    else
+        color_error "❌ ERROR: No workspace or project available for build"
+        return 1
+    fi
     
     # Add code signing flags if SKIP_CODE_SIGN is enabled
     if [ "$SKIP_CODE_SIGN" = "1" ]; then
@@ -216,26 +252,41 @@ build_archive() {
 # Main build process
 print_section "Starting NovaCore XCFramework Build"
 
-# Ensure we're in the project root directory
+# Ensure we're in the project root directory (already cd'd above)
 print_step "Checking project root directory..."
-if [[ ! -d "msp-ios-sdk.xcworkspace" ]]; then
-    color_error "❌ ERROR: Please run this script from the project root directory"
+if [[ ! -f ".git/config" ]] && [[ ! -d "MSPDemoApp" ]]; then
+    color_error "❌ ERROR: Not in project root directory"
     color_error "Current directory: $(pwd)"
-    color_error "Expected to find: msp-ios-sdk.xcworkspace"
+    color_error "ROOT_DIR: $ROOT_DIR"
     exit 1
 fi
-print_success "Project root directory verified"
+print_success "Project root directory verified: $ROOT_DIR"
 
 # Check required commands
 print_step "Checking required commands..."
 check_command "xcodebuild"
-check_command "pod"
+# pod command is optional - only needed if Podfile exists and Pods not installed
 print_success "All required commands are available"
 
-# Check required files
+# Check required files - NovaCore can be built from its own project (no Pods needed)
 print_step "Checking required project files..."
-check_path "Podfile"
-print_success "All required project files found"
+NOVA_WORKSPACE=""
+NOVA_PROJECT=""
+
+# Prefer workspace if available, but NovaCore project works too (NovaCore doesn't use Pods)
+if [[ -d "$ROOT_DIR/msp-ios-sdk.xcworkspace" ]]; then
+    NOVA_WORKSPACE="$ROOT_DIR/msp-ios-sdk.xcworkspace"
+    print_success "Workspace found: msp-ios-sdk.xcworkspace (will use for build)"
+elif [[ -d "$ROOT_DIR/NovaCore/NovaCore.xcodeproj" ]]; then
+    NOVA_PROJECT="$ROOT_DIR/NovaCore/NovaCore.xcodeproj"
+    print_success "NovaCore project found: NovaCore/NovaCore.xcodeproj (NovaCore uses XCFramework, not Pods)"
+else
+    color_error "❌ ERROR: Neither workspace nor NovaCore project found"
+    color_error "NovaCore build requires:"
+    color_error "  - msp-ios-sdk.xcworkspace, or"
+    color_error "  - NovaCore/NovaCore.xcodeproj"
+    exit 1
+fi
 
 # Clean previous build artifacts
 print_step "Cleaning previous build artifacts..."
@@ -243,11 +294,12 @@ rm -rf "$PWD/outputNova/xcframework"
 mkdir -p "$PWD/outputNova/xcframework"
 print_success "Build directory cleaned and created"
 
-# Install pods
-print_section "Installing CocoaPods Dependencies"
-
-# Install CocoaPods dependencies with enhanced retry logic
-print_step "Installing CocoaPods dependencies with retry logic..."
+# NovaCore doesn't use Pods - it uses XCFramework integration
+# Only install Pods if we're using the workspace AND it requires Pods
+# But since NovaCore can be built from its own project, skip Pods installation
+if [[ -n "$NOVA_WORKSPACE" ]] && [[ -f "$ROOT_DIR/Podfile" ]] && [[ ! -d "$ROOT_DIR/Pods" ]]; then
+    print_section "Installing CocoaPods Dependencies"
+    print_step "Workspace requires Pods - installing dependencies (NovaCore doesn't need them)..."
 
 # Try multiple strategies for CocoaPods installation
 install_cocoapods_with_retry() {
@@ -358,12 +410,14 @@ EOF
     return 1
 }
 
-# Execute the installation
-if install_cocoapods_with_retry; then
-    print_success "CocoaPods installation completed successfully"
+    # Execute the installation
+    if install_cocoapods_with_retry; then
+        print_success "CocoaPods installation completed successfully"
+    else
+        color_warning "CocoaPods installation failed, but continuing (workspace may already be set up)"
+    fi
 else
-    color_error "Failed to install CocoaPods dependencies after all retry attempts"
-    exit 1
+    print_info "Pods already installed or not needed (SPM mode)"
 fi
 
 # Check for problematic dependencies in CI
@@ -402,6 +456,26 @@ else
     color_error "❌ ERROR: Asset validation failed - assets are out of sync"
     color_error "Please run '$ROOT_DIR/Scripts/lib/asset_sync.sh' to fix asset synchronization"
     exit 1
+fi
+
+# NovaCore project has Pods references and REQUIRES Pods dependencies
+# When building in Pods mode, Pods should already be installed
+# This section ensures Pods are available for NovaCore build
+if [[ -n "$NOVA_PROJECT" ]]; then
+    if [[ ! -d "$ROOT_DIR/Pods" ]]; then
+        color_error "❌ ERROR: Pods directory not found"
+        color_error "NovaCore requires Pods dependencies (Kingfisher, SnapKit, Shimmer, lottie-ios, MSPOMSDK)"
+        color_error "Please run 'pod install' first, or switch to Pods mode:"
+        color_error "  ./Scripts/target-switching/switch-target.sh pods"
+        exit 1
+    fi
+    
+    # Verify Pods structure exists for NovaCore
+    if [[ ! -d "$ROOT_DIR/Pods/Target Support Files/Pods-NovaCore" ]]; then
+        color_warning "⚠️  Pods-NovaCore target support files not found"
+        color_warning "This may indicate pod install did not complete successfully"
+        color_warning "Try running: bundle exec pod install"
+    fi
 fi
 
 # Build for iOS device

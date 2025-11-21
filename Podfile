@@ -146,7 +146,18 @@ post_install do |installer|
   installer.pods_project.targets.each do |target|
     target.build_configurations.each do |config|
       config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '15.0'
-      config.build_settings['OTHER_SWIFT_FLAGS'] = '-no-verify-emitted-module-interface'
+      
+      # Fix MSPOMSDK module interface verification issues
+      if target.name == 'MSPOMSDK'
+        config.build_settings['DEFINES_MODULE'] = 'YES'
+        config.build_settings['CLANG_ENABLE_MODULES'] = 'YES'
+        config.build_settings['SWIFT_INSTALL_OBJC_HEADER'] = 'YES'
+        # Disable module interface verification to avoid "underlying Objective-C module not found" errors
+        # This is safe because MSPOMSDK is a mixed Swift/ObjC module and the ObjC module is available at runtime
+        config.build_settings['OTHER_SWIFT_FLAGS'] = '$(inherited) -no-verify-emitted-module-interface'
+      else
+        config.build_settings['OTHER_SWIFT_FLAGS'] = '$(inherited) -no-verify-emitted-module-interface'
+      end
     end
   end
 end

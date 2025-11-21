@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
 # ============================================================================
-# Target Switching Script
+# Target Switching Script - Intelligent Mode Switcher
 # ============================================================================
 # Purpose: Switch between CocoaPods and Swift Package Manager (SPM) targets.
+#          Ensures both modes build successfully with proper validation.
 #
 # Usage:   ./Scripts/target-switching/switch-target.sh [spm|pods]
 # ============================================================================
@@ -44,6 +45,20 @@ fi
 log_info "Repository: $ROOT_DIR"
 
 # ============================================================================
+# INTELLIGENT MODE DETECTION
+# ============================================================================
+
+# Detect current mode before switching
+CURRENT_MODE=$(detect_current_mode)
+if [[ "$CURRENT_MODE" == "$TARGET" ]]; then
+    log_warn "Already in $TARGET mode"
+    log_info "Re-running switch to ensure clean state..."
+elif [[ "$CURRENT_MODE" == "mixed" ]]; then
+    log_warn "Detected mixed environment (both SPM and Pods artifacts present)"
+    log_info "This will be cleaned up during switch..."
+fi
+
+# ============================================================================
 # SPM TARGET SWITCHING
 # ============================================================================
 
@@ -55,7 +70,6 @@ if [[ "$TARGET" == "spm" ]]; then
     
     # Remove CocoaPods workspace first (may hold references to Pods)
     if [[ -d "$PODS_WORKSPACE" ]]; then
-        # Check if it's a CocoaPods workspace (has Pods reference)
         if grep -q "Pods/Pods.xcodeproj" "$PODS_WORKSPACE/contents.xcworkspacedata" 2>/dev/null; then
             if safe_remove_workspace "$PODS_WORKSPACE"; then
                 log_success "CocoaPods workspace removed"
@@ -64,7 +78,6 @@ if [[ "$TARGET" == "spm" ]]; then
                 exit 1
             fi
         else
-            # It might be an SPM workspace, we'll regenerate it
             if safe_remove_workspace "$PODS_WORKSPACE"; then
                 log_success "Stale workspace removed"
             else
@@ -96,68 +109,86 @@ if [[ "$TARGET" == "spm" ]]; then
         log_warn "SPM cleanup had warnings (continuing)"
     fi
     
-    # Step 3: Check and build required XCFrameworks
+    # Step 3: Verify required XCFrameworks (DO NOT build NovaCore in SPM mode)
     log_section "XCFramework Validation"
     
-    # Check wrapper XCFrameworks
-    log_step "Checking wrapper xcframeworks"
+    # Check wrapper XCFrameworks (non-blocking warning)
+    log_step "Checking wrapper XCFrameworks"
     wrapper_missing=0
-    if ! check_xcframeworks_exist; then
+    if ! check_xcframeworks_exist >/dev/null 2>&1; then
         wrapper_missing=$?
     fi
     if [[ $wrapper_missing -gt 0 ]]; then
-        log_warn "$wrapper_missing wrapper(s) missing xcframeworks"
-        log_info "To build wrapper xcframeworks, run:"
-        log_info "  1. bundle exec pod install"
-        log_info "  2. Scripts/target-switching/build-xcframeworks.sh"
+        log_warn "$wrapper_missing wrapper(s) missing XCFrameworks"
+        log_info "Wrapper XCFrameworks are optional but recommended for SPM mode"
+        log_info "To build wrapper XCFrameworks:"
+        log_info "  1. Switch to Pods mode: ./Scripts/target-switching/switch-target.sh pods"
+        log_info "  2. Build wrappers: Scripts/xcframeworks/build-all.sh"
+        log_info "  3. Switch back to SPM mode"
     else
-        log_success "All wrapper xcframeworks present"
+        log_success "All wrapper XCFrameworks present"
     fi
     
-    # Check required XCFrameworks
+    # Check required XCFrameworks (blocking - SPM mode cannot proceed without these)
     log_step "Checking required XCFrameworks"
     required_missing=0
-    if ! check_required_xcframeworks; then
-        required_missing=$?
-    fi
+    check_required_xcframeworks >/dev/null 2>&1 || required_missing=$?
     
     if [[ $required_missing -gt 0 ]]; then
-        log_warn "$required_missing required XCFramework(s) missing"
+        log_error "$required_missing required XCFramework(s) missing"
         
-        # Build NovaCore if missing
+        # Check specifically for NovaCore with detailed error message
         if [[ ! -d "$ROOT_DIR/NovaAdapter/NovaCore.xcframework" ]]; then
-            log_step "Building NovaCore.xcframework"
-            BUILD_NOVA_SCRIPT="$ROOT_DIR/Scripts/xcframeworks/internal/build-nova.sh"
-            if [[ -f "$BUILD_NOVA_SCRIPT" ]]; then
-                if SKIP_CODE_SIGN="${SKIP_CODE_SIGN:-1}" bash "$BUILD_NOVA_SCRIPT" 2>&1; then
-                    log_success "NovaCore.xcframework built successfully"
-                    ((required_missing--))
-                else
-                    log_error "Failed to build NovaCore.xcframework"
-                    log_info "Build script: $BUILD_NOVA_SCRIPT"
-                fi
-            else
-                log_error "NovaCore build script not found: $BUILD_NOVA_SCRIPT"
-            fi
+            log_error "❌ NovaCore.xcframework is MISSING"
+            log_info ""
+            log_info "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+            log_info "NovaCore.xcframework MUST be built in Pods mode."
+            log_info "It requires Pods dependencies: Kingfisher, SnapKit, Shimmer, lottie-ios, MSPOMSDK"
+            log_info ""
+            log_info "SPM mode CANNOT build NovaCore (no Pods dependencies available)."
+            log_info ""
+            log_info "To fix this:"
+            log_info "  1. Run: ./Scripts/target-switching/switch-target.sh pods"
+            log_info "  2. NovaCore will be built automatically during Pods mode setup"
+            log_info "  3. Then run: ./Scripts/target-switching/switch-target.sh spm"
+            log_info "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+            exit 1
         fi
         
-        # Re-check after build
-        if ! check_required_xcframeworks; then
-            remaining=$?
-            if [[ $remaining -gt 0 ]]; then
-                log_error "$remaining required XCFramework(s) still missing"
-                log_info "Missing XCFrameworks must be built or copied manually:"
-                log_info "  - MSPSharedLibraries/PrebidMobile.xcframework"
-                log_info "  - MSPSharedLibraries/OMSDK_Newsbreak1.xcframework"
-                log_info "  - MSPOMSDK/OMSDK_Newsbreak1.xcframework"
-                exit 1
-            fi
-        else
-            log_success "All required XCFrameworks present"
-        fi
-    else
-        log_success "All required XCFrameworks present"
+        # Check other required XCFrameworks with detailed output
+        log_error "Other missing required XCFrameworks:"
+        check_required_xcframeworks 2>&1 | grep -E "missing:|invalid:" || true
+        log_error ""
+        log_error "All required XCFrameworks must exist before SPM mode can proceed."
+        log_error "Missing XCFrameworks must be built or copied manually."
+        exit 1
     fi
+    
+    # Validate XCFramework integrity (check Info.plist exists)
+    log_step "Validating XCFramework integrity"
+    local invalid_count=0
+    local required_xcframeworks=(
+        "MSPSharedLibraries/PrebidMobile.xcframework"
+        "MSPSharedLibraries/OMSDK_Newsbreak1.xcframework"
+        "MSPOMSDK/OMSDK_Newsbreak1.xcframework"
+        "NovaAdapter/NovaCore.xcframework"
+    )
+    
+    for xcf in "${required_xcframeworks[@]}"; do
+        local xcf_path="$ROOT_DIR/$xcf"
+        if [[ ! -f "$xcf_path/Info.plist" ]]; then
+            log_error "Invalid XCFramework (missing Info.plist): $xcf"
+            ((invalid_count++))
+        fi
+    done
+    
+    if [[ $invalid_count -gt 0 ]]; then
+        log_error "$invalid_count XCFramework(s) are invalid or corrupted"
+        log_error "Re-build the affected XCFrameworks in Pods mode"
+        exit 1
+    fi
+    
+    log_success "All required XCFrameworks present and valid"
     
     # Step 4: Generate YAML specs
     log_section "YAML Generation"
@@ -184,7 +215,7 @@ if [[ "$TARGET" == "spm" ]]; then
         exit 1
     fi
     
-    # Step 6: Generate workspace (for Pods mode, but also useful for SPM)
+    # Step 6: Generate workspace
     if [[ -f "$ROOT_DIR/Scripts/tools/generate-workspace.sh" ]]; then
         log_step "Generating workspace"
         if "$ROOT_DIR/Scripts/tools/generate-workspace.sh" 2>&1; then
@@ -194,24 +225,44 @@ if [[ "$TARGET" == "spm" ]]; then
         fi
     fi
     
-    # Step 7: Final XCFramework verification
+    # Step 7: Final XCFramework verification and MSPOMSDK validation
     log_section "Final Verification"
     log_step "Verifying all required XCFrameworks"
-    if ! check_required_xcframeworks; then
+    if ! check_required_xcframeworks >/dev/null 2>&1; then
         errors=$?
         log_error "$errors required XCFramework(s) missing - SPM mode cannot proceed"
+        check_required_xcframeworks 2>&1 | grep -E "missing:|invalid:" || true
         exit 1
     fi
     log_success "All required XCFrameworks verified"
     
-    # Step 8: Validate environment
+    # Validate MSPOMSDK.xcframework specifically (critical for SPM mode)
+    log_step "Validating MSPOMSDK.xcframework"
+    local mspomsdk_xcf="$ROOT_DIR/MSPOMSDK/OMSDK_Newsbreak1.xcframework"
+    if [[ ! -d "$mspomsdk_xcf" ]]; then
+        log_error "MSPOMSDK.xcframework (OMSDK_Newsbreak1.xcframework) is missing"
+        log_error "This XCFramework is required for SPM mode"
+        exit 1
+    elif [[ ! -f "$mspomsdk_xcf/Info.plist" ]]; then
+        log_error "MSPOMSDK.xcframework is invalid (missing Info.plist)"
+        log_error "Re-build or restore this XCFramework"
+        exit 1
+    else
+        log_success "MSPOMSDK.xcframework validated"
+    fi
+    
+    # Step 8: Validate environment (SPM mode specific checks)
     log_section "Environment Validation"
-    log_step "Validating environment"
+    log_step "Validating SPM environment"
     if validate_environment "spm"; then
         log_success "Environment validation passed"
     else
         errors=$?
         log_error "Environment validation failed ($errors error(s))"
+        log_info "SPM mode requires:"
+        log_info "  - No Pods/ directory"
+        log_info "  - MSPDemoApp-SPM target in project.yml"
+        log_info "  - All required XCFrameworks present"
         exit 1
     fi
     
@@ -244,7 +295,6 @@ elif [[ "$TARGET" == "pods" ]]; then
     
     # Remove SPM workspace (if it exists and is SPM-only)
     if [[ -d "$SPM_WORKSPACE" ]]; then
-        # Check if it's an SPM workspace (no Pods reference)
         if ! grep -q "Pods/Pods.xcodeproj" "$SPM_WORKSPACE/contents.xcworkspacedata" 2>/dev/null; then
             safe_remove_workspace "$SPM_WORKSPACE"
             log_success "SPM workspace removed"
@@ -255,7 +305,31 @@ elif [[ "$TARGET" == "pods" ]]; then
         log_info "SPM workspace already removed"
     fi
     
-    # Step 2: Clean and install CocoaPods
+    # Step 2: Ensure MSPiOSCore.xcframework exists (required for adapters)
+    log_section "XCFramework Prerequisites"
+    log_step "Checking MSPiOSCore.xcframework"
+    if [[ ! -d "$ROOT_DIR/MSPSharedLibraries/MSPiOSCore.xcframework" ]]; then
+        log_warn "MSPiOSCore.xcframework missing - building it now"
+        BUILD_IOSCORE_SCRIPT="$ROOT_DIR/Scripts/xcframeworks/internal/build-ioscore.sh"
+        if [[ -f "$BUILD_IOSCORE_SCRIPT" ]]; then
+            log_info "Building MSPiOSCore.xcframework..."
+            if SKIP_CODE_SIGN="${SKIP_CODE_SIGN:-1}" bash "$BUILD_IOSCORE_SCRIPT" 2>&1; then
+                log_success "MSPiOSCore.xcframework built successfully"
+            else
+                log_error "Failed to build MSPiOSCore.xcframework"
+                log_error "Adapters require MSPiOSCore - Pods mode cannot proceed"
+                exit 1
+            fi
+        else
+            log_error "MSPiOSCore build script not found: $BUILD_IOSCORE_SCRIPT"
+            exit 1
+        fi
+    else
+        log_success "MSPiOSCore.xcframework found"
+    fi
+    
+    # Step 3: Clean and install CocoaPods
+    log_section "CocoaPods Installation"
     log_step "Cleaning and installing CocoaPods"
     if "$SCRIPT_DIR/cleanup_pods.sh"; then
         log_success "CocoaPods environment cleaned and reinstalled"
@@ -270,7 +344,7 @@ elif [[ "$TARGET" == "pods" ]]; then
         log_info "Continuing despite cleanup warnings (Pods/ exists)"
     fi
     
-    # Step 3: Generate YAML specs
+    # Step 4: Generate YAML specs (needed for workspace generation)
     log_section "YAML Generation"
     log_step "Generating YAML specs"
     if "$SCRIPT_DIR/generate_workspace.sh" pods; then
@@ -280,7 +354,7 @@ elif [[ "$TARGET" == "pods" ]]; then
         exit 1
     fi
     
-    # Step 4: Generate Xcode project from YAML
+    # Step 6: Generate Xcode project from YAML
     log_section "Xcode Project Generation"
     log_step "Generating Xcode project from YAML"
     if command -v xcodegen &>/dev/null; then
@@ -295,7 +369,7 @@ elif [[ "$TARGET" == "pods" ]]; then
         exit 1
     fi
     
-    # Step 5: Generate workspace
+    # Step 7: Generate workspace (required for NovaCore build)
     if [[ -f "$ROOT_DIR/Scripts/tools/generate-workspace.sh" ]]; then
         log_step "Generating workspace"
         if "$ROOT_DIR/Scripts/tools/generate-workspace.sh" 2>&1; then
@@ -305,61 +379,109 @@ elif [[ "$TARGET" == "pods" ]]; then
         fi
     fi
     
-    # Step 6: Validate wrappers (if Pods exist)
-    log_section "Wrapper Validation"
-    log_step "Validating wrapper xcframeworks"
-    if [[ -d "$PODS_DIR" ]]; then
-        VALIDATE_SCRIPT="$ROOT_DIR/Scripts/xcframeworks/validate-wrappers.sh"
-        if [[ -f "$VALIDATE_SCRIPT" ]]; then
-            if "$VALIDATE_SCRIPT" 2>/dev/null; then
-                log_success "Wrapper validation passed"
+    # Step 8: Build NovaCore.xcframework (Pods mode only - requires Pods dependencies and workspace)
+    log_section "NovaCore XCFramework Build"
+    log_step "Checking NovaCore.xcframework"
+    if [[ ! -d "$ROOT_DIR/NovaAdapter/NovaCore.xcframework" ]]; then
+        log_warn "NovaCore.xcframework missing - building it now"
+        log_info "NovaCore requires Pods dependencies (Kingfisher, SnapKit, Shimmer, lottie-ios, MSPOMSDK)"
+        log_info "Building from workspace to ensure Pods are available"
+        
+        # Verify workspace exists (required for NovaCore build)
+        if [[ ! -d "$PODS_WORKSPACE" ]]; then
+            log_error "Workspace not found - cannot build NovaCore"
+            log_error "Workspace is required for NovaCore build (includes Pods projects)"
+            exit 1
+        fi
+        
+        BUILD_NOVA_SCRIPT="$ROOT_DIR/Scripts/xcframeworks/internal/build-nova.sh"
+        if [[ -f "$BUILD_NOVA_SCRIPT" ]]; then
+            log_info "Building NovaCore.xcframework from workspace..."
+            if SKIP_CODE_SIGN="${SKIP_CODE_SIGN:-1}" bash "$BUILD_NOVA_SCRIPT" 2>&1; then
+                log_success "NovaCore.xcframework built successfully"
             else
-                log_warn "Wrapper validation had warnings or failures"
+                log_error "Failed to build NovaCore.xcframework"
+                log_error "NovaCore build requires Pods dependencies and workspace - ensure pod install completed successfully"
+                exit 1
             fi
         else
-            log_warn "Wrapper validation script not found"
+            log_error "NovaCore build script not found: $BUILD_NOVA_SCRIPT"
+            exit 1
         fi
     else
-        log_warn "Pods/ not found, skipping wrapper validation"
+        log_success "NovaCore.xcframework found"
     fi
     
-    # Step 7: Verify no SPM packages in project.yml
+    # Step 9: Verify no SPM packages in project.yml (critical for Pods mode isolation)
     log_section "SPM Isolation Check"
-    log_step "Verifying SPM packages are excluded"
+    log_step "Verifying SPM packages are excluded from Pods mode"
+    
+    # Check if packages block exists and is empty
+    local packages_empty=false
     if grep -q "^packages: {}$" "$PROJECT_SPEC" 2>/dev/null; then
-        log_success "SPM packages correctly excluded (packages: {})"
-    elif grep -q "^packages:$" "$PROJECT_SPEC" 2>/dev/null && ! grep -A 1 "^packages:" "$PROJECT_SPEC" | grep -qE "^  [A-Za-z]"; then
-        log_success "SPM packages correctly excluded (empty packages)"
+        packages_empty=true
+    elif grep -q "^packages:$" "$PROJECT_SPEC" 2>/dev/null; then
+        # Check if packages block has any entries
+        if ! grep -A 20 "^packages:" "$PROJECT_SPEC" | grep -qE "^  [A-Za-z]"; then
+            packages_empty=true
+        fi
     else
-        log_error "project.yml contains SPM packages - Pods mode should not include packages"
-        log_info "This may cause SwiftPM resolution errors in Pods mode"
+        # No packages block at all - also acceptable for Pods mode
+        packages_empty=true
+    fi
+    
+    if [[ "$packages_empty" == "true" ]]; then
+        log_success "SPM packages correctly excluded (Pods mode isolation verified)"
+    else
+        log_error "❌ CRITICAL: project.yml contains SPM packages in Pods mode"
+        log_error ""
+        log_error "Pods mode MUST have empty packages: {} to prevent SwiftPM resolution."
+        log_error "SwiftPM resolution in Pods mode causes binary target errors."
+        log_error ""
+        log_error "Current packages block:"
+        grep -A 10 "^packages:" "$PROJECT_SPEC" | head -15 || true
+        log_error ""
+        log_error "This is a YAML generation error. Check generate_workspace.sh"
         exit 1
     fi
     
-    # Step 8: Validate environment
+    # Step 10: Validate environment (Pods mode specific checks)
     log_section "Environment Validation"
-    log_step "Validating environment"
+    log_step "Validating Pods environment"
     if validate_environment "pods"; then
         log_success "Environment validation passed"
     else
         errors=$?
         log_error "Environment validation failed ($errors error(s))"
+        log_info "Pods mode requires:"
+        log_info "  - Pods/ directory exists"
+        log_info "  - Workspace contains Pods/Pods.xcodeproj"
+        log_info "  - project.yml has packages: {} (no SPM packages)"
+        log_info "  - MSPDemoApp target (not MSPDemoApp-SPM)"
         exit 1
     fi
     
-    # Step 9: Open Xcode (workspace created by pod install or generate-workspace.sh)
+    # Step 11: Open Xcode (workspace created by pod install or generate-workspace.sh)
     log_section "Opening Xcode"
-    log_step "Opening Xcode"
+    log_step "Opening Xcode workspace"
     if [[ -d "$PODS_WORKSPACE" ]]; then
-        open "$PODS_WORKSPACE"
-        log_success "Xcode opened with CocoaPods workspace"
+        # Verify workspace contains Pods
+        if grep -q "Pods/Pods.xcodeproj" "$PODS_WORKSPACE/contents.xcworkspacedata" 2>/dev/null; then
+            open "$PODS_WORKSPACE"
+            log_success "Xcode opened with CocoaPods workspace"
+        else
+            log_warn "Workspace exists but doesn't contain Pods - may need regeneration"
+            open "$PODS_WORKSPACE"
+        fi
     else
         log_warn "CocoaPods workspace not found. Opening project directory instead..."
         PROJECT_DIR="$(dirname "$PROJECT_SPEC")"
         if [[ -d "$PROJECT_DIR/MSPDemoApp.xcodeproj" ]]; then
             open "$PROJECT_DIR/MSPDemoApp.xcodeproj"
+            log_warn "Opened project instead of workspace - Pods integration may be incomplete"
         else
             open "$PROJECT_DIR"
+            log_warn "Opened directory - Xcode project may not be generated"
         fi
     fi
 fi
@@ -376,10 +498,21 @@ log_section "Next Steps"
 
 if [[ "$TARGET" == "spm" ]]; then
     log_info "1. Wait for Xcode to resolve packages (File → Packages → Resolve Package Versions)"
-    log_info "2. Build MSPDemoApp-SPM target"
+    log_info "2. Build MSPDemoApp-SPM target (simulator or device)"
+    log_info "3. Verify all XCFrameworks are correctly linked"
+    log_info ""
+    log_info "Note: If you see 'binary target does not contain a binary artifact' errors:"
+    log_info "      - Verify all required XCFrameworks exist and have valid Info.plist"
+    log_info "      - Check that XCFramework paths in Package.swift are correct"
 else
-    log_info "1. Build MSPDemoApp target"
-    log_info "2. Verify all adapters are working"
+    log_info "1. Build MSPDemoApp target (simulator or device)"
+    log_info "2. Verify all adapters compile successfully"
+    log_info "3. If NovaCore build failed, check Pods dependencies are installed"
+    log_info ""
+    log_info "Note: Pods mode requires:"
+    log_info "      - All Pods dependencies installed (pod install completed)"
+    log_info "      - Workspace includes Pods/Pods.xcodeproj"
+    log_info "      - No SPM packages in project.yml (packages: {})"
 fi
 
 log_info ""
