@@ -25,7 +25,19 @@ if [[ -z "$MODULE_NAME" ]]; then
 fi
 
 SCHEME_NAME="$MODULE_NAME"
-PROJECT_YML="$ROOT_DIR/$MODULE_NAME/project.yml"
+# Try new structure first (Sources/Core/ or Sources/Adapters/), fallback to old
+if [[ -f "$ROOT_DIR/Sources/Core/$MODULE_NAME/project.yml" ]]; then
+    PROJECT_YML="$ROOT_DIR/Sources/Core/$MODULE_NAME/project.yml"
+elif [[ -f "$ROOT_DIR/Sources/Adapters/$MODULE_NAME/project.yml" ]]; then
+    PROJECT_YML="$ROOT_DIR/Sources/Adapters/$MODULE_NAME/project.yml"
+elif [[ -f "$ROOT_DIR/Sources/SharedLibraries/$MODULE_NAME/project.yml" ]]; then
+    PROJECT_YML="$ROOT_DIR/Sources/SharedLibraries/$MODULE_NAME/project.yml"
+elif [[ -f "$ROOT_DIR/$MODULE_NAME/project.yml" ]]; then
+    PROJECT_YML="$ROOT_DIR/$MODULE_NAME/project.yml"
+else
+    log_error "project.yml not found for $MODULE_NAME"
+    exit 1
+fi
 
 if [[ ! -f "$PROJECT_YML" ]]; then
     log_error "project.yml not found: $PROJECT_YML"
@@ -47,7 +59,16 @@ if ! xcodegen generate --spec "$PROJECT_YML"; then
 fi
 
 # Verify project was generated
-XCODEPROJ="$ROOT_DIR/$MODULE_NAME/$MODULE_NAME.xcodeproj"
+# Determine project location based on module location
+if [[ -f "$ROOT_DIR/Sources/Core/$MODULE_NAME/project.yml" ]]; then
+    XCODEPROJ="$ROOT_DIR/Sources/Core/$MODULE_NAME/$MODULE_NAME.xcodeproj"
+elif [[ -f "$ROOT_DIR/Sources/Adapters/$MODULE_NAME/project.yml" ]]; then
+    XCODEPROJ="$ROOT_DIR/Sources/Adapters/$MODULE_NAME/$MODULE_NAME.xcodeproj"
+elif [[ -f "$ROOT_DIR/Sources/SharedLibraries/$MODULE_NAME/project.yml" ]]; then
+    XCODEPROJ="$ROOT_DIR/Sources/SharedLibraries/$MODULE_NAME/$MODULE_NAME.xcodeproj"
+else
+    XCODEPROJ="$ROOT_DIR/$MODULE_NAME/$MODULE_NAME.xcodeproj"
+fi
 if [[ ! -d "$XCODEPROJ" ]]; then
     log_error "Xcode project not generated: $XCODEPROJ"
     exit 1
@@ -61,7 +82,7 @@ if [[ -d "$SHARED_DERIVED_DATA" ]] && [[ -d "$SHARED_DERIVED_DATA/Build/Products
     log_info "Using shared DerivedData (Pods pre-built): $DERIVED_DATA"
 else
     # Use module-specific DerivedData if Pods weren't pre-built
-    DERIVED_DATA="$ROOT_DIR/DerivedData/build-$MODULE_NAME"
+    DERIVED_DATA="$ROOT_DIR/.generated/DerivedData/build-$MODULE_NAME"
     log_info "Using module-specific DerivedData: $DERIVED_DATA"
 fi
 mkdir -p "$DERIVED_DATA"

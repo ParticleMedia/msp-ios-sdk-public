@@ -4,53 +4,53 @@ workspace:
   name: msp-ios-sdk
   projects:
     - name: MSPDemoApp
-      path: MSPDemoApp/project.yml
+      path: Examples/MSPDemoApp/project.yml
+      type: file
+    - name: MSPDemoApp
+      path: Examples/MSPDemoApp/project.yml
       type: file
     - name: AmazonAdapter
-      path: AmazonAdapter/AmazonAdapter.xcodeproj
+      path: Sources/Adapters/AmazonAdapter/project.yml
       type: file
     - name: InmobiAdapter
-      path: InmobiAdapter/InmobiAdapter.xcodeproj
-      type: file
-    - name: MSPCore
-      path: MSPCore/MSPCore.xcodeproj
+      path: Sources/Adapters/InmobiAdapter/project.yml
       type: file
     - name: MSPFacebookAdapter
-      path: MSPFacebookAdapter/MSPFacebookAdapter.xcodeproj
+      path: Sources/Adapters/MSPFacebookAdapter/project.yml
       type: file
     - name: MSPGoogleAdapter
-      path: MSPGoogleAdapter/MSPGoogleAdapter.xcodeproj
-      type: file
-    - name: MSPOMSDK
-      path: MSPOMSDK/MSPOMSDK.xcodeproj
-      type: file
-    - name: MSPSharedLibraries
-      path: MSPSharedLibraries/MSPSharedLibraries.xcodeproj
-      type: file
-    - name: MSPiOSCore
-      path: MSPiOSCore/MSPiOSCore.xcodeproj
+      path: Sources/Adapters/MSPGoogleAdapter/project.yml
       type: file
     - name: MintegralAdapter
-      path: MintegralAdapter/MintegralAdapter.xcodeproj
+      path: Sources/Adapters/MintegralAdapter/project.yml
       type: file
     - name: MobilefuseAdapter
-      path: MobilefuseAdapter/MobilefuseAdapter.xcodeproj
+      path: Sources/Adapters/MobilefuseAdapter/project.yml
       type: file
     - name: NovaAdapter
-      path: NovaAdapter/NovaAdapter.xcodeproj
-      type: file
-    - name: NovaCore
-      path: NovaCore/NovaCore.xcodeproj
+      path: Sources/Adapters/NovaAdapter/project.yml
       type: file
     - name: PrebidAdapter
-      path: PrebidAdapter/PrebidAdapter.xcodeproj
+      path: Sources/Adapters/PrebidAdapter/project.yml
       type: file
     - name: PubmaticAdapter
-      path: PubmaticAdapter/PubmaticAdapter.xcodeproj
+      path: Sources/Adapters/PubmaticAdapter/project.yml
       type: file
     - name: UnityAdapter
-      path: UnityAdapter/UnityAdapter.xcodeproj
+      path: Sources/Adapters/UnityAdapter/project.yml
       type: file
-    - name: Pods
-      path: Pods/Pods.xcodeproj
+    - name: MSPCore
+      path: Sources/Core/MSPCore/project.yml
+      type: file
+    - name: MSPOMSDK
+      path: Sources/Core/MSPOMSDK/project.yml
+      type: file
+    - name: MSPSharedLibraries
+      path: Sources/Core/MSPSharedLibraries/project.yml
+      type: file
+    - name: MSPiOSCore
+      path: Sources/Core/MSPiOSCore/project.yml
+      type: file
+    - name: NovaCore
+      path: Sources/Core/NovaCore/project.yml
       type: file

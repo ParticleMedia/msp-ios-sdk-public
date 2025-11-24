@@ -177,7 +177,7 @@ validate_demo_app_structure() {
     print_status $BLUE "🔍 Validating MSPDemoApp structure and dependencies..."
     
     # Check if MSPDemoApp project structure is valid
-    if [ -d "MSPDemoApp" ] && [ -f "MSPDemoApp/MSPDemoApp.xcodeproj/project.pbxproj" ]; then
+    if [ -d "MSPDemoApp" ] && [ -f "Examples/MSPDemoApp/MSPDemoApp.xcodeproj/project.pbxproj" ]; then
         print_status $GREEN "✅ MSPDemoApp project structure is valid"
     else
         print_status $RED "❌ MSPDemoApp project structure is invalid"
@@ -186,9 +186,9 @@ validate_demo_app_structure() {
     
     # Check if required files exist
     local required_files=(
-        "MSPDemoApp/MSPDemoApp/AppDelegate.swift"
-        "MSPDemoApp/MSPDemoApp/Info.plist"
-        "MSPDemoApp/MSPDemoApp.xcodeproj/project.pbxproj"
+        "Examples/MSPDemoApp/MSPDemoApp/AppDelegate.swift"
+        "Examples/MSPDemoApp/MSPDemoApp/Info.plist"
+        "Examples/MSPDemoApp/MSPDemoApp.xcodeproj/project.pbxproj"
     )
     
     for file in "${required_files[@]}"; do

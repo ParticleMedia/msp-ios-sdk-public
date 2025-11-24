@@ -1,0 +1,118 @@
+# MSPCore XcodeGen Project Specification
+# Uses shared template and adds MSPCore-specific overrides
+# Template: Config/xcodegen/module.project_template.yml
+
+include:
+  - ../../../Configs/xcodegen/module.project_template.yml
+
+name: MSPCore
+
+settings:
+  base:
+    # Product Configuration
+    PRODUCT_NAME: MSPCore
+    PRODUCT_BUNDLE_IDENTIFIER: msp.MSPCore
+    PRODUCT_MODULE_NAME: MSPCore
+
+targets:
+  MSPCore:
+    type: framework
+    platform: iOS
+    sources:
+      - path: MSPCore
+        excludes:
+          - "**/*.md"
+          - "**/Tests/**"
+          - "**/*.test.swift"
+          - "**/*.spec.swift"
+    dependencies:
+      - framework: ../../../../Sources/SharedLibraries/MSPSharedLibraries/MSPiOSCore.xcframework
+        embed: false
+      - framework: ../../../../Sources/SharedLibraries/MSPSharedLibraries/PrebidMobile.xcframework
+        embed: false
+      - framework: ../../../../Build/XCFrameworks/MSPPrebidAdapter.xcframework
+        embed: false
+    settings:
+      base:
+        # CRITICAL: Override PODS_ROOT and PODS_PODFILE_DIR_PATH from xcconfig
+        PODS_ROOT: $(SRCROOT)/../Pods
+        PODS_PODFILE_DIR_PATH: $(SRCROOT)/..
+        
+        # Framework Search Paths - Include MSPiOSCore, PrebidMobile, and MSPPrebidAdapter XCFrameworks
+        # MSPCore depends on MSPiOSCore, PrebidMobile, and MSPPrebidAdapter
+        # Xcode will automatically resolve the correct architecture slice from the XCFramework
+        FRAMEWORK_SEARCH_PATHS:
+          - $(inherited)
+          - $(SRCROOT)/../../../../Sources/SharedLibraries/MSPSharedLibraries/MSPiOSCore.xcframework
+          - $(SRCROOT)/../../../../Sources/SharedLibraries/MSPSharedLibraries/PrebidMobile.xcframework
+          - $(SRCROOT)/../../../../Build/XCFrameworks/MSPPrebidAdapter.xcframework
+        
+        # Swift Module Search Paths - Include SwiftProtobuf
+        # SwiftProtobuf is a Pod dependency required by MSPCore
+        # The xcconfig may not include SwiftProtobuf in SWIFT_INCLUDE_PATHS,
+        # so we explicitly add it here to ensure the Swift compiler can find it during archive
+        # Note: Pre-built Pods are in DerivedData/Build/Products, not in ArchiveIntermediates/BuildProductsPath
+        # BUILD_DIR points to ArchiveIntermediates/MSPCore/BuildProductsPath
+        # Products is at: BUILD_DIR/../../../../Products/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)
+        SWIFT_INCLUDE_PATHS: $(inherited) $(PODS_CONFIGURATION_BUILD_DIR)/SwiftProtobuf $(BUILD_DIR)/../../../../Products/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)/SwiftProtobuf
+        
+        # Library Search Paths - Include SwiftProtobuf static library
+        # SwiftProtobuf is a static library (libSwiftProtobuf.a) that needs to be linked
+        # Add the path where libSwiftProtobuf.a is located
+        LIBRARY_SEARCH_PATHS:
+          - $(inherited)
+          - $(PODS_CONFIGURATION_BUILD_DIR)/SwiftProtobuf
+          - $(BUILD_DIR)/../../../../Products/$(CONFIGURATION)$(EFFECTIVE_PLATFORM_NAME)/SwiftProtobuf
+        
+        # Link SwiftProtobuf static library
+        # This is required for the module to be loadable during archive builds
+        OTHER_LDFLAGS: $(inherited) -lSwiftProtobuf
+    configFiles:
+      Debug: "../../../../../Pods/Target Support Files/Pods-MSPCore/Pods-MSPCore.debug.xcconfig"
+      Release: "../../../../../Pods/Target Support Files/Pods-MSPCore/Pods-MSPCore.release.xcconfig"
+    prebuildScripts:
+      - name: "[CP] Check Pods Manifest.lock"
+        script: |
+          if [ -z "${PODS_PODFILE_DIR_PATH}" ] || [ -z "${PODS_ROOT}" ]; then
+            echo "error: CocoaPods environment variables are not set." >&2
+            exit 1
+          fi
+          if [ ! -e "${PODS_ROOT}/Manifest.lock" ] || [ ! -e "${PODS_PODFILE_DIR_PATH}/Podfile.lock" ]; then
+            echo "error: Run 'pod install' to generate Pods/Manifest.lock." >&2
+            exit 1
+          fi
+          if ! diff "${PODS_PODFILE_DIR_PATH}/Podfile.lock" "${PODS_ROOT}/Manifest.lock" >/dev/null; then
+            echo "error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation." >&2
+            exit 1
+          fi
+        shell: /bin/sh
+        inputFiles:
+          - ${PODS_PODFILE_DIR_PATH}/Podfile.lock
+          - ${PODS_ROOT}/Manifest.lock
+    postbuildScripts:
+      - name: "[CP] Copy Pods Resources"
+        script: |
+          if [ -f "${PODS_ROOT}/Target Support Files/Pods-MSPCore/Pods-MSPCore-resources.sh" ]; then
+            "${PODS_ROOT}/Target Support Files/Pods-MSPCore/Pods-MSPCore-resources.sh"
+          fi
+        shell: /bin/sh
+      - name: "[CP] Embed Pods Frameworks"
+        script: |
+          if [ -f "${PODS_ROOT}/Target Support Files/Pods-MSPCore/Pods-MSPCore-frameworks.sh" ]; then
+            "${PODS_ROOT}/Target Support Files/Pods-MSPCore/Pods-MSPCore-frameworks.sh"
+          fi
+        shell: /bin/sh
+
+schemes:
+  MSPCore:
+    build:
+      targets:
+        MSPCore: all
+    run:
+      config: Debug
+    profile:
+      config: Release
+    analyze:
+      config: Debug
+    archive:
+      config: Release

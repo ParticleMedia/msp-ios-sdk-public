@@ -1,0 +1,63 @@
+# MobilefuseAdapter XcodeGen Project Specification
+# Uses shared template and adds MobilefuseAdapter-specific overrides
+# Template: Config/xcodegen/module.project_template.yml
+
+include:
+  - ../../../Configs/xcodegen/module.project_template.yml
+
+name: MobilefuseAdapter
+
+settings:
+  base:
+    # Product Configuration
+    PRODUCT_NAME: MobilefuseAdapter
+    PRODUCT_BUNDLE_IDENTIFIER: msp.MobilefuseAdapter
+    PRODUCT_MODULE_NAME: MobilefuseAdapter
+
+targets:
+  MobilefuseAdapter:
+    type: framework
+    platform: iOS
+    sources:
+      - path: MobilefuseAdapter
+        excludes:
+          - "**/*.md"
+          - "**/Tests/**"
+          - "**/*.test.swift"
+          - "**/*.spec.swift"
+          - "MobilefuseAdapter.docc/**"
+    dependencies:
+      - framework: ../../../../../../../../Build/XCFrameworks/MSPiOSCore.xcframework
+        embed: false
+      - framework: ../../../../../../../../Build/XCFrameworks/PrebidMobile.xcframework
+        embed: false
+      - framework: ../../../../../Pods/MobileFuseSDK/MobileFuseSDK.xcframework
+        embed: false
+    settings:
+      base:
+        # CRITICAL: Override PODS_ROOT and PODS_PODFILE_DIR_PATH from xcconfig
+        PODS_ROOT: $(SRCROOT)/../Pods
+        PODS_PODFILE_DIR_PATH: $(SRCROOT)/..
+        
+        # Framework Search Paths - Include MSPiOSCore and PrebidMobile XCFrameworks
+        # MobilefuseAdapter depends on MSPiOSCore and PrebidMobile, which are located in MSPSharedLibraries
+        # Xcode will automatically resolve the correct architecture slice from the XCFramework
+        FRAMEWORK_SEARCH_PATHS:
+          - $(inherited)
+          - $(SRCROOT)/../../../../../../../../Build/XCFrameworks/MSPiOSCore.xcframework
+          - $(SRCROOT)/../../../../../../../../Build/XCFrameworks/PrebidMobile.xcframework
+          - $(SRCROOT)/../../../../../Pods/MobileFuseSDK/MobileFuseSDK.xcframework
+
+schemes:
+  MobilefuseAdapter:
+    build:
+      targets:
+        MobilefuseAdapter: all
+    run:
+      config: Debug
+    profile:
+      config: Release
+    analyze:
+      config: Debug
+    archive:
+      config: Release

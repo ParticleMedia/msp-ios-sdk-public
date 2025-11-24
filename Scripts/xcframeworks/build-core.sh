@@ -43,7 +43,7 @@ if [[ -d "$WORKSPACE_FILE" ]]; then
     PODS_DEPENDENCIES=("SnapKit" "Kingfisher" "lottie-ios" "Shimmer" "SwiftProtobuf")
     
     # Use a shared DerivedData path so pre-built Pods are available to archive builds
-    SHARED_DERIVED_DATA="$ROOT_DIR/DerivedData/build-shared"
+    SHARED_DERIVED_DATA="$ROOT_DIR/.generated/DerivedData/build-shared"
     mkdir -p "$SHARED_DERIVED_DATA"
     
     for pod in "${PODS_DEPENDENCIES[@]}"; do
@@ -78,7 +78,7 @@ fi
 # Step 1 — Build MSPPrebidAdapter first (required by MSPCore)
 # -----------------------------------------------------------
 BUILD_MODULE_SCRIPT="$XCFRAMEWORKS_SCRIPT_DIR/build_module.sh"
-PREBID_ADAPTER_XCFRAMEWORK="$ROOT_DIR/build/XCFrameworks/MSPPrebidAdapter.xcframework"
+PREBID_ADAPTER_XCFRAMEWORK="$ROOT_DIR/Build/XCFrameworks/MSPPrebidAdapter.xcframework"
 
 if [[ ! -d "$PREBID_ADAPTER_XCFRAMEWORK" ]]; then
     log_section "Building MSPPrebidAdapter (required by MSPCore)"

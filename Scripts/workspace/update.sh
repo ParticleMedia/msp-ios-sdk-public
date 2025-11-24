@@ -283,7 +283,7 @@ pods_detected=0
   for proj in "${PROJECTS[@]}"; do
     rel="${proj#$ROOT_DIR/}"
     # Skip the generated MSPDemoApp project - it will be created from the spec above.
-    if [[ "$rel" == "MSPDemoApp/MSPDemoApp.xcodeproj" ]]; then
+    if [[ "$rel" == "Examples/MSPDemoApp/MSPDemoApp.xcodeproj" ]]; then
       continue
     fi
     if [[ "$rel" == "Pods/Pods.xcodeproj" ]]; then
@@ -312,12 +312,12 @@ mkdir -p "$WORKSPACE_PATH"
 XML
   cat <<'XML'
    <FileRef
-      location = "group:MSPDemoApp/MSPDemoApp.xcodeproj">
+      location = "group:Examples/MSPDemoApp/MSPDemoApp.xcodeproj">
    </FileRef>
 XML
   for proj in "${PROJECTS[@]}"; do
     rel="${proj#$ROOT_DIR/}"
-    if [[ "$rel" == "MSPDemoApp/MSPDemoApp.xcodeproj" ]]; then
+    if [[ "$rel" == "Examples/MSPDemoApp/MSPDemoApp.xcodeproj" ]]; then
       continue
     fi
     cat <<XML

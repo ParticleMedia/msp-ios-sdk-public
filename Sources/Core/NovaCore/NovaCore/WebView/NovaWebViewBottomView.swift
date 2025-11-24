@@ -1,0 +1,108 @@
+import Foundation
+import UIKit
+
+protocol NovaWebViewBottomViewDelegate: AnyObject {
+    func bottomViewDidTapBackButton()
+    func bottomViewDidTapForwardButton()
+}
+
+class NovaWebViewBottomView: UIView {
+    // MARK: - Constants
+
+    private enum Constants {
+        static let buttonDisableColor = UIColor(light: NovaColorPalettes.Gray.tint200, dark: NovaColorPalettes.Gray.tint500)
+        static let buttonEnableColor = UIColor(light: NovaColorPalettes.Black, dark: NovaColorPalettes.White)
+    }
+
+    // MARK: - Properties
+
+    weak var delegate: NovaWebViewBottomViewDelegate?
+
+    private let backButton: UIButton = {
+        var configuration = UIButton.Configuration.plain()
+        configuration.contentInsets = NSDirectionalEdgeInsets(top: 10, leading: 10, bottom: 10, trailing: 10)
+        let button = UIButton(configuration: configuration)
+        button.setImage(.Nova.chevronLeftLine?.withTintColor(Constants.buttonDisableColor), for: .disabled)
+        button.setImage(.Nova.chevronLeftLine?.withTintColor(Constants.buttonEnableColor), for: .normal)
+        button.isEnabled = false
+        button.translatesAutoresizingMaskIntoConstraints = false
+        return button
+    }()
+
+    private let forwardButton: UIButton = {
+        var configuration = UIButton.Configuration.plain()
+        configuration.contentInsets = NSDirectionalEdgeInsets(top: 10, leading: 10, bottom: 10, trailing: 10)
+        let button = UIButton(configuration: configuration)
+        button.setImage(.Nova.chevronRightLine?.withTintColor(Constants.buttonDisableColor), for: .disabled)
+        button.setImage(.Nova.chevronRightLine?.withTintColor(Constants.buttonEnableColor), for: .normal)
+        button.isEnabled = false
+        button.translatesAutoresizingMaskIntoConstraints = false
+        return button
+    }()
+
+    private lazy var containerView: UIStackView = {
+        let view = UIStackView(arrangedSubviews: [backButton, forwardButton])
+        view.axis = .horizontal
+        view.alignment = .center
+        view.spacing = 28
+        view.translatesAutoresizingMaskIntoConstraints = false
+        return view
+    }()
+
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+
+        backButton.addTarget(self, action: #selector(didTapBackButton), for: .touchUpInside)
+        forwardButton.addTarget(self, action: #selector(didTapForwardButton), for: .touchUpInside)
+
+        backgroundColor = UIColor(light: NovaColorPalettes.Gray.tint100, dark: NovaColorPalettes.Gray.tint700)
+
+        addSubview(containerView)
+
+        NSLayoutConstraint.activate([
+            backButton.widthAnchor.constraint(equalToConstant: 44),
+            backButton.heightAnchor.constraint(equalToConstant: 44)
+        ])
+
+        NSLayoutConstraint.activate([
+            forwardButton.widthAnchor.constraint(equalToConstant: 44),
+            forwardButton.heightAnchor.constraint(equalToConstant: 44)
+        ])
+
+        NSLayoutConstraint.activate([
+            containerView.topAnchor.constraint(equalTo: topAnchor),
+            containerView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 6),
+            containerView.bottomAnchor.constraint(equalTo: bottomAnchor)
+        ])
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+}
+
+// MARK: - functions
+
+extension NovaWebViewBottomView {
+    func configButton(canGoBack: Bool? = nil, canGoForward: Bool? = nil) {
+        if let canGoBack {
+            backButton.isEnabled = canGoBack
+        }
+
+        if let canGoForward {
+            forwardButton.isEnabled = canGoForward
+        }
+    }
+}
+
+// MARK: - Private functions
+
+private extension NovaWebViewBottomView {
+    @objc func didTapBackButton() {
+        delegate?.bottomViewDidTapBackButton()
+    }
+
+    @objc func didTapForwardButton() {
+        delegate?.bottomViewDidTapForwardButton()
+    }
+}
