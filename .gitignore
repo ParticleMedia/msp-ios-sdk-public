@@ -53,6 +53,13 @@ MSPGoogleAdapter/*.xcframework/
 .swiftpm/
 .build/
 **/*.xcframework
+# Internal SDK XCFrameworks (must be committed)
+!Sources/Core/MSPSharedLibraries/PrebidMobile.xcframework/
+!Sources/Core/MSPOMSDK/OMSDK_Newsbreak1.xcframework/
+!Sources/Core/ThirdParty/Kingfisher/Kingfisher.xcframework/
+!Sources/Core/ThirdParty/SnapKit/SnapKit.xcframework/
+!Sources/Core/ThirdParty/Lottie/Lottie.xcframework/
+!Sources/Core/ThirdParty/Shimmer/Shimmer.xcframework/
 Scripts/xcframeworks/output-temp/
 ExtractedFrameworks/
 
@@ -65,7 +72,8 @@ OpenWrapSDKWrapper/Frameworks/*.xcframework
 MintegralAdSDKWrapper/Frameworks/*.xcframework
 MobileFuseSDKWrapper/Frameworks/*.xcframework
 InMobiSDKWrapper/Frameworks/*.xcframework
-MSPSharedLibraries/PrebidMobile.xcframework
+# Legacy path - now handled by exception above
+# MSPSharedLibraries/PrebidMobile.xcframework
 
 # Node / editor
 node_modules/
