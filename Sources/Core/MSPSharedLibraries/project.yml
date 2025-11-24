@@ -31,14 +31,15 @@ targets:
     settings:
       base:
         # CRITICAL: Override PODS_ROOT and PODS_PODFILE_DIR_PATH from xcconfig
-        PODS_ROOT: $(SRCROOT)/../Pods
-        PODS_PODFILE_DIR_PATH: $(SRCROOT)/..
+        PODS_ROOT: $(SRCROOT)/../../../Pods
+        PODS_PODFILE_DIR_PATH: $(SRCROOT)/../../..
         
         # Framework Search Paths - Include $(PROJECT_DIR) to find local XCFrameworks
         FRAMEWORK_SEARCH_PATHS: $(inherited) $(PROJECT_DIR)
     configFiles:
-      Debug: "../../../../../Pods/Target Support Files/Pods-MSPSharedLibraries/Pods-MSPSharedLibraries.debug.xcconfig"
-      Release: "../../../../../Pods/Target Support Files/Pods-MSPSharedLibraries/Pods-MSPSharedLibraries.release.xcconfig"
+    configFiles:
+      Debug: "../../../Pods/Target Support Files/Pods-MSPSharedLibraries/Pods-MSPSharedLibraries.debug.xcconfig"
+      Release: "../../../Pods/Target Support Files/Pods-MSPSharedLibraries/Pods-MSPSharedLibraries.release.xcconfig"
     prebuildScripts:
       - name: "[CP] Check Pods Manifest.lock"
         script: |

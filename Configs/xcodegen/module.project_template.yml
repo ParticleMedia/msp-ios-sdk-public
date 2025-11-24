@@ -50,9 +50,7 @@ settings:
     GENERATE_INFOPLIST_FILE: YES
     INFOPLIST_FILE: ""
     
-    # CocoaPods Integration - CRITICAL: These paths point to repo root Pods, not module/Pods
-    PODS_ROOT: $(SRCROOT)/../Pods
-    PODS_PODFILE_DIR_PATH: $(SRCROOT)/..
+    # Source root
     SRCROOT: $(PROJECT_DIR)
     
     # Build for Distribution (required for framework distribution)

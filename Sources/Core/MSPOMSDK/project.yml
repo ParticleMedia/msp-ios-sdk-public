@@ -28,8 +28,8 @@ targets:
     settings:
       base:
         # CRITICAL: Override PODS_ROOT and PODS_PODFILE_DIR_PATH from xcconfig
-        PODS_ROOT: $(SRCROOT)/../Pods
-        PODS_PODFILE_DIR_PATH: $(SRCROOT)/..
+        PODS_ROOT: $(SRCROOT)/../../../Pods
+        PODS_PODFILE_DIR_PATH: $(SRCROOT)/../../..
         
         # Module-specific Swift flags for module interface verification
         OTHER_SWIFT_FLAGS: $(inherited) -no-verify-emitted-module-interface
@@ -37,8 +37,9 @@ targets:
         # Framework Search Paths - Include OMSDK_Newsbreak1.xcframework
         FRAMEWORK_SEARCH_PATHS: $(inherited) $(SRCROOT)/OMSDK_Newsbreak1.xcframework
     configFiles:
-      Debug: "../../../../../Pods/Target Support Files/Pods-MSPOMSDK/Pods-MSPOMSDK.debug.xcconfig"
-      Release: "../../../../../Pods/Target Support Files/Pods-MSPOMSDK/Pods-MSPOMSDK.release.xcconfig"
+    configFiles:
+      Debug: "../../../Pods/Target Support Files/Pods-MSPOMSDK/Pods-MSPOMSDK.debug.xcconfig"
+      Release: "../../../Pods/Target Support Files/Pods-MSPOMSDK/Pods-MSPOMSDK.release.xcconfig"
     prebuildScripts:
       - name: "[CP] Check Pods Manifest.lock"
         script: |

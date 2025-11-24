@@ -26,26 +26,26 @@ targets:
           - "**/*.test.swift"
           - "**/*.spec.swift"
     dependencies:
-      - framework: ../../../../Sources/SharedLibraries/MSPSharedLibraries/MSPiOSCore.xcframework
+      - framework: ../../../Build/XCFrameworks/MSPiOSCore.xcframework
         embed: false
-      - framework: ../../../../Sources/SharedLibraries/MSPSharedLibraries/PrebidMobile.xcframework
+      - framework: ../../../Pods/MSPSharedLibraries/MSPSharedLibraries/PrebidMobile.xcframework
         embed: false
-      - framework: ../../../../Build/XCFrameworks/MSPPrebidAdapter.xcframework
+      - framework: ../../../Build/XCFrameworks/PrebidAdapter.xcframework
         embed: false
     settings:
       base:
         # CRITICAL: Override PODS_ROOT and PODS_PODFILE_DIR_PATH from xcconfig
-        PODS_ROOT: $(SRCROOT)/../Pods
-        PODS_PODFILE_DIR_PATH: $(SRCROOT)/..
+        PODS_ROOT: $(SRCROO../../../Pods
+        PODS_PODFILE_DIR_PATH: $(SRCROOT)/../../..
         
         # Framework Search Paths - Include MSPiOSCore, PrebidMobile, and MSPPrebidAdapter XCFrameworks
         # MSPCore depends on MSPiOSCore, PrebidMobile, and MSPPrebidAdapter
         # Xcode will automatically resolve the correct architecture slice from the XCFramework
         FRAMEWORK_SEARCH_PATHS:
           - $(inherited)
-          - $(SRCROOT)/../../../../Sources/SharedLibraries/MSPSharedLibraries/MSPiOSCore.xcframework
-          - $(SRCROOT)/../../../../Sources/SharedLibraries/MSPSharedLibraries/PrebidMobile.xcframework
-          - $(SRCROOT)/../../../../Build/XCFrameworks/MSPPrebidAdapter.xcframework
+          - $(SRCROOT)/../../../Build/XCFrameworks/MSPiOSCore.xcframework
+          - $(SRCROOT)/../../../Pods/MSPSharedLibraries/MSPSharedLibraries/PrebidMobile.xcframework
+          - $(SRCROOT)/../../../Build/XCFrameworks/PrebidAdapter.xcframework
         
         # Swift Module Search Paths - Include SwiftProtobuf
         # SwiftProtobuf is a Pod dependency required by MSPCore
@@ -68,8 +68,9 @@ targets:
         # This is required for the module to be loadable during archive builds
         OTHER_LDFLAGS: $(inherited) -lSwiftProtobuf
     configFiles:
-      Debug: "../../../../../Pods/Target Support Files/Pods-MSPCore/Pods-MSPCore.debug.xcconfig"
-      Release: "../../../../../Pods/Target Support Files/Pods-MSPCore/Pods-MSPCore.release.xcconfig"
+    configFiles:
+      Debug: "../../../Pods/Target Support Files/Pods-MSPCore/Pods-MSPCore.debug.xcconfig"
+      Release: "../../../Pods/Target Support Files/Pods-MSPCore/Pods-MSPCore.release.xcconfig"
     prebuildScripts:
       - name: "[CP] Check Pods Manifest.lock"
         script: |
