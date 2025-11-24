@@ -75,35 +75,20 @@ else
 fi
 
 # -----------------------------------------------------------
-# Step 1 — Build MSPPrebidAdapter first (required by MSPCore)
 # -----------------------------------------------------------
-BUILD_MODULE_SCRIPT="$XCFRAMEWORKS_SCRIPT_DIR/build_module.sh"
-PREBID_ADAPTER_XCFRAMEWORK="$ROOT_DIR/Build/XCFrameworks/MSPPrebidAdapter.xcframework"
-
-if [[ ! -d "$PREBID_ADAPTER_XCFRAMEWORK" ]]; then
-    log_section "Building MSPPrebidAdapter (required by MSPCore)"
-    if "$BUILD_MODULE_SCRIPT" "PrebidAdapter"; then
-        log_success "MSPPrebidAdapter: BUILD SUCCEEDED"
-    else
-        log_error "MSPPrebidAdapter: BUILD FAILED"
-        log_error "MSPCore depends on MSPPrebidAdapter - cannot continue"
-        exit 1
-    fi
-else
-    log_info "MSPPrebidAdapter.xcframework already exists, skipping build"
-fi
-
-# -----------------------------------------------------------
-# Continue with MSP core modules archive (NovaCore → MSPCore → MSPOMSDK → MSPSharedLibraries)
+# Build core modules in dependency order
+# PrebidAdapter is now included in CORE_MODULES array below
 # -----------------------------------------------------------
 
 # Core modules in dependency order
+# Order: MSPSharedLibraries → MSPiOSCore → PrebidAdapter → NovaCore → MSPCore → MSPOMSDK
 CORE_MODULES=(
+    "MSPSharedLibraries"
+    "MSPiOSCore"
+    "PrebidAdapter"
     "NovaCore"
     "MSPCore"
     "MSPOMSDK"
-    "MSPSharedLibraries"
-    "MSPiOSCore"
 )
 
 SUCCESS_COUNT=0

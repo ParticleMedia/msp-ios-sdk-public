@@ -47,13 +47,15 @@ fi
 log_title "Building XCFramework: $MODULE_NAME"
 
 # Create output directories
-ARCHIVES_DIR="$ROOT_DIR/build/archives"
-XCFRAMEWORKS_DIR="$ROOT_DIR/build/XCFrameworks"
+ARCHIVES_DIR="$ROOT_DIR/Build/Archives"
+XCFRAMEWORKS_DIR="$ROOT_DIR/Build/XCFrameworks"
 mkdir -p "$ARCHIVES_DIR" "$XCFRAMEWORKS_DIR"
 
 # Generate Xcode project from project.yml
+# Run xcodegen from the project directory to ensure relative paths resolve correctly
 log_step "Generating Xcode project from project.yml"
-if ! xcodegen generate --spec "$PROJECT_YML"; then
+PROJECT_DIR=$(dirname "$PROJECT_YML")
+if ! (cd "$PROJECT_DIR" && xcodegen generate --spec "$(basename "$PROJECT_YML")"); then
     log_error "Failed to generate Xcode project for $MODULE_NAME"
     exit 1
 fi
@@ -94,16 +96,28 @@ SIMULATOR_ARCHIVE="$ARCHIVES_DIR/$MODULE_NAME-Simulator.xcarchive"
 # Clean previous archives
 rm -rf "$IOS_ARCHIVE" "$SIMULATOR_ARCHIVE"
 
-# Use workspace if available (for Pods dependencies), otherwise use project
-WORKSPACE="$ROOT_DIR/msp-ios-sdk.xcworkspace"
+# Use workspace if available and scheme exists, otherwise use project
+WORKSPACE="$ROOT_DIR/.generated/msp-ios-sdk.xcworkspace"
+if [[ ! -d "$WORKSPACE" ]]; then
+    WORKSPACE="$ROOT_DIR/msp-ios-sdk.xcworkspace"
+fi
+
+# Check if scheme exists in workspace
+SCHEME_IN_WORKSPACE=false
 if [[ -d "$WORKSPACE" ]]; then
+    if xcodebuild -workspace "$WORKSPACE" -list 2>/dev/null | grep -qE "^\s*$SCHEME_NAME\s*$"; then
+        SCHEME_IN_WORKSPACE=true
+    fi
+fi
+
+if [[ "$SCHEME_IN_WORKSPACE" == "true" ]]; then
     BUILD_ARG="-workspace"
     BUILD_PATH="$WORKSPACE"
     log_info "Using workspace for Pods dependencies: $WORKSPACE"
 else
     BUILD_ARG="-project"
     BUILD_PATH="$XCODEPROJ"
-    log_warn "Workspace not found, using project (Pods dependencies may not be available)"
+    log_warn "Scheme not in workspace, using project directly (Pods dependencies may not be available)"
 fi
 
 # Build iOS device archive

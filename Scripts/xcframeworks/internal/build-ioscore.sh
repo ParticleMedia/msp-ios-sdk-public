@@ -48,7 +48,7 @@ show_usage() {
     color_info "What this script does:"
     echo "  1. Builds MSPiOSCore.xcframework for iOS device and simulator"
     echo "  2. Creates universal binary with arm64 and x86_64 architectures"
-    echo "  3. Deploys to MSPSharedLibraries/MSPiOSCore.xcframework"
+    echo "  3. Deploys to Build/XCFrameworks/MSPiOSCore.xcframework"
     echo ""
     color_warning "Note: Code signing requires valid iOS Development certificate."
     color_warning "Use SKIP_CODE_SIGN=1 if you don't have signing certificates."
@@ -89,8 +89,13 @@ ensure_project_root() {
 main() {
     echo "🔧 Starting MSPiOSCore XCFramework build"
     
-    # Ensure we're in the project root
-    ensure_project_root
+    # Ensure we're in the project root (updated for new structure)
+    if [[ ! -f ".git/config" ]] && [[ ! -d "Examples/MSPDemoApp" ]] && [[ ! -d "Sources/Core/MSPiOSCore" ]]; then
+        color_error "❌ ERROR: Not in project root directory"
+        color_error "Current directory: $(pwd)"
+        color_error "ROOT_DIR: $ROOT_DIR"
+        exit 1
+    fi
     
     # Show build configuration
     if [[ "$SKIP_CODE_SIGN" == "1" ]]; then
@@ -118,9 +123,9 @@ main() {
     fi
     
     # Generate MSPCore project from project.yml (XcodeGen-managed)
-    MSPCORE_PROJECT_SPEC="$ROOT_DIR/MSPCore/project.yml"
+    MSPCORE_PROJECT_SPEC="$ROOT_DIR/Sources/Core/MSPCore/project.yml"
     if [[ ! -f "$MSPCORE_PROJECT_SPEC" ]]; then
-        color_error "❌ ERROR: MSPCore/project.yml not found"
+        color_error "❌ ERROR: Sources/Core/MSPCore/project.yml not found"
         color_error "MSPCore migration to XcodeGen requires project.yml"
         exit 1
     fi
@@ -134,9 +139,9 @@ main() {
     fi
     
     # Verify generated project exists
-    if [[ ! -d "MSPCore/MSPCore.xcodeproj" ]]; then
+    if [[ ! -d "Sources/Core/MSPCore/MSPCore.xcodeproj" ]]; then
         color_error "❌ ERROR: Generated MSPCore.xcodeproj not found"
-        color_error "Expected: MSPCore/MSPCore.xcodeproj"
+        color_error "Expected: Sources/Core/MSPCore/MSPCore.xcodeproj"
         exit 1
     fi
     echo "✅ MSPCore project found (generated from project.yml)"
@@ -152,15 +157,15 @@ main() {
     if build_xcframework \
         "MSPCore" \
         "MSPCore" \
-        "MSPCore/MSPCore" \
+        "Sources/Core/MSPCore/MSPCore" \
         "Build/Temp/MSPiOSCore/xcframework" \
-        "MSPSharedLibraries" \
+        "Build/XCFrameworks" \
         "MSPiOSCore.xcframework"; then
         
         echo "✅ MSPiOSCore XCFramework built successfully"
         
         # Validate the built XCFramework
-        if validate_xcframework "MSPSharedLibraries/MSPiOSCore.xcframework" "MSPiOSCore"; then
+        if validate_xcframework "Build/XCFrameworks/MSPiOSCore.xcframework" "MSPiOSCore"; then
             echo "✅ MSPiOSCore XCFramework validation passed"
         else
             echo "❌ ERROR: MSPiOSCore XCFramework validation failed"
@@ -170,11 +175,11 @@ main() {
         # Show build summary
         echo "🔧 Build Summary"
         color_success "🎉 MSPiOSCore.xcframework build completed successfully!"
-        color_info "📁 Output location: MSPSharedLibraries/MSPiOSCore.xcframework"
+        color_info "📁 Output location: Build/XCFrameworks/MSPiOSCore.xcframework"
         
         # Show framework size
         if command -v du &> /dev/null; then
-            local framework_size=$(du -sh "MSPSharedLibraries/MSPiOSCore.xcframework" 2>/dev/null | cut -f1)
+            local framework_size=$(du -sh "Build/XCFrameworks/MSPiOSCore.xcframework" 2>/dev/null | cut -f1)
             color_info "📦 Framework size: $framework_size"
         fi
         

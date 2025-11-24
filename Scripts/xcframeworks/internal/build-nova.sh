@@ -177,7 +177,7 @@ build_archive() {
             -configuration Release \
             -sdk \"$sdk\" \
             BUILD_LIBRARY_FOR_DISTRIBUTION=YES \
-            OTHER_SWIFT_FLAGS[MSPOMSDK]=\"\$(inherited) -no-verify-emitted-module-interface\" \
+            'OTHER_SWIFT_FLAGS[MSPOMSDK]=\$(inherited) -no-verify-emitted-module-interface' \
             $ci_flags"
     elif [[ -n "$NOVA_PROJECT" ]]; then
         build_command="xcodebuild archive \
@@ -189,7 +189,7 @@ build_archive() {
             -configuration Release \
             -sdk \"$sdk\" \
             BUILD_LIBRARY_FOR_DISTRIBUTION=YES \
-            OTHER_SWIFT_FLAGS[MSPOMSDK]=\"\$(inherited) -no-verify-emitted-module-interface\" \
+            'OTHER_SWIFT_FLAGS[MSPOMSDK]=\$(inherited) -no-verify-emitted-module-interface' \
             $ci_flags"
     else
         color_error "❌ ERROR: No workspace or project available for build"
@@ -279,15 +279,24 @@ if ! command -v xcodegen &> /dev/null; then
 fi
 
 # Generate NovaCore project from project.yml (XcodeGen-managed)
-NOVA_PROJECT_SPEC="$ROOT_DIR/NovaCore/project.yml"
-if [[ ! -f "$NOVA_PROJECT_SPEC" ]]; then
+# Try new structure first (Sources/Core/), fallback to old structure
+if [[ -f "$ROOT_DIR/Sources/Core/NovaCore/project.yml" ]]; then
+    NOVA_PROJECT_SPEC="$ROOT_DIR/Sources/Core/NovaCore/project.yml"
+elif [[ -f "$ROOT_DIR/NovaCore/project.yml" ]]; then
+    NOVA_PROJECT_SPEC="$ROOT_DIR/NovaCore/project.yml"
+else
     color_error "❌ ERROR: NovaCore/project.yml not found"
+    color_error "Checked locations:"
+    color_error "  - $ROOT_DIR/Sources/Core/NovaCore/project.yml"
+    color_error "  - $ROOT_DIR/NovaCore/project.yml"
     color_error "NovaCore migration to XcodeGen requires project.yml"
     exit 1
 fi
 
 print_step "Generating NovaCore.xcodeproj from project.yml..."
-if xcodegen generate --spec "$NOVA_PROJECT_SPEC"; then
+# Run xcodegen from the project directory to ensure relative paths resolve correctly
+PROJECT_DIR=$(dirname "$NOVA_PROJECT_SPEC")
+if (cd "$PROJECT_DIR" && xcodegen generate --spec "$(basename "$NOVA_PROJECT_SPEC")"); then
     print_success "NovaCore.xcodeproj generated successfully from project.yml"
 else
     color_error "❌ ERROR: Failed to generate NovaCore.xcodeproj from project.yml"
@@ -298,16 +307,47 @@ fi
 NOVA_WORKSPACE=""
 NOVA_PROJECT=""
 
-# Prefer workspace if available, otherwise use generated project
-if [[ -d "$ROOT_DIR/msp-ios-sdk.xcworkspace" ]]; then
-    NOVA_WORKSPACE="$ROOT_DIR/msp-ios-sdk.xcworkspace"
-    print_success "Workspace found: msp-ios-sdk.xcworkspace (will use for build)"
-elif [[ -d "$ROOT_DIR/NovaCore/NovaCore.xcodeproj" ]]; then
-    NOVA_PROJECT="$ROOT_DIR/NovaCore/NovaCore.xcodeproj"
-    print_success "NovaCore project found: NovaCore/NovaCore.xcodeproj (generated from project.yml)"
+# Determine project location based on project.yml location
+if [[ "$NOVA_PROJECT_SPEC" == *"Sources/Core/NovaCore"* ]]; then
+    EXPECTED_PROJECT="$ROOT_DIR/Sources/Core/NovaCore/NovaCore.xcodeproj"
+else
+    EXPECTED_PROJECT="$ROOT_DIR/NovaCore/NovaCore.xcodeproj"
+fi
+
+# Check if scheme exists in workspace before using it
+# Prefer project if workspace doesn't have the scheme
+if [[ -d "$ROOT_DIR/.generated/msp-ios-sdk.xcworkspace" ]]; then
+    # Check if NovaCore scheme exists in workspace
+    if xcodebuild -workspace "$ROOT_DIR/.generated/msp-ios-sdk.xcworkspace" -list 2>/dev/null | grep -qE "^\s*NovaCore\s*$"; then
+        NOVA_WORKSPACE="$ROOT_DIR/.generated/msp-ios-sdk.xcworkspace"
+        print_success "Workspace found with NovaCore scheme: .generated/msp-ios-sdk.xcworkspace (will use for build)"
+    elif [[ -d "$EXPECTED_PROJECT" ]]; then
+        NOVA_PROJECT="$EXPECTED_PROJECT"
+        print_success "NovaCore project found: $EXPECTED_PROJECT (workspace doesn't have NovaCore scheme, using project)"
+    else
+        color_error "❌ ERROR: Generated NovaCore.xcodeproj not found"
+        color_error "Expected: $EXPECTED_PROJECT"
+        exit 1
+    fi
+elif [[ -d "$ROOT_DIR/msp-ios-sdk.xcworkspace" ]]; then
+    # Check if NovaCore scheme exists in workspace
+    if xcodebuild -workspace "$ROOT_DIR/msp-ios-sdk.xcworkspace" -list 2>/dev/null | grep -qE "^\s*NovaCore\s*$"; then
+        NOVA_WORKSPACE="$ROOT_DIR/msp-ios-sdk.xcworkspace"
+        print_success "Workspace found with NovaCore scheme: msp-ios-sdk.xcworkspace (will use for build)"
+    elif [[ -d "$EXPECTED_PROJECT" ]]; then
+        NOVA_PROJECT="$EXPECTED_PROJECT"
+        print_success "NovaCore project found: $EXPECTED_PROJECT (workspace doesn't have NovaCore scheme, using project)"
+    else
+        color_error "❌ ERROR: Generated NovaCore.xcodeproj not found"
+        color_error "Expected: $EXPECTED_PROJECT"
+        exit 1
+    fi
+elif [[ -d "$EXPECTED_PROJECT" ]]; then
+    NOVA_PROJECT="$EXPECTED_PROJECT"
+    print_success "NovaCore project found: $EXPECTED_PROJECT (generated from project.yml)"
 else
     color_error "❌ ERROR: Generated NovaCore.xcodeproj not found"
-    color_error "Expected: NovaCore/NovaCore.xcodeproj"
+    color_error "Expected: $EXPECTED_PROJECT"
     exit 1
 fi
 
