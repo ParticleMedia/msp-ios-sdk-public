@@ -100,3 +100,6 @@ Tmp/
 *.tmp
 
 # Note: MigrationReports/ is NOT ignored - reports are visible but cleaned by pre-commit hook
+
+# Auto-generated MSPDemoApp project.yml
+Examples/MSPDemoApp/project.yml
