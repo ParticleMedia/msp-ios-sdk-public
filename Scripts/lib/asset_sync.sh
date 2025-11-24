@@ -9,7 +9,18 @@ set -euo pipefail
 # Script configuration
 readonly SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 readonly PROJECT_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
-readonly NOVACORE_DIR="$PROJECT_ROOT/NovaCore/NovaCore"
+# Try new structure first (Sources/Core/), fallback to old structure
+if [[ -d "$PROJECT_ROOT/Sources/Core/NovaCore/NovaCore" ]]; then
+    readonly NOVACORE_DIR="$PROJECT_ROOT/Sources/Core/NovaCore/NovaCore"
+elif [[ -d "$PROJECT_ROOT/NovaCore/NovaCore" ]]; then
+    readonly NOVACORE_DIR="$PROJECT_ROOT/NovaCore/NovaCore"
+else
+    echo "ERROR: NovaCore directory not found" >&2
+    echo "Checked locations:" >&2
+    echo "  - $PROJECT_ROOT/Sources/Core/NovaCore/NovaCore" >&2
+    echo "  - $PROJECT_ROOT/NovaCore/NovaCore" >&2
+    exit 1
+fi
 readonly ASSETS_SOURCE="$NOVACORE_DIR/NBAssets.xcassets"
 readonly BUNDLE_TARGET="$NOVACORE_DIR/NBResourceBundle.bundle"
 readonly TEMP_DIR="/tmp/nova_asset_sync_$$"
