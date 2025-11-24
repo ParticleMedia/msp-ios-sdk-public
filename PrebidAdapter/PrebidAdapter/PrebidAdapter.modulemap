@@ -1,5 +1,0 @@
-framework module PrebidAdapter {
-    
-    // Versions
-    header "PrebidAdapter.h"
-}

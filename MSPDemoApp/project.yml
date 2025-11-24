@@ -12,7 +12,7 @@ settings:
   base:
     CURRENT_PROJECT_VERSION: 1
     DEVELOPMENT_TEAM: 4PEHUZX8QH
-    INFOPLIST_FILE: MSPDemoApp/Info.plist
+    INFOPLIST_FILE: Examples/MSPDemoApp/Info.plist
     IPHONEOS_DEPLOYMENT_TARGET: "15.0"
     MARKETING_VERSION: 0.0.117
     PRODUCT_BUNDLE_IDENTIFIER: MSPDemoApp.MSPDemoApp
@@ -24,9 +24,9 @@ targetTemplates:
     type: application
     platform: iOS
     sources:
-      - path: MSPDemoApp
+      - path: Examples/MSPDemoApp
     info:
-      path: MSPDemoApp/Info.plist
+      path: Examples/MSPDemoApp/Info.plist
       properties:
         UILaunchStoryboardName: LaunchScreen
         UIMainStoryboardFile: Main
@@ -73,7 +73,7 @@ targets:
     type: bundle.unit-test
     platform: iOS
     sources:
-      - path: MSPDemoAppTests
+      - path: Examples/Examples/MSPDemoApp/MSPDemoAppTests
     settings:
       base:
         ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES: YES
@@ -84,7 +84,7 @@ targets:
     type: bundle.ui-testing
     platform: iOS
     sources:
-      - path: MSPDemoAppUITests
+      - path: Examples/Examples/MSPDemoApp/MSPDemoAppUITests
     settings:
       base:
         ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES: YES
