@@ -99,6 +99,7 @@ extension NovaNativeAdVideoPlayButtonOnCenterSubviewHandler: NovaNativeAdVideoSu
         }
     }
 
+    @MainActor
     func sync(with state: NovaAdVideoState) {
         switch state.playState {
         case .showCover(_, coverURL: let coverURL):

@@ -169,6 +169,7 @@ class NovaInterstitialAdTwoPartPlayableSubviewHandler: NovaInterstitialAdSubview
         showFirstPart()
     }
 
+    @MainActor
     func config() {
         // Configure advertiser info
         if let advertiserText = interstitialAd.advertiser {

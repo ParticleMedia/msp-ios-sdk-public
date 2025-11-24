@@ -107,6 +107,7 @@ extension ImmersiveEndCardSubviewHandler: NovaAdEndCardSubviewHandling {
         }
     }
 
+    @MainActor
     func config(with model: NovaAdEndCardViewModel) {
         if let appIconUrl = model.iconUrl {
             iconView.isHidden = false

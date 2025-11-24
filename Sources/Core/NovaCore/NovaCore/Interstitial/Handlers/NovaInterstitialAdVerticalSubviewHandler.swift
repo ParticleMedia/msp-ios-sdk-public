@@ -129,6 +129,7 @@ class NovaInterstitialAdVerticalSubviewHandler: NovaInterstitialAdSubviewHandler
         }
     }
 
+    @MainActor
     func config() {
         // Configure advertiser info
         if let advertiserText = interstitialAd.advertiser {

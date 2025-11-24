@@ -124,6 +124,7 @@ class NovaInterstitialAdPlayableSubviewHandler: NovaInterstitialAdSubviewHandler
         }
     }
 
+    @MainActor
     func config() {
         if let iconURL = interstitialAd.iconURL {
             advertiserAvatar.isHidden = false

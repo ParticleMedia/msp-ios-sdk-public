@@ -135,6 +135,7 @@ extension NovaNativeAdVideoPlayButtonOnLeftBottomSubviewHandler: NovaNativeAdVid
         }
     }
 
+    @MainActor
     func sync(with state: NovaAdVideoState) {
         volumeButton.setImage(state.isMute ? volumeOffImage: volumeOnImage, for: .normal)
         switch state.playState {
