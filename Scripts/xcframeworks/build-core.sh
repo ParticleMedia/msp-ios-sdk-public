@@ -103,6 +103,7 @@ CORE_MODULES=(
     "MSPCore"
     "MSPOMSDK"
     "MSPSharedLibraries"
+    "MSPiOSCore"
 )
 
 SUCCESS_COUNT=0

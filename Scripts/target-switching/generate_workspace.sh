@@ -350,6 +350,9 @@ fi
 if [[ -f "$ROOT_DIR/MSPSharedLibraries/project.yml" ]]; then
     XCODEGEN_PROJECTS+=("MSPSharedLibraries/project.yml")
 fi
+if [[ -f "$ROOT_DIR/MSPiOSCore/project.yml" ]]; then
+    XCODEGEN_PROJECTS+=("MSPiOSCore/project.yml")
+fi
 if [[ -f "$ROOT_DIR/NovaAdapter/project.yml" ]]; then
     XCODEGEN_PROJECTS+=("NovaAdapter/project.yml")
 fi
@@ -565,6 +568,9 @@ YAML
             continue
         fi
         if [[ "$rel" == "MSPSharedLibraries/MSPSharedLibraries.xcodeproj" ]] && [[ -f "$ROOT_DIR/MSPSharedLibraries/project.yml" ]]; then
+            continue
+        fi
+        if [[ "$rel" == "MSPiOSCore/MSPiOSCore.xcodeproj" ]] && [[ -f "$ROOT_DIR/MSPiOSCore/project.yml" ]]; then
             continue
         fi
         if [[ "$rel" == "NovaAdapter/NovaAdapter.xcodeproj" ]] && [[ -f "$ROOT_DIR/NovaAdapter/project.yml" ]]; then

@@ -1,0 +1,50 @@
+include:
+  - ../Config/xcodegen/module.project_template.yml
+
+name: MSPiOSCore
+
+settings:
+  base:
+    # Product Configuration
+    PRODUCT_NAME: MSPiOSCore
+    PRODUCT_BUNDLE_IDENTIFIER: msp.MSPiOSCore
+    PRODUCT_MODULE_NAME: MSPiOSCore
+
+targets:
+  MSPiOSCore:
+    type: framework
+    platform: iOS
+    sources:
+      - path: MSPiOSCore
+        excludes:
+          - "**/*.md"
+          - "**/Tests/**"
+          - "**/*.test.swift"
+          - "**/*.spec.swift"
+          - "MSPiOSCore.docc/**"
+    settings:
+      base:
+        # CRITICAL: Override PODS_ROOT and PODS_PODFILE_DIR_PATH from xcconfig
+        PODS_ROOT: $(SRCROOT)/../Pods
+        PODS_PODFILE_DIR_PATH: $(SRCROOT)/..
+        
+        # Framework Search Paths
+        # MSPiOSCore is a core module with no external framework dependencies
+        # All dependencies are standard iOS frameworks (Foundation, etc.)
+        FRAMEWORK_SEARCH_PATHS:
+          - $(inherited)
+
+schemes:
+  MSPiOSCore:
+    build:
+      targets:
+        MSPiOSCore: all
+    run:
+      config: Debug
+    profile:
+      config: Release
+    analyze:
+      config: Debug
+    archive:
+      config: Release
+
