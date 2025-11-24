@@ -1,0 +1,6 @@
+framework module Shimmer {
+  umbrella header "Shimmer.h"
+  export *
+
+  module * { export * }
+}

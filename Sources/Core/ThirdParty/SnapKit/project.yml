@@ -1,0 +1,19 @@
+# SnapKit XcodeGen Project Specification
+# Used for building SnapKit.xcframework
+
+name: SnapKit
+
+targets:
+  SnapKit:
+    type: framework
+    platform: iOS
+    sources:
+      - path: .
+    settings:
+      base:
+        PRODUCT_NAME: SnapKit
+        PRODUCT_MODULE_NAME: SnapKit
+        BUILD_LIBRARY_FOR_DISTRIBUTION: YES
+        SKIP_INSTALL: NO
+
+
