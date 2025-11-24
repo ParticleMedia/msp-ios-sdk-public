@@ -33,7 +33,7 @@ readonly SPM_WORKSPACE="$ROOT_DIR/msp-ios-sdk.xcworkspace"
 readonly PODS_WORKSPACE="$ROOT_DIR/msp-ios-sdk.xcworkspace"
 readonly PODS_DIR="$ROOT_DIR/Pods"
 readonly WORKSPACE_SPEC="$ROOT_DIR/workspace.yml"
-readonly PROJECT_SPEC="$ROOT_DIR/MSPDemoApp/project.yml"
+readonly PROJECT_SPEC="$ROOT_DIR/Examples/MSPDemoApp/project.yml"
 
 # ============================================================================
 # Logging Functions (UI system)

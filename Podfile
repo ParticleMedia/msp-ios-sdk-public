@@ -49,7 +49,6 @@ target 'MSPCore' do
   #pod 'Google-Mobile-Ads-SDK', "10.14.0", :modular_headers => true
   #pod 'GoogleAdapter',  :path => 'GoogleAdapter', :modular_headers => true
 
-  pod 'SnapKit', :modular_headers => true
 
   #target 'MSPUtilityTests' do
     # Pods for testing
@@ -108,9 +107,7 @@ target 'NovaCore' do
   #use_frameworks!
 
   # Pods for NovaAdapter
-  pod 'lottie-ios', :modular_headers => true
   pod 'Kingfisher', '~> 7.0', :modular_headers => true
-  pod 'SnapKit', :modular_headers => true
   #pod 'SDWebImage', '5.18.8', :modular_headers => true
   #pod 'SDWebImageWebPCoder', '0.14.2', :modular_headers => true
   #pod 'SnapKit', '~> 5.6.0', :modular_headers => true

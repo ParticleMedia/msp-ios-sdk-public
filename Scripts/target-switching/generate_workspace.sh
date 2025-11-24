@@ -114,7 +114,7 @@ settings:
   base:
     CURRENT_PROJECT_VERSION: 1
     DEVELOPMENT_TEAM: 4PEHUZX8QH
-    INFOPLIST_FILE: Examples/MSPDemoApp/Info.plist
+    INFOPLIST_FILE: MSPDemoApp/Info.plist
     IPHONEOS_DEPLOYMENT_TARGET: "15.0"
     MARKETING_VERSION: 0.0.117
     PRODUCT_BUNDLE_IDENTIFIER: MSPDemoApp.MSPDemoApp
@@ -158,9 +158,9 @@ targetTemplates:
     type: application
     platform: iOS
     sources:
-      - path: Examples/MSPDemoApp
+      - path: MSPDemoApp
     info:
-      path: Examples/MSPDemoApp/Info.plist
+      path: MSPDemoApp/Info.plist
       properties:
         UILaunchStoryboardName: LaunchScreen
         UIMainStoryboardFile: Main
@@ -173,7 +173,7 @@ YAML
     # Add PODS_ROOT only in Pods mode (for BaseAppTarget template)
     if [[ "$TARGET_MODE" == "pods" ]]; then
         cat <<'YAML'
-        PODS_ROOT: "$(SRCROOT)/../Pods"
+        PODS_ROOT: "$(SRCROOT)/../../Pods"
 YAML
     fi
     cat <<'YAML'
@@ -190,8 +190,8 @@ YAML
     templates:
       - BaseAppTarget
     configFiles:
-      Debug: ../Pods/Target Support Files/Pods-MSPDemoApp/Pods-MSPDemoApp.debug.xcconfig
-      Release: ../Pods/Target Support Files/Pods-MSPDemoApp/Pods-MSPDemoApp.release.xcconfig
+      Debug: ../../Pods/Target Support Files/Pods-MSPDemoApp/Pods-MSPDemoApp.debug.xcconfig
+      Release: ../../Pods/Target Support Files/Pods-MSPDemoApp/Pods-MSPDemoApp.release.xcconfig
     prebuildScripts:
       - name: "[CP] Check Pods Manifest.lock"
         script: |
@@ -251,7 +251,7 @@ YAML
     type: bundle.unit-test
     platform: iOS
     sources:
-      - path: Examples/Examples/MSPDemoApp/MSPDemoAppTests
+      - path: MSPDemoAppTests
     settings:
       base:
         ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES: YES
@@ -262,7 +262,7 @@ YAML
     type: bundle.ui-testing
     platform: iOS
     sources:
-      - path: Examples/Examples/MSPDemoApp/MSPDemoAppUITests
+      - path: MSPDemoAppUITests
     settings:
       base:
         ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES: YES

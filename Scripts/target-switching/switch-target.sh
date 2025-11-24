@@ -308,7 +308,7 @@ elif [[ "$TARGET" == "pods" ]]; then
     # Step 2: Ensure MSPiOSCore.xcframework exists (required for adapters)
     log_section "XCFramework Prerequisites"
     log_step "Checking MSPiOSCore.xcframework"
-    if [[ ! -d "$ROOT_DIR/MSPSharedLibraries/MSPiOSCore.xcframework" ]]; then
+    if [[ ! -d "$ROOT_DIR/Sources/Core/MSPSharedLibraries/MSPiOSCore.xcframework" ]] && [[ ! -d "$ROOT_DIR/Build/XCFrameworks/MSPiOSCore.xcframework" ]]; then
         log_warn "MSPiOSCore.xcframework missing - building it now"
         BUILD_IOSCORE_SCRIPT="$ROOT_DIR/Scripts/xcframeworks/internal/build-ioscore.sh"
         if [[ -f "$BUILD_IOSCORE_SCRIPT" ]]; then
@@ -382,7 +382,7 @@ elif [[ "$TARGET" == "pods" ]]; then
     # Step 8: Build NovaCore.xcframework (Pods mode only - requires Pods dependencies and workspace)
     log_section "NovaCore XCFramework Build"
     log_step "Checking NovaCore.xcframework"
-    if [[ ! -d "$ROOT_DIR/NovaAdapter/NovaCore.xcframework" ]]; then
+    if [[ ! -d "$ROOT_DIR/Sources/Adapters/NovaAdapter/NovaCore.xcframework" ]] && [[ ! -d "$ROOT_DIR/Build/XCFrameworks/NovaCore.xcframework" ]]; then
         log_warn "NovaCore.xcframework missing - building it now"
         log_info "NovaCore requires Pods dependencies (Kingfisher, SnapKit, Shimmer, lottie-ios, MSPOMSDK)"
         log_info "Building from workspace to ensure Pods are available"
