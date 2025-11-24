@@ -27,11 +27,11 @@ targets:
           - "**/*.spec.swift"
           - "InmobiAdapter.docc/**"
     dependencies:
-      - framework: ../../../../../../../../Build/XCFrameworks/MSPiOSCore.xcframework
+      - framework: ../../../Build/XCFrameworks/MSPiOSCore.xcframework
         embed: false
-      - framework: ../../../../../../../../Build/XCFrameworks/PrebidMobile.xcframework
+      - framework: ../../Core/MSPSharedLibraries/PrebidMobile.xcframework
         embed: false
-      - framework: ../../../../../Pods/InMobiSDK/InMobiSDK.xcframework
+      - framework: ../../../Pods/InMobiSDK/InMobiSDK.xcframework
         embed: false
     settings:
       base:
@@ -40,9 +40,9 @@ targets:
         # Xcode will automatically resolve the correct architecture slice from the XCFramework
         FRAMEWORK_SEARCH_PATHS:
           - $(inherited)
-          - $(SRCROOT)/../../../../../../../../Build/XCFrameworks/MSPiOSCore.xcframework
-          - $(SRCROOT)/../../../../../../../../Build/XCFrameworks/PrebidMobile.xcframework
-          - $(SRCROOT)/../../../../../Pods/InMobiSDK/InMobiSDK.xcframework
+          - $(SRCROOT)/../../../Build/XCFrameworks/MSPiOSCore.xcframework
+          - $(SRCROOT)/../../Core/MSPSharedLibraries/PrebidMobile.xcframework
+          - $(SRCROOT)/../../../Pods/InMobiSDK/InMobiSDK.xcframework
 
 schemes:
   InmobiAdapter:

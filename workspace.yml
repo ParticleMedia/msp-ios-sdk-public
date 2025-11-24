@@ -54,3 +54,12 @@ workspace:
     - name: NovaCore
       path: Sources/Core/NovaCore/project.yml
       type: file
+    - name: Lottie
+      path: Sources/Core/ThirdParty/Lottie/project.yml
+      type: file
+    - name: SnapKit
+      path: Sources/Core/ThirdParty/SnapKit/project.yml
+      type: file
+    - name: Pods
+      path: Pods/Pods.xcodeproj
+      type: file
