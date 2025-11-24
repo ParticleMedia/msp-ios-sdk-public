@@ -198,8 +198,8 @@ wait_for_process() {
 # Cleanup utilities
 cleanup_build_artifacts() {
     local artifacts=(
-        "outputMSPiOSCore"
-        "outputNova"
+        "Build/Temp/MSPiOSCore"
+        "Build/Temp/NovaCore"
         "DerivedData"
         "*.xcarchive"
         "*.dSYM.zip"

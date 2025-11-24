@@ -14,10 +14,10 @@ declare -A FRAMEWORK_CONFIGS
 # Initialize framework configurations
 init_framework_configs() {
     # MSPiOSCore configuration
-    FRAMEWORK_CONFIGS["MSPiOSCore"]="name=MSPiOSCore;scheme=MSPiOSCore;output_dir=outputMSPiOSCore;deploy_dir=MSPSharedLibraries;xcframework_name=MSPiOSCore.xcframework;source_only=false;podspec=MSPiOSCore/MSPiOSCore.podspec;project_path=MSPiOSCore/MSPiOSCore"
+    FRAMEWORK_CONFIGS["MSPiOSCore"]="name=MSPiOSCore;scheme=MSPiOSCore;output_dir=Build/Temp/MSPiOSCore;deploy_dir=MSPSharedLibraries;xcframework_name=MSPiOSCore.xcframework;source_only=false;podspec=MSPiOSCore/MSPiOSCore.podspec;project_path=MSPiOSCore/MSPiOSCore"
     
     # NovaCore configuration
-    FRAMEWORK_CONFIGS["NovaCore"]="name=NovaCore;scheme=NovaCore;output_dir=outputNova;deploy_dir=NovaAdapter;xcframework_name=NovaCore.xcframework;source_only=false;podspec=NovaCore/NovaCore.podspec;project_path=NovaCore/NovaCore"
+    FRAMEWORK_CONFIGS["NovaCore"]="name=NovaCore;scheme=NovaCore;output_dir=Build/Temp/NovaCore;deploy_dir=NovaAdapter;xcframework_name=NovaCore.xcframework;source_only=false;podspec=NovaCore/NovaCore.podspec;project_path=NovaCore/NovaCore"
     
     # MSPCore configuration (source only)
     FRAMEWORK_CONFIGS["MSPCore"]="name=MSPCore;scheme=MSPCore;output_dir=;deploy_dir=;xcframework_name=;source_only=true;podspec=MSPCore/MSPCore.podspec;project_path=MSPCore/MSPCore"

@@ -313,8 +313,8 @@ fi
 
 # Clean previous build artifacts
 print_step "Cleaning previous build artifacts..."
-rm -rf "$PWD/outputNova/xcframework"
-mkdir -p "$PWD/outputNova/xcframework"
+rm -rf "$PWD/Build/Temp/NovaCore/xcframework"
+mkdir -p "$PWD/Build/Temp/NovaCore/xcframework"
 print_success "Build directory cleaned and created"
 
 # NovaCore doesn't use Pods - it uses XCFramework integration
@@ -504,7 +504,7 @@ fi
 # Build for iOS device
 print_section "Building NovaCore for iOS Device"
 print_step "Building iOS device archive..."
-if build_archive "NovaCore" "iOS" "$PWD/outputNova/xcframework/NovaCore-iOS" "iphoneos"; then
+if build_archive "NovaCore" "iOS" "$PWD/Build/Temp/NovaCore/xcframework/NovaCore-iOS" "iphoneos"; then
     print_success "iOS device archive created successfully"
 else
     color_error "❌ ERROR: Failed to create iOS device archive"
@@ -512,13 +512,13 @@ else
 fi
 
 # Verify iOS archive
-check_path "$PWD/outputNova/xcframework/NovaCore-iOS.xcarchive/Products/Library/Frameworks/NovaCore.framework"
+check_path "$PWD/Build/Temp/NovaCore/xcframework/NovaCore-iOS.xcarchive/Products/Library/Frameworks/NovaCore.framework"
 print_success "iOS device framework verified"
 
 # Build for iOS Simulator
 print_section "Building NovaCore for iOS Simulator"
 print_step "Building iOS simulator archive with universal binary (arm64 + x86_64)..."
-if build_archive "NovaCore" "generic/platform=iOS Simulator" "$PWD/outputNova/xcframework/NovaCore-Simulator" "iphonesimulator" "ONLY_ACTIVE_ARCH=NO VALID_ARCHS=\"arm64 x86_64\" ARCHS=\"arm64 x86_64\" EXCLUDED_ARCHS=\"\""; then
+if build_archive "NovaCore" "generic/platform=iOS Simulator" "$PWD/Build/Temp/NovaCore/xcframework/NovaCore-Simulator" "iphonesimulator" "ONLY_ACTIVE_ARCH=NO VALID_ARCHS=\"arm64 x86_64\" ARCHS=\"arm64 x86_64\" EXCLUDED_ARCHS=\"\""; then
     print_success "iOS simulator archive created successfully"
 else
     color_error "❌ ERROR: Failed to create iOS simulator archive"
@@ -526,16 +526,16 @@ else
 fi
 
 # Verify simulator archive
-check_path "$PWD/outputNova/xcframework/NovaCore-Simulator.xcarchive/Products/Library/Frameworks/NovaCore.framework"
+check_path "$PWD/Build/Temp/NovaCore/xcframework/NovaCore-Simulator.xcarchive/Products/Library/Frameworks/NovaCore.framework"
 print_success "iOS simulator framework verified"
 
 # Create XCFramework
 print_section "Creating NovaCore.xcframework"
 print_step "Combining device and simulator frameworks into XCFramework..."
 if xcodebuild -create-xcframework \
-    -framework "$PWD/outputNova/xcframework/NovaCore-iOS.xcarchive/Products/Library/Frameworks/NovaCore.framework" \
-    -framework "$PWD/outputNova/xcframework/NovaCore-Simulator.xcarchive/Products/Library/Frameworks/NovaCore.framework" \
-    -output "$PWD/outputNova/xcframework/NovaCore.xcframework"; then
+    -framework "$PWD/Build/Temp/NovaCore/xcframework/NovaCore-iOS.xcarchive/Products/Library/Frameworks/NovaCore.framework" \
+    -framework "$PWD/Build/Temp/NovaCore/xcframework/NovaCore-Simulator.xcarchive/Products/Library/Frameworks/NovaCore.framework" \
+    -output "$PWD/Build/Temp/NovaCore/xcframework/NovaCore.xcframework"; then
     print_success "NovaCore.xcframework created successfully"
 else
     color_error "❌ ERROR: Failed to create NovaCore.xcframework"
@@ -543,14 +543,14 @@ else
 fi
 
 # Verify XCFramework
-check_path "$PWD/outputNova/xcframework/NovaCore.xcframework"
+check_path "$PWD/Build/Temp/NovaCore/xcframework/NovaCore.xcframework"
 print_success "NovaCore.xcframework verified"
 
 # Check XCFramework contents
 print_step "Verifying XCFramework contents..."
-if [ -f "$PWD/outputNova/xcframework/NovaCore.xcframework/Info.plist" ]; then
+if [ -f "$PWD/Build/Temp/NovaCore/xcframework/NovaCore.xcframework/Info.plist" ]; then
     color_info "📋 XCFramework Info.plist contents:"
-    plutil -p "$PWD/outputNova/xcframework/NovaCore.xcframework/Info.plist" | grep -E "(LibraryIdentifier|SupportedArchitectures)" || true
+    plutil -p "$PWD/Build/Temp/NovaCore/xcframework/NovaCore.xcframework/Info.plist" | grep -E "(LibraryIdentifier|SupportedArchitectures)" || true
     print_success "XCFramework structure verified"
 else
     color_error "❌ ERROR: XCFramework Info.plist not found"
@@ -559,7 +559,7 @@ fi
 
 # Copy to NovaAdapter
 print_section "Deploying NovaCore.xcframework to NovaAdapter"
-SOURCE_XCFRAMEWORK="$PWD/outputNova/xcframework/NovaCore.xcframework"
+SOURCE_XCFRAMEWORK="$PWD/Build/Temp/NovaCore/xcframework/NovaCore.xcframework"
 DESTINATION_DIR="$PWD/NovaAdapter"
 DESTINATION_XCFRAMEWORK="$DESTINATION_DIR/NovaCore.xcframework"
 TEMP_XCFRAMEWORK="$DESTINATION_DIR/NovaCore.xcframework.tmp"

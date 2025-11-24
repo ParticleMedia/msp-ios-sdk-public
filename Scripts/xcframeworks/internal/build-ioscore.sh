@@ -143,8 +143,8 @@ main() {
     
     # Clean previous build artifacts
     echo "🔧 Cleaning previous build artifacts..."
-    rm -rf "outputMSPiOSCore/xcframework"
-    mkdir -p "outputMSPiOSCore/xcframework"
+    rm -rf "Build/Temp/MSPiOSCore/xcframework"
+    mkdir -p "Build/Temp/MSPiOSCore/xcframework"
     echo "✅ Build directory cleaned and created"
     
     # Build XCFramework using shared library
@@ -153,7 +153,7 @@ main() {
         "MSPCore" \
         "MSPCore" \
         "MSPCore/MSPCore" \
-        "outputMSPiOSCore/xcframework" \
+        "Build/Temp/MSPiOSCore/xcframework" \
         "MSPSharedLibraries" \
         "MSPiOSCore.xcframework"; then
         
