@@ -49,7 +49,6 @@ Pod::Spec.new do |spec|
   spec.dependency 'MSPOMSDK'
   spec.dependency 'MSPiOSCore'
   spec.dependency 'NovaCore'
-  spec.dependency 'PrebidMobile'
   # Kingfisher, SnapKit are now bundled in NovaCore.xcframework - removed as dependencies
 
   spec.static_framework = true

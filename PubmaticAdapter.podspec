@@ -46,7 +46,6 @@ Pod::Spec.new do |spec|
   spec.source_files = "Sources/Adapters/PubmaticAdapter/**/*.{swift}"
 
   spec.dependency 'OpenWrapSDK', '4.0.0'
-  spec.dependency 'PrebidMobile'
   spec.dependency 'MSPSharedLibraries'
   spec.dependency 'MSPiOSCore'
 

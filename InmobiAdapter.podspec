@@ -46,7 +46,6 @@ Pod::Spec.new do |spec|
   spec.source_files = "Sources/Adapters/InmobiAdapter/**/*.{swift}"
 
   spec.dependency 'InMobiSDK', '10.8.0'
-  spec.dependency 'PrebidMobile'
   spec.dependency 'MSPSharedLibraries'
   spec.dependency 'MSPiOSCore'
 

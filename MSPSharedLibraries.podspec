@@ -94,7 +94,10 @@ Pod::Spec.new do |spec|
   spec.platform     = :ios, '15.0'
   spec.requires_arc  = true
 
-  spec.vendored_frameworks = "Build/XCFrameworks/MSPSharedLibraries.xcframework"
+  spec.vendored_frameworks = [
+    "Build/XCFrameworks/MSPSharedLibraries.xcframework",
+    "Sources/Core/MSPSharedLibraries/PrebidMobile.xcframework"
+  ]
 
   spec.static_framework = true
 

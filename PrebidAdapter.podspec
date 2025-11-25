@@ -45,7 +45,6 @@ Pod::Spec.new do |spec|
 
   spec.source_files = "Sources/Adapters/PrebidAdapter/**/*.{swift}"
 
-  spec.dependency 'PrebidMobile'
   spec.dependency 'MSPSharedLibraries'
   spec.dependency 'MSPiOSCore'
 

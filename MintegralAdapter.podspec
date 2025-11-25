@@ -48,7 +48,6 @@ Pod::Spec.new do |spec|
   spec.dependency 'MintegralAdSDK/BidNativeAd'
   spec.dependency 'MintegralAdSDK/BidBannerAd'
   spec.dependency 'MintegralAdSDK/BidNewInterstitialAd'
-  spec.dependency 'PrebidMobile'
   spec.dependency 'MSPSharedLibraries'
   spec.dependency 'MSPiOSCore'
 

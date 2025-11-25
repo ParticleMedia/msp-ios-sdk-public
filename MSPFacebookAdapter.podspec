@@ -46,7 +46,6 @@ Pod::Spec.new do |spec|
   spec.source_files = "Sources/Adapters/MSPFacebookAdapter/**/*.{swift}"
 
   spec.dependency 'FBAudienceNetwork', '~> 6.15.0'
-  spec.dependency 'PrebidMobile'
   spec.dependency 'MSPSharedLibraries'
   spec.dependency 'MSPiOSCore'
 
