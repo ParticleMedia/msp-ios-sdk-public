@@ -21,6 +21,8 @@ targets:
     sources:
       - path: MobilefuseAdapter
         excludes:
+          - "**/*.h"
+          - "**/*.modulemap"
           - "**/*.md"
           - "**/Tests/**"
           - "**/*.test.swift"

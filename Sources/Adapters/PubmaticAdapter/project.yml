@@ -21,6 +21,8 @@ targets:
     sources:
       - path: PubmaticAdapter
         excludes:
+          - "**/*.h"
+          - "**/*.modulemap"
           - "**/*.md"
           - "**/Tests/**"
           - "**/*.test.swift"

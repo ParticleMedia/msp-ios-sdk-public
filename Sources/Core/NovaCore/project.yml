@@ -29,6 +29,8 @@ targets:
     sources:
       - path: NovaCore
         excludes:
+          - "**/*.h"
+          - "**/*.modulemap"
           - "**/*.md"
           - "**/Tests/**"
           - "**/*.test.swift"

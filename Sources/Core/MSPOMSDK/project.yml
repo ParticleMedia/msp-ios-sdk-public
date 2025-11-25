@@ -21,6 +21,8 @@ targets:
     sources:
       - path: MSPOMSDK
         excludes:
+          - "**/*.h"
+          - "**/*.modulemap"
           - "**/*.md"
           - "**/Tests/**"
           - "**/*.test.swift"

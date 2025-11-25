@@ -21,6 +21,8 @@ targets:
     sources:
       - path: UnityAdapter
         excludes:
+          - "**/*.h"
+          - "**/*.modulemap"
           - "**/*.md"
           - "**/Tests/**"
           - "**/*.test.swift"

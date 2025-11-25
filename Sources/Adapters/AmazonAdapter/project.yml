@@ -21,6 +21,8 @@ targets:
     sources:
       - path: AmazonAdapter
         excludes:
+          - "**/*.h"
+          - "**/*.modulemap"
           - "**/*.md"
           - "**/Tests/**"
           - "**/*.test.swift"

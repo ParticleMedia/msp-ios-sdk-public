@@ -22,6 +22,8 @@ targets:
           - "**/*.test.swift"
           - "**/*.spec.swift"
           - "MSPiOSCore.docc/**"
+          - "**/*.h"
+          - "**/*.modulemap"
     settings:
       base:
         BUILD_LIBRARY_FOR_DISTRIBUTION: YES

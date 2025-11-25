@@ -21,6 +21,8 @@ targets:
     sources:
       - path: MintegralAdapter
         excludes:
+          - "**/*.h"
+          - "**/*.modulemap"
           - "**/*.md"
           - "**/Tests/**"
           - "**/*.test.swift"

@@ -24,6 +24,8 @@ targets:
     sources:
       - path: MSPSharedLibraries
         excludes:
+          - "**/*.h"
+          - "**/*.modulemap"
           - "**/*.md"
           - "**/Tests/**"
           - "**/*.test.swift"

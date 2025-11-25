@@ -21,6 +21,8 @@ targets:
     sources:
       - path: NovaAdapter
         excludes:
+          - "**/*.h"
+          - "**/*.modulemap"
           - "**/*.md"
           - "**/Tests/**"
           - "**/*.test.swift"
