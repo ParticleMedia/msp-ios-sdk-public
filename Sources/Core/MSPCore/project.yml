@@ -38,13 +38,13 @@ targets:
         embed: false
       - framework: ../ThirdParty/SwiftProtobuf/SwiftProtobuf.xcframework
         embed: false
-      - framework: ../MSPOMSDK/OMSDK_Newsbreak1.xcframework
+      - framework: ../../../Build/XCFrameworks/MSPSharedLibraries.xcframework
         embed: false
       - framework: ../MSPSharedLibraries/PrebidMobile.xcframework
         embed: false
-      - framework: ../../../Build/XCFrameworks/MSPPrebidAdapter.xcframework
+      - framework: ../../../Sources/Core/MSPOMSDK/OMSDK_Newsbreak1.xcframework
         embed: false
-      - framework: ../../../Build/XCFrameworks/MSPSharedLibraries.xcframework
+      - framework: ../../../Build/XCFrameworks/MSPPrebidAdapter.xcframework
         embed: false
     settings:
       base:
@@ -60,6 +60,7 @@ targets:
           - $(SRCROOT)/../ThirdParty/Shimmer
           - $(SRCROOT)/../ThirdParty/SwiftProtobuf
           - $(SRCROOT)/../../../Build/XCFrameworks
+          - $(SRCROOT)/../MSPSharedLibraries
           - $(SRCROOT)/../MSPOMSDK
 
 schemes:
