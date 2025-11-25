@@ -27,6 +27,11 @@ targets:
         BUILD_LIBRARY_FOR_DISTRIBUTION: YES
         SKIP_INSTALL: NO
         
+        # Swift Module Interface Settings (explicit for XCFramework distribution)
+        SWIFT_EMIT_MODULE_INTERFACE: YES
+        SWIFT_INSTALL_MODULE_FOR_DEPLOYMENT: YES
+        ENABLE_LIBRARY_EVOLUTION: YES
+        
         # Framework Search Paths
         # MSPiOSCore is a core module with no external framework dependencies
         # All dependencies are standard iOS frameworks (Foundation, etc.)
