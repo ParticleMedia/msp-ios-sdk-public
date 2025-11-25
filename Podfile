@@ -125,8 +125,12 @@ end
 target 'MSPDemoApp' do
   project 'Examples/MSPDemoApp/MSPDemoApp'
 
-  # Pure Swift XCFrameworks - no modular_headers needed
+  # Core modules (binary XCFrameworks)
+  pod 'MSPiOSCore', :path => 'MSPiOSCore.podspec', :configurations => demoapp_pod_configs
+  pod 'NovaCore', :path => 'NovaCore.podspec', :configurations => demoapp_pod_configs
   pod 'MSPCore', :path => 'MSPCore.podspec', :configurations => demoapp_pod_configs
+  
+  # Adapter modules (source pods)
   pod 'NovaAdapter', :path => 'NovaAdapter.podspec', :configurations => demoapp_pod_configs
   pod 'PrebidAdapter', :path => 'PrebidAdapter.podspec', :configurations => demoapp_pod_configs
   pod 'MSPGoogleAdapter', :path => 'MSPGoogleAdapter.podspec', :configurations => demoapp_pod_configs

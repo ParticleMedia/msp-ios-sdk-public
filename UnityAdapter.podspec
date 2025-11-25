@@ -43,10 +43,11 @@ Pod::Spec.new do |spec|
   spec.swift_version = '5.0'
   spec.requires_arc  = true
 
-  spec.vendored_frameworks = "Build/XCFrameworks/UnityAdapter.xcframework"
+  spec.source_files = "Sources/Adapters/UnityAdapter/**/*.{swift}"
 
   spec.dependency 'IronSourceSDK','8.6.0.0'
   spec.dependency 'MSPSharedLibraries'
+  spec.dependency 'MSPiOSCore'
 
   spec.static_framework = true
 

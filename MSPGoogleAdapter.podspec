@@ -43,11 +43,12 @@ Pod::Spec.new do |spec|
   spec.swift_version = '5.0'
   spec.requires_arc  = true
 
-  spec.vendored_frameworks = "Build/XCFrameworks/MSPGoogleAdapter.xcframework"
+  spec.source_files = "Sources/Adapters/MSPGoogleAdapter/**/*.{swift}"
 
   spec.dependency 'Google-Mobile-Ads-SDK', "~> 12.0"
   spec.dependency 'PrebidMobile'
   spec.dependency 'MSPSharedLibraries'
+  spec.dependency 'MSPiOSCore'
 
   spec.static_framework = true
 

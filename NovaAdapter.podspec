@@ -43,11 +43,14 @@ Pod::Spec.new do |spec|
   spec.swift_version = '5.0'
   spec.requires_arc  = true
 
-  spec.vendored_frameworks = "Build/XCFrameworks/NovaAdapter.xcframework"
+  spec.source_files = "Sources/Adapters/NovaAdapter/**/*.{swift}"
 
   spec.dependency 'MSPSharedLibraries'
   spec.dependency 'MSPOMSDK'
-  # Kingfisher, SnapKit are now bundled in NovaAdapter.xcframework - removed as dependencies
+  spec.dependency 'MSPiOSCore'
+  spec.dependency 'NovaCore'
+  spec.dependency 'PrebidMobile'
+  # Kingfisher, SnapKit are now bundled in NovaCore.xcframework - removed as dependencies
 
   spec.static_framework = true
 

@@ -43,13 +43,14 @@ Pod::Spec.new do |spec|
   spec.swift_version = '5.0'
   spec.requires_arc  = true
 
-  spec.vendored_frameworks = "Build/XCFrameworks/MintegralAdapter.xcframework"
+  spec.source_files = "Sources/Adapters/MintegralAdapter/**/*.{swift}"
 
   spec.dependency 'MintegralAdSDK/BidNativeAd'
   spec.dependency 'MintegralAdSDK/BidBannerAd'
   spec.dependency 'MintegralAdSDK/BidNewInterstitialAd'
   spec.dependency 'PrebidMobile'
   spec.dependency 'MSPSharedLibraries'
+  spec.dependency 'MSPiOSCore'
 
   spec.static_framework = true
 

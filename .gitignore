@@ -52,15 +52,43 @@ MSPGoogleAdapter/*.xcframework/
 # Swift Package Manager artifacts
 .swiftpm/
 .build/
+
+# Ignore all generated third-party XCFrameworks
+Build/XCFrameworks/*Kingfisher*
+Build/XCFrameworks/*SnapKit*
+Build/XCFrameworks/*Lottie*
+Build/XCFrameworks/*Shimmer*
+Build/XCFrameworks/*SwiftProtobuf*
+Build/XCFrameworks/*Amazon*
+Build/XCFrameworks/*DTBiOSSDK*
+Build/XCFrameworks/*InMobi*
+Build/XCFrameworks/*IronSource*
+Build/XCFrameworks/*MobileFuse*
+Build/XCFrameworks/*MTG*
+Build/XCFrameworks/*OpenWrap*
+Build/XCFrameworks/*FBAudienceNetwork*
+
+# DO NOT IGNORE PrebidMobile.xcframework (required for MSPSharedLibraries)
+!Build/XCFrameworks/PrebidMobile.xcframework
+!Sources/Core/MSPSharedLibraries/PrebidMobile.xcframework
+
+# Ignore archives
+Build/Archives/*
+
+# Ignore adapter XCFrameworks (no longer used - adapters are source-only)
+Build/XCFrameworks/*Adapter*
+
+# Ignore all XCFrameworks by default, then whitelist MSP Core modules
 **/*.xcframework
 # Internal SDK XCFrameworks (must be committed)
-!Sources/Core/MSPSharedLibraries/PrebidMobile.xcframework/
-!Sources/Core/MSPOMSDK/OMSDK_Newsbreak1.xcframework/
-!Sources/Core/ThirdParty/Kingfisher/Kingfisher.xcframework/
-!Sources/Core/ThirdParty/SnapKit/SnapKit.xcframework/
-!Sources/Core/ThirdParty/Lottie/Lottie.xcframework/
-!Sources/Core/ThirdParty/Shimmer/Shimmer.xcframework/
-!Sources/Core/ThirdParty/SwiftProtobuf/SwiftProtobuf.xcframework/
+!Build/XCFrameworks/MSPCore.xcframework
+!Build/XCFrameworks/MSPiOSCore.xcframework
+!Build/XCFrameworks/NovaCore.xcframework
+!Build/XCFrameworks/MSPSharedLibraries.xcframework
+!Build/XCFrameworks/MSPOMSDK.xcframework
+!Build/XCFrameworks/PrebidMobile.xcframework
+!Sources/Core/MSPSharedLibraries/PrebidMobile.xcframework
+!Sources/Core/MSPOMSDK/OMSDK_Newsbreak1.xcframework
 Scripts/xcframeworks/output-temp/
 ExtractedFrameworks/
 

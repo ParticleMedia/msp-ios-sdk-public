@@ -43,12 +43,13 @@ Pod::Spec.new do |spec|
   spec.swift_version = '5.0'
   spec.requires_arc  = true
 
-  spec.vendored_frameworks = "Build/XCFrameworks/AmazonAdapter.xcframework"
+  spec.source_files = "Sources/Adapters/AmazonAdapter/**/*.{swift}"
 
   spec.dependency 'Google-Mobile-Ads-SDK', "~> 12.0"
   spec.dependency "AmazonPublisherServicesSDK", "4.5.5"
   spec.dependency "AmazonPublisherServicesAdMobAdapter", "2.2.0"
   spec.dependency 'MSPSharedLibraries'
+  spec.dependency 'MSPiOSCore'
 
   spec.static_framework = true
 
