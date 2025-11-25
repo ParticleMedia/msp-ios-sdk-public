@@ -4,12 +4,12 @@ Pod::Spec.new do |spec|
 
   
 
-  spec.name         = "PrebidAdapter"
+  spec.name         = "MintegralAdapter"
   spec.version      = "0.0.92"
-  spec.summary      = "an adapter for Google SDK"
-  spec.description  = "an adapter for Google SDK for MSP S2S"
+  spec.summary      = "an adapter for Mintegral SDK"
+  spec.description  = "an adapter for Mintegral SDK for MSP C2S"
 
-  spec.homepage     = "https://github.com/aimsp/msp-ios-sdk/GoogleAdapter"
+  spec.homepage     = "https://github.com/aimsp/msp-ios-sdk/MintegralAdapter"
  
   spec.license      = "Copyright"
   
@@ -43,11 +43,15 @@ Pod::Spec.new do |spec|
   spec.swift_version = '5.0'
   spec.requires_arc  = true
 
-  spec.vendored_frameworks = 'Build/XCFrameworks/MSPPrebidAdapter.xcframework'
+  spec.vendored_frameworks = "Build/XCFrameworks/MintegralAdapter.xcframework"
 
+  spec.dependency 'MintegralAdSDK/BidNativeAd'
+  spec.dependency 'MintegralAdSDK/BidBannerAd'
+  spec.dependency 'MintegralAdSDK/BidNewInterstitialAd'
   spec.dependency 'MSPSharedLibraries'
 
   spec.static_framework = true
+spec.pod_target_xcconfig = { 'BUILD_LIBRARY_FOR_DISTRIBUTION' => 'YES' }
   # ――― Resources ―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
   #
   #  A list of resources included with the Pod. These are copied into the

@@ -1,5 +1,5 @@
 #
-#  Be sure to run `pod spec lint MSPCore.podspec' to ensure this is a
+#  Be sure to run `pod spec lint MSPSharedLibraries.podspec' to ensure this is a
 #  valid spec and to remove all comments including this before submitting the spec.
 #
 #  To learn more about Podspec attributes see https://guides.cocoapods.org/syntax/podspec.html
@@ -15,8 +15,8 @@ Pod::Spec.new do |spec|
   #  summary should be tweet-length, and the description more in depth.
   #
 
-  spec.name         = "MSPCore"
-  spec.version      = "2.7.1"
+  spec.name         = "MSPSharedLibraries"
+  spec.version      = "0.0.96"
   spec.summary      = "An utility helper for MSP"
 
   spec.ios.deployment_target = '15.0'
@@ -28,7 +28,7 @@ Pod::Spec.new do |spec|
   #   * Write the description between the DESC delimiters below.
   #   * Finally, don't worry about the indent, CocoaPods strips it!
   spec.description  = "An utility for MSP settings"
-  spec.homepage     = "https://github.com/aimsp/msp-ios-sdk/MSPCore"
+  spec.homepage     = "https://github.com/aimsp/msp-ios-sdk/MSPSharedLibraries"
   # spec.screenshots  = "www.example.com/screenshots_1.gif", "www.example.com/screenshots_2.gif"
 
 
@@ -83,7 +83,6 @@ Pod::Spec.new do |spec|
 
   spec.source       = { :git => "https://github.com/ParticleMedia/msp-ios-sdk-public.git", :tag => "#{spec.version}" }
 
-
   # ――― Source Code ―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
   #
   #  CocoaPods is smart about how it includes source code. For source files
@@ -95,20 +94,10 @@ Pod::Spec.new do |spec|
   spec.platform     = :ios, '15.0'
   spec.requires_arc  = true
 
-  spec.vendored_frameworks = 'Build/XCFrameworks/MSPCore.xcframework'
-
-  spec.dependency 'MSPSharedLibraries'
-  spec.dependency 'PrebidAdapter'#, '0.0.92'
-  spec.dependency 'SwiftProtobuf'#, '1.21.0'
-  spec.dependency 'SnapKit'
-  spec.dependency 'lottie-ios'
-  #spec.vendored_frameworks= "MSPCore/PrebidAdapter.xcframework"#, "PrebidMobile.xcframework", "MSPiOSCore.xcframework"
-
+  spec.vendored_frameworks = "Build/XCFrameworks/MSPSharedLibraries.xcframework"
 
   spec.static_framework = true
-  spec.resource_bundles = {
-    'MSPCoreResources' => ['MSPCore/MSPCore/Resources/Config.plist']
-  }
+spec.pod_target_xcconfig = { 'BUILD_LIBRARY_FOR_DISTRIBUTION' => 'YES' }
 
 
 

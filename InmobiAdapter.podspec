@@ -4,12 +4,12 @@ Pod::Spec.new do |spec|
 
   
 
-  spec.name         = "NovaAdapter"
-  spec.version      = "0.0.95"
-  spec.summary      = "an adapter for Google SDK"
-  spec.description  = "an adapter for Google SDK for MSP S2S"
+  spec.name         = "InmobiAdapter"
+  spec.version      = "0.0.92"
+  spec.summary      = "an adapter for Inmobi SDK"
+  spec.description  = "an adapter for Inmobi SDK for MSP C2S"
 
-  spec.homepage     = "https://github.com/aimsp/msp-ios-sdk/GoogleAdapter"
+  spec.homepage     = "https://github.com/aimsp/msp-ios-sdk/MetaAdapter"
  
   spec.license      = "Copyright"
   
@@ -43,14 +43,13 @@ Pod::Spec.new do |spec|
   spec.swift_version = '5.0'
   spec.requires_arc  = true
 
-  spec.vendored_frameworks = 'Build/XCFrameworks/NovaAdapter.xcframework'
+  spec.vendored_frameworks = "Build/XCFrameworks/InmobiAdapter.xcframework"
 
+  spec.dependency 'InMobiSDK', '10.8.0'
   spec.dependency 'MSPSharedLibraries'
-  spec.dependency 'MSPOMSDK'
-  spec.dependency 'Kingfisher', '~> 7.0'
-  spec.dependency 'SnapKit'
 
   spec.static_framework = true
+spec.pod_target_xcconfig = { 'BUILD_LIBRARY_FOR_DISTRIBUTION' => 'YES' }
   # ――― Resources ―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
   #
   #  A list of resources included with the Pod. These are copied into the

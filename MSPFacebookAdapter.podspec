@@ -43,12 +43,13 @@ Pod::Spec.new do |spec|
   spec.swift_version = '5.0'
   spec.requires_arc  = true
 
-  spec.vendored_frameworks = 'Build/XCFrameworks/MSPFacebookAdapter.xcframework'
+  spec.vendored_frameworks = "Build/XCFrameworks/MSPFacebookAdapter.xcframework"
 
   spec.dependency 'FBAudienceNetwork', '~> 6.15.0'
   spec.dependency 'MSPSharedLibraries'
 
   spec.static_framework = true
+spec.pod_target_xcconfig = { 'BUILD_LIBRARY_FOR_DISTRIBUTION' => 'YES' }
   # ――― Resources ―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
   #
   #  A list of resources included with the Pod. These are copied into the

@@ -4,12 +4,12 @@ Pod::Spec.new do |spec|
 
   
 
-  spec.name         = "InmobiAdapter"
+  spec.name         = "AmazonAdapter"
   spec.version      = "0.0.92"
-  spec.summary      = "an adapter for Inmobi SDK"
-  spec.description  = "an adapter for Inmobi SDK for MSP C2S"
+  spec.summary      = "an adapter for Google SDK"
+  spec.description  = "an adapter for Google SDK for MSP S2S"
 
-  spec.homepage     = "https://github.com/aimsp/msp-ios-sdk/MetaAdapter"
+  spec.homepage     = "https://github.com/aimsp/msp-ios-sdk/AmazonAdapter"
  
   spec.license      = "Copyright"
   
@@ -43,12 +43,15 @@ Pod::Spec.new do |spec|
   spec.swift_version = '5.0'
   spec.requires_arc  = true
 
-  spec.vendored_frameworks = 'Build/XCFrameworks/InmobiAdapter.xcframework'
+  spec.vendored_frameworks = "Build/XCFrameworks/AmazonAdapter.xcframework"
 
-  spec.dependency 'InMobiSDK', '10.8.0'
+  spec.dependency 'Google-Mobile-Ads-SDK', "~> 12.0"
+  spec.dependency "AmazonPublisherServicesSDK", "4.5.5"
+  spec.dependency "AmazonPublisherServicesAdMobAdapter", "2.2.0"
   spec.dependency 'MSPSharedLibraries'
 
   spec.static_framework = true
+spec.pod_target_xcconfig = { 'BUILD_LIBRARY_FOR_DISTRIBUTION' => 'YES' }
   # ――― Resources ―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
   #
   #  A list of resources included with the Pod. These are copied into the

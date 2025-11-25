@@ -112,7 +112,7 @@ target 'NovaCore' do
   #pod 'SDWebImageWebPCoder', '0.14.2', :modular_headers => true
   #pod 'SnapKit', '~> 5.6.0', :modular_headers => true
   pod 'Shimmer', :modular_headers => true
-  pod 'MSPOMSDK', :podspec => 'Podspecs/MSPOMSDK.podspec', :modular_headers => true
+  pod 'MSPOMSDK', :path => 'MSPOMSDK.podspec', :modular_headers => true
   #pod 'DeviceKit', :modular_headers => true
   #pod 'NBDesignSystem', :git => 'https://github.com/ParticleMedia/LAFoundation', :branch => 'main', :commit => 'b94a948', :modular_headers => true
   #pod 'MSPSharedLibraries', :path => './MSPSharedLibraries', :modular_headers => true
@@ -125,19 +125,19 @@ end
 target 'MSPDemoApp' do
   project 'Examples/MSPDemoApp/MSPDemoApp'
 
-  pod 'MSPCore', :podspec => 'Podspecs/MSPCore.podspec', :modular_headers => true, :configurations => demoapp_pod_configs
-  pod 'NovaAdapter', :podspec => 'Podspecs/NovaAdapter.podspec', :modular_headers => true, :configurations => demoapp_pod_configs
-  pod 'PrebidAdapter', :podspec => 'Podspecs/PrebidAdapter.podspec', :modular_headers => true, :configurations => demoapp_pod_configs
-  pod 'MSPGoogleAdapter', :podspec => 'Podspecs/MSPGoogleAdapter.podspec', :modular_headers => true, :configurations => demoapp_pod_configs
-  pod 'MSPFacebookAdapter', :podspec => 'Podspecs/MSPFacebookAdapter.podspec', :modular_headers => true, :configurations => demoapp_pod_configs
-  pod 'UnityAdapter', :podspec => 'Podspecs/UnityAdapter.podspec', :modular_headers => true, :configurations => demoapp_pod_configs
-  pod 'InmobiAdapter', :podspec => 'Podspecs/InmobiAdapter.podspec', :modular_headers => true, :configurations => demoapp_pod_configs
-  pod 'MobilefuseAdapter', :podspec => 'Podspecs/MobilefuseAdapter.podspec', :modular_headers => true, :configurations => demoapp_pod_configs
-  pod 'MintegralAdapter', :podspec => 'Podspecs/MintegralAdapter.podspec', :modular_headers => true, :configurations => demoapp_pod_configs
-  pod 'PubmaticAdapter', :podspec => 'Podspecs/PubmaticAdapter.podspec', :modular_headers => true, :configurations => demoapp_pod_configs
-  pod 'AmazonAdapter', :podspec => 'Podspecs/AmazonAdapter.podspec', :modular_headers => true, :configurations => demoapp_pod_configs
+  pod 'MSPCore', :path => 'MSPCore.podspec', :modular_headers => true, :configurations => demoapp_pod_configs
+  pod 'NovaAdapter', :path => 'NovaAdapter.podspec', :modular_headers => true, :configurations => demoapp_pod_configs
+  pod 'PrebidAdapter', :path => 'PrebidAdapter.podspec', :modular_headers => true, :configurations => demoapp_pod_configs
+  pod 'MSPGoogleAdapter', :path => 'MSPGoogleAdapter.podspec', :modular_headers => true, :configurations => demoapp_pod_configs
+  pod 'MSPFacebookAdapter', :path => 'MSPFacebookAdapter.podspec', :modular_headers => true, :configurations => demoapp_pod_configs
+  pod 'UnityAdapter', :path => 'UnityAdapter.podspec', :modular_headers => true, :configurations => demoapp_pod_configs
+  pod 'InmobiAdapter', :path => 'InmobiAdapter.podspec', :modular_headers => true, :configurations => demoapp_pod_configs
+  pod 'MobilefuseAdapter', :path => 'MobilefuseAdapter.podspec', :modular_headers => true, :configurations => demoapp_pod_configs
+  pod 'MintegralAdapter', :path => 'MintegralAdapter.podspec', :modular_headers => true, :configurations => demoapp_pod_configs
+  pod 'PubmaticAdapter', :path => 'PubmaticAdapter.podspec', :modular_headers => true, :configurations => demoapp_pod_configs
+  pod 'AmazonAdapter', :path => 'AmazonAdapter.podspec', :modular_headers => true, :configurations => demoapp_pod_configs
   pod 'SwiftProtobuf', '1.30.0', :modular_headers => true, :configurations => demoapp_pod_configs
-  pod 'MSPSharedLibraries', :podspec => 'Podspecs/MSPSharedLibraries.podspec', :modular_headers => true, :configurations => demoapp_pod_configs
+  pod 'MSPSharedLibraries', :path => 'MSPSharedLibraries.podspec', :modular_headers => true, :configurations => demoapp_pod_configs
 end
 
 post_install do |installer|

@@ -4,12 +4,12 @@ Pod::Spec.new do |spec|
 
   
 
-  spec.name         = "MobilefuseAdapter"
+  spec.name         = "PubmaticAdapter"
   spec.version      = "0.0.92"
-  spec.summary      = "an adapter for Mobilefuse SDK"
-  spec.description  = "an adapter for Mobilefuse SDK for MSP C2S"
+  spec.summary      = "an adapter for Pubmatic SDK"
+  spec.description  = "an adapter for Pubmatic SDK for MSP C2S"
 
-  spec.homepage     = "https://github.com/aimsp/msp-ios-sdk/MobilefuseAdapter"
+  spec.homepage     = "https://github.com/aimsp/msp-ios-sdk/MetaAdapter"
  
   spec.license      = "Copyright"
   
@@ -43,12 +43,13 @@ Pod::Spec.new do |spec|
   spec.swift_version = '5.0'
   spec.requires_arc  = true
 
-  spec.vendored_frameworks = 'Build/XCFrameworks/MobilefuseAdapter.xcframework'
+  spec.vendored_frameworks = "Build/XCFrameworks/PubmaticAdapter.xcframework"
 
-  spec.dependency 'MobileFuseSDK', '1.8.2'
+  spec.dependency 'OpenWrapSDK', '4.0.0'
   spec.dependency 'MSPSharedLibraries'
 
   spec.static_framework = true
+spec.pod_target_xcconfig = { 'BUILD_LIBRARY_FOR_DISTRIBUTION' => 'YES' }
   # ――― Resources ―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
   #
   #  A list of resources included with the Pod. These are copied into the
