@@ -164,6 +164,15 @@ post_install do |installer|
       config.build_settings['OTHER_SWIFT_FLAGS'] = config.build_settings['OTHER_SWIFT_FLAGS'].to_s.gsub(/\s*-no-verify-emitted-module-interface\s*/, '').strip
       config.build_settings['OTHER_SWIFT_FLAGS'] << ' -no-verify-emitted-module-interface' unless config.build_settings['OTHER_SWIFT_FLAGS'].include?('-no-verify-emitted-module-interface')
 
+      # --- Disable BUILD_LIBRARY_FOR_DISTRIBUTION for Kingfisher ---
+      # Fix SwiftVerifyEmittedModuleInterface error: "underlying Objective-C module 'Kingfisher' not found"
+      # Kingfisher is a third-party pod and should not generate .swiftinterface files
+      if target.name == "Kingfisher"
+        puts "⚙️  [post_install] Disabling BUILD_LIBRARY_FOR_DISTRIBUTION for Kingfisher"
+        config.build_settings["BUILD_LIBRARY_FOR_DISTRIBUTION"] = "NO"
+        config.build_settings["SWIFT_EMIT_MODULE_INTERFACE"] = "NO"
+      end
+      
       # --- Enable Swift module generation for Shimmer ---
       # Fix "no such module 'Shimmer'" during XCFramework archive
       # Enable Swift import for Shimmer (Obj-C pod) by generating Shimmer.swiftmodule
@@ -176,11 +185,18 @@ post_install do |installer|
     end
     
     # Remove SwiftVerifyEmittedModuleInterface build phases from Pods targets
+    # Especially important for Kingfisher to prevent interface verification errors
     target.build_phases.each do |phase|
       if phase.respond_to?(:name) && phase.name == 'SwiftVerifyEmittedModuleInterface'
+        if target.name == "Kingfisher"
+          puts "⚙️  [post_install] Removing SwiftVerifyEmittedModuleInterface build phase for Kingfisher"
+        end
         target.build_phases.delete(phase)
       elsif phase.is_a?(Xcodeproj::Project::Object::PBXShellScriptBuildPhase)
         if phase.shell_script && phase.shell_script.include?('SwiftVerifyEmittedModuleInterface')
+          if target.name == "Kingfisher"
+            puts "⚙️  [post_install] Removing SwiftVerifyEmittedModuleInterface script phase for Kingfisher"
+          end
           target.build_phases.delete(phase)
         end
       end
