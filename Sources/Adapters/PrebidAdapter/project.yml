@@ -29,24 +29,21 @@ targets:
     dependencies:
       - framework: ../../../Build/XCFrameworks/MSPiOSCore.xcframework
         embed: false
+      - framework: ../../Core/MSPOMSDK/OMSDK_Newsbreak1.xcframework
+        embed: false
       - framework: ../../Core/MSPSharedLibraries/PrebidMobile.xcframework
         embed: false
     settings:
       base:
-        # CRITICAL: Override PODS_ROOT and PODS_PODFILE_DIR_PATH from xcconfig
-        PODS_ROOT: $(SRCROOT)/../../../Pods
-        PODS_PODFILE_DIR_PATH: $(SRCROOT)/../../..
+        BUILD_LIBRARY_FOR_DISTRIBUTION: YES
+        SKIP_INSTALL: NO
         
-        # Framework Search Paths - Include PrebidMobile and MSPiOSCore XCFrameworks
-        # PrebidAdapter depends on PrebidMobile and MSPiOSCore, which are located in MSPSharedLibraries
-        # Xcode will automatically resolve the correct architecture slice from the XCFramework
+        # Framework Search Paths - XCFrameworks only
         FRAMEWORK_SEARCH_PATHS:
           - $(inherited)
-          - $(SRCROOT)/../../../Build/XCFrameworks/MSPiOSCore.xcframework
-          - $(SRCROOT)/../../Core/MSPSharedLibraries/PrebidMobile.xcframework
-    configFiles:
-      Debug: "../../../Pods/Target Support Files/Pods-PrebidAdapter/Pods-PrebidAdapter.debug.xcconfig"
-      Release: "../../../Pods/Target Support Files/Pods-PrebidAdapter/Pods-PrebidAdapter.release.xcconfig"
+          - $(SRCROOT)/../../../Build/XCFrameworks
+          - $(SRCROOT)/../../Core/MSPOMSDK
+          - $(SRCROOT)/../../Core/MSPSharedLibraries
 
 schemes:
   PrebidAdapter:
