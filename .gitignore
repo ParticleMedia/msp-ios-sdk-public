@@ -78,6 +78,9 @@ Build/Archives/*
 # Ignore adapter XCFrameworks (no longer used - adapters are source-only)
 Build/XCFrameworks/*Adapter*
 
+# Ignore downloaded Kingfisher source files (downloaded via prepare_command during pod install)
+ThirdParty/MSPKingfisher/Sources/
+
 # Ignore all XCFrameworks by default, then whitelist MSP Core modules
 **/*.xcframework
 # Internal SDK XCFrameworks (must be committed)

@@ -49,7 +49,7 @@ Pod::Spec.new do |spec|
   spec.dependency 'MSPOMSDK'
   spec.dependency 'MSPiOSCore'
   spec.dependency 'NovaCore'
-  spec.dependency 'Kingfisher'
+  spec.dependency 'MSPKingfisher'
   spec.dependency 'SnapKit'
   # Kingfisher and SnapKit are now direct pod dependencies for source compilation
 
