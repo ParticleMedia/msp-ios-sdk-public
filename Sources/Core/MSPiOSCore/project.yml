@@ -24,9 +24,8 @@ targets:
           - "MSPiOSCore.docc/**"
     settings:
       base:
-        # CRITICAL: Override PODS_ROOT and PODS_PODFILE_DIR_PATH from xcconfig
-        PODS_ROOT: $(SRCROOT)/../../../Pods
-        PODS_PODFILE_DIR_PATH: $(SRCROOT)/../../..
+        BUILD_LIBRARY_FOR_DISTRIBUTION: YES
+        SKIP_INSTALL: NO
         
         # Framework Search Paths
         # MSPiOSCore is a core module with no external framework dependencies

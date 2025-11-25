@@ -27,51 +27,16 @@ targets:
           - "**/*.spec.swift"
     settings:
       base:
-        # CRITICAL: Override PODS_ROOT and PODS_PODFILE_DIR_PATH from xcconfig
-        PODS_ROOT: $(SRCROOT)/../../../Pods
-        PODS_PODFILE_DIR_PATH: $(SRCROOT)/../../..
+        BUILD_LIBRARY_FOR_DISTRIBUTION: YES
+        SKIP_INSTALL: NO
         
         # Module-specific Swift flags for module interface verification
         OTHER_SWIFT_FLAGS: $(inherited) -no-verify-emitted-module-interface
         
         # Framework Search Paths - Include OMSDK_Newsbreak1.xcframework
-        FRAMEWORK_SEARCH_PATHS: $(inherited) $(SRCROOT)/OMSDK_Newsbreak1.xcframework
-    configFiles:
-    configFiles:
-      Debug: "../../../Pods/Target Support Files/Pods-MSPOMSDK/Pods-MSPOMSDK.debug.xcconfig"
-      Release: "../../../Pods/Target Support Files/Pods-MSPOMSDK/Pods-MSPOMSDK.release.xcconfig"
-    prebuildScripts:
-      - name: "[CP] Check Pods Manifest.lock"
-        script: |
-          if [ -z "${PODS_PODFILE_DIR_PATH}" ] || [ -z "${PODS_ROOT}" ]; then
-            echo "error: CocoaPods environment variables are not set." >&2
-            exit 1
-          fi
-          if [ ! -e "${PODS_ROOT}/Manifest.lock" ] || [ ! -e "${PODS_PODFILE_DIR_PATH}/Podfile.lock" ]; then
-            echo "error: Run 'pod install' to generate Pods/Manifest.lock." >&2
-            exit 1
-          fi
-          if ! diff "${PODS_PODFILE_DIR_PATH}/Podfile.lock" "${PODS_ROOT}/Manifest.lock" >/dev/null; then
-            echo "error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation." >&2
-            exit 1
-          fi
-        shell: /bin/sh
-        inputFiles:
-          - ${PODS_PODFILE_DIR_PATH}/Podfile.lock
-          - ${PODS_ROOT}/Manifest.lock
-    postbuildScripts:
-      - name: "[CP] Copy Pods Resources"
-        script: |
-          if [ -f "${PODS_ROOT}/Target Support Files/Pods-MSPOMSDK/Pods-MSPOMSDK-resources.sh" ]; then
-            "${PODS_ROOT}/Target Support Files/Pods-MSPOMSDK/Pods-MSPOMSDK-resources.sh"
-          fi
-        shell: /bin/sh
-      - name: "[CP] Embed Pods Frameworks"
-        script: |
-          if [ -f "${PODS_ROOT}/Target Support Files/Pods-MSPOMSDK/Pods-MSPOMSDK-frameworks.sh" ]; then
-            "${PODS_ROOT}/Target Support Files/Pods-MSPOMSDK/Pods-MSPOMSDK-frameworks.sh"
-          fi
-        shell: /bin/sh
+        FRAMEWORK_SEARCH_PATHS:
+          - $(inherited)
+          - $(SRCROOT)/OMSDK_Newsbreak1.xcframework
 
 schemes:
   MSPOMSDK:
