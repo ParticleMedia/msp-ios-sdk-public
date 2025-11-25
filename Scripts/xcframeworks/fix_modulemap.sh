@@ -44,17 +44,35 @@ find "$XCFRAMEWORK_PATH" -type d -name "*.framework" | while read -r framework_d
     # Read current modulemap
     CURRENT_CONTENT=$(cat "$modulemap")
     
-    # Check if link directives already exist
-    if echo "$CURRENT_CONTENT" | grep -q "link \""; then
-        echo "  Modulemap already has link directives, skipping"
-        continue
+    # Check if modulemap already has simplified structure (no .Swift submodule)
+    if ! echo "$CURRENT_CONTENT" | grep -q "module $MODULE_NAME.Swift"; then
+        # Already simplified, but check if we need to add/update link directives
+        if [[ ${#DEPENDENCIES[@]} -gt 0 ]]; then
+            # Check if all dependencies are already linked
+            ALL_LINKED=true
+            for dep in "${DEPENDENCIES[@]}"; do
+                if ! echo "$CURRENT_CONTENT" | grep -q "link \"$dep\""; then
+                    ALL_LINKED=false
+                    break
+                fi
+            done
+            if [[ "$ALL_LINKED" == "true" ]]; then
+                echo "  Modulemap already simplified with all link directives, skipping"
+                continue
+            fi
+        else
+            # No dependencies and already simplified, skip
+            echo "  Modulemap already simplified, skipping"
+            continue
+        fi
     fi
     
     # Parse existing modulemap to preserve structure
     # Extract umbrella header line if present
     UMBRELLA_HEADER=$(echo "$CURRENT_CONTENT" | grep -E "umbrella header" | sed -E 's/.*umbrella header "([^"]+)".*/\1/' || echo "$MODULE_NAME.h")
     
-    # Create new modulemap with link directives, preserving existing structure
+    # Create simplified modulemap with link directives (no .Swift submodule)
+    # This avoids "underlying Objective-C module not found" errors
     {
         echo "framework module $MODULE_NAME {"
         if [[ -n "$UMBRELLA_HEADER" ]]; then
@@ -72,14 +90,13 @@ find "$XCFRAMEWORK_PATH" -type d -name "*.framework" | while read -r framework_d
         fi
         
         echo "}"
-        echo ""
-        echo "module $MODULE_NAME.Swift {"
-        echo "  header \"$MODULE_NAME-Swift.h\""
-        echo "  requires objc"
-        echo "}"
     } > "$modulemap.tmp"
     
     mv "$modulemap.tmp" "$modulemap"
-    echo "  ✅ Fixed modulemap with dependencies: ${DEPENDENCIES[*]}"
+    if [[ ${#DEPENDENCIES[@]} -gt 0 ]]; then
+        echo "  ✅ Fixed modulemap with dependencies: ${DEPENDENCIES[*]}"
+    else
+        echo "  ✅ Fixed modulemap (simplified, no dependencies)"
+    fi
 done
 

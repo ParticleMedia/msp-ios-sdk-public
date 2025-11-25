@@ -295,6 +295,12 @@ fi
 
 log_success "XCFramework created: $XCFRAMEWORK_OUTPUT"
 
+# Remove precompiled .swiftmodule binary files to avoid "module was built in directory X but now resides in directory Y" errors
+# Keep only .swiftinterface files for interface-based module resolution
+log_step "Removing precompiled .swiftmodule binary files"
+find "$XCFRAMEWORK_OUTPUT" -type f -name "*.swiftmodule" ! -name "*.swiftinterface" ! -name "*.swiftdoc" ! -name "*.abi.json" -delete 2>/dev/null || true
+log_info "  Removed binary .swiftmodule files (keeping .swiftinterface only)"
+
 # Fix module.modulemap to include link directives for embedded third-party frameworks
 log_step "Fixing module.modulemap with link directives"
 # Use ROOT_DIR to find fix_modulemap.sh (same directory as build_module.sh)
