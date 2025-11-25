@@ -96,15 +96,23 @@ Pod::Spec.new do |spec|
   spec.requires_arc  = true
 
   spec.vendored_frameworks = "Build/XCFrameworks/MSPCore.xcframework"
+  spec.module_name = 'MSPCore'
 
   spec.dependency 'MSPSharedLibraries'
   spec.dependency 'PrebidAdapter'
-  spec.dependency 'SwiftProtobuf'
-  spec.dependency 'SnapKit'
-  spec.dependency 'lottie-ios'
+  # SwiftProtobuf, SnapKit, lottie-ios are now bundled in MSPCore.xcframework - removed as dependencies
 
   spec.static_framework = true
-spec.pod_target_xcconfig = { 'BUILD_LIBRARY_FOR_DISTRIBUTION' => 'YES' }
+
+  spec.pod_target_xcconfig = {
+    'BUILD_LIBRARY_FOR_DISTRIBUTION' => 'YES',
+    'FRAMEWORK_SEARCH_PATHS' => '$(inherited) $(PODS_ROOT)/../Build/XCFrameworks',
+    'SWIFT_INCLUDE_PATHS' => '$(inherited) $(PODS_ROOT)/../Build/XCFrameworks'
+  }
+  spec.user_target_xcconfig = {
+    'FRAMEWORK_SEARCH_PATHS' => '$(inherited) $(PODS_ROOT)/../Build/XCFrameworks',
+    'SWIFT_INCLUDE_PATHS' => '$(inherited) $(PODS_ROOT)/../Build/XCFrameworks'
+  }
 
 
 
