@@ -44,9 +44,13 @@ find "$XCFRAMEWORK_PATH" -type d -name "*.framework" | while read -r framework_d
     # Read current modulemap
     CURRENT_CONTENT=$(cat "$modulemap")
     
-    # Check if modulemap already has simplified structure (no .Swift submodule)
-    if ! echo "$CURRENT_CONTENT" | grep -q "module $MODULE_NAME.Swift"; then
-        # Already simplified, but check if we need to add/update link directives
+    # Check if modulemap already has pure Swift structure (no umbrella header, no .Swift submodule)
+    HAS_UMBRELLA=$(echo "$CURRENT_CONTENT" | grep -q "umbrella header" && echo "yes" || echo "no")
+    HAS_SWIFT_SUBMODULE=$(echo "$CURRENT_CONTENT" | grep -q "module $MODULE_NAME.Swift" && echo "yes" || echo "no")
+    
+    # Check if already pure Swift (no umbrella, no .Swift submodule)
+    if [[ "$HAS_UMBRELLA" == "no" ]] && [[ "$HAS_SWIFT_SUBMODULE" == "no" ]]; then
+        # Already pure Swift, but check if we need to add/update link directives
         if [[ ${#DEPENDENCIES[@]} -gt 0 ]]; then
             # Check if all dependencies are already linked
             ALL_LINKED=true
@@ -57,29 +61,21 @@ find "$XCFRAMEWORK_PATH" -type d -name "*.framework" | while read -r framework_d
                 fi
             done
             if [[ "$ALL_LINKED" == "true" ]]; then
-                echo "  Modulemap already simplified with all link directives, skipping"
+                echo "  Modulemap already pure Swift with all link directives, skipping"
                 continue
             fi
         else
-            # No dependencies and already simplified, skip
-            echo "  Modulemap already simplified, skipping"
+            # No dependencies and already pure Swift, skip
+            echo "  Modulemap already pure Swift, skipping"
             continue
         fi
     fi
     
-    # Parse existing modulemap to preserve structure
-    # Extract umbrella header line if present
-    UMBRELLA_HEADER=$(echo "$CURRENT_CONTENT" | grep -E "umbrella header" | sed -E 's/.*umbrella header "([^"]+)".*/\1/' || echo "$MODULE_NAME.h")
-    
-    # Create simplified modulemap with link directives (no .Swift submodule)
-    # This avoids "underlying Objective-C module not found" errors
+    # Create pure Swift modulemap (no umbrella header, no ObjC references)
+    # This is the correct structure for Swift-only frameworks
     {
         echo "framework module $MODULE_NAME {"
-        if [[ -n "$UMBRELLA_HEADER" ]]; then
-            echo "  umbrella header \"$UMBRELLA_HEADER\""
-        fi
         echo "  export *"
-        echo ""
         echo "  module * { export * }"
         
         # Add link directives for each dependency (if any)
@@ -94,9 +90,9 @@ find "$XCFRAMEWORK_PATH" -type d -name "*.framework" | while read -r framework_d
     
     mv "$modulemap.tmp" "$modulemap"
     if [[ ${#DEPENDENCIES[@]} -gt 0 ]]; then
-        echo "  ✅ Fixed modulemap with dependencies: ${DEPENDENCIES[*]}"
+        echo "  ✅ Fixed modulemap (pure Swift) with dependencies: ${DEPENDENCIES[*]}"
     else
-        echo "  ✅ Fixed modulemap (simplified, no dependencies)"
+        echo "  ✅ Fixed modulemap (pure Swift, no dependencies)"
     fi
 done
 
