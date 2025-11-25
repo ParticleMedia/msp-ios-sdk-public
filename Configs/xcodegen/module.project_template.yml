@@ -43,12 +43,21 @@ settings:
     
     # Module Configuration
     DEFINES_MODULE: YES
-    CLANG_ENABLE_MODULES: YES
-    SWIFT_INSTALL_OBJC_HEADER: YES
     
-    # Info.plist (auto-generated)
+    # Pure Swift Framework Settings (no ObjC bridging)
+    # Turn framework into PURE Swift framework (no ObjC bridging layer)
+    CLANG_ENABLE_MODULES: NO
+    SWIFT_INSTALL_OBJC_HEADER: NO
+    
+    # Prevent Xcode from generating <Module>.h umbrella header
     GENERATE_INFOPLIST_FILE: YES
     INFOPLIST_FILE: ""
+    SWIFT_OBJC_INTERFACE_HEADER_NAME: ""
+    SWIFT_OBJC_BRIDGING_HEADER: ""
+    
+    # Remove any leftover ObjC header exposure
+    PUBLIC_HEADERS_FOLDER_PATH: ""
+    PRIVATE_HEADERS_FOLDER_PATH: ""
     
     # Source root
     SRCROOT: $(PROJECT_DIR)
