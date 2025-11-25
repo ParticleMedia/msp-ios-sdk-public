@@ -1,0 +1,83 @@
+#!/bin/bash
+# ============================================================================
+# Fix module.modulemap for XCFramework
+# ============================================================================
+# Purpose: Add link directives for third-party dependencies to module maps
+# Usage:   ./Scripts/xcframeworks/fix_modulemap.sh <XCFrameworkPath> <ModuleName> [dependencies...]
+# ============================================================================
+
+set -euo pipefail
+
+XCFRAMEWORK_PATH="$1"
+MODULE_NAME="$2"
+shift 2
+DEPENDENCIES=("$@")
+
+if [[ ! -d "$XCFRAMEWORK_PATH" ]]; then
+    echo "Error: XCFramework not found: $XCFRAMEWORK_PATH"
+    exit 1
+fi
+
+# Find only the main module's module.modulemap files (not embedded frameworks)
+# Pattern: <XCFramework>/<platform>/<ModuleName>.framework/Modules/module.modulemap
+find "$XCFRAMEWORK_PATH" -type d -name "*.framework" | while read -r framework_dir; do
+    # Check if this is the main module's framework (not an embedded one)
+    framework_name=$(basename "$framework_dir" .framework)
+    
+    # Skip if this is an embedded framework (inside Frameworks/ subdirectory)
+    if echo "$framework_dir" | grep -q "/Frameworks/"; then
+        continue
+    fi
+    
+    # Only process if this matches our module name
+    if [[ "$framework_name" != "$MODULE_NAME" ]]; then
+        continue
+    fi
+    
+    modulemap="$framework_dir/Modules/module.modulemap"
+    if [[ ! -f "$modulemap" ]]; then
+        continue
+    fi
+    
+    echo "Fixing modulemap: $modulemap"
+    
+    # Read current modulemap
+    CURRENT_CONTENT=$(cat "$modulemap")
+    
+    # Check if link directives already exist
+    if echo "$CURRENT_CONTENT" | grep -q "link \""; then
+        echo "  Modulemap already has link directives, skipping"
+        continue
+    fi
+    
+    # Parse existing modulemap to preserve structure
+    # Extract umbrella header line if present
+    UMBRELLA_HEADER=$(echo "$CURRENT_CONTENT" | grep -E "umbrella header" | sed -E 's/.*umbrella header "([^"]+)".*/\1/' || echo "$MODULE_NAME.h")
+    
+    # Create new modulemap with link directives, preserving existing structure
+    {
+        echo "framework module $MODULE_NAME {"
+        if [[ -n "$UMBRELLA_HEADER" ]]; then
+            echo "  umbrella header \"$UMBRELLA_HEADER\""
+        fi
+        echo "  export *"
+        echo ""
+        echo "  module * { export * }"
+        
+        # Add link directives for each dependency
+        for dep in "${DEPENDENCIES[@]}"; do
+            echo "  link \"$dep\""
+        done
+        
+        echo "}"
+        echo ""
+        echo "module $MODULE_NAME.Swift {"
+        echo "  header \"$MODULE_NAME-Swift.h\""
+        echo "  requires objc"
+        echo "}"
+    } > "$modulemap.tmp"
+    
+    mv "$modulemap.tmp" "$modulemap"
+    echo "  ✅ Fixed modulemap with dependencies: ${DEPENDENCIES[*]}"
+done
+

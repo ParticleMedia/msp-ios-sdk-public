@@ -175,6 +175,86 @@ fi
 PRODUCT_NAME="${PRODUCT_NAME:-$MODULE_NAME}"
 log_info "Using PRODUCT_NAME: $PRODUCT_NAME (module: $MODULE_NAME)"
 
+# Embed third-party XCFrameworks into archives before creating XCFramework
+# This ensures all dependencies are available when the XCFramework is used
+log_step "Embedding third-party XCFrameworks into archives"
+
+# Function to embed a third-party XCFramework into a framework archive
+embed_thirdparty_xcframework() {
+    local archive_path="$1"
+    local thirdparty_xcf="$2"
+    local framework_path="$archive_path/Products/Library/Frameworks/$PRODUCT_NAME.framework"
+    
+    if [[ ! -d "$thirdparty_xcf" ]]; then
+        log_warn "Third-party XCFramework not found, skipping: $thirdparty_xcf"
+        return 0
+    fi
+    
+    # Create Frameworks directory inside the framework if it doesn't exist
+    mkdir -p "$framework_path/Frameworks"
+    
+    # Copy the XCFramework into the framework's Frameworks directory
+    local xcf_name=$(basename "$thirdparty_xcf")
+    if cp -R "$thirdparty_xcf" "$framework_path/Frameworks/$xcf_name"; then
+        log_info "  Embedded: $xcf_name"
+    else
+        log_warn "  Failed to embed: $xcf_name"
+    fi
+}
+
+# Determine which third-party frameworks this module needs
+THIRDPARTY_XCFS=()
+case "$MODULE_NAME" in
+    MSPCore)
+        THIRDPARTY_XCFS=(
+            "$ROOT_DIR/Sources/Core/ThirdParty/SwiftProtobuf/SwiftProtobuf.xcframework"
+            "$ROOT_DIR/Sources/Core/ThirdParty/SnapKit/SnapKit.xcframework"
+        )
+        ;;
+    NovaCore)
+        THIRDPARTY_XCFS=(
+            "$ROOT_DIR/Sources/Core/ThirdParty/Kingfisher/Kingfisher.xcframework"
+            "$ROOT_DIR/Sources/Core/ThirdParty/SnapKit/SnapKit.xcframework"
+            "$ROOT_DIR/Sources/Core/ThirdParty/Lottie/Lottie.xcframework"
+            "$ROOT_DIR/Sources/Core/ThirdParty/Shimmer/Shimmer.xcframework"
+        )
+        ;;
+    NovaAdapter)
+        THIRDPARTY_XCFS=(
+            "$ROOT_DIR/Sources/Core/ThirdParty/Kingfisher/Kingfisher.xcframework"
+            "$ROOT_DIR/Sources/Core/ThirdParty/SnapKit/SnapKit.xcframework"
+        )
+        ;;
+    UnityAdapter)
+        # UnityAdapter needs IronSource - check if wrapper exists
+        if [[ -d "$ROOT_DIR/Scripts/xcframeworks/output-temp/IronSourceSDKWrapper/Frameworks/IronSourceSDK.xcframework" ]]; then
+            THIRDPARTY_XCFS=(
+                "$ROOT_DIR/Scripts/xcframeworks/output-temp/IronSourceSDKWrapper/Frameworks/IronSourceSDK.xcframework"
+            )
+        fi
+        ;;
+    InmobiAdapter)
+        # InmobiAdapter needs InMobiSDK
+        if [[ -d "$ROOT_DIR/Scripts/xcframeworks/output-temp/InMobiSDKWrapper/Frameworks/InMobiSDK.xcframework" ]]; then
+            THIRDPARTY_XCFS=(
+                "$ROOT_DIR/Scripts/xcframeworks/output-temp/InMobiSDKWrapper/Frameworks/InMobiSDK.xcframework"
+            )
+        fi
+        ;;
+esac
+
+# Embed third-party XCFrameworks into both archives
+if [[ ${#THIRDPARTY_XCFS[@]} -gt 0 ]]; then
+    for thirdparty_xcf in "${THIRDPARTY_XCFS[@]}"; do
+        if [[ -d "$thirdparty_xcf" ]]; then
+            embed_thirdparty_xcframework "$IOS_ARCHIVE" "$thirdparty_xcf"
+            embed_thirdparty_xcframework "$SIMULATOR_ARCHIVE" "$thirdparty_xcf"
+        fi
+    done
+else
+    log_info "  No third-party XCFrameworks to embed for $MODULE_NAME"
+fi
+
 # Create XCFramework
 log_step "Creating XCFramework"
 # Use PRODUCT_NAME for XCFramework output name (matches framework name)
@@ -214,6 +294,37 @@ if [[ ! -d "$SWIFT_MODULE" ]] && [[ ! -f "$SWIFT_MODULE/arm64.swiftmodule" ]]; t
 fi
 
 log_success "XCFramework created: $XCFRAMEWORK_OUTPUT"
+
+# Fix module.modulemap to include link directives for embedded third-party frameworks
+log_step "Fixing module.modulemap with link directives"
+# Use ROOT_DIR to find fix_modulemap.sh (same directory as build_module.sh)
+FIX_MODULEMAP_SCRIPT="$ROOT_DIR/Scripts/xcframeworks/fix_modulemap.sh"
+if [[ -f "$FIX_MODULEMAP_SCRIPT" ]]; then
+    # Build list of third-party framework names from THIRDPARTY_XCFS
+    THIRDPARTY_NAMES=()
+    if [[ ${#THIRDPARTY_XCFS[@]} -gt 0 ]]; then
+        for thirdparty_xcf in "${THIRDPARTY_XCFS[@]}"; do
+            if [[ -d "$thirdparty_xcf" ]]; then
+                # Extract framework name from path (e.g., "SwiftProtobuf" from ".../SwiftProtobuf.xcframework")
+                FRAMEWORK_NAME=$(basename "$thirdparty_xcf" .xcframework)
+                THIRDPARTY_NAMES+=("$FRAMEWORK_NAME")
+            fi
+        done
+    fi
+    
+    if [[ ${#THIRDPARTY_NAMES[@]} -gt 0 ]]; then
+        log_info "  Adding link directives for: ${THIRDPARTY_NAMES[*]}"
+        if bash "$FIX_MODULEMAP_SCRIPT" "$XCFRAMEWORK_OUTPUT" "$PRODUCT_NAME" "${THIRDPARTY_NAMES[@]}"; then
+            log_success "  Module map fixed with link directives"
+        else
+            log_warn "  Failed to fix module map (non-fatal)"
+        fi
+    else
+        log_info "  No third-party frameworks to link"
+    fi
+else
+    log_warn "fix_modulemap.sh not found, skipping module map fix"
+fi
 
 # Special handling for NovaCore: Copy to NovaAdapter/ folder (legacy compatibility)
 # This ensures compatibility with scripts that expect NovaCore.xcframework in NovaAdapter/
