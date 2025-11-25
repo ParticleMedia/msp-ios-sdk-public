@@ -60,6 +60,7 @@ MSPGoogleAdapter/*.xcframework/
 !Sources/Core/ThirdParty/SnapKit/SnapKit.xcframework/
 !Sources/Core/ThirdParty/Lottie/Lottie.xcframework/
 !Sources/Core/ThirdParty/Shimmer/Shimmer.xcframework/
+!Sources/Core/ThirdParty/SwiftProtobuf/SwiftProtobuf.xcframework/
 Scripts/xcframeworks/output-temp/
 ExtractedFrameworks/
 

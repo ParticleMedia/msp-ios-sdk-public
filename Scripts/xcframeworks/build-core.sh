@@ -75,6 +75,28 @@ else
 fi
 
 # -----------------------------------------------------------
+# Step 1 — Build third-party XCFrameworks needed by core modules
+# -----------------------------------------------------------
+SWIFTPROTOBUF_XCFRAMEWORK="$ROOT_DIR/Sources/Core/ThirdParty/SwiftProtobuf/SwiftProtobuf.xcframework"
+if [[ ! -d "$SWIFTPROTOBUF_XCFRAMEWORK" ]]; then
+    log_step "Building SwiftProtobuf.xcframework..."
+    SWIFTPROTOBUF_BUILD_SCRIPT="$ROOT_DIR/Sources/Core/ThirdParty/SwiftProtobuf/build.sh"
+    if [[ -f "$SWIFTPROTOBUF_BUILD_SCRIPT" ]]; then
+        if bash "$SWIFTPROTOBUF_BUILD_SCRIPT"; then
+            log_success "SwiftProtobuf.xcframework built successfully"
+        else
+            log_error "Failed to build SwiftProtobuf.xcframework"
+            exit 1
+        fi
+    else
+        log_error "SwiftProtobuf build script not found: $SWIFTPROTOBUF_BUILD_SCRIPT"
+        exit 1
+    fi
+else
+    log_info "SwiftProtobuf.xcframework already exists, skipping build"
+fi
+
+# -----------------------------------------------------------
 # -----------------------------------------------------------
 # Build core modules in dependency order
 # PrebidAdapter is now included in CORE_MODULES array below
