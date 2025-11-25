@@ -107,11 +107,11 @@ target 'NovaCore' do
   #use_frameworks!
 
   # Pods for NovaAdapter
-  pod 'Kingfisher', '~> 7.0', :modular_headers => true
+  # Kingfisher, SnapKit, Shimmer are now provided via XCFrameworks - removed from Podfile
   #pod 'SDWebImage', '5.18.8', :modular_headers => true
   #pod 'SDWebImageWebPCoder', '0.14.2', :modular_headers => true
   #pod 'SnapKit', '~> 5.6.0', :modular_headers => true
-  pod 'Shimmer', :modular_headers => true
+  #pod 'Shimmer', :modular_headers => true
   pod 'MSPOMSDK', :path => 'MSPOMSDK.podspec', :modular_headers => true
   #pod 'DeviceKit', :modular_headers => true
   #pod 'NBDesignSystem', :git => 'https://github.com/ParticleMedia/LAFoundation', :branch => 'main', :commit => 'b94a948', :modular_headers => true
@@ -136,7 +136,7 @@ target 'MSPDemoApp' do
   pod 'MintegralAdapter', :path => 'MintegralAdapter.podspec', :modular_headers => true, :configurations => demoapp_pod_configs
   pod 'PubmaticAdapter', :path => 'PubmaticAdapter.podspec', :modular_headers => true, :configurations => demoapp_pod_configs
   pod 'AmazonAdapter', :path => 'AmazonAdapter.podspec', :modular_headers => true, :configurations => demoapp_pod_configs
-  pod 'SwiftProtobuf', '1.30.0', :modular_headers => true, :configurations => demoapp_pod_configs
+  # SwiftProtobuf is now provided via XCFramework in MSPCore - removed from Podfile
   pod 'MSPSharedLibraries', :path => 'MSPSharedLibraries.podspec', :modular_headers => true, :configurations => demoapp_pod_configs
 end
 
@@ -167,6 +167,18 @@ post_install do |installer|
         config.build_settings["DEFINES_MODULE"] = "YES"
         config.build_settings["CLANG_ENABLE_MODULES"] = "YES"
         config.build_settings["SWIFT_OBJC_BRIDGING_HEADER"] = ""
+      end
+    end
+    
+    # Remove SwiftVerifyEmittedModuleInterface build phases from Pods targets
+    target.build_phases.each do |phase|
+      if phase.respond_to?(:name) && phase.name == 'SwiftVerifyEmittedModuleInterface'
+        target.build_phases.delete(phase)
+      elsif phase.is_a?(Xcodeproj::Project::Object::PBXShellScriptBuildPhase)
+        if phase.shell_script && phase.shell_script.include?('SwiftVerifyEmittedModuleInterface')
+          target.build_phases.delete(phase)
+        end
+      end
     end
   end
   
@@ -180,15 +192,8 @@ post_install do |installer|
     File.symlink("Shimmer.modulemap", module_modulemap)
   end
   
-  # Remove SwiftVerifyEmittedModuleInterface build phases from Pods targets
-    target.build_phases.each do |phase|
-      if phase.respond_to?(:name) && phase.name == 'SwiftVerifyEmittedModuleInterface'
-        target.build_phases.delete(phase)
-      elsif phase.is_a?(Xcodeproj::Project::Object::PBXShellScriptBuildPhase)
-        if phase.shell_script && phase.shell_script.include?('SwiftVerifyEmittedModuleInterface')
-          target.build_phases.delete(phase)
-        end
-      end
-    end
-  end
+  # Note: Swift module resolution for vendored XCFrameworks is handled via:
+  # 1. FRAMEWORK_SEARCH_PATHS (already set in podspecs and xcconfig)
+  # 2. Swift compiler automatically finds module.modulemap in framework/Modules/
+  # 3. No need to add -I flags - they cause path mismatch errors
 end
