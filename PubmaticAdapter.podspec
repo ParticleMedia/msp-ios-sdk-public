@@ -46,6 +46,7 @@ Pod::Spec.new do |spec|
   spec.vendored_frameworks = "Build/XCFrameworks/PubmaticAdapter.xcframework"
 
   spec.dependency 'OpenWrapSDK', '4.0.0'
+  spec.dependency 'PrebidMobile'
   spec.dependency 'MSPSharedLibraries'
 
   spec.static_framework = true

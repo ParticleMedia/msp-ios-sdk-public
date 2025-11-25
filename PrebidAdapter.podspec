@@ -45,6 +45,7 @@ Pod::Spec.new do |spec|
 
   spec.vendored_frameworks = "Build/XCFrameworks/MSPPrebidAdapter.xcframework"
 
+  spec.dependency 'PrebidMobile'
   spec.dependency 'MSPSharedLibraries'
 
   spec.static_framework = true

@@ -46,6 +46,7 @@ Pod::Spec.new do |spec|
   spec.vendored_frameworks = "Build/XCFrameworks/MSPFacebookAdapter.xcframework"
 
   spec.dependency 'FBAudienceNetwork', '~> 6.15.0'
+  spec.dependency 'PrebidMobile'
   spec.dependency 'MSPSharedLibraries'
 
   spec.static_framework = true

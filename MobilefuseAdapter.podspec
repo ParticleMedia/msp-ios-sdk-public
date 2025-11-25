@@ -46,6 +46,7 @@ Pod::Spec.new do |spec|
   spec.vendored_frameworks = "Build/XCFrameworks/MobilefuseAdapter.xcframework"
 
   spec.dependency 'MobileFuseSDK', '1.8.2'
+  spec.dependency 'PrebidMobile'
   spec.dependency 'MSPSharedLibraries'
 
   spec.static_framework = true
