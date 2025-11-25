@@ -90,17 +90,18 @@ FAILED_MODULES=()
 for module in "${ADAPTER_MODULES[@]}"; do
     log_section "Building $module"
     
-    # Check if XCFramework already exists (idempotent)
+    # Determine PRODUCT_NAME
     PRODUCT_NAME="$module"
     if [[ "$module" == "PrebidAdapter" ]]; then
         PRODUCT_NAME="MSPPrebidAdapter"
     fi
     
+    # For Round 3, force rebuild all adapters to use new build system
+    # Remove existing XCFramework to ensure fresh build with new pipeline
     XCFRAMEWORK_OUTPUT="$ROOT_DIR/Build/XCFrameworks/$PRODUCT_NAME.xcframework"
     if [[ -d "$XCFRAMEWORK_OUTPUT" ]]; then
-        log_info "$PRODUCT_NAME.xcframework already exists. Skipping build."
-        ((SUCCESS_COUNT++))
-        continue
+        log_info "Removing existing $PRODUCT_NAME.xcframework for fresh rebuild..."
+        rm -rf "$XCFRAMEWORK_OUTPUT"
     fi
     
     if "$BUILD_MODULE_SCRIPT" "$module"; then

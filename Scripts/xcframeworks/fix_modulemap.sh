@@ -64,10 +64,12 @@ find "$XCFRAMEWORK_PATH" -type d -name "*.framework" | while read -r framework_d
         echo ""
         echo "  module * { export * }"
         
-        # Add link directives for each dependency
-        for dep in "${DEPENDENCIES[@]}"; do
-            echo "  link \"$dep\""
-        done
+        # Add link directives for each dependency (if any)
+        if [[ ${#DEPENDENCIES[@]} -gt 0 ]]; then
+            for dep in "${DEPENDENCIES[@]}"; do
+                echo "  link \"$dep\""
+            done
+        fi
         
         echo "}"
         echo ""
