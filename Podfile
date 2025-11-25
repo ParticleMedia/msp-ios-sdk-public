@@ -7,7 +7,7 @@ install! 'cocoapods',
          :generate_multiple_pod_projects => true,
          :integrate_targets => false
 
-project 'Sources/Adapters/PrebidAdapter/PrebidAdapter'
+project 'Sources/Adapters/MSPPrebidAdapter/MSPPrebidAdapter'
 project 'Sources/Adapters/MSPGoogleAdapter/MSPGoogleAdapter'
 project 'Sources/Core/MSPCore/MSPCore'
 project 'Examples/MSPDemoApp/MSPDemoApp', 'Debug' => :debug, 'Release' => :release
@@ -26,14 +26,14 @@ demoapp_pod_configs = %w[Debug Release]
 puts "[MSPDemoApp] Integrating CocoaPods dependencies for DemoApp target"
 
 
-target 'PrebidAdapter' do
-  project 'Sources/Adapters/PrebidAdapter/PrebidAdapter'
+target 'MSPPrebidAdapter' do
+  project 'Sources/Adapters/MSPPrebidAdapter/MSPPrebidAdapter'
   # Comment the next line if you don't want to use dynamic frameworks
   use_frameworks!
 
-  # Pods for PrebidAdapter
+  # Pods for MSPPrebidAdapter
 
-  target 'PrebidAdapterTests' do
+  target 'MSPPrebidAdapterTests' do
     # Pods for testing
   end
 
@@ -132,7 +132,7 @@ target 'MSPDemoApp' do
   
   # Adapter modules (source pods)
   pod 'NovaAdapter', :path => 'NovaAdapter.podspec', :configurations => demoapp_pod_configs
-  pod 'PrebidAdapter', :path => 'PrebidAdapter.podspec', :configurations => demoapp_pod_configs
+  pod 'MSPPrebidAdapter', :path => 'MSPPrebidAdapter.podspec', :configurations => demoapp_pod_configs
   pod 'MSPGoogleAdapter', :path => 'MSPGoogleAdapter.podspec', :configurations => demoapp_pod_configs
   pod 'MSPFacebookAdapter', :path => 'MSPFacebookAdapter.podspec', :configurations => demoapp_pod_configs
   pod 'UnityAdapter', :path => 'UnityAdapter.podspec', :configurations => demoapp_pod_configs

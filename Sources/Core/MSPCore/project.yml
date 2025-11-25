@@ -46,8 +46,8 @@ targets:
         embed: false
       - framework: ../../../Sources/Core/MSPOMSDK/OMSDK_Newsbreak1.xcframework
         embed: false
-      - framework: ../../../Build/XCFrameworks/MSPPrebidAdapter.xcframework
-        embed: false
+      # Note: MSPPrebidAdapter is now a source pod, not an XCFramework
+      # MSPCore.xcframework needs to be rebuilt to remove this XCFramework dependency
     settings:
       base:
         BUILD_LIBRARY_FOR_DISTRIBUTION: YES

@@ -75,10 +75,10 @@ let package = Package(
         .target(
             name: "MSPPrebidAdapter",
             dependencies: [
-                "MSPSharedLibraries"
-                // PrebidMobile would need to be added
+                "MSPSharedLibraries",
+                "MSPiOSCore"
             ],
-            path: "Sources/Adapters/PrebidAdapter/PrebidAdapter"
+            path: "Sources/Adapters/MSPPrebidAdapter/MSPPrebidAdapter"
         ),
         .target(
             name: "NovaAdapter",

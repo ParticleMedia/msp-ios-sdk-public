@@ -1,25 +1,25 @@
-# PrebidAdapter XcodeGen Project Specification
-# Uses shared template and adds PrebidAdapter-specific overrides
+# MSPPrebidAdapter XcodeGen Project Specification
+# Uses shared template and adds MSPPrebidAdapter-specific overrides
 # Template: Config/xcodegen/module.project_template.yml
 
 include:
   - ../../../Configs/xcodegen/module.project_template.yml
 
-name: PrebidAdapter
+name: MSPPrebidAdapter
 
 settings:
   base:
     # Product Configuration
     PRODUCT_NAME: MSPPrebidAdapter
-    PRODUCT_BUNDLE_IDENTIFIER: msp.PrebidAdapter
+    PRODUCT_BUNDLE_IDENTIFIER: msp.MSPPrebidAdapter
     PRODUCT_MODULE_NAME: MSPPrebidAdapter
 
 targets:
-  PrebidAdapter:
+  MSPPrebidAdapter:
     type: framework
     platform: iOS
     sources:
-      - path: PrebidAdapter
+      - path: MSPPrebidAdapter
         excludes:
           - "**/*.h"
           - "**/*.modulemap"
@@ -27,7 +27,7 @@ targets:
           - "**/Tests/**"
           - "**/*.test.swift"
           - "**/*.spec.swift"
-          - "PrebidAdapter.docc/**"
+          - "MSPPrebidAdapter.docc/**"
     dependencies:
       - framework: ../../../Build/XCFrameworks/MSPiOSCore.xcframework
         embed: false
@@ -48,10 +48,10 @@ targets:
           - $(SRCROOT)/../../Core/MSPSharedLibraries
 
 schemes:
-  PrebidAdapter:
+  MSPPrebidAdapter:
     build:
       targets:
-        PrebidAdapter: all
+        MSPPrebidAdapter: all
     run:
       config: Debug
     profile:

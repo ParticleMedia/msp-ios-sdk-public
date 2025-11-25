@@ -99,7 +99,7 @@ Pod::Spec.new do |spec|
   spec.module_name = 'MSPCore'
 
   spec.dependency 'MSPSharedLibraries'
-  spec.dependency 'PrebidAdapter'
+  spec.dependency 'MSPPrebidAdapter'
   # SwiftProtobuf, SnapKit, lottie-ios are now bundled in MSPCore.xcframework - removed as dependencies
 
   spec.static_framework = true
