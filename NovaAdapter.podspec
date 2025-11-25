@@ -49,7 +49,9 @@ Pod::Spec.new do |spec|
   spec.dependency 'MSPOMSDK'
   spec.dependency 'MSPiOSCore'
   spec.dependency 'NovaCore'
-  # Kingfisher, SnapKit are now bundled in NovaCore.xcframework - removed as dependencies
+  spec.dependency 'Kingfisher'
+  spec.dependency 'SnapKit'
+  # Kingfisher and SnapKit are now direct pod dependencies for source compilation
 
   spec.static_framework = true
 
