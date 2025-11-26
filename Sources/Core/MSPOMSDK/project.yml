@@ -41,7 +41,7 @@ targets:
           - $(SRCROOT)/OMSDK_Newsbreak1.xcframework
 
 schemes:
-  MSPOMSDK:
+  MSPOMSDK-XCFramework:
     build:
       targets:
         MSPOMSDK: all

@@ -41,10 +41,10 @@ targets:
           - $(inherited)
 
 schemes:
-  MSPiOSCore:
+  MSPiOSCore-XCFramework:
     build:
       targets:
-        MSPiOSCore: all
+        MSPiOSCore-XCFramework: all
     run:
       config: Debug
     profile:

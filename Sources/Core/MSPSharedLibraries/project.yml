@@ -44,7 +44,7 @@ targets:
           - $(SRCROOT)/../../../Build/XCFrameworks
 
 schemes:
-  MSPSharedLibraries:
+  MSPSharedLibraries-XCFramework:
     build:
       targets:
         MSPSharedLibraries: all

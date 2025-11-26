@@ -15,9 +15,9 @@ settings:
     PRODUCT_BUNDLE_IDENTIFIER: msp.NovaCore
     PRODUCT_MODULE_NAME: NovaCore
     
-    # Framework Search Paths - ONLY XCFramework paths, NO Pods
-    # Note: ThirdParty frameworks (Kingfisher, SnapKit, Lottie, Shimmer) are automatically
-    # added to FRAMEWORK_SEARCH_PATHS via the dependencies section, so we don't need to list them here
+    # Framework Search Paths - Core XCFrameworks only
+    # Third-party dependencies (Kingfisher, SnapKit, Lottie, Shimmer) are provided
+    # via Pods at application level, not as XCFrameworks
     FRAMEWORK_SEARCH_PATHS:
       - $(inherited)
       - $(SRCROOT)/../../../Build/XCFrameworks
@@ -39,21 +39,49 @@ targets:
     dependencies:
       - framework: ../MSPOMSDK/OMSDK_Newsbreak1.xcframework
         embed: false
-      - framework: ../ThirdParty/Kingfisher/Kingfisher.xcframework
-        embed: false
-      - framework: ../ThirdParty/SnapKit/SnapKit.xcframework
-        embed: false
-      - framework: ../ThirdParty/Lottie/Lottie.xcframework
-        embed: false
-      - framework: ../ThirdParty/Shimmer/Shimmer.xcframework
-        embed: false
+      # Third-party dependencies (Kingfisher, SnapKit, Lottie, Shimmer) are provided
+      # via Pods at application level. Core XCFrameworks use @_implementationOnly
+      # imports and do NOT embed these frameworks.
     settings:
       base:
         # Module-specific Swift flags
-        OTHER_SWIFT_FLAGS: $(inherited) -no-verify-emitted-module-interface
+        # Include paths for Pod modules (Kingfisher from MSPKingfisher) pre-built in shared DerivedData
+        # Using -Xcc -I to also add Clang header search paths for the underlying ObjC module
+        OTHER_SWIFT_FLAGS: >-
+          $(inherited) 
+          -no-verify-emitted-module-interface 
+          -Xcc -I$(SRCROOT)/../../../.generated/DerivedData/build-shared/Build/Products/Release-iphoneos/MSPKingfisher
+          -Xcc -I$(SRCROOT)/../../../.generated/DerivedData/build-shared/Build/Products/Release-iphonesimulator/MSPKingfisher
+        # Swift module search paths for Pod modules - uses $(PLATFORM_NAME) for platform-specific paths
+        # When building for iOS: Release-iphoneos, when building for Simulator: Release-iphonesimulator
+        SWIFT_INCLUDE_PATHS[sdk=iphoneos*]:
+          - $(inherited)
+          - $(SRCROOT)/../../../.generated/DerivedData/build-shared/Build/Products/Release-iphoneos/MSPKingfisher
+          - $(SRCROOT)/../../../.generated/DerivedData/build-shared/Build/Products/Release-iphoneos/SnapKit
+          - $(SRCROOT)/../../../.generated/DerivedData/build-shared/Build/Products/Release-iphoneos/lottie-ios
+          - $(SRCROOT)/../../../.generated/DerivedData/build-shared/Build/Products/Release-iphoneos/Shimmer
+        SWIFT_INCLUDE_PATHS[sdk=iphonesimulator*]:
+          - $(inherited)
+          - $(SRCROOT)/../../../.generated/DerivedData/build-shared/Build/Products/Release-iphonesimulator/MSPKingfisher
+          - $(SRCROOT)/../../../.generated/DerivedData/build-shared/Build/Products/Release-iphonesimulator/SnapKit
+          - $(SRCROOT)/../../../.generated/DerivedData/build-shared/Build/Products/Release-iphonesimulator/lottie-ios
+          - $(SRCROOT)/../../../.generated/DerivedData/build-shared/Build/Products/Release-iphonesimulator/Shimmer
+        # Header search paths for ObjC interop
+        HEADER_SEARCH_PATHS[sdk=iphoneos*]:
+          - $(inherited)
+          - $(SRCROOT)/../../../.generated/DerivedData/build-shared/Build/Products/Release-iphoneos/MSPKingfisher
+          - $(SRCROOT)/../../../.generated/DerivedData/build-shared/Build/Products/Release-iphoneos/SnapKit
+          - $(SRCROOT)/../../../.generated/DerivedData/build-shared/Build/Products/Release-iphoneos/lottie-ios
+          - $(SRCROOT)/../../../.generated/DerivedData/build-shared/Build/Products/Release-iphoneos/Shimmer
+        HEADER_SEARCH_PATHS[sdk=iphonesimulator*]:
+          - $(inherited)
+          - $(SRCROOT)/../../../.generated/DerivedData/build-shared/Build/Products/Release-iphonesimulator/MSPKingfisher
+          - $(SRCROOT)/../../../.generated/DerivedData/build-shared/Build/Products/Release-iphonesimulator/SnapKit
+          - $(SRCROOT)/../../../.generated/DerivedData/build-shared/Build/Products/Release-iphonesimulator/lottie-ios
+          - $(SRCROOT)/../../../.generated/DerivedData/build-shared/Build/Products/Release-iphonesimulator/Shimmer
 
 schemes:
-  NovaCore:
+  NovaCore-XCFramework:
     build:
       targets:
         NovaCore: all

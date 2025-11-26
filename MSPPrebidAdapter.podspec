@@ -23,8 +23,8 @@ Pod::Spec.new do |spec|
   spec.pod_target_xcconfig = {
     'BUILD_LIBRARY_FOR_DISTRIBUTION' => 'NO',
     'SWIFT_EMIT_MODULE_INTERFACE' => 'NO',
-    'FRAMEWORK_SEARCH_PATHS' => '$(inherited) $(PODS_ROOT)/../Build/XCFrameworks',
-    'SWIFT_INCLUDE_PATHS' => '$(inherited) $(PODS_ROOT)/../Build/XCFrameworks'
+    'FRAMEWORK_SEARCH_PATHS' => '$(inherited) $(PODS_ROOT)/../Build/XCFrameworks $(PODS_ROOT)/../Sources/Core/MSPSharedLibraries $(PODS_ROOT)/../Sources/Core/MSPSharedLibraries/PrebidMobile.xcframework/ios-arm64 $(PODS_ROOT)/../Sources/Core/MSPSharedLibraries/PrebidMobile.xcframework/ios-arm64_x86_64-simulator',
+    'SWIFT_INCLUDE_PATHS' => '$(inherited) $(PODS_ROOT)/../Build/XCFrameworks $(PODS_ROOT)/../Sources/Core/MSPSharedLibraries'
   }
 
   spec.user_target_xcconfig = {

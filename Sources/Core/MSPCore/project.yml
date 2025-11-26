@@ -30,43 +30,51 @@ targets:
     dependencies:
       - framework: ../../../Build/XCFrameworks/MSPiOSCore.xcframework
         embed: false
-      - framework: ../ThirdParty/Kingfisher/Kingfisher.xcframework
-        embed: false
-      - framework: ../ThirdParty/SnapKit/SnapKit.xcframework
-        embed: false
-      - framework: ../ThirdParty/Lottie/Lottie.xcframework
-        embed: false
-      - framework: ../ThirdParty/Shimmer/Shimmer.xcframework
-        embed: false
-      - framework: ../ThirdParty/SwiftProtobuf/SwiftProtobuf.xcframework
-        embed: false
       - framework: ../../../Build/XCFrameworks/MSPSharedLibraries.xcframework
         embed: false
       - framework: ../MSPSharedLibraries/PrebidMobile.xcframework
         embed: false
       - framework: ../../../Sources/Core/MSPOMSDK/OMSDK_Newsbreak1.xcframework
         embed: false
-      # Note: MSPPrebidAdapter is now a source pod, not an XCFramework
-      # MSPCore.xcframework needs to be rebuilt to remove this XCFramework dependency
+      # Third-party dependencies (Kingfisher, SnapKit, Lottie, Shimmer, SwiftProtobuf)
+      # are provided via Pods at application level. Core XCFrameworks use
+      # @_implementationOnly imports and do NOT embed these frameworks.
+      # MSPPrebidAdapter is now a source pod, not an XCFramework
+      # At build time, MSPPrebidAdapter will be available via workspace
+      # At app level, MSPPrebidAdapter is provided as a source pod
     settings:
       base:
         BUILD_LIBRARY_FOR_DISTRIBUTION: YES
         SKIP_INSTALL: NO
         
-        # Framework Search Paths - XCFrameworks only
+        # Framework Search Paths - Core XCFrameworks only
+        # Third-party dependencies are provided via Pods at application level
         FRAMEWORK_SEARCH_PATHS:
           - $(inherited)
-          - $(SRCROOT)/../ThirdParty/Kingfisher
-          - $(SRCROOT)/../ThirdParty/SnapKit
-          - $(SRCROOT)/../ThirdParty/Lottie
-          - $(SRCROOT)/../ThirdParty/Shimmer
-          - $(SRCROOT)/../ThirdParty/SwiftProtobuf
           - $(SRCROOT)/../../../Build/XCFrameworks
           - $(SRCROOT)/../MSPSharedLibraries
           - $(SRCROOT)/../MSPOMSDK
 
+        # Swift Include Paths for Pod modules - Platform-specific paths
+        # Pod modules are pre-built into shared DerivedData and injected via build script
+        SWIFT_INCLUDE_PATHS:
+          - $(inherited)
+          - $(SRCROOT)/../../../.generated/DerivedData/build-shared/Build/Products/Release-$(PLATFORM_NAME)/MSPKingfisher
+          - $(SRCROOT)/../../../.generated/DerivedData/build-shared/Build/Products/Release-$(PLATFORM_NAME)/SnapKit
+          - $(SRCROOT)/../../../.generated/DerivedData/build-shared/Build/Products/Release-$(PLATFORM_NAME)/lottie-ios
+          - $(SRCROOT)/../../../.generated/DerivedData/build-shared/Build/Products/Release-$(PLATFORM_NAME)/Shimmer
+          - $(SRCROOT)/../../../.generated/DerivedData/build-shared/Build/Products/Release-$(PLATFORM_NAME)/MSPPrebidAdapter
+          - $(SRCROOT)/../../../.generated/DerivedData/build-shared/Build/Products/Release-$(PLATFORM_NAME)/SwiftProtobuf
+        
+        HEADER_SEARCH_PATHS:
+          - $(inherited)
+          - $(SRCROOT)/../../../.generated/DerivedData/build-shared/Build/Products/Release-$(PLATFORM_NAME)/MSPPrebidAdapter
+          - $(SRCROOT)/../../../.generated/DerivedData/build-shared/Build/Products/Release-$(PLATFORM_NAME)/SwiftProtobuf
+        
+        OTHER_SWIFT_FLAGS: "-no-verify-emitted-module-interface"
+
 schemes:
-  MSPCore:
+  MSPCore-XCFramework:
     build:
       targets:
         MSPCore: all

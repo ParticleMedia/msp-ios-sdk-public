@@ -145,6 +145,9 @@ target 'MSPDemoApp' do
   pod 'MSPSharedLibraries', :path => 'MSPSharedLibraries.podspec', :configurations => demoapp_pod_configs
   # MSPKingfisher replaces official Kingfisher pod to avoid SwiftVerifyEmittedModuleInterface errors
   pod 'MSPKingfisher', :path => 'ThirdParty/MSPKingfisher/MSPKingfisher.podspec', :configurations => demoapp_pod_configs
+  # Lottie and Shimmer are needed by NovaCore at compile time
+  pod 'lottie-ios', '~> 4.2', :configurations => demoapp_pod_configs
+  pod 'Shimmer', :configurations => demoapp_pod_configs
 end
 
 post_install do |installer|
@@ -166,14 +169,14 @@ post_install do |installer|
       config.build_settings['OTHER_SWIFT_FLAGS'] = config.build_settings['OTHER_SWIFT_FLAGS'].to_s.gsub(/\s*-no-verify-emitted-module-interface\s*/, '').strip
       config.build_settings['OTHER_SWIFT_FLAGS'] << ' -no-verify-emitted-module-interface' unless config.build_settings['OTHER_SWIFT_FLAGS'].include?('-no-verify-emitted-module-interface')
 
-      # Note: Kingfisher-specific patching removed - now using KingfisherLocal wrapper
+      # Note: Kingfisher-specific patching removed - now using MSPKingfisher wrapper
       # which has BUILD_LIBRARY_FOR_DISTRIBUTION=NO set in its podspec
       
       # --- Enable Swift module generation for Shimmer ---
       # Fix "no such module 'Shimmer'" during XCFramework archive
       # Enable Swift import for Shimmer (Obj-C pod) by generating Shimmer.swiftmodule
       if target.name == "Shimmer"
-        puts "⚙️  [post_install] Enabling Swift module generation for Shimmer"
+        puts "[post_install] Enabling Swift module generation for Shimmer"
         config.build_settings["DEFINES_MODULE"] = "YES"
         config.build_settings["CLANG_ENABLE_MODULES"] = "YES"
         config.build_settings["SWIFT_OBJC_BRIDGING_HEADER"] = ""
@@ -190,6 +193,30 @@ post_install do |installer|
         end
       end
     end
+    
+    # --- Patch [CP] Copy XCFrameworks script to support MSP_SKIP_CP_XCFRAMEWORKS guard ---
+    # This allows Core XCFramework builds to skip the copy script when XCFrameworks don't exist yet
+    # The script will still run normally for MSPDemoApp builds when XCFrameworks are present
+    target.build_phases.each do |phase|
+      if phase.is_a?(Xcodeproj::Project::Object::PBXShellScriptBuildPhase)
+        if phase.name == '[CP] Copy XCFrameworks' || (phase.shell_script && phase.shell_script.include?('[CP] Copy XCFrameworks'))
+          # Check if guard is already present (idempotent)
+          unless phase.shell_script && phase.shell_script.include?('MSP_SKIP_CP_XCFRAMEWORKS')
+            guard_script = <<~SCRIPT
+              # MSP Guard: Skip [CP] Copy XCFrameworks during Core XCFramework builds
+              # This prevents rsync errors when XCFrameworks don't exist yet
+              if [ "$MSP_SKIP_CP_XCFRAMEWORKS" = "1" ]; then
+                echo "[MSP] Skipping [CP] Copy XCFrameworks because MSP_SKIP_CP_XCFRAMEWORKS=1"
+                exit 0
+              fi
+              
+            SCRIPT
+            phase.shell_script = guard_script + (phase.shell_script || '')
+            puts "[post_install] Added MSP_SKIP_CP_XCFRAMEWORKS guard to [CP] Copy XCFrameworks for #{target.name}"
+          end
+        end
+      end
+    end
   end
   
   # Create module.modulemap symlink for Shimmer to make it discoverable by Swift
@@ -198,7 +225,7 @@ post_install do |installer|
   shimmer_modulemap = File.join(shimmer_modulemap_dir, "Shimmer.modulemap")
   module_modulemap = File.join(shimmer_modulemap_dir, "module.modulemap")
   if File.exist?(shimmer_modulemap) && !File.exist?(module_modulemap)
-    puts "⚙️  [post_install] Creating module.modulemap symlink for Shimmer"
+    puts "[post_install] Creating module.modulemap symlink for Shimmer"
     File.symlink("Shimmer.modulemap", module_modulemap)
   end
   
