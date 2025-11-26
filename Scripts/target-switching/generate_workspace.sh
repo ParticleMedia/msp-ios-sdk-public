@@ -43,6 +43,7 @@ while IFS= read -r pkg_file; do
     PACKAGE_FILES+=("$pkg_file")
 done < <(find "$ROOT_DIR" -name Package.swift \
     ! -path '*/Pods/*' ! -path '*/DerivedData/*' ! -path '*/.build/*' \
+    ! -path '*/Sources/Wrappers/*' \
     -print | LC_ALL=C sort)
 
 PACKAGE_NAMES=()
@@ -50,7 +51,12 @@ PACKAGE_REL_PATHS=()
 for pkg in "${PACKAGE_FILES[@]}"; do
     pkg_dir="${pkg%/Package.swift}"
     pkg_name="$(basename "$pkg_dir")"
-    rel_path="${pkg_dir#$ROOT_DIR/}"
+    # Handle root Package.swift specially
+    if [[ "$pkg_dir" == "$ROOT_DIR" ]]; then
+        rel_path=""
+    else
+        rel_path="${pkg_dir#$ROOT_DIR/}"
+    fi
     PACKAGE_NAMES+=("$pkg_name")
     PACKAGE_REL_PATHS+=("$rel_path")
 done
@@ -131,24 +137,13 @@ YAML
         # SPM mode but no packages found
         echo "packages: {}"
     else
-        # SPM mode: include all discovered packages
-        echo "packages:"
-        # Sort package names for determinism
-        IFS=$'\n' sorted_packages=($(printf '%s\n' "${PACKAGE_NAMES[@]}" | LC_ALL=C sort))
-        for pkg_name in "${sorted_packages[@]}"; do
-            # Find corresponding path
-            for ((i=0; i<${#PACKAGE_NAMES[@]}; i++)); do
-                if [[ "${PACKAGE_NAMES[$i]}" == "$pkg_name" ]]; then
-                    rel="../${PACKAGE_REL_PATHS[$i]}"
-                    cat <<YAML
-  ${pkg_name}:
-    name: ${pkg_name}
-    path: ${rel}
+        # SPM mode: include ONLY the root msp-ios-sdk package
+        # All 16 products come from this single Package.swift
+        cat <<'YAML'
+packages:
+  msp-ios-sdk:
+    path: ../..
 YAML
-                    break
-                fi
-            done
-        done
     fi
 
     cat <<'YAML'
@@ -232,15 +227,12 @@ YAML
       Release: ../Configs/MSPDemoApp-Release-SPM.xcconfig
     dependencies:
 YAML
-        # Sort products for determinism
-        IFS=$'\n' sorted_products=($(printf '%s\n' "${SPM_APP_PRODUCTS[@]}" | LC_ALL=C sort))
-        for product in "${sorted_products[@]}"; do
-            if package_exists "$product"; then
-                cat <<YAML
-      - package: ${product}
+        # All products come from the root msp-ios-sdk package
+        for product in "${SPM_APP_PRODUCTS[@]}"; do
+            cat <<YAML
+      - package: msp-ios-sdk
         product: ${product}
 YAML
-            fi
         done
     fi
 
