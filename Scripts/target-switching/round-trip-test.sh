@@ -5,10 +5,12 @@
 # Purpose: Validates that switching between Pods and SPM modes works correctly
 #          by performing a full round-trip test: Pods → SPM → Pods
 #
-# Usage:   ./Scripts/target-switching/round-trip-test.sh [--skip-build]
+# Usage:   ./Scripts/target-switching/round-trip-test.sh [options]
 #
 # Options:
-#   --skip-build   Skip actual Xcode builds (only test mode switching)
+#   --skip-build      Skip actual Xcode builds (only test mode switching)
+#   --stress=N        Run N complete cycles (default: 1)
+#                     Example: --stress=3 runs Pods→SPM→Pods→SPM→Pods→SPM
 #
 # Exit codes:
 #   0 - Round-trip test passed
@@ -28,9 +30,34 @@ ensure_repo_root
 
 # Parse arguments
 SKIP_BUILD=false
-if [[ "${1:-}" == "--skip-build" ]]; then
-    SKIP_BUILD=true
-fi
+STRESS_CYCLES=1
+
+for arg in "$@"; do
+    case "$arg" in
+        --skip-build)
+            SKIP_BUILD=true
+            ;;
+        --stress=*)
+            STRESS_CYCLES="${arg#*=}"
+            if ! [[ "$STRESS_CYCLES" =~ ^[0-9]+$ ]] || [[ "$STRESS_CYCLES" -lt 1 ]]; then
+                log_error "Invalid --stress value: $STRESS_CYCLES (must be positive integer)"
+                exit 1
+            fi
+            ;;
+        -h|--help)
+            echo "Usage: $0 [--skip-build] [--stress=N]"
+            echo ""
+            echo "Options:"
+            echo "  --skip-build   Skip actual Xcode builds"
+            echo "  --stress=N     Run N complete cycles (default: 1)"
+            exit 0
+            ;;
+        *)
+            log_error "Unknown option: $arg"
+            exit 1
+            ;;
+    esac
+done
 
 # ============================================================================
 # Test Configuration
@@ -171,10 +198,56 @@ validate_spm_mode() {
 # Main Test Sequence
 # ============================================================================
 
+run_single_cycle() {
+    local cycle_num="$1"
+    local stage_prefix="Cycle $cycle_num"
+    local failed=0
+    
+    log_section "$stage_prefix: Pods → SPM → Pods"
+    
+    # Switch to Pods
+    if ! run_stage "$stage_prefix.1 Switch to Pods" "$SCRIPT_DIR/switch-target.sh pods"; then
+        ((failed++))
+    fi
+    
+    # Validate Pods mode
+    if ! run_stage "$stage_prefix.2 Validate Pods Mode" "validate_pods_mode"; then
+        ((failed++))
+    fi
+    
+    # Build Pods app
+    if ! run_stage "$stage_prefix.3 Build Pods App" "build_pods_app"; then
+        ((failed++))
+    fi
+    
+    # Switch to SPM
+    if ! run_stage "$stage_prefix.4 Switch to SPM" "$SCRIPT_DIR/switch-target.sh spm"; then
+        ((failed++))
+    fi
+    
+    # Validate SPM mode
+    if ! run_stage "$stage_prefix.5 Validate SPM Mode" "validate_spm_mode"; then
+        ((failed++))
+    fi
+    
+    # Build SPM app
+    if ! run_stage "$stage_prefix.6 Build SPM App" "build_spm_app"; then
+        ((failed++))
+    fi
+    
+    return $failed
+}
+
 main() {
-    log_title "Round-Trip Test: Pods → SPM → Pods"
+    local cycle_label=""
+    if [[ "$STRESS_CYCLES" -gt 1 ]]; then
+        cycle_label=" (Stress Test: $STRESS_CYCLES cycles)"
+    fi
+    
+    log_title "Round-Trip Test: Pods → SPM → Pods$cycle_label"
     log_info "Repository: $ROOT_DIR"
     log_info "Report: $REPORT_FILE"
+    log_info "Cycles: $STRESS_CYCLES"
     
     if [[ "$SKIP_BUILD" == "true" ]]; then
         log_warn "Build steps will be skipped (--skip-build)"
@@ -183,53 +256,36 @@ main() {
     echo "" >> "$REPORT_FILE"
     echo "============================================================" >> "$REPORT_FILE"
     echo "Round-Trip Test Started: $(date)" >> "$REPORT_FILE"
+    echo "Stress Cycles: $STRESS_CYCLES" >> "$REPORT_FILE"
     echo "============================================================" >> "$REPORT_FILE"
     
-    local failed=0
+    local total_failed=0
     
-    # Stage 1: Switch to Pods
-    if ! run_stage "1. Switch to Pods" "$SCRIPT_DIR/switch-target.sh pods"; then
-        ((failed++))
+    # Run stress cycles
+    for ((cycle=1; cycle<=STRESS_CYCLES; cycle++)); do
+        log_title "━━━ Starting Cycle $cycle of $STRESS_CYCLES ━━━"
+        
+        if ! run_single_cycle "$cycle"; then
+            cycle_errors=$?
+            ((total_failed += cycle_errors))
+            log_warn "Cycle $cycle completed with $cycle_errors error(s)"
+        else
+            log_success "Cycle $cycle completed successfully"
+        fi
+    done
+    
+    # Final validation: ensure we end in Pods mode
+    log_section "Final State Verification"
+    if ! run_stage "Final: Switch to Pods" "$SCRIPT_DIR/switch-target.sh pods"; then
+        ((total_failed++))
     fi
     
-    # Stage 2: Validate Pods mode
-    if ! run_stage "2. Validate Pods Mode" "validate_pods_mode"; then
-        ((failed++))
+    if ! run_stage "Final: Validate Pods Mode" "validate_pods_mode"; then
+        ((total_failed++))
     fi
     
-    # Stage 3: Build Pods app
-    if ! run_stage "3. Build Pods App" "build_pods_app"; then
-        ((failed++))
-    fi
-    
-    # Stage 4: Switch to SPM
-    if ! run_stage "4. Switch to SPM" "$SCRIPT_DIR/switch-target.sh spm"; then
-        ((failed++))
-    fi
-    
-    # Stage 5: Validate SPM mode
-    if ! run_stage "5. Validate SPM Mode" "validate_spm_mode"; then
-        ((failed++))
-    fi
-    
-    # Stage 6: Build SPM app
-    if ! run_stage "6. Build SPM App" "build_spm_app"; then
-        ((failed++))
-    fi
-    
-    # Stage 7: Switch back to Pods
-    if ! run_stage "7. Switch back to Pods" "$SCRIPT_DIR/switch-target.sh pods"; then
-        ((failed++))
-    fi
-    
-    # Stage 8: Validate Pods mode again
-    if ! run_stage "8. Validate Pods Mode (Final)" "validate_pods_mode"; then
-        ((failed++))
-    fi
-    
-    # Stage 9: Build Pods app again
-    if ! run_stage "9. Build Pods App (Final)" "build_pods_app"; then
-        ((failed++))
+    if ! run_stage "Final: Build Pods App" "build_pods_app"; then
+        ((total_failed++))
     fi
     
     # Summary
@@ -254,15 +310,16 @@ main() {
     echo "" >> "$REPORT_FILE"
     echo "============================================================" >> "$REPORT_FILE"
     echo "Round-Trip Test Completed: $(date)" >> "$REPORT_FILE"
-    echo "Total Failures: $failed" >> "$REPORT_FILE"
+    echo "Stress Cycles Completed: $STRESS_CYCLES" >> "$REPORT_FILE"
+    echo "Total Failures: $total_failed" >> "$REPORT_FILE"
     echo "============================================================" >> "$REPORT_FILE"
     
-    if [[ $failed -eq 0 ]]; then
-        log_success "Round-trip test PASSED!"
+    if [[ $total_failed -eq 0 ]]; then
+        log_success "Round-trip test PASSED! ($STRESS_CYCLES cycle(s))"
         log_info "Full report: $REPORT_FILE"
         exit 0
     else
-        log_error "Round-trip test FAILED with $failed error(s)"
+        log_error "Round-trip test FAILED with $total_failed error(s) across $STRESS_CYCLES cycle(s)"
         log_info "Full report: $REPORT_FILE"
         exit 1
     fi

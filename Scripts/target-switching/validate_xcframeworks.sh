@@ -91,6 +91,91 @@ validate_adapter_source() {
 }
 
 # ============================================================================
+# Version Verification Functions
+# ============================================================================
+
+# Get version from CocoaPods lockfile
+get_pods_version() {
+    local pod_name="$1"
+    local lockfile="$ROOT_DIR/Podfile.lock"
+    
+    if [[ ! -f "$lockfile" ]]; then
+        echo "unknown"
+        return
+    fi
+    
+    # Extract version from Podfile.lock (format: "  - PodName (x.y.z)")
+    local version
+    version=$(grep -E "^  - ${pod_name} \\(" "$lockfile" 2>/dev/null | head -1 | sed -E 's/.*\(([0-9.]+)\).*/\1/' || echo "unknown")
+    echo "$version"
+}
+
+# Get version from Package.resolved
+get_spm_version() {
+    local package_name="$1"
+    local resolved_file="$ROOT_DIR/Examples/MSPDemoApp/MSPDemoApp.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved"
+    
+    # Also check alternative locations
+    if [[ ! -f "$resolved_file" ]]; then
+        resolved_file="$ROOT_DIR/Package.resolved"
+    fi
+    
+    if [[ ! -f "$resolved_file" ]]; then
+        echo "not-resolved"
+        return
+    fi
+    
+    # Extract version from Package.resolved (JSON format v2)
+    local version
+    version=$(grep -A 5 "\"identity\" : \"${package_name}\"" "$resolved_file" 2>/dev/null | grep -E '"version"' | sed -E 's/.*"version"[[:space:]]*:[[:space:]]*"([^"]+)".*/\1/' | head -1 || echo "unknown")
+    echo "$version"
+}
+
+# Validate version match between Pods and SPM
+validate_dependency_versions() {
+    local errors=0
+    
+    log_section "Dependency Version Verification"
+    log_info "Comparing CocoaPods and SPM dependency versions..."
+    
+    # SwiftProtobuf version check
+    local pods_swiftprotobuf spm_swiftprotobuf
+    pods_swiftprotobuf=$(get_pods_version "SwiftProtobuf")
+    spm_swiftprotobuf=$(get_spm_version "swift-protobuf")
+    
+    if [[ "$pods_swiftprotobuf" != "unknown" ]] && [[ "$spm_swiftprotobuf" != "not-resolved" ]] && [[ "$spm_swiftprotobuf" != "unknown" ]]; then
+        if [[ "$pods_swiftprotobuf" == "$spm_swiftprotobuf" ]]; then
+            log_success "✓ SwiftProtobuf: Pods=$pods_swiftprotobuf, SPM=$spm_swiftprotobuf (match)"
+        else
+            log_error "❌ SwiftProtobuf version mismatch: Pods=$pods_swiftprotobuf, SPM=$spm_swiftprotobuf"
+            log_error "   Update Package.swift to use exact: \"$pods_swiftprotobuf\""
+            ((errors++))
+        fi
+    else
+        log_warn "⚠ SwiftProtobuf: Pods=$pods_swiftprotobuf, SPM=$spm_swiftprotobuf (unable to verify)"
+    fi
+    
+    # Lottie version check
+    local pods_lottie spm_lottie
+    pods_lottie=$(get_pods_version "lottie-ios")
+    spm_lottie=$(get_spm_version "lottie-ios")
+    
+    if [[ "$pods_lottie" != "unknown" ]] && [[ "$spm_lottie" != "not-resolved" ]] && [[ "$spm_lottie" != "unknown" ]]; then
+        if [[ "$pods_lottie" == "$spm_lottie" ]]; then
+            log_success "✓ Lottie: Pods=$pods_lottie, SPM=$spm_lottie (match)"
+        else
+            log_error "❌ Lottie version mismatch: Pods=$pods_lottie, SPM=$spm_lottie"
+            log_error "   Update Package.swift to use exact: \"$pods_lottie\""
+            ((errors++))
+        fi
+    else
+        log_warn "⚠ Lottie: Pods=$pods_lottie, SPM=$spm_lottie (unable to verify)"
+    fi
+    
+    return $errors
+}
+
+# ============================================================================
 # Main Validation
 # ============================================================================
 
@@ -131,6 +216,12 @@ main() {
             ((total_errors++))
         fi
     done
+    
+    # Validate Dependency Versions (SwiftProtobuf, Lottie)
+    if ! validate_dependency_versions; then
+        version_errors=$?
+        ((total_errors += version_errors))
+    fi
     
     # Summary
     log_section "Validation Summary"

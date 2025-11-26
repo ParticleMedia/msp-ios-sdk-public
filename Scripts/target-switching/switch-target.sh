@@ -116,23 +116,50 @@ if [[ "$TARGET" == "spm" ]]; then
     if "$SCRIPT_DIR/validate_xcframeworks.sh"; then
         log_success "All XCFrameworks validated successfully"
     else
-        log_error "XCFramework validation failed"
+        log_warn "XCFramework validation failed - some required XCFrameworks are missing"
         log_info ""
         log_info "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-        log_info "Required XCFrameworks for SPM mode:"
-        log_info "  - Build/XCFrameworks/MSPSharedLibraries.xcframework"
-        log_info "  - Build/XCFrameworks/MSPiOSCore.xcframework"
-        log_info "  - Build/XCFrameworks/NovaCore.xcframework"
-        log_info "  - Build/XCFrameworks/MSPCore.xcframework"
-        log_info "  - Build/XCFrameworks/MSPOMSDK.xcframework"
-        log_info "  - ThirdParty/PrebidMobile/PrebidMobile.xcframework"
-        log_info ""
-        log_info "To fix this:"
-        log_info "  1. Build Core XCFrameworks: ./Scripts/xcframeworks/build-core.sh"
-        log_info "  2. Ensure ThirdParty/PrebidMobile/PrebidMobile.xcframework exists"
-        log_info "  3. Then retry: ./Scripts/target-switching/switch-target.sh spm"
+        log_info "Auto-syncing XCFrameworks from CocoaPods..."
         log_info "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-        exit 1
+        
+        # Auto-run spm_sync_all.sh to fetch missing XCFrameworks
+        SPM_SYNC_SCRIPT="$ROOT_DIR/Scripts/spm-sync/spm_sync_all.sh"
+        if [[ -x "$SPM_SYNC_SCRIPT" ]]; then
+            log_step "Running spm_sync_all.sh to extract XCFrameworks from Pods"
+            if "$SPM_SYNC_SCRIPT"; then
+                log_success "XCFramework sync completed"
+                
+                # Re-validate after sync
+                log_step "Re-validating XCFrameworks after sync"
+                if "$SCRIPT_DIR/validate_xcframeworks.sh"; then
+                    log_success "All XCFrameworks now validated successfully"
+                else
+                    log_error "XCFramework validation still failing after sync"
+                    log_error "Please check the output above and manually resolve the issues"
+                    exit 1
+                fi
+            else
+                log_error "spm_sync_all.sh failed"
+                log_info ""
+                log_info "Manual fix required:"
+                log_info "  1. Run: pod install"
+                log_info "  2. Run: ./Scripts/spm-sync/spm_sync_all.sh"
+                log_info "  3. Build Core XCFrameworks: ./Scripts/xcframeworks/build-core.sh"
+                log_info "  4. Then retry: ./Scripts/target-switching/switch-target.sh spm"
+                exit 1
+            fi
+        else
+            log_error "spm_sync_all.sh not found or not executable: $SPM_SYNC_SCRIPT"
+            log_info ""
+            log_info "Required XCFrameworks for SPM mode:"
+            log_info "  - Build/XCFrameworks/MSPSharedLibraries.xcframework"
+            log_info "  - Build/XCFrameworks/MSPiOSCore.xcframework"
+            log_info "  - Build/XCFrameworks/NovaCore.xcframework"
+            log_info "  - Build/XCFrameworks/MSPCore.xcframework"
+            log_info "  - Build/XCFrameworks/MSPOMSDK.xcframework"
+            log_info "  - ThirdParty/PrebidMobile/PrebidMobile.xcframework"
+            exit 1
+        fi
     fi
     
     # Step 4: Generate YAML specs

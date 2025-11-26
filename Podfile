@@ -41,7 +41,7 @@ target 'MSPDemoApp' do
   # MSPKingfisher replaces official Kingfisher pod to avoid SwiftVerifyEmittedModuleInterface errors
   pod 'MSPKingfisher', :path => 'ThirdParty/MSPKingfisher/MSPKingfisher.podspec', :configurations => demoapp_pod_configs
   # Lottie and Shimmer are needed by NovaCore at compile time
-  pod 'lottie-ios', '~> 4.2', :configurations => demoapp_pod_configs
+  pod 'lottie-ios', '4.5.2', :configurations => demoapp_pod_configs
   pod 'Shimmer', :configurations => demoapp_pod_configs
   # SwiftProtobuf is needed by MSPCore at compile time
   pod 'SwiftProtobuf', '~> 1.28.2', :configurations => demoapp_pod_configs

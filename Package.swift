@@ -86,15 +86,17 @@ let package = Package(
         ),
         
         // SwiftProtobuf - Required by MSPCore (runtime dependency)
+        // MUST match CocoaPods version in Podfile (1.28.2)
         .package(
             url: "https://github.com/apple/swift-protobuf.git",
-            from: "1.25.0"
+            exact: "1.28.2"
         ),
         
         // Lottie - Required by NovaCore (runtime dependency)
+        // MUST match CocoaPods version in Podfile (4.5.2)
         .package(
             url: "https://github.com/airbnb/lottie-ios.git",
-            from: "4.2.0"
+            exact: "4.5.2"
         ),
     ],
     
