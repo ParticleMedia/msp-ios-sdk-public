@@ -59,6 +59,7 @@ MINTEGRAL_MODULES=(
   "MTGSDKBidding"
   "MTGSDKBanner"
   "MTGSDKNewInterstitial"
+  "MTGSDKInterstitialVideo"
 )
 
 # ============================================================================

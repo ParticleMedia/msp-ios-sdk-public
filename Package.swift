@@ -30,10 +30,11 @@ let package = Package(
         // ───────────────────────────────────────────────────────────────────────
         // Top-level SDK Product
         // Use this for basic SDK integration without specifying individual adapters
+        // MSPCoreLinker ensures SwiftProtobuf is linked with MSPCore
         // ───────────────────────────────────────────────────────────────────────
         .library(
             name: "MSPAds",
-            targets: ["MSPCore", "MSPSharedLibraries", "MSPiOSCore"]
+            targets: ["MSPCoreLinker", "MSPSharedLibraries", "MSPiOSCore"]
         ),
         
         // ───────────────────────────────────────────────────────────────────────
@@ -42,7 +43,9 @@ let package = Package(
         .library(name: "MSPSharedLibraries", targets: ["MSPSharedLibraries"]),
         .library(name: "MSPiOSCore", targets: ["MSPiOSCore"]),
         .library(name: "NovaCore", targets: ["NovaCore"]),
+        .library(name: "NovaCoreLinker", targets: ["NovaCoreLinker"]),  // NovaCore + Lottie
         .library(name: "MSPCore", targets: ["MSPCore"]),
+        .library(name: "MSPCoreLinker", targets: ["MSPCoreLinker"]),  // MSPCore + SwiftProtobuf
         .library(name: "MSPOMSDK", targets: ["MSPOMSDK"]),
         
         // ───────────────────────────────────────────────────────────────────────
@@ -81,6 +84,18 @@ let package = Package(
             url: "https://github.com/onevcat/Kingfisher.git",
             from: "8.0.0"
         ),
+        
+        // SwiftProtobuf - Required by MSPCore (runtime dependency)
+        .package(
+            url: "https://github.com/apple/swift-protobuf.git",
+            from: "1.25.0"
+        ),
+        
+        // Lottie - Required by NovaCore (runtime dependency)
+        .package(
+            url: "https://github.com/airbnb/lottie-ios.git",
+            from: "4.2.0"
+        ),
     ],
     
     // ═══════════════════════════════════════════════════════════════════════════
@@ -109,9 +124,42 @@ let package = Package(
             path: "Build/XCFrameworks/NovaCore.xcframework"
         ),
         
+        /// Shimmer - Facebook shimmering effect library (Objective-C)
+        /// Bundled from CocoaPods for SPM compatibility
+        .target(
+            name: "Shimmer",
+            dependencies: [],
+            path: "ThirdParty/Shimmer/Shimmer",
+            publicHeadersPath: "include"
+        ),
+        
+        /// NovaCoreLinker - ensures Lottie and Shimmer are linked with NovaCore
+        /// NovaCore.xcframework has undefined Lottie/Shimmer symbols that need runtime linking
+        .target(
+            name: "NovaCoreLinker",
+            dependencies: [
+                "NovaCore",
+                "Shimmer",
+                .product(name: "Lottie", package: "lottie-ios"),
+            ],
+            path: "Sources/Common/NovaCoreWrapper"
+        ),
+        
         .binaryTarget(
             name: "MSPCore",
             path: "Build/XCFrameworks/MSPCore.xcframework"
+        ),
+        
+        /// MSPCoreLinker - ensures SwiftProtobuf is linked with MSPCore
+        /// MSPCore.xcframework has undefined SwiftProtobuf symbols that need runtime linking
+        /// Apps should depend on MSPCoreLinker instead of MSPCore directly
+        .target(
+            name: "MSPCoreLinker",
+            dependencies: [
+                "MSPCore",
+                .product(name: "SwiftProtobuf", package: "swift-protobuf"),
+            ],
+            path: "Sources/Common/MSPCoreWrapper"
         ),
         
         .binaryTarget(
@@ -179,6 +227,10 @@ let package = Package(
         .binaryTarget(
             name: "MTGSDKNewInterstitial",
             path: "ThirdParty/MintegralAdSDK/MTGSDKNewInterstitial.xcframework"
+        ),
+        .binaryTarget(
+            name: "MTGSDKInterstitialVideo",
+            path: "ThirdParty/MintegralAdSDK/MTGSDKInterstitialVideo.xcframework"
         ),
         
         /// OpenWrapSDK - PubMatic OpenWrap SDK
@@ -253,13 +305,14 @@ let package = Package(
         ),
         
         /// NovaAdapter - Nova custom ad format adapter
-        /// Dependencies: MSPSharedLibraries, MSPiOSCore, NovaCore, MSPOMSDK, Kingfisher, SnapKit
+        /// Dependencies: MSPSharedLibraries, MSPiOSCore, NovaCoreLinker, MSPOMSDK, Kingfisher, SnapKit
+        /// Uses NovaCoreLinker to ensure Lottie is linked with NovaCore
         .target(
             name: "NovaAdapter",
             dependencies: [
                 "MSPSharedLibraries",
                 "MSPiOSCore",
-                "NovaCore",
+                "NovaCoreLinker",
                 "MSPOMSDK",
                 .product(name: "Kingfisher", package: "Kingfisher"),
                 .product(name: "SnapKit", package: "SnapKit"),
@@ -317,7 +370,7 @@ let package = Package(
         ),
         
         /// MintegralAdapter - Mintegral advertising adapter
-        /// Dependencies: MSPSharedLibraries, MSPiOSCore, MTGSDK, MTGSDKBidding, MTGSDKBanner, MTGSDKNewInterstitial
+        /// Dependencies: MSPSharedLibraries, MSPiOSCore, MTGSDK, MTGSDKBidding, MTGSDKBanner, MTGSDKNewInterstitial, MTGSDKInterstitialVideo
         .target(
             name: "MintegralAdapter",
             dependencies: [
@@ -327,6 +380,7 @@ let package = Package(
                 "MTGSDKBidding",
                 "MTGSDKBanner",
                 "MTGSDKNewInterstitial",
+                "MTGSDKInterstitialVideo",
             ],
             path: "Sources/Adapters/MintegralAdapter/MintegralAdapter"
         ),
