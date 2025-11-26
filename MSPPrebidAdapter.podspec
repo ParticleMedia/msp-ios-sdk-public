@@ -28,15 +28,16 @@ Pod::Spec.new do |spec|
   spec.private_header_files = []
 
   # DISABLE SWIFT INTERFACE GENERATION - MSPCore uses @_implementationOnly import
+  # Canonical paths synchronized with Package.swift (SPM)
   spec.pod_target_xcconfig = {
     'BUILD_LIBRARY_FOR_DISTRIBUTION' => 'NO',
     'SWIFT_EMIT_MODULE_INTERFACE' => 'NO',
     'SWIFT_INSTALL_MODULE_FOR_DEPLOYMENT' => 'NO',
     'DEFINES_MODULE' => 'YES',
-    'FRAMEWORK_SEARCH_PATHS' => '$(inherited) $(PODS_ROOT)/../Build/XCFrameworks $(PODS_ROOT)/../Sources/Core/MSPSharedLibraries $(PODS_ROOT)/../Sources/Core/MSPSharedLibraries/PrebidMobile.xcframework/$(PLATFORM_NAME)'
+    'FRAMEWORK_SEARCH_PATHS' => '$(inherited) $(PODS_ROOT)/../Build/XCFrameworks $(PODS_ROOT)/../ThirdParty/PrebidMobile $(PODS_ROOT)/../ThirdParty/PrebidMobile/PrebidMobile.xcframework/$(PLATFORM_NAME)'
   }
 
   spec.user_target_xcconfig = {
-    'FRAMEWORK_SEARCH_PATHS' => '$(inherited) $(PODS_ROOT)/../Build/XCFrameworks $(PODS_ROOT)/../Sources/Core/MSPSharedLibraries'
+    'FRAMEWORK_SEARCH_PATHS' => '$(inherited) $(PODS_ROOT)/../Build/XCFrameworks $(PODS_ROOT)/../ThirdParty/PrebidMobile'
   }
 end

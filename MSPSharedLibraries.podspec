@@ -94,9 +94,10 @@ Pod::Spec.new do |spec|
   spec.platform     = :ios, '15.0'
   spec.requires_arc  = true
 
+  # Canonical paths synchronized with Package.swift (SPM)
   spec.vendored_frameworks = [
     "Build/XCFrameworks/MSPSharedLibraries.xcframework",
-    "Sources/Core/MSPSharedLibraries/PrebidMobile.xcframework"
+    "ThirdParty/PrebidMobile/PrebidMobile.xcframework"
   ]
 
   spec.static_framework = true

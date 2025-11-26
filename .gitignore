@@ -68,10 +68,6 @@ Build/XCFrameworks/*MTG*
 Build/XCFrameworks/*OpenWrap*
 Build/XCFrameworks/*FBAudienceNetwork*
 
-# DO NOT IGNORE PrebidMobile.xcframework (required for MSPSharedLibraries)
-!Build/XCFrameworks/PrebidMobile.xcframework
-!Sources/Core/MSPSharedLibraries/PrebidMobile.xcframework
-
 # Ignore archives
 Build/Archives/*
 
@@ -81,17 +77,22 @@ Build/XCFrameworks/*Adapter*
 # Ignore downloaded Kingfisher source files (downloaded via prepare_command during pod install)
 ThirdParty/MSPKingfisher/Sources/
 
-# Ignore all XCFrameworks by default, then whitelist MSP Core modules
+# Ignore all XCFrameworks by default, then whitelist required modules
 **/*.xcframework
+
 # Internal SDK XCFrameworks (must be committed)
 !Build/XCFrameworks/MSPCore.xcframework
 !Build/XCFrameworks/MSPiOSCore.xcframework
 !Build/XCFrameworks/NovaCore.xcframework
 !Build/XCFrameworks/MSPSharedLibraries.xcframework
 !Build/XCFrameworks/MSPOMSDK.xcframework
-!Build/XCFrameworks/PrebidMobile.xcframework
-!Sources/Core/MSPSharedLibraries/PrebidMobile.xcframework
 !Sources/Core/MSPOMSDK/OMSDK_Newsbreak1.xcframework
+
+# PrebidMobile.xcframework - CANONICAL PATH (synchronized between CocoaPods and SPM)
+# This file MUST be committed - both CocoaPods and SPM depend on it
+!ThirdParty/PrebidMobile/
+!ThirdParty/PrebidMobile/PrebidMobile.xcframework
+!ThirdParty/PrebidMobile/PrebidMobile.xcframework/**
 Scripts/xcframeworks/output-temp/
 ExtractedFrameworks/
 
