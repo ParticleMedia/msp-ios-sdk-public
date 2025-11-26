@@ -161,11 +161,24 @@ let package = Package(
             path: "ThirdParty/MobileFuseSDK/MobileFuseSDK.xcframework"
         ),
         
-        /// MintegralAdSDK - Mintegral advertising SDK
+        /// Mintegral SDK - Multi-module advertising SDK
         /// Used by: MintegralAdapter
+        /// Subspecs: MTGSDK (core), MTGSDKBidding, MTGSDKBanner, MTGSDKNewInterstitial
         .binaryTarget(
-            name: "MintegralAdSDK",
-            path: "ThirdParty/MintegralAdSDK/MintegralAdSDK.xcframework"
+            name: "MTGSDK",
+            path: "ThirdParty/MintegralAdSDK/MTGSDK.xcframework"
+        ),
+        .binaryTarget(
+            name: "MTGSDKBidding",
+            path: "ThirdParty/MintegralAdSDK/MTGSDKBidding.xcframework"
+        ),
+        .binaryTarget(
+            name: "MTGSDKBanner",
+            path: "ThirdParty/MintegralAdSDK/MTGSDKBanner.xcframework"
+        ),
+        .binaryTarget(
+            name: "MTGSDKNewInterstitial",
+            path: "ThirdParty/MintegralAdSDK/MTGSDKNewInterstitial.xcframework"
         ),
         
         /// OpenWrapSDK - PubMatic OpenWrap SDK
@@ -289,13 +302,16 @@ let package = Package(
         ),
         
         /// MintegralAdapter - Mintegral advertising adapter
-        /// Dependencies: MSPSharedLibraries, MSPiOSCore, MintegralAdSDK
+        /// Dependencies: MSPSharedLibraries, MSPiOSCore, MTGSDK, MTGSDKBidding, MTGSDKBanner, MTGSDKNewInterstitial
         .target(
             name: "MintegralAdapter",
             dependencies: [
                 "MSPSharedLibraries",
                 "MSPiOSCore",
-                "MintegralAdSDK",
+                "MTGSDK",
+                "MTGSDKBidding",
+                "MTGSDKBanner",
+                "MTGSDKNewInterstitial",
             ],
             path: "Sources/Adapters/MintegralAdapter/MintegralAdapter"
         ),

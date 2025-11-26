@@ -48,9 +48,17 @@ SDK_CONFIGS=(
   "IronSourceSDK:IronSourceSDK:IronSource"
   "InMobiSDK:InMobiSDK:InMobiSDK"
   "MobileFuseSDK:MobileFuseSDK:MobileFuseSDK"
-  "MintegralAdSDK:MintegralAdSDK:MTGSDK"
   "OpenWrapSDK:OpenWrapSDK:OpenWrapSDK"
   "AmazonPublisherServicesSDK:AmazonPublisherServicesSDK:DTBiOSSDK"
+)
+
+# Mintegral has multiple subspecs that need to be extracted separately
+# Each subspec is its own xcframework under Pods/MintegralAdSDK/Fmk/
+MINTEGRAL_MODULES=(
+  "MTGSDK"
+  "MTGSDKBidding"
+  "MTGSDKBanner"
+  "MTGSDKNewInterstitial"
 )
 
 # ============================================================================
@@ -296,6 +304,63 @@ process_sdk() {
 }
 
 # ============================================================================
+# Mintegral Multi-Module Extraction
+# ============================================================================
+
+process_mintegral_modules() {
+  local mintegral_pod_dir="$PODS_DIR/MintegralAdSDK/Fmk"
+  local mintegral_dest_dir="$DEST_DIR/MintegralAdSDK"
+  
+  log ""
+  log "━━━ Processing Mintegral Multi-Module SDK"
+  
+  if [[ ! -d "$mintegral_pod_dir" ]]; then
+    log_warn "Mintegral Pod directory not found: $mintegral_pod_dir"
+    return 1
+  fi
+  
+  # Clean and recreate destination
+  safe_rm_rf "$mintegral_dest_dir"
+  mkdir -p "$mintegral_dest_dir"
+  
+  local mintegral_success=0
+  local mintegral_fail=0
+  
+  for module in "${MINTEGRAL_MODULES[@]}"; do
+    local src_xcframework="$mintegral_pod_dir/${module}.xcframework"
+    local dest_xcframework="$mintegral_dest_dir/${module}.xcframework"
+    
+    log "  Processing: $module"
+    
+    if [[ -d "$src_xcframework" ]]; then
+      # Copy the xcframework
+      cp -R "$src_xcframework" "$dest_xcframework"
+      
+      # Validate
+      if [[ -f "$dest_xcframework/Info.plist" ]]; then
+        log_ok "  Installed $module.xcframework"
+        ((mintegral_success++)) || true
+      else
+        log_err "  $module.xcframework missing Info.plist"
+        ((mintegral_fail++)) || true
+      fi
+    else
+      log_err "  $module.xcframework not found at $src_xcframework"
+      ((mintegral_fail++)) || true
+    fi
+  done
+  
+  log ""
+  log "  Mintegral modules: $mintegral_success succeeded, $mintegral_fail failed"
+  
+  if [[ $mintegral_fail -eq 0 ]]; then
+    return 0
+  else
+    return 1
+  fi
+}
+
+# ============================================================================
 # Main
 # ============================================================================
 
@@ -328,6 +393,14 @@ main() {
   local success_count=0
   local fail_count=0
   local failed_sdks=()
+  
+  # Process Mintegral multi-module SDK first
+  if process_mintegral_modules; then
+    ((success_count++)) || true
+  else
+    ((fail_count++)) || true
+    failed_sdks+=("MintegralAdSDK")
+  fi
   
   for config in "${SDK_CONFIGS[@]}"; do
     # Parse config: "SDK_NAME:POD_NAME:FRAMEWORK_NAME"
@@ -364,7 +437,7 @@ main() {
   
   log ""
   log "━━━ Output Directory Contents"
-  find "$DEST_DIR" -maxdepth 2 -name "*.xcframework" -type d | sort | while read -r xc; do
+  find "$DEST_DIR" -maxdepth 3 -name "*.xcframework" -type d | sort | while read -r xc; do
     if [[ -f "$xc/Info.plist" ]]; then
       log_ok "$xc"
     else

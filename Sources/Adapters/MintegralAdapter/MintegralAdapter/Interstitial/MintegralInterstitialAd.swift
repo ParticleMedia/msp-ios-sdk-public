@@ -7,12 +7,8 @@
 
 import Foundation
 import MSPiOSCore
-#if SWIFT_PACKAGE
-import MTGSDK
-#else
 import MTGSDK
 import MTGSDKNewInterstitial
-#endif
 
 
 public class MintegralInterstitialAd: MSPiOSCore.InterstitialAd {
