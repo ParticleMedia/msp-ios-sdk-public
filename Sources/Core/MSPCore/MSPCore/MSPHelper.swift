@@ -2,12 +2,12 @@ import Foundation
 import AdSupport
 import MSPiOSCore
 //import shared
-import MSPPrebidAdapter
-import PrebidMobile
+@_implementationOnly import MSPPrebidAdapter
+@_implementationOnly import PrebidMobile
 import UIKit
 import AppTrackingTransparency
 
-import SwiftProtobuf
+@_implementationOnly import SwiftProtobuf
 
 public class MSP {
     public let version = {

@@ -1,5 +1,5 @@
 import UIKit
-import SnapKit
+@_implementationOnly import SnapKit
 
 class DebugAdContainerViewController: UIViewController {
     private let adView: UIView

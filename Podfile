@@ -7,121 +7,13 @@ install! 'cocoapods',
          :generate_multiple_pod_projects => true,
          :integrate_targets => false
 
-project 'Sources/Adapters/MSPPrebidAdapter/MSPPrebidAdapter'
-project 'Sources/Adapters/MSPGoogleAdapter/MSPGoogleAdapter'
-project 'Sources/Core/MSPCore/MSPCore'
+# Only define the main app project - XcodeGen Core projects are for XCFramework building only
 project 'Examples/MSPDemoApp/MSPDemoApp', 'Debug' => :debug, 'Release' => :release
-project 'Sources/Adapters/NovaAdapter/NovaAdapter'
-project 'Sources/Core/MSPSharedLibraries/MSPSharedLibraries'
-project 'Sources/Adapters/MSPFacebookAdapter/MSPFacebookAdapter'
-
-project 'Sources/Adapters/InmobiAdapter/InmobiAdapter'
-project 'Sources/Adapters/MintegralAdapter/MintegralAdapter'
-project 'Sources/Adapters/MobilefuseAdapter/MobilefuseAdapter'
-project 'Sources/Adapters/PubmaticAdapter/PubmaticAdapter'
-project 'Sources/Adapters/UnityAdapter/UnityAdapter'
 
 # MSP DemoApp integration mode: cocoapods (default) or spm
 demoapp_pod_configs = %w[Debug Release]
 puts "[MSPDemoApp] Integrating CocoaPods dependencies for DemoApp target"
 
-
-target 'MSPPrebidAdapter' do
-  project 'Sources/Adapters/MSPPrebidAdapter/MSPPrebidAdapter'
-  # Comment the next line if you don't want to use dynamic frameworks
-  use_frameworks!
-
-  # Pods for MSPPrebidAdapter
-
-  target 'MSPPrebidAdapterTests' do
-    # Pods for testing
-  end
-
-end
-
-target 'MSPCore' do
-  project 'Sources/Core/MSPCore/MSPCore'
-  # Comment the next line if you don't want to use dynamic frameworks
-  # use_frameworks!
-
-  # Pods for MSPCore
-  # use_frameworks! :linkage => :static
-  #pod 'Google-Mobile-Ads-SDK', "10.14.0", :modular_headers => true
-  #pod 'GoogleAdapter',  :path => 'GoogleAdapter', :modular_headers => true
-
-
-  #target 'MSPUtilityTests' do
-    # Pods for testing
-  #end
-
-end
-
-target 'MSPSharedLibraries' do
-  project 'Sources/Core/MSPSharedLibraries/MSPSharedLibraries'
-  
-end
-
-target 'MSPOMSDK' do
-  project 'MSPOMSDK/MSPOMSDK'
-  
-end
-
-
-target 'MSPGoogleAdapter' do
-  project 'Sources/Adapters/MSPGoogleAdapter/MSPGoogleAdapter'
-  # Comment the next line if you don't want to use dynamic frameworks
-  # use_frameworks!
-
-  # Pods for GoogleAdapter
-  # pod 'Google-Mobile-Ads-SDK', "10.14.0", :modular_headers => true
-end
-
-target 'NovaAdapter' do
-  project 'Sources/Adapters/NovaAdapter/NovaAdapter'
-  # Comment the next line if you don't want to use dynamic frameworks
-  #use_frameworks!
-
-  # Pods for NovaAdapter
-  #pod 'SDWebImage', '5.18.8', :modular_headers => true
-  #pod 'SDWebImageWebPCoder', '0.14.2', :modular_headers => true
-  #pod 'SnapKit', '~> 5.6.0', :modular_headers => true
-  #pod 'Shimmer', :modular_headers => true
-  #pod 'DeviceKit', :modular_headers => true
-  #pod 'NBDesignSystem', :git => 'https://github.com/ParticleMedia/LAFoundation', :branch => 'main', :commit => 'b94a948', :modular_headers => true
-  #pod 'MSPSharedLibraries', :path => './MSPSharedLibraries', :modular_headers => true
-end
-
-target 'MSPFacebookAdapter' do
-  project 'Sources/Adapters/MSPFacebookAdapter/MSPFacebookAdapter'
-  
-end
-
-target 'AmazonAdapter' do
-  project 'AmazonAdapter/AmazonAdapter'
-  
-end
-
-target 'NovaCore' do
-  project 'NovaCore/NovaCore'
-  # Comment the next line if you don't want to use dynamic frameworks
-  #use_frameworks!
-
-  # Pods for NovaAdapter
-  # Kingfisher, SnapKit, Shimmer are now provided via XCFrameworks - removed from Podfile
-  #pod 'SDWebImage', '5.18.8', :modular_headers => true
-  #pod 'SDWebImageWebPCoder', '0.14.2', :modular_headers => true
-  #pod 'SnapKit', '~> 5.6.0', :modular_headers => true
-  #pod 'Shimmer', :modular_headers => true
-  pod 'MSPOMSDK', :path => 'MSPOMSDK.podspec'
-  #pod 'DeviceKit', :modular_headers => true
-  #pod 'NBDesignSystem', :git => 'https://github.com/ParticleMedia/LAFoundation', :branch => 'main', :commit => 'b94a948', :modular_headers => true
-  #pod 'MSPSharedLibraries', :path => './MSPSharedLibraries', :modular_headers => true
-end
-
-  #target 'GoogleAdapterTests' do
-  #  pod 'Google-Mobile-Ads-SDK'
-  #end
-  
 target 'MSPDemoApp' do
   project 'Examples/MSPDemoApp/MSPDemoApp'
 
@@ -148,6 +40,8 @@ target 'MSPDemoApp' do
   # Lottie and Shimmer are needed by NovaCore at compile time
   pod 'lottie-ios', '~> 4.2', :configurations => demoapp_pod_configs
   pod 'Shimmer', :configurations => demoapp_pod_configs
+  # SwiftProtobuf is needed by MSPCore at compile time
+  pod 'SwiftProtobuf', '~> 1.28.2', :configurations => demoapp_pod_configs
 end
 
 post_install do |installer|
@@ -155,16 +49,16 @@ post_install do |installer|
     target.build_configurations.each do |config|
       config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '15.0'
       
-      # Disable Swift module interface verification for Pods targets only
-      # This fixes archive-time errors: "SwiftVerifyEmittedModuleInterface: underlying Objective-C module 'SnapKit' not found"
-      # MSP modules keep verification enabled (they are not in installer.pods_project.targets)
-      # 
-      # Approach: Disable module interface emission and remove verification build phases
-      # This is safe because Pods are pre-built or built separately, and MSP modules don't need Pod interfaces
+      # Disable Swift module interface verification for Pods targets
+      # MSPCore uses @_implementationOnly import for MSPPrebidAdapter, so no swiftinterface needed
       config.build_settings['SWIFT_EMIT_MODULE_INTERFACE'] = 'NO'
       config.build_settings['SWIFT_INSTALL_MODULE_FOR_DEPLOYMENT'] = 'NO'
       config.build_settings['BUILD_LIBRARY_FOR_DISTRIBUTION'] = 'NO'
+      
       config.build_settings['OTHER_SWIFT_FLAGS'] ||= ''
+      # Remove -import-underlying-module flag from ALL pods
+      # This flag causes "cannot load underlying module" errors for pods without ObjC code
+      config.build_settings['OTHER_SWIFT_FLAGS'] = config.build_settings['OTHER_SWIFT_FLAGS'].to_s.gsub(/-import-underlying-module/, '').strip
       # Remove any existing -no-verify-emitted-module-interface if present, then add it
       config.build_settings['OTHER_SWIFT_FLAGS'] = config.build_settings['OTHER_SWIFT_FLAGS'].to_s.gsub(/\s*-no-verify-emitted-module-interface\s*/, '').strip
       config.build_settings['OTHER_SWIFT_FLAGS'] << ' -no-verify-emitted-module-interface' unless config.build_settings['OTHER_SWIFT_FLAGS'].include?('-no-verify-emitted-module-interface')
@@ -233,4 +127,45 @@ post_install do |installer|
   # 1. FRAMEWORK_SEARCH_PATHS (already set in podspecs and xcconfig)
   # 2. Swift compiler automatically finds module.modulemap in framework/Modules/
   # 3. No need to add -I flags - they cause path mismatch errors
+  
+  # --- Fix adapter modulemaps to use relative paths for Swift Compatibility Header ---
+  # This fixes "cannot load underlying module" errors when importing adapters
+  adapter_pods = ["MSPPrebidAdapter", "MSPGoogleAdapter", "MSPFacebookAdapter", "NovaAdapter",
+                  "AmazonAdapter", "UnityAdapter", "InmobiAdapter", "MobilefuseAdapter",
+                  "MintegralAdapter", "PubmaticAdapter"]
+  adapter_pods.each do |pod_name|
+    target_support_files = File.join(installer.sandbox.root, "Target Support Files", pod_name)
+    if Dir.exist?(target_support_files)
+      puts "[post_install] Processing #{pod_name} support files"
+      # Note: Modulemap fixing will be done at build time via xcconfig
+    end
+  end
+  
+  # --- Configure pure Swift adapters to not generate ObjC module ---
+  # Remove umbrella header references to prevent "cannot load underlying module" errors
+  installer.pods_project.targets.each do |target|
+    if adapter_pods.include?(target.name)
+      puts "[post_install] Configuring pure Swift module for #{target.name}"
+      target.build_configurations.each do |config|
+        # Disable generating ObjC module for pure Swift pods
+        config.build_settings['DEFINES_MODULE'] = 'YES'
+        config.build_settings['SWIFT_OBJC_INTERFACE_HEADER_NAME'] = ''
+        config.build_settings['GENERATE_INFOPLIST_FILE'] = 'NO'
+      end
+    end
+  end
+  
+  # --- Patch ALL xcconfig files to remove -import-underlying-module ---
+  # This flag causes "cannot load underlying module" errors for pure Swift pods
+  # CocoaPods generates this in xcconfig files which we need to patch directly
+  puts "[post_install] Patching xcconfig files to remove -import-underlying-module..."
+  Dir.glob(File.join(installer.sandbox.root, "Target Support Files", "*", "*.xcconfig")).each do |xcconfig_path|
+    content = File.read(xcconfig_path)
+    if content.include?("-import-underlying-module")
+      new_content = content.gsub(/-import-underlying-module/, '')
+      File.write(xcconfig_path, new_content)
+      puts "[post_install] Patched: #{File.basename(xcconfig_path)}"
+    end
+  end
+  puts "[post_install] xcconfig patching complete"
 end

@@ -6,7 +6,7 @@
 //
 
 import Foundation
-import MSPPrebidAdapter
+@_implementationOnly import MSPPrebidAdapter
 import MSPiOSCore
 // shared
 import UIKit

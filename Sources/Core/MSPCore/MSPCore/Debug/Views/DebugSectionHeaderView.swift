@@ -1,5 +1,5 @@
 import UIKit
-import SnapKit
+@_implementationOnly import SnapKit
 
 class DebugSectionHeaderView: UIView {
     // MARK: - Properties

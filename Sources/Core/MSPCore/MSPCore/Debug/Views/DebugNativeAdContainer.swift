@@ -1,7 +1,7 @@
 import Foundation
 import MSPiOSCore
 import UIKit
-import SnapKit
+@_implementationOnly import SnapKit
 
 class DebugNativeAdContainer: UIView, MSPNativeAdContainer {
     private lazy var titleLabel: UILabel = {

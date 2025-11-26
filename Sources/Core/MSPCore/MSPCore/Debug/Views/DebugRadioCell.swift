@@ -1,6 +1,6 @@
 import UIKit
 import Combine
-import SnapKit
+@_implementationOnly import SnapKit
 
 private enum UIConfig {
     static let labelLeading: CGFloat = 16
