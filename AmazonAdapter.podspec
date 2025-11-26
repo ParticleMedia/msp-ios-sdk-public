@@ -14,7 +14,7 @@ Pod::Spec.new do |spec|
   # PURE SWIFT SOURCE POD
   spec.source_files = "Sources/Adapters/AmazonAdapter/**/*.{swift}"
 
-  spec.dependency 'Google-Mobile-Ads-SDK', "~> 12.0"
+  spec.dependency 'MSPGoogleAdsTypes'
   spec.dependency "AmazonPublisherServicesSDK", "4.5.5"
   spec.dependency "AmazonPublisherServicesAdMobAdapter", "2.2.0"
   spec.dependency 'MSPSharedLibraries'

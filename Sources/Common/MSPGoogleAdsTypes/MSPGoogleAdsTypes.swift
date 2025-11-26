@@ -92,7 +92,8 @@ public func MSPGADMobileAdsStart(completionHandler: ((Error?) -> Void)?) {
 }
 
 public func MSPGADMobileAdsSDKVersion() -> String {
-    return GADMobileAds.sharedInstance().sdkVersion
+    let version = GADMobileAds.sharedInstance().versionNumber
+    return "\(version.majorVersion).\(version.minorVersion).\(version.patchVersion)"
 }
 
 public func MSPGADInterstitialAdLoad(adUnitID: String, request: MSPGADRequest, completion: @escaping (MSPGADInterstitialAd?, Error?) -> Void) {

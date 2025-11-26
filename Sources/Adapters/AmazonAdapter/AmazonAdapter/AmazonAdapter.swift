@@ -7,13 +7,13 @@
 import MSPiOSCore
 import Foundation
 import DTBiOSSDK
-import GoogleMobileAds
+import MSPGoogleAdsTypes
 
 @objc public class AmazonAdapter : NSObject, AdNetworkAdapter {
     private var dtbAdLoader: DTBAdLoader?
     private var dtbAdResponse: DTBAdResponse?
     
-    private var bannerView: AdManagerBannerView?
+    private var bannerView: MSPGAMBannerView?
     public weak var auctionBidListener: AuctionBidListener?
     public var bidderPlacementId: String?
     public var googlePlacementId: String? // placement id used in google banner view
@@ -543,7 +543,7 @@ extension AmazonAdapter: DTBAdCallback {
     public func onSuccess(_ adResponse: DTBAdResponse!) {
         
         self.dtbAdResponse = adResponse
-        let bannerView = AdManagerBannerView(adSize: getGADAdSize())
+        let bannerView = MSPGAMBannerView(adSize: getGADAdSize())
         self.bannerView = bannerView
         if let dtbAdSize = self.dtbAdSize,
            let pricePoint = adResponse.pricePoints(dtbAdSize){
@@ -553,7 +553,7 @@ extension AmazonAdapter: DTBAdCallback {
         bannerView.adUnitID = self.googlePlacementId
         bannerView.rootViewController = self.adListener?.getRootViewController()
         bannerView.delegate = self
-        let gamRequest = AdManagerRequest()
+        let gamRequest = MSPGADRequest()
         gamRequest.customTargeting = adResponse.customTargeting()
         bannerView.load(gamRequest)
         
@@ -568,21 +568,21 @@ extension AmazonAdapter: DTBAdCallback {
         }
     }
     
-    func getGADAdSize() -> GoogleMobileAds.AdSize {
+    func getGADAdSize() -> MSPGADAdSize {
         if let adRequest = adRequest {
             if let width = adRequest.adSize?.width,
                let height = adRequest.adSize?.height {
                 if width == 300, height == 250 {
-                    return AdSizeMediumRectangle
+                    return MSPGADAdSizeMediumRectangle
                 }
             }
         }
-        return AdSizeBanner
+        return MSPGADAdSizeBanner
     }
     
 }
-extension AmazonAdapter: GoogleMobileAds.BannerViewDelegate {
-    public func bannerViewDidReceiveAd(_ bannerView: GoogleMobileAds.BannerView) {
+extension AmazonAdapter: MSPGADBannerViewDelegate {
+    public func bannerViewDidReceiveAd(_ bannerView: MSPGADBannerView) {
         MSPLogger.shared.info(message: "[Adapter: Amazon] successfully loaded Google Banner ad")
         DispatchQueue.main.async {
             var bannerAd = BannerAd(adView: bannerView, adNetworkAdapter: self)
@@ -603,7 +603,7 @@ extension AmazonAdapter: GoogleMobileAds.BannerViewDelegate {
         }
     }
     
-    public func bannerView(_ bannerView: GoogleMobileAds.BannerView, didFailToReceiveAdWithError error: Error) {
+    public func bannerView(_ bannerView: MSPGADBannerView, didFailToReceiveAdWithError error: Error) {
         MSPLogger.shared.info(message: "[Adapter: Amazon] Fail to load Google Banner ad")
         self.auctionBidListener?.onError(error: error.localizedDescription)
         self.adMetricReporter?.logAdResult(placementId: adRequest?.placementId ?? "", ad: nil, fill: false, isFromCache: false)
@@ -612,14 +612,14 @@ extension AmazonAdapter: GoogleMobileAds.BannerViewDelegate {
         }
     }
     
-    public func bannerViewDidRecordClick(_ bannerView: GoogleMobileAds.BannerView) {
+    public func bannerViewDidRecordClick(_ bannerView: MSPGADBannerView) {
         if let googleAd = self.bannerAd {
             self.adListener?.onAdClick(ad: googleAd)
             self.sendClickAdEvent(ad: googleAd)
         }
     }
     
-    public func bannerViewDidRecordImpression(_ bannerView: GoogleMobileAds.BannerView) {
+    public func bannerViewDidRecordImpression(_ bannerView: MSPGADBannerView) {
         if let googleAd = self.bannerAd {
             self.adListener?.onAdImpression(ad: googleAd)
             if let adRequest = adRequest {

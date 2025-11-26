@@ -196,6 +196,21 @@ let package = Package(
         ),
         
         // ═══════════════════════════════════════════════════════════════════════
+        // SECTION 2.5: SHARED MODULES - Swift Source Targets
+        // ═══════════════════════════════════════════════════════════════════════
+        
+        /// MSPGoogleAdsTypes - Abstraction layer for GoogleMobileAds SDK
+        /// Provides unified API across CocoaPods and SPM builds
+        /// Used by: MSPGoogleAdapter, AmazonAdapter
+        .target(
+            name: "MSPGoogleAdsTypes",
+            dependencies: [
+                .product(name: "GoogleMobileAds", package: "swift-package-manager-google-mobile-ads"),
+            ],
+            path: "Sources/Common/MSPGoogleAdsTypes"
+        ),
+        
+        // ═══════════════════════════════════════════════════════════════════════
         // SECTION 3: ADAPTER MODULES - Swift Source Targets (10)
         // ═══════════════════════════════════════════════════════════════════════
         // These are compiled from source by the consumer.
@@ -214,13 +229,13 @@ let package = Package(
         ),
         
         /// MSPGoogleAdapter - Google AdMob/Ad Manager adapter
-        /// Dependencies: MSPSharedLibraries, MSPiOSCore, GoogleMobileAds (SPM)
+        /// Dependencies: MSPSharedLibraries, MSPiOSCore, MSPGoogleAdsTypes
         .target(
             name: "MSPGoogleAdapter",
             dependencies: [
                 "MSPSharedLibraries",
                 "MSPiOSCore",
-                .product(name: "GoogleMobileAds", package: "swift-package-manager-google-mobile-ads"),
+                "MSPGoogleAdsTypes",
             ],
             path: "Sources/Adapters/MSPGoogleAdapter/MSPGoogleAdapter"
         ),
@@ -253,13 +268,13 @@ let package = Package(
         ),
         
         /// AmazonAdapter - Amazon Publisher Services adapter
-        /// Dependencies: MSPSharedLibraries, MSPiOSCore, GoogleMobileAds, AmazonPublisherServicesSDK
+        /// Dependencies: MSPSharedLibraries, MSPiOSCore, MSPGoogleAdsTypes, AmazonPublisherServicesSDK
         .target(
             name: "AmazonAdapter",
             dependencies: [
                 "MSPSharedLibraries",
                 "MSPiOSCore",
-                .product(name: "GoogleMobileAds", package: "swift-package-manager-google-mobile-ads"),
+                "MSPGoogleAdsTypes",
                 "AmazonPublisherServicesSDK",
             ],
             path: "Sources/Adapters/AmazonAdapter/AmazonAdapter"

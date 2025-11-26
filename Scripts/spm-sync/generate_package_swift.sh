@@ -43,6 +43,8 @@ let package = Package(
         .library(name: "PubmaticAdapter", targets: ["PubmaticAdapter"]),
     ],
     dependencies: [
+        // Google Mobile Ads SDK - Required by MSPGoogleAdsTypes
+        .package(url: "https://github.com/googleads/swift-package-manager-google-mobile-ads.git", from: "11.0.0"),
         // UI / utility libraries that are cleanly supported via SPM
         .package(url: "https://github.com/SnapKit/SnapKit.git", from: "5.7.1"),
         .package(url: "https://github.com/onevcat/Kingfisher.git", from: "8.6.2"),
@@ -77,10 +79,7 @@ let package = Package(
             name: "PrebidMobile",
             path: "ThirdParty/PrebidMobile/PrebidMobile.xcframework"
         ),
-        .binaryTarget(
-            name: "GoogleMobileAds",
-            path: "ThirdParty/GoogleMobileAds/GoogleMobileAds.xcframework"
-        ),
+        // GoogleMobileAds is now provided via SPM package (swift-package-manager-google-mobile-ads)
         .binaryTarget(
             name: "FBAudienceNetwork",
             path: "ThirdParty/FBAudienceNetwork/FBAudienceNetwork.xcframework"
@@ -110,6 +109,16 @@ let package = Package(
             path: "ThirdParty/AmazonPublisherServicesSDK/AmazonPublisherServicesSDK.xcframework"
         ),
 
+        // MARK: - Shared modules (abstraction layers)
+        
+        .target(
+            name: "MSPGoogleAdsTypes",
+            dependencies: [
+                .product(name: "GoogleMobileAds", package: "swift-package-manager-google-mobile-ads"),
+            ],
+            path: "Sources/Common/MSPGoogleAdsTypes"
+        ),
+
         // MARK: - Adapter source targets (10)
 
         .target(
@@ -126,7 +135,7 @@ let package = Package(
             dependencies: [
                 "MSPSharedLibraries",
                 "MSPiOSCore",
-                "GoogleMobileAds"
+                "MSPGoogleAdsTypes"
             ],
             path: "Sources/Adapters/MSPGoogleAdapter/MSPGoogleAdapter"
         ),
@@ -156,6 +165,7 @@ let package = Package(
             dependencies: [
                 "MSPSharedLibraries",
                 "MSPiOSCore",
+                "MSPGoogleAdsTypes",
                 "AmazonPublisherServicesSDK"
             ],
             path: "Sources/Adapters/AmazonAdapter/AmazonAdapter"

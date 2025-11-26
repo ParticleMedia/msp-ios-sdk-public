@@ -1,6 +1,7 @@
 import Foundation
 import GoogleMobileAds
 import MSPiOSCore
+import MSPGoogleAdsTypes
 //import shared
 import PrebidMobile
 
