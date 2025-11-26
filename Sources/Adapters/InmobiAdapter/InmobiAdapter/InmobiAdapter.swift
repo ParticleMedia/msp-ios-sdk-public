@@ -8,11 +8,7 @@ import Foundation
 import MSPiOSCore
 //import shared
 import PrebidMobile
-#if SWIFT_PACKAGE
-import InMobiSDKWrapper
-#else
 import InMobiSDK
-#endif
 
 @objc public class InmobiAdapter : NSObject, AdNetworkAdapter {
     public func getSDKVersion() -> String {

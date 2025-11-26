@@ -6,11 +6,7 @@
 //
 import Foundation
 import MSPiOSCore
-#if SWIFT_PACKAGE
-import InMobiSDKWrapper
-#else
 import InMobiSDK
-#endif
 
 
 public class InmobiInterstitialAd: MSPiOSCore.InterstitialAd {

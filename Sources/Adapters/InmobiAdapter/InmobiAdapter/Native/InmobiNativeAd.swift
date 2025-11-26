@@ -7,11 +7,7 @@
 
 import Foundation
 import MSPiOSCore
-#if SWIFT_PACKAGE
-import InMobiSDKWrapper
-#else
 import InMobiSDK
-#endif
 
 public class InmobiNativeAd: NativeAd {
     public var nativeAdItem: IMNative?

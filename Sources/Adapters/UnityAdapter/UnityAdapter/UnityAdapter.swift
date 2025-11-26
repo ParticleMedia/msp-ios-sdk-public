@@ -7,11 +7,7 @@
 
 import Foundation
 import MSPiOSCore
-#if SWIFT_PACKAGE
-import IronSourceSDKWrapper
-#else
 import IronSource
-#endif
 
 @objc public class UnityAdapter : NSObject, AdNetworkAdapter {
     public func getSDKVersion() -> String {

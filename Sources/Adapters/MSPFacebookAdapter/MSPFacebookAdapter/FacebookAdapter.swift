@@ -3,11 +3,7 @@
 import Foundation
 import UIKit
 import MSPiOSCore
-#if SWIFT_PACKAGE
-import FBAudienceNetworkWrapper
-#else
 import FBAudienceNetwork
-#endif
 import AppTrackingTransparency
 import PrebidMobile
 

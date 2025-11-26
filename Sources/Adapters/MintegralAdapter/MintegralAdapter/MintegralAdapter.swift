@@ -9,7 +9,7 @@ import MSPiOSCore
 //import shared
 import PrebidMobile
 #if SWIFT_PACKAGE
-import MintegralAdSDKWrapper
+import MTGSDK
 #else
 import MTGSDK
 import MTGSDKBanner

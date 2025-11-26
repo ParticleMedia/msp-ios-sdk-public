@@ -8,7 +8,7 @@
 import Foundation
 import MSPiOSCore
 #if SWIFT_PACKAGE
-import MintegralAdSDKWrapper
+import MTGSDK
 #else
 import MTGSDK
 #endif

@@ -20,7 +20,7 @@ import PackageDescription
 let package = Package(
     name: "msp-ios-sdk",
     platforms: [
-        .iOS(.v12)
+        .iOS(.v15)
     ],
     
     // ═══════════════════════════════════════════════════════════════════════════
@@ -144,7 +144,7 @@ let package = Package(
         /// Used by: UnityAdapter
         .binaryTarget(
             name: "IronSourceSDK",
-            path: "ThirdParty/IronSourceSDK/IronSource.xcframework"
+            path: "ThirdParty/IronSourceSDK/IronSourceSDK.xcframework"
         ),
         
         /// InMobiSDK - InMobi advertising SDK
@@ -165,7 +165,7 @@ let package = Package(
         /// Used by: MintegralAdapter
         .binaryTarget(
             name: "MintegralAdSDK",
-            path: "ThirdParty/MintegralAdSDK/MTGSDK.xcframework"
+            path: "ThirdParty/MintegralAdSDK/MintegralAdSDK.xcframework"
         ),
         
         /// OpenWrapSDK - PubMatic OpenWrap SDK
@@ -179,7 +179,7 @@ let package = Package(
         /// Used by: AmazonAdapter
         .binaryTarget(
             name: "AmazonPublisherServicesSDK",
-            path: "ThirdParty/AmazonPublisherServicesSDK/DTBiOSSDK.xcframework"
+            path: "ThirdParty/AmazonPublisherServicesSDK/AmazonPublisherServicesSDK.xcframework"
         ),
         
         // ═══════════════════════════════════════════════════════════════════════
