@@ -109,86 +109,31 @@ if [[ "$TARGET" == "spm" ]]; then
         log_warn "SPM cleanup had warnings (continuing)"
     fi
     
-    # Step 3: Verify required XCFrameworks (DO NOT build NovaCore in SPM mode)
+    # Step 3: Verify required XCFrameworks using validate_xcframeworks.sh
     log_section "XCFramework Validation"
     
-    # Check wrapper XCFrameworks (non-blocking warning)
-    log_step "Checking wrapper XCFrameworks"
-    wrapper_missing=0
-    if ! check_xcframeworks_exist >/dev/null 2>&1; then
-        wrapper_missing=$?
-    fi
-    if [[ $wrapper_missing -gt 0 ]]; then
-        log_warn "$wrapper_missing wrapper(s) missing XCFrameworks"
-        log_info "Wrapper XCFrameworks are optional but recommended for SPM mode"
-        log_info "To build wrapper XCFrameworks:"
-        log_info "  1. Switch to Pods mode: ./Scripts/target-switching/switch-target.sh pods"
-        log_info "  2. Build wrappers: Scripts/xcframeworks/build-all.sh"
-        log_info "  3. Switch back to SPM mode"
+    log_step "Running XCFramework validation"
+    if "$SCRIPT_DIR/validate_xcframeworks.sh"; then
+        log_success "All XCFrameworks validated successfully"
     else
-        log_success "All wrapper XCFrameworks present"
-    fi
-    
-    # Check required XCFrameworks (blocking - SPM mode cannot proceed without these)
-    log_step "Checking required XCFrameworks"
-    required_missing=0
-    check_required_xcframeworks >/dev/null 2>&1 || required_missing=$?
-    
-    if [[ $required_missing -gt 0 ]]; then
-        log_error "$required_missing required XCFramework(s) missing"
-        
-        # Check specifically for NovaCore with detailed error message
-        if [[ ! -d "$ROOT_DIR/NovaAdapter/NovaCore.xcframework" ]]; then
-            log_error "❌ NovaCore.xcframework is MISSING"
-            log_info ""
-            log_info "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-            log_info "NovaCore.xcframework MUST be built in Pods mode."
-            log_info "It requires Pods dependencies: Kingfisher, SnapKit, Shimmer, lottie-ios, MSPOMSDK"
-            log_info ""
-            log_info "SPM mode CANNOT build NovaCore (no Pods dependencies available)."
-            log_info ""
-            log_info "To fix this:"
-            log_info "  1. Run: ./Scripts/target-switching/switch-target.sh pods"
-            log_info "  2. NovaCore will be built automatically during Pods mode setup"
-            log_info "  3. Then run: ./Scripts/target-switching/switch-target.sh spm"
-            log_info "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-            exit 1
-        fi
-        
-        # Check other required XCFrameworks with detailed output
-        log_error "Other missing required XCFrameworks:"
-        check_required_xcframeworks 2>&1 | grep -E "missing:|invalid:" || true
-        log_error ""
-        log_error "All required XCFrameworks must exist before SPM mode can proceed."
-        log_error "Missing XCFrameworks must be built or copied manually."
+        log_error "XCFramework validation failed"
+        log_info ""
+        log_info "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+        log_info "Required XCFrameworks for SPM mode:"
+        log_info "  - Build/XCFrameworks/MSPSharedLibraries.xcframework"
+        log_info "  - Build/XCFrameworks/MSPiOSCore.xcframework"
+        log_info "  - Build/XCFrameworks/NovaCore.xcframework"
+        log_info "  - Build/XCFrameworks/MSPCore.xcframework"
+        log_info "  - Build/XCFrameworks/MSPOMSDK.xcframework"
+        log_info "  - ThirdParty/PrebidMobile/PrebidMobile.xcframework"
+        log_info ""
+        log_info "To fix this:"
+        log_info "  1. Build Core XCFrameworks: ./Scripts/xcframeworks/build-core.sh"
+        log_info "  2. Ensure ThirdParty/PrebidMobile/PrebidMobile.xcframework exists"
+        log_info "  3. Then retry: ./Scripts/target-switching/switch-target.sh spm"
+        log_info "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
         exit 1
     fi
-    
-    # Validate XCFramework integrity (check Info.plist exists)
-    log_step "Validating XCFramework integrity"
-    local invalid_count=0
-    local required_xcframeworks=(
-        "MSPSharedLibraries/PrebidMobile.xcframework"
-        "MSPSharedLibraries/OMSDK_Newsbreak1.xcframework"
-        "MSPOMSDK/OMSDK_Newsbreak1.xcframework"
-        "NovaAdapter/NovaCore.xcframework"
-    )
-    
-    for xcf in "${required_xcframeworks[@]}"; do
-        local xcf_path="$ROOT_DIR/$xcf"
-        if [[ ! -f "$xcf_path/Info.plist" ]]; then
-            log_error "Invalid XCFramework (missing Info.plist): $xcf"
-            ((invalid_count++))
-        fi
-    done
-    
-    if [[ $invalid_count -gt 0 ]]; then
-        log_error "$invalid_count XCFramework(s) are invalid or corrupted"
-        log_error "Re-build the affected XCFrameworks in Pods mode"
-        exit 1
-    fi
-    
-    log_success "All required XCFrameworks present and valid"
     
     # Step 4: Generate YAML specs
     log_section "YAML Generation"
@@ -238,17 +183,25 @@ if [[ "$TARGET" == "spm" ]]; then
     
     # Validate MSPOMSDK.xcframework specifically (critical for SPM mode)
     log_step "Validating MSPOMSDK.xcframework"
-    local mspomsdk_xcf="$ROOT_DIR/MSPOMSDK/OMSDK_Newsbreak1.xcframework"
+    local mspomsdk_xcf="$ROOT_DIR/Build/XCFrameworks/MSPOMSDK.xcframework"
+    local omsdk_xcf="$ROOT_DIR/Sources/Core/MSPOMSDK/OMSDK_Newsbreak1.xcframework"
     if [[ ! -d "$mspomsdk_xcf" ]]; then
-        log_error "MSPOMSDK.xcframework (OMSDK_Newsbreak1.xcframework) is missing"
+        log_error "MSPOMSDK.xcframework is missing from Build/XCFrameworks/"
         log_error "This XCFramework is required for SPM mode"
         exit 1
     elif [[ ! -f "$mspomsdk_xcf/Info.plist" ]]; then
         log_error "MSPOMSDK.xcframework is invalid (missing Info.plist)"
-        log_error "Re-build or restore this XCFramework"
+        log_error "Re-build: ./Scripts/xcframeworks/build-core.sh"
         exit 1
     else
         log_success "MSPOMSDK.xcframework validated"
+    fi
+    
+    # Also check embedded OMSDK
+    if [[ ! -d "$omsdk_xcf" ]]; then
+        log_warn "OMSDK_Newsbreak1.xcframework missing from Sources/Core/MSPOMSDK/"
+    else
+        log_success "OMSDK_Newsbreak1.xcframework present"
     fi
     
     # Step 8: Validate environment (SPM mode specific checks)
@@ -379,37 +332,32 @@ elif [[ "$TARGET" == "pods" ]]; then
         fi
     fi
     
-    # Step 8: Build NovaCore.xcframework (Pods mode only - requires Pods dependencies and workspace)
-    log_section "NovaCore XCFramework Build"
-    log_step "Checking NovaCore.xcframework"
-    if [[ ! -d "$ROOT_DIR/Sources/Adapters/NovaAdapter/NovaCore.xcframework" ]] && [[ ! -d "$ROOT_DIR/Build/XCFrameworks/NovaCore.xcframework" ]]; then
-        log_warn "NovaCore.xcframework missing - building it now"
-        log_info "NovaCore requires Pods dependencies (Kingfisher, SnapKit, Shimmer, lottie-ios, MSPOMSDK)"
-        log_info "Building from workspace to ensure Pods are available"
-        
-        # Verify workspace exists (required for NovaCore build)
-        if [[ ! -d "$PODS_WORKSPACE" ]]; then
-            log_error "Workspace not found - cannot build NovaCore"
-            log_error "Workspace is required for NovaCore build (includes Pods projects)"
-            exit 1
+    # Step 8: Check Core XCFrameworks (Pods mode only - optionally build if missing)
+    log_section "Core XCFramework Check"
+    log_step "Checking Core XCFrameworks"
+    
+    local core_xcframeworks_missing=0
+    for xcf in "MSPSharedLibraries" "MSPiOSCore" "NovaCore" "MSPCore" "MSPOMSDK"; do
+        if [[ ! -d "$ROOT_DIR/Build/XCFrameworks/${xcf}.xcframework" ]]; then
+            log_warn "${xcf}.xcframework missing from Build/XCFrameworks/"
+            ((core_xcframeworks_missing++))
         fi
-        
-        BUILD_NOVA_SCRIPT="$ROOT_DIR/Scripts/xcframeworks/internal/build-nova.sh"
-        if [[ -f "$BUILD_NOVA_SCRIPT" ]]; then
-            log_info "Building NovaCore.xcframework from workspace..."
-            if SKIP_CODE_SIGN="${SKIP_CODE_SIGN:-1}" bash "$BUILD_NOVA_SCRIPT" 2>&1; then
-                log_success "NovaCore.xcframework built successfully"
-            else
-                log_error "Failed to build NovaCore.xcframework"
-                log_error "NovaCore build requires Pods dependencies and workspace - ensure pod install completed successfully"
-                exit 1
-            fi
-        else
-            log_error "NovaCore build script not found: $BUILD_NOVA_SCRIPT"
-            exit 1
-        fi
+    done
+    
+    if [[ $core_xcframeworks_missing -gt 0 ]]; then
+        log_warn "$core_xcframeworks_missing Core XCFramework(s) missing"
+        log_info "Core XCFrameworks can be built with: ./Scripts/xcframeworks/build-core.sh"
+        log_info "Continuing with Pods mode setup..."
     else
-        log_success "NovaCore.xcframework found"
+        log_success "All Core XCFrameworks present"
+    fi
+    
+    # Check ThirdParty/PrebidMobile
+    if [[ ! -d "$ROOT_DIR/ThirdParty/PrebidMobile/PrebidMobile.xcframework" ]]; then
+        log_warn "PrebidMobile.xcframework missing from ThirdParty/PrebidMobile/"
+        log_info "This is required for MSPPrebidAdapter to compile"
+    else
+        log_success "PrebidMobile.xcframework present"
     fi
     
     # Step 9: Verify no SPM packages in project.yml (critical for Pods mode isolation)

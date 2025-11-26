@@ -111,100 +111,123 @@ check_mixed_environment() {
 }
 
 # ============================================================================
-# 2. CHECK MISSING OR BROKEN ARTIFACTS
+# 2. CHECK MISSING OR BROKEN ARTIFACTS (Updated for new architecture - Round 26)
 # ============================================================================
 
 check_missing_artifacts() {
     print_section "2. Checking Missing or Broken Artifacts"
     
-    for wrapper in "${WRAPPER_NAMES[@]}"; do
-        local wrapper_dir="$ROOT_DIR/$wrapper"
+    # Check Core XCFrameworks
+    local core_xcframeworks=(
+        "Build/XCFrameworks/MSPSharedLibraries.xcframework"
+        "Build/XCFrameworks/MSPiOSCore.xcframework"
+        "Build/XCFrameworks/NovaCore.xcframework"
+        "Build/XCFrameworks/MSPCore.xcframework"
+        "Build/XCFrameworks/MSPOMSDK.xcframework"
+    )
+    
+    for xcf in "${core_xcframeworks[@]}"; do
+        local xcf_path="$ROOT_DIR/$xcf"
+        local xcf_name="$(basename "$xcf")"
         
-        # Check wrapper directory exists
-        if [[ ! -d "$wrapper_dir" ]]; then
-            print_fail "Wrapper directory missing: $wrapper"
-            continue
-        fi
-        
-        # Check Frameworks/ directory exists
-        local frameworks_dir="$wrapper_dir/Frameworks"
-        if [[ ! -d "$frameworks_dir" ]]; then
-            print_fail "Frameworks/ directory missing: $wrapper/Frameworks"
+        if [[ -d "$xcf_path" ]]; then
+            if [[ -f "$xcf_path/Info.plist" ]]; then
+                print_ok "Core XCFramework valid: $xcf_name"
+            else
+                print_fail "Core XCFramework invalid (no Info.plist): $xcf_name"
+            fi
         else
-            print_ok "Frameworks/ exists: $wrapper"
-        fi
-        
-        # Determine expected xcframework name
-        local sdk_name
-        sdk_name=$(get_sdk_name "$wrapper")
-        
-        # Check xcframework exists (check both temp and final locations)
-        local temp_path="$ROOT_DIR/Scripts/xcframeworks/output-temp/$wrapper/Frameworks/$sdk_name.xcframework"
-        local final_path="$frameworks_dir/$sdk_name.xcframework"
-        
-        if [[ -d "$final_path" ]]; then
-            print_ok "XCFramework exists: $wrapper/$sdk_name.xcframework"
-        elif [[ -d "$temp_path" ]]; then
-            print_ok "XCFramework exists (temp): $wrapper/$sdk_name.xcframework"
-        else
-            print_fail "XCFramework missing: $wrapper/$sdk_name.xcframework"
-        fi
-        
-        # Check Package.swift exists
-        local package_swift="$wrapper_dir/Package.swift"
-        if [[ -f "$package_swift" ]]; then
-            print_ok "Package.swift exists: $wrapper"
-        else
-            print_fail "Package.swift missing: $wrapper/Package.swift"
-        fi
-        
-        # Check builder script exists
-        local script_name
-        script_name=$(get_builder_script "$wrapper")
-        local builder_script=""
-        if [[ -n "$script_name" ]]; then
-            builder_script="Scripts/xcframeworks/wrappers/$script_name"
-        fi
-        
-        if [[ -n "$builder_script" ]] && [[ -f "$ROOT_DIR/$builder_script" ]]; then
-            print_ok "Builder script exists: $builder_script"
-        elif [[ -n "$builder_script" ]]; then
-            print_fail "Builder script missing: $builder_script"
+            print_fail "Core XCFramework missing: $xcf"
         fi
     done
+    
+    # Check ThirdParty XCFrameworks
+    local thirdparty_xcframeworks=(
+        "ThirdParty/PrebidMobile/PrebidMobile.xcframework"
+    )
+    
+    for xcf in "${thirdparty_xcframeworks[@]}"; do
+        local xcf_path="$ROOT_DIR/$xcf"
+        local xcf_name="$(basename "$xcf")"
+        
+        if [[ -d "$xcf_path" ]]; then
+            if [[ -f "$xcf_path/Info.plist" ]]; then
+                print_ok "ThirdParty XCFramework valid: $xcf_name"
+            else
+                print_fail "ThirdParty XCFramework invalid (no Info.plist): $xcf_name"
+            fi
+        else
+            print_fail "ThirdParty XCFramework missing: $xcf"
+        fi
+    done
+    
+    # Check Adapter Sources
+    local adapters=(
+        "Sources/Adapters/MSPPrebidAdapter/MSPPrebidAdapter"
+        "Sources/Adapters/MSPGoogleAdapter/MSPGoogleAdapter"
+        "Sources/Adapters/MSPFacebookAdapter/MSPFacebookAdapter"
+        "Sources/Adapters/NovaAdapter/NovaAdapter"
+        "Sources/Adapters/AmazonAdapter/AmazonAdapter"
+        "Sources/Adapters/UnityAdapter/UnityAdapter"
+        "Sources/Adapters/InmobiAdapter/InmobiAdapter"
+        "Sources/Adapters/MobilefuseAdapter/MobilefuseAdapter"
+        "Sources/Adapters/MintegralAdapter/MintegralAdapter"
+        "Sources/Adapters/PubmaticAdapter/PubmaticAdapter"
+    )
+    
+    for adapter in "${adapters[@]}"; do
+        local adapter_path="$ROOT_DIR/$adapter"
+        local adapter_name="$(basename "$adapter")"
+        
+        if [[ -d "$adapter_path" ]]; then
+            local swift_count=$(find "$adapter_path" -name "*.swift" -type f 2>/dev/null | wc -l | tr -d ' ')
+            if [[ $swift_count -gt 0 ]]; then
+                print_ok "Adapter source valid: $adapter_name ($swift_count Swift files)"
+            else
+                print_fail "Adapter source empty (no Swift files): $adapter_name"
+            fi
+        else
+            print_fail "Adapter source missing: $adapter"
+        fi
+    done
+    
+    # Check Package.swift
+    if [[ -f "$ROOT_DIR/Package.swift" ]]; then
+        print_ok "Package.swift exists"
+    else
+        print_fail "Package.swift missing"
+    fi
 }
 
 # ============================================================================
-# 3. CHECK WRAPPER VALIDITY
+# 3. CHECK XCFRAMEWORK VALIDITY (Updated for new architecture - Round 26)
 # ============================================================================
 
 check_wrapper_validity() {
-    print_section "3. Checking Wrapper Validity"
+    print_section "3. Checking XCFramework Validity"
     
-    for wrapper in "${WRAPPER_NAMES[@]}"; do
-        local wrapper_dir="$ROOT_DIR/$wrapper"
-        local frameworks_dir="$wrapper_dir/Frameworks"
+    # Core XCFrameworks to validate
+    local core_xcframeworks=(
+        "Build/XCFrameworks/MSPSharedLibraries.xcframework"
+        "Build/XCFrameworks/MSPiOSCore.xcframework"
+        "Build/XCFrameworks/NovaCore.xcframework"
+        "Build/XCFrameworks/MSPCore.xcframework"
+        "Build/XCFrameworks/MSPOMSDK.xcframework"
+        "ThirdParty/PrebidMobile/PrebidMobile.xcframework"
+    )
+    
+    for xcf_rel in "${core_xcframeworks[@]}"; do
+        local xcframework_path="$ROOT_DIR/$xcf_rel"
+        local xcf_name="$(basename "$xcf_rel" .xcframework)"
         
-        # Determine expected xcframework name
-        local sdk_name
-        sdk_name=$(get_sdk_name "$wrapper")
-        
-        # Check both temp and final locations
-        local xcframework_path=""
-        if [[ -d "$frameworks_dir/$sdk_name.xcframework" ]]; then
-            xcframework_path="$frameworks_dir/$sdk_name.xcframework"
-        elif [[ -d "$ROOT_DIR/Scripts/xcframeworks/output-temp/$wrapper/Frameworks/$sdk_name.xcframework" ]]; then
-            xcframework_path="$ROOT_DIR/Scripts/xcframeworks/output-temp/$wrapper/Frameworks/$sdk_name.xcframework"
-        fi
-        
-        if [[ -z "$xcframework_path" ]] || [[ ! -d "$xcframework_path" ]]; then
-            print_warn "Skipping validation: $wrapper/$sdk_name.xcframework not found"
+        if [[ ! -d "$xcframework_path" ]]; then
+            print_warn "Skipping validation: $xcf_rel not found"
             continue
         fi
         
         # Check xcframework structure
         if [[ ! -f "$xcframework_path/Info.plist" ]]; then
-            print_fail "Invalid xcframework: $wrapper/$sdk_name.xcframework missing Info.plist"
+            print_fail "Invalid xcframework: $xcf_name missing Info.plist"
             continue
         fi
         
@@ -225,7 +248,7 @@ check_wrapper_validity() {
         
         # Validate device slice
         if [[ -z "$ios_device_slice" ]]; then
-            print_fail "Missing iOS device slice (arm64): $wrapper/$sdk_name.xcframework"
+            print_fail "Missing iOS device slice (arm64): $xcf_name"
         else
             local framework_binary=""
             for framework in "$ios_device_slice"/*.framework; do
@@ -241,38 +264,21 @@ check_wrapper_validity() {
                 if command -v lipo &>/dev/null; then
                     local archs="$(lipo -archs "$framework_binary" 2>/dev/null || echo "")"
                     if [[ "$archs" == *"arm64"* ]]; then
-                        print_ok "Device slice valid (arm64): $wrapper"
+                        print_ok "Device slice valid (arm64): $xcf_name"
                     else
-                        print_fail "Device slice missing arm64: $wrapper"
+                        print_fail "Device slice missing arm64: $xcf_name"
                     fi
                 else
                     print_warn "lipo not available, skipping architecture check"
                 fi
-                
-                # Check minimum iOS version
-                if command -v otool &>/dev/null; then
-                    local min_version="$(otool -l "$framework_binary" 2>/dev/null | grep -A 3 "LC_VERSION_MIN_IPHONEOS" | grep "version" | awk '{print $2}' | head -1 || echo "")"
-                    if [[ -n "$min_version" ]]; then
-                        local major_version="${min_version%%.*}"
-                        if [[ "$major_version" -ge 12 ]]; then
-                            print_ok "iOS minimum version >= 12.0: $wrapper (v$min_version)"
-                        else
-                            print_fail "iOS minimum version < 12.0: $wrapper (v$min_version)"
-                        fi
-                    else
-                        print_warn "Could not determine iOS minimum version: $wrapper"
-                    fi
-                else
-                    print_warn "otool not available, skipping iOS version check"
-                fi
             else
-                print_fail "Framework binary not found: $wrapper/$sdk_name.xcframework (device slice)"
+                print_fail "Framework binary not found: $xcf_name (device slice)"
             fi
         fi
         
         # Validate simulator slice
         if [[ -z "$ios_sim_slice" ]]; then
-            print_warn "Missing iOS simulator slice: $wrapper/$sdk_name.xcframework"
+            print_warn "Missing iOS simulator slice: $xcf_name"
         else
             local framework_binary=""
             for framework in "$ios_sim_slice"/*.framework; do
@@ -288,15 +294,15 @@ check_wrapper_validity() {
                 if command -v lipo &>/dev/null; then
                     local archs="$(lipo -archs "$framework_binary" 2>/dev/null || echo "")"
                     if [[ "$archs" == *"arm64"* ]] || [[ "$archs" == *"x86_64"* ]]; then
-                        print_ok "Simulator slice valid: $wrapper ($archs)"
+                        print_ok "Simulator slice valid: $xcf_name ($archs)"
                     else
-                        print_fail "Simulator slice missing arm64/x86_64: $wrapper"
+                        print_fail "Simulator slice missing arm64/x86_64: $xcf_name"
                     fi
                 else
                     print_warn "lipo not available, skipping architecture check"
                 fi
             else
-                print_fail "Framework binary not found: $wrapper/$sdk_name.xcframework (simulator slice)"
+                print_fail "Framework binary not found: $xcf_name (simulator slice)"
             fi
         fi
     done

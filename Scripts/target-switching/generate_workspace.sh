@@ -55,29 +55,28 @@ for pkg in "${PACKAGE_FILES[@]}"; do
     PACKAGE_REL_PATHS+=("$rel_path")
 done
 
-# SPM app products (sorted alphabetically for determinism)
+# SPM app products (updated for new SDK architecture - Round 26)
+# These match the 16 products defined in Package.swift
 declare -a SPM_APP_PRODUCTS=(
-    "FBAudienceNetworkWrapper"
-    "InMobiSDKWrapper"
-    "InmobiAdapter"
-    "IronSourceSDKWrapper"
-    "MintegralAdapter"
-    "MintegralAdSDKWrapper"
-    "MobileFuseSDKWrapper"
-    "MobilefuseAdapter"
-    "MSPCore"
-    "MSPFacebookAdapter"
-    "MSPGoogleAdapter"
-    "MSPiOSCore"
-    "MSPOMSDK"
+    # Top-level product
+    "MSPAds"
+    # Core modules (XCFrameworks)
     "MSPSharedLibraries"
-    "NovaAdapter"
+    "MSPiOSCore"
     "NovaCore"
-    "OpenWrapSDKWrapper"
-    "PrebidAdapter"
-    "PubmaticAdapter"
-    "ShimmerWrapper"
+    "MSPCore"
+    "MSPOMSDK"
+    # Adapter modules (Source)
+    "MSPPrebidAdapter"
+    "MSPGoogleAdapter"
+    "MSPFacebookAdapter"
+    "NovaAdapter"
+    "AmazonAdapter"
     "UnityAdapter"
+    "InmobiAdapter"
+    "MobilefuseAdapter"
+    "MintegralAdapter"
+    "PubmaticAdapter"
 )
 
 package_exists() {
@@ -170,10 +169,11 @@ targetTemplates:
         ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
         SWIFT_VERSION: 5.0
 YAML
-    # Add PODS_ROOT only in Pods mode (for BaseAppTarget template)
+    # Add PODS_ROOT and PODS_PODFILE_DIR_PATH only in Pods mode (for BaseAppTarget template)
     if [[ "$TARGET_MODE" == "pods" ]]; then
         cat <<'YAML'
         PODS_ROOT: "$(SRCROOT)/../../Pods"
+        PODS_PODFILE_DIR_PATH: "$(SRCROOT)/../.."
 YAML
     fi
     cat <<'YAML'
@@ -382,7 +382,7 @@ if [[ "$TARGET_MODE" == "spm" ]]; then
             continue
         fi
         # Skip PrebidAdapter.xcodeproj if PrebidAdapter/project.yml exists (XcodeGen-managed)
-        if [[ "$proj" == *"Sources/Adapters/PrebidAdapter/PrebidAdapter.xcodeproj" ]] && [[ -f "$ROOT_DIR/Sources/Adapters/PrebidAdapter/project.yml" ]]; then
+        if [[ "$proj" == *"Sources/Adapters/MSPPrebidAdapter/MSPPrebidAdapter.xcodeproj" ]] && [[ -f "$ROOT_DIR/Sources/Adapters/MSPPrebidAdapter/project.yml" ]]; then
             continue
         fi
         # Skip MSPGoogleAdapter.xcodeproj if MSPGoogleAdapter/project.yml exists (XcodeGen-managed)
@@ -446,7 +446,7 @@ else
             continue
         fi
         # Skip PrebidAdapter.xcodeproj if PrebidAdapter/project.yml exists (XcodeGen-managed)
-        if [[ "$proj" == *"Sources/Adapters/PrebidAdapter/PrebidAdapter.xcodeproj" ]] && [[ -f "$ROOT_DIR/Sources/Adapters/PrebidAdapter/project.yml" ]]; then
+        if [[ "$proj" == *"Sources/Adapters/MSPPrebidAdapter/MSPPrebidAdapter.xcodeproj" ]] && [[ -f "$ROOT_DIR/Sources/Adapters/MSPPrebidAdapter/project.yml" ]]; then
             continue
         fi
         # Skip MSPGoogleAdapter.xcodeproj if MSPGoogleAdapter/project.yml exists (XcodeGen-managed)
@@ -548,7 +548,7 @@ YAML
             if [[ "$rel" == "Sources/Adapters/NovaAdapter/NovaAdapter.xcodeproj" ]] && [[ -f "$ROOT_DIR/Sources/Adapters/NovaAdapter/project.yml" ]]; then
                 continue
             fi
-            if [[ "$rel" == "Sources/Adapters/PrebidAdapter/PrebidAdapter.xcodeproj" ]] && [[ -f "$ROOT_DIR/Sources/Adapters/PrebidAdapter/project.yml" ]]; then
+            if [[ "$rel" == "Sources/Adapters/MSPPrebidAdapter/MSPPrebidAdapter.xcodeproj" ]] && [[ -f "$ROOT_DIR/Sources/Adapters/MSPPrebidAdapter/project.yml" ]]; then
                 continue
             fi
             if [[ "$rel" == "Sources/Adapters/MSPGoogleAdapter/MSPGoogleAdapter.xcodeproj" ]] && [[ -f "$ROOT_DIR/Sources/Adapters/MSPGoogleAdapter/project.yml" ]]; then

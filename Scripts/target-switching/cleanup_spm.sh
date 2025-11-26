@@ -1,10 +1,14 @@
 #!/usr/bin/env bash
 # ============================================================================
-# SwiftPM Environment Cleanup
+# SwiftPM Environment Cleanup (Updated for new SDK architecture - Round 26)
 # ============================================================================
 # Purpose: Safely remove all SwiftPM artifacts without touching tracked files
+#          or critical XCFrameworks.
 #
-# Safety: Only removes untracked SwiftPM artifacts. Never modifies tracked files.
+# Safety: 
+#   - Only removes untracked SwiftPM artifacts
+#   - Never modifies tracked files
+#   - Never deletes Build/XCFrameworks/ or ThirdParty/
 #
 # Usage:   ./Scripts/target-switching/cleanup_spm.sh [--force]
 # ============================================================================
@@ -32,6 +36,16 @@ if [[ "$FORCE" != "--force" ]]; then
 fi
 
 log_title "SwiftPM Environment Cleanup"
+
+# Step 0: Remove Package.resolved (SPM lock file)
+log_section "Removing Package.resolved"
+log_step "Removing Package.resolved"
+if [[ -f "$ROOT_DIR/Package.resolved" ]]; then
+    rm -f "$ROOT_DIR/Package.resolved"
+    log_success "Package.resolved removed"
+else
+    log_info "Package.resolved not found"
+fi
 
 # Step 1: Remove .swiftpm directories (but not inside .xcodeproj)
 log_section "Removing .swiftpm Directories"

@@ -155,11 +155,18 @@ safe_remove_directory() {
     local description="${2:-directory}"
     
     # Protect critical XCFrameworks - NEVER delete these directories or their contents
+    # Updated for new SDK architecture (Round 26)
     local protected_paths=(
-        "MSPSharedLibraries/PrebidMobile.xcframework"
-        "MSPSharedLibraries/OMSDK_Newsbreak1.xcframework"
-        "MSPOMSDK/OMSDK_Newsbreak1.xcframework"
-        "NovaAdapter/NovaCore.xcframework"
+        # Canonical ThirdParty location
+        "ThirdParty/PrebidMobile/PrebidMobile.xcframework"
+        # Embedded OMSDK
+        "Sources/Core/MSPOMSDK/OMSDK_Newsbreak1.xcframework"
+        # Core XCFrameworks in Build/
+        "Build/XCFrameworks/MSPSharedLibraries.xcframework"
+        "Build/XCFrameworks/MSPiOSCore.xcframework"
+        "Build/XCFrameworks/NovaCore.xcframework"
+        "Build/XCFrameworks/MSPCore.xcframework"
+        "Build/XCFrameworks/MSPOMSDK.xcframework"
     )
     
     # Check if the directory path matches any protected XCFramework
@@ -172,9 +179,9 @@ safe_remove_directory() {
     done
     
     # Also protect parent directories that contain protected XCFrameworks
-    if [[ "$dir_path" == "$ROOT_DIR/MSPSharedLibraries" ]] || \
-       [[ "$dir_path" == "$ROOT_DIR/MSPOMSDK" ]] || \
-       [[ "$dir_path" == "$ROOT_DIR/NovaAdapter" ]]; then
+    if [[ "$dir_path" == "$ROOT_DIR/ThirdParty/PrebidMobile" ]] || \
+       [[ "$dir_path" == "$ROOT_DIR/Build/XCFrameworks" ]] || \
+       [[ "$dir_path" == "$ROOT_DIR/Sources/Core/MSPOMSDK" ]]; then
         log_error "Refusing to delete directory containing protected XCFrameworks: $dir_path"
         return 1
     fi
@@ -228,43 +235,65 @@ safe_remove_directory() {
 }
 
 # ============================================================================
-# XCFramework Detection
+# XCFramework Detection (Updated for new SDK architecture - Round 26)
 # ============================================================================
+
+# Core XCFrameworks required for both SPM and Pods modes
+CORE_XCFRAMEWORKS=(
+    "Build/XCFrameworks/MSPSharedLibraries.xcframework"
+    "Build/XCFrameworks/MSPiOSCore.xcframework"
+    "Build/XCFrameworks/NovaCore.xcframework"
+    "Build/XCFrameworks/MSPCore.xcframework"
+    "Build/XCFrameworks/MSPOMSDK.xcframework"
+)
+
+# Third-party XCFrameworks (canonical paths)
+THIRDPARTY_XCFRAMEWORKS=(
+    "ThirdParty/PrebidMobile/PrebidMobile.xcframework"
+)
+
+# Embedded XCFrameworks
+EMBEDDED_XCFRAMEWORKS=(
+    "Sources/Core/MSPOMSDK/OMSDK_Newsbreak1.xcframework"
+)
+
+# Adapter source directories (must exist for both modes)
+ADAPTER_SOURCES=(
+    "Sources/Adapters/MSPPrebidAdapter/MSPPrebidAdapter"
+    "Sources/Adapters/MSPGoogleAdapter/MSPGoogleAdapter"
+    "Sources/Adapters/MSPFacebookAdapter/MSPFacebookAdapter"
+    "Sources/Adapters/NovaAdapter/NovaAdapter"
+    "Sources/Adapters/AmazonAdapter/AmazonAdapter"
+    "Sources/Adapters/UnityAdapter/UnityAdapter"
+    "Sources/Adapters/InmobiAdapter/InmobiAdapter"
+    "Sources/Adapters/MobilefuseAdapter/MobilefuseAdapter"
+    "Sources/Adapters/MintegralAdapter/MintegralAdapter"
+    "Sources/Adapters/PubmaticAdapter/PubmaticAdapter"
+)
 
 check_xcframeworks_exist() {
     local missing=0
-    local wrappers=(
-        "ShimmerWrapper"
-        "FBAudienceNetworkWrapper"
-        "IronSourceSDKWrapper"
-        "OpenWrapSDKWrapper"
-        "MintegralAdSDKWrapper"
-        "MobileFuseSDKWrapper"
-        "InMobiSDKWrapper"
-    )
     
-    for wrapper in "${wrappers[@]}"; do
-        local wrapper_dir="$ROOT_DIR/$wrapper"
-        local frameworks_dir="$wrapper_dir/Frameworks"
-        
-        if [[ ! -d "$wrapper_dir" ]]; then
-            log_warning "Wrapper directory missing: $wrapper"
+    # Check Core XCFrameworks
+    for xcf in "${CORE_XCFRAMEWORKS[@]}"; do
+        local xcf_path="$ROOT_DIR/$xcf"
+        if [[ ! -d "$xcf_path" ]]; then
+            log_warning "Core XCFramework missing: $xcf"
             ((missing++))
-            continue
-        fi
-        
-        if [[ ! -d "$frameworks_dir" ]]; then
-            log_warning "Frameworks directory missing: $wrapper/Frameworks"
+        elif [[ ! -f "$xcf_path/Info.plist" ]]; then
+            log_warning "Core XCFramework invalid (missing Info.plist): $xcf"
             ((missing++))
-            continue
         fi
-        
-        # Check for at least one .xcframework
-        local xcframeworks
-        xcframeworks=$(find "$frameworks_dir" -maxdepth 1 -name "*.xcframework" -type d 2>/dev/null | wc -l | tr -d ' ')
-        
-        if [[ "$xcframeworks" -eq 0 ]]; then
-            log_warning "No xcframeworks found in: $wrapper/Frameworks"
+    done
+    
+    # Check ThirdParty XCFrameworks
+    for xcf in "${THIRDPARTY_XCFRAMEWORKS[@]}"; do
+        local xcf_path="$ROOT_DIR/$xcf"
+        if [[ ! -d "$xcf_path" ]]; then
+            log_warning "ThirdParty XCFramework missing: $xcf"
+            ((missing++))
+        elif [[ ! -f "$xcf_path/Info.plist" ]]; then
+            log_warning "ThirdParty XCFramework invalid (missing Info.plist): $xcf"
             ((missing++))
         fi
     done
@@ -275,20 +304,54 @@ check_xcframeworks_exist() {
 # Check required XCFrameworks for SPM mode
 check_required_xcframeworks() {
     local missing=0
-    local required_xcframeworks=(
-        "MSPSharedLibraries/PrebidMobile.xcframework"
-        "MSPSharedLibraries/OMSDK_Newsbreak1.xcframework"
-        "MSPOMSDK/OMSDK_Newsbreak1.xcframework"
-        "NovaAdapter/NovaCore.xcframework"
-    )
     
-    for xcf in "${required_xcframeworks[@]}"; do
+    # All Core XCFrameworks are required
+    for xcf in "${CORE_XCFRAMEWORKS[@]}"; do
         local xcf_path="$ROOT_DIR/$xcf"
         if [[ ! -d "$xcf_path" ]]; then
             log_warning "Required XCFramework missing: $xcf"
             ((missing++))
         elif [[ ! -f "$xcf_path/Info.plist" ]]; then
             log_warning "Required XCFramework invalid (missing Info.plist): $xcf"
+            ((missing++))
+        fi
+    done
+    
+    # ThirdParty XCFrameworks are required
+    for xcf in "${THIRDPARTY_XCFRAMEWORKS[@]}"; do
+        local xcf_path="$ROOT_DIR/$xcf"
+        if [[ ! -d "$xcf_path" ]]; then
+            log_warning "Required ThirdParty XCFramework missing: $xcf"
+            ((missing++))
+        elif [[ ! -f "$xcf_path/Info.plist" ]]; then
+            log_warning "Required ThirdParty XCFramework invalid (missing Info.plist): $xcf"
+            ((missing++))
+        fi
+    done
+    
+    # Embedded XCFrameworks are required
+    for xcf in "${EMBEDDED_XCFRAMEWORKS[@]}"; do
+        local xcf_path="$ROOT_DIR/$xcf"
+        if [[ ! -d "$xcf_path" ]]; then
+            log_warning "Required embedded XCFramework missing: $xcf"
+            ((missing++))
+        elif [[ ! -f "$xcf_path/Info.plist" ]]; then
+            log_warning "Required embedded XCFramework invalid (missing Info.plist): $xcf"
+            ((missing++))
+        fi
+    done
+    
+    return $missing
+}
+
+# Check adapter source directories exist
+check_adapter_sources() {
+    local missing=0
+    
+    for adapter in "${ADAPTER_SOURCES[@]}"; do
+        local adapter_path="$ROOT_DIR/$adapter"
+        if [[ ! -d "$adapter_path" ]]; then
+            log_warning "Adapter source missing: $adapter"
             ((missing++))
         fi
     done

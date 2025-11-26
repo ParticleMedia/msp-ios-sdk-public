@@ -1,10 +1,13 @@
 #!/usr/bin/env bash
 # ============================================================================
-# CocoaPods Environment Cleanup
+# CocoaPods Environment Cleanup (Updated for new SDK architecture - Round 26)
 # ============================================================================
 # Purpose: Clean CocoaPods environment and reinstall pods
 #
-# Safety: Only cleans CocoaPods artifacts and DerivedData.
+# Safety: 
+#   - Only cleans CocoaPods artifacts and DerivedData
+#   - Never deletes Build/XCFrameworks/ or ThirdParty/
+#   - Never deletes Sources/
 #
 # Usage:   ./Scripts/target-switching/cleanup_pods.sh
 # ============================================================================
@@ -26,6 +29,12 @@ if [[ ! -f "$ROOT_DIR/Podfile" ]]; then
 fi
 
 log_title "CocoaPods Environment Cleanup"
+
+# Safety check: Ensure we never delete protected directories
+log_info "Protected directories (will NOT be deleted):"
+log_info "  - Build/XCFrameworks/"
+log_info "  - ThirdParty/"
+log_info "  - Sources/"
 
 # Step 1: Deintegrate CocoaPods (must be in repo root)
 log_section "Deintegrating CocoaPods"
