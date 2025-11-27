@@ -31,6 +31,64 @@
     <key>GADApplicationIdentifier</key>
     <string>ca-app-pub-3940256099942544~1458002511</string>
 
+    <!-- Required for App Tracking Transparency (ATT) - iOS 14+ -->
+    <key>NSUserTrackingUsageDescription</key>
+    <string>This identifier will be used to deliver personalized ads.</string>
+
+    <!-- SKAdNetwork identifiers for ad attribution -->
+    <key>SKAdNetworkItems</key>
+    <array>
+        <!-- Google -->
+        <dict>
+            <key>SKAdNetworkIdentifier</key>
+            <string>cstr6suwn9.skadnetwork</string>
+        </dict>
+        <!-- Facebook -->
+        <dict>
+            <key>SKAdNetworkIdentifier</key>
+            <string>v9wttpbfk9.skadnetwork</string>
+        </dict>
+        <dict>
+            <key>SKAdNetworkIdentifier</key>
+            <string>n38lu8286q.skadnetwork</string>
+        </dict>
+        <!-- Unity -->
+        <dict>
+            <key>SKAdNetworkIdentifier</key>
+            <string>4dzt52r2t5.skadnetwork</string>
+        </dict>
+        <!-- IronSource -->
+        <dict>
+            <key>SKAdNetworkIdentifier</key>
+            <string>su67r6k2v3.skadnetwork</string>
+        </dict>
+        <!-- InMobi -->
+        <dict>
+            <key>SKAdNetworkIdentifier</key>
+            <string>wzmmz9fp6w.skadnetwork</string>
+        </dict>
+        <!-- Mintegral -->
+        <dict>
+            <key>SKAdNetworkIdentifier</key>
+            <string>kbd757ywx3.skadnetwork</string>
+        </dict>
+        <!-- PubMatic -->
+        <dict>
+            <key>SKAdNetworkIdentifier</key>
+            <string>k674qkevps.skadnetwork</string>
+        </dict>
+        <!-- MobileFuse -->
+        <dict>
+            <key>SKAdNetworkIdentifier</key>
+            <string>g28c52eehv.skadnetwork</string>
+        </dict>
+        <!-- Amazon -->
+        <dict>
+            <key>SKAdNetworkIdentifier</key>
+            <string>p78axxw29g.skadnetwork</string>
+        </dict>
+    </array>
+
     <!-- Scene Configuration for iOS 13+ -->
     <key>UIApplicationSceneManifest</key>
     <dict>
