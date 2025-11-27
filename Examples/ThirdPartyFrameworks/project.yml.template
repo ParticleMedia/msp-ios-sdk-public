@@ -1,0 +1,146 @@
+# XcodeGen Project for Third-Party Frameworks
+# Builds SwiftProtobuf, SnapKit, Lottie, Shimmer, and Kingfisher as dynamic frameworks
+# for XCFramework packaging.
+
+name: ThirdPartyFrameworks
+
+options:
+  minimumXcodeGenVersion: 2.38.0
+  deploymentTarget:
+    iOS: "15.0"
+  bundleIdPrefix: msp.thirdparty
+  developmentLanguage: en
+
+configs:
+  Debug: debug
+  Release: release
+
+settings:
+  base:
+    IPHONEOS_DEPLOYMENT_TARGET: "15.0"
+    TARGETED_DEVICE_FAMILY: "1,2"
+    SWIFT_VERSION: "5.0"
+    DEFINES_MODULE: YES
+    BUILD_LIBRARY_FOR_DISTRIBUTION: YES
+    MACH_O_TYPE: mh_dylib
+    DYLIB_INSTALL_NAME_BASE: "@rpath"
+    INSTALL_PATH: "$(LOCAL_LIBRARY_DIR)/Frameworks"
+    SKIP_INSTALL: NO
+    CODE_SIGN_IDENTITY: ""
+    CODE_SIGNING_REQUIRED: NO
+    CODE_SIGNING_ALLOWED: NO
+    CLANG_ENABLE_MODULES: YES
+
+targets:
+  SwiftProtobuf:
+    type: framework
+    platform: iOS
+    sources:
+      - path: ../../Pods/SwiftProtobuf/Sources/SwiftProtobuf
+        excludes:
+          - "**/*.md"
+    settings:
+      base:
+        PRODUCT_NAME: SwiftProtobuf
+        PRODUCT_BUNDLE_IDENTIFIER: msp.thirdparty.SwiftProtobuf
+        PRODUCT_MODULE_NAME: SwiftProtobuf
+        SWIFT_OBJC_INTERFACE_HEADER_NAME: ""
+
+  SnapKit:
+    type: framework
+    platform: iOS
+    sources:
+      - path: ../../Pods/SnapKit/Sources
+        excludes:
+          - "**/*.md"
+    settings:
+      base:
+        PRODUCT_NAME: SnapKit
+        PRODUCT_BUNDLE_IDENTIFIER: msp.thirdparty.SnapKit
+        PRODUCT_MODULE_NAME: SnapKit
+        SWIFT_OBJC_INTERFACE_HEADER_NAME: ""
+
+  Lottie:
+    type: framework
+    platform: iOS
+    sources:
+      - path: ../../Pods/lottie-ios/Sources
+        excludes:
+          - "**/*.md"
+          - "**/*.docc/**"
+    settings:
+      base:
+        PRODUCT_NAME: Lottie
+        PRODUCT_BUNDLE_IDENTIFIER: msp.thirdparty.Lottie
+        PRODUCT_MODULE_NAME: Lottie
+        SWIFT_OBJC_INTERFACE_HEADER_NAME: ""
+
+  Shimmer:
+    type: framework
+    platform: iOS
+    sources:
+      - path: ../../Pods/Shimmer/FBShimmering
+        headerVisibility: public
+    settings:
+      base:
+        PRODUCT_NAME: Shimmer
+        PRODUCT_BUNDLE_IDENTIFIER: msp.thirdparty.Shimmer
+        PRODUCT_MODULE_NAME: Shimmer
+        # Objective-C settings
+        CLANG_ENABLE_MODULES: YES
+        DEFINES_MODULE: YES
+        # Generate module map for ObjC
+        MODULEMAP_FILE: ""
+        SWIFT_INSTALL_OBJC_HEADER: NO
+
+  Kingfisher:
+    type: framework
+    platform: iOS
+    sources:
+      - path: ../../ThirdParty/MSPKingfisher/Sources
+        excludes:
+          - "**/*.md"
+          - "**/Documentation.docc/**"
+    settings:
+      base:
+        PRODUCT_NAME: Kingfisher
+        PRODUCT_BUNDLE_IDENTIFIER: msp.thirdparty.Kingfisher
+        PRODUCT_MODULE_NAME: Kingfisher
+        SWIFT_OBJC_INTERFACE_HEADER_NAME: ""
+
+schemes:
+  SwiftProtobuf:
+    build:
+      targets:
+        SwiftProtobuf: all
+    archive:
+      config: Release
+
+  SnapKit:
+    build:
+      targets:
+        SnapKit: all
+    archive:
+      config: Release
+
+  Lottie:
+    build:
+      targets:
+        Lottie: all
+    archive:
+      config: Release
+
+  Shimmer:
+    build:
+      targets:
+        Shimmer: all
+    archive:
+      config: Release
+
+  Kingfisher:
+    build:
+      targets:
+        Kingfisher: all
+    archive:
+      config: Release
+

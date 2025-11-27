@@ -6,13 +6,24 @@ Pod::Spec.new do |spec|
   spec.homepage     = "https://github.com/aimsp/msp-ios-sdk/NovaAdapter"
   spec.license      = "Copyright"
   spec.author       = { "huanzhiNB" => "huanzhi.zhang@newsbreak.com" }
-  spec.source       = { :git => "https://github.com/ParticleMedia/msp-ios-sdk-public.git", :tag => "#{spec.version}" }
   spec.platform     = :ios, '15.0'
   spec.swift_version = '5.0'
   spec.requires_arc  = true
 
-  # PURE SWIFT SOURCE POD
-  spec.source_files = "Sources/Adapters/NovaAdapter/**/*.{swift}"
+  # ═══════════════════════════════════════════════════════════════════════════
+  # DUAL-MODE SUPPORT: Development (source) vs Release (binary)
+  # ═══════════════════════════════════════════════════════════════════════════
+  msp_release = ENV['MSP_RELEASE'] == '1'
+
+  if msp_release
+    # RELEASE MODE: Binary XCFramework for external distribution
+    spec.source = { :git => "https://github.com/ParticleMedia/msp-ios-sdk-public.git", :tag => spec.version.to_s }
+    spec.vendored_frameworks = "Binary/NovaAdapter.xcframework"
+  else
+    # DEVELOPMENT MODE: Source files for internal development
+    spec.source = { :path => '.' }
+    spec.source_files = "Sources/Adapters/NovaAdapter/NovaAdapter/**/*.{swift}"
+  end
 
   spec.dependency 'MSPSharedLibraries'
   spec.dependency 'MSPOMSDK'

@@ -1,25 +1,25 @@
-# NovaAdapter XcodeGen Project Specification
-# Uses shared template and adds NovaAdapter-specific overrides
+# PubmaticAdapter XcodeGen Project Specification
+# Uses shared template and adds PubmaticAdapter-specific overrides
 # Template: Config/xcodegen/module.project_template.yml
 
 include:
   - ../../../Configs/xcodegen/module.project_template.yml
 
-name: NovaAdapter
+name: PubmaticAdapter
 
 settings:
   base:
     # Product Configuration
-    PRODUCT_NAME: NovaAdapter
-    PRODUCT_BUNDLE_IDENTIFIER: msp.NovaAdapter
-    PRODUCT_MODULE_NAME: NovaAdapter
+    PRODUCT_NAME: PubmaticAdapter
+    PRODUCT_BUNDLE_IDENTIFIER: msp.PubmaticAdapter
+    PRODUCT_MODULE_NAME: PubmaticAdapter
 
 targets:
-  NovaAdapter:
+  PubmaticAdapter:
     type: framework
     platform: iOS
     sources:
-      - path: NovaAdapter
+      - path: PubmaticAdapter
         excludes:
           - "**/*.h"
           - "**/*.modulemap"
@@ -27,21 +27,13 @@ targets:
           - "**/Tests/**"
           - "**/*.test.swift"
           - "**/*.spec.swift"
-          - "NovaAdapter.docc/**"
+          - "PubmaticAdapter.docc/**"
     dependencies:
       - framework: ../../../Build/XCFrameworks/MSPiOSCore.xcframework
         embed: false
       - framework: ../../Core/MSPSharedLibraries/PrebidMobile.xcframework
         embed: false
-      - framework: ../../../Build/XCFrameworks/NovaCore.xcframework
-        embed: false
-      - framework: ../../Core/ThirdParty/Kingfisher/Kingfisher.xcframework
-        embed: false
-      - framework: ../../Core/ThirdParty/SnapKit/SnapKit.xcframework
-        embed: false
-      - framework: ../../Core/ThirdParty/Lottie/Lottie.xcframework
-        embed: false
-      - framework: ../../Core/ThirdParty/Shimmer/Shimmer.xcframework
+      - framework: ../../../Sources/Wrappers/OpenWrapSDKWrapper/Frameworks/OpenWrapSDK.xcframework
         embed: false
     settings:
       base:
@@ -59,12 +51,13 @@ targets:
           - $(SRCROOT)/../../../Sources/Core/ThirdParty/Shimmer
           - $(SRCROOT)/../../../Sources/Core/ThirdParty/SwiftProtobuf
           - $(SRCROOT)/../../../Sources/Core/MSPOMSDK/OMSDK_Newsbreak1.xcframework
+          - $(SRCROOT)/../../../Sources/Wrappers/OpenWrapSDKWrapper/Frameworks
 
 schemes:
-  NovaAdapter:
+  PubmaticAdapter:
     build:
       targets:
-        NovaAdapter: all
+        PubmaticAdapter: all
     run:
       config: Debug
     profile:

@@ -1,25 +1,25 @@
-# NovaAdapter XcodeGen Project Specification
-# Uses shared template and adds NovaAdapter-specific overrides
+# MintegralAdapter XcodeGen Project Specification
+# Uses shared template and adds MintegralAdapter-specific overrides
 # Template: Config/xcodegen/module.project_template.yml
 
 include:
   - ../../../Configs/xcodegen/module.project_template.yml
 
-name: NovaAdapter
+name: MintegralAdapter
 
 settings:
   base:
     # Product Configuration
-    PRODUCT_NAME: NovaAdapter
-    PRODUCT_BUNDLE_IDENTIFIER: msp.NovaAdapter
-    PRODUCT_MODULE_NAME: NovaAdapter
+    PRODUCT_NAME: MintegralAdapter
+    PRODUCT_BUNDLE_IDENTIFIER: msp.MintegralAdapter
+    PRODUCT_MODULE_NAME: MintegralAdapter
 
 targets:
-  NovaAdapter:
+  MintegralAdapter:
     type: framework
     platform: iOS
     sources:
-      - path: NovaAdapter
+      - path: MintegralAdapter
         excludes:
           - "**/*.h"
           - "**/*.modulemap"
@@ -27,21 +27,21 @@ targets:
           - "**/Tests/**"
           - "**/*.test.swift"
           - "**/*.spec.swift"
-          - "NovaAdapter.docc/**"
+          - "MintegralAdapter.docc/**"
     dependencies:
       - framework: ../../../Build/XCFrameworks/MSPiOSCore.xcframework
         embed: false
       - framework: ../../Core/MSPSharedLibraries/PrebidMobile.xcframework
         embed: false
-      - framework: ../../../Build/XCFrameworks/NovaCore.xcframework
+      - framework: ../../../Pods/MintegralAdSDK/Fmk/MTGSDK.xcframework
         embed: false
-      - framework: ../../Core/ThirdParty/Kingfisher/Kingfisher.xcframework
+      - framework: ../../../Pods/MintegralAdSDK/Fmk/MTGSDKBanner.xcframework
         embed: false
-      - framework: ../../Core/ThirdParty/SnapKit/SnapKit.xcframework
+      - framework: ../../../Pods/MintegralAdSDK/Fmk/MTGSDKNewInterstitial.xcframework
         embed: false
-      - framework: ../../Core/ThirdParty/Lottie/Lottie.xcframework
+      - framework: ../../../Pods/MintegralAdSDK/Fmk/MTGSDKInterstitialVideo.xcframework
         embed: false
-      - framework: ../../Core/ThirdParty/Shimmer/Shimmer.xcframework
+      - framework: ../../../Pods/MintegralAdSDK/Fmk/MTGSDKBidding.xcframework
         embed: false
     settings:
       base:
@@ -59,12 +59,13 @@ targets:
           - $(SRCROOT)/../../../Sources/Core/ThirdParty/Shimmer
           - $(SRCROOT)/../../../Sources/Core/ThirdParty/SwiftProtobuf
           - $(SRCROOT)/../../../Sources/Core/MSPOMSDK/OMSDK_Newsbreak1.xcframework
+          - $(SRCROOT)/../../../Pods/MintegralAdSDK/Fmk
 
 schemes:
-  NovaAdapter:
+  MintegralAdapter:
     build:
       targets:
-        NovaAdapter: all
+        MintegralAdapter: all
     run:
       config: Debug
     profile:

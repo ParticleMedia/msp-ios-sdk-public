@@ -42,6 +42,10 @@ readonly PACKAGE_SWIFT="$ROOT_DIR/Package.swift"
 readonly PACKAGE_SWIFT_TEMPLATE="$ROOT_DIR/Package.swift.template"
 readonly PACKAGE_SWIFT_DISABLED="$ROOT_DIR/Package.swift.disabled"  # Legacy, will be removed
 
+# XCFramework directories
+readonly XCFRAMEWORK_DIR="$ROOT_DIR/Build/XCFrameworks"
+readonly BINARY_DIR="$ROOT_DIR/Binary"  # Future migration target
+
 # ============================================================================
 # Package.swift State Management
 # ============================================================================
@@ -58,19 +62,22 @@ check_package_swift_state() {
         return 1
     fi
     
-    if [[ "$target_mode" == "pods" ]]; then
-        # Pods mode: Package.swift must NOT exist
-        if [[ -f "$PACKAGE_SWIFT" ]]; then
-            return 1  # Invalid state - Package.swift should be deleted
-        fi
-        return 0
-    elif [[ "$target_mode" == "spm" ]]; then
-        # SPM mode: Package.swift must exist (copied from template)
-        if [[ ! -f "$PACKAGE_SWIFT" ]]; then
-            return 1  # Invalid state - Package.swift should exist
-        fi
-        return 0
-    fi
+    case "$target_mode" in
+        pods|pods-dev|pods-release)
+            # Pods modes: Package.swift must NOT exist
+            if [[ -f "$PACKAGE_SWIFT" ]]; then
+                return 1  # Invalid state - Package.swift should be deleted
+            fi
+            return 0
+            ;;
+        spm|spm-release)
+            # SPM modes: Package.swift must exist (copied from template)
+            if [[ ! -f "$PACKAGE_SWIFT" ]]; then
+                return 1  # Invalid state - Package.swift should exist
+            fi
+            return 0
+            ;;
+    esac
     return 1
 }
 
@@ -129,17 +136,20 @@ ensure_package_swift_enabled() {
 auto_fix_package_swift_state() {
     local target_mode="$1"
     
-    if [[ "$target_mode" == "pods" ]]; then
-        if [[ -f "$PACKAGE_SWIFT" ]]; then
-            log_warn "⚠️ Pods mode detected but Package.swift exists. Auto-removing..."
-            ensure_package_swift_disabled
-        fi
-    elif [[ "$target_mode" == "spm" ]]; then
-        if [[ ! -f "$PACKAGE_SWIFT" ]]; then
-            log_warn "⚠️ SPM mode detected but Package.swift is missing. Auto-generating..."
-            ensure_package_swift_enabled
-        fi
-    fi
+    case "$target_mode" in
+        pods|pods-dev|pods-release)
+            if [[ -f "$PACKAGE_SWIFT" ]]; then
+                log_warn "⚠️ Pods mode detected but Package.swift exists. Auto-removing..."
+                ensure_package_swift_disabled
+            fi
+            ;;
+        spm|spm-release)
+            if [[ ! -f "$PACKAGE_SWIFT" ]]; then
+                log_warn "⚠️ SPM mode detected but Package.swift is missing. Auto-generating..."
+                ensure_package_swift_enabled
+            fi
+            ;;
+    esac
 }
 
 # ============================================================================
@@ -529,33 +539,19 @@ validate_environment() {
     # Validate YAML files exist
     if [[ ! -f "$PROJECT_SPEC" ]]; then
         log_error "project.yml missing: $PROJECT_SPEC"
-        ((errors++))
+        ((errors++)) || true
     fi
     
     if [[ ! -f "$WORKSPACE_SPEC" ]]; then
         log_error "workspace.yml missing: $WORKSPACE_SPEC"
-        ((errors++))
+        ((errors++)) || true
     fi
     
     # Validate Package.swift state (Template Architecture)
     # Template must ALWAYS exist (developer-maintained)
     if [[ ! -f "$PACKAGE_SWIFT_TEMPLATE" ]]; then
         log_error "Package.swift.template missing (developer-maintained file)"
-        ((errors++))
-    fi
-    
-    if [[ "$target" == "spm" ]]; then
-        # SPM mode: Package.swift must exist (copied from template)
-        if [[ ! -f "$PACKAGE_SWIFT" ]]; then
-            log_error "Package.swift missing (required for SPM mode)"
-            ((errors++))
-        fi
-    elif [[ "$target" == "pods" ]]; then
-        # Pods mode: Package.swift must NOT exist (deleted, template preserved)
-        if [[ -f "$PACKAGE_SWIFT" ]]; then
-            log_error "Package.swift exists (should be removed in Pods mode)"
-            ((errors++))
-        fi
+        ((errors++)) || true
     fi
     
     # Clean up legacy .disabled file if it exists
@@ -564,77 +560,92 @@ validate_environment() {
         rm -f "$PACKAGE_SWIFT_DISABLED"
     fi
     
-    # Validate YAML content matches target mode
-    if [[ "$target" == "spm" ]]; then
-        if [[ -d "$PODS_DIR" ]]; then
-            log_error "Pods/ directory exists (should be removed for SPM)"
-            ((errors++))
-        fi
-        
-        # Check project.yml has SPM target, not Pods target
-        if grep -q "^  MSPDemoApp:$" "$PROJECT_SPEC" 2>/dev/null; then
-            log_error "project.yml contains MSPDemoApp target (should be MSPDemoApp-SPM for SPM mode)"
-            ((errors++))
-        fi
-        
-        if ! grep -q "^  MSPDemoApp-SPM:$" "$PROJECT_SPEC" 2>/dev/null; then
-            log_error "project.yml missing MSPDemoApp-SPM target (required for SPM mode)"
-            ((errors++))
-        fi
-        
-        # Check for Pods xcconfig references
-        if grep -q "Pods.*xcconfig\|Pods-MSPDemoApp" "$PROJECT_SPEC" 2>/dev/null; then
-            log_error "project.yml contains Pods xcconfig references (should not in SPM mode)"
-            ((errors++))
-        fi
-        
-        # Check workspace.yml doesn't include Pods project
-        if grep -q "Pods/Pods.xcodeproj" "$WORKSPACE_SPEC" 2>/dev/null; then
-            log_error "workspace.yml contains Pods project (should not in SPM mode)"
-            ((errors++))
-        fi
-        
-        # Verify required XCFrameworks exist
-        if ! check_required_xcframeworks >/dev/null 2>&1; then
-            xcf_missing=$?
-            log_error "$xcf_missing required XCFramework(s) missing for SPM mode"
-            ((errors++))
-        fi
-        
-    elif [[ "$target" == "pods" ]]; then
-        if [[ ! -d "$PODS_DIR" ]]; then
-            log_error "Pods/ directory missing (required for CocoaPods)"
-            ((errors++))
-        fi
-        
-        # Check project.yml has Pods target, not SPM target
-        if ! grep -q "^  MSPDemoApp:$" "$PROJECT_SPEC" 2>/dev/null; then
-            log_error "project.yml missing MSPDemoApp target (required for Pods mode)"
-            ((errors++))
-        fi
-        
-        if grep -q "^  MSPDemoApp-SPM:$" "$PROJECT_SPEC" 2>/dev/null; then
-            log_error "project.yml contains MSPDemoApp-SPM target (should be MSPDemoApp for Pods mode)"
-            ((errors++))
-        fi
-        
-        # Check for Pods xcconfig references
-        if ! grep -q "Pods.*xcconfig\|Pods-MSPDemoApp" "$PROJECT_SPEC" 2>/dev/null; then
-            log_error "project.yml missing Pods xcconfig references (required for Pods mode)"
-            ((errors++))
-        fi
-        
-        # Check that packages section is empty (no SwiftPM packages in Pods mode)
-        if grep -q "^packages:" "$PROJECT_SPEC" 2>/dev/null; then
-            if ! grep -q "^packages: {}$" "$PROJECT_SPEC" 2>/dev/null; then
-                # Check if there are any package entries (not just empty)
-                if grep -A 1 "^packages:" "$PROJECT_SPEC" 2>/dev/null | grep -qE "^  [A-Za-z]"; then
-                    log_error "project.yml contains SwiftPM packages (should be empty in Pods mode)"
-                    ((errors++))
+    # Mode-specific validation
+    case "$target" in
+        spm|spm-release)
+            # SPM mode: Package.swift must exist (copied from template)
+            if [[ ! -f "$PACKAGE_SWIFT" ]]; then
+                log_error "Package.swift missing (required for SPM mode)"
+                ((errors++)) || true
+            fi
+            
+            if [[ -d "$PODS_DIR" ]]; then
+                log_error "Pods/ directory exists (should be removed for SPM)"
+                ((errors++)) || true
+            fi
+            
+            # Check project.yml has SPM target, not Pods target
+            if grep -q "^  MSPDemoApp:$" "$PROJECT_SPEC" 2>/dev/null; then
+                log_error "project.yml contains MSPDemoApp target (should be MSPDemoApp-SPM for SPM mode)"
+                ((errors++)) || true
+            fi
+            
+            if ! grep -q "^  MSPDemoApp-SPM:$" "$PROJECT_SPEC" 2>/dev/null; then
+                log_error "project.yml missing MSPDemoApp-SPM target (required for SPM mode)"
+                ((errors++)) || true
+            fi
+            
+            # Check for Pods xcconfig references
+            if grep -q "Pods.*xcconfig\|Pods-MSPDemoApp" "$PROJECT_SPEC" 2>/dev/null; then
+                log_error "project.yml contains Pods xcconfig references (should not in SPM mode)"
+                ((errors++)) || true
+            fi
+            
+            # Check workspace.yml doesn't include Pods project
+            if grep -q "Pods/Pods.xcodeproj" "$WORKSPACE_SPEC" 2>/dev/null; then
+                log_error "workspace.yml contains Pods project (should not in SPM mode)"
+                ((errors++)) || true
+            fi
+            
+            # Verify required XCFrameworks exist
+            if ! check_required_xcframeworks >/dev/null 2>&1; then
+                xcf_missing=$?
+                log_error "$xcf_missing required XCFramework(s) missing for SPM mode"
+                ((errors++)) || true
+            fi
+            ;;
+            
+        pods|pods-dev|pods-release)
+            # Pods mode: Package.swift must NOT exist (deleted, template preserved)
+            if [[ -f "$PACKAGE_SWIFT" ]]; then
+                log_error "Package.swift exists (should be removed in Pods mode)"
+                ((errors++)) || true
+            fi
+            
+            if [[ ! -d "$PODS_DIR" ]]; then
+                log_error "Pods/ directory missing (required for CocoaPods)"
+                ((errors++)) || true
+            fi
+            
+            # Check project.yml has Pods target, not SPM target
+            if ! grep -q "^  MSPDemoApp:$" "$PROJECT_SPEC" 2>/dev/null; then
+                log_error "project.yml missing MSPDemoApp target (required for Pods mode)"
+                ((errors++)) || true
+            fi
+            
+            if grep -q "^  MSPDemoApp-SPM:$" "$PROJECT_SPEC" 2>/dev/null; then
+                log_error "project.yml contains MSPDemoApp-SPM target (should be MSPDemoApp for Pods mode)"
+                ((errors++)) || true
+            fi
+            
+            # Check for Pods xcconfig references
+            if ! grep -q "Pods.*xcconfig\|Pods-MSPDemoApp" "$PROJECT_SPEC" 2>/dev/null; then
+                log_error "project.yml missing Pods xcconfig references (required for Pods mode)"
+                ((errors++)) || true
+            fi
+            
+            # Check that packages section is empty (no SwiftPM packages in Pods mode)
+            if grep -q "^packages:" "$PROJECT_SPEC" 2>/dev/null; then
+                if ! grep -q "^packages: {}$" "$PROJECT_SPEC" 2>/dev/null; then
+                    # Check if there are any package entries (not just empty)
+                    if grep -A 1 "^packages:" "$PROJECT_SPEC" 2>/dev/null | grep -qE "^  [A-Za-z]"; then
+                        log_error "project.yml contains SwiftPM packages (should be empty in Pods mode)"
+                        ((errors++)) || true
+                    fi
                 fi
             fi
-        fi
-    fi
+            ;;
+    esac
     
     return $errors
 }

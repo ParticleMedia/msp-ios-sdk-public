@@ -26,7 +26,18 @@ fi
 log_title "Building Core Modules"
 
 # -----------------------------------------------------------
-# Step 0 — Ensure workspace and Pods are available
+# Step 0 — Generate project.yml from templates (Template Architecture)
+# -----------------------------------------------------------
+log_section "Generating project.yml from templates"
+
+if [[ -x "$ROOT_DIR/Scripts/target-switching/generate_project_templates.sh" ]]; then
+    "$ROOT_DIR/Scripts/target-switching/generate_project_templates.sh"
+else
+    log_warn "generate_project_templates.sh not found or not executable"
+fi
+
+# -----------------------------------------------------------
+# Step 1 — Ensure workspace and Pods are available
 # Core modules depend on Pod sources (MSPPrebidAdapter, MSPKingfisher, etc.)
 # via workspace, not XCFrameworks
 # -----------------------------------------------------------

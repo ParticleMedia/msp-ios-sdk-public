@@ -30,11 +30,13 @@ if [[ "$MODULE_NAME" =~ ^(MSPCore|NovaCore|MSPiOSCore|MSPSharedLibraries|MSPOMSD
 else
     SCHEME_NAME="$MODULE_NAME"
 fi
-# Try new structure first (Sources/Core/ or Sources/Adapters/), fallback to old
+# Try new structure first (Sources/Core/, Sources/Adapters/, Sources/Common/), fallback to old
 if [[ -f "$ROOT_DIR/Sources/Core/$MODULE_NAME/project.yml" ]]; then
     PROJECT_YML="$ROOT_DIR/Sources/Core/$MODULE_NAME/project.yml"
 elif [[ -f "$ROOT_DIR/Sources/Adapters/$MODULE_NAME/project.yml" ]]; then
     PROJECT_YML="$ROOT_DIR/Sources/Adapters/$MODULE_NAME/project.yml"
+elif [[ -f "$ROOT_DIR/Sources/Common/$MODULE_NAME/project.yml" ]]; then
+    PROJECT_YML="$ROOT_DIR/Sources/Common/$MODULE_NAME/project.yml"
 elif [[ -f "$ROOT_DIR/Sources/SharedLibraries/$MODULE_NAME/project.yml" ]]; then
     PROJECT_YML="$ROOT_DIR/Sources/SharedLibraries/$MODULE_NAME/project.yml"
 elif [[ -f "$ROOT_DIR/$MODULE_NAME/project.yml" ]]; then
@@ -71,6 +73,8 @@ if [[ -f "$ROOT_DIR/Sources/Core/$MODULE_NAME/project.yml" ]]; then
     XCODEPROJ="$ROOT_DIR/Sources/Core/$MODULE_NAME/$MODULE_NAME.xcodeproj"
 elif [[ -f "$ROOT_DIR/Sources/Adapters/$MODULE_NAME/project.yml" ]]; then
     XCODEPROJ="$ROOT_DIR/Sources/Adapters/$MODULE_NAME/$MODULE_NAME.xcodeproj"
+elif [[ -f "$ROOT_DIR/Sources/Common/$MODULE_NAME/project.yml" ]]; then
+    XCODEPROJ="$ROOT_DIR/Sources/Common/$MODULE_NAME/$MODULE_NAME.xcodeproj"
 elif [[ -f "$ROOT_DIR/Sources/SharedLibraries/$MODULE_NAME/project.yml" ]]; then
     XCODEPROJ="$ROOT_DIR/Sources/SharedLibraries/$MODULE_NAME/$MODULE_NAME.xcodeproj"
 else
@@ -109,12 +113,18 @@ if [[ ! -d "$WORKSPACE" ]]; then
 fi
 
 # Check if scheme exists in workspace
+# NOTE: Skip workspace mode entirely for XCFramework builds because:
+#   1. CocoaPods creates duplicate schemes in Pods.xcodeproj that conflict with our targets
+#   2. The Pods scheme has different build settings (staticlib, different install paths)
+#   3. We need our XcodeGen-generated project with correct framework settings
+# Always use project mode for XCFramework builds
 SCHEME_IN_WORKSPACE=false
-if [[ -d "$WORKSPACE" ]]; then
-    if xcodebuild -workspace "$WORKSPACE" -list 2>/dev/null | grep -qE "^\s*$SCHEME_NAME\s*$"; then
-        SCHEME_IN_WORKSPACE=true
-    fi
-fi
+# Disabled: Pods project conflicts with adapter schemes
+# if [[ -d "$WORKSPACE" ]]; then
+#     if xcodebuild -workspace "$WORKSPACE" -list 2>/dev/null | grep -qE "^\s*$SCHEME_NAME\s*$"; then
+#         SCHEME_IN_WORKSPACE=true
+#     fi
+# fi
 
 # For Core modules, use PROJECT mode (not workspace) to avoid Pods scheme conflicts
 # but still inject -I paths for pre-built Pod modules (especially Kingfisher from MSPKingfisher)

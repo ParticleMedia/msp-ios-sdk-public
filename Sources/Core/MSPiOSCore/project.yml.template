@@ -1,0 +1,56 @@
+include:
+  - ../../../Configs/xcodegen/module.project_template.yml
+
+name: MSPiOSCore
+
+settings:
+  base:
+    # Product Configuration
+    PRODUCT_NAME: MSPiOSCore
+    PRODUCT_BUNDLE_IDENTIFIER: msp.MSPiOSCore
+    PRODUCT_MODULE_NAME: MSPiOSCore
+
+targets:
+  MSPiOSCore:
+    type: framework
+    platform: iOS
+    sources:
+      - path: MSPiOSCore
+        excludes:
+          - "**/*.md"
+          - "**/Tests/**"
+          - "**/*.test.swift"
+          - "**/*.spec.swift"
+          - "MSPiOSCore.docc/**"
+          - "**/*.h"
+          - "**/*.modulemap"
+    settings:
+      base:
+        BUILD_LIBRARY_FOR_DISTRIBUTION: YES
+        SKIP_INSTALL: NO
+        
+        # Swift Module Interface Settings (explicit for XCFramework distribution)
+        SWIFT_EMIT_MODULE_INTERFACE: YES
+        SWIFT_INSTALL_MODULE_FOR_DEPLOYMENT: YES
+        ENABLE_LIBRARY_EVOLUTION: YES
+        
+        # Framework Search Paths
+        # MSPiOSCore is a core module with no external framework dependencies
+        # All dependencies are standard iOS frameworks (Foundation, etc.)
+        FRAMEWORK_SEARCH_PATHS:
+          - $(inherited)
+
+schemes:
+  MSPiOSCore-XCFramework:
+    build:
+      targets:
+        MSPiOSCore-XCFramework: all
+    run:
+      config: Debug
+    profile:
+      config: Release
+    analyze:
+      config: Debug
+    archive:
+      config: Release
+

@@ -6,13 +6,24 @@ Pod::Spec.new do |spec|
   spec.homepage     = "https://github.com/aimsp/msp-ios-sdk/MobilefuseAdapter"
   spec.license      = "Copyright"
   spec.author       = { "huanzhiNB" => "huanzhi.zhang@newsbreak.com" }
-  spec.source       = { :git => "https://github.com/ParticleMedia/msp-ios-sdk-public.git", :tag => "#{spec.version}" }
   spec.platform     = :ios, '15.0'
   spec.swift_version = '5.0'
   spec.requires_arc  = true
 
-  # PURE SWIFT SOURCE POD
-  spec.source_files = "Sources/Adapters/MobilefuseAdapter/**/*.{swift}"
+  # ═══════════════════════════════════════════════════════════════════════════
+  # DUAL-MODE SUPPORT: Development (source) vs Release (binary)
+  # ═══════════════════════════════════════════════════════════════════════════
+  msp_release = ENV['MSP_RELEASE'] == '1'
+
+  if msp_release
+    # RELEASE MODE: Binary XCFramework for external distribution
+    spec.source = { :git => "https://github.com/ParticleMedia/msp-ios-sdk-public.git", :tag => spec.version.to_s }
+    spec.vendored_frameworks = "Binary/MobilefuseAdapter.xcframework"
+  else
+    # DEVELOPMENT MODE: Source files for internal development
+    spec.source = { :path => '.' }
+    spec.source_files = "Sources/Adapters/MobilefuseAdapter/MobilefuseAdapter/**/*.{swift}"
+  end
 
   spec.dependency 'MobileFuseSDK', '1.8.2'
   spec.dependency 'MSPSharedLibraries'

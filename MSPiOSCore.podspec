@@ -26,12 +26,24 @@ Pod::Spec.new do |spec|
   spec.license      = "Copyright"
   spec.author       = { "huanzhiNB" => "huanzhi.zhang@newsbreak.com" }
 
-  spec.source       = { :git => "https://github.com/ParticleMedia/msp-ios-sdk-public.git", :tag => "#{spec.version}" }
+  # ═══════════════════════════════════════════════════════════════════════════
+  # DUAL-MODE SUPPORT: Development (source) vs Release (binary)
+  # ═══════════════════════════════════════════════════════════════════════════
+  msp_release = ENV['MSP_RELEASE'] == '1'
+
+  if msp_release
+    # RELEASE MODE: Binary XCFramework for external distribution
+    spec.source = { :git => "https://github.com/ParticleMedia/msp-ios-sdk-public.git", :tag => spec.version.to_s }
+    spec.vendored_frameworks = "Binary/MSPiOSCore.xcframework"
+  else
+    # DEVELOPMENT MODE: Source files for internal development
+    spec.source = { :path => '.' }
+    spec.source_files = "Sources/Core/MSPiOSCore/MSPiOSCore/**/*.{swift,h,m}"
+  end
 
   spec.platform     = :ios, '15.0'
   spec.requires_arc  = true
 
-  spec.vendored_frameworks = "Build/XCFrameworks/MSPiOSCore.xcframework"
   spec.module_name = 'MSPiOSCore'
 
   spec.static_framework = true

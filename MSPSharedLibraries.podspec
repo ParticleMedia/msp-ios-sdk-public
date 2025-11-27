@@ -81,7 +81,25 @@ Pod::Spec.new do |spec|
   #  Supports git, hg, bzr, svn and HTTP.
   #
 
-  spec.source       = { :git => "https://github.com/ParticleMedia/msp-ios-sdk-public.git", :tag => "#{spec.version}" }
+  # ═══════════════════════════════════════════════════════════════════════════
+  # DUAL-MODE SUPPORT: Development (source) vs Release (binary)
+  # ═══════════════════════════════════════════════════════════════════════════
+  msp_release = ENV['MSP_RELEASE'] == '1'
+
+  if msp_release
+    # RELEASE MODE: Binary XCFramework for external distribution
+    spec.source = { :git => "https://github.com/ParticleMedia/msp-ios-sdk-public.git", :tag => spec.version.to_s }
+    spec.vendored_frameworks = [
+      "Binary/MSPSharedLibraries.xcframework",
+      "ThirdParty/PrebidMobile/PrebidMobile.xcframework"
+    ]
+  else
+    # DEVELOPMENT MODE: Source files for internal development
+    # NOTE: Still need PrebidMobile.xcframework as it's a binary-only third-party SDK
+    spec.source = { :path => '.' }
+    spec.source_files = "Sources/Core/MSPSharedLibraries/MSPSharedLibraries/**/*.{swift,h,m}"
+    spec.vendored_frameworks = "ThirdParty/PrebidMobile/PrebidMobile.xcframework"
+  end
 
   # ――― Source Code ―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
   #
@@ -93,12 +111,6 @@ Pod::Spec.new do |spec|
 
   spec.platform     = :ios, '15.0'
   spec.requires_arc  = true
-
-  # Canonical paths synchronized with Package.swift (SPM)
-  spec.vendored_frameworks = [
-    "Build/XCFrameworks/MSPSharedLibraries.xcframework",
-    "ThirdParty/PrebidMobile/PrebidMobile.xcframework"
-  ]
 
   spec.static_framework = true
 

@@ -31,6 +31,8 @@ Then select scheme **MSPDemoApp** → Run.
 
 **That's it!** No additional scripts needed for initial setup.
 
+> **Note:** This uses `pods-dev` mode (all modules as source code), which is the default for SDK development.
+
 ### 1.3 Build from Command Line (CocoaPods Mode)
 
 ```bash
@@ -50,21 +52,33 @@ xcodebuild \
 
 The `switch-target.sh` script is **ONLY needed when switching between modes**, not for initial setup.
 
+### Three-Mode Architecture
+
+| Mode | Core Modules | Adapters | Use Case |
+|------|--------------|----------|----------|
+| **pods-dev** | SOURCE | SOURCE | Daily development (default) |
+| **pods-release** | BINARY | SOURCE | Pre-release validation |
+| **spm-release** | BINARY | SOURCE | SPM distribution testing |
+
+> **Important:** Adapters are **SOURCE-ONLY** in all modes. No adapter XCFrameworks are ever required.
+
 | Scenario | What to run |
 |----------|-------------|
 | Fresh clone (first time) | `pod install` → open workspace |
 | Already in Pods mode, want to stay | Nothing needed |
-| Switch from Pods → SPM | `./Scripts/target-switching/switch-target.sh spm` |
-| Switch from SPM → Pods | `./Scripts/target-switching/switch-target.sh pods` |
+| Switch to development mode | `./Scripts/target-switching/switch-target.sh pods-dev` |
+| Switch to release validation | `./Scripts/target-switching/switch-target.sh pods-release` |
+| Switch to SPM mode | `./Scripts/target-switching/switch-target.sh spm-release` |
 
 ### 2.1 Switch to SPM Mode
 
 ```bash
-./Scripts/target-switching/switch-target.sh spm
+./Scripts/target-switching/switch-target.sh spm-release
 ```
 
 This will:
 - Clean `Pods/` directory
+- Generate `Package.swift` from template
 - Auto-sync XCFrameworks if missing
 - Generate SPM project via XcodeGen
 - Open `Examples/MSPDemoApp/MSPDemoApp.xcodeproj`
@@ -74,36 +88,51 @@ After Xcode opens, select scheme **MSPDemoApp-SPM** → Run.
 ### 2.2 Switch Back to CocoaPods Mode (from SPM)
 
 ```bash
-./Scripts/target-switching/switch-target.sh pods
+./Scripts/target-switching/switch-target.sh pods-dev
 ```
 
 This will:
-- Clean SPM artifacts
+- Clean SPM artifacts (using `cleanup_spm.sh`)
 - Run `pod install`
-- Generate workspace via XcodeGen
+- Generate project files from templates via XcodeGen
 - Open `msp-ios-sdk.xcworkspace`
 
 ### 2.3 Summary Table
 
 | Mode | Workspace/Project | Scheme |
 |------|-------------------|--------|
-| **CocoaPods** | `msp-ios-sdk.xcworkspace` | `MSPDemoApp` |
-| **SPM** | `Examples/MSPDemoApp/MSPDemoApp.xcodeproj` | `MSPDemoApp-SPM` |
+| **pods-dev** | `msp-ios-sdk.xcworkspace` | `MSPDemoApp` |
+| **pods-release** | `msp-ios-sdk.xcworkspace` | `MSPDemoApp` |
+| **spm-release** | `Examples/MSPDemoApp/MSPDemoApp.xcodeproj` | `MSPDemoApp-SPM` |
 
 ---
 
 ## 3. Round-Trip Testing
 
-Test that both modes work correctly:
+Test that all three modes work correctly:
 
 ```bash
 ./Scripts/target-switching/round-trip-test.sh
 ```
 
+**Test cycle:** `pods-dev` → `pods-release` → `spm-release` → `pods-dev`
+
+The round-trip test validates:
+- Mode switching works correctly
+- Generated files (workspace.yml, project.yml, Package.swift) are valid
+- Core XCFrameworks exist (5 required)
+- Git status is clean after full cycle
+
 **Stress test (multiple cycles):**
 
 ```bash
-./Scripts/target-switching/round-trip-test.sh --stress=3
+./Scripts/target-switching/round-trip-test.sh --loops=3
+```
+
+**Skip builds (validation only):**
+
+```bash
+./Scripts/target-switching/round-trip-test.sh --skip-build
 ```
 
 ---
@@ -125,7 +154,7 @@ pod 'Google-Mobile-Ads-SDK', '~> 12.0'
 ```bash
 pod install                                     # Update Pods
 ./Scripts/spm-sync/spm_sync_all.sh              # Extract XCFrameworks to ThirdParty/
-./Scripts/target-switching/round-trip-test.sh  # Validate both modes work
+./Scripts/target-switching/round-trip-test.sh  # Validate all modes work
 ```
 
 ### Rules
@@ -134,6 +163,17 @@ pod install                                     # Update Pods
 |-------|----------|
 | Update versions in `Podfile` | Manually edit `ThirdParty/` contents |
 | Run `spm_sync_all.sh` after changes | Edit third-party versions in `Package.swift` |
+
+### XCFramework Build Rules
+
+Only **5 core XCFrameworks** are required (built via `build-core.sh`):
+- MSPCore
+- MSPiOSCore
+- MSPSharedLibraries
+- MSPOMSDK
+- NovaCore
+
+**Adapter XCFrameworks are NOT required** — adapters are always source-only.
 
 ### Special Cases
 
@@ -156,15 +196,15 @@ open msp-ios-sdk.xcworkspace
 
 ```bash
 ./Scripts/spm-sync/spm_sync_all.sh
-./Scripts/target-switching/switch-target.sh spm
+./Scripts/target-switching/switch-target.sh spm-release
 ```
 
 ### SPM: "no such module XXX"
 
 ```bash
-rm -rf .swiftpm .build
+./Scripts/target-switching/cleanup_spm.sh --force
 ./Scripts/spm-sync/spm_sync_all.sh
-./Scripts/target-switching/switch-target.sh spm
+./Scripts/target-switching/switch-target.sh spm-release
 ```
 
 ### Nuclear Option (Full Reset)
@@ -178,7 +218,7 @@ pod install
 ./Scripts/spm-sync/spm_sync_all.sh
 
 # 3. Switch to desired mode
-./Scripts/target-switching/switch-target.sh pods   # or: spm
+./Scripts/target-switching/switch-target.sh pods-dev   # or: pods-release, spm-release
 ```
 
 ### Full CI Validation
@@ -195,22 +235,39 @@ pod install
 msp-ios-sdk/
 ├── Sources/
 │   ├── Core/                 # Core modules (5)
-│   ├── Adapters/             # Ad network adapters (10)
+│   ├── Adapters/             # Ad network adapters (10) — always source
 │   └── Common/               # Shared modules
 │
-├── Build/XCFrameworks/       # Pre-built core XCFrameworks
+├── Build/XCFrameworks/       # Built core XCFrameworks
+├── Binary/                   # Release-ready XCFrameworks
 ├── ThirdParty/               # Third-party XCFrameworks (from Pods)
 │
 ├── Scripts/
 │   ├── spm-sync/             # Pods → SPM sync
-│   ├── target-switching/     # Mode switching
+│   ├── target-switching/     # Mode switching (3 modes)
+│   ├── xcframeworks/         # XCFramework builders
 │   └── ci/                   # CI scripts
 │
 ├── Examples/MSPDemoApp/      # Demo app
-├── msp-ios-sdk.xcworkspace   # CocoaPods workspace
-├── Package.swift             # SPM manifest
+├── *.podspec                 # CocoaPods specs (dual-mode)
+├── *.template                # Project templates (tracked)
+├── msp-ios-sdk.xcworkspace   # CocoaPods workspace (generated)
+├── Package.swift             # SPM manifest (generated from template)
 └── Podfile                   # CocoaPods (source of truth)
 ```
+
+### Key Scripts
+
+| Script | Purpose |
+|--------|---------|
+| `switch-target.sh` | Switch between pods-dev, pods-release, spm-release |
+| `generate_project_templates.sh` | Generate project.yml from templates |
+| `spm_sync_all.sh` | Sync Pods → ThirdParty XCFrameworks |
+| `build-core.sh` | Build 5 core XCFrameworks |
+| `build-adapters.sh` | Build adapter XCFrameworks (optional, non-blocking) |
+| `validate_xcframeworks.sh` | Validate 5 core XCFrameworks exist |
+| `round-trip-test.sh` | Test 3-mode switching cycle |
+| `cleanup_spm.sh` | Clean SwiftPM artifacts |
 
 ---
 
@@ -225,14 +282,27 @@ Pods/                  → ThirdParty/*.xcframework
     └──► spm_sync_all.sh ──────────┘
                               │
                               ▼
-                        Package.swift
+                        Package.swift.template
                               │
-             ┌───────────────┼───────────────┐
-             ▼                               ▼
-      Pods mode                         SPM mode
- (msp-ios-sdk.xcworkspace)     (MSPDemoApp.xcodeproj)
-      Scheme: MSPDemoApp         Scheme: MSPDemoApp-SPM
+             ┌────────────────┼────────────────┐
+             ▼                ▼                ▼
+        pods-dev         pods-release      spm-release
+     (all source)     (core binary)     (core binary)
+                      (adapter source)  (adapter source)
+
+Required Core XCFrameworks (5):
+  MSPCore, MSPiOSCore, MSPSharedLibraries, MSPOMSDK, NovaCore
+
+Adapters: Always SOURCE (no XCFrameworks required)
 ```
+
+### Release Workflow (Summary)
+
+```
+preflight → build-core → pods-release → spm-release → publish
+```
+
+For detailed release steps, see internal release documentation.
 
 ---
 

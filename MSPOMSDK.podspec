@@ -81,7 +81,22 @@ Pod::Spec.new do |spec|
   #  Supports git, hg, bzr, svn and HTTP.
   #
 
-  spec.source       = { :git => "https://github.com/ParticleMedia/msp-ios-sdk-public.git", :tag => "#{spec.version}" }
+  # ═══════════════════════════════════════════════════════════════════════════
+  # DUAL-MODE SUPPORT: Development (source) vs Release (binary)
+  # ═══════════════════════════════════════════════════════════════════════════
+  msp_release = ENV['MSP_RELEASE'] == '1'
+
+  if msp_release
+    # RELEASE MODE: Binary XCFramework for external distribution
+    spec.source = { :git => "https://github.com/ParticleMedia/msp-ios-sdk-public.git", :tag => spec.version.to_s }
+    spec.vendored_frameworks = "Binary/MSPOMSDK.xcframework"
+  else
+    # DEVELOPMENT MODE: Source files for internal development
+    # NOTE: OMSDK_Newsbreak1.xcframework is a binary-only third-party SDK, must be vendored
+    spec.source = { :path => '.' }
+    spec.source_files = "Sources/Core/MSPOMSDK/MSPOMSDK/**/*.{swift,h,m}"
+    spec.vendored_frameworks = "Sources/Core/MSPOMSDK/OMSDK_Newsbreak1.xcframework"
+  end
 
   # ――― Source Code ―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
   #
@@ -93,8 +108,6 @@ Pod::Spec.new do |spec|
 
   spec.platform     = :ios, '15.0'
   spec.requires_arc  = true
-
-  spec.vendored_frameworks = "Build/XCFrameworks/MSPOMSDK.xcframework"
 
   spec.static_framework = true
 

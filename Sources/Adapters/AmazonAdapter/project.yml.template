@@ -1,25 +1,25 @@
-# NovaAdapter XcodeGen Project Specification
-# Uses shared template and adds NovaAdapter-specific overrides
+# AmazonAdapter XcodeGen Project Specification
+# Uses shared template and adds AmazonAdapter-specific overrides
 # Template: Config/xcodegen/module.project_template.yml
 
 include:
   - ../../../Configs/xcodegen/module.project_template.yml
 
-name: NovaAdapter
+name: AmazonAdapter
 
 settings:
   base:
     # Product Configuration
-    PRODUCT_NAME: NovaAdapter
-    PRODUCT_BUNDLE_IDENTIFIER: msp.NovaAdapter
-    PRODUCT_MODULE_NAME: NovaAdapter
+    PRODUCT_NAME: AmazonAdapter
+    PRODUCT_BUNDLE_IDENTIFIER: msp.AmazonAdapter
+    PRODUCT_MODULE_NAME: AmazonAdapter
 
 targets:
-  NovaAdapter:
+  AmazonAdapter:
     type: framework
     platform: iOS
     sources:
-      - path: NovaAdapter
+      - path: AmazonAdapter
         excludes:
           - "**/*.h"
           - "**/*.modulemap"
@@ -27,21 +27,13 @@ targets:
           - "**/Tests/**"
           - "**/*.test.swift"
           - "**/*.spec.swift"
-          - "NovaAdapter.docc/**"
+          - "AmazonAdapter.docc/**"
     dependencies:
       - framework: ../../../Build/XCFrameworks/MSPiOSCore.xcframework
         embed: false
-      - framework: ../../Core/MSPSharedLibraries/PrebidMobile.xcframework
+      - framework: ../../../Pods/AmazonPublisherServicesSDK/APS_iOS_SDK-4.5.5/DTBiOSSDK.xcframework
         embed: false
-      - framework: ../../../Build/XCFrameworks/NovaCore.xcframework
-        embed: false
-      - framework: ../../Core/ThirdParty/Kingfisher/Kingfisher.xcframework
-        embed: false
-      - framework: ../../Core/ThirdParty/SnapKit/SnapKit.xcframework
-        embed: false
-      - framework: ../../Core/ThirdParty/Lottie/Lottie.xcframework
-        embed: false
-      - framework: ../../Core/ThirdParty/Shimmer/Shimmer.xcframework
+      - framework: ../../../Pods/Google-Mobile-Ads-SDK/Frameworks/GoogleMobileAdsFramework/GoogleMobileAds.xcframework
         embed: false
     settings:
       base:
@@ -59,12 +51,14 @@ targets:
           - $(SRCROOT)/../../../Sources/Core/ThirdParty/Shimmer
           - $(SRCROOT)/../../../Sources/Core/ThirdParty/SwiftProtobuf
           - $(SRCROOT)/../../../Sources/Core/MSPOMSDK/OMSDK_Newsbreak1.xcframework
+          - $(SRCROOT)/../../../Pods/AmazonPublisherServicesSDK/APS_iOS_SDK-4.5.5
+          - $(SRCROOT)/../../../Pods/Google-Mobile-Ads-SDK/Frameworks/GoogleMobileAdsFramework
 
 schemes:
-  NovaAdapter:
+  AmazonAdapter:
     build:
       targets:
-        NovaAdapter: all
+        AmazonAdapter: all
     run:
       config: Debug
     profile:

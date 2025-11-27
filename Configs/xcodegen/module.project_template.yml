@@ -66,9 +66,10 @@ settings:
     BUILD_LIBRARY_FOR_DISTRIBUTION: YES
     
     # Framework Settings
-    # Static framework for XCFramework distribution (avoids dynamic linking issues)
-    MACH_O_TYPE: staticlib
-    # DYLIB_INSTALL_NAME_BASE not needed for static frameworks
+    # Dynamic framework is required for proper XCFramework packaging
+    # The resulting XCFramework will contain both iOS and Simulator slices
+    MACH_O_TYPE: mh_dylib
+    DYLIB_INSTALL_NAME_BASE: "@rpath"
     INSTALL_PATH: $(LOCAL_LIBRARY_DIR)/Frameworks
     SKIP_INSTALL: NO
     
