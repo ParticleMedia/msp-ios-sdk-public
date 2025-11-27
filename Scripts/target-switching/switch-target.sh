@@ -101,17 +101,10 @@ if [[ "$TARGET" == "spm" ]]; then
         log_info "Pods/ already removed"
     fi
     
-    # Step 1.5: Restore Package.swift if it was disabled
+    # Step 1.5: Restore Package.swift (CRITICAL for SPM mode)
     log_section "Restoring Package.swift"
-    log_step "Checking for Package.swift.disabled"
-    if [[ -f "$ROOT_DIR/Package.swift.disabled" ]]; then
-        mv "$ROOT_DIR/Package.swift.disabled" "$ROOT_DIR/Package.swift"
-        log_success "Package.swift restored from Package.swift.disabled"
-    elif [[ -f "$ROOT_DIR/Package.swift" ]]; then
-        log_info "Package.swift already exists"
-    else
-        log_error "Package.swift not found! SPM mode requires Package.swift"
-        log_info "Try: git checkout Package.swift"
+    if ! ensure_package_swift_enabled; then
+        log_error "Failed to restore Package.swift for SPM mode"
         exit 1
     fi
     
@@ -245,7 +238,20 @@ if [[ "$TARGET" == "spm" ]]; then
         log_success "OMSDK_Newsbreak1.xcframework present"
     fi
     
-    # Step 8: Validate environment (SPM mode specific checks)
+    # Step 8: Final Package.swift state check
+    log_section "Final Package.swift Check"
+    log_step "Ensuring Package.swift is enabled"
+    if [[ ! -f "$PACKAGE_SWIFT" ]]; then
+        log_error "Package.swift missing - SPM mode requires Package.swift"
+        exit 1
+    fi
+    if [[ -f "$PACKAGE_SWIFT_DISABLED" ]]; then
+        log_warn "Package.swift.disabled still exists - removing"
+        rm -f "$PACKAGE_SWIFT_DISABLED"
+    fi
+    log_success "Package.swift correctly enabled for SPM mode"
+    
+    # Step 9: Validate environment (SPM mode specific checks)
     log_section "Environment Validation"
     log_step "Validating SPM environment"
     if validate_environment "spm"; then
@@ -255,12 +261,14 @@ if [[ "$TARGET" == "spm" ]]; then
         log_error "Environment validation failed ($errors error(s))"
         log_info "SPM mode requires:"
         log_info "  - No Pods/ directory"
+        log_info "  - Package.swift must exist"
+        log_info "  - Package.swift.disabled must NOT exist"
         log_info "  - MSPDemoApp-SPM target in project.yml"
         log_info "  - All required XCFrameworks present"
         exit 1
     fi
     
-    # Step 9: Open Xcode
+    # Step 10: Open Xcode
     log_section "Opening Xcode"
     log_step "Opening Xcode"
     PROJECT_DIR="$(dirname "$PROJECT_SPEC")"
@@ -289,16 +297,8 @@ elif [[ "$TARGET" == "pods" ]]; then
     
     # Step 1.5: CRITICAL - Disable Package.swift to prevent Xcode from auto-detecting SPM
     log_section "Disabling Package.swift"
-    log_step "Renaming Package.swift to Package.swift.disabled"
-    if [[ -f "$ROOT_DIR/Package.swift" ]]; then
-        mv "$ROOT_DIR/Package.swift" "$ROOT_DIR/Package.swift.disabled"
-        log_success "Package.swift renamed to Package.swift.disabled"
-        log_info "This prevents Xcode from auto-detecting SPM packages in Pods mode"
-    elif [[ -f "$ROOT_DIR/Package.swift.disabled" ]]; then
-        log_info "Package.swift already disabled"
-    else
-        log_warn "Package.swift not found (may need to restore from git)"
-    fi
+    ensure_package_swift_disabled
+    log_info "This prevents Xcode from auto-detecting SPM packages in Pods mode"
     
     # Remove SPM workspace (if it exists and is SPM-only)
     if [[ -d "$SPM_WORKSPACE" ]]; then
@@ -447,7 +447,20 @@ elif [[ "$TARGET" == "pods" ]]; then
         exit 1
     fi
     
-    # Step 10: Validate environment (Pods mode specific checks)
+    # Step 10: Final Package.swift state check (auto-fix if git checkout restored it)
+    log_section "Final Package.swift Check"
+    log_step "Ensuring Package.swift remains disabled"
+    if [[ -f "$PACKAGE_SWIFT" ]]; then
+        log_warn "⚠️ Package.swift was restored (git checkout?). Auto-disabling..."
+        ensure_package_swift_disabled
+    fi
+    if [[ ! -f "$PACKAGE_SWIFT_DISABLED" ]]; then
+        log_error "Package.swift.disabled missing - Pods mode may have SPM interference"
+    else
+        log_success "Package.swift correctly disabled for Pods mode"
+    fi
+    
+    # Step 11: Validate environment (Pods mode specific checks)
     log_section "Environment Validation"
     log_step "Validating Pods environment"
     if validate_environment "pods"; then
@@ -457,13 +470,15 @@ elif [[ "$TARGET" == "pods" ]]; then
         log_error "Environment validation failed ($errors error(s))"
         log_info "Pods mode requires:"
         log_info "  - Pods/ directory exists"
+        log_info "  - Package.swift must NOT exist (disabled)"
+        log_info "  - Package.swift.disabled must exist"
         log_info "  - Workspace contains Pods/Pods.xcodeproj"
         log_info "  - project.yml has packages: {} (no SPM packages)"
         log_info "  - MSPDemoApp target (not MSPDemoApp-SPM)"
         exit 1
     fi
     
-    # Step 11: Open Xcode (workspace created by pod install or generate-workspace.sh)
+    # Step 12: Open Xcode (workspace created by pod install or generate-workspace.sh)
     log_section "Opening Xcode"
     log_step "Opening Xcode workspace"
     if [[ -d "$PODS_WORKSPACE" ]]; then

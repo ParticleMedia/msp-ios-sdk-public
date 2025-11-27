@@ -35,6 +35,107 @@ readonly PODS_DIR="$ROOT_DIR/Pods"
 readonly WORKSPACE_SPEC="$ROOT_DIR/workspace.yml"
 readonly PROJECT_SPEC="$ROOT_DIR/Examples/MSPDemoApp/project.yml"
 
+# Package.swift paths
+readonly PACKAGE_SWIFT="$ROOT_DIR/Package.swift"
+readonly PACKAGE_SWIFT_DISABLED="$ROOT_DIR/Package.swift.disabled"
+
+# ============================================================================
+# Package.swift State Management
+# ============================================================================
+# These functions manage the Package.swift file to prevent Xcode from
+# auto-detecting SPM packages when in Pods mode.
+
+# Check if Package.swift state is correct for a given mode
+check_package_swift_state() {
+    local target_mode="$1"
+    
+    if [[ "$target_mode" == "pods" ]]; then
+        # Pods mode: Package.swift must NOT exist, Package.swift.disabled must exist
+        if [[ -f "$PACKAGE_SWIFT" ]]; then
+            return 1  # Invalid state
+        fi
+        if [[ ! -f "$PACKAGE_SWIFT_DISABLED" ]]; then
+            return 1  # Invalid state
+        fi
+        return 0
+    elif [[ "$target_mode" == "spm" ]]; then
+        # SPM mode: Package.swift must exist, Package.swift.disabled must NOT exist
+        if [[ ! -f "$PACKAGE_SWIFT" ]]; then
+            return 1  # Invalid state
+        fi
+        if [[ -f "$PACKAGE_SWIFT_DISABLED" ]]; then
+            return 1  # Invalid state
+        fi
+        return 0
+    fi
+    return 1
+}
+
+# Ensure Package.swift is in correct state for Pods mode
+ensure_package_swift_disabled() {
+    log_step "Ensuring Package.swift is disabled for Pods mode"
+    
+    # Handle edge case: both files exist
+    if [[ -f "$PACKAGE_SWIFT" ]] && [[ -f "$PACKAGE_SWIFT_DISABLED" ]]; then
+        log_warn "Both Package.swift and Package.swift.disabled exist!"
+        log_info "Removing Package.swift (keeping .disabled version)"
+        rm -f "$PACKAGE_SWIFT"
+    fi
+    
+    # If Package.swift exists, rename to disabled
+    if [[ -f "$PACKAGE_SWIFT" ]]; then
+        mv "$PACKAGE_SWIFT" "$PACKAGE_SWIFT_DISABLED"
+        log_success "Package.swift → Package.swift.disabled"
+    elif [[ -f "$PACKAGE_SWIFT_DISABLED" ]]; then
+        log_info "Package.swift already disabled"
+    else
+        log_warn "Neither Package.swift nor Package.swift.disabled exists!"
+        log_info "This may require: git checkout Package.swift"
+    fi
+}
+
+# Ensure Package.swift is in correct state for SPM mode
+ensure_package_swift_enabled() {
+    log_step "Ensuring Package.swift is enabled for SPM mode"
+    
+    # Handle edge case: both files exist
+    if [[ -f "$PACKAGE_SWIFT" ]] && [[ -f "$PACKAGE_SWIFT_DISABLED" ]]; then
+        log_warn "Both Package.swift and Package.swift.disabled exist!"
+        log_info "Removing Package.swift.disabled (keeping active version)"
+        rm -f "$PACKAGE_SWIFT_DISABLED"
+    fi
+    
+    # If disabled version exists, restore it
+    if [[ -f "$PACKAGE_SWIFT_DISABLED" ]]; then
+        mv "$PACKAGE_SWIFT_DISABLED" "$PACKAGE_SWIFT"
+        log_success "Package.swift.disabled → Package.swift"
+    elif [[ -f "$PACKAGE_SWIFT" ]]; then
+        log_info "Package.swift already enabled"
+    else
+        log_error "Neither Package.swift nor Package.swift.disabled exists!"
+        log_info "SPM mode requires Package.swift. Try: git checkout Package.swift"
+        return 1
+    fi
+    return 0
+}
+
+# Auto-fix Package.swift state for current mode (called during validation)
+auto_fix_package_swift_state() {
+    local target_mode="$1"
+    
+    if [[ "$target_mode" == "pods" ]]; then
+        if [[ -f "$PACKAGE_SWIFT" ]]; then
+            log_warn "⚠️ Pods mode detected but Package.swift exists. Auto-disabling..."
+            ensure_package_swift_disabled
+        fi
+    elif [[ "$target_mode" == "spm" ]]; then
+        if [[ ! -f "$PACKAGE_SWIFT" ]] && [[ -f "$PACKAGE_SWIFT_DISABLED" ]]; then
+            log_warn "⚠️ SPM mode detected but Package.swift is disabled. Auto-restoring..."
+            ensure_package_swift_enabled
+        fi
+    fi
+}
+
 # ============================================================================
 # Logging Functions (UI system)
 # ============================================================================
@@ -378,6 +479,29 @@ validate_environment() {
         ((errors++))
     fi
     
+    # Validate Package.swift state
+    if [[ "$target" == "spm" ]]; then
+        # SPM mode: Package.swift must exist
+        if [[ ! -f "$PACKAGE_SWIFT" ]]; then
+            log_error "Package.swift missing (required for SPM mode)"
+            ((errors++))
+        fi
+        if [[ -f "$PACKAGE_SWIFT_DISABLED" ]]; then
+            log_error "Package.swift.disabled exists (should not in SPM mode)"
+            ((errors++))
+        fi
+    elif [[ "$target" == "pods" ]]; then
+        # Pods mode: Package.swift must NOT exist
+        if [[ -f "$PACKAGE_SWIFT" ]]; then
+            log_error "Package.swift exists (should be disabled in Pods mode)"
+            ((errors++))
+        fi
+        if [[ ! -f "$PACKAGE_SWIFT_DISABLED" ]]; then
+            log_error "Package.swift.disabled missing (required for Pods mode)"
+            ((errors++))
+        fi
+    fi
+    
     # Validate YAML content matches target mode
     if [[ "$target" == "spm" ]]; then
         if [[ -d "$PODS_DIR" ]]; then
@@ -410,7 +534,7 @@ validate_environment() {
         
         # Verify required XCFrameworks exist
         if ! check_required_xcframeworks >/dev/null 2>&1; then
-            local xcf_missing=$?
+            xcf_missing=$?
             log_error "$xcf_missing required XCFramework(s) missing for SPM mode"
             ((errors++))
         fi

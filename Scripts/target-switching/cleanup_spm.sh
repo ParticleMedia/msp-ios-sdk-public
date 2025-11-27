@@ -1,14 +1,22 @@
 #!/usr/bin/env bash
 # ============================================================================
-# SwiftPM Environment Cleanup (Updated for new SDK architecture - Round 26)
+# SwiftPM Environment Cleanup (Hardened Version)
 # ============================================================================
-# Purpose: Safely remove all SwiftPM artifacts without touching tracked files
-#          or critical XCFrameworks.
+# Purpose: Comprehensively remove ALL SwiftPM artifacts to ensure clean
+#          Pods-only mode without any SPM side effects.
 #
-# Safety: 
-#   - Only removes untracked SwiftPM artifacts
-#   - Never modifies tracked files
+# This script removes:
+#   - Package.resolved (root, inside workspaces, inside projects)
+#   - .swiftpm directories (everywhere)
+#   - swiftpm directories inside xcshareddata and xcuserdata
+#   - SourcePackages directories
+#   - .build directories
+#   - DerivedData cache
+#
+# Safety:
 #   - Never deletes Build/XCFrameworks/ or ThirdParty/
+#   - Never deletes Sources/
+#   - Never modifies Package.swift (that's handled by switch-target.sh)
 #
 # Usage:   ./Scripts/target-switching/cleanup_spm.sh [--force]
 # ============================================================================
@@ -37,26 +45,43 @@ fi
 
 log_title "SwiftPM Environment Cleanup"
 
-# Step 0: Remove ALL Package.resolved files (including inside .xcodeproj bundles)
+# Safety info
+log_info "Protected directories (will NOT be deleted):"
+log_info "  - Build/XCFrameworks/"
+log_info "  - ThirdParty/"
+log_info "  - Sources/"
+
+# ============================================================================
+# Step 1: Remove ALL Package.resolved files
+# ============================================================================
 log_section "Removing Package.resolved Files"
-log_step "Removing Package.resolved files"
+log_step "Scanning for Package.resolved files"
 PACKAGE_RESOLVED_COUNT=0
 
 # Remove root Package.resolved
 if [[ -f "$ROOT_DIR/Package.resolved" ]]; then
     rm -f "$ROOT_DIR/Package.resolved"
-    ((PACKAGE_RESOLVED_COUNT++))
+    ((PACKAGE_RESOLVED_COUNT++)) || true
     log_info "Removed: Package.resolved (root)"
 fi
 
-# Remove Package.resolved from inside all .xcodeproj bundles
+# Remove Package.resolved from inside workspaces
 while IFS= read -r -d '' resolved_file; do
     if [[ -f "$resolved_file" ]]; then
         log_info "Removing: ${resolved_file#$ROOT_DIR/}"
         rm -f "$resolved_file"
-        ((PACKAGE_RESOLVED_COUNT++))
+        ((PACKAGE_RESOLVED_COUNT++)) || true
     fi
-done < <(find "$ROOT_DIR" -path "*/.xcodeproj/*/Package.resolved" -type f ! -path "*/Pods/*" -print0 2>/dev/null || true)
+done < <(find "$ROOT_DIR" -path "*.xcworkspace/*/Package.resolved" -type f ! -path "*/Pods/*" -print0 2>/dev/null || true)
+
+# Remove Package.resolved from inside .xcodeproj bundles
+while IFS= read -r -d '' resolved_file; do
+    if [[ -f "$resolved_file" ]]; then
+        log_info "Removing: ${resolved_file#$ROOT_DIR/}"
+        rm -f "$resolved_file"
+        ((PACKAGE_RESOLVED_COUNT++)) || true
+    fi
+done < <(find "$ROOT_DIR" -path "*.xcodeproj/*/Package.resolved" -type f ! -path "*/Pods/*" -print0 2>/dev/null || true)
 
 if [[ $PACKAGE_RESOLVED_COUNT -gt 0 ]]; then
     log_success "Removed $PACKAGE_RESOLVED_COUNT Package.resolved file(s)"
@@ -64,48 +89,82 @@ else
     log_info "No Package.resolved files found"
 fi
 
-# Step 1: Remove ALL .swiftpm directories (including inside .xcodeproj bundles)
+# ============================================================================
+# Step 2: Remove ALL .swiftpm directories
+# ============================================================================
 log_section "Removing .swiftpm Directories"
 log_step "Scanning for .swiftpm directories"
 SWIFTPM_COUNT=0
+
+# Remove .swiftpm directories everywhere
 while IFS= read -r -d '' dir; do
-    if [[ "$dir" == "$ROOT_DIR"* ]]; then
+    if [[ "$dir" == "$ROOT_DIR"* ]] && [[ -d "$dir" ]]; then
         log_info "Removing: ${dir#$ROOT_DIR/}"
         rm -rf "$dir"
-        ((SWIFTPM_COUNT++))
+        ((SWIFTPM_COUNT++)) || true
     fi
 done < <(find "$ROOT_DIR" -type d -name ".swiftpm" ! -path "*/Pods/*" ! -path "*/.git/*" -print0 2>/dev/null || true)
 
-# Also remove swiftpm directories inside .xcodeproj bundles
-while IFS= read -r -d '' dir; do
-    if [[ "$dir" == "$ROOT_DIR"* ]]; then
-        log_info "Removing: ${dir#$ROOT_DIR/}"
-        rm -rf "$dir"
-        ((SWIFTPM_COUNT++))
-    fi
-done < <(find "$ROOT_DIR" -type d -name "swiftpm" -path "*/.xcodeproj/*" ! -path "*/Pods/*" -print0 2>/dev/null || true)
-
 if [[ $SWIFTPM_COUNT -gt 0 ]]; then
-    log_success "Removed $SWIFTPM_COUNT .swiftpm/swiftpm directory/ies"
+    log_success "Removed $SWIFTPM_COUNT .swiftpm directory/ies"
 else
     log_info "No .swiftpm directories found"
 fi
 
-# Step 2: Remove SourcePackages directories
+# ============================================================================
+# Step 3: Remove swiftpm directories inside xcshareddata and xcuserdata
+# ============================================================================
+log_section "Removing Xcode SPM Caches"
+log_step "Scanning for swiftpm directories inside Xcode bundles"
+XCODE_SPM_COUNT=0
+
+# Remove */xcshareddata/swiftpm/
+while IFS= read -r -d '' dir; do
+    if [[ "$dir" == "$ROOT_DIR"* ]] && [[ -d "$dir" ]]; then
+        log_info "Removing: ${dir#$ROOT_DIR/}"
+        rm -rf "$dir"
+        ((XCODE_SPM_COUNT++)) || true
+    fi
+done < <(find "$ROOT_DIR" -type d -path "*/xcshareddata/swiftpm" ! -path "*/Pods/*" -print0 2>/dev/null || true)
+
+# Remove */xcuserdata/*/swiftpm/
+while IFS= read -r -d '' dir; do
+    if [[ "$dir" == "$ROOT_DIR"* ]] && [[ -d "$dir" ]]; then
+        log_info "Removing: ${dir#$ROOT_DIR/}"
+        rm -rf "$dir"
+        ((XCODE_SPM_COUNT++)) || true
+    fi
+done < <(find "$ROOT_DIR" -type d -path "*/xcuserdata/*/swiftpm" ! -path "*/Pods/*" -print0 2>/dev/null || true)
+
+# Remove swiftpm directories inside .xcodeproj/project.xcworkspace/
+while IFS= read -r -d '' dir; do
+    if [[ "$dir" == "$ROOT_DIR"* ]] && [[ -d "$dir" ]]; then
+        log_info "Removing: ${dir#$ROOT_DIR/}"
+        rm -rf "$dir"
+        ((XCODE_SPM_COUNT++)) || true
+    fi
+done < <(find "$ROOT_DIR" -type d -name "swiftpm" -path "*/.xcodeproj/*" ! -path "*/Pods/*" -print0 2>/dev/null || true)
+
+if [[ $XCODE_SPM_COUNT -gt 0 ]]; then
+    log_success "Removed $XCODE_SPM_COUNT Xcode SPM cache directory/ies"
+else
+    log_info "No Xcode SPM caches found"
+fi
+
+# ============================================================================
+# Step 4: Remove SourcePackages directories
+# ============================================================================
 log_section "Removing SourcePackages Directories"
 log_step "Scanning for SourcePackages directories"
 SOURCEPACKAGES_COUNT=0
+
 while IFS= read -r -d '' dir; do
-    # Skip if inside .xcodeproj bundle
-    if [[ "$dir" == *".xcodeproj/"* ]]; then
-        continue
-    fi
-    if [[ "$dir" == "$ROOT_DIR"* ]]; then
+    if [[ "$dir" == "$ROOT_DIR"* ]] && [[ -d "$dir" ]]; then
         log_info "Removing: ${dir#$ROOT_DIR/}"
         rm -rf "$dir"
-        ((SOURCEPACKAGES_COUNT++))
+        ((SOURCEPACKAGES_COUNT++)) || true
     fi
-done < <(find "$ROOT_DIR" -type d -name "SourcePackages" ! -path "*/Pods/*" ! -path "*/.git/*" ! -path "*/MSPSharedLibraries/*" ! -path "*/MSPOMSDK/*" ! -path "*/NovaAdapter/*" -print0 2>/dev/null || true)
+done < <(find "$ROOT_DIR" -type d -name "SourcePackages" ! -path "*/Pods/*" ! -path "*/.git/*" -print0 2>/dev/null || true)
 
 if [[ $SOURCEPACKAGES_COUNT -gt 0 ]]; then
     log_success "Removed $SOURCEPACKAGES_COUNT SourcePackages directory/ies"
@@ -113,21 +172,20 @@ else
     log_info "No SourcePackages directories found"
 fi
 
-# Step 3: Remove .build directories
+# ============================================================================
+# Step 5: Remove .build directories
+# ============================================================================
 log_section "Removing .build Directories"
 log_step "Scanning for .build directories"
 BUILD_COUNT=0
+
 while IFS= read -r -d '' dir; do
-    # Skip if inside .xcodeproj bundle
-    if [[ "$dir" == *".xcodeproj/"* ]]; then
-        continue
-    fi
-    if [[ "$dir" == "$ROOT_DIR"* ]]; then
+    if [[ "$dir" == "$ROOT_DIR"* ]] && [[ -d "$dir" ]]; then
         log_info "Removing: ${dir#$ROOT_DIR/}"
         rm -rf "$dir"
-        ((BUILD_COUNT++))
+        ((BUILD_COUNT++)) || true
     fi
-done < <(find "$ROOT_DIR" -type d -name ".build" ! -path "*/Pods/*" ! -path "*/.git/*" ! -path "*/MSPSharedLibraries/*" ! -path "*/MSPOMSDK/*" ! -path "*/NovaAdapter/*" -print0 2>/dev/null || true)
+done < <(find "$ROOT_DIR" -type d -name ".build" ! -path "*/Pods/*" ! -path "*/.git/*" -print0 2>/dev/null || true)
 
 if [[ $BUILD_COUNT -gt 0 ]]; then
     log_success "Removed $BUILD_COUNT .build directory/ies"
@@ -135,16 +193,24 @@ else
     log_info "No .build directories found"
 fi
 
-# Step 4: Remove SPM workspace (but only if it's the main one)
+# ============================================================================
+# Step 6: Remove SPM workspace
+# ============================================================================
 log_section "Removing SPM Workspace"
 log_step "Removing SPM workspace"
-if safe_remove_workspace "$SPM_WORKSPACE"; then
-    log_success "SPM workspace removed"
+if [[ -d "$SPM_WORKSPACE" ]]; then
+    if safe_remove_workspace "$SPM_WORKSPACE"; then
+        log_success "SPM workspace removed"
+    else
+        log_warn "Failed to remove SPM workspace"
+    fi
 else
     log_info "SPM workspace not found or already removed"
 fi
 
-# Step 5: Clean DerivedData
+# ============================================================================
+# Step 7: Clean DerivedData
+# ============================================================================
 log_section "Cleaning DerivedData"
 log_step "Cleaning DerivedData cache"
 DERIVED_DATA_DIR="$HOME/Library/Developer/Xcode/DerivedData"
@@ -156,5 +222,18 @@ else
     log_info "DerivedData directory not found"
 fi
 
+# ============================================================================
+# Summary
+# ============================================================================
 log_title "Cleanup Complete"
+
+TOTAL_REMOVED=$((PACKAGE_RESOLVED_COUNT + SWIFTPM_COUNT + XCODE_SPM_COUNT + SOURCEPACKAGES_COUNT + BUILD_COUNT))
 log_success "SwiftPM environment cleaned"
+log_info "Total items removed: $TOTAL_REMOVED"
+log_info ""
+log_info "Removed:"
+log_info "  - Package.resolved files: $PACKAGE_RESOLVED_COUNT"
+log_info "  - .swiftpm directories: $SWIFTPM_COUNT"
+log_info "  - Xcode SPM caches: $XCODE_SPM_COUNT"
+log_info "  - SourcePackages: $SOURCEPACKAGES_COUNT"
+log_info "  - .build directories: $BUILD_COUNT"

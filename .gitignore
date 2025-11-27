@@ -34,6 +34,14 @@ Package.resolved
 msp-ios-sdk.xcworkspace/xcshareddata/swiftpm/local-packages.json
 msp-ios-sdk.xcworkspace/contents.xcworkspacedata
 
+# Package.swift disabled file (used during Pods mode to prevent Xcode SPM auto-detection)
+Package.swift.disabled
+
+# Xcode SPM caches inside project/workspace bundles
+*.xcworkspace/xcshareddata/swiftpm/
+*.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/
+**/xcuserdata/*/swiftpm/
+
 # CocoaPods
 Pods/
 Podfile.lock
@@ -49,9 +57,7 @@ MSPGoogleAdapter/build/
 MSPFacebookAdapter/*.xcframework/
 MSPGoogleAdapter/*.xcframework/
 
-# Swift Package Manager artifacts
-.swiftpm/
-.build/
+# Swift Package Manager artifacts (duplicate entries removed - see above)
 
 # Ignore all generated third-party XCFrameworks
 Build/XCFrameworks/*Kingfisher*
