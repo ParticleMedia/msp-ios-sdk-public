@@ -51,6 +51,13 @@ target 'MSPDemoApp' do
   pod 'Shimmer', :configurations => demoapp_pod_configs, :modular_headers => true
   # SwiftProtobuf is needed by MSPCore at compile time
   pod 'SwiftProtobuf', '~> 1.28.2', :configurations => demoapp_pod_configs
+  
+  # pods-dev mode: Embed ALL third-party XCFrameworks from ThirdParty/
+  # This ensures DTBiOSSDK, IronSourceSDK, OpenWrapSDK, Amazon APS, MobileFuse, InMobi, etc.
+  # are embedded into MSPDemoApp to prevent dyld crashes at runtime
+  if msp_mode == 'pods-dev'
+    pod 'MSPThirdParty', :path => 'ThirdParty/ThirdParty.podspec', :configurations => demoapp_pod_configs
+  end
 end
 
 post_install do |installer|
