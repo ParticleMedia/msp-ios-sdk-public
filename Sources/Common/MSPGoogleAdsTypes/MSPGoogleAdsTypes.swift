@@ -141,12 +141,12 @@ public func MSPGADRequestSetAdString(_ request: MSPGADRequest, adString: String?
 }
 
 // InterstitialAd present() method helper (method signature differs between SPM and CocoaPods)
-// Extension to provide unified present(from:) method
-extension MSPGADInterstitialAd {
-    public func present(from rootViewController: UIViewController?) {
-        // For SPM, call present(from:) on GADInterstitialAd (which accepts optional)
-        (self as GADInterstitialAd).present(from: rootViewController)
-    }
+// Unified wrapper function to avoid "Ambiguous use of 'present(from:)'" errors
+// This function handles the API differences between SPM and CocoaPods versions
+public func MSPGADInterstitialAdPresent(_ ad: MSPGADInterstitialAd?, from rootViewController: UIViewController?) {
+    guard let ad = ad else { return }
+    // SPM version: GADInterstitialAd.present(from:)
+    ad.present(from: rootViewController)
 }
 #else
 public func MSPGADMobileAdsStart(completionHandler: ((Error?) -> Void)?) {
@@ -205,11 +205,11 @@ public func MSPGADRequestSetAdString(_ request: MSPGADRequest, adString: String?
 }
 
 // InterstitialAd present() method helper (method signature differs between SPM and CocoaPods)
-// Extension to provide unified present(from:) method
-extension MSPGADInterstitialAd {
-    public func present(from rootViewController: UIViewController?) {
-        // For CocoaPods, call present(from:) on GoogleMobileAds.InterstitialAd (which accepts optional)
-        (self as GoogleMobileAds.InterstitialAd).present(from: rootViewController)
-    }
+// Unified wrapper function to avoid "Ambiguous use of 'present(from:)'" errors
+// This function handles the API differences between SPM and CocoaPods versions
+public func MSPGADInterstitialAdPresent(_ ad: MSPGADInterstitialAd?, from rootViewController: UIViewController?) {
+    guard let ad = ad else { return }
+    // CocoaPods version: GoogleMobileAds.InterstitialAd.present(from:)
+    ad.present(from: rootViewController)
 }
 #endif

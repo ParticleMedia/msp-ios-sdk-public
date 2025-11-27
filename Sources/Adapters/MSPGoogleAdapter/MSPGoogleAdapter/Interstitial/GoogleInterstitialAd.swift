@@ -17,11 +17,15 @@ public class GoogleInterstitialAd: MSPiOSCore.InterstitialAd {
     public var interstitialAdItem: MSPGADInterstitialAd?
     
     public override func show() {
-        interstitialAdItem?.present(from: rootViewController)
+        // Use unified wrapper function to avoid "Ambiguous use of 'present(from:)'" errors
+        // between CocoaPods and SPM versions of GoogleMobileAds
+        MSPGADInterstitialAdPresent(interstitialAdItem, from: rootViewController)
     }
     
     public override func show(rootViewController: UIViewController?) {
-        interstitialAdItem?.present(from: rootViewController)
+        // Use unified wrapper function to avoid "Ambiguous use of 'present(from:)'" errors
+        // between CocoaPods and SPM versions of GoogleMobileAds
+        MSPGADInterstitialAdPresent(interstitialAdItem, from: rootViewController)
     }
     
     public override func isValid() -> Bool {
