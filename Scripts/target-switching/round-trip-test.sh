@@ -191,6 +191,19 @@ validate_pods_mode_state() {
         fi
     fi
     
+    # Info.plist must contain GADApplicationIdentifier (required for Google Ads)
+    if [[ -f "$ROOT_DIR/Examples/MSPDemoApp/MSPDemoApp/Info.plist" ]]; then
+        if grep -q "GADApplicationIdentifier" "$ROOT_DIR/Examples/MSPDemoApp/MSPDemoApp/Info.plist" 2>/dev/null; then
+            print_pass "Info.plist contains GADApplicationIdentifier"
+        else
+            print_fail "Info.plist missing GADApplicationIdentifier"
+            ((errors++)) || true
+        fi
+    else
+        print_fail "Info.plist not found"
+        ((errors++)) || true
+    fi
+    
     if [[ $errors -eq 0 ]]; then
         print_pass "Pods mode validation PASSED"
         return 0
@@ -246,6 +259,19 @@ validate_spm_mode_state() {
             print_fail "XCFramework validation failed"
             ((errors++)) || true
         fi
+    fi
+    
+    # Info.plist must contain GADApplicationIdentifier (required for Google Ads)
+    if [[ -f "$ROOT_DIR/Examples/MSPDemoApp/MSPDemoApp/Info.plist" ]]; then
+        if grep -q "GADApplicationIdentifier" "$ROOT_DIR/Examples/MSPDemoApp/MSPDemoApp/Info.plist" 2>/dev/null; then
+            print_pass "Info.plist contains GADApplicationIdentifier"
+        else
+            print_fail "Info.plist missing GADApplicationIdentifier"
+            ((errors++)) || true
+        fi
+    else
+        print_fail "Info.plist not found"
+        ((errors++)) || true
     fi
     
     if [[ $errors -eq 0 ]]; then

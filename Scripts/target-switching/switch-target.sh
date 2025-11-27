@@ -277,7 +277,19 @@ if [[ "$TARGET" == "spm" ]]; then
         exit 1
     fi
     
-    # Step 10: Open Xcode
+    # Step 10: Generate Info.plist from template
+    log_section "Info.plist Generation"
+    log_step "Regenerating Info.plist from template"
+    INFO_PLIST_TEMPLATE="$ROOT_DIR/Examples/MSPDemoApp/Info.plist.template"
+    INFO_PLIST_OUTPUT="$ROOT_DIR/Examples/MSPDemoApp/MSPDemoApp/Info.plist"
+    if [[ -f "$INFO_PLIST_TEMPLATE" ]]; then
+        cp "$INFO_PLIST_TEMPLATE" "$INFO_PLIST_OUTPUT"
+        log_success "Info.plist generated (includes GADApplicationIdentifier)"
+    else
+        log_warn "Info.plist.template not found"
+    fi
+    
+    # Step 11: Open Xcode
     log_section "Opening Xcode"
     log_step "Opening Xcode"
     PROJECT_DIR="$(dirname "$PROJECT_SPEC")"
@@ -555,7 +567,19 @@ elif [[ "$TARGET" == "pods" ]]; then
         exit 1
     fi
     
-    # Step 12: Open Xcode (workspace created by pod install or generate-workspace.sh)
+    # Step 12: Generate Info.plist from template
+    log_section "Info.plist Generation"
+    log_step "Regenerating Info.plist from template"
+    INFO_PLIST_TEMPLATE="$ROOT_DIR/Examples/MSPDemoApp/Info.plist.template"
+    INFO_PLIST_OUTPUT="$ROOT_DIR/Examples/MSPDemoApp/MSPDemoApp/Info.plist"
+    if [[ -f "$INFO_PLIST_TEMPLATE" ]]; then
+        cp "$INFO_PLIST_TEMPLATE" "$INFO_PLIST_OUTPUT"
+        log_success "Info.plist generated (includes GADApplicationIdentifier)"
+    else
+        log_warn "Info.plist.template not found"
+    fi
+    
+    # Step 13: Open Xcode (workspace created by pod install or generate-workspace.sh)
     log_section "Opening Xcode"
     log_step "Opening Xcode workspace"
     if [[ -d "$PODS_WORKSPACE" ]]; then

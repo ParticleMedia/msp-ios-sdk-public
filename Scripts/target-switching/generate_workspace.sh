@@ -554,5 +554,23 @@ XML
 
 log_success "[xcodegen] Successfully generated .xcworkspace"
 
+# ============================================================================
+# Generate Info.plist from template (Template Architecture)
+# ============================================================================
+# Info.plist.template is the developer-maintained source
+# Info.plist is generated and must NEVER be committed
+log_section "Generating Info.plist"
+log_step "Generating Info.plist from template"
+
+INFO_PLIST_TEMPLATE="$ROOT_DIR/Examples/MSPDemoApp/Info.plist.template"
+INFO_PLIST_OUTPUT="$ROOT_DIR/Examples/MSPDemoApp/MSPDemoApp/Info.plist"
+
+if [[ -f "$INFO_PLIST_TEMPLATE" ]]; then
+    cp "$INFO_PLIST_TEMPLATE" "$INFO_PLIST_OUTPUT"
+    log_success "Info.plist generated from template (includes GADApplicationIdentifier)"
+else
+    log_warn "Info.plist.template not found - skipping Info.plist generation"
+fi
+
 log_title "YAML Generation Complete"
 log_success "YAML specs generated for $TARGET_MODE mode"
