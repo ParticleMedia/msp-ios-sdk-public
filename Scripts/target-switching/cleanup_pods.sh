@@ -49,7 +49,7 @@ log_info "Protected directories (will NOT be deleted):"
 log_info "  - Build/XCFrameworks/"
 log_info "  - ThirdParty/"
 log_info "  - Sources/"
-log_info "  - Package.swift.disabled"
+log_info "  - Package.swift.template (developer-maintained)"
 
 # ============================================================================
 # Step 1: Deintegrate CocoaPods

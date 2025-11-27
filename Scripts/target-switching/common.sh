@@ -35,9 +35,12 @@ readonly PODS_DIR="$ROOT_DIR/Pods"
 readonly WORKSPACE_SPEC="$ROOT_DIR/workspace.yml"
 readonly PROJECT_SPEC="$ROOT_DIR/Examples/MSPDemoApp/project.yml"
 
-# Package.swift paths
+# Package.swift paths (Template-based architecture)
+# Package.swift.template - Developer-maintained, tracked in Git
+# Package.swift - Generated from template in SPM mode, deleted in Pods mode
 readonly PACKAGE_SWIFT="$ROOT_DIR/Package.swift"
-readonly PACKAGE_SWIFT_DISABLED="$ROOT_DIR/Package.swift.disabled"
+readonly PACKAGE_SWIFT_TEMPLATE="$ROOT_DIR/Package.swift.template"
+readonly PACKAGE_SWIFT_DISABLED="$ROOT_DIR/Package.swift.disabled"  # Legacy, will be removed
 
 # ============================================================================
 # Package.swift State Management
@@ -45,77 +48,80 @@ readonly PACKAGE_SWIFT_DISABLED="$ROOT_DIR/Package.swift.disabled"
 # These functions manage the Package.swift file to prevent Xcode from
 # auto-detecting SPM packages when in Pods mode.
 
-# Check if Package.swift state is correct for a given mode
+# Check if Package.swift state is correct for a given mode (Template Architecture)
 check_package_swift_state() {
     local target_mode="$1"
     
+    # Template must ALWAYS exist (developer-maintained)
+    if [[ ! -f "$PACKAGE_SWIFT_TEMPLATE" ]]; then
+        log_warn "Package.swift.template is missing! This is a developer-maintained file."
+        return 1
+    fi
+    
     if [[ "$target_mode" == "pods" ]]; then
-        # Pods mode: Package.swift must NOT exist, Package.swift.disabled must exist
+        # Pods mode: Package.swift must NOT exist
         if [[ -f "$PACKAGE_SWIFT" ]]; then
-            return 1  # Invalid state
-        fi
-        if [[ ! -f "$PACKAGE_SWIFT_DISABLED" ]]; then
-            return 1  # Invalid state
+            return 1  # Invalid state - Package.swift should be deleted
         fi
         return 0
     elif [[ "$target_mode" == "spm" ]]; then
-        # SPM mode: Package.swift must exist, Package.swift.disabled must NOT exist
+        # SPM mode: Package.swift must exist (copied from template)
         if [[ ! -f "$PACKAGE_SWIFT" ]]; then
-            return 1  # Invalid state
-        fi
-        if [[ -f "$PACKAGE_SWIFT_DISABLED" ]]; then
-            return 1  # Invalid state
+            return 1  # Invalid state - Package.swift should exist
         fi
         return 0
     fi
     return 1
 }
 
-# Ensure Package.swift is in correct state for Pods mode
+# Ensure Package.swift is in correct state for Pods mode (Template Architecture)
+# In Pods mode: Delete Package.swift (template remains untouched)
 ensure_package_swift_disabled() {
-    log_step "Ensuring Package.swift is disabled for Pods mode"
+    log_step "Ensuring Package.swift is removed for Pods mode"
     
-    # Handle edge case: both files exist
-    if [[ -f "$PACKAGE_SWIFT" ]] && [[ -f "$PACKAGE_SWIFT_DISABLED" ]]; then
-        log_warn "Both Package.swift and Package.swift.disabled exist!"
-        log_info "Removing Package.swift (keeping .disabled version)"
-        rm -f "$PACKAGE_SWIFT"
+    # Verify template exists (developer-maintained)
+    if [[ ! -f "$PACKAGE_SWIFT_TEMPLATE" ]]; then
+        log_error "Package.swift.template is missing! Cannot proceed."
+        log_info "This is a developer-maintained file that must exist in the repository."
+        return 1
     fi
     
-    # If Package.swift exists, rename to disabled
-    if [[ -f "$PACKAGE_SWIFT" ]]; then
-        mv "$PACKAGE_SWIFT" "$PACKAGE_SWIFT_DISABLED"
-        log_success "Package.swift → Package.swift.disabled"
-    elif [[ -f "$PACKAGE_SWIFT_DISABLED" ]]; then
-        log_info "Package.swift already disabled"
-    else
-        log_warn "Neither Package.swift nor Package.swift.disabled exists!"
-        log_info "This may require: git checkout Package.swift"
-    fi
-}
-
-# Ensure Package.swift is in correct state for SPM mode
-ensure_package_swift_enabled() {
-    log_step "Ensuring Package.swift is enabled for SPM mode"
-    
-    # Handle edge case: both files exist
-    if [[ -f "$PACKAGE_SWIFT" ]] && [[ -f "$PACKAGE_SWIFT_DISABLED" ]]; then
-        log_warn "Both Package.swift and Package.swift.disabled exist!"
-        log_info "Removing Package.swift.disabled (keeping active version)"
+    # Clean up legacy .disabled file if it exists
+    if [[ -f "$PACKAGE_SWIFT_DISABLED" ]]; then
+        log_info "Removing legacy Package.swift.disabled"
         rm -f "$PACKAGE_SWIFT_DISABLED"
     fi
     
-    # If disabled version exists, restore it
-    if [[ -f "$PACKAGE_SWIFT_DISABLED" ]]; then
-        mv "$PACKAGE_SWIFT_DISABLED" "$PACKAGE_SWIFT"
-        log_success "Package.swift.disabled → Package.swift"
-    elif [[ -f "$PACKAGE_SWIFT" ]]; then
-        log_info "Package.swift already enabled"
+    # Delete runtime Package.swift (generated from template in SPM mode)
+    if [[ -f "$PACKAGE_SWIFT" ]]; then
+        rm -f "$PACKAGE_SWIFT"
+        log_success "Package.swift removed (template preserved at Package.swift.template)"
     else
-        log_error "Neither Package.swift nor Package.swift.disabled exists!"
-        log_info "SPM mode requires Package.swift. Try: git checkout Package.swift"
+        log_info "Package.swift already removed"
+    fi
+}
+
+# Ensure Package.swift is in correct state for SPM mode (Template Architecture)
+# In SPM mode: Copy template to Package.swift
+ensure_package_swift_enabled() {
+    log_step "Ensuring Package.swift is generated from template for SPM mode"
+    
+    # Verify template exists (developer-maintained)
+    if [[ ! -f "$PACKAGE_SWIFT_TEMPLATE" ]]; then
+        log_error "Package.swift.template is missing! Cannot proceed."
+        log_info "This is a developer-maintained file that must exist in the repository."
         return 1
     fi
+    
+    # Clean up legacy .disabled file if it exists
+    if [[ -f "$PACKAGE_SWIFT_DISABLED" ]]; then
+        log_info "Removing legacy Package.swift.disabled"
+        rm -f "$PACKAGE_SWIFT_DISABLED"
+    fi
+    
+    # Copy template to runtime Package.swift
+    cp "$PACKAGE_SWIFT_TEMPLATE" "$PACKAGE_SWIFT"
+    log_success "Package.swift generated from Package.swift.template"
     return 0
 }
 
@@ -125,15 +131,67 @@ auto_fix_package_swift_state() {
     
     if [[ "$target_mode" == "pods" ]]; then
         if [[ -f "$PACKAGE_SWIFT" ]]; then
-            log_warn "⚠️ Pods mode detected but Package.swift exists. Auto-disabling..."
+            log_warn "⚠️ Pods mode detected but Package.swift exists. Auto-removing..."
             ensure_package_swift_disabled
         fi
     elif [[ "$target_mode" == "spm" ]]; then
-        if [[ ! -f "$PACKAGE_SWIFT" ]] && [[ -f "$PACKAGE_SWIFT_DISABLED" ]]; then
-            log_warn "⚠️ SPM mode detected but Package.swift is disabled. Auto-restoring..."
+        if [[ ! -f "$PACKAGE_SWIFT" ]]; then
+            log_warn "⚠️ SPM mode detected but Package.swift is missing. Auto-generating..."
             ensure_package_swift_enabled
         fi
     fi
+}
+
+# ============================================================================
+# Git Cleanliness Verification (Template Architecture)
+# ============================================================================
+# After switching modes, verify that git status is clean.
+# All switching-generated files should be in .gitignore.
+
+verify_git_cleanliness() {
+    log_step "Verifying git status is clean after switching"
+    
+    local dirty_files
+    dirty_files=$(git status --porcelain 2>/dev/null || echo "")
+    
+    if [[ -z "$dirty_files" ]]; then
+        log_success "Git status is clean - switching did not modify tracked files"
+        return 0
+    fi
+    
+    # Filter out expected untracked files (should be in .gitignore)
+    local unexpected_files=""
+    while IFS= read -r line; do
+        # Skip empty lines
+        [[ -z "$line" ]] && continue
+        
+        # Get the status and file path
+        local status="${line:0:2}"
+        local filepath="${line:3}"
+        
+        # Skip untracked files that should be in .gitignore
+        # (These are expected but may not be ignored yet)
+        case "$filepath" in
+            Package.swift|workspace.yml|Examples/*/project.yml|.generated/*|msp-ios-sdk.xcworkspace)
+                log_warn "File should be in .gitignore: $filepath"
+                ;;
+            *)
+                unexpected_files+="$line"$'\n'
+                ;;
+        esac
+    done <<< "$dirty_files"
+    
+    if [[ -n "$unexpected_files" ]]; then
+        log_error "Unexpected files modified by switching:"
+        echo "$unexpected_files" | while IFS= read -r line; do
+            [[ -n "$line" ]] && log_error "  $line"
+        done
+        log_error "Switching should NEVER modify tracked files!"
+        return 1
+    fi
+    
+    log_success "Git status check passed (only switching-generated files present)"
+    return 0
 }
 
 # ============================================================================
@@ -479,27 +537,31 @@ validate_environment() {
         ((errors++))
     fi
     
-    # Validate Package.swift state
+    # Validate Package.swift state (Template Architecture)
+    # Template must ALWAYS exist (developer-maintained)
+    if [[ ! -f "$PACKAGE_SWIFT_TEMPLATE" ]]; then
+        log_error "Package.swift.template missing (developer-maintained file)"
+        ((errors++))
+    fi
+    
     if [[ "$target" == "spm" ]]; then
-        # SPM mode: Package.swift must exist
+        # SPM mode: Package.swift must exist (copied from template)
         if [[ ! -f "$PACKAGE_SWIFT" ]]; then
             log_error "Package.swift missing (required for SPM mode)"
             ((errors++))
         fi
-        if [[ -f "$PACKAGE_SWIFT_DISABLED" ]]; then
-            log_error "Package.swift.disabled exists (should not in SPM mode)"
-            ((errors++))
-        fi
     elif [[ "$target" == "pods" ]]; then
-        # Pods mode: Package.swift must NOT exist
+        # Pods mode: Package.swift must NOT exist (deleted, template preserved)
         if [[ -f "$PACKAGE_SWIFT" ]]; then
-            log_error "Package.swift exists (should be disabled in Pods mode)"
+            log_error "Package.swift exists (should be removed in Pods mode)"
             ((errors++))
         fi
-        if [[ ! -f "$PACKAGE_SWIFT_DISABLED" ]]; then
-            log_error "Package.swift.disabled missing (required for Pods mode)"
-            ((errors++))
-        fi
+    fi
+    
+    # Clean up legacy .disabled file if it exists
+    if [[ -f "$PACKAGE_SWIFT_DISABLED" ]]; then
+        log_warn "Legacy Package.swift.disabled found - removing"
+        rm -f "$PACKAGE_SWIFT_DISABLED"
     fi
     
     # Validate YAML content matches target mode

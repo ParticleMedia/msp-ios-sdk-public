@@ -238,18 +238,27 @@ if [[ "$TARGET" == "spm" ]]; then
         log_success "OMSDK_Newsbreak1.xcframework present"
     fi
     
-    # Step 8: Final Package.swift state check
+    # Step 8: Final Package.swift state check (Template Architecture)
     log_section "Final Package.swift Check"
-    log_step "Ensuring Package.swift is enabled"
+    log_step "Ensuring Package.swift is generated from template"
     if [[ ! -f "$PACKAGE_SWIFT" ]]; then
         log_error "Package.swift missing - SPM mode requires Package.swift"
+        log_info "Attempting to regenerate from template..."
+        if ! ensure_package_swift_enabled; then
+            log_error "Failed to regenerate Package.swift from template"
+            exit 1
+        fi
+    fi
+    if [[ ! -f "$PACKAGE_SWIFT_TEMPLATE" ]]; then
+        log_error "Package.swift.template is missing! This is a developer-maintained file."
         exit 1
     fi
+    # Clean up legacy .disabled file
     if [[ -f "$PACKAGE_SWIFT_DISABLED" ]]; then
-        log_warn "Package.swift.disabled still exists - removing"
+        log_info "Removing legacy Package.swift.disabled"
         rm -f "$PACKAGE_SWIFT_DISABLED"
     fi
-    log_success "Package.swift correctly enabled for SPM mode"
+    log_success "Package.swift correctly enabled for SPM mode (generated from template)"
     
     # Step 9: Validate environment (SPM mode specific checks)
     log_section "Environment Validation"
@@ -261,8 +270,8 @@ if [[ "$TARGET" == "spm" ]]; then
         log_error "Environment validation failed ($errors error(s))"
         log_info "SPM mode requires:"
         log_info "  - No Pods/ directory"
-        log_info "  - Package.swift must exist"
-        log_info "  - Package.swift.disabled must NOT exist"
+        log_info "  - Package.swift must exist (generated from template)"
+        log_info "  - Package.swift.template must exist (developer-maintained)"
         log_info "  - MSPDemoApp-SPM target in project.yml"
         log_info "  - All required XCFrameworks present"
         exit 1
@@ -515,17 +524,17 @@ elif [[ "$TARGET" == "pods" ]]; then
         exit 1
     fi
     
-    # Step 10: Final Package.swift state check (auto-fix if git checkout restored it)
+    # Step 10: Final Package.swift state check (Template Architecture)
     log_section "Final Package.swift Check"
-    log_step "Ensuring Package.swift remains disabled"
+    log_step "Ensuring Package.swift is removed (template preserved)"
     if [[ -f "$PACKAGE_SWIFT" ]]; then
-        log_warn "⚠️ Package.swift was restored (git checkout?). Auto-disabling..."
+        log_warn "⚠️ Package.swift exists. Auto-removing..."
         ensure_package_swift_disabled
     fi
-    if [[ ! -f "$PACKAGE_SWIFT_DISABLED" ]]; then
-        log_error "Package.swift.disabled missing - Pods mode may have SPM interference"
+    if [[ ! -f "$PACKAGE_SWIFT_TEMPLATE" ]]; then
+        log_error "Package.swift.template missing - developer-maintained file required"
     else
-        log_success "Package.swift correctly disabled for Pods mode"
+        log_success "Package.swift correctly removed for Pods mode (template preserved)"
     fi
     
     # Step 11: Validate environment (Pods mode specific checks)
@@ -538,8 +547,8 @@ elif [[ "$TARGET" == "pods" ]]; then
         log_error "Environment validation failed ($errors error(s))"
         log_info "Pods mode requires:"
         log_info "  - Pods/ directory exists"
-        log_info "  - Package.swift must NOT exist (disabled)"
-        log_info "  - Package.swift.disabled must exist"
+        log_info "  - Package.swift must NOT exist (removed)"
+        log_info "  - Package.swift.template must exist (developer-maintained)"
         log_info "  - Workspace contains Pods/Pods.xcodeproj"
         log_info "  - project.yml has packages: {} (no SPM packages)"
         log_info "  - MSPDemoApp target (not MSPDemoApp-SPM)"
@@ -569,6 +578,18 @@ elif [[ "$TARGET" == "pods" ]]; then
             log_warn "Opened directory - Xcode project may not be generated"
         fi
     fi
+fi
+
+# ============================================================================
+# GIT CLEANLINESS VERIFICATION
+# ============================================================================
+
+log_section "Git Cleanliness Check"
+if verify_git_cleanliness; then
+    log_success "Git status verified clean"
+else
+    log_warn "Git status not fully clean - some generated files may need .gitignore updates"
+    log_info "Run: git status --porcelain"
 fi
 
 # ============================================================================

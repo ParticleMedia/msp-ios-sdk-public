@@ -142,12 +142,12 @@ validate_pods_mode_state() {
         print_pass "Package.swift correctly absent"
     fi
     
-    # Package.swift.disabled must exist
-    if [[ ! -f "$ROOT_DIR/Package.swift.disabled" ]]; then
-        print_fail "Package.swift.disabled missing in Pods mode"
+    # Package.swift.template must exist (developer-maintained)
+    if [[ ! -f "$ROOT_DIR/Package.swift.template" ]]; then
+        print_fail "Package.swift.template missing (developer-maintained)"
         ((errors++)) || true
     else
-        print_pass "Package.swift.disabled present"
+        print_pass "Package.swift.template present"
     fi
     
     # Pods directory must exist
@@ -212,12 +212,12 @@ validate_spm_mode_state() {
         print_pass "Package.swift present"
     fi
     
-    # Package.swift.disabled must NOT exist
-    if [[ -f "$ROOT_DIR/Package.swift.disabled" ]]; then
-        print_fail "Package.swift.disabled should NOT exist in SPM mode"
+    # Package.swift.template must exist (developer-maintained)
+    if [[ ! -f "$ROOT_DIR/Package.swift.template" ]]; then
+        print_fail "Package.swift.template missing (developer-maintained)"
         ((errors++)) || true
     else
-        print_pass "Package.swift.disabled correctly absent"
+        print_pass "Package.swift.template present"
     fi
     
     # Pods directory must NOT exist
