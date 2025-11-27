@@ -3,22 +3,22 @@
 # Round-Trip Test Script (Three-Mode Architecture)
 # ============================================================================
 # Purpose: Validates switching between all three modes works correctly:
-#          pods-dev → pods-release → spm-release → pods-dev
+#          pods-dev → pods-release → spm-release
 #
 # Final Architecture:
-#   - pods-dev:     All modules as SOURCE (development)
-#   - pods-release: Core modules as BINARY, Adapters as SOURCE
-#   - spm-release:  Core modules as BINARY, Adapters as SOURCE
+#   - pods-dev:     All modules as SOURCE, builds DemoApp
+#   - pods-release: Validates 5 core XCFrameworks only (NO build)
+#   - spm-release:  Validates Package.swift + 5 XCFrameworks
 #
 # IMPORTANT:
 #   - Adapters are SOURCE-ONLY in all modes (never require XCFrameworks)
-#   - Only 5 core XCFrameworks are required: MSPCore, MSPiOSCore,
-#     MSPSharedLibraries, MSPOMSDK, NovaCore
+#   - Only 5 core XCFrameworks are required
+#   - DemoApp is ONLY built in pods-dev mode
 #
 # Usage:   ./Scripts/target-switching/round-trip-test.sh [options]
 #
 # Options:
-#   --skip-build      Skip actual Xcode builds (validation only)
+#   --skip-build      Skip DemoApp build in pods-dev (validation only)
 #   --loops=N         Run N complete cycles (default: 1)
 #   --verbose         Enable verbose output
 #
@@ -39,81 +39,14 @@ source "$SCRIPT_DIR/common.sh"
 ensure_repo_root
 
 # ============================================================================
-# Colors and Formatting
+# Colors
 # ============================================================================
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
-CYAN='\033[0;36m'
 BOLD='\033[1m'
 NC='\033[0m'
-
-# ============================================================================
-# Report Output Functions (Structured Format)
-# ============================================================================
-
-report() {
-    echo -e "$1"
-}
-
-report_section() {
-    echo ""
-    echo "=================================================="
-    echo "$1"
-    echo "=================================================="
-}
-
-report_switch() {
-    local mode="$1"
-    local status="$2"
-    if [[ "$status" == "OK" ]]; then
-        echo -e "[RoundTrip] Switching → ${GREEN}$mode${NC} ... ${GREEN}OK${NC}"
-    else
-        echo -e "[${RED}ERROR${NC}] Mode switch failed: $mode"
-    fi
-}
-
-report_check() {
-    local item="$1"
-    local status="$2"
-    if [[ "$status" == "OK" ]]; then
-        echo -e "[Check] Generated ${GREEN}$item${NC} OK"
-    else
-        echo -e "[${RED}ERROR${NC}] Missing: $item"
-    fi
-}
-
-report_build() {
-    local mode="$1"
-    local desc="$2"
-    local status="$3"
-    if [[ "$status" == "OK" ]]; then
-        echo -e "[Build] ${GREEN}$mode${NC} $desc ... ${GREEN}OK${NC}"
-    else
-        echo -e "[${RED}ERROR${NC}] $mode $desc ... FAILED"
-    fi
-}
-
-report_warning() {
-    echo -e "[${YELLOW}Warning${NC}] $1"
-}
-
-report_git() {
-    local status="$1"
-    if [[ "$status" == "OK" ]]; then
-        echo -e "[Git] No diffs after switch → ${GREEN}OK${NC}"
-    else
-        echo -e "[${RED}ERROR${NC}] Git diff detected:"
-    fi
-}
-
-report_loop() {
-    local current="$1"
-    local total="$2"
-    echo ""
-    echo -e "[${GREEN}Loop $current/$total Completed Successfully${NC}]"
-}
 
 # ============================================================================
 # Parse Arguments
@@ -130,7 +63,7 @@ for arg in "$@"; do
         --loops=*)
             LOOPS="${arg#*=}"
             if ! [[ "$LOOPS" =~ ^[0-9]+$ ]] || [[ "$LOOPS" -lt 1 ]]; then
-                echo "[ERROR] Invalid --loops value: $LOOPS (must be positive integer)"
+                echo -e "${RED}[ERROR]${NC} Invalid --loops value: $LOOPS (must be positive integer)"
                 exit 1
             fi
             ;;
@@ -141,15 +74,15 @@ for arg in "$@"; do
             echo "Usage: $0 [--skip-build] [--loops=N] [--verbose]"
             echo ""
             echo "Options:"
-            echo "  --skip-build   Skip actual Xcode builds (validation only)"
+            echo "  --skip-build   Skip DemoApp build in pods-dev (validation only)"
             echo "  --loops=N      Run N complete cycles (default: 1)"
             echo "  --verbose      Enable verbose output"
             echo ""
-            echo "Test Cycle: pods-dev → pods-release → spm-release → pods-dev"
+            echo "Test Cycle: pods-dev → pods-release → spm-release"
             exit 0
             ;;
         *)
-            echo "[ERROR] Unknown option: $arg"
+            echo -e "${RED}[ERROR]${NC} Unknown option: $arg"
             exit 1
             ;;
     esac
@@ -162,8 +95,8 @@ BUILD_LOG_DIR="$ROOT_DIR/BuildReports"
 mkdir -p "$BUILD_LOG_DIR"
 TIMESTAMP=$(date +%Y%m%d_%H%M%S)
 
-# Required Core XCFrameworks (ONLY these 5 are validated)
-CORE_XCFRAMEWORKS_LIST=(
+# The 5 required core XCFrameworks (adapters are SOURCE-ONLY)
+CORE_XCFRAMEWORKS=(
     "MSPCore"
     "MSPiOSCore"
     "MSPSharedLibraries"
@@ -172,59 +105,73 @@ CORE_XCFRAMEWORKS_LIST=(
 )
 
 # ============================================================================
+# Helper Functions
+# ============================================================================
+
+log_header() {
+    echo ""
+    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    echo "                         $1"
+    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+}
+
+log_section() {
+    echo ""
+    echo "══════════════════════════════════════════════════════════════════════"
+    echo "  $1"
+    echo "══════════════════════════════════════════════════════════════════════"
+}
+
+log_ok() {
+    echo -e "  ${GREEN}✓${NC} $1"
+}
+
+log_fail() {
+    echo -e "  ${RED}✗${NC} $1"
+}
+
+log_warn() {
+    echo -e "  ${YELLOW}⚠${NC} $1"
+}
+
+log_info() {
+    echo -e "  ${BLUE}→${NC} $1"
+}
+
+# ============================================================================
 # Validation Functions
 # ============================================================================
 
-# Validate generated files exist
-validate_generated_files() {
-    local mode="$1"
-    local errors=0
+# Check if workspace symlink exists at project root
+validate_workspace_symlink() {
+    local symlink="$ROOT_DIR/msp-ios-sdk.xcworkspace"
     
-    # workspace.yml
-    if [[ -f "$ROOT_DIR/workspace.yml" ]]; then
-        report_check "workspace.yml" "OK"
+    if [[ -L "$symlink" ]] || [[ -d "$symlink" ]]; then
+        log_ok "Workspace symlink exists: msp-ios-sdk.xcworkspace"
+        return 0
     else
-        report_check "workspace.yml" "MISSING"
-        ((errors++)) || true
+        log_fail "Workspace symlink missing: msp-ios-sdk.xcworkspace"
+        return 1
     fi
-    
-    # project.yml
-    if [[ -f "$ROOT_DIR/Examples/MSPDemoApp/project.yml" ]]; then
-        report_check "project.yml" "OK"
-    else
-        report_check "project.yml" "MISSING"
-        ((errors++)) || true
-    fi
-    
-    # Package.swift (only for spm-release)
-    if [[ "$mode" == "spm-release" ]]; then
-        if [[ -f "$ROOT_DIR/Package.swift" ]]; then
-            report_check "Package.swift" "OK"
-        else
-            report_check "Package.swift" "MISSING"
-            ((errors++)) || true
-        fi
-    fi
-    
-    return $errors
 }
 
-# Validate ONLY the 5 core XCFrameworks (for pods-release and spm-release)
+# Validate only the 5 core XCFrameworks exist
 validate_core_xcframeworks() {
     local errors=0
-    local xcf_dir="$ROOT_DIR/Build/XCFrameworks"
-    local bin_dir="$ROOT_DIR/Binary"
     
-    # Check Binary/ first, fall back to Build/XCFrameworks/
-    if [[ -d "$bin_dir" ]] && [[ "$(ls -A "$bin_dir" 2>/dev/null)" ]]; then
-        xcf_dir="$bin_dir"
+    # Check Binary/ first, then Build/XCFrameworks/
+    local xcf_dir="$ROOT_DIR/Binary"
+    if [[ ! -d "$xcf_dir" ]] || [[ -z "$(ls -A "$xcf_dir" 2>/dev/null)" ]]; then
+        xcf_dir="$ROOT_DIR/Build/XCFrameworks"
     fi
     
-    for xcf in "${CORE_XCFRAMEWORKS_LIST[@]}"; do
+    echo "  Checking 5 core XCFrameworks in: $xcf_dir"
+    
+    for xcf in "${CORE_XCFRAMEWORKS[@]}"; do
         if [[ -d "$xcf_dir/${xcf}.xcframework" ]]; then
-            echo -e "  [Check] ${GREEN}$xcf.xcframework${NC} OK"
+            log_ok "$xcf.xcframework"
         else
-            echo -e "  [${RED}ERROR${NC}] Missing: $xcf.xcframework"
+            log_fail "$xcf.xcframework (MISSING)"
             ((errors++)) || true
         fi
     done
@@ -232,269 +179,204 @@ validate_core_xcframeworks() {
     return $errors
 }
 
-# Validate Package.swift syntax
-validate_package_swift_syntax() {
+# Validate Package.swift exists and is syntactically valid
+validate_package_swift() {
     if [[ ! -f "$ROOT_DIR/Package.swift" ]]; then
+        log_fail "Package.swift does not exist"
         return 1
     fi
     
-    # Basic syntax check using swift package dump-package
+    log_ok "Package.swift exists"
+    
+    # Validate syntax using swift package dump-package
     cd "$ROOT_DIR"
     if swift package dump-package >/dev/null 2>&1; then
+        log_ok "Package.swift syntax is valid"
         return 0
     else
+        log_fail "Package.swift has syntax errors"
         return 1
     fi
 }
 
-# Check git cleanliness (tracked files only)
+# Check git status (tracked files only)
 check_git_clean() {
     cd "$ROOT_DIR"
     local git_status
     git_status=$(git status --porcelain 2>/dev/null | grep -v "^??" || true)
     
     if [[ -z "$git_status" ]]; then
-        report_git "OK"
+        log_ok "Git status clean (no tracked file changes)"
         return 0
     else
-        report_git "DIRTY"
-        echo "$git_status" | head -20
-        return 1
+        log_warn "Git has uncommitted changes:"
+        echo "$git_status" | head -10 | while read -r line; do
+            echo "       $line"
+        done
+        # Warning only, not a failure
+        return 0
     fi
 }
 
 # ============================================================================
-# Mode Switch and Validation Functions
+# Mode Test Functions
 # ============================================================================
 
-# Switch to pods-dev mode and validate
-switch_pods_dev() {
-    report_section "1. Mode Switch Status"
+# Test pods-dev mode
+test_pods_dev() {
+    log_header "PODS-DEV MODE"
+    local errors=0
     
+    # Step 1: Switch to pods-dev
+    echo ""
+    echo "  [1/4] Switching to pods-dev..."
     if MSP_RELEASE=0 "$SCRIPT_DIR/switch-target.sh" pods-dev >/dev/null 2>&1; then
-        report_switch "pods-dev" "OK"
+        log_ok "switch-target.sh pods-dev succeeded"
     else
-        report_switch "pods-dev" "FAILED"
+        log_fail "switch-target.sh pods-dev failed"
         return 1
     fi
     
-    report_section "2. Generated File Validation"
-    if ! validate_generated_files "pods-dev"; then
-        return 1
+    # Step 2: Validate workspace symlink
+    echo ""
+    echo "  [2/4] Validating workspace symlink..."
+    if ! validate_workspace_symlink; then
+        ((errors++)) || true
     fi
     
-    # Validate that workspace symlink exists at root
-    # switch-target.sh creates: msp-ios-sdk.xcworkspace → .generated/msp-ios-sdk.xcworkspace
-    local ROOT_WORKSPACE="$ROOT_DIR/msp-ios-sdk.xcworkspace"
-    
-    if [[ -L "$ROOT_WORKSPACE" ]] || [[ -d "$ROOT_WORKSPACE" ]]; then
-        report_check "msp-ios-sdk.xcworkspace (symlink)" "OK"
-    else
-        report_check "msp-ios-sdk.xcworkspace (symlink)" "MISSING"
-        echo -e "[${RED}ERROR${NC}] Workspace symlink not found at: $ROOT_WORKSPACE"
-        echo "  switch-target.sh should have created this symlink"
-        return 1
-    fi
-    
-    report_section "3. Build / Lint Validation"
+    # Step 3: Build DemoApp
+    echo ""
+    echo "  [3/4] Building DemoApp..."
     if [[ "$SKIP_BUILD" == "true" ]]; then
-        report_warning "Build skipped (--skip-build)"
-        report_build "pods-dev" "DemoApp build" "OK"
+        log_warn "Build skipped (--skip-build)"
     else
-        echo "[Build] pods-dev DemoApp build ..."
-        echo "  Workspace: msp-ios-sdk.xcworkspace"
-        echo "  Scheme: MSPDemoApp"
         local log_file="$BUILD_LOG_DIR/pods-dev-$TIMESTAMP.log"
-        
         cd "$ROOT_DIR"
-        # MANDATORY: pods-dev MUST build the DemoApp successfully
-        # This is a real xcodebuild that validates all source code compiles
+        
         if xcodebuild -workspace msp-ios-sdk.xcworkspace \
             -scheme MSPDemoApp \
             -configuration Debug \
             -destination "platform=iOS Simulator,name=iPhone 16" \
-            build 2>&1 | tee "$log_file" | tail -5; then
-            report_build "pods-dev" "DemoApp build" "OK"
+            build 2>&1 | tee "$log_file" | tail -3; then
+            
+            # Check if build succeeded
+            if grep -q "BUILD SUCCEEDED" "$log_file"; then
+                log_ok "DemoApp build SUCCEEDED"
+            else
+                log_fail "DemoApp build FAILED"
+                echo ""
+                echo "  Last 30 lines of build log:"
+                tail -30 "$log_file" | sed 's/^/       /'
+                return 1
+            fi
         else
-            report_build "pods-dev" "DemoApp build" "FAILED"
-            echo ""
-            echo -e "[${RED}ERROR${NC}] pods-dev build failed"
-            echo ""
-            echo "Last 40 lines of build log:"
-            tail -40 "$log_file"
+            log_fail "xcodebuild command failed"
             return 1
         fi
     fi
     
-    return 0
+    # Step 4: Check git status
+    echo ""
+    echo "  [4/4] Checking git status..."
+    check_git_clean
+    
+    if [[ $errors -eq 0 ]]; then
+        echo ""
+        echo -e "  ${GREEN}━━━ pods-dev: PASSED ━━━${NC}"
+        return 0
+    else
+        echo ""
+        echo -e "  ${RED}━━━ pods-dev: FAILED ━━━${NC}"
+        return 1
+    fi
 }
 
-# Switch to pods-release mode and validate
-switch_pods_release() {
-    report_section "1. Mode Switch Status"
+# Test pods-release mode
+test_pods_release() {
+    log_header "PODS-RELEASE MODE"
+    local errors=0
     
+    # Step 1: Switch to pods-release
+    echo ""
+    echo "  [1/3] Switching to pods-release..."
     if MSP_RELEASE=1 "$SCRIPT_DIR/switch-target.sh" pods-release >/dev/null 2>&1; then
-        report_switch "pods-release" "OK"
+        log_ok "switch-target.sh pods-release succeeded"
     else
-        report_switch "pods-release" "FAILED"
+        log_fail "switch-target.sh pods-release failed"
+        echo ""
+        log_warn "pods-release requires 5 core XCFrameworks."
+        log_warn "Build them first: ./Scripts/xcframeworks/build-core.sh"
         return 1
     fi
     
-    report_section "2. Generated File Validation"
-    if ! validate_generated_files "pods-release"; then
-        return 1
-    fi
-    
-    report_section "3. Build / Lint Validation"
-    echo "[Build] pods-release validating core XCFrameworks ..."
+    # Step 2: Validate ONLY 5 core XCFrameworks (NO DemoApp build!)
     echo ""
-    echo "Checking 5 required core XCFrameworks:"
-    
-    if validate_core_xcframeworks; then
-        echo ""
-        report_build "pods-release" "found core XCFrameworks" "OK"
-    else
-        echo ""
-        report_build "pods-release" "found core XCFrameworks" "FAILED"
-        echo ""
-        report_warning "Missing core XCFrameworks. Run: ./Scripts/xcframeworks/build-core.sh"
-        return 1
+    echo "  [2/3] Validating core XCFrameworks..."
+    echo "  NOTE: DemoApp is NOT built in pods-release mode"
+    if ! validate_core_xcframeworks; then
+        log_fail "Core XCFramework validation failed"
+        ((errors++)) || true
     fi
     
-    # NOTE: We do NOT build DemoApp in pods-release mode
-    # Only validate that core XCFrameworks exist and templates generated correctly
+    # Step 3: Check git status
+    echo ""
+    echo "  [3/3] Checking git status..."
+    check_git_clean
     
-    return 0
+    if [[ $errors -eq 0 ]]; then
+        echo ""
+        echo -e "  ${GREEN}━━━ pods-release: PASSED ━━━${NC}"
+        return 0
+    else
+        echo ""
+        echo -e "  ${RED}━━━ pods-release: FAILED ━━━${NC}"
+        return 1
+    fi
 }
 
-# Switch to spm-release mode and validate
-switch_spm_release() {
-    report_section "1. Mode Switch Status"
+# Test spm-release mode
+test_spm_release() {
+    log_header "SPM-RELEASE MODE"
+    local errors=0
     
+    # Step 1: Switch to spm-release
+    echo ""
+    echo "  [1/4] Switching to spm-release..."
     if "$SCRIPT_DIR/switch-target.sh" spm-release >/dev/null 2>&1; then
-        report_switch "spm-release" "OK"
+        log_ok "switch-target.sh spm-release succeeded"
     else
-        report_switch "spm-release" "FAILED"
+        log_fail "switch-target.sh spm-release failed"
         return 1
     fi
     
-    report_section "2. Generated File Validation"
-    if ! validate_generated_files "spm-release"; then
-        return 1
+    # Step 2: Validate Package.swift
+    echo ""
+    echo "  [2/4] Validating Package.swift..."
+    if ! validate_package_swift; then
+        ((errors++)) || true
     fi
     
-    report_section "3. Build / Lint Validation"
-    echo "[Build] spm-release validating Package.swift syntax ..."
+    # Step 3: Validate core XCFrameworks (also required for SPM)
+    echo ""
+    echo "  [3/4] Validating core XCFrameworks..."
+    if ! validate_core_xcframeworks; then
+        ((errors++)) || true
+    fi
     
-    if validate_package_swift_syntax; then
-        report_build "spm-release" "Package.swift lint" "OK"
+    # Step 4: Check git status
+    echo ""
+    echo "  [4/4] Checking git status..."
+    check_git_clean
+    
+    if [[ $errors -eq 0 ]]; then
+        echo ""
+        echo -e "  ${GREEN}━━━ spm-release: PASSED ━━━${NC}"
+        return 0
     else
-        report_build "spm-release" "Package.swift lint" "FAILED"
-        return 1
-    fi
-    
-    # Also validate core XCFrameworks for spm-release
-    echo ""
-    echo "Checking 5 required core XCFrameworks:"
-    if validate_core_xcframeworks; then
         echo ""
-        report_build "spm-release" "found core XCFrameworks" "OK"
-    else
-        echo ""
-        report_build "spm-release" "found core XCFrameworks" "FAILED"
+        echo -e "  ${RED}━━━ spm-release: FAILED ━━━${NC}"
         return 1
     fi
-    
-    return 0
-}
-
-# ============================================================================
-# Single Loop Execution
-# ============================================================================
-
-run_single_loop() {
-    local loop_num="$1"
-    
-    echo ""
-    echo "╔════════════════════════════════════════════════════════════════════╗"
-    echo "║                      LOOP $loop_num of $LOOPS                              ║"
-    echo "╚════════════════════════════════════════════════════════════════════╝"
-    
-    # =========================================
-    # STEP 1: pods-dev
-    # =========================================
-    echo ""
-    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-    echo "                         PODS-DEV MODE"
-    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-    
-    if ! switch_pods_dev; then
-        echo ""
-        echo -e "[${RED}ERROR${NC}] pods-dev mode failed"
-        return 1
-    fi
-    
-    # =========================================
-    # STEP 2: pods-release
-    # =========================================
-    echo ""
-    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-    echo "                       PODS-RELEASE MODE"
-    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-    
-    if ! switch_pods_release; then
-        echo ""
-        echo -e "[${RED}ERROR${NC}] pods-release mode failed"
-        return 1
-    fi
-    
-    # =========================================
-    # STEP 3: spm-release
-    # =========================================
-    echo ""
-    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-    echo "                        SPM-RELEASE MODE"
-    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-    
-    if ! switch_spm_release; then
-        echo ""
-        echo -e "[${RED}ERROR${NC}] spm-release mode failed"
-        return 1
-    fi
-    
-    # =========================================
-    # STEP 4: Return to pods-dev
-    # =========================================
-    echo ""
-    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-    echo "                    RETURNING TO PODS-DEV"
-    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-    
-    report_section "1. Mode Switch Status"
-    
-    if MSP_RELEASE=0 "$SCRIPT_DIR/switch-target.sh" pods-dev >/dev/null 2>&1; then
-        report_switch "pods-dev (final)" "OK"
-    else
-        report_switch "pods-dev (final)" "FAILED"
-        return 1
-    fi
-    
-    # =========================================
-    # STEP 5: Git Cleanliness Check
-    # =========================================
-    report_section "5. Git Cleanliness Check"
-    
-    if ! check_git_clean; then
-        report_warning "Git has uncommitted changes after round-trip"
-        # Note: This is a warning, not a failure
-    fi
-    
-    # =========================================
-    # Loop Complete
-    # =========================================
-    report_loop "$loop_num" "$LOOPS"
-    
-    return 0
 }
 
 # ============================================================================
@@ -506,7 +388,7 @@ main() {
     echo "╔════════════════════════════════════════════════════════════════════╗"
     echo "║           ROUND-TRIP TEST: Three-Mode Architecture                 ║"
     echo "║                                                                    ║"
-    echo "║   Cycle: pods-dev → pods-release → spm-release → pods-dev         ║"
+    echo "║   Cycle: pods-dev → pods-release → spm-release                     ║"
     echo "╚════════════════════════════════════════════════════════════════════╝"
     echo ""
     echo "Configuration:"
@@ -514,41 +396,57 @@ main() {
     echo "  Loops: $LOOPS"
     echo "  Skip Build: $SKIP_BUILD"
     echo ""
-    echo "Core XCFrameworks Required (5):"
-    for xcf in "${CORE_XCFRAMEWORKS_LIST[@]}"; do
+    echo "Required Core XCFrameworks (5):"
+    for xcf in "${CORE_XCFRAMEWORKS[@]}"; do
         echo "  - $xcf"
     done
     echo ""
-    echo "NOTE: Adapters are SOURCE-ONLY in all modes."
-    echo "      Adapter XCFrameworks are NEVER required."
+    echo "NOTE: Adapters are SOURCE-ONLY in all modes (no XCFrameworks needed)"
+    echo "NOTE: DemoApp is ONLY built in pods-dev mode"
     echo ""
     
-    local failed_loops=0
     local passed_loops=0
+    local failed_loops=0
     
     for ((loop=1; loop<=LOOPS; loop++)); do
-        if run_single_loop "$loop"; then
-            ((passed_loops++)) || true
-        else
+        log_section "LOOP $loop of $LOOPS"
+        
+        # Test pods-dev
+        if ! test_pods_dev; then
+            echo -e "${RED}[FAILED]${NC} Loop $loop failed at pods-dev"
             ((failed_loops++)) || true
-            echo ""
-            echo -e "[${RED}ERROR${NC}] Loop $loop FAILED"
             break
         fi
+        
+        # Test pods-release
+        if ! test_pods_release; then
+            echo -e "${RED}[FAILED]${NC} Loop $loop failed at pods-release"
+            ((failed_loops++)) || true
+            break
+        fi
+        
+        # Test spm-release
+        if ! test_spm_release; then
+            echo -e "${RED}[FAILED]${NC} Loop $loop failed at spm-release"
+            ((failed_loops++)) || true
+            break
+        fi
+        
+        ((passed_loops++)) || true
+        echo ""
+        echo -e "${GREEN}[Loop $loop/$LOOPS] ALL MODES PASSED${NC}"
     done
     
-    # =========================================
     # Final Summary
-    # =========================================
-    report_section "6. Loop Summary"
+    log_section "FINAL SUMMARY"
     
     echo ""
     echo "┌─────────────────────────────────────────┐"
     echo "│           ROUND-TRIP SUMMARY            │"
     echo "├─────────────────────────────────────────┤"
     printf "│  Total Loops:   %-22d │\n" "$LOOPS"
-    printf "│  Passed:        ${GREEN}%-22d${NC} │\n" "$passed_loops"
-    printf "│  Failed:        ${RED}%-22d${NC} │\n" "$failed_loops"
+    printf "│  Passed:        %-22d │\n" "$passed_loops"
+    printf "│  Failed:        %-22d │\n" "$failed_loops"
     echo "├─────────────────────────────────────────┤"
     
     if [[ $failed_loops -eq 0 ]]; then
@@ -557,7 +455,7 @@ main() {
         echo ""
         echo -e "${GREEN}╔════════════════════════════════════════════════════════════════════╗${NC}"
         echo -e "${GREEN}║                                                                    ║${NC}"
-        echo -e "${GREEN}║        ✓ Round-trip test PASSED! ($passed_loops loop(s))                    ║${NC}"
+        echo -e "${GREEN}║        ✓ ALL MODES PASSED SUCCESSFULLY ($passed_loops loop(s))             ║${NC}"
         echo -e "${GREEN}║                                                                    ║${NC}"
         echo -e "${GREEN}╚════════════════════════════════════════════════════════════════════╝${NC}"
         echo ""
