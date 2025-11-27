@@ -328,7 +328,7 @@ switch_pods_dev() {
     fi
     
     log_step "Generating workspace/project YAML"
-    if "$SCRIPT_DIR/generate_workspace.sh" pods; then
+    if "$SCRIPT_DIR/generate_workspace.sh" pods-dev; then
         log_success "YAML generated"
     else
         log_error "YAML generation failed"
@@ -338,7 +338,7 @@ switch_pods_dev() {
     # Step 4: Run pod install (with MSP_RELEASE=0)
     log_section "CocoaPods Installation"
     log_step "Running pod install (MSP_RELEASE=0)"
-    log_info "Podspecs will use source_files (development mode)"
+    log_info "All modules compiled from SOURCE (path-based pods)"
     
     cd "$ROOT_DIR"
     if MSP_RELEASE=0 pod install; then
@@ -424,7 +424,7 @@ switch_pods_release() {
     fi
     
     log_step "Generating workspace/project YAML"
-    if "$SCRIPT_DIR/generate_workspace.sh" pods; then
+    if "$SCRIPT_DIR/generate_workspace.sh" pods-release; then
         log_success "YAML generated"
     else
         log_error "YAML generation failed"
@@ -434,7 +434,7 @@ switch_pods_release() {
     # Step 5: Run pod install (with MSP_RELEASE=1)
     log_section "CocoaPods Installation"
     log_step "Running pod install (MSP_RELEASE=1)"
-    log_info "Podspecs will use vendored_frameworks (binary mode)"
+    log_info "Core modules use BINARY XCFrameworks, adapters use SOURCE"
     
     cd "$ROOT_DIR"
     if MSP_RELEASE=1 pod install; then
@@ -543,7 +543,7 @@ switch_spm_release() {
     fi
     
     log_step "Generating workspace/project YAML"
-    if "$SCRIPT_DIR/generate_workspace.sh" spm; then
+    if "$SCRIPT_DIR/generate_workspace.sh" spm-release; then
         log_success "YAML generated"
     else
         log_error "YAML generation failed"

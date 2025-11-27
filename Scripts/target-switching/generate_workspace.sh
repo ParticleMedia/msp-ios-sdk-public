@@ -30,12 +30,25 @@ if [[ -z "$TARGET_MODE" ]]; then
     fi
 fi
 
-if [[ "$TARGET_MODE" != "spm" ]] && [[ "$TARGET_MODE" != "pods" ]]; then
-    log_error "Invalid mode. Must be 'spm' or 'pods'"
+# Normalize modes: 
+#   - pods-dev and pods-release both use "pods" workspace generation
+#   - spm-release uses "spm" workspace generation
+# The difference is in MSP_RELEASE environment variable (handled by podspecs)
+EFFECTIVE_MODE="$TARGET_MODE"
+if [[ "$TARGET_MODE" == "pods-dev" ]] || [[ "$TARGET_MODE" == "pods-release" ]]; then
+    EFFECTIVE_MODE="pods"
+    log_info "Mode '$TARGET_MODE' uses Pods workspace generation (MSP_RELEASE controls source vs binary)"
+elif [[ "$TARGET_MODE" == "spm-release" ]]; then
+    EFFECTIVE_MODE="spm"
+    log_info "Mode '$TARGET_MODE' uses SPM workspace generation"
+fi
+
+if [[ "$EFFECTIVE_MODE" != "spm" ]] && [[ "$EFFECTIVE_MODE" != "pods" ]]; then
+    log_error "Invalid mode. Must be 'spm', 'pods', 'pods-dev', 'pods-release', or 'spm-release'"
     exit 1
 fi
 
-log_title "Generating YAML Specs: $TARGET_MODE mode"
+log_title "Generating YAML Specs: $TARGET_MODE mode (effective: $EFFECTIVE_MODE)"
 
 # Find all Package.swift files (sorted for determinism)
 # NOTE: In Pods mode, Package.swift is renamed to Package.swift.disabled, so this may be empty
@@ -136,7 +149,7 @@ YAML
     # Add packages section (sorted alphabetically)
     # In Pods mode: DO NOT include SwiftPM packages (empty packages block)
     # In SPM mode: Include all discovered local packages
-    if [[ "$TARGET_MODE" == "pods" ]]; then
+    if [[ "$EFFECTIVE_MODE" == "pods" ]]; then
         # Pods mode: empty packages to prevent SwiftPM resolution
         echo "packages: {}"
     elif [[ ${#PACKAGE_NAMES[@]} -eq 0 ]]; then
@@ -171,7 +184,7 @@ targetTemplates:
         SWIFT_VERSION: 5.0
 YAML
     # Add PODS_ROOT and PODS_PODFILE_DIR_PATH only in Pods mode (for BaseAppTarget template)
-    if [[ "$TARGET_MODE" == "pods" ]]; then
+    if [[ "$EFFECTIVE_MODE" == "pods" ]]; then
         cat <<'YAML'
         PODS_ROOT: "$(SRCROOT)/../../Pods"
         PODS_PODFILE_DIR_PATH: "$(SRCROOT)/../.."
@@ -185,7 +198,7 @@ targets:
 YAML
 
     # MSPDemoApp target (CocoaPods only)
-    if [[ "$TARGET_MODE" == "pods" ]]; then
+    if [[ "$EFFECTIVE_MODE" == "pods" ]]; then
         cat <<'YAML'
   MSPDemoApp:
     templates:
@@ -290,7 +303,7 @@ YAML
     fi
 
     # MSPDemoApp-SPM target (SPM only)
-    if [[ "$TARGET_MODE" == "spm" ]]; then
+    if [[ "$EFFECTIVE_MODE" == "spm" ]]; then
         cat <<'YAML'
   MSPDemoApp-SPM:
     templates:
@@ -313,7 +326,7 @@ YAML
     fi
 
     # Test targets (only for Pods mode)
-    if [[ "$TARGET_MODE" == "pods" ]]; then
+    if [[ "$EFFECTIVE_MODE" == "pods" ]]; then
         cat <<'YAML'
   MSPDemoAppTests:
     type: bundle.unit-test
@@ -343,7 +356,7 @@ YAML
     cat <<'YAML'
 schemes:
 YAML
-    if [[ "$TARGET_MODE" == "pods" ]]; then
+    if [[ "$EFFECTIVE_MODE" == "pods" ]]; then
         cat <<'YAML'
   MSPDemoApp:
     build:
@@ -429,7 +442,7 @@ workspace:
 YAML
     
     # Add mode-specific projects
-    if [[ "$TARGET_MODE" == "pods" ]]; then
+    if [[ "$EFFECTIVE_MODE" == "pods" ]]; then
         # Pods mode: include Pods project
         if [[ -d "$PODS_DIR/Pods.xcodeproj" ]]; then
             cat <<'YAML'
@@ -493,7 +506,7 @@ for project_yml in "${PROJECT_YML_FILES[@]}"; do
 done
 
 # Step 2: Generate MSPDemoApp project.yml (if in Pods mode)
-if [[ "$TARGET_MODE" == "pods" ]] && [[ -f "$PROJECT_SPEC" ]]; then
+if [[ "$EFFECTIVE_MODE" == "pods" ]] && [[ -f "$PROJECT_SPEC" ]]; then
     log_info "[xcodegen] Generating MSPDemoApp project"
     if ! xcodegen generate --spec "$PROJECT_SPEC" 2>&1; then
         log_warn "[xcodegen] Failed to generate MSPDemoApp project (may need pod install first)"
