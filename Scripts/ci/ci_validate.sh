@@ -22,6 +22,18 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT_DIR="$(cd "$SCRIPT_DIR/../.." && pwd)"
 
+# ============================================================================
+# Source Shared Libraries
+# ============================================================================
+# Phase 1 Refactoring: Use centralized logging from lib/
+# Note: We define simple fallbacks for CI environments where full lib may not load
+
+# Try to source the shared logging library
+if [[ -f "$ROOT_DIR/Scripts/lib/colors.sh" ]]; then
+    # shellcheck source=Scripts/lib/colors.sh
+    source "$ROOT_DIR/Scripts/lib/colors.sh" 2>/dev/null || true
+fi
+
 # Parse arguments
 STRESS_CYCLES=2
 SKIP_BUILD=false
@@ -36,13 +48,15 @@ for arg in "$@"; do
     esac
 done
 
-# Colors for output
-RED='\033[0;31m'
-GREEN='\033[0;32m'
-YELLOW='\033[1;33m'
-BLUE='\033[0;34m'
-NC='\033[0m' # No Color
+# Colors for output (fallback if colors.sh not loaded)
+: "${RED:=\033[0;31m}"
+: "${GREEN:=\033[0;32m}"
+: "${YELLOW:=\033[1;33m}"
+: "${BLUE:=\033[0;34m}"
+: "${NC:=\033[0m}"
 
+# Logging functions (CI-specific formatting)
+# These are intentionally simple for CI log readability
 log_step() { echo -e "${BLUE}▶${NC} $1"; }
 log_success() { echo -e "${GREEN}✓${NC} $1"; }
 log_error() { echo -e "${RED}✗${NC} $1"; }

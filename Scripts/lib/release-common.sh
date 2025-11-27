@@ -5,7 +5,7 @@
 
 # Try to source UI system (if available)
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-ROOT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
+ROOT_DIR="$(cd "$SCRIPT_DIR/../.." && pwd)"
 
 # Source colors and UI system if available
 if [[ -f "$ROOT_DIR/Scripts/lib/colors.sh" ]]; then
@@ -363,472 +363,39 @@ create_github_release_internal() {
     return 0
 }
 
-# Slack Notification Functions
-# =============================
+# ============================================================================
+# Slack Notification Functions (Extracted to notify/slack.sh)
+# ============================================================================
+# Phase 1 Refactoring: Slack functions have been extracted to a dedicated module.
+# This source statement provides backward compatibility.
+# See: Scripts/notify/slack.sh for the implementation.
 
-# Load Slack configuration from config file if it exists
-# Falls back to environment variables if config file is not found
-# Environment variables take precedence over config file values
-load_slack_config() {
-    # Get the directory where this script is located
-    local script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-    # Resolve the config file path relative to the script directory
-    # Script is in Scripts/lib/, config is in Scripts/config/
-    local config_dir="$(cd "$script_dir/../config" 2>/dev/null && pwd)"
-    if [[ -z "$config_dir" ]]; then
-        # Fallback: try to find config directory from project root
-        local project_root="$(cd "$script_dir/../.." 2>/dev/null && pwd)"
-        if [[ -n "$project_root" ]]; then
-            config_dir="$project_root/Scripts/config"
-        fi
-    fi
-    local config_file="${config_dir}/slack.conf"
-    
-    if [[ -f "$config_file" ]]; then
-        log_debug "Loading Slack configuration from: $config_file"
-        
-        # Read the config file line by line
-        while IFS= read -r line || [[ -n "$line" ]]; do
-            # Skip comments and empty lines
-            [[ "$line" =~ ^[[:space:]]*# ]] && continue
-            [[ -z "${line// }" ]] && continue
-            
-            # Parse key=value pairs
-            if [[ "$line" =~ ^[[:space:]]*([^=]+)=(.*)$ ]]; then
-                local key="${BASH_REMATCH[1]}"
-                local value="${BASH_REMATCH[2]}"
-                
-                # Remove leading/trailing whitespace from key
-                key=$(echo "$key" | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
-                
-                # Remove leading/trailing whitespace and quotes from value
-                value=$(echo "$value" | sed 's/^[[:space:]]*//;s/[[:space:]]*$//' | sed 's/^"\(.*\)"$/\1/' | sed "s/^'\(.*\)'$/\1/")
-                
-                # Only set if not already set in environment (environment takes precedence)
-                if [[ -n "$key" ]] && [[ -n "$value" ]]; then
-                    case "$key" in
-                        SLACK_WEBHOOK_URL)
-                            [[ -z "${SLACK_WEBHOOK_URL:-}" ]] && export SLACK_WEBHOOK_URL="$value"
-                            ;;
-                        SLACK_CHANNEL)
-                            [[ -z "${SLACK_CHANNEL:-}" ]] && export SLACK_CHANNEL="$value"
-                            ;;
-                        SLACK_USERNAME)
-                            [[ -z "${SLACK_USERNAME:-}" ]] && export SLACK_USERNAME="$value"
-                            ;;
-                        SLACK_ICON_EMOJI)
-                            [[ -z "${SLACK_ICON_EMOJI:-}" ]] && export SLACK_ICON_EMOJI="$value"
-                            ;;
-                    esac
-                fi
-            fi
-        done < "$config_file"
-    else
-        log_debug "Slack config file not found: $config_file (using environment variables or defaults)"
-    fi
-}
+# Source the Slack notification module
+if [[ -f "$ROOT_DIR/Scripts/notify/slack.sh" ]]; then
+    # shellcheck source=Scripts/notify/slack.sh
+    source "$ROOT_DIR/Scripts/notify/slack.sh"
+else
+    # Fallback: Define stub functions if module not found
+    log_warning "notify/slack.sh not found - Slack notifications will be disabled"
+    send_slack_notification() { log_warning "Slack notifications disabled (module not found)"; }
+    notify_release_success() { :; }
+    notify_release_failure() { :; }
+    notify_release_warning() { :; }
+    notify_release_start() { :; }
+    notify_pod_release() { :; }
+    notify_release_summary() { :; }
+    notify_release_success_with_summary() { :; }
+    test_slack_notification() { log_error "Slack notifications disabled (module not found)"; return 1; }
+fi
 
-# Load Slack configuration (environment variables take precedence)
-load_slack_config
-
-# Slack configuration with defaults
-SLACK_WEBHOOK_URL="${SLACK_WEBHOOK_URL:-}"
-SLACK_CHANNEL="${SLACK_CHANNEL:-#releases}"
-SLACK_USERNAME="${SLACK_USERNAME:-MSP iOS SDK Bot}"
-SLACK_ICON_EMOJI="${SLACK_ICON_EMOJI:-:rocket:}"
-
-# Environment detection
+# Backward compatibility: Re-export environment functions
+# These are now defined in notify/slack.sh but may be used by other scripts
 get_environment() {
-    if [[ -n "$JENKINS_URL" ]]; then
-        echo "jenkins"
-    elif [[ -n "$GITHUB_ACTIONS" ]]; then
-        echo "github-actions"
-    elif [[ -n "$CI" ]]; then
-        echo "ci"
-    else
-        echo "local"
-    fi
+    get_slack_environment
 }
 
-# Convert markdown to Slack formatting
-format_release_notes_for_slack() {
-    local release_notes="$1"
-    
-    if [[ -z "$release_notes" ]]; then
-        echo ""
-        return
-    fi
-    
-    # Convert markdown headers to Slack bold
-    local formatted_notes=$(echo "$release_notes" | sed 's/^## \(.*\)$/*\1*/g')
-    formatted_notes=$(echo "$formatted_notes" | sed 's/^### \(.*\)$/*\1*/g')
-    
-    # Convert markdown lists to Slack formatting
-    formatted_notes=$(echo "$formatted_notes" | sed 's/^- /• /g')
-    
-    # Clean up extra whitespace but preserve line breaks
-    formatted_notes=$(echo "$formatted_notes" | sed 's/^[[:space:]]*//g' | sed 's/[[:space:]]*$//g')
-    
-    # Replace multiple newlines with single newline
-    formatted_notes=$(echo "$formatted_notes" | tr -s '\n')
-    
-    # Truncate if too long for Slack (count characters including newlines)
-    local char_count=$(echo "$formatted_notes" | wc -c)
-    if [[ $char_count -gt 200 ]]; then
-        # Truncate to 197 characters and add ellipsis
-        formatted_notes=$(echo "$formatted_notes" | head -c 197)
-        formatted_notes="${formatted_notes}..."
-    fi
-    
-    echo "$formatted_notes"
-}
-
-# Get environment-specific information
 get_environment_info() {
-    local env=$(get_environment)
-    case "$env" in
-        "jenkins")
-            echo "Jenkins Build #${BUILD_NUMBER:-unknown}"
-            ;;
-        "github-actions")
-            echo "GitHub Actions - ${GITHUB_WORKFLOW:-unknown workflow}"
-            ;;
-        "ci")
-            echo "CI Environment"
-            ;;
-        "local")
-            # Handle hostnames with spaces properly
-            local hostname=$(hostname)
-            echo "Local Development - $(whoami)@${hostname}"
-            ;;
-        *)
-            echo "Unknown Environment"
-            ;;
-    esac
-}
-
-# Send Slack notification
-send_slack_notification() {
-    local message="$1"
-    local color="${2:-good}"
-    local title="${3:-}"
-    local fields="${4:-}"
-    
-    if [[ -z "$SLACK_WEBHOOK_URL" ]]; then
-        log_warning "SLACK_WEBHOOK_URL not set, skipping Slack notification"
-        return 0
-    fi
-    
-    # Escape special characters for JSON
-    local escaped_message=$(echo "$message" | sed 's/"/\\"/g' | sed 's/\\/\\\\/g')
-    local escaped_title=$(echo "$title" | sed 's/"/\\"/g' | sed 's/\\/\\\\/g')
-    local escaped_footer=$(get_environment_info | sed 's/"/\\"/g' | sed 's/\\/\\\\/g')
-    
-    # Build the JSON payload
-    local json_payload=$(cat <<EOF
-{
-    "channel": "$SLACK_CHANNEL",
-    "username": "$SLACK_USERNAME",
-    "icon_emoji": "$SLACK_ICON_EMOJI",
-    "text": "$escaped_message",
-    "attachments": [
-        {
-            "color": "$color",
-            "title": "$escaped_title",
-            "fields": [$fields],
-            "footer": "$escaped_footer",
-            "ts": $(date +%s)
-        }
-    ]
-}
-EOF
-)
-    
-    # Send the notification
-    local response=$(curl -s -X POST -H 'Content-type: application/json' \
-        --data "$json_payload" \
-        "$SLACK_WEBHOOK_URL" 2>/dev/null)
-    
-    if [[ "$response" == "ok" ]]; then
-        log_success "Slack notification sent successfully"
-    else
-        log_warning "Failed to send Slack notification: $response"
-    fi
-}
-
-# Send release success notification
-notify_release_success() {
-    local release_type="$1"
-    local version="$2"
-    local pods="$3"
-    local duration="${4:-unknown}"
-    local release_notes="${5:-}"
-    
-    local message="🚀 *${release_type} Release Successful!*"
-    local title="Release Details"
-    local fields=""
-    
-    # Add version field
-    fields+="{\"title\": \"Version\", \"value\": \"$version\", \"short\": true},"
-    
-    # Add pods field
-    if [[ -n "$pods" ]]; then
-        fields+="{\"title\": \"Released Pods\", \"value\": \"$pods\", \"short\": true},"
-    fi
-    
-    # Add duration field
-    fields+="{\"title\": \"Duration\", \"value\": \"$duration\", \"short\": true},"
-    
-    # Add environment field
-    fields+="{\"title\": \"Environment\", \"value\": \"$(get_environment_info)\", \"short\": true}"
-    
-    # Add release notes if provided
-    if [[ -n "$release_notes" ]]; then
-        local formatted_notes=$(format_release_notes_for_slack "$release_notes")
-        fields+=",{\"title\": \"Release Notes\", \"value\": \"$formatted_notes\", \"short\": false}"
-    fi
-    
-    send_slack_notification "$message" "good" "$title" "$fields"
-}
-
-# Send release failure notification
-notify_release_failure() {
-    local release_type="$1"
-    local version="$2"
-    local error_message="$3"
-    local failed_step="${4:-unknown}"
-    
-    local message="❌ *${release_type} Release Failed!*"
-    local title="Release Error Details"
-    local fields=""
-    
-    # Add version field
-    fields+="{\"title\": \"Version\", \"value\": \"$version\", \"short\": true},"
-    
-    # Add failed step field
-    fields+="{\"title\": \"Failed Step\", \"value\": \"$failed_step\", \"short\": true},"
-    
-    # Add error message field
-    fields+="{\"title\": \"Error Message\", \"value\": \"$error_message\", \"short\": false},"
-    
-    # Add environment field
-    fields+="{\"title\": \"Environment\", \"value\": \"$(get_environment_info)\", \"short\": true}"
-    
-    send_slack_notification "$message" "danger" "$title" "$fields"
-}
-
-# Send release warning notification
-notify_release_warning() {
-    local release_type="$1"
-    local version="$2"
-    local warning_message="$3"
-    local warning_step="${4:-unknown}"
-    
-    local message="⚠️ *${release_type} Release Completed with Warnings*"
-    local title="Release Warning Details"
-    local fields=""
-    
-    # Add version field
-    fields+="{\"title\": \"Version\", \"value\": \"$version\", \"short\": true},"
-    
-    # Add warning step field
-    fields+="{\"title\": \"Warning Step\", \"value\": \"$warning_step\", \"short\": true},"
-    
-    # Add warning message field
-    fields+="{\"title\": \"Warning Message\", \"value\": \"$warning_message\", \"short\": false},"
-    
-    # Add environment field
-    fields+="{\"title\": \"Environment\", \"value\": \"$(get_environment_info)\", \"short\": true}"
-    
-    send_slack_notification "$message" "warning" "$title" "$fields"
-}
-
-# Send release start notification
-notify_release_start() {
-    local release_type="$1"
-    local version="$2"
-    local pods="$3"
-    local release_notes="${4:-}"
-    
-    local message="🔄 *${release_type} Release Started*"
-    local title="Release Information"
-    local fields=""
-    
-    # Add version field
-    fields+="{\"title\": \"Version\", \"value\": \"$version\", \"short\": true},"
-    
-    # Add pods field
-    if [[ -n "$pods" ]]; then
-        fields+="{\"title\": \"Pods to Release\", \"value\": \"$pods\", \"short\": true},"
-    fi
-    
-    # Add environment field
-    fields+="{\"title\": \"Environment\", \"value\": \"$(get_environment_info)\", \"short\": true}"
-    
-    # Add release notes if provided
-    if [[ -n "$release_notes" ]]; then
-        local formatted_notes=$(format_release_notes_for_slack "$release_notes")
-        fields+=",{\"title\": \"Release Notes\", \"value\": \"$formatted_notes\", \"short\": false}"
-    fi
-    
-    send_slack_notification "$message" "#36a64f" "$title" "$fields"
-}
-
-# Send individual pod release notification
-notify_pod_release() {
-    local pod="$1"
-    local version="$2"
-    local pod_status="$3"  # success, failure, warning
-    local message="$4"
-    
-    local emoji=""
-    local color=""
-    
-    case "$pod_status" in
-        "success")
-            emoji="✅"
-            color="good"
-            ;;
-        "failure")
-            emoji="❌"
-            color="danger"
-            ;;
-        "warning")
-            emoji="⚠️"
-            color="warning"
-            ;;
-        *)
-            emoji="ℹ️"
-            color="#36a64f"
-            ;;
-    esac
-    
-    local slack_message="${emoji} *${pod}* v${version}"
-    if [[ -n "$message" ]]; then
-        slack_message+="
-$message"
-    fi
-    
-    local fields="{\"title\": \"Pod\", \"value\": \"$pod\", \"short\": true},"
-    fields+="{\"title\": \"Version\", \"value\": \"$version\", \"short\": true},"
-    fields+="{\"title\": \"Status\", \"value\": \"$pod_status\", \"short\": true}"
-    
-    send_slack_notification "$slack_message" "$color" "Pod Release Update" "$fields"
-}
-
-# Send release summary notification
-notify_release_summary() {
-    local release_type="$1"
-    local version="$2"
-    local total_pods="$3"
-    local successful_pods="$4"
-    local failed_pods="$5"
-    local duration="$6"
-    
-    local message="📊 *${release_type} Release Summary*"
-    local title="Release Statistics"
-    local fields=""
-    
-    # Add version field
-    fields+="{\"title\": \"Version\", \"value\": \"$version\", \"short\": true},"
-    
-    # Add total pods field
-    fields+="{\"title\": \"Total Pods\", \"value\": \"$total_pods\", \"short\": true},"
-    
-    # Add successful pods field
-    fields+="{\"title\": \"Successful\", \"value\": \"$successful_pods\", \"short\": true},"
-    
-    # Add failed pods field
-    fields+="{\"title\": \"Failed\", \"value\": \"$failed_pods\", \"short\": true},"
-    
-    # Add duration field
-    fields+="{\"title\": \"Duration\", \"value\": \"$duration\", \"short\": true},"
-    
-    # Add environment field
-    fields+="{\"title\": \"Environment\", \"value\": \"$(get_environment_info)\", \"short\": true}"
-    
-    local color="good"
-    if [[ "$failed_pods" -gt 0 ]]; then
-        color="danger"
-    elif [[ "$successful_pods" -lt "$total_pods" ]]; then
-        color="warning"
-    fi
-    
-    send_slack_notification "$message" "$color" "$title" "$fields"
-}
-
-# Send combined release success notification with summary
-notify_release_success_with_summary() {
-    local release_type="$1"
-    local version="$2"
-    local pods="$3"
-    local duration="${4:-unknown}"
-    local release_notes="${5:-}"
-    local total_pods="$6"
-    local successful_pods="$7"
-    local failed_pods="$8"
-    local release_branch="${9:-}"
-    
-    local message="🚀 *${release_type} Release Successful!*"
-    local title="Release Details & Summary"
-    local fields=""
-    
-    # Add version field
-    fields+="{\"title\": \"Version\", \"value\": \"$version\", \"short\": true}"
-    
-    # Add release branch field if provided
-    if [[ -n "$release_branch" ]]; then
-        fields+=",{\"title\": \"Release Branch\", \"value\": \"$release_branch\", \"short\": true}"
-    fi
-    
-    # Add duration field
-    fields+=",{\"title\": \"Duration\", \"value\": \"$duration\", \"short\": true}"
-    
-    # Add released pods field
-    if [[ -n "$pods" ]]; then
-        fields+=",{\"title\": \"Released Pods\", \"value\": \"$pods\", \"short\": true}"
-    fi
-    
-    # Add environment field
-    fields+=",{\"title\": \"Environment\", \"value\": \"$(get_environment_info)\", \"short\": true}"
-    
-    # Add release notes if provided
-    if [[ -n "$release_notes" ]]; then
-        local formatted_notes=$(format_release_notes_for_slack "$release_notes")
-        fields+=",{\"title\": \"Release Notes\", \"value\": \"$formatted_notes\", \"short\": false}"
-    fi
-    
-    # Add summary statistics
-    fields+=",{\"title\": \"Total Pods\", \"value\": \"$total_pods\", \"short\": true}"
-    fields+=",{\"title\": \"Successful\", \"value\": \"$successful_pods\", \"short\": true}"
-    fields+=",{\"title\": \"Failed\", \"value\": \"$failed_pods\", \"short\": true}"
-    
-    local color="good"
-    if [[ "$failed_pods" -gt 0 ]]; then
-        color="danger"
-    elif [[ "$successful_pods" -lt "$total_pods" ]]; then
-        color="warning"
-    fi
-    
-    send_slack_notification "$message" "$color" "$title" "$fields"
-}
-
-# Test Slack notification
-test_slack_notification() {
-    log_step "Testing Slack notification..."
-    
-    if [[ -z "$SLACK_WEBHOOK_URL" ]]; then
-        log_error "SLACK_WEBHOOK_URL not set. Please set it to test notifications."
-        return 1
-    fi
-    
-    local message="🧪 *Test Notification*"
-    local title="Slack Integration Test"
-    local fields="{\"title\": \"Test\", \"value\": \"This is a test notification from MSP iOS SDK Release Bot\", \"short\": false},"
-    fields+="{\"title\": \"Environment\", \"value\": \"$(get_environment_info)\", \"short\": true},"
-    fields+="{\"title\": \"Timestamp\", \"value\": \"$(date)\", \"short\": true}"
-    
-    send_slack_notification "$message" "good" "$title" "$fields"
+    get_slack_environment_info
 }
 
 # Release Notes Generation Functions
@@ -1042,14 +609,37 @@ update_config_plist_version() {
 }
 
 # Export functions for use in other scripts
-export -f log_info log_success log_warning log_error log_step log_release log_debug print_section print_subsection
+# Note: Logging functions may come from lib/ui.sh or fallbacks defined above
+export -f log_info log_success log_warning log_error log_step log_release log_debug print_section print_subsection 2>/dev/null || true
+
+# Export pod configuration functions
 export -f get_pod_dependencies is_valid_pod get_release_order_for_pod validate_release_order
+
+# Export podspec utilities
 export -f update_podspec_dependency_version update_podspec_to_zip_format
+
+# Export project utilities
 export -f get_project_root ensure_project_root
+
+# Export retry utilities
 export -f retry_with_backoff validate_podspec_with_retry publish_podspec_with_retry
+
+# Export GitHub release utilities
 export -f create_github_release_with_retry create_github_release_internal
-export -f get_environment get_environment_info format_release_notes_for_slack send_slack_notification
-export -f notify_release_success notify_release_failure notify_release_warning notify_release_start notify_release_success_with_summary
-export -f notify_pod_release notify_release_summary test_slack_notification
+
+# Export environment functions (backward compatibility wrappers)
+export -f get_environment get_environment_info
+
+# Export release notes functions
 export -f generate_release_notes_from_git generate_release_notes_from_template generate_simple_release_notes prompt_for_release_notes get_release_notes
+
+# Export version update functions
 export -f update_config_plist_version
+
+# Note: Slack notification functions are exported by Scripts/notify/slack.sh
+# The following are available after sourcing this file:
+#   - send_slack_notification
+#   - notify_release_success, notify_release_failure, notify_release_warning
+#   - notify_release_start, notify_pod_release, notify_release_summary
+#   - notify_release_success_with_summary, test_slack_notification
+#   - format_release_notes_for_slack
