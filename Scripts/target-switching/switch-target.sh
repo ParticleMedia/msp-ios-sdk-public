@@ -133,6 +133,35 @@ run_xcodegen() {
     fi
 }
 
+# Create workspace symlink at project root
+# The actual workspace is generated inside .generated/ to keep root clean
+# The symlink allows developers to always use: open msp-ios-sdk.xcworkspace
+create_workspace_symlink() {
+    log_step "Creating workspace symlink at project root"
+    
+    local GENERATED_WORKSPACE="$ROOT_DIR/.generated/msp-ios-sdk.xcworkspace"
+    local ROOT_SYMLINK="$ROOT_DIR/msp-ios-sdk.xcworkspace"
+    
+    if [[ ! -d "$GENERATED_WORKSPACE" ]]; then
+        log_warn "Generated workspace not found at: $GENERATED_WORKSPACE"
+        log_warn "Symlink not created - workspace may not work properly"
+        return 1
+    fi
+    
+    # Remove existing symlink or directory (force overwrite)
+    rm -f "$ROOT_SYMLINK" 2>/dev/null || true
+    
+    # Create symlink pointing to generated workspace
+    if ln -sf ".generated/msp-ios-sdk.xcworkspace" "$ROOT_SYMLINK"; then
+        log_success "Workspace symlink created: msp-ios-sdk.xcworkspace → .generated/msp-ios-sdk.xcworkspace"
+    else
+        log_error "Failed to create workspace symlink"
+        return 1
+    fi
+    
+    return 0
+}
+
 # Pre-stage XCFrameworks for Pods build
 prestage_xcframeworks() {
     log_step "Pre-staging XCFrameworks for Pods build"
@@ -352,25 +381,29 @@ switch_pods_dev() {
     log_section "Xcode Project Generation"
     run_xcodegen
     
-    # Step 6: Generate Info.plist
+    # Step 6: Create workspace symlink at root
+    log_section "Workspace Symlink"
+    create_workspace_symlink
+    
+    # Step 7: Generate Info.plist
     log_section "Info.plist Generation"
     generate_info_plist
     
-    # Step 7: Validate final state
+    # Step 8: Validate final state
     log_section "Validation"
     if ! validate_final_state "pods-dev"; then
         print_summary "pods-dev" "FAILED"
         exit 1
     fi
     
-    # Step 8: Git cleanliness check
+    # Step 9: Git cleanliness check
     log_section "Git Status Check"
     verify_git_cleanliness || log_warn "Git status not fully clean"
     
-    # Step 9: Open Xcode
+    # Step 10: Open Xcode
     log_section "Opening Xcode"
-    if [[ -d "$PODS_WORKSPACE" ]]; then
-        open "$PODS_WORKSPACE"
+    if [[ -L "$ROOT_DIR/msp-ios-sdk.xcworkspace" ]] || [[ -d "$ROOT_DIR/msp-ios-sdk.xcworkspace" ]]; then
+        open "$ROOT_DIR/msp-ios-sdk.xcworkspace"
         log_success "Opened workspace"
     fi
     
@@ -448,29 +481,33 @@ switch_pods_release() {
     log_section "Xcode Project Generation"
     run_xcodegen
     
-    # Step 7: Pre-stage XCFrameworks
+    # Step 7: Create workspace symlink at root
+    log_section "Workspace Symlink"
+    create_workspace_symlink
+    
+    # Step 8: Pre-stage XCFrameworks
     log_section "XCFramework Staging"
     prestage_xcframeworks
     
-    # Step 8: Generate Info.plist
+    # Step 9: Generate Info.plist
     log_section "Info.plist Generation"
     generate_info_plist
     
-    # Step 9: Validate final state
+    # Step 10: Validate final state
     log_section "Validation"
     if ! validate_final_state "pods-release"; then
         print_summary "pods-release" "FAILED"
         exit 1
     fi
     
-    # Step 10: Git cleanliness check
+    # Step 11: Git cleanliness check
     log_section "Git Status Check"
     verify_git_cleanliness || log_warn "Git status not fully clean"
     
-    # Step 11: Open Xcode
+    # Step 12: Open Xcode
     log_section "Opening Xcode"
-    if [[ -d "$PODS_WORKSPACE" ]]; then
-        open "$PODS_WORKSPACE"
+    if [[ -L "$ROOT_DIR/msp-ios-sdk.xcworkspace" ]] || [[ -d "$ROOT_DIR/msp-ios-sdk.xcworkspace" ]]; then
+        open "$ROOT_DIR/msp-ios-sdk.xcworkspace"
         log_success "Opened workspace"
     fi
     
@@ -554,11 +591,15 @@ switch_spm_release() {
     log_section "Xcode Project Generation"
     run_xcodegen
     
-    # Step 7: Generate Info.plist
+    # Step 7: Create workspace symlink at root (for consistency)
+    log_section "Workspace Symlink"
+    create_workspace_symlink
+    
+    # Step 8: Generate Info.plist
     log_section "Info.plist Generation"
     generate_info_plist
     
-    # Step 8: Validate XCFrameworks in Package.swift paths
+    # Step 9: Validate XCFrameworks in Package.swift paths
     log_section "Package.swift Validation"
     log_step "Verifying XCFramework paths in Package.swift"
     
@@ -576,18 +617,19 @@ switch_spm_release() {
         log_warn "$missing_refs module(s) not referenced in Package.swift"
     fi
     
-    # Step 9: Validate final state
+    # Step 10: Validate final state
     log_section "Validation"
     if ! validate_final_state "spm-release"; then
         print_summary "spm-release" "FAILED"
         exit 1
     fi
     
-    # Step 10: Git cleanliness check
+    # Step 11: Git cleanliness check
     log_section "Git Status Check"
     verify_git_cleanliness || log_warn "Git status not fully clean"
     
-    # Step 11: Open Xcode project
+    # Step 12: Open Xcode project
+    # Note: SPM mode uses the .xcodeproj directly with Package.swift dependencies
     log_section "Opening Xcode"
     local PROJECT_DIR="$(dirname "$PROJECT_SPEC")"
     if [[ -d "$PROJECT_DIR/MSPDemoApp.xcodeproj" ]]; then

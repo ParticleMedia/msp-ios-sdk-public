@@ -283,27 +283,16 @@ switch_pods_dev() {
         return 1
     fi
     
-    # Validate that workspace actually exists
-    # The workspace is generated at .generated/msp-ios-sdk.xcworkspace
-    # We need to create a symlink at root for xcodebuild to work properly
-    local GENERATED_WORKSPACE="$ROOT_DIR/.generated/msp-ios-sdk.xcworkspace"
+    # Validate that workspace symlink exists at root
+    # switch-target.sh creates: msp-ios-sdk.xcworkspace → .generated/msp-ios-sdk.xcworkspace
     local ROOT_WORKSPACE="$ROOT_DIR/msp-ios-sdk.xcworkspace"
     
-    if [[ -d "$GENERATED_WORKSPACE" ]]; then
-        # Ensure symlink exists at root pointing to generated workspace
-        if [[ ! -L "$ROOT_WORKSPACE" ]] || [[ ! -e "$ROOT_WORKSPACE" ]]; then
-            rm -f "$ROOT_WORKSPACE" 2>/dev/null || true
-            ln -sf ".generated/msp-ios-sdk.xcworkspace" "$ROOT_WORKSPACE"
-        fi
-        report_check "msp-ios-sdk.xcworkspace" "OK"
-    elif [[ -d "$ROOT_WORKSPACE" ]]; then
-        # Workspace exists directly at root (legacy)
-        report_check "msp-ios-sdk.xcworkspace" "OK"
+    if [[ -L "$ROOT_WORKSPACE" ]] || [[ -d "$ROOT_WORKSPACE" ]]; then
+        report_check "msp-ios-sdk.xcworkspace (symlink)" "OK"
     else
-        report_check "msp-ios-sdk.xcworkspace" "MISSING"
-        echo -e "[${RED}ERROR${NC}] pods-dev workspace not found at:"
-        echo "  - $GENERATED_WORKSPACE"
-        echo "  - $ROOT_WORKSPACE"
+        report_check "msp-ios-sdk.xcworkspace (symlink)" "MISSING"
+        echo -e "[${RED}ERROR${NC}] Workspace symlink not found at: $ROOT_WORKSPACE"
+        echo "  switch-target.sh should have created this symlink"
         return 1
     fi
     
@@ -313,7 +302,7 @@ switch_pods_dev() {
         report_build "pods-dev" "DemoApp build" "OK"
     else
         echo "[Build] pods-dev DemoApp build ..."
-        echo "  Workspace: $ROOT_WORKSPACE"
+        echo "  Workspace: msp-ios-sdk.xcworkspace"
         echo "  Scheme: MSPDemoApp"
         local log_file="$BUILD_LOG_DIR/pods-dev-$TIMESTAMP.log"
         
