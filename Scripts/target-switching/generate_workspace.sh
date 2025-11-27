@@ -396,171 +396,30 @@ else
     log_success "project.yml generated"
 fi
 
-# Generate workspace.yml deterministically
+# Generate workspace.yml from template
 log_section "Generating workspace.yml"
 log_step "Generating workspace.yml"
 
-# Find all .xcodeproj files (excluding Pods and build artifacts, sorted for determinism)
-# NOTE: Modules with project.yml (XcodeGen-managed) should use project.yml, not .xcodeproj
-PROJECTS=()
-# Initialize empty array
-# Initialize PROJECTS array
-XCODEGEN_PROJECTS=()
-# Initialize PROJECTS array
+# ============================================================================
+# Generate workspace.yml from template (Template Architecture)
+# ============================================================================
+# workspace.yml.template is the developer-maintained source
+# workspace.yml is generated and must NEVER be committed
 
-# Discover XcodeGen-managed modules (project.yml takes precedence over .xcodeproj)
-# Find all project.yml files in Sources/ and Examples/ directories
-# Exclude Pods/, Build/, .generated/ from search
-while IFS= read -r project_yml; do
-    # Get relative path from ROOT_DIR
-    rel_path="${project_yml#$ROOT_DIR/}"
-    # Skip if in excluded directories
-    if [[ "$rel_path" == Pods/* ]] || [[ "$rel_path" == Build/* ]] || [[ "$rel_path" == .generated/* ]]; then
-        continue
-    fi
-    XCODEGEN_PROJECTS+=("$rel_path")
-done < <(find "$ROOT_DIR/Sources" "$ROOT_DIR/Examples" -name "project.yml" -type f 2>/dev/null | LC_ALL=C sort)
-
-if [[ "$TARGET_MODE" == "spm" ]]; then
-    # SPM mode: exclude all Pods projects
-    log_info "[generate_workspace] SPM mode: excluded Pods/Pods.xcodeproj"
-    while IFS= read -r proj; do
-        # Defensive check: skip any Pods-related paths
-        if [[ "$proj" == *"Pods"* ]] || [[ "$proj" == *"Pods.xcodeproj" ]] || [[ "$proj" == */Pods/* ]]; then
-            continue
-        fi
-        # Skip NovaCore.xcodeproj if NovaCore/project.yml exists (XcodeGen-managed)
-        if [[ "$proj" == *"Sources/Core/NovaCore/NovaCore.xcodeproj" ]] && [[ -f "$ROOT_DIR/Sources/Core/NovaCore/project.yml" ]]; then
-            continue
-        fi
-        # Skip MSPCore.xcodeproj if MSPCore/project.yml exists (XcodeGen-managed)
-        if [[ "$proj" == *"Sources/Core/MSPCore/MSPCore.xcodeproj" ]] && [[ -f "$ROOT_DIR/Sources/Core/MSPCore/project.yml" ]]; then
-            continue
-        fi
-        # Skip MSPOMSDK.xcodeproj if MSPOMSDK/project.yml exists (XcodeGen-managed)
-        if [[ "$proj" == *"Sources/Core/MSPOMSDK/MSPOMSDK.xcodeproj" ]] && [[ -f "$ROOT_DIR/Sources/Core/MSPOMSDK/project.yml" ]]; then
-            continue
-        fi
-        # Skip MSPSharedLibraries.xcodeproj if MSPSharedLibraries/project.yml exists (XcodeGen-managed)
-        if [[ "$proj" == *"Sources/Core/MSPSharedLibraries/MSPSharedLibraries.xcodeproj" ]] && [[ -f "$ROOT_DIR/Sources/Core/MSPSharedLibraries/project.yml" ]]; then
-            continue
-        fi
-        # Skip NovaAdapter.xcodeproj if NovaAdapter/project.yml exists (XcodeGen-managed)
-        if [[ "$proj" == *"Sources/Adapters/NovaAdapter/NovaAdapter.xcodeproj" ]] && [[ -f "$ROOT_DIR/Sources/Adapters/NovaAdapter/project.yml" ]]; then
-            continue
-        fi
-        # Skip PrebidAdapter.xcodeproj if PrebidAdapter/project.yml exists (XcodeGen-managed)
-        if [[ "$proj" == *"Sources/Adapters/MSPPrebidAdapter/MSPPrebidAdapter.xcodeproj" ]] && [[ -f "$ROOT_DIR/Sources/Adapters/MSPPrebidAdapter/project.yml" ]]; then
-            continue
-        fi
-        # Skip MSPGoogleAdapter.xcodeproj if MSPGoogleAdapter/project.yml exists (XcodeGen-managed)
-        if [[ "$proj" == *"Sources/Adapters/MSPGoogleAdapter/MSPGoogleAdapter.xcodeproj" ]] && [[ -f "$ROOT_DIR/Sources/Adapters/MSPGoogleAdapter/project.yml" ]]; then
-            continue
-        fi
-        # Skip MSPFacebookAdapter.xcodeproj if MSPFacebookAdapter/project.yml exists (XcodeGen-managed)
-        if [[ "$proj" == *"Sources/Adapters/MSPFacebookAdapter/MSPFacebookAdapter.xcodeproj" ]] && [[ -f "$ROOT_DIR/Sources/Adapters/MSPFacebookAdapter/project.yml" ]]; then
-            continue
-        fi
-        # Skip InmobiAdapter.xcodeproj if InmobiAdapter/project.yml exists (XcodeGen-managed)
-        if [[ "$proj" == *"Sources/Adapters/InmobiAdapter/InmobiAdapter.xcodeproj" ]] && [[ -f "$ROOT_DIR/Sources/Adapters/InmobiAdapter/project.yml" ]]; then
-            continue
-        fi
-        # Skip MintegralAdapter.xcodeproj if MintegralAdapter/project.yml exists (XcodeGen-managed)
-        if [[ "$proj" == *"Sources/Adapters/MintegralAdapter/MintegralAdapter.xcodeproj" ]] && [[ -f "$ROOT_DIR/Sources/Adapters/MintegralAdapter/project.yml" ]]; then
-            continue
-        fi
-        # Skip MobilefuseAdapter.xcodeproj if MobilefuseAdapter/project.yml exists (XcodeGen-managed)
-        if [[ "$proj" == *"Sources/Adapters/MobilefuseAdapter/MobilefuseAdapter.xcodeproj" ]] && [[ -f "$ROOT_DIR/Sources/Adapters/MobilefuseAdapter/project.yml" ]]; then
-            continue
-        fi
-        # Skip PubmaticAdapter.xcodeproj if PubmaticAdapter/project.yml exists (XcodeGen-managed)
-        if [[ "$proj" == *"Sources/Adapters/PubmaticAdapter/PubmaticAdapter.xcodeproj" ]] && [[ -f "$ROOT_DIR/Sources/Adapters/PubmaticAdapter/project.yml" ]]; then
-            continue
-        fi
-        # Skip UnityAdapter.xcodeproj if UnityAdapter/project.yml exists (XcodeGen-managed)
-        if [[ "$proj" == *"Sources/Adapters/UnityAdapter/UnityAdapter.xcodeproj" ]] && [[ -f "$ROOT_DIR/Sources/Adapters/UnityAdapter/project.yml" ]]; then
-            continue
-        fi
-        # Skip AmazonAdapter.xcodeproj if AmazonAdapter/project.yml exists (XcodeGen-managed)
-        if [[ "$proj" == *"Sources/Adapters/AmazonAdapter/AmazonAdapter.xcodeproj" ]] && [[ -f "$ROOT_DIR/Sources/Adapters/AmazonAdapter/project.yml" ]]; then
-            continue
-        fi
-        PROJECTS+=("$proj")
-    done < <(find "$ROOT_DIR" -name '*.xcodeproj' \
-        ! -path '*/DerivedData/*' ! -path '*/Pods/*' \
-        -print | LC_ALL=C sort)
-else
-    # Pods mode: exclude ALL Pods projects (including individual pod projects)
-    # We'll add Pods/Pods.xcodeproj separately at the end
-    while IFS= read -r proj; do
-        # Skip NovaCore.xcodeproj if NovaCore/project.yml exists (XcodeGen-managed)
-        if [[ "$proj" == *"Sources/Core/NovaCore/NovaCore.xcodeproj" ]] && [[ -f "$ROOT_DIR/Sources/Core/NovaCore/project.yml" ]]; then
-            continue
-        fi
-        # Skip MSPCore.xcodeproj if MSPCore/project.yml exists (XcodeGen-managed)
-        if [[ "$proj" == *"Sources/Core/MSPCore/MSPCore.xcodeproj" ]] && [[ -f "$ROOT_DIR/Sources/Core/MSPCore/project.yml" ]]; then
-            continue
-        fi
-        # Skip MSPOMSDK.xcodeproj if MSPOMSDK/project.yml exists (XcodeGen-managed)
-        if [[ "$proj" == *"Sources/Core/MSPOMSDK/MSPOMSDK.xcodeproj" ]] && [[ -f "$ROOT_DIR/Sources/Core/MSPOMSDK/project.yml" ]]; then
-            continue
-        fi
-        # Skip MSPSharedLibraries.xcodeproj if MSPSharedLibraries/project.yml exists (XcodeGen-managed)
-        if [[ "$proj" == *"Sources/Core/MSPSharedLibraries/MSPSharedLibraries.xcodeproj" ]] && [[ -f "$ROOT_DIR/Sources/Core/MSPSharedLibraries/project.yml" ]]; then
-            continue
-        fi
-        # Skip NovaAdapter.xcodeproj if NovaAdapter/project.yml exists (XcodeGen-managed)
-        if [[ "$proj" == *"Sources/Adapters/NovaAdapter/NovaAdapter.xcodeproj" ]] && [[ -f "$ROOT_DIR/Sources/Adapters/NovaAdapter/project.yml" ]]; then
-            continue
-        fi
-        # Skip PrebidAdapter.xcodeproj if PrebidAdapter/project.yml exists (XcodeGen-managed)
-        if [[ "$proj" == *"Sources/Adapters/MSPPrebidAdapter/MSPPrebidAdapter.xcodeproj" ]] && [[ -f "$ROOT_DIR/Sources/Adapters/MSPPrebidAdapter/project.yml" ]]; then
-            continue
-        fi
-        # Skip MSPGoogleAdapter.xcodeproj if MSPGoogleAdapter/project.yml exists (XcodeGen-managed)
-        if [[ "$proj" == *"Sources/Adapters/MSPGoogleAdapter/MSPGoogleAdapter.xcodeproj" ]] && [[ -f "$ROOT_DIR/Sources/Adapters/MSPGoogleAdapter/project.yml" ]]; then
-            continue
-        fi
-        # Skip MSPFacebookAdapter.xcodeproj if MSPFacebookAdapter/project.yml exists (XcodeGen-managed)
-        if [[ "$proj" == *"Sources/Adapters/MSPFacebookAdapter/MSPFacebookAdapter.xcodeproj" ]] && [[ -f "$ROOT_DIR/Sources/Adapters/MSPFacebookAdapter/project.yml" ]]; then
-            continue
-        fi
-        # Skip InmobiAdapter.xcodeproj if InmobiAdapter/project.yml exists (XcodeGen-managed)
-        if [[ "$proj" == *"Sources/Adapters/InmobiAdapter/InmobiAdapter.xcodeproj" ]] && [[ -f "$ROOT_DIR/Sources/Adapters/InmobiAdapter/project.yml" ]]; then
-            continue
-        fi
-        # Skip MintegralAdapter.xcodeproj if MintegralAdapter/project.yml exists (XcodeGen-managed)
-        if [[ "$proj" == *"Sources/Adapters/MintegralAdapter/MintegralAdapter.xcodeproj" ]] && [[ -f "$ROOT_DIR/Sources/Adapters/MintegralAdapter/project.yml" ]]; then
-            continue
-        fi
-        # Skip MobilefuseAdapter.xcodeproj if MobilefuseAdapter/project.yml exists (XcodeGen-managed)
-        if [[ "$proj" == *"Sources/Adapters/MobilefuseAdapter/MobilefuseAdapter.xcodeproj" ]] && [[ -f "$ROOT_DIR/Sources/Adapters/MobilefuseAdapter/project.yml" ]]; then
-            continue
-        fi
-        # Skip PubmaticAdapter.xcodeproj if PubmaticAdapter/project.yml exists (XcodeGen-managed)
-        if [[ "$proj" == *"Sources/Adapters/PubmaticAdapter/PubmaticAdapter.xcodeproj" ]] && [[ -f "$ROOT_DIR/Sources/Adapters/PubmaticAdapter/project.yml" ]]; then
-            continue
-        fi
-        # Skip UnityAdapter.xcodeproj if UnityAdapter/project.yml exists (XcodeGen-managed)
-        if [[ "$proj" == *"Sources/Adapters/UnityAdapter/UnityAdapter.xcodeproj" ]] && [[ -f "$ROOT_DIR/Sources/Adapters/UnityAdapter/project.yml" ]]; then
-            continue
-        fi
-        # Skip AmazonAdapter.xcodeproj if AmazonAdapter/project.yml exists (XcodeGen-managed)
-        if [[ "$proj" == *"Sources/Adapters/AmazonAdapter/AmazonAdapter.xcodeproj" ]] && [[ -f "$ROOT_DIR/Sources/Adapters/AmazonAdapter/project.yml" ]]; then
-            continue
-        fi
-        PROJECTS+=("$proj")
-    done < <(find "$ROOT_DIR" -name '*.xcodeproj' \
-        ! -path '*/DerivedData/*' ! -path '*/Pods/*' \
-        -print | LC_ALL=C sort)
-fi
-
+WORKSPACE_TEMPLATE="$ROOT_DIR/workspace.yml.template"
 TEMP_WORKSPACE_SPEC="${WORKSPACE_SPEC}.tmp"
 
+if [[ ! -f "$WORKSPACE_TEMPLATE" ]]; then
+    log_error "workspace.yml.template not found! Cannot generate workspace.yml"
+    log_info "This is a developer-maintained file that must exist in the repository."
+    exit 1
+fi
+
+# Generate workspace.yml directly (template approach simplified)
 {
     cat <<'YAML'
-# This file is auto-generated by Scripts/target-switching/generate_workspace.sh
-# DO NOT EDIT MANUALLY - changes will be overwritten
+# This file is auto-generated from workspace.yml.template by generate_workspace.sh
+# DO NOT EDIT MANUALLY - edit workspace.yml.template instead!
 workspace:
   name: msp-ios-sdk
   projects:
@@ -569,98 +428,18 @@ workspace:
       type: file
 YAML
     
-    # In Pods mode: ONLY include MSPDemoApp and Pods - exclude ALL SDK source projects
-    if [[ "$TARGET_MODE" != "pods" ]]; then
-        # Add XcodeGen-managed projects (project.yml files) first
-        for proj_yml in "${XCODEGEN_PROJECTS[@]}"; do
-            project_name="$(basename "$(dirname "$proj_yml")")"
-            printf "    - name: %s\n" "$project_name"
-            printf "      path: %s\n" "$proj_yml"
-            printf "      type: file\n"
-        done
-        
-        # Add all found .xcodeproj projects (excluding generated MSPDemoApp and XcodeGen-managed modules, sorted for determinism)
-        if [[ ${#PROJECTS[@]} -gt 0 ]]; then
-            for proj in "${PROJECTS[@]}"; do
-            rel="${proj#$ROOT_DIR/}"
-            # Defensive check: skip any Pods-related paths in SPM mode
-            if [[ "$TARGET_MODE" == "spm" ]]; then
-                if [[ "$rel" == *"Pods"* ]] || [[ "$rel" == *"Pods.xcodeproj" ]] || [[ "$rel" == */Pods/* ]]; then
-                    continue
-                fi
-            fi
-            if [[ "$rel" == "Examples/Examples/MSPDemoApp/MSPDemoApp.xcodeproj" ]]; then
-                continue
-            fi
-            # Skip if this module has a project.yml (already included above)
-            project_dir="$(dirname "$rel")"
-            if [[ -f "$ROOT_DIR/$project_dir/project.yml" ]]; then
-                continue
-            fi
-            # Skip NovaCore, MSPCore, MSPOMSDK, and MSPSharedLibraries if they have project.yml (already included above)
-            if [[ "$rel" == "Sources/Core/NovaCore/NovaCore.xcodeproj" ]] && [[ -f "$ROOT_DIR/Sources/Core/NovaCore/project.yml" ]]; then
-                continue
-            fi
-            if [[ "$rel" == "Sources/Core/MSPCore/MSPCore.xcodeproj" ]] && [[ -f "$ROOT_DIR/Sources/Core/MSPCore/project.yml" ]]; then
-                continue
-            fi
-            if [[ "$rel" == "Sources/Core/MSPOMSDK/MSPOMSDK.xcodeproj" ]] && [[ -f "$ROOT_DIR/Sources/Core/MSPOMSDK/project.yml" ]]; then
-                continue
-            fi
-            if [[ "$rel" == "Sources/Core/MSPSharedLibraries/MSPSharedLibraries.xcodeproj" ]] && [[ -f "$ROOT_DIR/Sources/Core/MSPSharedLibraries/project.yml" ]]; then
-                continue
-            fi
-            if [[ "$rel" == "Sources/Core/MSPiOSCore/MSPiOSCore.xcodeproj" ]] && [[ -f "$ROOT_DIR/Sources/Core/MSPiOSCore/project.yml" ]]; then
-                continue
-            fi
-            if [[ "$rel" == "Sources/Adapters/NovaAdapter/NovaAdapter.xcodeproj" ]] && [[ -f "$ROOT_DIR/Sources/Adapters/NovaAdapter/project.yml" ]]; then
-                continue
-            fi
-            if [[ "$rel" == "Sources/Adapters/MSPPrebidAdapter/MSPPrebidAdapter.xcodeproj" ]] && [[ -f "$ROOT_DIR/Sources/Adapters/MSPPrebidAdapter/project.yml" ]]; then
-                continue
-            fi
-            if [[ "$rel" == "Sources/Adapters/MSPGoogleAdapter/MSPGoogleAdapter.xcodeproj" ]] && [[ -f "$ROOT_DIR/Sources/Adapters/MSPGoogleAdapter/project.yml" ]]; then
-                continue
-            fi
-            if [[ "$rel" == "Sources/Adapters/MSPFacebookAdapter/MSPFacebookAdapter.xcodeproj" ]] && [[ -f "$ROOT_DIR/Sources/Adapters/MSPFacebookAdapter/project.yml" ]]; then
-                continue
-            fi
-            if [[ "$rel" == "Sources/Adapters/InmobiAdapter/InmobiAdapter.xcodeproj" ]] && [[ -f "$ROOT_DIR/Sources/Adapters/InmobiAdapter/project.yml" ]]; then
-                continue
-            fi
-            if [[ "$rel" == "Sources/Adapters/MintegralAdapter/MintegralAdapter.xcodeproj" ]] && [[ -f "$ROOT_DIR/Sources/Adapters/MintegralAdapter/project.yml" ]]; then
-                continue
-            fi
-            if [[ "$rel" == "Sources/Adapters/MobilefuseAdapter/MobilefuseAdapter.xcodeproj" ]] && [[ -f "$ROOT_DIR/Sources/Adapters/MobilefuseAdapter/project.yml" ]]; then
-                continue
-            fi
-            if [[ "$rel" == "Sources/Adapters/PubmaticAdapter/PubmaticAdapter.xcodeproj" ]] && [[ -f "$ROOT_DIR/Sources/Adapters/PubmaticAdapter/project.yml" ]]; then
-                continue
-            fi
-            if [[ "$rel" == "Sources/Adapters/UnityAdapter/UnityAdapter.xcodeproj" ]] && [[ -f "$ROOT_DIR/Sources/Adapters/UnityAdapter/project.yml" ]]; then
-                continue
-            fi
-            if [[ "$rel" == "Sources/Adapters/AmazonAdapter/AmazonAdapter.xcodeproj" ]] && [[ -f "$ROOT_DIR/Sources/Adapters/AmazonAdapter/project.yml" ]]; then
-                continue
-            fi
-                project_name="$(basename "${rel%.*}")"
-                printf "    - name: %s\n" "$project_name"
-                printf "      path: %s\n" "$rel"
-                printf "      type: file\n"
-            done
-        fi
-    fi
-    
-    # Only include Pods project if in Pods mode AND it exists
-    # Make sure it's not already included (shouldn't be, since we exclude all Pods/*)
-    # Note: Pods path is relative to repo root since workspace.yml is at root
-    if [[ "$TARGET_MODE" == "pods" ]] && [[ -d "$PODS_DIR/Pods.xcodeproj" ]]; then
-        cat <<'YAML'
+    # Add mode-specific projects
+    if [[ "$TARGET_MODE" == "pods" ]]; then
+        # Pods mode: include Pods project
+        if [[ -d "$PODS_DIR/Pods.xcodeproj" ]]; then
+            cat <<'YAML'
     - name: Pods
       path: Pods/Pods.xcodeproj
       type: file
 YAML
+        fi
     fi
+    # SPM mode: no additional projects needed (MSPDemoApp handles SPM dependencies)
 } > "$TEMP_WORKSPACE_SPEC"
 
 # Compare with existing file and only write if different
