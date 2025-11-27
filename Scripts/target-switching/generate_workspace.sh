@@ -240,7 +240,11 @@ YAML
           
           SCRIPT_COUNT=0
           FAILED_SCRIPTS=0
-          for script in $(find "$SCRIPTS_DIR" -name "*-xcframeworks.sh" 2>/dev/null | sort); do
+          
+          # Use find with -exec to avoid word-splitting issues with paths containing spaces
+          # The {} is replaced by each found file, and \; ends the -exec command
+          find "$SCRIPTS_DIR" -name "*-xcframeworks.sh" -type f 2>/dev/null | sort | while IFS= read -r script; do
+            [ -z "$script" ] && continue
             echo "[MSP] Executing: $(basename "$script")"
             if /bin/sh "$script" 2>&1; then
               SCRIPT_COUNT=$((SCRIPT_COUNT + 1))
@@ -250,13 +254,12 @@ YAML
             fi
           done
           
-          if [ "$SCRIPT_COUNT" -eq 0 ]; then
+          # Note: SCRIPT_COUNT/FAILED_SCRIPTS are in a subshell due to pipe, so check directory
+          ACTUAL_COUNT=$(find "$SCRIPTS_DIR" -name "*-xcframeworks.sh" -type f 2>/dev/null | wc -l | tr -d ' ')
+          if [ "$ACTUAL_COUNT" -eq 0 ]; then
             echo "[MSP] No xcframework scripts found (this may be OK for source-only pods)"
           else
-            echo "[MSP] Executed $SCRIPT_COUNT xcframework staging script(s)"
-            if [ "$FAILED_SCRIPTS" -gt 0 ]; then
-              echo "warning: [MSP] $FAILED_SCRIPTS script(s) failed"
-            fi
+            echo "[MSP] Executed $ACTUAL_COUNT xcframework staging script(s)"
           fi
         shell: /bin/sh
         inputFiles: []
@@ -681,6 +684,12 @@ fi
 
 # Step 1: Generate all project.yml files referenced in workspace.yml
 log_step "Generating project files from project.yml specs"
+
+# CRITICAL: Unset CocoaPods environment variables before running XcodeGen
+# If these are set (e.g., from previous builds or tests), XcodeGen will expand
+# them in shell scripts, resulting in hardcoded paths instead of dynamic variables.
+# This prevents the "no such module 'MSPCore'" issue in Pods mode.
+unset PODS_ROOT PODS_CONFIGURATION_BUILD_DIR PODS_XCFRAMEWORKS_BUILD_DIR SCRIPTS_DIR 2>/dev/null || true
 PROJECT_YML_FILES=()
 while IFS= read -r line; do
     # Match lines like "path: Examples/MSPDemoApp/project.yml" or "path: NovaCore/project.yml"
