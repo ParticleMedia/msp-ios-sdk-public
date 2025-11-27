@@ -37,34 +37,56 @@ fi
 
 log_title "SwiftPM Environment Cleanup"
 
-# Step 0: Remove Package.resolved (SPM lock file)
-log_section "Removing Package.resolved"
-log_step "Removing Package.resolved"
+# Step 0: Remove ALL Package.resolved files (including inside .xcodeproj bundles)
+log_section "Removing Package.resolved Files"
+log_step "Removing Package.resolved files"
+PACKAGE_RESOLVED_COUNT=0
+
+# Remove root Package.resolved
 if [[ -f "$ROOT_DIR/Package.resolved" ]]; then
     rm -f "$ROOT_DIR/Package.resolved"
-    log_success "Package.resolved removed"
-else
-    log_info "Package.resolved not found"
+    ((PACKAGE_RESOLVED_COUNT++))
+    log_info "Removed: Package.resolved (root)"
 fi
 
-# Step 1: Remove .swiftpm directories (but not inside .xcodeproj)
+# Remove Package.resolved from inside all .xcodeproj bundles
+while IFS= read -r -d '' resolved_file; do
+    if [[ -f "$resolved_file" ]]; then
+        log_info "Removing: ${resolved_file#$ROOT_DIR/}"
+        rm -f "$resolved_file"
+        ((PACKAGE_RESOLVED_COUNT++))
+    fi
+done < <(find "$ROOT_DIR" -path "*/.xcodeproj/*/Package.resolved" -type f ! -path "*/Pods/*" -print0 2>/dev/null || true)
+
+if [[ $PACKAGE_RESOLVED_COUNT -gt 0 ]]; then
+    log_success "Removed $PACKAGE_RESOLVED_COUNT Package.resolved file(s)"
+else
+    log_info "No Package.resolved files found"
+fi
+
+# Step 1: Remove ALL .swiftpm directories (including inside .xcodeproj bundles)
 log_section "Removing .swiftpm Directories"
 log_step "Scanning for .swiftpm directories"
 SWIFTPM_COUNT=0
 while IFS= read -r -d '' dir; do
-    # Skip if inside .xcodeproj bundle
-    if [[ "$dir" == *".xcodeproj/"* ]]; then
-        continue
-    fi
     if [[ "$dir" == "$ROOT_DIR"* ]]; then
         log_info "Removing: ${dir#$ROOT_DIR/}"
         rm -rf "$dir"
         ((SWIFTPM_COUNT++))
     fi
-done < <(find "$ROOT_DIR" -type d -name ".swiftpm" ! -path "*/Pods/*" ! -path "*/.git/*" ! -path "*/MSPSharedLibraries/*" ! -path "*/MSPOMSDK/*" ! -path "*/NovaAdapter/*" -print0 2>/dev/null || true)
+done < <(find "$ROOT_DIR" -type d -name ".swiftpm" ! -path "*/Pods/*" ! -path "*/.git/*" -print0 2>/dev/null || true)
+
+# Also remove swiftpm directories inside .xcodeproj bundles
+while IFS= read -r -d '' dir; do
+    if [[ "$dir" == "$ROOT_DIR"* ]]; then
+        log_info "Removing: ${dir#$ROOT_DIR/}"
+        rm -rf "$dir"
+        ((SWIFTPM_COUNT++))
+    fi
+done < <(find "$ROOT_DIR" -type d -name "swiftpm" -path "*/.xcodeproj/*" ! -path "*/Pods/*" -print0 2>/dev/null || true)
 
 if [[ $SWIFTPM_COUNT -gt 0 ]]; then
-    log_success "Removed $SWIFTPM_COUNT .swiftpm directory/ies"
+    log_success "Removed $SWIFTPM_COUNT .swiftpm/swiftpm directory/ies"
 else
     log_info "No .swiftpm directories found"
 fi

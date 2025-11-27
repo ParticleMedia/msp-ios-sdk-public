@@ -101,6 +101,20 @@ if [[ "$TARGET" == "spm" ]]; then
         log_info "Pods/ already removed"
     fi
     
+    # Step 1.5: Restore Package.swift if it was disabled
+    log_section "Restoring Package.swift"
+    log_step "Checking for Package.swift.disabled"
+    if [[ -f "$ROOT_DIR/Package.swift.disabled" ]]; then
+        mv "$ROOT_DIR/Package.swift.disabled" "$ROOT_DIR/Package.swift"
+        log_success "Package.swift restored from Package.swift.disabled"
+    elif [[ -f "$ROOT_DIR/Package.swift" ]]; then
+        log_info "Package.swift already exists"
+    else
+        log_error "Package.swift not found! SPM mode requires Package.swift"
+        log_info "Try: git checkout Package.swift"
+        exit 1
+    fi
+    
     # Step 2: Clean SPM
     log_step "Cleaning SwiftPM environment"
     if "$SCRIPT_DIR/cleanup_spm.sh" --force; then
@@ -210,8 +224,8 @@ if [[ "$TARGET" == "spm" ]]; then
     
     # Validate MSPOMSDK.xcframework specifically (critical for SPM mode)
     log_step "Validating MSPOMSDK.xcframework"
-    local mspomsdk_xcf="$ROOT_DIR/Build/XCFrameworks/MSPOMSDK.xcframework"
-    local omsdk_xcf="$ROOT_DIR/Sources/Core/MSPOMSDK/OMSDK_Newsbreak1.xcframework"
+    mspomsdk_xcf="$ROOT_DIR/Build/XCFrameworks/MSPOMSDK.xcframework"
+    omsdk_xcf="$ROOT_DIR/Sources/Core/MSPOMSDK/OMSDK_Newsbreak1.xcframework"
     if [[ ! -d "$mspomsdk_xcf" ]]; then
         log_error "MSPOMSDK.xcframework is missing from Build/XCFrameworks/"
         log_error "This XCFramework is required for SPM mode"
@@ -273,6 +287,19 @@ elif [[ "$TARGET" == "pods" ]]; then
         log_warn "SPM cleanup had warnings (continuing)"
     fi
     
+    # Step 1.5: CRITICAL - Disable Package.swift to prevent Xcode from auto-detecting SPM
+    log_section "Disabling Package.swift"
+    log_step "Renaming Package.swift to Package.swift.disabled"
+    if [[ -f "$ROOT_DIR/Package.swift" ]]; then
+        mv "$ROOT_DIR/Package.swift" "$ROOT_DIR/Package.swift.disabled"
+        log_success "Package.swift renamed to Package.swift.disabled"
+        log_info "This prevents Xcode from auto-detecting SPM packages in Pods mode"
+    elif [[ -f "$ROOT_DIR/Package.swift.disabled" ]]; then
+        log_info "Package.swift already disabled"
+    else
+        log_warn "Package.swift not found (may need to restore from git)"
+    fi
+    
     # Remove SPM workspace (if it exists and is SPM-only)
     if [[ -d "$SPM_WORKSPACE" ]]; then
         if ! grep -q "Pods/Pods.xcodeproj" "$SPM_WORKSPACE/contents.xcworkspacedata" 2>/dev/null; then
@@ -314,7 +341,7 @@ elif [[ "$TARGET" == "pods" ]]; then
     if "$SCRIPT_DIR/cleanup_pods.sh"; then
         log_success "CocoaPods environment cleaned and reinstalled"
     else
-        local cleanup_exit=$?
+        cleanup_exit=$?
         log_warn "CocoaPods cleanup had issues (exit code: $cleanup_exit)"
         # Check if Pods directory exists (critical for Pods mode)
         if [[ ! -d "$PODS_DIR" ]]; then
@@ -363,7 +390,7 @@ elif [[ "$TARGET" == "pods" ]]; then
     log_section "Core XCFramework Check"
     log_step "Checking Core XCFrameworks"
     
-    local core_xcframeworks_missing=0
+    core_xcframeworks_missing=0
     for xcf in "MSPSharedLibraries" "MSPiOSCore" "NovaCore" "MSPCore" "MSPOMSDK"; do
         if [[ ! -d "$ROOT_DIR/Build/XCFrameworks/${xcf}.xcframework" ]]; then
             log_warn "${xcf}.xcframework missing from Build/XCFrameworks/"
@@ -392,7 +419,7 @@ elif [[ "$TARGET" == "pods" ]]; then
     log_step "Verifying SPM packages are excluded from Pods mode"
     
     # Check if packages block exists and is empty
-    local packages_empty=false
+    packages_empty=false
     if grep -q "^packages: {}$" "$PROJECT_SPEC" 2>/dev/null; then
         packages_empty=true
     elif grep -q "^packages:$" "$PROJECT_SPEC" 2>/dev/null; then

@@ -38,28 +38,31 @@ fi
 log_title "Generating YAML Specs: $TARGET_MODE mode"
 
 # Find all Package.swift files (sorted for determinism)
+# NOTE: In Pods mode, Package.swift is renamed to Package.swift.disabled, so this may be empty
 PACKAGE_FILES=()
 while IFS= read -r pkg_file; do
-    PACKAGE_FILES+=("$pkg_file")
+    [[ -n "$pkg_file" ]] && PACKAGE_FILES+=("$pkg_file")
 done < <(find "$ROOT_DIR" -name Package.swift \
     ! -path '*/Pods/*' ! -path '*/DerivedData/*' ! -path '*/.build/*' \
     ! -path '*/Sources/Wrappers/*' \
-    -print | LC_ALL=C sort)
+    -print 2>/dev/null | LC_ALL=C sort || true)
 
 PACKAGE_NAMES=()
 PACKAGE_REL_PATHS=()
-for pkg in "${PACKAGE_FILES[@]}"; do
-    pkg_dir="${pkg%/Package.swift}"
-    pkg_name="$(basename "$pkg_dir")"
-    # Handle root Package.swift specially
-    if [[ "$pkg_dir" == "$ROOT_DIR" ]]; then
-        rel_path=""
-    else
-        rel_path="${pkg_dir#$ROOT_DIR/}"
-    fi
-    PACKAGE_NAMES+=("$pkg_name")
-    PACKAGE_REL_PATHS+=("$rel_path")
-done
+if [[ ${#PACKAGE_FILES[@]} -gt 0 ]]; then
+    for pkg in "${PACKAGE_FILES[@]}"; do
+        pkg_dir="${pkg%/Package.swift}"
+        pkg_name="$(basename "$pkg_dir")"
+        # Handle root Package.swift specially
+        if [[ "$pkg_dir" == "$ROOT_DIR" ]]; then
+            rel_path=""
+        else
+            rel_path="${pkg_dir#$ROOT_DIR/}"
+        fi
+        PACKAGE_NAMES+=("$pkg_name")
+        PACKAGE_REL_PATHS+=("$rel_path")
+    done
+fi
 
 # SPM app products (updated for new SDK architecture - Round 26)
 # These match the 16 products defined in Package.swift
@@ -87,6 +90,9 @@ declare -a SPM_APP_PRODUCTS=(
 
 package_exists() {
     local name="$1"
+    if [[ ${#PACKAGE_NAMES[@]} -eq 0 ]]; then
+        return 1
+    fi
     for candidate in "${PACKAGE_NAMES[@]}"; do
         if [[ "$candidate" == "$name" ]]; then
             return 0
