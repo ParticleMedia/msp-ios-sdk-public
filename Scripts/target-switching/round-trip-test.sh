@@ -283,23 +283,53 @@ switch_pods_dev() {
         return 1
     fi
     
+    # Validate that workspace actually exists
+    # The workspace is generated at .generated/msp-ios-sdk.xcworkspace
+    # We need to create a symlink at root for xcodebuild to work properly
+    local GENERATED_WORKSPACE="$ROOT_DIR/.generated/msp-ios-sdk.xcworkspace"
+    local ROOT_WORKSPACE="$ROOT_DIR/msp-ios-sdk.xcworkspace"
+    
+    if [[ -d "$GENERATED_WORKSPACE" ]]; then
+        # Ensure symlink exists at root pointing to generated workspace
+        if [[ ! -L "$ROOT_WORKSPACE" ]] || [[ ! -e "$ROOT_WORKSPACE" ]]; then
+            rm -f "$ROOT_WORKSPACE" 2>/dev/null || true
+            ln -sf ".generated/msp-ios-sdk.xcworkspace" "$ROOT_WORKSPACE"
+        fi
+        report_check "msp-ios-sdk.xcworkspace" "OK"
+    elif [[ -d "$ROOT_WORKSPACE" ]]; then
+        # Workspace exists directly at root (legacy)
+        report_check "msp-ios-sdk.xcworkspace" "OK"
+    else
+        report_check "msp-ios-sdk.xcworkspace" "MISSING"
+        echo -e "[${RED}ERROR${NC}] pods-dev workspace not found at:"
+        echo "  - $GENERATED_WORKSPACE"
+        echo "  - $ROOT_WORKSPACE"
+        return 1
+    fi
+    
     report_section "3. Build / Lint Validation"
     if [[ "$SKIP_BUILD" == "true" ]]; then
         report_warning "Build skipped (--skip-build)"
-        report_build "pods-dev" "compile check" "OK"
+        report_build "pods-dev" "DemoApp build" "OK"
     else
-        echo "[Build] pods-dev compile check ..."
+        echo "[Build] pods-dev DemoApp build ..."
+        echo "  Workspace: $ROOT_WORKSPACE"
+        echo "  Scheme: MSPDemoApp"
         local log_file="$BUILD_LOG_DIR/pods-dev-$TIMESTAMP.log"
         
         cd "$ROOT_DIR"
+        # MANDATORY: pods-dev MUST build the DemoApp successfully
+        # This is a real xcodebuild that validates all source code compiles
         if xcodebuild -workspace msp-ios-sdk.xcworkspace \
             -scheme MSPDemoApp \
             -configuration Debug \
             -destination "platform=iOS Simulator,name=iPhone 16" \
             build 2>&1 | tee "$log_file" | tail -5; then
-            report_build "pods-dev" "compile check" "OK"
+            report_build "pods-dev" "DemoApp build" "OK"
         else
-            report_build "pods-dev" "compile check" "FAILED"
+            report_build "pods-dev" "DemoApp build" "FAILED"
+            echo ""
+            echo -e "[${RED}ERROR${NC}] pods-dev build failed"
             echo ""
             echo "Last 40 lines of build log:"
             tail -40 "$log_file"
