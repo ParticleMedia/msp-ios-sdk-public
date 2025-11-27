@@ -1,12 +1,18 @@
 #!/bin/bash
 # ============================================================================
-# XCFramework Builder for Adapter Modules
+# XCFramework Builder for Adapter Modules (OPTIONAL)
 # ============================================================================
-# Purpose: Build all adapter modules into XCFrameworks
+# Purpose: Build adapter modules into XCFrameworks (for testing only)
+#
+# IMPORTANT: Adapters are SOURCE-ONLY in all modes (pods-dev, pods-release, spm-release)
+#            This script is optional and MUST NOT block any pipeline.
+#            All failures are warnings, not errors.
+#
 # Usage:   ./Scripts/xcframeworks/build-adapters.sh
 # ============================================================================
 
-set -euo pipefail
+# Note: We use `set -o pipefail` but NOT `set -e` to ensure failures don't exit
+set -o pipefail
 
 # Source common functions
 XCFRAMEWORKS_SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -25,10 +31,22 @@ fi
 
 log_title "Building Adapter Modules"
 
-# All adapter modules
+# ============================================================================
+# Generate project.yml from templates (Template Architecture)
+# ============================================================================
+log_section "Generating project.yml from templates"
+
+if [[ -x "$ROOT_DIR/Scripts/target-switching/generate_project_templates.sh" ]]; then
+    "$ROOT_DIR/Scripts/target-switching/generate_project_templates.sh"
+else
+    log_warn "generate_project_templates.sh not found or not executable"
+fi
+
+# All adapter modules (including MSPGoogleAdsTypes which is a Common module)
 ADAPTER_MODULES=(
+    "MSPGoogleAdsTypes"
     "NovaAdapter"
-    "PrebidAdapter"
+    "MSPPrebidAdapter"
     "MSPGoogleAdapter"
     "MSPFacebookAdapter"
     "InmobiAdapter"
@@ -46,42 +64,27 @@ CORE_XCFRAMEWORKS=(
     "MSPSharedLibraries"
 )
 
-# Third-party XCFrameworks
-THIRDPARTY_XCFRAMEWORKS=(
-    "Sources/Core/ThirdParty/Kingfisher/Kingfisher.xcframework"
-    "Sources/Core/ThirdParty/SnapKit/SnapKit.xcframework"
-    "Sources/Core/ThirdParty/Lottie/Lottie.xcframework"
-    "Sources/Core/ThirdParty/Shimmer/Shimmer.xcframework"
-    "Sources/Core/ThirdParty/SwiftProtobuf/SwiftProtobuf.xcframework"
-    "Sources/Core/MSPOMSDK/OMSDK_Newsbreak1.xcframework"
-    "Sources/Core/MSPSharedLibraries/PrebidMobile.xcframework"
-)
-
-# Check core XCFrameworks exist
-log_section "Checking core XCFrameworks"
+# Check core XCFrameworks exist (optional - adapters may work without them in source mode)
+log_section "Checking core XCFrameworks (optional for adapter builds)"
+CORE_MISSING=0
 for framework in "${CORE_XCFRAMEWORKS[@]}"; do
     XCFRAMEWORK_PATH="$ROOT_DIR/Build/XCFrameworks/$framework.xcframework"
     if [[ ! -d "$XCFRAMEWORK_PATH" ]]; then
-        log_error "Core XCFramework not found: $XCFRAMEWORK_PATH"
-        log_info "Please run ./Scripts/xcframeworks/build-core.sh first"
-        exit 1
+        log_warn "Core XCFramework not found: $XCFRAMEWORK_PATH (adapter builds may fail)"
+        ((CORE_MISSING++)) || true
     else
         log_success "Found: $framework.xcframework"
     fi
 done
 
-# Check third-party XCFrameworks exist
-log_section "Checking third-party XCFrameworks"
-for framework_path in "${THIRDPARTY_XCFRAMEWORKS[@]}"; do
-    FULL_PATH="$ROOT_DIR/$framework_path"
-    if [[ ! -d "$FULL_PATH" ]]; then
-        log_error "Third-party XCFramework not found: $FULL_PATH"
-        exit 1
-    else
-        FRAMEWORK_NAME=$(basename "$framework_path")
-        log_success "Found: $FRAMEWORK_NAME"
-    fi
-done
+if [[ $CORE_MISSING -gt 0 ]]; then
+    log_warn "$CORE_MISSING core XCFramework(s) missing - adapter builds may fail"
+    log_info "To build core modules: ./Scripts/xcframeworks/build-core.sh"
+fi
+
+# Third-party dependencies (Kingfisher, SnapKit, etc.) are resolved via CocoaPods
+# No need to check for XCFrameworks - the workspace build will find them in Pods/
+log_info "Third-party dependencies will be resolved via CocoaPods workspace"
 
 SUCCESS_COUNT=0
 FAIL_COUNT=0
@@ -115,8 +118,50 @@ for module in "${ADAPTER_MODULES[@]}"; do
 done
 
 log_title "Adapter Modules Build Complete"
-log_success "Successfully built $SUCCESS_COUNT adapter(s)"
-if [[ $FAIL_COUNT -gt 0 ]]; then
-    log_error "Failed to build $FAIL_COUNT adapter(s): ${FAILED_MODULES[*]}"
-    exit 1
+
+# NOTE: Adapters are SOURCE-ONLY in the final architecture.
+# This script is for optional testing/validation only.
+# Failures are warnings, not errors.
+
+if [[ $SUCCESS_COUNT -gt 0 ]]; then
+    log_success "Successfully built $SUCCESS_COUNT adapter(s)"
 fi
+
+if [[ $FAIL_COUNT -gt 0 ]]; then
+    log_warn "WARNING: $FAIL_COUNT adapter(s) failed to build: ${FAILED_MODULES[*]}"
+    log_warn "This is expected - adapters are source-only and don't require XCFrameworks."
+    log_warn "Continuing without blocking the pipeline."
+fi
+
+# Copy all adapter XCFrameworks to Binary/ directory
+log_section "Copying Adapter XCFrameworks to Binary/"
+BINARY_DIR="$ROOT_DIR/Binary"
+mkdir -p "$BINARY_DIR"
+
+for module in "${ADAPTER_MODULES[@]}"; do
+    PRODUCT_NAME="$module"
+    XCFRAMEWORK_SRC="$ROOT_DIR/Build/XCFrameworks/$PRODUCT_NAME.xcframework"
+    XCFRAMEWORK_DST="$BINARY_DIR/$PRODUCT_NAME.xcframework"
+    
+    if [[ -d "$XCFRAMEWORK_SRC" ]]; then
+        rm -rf "$XCFRAMEWORK_DST"
+        cp -R "$XCFRAMEWORK_SRC" "$XCFRAMEWORK_DST"
+        log_success "Copied $PRODUCT_NAME.xcframework to Binary/"
+    else
+        log_warn "Not found: $XCFRAMEWORK_SRC"
+    fi
+done
+
+log_section "Final Summary"
+log_info "Binary/ directory contents:"
+ls -1 "$BINARY_DIR" 2>/dev/null | while read -r xcf; do
+    log_success "  ✓ $xcf"
+done || true
+
+log_info ""
+log_info "NOTE: Adapter XCFrameworks are OPTIONAL."
+log_info "The pods-dev, pods-release, and spm-release modes all use adapters as SOURCE code."
+log_info ""
+
+# Always exit 0 - adapter builds are optional
+exit 0

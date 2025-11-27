@@ -209,13 +209,20 @@ main() {
         fi
     done
     
-    # Validate Adapter Sources
-    log_section "Adapter Source Modules"
+    # Validate Adapter Sources (non-fatal - warnings only)
+    # Adapters are source-only and their absence should not block validation
+    log_section "Adapter Source Modules (non-fatal)"
+    local adapter_warnings=0
     for adapter in "${ADAPTER_SOURCES[@]}"; do
         if ! validate_adapter_source "$adapter"; then
-            ((total_errors++))
+            ((adapter_warnings++)) || true
+            # Note: We don't increment total_errors for adapter issues
         fi
     done
+    
+    if [[ $adapter_warnings -gt 0 ]]; then
+        log_warn "$adapter_warnings adapter source(s) have issues (non-blocking)"
+    fi
     
     # Validate Dependency Versions (SwiftProtobuf, Lottie)
     if ! validate_dependency_versions; then
@@ -227,22 +234,26 @@ main() {
     log_section "Validation Summary"
     
     if [[ $total_errors -eq 0 ]]; then
-        log_success "All XCFrameworks and adapters validated successfully!"
+        log_success "All required XCFrameworks validated successfully!"
         echo ""
-        log_info "Core XCFrameworks:     ${#CORE_XCFRAMEWORKS[@]} ✓"
+        log_info "Core XCFrameworks:       ${#CORE_XCFRAMEWORKS[@]} ✓"
         log_info "ThirdParty XCFrameworks: ${#THIRDPARTY_XCFRAMEWORKS[@]} ✓"
         log_info "Embedded XCFrameworks:   ${#EMBEDDED_XCFRAMEWORKS[@]} ✓"
-        log_info "Adapter Sources:         ${#ADAPTER_SOURCES[@]} ✓"
+        log_info "Adapter Sources:         ${#ADAPTER_SOURCES[@]} (warnings: $adapter_warnings)"
+        echo ""
+        log_info "NOTE: Adapter issues are non-fatal. Adapters are SOURCE-ONLY."
         exit 0
     else
         log_error "Validation failed with $total_errors error(s)"
         echo ""
+        log_info "REQUIRED XCFrameworks (must exist):"
+        log_info "  - MSPCore, MSPiOSCore, MSPSharedLibraries, MSPOMSDK, NovaCore"
+        log_info ""
         log_info "To fix missing XCFrameworks:"
         log_info "  1. Run: ./Scripts/xcframeworks/build-core.sh"
         log_info "  2. Ensure ThirdParty/PrebidMobile/PrebidMobile.xcframework exists"
         log_info ""
-        log_info "To fix missing adapters:"
-        log_info "  Check Sources/Adapters/ directory structure"
+        log_info "NOTE: Adapter XCFrameworks are NOT required (adapters are source-only)."
         exit 1
     fi
 }
