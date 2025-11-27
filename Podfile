@@ -3,9 +3,15 @@
  platform :ios, '15.0'
 
 workspace 'msp-ios-sdk'
+
+# pods-dev mode: full integration for source-based development
+# pods-release mode: no integration (XcodeGen manages project)
+msp_mode = ENV['MSP_MODE'] || 'pods-release'
+integrate = (msp_mode == 'pods-dev')
+
 install! 'cocoapods',
          :generate_multiple_pod_projects => true,
-         :integrate_targets => false
+         :integrate_targets => integrate
 
 # Only define the main app project - XcodeGen Core projects are for XCFramework building only
 project 'Examples/MSPDemoApp/MSPDemoApp', 'Debug' => :debug, 'Release' => :release
@@ -48,6 +54,13 @@ target 'MSPDemoApp' do
 end
 
 post_install do |installer|
+  # Detect mode from environment variable
+  msp_mode = ENV['MSP_MODE'] || 'pods-release'
+  is_pods_dev = (msp_mode == 'pods-dev')
+  
+  puts "[post_install] MSP_MODE=#{msp_mode}"
+  puts "[post_install] pods-dev mode: #{is_pods_dev ? 'YES (pure source, no XCFrameworks)' : 'NO (binary mode)'}"
+  
   installer.pods_project.targets.each do |target|
     target.build_configurations.each do |config|
       config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '15.0'
@@ -91,25 +104,53 @@ post_install do |installer|
       end
     end
     
-    # --- Patch [CP] Copy XCFrameworks script to support MSP_SKIP_CP_XCFRAMEWORKS guard ---
-    # This allows Core XCFramework builds to skip the copy script when XCFrameworks don't exist yet
-    # The script will still run normally for MSPDemoApp builds when XCFrameworks are present
-    target.build_phases.each do |phase|
-      if phase.is_a?(Xcodeproj::Project::Object::PBXShellScriptBuildPhase)
-        if phase.name == '[CP] Copy XCFrameworks' || (phase.shell_script && phase.shell_script.include?('[CP] Copy XCFrameworks'))
-          # Check if guard is already present (idempotent)
-          unless phase.shell_script && phase.shell_script.include?('MSP_SKIP_CP_XCFRAMEWORKS')
-            guard_script = <<~SCRIPT
-              # MSP Guard: Skip [CP] Copy XCFrameworks during Core XCFramework builds
-              # This prevents rsync errors when XCFrameworks don't exist yet
-              if [ "$MSP_SKIP_CP_XCFRAMEWORKS" = "1" ]; then
-                echo "[MSP] Skipping [CP] Copy XCFrameworks because MSP_SKIP_CP_XCFRAMEWORKS=1"
-                exit 0
-              fi
-              
-            SCRIPT
-            phase.shell_script = guard_script + (phase.shell_script || '')
-            puts "[post_install] Added MSP_SKIP_CP_XCFRAMEWORKS guard to [CP] Copy XCFrameworks for #{target.name}"
+    # =========================================================================
+    # PODS-DEV MODE: Remove ALL XCFramework copy phases
+    # In pods-dev, ALL modules are SOURCE-ONLY. No XCFrameworks exist.
+    # =========================================================================
+    if is_pods_dev
+      phases_to_delete = []
+      
+      target.build_phases.each do |phase|
+        next unless phase.is_a?(Xcodeproj::Project::Object::PBXShellScriptBuildPhase)
+        next unless phase.respond_to?(:name) && phase.name
+        
+        # Remove [CP] Copy XCFrameworks phases
+        if phase.name.include?('Copy XCFrameworks')
+          phases_to_delete << phase
+          puts "[post_install] [pods-dev] Removing '#{phase.name}' from #{target.name}"
+        end
+        
+        # Remove [CP] Embed Pods Frameworks phases
+        if phase.name.include?('Embed Pods Frameworks')
+          phases_to_delete << phase
+          puts "[post_install] [pods-dev] Removing '#{phase.name}' from #{target.name}"
+        end
+      end
+      
+      phases_to_delete.each { |phase| target.build_phases.delete(phase) }
+    else
+      # =========================================================================
+      # PODS-RELEASE MODE: Add guard to XCFramework copy phases
+      # This allows Core XCFramework builds to skip the copy script when XCFrameworks don't exist yet
+      # =========================================================================
+      target.build_phases.each do |phase|
+        if phase.is_a?(Xcodeproj::Project::Object::PBXShellScriptBuildPhase)
+          if phase.name == '[CP] Copy XCFrameworks' || (phase.shell_script && phase.shell_script.include?('[CP] Copy XCFrameworks'))
+            # Check if guard is already present (idempotent)
+            unless phase.shell_script && phase.shell_script.include?('MSP_SKIP_CP_XCFRAMEWORKS')
+              guard_script = <<~SCRIPT
+                # MSP Guard: Skip [CP] Copy XCFrameworks during Core XCFramework builds
+                # This prevents rsync errors when XCFrameworks don't exist yet
+                if [ "$MSP_SKIP_CP_XCFRAMEWORKS" = "1" ]; then
+                  echo "[MSP] Skipping [CP] Copy XCFrameworks because MSP_SKIP_CP_XCFRAMEWORKS=1"
+                  exit 0
+                fi
+                
+              SCRIPT
+              phase.shell_script = guard_script + (phase.shell_script || '')
+              puts "[post_install] Added MSP_SKIP_CP_XCFRAMEWORKS guard to [CP] Copy XCFrameworks for #{target.name}"
+            end
           end
         end
       end

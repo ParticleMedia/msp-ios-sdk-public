@@ -199,6 +199,7 @@ YAML
 
     # MSPDemoApp target (CocoaPods only)
     if [[ "$EFFECTIVE_MODE" == "pods" ]]; then
+        # Base target definition (common to both pods-dev and pods-release)
         cat <<'YAML'
   MSPDemoApp:
     templates:
@@ -206,6 +207,13 @@ YAML
     configFiles:
       Debug: ../../Pods/Target Support Files/Pods-MSPDemoApp/Pods-MSPDemoApp.debug.xcconfig
       Release: ../../Pods/Target Support Files/Pods-MSPDemoApp/Pods-MSPDemoApp.release.xcconfig
+YAML
+
+        # PODS-RELEASE: Add XCFramework copy phases (needed for binary distribution)
+        # PODS-DEV: Skip XCFramework phases (pure source mode, no XCFrameworks)
+        if [[ "$TARGET_MODE" == "pods-release" ]]; then
+            echo "pods-release: Adding [CP] Copy XCFrameworks and [CP] Embed Pods Frameworks phases" >&2
+            cat <<'YAML'
     prebuildScripts:
       - name: "[CP] Copy XCFrameworks"
         script: |
@@ -300,6 +308,32 @@ YAML
         script: "\"${PODS_ROOT}/Target Support Files/Pods-MSPDemoApp/Pods-MSPDemoApp-frameworks.sh\""
         shell: /bin/sh
 YAML
+        else
+            # PODS-DEV: Clean source-only mode - no XCFramework phases
+            echo "pods-dev: Skipping [CP] Copy XCFrameworks and [CP] Embed Pods Frameworks phases (pure source mode)" >&2
+            cat <<'YAML'
+    prebuildScripts:
+      - name: "[CP] Check Pods Manifest.lock"
+        script: |
+          if [ -z "${PODS_PODFILE_DIR_PATH}" ] || [ -z "${PODS_ROOT}" ]; then
+            echo "error: CocoaPods environment variables are not set." >&2
+            exit 1
+          fi
+          if [ ! -e "${PODS_ROOT}/Manifest.lock" ] || [ ! -e "${PODS_PODFILE_DIR_PATH}/Podfile.lock" ]; then
+            echo "error: Run 'pod install' to generate Pods/Manifest.lock." >&2
+            exit 1
+          fi
+          if ! diff "${PODS_PODFILE_DIR_PATH}/Podfile.lock" "${PODS_ROOT}/Manifest.lock" >/dev/null; then
+            echo "error: Podfile.lock and Manifest.lock are out of sync. Run 'pod install'." >&2
+            exit 1
+          fi
+        shell: /bin/sh
+    postbuildScripts:
+      - name: "[CP] Copy Pods Resources"
+        script: "\"${PODS_ROOT}/Target Support Files/Pods-MSPDemoApp/Pods-MSPDemoApp-resources.sh\""
+        shell: /bin/sh
+YAML
+        fi
     fi
 
     # MSPDemoApp-SPM target (SPM only)
@@ -443,13 +477,24 @@ YAML
     
     # Add mode-specific projects
     if [[ "$EFFECTIVE_MODE" == "pods" ]]; then
-        # Pods mode: include Pods project
-        if [[ -d "$PODS_DIR/Pods.xcodeproj" ]]; then
-            cat <<'YAML'
-    - name: Pods
-      path: Pods/Pods.xcodeproj
-      type: file
-YAML
+        # Pods mode: include ALL Pod .xcodeproj files
+        # With :generate_multiple_pod_projects => true in Podfile, each Pod gets its own .xcodeproj
+        # We need to include all of them for Xcode to properly build dependencies
+        
+        # Find all .xcodeproj in Pods/ and add them to workspace
+        pod_projects=()
+        while IFS= read -r proj; do
+            [[ -n "$proj" ]] && pod_projects+=("$proj")
+        done < <(find "$PODS_DIR" -maxdepth 1 -name "*.xcodeproj" -type d 2>/dev/null | LC_ALL=C sort || true)
+        
+        if [[ ${#pod_projects[@]} -gt 0 ]]; then
+            for proj in "${pod_projects[@]}"; do
+                proj_name=$(basename "$proj" .xcodeproj)
+                proj_rel_path="${proj#$ROOT_DIR/}"
+                echo "    - name: $proj_name"
+                echo "      path: $proj_rel_path"
+                echo "      type: file"
+            done
         fi
     fi
     # SPM mode: no additional projects needed (MSPDemoApp handles SPM dependencies)

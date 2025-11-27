@@ -330,11 +330,12 @@ print_summary() {
 switch_pods_dev() {
     log_title "Switching to PODS-DEV Mode"
     log_info "Mode: CocoaPods with source files (internal development)"
-    log_info "MSP_RELEASE=0"
+    log_info "MSP_RELEASE=0, MSP_MODE=pods-dev"
     log_info ""
     
-    # Export MSP_RELEASE for podspecs
+    # Export environment variables for podspecs and Podfile
     export MSP_RELEASE=0
+    export MSP_MODE=pods-dev
     
     # Step 1: Clean SPM artifacts
     log_section "Environment Cleanup"
@@ -349,7 +350,19 @@ switch_pods_dev() {
     log_step "Removing Package.swift"
     ensure_package_swift_disabled
     
-    # Step 3: Generate project.yml from templates
+    # Step 3: Clean existing Pods to force regeneration
+    # This ensures CocoaPods removes XCFramework copy phases in pods-dev mode
+    log_step "Cleaning existing Pods (force regeneration)"
+    if [[ -d "$PODS_DIR" ]]; then
+        rm -rf "$PODS_DIR"
+        log_success "Pods/ removed"
+    fi
+    if [[ -f "$ROOT_DIR/Podfile.lock" ]]; then
+        rm -f "$ROOT_DIR/Podfile.lock"
+        log_success "Podfile.lock removed"
+    fi
+    
+    # Step 4: Generate project.yml from templates
     log_section "YAML Generation"
     log_step "Generating project.yml from templates"
     if [[ -x "$SCRIPT_DIR/generate_project_templates.sh" ]]; then
@@ -364,14 +377,15 @@ switch_pods_dev() {
         exit 1
     fi
     
-    # Step 4: Run pod install (with MSP_RELEASE=0)
+    # Step 5: Run pod install (with MSP_RELEASE=0 and MSP_MODE=pods-dev)
     log_section "CocoaPods Installation"
-    log_step "Running pod install (MSP_RELEASE=0)"
+    log_step "Running pod install (MSP_RELEASE=0, MSP_MODE=pods-dev)"
     log_info "All modules compiled from SOURCE (path-based pods)"
+    log_info "XCFramework copy phases will be REMOVED by Podfile post_install"
     
     cd "$ROOT_DIR"
-    if MSP_RELEASE=0 pod install; then
-        log_success "pod install completed"
+    if MSP_RELEASE=0 MSP_MODE=pods-dev pod install; then
+        log_success "pod install completed (pure source mode)"
     else
         log_error "pod install failed"
         exit 1
@@ -422,11 +436,12 @@ switch_pods_dev() {
 switch_pods_release() {
     log_title "Switching to PODS-RELEASE Mode"
     log_info "Mode: CocoaPods with binary XCFrameworks (pre-release validation)"
-    log_info "MSP_RELEASE=1"
+    log_info "MSP_RELEASE=1, MSP_MODE=pods-release"
     log_info ""
     
-    # Export MSP_RELEASE for podspecs
+    # Export environment variables for podspecs and Podfile
     export MSP_RELEASE=1
+    export MSP_MODE=pods-release
     
     # Step 1: Validate XCFrameworks exist
     log_section "XCFramework Validation"
