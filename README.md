@@ -62,6 +62,16 @@ The `switch-target.sh` script is **ONLY needed when switching between modes**, n
 
 > **Important:** Adapters are **SOURCE-ONLY** in all modes. No adapter XCFrameworks are ever required.
 
+**Third-party SDKs in each mode:**
+- **pods-dev / pods-release**: Third-party SDKs (Google, Facebook, InMobi, etc.) come from their official CocoaPods. CocoaPods handles embedding frameworks like DTBiOSSDK.framework automatically.
+- **spm-release**: Third-party XCFrameworks are synced to `ThirdParty/` via `spm_sync_all.sh`.
+
+**Workspace symlink:** All modes create a symlink at the project root:
+```
+msp-ios-sdk.xcworkspace → .generated/msp-ios-sdk.xcworkspace
+```
+This is handled automatically by `switch-target.sh` — always use `open msp-ios-sdk.xcworkspace`.
+
 | Scenario | What to run |
 |----------|-------------|
 | Fresh clone (first time) | `pod install` → open workspace |
@@ -105,6 +115,19 @@ This will:
 | **pods-release** | `msp-ios-sdk.xcworkspace` | `MSPDemoApp` |
 | **spm-release** | `Examples/MSPDemoApp/MSPDemoApp.xcodeproj` | `MSPDemoApp-SPM` |
 
+### 2.4 Template System
+
+All generated files are created from templates (tracked in git):
+
+| Template | Generated File | When |
+|----------|----------------|------|
+| `workspace.yml.template` | `workspace.yml` | All modes |
+| `project.yml.template` | `project.yml` | All modes |
+| `Package.swift.template` | `Package.swift` | spm-release only |
+| `Info.plist.template` | `Info.plist` | All modes |
+
+Generated files are ignored by git. After switching modes, `git status` should show no tracked file changes.
+
 ---
 
 ## 3. Round-Trip Testing
@@ -117,11 +140,27 @@ Test that all three modes work correctly:
 
 **Test cycle:** `pods-dev` → `pods-release` → `spm-release` → `pods-dev`
 
-The round-trip test validates:
-- Mode switching works correctly
-- Generated files (workspace.yml, project.yml, Package.swift) are valid
-- Core XCFrameworks exist (5 required)
-- Git status is clean after full cycle
+### Prerequisites
+
+Before running the full round-trip test, you need the 5 core XCFrameworks:
+
+```bash
+./Scripts/xcframeworks/build-core.sh
+```
+
+This builds: MSPCore, MSPiOSCore, MSPSharedLibraries, MSPOMSDK, NovaCore
+
+### What each mode validates
+
+| Mode | Validation |
+|------|------------|
+| **pods-dev** | `pod install` + **DemoApp builds successfully** |
+| **pods-release** | 5 core XCFrameworks exist (no DemoApp build) |
+| **spm-release** | Package.swift syntax + 5 core XCFrameworks exist |
+
+The round-trip test also validates:
+- Generated files (workspace.yml, project.yml, Package.swift) exist
+- Git status is clean after full cycle (no tracked file changes)
 
 **Stress test (multiple cycles):**
 
