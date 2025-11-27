@@ -144,9 +144,9 @@ public func MSPGADRequestSetAdString(_ request: MSPGADRequest, adString: String?
 // Unified wrapper function to avoid "Ambiguous use of 'present(from:)'" errors
 // This function handles the API differences between SPM and CocoaPods versions
 public func MSPGADInterstitialAdPresent(_ ad: MSPGADInterstitialAd?, from rootViewController: UIViewController?) {
-    guard let ad = ad else { return }
-    // SPM version: GADInterstitialAd.present(from:)
-    ad.present(from: rootViewController)
+    guard let ad = ad, let vc = rootViewController else { return }
+    // SPM version: GADInterstitialAd.present(fromRootViewController:)
+    ad.present(fromRootViewController: vc)
 }
 #else
 public func MSPGADMobileAdsStart(completionHandler: ((Error?) -> Void)?) {

@@ -276,10 +276,14 @@ build_pods_app() {
     
     local build_start=$(date +%s)
     
+    # Use predictable derivedDataPath so xcframeworks can be pre-staged
+    local derived_data_path="${HOME}/Library/Developer/Xcode/DerivedData/msp-ios-sdk-roundtrip"
+    
     if xcodebuild -workspace msp-ios-sdk.xcworkspace \
         -scheme MSPDemoApp \
         -configuration Debug \
         -destination "platform=iOS Simulator,name=iPhone 16" \
+        -derivedDataPath "$derived_data_path" \
         build 2>&1 | tee "$log_file"; then
         
         local build_end=$(date +%s)
@@ -317,10 +321,14 @@ build_spm_app() {
     
     local build_start=$(date +%s)
     
+    # Use predictable derivedDataPath for SPM builds as well
+    local derived_data_path="${HOME}/Library/Developer/Xcode/DerivedData/msp-ios-sdk-roundtrip"
+    
     if xcodebuild -project Examples/MSPDemoApp/MSPDemoApp.xcodeproj \
         -scheme MSPDemoApp-SPM \
         -configuration Debug \
         -destination "platform=iOS Simulator,name=iPhone 16" \
+        -derivedDataPath "$derived_data_path" \
         build 2>&1 | tee "$log_file"; then
         
         local build_end=$(date +%s)

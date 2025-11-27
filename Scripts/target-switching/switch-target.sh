@@ -414,6 +414,74 @@ elif [[ "$TARGET" == "pods" ]]; then
         log_success "PrebidMobile.xcframework present"
     fi
     
+    # Step 8.5: Pre-populate XCFrameworkIntermediates (ensures xcframeworks are ready before build)
+    log_section "XCFramework Staging"
+    log_step "Pre-populating XCFrameworkIntermediates for Pods mode"
+    
+    # Use predictable DerivedData path for round-trip tests
+    # Also check for any existing msp-ios-sdk-* folders
+    DD_PREFIX="$HOME/Library/Developer/Xcode/DerivedData"
+    
+    # Stage to multiple possible locations to ensure coverage
+    declare -a TARGET_DIRS=()
+    
+    # 1. Predictable path for round-trip tests
+    TARGET_DIRS+=("$DD_PREFIX/msp-ios-sdk-roundtrip/Build/Products/Debug-iphonesimulator/XCFrameworkIntermediates")
+    
+    # 2. Any existing DerivedData folders
+    while IFS= read -r dir; do
+        if [[ -n "$dir" ]]; then
+            TARGET_DIRS+=("$dir/Build/Products/Debug-iphonesimulator/XCFrameworkIntermediates")
+        fi
+    done < <(find "$DD_PREFIX" -maxdepth 1 -name "msp-ios-sdk-*" -type d 2>/dev/null)
+    
+    # Run all xcframeworks copy scripts for each target directory
+    SCRIPTS_DIR="$PODS_DIR/Target Support Files"
+    if [[ -d "$SCRIPTS_DIR" ]]; then
+        total_staged=0
+        for PODS_XCFRAMEWORKS_BUILD_DIR in "${TARGET_DIRS[@]}"; do
+            mkdir -p "$PODS_XCFRAMEWORKS_BUILD_DIR"
+            
+            export PODS_ROOT="$PODS_DIR"
+            export PODS_CONFIGURATION_BUILD_DIR="${PODS_XCFRAMEWORKS_BUILD_DIR%/XCFrameworkIntermediates}"
+            export PODS_XCFRAMEWORKS_BUILD_DIR="$PODS_XCFRAMEWORKS_BUILD_DIR"
+            export ARCHS="arm64"
+            export PLATFORM_NAME="iphonesimulator"
+            
+            script_count=0
+            failed_scripts=()
+            
+            # Get all scripts and run them
+            while IFS= read -r script; do
+                [[ -z "$script" ]] && continue
+                script_name="$(basename "$script")"
+                if /bin/sh "$script" >/dev/null 2>&1; then
+                    ((script_count++))
+                else
+                    failed_scripts+=("$script_name")
+                fi
+            done < <(find "$SCRIPTS_DIR" -name "*-xcframeworks.sh" 2>/dev/null | sort)
+            
+            if [[ $script_count -gt 0 ]]; then
+                log_info "Staged $script_count xcframework(s) to: $(basename "$(dirname "$(dirname "$(dirname "$PODS_XCFRAMEWORKS_BUILD_DIR")")")")"
+                ((total_staged++))
+            fi
+            
+            # Report any failures
+            if [[ ${#failed_scripts[@]} -gt 0 ]]; then
+                log_warn "Failed scripts: ${failed_scripts[*]}"
+            fi
+        done
+        
+        if [[ $total_staged -gt 0 ]]; then
+            log_success "Pre-staged xcframeworks to ${#TARGET_DIRS[@]} location(s)"
+        else
+            log_warn "No xcframeworks staged (scripts may be missing)"
+        fi
+    else
+        log_warn "Pods/Target Support Files not found - skipping xcframework staging"
+    fi
+    
     # Step 9: Verify no SPM packages in project.yml (critical for Pods mode isolation)
     log_section "SPM Isolation Check"
     log_step "Verifying SPM packages are excluded from Pods mode"
