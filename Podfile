@@ -52,12 +52,10 @@ target 'MSPDemoApp' do
   # SwiftProtobuf is needed by MSPCore at compile time
   pod 'SwiftProtobuf', '~> 1.28.2', :configurations => demoapp_pod_configs
   
-  # pods-dev mode: Embed ALL third-party XCFrameworks from ThirdParty/
-  # This ensures DTBiOSSDK, IronSourceSDK, OpenWrapSDK, Amazon APS, MobileFuse, InMobi, etc.
-  # are embedded into MSPDemoApp to prevent dyld crashes at runtime
-  if msp_mode == 'pods-dev'
-    pod 'MSPThirdParty', :path => 'ThirdParty/ThirdParty.podspec', :configurations => demoapp_pod_configs
-  end
+  # NOTE: MSPThirdParty pod is NOT needed because:
+  # - Third-party SDKs (FBAudienceNetwork, InMobiSDK, etc.) are provided by their own CocoaPods
+  # - PrebidMobile.xcframework is already included in MSPSharedLibraries.podspec (in all modes)
+  # - CocoaPods automatically embeds these frameworks when :integrate_targets => true (pods-dev mode)
 end
 
 post_install do |installer|
@@ -112,52 +110,36 @@ post_install do |installer|
     end
     
     # =========================================================================
-    # PODS-DEV MODE: Remove ALL XCFramework copy phases
-    # In pods-dev, ALL modules are SOURCE-ONLY. No XCFrameworks exist.
+    # XCFramework copy phase handling (BOTH pods-dev and pods-release)
     # =========================================================================
-    if is_pods_dev
-      phases_to_delete = []
-      
-      target.build_phases.each do |phase|
-        next unless phase.is_a?(Xcodeproj::Project::Object::PBXShellScriptBuildPhase)
-        next unless phase.respond_to?(:name) && phase.name
-        
-        # Remove [CP] Copy XCFrameworks phases
-        if phase.name.include?('Copy XCFrameworks')
-          phases_to_delete << phase
-          puts "[post_install] [pods-dev] Removing '#{phase.name}' from #{target.name}"
-        end
-        
-        # Remove [CP] Embed Pods Frameworks phases
-        if phase.name.include?('Embed Pods Frameworks')
-          phases_to_delete << phase
-          puts "[post_install] [pods-dev] Removing '#{phase.name}' from #{target.name}"
-        end
-      end
-      
-      phases_to_delete.each { |phase| target.build_phases.delete(phase) }
-    else
-      # =========================================================================
-      # PODS-RELEASE MODE: Add guard to XCFramework copy phases
-      # This allows Core XCFramework builds to skip the copy script when XCFrameworks don't exist yet
-      # =========================================================================
-      target.build_phases.each do |phase|
-        if phase.is_a?(Xcodeproj::Project::Object::PBXShellScriptBuildPhase)
-          if phase.name == '[CP] Copy XCFrameworks' || (phase.shell_script && phase.shell_script.include?('[CP] Copy XCFrameworks'))
-            # Check if guard is already present (idempotent)
-            unless phase.shell_script && phase.shell_script.include?('MSP_SKIP_CP_XCFRAMEWORKS')
-              guard_script = <<~SCRIPT
-                # MSP Guard: Skip [CP] Copy XCFrameworks during Core XCFramework builds
-                # This prevents rsync errors when XCFrameworks don't exist yet
-                if [ "$MSP_SKIP_CP_XCFRAMEWORKS" = "1" ]; then
-                  echo "[MSP] Skipping [CP] Copy XCFrameworks because MSP_SKIP_CP_XCFRAMEWORKS=1"
-                  exit 0
-                fi
-                
-              SCRIPT
-              phase.shell_script = guard_script + (phase.shell_script || '')
-              puts "[post_install] Added MSP_SKIP_CP_XCFRAMEWORKS guard to [CP] Copy XCFrameworks for #{target.name}"
-            end
+    # IMPORTANT: Do NOT remove [CP] Copy XCFrameworks or [CP] Embed Pods Frameworks
+    # in pods-dev mode! Third-party pods (FBAudienceNetwork, InMobiSDK, etc.) still
+    # need these phases to embed their XCFrameworks (like DTBiOSSDK.framework).
+    #
+    # MSP core pods are dual-mode:
+    #   - MSP_RELEASE=0 → source_files only (no vendored_frameworks)
+    #   - MSP_RELEASE=1 → vendored_frameworks (binary mode)
+    # So in pods-dev, MSP pods won't have any XCFrameworks to copy anyway.
+    # CocoaPods will only copy XCFrameworks for third-party pods that need them.
+    #
+    # We add a guard to [CP] Copy XCFrameworks to skip during Core XCFramework builds
+    # (when MSP_SKIP_CP_XCFRAMEWORKS=1), but this applies to both modes.
+    target.build_phases.each do |phase|
+      if phase.is_a?(Xcodeproj::Project::Object::PBXShellScriptBuildPhase)
+        if phase.name == '[CP] Copy XCFrameworks' || (phase.shell_script && phase.shell_script.include?('[CP] Copy XCFrameworks'))
+          # Check if guard is already present (idempotent)
+          unless phase.shell_script && phase.shell_script.include?('MSP_SKIP_CP_XCFRAMEWORKS')
+            guard_script = <<~SCRIPT
+              # MSP Guard: Skip [CP] Copy XCFrameworks during Core XCFramework builds
+              # This prevents rsync errors when XCFrameworks don't exist yet
+              if [ "$MSP_SKIP_CP_XCFRAMEWORKS" = "1" ]; then
+                echo "[MSP] Skipping [CP] Copy XCFrameworks because MSP_SKIP_CP_XCFRAMEWORKS=1"
+                exit 0
+              fi
+              
+            SCRIPT
+            phase.shell_script = guard_script + (phase.shell_script || '')
+            puts "[post_install] Added MSP_SKIP_CP_XCFRAMEWORKS guard to [CP] Copy XCFrameworks for #{target.name}"
           end
         end
       end

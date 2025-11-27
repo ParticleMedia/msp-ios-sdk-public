@@ -309,8 +309,17 @@ YAML
         shell: /bin/sh
 YAML
         else
-            # PODS-DEV: Clean source-only mode - no XCFramework phases
-            echo "pods-dev: Skipping [CP] Copy XCFrameworks and [CP] Embed Pods Frameworks phases (pure source mode)" >&2
+            # PODS-DEV: Include ALL CocoaPods phases, same as pods-release
+            # 
+            # IMPORTANT: pods-dev MUST include [CP] Embed Pods Frameworks!
+            # Third-party pods (FBAudienceNetwork, InMobiSDK, etc.) still need to embed
+            # their XCFrameworks (like DTBiOSSDK.framework) even in source mode.
+            #
+            # MSP pods are dual-mode:
+            #   - MSP_RELEASE=0 → source_files only (no XCFrameworks)
+            #   - MSP_RELEASE=1 → vendored_frameworks
+            # So in pods-dev, CocoaPods will only copy XCFrameworks for third-party pods.
+            echo "pods-dev: Including all CocoaPods phases (third-party XCFrameworks still need embedding)" >&2
             cat <<'YAML'
     prebuildScripts:
       - name: "[CP] Check Pods Manifest.lock"
@@ -331,6 +340,9 @@ YAML
     postbuildScripts:
       - name: "[CP] Copy Pods Resources"
         script: "\"${PODS_ROOT}/Target Support Files/Pods-MSPDemoApp/Pods-MSPDemoApp-resources.sh\""
+        shell: /bin/sh
+      - name: "[CP] Embed Pods Frameworks"
+        script: "\"${PODS_ROOT}/Target Support Files/Pods-MSPDemoApp/Pods-MSPDemoApp-frameworks.sh\""
         shell: /bin/sh
 YAML
         fi
