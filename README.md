@@ -10,36 +10,28 @@ Internal SDK repository containing MSPDemoApp, all core modules, adapters, and t
 
 ## 1. SDK Developer Workflow (Start Here)
 
-This section covers day-to-day development in this repository.
-
 ### 1.1 Prerequisites
 
 ```bash
-# Required tools
 brew install xcodegen cocoapods
 ```
 
-### 1.2 Clone & Bootstrap
+### 1.2 Fresh Clone & Setup (CocoaPods Mode)
+
+For a fresh clone, just run these commands:
 
 ```bash
 git clone <repo-url>
 cd msp-ios-sdk
 pod install
-```
-
-**Recommended default mode:** 👉 **CocoaPods** (more stable for development & debugging)
-
-### 1.3 Run MSPDemoApp (CocoaPods Mode — Recommended)
-
-**Option A: Open in Xcode**
-
-```bash
 open msp-ios-sdk.xcworkspace
 ```
 
-Then select scheme **MSPDemoApp** and run.
+Then select scheme **MSPDemoApp** → Run.
 
-**Option B: Command line build**
+**That's it!** No additional scripts needed for initial setup.
+
+### 1.3 Build from Command Line (CocoaPods Mode)
 
 ```bash
 xcodebuild \
@@ -52,45 +44,34 @@ xcodebuild \
 
 > Note: Change `iPhone 16` to any simulator available on your machine.
 
-### 1.4 Run MSPDemoApp (SPM Mode)
+---
 
-**Step 1: Switch to SPM mode**
+## 2. When Do You Need `switch-target.sh`?
+
+The `switch-target.sh` script is **ONLY needed when switching between modes**, not for initial setup.
+
+| Scenario | What to run |
+|----------|-------------|
+| Fresh clone (first time) | `pod install` → open workspace |
+| Already in Pods mode, want to stay | Nothing needed |
+| Switch from Pods → SPM | `./Scripts/target-switching/switch-target.sh spm` |
+| Switch from SPM → Pods | `./Scripts/target-switching/switch-target.sh pods` |
+
+### 2.1 Switch to SPM Mode
 
 ```bash
 ./Scripts/target-switching/switch-target.sh spm
 ```
 
-This script will:
+This will:
 - Clean `Pods/` directory
-- Auto-sync XCFrameworks if missing (runs `spm_sync_all.sh`)
+- Auto-sync XCFrameworks if missing
 - Generate SPM project via XcodeGen
-- Open Xcode automatically
+- Open `Examples/MSPDemoApp/MSPDemoApp.xcodeproj`
 
-**Step 2: Build**
+After Xcode opens, select scheme **MSPDemoApp-SPM** → Run.
 
-After Xcode opens, select scheme **MSPDemoApp-SPM** and run.
-
-Or build from command line:
-
-```bash
-xcodebuild \
-  -project Examples/MSPDemoApp/MSPDemoApp.xcodeproj \
-  -scheme MSPDemoApp-SPM \
-  -configuration Debug \
-  -destination "platform=iOS Simulator,name=iPhone 16" \
-  build
-```
-
----
-
-## 2. Switching Between CocoaPods & SPM
-
-| Mode | Purpose | What to Open |
-|------|---------|--------------|
-| **CocoaPods** | Main development mode | `msp-ios-sdk.xcworkspace` |
-| **SPM** | Validate Package.swift & distribution | `Examples/MSPDemoApp/MSPDemoApp.xcodeproj` |
-
-### 2.1 Switch to CocoaPods Mode
+### 2.2 Switch Back to CocoaPods Mode (from SPM)
 
 ```bash
 ./Scripts/target-switching/switch-target.sh pods
@@ -102,19 +83,18 @@ This will:
 - Generate workspace via XcodeGen
 - Open `msp-ios-sdk.xcworkspace`
 
-### 2.2 Switch to SPM Mode
+### 2.3 Summary Table
 
-```bash
-./Scripts/target-switching/switch-target.sh spm
-```
+| Mode | Workspace/Project | Scheme |
+|------|-------------------|--------|
+| **CocoaPods** | `msp-ios-sdk.xcworkspace` | `MSPDemoApp` |
+| **SPM** | `Examples/MSPDemoApp/MSPDemoApp.xcodeproj` | `MSPDemoApp-SPM` |
 
-This will:
-- Remove `Pods/` directory
-- Auto-sync third-party XCFrameworks if missing
-- Generate SPM project via XcodeGen
-- Open `Examples/MSPDemoApp/MSPDemoApp.xcodeproj`
+---
 
-### 2.3 Round-Trip Test (Pods → SPM → Pods)
+## 3. Round-Trip Testing
+
+Test that both modes work correctly:
 
 ```bash
 ./Scripts/target-switching/round-trip-test.sh
@@ -126,26 +106,21 @@ This will:
 ./Scripts/target-switching/round-trip-test.sh --stress=3
 ```
 
-Round-trip tests ensure both modes stay clean and interchangeable.
-
 ---
 
-## 3. Dependency Sync (Pods → XCFramework → SPM)
+## 4. Upgrading Third-Party SDKs
 
 > **Podfile is the only source of truth** for all third-party SDK versions.
 
-### When Upgrading Third-Party SDKs
+### Step-by-Step Process
 
-When you need to update Google, IronSource, InMobi, Mintegral, or any other third-party SDK:
-
-**Step 1: Update version in Podfile**
+**1. Update version in Podfile:**
 
 ```ruby
-# Example: Update Google Mobile Ads
 pod 'Google-Mobile-Ads-SDK', '~> 12.0'
 ```
 
-**Step 2: Run these 3 commands in order**
+**2. Run these 3 commands:**
 
 ```bash
 pod install                                     # Update Pods
@@ -153,118 +128,96 @@ pod install                                     # Update Pods
 ./Scripts/target-switching/round-trip-test.sh  # Validate both modes work
 ```
 
-### Important Rules
+### Rules
 
 | ✅ Do | ❌ Don't |
 |-------|----------|
 | Update versions in `Podfile` | Manually edit `ThirdParty/` contents |
-| Run `spm_sync_all.sh` after Podfile changes | Edit third-party versions in `Package.swift` |
-| Validate with round-trip test | Skip sync after upgrading SDKs |
+| Run `spm_sync_all.sh` after changes | Edit third-party versions in `Package.swift` |
 
 ### Special Cases
 
-- **PrebidMobile**: Uses canonical XCFramework at `ThirdParty/PrebidMobile/` (no extraction needed)
-- **GoogleMobileAds**: Uses official SPM package from Google (skip extraction)
+- **PrebidMobile**: Uses canonical XCFramework at `ThirdParty/PrebidMobile/` (no extraction)
+- **GoogleMobileAds**: Uses official SPM package (skip extraction)
 
 ---
 
-## 4. Troubleshooting
+## 5. Troubleshooting
 
-### MSPDemoApp (Pods mode) build fails
+### Pods build fails
 
 ```bash
-# Clean and reinstall
 pod install
 rm -rf ~/Library/Developer/Xcode/DerivedData/*
 open msp-ios-sdk.xcworkspace
 ```
 
-### MSPDemoApp-SPM: "binary target does not contain a binary artifact"
+### SPM: "binary target does not contain a binary artifact"
 
 ```bash
-# Re-sync XCFrameworks from Pods
 ./Scripts/spm-sync/spm_sync_all.sh
 ./Scripts/target-switching/switch-target.sh spm
 ```
 
-### MSPDemoApp-SPM: "no such module XXX"
+### SPM: "no such module XXX"
 
 ```bash
-# Clean SPM cache and re-sync
 rm -rf .swiftpm .build
 ./Scripts/spm-sync/spm_sync_all.sh
 ./Scripts/target-switching/switch-target.sh spm
 ```
 
-### General Recovery (Nuclear Option)
-
-If nothing works, run these commands in order:
+### Nuclear Option (Full Reset)
 
 ```bash
 # 1. Clean everything
 rm -rf Pods/ .swiftpm .build ~/Library/Developer/Xcode/DerivedData/*
 
-# 2. Reinstall and sync
+# 2. Reinstall
 pod install
 ./Scripts/spm-sync/spm_sync_all.sh
 
-# 3. Switch to your desired mode
+# 3. Switch to desired mode
 ./Scripts/target-switching/switch-target.sh pods   # or: spm
 ```
 
 ### Full CI Validation
 
-Run the complete validation pipeline:
-
 ```bash
 ./Scripts/ci/ci_validate.sh
 ```
 
-This runs: cleanup → pod install → sync → Pods build → SPM build → round-trip test.
-
 ---
 
-## 5. Repository Layout
+## 6. Repository Layout
 
 ```
 msp-ios-sdk/
 ├── Sources/
-│   ├── Core/                 # Core modules (5): MSPSharedLibraries, MSPiOSCore, NovaCore, MSPCore, MSPOMSDK
+│   ├── Core/                 # Core modules (5)
 │   ├── Adapters/             # Ad network adapters (10)
-│   └── Common/               # Shared modules (MSPGoogleAdsTypes, wrappers)
+│   └── Common/               # Shared modules
 │
-├── Build/XCFrameworks/       # Pre-built core XCFrameworks (5)
-│
-├── ThirdParty/               # Third-party XCFrameworks (extracted from Pods)
+├── Build/XCFrameworks/       # Pre-built core XCFrameworks
+├── ThirdParty/               # Third-party XCFrameworks (from Pods)
 │
 ├── Scripts/
-│   ├── spm-sync/             # Pods → SPM sync tools
-│   │   ├── extract_from_pods.sh
-│   │   ├── generate_package_swift.sh
-│   │   └── spm_sync_all.sh
-│   ├── target-switching/     # Pods ↔ SPM mode switching
-│   │   ├── switch-target.sh
-│   │   ├── round-trip-test.sh
-│   │   └── validate_xcframeworks.sh
-│   └── ci/
-│       └── ci_validate.sh
+│   ├── spm-sync/             # Pods → SPM sync
+│   ├── target-switching/     # Mode switching
+│   └── ci/                   # CI scripts
 │
-├── Examples/MSPDemoApp/      # Demo application
-│   ├── MSPDemoApp.xcodeproj  # SPM mode project
-│   └── project.yml           # XcodeGen spec
-│
+├── Examples/MSPDemoApp/      # Demo app
 ├── msp-ios-sdk.xcworkspace   # CocoaPods workspace
 ├── Package.swift             # SPM manifest
-├── Podfile                   # CocoaPods dependencies (source of truth)
-└── *.podspec                 # Pod specifications (16)
+└── Podfile                   # CocoaPods (source of truth)
 ```
 
 ---
 
-## 6. Architecture Overview
+## 7. Architecture
 
 ```
-Podfile  (single version source of truth)
+Podfile  (source of truth)
     │
     ▼ pod install
 Pods/                  → ThirdParty/*.xcframework
@@ -283,19 +236,15 @@ Pods/                  → ThirdParty/*.xcframework
 
 ---
 
-## 7. Internal Developer Documentation
+## 8. Internal Documentation
 
 | Document | Description |
 |----------|-------------|
-| [DEPENDENCY_MIGRATION_GUIDE_ZH.md](Docs/DEPENDENCY_MIGRATION_GUIDE_ZH.md) | Full Chinese technical reference for architecture, scripts, and migration workflows |
-
-> These documents are for **SDK maintainers** within the team. External app developers typically do not need them.
+| [DEPENDENCY_MIGRATION_GUIDE_ZH.md](Docs/DEPENDENCY_MIGRATION_GUIDE_ZH.md) | Chinese technical reference |
 
 ---
 
-## 8. External App Integration
-
-> For app developers integrating MSP SDK into their apps.
+## 9. External App Integration
 
 ### CocoaPods
 
@@ -303,7 +252,6 @@ Pods/                  → ThirdParty/*.xcframework
 pod 'MSPCore'
 pod 'MSPGoogleAdapter'
 pod 'MSPFacebookAdapter'
-# ... add other adapters as needed
 ```
 
 ### SPM
@@ -312,11 +260,9 @@ pod 'MSPFacebookAdapter'
 https://github.com/ParticleMedia/msp-ios-sdk-public.git
 ```
 
-Full integration documentation is available in the [public SDK docs](https://github.com/ParticleMedia/msp-ios-sdk-public).
-
 ---
 
-## 9. Requirements
+## 10. Requirements
 
 | Requirement | Version |
 |-------------|---------|
@@ -328,7 +274,7 @@ Full integration documentation is available in the [public SDK docs](https://git
 
 ---
 
-## 10. Contact
+## 11. Contact
 
 **Email:** pengyu.gou@newsbreak.com  
 **GitHub Issues:** [msp-ios-sdk-public](https://github.com/ParticleMedia/msp-ios-sdk-public/issues)
