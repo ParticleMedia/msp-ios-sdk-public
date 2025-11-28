@@ -177,3 +177,24 @@ msp-ios-sdk.xcworkspace
 
 # Verification matrix outputs (auto-generated)
 verification_matrix/
+
+# ============================================================================
+# Release System Test Artifacts (auto-generated, ignore)
+# ============================================================================
+# Test suite source code (run_all.sh, helpers.sh, mock/*, cases/*) is tracked.
+# Only generated artifacts from test execution are ignored.
+
+# Logs created by mock binaries
+Scripts/tests/release_state/**/mock_invocations.log
+Scripts/tests/release_state/**/mock_*.log
+
+# Logs captured from test runs
+Scripts/tests/release_state/**/test_output.log
+
+# Synthetic state dumps created for rollback tests
+Scripts/tests/release_state/**/test_state_*.json
+
+# Temporary directories created by test runner or cases
+Scripts/tests/release_state/**/tmp/
+Scripts/tests/release_state/**/temp/
+Scripts/tests/release_state/**/case_*/
