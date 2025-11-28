@@ -235,7 +235,7 @@ pre_release_setup() {
 create_release_branch() {
     log_release "Step 1: Creating release branch"
     
-    local create_branch_cmd="$SCRIPT_DIR/create-release-branch.sh"
+    local create_branch_cmd="$ROOT_DIR/Scripts/release/orchestrator/branch.sh"
     if [[ "$DRY_RUN" == "true" ]]; then
         create_branch_cmd="$create_branch_cmd --dry-run"
     fi
@@ -279,8 +279,13 @@ release_cocoapods() {
     log_info "  RELEASE_BRANCH=$RELEASE_BRANCH"
     log_info "  PODS_MODULES=$PODS_MODULES"
     
-    # Call cocoapods.sh directly (no CLI arguments)
-    if "$SCRIPT_DIR/cocoapods.sh"; then
+    # Call pods/publish.sh directly (no CLI arguments)
+    local COCOAPODS_SCRIPT="$ROOT_DIR/Scripts/release/publish/pods/publish.sh"
+    if [[ ! -f "$COCOAPODS_SCRIPT" ]]; then
+        log_error "CocoaPods publish script not found at $COCOAPODS_SCRIPT"
+        return 1
+    fi
+    if bash "$COCOAPODS_SCRIPT"; then
         log_success "CocoaPods released successfully"
         # Track success based on PODS_MODULES if available
         if [[ "$DRY_RUN" != "true" && -n "${PODS_MODULES:-}" ]]; then
@@ -327,8 +332,13 @@ release_spm() {
     log_info "  RELEASE_BRANCH=$RELEASE_BRANCH"
     log_info "  SPM_PACKAGES=$SPM_PACKAGES"
     
-    # Call spm.sh directly (no CLI arguments)
-    if "$SCRIPT_DIR/spm.sh"; then
+    # Call spm/publish.sh directly (no CLI arguments)
+    local SPM_SCRIPT="$ROOT_DIR/Scripts/release/publish/spm/publish.sh"
+    if [[ ! -f "$SPM_SCRIPT" ]]; then
+        log_error "SPM publish script not found at $SPM_SCRIPT"
+        return 1
+    fi
+    if bash "$SPM_SCRIPT"; then
         log_success "SPM released successfully"
         # Track success based on SPM_PACKAGES if available
         if [[ "$DRY_RUN" != "true" && -n "${SPM_PACKAGES:-}" ]]; then

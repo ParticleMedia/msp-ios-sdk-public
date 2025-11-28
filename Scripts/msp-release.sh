@@ -15,9 +15,9 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 
 # Existing release scripts (delegate to these)
-MODULAR_SCRIPT="$SCRIPT_DIR/release/modular.sh"
-COCOAPODS_SCRIPT="$SCRIPT_DIR/release/cocoapods.sh"
-SPM_SCRIPT="$SCRIPT_DIR/release/spm.sh"
+MODULAR_SCRIPT="$SCRIPT_DIR/release/orchestrator/modular.sh"
+COCOAPODS_SCRIPT="$SCRIPT_DIR/release/publish/pods/publish.sh"
+SPM_SCRIPT="$SCRIPT_DIR/release/publish/spm/publish.sh"
 
 # Default config file location
 DEFAULT_CONFIG_FILE="$SCRIPT_DIR/release/config/release.yaml"
@@ -470,8 +470,8 @@ show_version() {
     echo ""
     echo "Underlying scripts:"
     echo "  modular.sh:   $MODULAR_SCRIPT"
-    echo "  cocoapods.sh: $COCOAPODS_SCRIPT"
-    echo "  spm.sh:       $SPM_SCRIPT"
+    echo "  pods/publish.sh: $COCOAPODS_SCRIPT"
+    echo "  spm/publish.sh:  $SPM_SCRIPT"
 }
 
 # ============================================================================
@@ -521,13 +521,13 @@ do_preflight() {
     fi
     
     # Load preflight script
-    local PRE_SCRIPT="$ROOT_DIR/Scripts/release/preflight.sh"
+    local PRE_SCRIPT="$ROOT_DIR/Scripts/release/preflight/preflight.sh"
     if [[ ! -f "$PRE_SCRIPT" ]]; then
         log_error "Preflight script not found at $PRE_SCRIPT"
         return 1
     fi
     
-    # shellcheck source=Scripts/release/preflight.sh
+    # shellcheck source=Scripts/release/preflight/preflight.sh
     source "$PRE_SCRIPT"
     
     # Run preflight checks
@@ -578,13 +578,13 @@ do_run() {
     if [[ "${SKIP_PREFLIGHT:-false}" != "true" ]]; then
         log_info "Running preflight checks (use --skip-preflight to disable)"
         
-        local PRE_SCRIPT="$ROOT_DIR/Scripts/release/preflight.sh"
+        local PRE_SCRIPT="$ROOT_DIR/Scripts/release/preflight/preflight.sh"
         if [[ ! -f "$PRE_SCRIPT" ]]; then
             log_error "Preflight script not found at $PRE_SCRIPT"
             return 1
         fi
         
-        # shellcheck source=Scripts/release/preflight.sh
+        # shellcheck source=Scripts/release/preflight/preflight.sh
         source "$PRE_SCRIPT"
         
         if ! preflight_static; then
@@ -701,13 +701,13 @@ do_verify() {
     fi
     
     # Load verify script
-    local VERIFY_SCRIPT="$ROOT_DIR/Scripts/release/verify.sh"
+    local VERIFY_SCRIPT="$ROOT_DIR/Scripts/release/verify/verify.sh"
     if [[ ! -f "$VERIFY_SCRIPT" ]]; then
         log_error "Verify script not found at $VERIFY_SCRIPT"
         return 1
     fi
     
-    # shellcheck source=Scripts/release/verify.sh
+    # shellcheck source=Scripts/release/verify/verify.sh
     source "$VERIFY_SCRIPT"
     
     log_title "Verifying Remote Release (Pods + SPM placeholder)"
