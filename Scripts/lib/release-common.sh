@@ -2,99 +2,198 @@
 
 # Release Common Library
 # Shared functions and configurations for all release scripts
+#
+# Phase 3 Step 1: Refactored to use modular utils/
+# This file now sources utility modules and provides backward compatibility wrappers
 
-# Try to source UI system (if available)
+# ============================================================================
+# ROOT_DIR Calculation
+# ============================================================================
+# Calculate ROOT_DIR relative to this file's location
+# release-common.sh is in Scripts/lib/, so go up two levels to reach repo root
+ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-ROOT_DIR="$(cd "$SCRIPT_DIR/../.." && pwd)"
 
-# Source colors and UI system if available
+# ============================================================================
+# UI System Loading (UI-First Rule)
+# ============================================================================
+# Load UI system in order: colors.sh → ui.sh → logging.sh
+# This ensures all logging functions are available before utils modules are loaded
+
+# Handle NO_ANSI flag by setting NO_COLOR (logging.sh respects NO_COLOR)
+if [[ "${NO_ANSI:-false}" == "true" ]]; then
+    export NO_COLOR=1
+fi
+
+# Source colors.sh
 if [[ -f "$ROOT_DIR/Scripts/lib/colors.sh" ]]; then
     # shellcheck source=Scripts/lib/colors.sh
     source "$ROOT_DIR/Scripts/lib/colors.sh" 2>/dev/null || true
 fi
 
+# Source ui.sh (depends on colors.sh)
 if [[ -f "$ROOT_DIR/Scripts/lib/ui.sh" ]]; then
     # shellcheck source=Scripts/lib/ui.sh
     source "$ROOT_DIR/Scripts/lib/ui.sh" 2>/dev/null || true
 fi
 
-# Fallback color definitions (if colors.sh not available)
-: "${RED:=\033[0;31m}"
-: "${GREEN:=\033[0;32m}"
-: "${YELLOW:=\033[1;33m}"
-: "${BLUE:=\033[0;34m}"
-: "${PURPLE:=\033[0;35m}"
-: "${NC:=\033[0m}"
+# Source logging.sh (depends on colors.sh and ui.sh)
+if [[ -f "$ROOT_DIR/Scripts/lib/logging.sh" ]]; then
+    # shellcheck source=Scripts/lib/logging.sh
+    source "$ROOT_DIR/Scripts/lib/logging.sh" 2>/dev/null || true
+fi
 
-# Logging functions (use UI system if available, fallback to simple functions)
-if command -v log_info &>/dev/null && command -v log_success &>/dev/null; then
-    # UI system available - use it but keep function names for compatibility
-    log_warning() {
-        log_warn "$1"
-    }
+# ============================================================================
+# Fallback Logging Functions (if UI system not available)
+# ============================================================================
+# Only define fallbacks if logging functions are not available
+if ! command -v log_info &>/dev/null; then
+    # Fallback color definitions
+    : "${RED:=\033[0;31m}"
+    : "${GREEN:=\033[0;32m}"
+    : "${YELLOW:=\033[1;33m}"
+    : "${BLUE:=\033[0;34m}"
+    : "${PURPLE:=\033[0;35m}"
+    : "${NC:=\033[0m}"
     
-    log_release() {
-        if should_use_colors; then
-            printf "${PURPLE}🚀${NC} %s\n" "$1"
-        else
-            printf "🚀 %s\n" "$1"
-        fi
-    }
-    
-    log_debug() {
-        if [[ "$VERBOSE" == "true" ]]; then
-            log_info "🔍 $1"
-        fi
-    }
-    
-    print_section() {
-        log_section "$1"
-    }
-else
     # Fallback logging functions
     log_info() {
-        echo -e "${BLUE}ℹ️  $1${NC}"
-    }
-
-    log_success() {
-        echo -e "${GREEN}✅ $1${NC}"
-    }
-
-    log_warning() {
-        echo -e "${YELLOW}⚠️  $1${NC}"
-    }
-
-    log_error() {
-        echo -e "${RED}❌ $1${NC}"
-    }
-
-    log_step() {
-        echo -e "${BLUE}🔧 $1${NC}"
-    }
-
-    log_release() {
-        echo -e "${PURPLE}🚀 $1${NC}"
-    }
-
-    log_debug() {
-        if [[ "$VERBOSE" == "true" ]]; then
-            echo -e "${BLUE}🔍 $1${NC}"
+        if [[ "${NO_ANSI:-false}" == "true" ]]; then
+            echo "[INFO] $1"
+        else
+            echo -e "${BLUE}ℹ️  $1${NC}"
         fi
     }
-
+    
+    log_success() {
+        if [[ "${NO_ANSI:-false}" == "true" ]]; then
+            echo "[SUCCESS] $1"
+        else
+            echo -e "${GREEN}✅ $1${NC}"
+        fi
+    }
+    
+    log_warning() {
+        if [[ "${NO_ANSI:-false}" == "true" ]]; then
+            echo "[WARN] $1"
+        else
+            echo -e "${YELLOW}⚠️  $1${NC}"
+        fi
+    }
+    
+    log_error() {
+        if [[ "${NO_ANSI:-false}" == "true" ]]; then
+            echo "[ERROR] $1" >&2
+        else
+            echo -e "${RED}❌ $1${NC}" >&2
+        fi
+    }
+    
+    log_step() {
+        if [[ "${NO_ANSI:-false}" == "true" ]]; then
+            echo "[STEP] $1"
+        else
+            echo -e "${BLUE}🔧 $1${NC}"
+        fi
+    }
+    
+    log_release() {
+        if [[ "${NO_ANSI:-false}" == "true" ]]; then
+            echo "[RELEASE] $1"
+        else
+            echo -e "${PURPLE}🚀 $1${NC}"
+        fi
+    }
+    
+    log_debug() {
+        if [[ "${VERBOSE:-false}" == "true" ]]; then
+            if [[ "${NO_ANSI:-false}" == "true" ]]; then
+                echo "[DEBUG] $1"
+            else
+                echo -e "${BLUE}🔍 $1${NC}"
+            fi
+        fi
+    }
+    
     print_section() {
-        echo ""
-        echo "═══════════════════════════════════════════════════════════════════"
-        echo "$1"
-        echo "═══════════════════════════════════════════════════════════════════"
-        echo ""
+        if [[ "${NO_ANSI:-false}" == "true" ]]; then
+            echo ""
+            echo "=== $1 ==="
+            echo ""
+        else
+            echo ""
+            echo "═══════════════════════════════════════════════════════════════════"
+            echo "$1"
+            echo "═══════════════════════════════════════════════════════════════════"
+            echo ""
+        fi
+    }
+    
+    print_subsection() {
+        if [[ "${NO_ANSI:-false}" == "true" ]]; then
+            echo "--- $1 ---"
+        else
+            echo -e "${BLUE}--- $1 ---${NC}"
+        fi
+    }
+    
+    # Alias log_warn to log_warning for compatibility
+    log_warn() {
+        log_warning "$@"
     }
 fi
 
-print_subsection() {
-    echo -e "${BLUE}--- $1 ---${NC}"
-}
+# ============================================================================
+# Source Utility Modules
+# ============================================================================
+# Source modules in dependency order (git, version, retry, state, podspec, github, notify)
+# Utils modules will source UI system themselves, but release-common.sh has already loaded it
 
+# Source git utilities
+if [[ -f "$ROOT_DIR/Scripts/release/utils/git.sh" ]]; then
+    # shellcheck source=Scripts/release/utils/git.sh
+    source "$ROOT_DIR/Scripts/release/utils/git.sh" 2>/dev/null || true
+fi
+
+# Source version utilities
+if [[ -f "$ROOT_DIR/Scripts/release/utils/version.sh" ]]; then
+    # shellcheck source=Scripts/release/utils/version.sh
+    source "$ROOT_DIR/Scripts/release/utils/version.sh" 2>/dev/null || true
+fi
+
+# Source retry utilities
+if [[ -f "$ROOT_DIR/Scripts/release/utils/retry.sh" ]]; then
+    # shellcheck source=Scripts/release/utils/retry.sh
+    source "$ROOT_DIR/Scripts/release/utils/retry.sh" 2>/dev/null || true
+fi
+
+# Source state utilities
+if [[ -f "$ROOT_DIR/Scripts/release/utils/state.sh" ]]; then
+    # shellcheck source=Scripts/release/utils/state.sh
+    source "$ROOT_DIR/Scripts/release/utils/state.sh" 2>/dev/null || true
+fi
+
+# Source podspec utilities
+if [[ -f "$ROOT_DIR/Scripts/release/utils/podspec.sh" ]]; then
+    # shellcheck source=Scripts/release/utils/podspec.sh
+    source "$ROOT_DIR/Scripts/release/utils/podspec.sh" 2>/dev/null || true
+fi
+
+# Source GitHub utilities
+if [[ -f "$ROOT_DIR/Scripts/release/utils/github.sh" ]]; then
+    # shellcheck source=Scripts/release/utils/github.sh
+    source "$ROOT_DIR/Scripts/release/utils/github.sh" 2>/dev/null || true
+fi
+
+# Source notification utilities
+if [[ -f "$ROOT_DIR/Scripts/release/utils/notify.sh" ]]; then
+    # shellcheck source=Scripts/release/utils/notify.sh
+    source "$ROOT_DIR/Scripts/release/utils/notify.sh" 2>/dev/null || true
+fi
+
+# ============================================================================
+# Pod Configuration
+# ============================================================================
 # Pod configurations - Single source of truth
 # Order matters: dependencies must be released before dependents
 POD_RELEASE_ORDER=(
@@ -204,46 +303,9 @@ validate_release_order() {
     return 0
 }
 
-# Function to update podspec dependency version
-update_podspec_dependency_version() {
-    local podspec_file="$1"
-    local dependency_name="$2"
-    local version="$3"
-    
-    if [[ ! -f "$podspec_file" ]]; then
-        log_error "Podspec file not found: $podspec_file"
-        return 1
-    fi
-    
-    # Update dependency version
-    sed -i '' "s|spec\.dependency '$dependency_name'[^,]*|spec.dependency '$dependency_name', '$version'|g" "$podspec_file"
-    
-    log_success "Updated $dependency_name dependency to version $version in $podspec_file"
-}
-
-# Function to update podspec to HTTP zip format
-update_podspec_to_zip_format() {
-    local podspec_file="$1"
-    local version="$2"
-    
-    if [[ ! -f "$podspec_file" ]]; then
-        log_error "Podspec file not found: $podspec_file"
-        return 1
-    fi
-    
-    # Create backup
-    cp "$podspec_file" "${podspec_file}.backup"
-    
-    # Update version
-    sed -i '' "s|spec\.version.*=.*\".*\"|spec.version = \"${version}\"|g" "$podspec_file"
-    
-    # Update source to use HTTP zip format
-    sed -i '' "s|spec\.source.*=.*{.*:git.*=>.*\"https://github\.com/.*\.git\".*:tag.*=>.*\"#{spec\.version}\".*}|spec.source = {\n    http: \"https://github.com/ParticleMedia/msp-ios-sdk-public/releases/download/${version}/$(basename "$podspec_file" .podspec)-${version}.zip\",\n    type: \"zip\"\n  }|g" "$podspec_file"
-    
-    
-    log_success "Updated $podspec_file to use HTTP zip source format"
-}
-
+# ============================================================================
+# Project Utilities
+# ============================================================================
 # Function to get project root
 get_project_root() {
     cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd
@@ -257,150 +319,9 @@ ensure_project_root() {
     fi
 }
 
-# Retry logic with exponential backoff
-retry_with_backoff() {
-    local max_attempts="$1"
-    local base_delay="$2"
-    local command_name="$3"
-    shift 3
-    local command=("$@")
-    
-    local attempt=1
-    
-    while [[ $attempt -le $max_attempts ]]; do
-        log_debug "Attempt $attempt/$max_attempts: $command_name"
-        
-        if "${command[@]}"; then
-            log_success "$command_name succeeded on attempt $attempt"
-            return 0
-        else
-            log_warning "$command_name failed (attempt $attempt/$max_attempts)"
-            
-            if [[ $attempt -lt $max_attempts ]]; then
-                # Exponential backoff: base_delay * 2^(attempt-1)
-                local delay=$((base_delay * (1 << (attempt - 1))))
-                log_info "Retrying $command_name in ${delay} seconds..."
-                sleep $delay
-            fi
-        fi
-        
-        ((attempt++))
-    done
-    
-    log_error "$command_name failed after $max_attempts attempts"
-    return 1
-}
-
-# Validate podspec with retry logic
-validate_podspec_with_retry() {
-    local podspec="$1"
-    local max_attempts=3
-    local base_delay=5
-    
-    log_step "Validating podspec with retry: $(basename "$podspec")"
-    
-    retry_with_backoff $max_attempts $base_delay "podspec validation" \
-        validate_podspec "$podspec"
-}
-
-# Publish podspec with retry logic
-publish_podspec_with_retry() {
-    local podspec="$1"
-    local max_attempts=3
-    local base_delay=10
-    
-    log_step "Publishing podspec with retry: $(basename "$podspec")"
-    
-    # First update the specs repo with retry
-    if ! retry_with_backoff 3 5 "specs repo update" update_specs_repo; then
-        log_warning "Failed to update specs repo, continuing anyway..."
-    fi
-    
-    # Then publish with retry
-    retry_with_backoff $max_attempts $base_delay "podspec publishing" \
-        publish_podspec "$podspec"
-}
-
-# GitHub release with retry logic
-create_github_release_with_retry() {
-    local pod="$1"
-    local version="$2"
-    local max_attempts=3
-    local base_delay=5
-    
-    log_step "Creating GitHub release with retry for $pod"
-    
-    retry_with_backoff $max_attempts $base_delay "GitHub release creation" \
-        create_github_release_internal "$pod" "$version"
-}
-
-# Internal GitHub release function (to be called by retry logic)
-create_github_release_internal() {
-    local pod="$1"
-    local version="$2"
-    
-    # Create zip file
-    local zip_name="${pod}-${version}.zip"
-    if [[ -d "$pod" ]]; then
-        zip -r "$zip_name" "$pod" >/dev/null 2>&1
-    else
-        log_warning "Pod directory $pod not found, skipping zip creation"
-        return 0
-    fi
-    
-    # Create or update GitHub release
-    if gh release view "$version" --repo "ParticleMedia/msp-ios-sdk-public" &>/dev/null; then
-        log_info "Release $version already exists, uploading assets"
-        gh release upload "$version" "$zip_name" --repo "ParticleMedia/msp-ios-sdk-public" --clobber
-    else
-        log_info "Creating new release $version"
-        gh release create "$version" "$zip_name" --repo "ParticleMedia/msp-ios-sdk-public"
-    fi
-    
-    # Clean up zip file
-    rm -f "$zip_name"
-    
-    return 0
-}
-
 # ============================================================================
-# Slack Notification Functions (Extracted to notify/slack.sh)
-# ============================================================================
-# Phase 1 Refactoring: Slack functions have been extracted to a dedicated module.
-# This source statement provides backward compatibility.
-# See: Scripts/notify/slack.sh for the implementation.
-
-# Source the Slack notification module
-if [[ -f "$ROOT_DIR/Scripts/notify/slack.sh" ]]; then
-    # shellcheck source=Scripts/notify/slack.sh
-    source "$ROOT_DIR/Scripts/notify/slack.sh"
-else
-    # Fallback: Define stub functions if module not found
-    log_warning "notify/slack.sh not found - Slack notifications will be disabled"
-    send_slack_notification() { log_warning "Slack notifications disabled (module not found)"; }
-    notify_release_success() { :; }
-    notify_release_failure() { :; }
-    notify_release_warning() { :; }
-    notify_release_start() { :; }
-    notify_pod_release() { :; }
-    notify_release_summary() { :; }
-    notify_release_success_with_summary() { :; }
-    test_slack_notification() { log_error "Slack notifications disabled (module not found)"; return 1; }
-fi
-
-# Backward compatibility: Re-export environment functions
-# These are now defined in notify/slack.sh but may be used by other scripts
-get_environment() {
-    get_slack_environment
-}
-
-get_environment_info() {
-    get_slack_environment_info
-}
-
 # Release Notes Generation Functions
-# ==================================
-
+# ============================================================================
 # Generate release notes from git commits
 generate_release_notes_from_git() {
     local version="$1"
@@ -587,59 +508,76 @@ get_release_notes() {
     esac
 }
 
-# Update Config.plist version
-update_config_plist_version() {
-    local version="$1"
-    local config_plist="MSPCore/MSPCore/Resources/Config.plist"
-    
-    if [[ ! -f "$config_plist" ]]; then
-        log_error "Config.plist not found: $config_plist"
-        return 1
-    fi
-    
-    log_step "Updating SDKVersion in Config.plist to $version"
-    
-    # Create backup
-    cp "$config_plist" "${config_plist}.backup"
-    
-    # Update SDKVersion in Config.plist
-    sed -i '' "s|<string>.*</string>|<string>${version}</string>|g" "$config_plist"
-    
-    log_success "Updated SDKVersion in Config.plist to $version"
+# ============================================================================
+# Slack Notification Functions (Extracted to notify/slack.sh)
+# ============================================================================
+# Phase 1 Refactoring: Slack functions have been extracted to a dedicated module.
+# This source statement provides backward compatibility.
+# See: Scripts/notify/slack.sh for the implementation.
+
+# Source the Slack notification module
+if [[ -f "$ROOT_DIR/Scripts/notify/slack.sh" ]]; then
+    # shellcheck source=Scripts/notify/slack.sh
+    source "$ROOT_DIR/Scripts/notify/slack.sh"
+else
+    # Fallback: Define stub functions if module not found
+    log_warning "notify/slack.sh not found - Slack notifications will be disabled"
+    send_slack_notification() { log_warning "Slack notifications disabled (module not found)"; }
+    notify_release_success() { :; }
+    notify_release_failure() { :; }
+    notify_release_warning() { :; }
+    notify_release_start() { :; }
+    notify_pod_release() { :; }
+    notify_release_summary() { :; }
+    notify_release_success_with_summary() { :; }
+    test_slack_notification() { log_error "Slack notifications disabled (module not found)"; return 1; }
+fi
+
+# Backward compatibility: Re-export environment functions
+# These are now defined in notify/slack.sh but may be used by other scripts
+get_environment() {
+    get_slack_environment
 }
 
-# Export functions for use in other scripts
-# Note: Logging functions may come from lib/ui.sh or fallbacks defined above
-export -f log_info log_success log_warning log_error log_step log_release log_debug print_section print_subsection 2>/dev/null || true
+get_environment_info() {
+    get_slack_environment_info
+}
+
+# ============================================================================
+# Backward Compatibility Wrappers
+# ============================================================================
+# Legacy function names for functions moved to utils modules
+
+# Podspec functions (now in utils/podspec.sh)
+update_podspec_dependency_version() {
+    update_podspec_dependencies "$@"
+}
+
+update_podspec_to_zip_format() {
+    update_podspec_source_to_zip "$@"
+}
+
+# ============================================================================
+# Export Functions
+# ============================================================================
+# Export logging functions
+export -f log_info log_success log_warning log_error log_step log_release log_debug print_section print_subsection log_warn 2>/dev/null || true
 
 # Export pod configuration functions
 export -f get_pod_dependencies is_valid_pod get_release_order_for_pod validate_release_order
 
-# Export podspec utilities
-export -f update_podspec_dependency_version update_podspec_to_zip_format
-
 # Export project utilities
 export -f get_project_root ensure_project_root
-
-# Export retry utilities
-export -f retry_with_backoff validate_podspec_with_retry publish_podspec_with_retry
-
-# Export GitHub release utilities
-export -f create_github_release_with_retry create_github_release_internal
-
-# Export environment functions (backward compatibility wrappers)
-export -f get_environment get_environment_info
 
 # Export release notes functions
 export -f generate_release_notes_from_git generate_release_notes_from_template generate_simple_release_notes prompt_for_release_notes get_release_notes
 
-# Export version update functions
-export -f update_config_plist_version
+# Export environment functions (backward compatibility wrappers)
+export -f get_environment get_environment_info
 
+# Export legacy podspec functions (backward compatibility)
+export -f update_podspec_dependency_version update_podspec_to_zip_format
+
+# Note: Functions from utils modules are exported by their respective modules
 # Note: Slack notification functions are exported by Scripts/notify/slack.sh
-# The following are available after sourcing this file:
-#   - send_slack_notification
-#   - notify_release_success, notify_release_failure, notify_release_warning
-#   - notify_release_start, notify_pod_release, notify_release_summary
-#   - notify_release_success_with_summary, test_slack_notification
-#   - format_release_notes_for_slack
+# Note: Functions from utils/notify.sh are exported by that module
