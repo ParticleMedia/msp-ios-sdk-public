@@ -171,6 +171,199 @@ Release orchestration scripts for publishing to CocoaPods and SPM.
 
 ---
 
+## 📦 Verification System (verify + verify-matrix)
+
+The MSP Release System provides a complete multi-layer verification framework that ensures both local and remote environments can successfully resolve, install, and build MSP SDK products across all distribution methods:
+
+- **CocoaPods binary distribution**
+- **SwiftPM binaryTarget distribution**
+- **Local SPM (path dependency) integration**
+- **Full environment matrix testing (15 scenarios)**
+
+This section documents how the verification system works and how to use it.
+
+---
+
+### 1. `verify` — Release Product Verification
+
+```bash
+./Scripts/msp-release.sh verify <version>
+```
+
+Runs the full verification pipeline:
+
+#### ✔ 1. Pods Remote Verification
+
+Ensures the released CocoaPods artifacts can be fetched and integrated in a clean environment.
+
+**Steps:**
+- Creates an isolated temp directory
+- Generates a minimal SwiftUI TestApp
+- Creates a Podfile pointing to **PODS_REMOTE_URL**
+- Installs Pods
+- Builds the TestApp via xcodebuild
+- Reports success/failure
+
+**Config keys used:**
+
+| YAML Key | Shell Var | Description |
+|---------|------------|-------------|
+| `pods.remote_url` | `PODS_REMOTE_URL` | CocoaPods source repo URL |
+| `pods.remote_primary_product` | `PODS_REMOTE_PRIMARY_PRODUCT` | The main pod to import |
+
+---
+
+#### ✔ 2. SPM Remote Verification
+
+Ensures the Swift Package Manager artifacts are valid on GitHub (or other host).
+
+**Steps:**
+- Creates isolated temp directory
+- Generates a minimal SwiftPM executable
+- Adds package dependency pointing to **SPM_REMOTE_URL**
+- Runs `swift package resolve` and `swift build`
+
+**Config keys:**
+
+| YAML Key | Shell Var | Description |
+|---------|------------|-------------|
+| `spm.remote_url` | `SPM_REMOTE_URL` | URL of the remote SPM package |
+| `spm.remote_product_name` | `SPM_REMOTE_PRODUCT_NAME` | Product name to import |
+
+**Strict mode:**
+
+| YAML Key | Shell Var | Description |
+|---------|------------|-------------|
+| `verify.spm_strict` | `VERIFY_SPM_STRICT` | If true (default), failure stops release |
+
+---
+
+#### ✔ 3. Local SPM Build Validation
+
+Ensures that the local Package.swift (binaryTarget + source adapters) is internally consistent.
+
+**Steps:**
+- Creates a clean SPM test package
+- Adds a **path** dependency to local repo
+- Imports `SPM_REMOTE_PRODUCT_NAME` (default: `MSPAds`)
+- Resolves and builds locally
+
+Failures **always block release**.
+
+---
+
+### 2. `verify-matrix` — Patch-Level Verification Matrix
+
+```bash
+./Scripts/msp-release.sh verify-matrix
+```
+
+Runs **15 automated test scenarios**, covering all combinations of:
+
+- `DRY_RUN` = on/off
+- `VERIFY_SPM_STRICT` = on/off
+- `SPM_REMOTE_URL` = unset / valid / invalid
+- pods-only / spm-only modes
+
+#### Directory Structure
+
+```
+Scripts/release/verify-matrix/
+│
+├── generate_cases.sh # Generates 15 cases automatically
+├── matrix.sh # Runs all cases and produces results
+├── cases/ # Auto-generated test scripts
+└── README.md # Local documentation
+```
+
+#### Output Directory (ignored by git)
+
+```
+verification_matrix/
+└── run-<timestamp>/
+    ├── case-A1/output.log
+    ├── case-A2/output.log
+    ...
+    └── summary.json
+```
+
+#### Summary Report Format
+
+Each run produces a machine-readable summary:
+
+```json
+{
+  "timestamp": "2025-01-03T15:23:11Z",
+  "total_cases": 15,
+  "passed": 13,
+  "failed": 2,
+  "cases": {
+    "A1": "passed",
+    "A2": "failed",
+    ...
+  }
+}
+```
+
+---
+
+### 3. Configuration Keys Used by the Verification System
+
+Add these to `Scripts/release/config/release.yaml`:
+
+```yaml
+pods:
+  remote_url: ""
+  remote_primary_product: "MSPCore"
+
+spm:
+  remote_url: ""
+  remote_product_name: "MSPAds"
+
+verify:
+  spm_strict: true
+  matrix_default_version: "0.0.0-test"
+```
+
+---
+
+### 4. Recommended Workflow
+
+#### During Development / Refactoring
+
+```bash
+./Scripts/msp-release.sh verify-matrix
+```
+
+- Ensures all environments behave consistently
+- Useful after major changes to release/publish scripts
+
+#### Before Official Release
+
+```bash
+./Scripts/msp-release.sh verify <version>
+```
+
+#### CI Integration (Optional)
+
+Add a small subset of matrix cases:
+
+- E1 — baseline default
+- B2 — strict + valid SPM URL
+- E2 — pods-only
+- E3 — spm-only
+
+---
+
+### 5. Notes
+
+- The verification system never touches the main repository — all tests run in isolated temp directories.
+- Pods verification is hard-fail (always blocks release).
+- SPM remote verification is configurable via strict mode.
+- Local SPM validation is always blocking.
+
+---
+
 ## Quick Reference
 
 ### Common Workflows
