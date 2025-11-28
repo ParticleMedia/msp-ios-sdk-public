@@ -303,7 +303,58 @@ fetch_remote() {
     fi
 }
 
+# Delete a local and remote git tag
+# Usage: msp_git_delete_tag <tag_name>
+msp_git_delete_tag() {
+    local tag_name="$1"
+    
+    if [[ -z "$tag_name" ]]; then
+        log_warn "msp_git_delete_tag: empty tag name, nothing to delete"
+        return 0
+    fi
+    
+    # Delete local tag (ignore errors if it doesn't exist)
+    if git tag -l "$tag_name" >/dev/null 2>&1; then
+        if ! git tag -d "$tag_name" 2>/dev/null; then
+            log_error "Failed to delete local git tag: ${tag_name}"
+            return 1
+        fi
+        log_info "Deleted local git tag: ${tag_name}"
+    else
+        log_info "Local git tag ${tag_name} does not exist; skipping local delete"
+    fi
+    
+    # Delete remote tag (assume 'origin'; ignore errors if it doesn't exist)
+    if ! git push origin ":refs/tags/${tag_name}" 2>/dev/null; then
+        log_error "Failed to delete remote git tag: ${tag_name}"
+        return 1
+    fi
+    
+    log_success "Deleted git tag (local and remote): ${tag_name}"
+    return 0
+}
+
+# Delete a remote release branch
+# Usage: msp_git_delete_remote_branch <branch_name>
+msp_git_delete_remote_branch() {
+    local branch_name="$1"
+    
+    if [[ -z "$branch_name" ]]; then
+        log_warn "msp_git_delete_remote_branch: empty branch name, nothing to delete"
+        return 0
+    fi
+    
+    # We intentionally do NOT delete the local branch for safety
+    if ! git push origin --delete "$branch_name" 2>/dev/null; then
+        log_error "Failed to delete remote release branch: ${branch_name}"
+        return 1
+    fi
+    
+    log_success "Deleted remote release branch: ${branch_name}"
+    return 0
+}
+
 # Export functions
-export -f ensure_git_clean create_branch delete_branch tag_exists create_tag push_branch push_tag fetch_remote 2>/dev/null || true
+export -f ensure_git_clean create_branch delete_branch tag_exists create_tag push_branch push_tag fetch_remote msp_git_delete_tag msp_git_delete_remote_branch 2>/dev/null || true
 
 

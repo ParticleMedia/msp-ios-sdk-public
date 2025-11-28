@@ -43,6 +43,22 @@ else
     exit 1
 fi
 
+# Source git and github utilities for rollback operations
+if [[ -f "$SCRIPT_DIR/release/utils/git.sh" ]]; then
+    # shellcheck source=Scripts/release/utils/git.sh
+    source "$SCRIPT_DIR/release/utils/git.sh" 2>/dev/null || true
+fi
+
+if [[ -f "$SCRIPT_DIR/release/utils/github.sh" ]]; then
+    # shellcheck source=Scripts/release/utils/github.sh
+    source "$SCRIPT_DIR/release/utils/github.sh" 2>/dev/null || true
+fi
+
+if [[ -f "$SCRIPT_DIR/release/utils/state.sh" ]]; then
+    # shellcheck source=Scripts/release/utils/state.sh
+    source "$SCRIPT_DIR/release/utils/state.sh" 2>/dev/null || true
+fi
+
 # ============================================================================
 # Source Config Module
 # ============================================================================
@@ -876,13 +892,148 @@ run_msp_rollback() {
     log_info "- Manual remediation may be required (e.g., publish a new version)"
     echo ""
     
-    if [[ "${MSP_ROLLBACK_FORCE:-0}" == "1" ]]; then
-        log_warn "NOTE: --force was specified, but destructive rollback operations are not implemented yet (Step 4.3.2)"
-        log_warn "      This run is a dry plan only; no changes have been made"
-    else
-        log_info "No changes have been made. Re-run with --force once destructive rollback is implemented"
+    # If --force is not set, just print the plan and exit
+    if [[ "${MSP_ROLLBACK_FORCE:-0}" != "1" ]]; then
+        log_info "No changes have been made. Re-run with --force to execute destructive rollback operations"
+        return 0
     fi
     
+    # --force is set: ask for confirmation and execute
+    log_warn "Destructive rollback operations WILL be executed as described above"
+    log_warn "This includes deleting git tags/branches and GitHub Releases"
+    log_info "Press ENTER to continue, or Ctrl+C to abort"
+    echo ""
+    
+    # Confirmation (Scheme A)
+    # Use read -r to wait for ENTER; in non-interactive environments,
+    # users can pipe a newline: `printf '\n' | msp-release.sh rollback --force`
+    read -r _
+    
+    # Execute rollback actions
+    if _msp_execute_rollback_actions \
+        "$version" \
+        "$release_branch" \
+        "$tag_created" \
+        "$tag_name" \
+        "$branch_pushed" \
+        "$gh_release_created"; then
+        
+        # On success, reset git flags in the state
+        if command -v msp_state_reset_git_flags &>/dev/null; then
+            msp_state_reset_git_flags
+        fi
+        
+        log_section "Rollback completed successfully"
+        return 0
+    else
+        log_section "Rollback completed with errors"
+        # Optionally still call msp_state_reset_git_flags() if some actions succeeded.
+        # For now, we leave the git flags as-is so users can see that not all actions were completed.
+        return 1
+    fi
+}
+
+# Private helper to execute rollback actions
+_msp_execute_rollback_actions() {
+    local version="$1"
+    local release_branch="$2"
+    local tag_created="$3"
+    local tag_name="$4"
+    local branch_pushed="$5"
+    local gh_release_created="$6"
+    
+    local any_error=0
+    
+    log_section "Executing Destructive Rollback Actions"
+    
+    # 1) Delete git tag (local + remote) if recorded as created
+    if [[ "$tag_created" == "true" ]]; then
+        if [[ -z "$tag_name" || "$tag_name" == "null" || "$tag_name" == "" ]]; then
+            log_warn "State indicates tag_created=true but tag_name is empty. Skipping tag deletion"
+        else
+            log_info "Deleting git tag (local + remote): ${tag_name}"
+            if command -v msp_git_delete_tag &>/dev/null; then
+                if ! msp_git_delete_tag "$tag_name"; then
+                    log_error "Failed to delete git tag ${tag_name}"
+                    any_error=1
+                fi
+            else
+                log_error "msp_git_delete_tag function not available"
+                any_error=1
+            fi
+        fi
+    else
+        log_info "No git tag recorded as created. Skipping git tag deletion"
+    fi
+    
+    echo ""
+    
+    # 2) Delete remote release branch if recorded as pushed
+    if [[ "$branch_pushed" == "true" ]]; then
+        if [[ -z "$release_branch" || "$release_branch" == "unknown" || "$release_branch" == "null" ]]; then
+            log_warn "State indicates release_branch_pushed=true but release_branch is unknown. Skipping remote branch deletion"
+        else
+            log_info "Deleting remote release branch: ${release_branch}"
+            if command -v msp_git_delete_remote_branch &>/dev/null; then
+                if ! msp_git_delete_remote_branch "$release_branch"; then
+                    log_error "Failed to delete remote release branch ${release_branch}"
+                    any_error=1
+                fi
+            else
+                log_error "msp_git_delete_remote_branch function not available"
+                any_error=1
+            fi
+        fi
+    else
+        log_info "No release branch recorded as pushed. Skipping remote branch deletion"
+    fi
+    
+    echo ""
+    
+    # 3) Delete GitHub Release if recorded as created
+    if [[ "$gh_release_created" == "true" ]]; then
+        local release_target=""
+        if [[ -n "$tag_name" && "$tag_name" != "null" && "$tag_name" != "" ]]; then
+            release_target="$tag_name"
+        elif [[ "$version" != "unknown" && "$version" != "null" && -n "$version" ]]; then
+            release_target="$version"
+        fi
+        
+        if [[ -z "$release_target" ]]; then
+            log_warn "State indicates github_release_created=true but tag_name/version is empty. Skipping GitHub Release deletion"
+        else
+            log_info "Deleting GitHub Release: ${release_target}"
+            if command -v github_delete_release &>/dev/null; then
+                if ! github_delete_release "$release_target"; then
+                    log_error "Failed to delete GitHub Release ${release_target}"
+                    any_error=1
+                fi
+            else
+                log_error "github_delete_release function not available"
+                any_error=1
+            fi
+        fi
+    else
+        log_info "No GitHub Release recorded as created. Skipping GitHub Release deletion"
+    fi
+    
+    echo ""
+    
+    # 4) CocoaPods considerations (no automatic unpublish)
+    log_section "CocoaPods Considerations"
+    log_info "- CocoaPods trunk does not support automatic unpublish"
+    log_info "- If a broken version has been published, the recommended remediation is:"
+    log_info "    1) Bump a new version (e.g., patch/minor)"
+    log_info "    2) Release the new version with the fixes"
+    log_info "    3) Communicate deprecation of the problematic version if necessary"
+    echo ""
+    
+    if [[ $any_error -ne 0 ]]; then
+        log_warn "Rollback actions completed with errors. See messages above"
+        return 1
+    fi
+    
+    log_success "All destructive rollback actions completed successfully"
     return 0
 }
 

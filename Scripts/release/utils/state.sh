@@ -413,6 +413,22 @@ msp_state_set_tag_name() {
     return 0
 }
 
+# Reset git-related flags in the state after a successful rollback
+msp_state_reset_git_flags() {
+    if ! msp_state_is_enabled; then
+        return 0
+    fi
+
+    local path
+    path="$(msp_state_file_path)"
+
+    [[ -f "$path" ]] || return 0
+
+    _msp_state_update_json '.git.tag_created = false | .git.tag_name = null | .git.release_branch_pushed = false | .git.github_release_created = false | .timestamps.updated_at = "'"$(_msp_state_now)"'"' || return 0
+
+    return 0
+}
+
 # ============================================================================
 # Export Functions
 # ============================================================================
@@ -427,3 +443,4 @@ export -f msp_state_get_step_status
 export -f msp_state_mark_git_flag
 export -f msp_state_touch
 export -f msp_state_set_tag_name
+export -f msp_state_reset_git_flags

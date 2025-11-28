@@ -36,19 +36,13 @@ if [[ -f "$ROOT_DIR/Scripts/lib/logging.sh" ]]; then
     source "$ROOT_DIR/Scripts/lib/logging.sh" 2>/dev/null || true
 fi
 
-# Load release state utilities
-if [[ -f "$SCRIPT_DIR/state.sh" ]]; then
-    # shellcheck source=Scripts/release/utils/state.sh
-    source "$SCRIPT_DIR/state.sh" 2>/dev/null || true
-fi
-
 # Fallback logging functions if UI system not available
 if ! command -v log_info &>/dev/null; then
-    : "${RED:=[0;31m}"
-    : "${GREEN:=[0;32m}"
-    : "${YELLOW:=[1;33m}"
-    : "${BLUE:=[0;34m}"
-    : "${NC:=[0m}"
+    : "${RED:=\033[0;31m}"
+    : "${GREEN:=\033[0;32m}"
+    : "${YELLOW:=\033[1;33m}"
+    : "${BLUE:=\033[0;34m}"
+    : "${NC:=\033[0m}"
     
     log_info() {
         if [[ "${NO_ANSI:-false}" == "true" ]]; then
@@ -189,7 +183,7 @@ github_upload_asset() {
     log_step "Uploading asset to GitHub release: $tag"
     
     # Check if gh CLI is available
-    if ! command -v gh &>/dev/null; then
+    if ! command -v gh >/dev/null; then
         log_error "GitHub CLI (gh) is not installed"
         return 1
     fi
@@ -212,7 +206,7 @@ github_release_exists() {
     fi
     
     # Check if gh CLI is available
-    if ! command -v gh &>/dev/null; then
+    if ! command -v gh >/dev/null; then
         log_warning "GitHub CLI (gh) is not installed, cannot check release existence"
         return 1
     fi
@@ -225,27 +219,28 @@ github_release_exists() {
 }
 
 # Delete GitHub release
+# Usage: github_delete_release <tag_or_release_name>
 github_delete_release() {
-    local tag="$1"
+    local release_name="$1"
     
-    if [[ -z "$tag" ]]; then
-        log_error "Tag is required"
+    if [[ -z "$release_name" ]]; then
+        log_warn "github_delete_release: empty release name, nothing to delete"
+        return 0
+    fi
+    
+    if ! command -v gh >/dev/null 2>&1; then
+        log_error "GitHub CLI (gh) is not available; cannot delete GitHub Release ${release_name}"
         return 1
     fi
     
-    log_step "Deleting GitHub release: $tag"
+    log_step "Deleting GitHub release: $release_name"
     
-    # Check if gh CLI is available
-    if ! command -v gh &>/dev/null; then
-        log_error "GitHub CLI (gh) is not installed"
-        return 1
-    fi
-    
-    if gh release delete "$tag" --repo "$GITHUB_REPO" --yes 2>/dev/null; then
-        log_success "Deleted GitHub release: $tag"
+    # --yes to avoid extra prompts; our own rollback flow already confirmed
+    if gh release delete "$release_name" --repo "$GITHUB_REPO" --yes 2>/dev/null; then
+        log_success "Deleted GitHub Release: ${release_name}"
         return 0
     else
-        log_error "Failed to delete GitHub release: $tag"
+        log_error "Failed to delete GitHub Release: ${release_name}"
         return 1
     fi
 }
@@ -300,5 +295,4 @@ create_github_release_with_retry() {
 # Export functions
 export -f github_create_release github_upload_asset github_release_exists github_delete_release \
     create_github_release_internal create_github_release_with_retry 2>/dev/null || true
-
 
