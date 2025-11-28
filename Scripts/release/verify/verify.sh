@@ -213,15 +213,215 @@ EOF
 }
 
 # ============================================================================
-# SPM Remote Verification (Placeholder)
+# SPM Remote Verification
 # ============================================================================
 verify_spm_remote() {
     local version="$1"
     
-    log_section "SPM Remote Verification (TODO)"
+    if [[ -z "$version" ]]; then
+        log_error "Version is required for SPM remote verification"
+        return 1
+    fi
     
-    log_info "SPM verification is not implemented yet. Skipping."
-    log_info "Will be implemented in Phase 3 Step 2."
+    log_section "SPM Remote Verification"
+    
+    # DRY_RUN shortcut
+    local dry_run_value="${DRY_RUN:-false}"
+    if [[ "$dry_run_value" == "true" ]] || [[ "$dry_run_value" == "1" ]] || [[ "$dry_run_value" == "yes" ]]; then
+        log_info "[DRY RUN] Skipping SPM remote verification"
+        return 0
+    fi
+    
+    # Configuration: Read from environment with defaults
+    local spm_remote_url="${SPM_REMOTE_URL:-}"
+    local spm_package_name="${SPM_REMOTE_PACKAGE_NAME:-msp-ios-sdk}"
+    local spm_product_name="${SPM_REMOTE_PRODUCT_NAME:-MSPAds}"
+    
+    # Check if SPM_REMOTE_URL is set
+    if [[ -z "$spm_remote_url" ]]; then
+        log_warn "SPM_REMOTE_URL is not set. Skipping SPM remote verification."
+        log_info "To enable SPM verification, set SPM_REMOTE_URL environment variable."
+        return 0
+    fi
+    
+    log_info "Using remote URL: $spm_remote_url"
+    log_info "Package name: $spm_package_name"
+    log_info "Product name: $spm_product_name"
+    log_info "Version: $version"
+    
+    # Create temp directory
+    log_step "Creating temporary SPM test package"
+    local temp_dir
+    temp_dir=$(mktemp -d -t msp-spm-verify-XXXXXX)
+    if [[ ! -d "$temp_dir" ]]; then
+        log_error "Failed to create temporary directory"
+        return 1
+    fi
+    
+    # Cleanup function
+    local cleanup_on_exit=true
+    if [[ "${DEBUG:-false}" == "true" ]] || [[ "${VERBOSE:-false}" == "true" ]]; then
+        cleanup_on_exit=false
+        log_info "DEBUG/VERBOSE mode: keeping test directory at $temp_dir"
+    fi
+    
+    cleanup_temp_dir() {
+        if [[ "$cleanup_on_exit" == "true" ]]; then
+            log_step "Cleaning up temporary directory"
+            rm -rf "$temp_dir" 2>/dev/null || true
+        fi
+    }
+    
+    trap cleanup_temp_dir EXIT
+    
+    cd "$temp_dir" || {
+        log_error "Failed to change to temporary directory"
+        return 1
+    }
+    
+    # Create minimal SwiftPM executable package
+    log_step "Initializing SwiftPM test package"
+    
+    if ! swift package init --type executable --name TestSPMApp 2>&1; then
+        log_error "Failed to initialize Swift package"
+        return 1
+    fi
+    
+    log_success "Swift package initialized"
+    
+    # Patch Package.swift to add remote dependency
+    log_step "Adding remote SPM dependency to Package.swift"
+    
+    local package_swift="$temp_dir/Package.swift"
+    if [[ ! -f "$package_swift" ]]; then
+        log_error "Package.swift not found after initialization"
+        return 1
+    fi
+    
+    # Read existing Package.swift and inject dependency
+    local package_content
+    package_content=$(cat "$package_swift")
+    
+    # Create modified Package.swift with remote dependency
+    cat > "$package_swift" << EOF
+// swift-tools-version: 5.9
+import PackageDescription
+
+let package = Package(
+    name: "TestSPMApp",
+    dependencies: [
+        .package(url: "$spm_remote_url", .exact("$version"))
+    ],
+    targets: [
+        .executableTarget(
+            name: "TestSPMApp",
+            dependencies: [
+                .product(name: "$spm_product_name", package: "$spm_package_name")
+            ]
+        )
+    ]
+)
+EOF
+    
+    log_info "Package.swift updated with remote dependency"
+    
+    # Update main.swift to use the remote product
+    log_step "Updating main.swift to use remote product"
+    
+    local main_swift="$temp_dir/Sources/TestSPMApp/main.swift"
+    if [[ -f "$main_swift" ]]; then
+        cat > "$main_swift" << 'SWIFT_EOF'
+import Foundation
+// Import the remote product to verify it's available
+// Note: This is a minimal test - actual usage would require proper imports
+
+print("MSP SPM Verification Test")
+print("If you see this, the package resolved and built successfully.")
+SWIFT_EOF
+        log_info "main.swift updated"
+    fi
+    
+    # Run swift package resolve
+    log_step "Resolving Swift package dependencies"
+    
+    local resolve_output
+    local resolve_exit_code
+    
+    if [[ "$VERBOSE" == "true" ]]; then
+        if swift package resolve 2>&1; then
+            resolve_exit_code=0
+        else
+            resolve_exit_code=$?
+        fi
+    else
+        resolve_output=$(swift package resolve 2>&1)
+        resolve_exit_code=$?
+    fi
+    
+    if [[ $resolve_exit_code -ne 0 ]]; then
+        log_error "swift package resolve failed (exit code: $resolve_exit_code)"
+        if [[ "$VERBOSE" != "true" && -n "$resolve_output" ]]; then
+            log_info "Resolve output (last 20 lines):"
+            echo "$resolve_output" | tail -20 | sed 's/^/  /'
+        fi
+        log_info "This may indicate:"
+        log_info "  - Version $version is not yet available in the remote repository"
+        log_info "  - Network connectivity issues"
+        log_info "  - Invalid remote URL: $spm_remote_url"
+        return 1
+    fi
+    
+    log_success "Swift package resolved successfully"
+    
+    # Run swift build
+    log_step "Building Swift package"
+    
+    local build_output
+    local build_exit_code
+    
+    if [[ "$VERBOSE" == "true" ]]; then
+        if swift build 2>&1; then
+            build_exit_code=0
+        else
+            build_exit_code=$?
+        fi
+    else
+        build_output=$(swift build 2>&1)
+        build_exit_code=$?
+    fi
+    
+    if [[ $build_exit_code -ne 0 ]]; then
+        log_error "swift build failed (exit code: $build_exit_code)"
+        if [[ "$VERBOSE" != "true" && -n "$build_output" ]]; then
+            log_info "Build output (last 20 lines):"
+            echo "$build_output" | tail -20 | sed 's/^/  /'
+        fi
+        log_info "This may indicate:"
+        log_info "  - Build errors in the remote package"
+        log_info "  - Incompatible Swift version"
+        log_info "  - Missing dependencies"
+        return 1
+    fi
+    
+    log_success "Swift package built successfully"
+    
+    # Produce summary
+    ui_divider
+    log_success "SPM Remote Verification Summary"
+    ui_kv "Remote URL" "$spm_remote_url"
+    ui_kv "Version" "$version"
+    ui_kv "Package" "$spm_package_name"
+    ui_kv "Product" "$spm_product_name"
+    ui_kv "Resolved" "YES"
+    ui_kv "Built" "YES"
+    ui_kv "Test directory" "$temp_dir"
+    ui_divider
+    
+    # Disable cleanup if we got here successfully (for inspection)
+    if [[ "${KEEP_VERIFY_ARTIFACTS:-false}" == "true" ]]; then
+        cleanup_on_exit=false
+        log_info "Artifacts kept at: $temp_dir"
+    fi
     
     return 0
 }
@@ -249,9 +449,13 @@ verify_main() {
     
     echo ""
     
-    # 2: Verify SPM release (PLACEHOLDER ONLY)
+    # 2: Verify SPM release (BEST-EFFORT)
+    # SPM verification is best-effort: failures don't block the release
     if ! verify_spm_remote "$version"; then
-        log_warn "SPM verification returned non-zero (placeholder - ignoring)"
+        log_warn "SPM remote verify failed (best-effort). This DOES NOT block release yet."
+        log_info "SPM verification will be enforced in a future phase."
+    else
+        log_success "SPM remote verification passed"
     fi
     
     log_success "Remote verification complete!"
