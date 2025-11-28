@@ -18,6 +18,13 @@ source "$ROOT_DIR/Scripts/lib/colors.sh"
 source "$ROOT_DIR/Scripts/lib/ui.sh"
 source "$ROOT_DIR/Scripts/lib/logging.sh"
 
+# Load release state utilities
+source "$SCRIPT_DIR/../utils/state.sh"
+
+# Initialize state for verify-matrix
+msp_state_init "verify_matrix"
+msp_state_mark_step_running "verify_matrix"
+
 log_section "MSP Release Verification Matrix"
 log_info "Executing all test cases from: $CASES_DIR"
 
@@ -84,9 +91,11 @@ done
 
 if [[ $matrix_failed -eq 1 ]]; then
     log_error "Verification matrix completed with failures"
+    msp_state_mark_step_failed "verify_matrix" "verification matrix completed with failures" "1"
     exit 1
 fi
 
 log_success "Verification matrix completed successfully"
+msp_state_mark_step_success "verify_matrix"
 exit 0
 

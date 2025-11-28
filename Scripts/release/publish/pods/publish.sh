@@ -17,6 +17,9 @@ ROOT_DIR="$(cd "$SCRIPT_DIR/../../.." && pwd)"
 source "$ROOT_DIR/Scripts/lib/release-common.sh"
 source "$ROOT_DIR/Scripts/lib/cocoapods.sh"
 
+# Load release state utilities
+source "$SCRIPT_DIR/../../utils/state.sh"
+
 # ============================================================================
 # Environment Variable Validation
 # ============================================================================
@@ -634,6 +637,16 @@ commit_release_changes() {
 
 # Main function
 main() {
+    # Initialize state for standalone pods flow
+    msp_state_init "run"
+    
+    # Check if pods publish should be skipped
+    if [[ "${PODS_ENABLED:-true}" == "false" ]] || [[ "${SKIP_PODS:-false}" == "true" ]]; then
+        msp_state_mark_step_skipped "pods_publish" "pods publish skipped due to PODS_ENABLED=false or SKIP_PODS=true"
+        log_info "Pods publish skipped"
+        return 0
+    fi
+    
     # Backward compatibility: parse remaining CLI arguments if any
     # (Only used if script is called directly, not via msp-release.sh)
     if [[ $# -gt 0 ]]; then
@@ -651,6 +664,9 @@ main() {
     
     # Record start time for duration calculation
     local start_time=$(date +%s)
+    
+    # Mark pods_publish step as running
+    msp_state_mark_step_running "pods_publish"
     
     print_section "Starting CocoaPods Release Process for Version: $VERSION"
     
@@ -695,6 +711,7 @@ main() {
         if [[ "$DRY_RUN" != "true" ]]; then
             notify_release_failure "CocoaPods" "$VERSION" "MSPSharedLibraries release failed" "Foundation Release"
         fi
+        msp_state_mark_step_failed "pods_publish" "MSPSharedLibraries release failed" "1"
         exit 1
     fi
     
@@ -711,6 +728,7 @@ main() {
         if [[ "$DRY_RUN" != "true" ]]; then
             notify_release_failure "CocoaPods" "$VERSION" "Adapter release failed" "Adapter Release"
         fi
+        msp_state_mark_step_failed "pods_publish" "Adapter release failed" "1"
         exit 1
     fi
     
@@ -723,6 +741,7 @@ main() {
         if [[ "$DRY_RUN" != "true" ]]; then
             notify_release_failure "CocoaPods" "$VERSION" "MSPCore release failed" "Main Framework Release"
         fi
+        msp_state_mark_step_failed "pods_publish" "MSPCore release failed" "1"
         exit 1
     fi
     
@@ -743,6 +762,9 @@ main() {
         local pods_list=$(IFS=", "; echo "${cocoapods_pods[*]}")
         notify_release_success_with_summary "CocoaPods" "$VERSION" "$pods_list" "$duration_formatted" "$release_notes" "$total_pods" "$successful_pods" "$failed_pods" "$RELEASE_BRANCH"
     fi
+    
+    # Mark pods_publish step as successful
+    msp_state_mark_step_success "pods_publish"
 }
 
 # Entry point

@@ -6,10 +6,15 @@ ROOT_DIR="$(cd "$SCRIPT_DIR/../.." && pwd)"
 # shellcheck source=Scripts/lib/release-common.sh
 source "$ROOT_DIR/Scripts/lib/release-common.sh"
 
+# Load release state utilities
+source "$SCRIPT_DIR/../utils/state.sh"
+
 # ============================================================================
 # Preflight Static Checks (Fast, No Builds)
 # ============================================================================
 preflight_static() {
+    msp_state_mark_step_running "preflight_static"
+    
     log_section "Preflight (Static Checks)"
     
     local errors=0
@@ -123,28 +128,40 @@ preflight_static() {
     fi
     
     # Final summary
+    local exit_code=0
     if [[ $errors -gt 0 ]]; then
         log_error "Static preflight checks failed with $errors error(s) and $warnings warning(s)"
-        return 1
+        exit_code=1
     elif [[ $warnings -gt 0 ]]; then
         log_warn "Static preflight checks passed with $warnings warning(s)"
         log_success "Static preflight checks passed (with warnings)"
-        return 0
+        exit_code=0
     else
         log_success "Static preflight checks passed"
-        return 0
+        exit_code=0
     fi
+    
+    if [[ $exit_code -ne 0 ]]; then
+        msp_state_mark_step_failed "preflight_static" "preflight static checks failed" "$exit_code"
+        return $exit_code
+    fi
+    
+    msp_state_mark_step_success "preflight_static"
+    return 0
 }
 
 # ============================================================================
 # Preflight Build Checks (Slow, With Round-trip/Build Validation)
 # ============================================================================
 preflight_build() {
+    msp_state_mark_step_running "preflight_build"
+    
     log_section "Preflight (Build / Round-trip Checks)"
     
     # 1) DRY_RUN shortcut
     if [[ "${DRY_RUN:-false}" == "true" ]]; then
         log_info "DRY RUN: Skipping build preflight"
+        msp_state_mark_step_skipped "preflight_build" "preflight build skipped due to DRY_RUN"
         return 0
     fi
     
@@ -154,6 +171,7 @@ preflight_build() {
     if [[ ! -f "$round_trip_script" ]]; then
         log_warn "Round-trip test script not found at $round_trip_script"
         log_warn "Skipping build preflight (script missing)"
+        msp_state_mark_step_skipped "preflight_build" "preflight build skipped due to missing round-trip script"
         return 0
     fi
     
@@ -166,10 +184,12 @@ preflight_build() {
     
     if ! bash "$round_trip_script" --loops=1; then
         log_error "Round-trip test failed"
+        msp_state_mark_step_failed "preflight_build" "preflight build checks failed" "1"
         return 1
     fi
     
     log_success "Build preflight checks passed"
+    msp_state_mark_step_success "preflight_build"
     return 0
 }
 
@@ -177,6 +197,9 @@ preflight_build() {
 # Main Preflight Dispatcher
 # ============================================================================
 run_preflight_main() {
+    # Initialize state for standalone preflight
+    msp_state_init "preflight"
+    
     local static_only=false
     local build_only=false
     
@@ -201,6 +224,7 @@ run_preflight_main() {
     # Run checks
     if [[ "$build_only" == "true" ]]; then
         # Only build checks
+        msp_state_mark_step_skipped "preflight_static" "preflight static skipped due to --build-only"
         if ! preflight_build; then
             return 1
         fi
@@ -209,6 +233,7 @@ run_preflight_main() {
         if ! preflight_static; then
             return 1
         fi
+        msp_state_mark_step_skipped "preflight_build" "preflight build skipped due to --static-only"
     else
         # Default: both checks
         if ! preflight_static; then

@@ -13,6 +13,9 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT_DIR="$(cd "$SCRIPT_DIR/../../.." && pwd)"
 source "$ROOT_DIR/Scripts/lib/release-common.sh"
 
+# Load release state utilities
+source "$SCRIPT_DIR/../../utils/state.sh"
+
 # ============================================================================
 # Environment Variable Validation
 # ============================================================================
@@ -215,11 +218,14 @@ create_spm_tag() {
 
 # SPM Local Build Validation
 spm_local_validation() {
+    msp_state_mark_step_running "spm_local_validation"
+    
     log_section "SPM Local Build Validation"
     
     # DRY_RUN shortcut
     if [[ "$DRY_RUN" == "true" ]] || [[ "$DRY_RUN" == "1" ]]; then
         log_info "[DRY_RUN] Skipping SPM local build validation"
+        msp_state_mark_step_skipped "spm_local_validation" "SPM local validation skipped due to DRY_RUN"
         return 0
     fi
     
@@ -366,6 +372,7 @@ EOF
             echo "$build_output" | tail -20 | sed 's/^/  /'
         fi
         log_error "SPM Local Build Validation Failed"
+        msp_state_mark_step_failed "spm_local_validation" "SPM local validation failed" "1"
         return 1
     fi
     
@@ -385,6 +392,7 @@ EOF
         log_info "Artifacts kept at: $SPM_LOCAL_TMPDIR"
     fi
     
+    msp_state_mark_step_success "spm_local_validation"
     return 0
 }
 
@@ -445,6 +453,17 @@ release_spm_package() {
 
 # Main function
 main() {
+    # Initialize state for standalone SPM flow
+    msp_state_init "run"
+    
+    # Check if SPM publish should be skipped
+    if [[ "${SPM_ENABLED:-true}" == "false" ]] || [[ "${SKIP_SPM:-false}" == "true" ]]; then
+        msp_state_mark_step_skipped "spm_publish" "SPM publish skipped due to SPM_ENABLED=false or SKIP_SPM=true"
+        msp_state_mark_step_skipped "spm_local_validation" "SPM local validation skipped due to SPM_ENABLED=false or SKIP_SPM=true"
+        log_info "SPM publish skipped"
+        return 0
+    fi
+    
     # Backward compatibility: parse remaining CLI arguments if any
     # (Only used if script is called directly, not via msp-release.sh)
     if [[ $# -gt 0 ]]; then
@@ -462,6 +481,9 @@ main() {
     
     # Record start time for duration calculation
     local start_time=$(date +%s)
+    
+    # Mark spm_publish step as running
+    msp_state_mark_step_running "spm_publish"
     
     print_section "Starting SPM Release Process for Version: $VERSION"
     
@@ -498,17 +520,19 @@ main() {
             if [[ "$DRY_RUN" != "true" ]]; then
                 notify_release_failure "SPM" "$VERSION" "$package release failed" "Package Release"
             fi
+            msp_state_mark_step_failed "spm_publish" "$package release failed" "1"
             exit 1
         fi
     done
     
-    # Run local SPM build validation
+    # Run local SPM build validation (before publish)
     log_step "Running local SPM build validation"
     if ! spm_local_validation; then
         log_error "Local SPM validation failed — aborting SPM release"
         if [[ "$DRY_RUN" != "true" ]]; then
             notify_release_failure "SPM" "$VERSION" "Local SPM build validation failed" "Local Validation"
         fi
+        msp_state_mark_step_failed "spm_publish" "SPM publish failed due to local validation failure" "1"
         return 1
     fi
     
@@ -519,6 +543,7 @@ main() {
         if [[ "$DRY_RUN" != "true" ]]; then
             notify_release_failure "SPM" "$VERSION" "Failed to push SPM tags" "Tag Push"
         fi
+        msp_state_mark_step_failed "spm_publish" "Failed to push SPM tags" "1"
         exit 1
     fi
     
@@ -539,6 +564,9 @@ main() {
         local spm_packages_list=$(IFS=", "; echo "${successful_package_names[*]}")
         notify_release_success_with_summary "SPM" "$VERSION" "$spm_packages_list" "$duration_formatted" "$RELEASE_NOTES" "$total_packages" "$successful_packages" "$failed_packages" "$RELEASE_BRANCH"
     fi
+    
+    # Mark spm_publish step as successful
+    msp_state_mark_step_success "spm_publish"
 }
 
 # Entry point

@@ -6,6 +6,9 @@ ROOT_DIR="$(cd "$SCRIPT_DIR/../.." && pwd)"
 # shellcheck source=Scripts/lib/release-common.sh
 source "$ROOT_DIR/Scripts/lib/release-common.sh"
 
+# Load release state utilities
+source "$SCRIPT_DIR/../utils/state.sh"
+
 # ============================================================================
 # Pods Remote Verification
 # ============================================================================
@@ -17,12 +20,15 @@ verify_pods_remote() {
         return 1
     fi
     
+    msp_state_mark_step_running "pods_remote_verify"
+    
     log_section "CocoaPods Remote Verification"
     
     # DRY_RUN shortcut
     if [[ "${DRY_RUN:-false}" == "true" ]]; then
         log_info "DRY RUN: Skipping Pods remote verification"
         log_info "Would verify: pod 'MSPCore', '~> $version'"
+        msp_state_mark_step_skipped "pods_remote_verify" "Pods remote verify skipped due to DRY_RUN"
         return 0
     fi
     
@@ -38,6 +44,7 @@ verify_pods_remote() {
     mkdir -p "$testapp_dir"
     cd "$testapp_dir" || {
         log_error "Failed to create test directory"
+        msp_state_mark_step_failed "pods_remote_verify" "Failed to create test directory" "1"
         return 1
     }
     
@@ -65,6 +72,7 @@ verify_pods_remote() {
     if [[ -z "$pods_remote_url" ]]; then
         log_warn "PODS_REMOTE_URL is not set. Skipping Pods remote verification."
         log_info "To enable Pods verification, set PODS_REMOTE_URL environment variable."
+        msp_state_mark_step_skipped "pods_remote_verify" "Pods remote verify skipped due to PODS_REMOTE_URL not set"
         return 0
     fi
     
@@ -136,12 +144,15 @@ EOF
     
     # Run pod install
     log_step "Installing pods from remote trunk"
+    local install_exit_code=0
     if ! pod install --silent 2>&1; then
+        install_exit_code=$?
         log_error "pod install failed"
         log_info "This may indicate:"
         log_info "  - Version $version is not yet available in CocoaPods trunk"
         log_info "  - Network connectivity issues"
         log_info "  - Podspec validation errors"
+        msp_state_mark_step_failed "pods_remote_verify" "pod install failed" "$install_exit_code"
         return 1
     fi
     
@@ -150,6 +161,7 @@ EOF
     # Verify workspace exists
     if [[ ! -f "$testapp_dir/TestApp.xcworkspace/contents.xcworkspacedata" ]]; then
         log_error "Workspace file not found after pod install"
+        msp_state_mark_step_failed "pods_remote_verify" "Workspace file not found after pod install" "1"
         return 1
     fi
     
@@ -187,6 +199,7 @@ EOF
             log_info "Build output (last 20 lines):"
             echo "$build_output" | tail -20 | sed 's/^/  /'
         fi
+        msp_state_mark_step_failed "pods_remote_verify" "xcodebuild failed" "$build_exit_code"
         return 1
     fi
     
@@ -240,12 +253,15 @@ verify_spm_remote() {
         return 1
     fi
     
+    msp_state_mark_step_running "spm_remote_verify"
+    
     log_section "SPM Remote Verification"
     
     # DRY_RUN shortcut
     local dry_run_value="${DRY_RUN:-false}"
     if [[ "$dry_run_value" == "true" ]] || [[ "$dry_run_value" == "1" ]] || [[ "$dry_run_value" == "yes" ]]; then
         log_info "[DRY RUN] Skipping SPM remote verification"
+        msp_state_mark_step_skipped "spm_remote_verify" "SPM remote verify skipped due to DRY_RUN"
         return 0
     fi
     
@@ -263,6 +279,7 @@ verify_spm_remote() {
     if [[ -z "$spm_remote_url" ]]; then
         log_warn "SPM_REMOTE_URL is not set. Skipping SPM remote verification."
         log_info "To enable SPM verification, set SPM_REMOTE_URL environment variable."
+        msp_state_mark_step_skipped "spm_remote_verify" "SPM remote verify skipped due to SPM_REMOTE_URL not set"
         return 0
     fi
     
@@ -298,6 +315,7 @@ verify_spm_remote() {
     
     cd "$temp_dir" || {
         log_error "Failed to change to temporary directory"
+        msp_state_mark_step_failed "spm_remote_verify" "Failed to change to temporary directory" "1"
         return 1
     }
     
@@ -306,6 +324,7 @@ verify_spm_remote() {
     
     if ! swift package init --type executable --name TestSPMApp 2>&1; then
         log_error "Failed to initialize Swift package"
+        msp_state_mark_step_failed "spm_remote_verify" "Failed to initialize Swift package" "1"
         return 1
     fi
     
@@ -317,6 +336,7 @@ verify_spm_remote() {
     local package_swift="$temp_dir/Package.swift"
     if [[ ! -f "$package_swift" ]]; then
         log_error "Package.swift not found after initialization"
+        msp_state_mark_step_failed "spm_remote_verify" "Package.swift not found after initialization" "1"
         return 1
     fi
     
@@ -435,9 +455,11 @@ EOF
         # Check strict mode
         if [[ "${VERIFY_SPM_STRICT:-true}" == "true" ]]; then
             log_error "SPM remote verification FAILED (strict mode). Blocking release."
+            msp_state_mark_step_failed "spm_remote_verify" "swift build failed (strict mode)" "$build_exit_code"
             return 1
         else
             log_warn "SPM remote verification failed (soft mode). Continuing."
+            msp_state_mark_step_failed "spm_remote_verify" "swift build failed (soft mode)" "$build_exit_code"
             return 0
         fi
     fi
@@ -462,6 +484,7 @@ EOF
         log_info "Artifacts kept at: $temp_dir"
     fi
     
+    msp_state_mark_step_success "spm_remote_verify"
     return 0
 }
 
