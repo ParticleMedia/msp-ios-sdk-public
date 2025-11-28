@@ -148,55 +148,106 @@ parse_global_options() {
 }
 
 # ============================================================================
-# Load and Apply Config
+# Load Release Configuration
 # ============================================================================
-load_and_apply_config() {
+# Loads YAML config file and exports environment variables for later phases.
+# Implements override priority: CLI args > YAML config > built-in defaults
+# ============================================================================
+load_release_config() {
+    # If config module is not available, skip config loading (backward compatibility)
     if [[ "$CONFIG_MODULE_LOADED" != "true" ]]; then
-        log_warn "Config module not loaded - using CLI arguments only"
+        log_debug "[CONFIG] Config module not available - using CLI arguments only"
         return 0
     fi
     
-    # Initialize defaults
+    # Initialize defaults from config.sh
     init_config_defaults
     
-    # Load config file if specified
+    # Load config file if --config was provided
     if [[ -n "$CONFIG_FILE" ]]; then
+        # Validate config file exists
         if [[ ! -f "$CONFIG_FILE" ]]; then
             log_error "Config file not found: $CONFIG_FILE"
             exit 1
         fi
         
-        log_debug "Loading config from: $CONFIG_FILE"
+        # Resolve absolute path for clarity
+        local config_abs_path
+        config_abs_path="$(cd "$(dirname "$CONFIG_FILE")" && pwd)/$(basename "$CONFIG_FILE")"
+        
+        log_debug "[CONFIG] Loading config from: $config_abs_path"
+        
+        # Parse YAML config file
         if ! load_config "$CONFIG_FILE"; then
             log_error "Failed to parse config file: $CONFIG_FILE"
             exit 1
         fi
-        log_success "Config loaded from: $CONFIG_FILE"
+        
+        if [[ "$VERBOSE" == "true" ]]; then
+            log_info "[CONFIG] Loaded from: $config_abs_path"
+        fi
+    else
+        if [[ "$VERBOSE" == "true" ]]; then
+            log_info "[CONFIG] No config file specified - using defaults"
+        fi
     fi
     
     # Apply CLI overrides (CLI takes precedence over config)
     if [[ -n "$CLI_VERSION" ]]; then
-        log_debug "CLI override: version=$CLI_VERSION"
+        log_debug "[CONFIG] CLI override: version=$CLI_VERSION"
         set_config_version "$CLI_VERSION"
     fi
     
     if [[ "$CLI_SKIP_PODS" == "true" ]]; then
-        log_debug "CLI override: pods.enabled=false"
+        log_debug "[CONFIG] CLI override: pods.enabled=false"
         set_config_pods_enabled "false"
     fi
     
     if [[ "$CLI_SKIP_SPM" == "true" ]]; then
-        log_debug "CLI override: spm.enabled=false"
+        log_debug "[CONFIG] CLI override: spm.enabled=false"
         set_config_spm_enabled "false"
     fi
     
-    # Validate config
-    validate_config
+    # Validate config (warnings only, not fatal)
+    validate_config || true
     
-    # Print summary in verbose mode
+    # Export environment variables for later phases
+    # These variables will be available to orchestrator scripts
+    export RELEASE_VERSION="$(get_config_version)"
+    export RELEASE_BRANCH="$(get_config_release_branch)"
+    export BASE_BRANCH="$(get_config_base_branch)"
+    export PODS_ENABLED="$(get_config_pods_enabled)"
+    export SPM_ENABLED="$(get_config_spm_enabled)"
+    export PODS_MODULES="$(get_config_pods_modules)"
+    export SPM_PACKAGES="$(get_config_spm_packages)"
+    export SLACK_CHANNEL="$(get_config_slack_channel)"
+    export DM_ON_FAILURE="$(get_config_dm_on_failure)"
+    
+    # Print verbose debug output in requested format
     if [[ "$VERBOSE" == "true" ]]; then
-        print_config_summary
+        echo ""
+        echo "[CONFIG] Configuration Summary:"
+        echo "[CONFIG]   version = ${RELEASE_VERSION:-<not set>}"
+        echo "[CONFIG]   release_branch = ${RELEASE_BRANCH:-<auto>}"
+        echo "[CONFIG]   base_branch = ${BASE_BRANCH:-main}"
+        echo "[CONFIG]   pods.enabled = ${PODS_ENABLED:-true}"
+        echo "[CONFIG]   pods.modules = ${PODS_MODULES:-<default>}"
+        echo "[CONFIG]   spm.enabled = ${SPM_ENABLED:-true}"
+        echo "[CONFIG]   spm.packages = ${SPM_PACKAGES:-<default>}"
+        echo "[CONFIG]   notifications.slack_channel = ${SLACK_CHANNEL:-#msp-release}"
+        echo "[CONFIG]   notifications.dm_on_failure = ${DM_ON_FAILURE:-true}"
+        echo ""
     fi
+}
+
+# ============================================================================
+# Load and Apply Config (Alias for backward compatibility)
+# ============================================================================
+# This function is kept for backward compatibility with existing code.
+# It now delegates to load_release_config().
+# ============================================================================
+load_and_apply_config() {
+    load_release_config
 }
 
 # ============================================================================
