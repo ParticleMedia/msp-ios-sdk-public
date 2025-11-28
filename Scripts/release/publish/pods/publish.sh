@@ -665,6 +665,16 @@ main() {
     # Record start time for duration calculation
     local start_time=$(date +%s)
     
+    # Check if we should skip this step in resume mode
+    if [[ "${MSP_RESUME_MODE:-0}" == "1" ]]; then
+        local status
+        status="$(msp_state_get_step_status "pods_publish" 2>/dev/null || echo "unknown")"
+        if [[ "$status" == "success" || "$status" == "skipped" ]]; then
+            log_info "Resuming: skipping pods_publish (status already ${status})"
+            return 0
+        fi
+    fi
+    
     # Mark pods_publish step as running
     msp_state_mark_step_running "pods_publish"
     

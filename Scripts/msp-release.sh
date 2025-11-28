@@ -555,6 +555,16 @@ do_preflight() {
 do_run() {
     log_info "[CLI] run subcommand invoked"
     
+    # Scheme A: always reset state for a new 'run' invocation
+    local state_file="${ROOT_DIR}/.msp-release-state.json"
+    if [[ -f "$state_file" ]]; then
+        log_info "Resetting state file for fresh run"
+        rm -f "$state_file"
+    fi
+    
+    # Ensure MSP_RESUME_MODE is unset for normal runs
+    unset MSP_RESUME_MODE
+    
     # Load config (applies CLI overrides)
     load_release_config
     
@@ -766,11 +776,94 @@ do_rollback() {
 }
 
 do_resume() {
-    log_info "[CLI] resume subcommand invoked (no logic yet)"
-    log_warn "Command 'resume' is not yet implemented."
-    log_info "This will resume from the last successful checkpoint."
-    log_info "Requires state tracking (future phase)."
-    exit 0
+    log_title "MSP Release - Resume Last Run"
+    
+    # Check if state file exists
+    local state_file="${ROOT_DIR}/.msp-release-state.json"
+    if [[ ! -f "$state_file" ]]; then
+        log_error "No previous release run found. Cannot resume."
+        log_info "State file not found: $state_file"
+        log_info "Please run 'msp-release.sh run <VERSION>' first to start a release."
+        exit 1
+    fi
+    
+    # Set resume mode
+    export MSP_RESUME_MODE=1
+    
+    log_info "Resuming from previous release run"
+    log_info "State file: $state_file"
+    
+    # Load config (applies CLI overrides, but version should come from state)
+    load_release_config
+    
+    # Try to read version from state file if available
+    if command -v jq >/dev/null 2>&1; then
+        local state_version
+        state_version=$(jq -r '.version // empty' "$state_file" 2>/dev/null || echo "")
+        if [[ -n "$state_version" && "$state_version" != "unknown" ]]; then
+            export RELEASE_VERSION="$state_version"
+            log_info "Resuming release for version: $RELEASE_VERSION"
+        fi
+    fi
+    
+    # If version is still not set, try to get it from remaining args or config
+    if [[ -z "${RELEASE_VERSION:-}" ]]; then
+        if [[ ${#REMAINING_ARGS[@]} -gt 0 && ! "${REMAINING_ARGS[0]}" =~ ^- ]]; then
+            CLI_VERSION="${REMAINING_ARGS[0]}"
+            REMAINING_ARGS=("${REMAINING_ARGS[@]:1}")
+            if [[ "$CONFIG_MODULE_LOADED" == "true" ]]; then
+                set_config_version "$CLI_VERSION"
+            fi
+        fi
+        
+        if [[ -n "$CLI_VERSION" ]]; then
+            export RELEASE_VERSION="$CLI_VERSION"
+            apply_cli_overrides
+        fi
+    fi
+    
+    # Check if version is set
+    if [[ -z "${RELEASE_VERSION:-}" ]]; then
+        log_error "VERSION is required for 'resume' command"
+        log_info "Usage: msp-release.sh resume [VERSION] [OPTIONS]"
+        log_info "   or: msp-release.sh resume --config <file>  (with version in config)"
+        log_info "Note: Version will be read from state file if not provided"
+        exit 1
+    fi
+    
+    # Run preflight checks (unless skipped) - will skip if already successful in resume mode
+    if [[ "${SKIP_PREFLIGHT:-false}" != "true" ]]; then
+        log_info "Running preflight checks (will skip if already successful)"
+        
+        local PRE_SCRIPT="$ROOT_DIR/Scripts/release/preflight/preflight.sh"
+        if [[ ! -f "$PRE_SCRIPT" ]]; then
+            log_error "Preflight script not found at $PRE_SCRIPT"
+            return 1
+        fi
+        
+        # shellcheck source=Scripts/release/preflight/preflight.sh
+        source "$PRE_SCRIPT"
+        
+        if ! preflight_static; then
+            log_error "Static preflight failed. Aborting resume"
+            return 1
+        fi
+        
+        if ! preflight_build; then
+            log_error "Build preflight failed. Aborting resume"
+            return 1
+        fi
+        
+        log_success "Preflight checks passed"
+    else
+        log_warn "Skipping preflight due to --skip-preflight flag"
+    fi
+    
+    # Delegate to modular.sh (same as run, but with MSP_RESUME_MODE=1)
+    log_info "Delegating to: $MODULAR_SCRIPT"
+    log_info "Arguments: $RELEASE_VERSION ${REMAINING_ARGS[*]:-}"
+    
+    exec "$MODULAR_SCRIPT" "$RELEASE_VERSION" ${REMAINING_ARGS[@]+"${REMAINING_ARGS[@]}"}
 }
 
 # ============================================================================

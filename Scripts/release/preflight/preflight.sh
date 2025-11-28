@@ -10,9 +10,35 @@ source "$ROOT_DIR/Scripts/lib/release-common.sh"
 source "$SCRIPT_DIR/../utils/state.sh"
 
 # ============================================================================
+# Resume Helper
+# ============================================================================
+_msp_preflight_should_skip_step() {
+    local step="$1"
+    
+    if [[ "${MSP_RESUME_MODE:-0}" != "1" ]]; then
+        return 1
+    fi
+    
+    local status
+    status="$(msp_state_get_step_status "$step" 2>/dev/null || echo "unknown")"
+    
+    if [[ "$status" == "success" || "$status" == "skipped" ]]; then
+        return 0
+    fi
+    
+    return 1
+}
+
+# ============================================================================
 # Preflight Static Checks (Fast, No Builds)
 # ============================================================================
 preflight_static() {
+    # Check if we should skip this step in resume mode
+    if _msp_preflight_should_skip_step "preflight_static"; then
+        log_info "Resuming: skipping preflight_static (status already success/skipped)"
+        return 0
+    fi
+    
     msp_state_mark_step_running "preflight_static"
     
     log_section "Preflight (Static Checks)"
@@ -154,6 +180,12 @@ preflight_static() {
 # Preflight Build Checks (Slow, With Round-trip/Build Validation)
 # ============================================================================
 preflight_build() {
+    # Check if we should skip this step in resume mode
+    if _msp_preflight_should_skip_step "preflight_build"; then
+        log_info "Resuming: skipping preflight_build (status already success/skipped)"
+        return 0
+    fi
+    
     msp_state_mark_step_running "preflight_build"
     
     log_section "Preflight (Build / Round-trip Checks)"

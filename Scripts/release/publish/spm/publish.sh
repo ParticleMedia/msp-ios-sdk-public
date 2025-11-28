@@ -216,8 +216,34 @@ create_spm_tag() {
     log_success "Created tag: $tag_name"
 }
 
+# ============================================================================
+# Resume Helper
+# ============================================================================
+_msp_spm_should_skip_step() {
+    local step="$1"
+    
+    if [[ "${MSP_RESUME_MODE:-0}" != "1" ]]; then
+        return 1
+    fi
+    
+    local status
+    status="$(msp_state_get_step_status "$step" 2>/dev/null || echo "unknown")"
+    
+    if [[ "$status" == "success" || "$status" == "skipped" ]]; then
+        return 0
+    fi
+    
+    return 1
+}
+
 # SPM Local Build Validation
 spm_local_validation() {
+    # Check if we should skip this step in resume mode
+    if _msp_spm_should_skip_step "spm_local_validation"; then
+        log_info "Resuming: skipping spm_local_validation (status already success/skipped)"
+        return 0
+    fi
+    
     msp_state_mark_step_running "spm_local_validation"
     
     log_section "SPM Local Build Validation"
@@ -481,6 +507,12 @@ main() {
     
     # Record start time for duration calculation
     local start_time=$(date +%s)
+    
+    # Check if we should skip this step in resume mode
+    if _msp_spm_should_skip_step "spm_publish"; then
+        log_info "Resuming: skipping spm_publish (status already success/skipped)"
+        return 0
+    fi
     
     # Mark spm_publish step as running
     msp_state_mark_step_running "spm_publish"

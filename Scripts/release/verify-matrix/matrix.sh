@@ -23,6 +23,17 @@ source "$SCRIPT_DIR/../utils/state.sh"
 
 # Initialize state for verify-matrix
 msp_state_init "verify_matrix"
+
+# Check if we should skip this step in resume mode
+if [[ "${MSP_RESUME_MODE:-0}" == "1" ]]; then
+    local status
+    status="$(msp_state_get_step_status "verify_matrix" 2>/dev/null || echo "unknown")"
+    if [[ "$status" == "success" || "$status" == "skipped" ]]; then
+        log_info "Resuming: skipping verify_matrix (status already ${status})"
+        exit 0
+    fi
+fi
+
 msp_state_mark_step_running "verify_matrix"
 
 log_section "MSP Release Verification Matrix"
