@@ -213,6 +213,181 @@ create_spm_tag() {
     log_success "Created tag: $tag_name"
 }
 
+# SPM Local Build Validation
+spm_local_validation() {
+    log_section "SPM Local Build Validation"
+    
+    # DRY_RUN shortcut
+    if [[ "$DRY_RUN" == "true" ]] || [[ "$DRY_RUN" == "1" ]]; then
+        log_info "[DRY_RUN] Skipping SPM local build validation"
+        return 0
+    fi
+    
+    # Get SPM product name with fallback
+    local spm_product_name="${SPM_REMOTE_PRODUCT_NAME:-MSPAds}"
+    
+    # Create temp directory
+    log_step "Creating temporary test package"
+    local SPM_LOCAL_TMPDIR
+    SPM_LOCAL_TMPDIR="$(mktemp -d -t msp_spm_local_XXXXXX)"
+    if [[ ! -d "$SPM_LOCAL_TMPDIR" ]]; then
+        log_error "Failed to create temporary directory"
+        return 1
+    fi
+    
+    # Cleanup function
+    local cleanup_on_exit=true
+    if [[ "${DEBUG:-false}" == "true" ]] || [[ "${VERBOSE:-false}" == "true" ]]; then
+        cleanup_on_exit=false
+        log_info "DEBUG/VERBOSE mode: keeping test directory at $SPM_LOCAL_TMPDIR"
+    fi
+    
+    cleanup_temp_dir() {
+        if [[ "$cleanup_on_exit" == "true" ]]; then
+            log_step "Cleaning up temporary directory"
+            rm -rf "$SPM_LOCAL_TMPDIR" 2>/dev/null || true
+        fi
+    }
+    
+    trap cleanup_temp_dir EXIT
+    
+    cd "$SPM_LOCAL_TMPDIR" || {
+        log_error "Failed to change to temporary directory"
+        return 1
+    }
+    
+    # Initialize minimal SwiftPM executable package
+    log_step "Initializing SwiftPM test package"
+    if ! swift package init --type executable --name MSP_SPMLocalTest 2>&1; then
+        log_error "Failed to initialize Swift package"
+        return 1
+    fi
+    
+    log_success "Swift package initialized"
+    
+    # Get absolute path to repo Package.swift
+    local repo_package_swift="$ROOT_DIR/Package.swift"
+    if [[ ! -f "$repo_package_swift" ]]; then
+        log_error "Package.swift not found at $repo_package_swift"
+        log_error "SPM local validation requires Package.swift to be generated first"
+        return 1
+    fi
+    
+    local repo_abs_path
+    repo_abs_path="$(cd "$ROOT_DIR" && pwd)"
+    
+    # Create test Package.swift that depends on local repo Package.swift
+    log_step "Creating test Package.swift with local dependency"
+    local test_package_swift="$SPM_LOCAL_TMPDIR/Package.swift"
+    
+    cat > "$test_package_swift" << EOF
+// swift-tools-version: 5.9
+import PackageDescription
+
+let package = Package(
+    name: "MSP_SPMLocalTest",
+    dependencies: [
+        .package(path: "$repo_abs_path")
+    ],
+    targets: [
+        .executableTarget(
+            name: "MSP_SPMLocalTest",
+            dependencies: [
+                .product(name: "$spm_product_name", package: "msp-ios-sdk")
+            ]
+        )
+    ]
+)
+EOF
+    
+    log_info "Test Package.swift created with dependency on: $repo_abs_path"
+    
+    # Update main.swift to import the product
+    log_step "Updating main.swift to import SPM product"
+    local main_swift="$SPM_LOCAL_TMPDIR/Sources/MSP_SPMLocalTest/main.swift"
+    if [[ -f "$main_swift" ]]; then
+        cat > "$main_swift" << EOF
+import Foundation
+import ${spm_product_name}
+
+print("MSP SPM Local Validation Test")
+print("If you see this, the local build succeeded.")
+EOF
+        log_info "main.swift updated with import: $spm_product_name"
+    fi
+    
+    # Run swift package resolve
+    log_step "Resolving Swift package dependencies"
+    local resolve_output
+    local resolve_exit_code
+    
+    if [[ "$VERBOSE" == "true" ]]; then
+        if swift package resolve 2>&1; then
+            resolve_exit_code=0
+        else
+            resolve_exit_code=$?
+        fi
+    else
+        resolve_output=$(swift package resolve 2>&1)
+        resolve_exit_code=$?
+    fi
+    
+    if [[ $resolve_exit_code -ne 0 ]]; then
+        log_error "swift package resolve failed (exit code: $resolve_exit_code)"
+        if [[ "$VERBOSE" != "true" && -n "$resolve_output" ]]; then
+            log_info "Resolve output (last 20 lines):"
+            echo "$resolve_output" | tail -20 | sed 's/^/  /'
+        fi
+        return 1
+    fi
+    
+    log_success "Swift package resolved successfully"
+    
+    # Run swift build -c release
+    log_step "Building Swift package (release configuration)"
+    local build_output
+    local build_exit_code
+    
+    if [[ "$VERBOSE" == "true" ]]; then
+        if swift build -c release 2>&1; then
+            build_exit_code=0
+        else
+            build_exit_code=$?
+        fi
+    else
+        build_output=$(swift build -c release 2>&1)
+        build_exit_code=$?
+    fi
+    
+    if [[ $build_exit_code -ne 0 ]]; then
+        log_error "swift build failed (exit code: $build_exit_code)"
+        if [[ "$VERBOSE" != "true" && -n "$build_output" ]]; then
+            log_info "Build output (last 20 lines):"
+            echo "$build_output" | tail -20 | sed 's/^/  /'
+        fi
+        log_error "SPM Local Build Validation Failed"
+        return 1
+    fi
+    
+    log_success "Swift package built successfully"
+    
+    # Produce summary
+    ui_divider
+    log_success "SPM Local Build Validation Summary"
+    ui_kv "Temp Directory" "$SPM_LOCAL_TMPDIR"
+    ui_kv "SPM Product" "$spm_product_name"
+    ui_kv "Status" "Success"
+    ui_divider
+    
+    # Disable cleanup if we got here successfully (for inspection)
+    if [[ "${KEEP_VERIFY_ARTIFACTS:-false}" == "true" ]]; then
+        cleanup_on_exit=false
+        log_info "Artifacts kept at: $SPM_LOCAL_TMPDIR"
+    fi
+    
+    return 0
+}
+
 # Push tags to remote
 push_spm_tags() {
     log_step "Pushing SPM tags to remote"
@@ -327,6 +502,15 @@ main() {
         fi
     done
     
+    # Run local SPM build validation
+    log_step "Running local SPM build validation"
+    if ! spm_local_validation; then
+        log_error "Local SPM validation failed — aborting SPM release"
+        if [[ "$DRY_RUN" != "true" ]]; then
+            notify_release_failure "SPM" "$VERSION" "Local SPM build validation failed" "Local Validation"
+        fi
+        return 1
+    fi
     
     # Push all tags
     if push_spm_tags; then
