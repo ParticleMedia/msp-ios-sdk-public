@@ -79,6 +79,8 @@ init_config_defaults() {
     
     # Verification settings
     CONFIG_VERIFY_SPM_STRICT="true"
+    CONFIG_VERIFY_MATRIX_DEFAULT_VERSION="1.0.0"
+    CONFIG_VERIFY_MATRIX_VERSION=""
     
     CONFIG_FILE_PATH=""
 }
@@ -251,6 +253,9 @@ load_config() {
                                 CONFIG_VERIFY_SPM_STRICT="false"
                             fi
                             ;;
+                        matrix_default_version)
+                            CONFIG_VERIFY_MATRIX_VERSION="$value"
+                            ;;
                     esac
                     ;;
             esac
@@ -337,6 +342,10 @@ get_config_spm_remote_product_name() {
 
 get_config_verify_spm_strict() {
     echo "$CONFIG_VERIFY_SPM_STRICT"
+}
+
+get_config_verify_matrix_version() {
+    echo "${CONFIG_VERIFY_MATRIX_VERSION:-$CONFIG_VERIFY_MATRIX_DEFAULT_VERSION}"
 }
 
 # ============================================================================
@@ -455,7 +464,7 @@ export -f get_config_pods_modules get_config_spm_packages
 export -f get_config_slack_channel get_config_dm_on_failure
 export -f get_config_pods_remote_url get_config_pods_remote_primary_product
 export -f get_config_spm_remote_url get_config_spm_remote_product_name
-export -f get_config_verify_spm_strict
+export -f get_config_verify_spm_strict get_config_verify_matrix_version
 export -f set_config_version set_config_release_branch set_config_base_branch
 export -f set_config_pods_enabled set_config_spm_enabled
 export -f set_config_pods_modules set_config_spm_packages

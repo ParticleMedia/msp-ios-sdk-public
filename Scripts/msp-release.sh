@@ -67,6 +67,7 @@ readonly SUBCOMMANDS=(
     "pods"
     "spm"
     "verify"
+    "verify-matrix"
     "rollback"
     "resume"
 )
@@ -382,6 +383,7 @@ COMMANDS:
     pods <VERSION>    Execute CocoaPods release only
     spm <VERSION>     Execute SPM release only
     verify <VERSION>  Verify a released version (post-release validation)
+    verify-matrix     Run full verification matrix (all test cases)
     rollback          Rollback a failed release
     resume            Resume from last checkpoint
 
@@ -725,6 +727,34 @@ do_verify() {
     return 0
 }
 
+do_verify_matrix() {
+    log_title "MSP Release Verification Matrix"
+    
+    # Load config (applies CLI overrides)
+    load_release_config
+    
+    # Get matrix script path
+    local MATRIX_SCRIPT="$ROOT_DIR/Scripts/release/verify-matrix/matrix.sh"
+    if [[ ! -f "$MATRIX_SCRIPT" ]]; then
+        log_error "Verification matrix script not found at $MATRIX_SCRIPT"
+        return 1
+    fi
+    
+    # Pass through environment variables
+    export DRY_RUN="${DRY_RUN:-false}"
+    export VERBOSE="${VERBOSE:-false}"
+    export NO_ANSI="${NO_ANSI:-false}"
+    
+    # Run matrix script
+    if bash "$MATRIX_SCRIPT"; then
+        log_success "Verification matrix completed successfully"
+        return 0
+    else
+        log_error "Verification matrix failed"
+        return 1
+    fi
+}
+
 do_rollback() {
     log_info "[CLI] rollback subcommand invoked (no logic yet)"
     log_warn "Command 'rollback' is not yet implemented."
@@ -771,6 +801,9 @@ dispatch_subcommand() {
             ;;
         verify)
             do_verify
+            ;;
+        verify-matrix)
+            do_verify_matrix
             ;;
         rollback)
             do_rollback

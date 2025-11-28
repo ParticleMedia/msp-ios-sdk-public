@@ -217,6 +217,10 @@ verify:
   # true  = fail → stop publishing (recommended, default)
   # false = fail → warning only (legacy behavior)
   spm_strict: true
+  
+  # Default version to use for verification matrix tests
+  # This version is used when running verify-matrix command
+  matrix_default_version: "1.0.0"
 
 # ═══════════════════════════════════════════════════════════════════════════
 # NOTIFICATION CONFIGURATION

@@ -174,3 +174,6 @@ Examples/MSPDemoApp/MSPDemoApp/Info.plist
 
 # Root workspace symlink (points to .generated/msp-ios-sdk.xcworkspace)
 msp-ios-sdk.xcworkspace
+
+# Verification matrix outputs (auto-generated)
+verification_matrix/

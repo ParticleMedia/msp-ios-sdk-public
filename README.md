@@ -427,7 +427,105 @@ Defaults ensure verification always works even with minimal config:
 
 ---
 
-## 12. Contact
+## 12. Verification Matrix
+
+The verification matrix system provides automated testing of the MSP release verification system across multiple scenarios.
+
+### Purpose
+
+The verification matrix tests various combinations of:
+- `DRY_RUN` mode (enabled/disabled)
+- `VERIFY_SPM_STRICT` behavior (strict/soft mode)
+- `SPM_REMOTE_URL` presence (set/unset/invalid)
+- Pods-only and SPM-only configurations
+
+### How to Run
+
+Run the full verification matrix:
+
+```bash
+./Scripts/msp-release.sh verify-matrix
+```
+
+Or run the matrix script directly:
+
+```bash
+./Scripts/release/verify-matrix/matrix.sh
+```
+
+### Output Structure
+
+Results are stored under `verification_matrix/run-<timestamp>/`:
+
+```
+verification_matrix/
+└── run-20251128_160000/
+    ├── case-A1/
+    │   └── output.log
+    ├── case-B2/
+    │   └── output.log
+    └── summary.json
+```
+
+The `summary.json` file contains machine-readable results:
+
+```json
+{
+  "timestamp": "2025-11-28T16:00:00Z",
+  "cases": {
+    "A1": { "status": "success", "exit_code": 0 },
+    "B2": { "status": "failed", "exit_code": 1 }
+  }
+}
+```
+
+### Strict vs Non-Strict Behavior
+
+- **Strict mode (default)**: SPM remote verification failures block the release
+- **Non-strict mode**: SPM remote verification failures are logged as warnings but do not block the release
+
+Configure via `release.yaml`:
+
+```yaml
+verify:
+  spm_strict: true   # or false for non-strict
+```
+
+### Overriding Test Parameters
+
+You can override environment variables for specific test scenarios:
+
+```bash
+DRY_RUN=1 VERIFY_SPM_STRICT=false SPM_REMOTE_URL="https://example.com" \
+  ./Scripts/msp-release.sh verify-matrix
+```
+
+### CI Usage Examples
+
+```bash
+# Run matrix in CI
+./Scripts/msp-release.sh verify-matrix
+
+# Check exit code
+if [[ $? -ne 0 ]]; then
+  echo "Verification matrix failed"
+  exit 1
+fi
+```
+
+### Generating Test Cases
+
+To regenerate all test case scripts:
+
+```bash
+./Scripts/release/verify-matrix/generate_cases.sh
+```
+
+This will create 15 test cases covering all combinations of DRY_RUN, VERIFY_SPM_STRICT, and SPM_REMOTE_URL settings.
+
+---
+
+## 13. Contact
 
 **Email:** pengyu.gou@newsbreak.com  
 **GitHub Issues:** [msp-ios-sdk-public](https://github.com/ParticleMedia/msp-ios-sdk-public/issues)
