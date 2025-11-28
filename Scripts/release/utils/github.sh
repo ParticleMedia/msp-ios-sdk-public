@@ -36,6 +36,12 @@ if [[ -f "$ROOT_DIR/Scripts/lib/logging.sh" ]]; then
     source "$ROOT_DIR/Scripts/lib/logging.sh" 2>/dev/null || true
 fi
 
+# Load release state utilities
+if [[ -f "$SCRIPT_DIR/state.sh" ]]; then
+    # shellcheck source=Scripts/release/utils/state.sh
+    source "$SCRIPT_DIR/state.sh" 2>/dev/null || true
+fi
+
 # Fallback logging functions if UI system not available
 if ! command -v log_info &>/dev/null; then
     : "${RED:=[0;31m}"
@@ -147,6 +153,16 @@ github_create_release() {
     
     if "${gh_cmd[@]}" 2>/dev/null; then
         log_success "Created GitHub release: $tag"
+        
+        # Track GitHub release creation in state
+        if command -v msp_state_mark_git_flag &>/dev/null; then
+            msp_state_mark_git_flag "github_release_created" true
+            if command -v msp_state_set_tag_name &>/dev/null; then
+                # Ensure tag_name is set if not already set
+                msp_state_set_tag_name "$tag"
+            fi
+        fi
+        
         return 0
     else
         log_error "Failed to create GitHub release: $tag"

@@ -36,6 +36,12 @@ if [[ -f "$ROOT_DIR/Scripts/lib/logging.sh" ]]; then
     source "$ROOT_DIR/Scripts/lib/logging.sh" 2>/dev/null || true
 fi
 
+# Load release state utilities
+if [[ -f "$SCRIPT_DIR/state.sh" ]]; then
+    # shellcheck source=Scripts/release/utils/state.sh
+    source "$SCRIPT_DIR/state.sh" 2>/dev/null || true
+fi
+
 # Fallback logging functions if UI system not available
 if ! command -v log_info &>/dev/null; then
     : "${RED:=\033[0;31m}"
@@ -217,6 +223,15 @@ create_tag() {
     
     if git tag -a "$tag_name" -m "$message" 2>/dev/null; then
         log_success "Created tag $tag_name"
+        
+        # Track tag creation in state
+        if command -v msp_state_mark_git_flag &>/dev/null; then
+            msp_state_mark_git_flag "tag_created" true
+            if command -v msp_state_set_tag_name &>/dev/null; then
+                msp_state_set_tag_name "$tag_name"
+            fi
+        fi
+        
         return 0
     else
         log_error "Failed to create tag $tag_name"

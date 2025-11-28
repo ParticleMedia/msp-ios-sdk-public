@@ -391,6 +391,28 @@ msp_state_touch() {
     return 0
 }
 
+# Set tag name in state
+msp_state_set_tag_name() {
+    local name="$1"
+
+    if ! msp_state_is_enabled; then
+        return 0
+    fi
+
+    local path
+    path="$(msp_state_file_path)"
+
+    [[ -f "$path" ]] || return 0
+
+    # Escape name for JSON
+    local name_json
+    name_json=$(printf '%s' "$name" | jq -Rs .)
+
+    _msp_state_update_json ".git.tag_name = $name_json | .timestamps.updated_at = \"$(_msp_state_now)\"" || return 0
+
+    return 0
+}
+
 # ============================================================================
 # Export Functions
 # ============================================================================
@@ -404,3 +426,4 @@ export -f msp_state_mark_step_skipped
 export -f msp_state_get_step_status
 export -f msp_state_mark_git_flag
 export -f msp_state_touch
+export -f msp_state_set_tag_name

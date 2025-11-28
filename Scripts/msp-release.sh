@@ -766,13 +766,124 @@ do_verify_matrix() {
 }
 
 do_rollback() {
-    log_info "[CLI] rollback subcommand invoked (no logic yet)"
-    log_warn "Command 'rollback' is not yet implemented."
-    log_info "This will:"
-    log_info "  - Delete release tags"
-    log_info "  - Delete GitHub releases"
-    log_info "  - Unpublish pods (if possible)"
-    exit 0
+    log_title "MSP Release - Rollback Plan"
+    
+    # Parse rollback-specific flags
+    MSP_ROLLBACK_FORCE=0
+    
+    local remaining_rollback_args=()
+    for arg in "${REMAINING_ARGS[@]}"; do
+        case "$arg" in
+            --force)
+                MSP_ROLLBACK_FORCE=1
+                ;;
+            --no-ansi)
+                NO_ANSI=true
+                export NO_ANSI
+                ;;
+            *)
+                remaining_rollback_args+=("$arg")
+                ;;
+        esac
+    done
+    
+    export MSP_ROLLBACK_FORCE
+    
+    # Delegate to rollback handler
+    run_msp_rollback
+    exit $?
+}
+
+# Rollback handler function
+run_msp_rollback() {
+    # Determine repo root and state file
+    local state_file="${ROOT_DIR}/.msp-release-state.json"
+    
+    if [[ ! -f "$state_file" ]]; then
+        log_error "No .msp-release-state.json found. Nothing to roll back."
+        log_info "State file not found: $state_file"
+        log_info "Please run 'msp-release.sh run <VERSION>' first to start a release."
+        return 1
+    fi
+    
+    # Use jq (if available) to read the state
+    if ! command -v jq >/dev/null 2>&1; then
+        log_error "jq is required to inspect rollback state."
+        log_info "Please install jq to use the rollback command."
+        return 1
+    fi
+    
+    # Extract relevant fields
+    local version release_branch tag_created tag_name branch_pushed gh_release_created
+    
+    version="$(jq -r '.version // "unknown"' "$state_file" 2>/dev/null || echo "unknown")"
+    release_branch="$(jq -r '.release_branch // "unknown"' "$state_file" 2>/dev/null || echo "unknown")"
+    tag_created="$(jq -r '.git.tag_created // false' "$state_file" 2>/dev/null || echo "false")"
+    tag_name="$(jq -r '.git.tag_name // empty' "$state_file" 2>/dev/null || echo "")"
+    branch_pushed="$(jq -r '.git.release_branch_pushed // false' "$state_file" 2>/dev/null || echo "false")"
+    gh_release_created="$(jq -r '.git.github_release_created // false' "$state_file" 2>/dev/null || echo "false")"
+    
+    # Print a clear rollback plan
+    log_section "MSP Rollback Plan"
+    ui_kv "Version" "${version}"
+    ui_kv "Release branch" "${release_branch}"
+    ui_kv "Git tag" "${tag_name:-<none>}"
+    echo ""
+    
+    log_section "Planned Actions"
+    
+    if [[ "$tag_created" == "true" ]]; then
+        if [[ -n "$tag_name" && "$tag_name" != "null" && "$tag_name" != "" ]]; then
+            log_info "- Would delete local git tag: ${tag_name}"
+            log_info "- Would delete remote git tag: ${tag_name}"
+        else
+            log_info "- Git tag was created but tag name is not recorded"
+            log_info "- Would attempt to identify and delete tags for version: ${version}"
+        fi
+    else
+        log_info "- No git tag recorded as created"
+    fi
+    
+    echo ""
+    
+    if [[ "$branch_pushed" == "true" ]]; then
+        if [[ "$release_branch" != "unknown" && "$release_branch" != "null" && -n "$release_branch" ]]; then
+            log_info "- Would delete remote release branch: ${release_branch}"
+        else
+            log_info "- Release branch was pushed but branch name is not recorded"
+        fi
+    else
+        log_info "- No release branch recorded as pushed"
+    fi
+    
+    echo ""
+    
+    if [[ "$gh_release_created" == "true" ]]; then
+        if [[ -n "$tag_name" && "$tag_name" != "null" && "$tag_name" != "" ]]; then
+            log_info "- Would delete GitHub Release associated with tag: ${tag_name}"
+        elif [[ "$version" != "unknown" ]]; then
+            log_info "- Would delete GitHub Release associated with version: ${version}"
+        else
+            log_info "- GitHub Release was created but tag/version is not recorded"
+        fi
+    else
+        log_info "- No GitHub Release recorded as created"
+    fi
+    
+    echo ""
+    log_section "CocoaPods Considerations"
+    log_info "- CocoaPods trunk does not support automatic unpublish"
+    log_info "- Manual remediation may be required (e.g., publish a new version)"
+    echo ""
+    
+    if [[ "${MSP_ROLLBACK_FORCE:-0}" == "1" ]]; then
+        log_warn "NOTE: --force was specified, but destructive rollback operations are not implemented yet (Step 4.3.2)"
+        log_warn "      This run is a dry plan only; no changes have been made"
+    else
+        log_info "No changes have been made. Re-run with --force once destructive rollback is implemented"
+    fi
+    
+    return 0
 }
 
 do_resume() {

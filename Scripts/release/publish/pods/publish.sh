@@ -297,18 +297,37 @@ create_github_release_for_pod() {
     fi
     
     # Create or update GitHub release
+    local gh_release_created=false
     if gh release view "$version" --repo "ParticleMedia/msp-ios-sdk-public" &>/dev/null; then
         log_info "Release $version already exists, uploading assets"
-        gh release upload "$version" "$zip_name" --repo "ParticleMedia/msp-ios-sdk-public" --clobber
+        if gh release upload "$version" "$zip_name" --repo "ParticleMedia/msp-ios-sdk-public" --clobber; then
+            gh_release_created=true
+        fi
     else
         log_info "Creating new release $version"
-        gh release create "$version" "$zip_name" --repo "ParticleMedia/msp-ios-sdk-public" --title "Release $version" --notes "Release $version"
+        if gh release create "$version" "$zip_name" --repo "ParticleMedia/msp-ios-sdk-public" --title "Release $version" --notes "Release $version"; then
+            gh_release_created=true
+        fi
     fi
     
     # Clean up zip file
     rm -f "$zip_name"
     
-    log_success "GitHub release created for $pod"
+    if [[ "$gh_release_created" == "true" ]]; then
+        log_success "GitHub release created for $pod"
+        
+        # Track GitHub release creation in state
+        if command -v msp_state_mark_git_flag &>/dev/null; then
+            msp_state_mark_git_flag "github_release_created" true
+            if command -v msp_state_set_tag_name &>/dev/null; then
+                # Ensure tag_name is set if not already set
+                msp_state_set_tag_name "$version"
+            fi
+        fi
+    else
+        log_error "Failed to create/update GitHub release for $pod"
+        return 1
+    fi
 }
 
 # Publish pod to CocoaPods

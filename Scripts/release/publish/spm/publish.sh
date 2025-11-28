@@ -211,9 +211,21 @@ create_spm_tag() {
     fi
     
     # Create tag
-    git tag "$tag_name"
-    
-    log_success "Created tag: $tag_name"
+    if git tag "$tag_name"; then
+        log_success "Created tag: $tag_name"
+        
+        # Track tag creation in state
+        if command -v msp_state_mark_git_flag &>/dev/null; then
+            msp_state_mark_git_flag "tag_created" true
+            if command -v msp_state_set_tag_name &>/dev/null; then
+                # Track the last tag created (SPM may create multiple tags)
+                msp_state_set_tag_name "$tag_name"
+            fi
+        fi
+    else
+        log_error "Failed to create tag: $tag_name"
+        return 1
+    fi
 }
 
 # ============================================================================

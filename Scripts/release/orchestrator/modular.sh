@@ -383,6 +383,11 @@ push_release_branch() {
     if git push origin "$RELEASE_BRANCH"; then
         log_success "Release branch pushed successfully"
         GITHUB_RELEASES_SUCCESS+=("Release branch $RELEASE_BRANCH")
+        
+        # Track release branch push in state
+        if command -v msp_state_mark_git_flag &>/dev/null; then
+            msp_state_mark_git_flag "release_branch_pushed" true
+        fi
     else
         log_error "Failed to push release branch"
         OVERALL_SUCCESS="false"
