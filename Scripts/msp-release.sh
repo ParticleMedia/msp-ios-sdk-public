@@ -505,15 +505,44 @@ do_config() {
 }
 
 do_preflight() {
-    log_info "[CLI] preflight subcommand invoked (no logic yet)"
-    log_warn "Command 'preflight' is not yet implemented."
-    log_info "This will validate:"
-    log_info "  - Git state (clean working tree, correct branch)"
-    log_info "  - Podspec validation (lint all podspecs)"
-    log_info "  - XCFramework coherence (ThirdParty matches Pods)"
-    log_info "  - Package.swift validity"
-    log_info "  - Credentials availability (gh, pod trunk)"
-    exit 0
+    log_section "MSP Release - Preflight"
+    
+    # Load config (applies CLI overrides)
+    load_release_config
+    
+    # Get version from remaining args or config (for validation)
+    if [[ -n "${REMAINING_ARGS:-}" ]] && [[ ${#REMAINING_ARGS[@]} -gt 0 ]] && [[ ! "${REMAINING_ARGS[0]}" =~ ^- ]]; then
+        CLI_VERSION="${REMAINING_ARGS[0]}"
+        if [[ "$CONFIG_MODULE_LOADED" == "true" ]]; then
+            set_config_version "$CLI_VERSION"
+        fi
+        export RELEASE_VERSION="$CLI_VERSION"
+        apply_cli_overrides
+    fi
+    
+    # Load preflight script
+    local PRE_SCRIPT="$ROOT_DIR/Scripts/release/preflight.sh"
+    if [[ ! -f "$PRE_SCRIPT" ]]; then
+        log_error "Preflight script not found at $PRE_SCRIPT"
+        return 1
+    fi
+    
+    # shellcheck source=Scripts/release/preflight.sh
+    source "$PRE_SCRIPT"
+    
+    # Run preflight checks
+    if ! preflight_static; then
+        log_error "Static preflight failed"
+        return 1
+    fi
+    
+    if ! preflight_build; then
+        log_error "Build preflight failed"
+        return 1
+    fi
+    
+    log_success "All preflight checks passed"
+    return 0
 }
 
 do_run() {
@@ -543,6 +572,34 @@ do_run() {
         log_info "Usage: msp-release.sh run <VERSION> [OPTIONS]"
         log_info "   or: msp-release.sh run --config <file>  (with version in config)"
         exit 1
+    fi
+    
+    # Run preflight checks (unless skipped)
+    if [[ "${SKIP_PREFLIGHT:-false}" != "true" ]]; then
+        log_info "Running preflight checks (use --skip-preflight to disable)"
+        
+        local PRE_SCRIPT="$ROOT_DIR/Scripts/release/preflight.sh"
+        if [[ ! -f "$PRE_SCRIPT" ]]; then
+            log_error "Preflight script not found at $PRE_SCRIPT"
+            return 1
+        fi
+        
+        # shellcheck source=Scripts/release/preflight.sh
+        source "$PRE_SCRIPT"
+        
+        if ! preflight_static; then
+            log_error "Static preflight failed. Aborting release"
+            return 1
+        fi
+        
+        if ! preflight_build; then
+            log_error "Build preflight failed. Aborting release"
+            return 1
+        fi
+        
+        log_success "Preflight checks passed"
+    else
+        log_warn "Skipping preflight due to --skip-preflight flag"
     fi
     
     # For now, delegate to modular.sh (backward compatibility)
