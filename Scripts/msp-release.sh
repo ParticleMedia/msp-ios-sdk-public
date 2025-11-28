@@ -682,12 +682,42 @@ do_spm() {
 }
 
 do_verify() {
-    log_info "[CLI] verify subcommand invoked (no logic yet)"
-    log_warn "Command 'verify' is not yet implemented."
-    log_info "This will verify that a release is installable via:"
-    log_info "  - pod 'MSPCore', '~> <VERSION>'"
-    log_info "  - .package(url: \"...\", from: \"<VERSION>\")"
-    exit 0
+    # Load config (applies CLI overrides)
+    load_release_config
+    
+    # Get version from remaining args or config
+    local version="${RELEASE_VERSION:-}"
+    if [[ -n "${REMAINING_ARGS:-}" ]] && [[ ${#REMAINING_ARGS[@]} -gt 0 ]] && [[ -n "${REMAINING_ARGS[0]:-}" ]] && [[ ! "${REMAINING_ARGS[0]}" =~ ^- ]]; then
+        version="${REMAINING_ARGS[0]}"
+        export RELEASE_VERSION="$version"
+        apply_cli_overrides
+    fi
+    
+    if [[ -z "$version" ]]; then
+        log_error "Missing version for verify"
+        log_info "Usage: msp-release.sh verify <VERSION> [OPTIONS]"
+        log_info "   or: msp-release.sh verify --config <file>  (with version in config)"
+        exit 1
+    fi
+    
+    # Load verify script
+    local VERIFY_SCRIPT="$ROOT_DIR/Scripts/release/verify.sh"
+    if [[ ! -f "$VERIFY_SCRIPT" ]]; then
+        log_error "Verify script not found at $VERIFY_SCRIPT"
+        return 1
+    fi
+    
+    # shellcheck source=Scripts/release/verify.sh
+    source "$VERIFY_SCRIPT"
+    
+    log_title "Verifying Remote Release (Pods + SPM placeholder)"
+    
+    if ! verify_main "$version"; then
+        log_error "Remote verification failed"
+        return 1
+    fi
+    
+    return 0
 }
 
 do_rollback() {
