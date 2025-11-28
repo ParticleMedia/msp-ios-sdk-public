@@ -291,7 +291,7 @@ fi
 log_title "Step 5: Swift Package Manager Build"
 
 log_step "Switching to SPM mode..."
-if [[ -x "$ROOT_DIR/Scripts/target-switching/switch-target.sh" ]]; then
+if [[ -x "$ROOT_DIR/Scripts/switch-target.sh" ]]; then
     "$ROOT_DIR/Scripts/switch-target.sh" spm || {
         log_error "switch-target.sh spm failed"
         ((FAILURES++)) || true
