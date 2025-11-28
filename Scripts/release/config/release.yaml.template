@@ -208,6 +208,17 @@ spm:
   remote_product_name: "MSPAds"
 
 # ═══════════════════════════════════════════════════════════════════════════
+# VERIFICATION SETTINGS
+# ═══════════════════════════════════════════════════════════════════════════
+# Configure verification behavior for release validation
+
+verify:
+  # Whether SPM remote verification failure should block release.
+  # true  = fail → stop publishing (recommended, default)
+  # false = fail → warning only (legacy behavior)
+  spm_strict: true
+
+# ═══════════════════════════════════════════════════════════════════════════
 # NOTIFICATION CONFIGURATION
 # ═══════════════════════════════════════════════════════════════════════════
 # Configure Slack notifications for release events

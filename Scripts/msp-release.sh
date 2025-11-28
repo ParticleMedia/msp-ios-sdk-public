@@ -336,6 +336,7 @@ load_release_config() {
     export PODS_REMOTE_PRIMARY_PRODUCT="$(get_config_pods_remote_primary_product)"
     export SPM_REMOTE_URL="$(get_config_spm_remote_url)"
     export SPM_REMOTE_PRODUCT_NAME="$(get_config_spm_remote_product_name)"
+    export VERIFY_SPM_STRICT="$(get_config_verify_spm_strict)"
     
     # Apply CLI overrides (CLI takes precedence)
     apply_cli_overrides

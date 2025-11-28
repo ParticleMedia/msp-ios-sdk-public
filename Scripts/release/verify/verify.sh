@@ -391,7 +391,15 @@ EOF
         log_info "  - Version $version is not yet available in the remote repository"
         log_info "  - Network connectivity issues"
         log_info "  - Invalid remote URL: $spm_remote_url"
-        return 1
+        
+        # Check strict mode
+        if [[ "${VERIFY_SPM_STRICT:-true}" == "true" ]]; then
+            log_error "SPM remote verification FAILED (strict mode). Blocking release."
+            return 1
+        else
+            log_warn "SPM remote verification failed (soft mode). Continuing."
+            return 0
+        fi
     fi
     
     log_success "Swift package resolved successfully"
@@ -423,7 +431,15 @@ EOF
         log_info "  - Build errors in the remote package"
         log_info "  - Incompatible Swift version"
         log_info "  - Missing dependencies"
-        return 1
+        
+        # Check strict mode
+        if [[ "${VERIFY_SPM_STRICT:-true}" == "true" ]]; then
+            log_error "SPM remote verification FAILED (strict mode). Blocking release."
+            return 1
+        else
+            log_warn "SPM remote verification failed (soft mode). Continuing."
+            return 0
+        fi
     fi
     
     log_success "Swift package built successfully"
@@ -472,13 +488,10 @@ verify_main() {
     
     echo ""
     
-    # 2: Verify SPM release (BEST-EFFORT)
-    # SPM verification is best-effort: failures don't block the release
+    # 2: Verify SPM release (strict by default, configurable)
     if ! verify_spm_remote "$version"; then
-        log_warn "SPM remote verify failed (best-effort). This DOES NOT block release yet."
-        log_info "SPM verification will be enforced in a future phase."
-    else
-        log_success "SPM remote verification passed"
+        log_error "SPM remote verification failed"
+        return 1
     fi
     
     log_success "Remote verification complete!"

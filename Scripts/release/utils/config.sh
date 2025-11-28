@@ -77,6 +77,9 @@ init_config_defaults() {
     CONFIG_SPM_REMOTE_URL=""
     CONFIG_SPM_REMOTE_PRODUCT_NAME="MSPAds"
     
+    # Verification settings
+    CONFIG_VERIFY_SPM_STRICT="true"
+    
     CONFIG_FILE_PATH=""
 }
 
@@ -238,6 +241,18 @@ load_config() {
                             ;;
                     esac
                     ;;
+                verify)
+                    case "$key" in
+                        spm_strict)
+                            # Normalize boolean value
+                            if [[ "$value" == "true" ]] || [[ "$value" == "1" ]] || [[ "$value" == "yes" ]]; then
+                                CONFIG_VERIFY_SPM_STRICT="true"
+                            else
+                                CONFIG_VERIFY_SPM_STRICT="false"
+                            fi
+                            ;;
+                    esac
+                    ;;
             esac
         fi
     done < "$config_file"
@@ -318,6 +333,10 @@ get_config_spm_remote_url() {
 
 get_config_spm_remote_product_name() {
     echo "$CONFIG_SPM_REMOTE_PRODUCT_NAME"
+}
+
+get_config_verify_spm_strict() {
+    echo "$CONFIG_VERIFY_SPM_STRICT"
 }
 
 # ============================================================================
@@ -436,6 +455,7 @@ export -f get_config_pods_modules get_config_spm_packages
 export -f get_config_slack_channel get_config_dm_on_failure
 export -f get_config_pods_remote_url get_config_pods_remote_primary_product
 export -f get_config_spm_remote_url get_config_spm_remote_product_name
+export -f get_config_verify_spm_strict
 export -f set_config_version set_config_release_branch set_config_base_branch
 export -f set_config_pods_enabled set_config_spm_enabled
 export -f set_config_pods_modules set_config_spm_packages
