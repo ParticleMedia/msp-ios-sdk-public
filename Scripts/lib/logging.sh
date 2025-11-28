@@ -434,6 +434,11 @@ set_log_level_from_env() {
 init_logging() {
     set_log_level_from_env
     
+    # Ensure NO_ANSI overrides all colored output
+    if [[ "${NO_ANSI:-}" == "1" ]]; then
+        export NO_COLOR=1
+    fi
+    
     # Dump environment in debug mode
     dump_environment
 }
