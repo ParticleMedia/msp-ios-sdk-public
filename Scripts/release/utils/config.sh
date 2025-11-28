@@ -41,6 +41,10 @@ CONFIG_PODS_ENABLED=""
 CONFIG_SPM_ENABLED=""
 CONFIG_SLACK_CHANNEL=""
 CONFIG_DM_ON_FAILURE=""
+CONFIG_PODS_REMOTE_URL=""
+CONFIG_PODS_REMOTE_PRIMARY_PRODUCT=""
+CONFIG_SPM_REMOTE_URL=""
+CONFIG_SPM_REMOTE_PRODUCT_NAME=""
 
 # Array values (space-separated strings for bash 3.x compatibility)
 CONFIG_PODS_MODULES=""
@@ -66,6 +70,12 @@ init_config_defaults() {
     
     # Default SPM packages
     CONFIG_SPM_PACKAGES="NovaCore NovaAdapter"
+    
+    # Remote verification defaults
+    CONFIG_PODS_REMOTE_URL=""
+    CONFIG_PODS_REMOTE_PRIMARY_PRODUCT="MSPCore"
+    CONFIG_SPM_REMOTE_URL=""
+    CONFIG_SPM_REMOTE_PRODUCT_NAME="MSPAds"
     
     CONFIG_FILE_PATH=""
 }
@@ -197,12 +207,24 @@ load_config() {
                         enabled)
                             CONFIG_PODS_ENABLED="$value"
                             ;;
+                        remote_url)
+                            CONFIG_PODS_REMOTE_URL="$value"
+                            ;;
+                        remote_primary_product)
+                            CONFIG_PODS_REMOTE_PRIMARY_PRODUCT="$value"
+                            ;;
                     esac
                     ;;
                 spm)
                     case "$key" in
                         enabled)
                             CONFIG_SPM_ENABLED="$value"
+                            ;;
+                        remote_url)
+                            CONFIG_SPM_REMOTE_URL="$value"
+                            ;;
+                        remote_product_name)
+                            CONFIG_SPM_REMOTE_PRODUCT_NAME="$value"
                             ;;
                     esac
                     ;;
@@ -280,6 +302,22 @@ get_config_slack_channel() {
 
 get_config_dm_on_failure() {
     echo "$CONFIG_DM_ON_FAILURE"
+}
+
+get_config_pods_remote_url() {
+    echo "$CONFIG_PODS_REMOTE_URL"
+}
+
+get_config_pods_remote_primary_product() {
+    echo "$CONFIG_PODS_REMOTE_PRIMARY_PRODUCT"
+}
+
+get_config_spm_remote_url() {
+    echo "$CONFIG_SPM_REMOTE_URL"
+}
+
+get_config_spm_remote_product_name() {
+    echo "$CONFIG_SPM_REMOTE_PRODUCT_NAME"
 }
 
 # ============================================================================
@@ -396,6 +434,8 @@ export -f get_config_version get_config_release_branch get_config_base_branch
 export -f get_config_pods_enabled get_config_spm_enabled
 export -f get_config_pods_modules get_config_spm_packages
 export -f get_config_slack_channel get_config_dm_on_failure
+export -f get_config_pods_remote_url get_config_pods_remote_primary_product
+export -f get_config_spm_remote_url get_config_spm_remote_product_name
 export -f set_config_version set_config_release_branch set_config_base_branch
 export -f set_config_pods_enabled set_config_spm_enabled
 export -f set_config_pods_modules set_config_spm_packages

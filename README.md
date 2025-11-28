@@ -383,7 +383,51 @@ https://github.com/ParticleMedia/msp-ios-sdk-public.git
 
 ---
 
-## 11. Contact
+## 11. MSP Release Config Variable Naming Convention
+
+All configuration keys follow the strict naming convention:
+
+### 1. SCOPE (pods, spm)
+
+Indicates which subsystem owns the variable.
+
+Examples:
+- `pods.remote_url`
+- `pods.remote_primary_product`
+- `spm.remote_url`
+- `spm.remote_product_name`
+
+### 2. PURPOSE (remote_url, primary_product, product_name)
+
+Describes exactly what the variable is used for.
+
+### 3. Exported Shell Variables (UPPER_SNAKE_CASE)
+
+All parsed config values are exported using uppercase snake case:
+
+| YAML Key                      | Shell Variable               |
+|------------------------------|-------------------------------|
+| pods.remote_url              | PODS_REMOTE_URL               |
+| pods.remote_primary_product  | PODS_REMOTE_PRIMARY_PRODUCT   |
+| spm.remote_url               | SPM_REMOTE_URL                |
+| spm.remote_product_name      | SPM_REMOTE_PRODUCT_NAME       |
+
+### 4. No ambiguity
+
+- Podspec → "product" refers to CocoaPods frameworks
+- SPM → "product" refers to SPM product names
+- All variables always reference a *single importable module name*
+
+### 5. Safe defaults
+
+Defaults ensure verification always works even with minimal config:
+
+- PODS_REMOTE_PRIMARY_PRODUCT = MSPCore
+- SPM_REMOTE_PRODUCT_NAME = MSPAds
+
+---
+
+## 12. Contact
 
 **Email:** pengyu.gou@newsbreak.com  
 **GitHub Issues:** [msp-ios-sdk-public](https://github.com/ParticleMedia/msp-ios-sdk-public/issues)

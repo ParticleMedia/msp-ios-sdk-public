@@ -332,6 +332,10 @@ load_release_config() {
     export SPM_PACKAGES="$(get_config_spm_packages)"
     export SLACK_CHANNEL="$(get_config_slack_channel)"
     export DM_ON_FAILURE="$(get_config_dm_on_failure)"
+    export PODS_REMOTE_URL="$(get_config_pods_remote_url)"
+    export PODS_REMOTE_PRIMARY_PRODUCT="$(get_config_pods_remote_primary_product)"
+    export SPM_REMOTE_URL="$(get_config_spm_remote_url)"
+    export SPM_REMOTE_PRODUCT_NAME="$(get_config_spm_remote_product_name)"
     
     # Apply CLI overrides (CLI takes precedence)
     apply_cli_overrides

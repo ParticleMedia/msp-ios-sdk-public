@@ -117,6 +117,18 @@ pods:
     - NovaAdapter
     - PubmaticAdapter
     - UnityAdapter
+  
+  # Optional: Remote Pods verification URL
+  # If set, verify_pods_remote() will use this URL to verify remote pod installation.
+  # Example: "https://github.com/your-org/msp-ios-sdk-pods-specs.git"
+  # Leave empty to skip remote pods verification.
+  remote_url: ""
+  
+  # Primary pod product to import in the TestApp during remote verification
+  # This is the main pod that will be imported and tested.
+  # Default: "MSPCore"
+  # Example: "MSPCore", "NovaAdapter", "MSPGoogleAdapter"
+  remote_primary_product: "MSPCore"
 
 # ═══════════════════════════════════════════════════════════════════════════
 # SWIFT PACKAGE MANAGER CONFIGURATION
@@ -182,6 +194,18 @@ spm:
     - NovaAdapter
     - PubmaticAdapter
     - UnityAdapter
+  
+  # Optional: Remote SPM verification URL
+  # If set, verify_spm_remote() will use this URL to verify remote SPM package installation.
+  # Example: "https://github.com/your-org/msp-ios-sdk.git"
+  # Leave empty to skip remote SPM verification.
+  remote_url: ""
+  
+  # Primary SPM product name to import in test SPM client during remote verification
+  # This is the main SPM product that will be imported and tested.
+  # Default: "MSPAds"
+  # Example: "MSPAds", "MSPCore", "NovaCore"
+  remote_product_name: "MSPAds"
 
 # ═══════════════════════════════════════════════════════════════════════════
 # NOTIFICATION CONFIGURATION

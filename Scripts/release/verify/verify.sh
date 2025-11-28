@@ -57,12 +57,28 @@ verify_pods_remote() {
     
     trap cleanup_verify_dir EXIT
     
+    # Configuration: Read from environment with defaults
+    local pods_remote_url="${PODS_REMOTE_URL:-}"
+    local pods_primary_product="${PODS_REMOTE_PRIMARY_PRODUCT:-MSPCore}"
+    
+    # Check if PODS_REMOTE_URL is set
+    if [[ -z "$pods_remote_url" ]]; then
+        log_warn "PODS_REMOTE_URL is not set. Skipping Pods remote verification."
+        log_info "To enable Pods verification, set PODS_REMOTE_URL environment variable."
+        return 0
+    fi
+    
+    log_info "Using remote URL: $pods_remote_url"
+    log_info "Primary product: $pods_primary_product"
+    log_info "Version: $version"
+    
     # Generate minimal SwiftUI TestApp
     log_step "Generating minimal TestApp"
     
-    # Create main.swift (SwiftUI minimal app)
-    cat > "$testapp_dir/main.swift" << 'SWIFT_EOF'
+    # Create main.swift (SwiftUI minimal app) with dynamic import
+    cat > "$testapp_dir/main.swift" << EOF
 import SwiftUI
+import ${pods_primary_product}
 
 @main
 struct TestApp: App {
@@ -85,24 +101,25 @@ struct ContentView: View {
         .padding()
     }
 }
-SWIFT_EOF
+EOF
     
     # Create Podfile
     log_step "Generating Podfile"
     
     cat > "$testapp_dir/Podfile" << EOF
+source '$pods_remote_url'
+source 'https://cdn.cocoapods.org/'
+
 platform :ios, '15.0'
 use_frameworks!
 
 target 'TestApp' do
-  pod 'MSPCore', '~> $version'
-  pod 'NovaAdapter', '~> $version'
-  pod 'MSPGoogleAdapter', '~> $version'
-  pod 'MSPFacebookAdapter', '~> $version'
+  pod '${pods_primary_product}', '~> $version'
 end
 EOF
     
     log_info "Podfile created with version constraint: ~> $version"
+    log_info "Podfile uses remote source: $pods_remote_url"
     
     # Update pod repo
     log_step "Updating CocoaPods repository"
@@ -237,6 +254,11 @@ verify_spm_remote() {
     local spm_package_name="${SPM_REMOTE_PACKAGE_NAME:-msp-ios-sdk}"
     local spm_product_name="${SPM_REMOTE_PRODUCT_NAME:-MSPAds}"
     
+    # Fallback to default if empty
+    if [[ -z "$spm_product_name" ]]; then
+        spm_product_name="MSPAds"
+    fi
+    
     # Check if SPM_REMOTE_URL is set
     if [[ -z "$spm_remote_url" ]]; then
         log_warn "SPM_REMOTE_URL is not set. Skipping SPM remote verification."
@@ -316,7 +338,7 @@ let package = Package(
         .executableTarget(
             name: "TestSPMApp",
             dependencies: [
-                .product(name: "$spm_product_name", package: "$spm_package_name")
+                .product(name: "${spm_product_name}", package: "$spm_package_name")
             ]
         )
     ]
@@ -330,15 +352,16 @@ EOF
     
     local main_swift="$temp_dir/Sources/TestSPMApp/main.swift"
     if [[ -f "$main_swift" ]]; then
-        cat > "$main_swift" << 'SWIFT_EOF'
+        cat > "$main_swift" << EOF
 import Foundation
+import ${spm_product_name}
 // Import the remote product to verify it's available
 // Note: This is a minimal test - actual usage would require proper imports
 
 print("MSP SPM Verification Test")
 print("If you see this, the package resolved and built successfully.")
-SWIFT_EOF
-        log_info "main.swift updated"
+EOF
+        log_info "main.swift updated with import: $spm_product_name"
     fi
     
     # Run swift package resolve
