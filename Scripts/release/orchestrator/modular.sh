@@ -13,6 +13,9 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT_DIR="$(cd "$SCRIPT_DIR/../.." && pwd)"
 source "$ROOT_DIR/Scripts/lib/release-common.sh"
 
+# Source state management utility
+source "$SCRIPT_DIR/../utils/state.sh"
+
 # ============================================================================
 # Environment Variable Validation
 # ============================================================================
@@ -506,8 +509,20 @@ show_comprehensive_release_summary() {
     echo ""
 }
 
+# Error handler for state tracking
+_handle_main_error() {
+    local exit_code=$?
+    if [[ $exit_code -ne 0 ]]; then
+        msp_state_mark_step_failed "run" "orchestrator failed (see logs)" "$exit_code" || true
+    fi
+    exit $exit_code
+}
+
 # Main function
 main() {
+    # Set error trap for state tracking
+    trap '_handle_main_error' ERR
+    
     # Backward compatibility: parse remaining CLI arguments if any
     # (Only used if script is called directly, not via msp-release.sh)
     if [[ $# -gt 0 ]]; then
@@ -519,6 +534,10 @@ main() {
     
     # Ensure we're in the project root
     ensure_project_root
+    
+    # Initialize state tracking
+    msp_state_init "run"
+    msp_state_mark_step_running "run"
     
     print_section "Starting Complete Release Process for Version: $VERSION"
     
@@ -542,6 +561,12 @@ main() {
     
     # Record end time
     RELEASE_END_TIME=$(date '+%Y-%m-%d %H:%M:%S')
+    
+    # Mark run as successful
+    msp_state_mark_step_success "run"
+    
+    # Clear error trap on success
+    trap - ERR
     
     # Show comprehensive summary
     show_comprehensive_release_summary

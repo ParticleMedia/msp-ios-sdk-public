@@ -824,6 +824,10 @@ dispatch_subcommand() {
 # Main
 # ============================================================================
 main() {
+    # Capture original CLI arguments for state tracking (before any parsing)
+    MSP_RELEASE_ORIGINAL_ARGS="$*"
+    export MSP_RELEASE_ORIGINAL_ARGS
+    
     # Parse all flags first (supports flags before subcommand)
     parse_flags "$@"
     

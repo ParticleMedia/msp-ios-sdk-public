@@ -1,230 +1,406 @@
-#!/bin/bash
-
-# State Management Utilities for Release Scripts
-# Provides functions to save, load, and manage release state
+# ============================================================================
+# MSP Release State Management
+# ============================================================================
+# Purpose: Persistent state tracking for release operations
+#          Backed by .msp-release-state.json in repo root
+#
+# Usage:
+#   source Scripts/release/utils/state.sh
+#   msp_state_init "run"
+#   msp_state_mark_step_running "preflight"
+#   msp_state_mark_step_success "preflight"
+#
+# Dependencies:
+#   - jq (optional, system becomes no-op if missing)
+#   - MSP_STATE_DISABLE=1 to disable entirely
+# ============================================================================
 
 # ============================================================================
-# ROOT_DIR and UI System Loading
+# Internal Helpers
 # ============================================================================
-# Calculate ROOT_DIR if not already set (may be set by parent script)
-if [[ -z "${ROOT_DIR:-}" ]]; then
-    SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-    ROOT_DIR="$(cd "$SCRIPT_DIR/../../.." && pwd)"
-fi
 
-# Source UI system in order: colors.sh → ui.sh → logging.sh
-# Handle NO_ANSI flag by setting NO_COLOR (logging.sh respects NO_COLOR)
-if [[ "${NO_ANSI:-false}" == "true" ]]; then
-    export NO_COLOR=1
-fi
-
-# Source colors.sh
-if [[ -f "$ROOT_DIR/Scripts/lib/colors.sh" ]]; then
-    # shellcheck source=Scripts/lib/colors.sh
-    source "$ROOT_DIR/Scripts/lib/colors.sh" 2>/dev/null || true
-fi
-
-# Source ui.sh (depends on colors.sh)
-if [[ -f "$ROOT_DIR/Scripts/lib/ui.sh" ]]; then
-    # shellcheck source=Scripts/lib/ui.sh
-    source "$ROOT_DIR/Scripts/lib/ui.sh" 2>/dev/null || true
-fi
-
-# Source logging.sh (depends on colors.sh and ui.sh)
-if [[ -f "$ROOT_DIR/Scripts/lib/logging.sh" ]]; then
-    # shellcheck source=Scripts/lib/logging.sh
-    source "$ROOT_DIR/Scripts/lib/logging.sh" 2>/dev/null || true
-fi
-
-# Fallback logging functions if UI system not available
-if ! command -v log_info &>/dev/null; then
-    : "${RED:=[0;31m}"
-    : "${GREEN:=[0;32m}"
-    : "${YELLOW:=[1;33m}"
-    : "${BLUE:=[0;34m}"
-    : "${NC:=[0m}"
-    
-    log_info() {
-        if [[ "${NO_ANSI:-false}" == "true" ]]; then
-            echo "[INFO] $1"
-        else
-            echo -e "${BLUE}ℹ️  $1${NC}"
-        fi
-    }
-    
-    log_success() {
-        if [[ "${NO_ANSI:-false}" == "true" ]]; then
-            echo "[SUCCESS] $1"
-        else
-            echo -e "${GREEN}✅ $1${NC}"
-        fi
-    }
-    
-    log_warning() {
-        if [[ "${NO_ANSI:-false}" == "true" ]]; then
-            echo "[WARN] $1"
-        else
-            echo -e "${YELLOW}⚠️  $1${NC}"
-        fi
-    }
-    
-    log_error() {
-        if [[ "${NO_ANSI:-false}" == "true" ]]; then
-            echo "[ERROR] $1" >&2
-        else
-            echo -e "${RED}❌ $1${NC}" >&2
-        fi
-    }
-    
-    log_step() {
-        if [[ "${NO_ANSI:-false}" == "true" ]]; then
-            echo "[STEP] $1"
-        else
-            echo -e "${BLUE}🔧 $1${NC}"
-        fi
-    }
-    
-    log_debug() {
-        if [[ "${VERBOSE:-false}" == "true" ]]; then
-            if [[ "${NO_ANSI:-false}" == "true" ]]; then
-                echo "[DEBUG] $1"
-            else
-                echo -e "${BLUE}🔍 $1${NC}"
-            fi
-        fi
-    }
-    
-    log_warn() {
-        log_warning "$@"
-    }
-fi
-
-
-# Default state file location
-STATE_FILE="${RELEASE_STATE_FILE:-$ROOT_DIR/.release-state.json}"
-
-# Save release state to file
-save_release_state() {
-    local state_data="$1"
-    local state_file="${2:-$STATE_FILE}"
-    
-    if [[ -z "$state_data" ]]; then
-        log_error "State data is required"
-        return 1
-    fi
-    
-    log_debug "Saving release state to $state_file"
-    
-    # Create directory if it doesn't exist
-    mkdir -p "$(dirname "$state_file")"
-    
-    # Write state to file
-    echo "$state_data" > "$state_file"
-    
-    if [[ $? -eq 0 ]]; then
-        log_success "Saved release state to $state_file"
-        return 0
-    else
-        log_error "Failed to save release state to $state_file"
-        return 1
-    fi
+# Compute repository root based on this file's location
+# state.sh is located at Scripts/release/utils/state.sh
+_msp_state_repo_root() {
+    local script_dir
+    script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+    # ../../.. -> <repo_root>
+    cd "${script_dir}/../../.." && pwd
 }
 
-# Load release state from file
-load_release_state() {
-    local state_file="${1:-$STATE_FILE}"
-    
-    if [[ ! -f "$state_file" ]]; then
-        log_warning "State file not found: $state_file"
-        return 1
-    fi
-    
-    log_debug "Loading release state from $state_file"
-    
-    # Read state from file
-    cat "$state_file"
-    
-    if [[ $? -eq 0 ]]; then
-        log_success "Loaded release state from $state_file"
-        return 0
-    else
-        log_error "Failed to load release state from $state_file"
-        return 1
-    fi
+# Get absolute path to state file
+msp_state_file_path() {
+    local root
+    root="$(_msp_state_repo_root)"
+    echo "${root}/.msp-release-state.json"
 }
 
-# Update release state (merge with existing state)
-update_release_state() {
-    local key="$1"
-    local value="$2"
-    local state_file="${3:-$STATE_FILE}"
-    
-    if [[ -z "$key" || -z "$value" ]]; then
-        log_error "Key and value are required"
+# Get current timestamp in ISO8601 format
+_msp_state_now() {
+    date -u +"%Y-%m-%dT%H:%M:%SZ"
+}
+
+# Safely update JSON file via jq
+_msp_state_update_json() {
+    local jq_filter="$1"
+    local path
+    path="$(msp_state_file_path)"
+
+    [[ -f "$path" ]] || return 0
+
+    local tmp
+    tmp="${path}.tmp"
+
+    if ! jq "$jq_filter" "$path" > "$tmp" 2>/dev/null; then
+        # Do not overwrite the original file on jq failure
+        rm -f "$tmp"
         return 1
     fi
-    
-    log_debug "Updating release state: $key = $value"
-    
-    # Load existing state or create new
-    local existing_state="{}"
-    if [[ -f "$state_file" ]]; then
-        existing_state=$(cat "$state_file" 2>/dev/null || echo "{}")
-    fi
-    
-    # Update state (simple JSON update - for complex cases, use jq if available)
-    if command -v jq &>/dev/null; then
-        # Use jq for proper JSON manipulation
-        local updated_state
-        updated_state=$(echo "$existing_state" | jq ". + {\"$key\": \"$value\"}" 2>/dev/null)
-        if [[ $? -eq 0 ]]; then
-            echo "$updated_state" > "$state_file"
-            log_success "Updated release state: $key = $value"
-            return 0
-        fi
-    fi
-    
-    # Fallback: simple string replacement (not perfect JSON, but works for simple cases)
-    if [[ "$existing_state" == "{}" ]]; then
-        echo "{\"$key\": \"$value\"}" > "$state_file"
-    else
-        # Remove existing key if present, then add new one
-        local temp_state
-        temp_state=$(echo "$existing_state" | sed "s/\"$key\":[^,}]*//" | sed 's/,,/,/g' | sed 's/,}/}/g' | sed 's/{,/{/g')
-        # Add new key-value pair
-        if [[ "$temp_state" == "{}" ]]; then
-            echo "{\"$key\": \"$value\"}" > "$state_file"
-        else
-            echo "$temp_state" | sed "s/}/, \"$key\": \"$value\"}/" > "$state_file"
-        fi
-    fi
-    
-    log_success "Updated release state: $key = $value"
+
+    mv "$tmp" "$path"
     return 0
 }
 
-# Reset release state (delete state file)
-reset_release_state() {
-    local state_file="${1:-$STATE_FILE}"
-    
-    log_debug "Resetting release state: $state_file"
-    
-    if [[ -f "$state_file" ]]; then
-        rm -f "$state_file"
-        if [[ $? -eq 0 ]]; then
-            log_success "Reset release state"
-            return 0
-        else
-            log_error "Failed to reset release state"
-            return 1
-        fi
-    else
-        log_info "State file does not exist, nothing to reset"
-        return 0
+# ============================================================================
+# Enable/Disable Detection
+# ============================================================================
+
+msp_state_is_enabled() {
+    # If explicitly disabled, return 1
+    if [[ "${MSP_STATE_DISABLE:-0}" == "1" ]]; then
+        return 1
     fi
+
+    # Require jq
+    if ! command -v jq >/dev/null 2>&1; then
+        return 1
+    fi
+
+    return 0
 }
 
-# Export functions
-export -f save_release_state load_release_state update_release_state reset_release_state 2>/dev/null || true
+# ============================================================================
+# Public API: State Initialization
+# ============================================================================
 
+msp_state_init() {
+    local mode="${1:-unknown}"
 
+    # Check if enabled
+    if ! msp_state_is_enabled; then
+        return 0
+    fi
+
+    local path
+    path="$(msp_state_file_path)"
+
+    # If file exists, only update timestamp
+    if [[ -f "$path" ]]; then
+        _msp_state_update_json ".timestamps.updated_at = \"$(_msp_state_now)\"" || return 0
+        return 0
+    fi
+
+    # Get values from environment
+    local version="${RELEASE_VERSION:-unknown}"
+    local base_branch="${BASE_BRANCH:-unknown}"
+    local release_branch="${RELEASE_BRANCH:-unknown}"
+    local dry_run_val="${DRY_RUN:-false}"
+    local config_path="${CONFIG_FILE:-null}"
+    local cli_args="${MSP_RELEASE_ORIGINAL_ARGS:-}"
+    local invoked_subcommand="${SUBCOMMAND:-${mode}}"
+
+    # Normalize dry_run to boolean
+    local dry_run_bool="false"
+    if [[ "$dry_run_val" == "true" ]] || [[ "$dry_run_val" == "1" ]]; then
+        dry_run_bool="true"
+    fi
+
+    # Normalize config_path
+    if [[ -z "$config_path" ]] || [[ "$config_path" == "null" ]]; then
+        config_path="null"
+    else
+        config_path="\"$config_path\""
+    fi
+
+    local now
+    now="$(_msp_state_now)"
+
+    # Create initial state JSON
+    jq -n \
+        --arg run_id "$now" \
+        --arg mode "$mode" \
+        --arg version "$version" \
+        --arg base_branch "$base_branch" \
+        --arg release_branch "$release_branch" \
+        --argjson dry_run "$dry_run_bool" \
+        --argjson config_path "$config_path" \
+        --arg cli_args "$cli_args" \
+        --arg invoked_subcommand "$invoked_subcommand" \
+        --arg started_at "$now" \
+        --arg updated_at "$now" \
+        '{
+            schema_version: 1,
+            run_id: $run_id,
+            mode: $mode,
+            version: $version,
+            base_branch: $base_branch,
+            release_branch: $release_branch,
+            dry_run: $dry_run,
+            config: {
+                config_path: ($config_path | if . == "null" then null else . end),
+                cli_args: $cli_args,
+                invoked_subcommand: $invoked_subcommand
+            },
+            git: {
+                tag_created: false,
+                tag_name: null,
+                release_branch_pushed: false,
+                github_release_created: false
+            },
+            steps: {},
+            timestamps: {
+                started_at: $started_at,
+                updated_at: $updated_at
+            },
+            last_error: {
+                step: null,
+                message: null,
+                exit_code: null,
+                occurred_at: null
+            }
+        }' > "$path" 2>/dev/null || return 0
+
+    return 0
+}
+
+# ============================================================================
+# Public API: Step Status Management
+# ============================================================================
+
+msp_state_mark_step_running() {
+    local step_name="$1"
+
+    if ! msp_state_is_enabled; then
+        return 0
+    fi
+
+    local path
+    path="$(msp_state_file_path)"
+
+    [[ -f "$path" ]] || return 0
+
+    local now
+    now="$(_msp_state_now)"
+
+    # Check if step exists
+    local step_exists
+    step_exists=$(jq -e ".steps[\"$step_name\"] != null" "$path" 2>/dev/null || echo "false")
+
+    if [[ "$step_exists" == "true" ]]; then
+        # Increment attempt (or set to 1 if missing)
+        local current_attempt
+        current_attempt=$(jq -r ".steps[\"$step_name\"].attempt // 1" "$path" 2>/dev/null || echo "1")
+        local new_attempt=$((current_attempt + 1))
+
+        # Update existing step
+        _msp_state_update_json ".steps[\"$step_name\"].status = \"running\" | .steps[\"$step_name\"].attempt = $new_attempt | .steps[\"$step_name\"].started_at = (if .steps[\"$step_name\"].started_at == null then \"$now\" else .steps[\"$step_name\"].started_at end) | .timestamps.updated_at = \"$now\"" || return 0
+    else
+        # Create new step
+        _msp_state_update_json ".steps[\"$step_name\"] = {status: \"running\", attempt: 1, started_at: \"$now\", completed_at: null, notes: null} | .timestamps.updated_at = \"$now\"" || return 0
+    fi
+
+    return 0
+}
+
+msp_state_mark_step_success() {
+    local step_name="$1"
+
+    if ! msp_state_is_enabled; then
+        return 0
+    fi
+
+    local path
+    path="$(msp_state_file_path)"
+
+    [[ -f "$path" ]] || return 0
+
+    local now
+    now="$(_msp_state_now)"
+
+    # Ensure step exists, then update
+    local step_exists
+    step_exists=$(jq -e ".steps[\"$step_name\"] != null" "$path" 2>/dev/null || echo "false")
+
+    if [[ "$step_exists" != "true" ]]; then
+        # Create step first
+        _msp_state_update_json ".steps[\"$step_name\"] = {status: \"success\", attempt: 1, started_at: \"$now\", completed_at: \"$now\", notes: null} | .timestamps.updated_at = \"$now\"" || return 0
+    else
+        # Update existing step
+        _msp_state_update_json ".steps[\"$step_name\"].status = \"success\" | .steps[\"$step_name\"].started_at = (if .steps[\"$step_name\"].started_at == null then \"$now\" else .steps[\"$step_name\"].started_at end) | .steps[\"$step_name\"].completed_at = \"$now\" | .timestamps.updated_at = \"$now\"" || return 0
+    fi
+
+    return 0
+}
+
+msp_state_mark_step_failed() {
+    local step_name="$1"
+    local message="${2:-Unknown error}"
+    local exit_code="${3:-1}"
+
+    if ! msp_state_is_enabled; then
+        return 0
+    fi
+
+    local path
+    path="$(msp_state_file_path)"
+
+    [[ -f "$path" ]] || return 0
+
+    local now
+    now="$(_msp_state_now)"
+
+    # Truncate message if too long (limit to 500 chars)
+    if [[ ${#message} -gt 500 ]]; then
+        message="${message:0:497}..."
+    fi
+
+    # Escape message for JSON
+    local message_json
+    message_json=$(printf '%s' "$message" | jq -Rs .)
+
+    # Ensure step exists, then update
+    local step_exists
+    step_exists=$(jq -e ".steps[\"$step_name\"] != null" "$path" 2>/dev/null || echo "false")
+
+    if [[ "$step_exists" != "true" ]]; then
+        # Create step first
+        _msp_state_update_json ".steps[\"$step_name\"] = {status: \"failed\", attempt: 1, started_at: \"$now\", completed_at: \"$now\", notes: null} | .last_error = {step: \"$step_name\", message: $message_json, exit_code: $exit_code, occurred_at: \"$now\"} | .timestamps.updated_at = \"$now\"" || return 0
+    else
+        # Update existing step
+        _msp_state_update_json ".steps[\"$step_name\"].status = \"failed\" | .steps[\"$step_name\"].started_at = (if .steps[\"$step_name\"].started_at == null then \"$now\" else .steps[\"$step_name\"].started_at end) | .steps[\"$step_name\"].completed_at = \"$now\" | .last_error = {step: \"$step_name\", message: $message_json, exit_code: $exit_code, occurred_at: \"$now\"} | .timestamps.updated_at = \"$now\"" || return 0
+    fi
+
+    return 0
+}
+
+msp_state_mark_step_skipped() {
+    local step_name="$1"
+    local reason="${2:-}"
+
+    if ! msp_state_is_enabled; then
+        return 0
+    fi
+
+    local path
+    path="$(msp_state_file_path)"
+
+    [[ -f "$path" ]] || return 0
+
+    local now
+    now="$(_msp_state_now)"
+
+    # Ensure step exists, then update
+    local step_exists
+    step_exists=$(jq -e ".steps[\"$step_name\"] != null" "$path" 2>/dev/null || echo "false")
+
+    if [[ "$step_exists" != "true" ]]; then
+        # Create step first
+        if [[ -n "$reason" ]]; then
+            local reason_json
+            reason_json=$(printf '%s' "$reason" | jq -Rs .)
+            _msp_state_update_json ".steps[\"$step_name\"] = {status: \"skipped\", attempt: 0, started_at: null, completed_at: \"$now\", notes: $reason_json} | .timestamps.updated_at = \"$now\"" || return 0
+        else
+            _msp_state_update_json ".steps[\"$step_name\"] = {status: \"skipped\", attempt: 0, started_at: null, completed_at: \"$now\", notes: null} | .timestamps.updated_at = \"$now\"" || return 0
+        fi
+    else
+        # Update existing step
+        if [[ -n "$reason" ]]; then
+            local reason_json
+            reason_json=$(printf '%s' "$reason" | jq -Rs .)
+            _msp_state_update_json ".steps[\"$step_name\"].status = \"skipped\" | .steps[\"$step_name\"].completed_at = \"$now\" | .steps[\"$step_name\"].notes = $reason_json | .timestamps.updated_at = \"$now\"" || return 0
+        else
+            _msp_state_update_json ".steps[\"$step_name\"].status = \"skipped\" | .steps[\"$step_name\"].completed_at = \"$now\" | .timestamps.updated_at = \"$now\"" || return 0
+        fi
+    fi
+
+    return 0
+}
+
+msp_state_get_step_status() {
+    local step_name="$1"
+
+    if ! msp_state_is_enabled; then
+        echo "unknown"
+        return 0
+    fi
+
+    local path
+    path="$(msp_state_file_path)"
+
+    if [[ ! -f "$path" ]]; then
+        echo "unknown"
+        return 0
+    fi
+
+    local status
+    status=$(jq -r ".steps[\"$step_name\"].status // \"unknown\"" "$path" 2>/dev/null || echo "unknown")
+    echo "$status"
+    return 0
+}
+
+# ============================================================================
+# Public API: Git Flags and Timestamps
+# ============================================================================
+
+msp_state_mark_git_flag() {
+    local field_name="$1"
+    local bool_value="$2"
+
+    if ! msp_state_is_enabled; then
+        return 0
+    fi
+
+    local path
+    path="$(msp_state_file_path)"
+
+    [[ -f "$path" ]] || return 0
+
+    # Normalize to JSON boolean
+    local json_bool="false"
+    if [[ "$bool_value" == "true" ]] || [[ "$bool_value" == "1" ]]; then
+        json_bool="true"
+    fi
+
+    _msp_state_update_json ".git[\"$field_name\"] = $json_bool | .timestamps.updated_at = \"$(_msp_state_now)\"" || return 0
+
+    return 0
+}
+
+msp_state_touch() {
+    if ! msp_state_is_enabled; then
+        return 0
+    fi
+
+    local path
+    path="$(msp_state_file_path)"
+
+    [[ -f "$path" ]] || return 0
+
+    _msp_state_update_json ".timestamps.updated_at = \"$(_msp_state_now)\"" || return 0
+
+    return 0
+}
+
+# ============================================================================
+# Export Functions
+# ============================================================================
+export -f msp_state_file_path
+export -f msp_state_is_enabled
+export -f msp_state_init
+export -f msp_state_mark_step_running
+export -f msp_state_mark_step_success
+export -f msp_state_mark_step_failed
+export -f msp_state_mark_step_skipped
+export -f msp_state_get_step_status
+export -f msp_state_mark_git_flag
+export -f msp_state_touch
