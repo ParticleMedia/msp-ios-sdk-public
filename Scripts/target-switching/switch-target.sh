@@ -362,7 +362,34 @@ switch_pods_dev() {
         log_success "Podfile.lock removed"
     fi
     
-    # Step 4: Generate project.yml from templates
+    # Also clean DemoApp Pods directory if it exists
+    local DEMOAPP_PODS_DIR="$ROOT_DIR/Examples/DemoApp/Pods"
+    local DEMOAPP_PODFILE_LOCK="$ROOT_DIR/Examples/DemoApp/Podfile.lock"
+    if [[ -d "$DEMOAPP_PODS_DIR" ]]; then
+        rm -rf "$DEMOAPP_PODS_DIR"
+        log_success "Examples/DemoApp/Pods/ removed"
+    fi
+    if [[ -f "$DEMOAPP_PODFILE_LOCK" ]]; then
+        rm -f "$DEMOAPP_PODFILE_LOCK"
+        log_success "Examples/DemoApp/Podfile.lock removed"
+    fi
+    
+    # Step 4: Run pod install FIRST (before XcodeGen)
+    # This is critical: XcodeGen needs the xcconfig files that pod install generates
+    log_section "CocoaPods Installation"
+    log_step "Running pod install (MSP_RELEASE=0, MSP_MODE=pods-dev)"
+    log_info "All modules compiled from SOURCE (path-based pods)"
+    log_info "XCFramework copy phases will be REMOVED by Podfile post_install"
+    
+    cd "$ROOT_DIR"
+    if MSP_RELEASE=0 MSP_MODE=pods-dev pod install; then
+        log_success "pod install completed (pure source mode)"
+    else
+        log_error "pod install failed"
+        exit 1
+    fi
+    
+    # Step 5: Generate project.yml from templates (AFTER pod install)
     log_section "YAML Generation"
     log_step "Generating project.yml from templates"
     if [[ -x "$SCRIPT_DIR/generate_project_templates.sh" ]]; then
@@ -377,44 +404,30 @@ switch_pods_dev() {
         exit 1
     fi
     
-    # Step 5: Run pod install (with MSP_RELEASE=0 and MSP_MODE=pods-dev)
-    log_section "CocoaPods Installation"
-    log_step "Running pod install (MSP_RELEASE=0, MSP_MODE=pods-dev)"
-    log_info "All modules compiled from SOURCE (path-based pods)"
-    log_info "XCFramework copy phases will be REMOVED by Podfile post_install"
-    
-    cd "$ROOT_DIR"
-    if MSP_RELEASE=0 MSP_MODE=pods-dev pod install; then
-        log_success "pod install completed (pure source mode)"
-    else
-        log_error "pod install failed"
-        exit 1
-    fi
-    
-    # Step 5: Generate Xcode project
+    # Step 6: Generate Xcode project (now xcconfig files exist)
     log_section "Xcode Project Generation"
     run_xcodegen
     
-    # Step 6: Create workspace symlink at root
+    # Step 7: Create workspace symlink at root
     log_section "Workspace Symlink"
     create_workspace_symlink
     
-    # Step 7: Generate Info.plist
+    # Step 8: Generate Info.plist
     log_section "Info.plist Generation"
     generate_info_plist
     
-    # Step 8: Validate final state
+    # Step 9: Validate final state
     log_section "Validation"
     if ! validate_final_state "pods-dev"; then
         print_summary "pods-dev" "FAILED"
         exit 1
     fi
     
-    # Step 9: Git cleanliness check
+    # Step 10: Git cleanliness check
     log_section "Git Status Check"
     verify_git_cleanliness || log_warn "Git status not fully clean"
     
-    # Step 10: Open Xcode
+    # Step 11: Open Xcode
     log_section "Opening Xcode"
     if [[ -L "$ROOT_DIR/msp-ios-sdk.xcworkspace" ]] || [[ -d "$ROOT_DIR/msp-ios-sdk.xcworkspace" ]]; then
         open "$ROOT_DIR/msp-ios-sdk.xcworkspace"
