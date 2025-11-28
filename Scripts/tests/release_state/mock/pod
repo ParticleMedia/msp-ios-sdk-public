@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+
+# Mock pod binary for testing
+# Logs all invocations
+
+MOCK_LOG="${MOCK_LOG:-./mock_invocations.log}"
+
+# Log the invocation
+echo "[MOCK] pod $*" >> "$MOCK_LOG" 2>&1
+
+# For now, all pod commands succeed
+# Can be extended with failure simulation if needed
+if [[ "${MOCK_POD_FAIL:-0}" == "1" ]]; then
+    echo "error: pod command failed" >&2
+    exit 1
+fi
+
+exit 0
+

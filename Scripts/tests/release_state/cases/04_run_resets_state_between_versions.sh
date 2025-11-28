@@ -1,0 +1,44 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+# Test Case 04: Run resets state between versions
+
+repo_root="$(pwd)"
+
+# Source helpers
+# shellcheck source=Scripts/tests/release_state/helpers.sh
+source "$(dirname "${BASH_SOURCE[0]}")/../helpers.sh"
+
+echo "Test: Run resets state between versions"
+
+# First run with version 0.0.1
+./Scripts/msp-release.sh run 0.0.1 --dry-run 2>&1 || true
+
+# Verify version is 0.0.1
+version1="$(read_state_field "$repo_root" '.version')"
+assert_equals "0.0.1" "$version1" "First run should set version to 0.0.1"
+
+# Get the run_id from first run
+run_id1="$(read_state_field "$repo_root" '.run_id')"
+
+# Second run with version 0.0.2
+./Scripts/msp-release.sh run 0.0.2 --dry-run 2>&1 || true
+
+# Verify version is now 0.0.2
+version2="$(read_state_field "$repo_root" '.version')"
+assert_equals "0.0.2" "$version2" "Second run should set version to 0.0.2"
+
+# Verify run_id changed (indicating a new run)
+run_id2="$(read_state_field "$repo_root" '.run_id')"
+if [[ "$run_id1" == "$run_id2" ]]; then
+    echo "ASSERT FAILED: run_id should change between runs" >&2
+    exit 1
+fi
+
+# Verify release_branch is updated
+release_branch="$(read_state_field "$repo_root" '.release_branch')"
+assert_contains "$release_branch" "0.0.2" "Release branch should contain new version"
+
+echo "✓ Test passed: Run resets state between versions"
+

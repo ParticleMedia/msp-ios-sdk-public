@@ -1,0 +1,81 @@
+#!/usr/bin/env bash
+
+# Mock git binary for testing
+# Logs all invocations and can simulate failures based on environment variables
+
+MOCK_LOG="${MOCK_LOG:-./mock_invocations.log}"
+
+# Log the invocation
+echo "[MOCK] git $*" >> "$MOCK_LOG" 2>&1
+
+# Parse command
+case "${1:-}" in
+    tag)
+        case "${2:-}" in
+            -d|--delete)
+                # Delete local tag
+                local tag_name="${3:-}"
+                if [[ -n "$tag_name" ]]; then
+                    if [[ "${MOCK_GIT_FAIL_ON_TAG_DELETE:-0}" == "1" ]]; then
+                        echo "error: tag '${tag_name}' not found" >&2
+                        exit 1
+                    fi
+                fi
+                ;;
+            -l|--list)
+                # List tags (for tag existence checks)
+                # Return empty list by default, or specific tags if MOCK_GIT_TAGS is set
+                if [[ -n "${MOCK_GIT_TAGS:-}" ]]; then
+                    echo "$MOCK_GIT_TAGS"
+                fi
+                ;;
+            *)
+                # Create tag or other tag operations
+                if [[ "${MOCK_GIT_FAIL_ON_TAG_CREATE:-0}" == "1" ]]; then
+                    echo "error: failed to create tag" >&2
+                    exit 1
+                fi
+                ;;
+        esac
+        ;;
+    push)
+        local remote="${2:-origin}"
+        case "${3:-}" in
+            :refs/tags/*)
+                # Delete remote tag: git push origin :refs/tags/<tag>
+                local tag_name="${3#:refs/tags/}"
+                if [[ "${MOCK_GIT_FAIL_ON_TAG_PUSH:-0}" == "1" ]]; then
+                    echo "error: failed to delete remote tag '${tag_name}'" >&2
+                    exit 1
+                fi
+                ;;
+            --delete)
+                # Delete remote branch: git push origin --delete <branch>
+                local branch_name="${4:-}"
+                if [[ "${MOCK_GIT_FAIL_ON_BRANCH_DELETE:-0}" == "1" ]]; then
+                    echo "error: failed to delete remote branch '${branch_name}'" >&2
+                    exit 1
+                fi
+                ;;
+            *)
+                # Push branch or tag
+                if [[ "${MOCK_GIT_FAIL_ON_PUSH:-0}" == "1" ]]; then
+                    echo "error: failed to push" >&2
+                    exit 1
+                fi
+                ;;
+        esac
+        ;;
+    checkout)
+        # Checkout branch (usually succeeds in mocks)
+        ;;
+    status|diff|show-ref|rev-parse|ls-files)
+        # Read-only operations, always succeed
+        ;;
+    *)
+        # Unknown command, log and succeed
+        ;;
+esac
+
+exit 0
+
