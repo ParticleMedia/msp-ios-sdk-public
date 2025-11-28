@@ -10,9 +10,9 @@
 #   spm-release  - Swift Package Manager with binary XCFrameworks (SPM release)
 #
 # Usage:
-#   ./Scripts/target-switching/switch-target.sh pods-dev
-#   ./Scripts/target-switching/switch-target.sh pods-release
-#   ./Scripts/target-switching/switch-target.sh spm-release
+#   ./Scripts/switch-target.sh pods-dev
+#   ./Scripts/switch-target.sh pods-release
+#   ./Scripts/switch-target.sh spm-release
 #
 # Environment:
 #   MSP_RELEASE=0 (pods-dev)    - Podspecs use source_files
@@ -24,10 +24,10 @@ set -euo pipefail
 
 # Source common functions
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-ROOT_DIR="$(cd "$SCRIPT_DIR/../.." && pwd)"
+ROOT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 
 # shellcheck source=Scripts/target-switching/common.sh
-source "$SCRIPT_DIR/common.sh"
+source "$SCRIPT_DIR/target-switching/common.sh"
 
 ensure_repo_root
 
@@ -340,7 +340,7 @@ switch_pods_dev() {
     # Step 1: Clean SPM artifacts
     log_section "Environment Cleanup"
     log_step "Cleaning SPM artifacts"
-    if "$SCRIPT_DIR/cleanup_spm.sh" --force 2>/dev/null; then
+    if "$SCRIPT_DIR/target-switching/cleanup_spm.sh" --force 2>/dev/null; then
         log_success "SPM cleanup completed"
     else
         log_warn "SPM cleanup had warnings (continuing)"
@@ -392,12 +392,12 @@ switch_pods_dev() {
     # Step 5: Generate project.yml from templates (AFTER pod install)
     log_section "YAML Generation"
     log_step "Generating project.yml from templates"
-    if [[ -x "$SCRIPT_DIR/generate_project_templates.sh" ]]; then
-        "$SCRIPT_DIR/generate_project_templates.sh"
+    if [[ -x "$SCRIPT_DIR/target-switching/generate_project_templates.sh" ]]; then
+        "$SCRIPT_DIR/target-switching/generate_project_templates.sh"
     fi
     
     log_step "Generating workspace/project YAML"
-    if "$SCRIPT_DIR/generate_workspace.sh" pods-dev; then
+    if "$SCRIPT_DIR/target-switching/generate_workspace.sh" pods-dev; then
         log_success "YAML generated"
     else
         log_error "YAML generation failed"
@@ -467,7 +467,7 @@ switch_pods_release() {
     # Step 2: Clean SPM artifacts
     log_section "Environment Cleanup"
     log_step "Cleaning SPM artifacts"
-    if "$SCRIPT_DIR/cleanup_spm.sh" --force 2>/dev/null; then
+    if "$SCRIPT_DIR/target-switching/cleanup_spm.sh" --force 2>/dev/null; then
         log_success "SPM cleanup completed"
     else
         log_warn "SPM cleanup had warnings (continuing)"
@@ -480,12 +480,12 @@ switch_pods_release() {
     # Step 4: Generate project.yml from templates
     log_section "YAML Generation"
     log_step "Generating project.yml from templates"
-    if [[ -x "$SCRIPT_DIR/generate_project_templates.sh" ]]; then
-        "$SCRIPT_DIR/generate_project_templates.sh"
+    if [[ -x "$SCRIPT_DIR/target-switching/generate_project_templates.sh" ]]; then
+        "$SCRIPT_DIR/target-switching/generate_project_templates.sh"
     fi
     
     log_step "Generating workspace/project YAML"
-    if "$SCRIPT_DIR/generate_workspace.sh" pods-release; then
+    if "$SCRIPT_DIR/target-switching/generate_workspace.sh" pods-release; then
         log_success "YAML generated"
     else
         log_error "YAML generation failed"
@@ -586,7 +586,7 @@ switch_spm_release() {
     
     # Step 3: Clean SPM caches
     log_step "Cleaning SPM caches"
-    if "$SCRIPT_DIR/cleanup_spm.sh" --force 2>/dev/null; then
+    if "$SCRIPT_DIR/target-switching/cleanup_spm.sh" --force 2>/dev/null; then
         log_success "SPM cleanup completed"
     else
         log_warn "SPM cleanup had warnings (continuing)"
@@ -603,12 +603,12 @@ switch_spm_release() {
     # Step 5: Generate project.yml from templates
     log_section "YAML Generation"
     log_step "Generating project.yml from templates"
-    if [[ -x "$SCRIPT_DIR/generate_project_templates.sh" ]]; then
-        "$SCRIPT_DIR/generate_project_templates.sh"
+    if [[ -x "$SCRIPT_DIR/target-switching/generate_project_templates.sh" ]]; then
+        "$SCRIPT_DIR/target-switching/generate_project_templates.sh"
     fi
     
     log_step "Generating workspace/project YAML"
-    if "$SCRIPT_DIR/generate_workspace.sh" spm-release; then
+    if "$SCRIPT_DIR/target-switching/generate_workspace.sh" spm-release; then
         log_success "YAML generated"
     else
         log_error "YAML generation failed"

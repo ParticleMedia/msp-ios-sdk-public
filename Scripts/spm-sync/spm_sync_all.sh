@@ -28,9 +28,9 @@ main() {
     "$ROOT_DIR/Scripts/target-switching/validate_xcframeworks.sh" || err "validate_xcframeworks.sh reported problems."
   fi
 
-  if [[ -x "$ROOT_DIR/Scripts/target-switching/switch-target.sh" ]]; then
+  if [[ -x "$ROOT_DIR/Scripts/switch-target.sh" ]]; then
     log "You can now switch to SPM mode with:"
-    echo "  $ROOT_DIR/Scripts/target-switching/switch-target.sh spm"
+    echo "  $ROOT_DIR/Scripts/switch-target.sh spm-release"
   fi
 
   log "🎉 Pods → XCFramework → SPM sync complete."

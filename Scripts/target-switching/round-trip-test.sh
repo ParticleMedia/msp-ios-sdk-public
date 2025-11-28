@@ -230,7 +230,7 @@ test_pods_dev() {
     # Step 1: Switch to pods-dev
     echo ""
     echo "  [1/4] Switching to pods-dev..."
-    if MSP_RELEASE=0 "$SCRIPT_DIR/switch-target.sh" pods-dev >/dev/null 2>&1; then
+    if MSP_RELEASE=0 "$ROOT_DIR/Scripts/switch-target.sh" pods-dev >/dev/null 2>&1; then
         log_ok "switch-target.sh pods-dev succeeded"
     else
         log_fail "switch-target.sh pods-dev failed"
@@ -299,7 +299,7 @@ test_pods_release() {
     # Step 1: Switch to pods-release
     echo ""
     echo "  [1/3] Switching to pods-release..."
-    if MSP_RELEASE=1 "$SCRIPT_DIR/switch-target.sh" pods-release >/dev/null 2>&1; then
+    if MSP_RELEASE=1 "$ROOT_DIR/Scripts/switch-target.sh" pods-release >/dev/null 2>&1; then
         log_ok "switch-target.sh pods-release succeeded"
     else
         log_fail "switch-target.sh pods-release failed"
@@ -342,7 +342,7 @@ test_spm_release() {
     # Step 1: Switch to spm-release
     echo ""
     echo "  [1/4] Switching to spm-release..."
-    if "$SCRIPT_DIR/switch-target.sh" spm-release >/dev/null 2>&1; then
+    if "$ROOT_DIR/Scripts/switch-target.sh" spm-release >/dev/null 2>&1; then
         log_ok "switch-target.sh spm-release succeeded"
     else
         log_fail "switch-target.sh spm-release failed"

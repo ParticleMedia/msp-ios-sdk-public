@@ -76,14 +76,14 @@ This is handled automatically by `switch-target.sh` — always use `open msp-ios
 |----------|-------------|
 | Fresh clone (first time) | `pod install` → open workspace |
 | Already in Pods mode, want to stay | Nothing needed |
-| Switch to development mode | `./Scripts/target-switching/switch-target.sh pods-dev` |
-| Switch to release validation | `./Scripts/target-switching/switch-target.sh pods-release` |
-| Switch to SPM mode | `./Scripts/target-switching/switch-target.sh spm-release` |
+| Switch to development mode | `./Scripts/switch-target.sh pods-dev` |
+| Switch to release validation | `./Scripts/switch-target.sh pods-release` |
+| Switch to SPM mode | `./Scripts/switch-target.sh spm-release` |
 
 ### 2.1 Switch to SPM Mode
 
 ```bash
-./Scripts/target-switching/switch-target.sh spm-release
+./Scripts/switch-target.sh spm-release
 ```
 
 This will:
@@ -98,7 +98,7 @@ After Xcode opens, select scheme **MSPDemoApp-SPM** → Run.
 ### 2.2 Switch Back to CocoaPods Mode (from SPM)
 
 ```bash
-./Scripts/target-switching/switch-target.sh pods-dev
+./Scripts/switch-target.sh pods-dev
 ```
 
 This will:
@@ -235,7 +235,7 @@ open msp-ios-sdk.xcworkspace
 
 ```bash
 ./Scripts/spm-sync/spm_sync_all.sh
-./Scripts/target-switching/switch-target.sh spm-release
+./Scripts/switch-target.sh spm-release
 ```
 
 ### SPM: "no such module XXX"
@@ -243,7 +243,7 @@ open msp-ios-sdk.xcworkspace
 ```bash
 ./Scripts/target-switching/cleanup_spm.sh --force
 ./Scripts/spm-sync/spm_sync_all.sh
-./Scripts/target-switching/switch-target.sh spm-release
+./Scripts/switch-target.sh spm-release
 ```
 
 ### Nuclear Option (Full Reset)
@@ -257,7 +257,7 @@ pod install
 ./Scripts/spm-sync/spm_sync_all.sh
 
 # 3. Switch to desired mode
-./Scripts/target-switching/switch-target.sh pods-dev   # or: pods-release, spm-release
+./Scripts/switch-target.sh pods-dev   # or: pods-release, spm-release
 ```
 
 ### Full CI Validation

@@ -252,8 +252,8 @@ fi
 log_title "Step 4: CocoaPods Build"
 
 log_step "Switching to Pods mode..."
-if [[ -x "$ROOT_DIR/Scripts/target-switching/switch-target.sh" ]]; then
-    "$ROOT_DIR/Scripts/target-switching/switch-target.sh" pods || {
+if [[ -x "$ROOT_DIR/Scripts/switch-target.sh" ]]; then
+    "$ROOT_DIR/Scripts/switch-target.sh" pods || {
         log_error "switch-target.sh pods failed"
         ((FAILURES++)) || true
     }
@@ -292,7 +292,7 @@ log_title "Step 5: Swift Package Manager Build"
 
 log_step "Switching to SPM mode..."
 if [[ -x "$ROOT_DIR/Scripts/target-switching/switch-target.sh" ]]; then
-    "$ROOT_DIR/Scripts/target-switching/switch-target.sh" spm || {
+    "$ROOT_DIR/Scripts/switch-target.sh" spm || {
         log_error "switch-target.sh spm failed"
         ((FAILURES++)) || true
     }
@@ -351,8 +351,8 @@ fi
 log_title "Step 7: Final State Validation"
 
 log_step "Switching back to Pods mode..."
-if [[ -x "$ROOT_DIR/Scripts/target-switching/switch-target.sh" ]]; then
-    "$ROOT_DIR/Scripts/target-switching/switch-target.sh" pods || {
+if [[ -x "$ROOT_DIR/Scripts/switch-target.sh" ]]; then
+    "$ROOT_DIR/Scripts/switch-target.sh" pods || {
         log_error "Final switch-target.sh pods failed"
         ((FAILURES++)) || true
     }

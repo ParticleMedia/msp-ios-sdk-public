@@ -25,7 +25,7 @@ WORKSPACE_DATA="$WORKSPACE_PATH/contents.xcworkspacedata"
 
 if [[ ! -f "$WORKSPACE_SPEC" ]]; then
     log_error "workspace.yml not found: $WORKSPACE_SPEC"
-    log_info "Run './Scripts/target-switching/switch-target.sh [spm|pods]' first"
+    log_info "Run './Scripts/switch-target.sh [spm-release|pods-dev]' first"
     exit 1
 fi
 
