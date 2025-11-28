@@ -2,6 +2,9 @@
 
 # Modular Release Orchestrator
 # Orchestrates the complete release process: create branch → CocoaPods → SPM → push
+#
+# Phase 2 Step 4: Config-driven orchestrator
+# This script now uses environment variables from msp-release.sh instead of CLI arguments.
 
 set -e
 
@@ -10,17 +13,48 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT_DIR="$(cd "$SCRIPT_DIR/../.." && pwd)"
 source "$ROOT_DIR/Scripts/lib/release-common.sh"
 
-# Default values
-VERSION=""
-BASE_BRANCH=""  # Will be set to current branch dynamically
-RELEASE_BRANCH=""
-DRY_RUN="false"
-SKIP_COCOAPODS="false"
-SKIP_SPM="false"
-SKIP_PUSH="false"
-SKIP_CODE_SIGN="false"
-VERBOSE="false"
-RELEASE_NOTES=""
+# ============================================================================
+# Environment Variable Validation
+# ============================================================================
+# Check if required environment variables are set (from msp-release.sh)
+# If not set, fall back to CLI argument parsing for backward compatibility
+
+if [[ -z "${RELEASE_VERSION:-}" ]]; then
+    # Backward compatibility: extract from CLI if called directly
+    if [[ $# -gt 0 && ! "$1" =~ ^-- ]]; then
+        RELEASE_VERSION="$1"
+        shift
+    else
+        log_error "RELEASE_VERSION not set. Did you forget to run via msp-release.sh?"
+        log_info "Usage: msp-release.sh run <VERSION>"
+        log_info "   or: $0 <VERSION> [OPTIONS]  (direct call for debugging)"
+        exit 1
+    fi
+fi
+
+# Use environment variables with CLI fallback for backward compatibility
+VERSION="${RELEASE_VERSION:-}"
+BASE_BRANCH="${BASE_BRANCH:-}"
+RELEASE_BRANCH="${RELEASE_BRANCH:-}"
+DRY_RUN="${DRY_RUN:-false}"
+SKIP_PUSH="${SKIP_PUSH:-false}"
+SKIP_CODE_SIGN="${SKIP_CODE_SIGN:-false}"
+VERBOSE="${VERBOSE:-false}"
+RELEASE_NOTES="${RELEASE_NOTES:-}"
+
+# Use PODS_ENABLED and SPM_ENABLED from environment (normalized by msp-release.sh)
+# Convert to SKIP flags for internal use
+if [[ "${PODS_ENABLED:-true}" == "false" ]]; then
+    SKIP_COCOAPODS="true"
+else
+    SKIP_COCOAPODS="false"
+fi
+
+if [[ "${SPM_ENABLED:-true}" == "false" ]]; then
+    SKIP_SPM="true"
+else
+    SKIP_SPM="false"
+fi
 
 # Release tracking variables
 RELEASE_START_TIME=""
@@ -33,8 +67,13 @@ GITHUB_RELEASES_SUCCESS=()
 GITHUB_RELEASES_FAILED=()
 OVERALL_SUCCESS="true"
 
-# Parse command line arguments
+# ============================================================================
+# Backward Compatibility: CLI Argument Parsing
+# ============================================================================
+# Only used if script is called directly (not via msp-release.sh)
+# This allows debugging and direct execution for backward compatibility
 parse_arguments() {
+    # Only parse if we have remaining CLI args (backward compatibility)
     while [[ $# -gt 0 ]]; do
         case $1 in
             --help|-h)
@@ -42,7 +81,7 @@ parse_arguments() {
                 exit 0
                 ;;
             --version|-v)
-                echo "Modular Release Orchestrator v1.0.0"
+                echo "Modular Release Orchestrator v2.0.0-phase2"
                 exit 0
                 ;;
             --base-branch)
@@ -57,7 +96,7 @@ parse_arguments() {
                 DRY_RUN="true"
                 shift
                 ;;
-            --skip-cocoapods)
+            --skip-cocoapods|--skip-pods)
                 SKIP_COCOAPODS="true"
                 shift
                 ;;
@@ -86,13 +125,7 @@ parse_arguments() {
                 shift 2
                 ;;
             *)
-                if [[ -z "$VERSION" ]]; then
-                    VERSION="$1"
-                else
-                    log_error "Unknown argument: $1"
-                    show_help
-                    exit 1
-                fi
+                # Unknown argument - ignore (already processed VERSION above)
                 shift
                 ;;
         esac
@@ -132,8 +165,11 @@ show_help() {
     echo "  $0 --skip-spm 0.0.2-migration-spm"
 }
 
-# Validate inputs
+# ============================================================================
+# Validate Inputs
+# ============================================================================
 validate_inputs() {
+    # VERSION should already be set from RELEASE_VERSION
     if [[ -z "$VERSION" ]]; then
         log_error "Version is required"
         show_help
@@ -144,7 +180,7 @@ validate_inputs() {
     if [[ -z "$BASE_BRANCH" ]]; then
         BASE_BRANCH="$(git branch --show-current)"
         if [[ -z "$BASE_BRANCH" ]]; then
-            log_error "Could not determine current branch. Please specify --base-branch"
+            log_error "Could not determine current branch. Please specify BASE_BRANCH environment variable or --base-branch"
             exit 1
         fi
     fi
@@ -159,8 +195,14 @@ validate_inputs() {
     log_info "  Base Branch: $BASE_BRANCH"
     log_info "  Release Branch: $RELEASE_BRANCH"
     log_info "  Dry Run: $DRY_RUN"
-    log_info "  Skip CocoaPods: $SKIP_COCOAPODS"
-    log_info "  Skip SPM: $SKIP_SPM"
+    log_info "  Pods Enabled: $([ "$SKIP_COCOAPODS" == "true" ] && echo "false" || echo "true")"
+    log_info "  SPM Enabled: $([ "$SKIP_SPM" == "true" ] && echo "false" || echo "true")"
+    if [[ -n "${PODS_MODULES:-}" ]]; then
+        log_info "  Pods Modules: $PODS_MODULES"
+    fi
+    if [[ -n "${SPM_PACKAGES:-}" ]]; then
+        log_info "  SPM Packages: $SPM_PACKAGES"
+    fi
     log_info "  Skip Push: $SKIP_PUSH"
 }
 
@@ -212,7 +254,7 @@ create_release_branch() {
 # Step 2: Release CocoaPods
 release_cocoapods() {
     if [[ "$SKIP_COCOAPODS" == "true" ]]; then
-        log_info "Skipping CocoaPods release (--skip-cocoapods flag)"
+        log_info "Skipping CocoaPods release (PODS_ENABLED=false)"
         return 0
     fi
     
@@ -223,31 +265,36 @@ release_cocoapods() {
         git checkout "$RELEASE_BRANCH"
     fi
     
-    local cocoapods_cmd="$SCRIPT_DIR/release-cocoapods-modular.sh"
-    if [[ "$DRY_RUN" == "true" ]]; then
-        cocoapods_cmd="$cocoapods_cmd --dry-run"
-    fi
-    if [[ "$VERBOSE" == "true" ]]; then
-        cocoapods_cmd="$cocoapods_cmd --verbose"
-    fi
-    if [[ -n "$RELEASE_NOTES" ]]; then
-        cocoapods_cmd="$cocoapods_cmd --release-notes \"$RELEASE_NOTES\""
-    fi
-    cocoapods_cmd="$cocoapods_cmd --release-branch $RELEASE_BRANCH $VERSION"
+    # Export environment variables for cocoapods.sh
+    # Child script should NOT parse CLI arguments, only use environment variables
+    export RELEASE_VERSION="$VERSION"
+    export RELEASE_BRANCH="$RELEASE_BRANCH"
+    export DRY_RUN="$DRY_RUN"
+    export VERBOSE="$VERBOSE"
+    export PODS_MODULES="${PODS_MODULES:-}"
+    export RELEASE_NOTES="${RELEASE_NOTES:-}"
     
-    log_info "Executing: $cocoapods_cmd"
+    log_info "Calling cocoapods.sh with environment variables:"
+    log_info "  RELEASE_VERSION=$RELEASE_VERSION"
+    log_info "  RELEASE_BRANCH=$RELEASE_BRANCH"
+    log_info "  PODS_MODULES=$PODS_MODULES"
     
-    if eval "$cocoapods_cmd"; then
+    # Call cocoapods.sh directly (no CLI arguments)
+    if "$SCRIPT_DIR/cocoapods.sh"; then
         log_success "CocoaPods released successfully"
-        # In a real implementation, we would parse the output to track individual pod success/failure
-        # For now, we'll assume all pods succeeded if the overall command succeeded
-        if [[ "$DRY_RUN" != "true" ]]; then
-            COCOAPODS_SUCCESS+=("MSPSharedLibraries" "MSPFacebookAdapter" "MSPGoogleAdapter" "NovaAdapter" "AmazonAdapter" "PrebidAdapter" "MSPCore")
+        # Track success based on PODS_MODULES if available
+        if [[ "$DRY_RUN" != "true" && -n "${PODS_MODULES:-}" ]]; then
+            # Split PODS_MODULES space-separated string into array
+            for module in $PODS_MODULES; do
+                COCOAPODS_SUCCESS+=("$module")
+            done
+        elif [[ "$DRY_RUN" != "true" ]]; then
+            # Fallback to default list if PODS_MODULES not set
+            COCOAPODS_SUCCESS+=("MSPSharedLibraries" "MSPFacebookAdapter" "MSPGoogleAdapter" "NovaAdapter" "AmazonAdapter" "MSPPrebidAdapter" "MSPCore")
         fi
     else
         log_error "Failed to release CocoaPods"
         OVERALL_SUCCESS="false"
-        # In a real implementation, we would parse the output to track which pods failed
         COCOAPODS_FAILED+=("CocoaPods release failed")
     fi
 }
@@ -255,7 +302,7 @@ release_cocoapods() {
 # Step 3: Release SPM
 release_spm() {
     if [[ "$SKIP_SPM" == "true" ]]; then
-        log_info "Skipping SPM release (--skip-spm flag)"
+        log_info "Skipping SPM release (SPM_ENABLED=false)"
         return 0
     fi
     
@@ -266,23 +313,31 @@ release_spm() {
         git checkout "$RELEASE_BRANCH"
     fi
     
-    local spm_cmd="$SCRIPT_DIR/release-spm-modular.sh"
-    if [[ "$DRY_RUN" == "true" ]]; then
-        spm_cmd="$spm_cmd --dry-run"
-    fi
-    if [[ "$VERBOSE" == "true" ]]; then
-        spm_cmd="$spm_cmd --verbose"
-    fi
-    if [[ -n "$RELEASE_NOTES" ]]; then
-        spm_cmd="$spm_cmd --release-notes \"$RELEASE_NOTES\""
-    fi
-    spm_cmd="$spm_cmd --release-branch $RELEASE_BRANCH $VERSION"
+    # Export environment variables for spm.sh
+    # Child script should NOT parse CLI arguments, only use environment variables
+    export RELEASE_VERSION="$VERSION"
+    export RELEASE_BRANCH="$RELEASE_BRANCH"
+    export DRY_RUN="$DRY_RUN"
+    export VERBOSE="$VERBOSE"
+    export SPM_PACKAGES="${SPM_PACKAGES:-}"
+    export RELEASE_NOTES="${RELEASE_NOTES:-}"
     
-    log_info "Executing: $spm_cmd"
+    log_info "Calling spm.sh with environment variables:"
+    log_info "  RELEASE_VERSION=$RELEASE_VERSION"
+    log_info "  RELEASE_BRANCH=$RELEASE_BRANCH"
+    log_info "  SPM_PACKAGES=$SPM_PACKAGES"
     
-    if eval "$spm_cmd"; then
+    # Call spm.sh directly (no CLI arguments)
+    if "$SCRIPT_DIR/spm.sh"; then
         log_success "SPM released successfully"
-        if [[ "$DRY_RUN" != "true" ]]; then
+        # Track success based on SPM_PACKAGES if available
+        if [[ "$DRY_RUN" != "true" && -n "${SPM_PACKAGES:-}" ]]; then
+            # Split SPM_PACKAGES space-separated string into array
+            for package in $SPM_PACKAGES; do
+                SPM_SUCCESS+=("$package")
+            done
+        elif [[ "$DRY_RUN" != "true" ]]; then
+            # Fallback to default list if SPM_PACKAGES not set
             SPM_SUCCESS+=("NovaCore" "NovaAdapter")
         fi
     else
@@ -443,8 +498,11 @@ show_comprehensive_release_summary() {
 
 # Main function
 main() {
-    # Parse arguments
-    parse_arguments "$@"
+    # Backward compatibility: parse remaining CLI arguments if any
+    # (Only used if script is called directly, not via msp-release.sh)
+    if [[ $# -gt 0 ]]; then
+        parse_arguments "$@"
+    fi
     
     # Validate inputs
     validate_inputs
@@ -479,8 +537,10 @@ main() {
     show_comprehensive_release_summary
 }
 
-# Show usage if no arguments provided
-if [[ $# -eq 0 ]]; then
+# Entry point
+# If RELEASE_VERSION is set from environment (via msp-release.sh), use it directly
+# Otherwise, require CLI arguments for backward compatibility
+if [[ -z "${RELEASE_VERSION:-}" && $# -eq 0 ]]; then
     show_help
     exit 1
 fi

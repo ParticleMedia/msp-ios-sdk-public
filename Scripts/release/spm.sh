@@ -2,6 +2,9 @@
 
 # Modular SPM Release Script
 # Releases Swift Package Manager packages
+#
+# Phase 2 Step 4: Config-driven release
+# This script now uses environment variables from msp-release.sh instead of CLI arguments.
 
 set -e
 
@@ -10,15 +13,42 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT_DIR="$(cd "$SCRIPT_DIR/../.." && pwd)"
 source "$ROOT_DIR/Scripts/lib/release-common.sh"
 
-# Default values
-VERSION=""
-RELEASE_BRANCH=""
-RELEASE_NOTES=""
-DRY_RUN="false"
-VERBOSE="false"
+# ============================================================================
+# Environment Variable Validation
+# ============================================================================
+# Check if required environment variables are set (from msp-release.sh)
+# If not set, fall back to CLI argument parsing for backward compatibility
 
-# Parse command line arguments
+if [[ -z "${RELEASE_VERSION:-}" ]]; then
+    # Backward compatibility: extract from CLI if called directly
+    if [[ $# -gt 0 && ! "$1" =~ ^-- ]]; then
+        RELEASE_VERSION="$1"
+        shift
+    else
+        log_error "RELEASE_VERSION not set. Did you forget to run via msp-release.sh?"
+        log_info "Usage: msp-release.sh spm <VERSION>"
+        log_info "   or: $0 <VERSION> [OPTIONS]  (direct call for debugging)"
+        exit 1
+    fi
+fi
+
+# Use environment variables with CLI fallback for backward compatibility
+VERSION="${RELEASE_VERSION:-}"
+RELEASE_BRANCH="${RELEASE_BRANCH:-}"
+RELEASE_NOTES="${RELEASE_NOTES:-}"
+DRY_RUN="${DRY_RUN:-false}"
+VERBOSE="${VERBOSE:-false}"
+
+# Default SPM packages if SPM_PACKAGES not set (backward compatibility)
+DEFAULT_SPM_PACKAGES="NovaCore NovaAdapter"
+SPM_PACKAGES="${SPM_PACKAGES:-$DEFAULT_SPM_PACKAGES}"
+
+# ============================================================================
+# Backward Compatibility: CLI Argument Parsing
+# ============================================================================
+# Only used if script is called directly (not via msp-release.sh)
 parse_arguments() {
+    # Only parse if we have remaining CLI args (backward compatibility)
     while [[ $# -gt 0 ]]; do
         case $1 in
             --help|-h)
@@ -26,7 +56,7 @@ parse_arguments() {
                 exit 0
                 ;;
             --version|-v)
-                echo "Modular SPM Release Script v1.0.0"
+                echo "Modular SPM Release Script v2.0.0-phase2"
                 exit 0
                 ;;
             --release-branch)
@@ -46,13 +76,7 @@ parse_arguments() {
                 shift 2
                 ;;
             *)
-                if [[ -z "$VERSION" ]]; then
-                    VERSION="$1"
-                else
-                    log_error "Unknown argument: $1"
-                    show_help
-                    exit 1
-                fi
+                # Unknown argument - ignore (already processed VERSION above)
                 shift
                 ;;
         esac
@@ -98,6 +122,9 @@ validate_inputs() {
     log_info "  Version: $VERSION"
     log_info "  Release Branch: $RELEASE_BRANCH"
     log_info "  Dry Run: $DRY_RUN"
+    if [[ -n "${SPM_PACKAGES:-}" ]]; then
+        log_info "  SPM Packages: $SPM_PACKAGES"
+    fi
 }
 
 # Check if we're on the correct release branch
@@ -201,40 +228,53 @@ push_spm_tags() {
     log_success "Pushed SPM tags to remote"
 }
 
-# Release NovaCore SPM package
-release_novacore_spm() {
-    log_release "Releasing NovaCore SPM package"
+# Release a single SPM package
+release_spm_package() {
+    local package_name="$1"
+    local version="$2"
     
-    # Update NovaCore Package.swift version
-    update_package_swift_version "NovaCore/Package.swift" "$VERSION"
+    log_release "Releasing $package_name SPM package"
     
-    # Create tag for NovaCore
-    create_spm_tag "NovaCore" "$VERSION"
+    # Find Package.swift file for this package
+    # SPM packages may be in different locations
+    local package_file=""
+    if [[ -f "$package_name/Package.swift" ]]; then
+        package_file="$package_name/Package.swift"
+    elif [[ -f "Sources/$package_name/Package.swift" ]]; then
+        package_file="Sources/$package_name/Package.swift"
+    elif [[ -f "$ROOT_DIR/$package_name/Package.swift" ]]; then
+        package_file="$ROOT_DIR/$package_name/Package.swift"
+    else
+        log_warn "Package.swift not found for $package_name, skipping version update"
+    fi
     
-    log_success "NovaCore SPM package released"
-}
-
-# Release NovaAdapter SPM package
-release_novaadapter_spm() {
-    log_release "Releasing NovaAdapter SPM package"
+    # Update Package.swift version if found
+    if [[ -n "$package_file" ]]; then
+        update_package_swift_version "$package_file" "$version"
+    fi
     
-    # Update NovaAdapter Package.swift version
-    update_package_swift_version "NovaAdapter/Package.swift" "$VERSION"
+    # Update dependencies if this package depends on other SPM packages
+    # For example, NovaAdapter depends on NovaCore
+    if [[ "$package_name" == "NovaAdapter" ]]; then
+        if [[ -n "$package_file" ]]; then
+            update_package_swift_dependency "$package_file" "NovaCore" "$version"
+        fi
+    fi
     
-    # Update NovaAdapter dependency on NovaCore
-    update_package_swift_dependency "NovaAdapter/Package.swift" "NovaCore" "$VERSION"
+    # Create tag for this package
+    create_spm_tag "$package_name" "$version"
     
-    # Create tag for NovaAdapter
-    create_spm_tag "NovaAdapter" "$VERSION"
-    
-    log_success "NovaAdapter SPM package released"
+    log_success "$package_name SPM package released"
 }
 
 
 # Main function
 main() {
-    # Parse arguments
-    parse_arguments "$@"
+    # Backward compatibility: parse remaining CLI arguments if any
+    # (Only used if script is called directly, not via msp-release.sh)
+    if [[ $# -gt 0 ]]; then
+        parse_arguments "$@"
+    fi
     
     # Validate inputs
     validate_inputs
@@ -252,35 +292,40 @@ main() {
     
     # Skip individual start notifications - only send final success/failure
     
+    # Convert SPM_PACKAGES space-separated string to array
+    local spm_packages_array=()
+    for package in $SPM_PACKAGES; do
+        spm_packages_array+=("$package")
+    done
+    
+    if [[ ${#spm_packages_array[@]} -eq 0 ]]; then
+        log_warn "SPM_PACKAGES is empty. Using default package list for backward compatibility."
+        spm_packages_array=("NovaCore" "NovaAdapter")
+    fi
+    
+    log_info "Releasing SPM packages from SPM_PACKAGES: ${spm_packages_array[*]}"
+    
     # Track release statistics
-    local total_packages=2
+    local total_packages=${#spm_packages_array[@]}
     local successful_packages=0
     local failed_packages=0
     local failed_package_names=()
+    local successful_package_names=()
     
-    # Release NovaCore SPM package
-    if release_novacore_spm; then
-        ((successful_packages++))
-    else
-        ((failed_packages++))
-        failed_package_names+=("NovaCore")
-        if [[ "$DRY_RUN" != "true" ]]; then
-            notify_release_failure "SPM" "$VERSION" "NovaCore release failed" "Core Package Release"
+    # Release each SPM package in order
+    for package in "${spm_packages_array[@]}"; do
+        if release_spm_package "$package" "$VERSION"; then
+            ((successful_packages++))
+            successful_package_names+=("$package")
+        else
+            ((failed_packages++))
+            failed_package_names+=("$package")
+            if [[ "$DRY_RUN" != "true" ]]; then
+                notify_release_failure "SPM" "$VERSION" "$package release failed" "Package Release"
+            fi
+            exit 1
         fi
-        exit 1
-    fi
-    
-    # Release NovaAdapter SPM package
-    if release_novaadapter_spm; then
-        ((successful_packages++))
-    else
-        ((failed_packages++))
-        failed_package_names+=("NovaAdapter")
-        if [[ "$DRY_RUN" != "true" ]]; then
-            notify_release_failure "SPM" "$VERSION" "NovaAdapter release failed" "Adapter Package Release"
-        fi
-        exit 1
-    fi
+    done
     
     
     # Push all tags
@@ -301,18 +346,21 @@ main() {
     print_section "SPM Release Process Completed Successfully"
     log_success "All SPM packages released successfully for version: $VERSION"
     log_info "SPM packages available at:"
-    log_info "  NovaCore: https://github.com/ParticleMedia/msp-ios-sdk-public.git (tag: NovaCore-$VERSION)"
-    log_info "  NovaAdapter: https://github.com/ParticleMedia/msp-ios-sdk-public.git (tag: NovaAdapter-$VERSION)"
+    for package in "${successful_package_names[@]}"; do
+        log_info "  $package: https://github.com/ParticleMedia/msp-ios-sdk-public.git (tag: ${package}-${VERSION})"
+    done
     
     # Send single comprehensive success notification (skip in dry-run mode)
     if [[ "$DRY_RUN" != "true" ]]; then
-        local spm_packages="NovaCore, NovaAdapter"
-        notify_release_success_with_summary "SPM" "$VERSION" "$spm_packages" "$duration_formatted" "$RELEASE_NOTES" "$total_packages" "$successful_packages" "$failed_packages" "$RELEASE_BRANCH"
+        local spm_packages_list=$(IFS=", "; echo "${successful_package_names[*]}")
+        notify_release_success_with_summary "SPM" "$VERSION" "$spm_packages_list" "$duration_formatted" "$RELEASE_NOTES" "$total_packages" "$successful_packages" "$failed_packages" "$RELEASE_BRANCH"
     fi
 }
 
-# Show usage if no arguments provided
-if [[ $# -eq 0 ]]; then
+# Entry point
+# If RELEASE_VERSION is set from environment (via msp-release.sh), use it directly
+# Otherwise, require CLI arguments for backward compatibility
+if [[ -z "${RELEASE_VERSION:-}" && $# -eq 0 ]]; then
     show_help
     exit 1
 fi

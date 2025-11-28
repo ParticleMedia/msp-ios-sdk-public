@@ -2,6 +2,9 @@
 
 # Modular CocoaPods Release Script
 # Follows the exact release workflow: MSPSharedLibraries → Adapters → MSPCore
+#
+# Phase 2 Step 4: Config-driven release
+# This script now uses environment variables from msp-release.sh instead of CLI arguments.
 
 # Ensure UTF-8 encoding for CocoaPods
 export LANG=en_US.UTF-8
@@ -14,18 +17,45 @@ ROOT_DIR="$(cd "$SCRIPT_DIR/../.." && pwd)"
 source "$ROOT_DIR/Scripts/lib/release-common.sh"
 source "$ROOT_DIR/Scripts/lib/cocoapods.sh"
 
-# Default values
-VERSION=""
-RELEASE_BRANCH=""
-DRY_RUN="false"
-SKIP_VALIDATION="false"
-VERBOSE="false"
-RELEASE_NOTES_SOURCE="auto"  # auto, git, template, prompt
-RELEASE_NOTES_TEMPLATE=""
-RELEASE_NOTES=""
+# ============================================================================
+# Environment Variable Validation
+# ============================================================================
+# Check if required environment variables are set (from msp-release.sh)
+# If not set, fall back to CLI argument parsing for backward compatibility
 
-# Parse command line arguments
+if [[ -z "${RELEASE_VERSION:-}" ]]; then
+    # Backward compatibility: extract from CLI if called directly
+    if [[ $# -gt 0 && ! "$1" =~ ^-- ]]; then
+        RELEASE_VERSION="$1"
+        shift
+    else
+        log_error "RELEASE_VERSION not set. Did you forget to run via msp-release.sh?"
+        log_info "Usage: msp-release.sh pods <VERSION>"
+        log_info "   or: $0 <VERSION> [OPTIONS]  (direct call for debugging)"
+        exit 1
+    fi
+fi
+
+# Use environment variables with CLI fallback for backward compatibility
+VERSION="${RELEASE_VERSION:-}"
+RELEASE_BRANCH="${RELEASE_BRANCH:-}"
+DRY_RUN="${DRY_RUN:-false}"
+SKIP_VALIDATION="${SKIP_VALIDATION:-false}"
+VERBOSE="${VERBOSE:-false}"
+RELEASE_NOTES_SOURCE="${RELEASE_NOTES_SOURCE:-auto}"
+RELEASE_NOTES_TEMPLATE="${RELEASE_NOTES_TEMPLATE:-}"
+RELEASE_NOTES="${RELEASE_NOTES:-}"
+
+# Default pod modules if PODS_MODULES not set (backward compatibility)
+DEFAULT_PODS_MODULES="MSPSharedLibraries MSPPrebidAdapter MSPCore MSPGoogleAdapter MSPFacebookAdapter NovaAdapter AmazonAdapter"
+PODS_MODULES="${PODS_MODULES:-$DEFAULT_PODS_MODULES}"
+
+# ============================================================================
+# Backward Compatibility: CLI Argument Parsing
+# ============================================================================
+# Only used if script is called directly (not via msp-release.sh)
 parse_arguments() {
+    # Only parse if we have remaining CLI args (backward compatibility)
     while [[ $# -gt 0 ]]; do
         case $1 in
             --help|-h)
@@ -33,7 +63,7 @@ parse_arguments() {
                 exit 0
                 ;;
             --version|-v)
-                echo "Modular CocoaPods Release Script v1.0.0"
+                echo "Modular CocoaPods Release Script v2.0.0-phase2"
                 exit 0
                 ;;
             --release-branch)
@@ -65,13 +95,7 @@ parse_arguments() {
                 shift 2
                 ;;
             *)
-                if [[ -z "$VERSION" ]]; then
-                    VERSION="$1"
-                else
-                    log_error "Unknown argument: $1"
-                    show_help
-                    exit 1
-                fi
+                # Unknown argument - ignore (already processed VERSION above)
                 shift
                 ;;
         esac
@@ -419,7 +443,32 @@ release_adapters() {
         return 1
     fi
     
-    local adapters=("MSPFacebookAdapter" "MSPGoogleAdapter" "NovaAdapter" "AmazonAdapter" "PrebidAdapter")
+    # Extract adapters from PODS_MODULES (exclude MSPSharedLibraries and MSPCore)
+    # Adapters are all modules that are not core modules
+    local core_modules=("MSPSharedLibraries" "MSPCore" "MSPiOSCore" "MSPOMSDK" "NovaCore" "MSPGoogleAdsTypes")
+    local adapters=()
+    
+    # Split PODS_MODULES space-separated string and filter out core modules
+    for module in $PODS_MODULES; do
+        local is_core=false
+        for core in "${core_modules[@]}"; do
+            if [[ "$module" == "$core" ]]; then
+                is_core=true
+                break
+            fi
+        done
+        if [[ "$is_core" == "false" ]]; then
+            adapters+=("$module")
+        fi
+    done
+    
+    if [[ ${#adapters[@]} -eq 0 ]]; then
+        log_warn "No adapters found in PODS_MODULES. Using default adapter list for backward compatibility."
+        adapters=("MSPFacebookAdapter" "MSPGoogleAdapter" "NovaAdapter" "AmazonAdapter" "MSPPrebidAdapter")
+    fi
+    
+    log_info "Releasing adapters from PODS_MODULES: ${adapters[*]}"
+    
     local pids=()
     local result_files=()
     local temp_dir="/tmp/msp_parallel_release_$$"
@@ -514,11 +563,16 @@ release_adapters() {
             return 1
         fi
         
-        # Check PrebidAdapter availability (MSPCore depends on it)
-        log_info "Checking PrebidAdapter availability..."
-        if ! wait_for_pod_availability "PrebidAdapter" "$VERSION"; then
-            log_error "PrebidAdapter not available, cannot proceed with MSPCore release"
-            return 1
+        # Check MSPPrebidAdapter availability (MSPCore depends on it)
+        # Only check if MSPPrebidAdapter is in PODS_MODULES
+        if echo "$PODS_MODULES" | grep -q "MSPPrebidAdapter"; then
+            log_info "Checking MSPPrebidAdapter availability..."
+            if ! wait_for_pod_availability "MSPPrebidAdapter" "$VERSION"; then
+                log_error "MSPPrebidAdapter not available, cannot proceed with MSPCore release"
+                return 1
+            fi
+        else
+            log_info "MSPPrebidAdapter not in PODS_MODULES, skipping availability check"
         fi
         
         log_success "All dependencies available for MSPCore release"
@@ -580,8 +634,11 @@ commit_release_changes() {
 
 # Main function
 main() {
-    # Parse arguments
-    parse_arguments "$@"
+    # Backward compatibility: parse remaining CLI arguments if any
+    # (Only used if script is called directly, not via msp-release.sh)
+    if [[ $# -gt 0 ]]; then
+        parse_arguments "$@"
+    fi
     
     # Validate inputs
     validate_inputs
@@ -607,8 +664,19 @@ main() {
         release_notes=$(get_release_notes "$VERSION" "CocoaPods" "$RELEASE_NOTES_SOURCE" "$RELEASE_NOTES_TEMPLATE")
     fi
     
-    # Create CocoaPods-specific pod list (exclude MSPOMSDK which is SPM-only)
-    local cocoapods_pods=("MSPSharedLibraries" "MSPFacebookAdapter" "MSPGoogleAdapter" "NovaAdapter" "AmazonAdapter" "PrebidAdapter" "MSPCore")
+    # Create CocoaPods-specific pod list from PODS_MODULES
+    # Convert space-separated PODS_MODULES to array
+    local cocoapods_pods=()
+    for module in $PODS_MODULES; do
+        cocoapods_pods+=("$module")
+    done
+    
+    if [[ ${#cocoapods_pods[@]} -eq 0 ]]; then
+        log_warn "PODS_MODULES is empty. Using default pod list for backward compatibility."
+        cocoapods_pods=("MSPSharedLibraries" "MSPFacebookAdapter" "MSPGoogleAdapter" "NovaAdapter" "AmazonAdapter" "MSPPrebidAdapter" "MSPCore")
+    fi
+    
+    log_info "Releasing pods from PODS_MODULES: ${cocoapods_pods[*]}"
     
     # Skip individual start notifications - only send final success/failure
     
@@ -677,8 +745,10 @@ main() {
     fi
 }
 
-# Show usage if no arguments provided
-if [[ $# -eq 0 ]]; then
+# Entry point
+# If RELEASE_VERSION is set from environment (via msp-release.sh), use it directly
+# Otherwise, require CLI arguments for backward compatibility
+if [[ -z "${RELEASE_VERSION:-}" && $# -eq 0 ]]; then
     show_help
     exit 1
 fi
