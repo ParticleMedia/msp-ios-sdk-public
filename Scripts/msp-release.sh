@@ -26,6 +26,24 @@ DEFAULT_CONFIG_FILE="$SCRIPT_DIR/release/config/release.yaml"
 readonly MSP_RELEASE_VERSION="1.2.0-phase2-step3"
 
 # ============================================================================
+# Source Release Common Library (loads UI system)
+# ============================================================================
+# Handle NO_ANSI flag early (before sourcing release-common.sh)
+# This ensures NO_COLOR is set before logging.sh is loaded
+if [[ "${NO_ANSI:-false}" == "true" ]]; then
+    export NO_COLOR=1
+fi
+
+# Source release-common.sh which loads colors.sh, ui.sh, logging.sh, and utils
+if [[ -f "$ROOT_DIR/Scripts/lib/release-common.sh" ]]; then
+    # shellcheck source=Scripts/lib/release-common.sh
+    source "$ROOT_DIR/Scripts/lib/release-common.sh"
+else
+    echo "ERROR: release-common.sh not found" >&2
+    exit 1
+fi
+
+# ============================================================================
 # Source Config Module
 # ============================================================================
 if [[ -f "$SCRIPT_DIR/release/utils/config.sh" ]]; then
@@ -35,17 +53,6 @@ if [[ -f "$SCRIPT_DIR/release/utils/config.sh" ]]; then
 else
     CONFIG_MODULE_LOADED=false
 fi
-
-# ============================================================================
-# Colors for output (can be disabled with --no-ansi)
-# ============================================================================
-RED='\033[0;31m'
-GREEN='\033[0;32m'
-YELLOW='\033[1;33m'
-BLUE='\033[0;34m'
-CYAN='\033[0;36m'
-BOLD='\033[1m'
-NC='\033[0m'
 
 # ============================================================================
 # Subcommand Registry
@@ -80,56 +87,11 @@ CLI_VERSION=""
 SUBCOMMAND=""
 
 # ============================================================================
-# CLI Logging Helpers (respect VERBOSE and NO_ANSI)
+# Logging Functions
 # ============================================================================
-cli_debug() {
-    if [[ "$VERBOSE" == "true" ]]; then
-        if [[ "$NO_ANSI" == "true" ]]; then
-            echo "[DEBUG] $1"
-        else
-            echo -e "${CYAN}🔍${NC} $1"
-        fi
-    fi
-}
-
-cli_info() {
-    if [[ "$NO_ANSI" == "true" ]]; then
-        echo "[INFO] $1"
-    else
-        echo -e "${BLUE}ℹ${NC}  $1"
-    fi
-}
-
-cli_success() {
-    if [[ "$NO_ANSI" == "true" ]]; then
-        echo "[OK] $1"
-    else
-        echo -e "${GREEN}✓${NC}  $1"
-    fi
-}
-
-cli_warn() {
-    if [[ "$NO_ANSI" == "true" ]]; then
-        echo "[WARN] $1" >&2
-    else
-        echo -e "${YELLOW}⚠${NC}  $1" >&2
-    fi
-}
-
-cli_error() {
-    if [[ "$NO_ANSI" == "true" ]]; then
-        echo "[ERROR] $1" >&2
-    else
-        echo -e "${RED}✗${NC}  $1" >&2
-    fi
-}
-
-# Legacy logging functions (for backward compatibility)
-log_info() { cli_info "$1"; }
-log_success() { cli_success "$1"; }
-log_error() { cli_error "$1"; }
-log_warn() { cli_warn "$1"; }
-log_debug() { cli_debug "$1"; }
+# All logging functions are provided by release-common.sh (via logging.sh)
+# log_info, log_success, log_error, log_warn, log_debug are available
+# NO_ANSI is handled by release-common.sh setting NO_COLOR=1
 
 # ============================================================================
 # Flag Parser
@@ -146,7 +108,7 @@ parse_flags() {
                     CONFIG_FILE="$2"
                     shift 2
                 else
-                    cli_error "--config requires a file path"
+                    log_error "--config requires a file path"
                     exit 1
                 fi
                 ;;
@@ -271,7 +233,7 @@ apply_cli_overrides() {
         if [[ "$CONFIG_MODULE_LOADED" == "true" ]]; then
             set_config_version "$CLI_VERSION"
         fi
-        cli_debug "[CLI] Override: RELEASE_VERSION=$CLI_VERSION"
+        log_debug "[CLI] Override: RELEASE_VERSION=$CLI_VERSION"
     fi
     
     # Pods enabled override
@@ -280,13 +242,13 @@ apply_cli_overrides() {
         if [[ "$CONFIG_MODULE_LOADED" == "true" ]]; then
             set_config_pods_enabled "false"
         fi
-        cli_debug "[CLI] Override: PODS_ENABLED=false"
+        log_debug "[CLI] Override: PODS_ENABLED=false"
     elif [[ "$ONLY_PODS" == "true" ]]; then
         export PODS_ENABLED="true"
         if [[ "$CONFIG_MODULE_LOADED" == "true" ]]; then
             set_config_pods_enabled "true"
         fi
-        cli_debug "[CLI] Override: PODS_ENABLED=true (only-pods)"
+        log_debug "[CLI] Override: PODS_ENABLED=true (only-pods)"
     fi
     
     # SPM enabled override
@@ -295,13 +257,13 @@ apply_cli_overrides() {
         if [[ "$CONFIG_MODULE_LOADED" == "true" ]]; then
             set_config_spm_enabled "false"
         fi
-        cli_debug "[CLI] Override: SPM_ENABLED=false"
+        log_debug "[CLI] Override: SPM_ENABLED=false"
     elif [[ "$ONLY_SPM" == "true" ]]; then
         export SPM_ENABLED="true"
         if [[ "$CONFIG_MODULE_LOADED" == "true" ]]; then
             set_config_spm_enabled "true"
         fi
-        cli_debug "[CLI] Override: SPM_ENABLED=true (only-spm)"
+        log_debug "[CLI] Override: SPM_ENABLED=true (only-spm)"
     fi
     
     # Export other CLI flags
@@ -310,7 +272,7 @@ apply_cli_overrides() {
     export SKIP_PREFLIGHT="$SKIP_PREFLIGHT"
     export NO_ANSI="$NO_ANSI"
     
-    cli_debug "[CLI] Applied all CLI overrides"
+    log_debug "[CLI] Applied all CLI overrides"
 }
 
 # ============================================================================
@@ -321,7 +283,7 @@ apply_cli_overrides() {
 load_release_config() {
     # If config module is not available, skip config loading (backward compatibility)
     if [[ "$CONFIG_MODULE_LOADED" != "true" ]]; then
-        cli_debug "[CONFIG] Config module not available - using CLI arguments only"
+        log_debug "[CONFIG] Config module not available - using CLI arguments only"
         return 0
     fi
     
@@ -332,7 +294,7 @@ load_release_config() {
     if [[ -n "$CONFIG_FILE" ]]; then
         # Validate config file exists
         if [[ ! -f "$CONFIG_FILE" ]]; then
-            cli_error "Config file not found: $CONFIG_FILE"
+            log_error "Config file not found: $CONFIG_FILE"
             exit 1
         fi
         
@@ -340,20 +302,20 @@ load_release_config() {
         local config_abs_path
         config_abs_path="$(cd "$(dirname "$CONFIG_FILE")" && pwd)/$(basename "$CONFIG_FILE")"
         
-        cli_debug "[CONFIG] Loading config from: $config_abs_path"
+        log_debug "[CONFIG] Loading config from: $config_abs_path"
         
         # Parse YAML config file
         if ! load_config "$CONFIG_FILE"; then
-            cli_error "Failed to parse config file: $CONFIG_FILE"
+            log_error "Failed to parse config file: $CONFIG_FILE"
             exit 1
         fi
         
         if [[ "$VERBOSE" == "true" ]]; then
-            cli_info "[CONFIG] Loaded from: $config_abs_path"
+            log_info "[CONFIG] Loaded from: $config_abs_path"
         fi
     else
         if [[ "$VERBOSE" == "true" ]]; then
-            cli_info "[CONFIG] No config file specified - using defaults"
+            log_info "[CONFIG] No config file specified - using defaults"
         fi
     fi
     
@@ -526,7 +488,7 @@ do_version() {
 
 do_config() {
     if [[ "$CONFIG_MODULE_LOADED" != "true" ]]; then
-        cli_error "Config module not available"
+        log_error "Config module not available"
         exit 1
     fi
     
@@ -543,19 +505,19 @@ do_config() {
 }
 
 do_preflight() {
-    cli_info "[CLI] preflight subcommand invoked (no logic yet)"
-    cli_warn "Command 'preflight' is not yet implemented."
-    cli_info "This will validate:"
-    cli_info "  - Git state (clean working tree, correct branch)"
-    cli_info "  - Podspec validation (lint all podspecs)"
-    cli_info "  - XCFramework coherence (ThirdParty matches Pods)"
-    cli_info "  - Package.swift validity"
-    cli_info "  - Credentials availability (gh, pod trunk)"
+    log_info "[CLI] preflight subcommand invoked (no logic yet)"
+    log_warn "Command 'preflight' is not yet implemented."
+    log_info "This will validate:"
+    log_info "  - Git state (clean working tree, correct branch)"
+    log_info "  - Podspec validation (lint all podspecs)"
+    log_info "  - XCFramework coherence (ThirdParty matches Pods)"
+    log_info "  - Package.swift validity"
+    log_info "  - Credentials availability (gh, pod trunk)"
     exit 0
 }
 
 do_run() {
-    cli_info "[CLI] run subcommand invoked"
+    log_info "[CLI] run subcommand invoked"
     
     # Load config (applies CLI overrides)
     load_release_config
@@ -577,21 +539,21 @@ do_run() {
     
     # Check if version is set
     if [[ -z "${RELEASE_VERSION:-}" ]]; then
-        cli_error "VERSION is required for 'run' command"
-        cli_info "Usage: msp-release.sh run <VERSION> [OPTIONS]"
-        cli_info "   or: msp-release.sh run --config <file>  (with version in config)"
+        log_error "VERSION is required for 'run' command"
+        log_info "Usage: msp-release.sh run <VERSION> [OPTIONS]"
+        log_info "   or: msp-release.sh run --config <file>  (with version in config)"
         exit 1
     fi
     
     # For now, delegate to modular.sh (backward compatibility)
-    cli_info "Delegating to: $MODULAR_SCRIPT"
-    cli_info "Arguments: $RELEASE_VERSION ${REMAINING_ARGS[*]:-}"
+    log_info "Delegating to: $MODULAR_SCRIPT"
+    log_info "Arguments: $RELEASE_VERSION ${REMAINING_ARGS[*]:-}"
     
     exec "$MODULAR_SCRIPT" "$RELEASE_VERSION" ${REMAINING_ARGS[@]+"${REMAINING_ARGS[@]}"}
 }
 
 do_pods() {
-    cli_info "[CLI] pods subcommand invoked"
+    log_info "[CLI] pods subcommand invoked"
     
     # Load config (applies CLI overrides)
     load_release_config
@@ -613,21 +575,21 @@ do_pods() {
     
     # Check if version is set
     if [[ -z "${RELEASE_VERSION:-}" ]]; then
-        cli_error "VERSION is required for 'pods' command"
-        cli_info "Usage: msp-release.sh pods <VERSION> [OPTIONS]"
-        cli_info "   or: msp-release.sh pods --config <file>  (with version in config)"
+        log_error "VERSION is required for 'pods' command"
+        log_info "Usage: msp-release.sh pods <VERSION> [OPTIONS]"
+        log_info "   or: msp-release.sh pods --config <file>  (with version in config)"
         exit 1
     fi
     
     # For now, delegate to cocoapods.sh (backward compatibility)
-    cli_info "Delegating to: $COCOAPODS_SCRIPT"
-    cli_info "Arguments: $RELEASE_VERSION ${REMAINING_ARGS[*]:-}"
+    log_info "Delegating to: $COCOAPODS_SCRIPT"
+    log_info "Arguments: $RELEASE_VERSION ${REMAINING_ARGS[*]:-}"
     
     exec "$COCOAPODS_SCRIPT" "$RELEASE_VERSION" ${REMAINING_ARGS[@]+"${REMAINING_ARGS[@]}"}
 }
 
 do_spm() {
-    cli_info "[CLI] spm subcommand invoked"
+    log_info "[CLI] spm subcommand invoked"
     
     # Load config (applies CLI overrides)
     load_release_config
@@ -649,43 +611,43 @@ do_spm() {
     
     # Check if version is set
     if [[ -z "${RELEASE_VERSION:-}" ]]; then
-        cli_error "VERSION is required for 'spm' command"
-        cli_info "Usage: msp-release.sh spm <VERSION> [OPTIONS]"
-        cli_info "   or: msp-release.sh spm --config <file>  (with version in config)"
+        log_error "VERSION is required for 'spm' command"
+        log_info "Usage: msp-release.sh spm <VERSION> [OPTIONS]"
+        log_info "   or: msp-release.sh spm --config <file>  (with version in config)"
         exit 1
     fi
     
     # For now, delegate to spm.sh (backward compatibility)
-    cli_info "Delegating to: $SPM_SCRIPT"
-    cli_info "Arguments: $RELEASE_VERSION ${REMAINING_ARGS[*]:-}"
+    log_info "Delegating to: $SPM_SCRIPT"
+    log_info "Arguments: $RELEASE_VERSION ${REMAINING_ARGS[*]:-}"
     
     exec "$SPM_SCRIPT" "$RELEASE_VERSION" ${REMAINING_ARGS[@]+"${REMAINING_ARGS[@]}"}
 }
 
 do_verify() {
-    cli_info "[CLI] verify subcommand invoked (no logic yet)"
-    cli_warn "Command 'verify' is not yet implemented."
-    cli_info "This will verify that a release is installable via:"
-    cli_info "  - pod 'MSPCore', '~> <VERSION>'"
-    cli_info "  - .package(url: \"...\", from: \"<VERSION>\")"
+    log_info "[CLI] verify subcommand invoked (no logic yet)"
+    log_warn "Command 'verify' is not yet implemented."
+    log_info "This will verify that a release is installable via:"
+    log_info "  - pod 'MSPCore', '~> <VERSION>'"
+    log_info "  - .package(url: \"...\", from: \"<VERSION>\")"
     exit 0
 }
 
 do_rollback() {
-    cli_info "[CLI] rollback subcommand invoked (no logic yet)"
-    cli_warn "Command 'rollback' is not yet implemented."
-    cli_info "This will:"
-    cli_info "  - Delete release tags"
-    cli_info "  - Delete GitHub releases"
-    cli_info "  - Unpublish pods (if possible)"
+    log_info "[CLI] rollback subcommand invoked (no logic yet)"
+    log_warn "Command 'rollback' is not yet implemented."
+    log_info "This will:"
+    log_info "  - Delete release tags"
+    log_info "  - Delete GitHub releases"
+    log_info "  - Unpublish pods (if possible)"
     exit 0
 }
 
 do_resume() {
-    cli_info "[CLI] resume subcommand invoked (no logic yet)"
-    cli_warn "Command 'resume' is not yet implemented."
-    cli_info "This will resume from the last successful checkpoint."
-    cli_info "Requires state tracking (future phase)."
+    log_info "[CLI] resume subcommand invoked (no logic yet)"
+    log_warn "Command 'resume' is not yet implemented."
+    log_info "This will resume from the last successful checkpoint."
+    log_info "Requires state tracking (future phase)."
     exit 0
 }
 
@@ -725,7 +687,7 @@ dispatch_subcommand() {
             do_resume
             ;;
         *)
-            cli_error "Unknown command: $SUBCOMMAND"
+            log_error "Unknown command: $SUBCOMMAND"
             echo ""
             show_help
             exit 1
