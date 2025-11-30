@@ -24,11 +24,11 @@
 
 # Environment detection
 detect_environment() {
-    if [[ -n "${GITHUB_ACTIONS}" ]]; then
+    if [[ -n "${GITHUB_ACTIONS:-}" ]]; then
         echo "github-actions"
-    elif [[ -n "${CI}" ]]; then
+    elif [[ -n "${CI:-}" ]]; then
         echo "ci"
-    elif [[ -n "${FL_BUILDLOG_PATH}" ]]; then
+    elif [[ -n "${FL_BUILDLOG_PATH:-}" ]]; then
         echo "fastlane"
     else
         echo "local"

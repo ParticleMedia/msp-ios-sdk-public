@@ -19,13 +19,13 @@ create_synthetic_state "$repo_root" "0.0.1" "v0.0.1" "release/0.0.1"
 clear_mock_log
 
 # Run rollback with --force (pipe newline for confirmation)
-output=$(printf '\n' | ./Scripts/msp-release.sh rollback --force 2>&1 || true)
+output=$(printf '\n' | ./Scripts/msp-release.sh rollback --force --no-ansi 2>&1 || true)
 
 # Assert that destructive actions were taken (check mock log)
-mock_log_contains "git tag -d v0.0.1" "Tag deletion should occur with --force"
-mock_log_contains "git push origin :refs/tags/v0.0.1" "Remote tag deletion should occur with --force"
-mock_log_contains "git push origin --delete release/0.0.1" "Branch deletion should occur with --force"
-mock_log_contains "gh release delete v0.0.1" "GitHub Release deletion should occur with --force"
+mock_log_contains "$MOCK_LOG" "git tag -d v0.0.1" "Tag deletion should occur with --force"
+mock_log_contains "$MOCK_LOG" "git push origin :refs/tags/v0.0.1" "Remote tag deletion should occur with --force"
+mock_log_contains "$MOCK_LOG" "git push origin --delete release/0.0.1" "Branch deletion should occur with --force"
+mock_log_contains "$MOCK_LOG" "gh release delete v0.0.1" "GitHub Release deletion should occur with --force"
 
 # Assert state flags have been reset
 tag_created="$(read_state_field "$repo_root" '.git.tag_created')"

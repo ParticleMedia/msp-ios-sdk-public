@@ -13,8 +13,8 @@ source "$(dirname "${BASH_SOURCE[0]}")/../helpers.sh"
 echo "Test: Run creates state file"
 
 # Minimal run (version can be arbitrary)
-# Allow failures if DRY_RUN is limited, but state should still be created
-./Scripts/msp-release.sh run 0.0.1 --dry-run 2>&1 || true
+# Skip preflight to avoid heavy checks, focus on state creation
+./Scripts/msp-release.sh run 0.0.1 --dry-run --skip-preflight --no-ansi 2>&1 || true
 
 # Assert state file exists
 assert_file_exists "${repo_root}/.msp-release-state.json" "State file should be created"

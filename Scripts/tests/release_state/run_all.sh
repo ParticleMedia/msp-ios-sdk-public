@@ -114,6 +114,18 @@ run_test_case() {
         # Make scripts executable
         find Scripts -type f -name "*.sh" -exec chmod +x {} \; 2>/dev/null || true
         
+        # Create minimal .git directory for git commands
+        mkdir -p .git
+        if [[ ! -f .git/HEAD ]]; then
+            echo "ref: refs/heads/main" > .git/HEAD
+        fi
+        if [[ ! -f .git/config ]]; then
+            cat > .git/config <<'EOF'
+[core]
+    repositoryformatversion = 0
+EOF
+        fi
+        
         # Set up mock PATH (mocks come first)
         export PATH="${mock_dir}:${PATH}"
         

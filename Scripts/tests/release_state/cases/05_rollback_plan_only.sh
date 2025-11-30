@@ -19,7 +19,7 @@ create_synthetic_state "$repo_root" "0.0.1" "v0.0.1" "release/0.0.1"
 clear_mock_log
 
 # Run rollback without --force
-output=$(./Scripts/msp-release.sh rollback 2>&1 || true)
+output=$(./Scripts/msp-release.sh rollback --no-ansi 2>&1 || true)
 
 # Assert output contains plan text
 assert_contains "$output" "Would delete local git tag" "Rollback plan should mention tag deletion"
@@ -28,10 +28,13 @@ assert_contains "$output" "Would delete remote release branch" "Rollback plan sh
 assert_contains "$output" "Would delete GitHub Release" "Rollback plan should mention GitHub Release deletion"
 
 # Assert that no destructive actions were taken (check mock log)
-mock_log_not_contains "git tag -d" "No tag deletion should occur without --force"
-mock_log_not_contains "git push origin :refs/tags" "No remote tag deletion should occur without --force"
-mock_log_not_contains "git push origin --delete" "No branch deletion should occur without --force"
-mock_log_not_contains "gh release delete" "No GitHub Release deletion should occur without --force"
+# Note: mock log might not exist if no commands were run
+if [[ -f "$MOCK_LOG" ]]; then
+    mock_log_not_contains "$MOCK_LOG" "git tag -d" "No tag deletion should occur without --force"
+    mock_log_not_contains "$MOCK_LOG" "git push origin :refs/tags" "No remote tag deletion should occur without --force"
+    mock_log_not_contains "$MOCK_LOG" "git push origin --delete" "No branch deletion should occur without --force"
+    mock_log_not_contains "$MOCK_LOG" "gh release delete" "No GitHub Release deletion should occur without --force"
+fi
 
 # Assert state flags are unchanged
 tag_created="$(read_state_field "$repo_root" '.git.tag_created')"

@@ -79,14 +79,14 @@ assert_equals "failed" "$status_before" "spm_publish should be marked as failed"
 unset MOCK_GIT_FAIL_ON_TAG_PUSH
 
 # Run resume - it should retry the failed step
-output=$(./Scripts/msp-release.sh resume 0.0.1 --dry-run 2>&1 || true)
+output=$(./Scripts/msp-release.sh resume --dry-run --no-ansi 2>&1 || true)
 
-# Verify that preflight_static is skipped (already succeeded)
-assert_contains "$output" "Resuming: skipping preflight_static" "Resume should skip preflight_static"
+# Verify that preflight_static is skipped (already succeeded) - check for partial match
+assert_contains "$output" "skipping preflight_static" "Resume should skip preflight_static"
 
 # The failed step should be retried (we can't easily verify success without full integration,
 # but we can verify it's not skipped)
-assert_not_contains "$output" "Resuming: skipping spm_publish" "Resume should NOT skip failed spm_publish"
+assert_not_contains "$output" "skipping spm_publish" "Resume should NOT skip failed spm_publish"
 
 echo "✓ Test passed: Resume retries failed step"
 

@@ -10,11 +10,17 @@ set -e
 
 # Source the common library
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-ROOT_DIR="$(cd "$SCRIPT_DIR/../.." && pwd)"
+# Use ROOT_DIR from environment if set, otherwise calculate from script location
+if [[ -z "${ROOT_DIR:-}" ]]; then
+    ROOT_DIR="$(cd "$SCRIPT_DIR/../.." && pwd)"
+fi
 source "$ROOT_DIR/Scripts/lib/release-common.sh"
 
-# Source state management utility
-source "$SCRIPT_DIR/../utils/state.sh"
+# Source state management utility (state.sh is already loaded by release-common.sh, but we can source it again if needed)
+# Use absolute path to ensure correct location
+if [[ -f "$ROOT_DIR/Scripts/release/utils/state.sh" ]]; then
+    source "$ROOT_DIR/Scripts/release/utils/state.sh" 2>/dev/null || true
+fi
 
 # ============================================================================
 # Environment Variable Validation
@@ -211,7 +217,7 @@ validate_inputs() {
 
 # Step 0: Pre-release setup (build frameworks)
 pre_release_setup() {
-    log_release "Step 0: Pre-release setup (building frameworks)"
+    log_section "Step 0: Pre-release setup (building frameworks)"
     
     if [[ "$DRY_RUN" == "true" ]]; then
         log_info "DRY RUN: Would run build scripts to ensure frameworks are up-to-date"
@@ -236,7 +242,7 @@ pre_release_setup() {
 
 # Step 1: Create release branch
 create_release_branch() {
-    log_release "Step 1: Creating release branch"
+    log_section "Step 1: Creating release branch"
     
     local create_branch_cmd="$ROOT_DIR/Scripts/release/orchestrator/branch.sh"
     if [[ "$DRY_RUN" == "true" ]]; then
@@ -261,7 +267,7 @@ release_cocoapods() {
         return 0
     fi
     
-    log_release "Step 2: Releasing CocoaPods"
+    log_section "Step 2: Releasing CocoaPods"
     
     # Checkout release branch (skip in dry-run mode)
     if [[ "$DRY_RUN" != "true" ]]; then
@@ -314,7 +320,7 @@ release_spm() {
         return 0
     fi
     
-    log_release "Step 3: Releasing SPM"
+    log_section "Step 3: Releasing SPM"
     
     # Ensure we're on release branch (skip in dry-run mode)
     if [[ "$DRY_RUN" != "true" ]]; then

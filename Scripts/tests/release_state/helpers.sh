@@ -106,29 +106,45 @@ assert_state_field() {
 # ============================================================================
 
 mock_log_contains() {
-    local pattern="$1"
-    local message="$2"
+    local log_file="${1:-${MOCK_LOG}}"
+    local pattern="$2"
+    local message="$3"
     
-    if [[ ! -f "$MOCK_LOG" ]]; then
-        echo "ASSERT FAILED: ${message} (mock log not found: ${MOCK_LOG})" >&2
+    # If only 2 args provided, treat first as pattern and second as message
+    if [[ $# -eq 2 ]]; then
+        pattern="$1"
+        message="$2"
+        log_file="${MOCK_LOG}"
+    fi
+    
+    if [[ ! -f "$log_file" ]]; then
+        echo "ASSERT FAILED: ${message} (mock log not found: ${log_file})" >&2
         exit 1
     fi
     
-    if ! grep -q "$pattern" "$MOCK_LOG" 2>/dev/null; then
+    if ! grep -q "$pattern" "$log_file" 2>/dev/null; then
         echo "ASSERT FAILED: ${message} (expected pattern '${pattern}' not found in mock log)" >&2
         exit 1
     fi
 }
 
 mock_log_not_contains() {
-    local pattern="$1"
-    local message="$2"
+    local log_file="${1:-${MOCK_LOG}}"
+    local pattern="$2"
+    local message="$3"
     
-    if [[ ! -f "$MOCK_LOG" ]]; then
+    # If only 2 args provided, treat first as pattern and second as message
+    if [[ $# -eq 2 ]]; then
+        pattern="$1"
+        message="$2"
+        log_file="${MOCK_LOG}"
+    fi
+    
+    if [[ ! -f "$log_file" ]]; then
         return 0  # Log doesn't exist, so pattern doesn't exist
     fi
     
-    if grep -q "$pattern" "$MOCK_LOG" 2>/dev/null; then
+    if grep -q "$pattern" "$log_file" 2>/dev/null; then
         echo "ASSERT FAILED: ${message} (expected pattern '${pattern}' should NOT be in mock log)" >&2
         exit 1
     fi

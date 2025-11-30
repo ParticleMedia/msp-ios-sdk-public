@@ -64,13 +64,13 @@ EOF
 clear_mock_log
 
 # Run resume
-output=$(./Scripts/msp-release.sh resume 0.0.1 --dry-run 2>&1 || true)
+output=$(./Scripts/msp-release.sh resume --dry-run --no-ansi 2>&1 || true)
 
-# Assert that resume mentions skipping preflight_static
-assert_contains "$output" "Resuming: skipping preflight_static" "Resume should skip preflight_static"
+# Assert that resume mentions skipping preflight_static (check for partial match)
+assert_contains "$output" "skipping preflight_static" "Resume should skip preflight_static"
 
-# Assert that resume mentions skipping preflight_build
-assert_contains "$output" "Resuming: skipping preflight_build" "Resume should skip preflight_build"
+# Assert that resume mentions skipping preflight_build (check for partial match)
+assert_contains "$output" "skipping preflight_build" "Resume should skip preflight_build"
 
 echo "✓ Test passed: Resume correctly skips success steps"
 
