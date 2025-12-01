@@ -198,3 +198,6 @@ Scripts/tests/release_state/**/test_state_*.json
 Scripts/tests/release_state/**/tmp/
 Scripts/tests/release_state/**/temp/
 Scripts/tests/release_state/**/case_*/
+
+# MSP Release System runtime state file
+.msp-release-state.json
