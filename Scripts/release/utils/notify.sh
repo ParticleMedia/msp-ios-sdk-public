@@ -431,6 +431,70 @@ EOF
     return 0
 }
 
+# ============================================================================
+# Message Template Functions
+# ============================================================================
+
+# Build success message template
+# Returns formatted success message with exact structure
+notify::build_success_message() {
+    local module="$1"
+    local version="$2"
+    local author="$3"
+    local env="$4"
+    
+    # Exact format as specified:
+    # 🎉 Module Released Successfully  
+    # Module: <module>  
+    # Version: <version>  
+    # Released by: <author>  
+    # Environment: <env>  
+    printf "🎉 Module Released Successfully\nModule: %s\nVersion: %s\nReleased by: %s\nEnvironment: %s\n" \
+        "$module" \
+        "$version" \
+        "${author:-unknown}" \
+        "$env"
+}
+
+# Build error message template
+# Returns formatted error message with exact structure
+notify::build_error_message() {
+    local module="$1"
+    local version="$2"
+    local short_reason="$3"
+    local author="$4"
+    local env="$5"
+    
+    # Exact format as specified:
+    # ❌ Module Release Failed  
+    # Module: <module>  
+    # Version: <version>  
+    # Error: <short_reason>  
+    printf "❌ Module Release Failed\nModule: %s\nVersion: %s\nError: %s\n" \
+        "$module" \
+        "$version" \
+        "$short_reason"
+}
+
+# Render message based on type
+# Pure function: no side effects, no logging
+notify::render_message() {
+    local type="$1"
+    local module="$2"
+    local version="$3"
+    local author="$4"
+    local env="$5"
+    local error_reason="${6:-}"
+    
+    if [[ "$type" == "success" ]]; then
+        notify::build_success_message "$module" "$version" "$author" "$env"
+    elif [[ "$type" == "error" ]]; then
+        notify::build_error_message "$module" "$version" "$error_reason" "$author" "$env"
+    else
+        return 1
+    fi
+}
+
 # Notify module release success
 # TEST MODE: Requires MSP_SLACK_DM_OVERRIDE for DM, uses MSP_SLACK_TEST_WEBHOOK for channel
 # PROD MODE: Uses resolve_user() for DM, uses YAML webhook for channel
@@ -441,17 +505,64 @@ notify::module_success() {
     # Load mapping (optional, may fail silently)
     notify::load_mapping 2>/dev/null || true
 
+    # Compute author and environment
+    local author="${MSP_AUTHOR_EMAIL:-unknown}"
+    local env
+    if notify::is_test_mode; then
+        env="test"
+    else
+        env="prod"
+    fi
+
+    # Build message using template
+    local message
+    message="$(notify::build_success_message "$module" "$version" "$author" "$env")" || true
+
     # Send DM (respects MSP_SLACK_DM_OVERRIDE, handles TEST MODE requirements)
-    local dm_msg="🎉 *$module $version 发布成功*\n由 <${MSP_AUTHOR_EMAIL:-unknown}> 触发。"
-    notify::dm "$module" "$dm_msg" 2>/dev/null || true
+    # Note: notify::dm expects (user, message) but we pass module for user resolution
+    # The actual user resolution happens inside notify::dm
+    notify::dm "$module" "$message" 2>/dev/null || true
 
     # Send channel message (uses test webhook in TEST MODE, YAML webhook in PROD MODE)
-    local channel_msg="✔️ 模块 *$module* 已成功发布版本 *$version*。"
-    notify::channel "$channel_msg" 2>/dev/null || true
+    # DM and channel MUST use the exact same body string
+    notify::channel "$message" 2>/dev/null || true
+    
+    return 0
+}
+
+# Notify module release error
+# Sends DM ONLY (no channel notification in test or prod)
+# TEST MODE: Requires MSP_SLACK_DM_OVERRIDE
+# PROD MODE: Uses resolve_user() unless overridden
+notify::module_error() {
+    local module="$1"
+    local version="$2"
+    local short_reason="$3"
+
+    # Load mapping (optional, may fail silently)
+    notify::load_mapping 2>/dev/null || true
+
+    # Compute author and environment
+    local author="${MSP_AUTHOR_EMAIL:-unknown}"
+    local env
+    if notify::is_test_mode; then
+        env="test"
+    else
+        env="prod"
+    fi
+
+    # Build message using template
+    local message
+    message="$(notify::build_error_message "$module" "$version" "$short_reason" "$author" "$env")" || true
+
+    # Send DM ONLY (no channel notification)
+    # Note: notify::dm expects (user, message) but we pass module for user resolution
+    # The actual user resolution happens inside notify::dm
+    notify::dm "$module" "$message" 2>/dev/null || true
     
     return 0
 }
 
 # Export Slack notification functions
-export -f notify::is_test_mode notify::load_mapping notify::resolve_user notify::dm notify::channel notify::module_success notify::_send_dm notify::_send_webhook 2>/dev/null || true
+export -f notify::is_test_mode notify::load_mapping notify::resolve_user notify::dm notify::channel notify::module_success notify::module_error notify::build_success_message notify::build_error_message notify::render_message notify::_send_dm notify::_send_webhook 2>/dev/null || true
 
