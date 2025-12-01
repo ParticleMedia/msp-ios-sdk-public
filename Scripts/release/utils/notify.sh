@@ -275,7 +275,6 @@ notify::_send_dm() {
       --data "{\"channel\":\"$channel\",\"text\":\"$message\"}" \
       https://slack.com/api/chat.postMessage >/dev/null 2>&1 || true
     
-    echo "DEBUG_NOTIFY_DM: user=$user_id message_length=${#message} DM_CALLED=1" >> /tmp/msp-slack-debug.log 2>&1
     return 0
 }
 
@@ -292,7 +291,6 @@ notify::_send_webhook() {
       --data "{\"text\":\"$message\"}" \
       "$webhook_url" >/dev/null 2>&1 || true
     
-    echo "DEBUG_NOTIFY_WEBHOOK: url=$webhook_url message_length=${#message} WEBHOOK_CALLED=1" >> /tmp/msp-slack-debug.log 2>&1
     return 0
 }
 
@@ -562,9 +560,6 @@ notify::render_message() {
 # DEPRECATED: Module-level success notifications are disabled
 # This function is now a NO-OP to maintain backward compatibility
 notify::module_success() {
-    local module="${1:-}"
-    local version="${2:-}"
-    echo "DEBUG_NOTIFY_ENTRY: func=$FUNCNAME module=$module version=$version" >> /tmp/msp-slack-debug.log 2>&1
     # Module-level success sends nothing (Slack OR Email)
     return 0
 }
@@ -577,7 +572,6 @@ notify::module_error() {
     local module="$1"
     local version="$2"
     local short_reason="$3"
-    echo "DEBUG_NOTIFY_ENTRY: func=$FUNCNAME module=$module version=$version" >> /tmp/msp-slack-debug.log 2>&1
 
     # Load mapping (optional, may fail silently)
     notify::load_mapping 2>/dev/null || true
@@ -608,7 +602,6 @@ notify::module_error() {
 # Soft-fail always
 notify::release_success_dm() {
     local version="$1"
-    echo "DEBUG_NOTIFY_RELEASE: func=$FUNCNAME version=$version" >> /tmp/msp-slack-debug.log 2>&1
     
     # Simple success message
     local message="MSP Release Success — Version: $version"
@@ -624,7 +617,6 @@ notify::release_success_dm() {
 # Soft-fail always
 notify::release_success_channel() {
     local version="$1"
-    echo "DEBUG_NOTIFY_RELEASE: func=$FUNCNAME version=$version" >> /tmp/msp-slack-debug.log 2>&1
     
     # Simple success message
     local message="MSP Release Success — Version: $version"
