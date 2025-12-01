@@ -40,6 +40,11 @@ if [[ -f "$ROOT_DIR/Scripts/release/utils/notify.sh" ]]; then
     source "$ROOT_DIR/Scripts/release/utils/notify.sh" 2>/dev/null || true
 fi
 
+# Source email notification utilities
+if [[ -f "$ROOT_DIR/Scripts/notify/email.sh" ]]; then
+    source "$ROOT_DIR/Scripts/notify/email.sh" 2>/dev/null || true
+fi
+
 # ============================================================================
 # Environment Variable Validation
 # ============================================================================
@@ -372,19 +377,12 @@ release_spm() {
             # Split SPM_PACKAGES space-separated string into array
             for package in $SPM_PACKAGES; do
                 SPM_SUCCESS+=("$package")
-                # Send Slack notification for each successful module
-                if command -v notify::module_success &>/dev/null; then
-                    notify::module_success "$package" "$VERSION" || true
-                fi
+                # Module-level success notifications are disabled (now NO-OP)
             done
         elif [[ "$DRY_RUN" != "true" ]]; then
             # Fallback to default list if SPM_PACKAGES not set
             SPM_SUCCESS+=("NovaCore" "NovaAdapter")
-            # Send Slack notification for default modules
-            if command -v notify::module_success &>/dev/null; then
-                notify::module_success "NovaCore" "$VERSION" || true
-                notify::module_success "NovaAdapter" "$VERSION" || true
-            fi
+            # Module-level success notifications are disabled (now NO-OP)
         fi
     else
         log_error "Failed to release SPM"
@@ -608,6 +606,65 @@ main() {
     
     # Show comprehensive summary
     show_comprehensive_release_summary
+    
+    # Global success notifications (only if release succeeded)
+    if [[ "$OVERALL_SUCCESS" == "true" ]]; then
+        # Build module list from successful releases
+        local module_list=""
+        
+        # Add CocoaPods modules
+        if [[ ${#COCOAPODS_SUCCESS[@]} -gt 0 ]]; then
+            for pod in "${COCOAPODS_SUCCESS[@]}"; do
+                if [[ -z "$module_list" ]]; then
+                    module_list="    - $pod"
+                else
+                    module_list="$module_list"$'\n'"    - $pod"
+                fi
+            done
+        fi
+        
+        # Add SPM modules
+        if [[ ${#SPM_SUCCESS[@]} -gt 0 ]]; then
+            for package in "${SPM_SUCCESS[@]}"; do
+                if [[ -z "$module_list" ]]; then
+                    module_list="    - $package"
+                else
+                    module_list="$module_list"$'\n'"    - $package"
+                fi
+            done
+        fi
+        
+        # If no modules, use placeholder
+        if [[ -z "$module_list" ]]; then
+            module_list="    - (none)"
+        fi
+        
+        # Calculate duration for email
+        local duration=""
+        if [[ -n "$RELEASE_START_TIME" && -n "$RELEASE_END_TIME" ]]; then
+            local start_epoch=$(date -j -f "%Y-%m-%d %H:%M:%S" "$RELEASE_START_TIME" "+%s" 2>/dev/null || date -d "$RELEASE_START_TIME" "+%s" 2>/dev/null)
+            local end_epoch=$(date -j -f "%Y-%m-%d %H:%M:%S" "$RELEASE_END_TIME" "+%s" 2>/dev/null || date -d "$RELEASE_END_TIME" "+%s" 2>/dev/null)
+            if [[ -n "$start_epoch" && -n "$end_epoch" ]]; then
+                local duration_seconds=$((end_epoch - start_epoch))
+                local minutes=$((duration_seconds / 60))
+                local seconds=$((duration_seconds % 60))
+                duration="${minutes}m ${seconds}s"
+            fi
+        fi
+        
+        # Send global success notifications (soft-fail always)
+        if command -v notify::release_success_dm &>/dev/null; then
+            notify::release_success_dm "$VERSION" || true
+        fi
+        
+        if command -v notify::release_success_channel &>/dev/null; then
+            notify::release_success_channel "$VERSION" || true
+        fi
+        
+        if command -v notify::email::send_success_email &>/dev/null; then
+            notify::email::send_success_email "$VERSION" "${MSP_AUTHOR_EMAIL:-unknown}" "$module_list" "${duration:-unknown}" || true
+        fi
+    fi
 }
 
 # Entry point

@@ -33,12 +33,13 @@ if [[ -f "${repo_root}/Scripts/release/utils/notify.sh" ]]; then
     source "${repo_root}/Scripts/release/utils/notify.sh" 2>/dev/null || true
 fi
 
-# Test notification routing directly (notifications aren't sent in --dry-run mode)
+# Test notification routing directly using global success DM function
+# Module-level notifications are disabled, so we test global success functions
 # Capture stderr to check for warnings
 output=""
-if command -v notify::module_success &>/dev/null; then
-    # Call notify::module_success directly and capture output
-    output=$(notify::module_success "TestModule" "0.0.1" 2>&1 || true)
+if command -v notify::release_success_dm &>/dev/null; then
+    # Call global success DM function and capture output
+    output=$(notify::release_success_dm "0.0.1" 2>&1 || true)
 fi
 
 # Wait for async operations

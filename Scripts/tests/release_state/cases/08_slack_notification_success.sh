@@ -27,11 +27,11 @@ source "${repo_root}/Scripts/release/utils/notify.sh" 2>/dev/null || true
 # Clear mock log
 clear_mock_log
 
-# Test notification routing directly (notifications aren't sent in --dry-run mode)
-# This verifies that TEST MODE routing works correctly
-if command -v notify::module_success &>/dev/null; then
-    # Call notify::module_success directly to test routing
-    notify::module_success "TestModule" "0.0.1" 2>/dev/null || true
+# Test notification routing directly using global success functions
+# Module-level notifications are disabled, so we test global success functions
+if command -v notify::release_success_channel &>/dev/null; then
+    # Call global success channel function to test routing
+    notify::release_success_channel "0.0.1" 2>/dev/null || true
 fi
 
 # Wait for async operations

@@ -549,37 +549,10 @@ notify::render_message() {
 }
 
 # Notify module release success
-# TEST MODE: Requires MSP_SLACK_DM_OVERRIDE for DM, uses MSP_SLACK_TEST_WEBHOOK for channel
-# PROD MODE: Uses resolve_user() for DM, uses YAML webhook for channel
+# DEPRECATED: Module-level success notifications are disabled
+# This function is now a NO-OP to maintain backward compatibility
 notify::module_success() {
-    local module="$1"
-    local version="$2"
-
-    # Load mapping (optional, may fail silently)
-    notify::load_mapping 2>/dev/null || true
-
-    # Compute author and environment
-    local author="${MSP_AUTHOR_EMAIL:-unknown}"
-    local env
-    if notify::is_test_mode; then
-        env="test"
-    else
-        env="prod"
-    fi
-
-    # Build message using template
-    local message
-    message="$(notify::build_success_message "$module" "$version" "$author" "$env")" || true
-
-    # Send DM (respects MSP_SLACK_DM_OVERRIDE, handles TEST MODE requirements)
-    # Note: notify::dm expects (user, message) but we pass module for user resolution
-    # The actual user resolution happens inside notify::dm
-    notify::dm "$module" "$message" 2>/dev/null || true
-
-    # Send channel message (uses test webhook in TEST MODE, YAML webhook in PROD MODE)
-    # DM and channel MUST use the exact same body string
-    notify::channel "$message" 2>/dev/null || true
-    
+    # Module-level success sends nothing (Slack OR Email)
     return 0
 }
 
@@ -616,6 +589,36 @@ notify::module_error() {
     return 0
 }
 
+# Notify global release success (DM only)
+# Sends DM to appropriate user based on TEST/PROD mode and routing rules
+# Soft-fail always
+notify::release_success_dm() {
+    local version="$1"
+    
+    # Simple success message
+    local message="MSP Release Success — Version: $version"
+    
+    # Send DM using existing routing logic (respects MSP_SLACK_DM_OVERRIDE, TEST/PROD mode)
+    notify::dm "" "$message" 2>/dev/null || true
+    
+    return 0
+}
+
+# Notify global release success (Channel broadcast only)
+# Sends to channel using TEST/PROD webhook rules
+# Soft-fail always
+notify::release_success_channel() {
+    local version="$1"
+    
+    # Simple success message
+    local message="MSP Release Success — Version: $version"
+    
+    # Send channel message using existing routing logic (TEST/PROD webhook rules)
+    notify::channel "$message" 2>/dev/null || true
+    
+    return 0
+}
+
 # Export Slack notification functions
-export -f notify::is_test_mode notify::load_mapping notify::resolve_user notify::dm notify::channel notify::module_success notify::module_error notify::build_success_message notify::build_error_message notify::render_message notify::_send_dm notify::_send_webhook 2>/dev/null || true
+export -f notify::is_test_mode notify::load_mapping notify::resolve_user notify::dm notify::channel notify::module_success notify::module_error notify::build_success_message notify::build_error_message notify::render_message notify::_send_dm notify::_send_webhook notify::release_success_dm notify::release_success_channel 2>/dev/null || true
 
