@@ -1,7 +1,32 @@
 #!/bin/bash
 
+# ============================================================================
 # Notification Utilities for Release Scripts
-# Provides wrapper functions for Slack notifications
+# ============================================================================
+# Provides wrapper functions for Slack notifications with TEST/PROD mode support
+#
+# Environment Variables:
+#   MSP_SLACK_ALERT_ENV
+#     - Determines Slack notification mode: "test" or "prod" (default)
+#     - TEST mode: Uses test webhook, requires MSP_SLACK_DM_OVERRIDE for DMs
+#     - PROD mode: Uses YAML config webhooks and user mappings
+#
+#   MSP_SLACK_DM_OVERRIDE
+#     - If set, ALL direct messages are sent to this Slack user_id
+#     - Applies in BOTH test and prod modes
+#     - Fully bypasses resolve_user() and module_owner mapping
+#     - In TEST mode, if not set, DMs are skipped with a warning
+#
+#   MSP_SLACK_TEST_WEBHOOK
+#     - In TEST mode, ALL channel notifications use this webhook URL
+#     - YAML alerts.webhook is ignored in TEST mode for safety
+#     - If missing in TEST mode, channel messages are skipped with a warning
+#
+# TEST MODE Safety:
+#   - TEST mode ignores YAML webhooks to prevent accidental production notifications
+#   - TEST mode requires explicit DM override to prevent hardcoded user IDs
+#   - All failures are soft-fail (logged but non-blocking)
+# ============================================================================
 
 # ============================================================================
 # ROOT_DIR and UI System Loading
@@ -208,4 +233,225 @@ notify_summary() {
 # Export functions
 export -f notify_start notify_success notify_failure notify_warning notify_summary 2>/dev/null || true
 
+# ============================================================================
+# Slack Notification Functions (TEST MODE Safe)
+# ============================================================================
+
+# Check if TEST MODE is enabled
+notify::is_test_mode() {
+    [[ "${MSP_SLACK_ALERT_ENV:-}" == "test" ]]
+}
+
+# Internal helper: Send DM to Slack user (soft-fail)
+notify::_send_dm() {
+    local user_id="$1"
+    local message="$2"
+    
+    # Silent skip if no bot token
+    [[ -z "${SLACK_BOT_TOKEN:-}" ]] && return 0
+
+    # Open DM channel (silent on failure)
+    local channel
+    channel=$(curl -s -X POST \
+      -H "Authorization: Bearer $SLACK_BOT_TOKEN" \
+      -H "Content-type: application/json; charset=utf-8" \
+      --data "{\"users\": \"$user_id\"}" \
+      https://slack.com/api/conversations.open 2>/dev/null | python3 -c "import sys, json; print(json.load(sys.stdin).get('channel',{}).get('id',''))" 2>/dev/null) || true
+
+    [[ -z "$channel" ]] && return 0
+
+    # Send message (silent on failure)
+    curl -s -X POST \
+      -H "Authorization: Bearer $SLACK_BOT_TOKEN" \
+      -H "Content-type: application/json" \
+      --data "{\"channel\":\"$channel\",\"text\":\"$message\"}" \
+      https://slack.com/api/chat.postMessage >/dev/null 2>&1 || true
+    
+    return 0
+}
+
+# Internal helper: Send message to webhook (soft-fail)
+notify::_send_webhook() {
+    local webhook_url="$1"
+    local message="$2"
+    
+    [[ -z "$webhook_url" ]] && return 0
+    
+    # Send to webhook (silent on failure)
+    curl -s -X POST \
+      -H "Content-type: application/json" \
+      --data "{\"text\":\"$message\"}" \
+      "$webhook_url" >/dev/null 2>&1 || true
+    
+    return 0
+}
+
+# Load Slack mapping configuration
+notify::load_mapping() {
+    local mapping_file="$ROOT_DIR/Scripts/config/slack_mapping.yaml"
+    [[ ! -f "$mapping_file" ]] && return 1
+
+    eval "$(python3 - <<EOF
+import yaml, json, sys
+d=yaml.safe_load(open("$mapping_file"))
+print("SLACK_EMAIL_MAP='"+json.dumps(d.get("email_map",{})).replace("'","'\"'\"'")+"'")
+print("SLACK_MODULE_OWNER='"+json.dumps(d.get("module_owner",{})).replace("'","'\"'\"'")+"'")
+print("SLACK_ALERTS='"+json.dumps(d.get("alerts",{})).replace("'","'\"'\"'")+"'")
+EOF
+)"
+}
+
+# Resolve Slack user ID from module or author email
+# PROD MODE: Uses email_map/module_owner mapping
+# TEST MODE: Returns empty (DM override required)
+notify::resolve_user() {
+    local module="$1"
+    
+    # TEST MODE: Return empty (DM override must be used)
+    if notify::is_test_mode; then
+        return 0
+    fi
+    
+    # PROD MODE: Use actual mapping
+    local author="${MSP_AUTHOR_EMAIL:-}"
+    
+    # Load mapping if not already loaded
+    if [[ -z "${SLACK_EMAIL_MAP:-}" ]]; then
+        notify::load_mapping || return 1
+    fi
+    
+    local email_id
+    email_id=$(python3 - <<EOF
+import json
+email_map=json.loads('$SLACK_EMAIL_MAP')
+print(email_map.get("$author",""))
+EOF
+    ) 2>/dev/null || true
+
+    [[ -n "$email_id" ]] && echo "$email_id" && return 0
+
+    local module_owner
+    module_owner=$(python3 - <<EOF
+import json
+m=json.loads('$SLACK_MODULE_OWNER')
+print(m.get("$module", m.get("default","")))
+EOF
+    ) 2>/dev/null || true
+
+    echo "$module_owner"
+}
+
+# Send direct message to Slack user
+# Respects MSP_SLACK_DM_OVERRIDE if set (applies in both test and prod)
+# TEST MODE: Requires MSP_SLACK_DM_OVERRIDE, otherwise logs warning and skips
+# PROD MODE: Uses resolve_user() if override not set
+notify::dm() {
+    local user="$1"
+    local message="$2"
+    
+    local target_user=""
+    
+    # Check for DM override (applies in both test and prod)
+    if [[ -n "${MSP_SLACK_DM_OVERRIDE:-}" ]]; then
+        target_user="$MSP_SLACK_DM_OVERRIDE"
+    elif notify::is_test_mode; then
+        # TEST MODE: Override required
+        log_warning "TEST MODE active but MSP_SLACK_DM_OVERRIDE not set; skipping DM (soft-fail)"
+        return 0
+    else
+        # PROD MODE: Use resolved user or provided user
+        if [[ -z "$user" ]]; then
+            # Try to resolve from module (if called from module_success)
+            target_user="$(notify::resolve_user "" 2>/dev/null || echo "")"
+        else
+            target_user="$user"
+        fi
+    fi
+    
+    [[ -z "$target_user" ]] && return 0
+    
+    # Send DM using internal helper (soft-fail)
+    notify::_send_dm "$target_user" "$message"
+    return 0
+}
+
+# Send message to Slack channel
+# TEST MODE: Uses MSP_SLACK_TEST_WEBHOOK (ignores YAML webhook for safety)
+# PROD MODE: Uses alerts.webhook from slack_mapping.yaml
+notify::channel() {
+    local message="$1"
+
+    # TEST MODE: Use test webhook only (ignore YAML webhook)
+    if notify::is_test_mode; then
+        local test_webhook="${MSP_SLACK_TEST_WEBHOOK:-}"
+        if [[ -z "$test_webhook" ]]; then
+            log_warning "TEST MODE active but MSP_SLACK_TEST_WEBHOOK not set; skipping channel message (soft-fail)"
+            return 0
+        fi
+        
+        # Send to test webhook using internal helper (soft-fail)
+        notify::_send_webhook "$test_webhook" "$message"
+        return 0
+    fi
+    
+    # PROD MODE: Use YAML webhook from alerts.webhook
+    if [[ -z "${SLACK_ALERTS:-}" ]]; then
+        notify::load_mapping || return 0
+    fi
+    
+    local webhook_url
+    webhook_url=$(python3 - <<EOF
+import json;print(json.loads('$SLACK_ALERTS').get("webhook",""))
+EOF
+    ) 2>/dev/null || true
+    
+    if [[ -n "$webhook_url" ]]; then
+        # Use webhook if available (soft-fail)
+        notify::_send_webhook "$webhook_url" "$message"
+        return 0
+    fi
+    
+    # Fallback: Use channel API if webhook not available
+    local channel
+    channel=$(python3 - <<EOF
+import json;print(json.loads('$SLACK_ALERTS').get("channel",""))
+EOF
+    ) 2>/dev/null || true
+    
+    [[ -z "$channel" ]] && return 0
+    [[ -z "${SLACK_BOT_TOKEN:-}" ]] && return 0
+
+    # Send message via channel API (silent on failure)
+    curl -s -X POST \
+      -H "Authorization: Bearer $SLACK_BOT_TOKEN" \
+      -H "Content-type: application/json" \
+      --data "{\"channel\":\"$channel\",\"text\":\"$message\"}" \
+      https://slack.com/api/chat.postMessage >/dev/null 2>&1 || true
+    
+    return 0
+}
+
+# Notify module release success
+# TEST MODE: Requires MSP_SLACK_DM_OVERRIDE for DM, uses MSP_SLACK_TEST_WEBHOOK for channel
+# PROD MODE: Uses resolve_user() for DM, uses YAML webhook for channel
+notify::module_success() {
+    local module="$1"
+    local version="$2"
+
+    # Load mapping (optional, may fail silently)
+    notify::load_mapping 2>/dev/null || true
+
+    # Send DM (respects MSP_SLACK_DM_OVERRIDE, handles TEST MODE requirements)
+    local dm_msg="🎉 *$module $version 发布成功*\n由 <${MSP_AUTHOR_EMAIL:-unknown}> 触发。"
+    notify::dm "$module" "$dm_msg" 2>/dev/null || true
+
+    # Send channel message (uses test webhook in TEST MODE, YAML webhook in PROD MODE)
+    local channel_msg="✔️ 模块 *$module* 已成功发布版本 *$version*。"
+    notify::channel "$channel_msg" 2>/dev/null || true
+    
+    return 0
+}
+
+# Export Slack notification functions
+export -f notify::is_test_mode notify::load_mapping notify::resolve_user notify::dm notify::channel notify::module_success notify::_send_dm notify::_send_webhook 2>/dev/null || true
 
