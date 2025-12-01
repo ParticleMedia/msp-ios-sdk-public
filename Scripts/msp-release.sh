@@ -585,6 +585,10 @@ do_preflight() {
 }
 
 do_run() {
+    # Record author email for Slack notifications
+    AUTHOR_EMAIL="$(git config user.email 2>/dev/null || echo "")"
+    export MSP_AUTHOR_EMAIL="$AUTHOR_EMAIL"
+    
     log_info "[CLI] run subcommand invoked"
     
     # Scheme A: always reset state for a new 'run' invocation

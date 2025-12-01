@@ -1,0 +1,23 @@
+---
+email_map:
+  pengyu.gou@newsbreak.com: U0910UJPD7B
+  han.xiang@newsbreak.com: U02FEJU9ZGX
+  huanzhi.zhang@newsbreak.com: U0207LGEDC4
+  ling.yang@newsbreak.com: U023FKM4Y14
+  mingming.luo@newsbreak.com: U092NFAJ5FC
+  shanyu.li@newsbreak.com: U06KJEVH06R
+
+module_owner:
+  default: U0910UJPD7B
+  MSPSharedLibraries: U0910UJPD7B
+  MSPFacebookAdapter: U0910UJPD7B
+  MSPGoogleAdapter: U0910UJPD7B
+  NovaAdapter: U0910UJPD7B
+  AmazonAdapter: U0910UJPD7B
+  MSPPrebidAdapter: U0910UJPD7B
+  MSPCore: U0910UJPD7B
+
+alerts:
+  channel: C093RJJBGRZ
+  webhook: https://hooks.slack.com/services/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
+

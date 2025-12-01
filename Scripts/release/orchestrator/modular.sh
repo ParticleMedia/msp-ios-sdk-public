@@ -35,6 +35,11 @@ if [[ -f "$ROOT_DIR/Scripts/release/utils/state.sh" ]]; then
     source "$ROOT_DIR/Scripts/release/utils/state.sh" 2>/dev/null || true
 fi
 
+# Source notification utilities for Slack integration
+if [[ -f "$ROOT_DIR/Scripts/release/utils/notify.sh" ]]; then
+    source "$ROOT_DIR/Scripts/release/utils/notify.sh" 2>/dev/null || true
+fi
+
 # ============================================================================
 # Environment Variable Validation
 # ============================================================================
@@ -367,10 +372,19 @@ release_spm() {
             # Split SPM_PACKAGES space-separated string into array
             for package in $SPM_PACKAGES; do
                 SPM_SUCCESS+=("$package")
+                # Send Slack notification for each successful module
+                if command -v notify::module_success &>/dev/null; then
+                    notify::module_success "$package" "$VERSION" || true
+                fi
             done
         elif [[ "$DRY_RUN" != "true" ]]; then
             # Fallback to default list if SPM_PACKAGES not set
             SPM_SUCCESS+=("NovaCore" "NovaAdapter")
+            # Send Slack notification for default modules
+            if command -v notify::module_success &>/dev/null; then
+                notify::module_success "NovaCore" "$VERSION" || true
+                notify::module_success "NovaAdapter" "$VERSION" || true
+            fi
         fi
     else
         log_error "Failed to release SPM"
