@@ -10,11 +10,17 @@ set -e
 
 # Source the common library
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-ROOT_DIR="$(cd "$SCRIPT_DIR/../../.." && pwd)"
+# Use ROOT_DIR from environment if set, otherwise calculate from script location
+if [[ -z "${ROOT_DIR:-}" ]]; then
+    ROOT_DIR="$(cd "$SCRIPT_DIR/../../.." && pwd)"
+fi
 source "$ROOT_DIR/Scripts/lib/release-common.sh"
 
-# Load release state utilities
-source "$SCRIPT_DIR/../../utils/state.sh"
+# Load release state utilities (state.sh is already loaded by release-common.sh, but we can source it again if needed)
+# Use absolute path to ensure correct location
+if [[ -f "$ROOT_DIR/Scripts/release/utils/state.sh" ]]; then
+    source "$ROOT_DIR/Scripts/release/utils/state.sh" 2>/dev/null || true
+fi
 
 # ============================================================================
 # Environment Variable Validation
@@ -454,7 +460,7 @@ release_spm_package() {
     local package_name="$1"
     local version="$2"
     
-    log_release "Releasing $package_name SPM package"
+    log_section "Releasing $package_name SPM package"
     
     # Find Package.swift file for this package
     # SPM packages may be in different locations

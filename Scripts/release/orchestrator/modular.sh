@@ -373,7 +373,7 @@ push_release_branch() {
         return 0
     fi
     
-    log_release "Step 4: Pushing release branch"
+    log_section "Step 4: Pushing release branch"
     
     if [[ "$DRY_RUN" == "true" ]]; then
         log_info "DRY RUN: Would push release branch $RELEASE_BRANCH to remote"

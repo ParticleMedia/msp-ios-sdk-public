@@ -1,7 +1,10 @@
 #!/bin/bash
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-ROOT_DIR="$(cd "$SCRIPT_DIR/../.." && pwd)"
+# Use ROOT_DIR from environment if set, otherwise calculate from script location
+if [[ -z "${ROOT_DIR:-}" ]]; then
+    ROOT_DIR="$(cd "$SCRIPT_DIR/../.." && pwd)"
+fi
 
 # shellcheck source=Scripts/lib/release-common.sh
 source "$ROOT_DIR/Scripts/lib/release-common.sh"

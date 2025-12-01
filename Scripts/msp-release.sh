@@ -787,8 +787,13 @@ do_rollback() {
     # Parse rollback-specific flags
     MSP_ROLLBACK_FORCE=0
     
+    # Initialize REMAINING_ARGS if not set
+    if [[ -z "${REMAINING_ARGS:-}" ]]; then
+        REMAINING_ARGS=()
+    fi
+    
     local remaining_rollback_args=()
-    for arg in "${REMAINING_ARGS[@]}"; do
+    for arg in "${REMAINING_ARGS[@]+"${REMAINING_ARGS[@]}"}"; do
         case "$arg" in
             --force)
                 MSP_ROLLBACK_FORCE=1

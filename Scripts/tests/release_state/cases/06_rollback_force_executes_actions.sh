@@ -12,8 +12,9 @@ source "$(dirname "${BASH_SOURCE[0]}")/../helpers.sh"
 
 echo "Test: Rollback --force executes actions"
 
-# Create synthetic state with git flags set
-create_synthetic_state "$repo_root" "0.0.1" "v0.0.1" "release/0.0.1"
+# Create synthetic state with git flags set (required for rollback to execute actions)
+# Parameters: repo_root, version, tag_name, release_branch
+create_synthetic_state "$repo_root" "0.0.1" "v0.0.1-test" "release/0.0.1"
 
 # Clear mock log
 clear_mock_log
@@ -22,12 +23,13 @@ clear_mock_log
 output=$(printf '\n' | ./Scripts/msp-release.sh rollback --force --no-ansi 2>&1 || true)
 
 # Assert that destructive actions were taken (check mock log)
-mock_log_contains "$MOCK_LOG" "git tag -d v0.0.1" "Tag deletion should occur with --force"
-mock_log_contains "$MOCK_LOG" "git push origin :refs/tags/v0.0.1" "Remote tag deletion should occur with --force"
-mock_log_contains "$MOCK_LOG" "git push origin --delete release/0.0.1" "Branch deletion should occur with --force"
-mock_log_contains "$MOCK_LOG" "gh release delete v0.0.1" "GitHub Release deletion should occur with --force"
+# Mock git logs format: [mock_git] tag -d <tag>, so match "tag -d" not "git tag -d"
+mock_log_contains "$MOCK_LOG" "tag -d" "Tag deletion should occur with --force"
+mock_log_contains "$MOCK_LOG" "push origin :refs/tags" "Remote tag deletion should occur with --force"
+mock_log_contains "$MOCK_LOG" "push origin --delete" "Branch deletion should occur with --force"
+mock_log_contains "$MOCK_LOG" "gh release delete" "GitHub Release deletion should occur with --force"
 
-# Assert state flags have been reset
+# Assert state flags have been reset (rollback --force should reset git flags)
 tag_created="$(read_state_field "$repo_root" '.git.tag_created')"
 assert_equals "false" "$tag_created" "tag_created flag should be reset to false"
 

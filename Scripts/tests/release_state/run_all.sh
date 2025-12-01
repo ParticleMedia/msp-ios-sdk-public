@@ -77,6 +77,8 @@ run_test_case() {
     local tmpdir
     tmpdir="$(mktemp -d)"
     
+    echo "[DEBUG] Test sandbox: $tmpdir"
+    
     # Cleanup function
     cleanup() {
         rm -rf "$tmpdir"
@@ -91,25 +93,40 @@ run_test_case() {
         clear_mock_log
         
         # Copy Scripts directory structure
-        # We need to copy the entire repo structure to have proper paths
+        # Use ONLY the real repository Scripts/ directory (single source)
         local repo_root
         repo_root="$(cd "${script_dir}/../../.." && pwd)"
         
-        # Create minimal repo structure
-        mkdir -p Scripts/release/{orchestrator,preflight,publish/{pods,spm},verify,utils,config}
-        mkdir -p Scripts/lib
+        # Fully clean sandbox Scripts directory before copying
+        rm -rf "$tmpdir/Scripts"
+        mkdir -p "$tmpdir/Scripts"
         
-        # Copy essential scripts
-        cp -R "${repo_root}/Scripts/lib"/* Scripts/lib/ 2>/dev/null || true
-        cp -R "${repo_root}/Scripts/release/utils"/* Scripts/release/utils/ 2>/dev/null || true
-        cp -R "${repo_root}/Scripts/release/orchestrator"/* Scripts/release/orchestrator/ 2>/dev/null || true
-        cp -R "${repo_root}/Scripts/release/preflight"/* Scripts/release/preflight/ 2>/dev/null || true
-        cp -R "${repo_root}/Scripts/release/publish"/* Scripts/release/publish/ 2>/dev/null || true
-        cp -R "${repo_root}/Scripts/release/verify"/* Scripts/release/verify/ 2>/dev/null || true
-        cp -R "${repo_root}/Scripts/release/config"/* Scripts/release/config/ 2>/dev/null || true
+        # ONE AND ONLY ONE copy command - copy entire Scripts/ directory from repository
+        cp -R "${repo_root}/Scripts"/* "$tmpdir/Scripts/" 2>/dev/null || {
+            echo "[FATAL TEST ERROR] Failed to copy Scripts directory from ${repo_root}/Scripts" >&2
+            exit 99
+        }
         
-        # Copy main release script
-        cp "${repo_root}/Scripts/msp-release.sh" Scripts/msp-release.sh 2>/dev/null || true
+        # Strict verification of required files
+        REQUIRED_FILES=(
+            "$tmpdir/Scripts/msp-release.sh"
+            "$tmpdir/Scripts/lib/colors.sh"
+            "$tmpdir/Scripts/lib/logging.sh"
+            "$tmpdir/Scripts/release/utils/state.sh"
+            "$tmpdir/Scripts/release/orchestrator/modular.sh"
+        )
+        
+        for f in "${REQUIRED_FILES[@]}"; do
+            if [[ ! -f "$f" ]]; then
+                echo "[FATAL TEST ERROR] Missing required file: $f" >&2
+                exit 99
+            fi
+        done
+        
+        echo "[DEBUG] Dumping directory tree after copy:"
+        find "$tmpdir/Scripts" -maxdepth 4 -type f | sed "s|$tmpdir||" | sort
+        
+        echo "[DEBUG] msp-release.sh location: $tmpdir/Scripts/msp-release.sh"
         
         # Make scripts executable
         find Scripts -type f -name "*.sh" -exec chmod +x {} \; 2>/dev/null || true

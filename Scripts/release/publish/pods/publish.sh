@@ -13,12 +13,18 @@ set -e
 
 # Source the common library
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-ROOT_DIR="$(cd "$SCRIPT_DIR/../../.." && pwd)"
+# Use ROOT_DIR from environment if set, otherwise calculate from script location
+if [[ -z "${ROOT_DIR:-}" ]]; then
+    ROOT_DIR="$(cd "$SCRIPT_DIR/../../.." && pwd)"
+fi
 source "$ROOT_DIR/Scripts/lib/release-common.sh"
 source "$ROOT_DIR/Scripts/lib/cocoapods.sh"
 
-# Load release state utilities
-source "$SCRIPT_DIR/../../utils/state.sh"
+# Load release state utilities (state.sh is already loaded by release-common.sh, but we can source it again if needed)
+# Use absolute path to ensure correct location
+if [[ -f "$ROOT_DIR/Scripts/release/utils/state.sh" ]]; then
+    source "$ROOT_DIR/Scripts/release/utils/state.sh" 2>/dev/null || true
+fi
 
 # ============================================================================
 # Environment Variable Validation
@@ -392,7 +398,7 @@ wait_for_pod_availability() {
 
 # Release MSPSharedLibraries (Step 1)
 release_msp_shared_libraries() {
-    log_release "Step 1: Releasing MSPSharedLibraries (foundation dependency)"
+    log_section "Step 1: Releasing MSPSharedLibraries (foundation dependency)"
     
     # Update podspec
     update_podspec_for_release "MSPSharedLibraries" "$VERSION"
@@ -417,7 +423,7 @@ release_single_adapter() {
     local version="$2"
     local result_file="$3"
     
-    log_release "Releasing $adapter"
+    log_section "Releasing $adapter"
     
     # Update podspec
     if ! update_podspec_for_release "$adapter" "$version"; then
@@ -456,7 +462,7 @@ release_single_adapter() {
 
 # Release Adapters (Step 2) - Parallel Processing
 release_adapters() {
-    log_release "Step 2: Releasing Adapters that depend on MSPSharedLibraries (in parallel)"
+    log_section "Step 2: Releasing Adapters that depend on MSPSharedLibraries (in parallel)"
     
     # Ensure MSPSharedLibraries is available before adapter releases
     log_step "Verifying MSPSharedLibraries availability before adapter releases..."
@@ -556,7 +562,7 @@ release_adapters() {
     rm -rf "$temp_dir"
     
     # Report final results
-    log_release "Parallel adapter release completed:"
+    log_section "Parallel adapter release completed:"
     log_info "  ✅ Successful: $success_count"
     log_info "  ❌ Failed: $failure_count"
     
@@ -569,7 +575,7 @@ release_adapters() {
     
     # Step 2.5: Check availability of MSPSharedLibraries and PrebidAdapter before MSPCore release
     if [[ "$DRY_RUN" != "true" ]]; then
-        log_release "Step 2.5: Checking availability of dependencies for MSPCore"
+        log_section "Step 2.5: Checking availability of dependencies for MSPCore"
         
         # Update specs repository once
         log_info "Updating CocoaPods specs repository..."
@@ -605,7 +611,7 @@ release_adapters() {
 
 # Release MSPCore (Step 3)
 release_msp_core() {
-    log_release "Step 3: Releasing MSPCore (main framework)"
+    log_section "Step 3: Releasing MSPCore (main framework)"
     
     # Update podspec
     update_podspec_for_release "MSPCore" "$VERSION"

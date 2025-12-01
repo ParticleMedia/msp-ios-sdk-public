@@ -16,15 +16,33 @@ echo "Test: Run creates state file"
 # Skip preflight to avoid heavy checks, focus on state creation
 ./Scripts/msp-release.sh run 0.0.1 --dry-run --skip-preflight --no-ansi 2>&1 || true
 
-# Assert state file exists
-assert_file_exists "${repo_root}/.msp-release-state.json" "State file should be created"
+# Wait a moment for state file to be written
+sleep 0.5
 
-# Check that 'run' step exists and has a status
+# Assert state file exists (check both repo_root and current directory)
+if [[ ! -f "${repo_root}/.msp-release-state.json" ]] && [[ ! -f ".msp-release-state.json" ]]; then
+    echo "ASSERT FAILED: State file should be created" >&2
+    echo "Checked: ${repo_root}/.msp-release-state.json" >&2
+    echo "Checked: $(pwd)/.msp-release-state.json" >&2
+    exit 1
+fi
+
+# Use the state file that exists
+if [[ -f "${repo_root}/.msp-release-state.json" ]]; then
+    state_file="${repo_root}/.msp-release-state.json"
+elif [[ -f ".msp-release-state.json" ]]; then
+    state_file=".msp-release-state.json"
+    repo_root="$(pwd)"
+fi
+
+# Check that 'run' step exists and has status "success" (modular.sh completes and marks it as success)
 run_status="$(read_state_field "$repo_root" '.steps["run"].status // "<missing>"')"
 if [[ "$run_status" == "<missing>" ]]; then
     echo "ASSERT FAILED: Step 'run' should exist in state" >&2
     exit 1
 fi
+# In test environment, modular.sh completes → run step is marked as "success"
+assert_equals "success" "$run_status" "Step 'run' should have status 'success' (modular.sh completed)"
 
 # Check that version is set
 version="$(read_state_field "$repo_root" '.version // "<missing>"')"
