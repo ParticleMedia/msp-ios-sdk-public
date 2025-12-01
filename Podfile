@@ -179,7 +179,7 @@ post_install do |installer|
   installer.pods_project.targets.each do |target|
     if adapter_pods.include?(target.name)
       puts "[post_install] Configuring pure Swift module for #{target.name}"
-      target.build_configurations.each do |config|
+    target.build_configurations.each do |config|
         # Disable generating ObjC module for pure Swift pods
         config.build_settings['DEFINES_MODULE'] = 'YES'
         config.build_settings['SWIFT_OBJC_INTERFACE_HEADER_NAME'] = ''
