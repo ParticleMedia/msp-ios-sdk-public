@@ -31,23 +31,31 @@
 # ============================================================================
 # ROOT_DIR and UI System Loading
 # ============================================================================
-# ========================================
-# Unified ROOT_DIR resolution (final)
-# ========================================
-# The root dir is always the directory that contains
-# the parent Scripts/ folder where msp-release.sh lives.
+# ============================================
+# Unified ROOT_DIR resolution (final version)
+# ============================================
 if [[ -z "${ROOT_DIR:-}" ]]; then
-    SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-    # Find Scripts/ directory by going up until we find it, then go up one more level
-    ROOT_DIR="$SCRIPT_DIR"
-    while [[ "$ROOT_DIR" != "/" ]] && [[ "${ROOT_DIR##*/}" != "Scripts" ]]; do
-        ROOT_DIR="$(dirname "$ROOT_DIR")"
-    done
-    # If we found Scripts/, go up one more level to get repo root
-    if [[ "${ROOT_DIR##*/}" == "Scripts" ]]; then
-        ROOT_DIR="$(dirname "$ROOT_DIR")"
+    # First try Git repo root (most reliable)
+    if command -v git >/dev/null 2>&1; then
+        git_root="$(git rev-parse --show-toplevel 2>/dev/null || echo "")"
+        if [[ -n "$git_root" ]]; then
+            ROOT_DIR="$git_root"
+        fi
+    fi
+
+    # Fallback to walking up from SCRIPT_DIR
+    if [[ -z "${ROOT_DIR:-}" ]]; then
+        SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+        ROOT_DIR="$SCRIPT_DIR"
+        while [[ "$ROOT_DIR" != "/" ]] && [[ "${ROOT_DIR##*/}" != "Scripts" ]]; do
+            ROOT_DIR="$(dirname "$ROOT_DIR")"
+        done
+        if [[ "${ROOT_DIR##*/}" == "Scripts" ]]; then
+            ROOT_DIR="$(dirname "$ROOT_DIR")"
+        fi
     fi
 fi
+
 export ROOT_DIR
 
 # Source UI system in order: colors.sh → ui.sh → logging.sh
@@ -267,6 +275,7 @@ notify::_send_dm() {
       --data "{\"channel\":\"$channel\",\"text\":\"$message\"}" \
       https://slack.com/api/chat.postMessage >/dev/null 2>&1 || true
     
+    echo "DEBUG_NOTIFY_DM: user=$user_id message_length=${#message} DM_CALLED=1" >> /tmp/msp-slack-debug.log 2>&1
     return 0
 }
 
@@ -283,6 +292,7 @@ notify::_send_webhook() {
       --data "{\"text\":\"$message\"}" \
       "$webhook_url" >/dev/null 2>&1 || true
     
+    echo "DEBUG_NOTIFY_WEBHOOK: url=$webhook_url message_length=${#message} WEBHOOK_CALLED=1" >> /tmp/msp-slack-debug.log 2>&1
     return 0
 }
 
@@ -552,6 +562,9 @@ notify::render_message() {
 # DEPRECATED: Module-level success notifications are disabled
 # This function is now a NO-OP to maintain backward compatibility
 notify::module_success() {
+    local module="${1:-}"
+    local version="${2:-}"
+    echo "DEBUG_NOTIFY_ENTRY: func=$FUNCNAME module=$module version=$version" >> /tmp/msp-slack-debug.log 2>&1
     # Module-level success sends nothing (Slack OR Email)
     return 0
 }
@@ -564,6 +577,7 @@ notify::module_error() {
     local module="$1"
     local version="$2"
     local short_reason="$3"
+    echo "DEBUG_NOTIFY_ENTRY: func=$FUNCNAME module=$module version=$version" >> /tmp/msp-slack-debug.log 2>&1
 
     # Load mapping (optional, may fail silently)
     notify::load_mapping 2>/dev/null || true
@@ -594,6 +608,7 @@ notify::module_error() {
 # Soft-fail always
 notify::release_success_dm() {
     local version="$1"
+    echo "DEBUG_NOTIFY_RELEASE: func=$FUNCNAME version=$version" >> /tmp/msp-slack-debug.log 2>&1
     
     # Simple success message
     local message="MSP Release Success — Version: $version"
@@ -609,6 +624,7 @@ notify::release_success_dm() {
 # Soft-fail always
 notify::release_success_channel() {
     local version="$1"
+    echo "DEBUG_NOTIFY_RELEASE: func=$FUNCNAME version=$version" >> /tmp/msp-slack-debug.log 2>&1
     
     # Simple success message
     local message="MSP Release Success — Version: $version"
