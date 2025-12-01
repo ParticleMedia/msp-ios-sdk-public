@@ -21,3 +21,16 @@ alerts:
   channel: C093RJJBGRZ
   webhook: https://hooks.slack.com/services/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
 
+templates:
+  success: |
+    🎉 Module Released Successfully
+    Module: {{MODULE}}
+    Version: {{VERSION}}
+    Released by: {{AUTHOR}}
+    Environment: {{ENV}}
+  error: |
+    ❌ Module Release Failed
+    Module: {{MODULE}}
+    Version: {{VERSION}}
+    Error: {{ERROR}}
+

@@ -291,6 +291,7 @@ notify::load_mapping() {
     local mapping_file="$ROOT_DIR/Scripts/config/slack_mapping.yaml"
     [[ ! -f "$mapping_file" ]] && return 1
 
+    # Load existing mappings (email_map, module_owner, alerts)
     eval "$(python3 - <<EOF
 import yaml, json, sys
 d=yaml.safe_load(open("$mapping_file"))
@@ -298,7 +299,39 @@ print("SLACK_EMAIL_MAP='"+json.dumps(d.get("email_map",{})).replace("'","'\"'\"'
 print("SLACK_MODULE_OWNER='"+json.dumps(d.get("module_owner",{})).replace("'","'\"'\"'")+"'")
 print("SLACK_ALERTS='"+json.dumps(d.get("alerts",{})).replace("'","'\"'\"'")+"'")
 EOF
-)"
+)" || return 1
+
+    # Load templates section (optional, soft-fail if missing or malformed)
+    local templates_json
+    templates_json=$(python3 - <<EOF
+import yaml, json, sys
+try:
+    d=yaml.safe_load(open("$mapping_file"))
+    templates = d.get("templates", {})
+    if templates:
+        # Escape single quotes and newlines for shell
+        success = templates.get("success", "").replace("'", "'\"'\"'").replace("\n", "\\n")
+        error = templates.get("error", "").replace("'", "'\"'\"'").replace("\n", "\\n")
+        print("NOTIFY_TEMPLATE_SUCCESS='"+success+"'")
+        print("NOTIFY_TEMPLATE_ERROR='"+error+"'")
+except Exception as e:
+    # Silent failure - templates are optional
+    pass
+EOF
+    ) 2>/dev/null || true
+
+    # Only set template variables if parsing succeeded and templates exist
+    if [[ -n "$templates_json" ]]; then
+        eval "$templates_json" 2>/dev/null || {
+            log_warning "Failed to load Slack message templates from YAML; using built-in defaults"
+            unset NOTIFY_TEMPLATE_SUCCESS
+            unset NOTIFY_TEMPLATE_ERROR
+        }
+    else
+        # Templates section missing or empty - use defaults (variables remain unset)
+        unset NOTIFY_TEMPLATE_SUCCESS
+        unset NOTIFY_TEMPLATE_ERROR
+    fi
 }
 
 # Resolve Slack user ID from module or author email
@@ -437,18 +470,27 @@ EOF
 
 # Build success message template
 # Returns formatted success message with exact structure
+# Uses config-driven template if available, falls back to hard-coded default
 notify::build_success_message() {
     local module="$1"
     local version="$2"
     local author="$3"
     local env="$4"
     
-    # Exact format as specified:
-    # 🎉 Module Released Successfully  
-    # Module: <module>  
-    # Version: <version>  
-    # Released by: <author>  
-    # Environment: <env>  
+    # Use config template if available
+    if [[ -n "${NOTIFY_TEMPLATE_SUCCESS:-}" ]]; then
+        local template="${NOTIFY_TEMPLATE_SUCCESS}"
+        # Replace placeholders using parameter expansion (safe for typical values)
+        template="${template//\{\{MODULE\}\}/$module}"
+        template="${template//\{\{VERSION\}\}/$version}"
+        template="${template//\{\{AUTHOR\}\}/${author:-unknown}}"
+        template="${template//\{\{ENV\}\}/$env}"
+        # Convert \n to actual newlines
+        echo -e "$template"
+        return 0
+    fi
+    
+    # Fallback to hard-coded default template
     printf "🎉 Module Released Successfully\nModule: %s\nVersion: %s\nReleased by: %s\nEnvironment: %s\n" \
         "$module" \
         "$version" \
@@ -458,6 +500,7 @@ notify::build_success_message() {
 
 # Build error message template
 # Returns formatted error message with exact structure
+# Uses config-driven template if available, falls back to hard-coded default
 notify::build_error_message() {
     local module="$1"
     local version="$2"
@@ -465,11 +508,21 @@ notify::build_error_message() {
     local author="$4"
     local env="$5"
     
-    # Exact format as specified:
-    # ❌ Module Release Failed  
-    # Module: <module>  
-    # Version: <version>  
-    # Error: <short_reason>  
+    # Use config template if available
+    if [[ -n "${NOTIFY_TEMPLATE_ERROR:-}" ]]; then
+        local template="${NOTIFY_TEMPLATE_ERROR}"
+        # Replace placeholders using parameter expansion (safe for typical values)
+        template="${template//\{\{MODULE\}\}/$module}"
+        template="${template//\{\{VERSION\}\}/$version}"
+        template="${template//\{\{ERROR\}\}/$short_reason}"
+        template="${template//\{\{AUTHOR\}\}/${author:-unknown}}"
+        template="${template//\{\{ENV\}\}/$env}"
+        # Convert \n to actual newlines
+        echo -e "$template"
+        return 0
+    fi
+    
+    # Fallback to hard-coded default template
     printf "❌ Module Release Failed\nModule: %s\nVersion: %s\nError: %s\n" \
         "$module" \
         "$version" \
