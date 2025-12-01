@@ -6,23 +6,31 @@
 # ============================================================================
 # ROOT_DIR and UI System Loading
 # ============================================================================
-# ========================================
-# Unified ROOT_DIR resolution (final)
-# ========================================
-# The root dir is always the directory that contains
-# the parent Scripts/ folder where msp-release.sh lives.
+# ============================================
+# Unified ROOT_DIR resolution (final version)
+# ============================================
 if [[ -z "${ROOT_DIR:-}" ]]; then
-    SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-    # Find Scripts/ directory by going up until we find it, then go up one more level
-    ROOT_DIR="$SCRIPT_DIR"
-    while [[ "$ROOT_DIR" != "/" ]] && [[ "${ROOT_DIR##*/}" != "Scripts" ]]; do
-        ROOT_DIR="$(dirname "$ROOT_DIR")"
-    done
-    # If we found Scripts/, go up one more level to get repo root
-    if [[ "${ROOT_DIR##*/}" == "Scripts" ]]; then
-        ROOT_DIR="$(dirname "$ROOT_DIR")"
+    # First try Git repo root (most reliable)
+    if command -v git >/dev/null 2>&1; then
+        git_root="$(git rev-parse --show-toplevel 2>/dev/null || echo "")"
+        if [[ -n "$git_root" ]]; then
+            ROOT_DIR="$git_root"
+        fi
+    fi
+
+    # Fallback to walking up from SCRIPT_DIR
+    if [[ -z "${ROOT_DIR:-}" ]]; then
+        SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+        ROOT_DIR="$SCRIPT_DIR"
+        while [[ "$ROOT_DIR" != "/" ]] && [[ "${ROOT_DIR##*/}" != "Scripts" ]]; do
+            ROOT_DIR="$(dirname "$ROOT_DIR")"
+        done
+        if [[ "${ROOT_DIR##*/}" == "Scripts" ]]; then
+            ROOT_DIR="$(dirname "$ROOT_DIR")"
+        fi
     fi
 fi
+
 export ROOT_DIR
 
 # Source UI system in order: colors.sh → ui.sh → logging.sh
