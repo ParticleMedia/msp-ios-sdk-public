@@ -19,7 +19,7 @@ module_owner:
 
 alerts:
   channel: C093RJJBGRZ
-  webhook: https://hooks.slack.com/services/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
+  webhook: https://hooks.slack.com/services/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
 
 templates:
   success: |
