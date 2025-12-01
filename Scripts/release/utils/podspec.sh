@@ -6,11 +6,24 @@
 # ============================================================================
 # ROOT_DIR and UI System Loading
 # ============================================================================
-# Calculate ROOT_DIR if not already set (may be set by parent script)
+# ========================================
+# Unified ROOT_DIR resolution (final)
+# ========================================
+# The root dir is always the directory that contains
+# the parent Scripts/ folder where msp-release.sh lives.
 if [[ -z "${ROOT_DIR:-}" ]]; then
     SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-    ROOT_DIR="$(cd "$SCRIPT_DIR/../../.." && pwd)"
+    # Find Scripts/ directory by going up until we find it, then go up one more level
+    ROOT_DIR="$SCRIPT_DIR"
+    while [[ "$ROOT_DIR" != "/" ]] && [[ "${ROOT_DIR##*/}" != "Scripts" ]]; do
+        ROOT_DIR="$(dirname "$ROOT_DIR")"
+    done
+    # If we found Scripts/, go up one more level to get repo root
+    if [[ "${ROOT_DIR##*/}" == "Scripts" ]]; then
+        ROOT_DIR="$(dirname "$ROOT_DIR")"
+    fi
 fi
+export ROOT_DIR
 
 # Source UI system in order: colors.sh → ui.sh → logging.sh
 # Handle NO_ANSI flag by setting NO_COLOR (logging.sh respects NO_COLOR)

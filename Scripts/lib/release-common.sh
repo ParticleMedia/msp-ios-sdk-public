@@ -9,9 +9,24 @@
 # ============================================================================
 # ROOT_DIR Calculation
 # ============================================================================
-# Calculate ROOT_DIR relative to this file's location
-# release-common.sh is in Scripts/lib/, so go up two levels to reach repo root
-ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
+# ========================================
+# Unified ROOT_DIR resolution (final)
+# ========================================
+# The root dir is always the directory that contains
+# the parent Scripts/ folder where msp-release.sh lives.
+if [[ -z "${ROOT_DIR:-}" ]]; then
+    SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+    # Find Scripts/ directory by going up until we find it, then go up one more level
+    ROOT_DIR="$SCRIPT_DIR"
+    while [[ "$ROOT_DIR" != "/" ]] && [[ "${ROOT_DIR##*/}" != "Scripts" ]]; do
+        ROOT_DIR="$(dirname "$ROOT_DIR")"
+    done
+    # If we found Scripts/, go up one more level to get repo root
+    if [[ "${ROOT_DIR##*/}" == "Scripts" ]]; then
+        ROOT_DIR="$(dirname "$ROOT_DIR")"
+    fi
+fi
+export ROOT_DIR
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 # ============================================================================
@@ -57,83 +72,83 @@ if ! command -v log_info &>/dev/null; then
     : "${NC:=\033[0m}"
     
     # Fallback logging functions
-    log_info() {
+log_info() {
         if [[ "${NO_ANSI:-false}" == "true" ]]; then
             echo "[INFO] $1"
         else
-            echo -e "${BLUE}ℹ️  $1${NC}"
+    echo -e "${BLUE}ℹ️  $1${NC}"
         fi
-    }
-    
-    log_success() {
+}
+
+log_success() {
         if [[ "${NO_ANSI:-false}" == "true" ]]; then
             echo "[SUCCESS] $1"
         else
-            echo -e "${GREEN}✅ $1${NC}"
+    echo -e "${GREEN}✅ $1${NC}"
         fi
-    }
-    
-    log_warning() {
+}
+
+log_warning() {
         if [[ "${NO_ANSI:-false}" == "true" ]]; then
             echo "[WARN] $1"
         else
-            echo -e "${YELLOW}⚠️  $1${NC}"
+    echo -e "${YELLOW}⚠️  $1${NC}"
         fi
-    }
-    
-    log_error() {
+}
+
+log_error() {
         if [[ "${NO_ANSI:-false}" == "true" ]]; then
             echo "[ERROR] $1" >&2
         else
             echo -e "${RED}❌ $1${NC}" >&2
         fi
-    }
-    
-    log_step() {
+}
+
+log_step() {
         if [[ "${NO_ANSI:-false}" == "true" ]]; then
             echo "[STEP] $1"
         else
-            echo -e "${BLUE}🔧 $1${NC}"
+    echo -e "${BLUE}🔧 $1${NC}"
         fi
-    }
-    
-    log_release() {
+}
+
+log_release() {
         if [[ "${NO_ANSI:-false}" == "true" ]]; then
             echo "[RELEASE] $1"
         else
-            echo -e "${PURPLE}🚀 $1${NC}"
+    echo -e "${PURPLE}🚀 $1${NC}"
         fi
-    }
-    
-    log_debug() {
+}
+
+log_debug() {
         if [[ "${VERBOSE:-false}" == "true" ]]; then
             if [[ "${NO_ANSI:-false}" == "true" ]]; then
                 echo "[DEBUG] $1"
             else
-                echo -e "${BLUE}🔍 $1${NC}"
+        echo -e "${BLUE}🔍 $1${NC}"
             fi
-        fi
-    }
-    
-    print_section() {
+    fi
+}
+
+print_section() {
         if [[ "${NO_ANSI:-false}" == "true" ]]; then
             echo ""
             echo "=== $1 ==="
             echo ""
         else
-            echo ""
-            echo "═══════════════════════════════════════════════════════════════════"
-            echo "$1"
-            echo "═══════════════════════════════════════════════════════════════════"
-            echo ""
+    echo ""
+    echo "═══════════════════════════════════════════════════════════════════"
+    echo "$1"
+    echo "═══════════════════════════════════════════════════════════════════"
+    echo ""
         fi
-    }
-    
-    print_subsection() {
+}
+
+print_subsection() {
         if [[ "${NO_ANSI:-false}" == "true" ]]; then
             echo "--- $1 ---"
         else
-            echo -e "${BLUE}--- $1 ---${NC}"
+    echo -e "${BLUE}--- $1 ---${NC}"
         fi
     }
     

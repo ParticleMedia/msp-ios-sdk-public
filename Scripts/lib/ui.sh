@@ -16,7 +16,23 @@
 # ============================================================================
 
 UI_SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-ROOT_DIR="$(cd "$UI_SCRIPT_DIR/../.." && pwd)"
+# ========================================
+# Unified ROOT_DIR resolution (final)
+# ========================================
+# The root dir is always the directory that contains
+# the parent Scripts/ folder where msp-release.sh lives.
+if [[ -z "${ROOT_DIR:-}" ]]; then
+    # Find Scripts/ directory by going up until we find it, then go up one more level
+    ROOT_DIR="$UI_SCRIPT_DIR"
+    while [[ "$ROOT_DIR" != "/" ]] && [[ "${ROOT_DIR##*/}" != "Scripts" ]]; do
+        ROOT_DIR="$(dirname "$ROOT_DIR")"
+    done
+    # If we found Scripts/, go up one more level to get repo root
+    if [[ "${ROOT_DIR##*/}" == "Scripts" ]]; then
+        ROOT_DIR="$(dirname "$ROOT_DIR")"
+    fi
+fi
+export ROOT_DIR
 
 # Load colors first, then logging (colors may load logging, but that's safe)
 source "$ROOT_DIR/Scripts/lib/colors.sh" 2>/dev/null || true
