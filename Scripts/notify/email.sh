@@ -156,12 +156,12 @@ EOF
         return 0
     fi
     
-    # Get remote verification status from environment
-    local remote_status="${REMOTE_VERIFY_STATUS:-}"
+    # Get verification status from environment (includes remote, local, and device)
+    local verify_status="${REMOTE_VERIFY_STATUS:-}"
     
     # Render email body (module_list is already formatted with dashes from orchestrator)
     local email_body
-    email_body="$(notify::email::render_success_template "$version" "$author_email" "$module_list" "$duration" "$remote_status")" || return 0
+    email_body="$(notify::email::render_success_template "$version" "$author_email" "$module_list" "$duration" "$verify_status")" || return 0
     
     # Create temporary file for email content
     local tmp_file

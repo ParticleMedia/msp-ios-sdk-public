@@ -592,6 +592,49 @@ show_comprehensive_release_summary() {
     fi
     echo ""
     
+    # Device Verification Results
+    print_subsection "Device Verification"
+    
+    if [[ "${DEVICE_VERIFY_EXECUTED:-0}" == "1" ]]; then
+        local device_mode="${DEVICE_VERIFY_MODE:-unknown}"
+        local archive_status="FAIL"
+        local ipa_status="FAIL"
+        
+        if [[ -n "${DEVICE_VERIFY_ARCHIVE_PATH:-}" ]] && [[ -d "${DEVICE_VERIFY_ARCHIVE_PATH}" ]]; then
+            archive_status="PASS"
+        fi
+        
+        if [[ -n "${DEVICE_VERIFY_IPA_PATH:-}" ]] && [[ -f "${DEVICE_VERIFY_IPA_PATH}" ]]; then
+            ipa_status="PASS"
+        fi
+        
+        if [[ "${DEVICE_VERIFY_SUCCESS:-0}" == "1" ]]; then
+            log_success "Executed: yes"
+            log_success "Mode: $device_mode"
+            log_success "Archive: $archive_status"
+            log_success "IPA: $ipa_status"
+        else
+            log_info "Executed: yes"
+            log_info "Mode: $device_mode"
+            if [[ "$archive_status" == "PASS" ]]; then
+                log_success "Archive: $archive_status"
+            else
+                log_error "Archive: $archive_status"
+            fi
+            if [[ "$ipa_status" == "PASS" ]]; then
+                log_success "IPA: $ipa_status"
+            else
+                log_error "IPA: $ipa_status"
+            fi
+        fi
+    else
+        log_info "Executed: no"
+        log_info "Mode: N/A"
+        log_info "Archive: N/A"
+        log_info "IPA: N/A"
+    fi
+    echo ""
+    
     # Next Steps
     print_subsection "Next Steps"
     
@@ -647,6 +690,65 @@ run_remote_verification() {
             jq ".remote_verify = {
                 spm: {executed: ($spm_executed == 1), success: ($spm_success == 1)},
                 pods: {executed: ($pods_executed == 1), success: ($pods_success == 1)}
+            } | .timestamps.updated_at = \"$(date -u +"%Y-%m-%dT%H:%M:%SZ")\"" \
+                "$state_file" > "${state_file}.tmp" 2>/dev/null && \
+                mv "${state_file}.tmp" "$state_file" 2>/dev/null || true
+        fi
+    fi
+    
+    return 0
+}
+
+# Step 7: Run device verification
+run_device_verification() {
+    # Check if device verification is enabled (default: enabled)
+    local verify_enabled="${MSP_DEVICE_VERIFY_ENABLED:-1}"
+    if [[ "$verify_enabled" != "1" ]]; then
+        log_info "Device verification disabled (MSP_DEVICE_VERIFY_ENABLED != 1)"
+        return 0
+    fi
+    
+    log_section "Step 7: Device Verification"
+    
+    # Source device verification runner
+    local verify_script="$ROOT_DIR/Scripts/release/verify_local_device/run_device.sh"
+    if [[ ! -f "$verify_script" ]]; then
+        log_warn "Device verification script not found, skipping"
+        return 0
+    fi
+    
+    # Run device verification (soft-fail: never breaks release)
+    if source "$verify_script" && run_device_verification; then
+        log_info "Device verification completed"
+    else
+        log_warn "Device verification encountered errors (non-blocking)"
+    fi
+    
+    # Write device verification results to state file
+    if command -v msp_state_is_enabled &>/dev/null && msp_state_is_enabled; then
+        local state_file
+        state_file="$ROOT_DIR/.msp-release-state.json"
+        if [[ -f "$state_file" ]] && command -v jq >/dev/null 2>&1; then
+            # Update state with device verification results
+            local executed="${DEVICE_VERIFY_EXECUTED:-0}"
+            local success="${DEVICE_VERIFY_SUCCESS:-0}"
+            local mode="${DEVICE_VERIFY_MODE:-unknown}"
+            local archive_path="${DEVICE_VERIFY_ARCHIVE_PATH:-}"
+            local ipa_path="${DEVICE_VERIFY_IPA_PATH:-}"
+            
+            local mode_json
+            mode_json="\"$mode\""
+            local archive_json
+            archive_json="\"$archive_path\""
+            local ipa_json
+            ipa_json="\"$ipa_path\""
+            
+            jq ".device_verify = {
+                executed: ($executed == 1),
+                success: ($success == 1),
+                mode: $mode_json,
+                archive_path: $archive_json,
+                ipa_path: $ipa_json
             } | .timestamps.updated_at = \"$(date -u +"%Y-%m-%dT%H:%M:%SZ")\"" \
                 "$state_file" > "${state_file}.tmp" 2>/dev/null && \
                 mv "${state_file}.tmp" "$state_file" 2>/dev/null || true
@@ -723,6 +825,9 @@ main() {
     
     # Step 6: Run local verification (soft-fail, never breaks release)
     run_local_verification
+    
+    # Step 7: Run device verification (soft-fail, never breaks release)
+    run_device_verification
     
     # Global success notifications (only if release succeeded)
     if [[ "$OVERALL_SUCCESS" == "true" ]]; then
