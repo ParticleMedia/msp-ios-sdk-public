@@ -367,29 +367,50 @@ test_pods_dev() {
     
     log_header "PODS-DEV${is_final:+ (return)}"
     
-    # [X.1] Switch mode
+    # [X.0] Pre-flight check: Podfile existence (STEP A)
+    rtt_log_step "[${phase_num}.0] Pre-flight: Podfile existence check"
+    if [[ ! -f "$ROOT_DIR/Podfile" ]]; then
+        rtt_log_fail "Podfile not found at $ROOT_DIR/Podfile — this indicates an environment problem (CocoaPods will not work)."
+        phase_result="FAIL"
+        return 1
+    fi
+    rtt_log_success "Podfile exists"
+    
+    # [X.1] Switch mode (with enhanced logging - STEP B)
     rtt_log_step "[${phase_num}.1] Switch mode"
+    local pods_dev_log
+    pods_dev_log="$(mktemp)"
     local switch_output
     local switch_retries=0
-    switch_output=$("$ROOT_DIR/Scripts/switch-target.sh" pods-dev 2>&1) || {
+    switch_output=$("$ROOT_DIR/Scripts/switch-target.sh" pods-dev 2>&1 | tee "$pods_dev_log") || {
         if [[ "$AUTO_FIX" == "true" ]] && [[ $switch_retries -eq 0 ]]; then
             ((switch_retries++)) || true
             if auto_repair_mode "pods-dev"; then
                 rtt_log_success "Switch → OK (after auto-repair)"
             else
                 rtt_log_fail "Switch failed (auto-repair also failed)"
-                echo "$switch_output" | tail -10 | sed 's/^/    /'
+                echo "---------- POD INSTALL OUTPUT ----------"
+                tail -30 "$pods_dev_log" | sed 's/^/    /'
+                echo "----------------------------------------"
+                # Store log path for final summary (STEP C)
+                export RTT_PODS_DEV_LOG="$pods_dev_log"
                 phase_result="FAIL"
                 return 1
             fi
         else
-            rtt_log_fail "Switch failed"
-            echo "$switch_output" | tail -10 | sed 's/^/    /'
+            rtt_log_fail "Switch failed (see pod install error below):"
+            echo "---------- POD INSTALL OUTPUT ----------"
+            tail -30 "$pods_dev_log" | sed 's/^/    /'
+            echo "----------------------------------------"
+            # Store log path for final summary (STEP C)
+            export RTT_PODS_DEV_LOG="$pods_dev_log"
             phase_result="FAIL"
             return 1
         fi
     }
     rtt_log_success "Switch → OK"
+    # Clean up log file on success (STEP D)
+    rm -f "$pods_dev_log" 2>/dev/null || true
     
     # [X.2] Git Clean Gate (immediately after switch)
     rtt_log_step "[${phase_num}.2] Git Clean Gate"
@@ -773,6 +794,14 @@ main() {
         printf "  spm-release:      %s\n" "${RTT_SPM_RELEASE:-UNKNOWN}"
         printf "  pods-dev (exit):   %s\n" "${RTT_PODS_DEV_EXIT:-UNKNOWN}"
         echo ""
+    fi
+    
+    # STEP C: Show pod install failure details if pods-dev failed
+    if [[ -n "${RTT_PODS_DEV_LOG:-}" ]] && [[ -f "${RTT_PODS_DEV_LOG:-}" ]]; then
+        echo "RTT PODS-DEV FAILURE:"
+        head -30 "$RTT_PODS_DEV_LOG" | sed 's/^/  /'
+        echo ""
+        rm -f "$RTT_PODS_DEV_LOG" 2>/dev/null || true
     fi
     
     echo "┌─────────────────────────────────────────┐"
