@@ -635,6 +635,40 @@ show_comprehensive_release_summary() {
     fi
     echo ""
     
+    # XCFramework Verification Results
+    print_subsection "XCFramework Verification"
+    
+    if [[ "${XCF_VERIFY_EXECUTED:-0}" == "1" ]]; then
+        # Parse module results from JSON (if available)
+        if [[ -n "${XCF_VERIFY_MODULES_JSON:-}" ]] && command -v jq >/dev/null 2>&1; then
+            local modules
+            modules="$(echo "$XCF_VERIFY_MODULES_JSON" | jq -r 'keys[]' 2>/dev/null || echo "")"
+            if [[ -n "$modules" ]]; then
+                while IFS= read -r module; do
+                    local success
+                    success="$(echo "$XCF_VERIFY_MODULES_JSON" | jq -r ".\"$module\".success" 2>/dev/null || echo "false")"
+                    local warnings
+                    warnings="$(echo "$XCF_VERIFY_MODULES_JSON" | jq -r ".\"$module\".warnings" 2>/dev/null || echo "0")"
+                    
+                    if [[ "$success" == "true" ]]; then
+                        if [[ "$warnings" == "0" ]]; then
+                            log_success "$module: PASS (0 warnings)"
+                        else
+                            log_success "$module: PASS ($warnings warnings)"
+                        fi
+                    else
+                        log_error "$module: FAIL ($warnings warnings)"
+                    fi
+                done <<< "$modules"
+            fi
+        else
+            log_info "Module results not available"
+        fi
+    else
+        log_info "Executed: no"
+    fi
+    echo ""
+    
     # Next Steps
     print_subsection "Next Steps"
     
@@ -758,6 +792,53 @@ run_device_verification() {
     return 0
 }
 
+# Step 8: Run XCFramework deep verification
+run_xcframework_verification() {
+    # Check if XCFramework verification is enabled (default: enabled)
+    local verify_enabled="${MSP_XCF_VERIFY_ENABLED:-1}"
+    if [[ "$verify_enabled" != "1" ]]; then
+        log_info "XCFramework verification disabled (MSP_XCF_VERIFY_ENABLED != 1)"
+        return 0
+    fi
+    
+    log_section "Step 8: XCFramework Deep Verification"
+    
+    # Source XCFramework verification runner
+    local verify_script="$ROOT_DIR/Scripts/release/verify_xcframework/run_xcf.sh"
+    if [[ ! -f "$verify_script" ]]; then
+        log_warn "XCFramework verification script not found, skipping"
+        return 0
+    fi
+    
+    # Run XCFramework verification (soft-fail: never breaks release)
+    if source "$verify_script" && run_xcframework_verification; then
+        log_info "XCFramework verification completed"
+    else
+        log_warn "XCFramework verification encountered errors (non-blocking)"
+    fi
+    
+    # Write XCFramework verification results to state file
+    if command -v msp_state_is_enabled &>/dev/null && msp_state_is_enabled; then
+        local state_file
+        state_file="$ROOT_DIR/.msp-release-state.json"
+        if [[ -f "$state_file" ]] && command -v jq >/dev/null 2>&1; then
+            # Update state with XCFramework verification results
+            local executed="${XCF_VERIFY_EXECUTED:-0}"
+            local modules_json="${XCF_VERIFY_MODULES_JSON:-{}}"
+            
+            # Parse modules JSON and write to state
+            jq ".xcframework_verify = {
+                executed: ($executed == 1),
+                modules: $modules_json
+            } | .timestamps.updated_at = \"$(date -u +"%Y-%m-%dT%H:%M:%SZ")\"" \
+                "$state_file" > "${state_file}.tmp" 2>/dev/null && \
+                mv "${state_file}.tmp" "$state_file" 2>/dev/null || true
+        fi
+    fi
+    
+    return 0
+}
+
 # Error handler for state tracking
 _handle_main_error() {
     local exit_code=$?
@@ -828,6 +909,9 @@ main() {
     
     # Step 7: Run device verification (soft-fail, never breaks release)
     run_device_verification
+    
+    # Step 8: Run XCFramework deep verification (soft-fail, never breaks release)
+    run_xcframework_verification
     
     # Global success notifications (only if release succeeded)
     if [[ "$OVERALL_SUCCESS" == "true" ]]; then
@@ -919,6 +1003,38 @@ main() {
             fi
         fi
         
+        # Build XCFramework verification status for notifications
+        local xcf_status=""
+        if [[ "${XCF_VERIFY_EXECUTED:-0}" == "1" ]] && [[ -n "${XCF_VERIFY_MODULES_JSON:-}" ]] && command -v jq >/dev/null 2>&1; then
+            local modules
+            modules="$(echo "${XCF_VERIFY_MODULES_JSON}" | jq -r 'keys[]' 2>/dev/null || echo "")"
+            if [[ -n "$modules" ]]; then
+                while IFS= read -r module; do
+                    local success
+                    success="$(echo "${XCF_VERIFY_MODULES_JSON}" | jq -r ".\"$module\".success" 2>/dev/null || echo "false")"
+                    local warnings
+                    warnings="$(echo "${XCF_VERIFY_MODULES_JSON}" | jq -r ".\"$module\".warnings" 2>/dev/null || echo "0")"
+                    
+                    local module_status=""
+                    if [[ "$success" == "true" ]]; then
+                        if [[ "$warnings" == "0" ]]; then
+                            module_status="    - XCFramework $module: PASS"
+                        else
+                            module_status="    - XCFramework $module: WARN ($warnings warnings)"
+                        fi
+                    else
+                        module_status="    - XCFramework $module: FAIL"
+                    fi
+                    
+                    if [[ -z "$xcf_status" ]]; then
+                        xcf_status="$module_status"
+                    else
+                        xcf_status="$xcf_status"$'\n'"$module_status"
+                    fi
+                done <<< "$modules"
+            fi
+        fi
+        
         # Combine verification status
         local verify_status="$remote_status"
         if [[ -n "$local_status" ]]; then
@@ -926,6 +1042,20 @@ main() {
                 verify_status="$local_status"
             else
                 verify_status="$verify_status"$'\n'"$local_status"
+            fi
+        fi
+        if [[ -n "$device_status" ]]; then
+            if [[ -z "$verify_status" ]]; then
+                verify_status="$device_status"
+            else
+                verify_status="$verify_status"$'\n'"$device_status"
+            fi
+        fi
+        if [[ -n "$xcf_status" ]]; then
+            if [[ -z "$verify_status" ]]; then
+                verify_status="$xcf_status"
+            else
+                verify_status="$verify_status"$'\n'"$xcf_status"
             fi
         fi
         
