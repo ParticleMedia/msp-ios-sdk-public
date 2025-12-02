@@ -52,6 +52,7 @@ import GoogleMobileAds
         DTBAds.sharedInstance().mraidPolicy = CUSTOM_MRAID
         DTBAds.sharedInstance().mraidCustomVersions = ["1.0", "2.0", "3.0"]
         DTBAds.sharedInstance().useGeoLocation = true
+        adapterInitListener.onComplete(adNetwork: .amazon, adapterInitStatus: .SUCCESS, message: "")
     }
     
     public func destroyAd() {
