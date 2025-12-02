@@ -10,13 +10,12 @@ success_list:
     - shanyu.li@newsbreak.com
     - qili.chen@newsbreak.com
 
-smtp:
-  host: smtp.office365.com
-  port: 587
-  username: msp-noreply@nb-internal.com
-  password_env: MSP_EMAIL_PASSWORD
+api:
+  endpoint_env: MSP_EMAIL_ENDPOINT
+  from: msp-no-reply@newsbreak.com
 
 templates:
+  subject: "MSP Release Success — Version {{VERSION}}"
   success: |
     MSP Release Success 🎉
     Version: {{VERSION}}
@@ -24,4 +23,5 @@ templates:
     Modules:
 {{MODULE_LIST}}
     Duration: {{DURATION}}
-
+    Verification:
+{{VERIFICATION_STATUS}}

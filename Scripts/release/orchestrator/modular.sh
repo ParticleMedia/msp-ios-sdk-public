@@ -1072,7 +1072,7 @@ main() {
         fi
         
         if command -v notify::email::send_success_email &>/dev/null; then
-            notify::email::send_success_email "$VERSION" "${MSP_AUTHOR_EMAIL:-unknown}" "$module_list" "${duration:-unknown}" || true
+            notify::email::send_success_email "$VERSION" "${MSP_AUTHOR_EMAIL:-unknown}" "$module_list" "${duration:-unknown}" "${REMOTE_VERIFY_STATUS:-}" || true
         fi
     fi
 }
