@@ -603,8 +603,11 @@ notify::module_error() {
 notify::release_success_dm() {
     local version="$1"
     
-    # Simple success message
+    # Build message with remote verification status if available
     local message="MSP Release Success — Version: $version"
+    if [[ -n "${REMOTE_VERIFY_STATUS:-}" ]]; then
+        message="$message"$'\n\n'"Remote Verification:"$'\n'"${REMOTE_VERIFY_STATUS}"
+    fi
     
     # Send DM using existing routing logic (respects MSP_SLACK_DM_OVERRIDE, TEST/PROD mode)
     notify::dm "" "$message" 2>/dev/null || true
@@ -618,8 +621,11 @@ notify::release_success_dm() {
 notify::release_success_channel() {
     local version="$1"
     
-    # Simple success message
+    # Build message with remote verification status if available
     local message="MSP Release Success — Version: $version"
+    if [[ -n "${REMOTE_VERIFY_STATUS:-}" ]]; then
+        message="$message"$'\n\n'"Remote Verification:"$'\n'"${REMOTE_VERIFY_STATUS}"
+    fi
     
     # Send channel message using existing routing logic (TEST/PROD webhook rules)
     notify::channel "$message" 2>/dev/null || true

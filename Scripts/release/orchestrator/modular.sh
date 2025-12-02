@@ -537,6 +537,40 @@ show_comprehensive_release_summary() {
         echo ""
     fi
     
+    # Remote Verification Results
+    print_subsection "Remote Verification"
+    
+    # SPM Remote Verification
+    if [[ "${REMOTE_SPM_EXECUTED:-0}" == "1" ]]; then
+        local spm_url="${MSP_VERIFY_SPM_URL:-N/A}"
+        local spm_version="${MSP_VERIFY_SPM_VERSION:-N/A}"
+        if [[ "${REMOTE_SPM_SUCCESS:-0}" == "1" ]]; then
+            log_success "SPM:   PASS  (repo: $spm_url, version: $spm_version)"
+        else
+            log_error "SPM:   FAIL  (repo: $spm_url, version: $spm_version)"
+        fi
+    elif [[ -z "${MSP_VERIFY_SPM_URL:-}" ]] || [[ -z "${MSP_VERIFY_SPM_VERSION:-}" ]]; then
+        log_info "SPM:   N/A   (not configured)"
+    else
+        log_info "SPM:   SKIPPED"
+    fi
+    
+    # CocoaPods Remote Verification
+    if [[ "${REMOTE_PODS_EXECUTED:-0}" == "1" ]]; then
+        local pods_url="${MSP_VERIFY_PODS_URL:-N/A}"
+        local pods_version="${MSP_VERIFY_PODS_VERSION:-N/A}"
+        if [[ "${REMOTE_PODS_SUCCESS:-0}" == "1" ]]; then
+            log_success "Pods:  PASS  (repo: $pods_url, version: $pods_version)"
+        else
+            log_error "Pods:  FAIL  (repo: $pods_url, version: $pods_version)"
+        fi
+    elif [[ -z "${MSP_VERIFY_PODS_URL:-}" ]] || [[ -z "${MSP_VERIFY_PODS_VERSION:-}" ]]; then
+        log_info "Pods:  N/A   (not configured)"
+    else
+        log_info "Pods:  SKIPPED"
+    fi
+    echo ""
+    
     # Next Steps
     print_subsection "Next Steps"
     
@@ -551,6 +585,54 @@ show_comprehensive_release_summary() {
         log_info "3. Check logs for detailed error information"
     fi
     echo ""
+}
+
+# Step 5: Run remote verification
+run_remote_verification() {
+    # Check if remote verification is enabled (default: enabled)
+    local verify_enabled="${MSP_REMOTE_VERIFY_ENABLED:-1}"
+    if [[ "$verify_enabled" != "1" ]]; then
+        log_info "Remote verification disabled (MSP_REMOTE_VERIFY_ENABLED != 1)"
+        return 0
+    fi
+    
+    log_section "Step 5: Remote Verification"
+    
+    # Source remote verification runner
+    local verify_script="$ROOT_DIR/Scripts/release/verify_remote/run_all.sh"
+    if [[ ! -f "$verify_script" ]]; then
+        log_warn "Remote verification script not found, skipping"
+        return 0
+    fi
+    
+    # Run remote verification (soft-fail: never breaks release)
+    if source "$verify_script" && run_all_remote_verification; then
+        log_info "Remote verification completed"
+    else
+        log_warn "Remote verification encountered errors (non-blocking)"
+    fi
+    
+    # Write remote verification results to state file
+    if command -v msp_state_is_enabled &>/dev/null && msp_state_is_enabled; then
+        local state_file
+        state_file="$ROOT_DIR/.msp-release-state.json"
+        if [[ -f "$state_file" ]] && command -v jq >/dev/null 2>&1; then
+            # Update state with remote verification results
+            local spm_executed="${REMOTE_SPM_EXECUTED:-0}"
+            local spm_success="${REMOTE_SPM_SUCCESS:-0}"
+            local pods_executed="${REMOTE_PODS_EXECUTED:-0}"
+            local pods_success="${REMOTE_PODS_SUCCESS:-0}"
+            
+            jq ".remote_verify = {
+                spm: {executed: ($spm_executed == 1), success: ($spm_success == 1)},
+                pods: {executed: ($pods_executed == 1), success: ($pods_success == 1)}
+            } | .timestamps.updated_at = \"$(date -u +"%Y-%m-%dT%H:%M:%SZ")\"" \
+                "$state_file" > "${state_file}.tmp" 2>/dev/null && \
+                mv "${state_file}.tmp" "$state_file" 2>/dev/null || true
+        fi
+    fi
+    
+    return 0
 }
 
 # Error handler for state tracking
@@ -615,6 +697,9 @@ main() {
     # Show comprehensive summary
     show_comprehensive_release_summary
     
+    # Step 5: Run remote verification (soft-fail, never breaks release)
+    run_remote_verification
+    
     # Global success notifications (only if release succeeded)
     if [[ "$OVERALL_SUCCESS" == "true" ]]; then
         # Build module list from successful releases
@@ -659,6 +744,43 @@ main() {
                 duration="${minutes}m ${seconds}s"
             fi
         fi
+        
+        # Build remote verification status for notifications
+        local remote_status=""
+        if [[ "${REMOTE_SPM_EXECUTED:-0}" == "1" ]]; then
+            if [[ "${REMOTE_SPM_SUCCESS:-0}" == "1" ]]; then
+                remote_status="    - SPM: PASS"
+            else
+                remote_status="    - SPM: FAIL"
+            fi
+        elif [[ -n "${MSP_VERIFY_SPM_URL:-}" ]] && [[ -n "${MSP_VERIFY_SPM_VERSION:-}" ]]; then
+            remote_status="    - SPM: SKIPPED"
+        fi
+        
+        if [[ "${REMOTE_PODS_EXECUTED:-0}" == "1" ]]; then
+            if [[ "${REMOTE_PODS_SUCCESS:-0}" == "1" ]]; then
+                if [[ -z "$remote_status" ]]; then
+                    remote_status="    - Pods: PASS"
+                else
+                    remote_status="$remote_status"$'\n'"    - Pods: PASS"
+                fi
+            else
+                if [[ -z "$remote_status" ]]; then
+                    remote_status="    - Pods: FAIL"
+                else
+                    remote_status="$remote_status"$'\n'"    - Pods: FAIL"
+                fi
+            fi
+        elif [[ -n "${MSP_VERIFY_PODS_URL:-}" ]] && [[ -n "${MSP_VERIFY_PODS_VERSION:-}" ]]; then
+            if [[ -z "$remote_status" ]]; then
+                remote_status="    - Pods: SKIPPED"
+            else
+                remote_status="$remote_status"$'\n'"    - Pods: SKIPPED"
+            fi
+        fi
+        
+        # Export remote status for notifications
+        export REMOTE_VERIFY_STATUS="$remote_status"
         
         # Send global success notifications (soft-fail always)
         if command -v notify::release_success_dm &>/dev/null; then

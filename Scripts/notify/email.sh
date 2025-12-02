@@ -56,13 +56,14 @@ EOF
 }
 
 # Render success email template
-# Replaces placeholders: {{VERSION}}, {{AUTHOR}}, {{MODULE_LIST}}, {{DURATION}}
+# Replaces placeholders: {{VERSION}}, {{AUTHOR}}, {{MODULE_LIST}}, {{DURATION}}, {{REMOTE_STATUS}}
 # Returns rendered template on stdout
 notify::email::render_success_template() {
     local version="$1"
     local author="$2"
     local module_list="$3"
     local duration="$4"
+    local remote_status="${5:-}"
     
     # Load mapping to get template
     notify::email::load_mapping 2>/dev/null || true
@@ -75,17 +76,23 @@ notify::email::render_success_template() {
         template="${template//\{\{AUTHOR\}\}/${author:-unknown}}"
         template="${template//\{\{MODULE_LIST\}\}/$module_list}"
         template="${template//\{\{DURATION\}\}/$duration}"
+        # Replace {{REMOTE_STATUS}} if present
+        if [[ -n "$remote_status" ]]; then
+            template="${template//\{\{REMOTE_STATUS\}\}/$remote_status}"
+        else
+            template="${template//\{\{REMOTE_STATUS\}\}/}"
+        fi
         # Convert \n to actual newlines
         echo -e "$template"
         return 0
     fi
     
     # Fallback to hard-coded default template
-    printf "MSP Release Success 🎉\nVersion: %s\nAuthor: %s\nModules:\n%s\nDuration: %s\n" \
-        "$version" \
-        "${author:-unknown}" \
-        "$module_list" \
-        "$duration"
+    local email_body="MSP Release Success 🎉\nVersion: $version\nAuthor: ${author:-unknown}\nModules:\n$module_list\nDuration: $duration"
+    if [[ -n "$remote_status" ]]; then
+        email_body="$email_body\n\nRemote Verification:\n$remote_status"
+    fi
+    printf "$email_body\n"
 }
 
 # Send success email broadcast
@@ -149,9 +156,12 @@ EOF
         return 0
     fi
     
+    # Get remote verification status from environment
+    local remote_status="${REMOTE_VERIFY_STATUS:-}"
+    
     # Render email body (module_list is already formatted with dashes from orchestrator)
     local email_body
-    email_body="$(notify::email::render_success_template "$version" "$author_email" "$module_list" "$duration")" || return 0
+    email_body="$(notify::email::render_success_template "$version" "$author_email" "$module_list" "$duration" "$remote_status")" || return 0
     
     # Create temporary file for email content
     local tmp_file
