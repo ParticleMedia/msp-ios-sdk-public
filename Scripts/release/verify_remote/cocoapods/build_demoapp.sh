@@ -4,40 +4,75 @@
 # ============================================================================
 # Purpose: Build DemoApp in sandbox using CocoaPods workspace
 #
-# Usage:   ./build_demoapp.sh <sandbox_path> <scheme>
+# Usage:   ./build_demoapp.sh <sandbox_path>
 # ============================================================================
 
 set -euo pipefail
 
 # Source common utilities
 source "$(dirname "$0")/../common/utils.sh"
-source "$(dirname "$0")/../common/env.sh"
 
 # ============================================================================
 # Functions
 # ============================================================================
 
 build_demoapp_pods() {
-    local sandbox_path="${1:-}"
-    local scheme="${2:-MSPDemoApp}"
+    local sandbox="$1"
     
-    if [[ -z "$sandbox_path" ]]; then
-        log_error "Sandbox path required"
+    if [[ -z "$sandbox" ]]; then
+        vr_log_error "Sandbox path required"
         return 1
     fi
     
-    local workspace="${sandbox_path}/msp-ios-sdk.xcworkspace"
+    # Check if xcodebuild exists
+    if ! command -v xcodebuild >/dev/null 2>&1; then
+        vr_log_warn "xcodebuild command not found, skipping build verification"
+        return 0
+    fi
+    
+    local demoapp_dir="$sandbox/DemoApp"
+    local workspace="$demoapp_dir/MSPDemoApp.xcworkspace"
     
     if [[ ! -d "$workspace" ]] && [[ ! -L "$workspace" ]]; then
-        log_error "Workspace not found in sandbox"
+        vr_log_error "Workspace not found: $workspace"
         return 1
     fi
     
-    # TODO: Change to sandbox directory
-    # TODO: Build using xcodebuild with CocoaPods workspace
-    # TODO: Verify build succeeded
+    # Create temporary log file for xcodebuild output
+    local build_log
+    build_log="$(mktemp)" || {
+        vr_log_error "Failed to create temporary log file"
+        return 1
+    }
     
-    return 0
+    # Change to DemoApp directory and run xcodebuild
+    pushd "$demoapp_dir" >/dev/null || {
+        vr_log_error "Failed to change to DemoApp directory: $demoapp_dir"
+        rm -f "$build_log"
+        return 1
+    }
+    
+    vr_log_info "[PODS] Building DemoApp via xcodebuild..."
+    if xcodebuild \
+        -workspace MSPDemoApp.xcworkspace \
+        -scheme MSPDemoApp \
+        -configuration Release \
+        -sdk iphoneos \
+        CODE_SIGNING_ALLOWED=NO \
+        >"$build_log" 2>&1; then
+        vr_log_info "[PODS] Build succeeded"
+        rm -f "$build_log"
+        popd >/dev/null
+        return 0
+    else
+        vr_log_error "[PODS] Build failed"
+        echo "---------- XCODEBUILD OUTPUT (last 80 lines) ----------"
+        tail -n 80 "$build_log" || cat "$build_log"
+        echo "------------------------------------------------------"
+        rm -f "$build_log"
+        popd >/dev/null
+        return 1
+    fi
 }
 
 # ============================================================================
@@ -47,4 +82,3 @@ build_demoapp_pods() {
 if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
     build_demoapp_pods "$@"
 fi
-

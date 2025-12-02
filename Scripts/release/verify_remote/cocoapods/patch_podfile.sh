@@ -2,9 +2,10 @@
 # ============================================================================
 # Patch Podfile for Remote CocoaPods Verification
 # ============================================================================
-# Purpose: Modify Podfile to use remote source instead of local path
+# Purpose: Generate Podfile to use remote source instead of local path
 #
-# Usage:   ./patch_podfile.sh <sandbox_path> <remote_version> <source_url>
+# Usage:   ./patch_podfile.sh <sandbox_path>
+#          (reads MSP_VERIFY_PODS_URL, MSP_VERIFY_PODS_VERSION from environment)
 # ============================================================================
 
 set -euo pipefail
@@ -17,26 +18,35 @@ source "$(dirname "$0")/../common/utils.sh"
 # ============================================================================
 
 patch_podfile() {
-    local sandbox_path="${1:-}"
-    local remote_version="${2:-}"
-    local source_url="${3:-}"
+    local sandbox="$1"
     
-    if [[ -z "$sandbox_path" ]] || [[ -z "$remote_version" ]]; then
-        log_error "Sandbox path and remote version required"
+    if [[ -z "$sandbox" ]]; then
+        vr_log_error "Sandbox path required"
         return 1
     fi
     
-    local podfile="${sandbox_path}/Podfile"
+    # Read configuration from environment
+    local remote_url="${MSP_VERIFY_PODS_URL:-}"
+    local remote_version="${MSP_VERIFY_PODS_VERSION:-}"
     
-    if [[ ! -f "$podfile" ]]; then
-        log_error "Podfile not found in sandbox"
+    if [[ -z "$remote_url" ]] || [[ -z "$remote_version" ]]; then
+        vr_log_error "MSP_VERIFY_PODS_URL and MSP_VERIFY_PODS_VERSION required"
         return 1
     fi
     
-    # TODO: Read Podfile
-    # TODO: Replace local path-based pods with remote version-based pods
-    # TODO: Update source URL if provided
-    # TODO: Write modified Podfile back
+    # Generate Podfile in sandbox/DemoApp/
+    local podfile_path="$sandbox/DemoApp/Podfile"
+    
+    cat > "$podfile_path" <<EOF
+platform :ios, '13.0'
+use_frameworks!
+
+target 'MSPDemoApp' do
+  pod 'MSP', :git => '$remote_url', :tag => '$remote_version'
+end
+EOF
+    
+    vr_log_info "[PODS] Patched Podfile (URL=$remote_url, version=$remote_version)"
     
     return 0
 }
@@ -48,4 +58,3 @@ patch_podfile() {
 if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
     patch_podfile "$@"
 fi
-
