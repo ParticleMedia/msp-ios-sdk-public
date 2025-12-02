@@ -571,6 +571,27 @@ show_comprehensive_release_summary() {
     fi
     echo ""
     
+    # Local Verification Results
+    print_subsection "Local Verification"
+    
+    if [[ "${LOCAL_VERIFY_EXECUTED:-0}" == "1" ]]; then
+        local mode="${LOCAL_VERIFY_MODE:-unknown}"
+        if [[ "${LOCAL_VERIFY_SUCCESS:-0}" == "1" ]]; then
+            log_success "Executed: yes"
+            log_success "Mode: $mode"
+            log_success "Result: PASS"
+        else
+            log_info "Executed: yes"
+            log_info "Mode: $mode"
+            log_error "Result: FAIL"
+        fi
+    else
+        log_info "Executed: no"
+        log_info "Mode: N/A"
+        log_info "Result: SKIPPED"
+    fi
+    echo ""
+    
     # Next Steps
     print_subsection "Next Steps"
     
@@ -700,6 +721,9 @@ main() {
     # Step 5: Run remote verification (soft-fail, never breaks release)
     run_remote_verification
     
+    # Step 6: Run local verification (soft-fail, never breaks release)
+    run_local_verification
+    
     # Global success notifications (only if release succeeded)
     if [[ "$OVERALL_SUCCESS" == "true" ]]; then
         # Build module list from successful releases
@@ -779,8 +803,29 @@ main() {
             fi
         fi
         
-        # Export remote status for notifications
-        export REMOTE_VERIFY_STATUS="$remote_status"
+        # Build local verification status for notifications
+        local local_status=""
+        if [[ "${LOCAL_VERIFY_EXECUTED:-0}" == "1" ]]; then
+            local mode="${LOCAL_VERIFY_MODE:-unknown}"
+            if [[ "${LOCAL_VERIFY_SUCCESS:-0}" == "1" ]]; then
+                local_status="    - Local ($mode): PASS"
+            else
+                local_status="    - Local ($mode): FAIL"
+            fi
+        fi
+        
+        # Combine verification status
+        local verify_status="$remote_status"
+        if [[ -n "$local_status" ]]; then
+            if [[ -z "$verify_status" ]]; then
+                verify_status="$local_status"
+            else
+                verify_status="$verify_status"$'\n'"$local_status"
+            fi
+        fi
+        
+        # Export combined status for notifications
+        export REMOTE_VERIFY_STATUS="$verify_status"
         
         # Send global success notifications (soft-fail always)
         if command -v notify::release_success_dm &>/dev/null; then
