@@ -600,6 +600,8 @@ notify::module_error() {
 # Notify global release success (DM only)
 # Sends DM to appropriate user based on TEST/PROD mode and routing rules
 # Soft-fail always
+# DEPRECATED: Use notify::send_release_summary() instead
+# This function is kept for backward compatibility only
 notify::release_success_dm() {
     local version="$1"
     
@@ -618,6 +620,8 @@ notify::release_success_dm() {
 # Notify global release success (Channel broadcast only)
 # Sends to channel using TEST/PROD webhook rules
 # Soft-fail always
+# DEPRECATED: Use notify::send_release_summary() instead
+# This function is kept for backward compatibility only
 notify::release_success_channel() {
     local version="$1"
     

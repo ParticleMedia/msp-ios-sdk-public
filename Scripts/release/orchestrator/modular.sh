@@ -1062,17 +1062,113 @@ main() {
         # Export combined status for notifications
         export REMOTE_VERIFY_STATUS="$verify_status"
         
-        # Send global success notifications (soft-fail always)
-        if command -v notify::release_success_dm &>/dev/null; then
-            notify::release_success_dm "$VERSION" || true
-        fi
+        # Build unified notification data (JSON)
+        build_notify_data_json() {
+            # Build modules JSON
+            local modules_json="{"
+            local first_module=1
+            if [[ ${#COCOAPODS_SUCCESS[@]} -gt 0 ]]; then
+                for pod in "${COCOAPODS_SUCCESS[@]}"; do
+                    if [[ $first_module -eq 1 ]]; then
+                        first_module=0
+                    else
+                        modules_json="$modules_json,"
+                    fi
+                    modules_json="$modules_json\"$pod\":\"$VERSION\""
+                done
+            fi
+            if [[ ${#SPM_SUCCESS[@]} -gt 0 ]]; then
+                for package in "${SPM_SUCCESS[@]}"; do
+                    if [[ $first_module -eq 1 ]]; then
+                        first_module=0
+                    else
+                        modules_json="$modules_json,"
+                    fi
+                    modules_json="$modules_json\"$package\":\"$VERSION\""
+                done
+            fi
+            modules_json="$modules_json}"
+            
+            # Build remote verification JSON
+            local remote_verify_json="{"
+            local first_remote=1
+            if [[ "${REMOTE_SPM_EXECUTED:-0}" == "1" ]]; then
+                first_remote=0
+                remote_verify_json="$remote_verify_json\"spm\":{\"executed\":true,\"success\":$([[ "${REMOTE_SPM_SUCCESS:-0}" == "1" ]] && echo "true" || echo "false"),\"url\":\"${MSP_VERIFY_SPM_URL:-}\",\"version\":\"${MSP_VERIFY_SPM_VERSION:-}\"}"
+            fi
+            if [[ "${REMOTE_PODS_EXECUTED:-0}" == "1" ]]; then
+                if [[ $first_remote -eq 0 ]]; then
+                    remote_verify_json="$remote_verify_json,"
+                fi
+                remote_verify_json="$remote_verify_json\"pods\":{\"executed\":true,\"success\":$([[ "${REMOTE_PODS_SUCCESS:-0}" == "1" ]] && echo "true" || echo "false"),\"url\":\"${MSP_VERIFY_PODS_URL:-}\",\"version\":\"${MSP_VERIFY_PODS_VERSION:-}\"}"
+            fi
+            remote_verify_json="$remote_verify_json}"
+            
+            # Build local verification JSON
+            local local_verify_json="{"
+            local_verify_json="$local_verify_json\"executed\":$([[ "${LOCAL_VERIFY_EXECUTED:-0}" == "1" ]] && echo "true" || echo "false"),"
+            local_verify_json="$local_verify_json\"success\":$([[ "${LOCAL_VERIFY_SUCCESS:-0}" == "1" ]] && echo "true" || echo "false"),"
+            local_verify_json="$local_verify_json\"mode\":\"${LOCAL_VERIFY_MODE:-unknown}\""
+            local_verify_json="$local_verify_json}"
+            
+            # Build device verification JSON
+            local device_verify_json="{"
+            device_verify_json="$device_verify_json\"executed\":$([[ "${DEVICE_VERIFY_EXECUTED:-0}" == "1" ]] && echo "true" || echo "false"),"
+            device_verify_json="$device_verify_json\"success\":$([[ "${DEVICE_VERIFY_SUCCESS:-0}" == "1" ]] && echo "true" || echo "false"),"
+            device_verify_json="$device_verify_json\"mode\":\"${DEVICE_VERIFY_MODE:-unknown}\","
+            device_verify_json="$device_verify_json\"archive\":\"$([[ -n "${DEVICE_VERIFY_ARCHIVE_PATH:-}" ]] && echo "pass" || echo "fail")\","
+            device_verify_json="$device_verify_json\"ipa\":\"$([[ -n "${DEVICE_VERIFY_IPA_PATH:-}" ]] && echo "pass" || echo "fail")\""
+            device_verify_json="$device_verify_json}"
+            
+            # Build XCFramework verification JSON
+            local xcf_verify_json="{"
+            xcf_verify_json="$xcf_verify_json\"executed\":$([[ "${XCF_VERIFY_EXECUTED:-0}" == "1" ]] && echo "true" || echo "false"),"
+            xcf_verify_json="$xcf_verify_json\"modules\":${XCF_VERIFY_MODULES_JSON:-{}}"
+            xcf_verify_json="$xcf_verify_json}"
+            
+            # Build failure JSON
+            local failure_json="{"
+            failure_json="$failure_json\"occurred\":false"
+            failure_json="$failure_json}"
+            
+            # Combine into final JSON
+            local notify_data
+            notify_data=$(cat <<EOF
+{
+  "version": "$VERSION",
+  "author": "${MSP_AUTHOR_EMAIL:-unknown}",
+  "duration": "${duration:-unknown}",
+  "timestamp": "$(date -u +"%Y-%m-%dT%H:%M:%SZ")",
+  "modules": $modules_json,
+  "remote_verify": $remote_verify_json,
+  "local_verify": $local_verify_json,
+  "device_verify": $device_verify_json,
+  "xcframework_verify": $xcf_verify_json,
+  "failure": $failure_json
+}
+EOF
+)
+            export NOTIFY_DATA_JSON="$notify_data"
+        }
         
-        if command -v notify::release_success_channel &>/dev/null; then
-            notify::release_success_channel "$VERSION" || true
-        fi
+        # Build notification data
+        build_notify_data_json
         
-        if command -v notify::email::send_success_email &>/dev/null; then
-            notify::email::send_success_email "$VERSION" "${MSP_AUTHOR_EMAIL:-unknown}" "$module_list" "${duration:-unknown}" "${REMOTE_VERIFY_STATUS:-}" || true
+        # Send unified notifications via clean API
+        if command -v notify::send_release_summary &>/dev/null; then
+            source "${ROOT_DIR:-.}/Scripts/notify/notify_core.sh" 2>/dev/null || true
+            notify::send_release_summary "$NOTIFY_DATA_JSON" || true
+        else
+            # Fallback to old notification system if new API not available
+            if command -v notify::release_success_dm &>/dev/null; then
+                notify::release_success_dm "$VERSION" || true
+            fi
+            if command -v notify::release_success_channel &>/dev/null; then
+                notify::release_success_channel "$VERSION" || true
+            fi
+            if command -v notify::email::send_success_email &>/dev/null; then
+                notify::email::send_success_email "$VERSION" "${MSP_AUTHOR_EMAIL:-unknown}" "$module_list" "${duration:-unknown}" "${REMOTE_VERIFY_STATUS:-}" || true
+            fi
         fi
     fi
 }

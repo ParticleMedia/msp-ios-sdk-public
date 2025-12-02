@@ -166,6 +166,8 @@ notify::email::render_success_template() {
 # Send Success Email via HTTP API
 # ============================================================================
 
+# DEPRECATED: Use notify::send_release_summary() instead
+# This function is kept for backward compatibility only
 notify::email::send_success_email() {
     local version="$1"
     local author="$2"
