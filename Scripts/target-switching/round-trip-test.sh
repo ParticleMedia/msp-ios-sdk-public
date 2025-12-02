@@ -14,10 +14,11 @@
 #   - Only pods-dev mode builds DemoApp
 #   - pods-release and spm-release are SOFT checks (warn on missing XCFrameworks)
 #
-# Usage:   ./Scripts/target-switching/round-trip-test.sh [--loops=N]
+# Usage:   ./Scripts/target-switching/round-trip-test.sh [--loops=N] [--fix]
 #
 # Options:
 #   --loops=N    Run N complete cycles (default: 1)
+#   --fix        Auto-repair mode: retry failed switches, regenerate configs
 #
 # Exit codes:
 #   0 - Round-trip test passed
@@ -49,6 +50,7 @@ NC='\033[0m'
 # Parse Arguments
 # ============================================================================
 LOOPS=1
+AUTO_FIX=false
 
 for arg in "$@"; do
     case "$arg" in
@@ -59,11 +61,15 @@ for arg in "$@"; do
                 exit 1
             fi
             ;;
+        --fix)
+            AUTO_FIX=true
+            ;;
         -h|--help)
-            echo "Usage: $0 [--loops=N]"
+            echo "Usage: $0 [--loops=N] [--fix]"
             echo ""
             echo "Options:"
             echo "  --loops=N    Run N complete cycles (default: 1)"
+            echo "  --fix        Auto-repair mode: retry failed switches, regenerate configs"
             echo ""
             echo "Test Cycle: pods-dev → pods-release → spm-release → pods-dev"
             exit 0
@@ -83,9 +89,26 @@ mkdir -p "$BUILD_LOG_DIR"
 TIMESTAMP=$(date +%Y%m%d_%H%M%S)
 
 # ============================================================================
-# Helper Functions
+# Structured Logging Functions (RTT-specific, non-conflicting with release system)
 # ============================================================================
 
+rtt_log_step() {
+    echo "  $1"
+}
+
+rtt_log_success() {
+    echo -e "  ${GREEN}✓${NC} $1"
+}
+
+rtt_log_fail() {
+    echo -e "  ${RED}✗${NC} $1"
+}
+
+rtt_log_warning() {
+    echo -e "  ${YELLOW}⚠${NC} $1"
+}
+
+# Legacy logging functions (for backward compatibility)
 log_header() {
     echo ""
     echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
@@ -94,19 +117,19 @@ log_header() {
 }
 
 log_step() {
-    echo "  $1"
+    rtt_log_step "$1"
 }
 
 log_ok() {
-    echo -e "  ${GREEN}✓${NC} $1"
+    rtt_log_success "$1"
 }
 
 log_fail() {
-    echo -e "  ${RED}✗${NC} $1"
+    rtt_log_fail "$1"
 }
 
 log_warn() {
-    echo -e "  ${YELLOW}⚠${NC} $1"
+    rtt_log_warning "$1"
 }
 
 log_info() {
@@ -172,17 +195,23 @@ validate_package_swift() {
     fi
 }
 
-# Check git status (tracked files only)
+# Git Clean Gate: Strict check after mode switch (FAILS RTT if dirty)
 check_git_clean() {
     cd "$ROOT_DIR"
     local git_status
-    git_status=$(git status --porcelain 2>/dev/null | grep -v "^??" || true)
+    git_status=$(git status --porcelain 2>/dev/null || true)
     
     if [[ -z "$git_status" ]]; then
         return 0
     else
         return 1
     fi
+}
+
+# Get git status output for display
+get_git_status() {
+    cd "$ROOT_DIR"
+    git status --porcelain 2>/dev/null | head -10 || echo ""
 }
 
 # Build DemoApp
@@ -208,6 +237,124 @@ build_demoapp() {
 }
 
 # ============================================================================
+# Mode Verification Functions
+# ============================================================================
+
+# Verify mode signature in project.yml
+verify_project_yml_mode() {
+    local expected_mode="$1"
+    local project_yml="$ROOT_DIR/Examples/MSPDemoApp/project.yml"
+    
+    if [[ ! -f "$project_yml" ]]; then
+        return 1
+    fi
+    
+    case "$expected_mode" in
+        pods-dev)
+            # Should have MSPDemoApp target, no MSPDemoApp-SPM
+            if grep -q "^  MSPDemoApp:$" "$project_yml" 2>/dev/null && \
+               ! grep -q "^  MSPDemoApp-SPM:$" "$project_yml" 2>/dev/null; then
+                return 0
+            fi
+            ;;
+        pods-release)
+            # Should have MSPDemoApp target with XCFramework phases
+            if grep -q "^  MSPDemoApp:$" "$project_yml" 2>/dev/null && \
+               grep -q "\[CP\] Copy XCFrameworks" "$project_yml" 2>/dev/null; then
+                return 0
+            fi
+            ;;
+        spm-release)
+            # Should have MSPDemoApp-SPM target, no MSPDemoApp
+            if grep -q "^  MSPDemoApp-SPM:$" "$project_yml" 2>/dev/null && \
+               ! grep -q "^  MSPDemoApp:$" "$project_yml" 2>/dev/null; then
+                return 0
+            fi
+            ;;
+    esac
+    return 1
+}
+
+# Verify workspace.yml exists and is regenerated
+verify_workspace_yml() {
+    local workspace_yml="$ROOT_DIR/workspace.yml"
+    
+    if [[ ! -f "$workspace_yml" ]]; then
+        return 1
+    fi
+    
+    # Check if file is recent (regenerated)
+    # For RTT purposes, existence is sufficient
+    return 0
+}
+
+# Verify Package.swift mode signature
+verify_package_swift_mode() {
+    local expected_mode="$1"
+    local package_swift="$ROOT_DIR/Package.swift"
+    
+    case "$expected_mode" in
+        pods-dev|pods-release)
+            # Package.swift must NOT exist
+            if [[ ! -f "$package_swift" ]]; then
+                return 0
+            fi
+            return 1
+            ;;
+        spm-release)
+            # Package.swift must exist and be valid
+            if [[ -f "$package_swift" ]]; then
+                cd "$ROOT_DIR"
+                if swift package describe >/dev/null 2>&1; then
+                    return 0
+                fi
+            fi
+            return 1
+            ;;
+    esac
+    return 1
+}
+
+# Comprehensive mode verification
+verify_mode_signature() {
+    local mode="$1"
+    local errors=0
+    
+    if ! verify_project_yml_mode "$mode"; then
+        rtt_log_fail "project.yml mode signature mismatch for $mode"
+        ((errors++)) || true
+    fi
+    
+    if ! verify_workspace_yml; then
+        rtt_log_fail "workspace.yml missing or not regenerated"
+        ((errors++)) || true
+    fi
+    
+    if ! verify_package_swift_mode "$mode"; then
+        rtt_log_fail "Package.swift state incorrect for $mode"
+        ((errors++)) || true
+    fi
+    
+    return $errors
+}
+
+# Auto-repair: Retry switch and regenerate configs
+auto_repair_mode() {
+    local mode="$1"
+    
+    rtt_log_warning "Auto-repair: Retrying switch to $mode"
+    
+    # Retry switch
+    if "$ROOT_DIR/Scripts/switch-target.sh" "$mode" >/dev/null 2>&1; then
+        rtt_log_success "Auto-repair: Switch retry succeeded"
+        return 0
+    else
+        rtt_log_fail "Auto-repair: Switch retry failed"
+        return 1
+    fi
+}
+
+# ============================================================================
 # Mode Test Functions
 # ============================================================================
 
@@ -216,54 +363,100 @@ test_pods_dev() {
     local phase_num="$1"
     local is_final="$2"
     local errors=0
+    local phase_result="PASS"
     
     log_header "PODS-DEV${is_final:+ (return)}"
     
     # [X.1] Switch mode
-    log_step "[${phase_num}.1] Switch mode"
+    rtt_log_step "[${phase_num}.1] Switch mode"
     local switch_output
+    local switch_retries=0
     switch_output=$("$ROOT_DIR/Scripts/switch-target.sh" pods-dev 2>&1) || {
-        log_fail "Switch failed"
-        echo "$switch_output" | tail -10 | sed 's/^/    /'
-        return 1
+        if [[ "$AUTO_FIX" == "true" ]] && [[ $switch_retries -eq 0 ]]; then
+            ((switch_retries++)) || true
+            if auto_repair_mode "pods-dev"; then
+                rtt_log_success "Switch → OK (after auto-repair)"
+            else
+                rtt_log_fail "Switch failed (auto-repair also failed)"
+                echo "$switch_output" | tail -10 | sed 's/^/    /'
+                phase_result="FAIL"
+                return 1
+            fi
+        else
+            rtt_log_fail "Switch failed"
+            echo "$switch_output" | tail -10 | sed 's/^/    /'
+            phase_result="FAIL"
+            return 1
+        fi
     }
-    log_ok "Switch → OK"
+    rtt_log_success "Switch → OK"
     
-    # [X.2] Validate workspace/YAML
-    log_step "[${phase_num}.2] Workspace/YAML validation"
-    if ! validate_workspace_symlink; then
-        log_fail "Workspace symlink missing"
+    # [X.2] Git Clean Gate (immediately after switch)
+    rtt_log_step "[${phase_num}.2] Git Clean Gate"
+    if ! check_git_clean; then
+        rtt_log_fail "Git → DIRTY (RTT FAILURE)"
+        get_git_status | sed 's/^/    /'
+        phase_result="FAIL"
+        return 1
+    fi
+    rtt_log_success "Git → CLEAN"
+    
+    # [X.3] Mode Verification
+    rtt_log_step "[${phase_num}.3] Mode Verification"
+    if ! verify_mode_signature "pods-dev"; then
+        rtt_log_fail "Mode signature verification failed"
         ((errors++)) || true
+        phase_result="FAIL"
+    else
+        rtt_log_success "Mode signature → OK"
+    fi
+    
+    # [X.4] Validate workspace/YAML
+    rtt_log_step "[${phase_num}.4] Workspace/YAML validation"
+    if ! validate_workspace_symlink; then
+        rtt_log_fail "Workspace symlink missing"
+        ((errors++)) || true
+        phase_result="FAIL"
     fi
     
     if ! validate_yaml_files; then
-        log_fail "YAML files missing"
+        rtt_log_fail "YAML files missing"
         ((errors++)) || true
+        phase_result="FAIL"
     fi
     
     if [[ $errors -eq 0 ]]; then
-        log_ok "Workspace/YAML → OK"
+        rtt_log_success "Workspace/YAML → OK"
     else
+        phase_result="FAIL"
         return 1
     fi
     
-    # [X.3] Build DemoApp (only for pods-dev)
-    log_step "[${phase_num}.3] Build DemoApp"
+    # [X.5] Build DemoApp (only for pods-dev)
+    rtt_log_step "[${phase_num}.5] Build DemoApp"
     if build_demoapp "pods-dev"; then
-        log_ok "Build DemoApp → OK"
+        rtt_log_success "Build DemoApp → OK"
     else
-        log_fail "Build DemoApp → FAILED"
+        rtt_log_fail "Build DemoApp → FAILED"
+        phase_result="FAIL"
         return 1
     fi
     
-    # [X.4] Git cleanliness
-    log_step "[${phase_num}.4] Git cleanliness"
-    if check_git_clean; then
-        log_ok "Git → CLEAN"
-    else
-        log_fail "Git → DIRTY"
-        git status --porcelain 2>/dev/null | grep -v "^??" | head -5 | sed 's/^/    /'
+    # [X.6] Final Git Clean Gate
+    rtt_log_step "[${phase_num}.6] Final Git Clean Gate"
+    if ! check_git_clean; then
+        rtt_log_fail "Git → DIRTY (RTT FAILURE)"
+        get_git_status | sed 's/^/    /'
+        phase_result="FAIL"
         return 1
+    fi
+    rtt_log_success "Git → CLEAN"
+    
+    # Store result for summary
+    if [[ "$is_final" == "final" ]]; then
+        RTT_PODS_DEV_EXIT="$phase_result"
+    else
+        RTT_PODS_DEV_ENTRY="$phase_result"
     fi
     
     return 0
@@ -274,54 +467,95 @@ test_pods_release() {
     local phase_num="$1"
     local errors=0
     local switch_succeeded=false
+    local phase_result="PASS"
     
     log_header "PODS-RELEASE"
     
     # [X.1] Switch mode
-    log_step "[${phase_num}.1] Switch mode"
+    rtt_log_step "[${phase_num}.1] Switch mode"
     local switch_output
     local switch_exit_code=0
     switch_output=$("$ROOT_DIR/Scripts/switch-target.sh" pods-release 2>&1) || switch_exit_code=$?
     
     if [[ $switch_exit_code -eq 0 ]]; then
-        log_ok "Switch → OK"
+        rtt_log_success "Switch → OK"
         switch_succeeded=true
     elif is_xcframework_missing_error "$switch_output"; then
-        log_warn "Switch → WARN: core XCFrameworks missing (ignored for RTT)"
+        rtt_log_warning "Switch → WARN: core XCFrameworks missing (ignored for RTT)"
         # Continue RTT - this is expected
     elif is_hard_error "$switch_output"; then
-        log_fail "Switch → FAILED (hard error)"
-        echo "$switch_output" | tail -10 | sed 's/^/    /'
-        return 1
+        if [[ "$AUTO_FIX" == "true" ]]; then
+            if auto_repair_mode "pods-release"; then
+                switch_succeeded=true
+                rtt_log_success "Switch → OK (after auto-repair)"
+            else
+                rtt_log_fail "Switch → FAILED (hard error, auto-repair failed)"
+                echo "$switch_output" | tail -10 | sed 's/^/    /'
+                phase_result="FAIL"
+                return 1
+            fi
+        else
+            rtt_log_fail "Switch → FAILED (hard error)"
+            echo "$switch_output" | tail -10 | sed 's/^/    /'
+            phase_result="FAIL"
+            return 1
+        fi
     else
-        log_fail "Switch → FAILED (unknown error)"
+        rtt_log_fail "Switch → FAILED (unknown error)"
         echo "$switch_output" | tail -10 | sed 's/^/    /'
+        phase_result="FAIL"
         return 1
     fi
     
-    # [X.2] YAML/workspace validation (only if switch succeeded)
+    # [X.2] Git Clean Gate (immediately after switch)
+    rtt_log_step "[${phase_num}.2] Git Clean Gate"
+    if ! check_git_clean; then
+        rtt_log_fail "Git → DIRTY (RTT FAILURE)"
+        get_git_status | sed 's/^/    /'
+        phase_result="FAIL"
+        return 1
+    fi
+    rtt_log_success "Git → CLEAN"
+    
+    # [X.3] Mode Verification (only if switch succeeded)
     if [[ "$switch_succeeded" == "true" ]]; then
-        log_step "[${phase_num}.2] Workspace/YAML validation"
-        if validate_workspace_symlink && validate_yaml_files; then
-            log_ok "Workspace/YAML → OK"
-        else
-            log_fail "Workspace/YAML → FAILED"
+        rtt_log_step "[${phase_num}.3] Mode Verification"
+        if ! verify_mode_signature "pods-release"; then
+            rtt_log_fail "Mode signature verification failed"
             ((errors++)) || true
+            phase_result="FAIL"
+        else
+            rtt_log_success "Mode signature → OK"
+        fi
+        
+        # [X.4] YAML/workspace validation
+        rtt_log_step "[${phase_num}.4] Workspace/YAML validation"
+        if validate_workspace_symlink && validate_yaml_files; then
+            rtt_log_success "Workspace/YAML → OK"
+        else
+            rtt_log_fail "Workspace/YAML → FAILED"
+            ((errors++)) || true
+            phase_result="FAIL"
         fi
     else
-        log_step "[${phase_num}.2] Workspace/YAML validation"
+        rtt_log_step "[${phase_num}.3] Mode Verification"
+        log_info "Skipped (switch failed due to missing XCFrameworks)"
+        rtt_log_step "[${phase_num}.4] Workspace/YAML validation"
         log_info "Skipped (switch failed due to missing XCFrameworks)"
     fi
     
-    # [X.3] Git cleanliness
-    log_step "[${phase_num}.3] Git cleanliness"
-    if check_git_clean; then
-        log_ok "Git → CLEAN"
-    else
-        log_fail "Git → DIRTY"
-        git status --porcelain 2>/dev/null | grep -v "^??" | head -5 | sed 's/^/    /'
+    # [X.5] Final Git Clean Gate
+    rtt_log_step "[${phase_num}.5] Final Git Clean Gate"
+    if ! check_git_clean; then
+        rtt_log_fail "Git → DIRTY (RTT FAILURE)"
+        get_git_status | sed 's/^/    /'
+        phase_result="FAIL"
         return 1
     fi
+    rtt_log_success "Git → CLEAN"
+    
+    # Store result for summary
+    RTT_PODS_RELEASE="$phase_result"
     
     if [[ $errors -gt 0 ]]; then
         return 1
@@ -335,54 +569,95 @@ test_spm_release() {
     local phase_num="$1"
     local errors=0
     local switch_succeeded=false
+    local phase_result="PASS"
     
     log_header "SPM-RELEASE"
     
     # [X.1] Switch mode
-    log_step "[${phase_num}.1] Switch mode"
+    rtt_log_step "[${phase_num}.1] Switch mode"
     local switch_output
     local switch_exit_code=0
     switch_output=$("$ROOT_DIR/Scripts/switch-target.sh" spm-release 2>&1) || switch_exit_code=$?
     
     if [[ $switch_exit_code -eq 0 ]]; then
-        log_ok "Switch → OK"
+        rtt_log_success "Switch → OK"
         switch_succeeded=true
     elif is_xcframework_missing_error "$switch_output"; then
-        log_warn "Switch → WARN: core XCFrameworks missing (ignored for RTT)"
+        rtt_log_warning "Switch → WARN: core XCFrameworks missing (ignored for RTT)"
         # Continue RTT - this is expected
     elif is_hard_error "$switch_output"; then
-        log_fail "Switch → FAILED (hard error)"
-        echo "$switch_output" | tail -10 | sed 's/^/    /'
-        return 1
+        if [[ "$AUTO_FIX" == "true" ]]; then
+            if auto_repair_mode "spm-release"; then
+                switch_succeeded=true
+                rtt_log_success "Switch → OK (after auto-repair)"
+            else
+                rtt_log_fail "Switch → FAILED (hard error, auto-repair failed)"
+                echo "$switch_output" | tail -10 | sed 's/^/    /'
+                phase_result="FAIL"
+                return 1
+            fi
+        else
+            rtt_log_fail "Switch → FAILED (hard error)"
+            echo "$switch_output" | tail -10 | sed 's/^/    /'
+            phase_result="FAIL"
+            return 1
+        fi
     else
-        log_fail "Switch → FAILED (unknown error)"
+        rtt_log_fail "Switch → FAILED (unknown error)"
         echo "$switch_output" | tail -10 | sed 's/^/    /'
+        phase_result="FAIL"
         return 1
     fi
     
-    # [X.2] Package.swift validation (only if switch succeeded)
+    # [X.2] Git Clean Gate (immediately after switch)
+    rtt_log_step "[${phase_num}.2] Git Clean Gate"
+    if ! check_git_clean; then
+        rtt_log_fail "Git → DIRTY (RTT FAILURE)"
+        get_git_status | sed 's/^/    /'
+        phase_result="FAIL"
+        return 1
+    fi
+    rtt_log_success "Git → CLEAN"
+    
+    # [X.3] Mode Verification (only if switch succeeded)
     if [[ "$switch_succeeded" == "true" ]]; then
-        log_step "[${phase_num}.2] Package.swift validation"
-        if validate_package_swift; then
-            log_ok "Package.swift → OK"
-        else
-            log_fail "Package.swift → FAILED (missing or invalid)"
+        rtt_log_step "[${phase_num}.3] Mode Verification"
+        if ! verify_mode_signature "spm-release"; then
+            rtt_log_fail "Mode signature verification failed"
             ((errors++)) || true
+            phase_result="FAIL"
+        else
+            rtt_log_success "Mode signature → OK"
+        fi
+        
+        # [X.4] Package.swift validation
+        rtt_log_step "[${phase_num}.4] Package.swift validation"
+        if validate_package_swift; then
+            rtt_log_success "Package.swift → OK"
+        else
+            rtt_log_fail "Package.swift → FAILED (missing or invalid)"
+            ((errors++)) || true
+            phase_result="FAIL"
         fi
     else
-        log_step "[${phase_num}.2] Package.swift validation"
+        rtt_log_step "[${phase_num}.3] Mode Verification"
+        log_info "Skipped (switch failed due to missing XCFrameworks)"
+        rtt_log_step "[${phase_num}.4] Package.swift validation"
         log_info "Skipped (switch failed due to missing XCFrameworks)"
     fi
     
-    # [X.3] Git cleanliness
-    log_step "[${phase_num}.3] Git cleanliness"
-    if check_git_clean; then
-        log_ok "Git → CLEAN"
-    else
-        log_fail "Git → DIRTY"
-        git status --porcelain 2>/dev/null | grep -v "^??" | head -5 | sed 's/^/    /'
+    # [X.5] Final Git Clean Gate
+    rtt_log_step "[${phase_num}.5] Final Git Clean Gate"
+    if ! check_git_clean; then
+        rtt_log_fail "Git → DIRTY (RTT FAILURE)"
+        get_git_status | sed 's/^/    /'
+        phase_result="FAIL"
         return 1
     fi
+    rtt_log_success "Git → CLEAN"
+    
+    # Store result for summary
+    RTT_SPM_RELEASE="$phase_result"
     
     if [[ $errors -gt 0 ]]; then
         return 1
@@ -397,6 +672,12 @@ test_spm_release() {
 
 run_single_loop() {
     local loop_num="$1"
+    
+    # Initialize phase results
+    RTT_PODS_DEV_ENTRY=""
+    RTT_PODS_RELEASE=""
+    RTT_SPM_RELEASE=""
+    RTT_PODS_DEV_EXIT=""
     
     echo ""
     echo "══════════════════════════════════════════════════════════════════════"
@@ -433,6 +714,15 @@ run_single_loop() {
     
     echo ""
     echo -e "${GREEN}[Loop $loop_num/$LOOPS] All phases completed${NC}"
+    
+    # Verify final state: RTT fully reversible
+    if check_git_clean; then
+        rtt_log_success "RTT fully reversible (git clean)"
+    else
+        rtt_log_fail "RTT not fully reversible (git dirty)"
+        return 1
+    fi
+    
     return 0
 }
 
@@ -468,12 +758,23 @@ main() {
         fi
     done
     
-    # Final Summary
+    # Final Summary Block (Enhanced)
     echo ""
     echo "══════════════════════════════════════════════════════════════════════"
-    echo "  FINAL SUMMARY"
+    echo "  RTT SUMMARY"
     echo "══════════════════════════════════════════════════════════════════════"
     echo ""
+    
+    # Per-phase results (from last successful loop)
+    if [[ $passed_loops -gt 0 ]]; then
+        echo "RTT Summary:"
+        printf "  pods-dev (entry): %s\n" "${RTT_PODS_DEV_ENTRY:-UNKNOWN}"
+        printf "  pods-release:     %s\n" "${RTT_PODS_RELEASE:-UNKNOWN}"
+        printf "  spm-release:      %s\n" "${RTT_SPM_RELEASE:-UNKNOWN}"
+        printf "  pods-dev (exit):   %s\n" "${RTT_PODS_DEV_EXIT:-UNKNOWN}"
+        echo ""
+    fi
+    
     echo "┌─────────────────────────────────────────┐"
     echo "│           ROUND-TRIP SUMMARY            │"
     echo "├─────────────────────────────────────────┤"
@@ -492,6 +793,7 @@ main() {
         echo -e "${GREEN}║                                                                    ║${NC}"
         echo -e "${GREEN}╚════════════════════════════════════════════════════════════════════╝${NC}"
         echo ""
+        echo "RTT RESULT: SUCCESS"
         exit 0
     else
         echo -e "│  Status:        ${RED}FAILED${NC}                  │"
@@ -503,6 +805,8 @@ main() {
         echo -e "${RED}║                                                                    ║${NC}"
         echo -e "${RED}╚════════════════════════════════════════════════════════════════════╝${NC}"
         echo ""
+        echo "RTT RESULT: FAILURE"
+        echo "Details logged above."
         exit 1
     fi
 }
