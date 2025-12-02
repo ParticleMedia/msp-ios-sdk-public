@@ -15,6 +15,8 @@ set -euo pipefail
 
 SLACK_DM_TEMPLATE=""
 SLACK_CHANNEL_TEMPLATE=""
+SLACK_BLOCK_TEMPLATE=""
+SLACK_BLOCKKIT_TEMPLATE=""
 EMAIL_SUBJECT_TEMPLATE=""
 EMAIL_HTML_TEMPLATE=""
 
@@ -26,14 +28,16 @@ notify::render::init_templates() {
     local mapping_file="${ROOT_DIR:-.}/Scripts/config/notify_mapping.yaml"
     
     if [[ ! -f "$mapping_file" ]]; then
-        echo "Warning: notify_mapping.yaml not found" >&2
-        return 1
+        return 0  # Soft-fail: template file not found
     fi
     
     # Parse YAML using Python (if available)
-    if command -v python3 >/dev/null 2>&1; then
-        local yaml_data
-        yaml_data="$(python3 <<'PYEOF'
+    if ! command -v python3 >/dev/null 2>&1; then
+        return 0  # Soft-fail: python3 not available
+    fi
+    
+    local yaml_data
+    yaml_data="$(python3 <<'PYEOF'
 import yaml
 import json
 import sys
@@ -42,22 +46,24 @@ try:
     with open(sys.argv[1], 'r') as f:
         data = yaml.safe_load(f)
     print(json.dumps(data))
-except Exception as e:
-    print(json.dumps({}), file=sys.stderr)
-    sys.exit(1)
+except Exception:
+    print(json.dumps({}))
 PYEOF
 "$mapping_file" 2>/dev/null || echo "{}")"
-        
-        if [[ -n "$yaml_data" ]] && [[ "$yaml_data" != "{}" ]]; then
-            # Extract Slack templates
-            SLACK_DM_TEMPLATE="$(echo "$yaml_data" | python3 -c "import sys, json; data=json.load(sys.stdin); print(data.get('slack', {}).get('dm_template', ''))" 2>/dev/null || echo "")"
-            SLACK_CHANNEL_TEMPLATE="$(echo "$yaml_data" | python3 -c "import sys, json; data=json.load(sys.stdin); print(data.get('slack', {}).get('channel_template', ''))" 2>/dev/null || echo "")"
-            
-            # Extract Email templates
-            EMAIL_SUBJECT_TEMPLATE="$(echo "$yaml_data" | python3 -c "import sys, json; data=json.load(sys.stdin); print(data.get('email', {}).get('subject_template', ''))" 2>/dev/null || echo "")"
-            EMAIL_HTML_TEMPLATE="$(echo "$yaml_data" | python3 -c "import sys, json; data=json.load(sys.stdin); print(data.get('email', {}).get('html_template', ''))" 2>/dev/null || echo "")"
-        fi
+    
+    if [[ -z "$yaml_data" ]] || [[ "$yaml_data" == "{}" ]]; then
+        return 0  # Soft-fail: failed to parse YAML
     fi
+    
+    # Extract Slack templates (soft-fail on each extraction)
+    SLACK_DM_TEMPLATE="$(echo "$yaml_data" | python3 -c "import sys, json; data=json.load(sys.stdin); print(data.get('slack', {}).get('dm_template', ''))" 2>/dev/null || echo "")"
+    SLACK_CHANNEL_TEMPLATE="$(echo "$yaml_data" | python3 -c "import sys, json; data=json.load(sys.stdin); print(data.get('slack', {}).get('channel_template', ''))" 2>/dev/null || echo "")"
+    SLACK_BLOCK_TEMPLATE="$(echo "$yaml_data" | python3 -c "import sys, json; data=json.load(sys.stdin); print(data.get('slack', {}).get('block_template', ''))" 2>/dev/null || echo "")"
+    SLACK_BLOCKKIT_TEMPLATE="$(echo "$yaml_data" | python3 -c "import sys, json; data=json.load(sys.stdin); print(data.get('slack', {}).get('blockkit_template', ''))" 2>/dev/null || echo "")"
+    
+    # Extract Email templates (soft-fail on each extraction)
+    EMAIL_SUBJECT_TEMPLATE="$(echo "$yaml_data" | python3 -c "import sys, json; data=json.load(sys.stdin); print(data.get('email', {}).get('subject_template', ''))" 2>/dev/null || echo "")"
+    EMAIL_HTML_TEMPLATE="$(echo "$yaml_data" | python3 -c "import sys, json; data=json.load(sys.stdin); print(data.get('email', {}).get('html_template', ''))" 2>/dev/null || echo "")"
     
     return 0
 }
@@ -97,7 +103,7 @@ _notify_render::generate_modules_text() {
     local output=""
     local first=1
     
-    echo "$modules_json" | jq -r 'to_entries[] | "\(.key) (\(.value))"' 2>/dev/null | while IFS= read -r line; do
+    echo "$modules_json" | jq -r 'to_entries[] | "  • \(.key) \(.value)"' 2>/dev/null | while IFS= read -r line; do
         if [[ $first -eq 1 ]]; then
             output="$line"
             first=0
@@ -166,24 +172,24 @@ _notify_render::generate_verification_text() {
     
     if [[ "$remote_spm_executed" == "true" ]]; then
         if [[ "$remote_spm_success" == "true" ]]; then
-            output="    - SPM: PASS"
+            output="  ✔ SPM: PASS"
         else
-            output="    - SPM: FAIL"
+            output="  ❌ SPM: FAIL"
         fi
     fi
     
     if [[ "$remote_pods_executed" == "true" ]]; then
         if [[ "$remote_pods_success" == "true" ]]; then
             if [[ -z "$output" ]]; then
-                output="    - Pods: PASS"
+                output="  ✔ Pods: PASS"
             else
-                output="$output"$'\n'"    - Pods: PASS"
+                output="$output"$'\n'"  ✔ Pods: PASS"
             fi
         else
             if [[ -z "$output" ]]; then
-                output="    - Pods: FAIL"
+                output="  ❌ Pods: FAIL"
             else
-                output="$output"$'\n'"    - Pods: FAIL"
+                output="$output"$'\n'"  ❌ Pods: FAIL"
             fi
         fi
     fi
@@ -197,15 +203,15 @@ _notify_render::generate_verification_text() {
     if [[ "$local_executed" == "true" ]]; then
         if [[ "$local_success" == "true" ]]; then
             if [[ -z "$output" ]]; then
-                output="    - Local ($local_mode): PASS"
+                output="  ✔ Local ($local_mode): PASS"
             else
-                output="$output"$'\n'"    - Local ($local_mode): PASS"
+                output="$output"$'\n'"  ✔ Local ($local_mode): PASS"
             fi
         else
             if [[ -z "$output" ]]; then
-                output="    - Local ($local_mode): FAIL"
+                output="  ❌ Local ($local_mode): FAIL"
             else
-                output="$output"$'\n'"    - Local ($local_mode): FAIL"
+                output="$output"$'\n'"  ❌ Local ($local_mode): FAIL"
             fi
         fi
     fi
@@ -219,15 +225,15 @@ _notify_render::generate_verification_text() {
     if [[ "$device_executed" == "true" ]]; then
         if [[ "$device_success" == "true" ]]; then
             if [[ -z "$output" ]]; then
-                output="    - Device ($device_mode): PASS"
+                output="  ✔ Device ($device_mode): PASS"
             else
-                output="$output"$'\n'"    - Device ($device_mode): PASS"
+                output="$output"$'\n'"  ✔ Device ($device_mode): PASS"
             fi
         else
             if [[ -z "$output" ]]; then
-                output="    - Device ($device_mode): FAIL"
+                output="  ❌ Device ($device_mode): FAIL"
             else
-                output="$output"$'\n'"    - Device ($device_mode): FAIL"
+                output="$output"$'\n'"  ❌ Device ($device_mode): FAIL"
             fi
         fi
     fi
@@ -237,7 +243,7 @@ _notify_render::generate_verification_text() {
     xcf_modules_json="$(echo "$json" | jq -r '.xcframework_verify.modules // {}' 2>/dev/null || echo "{}")"
     
     if [[ "$xcf_modules_json" != "{}" ]] && [[ -n "$xcf_modules_json" ]]; then
-        echo "$xcf_modules_json" | jq -r 'to_entries[] | "    - XCFramework \(.key): \(if .value.success then "PASS" else "FAIL" end)\(if .value.warnings > 0 then " (\(.value.warnings) warnings)" else "" end)"' 2>/dev/null | while IFS= read -r line; do
+        echo "$xcf_modules_json" | jq -r 'to_entries[] | "  \(if .value.success then "✔" else "❌" end) XCF \(.key): \(if .value.success then "PASS" else "FAIL" end)\(if .value.warnings > 0 then " ⚠️ \(.value.warnings)" else "" end)"' 2>/dev/null | while IFS= read -r line; do
             if [[ -z "$output" ]]; then
                 output="$line"
             else
@@ -436,12 +442,10 @@ _notify_render::generate_failure_context() {
     reason="$(echo "$json" | jq -r '.failure.reason // ""' 2>/dev/null || echo "")"
     log_path="$(echo "$json" | jq -r '.failure.log_path // ""' 2>/dev/null || echo "")"
     
-    local output="❌ Failure Detected:"
-    [[ -n "$stage" ]] && output="$output"$'\n'"  Stage: $stage"
-    [[ -n "$module" ]] && output="$output"$'\n'"  Module: $module"
-    [[ -n "$script" ]] && output="$output"$'\n'"  Script: $script"
-    [[ -n "$reason" ]] && output="$output"$'\n'"  Reason: $reason"
-    [[ -n "$log_path" ]] && output="$output"$'\n'"  Log: $log_path"
+    local output="❌ Failure: $stage"
+    [[ -n "$module" ]] && output="$output/$module"
+    output="$output"$'\n'"  → $reason"
+    [[ -n "$log_path" ]] && output="$output"$'\n'"  📄 $log_path"
     
     echo "$output"
 }
@@ -508,7 +512,7 @@ notify::render::render_dm() {
     
     if [[ -z "$SLACK_DM_TEMPLATE" ]]; then
         echo "Warning: Slack DM template not loaded" >&2
-        return 1
+        return 0  # Soft-fail
     fi
     
     local version author duration timestamp
@@ -518,9 +522,9 @@ notify::render::render_dm() {
     timestamp="$(echo "$json" | jq -r '.timestamp // ""' 2>/dev/null || echo "")"
     
     local modules verification failure_context
-    modules="$(_notify_render::generate_modules_text "$json")"
-    verification="$(_notify_render::generate_verification_text "$json")"
-    failure_context="$(_notify_render::generate_failure_context "$json")"
+    modules="$(_notify_render::generate_modules_text "$json" 2>/dev/null || echo "(none)")"
+    verification="$(_notify_render::generate_verification_text "$json" 2>/dev/null || echo "(none)")"
+    failure_context="$(_notify_render::generate_failure_context "$json" 2>/dev/null || echo "")"
     
     local result="$SLACK_DM_TEMPLATE"
     result="${result//\{\{VERSION\}\}/$version}"
@@ -546,7 +550,7 @@ notify::render::render_channel() {
     
     if [[ -z "$SLACK_CHANNEL_TEMPLATE" ]]; then
         echo "Warning: Slack Channel template not loaded" >&2
-        return 1
+        return 0  # Soft-fail
     fi
     
     local version author duration timestamp
@@ -556,9 +560,9 @@ notify::render::render_channel() {
     timestamp="$(echo "$json" | jq -r '.timestamp // ""' 2>/dev/null || echo "")"
     
     local modules_short verification_short failure_context_short
-    modules_short="$(_notify_render::generate_modules_short "$json")"
-    verification_short="$(_notify_render::generate_verification_short "$json")"
-    failure_context_short="$(_notify_render::generate_failure_context_short "$json")"
+    modules_short="$(_notify_render::generate_modules_short "$json" 2>/dev/null || echo "(none)")"
+    verification_short="$(_notify_render::generate_verification_short "$json" 2>/dev/null || echo "(none)")"
+    failure_context_short="$(_notify_render::generate_failure_context_short "$json" 2>/dev/null || echo "")"
     
     local result="$SLACK_CHANNEL_TEMPLATE"
     result="${result//\{\{VERSION\}\}/$version}"
@@ -584,7 +588,7 @@ notify::render::render_email_subject() {
     
     if [[ -z "$EMAIL_SUBJECT_TEMPLATE" ]]; then
         echo "Warning: Email subject template not loaded" >&2
-        return 1
+        return 0  # Soft-fail
     fi
     
     local version
@@ -607,7 +611,7 @@ notify::render::render_email_html() {
     
     if [[ -z "$EMAIL_HTML_TEMPLATE" ]]; then
         echo "Warning: Email HTML template not loaded" >&2
-        return 1
+        return 0  # Soft-fail
     fi
     
     local version author duration timestamp
@@ -617,9 +621,19 @@ notify::render::render_email_html() {
     timestamp="$(echo "$json" | jq -r '.timestamp // ""' 2>/dev/null || echo "")"
     
     local modules_html verification_html failure_context_html
-    modules_html="$(_notify_render::generate_modules_html "$json")"
-    verification_html="$(_notify_render::generate_verification_html "$json")"
-    failure_context_html="$(_notify_render::generate_failure_context_html "$json")"
+    modules_html="$(_notify_render::generate_modules_html "$json" 2>/dev/null || echo "<p>(none)</p>")"
+    verification_html="$(_notify_render::generate_verification_html "$json" 2>/dev/null || echo "<p>(none)</p>")"
+    failure_context_html="$(_notify_render::generate_failure_context_html "$json" 2>/dev/null || echo "")"
+    
+    # Determine status and status_class
+    local failure_occurred
+    failure_occurred="$(echo "$json" | jq -r '.failure.occurred // false' 2>/dev/null || echo "false")"
+    local status="Success"
+    local status_class="success"
+    [[ "$failure_occurred" == "true" ]] && {
+        status="Failure"
+        status_class="failed"
+    }
     
     local result="$EMAIL_HTML_TEMPLATE"
     result="${result//\{\{VERSION\}\}/$version}"
@@ -629,14 +643,413 @@ notify::render::render_email_html() {
     result="${result//\{\{MODULES_HTML\}\}/$modules_html}"
     result="${result//\{\{VERIFICATION_HTML\}\}/$verification_html}"
     result="${result//\{\{FAILURE_CONTEXT_HTML\}\}/$failure_context_html}"
-    
-    # Determine status
-    local failure_occurred
-    failure_occurred="$(echo "$json" | jq -r '.failure.occurred // false' 2>/dev/null || echo "false")"
-    local status="Success"
-    [[ "$failure_occurred" == "true" ]] && status="Failure"
     result="${result//\{\{STATUS\}\}/$status}"
+    result="${result//\{\{STATUS_CLASS\}\}/$status_class}"
     
     echo "$result"
 }
 
+# ============================================================================
+# Render Slack Block Kit
+# ============================================================================
+
+notify::render::render_slack_blockkit() {
+    local json="$1"
+    
+    if [[ -z "$SLACK_BLOCKKIT_TEMPLATE" ]]; then
+        return 0  # Soft-fail: template not loaded
+    fi
+    
+    # Extract values from JSON
+    local version author duration timestamp
+    version="$(echo "$json" | jq -r '.version // ""' 2>/dev/null || echo "")"
+    author="$(echo "$json" | jq -r '.author // ""' 2>/dev/null || echo "")"
+    duration="$(echo "$json" | jq -r '.duration // ""' 2>/dev/null || echo "")"
+    timestamp="$(echo "$json" | jq -r '.timestamp // ""' 2>/dev/null || echo "")"
+    
+    # Generate content sections
+    local modules verification failure_context
+    modules="$(_notify_render::generate_modules_text "$json" 2>/dev/null || echo "(none)")"
+    verification="$(_notify_render::generate_verification_text "$json" 2>/dev/null || echo "(none)")"
+    failure_context="$(_notify_render::generate_failure_context "$json" 2>/dev/null || echo "")"
+    
+    # Use Python to properly build and escape JSON
+    if ! command -v python3 >/dev/null 2>&1; then
+        return 0  # Soft-fail: python3 not available
+    fi
+    
+    local result
+    result="$(python3 <<PYEOF
+import json
+import sys
+
+# Read template
+template_str = '''$SLACK_BLOCKKIT_TEMPLATE'''
+
+# Replace simple placeholders first
+template_str = template_str.replace('{{VERSION}}', '$version')
+template_str = template_str.replace('{{AUTHOR}}', '$author')
+template_str = template_str.replace('{{DURATION}}', '$duration')
+template_str = template_str.replace('{{TIMESTAMP}}', '$timestamp')
+
+# Parse template JSON
+try:
+    template = json.loads(template_str)
+except Exception:
+    sys.exit(1)
+
+# Escape modules and verification for JSON
+modules_text = '''$modules'''
+verification_text = '''$verification'''
+failure_text = '''$failure_context'''
+
+# Replace placeholders in blocks
+for block in template.get('blocks', []):
+    if block.get('type') == 'section':
+        text_obj = block.get('text', {})
+        if 'text' in text_obj:
+            text_content = text_obj['text']
+            
+            # Replace MODULES placeholder
+            if '{{MODULES}}' in text_content:
+                text_content = text_content.replace('{{MODULES}}', modules_text)
+            
+            # Replace VERIFICATION placeholder
+            if '{{VERIFICATION}}' in text_content:
+                text_content = text_content.replace('{{VERIFICATION}}', verification_text)
+            
+            # Replace FAILURE_CONTEXT placeholder
+            if '{{FAILURE_CONTEXT}}' in text_content:
+                if failure_text and failure_text.strip():
+                    text_content = text_content.replace('{{FAILURE_CONTEXT}}', failure_text)
+                else:
+                    # Mark block for removal
+                    block['_remove'] = True
+                    continue
+            
+            text_obj['text'] = text_content
+
+# Remove marked blocks and their preceding dividers
+new_blocks = []
+i = 0
+while i < len(template['blocks']):
+    block = template['blocks'][i]
+    if block.get('_remove'):
+        # Remove this block and preceding divider if exists
+        if i > 0 and template['blocks'][i-1].get('type') == 'divider':
+            new_blocks.pop()  # Remove the divider
+        i += 1
+        continue
+    new_blocks.append(block)
+    i += 1
+
+template['blocks'] = new_blocks
+
+# Output minified JSON
+print(json.dumps(template, separators=(',', ':')))
+PYEOF
+2>/dev/null || echo "")"
+    
+    if [[ -z "$result" ]]; then
+        return 0  # Soft-fail: failed to render
+    fi
+    
+    echo "$result"
+}
+
+
+# ============================================================================
+# Render Slack Block (Structured Block Kit)
+# ============================================================================
+
+notify::render::render_slack_block() {
+    local json="$1"
+    
+    if [[ -z "$SLACK_BLOCK_TEMPLATE" ]]; then
+        return 0  # Soft-fail: template not loaded
+    fi
+    
+    # Extract values from JSON
+    local version author duration timestamp
+    version="$(echo "$json" | jq -r '.version // ""' 2>/dev/null || echo "")"
+    author="$(echo "$json" | jq -r '.author // ""' 2>/dev/null || echo "")"
+    duration="$(echo "$json" | jq -r '.duration // ""' 2>/dev/null || echo "")"
+    timestamp="$(echo "$json" | jq -r '.timestamp // ""' 2>/dev/null || echo "")"
+    
+    # Generate Block Kit blocks for modules, verification, and failure
+    local modules_block verification_block failure_context_block
+    
+    # Generate MODULES_BLOCK
+    modules_block="$(_notify_render::generate_modules_block "$json" 2>/dev/null || echo "")"
+    
+    # Generate VERIFICATION_BLOCK
+    verification_block="$(_notify_render::generate_verification_block "$json" 2>/dev/null || echo "")"
+    
+    # Generate FAILURE_CONTEXT_BLOCK
+    failure_context_block="$(_notify_render::generate_failure_context_block "$json" 2>/dev/null || echo "")"
+    
+    # Use Python to properly build and escape JSON
+    if ! command -v python3 >/dev/null 2>&1; then
+        return 0  # Soft-fail: python3 not available
+    fi
+    
+    local result
+    result="$(python3 <<PYEOF
+import json
+import sys
+
+# Read template
+template_str = '''$SLACK_BLOCK_TEMPLATE'''
+
+# Replace simple placeholders first
+template_str = template_str.replace('{{VERSION}}', '$version')
+template_str = template_str.replace('{{AUTHOR}}', '$author')
+template_str = template_str.replace('{{DURATION}}', '$duration')
+template_str = template_str.replace('{{TIMESTAMP}}', '$timestamp')
+
+# Replace block placeholders
+modules_block_str = '''$modules_block'''
+verification_block_str = '''$verification_block'''
+failure_block_str = '''$failure_context_block'''
+
+# Replace MODULES_BLOCK
+if modules_block_str and modules_block_str.strip():
+    template_str = template_str.replace('{{MODULES_BLOCK}}', modules_block_str)
+else:
+    # Remove MODULES_BLOCK placeholder and preceding divider if empty
+    template_str = template_str.replace(',\n        {{MODULES_BLOCK}},', '')
+    template_str = template_str.replace('        {{MODULES_BLOCK}},', '')
+
+# Replace VERIFICATION_BLOCK
+if verification_block_str and verification_block_str.strip():
+    template_str = template_str.replace('{{VERIFICATION_BLOCK}}', verification_block_str)
+else:
+    # Remove VERIFICATION_BLOCK placeholder and preceding divider if empty
+    template_str = template_str.replace(',\n        {{VERIFICATION_BLOCK}},', '')
+    template_str = template_str.replace('        {{VERIFICATION_BLOCK}},', '')
+
+# Replace FAILURE_CONTEXT_BLOCK
+if failure_block_str and failure_block_str.strip():
+    template_str = template_str.replace('{{FAILURE_CONTEXT_BLOCK}}', failure_block_str)
+else:
+    # Remove FAILURE_CONTEXT_BLOCK placeholder and preceding divider if empty
+    template_str = template_str.replace(',\n        {{FAILURE_CONTEXT_BLOCK}},', '')
+    template_str = template_str.replace('        {{FAILURE_CONTEXT_BLOCK}},', '')
+
+# Parse template JSON
+try:
+    template = json.loads(template_str)
+except Exception as e:
+    sys.exit(1)
+
+# Clean up empty blocks and extra dividers
+if 'blocks' in template:
+    new_blocks = []
+    i = 0
+    while i < len(template['blocks']):
+        block = template['blocks'][i]
+        # Skip empty or None blocks
+        if block is None:
+            i += 1
+            continue
+        # Remove duplicate dividers
+        if block.get('type') == 'divider' and i > 0 and template['blocks'][i-1].get('type') == 'divider':
+            i += 1
+            continue
+        new_blocks.append(block)
+        i += 1
+    template['blocks'] = new_blocks
+
+# Output minified JSON
+print(json.dumps(template, separators=(',', ':')))
+PYEOF
+2>/dev/null || echo "")"
+    
+    if [[ -z "$result" ]]; then
+        return 0  # Soft-fail: failed to render
+    fi
+    
+    echo "$result"
+}
+
+# ============================================================================
+# Generate Modules Block (Block Kit format)
+# ============================================================================
+
+_notify_render::generate_modules_block() {
+    local json="$1"
+    
+    local modules_json
+    modules_json="$(echo "$json" | jq -r '.modules // {}' 2>/dev/null || echo "{}")"
+    
+    if [[ "$modules_json" == "{}" ]] || [[ -z "$modules_json" ]]; then
+        return 0  # Return empty, will be removed
+    fi
+    
+    # Generate Block Kit section block for modules
+    echo "$modules_json" | python3 -c "
+import sys, json
+
+modules = json.load(sys.stdin)
+if not modules:
+    sys.exit(0)
+
+# Build module list text
+module_lines = ['*📦 Modules Released*']
+for module_name, version in modules.items():
+    module_lines.append(f'  • {module_name} ({version})')
+
+module_text = '\n'.join(module_lines)
+
+# Create Block Kit section block
+block = {
+    'type': 'section',
+    'text': {
+        'type': 'mrkdwn',
+        'text': module_text
+    }
+}
+
+print(json.dumps(block, separators=(',', ':')))
+" 2>/dev/null || echo ""
+}
+
+# ============================================================================
+# Generate Verification Block (Block Kit format)
+# ============================================================================
+
+_notify_render::generate_verification_block() {
+    local json="$1"
+    
+    # Collect all verification statuses
+    local verification_items=()
+    
+    # Remote SPM
+    local remote_spm_executed remote_spm_success
+    remote_spm_executed="$(echo "$json" | jq -r '.remote_verify.spm.executed // false' 2>/dev/null || echo "false")"
+    remote_spm_success="$(echo "$json" | jq -r '.remote_verify.spm.success // false' 2>/dev/null || echo "false")"
+    if [[ "$remote_spm_executed" == "true" ]]; then
+        if [[ "$remote_spm_success" == "true" ]]; then
+            verification_items+=("✔ SPM: PASS")
+        else
+            verification_items+=("❌ SPM: FAIL")
+        fi
+    fi
+    
+    # Remote Pods
+    local remote_pods_executed remote_pods_success
+    remote_pods_executed="$(echo "$json" | jq -r '.remote_verify.pods.executed // false' 2>/dev/null || echo "false")"
+    remote_pods_success="$(echo "$json" | jq -r '.remote_verify.pods.success // false' 2>/dev/null || echo "false")"
+    if [[ "$remote_pods_executed" == "true" ]]; then
+        if [[ "$remote_pods_success" == "true" ]]; then
+            verification_items+=("✔ Pods: PASS")
+        else
+            verification_items+=("❌ Pods: FAIL")
+        fi
+    fi
+    
+    # Local Verification
+    local local_executed local_success local_mode
+    local_executed="$(echo "$json" | jq -r '.local_verify.executed // false' 2>/dev/null || echo "false")"
+    local_success="$(echo "$json" | jq -r '.local_verify.success // false' 2>/dev/null || echo "false")"
+    local_mode="$(echo "$json" | jq -r '.local_verify.mode // ""' 2>/dev/null || echo "")"
+    if [[ "$local_executed" == "true" ]]; then
+        if [[ "$local_success" == "true" ]]; then
+            verification_items+=("✔ Local ($local_mode): PASS")
+        else
+            verification_items+=("❌ Local ($local_mode): FAIL")
+        fi
+    fi
+    
+    # Device Verification
+    local device_executed device_success device_mode
+    device_executed="$(echo "$json" | jq -r '.device_verify.executed // false' 2>/dev/null || echo "false")"
+    device_success="$(echo "$json" | jq -r '.device_verify.success // false' 2>/dev/null || echo "false")"
+    device_mode="$(echo "$json" | jq -r '.device_verify.mode // ""' 2>/dev/null || echo "")"
+    if [[ "$device_executed" == "true" ]]; then
+        if [[ "$device_success" == "true" ]]; then
+            verification_items+=("✔ Device ($device_mode): PASS")
+        else
+            verification_items+=("❌ Device ($device_mode): FAIL")
+        fi
+    fi
+    
+    # XCFramework Verification
+    local xcf_modules_json
+    xcf_modules_json="$(echo "$json" | jq -r '.xcframework_verify.modules // {}' 2>/dev/null || echo "{}")"
+    if [[ "$xcf_modules_json" != "{}" ]] && [[ -n "$xcf_modules_json" ]]; then
+        echo "$xcf_modules_json" | python3 -c "
+import sys, json
+modules = json.load(sys.stdin)
+for module_name, data in modules.items():
+    status = '✔' if data.get('success', False) else '❌'
+    warnings = data.get('warnings', 0)
+    warn_text = f' ⚠️{warnings}' if warnings > 0 else ''
+    print(f'{status} XCF {module_name}: {\"PASS\" if data.get(\"success\", False) else \"FAIL\"}{warn_text}')
+" 2>/dev/null | while IFS= read -r line; do
+            verification_items+=("$line")
+        done
+    fi
+    
+    if [[ ${#verification_items[@]} -eq 0 ]]; then
+        return 0  # Return empty, will be removed
+    fi
+    
+    # Generate Block Kit section block for verification
+    local verification_text="*🧪 Verification Summary*"
+    for item in "${verification_items[@]}"; do
+        verification_text="$verification_text"$'\n'"  $item"
+    done
+    
+    python3 -c "
+import sys, json
+block = {
+    'type': 'section',
+    'text': {
+        'type': 'mrkdwn',
+        'text': '''$verification_text'''
+    }
+}
+print(json.dumps(block, separators=(',', ':')))
+" 2>/dev/null || echo ""
+}
+
+# ============================================================================
+# Generate Failure Context Block (Block Kit format)
+# ============================================================================
+
+_notify_render::generate_failure_context_block() {
+    local json="$1"
+    
+    local occurred
+    occurred="$(echo "$json" | jq -r '.failure.occurred // false' 2>/dev/null || echo "false")"
+    
+    if [[ "$occurred" != "true" ]]; then
+        return 0  # Return empty, will be removed
+    fi
+    
+    local stage module script reason log_path
+    stage="$(echo "$json" | jq -r '.failure.stage // ""' 2>/dev/null || echo "")"
+    module="$(echo "$json" | jq -r '.failure.module // ""' 2>/dev/null || echo "")"
+    script="$(echo "$json" | jq -r '.failure.script // ""' 2>/dev/null || echo "")"
+    reason="$(echo "$json" | jq -r '.failure.reason // ""' 2>/dev/null || echo "")"
+    log_path="$(echo "$json" | jq -r '.failure.log_path // ""' 2>/dev/null || echo "")"
+    
+    local failure_text="❌ Failure: $stage"
+    [[ -n "$module" ]] && failure_text="$failure_text/$module"
+    failure_text="$failure_text"$'\n'"  → $reason"
+    [[ -n "$log_path" ]] && failure_text="$failure_text"$'\n'"  📄 $log_path"
+    
+    # Generate Block Kit section block for failure
+    python3 -c "
+import sys, json
+block = {
+    'type': 'section',
+    'text': {
+        'type': 'mrkdwn',
+        'text': '''$failure_text'''
+    }
+}
+print(json.dumps(block, separators=(',', ':')))
+" 2>/dev/null || echo ""
+}
