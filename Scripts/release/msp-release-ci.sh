@@ -43,22 +43,20 @@ if [[ -z "${VERSION:-}" ]]; then
     exit 1
 fi
 
-if [[ "$VERSION" == "auto" ]]; then
-    # Auto-bump: get last tag and bump patch version
-    LAST_TAG="$(git tag | sort -V | tail -1 2>/dev/null || echo "0.0.0")"
-    if [[ "$LAST_TAG" == "0.0.0" ]] || [[ -z "$LAST_TAG" ]]; then
-        VERSION="0.0.1"
+if [[ "$VERSION" == "auto" ]] || [[ "$VERSION" =~ ^auto: ]]; then
+    # Use auto_version.sh for version bumping
+    AUTO_VERSION_SCRIPT="$ROOT_DIR/Scripts/release/auto_version.sh"
+    if [[ -f "$AUTO_VERSION_SCRIPT" ]]; then
+        VERSION="$(bash "$AUTO_VERSION_SCRIPT" "$VERSION" 2>/dev/null || echo "")"
+        if [[ -z "$VERSION" ]]; then
+            echo "Error: Failed to resolve auto version" >&2
+            exit 1
+        fi
+        echo "[CI] Auto-bumped version: $VERSION"
     else
-        # Extract version parts
-        IFS='.' read -r -a VERSION_PARTS <<< "$LAST_TAG"
-        MAJOR="${VERSION_PARTS[0]:-0}"
-        MINOR="${VERSION_PARTS[1]:-0}"
-        PATCH="${VERSION_PARTS[2]:-0}"
-        # Bump patch
-        PATCH=$((PATCH + 1))
-        VERSION="${MAJOR}.${MINOR}.${PATCH}"
+        echo "Error: auto_version.sh not found at $AUTO_VERSION_SCRIPT" >&2
+        exit 1
     fi
-    echo "[CI] Auto-bumped version: $LAST_TAG → $VERSION"
 fi
 
 # RELEASE_NOTES rules
