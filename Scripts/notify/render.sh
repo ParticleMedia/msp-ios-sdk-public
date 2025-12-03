@@ -820,23 +820,27 @@ notify::render::render_email_html() {
     # Apply all replacements sequentially (compatible with all bash versions)
     local html="$EMAIL_HTML_TEMPLATE"
     
-    # First replace placeholders to get rendered template
+    # Replace header title and meta lines BEFORE placeholder replacement
+    # This avoids issues with JSON objects being inserted into placeholders
+    # Use sed with # as delimiter and properly escape replacement strings
+    # Escape special sed characters in replacement strings
+    local final_title_safe final_meta_safe
+    final_title_safe="$(printf '%s\n' "$final_title" | sed 's/[[\.*^$()+?{|]/\\&/g' | sed 's/#/\\#/g')"
+    final_meta_safe="$(printf '%s\n' "$final_meta" | sed 's/[[\.*^$()+?{|]/\\&/g' | sed 's/#/\\#/g')"
+    
+    # Replace title line (match exact pattern with leading spaces)
+    html="$(echo "$html" | sed "s#    <h1>MSP Release Summary — {{VERSION}}</h1>#    <h1>$final_title_safe</h1>#")"
+    
+    # Replace meta line (match exact pattern with leading spaces)
+    html="$(echo "$html" | sed "s#    <p>Author: {{AUTHOR}} | Duration: {{DURATION}} | Time: {{TIMESTAMP}}</p>#    <p>$final_meta_safe</p>#")"
+    
+    # Now replace remaining placeholders (for other sections that might use them)
     html="${html//\{\{VERSION\}\}/$version}"
     html="${html//\{\{AUTHOR\}\}/$author}"
     html="${html//\{\{DURATION\}\}/$duration}"
     html="${html//\{\{TIMESTAMP\}\}/$timestamp}"
     html="${html//\{\{STATUS\}\}/$status}"
     html="${html//\{\{STATUS_CLASS\}\}/$header_status_class}"
-    
-    # Now replace the header title and meta lines with our computed values
-    # Use sed for more robust pattern matching that handles leading whitespace
-    # Escape special characters in replacement strings for sed
-    local final_title_escaped final_meta_escaped
-    final_title_escaped="$(printf '%s\n' "$final_title" | sed 's/[[\.*^$()+?{|]/\\&/g')"
-    final_meta_escaped="$(printf '%s\n' "$final_meta" | sed 's/[[\.*^$()+?{|]/\\&/g')"
-    
-    html="$(echo "$html" | sed "s|<h1>MSP Release Summary — [^<]*</h1>|<h1>$final_title_escaped</h1>|g")"
-    html="$(echo "$html" | sed "s|<p>Author: [^<]*</p>|<p>$final_meta_escaped</p>|g")"
     html="${html//\{\{MODULES_HTML\}\}/$modules_html}"
     html="${html//\{\{VERIFICATION_HTML\}\}/$verification_html}"
     
