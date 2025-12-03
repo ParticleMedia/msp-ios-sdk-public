@@ -120,14 +120,20 @@ _notify_render::generate_modules_text() {
     local output=""
     local first=1
     
-    echo "$modules_json" | jq -r 'to_entries[] | "  • \(.key) \(.value)"' 2>/dev/null | while IFS= read -r line; do
+    # Use process substitution to avoid subshell variable scoping issues
+    while IFS= read -r line; do
         if [[ $first -eq 1 ]]; then
             output="$line"
             first=0
         else
             output="$output"$'\n'"$line"
         fi
-    done
+    done < <(echo "$modules_json" | jq -r 'to_entries[] | "  • \(.key) \(.value)"' 2>/dev/null)
+    
+    if [[ -z "$output" ]]; then
+        echo "(none)"
+        return 0
+    fi
     
     echo "$output"
 }
@@ -543,10 +549,13 @@ notify::render::render_dm() {
     fi
     
     local version author duration timestamp
-    version="$(echo "$json" | jq -r '.version // ""' 2>/dev/null || echo "")"
-    author="$(echo "$json" | jq -r '.author // ""' 2>/dev/null || echo "")"
-    duration="$(echo "$json" | jq -r '.duration // ""' 2>/dev/null || echo "")"
-    timestamp="$(echo "$json" | jq -r '.timestamp // ""' 2>/dev/null || echo "")"
+    version="$(echo "$json" | jq -r '.version // .release.version // ""' 2>/dev/null || echo "")"
+    # Extract author: prefer .author.email, fallback to .author.name, then .author (if string)
+    author="$(echo "$json" | jq -r '.author.email // .author.name // (if .author | type == "string" then .author else empty end) // ""' 2>/dev/null || echo "")"
+    # Extract duration: prefer .timing.duration_human, fallback to .timing.duration, then .duration
+    duration="$(echo "$json" | jq -r '.timing.duration_human // .timing.duration // .duration // ""' 2>/dev/null || echo "")"
+    # Extract timestamp: prefer .timing.finished_at, fallback to .finished_at, then .timestamp
+    timestamp="$(echo "$json" | jq -r '.timing.finished_at // .finished_at // .timestamp // ""' 2>/dev/null || echo "")"
     
     local modules verification failure_context
     modules="$(_notify_render::generate_modules_text "$json" 2>/dev/null || echo "(none)")"
@@ -581,10 +590,13 @@ notify::render::render_channel() {
     fi
     
     local version author duration timestamp
-    version="$(echo "$json" | jq -r '.version // ""' 2>/dev/null || echo "")"
-    author="$(echo "$json" | jq -r '.author // ""' 2>/dev/null || echo "")"
-    duration="$(echo "$json" | jq -r '.duration // ""' 2>/dev/null || echo "")"
-    timestamp="$(echo "$json" | jq -r '.timestamp // ""' 2>/dev/null || echo "")"
+    version="$(echo "$json" | jq -r '.version // .release.version // ""' 2>/dev/null || echo "")"
+    # Extract author: prefer .author.email, fallback to .author.name, then .author (if string)
+    author="$(echo "$json" | jq -r '.author.email // .author.name // (if .author | type == "string" then .author else empty end) // ""' 2>/dev/null || echo "")"
+    # Extract duration: prefer .timing.duration_human, fallback to .timing.duration, then .duration
+    duration="$(echo "$json" | jq -r '.timing.duration_human // .timing.duration // .duration // ""' 2>/dev/null || echo "")"
+    # Extract timestamp: prefer .timing.finished_at, fallback to .finished_at, then .timestamp
+    timestamp="$(echo "$json" | jq -r '.timing.finished_at // .finished_at // .timestamp // ""' 2>/dev/null || echo "")"
     
     local modules_short verification_short failure_context_short
     modules_short="$(_notify_render::generate_modules_short "$json" 2>/dev/null || echo "(none)")"
@@ -881,10 +893,13 @@ notify::render::render_slack_blockkit() {
     
     # Extract values from JSON
     local version author duration timestamp
-    version="$(echo "$json" | jq -r '.version // ""' 2>/dev/null || echo "")"
-    author="$(echo "$json" | jq -r '.author // ""' 2>/dev/null || echo "")"
-    duration="$(echo "$json" | jq -r '.duration // ""' 2>/dev/null || echo "")"
-    timestamp="$(echo "$json" | jq -r '.timestamp // ""' 2>/dev/null || echo "")"
+    version="$(echo "$json" | jq -r '.version // .release.version // ""' 2>/dev/null || echo "")"
+    # Extract author: prefer .author.email, fallback to .author.name, then .author (if string)
+    author="$(echo "$json" | jq -r '.author.email // .author.name // (if .author | type == "string" then .author else empty end) // ""' 2>/dev/null || echo "")"
+    # Extract duration: prefer .timing.duration_human, fallback to .timing.duration, then .duration
+    duration="$(echo "$json" | jq -r '.timing.duration_human // .timing.duration // .duration // ""' 2>/dev/null || echo "")"
+    # Extract timestamp: prefer .timing.finished_at, fallback to .finished_at, then .timestamp
+    timestamp="$(echo "$json" | jq -r '.timing.finished_at // .finished_at // .timestamp // ""' 2>/dev/null || echo "")"
     
     # Generate content sections
     local modules verification failure_context
@@ -990,10 +1005,13 @@ notify::render::render_slack_block() {
     
     # Extract values from JSON
     local version author duration timestamp
-    version="$(echo "$json" | jq -r '.version // ""' 2>/dev/null || echo "")"
-    author="$(echo "$json" | jq -r '.author // ""' 2>/dev/null || echo "")"
-    duration="$(echo "$json" | jq -r '.duration // ""' 2>/dev/null || echo "")"
-    timestamp="$(echo "$json" | jq -r '.timestamp // ""' 2>/dev/null || echo "")"
+    version="$(echo "$json" | jq -r '.version // .release.version // ""' 2>/dev/null || echo "")"
+    # Extract author: prefer .author.email, fallback to .author.name, then .author (if string)
+    author="$(echo "$json" | jq -r '.author.email // .author.name // (if .author | type == "string" then .author else empty end) // ""' 2>/dev/null || echo "")"
+    # Extract duration: prefer .timing.duration_human, fallback to .timing.duration, then .duration
+    duration="$(echo "$json" | jq -r '.timing.duration_human // .timing.duration // .duration // ""' 2>/dev/null || echo "")"
+    # Extract timestamp: prefer .timing.finished_at, fallback to .finished_at, then .timestamp
+    timestamp="$(echo "$json" | jq -r '.timing.finished_at // .finished_at // .timestamp // ""' 2>/dev/null || echo "")"
     
     # Generate Block Kit blocks for modules, verification, and failure
     local modules_block verification_block failure_context_block

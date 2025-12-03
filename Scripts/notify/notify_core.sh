@@ -75,10 +75,12 @@ notify::send_release_summary() {
         [[ -n "$channel_msg" ]] && notify::slack::send_channel "$channel_msg" 2>/dev/null || true
     fi
     
-    # Email always uses text template
-    email_html="$(notify::render::render_email_html "$json" 2>/dev/null || echo "")"
-    email_subject="$(notify::render::render_email_subject "$json" 2>/dev/null || echo "")"
-    [[ -n "$email_html" ]] && [[ -n "$email_subject" ]] && notify::email::send "$email_subject" "$email_html" 2>/dev/null || true
+    # Email always uses text template (only if not disabled)
+    if [[ "${MSP_EMAIL_DISABLED:-0}" != "1" ]]; then
+        email_html="$(notify::render::render_email_html "$json" 2>/dev/null || echo "")"
+        email_subject="$(notify::render::render_email_subject "$json" 2>/dev/null || echo "")"
+        [[ -n "$email_html" ]] && [[ -n "$email_subject" ]] && notify::email::send "$email_subject" "$email_html" 2>/dev/null || true
+    fi
     
     return 0
 }

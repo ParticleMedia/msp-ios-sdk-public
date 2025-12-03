@@ -57,24 +57,23 @@ except Exception:
 PYEOF
 "$email_mapping_file" 2>/dev/null || echo "{}")"
             
-            if [[ -n "$email_yaml_data" ]] && [[ "$email_yaml_data" != "{}" ]]; then
-                # Determine environment (test or prod)
-                local env_mode="${MSP_SLACK_ALERT_ENV:-prod}"
-                [[ "$env_mode" != "test" ]] && env_mode="prod"
-                
-                # Get recipient list
-                local recipients_json
-                recipients_json="$(echo "$email_yaml_data" | python3 -c "import sys, json; data=json.load(sys.stdin); emails=data.get('success_list', {}).get('$env_mode', []); print(json.dumps(emails))" 2>/dev/null || echo "[]")"
-                
-                # Parse recipients into array
-                EMAIL_RECIPIENTS=()
-                if [[ -n "$recipients_json" ]] && [[ "$recipients_json" != "[]" ]]; then
-                    local idx=0
-                    while IFS= read -r email; do
-                        [[ -n "$email" ]] && EMAIL_RECIPIENTS[$idx]="$email"
-                        idx=$((idx + 1))
-                    done < <(echo "$recipients_json" | python3 -c "import sys, json; emails=json.load(sys.stdin); [print(e) for e in emails]" 2>/dev/null)
-                fi
+        if [[ -n "$email_yaml_data" ]] && [[ "$email_yaml_data" != "{}" ]]; then
+            # Determine environment (test or prod)
+            local env_mode="${MSP_SLACK_ALERT_ENV:-prod}"
+            [[ "$env_mode" != "test" ]] && env_mode="prod"
+            
+            # Get recipient list
+            local recipients_json
+            recipients_json="$(echo "$email_yaml_data" | python3 -c "import sys, json; data=json.load(sys.stdin); emails=data.get('success_list', {}).get('$env_mode', []); print(json.dumps(emails))" 2>/dev/null || echo "[]")"
+            
+            # Parse recipients into array
+            EMAIL_RECIPIENTS=()
+            if [[ -n "$recipients_json" ]] && [[ "$recipients_json" != "[]" ]]; then
+                local idx=0
+                while IFS= read -r email; do
+                    [[ -n "$email" ]] && EMAIL_RECIPIENTS[$idx]="$email"
+                    idx=$((idx + 1))
+                done < <(echo "$recipients_json" | python3 -c "import sys, json; emails=json.load(sys.stdin); [print(e) for e in emails]" 2>/dev/null)
             fi
         fi
     fi
@@ -92,6 +91,12 @@ declare -a EMAIL_RECIPIENTS
 notify::email::send() {
     local subject="$1"
     local html_body="$2"
+    
+    # Check if email is disabled (for testing)
+    if [[ "${MSP_EMAIL_DISABLED:-0}" == "1" ]]; then
+        echo "[notify][email] Email disabled for test mode" >&2
+        return 0
+    fi
     
     # Load configuration
     _notify_email::load_config 2>/dev/null || true
