@@ -155,20 +155,27 @@ _notify_render::generate_modules_html() {
     modules_json="$(echo "$json" | jq -r '.modules // {}' 2>/dev/null || echo "{}")"
     
     if [[ "$modules_json" == "{}" ]] || [[ -z "$modules_json" ]]; then
-        echo "<p>(none)</p>"
+        printf '%s\n' "<p>(none)</p>"
         return 0
     fi
     
+    # Use process substitution to avoid subshell issue with while loop
     local output=""
-    echo "$modules_json" | jq -r 'to_entries[] | "<div class=\"module\">\(.key) <span class=\"version\">\(.value)</span></div>"' 2>/dev/null | while IFS= read -r line; do
-        if [[ -z "$output" ]]; then
-            output="$line"
-        else
-            output="$output"$'\n'"$line"
+    while IFS= read -r line; do
+        if [[ -n "$line" ]]; then
+            if [[ -z "$output" ]]; then
+                output="$line"
+            else
+                output="$output"$'\n'"$line"
+            fi
         fi
-    done
+    done < <(echo "$modules_json" | jq -r 'to_entries[] | "<div class=\"module\">\(.key) <span class=\"version\">\(.value)</span></div>"' 2>/dev/null)
     
-    echo "$output"
+    if [[ -z "$output" ]]; then
+        printf '%s\n' "<p>(none)</p>"
+    else
+        printf '%s\n' "$output"
+    fi
 }
 
 # ============================================================================
@@ -421,13 +428,16 @@ _notify_render::generate_verification_html() {
     xcf_modules_json="$(echo "$json" | jq -r '.xcframework_verify.modules // {}' 2>/dev/null || echo "{}")"
     
     if [[ "$xcf_modules_json" != "{}" ]] && [[ -n "$xcf_modules_json" ]]; then
-        echo "$xcf_modules_json" | jq -r 'to_entries[] | "<div class=\"verification-item\"><span class=\"\(if .value.success then "success" else "failure" end)\">\(if .value.success then "✓" else "✗" end)</span> XCFramework \(.key): \(if .value.success then "PASS" else "FAIL" end)\(if .value.warnings > 0 then " <span class=\"warning\">(\(.value.warnings) warnings)</span>" else "" end)</div>"' 2>/dev/null | while IFS= read -r line; do
-            if [[ -z "$output" ]]; then
-                output="$line"
-            else
-                output="$output"$'\n'"$line"
+        # Use process substitution to avoid subshell issue with while loop
+        while IFS= read -r line; do
+            if [[ -n "$line" ]]; then
+                if [[ -z "$output" ]]; then
+                    output="$line"
+                else
+                    output="$output"$'\n'"$line"
+                fi
             fi
-        done
+        done < <(echo "$xcf_modules_json" | jq -r 'to_entries[] | "<div class=\"verification-item\"><span class=\"\(if .value.success then "success" else "failure" end)\">\(if .value.success then "✓" else "✗" end)</span> XCFramework \(.key): \(if .value.success then "PASS" else "FAIL" end)\(if .value.warnings > 0 then " <span class=\"warning\">(\(.value.warnings) warnings)</span>" else "" end)</div>"' 2>/dev/null)
     fi
     
     if [[ -z "$output" ]]; then
@@ -666,30 +676,30 @@ notify::render::render_email_html() {
     fi
     
     # Apply all replacements sequentially (compatible with all bash versions)
-    local result="$EMAIL_HTML_TEMPLATE"
+    local html="$EMAIL_HTML_TEMPLATE"
     
     # Replace all placeholders in order
-    result="${result//\{\{VERSION\}\}/$version}"
-    result="${result//\{\{AUTHOR\}\}/$author}"
-    result="${result//\{\{DURATION\}\}/$duration}"
-    result="${result//\{\{TIMESTAMP\}\}/$timestamp}"
-    result="${result//\{\{STATUS\}\}/$status}"
-    result="${result//\{\{STATUS_CLASS\}\}/$status_class}"
-    result="${result//\{\{MODULES_HTML\}\}/$modules_html}"
-    result="${result//\{\{VERIFICATION_HTML\}\}/$verification_html}"
+    html="${html//\{\{VERSION\}\}/$version}"
+    html="${html//\{\{AUTHOR\}\}/$author}"
+    html="${html//\{\{DURATION\}\}/$duration}"
+    html="${html//\{\{TIMESTAMP\}\}/$timestamp}"
+    html="${html//\{\{STATUS\}\}/$status}"
+    html="${html//\{\{STATUS_CLASS\}\}/$status_class}"
+    html="${html//\{\{MODULES_HTML\}\}/$modules_html}"
+    html="${html//\{\{VERIFICATION_HTML\}\}/$verification_html}"
     
     # Handle failure context - remove placeholder if empty
     if [[ -z "$failure_context_html" ]] || [[ "$failure_context_html" == "" ]]; then
-        result="${result//\{\{FAILURE_CONTEXT_HTML\}\}/}"
+        html="${html//\{\{FAILURE_CONTEXT_HTML\}\}/}"
     else
-        result="${result//\{\{FAILURE_CONTEXT_HTML\}\}/$failure_context_html}"
+        html="${html//\{\{FAILURE_CONTEXT_HTML\}\}/$failure_context_html}"
     fi
     
     # Write to preview file (soft-fail if directory creation fails)
     mkdir -p Tests/notify_output 2>/dev/null || true
-    echo "$result" > Tests/notify_output/email_preview.html 2>/dev/null || true
+    printf '%s\n' "$html" > Tests/notify_output/email_preview.html 2>/dev/null || true
     
-    echo "$result"
+    printf '%s\n' "$html"
 }
 
 # ============================================================================
