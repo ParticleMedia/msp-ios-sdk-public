@@ -9,6 +9,13 @@
 
 set -euo pipefail
 
+# Source time utilities if available
+if [[ -n "${ROOT_DIR:-}" ]] && [[ -f "${ROOT_DIR}/Scripts/lib/time-utils.sh" ]]; then
+    source "${ROOT_DIR}/Scripts/lib/time-utils.sh" 2>/dev/null || true
+elif [[ -f "$(dirname "${BASH_SOURCE[0]}")/../../lib/time-utils.sh" ]]; then
+    source "$(dirname "${BASH_SOURCE[0]}")/../../lib/time-utils.sh" 2>/dev/null || true
+fi
+
 # ============================================================================
 # Template Variables (loaded from notify_mapping.yaml)
 # ============================================================================
@@ -114,9 +121,17 @@ _notify_render::format_slack_timestamp() {
         return 0
     fi
     
+    # Try to use shared time utility if available
+    if command -v format_timestamp_slack >/dev/null 2>&1; then
+        format_timestamp_slack "$iso8601"
+        return 0
+    fi
+    
+    # Fallback to local implementation if time-utils.sh is not available
     # Try to convert ISO8601 to unix timestamp
     local unix_ts
     unix_ts="$(date -jf "%Y-%m-%dT%H:%M:%SZ" "$iso8601" "+%s" 2>/dev/null || \
+               date -jf "%Y-%m-%dT%H:%M:%S" "${iso8601%Z}" "+%s" 2>/dev/null || \
                date -d "$iso8601" "+%s" 2>/dev/null || \
                echo "")"
     
