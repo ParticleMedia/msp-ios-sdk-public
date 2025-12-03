@@ -31,39 +31,56 @@ notify::render::init_templates() {
         return 0  # Soft-fail: template file not found
     fi
     
-    # Parse YAML using Python (if available)
+    # Parse YAML and extract templates directly using Python
     if ! command -v python3 >/dev/null 2>&1; then
         return 0  # Soft-fail: python3 not available
     fi
     
-    local yaml_data
-    yaml_data="$(python3 <<'PYEOF'
+    # Use Python to extract templates and write to temp files
+    local temp_dir
+    temp_dir="$(mktemp -d)" || return 0
+    
+    python3 - "$mapping_file" "$temp_dir" <<'PYEOF' 2>/dev/null || true
 import yaml
-import json
 import sys
+import os
 
 try:
-    with open(sys.argv[1], 'r') as f:
+    mapping_file = sys.argv[1]
+    temp_dir = sys.argv[2]
+    
+    with open(mapping_file, 'r') as f:
         data = yaml.safe_load(f)
-    print(json.dumps(data))
+    
+    slack = data.get('slack', {})
+    email = data.get('email', {})
+    
+    templates = {
+        'SLACK_DM_TEMPLATE': slack.get('dm_template', ''),
+        'SLACK_CHANNEL_TEMPLATE': slack.get('channel_template', ''),
+        'SLACK_BLOCK_TEMPLATE': slack.get('block_template', ''),
+        'EMAIL_SUBJECT_TEMPLATE': email.get('subject_template', ''),
+        'EMAIL_HTML_TEMPLATE': email.get('html_template', '')
+    }
+    
+    for var_name, template in templates.items():
+        if template:
+            file_path = os.path.join(temp_dir, var_name)
+            with open(file_path, 'w', encoding='utf-8') as f:
+                f.write(template)
 except Exception:
-    print(json.dumps({}))
+    pass
 PYEOF
-"$mapping_file" 2>/dev/null || echo "{}")"
     
-    if [[ -z "$yaml_data" ]] || [[ "$yaml_data" == "{}" ]]; then
-        return 0  # Soft-fail: failed to parse YAML
-    fi
+    # Read templates from temp files
+    [[ -f "$temp_dir/SLACK_DM_TEMPLATE" ]] && SLACK_DM_TEMPLATE="$(cat "$temp_dir/SLACK_DM_TEMPLATE")" || SLACK_DM_TEMPLATE=""
+    [[ -f "$temp_dir/SLACK_CHANNEL_TEMPLATE" ]] && SLACK_CHANNEL_TEMPLATE="$(cat "$temp_dir/SLACK_CHANNEL_TEMPLATE")" || SLACK_CHANNEL_TEMPLATE=""
+    [[ -f "$temp_dir/SLACK_BLOCK_TEMPLATE" ]] && SLACK_BLOCK_TEMPLATE="$(cat "$temp_dir/SLACK_BLOCK_TEMPLATE")" || SLACK_BLOCK_TEMPLATE=""
+    [[ -f "$temp_dir/EMAIL_SUBJECT_TEMPLATE" ]] && EMAIL_SUBJECT_TEMPLATE="$(cat "$temp_dir/EMAIL_SUBJECT_TEMPLATE")" || EMAIL_SUBJECT_TEMPLATE=""
+    [[ -f "$temp_dir/EMAIL_HTML_TEMPLATE" ]] && EMAIL_HTML_TEMPLATE="$(cat "$temp_dir/EMAIL_HTML_TEMPLATE")" || EMAIL_HTML_TEMPLATE=""
     
-    # Extract Slack templates (soft-fail on each extraction)
-    SLACK_DM_TEMPLATE="$(echo "$yaml_data" | python3 -c "import sys, json; data=json.load(sys.stdin); print(data.get('slack', {}).get('dm_template', ''))" 2>/dev/null || echo "")"
-    SLACK_CHANNEL_TEMPLATE="$(echo "$yaml_data" | python3 -c "import sys, json; data=json.load(sys.stdin); print(data.get('slack', {}).get('channel_template', ''))" 2>/dev/null || echo "")"
-    SLACK_BLOCK_TEMPLATE="$(echo "$yaml_data" | python3 -c "import sys, json; data=json.load(sys.stdin); print(data.get('slack', {}).get('block_template', ''))" 2>/dev/null || echo "")"
-    SLACK_BLOCKKIT_TEMPLATE="$(echo "$yaml_data" | python3 -c "import sys, json; data=json.load(sys.stdin); print(data.get('slack', {}).get('blockkit_template', ''))" 2>/dev/null || echo "")"
-    
-    # Extract Email templates (soft-fail on each extraction)
-    EMAIL_SUBJECT_TEMPLATE="$(echo "$yaml_data" | python3 -c "import sys, json; data=json.load(sys.stdin); print(data.get('email', {}).get('subject_template', ''))" 2>/dev/null || echo "")"
-    EMAIL_HTML_TEMPLATE="$(echo "$yaml_data" | python3 -c "import sys, json; data=json.load(sys.stdin); print(data.get('email', {}).get('html_template', ''))" 2>/dev/null || echo "")"
+    # Cleanup
+    rm -rf "$temp_dir" 2>/dev/null || true
     
     return 0
 }
@@ -614,37 +631,63 @@ notify::render::render_email_html() {
         return 0  # Soft-fail
     fi
     
+    # Extract all required fields from JSON with defaults
     local version author duration timestamp
     version="$(echo "$json" | jq -r '.version // ""' 2>/dev/null || echo "")"
     author="$(echo "$json" | jq -r '.author // ""' 2>/dev/null || echo "")"
     duration="$(echo "$json" | jq -r '.duration // ""' 2>/dev/null || echo "")"
     timestamp="$(echo "$json" | jq -r '.timestamp // ""' 2>/dev/null || echo "")"
     
+    # Set defaults if empty
+    version="${version:-unknown}"
+    author="${author:-unknown}"
+    duration="${duration:-unknown}"
+    timestamp="${timestamp:-unknown}"
+    
+    # Generate HTML sections
     local modules_html verification_html failure_context_html
     modules_html="$(_notify_render::generate_modules_html "$json" 2>/dev/null || echo "<p>(none)</p>")"
     verification_html="$(_notify_render::generate_verification_html "$json" 2>/dev/null || echo "<p>(none)</p>")"
     failure_context_html="$(_notify_render::generate_failure_context_html "$json" 2>/dev/null || echo "")"
     
-    # Determine status and status_class
-    local failure_occurred
+    # Determine overall success/failure status
+    local failure_occurred overall_success
     failure_occurred="$(echo "$json" | jq -r '.failure.occurred // false' 2>/dev/null || echo "false")"
-    local status="Success"
-    local status_class="success"
-    [[ "$failure_occurred" == "true" ]] && {
-        status="Failure"
-        status_class="failed"
-    }
+    overall_success="$(echo "$json" | jq -r '.success // true' 2>/dev/null || echo "true")"
     
+    # Set status and status_class based on overall result
+    local status status_class
+    if [[ "$failure_occurred" == "true" ]] || [[ "$overall_success" == "false" ]]; then
+        status="Failed"
+        status_class="failed"
+    else
+        status="Success"
+        status_class="success"
+    fi
+    
+    # Apply all replacements sequentially (compatible with all bash versions)
     local result="$EMAIL_HTML_TEMPLATE"
+    
+    # Replace all placeholders in order
     result="${result//\{\{VERSION\}\}/$version}"
     result="${result//\{\{AUTHOR\}\}/$author}"
     result="${result//\{\{DURATION\}\}/$duration}"
     result="${result//\{\{TIMESTAMP\}\}/$timestamp}"
-    result="${result//\{\{MODULES_HTML\}\}/$modules_html}"
-    result="${result//\{\{VERIFICATION_HTML\}\}/$verification_html}"
-    result="${result//\{\{FAILURE_CONTEXT_HTML\}\}/$failure_context_html}"
     result="${result//\{\{STATUS\}\}/$status}"
     result="${result//\{\{STATUS_CLASS\}\}/$status_class}"
+    result="${result//\{\{MODULES_HTML\}\}/$modules_html}"
+    result="${result//\{\{VERIFICATION_HTML\}\}/$verification_html}"
+    
+    # Handle failure context - remove placeholder if empty
+    if [[ -z "$failure_context_html" ]] || [[ "$failure_context_html" == "" ]]; then
+        result="${result//\{\{FAILURE_CONTEXT_HTML\}\}/}"
+    else
+        result="${result//\{\{FAILURE_CONTEXT_HTML\}\}/$failure_context_html}"
+    fi
+    
+    # Write to preview file (soft-fail if directory creation fails)
+    mkdir -p Tests/notify_output 2>/dev/null || true
+    echo "$result" > Tests/notify_output/email_preview.html 2>/dev/null || true
     
     echo "$result"
 }
