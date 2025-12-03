@@ -641,14 +641,130 @@ notify::render::render_email_html() {
         return 0  # Soft-fail
     fi
     
-    # Extract all required fields from JSON with defaults
-    local version author duration timestamp
-    version="$(echo "$json" | jq -r '.version // ""' 2>/dev/null || echo "")"
-    author="$(echo "$json" | jq -r '.author // ""' 2>/dev/null || echo "")"
-    duration="$(echo "$json" | jq -r '.duration // ""' 2>/dev/null || echo "")"
-    timestamp="$(echo "$json" | jq -r '.timestamp // ""' 2>/dev/null || echo "")"
+    # ============================================================================
+    # Email Header Extraction with Defensive Fallbacks
+    # ============================================================================
+    # This section provides safe default header content for older/not-yet-updated
+    # orchestrator JSON payloads. It first tries dedicated email header fields,
+    # then falls back to general release fields, ensuring the header is never empty.
+    # ============================================================================
     
-    # Set defaults if empty
+    # Try dedicated email header fields first
+    local header_title header_meta header_status_class
+    header_title="$(echo "$json" | jq -r '.email.header.title // empty' 2>/dev/null || echo "")"
+    header_meta="$(echo "$json" | jq -r '.email.header.meta // empty' 2>/dev/null || echo "")"
+    header_status_class="$(echo "$json" | jq -r '.email.header.status_class // empty' 2>/dev/null || echo "")"
+    
+    # Build fallback title if header_title is empty
+    if [[ -z "$header_title" ]]; then
+        local release_version release_environment release_channel
+        release_version="$(echo "$json" | jq -r '.release.version // .version // empty' 2>/dev/null || echo "")"
+        release_environment="$(echo "$json" | jq -r '.release.environment // .release.channel // empty' 2>/dev/null || echo "")"
+        
+        header_title="MSP Release Summary"
+        [[ -n "$release_version" ]] && header_title="$header_title — $release_version"
+        [[ -n "$release_environment" ]] && header_title="$header_title ($release_environment)"
+    fi
+    
+    # Build fallback meta line if header_meta is empty
+    if [[ -z "$header_meta" ]]; then
+        local author_email author_name author_fallback
+        local duration_human duration_fallback
+        local finished_at timestamp_fallback
+        
+        # Author: prefer .author.email, fallback to .author.name, then .author (if string)
+        author_email="$(echo "$json" | jq -r '.author.email // empty' 2>/dev/null || echo "")"
+        author_name="$(echo "$json" | jq -r '.author.name // empty' 2>/dev/null || echo "")"
+        # Check if .author is a string (not an object)
+        author_type="$(echo "$json" | jq -r 'if .author | type == "string" then .author else empty end' 2>/dev/null || echo "")"
+        
+        local author_part=""
+        if [[ -n "$author_email" ]]; then
+            author_part="$author_email"
+        elif [[ -n "$author_name" ]]; then
+            author_part="$author_name"
+        elif [[ -n "$author_type" ]]; then
+            author_part="$author_type"
+        fi
+        
+        # Duration: prefer .timing.duration_human, fallback to .timing.duration, then .duration
+        duration_human="$(echo "$json" | jq -r '.timing.duration_human // empty' 2>/dev/null || echo "")"
+        duration_fallback="$(echo "$json" | jq -r '.timing.duration // .duration // empty' 2>/dev/null || echo "")"
+        
+        local duration_part=""
+        if [[ -n "$duration_human" ]]; then
+            duration_part="$duration_human"
+        elif [[ -n "$duration_fallback" ]]; then
+            duration_part="$duration_fallback"
+        fi
+        
+        # Timestamp: prefer .timing.finished_at, fallback to .finished_at, then .timestamp
+        finished_at="$(echo "$json" | jq -r '.timing.finished_at // .finished_at // empty' 2>/dev/null || echo "")"
+        timestamp_fallback="$(echo "$json" | jq -r '.timestamp // empty' 2>/dev/null || echo "")"
+        
+        local timestamp_part=""
+        if [[ -n "$finished_at" ]]; then
+            timestamp_part="$finished_at"
+        elif [[ -n "$timestamp_fallback" ]]; then
+            timestamp_part="$timestamp_fallback"
+        fi
+        
+        # Build meta line by joining non-empty parts with " | "
+        local meta_parts=()
+        [[ -n "$author_part" ]] && meta_parts+=("Author: $author_part")
+        [[ -n "$duration_part" ]] && meta_parts+=("Duration: $duration_part")
+        [[ -n "$timestamp_part" ]] && meta_parts+=("Time: $timestamp_part")
+        
+        if [[ ${#meta_parts[@]} -gt 0 ]]; then
+            header_meta="$(IFS=' | '; echo "${meta_parts[*]}")"
+        else
+            header_meta="MSP Release Pipeline"
+        fi
+    fi
+    
+    # Derive status_class if header_status_class is empty
+    if [[ -z "$header_status_class" ]]; then
+        local generic_status
+        generic_status="$(echo "$json" | jq -r '.status // empty' 2>/dev/null || echo "")"
+        
+        case "$generic_status" in
+            success|Success|SUCCESS)
+                header_status_class="success"
+                ;;
+            failure|Failure|FAILURE|failed|Failed|FAILED)
+                header_status_class="failed"
+                ;;
+            *)
+                # Fallback to existing logic
+                local failure_occurred overall_success
+                failure_occurred="$(echo "$json" | jq -r '.failure.occurred // false' 2>/dev/null || echo "false")"
+                overall_success="$(echo "$json" | jq -r '.success // true' 2>/dev/null || echo "true")"
+                
+                if [[ "$failure_occurred" == "true" ]] || [[ "$overall_success" == "false" ]]; then
+                    header_status_class="failed"
+                else
+                    header_status_class="success"
+                fi
+                ;;
+        esac
+    fi
+    
+    # Optional debug output (only when MSP_DEBUG_NOTIFY_EMAIL_HEADER=1)
+    if [[ "${MSP_DEBUG_NOTIFY_EMAIL_HEADER:-}" == "1" ]]; then
+        echo "[notify][debug] email header_title: $header_title" >&2
+        echo "[notify][debug] email header_meta: $header_meta" >&2
+        echo "[notify][debug] email status_class: $header_status_class" >&2
+    fi
+    
+    # For backward compatibility, also extract individual fields for template replacement
+    # (These are used by the existing template placeholders)
+    local version author duration timestamp
+    version="$(echo "$json" | jq -r '.version // empty' 2>/dev/null || echo "")"
+    author="$(echo "$json" | jq -r '.author // empty' 2>/dev/null || echo "")"
+    duration="$(echo "$json" | jq -r '.duration // empty' 2>/dev/null || echo "")"
+    timestamp="$(echo "$json" | jq -r '.timestamp // empty' 2>/dev/null || echo "")"
+    
+    # Set defaults if empty (for backward compatibility with existing template)
     version="${version:-unknown}"
     author="${author:-unknown}"
     duration="${duration:-unknown}"
@@ -660,31 +776,67 @@ notify::render::render_email_html() {
     verification_html="$(_notify_render::generate_verification_html "$json" 2>/dev/null || echo "<p>(none)</p>")"
     failure_context_html="$(_notify_render::generate_failure_context_html "$json" 2>/dev/null || echo "")"
     
-    # Determine overall success/failure status
+    # Determine status for template (used by {{STATUS}} placeholder)
     local failure_occurred overall_success
     failure_occurred="$(echo "$json" | jq -r '.failure.occurred // false' 2>/dev/null || echo "false")"
     overall_success="$(echo "$json" | jq -r '.success // true' 2>/dev/null || echo "true")"
     
-    # Set status and status_class based on overall result
-    local status status_class
+    local status
     if [[ "$failure_occurred" == "true" ]] || [[ "$overall_success" == "false" ]]; then
         status="Failed"
-        status_class="failed"
     else
         status="Success"
-        status_class="success"
+    fi
+    
+    # Build final title and meta strings for template replacement
+    local final_title final_meta
+    if [[ -n "$header_title" ]]; then
+        final_title="$header_title"
+    else
+        # Build from version (backward compatibility)
+        if [[ "$version" != "unknown" ]]; then
+            final_title="MSP Release Summary — $version"
+        else
+            final_title="MSP Release Summary"
+        fi
+    fi
+    
+    if [[ -n "$header_meta" ]]; then
+        final_meta="$header_meta"
+    else
+        # Build from individual fields (backward compatibility)
+        local meta_parts=()
+        [[ "$author" != "unknown" ]] && meta_parts+=("Author: $author")
+        [[ "$duration" != "unknown" ]] && meta_parts+=("Duration: $duration")
+        [[ "$timestamp" != "unknown" ]] && meta_parts+=("Time: $timestamp")
+        
+        if [[ ${#meta_parts[@]} -gt 0 ]]; then
+            final_meta="$(IFS=' | '; echo "${meta_parts[*]}")"
+        else
+            final_meta="MSP Release Pipeline"
+        fi
     fi
     
     # Apply all replacements sequentially (compatible with all bash versions)
     local html="$EMAIL_HTML_TEMPLATE"
     
-    # Replace all placeholders in order
+    # First replace placeholders to get rendered template
     html="${html//\{\{VERSION\}\}/$version}"
     html="${html//\{\{AUTHOR\}\}/$author}"
     html="${html//\{\{DURATION\}\}/$duration}"
     html="${html//\{\{TIMESTAMP\}\}/$timestamp}"
     html="${html//\{\{STATUS\}\}/$status}"
-    html="${html//\{\{STATUS_CLASS\}\}/$status_class}"
+    html="${html//\{\{STATUS_CLASS\}\}/$header_status_class}"
+    
+    # Now replace the header title and meta lines with our computed values
+    # Use sed for more robust pattern matching that handles leading whitespace
+    # Escape special characters in replacement strings for sed
+    local final_title_escaped final_meta_escaped
+    final_title_escaped="$(printf '%s\n' "$final_title" | sed 's/[[\.*^$()+?{|]/\\&/g')"
+    final_meta_escaped="$(printf '%s\n' "$final_meta" | sed 's/[[\.*^$()+?{|]/\\&/g')"
+    
+    html="$(echo "$html" | sed "s|<h1>MSP Release Summary — [^<]*</h1>|<h1>$final_title_escaped</h1>|g")"
+    html="$(echo "$html" | sed "s|<p>Author: [^<]*</p>|<p>$final_meta_escaped</p>|g")"
     html="${html//\{\{MODULES_HTML\}\}/$modules_html}"
     html="${html//\{\{VERIFICATION_HTML\}\}/$verification_html}"
     
