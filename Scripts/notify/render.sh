@@ -758,11 +758,20 @@ notify::render::render_email_html() {
     
     # For backward compatibility, also extract individual fields for template replacement
     # (These are used by the existing template placeholders)
+    # Use the same fallback logic as header extraction
     local version author duration timestamp
-    version="$(echo "$json" | jq -r '.version // empty' 2>/dev/null || echo "")"
-    author="$(echo "$json" | jq -r '.author // empty' 2>/dev/null || echo "")"
-    duration="$(echo "$json" | jq -r '.duration // empty' 2>/dev/null || echo "")"
-    timestamp="$(echo "$json" | jq -r '.timestamp // empty' 2>/dev/null || echo "")"
+    
+    # Version: prefer .release.version, fallback to .version
+    version="$(echo "$json" | jq -r '.release.version // .version // empty' 2>/dev/null || echo "")"
+    
+    # Author: prefer .author.email, fallback to .author.name, then .author (if string)
+    author="$(echo "$json" | jq -r '.author.email // .author.name // (if .author | type == "string" then .author else empty end) // empty' 2>/dev/null || echo "")"
+    
+    # Duration: prefer .timing.duration_human, fallback to .timing.duration, then .duration
+    duration="$(echo "$json" | jq -r '.timing.duration_human // .timing.duration // .duration // empty' 2>/dev/null || echo "")"
+    
+    # Timestamp: prefer .timing.finished_at, fallback to .finished_at, then .timestamp
+    timestamp="$(echo "$json" | jq -r '.timing.finished_at // .finished_at // .timestamp // empty' 2>/dev/null || echo "")"
     
     # Set defaults if empty (for backward compatibility with existing template)
     version="${version:-unknown}"
