@@ -837,11 +837,12 @@ notify::render::render_email_html() {
     final_title_safe="$(printf '%s\n' "$final_title" | sed 's/[[\.*^$()+?{|]/\\&/g' | sed 's/#/\\#/g')"
     final_meta_safe="$(printf '%s\n' "$final_meta" | sed 's/[[\.*^$()+?{|]/\\&/g' | sed 's/#/\\#/g')"
     
-    # Replace title line (match exact pattern with leading spaces)
-    html="$(echo "$html" | sed "s#    <h1>MSP Release Summary — {{VERSION}}</h1>#    <h1>$final_title_safe</h1>#")"
+    # Replace title line (match exact pattern with leading spaces, handle inline styles)
+    # Pattern must match both with and without inline styles
+    html="$(echo "$html" | sed "s#    <h1[^>]*>MSP Release Summary — {{VERSION}}</h1>#    <h1 style=\"color: white !important; margin: 0; padding: 0;\">$final_title_safe</h1>#")"
     
-    # Replace meta line (match exact pattern with leading spaces)
-    html="$(echo "$html" | sed "s#    <p>Author: {{AUTHOR}} | Duration: {{DURATION}} | Time: {{TIMESTAMP}}</p>#    <p>$final_meta_safe</p>#")"
+    # Replace meta line (match exact pattern with leading spaces, handle inline styles)
+    html="$(echo "$html" | sed "s#    <p[^>]*>Author: {{AUTHOR}} | Duration: {{DURATION}} | Time: {{TIMESTAMP}}</p>#    <p style=\"color: white !important; margin: 10px 0 0 0;\">$final_meta_safe</p>#")"
     
     # Now replace remaining placeholders (for other sections that might use them)
     html="${html//\{\{VERSION\}\}/$version}"
