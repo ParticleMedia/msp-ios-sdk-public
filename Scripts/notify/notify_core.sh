@@ -49,17 +49,13 @@ notify::send_release_summary() {
         block_json="$(notify::render::render_slack_block "$json" 2>/dev/null || echo "")"
         
         if [[ -n "$block_json" ]]; then
-            # Use Block Kit via webhook
-            notify::slack::send_block "$block_json" 2>/dev/null || {
-                # Fallback to text templates if Block Kit fails
-                dm_msg="$(notify::render::render_dm "$json" 2>/dev/null || echo "")"
-                channel_msg="$(notify::render::render_channel "$json" 2>/dev/null || echo "")"
-                
-                [[ -n "$dm_msg" ]] && notify::slack::send_dm "$dm_msg" 2>/dev/null || true
-                [[ -n "$channel_msg" ]] && notify::slack::send_channel "$channel_msg" 2>/dev/null || true
-            }
+            # Use Block Kit sender (handles both DM and Channel)
+            # This function sends DM via API and Channel via webhook/API
+            notify::slack::send_blockkit "$block_json" 2>/dev/null || true
+            # Note: No fallback to text when BlockKit mode is enabled
+            # If BlockKit fails, we fail silently (soft-fail)
         else
-            # Fallback to text templates if Block Kit rendering fails
+            # Fallback to text templates only if Block Kit rendering fails
             dm_msg="$(notify::render::render_dm "$json" 2>/dev/null || echo "")"
             channel_msg="$(notify::render::render_channel "$json" 2>/dev/null || echo "")"
             

@@ -97,10 +97,14 @@ notify::slack::send_blockkit() {
         
         if [[ -n "$channel" ]]; then
             # Send Block Kit message via chat.postMessage
-            curl -s -X POST \
+            local dm_payload
+            dm_payload="{\"channel\":\"$channel\",\"blocks\":$blocks_json}"
+            echo "[SLACK][DM] Sending BlockKit to channel: $channel" >&2
+            echo "[SLACK][DM] Payload: $dm_payload" >&2
+            curl -s -w "\n[SLACK][DM] HTTP Status: %{http_code}\n" -X POST \
               -H "Authorization: Bearer $SLACK_BOT_TOKEN" \
               -H "Content-type: application/json" \
-              --data "{\"channel\":\"$channel\",\"blocks\":$blocks_json}" \
+              --data "$dm_payload" \
               https://slack.com/api/chat.postMessage >/dev/null 2>&1 || true
         fi
     fi
@@ -110,28 +114,19 @@ notify::slack::send_blockkit() {
         # TEST MODE: Use test webhook
         local test_webhook="${MSP_SLACK_TEST_WEBHOOK:-}"
         if [[ -n "$test_webhook" ]]; then
-            # Webhooks don't support Block Kit directly, fallback to text
-            local text_fallback
-            text_fallback="$(echo "$blocks_json" | python3 -c "
-import sys, json
-blocks = json.load(sys.stdin)
-text = ''
-for block in blocks:
-    if block.get('type') == 'header':
-        text += block.get('text', {}).get('text', '') + '\n'
-    elif block.get('type') == 'section':
-        text += block.get('text', {}).get('text', '') + '\n'
-print(text.strip())
-" 2>/dev/null || echo "")"
-            if [[ -n "$text_fallback" ]]; then
-                curl -s -X POST \
-                  -H "Content-type: application/json" \
-                  --data "{\"text\":\"$text_fallback\"}" \
-                  "$test_webhook" >/dev/null 2>&1 || true
-            fi
+            # Webhooks DO support Block Kit blocks parameter
+            # Send Block Kit JSON directly via webhook
+            local channel_payload
+            channel_payload="{\"blocks\":$blocks_json}"
+            echo "[SLACK][CHANNEL] Sending BlockKit to webhook" >&2
+            echo "[SLACK][CHANNEL] Payload: $channel_payload" >&2
+            curl -s -w "\n[SLACK][CHANNEL] HTTP Status: %{http_code}\n" -X POST \
+              -H "Content-type: application/json" \
+              --data "$channel_payload" \
+              "$test_webhook" >/dev/null 2>&1 || true
         fi
     else
-        # PROD MODE: Use channel API if bot token available
+        # PROD MODE: Prefer API if bot token available, otherwise use webhook
         if [[ -n "${SLACK_BOT_TOKEN:-}" ]]; then
             # Load channel from YAML config
             source "${ROOT_DIR:-.}/Scripts/release/utils/notify.sh" 2>/dev/null || true
@@ -146,12 +141,35 @@ EOF
 2>/dev/null || echo "")
             
             if [[ -n "$channel_id" ]]; then
-                # Send Block Kit message via chat.postMessage
+                # Send Block Kit message via chat.postMessage API
                 curl -s -X POST \
                   -H "Authorization: Bearer $SLACK_BOT_TOKEN" \
                   -H "Content-type: application/json" \
                   --data "{\"channel\":\"$channel_id\",\"blocks\":$blocks_json}" \
                   https://slack.com/api/chat.postMessage >/dev/null 2>&1 || true
+            fi
+        else
+            # Fallback to webhook if no bot token
+            source "${ROOT_DIR:-.}/Scripts/release/utils/notify.sh" 2>/dev/null || true
+            notify::load_mapping 2>/dev/null || true
+            
+            local webhook_url
+            webhook_url=$(python3 - <<EOF
+import json
+try:
+    alerts = json.loads('${SLACK_ALERTS:-{}}')
+    print(alerts.get('webhook', ''))
+except Exception:
+    print('')
+EOF
+2>/dev/null || echo "")
+            
+            if [[ -n "$webhook_url" ]]; then
+                # Send Block Kit via webhook
+                curl -s -X POST \
+                  -H "Content-type: application/json" \
+                  --data "{\"blocks\":$blocks_json}" \
+                  "$webhook_url" >/dev/null 2>&1 || true
             fi
         fi
     fi
