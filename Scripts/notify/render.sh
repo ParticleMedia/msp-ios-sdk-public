@@ -103,6 +103,33 @@ _notify_render::extract_json() {
 }
 
 # ============================================================================
+# Helper: Format Timestamp for Slack
+# ============================================================================
+
+_notify_render::format_slack_timestamp() {
+    local iso8601="$1"
+    
+    if [[ -z "$iso8601" ]]; then
+        echo ""
+        return 0
+    fi
+    
+    # Try to convert ISO8601 to unix timestamp
+    local unix_ts
+    unix_ts="$(date -jf "%Y-%m-%dT%H:%M:%SZ" "$iso8601" "+%s" 2>/dev/null || \
+               date -d "$iso8601" "+%s" 2>/dev/null || \
+               echo "")"
+    
+    if [[ -n "$unix_ts" ]] && [[ "$unix_ts" =~ ^[0-9]+$ ]]; then
+        # Use Slack's date formatting: <!date^unix_ts^{format}|fallback>
+        echo "<!date^${unix_ts}^{date_num} {time}|${iso8601}>"
+    else
+        # Fallback to original ISO string if parsing fails
+        echo "$iso8601"
+    fi
+}
+
+# ============================================================================
 # Generate Modules Text
 # ============================================================================
 
@@ -999,22 +1026,22 @@ PYEOF
 notify::render::render_slack_block() {
     local json="$1"
     
-    if [[ -z "$SLACK_BLOCK_TEMPLATE" ]]; then
-        return 0  # Soft-fail: template not loaded
-    fi
-    
     # Extract values from JSON
-    local version author duration timestamp
-    version="$(echo "$json" | jq -r '.version // .release.version // ""' 2>/dev/null || echo "")"
+    local version author duration timestamp_raw
+    version="$(echo "$json" | jq -r '.release.version // .version // ""' 2>/dev/null || echo "")"
     # Extract author: prefer .author.email, fallback to .author.name, then .author (if string)
     author="$(echo "$json" | jq -r '.author.email // .author.name // (if .author | type == "string" then .author else empty end) // ""' 2>/dev/null || echo "")"
     # Extract duration: prefer .timing.duration_human, fallback to .timing.duration, then .duration
     duration="$(echo "$json" | jq -r '.timing.duration_human // .timing.duration // .duration // ""' 2>/dev/null || echo "")"
     # Extract timestamp: prefer .timing.finished_at, fallback to .finished_at, then .timestamp
-    timestamp="$(echo "$json" | jq -r '.timing.finished_at // .finished_at // .timestamp // ""' 2>/dev/null || echo "")"
+    timestamp_raw="$(echo "$json" | jq -r '.timing.finished_at // .finished_at // .timestamp // ""' 2>/dev/null || echo "")"
     
-    # Generate Block Kit blocks for modules, verification, and failure
-    local modules_block verification_block failure_context_block
+    # Format timestamp for Slack
+    local slack_time
+    slack_time="$(_notify_render::format_slack_timestamp "$timestamp_raw")"
+    
+    # Generate Block Kit blocks for modules, verification, and release notes
+    local modules_block verification_block release_notes_block
     
     # Generate MODULES_BLOCK
     modules_block="$(_notify_render::generate_modules_block "$json" 2>/dev/null || echo "")"
@@ -1022,85 +1049,111 @@ notify::render::render_slack_block() {
     # Generate VERIFICATION_BLOCK
     verification_block="$(_notify_render::generate_verification_block "$json" 2>/dev/null || echo "")"
     
-    # Generate FAILURE_CONTEXT_BLOCK
-    failure_context_block="$(_notify_render::generate_failure_context_block "$json" 2>/dev/null || echo "")"
+    # Generate RELEASE_NOTES_BLOCK
+    release_notes_block="$(_notify_render::generate_release_notes_block "$json" 2>/dev/null || echo "")"
     
-    # Use Python to properly build and escape JSON
+    # Use Python to build BlockKit JSON
     if ! command -v python3 >/dev/null 2>&1; then
         return 0  # Soft-fail: python3 not available
     fi
+    
+    # Write blocks to temp files to avoid shell escaping issues
+    local temp_dir
+    temp_dir="$(mktemp -d)" || return 0
+    
+    [[ -n "$modules_block" ]] && echo "$modules_block" > "$temp_dir/modules.json" || true
+    [[ -n "$verification_block" ]] && echo "$verification_block" > "$temp_dir/verification.json" || true
+    [[ -n "$release_notes_block" ]] && echo "$release_notes_block" > "$temp_dir/release_notes.json" || true
     
     local result
     result="$(python3 <<PYEOF
 import json
 import sys
+import os
 
-# Read template
-template_str = '''$SLACK_BLOCK_TEMPLATE'''
+temp_dir = '''$temp_dir'''
 
-# Replace simple placeholders first
-template_str = template_str.replace('{{VERSION}}', '$version')
-template_str = template_str.replace('{{AUTHOR}}', '$author')
-template_str = template_str.replace('{{DURATION}}', '$duration')
-template_str = template_str.replace('{{TIMESTAMP}}', '$timestamp')
+# Build blocks array
+blocks = []
 
-# Replace block placeholders
-modules_block_str = '''$modules_block'''
-verification_block_str = '''$verification_block'''
-failure_block_str = '''$failure_context_block'''
+# Header/Title (section)
+version_str = '''$version'''
+if version_str:
+    blocks.append({
+        "type": "section",
+        "text": {
+            "type": "mrkdwn",
+            "text": "🎉 *MSP Release " + version_str + "*"
+        }
+    })
 
-# Replace MODULES_BLOCK
-if modules_block_str and modules_block_str.strip():
-    template_str = template_str.replace('{{MODULES_BLOCK}}', modules_block_str)
-else:
-    # Remove MODULES_BLOCK placeholder and preceding divider if empty
-    template_str = template_str.replace(',\n        {{MODULES_BLOCK}},', '')
-    template_str = template_str.replace('        {{MODULES_BLOCK}},', '')
+# Meta info (context)
+meta_elements = []
+author_str = '''$author'''
+duration_str = '''$duration'''
+slack_time_str = '''$slack_time'''
 
-# Replace VERIFICATION_BLOCK
-if verification_block_str and verification_block_str.strip():
-    template_str = template_str.replace('{{VERIFICATION_BLOCK}}', verification_block_str)
-else:
-    # Remove VERIFICATION_BLOCK placeholder and preceding divider if empty
-    template_str = template_str.replace(',\n        {{VERIFICATION_BLOCK}},', '')
-    template_str = template_str.replace('        {{VERIFICATION_BLOCK}},', '')
+if author_str:
+    meta_elements.append({"type": "mrkdwn", "text": "👤 " + author_str})
+if duration_str:
+    meta_elements.append({"type": "mrkdwn", "text": "⏱ " + duration_str})
+if slack_time_str:
+    meta_elements.append({"type": "mrkdwn", "text": "🕐 " + slack_time_str})
 
-# Replace FAILURE_CONTEXT_BLOCK
-if failure_block_str and failure_block_str.strip():
-    template_str = template_str.replace('{{FAILURE_CONTEXT_BLOCK}}', failure_block_str)
-else:
-    # Remove FAILURE_CONTEXT_BLOCK placeholder and preceding divider if empty
-    template_str = template_str.replace(',\n        {{FAILURE_CONTEXT_BLOCK}},', '')
-    template_str = template_str.replace('        {{FAILURE_CONTEXT_BLOCK}},', '')
+if meta_elements:
+    blocks.append({
+        "type": "context",
+        "elements": meta_elements
+    })
 
-# Parse template JSON
-try:
-    template = json.loads(template_str)
-except Exception as e:
-    sys.exit(1)
+# Divider
+blocks.append({"type": "divider"})
 
-# Clean up empty blocks and extra dividers
-if 'blocks' in template:
-    new_blocks = []
-    i = 0
-    while i < len(template['blocks']):
-        block = template['blocks'][i]
-        # Skip empty or None blocks
-        if block is None:
-            i += 1
-            continue
-        # Remove duplicate dividers
-        if block.get('type') == 'divider' and i > 0 and template['blocks'][i-1].get('type') == 'divider':
-            i += 1
-            continue
-        new_blocks.append(block)
-        i += 1
-    template['blocks'] = new_blocks
+# Modules section
+modules_file = os.path.join(temp_dir, "modules.json")
+if os.path.exists(modules_file):
+    try:
+        with open(modules_file, 'r', encoding='utf-8') as f:
+            modules_block_obj = json.load(f)
+            if modules_block_obj:
+                blocks.append(modules_block_obj)
+                blocks.append({"type": "divider"})
+    except Exception:
+        pass
+
+# Verification section
+verification_file = os.path.join(temp_dir, "verification.json")
+if os.path.exists(verification_file):
+    try:
+        with open(verification_file, 'r', encoding='utf-8') as f:
+            verification_block_obj = json.load(f)
+            if verification_block_obj:
+                blocks.append(verification_block_obj)
+                blocks.append({"type": "divider"})
+    except Exception:
+        pass
+
+# Release notes section
+release_notes_file = os.path.join(temp_dir, "release_notes.json")
+if os.path.exists(release_notes_file):
+    try:
+        with open(release_notes_file, 'r', encoding='utf-8') as f:
+            release_notes_block_obj = json.load(f)
+            if release_notes_block_obj:
+                blocks.append(release_notes_block_obj)
+    except Exception:
+        pass
+
+# Build final payload
+payload = {"blocks": blocks}
 
 # Output minified JSON
-print(json.dumps(template, separators=(',', ':')))
+print(json.dumps(payload, separators=(',', ':')))
 PYEOF
 2>/dev/null || echo "")"
+    
+    # Cleanup temp directory
+    rm -rf "$temp_dir" 2>/dev/null || true
     
     if [[ -z "$result" ]]; then
         return 0  # Soft-fail: failed to render
@@ -1131,10 +1184,13 @@ modules = json.load(sys.stdin)
 if not modules:
     sys.exit(0)
 
-# Build module list text
-module_lines = ['*📦 Modules Released*']
+# Build module list text (show all modules, no truncation)
+module_items = []
 for module_name, version in modules.items():
-    module_lines.append(f'  • {module_name} ({version})')
+    module_items.append(f'• {module_name} {version}')
+
+module_lines = ['📦 *Modules*']
+module_lines.extend(module_items)
 
 module_text = '\n'.join(module_lines)
 
@@ -1167,9 +1223,9 @@ _notify_render::generate_verification_block() {
     remote_spm_success="$(echo "$json" | jq -r '.remote_verify.spm.success // false' 2>/dev/null || echo "false")"
     if [[ "$remote_spm_executed" == "true" ]]; then
         if [[ "$remote_spm_success" == "true" ]]; then
-            verification_items+=("✔ SPM: PASS")
+            verification_items+=("• SPM: PASS")
         else
-            verification_items+=("❌ SPM: FAIL")
+            verification_items+=("• SPM: FAIL")
         fi
     fi
     
@@ -1179,9 +1235,9 @@ _notify_render::generate_verification_block() {
     remote_pods_success="$(echo "$json" | jq -r '.remote_verify.pods.success // false' 2>/dev/null || echo "false")"
     if [[ "$remote_pods_executed" == "true" ]]; then
         if [[ "$remote_pods_success" == "true" ]]; then
-            verification_items+=("✔ Pods: PASS")
+            verification_items+=("• Pods: PASS")
         else
-            verification_items+=("❌ Pods: FAIL")
+            verification_items+=("• Pods: FAIL")
         fi
     fi
     
@@ -1192,9 +1248,9 @@ _notify_render::generate_verification_block() {
     local_mode="$(echo "$json" | jq -r '.local_verify.mode // ""' 2>/dev/null || echo "")"
     if [[ "$local_executed" == "true" ]]; then
         if [[ "$local_success" == "true" ]]; then
-            verification_items+=("✔ Local ($local_mode): PASS")
+            verification_items+=("• Local: PASS")
         else
-            verification_items+=("❌ Local ($local_mode): FAIL")
+            verification_items+=("• Local: FAIL")
         fi
     fi
     
@@ -1205,9 +1261,9 @@ _notify_render::generate_verification_block() {
     device_mode="$(echo "$json" | jq -r '.device_verify.mode // ""' 2>/dev/null || echo "")"
     if [[ "$device_executed" == "true" ]]; then
         if [[ "$device_success" == "true" ]]; then
-            verification_items+=("✔ Device ($device_mode): PASS")
+            verification_items+=("• Device: PASS")
         else
-            verification_items+=("❌ Device ($device_mode): FAIL")
+            verification_items+=("• Device: FAIL")
         fi
     fi
     
@@ -1215,27 +1271,30 @@ _notify_render::generate_verification_block() {
     local xcf_modules_json
     xcf_modules_json="$(echo "$json" | jq -r '.xcframework_verify.modules // {}' 2>/dev/null || echo "{}")"
     if [[ "$xcf_modules_json" != "{}" ]] && [[ -n "$xcf_modules_json" ]]; then
-        echo "$xcf_modules_json" | python3 -c "
+        # Use process substitution to avoid subshell variable scoping issues
+        while IFS= read -r line; do
+            verification_items+=("$line")
+        done < <(echo "$xcf_modules_json" | python3 -c "
 import sys, json
 modules = json.load(sys.stdin)
 for module_name, data in modules.items():
-    status = '✔' if data.get('success', False) else '❌'
+    status = 'PASS' if data.get('success', False) else 'FAIL'
     warnings = data.get('warnings', 0)
     warn_text = f' ⚠️{warnings}' if warnings > 0 else ''
-    print(f'{status} XCF {module_name}: {\"PASS\" if data.get(\"success\", False) else \"FAIL\"}{warn_text}')
-" 2>/dev/null | while IFS= read -r line; do
-            verification_items+=("$line")
-        done
+    print(f'• XC {module_name}: {status}{warn_text}')
+" 2>/dev/null)
     fi
     
     if [[ ${#verification_items[@]} -eq 0 ]]; then
         return 0  # Return empty, will be removed
     fi
     
-    # Generate Block Kit section block for verification
-    local verification_text="*🧪 Verification Summary*"
-    for item in "${verification_items[@]}"; do
-        verification_text="$verification_text"$'\n'"  $item"
+    # Generate Block Kit section block for verification (show all items, no truncation)
+    local verification_text="🧪 *Verification*"
+    local i=0
+    while [[ $i -lt ${#verification_items[@]} ]]; do
+        verification_text="$verification_text"$'\n'"${verification_items[$i]}"
+        ((i++))
     done
     
     python3 -c "
@@ -1285,6 +1344,37 @@ block = {
     'text': {
         'type': 'mrkdwn',
         'text': '''$failure_text'''
+    }
+}
+print(json.dumps(block, separators=(',', ':')))
+" 2>/dev/null || echo ""
+}
+
+# ============================================================================
+# Generate Release Notes Block (Block Kit format)
+# ============================================================================
+
+_notify_render::generate_release_notes_block() {
+    local json="$1"
+    
+    # Extract release notes
+    local release_notes
+    release_notes="$(echo "$json" | jq -r '.release_notes // .release.notes // ""' 2>/dev/null || echo "")"
+    
+    if [[ -z "$release_notes" ]]; then
+        return 0  # Return empty if no release notes
+    fi
+    
+    # Show full release notes (no truncation)
+    # Generate Block Kit section block for release notes
+    python3 -c "
+import sys, json
+release_notes_str = '''$release_notes'''
+block = {
+    'type': 'section',
+    'text': {
+        'type': 'mrkdwn',
+        'text': '📄 *Release Notes*\\n' + release_notes_str
     }
 }
 print(json.dumps(block, separators=(',', ':')))
