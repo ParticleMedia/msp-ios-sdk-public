@@ -803,13 +803,6 @@ notify::render::render_email_html() {
         esac
     fi
     
-    # Optional debug output (only when MSP_DEBUG_NOTIFY_EMAIL_HEADER=1)
-    if [[ "${MSP_DEBUG_NOTIFY_EMAIL_HEADER:-}" == "1" ]]; then
-        echo "[notify][debug] email header_title: $header_title" >&2
-        echo "[notify][debug] email header_meta: $header_meta" >&2
-        echo "[notify][debug] email status_class: $header_status_class" >&2
-    fi
-    
     # For backward compatibility, also extract individual fields for template replacement
     # (These are used by the existing template placeholders)
     # Use the same fallback logic as header extraction

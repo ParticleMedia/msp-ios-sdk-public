@@ -18,8 +18,9 @@ EMAIL_ENDPOINT_ENV=""
 EMAIL_ENDPOINT=""
 EMAIL_TEMPLATE_SUBJECT=""
 EMAIL_TEMPLATE_SUCCESS=""
-declare -A EMAIL_SUCCESS_LIST_TEST
-declare -A EMAIL_SUCCESS_LIST_PROD
+# Use regular arrays instead of associative arrays for compatibility
+EMAIL_SUCCESS_LIST_TEST=()
+EMAIL_SUCCESS_LIST_PROD=()
 
 # ============================================================================
 # Load Email Mapping Configuration
@@ -196,12 +197,12 @@ notify::email::send_success_email() {
     # Get recipient list
     local emails=()
     if [[ "$env_mode" == "test" ]]; then
-        for idx in "${!EMAIL_SUCCESS_LIST_TEST[@]}"; do
-            emails+=("${EMAIL_SUCCESS_LIST_TEST[$idx]}")
+        for email in "${EMAIL_SUCCESS_LIST_TEST[@]}"; do
+            [[ -n "$email" ]] && emails+=("$email")
         done
     else
-        for idx in "${!EMAIL_SUCCESS_LIST_PROD[@]}"; do
-            emails+=("${EMAIL_SUCCESS_LIST_PROD[$idx]}")
+        for email in "${EMAIL_SUCCESS_LIST_PROD[@]}"; do
+            [[ -n "$email" ]] && emails+=("$email")
         done
     fi
     

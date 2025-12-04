@@ -35,6 +35,11 @@ if [[ -z "${ROOT_DIR:-}" ]]; then
 fi
 
 export ROOT_DIR
+
+# Set BUILD_ENVIRONMENT default before sourcing release-common.sh
+# This prevents "parameter not set" errors when release-common.sh uses set -u
+export BUILD_ENVIRONMENT="${BUILD_ENVIRONMENT:-local}"
+
 source "$ROOT_DIR/Scripts/lib/release-common.sh"
 
 # Source state management utility (state.sh is already loaded by release-common.sh, but we can source it again if needed)
@@ -52,6 +57,26 @@ fi
 if [[ -f "$ROOT_DIR/Scripts/notify/email.sh" ]]; then
     source "$ROOT_DIR/Scripts/notify/email.sh" 2>/dev/null || true
 fi
+
+# ============================================================================
+# STEP-Level Logging Functions
+# ============================================================================
+# These functions provide structured logging for each CI step
+step() {
+    echo "[CI][STEP] $1..." >&2
+}
+
+step_done() {
+    echo "[CI][STEP] $1: OK" >&2
+}
+
+step_fail() {
+    echo "[CI][STEP] $1: FAILED (code=$2)" >&2
+}
+
+step_skip() {
+    echo "[CI][STEP] $1: SKIPPED" >&2
+}
 
 # ============================================================================
 # Environment Variable Validation
@@ -250,6 +275,7 @@ validate_inputs() {
 pre_release_setup() {
     log_section "Step 0: Pre-release setup (building frameworks)"
     
+    
     if [[ "$DRY_RUN" == "true" ]]; then
         log_info "DRY RUN: Would run build scripts to ensure frameworks are up-to-date"
         return 0
@@ -258,12 +284,15 @@ pre_release_setup() {
     # Build all frameworks using the unified build script
     log_step "Building all frameworks using unified build script"
     
-    local build_args="--frameworks MSPiOSCore,NovaCore"
-    if [[ "$SKIP_CODE_SIGN" == "true" ]]; then
-        build_args="$build_args --skip-code-sign"
+    # Use the xcframeworks build script
+    local BUILD_SCRIPT="$ROOT_DIR/Scripts/xcframeworks/build-core.sh"
+    if [[ ! -f "$BUILD_SCRIPT" ]]; then
+        log_warn "Build script not found at $BUILD_SCRIPT, skipping framework build"
+        log_info "Frameworks may need to be built manually before release"
+        return 0
     fi
     
-    if ! "$SCRIPT_DIR/build.sh" $build_args; then
+    if ! bash "$BUILD_SCRIPT"; then
         log_error "Failed to build frameworks"
         exit 1
     fi
@@ -294,7 +323,7 @@ create_release_branch() {
 # Step 2: Release CocoaPods
 release_cocoapods() {
     if [[ "$SKIP_COCOAPODS" == "true" ]]; then
-        log_info "Skipping CocoaPods release (PODS_ENABLED=false)"
+        step_skip "release_cocoapods (SKIP_COCOAPODS=true)"
         return 0
     fi
     
@@ -347,7 +376,7 @@ release_cocoapods() {
 # Step 3: Release SPM
 release_spm() {
     if [[ "$SKIP_SPM" == "true" ]]; then
-        log_info "Skipping SPM release (SPM_ENABLED=false)"
+        step_skip "release_spm (SKIP_SPM=true)"
         return 0
     fi
     
@@ -402,7 +431,7 @@ release_spm() {
 # Step 4: Push release branch
 push_release_branch() {
     if [[ "$SKIP_PUSH" == "true" ]]; then
-        log_info "Skipping push (--skip-push flag)"
+        step_skip "push_release_branch (SKIP_PUSH=true)"
         return 0
     fi
     
@@ -875,19 +904,49 @@ main() {
     RELEASE_START_TIME=$(date '+%Y-%m-%d %H:%M:%S')
     
     # Step 0: Pre-release setup (build frameworks)
-    pre_release_setup
+    step "pre_release_setup"
+    if pre_release_setup; then
+        step_done "pre_release_setup"
+    else
+        step_fail "pre_release_setup" $?
+        return 10
+    fi
     
     # Step 1: Create release branch
-    create_release_branch
+    step "create_release_branch"
+    if create_release_branch; then
+        step_done "create_release_branch"
+    else
+        step_fail "create_release_branch" $?
+        return 11
+    fi
     
     # Step 2: Release CocoaPods
-    release_cocoapods
+    step "release_cocoapods"
+    if release_cocoapods; then
+        step_done "release_cocoapods"
+    else
+        step_fail "release_cocoapods" $?
+        return 12
+    fi
     
     # Step 3: Release SPM
-    release_spm
+    step "release_spm"
+    if release_spm; then
+        step_done "release_spm"
+    else
+        step_fail "release_spm" $?
+        return 13
+    fi
     
     # Step 4: Push release branch
-    push_release_branch
+    step "push_release_branch"
+    if push_release_branch; then
+        step_done "push_release_branch"
+    else
+        step_fail "push_release_branch" $?
+        return 14
+    fi
     
     # Record end time
     RELEASE_END_TIME=$(date '+%Y-%m-%d %H:%M:%S')
@@ -902,16 +961,45 @@ main() {
     show_comprehensive_release_summary
     
     # Step 5: Run remote verification (soft-fail, never breaks release)
-    run_remote_verification
+    step "run_remote_verification"
+    if run_remote_verification; then
+        step_done "run_remote_verification"
+    else
+        step_fail "run_remote_verification" $?
+        # Soft-fail: continue anyway
+    fi
     
     # Step 6: Run local verification (soft-fail, never breaks release)
-    run_local_verification
+    step "run_local_verification"
+    local verify_script="$ROOT_DIR/Scripts/release/verify_local/run_local.sh"
+    if [[ -f "$verify_script" ]]; then
+        if source "$verify_script" && run_local_verification; then
+            step_done "run_local_verification"
+        else
+            step_fail "run_local_verification" $?
+            # Soft-fail: continue anyway
+        fi
+    else
+        step_skip "run_local_verification (script not found)"
+    fi
     
     # Step 7: Run device verification (soft-fail, never breaks release)
-    run_device_verification
+    step "run_device_verification"
+    if run_device_verification; then
+        step_done "run_device_verification"
+    else
+        step_fail "run_device_verification" $?
+        # Soft-fail: continue anyway
+    fi
     
     # Step 8: Run XCFramework deep verification (soft-fail, never breaks release)
-    run_xcframework_verification
+    step "run_xcframework_verification"
+    if run_xcframework_verification; then
+        step_done "run_xcframework_verification"
+    else
+        step_fail "run_xcframework_verification" $?
+        # Soft-fail: continue anyway
+    fi
     
     # Global success notifications (only if release succeeded)
     if [[ "$OVERALL_SUCCESS" == "true" ]]; then

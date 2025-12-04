@@ -160,6 +160,9 @@ create_release_branch() {
     fi
     
     # Ensure we're on the base branch
+    # Clean untracked files that might conflict with checkout
+    # This is safe in CI/sandbox environments where untracked files are from script copying
+    git clean -fd || true
     git checkout "$BASE_BRANCH"
     
     # Pull latest changes

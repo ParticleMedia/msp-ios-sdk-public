@@ -40,8 +40,10 @@ XCF_VERIFY_ENABLED="${MSP_XCF_VERIFY_ENABLED:-1}"
 
 # Initialize result variables
 XCF_VERIFY_EXECUTED=0
-declare -A XCF_VERIFY_MODULE_RESULTS
-declare -A XCF_VERIFY_MODULE_WARNINGS
+# Use regular arrays instead of associative arrays for Bash 3.2 compatibility
+XCF_VERIFY_MODULE_NAMES=()
+XCF_VERIFY_MODULE_RESULTS=()
+XCF_VERIFY_MODULE_WARNINGS=()
 
 # ============================================================================
 # Main Runner
@@ -99,8 +101,9 @@ run_xcframework_verification() {
         local sandbox_xcf="$SANDBOX_DIR/$module_name.xcframework"
         cp -R "$xcf_path" "$sandbox_xcf" || {
             vr_log_error "[XCF] Failed to copy $module_name to sandbox"
-            XCF_VERIFY_MODULE_RESULTS["$module_name"]=0
-            XCF_VERIFY_MODULE_WARNINGS["$module_name"]=0
+            XCF_VERIFY_MODULE_NAMES+=("$module_name")
+            XCF_VERIFY_MODULE_RESULTS+=(0)
+            XCF_VERIFY_MODULE_WARNINGS+=(0)
             continue
         }
         
@@ -154,8 +157,9 @@ run_xcframework_verification() {
         fi
         
         # Record results
-        XCF_VERIFY_MODULE_RESULTS["$module_name"]=$module_success
-        XCF_VERIFY_MODULE_WARNINGS["$module_name"]=$module_warnings
+        XCF_VERIFY_MODULE_NAMES+=("$module_name")
+        XCF_VERIFY_MODULE_RESULTS+=($module_success)
+        XCF_VERIFY_MODULE_WARNINGS+=($module_warnings)
         
         if [[ $module_success -eq 1 ]]; then
             vr_log_info "[XCF] $module_name: PASS ($module_warnings warnings)"
@@ -170,15 +174,17 @@ run_xcframework_verification() {
     # Build JSON structure for state file
     local json_modules="{"
     local first=1
-    for module in "${!XCF_VERIFY_MODULE_RESULTS[@]}"; do
+    local idx=0
+    for module_name in "${XCF_VERIFY_MODULE_NAMES[@]}"; do
         if [[ $first -eq 1 ]]; then
             first=0
         else
             json_modules="$json_modules,"
         fi
-        local success="${XCF_VERIFY_MODULE_RESULTS[$module]}"
-        local warnings="${XCF_VERIFY_MODULE_WARNINGS[$module]:-0}"
-        json_modules="$json_modules\"$module\":{\"success\":$success,\"warnings\":$warnings}"
+        local success="${XCF_VERIFY_MODULE_RESULTS[$idx]}"
+        local warnings="${XCF_VERIFY_MODULE_WARNINGS[$idx]:-0}"
+        json_modules="$json_modules\"$module_name\":{\"success\":$success,\"warnings\":$warnings}"
+        idx=$((idx + 1))
     done
     json_modules="$json_modules}"
     

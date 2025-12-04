@@ -12,6 +12,7 @@ set -euo pipefail
 XCFRAMEWORKS_SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT_DIR="$(cd "$XCFRAMEWORKS_SCRIPT_DIR/../.." && pwd)"
 
+
 # shellcheck source=Scripts/target-switching/common.sh
 source "$XCFRAMEWORKS_SCRIPT_DIR/../target-switching/common.sh"
 

@@ -20,6 +20,7 @@
 
 set -euo pipefail
 
+
 # ============================================================================
 # STEP 1 — Determine ROOT_DIR
 # ============================================================================
@@ -35,12 +36,19 @@ echo "[CI] ROOT_DIR: $ROOT_DIR"
 # STEP 2 — Parse CI Environment
 # ============================================================================
 
-# VERSION rules
+# ============================================================================
+# Fail-Fast Detection for Silent Failures
+# ============================================================================
 if [[ -z "${VERSION:-}" ]]; then
-    echo "Error: VERSION environment variable is required" >&2
+    echo "[CI][FATAL] VERSION is empty — CI cannot continue" >&2
     echo "Usage: export VERSION=\"1.9.0\" && bash $0" >&2
     echo "   or: export VERSION=\"auto\" && bash $0  (auto-bump patch version)" >&2
-    exit 1
+    exit 90
+fi
+
+if [[ -z "${RELEASE_BRANCH:-}" ]] && [[ -n "${VERSION:-}" ]]; then
+    # RELEASE_BRANCH will be auto-generated, but we validate VERSION is set
+    : # OK, will be set later
 fi
 
 if [[ "$VERSION" == "auto" ]] || [[ "$VERSION" =~ ^auto: ]]; then
@@ -74,6 +82,12 @@ fi
 # RELEASE_BRANCH rules
 if [[ -z "${RELEASE_BRANCH:-}" ]]; then
     RELEASE_BRANCH="release/$VERSION"
+fi
+
+# Fail-fast: validate RELEASE_BRANCH is set after auto-generation
+if [[ -z "${RELEASE_BRANCH:-}" ]]; then
+    echo "[CI][FATAL] RELEASE_BRANCH is empty after auto-generation" >&2
+    exit 91
 fi
 
 echo "[CI] Version: $VERSION"
@@ -126,12 +140,9 @@ echo "[CI] ===================================================="
 
 # Call orchestrator - hard fail on any error (CI requirement)
 # Note: orchestrator uses environment variables (RELEASE_VERSION, etc.) which we've already set
-# We also pass CLI arguments for clarity and backward compatibility
-bash "$ORCHESTRATOR_SCRIPT" \
-    --version "$VERSION" \
-    --release-notes "$RELEASE_NOTES" \
-    --base-branch "$BASE_BRANCH" \
-    --release-branch "$RELEASE_BRANCH" || {
+# DO NOT pass --version flag as it conflicts with orchestrator's version display command
+# Orchestrator will read RELEASE_VERSION from environment
+bash "$ORCHESTRATOR_SCRIPT" || {
     ORCHESTRATOR_EXIT_CODE=$?
     echo "[CI] ===================================================="
     echo "[CI] ERROR: Release orchestrator failed with exit code $ORCHESTRATOR_EXIT_CODE" >&2
