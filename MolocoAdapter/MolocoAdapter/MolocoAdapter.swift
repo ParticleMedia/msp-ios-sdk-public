@@ -65,6 +65,7 @@ fileprivate typealias BannerCreator = (MolocoSDK.MolocoCreateAdParams, UIViewCon
             self.adRequest = adRequest
             self.bidderPlacementId = bidderPlacementId
             self.bidResponse = mBidResponse
+            self.priceInDollar = Double(mBidResponse.winningBid?.price ?? 0.0)
 
             let rootViewController = adListener.getRootViewController()
             
