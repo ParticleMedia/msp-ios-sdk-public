@@ -79,7 +79,7 @@ import IronSource
            let appKey = params[InitializationParametersCustomKeys.UNITY_APP_KEY] as? String {
             let requestBuilder = LPMInitRequestBuilder(appKey: appKey)
                 .withLegacyAdFormats([IS_REWARDED_VIDEO, IS_NATIVE_AD])
-                .withUserId(UserDefaults.standard.string(forKey: "msp_user_id") ?? "")
+                .withUserId(UserDefaults.standard.string(forKey: MSPConstants.USER_DEFAULTS_KEY_MSP_USER_ID) ?? "")
             // Build the initial request
             let initRequest = requestBuilder.build()
             // Initialize LevelPlay with the prepared request
