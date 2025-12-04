@@ -33,7 +33,13 @@ public class MSP {
     public var appId: Int64?
     public var org: String?
     public var app: String?
-    public var ppid: String?
+    public var ppid: String? {
+        didSet {
+            DispatchQueue.main.async {
+                self.tryUpdateMSPId()
+            }
+        }
+    }
     public var email: String?
     public var prebidAPIKey: String?
     
@@ -74,12 +80,7 @@ public class MSP {
                 self.prebidAPIKey = initParams.getPrebidAPIKey()
             }
             
-            if UserDefaults.standard.string(forKey: "msp_user_id") == nil {
-                self.fetchMSPUserId()
-            } else if UserDefaults.standard.string(forKey: "msp_id") == nil {
-                let mspUserId = UserDefaults.standard.string(forKey: "msp_user_id")
-                UserDefaults.standard.setValue(mspUserId, forKey: "msp_id")
-            }
+            self.tryUpdateMSPId()
             
             self.numInitWaitingForCallbacks = 1 //default vaule is 1 for prebid sdk is alwasys in the dependency
             for manager in adNetworkManagers {
@@ -109,6 +110,17 @@ public class MSP {
             
             UserDefaults.standard.setValue(String(Date().timeIntervalSince1970 * 1000), forKey: "FirstLaunchTime")
             self.blockLatencyInMs = Int32((Date().timeIntervalSince1970 - initStartTime) * 1000)
+        }
+    }
+    
+    private func tryUpdateMSPId() {
+        let keyMSPId = MSPConstants.USER_DEFAULTS_KEY_MSP_ID
+        let keyMSPUserId = MSPConstants.USER_DEFAULTS_KEY_MSP_USER_ID
+        if UserDefaults.standard.string(forKey: keyMSPUserId) == nil {
+            self.fetchMSPUserId()
+        } else if UserDefaults.standard.string(forKey: keyMSPId) == nil {
+            let mspUserId = UserDefaults.standard.string(forKey: keyMSPUserId)
+            UserDefaults.standard.setValue(mspUserId, forKey: keyMSPId)
         }
     }
     
@@ -226,8 +238,8 @@ public class MSP {
                         // Handle JSON response
                         if let responseDict = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any],
                            let id = responseDict["id"] as? Int64, id != 0 {
-                            UserDefaults.standard.setValue(String(id), forKey: "msp_user_id")
-                            UserDefaults.standard.setValue(String(id), forKey: "msp_id")
+                            UserDefaults.standard.setValue(String(id), forKey: MSPConstants.USER_DEFAULTS_KEY_MSP_USER_ID)
+                            UserDefaults.standard.setValue(String(id), forKey: MSPConstants.USER_DEFAULTS_KEY_MSP_ID)
                         }
                     } catch {
                         print("Error parsing response: \(error)")
