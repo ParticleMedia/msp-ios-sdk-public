@@ -690,229 +690,395 @@ notify::render::render_email_subject() {
 notify::render::render_email_html() {
     local json="$1"
     
-    if [[ -z "$EMAIL_HTML_TEMPLATE" ]]; then
-        echo "Warning: Email HTML template not loaded" >&2
-        return 0  # Soft-fail
-    fi
+    # Phase 4 Step 2 TASK 6: Detect release tier for email
+    local release_tier
+    release_tier="$(echo "$json" | jq -r '.release_tier // .release.release_tier // "preflight"' 2>/dev/null || echo "preflight")"
+    local release_mode
+    release_mode="$(echo "$json" | jq -r '.release_mode // .release.release_mode // "cli"' 2>/dev/null || echo "cli")"
     
-    # ============================================================================
-    # Email Header Extraction with Defensive Fallbacks
-    # ============================================================================
-    # This section provides safe default header content for older/not-yet-updated
-    # orchestrator JSON payloads. It first tries dedicated email header fields,
-    # then falls back to general release fields, ensuring the header is never empty.
-    # ============================================================================
-    
-    # Try dedicated email header fields first
-    local header_title header_meta header_status_class
-    header_title="$(echo "$json" | jq -r '.email.header.title // empty' 2>/dev/null || echo "")"
-    header_meta="$(echo "$json" | jq -r '.email.header.meta // empty' 2>/dev/null || echo "")"
-    header_status_class="$(echo "$json" | jq -r '.email.header.status_class // empty' 2>/dev/null || echo "")"
-    
-    # Build fallback title if header_title is empty
-    if [[ -z "$header_title" ]]; then
-        local release_version release_environment release_channel
-        release_version="$(echo "$json" | jq -r '.release.version // .version // empty' 2>/dev/null || echo "")"
-        release_environment="$(echo "$json" | jq -r '.release.environment // .release.channel // empty' 2>/dev/null || echo "")"
-        
-        header_title="MSP Release Summary"
-        [[ -n "$release_version" ]] && header_title="$header_title — $release_version"
-        [[ -n "$release_environment" ]] && header_title="$header_title ($release_environment)"
-    fi
-    
-    # Build fallback meta line if header_meta is empty
-    if [[ -z "$header_meta" ]]; then
-        local author_email author_name author_fallback
-        local duration_human duration_fallback
-        local finished_at timestamp_fallback
-        
-        # Author: prefer .author.email, fallback to .author.name, then .author (if string)
-        author_email="$(echo "$json" | jq -r '.author.email // empty' 2>/dev/null || echo "")"
-        author_name="$(echo "$json" | jq -r '.author.name // empty' 2>/dev/null || echo "")"
-        # Check if .author is a string (not an object)
-        author_type="$(echo "$json" | jq -r 'if .author | type == "string" then .author else empty end' 2>/dev/null || echo "")"
-        
-        local author_part=""
-        if [[ -n "$author_email" ]]; then
-            author_part="$author_email"
-        elif [[ -n "$author_name" ]]; then
-            author_part="$author_name"
-        elif [[ -n "$author_type" ]]; then
-            author_part="$author_type"
-        fi
-        
-        # Duration: prefer .timing.duration_human, fallback to .timing.duration, then .duration
-        duration_human="$(echo "$json" | jq -r '.timing.duration_human // empty' 2>/dev/null || echo "")"
-        duration_fallback="$(echo "$json" | jq -r '.timing.duration // .duration // empty' 2>/dev/null || echo "")"
-        
-        local duration_part=""
-        if [[ -n "$duration_human" ]]; then
-            duration_part="$duration_human"
-        elif [[ -n "$duration_fallback" ]]; then
-            duration_part="$duration_fallback"
-        fi
-        
-        # Timestamp: prefer .timing.finished_at, fallback to .finished_at, then .timestamp
-        finished_at="$(echo "$json" | jq -r '.timing.finished_at // .finished_at // empty' 2>/dev/null || echo "")"
-        timestamp_fallback="$(echo "$json" | jq -r '.timestamp // empty' 2>/dev/null || echo "")"
-        
-        local timestamp_part=""
-        if [[ -n "$finished_at" ]]; then
-            timestamp_part="$finished_at"
-        elif [[ -n "$timestamp_fallback" ]]; then
-            timestamp_part="$timestamp_fallback"
-        fi
-        
-        # Build meta line by joining non-empty parts with " | "
-        local meta_parts=()
-        [[ -n "$author_part" ]] && meta_parts+=("Author: $author_part")
-        [[ -n "$duration_part" ]] && meta_parts+=("Duration: $duration_part")
-        [[ -n "$timestamp_part" ]] && meta_parts+=("Time: $timestamp_part")
-        
-        if [[ ${#meta_parts[@]} -gt 0 ]]; then
-            header_meta="$(IFS=' | '; echo "${meta_parts[*]}")"
-        else
-            header_meta="MSP Release Pipeline"
-        fi
-    fi
-    
-    # Derive status_class if header_status_class is empty
-    if [[ -z "$header_status_class" ]]; then
-        local generic_status
-        generic_status="$(echo "$json" | jq -r '.status // empty' 2>/dev/null || echo "")"
-        
-        case "$generic_status" in
-            success|Success|SUCCESS)
-                header_status_class="success"
-                ;;
-            failure|Failure|FAILURE|failed|Failed|FAILED)
-                header_status_class="failed"
-                ;;
-            *)
-                # Fallback to existing logic
-                local failure_occurred overall_success
-                failure_occurred="$(echo "$json" | jq -r '.failure.occurred // false' 2>/dev/null || echo "false")"
-                overall_success="$(echo "$json" | jq -r '.success // true' 2>/dev/null || echo "true")"
-                
-                if [[ "$failure_occurred" == "true" ]] || [[ "$overall_success" == "false" ]]; then
-                    header_status_class="failed"
-                else
-                    header_status_class="success"
-                fi
-                ;;
-        esac
-    fi
-    
-    # For backward compatibility, also extract individual fields for template replacement
-    # (These are used by the existing template placeholders)
-    # Use the same fallback logic as header extraction
-    local version author duration timestamp
-    
-    # Version: prefer .release.version, fallback to .version
-    version="$(echo "$json" | jq -r '.release.version // .version // empty' 2>/dev/null || echo "")"
-    
-    # Author: prefer .author.email, fallback to .author.name, then .author (if string)
-    author="$(echo "$json" | jq -r '.author.email // .author.name // (if .author | type == "string" then .author else empty end) // empty' 2>/dev/null || echo "")"
-    
-    # Duration: prefer .timing.duration_human, fallback to .timing.duration, then .duration
-    duration="$(echo "$json" | jq -r '.timing.duration_human // .timing.duration // .duration // empty' 2>/dev/null || echo "")"
-    
-    # Timestamp: prefer .timing.finished_at, fallback to .finished_at, then .timestamp
-    timestamp="$(echo "$json" | jq -r '.timing.finished_at // .finished_at // .timestamp // empty' 2>/dev/null || echo "")"
-    
-    # Set defaults if empty (for backward compatibility with existing template)
-    version="${version:-unknown}"
-    author="${author:-unknown}"
-    duration="${duration:-unknown}"
-    timestamp="${timestamp:-unknown}"
-    
-    # Generate HTML sections
-    local modules_html verification_html failure_context_html
-    modules_html="$(_notify_render::generate_modules_html "$json" 2>/dev/null || echo "<p>(none)</p>")"
-    verification_html="$(_notify_render::generate_verification_html "$json" 2>/dev/null || echo "<p>(none)</p>")"
-    failure_context_html="$(_notify_render::generate_failure_context_html "$json" 2>/dev/null || echo "")"
-    
-    # Determine status for template (used by {{STATUS}} placeholder)
-    local failure_occurred overall_success
-    failure_occurred="$(echo "$json" | jq -r '.failure.occurred // false' 2>/dev/null || echo "false")"
-    overall_success="$(echo "$json" | jq -r '.success // true' 2>/dev/null || echo "true")"
-    
-    local status
-    if [[ "$failure_occurred" == "true" ]] || [[ "$overall_success" == "false" ]]; then
-        status="Failed"
+    # Route to tier-specific email renderer
+    if [[ "$release_tier" == "production" ]]; then
+        _notify_render::render_production_email "$json" "$release_mode"
     else
-        status="Success"
+        _notify_render::render_preflight_email "$json"
     fi
+}
+
+# ============================================================================
+# Phase 4 Step 2: Production Email HTML Renderer
+# ============================================================================
+
+_notify_render::render_production_email() {
+    local json="$1"
+    local release_mode="$2"
     
-    # Build final title and meta strings for template replacement
-    local final_title final_meta
-    if [[ -n "$header_title" ]]; then
-        final_title="$header_title"
-    else
-        # Build from version (backward compatibility)
-        if [[ "$version" != "unknown" ]]; then
-            final_title="MSP Release Summary — $version"
-        else
-            final_title="MSP Release Summary"
-        fi
-    fi
+    # Extract data
+    local version author duration branch started_at ended_at
+    version="$(echo "$json" | jq -r '.version // .release.version // ""' 2>/dev/null || echo "")"
+    author="$(echo "$json" | jq -r '.author.email // .author.name // ""' 2>/dev/null || echo "")"
+    duration="$(echo "$json" | jq -r '.duration // .timing.duration_human // ""' 2>/dev/null || echo "")"
+    branch="$(echo "$json" | jq -r '.release_branch // ""' 2>/dev/null || echo "")"
+    started_at="$(echo "$json" | jq -r '.timestamps.timestamp_start // ""' 2>/dev/null || echo "")"
+    ended_at="$(echo "$json" | jq -r '.timestamps.timestamp_end // ""' 2>/dev/null || echo "")"
     
-    if [[ -n "$header_meta" ]]; then
-        final_meta="$header_meta"
-    else
-        # Build from individual fields (backward compatibility)
-        local meta_parts=()
-        [[ "$author" != "unknown" ]] && meta_parts+=("Author: $author")
-        [[ "$duration" != "unknown" ]] && meta_parts+=("Duration: $duration")
-        [[ "$timestamp" != "unknown" ]] && meta_parts+=("Time: $timestamp")
+    # Extract pods lint results
+    local pods_lint_errors pods_lint_warnings
+    pods_lint_errors="$(echo "$json" | jq -r '.steps.pods.lint_errors // 0' 2>/dev/null || echo "0")"
+    pods_lint_warnings="$(echo "$json" | jq -r '.steps.pods.lint_warnings // 0' 2>/dev/null || echo "0")"
+    
+    # Extract SPM manifest results
+    local spm_manifest_status spm_errors spm_warnings
+    spm_manifest_status="$(echo "$json" | jq -r '.steps.spm_manifest.status // "unknown"' 2>/dev/null || echo "unknown")"
+    spm_errors="$(echo "$json" | jq -r '.steps.spm_manifest.errors // []' 2>/dev/null || echo "[]")"
+    spm_warnings="$(echo "$json" | jq -r '.steps.spm_manifest.warnings // []' 2>/dev/null || echo "[]")"
+    
+    # Extract artifacts
+    local xcframework_paths ipa_path spec_paths
+    xcframework_paths="$(echo "$json" | jq -r '.artifacts.xcframework_paths // []' 2>/dev/null || echo "[]")"
+    ipa_path="$(echo "$json" | jq -r '.artifacts.ipa_path // ""' 2>/dev/null || echo "")"
+    spec_paths="$(echo "$json" | jq -r '.artifacts.spec_paths // []' 2>/dev/null || echo "[]")"
+    
+    # Extract release notes
+    local release_notes
+    release_notes="$(echo "$json" | jq -r '.release_notes // .release.notes // ""' 2>/dev/null || echo "")"
+    
+    # Extract modules
+    local modules_json
+    modules_json="$(echo "$json" | jq -r '.modules // {}' 2>/dev/null || echo "{}")"
+    
+    # Extract verification results
+    local steps_json
+    steps_json="$(echo "$json" | jq -r '.steps // {}' 2>/dev/null || echo "{}")"
+    
+    # Generate HTML
+    python3 <<PYEOF
+import json
+import html
+
+version = '''$version'''
+author = '''$author'''
+duration = '''$duration'''
+branch = '''$branch'''
+started_at = '''$started_at'''
+ended_at = '''$ended_at'''
+release_mode = '''$release_mode'''
+pods_lint_errors = int('''$pods_lint_errors''')
+pods_lint_warnings = int('''$pods_lint_warnings''')
+spm_manifest_status = '''$spm_manifest_status'''
+
+try:
+    spm_errors = json.loads('''$spm_errors''')
+    spm_warnings = json.loads('''$spm_manifest_warnings''')
+    xcf_paths = json.loads('''$xcframework_paths''')
+    spec_paths_list = json.loads('''$spec_paths''')
+    modules = json.loads('''$modules_json''')
+    steps = json.loads('''$steps_json''')
+except:
+    spm_errors = []
+    spm_warnings = []
+    xcf_paths = []
+    spec_paths_list = []
+    modules = {}
+    steps = {}
+
+ipa_path = '''$ipa_path'''
+release_notes = '''$release_notes'''
+
+html_content = """
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; margin: 0; padding: 20px; background: #f5f5f5; }
+        .container { max-width: 800px; margin: 0 auto; background: white; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .header { background: #2eb886; color: white; padding: 30px; border-radius: 8px 8px 0 0; }
+        .header h1 { margin: 0; font-size: 24px; }
+        .header p { margin: 10px 0 0 0; opacity: 0.9; }
+        .content { padding: 30px; }
+        .section { margin-bottom: 30px; }
+        .section h2 { color: #333; border-bottom: 2px solid #2eb886; padding-bottom: 10px; }
+        table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+        table td, table th { padding: 10px; text-align: left; border-bottom: 1px solid #ddd; }
+        table th { background: #f8f8f8; font-weight: 600; }
+        .success { color: #2eb886; }
+        .error { color: #e01e5a; }
+        .warning { color: #f39c12; }
+        .pre-block { background: #f8f8f8; padding: 15px; border-radius: 4px; font-family: monospace; white-space: pre-wrap; overflow-x: auto; }
+        .error-item { color: #e01e5a; font-weight: 600; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🟢 MSP iOS SDK Production Release</h1>
+            <p>Version: {version} | Branch: {branch} | Duration: {duration}</p>
+        </div>
+        <div class="content">
+            <div class="section">
+                <h2>Release Information</h2>
+                <table>
+                    <tr><th>Version</th><td><strong>{version}</strong></td></tr>
+                    <tr><th>Author</th><td>{author}</td></tr>
+                    <tr><th>Branch</th><td>{branch}</td></tr>
+                    <tr><th>Started</th><td>{started_at}</td></tr>
+                    <tr><th>Ended</th><td>{ended_at}</td></tr>
+                    <tr><th>Duration</th><td>{duration}</td></tr>
+                </table>
+            </div>
+            
+            <div class="section">
+                <h2>Summary</h2>
+                <table>
+                    <tr>
+                        <th>CocoaPods Release</th>
+                        <td class="{pods_status_class}">{pods_status_text}</td>
+                    </tr>
+                    <tr>
+                        <th>Pods Lint</th>
+                        <td>Errors: {pods_lint_errors}, Warnings: {pods_lint_warnings}</td>
+                    </tr>
+                    <tr>
+                        <th>SPM Release</th>
+                        <td class="{spm_status_class}">{spm_status_text}</td>
+                    </tr>
+                    <tr>
+                        <th>SPM Manifest</th>
+                        <td>Status: {spm_manifest_status} | Errors: {spm_error_count}, Warnings: {spm_warning_count}</td>
+                    </tr>
+                </table>
+            </div>
+""".format(
+    version=html.escape(version or "N/A"),
+    author=html.escape(author or "N/A"),
+    branch=html.escape(branch or "N/A"),
+    started_at=html.escape(started_at or "N/A"),
+    ended_at=html.escape(ended_at or "N/A"),
+    duration=html.escape(duration or "N/A"),
+    pods_status_class="success" if pods_lint_errors == 0 else "error",
+    pods_status_text="✅ Success" if pods_lint_errors == 0 else f"❌ Failed ({pods_lint_errors} errors)",
+    pods_lint_errors=pods_lint_errors,
+    pods_lint_warnings=pods_lint_warnings,
+    spm_status_class="success" if spm_manifest_status == "success" else "error",
+    spm_status_text="✅ Success" if spm_manifest_status == "success" else "❌ Failed",
+    spm_manifest_status=spm_manifest_status,
+    spm_error_count=len(spm_errors),
+    spm_warning_count=len(spm_warnings)
+)
+
+# Verification Section (CLI only)
+if release_mode == "cli":
+    html_content += """
+            <div class="section">
+                <h2>Verification</h2>
+                <table>
+"""
+    if steps.get("local_verify", {}).get("status") == "success":
+        html_content += "<tr><th>Local Verify</th><td class='success'>✅ PASS</td></tr>"
+    elif steps.get("local_verify", {}).get("status") == "failed":
+        html_content += "<tr><th>Local Verify</th><td class='error'>❌ FAIL</td></tr>"
+    
+    if steps.get("device_verify", {}).get("status") == "success":
+        html_content += "<tr><th>Device Verify</th><td class='success'>✅ PASS</td></tr>"
+    elif steps.get("device_verify", {}).get("status") == "failed":
+        html_content += "<tr><th>Device Verify</th><td class='error'>❌ FAIL</td></tr>"
+    
+    if steps.get("xcframework_verify", {}).get("status") == "success":
+        html_content += "<tr><th>XCFramework Verify</th><td class='success'>✅ PASS</td></tr>"
+    elif steps.get("xcframework_verify", {}).get("status") == "failed":
+        html_content += "<tr><th>XCFramework Verify</th><td class='error'>❌ FAIL</td></tr>"
+    
+    html_content += """
+                </table>
+            </div>
+"""
+
+# Release Notes
+if release_notes:
+    html_content += f"""
+            <div class="section">
+                <h2>Release Notes</h2>
+                <div class="pre-block">{html.escape(release_notes)}</div>
+            </div>
+"""
+
+# Artifacts
+if xcf_paths or ipa_path or spec_paths_list:
+    html_content += """
+            <div class="section">
+                <h2>Artifacts</h2>
+                <table>
+"""
+    if xcf_paths:
+        html_content += f"<tr><th>XCFrameworks</th><td>{len(xcf_paths)} files</td></tr>"
+    if ipa_path:
+        html_content += f"<tr><th>IPA</th><td>{html.escape(ipa_path)}</td></tr>"
+    if spec_paths_list:
+        html_content += f"<tr><th>Specs</th><td>{len(spec_paths_list)} files</td></tr>"
+    html_content += """
+                </table>
+            </div>
+"""
+
+# Error Section
+error_items = []
+if pods_lint_errors > 0:
+    error_items.append("❌ pods lint failed")
+if spm_manifest_status == "error":
+    error_items.append("❌ spm manifest mismatch")
+if spm_errors:
+    error_items.append("❌ spm tag missing")
+if steps.get("local_verify", {}).get("status") == "failed":
+    error_items.append("❌ local verify fail")
+if steps.get("device_verify", {}).get("status") == "failed":
+    error_items.append("❌ device verify fail")
+if steps.get("xcframework_verify", {}).get("status") == "failed":
+    error_items.append("❌ xcframework verify fail")
+
+if error_items:
+    html_content += """
+            <div class="section">
+                <h2>Errors</h2>
+                <ul>
+"""
+    for item in error_items:
+        html_content += f"<li class='error-item'>{html.escape(item)}</li>"
+    html_content += """
+                </ul>
+            </div>
+"""
+
+html_content += """
+        </div>
+    </div>
+</body>
+</html>
+"""
+
+print(html_content)
+PYEOF
+}
+
+# ============================================================================
+# Phase 4 Step 2: Preflight Email HTML Renderer
+# ============================================================================
+
+_notify_render::render_preflight_email() {
+    local json="$1"
+    
+    # Extract data
+    local version author duration branch
+    version="$(echo "$json" | jq -r '.version // .release.version // ""' 2>/dev/null || echo "")"
+    author="$(echo "$json" | jq -r '.author.email // .author.name // ""' 2>/dev/null || echo "")"
+    duration="$(echo "$json" | jq -r '.duration // .timing.duration_human // ""' 2>/dev/null || echo "")"
+    branch="$(echo "$json" | jq -r '.release_branch // ""' 2>/dev/null || echo "")"
+    
+    local pods_lint_warnings spm_warnings
+    pods_lint_warnings="$(echo "$json" | jq -r '.steps.pods.lint_warnings // 0' 2>/dev/null || echo "0")"
+    spm_warnings="$(echo "$json" | jq -r '.steps.spm_manifest.warnings // []' 2>/dev/null || echo "[]")"
+    
+    local release_notes modules_json
+    release_notes="$(echo "$json" | jq -r '.release_notes // .release.notes // ""' 2>/dev/null || echo "")"
+    modules_json="$(echo "$json" | jq -r '.modules // {}' 2>/dev/null || echo "{}")"
+    
+    python3 <<PYEOF
+import json
+import html
+
+version = '''$version'''
+author = '''$author'''
+duration = '''$duration'''
+branch = '''$branch'''
+pods_lint_warnings = int('''$pods_lint_warnings''')
+
+try:
+    spm_warnings = json.loads('''$spm_warnings''')
+    modules = json.loads('''$modules_json''')
+except:
+    spm_warnings = []
+    modules = {}
+
+release_notes = '''$release_notes'''
+
+html_content = f"""
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <style>
+        body {{ font-family: -apple-system, sans-serif; margin: 0; padding: 20px; background: #f5f5f5; }}
+        .container {{ max-width: 700px; margin: 0 auto; background: white; border-radius: 8px; padding: 20px; }}
+        .header {{ background: #f39c12; color: white; padding: 20px; border-radius: 8px; margin: -20px -20px 20px -20px; }}
+        .section {{ margin: 20px 0; }}
+        .pre-block {{ background: #f8f8f8; padding: 15px; border-radius: 4px; font-family: monospace; white-space: pre-wrap; }}
+        .warning {{ color: #f39c12; }}
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🟡 Preflight Release """ + html.escape(version or "N/A") + """</h1>
+            <p>Author: """ + html.escape(author or "N/A") + """ | Duration: """ + html.escape(duration or "N/A") + """ | Branch: """ + html.escape(branch or "N/A") + """</p>
+        </div>
         
-        if [[ ${#meta_parts[@]} -gt 0 ]]; then
-            final_meta="$(IFS=' | '; echo "${meta_parts[*]}")"
-        else
-            final_meta="MSP Release Pipeline"
-        fi
-    fi
-    
-    # Apply all replacements sequentially (compatible with all bash versions)
-    local html="$EMAIL_HTML_TEMPLATE"
-    
-    # Replace header title and meta lines BEFORE placeholder replacement
-    # This avoids issues with JSON objects being inserted into placeholders
-    # Use sed with # as delimiter and properly escape replacement strings
-    # Escape special sed characters in replacement strings
-    local final_title_safe final_meta_safe
-    final_title_safe="$(printf '%s\n' "$final_title" | sed 's/[[\.*^$()+?{|]/\\&/g' | sed 's/#/\\#/g')"
-    final_meta_safe="$(printf '%s\n' "$final_meta" | sed 's/[[\.*^$()+?{|]/\\&/g' | sed 's/#/\\#/g')"
-    
-    # Replace title line (match exact pattern with leading spaces, handle inline styles)
-    # Pattern must match both with and without inline styles
-    html="$(echo "$html" | sed "s#    <h1[^>]*>MSP Release Summary — {{VERSION}}</h1>#    <h1 style=\"color: white !important; margin: 0; padding: 0;\">$final_title_safe</h1>#")"
-    
-    # Replace meta line (match exact pattern with leading spaces, handle inline styles)
-    html="$(echo "$html" | sed "s#    <p[^>]*>Author: {{AUTHOR}} | Duration: {{DURATION}} | Time: {{TIMESTAMP}}</p>#    <p style=\"color: white !important; margin: 10px 0 0 0;\">$final_meta_safe</p>#")"
-    
-    # Now replace remaining placeholders (for other sections that might use them)
-    html="${html//\{\{VERSION\}\}/$version}"
-    html="${html//\{\{AUTHOR\}\}/$author}"
-    html="${html//\{\{DURATION\}\}/$duration}"
-    html="${html//\{\{TIMESTAMP\}\}/$timestamp}"
-    html="${html//\{\{STATUS\}\}/$status}"
-    html="${html//\{\{STATUS_CLASS\}\}/$header_status_class}"
-    html="${html//\{\{MODULES_HTML\}\}/$modules_html}"
-    html="${html//\{\{VERIFICATION_HTML\}\}/$verification_html}"
-    
-    # Handle failure context - remove placeholder if empty
-    if [[ -z "$failure_context_html" ]] || [[ "$failure_context_html" == "" ]]; then
-        html="${html//\{\{FAILURE_CONTEXT_HTML\}\}/}"
-    else
-        html="${html//\{\{FAILURE_CONTEXT_HTML\}\}/$failure_context_html}"
-    fi
-    
-    # Write to preview file (soft-fail if directory creation fails)
-    mkdir -p Tests/notify_output 2>/dev/null || true
-    printf '%s\n' "$html" > Tests/notify_output/email_preview.html 2>/dev/null || true
-    
-    printf '%s\n' "$html"
+        <div class="section">
+            <h2>Version & Branch</h2>
+            <p><strong>Version:</strong> """ + html.escape(version or "N/A") + """</p>
+            <p><strong>Branch:</strong> """ + html.escape(branch or "N/A") + """</p>
+        </div>
+"""
+
+# Warnings
+warnings_list = []
+if pods_lint_warnings > 0:
+    warnings_list.append(f"Pods Lint: {pods_lint_warnings} warnings")
+if spm_warnings:
+    warnings_list.append(f"SPM Manifest: {len(spm_warnings)} warnings")
+
+if warnings_list:
+    html_content += """
+        <div class="section">
+            <h2>⚠️ Warnings</h2>
+            <ul>
+"""
+    for w in warnings_list:
+        html_content += f"<li class='warning'>{html.escape(w)}</li>"
+    html_content += """
+            </ul>
+        </div>
+"""
+
+# Modules
+if modules:
+    html_content += """
+        <div class="section">
+            <h2>📦 Modules</h2>
+            <ul>
+"""
+    for k, v in modules.items():
+        html_content += f"<li>{html.escape(k)} {html.escape(str(v))}</li>"
+    html_content += """
+            </ul>
+        </div>
+"""
+
+# Release Notes
+if release_notes:
+    html_content += """
+        <div class="section">
+            <h2>📝 Release Notes</h2>
+            <div class="pre-block">""" + html.escape(release_notes) + """</div>
+        </div>
+"""
+
+html_content += """
+    </div>
+</body>
+</html>
+"""
+
+print(html_content)
+PYEOF
 }
 
 # ============================================================================
@@ -1034,6 +1200,12 @@ PYEOF
 notify::render::render_slack_block() {
     local json="$1"
     
+    # Phase 4 Step 2 TASK 6: Detect release tier
+    local release_tier
+    release_tier="$(echo "$json" | jq -r '.release_tier // .release.release_tier // "preflight"' 2>/dev/null || echo "preflight")"
+    local release_mode
+    release_mode="$(echo "$json" | jq -r '.release_mode // .release.release_mode // "cli"' 2>/dev/null || echo "cli")"
+    
     # Extract values from JSON
     local version author duration timestamp_raw
     version="$(echo "$json" | jq -r '.release.version // .version // ""' 2>/dev/null || echo "")"
@@ -1048,65 +1220,127 @@ notify::render::render_slack_block() {
     local slack_time
     slack_time="$(_notify_render::format_slack_timestamp "$timestamp_raw")"
     
-    # Generate Block Kit blocks for modules, verification, and release notes
-    local modules_block verification_block release_notes_block
+    # Phase 4 Step 2: Route to tier-specific renderer
+    if [[ "$release_tier" == "production" ]]; then
+        _notify_render::render_production_blockkit "$json" "$version" "$author" "$duration" "$slack_time" "$release_mode"
+    else
+        _notify_render::render_preflight_blockkit "$json" "$version" "$author" "$duration" "$slack_time"
+    fi
+}
+
+# ============================================================================
+# Phase 4 Step 2: Production BlockKit Renderer
+# ============================================================================
+
+_notify_render::render_production_blockkit() {
+    local json="$1"
+    local version="$2"
+    local author="$3"
+    local duration="$4"
+    local slack_time="$5"
+    local release_mode="$6"
     
-    # Generate MODULES_BLOCK
-    modules_block="$(_notify_render::generate_modules_block "$json" 2>/dev/null || echo "")"
-    
-    # Generate VERIFICATION_BLOCK
-    verification_block="$(_notify_render::generate_verification_block "$json" 2>/dev/null || echo "")"
-    
-    # Generate RELEASE_NOTES_BLOCK
-    release_notes_block="$(_notify_render::generate_release_notes_block "$json" 2>/dev/null || echo "")"
-    
-    # Use Python to build BlockKit JSON
     if ! command -v python3 >/dev/null 2>&1; then
-        return 0  # Soft-fail: python3 not available
+        return 0
     fi
     
-    # Write blocks to temp files to avoid shell escaping issues
-    local temp_dir
-    temp_dir="$(mktemp -d)" || return 0
+    # Extract additional production-specific data
+    local branch started_at ended_at
+    branch="$(echo "$json" | jq -r '.release_branch // .git.release_branch // ""' 2>/dev/null || echo "")"
+    started_at="$(echo "$json" | jq -r '.timestamps.timestamp_start // .timestamps.started_at // ""' 2>/dev/null || echo "")"
+    ended_at="$(echo "$json" | jq -r '.timestamps.timestamp_end // .timestamps.updated_at // ""' 2>/dev/null || echo "")"
     
-    [[ -n "$modules_block" ]] && echo "$modules_block" > "$temp_dir/modules.json" || true
-    [[ -n "$verification_block" ]] && echo "$verification_block" > "$temp_dir/verification.json" || true
-    [[ -n "$release_notes_block" ]] && echo "$release_notes_block" > "$temp_dir/release_notes.json" || true
+    # Extract pods lint results
+    local pods_lint_errors pods_lint_warnings
+    pods_lint_errors="$(echo "$json" | jq -r '.steps.pods.lint_errors // 0' 2>/dev/null || echo "0")"
+    pods_lint_warnings="$(echo "$json" | jq -r '.steps.pods.lint_warnings // 0' 2>/dev/null || echo "0")"
+    
+    # Extract SPM manifest results
+    local spm_manifest_status spm_manifest_errors spm_manifest_warnings
+    spm_manifest_status="$(echo "$json" | jq -r '.steps.spm_manifest.status // "unknown"' 2>/dev/null || echo "unknown")"
+    spm_manifest_errors="$(echo "$json" | jq -r '.steps.spm_manifest.errors // []' 2>/dev/null || echo "[]")"
+    spm_manifest_warnings="$(echo "$json" | jq -r '.steps.spm_manifest.warnings // []' 2>/dev/null || echo "[]")"
+    
+    # Extract artifacts
+    local xcframework_paths ipa_path spec_paths
+    xcframework_paths="$(echo "$json" | jq -r '.artifacts.xcframework_paths // []' 2>/dev/null || echo "[]")"
+    ipa_path="$(echo "$json" | jq -r '.artifacts.ipa_path // ""' 2>/dev/null || echo "")"
+    spec_paths="$(echo "$json" | jq -r '.artifacts.spec_paths // []' 2>/dev/null || echo "[]")"
+    
+    # Extract release notes
+    local release_notes
+    release_notes="$(echo "$json" | jq -r '.release_notes // .release.notes // ""' 2>/dev/null || echo "")"
+    
+    # Extract errors
+    local errors_json
+    errors_json="$(echo "$json" | jq -r '.steps // {}' 2>/dev/null || echo "{}")"
     
     local result
     result="$(python3 <<PYEOF
 import json
 import sys
-import os
 
-temp_dir = '''$temp_dir'''
+version = '''$version'''
+author = '''$author'''
+duration = '''$duration'''
+slack_time = '''$slack_time'''
+branch = '''$branch'''
+started_at = '''$started_at'''
+ended_at = '''$ended_at'''
+release_mode = '''$release_mode'''
+pods_lint_errors = int('''$pods_lint_errors''')
+pods_lint_warnings = int('''$pods_lint_warnings''')
+spm_manifest_status = '''$spm_manifest_status'''
 
-# Build blocks array
+# Parse JSON arrays
+try:
+    spm_errors = json.loads('''$spm_manifest_errors''')
+    spm_warnings = json.loads('''$spm_manifest_warnings''')
+    xcf_paths = json.loads('''$xcframework_paths''')
+    spec_paths_list = json.loads('''$spec_paths''')
+except:
+    spm_errors = []
+    spm_warnings = []
+    xcf_paths = []
+    spec_paths_list = []
+
+ipa_path = '''$ipa_path'''
+release_notes = '''$release_notes'''
+steps_json = '''$errors_json'''
+
 blocks = []
 
-# Header/Title (section)
-version_str = '''$version'''
-if version_str:
+# Header with green border (Production)
+blocks.append({
+    "type": "header",
+    "text": {
+        "type": "plain_text",
+        "text": "🟢 MSP iOS SDK Production Release"
+    }
+})
+
+# Version (highlighted)
+if version:
     blocks.append({
         "type": "section",
         "text": {
             "type": "mrkdwn",
-            "text": "🎉 *MSP Release " + version_str + "*"
+            "text": f"*Version:* `{version}`"
         }
     })
 
-# Meta info (context)
+# Meta info
 meta_elements = []
-author_str = '''$author'''
-duration_str = '''$duration'''
-slack_time_str = '''$slack_time'''
-
-if author_str:
-    meta_elements.append({"type": "mrkdwn", "text": "👤 " + author_str})
-if duration_str:
-    meta_elements.append({"type": "mrkdwn", "text": "⏱ " + duration_str})
-if slack_time_str:
-    meta_elements.append({"type": "mrkdwn", "text": "🕐 " + slack_time_str})
+if author:
+    meta_elements.append({"type": "mrkdwn", "text": f"👤 {author}"})
+if duration:
+    meta_elements.append({"type": "mrkdwn", "text": f"⏱ {duration}"})
+if branch:
+    meta_elements.append({"type": "mrkdwn", "text": f"🌿 {branch}"})
+if started_at:
+    meta_elements.append({"type": "mrkdwn", "text": f"🕐 Started: {started_at}"})
+if ended_at:
+    meta_elements.append({"type": "mrkdwn", "text": f"✅ Ended: {ended_at}"})
 
 if meta_elements:
     blocks.append({
@@ -1114,60 +1348,344 @@ if meta_elements:
         "elements": meta_elements
     })
 
-# Divider
 blocks.append({"type": "divider"})
 
-# Modules section
-modules_file = os.path.join(temp_dir, "modules.json")
-if os.path.exists(modules_file):
-    try:
-        with open(modules_file, 'r', encoding='utf-8') as f:
-            modules_block_obj = json.load(f)
-            if modules_block_obj:
-                blocks.append(modules_block_obj)
-                blocks.append({"type": "divider"})
-    except Exception:
-        pass
+# Summary Section
+blocks.append({
+    "type": "section",
+    "text": {
+        "type": "mrkdwn",
+        "text": "*📊 Summary*"
+    }
+})
 
-# Verification section
-verification_file = os.path.join(temp_dir, "verification.json")
-if os.path.exists(verification_file):
-    try:
-        with open(verification_file, 'r', encoding='utf-8') as f:
-            verification_block_obj = json.load(f)
-            if verification_block_obj:
-                blocks.append(verification_block_obj)
-                blocks.append({"type": "divider"})
-    except Exception:
-        pass
+# Pods Release Status
+pods_status_text = "✅ CocoaPods Release: Success"
+if pods_lint_errors > 0:
+    pods_status_text = f"❌ CocoaPods Release: Failed ({pods_lint_errors} errors)"
+elif pods_lint_warnings > 0:
+    pods_status_text = f"⚠️ CocoaPods Release: Success ({pods_lint_warnings} warnings)"
 
-# Release notes section
-release_notes_file = os.path.join(temp_dir, "release_notes.json")
-if os.path.exists(release_notes_file):
-    try:
-        with open(release_notes_file, 'r', encoding='utf-8') as f:
-            release_notes_block_obj = json.load(f)
-            if release_notes_block_obj:
-                blocks.append(release_notes_block_obj)
-    except Exception:
-        pass
+blocks.append({
+    "type": "section",
+    "text": {
+        "type": "mrkdwn",
+        "text": pods_status_text
+    }
+})
 
-# Build final payload
+# Pods Lint Results
+if pods_lint_errors > 0 or pods_lint_warnings > 0:
+    lint_details = f"Lint Errors: {pods_lint_errors}, Warnings: {pods_lint_warnings}"
+    blocks.append({
+        "type": "context",
+        "elements": [{"type": "mrkdwn", "text": lint_details}]
+    })
+
+# SPM Release Status
+spm_status_text = "✅ SPM Release: Success"
+if spm_manifest_status == "error":
+    spm_status_text = "❌ SPM Release: Failed"
+elif spm_manifest_status == "warning":
+    spm_status_text = "⚠️ SPM Release: Success (warnings)"
+
+blocks.append({
+    "type": "section",
+    "text": {
+        "type": "mrkdwn",
+        "text": spm_status_text
+    }
+})
+
+# SPM Manifest Results
+if spm_errors or spm_warnings:
+    manifest_details = []
+    if spm_errors:
+        manifest_details.append(f"Errors: {len(spm_errors)}")
+    if spm_warnings:
+        manifest_details.append(f"Warnings: {len(spm_warnings)}")
+    if manifest_details:
+        blocks.append({
+            "type": "context",
+            "elements": [{"type": "mrkdwn", "text": " | ".join(manifest_details)}]
+        })
+
+blocks.append({"type": "divider"})
+
+# Verification Section (CLI only)
+if release_mode == "cli":
+    blocks.append({
+        "type": "section",
+        "text": {
+            "type": "mrkdwn",
+            "text": "*🔍 Verification*"
+        }
+    })
+    
+    # Parse verification results from steps
+    try:
+        steps = json.loads(steps_json)
+        verifications = []
+        
+        if steps.get("local_verify", {}).get("status") == "success":
+            verifications.append("✅ Local Verify: PASS")
+        elif steps.get("local_verify", {}).get("status") == "failed":
+            verifications.append("❌ Local Verify: FAIL")
+        
+        if steps.get("device_verify", {}).get("status") == "success":
+            verifications.append("✅ Device Verify: PASS")
+        elif steps.get("device_verify", {}).get("status") == "failed":
+            verifications.append("❌ Device Verify: FAIL")
+        
+        if steps.get("xcframework_verify", {}).get("status") == "success":
+            verifications.append("✅ XCFramework Verify: PASS")
+        elif steps.get("xcframework_verify", {}).get("status") == "failed":
+            verifications.append("❌ XCFramework Verify: FAIL")
+        
+        if verifications:
+            blocks.append({
+                "type": "section",
+                "text": {
+                    "type": "mrkdwn",
+                    "text": "\\n".join(verifications)
+                }
+            })
+    except:
+        pass
+    
+    blocks.append({"type": "divider"})
+
+# Release Notes
+if release_notes:
+    blocks.append({
+        "type": "section",
+        "text": {
+            "type": "mrkdwn",
+            "text": "*📝 Release Notes*"
+        }
+    })
+    
+    # Truncate if too long (Slack limit ~3000 chars per block)
+    notes_text = release_notes[:2000] + ("..." if len(release_notes) > 2000 else "")
+    blocks.append({
+        "type": "section",
+        "text": {
+            "type": "mrkdwn",
+            "text": f"```{notes_text}```"
+        }
+    })
+    
+    blocks.append({"type": "divider"})
+
+# Artifacts
+artifacts_text = []
+if xcf_paths:
+    artifacts_text.append(f"*XCFrameworks:* {len(xcf_paths)} files")
+if ipa_path:
+    artifacts_text.append(f"*IPA:* {ipa_path}")
+if spec_paths_list:
+    artifacts_text.append(f"*Specs:* {len(spec_paths_list)} files")
+
+if artifacts_text:
+    blocks.append({
+        "type": "section",
+        "text": {
+            "type": "mrkdwn",
+            "text": "*📦 Artifacts*\\n" + "\\n".join(artifacts_text)
+        }
+    })
+    blocks.append({"type": "divider"})
+
+# Error Section
+error_items = []
+if pods_lint_errors > 0:
+    error_items.append("❌ pods lint failed")
+if spm_manifest_status == "error":
+    error_items.append("❌ spm manifest mismatch")
+if spm_errors:
+    error_items.append("❌ spm tag missing")
+
+# Check steps for failures
+try:
+    steps = json.loads(steps_json)
+    if steps.get("local_verify", {}).get("status") == "failed":
+        error_items.append("❌ local verify fail")
+    if steps.get("device_verify", {}).get("status") == "failed":
+        error_items.append("❌ device verify fail")
+    if steps.get("xcframework_verify", {}).get("status") == "failed":
+        error_items.append("❌ xcframework verify fail")
+except:
+    pass
+
+if error_items:
+    blocks.append({
+        "type": "section",
+        "text": {
+            "type": "mrkdwn",
+            "text": "*❌ Errors*\\n" + "\\n".join(error_items)
+        }
+    })
+
 payload = {"blocks": blocks}
-
-# Output minified JSON
 print(json.dumps(payload, separators=(',', ':')))
 PYEOF
 2>/dev/null || echo "")"
     
-    # Cleanup temp directory
-    rm -rf "$temp_dir" 2>/dev/null || true
+    if [[ -n "$result" ]]; then
+        echo "$result"
+    fi
+}
+
+# ============================================================================
+# Phase 4 Step 2: Preflight BlockKit Renderer
+# ============================================================================
+
+_notify_render::render_preflight_blockkit() {
+    local json="$1"
+    local version="$2"
+    local author="$3"
+    local duration="$4"
+    local slack_time="$5"
     
-    if [[ -z "$result" ]]; then
-        return 0  # Soft-fail: failed to render
+    if ! command -v python3 >/dev/null 2>&1; then
+        return 0
     fi
     
-    echo "$result"
+    # Extract preflight-specific data
+    local branch
+    branch="$(echo "$json" | jq -r '.release_branch // .git.release_branch // ""' 2>/dev/null || echo "")"
+    
+    # Extract warnings and soft failures
+    local pods_lint_warnings spm_manifest_warnings
+    pods_lint_warnings="$(echo "$json" | jq -r '.steps.pods.lint_warnings // 0' 2>/dev/null || echo "0")"
+    spm_manifest_warnings="$(echo "$json" | jq -r '.steps.spm_manifest.warnings // []' 2>/dev/null || echo "[]")"
+    
+    # Extract release notes
+    local release_notes
+    release_notes="$(echo "$json" | jq -r '.release_notes // .release.notes // ""' 2>/dev/null || echo "")"
+    
+    # Extract modules
+    local modules_json
+    modules_json="$(echo "$json" | jq -r '.modules // {}' 2>/dev/null || echo "{}")"
+    
+    local result
+    result="$(python3 <<PYEOF
+import json
+import sys
+
+version = '''$version'''
+author = '''$author'''
+duration = '''$duration'''
+slack_time = '''$slack_time'''
+branch = '''$branch'''
+pods_lint_warnings = int('''$pods_lint_warnings''')
+
+try:
+    spm_warnings = json.loads('''$spm_manifest_warnings''')
+    modules = json.loads('''$modules_json''')
+except:
+    spm_warnings = []
+    modules = {}
+
+release_notes = '''$release_notes'''
+
+blocks = []
+
+# Header (Preflight - lighter style)
+blocks.append({
+    "type": "section",
+    "text": {
+        "type": "mrkdwn",
+        "text": f"🟡 *Preflight Release {version}*"
+    }
+})
+
+# Meta info
+meta_elements = []
+if author:
+    meta_elements.append({"type": "mrkdwn", "text": f"👤 {author}"})
+if duration:
+    meta_elements.append({"type": "mrkdwn", "text": f"⏱ {duration}"})
+if branch:
+    meta_elements.append({"type": "mrkdwn", "text": f"🌿 {branch}"})
+if slack_time:
+    meta_elements.append({"type": "mrkdwn", "text": f"🕐 {slack_time}"})
+
+if meta_elements:
+    blocks.append({
+        "type": "context",
+        "elements": meta_elements
+    })
+
+blocks.append({"type": "divider"})
+
+# Version & Branch
+if version:
+    blocks.append({
+        "type": "section",
+        "fields": [
+            {"type": "mrkdwn", "text": f"*Version:*\\n`{version}`"},
+            {"type": "mrkdwn", "text": f"*Branch:*\\n{branch or 'N/A'}"}
+        ]
+    })
+
+# Warnings
+warnings_text = []
+if pods_lint_warnings > 0:
+    warnings_text.append(f"Pods Lint: {pods_lint_warnings} warnings")
+if spm_warnings:
+    warnings_text.append(f"SPM Manifest: {len(spm_warnings)} warnings")
+
+if warnings_text:
+    blocks.append({
+        "type": "section",
+        "text": {
+            "type": "mrkdwn",
+            "text": "*⚠️ Warnings*\\n" + "\\n".join([f"• {w}" for w in warnings_text])
+        }
+    })
+
+blocks.append({"type": "divider"})
+
+# Modules (full list)
+if modules:
+    module_items = [f"• {k} {v}" for k, v in modules.items()]
+    blocks.append({
+        "type": "section",
+        "text": {
+            "type": "mrkdwn",
+            "text": "*📦 Modules*\\n" + "\\n".join(module_items)
+        }
+    })
+    blocks.append({"type": "divider"})
+
+# Release Notes (full)
+if release_notes:
+    blocks.append({
+        "type": "section",
+        "text": {
+            "type": "mrkdwn",
+            "text": "*📝 Release Notes*"
+        }
+    })
+    
+    notes_text = release_notes[:1500] + ("..." if len(release_notes) > 1500 else "")
+    blocks.append({
+        "type": "section",
+        "text": {
+            "type": "mrkdwn",
+            "text": f"```{notes_text}```"
+        }
+    })
+
+payload = {"blocks": blocks}
+print(json.dumps(payload, separators=(',', ':')))
+PYEOF
+2>/dev/null || echo "")"
+    
+    if [[ -n "$result" ]]; then
+        echo "$result"
+    fi
 }
 
 # ============================================================================
