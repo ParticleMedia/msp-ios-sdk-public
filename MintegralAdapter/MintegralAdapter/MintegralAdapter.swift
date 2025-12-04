@@ -119,7 +119,7 @@ import MTGSDKBidding
 
                 var clickableViews = [UIView]()
 
-                for view in [nativeAdView, nativeAdView,nativeAdContainer.getTitle(), nativeAdContainer.getbody(), nativeAdContainer.getMedia(), nativeAdContainer.getAdvertiser(), nativeAdContainer.getCallToAction()] {
+                for view in [nativeAdView, nativeAdContainer.getTitle(), nativeAdContainer.getbody(), nativeAdContainer.getMedia(), nativeAdContainer.getAdvertiser(), nativeAdContainer.getCallToAction()] {
                     if let view = view {
                         //let tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleNativeAdClick))
                         //view.addGestureRecognizer(tapGesture)

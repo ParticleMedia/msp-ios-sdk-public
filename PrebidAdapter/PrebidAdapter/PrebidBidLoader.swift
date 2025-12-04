@@ -13,12 +13,13 @@ public class PrebidBidLoader : BidLoader {
     
     public var googleQueryInfo: String?
     public var facebookBidToken: String?
+    public var molocoBidToken: String?
     private let dispatchGroup = DispatchGroup()
     public var adMetricReporter: AdMetricReporter?
     
-    public override init(googleQueryInfoFetcher: GoogleQueryInfoFetcher, facebookBidTokenProvider: FacebookBidTokenProvider) {
+    public override init(googleQueryInfoFetcher: GoogleQueryInfoFetcher, facebookBidTokenProvider: FacebookBidTokenProvider, molocoBidTokenProvider: MolocoBidTokenProvider) {
         
-        super.init(googleQueryInfoFetcher: googleQueryInfoFetcher, facebookBidTokenProvider: facebookBidTokenProvider)
+        super.init(googleQueryInfoFetcher: googleQueryInfoFetcher, facebookBidTokenProvider: facebookBidTokenProvider, molocoBidTokenProvider: molocoBidTokenProvider)
         
     }
     
@@ -28,34 +29,38 @@ public class PrebidBidLoader : BidLoader {
         self.adRequest = adRequest
         
         //googleQueryInfoFetcher.fetch(completeListener: self, adRequest: adRequest)
-        self.fetchTokens(adRequest: adRequest){ [weak self] googleQueryInfo, facebookBidToken in
+        self.fetchTokens(adRequest: adRequest){ [weak self] googleQueryInfo, facebookBidToken, molocoBidToken in
             guard let self = self else {
                 return
             }
-            self.loadBidWithTokens(googleQueryInfo: googleQueryInfo, facebookBidToken: facebookBidToken, adRequest: adRequest)
+            self.loadBidWithTokens(googleQueryInfo: googleQueryInfo, facebookBidToken: facebookBidToken, molocoBidToken: molocoBidToken, adRequest: adRequest)
         }
     }
     
-    func fetchTokens(adRequest: AdRequest, completion: @escaping (String?, String?) -> Void) {
+    func fetchTokens(adRequest: AdRequest, completion: @escaping (String?, String?, String?) -> Void) {
         self.dispatchGroup.enter()
         self.googleQueryInfoFetcher.fetch(completeListener: self, adRequest: adRequest)
         
         self.dispatchGroup.enter()
         self.facebookBidTokenProvider.fetch(completeListener: self, context: self)
+        
+        self.dispatchGroup.enter()
+        self.molocoBidTokenProvider.fetch(completeListener: self, context: self)
 
         dispatchGroup.notify(queue: .main) {
-            completion(self.googleQueryInfo, self.facebookBidToken)
+            completion(self.googleQueryInfo, self.facebookBidToken, self.molocoBidToken)
         }
     }
     
-    public func loadBidWithTokens(googleQueryInfo: String?, facebookBidToken: String?, adRequest: AdRequest) {
+    public func loadBidWithTokens(googleQueryInfo: String?, facebookBidToken: String?, molocoBidToken: String?, adRequest: AdRequest) {
 
         let width = Int(adRequest.adSize?.width ?? 320)
         let height = Int(adRequest.adSize?.height ?? 50)
         let adSize = CGSize(width: width, height: height)
-        var adUnitConfig = getAdUnitConfig(configId: configId ?? "demo-ios-article-top",
+        let adUnitConfig = getAdUnitConfig(configId: configId ?? "demo-ios-article-top",
                                            gadQueryInfo: googleQueryInfo,
                                            facebookBidToken: facebookBidToken,
+                                           molocoBidToken: molocoBidToken,
                                            requestUUID: adRequest.requestId,
                                            prebidBannerAdSize: adSize,
                                            adRequest: adRequest)
@@ -76,7 +81,7 @@ public class PrebidBidLoader : BidLoader {
             
             if let bidResponse = bidResponse {
                 guard let seat = bidResponse.winningBidSeat else {
-                    var errorMessage = "no fill"
+                    let errorMessage = "no fill"
                     bidListener?.onError(msg: errorMessage)
                     adMetricReporter?.logAdResponse(ad: nil, adRequest: adRequest, errorCode: .ERROR_CODE_NO_FILL, errorMessage: errorMessage)
                     return
@@ -89,11 +94,13 @@ public class PrebidBidLoader : BidLoader {
                     self.bidListener?.onBidResponse(bidResponse: bidResponse, adNetwork: AdNetwork.facebook)
                 } else if seat == "msp_nova" {
                     self.bidListener?.onBidResponse(bidResponse: bidResponse, adNetwork: AdNetwork.nova)
+                } else if seat == "msp_moloco" {
+                    self.bidListener?.onBidResponse(bidResponse: bidResponse, adNetwork: AdNetwork.moloco)
                 } else {
                     self.bidListener?.onBidResponse(bidResponse: bidResponse, adNetwork: AdNetwork.prebid)
                 }
             } else {
-                var errorMessage = "missing response"
+                let errorMessage = "missing response"
                 bidListener?.onError(msg: errorMessage)
                 adMetricReporter?.logAdResponse(ad: nil, adRequest: adRequest, errorCode: .ERROR_CODE_NETWORK_ERROR, errorMessage: errorMessage)
             }
@@ -104,6 +111,7 @@ public class PrebidBidLoader : BidLoader {
     public func getAdUnitConfig(configId: String,
                                 gadQueryInfo: String?,
                                 facebookBidToken: String?,
+                                molocoBidToken: String?,
                                 requestUUID: String,
                                 prebidBannerAdSize: CGSize,
                                 adRequest: AdRequest) -> AdUnitConfig {
@@ -157,13 +165,15 @@ public class PrebidBidLoader : BidLoader {
                 adUnitConfig.addContextData(key: key, value: value as? String ?? "")
             }
         }
-        
 
         if let gadQueryInfo = gadQueryInfo {
             adUnitConfig.addContextData(key: "query_info", value: gadQueryInfo)
         }
         if let facebookBidToken = facebookBidToken {
             Targeting.shared.buyerUID = facebookBidToken
+        }
+        if let molocoBidToken = molocoBidToken {
+            adUnitConfig.addContextData(key: "moloco_bid_token", value: molocoBidToken)
         }
         
         if adRequest.adFormat == .native || adRequest.adFormat == .multi_format {
@@ -201,4 +211,10 @@ extension PrebidBidLoader: FacebookBidTokenListener {
     }
 }
 
+extension PrebidBidLoader: MolocoBidTokenListener {
+    public func onComplete(molocoBidToken: String) {
+        self.molocoBidToken = molocoBidToken
+        dispatchGroup.leave()
+    }
+}
 
