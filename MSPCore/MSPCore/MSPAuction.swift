@@ -109,6 +109,7 @@ extension MSPAuction: AuctionBidListener {
     }
     
     public func onError(error: String) {
+        MSPLogger.shared.info(message: "[Auction] Ads no filled. Reason: \(error)")
         self.biddingDispatchQueue.async {
             self.taskLock.lock()
             if self.remainingTaskCnt > 0 {
