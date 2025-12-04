@@ -13,6 +13,7 @@ import MSPiOSCore
 public class MSPBidLoaderProvider: BidLoaderProvider {
     public var googleQueryInfoFetcher: GoogleQueryInfoFetcher?
     public var facebookBidTokenProvider: FacebookBidTokenProvider?
+    public var molocoBidTokenProvider: MolocoBidTokenProvider?
     public weak var bidLoader: BidLoader?
     
     public init() {
@@ -20,7 +21,7 @@ public class MSPBidLoaderProvider: BidLoaderProvider {
     }
     
     public func getBidLoader() -> BidLoader {
-        let bidLoader = PrebidBidLoader(googleQueryInfoFetcher: googleQueryInfoFetcher ?? GoogleQueryInfoFetcherStandalone(), facebookBidTokenProvider: facebookBidTokenProvider ?? FacebookBidTokenProviderStandalone())
+        let bidLoader = PrebidBidLoader(googleQueryInfoFetcher: googleQueryInfoFetcher ?? GoogleQueryInfoFetcherStandalone(), facebookBidTokenProvider: facebookBidTokenProvider ?? FacebookBidTokenProviderStandalone(), molocoBidTokenProvider: molocoBidTokenProvider ?? MolocoBidTokenProviderStandalone())
         bidLoader.adMetricReporter = AdMetricReporterImp()
         self.bidLoader = bidLoader
         return bidLoader
@@ -38,4 +39,10 @@ public class FacebookBidTokenProviderStandalone: FacebookBidTokenProvider {
     public func fetch(completeListener: any FacebookBidTokenListener, context: Any) {
         completeListener.onComplete(bidToken: "dummy bidder token")
     } 
+}
+
+public class MolocoBidTokenProviderStandalone: MolocoBidTokenProvider {
+    public func fetch(completeListener: any MolocoBidTokenListener, context: Any) {
+        completeListener.onComplete(molocoBidToken: "dummy bidder token")
+    }
 }

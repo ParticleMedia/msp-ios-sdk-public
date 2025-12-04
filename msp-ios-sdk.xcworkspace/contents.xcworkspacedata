@@ -55,4 +55,7 @@
    <FileRef
       location = "group:NovaCore/NovaCore.xcodeproj">
    </FileRef>
+   <FileRef
+      location = "group:MolocoAdapter/MolocoAdapter.xcodeproj">
+   </FileRef>
 </Workspace>

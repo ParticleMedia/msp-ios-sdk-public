@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		5DD21B162ED0107200429A08 /* MolocoBidTokenProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DD21B152ED0107200429A08 /* MolocoBidTokenProvider.swift */; };
+		5DD21B182ED010A200429A08 /* MolocoBidTokenListener.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DD21B172ED010A200429A08 /* MolocoBidTokenListener.swift */; };
 		6614C9AE2D820D0F00FC85DF /* MSPConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6614C9AD2D820D0800FC85DF /* MSPConstants.swift */; };
 		662D913E2D8E16F500251DC3 /* MSPLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 662D913D2D8E16E700251DC3 /* MSPLogger.swift */; };
 		664F33432C4992E60014E1BA /* NativeAdView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 664F33422C4992E60014E1BA /* NativeAdView.swift */; };
@@ -71,6 +73,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		5DD21B152ED0107200429A08 /* MolocoBidTokenProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MolocoBidTokenProvider.swift; sourceTree = "<group>"; };
+		5DD21B172ED010A200429A08 /* MolocoBidTokenListener.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MolocoBidTokenListener.swift; sourceTree = "<group>"; };
 		6614C9AD2D820D0800FC85DF /* MSPConstants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MSPConstants.swift; sourceTree = "<group>"; };
 		662D913D2D8E16E700251DC3 /* MSPLogger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MSPLogger.swift; sourceTree = "<group>"; };
 		664F33422C4992E60014E1BA /* NativeAdView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NativeAdView.swift; sourceTree = "<group>"; };
@@ -235,6 +239,8 @@
 				66B730562C3DAF020042E4FF /* AdapterAdLoadError.swift */,
 				66B730582C3DAFDE0042E4FF /* AdapterInitStatus.swift */,
 				66B7305A2C3DB20F0042E4FF /* LoadAdParameters.swift */,
+				5DD21B152ED0107200429A08 /* MolocoBidTokenProvider.swift */,
+				5DD21B172ED010A200429A08 /* MolocoBidTokenListener.swift */,
 			);
 			path = adapter;
 			sourceTree = "<group>";
@@ -386,6 +392,7 @@
 				66B7305B2C3DB20F0042E4FF /* LoadAdParameters.swift in Sources */,
 				66EFCDAD2D1244E5005E0135 /* Bidder.swift in Sources */,
 				F2FBE6252EAA1FC9006FEFBA /* MSPNativeDisplayContext.swift in Sources */,
+				5DD21B162ED0107200429A08 /* MolocoBidTokenProvider.swift in Sources */,
 				66EFCDAB2D1244D2005E0135 /* AuctionListener.swift in Sources */,
 				665833422C812F32003F52AA /* BannerAd.swift in Sources */,
 				6657537A2BF1A58500338B1C /* BidLoader.swift in Sources */,
@@ -400,6 +407,7 @@
 				664F33542C4EDD2E0014E1BA /* utilities.swift in Sources */,
 				66B7305D2C3DBC7A0042E4FF /* AdLoader.swift in Sources */,
 				665753782BF1A4D000338B1C /* BidListener.swift in Sources */,
+				5DD21B182ED010A200429A08 /* MolocoBidTokenListener.swift in Sources */,
 				6657536A2BF19FB200338B1C /* AdapterAdLoadListener.swift in Sources */,
 				665753552BF0868500338B1C /* AdListener.swift in Sources */,
 				6657535A2BF087F700338B1C /* AdNetworkAdapter.swift in Sources */,
