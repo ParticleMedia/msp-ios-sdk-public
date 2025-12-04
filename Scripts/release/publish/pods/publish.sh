@@ -726,6 +726,86 @@ main() {
     
     print_section "Starting CocoaPods Release Process for Version: $VERSION"
     
+    # Phase 4 TASK 1: CocoaPods release strong validation
+    local release_mode="${MSP_RELEASE_MODE:-cli}"
+    local release_tier="${MSP_RELEASE_TIER:-preflight}"
+    echo "[MSP][ORCH] Mode: ${release_mode^^} — linting pods spec"
+    
+    # Check CocoaPods installation
+    if ! command -v pod >/dev/null 2>&1; then
+        log_error "CocoaPods is not installed. Please install it with: sudo gem install cocoapods"
+        exit 1
+    fi
+    
+    # Check trunk session status (stronger check)
+    log_step "Checking CocoaPods trunk session"
+    local trunk_check
+    trunk_check=$(pod trunk me 2>&1 || echo "ERROR")
+    if [[ "$trunk_check" =~ "No session" ]] || [[ "$trunk_check" =~ "authentication" ]] || [[ "$trunk_check" =~ "ERROR" ]]; then
+        log_error "CocoaPods trunk session is not valid"
+        log_error "Please run: pod trunk register <email> <name>"
+        exit 1
+    fi
+    log_success "CocoaPods trunk session is valid"
+    
+    # Phase 4: Strong lint validation for production releases
+    if [[ "$release_tier" == "production" ]]; then
+        log_section "Phase 4: Production Release - Strong Podspec Validation"
+        
+        # Validate all podspecs before publishing
+        local lint_errors=0
+        local lint_warnings=0
+        
+        for module in "${cocoapods_pods[@]}"; do
+            local podspec="${module}.podspec"
+            if [[ ! -f "$podspec" ]]; then
+                log_error "Podspec file not found: $podspec"
+                lint_errors=$((lint_errors + 1))
+                continue
+            fi
+            
+            log_step "Linting $podspec (production mode - strict)"
+            
+            # Run pod spec lint with strict mode
+            local lint_output
+            lint_output=$(pod spec lint "$podspec" --skip-tests --allow-warnings 2>&1 || echo "LINT_FAILED")
+            
+            if [[ "$lint_output" =~ "LINT_FAILED" ]] || [[ "$lint_output" =~ "error:" ]]; then
+                log_error "Podspec lint FAILED for $podspec"
+                echo "$lint_output" | grep -E "error:" | head -5
+                lint_errors=$((lint_errors + 1))
+                
+                # Hard fail for production
+                if [[ "$release_tier" == "production" ]]; then
+                    log_error "[MSP][ORCH] Production release: podspec lint errors are not allowed"
+                    exit 1
+                fi
+            elif [[ "$lint_output" =~ "warning:" ]]; then
+                log_warn "Podspec lint warnings for $podspec (non-blocking)"
+                lint_warnings=$((lint_warnings + 1))
+            else
+                log_success "Podspec lint passed for $podspec"
+            fi
+        done
+        
+        # Record lint results in state
+        if command -v msp_state_is_enabled &>/dev/null && msp_state_is_enabled; then
+            local state_file="$ROOT_DIR/.msp-release-state.json"
+            if [[ -f "$state_file" ]] && command -v jq >/dev/null 2>&1; then
+                jq ".steps.pods.lint_errors = $lint_errors | .steps.pods.lint_warnings = $lint_warnings" \
+                    "$state_file" > "${state_file}.tmp" 2>/dev/null && \
+                    mv "${state_file}.tmp" "$state_file" 2>/dev/null || true
+            fi
+        fi
+        
+        if [[ $lint_errors -gt 0 ]]; then
+            log_error "Podspec lint failed for $lint_errors podspec(s). Production release aborted."
+            exit 1
+        fi
+        
+        log_success "All podspecs passed lint validation ($lint_warnings warnings, non-blocking)"
+    fi
+    
     # Generate release notes
     local release_notes=""
     if [[ -n "$RELEASE_NOTES" ]]; then

@@ -108,6 +108,10 @@ msp_state_init() {
     local config_path="${CONFIG_FILE:-null}"
     local cli_args="${MSP_RELEASE_ORIGINAL_ARGS:-}"
     local invoked_subcommand="${SUBCOMMAND:-${mode}}"
+    
+    # Phase 4 TASK 3: Additional fields for final schema
+    local release_mode="${MSP_RELEASE_MODE:-cli}"
+    local release_tier="${MSP_RELEASE_TIER:-preflight}"
 
     # Normalize dry_run to boolean
     local dry_run_bool="false"
@@ -125,7 +129,7 @@ msp_state_init() {
     local now
     now="$(_msp_state_now)"
 
-    # Create initial state JSON
+    # Create initial state JSON with Phase 4 TASK 3 final schema
     jq -n \
         --arg run_id "$now" \
         --arg mode "$mode" \
@@ -138,11 +142,15 @@ msp_state_init() {
         --arg invoked_subcommand "$invoked_subcommand" \
         --arg started_at "$now" \
         --arg updated_at "$now" \
+        --arg release_mode "$release_mode" \
+        --arg release_tier "$release_tier" \
         '{
-            schema_version: 1,
+            schema_version: 2,
             run_id: $run_id,
             mode: $mode,
             version: $version,
+            release_mode: $release_mode,
+            release_tier: $release_tier,
             base_branch: $base_branch,
             release_branch: $release_branch,
             dry_run: $dry_run,
@@ -157,11 +165,29 @@ msp_state_init() {
                 release_branch_pushed: false,
                 github_release_created: false
             },
-            steps: {},
+            steps: {
+                pods: {},
+                spm: {},
+                local_verify: {},
+                device_verify: {},
+                xcframework_verify: {},
+                remote_verify_spm: {},
+                remote_verify_pods: {}
+            },
+            artifacts: {
+                xcframework_paths: [],
+                ipa_path: null,
+                spec_paths: [],
+                spm_manifest_local: null,
+                spm_manifest_remote: null
+            },
             timestamps: {
+                timestamp_start: $started_at,
+                timestamp_end: null,
                 started_at: $started_at,
                 updated_at: $updated_at
             },
+            duration_seconds: 0,
             last_error: {
                 step: null,
                 message: null,

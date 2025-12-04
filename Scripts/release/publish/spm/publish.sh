@@ -558,6 +558,177 @@ main() {
     
     print_section "Starting SPM Release Process for Version: $VERSION"
     
+    # Phase 4 TASK 2: SPM Manifest strong validation
+    local release_mode="${MSP_RELEASE_MODE:-cli}"
+    local release_tier="${MSP_RELEASE_TIER:-preflight}"
+    echo "[MSP][ORCH] Mode: ${release_mode^^} — validating SPM manifest"
+    
+    # Check if swift is available
+    if ! command -v swift >/dev/null 2>&1; then
+        log_error "Swift is not installed. Cannot validate SPM manifest."
+        if [[ "$release_tier" == "production" ]]; then
+            exit 1
+        fi
+    fi
+    
+    # Phase 4: SPM Manifest validation
+    log_section "Phase 4: SPM Manifest Validation"
+    
+    local manifest_errors=()
+    local manifest_warnings=()
+    local manifest_status="unknown"
+    
+    # Get remote repository URL
+    local remote_url
+    remote_url=$(git config --get remote.origin.url 2>/dev/null || echo "")
+    if [[ -z "$remote_url" ]]; then
+        log_warn "Could not determine remote repository URL"
+        manifest_warnings+=("Remote URL not found")
+    fi
+    
+    # Convert git URL to raw GitHub URL if needed
+    local raw_base_url=""
+    if [[ "$remote_url" =~ github\.com ]]; then
+        raw_base_url=$(echo "$remote_url" | sed 's|\.git$||' | sed 's|git@github.com:|https://raw.githubusercontent.com/|' | sed 's|https://github.com/|https://raw.githubusercontent.com/|')
+    fi
+    
+    # Validate each SPM package
+    for package in "${spm_packages_array[@]}"; do
+        log_step "Validating SPM manifest for $package"
+        
+        # Find Package.swift file
+        local package_file=""
+        if [[ -f "$package/Package.swift" ]]; then
+            package_file="$package/Package.swift"
+        elif [[ -f "$ROOT_DIR/$package/Package.swift" ]]; then
+            package_file="$ROOT_DIR/$package/Package.swift"
+        elif [[ -f "Package.swift" ]]; then
+            package_file="Package.swift"
+        fi
+        
+        if [[ -z "$package_file" ]] || [[ ! -f "$package_file" ]]; then
+            log_error "Package.swift not found for $package"
+            manifest_errors+=("Package.swift not found: $package")
+            continue
+        fi
+        
+        # Dump local manifest
+        local local_manifest_file="/tmp/local_manifest_${package}_$$.json"
+        if command -v swift >/dev/null 2>&1; then
+            if swift package dump-package --package-path "$(dirname "$package_file")" > "$local_manifest_file" 2>/dev/null; then
+                log_success "Dumped local manifest for $package"
+            else
+                log_error "Failed to dump local manifest for $package"
+                manifest_errors+=("Failed to dump local manifest: $package")
+                continue
+            fi
+        else
+            log_warn "Swift not available, skipping manifest dump for $package"
+            manifest_warnings+=("Swift not available for $package")
+            continue
+        fi
+        
+        # Check tag existence
+        local package_tag="${package}-${VERSION}"
+        if git rev-parse "$package_tag" >/dev/null 2>&1; then
+            log_warn "Tag $package_tag already exists"
+            if [[ "${MSP_ALLOW_EXISTING_TAG:-0}" != "1" ]]; then
+                manifest_errors+=("Tag already exists: $package_tag (use MSP_ALLOW_EXISTING_TAG=1 to override)")
+            else
+                manifest_warnings+=("Tag already exists (override allowed): $package_tag")
+            fi
+        fi
+        
+        # Get remote manifest if possible
+        if [[ -n "$raw_base_url" ]] && [[ -n "$package_file" ]]; then
+            local remote_manifest_url="${raw_base_url}/${package_tag}/$(basename "$package_file")"
+            local remote_manifest_file="/tmp/remote_manifest_${package}_$$.swift"
+            
+            log_step "Fetching remote manifest from $remote_manifest_url"
+            if curl -s -f "$remote_manifest_url" > "$remote_manifest_file" 2>/dev/null; then
+                log_success "Fetched remote manifest for $package"
+                
+                # Basic validation: check if remote manifest is parseable
+                if ! swift package dump-package --package-path "$(dirname "$remote_manifest_file")" >/dev/null 2>&1; then
+                    manifest_warnings+=("Remote manifest may not be parseable: $package")
+                fi
+            else
+                log_warn "Could not fetch remote manifest (tag may not exist yet): $package"
+                manifest_warnings+=("Remote manifest not available (expected for new releases): $package")
+            fi
+        fi
+        
+        # Extract version from local manifest
+        if [[ -f "$local_manifest_file" ]] && command -v jq >/dev/null 2>&1; then
+            local manifest_version
+            manifest_version=$(jq -r '.version // empty' "$local_manifest_file" 2>/dev/null || echo "")
+            if [[ -n "$manifest_version" ]] && [[ "$manifest_version" != "$VERSION" ]]; then
+                manifest_errors+=("Version mismatch in manifest: expected $VERSION, found $manifest_version")
+            fi
+        fi
+        
+        # Cleanup temp files
+        rm -f "$local_manifest_file" "$remote_manifest_file" 2>/dev/null || true
+    done
+    
+    # Record manifest validation results in state
+    if command -v msp_state_is_enabled &>/dev/null && msp_state_is_enabled; then
+        local state_file="$ROOT_DIR/.msp-release-state.json"
+        if [[ -f "$state_file" ]] && command -v jq >/dev/null 2>&1; then
+            local errors_json="[]"
+            local warnings_json="[]"
+            
+            if [[ ${#manifest_errors[@]} -gt 0 ]]; then
+                errors_json=$(printf '%s\n' "${manifest_errors[@]}" | jq -R . | jq -s .)
+            fi
+            
+            if [[ ${#manifest_warnings[@]} -gt 0 ]]; then
+                warnings_json=$(printf '%s\n' "${manifest_warnings[@]}" | jq -R . | jq -s .)
+            fi
+            
+            if [[ ${#manifest_errors[@]} -eq 0 ]]; then
+                manifest_status="success"
+            elif [[ ${#manifest_errors[@]} -gt 0 ]] && [[ "$release_tier" != "production" ]]; then
+                manifest_status="warning"
+            else
+                manifest_status="error"
+            fi
+            
+            jq ".steps.spm_manifest = {
+                status: \"$manifest_status\",
+                errors: $errors_json,
+                warnings: $warnings_json
+            }" "$state_file" > "${state_file}.tmp" 2>/dev/null && \
+                mv "${state_file}.tmp" "$state_file" 2>/dev/null || true
+        fi
+    fi
+    
+    # Handle validation results
+    if [[ ${#manifest_errors[@]} -gt 0 ]]; then
+        log_error "SPM manifest validation failed with ${#manifest_errors[@]} error(s):"
+        for error in "${manifest_errors[@]}"; do
+            log_error "  - $error"
+        done
+        
+        if [[ "$release_tier" == "production" ]]; then
+            log_error "[MSP][ORCH] Production release: SPM manifest errors are not allowed"
+            exit 1
+        else
+            log_warn "[MSP][ORCH] Preflight release: SPM manifest errors are non-blocking"
+        fi
+    fi
+    
+    if [[ ${#manifest_warnings[@]} -gt 0 ]]; then
+        log_warn "SPM manifest validation warnings (${#manifest_warnings[@]}):"
+        for warning in "${manifest_warnings[@]}"; do
+            log_warn "  - $warning"
+        done
+    fi
+    
+    if [[ ${#manifest_errors[@]} -eq 0 ]]; then
+        log_success "SPM manifest validation passed"
+    fi
+    
     # Skip individual start notifications - only send final success/failure
     
     # Convert SPM_PACKAGES space-separated string to array

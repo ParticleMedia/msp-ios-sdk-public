@@ -277,6 +277,28 @@ validate_inputs() {
         RELEASE_BRANCH="release/$VERSION"
     fi
     
+    # Phase 4 TASK 0: Branch validity check for production releases
+    local current_branch
+    current_branch="$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo "")"
+    if [[ -z "$current_branch" ]]; then
+        log_error "Could not determine current git branch"
+        exit 1
+    fi
+    
+    local release_tier="${MSP_RELEASE_TIER:-preflight}"
+    if [[ "$release_tier" == "production" ]]; then
+        # Production release: only allowed on main or release/* branches
+        if [[ "$current_branch" != "main" ]] && [[ ! "$current_branch" =~ ^release/ ]]; then
+            log_error "[MSP][ORCH][ERROR] Production release requires branch 'main' or 'release/*'"
+            log_error "Current branch: $current_branch"
+            log_error "Please switch to 'main' or a 'release/*' branch, or use MSP_RELEASE_TIER=preflight for preflight releases"
+            exit 1
+        fi
+        log_info "[MSP][ORCH] Production release: branch validation passed ($current_branch)"
+    else
+        log_info "[MSP][ORCH] Preflight release: no branch restriction (current: $current_branch)"
+    fi
+    
     log_info "Release orchestrator configuration:"
     log_info "  Version: $VERSION"
     log_info "  Base Branch: $BASE_BRANCH"
@@ -935,6 +957,79 @@ main() {
     local RELEASE_MODE
     RELEASE_MODE="$(_msp_release_get_mode)"
     echo "[MSP][ORCH] Release mode: ${RELEASE_MODE}"
+    
+    # Phase 4 TASK 4: Preflight / Production mode detection
+    local RELEASE_TIER="${MSP_RELEASE_TIER:-preflight}"
+    export MSP_RELEASE_TIER="$RELEASE_TIER"
+    echo "[MSP][ORCH] Release tier: ${RELEASE_TIER}"
+    
+    # Phase 4 TASK 5: Security protection mechanisms
+    log_section "Phase 4: Security Checks"
+    
+    # Check git working directory is clean
+    if ! git diff --exit-code >/dev/null 2>&1 || ! git diff --cached --exit-code >/dev/null 2>&1; then
+        log_error "[MSP][ORCH][ERROR] Git working directory is not clean"
+        log_error "Please commit or stash all changes before releasing"
+        git status --short
+        exit 1
+    fi
+    log_success "Git working directory is clean"
+    
+    # Check if tag exists (unless override allowed)
+    if [[ -n "$VERSION" ]]; then
+        if git rev-parse "v${VERSION}" >/dev/null 2>&1 || git rev-parse "$VERSION" >/dev/null 2>&1; then
+            if [[ "${MSP_ALLOW_EXISTING_TAG:-0}" != "1" ]]; then
+                log_error "[MSP][ORCH][ERROR] Tag already exists: $VERSION"
+                log_error "Use MSP_ALLOW_EXISTING_TAG=1 to override (not recommended)"
+                exit 1
+            else
+                log_warn "Tag $VERSION already exists (override allowed)"
+            fi
+        fi
+    fi
+    
+    # Production release validation
+    if [[ "$RELEASE_TIER" == "production" ]]; then
+        # Version must be >= 1.0.0
+        if [[ "$VERSION" =~ ^0\. ]]; then
+            log_error "[MSP][ORCH][ERROR] Production release requires version >= 1.0.0"
+            log_error "Current version: $VERSION"
+            log_error "Use MSP_RELEASE_TIER=preflight for pre-release versions"
+            exit 1
+        fi
+        
+        # CI mode cannot do production releases
+        if [[ "$RELEASE_MODE" == "ci" ]]; then
+            log_error "[MSP][ORCH][ERROR] CI mode cannot perform production releases"
+            log_error "Production releases must be done via CLI with manual confirmation"
+            exit 1
+        fi
+        
+        # CLI mode: require manual confirmation
+        if [[ "$RELEASE_MODE" == "cli" ]] && [[ -t 0 ]]; then
+            echo ""
+            echo "═══════════════════════════════════════════════════════════════════"
+            echo "⚠️  PRODUCTION RELEASE CONFIRMATION"
+            echo "═══════════════════════════════════════════════════════════════════"
+            echo "Version: $VERSION"
+            echo "Branch: $(git rev-parse --abbrev-ref HEAD)"
+            echo ""
+            echo "This is a PRODUCTION release. All validations will be STRICT."
+            echo "═══════════════════════════════════════════════════════════════════"
+            echo ""
+            read -p "[MSP][CLI] Confirm production release? (y/N): " confirm
+            if [[ "${confirm^^}" != "Y" ]] && [[ "${confirm^^}" != "YES" ]]; then
+                log_info "Production release cancelled by user"
+                exit 0
+            fi
+        fi
+    else
+        # Preflight: version must be 0.x.y-* or 0.x.y-preflight*
+        if [[ ! "$VERSION" =~ ^0\. ]] && [[ ! "$VERSION" =~ -preflight ]] && [[ ! "$VERSION" =~ -.* ]]; then
+            log_warn "[MSP][ORCH] Preflight release with version >= 1.0.0: $VERSION"
+            log_warn "Consider using MSP_RELEASE_TIER=production for production releases"
+        fi
+    fi
     
     # Phase 3: CI/CLI behavior differentiation
     local skip_local_verification=false
