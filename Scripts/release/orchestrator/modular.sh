@@ -350,6 +350,8 @@ release_cocoapods() {
     fi
     
     log_section "Step 2: Releasing CocoaPods"
+    local current_mode="${MSP_RELEASE_MODE:-cli}"
+    log_info "[MSP][ORCH] Mode: ${current_mode^^} — releasing CocoaPods"
     
     # Checkout release branch (skip in dry-run mode)
     if [[ "$DRY_RUN" != "true" ]]; then
@@ -403,6 +405,8 @@ release_spm() {
     fi
     
     log_section "Step 3: Releasing SPM"
+    local current_mode="${MSP_RELEASE_MODE:-cli}"
+    log_info "[MSP][ORCH] Mode: ${current_mode^^} — releasing SPM"
     
     # Ensure we're on release branch (skip in dry-run mode)
     if [[ "$DRY_RUN" != "true" ]]; then
@@ -786,6 +790,12 @@ run_remote_verification() {
 
 # Step 7: Run device verification
 run_device_verification() {
+    # Phase 3: Skip in CI mode
+    if [[ "${MSP_SKIP_DEVICE_VERIFY:-false}" == "true" ]]; then
+        log_info "[MSP][ORCH] Mode: CI — skipping device verification"
+        return 0
+    fi
+    
     # Check if device verification is enabled (default: enabled)
     local verify_enabled="${MSP_DEVICE_VERIFY_ENABLED:-1}"
     if [[ "$verify_enabled" != "1" ]]; then
@@ -794,6 +804,7 @@ run_device_verification() {
     fi
     
     log_section "Step 7: Device Verification"
+    log_info "[MSP][ORCH] Mode: CLI — running device verification"
     
     # Source device verification runner
     local verify_script="$ROOT_DIR/Scripts/release/verify_local_device/run_device.sh"
@@ -845,6 +856,15 @@ run_device_verification() {
 
 # Step 8: Run XCFramework deep verification
 run_xcframework_verification() {
+    local current_mode="${MSP_RELEASE_MODE:-cli}"
+    local current_mode_upper="${current_mode^^}"
+    
+    # Phase 3: Skip if flag is set or xcodebuild not available
+    if [[ "${MSP_SKIP_XCF_VERIFY:-false}" == "true" ]]; then
+        log_info "[MSP][ORCH] Mode: ${current_mode_upper} — skipping XCF verify (xcodebuild not available)"
+        return 0
+    fi
+    
     # Check if XCFramework verification is enabled (default: enabled)
     local verify_enabled="${MSP_XCF_VERIFY_ENABLED:-1}"
     if [[ "$verify_enabled" != "1" ]]; then
@@ -852,7 +872,14 @@ run_xcframework_verification() {
         return 0
     fi
     
+    # Check if xcodebuild exists
+    if ! command -v xcodebuild >/dev/null 2>&1; then
+        log_info "[MSP][ORCH] Mode: ${current_mode_upper} — xcodebuild not found, skipping XCF verify"
+        return 0
+    fi
+    
     log_section "Step 8: XCFramework Deep Verification"
+    log_info "[MSP][ORCH] Mode: ${current_mode_upper} — running XCF verify"
     
     # Source XCFramework verification runner
     local verify_script="$ROOT_DIR/Scripts/release/verify_xcframework/run_xcf.sh"
@@ -908,6 +935,46 @@ main() {
     local RELEASE_MODE
     RELEASE_MODE="$(_msp_release_get_mode)"
     echo "[MSP][ORCH] Release mode: ${RELEASE_MODE}"
+    
+    # Phase 3: CI/CLI behavior differentiation
+    local skip_local_verification=false
+    local skip_device_verification=false
+    local skip_pods_verification=false
+    local skip_spm_local_build=false
+    local skip_xcf_verify=false
+    
+    if [[ "$RELEASE_MODE" == "ci" ]]; then
+        skip_local_verification=true
+        skip_device_verification=true
+        skip_pods_verification=true
+        skip_spm_local_build=true
+        
+        # Check if xcodebuild exists for XCF verify
+        if ! command -v xcodebuild >/dev/null 2>&1; then
+            skip_xcf_verify=true
+            echo "[MSP][ORCH] Mode: CI — xcodebuild not found, skipping XCF verify"
+        fi
+        
+        # Check if pod exists for Pods verification
+        if ! command -v pod >/dev/null 2>&1; then
+            echo "[MSP][ORCH] Mode: CI — pod not found, skipping all Pods local verification"
+        fi
+        
+        echo "[MSP][ORCH] Mode: CI — skipping local verification steps"
+    else
+        skip_local_verification=false
+        skip_device_verification=false
+        skip_pods_verification=false
+        skip_spm_local_build=false
+        echo "[MSP][ORCH] Mode: CLI — running full verification"
+    fi
+    
+    # Export skip flags for use in verification functions
+    export MSP_SKIP_LOCAL_VERIFY="$skip_local_verification"
+    export MSP_SKIP_DEVICE_VERIFY="$skip_device_verification"
+    export MSP_SKIP_PODS_VERIFY="$skip_pods_verification"
+    export MSP_SKIP_SPM_LOCAL_BUILD="$skip_spm_local_build"
+    export MSP_SKIP_XCF_VERIFY="$skip_xcf_verify"
     
     # Backward compatibility: parse remaining CLI arguments if any
     # (Only used if script is called directly, not via msp-release.sh)
@@ -998,34 +1065,50 @@ main() {
     
     # Step 6: Run local verification (soft-fail, never breaks release)
     step "run_local_verification"
-    local verify_script="$ROOT_DIR/Scripts/release/verify_local/run_local.sh"
-    if [[ -f "$verify_script" ]]; then
-        if source "$verify_script" && run_local_verification; then
-            step_done "run_local_verification"
-        else
-            step_fail "run_local_verification" $?
-            # Soft-fail: continue anyway
-        fi
+    if [[ "$MSP_SKIP_LOCAL_VERIFY" == "true" ]]; then
+        echo "[MSP][ORCH] Mode: ${RELEASE_MODE^^} — skipping local verification"
+        step_skip "run_local_verification (skipped in CI mode)"
     else
-        step_skip "run_local_verification (script not found)"
+        local verify_script="$ROOT_DIR/Scripts/release/verify_local/run_local.sh"
+        if [[ -f "$verify_script" ]]; then
+            echo "[MSP][ORCH] Mode: ${RELEASE_MODE^^} — running local verification"
+            if source "$verify_script" && run_local_verification; then
+                step_done "run_local_verification"
+            else
+                step_fail "run_local_verification" $?
+                # Soft-fail: continue anyway
+            fi
+        else
+            step_skip "run_local_verification (script not found)"
+        fi
     fi
     
     # Step 7: Run device verification (soft-fail, never breaks release)
     step "run_device_verification"
-    if run_device_verification; then
-        step_done "run_device_verification"
+    if [[ "$MSP_SKIP_DEVICE_VERIFY" == "true" ]]; then
+        echo "[MSP][ORCH] Mode: ${RELEASE_MODE^^} — skipping device verification"
+        step_skip "run_device_verification (skipped in CI mode)"
     else
-        step_fail "run_device_verification" $?
-        # Soft-fail: continue anyway
+        if run_device_verification; then
+            step_done "run_device_verification"
+        else
+            step_fail "run_device_verification" $?
+            # Soft-fail: continue anyway
+        fi
     fi
     
     # Step 8: Run XCFramework deep verification (soft-fail, never breaks release)
     step "run_xcframework_verification"
-    if run_xcframework_verification; then
-        step_done "run_xcframework_verification"
+    if [[ "$MSP_SKIP_XCF_VERIFY" == "true" ]]; then
+        echo "[MSP][ORCH] Mode: ${RELEASE_MODE^^} — skipping XCF verify"
+        step_skip "run_xcframework_verification (skipped in CI mode or xcodebuild not available)"
     else
-        step_fail "run_xcframework_verification" $?
-        # Soft-fail: continue anyway
+        if run_xcframework_verification; then
+            step_done "run_xcframework_verification"
+        else
+            step_fail "run_xcframework_verification" $?
+            # Soft-fail: continue anyway
+        fi
     fi
     
     # Global success notifications (only if release succeeded)

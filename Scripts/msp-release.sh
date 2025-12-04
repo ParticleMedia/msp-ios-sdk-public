@@ -656,11 +656,41 @@ _msp_interactive_release_setup() {
         esac
     done
     
+    # Phase 3: CLI mode enforcement rules
+    if [[ "$MSP_SPM_ENABLED" == "true" ]]; then
+        # Rule: If SPM is selected, force enable XCF verify
+        if [[ "$MSP_XCF_VERIFY" != "true" ]]; then
+            echo ""
+            echo "${MSP_COLOR_YELLOW}⚠️  SPM release selected — automatically enabling XCF verify${MSP_COLOR_RESET}"
+            export MSP_XCF_VERIFY="true"
+        fi
+    fi
+    
+    if [[ "$MSP_PODS_ENABLED" == "true" ]]; then
+        # Rule: Check CocoaPods trunk session
+        if command -v pod >/dev/null 2>&1; then
+            local trunk_info
+            trunk_info=$(pod trunk me 2>&1 || echo "")
+            if [[ "$trunk_info" =~ "No session" ]] || [[ "$trunk_info" =~ "authentication" ]]; then
+                echo ""
+                echo "${MSP_COLOR_YELLOW}⚠️  CocoaPods trunk session may be expired. Please run 'pod trunk register' if needed.${MSP_COLOR_RESET}"
+            fi
+        fi
+    fi
+    
+    if [[ "$MSP_VERIFY_DEVICE" == "true" ]]; then
+        # Rule: Device verification requires iPhone connection
+        echo ""
+        echo "${MSP_COLOR_YELLOW}⚠️  Device verification requires a connected iPhone.${MSP_COLOR_RESET}"
+    fi
+    
     # Default: enable both Pods and SPM if nothing selected
     if [[ "$MSP_PODS_ENABLED" != "true" ]] && [[ "$MSP_SPM_ENABLED" != "true" ]]; then
         export MSP_PODS_ENABLED="true"
         export MSP_SPM_ENABLED="true"
         echo "No components selected, defaulting to CocoaPods + SPM"
+        # Also enable XCF verify by default when SPM is enabled
+        export MSP_XCF_VERIFY="true"
     fi
     
     echo ""
