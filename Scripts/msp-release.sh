@@ -84,6 +84,12 @@ if [[ -f "$SCRIPT_DIR/release/utils/state.sh" ]]; then
     source "$SCRIPT_DIR/release/utils/state.sh" 2>/dev/null || true
 fi
 
+# Source interactive utilities for CLI mode
+if [[ -f "$SCRIPT_DIR/release/interactive_utils.sh" ]]; then
+    # shellcheck source=Scripts/release/interactive_utils.sh
+    source "$SCRIPT_DIR/release/interactive_utils.sh" 2>/dev/null || true
+fi
+
 # ============================================================================
 # Source Config Module
 # ============================================================================
@@ -523,6 +529,166 @@ show_version() {
 }
 
 # ============================================================================
+# Interactive Release Setup (Phase 2)
+# ============================================================================
+_msp_interactive_release_setup() {
+    echo ""
+    echo "═══════════════════════════════════════════════════════════════════"
+    echo "MSP Release - Interactive Setup"
+    echo "═══════════════════════════════════════════════════════════════════"
+    echo ""
+    
+    # Step 1: Version Selection
+    local version_choice
+    version_choice=$(msp_prompt_menu "Select version source:" \
+        "Manual input" \
+        "Auto bump patch" \
+        "Auto bump minor" \
+        "Auto bump major" \
+        "Auto pre-release (0.0.1-xxx)")
+    
+    local version=""
+    case "$version_choice" in
+        0)
+            version=$(msp_prompt_text "Enter version:" "")
+            ;;
+        1)
+            if [[ -f "$ROOT_DIR/Scripts/release/auto_version.sh" ]]; then
+                version=$(bash "$ROOT_DIR/Scripts/release/auto_version.sh" "auto:patch" 2>/dev/null || echo "")
+            fi
+            if [[ -z "$version" ]]; then
+                log_error "Failed to auto-bump patch version"
+                version=$(msp_prompt_text "Enter version manually:" "")
+            fi
+            ;;
+        2)
+            if [[ -f "$ROOT_DIR/Scripts/release/auto_version.sh" ]]; then
+                version=$(bash "$ROOT_DIR/Scripts/release/auto_version.sh" "auto:minor" 2>/dev/null || echo "")
+            fi
+            if [[ -z "$version" ]]; then
+                log_error "Failed to auto-bump minor version"
+                version=$(msp_prompt_text "Enter version manually:" "")
+            fi
+            ;;
+        3)
+            if [[ -f "$ROOT_DIR/Scripts/release/auto_version.sh" ]]; then
+                version=$(bash "$ROOT_DIR/Scripts/release/auto_version.sh" "auto:major" 2>/dev/null || echo "")
+            fi
+            if [[ -z "$version" ]]; then
+                log_error "Failed to auto-bump major version"
+                version=$(msp_prompt_text "Enter version manually:" "")
+            fi
+            ;;
+        4)
+            version=$(msp_prompt_text "Enter pre-release version (e.g., 0.0.1-alpha):" "")
+            ;;
+    esac
+    
+    if [[ -z "$version" ]]; then
+        log_error "Version is required"
+        exit 1
+    fi
+    
+    export RELEASE_VERSION="$version"
+    echo ""
+    
+    # Step 2: Release Notes
+    local notes_choice
+    notes_choice=$(msp_prompt_menu "Select release notes source:" \
+        "Manual input" \
+        "Auto generate from git commits" \
+        "Load from file NOTES.txt")
+    
+    local release_notes=""
+    case "$notes_choice" in
+        0)
+            release_notes=$(msp_prompt_text "Enter release notes:" "")
+            ;;
+        1)
+            # Auto-generate from git commits (last 10 commits)
+            if command -v git >/dev/null 2>&1; then
+                release_notes=$(git log --oneline -10 2>/dev/null | head -c 500 || echo "Auto-generated release notes")
+            else
+                release_notes="Auto-generated release notes"
+            fi
+            echo "Auto-generated release notes: ${release_notes:0:50}..."
+            ;;
+        2)
+            if [[ -f "$ROOT_DIR/NOTES.txt" ]]; then
+                release_notes=$(cat "$ROOT_DIR/NOTES.txt" | head -c 1000)
+                echo "Loaded release notes from NOTES.txt"
+            else
+                log_warn "NOTES.txt not found, using manual input"
+                release_notes=$(msp_prompt_text "Enter release notes:" "")
+            fi
+            ;;
+    esac
+    
+    export RELEASE_NOTES="${release_notes:-No release notes provided}"
+    echo ""
+    
+    # Step 3: Component Selection
+    local component_selection
+    component_selection=$(msp_prompt_checkboxes "Select components to release:" \
+        "CocoaPods" \
+        "SPM" \
+        "XCF verify" \
+        "Local verify" \
+        "Remote verify" \
+        "Device verify")
+    
+    # Parse component selection
+    export MSP_PODS_ENABLED="false"
+    export MSP_SPM_ENABLED="false"
+    export MSP_XCF_VERIFY="false"
+    export MSP_VERIFY_LOCAL="false"
+    export MSP_VERIFY_REMOTE="false"
+    export MSP_VERIFY_DEVICE="false"
+    
+    for idx in $component_selection; do
+        case "$idx" in
+            0) export MSP_PODS_ENABLED="true" ;;
+            1) export MSP_SPM_ENABLED="true" ;;
+            2) export MSP_XCF_VERIFY="true" ;;
+            3) export MSP_VERIFY_LOCAL="true" ;;
+            4) export MSP_VERIFY_REMOTE="true" ;;
+            5) export MSP_VERIFY_DEVICE="true" ;;
+        esac
+    done
+    
+    # Default: enable both Pods and SPM if nothing selected
+    if [[ "$MSP_PODS_ENABLED" != "true" ]] && [[ "$MSP_SPM_ENABLED" != "true" ]]; then
+        export MSP_PODS_ENABLED="true"
+        export MSP_SPM_ENABLED="true"
+        echo "No components selected, defaulting to CocoaPods + SPM"
+    fi
+    
+    echo ""
+    
+    # Step 4: Final Confirmation
+    echo "═══════════════════════════════════════════════════════════════════"
+    echo "Release Summary:"
+    echo "  Version: $RELEASE_VERSION"
+    echo "  Release Notes: ${RELEASE_NOTES:0:50}${RELEASE_NOTES:50:+...}"
+    echo "  Components:"
+    [[ "$MSP_PODS_ENABLED" == "true" ]] && echo "    - CocoaPods"
+    [[ "$MSP_SPM_ENABLED" == "true" ]] && echo "    - SPM"
+    [[ "$MSP_XCF_VERIFY" == "true" ]] && echo "    - XCF verify"
+    [[ "$MSP_VERIFY_LOCAL" == "true" ]] && echo "    - Local verify"
+    [[ "$MSP_VERIFY_REMOTE" == "true" ]] && echo "    - Remote verify"
+    [[ "$MSP_VERIFY_DEVICE" == "true" ]] && echo "    - Device verify"
+    echo "═══════════════════════════════════════════════════════════════════"
+    echo ""
+    
+    if ! msp_prompt_yes_no "You are about to release version: $RELEASE_VERSION. Confirm?" "N"; then
+        log_info "Release cancelled by user"
+        exit 0
+    fi
+    
+    echo ""
+}
+
+# ============================================================================
 # Subcommand Handlers (Placeholders for Phase 2 Step 3)
 # ============================================================================
 
@@ -628,7 +794,26 @@ do_run() {
         apply_cli_overrides
     fi
     
-    # Check if version is set
+    # Interactive mode: only in CLI mode and when version is not set
+    # Skip if stdin is not a terminal (non-interactive mode)
+    if [[ "${MSP_RELEASE_MODE:-cli}" == "cli" ]] && [[ -z "${RELEASE_VERSION:-}" ]] && [[ -t 0 ]]; then
+        _msp_interactive_release_setup
+    fi
+    
+    # Apply interactive component selections to environment
+    if [[ "${MSP_PODS_ENABLED:-}" == "true" ]]; then
+        export PODS_ENABLED="true"
+    elif [[ "${MSP_PODS_ENABLED:-}" == "false" ]]; then
+        export PODS_ENABLED="false"
+    fi
+    
+    if [[ "${MSP_SPM_ENABLED:-}" == "true" ]]; then
+        export SPM_ENABLED="true"
+    elif [[ "${MSP_SPM_ENABLED:-}" == "false" ]]; then
+        export SPM_ENABLED="false"
+    fi
+    
+    # Check if version is set (after interactive setup)
     if [[ -z "${RELEASE_VERSION:-}" ]]; then
         log_error "VERSION is required for 'run' command"
         log_info "Usage: msp-release.sh run <VERSION> [OPTIONS]"
