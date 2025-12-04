@@ -8,6 +8,28 @@
 
 set -e
 
+# ============================================================================
+# Release Mode Detection
+# ============================================================================
+# Normalize release mode; default to cli for backward compatibility
+_msp_release_get_mode() {
+    local mode="${MSP_RELEASE_MODE:-cli}"
+    
+    case "$mode" in
+        ci|CI)
+            echo "ci"
+            ;;
+        cli|CLI|"")
+            echo "cli"
+            ;;
+        *)
+            # Unknown mode: fallback to cli but log a warning
+            echo "cli"
+            >&2 echo "[MSP][ORCH][WARN] Unknown MSP_RELEASE_MODE='$mode', falling back to 'cli'"
+            ;;
+    esac
+}
+
 # Source the common library
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 # ============================================
@@ -881,6 +903,11 @@ _handle_main_error() {
 main() {
     # Set error trap for state tracking
     trap '_handle_main_error' ERR
+    
+    # Detect and log release mode
+    local RELEASE_MODE
+    RELEASE_MODE="$(_msp_release_get_mode)"
+    echo "[MSP][ORCH] Release mode: ${RELEASE_MODE}"
     
     # Backward compatibility: parse remaining CLI arguments if any
     # (Only used if script is called directly, not via msp-release.sh)

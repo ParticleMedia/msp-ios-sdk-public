@@ -20,6 +20,12 @@
 
 set -euo pipefail
 
+# ============================================================================
+# Release mode: CI
+# ============================================================================
+# CI mode: always set to "ci", no external override allowed
+export MSP_RELEASE_MODE="ci"
+echo "[MSP][CI] Release mode: ${MSP_RELEASE_MODE}"
 
 # ============================================================================
 # STEP 1 — Determine ROOT_DIR
@@ -120,7 +126,6 @@ export MSP_CI_RELEASE_BRANCH="$RELEASE_BRANCH"
 export DRY_RUN="false"
 export SKIP_PUSH="false"
 
-echo "[CI] MSP_RELEASE_MODE=ci"
 echo "[CI] MSP_SLACK_BLOCK_MODE=${MSP_SLACK_BLOCK_MODE}"
 echo "[CI] MSP_SLACK_ALERT_ENV=${MSP_SLACK_ALERT_ENV}"
 

@@ -664,6 +664,10 @@ do_run() {
         log_warn "Skipping preflight due to --skip-preflight flag"
     fi
     
+    # Release mode: CLI
+    export MSP_RELEASE_MODE="${MSP_RELEASE_MODE:-cli}"
+    echo "[MSP][CLI] Release mode: ${MSP_RELEASE_MODE}"
+    
     # For now, delegate to modular.sh (backward compatibility)
     log_info "Delegating to: $MODULAR_SCRIPT"
     log_info "Arguments: $RELEASE_VERSION ${REMAINING_ARGS[*]:-}"
@@ -1217,11 +1221,14 @@ main() {
     MSP_RELEASE_ORIGINAL_ARGS="$*"
     export MSP_RELEASE_ORIGINAL_ARGS
     
+    # Initialize REMAINING_ARGS to avoid unbound variable errors
+    REMAINING_ARGS=()
+    
     # Parse all flags first (supports flags before subcommand)
     parse_flags "$@"
     
     # Detect subcommand from remaining args
-    detect_subcommand "${REMAINING_ARGS[@]}"
+    detect_subcommand "${REMAINING_ARGS[@]+"${REMAINING_ARGS[@]}"}"
     
     # Handle special cases that exit early
     if [[ "$SUBCOMMAND" == "help" ]]; then
