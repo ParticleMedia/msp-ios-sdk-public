@@ -9,6 +9,16 @@ public struct MSPConstants {
     public static let GOOGLE_AD_MULTI_CONTENT_URLS = "google_ads_multi_content_urls"
     public static let USER_ID = "user_id"
     
+    // User defaults key used to store NB user id.
+    public static let USER_DEFAULTS_KEY_MSP_USER_ID = "msp_user_id"
+    /* User defaults key used to store msp id fetched from id server.
+     * mspId is a parameter of MES user_signal event.
+     * If there is already msp_user_id, propagate its value to msp_id.
+     * Otherwise fetch an id from id server and set its value
+     * to both msp_user_id and msp_id.
+     */
+    public static let USER_DEFAULTS_KEY_MSP_ID = "msp_id"
+    
     public static let AD_INFO_OPENRTB_NURL = "nurl"
     public static let AD_INFO_OPENRTB_BURL = "burl"
 

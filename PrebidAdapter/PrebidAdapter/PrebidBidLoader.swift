@@ -132,7 +132,7 @@ public class PrebidBidLoader : BidLoader {
         userExt["geo"] = getGeoDict()
         Targeting.shared.userExt = userExt
         
-        if let userId = UserDefaults.standard.string(forKey: "msp_user_id") {
+        if let userId = UserDefaults.standard.string(forKey: MSPConstants.USER_DEFAULTS_KEY_MSP_USER_ID) {
             adUnitConfig.addContextData(key: MSPConstants.USER_ID, value: userId)
         }
         
@@ -144,7 +144,7 @@ public class PrebidBidLoader : BidLoader {
                 if key == MSPConstants.USER_ID,
                    let appUserId = value as? String {
                     // override user id in bid context and local cache with provided in the ad request
-                    UserDefaults.standard.setValue(appUserId, forKey: "msp_user_id")
+                    UserDefaults.standard.setValue(appUserId, forKey: MSPConstants.USER_DEFAULTS_KEY_MSP_USER_ID)
                 }
             }
         }
