@@ -44,7 +44,7 @@ schemes:
   MSPiOSCore-XCFramework:
     build:
       targets:
-        MSPiOSCore-XCFramework: all
+        MSPiOSCore: all
     run:
       config: Debug
     profile:
