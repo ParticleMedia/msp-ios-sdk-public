@@ -200,23 +200,38 @@ IOS_BUILD_SETTINGS=(
 
 # Add Pod search paths for Core modules - ONLY iOS paths for iOS archive
 # This allows Core modules to resolve Pod modules like Kingfisher (from MSPKingfisher)
+# Phase 4 Step 5: Also add modulemap injection for ObjC-only Pods like Shimmer
 if [[ -n "${POD_IOS_MODULES:-}" ]]; then
     # Add -I flags for each iOS Pod module path
     IOS_I_FLAGS=""
     IOS_HEADER_PATHS=""
+    IOS_MODULEMAP_FLAGS=""
     IFS=':' read -ra IOS_PATHS <<< "$POD_IOS_MODULES"
     for path in "${IOS_PATHS[@]}"; do
         if [[ -d "$path" ]]; then
             IOS_I_FLAGS="$IOS_I_FLAGS -I$path"
             IOS_HEADER_PATHS="$IOS_HEADER_PATHS $path"
+            # Phase 4 Step 5: Add modulemap file for ObjC-only Pods (Shimmer)
+            pod_name=$(basename "$path")
+            if [[ "$pod_name" == "Shimmer" ]]; then
+                shimmer_modulemap="$path/Shimmer.modulemap"
+                if [[ -f "$shimmer_modulemap" ]]; then
+                    IOS_MODULEMAP_FLAGS="$IOS_MODULEMAP_FLAGS -Xcc -fmodule-map-file=$shimmer_modulemap"
+                    log_info "iOS archive: Added Shimmer modulemap: $shimmer_modulemap"
+                fi
+            fi
         fi
     done
     if [[ -n "$IOS_I_FLAGS" ]]; then
-        # Update OTHER_SWIFT_FLAGS to include ONLY iOS Pod module paths
-        IOS_BUILD_SETTINGS[3]="OTHER_SWIFT_FLAGS=-no-verify-emitted-module-interface$IOS_I_FLAGS"
+        # Update OTHER_SWIFT_FLAGS to include ONLY iOS Pod module paths + modulemap flags
+        swift_flags="-no-verify-emitted-module-interface$IOS_I_FLAGS$IOS_MODULEMAP_FLAGS"
+        IOS_BUILD_SETTINGS[3]="OTHER_SWIFT_FLAGS=$swift_flags"
         # Add HEADER_SEARCH_PATHS for Clang to find module headers
         IOS_BUILD_SETTINGS+=("HEADER_SEARCH_PATHS=\$(inherited)$IOS_HEADER_PATHS")
         log_info "iOS archive: Added Swift include paths:$IOS_I_FLAGS"
+        if [[ -n "$IOS_MODULEMAP_FLAGS" ]]; then
+            log_info "iOS archive: Added modulemap flags:$IOS_MODULEMAP_FLAGS"
+        fi
     fi
 fi
 
@@ -255,23 +270,38 @@ SIM_BUILD_SETTINGS=(
 )
 
 # Add Pod search paths for Core modules - ONLY Simulator paths for Simulator archive
+# Phase 4 Step 5: Also add modulemap injection for ObjC-only Pods like Shimmer
 if [[ -n "${POD_SIM_MODULES:-}" ]]; then
     # Add -I flags for each Simulator Pod module path
     SIM_I_FLAGS=""
     SIM_HEADER_PATHS=""
+    SIM_MODULEMAP_FLAGS=""
     IFS=':' read -ra SIM_PATHS <<< "$POD_SIM_MODULES"
     for path in "${SIM_PATHS[@]}"; do
         if [[ -d "$path" ]]; then
             SIM_I_FLAGS="$SIM_I_FLAGS -I$path"
             SIM_HEADER_PATHS="$SIM_HEADER_PATHS $path"
+            # Phase 4 Step 5: Add modulemap file for ObjC-only Pods (Shimmer)
+            pod_name=$(basename "$path")
+            if [[ "$pod_name" == "Shimmer" ]]; then
+                shimmer_modulemap="$path/Shimmer.modulemap"
+                if [[ -f "$shimmer_modulemap" ]]; then
+                    SIM_MODULEMAP_FLAGS="$SIM_MODULEMAP_FLAGS -Xcc -fmodule-map-file=$shimmer_modulemap"
+                    log_info "Simulator archive: Added Shimmer modulemap: $shimmer_modulemap"
+                fi
+            fi
         fi
     done
     if [[ -n "$SIM_I_FLAGS" ]]; then
-        # Update OTHER_SWIFT_FLAGS to include ONLY Simulator Pod module paths
-        SIM_BUILD_SETTINGS[3]="OTHER_SWIFT_FLAGS=-no-verify-emitted-module-interface$SIM_I_FLAGS"
+        # Update OTHER_SWIFT_FLAGS to include ONLY Simulator Pod module paths + modulemap flags
+        local swift_flags="-no-verify-emitted-module-interface$SIM_I_FLAGS$SIM_MODULEMAP_FLAGS"
+        SIM_BUILD_SETTINGS[3]="OTHER_SWIFT_FLAGS=$swift_flags"
         # Add HEADER_SEARCH_PATHS for Clang to find module headers
         SIM_BUILD_SETTINGS+=("HEADER_SEARCH_PATHS=\$(inherited)$SIM_HEADER_PATHS")
         log_info "Simulator archive: Added Swift include paths:$SIM_I_FLAGS"
+        if [[ -n "$SIM_MODULEMAP_FLAGS" ]]; then
+            log_info "Simulator archive: Added modulemap flags:$SIM_MODULEMAP_FLAGS"
+        fi
     fi
 fi
 

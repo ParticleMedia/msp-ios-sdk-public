@@ -42,6 +42,7 @@ targets:
       # Third-party dependencies (Kingfisher, SnapKit, Lottie, Shimmer) are provided
       # via Pods at application level. Core XCFrameworks use @_implementationOnly
       # imports and do NOT embed these frameworks.
+      # Note: libShimmer.a is linked via OTHER_LDFLAGS with -force_load (see below)
     settings:
       base:
         # Module-specific Swift flags
@@ -79,6 +80,50 @@ targets:
           - $(SRCROOT)/../../../.generated/DerivedData/build-shared/Build/Products/Release-iphonesimulator/SnapKit
           - $(SRCROOT)/../../../.generated/DerivedData/build-shared/Build/Products/Release-iphonesimulator/lottie-ios
           - $(SRCROOT)/../../../.generated/DerivedData/build-shared/Build/Products/Release-iphonesimulator/Shimmer
+        # Phase 4 Step 5: Library search paths for static libraries
+        LIBRARY_SEARCH_PATHS[sdk=iphoneos*]:
+          - $(inherited)
+          - $(SRCROOT)/../../../.generated/DerivedData/build-shared/Build/Products/Release-iphoneos/Shimmer
+          - $(SRCROOT)/../../../.generated/DerivedData/build-shared/Build/Products/Release-iphoneos/SnapKit
+          - $(SRCROOT)/../../../.generated/DerivedData/build-shared/Build/Products/Release-iphoneos/MSPKingfisher
+          - $(SRCROOT)/../../../.generated/DerivedData/build-shared/Build/Products/Release-iphoneos/lottie-ios
+        LIBRARY_SEARCH_PATHS[sdk=iphonesimulator*]:
+          - $(inherited)
+          - $(SRCROOT)/../../../.generated/DerivedData/build-shared/Build/Products/Release-iphonesimulator/Shimmer
+          - $(SRCROOT)/../../../.generated/DerivedData/build-shared/Build/Products/Release-iphonesimulator/SnapKit
+          - $(SRCROOT)/../../../.generated/DerivedData/build-shared/Build/Products/Release-iphonesimulator/MSPKingfisher
+          - $(SRCROOT)/../../../.generated/DerivedData/build-shared/Build/Products/Release-iphonesimulator/lottie-ios
+        # Phase 4 Step 5: Link static libraries
+        # Shimmer: ObjC static library, requires -force_load to ensure all symbols are included
+        # SnapKit, MSPKingfisher, lottie-ios: Swift static libraries, regular linking should work
+        OTHER_LDFLAGS[sdk=iphoneos*]:
+          - $(inherited)
+          # Link Shimmer with -force_load (ObjC static library)
+          - -Wl,-force_load
+          - -Wl,$(SRCROOT)/../../../.generated/DerivedData/build-shared/Build/Products/Release-iphoneos/Shimmer/libShimmer.a
+          # Link SnapKit (Swift static library, regular linking)
+          - -L$(SRCROOT)/../../../.generated/DerivedData/build-shared/Build/Products/Release-iphoneos/SnapKit
+          - -lSnapKit
+          # Link MSPKingfisher (Swift static library, regular linking)
+          - -L$(SRCROOT)/../../../.generated/DerivedData/build-shared/Build/Products/Release-iphoneos/MSPKingfisher
+          - -lMSPKingfisher
+          # Link lottie-ios (Swift static library, regular linking)
+          - -L$(SRCROOT)/../../../.generated/DerivedData/build-shared/Build/Products/Release-iphoneos/lottie-ios
+          - -llottie-ios
+        OTHER_LDFLAGS[sdk=iphonesimulator*]:
+          - $(inherited)
+          # Link Shimmer with -force_load (ObjC static library)
+          - -Wl,-force_load
+          - -Wl,$(SRCROOT)/../../../.generated/DerivedData/build-shared/Build/Products/Release-iphonesimulator/Shimmer/libShimmer.a
+          # Link SnapKit (Swift static library, regular linking)
+          - -L$(SRCROOT)/../../../.generated/DerivedData/build-shared/Build/Products/Release-iphonesimulator/SnapKit
+          - -lSnapKit
+          # Link MSPKingfisher (Swift static library, regular linking)
+          - -L$(SRCROOT)/../../../.generated/DerivedData/build-shared/Build/Products/Release-iphonesimulator/MSPKingfisher
+          - -lMSPKingfisher
+          # Link lottie-ios (Swift static library, regular linking)
+          - -L$(SRCROOT)/../../../.generated/DerivedData/build-shared/Build/Products/Release-iphonesimulator/lottie-ios
+          - -llottie-ios
 
 schemes:
   NovaCore-XCFramework:

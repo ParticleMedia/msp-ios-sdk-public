@@ -129,6 +129,7 @@ mkdir -p "$ARCHIVES_DIR" "$XCFRAMEWORKS_DIR" "$LOGS_DIR"
 # -----------------------------------------------------------
 # Function: fix_pod_modulemaps
 # Purpose: Fix absolute paths in Pod modulemaps to use relative paths
+# Also copy Shimmer modulemap to build output (Shimmer is ObjC-only, needs modulemap)
 # -----------------------------------------------------------
 fix_pod_modulemaps() {
     log_info "Fixing Pod modulemaps (converting absolute paths to relative)"
@@ -153,6 +154,53 @@ EOF
                 log_info "Fixed modulemap: $plat/$pod"
             fi
         done
+        
+        # Phase 4 Step 5: Copy Shimmer modulemap, umbrella header, and all headers to build output
+        # Shimmer is ObjC-only and only produces libShimmer.a, but Swift needs modulemap + headers
+        local SHIMMER_DIR="$SHARED_DERIVED_DATA/Build/Products/Release-$plat/Shimmer"
+        if [[ -d "$SHIMMER_DIR" ]]; then
+            local SHIMMER_MODULEMAP="$SHIMMER_DIR/Shimmer.modulemap"
+            local SHIMMER_UMBRELLA="$SHIMMER_DIR/Shimmer-umbrella.h"
+            local PODS_MODULEMAP="$ROOT_DIR/Pods/Headers/Public/Shimmer/Shimmer.modulemap"
+            local PODS_UMBRELLA="$ROOT_DIR/Pods/Headers/Public/Shimmer/Shimmer-umbrella.h"
+            local PODS_HEADERS_DIR="$ROOT_DIR/Pods/Headers/Public/Shimmer"
+            
+            # Copy modulemap
+            if [[ -f "$PODS_MODULEMAP" ]] && [[ ! -f "$SHIMMER_MODULEMAP" ]]; then
+                mkdir -p "$SHIMMER_DIR"
+                cp "$PODS_MODULEMAP" "$SHIMMER_MODULEMAP"
+                # Also create module.modulemap symlink (Swift looks for this name)
+                ln -sf "Shimmer.modulemap" "$SHIMMER_DIR/module.modulemap" 2>/dev/null || true
+                log_info "Copied Shimmer modulemap to build output: $plat"
+            fi
+            
+            # Copy umbrella header (required by modulemap)
+            if [[ -f "$PODS_UMBRELLA" ]] && [[ ! -f "$SHIMMER_UMBRELLA" ]]; then
+                cp "$PODS_UMBRELLA" "$SHIMMER_UMBRELLA"
+                log_info "Copied Shimmer umbrella header to build output: $plat"
+            fi
+            
+            # Copy all header files (FBShimmering.h, FBShimmeringLayer.h, FBShimmeringView.h)
+            if [[ -d "$PODS_HEADERS_DIR" ]]; then
+                for header_file in "$PODS_HEADERS_DIR"/*.h; do
+                    if [[ -f "$header_file" ]] && [[ "$(basename "$header_file")" != "Shimmer-umbrella.h" ]]; then
+                        local header_name=$(basename "$header_file")
+                        # Resolve symlink to actual file
+                        if [[ -L "$header_file" ]]; then
+                            local actual_header=$(readlink -f "$header_file" 2>/dev/null || readlink "$header_file")
+                            if [[ -f "$actual_header" ]]; then
+                                cp "$actual_header" "$SHIMMER_DIR/$header_name"
+                            else
+                                cp "$header_file" "$SHIMMER_DIR/$header_name" 2>/dev/null || true
+                            fi
+                        else
+                            cp "$header_file" "$SHIMMER_DIR/$header_name"
+                        fi
+                    fi
+                done
+                log_info "Copied Shimmer headers to build output: $plat"
+            fi
+        fi
     done
 }
 
