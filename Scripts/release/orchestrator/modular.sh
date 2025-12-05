@@ -373,7 +373,8 @@ release_cocoapods() {
     
     log_section "Step 2: Releasing CocoaPods"
     local current_mode="${MSP_RELEASE_MODE:-cli}"
-    log_info "[MSP][ORCH] Mode: ${current_mode^^} — releasing CocoaPods"
+    local current_mode_upper=$(echo "$current_mode" | tr '[:lower:]' '[:upper:]' 2>/dev/null || echo "${current_mode}" | awk '{print toupper($0)}')
+    log_info "[MSP][ORCH] Mode: ${current_mode_upper} — releasing CocoaPods"
     
     # Checkout release branch (skip in dry-run mode)
     if [[ "$DRY_RUN" != "true" ]]; then
@@ -428,7 +429,8 @@ release_spm() {
     
     log_section "Step 3: Releasing SPM"
     local current_mode="${MSP_RELEASE_MODE:-cli}"
-    log_info "[MSP][ORCH] Mode: ${current_mode^^} — releasing SPM"
+    local current_mode_upper=$(echo "$current_mode" | tr '[:lower:]' '[:upper:]' 2>/dev/null || echo "${current_mode}" | awk '{print toupper($0)}')
+    log_info "[MSP][ORCH] Mode: ${current_mode_upper} — releasing SPM"
     
     # Ensure we're on release branch (skip in dry-run mode)
     if [[ "$DRY_RUN" != "true" ]]; then
@@ -879,7 +881,7 @@ run_device_verification() {
 # Step 8: Run XCFramework deep verification
 run_xcframework_verification() {
     local current_mode="${MSP_RELEASE_MODE:-cli}"
-    local current_mode_upper="${current_mode^^}"
+    local current_mode_upper=$(echo "$current_mode" | tr '[:lower:]' '[:upper:]' 2>/dev/null || echo "${current_mode}" | awk '{print toupper($0)}')
     
     # Phase 3: Skip if flag is set or xcodebuild not available
     if [[ "${MSP_SKIP_XCF_VERIFY:-false}" == "true" ]]; then
