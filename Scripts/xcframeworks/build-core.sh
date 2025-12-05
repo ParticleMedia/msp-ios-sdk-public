@@ -181,23 +181,48 @@ EOF
             fi
             
             # Copy all header files (FBShimmering.h, FBShimmeringLayer.h, FBShimmeringView.h)
+            # Phase 4 Final E2E Fix: Handle read-only Shimmer headers by using temp copy + chmod
             if [[ -d "$PODS_HEADERS_DIR" ]]; then
+                local TEMP_HEADERS_DIR="${TMPDIR:-/tmp}/msp_shimmer_headers_$$"
+                mkdir -p "$TEMP_HEADERS_DIR"
+                
                 for header_file in "$PODS_HEADERS_DIR"/*.h; do
                     if [[ -f "$header_file" ]] && [[ "$(basename "$header_file")" != "Shimmer-umbrella.h" ]]; then
                         local header_name=$(basename "$header_file")
-                        # Resolve symlink to actual file
+                        local temp_header="$TEMP_HEADERS_DIR/$header_name"
+                        local target_header="$SHIMMER_DIR/$header_name"
+                        
+                        # Step 1: Copy to temp directory
                         if [[ -L "$header_file" ]]; then
                             local actual_header=$(readlink -f "$header_file" 2>/dev/null || readlink "$header_file")
                             if [[ -f "$actual_header" ]]; then
-                                cp "$actual_header" "$SHIMMER_DIR/$header_name"
+                                cp "$actual_header" "$temp_header" 2>/dev/null || cp "$header_file" "$temp_header" 2>/dev/null || continue
                             else
-                                cp "$header_file" "$SHIMMER_DIR/$header_name" 2>/dev/null || true
+                                cp "$header_file" "$temp_header" 2>/dev/null || continue
                             fi
                         else
-                            cp "$header_file" "$SHIMMER_DIR/$header_name"
+                            cp "$header_file" "$temp_header" 2>/dev/null || continue
                         fi
+                        
+                        # Step 2: Make temp file writable
+                        chmod u+w "$temp_header" 2>/dev/null || true
+                        
+                        # Step 3: Ensure target directory exists
+                        mkdir -p "$SHIMMER_DIR"
+                        
+                        # Step 4: Remove existing read-only target file if it exists, then copy
+                        if [[ -f "$target_header" ]]; then
+                            chmod u+w "$target_header" 2>/dev/null || rm -f "$target_header" 2>/dev/null || true
+                        fi
+                        cp -f "$temp_header" "$target_header" 2>/dev/null || {
+                            # Fallback: try with explicit chmod after copy
+                            cp "$temp_header" "$target_header" 2>/dev/null && chmod u+w "$target_header" 2>/dev/null || true
+                        }
                     fi
                 done
+                
+                # Cleanup temp directory
+                rm -rf "$TEMP_HEADERS_DIR" 2>/dev/null || true
                 log_info "Copied Shimmer headers to build output: $plat"
             fi
         fi
