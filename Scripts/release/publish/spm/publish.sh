@@ -561,7 +561,8 @@ main() {
     # Phase 4 TASK 2: SPM Manifest strong validation
     local release_mode="${MSP_RELEASE_MODE:-cli}"
     local release_tier="${MSP_RELEASE_TIER:-preflight}"
-    echo "[MSP][ORCH] Mode: ${release_mode^^} — validating SPM manifest"
+    local release_mode_upper=$(echo "$release_mode" | tr '[:lower:]' '[:upper:]' 2>/dev/null || echo "$release_mode" | awk '{print toupper($0)}')
+    echo "[MSP][ORCH] Mode: ${release_mode_upper} — validating SPM manifest"
     
     # Check if swift is available
     if ! command -v swift >/dev/null 2>&1; then
