@@ -71,6 +71,42 @@ targets:
           - $(SRCROOT)/../../../.generated/DerivedData/build-shared/Build/Products/Release-$(PLATFORM_NAME)/MSPPrebidAdapter
           - $(SRCROOT)/../../../.generated/DerivedData/build-shared/Build/Products/Release-$(PLATFORM_NAME)/SwiftProtobuf
         
+        # Phase 4 Final E2E Fix: Library search paths for static libraries (SnapKit, SwiftProtobuf, MSPPrebidAdapter)
+        LIBRARY_SEARCH_PATHS[sdk=iphoneos*]:
+          - $(inherited)
+          - $(SRCROOT)/../../../.generated/DerivedData/build-shared/Build/Products/Release-iphoneos/SnapKit
+          - $(SRCROOT)/../../../.generated/DerivedData/build-shared/Build/Products/Release-iphoneos/SwiftProtobuf
+          - $(SRCROOT)/../../../.generated/DerivedData/build-shared/Build/Products/Release-iphoneos/MSPPrebidAdapter
+        LIBRARY_SEARCH_PATHS[sdk=iphonesimulator*]:
+          - $(inherited)
+          - $(SRCROOT)/../../../.generated/DerivedData/build-shared/Build/Products/Release-iphonesimulator/SnapKit
+          - $(SRCROOT)/../../../.generated/DerivedData/build-shared/Build/Products/Release-iphonesimulator/SwiftProtobuf
+          - $(SRCROOT)/../../../.generated/DerivedData/build-shared/Build/Products/Release-iphonesimulator/MSPPrebidAdapter
+        # Phase 4 Final E2E Fix: Link static libraries (SnapKit, SwiftProtobuf, MSPPrebidAdapter)
+        # All are Swift static libraries, regular linking should work
+        OTHER_LDFLAGS[sdk=iphoneos*]:
+          - $(inherited)
+          # Link SnapKit (Swift static library, regular linking)
+          - -L$(SRCROOT)/../../../.generated/DerivedData/build-shared/Build/Products/Release-iphoneos/SnapKit
+          - -lSnapKit
+          # Link SwiftProtobuf (Swift static library, regular linking)
+          - -L$(SRCROOT)/../../../.generated/DerivedData/build-shared/Build/Products/Release-iphoneos/SwiftProtobuf
+          - -lSwiftProtobuf
+          # Link MSPPrebidAdapter (Swift static library, regular linking)
+          - -L$(SRCROOT)/../../../.generated/DerivedData/build-shared/Build/Products/Release-iphoneos/MSPPrebidAdapter
+          - -lMSPPrebidAdapter
+        OTHER_LDFLAGS[sdk=iphonesimulator*]:
+          - $(inherited)
+          # Link SnapKit (Swift static library, regular linking)
+          - -L$(SRCROOT)/../../../.generated/DerivedData/build-shared/Build/Products/Release-iphonesimulator/SnapKit
+          - -lSnapKit
+          # Link SwiftProtobuf (Swift static library, regular linking)
+          - -L$(SRCROOT)/../../../.generated/DerivedData/build-shared/Build/Products/Release-iphonesimulator/SwiftProtobuf
+          - -lSwiftProtobuf
+          # Link MSPPrebidAdapter (Swift static library, regular linking)
+          - -L$(SRCROOT)/../../../.generated/DerivedData/build-shared/Build/Products/Release-iphonesimulator/MSPPrebidAdapter
+          - -lMSPPrebidAdapter
+        
         OTHER_SWIFT_FLAGS: "-no-verify-emitted-module-interface"
 
 schemes:
