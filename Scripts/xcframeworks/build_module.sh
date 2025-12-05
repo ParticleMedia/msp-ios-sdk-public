@@ -24,6 +24,12 @@ if [[ -z "$MODULE_NAME" ]]; then
     exit 1
 fi
 
+# Task 2: Generate project.yml from template before build
+log_step "Ensuring project.yml exists (generating from template if needed)"
+if [[ -x "$ROOT_DIR/Scripts/target-switching/generate_project_templates.sh" ]]; then
+    "$ROOT_DIR/Scripts/target-switching/generate_project_templates.sh" >/dev/null 2>&1 || true
+fi
+
 # For Core modules, use XCFramework-suffixed scheme to avoid Pods conflicts
 if [[ "$MODULE_NAME" =~ ^(MSPCore|NovaCore|MSPiOSCore|MSPSharedLibraries|MSPOMSDK)$ ]]; then
     SCHEME_NAME="${MODULE_NAME}-XCFramework"
@@ -538,5 +544,20 @@ if [[ "$MODULE_NAME" == "NovaCore" ]]; then
         # Restore backup if copy failed
         mv "${NOVA_ADAPTER_DEST}.backup" "$NOVA_ADAPTER_DEST" 2>/dev/null || true
     fi
+fi
+
+# Task 2: Cleanup generated project.yml files after build
+# Ensure workspace remains clean - project.yml should only exist during build
+log_step "Cleaning up generated project.yml files"
+if [[ -f "$PROJECT_YML" ]]; then
+    rm -f "$PROJECT_YML"
+    log_info "  Removed: $PROJECT_YML"
+fi
+
+# Also clean up project.yml in the same directory if it exists
+PROJECT_DIR=$(dirname "$PROJECT_YML")
+if [[ -f "$PROJECT_DIR/project.yml" ]]; then
+    rm -f "$PROJECT_DIR/project.yml"
+    log_info "  Removed: $PROJECT_DIR/project.yml"
 fi
 

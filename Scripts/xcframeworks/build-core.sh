@@ -397,3 +397,21 @@ if [[ $FAIL_COUNT -gt 0 ]]; then
     exit 1
 fi
 
+# Task 2: Cleanup generated project.yml files after build
+# Ensure workspace remains clean - project.yml should only exist during build
+log_step "Cleaning up generated project.yml files"
+CLEANED_COUNT=0
+while IFS= read -r project_yml; do
+    [[ -z "$project_yml" ]] && continue
+    if [[ -f "$project_yml" ]]; then
+        rm -f "$project_yml"
+        ((CLEANED_COUNT++)) || true
+    fi
+done < <(find "$ROOT_DIR/Sources" "$ROOT_DIR/Examples" -name "project.yml" -type f 2>/dev/null | grep -v ".generated" | grep -v "DerivedData" || true)
+
+if [[ $CLEANED_COUNT -gt 0 ]]; then
+    log_info "  Cleaned up $CLEANED_COUNT project.yml file(s)"
+else
+    log_info "  No project.yml files to clean up"
+fi
+

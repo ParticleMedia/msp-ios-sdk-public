@@ -24,6 +24,8 @@ log_section "Generating project.yml files from templates"
 GENERATED_COUNT=0
 FAILED_COUNT=0
 
+# Task 2: Ensure we only generate project.yml from templates
+# Never commit project.yml to Git - they are build artifacts
 # Find all project.yml.template files
 while IFS= read -r template; do
     [[ -z "$template" ]] && continue
