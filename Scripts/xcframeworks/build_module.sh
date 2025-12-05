@@ -294,7 +294,7 @@ if [[ -n "${POD_SIM_MODULES:-}" ]]; then
     done
     if [[ -n "$SIM_I_FLAGS" ]]; then
         # Update OTHER_SWIFT_FLAGS to include ONLY Simulator Pod module paths + modulemap flags
-        local swift_flags="-no-verify-emitted-module-interface$SIM_I_FLAGS$SIM_MODULEMAP_FLAGS"
+        swift_flags="-no-verify-emitted-module-interface$SIM_I_FLAGS$SIM_MODULEMAP_FLAGS"
         SIM_BUILD_SETTINGS[3]="OTHER_SWIFT_FLAGS=$swift_flags"
         # Add HEADER_SEARCH_PATHS for Clang to find module headers
         SIM_BUILD_SETTINGS+=("HEADER_SEARCH_PATHS=\$(inherited)$SIM_HEADER_PATHS")
