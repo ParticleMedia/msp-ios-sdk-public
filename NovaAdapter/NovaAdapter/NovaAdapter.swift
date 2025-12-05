@@ -161,6 +161,7 @@ public class NovaAdapter: AdNetworkAdapter {
                 novaNativeAdView.setupViews(with: novaNativeAdItem, clickableViews: clickableViews)
 
                 if let mediaContainer = nativeAdContainer.getMedia() {
+                    mediaContainer.subviews.forEach { $0.removeFromSuperview() }
                     mediaContainer.addSubview(novaNativeAdView.mediaView)
                     novaNativeAdView.mediaView.snp.makeConstraints { make in
                         make.directionalEdges.equalToSuperview()
