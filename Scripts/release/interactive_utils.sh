@@ -90,7 +90,7 @@ msp_prompt_menu() {
 msp_prompt_yes_no() {
     local prompt="$1"
     local default="${2:-N}"
-    local default_upper="${default^^}"
+    local default_upper=$(echo "$default" | tr '[:lower:]' '[:upper:]' 2>/dev/null || echo "$default" | awk '{print toupper($0)}')
     local response
     
     # Build prompt with default
@@ -108,7 +108,7 @@ msp_prompt_yes_no() {
         if [[ -z "$response" ]]; then
             response="$default_upper"
         else
-            response="${response^^}"
+            response=$(echo "$response" | tr '[:lower:]' '[:upper:]' 2>/dev/null || echo "$response" | awk '{print toupper($0)}')
         fi
         
         case "$response" in

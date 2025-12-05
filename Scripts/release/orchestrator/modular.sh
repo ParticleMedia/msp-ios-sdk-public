@@ -1020,7 +1020,8 @@ main() {
             echo "═══════════════════════════════════════════════════════════════════"
             echo ""
             read -p "[MSP][CLI] Confirm production release? (y/N): " confirm
-            if [[ "${confirm^^}" != "Y" ]] && [[ "${confirm^^}" != "YES" ]]; then
+            local confirm_upper=$(echo "$confirm" | tr '[:lower:]' '[:upper:]' 2>/dev/null || echo "$confirm" | awk '{print toupper($0)}')
+            if [[ "$confirm_upper" != "Y" ]] && [[ "$confirm_upper" != "YES" ]]; then
                 log_info "Production release cancelled by user"
                 exit 0
             fi
@@ -1162,13 +1163,14 @@ main() {
     
     # Step 6: Run local verification (soft-fail, never breaks release)
     step "run_local_verification"
+    local release_mode_upper=$(echo "$RELEASE_MODE" | tr '[:lower:]' '[:upper:]' 2>/dev/null || echo "$RELEASE_MODE" | awk '{print toupper($0)}')
     if [[ "$MSP_SKIP_LOCAL_VERIFY" == "true" ]]; then
-        echo "[MSP][ORCH] Mode: ${RELEASE_MODE^^} — skipping local verification"
+        echo "[MSP][ORCH] Mode: ${release_mode_upper} — skipping local verification"
         step_skip "run_local_verification (skipped in CI mode)"
     else
         local verify_script="$ROOT_DIR/Scripts/release/verify_local/run_local.sh"
         if [[ -f "$verify_script" ]]; then
-            echo "[MSP][ORCH] Mode: ${RELEASE_MODE^^} — running local verification"
+            echo "[MSP][ORCH] Mode: ${release_mode_upper} — running local verification"
             if source "$verify_script" && run_local_verification; then
                 step_done "run_local_verification"
             else
@@ -1183,7 +1185,7 @@ main() {
     # Step 7: Run device verification (soft-fail, never breaks release)
     step "run_device_verification"
     if [[ "$MSP_SKIP_DEVICE_VERIFY" == "true" ]]; then
-        echo "[MSP][ORCH] Mode: ${RELEASE_MODE^^} — skipping device verification"
+        echo "[MSP][ORCH] Mode: ${release_mode_upper} — skipping device verification"
         step_skip "run_device_verification (skipped in CI mode)"
     else
         if run_device_verification; then
@@ -1197,7 +1199,7 @@ main() {
     # Step 8: Run XCFramework deep verification (soft-fail, never breaks release)
     step "run_xcframework_verification"
     if [[ "$MSP_SKIP_XCF_VERIFY" == "true" ]]; then
-        echo "[MSP][ORCH] Mode: ${RELEASE_MODE^^} — skipping XCF verify"
+        echo "[MSP][ORCH] Mode: ${release_mode_upper} — skipping XCF verify"
         step_skip "run_xcframework_verification (skipped in CI mode or xcodebuild not available)"
     else
         if run_xcframework_verification; then
@@ -1464,6 +1466,31 @@ EOF
             if command -v notify::email::send_success_email &>/dev/null; then
                 notify::email::send_success_email "$VERSION" "${MSP_AUTHOR_EMAIL:-unknown}" "$module_list" "${duration:-unknown}" "${REMOTE_VERIFY_STATUS:-}" || true
             fi
+        fi
+    fi
+    
+    # Task 4: Generate release.md report (always, even if some steps failed)
+    log_step "Generating release markdown report"
+    local report_generator="$ROOT_DIR/Scripts/release/generate_release_md.sh"
+    local state_file="$ROOT_DIR/.msp-release-state.json"
+    local report_file="$ROOT_DIR/Releases/release-$VERSION.md"
+    
+    if [[ ! -f "$report_generator" ]]; then
+        log_warn "Report generator not found: $report_generator"
+    elif [[ ! -f "$state_file" ]]; then
+        log_warn "State file not found: $state_file (release.md will not be generated)"
+    else
+        log_info "Generating release report: Releases/release-$VERSION.md"
+        if bash "$report_generator" \
+            --state-file "$state_file" \
+            --output "$report_file" 2>&1; then
+            if [[ -f "$report_file" ]]; then
+                log_success "Release report generated: Releases/release-$VERSION.md"
+            else
+                log_warn "Report generation completed but file not found: $report_file"
+            fi
+        else
+            log_warn "Report generation failed (soft-fail, continuing)"
         fi
     fi
 }

@@ -729,12 +729,20 @@ main() {
     # Phase 4 TASK 1: CocoaPods release strong validation
     local release_mode="${MSP_RELEASE_MODE:-cli}"
     local release_tier="${MSP_RELEASE_TIER:-preflight}"
-    echo "[MSP][ORCH] Mode: ${release_mode^^} — linting pods spec"
+    local release_mode_upper=$(echo "$release_mode" | tr '[:lower:]' '[:upper:]' 2>/dev/null || echo "$release_mode" | awk '{print toupper($0)}')
+    echo "[MSP][ORCH] Mode: ${release_mode_upper} — linting pods spec"
     
     # Check CocoaPods installation
     if ! command -v pod >/dev/null 2>&1; then
         log_error "CocoaPods is not installed. Please install it with: sudo gem install cocoapods"
-        exit 1
+        # Task 3: Preflight mode allows soft-fail
+        if [[ "$release_tier" == "production" ]]; then
+            exit 1
+        else
+            log_warn "[MSP][ORCH] Preflight mode: CocoaPods not installed, skipping CocoaPods release"
+            msp_state_mark_step_failed "pods_publish" "CocoaPods not installed" "1"
+            return 0
+        fi
     fi
     
     # Check trunk session status (stronger check)
@@ -744,7 +752,14 @@ main() {
     if [[ "$trunk_check" =~ "No session" ]] || [[ "$trunk_check" =~ "authentication" ]] || [[ "$trunk_check" =~ "ERROR" ]]; then
         log_error "CocoaPods trunk session is not valid"
         log_error "Please run: pod trunk register <email> <name>"
-        exit 1
+        # Task 3: Preflight mode allows soft-fail
+        if [[ "$release_tier" == "production" ]]; then
+            exit 1
+        else
+            log_warn "[MSP][ORCH] Preflight mode: CocoaPods trunk session invalid, skipping CocoaPods release"
+            msp_state_mark_step_failed "pods_publish" "CocoaPods trunk session invalid" "1"
+            return 0
+        fi
     fi
     log_success "CocoaPods trunk session is valid"
     
@@ -848,7 +863,13 @@ main() {
             notify_release_failure "CocoaPods" "$VERSION" "MSPSharedLibraries release failed" "Foundation Release"
         fi
         msp_state_mark_step_failed "pods_publish" "MSPSharedLibraries release failed" "1"
-        exit 1
+        # Task 3: Preflight mode allows soft-fail, production requires hard-fail
+        if [[ "$release_tier" == "production" ]]; then
+            log_error "[MSP][ORCH] Production release: CocoaPods release failure is not allowed"
+            exit 1
+        else
+            log_warn "[MSP][ORCH] Preflight mode: CocoaPods release failed, continuing with other steps"
+        fi
     fi
     
     # Step 2: Release Adapters
@@ -865,7 +886,13 @@ main() {
             notify_release_failure "CocoaPods" "$VERSION" "Adapter release failed" "Adapter Release"
         fi
         msp_state_mark_step_failed "pods_publish" "Adapter release failed" "1"
-        exit 1
+        # Task 3: Preflight mode allows soft-fail, production requires hard-fail
+        if [[ "$release_tier" == "production" ]]; then
+            log_error "[MSP][ORCH] Production release: CocoaPods release failure is not allowed"
+            exit 1
+        else
+            log_warn "[MSP][ORCH] Preflight mode: CocoaPods release failed, continuing with other steps"
+        fi
     fi
     
     # Step 3: Release MSPCore
@@ -878,7 +905,13 @@ main() {
             notify_release_failure "CocoaPods" "$VERSION" "MSPCore release failed" "Main Framework Release"
         fi
         msp_state_mark_step_failed "pods_publish" "MSPCore release failed" "1"
-        exit 1
+        # Task 3: Preflight mode allows soft-fail, production requires hard-fail
+        if [[ "$release_tier" == "production" ]]; then
+            log_error "[MSP][ORCH] Production release: CocoaPods release failure is not allowed"
+            exit 1
+        else
+            log_warn "[MSP][ORCH] Preflight mode: CocoaPods release failed, continuing with other steps"
+        fi
     fi
     
     # Commit all changes

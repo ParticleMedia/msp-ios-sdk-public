@@ -339,9 +339,17 @@ spm_local_validation() {
     # Get absolute path to repo Package.swift
     local repo_package_swift="$ROOT_DIR/Package.swift"
     if [[ ! -f "$repo_package_swift" ]]; then
-        log_error "Package.swift not found at $repo_package_swift"
-        log_error "SPM local validation requires Package.swift to be generated first"
-        return 1
+        log_error "[SPM][ERROR] Package.swift not found at: $repo_package_swift"
+        log_error "[SPM][ERROR] SPM local validation requires Package.swift to be generated first"
+        # In preflight mode, allow soft-fail
+        if [[ "${MSP_RELEASE_TIER:-preflight}" == "production" ]]; then
+            return 1
+        else
+            log_warn "[SPM][WARN] Preflight mode: skipping local validation"
+            return 0
+        fi
+    else
+        log_info "[SPM][INFO] Package.swift found at: $repo_package_swift"
     fi
     
     local repo_abs_path
@@ -557,6 +565,45 @@ main() {
     msp_state_mark_step_running "spm_publish"
     
     print_section "Starting SPM Release Process for Version: $VERSION"
+    
+    # Task 2: Ensure Package.swift exists before SPM operations
+    # Package.swift is generated from Package.swift.template and should not be committed
+    local repo_package_swift="$ROOT_DIR/Package.swift"
+    local package_swift_template="$ROOT_DIR/Package.swift.template"
+    local generate_script="$ROOT_DIR/Scripts/spm-sync/generate_package_swift.sh"
+    
+    if [[ ! -f "$repo_package_swift" ]]; then
+        log_step "Package.swift not found, generating from template"
+        if [[ -f "$package_swift_template" ]]; then
+            # Try to generate from template
+            if [[ -x "$generate_script" ]]; then
+                log_info "[SPM][INFO] Generating Package.swift using generate_package_swift.sh"
+                "$generate_script" || {
+                    log_warn "[SPM][WARN] Failed to generate Package.swift, trying template copy"
+                    cp "$package_swift_template" "$repo_package_swift" 2>/dev/null || true
+                }
+            elif [[ -f "$package_swift_template" ]]; then
+                log_info "[SPM][INFO] Copying Package.swift from template"
+                cp "$package_swift_template" "$repo_package_swift" 2>/dev/null || true
+            fi
+        fi
+        
+        if [[ ! -f "$repo_package_swift" ]]; then
+            log_error "[SPM][ERROR] Package.swift not found at: $repo_package_swift"
+            log_error "[SPM][ERROR] Template not found at: $package_swift_template"
+            log_error "[SPM][ERROR] SPM local validation requires Package.swift to be generated first"
+            if [[ "${MSP_RELEASE_TIER:-preflight}" == "production" ]]; then
+                return 1
+            else
+                log_warn "[SPM][WARN] Preflight mode: continuing without Package.swift validation"
+                return 0
+            fi
+        else
+            log_success "[SPM][INFO] Package.swift found at: $repo_package_swift"
+        fi
+    else
+        log_info "[SPM][INFO] Package.swift found at: $repo_package_swift"
+    fi
     
     # Phase 4 TASK 2: SPM Manifest strong validation
     local release_mode="${MSP_RELEASE_MODE:-cli}"
