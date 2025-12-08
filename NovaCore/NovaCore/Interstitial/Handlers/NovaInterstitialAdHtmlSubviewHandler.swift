@@ -10,6 +10,7 @@ import WebKit
 @_implementationOnly import SnapKit
 
 class NovaInterstitialAdHtmlSubviewHandler: NovaInterstitialAdSubviewHandler, NovaTopRightClosable {
+    var darkColor: UIColor { NovaColorPalettes.Gray.tint200 }
     
     enum LayoutMetrics {
         static let avatarSize = 24.0
