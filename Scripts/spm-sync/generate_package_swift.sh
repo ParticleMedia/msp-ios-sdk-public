@@ -23,7 +23,8 @@ import PackageDescription
 let package = Package(
     name: "msp-ios-sdk",
     platforms: [
-        .iOS(.v15)
+        .iOS(.v15),
+        .macOS(.v10_15)
     ],
     products: [
         .library(name: "MSPAds", targets: ["MSPCore", "MSPSharedLibraries", "MSPiOSCore"]),
