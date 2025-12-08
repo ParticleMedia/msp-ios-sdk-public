@@ -36,21 +36,42 @@ build_demoapp() {
     
     # For Pods mode, need to run pod install first
     if [[ "$mode" == "pods" ]]; then
-        if [[ -f "$demoapp_dir/Podfile" ]]; then
-            vr_log_info "[LOCAL] Running pod install..."
-            pushd "$demoapp_dir" >/dev/null || {
-                vr_log_error "[LOCAL] Failed to change to DemoApp directory"
-                return 1
-            }
-            
-            if ! pod install --project-directory=. >/dev/null 2>&1; then
-                vr_log_error "[LOCAL] pod install failed"
-                popd >/dev/null
-                return 1
-            fi
-            
-            popd >/dev/null
+        # Ensure DemoApp directory exists
+        mkdir -p "$demoapp_dir" || {
+            vr_log_error "[LOCAL] Failed to create DemoApp directory: $demoapp_dir"
+            return 1
+        }
+        
+        # Check for Podfile
+        if [[ ! -f "$demoapp_dir/Podfile" ]]; then
+            vr_log_error "[LOCAL] Podfile not found at: $demoapp_dir/Podfile"
+            vr_log_info "[LOCAL] DemoApp directory contents:"
+            ls -la "$demoapp_dir" 2>/dev/null || vr_log_warn "[LOCAL] Failed to list DemoApp directory"
+            return 1
         fi
+        
+        # Create pod_install.log in DemoApp directory
+        local pod_log="$demoapp_dir/pod_install.log"
+        vr_log_info "[LOCAL] Running pod install in: $demoapp_dir"
+        vr_log_info "[LOCAL] Pod install log: $pod_log"
+        
+        # Change to DemoApp directory
+        pushd "$demoapp_dir" >/dev/null || {
+            vr_log_error "[LOCAL] Failed to cd into DemoApp dir: $demoapp_dir"
+            return 1
+        }
+        
+        # Run pod install with verbose output to log file
+        if pod install --verbose >"$pod_log" 2>&1; then
+            vr_log_info "[LOCAL] pod install succeeded"
+        else
+            vr_log_error "[LOCAL] pod install FAILED, see log at: $pod_log"
+            tail -n 40 "$pod_log" || cat "$pod_log" || true
+            popd >/dev/null || true
+            return 1
+        fi
+        
+        popd >/dev/null || true
         
         # Check for workspace
         local workspace="$demoapp_dir/MSPDemoApp.xcworkspace"
