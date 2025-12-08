@@ -98,8 +98,6 @@ let package = Package(
             path: "ThirdParty/MobileFuseSDK/MobileFuseSDK.xcframework"
         ),
         .binaryTarget(
-        ),
-        .binaryTarget(
             name: "OpenWrapSDK",
             path: "ThirdParty/OpenWrapSDK/OpenWrapSDK.xcframework"
         ),
