@@ -113,7 +113,7 @@ run_xcframework_verification() {
         vr_log_info "[XCF] Verifying $module_name..."
         
         # Copy XCFramework to sandbox
-        local sandbox_xcf="$SANDBOX_DIR/$module_name.xcframework"
+        local sandbox_xcf="$SANDBOX_DIR/${module_name}.xcframework"
         cp -R "$xcf_path" "$sandbox_xcf" || {
             vr_log_error "[XCF] Failed to copy $module_name to sandbox"
             XCF_VERIFY_MODULE_NAMES+=("$module_name")
