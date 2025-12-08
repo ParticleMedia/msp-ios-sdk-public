@@ -97,8 +97,6 @@ let package = Package(
             path: "ThirdParty/MobileFuseSDK/MobileFuseSDK.xcframework"
         ),
         .binaryTarget(
-            name: "MintegralAdSDK",
-            path: "ThirdParty/MintegralAdSDK/MintegralAdSDK.xcframework"
         ),
         .binaryTarget(
             name: "OpenWrapSDK",
@@ -202,7 +200,6 @@ let package = Package(
             dependencies: [
                 "MSPSharedLibraries",
                 "MSPiOSCore",
-                "MintegralAdSDK"
             ],
             path: "Sources/Adapters/MintegralAdapter/MintegralAdapter"
         ),
