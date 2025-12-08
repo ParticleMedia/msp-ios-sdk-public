@@ -15,7 +15,7 @@ source "$(dirname "$0")/../verify_remote/common/utils.sh"
 # Ensure ROOT_DIR is detected
 vr_detect_root_dir || {
     vr_log_error "Failed to detect ROOT_DIR"
-    return 1
+    exit 1
 }
 
 # ============================================================================
@@ -26,40 +26,76 @@ prepare_demoapp() {
     local sandbox="$1"
     
     if [[ -z "$sandbox" ]]; then
-        vr_log_error "Sandbox path required"
+        vr_log_error "[LOCAL] Sandbox path required"
         return 1
     fi
     
-    # Create DemoApp subdirectory in sandbox
-    mkdir -p "$sandbox/DemoApp"
+    # Ensure ROOT_DIR is set (re-detect if needed)
+    if [[ -z "${ROOT_DIR:-}" ]]; then
+        vr_detect_root_dir || {
+            vr_log_error "[LOCAL] Failed to detect ROOT_DIR"
+            return 1
+        }
+    fi
     
-    # Copy DemoApp from Examples/MSPDemoApp/
-    local demoapp_source="$ROOT_DIR/Examples/MSPDemoApp"
+    # Compute source and destination paths
+    local demoapp_src="$ROOT_DIR/Examples/MSPDemoApp"
+    local demoapp_dst="$sandbox/DemoApp"
     
-    if [[ ! -d "$demoapp_source" ]]; then
-        vr_log_error "DemoApp source not found: $demoapp_source"
+    vr_log_info "[LOCAL] ROOT_DIR: $ROOT_DIR"
+    vr_log_info "[LOCAL] Source path: $demoapp_src"
+    vr_log_info "[LOCAL] Destination path: $demoapp_dst"
+    
+    # Hard check: source must exist
+    if [[ ! -d "$demoapp_src" ]]; then
+        vr_log_error "[LOCAL] DemoApp source not found: $demoapp_src"
+        vr_log_info "[LOCAL] ROOT_DIR value: ${ROOT_DIR:-<unset>}"
+        vr_log_info "[LOCAL] Current directory: $(pwd)"
         return 1
     fi
     
-    # Copy Sources directory
-    if [[ -d "$demoapp_source/Sources" ]]; then
-        cp -R "$demoapp_source/Sources" "$sandbox/DemoApp/"
-        vr_log_info "[LOCAL] Copied Sources directory"
+    # Remove destination if it exists (to ensure clean copy)
+    if [[ -d "$demoapp_dst" ]]; then
+        rm -rf "$demoapp_dst" || {
+            vr_log_error "[LOCAL] Failed to remove existing DemoApp dest dir: $demoapp_dst"
+            return 1
+        }
     fi
     
-    # Copy Resources directory
-    if [[ -d "$demoapp_source/Resources" ]]; then
-        cp -R "$demoapp_source/Resources" "$sandbox/DemoApp/"
-        vr_log_info "[LOCAL] Copied Resources directory"
+    # Copy entire DemoApp directory - simplest and most reliable method
+    vr_log_info "[LOCAL] Executing: cp -R \"$demoapp_src\" \"$demoapp_dst\""
+    if ! cp -R "$demoapp_src" "$demoapp_dst" 2>&1; then
+        vr_log_error "[LOCAL] Failed to copy DemoApp from $demoapp_src to $demoapp_dst"
+        vr_log_info "[LOCAL] Source directory exists: $([ -d "$demoapp_src" ] && echo 'YES' || echo 'NO')"
+        vr_log_info "[LOCAL] Source directory contents:"
+        ls -la "$demoapp_src" 2>/dev/null | head -20 || true
+        return 1
     fi
     
-    # Copy project.yml
-    if [[ -f "$demoapp_source/project.yml" ]]; then
-        cp "$demoapp_source/project.yml" "$sandbox/DemoApp/"
-        vr_log_info "[LOCAL] Copied project.yml"
+    # Verify the copy succeeded
+    if [[ ! -d "$demoapp_dst" ]]; then
+        vr_log_error "[LOCAL] DemoApp destination directory missing after copy: $demoapp_dst"
+        return 1
     fi
     
-    vr_log_info "[LOCAL] Copied DemoApp sources to sandbox: $sandbox/DemoApp"
+    # Count files to verify copy
+    local file_count
+    file_count="$(find "$demoapp_dst" -type f 2>/dev/null | wc -l | tr -d ' ' || echo '0')"
+    vr_log_info "[LOCAL] Copy completed. File count: $file_count"
+    
+    if [[ "$file_count" == "0" ]]; then
+        vr_log_error "[LOCAL] Copy completed but destination is empty (0 files found)"
+        vr_log_info "[LOCAL] Source file count: $(find "$demoapp_src" -type f 2>/dev/null | wc -l | tr -d ' ' || echo '0')"
+        vr_log_info "[LOCAL] Destination directory listing:"
+        ls -la "$demoapp_dst" 2>/dev/null || true
+        return 1
+    fi
+    
+    vr_log_info "[LOCAL] Copied DemoApp sources to sandbox: $demoapp_dst ($file_count files)"
+    
+    # List contents (non-fatal if it fails)
+    vr_log_info "[LOCAL] Verifying copy (listing contents):"
+    ls -R "$demoapp_dst" 2>/dev/null | head -30 || vr_log_warn "[LOCAL] Could not list DemoApp directory (non-fatal)"
     
     return 0
 }
@@ -71,4 +107,3 @@ prepare_demoapp() {
 if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
     prepare_demoapp "$@"
 fi
-
