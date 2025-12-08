@@ -1124,17 +1124,45 @@ main() {
     if pre_release_setup; then
         step_done "pre_release_setup"
     else
-        step_fail "pre_release_setup" $?
-        return 10
+        # In preflight mode, allow pre_release_setup to fail gracefully
+        if [[ "$RELEASE_TIER" == "preflight" ]]; then
+            log_warn "Pre-release setup failed in preflight mode, continuing anyway"
+            step_skip "pre_release_setup"
+        else
+            step_fail "pre_release_setup" $?
+            return 10
+        fi
     fi
     
     # Step 1: Create release branch
     step "create_release_branch"
-    if create_release_branch; then
+    # In preflight mode, allow branch creation to fail gracefully
+    # Check if we're already on a release branch or if skip flag is set
+    local skip_branch_creation=false
+    if [[ "${SKIP_CREATE_RELEASE_BRANCH:-false}" == "true" ]]; then
+        skip_branch_creation=true
+        log_warn "Skipping branch creation (--skip-create-release-branch flag set)"
+    elif [[ "$RELEASE_TIER" == "preflight" ]]; then
+        # In preflight, check if already on a release branch
+        local current_branch=$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo "")
+        if [[ "$current_branch" =~ ^release/ ]]; then
+            skip_branch_creation=true
+            log_warn "Already on release branch '$current_branch', skipping branch creation in preflight mode"
+        fi
+    fi
+    
+    if [[ "$skip_branch_creation" == "true" ]]; then
+        step_skip "create_release_branch"
+    elif create_release_branch; then
         step_done "create_release_branch"
     else
-        step_fail "create_release_branch" $?
-        return 11
+        if [[ "$RELEASE_TIER" == "preflight" ]]; then
+            log_warn "Branch creation failed in preflight mode, continuing anyway"
+            step_skip "create_release_branch"
+        else
+            step_fail "create_release_branch" $?
+            return 11
+        fi
     fi
     
     # Step 2: Release CocoaPods
