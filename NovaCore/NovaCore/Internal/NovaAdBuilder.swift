@@ -178,7 +178,7 @@ public enum NovaAdBuilder {
                 layoutStyle: NovaNativeLayoutStyle(rawValue: adItem.creative.layout ?? ""),
                 marketingType: buildMarketingType(item: adItem.creative.tagItem),
                 playableInfo: buildPlayableInfo(adItem.creative.playableItem, for: .appOpen, abConfig: abConfig),
-                closeCountDownTimeSeconds: Int(adItem.creative.closeCountDownSeconds ?? ""),
+                closeCountDownTimeSeconds: adItem.creative.closeCountDownTimeSecond ?? 0,
                 clickableComponents: adItem.creative.clickableComponents?
                     .compactMap { NovaClickableComponent(rawValue: $0) },
                 htmlPageItems: adItem.creative.htmlPageItems
@@ -263,7 +263,7 @@ public enum NovaAdBuilder {
                     layoutStyle: NovaNativeLayoutStyle(rawValue: adItem.creative.layout ?? ""),
                     marketingType: buildMarketingType(item: adItem.creative.tagItem),
                     playableInfo: buildPlayableInfo(adItem.creative.playableItem, for: .appOpen, abConfig: abConfig),
-                    closeCountDownTimeSeconds: Int(adItem.creative.closeCountDownSeconds ?? ""),
+                    closeCountDownTimeSeconds: adItem.creative.closeCountDownTimeSecond ?? 0,
                     clickableComponents: adItem.creative.clickableComponents?
                         .compactMap { NovaClickableComponent(rawValue: $0) },
                     htmlPageItems: adItem.creative.htmlPageItems

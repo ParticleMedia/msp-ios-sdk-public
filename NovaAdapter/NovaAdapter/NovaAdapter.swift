@@ -404,6 +404,7 @@ public class NovaAdapter: AdNetworkAdapter {
                         fullScreenShot: fullScreenShot
                     )
                 self.interstitialAdItem?.logAdHide(reason: reason)
+            }
         }
     }
     

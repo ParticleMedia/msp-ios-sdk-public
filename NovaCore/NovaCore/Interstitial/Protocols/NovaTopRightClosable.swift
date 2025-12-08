@@ -13,7 +13,7 @@ import UIKit
 protocol NovaTopRightClosable: AnyObject {
     var countdownTimer: Timer? { get set }
     var delayTimer: Timer? { get set }
-    var countdownSecondRemaining: Int { get }
+    var countdownSecondRemaining: Int { get set }
     var delaySecondRemaining: Int? { get }
     var topRightCloseButton: UIButton  { get }
     var topRightCloseButtonArea: UIView { get }
@@ -34,7 +34,7 @@ extension NovaTopRightClosable {
     func setupCountdownTimerIfNeeded() {
         if countdownSecondRemaining > 0 {
             topRightCloseButton.isHidden = false
-            topRightCloseButtonStartCountDown(button: topRightCloseButton, clickableArea: topRightCloseButtonArea, countdownSeconds: countdownSecondRemaining)
+            topRightCloseButtonStartCountDown(button: topRightCloseButton, clickableArea: topRightCloseButtonArea)
         } else {
             enableTopRightCloseButton(button: topRightCloseButton, clickableArea: topRightCloseButtonArea)
         }
@@ -54,18 +54,18 @@ extension NovaTopRightClosable {
         }
     }
     
-    private func topRightCloseButtonStartCountDown(button: UIButton, clickableArea: UIView, countdownSeconds: Int) {
+    private func topRightCloseButtonStartCountDown(button: UIButton, clickableArea: UIView) {
         countdownTimer?.invalidate()
         
-            let endTime = Date().addingTimeInterval(TimeInterval(countdownSeconds))
+            let endTime = Date().addingTimeInterval(TimeInterval(countdownSecondRemaining))
 
             // Immediately show first number
             clickableArea.isUserInteractionEnabled = false
-            button.setTitle("\(countdownSeconds)", for: .normal)
+            button.setTitle("\(countdownSecondRemaining)", for: .normal)
 
             countdownTimer = Timer.scheduledTimer(withTimeInterval: 0.2, repeats: true) { [weak self] timer in
                 let remaining = Int(endTime.timeIntervalSinceNow.rounded(.up))
-
+                self?.countdownSecondRemaining = remaining
                 // Timer still running
                 if remaining > 0 {
                     button.setTitle("\(remaining)", for: .normal)
