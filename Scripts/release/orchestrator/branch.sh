@@ -3,7 +3,7 @@
 # Create Release Branch Script
 # Creates a release branch from the base branch for version releases
 
-set -e
+set +e  # Disabled to allow graceful error handling
 
 # Source the common library
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
