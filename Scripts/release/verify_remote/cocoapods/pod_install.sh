@@ -38,17 +38,14 @@ run_pod_install() {
         return 1
     fi
     
-    # Create temporary log file for pod install output
+    # Create log file in sandbox for pod install output (persisted for debugging)
     local pod_log
-    pod_log="$(mktemp)" || {
-        vr_log_error "Failed to create temporary log file"
-        return 1
-    }
+    pod_log="$sandbox/pod_install.log"
+    mkdir -p "$sandbox" || true
     
     # Change to DemoApp directory and run pod install
     pushd "$demoapp_dir" >/dev/null || {
         vr_log_error "Failed to change to DemoApp directory: $demoapp_dir"
-        rm -f "$pod_log"
         return 1
     }
     
@@ -61,17 +58,17 @@ run_pod_install() {
             vr_log_info "[PODS] Workspace and Pods directory created successfully"
         else
             vr_log_warn "[PODS] Workspace or Pods directory missing after pod install"
+        
+        vr_log_info "[PODS] Pod install log saved to: $pod_log"
         fi
         
-        rm -f "$pod_log"
         popd >/dev/null
         return 0
     else
         vr_log_error "[PODS] pod install failed (see diagnostics below)"
-        echo "---------- POD INSTALL OUTPUT (last 40 lines) ----------"
-        tail -n 40 "$pod_log" || cat "$pod_log"
-        echo "--------------------------------------------------------"
-        rm -f "$pod_log"
+        echo "------ Full pod install log at: $pod_log ------"
+        cat "$pod_log"
+        echo "------------------------------------------------"
         popd >/dev/null
         return 1
     fi
