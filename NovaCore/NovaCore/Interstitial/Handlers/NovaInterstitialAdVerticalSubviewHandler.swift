@@ -344,6 +344,8 @@ class NovaInterstitialAdVerticalSubviewHandler: NovaInterstitialAdSubviewHandler
     
     var countdownTimer: Timer?
     let countdownSecondRemaining: Int
+    var delayTimer: Timer? = nil
+    var delaySecondRemaining: Int? = nil
     private let showTopRightCloseButton: Bool
     
     var darkColor: UIColor {

@@ -12,10 +12,11 @@ import Foundation
 struct NovaInterstitialAdContext {
     // MARK: Lifecycle
 
-    init(interstitialAd: NovaInterstitialAdItem, layout: NovaInterstitialAdLayout, tracingId: UUID?) {
+    init(interstitialAd: NovaInterstitialAdItem, layout: NovaInterstitialAdLayout, tracingId: UUID?, pageIndex: Int? = nil) {
         self.interstitialAd = interstitialAd
         self.layout = layout
         self.tracingId = tracingId
+        self.pageIndex = pageIndex
     }
 
     // MARK: Internal
@@ -23,6 +24,7 @@ struct NovaInterstitialAdContext {
     let interstitialAd: NovaInterstitialAdItem
     let layout: NovaInterstitialAdLayout
     let tracingId: UUID?
+    let pageIndex: Int? // the current page index for multi page ads
 }
 
 // MARK: - NovaInterstitialAdLayoutType
@@ -33,6 +35,7 @@ enum NovaInterstitialAdLayoutType {
     case playable
     case twoPartPlayable
     case skOverlay(appStoreId: Int, thirdPartyTrackingURL: URL)
+    case html(showTopRightCancelButton: Bool)
 }
 
 extension NovaInterstitialAdItem {
@@ -68,6 +71,8 @@ extension NovaInterstitialAdItem {
                 DebugLogger.ui.error("missing interstitial layout: \(self.adId)")
                 return .horizontal(showTopRightCancelButton: false)
             }
+        case .html:
+            return .html(showTopRightCancelButton: true)
         }
     }
 }
