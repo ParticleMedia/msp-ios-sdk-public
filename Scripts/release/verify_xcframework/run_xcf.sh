@@ -60,11 +60,20 @@ run_xcframework_verification() {
     XCF_VERIFY_EXECUTED=1
     
     # Find XCFrameworks in build output
-    local xcframeworks_dir="${XCFRAMEWORKS_DIR:-$ROOT_DIR/build/xcframeworks}"
-    if [[ ! -d "$xcframeworks_dir" ]]; then
-        vr_log_warn "[XCF] XCFrameworks directory not found: $xcframeworks_dir"
-        return 0  # Soft-fail
+    # Multi-path fallback (same as worktree)
+    local xcframeworks_dir="${XCFRAMEWORKS_DIR:-}"
+    if [[ -z "$xcframeworks_dir" ]]; then
+        if [[ -d "$ROOT_DIR/Build/XCFrameworks" ]]; then
+            xcframeworks_dir="$ROOT_DIR/Build/XCFrameworks"
+        elif [[ -d "$ROOT_DIR/build/xcframeworks" ]]; then
+            xcframeworks_dir="$ROOT_DIR/build/xcframeworks"
+        else
+            vr_log_error "[XCF] XCFramework directory not found under root: $ROOT_DIR"
+            return 0  # Soft-fail
+        fi
     fi
+    
+    echo "[XCF][INFO] Using XCFrameworks directory: $xcframeworks_dir"
     
     # Create sandbox
     local SANDBOX_DIR
@@ -95,6 +104,12 @@ run_xcframework_verification() {
         local module_name
         module_name="$(basename "$xcf_path" .xcframework)"
         
+
+        # Skip Mintegral modules — handled via remote CocoaPods dependency
+        if [[ "$module_name" == "MintegralAdapter" ]] || [[ "$module_name" == "MintegralAdSDK" ]]; then
+            vr_log_info "[XCF] Skipping Mintegral module ($module_name) — handled via remote CocoaPods dependency"
+            continue
+        fi
         vr_log_info "[XCF] Verifying $module_name..."
         
         # Copy XCFramework to sandbox
@@ -113,12 +128,6 @@ run_xcframework_verification() {
         # Run all scans
         local scan_warnings
 
-        # Skip Mintegral modules — handled via remote CocoaPods dependency
-        if [[ "$module_name" == "MintegralAdapter" ]] || [[ "$module_name" == "MintegralAdSDK" ]]; then
-            vr_log_info "[XCF] Skipping Mintegral module ($module_name) — handled via remote CocoaPods dependency"
-            continue
-        fi
-        
         # 1. Architecture scan
         if ! scan_warnings="$(scan_architectures "$sandbox_xcf" "$module_name" 2>&1)"; then
             vr_log_warn "[XCF] Architecture scan failed for $module_name"
