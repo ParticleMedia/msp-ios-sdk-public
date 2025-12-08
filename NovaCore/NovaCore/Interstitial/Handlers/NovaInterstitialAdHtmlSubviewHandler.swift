@@ -27,7 +27,7 @@ class NovaInterstitialAdHtmlSubviewHandler: NovaInterstitialAdSubviewHandler, No
     private weak var viewController: UIViewController?
     private weak var parentView: UIView?
     var countdownTimer: Timer?
-    let countdownSecondRemaining: Int
+    var countdownSecondRemaining: Int
     var delayTimer: Timer?
     var delaySecondRemaining: Int?
     var pageIndex: Int?

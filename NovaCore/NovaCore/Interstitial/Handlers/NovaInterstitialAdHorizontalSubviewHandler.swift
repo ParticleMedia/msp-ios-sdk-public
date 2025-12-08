@@ -300,7 +300,7 @@ class NovaInterstitialAdHorizontalSubviewHandler: NovaInterstitialAdSubviewHandl
     // MARK: - NovaTopRightClosable
     
     var countdownTimer: Timer?
-    let countdownSecondRemaining: Int
+    var countdownSecondRemaining: Int
     var delayTimer: Timer? = nil
     let delaySecondRemaining: Int? = nil
     private let showTopRightCloseButton: Bool
