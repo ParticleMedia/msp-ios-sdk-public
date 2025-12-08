@@ -20,15 +20,14 @@ class NovaResource {
 
     // MARK: Private
 
-    private static var bundle: Bundle? {
+    static var resourceBundle: Bundle? {
         if let path = Bundle(for: NovaResource.self).path(forResource: "NBResourceBundle", ofType: "bundle") {
             return Bundle(path: path)
-        } else {
-            return nil
         }
+        return nil
     }
 
     private static func getResourceURL(_ name: String, withExtension: String, subdirectory: String) -> URL? {
-        return bundle?.url(forResource: name, withExtension: withExtension, subdirectory: subdirectory)
+        return resourceBundle?.url(forResource: name, withExtension: withExtension, subdirectory: subdirectory)
     }
 }
