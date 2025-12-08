@@ -66,9 +66,7 @@
 		66E534D82C24CBF200255D15 /* UIView+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E534952C24CBF200255D15 /* UIView+Extensions.swift */; };
 		66E534D92C24CBF200255D15 /* NovaAdBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E534972C24CBF200255D15 /* NovaAdBuilder.swift */; };
 		66E534DC2C24CBF200255D15 /* NovaAdUrlTransformer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E5349A2C24CBF200255D15 /* NovaAdUrlTransformer.swift */; };
-		66E535202C250A8900255D15 /* NBAssets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 66E535152C250A8900255D15 /* NBAssets.xcassets */; };
 		66E535392C263FEB00255D15 /* NBResourceBundle.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 66E535382C263FEB00255D15 /* NBResourceBundle.bundle */; };
-		8E0AF0E82EB9F6D6000F865A /* novaMraid.js in Resources */ = {isa = PBXBuildFile; fileRef = 8E0AF0E72EB9F6C9000F865A /* novaMraid.js */; };
 		8E0AF0EA2EB9F82C000F865A /* NovaResource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E0AF0E92EB9F82C000F865A /* NovaResource.swift */; };
 		8E122AA32EC719B100FDCA38 /* NovaNativeMediaProviding.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E122AA22EC719B100FDCA38 /* NovaNativeMediaProviding.swift */; };
 		8E2E71162E66C6C300A9C9C9 /* NovaClickAreaConfigurable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E2E71152E66C69C00A9C9C9 /* NovaClickAreaConfigurable.swift */; };
@@ -80,7 +78,6 @@
 		8E8C73112E5EE483007BBEE9 /* NovaImages.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E8C730A2E5EE483007BBEE9 /* NovaImages.swift */; };
 		8E8C73122E5EE483007BBEE9 /* NovaFonts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E8C73092E5EE483007BBEE9 /* NovaFonts.swift */; };
 		8E8C73222E6006DF007BBEE9 /* NovaAdMediaContent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E8C73212E6006D8007BBEE9 /* NovaAdMediaContent.swift */; };
-		F24349B52E87086100694ABD /* tap_to_try.json in Resources */ = {isa = PBXBuildFile; fileRef = F24349B22E87086100694ABD /* tap_to_try.json */; };
 		F2A9886B2E55A4C700EAEDB8 /* TimeInterval+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2A988692E55A4C700EAEDB8 /* TimeInterval+Extension.swift */; };
 		F2A9886C2E55A4C700EAEDB8 /* Collection+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2A988682E55A4C700EAEDB8 /* Collection+Extension.swift */; };
 		F2A988922E55A4E000EAEDB8 /* NovaTopRightClosable.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2A988872E55A4E000EAEDB8 /* NovaTopRightClosable.swift */; };
@@ -252,6 +249,8 @@
 		8E8C730B2E5EE483007BBEE9 /* NovaUIFonts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NovaUIFonts.swift; sourceTree = "<group>"; };
 		8E8C730C2E5EE483007BBEE9 /* NovaUIImages.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NovaUIImages.swift; sourceTree = "<group>"; };
 		8E8C73212E6006D8007BBEE9 /* NovaAdMediaContent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NovaAdMediaContent.swift; sourceTree = "<group>"; };
+		8EFF40ED2EE2E7DB00C34EAC /* novaMraidHook.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; path = novaMraidHook.js; sourceTree = "<group>"; };
+		8EFF40EE2EE2E7DB00C34EAC /* novaMraidInit.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; path = novaMraidInit.js; sourceTree = "<group>"; };
 		A7278CCCE62DB4171E27ED0A /* Pods-NovaCore.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-NovaCore.debug.xcconfig"; path = "Target Support Files/Pods-NovaCore/Pods-NovaCore.debug.xcconfig"; sourceTree = "<group>"; };
 		E6422D26A0200EC155CCF2E8 /* libPods-NovaCore.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-NovaCore.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		F24349B22E87086100694ABD /* tap_to_try.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = tap_to_try.json; sourceTree = "<group>"; };
@@ -584,6 +583,8 @@
 			isa = PBXGroup;
 			children = (
 				8E0AF0E72EB9F6C9000F865A /* novaMraid.js */,
+				8EFF40ED2EE2E7DB00C34EAC /* novaMraidHook.js */,
+				8EFF40EE2EE2E7DB00C34EAC /* novaMraidInit.js */,
 			);
 			path = Scripts;
 			sourceTree = "<group>";
@@ -939,10 +940,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				8E0AF0E82EB9F6D6000F865A /* novaMraid.js in Resources */,
-				66E535202C250A8900255D15 /* NBAssets.xcassets in Resources */,
 				66E535392C263FEB00255D15 /* NBResourceBundle.bundle in Resources */,
-				F24349B52E87086100694ABD /* tap_to_try.json in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
