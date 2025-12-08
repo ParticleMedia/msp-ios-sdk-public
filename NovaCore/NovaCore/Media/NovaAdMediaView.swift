@@ -141,6 +141,8 @@ extension NovaAdMediaView {
                 case .playable:
                     return self.playableView
                 }
+            case .html:
+                return nil
             }
         }()
         if let newMediaView = newMediaView {
@@ -151,12 +153,6 @@ extension NovaAdMediaView {
                 currentView = newMediaView
                 currentView?.adClickArea = .media
         }
-        addSubview(newMediaView)
-        newMediaView.snp.makeConstraints { make in
-            make.directionalEdges.equalToSuperview()
-        }
-        currentView = newMediaView
-        currentView?.adClickArea = .media
 
         tapToTryAnimationView?.removeFromSuperview()
         discountTag.removeFromSuperview()
@@ -223,10 +219,6 @@ extension NovaAdMediaView {
                 make.center.equalToSuperview()
                 make.size.equalTo(72.0)
             }
-<<<<<<< HEAD
-        default:
-            return false
-=======
             tapToTryAnimationView.play()
         }
     }
@@ -236,7 +228,6 @@ extension NovaAdMediaView {
             addSubview(discountTag)
             discountTag.config(with: discountTagInfo.style)
             discountTag.setupNormalLayout(on: self, with: discountTagInfo)
->>>>>>> feature/newsbreak_msp_migration
         }
     }
 }
