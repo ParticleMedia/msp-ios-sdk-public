@@ -12,17 +12,28 @@ import UIKit
 
 protocol NovaTopRightClosable: AnyObject {
     var countdownTimer: Timer? { get set }
+    var delayTimer: Timer? { get set }
     var countdownSecondRemaining: Int { get }
+    var delaySecondRemaining: Int? { get }
     var topRightCloseButton: UIButton  { get }
     var topRightCloseButtonArea: UIView { get }
     var darkColor: UIColor { get }
     func setupCountdownTimerIfNeeded()
     func enableCloseButtonIfNeeded()
+    func enableTopRightCloseButton(button: UIButton, clickableArea: UIView)
+}
+
+enum NovaTopRightCloseButtonStyle {
+    case closeInHorizontal
+    case closeInVertical
+    case skipInHorizontal
+    case skipInVertical
 }
 
 extension NovaTopRightClosable {
     func setupCountdownTimerIfNeeded() {
         if countdownSecondRemaining > 0 {
+            topRightCloseButton.isHidden = false
             topRightCloseButtonStartCountDown(button: topRightCloseButton, clickableArea: topRightCloseButtonArea, countdownSeconds: countdownSecondRemaining)
         } else {
             enableTopRightCloseButton(button: topRightCloseButton, clickableArea: topRightCloseButtonArea)
@@ -33,21 +44,54 @@ extension NovaTopRightClosable {
         enableTopRightCloseButton(button: topRightCloseButton, clickableArea: topRightCloseButtonArea)
     }
     
-    private func topRightCloseButtonStartCountDown(button: UIButton, clickableArea: UIView, countdownSeconds: Int) {
-        var remainingSeconds = countdownSeconds
-        countdownTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { _ in
-            if remainingSeconds > 0 {
-                clickableArea.isUserInteractionEnabled = false
-                button.setTitle("\(remainingSeconds)", for: .normal)
-            } else {
-                self.enableTopRightCloseButton(button: button, clickableArea: clickableArea)
-            }
-            remainingSeconds -= 1
+    func setupDelayTimerIfNeeded() {
+        if let delaySecondRemaining = delaySecondRemaining,
+           delaySecondRemaining > 0 {
+            topRightCloseButton.isHidden = true
+            delayStartCountDown(delaySeconds: delaySecondRemaining)
+        } else {
+            setupCountdownTimerIfNeeded()
         }
-        countdownTimer?.fire()
     }
     
-    private func enableTopRightCloseButton(button: UIButton, clickableArea: UIView) {
+    private func topRightCloseButtonStartCountDown(button: UIButton, clickableArea: UIView, countdownSeconds: Int) {
+        countdownTimer?.invalidate()
+        
+            let endTime = Date().addingTimeInterval(TimeInterval(countdownSeconds))
+
+            // Immediately show first number
+            clickableArea.isUserInteractionEnabled = false
+            button.setTitle("\(countdownSeconds)", for: .normal)
+
+            countdownTimer = Timer.scheduledTimer(withTimeInterval: 0.2, repeats: true) { [weak self] timer in
+                let remaining = Int(endTime.timeIntervalSinceNow.rounded(.up))
+
+                // Timer still running
+                if remaining > 0 {
+                    button.setTitle("\(remaining)", for: .normal)
+                } else {
+                    timer.invalidate()
+                    self?.enableTopRightCloseButton(button: button, clickableArea: clickableArea)
+                }
+            }
+
+            RunLoop.main.add(countdownTimer!, forMode: .common)
+    }
+    
+    private func delayStartCountDown(delaySeconds: Int) {
+        var remainingSeconds = delaySeconds
+        delayTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { _ in
+            remainingSeconds -= 1
+            if remainingSeconds > 0 {
+                
+            } else {
+                self.delayTimer?.invalidate()
+                self.setupCountdownTimerIfNeeded()
+            }
+        }
+    }
+    
+    func enableTopRightCloseButton(button: UIButton, clickableArea: UIView) {
         clickableArea.isUserInteractionEnabled = true
         self.countdownTimer?.invalidate()
         button.setTitle(nil, for: .normal)

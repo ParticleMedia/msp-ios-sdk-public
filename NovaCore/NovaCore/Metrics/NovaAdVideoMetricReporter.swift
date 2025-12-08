@@ -64,7 +64,7 @@ class NovaAdVideoMetricReporter {
         videoInfo: NovaNativeAdVideoInfo?,
         startTime: Double?,
         configTime: Double?,
-        novaVideoPlayer: NovaVideoPlayer?,
+        novaVideoPlayer: NovaVideoPlayer?
     ) {
         guard let record = allVideoLogRecords[encryptedAdToken] else {
             return

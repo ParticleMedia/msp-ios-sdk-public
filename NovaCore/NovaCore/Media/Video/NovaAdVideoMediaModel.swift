@@ -13,7 +13,7 @@ class NovaAdVideoMediaModel {
         videoLayoutOrientation: NovaNativeMediaLayoutOrientation,
         adCtrType: AdCtrType,
         callToAction: String?,
-        endCardModel: NovaAdEndCardViewModel?,
+        endCardModel: NovaAdEndCardViewModel?
     ) {
         self.videoInfo = videoInfo
         self.videoLayoutOrientation = videoLayoutOrientation

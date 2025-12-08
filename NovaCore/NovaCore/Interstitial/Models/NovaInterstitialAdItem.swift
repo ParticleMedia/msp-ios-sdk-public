@@ -39,6 +39,8 @@ public final class NovaInterstitialAdItem: NovaNativeBaseAd {
             return .sponsor
         case .carousel:
             return .horizontal
+        case .html:
+            return .unknown
         }
     }
 
@@ -85,7 +87,8 @@ public final class NovaInterstitialAdItem: NovaNativeBaseAd {
         marketingType: NovaAdMarketingType,
         playableInfo: NovaAdPlayableInfo?,
         closeCountDownTimeSeconds: Int?,
-        clickableComponents: [NovaClickableComponent]?
+        clickableComponents: [NovaClickableComponent]?,
+        htmlPageItems: [PageItem]?
     ) throws {
         self.startTimeInMs = startTimeInMs
         self.expirationTimeInMs = expirationTimeInMs
@@ -121,7 +124,8 @@ public final class NovaInterstitialAdItem: NovaNativeBaseAd {
             adDiscountTagInfo: adDiscountTagInfo,
             layoutStyle: layoutStyle,
             marketingType: marketingType,
-            playableInfo: playableInfo
+            playableInfo: playableInfo,
+            htmlPageItems: htmlPageItems
         )
     }
 

@@ -16,7 +16,8 @@ class NovaInterstitialAdSubviewHandlerCreator {
     static func create(
         interstitialAd: NovaInterstitialAdItem,
         delegate: NovaInterstitialAdSubviewBehaviorDelegate,
-        viewController: UIViewController?
+        viewController: UIViewController?,
+        pageIndex: Int? = nil
     ) -> NovaInterstitialAdSubviewHandler {
         // Prefer playable variants when creativeType indicates playable
         switch interstitialAd.layoutTypeInInterstitial {
@@ -49,6 +50,15 @@ class NovaInterstitialAdSubviewHandlerCreator {
                 viewController: viewController,
                 appStoreId: appStoreId,
                 thirdPartyTrackingURL: thirdPartyTrackingURL
+            )
+            
+        case .html(showTopRightCancelButton: let showTopRightCloseButton):
+            return NovaInterstitialAdHtmlSubviewHandler(
+                interstitialAd: interstitialAd,
+                showTopRightCloseButton: showTopRightCloseButton,
+                delegate: delegate,
+                viewController: viewController,
+                pageIndex: pageIndex
             )
         }
 

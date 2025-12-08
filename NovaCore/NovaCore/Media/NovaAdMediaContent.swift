@@ -145,7 +145,7 @@ public class NovaAdMediaContent {
             return .init(muted: model.videoInfo.isMute)
         case .videoPlayable(let videoModel, _):
             return .init(muted: videoModel.videoInfo.isMute)
-        case .image, .multipleItems, .multipleImages, .imagePlayable:
+        case .image, .multipleItems, .multipleImages, .imagePlayable, .html:
             return nil
         }
     }()
@@ -244,6 +244,8 @@ public class NovaAdMediaContent {
             case .playable:
                 return .free
             }
+        case .html:
+            return .free
         }
     }
 
@@ -259,6 +261,8 @@ public class NovaAdMediaContent {
             return .multipleItems
         case .imagePlayable, .videoPlayable:
             return .playable
+        case .html:
+            return .html
         }
     }
 

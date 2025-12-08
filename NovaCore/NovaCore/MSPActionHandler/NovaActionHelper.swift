@@ -110,7 +110,7 @@ extension NovaActionHelper where T == NovaActionState.Init {
 
 extension NovaActionHelper where T == NovaActionState.NovaEventSent {
     /// NovaActionHelper should be kept alive until the action is performed
-    func handleAdTap(in tapView: UIView?) -> NovaActionHelper<NovaActionState.Init> {
+    func handleAdTap(in tapView: UIView?, customUrl: URL? = nil) -> NovaActionHelper<NovaActionState.Init> {
         handleTapAction(in: tapView)
         context.onAdViewClick?(tapView)
         return NovaActionHelper<NovaActionState.Init>(from: self)
@@ -165,10 +165,10 @@ private extension NovaActionHelper {
 // MARK: - Private method after log sent
 
 private extension NovaActionHelper where T == NovaActionState.NovaEventSent {
-    func handleTapAction(in tapView: UIView?) {
+    func handleTapAction(in tapView: UIView?, customUrl: URL? = nil) {
         let actionModels = Self.generateCtrActionDateModels(from: context, in: tapView)
         for actionModel in actionModels {
-            actionHandler.performAction(actionModel: actionModel)
+            actionHandler.performAction(actionModel: actionModel, customUrl: customUrl)
         }
     }
 

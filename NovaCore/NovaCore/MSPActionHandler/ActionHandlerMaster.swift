@@ -48,7 +48,7 @@ extension ActionHandlerMaster: ActionHandling {
         return result
     }
 
-    func performAction(actionModel: ActionModel) {
+    func performAction(actionModel: ActionModel, customUrl: URL?) {
         let actionKey = actionModel.actionKey
         let actionDataModel = actionModel.actionDataModel
 
@@ -56,7 +56,7 @@ extension ActionHandlerMaster: ActionHandling {
 
         if let (actionModelDataType, actionHandler) = actionMapping[actionKey] {
             if canCast(actionDataModel, actionModelDataType) {
-                actionHandler.performAction(actionModel: actionModel)
+                actionHandler.performAction(actionModel: actionModel, customUrl: customUrl)
             } else {
                 assertionFailure("Unmatched actionDataModel type. Expecting \(actionModelDataType) for actionKey = \(actionKey), actionDataModel=\(actionDataModel)")
             }
