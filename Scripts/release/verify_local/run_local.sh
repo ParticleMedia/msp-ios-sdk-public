@@ -64,42 +64,67 @@ run_local_verification() {
     LOCAL_VERIFY_MODE="$mode"
     
     # Create sandbox
+    vr_log_info "[DEBUG] Entering sandbox creation"
     local SANDBOX_DIR
     SANDBOX_DIR="$(vr_create_sandbox "local")" || {
         vr_log_error "[LOCAL] Failed to create sandbox"
         return 0  # Soft-fail
     }
+    vr_log_info "[DEBUG] Sandbox created: $SANDBOX_DIR"
+    vr_log_info "[DEBUG] Listing sandbox after creation: $(ls -la "$SANDBOX_DIR" 2>/dev/null | head -10 || echo '(empty or error)')"
     
-    # Set up trap to clean up sandbox on exit
+    # Set up trap to clean up sandbox on exit (unless MSP_KEEP_SANDBOX is set)
     local cleanup_sandbox_path="$SANDBOX_DIR"
-    trap "vr_cleanup_sandbox '$cleanup_sandbox_path'" EXIT
-    
-    # Step 1: Prepare DemoApp
-    if ! "$SCRIPT_DIR/prepare_demoapp.sh" "$SANDBOX_DIR"; then
-        vr_log_error "[LOCAL] Failed to prepare DemoApp"
-        return 0  # Soft-fail
+    if [[ "${MSP_KEEP_SANDBOX:-0}" == "1" ]]; then
+        vr_log_info "[PATCH H] Sandbox retention enabled — sandbox will be preserved: $SANDBOX_DIR"
+    else
+        trap "vr_cleanup_sandbox '$cleanup_sandbox_path'" EXIT
     fi
     
+    # Step 1: Prepare DemoApp
+    vr_log_info "[DEBUG] Entering prepare_demoapp"
+    vr_log_info "[DEBUG] Listing sandbox before prepare_demoapp: $(ls -R "$SANDBOX_DIR" 2>/dev/null | head -20 || echo '(empty)')"
+    if ! "$SCRIPT_DIR/prepare_demoapp.sh" "$SANDBOX_DIR"; then
+        vr_log_error "[LOCAL] Failed to prepare DemoApp"
+        vr_log_info "[DEBUG] Listing sandbox after prepare_demoapp FAILED: $(ls -R "$SANDBOX_DIR" 2>/dev/null | head -20 || echo '(empty)')"
+        return 0  # Soft-fail
+    fi
+    vr_log_info "[DEBUG] Exiting prepare_demoapp (success)"
+    vr_log_info "[DEBUG] Listing sandbox after prepare_demoapp: $(ls -R "$SANDBOX_DIR" 2>/dev/null | head -30 || echo '(empty)')"
+    
     # Step 2: Inject SDK dependencies
+    vr_log_info "[DEBUG] Entering inject_sdk_${mode}"
     if [[ "$mode" == "pods" ]]; then
+        vr_log_info "[DEBUG] Listing sandbox before inject_sdk_pods: $(ls -R "$SANDBOX_DIR" 2>/dev/null | head -30 || echo '(empty)')"
         if ! "$SCRIPT_DIR/inject_sdk_pods.sh" "$SANDBOX_DIR"; then
             vr_log_error "[LOCAL] Failed to inject Pods dependencies"
+            vr_log_info "[DEBUG] Listing sandbox after inject_sdk_pods FAILED: $(ls -R "$SANDBOX_DIR" 2>/dev/null | head -30 || echo '(empty)')"
             return 0  # Soft-fail
         fi
+        vr_log_info "[DEBUG] Exiting inject_sdk_pods (success)"
+        vr_log_info "[DEBUG] Listing sandbox after inject_sdk_pods: $(ls -R "$SANDBOX_DIR" 2>/dev/null | head -40 || echo '(empty)')"
     else
+        vr_log_info "[DEBUG] Listing sandbox before inject_sdk_spm: $(ls -R "$SANDBOX_DIR" 2>/dev/null | head -30 || echo '(empty)')"
         if ! "$SCRIPT_DIR/inject_sdk_spm.sh" "$SANDBOX_DIR"; then
             vr_log_error "[LOCAL] Failed to inject SPM dependencies"
+            vr_log_info "[DEBUG] Listing sandbox after inject_sdk_spm FAILED: $(ls -R "$SANDBOX_DIR" 2>/dev/null | head -30 || echo '(empty)')"
             return 0  # Soft-fail
         fi
+        vr_log_info "[DEBUG] Exiting inject_sdk_spm (success)"
+        vr_log_info "[DEBUG] Listing sandbox after inject_sdk_spm: $(ls -R "$SANDBOX_DIR" 2>/dev/null | head -40 || echo '(empty)')"
     fi
     
     # Step 3: Build DemoApp
+    vr_log_info "[DEBUG] Entering build_demoapp"
+    vr_log_info "[DEBUG] Listing sandbox before build_demoapp: $(ls -R "$SANDBOX_DIR" 2>/dev/null | head -40 || echo '(empty)')"
     if ! "$SCRIPT_DIR/build_demoapp.sh" "$SANDBOX_DIR" "$mode"; then
         vr_log_error "[LOCAL] Build failed"
+        vr_log_info "[DEBUG] Listing sandbox after build_demoapp FAILED: $(ls -R "$SANDBOX_DIR" 2>/dev/null | head -40 || echo '(empty)')"
         LOCAL_VERIFY_SUCCESS=0
         return 0  # Soft-fail
     else
         vr_log_info "[LOCAL] Local verification succeeded"
+        vr_log_info "[DEBUG] Listing sandbox after build_demoapp SUCCESS: $(ls -R "$SANDBOX_DIR" 2>/dev/null | head -50 || echo '(empty)')"
         LOCAL_VERIFY_SUCCESS=1
     fi
     

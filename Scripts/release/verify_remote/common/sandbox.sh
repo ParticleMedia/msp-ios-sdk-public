@@ -37,8 +37,11 @@ vr_create_sandbox() {
         return 1
     fi
     
-    # Log friendly message
-    vr_log_info "Created sandbox: $sandbox_path"
+    # Log friendly message to stderr (not stdout, to avoid polluting command substitution)
+    vr_log_info "Created sandbox: $sandbox_path" >&2
+    vr_log_info "[DEBUG] sandbox created at: $sandbox_path" >&2
+    vr_log_info "[DEBUG] sandbox exists: $([ -d "$sandbox_path" ] && echo 'YES' || echo 'NO')" >&2
+    vr_log_info "[DEBUG] sandbox permissions: $(ls -ld "$sandbox_path" 2>/dev/null || echo 'N/A')" >&2
     
     # Echo the sandbox path to stdout (no extra text)
     echo "$sandbox_path"
@@ -51,6 +54,14 @@ vr_create_sandbox() {
 
 vr_cleanup_sandbox() {
     local dir="${1:-}"
+    
+    # [PATCH H] Respect MSP_KEEP_SANDBOX flag
+    if [[ "${MSP_KEEP_SANDBOX:-0}" == "1" ]]; then
+        if [[ -n "$dir" && -d "$dir" ]]; then
+            vr_log_info "[PATCH H] Keeping sandbox for debugging: $dir"
+        fi
+        return 0
+    fi
     
     if [[ -n "$dir" && -d "$dir" ]]; then
         rm -rf "$dir" || true
