@@ -112,6 +112,12 @@ run_xcframework_verification() {
         
         # Run all scans
         local scan_warnings
+
+        # Skip Mintegral modules — handled via remote CocoaPods dependency
+        if [[ "$module_name" == "MintegralAdapter" ]] || [[ "$module_name" == "MintegralAdSDK" ]]; then
+            vr_log_info "[XCF] Skipping Mintegral module ($module_name) — handled via remote CocoaPods dependency"
+            continue
+        fi
         
         # 1. Architecture scan
         if ! scan_warnings="$(scan_architectures "$sandbox_xcf" "$module_name" 2>&1)"; then
