@@ -39,8 +39,15 @@ fi
 
 export ROOT_DIR
 source "$ROOT_DIR/Scripts/lib/release-common.sh"
+# Before sourcing cocoapods.sh, ensure PODFILE is unset
+unset PODFILE 2>/dev/null || true
 source "$ROOT_DIR/Scripts/lib/cocoapods.sh"
 
+
+# After sourcing cocoapods.sh, override PODFILE with project Podfile
+PODFILE="$ROOT_DIR/Podfile"
+export PODFILE
+echo "[PODS][INFO] Using PODFILE path: $PODFILE"
 # Load release state utilities (state.sh is already loaded by release-common.sh, but we can source it again if needed)
 # Use absolute path to ensure correct location
 if [[ -f "$ROOT_DIR/Scripts/release/utils/state.sh" ]]; then

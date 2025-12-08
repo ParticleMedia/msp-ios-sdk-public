@@ -9,7 +9,8 @@ source "$(dirname "${BASH_SOURCE[0]}")/logging.sh"
 source "$(dirname "${BASH_SOURCE[0]}")/validation.sh"
 
 # CocoaPods constants
-readonly PODFILE="Podfile"
+# Note: PODFILE is not readonly to allow override in release scripts
+PODFILE="${PODFILE:-Podfile}"   # allow override, no readonly
 readonly PODFILE_LOCK="Podfile.lock"
 readonly PODS_DIR="Pods"
 readonly PODSPEC_EXTENSION=".podspec"
