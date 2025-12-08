@@ -70,7 +70,7 @@ echo "[DIAG] ROOT_DIR exported: $ROOT_DIR" >&2
 export BUILD_ENVIRONMENT="${BUILD_ENVIRONMENT:-local}"
 echo "[DIAG] BUILD_ENVIRONMENT set" >&2
 
-source "$ROOT_DIR/Scripts/lib/release-common.sh" || { echo "[DIAG] release-common.sh source failed with code: $?" >source "$ROOT_DIR/Scripts/lib/release-common.sh"2; exit 127; }
+source "$ROOT_DIR/Scripts/lib/release-common.sh"
 set +e  # Temporarily disabled - will re-enable after identifying failing command
 
 # Source state management utility (state.sh is already loaded by release-common.sh, but we can source it again if needed)
