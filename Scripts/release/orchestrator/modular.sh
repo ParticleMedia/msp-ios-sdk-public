@@ -9,8 +9,6 @@ echo "[DIAG] Arguments: $*" >&2
 # Phase 2 Step 4: Config-driven orchestrator
 # This script now uses environment variables from msp-release.sh instead of CLI arguments.
 
-echo "[DIAG] set -e enabled" >&2
-echo "[DIAG] After set -e" >&2
 
 # ============================================================================
 # Release Mode Detection
