@@ -8,7 +8,7 @@
 # Phase 2 Step 3: Complete CLI framework implementation
 # ============================================================================
 
-set -euo pipefail
+set +euo pipefail  # Disabled -e to allow graceful failures
 
 # Script locations
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
