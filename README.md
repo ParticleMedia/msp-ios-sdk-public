@@ -88,6 +88,12 @@ The project now features a modern, modular script architecture with:
 ./Scripts/buildNovaXCFramework.sh
 ```
 
+### NovaCore Resource Packaging
+
+- `NovaCore/NovaCore/Resources` is the single source of truth for all bundle resources (JS, Lottie, etc.); `asset_sync.sh` rebuilds `NBResourceBundle.bundle` from there on every run.
+- Do not add files directly into `NBResourceBundle.bundle` expecting them to persist; the bundle is regenerated each build.
+- Avoid adding individual resource files to the Xcode target; rely on the bundle to prevent duplicates in the final framework.
+
 ## 🚀 CI/CD Pipeline
 
 This project includes a comprehensive CI/CD pipeline using **GitHub Actions** and **Fastlane**:
