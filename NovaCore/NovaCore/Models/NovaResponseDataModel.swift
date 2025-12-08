@@ -53,6 +53,17 @@ struct Creative: Codable {
     let carouselItems: [MultipleItemsItem]?
     let tagItem: TagItem?
     let playableItem: PlayableItem?
+    
+    let htmlPageItems: [PageItem]?
+}
+
+struct PageItem: Codable {
+    let html: String?
+    let url: String?
+    let skipDelay: Int?
+    let skipCountdown: Int?
+    let useClickUrl: Bool?
+    let useCustomClose: Bool?
 }
 
 struct MultipleItemsItem: Codable {
