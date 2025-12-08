@@ -41,7 +41,7 @@ struct Creative: Codable {
     let creativeType: String?
     let adm: String?
     let marketingType: String?
-    let closeCountDownSeconds: String?
+    let closeCountDownTimeSecond: Int?
     let clickableComponents: [String]?
 
     let thirdPartyViewTrackingUrls: [String]?
