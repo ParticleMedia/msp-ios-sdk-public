@@ -1,7 +1,4 @@
 #!/bin/bash
-echo "[DIAG] modular.sh starting" >&2
-echo "[DIAG] Script path: $0" >&2
-echo "[DIAG] Arguments: $*" >&2
 
 # Modular Release Orchestrator
 # Orchestrates the complete release process: create branch → CocoaPods → SPM → push
@@ -9,8 +6,7 @@ echo "[DIAG] Arguments: $*" >&2
 # Phase 2 Step 4: Config-driven orchestrator
 # This script now uses environment variables from msp-release.sh instead of CLI arguments.
 
-echo "[DIAG] set -e enabled" >&2
-echo "[DIAG] After set -e" >&2
+set -e
 
 # ============================================================================
 # Release Mode Detection
@@ -36,14 +32,12 @@ _msp_release_get_mode() {
 
 # Source the common library
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-echo "[DIAG] SCRIPT_DIR set" >&2
 # ============================================
 # Unified ROOT_DIR resolution (final version)
 # ============================================
 if [[ -z "${ROOT_DIR:-}" ]]; then
     # First try Git repo root (most reliable)
     if command -v git >/dev/null 2>&1; then
-echo "[DIAG] git command check passed" >&2
         git_root="$(git rev-parse --show-toplevel 2>/dev/null || echo "")"
         if [[ -n "$git_root" ]]; then
             ROOT_DIR="$git_root"
@@ -63,15 +57,12 @@ echo "[DIAG] git command check passed" >&2
 fi
 
 export ROOT_DIR
-echo "[DIAG] ROOT_DIR exported: $ROOT_DIR" >&2
 
 # Set BUILD_ENVIRONMENT default before sourcing release-common.sh
 # This prevents "parameter not set" errors when release-common.sh uses set -u
 export BUILD_ENVIRONMENT="${BUILD_ENVIRONMENT:-local}"
-echo "[DIAG] BUILD_ENVIRONMENT set" >&2
 
-source "$ROOT_DIR/Scripts/lib/release-common.sh" || { echo "[DIAG] release-common.sh source failed with code: $?" >source "$ROOT_DIR/Scripts/lib/release-common.sh"2; exit 127; }
-set +e  # Temporarily disabled - will re-enable after identifying failing command
+source "$ROOT_DIR/Scripts/lib/release-common.sh"
 
 # Source state management utility (state.sh is already loaded by release-common.sh, but we can source it again if needed)
 # Use absolute path to ensure correct location
@@ -961,14 +952,6 @@ _handle_main_error() {
 
 # Main function
 main() {
-    echo "[DIAG] ========================================" >&2
-    echo "[DIAG] MAIN FUNCTION STARTED" >&2
-    echo "[DIAG] ========================================" >&2
-    echo "[DIAG] Starting main function" >&2
-    echo "[DIAG] Current directory: $(pwd)" >&2
-    echo "[DIAG] Shell: $0" >&2
-    echo "[DIAG] PATH: $PATH" >&2
-    echo "[DIAG] Arguments: $*" >&2
     # Set error trap for state tracking
     trap '_handle_main_error' ERR
     
@@ -986,20 +969,13 @@ main() {
     log_section "Phase 4: Security Checks"
     
     # Check git working directory is clean
-    # For preflight mode, allow uncommitted changes (warn only)
     if ! git diff --exit-code >/dev/null 2>&1 || ! git diff --cached --exit-code >/dev/null 2>&1; then
-        if [[ "$RELEASE_TIER" == "preflight" ]]; then
-            log_warn "[MSP][ORCH][WARN] Git working directory is not clean (preflight mode - continuing)"
-            git status --short || true
-        else
-            log_error "[MSP][ORCH][ERROR] Git working directory is not clean"
-            log_error "Please commit or stash all changes before releasing"
-            git status --short || true
-            exit 1
-        fi
-    else
-        log_success "Git working directory is clean"
+        log_error "[MSP][ORCH][ERROR] Git working directory is not clean"
+        log_error "Please commit or stash all changes before releasing"
+        git status --short
+        exit 1
     fi
+    log_success "Git working directory is clean"
     
     # Check if tag exists (unless override allowed)
     if [[ -n "$VERSION" ]]; then
@@ -1523,10 +1499,6 @@ EOF
 # If RELEASE_VERSION is set from environment (via msp-release.sh), use it directly
 # Otherwise, require CLI arguments for backward compatibility
 if [[ -z "${RELEASE_VERSION:-}" && $# -eq 0 ]]; then
-echo "[DIAG] About to call main" >&2
-echo "[DIAG] RELEASE_VERSION=${RELEASE_VERSION:-}" >&2
-echo "[DIAG] VERSION=${VERSION:-}" >&2
-echo "[DIAG] Arguments: $*" >&2
     show_help
     exit 1
 fi

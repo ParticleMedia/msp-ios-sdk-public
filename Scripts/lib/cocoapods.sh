@@ -811,3 +811,14 @@ export -f try_without_problematic_deps
 export -f clean_pod_cache
 export -f show_pod_info setup_bundle_integration
 export -f full_pod_setup
+
+# ---------------------------------------------------------------------
+# UTF-8 FIX PATCH
+# CocoaPods requires UTF-8 or pod install will crash with:
+#   "Unicode Normalization not appropriate for ASCII-8BIT"
+export LANG="en_US.UTF-8"
+export LC_ALL="en_US.UTF-8"
+export RUBYOPT="-EUTF-8:UTF-8"
+vr_log_info "[UTF8] UTF-8 environment applied for pod install"
+# ---------------------------------------------------------------------
+

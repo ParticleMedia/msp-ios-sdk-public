@@ -887,7 +887,7 @@ do_run() {
     log_info "Delegating to: $MODULAR_SCRIPT"
     log_info "Arguments: $RELEASE_VERSION ${REMAINING_ARGS[*]:-}"
     
-    exec "$MODULAR_SCRIPT" "$RELEASE_VERSION" ${REMAINING_ARGS[@]+"${REMAINING_ARGS[@]}"}
+    bash "$MODULAR_SCRIPT" "$RELEASE_VERSION" ${REMAINING_ARGS[@]+"${REMAINING_ARGS[@]}"}
 }
 
 do_pods() {
@@ -1378,7 +1378,7 @@ do_resume() {
     log_info "Delegating to: $MODULAR_SCRIPT"
     log_info "Arguments: $RELEASE_VERSION ${REMAINING_ARGS[*]:-}"
     
-    exec "$MODULAR_SCRIPT" "$RELEASE_VERSION" ${REMAINING_ARGS[@]+"${REMAINING_ARGS[@]}"}
+    bash "$MODULAR_SCRIPT" "$RELEASE_VERSION" ${REMAINING_ARGS[@]+"${REMAINING_ARGS[@]}"}
 }
 
 # ============================================================================

@@ -55,6 +55,15 @@ build_demoapp() {
         vr_log_info "[LOCAL] Running pod install in: $demoapp_dir"
         vr_log_info "[LOCAL] Pod install log: $pod_log"
         
+        # ---------------------------------------------------------------------
+        # UTF-8 FIX PATCH
+        # CocoaPods requires UTF-8 or pod install will crash with:
+        #   "Unicode Normalization not appropriate for ASCII-8BIT"
+        export LANG="en_US.UTF-8"
+        export LC_ALL="en_US.UTF-8"
+        export RUBYOPT="-EUTF-8:UTF-8"
+        vr_log_info "[UTF8] UTF-8 environment applied for pod install"
+        # ---------------------------------------------------------------------
         # Change to DemoApp directory
         pushd "$demoapp_dir" >/dev/null || {
             vr_log_error "[LOCAL] Failed to cd into DemoApp dir: $demoapp_dir"
@@ -62,7 +71,7 @@ build_demoapp() {
         }
         
         # Run pod install with verbose output to log file
-        if pod install --verbose >"$pod_log" 2>&1; then
+        if env LANG="en_US.UTF-8" LC_ALL="en_US.UTF-8" RUBYOPT="-EUTF-8:UTF-8" pod install --verbose >"$pod_log" 2>&1; then
             vr_log_info "[LOCAL] pod install succeeded"
         else
             vr_log_error "[LOCAL] pod install FAILED, see log at: $pod_log"
@@ -151,4 +160,6 @@ build_demoapp() {
 if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
     build_demoapp "$@"
 fi
+
+
 
