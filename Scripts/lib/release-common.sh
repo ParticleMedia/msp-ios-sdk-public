@@ -219,6 +219,31 @@ if [[ -f "$ROOT_DIR/Scripts/release/utils/github.sh" ]]; then
     source "$ROOT_DIR/Scripts/release/utils/github.sh" 2>/dev/null || true
 fi
 
+# ============================================================================
+# Release Tier Helpers (Patch M)
+# ============================================================================
+# Helper functions to determine if we're running in preflight or release tier
+
+is_preflight_tier() {
+    # MSP_RELEASE_TIER may be set via env or CLI
+    case "${MSP_RELEASE_TIER:-}" in
+        preflight|PRELFIGHT|Preflight|PREFLIGHT)
+            return 0
+            ;;
+        *)
+            return 1
+            ;;
+    esac
+}
+
+is_release_tier() {
+    if is_preflight_tier; then
+        return 1
+    fi
+    # treat anything not preflight as "release-like" for now
+    return 0
+}
+
 # Source notification utilities
 if [[ -f "$ROOT_DIR/Scripts/release/utils/notify.sh" ]]; then
     # shellcheck source=Scripts/release/utils/notify.sh
@@ -611,6 +636,7 @@ export -f get_environment get_environment_info
 
 # Export legacy podspec functions (backward compatibility)
 export -f update_podspec_dependency_version update_podspec_to_zip_format
+export -f is_preflight_tier is_release_tier 2>/dev/null || true
 
 # Note: Functions from utils modules are exported by their respective modules
 # Note: Slack notification functions are exported by Scripts/notify/slack.sh

@@ -484,7 +484,7 @@ push_spm_tags() {
     fi
     
     # Push all tags
-    git push origin --tags
+    spm_publish_tags "$VERSION"
     
     log_success "Pushed SPM tags to remote"
 }
@@ -522,10 +522,7 @@ release_spm_package() {
         fi
     fi
     
-    # Create tag for this package
-    create_spm_tag "$package_name" "$version"
-    
-    log_success "$package_name SPM package released"
+    log_success "$package_name SPM package prepared"
 }
 
 
@@ -874,3 +871,62 @@ fi
 
 # Run main function with all arguments
 main "$@"
+
+# ============================================================================
+# SPM Tag Publishing with Tier Awareness (Patch M)
+# ============================================================================
+spm_publish_tags() {
+    local version="$1"
+    
+    if [[ -z "$version" ]]; then
+        log_error "[SPM] spm_publish_tags: version is required"
+        return 1
+    fi
+    
+    # Source release-common.sh to get tier helpers
+    if ! command -v is_preflight_tier &>/dev/null; then
+        if [[ -f "$ROOT_DIR/Scripts/lib/release-common.sh" ]]; then
+            source "$ROOT_DIR/Scripts/lib/release-common.sh" 2>/dev/null || true
+        fi
+    fi
+    
+    if is_preflight_tier; then
+        log_info "[SPM] [PREVIEW] Skipping tag & remote publish in preflight tier (version: $version)"
+        return 0
+    fi
+    
+    # Real release tier behavior
+    log_info "[SPM] Creating and pushing tags for $version"
+    
+    # Create tags for each SPM package
+    for package in $SPM_PACKAGES; do
+        local tag_name="${package}-${version}"
+        
+        log_step "Creating git tag for SPM package: $tag_name"
+        
+        # Check if tag already exists
+        if git tag -l | grep -q "^${tag_name}$"; then
+            log_warning "Tag $tag_name already exists"
+            continue
+        fi
+        
+        # Create tag
+        if git tag "$tag_name"; then
+            log_success "Created tag: $tag_name"
+        else
+            log_error "Failed to create tag: $tag_name"
+            return 1
+        fi
+    done
+    
+    # Push tags to remote
+    log_step "Pushing tags to remote"
+    if spm_publish_tags "$VERSION"; then
+        log_success "Pushed tags to remote"
+    else
+        log_error "Failed to push tags to remote"
+        return 1
+    fi
+    
+    return 0
+}

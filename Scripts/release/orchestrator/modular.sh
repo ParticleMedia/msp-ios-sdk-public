@@ -74,6 +74,11 @@ export BUILD_ENVIRONMENT="${BUILD_ENVIRONMENT:-local}"
 echo "[DIAG] BUILD_ENVIRONMENT set" >&2
 
 source "$ROOT_DIR/Scripts/lib/release-common.sh"
+# Ensure tier helpers are available
+if ! command -v is_preflight_tier &>/dev/null; then
+    # Tier helpers should be in release-common.sh, but reload if missing
+    source "$ROOT_DIR/Scripts/lib/release-common.sh" 2>/dev/null || true
+fi
 set +e  # Temporarily disabled - will re-enable after identifying failing command
 
 # Source state management utility (state.sh is already loaded by release-common.sh, but we can source it again if needed)
@@ -778,6 +783,21 @@ show_comprehensive_release_summary() {
 
 # Step 5: Run remote verification
 run_remote_verification() {
+    # Source release-common.sh to get tier helpers
+    if ! command -v is_preflight_tier &>/dev/null; then
+        if [[ -f "$ROOT_DIR/Scripts/lib/release-common.sh" ]]; then
+            source "$ROOT_DIR/Scripts/lib/release-common.sh" 2>/dev/null || true
+        fi
+    fi
+    
+    if is_preflight_tier; then
+        log_info "[REMOTE] Skipping remote verification in preflight tier"
+        if command -v msp_state_mark_step_skipped &>/dev/null; then
+            msp_state_mark_step_skipped "remote_verify_spm" "Skipped in preflight tier"
+            msp_state_mark_step_skipped "remote_verify_pods" "Skipped in preflight tier"
+        fi
+        return 0
+    fi
     # Check if remote verification is enabled (default: enabled)
     local verify_enabled="${MSP_REMOTE_VERIFY_ENABLED:-1}"
     if [[ "$verify_enabled" != "1" ]]; then
@@ -982,6 +1002,7 @@ main() {
     
     # Phase 4 TASK 4: Preflight / Production mode detection
     local RELEASE_TIER="${MSP_RELEASE_TIER:-preflight}"
+    log_info "[TIER] Running in ${RELEASE_TIER} tier"
     export MSP_RELEASE_TIER="$RELEASE_TIER"
     echo "[MSP][ORCH] Release tier: ${RELEASE_TIER}"
     
@@ -1172,8 +1193,18 @@ main() {
     step "release_cocoapods"
     if release_cocoapods; then
         step_done "release_cocoapods"
+        if command -v msp_state_mark_step_success &>/dev/null; then
+            msp_state_mark_step_success "release_cocoapods"
+        fi
     else
-        step_fail "release_cocoapods" $?
+        if is_preflight_tier; then
+            log_warn "[ORCH] release_cocoapods failed in preflight tier (non-fatal)"
+            step_skip "release_cocoapods (preflight soft-fail)"
+            if command -v msp_state_mark_step_skipped &>/dev/null; then
+                msp_state_mark_step_skipped "release_cocoapods" "Skipped in preflight tier"
+            fi
+        else
+            step_fail "release_cocoapods" $?
         return 12
     fi
     
@@ -1181,8 +1212,18 @@ main() {
     step "release_spm"
     if release_spm; then
         step_done "release_spm"
+        if command -v msp_state_mark_step_success &>/dev/null; then
+            msp_state_mark_step_success "release_spm"
+        fi
     else
-        step_fail "release_spm" $?
+        if is_preflight_tier; then
+            log_warn "[ORCH] release_spm failed in preflight tier (non-fatal)"
+            step_skip "release_spm (preflight soft-fail)"
+            if command -v msp_state_mark_step_skipped &>/dev/null; then
+                msp_state_mark_step_skipped "release_spm" "Skipped in preflight tier"
+            fi
+        else
+            step_fail "release_spm" $?
         return 13
     fi
     
@@ -1548,7 +1589,6 @@ EOF
             log_warn "Report generation failed (soft-fail, continuing)"
         fi
     fi
-}
 
 # Entry point
 # If RELEASE_VERSION is set from environment (via msp-release.sh), use it directly

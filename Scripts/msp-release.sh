@@ -157,41 +157,27 @@ parse_flags() {
     while [[ $# -gt 0 ]]; do
         case "$1" in
             --config)
-                if [[ -n "${2:-}" && ! "$2" =~ ^- ]]; then
-                    CONFIG_FILE="$2"
-                    shift 2
-                else
-                    log_error "--config requires a file path"
-                    exit 1
-                fi
                 ;;
             --config=*)
                 CONFIG_FILE="${1#*=}"
-                shift
                 ;;
             --verbose|-V)
                 VERBOSE=true
-                shift
                 ;;
             --dry-run)
                 DRY_RUN=true
-                shift
                 ;;
             --no-ansi)
                 NO_ANSI=true
-                shift
                 ;;
             --skip-preflight)
                 SKIP_PREFLIGHT=true
-                shift
                 ;;
             --skip-pods|--skip-cocoapods)
                 SKIP_PODS=true
-                shift
                 ;;
             --skip-spm)
                 SKIP_SPM=true
-                shift
                 ;;
             --only-pods)
                 ONLY_PODS=true
@@ -203,6 +189,52 @@ parse_flags() {
                 SKIP_PODS=true
                 shift
                 ;;
+            --tier)
+                if [[ -n "${2:-}" && ! "$2" =~ ^- ]]; then
+                    MSP_RELEASE_TIER="$2"
+                    shift 2
+                else
+                    log_error "--tier requires a value (preflight or release)"
+                    exit 1
+                fi
+                ;;
+            --tier=*)
+                MSP_RELEASE_TIER="${1#*=}"
+                shift
+                ;;
+                ONLY_SPM=true
+                SKIP_PODS=true
+                shift
+                ;;
+            --tier)
+                if [[ -n "${2:-}" && ! "$2" =~ ^- ]]; then
+                    MSP_RELEASE_TIER="$2"
+                    shift 2
+                else
+                    log_error "--tier requires a value (preflight or release)"
+                    exit 1
+                fi
+                ;;
+            --tier=*)
+                MSP_RELEASE_TIER="${1#*=}"
+                shift
+                ;;
+                ONLY_PODS=true
+                SKIP_SPM=true
+                ;;
+                ;;
+            --tier=*)
+                MSP_RELEASE_TIER="${1#*=}"
+                shift
+                ;;
+                ;;
+                ;;
+                ;;
+                ;;
+                ;;
+                ONLY_SPM=true
+                SKIP_PODS=true
+                ;;
             --version|-v)
                 # Special case: if this is the only arg, show version and exit
                 if [[ $# -eq 1 ]]; then
@@ -210,7 +242,6 @@ parse_flags() {
                     return 0
                 fi
                 # Otherwise, treat as flag and continue
-                shift
                 ;;
             --help|-h)
                 # Special case: if this is the only arg, show help and exit
@@ -219,11 +250,9 @@ parse_flags() {
                     return 0
                 fi
                 # Otherwise, treat as flag and continue
-                shift
                 ;;
             *)
                 REMAINING_ARGS+=("$1")
-                shift
                 ;;
         esac
     done
@@ -885,6 +914,20 @@ do_run() {
     fi
     
     # Release mode: CLI
+    # Set MSP_RELEASE_TIER default (Patch M)
+    if [ -z "${MSP_RELEASE_TIER:-}" ]; then
+      MSP_RELEASE_TIER="preflight"
+      log_info "[TIER] MSP_RELEASE_TIER not set; defaulting to preflight"
+    fi
+    export MSP_RELEASE_TIER
+    log_info "[TIER] Running in ${MSP_RELEASE_TIER} tier"
+    # Set MSP_RELEASE_TIER default (Patch M)
+    if [ -z "${MSP_RELEASE_TIER:-}" ]; then
+      MSP_RELEASE_TIER="preflight"
+      log_info "[TIER] MSP_RELEASE_TIER not set; defaulting to preflight"
+    fi
+    export MSP_RELEASE_TIER
+    log_info "[TIER] Running in ${MSP_RELEASE_TIER} tier"
     export MSP_RELEASE_MODE="${MSP_RELEASE_MODE:-cli}"
     echo "[MSP][CLI] Release mode: ${MSP_RELEASE_MODE}"
     

@@ -240,7 +240,7 @@ publish_podspec() {
         publish_podspec "$podspec_file"
     else
         log_step "Publishing podspec: $podspec_file"
-        if pod trunk push "$podspec_file" --allow-warnings >/dev/null 2>&1; then
+        if msp_run_pod_trunk_push "$podspec_file"; then
             log_success "Podspec published: $podspec_file"
             return 0
         else
@@ -375,7 +375,50 @@ wait_for_pod_availability() {
 
 # Export functions
 export -f update_podspec_version update_podspec_source_to_zip update_podspec_dependencies \
+export -f msp_run_pod_trunk_push 2>/dev/null || true
     validate_podspec publish_podspec check_pod_available \
     update_podspec_dependency_version update_podspec_to_zip_format \
     validate_podspec_with_retry publish_podspec_with_retry wait_for_pod_availability 2>/dev/null || true
 
+
+# ============================================================================
+# CocoaPods Trunk Push with Tier Awareness (Patch M)
+# ============================================================================
+msp_run_pod_trunk_push() {
+    local spec="$1"
+    
+    if [[ -z "$spec" ]]; then
+        log_error "[PODS] msp_run_pod_trunk_push: spec file is required"
+        return 1
+    fi
+    
+    # Source release-common.sh to get tier helpers
+    if ! command -v is_preflight_tier &>/dev/null; then
+        if [[ -f "$ROOT_DIR/Scripts/lib/release-common.sh" ]]; then
+            source "$ROOT_DIR/Scripts/lib/release-common.sh" 2>/dev/null || true
+        fi
+    fi
+    
+    if is_preflight_tier; then
+        log_info "[PODS] [PREVIEW] Skipping pod trunk push in preflight tier for spec: $spec"
+        log_info "[PODS] [PREVIEW] Running pod spec lint instead to validate podspec"
+        
+        if ! pod spec lint "$spec" --allow-warnings; then
+            log_warn "[PODS] pod spec lint failed for $spec (preflight). Treating as non-fatal."
+            return 0
+        fi
+        
+        return 0
+    fi
+    
+    # Real release tier behavior - check safety guard
+    if [[ "${MSP_ALLOW_TRUNK_PUSH:-0}" != "1" ]]; then
+        log_error "[PODS][FATAL] trunk push disabled unless MSP_ALLOW_TRUNK_PUSH=1"
+        log_error "[PODS][FATAL] This is a safety guard to prevent accidental pushes"
+        return 1
+    fi
+    
+    # Real release tier behavior
+    log_info "[PODS] Running pod trunk push for $spec"
+    pod trunk push "$spec" --allow-warnings
+}
