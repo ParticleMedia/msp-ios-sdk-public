@@ -200,3 +200,130 @@ export -f msp_load_release_config \
          should_real_publish \
          should_test_publish \
          should_preflight_run 2>/dev/null || true
+
+# ============================================================================
+# Tier-Specific Configuration Cache (Patch M+Config Phase 2)
+# ============================================================================
+
+# ============================================================================
+# Parse Tier-Specific Configuration Value
+# ============================================================================
+_msp_parse_tier_config_value() {
+    local tier="$1"
+    local key="$2"
+    local config_file="${3:-$MSP_RELEASE_CONFIG_FILE}"
+    
+    if [[ ! -f "$config_file" ]]; then
+        return 1
+    fi
+    
+    # Use awk to parse tier-specific config
+    local result
+    result=$(awk -v tier="$tier" -v key="$key" '
+        BEGIN { in_tier=0; found=0 }
+        /^'"$tier"':/ { 
+            in_tier=1
+            next
+        }
+        in_tier && /^[[:space:]]+'"$key"':/ {
+            # Extract value
+            gsub(/^[[:space:]]+'"$key"':[[:space:]]*/, "")
+            gsub(/^[[:space:]]+|[[:space:]]+$/, "")
+            gsub(/^"|"$/, "")
+            print
+            found=1
+            exit
+        }
+        in_tier && /^[a-z_]+:/ && !/^[[:space:]]+/ {
+            # Left tier section (found next top-level key)
+            exit
+        }
+        END {
+            if (!found) exit 1
+        }
+    ' "$config_file" 2>/dev/null)
+    
+    if [[ -n "$result" ]]; then
+        echo "$result"
+        return 0
+    fi
+    
+    return 1
+}
+
+# ============================================================================
+# Get Tier-Specific Configuration Value (with caching)
+# ============================================================================
+msp_cfg_get() {
+    local key="$1"
+    local tier="${2:-${MSP_RELEASE_TIER:-preflight}}"
+    
+    # Normalize tier name
+    if [[ "$tier" == "production" ]]; then
+        tier="release"
+    fi
+    
+    # Validate tier
+    if [[ "$tier" != "preflight" ]] && [[ "$tier" != "release" ]]; then
+        echo "[CONFIG][ERROR] Invalid tier: $tier (must be 'preflight' or 'release')" >&2
+        return 1
+    fi
+    
+    # Check cache first
+    local cache_key="${tier}.${key}"
+    if [[ -n "$(echo "$_MSP_CFG_CACHE" | grep "^${cache_key}=" | cut -d= -f2-)" ]]; then
+        echo "$(echo "$_MSP_CFG_CACHE" | grep "^${cache_key}=" | cut -d= -f2-)"
+        return 0
+    fi
+    
+    # Load config if needed
+    if [[ -z "$MSP_RELEASE_CONFIG_FILE" ]] || [[ ! -f "$MSP_RELEASE_CONFIG_FILE" ]]; then
+        msp_load_release_config || {
+            echo "[CONFIG][ERROR] Failed to load configuration file" >&2
+            return 1
+        }
+    fi
+    
+    # Parse value
+    local value
+    value=$(_msp_parse_tier_config_value "$tier" "$key" "$MSP_RELEASE_CONFIG_FILE" 2>/dev/null)
+    
+    if [[ -z "$value" ]]; then
+        echo "[CONFIG][ERROR] Configuration key '$key' not found for tier '$tier'" >&2
+        echo "[CONFIG][ERROR] Check Scripts/release/config/release_config.yaml" >&2
+        return 1
+    fi
+    
+    # Cache and return
+    _MSP_CFG_CACHE="${cache_key}=$value"
+    echo "$value"
+    return 0
+}
+
+# ============================================================================
+# Check if Configuration Key is Enabled
+# ============================================================================
+is_enabled() {
+    local key="$1"
+    local tier="${2:-${MSP_RELEASE_TIER:-preflight}}"
+    
+    local value
+    value=$(msp_cfg_get "$key" "$tier" 2>/dev/null)
+    
+    if [[ $? -ne 0 ]]; then
+        # If key not found, fail-safe: return false
+        return 1
+    fi
+    
+    # Check if value is true (case-insensitive)
+    local value_lower
+    value_lower=$(echo "$value" | tr '[:upper:]' '[:lower:]')
+    [[ "$value_lower" == "true" ]]
+}
+
+# ============================================================================
+# Update Export Functions
+# ============================================================================
+# Re-export with new functions
+export -f msp_cfg_get \
+         is_enabled 2>/dev/null || true

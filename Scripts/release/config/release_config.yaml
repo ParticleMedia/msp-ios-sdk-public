@@ -1,6 +1,7 @@
-# MSP Release System - Branch Policy Configuration
-# This file controls which branches are allowed to perform real releases, test publishes, and preflight runs.
+# MSP Release System - Configuration
+# This file controls all release behavior through tier-specific configuration
 
+# Branch Policy Configuration
 branch_policy:
   rules:
     # Main branch: allow real publish, no test publish, allow preflight
@@ -27,12 +28,38 @@ branch_policy:
       allow_test_publish: true
       allow_preflight: true
 
+# Tier-Specific Release Behavior Configuration
+# Controls what operations are enabled/disabled for each tier
+preflight:
+  create_release_branch: false
+  push_spm_tags: false
+  push_podspec: false
+  run_remote_verify: false
+  run_local_verify: true
+  run_device_verify: true
+  run_xcframework_verify: true
+  skip_pre_release_setup: false
+  fail_fast: false
+
+release:
+  create_release_branch: true
+  push_spm_tags: true
+  push_podspec: true
+  run_remote_verify: true
+  run_local_verify: true
+  run_device_verify: true
+  run_xcframework_verify: true
+  skip_pre_release_setup: false
+  fail_fast: true
+
+# Publish Configuration
 publish:
   git_push_real: true
   git_push_test: true
   pod_trunk_push_real: true
   pod_trunk_push_test: true
 
+# Namespace Configuration
 namespace:
   test_tag_prefix: "test-"
   test_podspec_suffix: "-preview"
