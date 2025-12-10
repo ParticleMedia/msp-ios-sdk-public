@@ -1230,7 +1230,8 @@ main() {
             fi
         else
             step_fail "release_cocoapods" $?
-        return 12
+            return 12
+        fi
     fi
     
     # Step 3: Release SPM
@@ -1249,7 +1250,8 @@ main() {
             fi
         else
             step_fail "release_spm" $?
-        return 13
+            return 13
+        fi
     fi
     
     # Step 4: Push release branch
@@ -1610,10 +1612,12 @@ EOF
             else
                 log_warn "Report generation completed but file not found: $report_file"
             fi
-        else
-            log_warn "Report generation failed (soft-fail, continuing)"
-        fi
+    else
+        log_warn "Report generation failed (soft-fail, continuing)"
     fi
+fi
+
+}
 
 # Entry point
 # If RELEASE_VERSION is set from environment (via msp-release.sh), use it directly
