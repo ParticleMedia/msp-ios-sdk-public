@@ -881,18 +881,33 @@ spm_publish_tags() {
     if [[ -z "$version" ]]; then
         log_error "[SPM] spm_publish_tags: version is required"
         return 1
-    fi
     
-    # Source release-common.sh to get tier helpers
+    # Source release-common.sh to get tier helpers and config
     if ! command -v is_preflight_tier &>/dev/null; then
         if [[ -f "$ROOT_DIR/Scripts/lib/release-common.sh" ]]; then
             source "$ROOT_DIR/Scripts/lib/release-common.sh" 2>/dev/null || true
         fi
     fi
     
+    # Source config if not already loaded
+    if ! command -v should_real_publish &>/dev/null; then
+        if [[ -f "$ROOT_DIR/Scripts/release/lib/config.sh" ]]; then
+            source "$ROOT_DIR/Scripts/release/lib/config.sh" 2>/dev/null || true
+            msp_load_release_config 2>/dev/null || true
+        fi
+    fi
+    
     if is_preflight_tier; then
         log_info "[SPM] [PREVIEW] Skipping tag & remote publish in preflight tier (version: $version)"
         return 0
+    fi
+    
+    # Real release tier behavior - check config (Patch M+CONFIG)
+    if ! should_real_publish; then
+        local branch="$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo unknown)"
+        log_error "[SPM][BLOCKED] Real tag & remote publish not allowed on branch: $branch"
+        log_error "[SPM][BLOCKED] Check Scripts/release/config/release_config.yaml for branch policy"
+        return 1
     fi
     
     # Real release tier behavior
@@ -921,12 +936,11 @@ spm_publish_tags() {
     
     # Push tags to remote
     log_step "Pushing tags to remote"
-    if spm_publish_tags "$VERSION"; then
+    if git push origin --tags; then
         log_success "Pushed tags to remote"
     else
         log_error "Failed to push tags to remote"
         return 1
     fi
     
-    return 0
 }

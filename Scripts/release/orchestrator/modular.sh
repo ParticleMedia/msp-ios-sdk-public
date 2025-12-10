@@ -1002,6 +1002,31 @@ main() {
     
     # Phase 4 TASK 4: Preflight / Production mode detection
     local RELEASE_TIER="${MSP_RELEASE_TIER:-preflight}"
+    export MSP_RELEASE_TIER="$RELEASE_TIER"
+    log_info "[TIER] Running in ${RELEASE_TIER} tier"
+    
+    # Load and log configuration (Patch M+CONFIG)
+    if [[ -f "$ROOT_DIR/Scripts/release/lib/config.sh" ]]; then
+        source "$ROOT_DIR/Scripts/release/lib/config.sh" 2>/dev/null || true
+        msp_load_release_config 2>/dev/null || true
+        
+        local current_branch="$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo unknown)"
+        local allow_real="$(should_real_publish && echo true || echo false)"
+        local allow_test="$(should_test_publish && echo true || echo false)"
+        local allow_preflight="$(should_preflight_run && echo true || echo false)"
+        
+        log_info "[CONFIG] Branch: $current_branch"
+        log_info "[CONFIG] allow_real_publish = $allow_real"
+        log_info "[CONFIG] allow_test_publish = $allow_test"
+        log_info "[CONFIG] allow_preflight = $allow_preflight"
+        
+        # Block real publish if not allowed
+        if [[ "$RELEASE_TIER" != "preflight" ]] && ! should_real_publish; then
+            log_error "[BLOCKED] Real publish not allowed on branch: $current_branch"
+            log_error "[BLOCKED] Check Scripts/release/config/release_config.yaml for branch policy"
+            exit 1
+        fi
+    fi
     log_info "[TIER] Running in ${RELEASE_TIER} tier"
     export MSP_RELEASE_TIER="$RELEASE_TIER"
     echo "[MSP][ORCH] Release tier: ${RELEASE_TIER}"

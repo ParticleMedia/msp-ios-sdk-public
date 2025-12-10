@@ -228,6 +228,13 @@ is_preflight_tier() {
     # MSP_RELEASE_TIER may be set via env or CLI
     case "${MSP_RELEASE_TIER:-}" in
         preflight|PRELFIGHT|Preflight|PREFLIGHT)
+            # Check if preflight is allowed on this branch (Patch M+CONFIG)
+            if command -v should_preflight_run &>/dev/null; then
+                if ! should_preflight_run; then
+                    log_warn "[SKIP] Preflight not allowed on this branch"
+                    return 1
+                fi
+            fi
             return 0
             ;;
         *)
@@ -240,11 +247,25 @@ is_release_tier() {
     if is_preflight_tier; then
         return 1
     fi
+    # Check if real publish is allowed on this branch (Patch M+CONFIG)
+    if command -v should_real_publish &>/dev/null; then
+        if ! should_real_publish; then
+            local branch="$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo unknown)"
+            log_error "[BLOCKED] Real publish not allowed on branch: $branch"
+            log_error "[BLOCKED] Check Scripts/release/config/release_config.yaml for branch policy"
+            return 1
+        fi
+    fi
     # treat anything not preflight as "release-like" for now
     return 0
 }
 
 # Source notification utilities
+# Source release config loader (Patch M+CONFIG)
+if [[ -f "$ROOT_DIR/Scripts/release/lib/config.sh" ]]; then
+    # shellcheck source=Scripts/release/lib/config.sh
+    source "$ROOT_DIR/Scripts/release/lib/config.sh" 2>/dev/null || true
+fi
 if [[ -f "$ROOT_DIR/Scripts/release/utils/notify.sh" ]]; then
     # shellcheck source=Scripts/release/utils/notify.sh
     source "$ROOT_DIR/Scripts/release/utils/notify.sh" 2>/dev/null || true

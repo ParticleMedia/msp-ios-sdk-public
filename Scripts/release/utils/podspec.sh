@@ -392,10 +392,18 @@ msp_run_pod_trunk_push() {
         return 1
     fi
     
-    # Source release-common.sh to get tier helpers
+    # Source release-common.sh to get tier helpers and config
     if ! command -v is_preflight_tier &>/dev/null; then
         if [[ -f "$ROOT_DIR/Scripts/lib/release-common.sh" ]]; then
             source "$ROOT_DIR/Scripts/lib/release-common.sh" 2>/dev/null || true
+        fi
+    fi
+    
+    # Source config if not already loaded
+    if ! command -v should_real_publish &>/dev/null; then
+        if [[ -f "$ROOT_DIR/Scripts/release/lib/config.sh" ]]; then
+            source "$ROOT_DIR/Scripts/release/lib/config.sh" 2>/dev/null || true
+            msp_load_release_config 2>/dev/null || true
         fi
     fi
     
@@ -409,6 +417,14 @@ msp_run_pod_trunk_push() {
         fi
         
         return 0
+    fi
+    
+    # Real release tier behavior - check config (Patch M+CONFIG)
+    if ! should_real_publish; then
+        local branch="$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo unknown)"
+        log_error "[PODS][BLOCKED] Real pod trunk push not allowed on branch: $branch"
+        log_error "[PODS][BLOCKED] Check Scripts/release/config/release_config.yaml for branch policy"
+        return 1
     fi
     
     # Real release tier behavior - check safety guard

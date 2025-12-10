@@ -1,0 +1,39 @@
+# MSP Release System - Branch Policy Configuration
+# This file controls which branches are allowed to perform real releases, test publishes, and preflight runs.
+
+branch_policy:
+  rules:
+    # Main branch: allow real publish, no test publish, allow preflight
+    main:
+      allow_real_publish: true
+      allow_test_publish: false
+      allow_preflight: true
+
+    # Release branches: allow everything
+    "release/.*":
+      allow_real_publish: true
+      allow_test_publish: true
+      allow_preflight: true
+
+    # Feature branch: feature/spm_impl - allow real publish for development
+    feature/spm_impl:
+      allow_real_publish: true
+      allow_test_publish: true
+      allow_preflight: true
+
+    # All other feature branches: block real publish, allow test and preflight
+    "feature/.+":
+      allow_real_publish: false
+      allow_test_publish: true
+      allow_preflight: true
+
+publish:
+  git_push_real: true
+  git_push_test: true
+  pod_trunk_push_real: true
+  pod_trunk_push_test: true
+
+namespace:
+  test_tag_prefix: "test-"
+  test_podspec_suffix: "-preview"
+  real_tag_prefix: ""
