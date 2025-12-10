@@ -79,42 +79,33 @@ _msp_parse_yaml_value() {
     # Remove quotes from branch_name if present
     branch_name="${branch_name//\"/}"
     branch_name="${branch_name//\'/}"
-    
-    # Find the section in YAML file
-    local in_section=0
-    local found_key=0
-    local result=""
-    
-    while IFS= read -r line || [[ -n "$line" ]]; do
-        # Skip comments and empty lines
-        [[ "$line" =~ ^[[:space:]]*# ]] && continue
-        [[ -z "${line// }" ]] && continue
-        
-        # Check if we're entering the branch section (handle both quoted and unquoted, with slashes)
-        if [[ "$line" =~ ^[[:space:]]*"${branch_name}":[[:space:]]*$ ]] || [[ "$line" =~ ^[[:space:]]*${branch_name}:[[:space:]]*$ ]]; then
-            in_section=1
-            continue
-        fi
-        
-        # Check if we're leaving the section (new top-level key at column 0)
-        if [[ $in_section -eq 1 ]] && [[ "$line" =~ ^[^[:space:]] ]]; then
-            break
-        fi
-        
-        # If we're in the section, look for the key
-        if [[ $in_section -eq 1 ]] && [[ "$line" =~ ^[[:space:]]+${key_name}:[[:space:]]*(.+)$ ]]; then
-            result="${BASH_REMATCH[1]}"
-            # Remove quotes and trim whitespace
-            result="${result//\"/}"
-            result="${result//\'/}"
-            # Trim leading whitespace
-            result="${result#"${result%%[![:space:]]*}"}"
-            # Trim trailing whitespace
-            result="${result%"${result##*[![:space:]]}"}"
-            found_key=1
-            break
-        fi
-    done < "$config_file"
+
+    # Use awk to parse YAML - more reliable than bash regex
+    # Use match() function instead of ~ operator to handle special characters in branch names
+    local branch_escaped="${branch_name////\/}"
+    result=$(awk -v branch="$branch_escaped" -v key="$key_name" '
+        BEGIN { in_rules=0; in_branch=0 }
+        /^[[:space:]]*branch_policy:/ { in_rules=1; next }
+        in_rules && /^[[:space:]]*rules:/ { next }
+        in_rules && match($0, "^[[:space:]]+" branch ":") { in_branch=1; next }
+        in_branch && match($0, "^[[:space:]]+" key ":") {
+            gsub(/^[[:space:]]+/, "");
+            gsub(/^[^:]+:[[:space:]]*/, "");
+            gsub(/^[[:space:]]+|[[:space:]]+$/, "");
+            gsub(/^"|"$/, "");
+            print;
+            exit
+        }
+        in_branch && /^[[:space:]]{0,4}[^[:space:]]/ && !match($0, "^[[:space:]]+" branch ":") {
+            exit
+        }
+    ' "$config_file" 2>/dev/null)
+
+    if [[ -n "$result" ]]; then
+        return 0
+    fi
+
+    return 1
     
     if [[ $found_key -eq 1 ]] && [[ -n "$result" ]]; then
         echo "$result"
