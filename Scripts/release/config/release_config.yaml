@@ -1,66 +1,34 @@
-# MSP Release System - Configuration
-# This file controls all release behavior through tier-specific configuration
+# MSP Release System — Unified Configuration Schema (v1.0)
 
-# Branch Policy Configuration
-branch_policy:
-  rules:
-    # Main branch: allow real publish, no test publish, allow preflight
-    main:
-      allow_real_publish: true
-      allow_test_publish: false
-      allow_preflight: true
+tier:
+  default: preflight    # preflight | production
 
-    # Release branches: allow everything
-    "release/.*":
-      allow_real_publish: true
-      allow_test_publish: true
-      allow_preflight: true
+pods:
+  enabled: true         # Whether to run CocoaPods publish
+  lint: true            # Whether to run podspec lint
 
-    # Feature branch: feature/spm_impl - allow real publish for development
-    feature/spm_impl:
-      allow_real_publish: true
-      allow_test_publish: true
-      allow_preflight: true
+spm:
+  enabled: true         # Whether to run SPM publish
+  tags: true            # Whether to create/push Git tags for SPM
 
-    # All other feature branches: block real publish, allow test and preflight
-    "feature/.+":
-      allow_real_publish: false
-      allow_test_publish: true
-      allow_preflight: true
+branch:
+  create: true          # Whether to create release/* branch
+  push: true            # Whether to push the release branch
 
-# Tier-Specific Release Behavior Configuration
-# Controls what operations are enabled/disabled for each tier
-preflight:
-  create_release_branch: false
-  push_spm_tags: false
-  push_podspec: false
-  run_remote_verify: false
-  run_local_verify: true
-  run_device_verify: true
-  run_xcframework_verify: true
+build:
+  pre_release_setup: true
   skip_pre_release_setup: false
-  fail_fast: false
 
-release:
-  create_release_branch: true
-  push_spm_tags: true
-  push_podspec: true
-  run_remote_verify: true
-  run_local_verify: true
-  run_device_verify: true
-  run_xcframework_verify: true
-  skip_pre_release_setup: false
+verify:
+  remote: true
+  local: true
+  device: false
+  xcframework: true
+
+behavior:
   fail_fast: true
 
-# Publish Configuration
-publish:
-  git_push_real: true
-  git_push_test: true
-  pod_trunk_push_real: true
-  pod_trunk_push_test: true
-
-# Namespace Configuration
-namespace:
-  test_tag_prefix: "test-"
-  test_podspec_suffix: "-preview"
-  real_tag_prefix: ""
+notifications:
+  slack: true
+  email: true
+  github_release: true
