@@ -102,17 +102,12 @@ _msp_parse_yaml_value() {
     ' "$config_file" 2>/dev/null)
 
     if [[ -n "$result" ]]; then
+        echo "$result"
         return 0
     fi
 
     return 1
     
-    if [[ $found_key -eq 1 ]] && [[ -n "$result" ]]; then
-        echo "$result"
-        return 0
-    fi
-    
-    return 1
 }
 
 # ============================================================================
