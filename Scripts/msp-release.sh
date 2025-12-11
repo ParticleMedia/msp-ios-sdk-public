@@ -153,73 +153,89 @@ SUBCOMMAND=""
 # Returns remaining arguments (subcommand + positional args)
 parse_flags() {
     REMAINING_ARGS=()
-    
+
     while [[ $# -gt 0 ]]; do
         case "$1" in
             --config)
+                CONFIG_FILE="$2"
+                shift 2
                 ;;
+
             --config=*)
                 CONFIG_FILE="${1#*=}"
+                shift
                 ;;
+
             --verbose|-V)
                 VERBOSE=true
+                shift
                 ;;
+
             --dry-run)
                 DRY_RUN=true
+                shift
                 ;;
+
             --no-ansi)
                 NO_ANSI=true
+                shift
                 ;;
+
             --skip-preflight)
                 SKIP_PREFLIGHT=true
+                shift
                 ;;
+
             --skip-pods|--skip-cocoapods)
                 SKIP_PODS=true
+                shift
                 ;;
+
             --skip-spm)
                 SKIP_SPM=true
+                shift
                 ;;
+
             --only-pods)
                 ONLY_PODS=true
                 SKIP_SPM=true
                 shift
                 ;;
+
             --only-spm)
                 ONLY_SPM=true
                 SKIP_PODS=true
                 shift
                 ;;
+
             --tier)
                 if [[ -n "${2:-}" && ! "$2" =~ ^- ]]; then
                     MSP_RELEASE_TIER="$2"
                     shift 2
                 else
-                    log_error "--tier requires a value (preflight or release)"
+                    log_error "--tier requires a value"
                     exit 1
                 fi
                 ;;
+
             --tier=*)
                 MSP_RELEASE_TIER="${1#*=}"
                 shift
                 ;;
+
             --version|-v)
-                # Special case: if this is the only arg, show version and exit
-                if [[ $# -eq 1 ]]; then
-                    SUBCOMMAND="version"
-                    return 0
-                fi
-                # Otherwise, treat as flag and continue
+                SUBCOMMAND="version"
+                shift
                 ;;
+
             --help|-h)
-                # Special case: if this is the only arg, show help and exit
-                if [[ $# -eq 1 ]]; then
-                    SUBCOMMAND="help"
-                    return 0
-                fi
-                # Otherwise, treat as flag and continue
+                SUBCOMMAND="help"
+                shift
                 ;;
+
             *)
                 REMAINING_ARGS+=("$1")
+                shift
                 ;;
         esac
     done
