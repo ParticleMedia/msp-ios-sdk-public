@@ -795,18 +795,12 @@ show_comprehensive_release_summary() {
 
 # Step 5: Run remote verification
 run_remote_verification() {
-    # Source release-common.sh to get tier helpers
-    if ! command -v is_preflight_tier &>/dev/null; then
-        if [[ -f "$ROOT_DIR/Scripts/lib/release-common.sh" ]]; then
-            source "$ROOT_DIR/Scripts/lib/release-common.sh" 2>/dev/null || true
-        fi
-    fi
-    
-    if is_preflight_tier; then
-        log_info "[REMOTE] Skipping remote verification in preflight tier"
+    # Config-driven gating
+    if ! is_enabled "verify.remote"; then
+        log_info "[REMOTE] Skipping remote verification (config: verify.remote=false)"
         if command -v msp_state_mark_step_skipped &>/dev/null; then
-            msp_state_mark_step_skipped "remote_verify_spm" "Skipped in preflight tier"
-            msp_state_mark_step_skipped "remote_verify_pods" "Skipped in preflight tier"
+            msp_state_mark_step_skipped "remote_verify_spm" "Skipped (config: verify.remote=false)"
+            msp_state_mark_step_skipped "remote_verify_pods" "Skipped (config: verify.remote=false)"
         fi
         return 0
     fi
