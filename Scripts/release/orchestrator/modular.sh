@@ -74,11 +74,7 @@ export BUILD_ENVIRONMENT="${BUILD_ENVIRONMENT:-local}"
 echo "[DIAG] BUILD_ENVIRONMENT set" >&2
 
 source "$ROOT_DIR/Scripts/lib/release-common.sh"
-# Ensure tier helpers are available
-if ! command -v is_preflight_tier &>/dev/null; then
-    # Tier helpers should be in release-common.sh, but reload if missing
-    source "$ROOT_DIR/Scripts/lib/release-common.sh" 2>/dev/null || true
-fi
+# Config-driven gating is now standard - no need for tier helper checks
 set +e  # Temporarily disabled - will re-enable after identifying failing command
 
 # Source state management utility (state.sh is already loaded by release-common.sh, but we can source it again if needed)
@@ -337,6 +333,7 @@ validate_inputs() {
     log_info "  SPM Enabled: $(is_enabled "spm.enabled" && echo "true" || echo "false")"
     log_info "  Verify Local: $(is_enabled "verify.local" && echo "true" || echo "false")"
     log_info "  Verify Remote: $(is_enabled "verify.remote" && echo "true" || echo "false")"
+    log_info "  Verify XCFramework: $(is_enabled "verify.xcframework" && echo "true" || echo "false")"
     if [[ -n "${PODS_MODULES:-}" ]]; then
         log_info "  Pods Modules: $PODS_MODULES"
     fi
@@ -1254,11 +1251,12 @@ main() {
             msp_state_mark_step_success "release_cocoapods"
         fi
     else
-        if is_preflight_tier; then
-            log_warn "[ORCH] release_cocoapods failed in preflight tier (non-fatal)"
-            step_skip "release_cocoapods (preflight soft-fail)"
+        # Config-driven soft-fail: if pods are disabled, failure is non-fatal
+        if ! is_enabled "pods.enabled"; then
+            log_warn "[ORCH] release_cocoapods failed but pods.enabled=false (non-fatal)"
+            step_skip "release_cocoapods (config soft-fail)"
             if command -v msp_state_mark_step_skipped &>/dev/null; then
-                msp_state_mark_step_skipped "release_cocoapods" "Skipped in preflight tier"
+                msp_state_mark_step_skipped "release_cocoapods" "Skipped due to failure with pods.enabled=false"
             fi
         else
             step_fail "release_cocoapods" $?
@@ -1274,11 +1272,12 @@ main() {
             msp_state_mark_step_success "release_spm"
         fi
     else
-        if is_preflight_tier; then
-            log_warn "[ORCH] release_spm failed in preflight tier (non-fatal)"
-            step_skip "release_spm (preflight soft-fail)"
+        # Config-driven soft-fail: if spm is disabled, failure is non-fatal
+        if ! is_enabled "spm.enabled"; then
+            log_warn "[ORCH] release_spm failed but spm.enabled=false (non-fatal)"
+            step_skip "release_spm (config soft-fail)"
             if command -v msp_state_mark_step_skipped &>/dev/null; then
-                msp_state_mark_step_skipped "release_spm" "Skipped in preflight tier"
+                msp_state_mark_step_skipped "release_spm" "Skipped due to failure with spm.enabled=false"
             fi
         else
             step_fail "release_spm" $?

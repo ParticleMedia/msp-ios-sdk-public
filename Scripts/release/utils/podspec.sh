@@ -391,14 +391,12 @@ msp_run_pod_trunk_push() {
         log_error "[PODS] msp_run_pod_trunk_push: spec file is required"
         return 1
     fi
-    
-    # Source release-common.sh to get tier helpers and config
-    if ! command -v is_preflight_tier &>/dev/null; then
-        if [[ -f "$ROOT_DIR/Scripts/lib/release-common.sh" ]]; then
-            source "$ROOT_DIR/Scripts/lib/release-common.sh" 2>/dev/null || true
-        fi
+
+    # Source release-common.sh for config-driven gating
+    if [[ -f "$ROOT_DIR/Scripts/lib/release-common.sh" ]]; then
+        source "$ROOT_DIR/Scripts/lib/release-common.sh" 2>/dev/null || true
     fi
-    
+
     # Source config if not already loaded
     if ! command -v should_real_publish &>/dev/null; then
         if [[ -f "$ROOT_DIR/Scripts/release/lib/config.sh" ]]; then
@@ -406,16 +404,17 @@ msp_run_pod_trunk_push() {
             msp_load_release_config 2>/dev/null || true
         fi
     fi
-    
-    if is_preflight_tier; then
-        log_info "[PODS] [PREVIEW] Skipping pod trunk push in preflight tier for spec: $spec"
-        log_info "[PODS] [PREVIEW] Running pod spec lint instead to validate podspec"
-        
+
+    # Config-driven gating: skip if pods.enabled is false
+    if ! is_enabled "pods.enabled"; then
+        log_info "[PODS] [CONFIG] Skipping pod trunk push (config: pods.enabled=false, spec: $spec)"
+        log_info "[PODS] [CONFIG] Running pod spec lint instead to validate podspec"
+
         if ! pod spec lint "$spec" --allow-warnings; then
-            log_warn "[PODS] pod spec lint failed for $spec (preflight). Treating as non-fatal."
+            log_warn "[PODS] pod spec lint failed for $spec (config: pods.enabled=false). Treating as non-fatal."
             return 0
         fi
-        
+
         return 0
     fi
     

@@ -882,14 +882,12 @@ spm_publish_tags() {
         log_error "[SPM] spm_publish_tags: version is required"
         return 1
     fi
-    
-    # Source release-common.sh to get tier helpers and config
-    if ! command -v is_preflight_tier &>/dev/null; then
-        if [[ -f "$ROOT_DIR/Scripts/lib/release-common.sh" ]]; then
-            source "$ROOT_DIR/Scripts/lib/release-common.sh" 2>/dev/null || true
-        fi
+
+    # Source release-common.sh for config-driven gating
+    if [[ -f "$ROOT_DIR/Scripts/lib/release-common.sh" ]]; then
+        source "$ROOT_DIR/Scripts/lib/release-common.sh" 2>/dev/null || true
     fi
-    
+
     # Source config if not already loaded
     if ! command -v should_real_publish &>/dev/null; then
         if [[ -f "$ROOT_DIR/Scripts/release/lib/config.sh" ]]; then
@@ -897,9 +895,10 @@ spm_publish_tags() {
             msp_load_release_config 2>/dev/null || true
         fi
     fi
-    
-    if is_preflight_tier; then
-        log_info "[SPM] [PREVIEW] Skipping tag & remote publish in preflight tier (version: $version)"
+
+    # Config-driven gating: skip if spm.enabled is false
+    if ! is_enabled "spm.enabled"; then
+        log_info "[SPM] [CONFIG] Skipping tag & remote publish (config: spm.enabled=false, version: $version)"
         return 0
     fi
     
