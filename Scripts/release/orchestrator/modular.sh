@@ -333,8 +333,10 @@ validate_inputs() {
     log_info "  Base Branch: $BASE_BRANCH"
     log_info "  Release Branch: $RELEASE_BRANCH"
     log_info "  Dry Run: $DRY_RUN"
-    log_info "  Pods Enabled: $([ "$SKIP_COCOAPODS" == "true" ] && echo "false" || echo "true")"
-    log_info "  SPM Enabled: $([ "$SKIP_SPM" == "true" ] && echo "false" || echo "true")"
+    log_info "  Pods Enabled: $(is_enabled "pods.enabled" && echo "true" || echo "false")"
+    log_info "  SPM Enabled: $(is_enabled "spm.enabled" && echo "true" || echo "false")"
+    log_info "  Verify Local: $(is_enabled "verify.local" && echo "true" || echo "false")"
+    log_info "  Verify Remote: $(is_enabled "verify.remote" && echo "true" || echo "false")"
     if [[ -n "${PODS_MODULES:-}" ]]; then
         log_info "  Pods Modules: $PODS_MODULES"
     fi
@@ -375,6 +377,12 @@ pre_release_setup() {
 
 # Step 1: Create release branch
 create_release_branch() {
+    # Config-driven gating
+    if ! is_enabled "branch.create"; then
+        step_skip "create_release_branch (config: branch.create=false)"
+        return 0
+    fi
+
     log_section "Step 1: Creating release branch"
     
     local create_branch_cmd="$ROOT_DIR/Scripts/release/orchestrator/branch.sh"
@@ -395,6 +403,12 @@ create_release_branch() {
 
 # Step 2: Release CocoaPods
 release_cocoapods() {
+    # Step-C: Hard protection - config-driven gating
+    if ! is_enabled "pods.enabled"; then
+        step_skip "release_cocoapods (config: pods.enabled=false)"
+        return 0
+    fi
+
     if [[ "$SKIP_COCOAPODS" == "true" ]]; then
         step_skip "release_cocoapods (SKIP_COCOAPODS=true)"
         return 0
@@ -451,6 +465,12 @@ release_cocoapods() {
 
 # Step 3: Release SPM
 release_spm() {
+    # Step-C: Hard protection - config-driven gating
+    if ! is_enabled "spm.enabled"; then
+        step_skip "release_spm (config: spm.enabled=false)"
+        return 0
+    fi
+
     if [[ "$SKIP_SPM" == "true" ]]; then
         step_skip "release_spm (SKIP_SPM=true)"
         return 0
@@ -1299,7 +1319,11 @@ main() {
     # Step 6: Run local verification (soft-fail, never breaks release)
     step "run_local_verification"
     local release_mode_upper=$(echo "$RELEASE_MODE" | tr '[:lower:]' '[:upper:]' 2>/dev/null || echo "$RELEASE_MODE" | awk '{print toupper($0)}')
-    if [[ "$MSP_SKIP_LOCAL_VERIFY" == "true" ]]; then
+    # Config-driven gating
+    if ! is_enabled "verify.local"; then
+        echo "[MSP][ORCH] Mode: ${release_mode_upper} — skipping local verification (config: verify.local=false)"
+        step_skip "run_local_verification (config: verify.local=false)"
+    elif [[ "$MSP_SKIP_LOCAL_VERIFY" == "true" ]]; then
         echo "[MSP][ORCH] Mode: ${release_mode_upper} — skipping local verification"
         step_skip "run_local_verification (skipped in CI mode)"
     else
@@ -1333,7 +1357,11 @@ main() {
     
     # Step 8: Run XCFramework deep verification (soft-fail, never breaks release)
     step "run_xcframework_verification"
-    if [[ "$MSP_SKIP_XCF_VERIFY" == "true" ]]; then
+    # Config-driven gating
+    if ! is_enabled "verify.xcframework"; then
+        echo "[MSP][ORCH] Mode: ${release_mode_upper} — skipping XCF verify (config: verify.xcframework=false)"
+        step_skip "run_xcframework_verification (config: verify.xcframework=false)"
+    elif [[ "$MSP_SKIP_XCF_VERIFY" == "true" ]]; then
         echo "[MSP][ORCH] Mode: ${release_mode_upper} — skipping XCF verify"
         step_skip "run_xcframework_verification (skipped in CI mode or xcodebuild not available)"
     else
