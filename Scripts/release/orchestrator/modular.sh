@@ -93,6 +93,11 @@ if [[ -f "$ROOT_DIR/Scripts/notify/email.sh" ]]; then
     source "$ROOT_DIR/Scripts/notify/email.sh" 2>/dev/null || true
 fi
 
+# Source safety checks for Release tier protections
+if [[ -f "$ROOT_DIR/Scripts/release/utils/safety.sh" ]]; then
+    source "$ROOT_DIR/Scripts/release/utils/safety.sh" 2>/dev/null || true
+fi
+
 # ============================================================================
 # STEP-Level Logging Functions
 # ============================================================================
@@ -1033,7 +1038,16 @@ main() {
     local RELEASE_TIER="${MSP_RELEASE_TIER:-preflight}"
     export MSP_RELEASE_TIER="$RELEASE_TIER"
     log_info "[TIER] Running in ${RELEASE_TIER} tier"
-    
+
+    # Phase 3: Release Tier Safety Checks (must run before any operations)
+    VERSION="$1"
+    if command -v msp_release_safety_check &>/dev/null; then
+        if ! msp_release_safety_check "$VERSION"; then
+            log_error "[SAFETY] Safety checks failed. Aborting release."
+            exit 1
+        fi
+    fi
+
     # Load and log configuration (Patch M+CONFIG)
     if [[ -f "$ROOT_DIR/Scripts/release/lib/config.sh" ]]; then
         source "$ROOT_DIR/Scripts/release/lib/config.sh" 2>/dev/null || true

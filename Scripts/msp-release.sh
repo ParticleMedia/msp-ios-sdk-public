@@ -135,6 +135,7 @@ SKIP_PODS=false
 SKIP_SPM=false
 ONLY_PODS=false
 ONLY_SPM=false
+FORCE=false
 CONFIG_FILE=""
 CLI_VERSION=""
 SUBCOMMAND=""
@@ -178,6 +179,11 @@ parse_flags() {
 
             --no-ansi)
                 NO_ANSI=true
+                shift
+                ;;
+
+            --force)
+                FORCE=true
                 shift
                 ;;
 
@@ -336,7 +342,8 @@ apply_cli_overrides() {
     export VERBOSE="$VERBOSE"
     export SKIP_PREFLIGHT="$SKIP_PREFLIGHT"
     export NO_ANSI="$NO_ANSI"
-    
+    export MSP_RELEASE_FORCE="$FORCE"
+
     log_debug "[CLI] Applied all CLI overrides"
 }
 
