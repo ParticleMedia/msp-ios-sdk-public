@@ -217,36 +217,73 @@ _msp_parse_tier_config_value() {
         return 1
     fi
     
-    # Use awk to parse tier-specific config
-    local result
-    result=$(awk -v tier="$tier" -v key="$key" '
-        BEGIN { in_tier=0; found=0 }
-        /^'"$tier"':/ { 
-            in_tier=1
-            next
-        }
-        in_tier && /^[[:space:]]+'"$key"':/ {
-            # Extract value
-            gsub(/^[[:space:]]+'"$key"':[[:space:]]*/, "")
-            gsub(/^[[:space:]]+|[[:space:]]+$/, "")
-            gsub(/^"|"$/, "")
-            print
-            found=1
-            exit
-        }
-        in_tier && /^[a-z_]+:/ && !/^[[:space:]]+/ {
-            # Left tier section (found next top-level key)
-            exit
-        }
-        END {
-            if (!found) exit 1
-        }
-    ' "$config_file" 2>/dev/null)
+    # Split key by dots (e.g., "pods.enabled" -> ["pods", "enabled"])
+    local IFS='.'
+    local -a key_parts
+    read -ra key_parts <<< "$key"
+    IFS=$' \t\n'
     
-    if [[ -n "$result" ]]; then
-        echo "$result"
-        return 0
-    fi
+    local key_count=${#key_parts[@]}
+    local in_tier=0
+    local path_index=0
+    local last_indent=-1
+    local line
+    
+    while IFS= read -r line || [[ -n "$line" ]]; do
+        # Calculate indentation
+        local indent=0
+        while [[ ${line:$indent:1} == " " ]]; do
+            ((indent++))
+        done
+        
+        local stripped="${line:$indent}"
+        
+        # Check if we entered the tier section
+        if [[ "$stripped" =~ ^${tier}: ]]; then
+            in_tier=1
+            path_index=0
+            continue
+        fi
+        
+        # Check if we left the tier section (found next top-level key)
+        if [[ $in_tier -eq 1 ]] && [[ $indent -eq 0 ]] && [[ "$stripped" =~ ^[a-z_]+: ]]; then
+            break
+        fi
+        
+        # Process lines within tier section
+        if [[ $in_tier -eq 1 ]] && [[ $path_index -lt $key_count ]]; then
+            local expected_indent=$(( (path_index + 1) * 2 ))
+            
+            if [[ $indent -eq $expected_indent ]]; then
+                local current_key="${key_parts[$path_index]}"
+                
+                if [[ "$stripped" =~ ^${current_key}: ]]; then
+                    if [[ $path_index -eq $((key_count - 1)) ]]; then
+                        # Final key - extract value
+                        local value="${stripped#${current_key}:}"
+                        value="${value#"${value%%[![:space:]]*}"}"  # trim leading spaces
+                        value="${value%"${value##*[![:space:]]}"}"  # trim trailing spaces
+                        value="${value#\"}"  # remove leading quote
+                        value="${value%\"}"   # remove trailing quote
+                        value="${value%%#*}"  # remove comment
+                        value="${value%"${value##*[![:space:]]}"}"  # trim trailing spaces again
+                        
+                        if [[ -n "$value" ]]; then
+                            echo "$value"
+                            return 0
+                        fi
+                    else
+                        # Move to next level
+                        ((path_index++))
+                        last_indent=$indent
+                    fi
+                fi
+            elif [[ $indent -le $last_indent ]] && [[ $path_index -gt 0 ]]; then
+                # Went back up a level
+                break
+            fi
+        fi
+    done < "$config_file"
     
     return 1
 }

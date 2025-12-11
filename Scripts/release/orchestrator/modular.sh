@@ -124,14 +124,26 @@ step_skip() {
 # If not set, fall back to CLI argument parsing for backward compatibility
 
 if [[ -z "${RELEASE_VERSION:-}" ]]; then
-    # Backward compatibility: extract from CLI if called directly
+    # Backward compatibility: extract MODE and VERSION from CLI if called directly
+    # Expected format: bash modular.sh <MODE> <VERSION> [OPTIONS...]
+    # Example: bash modular.sh run 0.0.1-preflight-test
     if [[ $# -gt 0 && ! "$1" =~ ^-- ]]; then
-        RELEASE_VERSION="$1"
+        # First argument is MODE (e.g., "run"), skip it
         shift
+        # Second argument is VERSION (e.g., "0.0.1-preflight-test")
+        if [[ $# -gt 0 && ! "$1" =~ ^-- ]]; then
+            RELEASE_VERSION="$1"
+            shift
+        else
+            log_error "VERSION not provided. Expected: $0 <MODE> <VERSION> [OPTIONS]"
+            log_info "Usage: msp-release.sh run <VERSION>"
+            log_info "   or: $0 <MODE> <VERSION> [OPTIONS]  (direct call for debugging)"
+            exit 1
+        fi
     else
         log_error "RELEASE_VERSION not set. Did you forget to run via msp-release.sh?"
         log_info "Usage: msp-release.sh run <VERSION>"
-        log_info "   or: $0 <VERSION> [OPTIONS]  (direct call for debugging)"
+        log_info "   or: $0 <MODE> <VERSION> [OPTIONS]  (direct call for debugging)"
         exit 1
     fi
 fi
