@@ -131,6 +131,56 @@ step_skip() {
 }
 
 # ============================================================================
+# Unified Step Lifecycle API
+# ============================================================================
+
+mark_step_start() {
+    local step="$1"
+    if command -v msp_state_mark_step_running &>/dev/null; then
+        msp_state_mark_step_running "$step"
+    fi
+}
+
+mark_step_success() {
+    local step="$1"
+    if command -v msp_state_mark_step_success &>/dev/null; then
+        msp_state_mark_step_success "$step"
+    fi
+}
+
+mark_step_error() {
+    local step="$1"
+    local reason="$2"
+    if command -v msp_state_mark_step_failed &>/dev/null; then
+        msp_state_mark_step_failed "$step" "$reason"
+    fi
+}
+
+mark_step_skipped() {
+    local step="$1"
+    local reason="$2"
+    if command -v msp_state_mark_step_skipped &>/dev/null; then
+        msp_state_mark_step_skipped "$step" "$reason"
+    fi
+}
+
+# Unified Error Model
+fail_step() {
+    local step="$1"
+    local reason="$2"
+
+    log_error "[ERROR] Step '$step' failed: $reason"
+    mark_step_error "$step" "$reason"
+
+    # Check if fail_fast is enabled (default: true)
+    if is_enabled "behavior.fail_fast" 2>/dev/null || [[ "${MSP_FAIL_FAST:-true}" == "true" ]]; then
+        return 1
+    fi
+
+    return 1
+}
+
+# ============================================================================
 # Environment Variable Validation
 # ============================================================================
 # Check if required environment variables are set (from msp-release.sh)
@@ -362,31 +412,35 @@ validate_inputs() {
 
 # Step 0: Pre-release setup (build frameworks)
 pre_release_setup() {
+    mark_step_start "pre_release_setup"
     log_section "Step 0: Pre-release setup (building frameworks)"
-    
-    
+
+
     if [[ "$DRY_RUN" == "true" ]]; then
         log_info "DRY RUN: Would run build scripts to ensure frameworks are up-to-date"
+        mark_step_success "pre_release_setup"
         return 0
     fi
-    
+
     # Build all frameworks using the unified build script
     log_step "Building all frameworks using unified build script"
-    
+
     # Use the xcframeworks build script
     local BUILD_SCRIPT="$ROOT_DIR/Scripts/xcframeworks/build-core.sh"
     if [[ ! -f "$BUILD_SCRIPT" ]]; then
         log_warn "Build script not found at $BUILD_SCRIPT, skipping framework build"
         log_info "Frameworks may need to be built manually before release"
+        mark_step_success "pre_release_setup"
         return 0
     fi
-    
+
     if ! bash "$BUILD_SCRIPT"; then
-        log_error "Failed to build frameworks"
-        exit 1
+        fail_step "pre_release_setup" "framework build failed"
+        return 1
     fi
-    
+
     log_success "Pre-release setup completed successfully"
+    mark_step_success "pre_release_setup"
 }
 
 # Step 1: Create release branch
@@ -397,22 +451,24 @@ create_release_branch() {
         return 0
     fi
 
+    mark_step_start "create_release_branch"
     log_section "Step 1: Creating release branch"
-    
+
     local create_branch_cmd="$ROOT_DIR/Scripts/release/orchestrator/branch.sh"
     if [[ "$DRY_RUN" == "true" ]]; then
         create_branch_cmd="$create_branch_cmd --dry-run"
     fi
     create_branch_cmd="$create_branch_cmd --base-branch $BASE_BRANCH $VERSION"
-    
+
     log_info "Executing: $create_branch_cmd"
-    
+
     if ! eval "$create_branch_cmd"; then
-        log_error "Failed to create release branch"
-        exit 1
+        fail_step "create_release_branch" "branch creation script failed"
+        return 1
     fi
-    
+
     log_success "Release branch created successfully"
+    mark_step_success "create_release_branch"
 }
 
 # Step 2: Release CocoaPods
@@ -427,7 +483,8 @@ release_cocoapods() {
         step_skip "release_cocoapods (CLI: --skip-cocoapods)"
         return 0
     fi
-    
+
+    mark_step_start "release_cocoapods"
     log_section "Step 2: Releasing CocoaPods"
     local current_mode="${MSP_RELEASE_MODE:-cli}"
     local current_mode_upper=$(echo "$current_mode" | tr '[:lower:]' '[:upper:]' 2>/dev/null || echo "${current_mode}" | awk '{print toupper($0)}')
@@ -455,11 +512,12 @@ release_cocoapods() {
     # Call pods/publish.sh directly (no CLI arguments)
     local COCOAPODS_SCRIPT="$ROOT_DIR/Scripts/release/publish/pods/publish.sh"
     if [[ ! -f "$COCOAPODS_SCRIPT" ]]; then
-        log_error "CocoaPods publish script not found at $COCOAPODS_SCRIPT"
+        fail_step "release_cocoapods" "publish script not found at $COCOAPODS_SCRIPT"
         return 1
     fi
     if bash "$COCOAPODS_SCRIPT"; then
         log_success "CocoaPods released successfully"
+        mark_step_success "release_cocoapods"
         # Track success based on PODS_MODULES if available
         if [[ "$DRY_RUN" != "true" && -n "${PODS_MODULES:-}" ]]; then
             # Split PODS_MODULES space-separated string into array
@@ -471,9 +529,10 @@ release_cocoapods() {
             COCOAPODS_SUCCESS+=("MSPSharedLibraries" "MSPFacebookAdapter" "MSPGoogleAdapter" "NovaAdapter" "AmazonAdapter" "MSPPrebidAdapter" "MSPCore")
         fi
     else
-        log_error "Failed to release CocoaPods"
+        fail_step "release_cocoapods" "publish script execution failed"
         OVERALL_SUCCESS="false"
         COCOAPODS_FAILED+=("CocoaPods release failed")
+        return 1
     fi
 }
 
@@ -489,7 +548,8 @@ release_spm() {
         step_skip "release_spm (CLI: --skip-spm)"
         return 0
     fi
-    
+
+    mark_step_start "release_spm"
     log_section "Step 3: Releasing SPM"
     local current_mode="${MSP_RELEASE_MODE:-cli}"
     local current_mode_upper=$(echo "$current_mode" | tr '[:lower:]' '[:upper:]' 2>/dev/null || echo "${current_mode}" | awk '{print toupper($0)}')
@@ -517,11 +577,12 @@ release_spm() {
     # Call spm/publish.sh directly (no CLI arguments)
     local SPM_SCRIPT="$ROOT_DIR/Scripts/release/publish/spm/publish.sh"
     if [[ ! -f "$SPM_SCRIPT" ]]; then
-        log_error "SPM publish script not found at $SPM_SCRIPT"
+        fail_step "release_spm" "publish script not found at $SPM_SCRIPT"
         return 1
     fi
     if bash "$SPM_SCRIPT"; then
         log_success "SPM released successfully"
+        mark_step_success "release_spm"
         # Track success based on SPM_PACKAGES if available
         if [[ "$DRY_RUN" != "true" && -n "${SPM_PACKAGES:-}" ]]; then
             # Split SPM_PACKAGES space-separated string into array
@@ -535,9 +596,10 @@ release_spm() {
             # Module-level success notifications are disabled (now NO-OP)
         fi
     else
-        log_error "Failed to release SPM"
+        fail_step "release_spm" "publish script execution failed"
         OVERALL_SUCCESS="false"
         SPM_FAILED+=("SPM release failed")
+        return 1
     fi
 }
 
@@ -553,32 +615,36 @@ push_release_branch() {
         step_skip "push_release_branch (CLI: --skip-push)"
         return 0
     fi
-    
+
+    mark_step_start "push_release_branch"
     log_section "Step 4: Pushing release branch"
-    
+
     if [[ "$DRY_RUN" == "true" ]]; then
         log_info "DRY RUN: Would push release branch $RELEASE_BRANCH to remote"
+        mark_step_success "push_release_branch"
         return 0
     fi
-    
+
     # Ensure we're on release branch (skip in dry-run mode)
     if [[ "$DRY_RUN" != "true" ]]; then
         git checkout "$RELEASE_BRANCH"
     fi
-    
+
     # Push release branch
     if git push origin "$RELEASE_BRANCH"; then
         log_success "Release branch pushed successfully"
+        mark_step_success "push_release_branch"
         GITHUB_RELEASES_SUCCESS+=("Release branch $RELEASE_BRANCH")
-        
+
         # Track release branch push in state
         if command -v msp_state_mark_git_flag &>/dev/null; then
             msp_state_mark_git_flag "release_branch_pushed" true
         fi
     else
-        log_error "Failed to push release branch"
+        fail_step "push_release_branch" "git push failed"
         OVERALL_SUCCESS="false"
         GITHUB_RELEASES_FAILED+=("Release branch $RELEASE_BRANCH")
+        return 1
     fi
 }
 
