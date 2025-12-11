@@ -509,6 +509,12 @@ release_spm() {
 
 # Step 4: Push release branch
 push_release_branch() {
+    # Config-driven gating
+    if ! is_enabled "branch.push"; then
+        step_skip "push_release_branch (config: branch.push=false)"
+        return 0
+    fi
+
     if [[ "$SKIP_PUSH" == "true" ]]; then
         step_skip "push_release_branch (SKIP_PUSH=true)"
         return 0
