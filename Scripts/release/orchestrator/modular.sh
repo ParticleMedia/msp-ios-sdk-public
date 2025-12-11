@@ -412,7 +412,7 @@ release_cocoapods() {
     fi
 
     if [[ "$SKIP_COCOAPODS" == "true" ]]; then
-        step_skip "release_cocoapods (SKIP_COCOAPODS=true)"
+        step_skip "release_cocoapods (CLI: --skip-cocoapods)"
         return 0
     fi
     
@@ -474,7 +474,7 @@ release_spm() {
     fi
 
     if [[ "$SKIP_SPM" == "true" ]]; then
-        step_skip "release_spm (SKIP_SPM=true)"
+        step_skip "release_spm (CLI: --skip-spm)"
         return 0
     fi
     
@@ -538,7 +538,7 @@ push_release_branch() {
     fi
 
     if [[ "$SKIP_PUSH" == "true" ]]; then
-        step_skip "push_release_branch (SKIP_PUSH=true)"
+        step_skip "push_release_branch (CLI: --skip-push)"
         return 0
     fi
     
@@ -825,11 +825,7 @@ show_comprehensive_release_summary() {
 run_remote_verification() {
     # Config-driven gating
     if ! is_enabled "verify.remote"; then
-        log_info "[REMOTE] Skipping remote verification (config: verify.remote=false)"
-        if command -v msp_state_mark_step_skipped &>/dev/null; then
-            msp_state_mark_step_skipped "remote_verify_spm" "Skipped (config: verify.remote=false)"
-            msp_state_mark_step_skipped "remote_verify_pods" "Skipped (config: verify.remote=false)"
-        fi
+        step_skip "run_remote_verification (config: verify.remote=false)"
         return 0
     fi
     # Check if remote verification is enabled (default: enabled)
@@ -1331,18 +1327,14 @@ main() {
     
     # Step 6: Run local verification (soft-fail, never breaks release)
     step "run_local_verification"
-    local release_mode_upper=$(echo "$RELEASE_MODE" | tr '[:lower:]' '[:upper:]' 2>/dev/null || echo "$RELEASE_MODE" | awk '{print toupper($0)}')
     # Config-driven gating
     if ! is_enabled "verify.local"; then
-        echo "[MSP][ORCH] Mode: ${release_mode_upper} — skipping local verification (config: verify.local=false)"
         step_skip "run_local_verification (config: verify.local=false)"
     elif [[ "$MSP_SKIP_LOCAL_VERIFY" == "true" ]]; then
-        echo "[MSP][ORCH] Mode: ${release_mode_upper} — skipping local verification"
-        step_skip "run_local_verification (skipped in CI mode)"
+        step_skip "run_local_verification (tier: CI mode)"
     else
         local verify_script="$ROOT_DIR/Scripts/release/verify_local/run_local.sh"
         if [[ -f "$verify_script" ]]; then
-            echo "[MSP][ORCH] Mode: ${release_mode_upper} — running local verification"
             if source "$verify_script" && run_local_verification; then
                 step_done "run_local_verification"
             else
@@ -1350,15 +1342,14 @@ main() {
                 # Soft-fail: continue anyway
             fi
         else
-            step_skip "run_local_verification (script not found)"
+            step_skip "run_local_verification (config: script not found)"
         fi
     fi
     
     # Step 7: Run device verification (soft-fail, never breaks release)
     step "run_device_verification"
     if [[ "$MSP_SKIP_DEVICE_VERIFY" == "true" ]]; then
-        echo "[MSP][ORCH] Mode: ${release_mode_upper} — skipping device verification"
-        step_skip "run_device_verification (skipped in CI mode)"
+        step_skip "run_device_verification (tier: CI mode)"
     else
         if run_device_verification; then
             step_done "run_device_verification"
@@ -1372,11 +1363,9 @@ main() {
     step "run_xcframework_verification"
     # Config-driven gating
     if ! is_enabled "verify.xcframework"; then
-        echo "[MSP][ORCH] Mode: ${release_mode_upper} — skipping XCF verify (config: verify.xcframework=false)"
         step_skip "run_xcframework_verification (config: verify.xcframework=false)"
     elif [[ "$MSP_SKIP_XCF_VERIFY" == "true" ]]; then
-        echo "[MSP][ORCH] Mode: ${release_mode_upper} — skipping XCF verify"
-        step_skip "run_xcframework_verification (skipped in CI mode or xcodebuild not available)"
+        step_skip "run_xcframework_verification (tier: CI mode or xcodebuild not available)"
     else
         if run_xcframework_verification; then
             step_done "run_xcframework_verification"
