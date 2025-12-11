@@ -32,3 +32,30 @@ notifications:
   slack: true
   email: true
   github_release: true
+
+# Tier-specific overrides
+preflight:
+  pods:
+    enabled: false
+  spm:
+    enabled: false
+  branch:
+    create: false
+    push: false
+  verify:
+    local: true
+    remote: false
+    xcframework: true
+
+release:
+  pods:
+    enabled: true
+  spm:
+    enabled: true
+  branch:
+    create: true
+    push: true
+  verify:
+    local: true
+    remote: true
+    xcframework: true
