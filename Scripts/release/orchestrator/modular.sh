@@ -115,7 +115,19 @@ step_fail() {
 }
 
 step_skip() {
-    echo "[CI][STEP] $1: SKIPPED" >&2
+    local full_msg="$1"
+    echo "[CI][STEP] $full_msg: SKIPPED" >&2
+
+    # Extract step name and reason from format: "step_name (reason)"
+    if [[ "$full_msg" =~ ^([a-z_]+)[[:space:]]*\((.+)\)[[:space:]]*$ ]]; then
+        local step_name="${BASH_REMATCH[1]}"
+        local reason="${BASH_REMATCH[2]}"
+
+        # Record in state.json
+        if command -v msp_state_mark_step_skipped &>/dev/null; then
+            msp_state_mark_step_skipped "$step_name" "$reason"
+        fi
+    fi
 }
 
 # ============================================================================
@@ -570,6 +582,51 @@ push_release_branch() {
     fi
 }
 
+# Print a single step summary line
+print_step_summary() {
+    local step_num="$1"
+    local step_name="$2"
+    local description="$3"
+
+    local status="unknown"
+    local reason=""
+
+    # Try to get status from state.json
+    if command -v msp_state_get_step_status &>/dev/null; then
+        status=$(msp_state_get_step_status "$step_name" 2>/dev/null || echo "unknown")
+
+        # Get notes/reason from state.json
+        if command -v jq &>/dev/null && msp_state_is_enabled 2>/dev/null; then
+            local state_file
+            state_file="$ROOT_DIR/.msp-release-state.json"
+            if [[ -f "$state_file" ]]; then
+                reason=$(jq -r ".steps[\"$step_name\"].notes // \"\"" "$state_file" 2>/dev/null || echo "")
+            fi
+        fi
+    fi
+
+    # Format the output line
+    if [[ "$status" == "skipped" ]]; then
+        if [[ -n "$reason" ]]; then
+            printf "  Step %-2s: %-28s SKIP (%s)\n" "$step_num" "$description" "$reason"
+        else
+            printf "  Step %-2s: %-28s SKIP\n" "$step_num" "$description"
+        fi
+    elif [[ "$status" == "success" ]]; then
+        printf "  Step %-2s: %-28s RUN (success)\n" "$step_num" "$description"
+    elif [[ "$status" == "error" ]] || [[ "$status" == "failed" ]]; then
+        if [[ -n "$reason" ]]; then
+            printf "  Step %-2s: %-28s RUN (error: %s)\n" "$step_num" "$description" "$reason"
+        else
+            printf "  Step %-2s: %-28s RUN (error)\n" "$step_num" "$description"
+        fi
+    elif [[ "$status" == "running" ]]; then
+        printf "  Step %-2s: %-28s RUNNING\n" "$step_num" "$description"
+    else
+        printf "  Step %-2s: %-28s UNKNOWN\n" "$step_num" "$description"
+    fi
+}
+
 # Show comprehensive release summary
 show_comprehensive_release_summary() {
     print_section "Release Process Summary"
@@ -605,11 +662,24 @@ show_comprehensive_release_summary() {
         log_info "  Duration: $duration"
     fi
     echo ""
-    
-    # CocoaPods Results
-    if [[ "$SKIP_COCOAPODS" != "true" ]]; then
-        print_subsection "CocoaPods Release Results"
-        
+
+    # Step-by-Step Execution Summary
+    print_subsection "Step Execution Summary"
+    print_step_summary "0" "pre_release_setup" "Pre-release Setup"
+    print_step_summary "1" "create_release_branch" "Create Release Branch"
+    print_step_summary "2" "release_cocoapods" "Release CocoaPods"
+    print_step_summary "3" "release_spm" "Release SPM"
+    print_step_summary "4" "push_release_branch" "Push Release Branch"
+    print_step_summary "5" "run_remote_verification" "Remote Verification"
+    print_step_summary "6" "run_local_verification" "Local Verification"
+    print_step_summary "7" "run_device_verification" "Device Verification"
+    print_step_summary "8" "run_xcframework_verification" "XCFramework Verification"
+    echo ""
+
+    # CocoaPods Module Results (if executed)
+    if is_enabled "pods.enabled" && [[ "$SKIP_COCOAPODS" != "true" ]]; then
+        print_subsection "CocoaPods Module Results"
+
         if [[ ${#COCOAPODS_SUCCESS[@]} -gt 0 ]]; then
             log_success "✅ Successfully Released:"
             for pod in "${COCOAPODS_SUCCESS[@]}"; do
@@ -617,7 +687,7 @@ show_comprehensive_release_summary() {
             done
             echo ""
         fi
-        
+
         if [[ ${#COCOAPODS_FAILED[@]} -gt 0 ]]; then
             log_error "❌ Failed to Release:"
             for pod in "${COCOAPODS_FAILED[@]}"; do
@@ -625,15 +695,12 @@ show_comprehensive_release_summary() {
             done
             echo ""
         fi
-    else
-        log_info "CocoaPods release skipped (--skip-cocoapods flag)"
-        echo ""
     fi
-    
-    # SPM Results
-    if [[ "$SKIP_SPM" != "true" ]]; then
-        print_subsection "SPM Release Results"
-        
+
+    # SPM Module Results (if executed)
+    if is_enabled "spm.enabled" && [[ "$SKIP_SPM" != "true" ]]; then
+        print_subsection "SPM Module Results"
+
         if [[ ${#SPM_SUCCESS[@]} -gt 0 ]]; then
             log_success "✅ Successfully Released:"
             for package in "${SPM_SUCCESS[@]}"; do
@@ -641,7 +708,7 @@ show_comprehensive_release_summary() {
             done
             echo ""
         fi
-        
+
         if [[ ${#SPM_FAILED[@]} -gt 0 ]]; then
             log_error "❌ Failed to Release:"
             for package in "${SPM_FAILED[@]}"; do
@@ -649,9 +716,6 @@ show_comprehensive_release_summary() {
             done
             echo ""
         fi
-    else
-        log_info "SPM release skipped (--skip-spm flag)"
-        echo ""
     fi
     
     # GitHub Releases Results
@@ -1215,7 +1279,7 @@ main() {
         # In preflight mode, allow pre_release_setup to fail gracefully
         if [[ "$RELEASE_TIER" == "preflight" ]]; then
             log_warn "Pre-release setup failed in preflight mode, continuing anyway"
-            step_skip "pre_release_setup"
+            step_skip "pre_release_setup (tier: preflight soft-fail)"
         else
             step_fail "pre_release_setup" $?
             return 10
@@ -1227,26 +1291,29 @@ main() {
     # In preflight mode, allow branch creation to fail gracefully
     # Check if we're already on a release branch or if skip flag is set
     local skip_branch_creation=false
+    local skip_reason=""
     if [[ "${SKIP_CREATE_RELEASE_BRANCH:-false}" == "true" ]]; then
         skip_branch_creation=true
+        skip_reason="CLI: --skip-create-release-branch"
         log_warn "Skipping branch creation (--skip-create-release-branch flag set)"
     elif [[ "$RELEASE_TIER" == "preflight" ]]; then
         # In preflight, check if already on a release branch
         local current_branch=$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo "")
         if [[ "$current_branch" =~ ^release/ ]]; then
             skip_branch_creation=true
+            skip_reason="tier: already on release branch"
             log_warn "Already on release branch '$current_branch', skipping branch creation in preflight mode"
         fi
     fi
-    
+
     if [[ "$skip_branch_creation" == "true" ]]; then
-        step_skip "create_release_branch"
+        step_skip "create_release_branch ($skip_reason)"
     elif create_release_branch; then
         step_done "create_release_branch"
     else
         if [[ "$RELEASE_TIER" == "preflight" ]]; then
             log_warn "Branch creation failed in preflight mode, continuing anyway"
-            step_skip "create_release_branch"
+            step_skip "create_release_branch (tier: preflight soft-fail)"
         else
             step_fail "create_release_branch" $?
             return 11
