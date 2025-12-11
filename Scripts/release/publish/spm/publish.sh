@@ -881,6 +881,7 @@ spm_publish_tags() {
     if [[ -z "$version" ]]; then
         log_error "[SPM] spm_publish_tags: version is required"
         return 1
+    fi
     
     # Source release-common.sh to get tier helpers and config
     if ! command -v is_preflight_tier &>/dev/null; then

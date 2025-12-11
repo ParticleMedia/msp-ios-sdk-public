@@ -202,39 +202,6 @@ parse_flags() {
                 MSP_RELEASE_TIER="${1#*=}"
                 shift
                 ;;
-                ONLY_SPM=true
-                SKIP_PODS=true
-                shift
-                ;;
-            --tier)
-                if [[ -n "${2:-}" && ! "$2" =~ ^- ]]; then
-                    MSP_RELEASE_TIER="$2"
-                    shift 2
-                else
-                    log_error "--tier requires a value (preflight or release)"
-                    exit 1
-                fi
-                ;;
-            --tier=*)
-                MSP_RELEASE_TIER="${1#*=}"
-                shift
-                ;;
-                ONLY_PODS=true
-                SKIP_SPM=true
-                ;;
-                ;;
-            --tier=*)
-                MSP_RELEASE_TIER="${1#*=}"
-                shift
-                ;;
-                ;;
-                ;;
-                ;;
-                ;;
-                ;;
-                ONLY_SPM=true
-                SKIP_PODS=true
-                ;;
             --version|-v)
                 # Special case: if this is the only arg, show version and exit
                 if [[ $# -eq 1 ]]; then
