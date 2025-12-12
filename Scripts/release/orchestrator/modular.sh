@@ -1466,12 +1466,15 @@ main() {
     elif [[ "$MSP_SKIP_LOCAL_VERIFY" == "true" ]]; then
         step_skip "run_local_verification (tier: CI mode)"
     else
+        mark_step_start "run_local_verification"
         local verify_script="$ROOT_DIR/Scripts/release/verify_local/run_local.sh"
         if [[ -f "$verify_script" ]]; then
             if source "$verify_script" && run_local_verification; then
                 step_done "run_local_verification"
+                mark_step_success "run_local_verification"
             else
                 step_fail "run_local_verification" $?
+                fail_step "run_local_verification" "verification script failed"
                 # Soft-fail: continue anyway
             fi
         else
@@ -1484,10 +1487,13 @@ main() {
     if [[ "$MSP_SKIP_DEVICE_VERIFY" == "true" ]]; then
         step_skip "run_device_verification (tier: CI mode)"
     else
+        mark_step_start "run_device_verification"
         if run_device_verification; then
             step_done "run_device_verification"
+            mark_step_success "run_device_verification"
         else
             step_fail "run_device_verification" $?
+            fail_step "run_device_verification" "device verification failed"
             # Soft-fail: continue anyway
         fi
     fi
@@ -1500,10 +1506,13 @@ main() {
     elif [[ "$MSP_SKIP_XCF_VERIFY" == "true" ]]; then
         step_skip "run_xcframework_verification (tier: CI mode or xcodebuild not available)"
     else
+        mark_step_start "run_xcframework_verification"
         if run_xcframework_verification; then
             step_done "run_xcframework_verification"
+            mark_step_success "run_xcframework_verification"
         else
             step_fail "run_xcframework_verification" $?
+            fail_step "run_xcframework_verification" "XCFramework verification failed"
             # Soft-fail: continue anyway
         fi
     fi
@@ -1597,7 +1606,18 @@ main() {
                 local_status="    - Local ($mode): FAIL"
             fi
         fi
-        
+
+        # Build device verification status for notifications
+        local device_status=""
+        if [[ "${DEVICE_VERIFY_EXECUTED:-0}" == "1" ]]; then
+            local mode="${DEVICE_VERIFY_MODE:-unknown}"
+            if [[ "${DEVICE_VERIFY_SUCCESS:-0}" == "1" ]]; then
+                device_status="    - Device ($mode): PASS"
+            else
+                device_status="    - Device ($mode): FAIL"
+            fi
+        fi
+
         # Build XCFramework verification status for notifications
         local xcf_status=""
         if [[ "${XCF_VERIFY_EXECUTED:-0}" == "1" ]] && [[ -n "${XCF_VERIFY_MODULES_JSON:-}" ]] && command -v jq >/dev/null 2>&1; then
