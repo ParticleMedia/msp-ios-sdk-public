@@ -11,6 +11,10 @@ if command -v git >/dev/null 2>&1; then
 fi
 # --- End MSP Worktree Safety Guard (Patch K, shared) ---
 
+# Prevent multiple sourcing
+[[ -n "${_MSP_COCOAPODS_SOURCED:-}" ]] && return 0
+readonly _MSP_COCOAPODS_SOURCED=1
+
 # CocoaPods operations for MSP iOS SDK build system
 # This module provides comprehensive CocoaPods management with dependency handling and validation
 
