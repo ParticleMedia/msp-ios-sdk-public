@@ -108,7 +108,7 @@ run_xcframework_verification() {
     for xcf_path in "${xcframeworks[@]}"; do
         local module_name
         module_name="$(basename "$xcf_path" .xcframework)"
-        
+
 
         # Skip Mintegral modules — handled via remote CocoaPods dependency
         if [[ "$module_name" == "MintegralAdapter" ]] || [[ "$module_name" == "MintegralAdSDK" ]]; then
@@ -116,24 +116,31 @@ run_xcframework_verification() {
             continue
         fi
         vr_log_info "[XCF] Verifying $module_name..."
-        
+        echo "======================================================================"
+        echo "[TRACE][XCF] ====> STARTING VERIFICATION FOR: $module_name"
+        echo "======================================================================"
+
         # Copy XCFramework to sandbox
+        echo "[TRACE][XCF]      Copying to sandbox..."
         local sandbox_xcf="$SANDBOX_DIR/${module_name}.xcframework"
-        cp -R "$xcf_path" "$sandbox_xcf" || {
-            vr_log_error "[XCF] Failed to copy $module_name to sandbox"
+        if ! timeout 30s cp -R "$xcf_path" "$sandbox_xcf" 2>/dev/null; then
+            vr_log_error "[XCF] Failed to copy $module_name to sandbox (timeout or error)"
+            echo "[TRACE][XCF]      Copy FAILED or TIMEOUT"
             XCF_VERIFY_MODULE_NAMES+=("$module_name")
             XCF_VERIFY_MODULE_RESULTS+=(0)
             XCF_VERIFY_MODULE_WARNINGS+=(0)
             continue
-        }
-        
+        fi
+        echo "[TRACE][XCF]      Copy completed successfully"
+
         local module_success=1
         local module_warnings=0
-        
+
         # Run all scans
         local scan_warnings
 
         # 1. Architecture scan
+        echo "[TRACE][XCF]      Starting architecture scan..."
         if ! scan_warnings="$(scan_architectures "$sandbox_xcf" "$module_name" 2>&1)"; then
             vr_log_warn "[XCF] Architecture scan failed for $module_name"
         else
@@ -141,51 +148,65 @@ run_xcframework_verification() {
                 module_warnings=$((module_warnings + scan_warnings))
             fi
         fi
-        
+
         # 2. Swift module scan
-        if ! scan_swiftmodules "$sandbox_xcf" "$module_name" >/dev/null 2>&1; then
+        echo "[TRACE][XCF]      Starting Swift module scan..."
+        if ! timeout 60s scan_swiftmodules "$sandbox_xcf" "$module_name" >/dev/null 2>&1; then
             vr_log_error "[XCF] Swift module scan failed for $module_name"
+            echo "[TRACE][XCF]      Swift module scan FAILED or TIMEOUT"
             module_success=0
         fi
-        
+
         # 3. Dependency scan
-        if ! scan_dependencies "$sandbox_xcf" "$module_name" >/dev/null 2>&1; then
+        echo "[TRACE][XCF]      Starting dependency scan..."
+        if ! timeout 60s scan_dependencies "$sandbox_xcf" "$module_name" >/dev/null 2>&1; then
             vr_log_error "[XCF] Dependency scan failed for $module_name"
+            echo "[TRACE][XCF]      Dependency scan FAILED or TIMEOUT"
             module_success=0
         fi
-        
+
         # 4. Plist scan
-        if ! scan_plist "$sandbox_xcf" "$module_name" >/dev/null 2>&1; then
+        echo "[TRACE][XCF]      Starting plist scan..."
+        if ! timeout 60s scan_plist "$sandbox_xcf" "$module_name" >/dev/null 2>&1; then
             vr_log_error "[XCF] Plist scan failed for $module_name"
+            echo "[TRACE][XCF]      Plist scan FAILED or TIMEOUT"
             module_success=0
         fi
-        
+
         # 5. Symbol scan
-        if ! scan_symbols "$sandbox_xcf" "$module_name" >/dev/null 2>&1; then
+        echo "[TRACE][XCF]      Starting symbol scan..."
+        if ! timeout 60s scan_symbols "$sandbox_xcf" "$module_name" >/dev/null 2>&1; then
             vr_log_error "[XCF] Symbol scan failed for $module_name"
+            echo "[TRACE][XCF]      Symbol scan FAILED or TIMEOUT"
             module_success=0
         fi
         
         # 6. Size scan
+        echo "[TRACE][XCF]      Starting size scan..."
         local size_report="$SANDBOX_DIR/${module_name}.size_report.json"
-        if ! scan_warnings="$(scan_size "$sandbox_xcf" "$module_name" "$size_report" 2>&1)"; then
+        if ! scan_warnings="$(timeout 30s scan_size "$sandbox_xcf" "$module_name" "$size_report" 2>&1)"; then
             vr_log_warn "[XCF] Size scan failed for $module_name"
+            echo "[TRACE][XCF]      Size scan FAILED or TIMEOUT"
         else
             if [[ -n "$scan_warnings" ]] && [[ "$scan_warnings" =~ ^[0-9]+$ ]]; then
                 module_warnings=$((module_warnings + scan_warnings))
             fi
         fi
-        
+
         # Record results
         XCF_VERIFY_MODULE_NAMES+=("$module_name")
         XCF_VERIFY_MODULE_RESULTS+=($module_success)
         XCF_VERIFY_MODULE_WARNINGS+=($module_warnings)
-        
+
         if [[ $module_success -eq 1 ]]; then
             vr_log_info "[XCF] $module_name: PASS ($module_warnings warnings)"
+            echo "[TRACE][XCF] <==== COMPLETED $module_name: PASS ($module_warnings warnings)"
         else
             vr_log_error "[XCF] $module_name: FAIL ($module_warnings warnings)"
+            echo "[TRACE][XCF] <==== COMPLETED $module_name: FAIL ($module_warnings warnings)"
         fi
+        echo "======================================================================"
+        echo ""
     done
     
     # Export results for orchestrator

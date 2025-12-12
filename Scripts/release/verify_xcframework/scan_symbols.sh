@@ -36,34 +36,46 @@ scan_symbols() {
     fi
     
     vr_log_info "[XCF] Scanning symbol table for $module_name..."
-    
+    echo "[TRACE][XCF] ---> Entering symbol scan for $module_name"
+
     if ! command -v nm >/dev/null 2>&1; then
         vr_log_warn "[XCF] nm not found, skipping symbol scan"
+        echo "[TRACE][XCF] <--- Symbol scan skipped (nm not found)"
         return 0
     fi
-    
+
     # Find binary in first available slice
     local binary_path=""
     local slices=("ios-arm64" "ios-arm64_x86_64-simulator" "ios-arm64-simulator" "ios-x86_64-simulator")
-    
+
+    echo "[TRACE][XCF]      Searching for binary in slices..."
     for slice in "${slices[@]}"; do
         local slice_path="$xcframework_path/$slice"
         if [[ -d "$slice_path" ]]; then
-            binary_path="$(find "$slice_path" -name "$module_name" -type f | head -1)"
+            echo "[TRACE][XCF]      Checking slice: $slice"
+            binary_path="$(timeout 5s find "$slice_path" -name "$module_name" -type f 2>/dev/null | head -1 || echo "")"
             if [[ -n "$binary_path" ]] && [[ -f "$binary_path" ]]; then
+                echo "[TRACE][XCF]      Found binary: $binary_path"
                 break
             fi
         fi
     done
-    
+
     if [[ -z "$binary_path" ]] || [[ ! -f "$binary_path" ]]; then
         vr_log_warn "[XCF] Binary not found, skipping symbol scan"
+        echo "[TRACE][XCF] <--- Symbol scan skipped (binary not found)"
         return 0
     fi
-    
-    # Extract global symbols
+
+    # Extract global symbols with timeout
+    echo "[TRACE][XCF]      Running nm on binary: $binary_path"
     local symbols
-    symbols="$(nm -gU "$binary_path" 2>/dev/null || echo "")"
+    if ! symbols="$(timeout 20s nm -gU "$binary_path" 2>/dev/null || echo "")"; then
+        vr_log_error "[XCF] nm command timed out or failed for $module_name"
+        echo "[TRACE][XCF] <--- Symbol scan TIMEOUT on nm"
+        return 1
+    fi
+    echo "[TRACE][XCF]      nm completed successfully"
     
     if [[ -z "$symbols" ]]; then
         vr_log_warn "[XCF] Could not extract symbols"
@@ -91,11 +103,13 @@ scan_symbols() {
     
     if [[ $violations -gt 0 ]]; then
         vr_log_error "[XCF] Found $violations forbidden symbol violations"
+        echo "[TRACE][XCF] <--- Symbol scan FAILED ($violations violations)"
         return 1
     fi
-    
+
     vr_log_info "[XCF] Symbol scan passed (no forbidden symbols)"
-    
+    echo "[TRACE][XCF] <--- Symbol scan completed successfully"
+
     return 0
 }
 
