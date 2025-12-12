@@ -143,11 +143,11 @@ msp_get_branch_policy_value() {
         if [[ "$line" =~ ^[[:space:]]*\"([^\"]+)\":[[:space:]]*$ ]]; then
             pattern="${BASH_REMATCH[1]}"
             
-            # Check if branch matches pattern (convert regex to bash pattern)
-            local bash_pattern="${pattern//\./\.}"  # Escape dots
-            bash_pattern="${bash_pattern//\+/\+}"   # Escape plus
-            bash_pattern="${bash_pattern//\*/.*}"    # Convert * to .*
-            bash_pattern="${bash_pattern//\?/.}"     # Convert ? to .
+            # Check if branch matches pattern (bash regex - no escaping needed for . or +)
+            # Convert shell glob patterns to regex patterns
+            local bash_pattern="${pattern}"
+            bash_pattern="${bash_pattern//\*/.*}"    # Convert glob * to regex .*
+            bash_pattern="${bash_pattern//\?/.}"     # Convert glob ? to regex .
             
             if [[ "$branch" =~ ^${bash_pattern}$ ]]; then
                 # Found matching pattern, get the value
