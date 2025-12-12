@@ -214,7 +214,7 @@ msp_safety_require_changelog() {
 
         # Check if there's actual content after "## Changes"
         local changes_content
-        changes_content=$(sed -n '/## Changes/,/^##/p' "$changelog_file" | tail -n +2 | head -n -1 | grep -v '^[[:space:]]*$' | head -1)
+        changes_content=$(sed -n '/## Changes/,/^##/p' "$changelog_file" | tail -n +2 | sed '$d' | grep -v '^[[:space:]]*$' | head -1)
 
         if [[ -z "$changes_content" ]]; then
             log_error "[SAFETY] release.md '## Changes' section is empty"
