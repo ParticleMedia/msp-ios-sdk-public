@@ -59,3 +59,23 @@ release:
     local: true
     remote: true
     xcframework: true
+
+# Branch access control policy
+branch_policy:
+  rules:
+    "release/.*":
+      allow_real_publish: true
+      allow_test_publish: true
+      allow_preflight: true
+    "main":
+      allow_real_publish: true
+      allow_test_publish: true
+      allow_preflight: true
+    "master":
+      allow_real_publish: true
+      allow_test_publish: true
+      allow_preflight: true
+    "feature/.*":
+      allow_real_publish: false
+      allow_test_publish: false
+      allow_preflight: true
