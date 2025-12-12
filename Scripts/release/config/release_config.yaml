@@ -63,10 +63,6 @@ release:
 # Branch access control policy
 branch_policy:
   rules:
-    "release/0.8.8-real.1":
-      allow_real_publish: true
-      allow_test_publish: true
-      allow_preflight: true
     "release/.*":
       allow_real_publish: true
       allow_test_publish: true

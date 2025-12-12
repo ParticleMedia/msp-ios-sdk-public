@@ -76,13 +76,34 @@ _msp_parse_yaml_value() {
         return 1
     fi
     
-    # Remove quotes from branch_name if present
-    branch_name="${branch_name//\"/}"
-    branch_name="${branch_name//\'/}"
+    # Check if branch_name has quotes (for patterns) or not (for exact matches)
+    local has_quotes=0
+    if [[ "$branch_name" == \"*\" ]] || [[ "$branch_name" == \'*\' ]]; then
+        has_quotes=1
+    fi
+
+    # Remove quotes from branch_name for escaping
+    local branch_unquoted="${branch_name//\"/}"
+    branch_unquoted="${branch_unquoted//\'/}"
 
     # Use awk to parse YAML - more reliable than bash regex
-    # Use match() function instead of ~ operator to handle special characters in branch names
-    local branch_escaped="${branch_name////\/}"
+    # Escape special regex characters for awk match() function
+    local branch_escaped="${branch_unquoted}"
+    branch_escaped="${branch_escaped//\\/\\\\}"  # Escape backslashes first
+    branch_escaped="${branch_escaped//./\\.}"    # Escape dots
+    branch_escaped="${branch_escaped//\*/\\*}"   # Escape asterisks
+    branch_escaped="${branch_escaped//+/\\+}"    # Escape plus
+    branch_escaped="${branch_escaped//\?/\\?}"   # Escape question marks
+    branch_escaped="${branch_escaped//\[/\\[}"   # Escape square brackets
+    branch_escaped="${branch_escaped//\]/\\]}"   # Escape square brackets
+    branch_escaped="${branch_escaped//\^/\\^}"   # Escape caret
+    branch_escaped="${branch_escaped////\/}"     # Escape forward slashes last
+
+    # If the original had quotes, add them back for matching in YAML
+    if [[ $has_quotes -eq 1 ]]; then
+        branch_escaped="\"${branch_escaped}\""
+    fi
+
     result=$(awk -v branch="$branch_escaped" -v key="$key_name" '
         BEGIN { in_rules=0; in_branch=0 }
         /^[[:space:]]*branch_policy:/ { in_rules=1; next }
