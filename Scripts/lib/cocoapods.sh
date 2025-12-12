@@ -830,6 +830,6 @@ export -f full_pod_setup
 export LANG="en_US.UTF-8"
 export LC_ALL="en_US.UTF-8"
 export RUBYOPT="-EUTF-8:UTF-8"
-vr_log_info "[UTF8] UTF-8 environment applied for pod install"
+log_info "[UTF8] UTF-8 environment applied for pod install"
 # ---------------------------------------------------------------------
 
