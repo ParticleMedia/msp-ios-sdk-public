@@ -904,10 +904,11 @@ show_comprehensive_release_summary() {
     # XCFramework Verification Results
     print_subsection "XCFramework Verification"
 
-    # Read status from state.json instead of environment variable
+    # Read status and modules from state.json
     local xcf_status="unknown"
-    if command -v jq >/dev/null 2>&1 && [[ -f "$ROOT_DIR/.msp-release-state.json" ]]; then
-        xcf_status="$(jq -r '.steps.run_xcframework_verification.status // "unknown"' "$ROOT_DIR/.msp-release-state.json" 2>/dev/null || echo "unknown")"
+    local state_file="$ROOT_DIR/.msp-release-state.json"
+    if command -v jq >/dev/null 2>&1 && [[ -f "$state_file" ]]; then
+        xcf_status="$(jq -r '.steps.run_xcframework_verification.status // "unknown"' "$state_file" 2>/dev/null || echo "unknown")"
     fi
 
     if [[ "$xcf_status" == "success" ]] || [[ "$xcf_status" == "error" ]] || [[ "$xcf_status" == "failed" ]]; then
@@ -918,27 +919,43 @@ show_comprehensive_release_summary() {
             log_error "Result: FAIL"
         fi
 
-        # Parse module results from JSON (if available)
-        if [[ -n "${XCF_VERIFY_MODULES_JSON:-}" ]] && command -v jq >/dev/null 2>&1; then
-            local modules
-            modules="$(echo "$XCF_VERIFY_MODULES_JSON" | jq -r 'keys[]' 2>/dev/null || echo "")"
-            if [[ -n "$modules" ]]; then
-                while IFS= read -r module; do
-                    local success
-                    success="$(echo "$XCF_VERIFY_MODULES_JSON" | jq -r ".\"$module\".success" 2>/dev/null || echo "false")"
-                    local warnings
-                    warnings="$(echo "$XCF_VERIFY_MODULES_JSON" | jq -r ".\"$module\".warnings" 2>/dev/null || echo "0")"
+        # Read summary stats from state.json
+        if command -v jq >/dev/null 2>&1 && [[ -f "$state_file" ]]; then
+            local total_modules
+            local passed_modules
+            local failed_modules
+            total_modules="$(jq -r '.steps.run_xcframework_verification.summary.total // 0' "$state_file" 2>/dev/null || echo "0")"
+            passed_modules="$(jq -r '.steps.run_xcframework_verification.summary.passed // 0' "$state_file" 2>/dev/null || echo "0")"
+            failed_modules="$(jq -r '.steps.run_xcframework_verification.summary.failed // 0' "$state_file" 2>/dev/null || echo "0")"
 
-                    if [[ "$success" == "true" ]]; then
-                        if [[ "$warnings" == "0" ]]; then
-                            log_success "$module: PASS (0 warnings)"
-                        else
-                            log_success "$module: PASS ($warnings warnings)"
+            if [[ "$total_modules" != "0" ]]; then
+                log_info "Summary: $passed_modules passed, $failed_modules failed (total: $total_modules)"
+
+                # Show top 5 failed modules with details
+                if [[ "$failed_modules" != "0" ]]; then
+                    echo ""
+                    log_info "Failed modules (showing up to 5):"
+                    local modules
+                    modules="$(jq -r '.steps.run_xcframework_verification.modules | to_entries[] | select(.value.success == 0) | .key' "$state_file" 2>/dev/null || echo "")"
+                    if [[ -n "$modules" ]]; then
+                        local count=0
+                        while IFS= read -r module && [[ $count -lt 5 ]]; do
+                            local failed_scans
+                            failed_scans="$(jq -r ".steps.run_xcframework_verification.modules[\"$module\"].failed_scans | join(\", \")" "$state_file" 2>/dev/null || echo "unknown")"
+                            if [[ -n "$failed_scans" ]] && [[ "$failed_scans" != "null" ]] && [[ "$failed_scans" != "" ]]; then
+                                log_error "  - $module: failed scans: $failed_scans"
+                            else
+                                log_error "  - $module"
+                            fi
+                            count=$((count + 1))
+                        done <<< "$modules"
+
+                        if [[ "$failed_modules" -gt 5 ]]; then
+                            local remaining=$((failed_modules - 5))
+                            log_info "  ... and $remaining more"
                         fi
-                    else
-                        log_error "$module: FAIL ($warnings warnings)"
                     fi
-                done <<< "$modules"
+                fi
             fi
         fi
     else
@@ -1130,12 +1147,25 @@ run_xcframework_verification() {
             # Update state with XCFramework verification results
             local executed="${XCF_VERIFY_EXECUTED:-0}"
             local modules_json="${XCF_VERIFY_MODULES_JSON:-{}}"
-            
-            # Parse modules JSON and write to state
-            jq ".xcframework_verify = {
-                executed: ($executed == 1),
-                modules: $modules_json
-            } | .timestamps.updated_at = \"$(date -u +"%Y-%m-%dT%H:%M:%SZ")\"" \
+
+            # Calculate summary stats
+            local total_modules=0
+            local passed_modules=0
+            local failed_modules=0
+            if [[ "$executed" == "1" ]] && [[ -n "$modules_json" ]] && [[ "$modules_json" != "{}" ]]; then
+                total_modules=$(echo "$modules_json" | jq 'length' 2>/dev/null || echo "0")
+                passed_modules=$(echo "$modules_json" | jq '[.[] | select(.success == 1)] | length' 2>/dev/null || echo "0")
+                failed_modules=$((total_modules - passed_modules))
+            fi
+
+            # Write modules data to state.json under run_xcframework_verification
+            jq ".steps.run_xcframework_verification.modules = $modules_json |
+                .steps.run_xcframework_verification.summary = {
+                  total: $total_modules,
+                  passed: $passed_modules,
+                  failed: $failed_modules
+                } |
+                .timestamps.updated_at = \"$(date -u +"%Y-%m-%dT%H:%M:%SZ")\"" \
                 "$state_file" > "${state_file}.tmp" 2>/dev/null && \
                 mv "${state_file}.tmp" "$state_file" 2>/dev/null || true
         fi

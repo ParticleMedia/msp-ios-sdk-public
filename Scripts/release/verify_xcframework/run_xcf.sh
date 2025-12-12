@@ -49,6 +49,7 @@ XCF_VERIFY_EXECUTED=0
 XCF_VERIFY_MODULE_NAMES=()
 XCF_VERIFY_MODULE_RESULTS=()
 XCF_VERIFY_MODULE_WARNINGS=()
+XCF_VERIFY_MODULE_FAILED_SCANS=()
 
 # ============================================================================
 # Main Runner
@@ -135,6 +136,7 @@ run_xcframework_verification() {
 
         local module_success=1
         local module_warnings=0
+        local failed_scans=""
 
         # Run all scans
         local scan_warnings
@@ -155,6 +157,7 @@ run_xcframework_verification() {
             vr_log_error "[XCF] Swift module scan failed for $module_name"
             echo "[TRACE][XCF]      Swift module scan FAILED or TIMEOUT"
             module_success=0
+            failed_scans="${failed_scans}swiftmodules,"
         fi
 
         # 3. Dependency scan
@@ -163,6 +166,7 @@ run_xcframework_verification() {
             vr_log_error "[XCF] Dependency scan failed for $module_name"
             echo "[TRACE][XCF]      Dependency scan FAILED or TIMEOUT"
             module_success=0
+            failed_scans="${failed_scans}dependencies,"
         fi
 
         # 4. Plist scan
@@ -171,6 +175,7 @@ run_xcframework_verification() {
             vr_log_error "[XCF] Plist scan failed for $module_name"
             echo "[TRACE][XCF]      Plist scan FAILED or TIMEOUT"
             module_success=0
+            failed_scans="${failed_scans}plist,"
         fi
 
         # 5. Symbol scan
@@ -179,8 +184,9 @@ run_xcframework_verification() {
             vr_log_error "[XCF] Symbol scan failed for $module_name"
             echo "[TRACE][XCF]      Symbol scan FAILED or TIMEOUT"
             module_success=0
+            failed_scans="${failed_scans}symbols,"
         fi
-        
+
         # 6. Size scan
         echo "[TRACE][XCF]      Starting size scan..."
         local size_report="$SANDBOX_DIR/${module_name}.size_report.json"
@@ -193,10 +199,14 @@ run_xcframework_verification() {
             fi
         fi
 
+        # Remove trailing comma from failed_scans
+        failed_scans="${failed_scans%,}"
+
         # Record results
         XCF_VERIFY_MODULE_NAMES+=("$module_name")
         XCF_VERIFY_MODULE_RESULTS+=($module_success)
         XCF_VERIFY_MODULE_WARNINGS+=($module_warnings)
+        XCF_VERIFY_MODULE_FAILED_SCANS+=("$failed_scans")
 
         if [[ $module_success -eq 1 ]]; then
             vr_log_info "[XCF] $module_name: PASS ($module_warnings warnings)"
@@ -224,11 +234,30 @@ run_xcframework_verification() {
         fi
         local success="${XCF_VERIFY_MODULE_RESULTS[$idx]}"
         local warnings="${XCF_VERIFY_MODULE_WARNINGS[$idx]:-0}"
-        json_modules="$json_modules\"$module_name\":{\"success\":$success,\"warnings\":$warnings}"
+        local failed_scan_list="${XCF_VERIFY_MODULE_FAILED_SCANS[$idx]:-}"
+
+        # Convert comma-separated failed scans to JSON array
+        local failed_scans_json="[]"
+        if [[ -n "$failed_scan_list" ]]; then
+            failed_scans_json="["
+            local scan_first=1
+            IFS=',' read -ra SCANS <<< "$failed_scan_list"
+            for scan in "${SCANS[@]}"; do
+                if [[ $scan_first -eq 1 ]]; then
+                    scan_first=0
+                else
+                    failed_scans_json="$failed_scans_json,"
+                fi
+                failed_scans_json="$failed_scans_json\"$scan\""
+            done
+            failed_scans_json="$failed_scans_json]"
+        fi
+
+        json_modules="$json_modules\"$module_name\":{\"success\":$success,\"warnings\":$warnings,\"failed_scans\":$failed_scans_json}"
         idx=$((idx + 1))
     done
     json_modules="$json_modules}"
-    
+
     export XCF_VERIFY_MODULES_JSON="$json_modules"
     
     return 0
