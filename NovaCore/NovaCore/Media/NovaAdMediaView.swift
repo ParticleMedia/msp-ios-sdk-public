@@ -73,6 +73,7 @@ public final class NovaAdMediaView: UIView {
         let view = LottieAnimationView()
         if let animationPath = NovaResource.getLottieResourceURL("tap_to_try")?.path {
             DebugLogger.data.info("load lottie file success")
+            view.isUserInteractionEnabled = false
             view.animation = LottieAnimation.filepath(animationPath)
             view.loopMode = .loop
             view.adClickArea = .tap_to_try
