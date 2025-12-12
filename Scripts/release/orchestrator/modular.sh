@@ -903,8 +903,21 @@ show_comprehensive_release_summary() {
     
     # XCFramework Verification Results
     print_subsection "XCFramework Verification"
-    
-    if [[ "${XCF_VERIFY_EXECUTED:-0}" == "1" ]]; then
+
+    # Read status from state.json instead of environment variable
+    local xcf_status="unknown"
+    if command -v jq >/dev/null 2>&1 && [[ -f "$ROOT_DIR/.msp-release-state.json" ]]; then
+        xcf_status="$(jq -r '.steps.run_xcframework_verification.status // "unknown"' "$ROOT_DIR/.msp-release-state.json" 2>/dev/null || echo "unknown")"
+    fi
+
+    if [[ "$xcf_status" == "success" ]] || [[ "$xcf_status" == "error" ]] || [[ "$xcf_status" == "failed" ]]; then
+        log_info "Executed: yes"
+        if [[ "$xcf_status" == "success" ]]; then
+            log_success "Result: PASS"
+        else
+            log_error "Result: FAIL"
+        fi
+
         # Parse module results from JSON (if available)
         if [[ -n "${XCF_VERIFY_MODULES_JSON:-}" ]] && command -v jq >/dev/null 2>&1; then
             local modules
@@ -915,7 +928,7 @@ show_comprehensive_release_summary() {
                     success="$(echo "$XCF_VERIFY_MODULES_JSON" | jq -r ".\"$module\".success" 2>/dev/null || echo "false")"
                     local warnings
                     warnings="$(echo "$XCF_VERIFY_MODULES_JSON" | jq -r ".\"$module\".warnings" 2>/dev/null || echo "0")"
-                    
+
                     if [[ "$success" == "true" ]]; then
                         if [[ "$warnings" == "0" ]]; then
                             log_success "$module: PASS (0 warnings)"
@@ -927,8 +940,6 @@ show_comprehensive_release_summary() {
                     fi
                 done <<< "$modules"
             fi
-        else
-            log_info "Module results not available"
         fi
     else
         log_info "Executed: no"
