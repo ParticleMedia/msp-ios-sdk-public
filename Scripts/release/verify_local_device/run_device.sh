@@ -39,8 +39,6 @@ DEVICE_VERIFY_PODS="${MSP_DEVICE_VERIFY_PODS:-1}"
 DEVICE_VERIFY_SPM="${MSP_DEVICE_VERIFY_SPM:-1}"
 
 # Initialize result variables
-DEVICE_VERIFY_EXECUTED=0
-DEVICE_VERIFY_SUCCESS=0
 DEVICE_VERIFY_MODE=""
 DEVICE_VERIFY_ARCHIVE_PATH=""
 DEVICE_VERIFY_IPA_PATH=""
@@ -68,9 +66,8 @@ run_device_verification() {
     fi
     
     vr_log_info "[DEVICE] Starting device verification (mode: $mode)..."
-    DEVICE_VERIFY_EXECUTED=1
     DEVICE_VERIFY_MODE="$mode"
-    
+
     # Create sandbox
     local SANDBOX_DIR
     SANDBOX_DIR="$(vr_create_sandbox "device")" || {
@@ -163,7 +160,6 @@ run_device_verification() {
     local archive_path=""
     if ! "$SCRIPT_DIR/archive_demoapp.sh" "$SANDBOX_DIR"; then
         vr_log_error "[DEVICE] Archive failed"
-        DEVICE_VERIFY_SUCCESS=0
         return 0  # Soft-fail
     else
         archive_path="$SANDBOX_DIR/DemoApp/DemoApp.xcarchive"
@@ -176,22 +172,16 @@ run_device_verification() {
     local ipa_path=""
     if ! "$SCRIPT_DIR/export_ipa.sh" "$SANDBOX_DIR"; then
         vr_log_error "[DEVICE] IPA export failed"
-        DEVICE_VERIFY_SUCCESS=0
         return 0  # Soft-fail
     else
         ipa_path="$(find "$SANDBOX_DIR/DemoApp/output" -name "*.ipa" -type f 2>/dev/null | head -1)"
         if [[ -n "$ipa_path" ]] && [[ -f "$ipa_path" ]]; then
             DEVICE_VERIFY_IPA_PATH="$ipa_path"
             vr_log_info "[DEVICE] Device verification succeeded"
-            DEVICE_VERIFY_SUCCESS=1
-        else
-            DEVICE_VERIFY_SUCCESS=0
         fi
     fi
-    
+
     # Export results for orchestrator
-    export DEVICE_VERIFY_EXECUTED
-    export DEVICE_VERIFY_SUCCESS
     export DEVICE_VERIFY_MODE
     export DEVICE_VERIFY_ARCHIVE_PATH
     export DEVICE_VERIFY_IPA_PATH

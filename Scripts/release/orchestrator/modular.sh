@@ -839,18 +839,22 @@ show_comprehensive_release_summary() {
     
     # Local Verification Results
     print_subsection "Local Verification"
-    
-    if [[ "${LOCAL_VERIFY_EXECUTED:-0}" == "1" ]]; then
-        local mode="${LOCAL_VERIFY_MODE:-unknown}"
-        if [[ "${LOCAL_VERIFY_SUCCESS:-0}" == "1" ]]; then
-            log_success "Executed: yes"
-            log_success "Mode: $mode"
-            log_success "Result: PASS"
-        else
-            log_info "Executed: yes"
-            log_info "Mode: $mode"
-            log_error "Result: FAIL"
-        fi
+
+    # Read status from state.json
+    local local_status="unknown"
+    if command -v jq >/dev/null 2>&1 && [[ -f "$ROOT_DIR/.msp-release-state.json" ]]; then
+        local_status="$(jq -r '.steps.run_local_verification.status // "unknown"' "$ROOT_DIR/.msp-release-state.json" 2>/dev/null || echo "unknown")"
+    fi
+
+    if [[ "$local_status" == "success" ]]; then
+        log_success "Executed: yes"
+        log_success "Result: PASS"
+    elif [[ "$local_status" == "error" ]] || [[ "$local_status" == "failed" ]]; then
+        log_info "Executed: yes"
+        log_error "Result: FAIL"
+    elif [[ "$local_status" == "skipped" ]]; then
+        log_info "Executed: no"
+        log_info "Result: SKIPPED"
     else
         log_info "Executed: no"
         log_info "Mode: N/A"
@@ -860,39 +864,22 @@ show_comprehensive_release_summary() {
     
     # Device Verification Results
     print_subsection "Device Verification"
-    
-    if [[ "${DEVICE_VERIFY_EXECUTED:-0}" == "1" ]]; then
-        local device_mode="${DEVICE_VERIFY_MODE:-unknown}"
-        local archive_status="FAIL"
-        local ipa_status="FAIL"
-        
-        if [[ -n "${DEVICE_VERIFY_ARCHIVE_PATH:-}" ]] && [[ -d "${DEVICE_VERIFY_ARCHIVE_PATH}" ]]; then
-            archive_status="PASS"
-        fi
-        
-        if [[ -n "${DEVICE_VERIFY_IPA_PATH:-}" ]] && [[ -f "${DEVICE_VERIFY_IPA_PATH}" ]]; then
-            ipa_status="PASS"
-        fi
-        
-        if [[ "${DEVICE_VERIFY_SUCCESS:-0}" == "1" ]]; then
-            log_success "Executed: yes"
-            log_success "Mode: $device_mode"
-            log_success "Archive: $archive_status"
-            log_success "IPA: $ipa_status"
-        else
-            log_info "Executed: yes"
-            log_info "Mode: $device_mode"
-            if [[ "$archive_status" == "PASS" ]]; then
-                log_success "Archive: $archive_status"
-            else
-                log_error "Archive: $archive_status"
-            fi
-            if [[ "$ipa_status" == "PASS" ]]; then
-                log_success "IPA: $ipa_status"
-            else
-                log_error "IPA: $ipa_status"
-            fi
-        fi
+
+    # Read status from state.json
+    local device_status="unknown"
+    if command -v jq >/dev/null 2>&1 && [[ -f "$ROOT_DIR/.msp-release-state.json" ]]; then
+        device_status="$(jq -r '.steps.run_device_verification.status // "unknown"' "$ROOT_DIR/.msp-release-state.json" 2>/dev/null || echo "unknown")"
+    fi
+
+    if [[ "$device_status" == "success" ]]; then
+        log_success "Executed: yes"
+        log_success "Result: PASS"
+    elif [[ "$device_status" == "error" ]] || [[ "$device_status" == "failed" ]]; then
+        log_info "Executed: yes"
+        log_error "Result: FAIL"
+    elif [[ "$device_status" == "skipped" ]]; then
+        log_info "Executed: no"
+        log_info "Result: SKIPPED"
     else
         log_info "Executed: no"
         log_info "Mode: N/A"
@@ -1069,23 +1056,35 @@ run_device_verification() {
         local state_file
         state_file="$ROOT_DIR/.msp-release-state.json"
         if [[ -f "$state_file" ]] && command -v jq >/dev/null 2>&1; then
-            # Update state with device verification results
-            local executed="${DEVICE_VERIFY_EXECUTED:-0}"
-            local success="${DEVICE_VERIFY_SUCCESS:-0}"
+            # Read status from state.json instead of env vars
+            local device_status
+            device_status="$(jq -r '.steps.run_device_verification.status // "unknown"' "$state_file" 2>/dev/null || echo "unknown")"
+
+            # Map status to executed/success booleans
+            local executed=false
+            local success=false
+            if [[ "$device_status" == "success" ]]; then
+                executed=true
+                success=true
+            elif [[ "$device_status" == "error" ]] || [[ "$device_status" == "failed" ]]; then
+                executed=true
+                success=false
+            fi
+
             local mode="${DEVICE_VERIFY_MODE:-unknown}"
             local archive_path="${DEVICE_VERIFY_ARCHIVE_PATH:-}"
             local ipa_path="${DEVICE_VERIFY_IPA_PATH:-}"
-            
+
             local mode_json
             mode_json="\"$mode\""
             local archive_json
             archive_json="\"$archive_path\""
             local ipa_json
             ipa_json="\"$ipa_path\""
-            
+
             jq ".device_verify = {
-                executed: ($executed == 1),
-                success: ($success == 1),
+                executed: $executed,
+                success: $success,
                 mode: $mode_json,
                 archive_path: $archive_json,
                 ipa_path: $ipa_json
@@ -1144,15 +1143,14 @@ run_xcframework_verification() {
         local state_file
         state_file="$ROOT_DIR/.msp-release-state.json"
         if [[ -f "$state_file" ]] && command -v jq >/dev/null 2>&1; then
-            # Update state with XCFramework verification results
-            local executed="${XCF_VERIFY_EXECUTED:-0}"
+            # Read modules data from environment (populated by run_xcf.sh)
             local modules_json="${XCF_VERIFY_MODULES_JSON:-{}}"
 
-            # Calculate summary stats
+            # Calculate summary stats if modules data exists
             local total_modules=0
             local passed_modules=0
             local failed_modules=0
-            if [[ "$executed" == "1" ]] && [[ -n "$modules_json" ]] && [[ "$modules_json" != "{}" ]]; then
+            if [[ -n "$modules_json" ]] && [[ "$modules_json" != "{}" ]]; then
                 total_modules=$(echo "$modules_json" | jq 'length' 2>/dev/null || echo "0")
                 passed_modules=$(echo "$modules_json" | jq '[.[] | select(.success == 1)] | length' 2>/dev/null || echo "0")
                 failed_modules=$((total_modules - passed_modules))
@@ -1639,55 +1637,67 @@ main() {
         
         # Build local verification status for notifications
         local local_status=""
-        if [[ "${LOCAL_VERIFY_EXECUTED:-0}" == "1" ]]; then
-            local mode="${LOCAL_VERIFY_MODE:-unknown}"
-            if [[ "${LOCAL_VERIFY_SUCCESS:-0}" == "1" ]]; then
-                local_status="    - Local ($mode): PASS"
-            else
-                local_status="    - Local ($mode): FAIL"
+        if [[ -f "$ROOT_DIR/.msp-release-state.json" ]] && command -v jq >/dev/null 2>&1; then
+            local local_step_status
+            local_step_status="$(jq -r '.steps.run_local_verification.status // "unknown"' "$ROOT_DIR/.msp-release-state.json" 2>/dev/null || echo "unknown")"
+            if [[ "$local_step_status" == "success" ]] || [[ "$local_step_status" == "error" ]] || [[ "$local_step_status" == "failed" ]]; then
+                local mode="${LOCAL_VERIFY_MODE:-unknown}"
+                if [[ "$local_step_status" == "success" ]]; then
+                    local_status="    - Local ($mode): PASS"
+                else
+                    local_status="    - Local ($mode): FAIL"
+                fi
             fi
         fi
 
         # Build device verification status for notifications
         local device_status=""
-        if [[ "${DEVICE_VERIFY_EXECUTED:-0}" == "1" ]]; then
-            local mode="${DEVICE_VERIFY_MODE:-unknown}"
-            if [[ "${DEVICE_VERIFY_SUCCESS:-0}" == "1" ]]; then
-                device_status="    - Device ($mode): PASS"
-            else
-                device_status="    - Device ($mode): FAIL"
+        if [[ -f "$ROOT_DIR/.msp-release-state.json" ]] && command -v jq >/dev/null 2>&1; then
+            local device_step_status
+            device_step_status="$(jq -r '.steps.run_device_verification.status // "unknown"' "$ROOT_DIR/.msp-release-state.json" 2>/dev/null || echo "unknown")"
+            if [[ "$device_step_status" == "success" ]] || [[ "$device_step_status" == "error" ]] || [[ "$device_step_status" == "failed" ]]; then
+                local mode="${DEVICE_VERIFY_MODE:-unknown}"
+                if [[ "$device_step_status" == "success" ]]; then
+                    device_status="    - Device ($mode): PASS"
+                else
+                    device_status="    - Device ($mode): FAIL"
+                fi
             fi
         fi
 
         # Build XCFramework verification status for notifications
         local xcf_status=""
-        if [[ "${XCF_VERIFY_EXECUTED:-0}" == "1" ]] && [[ -n "${XCF_VERIFY_MODULES_JSON:-}" ]] && command -v jq >/dev/null 2>&1; then
-            local modules
-            modules="$(echo "${XCF_VERIFY_MODULES_JSON}" | jq -r 'keys[]' 2>/dev/null || echo "")"
-            if [[ -n "$modules" ]]; then
-                while IFS= read -r module; do
-                    local success
-                    success="$(echo "${XCF_VERIFY_MODULES_JSON}" | jq -r ".\"$module\".success" 2>/dev/null || echo "false")"
-                    local warnings
-                    warnings="$(echo "${XCF_VERIFY_MODULES_JSON}" | jq -r ".\"$module\".warnings" 2>/dev/null || echo "0")"
-                    
-                    local module_status=""
-                    if [[ "$success" == "true" ]]; then
-                        if [[ "$warnings" == "0" ]]; then
-                            module_status="    - XCFramework $module: PASS"
+        if [[ -f "$ROOT_DIR/.msp-release-state.json" ]] && command -v jq >/dev/null 2>&1; then
+            local xcf_step_status
+            xcf_step_status="$(jq -r '.steps.run_xcframework_verification.status // "unknown"' "$ROOT_DIR/.msp-release-state.json" 2>/dev/null || echo "unknown")"
+            if [[ "$xcf_step_status" != "unknown" ]] && [[ "$xcf_step_status" != "skipped" ]]; then
+                local modules
+                modules="$(jq -r '.steps.run_xcframework_verification.modules // {} | keys[]' "$ROOT_DIR/.msp-release-state.json" 2>/dev/null || echo "")"
+                if [[ -n "$modules" ]]; then
+                    while IFS= read -r module; do
+                        local success
+                        success="$(jq -r ".steps.run_xcframework_verification.modules[\"$module\"].success" "$ROOT_DIR/.msp-release-state.json" 2>/dev/null || echo "0")"
+                        local warnings
+                        warnings="$(jq -r ".steps.run_xcframework_verification.modules[\"$module\"].warnings" "$ROOT_DIR/.msp-release-state.json" 2>/dev/null || echo "0")"
+
+                        local module_status=""
+                        if [[ "$success" == "1" ]]; then
+                            if [[ "$warnings" == "0" ]]; then
+                                module_status="    - XCFramework $module: PASS"
+                            else
+                                module_status="    - XCFramework $module: WARN ($warnings warnings)"
+                            fi
                         else
-                            module_status="    - XCFramework $module: WARN ($warnings warnings)"
+                            module_status="    - XCFramework $module: FAIL"
                         fi
-                    else
-                        module_status="    - XCFramework $module: FAIL"
-                    fi
-                    
-                    if [[ -z "$xcf_status" ]]; then
-                        xcf_status="$module_status"
-                    else
-                        xcf_status="$xcf_status"$'\n'"$module_status"
-                    fi
-                done <<< "$modules"
+
+                        if [[ -z "$xcf_status" ]]; then
+                            xcf_status="$module_status"
+                        else
+                            xcf_status="$xcf_status"$'\n'"$module_status"
+                        fi
+                    done <<< "$modules"
+                fi
             fi
         fi
         
@@ -1762,24 +1772,62 @@ main() {
             
             # Build local verification JSON
             local local_verify_json="{"
-            local_verify_json="$local_verify_json\"executed\":$([[ "${LOCAL_VERIFY_EXECUTED:-0}" == "1" ]] && echo "true" || echo "false"),"
-            local_verify_json="$local_verify_json\"success\":$([[ "${LOCAL_VERIFY_SUCCESS:-0}" == "1" ]] && echo "true" || echo "false"),"
+            local local_step_status_json="unknown"
+            if [[ -f "$ROOT_DIR/.msp-release-state.json" ]] && command -v jq >/dev/null 2>&1; then
+                local_step_status_json="$(jq -r '.steps.run_local_verification.status // "unknown"' "$ROOT_DIR/.msp-release-state.json" 2>/dev/null || echo "unknown")"
+            fi
+            local local_executed="false"
+            local local_success="false"
+            if [[ "$local_step_status_json" == "success" ]]; then
+                local_executed="true"
+                local_success="true"
+            elif [[ "$local_step_status_json" == "error" ]] || [[ "$local_step_status_json" == "failed" ]]; then
+                local_executed="true"
+                local_success="false"
+            fi
+            local_verify_json="$local_verify_json\"executed\":$local_executed,"
+            local_verify_json="$local_verify_json\"success\":$local_success,"
             local_verify_json="$local_verify_json\"mode\":\"${LOCAL_VERIFY_MODE:-unknown}\""
             local_verify_json="$local_verify_json}"
             
             # Build device verification JSON
             local device_verify_json="{"
-            device_verify_json="$device_verify_json\"executed\":$([[ "${DEVICE_VERIFY_EXECUTED:-0}" == "1" ]] && echo "true" || echo "false"),"
-            device_verify_json="$device_verify_json\"success\":$([[ "${DEVICE_VERIFY_SUCCESS:-0}" == "1" ]] && echo "true" || echo "false"),"
+            local device_step_status_json="unknown"
+            if [[ -f "$ROOT_DIR/.msp-release-state.json" ]] && command -v jq >/dev/null 2>&1; then
+                device_step_status_json="$(jq -r '.steps.run_device_verification.status // "unknown"' "$ROOT_DIR/.msp-release-state.json" 2>/dev/null || echo "unknown")"
+            fi
+            local device_executed="false"
+            local device_success="false"
+            if [[ "$device_step_status_json" == "success" ]]; then
+                device_executed="true"
+                device_success="true"
+            elif [[ "$device_step_status_json" == "error" ]] || [[ "$device_step_status_json" == "failed" ]]; then
+                device_executed="true"
+                device_success="false"
+            fi
+            device_verify_json="$device_verify_json\"executed\":$device_executed,"
+            device_verify_json="$device_verify_json\"success\":$device_success,"
             device_verify_json="$device_verify_json\"mode\":\"${DEVICE_VERIFY_MODE:-unknown}\","
             device_verify_json="$device_verify_json\"archive\":\"$([[ -n "${DEVICE_VERIFY_ARCHIVE_PATH:-}" ]] && echo "pass" || echo "fail")\","
             device_verify_json="$device_verify_json\"ipa\":\"$([[ -n "${DEVICE_VERIFY_IPA_PATH:-}" ]] && echo "pass" || echo "fail")\""
             device_verify_json="$device_verify_json}"
-            
+
             # Build XCFramework verification JSON
             local xcf_verify_json="{"
-            xcf_verify_json="$xcf_verify_json\"executed\":$([[ "${XCF_VERIFY_EXECUTED:-0}" == "1" ]] && echo "true" || echo "false"),"
-            xcf_verify_json="$xcf_verify_json\"modules\":${XCF_VERIFY_MODULES_JSON:-{}}"
+            local xcf_step_status_json="unknown"
+            if [[ -f "$ROOT_DIR/.msp-release-state.json" ]] && command -v jq >/dev/null 2>&1; then
+                xcf_step_status_json="$(jq -r '.steps.run_xcframework_verification.status // "unknown"' "$ROOT_DIR/.msp-release-state.json" 2>/dev/null || echo "unknown")"
+            fi
+            local xcf_executed="false"
+            if [[ "$xcf_step_status_json" != "unknown" ]] && [[ "$xcf_step_status_json" != "skipped" ]]; then
+                xcf_executed="true"
+            fi
+            local xcf_modules_json="{}"
+            if [[ -f "$ROOT_DIR/.msp-release-state.json" ]] && command -v jq >/dev/null 2>&1; then
+                xcf_modules_json="$(jq -c '.steps.run_xcframework_verification.modules // {}' "$ROOT_DIR/.msp-release-state.json" 2>/dev/null || echo "{}")"
+            fi
+            xcf_verify_json="$xcf_verify_json\"executed\":$xcf_executed,"
+            xcf_verify_json="$xcf_verify_json\"modules\":$xcf_modules_json"
             xcf_verify_json="$xcf_verify_json}"
             
             # Build failure JSON

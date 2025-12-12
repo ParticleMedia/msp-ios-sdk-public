@@ -44,7 +44,6 @@ vr_detect_root_dir || {
 XCF_VERIFY_ENABLED="${MSP_XCF_VERIFY_ENABLED:-1}"
 
 # Initialize result variables
-XCF_VERIFY_EXECUTED=0
 # Use regular arrays instead of associative arrays for Bash 3.2 compatibility
 XCF_VERIFY_MODULE_NAMES=()
 XCF_VERIFY_MODULE_RESULTS=()
@@ -63,8 +62,7 @@ run_xcframework_verification() {
     fi
     
     vr_log_info "[XCF] Starting XCFramework deep verification..."
-    XCF_VERIFY_EXECUTED=1
-    
+
     # Find XCFrameworks in build output
     # Multi-path fallback (same as worktree)
     local xcframeworks_dir="${XCFRAMEWORKS_DIR:-}"
@@ -218,10 +216,7 @@ run_xcframework_verification() {
         echo "======================================================================"
         echo ""
     done
-    
-    # Export results for orchestrator
-    export XCF_VERIFY_EXECUTED
-    
+
     # Build JSON structure for state file
     local json_modules="{"
     local first=1

@@ -38,8 +38,6 @@ LOCAL_USE_PODS="${MSP_LOCAL_USE_PODS:-1}"
 LOCAL_USE_SPM="${MSP_LOCAL_USE_SPM:-1}"
 
 # Initialize result variables
-LOCAL_VERIFY_EXECUTED=0
-LOCAL_VERIFY_SUCCESS=0
 LOCAL_VERIFY_MODE=""
 
 # ============================================================================
@@ -65,9 +63,8 @@ run_local_verification() {
     fi
     
     vr_log_info "[LOCAL] Starting local verification (mode: $mode)..."
-    LOCAL_VERIFY_EXECUTED=1
     LOCAL_VERIFY_MODE="$mode"
-    
+
     # Create sandbox
     vr_log_info "[DEBUG] Entering sandbox creation"
     local SANDBOX_DIR
@@ -125,17 +122,13 @@ run_local_verification() {
     if ! "$SCRIPT_DIR/build_demoapp.sh" "$SANDBOX_DIR" "$mode"; then
         vr_log_error "[LOCAL] Build failed"
         vr_log_info "[DEBUG] Listing sandbox after build_demoapp FAILED: $(ls -R "$SANDBOX_DIR" 2>/dev/null | head -40 || echo '(empty)')"
-        LOCAL_VERIFY_SUCCESS=0
         return 0  # Soft-fail
     else
         vr_log_info "[LOCAL] Local verification succeeded"
         vr_log_info "[DEBUG] Listing sandbox after build_demoapp SUCCESS: $(ls -R "$SANDBOX_DIR" 2>/dev/null | head -50 || echo '(empty)')"
-        LOCAL_VERIFY_SUCCESS=1
     fi
-    
+
     # Export results for orchestrator
-    export LOCAL_VERIFY_EXECUTED
-    export LOCAL_VERIFY_SUCCESS
     export LOCAL_VERIFY_MODE
     
     return 0
