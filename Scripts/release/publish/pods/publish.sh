@@ -309,14 +309,21 @@ update_podspec_dependencies() {
 create_github_release_for_pod() {
     local pod="$1"
     local version="$2"
-    
+
     log_step "Creating GitHub release for $pod"
-    
+
     if [[ "$DRY_RUN" == "true" ]]; then
         log_info "DRY RUN: Would create GitHub release for $pod version $version"
         return 0
     fi
-    
+
+    # Phase R1.7: In release tier, skip GitHub release creation for binary distribution
+    # Binary pods are distributed via CocoaPods CDN, not GitHub releases
+    if [[ "${MSP_RELEASE_TIER:-}" == "release" ]]; then
+        log_info "Release tier: Skipping GitHub release creation (binary distribution via CocoaPods CDN)"
+        return 0
+    fi
+
     # Create zip file
     local zip_name="${pod}-${version}.zip"
     if [[ -d "$pod" ]]; then
@@ -366,14 +373,21 @@ publish_pod_to_cocoapods() {
     local pod="$1"
     local version="$2"
 
-    # Use generated podspec from Build/ReleasePodspecs/
-    local podspec="Build/ReleasePodspecs/${pod}.podspec"
+    # Use generated podspec from Build/ReleasePodspecs/ (Phase R1.7: use absolute path)
+    local podspec="$ROOT_DIR/Build/ReleasePodspecs/${pod}.podspec"
 
     log_step "Publishing $pod to CocoaPods using generated podspec"
 
     if [[ ! -f "$podspec" ]]; then
         log_error "Generated podspec not found: $podspec"
         log_error "Make sure update_podspec_for_release() was called first"
+
+        # Phase R1.7: Fail-fast in release tier to prevent infinite wait loops
+        if [[ "${MSP_RELEASE_TIER:-}" == "release" ]]; then
+            log_error "[FAIL-FAST] Podspec not found in release tier. Aborting to prevent wait loop."
+            msp_state_mark_step_failed "pods_publish" "Podspec not found: $podspec" "1"
+            exit 1
+        fi
         return 1
     fi
 
