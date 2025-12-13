@@ -445,7 +445,7 @@ release_msp_shared_libraries() {
     fi
 
     # FAIL-FAST: Verify generated podspec exists (release tier only)
-    local podspec_path="Build/ReleasePodspecs/MSPSharedLibraries.podspec"
+    local podspec_path="$ROOT_DIR/Build/ReleasePodspecs/MSPSharedLibraries.podspec"
     if [[ "${MSP_RELEASE_TIER:-}" == "release" ]] && [[ ! -f "$podspec_path" ]]; then
         log_error "[FAIL-FAST] Generated podspec not found: $podspec_path. Aborting release."
         msp_state_mark_step_failed "pods_publish" "Generated podspec not found: $podspec_path" "1"
@@ -487,7 +487,7 @@ release_single_adapter() {
     fi
 
     # FAIL-FAST: Verify generated podspec exists (release tier only)
-    local podspec_path="Build/ReleasePodspecs/${adapter}.podspec"
+    local podspec_path="$ROOT_DIR/Build/ReleasePodspecs/${adapter}.podspec"
     if [[ "${MSP_RELEASE_TIER:-}" == "release" ]] && [[ ! -f "$podspec_path" ]]; then
         echo "ERROR: Generated podspec not found: $podspec_path" > "$result_file"
         log_error "[FAIL-FAST] Generated podspec not found: $podspec_path. Aborting release."
@@ -689,7 +689,7 @@ release_msp_core() {
     fi
 
     # FAIL-FAST: Verify generated podspec exists (release tier only)
-    local podspec_path="Build/ReleasePodspecs/MSPCore.podspec"
+    local podspec_path="$ROOT_DIR/Build/ReleasePodspecs/MSPCore.podspec"
     if [[ "${MSP_RELEASE_TIER:-}" == "release" ]] && [[ ! -f "$podspec_path" ]]; then
         log_error "[FAIL-FAST] Generated podspec not found: $podspec_path. Aborting release."
         msp_state_mark_step_failed "pods_publish" "Generated podspec not found: $podspec_path" "1"
