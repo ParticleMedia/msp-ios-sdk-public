@@ -216,30 +216,22 @@ check_release_branch() {
 update_podspec_for_release() {
     local pod="$1"
     local version="$2"
-    local podspec="${pod}.podspec"
-    
-    if [[ ! -f "$podspec" ]]; then
-        log_error "Podspec not found: $podspec"
+
+    log_step "Generating release podspec for $pod version $version"
+
+    # Call the podspec generator script
+    if [[ ! -x "$ROOT_DIR/Scripts/release/generate_podspec.sh" ]]; then
+        log_error "Podspec generator script not found or not executable"
         return 1
     fi
-    
-    log_step "Updating $podspec for release version $version"
-    
-    # Create backup
-    cp "$podspec" "${podspec}.backup"
-    
-    # Update version
-    sed -i '' "s|spec\.version.*=.*\".*\"|spec.version = \"${version}\"|g" "$podspec"
-    
-    # Update source to HTTP zip format
-    local pod_name=$(basename "$podspec" .podspec)
-    local http_url="https://github.com/ParticleMedia/msp-ios-sdk-public/releases/download/${version}/${pod_name}-${version}.zip"
-    
-    # Handle both git source and existing HTTP source
-    sed -i '' "s|spec\.source.*=.*{.*:git.*=>.*\"https://github\.com/.*\.git\".*:tag.*=>.*\"#{spec\.version}\".*}|spec.source = {\n    http: \"${http_url}\",\n    type: \"zip\"\n  }|g" "$podspec"
-    sed -i '' "s|http: \"https://github\.com/ParticleMedia/msp-ios-sdk-public/releases/download/[^\"]*\"|http: \"${http_url}\"|g" "$podspec"
-    
-    log_success "Updated $podspec for release"
+
+    # Generate the release podspec
+    if ! "$ROOT_DIR/Scripts/release/generate_podspec.sh" "$pod" "$version"; then
+        log_error "Failed to generate release podspec for $pod"
+        return 1
+    fi
+
+    log_success "Generated release podspec for $pod at Build/ReleasePodspecs/${pod}.podspec"
 }
 
 # Update adapter SDK version
@@ -373,15 +365,23 @@ create_github_release_for_pod() {
 publish_pod_to_cocoapods() {
     local pod="$1"
     local version="$2"
-    local podspec="${pod}.podspec"
-    
-    log_step "Publishing $pod to CocoaPods"
-    
+
+    # Use generated podspec from Build/ReleasePodspecs/
+    local podspec="Build/ReleasePodspecs/${pod}.podspec"
+
+    log_step "Publishing $pod to CocoaPods using generated podspec"
+
+    if [[ ! -f "$podspec" ]]; then
+        log_error "Generated podspec not found: $podspec"
+        log_error "Make sure update_podspec_for_release() was called first"
+        return 1
+    fi
+
     if [[ "$DRY_RUN" == "true" ]]; then
-        log_info "DRY RUN: Would publish $pod version $version to CocoaPods"
+        log_info "DRY RUN: Would publish $pod version $version to CocoaPods using $podspec"
         return 0
     fi
-    
+
     # Validate podspec if not skipped
     if [[ "$SKIP_VALIDATION" != "true" ]]; then
         if ! validate_podspec_with_retry "$podspec"; then
@@ -389,13 +389,13 @@ publish_pod_to_cocoapods() {
             return 1
         fi
     fi
-    
+
     # Publish to CocoaPods
     if ! publish_podspec_with_retry "$podspec"; then
         log_error "Failed to publish $pod to CocoaPods"
         return 1
     fi
-    
+
     log_success "Published $pod to CocoaPods"
 }
 
