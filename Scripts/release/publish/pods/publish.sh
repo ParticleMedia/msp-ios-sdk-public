@@ -432,21 +432,37 @@ wait_for_pod_availability() {
 # Release MSPSharedLibraries (Step 1)
 release_msp_shared_libraries() {
     log_section "Step 1: Releasing MSPSharedLibraries (foundation dependency)"
-    
+
     # Update podspec
-    update_podspec_for_release "MSPSharedLibraries" "$VERSION"
-    
+    if ! update_podspec_for_release "MSPSharedLibraries" "$VERSION"; then
+        # FAIL-FAST: Immediately abort if podspec generation fails (release tier only)
+        if [[ "${MSP_RELEASE_TIER:-}" == "release" ]]; then
+            log_error "[FAIL-FAST] Podspec generation failed for MSPSharedLibraries. Aborting release."
+            msp_state_mark_step_failed "pods_publish" "Podspec generation failed for MSPSharedLibraries" "1"
+            exit 1
+        fi
+        return 1
+    fi
+
+    # FAIL-FAST: Verify generated podspec exists (release tier only)
+    local podspec_path="Build/ReleasePodspecs/MSPSharedLibraries.podspec"
+    if [[ "${MSP_RELEASE_TIER:-}" == "release" ]] && [[ ! -f "$podspec_path" ]]; then
+        log_error "[FAIL-FAST] Generated podspec not found: $podspec_path. Aborting release."
+        msp_state_mark_step_failed "pods_publish" "Generated podspec not found: $podspec_path" "1"
+        exit 1
+    fi
+
     # Create GitHub release
     create_github_release_for_pod "MSPSharedLibraries" "$VERSION"
-    
+
     # Publish to CocoaPods
     publish_pod_to_cocoapods "MSPSharedLibraries" "$VERSION"
-    
+
     # Wait for availability (skip in dry-run mode)
     if [[ "$DRY_RUN" != "true" ]]; then
         wait_for_pod_availability "MSPSharedLibraries" "$VERSION"
     fi
-    
+
     log_success "MSPSharedLibraries released successfully"
 }
 
@@ -455,13 +471,28 @@ release_single_adapter() {
     local adapter="$1"
     local version="$2"
     local result_file="$3"
-    
+
     log_section "Releasing $adapter"
-    
+
     # Update podspec
     if ! update_podspec_for_release "$adapter" "$version"; then
         echo "ERROR: Failed to update podspec for $adapter" > "$result_file"
+        # FAIL-FAST: Immediately abort if podspec generation fails (release tier only)
+        if [[ "${MSP_RELEASE_TIER:-}" == "release" ]]; then
+            log_error "[FAIL-FAST] Podspec generation failed for $adapter. Aborting release."
+            msp_state_mark_step_failed "pods_publish" "Podspec generation failed for $adapter" "1"
+            exit 1
+        fi
         return 1
+    fi
+
+    # FAIL-FAST: Verify generated podspec exists (release tier only)
+    local podspec_path="Build/ReleasePodspecs/${adapter}.podspec"
+    if [[ "${MSP_RELEASE_TIER:-}" == "release" ]] && [[ ! -f "$podspec_path" ]]; then
+        echo "ERROR: Generated podspec not found: $podspec_path" > "$result_file"
+        log_error "[FAIL-FAST] Generated podspec not found: $podspec_path. Aborting release."
+        msp_state_mark_step_failed "pods_publish" "Generated podspec not found: $podspec_path" "1"
+        exit 1
     fi
     
     # Update dependencies
@@ -645,10 +676,26 @@ release_adapters() {
 # Release MSPCore (Step 3)
 release_msp_core() {
     log_section "Step 3: Releasing MSPCore (main framework)"
-    
+
     # Update podspec
-    update_podspec_for_release "MSPCore" "$VERSION"
-    
+    if ! update_podspec_for_release "MSPCore" "$VERSION"; then
+        # FAIL-FAST: Immediately abort if podspec generation fails (release tier only)
+        if [[ "${MSP_RELEASE_TIER:-}" == "release" ]]; then
+            log_error "[FAIL-FAST] Podspec generation failed for MSPCore. Aborting release."
+            msp_state_mark_step_failed "pods_publish" "Podspec generation failed for MSPCore" "1"
+            exit 1
+        fi
+        return 1
+    fi
+
+    # FAIL-FAST: Verify generated podspec exists (release tier only)
+    local podspec_path="Build/ReleasePodspecs/MSPCore.podspec"
+    if [[ "${MSP_RELEASE_TIER:-}" == "release" ]] && [[ ! -f "$podspec_path" ]]; then
+        log_error "[FAIL-FAST] Generated podspec not found: $podspec_path. Aborting release."
+        msp_state_mark_step_failed "pods_publish" "Generated podspec not found: $podspec_path" "1"
+        exit 1
+    fi
+
     # Update dependencies
     update_podspec_dependencies "MSPCore" "$VERSION"
     
