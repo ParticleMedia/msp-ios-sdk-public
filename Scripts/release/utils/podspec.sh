@@ -202,28 +202,53 @@ update_podspec_dependencies() {
     log_success "Updated $dependency_name dependency to version $version in $podspec_file"
 }
 
-# Validate podspec (wrapper around validate_podspec from cocoapods.sh)
-validate_podspec() {
+# Phase R1.9: Private function to execute pod spec lint exactly once (no recursion)
+_msp_podspec_lint_once() {
     local podspec_file="$1"
-    
+
+    # Recursion guard: Fail-fast if already inside validation
+    if [[ -n "${_MSP_VALIDATE_PODSPEC_GUARD:-}" ]]; then
+        log_error "[RECURSION DETECTED] Already inside podspec validation, aborting to prevent infinite loop"
+        return 1
+    fi
+
     if [[ ! -f "$podspec_file" ]]; then
         log_error "Podspec file not found: $podspec_file"
         return 1
     fi
-    
-    # Use validate_podspec from cocoapods.sh if available
-    if command -v validate_podspec &>/dev/null; then
-        validate_podspec "$podspec_file"
+
+    # Set recursion guard
+    export _MSP_VALIDATE_PODSPEC_GUARD=1
+
+    log_step "Validating podspec: $(basename "$podspec_file")"
+
+    # Execute pod spec lint once (no function calls, no recursion possible)
+    local lint_result=0
+    if pod spec lint "$podspec_file" --allow-warnings --skip-import-validation 2>&1; then
+        log_success "Podspec validation passed: $(basename "$podspec_file")"
+        lint_result=0
     else
-        log_step "Validating podspec: $podspec_file"
-        if pod spec lint "$podspec_file" --quick --allow-warnings >/dev/null 2>&1; then
-            log_success "Podspec validation passed: $podspec_file"
-            return 0
-        else
-            log_error "Podspec validation failed: $podspec_file"
-            return 1
-        fi
+        log_error "Podspec validation failed: $(basename "$podspec_file")"
+        lint_result=1
     fi
+
+    # Clear recursion guard
+    unset _MSP_VALIDATE_PODSPEC_GUARD
+
+    return $lint_result
+}
+
+# Validate podspec (public wrapper - calls validate_podspec_with_retry)
+validate_podspec() {
+    local podspec_file="$1"
+
+    if [[ ! -f "$podspec_file" ]]; then
+        log_error "Podspec file not found: $podspec_file"
+        return 1
+    fi
+
+    # Simply call validate_podspec_with_retry (no recursion possible)
+    validate_podspec_with_retry "$podspec_file"
 }
 
 # Publish podspec (wrapper around publish_podspec from cocoapods.sh)
@@ -288,19 +313,20 @@ update_podspec_to_zip_format() {
     update_podspec_source_to_zip "$@"
 }
 
-# Validate podspec with retry logic
+# Phase R1.9: Validate podspec with retry logic (calls _msp_podspec_lint_once only)
 validate_podspec_with_retry() {
     local podspec="$1"
     local max_attempts=3
     local base_delay=5
-    
+
     log_step "Validating podspec with retry: $(basename "$podspec")"
-    
+
+    # Call _msp_podspec_lint_once in retry loop (breaks recursion chain)
     if command -v retry_with_backoff &>/dev/null; then
         retry_with_backoff $max_attempts $base_delay "podspec validation" \
-            validate_podspec "$podspec"
+            _msp_podspec_lint_once "$podspec"
     else
-        validate_podspec "$podspec"
+        _msp_podspec_lint_once "$podspec"
     fi
 }
 
