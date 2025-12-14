@@ -305,6 +305,42 @@ update_podspec_dependencies() {
     fi
 }
 
+# Phase R1.11: Ensure git tag exists and is pushed to remote (for podspec validation)
+ensure_release_tag_exists_and_pushed() {
+    local tag="$1"
+
+    if [[ -z "$tag" ]]; then
+        log_error "ensure_release_tag_exists_and_pushed: tag parameter is required"
+        return 1
+    fi
+
+    # Check if tag exists locally
+    if ! git rev-parse -q --verify "refs/tags/$tag" >/dev/null 2>&1; then
+        log_info "Creating local git tag: $tag"
+        if ! git tag "$tag"; then
+            log_error "Failed to create local tag: $tag"
+            return 1
+        fi
+        log_success "Created local tag: $tag"
+    else
+        log_info "Local tag already exists: $tag"
+    fi
+
+    # Check if tag exists on remote
+    if ! git ls-remote --tags origin "refs/tags/$tag" 2>/dev/null | grep -q "$tag"; then
+        log_info "Pushing tag to remote: $tag"
+        if ! git push origin "refs/tags/$tag"; then
+            log_error "Failed to push tag to remote: $tag"
+            return 1
+        fi
+        log_success "Pushed tag to remote: $tag"
+    else
+        log_info "Remote tag already exists: $tag"
+    fi
+
+    return 0
+}
+
 # Create GitHub release and upload zip
 create_github_release_for_pod() {
     local pod="$1"
@@ -317,10 +353,18 @@ create_github_release_for_pod() {
         return 0
     fi
 
-    # Phase R1.7: In release tier, skip GitHub release creation for binary distribution
+    # Phase R1.11: In release tier, skip GitHub release but ensure git tag exists
     # Binary pods are distributed via CocoaPods CDN, not GitHub releases
+    # However, git tag is REQUIRED for podspec validation (podspec references tag in spec.source)
     if [[ "${MSP_RELEASE_TIER:-}" == "release" ]]; then
         log_info "Release tier: Skipping GitHub release creation (binary distribution via CocoaPods CDN)"
+        log_info "Release tier: Ensuring git tag exists for podspec validation"
+
+        if ! ensure_release_tag_exists_and_pushed "$version"; then
+            log_error "Failed to ensure git tag exists: $version"
+            return 1
+        fi
+
         return 0
     fi
 
@@ -470,7 +514,15 @@ release_msp_shared_libraries() {
     create_github_release_for_pod "MSPSharedLibraries" "$VERSION"
 
     # Publish to CocoaPods
-    publish_pod_to_cocoapods "MSPSharedLibraries" "$VERSION"
+    # Phase R1.11: Fail-fast if publication fails (prevent wait loop)
+    if ! publish_pod_to_cocoapods "MSPSharedLibraries" "$VERSION"; then
+        if [[ "${MSP_RELEASE_TIER:-}" == "release" ]]; then
+            log_error "[FAIL-FAST] Failed to publish MSPSharedLibraries to CocoaPods. Aborting release."
+            msp_state_mark_step_failed "pods_publish" "Failed to publish MSPSharedLibraries" "1"
+            exit 1
+        fi
+        return 1
+    fi
 
     # Wait for availability (skip in dry-run mode)
     if [[ "$DRY_RUN" != "true" ]]; then
