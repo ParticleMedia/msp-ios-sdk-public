@@ -442,9 +442,14 @@ publish_pod_to_cocoapods() {
 
     # Validate podspec if not skipped
     if [[ "$SKIP_VALIDATION" != "true" ]]; then
-        if ! validate_podspec_with_retry "$podspec"; then
-            log_error "Podspec validation failed for $pod"
-            return 1
+        # Phase R1.13-A: Skip podspec validation in release tier (binary distribution)
+        if [[ "${MSP_RELEASE_TIER:-}" == "release" ]]; then
+            log_info "Release tier: Skipping podspec validation (binary distribution)"
+        else
+            if ! validate_podspec_with_retry "$podspec"; then
+                log_error "Podspec validation failed for $pod"
+                return 1
+            fi
         fi
     fi
 
