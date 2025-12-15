@@ -215,7 +215,9 @@ YAML
       - BaseAppTarget
 YAML
         # Only add configFiles if they exist (after pod install)
-        if [[ -f "$ROOT_DIR/$XCCONFIG_DEBUG" ]] && [[ -f "$ROOT_DIR/$XCCONFIG_RELEASE" ]]; then
+        # Path is relative to project directory (Examples/MSPDemoApp), so check from PROJECT_SPEC directory
+        PROJECT_DIR="$(dirname "$PROJECT_SPEC")"
+        if [[ -f "$PROJECT_DIR/$XCCONFIG_DEBUG" ]] && [[ -f "$PROJECT_DIR/$XCCONFIG_RELEASE" ]]; then
             cat <<YAML
     configFiles:
       Debug: $XCCONFIG_DEBUG
