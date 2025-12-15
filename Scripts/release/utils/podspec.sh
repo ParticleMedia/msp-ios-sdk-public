@@ -252,27 +252,41 @@ validate_podspec() {
 }
 
 # Publish podspec (wrapper around publish_podspec from cocoapods.sh)
-publish_podspec() {
+# Phase R1.15: Private implementation - podspec publishing (prevents recursion)
+_msp_podspec_publish_once() {
     local podspec_file="$1"
-    
+
     if [[ ! -f "$podspec_file" ]]; then
         log_error "Podspec file not found: $podspec_file"
         return 1
     fi
-    
-    # Use publish_podspec from cocoapods.sh if available
-    if command -v publish_podspec &>/dev/null; then
-        publish_podspec "$podspec_file"
+
+    log_step "Publishing podspec: $podspec_file"
+    if msp_run_pod_trunk_push "$podspec_file"; then
+        log_success "Podspec published: $podspec_file"
+        return 0
     else
-        log_step "Publishing podspec: $podspec_file"
-        if msp_run_pod_trunk_push "$podspec_file"; then
-            log_success "Podspec published: $podspec_file"
-            return 0
-        else
-            log_error "Failed to publish podspec: $podspec_file"
-            return 1
-        fi
+        log_error "Failed to publish podspec: $podspec_file"
+        return 1
     fi
+}
+
+# Phase R1.15: Public wrapper (for backward compatibility)
+publish_podspec() {
+    local podspec_file="$1"
+
+    # Recursion guard (Phase R1.15)
+    if [[ "${_MSP_PUBLISH_PODSPEC_GUARD:-0}" == "1" ]]; then
+        log_error "[BUG] publish_podspec recursion detected"
+        return 1
+    fi
+
+    export _MSP_PUBLISH_PODSPEC_GUARD=1
+    _msp_podspec_publish_once "$podspec_file"
+    local result=$?
+    export _MSP_PUBLISH_PODSPEC_GUARD=0
+
+    return $result
 }
 
 # Check if pod is available (wrapper around check_pod_availability from cocoapods.sh)
@@ -348,12 +362,12 @@ publish_podspec_with_retry() {
         update_specs_repo || log_warning "Failed to update specs repo, continuing anyway..."
     fi
     
-    # Then publish with retry
+    # Then publish with retry (Phase R1.15: call private implementation directly)
     if command -v retry_with_backoff &>/dev/null; then
         retry_with_backoff $max_attempts $base_delay "podspec publishing" \
-            publish_podspec "$podspec"
+            _msp_podspec_publish_once "$podspec"
     else
-        publish_podspec "$podspec"
+        _msp_podspec_publish_once "$podspec"
     fi
 }
 
