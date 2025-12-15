@@ -397,9 +397,19 @@ switch_pods_dev() {
     # Step 4: Generate project.yml from templates (BEFORE pod install)
     # CRITICAL: MSPDemoApp.xcodeproj must exist BEFORE pod install runs
     log_section "YAML Generation"
-    log_step "Generating project.yml from templates"
+    log_step "Generating project.yml from templates (excluding MSPDemoApp - handled by generate_workspace.sh)"
     if [[ -x "$SWITCH_TARGET_SCRIPT_DIR/target-switching/generate_project_templates.sh" ]]; then
         "$SWITCH_TARGET_SCRIPT_DIR/target-switching/generate_project_templates.sh"
+    fi
+    
+    # Step 4.5: Generate workspace YAML (which also generates MSPDemoApp/project.yml with proper placeholders)
+    # CRITICAL: generate_workspace.sh generates MSPDemoApp/project.yml with placeholders replaced
+    log_step "Generating workspace/project YAML (includes MSPDemoApp/project.yml)"
+    if "$SWITCH_TARGET_SCRIPT_DIR/target-switching/generate_workspace.sh" pods-dev; then
+        log_success "Workspace YAML generated (MSPDemoApp/project.yml created with placeholders replaced)"
+    else
+        log_error "Workspace YAML generation failed"
+        exit 1
     fi
     
     # Step 5: Generate MSPDemoApp.xcodeproj from project.yml (BEFORE pod install)
@@ -409,7 +419,7 @@ switch_pods_dev() {
     
     if [[ ! -f "$PROJECT_SPEC" ]]; then
         log_error "project.yml not found: $PROJECT_SPEC"
-        log_error "Project template generation must have failed"
+        log_error "Workspace YAML generation must have failed"
         exit 1
     fi
     
@@ -471,14 +481,15 @@ switch_pods_dev() {
         exit 1
     fi
     
-    # Step 8: Generate workspace/project YAML (AFTER pod install)
-    # Workspace generation includes Pods project, so it must run after pod install
-    log_section "Workspace YAML Generation"
-    log_step "Generating workspace/project YAML"
+    # Step 8: Regenerate workspace YAML (AFTER pod install)
+    # Workspace generation includes Pods project, so it must be regenerated after pod install
+    # Note: MSPDemoApp/project.yml was already generated in Step 4.5, but workspace.yml needs Pods project
+    log_section "Workspace YAML Regeneration"
+    log_step "Regenerating workspace YAML (includes Pods project)"
     if "$SWITCH_TARGET_SCRIPT_DIR/target-switching/generate_workspace.sh" pods-dev; then
-        log_success "YAML generated"
+        log_success "Workspace YAML regenerated (includes Pods project)"
     else
-        log_error "YAML generation failed"
+        log_error "Workspace YAML regeneration failed"
         exit 1
     fi
     
