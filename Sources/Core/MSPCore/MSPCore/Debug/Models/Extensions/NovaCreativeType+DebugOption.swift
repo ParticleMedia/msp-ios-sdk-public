@@ -11,14 +11,13 @@ extension NovaCreativeType: DebugOption {
         case .businessProfile: return "Business Profile"
         case .fullImage: return "Full Image"
         case .sponsoredContent: return "Sponsored Content"
-        case .html: return "Html"
         }
     }
     
     var isVisible: Bool {
         switch self {
         case .nativeImage, .nativeVideo: return true
-        case .businessProfile, .fullImage, .sponsoredContent, .html:
+        case .businessProfile, .fullImage, .sponsoredContent:
             // don't need to implement for now, maybe need attention in the future
             return false
         }
