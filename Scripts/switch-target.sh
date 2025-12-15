@@ -157,8 +157,14 @@ create_workspace_symlink() {
     local ROOT_SYMLINK="$ROOT_DIR/msp-ios-sdk.xcworkspace"
     
     if [[ ! -d "$GENERATED_WORKSPACE" ]]; then
-        log_warn "Generated workspace not found at: $GENERATED_WORKSPACE"
-        log_warn "Symlink not created - workspace may not work properly"
+        log_error "Generated workspace not found at: $GENERATED_WORKSPACE"
+        log_error "Workspace generation must have failed - cannot create symlink"
+        return 1
+    fi
+    
+    # Verify workspace is valid (has contents.xcworkspacedata)
+    if [[ ! -f "$GENERATED_WORKSPACE/contents.xcworkspacedata" ]]; then
+        log_error "Workspace exists but is invalid (missing contents.xcworkspacedata): $GENERATED_WORKSPACE"
         return 1
     fi
     
@@ -424,7 +430,11 @@ switch_pods_dev() {
     
     # Step 7: Create workspace symlink at root
     log_section "Workspace Symlink"
-    create_workspace_symlink
+    if ! create_workspace_symlink; then
+        log_error "Failed to create workspace symlink - workspace generation must have failed"
+        print_summary "pods-dev" "FAILED"
+        exit 1
+    fi
     
     # Step 8: Generate Info.plist
     log_section "Info.plist Generation"
@@ -436,6 +446,29 @@ switch_pods_dev() {
         print_summary "pods-dev" "FAILED"
         exit 1
     fi
+    
+    # Step 9.5: Final workspace existence check (strong contract)
+    log_section "Final Workspace Verification"
+    local FINAL_WORKSPACE="$ROOT_DIR/msp-ios-sdk.xcworkspace"
+    if [[ ! -L "$FINAL_WORKSPACE" ]] && [[ ! -d "$FINAL_WORKSPACE" ]]; then
+        log_error "Workspace does not exist at expected location: $FINAL_WORKSPACE"
+        log_error "This violates the pods-dev contract - workspace MUST exist on success"
+        print_summary "pods-dev" "FAILED"
+        exit 1
+    fi
+    
+    if [[ -L "$FINAL_WORKSPACE" ]]; then
+        local SYMLINK_TARGET
+        SYMLINK_TARGET="$(readlink "$FINAL_WORKSPACE" 2>/dev/null || echo "")"
+        if [[ -z "$SYMLINK_TARGET" ]] || [[ ! -d "$ROOT_DIR/$SYMLINK_TARGET" ]]; then
+            log_error "Workspace symlink is broken: $FINAL_WORKSPACE → $SYMLINK_TARGET"
+            log_error "Target does not exist or is not accessible"
+            print_summary "pods-dev" "FAILED"
+            exit 1
+        fi
+    fi
+    
+    log_success "Workspace verified: $FINAL_WORKSPACE exists and is valid"
     
     # Step 10: Git cleanliness check
     log_section "Git Status Check"
@@ -525,7 +558,11 @@ switch_pods_release() {
     
     # Step 7: Create workspace symlink at root
     log_section "Workspace Symlink"
-    create_workspace_symlink
+    if ! create_workspace_symlink; then
+        log_error "Failed to create workspace symlink - workspace generation must have failed"
+        print_summary "pods-release" "FAILED"
+        exit 1
+    fi
     
     # Step 8: Pre-stage XCFrameworks
     log_section "XCFramework Staging"
@@ -541,6 +578,29 @@ switch_pods_release() {
         print_summary "pods-release" "FAILED"
         exit 1
     fi
+    
+    # Step 10.5: Final workspace existence check (strong contract)
+    log_section "Final Workspace Verification"
+    local FINAL_WORKSPACE="$ROOT_DIR/msp-ios-sdk.xcworkspace"
+    if [[ ! -L "$FINAL_WORKSPACE" ]] && [[ ! -d "$FINAL_WORKSPACE" ]]; then
+        log_error "Workspace does not exist at expected location: $FINAL_WORKSPACE"
+        log_error "This violates the pods-release contract - workspace MUST exist on success"
+        print_summary "pods-release" "FAILED"
+        exit 1
+    fi
+    
+    if [[ -L "$FINAL_WORKSPACE" ]]; then
+        local SYMLINK_TARGET
+        SYMLINK_TARGET="$(readlink "$FINAL_WORKSPACE" 2>/dev/null || echo "")"
+        if [[ -z "$SYMLINK_TARGET" ]] || [[ ! -d "$ROOT_DIR/$SYMLINK_TARGET" ]]; then
+            log_error "Workspace symlink is broken: $FINAL_WORKSPACE → $SYMLINK_TARGET"
+            log_error "Target does not exist or is not accessible"
+            print_summary "pods-release" "FAILED"
+            exit 1
+        fi
+    fi
+    
+    log_success "Workspace verified: $FINAL_WORKSPACE exists and is valid"
     
     # Step 11: Git cleanliness check
     log_section "Git Status Check"
