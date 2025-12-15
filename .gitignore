@@ -137,7 +137,7 @@ node_modules/
 # Ruby / Bundler artifacts
 bin/
 cache/
-extensions/
+/extensions/
 gems/
 specifications/
 Gemfile.lock
