@@ -341,6 +341,60 @@ ensure_release_tag_exists_and_pushed() {
     return 0
 }
 
+# Phase R1.18: Wait for remote tag to be resolvable (tag propagation timing fix)
+wait_for_remote_tag() {
+    local tag="$1"
+    local max_attempts="${2:-12}"    # Default: 12 attempts
+    local sleep_seconds="${3:-5}"    # Default: 5 seconds between attempts
+
+    if [[ -z "$tag" ]]; then
+        log_error "wait_for_remote_tag: tag parameter is required"
+        return 1
+    fi
+
+    log_step "Waiting for remote tag '$tag' to be resolvable (Phase R1.18 timing fix)"
+
+    local attempt=1
+    while [[ $attempt -le $max_attempts ]]; do
+        log_info "Checking remote tag visibility (attempt $attempt/$max_attempts)..."
+
+        # Check if tag is resolvable from origin
+        if git ls-remote --tags origin "refs/tags/$tag" 2>/dev/null | grep -q "refs/tags/$tag"; then
+            log_success "Remote tag '$tag' is now visible and resolvable"
+
+            # Additional verification: try to fetch the tag reference
+            if git fetch --tags --force origin "refs/tags/$tag:refs/tags/$tag" >/dev/null 2>&1; then
+                log_success "Remote tag '$tag' fetch verification passed"
+                return 0
+            else
+                log_warn "Tag visible but fetch verification failed (attempt $attempt/$max_attempts)"
+            fi
+        else
+            log_info "Tag '$tag' not yet visible on remote"
+        fi
+
+        if [[ $attempt -lt $max_attempts ]]; then
+            log_info "Waiting ${sleep_seconds}s before next attempt..."
+            sleep "$sleep_seconds"
+        else
+            # Phase R1.18: Fail-fast on timeout in release tier
+            if [[ "${MSP_RELEASE_TIER:-}" == "release" ]]; then
+                log_error "[FAIL-FAST] Timeout waiting for remote tag '$tag' to be resolvable after $max_attempts attempts"
+                log_error "Tag was pushed but not yet propagated to all GitHub servers"
+                log_error "This is a timing/availability issue, not a code bug"
+                return 1
+            else
+                log_warn "Timeout waiting for remote tag (preflight tier - non-blocking)"
+                return 0
+            fi
+        fi
+
+        ((attempt++))
+    done
+
+    return 1
+}
+
 # Create GitHub release and upload zip
 create_github_release_for_pod() {
     local pod="$1"
@@ -362,6 +416,12 @@ create_github_release_for_pod() {
 
         if ! ensure_release_tag_exists_and_pushed "$version"; then
             log_error "Failed to ensure git tag exists: $version"
+            return 1
+        fi
+
+        # Phase R1.18: Wait for remote tag to be resolvable before CocoaPods publication
+        if ! wait_for_remote_tag "$version"; then
+            log_error "Failed to wait for remote tag visibility: $version"
             return 1
         fi
 
