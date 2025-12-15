@@ -252,3 +252,30 @@ fi
 
 log_success "All third-party XCFrameworks built successfully!"
 log_info "Output directory: $THIRDPARTY_OUTPUT_DIR"
+
+# ============================================================================
+# Copy third-party XCFrameworks to Build/XCFrameworks for core module builds
+# ============================================================================
+
+log_section "Copying third-party XCFrameworks to Build/XCFrameworks"
+
+XCFRAMEWORKS_BUILD_DIR="$ROOT_DIR/Build/XCFrameworks"
+mkdir -p "$XCFRAMEWORKS_BUILD_DIR"
+
+for target_spec in "${THIRDPARTY_TARGETS[@]}"; do
+    IFS=':' read -r scheme_name output_name <<< "$target_spec"
+    source_xcf="$THIRDPARTY_OUTPUT_DIR/$output_name/$output_name.xcframework"
+    target_xcf="$XCFRAMEWORKS_BUILD_DIR/$output_name.xcframework"
+    
+    if [[ -d "$source_xcf" ]]; then
+        # Remove existing symlink or directory
+        rm -rf "$target_xcf"
+        # Create symlink (more efficient than copy)
+        ln -sf "$(realpath "$source_xcf" 2>/dev/null || echo "$source_xcf")" "$target_xcf"
+        log_info "  Linked: Build/XCFrameworks/$output_name.xcframework -> ThirdParty/$output_name/$output_name.xcframework"
+    else
+        log_warn "  Skipping: $output_name.xcframework not found in ThirdParty/"
+    fi
+done
+
+log_success "Third-party XCFrameworks linked to Build/XCFrameworks"

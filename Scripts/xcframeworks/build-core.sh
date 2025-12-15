@@ -32,7 +32,25 @@ fi
 log_title "Building Core Modules"
 
 # -----------------------------------------------------------
-# Step 0 — Generate project.yml from templates (Template Architecture)
+# Step 0 — Build third-party XCFrameworks first (required by core modules)
+# Core modules (especially NovaCore) need third-party XCFrameworks like Shimmer
+# -----------------------------------------------------------
+log_section "Building third-party XCFrameworks"
+
+THIRDPARTY_BUILD_SCRIPT="$XCFRAMEWORKS_SCRIPT_DIR/build-thirdparty.sh"
+if [[ -f "$THIRDPARTY_BUILD_SCRIPT" ]] && [[ -x "$THIRDPARTY_BUILD_SCRIPT" ]]; then
+    if ! bash "$THIRDPARTY_BUILD_SCRIPT"; then
+        log_error "Failed to build third-party XCFrameworks"
+        exit 1
+    fi
+    log_success "Third-party XCFrameworks built successfully"
+else
+    log_warn "build-thirdparty.sh not found or not executable, skipping third-party build"
+    log_warn "Core modules may fail if required third-party XCFrameworks are missing"
+fi
+
+# -----------------------------------------------------------
+# Step 1 — Generate project.yml from templates (Template Architecture)
 # -----------------------------------------------------------
 log_section "Generating project.yml from templates"
 
