@@ -483,28 +483,18 @@ switch_pods_dev() {
     
     # Step 8: Regenerate workspace YAML (AFTER pod install)
     # Workspace generation includes Pods project, so it must be regenerated after pod install
-    # CRITICAL: This also regenerates MSPDemoApp/project.yml with xcconfig files (they now exist)
+    # CRITICAL: Do NOT regenerate MSPDemoApp.xcodeproj after pod install!
+    # CocoaPods owns the build graph and dependencies after pod install.
+    # XcodeGen must only run BEFORE pod install (Step 5).
     log_section "Workspace YAML Regeneration"
-    log_step "Regenerating workspace YAML (includes Pods project and xcconfig files)"
+    log_step "Regenerating workspace YAML (includes Pods project)"
+    log_info "Note: MSPDemoApp.xcodeproj is NOT regenerated - CocoaPods owns build dependencies"
     if "$SWITCH_TARGET_SCRIPT_DIR/target-switching/generate_workspace.sh" pods-dev; then
         log_success "Workspace YAML regenerated (includes Pods project)"
     else
         log_error "Workspace YAML regeneration failed"
         exit 1
     fi
-    
-    # Step 8.5: Regenerate MSPDemoApp.xcodeproj (AFTER xcconfig files are added to project.yml)
-    # CRITICAL: project.yml now includes xcconfig files, so project must be regenerated to apply them
-    log_section "Xcode Project Regeneration (Post-pod-install)"
-    log_step "Regenerating MSPDemoApp.xcodeproj with xcconfig files"
-    local PROJECT_DIR="$(dirname "$PROJECT_SPEC")"
-    local PROJECT_YML_NAME="$(basename "$PROJECT_SPEC")"
-    if ! (cd "$PROJECT_DIR" && xcodegen generate --spec "$PROJECT_YML_NAME" 2>&1); then
-        log_error "Failed to regenerate MSPDemoApp.xcodeproj with xcconfig files"
-        log_error "This is required for CocoaPods integration to work"
-        exit 1
-    fi
-    log_success "MSPDemoApp.xcodeproj regenerated with xcconfig files"
     
     # Step 9: Create workspace symlink at root
     log_section "Workspace Symlink"
