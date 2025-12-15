@@ -33,7 +33,6 @@ log_title "Building Core Modules"
 
 # -----------------------------------------------------------
 # Step 0 — Build third-party XCFrameworks first (required by core modules)
-# Core modules (especially NovaCore) need third-party XCFrameworks like Shimmer
 # -----------------------------------------------------------
 log_section "Building third-party XCFrameworks"
 
@@ -91,9 +90,8 @@ log_step "Pre-building Pod dependencies for Core modules"
 # - MSPKingfisher: provides Kingfisher module (used by NovaCore)
 # - SnapKit: used by NovaCore
 # - lottie-ios: used by NovaCore  
-# - Shimmer: used by NovaCore
 # - MSPPrebidAdapter: used by MSPCore
-POD_SCHEMES_TO_PREBUILD=("MSPKingfisher" "SnapKit" "lottie-ios" "Shimmer" "MSPPrebidAdapter" "SwiftProtobuf")
+POD_SCHEMES_TO_PREBUILD=("MSPKingfisher" "SnapKit" "lottie-ios" "MSPPrebidAdapter" "SwiftProtobuf")
 
 for pod_scheme in "${POD_SCHEMES_TO_PREBUILD[@]}"; do
     log_info "Pre-building $pod_scheme for iOS..."
@@ -152,7 +150,6 @@ mkdir -p "$ARCHIVES_DIR" "$XCFRAMEWORKS_DIR" "$LOGS_DIR"
 # -----------------------------------------------------------
 # Function: fix_pod_modulemaps
 # Purpose: Fix absolute paths in Pod modulemaps to use relative paths
-# Also copy Shimmer modulemap to build output (Shimmer is ObjC-only, needs modulemap)
 # -----------------------------------------------------------
 fix_pod_modulemaps() {
     log_info "Fixing Pod modulemaps (converting absolute paths to relative)"
@@ -177,78 +174,6 @@ EOF
                 log_info "Fixed modulemap: $plat/$pod"
             fi
         done
-        
-        # Phase 4 Step 5: Copy Shimmer modulemap, umbrella header, and all headers to build output
-        # Shimmer is ObjC-only and only produces libShimmer.a, but Swift needs modulemap + headers
-        local SHIMMER_DIR="$SHARED_DERIVED_DATA/Build/Products/Release-$plat/Shimmer"
-        if [[ -d "$SHIMMER_DIR" ]]; then
-            local SHIMMER_MODULEMAP="$SHIMMER_DIR/Shimmer.modulemap"
-            local SHIMMER_UMBRELLA="$SHIMMER_DIR/Shimmer-umbrella.h"
-            local PODS_MODULEMAP="$ROOT_DIR/Pods/Headers/Public/Shimmer/Shimmer.modulemap"
-            local PODS_UMBRELLA="$ROOT_DIR/Pods/Headers/Public/Shimmer/Shimmer-umbrella.h"
-            local PODS_HEADERS_DIR="$ROOT_DIR/Pods/Headers/Public/Shimmer"
-            
-            # Copy modulemap
-            if [[ -f "$PODS_MODULEMAP" ]] && [[ ! -f "$SHIMMER_MODULEMAP" ]]; then
-                mkdir -p "$SHIMMER_DIR"
-                cp "$PODS_MODULEMAP" "$SHIMMER_MODULEMAP"
-                # Also create module.modulemap symlink (Swift looks for this name)
-                ln -sf "Shimmer.modulemap" "$SHIMMER_DIR/module.modulemap" 2>/dev/null || true
-                log_info "Copied Shimmer modulemap to build output: $plat"
-            fi
-            
-            # Copy umbrella header (required by modulemap)
-            if [[ -f "$PODS_UMBRELLA" ]] && [[ ! -f "$SHIMMER_UMBRELLA" ]]; then
-                cp "$PODS_UMBRELLA" "$SHIMMER_UMBRELLA"
-                log_info "Copied Shimmer umbrella header to build output: $plat"
-            fi
-            
-            # Copy all header files (FBShimmering.h, FBShimmeringLayer.h, FBShimmeringView.h)
-            # Phase 4 Final E2E Fix: Handle read-only Shimmer headers by using temp copy + chmod
-            if [[ -d "$PODS_HEADERS_DIR" ]]; then
-                local TEMP_HEADERS_DIR="${TMPDIR:-/tmp}/msp_shimmer_headers_$$"
-                mkdir -p "$TEMP_HEADERS_DIR"
-                
-                for header_file in "$PODS_HEADERS_DIR"/*.h; do
-                    if [[ -f "$header_file" ]] && [[ "$(basename "$header_file")" != "Shimmer-umbrella.h" ]]; then
-                        local header_name=$(basename "$header_file")
-                        local temp_header="$TEMP_HEADERS_DIR/$header_name"
-                        local target_header="$SHIMMER_DIR/$header_name"
-                        
-                        # Step 1: Copy to temp directory
-                        if [[ -L "$header_file" ]]; then
-                            local actual_header=$(readlink -f "$header_file" 2>/dev/null || readlink "$header_file")
-                            if [[ -f "$actual_header" ]]; then
-                                cp "$actual_header" "$temp_header" 2>/dev/null || cp "$header_file" "$temp_header" 2>/dev/null || continue
-                            else
-                                cp "$header_file" "$temp_header" 2>/dev/null || continue
-                            fi
-                        else
-                            cp "$header_file" "$temp_header" 2>/dev/null || continue
-                        fi
-                        
-                        # Step 2: Make temp file writable
-                        chmod u+w "$temp_header" 2>/dev/null || true
-                        
-                        # Step 3: Ensure target directory exists
-                        mkdir -p "$SHIMMER_DIR"
-                        
-                        # Step 4: Remove existing read-only target file if it exists, then copy
-                        if [[ -f "$target_header" ]]; then
-                            chmod u+w "$target_header" 2>/dev/null || rm -f "$target_header" 2>/dev/null || true
-                        fi
-                        cp -f "$temp_header" "$target_header" 2>/dev/null || {
-                            # Fallback: try with explicit chmod after copy
-                            cp "$temp_header" "$target_header" 2>/dev/null && chmod u+w "$target_header" 2>/dev/null || true
-                        }
-                    fi
-                done
-                
-                # Cleanup temp directory
-                rm -rf "$TEMP_HEADERS_DIR" 2>/dev/null || true
-                log_info "Copied Shimmer headers to build output: $plat"
-            fi
-        fi
     done
 }
 

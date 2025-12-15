@@ -156,9 +156,9 @@ if [[ "$MODULE_NAME" =~ ^(MSPCore|NovaCore|MSPiOSCore|MSPSharedLibraries|MSPOMSD
     
     # Build SEPARATE path arrays for iOS and Simulator Pod modules
     # CRITICAL: Each archive must ONLY see its own platform's modules to avoid redefinition errors
-    # NovaCore needs: Kingfisher, SnapKit, Lottie, Shimmer
+    # NovaCore needs: Kingfisher, SnapKit, Lottie
     # MSPCore needs: MSPPrebidAdapter
-    POD_MODULES=("MSPKingfisher" "SnapKit" "lottie-ios" "Shimmer" "MSPPrebidAdapter")
+    POD_MODULES=("MSPKingfisher" "SnapKit" "lottie-ios" "MSPPrebidAdapter")
     POD_IOS_MODULES=""
     POD_SIM_MODULES=""
     
@@ -181,16 +181,9 @@ if [[ "$MODULE_NAME" =~ ^(MSPCore|NovaCore|MSPiOSCore|MSPSharedLibraries|MSPOMSD
     log_info "Found Pod modules (iOS): $POD_IOS_MODULES"
     log_info "Found Pod modules (Simulator): $POD_SIM_MODULES"
     
-    # Add FRAMEWORK_SEARCH_PATHS for third-party XCFrameworks (Shimmer, etc.)
+    # Add FRAMEWORK_SEARCH_PATHS for third-party XCFrameworks (if needed)
     # Third-party XCFrameworks are built by build-thirdparty.sh and linked to Build/XCFrameworks/
     THIRDPARTY_XCFRAMEWORKS_DIR="$ROOT_DIR/Build/XCFrameworks"
-    if [[ -d "$THIRDPARTY_XCFRAMEWORKS_DIR" ]]; then
-        # Check if Shimmer.xcframework exists (required by NovaCore)
-        if [[ "$MODULE_NAME" == "NovaCore" ]] && [[ -d "$THIRDPARTY_XCFRAMEWORKS_DIR/Shimmer.xcframework" ]]; then
-            log_info "Found Shimmer.xcframework in Build/XCFrameworks/ (required by NovaCore)"
-        fi
-        # FRAMEWORK_SEARCH_PATHS will be added to build settings below
-    fi
     
     log_info "Core module $MODULE_NAME: Using PROJECT mode (avoids Pods scheme conflicts)"
     log_info "  iOS Swift include paths: $POD_IOS_MODULES"
@@ -222,9 +215,6 @@ IOS_BUILD_SETTINGS=(
 
 # Add Pod search paths for Core modules - ONLY iOS paths for iOS archive
 # This allows Core modules to resolve Pod modules like Kingfisher (from MSPKingfisher)
-# Phase 4 Step 5: Also add modulemap injection for ObjC-only Pods like Shimmer
-# Also add FRAMEWORK_SEARCH_PATHS for third-party XCFrameworks (Shimmer, etc.)
-THIRDPARTY_XCFRAMEWORKS_DIR="$ROOT_DIR/Build/XCFrameworks"
 if [[ -n "${POD_IOS_MODULES:-}" ]]; then
     # Add -I flags for each iOS Pod module path
     IOS_I_FLAGS=""
@@ -235,15 +225,6 @@ if [[ -n "${POD_IOS_MODULES:-}" ]]; then
         if [[ -d "$path" ]]; then
             IOS_I_FLAGS="$IOS_I_FLAGS -I$path"
             IOS_HEADER_PATHS="$IOS_HEADER_PATHS $path"
-            # Phase 4 Step 5: Add modulemap file for ObjC-only Pods (Shimmer)
-            pod_name=$(basename "$path")
-            if [[ "$pod_name" == "Shimmer" ]]; then
-                shimmer_modulemap="$path/Shimmer.modulemap"
-                if [[ -f "$shimmer_modulemap" ]]; then
-                    IOS_MODULEMAP_FLAGS="$IOS_MODULEMAP_FLAGS -Xcc -fmodule-map-file=$shimmer_modulemap"
-                    log_info "iOS archive: Added Shimmer modulemap: $shimmer_modulemap"
-                fi
-            fi
         fi
     done
     if [[ -n "$IOS_I_FLAGS" ]]; then
@@ -259,15 +240,6 @@ if [[ -n "${POD_IOS_MODULES:-}" ]]; then
     fi
 fi
 
-# Add FRAMEWORK_SEARCH_PATHS for third-party XCFrameworks (Shimmer, etc.)
-# Core modules (especially NovaCore) need third-party XCFrameworks from Build/XCFrameworks/
-if [[ -d "$THIRDPARTY_XCFRAMEWORKS_DIR" ]]; then
-    # Check if NovaCore needs Shimmer.xcframework
-    if [[ "$MODULE_NAME" == "NovaCore" ]] && [[ -d "$THIRDPARTY_XCFRAMEWORKS_DIR/Shimmer.xcframework" ]]; then
-        IOS_BUILD_SETTINGS+=("FRAMEWORK_SEARCH_PATHS=\$(inherited) $THIRDPARTY_XCFRAMEWORKS_DIR")
-        log_info "iOS archive: Added FRAMEWORK_SEARCH_PATHS for Shimmer.xcframework"
-    fi
-fi
 
 # Set MSP_SKIP_CP_XCFRAMEWORKS=1 for Core module builds to skip [CP] Copy XCFrameworks script
 # This prevents CocoaPods from trying to copy XCFrameworks that don't exist yet during build
@@ -315,15 +287,6 @@ if [[ -n "${POD_SIM_MODULES:-}" ]]; then
         if [[ -d "$path" ]]; then
             SIM_I_FLAGS="$SIM_I_FLAGS -I$path"
             SIM_HEADER_PATHS="$SIM_HEADER_PATHS $path"
-            # Phase 4 Step 5: Add modulemap file for ObjC-only Pods (Shimmer)
-            pod_name=$(basename "$path")
-            if [[ "$pod_name" == "Shimmer" ]]; then
-                shimmer_modulemap="$path/Shimmer.modulemap"
-                if [[ -f "$shimmer_modulemap" ]]; then
-                    SIM_MODULEMAP_FLAGS="$SIM_MODULEMAP_FLAGS -Xcc -fmodule-map-file=$shimmer_modulemap"
-                    log_info "Simulator archive: Added Shimmer modulemap: $shimmer_modulemap"
-                fi
-            fi
         fi
     done
     if [[ -n "$SIM_I_FLAGS" ]]; then
@@ -339,15 +302,6 @@ if [[ -n "${POD_SIM_MODULES:-}" ]]; then
     fi
 fi
 
-# Add FRAMEWORK_SEARCH_PATHS for third-party XCFrameworks (Shimmer, etc.) for Simulator archive
-# Core modules (especially NovaCore) need third-party XCFrameworks from Build/XCFrameworks/
-if [[ -d "$THIRDPARTY_XCFRAMEWORKS_DIR" ]]; then
-    # Check if NovaCore needs Shimmer.xcframework
-    if [[ "$MODULE_NAME" == "NovaCore" ]] && [[ -d "$THIRDPARTY_XCFRAMEWORKS_DIR/Shimmer.xcframework" ]]; then
-        SIM_BUILD_SETTINGS+=("FRAMEWORK_SEARCH_PATHS=\$(inherited) $THIRDPARTY_XCFRAMEWORKS_DIR")
-        log_info "Simulator archive: Added FRAMEWORK_SEARCH_PATHS for Shimmer.xcframework"
-    fi
-fi
 
 # MSP_SKIP_CP_XCFRAMEWORKS is already set above for Core modules, reuse it here
 xcodebuild archive \
