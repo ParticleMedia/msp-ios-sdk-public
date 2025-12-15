@@ -26,6 +26,13 @@ msp_safety_require_ci_for_release() {
 
     if [[ "$tier" == "release" || "$tier" == "production" ]]; then
         if [[ -z "${CI:-}" ]]; then
+            # Stage A: Temporary local release override (explicit opt-in only)
+            if [[ "${MSP_LOCAL_RELEASE_OVERRIDE:-0}" == "1" ]]; then
+                log_warn "[SAFETY] ⚠️ Local release override enabled (Stage A only)"
+                log_warn "[SAFETY] This is a TEMPORARY override for Stage A validation"
+                log_warn "[SAFETY] Production releases MUST use CI pipeline"
+                return 0
+            fi
             log_error "[SAFETY] Release tier cannot be executed locally. Use CI pipeline only."
             log_error "[SAFETY] To run a test release, use: MSP_RELEASE_TIER=preflight"
             return 1
@@ -115,6 +122,12 @@ msp_safety_require_confirmation() {
     local tier="${MSP_RELEASE_TIER:-preflight}"
 
     if [[ "$tier" == "release" || "$tier" == "production" ]]; then
+        # Stage A: Temporary local release override (explicit opt-in only)
+        if [[ "${MSP_LOCAL_RELEASE_OVERRIDE:-0}" == "1" ]]; then
+            log_warn "[SAFETY] ⚠️ Confirmation bypassed (Stage A local override)"
+            return 0
+        fi
+        
         if [[ "$force" != "true" ]]; then
             local current_branch
             current_branch="$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo 'unknown')"
@@ -161,6 +174,12 @@ msp_safety_validate_branch() {
     local tier="${MSP_RELEASE_TIER:-preflight}"
 
     if [[ "$tier" == "release" || "$tier" == "production" ]]; then
+        # Stage A: Temporary local release override (explicit opt-in only)
+        if [[ "${MSP_LOCAL_RELEASE_OVERRIDE:-0}" == "1" ]]; then
+            log_warn "[SAFETY] ⚠️ Branch validation bypassed (Stage A local override)"
+            return 0
+        fi
+        
         local current_branch
         current_branch="$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo '')"
 
