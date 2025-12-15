@@ -737,7 +737,7 @@ switch_spm_release() {
     # Step 4: Generate Package.swift from template
     log_section "Package.swift Generation"
     log_step "Generating Package.swift from template"
-    if ! ensure_package_swift_enabled; then
+    if ! ensure_package_swift_enabled "spm-release"; then
         log_error "Failed to generate Package.swift"
         exit 1
     fi
