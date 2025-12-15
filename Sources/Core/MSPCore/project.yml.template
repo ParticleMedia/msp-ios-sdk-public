@@ -32,7 +32,7 @@ targets:
         embed: false
       - framework: ../../../Build/XCFrameworks/MSPSharedLibraries.xcframework
         embed: false
-      - framework: ../MSPSharedLibraries/PrebidMobile.xcframework
+      - framework: ../../../Build/XCFrameworks/PrebidMobile.xcframework
         embed: false
       - framework: ../../../Sources/Core/MSPOMSDK/OMSDK_Newsbreak1.xcframework
         embed: false

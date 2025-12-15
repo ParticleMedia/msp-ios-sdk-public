@@ -278,4 +278,15 @@ for target_spec in "${THIRDPARTY_TARGETS[@]}"; do
     fi
 done
 
+# Link PrebidMobile.xcframework (exists in ThirdParty, not built by this script)
+PREBID_SOURCE="$THIRDPARTY_OUTPUT_DIR/PrebidMobile/PrebidMobile.xcframework"
+PREBID_TARGET="$XCFRAMEWORKS_BUILD_DIR/PrebidMobile.xcframework"
+if [[ -d "$PREBID_SOURCE" ]]; then
+    rm -rf "$PREBID_TARGET"
+    ln -sf "$(realpath "$PREBID_SOURCE" 2>/dev/null || echo "$PREBID_SOURCE")" "$PREBID_TARGET"
+    log_info "  Linked: Build/XCFrameworks/PrebidMobile.xcframework -> ThirdParty/PrebidMobile/PrebidMobile.xcframework"
+else
+    log_warn "  Skipping: PrebidMobile.xcframework not found in ThirdParty/PrebidMobile/"
+fi
+
 log_success "Third-party XCFrameworks linked to Build/XCFrameworks"
