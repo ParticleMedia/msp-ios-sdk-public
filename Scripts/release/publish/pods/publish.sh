@@ -407,24 +407,114 @@ create_github_release_for_pod() {
         return 0
     fi
 
-    # Phase R1.11: In release tier, skip GitHub release but ensure git tag exists
-    # Binary pods are distributed via CocoaPods CDN, not GitHub releases
-    # However, git tag is REQUIRED for podspec validation (podspec references tag in spec.source)
+    # Stage A: In release tier, create GitHub release and upload binary zip
+    # HTTP binary distribution requires zip to be available before pod trunk push
     if [[ "${MSP_RELEASE_TIER:-}" == "release" ]]; then
-        log_info "Release tier: Skipping GitHub release creation (binary distribution via CocoaPods CDN)"
-        log_info "Release tier: Ensuring git tag exists for podspec validation"
-
-        if ! ensure_release_tag_exists_and_pushed "$version"; then
-            log_error "Failed to ensure git tag exists: $version"
+        log_info "Release tier: Creating GitHub release and uploading binary zip (HTTP distribution)"
+        
+        # Create zip file from XCFramework
+        local zip_name="${pod}-${version}.zip"
+        local xcframework_path="$ROOT_DIR/Build/XCFrameworks/${pod}.xcframework"
+        local temp_zip_dir="/tmp/msp_release_zip_$$"
+        
+        mkdir -p "$temp_zip_dir/Binary"
+        
+        if [[ ! -d "$xcframework_path" ]]; then
+            log_error "XCFramework not found: $xcframework_path"
+            rm -rf "$temp_zip_dir"
             return 1
         fi
-
-        # Phase R1.18: Wait for remote tag to be resolvable before CocoaPods publication
-        if ! wait_for_remote_tag "$version"; then
-            log_error "Failed to wait for remote tag visibility: $version"
+        
+        # Copy XCFramework to temp directory structure
+        cp -R "$xcframework_path" "$temp_zip_dir/Binary/${pod}.xcframework"
+        
+        # Handle MSPSharedLibraries special case (includes PrebidMobile)
+        if [[ "$pod" == "MSPSharedLibraries" ]]; then
+            local prebid_path="$ROOT_DIR/Build/XCFrameworks/PrebidMobile.xcframework"
+            if [[ -d "$prebid_path" ]]; then
+                mkdir -p "$temp_zip_dir/ThirdParty/PrebidMobile"
+                cp -R "$prebid_path" "$temp_zip_dir/ThirdParty/PrebidMobile/PrebidMobile.xcframework"
+            fi
+        fi
+        
+        # Create zip file
+        (cd "$temp_zip_dir" && zip -r "$ROOT_DIR/$zip_name" . >/dev/null 2>&1)
+        rm -rf "$temp_zip_dir"
+        
+        if [[ ! -f "$ROOT_DIR/$zip_name" ]]; then
+            log_error "Failed to create zip file: $zip_name"
             return 1
         fi
+        
+        log_info "Created zip file: $zip_name"
+        
+        # Stage A: Calculate SHA256 checksum for podspec
+        local zip_checksum
+        if command -v shasum >/dev/null 2>&1; then
+            zip_checksum=$(shasum -a 256 "$ROOT_DIR/$zip_name" 2>/dev/null | cut -d' ' -f1)
+            log_info "Calculated SHA256 checksum: $zip_checksum"
+        else
+            log_error "shasum command not available, cannot calculate checksum"
+            rm -f "$ROOT_DIR/$zip_name"
+            return 1
+        fi
+        
+        # Stage A: Update podspec with checksum (podspec already generated, add checksum to HTTP source)
+        local podspec="$ROOT_DIR/Build/ReleasePodspecs/${pod}.podspec"
+        if [[ -f "$podspec" ]]; then
+            log_step "Updating podspec with SHA256 checksum"
+            # Use Ruby to properly insert checksum into source hash (more robust than sed)
+            local zip_url="https://github.com/ParticleMedia/msp-ios-sdk-public/releases/download/${version}/${pod}-${version}.zip"
+            ruby <<RUBY_SCRIPT
+podspec_path = '$podspec'
+zip_url = '$zip_url'
+zip_checksum = '$zip_checksum'
 
+podspec_content = File.read(podspec_path)
+# Replace the source block with checksum included
+# Match the exact structure: spec.source = { ... } where ... can be any content including newlines
+new_source = "  spec.source = {\n    :http => \"#{zip_url}\",\n    :type => \"zip\",\n    :sha256 => \"#{zip_checksum}\"\n  }"
+# Use multiline mode and match from spec.source = { to closing brace with proper indentation
+podspec_content.gsub!(/  spec\.source = \{.*?\n  \}/m, new_source)
+File.write(podspec_path, podspec_content)
+RUBY_SCRIPT
+            log_success "Updated podspec with checksum: $zip_checksum"
+        else
+            log_warning "Podspec not found for checksum update: $podspec"
+        fi
+        
+        # Create or update GitHub release
+        local gh_release_created=false
+        if gh release view "$version" --repo "ParticleMedia/msp-ios-sdk-public" &>/dev/null; then
+            log_info "Release $version already exists, uploading assets"
+            if gh release upload "$version" "$ROOT_DIR/$zip_name" --repo "ParticleMedia/msp-ios-sdk-public" --clobber; then
+                gh_release_created=true
+            fi
+        else
+            log_info "Creating new release $version"
+            if gh release create "$version" "$ROOT_DIR/$zip_name" --repo "ParticleMedia/msp-ios-sdk-public" --title "Release $version" --notes "Release $version"; then
+                gh_release_created=true
+            fi
+        fi
+        
+        # Clean up zip file
+        rm -f "$ROOT_DIR/$zip_name"
+        
+        if [[ "$gh_release_created" == "true" ]]; then
+            log_success "GitHub release created and zip uploaded for $pod"
+            
+            # Track GitHub release creation in state
+            if command -v msp_state_mark_git_flag &>/dev/null; then
+                msp_state_mark_git_flag "github_release_created" true
+                if command -v msp_state_set_tag_name &>/dev/null; then
+                    msp_state_set_tag_name "$version"
+                fi
+            fi
+        else
+            log_error "Failed to create/update GitHub release for $pod"
+            return 1
+        fi
+        
         return 0
     fi
 
@@ -472,6 +562,38 @@ create_github_release_for_pod() {
     fi
 }
 
+# Stage A: Probe zip URL availability before publishing
+probe_zip_url() {
+    local pod="$1"
+    local version="$2"
+    local max_attempts=6
+    local sleep_seconds=5
+    
+    local zip_url="https://github.com/ParticleMedia/msp-ios-sdk-public/releases/download/${version}/${pod}-${version}.zip"
+    
+    log_step "Probing zip URL availability: $zip_url"
+    
+    local attempt=1
+    while [[ $attempt -le $max_attempts ]]; do
+        if curl -sSfL --head "$zip_url" >/dev/null 2>&1; then
+            log_success "Zip URL is accessible: $zip_url"
+            return 0
+        else
+            if [[ $attempt -lt $max_attempts ]]; then
+                log_info "Zip URL not yet accessible (attempt $attempt/$max_attempts), waiting ${sleep_seconds}s..."
+                sleep "$sleep_seconds"
+            else
+                log_error "[FAIL-FAST] Zip URL not accessible after $max_attempts attempts: $zip_url"
+                log_error "Binary zip must be available before pod trunk push (HTTP distribution)"
+                return 1
+            fi
+        fi
+        ((attempt++))
+    done
+    
+    return 1
+}
+
 # Publish pod to CocoaPods
 publish_pod_to_cocoapods() {
     local pod="$1"
@@ -498,6 +620,15 @@ publish_pod_to_cocoapods() {
     if [[ "$DRY_RUN" == "true" ]]; then
         log_info "DRY RUN: Would publish $pod version $version to CocoaPods using $podspec"
         return 0
+    fi
+
+    # Stage A: Probe zip URL availability in release tier (HTTP distribution)
+    if [[ "${MSP_RELEASE_TIER:-}" == "release" ]]; then
+        if ! probe_zip_url "$pod" "$version"; then
+            log_error "[FAIL-FAST] Binary zip not available, cannot publish to CocoaPods"
+            msp_state_mark_step_failed "pods_publish" "Binary zip not available: ${pod}-${version}.zip" "1"
+            exit 1
+        fi
     fi
 
     # Validate podspec if not skipped
