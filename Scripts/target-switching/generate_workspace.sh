@@ -205,14 +205,23 @@ YAML
     # MSPDemoApp target (CocoaPods only)
     if [[ "$EFFECTIVE_MODE" == "pods" ]]; then
         # Base target definition (common to both pods-dev and pods-release)
+        # NOTE: configFiles are only added if Pods xcconfig files exist (after pod install)
+        XCCONFIG_DEBUG="../../Pods/Target Support Files/Pods-MSPDemoApp/Pods-MSPDemoApp.debug.xcconfig"
+        XCCONFIG_RELEASE="../../Pods/Target Support Files/Pods-MSPDemoApp/Pods-MSPDemoApp.release.xcconfig"
+        
         cat <<'YAML'
   MSPDemoApp:
     templates:
       - BaseAppTarget
-    configFiles:
-      Debug: ../../Pods/Target Support Files/Pods-MSPDemoApp/Pods-MSPDemoApp.debug.xcconfig
-      Release: ../../Pods/Target Support Files/Pods-MSPDemoApp/Pods-MSPDemoApp.release.xcconfig
 YAML
+        # Only add configFiles if they exist (after pod install)
+        if [[ -f "$ROOT_DIR/$XCCONFIG_DEBUG" ]] && [[ -f "$ROOT_DIR/$XCCONFIG_RELEASE" ]]; then
+            cat <<YAML
+    configFiles:
+      Debug: $XCCONFIG_DEBUG
+      Release: $XCCONFIG_RELEASE
+YAML
+        fi
 
         # PODS-RELEASE: Add XCFramework copy phases (needed for binary distribution)
         # PODS-DEV: Skip XCFramework phases (pure source mode, no XCFrameworks)
