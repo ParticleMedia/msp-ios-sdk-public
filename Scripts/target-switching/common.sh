@@ -115,7 +115,10 @@ ensure_package_swift_disabled() {
 
 # Ensure Package.swift is in correct state for SPM mode (Template Architecture)
 # In SPM mode: Copy template to Package.swift
+# For spm-release: Generate core-only Package.swift (excludes missing third-party SDKs)
 ensure_package_swift_enabled() {
+    local mode="${1:-spm}"  # Default to 'spm', can be 'spm-release' for core-only generation
+    
     log_step "Ensuring Package.swift is generated from template for SPM mode"
     
     # Verify template exists (developer-maintained)
@@ -131,10 +134,40 @@ ensure_package_swift_enabled() {
         rm -f "$PACKAGE_SWIFT_DISABLED"
     fi
     
-    # Copy template to runtime Package.swift
+    # For spm-release mode: Generate core-only Package.swift
+    if [[ "$mode" == "spm-release" ]]; then
+        log_info "Generating core-only Package.swift for spm-release (excluding missing third-party SDKs)"
+        generate_core_only_package_swift
+        log_success "Package.swift generated (core-only mode)"
+        return 0
+    fi
+    
+    # For regular spm mode: Copy template to runtime Package.swift
     cp "$PACKAGE_SWIFT_TEMPLATE" "$PACKAGE_SWIFT"
     log_success "Package.swift generated from Package.swift.template"
     return 0
+}
+
+# Generate core-only Package.swift for spm-release mode
+# Excludes: adapter products/targets and missing third-party SDKs
+# Includes: core modules (MSPCore, MSPiOSCore, NovaCore, MSPSharedLibraries, MSPOMSDK) + PrebidMobile
+generate_core_only_package_swift() {
+    local temp_package="/tmp/Package.swift.core-only.$$"
+    local ruby_script="$ROOT_DIR/Scripts/target-switching/generate_core_only_package_swift.rb"
+    
+    # Use Ruby script for robust filtering (consistent with podspec manipulation)
+    if [[ -f "$ruby_script" ]] && command -v ruby >/dev/null 2>&1; then
+        if ! ruby "$ruby_script" "$PACKAGE_SWIFT_TEMPLATE" "$temp_package"; then
+            log_error "Failed to generate core-only Package.swift"
+            return 1
+        fi
+    else
+        log_error "Ruby script not found or ruby not available: $ruby_script"
+        return 1
+    fi
+    
+    # Move the generated file to final location
+    mv "$temp_package" "$PACKAGE_SWIFT"
 }
 
 # Auto-fix Package.swift state for current mode (called during validation)
