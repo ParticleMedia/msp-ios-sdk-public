@@ -394,8 +394,70 @@ switch_pods_dev() {
         log_success "Examples/DemoApp/Podfile.lock removed"
     fi
     
-    # Step 4: Run pod install FIRST (before XcodeGen)
-    # This is critical: XcodeGen needs the xcconfig files that pod install generates
+    # Step 4: Generate project.yml from templates (BEFORE pod install)
+    # CRITICAL: MSPDemoApp.xcodeproj must exist BEFORE pod install runs
+    log_section "YAML Generation"
+    log_step "Generating project.yml from templates"
+    if [[ -x "$SWITCH_TARGET_SCRIPT_DIR/target-switching/generate_project_templates.sh" ]]; then
+        "$SWITCH_TARGET_SCRIPT_DIR/target-switching/generate_project_templates.sh"
+    fi
+    
+    # Step 5: Generate MSPDemoApp.xcodeproj from project.yml (BEFORE pod install)
+    # CRITICAL: Podfile references 'Examples/MSPDemoApp/MSPDemoApp' - project MUST exist
+    log_section "Xcode Project Generation (Pre-pod-install)"
+    log_step "Generating MSPDemoApp.xcodeproj from project.yml"
+    
+    if [[ ! -f "$PROJECT_SPEC" ]]; then
+        log_error "project.yml not found: $PROJECT_SPEC"
+        log_error "Project template generation must have failed"
+        exit 1
+    fi
+    
+    if ! command -v xcodegen &>/dev/null; then
+        log_fatal "xcodegen not found. Install via: brew install xcodegen"
+        exit 1
+    fi
+    
+    # Generate MSPDemoApp project (run from project directory for correct relative paths)
+    local PROJECT_DIR="$(dirname "$PROJECT_SPEC")"
+    local PROJECT_YML_NAME="$(basename "$PROJECT_SPEC")"
+    if ! (cd "$PROJECT_DIR" && xcodegen generate --spec "$PROJECT_YML_NAME" 2>&1); then
+        log_error "Failed to generate MSPDemoApp.xcodeproj from project.yml"
+        log_error "This must succeed before pod install can run"
+        exit 1
+    fi
+    
+    # Verify project was generated at expected location
+    local EXPECTED_PROJECT="$PROJECT_DIR/MSPDemoApp.xcodeproj"
+    if [[ ! -d "$EXPECTED_PROJECT" ]]; then
+        log_error "MSPDemoApp.xcodeproj not found at expected location: $EXPECTED_PROJECT"
+        log_error "XcodeGen generation appeared to succeed but project is missing"
+        exit 1
+    fi
+    
+    log_success "MSPDemoApp.xcodeproj generated: $EXPECTED_PROJECT"
+    
+    # Step 6: Precondition check before pod install
+    log_section "Precondition Check"
+    log_step "Verifying MSPDemoApp.xcodeproj exists before pod install"
+    local PODFILE_PROJECT_PATH="$ROOT_DIR/Examples/MSPDemoApp/MSPDemoApp.xcodeproj"
+    if [[ ! -d "$PODFILE_PROJECT_PATH" ]]; then
+        log_error "MSPDemoApp.xcodeproj missing at Podfile-expected path: $PODFILE_PROJECT_PATH"
+        log_error "Podfile references: project 'Examples/MSPDemoApp/MSPDemoApp'"
+        log_error "Project generation step must have failed - cannot proceed with pod install"
+        exit 1
+    fi
+    
+    if [[ ! -f "$PODFILE_PROJECT_PATH/project.pbxproj" ]]; then
+        log_error "MSPDemoApp.xcodeproj exists but is invalid (missing project.pbxproj)"
+        log_error "XcodeGen generation may have failed silently"
+        exit 1
+    fi
+    
+    log_success "MSPDemoApp.xcodeproj verified: $PODFILE_PROJECT_PATH"
+    
+    # Step 7: Run pod install (AFTER project generation)
+    # CRITICAL: pod install requires MSPDemoApp.xcodeproj to exist
     log_section "CocoaPods Installation"
     log_step "Running pod install (MSP_RELEASE=0, MSP_MODE=pods-dev)"
     log_info "All modules compiled from SOURCE (path-based pods)"
@@ -409,13 +471,9 @@ switch_pods_dev() {
         exit 1
     fi
     
-    # Step 5: Generate project.yml from templates (AFTER pod install)
-    log_section "YAML Generation"
-    log_step "Generating project.yml from templates"
-    if [[ -x "$SWITCH_TARGET_SCRIPT_DIR/target-switching/generate_project_templates.sh" ]]; then
-        "$SWITCH_TARGET_SCRIPT_DIR/target-switching/generate_project_templates.sh"
-    fi
-    
+    # Step 8: Generate workspace/project YAML (AFTER pod install)
+    # Workspace generation includes Pods project, so it must run after pod install
+    log_section "Workspace YAML Generation"
     log_step "Generating workspace/project YAML"
     if "$SWITCH_TARGET_SCRIPT_DIR/target-switching/generate_workspace.sh" pods-dev; then
         log_success "YAML generated"
@@ -424,11 +482,7 @@ switch_pods_dev() {
         exit 1
     fi
     
-    # Step 6: Generate Xcode project (now xcconfig files exist)
-    log_section "Xcode Project Generation"
-    run_xcodegen
-    
-    # Step 7: Create workspace symlink at root
+    # Step 9: Create workspace symlink at root
     log_section "Workspace Symlink"
     if ! create_workspace_symlink; then
         log_error "Failed to create workspace symlink - workspace generation must have failed"
@@ -436,18 +490,18 @@ switch_pods_dev() {
         exit 1
     fi
     
-    # Step 8: Generate Info.plist
+    # Step 10: Generate Info.plist
     log_section "Info.plist Generation"
     generate_info_plist
     
-    # Step 9: Validate final state
+    # Step 11: Validate final state
     log_section "Validation"
     if ! validate_final_state "pods-dev"; then
         print_summary "pods-dev" "FAILED"
         exit 1
     fi
     
-    # Step 9.5: Final workspace existence check (strong contract)
+    # Step 11.5: Final workspace existence check (strong contract)
     log_section "Final Workspace Verification"
     local FINAL_WORKSPACE="$ROOT_DIR/msp-ios-sdk.xcworkspace"
     if [[ ! -L "$FINAL_WORKSPACE" ]] && [[ ! -d "$FINAL_WORKSPACE" ]]; then
@@ -470,11 +524,11 @@ switch_pods_dev() {
     
     log_success "Workspace verified: $FINAL_WORKSPACE exists and is valid"
     
-    # Step 10: Git cleanliness check
+    # Step 12: Git cleanliness check
     log_section "Git Status Check"
     verify_git_cleanliness || log_warn "Git status not fully clean"
     
-    # Step 11: Open Xcode
+    # Step 13: Open Xcode
     log_section "Opening Xcode"
     if [[ -L "$ROOT_DIR/msp-ios-sdk.xcworkspace" ]] || [[ -d "$ROOT_DIR/msp-ios-sdk.xcworkspace" ]]; then
         open "$ROOT_DIR/msp-ios-sdk.xcworkspace"
