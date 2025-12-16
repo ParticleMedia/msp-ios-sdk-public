@@ -799,7 +799,7 @@ release_adapters() {
     
     # Extract adapters from PODS_MODULES (exclude MSPSharedLibraries and MSPCore)
     # Adapters are all modules that are not core modules
-    local core_modules=("MSPSharedLibraries" "MSPCore" "MSPiOSCore" "MSPOMSDK" "NovaCore" "MSPGoogleAdsTypes")
+    local core_modules=("MSPSharedLibraries" "MSPCore" "MSPiOSCore" "MSPOMSDK" "NovaCore")
     local adapters=()
     
     # Split PODS_MODULES space-separated string and filter out core modules
