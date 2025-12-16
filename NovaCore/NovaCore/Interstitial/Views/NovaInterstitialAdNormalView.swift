@@ -87,10 +87,20 @@ class NovaInterstitialAdNormalView: UIView, NovaInterstitialAdViewProtocol {
     }
 
     func didTapAd(customUrl: URL?) {
-        actionHelper = actionHelper
-            .logNovaClickEvent(with: CACurrentMediaTime() - CACurrentMediaTime(), in: .cta)
-            .handleAdTap(in: nil)
-        context.interstitialAd.delegate?.interstitialAdDidLogClick(context.interstitialAd)
+        if  NovaConfig.shared.isInParticleApp {
+            viewController?.dismiss(animated: false) {
+                (self.viewController as? NovaInterstitialAdViewController)?.adDidDismiss()
+                self.actionHelper = self.actionHelper
+                    .logNovaClickEvent(with: CACurrentMediaTime() - CACurrentMediaTime(), in: .cta)
+                    .handleAdTap(in: nil)
+                self.context.interstitialAd.delegate?.interstitialAdDidLogClick(self.context.interstitialAd)
+            }
+        } else {
+            actionHelper = actionHelper
+                .logNovaClickEvent(with: CACurrentMediaTime() - CACurrentMediaTime(), in: .cta)
+                .handleAdTap(in: nil)
+            context.interstitialAd.delegate?.interstitialAdDidLogClick(context.interstitialAd)
+        }
     }
 
 
@@ -105,11 +115,22 @@ class NovaInterstitialAdNormalView: UIView, NovaInterstitialAdViewProtocol {
     }
 
     @objc func didTapAd(sender: UITapGestureRecognizer) {
-        let clickArea = sender.view?.adClickArea ?? .cta
-        let nbClickArea = ClickableAdArea(rawValue: clickArea.rawValue) ?? .cta
-        actionHelper = actionHelper
-            .logNovaClickEvent(with: CACurrentMediaTime() - startTime, in: nbClickArea)
-            .handleAdTap(in: sender.view)
+        if  NovaConfig.shared.isInParticleApp {
+            viewController?.dismiss(animated: false) {
+                (self.viewController as? NovaInterstitialAdViewController)?.adDidDismiss()
+                let clickArea = sender.view?.adClickArea ?? .cta
+                let nbClickArea = ClickableAdArea(rawValue: clickArea.rawValue) ?? .cta
+                self.actionHelper = self.actionHelper
+                    .logNovaClickEvent(with: CACurrentMediaTime() - self.startTime, in: nbClickArea)
+                    .handleAdTap(in: sender.view)
+            }
+        } else {
+            let clickArea = sender.view?.adClickArea ?? .cta
+            let nbClickArea = ClickableAdArea(rawValue: clickArea.rawValue) ?? .cta
+            actionHelper = self.actionHelper
+                .logNovaClickEvent(with: CACurrentMediaTime() - startTime, in: nbClickArea)
+                .handleAdTap(in: sender.view)
+        }
     }
 
     internal let context: NovaInterstitialAdContext

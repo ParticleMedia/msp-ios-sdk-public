@@ -33,6 +33,9 @@ public class NovaInterstitialAd: MSPiOSCore.InterstitialAd {
         rootViewController: UIViewController?,
         interstitialAdReportHandling: (any InterstitialAdReportHandling)?
     ) {
+        if interstitialAdReportHandling != nil {
+            NovaConfig.shared.isInParticleApp = true
+        }
         if let rootViewController {
             let reportAdapter = ReportHandlerAdapter(outer: interstitialAdReportHandling, ad: self)
             interstitialAdItem?
