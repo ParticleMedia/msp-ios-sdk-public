@@ -172,8 +172,10 @@ class NovaAdHtmlView: WKWebView, WKScriptMessageHandler {
         ]
         let data = try! JSONSerialization.data(withJSONObject: dict)
         let jsonString = String(data: data, encoding: .utf8)!
-
-        let js = "window.onAdContext(\(jsonString))"
+        let escaped = jsonString
+            .replacingOccurrences(of: "\\", with: "\\\\")
+            .replacingOccurrences(of: "\"", with: "\\\"")
+        let js = "window.onAdContext(\"\(escaped)\")"
         self.evaluateJavaScript(js, completionHandler: nil)
     }
     
