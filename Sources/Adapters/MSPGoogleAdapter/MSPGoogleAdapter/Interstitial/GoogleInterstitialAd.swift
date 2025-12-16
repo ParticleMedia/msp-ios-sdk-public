@@ -9,7 +9,6 @@ import Foundation
 import UIKit
 import GoogleMobileAds
 import MSPiOSCore
-import MSPGoogleAdsTypes
 
 
 public class GoogleInterstitialAd: MSPiOSCore.InterstitialAd {

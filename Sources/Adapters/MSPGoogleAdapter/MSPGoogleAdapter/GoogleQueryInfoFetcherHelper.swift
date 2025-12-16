@@ -7,7 +7,6 @@
 
 import Foundation
 import MSPiOSCore
-import MSPGoogleAdsTypes
 //import shared
 import GoogleMobileAds
 
