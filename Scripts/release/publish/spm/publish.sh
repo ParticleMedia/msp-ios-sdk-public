@@ -569,40 +569,21 @@ main() {
     print_section "Starting SPM Release Process for Version: $VERSION"
     
     # Task 2: Ensure Package.swift exists before SPM operations
-    # Package.swift is generated from Package.swift.template and should not be committed
+    # For spm-release mode: Generate core-only Package.swift (excludes missing third-party SDKs)
+    # Source common.sh to access ensure_package_swift_enabled function
+    if [[ -f "$ROOT_DIR/Scripts/target-switching/common.sh" ]]; then
+        source "$ROOT_DIR/Scripts/target-switching/common.sh"
+    fi
+    
     local repo_package_swift="$ROOT_DIR/Package.swift"
-    local package_swift_template="$ROOT_DIR/Package.swift.template"
-    local generate_script="$ROOT_DIR/Scripts/spm-sync/generate_package_swift.sh"
     
     if [[ ! -f "$repo_package_swift" ]]; then
-        log_step "Package.swift not found, generating from template"
-        if [[ -f "$package_swift_template" ]]; then
-            # Try to generate from template
-            if [[ -x "$generate_script" ]]; then
-                log_info "[SPM][INFO] Generating Package.swift using generate_package_swift.sh"
-                "$generate_script" || {
-                    log_warn "[SPM][WARN] Failed to generate Package.swift, trying template copy"
-                    cp "$package_swift_template" "$repo_package_swift" 2>/dev/null || true
-                }
-            elif [[ -f "$package_swift_template" ]]; then
-                log_info "[SPM][INFO] Copying Package.swift from template"
-                cp "$package_swift_template" "$repo_package_swift" 2>/dev/null || true
-            fi
+        log_step "Package.swift not found, generating core-only Package.swift for spm-release"
+        if ! ensure_package_swift_enabled "spm-release"; then
+            log_error "[SPM][ERROR] Failed to generate core-only Package.swift"
+            return 1
         fi
-        
-        if [[ ! -f "$repo_package_swift" ]]; then
-            log_error "[SPM][ERROR] Package.swift not found at: $repo_package_swift"
-            log_error "[SPM][ERROR] Template not found at: $package_swift_template"
-            log_error "[SPM][ERROR] SPM local validation requires Package.swift to be generated first"
-            if [[ "${MSP_RELEASE_TIER:-preflight}" == "production" ]]; then
-                return 1
-            else
-                log_warn "[SPM][WARN] Preflight mode: continuing without Package.swift validation"
-                return 0
-            fi
-        else
-            log_success "[SPM][INFO] Package.swift found at: $repo_package_swift"
-        fi
+        log_success "[SPM][INFO] Package.swift generated (core-only mode)"
     else
         log_info "[SPM][INFO] Package.swift found at: $repo_package_swift"
     fi
