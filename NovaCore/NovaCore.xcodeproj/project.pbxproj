@@ -8,7 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		21824D017C90F3658C6F8981 /* libPods-NovaCore.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E6422D26A0200EC155CCF2E8 /* libPods-NovaCore.a */; };
-		63519DAF29955CAD4855E1E2 /* (null) in Frameworks */ = {isa = PBXBuildFile; };
+		63519DAF29955CAD4855E1E2 /* BuildFile in Frameworks */ = {isa = PBXBuildFile; };
 		6639FC032CB0A9880051C764 /* NovaConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6639FC022CB0A9880051C764 /* NovaConstants.swift */; };
 		665EAB812EE6727C00E9DA0F /* NovaInterstitialAdPageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 665EAB802EE6727C00E9DA0F /* NovaInterstitialAdPageView.swift */; };
 		665EAB822EE6727C00E9DA0F /* NovaInterstitialAdPageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 665EAB802EE6727C00E9DA0F /* NovaInterstitialAdPageView.swift */; };
@@ -67,6 +67,7 @@
 		66E534D92C24CBF200255D15 /* NovaAdBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E534972C24CBF200255D15 /* NovaAdBuilder.swift */; };
 		66E534DC2C24CBF200255D15 /* NovaAdUrlTransformer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E5349A2C24CBF200255D15 /* NovaAdUrlTransformer.swift */; };
 		66E535392C263FEB00255D15 /* NBResourceBundle.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 66E535382C263FEB00255D15 /* NBResourceBundle.bundle */; };
+		8E010A622EF10B6800D5F308 /* NovaAdLandingWebLogHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E010A612EF10B6800D5F308 /* NovaAdLandingWebLogHelper.swift */; };
 		8E0AF0EA2EB9F82C000F865A /* NovaResource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E0AF0E92EB9F82C000F865A /* NovaResource.swift */; };
 		8E122AA32EC719B100FDCA38 /* NovaNativeMediaProviding.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E122AA22EC719B100FDCA38 /* NovaNativeMediaProviding.swift */; };
 		8E2E71162E66C6C300A9C9C9 /* NovaClickAreaConfigurable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E2E71152E66C69C00A9C9C9 /* NovaClickAreaConfigurable.swift */; };
@@ -237,6 +238,7 @@
 		66E535152C250A8900255D15 /* NBAssets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = NBAssets.xcassets; sourceTree = "<group>"; };
 		66E535382C263FEB00255D15 /* NBResourceBundle.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = NBResourceBundle.bundle; sourceTree = "<group>"; };
 		782A0D4A6DFC4D6D978FA699 /* Pods-NovaCore.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-NovaCore.release.xcconfig"; path = "Target Support Files/Pods-NovaCore/Pods-NovaCore.release.xcconfig"; sourceTree = "<group>"; };
+		8E010A612EF10B6800D5F308 /* NovaAdLandingWebLogHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NovaAdLandingWebLogHelper.swift; sourceTree = "<group>"; };
 		8E0AF0E72EB9F6C9000F865A /* novaMraid.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; path = novaMraid.js; sourceTree = "<group>"; };
 		8E0AF0E92EB9F82C000F865A /* NovaResource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NovaResource.swift; sourceTree = "<group>"; };
 		8E122AA22EC719B100FDCA38 /* NovaNativeMediaProviding.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NovaNativeMediaProviding.swift; sourceTree = "<group>"; };
@@ -348,7 +350,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				OMSDK_REF /* OMSDK_Newsbreak1.xcframework in Frameworks */,
-				63519DAF29955CAD4855E1E2 /* (null) in Frameworks */,
+				63519DAF29955CAD4855E1E2 /* BuildFile in Frameworks */,
 				21824D017C90F3658C6F8981 /* libPods-NovaCore.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -539,6 +541,7 @@
 				66E534832C24CBF200255D15 /* NovaAdSkipReason.swift */,
 				66E534842C24CBF200255D15 /* NovaAdVideoMetricReporter.swift */,
 				F2FBE6762EC46221006FEFBA /* NovaBaseAd+Log.swift */,
+				8E010A612EF10B6800D5F308 /* NovaAdLandingWebLogHelper.swift */,
 			);
 			path = Metrics;
 			sourceTree = "<group>";
@@ -1116,6 +1119,7 @@
 				F2A989212E55AA1B00EAEDB8 /* NovaAdEndCardSubviewHandling.swift in Sources */,
 				F2A989222E55AA1B00EAEDB8 /* CenterEndCardSubviewHandler.swift in Sources */,
 				F2A9892A2E55AA6200EAEDB8 /* NovaAdPlayableViewController.swift in Sources */,
+				8E010A622EF10B6800D5F308 /* NovaAdLandingWebLogHelper.swift in Sources */,
 				F2A989232E55AA1B00EAEDB8 /* NovaAdEndCard.swift in Sources */,
 				F2FBE6772EC46221006FEFBA /* NovaBaseAd+Log.swift in Sources */,
 				F2A989242E55AA1B00EAEDB8 /* ImmersiveEndCardSubviewHandler.swift in Sources */,
