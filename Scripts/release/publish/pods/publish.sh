@@ -743,7 +743,7 @@ release_single_adapter() {
             ROOT_DIR="$(git rev-parse --show-toplevel 2>/dev/null || echo "")"
         fi
         if [[ -z "${ROOT_DIR:-}" ]]; then
-            ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
+            ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../.." && pwd)"
         fi
         export ROOT_DIR
     fi
