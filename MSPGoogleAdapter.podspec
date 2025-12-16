@@ -30,6 +30,7 @@ Pod::Spec.new do |spec|
 
   spec.dependency 'MSPSharedLibraries'
   spec.dependency 'MSPiOSCore'
+  spec.dependency 'Google-Mobile-Ads-SDK', '~> 12.0'
 
   spec.static_framework = true
 
