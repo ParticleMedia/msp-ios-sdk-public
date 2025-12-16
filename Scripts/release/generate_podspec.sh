@@ -168,7 +168,7 @@ grep "spec\\.dependency" "$SOURCE_PODSPEC" >> "$OUTPUT_PODSPEC" 2>/dev/null || t
 # Stage A: Use HTTP binary zip distribution in release tier (no git tag dependency)
 if [[ "${MSP_RELEASE_TIER:-}" == "release" ]]; then
     # HTTP binary zip distribution (decoupled from git tags)
-    local zip_url="https://github.com/ParticleMedia/msp-ios-sdk-public/releases/download/${VERSION}/${POD_NAME}-${VERSION}.zip"
+    zip_url="https://github.com/ParticleMedia/msp-ios-sdk-public/releases/download/${VERSION}/${POD_NAME}-${VERSION}.zip"
     cat >> "$OUTPUT_PODSPEC" <<EOF_RELEASE
 
   # ═══════════════════════════════════════════════════════════════════════════
