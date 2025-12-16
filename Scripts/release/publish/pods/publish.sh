@@ -273,10 +273,13 @@ update_mspcore_version() {
 update_podspec_dependencies() {
     local pod="$1"
     local version="$2"
-    local podspec="${pod}.podspec"
+    # Use generated podspec from Build/ReleasePodspecs/ (not source podspec)
+    local podspec="$ROOT_DIR/Build/ReleasePodspecs/${pod}.podspec"
     
     if [[ ! -f "$podspec" ]]; then
-        return 0
+        log_error "Podspec file not found: $podspec"
+        log_error "Make sure update_podspec_for_release() was called first"
+        return 1
     fi
     
     log_step "Updating dependencies in $podspec"
