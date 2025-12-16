@@ -7,7 +7,6 @@
 import MSPiOSCore
 import Foundation
 import DTBiOSSDK
-import MSPGoogleAdsTypes
 
 @objc public class AmazonAdapter : NSObject, AdNetworkAdapter {
     private var dtbAdLoader: DTBAdLoader?
