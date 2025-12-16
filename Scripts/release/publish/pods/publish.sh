@@ -737,6 +737,17 @@ release_single_adapter() {
     local version="$2"
     local result_file="$3"
 
+    # Ensure ROOT_DIR is set in subprocess (parallel execution)
+    if [[ -z "${ROOT_DIR:-}" ]]; then
+        if command -v git >/dev/null 2>&1; then
+            ROOT_DIR="$(git rev-parse --show-toplevel 2>/dev/null || echo "")"
+        fi
+        if [[ -z "${ROOT_DIR:-}" ]]; then
+            ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
+        fi
+        export ROOT_DIR
+    fi
+
     log_section "Releasing $adapter"
 
     # Update podspec
