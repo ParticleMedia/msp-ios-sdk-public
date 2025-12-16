@@ -466,6 +466,74 @@ msp_run_pod_trunk_push() {
         return 1
     fi
     
+    # ============================================================================
+    # Idempotency Check: Detect if version already published
+    # ============================================================================
+    # Strategy: Query CocoaPods trunk to check if version exists
+    # Fail-safe: If check fails, proceed with publish (don't skip)
+    # ============================================================================
+    
+    # Extract pod name and version from podspec file
+    local pod_name
+    local pod_version
+    
+    if [[ -f "$spec" ]]; then
+        # Extract pod name from podspec (spec.name or Pod::Spec.new do |spec|)
+        pod_name=$(grep -E "^[[:space:]]*spec\.name[[:space:]]*=" "$spec" | head -1 | sed -E "s/.*spec\.name[[:space:]]*=[[:space:]]*['\"]([^'\"]+)['\"].*/\1/" || \
+                   grep -E "^[[:space:]]*Pod::Spec\.new" "$spec" | head -1 | sed -E "s/.*Pod::Spec\.new[[:space:]]+do[[:space:]]+\|[[:space:]]*([^|]+)[[:space:]]*\|.*/\1/" || \
+                   basename "$spec" .podspec)
+        
+        # Extract version from podspec (spec.version)
+        pod_version=$(grep -E "^[[:space:]]*spec\.version[[:space:]]*=" "$spec" | head -1 | sed -E "s/.*spec\.version[[:space:]]*=[[:space:]]*['\"]([^'\"]+)['\"].*/\1/" || \
+                      grep -E "^[[:space:]]*spec\.version[[:space:]]*=" "$spec" | head -1 | sed -E "s/.*spec\.version[[:space:]]*=[[:space:]]*([^[:space:]]+).*/\1/")
+    else
+        log_error "[PODS] Podspec file not found: $spec"
+        return 1
+    fi
+    
+    if [[ -z "$pod_name" ]] || [[ -z "$pod_version" ]]; then
+        log_warn "[PODS] Could not extract pod name or version from podspec, skipping idempotency check"
+        log_warn "[PODS] Pod name: ${pod_name:-<empty>}, Version: ${pod_version:-<empty>}"
+    else
+        log_info "[PODS] Performing idempotency check: querying CocoaPods trunk for ${pod_name}..."
+        
+        # Execute pod trunk info and capture output + exit code
+        local trunk_info_output
+        local trunk_info_exit_code
+        
+        trunk_info_output=$(pod trunk info "$pod_name" 2>&1)
+        trunk_info_exit_code=$?
+        
+        if [[ $trunk_info_exit_code -eq 0 ]]; then
+            # Command succeeded, check if version exists in output
+            # Use grep with fixed string to avoid partial matches
+            # Example output format from pod trunk info:
+            #   - Versions:
+            #     - 0.1.0-rc.1 (2025-12-16 04:10:04 UTC)
+            #     - 0.1.0-rc.0 (2025-12-15 10:00:00 UTC)
+            
+            # Match pattern: "- <VERSION> (" to ensure exact version match
+            # The space and parenthesis ensure we don't match 0.1.0 when looking for 0.1.0-rc.1
+            # Use -- to separate options from pattern to avoid issues with version strings starting with -
+            if echo "$trunk_info_output" | grep -- "- ${pod_version} (" >/dev/null 2>&1; then
+                log_success "[PODS] ✅ ${pod_name} ${pod_version} already published to CocoaPods trunk"
+                log_info "[PODS] Idempotency: Skipping duplicate pod trunk push"
+                local publish_timestamp
+                publish_timestamp=$(echo "$trunk_info_output" | grep -- "- ${pod_version} (" | head -1 | sed 's/.*(\(.*\))/\1/')
+                log_info "[PODS] Published timestamp: ${publish_timestamp:-unknown}"
+                return 0
+            else
+                log_info "[PODS] Version ${pod_version} not found in trunk, proceeding with publish"
+            fi
+        else
+            # Command failed - could be network error, pod doesn't exist yet, or auth issue
+            # Fail-safe: Don't skip, proceed with publish attempt
+            log_info "[PODS] ⚠️  pod trunk info failed (exit code: ${trunk_info_exit_code})"
+            log_info "[PODS] This may be normal for first-time pod publishing or network issues"
+            log_info "[PODS] Proceeding with publish attempt (fail-safe behavior)"
+        fi
+    fi
+    
     # Real release tier behavior - check safety guard
     if [[ "${MSP_ALLOW_TRUNK_PUSH:-0}" != "1" ]]; then
         log_error "[PODS][FATAL] trunk push disabled unless MSP_ALLOW_TRUNK_PUSH=1"
