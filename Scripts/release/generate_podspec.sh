@@ -245,7 +245,7 @@ fi
 
 # Validate source format based on release tier
 if [[ "${MSP_RELEASE_TIER:-}" == "release" ]]; then
-    if ! grep -q "spec.source.*http:" "$OUTPUT_PODSPEC"; then
+    if ! grep -qE "spec.source.*:http|:http =>" "$OUTPUT_PODSPEC"; then
         log_error "Generated podspec missing HTTP zip source (release tier)"
         exit 1
     fi
