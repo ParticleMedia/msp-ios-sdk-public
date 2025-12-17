@@ -810,14 +810,62 @@ release_single_adapter() {
         return 1
     fi
 
+    # ========================================================================
+    # DEBUG & CRITICAL FIX: Ensure ROOT_DIR before podspec verification
+    # ========================================================================
+    log_info "[DEBUG] Before podspec verification for $adapter"
+    log_info "[DEBUG] ROOT_DIR current value: '${ROOT_DIR:-<EMPTY>}'"
+
+    # CRITICAL: Re-ensure ROOT_DIR is set (defensive programming)
+    if [[ -z "${ROOT_DIR:-}" ]]; then
+        log_error "[CRITICAL] ROOT_DIR is EMPTY before podspec verification!"
+        log_error "[CRITICAL] This should not happen - attempting emergency resolution..."
+
+        # Try git method
+        if command -v git >/dev/null 2>&1; then
+            ROOT_DIR="$(git rev-parse --show-toplevel 2>/dev/null || echo "")"
+            if [[ -n "$ROOT_DIR" ]]; then
+                log_info "[CRITICAL] ROOT_DIR resolved via git: $ROOT_DIR"
+                export ROOT_DIR
+            fi
+        fi
+
+        # Fallback
+        if [[ -z "${ROOT_DIR:-}" ]]; then
+            ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../.." && pwd)"
+            log_info "[CRITICAL] ROOT_DIR resolved via fallback: $ROOT_DIR"
+            export ROOT_DIR
+        fi
+    else
+        log_info "[DEBUG] ROOT_DIR is set: $ROOT_DIR"
+    fi
+    # ========================================================================
+
     # FAIL-FAST: Verify generated podspec exists (release tier only)
     local podspec_path="$ROOT_DIR/Build/ReleasePodspecs/${adapter}.podspec"
+
+    log_info "[DEBUG] Constructed podspec_path: $podspec_path"
+    log_info "[DEBUG] Checking if file exists: [[ -f \"$podspec_path\" ]]"
+
     if [[ "${MSP_RELEASE_TIER:-}" == "release" ]] && [[ ! -f "$podspec_path" ]]; then
+        log_error "[DEBUG] File check FAILED"
+        log_error "[DEBUG] ROOT_DIR: '${ROOT_DIR}'"
+        log_error "[DEBUG] adapter: '$adapter'"
+        log_error "[DEBUG] podspec_path: '$podspec_path'"
+        log_error "[DEBUG] Listing Build/ReleasePodspecs/:"
+        if [[ -d "$ROOT_DIR/Build/ReleasePodspecs/" ]]; then
+            ls -la "$ROOT_DIR/Build/ReleasePodspecs/" 2>/dev/null || log_error "[DEBUG] Failed to list"
+        else
+            log_error "[DEBUG] Directory does not exist: $ROOT_DIR/Build/ReleasePodspecs/"
+        fi
+
         echo "ERROR: Generated podspec not found: $podspec_path" > "$result_file"
         log_error "[FAIL-FAST] Generated podspec not found: $podspec_path. Aborting release."
         msp_state_mark_step_failed "pods_publish" "Generated podspec not found: $podspec_path" "1"
         exit 1
     fi
+
+    log_info "[DEBUG] ✅ Podspec file exists: $podspec_path"
     
     # Update dependencies
     log_info "[DEBUG] About to call update_podspec_dependencies for $adapter"
