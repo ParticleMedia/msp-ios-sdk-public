@@ -93,12 +93,15 @@ fi
 # Check if this is a core module or adapter
 if is_core_module "$POD_NAME"; then
     # Core modules require XCFrameworks (binary distribution)
-    XCFRAMEWORK_PATH="$ROOT_DIR/Build/XCFrameworks/${POD_NAME}.xcframework"
-    
-    if [[ ! -d "$XCFRAMEWORK_PATH" ]]; then
-        log_error "XCFramework not found: $XCFRAMEWORK_PATH"
-        log_error "Run pre-release setup (Step 0) first to build XCFrameworks"
-        exit 1
+    # NovaAdapter: XCFrameworks are in Binary/ directory (in zip), not Build/XCFrameworks/
+    if [[ "$POD_NAME" != "NovaAdapter" ]]; then
+        XCFRAMEWORK_PATH="$ROOT_DIR/Build/XCFrameworks/${POD_NAME}.xcframework"
+        
+        if [[ ! -d "$XCFRAMEWORK_PATH" ]]; then
+            log_error "XCFramework not found: $XCFRAMEWORK_PATH"
+            log_error "Run pre-release setup (Step 0) first to build XCFrameworks"
+            exit 1
+        fi
     fi
     log_info "Core module detected: $POD_NAME (binary XCFramework required)"
 else
