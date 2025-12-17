@@ -180,12 +180,8 @@ class NovaInterstitialAdViewController: UIViewController {
 
     @objc func handleApplicationWillEnterForeground(_ aNoticiation: Notification) {
         dismiss(animated: false) {
-            self.adDidDismiss()
+            self.interstitialAd.delegate?.interstitialAdDidDismiss(self.interstitialAd)
         }
-    }
-    
-    public func adDidDismiss() {
-        self.interstitialAd.delegate?.interstitialAdDidDismiss(self.interstitialAd)
     }
 
     // MARK: Private
