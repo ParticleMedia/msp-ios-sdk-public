@@ -188,9 +188,9 @@ in_block {
 ' "$SOURCE_PODSPEC" >> "$OUTPUT_PODSPEC"
 
 # Extract dependencies
-# NovaAdapter: filter out NovaCore, MSPOMSDK, MSPiOSCore dependencies (embedded)
+# NovaAdapter: filter out NovaCore, MSPOMSDK, MSPiOSCore, MSPKingfisher dependencies (embedded)
 if [[ "$POD_NAME" == "NovaAdapter" ]]; then
-    grep "spec\\.dependency" "$SOURCE_PODSPEC" | grep -vE "(NovaCore|MSPOMSDK|MSPiOSCore)" >> "$OUTPUT_PODSPEC" 2>/dev/null || true
+    grep "spec\\.dependency" "$SOURCE_PODSPEC" | grep -vE "(NovaCore|MSPOMSDK|MSPiOSCore|MSPKingfisher)" >> "$OUTPUT_PODSPEC" 2>/dev/null || true
 elif is_core_module "$POD_NAME"; then
     # Core modules: keep all dependencies
     grep "spec\\.dependency" "$SOURCE_PODSPEC" >> "$OUTPUT_PODSPEC" 2>/dev/null || true
