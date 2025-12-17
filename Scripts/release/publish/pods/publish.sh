@@ -270,14 +270,16 @@ update_mspcore_version() {
 }
 
 # Update podspec dependencies
-update_podspec_dependencies() {
+# Local version for adapter release (2 params: pod, version)
+# Renamed to avoid conflict with utils/podspec.sh version (3 params)
+update_adapter_podspec_dependencies() {
     local pod="$1"
     local version="$2"
 
     # ========================================================================
     # DEBUG: Diagnose ROOT_DIR issue in subprocess
     # ========================================================================
-    log_info "[DEBUG] update_podspec_dependencies called for: $pod"
+    log_info "[DEBUG] update_adapter_podspec_dependencies called for: $pod"
     log_info "[DEBUG] ROOT_DIR value: '${ROOT_DIR:-<EMPTY>}'"
     log_info "[DEBUG] PWD: $(pwd)"
 
@@ -868,16 +870,16 @@ release_single_adapter() {
     log_info "[DEBUG] ✅ Podspec file exists: $podspec_path"
     
     # Update dependencies
-    log_info "[DEBUG] About to call update_podspec_dependencies for $adapter"
+    log_info "[DEBUG] About to call update_adapter_podspec_dependencies for $adapter"
     log_info "[DEBUG] ROOT_DIR before call: '${ROOT_DIR:-<EMPTY>}'"
 
-    if ! update_podspec_dependencies "$adapter" "$version"; then
+    if ! update_adapter_podspec_dependencies "$adapter" "$version"; then
         echo "ERROR: Failed to update dependencies for $adapter" > "$result_file"
-        log_error "[DEBUG] update_podspec_dependencies failed for $adapter"
+        log_error "[DEBUG] update_adapter_podspec_dependencies failed for $adapter"
         return 1
     fi
 
-    log_info "[DEBUG] update_podspec_dependencies succeeded for $adapter"
+    log_info "[DEBUG] update_adapter_podspec_dependencies succeeded for $adapter"
     
     # Update SDK version in adapter code
     if ! update_adapter_sdk_version "$adapter" "$version"; then
@@ -1075,7 +1077,7 @@ release_msp_core() {
     fi
 
     # Update dependencies
-    update_podspec_dependencies "MSPCore" "$VERSION"
+    update_adapter_podspec_dependencies "MSPCore" "$VERSION"
     
     # Update MSPCore version in Config.plist
     update_config_plist_version "$VERSION"
