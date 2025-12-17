@@ -7,6 +7,7 @@
 #
 # Safety Features:
 #   1. Block Release tier from running locally (requires CI environment)
+#      - Local release can be enabled via MSP_ALLOW_LOCAL_RELEASE=1
 #   2. Require clean Git state
 #   3. Validate version format
 #   4. Require confirmation unless --force is passed
@@ -26,11 +27,10 @@ msp_safety_require_ci_for_release() {
 
     if [[ "$tier" == "release" || "$tier" == "production" ]]; then
         if [[ -z "${CI:-}" ]]; then
-            # Stage A: Temporary local release override (explicit opt-in only)
-            if [[ "${MSP_LOCAL_RELEASE_OVERRIDE:-0}" == "1" ]]; then
-                log_warn "[SAFETY] ⚠️ Local release override enabled (Stage A only)"
-                log_warn "[SAFETY] This is a TEMPORARY override for Stage A validation"
-                log_warn "[SAFETY] Production releases MUST use CI pipeline"
+            # Local release mode: Allow local execution when explicitly enabled
+            if [[ "${MSP_ALLOW_LOCAL_RELEASE:-0}" == "1" ]]; then
+                log_info "[SAFETY] ℹ️  本地发布模式已启用 (Local release mode enabled)"
+                log_info "[SAFETY] ℹ️  建议在正式生产环境使用 CI 流水线 (Recommend using CI pipeline for production)"
                 return 0
             fi
             log_error "[SAFETY] Release tier cannot be executed locally. Use CI pipeline only."
@@ -122,9 +122,10 @@ msp_safety_require_confirmation() {
     local tier="${MSP_RELEASE_TIER:-preflight}"
 
     if [[ "$tier" == "release" || "$tier" == "production" ]]; then
-        # Stage A: Temporary local release override (explicit opt-in only)
-        if [[ "${MSP_LOCAL_RELEASE_OVERRIDE:-0}" == "1" ]]; then
-            log_warn "[SAFETY] ⚠️ Confirmation bypassed (Stage A local override)"
+        # Local release mode: Allow local execution when explicitly enabled
+        if [[ "${MSP_ALLOW_LOCAL_RELEASE:-0}" == "1" ]]; then
+            log_info "[SAFETY] ℹ️  本地发布模式已启用 (Local release mode enabled)"
+            log_info "[SAFETY] ℹ️  建议在正式生产环境使用 CI 流水线 (Recommend using CI pipeline for production)"
             return 0
         fi
         
@@ -174,9 +175,10 @@ msp_safety_validate_branch() {
     local tier="${MSP_RELEASE_TIER:-preflight}"
 
     if [[ "$tier" == "release" || "$tier" == "production" ]]; then
-        # Stage A: Temporary local release override (explicit opt-in only)
-        if [[ "${MSP_LOCAL_RELEASE_OVERRIDE:-0}" == "1" ]]; then
-            log_warn "[SAFETY] ⚠️ Branch validation bypassed (Stage A local override)"
+        # Local release mode: Allow local execution when explicitly enabled
+        if [[ "${MSP_ALLOW_LOCAL_RELEASE:-0}" == "1" ]]; then
+            log_info "[SAFETY] ℹ️  本地发布模式已启用 (Local release mode enabled)"
+            log_info "[SAFETY] ℹ️  建议在正式生产环境使用 CI 流水线 (Recommend using CI pipeline for production)"
             return 0
         fi
         
