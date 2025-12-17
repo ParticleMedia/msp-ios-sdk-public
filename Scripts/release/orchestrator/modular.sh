@@ -1229,10 +1229,10 @@ main() {
         log_info "[CONFIG] allow_preflight = $allow_preflight"
         
         # Block real publish if not allowed
-        # Stage A: Temporary local release override (explicit opt-in only)
+        # Local release mode: Bypass config-driven branch restrictions
         if [[ "$RELEASE_TIER" != "preflight" ]] && ! should_real_publish; then
-            if [[ "${MSP_LOCAL_RELEASE_OVERRIDE:-0}" == "1" ]]; then
-                log_warn "[BLOCKED] ⚠️ Config-driven publish check bypassed (Stage A local override)"
+            if [[ "${MSP_ALLOW_LOCAL_RELEASE:-0}" == "1" ]]; then
+                log_warn "[BLOCKED] ⚠️ Config-driven publish check bypassed (local release mode)"
             else
                 log_error "[BLOCKED] Real publish not allowed on branch: $current_branch"
                 log_error "[BLOCKED] Check Scripts/release/config/release_config.yaml for branch policy"
