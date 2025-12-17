@@ -273,6 +273,18 @@ update_mspcore_version() {
 update_podspec_dependencies() {
     local pod="$1"
     local version="$2"
+    
+    # Ensure ROOT_DIR is set (may be called from subprocess)
+    if [[ -z "${ROOT_DIR:-}" ]]; then
+        if command -v git >/dev/null 2>&1; then
+            ROOT_DIR="$(git rev-parse --show-toplevel 2>/dev/null || echo "")"
+        fi
+        if [[ -z "${ROOT_DIR:-}" ]]; then
+            ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../.." && pwd)"
+        fi
+        export ROOT_DIR
+    fi
+    
     # Use generated podspec from Build/ReleasePodspecs/ (not source podspec)
     local podspec="$ROOT_DIR/Build/ReleasePodspecs/${pod}.podspec"
     
