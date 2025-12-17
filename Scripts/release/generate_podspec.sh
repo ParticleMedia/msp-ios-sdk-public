@@ -286,8 +286,7 @@ EOF_VENDOR_SINGLE
     fi
 else
     # Adapters: source-based distribution (extract source_files from source podspec)
-        # Other adapters: source-based distribution (extract source_files from source podspec)
-        log_info "Adapter detected: extracting source_files from source podspec"
+    log_info "Adapter detected: extracting source_files from source podspec"
         
         # Extract source_files pattern from source podspec
         # Look for source_files in development mode section
