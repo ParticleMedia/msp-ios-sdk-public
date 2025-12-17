@@ -287,34 +287,33 @@ EOF_VENDOR_SINGLE
 else
     # Adapters: source-based distribution (extract source_files from source podspec)
     log_info "Adapter detected: extracting source_files from source podspec"
-        
-        # Extract source_files pattern from source podspec
-        # Look for source_files in development mode section
-        if grep -q "spec.source_files" "$SOURCE_PODSPEC"; then
-            # Extract the source_files line(s) from the source podspec
-            # This handles both single-line and multi-line patterns
-            awk '
-            /spec\.source_files/ {
-                print
-                if ($0 ~ /\[/ && $0 !~ /\]/) {
-                    in_array = 1
-                    next
-                }
+    
+    # Extract source_files pattern from source podspec
+    # Look for source_files in development mode section
+    if grep -q "spec.source_files" "$SOURCE_PODSPEC"; then
+        # Extract the source_files line(s) from the source podspec
+        # This handles both single-line and multi-line patterns
+        awk '
+        /spec\.source_files/ {
+            print
+            if ($0 ~ /\[/ && $0 !~ /\]/) {
+                in_array = 1
+                next
             }
-            in_array {
-                print
-                if ($0 ~ /\]/) {
-                    in_array = 0
-                }
+        }
+        in_array {
+            print
+            if ($0 ~ /\]/) {
+                in_array = 0
             }
-            ' "$SOURCE_PODSPEC" >> "$OUTPUT_PODSPEC" 2>/dev/null || true
-        else
-            # Fallback: construct source_files pattern based on adapter name
-            # Standard pattern: Sources/Adapters/{AdapterName}/{AdapterName}/**/*.{swift}
-            cat >> "$OUTPUT_PODSPEC" <<EOF_SOURCE_FILES
+        }
+        ' "$SOURCE_PODSPEC" >> "$OUTPUT_PODSPEC" 2>/dev/null || true
+    else
+        # Fallback: construct source_files pattern based on adapter name
+        # Standard pattern: Sources/Adapters/{AdapterName}/{AdapterName}/**/*.{swift}
+        cat >> "$OUTPUT_PODSPEC" <<EOF_SOURCE_FILES
   spec.source_files = "Sources/Adapters/${POD_NAME}/${POD_NAME}/**/*.{swift}"
 EOF_SOURCE_FILES
-        fi
     fi
 fi
 
