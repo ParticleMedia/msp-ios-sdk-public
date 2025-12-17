@@ -273,26 +273,62 @@ update_mspcore_version() {
 update_podspec_dependencies() {
     local pod="$1"
     local version="$2"
-    
-    # Ensure ROOT_DIR is set (may be called from subprocess)
+
+    # ========================================================================
+    # DEBUG: Diagnose ROOT_DIR issue in subprocess
+    # ========================================================================
+    log_info "[DEBUG] update_podspec_dependencies called for: $pod"
+    log_info "[DEBUG] ROOT_DIR value: '${ROOT_DIR:-<EMPTY>}'"
+    log_info "[DEBUG] PWD: $(pwd)"
+
+    # CRITICAL FIX: Ensure ROOT_DIR is set (same logic as release_single_adapter)
     if [[ -z "${ROOT_DIR:-}" ]]; then
+        log_warn "[DEBUG] ROOT_DIR is empty, attempting to resolve..."
+
+        # Try git method first
         if command -v git >/dev/null 2>&1; then
             ROOT_DIR="$(git rev-parse --show-toplevel 2>/dev/null || echo "")"
+            if [[ -n "$ROOT_DIR" ]]; then
+                log_info "[DEBUG] ROOT_DIR resolved via git: $ROOT_DIR"
+            fi
         fi
+
+        # Fallback to relative path
         if [[ -z "${ROOT_DIR:-}" ]]; then
+            # This function is called from release_single_adapter
+            # which is in Scripts/release/publish/pods/publish.sh
             ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../.." && pwd)"
+            log_info "[DEBUG] ROOT_DIR resolved via relative path: $ROOT_DIR"
         fi
+
         export ROOT_DIR
+    else
+        log_info "[DEBUG] ROOT_DIR already set: $ROOT_DIR"
     fi
-    
+
     # Use generated podspec from Build/ReleasePodspecs/ (not source podspec)
     local podspec="$ROOT_DIR/Build/ReleasePodspecs/${pod}.podspec"
-    
+
+    log_info "[DEBUG] Constructed podspec path: $podspec"
+    log_info "[DEBUG] Checking if file exists..."
+
     if [[ ! -f "$podspec" ]]; then
         log_error "Podspec file not found: $podspec"
+        log_error "[DEBUG] File does not exist at expected location"
+        log_error "[DEBUG] Listing Build/ReleasePodspecs/ contents:"
+        if [[ -d "$ROOT_DIR/Build/ReleasePodspecs/" ]]; then
+            ls -la "$ROOT_DIR/Build/ReleasePodspecs/" 2>/dev/null || echo "  Failed to list directory"
+        else
+            log_error "[DEBUG] Directory does not exist: $ROOT_DIR/Build/ReleasePodspecs/"
+        fi
         log_error "Make sure update_podspec_for_release() was called first"
         return 1
     fi
+
+    log_info "[DEBUG] ✅ Podspec file found: $podspec"
+    # ========================================================================
+    # END DEBUG
+    # ========================================================================
     
     log_step "Updating dependencies in $podspec"
     
@@ -784,10 +820,16 @@ release_single_adapter() {
     fi
     
     # Update dependencies
+    log_info "[DEBUG] About to call update_podspec_dependencies for $adapter"
+    log_info "[DEBUG] ROOT_DIR before call: '${ROOT_DIR:-<EMPTY>}'"
+
     if ! update_podspec_dependencies "$adapter" "$version"; then
         echo "ERROR: Failed to update dependencies for $adapter" > "$result_file"
+        log_error "[DEBUG] update_podspec_dependencies failed for $adapter"
         return 1
     fi
+
+    log_info "[DEBUG] update_podspec_dependencies succeeded for $adapter"
     
     # Update SDK version in adapter code
     if ! update_adapter_sdk_version "$adapter" "$version"; then
