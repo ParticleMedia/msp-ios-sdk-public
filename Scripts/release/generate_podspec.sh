@@ -271,6 +271,14 @@ if is_core_module "$POD_NAME"; then
     "ThirdParty/PrebidMobile/PrebidMobile.xcframework"
   ]
 EOF_VENDOR_MULTI
+    elif [[ "$POD_NAME" == "NovaAdapter" ]]; then
+        # NovaAdapter: pure binary distribution with embedded NovaCore
+        cat >> "$OUTPUT_PODSPEC" <<'EOF_VENDOR_NOVA'
+  spec.vendored_frameworks = [
+    "Binary/NovaAdapter.xcframework",
+    "Binary/NovaCore.xcframework"
+  ]
+EOF_VENDOR_NOVA
     else
         cat >> "$OUTPUT_PODSPEC" <<EOF_VENDOR_SINGLE
   spec.vendored_frameworks = "Binary/${POD_NAME}.xcframework"
