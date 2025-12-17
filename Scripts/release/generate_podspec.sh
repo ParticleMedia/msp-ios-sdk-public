@@ -285,19 +285,7 @@ EOF_VENDOR_NOVA
 EOF_VENDOR_SINGLE
     fi
 else
-    # Adapters: check if NovaAdapter (special case: pure binary distribution)
-    if [[ "$POD_NAME" == "NovaAdapter" ]]; then
-        # NovaAdapter: pure binary distribution (vendored_frameworks only)
-        log_info "NovaAdapter detected: pure binary distribution with embedded NovaCore"
-        
-        # Add vendored_frameworks for NovaAdapter + NovaCore
-        cat >> "$OUTPUT_PODSPEC" <<'EOF_VENDOR_NOVA'
-  spec.vendored_frameworks = [
-    "Binary/NovaAdapter.xcframework",
-    "Binary/NovaCore.xcframework"
-  ]
-EOF_VENDOR_NOVA
-    else
+    # Adapters: source-based distribution (extract source_files from source podspec)
         # Other adapters: source-based distribution (extract source_files from source podspec)
         log_info "Adapter detected: extracting source_files from source podspec"
         
