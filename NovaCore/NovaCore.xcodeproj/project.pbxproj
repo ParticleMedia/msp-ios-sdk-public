@@ -18,7 +18,6 @@
 		665EAB8D2EE6732000E9DA0F /* NovaAdHtmlMediaModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 665EAB882EE6732000E9DA0F /* NovaAdHtmlMediaModel.swift */; };
 		665EAB8E2EE6732000E9DA0F /* NovaAdHtmlJSMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 665EAB872EE6732000E9DA0F /* NovaAdHtmlJSMessage.swift */; };
 		665EAB8F2EE6732000E9DA0F /* NovaAdHtmlView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 665EAB892EE6732000E9DA0F /* NovaAdHtmlView.swift */; };
-		6669FB842EF1390C00FC9997 /* NovaConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6669FB832EF1390C00FC9997 /* NovaConfig.swift */; };
 		66E534392C24CAAE00255D15 /* NovaCore.docc in Sources */ = {isa = PBXBuildFile; fileRef = 66E534382C24CAAE00255D15 /* NovaCore.docc */; };
 		66E5343F2C24CAAF00255D15 /* NovaCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 66E534342C24CAAE00255D15 /* NovaCore.framework */; };
 		66E534442C24CAAF00255D15 /* NovaCoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E534432C24CAAF00255D15 /* NovaCoreTests.swift */; };
@@ -187,7 +186,6 @@
 		665EAB882EE6732000E9DA0F /* NovaAdHtmlMediaModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NovaAdHtmlMediaModel.swift; sourceTree = "<group>"; };
 		665EAB892EE6732000E9DA0F /* NovaAdHtmlView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NovaAdHtmlView.swift; sourceTree = "<group>"; };
 		665EAB8A2EE6732000E9DA0F /* NovaHtmlResource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NovaHtmlResource.swift; sourceTree = "<group>"; };
-		6669FB832EF1390C00FC9997 /* NovaConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NovaConfig.swift; sourceTree = "<group>"; };
 		66E534342C24CAAE00255D15 /* NovaCore.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = NovaCore.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		66E534372C24CAAE00255D15 /* NovaCore.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NovaCore.h; sourceTree = "<group>"; };
 		66E534382C24CAAE00255D15 /* NovaCore.docc */ = {isa = PBXFileReference; lastKnownFileType = folder.documentationcatalog; path = NovaCore.docc; sourceTree = "<group>"; };
@@ -578,7 +576,6 @@
 		66E5349C2C24CBF200255D15 /* Internal */ = {
 			isa = PBXGroup;
 			children = (
-				6669FB832EF1390C00FC9997 /* NovaConfig.swift */,
 				66E534972C24CBF200255D15 /* NovaAdBuilder.swift */,
 				66E5349A2C24CBF200255D15 /* NovaAdUrlTransformer.swift */,
 			);
@@ -1134,7 +1131,6 @@
 				F2A989152E55A64D00EAEDB8 /* GradientShadowView.swift in Sources */,
 				F2A989162E55A64D00EAEDB8 /* NovaAdPlayableTopBar.swift in Sources */,
 				F2A988942E55A4E000EAEDB8 /* NovaInterstitialAdItem.swift in Sources */,
-				6669FB842EF1390C00FC9997 /* NovaConfig.swift in Sources */,
 				F2A988FD2E55A52100EAEDB8 /* NovaClickAdActionDataModel.swift in Sources */,
 				F2A988FE2E55A52100EAEDB8 /* NovaClickAdActionHandler.swift in Sources */,
 				F2A988FF2E55A52100EAEDB8 /* NovaClickAdActionKey.swift in Sources */,
