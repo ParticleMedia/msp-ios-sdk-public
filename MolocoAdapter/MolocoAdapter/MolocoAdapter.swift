@@ -307,6 +307,31 @@ fileprivate typealias BannerCreator = (MolocoSDK.MolocoCreateAdParams, UIViewCon
     public func getSDKVersion() -> String {
         return Moloco.shared.sdkVersion
     }
+
+    private func trackBillingUrl(mspAd: MSPAd) {
+        guard let burl = mspAd.adInfo[MSPConstants.AD_INFO_OPENRTB_BURL] as? String,
+              let url = URL(string: burl) else {
+            return
+        }
+
+        DispatchQueue.global(qos: .background).async {
+            let task = URLSession.shared.dataTask(with: url) { _, response, error in
+                if let error = error {
+                    MSPLogger.shared.info(message: "[Adapter: Moloco] Failed to track billing URL: \(error.localizedDescription)")
+                } else {
+                    MSPLogger.shared.info(message: "[Adapter: Moloco] Successfully tracked billing URL")
+                }
+            }
+            task.resume()
+        }
+    }
+
+    private func replaceMacroAuctionPrice(url: String?, price: Double?) -> String? {
+        guard let price = price else {
+            return url
+        }
+        return url?.replacingOccurrences(of: "${AUCTION_PRICE}", with: String(price))
+    }
     
     public func handleAdLoaded(ad: MSPAd, auctionBidListener: AuctionBidListener, bidderPlacementId: String) {
         AdCache.shared.saveAd(placementId: bidderPlacementId, ad: ad)
@@ -422,13 +447,18 @@ extension MolocoAdapter: MolocoSDK.BaseAdDelegate {
         if let creativeId = creativeId {
             mspAd.adInfo[MSPConstants.AD_INFO_NETWORK_CREATIVE_ID] = creativeId
         }
-        
+
+        // Store burl for billing tracking
+        if let burl = self.bidResponse?.winningBid?.bid.burl {
+            mspAd.adInfo[MSPConstants.AD_INFO_OPENRTB_BURL] = self.replaceMacroAuctionPrice(url: burl, price: self.priceInDollar)
+        }
+
         self.handleAdLoaded(
             ad: mspAd,
             auctionBidListener: auctionBidListener,
             bidderPlacementId: self.bidderPlacementId ?? "moloco"
         )
-        
+
         self.adMetricReporter?.logAdResult(
             placementId: placementId,
             ad: mspAd,
@@ -481,10 +511,11 @@ extension MolocoAdapter: MolocoSDK.BaseAdDelegate {
     
     private func handleAdImpressed(ad: any MolocoAd) {
         let mspAd = self.getMSPAd(ad: ad)
-        
+
         if let mspAd = mspAd {
             MSPLogger.shared.info(message: "[Adapter: Moloco] Show Moloco ad successfully")
             self.adListener?.onAdImpression(ad: mspAd)
+            self.trackBillingUrl(mspAd: mspAd)
             DispatchQueue.main.async {
                 if let adRequest = self.adRequest,
                    let bidResponse = self.bidResponse {
