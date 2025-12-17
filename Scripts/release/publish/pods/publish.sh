@@ -493,6 +493,17 @@ create_github_release_for_pod() {
             fi
         fi
         
+        # Handle NovaAdapter special case (includes NovaCore)
+        if [[ "$pod" == "NovaAdapter" ]]; then
+            local novacore_path="$ROOT_DIR/Build/XCFrameworks/NovaCore.xcframework"
+            if [[ -d "$novacore_path" ]]; then
+                cp -R "$novacore_path" "$temp_zip_dir/Binary/NovaCore.xcframework"
+                log_info "Included NovaCore.xcframework in NovaAdapter zip"
+            else
+                log_warning "NovaCore.xcframework not found, NovaAdapter zip may be incomplete"
+            fi
+        fi
+        
         # Create zip file
         (cd "$temp_zip_dir" && zip -r "$ROOT_DIR/$zip_name" . >/dev/null 2>&1)
         rm -rf "$temp_zip_dir"
@@ -890,10 +901,15 @@ release_single_adapter() {
         return 1
     fi
     
-    # Create GitHub release
-    if ! create_github_release_for_pod "$adapter" "$version"; then
-        echo "ERROR: Failed to create GitHub release for $adapter" > "$result_file"
-        return 1
+    # Create GitHub release (only for binary distribution adapters)
+    if [[ "$adapter" == "NovaAdapter" ]]; then
+        log_info "NovaAdapter: Creating GitHub release (binary distribution)"
+        if ! create_github_release_for_pod "$adapter" "$version"; then
+            echo "ERROR: Failed to create GitHub release for $adapter" > "$result_file"
+            return 1
+        fi
+    else
+        log_info "$adapter: Skipping GitHub release (source-based distribution via git+tag)"
     fi
     
     # Publish to CocoaPods
