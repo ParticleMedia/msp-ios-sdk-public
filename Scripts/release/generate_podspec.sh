@@ -185,7 +185,12 @@ in_block {
 ' "$SOURCE_PODSPEC" >> "$OUTPUT_PODSPEC"
 
 # Extract dependencies
-grep "spec\\.dependency" "$SOURCE_PODSPEC" >> "$OUTPUT_PODSPEC" 2>/dev/null || true
+# NovaAdapter: filter out NovaCore, MSPOMSDK, MSPiOSCore dependencies (embedded or not needed)
+if [[ "$POD_NAME" == "NovaAdapter" ]]; then
+    grep "spec\\.dependency" "$SOURCE_PODSPEC" | grep -vE "(NovaCore|MSPOMSDK|MSPiOSCore)" >> "$OUTPUT_PODSPEC" 2>/dev/null || true
+else
+    grep "spec\\.dependency" "$SOURCE_PODSPEC" >> "$OUTPUT_PODSPEC" 2>/dev/null || true
+fi
 
 # Add release-specific configuration
 # Core modules: HTTP binary zip distribution (Stage A)
@@ -255,6 +260,7 @@ if is_core_module "$POD_NAME"; then
         cat >> "$OUTPUT_PODSPEC" <<'EOF_VENDOR_MULTI'
   spec.vendored_frameworks = [
     "Binary/MSPSharedLibraries.xcframework",
+    "Binary/MSPiOSCore.xcframework",
     "ThirdParty/PrebidMobile/PrebidMobile.xcframework"
   ]
 EOF_VENDOR_MULTI
@@ -264,35 +270,49 @@ EOF_VENDOR_MULTI
 EOF_VENDOR_SINGLE
     fi
 else
-    # Adapters: source-based distribution (extract source_files from source podspec)
-    log_info "Adapter detected: extracting source_files from source podspec"
-    
-    # Extract source_files pattern from source podspec
-    # Look for source_files in development mode section
-    if grep -q "spec.source_files" "$SOURCE_PODSPEC"; then
-        # Extract the source_files line(s) from the source podspec
-        # This handles both single-line and multi-line patterns
-        awk '
-        /spec\.source_files/ {
-            print
-            if ($0 ~ /\[/ && $0 !~ /\]/) {
-                in_array = 1
-                next
-            }
-        }
-        in_array {
-            print
-            if ($0 ~ /\]/) {
-                in_array = 0
-            }
-        }
-        ' "$SOURCE_PODSPEC" >> "$OUTPUT_PODSPEC" 2>/dev/null || true
+    # Adapters: check if NovaAdapter (special case: pure binary distribution)
+    if [[ "$POD_NAME" == "NovaAdapter" ]]; then
+        # NovaAdapter: pure binary distribution (vendored_frameworks only)
+        log_info "NovaAdapter detected: pure binary distribution with embedded NovaCore"
+        
+        # Add vendored_frameworks for NovaAdapter + NovaCore
+        cat >> "$OUTPUT_PODSPEC" <<'EOF_VENDOR_NOVA'
+  spec.vendored_frameworks = [
+    "Binary/NovaAdapter.xcframework",
+    "Binary/NovaCore.xcframework"
+  ]
+EOF_VENDOR_NOVA
     else
-        # Fallback: construct source_files pattern based on adapter name
-        # Standard pattern: Sources/Adapters/{AdapterName}/{AdapterName}/**/*.{swift}
-        cat >> "$OUTPUT_PODSPEC" <<EOF_SOURCE_FILES
+        # Other adapters: source-based distribution (extract source_files from source podspec)
+        log_info "Adapter detected: extracting source_files from source podspec"
+        
+        # Extract source_files pattern from source podspec
+        # Look for source_files in development mode section
+        if grep -q "spec.source_files" "$SOURCE_PODSPEC"; then
+            # Extract the source_files line(s) from the source podspec
+            # This handles both single-line and multi-line patterns
+            awk '
+            /spec\.source_files/ {
+                print
+                if ($0 ~ /\[/ && $0 !~ /\]/) {
+                    in_array = 1
+                    next
+                }
+            }
+            in_array {
+                print
+                if ($0 ~ /\]/) {
+                    in_array = 0
+                }
+            }
+            ' "$SOURCE_PODSPEC" >> "$OUTPUT_PODSPEC" 2>/dev/null || true
+        else
+            # Fallback: construct source_files pattern based on adapter name
+            # Standard pattern: Sources/Adapters/{AdapterName}/{AdapterName}/**/*.{swift}
+            cat >> "$OUTPUT_PODSPEC" <<EOF_SOURCE_FILES
   spec.source_files = "Sources/Adapters/${POD_NAME}/${POD_NAME}/**/*.{swift}"
 EOF_SOURCE_FILES
+        fi
     fi
 fi
 
@@ -324,10 +344,23 @@ if is_core_module "$POD_NAME"; then
         exit 1
     fi
 else
-    # Adapters must have source_files
-    if ! grep -q "spec.source_files" "$OUTPUT_PODSPEC"; then
-        log_error "Generated podspec missing source_files (adapter)"
-        exit 1
+    # Adapters: check if NovaAdapter (special case: pure binary distribution)
+    if [[ "$POD_NAME" == "NovaAdapter" ]]; then
+        # NovaAdapter: must have vendored_frameworks only (no source_files)
+        if ! grep -q "spec.vendored_frameworks" "$OUTPUT_PODSPEC"; then
+            log_error "Generated podspec missing vendored_frameworks (NovaAdapter)"
+            exit 1
+        fi
+        if grep -q "spec.source_files" "$OUTPUT_PODSPEC"; then
+            log_error "Generated podspec should not have source_files (NovaAdapter is pure binary)"
+            exit 1
+        fi
+    else
+        # Other adapters must have source_files
+        if ! grep -q "spec.source_files" "$OUTPUT_PODSPEC"; then
+            log_error "Generated podspec missing source_files (adapter)"
+            exit 1
+        fi
     fi
 fi
 
