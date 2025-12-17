@@ -358,6 +358,9 @@ update_adapter_podspec_dependencies() {
     fi
 }
 
+# Export function for parallel subprocess access
+export -f update_adapter_podspec_dependencies
+
 # Phase R1.11: Ensure git tag exists and is pushed to remote (for podspec validation)
 ensure_release_tag_exists_and_pushed() {
     local tag="$1"
