@@ -270,7 +270,9 @@ update_mspcore_version() {
 }
 
 # Update podspec dependencies
-update_podspec_dependencies() {
+# Local version for adapter release (2 params: pod, version)
+# Renamed to avoid conflict with utils/podspec.sh version (3 params)
+update_adapter_podspec_dependencies() {
     local pod="$1"
     local version="$2"
 
@@ -1075,7 +1077,7 @@ release_msp_core() {
     fi
 
     # Update dependencies
-    update_podspec_dependencies "MSPCore" "$VERSION"
+    update_adapter_podspec_dependencies "MSPCore" "$VERSION"
     
     # Update MSPCore version in Config.plist
     update_config_plist_version "$VERSION"
