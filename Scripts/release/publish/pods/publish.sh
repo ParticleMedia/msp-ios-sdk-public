@@ -690,11 +690,34 @@ publish_pod_to_cocoapods() {
     fi
 
     # Stage A: Probe zip URL availability in release tier (HTTP distribution)
+    # Only check for binary distribution pods (core modules + NovaAdapter)
     if [[ "${MSP_RELEASE_TIER:-}" == "release" ]]; then
-        if ! probe_zip_url "$pod" "$version"; then
-            log_error "[FAIL-FAST] Binary zip not available, cannot publish to CocoaPods"
-            msp_state_mark_step_failed "pods_publish" "Binary zip not available: ${pod}-${version}.zip" "1"
-            exit 1
+        # Check if this pod uses binary distribution (needs GitHub release zip)
+        local core_modules=("MSPSharedLibraries" "MSPCore" "MSPiOSCore" "MSPOMSDK" "NovaCore")
+        local is_binary=false
+        
+        # Check if it's a core module
+        for core in "${core_modules[@]}"; do
+            if [[ "$pod" == "$core" ]]; then
+                is_binary=true
+                break
+            fi
+        done
+        
+        # Check if it's NovaAdapter (special binary adapter)
+        if [[ "$pod" == "NovaAdapter" ]]; then
+            is_binary=true
+        fi
+        
+        if [[ "$is_binary" == "true" ]]; then
+            log_info "$pod: Verifying binary zip availability (HTTP distribution)"
+            if ! probe_zip_url "$pod" "$version"; then
+                log_error "[FAIL-FAST] Binary zip not available, cannot publish to CocoaPods"
+                msp_state_mark_step_failed "pods_publish" "Binary zip not available: ${pod}-${version}.zip" "1"
+                exit 1
+            fi
+        else
+            log_info "$pod: Skipping zip verification (source-based distribution via git+tag)"
         fi
     fi
 
