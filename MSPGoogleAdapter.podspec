@@ -23,8 +23,8 @@ Pod::Spec.new do |spec|
     # DEVELOPMENT MODE: Source files for internal development
     spec.source = { :path => '.' }
     spec.source_files = [
-      "Sources/Adapters/MSPGoogleAdapter/MSPGoogleAdapter/**/*.{swift}",
-      "Sources/Common/MSPGoogleAdsTypes/**/*.{swift}"
+      "Sources/Adapters/MSPGoogleAdapter/MSPGoogleAdapter/**/*.swift",
+      "Sources/Common/MSPGoogleAdsTypes/**/*.swift"
     ]
   end
 

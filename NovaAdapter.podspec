@@ -22,7 +22,7 @@ Pod::Spec.new do |spec|
   else
     # DEVELOPMENT MODE: Source files for internal development
     spec.source = { :path => '.' }
-    spec.source_files = "Sources/Adapters/NovaAdapter/NovaAdapter/**/*.{swift}"
+    spec.source_files = "Sources/Adapters/NovaAdapter/NovaAdapter/**/*.swift"
   end
 
   spec.dependency 'MSPSharedLibraries'

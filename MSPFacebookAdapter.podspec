@@ -22,7 +22,7 @@ Pod::Spec.new do |spec|
   else
     # DEVELOPMENT MODE: Source files for internal development
     spec.source = { :path => '.' }
-    spec.source_files = "Sources/Adapters/MSPFacebookAdapter/MSPFacebookAdapter/**/*.{swift}"
+    spec.source_files = "Sources/Adapters/MSPFacebookAdapter/MSPFacebookAdapter/**/*.swift"
   end
 
   spec.dependency 'FBAudienceNetwork', '~> 6.15.0'

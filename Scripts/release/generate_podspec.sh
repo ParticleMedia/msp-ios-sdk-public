@@ -311,9 +311,9 @@ else
         ' "$SOURCE_PODSPEC" >> "$OUTPUT_PODSPEC" 2>/dev/null || true
     else
         # Fallback: construct source_files pattern based on adapter name
-        # Standard pattern: Sources/Adapters/{AdapterName}/{AdapterName}/**/*.{swift}
+        # Standard pattern: Sources/Adapters/{AdapterName}/{AdapterName}/**/*.swift
         cat >> "$OUTPUT_PODSPEC" <<EOF_SOURCE_FILES
-  spec.source_files = "Sources/Adapters/${POD_NAME}/${POD_NAME}/**/*.{swift}"
+  spec.source_files = "Sources/Adapters/${POD_NAME}/${POD_NAME}/**/*.swift"
 EOF_SOURCE_FILES
     fi
 fi
