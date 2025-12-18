@@ -29,7 +29,8 @@ GENERATED_PODSPECS_DIR="$ROOT_DIR/Build/ReleasePodspecs"
 
 # Core modules (binary XCFrameworks) vs Adapters (source-based)
 # This classification matches the architecture documented in README.md
-CORE_MODULES=("MSPSharedLibraries" "MSPCore" "MSPiOSCore" "MSPOMSDK" "NovaCore")
+# Note: NovaCore is not included here - it's embedded via vendored_frameworks, not published separately
+CORE_MODULES=("MSPSharedLibraries" "MSPCore" "MSPiOSCore" "MSPOMSDK")
 
 # Check if a module is a core module
 is_core_module() {

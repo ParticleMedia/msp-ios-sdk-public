@@ -364,36 +364,116 @@ export -f update_adapter_podspec_dependencies
 # Phase R1.11: Ensure git tag exists and is pushed to remote (for podspec validation)
 ensure_release_tag_exists_and_pushed() {
     local tag="$1"
+    local target_commit="${2:-HEAD}"
 
     if [[ -z "$tag" ]]; then
         log_error "ensure_release_tag_exists_and_pushed: tag parameter is required"
         return 1
     fi
 
-    # Check if tag exists locally
-    if ! git rev-parse -q --verify "refs/tags/$tag" >/dev/null 2>&1; then
-        log_info "Creating local git tag: $tag"
-        if ! git tag "$tag"; then
+    # Resolve target commit to full SHA
+    local target_commit_sha
+    if ! target_commit_sha=$(git rev-parse "$target_commit" 2>/dev/null); then
+        log_error "Failed to resolve target commit: $target_commit"
+        return 1
+    fi
+
+    log_info "Ensuring tag $tag points to commit $target_commit_sha"
+
+    # Check if tag exists locally and verify commit
+    local tag_exists_locally=false
+    local tag_commit_sha=""
+    if git rev-parse -q --verify "refs/tags/$tag" >/dev/null 2>&1; then
+        tag_exists_locally=true
+        tag_commit_sha=$(git rev-parse "refs/tags/$tag" 2>/dev/null || echo "")
+        
+        if [[ -n "$tag_commit_sha" ]]; then
+            if [[ "$tag_commit_sha" == "$target_commit_sha" ]]; then
+                log_info "Local tag $tag already exists and points to correct commit: $target_commit_sha"
+            else
+                log_warning "Local tag $tag exists but points to wrong commit: $tag_commit_sha (expected: $target_commit_sha)"
+                log_info "Deleting incorrect local tag: $tag"
+                git tag -d "$tag" 2>/dev/null || true
+                tag_exists_locally=false
+            fi
+        fi
+    fi
+
+    # Check if tag exists on origin and verify commit
+    local tag_exists_on_origin=false
+    local origin_tag_sha=""
+    if git ls-remote --tags origin "refs/tags/$tag" 2>/dev/null | grep -q "refs/tags/$tag"; then
+        origin_tag_sha=$(git ls-remote --tags origin "refs/tags/$tag" 2>/dev/null | cut -f1)
+        if [[ -n "$origin_tag_sha" ]]; then
+            if [[ "$origin_tag_sha" == "$target_commit_sha" ]]; then
+                log_info "Origin tag $tag already exists and points to correct commit: $target_commit_sha"
+                tag_exists_on_origin=true
+            else
+                log_warning "Origin tag $tag exists but points to wrong commit: $origin_tag_sha (expected: $target_commit_sha)"
+                log_info "Deleting incorrect origin tag: $tag"
+                git push --delete origin "refs/tags/$tag" 2>/dev/null || true
+            fi
+        fi
+    fi
+
+    # Check if tag exists on public and verify commit
+    local tag_exists_on_public=false
+    local public_tag_sha=""
+    if git remote | grep -q "^public$"; then
+        if git ls-remote --tags public "refs/tags/$tag" 2>/dev/null | grep -q "refs/tags/$tag"; then
+            public_tag_sha=$(git ls-remote --tags public "refs/tags/$tag" 2>/dev/null | cut -f1)
+            if [[ -n "$public_tag_sha" ]]; then
+                if [[ "$public_tag_sha" == "$target_commit_sha" ]]; then
+                    log_info "Public tag $tag already exists and points to correct commit: $target_commit_sha"
+                    tag_exists_on_public=true
+                else
+                    log_warning "Public tag $tag exists but points to wrong commit: $public_tag_sha (expected: $target_commit_sha)"
+                    log_info "Deleting incorrect public tag: $tag"
+                    git push --delete public "refs/tags/$tag" 2>/dev/null || true
+                fi
+            fi
+        fi
+    fi
+
+    # Create local tag if it doesn't exist or was deleted
+    if [[ "$tag_exists_locally" == "false" ]]; then
+        log_info "Creating local git tag: $tag at commit $target_commit_sha"
+        if ! git tag "$tag" "$target_commit_sha"; then
             log_error "Failed to create local tag: $tag"
             return 1
         fi
-        log_success "Created local tag: $tag"
-    else
-        log_info "Local tag already exists: $tag"
+        log_success "Created local tag: $tag at commit $target_commit_sha"
     fi
 
-    # Check if tag exists on remote
-    if ! git ls-remote --tags origin "refs/tags/$tag" 2>/dev/null | grep -q "$tag"; then
-        log_info "Pushing tag to remote: $tag"
+    # Push tag to origin if it doesn't exist or was deleted
+    if [[ "$tag_exists_on_origin" == "false" ]]; then
+        log_info "Pushing tag to origin: $tag"
         if ! git push origin "refs/tags/$tag"; then
-            log_error "Failed to push tag to remote: $tag"
+            log_error "Failed to push tag to origin: $tag"
             return 1
         fi
-        log_success "Pushed tag to remote: $tag"
-    else
-        log_info "Remote tag already exists: $tag"
+        log_success "Pushed tag to origin: $tag"
     fi
 
+    # Push tag to public if it doesn't exist or was deleted
+    if [[ "$tag_exists_on_public" == "false" ]] && git remote | grep -q "^public$"; then
+        log_info "Pushing tag to public: $tag"
+        if ! git push public "refs/tags/$tag"; then
+            log_error "Failed to push tag to public: $tag"
+            return 1
+        fi
+        log_success "Pushed tag to public: $tag"
+    fi
+
+    # Final verification
+    local final_tag_sha
+    final_tag_sha=$(git rev-parse "refs/tags/$tag" 2>/dev/null || echo "")
+    if [[ "$final_tag_sha" != "$target_commit_sha" ]]; then
+        log_error "Tag verification failed: tag $tag points to $final_tag_sha, expected $target_commit_sha"
+        return 1
+    fi
+
+    log_success "Tag $tag verified: points to commit $target_commit_sha"
     return 0
 }
 
@@ -490,17 +570,6 @@ create_github_release_for_pod() {
             if [[ -d "$prebid_path" ]]; then
                 mkdir -p "$temp_zip_dir/ThirdParty/PrebidMobile"
                 cp -R "$prebid_path" "$temp_zip_dir/ThirdParty/PrebidMobile/PrebidMobile.xcframework"
-            fi
-        fi
-        
-        # Handle NovaAdapter special case (includes NovaCore)
-        if [[ "$pod" == "NovaAdapter" ]]; then
-            local novacore_path="$ROOT_DIR/Build/XCFrameworks/NovaCore.xcframework"
-            if [[ -d "$novacore_path" ]]; then
-                cp -R "$novacore_path" "$temp_zip_dir/Binary/NovaCore.xcframework"
-                log_info "Included NovaCore.xcframework in NovaAdapter zip"
-            else
-                log_warning "NovaCore.xcframework not found, NovaAdapter zip may be incomplete"
             fi
         fi
         
@@ -690,10 +759,11 @@ publish_pod_to_cocoapods() {
     fi
 
     # Stage A: Probe zip URL availability in release tier (HTTP distribution)
-    # Only check for binary distribution pods (core modules + NovaAdapter)
+    # Only check for binary distribution pods (core modules)
     if [[ "${MSP_RELEASE_TIER:-}" == "release" ]]; then
         # Check if this pod uses binary distribution (needs GitHub release zip)
-        local core_modules=("MSPSharedLibraries" "MSPCore" "MSPiOSCore" "MSPOMSDK" "NovaCore")
+        # Note: NovaCore is not included - it's embedded via vendored_frameworks, not published separately
+        local core_modules=("MSPSharedLibraries" "MSPCore" "MSPiOSCore" "MSPOMSDK")
         local is_binary=false
         
         # Check if it's a core module
@@ -703,11 +773,6 @@ publish_pod_to_cocoapods() {
                 break
             fi
         done
-        
-        # Check if it's NovaAdapter (special binary adapter)
-        if [[ "$pod" == "NovaAdapter" ]]; then
-            is_binary=true
-        fi
         
         if [[ "$is_binary" == "true" ]]; then
             log_info "$pod: Verifying binary zip availability (HTTP distribution)"
@@ -924,16 +989,8 @@ release_single_adapter() {
         return 1
     fi
     
-    # Create GitHub release (only for binary distribution adapters)
-    if [[ "$adapter" == "NovaAdapter" ]]; then
-        log_info "NovaAdapter: Creating GitHub release (binary distribution)"
-        if ! create_github_release_for_pod "$adapter" "$version"; then
-            echo "ERROR: Failed to create GitHub release for $adapter" > "$result_file"
-            return 1
-        fi
-    else
-        log_info "$adapter: Skipping GitHub release (source-based distribution via git+tag)"
-    fi
+    # Adapters use source-based distribution (git+tag), no GitHub release needed
+    log_info "$adapter: Skipping GitHub release (source-based distribution via git+tag)"
     
     # Publish to CocoaPods
     if ! publish_pod_to_cocoapods "$adapter" "$version"; then
@@ -959,7 +1016,8 @@ release_adapters() {
     
     # Extract adapters from PODS_MODULES (exclude MSPSharedLibraries and MSPCore)
     # Adapters are all modules that are not core modules
-    local core_modules=("MSPSharedLibraries" "MSPCore" "MSPiOSCore" "MSPOMSDK" "NovaCore")
+    # Note: NovaCore is not included - it's embedded via vendored_frameworks, not published separately
+    local core_modules=("MSPSharedLibraries" "MSPCore" "MSPiOSCore" "MSPOMSDK")
     local adapters=()
     
     # Split PODS_MODULES space-separated string and filter out core modules
