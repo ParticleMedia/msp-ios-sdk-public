@@ -455,6 +455,67 @@ ensure_release_tag_exists_and_pushed() {
         log_success "Pushed tag to origin: $tag"
     fi
 
+    # ========================================================================
+    # CRITICAL: Push commit to public remote BEFORE pushing tag
+    # ========================================================================
+    # CocoaPods will checkout the tag from public repo, so the commit
+    # containing source files must exist in public repo first
+    if git remote | grep -q "^public$"; then
+        log_info "Ensuring commit $target_commit_sha exists on public remote"
+
+        # Get current branch (or use HEAD if detached)
+        local current_branch
+        current_branch=$(git symbolic-ref --short HEAD 2>/dev/null || echo "HEAD")
+
+        # Check if commit exists on public remote
+        if ! git branch -r --contains "$target_commit_sha" | grep -q "public/"; then
+            log_warning "Commit $target_commit_sha not found on public remote, pushing..."
+
+            # Push current branch/HEAD to public remote
+            # This ensures the commit and its history are available
+            if [[ "$current_branch" == "HEAD" ]]; then
+                # Detached HEAD - push commit directly
+                log_info "Detached HEAD detected, pushing commit directly to public"
+                if ! git push public "$target_commit_sha:refs/heads/temp-release-$tag" 2>/dev/null; then
+                    log_warning "Failed to push commit to temp branch, trying force push to current branch"
+                    # Try to push to a temporary ref
+                    if ! git push public HEAD:refs/heads/release-temp 2>/dev/null; then
+                        log_error "Failed to push commit to public remote"
+                        return 1
+                    fi
+                fi
+            else
+                # Normal branch - push branch to public
+                log_info "Pushing branch $current_branch to public"
+                if ! git push public "$current_branch" 2>/dev/null; then
+                    # If push fails (e.g., branch doesn't track public), try force push
+                    log_warning "Normal push failed, trying with -u flag"
+                    if ! git push -u public "$current_branch" 2>/dev/null; then
+                        log_error "Failed to push branch to public remote"
+                        return 1
+                    fi
+                fi
+            fi
+
+            log_success "Commit pushed to public remote"
+        else
+            log_info "Commit $target_commit_sha already exists on public remote"
+        fi
+
+        # Verify commit is now accessible on public remote
+        sleep 2  # Brief wait for git server to process
+        if ! git ls-remote public "$target_commit_sha" >/dev/null 2>&1; then
+            # Try alternative verification
+            if ! git branch -r --contains "$target_commit_sha" 2>/dev/null | grep -q "public/"; then
+                log_error "Commit verification failed: $target_commit_sha not accessible on public"
+                return 1
+            fi
+        fi
+
+        log_success "Commit $target_commit_sha verified on public remote"
+    fi
+    # ========================================================================
+
     # Push tag to public if it doesn't exist or was deleted
     if [[ "$tag_exists_on_public" == "false" ]] && git remote | grep -q "^public$"; then
         log_info "Pushing tag to public: $tag"
