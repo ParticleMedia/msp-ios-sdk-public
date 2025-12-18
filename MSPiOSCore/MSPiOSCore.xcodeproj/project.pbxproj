@@ -9,6 +9,9 @@
 /* Begin PBXBuildFile section */
 		5DD21B162ED0107200429A08 /* MolocoBidTokenProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DD21B152ED0107200429A08 /* MolocoBidTokenProvider.swift */; };
 		5DD21B182ED010A200429A08 /* MolocoBidTokenListener.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DD21B172ED010A200429A08 /* MolocoBidTokenListener.swift */; };
+		5DF3366B2EF0068F00FAF9AD /* BidTokenProviders.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DF3366A2EF0068F00FAF9AD /* BidTokenProviders.swift */; };
+		5DF336732EF102D700FAF9AD /* LiftoffBidTokenListener.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DF336722EF102C400FAF9AD /* LiftoffBidTokenListener.swift */; };
+		5DF336752EF1030800FAF9AD /* LiftoffBidTokenProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DF336742EF102FE00FAF9AD /* LiftoffBidTokenProvider.swift */; };
 		6614C9AE2D820D0F00FC85DF /* MSPConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6614C9AD2D820D0800FC85DF /* MSPConstants.swift */; };
 		662D913E2D8E16F500251DC3 /* MSPLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 662D913D2D8E16E700251DC3 /* MSPLogger.swift */; };
 		664F33432C4992E60014E1BA /* NativeAdView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 664F33422C4992E60014E1BA /* NativeAdView.swift */; };
@@ -75,6 +78,9 @@
 /* Begin PBXFileReference section */
 		5DD21B152ED0107200429A08 /* MolocoBidTokenProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MolocoBidTokenProvider.swift; sourceTree = "<group>"; };
 		5DD21B172ED010A200429A08 /* MolocoBidTokenListener.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MolocoBidTokenListener.swift; sourceTree = "<group>"; };
+		5DF3366A2EF0068F00FAF9AD /* BidTokenProviders.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BidTokenProviders.swift; sourceTree = "<group>"; };
+		5DF336722EF102C400FAF9AD /* LiftoffBidTokenListener.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiftoffBidTokenListener.swift; sourceTree = "<group>"; };
+		5DF336742EF102FE00FAF9AD /* LiftoffBidTokenProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiftoffBidTokenProvider.swift; sourceTree = "<group>"; };
 		6614C9AD2D820D0800FC85DF /* MSPConstants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MSPConstants.swift; sourceTree = "<group>"; };
 		662D913D2D8E16E700251DC3 /* MSPLogger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MSPLogger.swift; sourceTree = "<group>"; };
 		664F33422C4992E60014E1BA /* NativeAdView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NativeAdView.swift; sourceTree = "<group>"; };
@@ -226,6 +232,8 @@
 		665753582BF087E300338B1C /* adapter */ = {
 			isa = PBXGroup;
 			children = (
+				5DF336742EF102FE00FAF9AD /* LiftoffBidTokenProvider.swift */,
+				5DF336722EF102C400FAF9AD /* LiftoffBidTokenListener.swift */,
 				665753592BF087F700338B1C /* AdNetworkAdapter.swift */,
 				6657535D2BF0B32D00338B1C /* InitializationParameters.swift */,
 				6657535F2BF0B37900338B1C /* AdapterParameters.swift */,
@@ -241,6 +249,7 @@
 				66B7305A2C3DB20F0042E4FF /* LoadAdParameters.swift */,
 				5DD21B152ED0107200429A08 /* MolocoBidTokenProvider.swift */,
 				5DD21B172ED010A200429A08 /* MolocoBidTokenListener.swift */,
+				5DF3366A2EF0068F00FAF9AD /* BidTokenProviders.swift */,
 			);
 			path = adapter;
 			sourceTree = "<group>";
@@ -389,6 +398,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5DF336732EF102D700FAF9AD /* LiftoffBidTokenListener.swift in Sources */,
 				66B7305B2C3DB20F0042E4FF /* LoadAdParameters.swift in Sources */,
 				66EFCDAD2D1244E5005E0135 /* Bidder.swift in Sources */,
 				F2FBE6252EAA1FC9006FEFBA /* MSPNativeDisplayContext.swift in Sources */,
@@ -399,6 +409,7 @@
 				66B730572C3DAF020042E4FF /* AdapterAdLoadError.swift in Sources */,
 				66F48C272CAB5B0A00902F4D /* InterstitialAd.swift in Sources */,
 				665753682BF19F3100338B1C /* GoogleQueryInfoListener.swift in Sources */,
+				5DF336752EF1030800FAF9AD /* LiftoffBidTokenProvider.swift in Sources */,
 				66B730592C3DAFDE0042E4FF /* AdapterInitStatus.swift in Sources */,
 				6657535C2BF0B24900338B1C /* AdRequest.swift in Sources */,
 				8EBDBE832E829BF200A0AAE2 /* VideoController.swift in Sources */,
@@ -413,6 +424,7 @@
 				6657535A2BF087F700338B1C /* AdNetworkAdapter.swift in Sources */,
 				8EFBE1B62E98F85E006C4F97 /* ImageController.swift in Sources */,
 				665753662BF19EFB00338B1C /* GoogleQueryInfoFetcher.swift in Sources */,
+				5DF3366B2EF0068F00FAF9AD /* BidTokenProviders.swift in Sources */,
 				6657533E2BF085C100338B1C /* MSPiOSCore.docc in Sources */,
 				8ED580EB2E897CAC00BD73B9 /* PlayableController.swift in Sources */,
 				665753762BF1A4A200338B1C /* AdNetworkAdapterProvider.swift in Sources */,

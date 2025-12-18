@@ -98,7 +98,7 @@ show_help() {
     echo "Release Workflow:"
     echo "  1. Publish MSPSharedLibraries (foundation dependency)"
     echo "  2. Wait for MSPSharedLibraries to be released"
-    echo "  3. Publish Adapters (MSPFacebookAdapter, MSPGoogleAdapter, NovaAdapter, AmazonAdapter, PrebidAdapter, MolocoAdapter)"
+    echo "  3. Publish Adapters (MSPFacebookAdapter, MSPGoogleAdapter, NovaAdapter, AmazonAdapter, PrebidAdapter, MolocoAdapter, LiftoffAdapter)"
     echo "  4. Wait for Adapters to be released"
     echo "  5. Publish MSPCore (main framework)"
     echo "  6. Commit all changes to release branch"
@@ -418,7 +418,7 @@ release_adapters() {
         return 1
     fi
     
-    local adapters=("MSPFacebookAdapter" "MSPGoogleAdapter" "NovaAdapter" "AmazonAdapter" "PrebidAdapter" "MolocoAdapter")
+    local adapters=("MSPFacebookAdapter" "MSPGoogleAdapter" "NovaAdapter" "AmazonAdapter" "PrebidAdapter" "MolocoAdapter" "LiftoffAdapter")
     local pids=()
     local result_files=()
     local temp_dir="/tmp/msp_parallel_release_$$"
@@ -607,7 +607,7 @@ main() {
     fi
     
     # Create CocoaPods-specific pod list (exclude MSPOMSDK which is SPM-only)
-    local cocoapods_pods=("MSPSharedLibraries" "MSPFacebookAdapter" "MSPGoogleAdapter" "NovaAdapter" "AmazonAdapter" "PrebidAdapter" "MolocoAdapter" "MSPCore")
+    local cocoapods_pods=("MSPSharedLibraries" "MSPFacebookAdapter" "MSPGoogleAdapter" "NovaAdapter" "AmazonAdapter" "PrebidAdapter" "MolocoAdapter" "LiftoffAdapter" "MSPCore")
     
     # Skip individual start notifications - only send final success/failure
     

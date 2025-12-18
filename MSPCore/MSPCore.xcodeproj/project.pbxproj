@@ -440,7 +440,6 @@
 				6639AC812B4DFAE300A248D2 /* Sources */,
 				6639AC822B4DFAE300A248D2 /* Frameworks */,
 				6639AC832B4DFAE300A248D2 /* Resources */,
-				3086C6189514696D66E8DD04 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -554,23 +553,6 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		3086C6189514696D66E8DD04 /* [CP] Copy Pods Resources */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-MSPCore/Pods-MSPCore-resources-${CONFIGURATION}-input-files.xcfilelist",
-			);
-			name = "[CP] Copy Pods Resources";
-			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-MSPCore/Pods-MSPCore-resources-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-MSPCore/Pods-MSPCore-resources.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
 		46C84CAF55D6A15AAB223DF8 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;

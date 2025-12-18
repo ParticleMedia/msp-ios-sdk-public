@@ -241,7 +241,7 @@ release_cocoapods() {
         # In a real implementation, we would parse the output to track individual pod success/failure
         # For now, we'll assume all pods succeeded if the overall command succeeded
         if [[ "$DRY_RUN" != "true" ]]; then
-            COCOAPODS_SUCCESS+=("MSPSharedLibraries" "MSPFacebookAdapter" "MSPGoogleAdapter" "NovaAdapter" "AmazonAdapter" "PrebidAdapter" "MolocoAdapter" "MSPCore")
+            COCOAPODS_SUCCESS+=("MSPSharedLibraries" "MSPFacebookAdapter" "MSPGoogleAdapter" "NovaAdapter" "AmazonAdapter" "PrebidAdapter" "MolocoAdapter" "LiftoffAdapter" "MSPCore")
         fi
     else
         log_error "Failed to release CocoaPods"

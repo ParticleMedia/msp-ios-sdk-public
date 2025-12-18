@@ -14,53 +14,56 @@ public class PrebidBidLoader : BidLoader {
     public var googleQueryInfo: String?
     public var facebookBidToken: String?
     public var molocoBidToken: String?
+    public var liftoffBidToken: String?
     private let dispatchGroup = DispatchGroup()
     public var adMetricReporter: AdMetricReporter?
     
-    public override init(googleQueryInfoFetcher: GoogleQueryInfoFetcher, facebookBidTokenProvider: FacebookBidTokenProvider, molocoBidTokenProvider: MolocoBidTokenProvider) {
-        
-        super.init(googleQueryInfoFetcher: googleQueryInfoFetcher, facebookBidTokenProvider: facebookBidTokenProvider, molocoBidTokenProvider: molocoBidTokenProvider)
-        
+    public override init(tokenProviders: BidTokenProviders) {
+        super.init(tokenProviders: tokenProviders)
     }
     
     public override func loadBid(placementId: String, adParams: [String : Any], bidListener: any BidListener, adRequest: AdRequest) {
         self.configId = placementId
         self.bidListener = bidListener
         self.adRequest = adRequest
-        
-        //googleQueryInfoFetcher.fetch(completeListener: self, adRequest: adRequest)
-        self.fetchTokens(adRequest: adRequest){ [weak self] googleQueryInfo, facebookBidToken, molocoBidToken in
+
+        self.fetchTokens(adRequest: adRequest) { [weak self] bidTokens in
             guard let self = self else {
                 return
             }
-            self.loadBidWithTokens(googleQueryInfo: googleQueryInfo, facebookBidToken: facebookBidToken, molocoBidToken: molocoBidToken, adRequest: adRequest)
+            self.loadBidWithTokens(bidTokens: bidTokens, adRequest: adRequest)
         }
     }
-    
-    func fetchTokens(adRequest: AdRequest, completion: @escaping (String?, String?, String?) -> Void) {
+
+    func fetchTokens(adRequest: AdRequest, completion: @escaping (BidTokens) -> Void) {
         self.dispatchGroup.enter()
         self.googleQueryInfoFetcher.fetch(completeListener: self, adRequest: adRequest)
-        
+
         self.dispatchGroup.enter()
         self.facebookBidTokenProvider.fetch(completeListener: self, context: self)
-        
+
         self.dispatchGroup.enter()
         self.molocoBidTokenProvider.fetch(completeListener: self, context: self)
+        
+        self.dispatchGroup.enter()
+        self.liftoffBidTokenProvider.fetch(completeListener: self, context: self)
 
         dispatchGroup.notify(queue: .main) {
-            completion(self.googleQueryInfo, self.facebookBidToken, self.molocoBidToken)
+            let bidTokens = BidTokens()
+                .with(googleQueryInfo: self.googleQueryInfo)
+                .with(facebookBidToken: self.facebookBidToken)
+                .with(molocoBidToken: self.molocoBidToken)
+                .with(liftoffBidToken: self.liftoffBidToken)
+            completion(bidTokens)
         }
     }
     
-    public func loadBidWithTokens(googleQueryInfo: String?, facebookBidToken: String?, molocoBidToken: String?, adRequest: AdRequest) {
-
+    public func loadBidWithTokens(bidTokens: BidTokens, adRequest: AdRequest) {
         let width = Int(adRequest.adSize?.width ?? 320)
         let height = Int(adRequest.adSize?.height ?? 50)
         let adSize = CGSize(width: width, height: height)
         let adUnitConfig = getAdUnitConfig(configId: configId ?? "demo-ios-article-top",
-                                           gadQueryInfo: googleQueryInfo,
-                                           facebookBidToken: facebookBidToken,
-                                           molocoBidToken: molocoBidToken,
+                                           bidTokens: bidTokens,
                                            requestUUID: adRequest.requestId,
                                            prebidBannerAdSize: adSize,
                                            adRequest: adRequest)
@@ -96,6 +99,8 @@ public class PrebidBidLoader : BidLoader {
                     self.bidListener?.onBidResponse(bidResponse: bidResponse, adNetwork: AdNetwork.nova)
                 } else if seat == "msp_moloco" {
                     self.bidListener?.onBidResponse(bidResponse: bidResponse, adNetwork: AdNetwork.moloco)
+                } else if seat == "vungle" {
+                    self.bidListener?.onBidResponse(bidResponse: bidResponse, adNetwork: AdNetwork.liftoff)
                 } else {
                     self.bidListener?.onBidResponse(bidResponse: bidResponse, adNetwork: AdNetwork.prebid)
                 }
@@ -109,9 +114,7 @@ public class PrebidBidLoader : BidLoader {
     
     
     public func getAdUnitConfig(configId: String,
-                                gadQueryInfo: String?,
-                                facebookBidToken: String?,
-                                molocoBidToken: String?,
+                                bidTokens: BidTokens,
                                 requestUUID: String,
                                 prebidBannerAdSize: CGSize,
                                 adRequest: AdRequest) -> AdUnitConfig {
@@ -166,14 +169,17 @@ public class PrebidBidLoader : BidLoader {
             }
         }
 
-        if let gadQueryInfo = gadQueryInfo {
+        if let gadQueryInfo = bidTokens.googleQueryInfo {
             adUnitConfig.addContextData(key: "query_info", value: gadQueryInfo)
         }
-        if let facebookBidToken = facebookBidToken {
+        if let facebookBidToken = bidTokens.facebookBidToken {
             Targeting.shared.buyerUID = facebookBidToken
         }
-        if let molocoBidToken = molocoBidToken {
+        if let molocoBidToken = bidTokens.molocoBidToken {
             adUnitConfig.addContextData(key: "moloco_bid_token", value: molocoBidToken)
+        }
+        if let liftoffBidToken = bidTokens.liftoffBidToken {
+            adUnitConfig.addContextData(key: "liftoff_bid_token", value: liftoffBidToken)
         }
         
         if adRequest.adFormat == .native || adRequest.adFormat == .multi_format {
@@ -218,3 +224,9 @@ extension PrebidBidLoader: MolocoBidTokenListener {
     }
 }
 
+extension PrebidBidLoader: LiftoffBidTokenListener {
+    public func onComplete(liftoffBidToken: String) {
+        self.liftoffBidToken = liftoffBidToken
+        dispatchGroup.leave()
+    }
+}
