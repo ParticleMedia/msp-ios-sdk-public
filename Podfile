@@ -17,6 +17,7 @@ project 'MobilefuseAdapter/MobilefuseAdapter'
 project 'PubmaticAdapter/PubmaticAdapter'
 project 'UnityAdapter/UnityAdapter'
 project 'MolocoAdapter/MolocoAdapter'
+project 'LiftoffAdapter/LiftoffAdapter'
 
 
 target 'PrebidAdapter' do
@@ -136,6 +137,7 @@ target 'MSPDemoApp' do
   pod 'PubmaticAdapter', :path => './', :modular_headers => true
   pod 'AmazonAdapter', :path => './', :modular_headers => true
   pod 'MolocoAdapter', :path => './', :modular_headers => true
+  pod 'LiftoffAdapter', :path => './', :modular_headers => true 
   pod 'SwiftProtobuf', '1.30.0', :modular_headers => true
   #pod 'GoogleMobileAds', :modular_headers => true
   #pod 'NovaAdapter', :path => './', :modular_headers => true

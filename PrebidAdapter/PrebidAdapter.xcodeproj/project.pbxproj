@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		1FAD4CF4DA9A5F4F6FF39485 /* Pods_PrebidAdapter.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8A11CB79D7872D1A49043475 /* Pods_PrebidAdapter.framework */; };
+		5DF336702EF00D5300FAF9AD /* BidTokens.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DF3366F2EF00D5300FAF9AD /* BidTokens.swift */; };
 		5E351931D3F6D56A60BE2F9D /* Pods_PrebidAdapter_PrebidAdapterTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 64BFBFF1962FABF7FA1D080A /* Pods_PrebidAdapter_PrebidAdapterTests.framework */; };
 		667A642F2E1EE20500A9B954 /* PrebidInterstitialAd.swift in Sources */ = {isa = PBXBuildFile; fileRef = 667A642E2E1EE1FB00A9B954 /* PrebidInterstitialAd.swift */; };
 		66D6C3A42B322B44006EBBF3 /* PrebidAdapter.docc in Sources */ = {isa = PBXBuildFile; fileRef = 66D6C3A32B322B44006EBBF3 /* PrebidAdapter.docc */; };
@@ -31,6 +32,7 @@
 /* Begin PBXFileReference section */
 		3AD3FD3A62266440FBC1D284 /* Pods-PrebidAdapter.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PrebidAdapter.debug.xcconfig"; path = "Target Support Files/Pods-PrebidAdapter/Pods-PrebidAdapter.debug.xcconfig"; sourceTree = "<group>"; };
 		520CD0FAE42A5653AA1BB6DF /* Pods-PrebidAdapter-PrebidAdapterTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-PrebidAdapter-PrebidAdapterTests.debug.xcconfig"; path = "Target Support Files/Pods-PrebidAdapter-PrebidAdapterTests/Pods-PrebidAdapter-PrebidAdapterTests.debug.xcconfig"; sourceTree = "<group>"; };
+		5DF3366F2EF00D5300FAF9AD /* BidTokens.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BidTokens.swift; sourceTree = "<group>"; };
 		64BFBFF1962FABF7FA1D080A /* Pods_PrebidAdapter_PrebidAdapterTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_PrebidAdapter_PrebidAdapterTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		6657537F2BF1A9DA00338B1C /* MSPiOSCore.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; path = MSPiOSCore.xcframework; sourceTree = "<group>"; };
 		667A642E2E1EE1FB00A9B954 /* PrebidInterstitialAd.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrebidInterstitialAd.swift; sourceTree = "<group>"; };
@@ -125,6 +127,7 @@
 				66D6C3A22B322B44006EBBF3 /* PrebidAdapter.h */,
 				66D6C3A32B322B44006EBBF3 /* PrebidAdapter.docc */,
 				66D6C3E52B323F76006EBBF3 /* PrebidAdapter.swift */,
+				5DF3366F2EF00D5300FAF9AD /* BidTokens.swift */,
 			);
 			path = PrebidAdapter;
 			sourceTree = "<group>";
@@ -309,6 +312,7 @@
 			files = (
 				667A642F2E1EE20500A9B954 /* PrebidInterstitialAd.swift in Sources */,
 				66D6C3A42B322B44006EBBF3 /* PrebidAdapter.docc in Sources */,
+				5DF336702EF00D5300FAF9AD /* BidTokens.swift in Sources */,
 				66D6C3E62B323F76006EBBF3 /* PrebidAdapter.swift in Sources */,
 				66D6C3F22B33996A006EBBF3 /* PrebidBidLoader.swift in Sources */,
 			);
