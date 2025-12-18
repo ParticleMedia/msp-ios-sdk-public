@@ -58,4 +58,7 @@
    <FileRef
       location = "group:MolocoAdapter/MolocoAdapter.xcodeproj">
    </FileRef>
+   <FileRef
+      location = "group:LiftoffAdapter/LiftoffAdapter.xcodeproj">
+   </FileRef>
 </Workspace>

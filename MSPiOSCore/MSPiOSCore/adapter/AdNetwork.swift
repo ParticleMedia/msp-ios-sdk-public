@@ -21,4 +21,5 @@ public enum AdNetwork: String, CaseIterable {
     case inmobi = "inmobi"
     case amazon = "amazon"
     case moloco = "moloco"
+    case liftoff = "liftoff"
 }
