@@ -1385,15 +1385,59 @@ main() {
     fi
     
     log_info "Releasing pods from PODS_MODULES: ${cocoapods_pods[*]}"
-    
+
+    # ============================================================================
+    # CRITICAL: Ensure release tag exists and is pushed BEFORE creating releases
+    # ============================================================================
+    log_section "Pre-Release: Creating and pushing release tag"
+
+    # Ensure the release tag exists locally and is pushed to remotes
+    # This MUST happen before GitHub Release creation to avoid draft releases
+    if ! ensure_release_tag_exists_and_pushed "$VERSION" "HEAD"; then
+        log_error "Failed to create/push release tag: $VERSION"
+        msp_state_mark_step_failed "pods_publish" "Failed to create release tag: $VERSION" "1"
+
+        # FAIL-FAST in release tier
+        if [[ "${MSP_RELEASE_TIER:-}" == "release" ]] || [[ "${MSP_RELEASE_TIER:-}" == "production" ]]; then
+            log_error "[FAIL-FAST] Tag creation failed in release tier. Aborting."
+            exit 1
+        fi
+        return 1
+    fi
+
+    log_success "Release tag $VERSION created and pushed to all remotes"
+
+    # Wait for tag propagation (GitHub may need time to make tag available)
+    log_info "Waiting 5 seconds for tag propagation..."
+    sleep 5
+
+    # Verify tag is accessible on public remote
+    if git remote | grep -q "^public$"; then
+        if ! git ls-remote --tags public "refs/tags/$VERSION" 2>/dev/null | grep -q "$VERSION"; then
+            log_error "Tag $VERSION not found on public remote after push"
+            log_error "GitHub Release creation will fail or create draft release"
+
+            # FAIL-FAST in release tier
+            if [[ "${MSP_RELEASE_TIER:-}" == "release" ]] || [[ "${MSP_RELEASE_TIER:-}" == "production" ]]; then
+                log_error "[FAIL-FAST] Tag not accessible on public remote. Aborting."
+                exit 1
+            fi
+            return 1
+        fi
+        log_success "Tag $VERSION verified on public remote"
+    else
+        log_warning "Public remote not found, skipping tag verification"
+    fi
+    # ============================================================================
+
     # Skip individual start notifications - only send final success/failure
-    
+
     # Track release statistics
     local total_pods=${#cocoapods_pods[@]}
     local successful_pods=0
     local failed_pods=0
     local failed_pod_names=()
-    
+
     # Step 1: Release MSPSharedLibraries
     if release_msp_shared_libraries; then
         ((successful_pods++))
