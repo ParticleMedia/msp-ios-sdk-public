@@ -631,7 +631,13 @@ create_github_release_for_pod() {
             if [[ -d "$prebid_path" ]]; then
                 mkdir -p "$temp_zip_dir/ThirdParty/PrebidMobile"
                 cp -R "$prebid_path" "$temp_zip_dir/ThirdParty/PrebidMobile/PrebidMobile.xcframework"
+                log_info "Included PrebidMobile.xcframework in zip"
+            else
+                log_error "PrebidMobile.xcframework not found at: $prebid_path"
+                return 1
             fi
+
+            # Note: MSPiOSCore is now published as a separate pod, not embedded in MSPSharedLibraries
         fi
         
         # Create zip file

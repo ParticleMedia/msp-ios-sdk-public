@@ -265,10 +265,10 @@ fi
 if is_core_module "$POD_NAME"; then
     # Core modules: binary XCFrameworks
     if [[ "$POD_NAME" == "MSPSharedLibraries" ]]; then
+        # MSPSharedLibraries: includes PrebidMobile only (MSPiOSCore is now a separate dependency)
         cat >> "$OUTPUT_PODSPEC" <<'EOF_VENDOR_MULTI'
   spec.vendored_frameworks = [
     "Binary/MSPSharedLibraries.xcframework",
-    "Binary/MSPiOSCore.xcframework",
     "ThirdParty/PrebidMobile/PrebidMobile.xcframework"
   ]
 EOF_VENDOR_MULTI
