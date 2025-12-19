@@ -6,7 +6,7 @@ enum AdsThirdPartyMetricReporter {
             //DebugLogging.info(.ads, "Third party impression tracking, url = \(thirdPartyImpressionTrackingUrl)")
 
             if let trackingURL = URL(string: thirdPartyImpressionTrackingUrl) {
-                URLSession.shared.dataTask(with: trackingURL).resume()
+                NovaTrackingUrlHelper.fire(url: trackingURL)
             }
         }
     }
@@ -16,7 +16,7 @@ enum AdsThirdPartyMetricReporter {
             //DebugLogging.info(.ads, "Third party click tracking, url = \(thirdPartyClickTrackingUrl)")
 
             if let trackingUrl = URL(string: thirdPartyClickTrackingUrl) {
-                URLSession.shared.dataTask(with: trackingUrl).resume()
+                NovaTrackingUrlHelper.fire(url: trackingUrl)
             }
         }
     }
