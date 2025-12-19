@@ -655,13 +655,20 @@ create_github_release_for_pod() {
                 if [[ -f "$shim_file" ]]; then
                     # Check if @_exported import already exists
                     if ! grep -q "@_exported import MSPiOSCore" "$shim_file"; then
-                        # Add @_exported import after the comment block
-                        sed -i '' '/^\/\/ SPM shim/a\
-// Re-export MSPiOSCore module to make it accessible to dependents (adapters)\
-@_exported import MSPiOSCore
-' "$shim_file"
+                        # Add @_exported import after the comment block using a temporary file
+                        local shim_temp="${shim_file}.tmp"
+                        {
+                            head -n 1 "$shim_file"
+                            echo "// Re-export MSPiOSCore module to make it accessible to dependents (adapters)"
+                            echo "@_exported import MSPiOSCore"
+                            tail -n +2 "$shim_file"
+                        } > "$shim_temp" && mv "$shim_temp" "$shim_file"
                         log_info "Enhanced Shim.swift with @_exported import MSPiOSCore"
+                    else
+                        log_info "Shim.swift already contains @_exported import MSPiOSCore"
                     fi
+                else
+                    log_warning "Shim.swift not found: $shim_file"
                 fi
                 
                 log_info "Included source files in zip: Sources/Core/MSPSharedLibraries/"
