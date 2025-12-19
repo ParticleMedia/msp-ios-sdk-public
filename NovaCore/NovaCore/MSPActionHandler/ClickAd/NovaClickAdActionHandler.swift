@@ -330,7 +330,7 @@ private extension NovaClickAdActionHandler {
     }
 
     func appInstallConversionTracking(to thirdPartyUrl: URL) async throws {
-        _ = try await URLSession.shared.data(from: thirdPartyUrl)
+        NovaTrackingUrlHelper.fire(url: thirdPartyUrl)
     }
 
     @MainActor
