@@ -1,4 +1,4 @@
 // SPM shim for MSPSharedLibraries; primary symbols provided by binary dependencies
-// Re-export MSPiOSCore module to make it accessible to dependents (adapters)
-@_exported import MSPiOSCore
+// Note: @_exported import MSPiOSCore is added during release packaging
+// In release mode, MSPiOSCore.xcframework is included in the zip package
 import Foundation

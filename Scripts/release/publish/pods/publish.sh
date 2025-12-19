@@ -313,7 +313,7 @@ update_adapter_podspec_dependencies() {
 
     log_info "[DEBUG] Constructed podspec path: $podspec"
     log_info "[DEBUG] Checking if file exists..."
-
+    
     if [[ ! -f "$podspec" ]]; then
         log_error "Podspec file not found: $podspec"
         log_error "[DEBUG] File does not exist at expected location"
@@ -375,8 +375,8 @@ ensure_release_tag_exists_and_pushed() {
     local target_commit_sha
     if ! target_commit_sha=$(git rev-parse "$target_commit" 2>/dev/null); then
         log_error "Failed to resolve target commit: $target_commit"
-        return 1
-    fi
+            return 1
+        fi
 
     log_info "Ensuring tag $tag points to commit $target_commit_sha"
 
@@ -621,7 +621,7 @@ create_github_release_for_pod() {
             rm -rf "$temp_zip_dir"
             return 1
         fi
-        
+
         # Copy XCFramework to temp directory structure
         cp -R "$xcframework_path" "$temp_zip_dir/Binary/${pod}.xcframework"
         
@@ -648,6 +648,22 @@ create_github_release_for_pod() {
             if [[ -d "$source_path" ]]; then
                 mkdir -p "$temp_zip_dir/Sources/Core"
                 cp -R "$source_path" "$temp_zip_dir/Sources/Core/MSPSharedLibraries"
+                
+                # Enhance Shim.swift with @_exported import MSPiOSCore for release mode
+                # This re-exports MSPiOSCore module to adapter dependents
+                local shim_file="$temp_zip_dir/Sources/Core/MSPSharedLibraries/MSPSharedLibraries/Shim.swift"
+                if [[ -f "$shim_file" ]]; then
+                    # Check if @_exported import already exists
+                    if ! grep -q "@_exported import MSPiOSCore" "$shim_file"; then
+                        # Add @_exported import after the comment block
+                        sed -i '' '/^\/\/ SPM shim/a\
+// Re-export MSPiOSCore module to make it accessible to dependents (adapters)\
+@_exported import MSPiOSCore
+' "$shim_file"
+                        log_info "Enhanced Shim.swift with @_exported import MSPiOSCore"
+                    fi
+                fi
+                
                 log_info "Included source files in zip: Sources/Core/MSPSharedLibraries/"
             else
                 log_warning "Source path not found: $source_path (hybrid mode may not work)"
@@ -731,7 +747,7 @@ RUBY_SCRIPT
             log_error "Failed to create/update GitHub release for $pod"
             return 1
         fi
-        
+
         return 0
     fi
 
@@ -1510,15 +1526,15 @@ main() {
         log_warning "Public remote not found, skipping tag verification"
     fi
     # ============================================================================
-
+    
     # Skip individual start notifications - only send final success/failure
-
+    
     # Track release statistics
     local total_pods=${#cocoapods_pods[@]}
     local successful_pods=0
     local failed_pods=0
     local failed_pod_names=()
-
+    
     # Step 1: Release MSPSharedLibraries
     if release_msp_shared_libraries; then
         ((successful_pods++))
