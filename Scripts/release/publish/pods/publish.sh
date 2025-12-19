@@ -625,12 +625,32 @@ create_github_release_for_pod() {
         # Copy XCFramework to temp directory structure
         cp -R "$xcframework_path" "$temp_zip_dir/Binary/${pod}.xcframework"
         
-        # Handle MSPSharedLibraries special case (includes PrebidMobile)
+        # Handle MSPSharedLibraries special case (includes PrebidMobile and source files for hybrid mode)
         if [[ "$pod" == "MSPSharedLibraries" ]]; then
             local prebid_path="$ROOT_DIR/Build/XCFrameworks/PrebidMobile.xcframework"
             if [[ -d "$prebid_path" ]]; then
                 mkdir -p "$temp_zip_dir/ThirdParty/PrebidMobile"
                 cp -R "$prebid_path" "$temp_zip_dir/ThirdParty/PrebidMobile/PrebidMobile.xcframework"
+            fi
+            
+            # Include MSPiOSCore.xcframework (embedded in MSPSharedLibraries)
+            local mspioscore_path="$ROOT_DIR/Build/XCFrameworks/MSPiOSCore.xcframework"
+            if [[ -d "$mspioscore_path" ]]; then
+                cp -R "$mspioscore_path" "$temp_zip_dir/Binary/MSPiOSCore.xcframework"
+                log_info "Included MSPiOSCore.xcframework in zip"
+            else
+                log_warning "MSPiOSCore.xcframework not found: $mspioscore_path"
+            fi
+            
+            # Hybrid mode: Include source files for MSPSharedLibraries
+            # This allows CocoaPods to compile source and properly expose MSPiOSCore module
+            local source_path="$ROOT_DIR/Sources/Core/MSPSharedLibraries"
+            if [[ -d "$source_path" ]]; then
+                mkdir -p "$temp_zip_dir/Sources/Core"
+                cp -R "$source_path" "$temp_zip_dir/Sources/Core/MSPSharedLibraries"
+                log_info "Included source files in zip: Sources/Core/MSPSharedLibraries/"
+            else
+                log_warning "Source path not found: $source_path (hybrid mode may not work)"
             fi
         fi
         
