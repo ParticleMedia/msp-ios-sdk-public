@@ -189,15 +189,16 @@ in_block {
 ' "$SOURCE_PODSPEC" >> "$OUTPUT_PODSPEC"
 
 # Extract dependencies
-# NovaAdapter: filter out NovaCore, MSPOMSDK, MSPiOSCore, MSPKingfisher dependencies (embedded)
+# NovaAdapter: filter out NovaCore, MSPOMSDK, MSPKingfisher dependencies (embedded)
+# Note: MSPiOSCore is now a separate pod, so adapters should keep this dependency
 if [[ "$POD_NAME" == "NovaAdapter" ]]; then
-    grep "spec\\.dependency" "$SOURCE_PODSPEC" | grep -vE "(NovaCore|MSPOMSDK|MSPiOSCore|MSPKingfisher)" >> "$OUTPUT_PODSPEC" 2>/dev/null || true
+    grep "spec\\.dependency" "$SOURCE_PODSPEC" | grep -vE "(NovaCore|MSPOMSDK|MSPKingfisher)" >> "$OUTPUT_PODSPEC" 2>/dev/null || true
 elif is_core_module "$POD_NAME"; then
     # Core modules: keep all dependencies
     grep "spec\\.dependency" "$SOURCE_PODSPEC" >> "$OUTPUT_PODSPEC" 2>/dev/null || true
 else
-    # Other adapters: filter out MSPiOSCore dependency (embedded in MSPSharedLibraries)
-    grep "spec\\.dependency" "$SOURCE_PODSPEC" | grep -v "MSPiOSCore" >> "$OUTPUT_PODSPEC" 2>/dev/null || true
+    # Other adapters: keep all dependencies (including MSPiOSCore, which is now a separate pod)
+    grep "spec\\.dependency" "$SOURCE_PODSPEC" >> "$OUTPUT_PODSPEC" 2>/dev/null || true
 fi
 
 # Add release-specific configuration
