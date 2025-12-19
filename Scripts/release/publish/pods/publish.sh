@@ -1080,6 +1080,16 @@ release_adapters() {
         log_error "MSPSharedLibraries $VERSION not available, cannot proceed with adapter releases"
         return 1
     fi
+
+    # CRITICAL: Also ensure MSPiOSCore is available (adapters depend on it)
+    log_step "Verifying MSPiOSCore availability before adapter releases..."
+    if ! wait_for_pod_availability "MSPiOSCore" "$VERSION"; then
+        log_error "MSPiOSCore $VERSION not available, cannot proceed with adapter releases"
+        log_error "All adapters depend on MSPiOSCore. Please wait for CDN sync and retry."
+        return 1
+    fi
+
+    log_success "Both MSPSharedLibraries and MSPiOSCore are available, proceeding with parallel adapter releases"
     
     # Extract adapters from PODS_MODULES (exclude MSPSharedLibraries and MSPCore)
     # Adapters are all modules that are not core modules
