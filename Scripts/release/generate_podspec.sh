@@ -265,7 +265,7 @@ if is_core_module "$POD_NAME"; then
         # Hybrid mode: source_files + vendored_frameworks
         # This allows CocoaPods to properly expose MSPiOSCore module to dependents
         cat >> "$OUTPUT_PODSPEC" <<'EOF_SOURCE_FILES'
-  spec.source_files = "Sources/Core/MSPSharedLibraries/MSPSharedLibraries/**/*.{swift}"
+  spec.source_files = "Sources/Core/MSPSharedLibraries/MSPSharedLibraries/**/*.swift"
 EOF_SOURCE_FILES
         cat >> "$OUTPUT_PODSPEC" <<'EOF_VENDOR_MULTI'
   spec.vendored_frameworks = [
