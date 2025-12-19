@@ -1090,14 +1090,14 @@ release_adapters() {
     
     # Ensure MSPSharedLibraries is available before adapter releases
     log_step "Verifying MSPSharedLibraries availability before adapter releases..."
-    if ! wait_for_pod_availability "MSPSharedLibraries" "$VERSION"; then
+    if ! smart_wait_for_pod_availability "MSPSharedLibraries" "$VERSION" "before parallel adapter releases"; then
         log_error "MSPSharedLibraries $VERSION not available, cannot proceed with adapter releases"
         return 1
     fi
 
     # CRITICAL: Also ensure MSPiOSCore is available (adapters depend on it)
     log_step "Verifying MSPiOSCore availability before adapter releases..."
-    if ! wait_for_pod_availability "MSPiOSCore" "$VERSION"; then
+    if ! smart_wait_for_pod_availability "MSPiOSCore" "$VERSION" "required by all adapters"; then
         log_error "MSPiOSCore $VERSION not available, cannot proceed with adapter releases"
         log_error "All adapters depend on MSPiOSCore. Please wait for CDN sync and retry."
         return 1
@@ -1221,7 +1221,7 @@ release_adapters() {
         
         # Check MSPSharedLibraries availability
         log_info "Checking MSPSharedLibraries availability..."
-        if ! wait_for_pod_availability "MSPSharedLibraries" "$VERSION"; then
+        if ! smart_wait_for_pod_availability "MSPSharedLibraries" "$VERSION" "before parallel adapter releases"; then
             log_error "MSPSharedLibraries not available, cannot proceed with MSPCore release"
             return 1
         fi
@@ -1230,7 +1230,7 @@ release_adapters() {
         # Only check if MSPPrebidAdapter is in PODS_MODULES
         if echo "$PODS_MODULES" | grep -q "MSPPrebidAdapter"; then
             log_info "Checking MSPPrebidAdapter availability..."
-            if ! wait_for_pod_availability "MSPPrebidAdapter" "$VERSION"; then
+            if ! smart_wait_for_pod_availability "MSPPrebidAdapter" "$VERSION" "required by MSPCore"; then
                 log_error "MSPPrebidAdapter not available, cannot proceed with MSPCore release"
                 return 1
             fi

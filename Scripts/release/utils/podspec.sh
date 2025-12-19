@@ -545,3 +545,120 @@ msp_run_pod_trunk_push() {
     log_info "[PODS] Running pod trunk push for $spec"
     pod trunk push "$spec" --allow-warnings
 }
+
+# ============================================================================
+# Smart Wait Strategy with User Interaction
+# ============================================================================
+# Generic intelligent waiting strategy for pod availability
+# Handles CDN sync delays (can be 30-40 minutes) with user control
+#
+# Usage: smart_wait_for_pod_availability <pod_name> <version> [context_description]
+#
+# Example:
+#   smart_wait_for_pod_availability "MSPiOSCore" "0.3.0-rc.1" "before parallel adapter releases"
+#
+smart_wait_for_pod_availability() {
+    local pod_name="$1"
+    local version="$2"
+    local context="${3:-}"
+
+    if [[ -z "$pod_name" || -z "$version" ]]; then
+        log_error "Usage: smart_wait_for_pod_availability <pod_name> <version> [context]"
+        return 1
+    fi
+
+    local context_msg=""
+    if [[ -n "$context" ]]; then
+        context_msg=" ($context)"
+    fi
+
+    log_section "Checking $pod_name $version availability$context_msg"
+
+    # ═══════════════════════════════════════════════════════════════════════════
+    # Stage 1: Quick check (2 minutes)
+    # ═══════════════════════════════════════════════════════════════════════════
+    log_step "Quick check: Is $pod_name $version available? (2 min timeout)..."
+
+    if wait_for_pod_availability "$pod_name" "$version" 120 10; then
+        log_success "✓ $pod_name $version is available!"
+        return 0
+    fi
+
+    # ═══════════════════════════════════════════════════════════════════════════
+    # Stage 2: Not available - present options
+    # ═══════════════════════════════════════════════════════════════════════════
+    log_warn "✗ $pod_name $version not available yet (checked for 2 minutes)"
+    echo ""
+    log_info "═══════════════════════════════════════════════════════════════════════════"
+    log_info "$pod_name $version was recently published. CDN sync can take 5-40 minutes."
+    log_info "Context: $context"
+    log_info "═══════════════════════════════════════════════════════════════════════════"
+    echo ""
+    log_info "Options:"
+    log_info "  1. Continue waiting (up to 40 more minutes) - Recommended for just-published pods"
+    log_info "  2. Try proceeding anyway (may fail if pod not synced)"
+    log_info "  3. Exit and retry later (safe choice)"
+    echo ""
+
+    local choice
+
+    # CI/Batch mode: auto-select option 1
+    if [[ "${CI:-false}" == "true" ]] || [[ "${BATCH_MODE:-false}" == "true" ]]; then
+        log_info "[CI/Batch Mode] Auto-selecting: Continue waiting"
+        choice="1"
+    else
+        # Interactive mode: ask user
+        read -p "Choose [1/2/3]: " choice
+    fi
+
+    case "$choice" in
+        1)
+            # ═══════════════════════════════════════════════════════════════════════════
+            # Stage 3: Long wait (up to 40 minutes total)
+            # ═══════════════════════════════════════════════════════════════════════════
+            log_info "Continuing to wait for $pod_name $version (up to 38 more minutes)..."
+            log_info "Checking every 30 seconds. Press Ctrl+C to abort."
+            echo ""
+
+            # 38 minutes = 2280 seconds (40 total - 2 already waited)
+            if ! wait_for_pod_availability "$pod_name" "$version" 2280 30; then
+                log_error "$pod_name $version still not available after 40 minutes total"
+                log_error "This is unusual. Please check:"
+                log_error "  1. Did $pod_name $version publish succeed?"
+                log_error "     Command: pod trunk info $pod_name"
+                log_error "  2. Is CocoaPods CDN having issues?"
+                log_error "     Check: https://status.cocoapods.org"
+                log_error "  3. Try manual check:"
+                log_error "     pod repo update && pod search $pod_name | grep $version"
+                return 1
+            fi
+
+            log_success "✓ $pod_name $version is now available!"
+            return 0
+            ;;
+
+        2)
+            log_warn "Proceeding without $pod_name $version availability confirmation"
+            log_warn "Subsequent operations may fail if pod not synced to CDN yet"
+            echo ""
+            read -p "Press Enter to continue..."
+            echo ""
+            return 0
+            ;;
+
+        3)
+            log_info "Exiting. Please retry after CDN sync completes."
+            log_info "To check manually: pod search $pod_name | grep $version"
+            return 1
+            ;;
+
+        *)
+            log_error "Invalid choice: $choice"
+            return 1
+            ;;
+    esac
+}
+
+# Export the function
+export -f smart_wait_for_pod_availability 2>/dev/null || true
+
