@@ -114,6 +114,9 @@ Pod::Spec.new do |spec|
 
   spec.static_framework = true
 
+  # MSPiOSCore is now a separate pod (Stage A: independent binary distribution)
+  spec.dependency 'MSPiOSCore'
+
   spec.pod_target_xcconfig = {
     'BUILD_LIBRARY_FOR_DISTRIBUTION' => 'YES',
     'FRAMEWORK_SEARCH_PATHS' => '$(inherited) $(PODS_ROOT)/../Build/XCFrameworks',
