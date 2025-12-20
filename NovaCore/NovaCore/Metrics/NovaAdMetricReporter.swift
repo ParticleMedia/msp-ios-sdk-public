@@ -135,7 +135,7 @@ private extension NovaAdMetricReporter {
 
         guard let url = components?.url else { return }
 
-        URLSession.shared.dataTask(with: url).resume()
+        NovaTrackingUrlHelper.fire(url: url)
     }
 }
 
