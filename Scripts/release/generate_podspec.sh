@@ -30,7 +30,8 @@ GENERATED_PODSPECS_DIR="$ROOT_DIR/Build/ReleasePodspecs"
 # Core modules (binary XCFrameworks) vs Adapters (source-based)
 # This classification matches the architecture documented in README.md
 # Note: NovaCore is not included here - it's embedded via vendored_frameworks, not published separately
-CORE_MODULES=("MSPSharedLibraries" "MSPCore" "MSPiOSCore" "MSPOMSDK")
+# NovaAdapter is a pure binary adapter (vendored_frameworks only), so it's included in CORE_MODULES
+CORE_MODULES=("MSPSharedLibraries" "MSPCore" "MSPiOSCore" "MSPOMSDK" "NovaAdapter")
 
 # Check if a module is a core module
 is_core_module() {
@@ -42,6 +43,11 @@ is_core_module() {
     done
     return 1
 }
+
+# MSP internal dependencies that require version constraints
+# Used for dependency version alignment (aligned with legacy update_adapter_podspec_dependencies)
+MSP_VERSIONED_DEPS=("MSPiOSCore" "MSPSharedLibraries" "MSPPrebidAdapter" "PrebidAdapter")
+MSP_VERSIONED_DEPS_PATTERN="$(IFS='|'; echo "${MSP_VERSIONED_DEPS[*]}")"
 
 # ============================================================================
 # Usage
@@ -218,7 +224,7 @@ fi
 # ═══════════════════════════════════════════════════════════════════════════
 
 # Always add version numbers to MSP internal dependencies (aligned with legacy behavior)
-if grep -qE "spec\\.dependency.*'(MSPiOSCore|MSPSharedLibraries|MSPPrebidAdapter|PrebidAdapter)'" "$OUTPUT_PODSPEC"; then
+if grep -qE "spec\\.dependency.*'($MSP_VERSIONED_DEPS_PATTERN)'" "$OUTPUT_PODSPEC"; then
     log_info "Adding version numbers to MSP internal dependencies (version: $VERSION)"
     
     # Transform dependency declarations (aligned with legacy update_adapter_podspec_dependencies):
@@ -228,10 +234,10 @@ if grep -qE "spec\\.dependency.*'(MSPiOSCore|MSPSharedLibraries|MSPPrebidAdapter
     #   spec.dependency 'PrebidAdapter'       → spec.dependency 'PrebidAdapter', '$VERSION' (legacy name)
     
     # Step 1: Remove any existing version constraints first (cleanup, aligned with legacy)
-    sed -i "" -E "s/(spec\\.dependency[[:space:]]+'(MSPiOSCore|MSPSharedLibraries|MSPPrebidAdapter|PrebidAdapter)')[^#\n]*/\\1/g" "$OUTPUT_PODSPEC"
+    sed -i "" -E "s/(spec\\.dependency[[:space:]]+'($MSP_VERSIONED_DEPS_PATTERN)')[^#\n]*/\\1/g" "$OUTPUT_PODSPEC"
     
     # Step 2: Add the new version (ensures consistency)
-    sed -i "" -E "s/(spec\\.dependency[[:space:]]+'(MSPiOSCore|MSPSharedLibraries|MSPPrebidAdapter|PrebidAdapter)')/\\1, '$VERSION'/g" "$OUTPUT_PODSPEC"
+    sed -i "" -E "s/(spec\\.dependency[[:space:]]+'($MSP_VERSIONED_DEPS_PATTERN)')/\\1, '$VERSION'/g" "$OUTPUT_PODSPEC"
     
     log_success "Updated MSP internal dependencies to version $VERSION"
 fi
