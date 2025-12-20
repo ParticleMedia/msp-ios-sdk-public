@@ -696,7 +696,7 @@ RUBY_SCRIPT
             fi
         else
             log_info "Creating new release $version"
-            if gh release create "$version" "$ROOT_DIR/$zip_name" --repo "ParticleMedia/msp-ios-sdk-public" --title "Release $version" --notes "Release $version"; then
+            if gh release create "$version" "$ROOT_DIR/$zip_name" --repo "ParticleMedia/msp-ios-sdk-public" --title "Release $version" --notes "Release $version" --latest; then
                 gh_release_created=true
             fi
         fi
@@ -741,7 +741,7 @@ RUBY_SCRIPT
         fi
     else
         log_info "Creating new release $version"
-        if gh release create "$version" "$zip_name" --repo "ParticleMedia/msp-ios-sdk-public" --title "Release $version" --notes "Release $version"; then
+        if gh release create "$version" "$zip_name" --repo "ParticleMedia/msp-ios-sdk-public" --title "Release $version" --notes "Release $version" --latest; then
             gh_release_created=true
         fi
     fi
@@ -770,8 +770,8 @@ RUBY_SCRIPT
 probe_zip_url() {
     local pod="$1"
     local version="$2"
-    local max_attempts=6
-    local sleep_seconds=5
+    local max_attempts=12  # Increased from 6 to 12 for GitHub CDN propagation
+    local sleep_seconds=10  # Increased from 5 to 10 seconds
     
     local zip_url="https://github.com/ParticleMedia/msp-ios-sdk-public/releases/download/${version}/${pod}-${version}.zip"
     
@@ -779,6 +779,7 @@ probe_zip_url() {
     
     local attempt=1
     while [[ $attempt -le $max_attempts ]]; do
+        # Follow redirects (-L) as GitHub CDN may return 302 redirects
         if curl -sSfL --head "$zip_url" >/dev/null 2>&1; then
             log_success "Zip URL is accessible: $zip_url"
             return 0
@@ -789,6 +790,7 @@ probe_zip_url() {
             else
                 log_error "[FAIL-FAST] Zip URL not accessible after $max_attempts attempts: $zip_url"
                 log_error "Binary zip must be available before pod trunk push (HTTP distribution)"
+                log_error "Note: GitHub CDN propagation can take up to 2 minutes. Please check if the release is published (not draft)."
                 return 1
             fi
         fi
