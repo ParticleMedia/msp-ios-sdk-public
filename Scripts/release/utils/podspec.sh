@@ -602,9 +602,10 @@ smart_wait_for_pod_availability() {
 
     local choice
 
-    # CI/Batch mode: auto-select option 1
-    if [[ "${CI:-false}" == "true" ]] || [[ "${BATCH_MODE:-false}" == "true" ]]; then
-        log_info "[CI/Batch Mode] Auto-selecting: Continue waiting"
+    # CI/Batch mode or non-interactive: auto-select option 1
+    # Check if stdin is a TTY (interactive) or if CI/BATCH_MODE is set
+    if [[ "${CI:-false}" == "true" ]] || [[ "${BATCH_MODE:-false}" == "true" ]] || ! [[ -t 0 ]]; then
+        log_info "[Non-Interactive Mode] Auto-selecting: Continue waiting (option 1)"
         choice="1"
     else
         # Interactive mode: ask user
