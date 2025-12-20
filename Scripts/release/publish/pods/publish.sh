@@ -920,7 +920,57 @@ wait_for_pod_availability() {
     return 1
 }
 
+# ============================================================================
+# Release MSPiOSCore (foundation - required by all modules)
+# ============================================================================
+release_msp_ioscore() {
+    log_section "Step 0: Releasing MSPiOSCore (foundation - required by all modules)"
+
+    # Update podspec
+    if ! update_podspec_for_release "MSPiOSCore" "$VERSION"; then
+        # FAIL-FAST: Immediately abort if podspec generation fails (release tier only)
+        if [[ "${MSP_RELEASE_TIER:-}" == "release" ]]; then
+            log_error "[FAIL-FAST] Podspec generation failed for MSPiOSCore. Aborting release."
+            msp_state_mark_step_failed "pods_publish" "Podspec generation failed for MSPiOSCore" "1"
+            exit 1
+        fi
+        return 1
+    fi
+
+    # FAIL-FAST: Verify generated podspec exists (release tier only)
+    local podspec_path="$ROOT_DIR/Build/ReleasePodspecs/MSPiOSCore.podspec"
+    if [[ "${MSP_RELEASE_TIER:-}" == "release" ]] && [[ ! -f "$podspec_path" ]]; then
+        log_error "[FAIL-FAST] Generated podspec not found: $podspec_path. Aborting release."
+        msp_state_mark_step_failed "pods_publish" "Generated podspec not found: $podspec_path" "1"
+        exit 1
+    fi
+
+    # Create GitHub release
+    create_github_release_for_pod "MSPiOSCore" "$VERSION"
+
+    # Publish to CocoaPods
+    # Phase R1.11: Fail-fast if publication fails (prevent wait loop)
+    if ! publish_pod_to_cocoapods "MSPiOSCore" "$VERSION"; then
+        if [[ "${MSP_RELEASE_TIER:-}" == "release" ]]; then
+            log_error "[FAIL-FAST] Failed to publish MSPiOSCore to CocoaPods. Aborting release."
+            msp_state_mark_step_failed "pods_publish" "Failed to publish MSPiOSCore" "1"
+            exit 1
+        fi
+        return 1
+    fi
+
+    # Wait for availability (skip in dry-run mode)
+    if [[ "$DRY_RUN" != "true" ]]; then
+        wait_for_pod_availability "MSPiOSCore" "$VERSION"
+    fi
+
+    log_success "MSPiOSCore released successfully"
+    return 0
+}
+
+# ============================================================================
 # Release MSPSharedLibraries (Step 1)
+# ============================================================================
 release_msp_shared_libraries() {
     log_section "Step 1: Releasing MSPSharedLibraries (foundation dependency)"
 
