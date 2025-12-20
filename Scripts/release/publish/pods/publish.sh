@@ -89,7 +89,8 @@ RELEASE_NOTES_TEMPLATE="${RELEASE_NOTES_TEMPLATE:-}"
 RELEASE_NOTES="${RELEASE_NOTES:-}"
 
 # Default pod modules if PODS_MODULES not set (backward compatibility)
-DEFAULT_PODS_MODULES="MSPSharedLibraries MSPPrebidAdapter MSPCore MSPGoogleAdapter MSPFacebookAdapter NovaAdapter AmazonAdapter"
+# Release order: MSPiOSCore → MSPSharedLibraries → Adapters → MSPCore
+DEFAULT_PODS_MODULES="MSPiOSCore MSPSharedLibraries MSPPrebidAdapter MSPCore MSPGoogleAdapter MSPFacebookAdapter NovaAdapter AmazonAdapter"
 PODS_MODULES="${PODS_MODULES:-$DEFAULT_PODS_MODULES}"
 
 # ============================================================================
@@ -1528,6 +1529,26 @@ main() {
     local successful_pods=0
     local failed_pods=0
     local failed_pod_names=()
+
+    # Step 0: Release MSPiOSCore (foundation - required by all modules)
+    if release_msp_ioscore; then
+        ((successful_pods++))
+    else
+        ((failed_pods++))
+        failed_pod_names+=("MSPiOSCore")
+        if [[ "$DRY_RUN" != "true" ]]; then
+            notify_release_failure "CocoaPods" "$VERSION" "MSPiOSCore release failed" "Foundation Release"
+        fi
+        msp_state_mark_step_failed "pods_publish" "MSPiOSCore release failed" "1"
+        # Task 3: Preflight mode allows soft-fail, release/production requires hard-fail
+        if [[ "$release_tier" == "release" ]] || [[ "$release_tier" == "production" ]]; then
+            log_error "[MSP][ORCH] Release tier ($release_tier): MSPiOSCore release failure - aborting"
+            log_error "[MSP][ORCH] All other modules depend on MSPiOSCore. Cannot proceed."
+            exit 1
+        else
+            log_warn "[MSP][ORCH] Preflight mode: CocoaPods release failed, continuing with other steps"
+        fi
+    fi
 
     # Step 1: Release MSPSharedLibraries
     if release_msp_shared_libraries; then
