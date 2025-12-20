@@ -197,6 +197,52 @@ else
     grep "spec\\.dependency" "$SOURCE_PODSPEC" | grep -v "MSPiOSCore" >> "$OUTPUT_PODSPEC" 2>/dev/null || true
 fi
 
+# ═══════════════════════════════════════════════════════════════════════════
+# DEPENDENCY VERSION ALIGNMENT (aligned with legacy update_adapter_podspec_dependencies)
+# ═══════════════════════════════════════════════════════════════════════════
+# Legacy script logic (publish.sh:336-360):
+#   - MSPSharedLibraries → add version
+#   - PrebidAdapter → add version (now MSPPrebidAdapter)
+#   - MSPOMSDK → keep without version
+#
+# New architecture extensions:
+#   - MSPiOSCore → add version (new independent module)
+#   - MSPSharedLibraries → add version (align with legacy)
+#   - MSPPrebidAdapter → add version (align with legacy, renamed from PrebidAdapter)
+#
+# For pre-release versions (contains -rc, -alpha, -beta):
+#   CocoaPods REQUIRES explicit version for pre-release dependencies
+#
+# For stable versions:
+#   Add version for consistency and dependency locking
+# ═══════════════════════════════════════════════════════════════════════════
+
+# Always add version numbers to MSP internal dependencies (aligned with legacy behavior)
+if grep -qE "spec\\.dependency.*'(MSPiOSCore|MSPSharedLibraries|MSPPrebidAdapter|PrebidAdapter)'" "$OUTPUT_PODSPEC"; then
+    log_info "Adding version numbers to MSP internal dependencies (version: $VERSION)"
+    
+    # Transform dependency declarations (aligned with legacy update_adapter_podspec_dependencies):
+    #   spec.dependency 'MSPiOSCore'          → spec.dependency 'MSPiOSCore', '$VERSION'
+    #   spec.dependency 'MSPSharedLibraries'  → spec.dependency 'MSPSharedLibraries', '$VERSION'
+    #   spec.dependency 'MSPPrebidAdapter'    → spec.dependency 'MSPPrebidAdapter', '$VERSION'
+    #   spec.dependency 'PrebidAdapter'       → spec.dependency 'PrebidAdapter', '$VERSION' (legacy name)
+    
+    # Step 1: Remove any existing version constraints first (cleanup, aligned with legacy)
+    sed -i "" -E "s/(spec\\.dependency[[:space:]]+'(MSPiOSCore|MSPSharedLibraries|MSPPrebidAdapter|PrebidAdapter)')[^#\n]*/\\1/g" "$OUTPUT_PODSPEC"
+    
+    # Step 2: Add the new version (ensures consistency)
+    sed -i "" -E "s/(spec\\.dependency[[:space:]]+'(MSPiOSCore|MSPSharedLibraries|MSPPrebidAdapter|PrebidAdapter)')/\\1, '$VERSION'/g" "$OUTPUT_PODSPEC"
+    
+    log_success "Updated MSP internal dependencies to version $VERSION"
+fi
+
+# MSPOMSDK: Keep without version constraint (aligned with legacy behavior)
+if grep -q "spec\\.dependency.*'MSPOMSDK'" "$OUTPUT_PODSPEC"; then
+    log_info "MSPOMSDK dependency found - keeping without version constraint (legacy behavior)"
+    # Remove any version constraint from MSPOMSDK (should not be in release podspec anyway due to filtering)
+    sed -i "" -E "s/(spec\\.dependency[[:space:]]+'MSPOMSDK')[^#\n]*/\\1/g" "$OUTPUT_PODSPEC"
+fi
+
 # Add release-specific configuration
 # Core modules: HTTP binary zip distribution (Stage A)
 # Adapters: git+tag source distribution (source-based architecture)
