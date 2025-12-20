@@ -926,6 +926,15 @@ wait_for_pod_availability() {
 release_msp_ioscore() {
     log_section "Step 0: Releasing MSPiOSCore (foundation - required by all modules)"
 
+    # Check if MSPiOSCore is already published (idempotency)
+    if [[ "$DRY_RUN" != "true" ]]; then
+        if check_pod_availability "MSPiOSCore" "$VERSION"; then
+            log_info "MSPiOSCore $VERSION is already published to CocoaPods, skipping release"
+            log_success "MSPiOSCore $VERSION already available"
+            return 0
+        fi
+    fi
+
     # Update podspec
     if ! update_podspec_for_release "MSPiOSCore" "$VERSION"; then
         # FAIL-FAST: Immediately abort if podspec generation fails (release tier only)
@@ -961,7 +970,7 @@ release_msp_ioscore() {
 
     # Wait for availability (skip in dry-run mode)
     if [[ "$DRY_RUN" != "true" ]]; then
-        wait_for_pod_availability "MSPiOSCore" "$VERSION"
+        smart_wait_for_pod_availability "MSPiOSCore" "$VERSION" "foundation module required by all other modules"
     fi
 
     log_success "MSPiOSCore released successfully"
@@ -1009,7 +1018,7 @@ release_msp_shared_libraries() {
 
     # Wait for availability (skip in dry-run mode)
     if [[ "$DRY_RUN" != "true" ]]; then
-        wait_for_pod_availability "MSPSharedLibraries" "$VERSION"
+        smart_wait_for_pod_availability "MSPSharedLibraries" "$VERSION" "foundation dependency required by adapters and MSPCore"
     fi
 
     log_success "MSPSharedLibraries released successfully"
@@ -1332,9 +1341,9 @@ release_msp_core() {
     
     # Wait for availability (skip in dry-run mode)
     if [[ "$DRY_RUN" != "true" ]]; then
-        wait_for_pod_availability "MSPCore" "$VERSION"
+        smart_wait_for_pod_availability "MSPCore" "$VERSION" "final integration module"
     fi
-    
+
     log_success "MSPCore released successfully"
 }
 
