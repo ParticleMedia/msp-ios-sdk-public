@@ -30,7 +30,7 @@ base_branch: "main"
 # ============================================================================
 pods:
   # Enable/disable CocoaPods release
-  enabled: false
+  enabled: true
   
   # Pods to release (in dependency order)
   # Note: Order matters! Dependencies must be listed before dependents.
@@ -48,7 +48,7 @@ pods:
 # ============================================================================
 spm:
   # Enable/disable SPM release
-  enabled: false
+  enabled: true
   
   # SPM packages to release
   packages:
