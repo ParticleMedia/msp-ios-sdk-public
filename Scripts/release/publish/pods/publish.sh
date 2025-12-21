@@ -43,6 +43,24 @@ if [[ -z "${ROOT_DIR:-}" ]]; then
 fi
 
 export ROOT_DIR
+
+# ============================================================================
+# Load Notification Functions
+# ============================================================================
+# Load Slack notification functions if available
+if [[ -f "$ROOT_DIR/Scripts/notify/slack.sh" ]]; then
+    # shellcheck source=Scripts/notify/slack.sh
+    source "$ROOT_DIR/Scripts/notify/slack.sh"
+    log_debug "[NOTIFY] Loaded Slack notification functions from: Scripts/notify/slack.sh" 2>/dev/null || true
+else
+    # Define stub functions to prevent errors (backward compatibility)
+    log_debug "[NOTIFY] Slack notification functions not found, using stub functions" 2>/dev/null || true
+    notify_release_failure() { :; }
+    notify_release_success() { :; }
+    notify_release_success_with_summary() { :; }
+    notify_release_warning() { :; }
+fi
+
 source "$ROOT_DIR/Scripts/lib/release-common.sh"
 # Before sourcing cocoapods.sh, ensure PODFILE is unset
 unset PODFILE 2>/dev/null || true
