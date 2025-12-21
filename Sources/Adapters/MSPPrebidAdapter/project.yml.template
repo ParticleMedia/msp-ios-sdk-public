@@ -33,7 +33,7 @@ targets:
         embed: false
       - framework: ../../Core/MSPOMSDK/OMSDK_Newsbreak1.xcframework
         embed: false
-      - framework: ../../Core/MSPSharedLibraries/PrebidMobile.xcframework
+      - framework: ../../../Build/XCFrameworks/PrebidMobile.xcframework
         embed: false
     settings:
       base:
@@ -45,7 +45,6 @@ targets:
           - $(inherited)
           - $(SRCROOT)/../../../Build/XCFrameworks
           - $(SRCROOT)/../../Core/MSPOMSDK
-          - $(SRCROOT)/../../Core/MSPSharedLibraries
 
 schemes:
   MSPPrebidAdapter:

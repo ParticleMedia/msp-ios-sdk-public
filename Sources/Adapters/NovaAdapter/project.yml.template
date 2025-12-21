@@ -31,7 +31,7 @@ targets:
     dependencies:
       - framework: ../../../Build/XCFrameworks/MSPiOSCore.xcframework
         embed: false
-      - framework: ../../Core/MSPSharedLibraries/PrebidMobile.xcframework
+      - framework: ../../../Build/XCFrameworks/PrebidMobile.xcframework
         embed: false
       - framework: ../../../Build/XCFrameworks/NovaCore.xcframework
         embed: false
@@ -52,7 +52,6 @@ targets:
         FRAMEWORK_SEARCH_PATHS:
           - $(inherited)
           - $(SRCROOT)/../../../Build/XCFrameworks
-          - $(SRCROOT)/../../Core/MSPSharedLibraries
           - $(SRCROOT)/../../../Sources/Core/ThirdParty/Kingfisher
           - $(SRCROOT)/../../../Sources/Core/ThirdParty/SnapKit
           - $(SRCROOT)/../../../Sources/Core/ThirdParty/Lottie
