@@ -581,8 +581,8 @@ main() {
         log_step "Package.swift not found, generating core-only Package.swift for spm-release"
         if ! ensure_package_swift_enabled "spm-release"; then
             log_error "[SPM][ERROR] Failed to generate core-only Package.swift"
-            return 1
-        fi
+                return 1
+            fi
         log_success "[SPM][INFO] Package.swift generated (core-only mode)"
     else
         log_info "[SPM][INFO] Package.swift found at: $repo_package_swift"
@@ -604,6 +604,23 @@ main() {
     
     # Phase 4: SPM Manifest validation
     log_section "Phase 4: SPM Manifest Validation"
+    
+    # Initialize spm_packages_array before use (fix unbound variable error)
+    local spm_packages_array=()
+    if [[ -n "${SPM_PACKAGES:-}" ]]; then
+        # Convert SPM_PACKAGES space-separated string to array
+        for package in $SPM_PACKAGES; do
+            spm_packages_array+=("$package")
+        done
+    fi
+    
+    # Use default packages if array is empty
+    if [[ ${#spm_packages_array[@]} -eq 0 ]]; then
+        log_info "SPM_PACKAGES not set or empty, using default package list"
+        spm_packages_array=("NovaCore" "NovaAdapter")
+    fi
+    
+    log_info "SPM packages to validate: ${spm_packages_array[*]}"
     
     local manifest_errors=()
     local manifest_warnings=()
@@ -762,15 +779,22 @@ main() {
     
     # Skip individual start notifications - only send final success/failure
     
-    # Convert SPM_PACKAGES space-separated string to array
-    local spm_packages_array=()
-    for package in $SPM_PACKAGES; do
-        spm_packages_array+=("$package")
-    done
-    
+    # spm_packages_array is already initialized in Phase 4 (SPM Manifest validation)
+    # Reuse the same array for consistency
     if [[ ${#spm_packages_array[@]} -eq 0 ]]; then
-        log_warn "SPM_PACKAGES is empty. Using default package list for backward compatibility."
-        spm_packages_array=("NovaCore" "NovaAdapter")
+        log_warn "spm_packages_array is empty. Re-initializing from SPM_PACKAGES."
+        # Convert SPM_PACKAGES space-separated string to array
+        spm_packages_array=()
+        if [[ -n "${SPM_PACKAGES:-}" ]]; then
+            for package in $SPM_PACKAGES; do
+                spm_packages_array+=("$package")
+            done
+        fi
+        
+        if [[ ${#spm_packages_array[@]} -eq 0 ]]; then
+            log_warn "SPM_PACKAGES is empty. Using default package list for backward compatibility."
+            spm_packages_array=("NovaCore" "NovaAdapter")
+        fi
     fi
     
     log_info "Releasing SPM packages from SPM_PACKAGES: ${spm_packages_array[*]}"
