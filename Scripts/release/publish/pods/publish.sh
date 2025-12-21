@@ -43,6 +43,24 @@ if [[ -z "${ROOT_DIR:-}" ]]; then
 fi
 
 export ROOT_DIR
+
+# ============================================================================
+# Load Notification Functions
+# ============================================================================
+# Load Slack notification functions if available
+if [[ -f "$ROOT_DIR/Scripts/notify/slack.sh" ]]; then
+    # shellcheck source=Scripts/notify/slack.sh
+    source "$ROOT_DIR/Scripts/notify/slack.sh"
+    log_debug "[NOTIFY] Loaded Slack notification functions from: Scripts/notify/slack.sh" 2>/dev/null || true
+else
+    # Define stub functions to prevent errors (backward compatibility)
+    log_debug "[NOTIFY] Slack notification functions not found, using stub functions" 2>/dev/null || true
+    notify_release_failure() { :; }
+    notify_release_success() { :; }
+    notify_release_success_with_summary() { :; }
+    notify_release_warning() { :; }
+fi
+
 source "$ROOT_DIR/Scripts/lib/release-common.sh"
 # Before sourcing cocoapods.sh, ensure PODFILE is unset
 unset PODFILE 2>/dev/null || true
@@ -314,7 +332,7 @@ update_adapter_podspec_dependencies() {
 
     log_info "[DEBUG] Constructed podspec path: $podspec"
     log_info "[DEBUG] Checking if file exists..."
-    
+
     if [[ ! -f "$podspec" ]]; then
         log_error "Podspec file not found: $podspec"
         log_error "[DEBUG] File does not exist at expected location"
@@ -376,8 +394,8 @@ ensure_release_tag_exists_and_pushed() {
     local target_commit_sha
     if ! target_commit_sha=$(git rev-parse "$target_commit" 2>/dev/null); then
         log_error "Failed to resolve target commit: $target_commit"
-            return 1
-        fi
+        return 1
+    fi
 
     log_info "Ensuring tag $tag points to commit $target_commit_sha"
 
@@ -617,68 +635,46 @@ create_github_release_for_pod() {
         
         mkdir -p "$temp_zip_dir/Binary"
         
-        # Handle NovaAdapter special case (requires both NovaAdapter.xcframework and NovaCore.xcframework)
-        if [[ "$pod" == "NovaAdapter" ]]; then
-            local nova_adapter_path="$ROOT_DIR/NovaAdapter/NovaAdapter.xcframework"
-            local nova_core_path="$ROOT_DIR/Build/XCFrameworks/NovaCore.xcframework"
-            
-            # Check if NovaAdapter.xcframework exists in NovaAdapter directory
-            if [[ ! -d "$nova_adapter_path" ]]; then
-                # Fallback: check if it's in Build/XCFrameworks
-                nova_adapter_path="$ROOT_DIR/Build/XCFrameworks/NovaAdapter.xcframework"
-                if [[ ! -d "$nova_adapter_path" ]]; then
-                    log_error "NovaAdapter.xcframework not found at: $ROOT_DIR/NovaAdapter/NovaAdapter.xcframework or $ROOT_DIR/Build/XCFrameworks/NovaAdapter.xcframework"
-                    log_error "NovaAdapter requires both NovaAdapter.xcframework and NovaCore.xcframework"
-                    rm -rf "$temp_zip_dir"
-            return 1
-                fi
-            fi
-            
-            if [[ ! -d "$nova_core_path" ]]; then
-                log_error "NovaCore.xcframework not found at: $nova_core_path"
-                rm -rf "$temp_zip_dir"
-                return 1
-            fi
-            
-            # Copy both XCFrameworks to Binary directory
-            cp -R "$nova_adapter_path" "$temp_zip_dir/Binary/NovaAdapter.xcframework"
-            cp -R "$nova_core_path" "$temp_zip_dir/Binary/NovaCore.xcframework"
-            log_info "Included NovaAdapter.xcframework and NovaCore.xcframework in zip"
-        elif [[ ! -d "$xcframework_path" ]]; then
+        if [[ ! -d "$xcframework_path" ]]; then
             log_error "XCFramework not found: $xcframework_path"
             rm -rf "$temp_zip_dir"
             return 1
-        else
-            # Copy XCFramework to temp directory structure
-            cp -R "$xcframework_path" "$temp_zip_dir/Binary/${pod}.xcframework"
         fi
         
-        # Handle MSPSharedLibraries special case (includes PrebidMobile)
+        # Copy XCFramework to temp directory structure
+        cp -R "$xcframework_path" "$temp_zip_dir/Binary/${pod}.xcframework"
+        
+        # Handle MSPSharedLibraries special case (includes PrebidMobile and source files for hybrid mode)
         if [[ "$pod" == "MSPSharedLibraries" ]]; then
             local prebid_path="$ROOT_DIR/Build/XCFrameworks/PrebidMobile.xcframework"
             if [[ -d "$prebid_path" ]]; then
                 mkdir -p "$temp_zip_dir/ThirdParty/PrebidMobile"
                 cp -R "$prebid_path" "$temp_zip_dir/ThirdParty/PrebidMobile/PrebidMobile.xcframework"
-                log_info "Included PrebidMobile.xcframework in zip"
-            else
-                log_error "PrebidMobile.xcframework not found at: $prebid_path"
-                return 1
             fi
-
-            # Note: MSPiOSCore is now published as a separate pod, not embedded in MSPSharedLibraries
+            
+            # Include MSPiOSCore.xcframework (embedded in MSPSharedLibraries)
+            local mspioscore_path="$ROOT_DIR/Build/XCFrameworks/MSPiOSCore.xcframework"
+            if [[ -d "$mspioscore_path" ]]; then
+                cp -R "$mspioscore_path" "$temp_zip_dir/Binary/MSPiOSCore.xcframework"
+                log_info "Included MSPiOSCore.xcframework in zip"
+            else
+                log_warning "MSPiOSCore.xcframework not found: $mspioscore_path"
+            fi
+            
+            # Hybrid mode: Include source files for MSPSharedLibraries
+            # This allows CocoaPods to compile source and properly expose MSPiOSCore module
+            local source_path="$ROOT_DIR/Sources/Core/MSPSharedLibraries"
+            if [[ -d "$source_path" ]]; then
+                mkdir -p "$temp_zip_dir/Sources/Core"
+                cp -R "$source_path" "$temp_zip_dir/Sources/Core/MSPSharedLibraries"
+                log_info "Included source files in zip: Sources/Core/MSPSharedLibraries/"
+            else
+                log_warning "Source path not found: $source_path (hybrid mode may not work)"
+            fi
         fi
         
-        # Set deterministic timestamp to ensure consistent checksums across builds
-        # Use a fixed date (2025-01-01 00:00:00 UTC) for all files
-        log_info "Setting deterministic timestamps for reproducible zip"
-        find "$temp_zip_dir" -exec touch -t 202501010000.00 {} \;
-
-        # Create deterministic zip file
-        # -r: recursive
-        # -X: exclude extra file attributes (ensures cross-platform reproducibility)
-        # -q: quiet mode
-        log_info "Creating deterministic zip file"
-        (cd "$temp_zip_dir" && TZ=UTC zip -r -X -q "$ROOT_DIR/$zip_name" .)
+        # Create zip file
+        (cd "$temp_zip_dir" && zip -r "$ROOT_DIR/$zip_name" . >/dev/null 2>&1)
         rm -rf "$temp_zip_dir"
         
         if [[ ! -f "$ROOT_DIR/$zip_name" ]]; then
@@ -723,78 +719,16 @@ RUBY_SCRIPT
             log_warning "Podspec not found for checksum update: $podspec"
         fi
         
-        # Create or update GitHub release (with idempotency and checksum protection)
+        # Create or update GitHub release
         local gh_release_created=false
         if gh release view "$version" --repo "ParticleMedia/msp-ios-sdk-public" &>/dev/null; then
-            log_info "Release $version already exists, checking if zip needs upload"
-
-            # Check if zip file already exists in GitHub Release
-            local existing_zip=$(gh release view "$version" --repo "ParticleMedia/msp-ios-sdk-public" --json assets -q ".assets[] | select(.name == \"$zip_name\") | .name" 2>/dev/null || echo "")
-
-            if [[ -n "$existing_zip" ]]; then
-                log_info "Zip file already exists in GitHub Release: $zip_name"
-                log_step "Verifying checksum for idempotency..."
-
-                # Download existing zip and verify checksum
-                local temp_download="/tmp/${zip_name}.existing.$$"
-                if curl -L -s -o "$temp_download" "https://github.com/ParticleMedia/msp-ios-sdk-public/releases/download/${version}/${zip_name}"; then
-                    local existing_checksum=$(shasum -a 256 "$temp_download" | cut -d' ' -f1)
-                    rm -f "$temp_download"
-
-                    log_info "GitHub Release zip checksum: $existing_checksum"
-                    log_info "Local generated zip checksum: $zip_checksum"
-
-                    if [[ "$existing_checksum" == "$zip_checksum" ]]; then
-                        log_success "✅ Checksum MATCH: Existing zip is identical to local zip"
-                        log_info "Skipping upload (idempotent operation - deterministic zip working correctly)"
-                        gh_release_created=true
-                    else
-                        log_warning "⚠️  CHECKSUM MISMATCH DETECTED!"
-                        log_warning "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-                        log_warning "  Existing GitHub zip: $existing_checksum"
-                        log_warning "  Local generated zip: $zip_checksum"
-                        log_warning "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-                        
-                        # Check if pod is already published to CocoaPods Trunk
-                        log_info "Checking if $pod $version is already published to CocoaPods Trunk..."
-                        if check_pod_availability "$pod" "$version" 2>/dev/null; then
-                            log_warning "⚠️  $pod $version is already published to CocoaPods Trunk"
-                            log_warning "⚠️  GitHub Release zip checksum mismatch is expected (old zip from previous release)"
-                            log_warning "⚠️  Skipping GitHub release update to prevent breaking CocoaPods verification"
-                            log_info "✅ Continuing with release process (pod already published, skipping zip update)"
-                            gh_release_created=true
-                        else
-                            log_error "❌ CRITICAL: This would break CocoaPods verification if this pod"
-                            log_error "    is already published to Trunk with the existing checksum!"
-                            log_error ""
-                            log_error "🛑 STOPPING to prevent corruption. Manual intervention required:"
-                            log_error "   1. Check if this pod version is already published to CocoaPods Trunk"
-                            log_error "   2. If published: Create a new version (e.g., bump rc number)"
-                            log_error "   3. If not published: Delete GitHub Release and re-run"
-                            log_error "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-                            rm -f "$ROOT_DIR/$zip_name"
-                            return 1
-                        fi
-                    fi
-                else
-                    log_warning "⚠️  Failed to download existing zip for verification"
-                    log_warning "Network issue or GitHub CDN delay. Will attempt re-upload with --clobber"
-                    if gh release upload "$version" "$ROOT_DIR/$zip_name" --repo "ParticleMedia/msp-ios-sdk-public" --clobber; then
-                        log_warning "Re-uploaded zip file (could not verify existing checksum)"
-                        gh_release_created=true
-                    fi
-                fi
-            else
-                log_info "Zip file not found in release, uploading new asset"
-                if gh release upload "$version" "$ROOT_DIR/$zip_name" --repo "ParticleMedia/msp-ios-sdk-public"; then
-                    log_success "Uploaded new zip file to GitHub Release"
-                    gh_release_created=true
-                fi
+            log_info "Release $version already exists, uploading assets"
+            if gh release upload "$version" "$ROOT_DIR/$zip_name" --repo "ParticleMedia/msp-ios-sdk-public" --clobber; then
+                gh_release_created=true
             fi
         else
             log_info "Creating new release $version"
-            if gh release create "$version" "$ROOT_DIR/$zip_name" --repo "ParticleMedia/msp-ios-sdk-public" --title "Release $version" --notes "Release $version" --latest; then
-                log_success "Created new GitHub Release and uploaded zip"
+            if gh release create "$version" "$ROOT_DIR/$zip_name" --repo "ParticleMedia/msp-ios-sdk-public" --title "Release $version" --notes "Release $version"; then
                 gh_release_created=true
             fi
         fi
@@ -816,7 +750,7 @@ RUBY_SCRIPT
             log_error "Failed to create/update GitHub release for $pod"
             return 1
         fi
-
+        
         return 0
     fi
 
@@ -839,7 +773,7 @@ RUBY_SCRIPT
         fi
     else
         log_info "Creating new release $version"
-        if gh release create "$version" "$zip_name" --repo "ParticleMedia/msp-ios-sdk-public" --title "Release $version" --notes "Release $version" --latest; then
+        if gh release create "$version" "$zip_name" --repo "ParticleMedia/msp-ios-sdk-public" --title "Release $version" --notes "Release $version"; then
             gh_release_created=true
         fi
     fi
@@ -868,8 +802,8 @@ RUBY_SCRIPT
 probe_zip_url() {
     local pod="$1"
     local version="$2"
-    local max_attempts=12  # Increased from 6 to 12 for GitHub CDN propagation
-    local sleep_seconds=10  # Increased from 5 to 10 seconds
+    local max_attempts=6
+    local sleep_seconds=5
     
     local zip_url="https://github.com/ParticleMedia/msp-ios-sdk-public/releases/download/${version}/${pod}-${version}.zip"
     
@@ -877,11 +811,8 @@ probe_zip_url() {
     
     local attempt=1
     while [[ $attempt -le $max_attempts ]]; do
-        # Follow redirects (-L) as GitHub CDN may return 302 redirects
-        # Check HTTP status code (200, 301, 302 are all valid)
-        local http_code=$(curl -sSfL -o /dev/null -w "%{http_code}" --head "$zip_url" 2>/dev/null || echo "000")
-        if [[ "$http_code" =~ ^(200|301|302)$ ]]; then
-            log_success "Zip URL is accessible: $zip_url (HTTP $http_code)"
+        if curl -sSfL --head "$zip_url" >/dev/null 2>&1; then
+            log_success "Zip URL is accessible: $zip_url"
             return 0
         else
             if [[ $attempt -lt $max_attempts ]]; then
@@ -890,7 +821,6 @@ probe_zip_url() {
             else
                 log_error "[FAIL-FAST] Zip URL not accessible after $max_attempts attempts: $zip_url"
                 log_error "Binary zip must be available before pod trunk push (HTTP distribution)"
-                log_error "Note: GitHub CDN propagation can take up to 2 minutes. Please check if the release is published (not draft)."
                 return 1
             fi
         fi
@@ -1218,38 +1148,8 @@ release_single_adapter() {
         return 1
     fi
     
-    # Check if this adapter uses binary distribution (vendored_frameworks)
-    # Binary adapters (like NovaAdapter) need GitHub release for zip file
-    local podspec_path="$ROOT_DIR/Build/ReleasePodspecs/${adapter}.podspec"
-    local uses_binary_distribution=false
-
-    if [[ -f "$podspec_path" ]]; then
-        # Check if podspec uses vendored_frameworks (binary distribution)
-        if grep -q "vendored_frameworks" "$podspec_path"; then
-            uses_binary_distribution=true
-            log_info "$adapter uses binary distribution (vendored_frameworks), creating GitHub release"
-
-            # Create GitHub release for binary adapters
-            if ! create_github_release_for_pod "$adapter" "$version"; then
-                echo "ERROR: Failed to create GitHub release for $adapter" > "$result_file"
-                log_error "Failed to create GitHub release for binary adapter: $adapter"
-                return 1
-            fi
-
-            # Stage A: Probe zip URL availability before CocoaPods publication
-            if ! probe_zip_url "$adapter" "$version"; then
-                echo "ERROR: Zip URL not accessible for $adapter after GitHub release creation" > "$result_file"
-                log_error "Zip URL not accessible for binary adapter: $adapter"
-                log_error "This is a critical failure - binary pods require accessible zip files"
-                return 1
-            fi
-        else
-            log_info "$adapter: Skipping GitHub release (source-based distribution via git+tag)"
-        fi
-    else
-        log_warning "Podspec not found at: $podspec_path, assuming source distribution"
-        log_info "$adapter: Skipping GitHub release (source-based distribution via git+tag)"
-    fi
+    # Adapters use source-based distribution (git+tag), no GitHub release needed
+    log_info "$adapter: Skipping GitHub release (source-based distribution via git+tag)"
     
     # Publish to CocoaPods
     if ! publish_pod_to_cocoapods "$adapter" "$version"; then
@@ -1461,7 +1361,7 @@ release_msp_core() {
     if [[ "$DRY_RUN" != "true" ]]; then
         smart_wait_for_pod_availability "MSPCore" "$VERSION" "final integration module"
     fi
-    
+
     log_success "MSPCore released successfully"
 }
 
@@ -1698,9 +1598,9 @@ main() {
         log_warning "Public remote not found, skipping tag verification"
     fi
     # ============================================================================
-    
+
     # Skip individual start notifications - only send final success/failure
-    
+
     # Track release statistics
     local total_pods=${#cocoapods_pods[@]}
     local successful_pods=0
@@ -1726,7 +1626,7 @@ main() {
             log_warn "[MSP][ORCH] Preflight mode: CocoaPods release failed, continuing with other steps"
         fi
     fi
-    
+
     # Step 1: Release MSPSharedLibraries
     if release_msp_shared_libraries; then
         ((successful_pods++))
