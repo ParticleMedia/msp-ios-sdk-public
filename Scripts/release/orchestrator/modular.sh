@@ -1234,9 +1234,9 @@ main() {
             if [[ "${MSP_ALLOW_LOCAL_RELEASE:-0}" == "1" ]]; then
                 log_warn "[BLOCKED] ⚠️ Config-driven publish check bypassed (local release mode)"
             else
-                log_error "[BLOCKED] Real publish not allowed on branch: $current_branch"
-                log_error "[BLOCKED] Check Scripts/release/config/release_config.yaml for branch policy"
-                exit 1
+            log_error "[BLOCKED] Real publish not allowed on branch: $current_branch"
+            log_error "[BLOCKED] Check Scripts/release/config/release_config.yaml for branch policy"
+            exit 1
             fi
         fi
     fi
