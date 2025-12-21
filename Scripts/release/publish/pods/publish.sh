@@ -314,7 +314,7 @@ update_adapter_podspec_dependencies() {
 
     log_info "[DEBUG] Constructed podspec path: $podspec"
     log_info "[DEBUG] Checking if file exists..."
-
+    
     if [[ ! -f "$podspec" ]]; then
         log_error "Podspec file not found: $podspec"
         log_error "[DEBUG] File does not exist at expected location"
@@ -376,8 +376,8 @@ ensure_release_tag_exists_and_pushed() {
     local target_commit_sha
     if ! target_commit_sha=$(git rev-parse "$target_commit" 2>/dev/null); then
         log_error "Failed to resolve target commit: $target_commit"
-        return 1
-    fi
+            return 1
+        fi
 
     log_info "Ensuring tag $tag points to commit $target_commit_sha"
 
@@ -617,14 +617,41 @@ create_github_release_for_pod() {
         
         mkdir -p "$temp_zip_dir/Binary"
         
-        if [[ ! -d "$xcframework_path" ]]; then
+        # Handle NovaAdapter special case (requires both NovaAdapter.xcframework and NovaCore.xcframework)
+        if [[ "$pod" == "NovaAdapter" ]]; then
+            local nova_adapter_path="$ROOT_DIR/NovaAdapter/NovaAdapter.xcframework"
+            local nova_core_path="$ROOT_DIR/Build/XCFrameworks/NovaCore.xcframework"
+            
+            # Check if NovaAdapter.xcframework exists in NovaAdapter directory
+            if [[ ! -d "$nova_adapter_path" ]]; then
+                # Fallback: check if it's in Build/XCFrameworks
+                nova_adapter_path="$ROOT_DIR/Build/XCFrameworks/NovaAdapter.xcframework"
+                if [[ ! -d "$nova_adapter_path" ]]; then
+                    log_error "NovaAdapter.xcframework not found at: $ROOT_DIR/NovaAdapter/NovaAdapter.xcframework or $ROOT_DIR/Build/XCFrameworks/NovaAdapter.xcframework"
+                    log_error "NovaAdapter requires both NovaAdapter.xcframework and NovaCore.xcframework"
+                    rm -rf "$temp_zip_dir"
+            return 1
+                fi
+            fi
+            
+            if [[ ! -d "$nova_core_path" ]]; then
+                log_error "NovaCore.xcframework not found at: $nova_core_path"
+                rm -rf "$temp_zip_dir"
+                return 1
+            fi
+            
+            # Copy both XCFrameworks to Binary directory
+            cp -R "$nova_adapter_path" "$temp_zip_dir/Binary/NovaAdapter.xcframework"
+            cp -R "$nova_core_path" "$temp_zip_dir/Binary/NovaCore.xcframework"
+            log_info "Included NovaAdapter.xcframework and NovaCore.xcframework in zip"
+        elif [[ ! -d "$xcframework_path" ]]; then
             log_error "XCFramework not found: $xcframework_path"
             rm -rf "$temp_zip_dir"
             return 1
+        else
+            # Copy XCFramework to temp directory structure
+            cp -R "$xcframework_path" "$temp_zip_dir/Binary/${pod}.xcframework"
         fi
-        
-        # Copy XCFramework to temp directory structure
-        cp -R "$xcframework_path" "$temp_zip_dir/Binary/${pod}.xcframework"
         
         # Handle MSPSharedLibraries special case (includes PrebidMobile)
         if [[ "$pod" == "MSPSharedLibraries" ]]; then
@@ -778,7 +805,7 @@ RUBY_SCRIPT
             log_error "Failed to create/update GitHub release for $pod"
             return 1
         fi
-        
+
         return 0
     fi
 
@@ -1192,10 +1219,10 @@ release_single_adapter() {
             log_info "$adapter uses binary distribution (vendored_frameworks), creating GitHub release"
 
             # Create GitHub release for binary adapters
-            if ! create_github_release_for_pod "$adapter" "$version"; then
-                echo "ERROR: Failed to create GitHub release for $adapter" > "$result_file"
+    if ! create_github_release_for_pod "$adapter" "$version"; then
+        echo "ERROR: Failed to create GitHub release for $adapter" > "$result_file"
                 log_error "Failed to create GitHub release for binary adapter: $adapter"
-                return 1
+        return 1
             fi
 
             # Stage A: Probe zip URL availability before CocoaPods publication
@@ -1423,7 +1450,7 @@ release_msp_core() {
     if [[ "$DRY_RUN" != "true" ]]; then
         smart_wait_for_pod_availability "MSPCore" "$VERSION" "final integration module"
     fi
-
+    
     log_success "MSPCore released successfully"
 }
 
@@ -1660,9 +1687,9 @@ main() {
         log_warning "Public remote not found, skipping tag verification"
     fi
     # ============================================================================
-
+    
     # Skip individual start notifications - only send final success/failure
-
+    
     # Track release statistics
     local total_pods=${#cocoapods_pods[@]}
     local successful_pods=0
@@ -1688,7 +1715,7 @@ main() {
             log_warn "[MSP][ORCH] Preflight mode: CocoaPods release failed, continuing with other steps"
         fi
     fi
-
+    
     # Step 1: Release MSPSharedLibraries
     if release_msp_shared_libraries; then
         ((successful_pods++))
