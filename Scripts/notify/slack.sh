@@ -14,16 +14,27 @@ msp_enforce_main_repo_or_exit
 # Usage:   source Scripts/notify/slack.sh
 #
 # Required Environment Variables:
-#   SLACK_WEBHOOK_URL - Slack incoming webhook URL (required for notifications)
+#   SLACK_WEBHOOK_URL - Slack incoming webhook URL (required for channel notifications)
 #
-# Optional Environment Variables:
+# Optional Environment Variables (Basic):
 #   SLACK_CHANNEL     - Target channel (default: #releases)
 #   SLACK_USERNAME    - Bot username (default: MSP iOS SDK Bot)
 #   SLACK_ICON_EMOJI  - Bot icon (default: :rocket:)
 #
+# Optional Environment Variables (Advanced):
+#   SLACK_BOT_TOKEN          - Bot token for DM and API features (xoxb-...)
+#   MSP_SLACK_DM_OVERRIDE    - User ID to send DM instead of channel (e.g., U0910UJPD7B)
+#   MSP_SLACK_ALERT_ENV      - Environment mode: test/prod (default: prod)
+#   MSP_SLACK_TEST_WEBHOOK   - Test webhook URL for MSP_SLACK_ALERT_ENV=test
+#
 # Configuration:
 #   Can also be configured via Scripts/config/slack.conf
 #   Environment variables take precedence over config file values.
+#
+# Advanced Features:
+#   - Direct Messages: Set MSP_SLACK_DM_OVERRIDE + SLACK_BOT_TOKEN
+#   - Test Mode: Set MSP_SLACK_ALERT_ENV=test to use MSP_SLACK_TEST_WEBHOOK
+#   - Production: Set MSP_SLACK_ALERT_ENV=prod (or unset) for production notifications
 # ============================================================================
 
 # Prevent multiple sourcing
@@ -90,6 +101,7 @@ load_slack_config() {
                 # Only set if not already set in environment (environment takes precedence)
                 if [[ -n "$key" ]] && [[ -n "$value" ]]; then
                     case "$key" in
+                        # Basic Slack Configuration
                         SLACK_WEBHOOK_URL)
                             [[ -z "${SLACK_WEBHOOK_URL:-}" ]] && export SLACK_WEBHOOK_URL="$value"
                             ;;
@@ -101,6 +113,19 @@ load_slack_config() {
                             ;;
                         SLACK_ICON_EMOJI)
                             [[ -z "${SLACK_ICON_EMOJI:-}" ]] && export SLACK_ICON_EMOJI="$value"
+                            ;;
+                        # Advanced Slack Configuration (DM, Test Mode, Bot Token)
+                        SLACK_BOT_TOKEN)
+                            [[ -z "${SLACK_BOT_TOKEN:-}" ]] && export SLACK_BOT_TOKEN="$value"
+                            ;;
+                        MSP_SLACK_DM_OVERRIDE)
+                            [[ -z "${MSP_SLACK_DM_OVERRIDE:-}" ]] && export MSP_SLACK_DM_OVERRIDE="$value"
+                            ;;
+                        MSP_SLACK_ALERT_ENV)
+                            [[ -z "${MSP_SLACK_ALERT_ENV:-}" ]] && export MSP_SLACK_ALERT_ENV="$value"
+                            ;;
+                        MSP_SLACK_TEST_WEBHOOK)
+                            [[ -z "${MSP_SLACK_TEST_WEBHOOK:-}" ]] && export MSP_SLACK_TEST_WEBHOOK="$value"
                             ;;
                     esac
                 fi
