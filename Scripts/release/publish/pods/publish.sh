@@ -641,8 +641,17 @@ create_github_release_for_pod() {
             # Note: MSPiOSCore is now published as a separate pod, not embedded in MSPSharedLibraries
         fi
         
-        # Create zip file
-        (cd "$temp_zip_dir" && zip -r "$ROOT_DIR/$zip_name" . >/dev/null 2>&1)
+        # Set deterministic timestamp to ensure consistent checksums across builds
+        # Use a fixed date (2025-01-01 00:00:00 UTC) for all files
+        log_info "Setting deterministic timestamps for reproducible zip"
+        find "$temp_zip_dir" -exec touch -t 202501010000.00 {} \;
+
+        # Create deterministic zip file
+        # -r: recursive
+        # -X: exclude extra file attributes (ensures cross-platform reproducibility)
+        # -q: quiet mode
+        log_info "Creating deterministic zip file"
+        (cd "$temp_zip_dir" && TZ=UTC zip -r -X -q "$ROOT_DIR/$zip_name" .)
         rm -rf "$temp_zip_dir"
         
         if [[ ! -f "$ROOT_DIR/$zip_name" ]]; then
@@ -687,16 +696,67 @@ RUBY_SCRIPT
             log_warning "Podspec not found for checksum update: $podspec"
         fi
         
-        # Create or update GitHub release
+        # Create or update GitHub release (with idempotency and checksum protection)
         local gh_release_created=false
         if gh release view "$version" --repo "ParticleMedia/msp-ios-sdk-public" &>/dev/null; then
-            log_info "Release $version already exists, uploading assets"
-            if gh release upload "$version" "$ROOT_DIR/$zip_name" --repo "ParticleMedia/msp-ios-sdk-public" --clobber; then
-                gh_release_created=true
+            log_info "Release $version already exists, checking if zip needs upload"
+
+            # Check if zip file already exists in GitHub Release
+            local existing_zip=$(gh release view "$version" --repo "ParticleMedia/msp-ios-sdk-public" --json assets -q ".assets[] | select(.name == \"$zip_name\") | .name" 2>/dev/null || echo "")
+
+            if [[ -n "$existing_zip" ]]; then
+                log_info "Zip file already exists in GitHub Release: $zip_name"
+                log_step "Verifying checksum for idempotency..."
+
+                # Download existing zip and verify checksum
+                local temp_download="/tmp/${zip_name}.existing.$$"
+                if curl -L -s -o "$temp_download" "https://github.com/ParticleMedia/msp-ios-sdk-public/releases/download/${version}/${zip_name}"; then
+                    local existing_checksum=$(shasum -a 256 "$temp_download" | cut -d' ' -f1)
+                    rm -f "$temp_download"
+
+                    log_info "GitHub Release zip checksum: $existing_checksum"
+                    log_info "Local generated zip checksum: $zip_checksum"
+
+                    if [[ "$existing_checksum" == "$zip_checksum" ]]; then
+                        log_success "✅ Checksum MATCH: Existing zip is identical to local zip"
+                        log_info "Skipping upload (idempotent operation - deterministic zip working correctly)"
+                        gh_release_created=true
+                    else
+                        log_error "❌ CHECKSUM MISMATCH DETECTED!"
+                        log_error "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+                        log_error "  Existing GitHub zip: $existing_checksum"
+                        log_error "  Local generated zip: $zip_checksum"
+                        log_error "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+                        log_error "⚠️  CRITICAL: This would break CocoaPods verification if this pod"
+                        log_error "    is already published to Trunk with the existing checksum!"
+                        log_error ""
+                        log_error "🛑 STOPPING to prevent corruption. Manual intervention required:"
+                        log_error "   1. Check if this pod version is already published to CocoaPods Trunk"
+                        log_error "   2. If published: Create a new version (e.g., bump rc number)"
+                        log_error "   3. If not published: Delete GitHub Release and re-run"
+                        log_error "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+                        rm -f "$ROOT_DIR/$zip_name"
+                        return 1
+                    fi
+                else
+                    log_warning "⚠️  Failed to download existing zip for verification"
+                    log_warning "Network issue or GitHub CDN delay. Will attempt re-upload with --clobber"
+                    if gh release upload "$version" "$ROOT_DIR/$zip_name" --repo "ParticleMedia/msp-ios-sdk-public" --clobber; then
+                        log_warning "Re-uploaded zip file (could not verify existing checksum)"
+                        gh_release_created=true
+                    fi
+                fi
+            else
+                log_info "Zip file not found in release, uploading new asset"
+                if gh release upload "$version" "$ROOT_DIR/$zip_name" --repo "ParticleMedia/msp-ios-sdk-public"; then
+                    log_success "Uploaded new zip file to GitHub Release"
+                    gh_release_created=true
+                fi
             fi
         else
             log_info "Creating new release $version"
             if gh release create "$version" "$ROOT_DIR/$zip_name" --repo "ParticleMedia/msp-ios-sdk-public" --title "Release $version" --notes "Release $version" --latest; then
+                log_success "Created new GitHub Release and uploaded zip"
                 gh_release_created=true
             fi
         fi
@@ -780,8 +840,10 @@ probe_zip_url() {
     local attempt=1
     while [[ $attempt -le $max_attempts ]]; do
         # Follow redirects (-L) as GitHub CDN may return 302 redirects
-        if curl -sSfL --head "$zip_url" >/dev/null 2>&1; then
-            log_success "Zip URL is accessible: $zip_url"
+        # Check HTTP status code (200, 301, 302 are all valid)
+        local http_code=$(curl -sSfL -o /dev/null -w "%{http_code}" --head "$zip_url" 2>/dev/null || echo "000")
+        if [[ "$http_code" =~ ^(200|301|302)$ ]]; then
+            log_success "Zip URL is accessible: $zip_url (HTTP $http_code)"
             return 0
         else
             if [[ $attempt -lt $max_attempts ]]; then
@@ -1118,8 +1180,38 @@ release_single_adapter() {
         return 1
     fi
     
-    # Adapters use source-based distribution (git+tag), no GitHub release needed
-    log_info "$adapter: Skipping GitHub release (source-based distribution via git+tag)"
+    # Check if this adapter uses binary distribution (vendored_frameworks)
+    # Binary adapters (like NovaAdapter) need GitHub release for zip file
+    local podspec_path="$ROOT_DIR/Build/ReleasePodspecs/${adapter}.podspec"
+    local uses_binary_distribution=false
+
+    if [[ -f "$podspec_path" ]]; then
+        # Check if podspec uses vendored_frameworks (binary distribution)
+        if grep -q "vendored_frameworks" "$podspec_path"; then
+            uses_binary_distribution=true
+            log_info "$adapter uses binary distribution (vendored_frameworks), creating GitHub release"
+
+            # Create GitHub release for binary adapters
+            if ! create_github_release_for_pod "$adapter" "$version"; then
+                echo "ERROR: Failed to create GitHub release for $adapter" > "$result_file"
+                log_error "Failed to create GitHub release for binary adapter: $adapter"
+                return 1
+            fi
+
+            # Stage A: Probe zip URL availability before CocoaPods publication
+            if ! probe_zip_url "$adapter" "$version"; then
+                echo "ERROR: Zip URL not accessible for $adapter after GitHub release creation" > "$result_file"
+                log_error "Zip URL not accessible for binary adapter: $adapter"
+                log_error "This is a critical failure - binary pods require accessible zip files"
+                return 1
+            fi
+        else
+            log_info "$adapter: Skipping GitHub release (source-based distribution via git+tag)"
+        fi
+    else
+        log_warning "Podspec not found at: $podspec_path, assuming source distribution"
+        log_info "$adapter: Skipping GitHub release (source-based distribution via git+tag)"
+    fi
     
     # Publish to CocoaPods
     if ! publish_pod_to_cocoapods "$adapter" "$version"; then
