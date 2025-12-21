@@ -749,21 +749,32 @@ RUBY_SCRIPT
                         log_info "Skipping upload (idempotent operation - deterministic zip working correctly)"
                         gh_release_created=true
                     else
-                        log_error "❌ CHECKSUM MISMATCH DETECTED!"
-                        log_error "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-                        log_error "  Existing GitHub zip: $existing_checksum"
-                        log_error "  Local generated zip: $zip_checksum"
-                        log_error "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-                        log_error "⚠️  CRITICAL: This would break CocoaPods verification if this pod"
-                        log_error "    is already published to Trunk with the existing checksum!"
-                        log_error ""
-                        log_error "🛑 STOPPING to prevent corruption. Manual intervention required:"
-                        log_error "   1. Check if this pod version is already published to CocoaPods Trunk"
-                        log_error "   2. If published: Create a new version (e.g., bump rc number)"
-                        log_error "   3. If not published: Delete GitHub Release and re-run"
-                        log_error "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-                        rm -f "$ROOT_DIR/$zip_name"
-                        return 1
+                        log_warning "⚠️  CHECKSUM MISMATCH DETECTED!"
+                        log_warning "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+                        log_warning "  Existing GitHub zip: $existing_checksum"
+                        log_warning "  Local generated zip: $zip_checksum"
+                        log_warning "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+                        
+                        # Check if pod is already published to CocoaPods Trunk
+                        log_info "Checking if $pod $version is already published to CocoaPods Trunk..."
+                        if check_pod_availability "$pod" "$version" 2>/dev/null; then
+                            log_warning "⚠️  $pod $version is already published to CocoaPods Trunk"
+                            log_warning "⚠️  GitHub Release zip checksum mismatch is expected (old zip from previous release)"
+                            log_warning "⚠️  Skipping GitHub release update to prevent breaking CocoaPods verification"
+                            log_info "✅ Continuing with release process (pod already published, skipping zip update)"
+                            gh_release_created=true
+                        else
+                            log_error "❌ CRITICAL: This would break CocoaPods verification if this pod"
+                            log_error "    is already published to Trunk with the existing checksum!"
+                            log_error ""
+                            log_error "🛑 STOPPING to prevent corruption. Manual intervention required:"
+                            log_error "   1. Check if this pod version is already published to CocoaPods Trunk"
+                            log_error "   2. If published: Create a new version (e.g., bump rc number)"
+                            log_error "   3. If not published: Delete GitHub Release and re-run"
+                            log_error "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+                            rm -f "$ROOT_DIR/$zip_name"
+                            return 1
+                        fi
                     fi
                 else
                     log_warning "⚠️  Failed to download existing zip for verification"
@@ -1219,10 +1230,10 @@ release_single_adapter() {
             log_info "$adapter uses binary distribution (vendored_frameworks), creating GitHub release"
 
             # Create GitHub release for binary adapters
-    if ! create_github_release_for_pod "$adapter" "$version"; then
-        echo "ERROR: Failed to create GitHub release for $adapter" > "$result_file"
+            if ! create_github_release_for_pod "$adapter" "$version"; then
+                echo "ERROR: Failed to create GitHub release for $adapter" > "$result_file"
                 log_error "Failed to create GitHub release for binary adapter: $adapter"
-        return 1
+                return 1
             fi
 
             # Stage A: Probe zip URL availability before CocoaPods publication
