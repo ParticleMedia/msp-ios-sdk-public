@@ -46,7 +46,6 @@ let package = Package(
         .library(name: "NovaCoreLinker", targets: ["NovaCoreLinker"]),  // NovaCore + Lottie
         .library(name: "MSPCore", targets: ["MSPCore"]),
         .library(name: "MSPCoreLinker", targets: ["MSPCoreLinker"]),  // MSPCore + SwiftProtobuf
-        .library(name: "MSPOMSDK", targets: ["MSPOMSDK"]),
         
         // ───────────────────────────────────────────────────────────────────────
         // Adapter Module Products (10) - Swift Source Targets
@@ -123,7 +122,8 @@ let package = Package(
         
         .binaryTarget(
             name: "NovaCore",
-            path: "Build/XCFrameworks/NovaCore.xcframework"
+            url: "https://github.com/ParticleMedia/msp-ios-sdk-public/releases/download/0.3.0-rc.5/NovaCore.xcframework.zip",
+            checksum: "60b301814e9f265dc24f5b45956c1677b5d0e0fb05b21bd1ccc341f36a3c1d56"
         ),
         
         /// Shimmer - Facebook shimmering effect library (Objective-C)
@@ -165,10 +165,6 @@ let package = Package(
         ),
         
         .binaryTarget(
-            name: "MSPOMSDK",
-            path: "Build/XCFrameworks/MSPOMSDK.xcframework"
-        ),
-        
         // ═══════════════════════════════════════════════════════════════════════
         // SECTION 2: THIRD-PARTY SDKs - Binary XCFrameworks (8)
         // ═══════════════════════════════════════════════════════════════════════
@@ -315,7 +311,6 @@ let package = Package(
                 "MSPSharedLibraries",
                 "MSPiOSCore",
                 "NovaCoreLinker",
-                "MSPOMSDK",
                 .product(name: "Kingfisher", package: "Kingfisher"),
                 .product(name: "SnapKit", package: "SnapKit"),
             ],
