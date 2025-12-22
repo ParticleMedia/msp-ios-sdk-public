@@ -229,12 +229,12 @@ create_tag() {
     local message="${2:-Release $tag_name}"
     local force="${3:-false}"
     local target_commit="${4:-HEAD}"
-
+    
     if [[ -z "$tag_name" ]]; then
         log_error "Tag name is required"
         return 1
     fi
-
+    
     # Resolve target commit to full SHA
     local target_commit_sha
     if ! target_commit_sha=$(git rev-parse "$target_commit" 2>/dev/null); then
@@ -256,14 +256,14 @@ create_tag() {
             else
                 log_warning "Tag $tag_name exists but points to wrong commit: $existing_commit_sha (expected: $target_commit_sha)"
 
-                if [[ "$force" == "true" ]]; then
+        if [[ "$force" == "true" ]]; then
                     log_info "Force mode: deleting incorrect tag..."
-                    git tag -d "$tag_name" 2>/dev/null || true
-                else
+            git tag -d "$tag_name" 2>/dev/null || true
+        else
                     log_error "Tag points to wrong commit. Use force=true to recreate"
                     return 1
-                fi
-            fi
+        fi
+    fi
         fi
     fi
 
@@ -278,7 +278,7 @@ create_tag() {
             log_error "Tag verification failed: tag points to $final_commit_sha instead of $target_commit_sha"
             return 1
         fi
-
+        
         # Track tag creation in state
         if command -v msp_state_mark_git_flag &>/dev/null; then
             msp_state_mark_git_flag "tag_created" true
@@ -286,7 +286,7 @@ create_tag() {
                 msp_state_set_tag_name "$tag_name"
             fi
         fi
-
+        
         return 0
     else
         log_error "Failed to create tag $tag_name"
