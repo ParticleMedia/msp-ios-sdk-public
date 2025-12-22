@@ -332,7 +332,7 @@ update_adapter_podspec_dependencies() {
 
     log_info "[DEBUG] Constructed podspec path: $podspec"
     log_info "[DEBUG] Checking if file exists..."
-
+    
     if [[ ! -f "$podspec" ]]; then
         log_error "Podspec file not found: $podspec"
         log_error "[DEBUG] File does not exist at expected location"
@@ -394,8 +394,8 @@ ensure_release_tag_exists_and_pushed() {
     local target_commit_sha
     if ! target_commit_sha=$(git rev-parse "$target_commit" 2>/dev/null); then
         log_error "Failed to resolve target commit: $target_commit"
-        return 1
-    fi
+            return 1
+        fi
 
     log_info "Ensuring tag $tag points to commit $target_commit_sha"
 
@@ -487,7 +487,13 @@ ensure_release_tag_exists_and_pushed() {
     # ========================================================================
     # CocoaPods will checkout the tag from public repo, so the commit
     # containing source files must exist in public repo first
-    if git remote | grep -q "^public$"; then
+    # 
+    # NOTE: If SKIP_PUBLIC_REMOTE_PUSH is set, skip this step (for cases where
+    # GitHub Push Protection blocks the push due to secrets in commit history)
+    if [[ "${SKIP_PUBLIC_REMOTE_PUSH:-0}" == "1" ]]; then
+        log_warning "SKIP_PUBLIC_REMOTE_PUSH=1: Skipping public remote push (secrets may be in commit history)"
+        log_warning "CocoaPods may fail if tag is not accessible on public remote"
+    elif git remote | grep -q "^public$"; then
         log_info "Ensuring commit $target_commit_sha exists on public remote"
 
         # Get current branch (or use HEAD if detached)
@@ -508,7 +514,12 @@ ensure_release_tag_exists_and_pushed() {
                     # Try to push to a temporary ref
                     if ! git push public HEAD:refs/heads/release-temp 2>/dev/null; then
                         log_error "Failed to push commit to public remote"
-                        return 1
+                        # If MSP_ALLOW_PUBLIC_PUSH_FAILURE is set, continue anyway
+                        if [[ "${MSP_ALLOW_PUBLIC_PUSH_FAILURE:-0}" == "1" ]]; then
+                            log_warning "MSP_ALLOW_PUBLIC_PUSH_FAILURE=1: Continuing despite public remote push failure"
+                        else
+                            return 1
+                        fi
                     fi
                 fi
             else
@@ -519,7 +530,12 @@ ensure_release_tag_exists_and_pushed() {
                     log_warning "Normal push failed, trying with -u flag"
                     if ! git push -u public "$current_branch" 2>/dev/null; then
                         log_error "Failed to push branch to public remote"
-                        return 1
+                        # If MSP_ALLOW_PUBLIC_PUSH_FAILURE is set, continue anyway
+                        if [[ "${MSP_ALLOW_PUBLIC_PUSH_FAILURE:-0}" == "1" ]]; then
+                            log_warning "MSP_ALLOW_PUBLIC_PUSH_FAILURE=1: Continuing despite public remote push failure"
+                        else
+                            return 1
+                        fi
                     fi
                 fi
             fi
@@ -535,7 +551,12 @@ ensure_release_tag_exists_and_pushed() {
             # Try alternative verification
             if ! git branch -r --contains "$target_commit_sha" 2>/dev/null | grep -q "public/"; then
                 log_error "Commit verification failed: $target_commit_sha not accessible on public"
-                return 1
+                # If MSP_ALLOW_PUBLIC_PUSH_FAILURE is set, continue anyway
+                if [[ "${MSP_ALLOW_PUBLIC_PUSH_FAILURE:-0}" == "1" ]]; then
+                    log_warning "MSP_ALLOW_PUBLIC_PUSH_FAILURE=1: Continuing despite verification failure"
+                else
+                    return 1
+                fi
             fi
         fi
 
@@ -544,13 +565,21 @@ ensure_release_tag_exists_and_pushed() {
     # ========================================================================
 
     # Push tag to public if it doesn't exist or was deleted
-    if [[ "$tag_exists_on_public" == "false" ]] && git remote | grep -q "^public$"; then
+    if [[ "${SKIP_PUBLIC_REMOTE_PUSH:-0}" == "1" ]]; then
+        log_warning "SKIP_PUBLIC_REMOTE_PUSH=1: Skipping tag push to public remote"
+    elif [[ "$tag_exists_on_public" == "false" ]] && git remote | grep -q "^public$"; then
         log_info "Pushing tag to public: $tag"
         if ! git push public "refs/tags/$tag"; then
             log_error "Failed to push tag to public: $tag"
-            return 1
+            # If MSP_ALLOW_PUBLIC_PUSH_FAILURE is set, continue anyway
+            if [[ "${MSP_ALLOW_PUBLIC_PUSH_FAILURE:-0}" == "1" ]]; then
+                log_warning "MSP_ALLOW_PUBLIC_PUSH_FAILURE=1: Continuing despite tag push failure"
+            else
+                return 1
+            fi
+        else
+            log_success "Pushed tag to public: $tag"
         fi
-        log_success "Pushed tag to public: $tag"
     fi
 
     # Final verification
@@ -648,7 +677,7 @@ create_github_release_for_pod() {
             rm -rf "$temp_zip_dir"
             return 1
         fi
-        
+
         # Copy XCFramework to temp directory structure
         cp -R "$xcframework_path" "$temp_zip_dir/Binary/${pod}.xcframework"
         
@@ -758,7 +787,7 @@ RUBY_SCRIPT
             log_error "Failed to create/update GitHub release for $pod"
             return 1
         fi
-        
+
         return 0
     fi
 
@@ -1369,7 +1398,7 @@ release_msp_core() {
     if [[ "$DRY_RUN" != "true" ]]; then
         smart_wait_for_pod_availability "MSPCore" "$VERSION" "final integration module"
     fi
-
+    
     log_success "MSPCore released successfully"
 }
 
@@ -1591,26 +1620,34 @@ main() {
     # Verify tag is accessible on public remote (skip in DRY_RUN mode)
     if [[ "${DRY_RUN:-false}" == "true" ]]; then
         log_info "DRY RUN: Skipping tag verification on public remote"
+    elif [[ "${SKIP_PUBLIC_REMOTE_PUSH:-0}" == "1" ]]; then
+        log_warning "SKIP_PUBLIC_REMOTE_PUSH=1: Skipping tag verification on public remote"
     elif git remote | grep -q "^public$"; then
         if ! git ls-remote --tags public "refs/tags/$VERSION" 2>/dev/null | grep -q "$VERSION"; then
             log_error "Tag $VERSION not found on public remote after push"
             log_error "GitHub Release creation will fail or create draft release"
 
-            # FAIL-FAST in release tier
+            # FAIL-FAST in release tier (unless MSP_ALLOW_PUBLIC_PUSH_FAILURE is set)
             if [[ "${MSP_RELEASE_TIER:-}" == "release" ]] || [[ "${MSP_RELEASE_TIER:-}" == "production" ]]; then
-                log_error "[FAIL-FAST] Tag not accessible on public remote. Aborting."
-                exit 1
+                if [[ "${MSP_ALLOW_PUBLIC_PUSH_FAILURE:-0}" == "1" ]]; then
+                    log_warning "MSP_ALLOW_PUBLIC_PUSH_FAILURE=1: Continuing despite tag verification failure"
+                else
+                    log_error "[FAIL-FAST] Tag not accessible on public remote. Aborting."
+                    exit 1
+                fi
+            else
+                return 1
             fi
-            return 1
+        else
+            log_success "Tag $VERSION verified on public remote"
         fi
-        log_success "Tag $VERSION verified on public remote"
     else
         log_warning "Public remote not found, skipping tag verification"
     fi
     # ============================================================================
-
+    
     # Skip individual start notifications - only send final success/failure
-
+    
     # Track release statistics
     local total_pods=${#cocoapods_pods[@]}
     local successful_pods=0
@@ -1636,7 +1673,7 @@ main() {
             log_warn "[MSP][ORCH] Preflight mode: CocoaPods release failed, continuing with other steps"
         fi
     fi
-
+    
     # Step 1: Release MSPSharedLibraries
     if release_msp_shared_libraries; then
         ((successful_pods++))
