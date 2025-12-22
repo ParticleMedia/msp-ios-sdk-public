@@ -454,6 +454,14 @@ ensure_release_tag_exists_and_pushed() {
         fi
     fi
 
+    # Skip all Git operations in DRY_RUN mode
+    if [[ "${DRY_RUN:-false}" == "true" ]]; then
+        log_info "DRY RUN: Would create/push tag $tag at commit $target_commit_sha"
+        log_info "DRY RUN: Would push commit to public remote"
+        log_info "DRY RUN: Would push tag to public remote"
+        return 0
+    fi
+
     # Create local tag if it doesn't exist or was deleted
     if [[ "$tag_exists_locally" == "false" ]]; then
         log_info "Creating local git tag: $tag at commit $target_commit_sha"
@@ -1580,8 +1588,10 @@ main() {
     log_info "Waiting 5 seconds for tag propagation..."
     sleep 5
 
-    # Verify tag is accessible on public remote
-    if git remote | grep -q "^public$"; then
+    # Verify tag is accessible on public remote (skip in DRY_RUN mode)
+    if [[ "${DRY_RUN:-false}" == "true" ]]; then
+        log_info "DRY RUN: Skipping tag verification on public remote"
+    elif git remote | grep -q "^public$"; then
         if ! git ls-remote --tags public "refs/tags/$VERSION" 2>/dev/null | grep -q "$VERSION"; then
             log_error "Tag $VERSION not found on public remote after push"
             log_error "GitHub Release creation will fail or create draft release"

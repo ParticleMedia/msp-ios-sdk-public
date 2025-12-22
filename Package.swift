@@ -164,7 +164,6 @@ let package = Package(
             path: "Sources/Common/MSPCoreWrapper"
         ),
         
-        .binaryTarget(
         // ═══════════════════════════════════════════════════════════════════════
         // SECTION 2: THIRD-PARTY SDKs - Binary XCFrameworks (8)
         // ═══════════════════════════════════════════════════════════════════════

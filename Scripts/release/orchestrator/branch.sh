@@ -120,16 +120,28 @@ check_base_branch() {
     log_step "Checking base branch: $BASE_BRANCH"
     
     if ! git show-ref --verify --quiet "refs/heads/$BASE_BRANCH"; then
-        log_error "Base branch '$BASE_BRANCH' does not exist locally"
-        exit 1
+        if [[ "$DRY_RUN" == "true" ]]; then
+            log_warn "DRY RUN: Base branch '$BASE_BRANCH' does not exist locally (continuing)"
+        else
+            log_error "Base branch '$BASE_BRANCH' does not exist locally"
+            exit 1
+        fi
     fi
     
     if ! git show-ref --verify --quiet "refs/remotes/origin/$BASE_BRANCH"; then
-        log_error "Base branch '$BASE_BRANCH' does not exist on remote"
-        exit 1
+        if [[ "$DRY_RUN" == "true" ]]; then
+            log_warn "DRY RUN: Base branch '$BASE_BRANCH' does not exist on remote (continuing)"
+        else
+            log_error "Base branch '$BASE_BRANCH' does not exist on remote"
+            exit 1
+        fi
     fi
     
-    log_success "Base branch '$BASE_BRANCH' exists"
+    if [[ "$DRY_RUN" != "true" ]]; then
+        log_success "Base branch '$BASE_BRANCH' exists"
+    else
+        log_info "DRY RUN: Skipping base branch validation"
+    fi
 }
 
 # Check if release branch already exists

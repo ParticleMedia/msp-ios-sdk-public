@@ -1153,7 +1153,13 @@ run_xcframework_verification() {
             if [[ -n "$modules_json" ]] && [[ "$modules_json" != "{}" ]]; then
                 total_modules=$(echo "$modules_json" | jq 'length' 2>/dev/null || echo "0")
                 passed_modules=$(echo "$modules_json" | jq '[.[] | select(.success == 1)] | length' 2>/dev/null || echo "0")
-                failed_modules=$((total_modules - passed_modules))
+                # Clean whitespace and ensure numeric values
+                total_modules=$(echo "${total_modules}" | tr -d '[:space:]' || echo "0")
+                passed_modules=$(echo "${passed_modules}" | tr -d '[:space:]' || echo "0")
+                # Ensure default values and calculate
+                total_modules="${total_modules:-0}"
+                passed_modules="${passed_modules:-0}"
+                failed_modules=$(( ${total_modules:-0} - ${passed_modules:-0} ))
             fi
 
             # Write modules data to state.json under run_xcframework_verification
@@ -1248,8 +1254,11 @@ main() {
     log_section "Phase 4: Security Checks"
     
     # Check git working directory is clean
-    # For preflight mode, allow uncommitted changes (warn only)
-    if ! git diff --exit-code >/dev/null 2>&1 || ! git diff --cached --exit-code >/dev/null 2>&1; then
+    # For preflight mode and DRY_RUN mode, allow uncommitted changes (warn only)
+    local dry_run="${DRY_RUN:-false}"
+    if [[ "$dry_run" == "true" ]]; then
+        log_info "[MSP][ORCH] DRY RUN mode: Allowing uncommitted changes"
+    elif ! git diff --exit-code >/dev/null 2>&1 || ! git diff --cached --exit-code >/dev/null 2>&1; then
         if [[ "$RELEASE_TIER" == "preflight" ]]; then
             log_warn "[MSP][ORCH][WARN] Git working directory is not clean (preflight mode - continuing)"
             git status --short || true
@@ -1263,8 +1272,8 @@ main() {
         log_success "Git working directory is clean"
     fi
     
-    # Check if tag exists (unless override allowed)
-    if [[ -n "$VERSION" ]]; then
+    # Check if tag exists (unless override allowed or DRY_RUN mode)
+    if [[ -n "$VERSION" ]] && [[ "${DRY_RUN:-false}" != "true" ]]; then
         if git rev-parse "v${VERSION}" >/dev/null 2>&1 || git rev-parse "$VERSION" >/dev/null 2>&1; then
             if [[ "${MSP_ALLOW_EXISTING_TAG:-0}" != "1" ]]; then
                 log_error "[MSP][ORCH][ERROR] Tag already exists: $VERSION"
@@ -1274,6 +1283,8 @@ main() {
                 log_warn "Tag $VERSION already exists (override allowed)"
             fi
         fi
+    elif [[ "${DRY_RUN:-false}" == "true" ]]; then
+        log_info "[MSP][ORCH] DRY RUN: Skipping tag existence check"
     fi
     
     # Production release validation

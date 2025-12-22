@@ -562,6 +562,12 @@ smart_wait_for_pod_availability() {
     local version="$2"
     local context="${3:-}"
 
+    # Skip waiting in DRY_RUN mode
+    if [[ "${DRY_RUN:-false}" == "true" ]]; then
+        log_info "DRY RUN: Skipping pod availability wait for $pod_name $version"
+        return 0
+    fi
+
     if [[ -z "$pod_name" || -z "$version" ]]; then
         log_error "Usage: smart_wait_for_pod_availability <pod_name> <version> [context]"
         return 1
