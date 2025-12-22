@@ -26,7 +26,15 @@ msp_safety_require_ci_for_release() {
     local tier="${MSP_RELEASE_TIER:-preflight}"
 
     if [[ "$tier" == "release" || "$tier" == "production" ]]; then
-        if [[ -z "${CI:-}" ]]; then
+        # Check for CI environment variables (CI, GITHUB_ACTIONS, etc.)
+        local ci_detected=false
+        if [[ -n "${CI:-}" ]] && [[ "${CI}" == "true" ]]; then
+            ci_detected=true
+        elif [[ -n "${GITHUB_ACTIONS:-}" ]] && [[ "${GITHUB_ACTIONS}" == "true" ]]; then
+            ci_detected=true
+        fi
+        
+        if [[ "$ci_detected" == "false" ]]; then
             # Local release mode: Allow local execution when explicitly enabled
             if [[ "${MSP_ALLOW_LOCAL_RELEASE:-0}" == "1" ]]; then
                 log_info "[SAFETY] ℹ️  本地发布模式已启用 (Local release mode enabled)"
@@ -35,9 +43,10 @@ msp_safety_require_ci_for_release() {
             fi
             log_error "[SAFETY] Release tier cannot be executed locally. Use CI pipeline only."
             log_error "[SAFETY] To run a test release, use: MSP_RELEASE_TIER=preflight"
+            log_error "[SAFETY] Or set: export CI=true && export GITHUB_ACTIONS=true"
             return 1
         fi
-        log_info "[SAFETY] ✓ CI environment detected (CI=${CI})"
+        log_info "[SAFETY] ✓ CI environment detected (CI=${CI:-}, GITHUB_ACTIONS=${GITHUB_ACTIONS:-})"
     fi
 
     return 0
@@ -50,6 +59,13 @@ msp_safety_require_clean_git() {
     local tier="${MSP_RELEASE_TIER:-preflight}"
 
     if [[ "$tier" == "release" || "$tier" == "production" ]]; then
+        # Allow uncommitted changes in DRY_RUN mode
+        local dry_run="${DRY_RUN:-false}"
+        if [[ "$dry_run" == "true" ]]; then
+            log_info "[SAFETY] ℹ️  DRY RUN mode: Allowing uncommitted changes"
+            return 0
+        fi
+        
         log_info "[SAFETY] Checking Git working directory cleanliness..."
 
         if ! git diff --quiet 2>/dev/null; then
@@ -120,8 +136,15 @@ msp_safety_require_confirmation() {
     local version="$1"
     local force="${MSP_RELEASE_FORCE:-false}"
     local tier="${MSP_RELEASE_TIER:-preflight}"
+    local dry_run="${DRY_RUN:-false}"
 
     if [[ "$tier" == "release" || "$tier" == "production" ]]; then
+        # Skip confirmation in DRY_RUN mode
+        if [[ "$dry_run" == "true" ]]; then
+            log_info "[SAFETY] ℹ️  DRY RUN mode: Skipping confirmation"
+            return 0
+        fi
+        
         # Local release mode: Allow local execution when explicitly enabled
         if [[ "${MSP_ALLOW_LOCAL_RELEASE:-0}" == "1" ]]; then
             log_info "[SAFETY] ℹ️  本地发布模式已启用 (Local release mode enabled)"

@@ -32,30 +32,37 @@ end
 # Read Package.swift with UTF-8 encoding
 package_content = File.read(package_swift_path, encoding: 'UTF-8')
 
-# Pattern to match: .binaryTarget(name: "TargetName", path: "...")
-# We need to match the entire binaryTarget block with proper indentation
-# The pattern should match both single-line and multi-line formats:
-#   .binaryTarget(name: "TargetName", path: "...")
-#   .binaryTarget(
-#       name: "TargetName",
-#       path: "path/to/TargetName.xcframework"
-#   )
-# Use a more flexible pattern that handles both cases
-pattern = /\.binaryTarget\(\s*name:\s*"#{Regexp.escape(target_name)}",\s*path:\s*"[^"]+"\s*\)/m
+# Pattern 1: Match .binaryTarget with path: (needs conversion to url: + checksum:)
+pattern_path = /\.binaryTarget\(\s*name:\s*"#{Regexp.escape(target_name)}",\s*path:\s*"[^"]+"\s*\)/m
 
-# Replacement with url and checksum
-# Maintain the same indentation style
+# Pattern 2: Match .binaryTarget with url: and checksum: (needs checksum update)
+# This pattern matches multi-line format with url and checksum
+pattern_url = /\.binaryTarget\(\s*name:\s*"#{Regexp.escape(target_name)}",\s*url:\s*"[^"]+",\s*checksum:\s*"[^"]+"\s*\)/m
+
+# Replacement with url and checksum (same for both cases)
 replacement = %Q(.binaryTarget(
             name: "#{target_name}",
             url: "#{remote_url}",
             checksum: "#{checksum}"
         ))
 
-# Perform replacement
-new_content = package_content.gsub(pattern, replacement)
+# Try pattern 1 first (path: → url: + checksum:)
+new_content = package_content.gsub(pattern_path, replacement)
+
+# If no replacement, try pattern 2 (update existing url: + checksum:)
+if new_content == package_content
+  new_content = package_content.gsub(pattern_url, replacement)
+end
 
 # Check if replacement was made
 if new_content == package_content
+  # Check if target exists as .target (source-based) instead of .binaryTarget
+  if package_content =~ /\.target\([^)]*name:\s*"#{Regexp.escape(target_name)}"[^)]*\)/m
+    STDERR.puts "Info: Target #{target_name} is a .target (source-based), not a .binaryTarget"
+    STDERR.puts "Skipping binary target update (source-based targets don't need URL/checksum)"
+    exit 0  # Success - this is expected for source-based targets
+  end
+  
   STDERR.puts "Warning: No replacement made for target: #{target_name}"
   STDERR.puts "Pattern may not match. Current binaryTarget definition:"
   # Try to find the target definition
