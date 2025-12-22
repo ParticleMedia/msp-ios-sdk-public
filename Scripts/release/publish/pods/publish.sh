@@ -843,7 +843,7 @@ RUBY_SCRIPT
 probe_zip_url() {
     local pod="$1"
     local version="$2"
-    local max_attempts=6
+    local max_attempts=12
     local sleep_seconds=5
     
     local zip_url="https://github.com/ParticleMedia/msp-ios-sdk-public/releases/download/${version}/${pod}-${version}.zip"
