@@ -288,6 +288,13 @@ spm_local_validation() {
         return 0
     fi
     
+    # Check if local validation should be skipped via environment variable
+    if [[ "${SKIP_SPM_LOCAL_VALIDATION:-false}" == "true" ]] || [[ "${SKIP_SPM_LOCAL_VALIDATION:-false}" == "1" ]]; then
+        log_info "Skipping SPM local build validation (SKIP_SPM_LOCAL_VALIDATION=true)"
+        msp_state_mark_step_skipped "spm_local_validation" "SPM local validation skipped due to SKIP_SPM_LOCAL_VALIDATION=true"
+        return 0
+    fi
+    
     msp_state_mark_step_running "spm_local_validation"
     
     log_section "SPM Local Build Validation"
