@@ -762,11 +762,15 @@ RUBY_SCRIPT
             log_info "Release $version already exists, uploading assets"
             if gh release upload "$version" "$ROOT_DIR/$zip_name" --repo "ParticleMedia/msp-ios-sdk-public" --clobber; then
                 gh_release_created=true
+                # Ensure release is published (not draft) and set as latest
+                gh release edit "$version" --repo "ParticleMedia/msp-ios-sdk-public" --draft=false --latest 2>/dev/null || true
             fi
         else
             log_info "Creating new release $version"
-            if gh release create "$version" "$ROOT_DIR/$zip_name" --repo "ParticleMedia/msp-ios-sdk-public" --title "Release $version" --notes "Release $version"; then
+            if gh release create "$version" "$ROOT_DIR/$zip_name" --repo "ParticleMedia/msp-ios-sdk-public" --title "Release $version" --notes "Release $version" --latest; then
                 gh_release_created=true
+                # Ensure release is published (not draft)
+                gh release edit "$version" --repo "ParticleMedia/msp-ios-sdk-public" --draft=false 2>/dev/null || true
             fi
         fi
         
