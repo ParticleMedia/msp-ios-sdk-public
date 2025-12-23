@@ -148,7 +148,7 @@ preflight_static() {
     done
     
     if [[ $found_count -eq ${#required_frameworks[@]} ]]; then
-        log_info "All 5 core XCFrameworks found"
+        log_info "All ${#required_frameworks[@]} core XCFrameworks found"
     elif [[ $found_count -gt 0 ]]; then
         log_warn "Only $found_count/${#required_frameworks[@]} core XCFrameworks found"
     else
