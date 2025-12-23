@@ -369,12 +369,8 @@ update_adapter_podspec_dependencies() {
         log_info "Updated PrebidAdapter dependency to $version"
     fi
     
-    # Update MSPOMSDK dependency (keep without version constraint) - handle both with and without version
-    if grep -q "spec\.dependency.*MSPOMSDK" "$podspec"; then
-        # Remove any existing version(s) and comments, keep it without version constraint
-        sed -i '' "s|spec\.dependency 'MSPOMSDK'[^#]*|spec.dependency 'MSPOMSDK'|g" "$podspec"
-        log_info "Updated MSPOMSDK dependency to remove version constraint"
-    fi
+    # Stage B: MSPOMSDK removed - OMSDK now embedded in NovaCore
+    # No longer need to handle MSPOMSDK dependency
 }
 
 # Export function for parallel subprocess access
@@ -949,7 +945,8 @@ publish_pod_to_cocoapods() {
     if [[ "${MSP_RELEASE_TIER:-}" == "release" ]]; then
         # Check if this pod uses binary distribution (needs GitHub release zip)
         # Note: NovaCore is not included - it's embedded via vendored_frameworks, not published separately
-        local core_modules=("MSPSharedLibraries" "MSPCore" "MSPiOSCore" "MSPOMSDK")
+        # Stage B: MSPOMSDK removed - OMSDK now embedded in NovaCore
+        local core_modules=("MSPSharedLibraries" "MSPCore" "MSPiOSCore")
         local is_binary=false
         
         # Check if it's a core module
@@ -1272,7 +1269,8 @@ release_adapters() {
     # Extract adapters from PODS_MODULES (exclude MSPSharedLibraries and MSPCore)
     # Adapters are all modules that are not core modules
     # Note: NovaCore is not included - it's embedded via vendored_frameworks, not published separately
-    local core_modules=("MSPSharedLibraries" "MSPCore" "MSPiOSCore" "MSPOMSDK")
+    # Stage B: MSPOMSDK removed - OMSDK now embedded in NovaCore
+    local core_modules=("MSPSharedLibraries" "MSPCore" "MSPiOSCore")
     local adapters=()
     
     # Split PODS_MODULES space-separated string and filter out core modules
