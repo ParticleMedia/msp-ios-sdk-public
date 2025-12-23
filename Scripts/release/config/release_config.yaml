@@ -47,6 +47,20 @@ preflight:
     remote: false
     xcframework: true
 
+test:
+  pods:
+    enabled: true
+  spm:
+    enabled: true
+  branch:
+    create: true
+    push: true
+  verify:
+    local: true
+    remote: true
+    device: true
+    xcframework: true
+
 release:
   pods:
     enabled: true
