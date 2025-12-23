@@ -122,6 +122,7 @@ readonly SUBCOMMANDS=(
     "verify-matrix"
     "rollback"
     "resume"
+    "fix-public-tag"
 )
 
 # ============================================================================
@@ -457,6 +458,7 @@ COMMANDS:
     verify-matrix     Run full verification matrix (all test cases)
     rollback          Rollback a failed release
     resume            Resume from last checkpoint
+    fix-public-tag <VERSION>  Fix public remote tag SHA mismatch
 
 GLOBAL FLAGS:
     --config <file>       Load release configuration from YAML file
@@ -811,6 +813,91 @@ do_preflight() {
     
     log_success "All preflight checks passed"
     return 0
+}
+
+do_fix_public_tag() {
+    # Fix public remote tag mismatch
+    if [[ ${#REMAINING_ARGS[@]} -eq 0 ]]; then
+        log_error "Usage: $0 fix-public-tag <version>"
+        exit 1
+    fi
+
+    local version="${REMAINING_ARGS[0]}"
+
+    log_info "════════════════════════════════════════════════════════════"
+    log_info "  Fixing public remote tag: $version"
+    log_info "════════════════════════════════════════════════════════════"
+
+    # Check if local tag exists
+    if ! git rev-parse "refs/tags/$version" >/dev/null 2>&1; then
+        log_error "Local tag $version not found"
+        exit 1
+    fi
+
+    local local_sha
+    local_sha=$(git rev-parse "refs/tags/$version")
+
+    log_info "本地 tag SHA: $local_sha"
+
+    # Check public remote tag
+    local public_sha
+    public_sha=$(git ls-remote --tags public "refs/tags/$version" 2>/dev/null | awk '{print $1}')
+
+    if [[ -n "$public_sha" ]]; then
+        log_info "远程 tag SHA: $public_sha"
+
+        if [[ "$local_sha" == "$public_sha" ]]; then
+            log_success "✅ Tag already correct on public remote"
+            exit 0
+        fi
+
+        log_warning "Tag SHA 不匹配，将强制更新..."
+    else
+        log_warning "Public remote 上没有找到 tag，将创建..."
+    fi
+
+    # Delete old tag
+    log_info "删除 public remote 上的旧 tag..."
+    git push public ":refs/tags/$version" 2>/dev/null || true
+
+    # Push new tag
+    log_info "推送正确的 tag 到 public remote..."
+    local push_output
+    push_output=$(git push public "refs/tags/$version" 2>&1)
+    local push_exit_code=$?
+
+    if [[ $push_exit_code -eq 0 ]]; then
+        log_success "✅ Tag 推送成功"
+
+        # Verify
+        sleep 2
+        local new_public_sha
+        new_public_sha=$(git ls-remote --tags public "refs/tags/$version" 2>/dev/null | awk '{print $1}')
+
+        if [[ "$new_public_sha" == "$local_sha" ]]; then
+            log_success "✅ 验证成功: public remote tag 已更新"
+            log_info "Tag $version 现在指向正确的 commit: $local_sha"
+        else
+            log_error "❌ 验证失败: tag SHA 仍不匹配"
+            log_error "期望: $local_sha"
+            log_error "实际: $new_public_sha"
+            exit 1
+        fi
+    else
+        log_error "❌ Tag 推送失败"
+        log_error ""
+        log_error "推送输出:"
+        echo "$push_output"
+        log_error ""
+        
+        if echo "$push_output" | grep -qi "push protection"; then
+            log_error "GitHub Push Protection 阻止了推送"
+            log_error "请访问 GitHub Web 界面手动允许推送"
+            log_error "检查推送输出中的 URL 链接"
+        fi
+        
+        exit 1
+    fi
 }
 
 do_run() {

@@ -44,6 +44,10 @@ msp_safety_require_ci_for_release() {
             log_error "[SAFETY] Release tier cannot be executed locally. Use CI pipeline only."
             log_error "[SAFETY] To run a test release, use: MSP_RELEASE_TIER=preflight"
             log_error "[SAFETY] Or set: export CI=true && export GITHUB_ACTIONS=true"
+            log_error ""
+            log_error "[SAFETY] ⚠️  重要提示:"
+            log_error "[SAFETY] ⚠️  不要设置 MSP_ALLOW_PUBLIC_PUSH_FAILURE=1"
+            log_error "[SAFETY] ⚠️  这会导致 public remote tag 不一致，CocoaPods 验证失败"
             return 1
         fi
         log_info "[SAFETY] ✓ CI environment detected (CI=${CI:-}, GITHUB_ACTIONS=${GITHUB_ACTIONS:-})"

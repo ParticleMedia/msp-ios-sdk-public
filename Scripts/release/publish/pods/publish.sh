@@ -569,13 +569,58 @@ ensure_release_tag_exists_and_pushed() {
         log_warning "SKIP_PUBLIC_REMOTE_PUSH=1: Skipping tag push to public remote"
     elif [[ "$tag_exists_on_public" == "false" ]] && git remote | grep -q "^public$"; then
         log_info "Pushing tag to public: $tag"
-        if ! git push public "refs/tags/$tag"; then
+        
+        # Attempt to push tag to public remote
+        local push_output
+        push_output=$(git push public "refs/tags/$tag" 2>&1)
+        local push_exit_code=$?
+
+        if [[ $push_exit_code -ne 0 ]]; then
             log_error "Failed to push tag to public: $tag"
-            # If MSP_ALLOW_PUBLIC_PUSH_FAILURE is set, continue anyway
-            if [[ "${MSP_ALLOW_PUBLIC_PUSH_FAILURE:-0}" == "1" ]]; then
-                log_warning "MSP_ALLOW_PUBLIC_PUSH_FAILURE=1: Continuing despite tag push failure"
+
+            # Check if GitHub Push Protection blocked the push
+            if echo "$push_output" | grep -qi "push protection"; then
+                log_error "════════════════════════════════════════════════════════════"
+                log_error "  GitHub Push Protection detected secrets in commit history"
+                log_error "════════════════════════════════════════════════════════════"
+                log_error ""
+                log_error "解决方案 / Solutions:"
+                log_error "  1. 访问 GitHub Web 界面，点击 'Allow this secret'"
+                log_error "     Visit GitHub Web UI and click 'Allow this secret'"
+                log_error ""
+                log_error "  2. 检查推送输出中的 URL 链接"
+                log_error "     Check the URL in the push output below:"
+                log_error ""
+                echo "$push_output"
+                log_error ""
+                log_error "  3. 完成授权后，运行修复命令:"
+                log_error "     After authorization, run: ./Scripts/msp-release.sh fix-public-tag $tag"
+                log_error ""
+                log_error "  4. 然后重新运行发布脚本"
+                log_error "     Then re-run the release script"
+                log_error ""
+                log_error "════════════════════════════════════════════════════════════"
+
+                # Do NOT continue - force user to fix the issue
+                if [[ "${MSP_ALLOW_PUBLIC_PUSH_FAILURE:-0}" == "1" ]]; then
+                    log_warning "⚠️  MSP_ALLOW_PUBLIC_PUSH_FAILURE=1 已设置，但这会导致 CocoaPods 验证失败"
+                    log_warning "⚠️  建议: 修复 GitHub Push Protection 问题后重新运行"
+                    log_warning "⚠️  继续执行可能导致适配器模块发布失败..."
+                    sleep 5  # Give user time to read the warning
+                else
+                    log_error "🛑 停止执行，请先解决 GitHub Push Protection 问题"
+                    return 1
+                fi
             else
-                return 1
+                # Other push errors
+                log_error "Push output:"
+                echo "$push_output"
+
+                if [[ "${MSP_ALLOW_PUBLIC_PUSH_FAILURE:-0}" == "1" ]]; then
+                    log_warning "MSP_ALLOW_PUBLIC_PUSH_FAILURE=1: Continuing despite tag push failure"
+                else
+                    return 1
+                fi
             fi
         else
             log_success "Pushed tag to public: $tag"
@@ -1644,6 +1689,44 @@ main() {
             fi
         else
             log_success "Tag $VERSION verified on public remote"
+
+            # CRITICAL: Verify tag points to correct commit
+            local public_tag_sha
+            public_tag_sha=$(git ls-remote --tags public "refs/tags/$VERSION" 2>/dev/null | awk '{print $1}')
+            local local_tag_sha
+            local_tag_sha=$(git rev-parse "refs/tags/$VERSION" 2>/dev/null)
+
+            if [[ -n "$public_tag_sha" ]] && [[ -n "$local_tag_sha" ]] && [[ "$public_tag_sha" != "$local_tag_sha" ]]; then
+                log_error "════════════════════════════════════════════════════════════"
+                log_error "  ❌ Public Remote Tag SHA Mismatch!"
+                log_error "════════════════════════════════════════════════════════════"
+                log_error ""
+                log_error "Tag: $VERSION"
+                log_error "本地 Local:  $local_tag_sha"
+                log_error "远程 Public: $public_tag_sha"
+                log_error ""
+                log_error "这意味着 public remote 上的 tag 指向错误的 commit！"
+                log_error "CocoaPods 验证将会失败（source_files 找不到）"
+                log_error ""
+                log_error "解决方案:"
+                log_error "  1. 强制更新 public remote tag:"
+                log_error "     git push public :refs/tags/$VERSION"
+                log_error "     git push public refs/tags/$VERSION"
+                log_error ""
+                log_error "  2. 或者运行修复命令:"
+                log_error "     ./Scripts/msp-release.sh fix-public-tag $VERSION"
+                log_error ""
+                log_error "════════════════════════════════════════════════════════════"
+
+                if [[ "${MSP_ALLOW_PUBLIC_PUSH_FAILURE:-0}" == "1" ]]; then
+                    log_warning "⚠️  MSP_ALLOW_PUBLIC_PUSH_FAILURE=1: 继续执行但可能失败"
+                else
+                    log_error "🛑 停止执行"
+                    exit 1
+                fi
+            elif [[ -n "$public_tag_sha" ]] && [[ -n "$local_tag_sha" ]] && [[ "$public_tag_sha" == "$local_tag_sha" ]]; then
+                log_success "✅ Tag SHA verified: local and public match"
+            fi
         fi
     else
         log_warning "Public remote not found, skipping tag verification"
