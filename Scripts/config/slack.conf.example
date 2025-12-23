@@ -1,13 +1,85 @@
-# Slack Notification Configuration
-# Copy this file to slack.conf and fill in your actual values
-# The slack.conf file is gitignored and will not be committed
+# Slack Notification Configuration Template
+# =============================================================================
+# ⚠️  DO NOT commit actual credentials to Git!
+# =============================================================================
+#
+# Usage:
+#   1. Copy this file to slack.conf:
+#      cp Scripts/config/slack.conf.example Scripts/config/slack.conf
+#
+#   2. Edit slack.conf and fill in your actual values
+#
+#   3. OR use environment variables (recommended for CI/CD):
+#      export SLACK_WEBHOOK_URL="your-webhook-url"
+#      export SLACK_BOT_TOKEN="your-bot-token"
+#      export MSP_SLACK_DM_OVERRIDE="your-user-id"
+#      export MSP_SLACK_ALERT_ENV="test"
+#      export MSP_SLACK_TEST_WEBHOOK="your-test-webhook-url"
+#
+# Note: Environment variables take precedence over this config file.
+# =============================================================================
 
-# Slack Webhook URL (required for Slack notifications)
-# Get this from: https://api.slack.com/apps -> Your App -> Incoming Webhooks
-SLACK_WEBHOOK_URL=https://hooks.slack.com/services/YOUR/WEBHOOK/URL
+# ============================================================================
+# Basic Slack Configuration
+# ============================================================================
 
-# Optional Slack Configuration
+# Slack Webhook URL (for channel notifications)
+# Get from: Slack App → Incoming Webhooks → Add New Webhook
+# Example: https://hooks.slack.com/services/T00000000/B00000000/XXXXXXXXXXXXXXXXXXXX
+SLACK_WEBHOOK_URL=
+
+# Optional Slack Configuration (uses defaults if not set)
 # SLACK_CHANNEL=#releases
 # SLACK_USERNAME=MSP iOS SDK Bot
 # SLACK_ICON_EMOJI=:rocket:
 
+# ============================================================================
+# Advanced Slack Configuration
+# ============================================================================
+
+# Slack Bot Token (for DM and advanced API features)
+# Get from: https://api.slack.com/apps → Your App → OAuth & Permissions
+# Required for: Sending Direct Messages via MSP_SLACK_DM_OVERRIDE
+# Example: xoxb-0000000000-0000000000000-XXXXXXXXXXXXXXXXXXXXXXXX
+SLACK_BOT_TOKEN=
+
+# Direct Message Override (User ID)
+# When set, sends notifications as DM to this user ID instead of channel
+# Find User ID: Right-click user in Slack → View Profile → More → Copy member ID
+# Example: U0910UJPD7B
+MSP_SLACK_DM_OVERRIDE=
+
+# Slack Alert Environment Mode
+# Values: test, prod (default: prod)
+# - test: Uses MSP_SLACK_TEST_WEBHOOK, safe for testing
+# - prod: Uses SLACK_WEBHOOK_URL, sends to production channel
+MSP_SLACK_ALERT_ENV=prod
+
+# Test Webhook URL (used when MSP_SLACK_ALERT_ENV=test)
+# Separate webhook for testing to avoid spamming production channels
+# Create in: Slack App → Incoming Webhooks → Add New Webhook (test channel)
+# Example: https://hooks.slack.com/services/T00000000/B00000000/XXXXXXXXXXXXXXXXXXXX
+MSP_SLACK_TEST_WEBHOOK=
+
+# ============================================================================
+# Usage Examples
+# ============================================================================
+#
+# 1. Production Release (send to channel):
+#    export MSP_SLACK_ALERT_ENV=prod
+#    unset MSP_SLACK_DM_OVERRIDE
+#    ./Scripts/msp-release.sh run <version>
+#
+# 2. Test Release (send to test channel):
+#    export MSP_SLACK_ALERT_ENV=test
+#    ./Scripts/msp-release.sh run <version>
+#
+# 3. Send DM to specific user (any environment):
+#    export MSP_SLACK_DM_OVERRIDE=U0910UJPD7B
+#    ./Scripts/msp-release.sh run <version>
+#
+# 4. Test with DM:
+#    export MSP_SLACK_ALERT_ENV=test
+#    export MSP_SLACK_DM_OVERRIDE=U0910UJPD7B
+#    ./Scripts/msp-release.sh run <version>
+#
