@@ -82,6 +82,11 @@ public class NovaAdVideoController {
     // MARK: Internal
 
     let videoView: NovaAdVideoView
+    weak var mediaContent: NovaAdMediaContent? {
+        didSet {
+            videoView.mediaContent = mediaContent
+        }
+    }
 }
 
 // MARK: - NovaAdPlayableController
@@ -140,14 +145,17 @@ public class NovaAdMediaContent {
     }()
 
     public lazy var videoController: NovaAdVideoController? = {
+        let controller: NovaAdVideoController?
         switch adMedia {
         case .video(let model):
-            return .init(muted: model.videoInfo.isMute)
+            controller = .init(muted: model.videoInfo.isMute)
         case .videoPlayable(let videoModel, _):
-            return .init(muted: videoModel.videoInfo.isMute)
+            controller = .init(muted: videoModel.videoInfo.isMute)
         case .image, .multipleItems, .multipleImages, .imagePlayable, .html:
             return nil
         }
+        controller?.mediaContent = self
+        return controller
     }()
 
     public lazy var playableController: NovaAdPlayableController? = {
@@ -268,8 +276,21 @@ public class NovaAdMediaContent {
 
     // MARK: Internal
 
-    let adMedia: NovaAdMedia
+    var adMedia: NovaAdMedia
     let discountTagInfo: NovaAdDiscountTagInfo?
+    
+    // MARK: - Video State Sync
+    
+    func updateVideoState(_ state: NovaAdVideoState?) {
+        switch adMedia {
+        case .video(let model):
+            model.videoInfo.state = state
+        case .videoPlayable(let videoModel, _):
+            videoModel.videoInfo.state = state
+        default:
+            break
+        }
+    }
 
     // MARK: Private
 
