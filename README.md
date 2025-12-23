@@ -525,6 +525,85 @@ This will create 15 test cases covering all combinations of DRY_RUN, VERIFY_SPM_
 
 ---
 
+## Release & Deployment
+
+### Quick Start
+
+**Local Release** (3 variables needed):
+```bash
+# Setup environment
+source Scripts/utils/setup-release-env.sh local
+
+# Run release
+./Scripts/msp-release.sh run 0.3.0-rc.6
+```
+
+**Using direnv** (auto-load):
+```bash
+cp .envrc.example .envrc
+direnv allow
+./Scripts/msp-release.sh run 0.3.0-rc.6
+```
+
+### Environment Variables
+
+Only **3 variables** required for local release:
+- `MSP_RELEASE_TIER=release`
+- `MSP_ALLOW_LOCAL_RELEASE=1`
+- `MSP_ALLOW_TRUNK_PUSH=1`
+
+**Configuration Profiles**:
+- `local` - Local release (default)
+- `ci` - CI/CD release
+- `rerelease` - Republish existing version
+- `test` - Test mode (no actual push)
+
+Use the setup script:
+```bash
+source Scripts/utils/setup-release-env.sh <profile>
+```
+
+### Slack Notifications
+
+**Option 1: Local config file** (recommended for development):
+```bash
+cp Scripts/config/slack.conf.example Scripts/config/slack.conf
+# Edit slack.conf and fill in your credentials
+```
+
+**Option 2: Environment variables** (recommended for CI):
+```bash
+export SLACK_WEBHOOK_URL="https://hooks.slack.com/services/..."
+export MSP_SLACK_ALERT_ENV="test"  # or "prod"
+```
+
+### Release Commands
+
+```bash
+# Basic release
+./Scripts/msp-release.sh run <version>
+
+# Fix public remote tag (if GitHub Push Protection blocks)
+./Scripts/msp-release.sh fix-public-tag <version>
+
+# Dry run (test without publishing)
+DRY_RUN=true ./Scripts/msp-release.sh run <version>
+```
+
+### Troubleshooting
+
+| Issue | Solution |
+|-------|----------|
+| "Release tier cannot be executed locally" | Set `MSP_ALLOW_LOCAL_RELEASE=1` |
+| "trunk push disabled" | Set `MSP_ALLOW_TRUNK_PUSH=1` |
+| "Tag already exists" | Use `rerelease` profile or set `MSP_ALLOW_EXISTING_TAG=1` |
+| Tag SHA mismatch | Run `./Scripts/msp-release.sh fix-public-tag <version>` |
+| GitHub Push Protection blocks push | Visit URL in error, allow secret, then run fix-public-tag |
+
+**For detailed documentation**, see [Scripts/README.md](Scripts/README.md).
+
+---
+
 ## 13. Contact
 
 **Email:** pengyu.gou@newsbreak.com  
