@@ -139,6 +139,40 @@ load_slack_config() {
 # Load configuration on source
 load_slack_config
 
+# ============================================================================
+# Environment-based Webhook Selection (TEST/PROD)
+# ============================================================================
+# Select webhook based on MSP_SLACK_ALERT_ENV (test/prod)
+# - test: Uses MSP_SLACK_TEST_WEBHOOK (safe for testing)
+# - prod: Uses SLACK_WEBHOOK_URL (production channel)
+select_slack_webhook() {
+    local alert_env="${MSP_SLACK_ALERT_ENV:-prod}"
+
+    case "$alert_env" in
+        test)
+            # Test mode: use test webhook if available
+            if [[ -n "${MSP_SLACK_TEST_WEBHOOK:-}" ]]; then
+                export SLACK_WEBHOOK_URL="$MSP_SLACK_TEST_WEBHOOK"
+                log_info "[SLACK] Using TEST webhook (MSP_SLACK_ALERT_ENV=test)" 2>/dev/null || true
+            else
+                log_warn "[SLACK] MSP_SLACK_ALERT_ENV=test but MSP_SLACK_TEST_WEBHOOK not set" 2>/dev/null || true
+                log_warn "[SLACK] Falling back to production webhook" 2>/dev/null || true
+            fi
+            ;;
+        prod|production)
+            # Production mode: use production webhook (already set)
+            log_info "[SLACK] Using PRODUCTION webhook (MSP_SLACK_ALERT_ENV=${alert_env})" 2>/dev/null || true
+            ;;
+        *)
+            # Unknown mode: warn and use production webhook
+            log_warn "[SLACK] Unknown MSP_SLACK_ALERT_ENV: ${alert_env}, using production webhook" 2>/dev/null || true
+            ;;
+    esac
+}
+
+# Call webhook selection
+select_slack_webhook
+
 # Slack configuration with defaults
 SLACK_WEBHOOK_URL="${SLACK_WEBHOOK_URL:-}"
 SLACK_CHANNEL="${SLACK_CHANNEL:-#releases}"

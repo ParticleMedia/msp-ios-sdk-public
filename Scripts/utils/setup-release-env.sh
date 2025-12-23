@@ -41,17 +41,23 @@ setup_local_profile() {
     export MSP_ALLOW_LOCAL_RELEASE=1
     export MSP_ALLOW_TRUNK_PUSH=1
 
-    # Slack: use test mode by default (optional)
+    # Slack: use test mode by default for local development
+    # - test: Sends to MSP_SLACK_TEST_WEBHOOK (safe for testing)
+    # - prod: Sends to SLACK_WEBHOOK_URL (production channel)
     export MSP_SLACK_ALERT_ENV=test
 
     echo "✅ Local release environment configured"
     echo "   MSP_RELEASE_TIER: $MSP_RELEASE_TIER"
     echo "   MSP_ALLOW_LOCAL_RELEASE: $MSP_ALLOW_LOCAL_RELEASE"
     echo "   MSP_ALLOW_TRUNK_PUSH: $MSP_ALLOW_TRUNK_PUSH"
-    echo "   MSP_SLACK_ALERT_ENV: $MSP_SLACK_ALERT_ENV"
+    echo "   MSP_SLACK_ALERT_ENV: $MSP_SLACK_ALERT_ENV (test webhook)"
     echo ""
-    echo "ℹ️  Slack credentials will be read from Scripts/config/slack.conf"
-    echo "   Or set SLACK_WEBHOOK_URL environment variable"
+    echo "ℹ️  Slack webhooks:"
+    echo "   - Test:  MSP_SLACK_TEST_WEBHOOK (from Scripts/config/slack.conf)"
+    echo "   - Prod:  SLACK_WEBHOOK_URL (from Scripts/config/slack.conf)"
+    echo ""
+    echo "💡 To use production Slack channel:"
+    echo "   export MSP_SLACK_ALERT_ENV=prod"
 }
 
 # ============================================================================

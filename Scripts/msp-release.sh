@@ -991,13 +991,16 @@ do_run() {
     fi
     
     # Release mode: CLI
-    # Set MSP_RELEASE_TIER default (Patch M)
-    if [ -z "${MSP_RELEASE_TIER:-}" ]; then
-      MSP_RELEASE_TIER="preflight"
-      log_info "[TIER] MSP_RELEASE_TIER not set; defaulting to preflight"
-    fi
-    export MSP_RELEASE_TIER
-    log_info "[TIER] Running in ${MSP_RELEASE_TIER} tier"
+    # ============================================================================
+    # DEBUG: Tier Detection
+    # ============================================================================
+    echo "[DEBUG] ========================================" >&2
+    echo "[DEBUG] Tier Detection at Script Start" >&2
+    echo "[DEBUG] ========================================" >&2
+    echo "[DEBUG] MSP_RELEASE_TIER (env): ${MSP_RELEASE_TIER:-unset}" >&2
+    echo "[DEBUG] Current branch: $(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo 'unknown')" >&2
+    echo "[DEBUG] ========================================" >&2
+    
     # Set MSP_RELEASE_TIER default (Patch M)
     if [ -z "${MSP_RELEASE_TIER:-}" ]; then
       MSP_RELEASE_TIER="preflight"

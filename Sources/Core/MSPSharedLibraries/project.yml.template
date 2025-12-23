@@ -30,9 +30,9 @@ targets:
           - "**/Tests/**"
           - "**/*.test.swift"
           - "**/*.spec.swift"
-    dependencies:
-      - framework: ../../../Build/XCFrameworks/MSPOMSDK.xcframework
-        embed: false
+    dependencies: []
+      # Stage B: MSPOMSDK removed - OMSDK now embedded in NovaCore
+      # MSPSharedLibraries no longer depends on MSPOMSDK.xcframework
     settings:
       base:
         BUILD_LIBRARY_FOR_DISTRIBUTION: YES

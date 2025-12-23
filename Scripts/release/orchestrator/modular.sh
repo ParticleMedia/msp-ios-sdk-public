@@ -1401,6 +1401,8 @@ main() {
         if [[ "$RELEASE_TIER" == "preflight" ]]; then
             log_warn "Pre-release setup failed in preflight mode, continuing anyway"
             step_skip "pre_release_setup (tier: preflight soft-fail)"
+            # Mark overall as failed to prevent success notification
+            OVERALL_SUCCESS="false"
         else
             step_fail "pre_release_setup" $?
             return 10
