@@ -1093,7 +1093,7 @@ PYEOF
 notify::render::render_slack_blockkit() {
     local json="$1"
     
-    if [[ -z "$SLACK_BLOCKKIT_TEMPLATE" ]]; then
+    if [[ -z "$SLACK_BLOCK_TEMPLATE" ]]; then
         return 0  # Soft-fail: template not loaded
     fi
     
@@ -1123,8 +1123,8 @@ notify::render::render_slack_blockkit() {
 import json
 import sys
 
-# Read template
-template_str = '''$SLACK_BLOCKKIT_TEMPLATE'''
+    # Read template
+    template_str = '''$SLACK_BLOCK_TEMPLATE'''
 
 # Replace simple placeholders first
 template_str = template_str.replace('{{VERSION}}', '$version')
