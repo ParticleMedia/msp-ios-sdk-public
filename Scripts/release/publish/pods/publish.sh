@@ -913,6 +913,173 @@ probe_zip_url() {
     return 1
 }
 
+# ============================================================================
+# CocoaPods Trunk Verification (Resume Mechanism)
+# ============================================================================
+
+# Check if a specific pod version exists on CocoaPods Trunk
+# Args: pod_name, version
+# Returns: 0 if exists, 1 if not found
+check_pod_published_on_trunk() {
+    local pod="$1"
+    local version="$2"
+
+    log_info "🔍 Checking if $pod $version is published on CocoaPods Trunk..."
+
+    # Method 1: pod trunk info (fastest and most reliable)
+    if pod trunk info "$pod" 2>/dev/null | grep -q -- "- $version"; then
+        log_success "✅ $pod $version found on Trunk (via trunk info)"
+        return 0
+    fi
+
+    # Method 2: pod search (fallback)
+    if pod search "$pod" --simple 2>/dev/null | grep -q -- "-> $version"; then
+        log_success "✅ $pod $version found on Trunk (via search)"
+        return 0
+    fi
+
+    # Method 3: Check pod spec repo (last resort)
+    if pod spec cat "$pod" 2>/dev/null | grep -q -- "version.*$version"; then
+        log_success "✅ $pod $version found in spec repo"
+        return 0
+    fi
+
+    log_warning "⚠️  $pod $version not found on Trunk"
+    return 1
+}
+
+# Verify all pods in list are published
+# Args: version, pod_list (space-separated)
+verify_all_pods_on_trunk() {
+    local version="$1"
+    shift
+    local pods=("$@")
+
+    log_info "🔍 Verifying ${#pods[@]} pods on CocoaPods Trunk..."
+
+    local all_found=true
+    for pod in "${pods[@]}"; do
+        if ! check_pod_published_on_trunk "$pod" "$version"; then
+            all_found=false
+        fi
+    done
+
+    if [[ "$all_found" == "true" ]]; then
+        log_success "✅ All pods verified on Trunk"
+        return 0
+    else
+        log_error "❌ Some pods not found on Trunk"
+        return 1
+    fi
+}
+
+# ============================================================================
+# Resume-Aware Pod Publishing
+# ============================================================================
+
+# Publish pod with resume support (three-tier verification)
+# Args: pod_name, version, podspec_path
+# Returns: 0 if published or already exists, 1 if failed
+publish_pod_with_resume() {
+    local pod="$1"
+    local version="$2"
+    local podspec="$3"
+
+    log_info "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    log_info "📦 Publishing: $pod $version"
+    log_info "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+
+    # Tier 1: Check local state (fast path)
+    local local_status
+    if command -v msp_state_get_pod_status &>/dev/null; then
+        local_status=$(msp_state_get_pod_status "$pod")
+        log_info "📝 Local state: $local_status"
+    else
+        local_status="unknown"
+    fi
+
+    if [[ "$local_status" == "published" ]]; then
+        log_info "ℹ️  Local state indicates pod was published"
+
+        # Tier 2: Verify with Trunk (authoritative)
+        if check_pod_published_on_trunk "$pod" "$version"; then
+            log_success "⏭️  Skipping $pod $version (already published on Trunk)"
+            return 0
+        else
+            log_warning "⚠️  Local state says published, but not found on Trunk"
+            log_warning "   This may indicate:"
+            log_warning "   - Trunk indexing delay (wait a few minutes)"
+            log_warning "   - Local state corruption"
+            log_warning "   - Pod was deleted from Trunk"
+            log_info "ℹ️  Will retry publishing..."
+
+            # Mark as inconsistent
+            if command -v msp_state_mark_pod_status &>/dev/null; then
+                msp_state_mark_pod_status "$pod" "inconsistent"
+            fi
+        fi
+    fi
+
+    # Tier 3: Attempt to publish
+    log_info "📦 Publishing $pod $version to CocoaPods Trunk..."
+
+    # Create temp log file
+    local log_file
+    log_file=$(mktemp)
+
+    # Publish with captured output
+    if pod trunk push "$podspec" --allow-warnings 2>&1 | tee "$log_file"; then
+        log_success "✅ $pod $version published successfully"
+
+        # Update state
+        if command -v msp_state_mark_pod_status &>/dev/null; then
+            msp_state_mark_pod_status "$pod" "published"
+            msp_state_set_pod_trunk_verified "$pod" "true"
+        fi
+
+        rm -f "$log_file"
+        return 0
+    else
+        # Check if error is "version already exists"
+        if grep -q "already exists" "$log_file" || grep -q "Unable to accept duplicate entry" "$log_file"; then
+            log_warning "⚠️  $pod $version already exists on Trunk"
+            log_info "ℹ️  This is expected if resuming after partial failure"
+
+            # Verify it's actually there
+            sleep 2  # Brief pause for Trunk indexing
+            if check_pod_published_on_trunk "$pod" "$version"; then
+                log_success "✅ Verified: $pod $version is on Trunk"
+
+                # Update local state to match Trunk
+                if command -v msp_state_mark_pod_status &>/dev/null; then
+                    msp_state_mark_pod_status "$pod" "published"
+                    msp_state_set_pod_trunk_verified "$pod" "true"
+                fi
+
+                rm -f "$log_file"
+                return 0
+            fi
+        fi
+
+        # Real failure
+        log_error "❌ Failed to publish $pod $version"
+
+        # Save error context
+        if command -v msp_state_mark_pod_status &>/dev/null; then
+            msp_state_mark_pod_status "$pod" "failed"
+        fi
+
+        # Show error details
+        log_error "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+        log_error "Error details:"
+        tail -20 "$log_file" | sed 's/^/  /'
+        log_error "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+
+        rm -f "$log_file"
+        return 1
+    fi
+}
+
 # Publish pod to CocoaPods
 publish_pod_to_cocoapods() {
     local pod="$1"
@@ -983,10 +1150,34 @@ publish_pod_to_cocoapods() {
         fi
     fi
 
-    # Publish to CocoaPods
-    if ! publish_podspec_with_retry "$podspec"; then
-        log_error "Failed to publish $pod to CocoaPods"
-        return 1
+    # Publish to CocoaPods (use resume-aware function if in resume mode)
+    if [[ "${MSP_RESUME_MODE:-0}" == "1" ]] || [[ "${MSP_RESUME_MODE:-false}" == "true" ]]; then
+        # Resume mode: use resume-aware publish function
+        if ! publish_pod_with_resume "$pod" "$version" "$podspec"; then
+            log_error "Failed to publish $pod to CocoaPods"
+            return 1
+        fi
+    else
+        # Normal mode: use standard publish function
+        # Mark as pending before publishing
+        if command -v msp_state_mark_pod_status &>/dev/null; then
+            msp_state_mark_pod_status "$pod" "pending"
+        fi
+
+        if ! publish_podspec_with_retry "$podspec"; then
+            log_error "Failed to publish $pod to CocoaPods"
+            # Mark as failed
+            if command -v msp_state_mark_pod_status &>/dev/null; then
+                msp_state_mark_pod_status "$pod" "failed"
+            fi
+            return 1
+        fi
+
+        # Mark as published on success
+        if command -v msp_state_mark_pod_status &>/dev/null; then
+            msp_state_mark_pod_status "$pod" "published"
+            msp_state_set_pod_trunk_verified "$pod" "true"
+        fi
     fi
 
     log_success "Published $pod to CocoaPods"

@@ -135,7 +135,7 @@ msp_state_init() {
     local now
     now="$(_msp_state_now)"
 
-    # Create initial state JSON with Phase 4 TASK 3 final schema
+    # Create initial state JSON with Phase 4 TASK 3 final schema + Resume mechanism pods tracking
     jq -n \
         --arg run_id "$now" \
         --arg mode "$mode" \
@@ -160,6 +160,7 @@ msp_state_init() {
             base_branch: $base_branch,
             release_branch: $release_branch,
             dry_run: $dry_run,
+            resume_count: 0,
             config: {
                 config_path: ($config_path | if . == "null" then null else . end),
                 cli_args: $cli_args,
@@ -180,6 +181,7 @@ msp_state_init() {
                 remote_verify_spm: {},
                 remote_verify_pods: {}
             },
+            pods: {},
             artifacts: {
                 xcframework_paths: [],
                 ipa_path: null,
@@ -462,6 +464,132 @@ msp_state_reset_git_flags() {
 }
 
 # ============================================================================
+# Pod-Level State Management (Resume Mechanism)
+# ============================================================================
+
+# Mark pod status in state file
+# Args: pod_name, status (published|failed|pending|inconsistent)
+msp_state_mark_pod_status() {
+    local pod="$1"
+    local status="$2"
+
+    if ! msp_state_is_enabled; then
+        return 0
+    fi
+
+    local path
+    path="$(msp_state_file_path)"
+    if [[ ! -f "$path" ]]; then
+        return 0
+    fi
+
+    # Update pod status with timestamp
+    local timestamp
+    timestamp="$(_msp_state_now)"
+
+    _msp_state_update_json ".pods[\"$pod\"].status = \"$status\" | .pods[\"$pod\"].updated_at = \"$timestamp\" | .timestamps.updated_at = \"$timestamp\"" || return 0
+
+    return 0
+}
+
+# Get pod status from state file
+# Args: pod_name
+# Returns: status string (published|failed|pending|inconsistent|unknown)
+msp_state_get_pod_status() {
+    local pod="$1"
+
+    if ! msp_state_is_enabled; then
+        echo "unknown"
+        return 0
+    fi
+
+    local path
+    path="$(msp_state_file_path)"
+    if [[ ! -f "$path" ]]; then
+        echo "unknown"
+        return 0
+    fi
+
+    local status=""
+    status=$(jq -r --arg pod "$pod" '.pods[$pod].status // "unknown"' "$path" 2>/dev/null || echo "unknown")
+
+    echo "$status"
+    return 0
+}
+
+# Set pod trunk verification status
+# Args: pod_name, verified (true|false)
+msp_state_set_pod_trunk_verified() {
+    local pod="$1"
+    local verified="$2"
+
+    if ! msp_state_is_enabled; then
+        return 0
+    fi
+
+    local path
+    path="$(msp_state_file_path)"
+    if [[ ! -f "$path" ]]; then
+        return 0
+    fi
+
+    local timestamp
+    timestamp="$(_msp_state_now)"
+
+    # Normalize to JSON boolean
+    local json_bool="false"
+    if [[ "$verified" == "true" ]] || [[ "$verified" == "1" ]]; then
+        json_bool="true"
+    fi
+
+    _msp_state_update_json ".pods[\"$pod\"].trunk_verified = $json_bool | .pods[\"$pod\"].trunk_verified_at = \"$timestamp\" | .timestamps.updated_at = \"$timestamp\"" || return 0
+
+    return 0
+}
+
+# Get pod trunk verification status
+# Args: pod_name
+# Returns: true|false|unknown
+msp_state_get_pod_trunk_verified() {
+    local pod="$1"
+
+    if ! msp_state_is_enabled; then
+        echo "unknown"
+        return 0
+    fi
+
+    local path
+    path="$(msp_state_file_path)"
+    if [[ ! -f "$path" ]]; then
+        echo "unknown"
+        return 0
+    fi
+
+    local verified=""
+    verified=$(jq -r --arg pod "$pod" '.pods[$pod].trunk_verified // "unknown"' "$path" 2>/dev/null || echo "unknown")
+
+    echo "$verified"
+    return 0
+}
+
+# Increment resume count
+msp_state_increment_resume_count() {
+    if ! msp_state_is_enabled; then
+        return 0
+    fi
+
+    local path
+    path="$(msp_state_file_path)"
+    if [[ ! -f "$path" ]]; then
+        return 0
+    fi
+
+    _msp_state_update_json '.resume_count = ((.resume_count // 0) + 1) | .timestamps.updated_at = "'"$(_msp_state_now)"'"' || return 0
+
+    return 0
+}
+
+# ============================================================================
 # Export Functions
 # ============================================================================
 export -f msp_state_file_path
@@ -476,3 +604,8 @@ export -f msp_state_mark_git_flag
 export -f msp_state_touch
 export -f msp_state_set_tag_name
 export -f msp_state_reset_git_flags
+export -f msp_state_mark_pod_status
+export -f msp_state_get_pod_status
+export -f msp_state_set_pod_trunk_verified
+export -f msp_state_get_pod_trunk_verified
+export -f msp_state_increment_resume_count

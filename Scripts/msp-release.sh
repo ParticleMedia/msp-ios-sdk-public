@@ -452,12 +452,12 @@ COMMANDS:
     config            Print effective configuration (merged CLI > config > defaults)
     preflight         Validate environment before release
     run <VERSION>     Execute full release (CocoaPods + SPM)
+    resume [VERSION]  Resume a failed release (auto-detects version from state file)
     pods <VERSION>    Execute CocoaPods release only
     spm <VERSION>     Execute SPM release only
     verify <VERSION>  Verify a released version (post-release validation)
     verify-matrix     Run full verification matrix (all test cases)
     rollback          Rollback a failed release
-    resume            Resume from last checkpoint
     fix-public-tag <VERSION>  Fix public remote tag SHA mismatch
 
 GLOBAL FLAGS:
@@ -512,6 +512,10 @@ EXAMPLES:
 
     # Dry run
     msp-release.sh run 0.0.3 --dry-run
+
+    # Resume failed release
+    msp-release.sh resume 0.3.0-rc.7
+    msp-release.sh resume              # Auto-detect version from state file
 
     # Preflight validation
     msp-release.sh preflight
@@ -1419,35 +1423,132 @@ _msp_execute_rollback_actions() {
 }
 
 do_resume() {
-    log_title "MSP Release - Resume Last Run"
+    echo ""
+    log_info "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    log_info "🔄 MSP Release Resume"
+    log_info "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    echo ""
     
     # Check if state file exists
     local state_file="${ROOT_DIR}/.msp-release-state.json"
     if [[ ! -f "$state_file" ]]; then
-        log_error "No previous release run found. Cannot resume."
+        log_error "❌ No previous release run found. Cannot resume."
         log_info "State file not found: $state_file"
         log_info "Please run 'msp-release.sh run <VERSION>' first to start a release."
         exit 1
     fi
     
-    # Set resume mode
-    export MSP_RESUME_MODE=1
+    # Auto-detect version from state file if not provided
+    local version="${1:-}"
+    if [[ -z "$version" ]]; then
+        if command -v jq >/dev/null 2>&1; then
+            version=$(jq -r '.version // empty' "$state_file" 2>/dev/null || echo "")
+            if [[ -n "$version" && "$version" != "unknown" ]]; then
+                log_info "📝 Auto-detected version from state file: $version"
+            fi
+        fi
+    fi
     
-    log_info "Resuming from previous release run"
-    log_info "State file: $state_file"
+    # Verify version is set
+    if [[ -z "$version" ]]; then
+        log_error "❌ No version specified and no state file found"
+        log_error ""
+        log_error "Usage: $0 resume [VERSION]"
+        log_error ""
+        log_error "Examples:"
+        log_error "  $0 resume 0.3.0-rc.7"
+        log_error "  $0 resume              # Auto-detect from state file"
+        return 1
+    fi
+    
+    # Load release-common for POD_RELEASE_ORDER
+    if [[ -f "$ROOT_DIR/Scripts/lib/release-common.sh" ]]; then
+        source "$ROOT_DIR/Scripts/lib/release-common.sh"
+    else
+        log_error "❌ Cannot load Scripts/lib/release-common.sh"
+        return 1
+    fi
+    
+    # Load state utilities
+    if [[ -f "$ROOT_DIR/Scripts/release/utils/state.sh" ]]; then
+        source "$ROOT_DIR/Scripts/release/utils/state.sh"
+    fi
+    
+    # Display resume summary
+    log_info "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    log_info "📋 Resume Summary for $version"
+    log_info "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    echo ""
+    
+    # Display pod status
+    local has_pending=false
+    local has_failed=false
+    
+    for pod in "${POD_RELEASE_ORDER[@]}"; do
+        local status="unknown"
+        if command -v msp_state_get_pod_status &>/dev/null; then
+            status=$(msp_state_get_pod_status "$pod")
+        fi
+        
+        case "$status" in
+            "published")
+                log_success "  ✅ $pod - Published"
+                ;;
+            "failed")
+                log_error "  ❌ $pod - Failed (will retry)"
+                has_failed=true
+                ;;
+            "inconsistent")
+                log_warning "  ⚠️  $pod - Inconsistent (will verify)"
+                has_pending=true
+                ;;
+            "pending"|"unknown")
+                log_info "  ⏳ $pod - Pending"
+                has_pending=true
+                ;;
+            *)
+                log_info "  ❓ $pod - $status"
+                has_pending=true
+                ;;
+        esac
+    done
+    
+    echo ""
+    log_info "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    
+    # Check if there's anything to do
+    if [[ "$has_pending" == "false" ]] && [[ "$has_failed" == "false" ]]; then
+        log_success "✅ All pods are already published!"
+        log_info ""
+        log_info "No action needed. Release $version is complete."
+        return 0
+    fi
+    
+    # Confirm resume
+    if [[ -t 0 ]]; then
+        echo ""
+        read -p "Continue with resume? (y/N): " confirm
+        if [[ "$confirm" != "y" && "$confirm" != "Y" ]]; then
+            log_info "Resume cancelled by user"
+            return 0
+        fi
+    fi
+    
+    echo ""
+    log_info "🔄 Resuming release for $version..."
+    echo ""
+    
+    # Increment resume count
+    if command -v msp_state_increment_resume_count &>/dev/null; then
+        msp_state_increment_resume_count
+    fi
+    
+    # Set resume mode flag and version
+    export MSP_RESUME_MODE="true"
+    export RELEASE_VERSION="$version"
     
     # Load config (applies CLI overrides, but version should come from state)
     load_release_config
-    
-    # Try to read version from state file if available
-    if command -v jq >/dev/null 2>&1; then
-        local state_version
-        state_version=$(jq -r '.version // empty' "$state_file" 2>/dev/null || echo "")
-        if [[ -n "$state_version" && "$state_version" != "unknown" ]]; then
-            export RELEASE_VERSION="$state_version"
-            log_info "Resuming release for version: $RELEASE_VERSION"
-        fi
-    fi
     
     # If version is still not set, try to get it from remaining args or config
     if [[ -z "${RELEASE_VERSION:-}" ]]; then
@@ -1592,3 +1693,4 @@ main() {
 }
 
 main "$@"
+
