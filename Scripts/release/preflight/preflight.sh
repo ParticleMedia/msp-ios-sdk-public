@@ -129,9 +129,9 @@ preflight_static() {
     # 5) Light XCFramework existence check
     log_step "Checking core XCFrameworks"
     local xcframeworks_dir="$ROOT_DIR/Build/XCFrameworks"
+    # Stage B: MSPOMSDK removed - OMSDK now embedded in NovaCore
     local required_frameworks=(
         "MSPSharedLibraries"
-        "MSPOMSDK"
         "MSPCore"
         "MSPiOSCore"
         "NovaCore"
