@@ -15,6 +15,7 @@ msp_enforce_main_repo_or_exit
 export LANG=en_US.UTF-8
 
 set -e
+set -o pipefail
 
 # Source the common library
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
