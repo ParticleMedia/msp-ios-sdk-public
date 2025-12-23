@@ -276,31 +276,34 @@ fi
 # ============================================================================
 # Pod configurations - Single source of truth
 # Order matters: dependencies must be released before dependents
+# Stage B: MSPOMSDK removed - OMSDK now embedded in NovaCore
+# Release order based on dependencies (8 pods total: 7 release + MSPiOSCore)
 POD_RELEASE_ORDER=(
     "MSPSharedLibraries"    # No dependencies
-    "MSPOMSDK"              # Depends on MSPSharedLibraries
     "MSPFacebookAdapter"    # Depends on MSPSharedLibraries
     "MSPGoogleAdapter"      # Depends on MSPSharedLibraries
-    "NovaAdapter"           # Depends on MSPSharedLibraries, MSPOMSDK
+    "NovaAdapter"           # Depends on MSPSharedLibraries (OMSDK via NovaCore)
     "AmazonAdapter"         # Depends on MSPSharedLibraries
     "PrebidAdapter"         # Depends on MSPSharedLibraries
     "MSPCore"               # Depends on MSPSharedLibraries, PrebidAdapter
+    "MSPiOSCore"            # No dependencies
 )
 
 # All pods to be released
 ALL_PODS=("MSPSharedLibraries" "PrebidAdapter" "NovaAdapter" "MSPFacebookAdapter" "MSPGoogleAdapter" "AmazonAdapter" "MSPCore")
 
 # Dependency mapping (using functions instead of associative arrays for bash 3.x compatibility)
+# Stage B: MSPOMSDK removed - OMSDK now embedded in NovaCore
 get_pod_dependencies_internal() {
     case "$1" in
         "MSPSharedLibraries") echo "" ;;
-        "MSPOMSDK") echo "MSPSharedLibraries" ;;
         "MSPFacebookAdapter") echo "MSPSharedLibraries" ;;
         "MSPGoogleAdapter") echo "MSPSharedLibraries" ;;
-        "NovaAdapter") echo "MSPSharedLibraries MSPOMSDK" ;;
+        "NovaAdapter") echo "MSPSharedLibraries" ;;  # Stage B: OMSDK via NovaCore
         "AmazonAdapter") echo "MSPSharedLibraries" ;;
         "PrebidAdapter") echo "MSPSharedLibraries" ;;
         "MSPCore") echo "MSPSharedLibraries PrebidAdapter" ;;
+        "MSPiOSCore") echo "" ;;
         *) echo "" ;;
     esac
 }
