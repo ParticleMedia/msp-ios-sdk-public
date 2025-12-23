@@ -26,9 +26,8 @@ Pod::Spec.new do |spec|
   end
 
   spec.dependency 'MSPSharedLibraries'
-  spec.dependency 'MSPOMSDK'
   spec.dependency 'MSPiOSCore'
-  spec.dependency 'NovaCore'
+  spec.dependency 'NovaCore'  # OMSDK is included via NovaCore
   spec.dependency 'MSPKingfisher'
   spec.dependency 'SnapKit'
 

@@ -287,15 +287,14 @@ build_mspcore_with_modulemaps() {
 
 # -----------------------------------------------------------
 # Core modules in dependency order
-# Order: MSPOMSDK → MSPSharedLibraries → MSPiOSCore → NovaCore → MSPCore
-# MSPSharedLibraries depends on MSPOMSDK.xcframework
+# Order: MSPSharedLibraries → MSPiOSCore → NovaCore → MSPCore
+# Stage B: MSPOMSDK removed - OMSDK now embedded in NovaCore
 # -----------------------------------------------------------
 # MSPSharedLibraries, MSPiOSCore, NovaCore: Use XcodeGen project mode (existing)
-# MSPCore, MSPOMSDK: Use Workspace mode (new) - they need Pods for MSPPrebidAdapter
+# MSPCore: Use Workspace mode (new) - needs Pods for MSPPrebidAdapter
 # -----------------------------------------------------------
 
 CORE_MODULES=(
-    "MSPOMSDK"
     "MSPSharedLibraries"
     "MSPiOSCore"
     "NovaCore"

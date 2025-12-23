@@ -31,7 +31,7 @@ GENERATED_PODSPECS_DIR="$ROOT_DIR/Build/ReleasePodspecs"
 # This classification matches the architecture documented in README.md
 # Note: NovaCore is not included here - it's embedded via vendored_frameworks, not published separately
 # NovaAdapter is a pure binary adapter (vendored_frameworks only), so it's included in CORE_MODULES
-CORE_MODULES=("MSPSharedLibraries" "MSPCore" "MSPiOSCore" "MSPOMSDK" "NovaAdapter")
+CORE_MODULES=("MSPSharedLibraries" "MSPCore" "MSPiOSCore" "NovaAdapter")
 
 # Check if a module is a core module
 is_core_module() {
@@ -195,10 +195,11 @@ in_block {
 ' "$SOURCE_PODSPEC" >> "$OUTPUT_PODSPEC"
 
 # Extract dependencies
-# NovaAdapter: filter out NovaCore, MSPOMSDK, MSPKingfisher dependencies (embedded)
+# NovaAdapter: filter out NovaCore, MSPKingfisher dependencies (embedded)
 # Note: MSPiOSCore is now a separate pod, so adapters should keep this dependency
+# Stage B: MSPOMSDK removed - OMSDK now embedded in NovaCore
 if [[ "$POD_NAME" == "NovaAdapter" ]]; then
-    grep "spec\\.dependency" "$SOURCE_PODSPEC" | grep -vE "(NovaCore|MSPOMSDK|MSPKingfisher)" >> "$OUTPUT_PODSPEC" 2>/dev/null || true
+    grep "spec\\.dependency" "$SOURCE_PODSPEC" | grep -vE "(NovaCore|MSPKingfisher)" >> "$OUTPUT_PODSPEC" 2>/dev/null || true
 elif is_core_module "$POD_NAME"; then
     # Core modules: keep all dependencies
     grep "spec\\.dependency" "$SOURCE_PODSPEC" >> "$OUTPUT_PODSPEC" 2>/dev/null || true
@@ -246,12 +247,8 @@ if grep -qE "spec\\.dependency.*'($MSP_VERSIONED_DEPS_PATTERN)'" "$OUTPUT_PODSPE
     log_success "Updated MSP internal dependencies to version $VERSION"
 fi
 
-# MSPOMSDK: Keep without version constraint (aligned with legacy behavior)
-if grep -q "spec\\.dependency.*'MSPOMSDK'" "$OUTPUT_PODSPEC"; then
-    log_info "MSPOMSDK dependency found - keeping without version constraint (legacy behavior)"
-    # Remove any version constraint from MSPOMSDK (should not be in release podspec anyway due to filtering)
-    sed -i "" -E "s/(spec\\.dependency[[:space:]]+'MSPOMSDK')[^#\n]*/\\1/g" "$OUTPUT_PODSPEC"
-fi
+# Stage B: MSPOMSDK removed - OMSDK now embedded in NovaCore
+# No longer need to handle MSPOMSDK dependency
 
 # Add release-specific configuration
 # Core modules: HTTP binary zip distribution (Stage A)

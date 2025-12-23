@@ -27,18 +27,20 @@ Pod::Spec.new do |spec|
 
   if msp_release
     # RELEASE MODE: Binary XCFramework for external distribution
+    # OMSDK is embedded in NovaCore.xcframework
     spec.source = { :git => "https://github.com/aimsp/msp-ios-sdk-public.git", :tag => "#{spec.version}" }
     spec.vendored_frameworks = "Binary/NovaCore.xcframework"
   else
     # DEVELOPMENT MODE: Source files for internal development
+    # OMSDK_Newsbreak1.xcframework is vendored directly (no MSPOMSDK wrapper)
     spec.source = { :path => '.' }
     spec.source_files = "Sources/Core/NovaCore/NovaCore/**/*.{swift,h,m}"
     spec.resources = "Sources/Core/NovaCore/NovaCore/Resources/**/*"
+    spec.vendored_frameworks = "Sources/Core/MSPOMSDK/OMSDK_Newsbreak1.xcframework"
   end
 
   # Dependencies
   spec.dependency 'MSPiOSCore'     # Ad protocols and interfaces
-  spec.dependency 'MSPOMSDK'       # OMSDK_Newsbreak1 for viewability measurement
   spec.dependency 'MSPKingfisher'  # Image loading (forked Kingfisher)
   spec.dependency 'lottie-ios'     # Animation support
   spec.dependency 'SnapKit'        # Auto Layout DSL

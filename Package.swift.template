@@ -46,8 +46,7 @@ let package = Package(
         .library(name: "NovaCoreLinker", targets: ["NovaCoreLinker"]),  // NovaCore + Lottie
         .library(name: "MSPCore", targets: ["MSPCore"]),
         .library(name: "MSPCoreLinker", targets: ["MSPCoreLinker"]),  // MSPCore + SwiftProtobuf
-        .library(name: "MSPOMSDK", targets: ["MSPOMSDK"]),
-        
+
         // ───────────────────────────────────────────────────────────────────────
         // Adapter Module Products (10) - Swift Source Targets
         // ───────────────────────────────────────────────────────────────────────
@@ -162,11 +161,6 @@ let package = Package(
                 .product(name: "SwiftProtobuf", package: "swift-protobuf"),
             ],
             path: "Sources/Common/MSPCoreWrapper"
-        ),
-        
-        .binaryTarget(
-            name: "MSPOMSDK",
-            path: "Build/XCFrameworks/MSPOMSDK.xcframework"
         ),
         
         // ═══════════════════════════════════════════════════════════════════════
@@ -306,16 +300,16 @@ let package = Package(
             path: "Sources/Adapters/MSPFacebookAdapter/MSPFacebookAdapter"
         ),
         
-        /// NovaAdapter - Nova custom ad format adapter
-        /// Dependencies: MSPSharedLibraries, MSPiOSCore, NovaCoreLinker, MSPOMSDK, Kingfisher, SnapKit
+        /// NovaAdapter - Nova ad format adapter
+        /// Dependencies: MSPSharedLibraries, MSPiOSCore, NovaCoreLinker, Kingfisher, SnapKit
         /// Uses NovaCoreLinker to ensure Lottie is linked with NovaCore
+        /// OMSDK is embedded in NovaCore binary
         .target(
             name: "NovaAdapter",
             dependencies: [
                 "MSPSharedLibraries",
                 "MSPiOSCore",
                 "NovaCoreLinker",
-                "MSPOMSDK",
                 .product(name: "Kingfisher", package: "Kingfisher"),
                 .product(name: "SnapKit", package: "SnapKit"),
             ],
