@@ -120,13 +120,17 @@ public final class NovaAdVideoView: UIView {
         }
     }
 
-    var muted: Bool = true {
-        didSet {
-            videoPlayer.setPlayerMute(muted)
-            if oldValue != muted {
-                reportMute(currentMuteState: muted)
-                if let state {
-                    self.state = .init(playState: state.playState, isMute: muted)
+    var muted: Bool {
+        get {
+            return mediaModel?.videoInfo.state?.isMute ?? mediaModel?.videoInfo.isMute ?? true
+        }
+        set {
+            let oldValue = muted
+            videoPlayer.setPlayerMute(newValue)
+            if oldValue != newValue {
+                reportMute(currentMuteState: newValue)
+                if let currentState = state {
+                    state = .init(playState: currentState.playState, isMute: newValue)
                 }
             }
         }
@@ -157,20 +161,30 @@ public final class NovaAdVideoView: UIView {
     private weak var iabReporter: IABMetricReporter?
 
     private var isPausedByUser = false
+    
+    weak var mediaContent: NovaAdMediaContent?
 
     // MARK: - Subviews
 
     private lazy var endCard: NovaAdEndCard = .init(delegate: self)
 
     private var state: NovaAdVideoState? {
-        didSet {
-            if let state {
-                if case .showCover = state.playState {
+        get {
+            return mediaModel?.videoInfo.state
+        }
+        set {
+            if let newState = newValue {
+                if case .showCover = newState.playState {
                 } else {
                     willAutoPlayingAfterShowCover = false
                 }
-                mediaModel?.videoInfo.state = state
-                subviewHandler?.sync(with: state)
+                mediaModel?.videoInfo.state = newState
+                mediaContent?.updateVideoState(newState)
+                subviewHandler?.sync(with: newState)
+            } else {
+                // When setting to nil, don't clear videoInfo.state as it's used for persistent state storage
+                // Only clear UI-related state
+                willAutoPlayingAfterShowCover = false
             }
         }
     }
@@ -212,7 +226,7 @@ extension NovaAdVideoView {
                 )
             }
         }()
-        muted = model.videoInfo.isMute
+        muted = model.videoInfo.state?.isMute ?? model.videoInfo.isMute
         setupActionHelper()
         setupTapGesture()
         configEndCard()
@@ -628,13 +642,14 @@ extension NovaAdVideoView: NovaVideoPlayerDelegate {
             if case .playing = state?.playState {
                 break
             }
+            let newIsMute = state?.isMute ?? true
             state = .init(
                 playState:
                 .playing(
                     currentTime: videoPlayer.currentTime(),
                     videoLength: videoPlayer.maximumTimeDuration()
                 ),
-                isMute: state?.isMute ?? true
+                isMute: newIsMute
             )
             videoStartPlayingAfterFinishLoading = true
         case .stopped:
@@ -648,11 +663,13 @@ extension NovaAdVideoView: NovaVideoPlayerDelegate {
                     return true
                 }
             }()
+            let newIsMute = state?.isMute ?? true
             state = .init(
                 playState: .endPlaying(shouldShowPlayButton: shouldShowPlayButton),
-                isMute: state?.isMute ?? true
+                isMute: newIsMute
             )
         case .paused:
+            let newIsMute = state?.isMute ?? true
             state = .init(
                 playState:
                 .paused(
@@ -660,7 +677,7 @@ extension NovaAdVideoView: NovaVideoPlayerDelegate {
                     videoLength: videoPlayer.maximumTimeDuration(),
                     endKind: videoPlayer.getVideoEndKind()
                 ),
-                isMute: state?.isMute ?? true
+                isMute: newIsMute
             )
             if let encryptedAdToken = actionContext?.adActionTracingInfo.encryptedAdToken, let lastResumeTime {
                 let duration = CACurrentMediaTime() - lastResumeTime
@@ -705,9 +722,10 @@ extension NovaAdVideoView: NovaVideoPlayerDelegate {
                 videoStartPlayingAfterFinishLoading = false
                 delegate?.videoViewDidChangeToPlay()
             }
+            let newIsMute = state?.isMute ?? true
             state = .init(
                 playState: .playing(currentTime: videoCurrent, videoLength: videoLength),
-                isMute: state?.isMute ?? true
+                isMute: newIsMute
             )
         case .paused(currentTime: _, _, _):
             let endKind: NovaVideoEndKind = {
@@ -717,9 +735,10 @@ extension NovaAdVideoView: NovaVideoPlayerDelegate {
                     return .none
                 }
             }()
+            let newIsMute = state?.isMute ?? true
             state = .init(
                 playState: .paused(currentTime: videoCurrent, videoLength: videoLength, endKind: endKind),
-                isMute: state?.isMute ?? true
+                isMute: newIsMute
             )
         default:
             break

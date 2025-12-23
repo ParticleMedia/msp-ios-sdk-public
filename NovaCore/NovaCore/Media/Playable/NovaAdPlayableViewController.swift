@@ -32,12 +32,15 @@ class NovaAdPlayableViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        view.backgroundColor = UIColor(light: NovaColorPalettes.White, dark: NovaColorPalettes.Gray.tint900)
+        view.clipsToBounds = true
+
         // Do any additional setup after loading the view.
         view.addSubviews(topBar, playableView, bottomBar)
 
         topBar.snp.makeConstraints { make in
             make.top.directionalHorizontalEdges.equalToSuperview()
-            make.height.equalTo((UIApplication.novaHasTopSafeArea ? (88) : (64)))
+            make.height.equalTo(UIApplication.novaSafeAreaInsets.top + 44)
         }
         topBar.addSubviews(closeButton, titleLabel)
         closeButton.snp.makeConstraints { make in
@@ -62,13 +65,15 @@ class NovaAdPlayableViewController: UIViewController {
         }
 
         config(with: config)
+
+        view.layoutIfNeeded()
     }
 
     // MARK: Private
 
     private lazy var topBar: UIView = {
         let view = UIView()
-        view.backgroundColor = .white
+        view.backgroundColor = UIColor(light: NovaColorPalettes.White, dark: NovaColorPalettes.Gray.tint900)
         return view
     }()
 
@@ -76,6 +81,7 @@ class NovaAdPlayableViewController: UIViewController {
         var configuration = UIButton.Configuration.plain()
         configuration.contentInsets = NSDirectionalEdgeInsets(top: 10.0, leading: 10.0, bottom: 10.0, trailing: 10.0)
         configuration.image = .Nova.crossLine
+        configuration.baseForegroundColor = UIColor(light: NovaColorPalettes.Gray.tint800, dark: NovaColorPalettes.White)
         let button = UIButton(configuration: configuration)
         button.addTarget(self, action: #selector(didTapCloseButton), for: .touchUpInside)
         return button
