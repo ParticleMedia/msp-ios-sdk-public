@@ -1544,6 +1544,9 @@ dispatch_subcommand() {
         resume)
             do_resume
             ;;
+        fix-public-tag)
+            do_fix_public_tag
+            ;;
         *)
             log_error "Unknown command: $SUBCOMMAND"
             echo ""
