@@ -518,6 +518,31 @@ release_cocoapods() {
     if bash "$COCOAPODS_SCRIPT"; then
         log_success "CocoaPods released successfully"
         mark_step_success "release_cocoapods"
+
+        # Auto-configure Pods remote verification environment variables
+        if [[ "$DRY_RUN" != "true" ]]; then
+            local github_url
+            github_url="$(git remote get-url origin 2>/dev/null || echo "")"
+
+            # Convert git@ format to https://
+            if [[ "$github_url" =~ ^git@github\.com:(.+)\.git$ ]]; then
+                github_url="https://github.com/${BASH_REMATCH[1]}"
+            elif [[ "$github_url" =~ ^git@github\.com:(.+)$ ]]; then
+                github_url="https://github.com/${BASH_REMATCH[1]}"
+            fi
+
+            # Remove .git suffix
+            github_url="${github_url%.git}"
+
+            if [[ -n "$github_url" && -n "$VERSION" ]]; then
+                export MSP_VERIFY_PODS_URL="$github_url"
+                export MSP_VERIFY_PODS_VERSION="$VERSION"
+                log_info "[VERIFY] Auto-configured Pods verification: $github_url @ $VERSION"
+            else
+                log_warn "[VERIFY] Could not auto-configure Pods verification"
+            fi
+        fi
+
         # Track success based on PODS_MODULES if available
         if [[ "$DRY_RUN" != "true" && -n "${PODS_MODULES:-}" ]]; then
             # Split PODS_MODULES space-separated string into array
@@ -583,6 +608,31 @@ release_spm() {
     if bash "$SPM_SCRIPT"; then
         log_success "SPM released successfully"
         mark_step_success "release_spm"
+
+        # Auto-configure SPM remote verification environment variables
+        if [[ "$DRY_RUN" != "true" ]]; then
+            local github_url
+            github_url="$(git remote get-url origin 2>/dev/null || echo "")"
+
+            # Convert git@ format to https://
+            if [[ "$github_url" =~ ^git@github\.com:(.+)\.git$ ]]; then
+                github_url="https://github.com/${BASH_REMATCH[1]}"
+            elif [[ "$github_url" =~ ^git@github\.com:(.+)$ ]]; then
+                github_url="https://github.com/${BASH_REMATCH[1]}"
+            fi
+
+            # Remove .git suffix
+            github_url="${github_url%.git}"
+
+            if [[ -n "$github_url" && -n "$VERSION" ]]; then
+                export MSP_VERIFY_SPM_URL="$github_url"
+                export MSP_VERIFY_SPM_VERSION="$VERSION"
+                log_info "[VERIFY] Auto-configured SPM verification: $github_url @ $VERSION"
+            else
+                log_warn "[VERIFY] Could not auto-configure SPM verification"
+            fi
+        fi
+
         # Track success based on SPM_PACKAGES if available
         if [[ "$DRY_RUN" != "true" && -n "${SPM_PACKAGES:-}" ]]; then
             # Split SPM_PACKAGES space-separated string into array

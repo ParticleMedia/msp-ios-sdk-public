@@ -322,8 +322,8 @@ msp_cfg_get() {
     fi
     
     # Validate tier
-    if [[ "$tier" != "preflight" ]] && [[ "$tier" != "release" ]]; then
-        echo "[CONFIG][ERROR] Invalid tier: $tier (must be 'preflight' or 'release')" >&2
+    if [[ "$tier" != "preflight" ]] && [[ "$tier" != "release" ]] && [[ "$tier" != "test" ]]; then
+        echo "[CONFIG][ERROR] Invalid tier: $tier (must be 'preflight', 'test', or 'release')" >&2
         return 1
     fi
     
