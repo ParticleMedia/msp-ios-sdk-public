@@ -113,6 +113,23 @@ DEFAULT_PODS_MODULES="MSPiOSCore MSPSharedLibraries MSPPrebidAdapter MSPCore MSP
 PODS_MODULES="${PODS_MODULES:-$DEFAULT_PODS_MODULES}"
 
 # ============================================================================
+# Core Module Detection
+# ============================================================================
+# Check if pod is a core module that requires binary distribution (HTTP zip source)
+# Core modules: MSPiOSCore, MSPSharedLibraries (require GitHub Release zip upload)
+is_core_module() {
+    local pod="$1"
+    case "$pod" in
+        MSPiOSCore|MSPSharedLibraries)
+            return 0
+            ;;
+        *)
+            return 1
+            ;;
+    esac
+}
+
+# ============================================================================
 # Backward Compatibility: CLI Argument Parsing
 # ============================================================================
 # Only used if script is called directly (not via msp-release.sh)
@@ -702,10 +719,10 @@ create_github_release_for_pod() {
         return 0
     fi
 
-    # Stage A: In release tier, create GitHub release and upload binary zip
+    # Stage A: All tiers (test/release) create GitHub release and upload binary zip for core modules
     # HTTP binary distribution requires zip to be available before pod trunk push
-    if [[ "${MSP_RELEASE_TIER:-}" == "release" ]]; then
-        log_info "Release tier: Creating GitHub release and uploading binary zip (HTTP distribution)"
+    if is_core_module "$pod"; then
+        log_info "[${MSP_RELEASE_TIER:-test} tier] Creating GitHub release and uploading binary zip (HTTP distribution)"
         
         # Create zip file from XCFramework
         local zip_name="${pod}-${version}.zip"
@@ -837,48 +854,10 @@ RUBY_SCRIPT
         return 0
     fi
 
-    # Create zip file
-    local zip_name="${pod}-${version}.zip"
-    if [[ -d "$pod" ]]; then
-        zip -r "$zip_name" "$pod" >/dev/null 2>&1
-        log_info "Created zip file: $zip_name"
-    else
-        log_error "Pod directory not found: $pod"
-        return 1
-    fi
-    
-    # Create or update GitHub release
-    local gh_release_created=false
-    if gh release view "$version" --repo "ParticleMedia/msp-ios-sdk-public" &>/dev/null; then
-        log_info "Release $version already exists, uploading assets"
-        if gh release upload "$version" "$zip_name" --repo "ParticleMedia/msp-ios-sdk-public" --clobber; then
-            gh_release_created=true
-        fi
-    else
-        log_info "Creating new release $version"
-        if gh release create "$version" "$zip_name" --repo "ParticleMedia/msp-ios-sdk-public" --title "Release $version" --notes "Release $version"; then
-            gh_release_created=true
-        fi
-    fi
-    
-    # Clean up zip file
-    rm -f "$zip_name"
-    
-    if [[ "$gh_release_created" == "true" ]]; then
-        log_success "GitHub release created for $pod"
-        
-        # Track GitHub release creation in state
-        if command -v msp_state_mark_git_flag &>/dev/null; then
-            msp_state_mark_git_flag "github_release_created" true
-            if command -v msp_state_set_tag_name &>/dev/null; then
-                # Ensure tag_name is set if not already set
-                msp_state_set_tag_name "$version"
-            fi
-        fi
-    else
-        log_error "Failed to create/update GitHub release for $pod"
-        return 1
-    fi
+    # For non-core modules (adapters), no GitHub release needed
+    # They use git+tag source in podspec
+    log_info "[${MSP_RELEASE_TIER:-test} tier] Non-core module $pod, skipping GitHub release creation"
+    return 0
 }
 
 # Stage A: Probe zip URL availability before publishing
