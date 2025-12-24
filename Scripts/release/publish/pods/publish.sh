@@ -1139,20 +1139,18 @@ publish_pod_to_cocoapods() {
 
     # Validate podspec if not skipped
     if [[ "$SKIP_VALIDATION" != "true" ]]; then
-        # Phase R1.13-A: Skip podspec validation in release and test tiers
-        # Reason:
-        #   - Release tier: uses HTTP zip source, needs actual GitHub Release
-        #   - Test tier: uses git+tag source, but tag may not be on public remote (GitHub Push Protection)
-        #   - Even if tag exists, git repo doesn't contain Binary/ directory (XCFrameworks not committed)
-        #   - Validation is meaningless, skip it to avoid false failures
-        if [[ "${MSP_RELEASE_TIER:-}" == "release" ]] || [[ "${MSP_RELEASE_TIER:-}" == "test" ]]; then
-            log_info "$MSP_RELEASE_TIER tier: Skipping podspec validation (git+tag source not available for validation)"
-        else
-            if ! validate_podspec_with_retry "$podspec"; then
-                log_error "Podspec validation failed for $pod"
-                return 1
-            fi
-        fi
+        # ═══════════════════════════════════════════════════════════════
+        # All tiers: Skip LOCAL validation (HTTP zip not available yet)
+        # Validation will be done by CocoaPods Trunk server
+        # ═══════════════════════════════════════════════════════════════
+        log_info "[$MSP_RELEASE_TIER tier] Skipping local podspec validation"
+        log_info "Reason: HTTP zip source requires GitHub Release to be created first"
+        log_info "Validation will be performed by CocoaPods Trunk during publication"
+        log_info ""
+        log_info "If publication fails, check:"
+        log_info "  1. GitHub Release exists: gh release view $VERSION"
+        log_info "  2. Zip file uploaded: gh release view $VERSION --json assets"
+        log_info "  3. Zip URL accessible: curl -I <zip-url>"
     fi
 
     # Publish to CocoaPods (use resume-aware function if in resume mode)
