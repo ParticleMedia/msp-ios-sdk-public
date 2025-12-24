@@ -440,17 +440,33 @@ notify::channel() {
         return 0
     fi
     
-    # PROD MODE: Use YAML webhook from alerts.webhook
-    if [[ -z "${SLACK_ALERTS:-}" ]]; then
-        notify::load_mapping || return 0
-    fi
-    
-    local webhook_url
-    webhook_url=$(python3 - <<EOF
+    # PROD MODE: Use webhook with priority order
+    # Priority:
+    #   1. SLACK_WEBHOOK_URL (from slack.conf or environment variable)
+    #   2. alerts.webhook from slack_mapping.yaml (fallback, deprecated)
+
+    local webhook_url=""
+
+    # Try environment variable first (highest priority)
+    if [[ -n "${SLACK_WEBHOOK_URL:-}" ]]; then
+        webhook_url="$SLACK_WEBHOOK_URL"
+        log_debug "Using SLACK_WEBHOOK_URL from environment/slack.conf: ${webhook_url:0:40}..."
+    else
+        # Fallback to YAML webhook (deprecated)
+        if [[ -z "${SLACK_ALERTS:-}" ]]; then
+            notify::load_mapping || return 0
+        fi
+
+        webhook_url=$(python3 - <<EOF
 import json;print(json.loads('$SLACK_ALERTS').get("webhook",""))
 EOF
-    ) 2>/dev/null || true
-    
+        ) 2>/dev/null || true
+
+        if [[ -n "$webhook_url" ]]; then
+            log_debug "Using webhook from slack_mapping.yaml (deprecated, please migrate to SLACK_WEBHOOK_URL in slack.conf)"
+        fi
+    fi
+
     if [[ -n "$webhook_url" ]]; then
         # Use webhook if available (soft-fail)
         notify::_send_webhook "$webhook_url" "$message"
