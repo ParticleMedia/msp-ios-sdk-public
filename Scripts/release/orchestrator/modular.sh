@@ -1568,7 +1568,16 @@ main() {
             fi
         else
             step_fail "release_cocoapods" $?
-            return 12
+            # Test/preflight tier: allow CocoaPods failure to continue with other steps
+            # Release/production tier: hard-fail (exit entire release)
+            local release_tier="${MSP_RELEASE_TIER:-preflight}"
+            if [[ "$release_tier" == "release" ]] || [[ "$release_tier" == "production" ]]; then
+                log_error "[MSP][ORCH] Release tier ($release_tier): CocoaPods release failure - aborting"
+                return 12
+            else
+                log_warn "[MSP][ORCH] $release_tier tier: CocoaPods release failed, continuing with other steps"
+                # Continue execution - don't return
+            fi
         fi
     fi
     
