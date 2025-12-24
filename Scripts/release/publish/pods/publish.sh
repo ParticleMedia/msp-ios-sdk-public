@@ -6,10 +6,47 @@ msp_enforce_main_repo_or_exit
 # --- End MSP Worktree Safety Guard (Patch L, shared) ---
 
 # Modular CocoaPods Release Script
-# Follows the exact release workflow: MSPSharedLibraries → Adapters → MSPCore
+# Follows the exact release workflow: MSPiOSCore → MSPSharedLibraries → Adapters → MSPCore
 #
 # Phase 2 Step 4: Config-driven release
 # This script now uses environment variables from msp-release.sh instead of CLI arguments.
+
+# ============================================================================
+# Release Architecture: Two Independent Dimensions
+# ============================================================================
+#
+# DIMENSION 1: RELEASE ORDER (based on dependency relationships)
+# ─────────────────────────────────────────────────────────────
+# Step 0: MSPiOSCore             (foundation - no dependencies)
+# Step 1: MSPSharedLibraries     (depends on: MSPiOSCore)
+# Step 2: Adapters (parallel)    (depends on: MSPSharedLibraries + MSPiOSCore)
+#     ├─ MSPPrebidAdapter
+#     ├─ MSPGoogleAdapter
+#     ├─ MSPFacebookAdapter
+#     ├─ NovaAdapter            (binary distribution, but in Adapters phase)
+#     └─ AmazonAdapter
+# Step 3: MSPCore                (depends on: MSPSharedLibraries + MSPPrebidAdapter)
+#
+# Why this order?
+# - MSPCore depends on MSPPrebidAdapter → MSPCore MUST come after Adapters
+# - Adapters depend on MSPSharedLibraries → Adapters come after MSPSharedLibraries
+# - MSPSharedLibraries depends on MSPiOSCore → MSPSharedLibraries comes after MSPiOSCore
+#
+# DIMENSION 2: DISTRIBUTION METHOD (implementation detail)
+# ─────────────────────────────────────────────────────────────
+# Binary Distribution (HTTP zip source from GitHub Releases):
+#     - MSPiOSCore, MSPSharedLibraries, MSPCore, NovaAdapter
+#
+# Source Distribution (git+tag source):
+#     - MSPPrebidAdapter, MSPGoogleAdapter, MSPFacebookAdapter, AmazonAdapter
+#
+# Why NovaAdapter is binary?
+# - NovaAdapter includes private NovaCore.xcframework (not in git repo)
+# - Must use HTTP zip to bundle Binary/NovaCore.xcframework
+# - But release order remains in Adapters phase (Step 2)
+#
+# Key Point: Distribution method does NOT affect release order!
+# ============================================================================
 
 # Ensure UTF-8 encoding for CocoaPods
 export LANG=en_US.UTF-8
@@ -60,6 +97,15 @@ else
     notify_release_success() { :; }
     notify_release_success_with_summary() { :; }
     notify_release_warning() { :; }
+fi
+
+# Source new notification system (supports DM-only, templates, smart routing)
+if [[ -f "$ROOT_DIR/Scripts/release/utils/notify.sh" ]]; then
+    # shellcheck source=Scripts/release/utils/notify.sh
+    source "$ROOT_DIR/Scripts/release/utils/notify.sh" 2>/dev/null || true
+    log_debug "[NOTIFY] Loaded new notification system (notify.sh)" 2>/dev/null || true
+else
+    log_warning "[NOTIFY] New notification system not found: $ROOT_DIR/Scripts/release/utils/notify.sh"
 fi
 
 source "$ROOT_DIR/Scripts/lib/release-common.sh"
@@ -113,14 +159,23 @@ DEFAULT_PODS_MODULES="MSPiOSCore MSPSharedLibraries MSPPrebidAdapter MSPCore MSP
 PODS_MODULES="${PODS_MODULES:-$DEFAULT_PODS_MODULES}"
 
 # ============================================================================
-# Core Module Detection
+# Binary Distribution Detection
 # ============================================================================
-# Check if pod is a core module that requires binary distribution (HTTP zip source)
-# Core modules: MSPiOSCore, MSPSharedLibraries (require GitHub Release zip upload)
-is_core_module() {
+# Check if a pod uses binary distribution (HTTP zip source from GitHub Releases).
+# This is a DISTRIBUTION METHOD check, NOT a release order check.
+#
+# Binary Distribution Pods:
+# - MSPiOSCore: Foundation framework (binary only)
+# - MSPSharedLibraries: Contains multiple XCFrameworks + PrebidMobile
+# - MSPCore: Main framework (binary distribution)
+# - NovaAdapter: Includes private NovaCore.xcframework (binary only)
+#
+# Note: Must match BINARY_DISTRIBUTION_PODS in generate_podspec.sh
+# ============================================================================
+is_binary_distribution() {
     local pod="$1"
     case "$pod" in
-        MSPiOSCore|MSPSharedLibraries)
+        MSPiOSCore|MSPSharedLibraries|MSPCore|NovaAdapter)
             return 0
             ;;
         *)
@@ -719,9 +774,9 @@ create_github_release_for_pod() {
         return 0
     fi
 
-    # Stage A: All tiers (test/release) create GitHub release and upload binary zip for core modules
+    # Stage A: All tiers (test/release) create GitHub release and upload binary zip for binary distribution pods
     # HTTP binary distribution requires zip to be available before pod trunk push
-    if is_core_module "$pod"; then
+    if is_binary_distribution "$pod"; then
         log_info "[${MSP_RELEASE_TIER:-test} tier] Creating GitHub release and uploading binary zip (HTTP distribution)"
         
         # Create zip file from XCFramework
@@ -1920,7 +1975,12 @@ main() {
         ((failed_pods++))
         failed_pod_names+=("MSPiOSCore")
         if [[ "$DRY_RUN" != "true" ]]; then
-            notify_release_failure "CocoaPods" "$VERSION" "MSPiOSCore release failed" "Foundation Release"
+            # Use new notification system: DM only (no channel spam)
+            if command -v notify::module_error &>/dev/null; then
+                notify::module_error "MSPiOSCore" "$VERSION" "Foundation release failed: MSPiOSCore publication to CocoaPods Trunk failed"
+            else
+                log_warning "New notification system not available, skipping failure notification"
+            fi
         fi
         msp_state_mark_step_failed "pods_publish" "MSPiOSCore release failed" "1"
 
@@ -1947,7 +2007,12 @@ main() {
         ((failed_pods++))
         failed_pod_names+=("MSPSharedLibraries")
         if [[ "$DRY_RUN" != "true" ]]; then
-            notify_release_failure "CocoaPods" "$VERSION" "MSPSharedLibraries release failed" "Foundation Release"
+            # Use new notification system: DM only (no channel spam)
+            if command -v notify::module_error &>/dev/null; then
+                notify::module_error "MSPSharedLibraries" "$VERSION" "Foundation release failed: MSPSharedLibraries publication to CocoaPods Trunk failed"
+            else
+                log_warning "New notification system not available, skipping failure notification"
+            fi
         fi
         msp_state_mark_step_failed "pods_publish" "MSPSharedLibraries release failed" "1"
         # Task 3: Preflight mode allows soft-fail, release/production requires hard-fail
@@ -1970,7 +2035,12 @@ main() {
         failed_pods=$((failed_pods + adapter_count))
         failed_pod_names+=("Adapters")
         if [[ "$DRY_RUN" != "true" ]]; then
-            notify_release_failure "CocoaPods" "$VERSION" "Adapter release failed" "Adapter Release"
+            # Use new notification system: DM only (no channel spam)
+            if command -v notify::module_error &>/dev/null; then
+                notify::module_error "Adapters" "$VERSION" "Adapters release failed: One or more adapters failed to publish to CocoaPods Trunk"
+            else
+                log_warning "New notification system not available, skipping failure notification"
+            fi
         fi
         msp_state_mark_step_failed "pods_publish" "Adapter release failed" "1"
         # Task 3: Preflight mode allows soft-fail, release/production requires hard-fail
@@ -1990,7 +2060,12 @@ main() {
         ((failed_pods++))
         failed_pod_names+=("MSPCore")
         if [[ "$DRY_RUN" != "true" ]]; then
-            notify_release_failure "CocoaPods" "$VERSION" "MSPCore release failed" "Main Framework Release"
+            # Use new notification system: DM only (no channel spam)
+            if command -v notify::module_error &>/dev/null; then
+                notify::module_error "MSPCore" "$VERSION" "Main framework release failed: MSPCore publication to CocoaPods Trunk failed"
+            else
+                log_warning "New notification system not available, skipping failure notification"
+            fi
         fi
         msp_state_mark_step_failed "pods_publish" "MSPCore release failed" "1"
         # Task 3: Preflight mode allows soft-fail, release/production requires hard-fail

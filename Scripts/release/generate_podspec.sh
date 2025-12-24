@@ -27,17 +27,30 @@ fi
 # Output directory for generated podspecs
 GENERATED_PODSPECS_DIR="$ROOT_DIR/Build/ReleasePodspecs"
 
-# Core modules (binary XCFrameworks) vs Adapters (source-based)
-# This classification matches the architecture documented in README.md
-# Note: NovaCore is not included here - it's embedded via vendored_frameworks, not published separately
-# NovaAdapter is a pure binary adapter (vendored_frameworks only), so it's included in CORE_MODULES
-CORE_MODULES=("MSPSharedLibraries" "MSPCore" "MSPiOSCore" "NovaAdapter")
+# ============================================================================
+# Binary Distribution Pods (HTTP zip source)
+# ============================================================================
+# These pods are distributed as pre-built XCFrameworks via HTTP zip from GitHub Releases.
+# This is a DISTRIBUTION METHOD choice, NOT a release order priority.
+#
+# Two Independent Dimensions:
+# 1. Release Order: Based on dependency relationships (see publish.sh)
+#    MSPiOSCore → MSPSharedLibraries → Adapters → MSPCore
+# 2. Distribution Method: Binary (HTTP zip) vs Source (git+tag)
+#    - Binary: MSPiOSCore, MSPSharedLibraries, MSPCore, NovaAdapter
+#    - Source: MSPPrebidAdapter, MSPGoogleAdapter, MSPFacebookAdapter, AmazonAdapter
+#
+# Note: NovaAdapter uses binary distribution (includes private NovaCore.xcframework)
+#       but is released in Adapters phase (Step 2), NOT in foundation phase.
+# ============================================================================
+BINARY_DISTRIBUTION_PODS=("MSPSharedLibraries" "MSPCore" "MSPiOSCore" "NovaAdapter")
 
-# Check if a module is a core module
-is_core_module() {
+# Check if a pod uses binary distribution (HTTP zip source)
+# Returns 0 (true) if the pod is in BINARY_DISTRIBUTION_PODS
+is_binary_distribution() {
     local module="$1"
-    for core in "${CORE_MODULES[@]}"; do
-        if [[ "$module" == "$core" ]]; then
+    for pod in "${BINARY_DISTRIBUTION_PODS[@]}"; do
+        if [[ "$module" == "$pod" ]]; then
             return 0
         fi
     done
@@ -97,9 +110,9 @@ if [[ ! -f "$SOURCE_PODSPEC" ]]; then
     exit 1
 fi
 
-# Check if this is a core module or adapter
-if is_core_module "$POD_NAME"; then
-    # Core modules require XCFrameworks (binary distribution)
+# Check if this pod uses binary distribution (HTTP zip source)
+if is_binary_distribution "$POD_NAME"; then
+    # Binary distribution pods require XCFrameworks
     # NovaAdapter: XCFrameworks are in Binary/ directory (in zip), not Build/XCFrameworks/
     if [[ "$POD_NAME" != "NovaAdapter" ]]; then
         XCFRAMEWORK_PATH="$ROOT_DIR/Build/XCFrameworks/${POD_NAME}.xcframework"
@@ -110,10 +123,10 @@ if is_core_module "$POD_NAME"; then
             exit 1
         fi
     fi
-    log_info "Core module detected: $POD_NAME (binary XCFramework required)"
+    log_info "Binary distribution pod detected: $POD_NAME (HTTP zip source, XCFramework required)"
 else
-    # Adapters are source-based (no XCFramework required)
-    log_info "Adapter detected: $POD_NAME (source-based, skipping XCFramework check)"
+    # Source distribution pods (git+tag source, no XCFramework required)
+    log_info "Source distribution pod detected: $POD_NAME (git+tag source, skipping XCFramework check)"
 fi
 
 # ============================================================================
@@ -200,11 +213,11 @@ in_block {
 # Stage B: MSPOMSDK removed - OMSDK now embedded in NovaCore
 if [[ "$POD_NAME" == "NovaAdapter" ]]; then
     grep "spec\\.dependency" "$SOURCE_PODSPEC" | grep -vE "(NovaCore|MSPKingfisher)" >> "$OUTPUT_PODSPEC" 2>/dev/null || true
-elif is_core_module "$POD_NAME"; then
-    # Core modules: keep all dependencies
+elif is_binary_distribution "$POD_NAME"; then
+    # Binary distribution pods: keep all dependencies
     grep "spec\\.dependency" "$SOURCE_PODSPEC" >> "$OUTPUT_PODSPEC" 2>/dev/null || true
 else
-    # Other adapters: keep all dependencies (including MSPiOSCore, which is now a separate pod)
+    # Source distribution pods: keep all dependencies (including MSPiOSCore, which is now a separate pod)
     grep "spec\\.dependency" "$SOURCE_PODSPEC" >> "$OUTPUT_PODSPEC" 2>/dev/null || true
 fi
 
@@ -251,10 +264,10 @@ fi
 # No longer need to handle MSPOMSDK dependency
 
 # Add release-specific configuration
-# Core modules vs Adapters: Different source strategies
-if is_core_module "$POD_NAME"; then
+# Binary distribution vs Source distribution: Different source strategies
+if is_binary_distribution "$POD_NAME"; then
     # ═══════════════════════════════════════════════════════════════
-    # CORE MODULES: HTTP binary zip distribution
+    # BINARY DISTRIBUTION PODS: HTTP binary zip distribution
     # Used by: release tier AND test tier (both use real distribution)
     # ═══════════════════════════════════════════════════════════════
     zip_url="https://github.com/ParticleMedia/msp-ios-sdk-public/releases/download/${VERSION}/${POD_NAME}-${VERSION}.zip"
@@ -299,9 +312,9 @@ else
 EOF_RELEASE
 fi
 
-# Add vendored_frameworks for core modules, source_files for adapters
-if is_core_module "$POD_NAME"; then
-    # Core modules: binary XCFrameworks
+# Add vendored_frameworks for binary distribution pods, source_files for source distribution pods
+if is_binary_distribution "$POD_NAME"; then
+    # Binary distribution pods: binary XCFrameworks
     if [[ "$POD_NAME" == "MSPSharedLibraries" ]]; then
         # MSPSharedLibraries: includes PrebidMobile only (MSPiOSCore is now a separate dependency)
         cat >> "$OUTPUT_PODSPEC" <<'EOF_VENDOR_MULTI'
@@ -376,8 +389,8 @@ if ! grep -q "spec.version.*$VERSION" "$OUTPUT_PODSPEC"; then
     exit 1
 fi
 
-# Validate podspec structure based on module type
-if is_core_module "$POD_NAME"; then
+# Validate podspec structure based on distribution method
+if is_binary_distribution "$POD_NAME"; then
     # Core modules must have vendored_frameworks
     if ! grep -q "spec.vendored_frameworks" "$OUTPUT_PODSPEC"; then
         log_error "Generated podspec missing vendored_frameworks (core module)"
@@ -404,18 +417,18 @@ else
     fi
 fi
 
-# Validate source format based on module type (all tiers use same format)
-if is_core_module "$POD_NAME"; then
-    # Core modules: HTTP binary zip source (all tiers)
+# Validate source format based on distribution method (all tiers use same format)
+if is_binary_distribution "$POD_NAME"; then
+    # Binary distribution pods: HTTP binary zip source (all tiers)
     if ! grep -qE "spec.source.*:http|:http =>" "$OUTPUT_PODSPEC"; then
-        log_error "Generated podspec missing HTTP zip source (core module)"
+        log_error "Generated podspec missing HTTP zip source (binary distribution pod)"
         exit 1
     fi
     log_success "Podspec structure validated (HTTP binary distribution)"
 else
-    # Adapters: git+tag source (all tiers)
+    # Source distribution pods: git+tag source (all tiers)
     if ! grep -qE "git:|:git =>" "$OUTPUT_PODSPEC"; then
-        log_error "Generated podspec missing git source (adapter)"
+        log_error "Generated podspec missing git source (source distribution pod)"
         exit 1
     fi
     log_success "Podspec structure validated (git+tag source distribution)"
