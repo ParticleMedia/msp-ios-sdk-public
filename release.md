@@ -1,6 +1,8 @@
 # Release 0.3.0-rc.13
 
 ## Changes
+This release includes architecture improvements and bug fixes.
+
 ### Architecture Improvements
 
 1. **Decoupled Release Order and Distribution Method**
