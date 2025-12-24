@@ -1139,9 +1139,14 @@ publish_pod_to_cocoapods() {
 
     # Validate podspec if not skipped
     if [[ "$SKIP_VALIDATION" != "true" ]]; then
-        # Phase R1.13-A: Skip podspec validation in release tier (binary distribution)
-        if [[ "${MSP_RELEASE_TIER:-}" == "release" ]]; then
-            log_info "Release tier: Skipping podspec validation (binary distribution)"
+        # Phase R1.13-A: Skip podspec validation in release and test tiers
+        # Reason:
+        #   - Release tier: uses HTTP zip source, needs actual GitHub Release
+        #   - Test tier: uses git+tag source, but tag may not be on public remote (GitHub Push Protection)
+        #   - Even if tag exists, git repo doesn't contain Binary/ directory (XCFrameworks not committed)
+        #   - Validation is meaningless, skip it to avoid false failures
+        if [[ "${MSP_RELEASE_TIER:-}" == "release" ]] || [[ "${MSP_RELEASE_TIER:-}" == "test" ]]; then
+            log_info "$MSP_RELEASE_TIER tier: Skipping podspec validation (git+tag source not available for validation)"
         else
             if ! validate_podspec_with_retry "$podspec"; then
                 log_error "Podspec validation failed for $pod"
@@ -1941,13 +1946,20 @@ main() {
             notify_release_failure "CocoaPods" "$VERSION" "MSPiOSCore release failed" "Foundation Release"
         fi
         msp_state_mark_step_failed "pods_publish" "MSPiOSCore release failed" "1"
-        # Task 3: Preflight mode allows soft-fail, release/production requires hard-fail
+
+        # MSPiOSCore is foundation module - all other modules depend on it
+        log_error "[MSP][ORCH] MSPiOSCore release failed (foundation module)"
+        log_error "[MSP][ORCH] All other modules depend on MSPiOSCore. Stopping CocoaPods release."
+
+        # Release tier: hard-fail (exit entire release)
         if [[ "$release_tier" == "release" ]] || [[ "$release_tier" == "production" ]]; then
-            log_error "[MSP][ORCH] Release tier ($release_tier): MSPiOSCore release failure - aborting"
-            log_error "[MSP][ORCH] All other modules depend on MSPiOSCore. Cannot proceed."
+            log_error "[MSP][ORCH] Release tier: aborting entire release"
             exit 1
         else
-            log_warn "[MSP][ORCH] Preflight mode: CocoaPods release failed, continuing with other steps"
+            # Test/preflight tier: stop CocoaPods release but continue with other steps (SPM, verification)
+            log_warn "[MSP][ORCH] $release_tier tier: stopping CocoaPods release, will continue with other steps"
+            # Return early to avoid publishing other pods (they will fail anyway)
+            return 1
         fi
     fi
     
