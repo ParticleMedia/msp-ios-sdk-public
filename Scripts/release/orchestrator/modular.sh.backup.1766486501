@@ -412,7 +412,6 @@ validate_inputs() {
 
 # Step 0: Pre-release setup (build frameworks)
 pre_release_setup() {
-    export CURRENT_STEP="pre_release_setup"
     mark_step_start "pre_release_setup"
     log_section "Step 0: Pre-release setup (building frameworks)"
 
@@ -452,7 +451,6 @@ create_release_branch() {
         return 0
     fi
 
-    export CURRENT_STEP="create_release_branch"
     mark_step_start "create_release_branch"
     log_section "Step 1: Creating release branch"
 
@@ -486,7 +484,6 @@ release_cocoapods() {
         return 0
     fi
 
-    export CURRENT_STEP="release_cocoapods"
     mark_step_start "release_cocoapods"
     log_section "Step 2: Releasing CocoaPods"
     local current_mode="${MSP_RELEASE_MODE:-cli}"
@@ -577,7 +574,6 @@ release_spm() {
         return 0
     fi
 
-    export CURRENT_STEP="release_spm"
     mark_step_start "release_spm"
     log_section "Step 3: Releasing SPM"
     local current_mode="${MSP_RELEASE_MODE:-cli}"
@@ -670,7 +666,6 @@ push_release_branch() {
         return 0
     fi
 
-    export CURRENT_STEP="push_release_branch"
     mark_step_start "push_release_branch"
     log_section "Step 4: Pushing release branch"
 
@@ -1023,7 +1018,6 @@ show_comprehensive_release_summary() {
 
 # Step 5: Run remote verification
 run_remote_verification() {
-    export CURRENT_STEP="run_remote_verification"
     # Config-driven gating
     if ! is_enabled "verify.remote"; then
         step_skip "run_remote_verification (config: verify.remote=false)"
@@ -1077,7 +1071,6 @@ run_remote_verification() {
 
 # Step 7: Run device verification
 run_device_verification() {
-    export CURRENT_STEP="run_device_verification"
     # Phase 3: Skip in CI mode
     if [[ "${MSP_SKIP_DEVICE_VERIFY:-false}" == "true" ]]; then
         log_info "[MSP][ORCH] Mode: CI — skipping device verification"
@@ -1156,7 +1149,6 @@ run_device_verification() {
 
 # Step 8: Run XCFramework deep verification
 run_xcframework_verification() {
-    export CURRENT_STEP="run_xcframework_verification"
     local current_mode="${MSP_RELEASE_MODE:-cli}"
     local current_mode_upper=$(echo "$current_mode" | tr '[:lower:]' '[:upper:]' 2>/dev/null || echo "${current_mode}" | awk '{print toupper($0)}')
     
@@ -1236,56 +1228,11 @@ run_xcframework_verification() {
     return 0
 }
 
-# Error handler for state tracking and failure notification
+# Error handler for state tracking
 _handle_main_error() {
     local exit_code=$?
     if [[ $exit_code -ne 0 ]]; then
-        local failed_step="${CURRENT_STEP:-unknown}"
-        
-        log_error "Release failed at step: $failed_step (exit code: $exit_code)"
-        
-        # Update state file
         msp_state_mark_step_failed "run" "orchestrator failed (see logs)" "$exit_code" || true
-        
-        # Get failure details from state file
-        local failure_msg="Unknown error"
-        local state_file="${STATE_FILE:-.msp-release-state.json}"
-        if [[ -f "$state_file" ]] && command -v jq >/dev/null 2>&1; then
-            failure_msg=$(jq -r '.last_error.message // .last_error.step // "Unknown error"' "$state_file" 2>/dev/null || echo "Unknown error")
-        fi
-        
-        # Send Slack failure notification
-        if command -v notify_failure &>/dev/null; then
-            log_info "Sending failure notification via Slack..."
-            local resume_cmd="./Scripts/msp-release.sh resume ${VERSION:-unknown}"
-            
-            # Use notify_failure function from notify.sh
-            notify_failure "MSP iOS SDK" "${VERSION:-unknown}" "$failure_msg" "$failed_step" || true
-            
-            # Also try to send DM if MSP_SLACK_DM_OVERRIDE is set
-            if [[ -n "${MSP_SLACK_DM_OVERRIDE:-}" ]] && command -v notify::_send_dm &>/dev/null; then
-                local dm_message=$(cat <<EOF
-🚨 *MSP iOS SDK Release Failed*
-
-*Version*: ${VERSION:-unknown}
-*Failed Step*: ${failed_step}
-*Exit Code*: ${exit_code}
-*Error*: ${failure_msg}
-
-*To Resume*:
-\`\`\`
-cd ${ROOT_DIR}
-${resume_cmd}
-\`\`\`
-
-*Logs*: Check \`${LOG_FILE:-/tmp/msp-release.log}\`
-EOF
-)
-                notify::_send_dm "${MSP_SLACK_DM_OVERRIDE}" "$dm_message" || true
-            fi
-        else
-            log_warning "notify_failure function not available, skipping notification"
-        fi
     fi
     exit $exit_code
 }
@@ -1497,7 +1444,6 @@ main() {
     
     # Step 0: Pre-release setup (build frameworks)
     step "pre_release_setup"
-    export CURRENT_STEP="pre_release_setup"
     if pre_release_setup; then
         step_done "pre_release_setup"
     else
@@ -1535,24 +1481,20 @@ main() {
 
     if [[ "$skip_branch_creation" == "true" ]]; then
         step_skip "create_release_branch ($skip_reason)"
+    elif create_release_branch; then
+        step_done "create_release_branch"
     else
-        export CURRENT_STEP="create_release_branch"
-        if create_release_branch; then
-            step_done "create_release_branch"
+        if [[ "$RELEASE_TIER" == "preflight" ]]; then
+            log_warn "Branch creation failed in preflight mode, continuing anyway"
+            step_skip "create_release_branch (tier: preflight soft-fail)"
         else
-            if [[ "$RELEASE_TIER" == "preflight" ]]; then
-                log_warn "Branch creation failed in preflight mode, continuing anyway"
-                step_skip "create_release_branch (tier: preflight soft-fail)"
-            else
-                step_fail "create_release_branch" $?
-                return 11
-            fi
+            step_fail "create_release_branch" $?
+            return 11
         fi
     fi
     
     # Step 2: Release CocoaPods
     step "release_cocoapods"
-    export CURRENT_STEP="release_cocoapods"
     if release_cocoapods; then
         step_done "release_cocoapods"
         if command -v msp_state_mark_step_success &>/dev/null; then
@@ -1574,7 +1516,6 @@ main() {
     
     # Step 3: Release SPM
     step "release_spm"
-    export CURRENT_STEP="release_spm"
     if release_spm; then
         step_done "release_spm"
         if command -v msp_state_mark_step_success &>/dev/null; then
@@ -1596,7 +1537,6 @@ main() {
     
     # Step 4: Push release branch
     step "push_release_branch"
-    export CURRENT_STEP="push_release_branch"
     if push_release_branch; then
         step_done "push_release_branch"
     else
@@ -1627,7 +1567,6 @@ main() {
     
     # Step 6: Run local verification (soft-fail, never breaks release)
     step "run_local_verification"
-    export CURRENT_STEP="run_local_verification"
     # Config-driven gating
     if ! is_enabled "verify.local"; then
         step_skip "run_local_verification (config: verify.local=false)"
@@ -1652,7 +1591,6 @@ main() {
     
     # Step 7: Run device verification (soft-fail, never breaks release)
     step "run_device_verification"
-    export CURRENT_STEP="run_device_verification"
     if [[ "$MSP_SKIP_DEVICE_VERIFY" == "true" ]]; then
         step_skip "run_device_verification (tier: CI mode)"
     else
@@ -1669,7 +1607,6 @@ main() {
     
     # Step 8: Run XCFramework deep verification (soft-fail, never breaks release)
     step "run_xcframework_verification"
-    export CURRENT_STEP="run_xcframework_verification"
     # Config-driven gating
     if ! is_enabled "verify.xcframework"; then
         step_skip "run_xcframework_verification (config: verify.xcframework=false)"
