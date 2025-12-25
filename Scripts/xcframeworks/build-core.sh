@@ -287,7 +287,12 @@ build_mspcore_with_modulemaps() {
 
 # -----------------------------------------------------------
 # Core modules in dependency order
-# Order: MSPSharedLibraries → MSPiOSCore → NovaCore → MSPCore
+# CORRECT Order: MSPiOSCore → MSPSharedLibraries → NovaCore → MSPCore
+# Rationale:
+# - MSPiOSCore: Base framework (no XCFramework dependencies)
+# - MSPSharedLibraries: Depends on MSPiOSCore (@_exported import MSPiOSCore in Shim.swift)
+# - NovaCore: May depend on MSPiOSCore/MSPSharedLibraries
+# - MSPCore: Top-level module, depends on everything above
 # Stage B: MSPOMSDK removed - OMSDK now embedded in NovaCore
 # -----------------------------------------------------------
 # MSPSharedLibraries, MSPiOSCore, NovaCore: Use XcodeGen project mode (existing)
@@ -295,8 +300,8 @@ build_mspcore_with_modulemaps() {
 # -----------------------------------------------------------
 
 CORE_MODULES=(
-    "MSPSharedLibraries"
     "MSPiOSCore"
+    "MSPSharedLibraries"
     "NovaCore"
     "MSPCore"
 )
