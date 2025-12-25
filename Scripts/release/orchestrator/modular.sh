@@ -103,6 +103,9 @@ if [[ -f "$ROOT_DIR/Scripts/release/utils/logger.sh" ]]; then
     source "$ROOT_DIR/Scripts/release/utils/logger.sh" 2>/dev/null || true
 fi
 
+echo "[DIAG] ===== After sourcing logger.sh =====" >&2
+echo "[DIAG] Current line: 104" >&2
+
 # ============================================================================
 # STEP-Level Logging Functions
 # ============================================================================
@@ -191,6 +194,11 @@ fail_step() {
 # Check if required environment variables are set (from msp-release.sh)
 # If not set, fall back to CLI argument parsing for backward compatibility
 
+echo "[DIAG] ===== Before RELEASE_VERSION check =====" >&2
+echo "[DIAG] RELEASE_VERSION from env: ${RELEASE_VERSION:-<empty>}" >&2
+echo "[DIAG] Arguments: $#" >&2
+echo "[DIAG] First arg: ${1:-<none>}" >&2
+
 if [[ -z "${RELEASE_VERSION:-}" ]]; then
     # Backward compatibility: extract MODE and VERSION from CLI if called directly
     # Expected format: bash modular.sh <MODE> <VERSION> [OPTIONS...]
@@ -228,6 +236,10 @@ fi
 # Use environment variables with CLI fallback for backward compatibility
 VERSION="${RELEASE_VERSION:-}"
 BASE_BRANCH="${BASE_BRANCH:-}"
+
+echo "[DIAG] ===== After VERSION assignment =====" >&2
+echo "[DIAG] VERSION=${VERSION:-<empty>}" >&2
+echo "[DIAG] RELEASE_VERSION=${RELEASE_VERSION:-<empty>}" >&2
 RELEASE_BRANCH="${RELEASE_BRANCH:-}"
 DRY_RUN="${DRY_RUN:-false}"
 SKIP_PUSH="${SKIP_PUSH:-false}"
