@@ -255,31 +255,95 @@ notify::is_test_mode() {
     [[ "${MSP_SLACK_ALERT_ENV:-}" == "test" ]]
 }
 
-# Internal helper: Send DM to Slack user (soft-fail)
+# Internal helper: Send DM to Slack user (with detailed logging)
 notify::_send_dm() {
     local user_id="$1"
     local message="$2"
-    
-    # Silent skip if no bot token
-    [[ -z "${SLACK_BOT_TOKEN:-}" ]] && return 0
 
-    # Open DM channel (silent on failure)
-    local channel
-    channel=$(curl -s -X POST \
+    # Check if logger functions are available
+    if ! command -v log::debug &>/dev/null; then
+        # Fallback logging if logger not available
+        log_debug() { echo "[DEBUG] $*" >&2; }
+        log_info() { echo "[INFO] $*" >&2; }
+        log_warn() { echo "[WARN] $*" >&2; }
+        log_error() { echo "[ERROR] $*" >&2; }
+    else
+        log_debug() { log::debug "SLACK_DM" "$*"; }
+        log_info() { log::info "SLACK_DM" "$*"; }
+        log_warn() { log::warn "SLACK_DM" "$*"; }
+        log_error() { log::error "SLACK_DM" "$*"; }
+    fi
+
+    log_debug "Attempting to send DM to user: $user_id"
+
+    # Check for bot token
+    if [[ -z "${SLACK_BOT_TOKEN:-}" ]]; then
+        log_error "SLACK_BOT_TOKEN not set - DM will not be sent"
+        log_warn "Please configure SLACK_BOT_TOKEN in Scripts/config/slack.conf"
+        log_warn "DM message was: ${message:0:100}..."
+        return 1  # Return failure status
+    fi
+
+    log_debug "SLACK_BOT_TOKEN is set: ${SLACK_BOT_TOKEN:0:20}..."
+
+    # Open DM channel with error handling
+    log_debug "Opening DM channel with Slack user: $user_id"
+    local api_response
+    api_response=$(curl -s -X POST \
       -H "Authorization: Bearer $SLACK_BOT_TOKEN" \
       -H "Content-type: application/json; charset=utf-8" \
       --data "{\"users\": \"$user_id\"}" \
-      https://slack.com/api/conversations.open 2>/dev/null | python3 -c "import sys, json; print(json.load(sys.stdin).get('channel',{}).get('id',''))" 2>/dev/null) || true
+      https://slack.com/api/conversations.open 2>&1)
 
-    [[ -z "$channel" ]] && return 0
+    # Check API response for errors
+    local ok_status
+    ok_status=$(echo "$api_response" | python3 -c "import sys, json; data=json.load(sys.stdin); print('True' if data.get('ok') else 'False')" 2>/dev/null || echo "false")
 
-    # Send message (silent on failure)
-    curl -s -X POST \
+    if [[ "$ok_status" != "True" ]]; then
+        log_error "Failed to open DM channel with user: $user_id"
+        # Extract error message from API response
+        local error_msg
+        error_msg=$(echo "$api_response" | python3 -c "import sys, json; data=json.load(sys.stdin); print(data.get('error', 'unknown error'))" 2>/dev/null || echo "unknown error")
+        log_error "Slack API error: $error_msg"
+        log_debug "Full API response: $api_response"
+        return 1
+    fi
+
+    # Extract channel ID
+    local channel
+    channel=$(echo "$api_response" | python3 -c "import sys, json; print(json.load(sys.stdin).get('channel',{}).get('id',''))" 2>/dev/null || echo "")
+
+    if [[ -z "$channel" ]]; then
+        log_error "Failed to extract channel ID from Slack API response"
+        log_debug "API response: $api_response"
+        return 1
+    fi
+
+    log_debug "DM channel opened successfully: $channel"
+
+    # Send message with error handling
+    log_debug "Sending message to channel: $channel"
+    local send_response
+    send_response=$(curl -s -X POST \
       -H "Authorization: Bearer $SLACK_BOT_TOKEN" \
       -H "Content-type: application/json" \
       --data "{\"channel\":\"$channel\",\"text\":\"$message\"}" \
-      https://slack.com/api/chat.postMessage >/dev/null 2>&1 || true
-    
+      https://slack.com/api/chat.postMessage 2>&1)
+
+    # Check send response
+    local send_ok
+    send_ok=$(echo "$send_response" | python3 -c "import sys, json; data=json.load(sys.stdin); print('True' if data.get('ok') else 'False')" 2>/dev/null || echo "false")
+
+    if [[ "$send_ok" != "True" ]]; then
+        log_error "Failed to send DM to user: $user_id"
+        local error_msg
+        error_msg=$(echo "$send_response" | python3 -c "import sys, json; data=json.load(sys.stdin); print(data.get('error', 'unknown error'))" 2>/dev/null || echo "unknown error")
+        log_error "Slack API error: $error_msg"
+        log_debug "Full API response: $send_response"
+        return 1
+    fi
+
+    log_info "✓ DM sent successfully to user: $user_id"
     return 0
 }
 
@@ -416,8 +480,14 @@ notify::dm() {
     
     [[ -z "$target_user" ]] && return 0
     
-    # Send DM using internal helper (soft-fail)
-    notify::_send_dm "$target_user" "$message"
+    # Send DM using internal helper
+    if ! notify::_send_dm "$target_user" "$message"; then
+        # Log failure but don't block execution (non-critical)
+        if command -v log::warn &>/dev/null; then
+            log::warn "SLACK_DM" "Failed to send DM notification to user: $target_user"
+        fi
+        return 1
+    fi
     return 0
 }
 
@@ -613,8 +683,15 @@ notify::module_error() {
     # Send DM ONLY (no channel notification)
     # Note: notify::dm expects (user, message) but we pass module for user resolution
     # The actual user resolution happens inside notify::dm
-    notify::dm "$module" "$message" 2>/dev/null || true
-    
+    if ! notify::dm "$module" "$message"; then
+        # Log failure for debugging
+        if command -v log::warn &>/dev/null; then
+            log::warn "NOTIFY" "Failed to send error notification for module: $module"
+            log::warn "NOTIFY" "Error message was: ${short_reason:0:100}..."
+        fi
+    fi
+
+    # Always return 0 (non-blocking)
     return 0
 }
 

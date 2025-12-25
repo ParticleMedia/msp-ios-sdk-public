@@ -114,6 +114,21 @@ if [[ -f "$ROOT_DIR/Scripts/release/utils/logger.sh" ]]; then
     source "$ROOT_DIR/Scripts/release/utils/logger.sh" 2>/dev/null || true
 fi
 
+# ============================================================================
+# Slack Notification Environment Diagnostics
+# ============================================================================
+if [[ "${MSP_LOG_LEVEL:-1}" -le 0 ]] || [[ "${VERBOSE:-false}" == "true" ]]; then
+    echo "[DIAG] Slack notification environment check:" >&2
+    if [[ -n "${SLACK_BOT_TOKEN:-}" ]]; then
+        echo "[DIAG]   SLACK_BOT_TOKEN: SET (${SLACK_BOT_TOKEN:0:20}...)" >&2
+    else
+        echo "[DIAG]   SLACK_BOT_TOKEN: NOT SET" >&2
+    fi
+    echo "[DIAG]   MSP_SLACK_DM_OVERRIDE: ${MSP_SLACK_DM_OVERRIDE:-NOT SET}" >&2
+    echo "[DIAG]   MSP_SLACK_ALERT_ENV: ${MSP_SLACK_ALERT_ENV:-prod (default)}" >&2
+    echo "[DIAG]   SLACK_WEBHOOK_URL: ${SLACK_WEBHOOK_URL:+SET}${SLACK_WEBHOOK_URL:-NOT SET}" >&2
+fi
+
 source "$ROOT_DIR/Scripts/lib/release-common.sh"
 # Before sourcing cocoapods.sh, ensure PODFILE is unset
 unset PODFILE 2>/dev/null || true
