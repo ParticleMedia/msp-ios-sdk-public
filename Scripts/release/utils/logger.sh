@@ -84,8 +84,13 @@ _log() {
     # JSON structured logging
     if [[ "$MSP_LOG_JSON" == "true" ]]; then
         local json_log
+
+        # Escape message for JSON (escape quotes and newlines)
+        local message_escaped
+        message_escaped=$(echo "$message" | sed 's/\\/\\\\/g' | sed 's/"/\\"/g' | tr '\n' ' ')
+
         json_log=$(cat <<EOF
-{"timestamp":"$timestamp","level":"$level","module":"$module","caller":"$caller","message":"$message"}
+{"timestamp":"$timestamp","level":"$level","module":"$module","caller":"$caller","message":"$message_escaped"}
 EOF
 )
         if [[ "$MSP_LOG_CONSOLE" == "true" ]]; then
@@ -165,8 +170,8 @@ log::success() {
 # Performance Metrics API
 # ============================================================================
 
-# Metrics storage file (temporary)
-_METRICS_TMP_FILE="${MSP_METRICS_FILE%.json}.tmp"
+# Metrics storage file (temporary) - use session ID + PID for uniqueness
+_METRICS_TMP_FILE="${MSP_METRICS_FILE%.json}-$$.tmp"
 
 # Start timing a named operation
 metrics::start() {
@@ -175,12 +180,19 @@ metrics::start() {
     
     # Try to get milliseconds precision, fallback to seconds
     if command -v gdate &>/dev/null; then
+        # GNU date with milliseconds support
         timestamp=$(gdate +%s%3N)
     elif [[ "$(uname)" == "Darwin" ]]; then
-        # macOS date doesn't support %3N, use seconds
-        timestamp=$(date +%s)
-        timestamp=$((timestamp * 1000))
+        # macOS: use Python for high-precision timestamp
+        if command -v python3 &>/dev/null; then
+            timestamp=$(python3 -c 'import time; print(int(time.time() * 1000))')
+        else
+            # Fallback to seconds
+            timestamp=$(date +%s)
+            timestamp=$((timestamp * 1000))
+        fi
     else
+        # Linux with milliseconds support
         timestamp=$(date +%s%3N 2>/dev/null || date +%s)
         # If date +%s%3N failed, multiply by 1000
         if [[ ${#timestamp} -lt 13 ]]; then
@@ -268,13 +280,16 @@ metrics::save() {
 
     local first=true
     if [[ -f "$_METRICS_TMP_FILE" ]]; then
-        while IFS=' ' read -r operation duration; do
+        while IFS=':' read -r key duration; do
+            # Extract operation name by removing "_duration" suffix
+            local operation="${key%_duration}"
+
             if [[ "$first" == "false" ]]; then
                 json_report+=","
             fi
             json_report+="\"$operation\":$duration"
             first=false
-        done < <(grep "_duration:" "$_METRICS_TMP_FILE" | sed 's/_duration:/ /')
+        done < <(grep "_duration:" "$_METRICS_TMP_FILE")
     fi
 
     json_report+="}}"
@@ -371,8 +386,8 @@ _log_init() {
     metrics_dir=$(dirname "$MSP_METRICS_FILE")
     mkdir -p "$metrics_dir" 2>/dev/null || true
     
-    # Initialize metrics temp file
-    _METRICS_TMP_FILE="${MSP_METRICS_FILE%.json}.tmp"
+    # Initialize metrics temp file with session ID + PID
+    _METRICS_TMP_FILE="${MSP_METRICS_FILE%.json}-$$.tmp"
     rm -f "$_METRICS_TMP_FILE" 2>/dev/null || true
     touch "$_METRICS_TMP_FILE" 2>/dev/null || true
 

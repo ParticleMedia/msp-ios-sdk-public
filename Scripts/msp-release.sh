@@ -921,11 +921,16 @@ do_run() {
     local version="${REMAINING_ARGS[0]:-unknown}"
     local tier="${MSP_RELEASE_TIER:-test}"
     if command -v log::info &>/dev/null; then
-        export MSP_LOG_FILE="/tmp/msp-release-${version}-${tier}-$(date +%Y%m%d-%H%M%S).log"
-        export MSP_METRICS_FILE="/tmp/msp-release-${version}-${tier}-metrics-$(date +%Y%m%d-%H%M%S).json"
+        # Generate unique session ID for this release
+        export MSP_SESSION_ID="${MSP_SESSION_ID:-$(date +%Y%m%d-%H%M%S)-$$}"
+
+        export MSP_LOG_FILE="/tmp/msp-release-${version}-${tier}-${MSP_SESSION_ID}.log"
+        export MSP_METRICS_FILE="/tmp/msp-release-${version}-${tier}-${MSP_SESSION_ID}-metrics.json"
+
         log::info "MSP" "Starting MSP iOS SDK Release"
         log::info "MSP" "Version: $version"
         log::info "MSP" "Tier: $tier"
+        log::info "MSP" "Session ID: $MSP_SESSION_ID"
         log::info "MSP" "Log file: $MSP_LOG_FILE"
         log::info "MSP" "Metrics file: $MSP_METRICS_FILE"
         metrics::start "msp_release_total"
