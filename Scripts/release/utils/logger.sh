@@ -31,10 +31,15 @@ readonly LOG_LEVEL_FATAL=4
 MSP_LOG_LEVEL="${MSP_LOG_LEVEL:-$LOG_LEVEL_INFO}"
 
 # Log output destinations
+# Initialize all log-related variables early to avoid "unbound variable" errors
 MSP_LOG_FILE="${MSP_LOG_FILE:-/tmp/msp-release-$(date +%Y%m%d-%H%M%S).log}"
+export MSP_LOG_FILE="${MSP_LOG_FILE}"
 MSP_LOG_JSON="${MSP_LOG_JSON:-false}"  # Enable JSON structured logging
+export MSP_LOG_JSON="${MSP_LOG_JSON}"
 MSP_LOG_CONSOLE="${MSP_LOG_CONSOLE:-true}"  # Console output
+export MSP_LOG_CONSOLE="${MSP_LOG_CONSOLE}"
 MSP_LOG_FILE_ENABLED="${MSP_LOG_FILE_ENABLED:-true}"  # File output
+export MSP_LOG_FILE_ENABLED="${MSP_LOG_FILE_ENABLED}"
 
 # Performance metrics file
 MSP_METRICS_FILE="${MSP_METRICS_FILE:-/tmp/msp-release-metrics-$(date +%Y%m%d-%H%M%S).json}"
