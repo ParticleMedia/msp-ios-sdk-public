@@ -337,25 +337,60 @@ update_adapter_sdk_version() {
     local adapter="$1"
     local version="$2"
     
-    # Skip MSPGoogleAdapter and MSPFacebookAdapter as they read SDK version from external sources
+    # Skip adapters that read SDK version from external sources
     if [[ "$adapter" == "MSPGoogleAdapter" || "$adapter" == "MSPFacebookAdapter" ]]; then
-        log_info "Skipping getSDKVersion() update for $adapter (reads from external sources)"
+        log::info "PUBLISH" "Skipping getSDKVersion() update for $adapter (reads from external sources)"
         return 0
     fi
     
-    log_step "Updating getSDKVersion() in $adapter"
-    
-    # Find Swift files in the adapter directory
-    local adapter_dir="${adapter}/${adapter}"
-    if [[ -d "$adapter_dir" ]]; then
-        find "$adapter_dir" -name "*.swift" -exec grep -l "getSDKVersion" {} \; | while read -r file; do
-            # Update getSDKVersion function to return the new version
-            sed -i '' "s|return \".*\"|return \"${version}\"|g" "$file"
-            log_info "Updated getSDKVersion in $file"
-        done
-    else
-        log_warning "Adapter directory not found: $adapter_dir"
+    log::info "PUBLISH" "Updating getSDKVersion() in $adapter to version $version"
+
+    # Fix: Use full path from project root
+    local adapter_dir="${ROOT_DIR}/Sources/Adapters/${adapter}/${adapter}"
+
+    # Validate directory exists
+    if [[ ! -d "$adapter_dir" ]]; then
+        log::error "PUBLISH" "Adapter directory not found: $adapter_dir"
+        log::error "PUBLISH" "Expected structure: Sources/Adapters/$adapter/$adapter/*.swift"
+        return 1
     fi
+
+    # Find and update Swift files containing getSDKVersion
+    local updated_count=0
+    local failed=false
+
+    while IFS= read -r file; do
+        # Verify file contains getSDKVersion function
+        if grep -q "func getSDKVersion()" "$file"; then
+            log::info "PUBLISH" "Updating $file"
+
+            # Update the return statement
+            # Pattern: return "any.version.string" → return "new.version"
+            if sed -i '' 's|return "[^"]*"|return "'"${version}"'"|g' "$file"; then
+                log::info "PUBLISH" "✓ Updated getSDKVersion in $(basename "$file")"
+                updated_count=$((updated_count + 1))
+            else
+                log::error "PUBLISH" "✗ Failed to update getSDKVersion in $file"
+                failed=true
+            fi
+        fi
+    done < <(find "$adapter_dir" -name "*.swift" -type f)
+
+    # Check results
+    if [[ "$failed" == "true" ]]; then
+        log::error "PUBLISH" "Failed to update some files in $adapter"
+        return 1
+    fi
+
+    if [[ $updated_count -eq 0 ]]; then
+        log::warn "PUBLISH" "No getSDKVersion() function found in $adapter"
+        log::warn "PUBLISH" "This may be expected if adapter doesn't implement getSDKVersion()"
+        # Not a failure - some adapters may not have this function
+        return 0
+    fi
+
+    log::info "PUBLISH" "✓ Successfully updated getSDKVersion() in $updated_count file(s) for $adapter"
+    return 0
 }
 
 # Update MSPCore version
@@ -836,9 +871,9 @@ create_github_release_for_pod() {
             else
                 log_warning "Source path not found: $source_path (hybrid mode may not work)"
             fi
-        fi
-        
-        # Create zip file
+    fi
+
+    # Create zip file
         (cd "$temp_zip_dir" && zip -r "$ROOT_DIR/$zip_name" . >/dev/null 2>&1)
         rm -rf "$temp_zip_dir"
         
@@ -857,8 +892,8 @@ create_github_release_for_pod() {
         else
             log_error "shasum command not available, cannot calculate checksum"
             rm -f "$ROOT_DIR/$zip_name"
-            return 1
-        fi
+        return 1
+    fi
         
         # Stage A: Update podspec with checksum (podspec already generated, add checksum to HTTP source)
         local podspec="$ROOT_DIR/Build/ReleasePodspecs/${pod}.podspec"
@@ -883,45 +918,45 @@ RUBY_SCRIPT
         else
             log_warning "Podspec not found for checksum update: $podspec"
         fi
-        
-        # Create or update GitHub release
-        local gh_release_created=false
-        if gh release view "$version" --repo "ParticleMedia/msp-ios-sdk-public" &>/dev/null; then
-            log_info "Release $version already exists, uploading assets"
+    
+    # Create or update GitHub release
+    local gh_release_created=false
+    if gh release view "$version" --repo "ParticleMedia/msp-ios-sdk-public" &>/dev/null; then
+        log_info "Release $version already exists, uploading assets"
             if gh release upload "$version" "$ROOT_DIR/$zip_name" --repo "ParticleMedia/msp-ios-sdk-public" --clobber; then
-                gh_release_created=true
+            gh_release_created=true
                 # Ensure release is published (not draft) and set as latest
                 gh release edit "$version" --repo "ParticleMedia/msp-ios-sdk-public" --draft=false --latest 2>/dev/null || true
-            fi
-        else
-            log_info "Creating new release $version"
+        fi
+    else
+        log_info "Creating new release $version"
             if gh release create "$version" "$ROOT_DIR/$zip_name" --repo "ParticleMedia/msp-ios-sdk-public" --title "Release $version" --notes "Release $version" --latest; then
-                gh_release_created=true
+            gh_release_created=true
                 # Ensure release is published (not draft)
                 gh release edit "$version" --repo "ParticleMedia/msp-ios-sdk-public" --draft=false 2>/dev/null || true
+        fi
+    fi
+    
+    # Clean up zip file
+        rm -f "$ROOT_DIR/$zip_name"
+    
+    if [[ "$gh_release_created" == "true" ]]; then
+            log_success "GitHub release created and zip uploaded for $pod"
+        
+        # Track GitHub release creation in state
+        if command -v msp_state_mark_git_flag &>/dev/null; then
+            msp_state_mark_git_flag "github_release_created" true
+            if command -v msp_state_set_tag_name &>/dev/null; then
+                msp_state_set_tag_name "$version"
             fi
         fi
-        
-        # Clean up zip file
-        rm -f "$ROOT_DIR/$zip_name"
-        
-        if [[ "$gh_release_created" == "true" ]]; then
-            log_success "GitHub release created and zip uploaded for $pod"
-            
-            # Track GitHub release creation in state
-            if command -v msp_state_mark_git_flag &>/dev/null; then
-                msp_state_mark_git_flag "github_release_created" true
-                if command -v msp_state_set_tag_name &>/dev/null; then
-                    msp_state_set_tag_name "$version"
-                fi
-            fi
             
             # End timing
             if command -v metrics::end &>/dev/null; then
                 metrics::end "publish_${pod}_github_release"
             fi
-        else
-            log_error "Failed to create/update GitHub release for $pod"
+    else
+        log_error "Failed to create/update GitHub release for $pod"
             if command -v metrics::end &>/dev/null; then
                 metrics::end "publish_${pod}_github_release"
             fi
@@ -1079,6 +1114,111 @@ publish_pod_with_resume() {
         fi
     fi
 
+    # ========================================================================
+    # Checksum Issue Auto-Fix Helper
+    # ========================================================================
+    # Detects and fixes checksum verification errors for source-based adapters
+    # Root cause: GitHub Release's auto-generated source code zip conflicts with git tag
+    auto_fix_checksum_issue() {
+        local pod_name="$1"
+        local version_tag="$2"
+        local error_output="$3"
+
+        # Check if this is a checksum verification error
+        if ! echo "$error_output" | grep -q "Verification checksum was incorrect"; then
+            return 1  # Not a checksum issue
+        fi
+
+        log::warn "PUBLISH" "Detected checksum verification error for $pod_name"
+        log::info "PUBLISH" "This usually happens when GitHub Release source code zip doesn't match git tag"
+
+        # Check if pod is source-based (Adapters use git+tag)
+        local podspec_file="${ROOT_DIR}/Build/ReleasePodspecs/${pod_name}.podspec"
+        if [[ ! -f "$podspec_file" ]]; then
+            log::error "PUBLISH" "Podspec not found: $podspec_file"
+            return 1
+        fi
+
+        # Verify this is a source-based distribution (has git: in source)
+        if ! grep -q "git:" "$podspec_file"; then
+            log::warn "PUBLISH" "Not a source-based distribution, cannot auto-fix"
+            return 1
+        fi
+
+        log::info "PUBLISH" "Confirmed: $pod_name is source-based (git+tag)"
+        log::info "PUBLISH" "Source-based adapters use main tag: $version_tag"
+        log::info "PUBLISH" "Attempting automatic fix..."
+
+        # Source-based adapters use the main tag (e.g., 0.3.0-rc.13), not pod-specific tags
+        # Check if main GitHub Release exists
+        local release_repo="ParticleMedia/msp-ios-sdk-public"
+        if ! gh release view "$version_tag" --repo "$release_repo" &>/dev/null; then
+            log::warn "PUBLISH" "GitHub Release $version_tag doesn't exist in $release_repo"
+            log::info "PUBLISH" "Creating new GitHub Release for main tag..."
+            
+            # Create new release from tag
+            local release_notes="MSP iOS SDK ${version_tag}
+
+This release includes source code for all adapters.
+Source code is distributed via git tag.
+
+Automatically created to resolve checksum verification issue."
+
+            if ! gh release create "$version_tag" \
+                --repo "$release_repo" \
+                --title "MSP iOS SDK $version_tag" \
+                --notes "$release_notes" \
+                --target "release/${version_tag}"; then
+                log::error "PUBLISH" "Failed to create GitHub Release $version_tag"
+                return 1
+            fi
+
+            log::info "PUBLISH" "✓ Created GitHub Release $version_tag"
+        else
+            log::info "PUBLISH" "Found existing GitHub Release: $version_tag"
+            log::info "PUBLISH" "Deleting and recreating to match current git tag..."
+
+            # Delete the conflicting release (keep tag)
+            if ! gh release delete "$version_tag" --repo "$release_repo" --yes; then
+                log::error "PUBLISH" "Failed to delete GitHub Release $version_tag"
+                return 1
+            fi
+
+            log::info "PUBLISH" "✓ Deleted GitHub Release $version_tag"
+
+            # Wait for GitHub to process deletion
+            sleep 2
+
+            # Recreate release from current tag
+            local release_notes="MSP iOS SDK ${version_tag}
+
+This release includes source code for all adapters.
+Source code is distributed via git tag.
+
+Automatically recreated to resolve checksum verification issue."
+
+            if ! gh release create "$version_tag" \
+                --repo "$release_repo" \
+                --title "MSP iOS SDK $version_tag" \
+                --notes "$release_notes" \
+                --target "release/${version_tag}"; then
+                log::error "PUBLISH" "Failed to recreate GitHub Release $version_tag"
+                return 1
+            fi
+
+            log::info "PUBLISH" "✓ Recreated GitHub Release $version_tag"
+        fi
+
+        # Wait for GitHub to generate new source code zip
+        log::info "PUBLISH" "Waiting for GitHub to generate source code archive..."
+        sleep 5
+
+        log::info "PUBLISH" "✓ Checksum issue fixed automatically"
+        log::info "PUBLISH" "CocoaPods Trunk will now download fresh source code zip"
+
+        return 0
+    }
+
     # Tier 3: Attempt to publish
     log_info "📦 Publishing $pod $version to CocoaPods Trunk..."
 
@@ -1087,7 +1227,12 @@ publish_pod_with_resume() {
     log_file=$(mktemp)
 
     # Publish with captured output
-    if pod trunk push "$podspec" --allow-warnings 2>&1 | tee "$log_file"; then
+    local publish_output
+    publish_output=$(pod trunk push "$podspec" --allow-warnings 2>&1 | tee "$log_file"; echo "${PIPESTATUS[0]}")
+    local publish_exit_code="${publish_output##*$'\n'}"
+    publish_output="${publish_output%$'\n'*}"
+
+    if [[ "$publish_exit_code" == "0" ]]; then
         log_success "✅ $pod $version published successfully"
 
         # Update state
@@ -1099,6 +1244,38 @@ publish_pod_with_resume() {
         rm -f "$log_file"
         return 0
     else
+        # ========================================================================
+        # Auto-fix: Checksum verification error
+        # ========================================================================
+        # Check if this is a checksum issue and auto-fix if possible
+        if auto_fix_checksum_issue "$pod" "$version" "$publish_output"; then
+            log::info "PUBLISH" "Checksum issue fixed, retrying publication..."
+
+            # Retry publication after fix
+            publish_output=$(pod trunk push "$podspec" --allow-warnings 2>&1 | tee "$log_file"; echo "${PIPESTATUS[0]}")
+            publish_exit_code="${publish_output##*$'\n'}"
+            publish_output="${publish_output%$'\n'*}"
+
+            if [[ "$publish_exit_code" == "0" ]]; then
+                log::info "PUBLISH" "✓ Publication succeeded after auto-fix"
+                # Update state
+                if command -v msp_state_mark_pod_status &>/dev/null; then
+                    msp_state_mark_pod_status "$pod" "published"
+                    msp_state_set_pod_trunk_verified "$pod" "true"
+                fi
+                rm -f "$log_file"
+                return 0
+            else
+                log::error "PUBLISH" "❌ Publication still failed after auto-fix"
+                log::error "PUBLISH" "Error details:"
+                echo "$publish_output" | while IFS= read -r line; do
+                    log::error "PUBLISH" "  $line"
+                done
+                rm -f "$log_file"
+                return 1
+            fi
+        fi
+
         # Check if error is "version already exists"
         if grep -q "already exists" "$log_file" || grep -q "Unable to accept duplicate entry" "$log_file"; then
             log_warning "⚠️  $pod $version already exists on Trunk"
@@ -1174,7 +1351,7 @@ publish_pod_to_cocoapods() {
 
     # Stage A: Probe zip URL availability in release tier (HTTP distribution)
     # Only check for binary distribution pods (core modules)
-    if [[ "${MSP_RELEASE_TIER:-}" == "release" ]]; then
+        if [[ "${MSP_RELEASE_TIER:-}" == "release" ]]; then
         # Check if this pod uses binary distribution (needs GitHub release zip)
         # Note: NovaCore is not included - it's embedded via vendored_frameworks, not published separately
         # Stage B: MSPOMSDK removed - OMSDK now embedded in NovaCore
@@ -1231,8 +1408,8 @@ publish_pod_to_cocoapods() {
             msp_state_mark_pod_status "$pod" "pending"
         fi
 
-        if ! publish_podspec_with_retry "$podspec"; then
-            log_error "Failed to publish $pod to CocoaPods"
+    if ! publish_podspec_with_retry "$podspec"; then
+        log_error "Failed to publish $pod to CocoaPods"
             # Mark as failed
             if command -v msp_state_mark_pod_status &>/dev/null; then
                 msp_state_mark_pod_status "$pod" "failed"
@@ -1242,7 +1419,7 @@ publish_pod_to_cocoapods() {
                 metrics::end "publish_${pod}_trunk_push"
                 metrics::record "cocoapods_failure_count" 1 "count"
             fi
-            return 1
+        return 1
         fi
 
         # Mark as published on success
@@ -1734,7 +1911,7 @@ release_msp_core() {
     if [[ "$DRY_RUN" != "true" ]]; then
         smart_wait_for_pod_availability "MSPCore" "$VERSION" "final integration module"
     fi
-
+    
     log_success "MSPCore released successfully"
 }
 
@@ -2021,7 +2198,7 @@ main() {
     # ============================================================================
     
     # Skip individual start notifications - only send final success/failure
-
+    
     # Track release statistics
     local total_pods=${#cocoapods_pods[@]}
     local successful_pods=0
