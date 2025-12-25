@@ -1115,6 +1115,143 @@ publish_pod_with_resume() {
     fi
 
     # ========================================================================
+    # GitHub Release Lock Mechanism (Concurrent Control)
+    # ========================================================================
+    # Prevents multiple pods from simultaneously modifying the same GitHub Release
+    acquire_github_release_lock() {
+        local version_tag="$1"
+        local timeout="${2:-60}"  # Default 60 seconds timeout
+        local lock_file="/tmp/msp-release-github-${version_tag}.lock"
+        local wait_interval=2
+        local elapsed=0
+
+        # Open lock file descriptor
+        exec 200>"$lock_file"
+
+        log::debug "LOCK" "Attempting to acquire lock for GitHub Release: $version_tag"
+
+        while true; do
+            # Try to acquire exclusive lock (non-blocking)
+            if flock -x -n 200; then
+                # Lock acquired, write lock info
+                echo "$$:$(date -u +%Y-%m-%dT%H:%M:%SZ):$(hostname)" >&200
+                export GITHUB_RELEASE_LOCK_FD=200
+                log::info "LOCK" "✓ Acquired lock for GitHub Release: $version_tag"
+                return 0
+            fi
+
+            # Check timeout
+            if [[ $elapsed -ge $timeout ]]; then
+                # Read lock holder info
+                local lock_holder
+                lock_holder=$(cat "$lock_file" 2>/dev/null || echo "unknown")
+                log::error "LOCK" "Failed to acquire lock for $version_tag after ${timeout}s (holder: $lock_holder)"
+                return 1
+            fi
+
+            # Wait and retry
+            log::debug "LOCK" "Lock busy, waiting... (${elapsed}/${timeout}s)"
+            sleep $wait_interval
+            elapsed=$((elapsed + wait_interval))
+        done
+    }
+
+    release_github_release_lock() {
+        if [[ -n "${GITHUB_RELEASE_LOCK_FD:-}" ]]; then
+            # Release lock by closing file descriptor
+            eval "exec ${GITHUB_RELEASE_LOCK_FD}>&-"
+            unset GITHUB_RELEASE_LOCK_FD
+            log::info "LOCK" "✓ Released GitHub Release lock"
+        fi
+    }
+
+    # ========================================================================
+    # GitHub Release Asset Backup/Restore (Binary File Recovery)
+    # ========================================================================
+    # Preserves binary assets (XCFramework zips) when recreating Release
+    backup_github_release_assets() {
+        local version_tag="$1"
+        local release_repo="$2"
+        local backup_dir="/tmp/msp-release-assets-backup-${version_tag}-$$"
+
+        log::info "BACKUP" "Backing up GitHub Release assets for $version_tag..."
+
+        # Create backup directory
+        mkdir -p "$backup_dir"
+
+        # Get list of assets
+        local assets
+        assets=$(gh release view "$version_tag" --repo "$release_repo" --json assets --jq '.assets[].name' 2>/dev/null || echo "")
+
+        if [[ -z "$assets" ]]; then
+            log::debug "BACKUP" "No assets to backup"
+            echo "$backup_dir"
+            return 0
+        fi
+
+        # Download each asset
+        local asset_count=0
+        while IFS= read -r asset_name; do
+            [[ -z "$asset_name" ]] && continue
+
+            log::debug "BACKUP" "Downloading asset: $asset_name"
+            if gh release download "$version_tag" \
+                --repo "$release_repo" \
+                --pattern "$asset_name" \
+                --dir "$backup_dir" \
+                --clobber 2>/dev/null; then
+                asset_count=$((asset_count + 1))
+                log::debug "BACKUP" "✓ Backed up: $asset_name"
+            else
+                log::warn "BACKUP" "Failed to backup: $asset_name"
+            fi
+        done <<< "$assets"
+
+        log::info "BACKUP" "✓ Backed up $asset_count asset(s) to: $backup_dir"
+        echo "$backup_dir"
+    }
+
+    restore_github_release_assets() {
+        local version_tag="$1"
+        local release_repo="$2"
+        local backup_dir="$3"
+
+        # Check if backup directory exists and has files
+        if [[ ! -d "$backup_dir" ]] || [[ -z "$(ls -A "$backup_dir" 2>/dev/null)" ]]; then
+            log::debug "RESTORE" "No assets to restore from: $backup_dir"
+            return 0
+        fi
+
+        log::info "RESTORE" "Restoring assets to GitHub Release: $version_tag..."
+
+        # Upload each backed up file
+        local restored_count=0
+        for asset_file in "$backup_dir"/*; do
+            [[ ! -f "$asset_file" ]] && continue
+
+            local asset_name
+            asset_name=$(basename "$asset_file")
+
+            log::debug "RESTORE" "Uploading asset: $asset_name"
+            if gh release upload "$version_tag" \
+                --repo "$release_repo" \
+                "$asset_file" \
+                --clobber 2>/dev/null; then
+                restored_count=$((restored_count + 1))
+                log::debug "RESTORE" "✓ Restored: $asset_name"
+            else
+                log::warn "RESTORE" "Failed to restore: $asset_name"
+            fi
+        done
+
+        log::info "RESTORE" "✓ Restored $restored_count asset(s)"
+
+        # Cleanup backup directory
+        rm -rf "$backup_dir"
+        log::debug "RESTORE" "Cleaned up backup directory"
+    }
+
+    # ========================================================================
     # Checksum Issue Auto-Fix Helper
     # ========================================================================
     # Detects and fixes checksum verification errors for source-based adapters
@@ -1178,9 +1315,27 @@ Automatically created to resolve checksum verification issue."
             log::info "PUBLISH" "Found existing GitHub Release: $version_tag"
             log::info "PUBLISH" "Deleting and recreating to match current git tag..."
 
+            # ═══════════════════════════════════════════════════════════════
+            # CONCURRENT CONTROL: Acquire lock to prevent race conditions
+            # ═══════════════════════════════════════════════════════════════
+            if ! acquire_github_release_lock "$version_tag" 120; then
+                log::error "PUBLISH" "Failed to acquire lock for GitHub Release operation"
+                return 1
+            fi
+
+            # Setup cleanup trap to ensure lock is released on error
+            trap 'release_github_release_lock' EXIT ERR
+
+            # ═══════════════════════════════════════════════════════════════
+            # ASSET BACKUP: Preserve binary files before deletion
+            # ═══════════════════════════════════════════════════════════════
+            local backup_dir
+            backup_dir=$(backup_github_release_assets "$version_tag" "$release_repo")
+
             # Delete the conflicting release (keep tag)
             if ! gh release delete "$version_tag" --repo "$release_repo" --yes; then
                 log::error "PUBLISH" "Failed to delete GitHub Release $version_tag"
+                release_github_release_lock
                 return 1
             fi
 
@@ -1203,10 +1358,22 @@ Automatically recreated to resolve checksum verification issue."
                 --notes "$release_notes" \
                 --target "release/${version_tag}"; then
                 log::error "PUBLISH" "Failed to recreate GitHub Release $version_tag"
+                release_github_release_lock
                 return 1
             fi
 
             log::info "PUBLISH" "✓ Recreated GitHub Release $version_tag"
+
+            # ═══════════════════════════════════════════════════════════════
+            # ASSET RESTORE: Restore binary files to new Release
+            # ═══════════════════════════════════════════════════════════════
+            restore_github_release_assets "$version_tag" "$release_repo" "$backup_dir"
+
+            # ═══════════════════════════════════════════════════════════════
+            # Release lock after successful operation
+            # ═══════════════════════════════════════════════════════════════
+            release_github_release_lock
+            trap - EXIT ERR  # Clear trap after successful completion
         fi
 
         # Wait for GitHub to generate new source code zip
