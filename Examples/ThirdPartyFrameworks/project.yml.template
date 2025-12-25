@@ -65,10 +65,13 @@ targets:
     type: framework
     platform: iOS
     sources:
-      - path: ../../Pods/lottie-ios/Sources
+      - path: ../../Pods/lottie-ios/Sources/Public
         excludes:
           - "**/*.md"
           - "**/*.docc/**"
+      - path: ../../Pods/lottie-ios/Sources/Private
+        excludes:
+          - "**/*.md"
     settings:
       base:
         PRODUCT_NAME: Lottie
