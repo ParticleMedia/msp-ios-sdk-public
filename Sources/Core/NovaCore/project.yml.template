@@ -40,7 +40,9 @@ targets:
       - framework: ../MSPOMSDK/OMSDK_Newsbreak1.xcframework
         embed: false
       # Shimmer XCFramework dependency (Plan B: unified XCFramework architecture)
-      - framework: ../../ThirdParty/Shimmer/Shimmer.xcframework
+      # Path is relative to project.yml location: Sources/Core/NovaCore/
+      # Shimmer.xcframework is in ThirdParty/Shimmer/ (repo root)
+      - framework: ../../../ThirdParty/Shimmer/Shimmer.xcframework
         embed: false
       # Third-party dependencies (Kingfisher, SnapKit, Lottie) are provided
       # via Pods at application level. Core XCFrameworks use @_implementationOnly
