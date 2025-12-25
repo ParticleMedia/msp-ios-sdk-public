@@ -2105,13 +2105,13 @@ fi
 }
 
 # Entry point
-# If RELEASE_VERSION is set from environment (via msp-release.sh), use it directly
-# Otherwise, require CLI arguments for backward compatibility
-if [[ -z "${RELEASE_VERSION:-}" && $# -eq 0 ]]; then
-echo "[DIAG] About to call main" >&2
-echo "[DIAG] RELEASE_VERSION=${RELEASE_VERSION:-}" >&2
-echo "[DIAG] VERSION=${VERSION:-}" >&2
-echo "[DIAG] Arguments: $*" >&2
+# Check if VERSION is set (either from RELEASE_VERSION env var or CLI arguments)
+# If not set, show help and exit
+if [[ -z "${VERSION:-}" && $# -eq 0 ]]; then
+    echo "[DIAG] About to call main" >&2
+    echo "[DIAG] RELEASE_VERSION=${RELEASE_VERSION:-}" >&2
+    echo "[DIAG] VERSION=${VERSION:-}" >&2
+    echo "[DIAG] Arguments: $*" >&2
     show_help
     exit 1
 fi
