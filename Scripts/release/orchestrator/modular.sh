@@ -195,18 +195,27 @@ if [[ -z "${RELEASE_VERSION:-}" ]]; then
     # Backward compatibility: extract MODE and VERSION from CLI if called directly
     # Expected format: bash modular.sh <MODE> <VERSION> [OPTIONS...]
     # Example: bash modular.sh run 0.0.1-preflight-test
+    # OR: bash modular.sh <VERSION> [OPTIONS...] (when called from msp-release.sh resume)
     if [[ $# -gt 0 && ! "$1" =~ ^-- ]]; then
-        # First argument is MODE (e.g., "run"), skip it
-        shift
-        # Second argument is VERSION (e.g., "0.0.1-preflight-test")
-        if [[ $# -gt 0 && ! "$1" =~ ^-- ]]; then
+        # Check if first argument looks like a version (contains dots or dashes)
+        # If it does, treat it as VERSION directly (resume mode from msp-release.sh)
+        if [[ "$1" =~ ^[0-9]+\.[0-9]+\.[0-9]+ ]]; then
+            # First argument is VERSION (e.g., "0.3.0-rc.13")
             RELEASE_VERSION="$1"
             shift
         else
-            log_error "VERSION not provided. Expected: $0 <MODE> <VERSION> [OPTIONS]"
-            log_info "Usage: msp-release.sh run <VERSION>"
-            log_info "   or: $0 <MODE> <VERSION> [OPTIONS]  (direct call for debugging)"
-            exit 1
+            # First argument is MODE (e.g., "run"), skip it
+            shift
+            # Second argument is VERSION (e.g., "0.0.1-preflight-test")
+            if [[ $# -gt 0 && ! "$1" =~ ^-- ]]; then
+                RELEASE_VERSION="$1"
+                shift
+            else
+                log_error "VERSION not provided. Expected: $0 <MODE> <VERSION> [OPTIONS]"
+                log_info "Usage: msp-release.sh run <VERSION>"
+                log_info "   or: $0 <MODE> <VERSION> [OPTIONS]  (direct call for debugging)"
+                exit 1
+            fi
         fi
     else
         log_error "RELEASE_VERSION not set. Did you forget to run via msp-release.sh?"
