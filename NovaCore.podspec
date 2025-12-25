@@ -36,7 +36,10 @@ Pod::Spec.new do |spec|
     spec.source = { :path => '.' }
     spec.source_files = "Sources/Core/NovaCore/NovaCore/**/*.{swift,h,m}"
     spec.resources = "Sources/Core/NovaCore/NovaCore/Resources/**/*"
-    spec.vendored_frameworks = "Sources/Core/MSPOMSDK/OMSDK_Newsbreak1.xcframework"
+    spec.vendored_frameworks = [
+      "Sources/Core/MSPOMSDK/OMSDK_Newsbreak1.xcframework",
+      "ThirdParty/Shimmer/Shimmer.xcframework"
+    ]
   end
 
   # Dependencies
@@ -48,7 +51,7 @@ Pod::Spec.new do |spec|
 
   spec.pod_target_xcconfig = {
     'BUILD_LIBRARY_FOR_DISTRIBUTION' => 'YES',
-    'FRAMEWORK_SEARCH_PATHS' => '$(inherited) $(PODS_ROOT)/../Build/XCFrameworks',
+    'FRAMEWORK_SEARCH_PATHS' => '$(inherited) $(PODS_ROOT)/../Build/XCFrameworks $(PODS_ROOT)/../ThirdParty/Shimmer',
     'SWIFT_INCLUDE_PATHS' => '$(inherited) $(PODS_ROOT)/../Build/XCFrameworks'
   }
   spec.user_target_xcconfig = {

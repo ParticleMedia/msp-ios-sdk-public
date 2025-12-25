@@ -17,7 +17,7 @@ ROOT_DIR="$(cd "$SCRIPT_DIR/../.." && pwd)"
   --scheme Shimmer \
   --output ShimmerWrapper \
   --sdk-name Shimmer \
-  --pods-dir "$ROOT_DIR/Pods/Shimmer"
+  --pods-dir "$ROOT_DIR/ThirdParty/Shimmer/Shimmer"
 
 # Apply Shimmer-specific umbrella header fix
 # Note: xcframework is now in temp directory, but we fix it in final destination

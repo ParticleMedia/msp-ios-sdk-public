@@ -54,7 +54,7 @@ _log_timestamp() {
 _log_caller() {
     local frame="${1:-2}"  # Default to 2 levels up
     local caller_info
-    caller_info=$(caller "$frame" 2>/dev/null || echo "unknown:0:unknown")
+    caller_info=$(caller "$frame" 2>/dev/null || echo "0 unknown unknown")
 
     # Parse caller output: line_number function_name file_path
     local line="${caller_info%% *}"
