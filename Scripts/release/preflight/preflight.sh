@@ -36,7 +36,7 @@ export ROOT_DIR
 source "$ROOT_DIR/Scripts/lib/release-common.sh"
 
 # Load release state utilities
-source "$SCRIPT_DIR/../utils/state.sh"
+source "$ROOT_DIR/Scripts/release/utils/state.sh"
 
 # ============================================================================
 # Resume Helper
