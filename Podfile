@@ -20,6 +20,65 @@ project 'Examples/MSPDemoApp/MSPDemoApp', 'Debug' => :debug, 'Release' => :relea
 demoapp_pod_configs = %w[Debug Release]
 puts "[MSPDemoApp] Integrating CocoaPods dependencies for DemoApp target"
 
+# ============================================================================
+# Pre-install hook: Ensure third-party XCFrameworks exist before pod install
+# ============================================================================
+# Automatically builds missing XCFrameworks (Shimmer, Lottie, etc.) if needed
+# This ensures DemoApp can compile in dev mode without manual intervention
+pre_install do |installer|
+  puts "[pre_install] Checking third-party XCFrameworks..."
+
+  # Required third-party XCFrameworks for all modes
+  required_xcframeworks = [
+    'Shimmer',
+    'Lottie',
+    'SnapKit',
+    'Kingfisher',
+    'SwiftProtobuf'
+  ]
+
+  missing_xcframeworks = []
+  required_xcframeworks.each do |name|
+    xcf_path = File.join(__dir__, "ThirdParty/#{name}/#{name}.xcframework")
+    unless Dir.exist?(xcf_path)
+      missing_xcframeworks << name
+      puts "[pre_install]   Missing: #{name}.xcframework"
+    else
+      puts "[pre_install]   Found: #{name}.xcframework"
+    end
+  end
+
+  # If any XCFrameworks are missing, run build-thirdparty.sh
+  unless missing_xcframeworks.empty?
+    puts "[pre_install] Building #{missing_xcframeworks.size} missing XCFramework(s)..."
+    puts "[pre_install] Running: Scripts/xcframeworks/build-thirdparty.sh"
+
+    build_script = File.join(__dir__, "Scripts/xcframeworks/build-thirdparty.sh")
+    unless File.exist?(build_script) && File.executable?(build_script)
+      raise "[pre_install] ERROR: build-thirdparty.sh not found or not executable: #{build_script}"
+    end
+
+    # Run build script and capture output
+    build_start = Time.now
+    unless system(build_script)
+      raise "[pre_install] ERROR: Failed to build third-party XCFrameworks (exit code: #{$?.exitstatus})"
+    end
+    build_duration = Time.now - build_start
+
+    puts "[pre_install] ✅ Third-party XCFrameworks built successfully (#{build_duration.round(1)}s)"
+
+    # Verify all frameworks were built
+    missing_xcframeworks.each do |name|
+      xcf_path = File.join(__dir__, "ThirdParty/#{name}/#{name}.xcframework")
+      unless Dir.exist?(xcf_path)
+        raise "[pre_install] ERROR: #{name}.xcframework still missing after build"
+      end
+    end
+  else
+    puts "[pre_install] ✅ All required XCFrameworks exist"
+  end
+end
+
 target 'MSPDemoApp' do
   project 'Examples/MSPDemoApp/MSPDemoApp'
 
@@ -46,9 +105,9 @@ target 'MSPDemoApp' do
   pod 'MSPSharedLibraries', :path => 'MSPSharedLibraries.podspec', :configurations => demoapp_pod_configs
   # MSPKingfisher replaces official Kingfisher pod to avoid SwiftVerifyEmittedModuleInterface errors
   pod 'MSPKingfisher', :path => 'ThirdParty/MSPKingfisher/MSPKingfisher.podspec', :configurations => demoapp_pod_configs
-  # Lottie and Shimmer are needed by NovaCore at compile time
+  # Lottie is needed by NovaCore at compile time
+  # Shimmer is now provided via XCFramework (Shimmer Plan B)
   pod 'lottie-ios', '4.5.2', :configurations => demoapp_pod_configs
-  pod 'Shimmer', :configurations => demoapp_pod_configs, :modular_headers => true
   # SwiftProtobuf is needed by MSPCore at compile time
   pod 'SwiftProtobuf', '~> 1.28.2', :configurations => demoapp_pod_configs
   
@@ -87,15 +146,8 @@ post_install do |installer|
       # Note: Kingfisher-specific patching removed - now using MSPKingfisher wrapper
       # which has BUILD_LIBRARY_FOR_DISTRIBUTION=NO set in its podspec
       
-      # --- Enable Swift module generation for Shimmer ---
-      # Fix "no such module 'Shimmer'" during XCFramework archive
-      # Enable Swift import for Shimmer (Obj-C pod) by generating Shimmer.swiftmodule
-      if target.name == "Shimmer"
-        puts "[post_install] Enabling Swift module generation for Shimmer"
-        config.build_settings["DEFINES_MODULE"] = "YES"
-        config.build_settings["CLANG_ENABLE_MODULES"] = "YES"
-        config.build_settings["SWIFT_OBJC_BRIDGING_HEADER"] = ""
-      end
+      # Shimmer is now provided via XCFramework (Shimmer Plan B)
+      # No post_install configuration needed
     end
     
     # Remove SwiftVerifyEmittedModuleInterface build phases from Pods targets
@@ -146,15 +198,8 @@ post_install do |installer|
     end
   end
   
-  # Create module.modulemap symlink for Shimmer to make it discoverable by Swift
-  # Swift requires modulemap to be named 'module.modulemap' in the include directory
-  shimmer_modulemap_dir = File.join(installer.sandbox.root, "Headers/Public/Shimmer")
-  shimmer_modulemap = File.join(shimmer_modulemap_dir, "Shimmer.modulemap")
-  module_modulemap = File.join(shimmer_modulemap_dir, "module.modulemap")
-  if File.exist?(shimmer_modulemap) && !File.exist?(module_modulemap)
-    puts "[post_install] Creating module.modulemap symlink for Shimmer"
-    File.symlink("Shimmer.modulemap", module_modulemap)
-  end
+  # Shimmer is now provided via XCFramework (Shimmer Plan B)
+  # No modulemap symlink needed - XCFramework includes module.modulemap
   
   # Note: Swift module resolution for vendored XCFrameworks is handled via:
   # 1. FRAMEWORK_SEARCH_PATHS (already set in podspecs and xcconfig)
