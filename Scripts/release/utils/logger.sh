@@ -321,10 +321,12 @@ metrics::report() {
         return 0
     fi
 
-    # Extract durations from temp file
+    # Extract durations from temp file (consistent with metrics::save)
     local sorted_ops
     sorted_ops=$(
-        grep "_duration:" "$_METRICS_TMP_FILE" | sed 's/_duration:/ /' | sort -rn -k2
+        while IFS=':' read -r key duration; do
+            echo "${key%_duration} $duration"
+        done < <(grep "_duration:" "$_METRICS_TMP_FILE") | sort -rn -k2
     )
 
     if [[ -z "$sorted_ops" ]]; then
