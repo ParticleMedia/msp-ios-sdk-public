@@ -9,6 +9,14 @@ fi
 export MSP_LOGGER_LOADED=1
 
 # ============================================================================
+# Initialize Metrics Temporary File (Early)
+# ============================================================================
+# Initialize _METRICS_TMP_FILE early to avoid "unbound variable" errors
+# This must be initialized before any script tries to use it
+_METRICS_TMP_FILE="${MSP_METRICS_TMP_FILE:-/tmp/msp-metrics-$$.tmp}"
+export _METRICS_TMP_FILE
+
+# ============================================================================
 # Configuration
 # ============================================================================
 
