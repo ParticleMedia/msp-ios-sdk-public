@@ -2,6 +2,12 @@
 # MSP iOS SDK - Unified Logging System
 # Provides structured logging with timestamps, modules, and metrics
 
+# Source guard: prevent multiple sourcing
+if [[ -n "${MSP_LOGGER_LOADED:-}" ]]; then
+    return 0  # Already loaded, skip
+fi
+export MSP_LOGGER_LOADED=1
+
 # ============================================================================
 # Configuration
 # ============================================================================
