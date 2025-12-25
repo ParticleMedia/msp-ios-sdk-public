@@ -39,14 +39,12 @@ _msp_release_get_mode() {
 
 # Source the common library
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-echo "[DIAG] SCRIPT_DIR set" >&2
 # ============================================
 # Unified ROOT_DIR resolution (final version)
 # ============================================
 if [[ -z "${ROOT_DIR:-}" ]]; then
     # First try Git repo root (most reliable)
     if command -v git >/dev/null 2>&1; then
-echo "[DIAG] git command check passed" >&2
         git_root="$(git rev-parse --show-toplevel 2>/dev/null || echo "")"
         if [[ -n "$git_root" ]]; then
             ROOT_DIR="$git_root"
@@ -66,12 +64,10 @@ echo "[DIAG] git command check passed" >&2
 fi
 
 export ROOT_DIR
-echo "[DIAG] ROOT_DIR exported: $ROOT_DIR" >&2
 
 # Set BUILD_ENVIRONMENT default before sourcing release-common.sh
 # This prevents "parameter not set" errors when release-common.sh uses set -u
 export BUILD_ENVIRONMENT="${BUILD_ENVIRONMENT:-local}"
-echo "[DIAG] BUILD_ENVIRONMENT set" >&2
 
 source "$ROOT_DIR/Scripts/lib/release-common.sh"
 # Config-driven gating is now standard - no need for tier helper checks
