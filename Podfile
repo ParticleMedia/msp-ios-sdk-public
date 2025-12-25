@@ -1,4 +1,5 @@
 
+use_modular_headers!
 # Uncomment the next line to define a global platform for your project
  platform :ios, '15.0'
 
@@ -7,7 +8,11 @@ workspace 'msp-ios-sdk'
 # pods-dev mode: full integration for source-based development
 # pods-release mode: no integration (XcodeGen manages project)
 msp_mode = ENV['MSP_MODE'] || 'pods-release'
-integrate = (msp_mode == 'pods-dev')
+# Force integrate to always generate workspace (required by build-core.sh)
+# Core XCFramework build requires workspace to:
+# - Pre-build Pod dependencies (MSPKingfisher, SnapKit, lottie-ios, MSPPrebidAdapter, SwiftProtobuf)
+# - Resolve Pod Swift modules in shared DerivedData
+integrate = true  # Was: (msp_mode == 'pods-dev')
 
 install! 'cocoapods',
          :generate_multiple_pod_projects => true,
