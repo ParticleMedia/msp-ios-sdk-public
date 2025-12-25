@@ -98,6 +98,11 @@ if [[ -f "$ROOT_DIR/Scripts/release/utils/safety.sh" ]]; then
     source "$ROOT_DIR/Scripts/release/utils/safety.sh" 2>/dev/null || true
 fi
 
+# Source unified logging system (if not already loaded)
+if [[ -f "$ROOT_DIR/Scripts/release/utils/logger.sh" ]]; then
+    source "$ROOT_DIR/Scripts/release/utils/logger.sh" 2>/dev/null || true
+fi
+
 # ============================================================================
 # STEP-Level Logging Functions
 # ============================================================================
@@ -1300,6 +1305,12 @@ main() {
     echo "[DIAG] Shell: $0" >&2
     echo "[DIAG] PATH: $PATH" >&2
     echo "[DIAG] Arguments: $*" >&2
+    
+    # Start timing for orchestrator
+    if command -v metrics::start &>/dev/null; then
+        metrics::start "orchestrator_total"
+    fi
+    
     # Set error trap for state tracking
     trap '_handle_main_error' ERR
     
@@ -1311,7 +1322,11 @@ main() {
     # Phase 4 TASK 4: Preflight / Production mode detection
     local RELEASE_TIER="${MSP_RELEASE_TIER:-preflight}"
     export MSP_RELEASE_TIER="$RELEASE_TIER"
-    log_info "[TIER] Running in ${RELEASE_TIER} tier"
+    if command -v log::info &>/dev/null; then
+        log::info "ORCH" "Running in ${RELEASE_TIER} tier"
+    else
+        log_info "[TIER] Running in ${RELEASE_TIER} tier"
+    fi
 
     # Phase 3: Release Tier Safety Checks (must run before any operations)
     VERSION="$1"
@@ -1495,10 +1510,21 @@ main() {
     # Record start time
     RELEASE_START_TIME=$(date '+%Y-%m-%d %H:%M:%S')
     
+    # Start timing for orchestrator main execution
+    if command -v metrics::start &>/dev/null; then
+        metrics::start "orchestrator_main"
+    fi
+    
     # Step 0: Pre-release setup (build frameworks)
     step "pre_release_setup"
     export CURRENT_STEP="pre_release_setup"
+    if command -v metrics::start &>/dev/null; then
+        metrics::start "pre_release_setup"
+    fi
     if pre_release_setup; then
+        if command -v metrics::end &>/dev/null; then
+            metrics::end "pre_release_setup"
+        fi
         step_done "pre_release_setup"
     else
         # In preflight mode, allow pre_release_setup to fail gracefully
@@ -1537,7 +1563,13 @@ main() {
         step_skip "create_release_branch ($skip_reason)"
     else
         export CURRENT_STEP="create_release_branch"
+        if command -v metrics::start &>/dev/null; then
+            metrics::start "create_release_branch"
+        fi
         if create_release_branch; then
+            if command -v metrics::end &>/dev/null; then
+                metrics::end "create_release_branch"
+            fi
             step_done "create_release_branch"
         else
             if [[ "$RELEASE_TIER" == "preflight" ]]; then
@@ -1553,7 +1585,13 @@ main() {
     # Step 2: Release CocoaPods
     step "release_cocoapods"
     export CURRENT_STEP="release_cocoapods"
+    if command -v metrics::start &>/dev/null; then
+        metrics::start "release_cocoapods"
+    fi
     if release_cocoapods; then
+        if command -v metrics::end &>/dev/null; then
+            metrics::end "release_cocoapods"
+        fi
         step_done "release_cocoapods"
         if command -v msp_state_mark_step_success &>/dev/null; then
             msp_state_mark_step_success "release_cocoapods"
@@ -1584,7 +1622,13 @@ main() {
     # Step 3: Release SPM
     step "release_spm"
     export CURRENT_STEP="release_spm"
+    if command -v metrics::start &>/dev/null; then
+        metrics::start "release_spm"
+    fi
     if release_spm; then
+        if command -v metrics::end &>/dev/null; then
+            metrics::end "release_spm"
+        fi
         step_done "release_spm"
         if command -v msp_state_mark_step_success &>/dev/null; then
             msp_state_mark_step_success "release_spm"
@@ -2040,6 +2084,14 @@ EOF
         log_warn "Report generation failed (soft-fail, continuing)"
     fi
 fi
+
+    # End timing and generate metrics report
+    if command -v metrics::end &>/dev/null; then
+        metrics::end "orchestrator_main"
+        metrics::end "orchestrator_total"
+        metrics::report
+        metrics::save
+    fi
 
 }
 

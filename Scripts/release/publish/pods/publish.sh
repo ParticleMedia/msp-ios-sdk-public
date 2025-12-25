@@ -108,6 +108,12 @@ else
     log_warning "[NOTIFY] New notification system not found: $ROOT_DIR/Scripts/release/utils/notify.sh"
 fi
 
+# Source unified logging system (if not already loaded)
+if [[ -f "$ROOT_DIR/Scripts/release/utils/logger.sh" ]]; then
+    # shellcheck source=Scripts/release/utils/logger.sh
+    source "$ROOT_DIR/Scripts/release/utils/logger.sh" 2>/dev/null || true
+fi
+
 source "$ROOT_DIR/Scripts/lib/release-common.sh"
 # Before sourcing cocoapods.sh, ensure PODFILE is unset
 unset PODFILE 2>/dev/null || true
@@ -768,9 +774,17 @@ create_github_release_for_pod() {
     local version="$2"
 
     log_step "Creating GitHub release for $pod"
+    
+    # Start timing
+    if command -v metrics::start &>/dev/null; then
+        metrics::start "publish_${pod}_github_release"
+    fi
 
     if [[ "$DRY_RUN" == "true" ]]; then
         log_info "DRY RUN: Would create GitHub release for $pod version $version"
+        if command -v metrics::end &>/dev/null; then
+            metrics::end "publish_${pod}_github_release"
+        fi
         return 0
     fi
 
@@ -901,8 +915,16 @@ RUBY_SCRIPT
                     msp_state_set_tag_name "$version"
                 fi
             fi
+            
+            # End timing
+            if command -v metrics::end &>/dev/null; then
+                metrics::end "publish_${pod}_github_release"
+            fi
         else
             log_error "Failed to create/update GitHub release for $pod"
+            if command -v metrics::end &>/dev/null; then
+                metrics::end "publish_${pod}_github_release"
+            fi
             return 1
         fi
 
@@ -912,6 +934,9 @@ RUBY_SCRIPT
     # For non-core modules (adapters), no GitHub release needed
     # They use git+tag source in podspec
     log_info "[${MSP_RELEASE_TIER:-test} tier] Non-core module $pod, skipping GitHub release creation"
+    if command -v metrics::end &>/dev/null; then
+        metrics::end "publish_${pod}_github_release"
+    fi
     return 0
 }
 
@@ -1123,6 +1148,11 @@ publish_pod_to_cocoapods() {
     local podspec="$ROOT_DIR/Build/ReleasePodspecs/${pod}.podspec"
 
     log_step "Publishing $pod to CocoaPods using generated podspec"
+    
+    # Start timing for trunk push
+    if command -v metrics::start &>/dev/null; then
+        metrics::start "publish_${pod}_trunk_push"
+    fi
 
     if [[ ! -f "$podspec" ]]; then
         log_error "Generated podspec not found: $podspec"
@@ -1207,6 +1237,11 @@ publish_pod_to_cocoapods() {
             if command -v msp_state_mark_pod_status &>/dev/null; then
                 msp_state_mark_pod_status "$pod" "failed"
             fi
+            # End timing even on failure
+            if command -v metrics::end &>/dev/null; then
+                metrics::end "publish_${pod}_trunk_push"
+                metrics::record "cocoapods_failure_count" 1 "count"
+            fi
             return 1
         fi
 
@@ -1214,6 +1249,11 @@ publish_pod_to_cocoapods() {
         if command -v msp_state_mark_pod_status &>/dev/null; then
             msp_state_mark_pod_status "$pod" "published"
             msp_state_set_pod_trunk_verified "$pod" "true"
+        fi
+        
+        # End timing for trunk push
+        if command -v metrics::end &>/dev/null; then
+            metrics::end "publish_${pod}_trunk_push"
         fi
     fi
 
@@ -1255,12 +1295,20 @@ wait_for_pod_availability() {
 # ============================================================================
 release_msp_ioscore() {
     log_section "Step 0: Releasing MSPiOSCore (foundation - required by all modules)"
+    
+    # Start timing
+    if command -v metrics::start &>/dev/null; then
+        metrics::start "pod_MSPiOSCore"
+    fi
 
     # Check if MSPiOSCore is already published (idempotency)
     if [[ "$DRY_RUN" != "true" ]]; then
         if check_pod_availability "MSPiOSCore" "$VERSION"; then
             log_info "MSPiOSCore $VERSION is already published to CocoaPods, skipping release"
             log_success "MSPiOSCore $VERSION already available"
+            if command -v metrics::end &>/dev/null; then
+                metrics::end "pod_MSPiOSCore"
+            fi
             return 0
         fi
     fi
@@ -1301,6 +1349,12 @@ release_msp_ioscore() {
     # Wait for availability (skip in dry-run mode)
     if [[ "$DRY_RUN" != "true" ]]; then
         smart_wait_for_pod_availability "MSPiOSCore" "$VERSION" "foundation module required by all other modules"
+    fi
+
+    # End timing
+    if command -v metrics::end &>/dev/null; then
+        metrics::end "pod_MSPiOSCore"
+        metrics::record "cocoapods_success_count" 1 "count"
     fi
 
     log_success "MSPiOSCore released successfully"
@@ -1349,6 +1403,12 @@ release_msp_shared_libraries() {
     # Wait for availability (skip in dry-run mode)
     if [[ "$DRY_RUN" != "true" ]]; then
         smart_wait_for_pod_availability "MSPSharedLibraries" "$VERSION" "foundation dependency required by adapters and MSPCore"
+    fi
+
+    # End timing
+    if command -v metrics::end &>/dev/null; then
+        metrics::end "pod_MSPSharedLibraries"
+        metrics::record "cocoapods_success_count" 1 "count"
     fi
 
     log_success "MSPSharedLibraries released successfully"

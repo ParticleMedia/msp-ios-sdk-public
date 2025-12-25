@@ -1,0 +1,387 @@
+#!/bin/bash
+# MSP iOS SDK - Unified Logging System
+# Provides structured logging with timestamps, modules, and metrics
+
+# ============================================================================
+# Configuration
+# ============================================================================
+
+# Log levels (numeric priority)
+readonly LOG_LEVEL_DEBUG=0
+readonly LOG_LEVEL_INFO=1
+readonly LOG_LEVEL_WARN=2
+readonly LOG_LEVEL_ERROR=3
+readonly LOG_LEVEL_FATAL=4
+
+# Current log level (can be overridden by MSP_LOG_LEVEL)
+MSP_LOG_LEVEL="${MSP_LOG_LEVEL:-$LOG_LEVEL_INFO}"
+
+# Log output destinations
+MSP_LOG_FILE="${MSP_LOG_FILE:-/tmp/msp-release-$(date +%Y%m%d-%H%M%S).log}"
+MSP_LOG_JSON="${MSP_LOG_JSON:-false}"  # Enable JSON structured logging
+MSP_LOG_CONSOLE="${MSP_LOG_CONSOLE:-true}"  # Console output
+MSP_LOG_FILE_ENABLED="${MSP_LOG_FILE_ENABLED:-true}"  # File output
+
+# Performance metrics file
+MSP_METRICS_FILE="${MSP_METRICS_FILE:-/tmp/msp-release-metrics-$(date +%Y%m%d-%H%M%S).json}"
+
+# ANSI colors
+readonly COLOR_RESET='\033[0m'
+readonly COLOR_RED='\033[0;31m'
+readonly COLOR_GREEN='\033[0;32m'
+readonly COLOR_YELLOW='\033[0;33m'
+readonly COLOR_BLUE='\033[0;34m'
+readonly COLOR_PURPLE='\033[0;35m'
+readonly COLOR_CYAN='\033[0;36m'
+readonly COLOR_GRAY='\033[0;90m'
+
+# ============================================================================
+# Core Logging Functions
+# ============================================================================
+
+# Get current timestamp in ISO 8601 format
+_log_timestamp() {
+    date -u +"%Y-%m-%dT%H:%M:%S.%3NZ" 2>/dev/null || date -u +"%Y-%m-%dT%H:%M:%SZ"
+}
+
+# Get calling function/script info
+_log_caller() {
+    local frame="${1:-2}"  # Default to 2 levels up
+    local caller_info
+    caller_info=$(caller "$frame" 2>/dev/null || echo "unknown:0:unknown")
+
+    # Parse caller output: line_number function_name file_path
+    local line="${caller_info%% *}"
+    local rest="${caller_info#* }"
+    local func="${rest%% *}"
+    local file="${rest#* }"
+
+    # Extract just the filename
+    file="${file##*/}"
+
+    echo "${file}:${line}:${func}"
+}
+
+# Core log function
+_log() {
+    local level="$1"
+    local level_num="$2"
+    local module="$3"
+    local message="$4"
+    local color="${5:-$COLOR_RESET}"
+
+    # Filter by log level
+    if [[ "$level_num" -lt "$MSP_LOG_LEVEL" ]]; then
+        return 0
+    fi
+
+    local timestamp
+    timestamp=$(_log_timestamp)
+
+    local caller
+    caller=$(_log_caller 3)
+
+    # JSON structured logging
+    if [[ "$MSP_LOG_JSON" == "true" ]]; then
+        local json_log
+        json_log=$(cat <<EOF
+{"timestamp":"$timestamp","level":"$level","module":"$module","caller":"$caller","message":"$message"}
+EOF
+)
+        if [[ "$MSP_LOG_CONSOLE" == "true" ]]; then
+            echo "$json_log"
+        fi
+        if [[ "$MSP_LOG_FILE_ENABLED" == "true" ]]; then
+            echo "$json_log" >> "$MSP_LOG_FILE"
+        fi
+        return 0
+    fi
+
+    # Human-readable format
+    local log_line
+    if [[ "${NO_ANSI:-false}" == "true" ]]; then
+        log_line="[$timestamp] [$level] [$module] $message ($caller)"
+    else
+        log_line="${COLOR_GRAY}[$timestamp]${COLOR_RESET} ${color}[$level]${COLOR_RESET} ${COLOR_CYAN}[$module]${COLOR_RESET} $message ${COLOR_GRAY}($caller)${COLOR_RESET}"
+    fi
+
+    # Output to console
+    if [[ "$MSP_LOG_CONSOLE" == "true" ]]; then
+        if [[ "$level" == "ERROR" ]] || [[ "$level" == "FATAL" ]]; then
+            echo -e "$log_line" >&2
+        else
+            echo -e "$log_line"
+        fi
+    fi
+
+    # Output to file (strip ANSI codes)
+    if [[ "$MSP_LOG_FILE_ENABLED" == "true" ]]; then
+        echo -e "$log_line" | sed 's/\x1b\[[0-9;]*m//g' >> "$MSP_LOG_FILE"
+    fi
+}
+
+# ============================================================================
+# Public Logging API
+# ============================================================================
+
+log::debug() {
+    local module="${1:-GENERAL}"
+    local message="$2"
+    _log "DEBUG" "$LOG_LEVEL_DEBUG" "$module" "$message" "$COLOR_GRAY"
+}
+
+log::info() {
+    local module="${1:-GENERAL}"
+    local message="$2"
+    _log "INFO" "$LOG_LEVEL_INFO" "$module" "$message" "$COLOR_BLUE"
+}
+
+log::warn() {
+    local module="${1:-GENERAL}"
+    local message="$2"
+    _log "WARN" "$LOG_LEVEL_WARN" "$module" "$message" "$COLOR_YELLOW"
+}
+
+log::error() {
+    local module="${1:-GENERAL}"
+    local message="$2"
+    _log "ERROR" "$LOG_LEVEL_ERROR" "$module" "$message" "$COLOR_RED"
+}
+
+log::fatal() {
+    local module="${1:-GENERAL}"
+    local message="$2"
+    _log "FATAL" "$LOG_LEVEL_FATAL" "$module" "$message" "$COLOR_RED"
+    exit 1
+}
+
+log::success() {
+    local module="${1:-GENERAL}"
+    local message="$2"
+    _log "SUCCESS" "$LOG_LEVEL_INFO" "$module" "✅ $message" "$COLOR_GREEN"
+}
+
+# ============================================================================
+# Performance Metrics API
+# ============================================================================
+
+# Metrics storage file (temporary)
+_METRICS_TMP_FILE="${MSP_METRICS_FILE%.json}.tmp"
+
+# Start timing a named operation
+metrics::start() {
+    local operation="$1"
+    local timestamp
+    
+    # Try to get milliseconds precision, fallback to seconds
+    if command -v gdate &>/dev/null; then
+        timestamp=$(gdate +%s%3N)
+    elif [[ "$(uname)" == "Darwin" ]]; then
+        # macOS date doesn't support %3N, use seconds
+        timestamp=$(date +%s)
+        timestamp=$((timestamp * 1000))
+    else
+        timestamp=$(date +%s%3N 2>/dev/null || date +%s)
+        # If date +%s%3N failed, multiply by 1000
+        if [[ ${#timestamp} -lt 13 ]]; then
+            timestamp=$((timestamp * 1000))
+        fi
+    fi
+    
+    # Store start time in temp file (operation:timestamp format)
+    echo "$operation:$timestamp" >> "$_METRICS_TMP_FILE"
+    log::debug "METRICS" "Started timing: $operation"
+}
+
+# End timing and record duration
+metrics::end() {
+    local operation="$1"
+    local end_time
+    
+    # Try to get milliseconds precision, fallback to seconds
+    if command -v gdate &>/dev/null; then
+        end_time=$(gdate +%s%3N)
+    elif [[ "$(uname)" == "Darwin" ]]; then
+        # macOS date doesn't support %3N, use seconds
+        end_time=$(date +%s)
+        end_time=$((end_time * 1000))
+    else
+        end_time=$(date +%s%3N 2>/dev/null || date +%s)
+        # If date +%s%3N failed, multiply by 1000
+        if [[ ${#end_time} -lt 13 ]]; then
+            end_time=$((end_time * 1000))
+        fi
+    fi
+
+    # Find start time from temp file (get last occurrence)
+    local start_time=0
+    if [[ -f "$_METRICS_TMP_FILE" ]]; then
+        start_time=$(grep "^${operation}:" "$_METRICS_TMP_FILE" | tail -1 | cut -d: -f2)
+    fi
+    
+    if [[ -z "$start_time" ]] || [[ "$start_time" -eq 0 ]]; then
+        log::warn "METRICS" "No start time found for operation: $operation"
+        return 1
+    fi
+
+    local duration=$((end_time - start_time))
+    
+    # Store duration in temp file (operation:duration format)
+    echo "${operation}_duration:$duration" >> "$_METRICS_TMP_FILE"
+
+    # Convert to human-readable format
+    local duration_sec=$((duration / 1000))
+    local duration_ms=$((duration % 1000))
+
+    log::info "METRICS" "Completed: $operation (${duration_sec}s ${duration_ms}ms)"
+}
+
+# Record a metric value
+metrics::record() {
+    local metric_name="$1"
+    local metric_value="$2"
+    local metric_unit="${3:-count}"
+
+    log::debug "METRICS" "Recorded: $metric_name = $metric_value $metric_unit"
+
+    # Append to metrics file (JSON Lines format)
+    if [[ -n "$MSP_METRICS_FILE" ]]; then
+        local timestamp
+        timestamp=$(_log_timestamp)
+        echo "{\"timestamp\":\"$timestamp\",\"metric\":\"$metric_name\",\"value\":$metric_value,\"unit\":\"$metric_unit\"}" >> "$MSP_METRICS_FILE"
+    fi
+}
+
+# Save all collected metrics to file
+metrics::save() {
+    if [[ -z "$MSP_METRICS_FILE" ]]; then
+        log::warn "METRICS" "No metrics file configured"
+        return 1
+    fi
+
+    log::info "METRICS" "Saving metrics to: $MSP_METRICS_FILE"
+
+    # Create JSON report from temp file
+    local json_report="{"
+    json_report+="\"timestamp\":\"$(_log_timestamp)\","
+    json_report+="\"durations\":{"
+
+    local first=true
+    if [[ -f "$_METRICS_TMP_FILE" ]]; then
+        while IFS=' ' read -r operation duration; do
+            if [[ "$first" == "false" ]]; then
+                json_report+=","
+            fi
+            json_report+="\"$operation\":$duration"
+            first=false
+        done < <(grep "_duration:" "$_METRICS_TMP_FILE" | sed 's/_duration:/ /')
+    fi
+
+    json_report+="}}"
+
+    echo "$json_report" >> "$MSP_METRICS_FILE"
+    log::success "METRICS" "Metrics saved successfully"
+    
+    # Clean up temp file
+    rm -f "$_METRICS_TMP_FILE"
+}
+
+# Generate human-readable metrics report
+metrics::report() {
+    echo ""
+    echo "==================================================================="
+    echo "                    PERFORMANCE METRICS REPORT"
+    echo "==================================================================="
+    echo ""
+
+    if [[ ! -f "$_METRICS_TMP_FILE" ]]; then
+        echo "No metrics collected."
+        return 0
+    fi
+
+    # Extract durations from temp file
+    local sorted_ops
+    sorted_ops=$(
+        grep "_duration:" "$_METRICS_TMP_FILE" | sed 's/_duration:/ /' | sort -rn -k2
+    )
+
+    if [[ -z "$sorted_ops" ]]; then
+        echo "No metrics collected."
+        return 0
+    fi
+
+    echo "Operation                                         Duration"
+    echo "-------------------------------------------------------------------"
+
+    local total_duration=0
+    while IFS=' ' read -r operation duration; do
+        local duration_sec=$((duration / 1000))
+        local duration_ms=$((duration % 1000))
+        printf "%-50s %5ds %03dms\n" "$operation" "$duration_sec" "$duration_ms"
+        total_duration=$((total_duration + duration))
+    done <<< "$sorted_ops"
+
+    echo "-------------------------------------------------------------------"
+    local total_sec=$((total_duration / 1000))
+    local total_ms=$((total_duration % 1000))
+    printf "%-50s %5ds %03dms\n" "TOTAL" "$total_sec" "$total_ms"
+    echo ""
+    echo "Metrics saved to: $MSP_METRICS_FILE"
+    echo "==================================================================="
+    echo ""
+}
+
+# ============================================================================
+# Backward Compatibility Layer
+# ============================================================================
+
+# Map old logging functions to new API
+log_info() {
+    log::info "LEGACY" "$1"
+}
+
+log_error() {
+    log::error "LEGACY" "$1"
+}
+
+log_warning() {
+    log::warn "LEGACY" "$1"
+}
+
+log_success() {
+    log::success "LEGACY" "$1"
+}
+
+log_step() {
+    log::info "STEP" "$1"
+}
+
+# ============================================================================
+# Initialization
+# ============================================================================
+
+_log_init() {
+    # Create log directory if needed
+    local log_dir
+    log_dir=$(dirname "$MSP_LOG_FILE")
+    mkdir -p "$log_dir" 2>/dev/null || true
+
+    # Create metrics directory if needed
+    local metrics_dir
+    metrics_dir=$(dirname "$MSP_METRICS_FILE")
+    mkdir -p "$metrics_dir" 2>/dev/null || true
+    
+    # Initialize metrics temp file
+    _METRICS_TMP_FILE="${MSP_METRICS_FILE%.json}.tmp"
+    rm -f "$_METRICS_TMP_FILE" 2>/dev/null || true
+    touch "$_METRICS_TMP_FILE" 2>/dev/null || true
+
+    log::info "LOGGER" "Logging initialized"
+    log::debug "LOGGER" "Log file: $MSP_LOG_FILE"
+    log::debug "LOGGER" "Metrics file: $MSP_METRICS_FILE"
+    log::debug "LOGGER" "Log level: $MSP_LOG_LEVEL"
+}
+
+# Auto-initialize when sourced
+_log_init
+

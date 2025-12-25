@@ -44,6 +44,14 @@ fi
 
 export ROOT_DIR
 
+# ============================================================================
+# Load Unified Logging System (Early - before other operations)
+# ============================================================================
+if [[ -f "$ROOT_DIR/Scripts/release/utils/logger.sh" ]]; then
+    # shellcheck source=Scripts/release/utils/logger.sh
+    source "$ROOT_DIR/Scripts/release/utils/logger.sh" 2>/dev/null || true
+fi
+
 # Existing release scripts (delegate to these)
 MODULAR_SCRIPT="$SCRIPT_DIR/release/orchestrator/modular.sh"
 COCOAPODS_SCRIPT="$SCRIPT_DIR/release/publish/pods/publish.sh"
@@ -909,12 +917,30 @@ do_run() {
     AUTHOR_EMAIL="$(git config user.email 2>/dev/null || echo "")"
     export MSP_AUTHOR_EMAIL="$AUTHOR_EMAIL"
     
-    log_info "[CLI] run subcommand invoked"
+    # Initialize logging system for this release run
+    local version="${REMAINING_ARGS[0]:-unknown}"
+    local tier="${MSP_RELEASE_TIER:-test}"
+    if command -v log::info &>/dev/null; then
+        export MSP_LOG_FILE="/tmp/msp-release-${version}-${tier}-$(date +%Y%m%d-%H%M%S).log"
+        export MSP_METRICS_FILE="/tmp/msp-release-${version}-${tier}-metrics-$(date +%Y%m%d-%H%M%S).json"
+        log::info "MSP" "Starting MSP iOS SDK Release"
+        log::info "MSP" "Version: $version"
+        log::info "MSP" "Tier: $tier"
+        log::info "MSP" "Log file: $MSP_LOG_FILE"
+        log::info "MSP" "Metrics file: $MSP_METRICS_FILE"
+        metrics::start "msp_release_total"
+    else
+        log_info "[CLI] run subcommand invoked"
+    fi
     
     # Scheme A: always reset state for a new 'run' invocation
     local state_file="${ROOT_DIR}/.msp-release-state.json"
     if [[ -f "$state_file" ]]; then
-        log_info "Resetting state file for fresh run"
+        if command -v log::info &>/dev/null; then
+            log::info "MSP" "Resetting state file for fresh run"
+        else
+            log_info "Resetting state file for fresh run"
+        fi
         rm -f "$state_file"
     fi
     
@@ -1016,10 +1042,39 @@ do_run() {
     echo "[MSP][CLI] Release mode: ${MSP_RELEASE_MODE}"
     
     # For now, delegate to modular.sh (backward compatibility)
-    log_info "Delegating to: $MODULAR_SCRIPT"
-    log_info "Arguments: $RELEASE_VERSION ${REMAINING_ARGS[*]:-}"
+    if command -v log::info &>/dev/null; then
+        log::info "MSP" "Delegating to: $MODULAR_SCRIPT"
+        log::info "MSP" "Arguments: $RELEASE_VERSION ${REMAINING_ARGS[*]:-}"
+    else
+        log_info "Delegating to: $MODULAR_SCRIPT"
+        log_info "Arguments: $RELEASE_VERSION ${REMAINING_ARGS[*]:-}"
+    fi
     
     bash "$MODULAR_SCRIPT" "$RELEASE_VERSION" ${REMAINING_ARGS[@]+"${REMAINING_ARGS[@]}"}
+    local result=$?
+    
+    # End timing and generate reports
+    if command -v metrics::end &>/dev/null; then
+        metrics::end "msp_release_total"
+        metrics::report
+        metrics::save
+        
+        # Generate analytics summary
+        if [[ -f "$ROOT_DIR/Scripts/release/utils/analytics.sh" ]]; then
+            source "$ROOT_DIR/Scripts/release/utils/analytics.sh" 2>/dev/null || true
+            if command -v analytics::summary &>/dev/null; then
+                analytics::summary "$MSP_METRICS_FILE" "$MSP_LOG_FILE"
+            fi
+        fi
+        
+        if command -v log::success &>/dev/null; then
+            log::success "MSP" "Release completed!"
+            log::info "MSP" "Full logs: $MSP_LOG_FILE"
+            log::info "MSP" "Metrics: $MSP_METRICS_FILE"
+        fi
+    fi
+    
+    return $result
 }
 
 do_pods() {
