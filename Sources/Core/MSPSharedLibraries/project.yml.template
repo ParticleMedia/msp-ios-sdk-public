@@ -42,6 +42,12 @@ targets:
         FRAMEWORK_SEARCH_PATHS:
           - $(inherited)
           - $(SRCROOT)/../../../Build/XCFrameworks
+        
+        # Swift Include Paths - Required for Swift to find modules in XCFrameworks
+        # MSPSharedLibraries depends on MSPiOSCore module
+        SWIFT_INCLUDE_PATHS:
+          - $(inherited)
+          - $(SRCROOT)/../../../Build/XCFrameworks
 
 schemes:
   MSPSharedLibraries-XCFramework:
