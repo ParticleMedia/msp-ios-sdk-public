@@ -1,11 +1,24 @@
 import UIKit
+@_implementationOnly import Shimmer
 
-// Stage A: Removed Shimmer dependency - replaced with simple static placeholder view
-// This maintains the same visual structure without requiring Shimmer framework
 class ShimmerLoadingView: UIView {
+
+     private let shimmerView: FBShimmeringView = {
+         let view = FBShimmeringView()
+         view.translatesAutoresizingMaskIntoConstraints = false
+
+         return  view
+     }()
 
     override init(frame: CGRect) {
         super.init(frame: frame)
+         self.addSubview(self.shimmerView)
+         NSLayoutConstraint.activate([
+             self.shimmerView.leftAnchor.constraint(equalTo: self.leftAnchor),
+             self.shimmerView.topAnchor.constraint(equalTo: self.topAnchor),
+             self.shimmerView.rightAnchor.constraint(equalTo: self.rightAnchor),
+             self.shimmerView.bottomAnchor.constraint(equalTo: self.bottomAnchor),
+         ])
 
          let containerView = UIView(frame: self.bounds)
          containerView.translatesAutoresizingMaskIntoConstraints = false
@@ -63,12 +76,14 @@ class ShimmerLoadingView: UIView {
              ])
          }
 
-         self.addSubview(containerView)
+         self.shimmerView.contentView = containerView
+         self.shimmerView.isShimmering = true
+
          NSLayoutConstraint.activate([
-             containerView.leftAnchor.constraint(equalTo: self.leftAnchor),
-             containerView.topAnchor.constraint(equalTo: self.topAnchor),
-             containerView.rightAnchor.constraint(equalTo: self.rightAnchor),
-             containerView.bottomAnchor.constraint(equalTo: self.bottomAnchor),
+             containerView.leftAnchor.constraint(equalTo: self.shimmerView.leftAnchor),
+             containerView.topAnchor.constraint(equalTo: self.shimmerView.topAnchor),
+             containerView.rightAnchor.constraint(equalTo: self.shimmerView.rightAnchor),
+             containerView.bottomAnchor.constraint(equalTo: self.shimmerView.bottomAnchor),
          ])
     }
 
