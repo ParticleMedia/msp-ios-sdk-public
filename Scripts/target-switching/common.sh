@@ -36,7 +36,14 @@ readonly SPM_WORKSPACE="$ROOT_DIR/msp-ios-sdk.xcworkspace"
 # Note: Podfile specifies workspace 'msp-ios-sdk', so CocoaPods also creates msp-ios-sdk.xcworkspace
 # Both SPM and Pods modes use the same workspace name, but with different contents
 readonly PODS_WORKSPACE="$ROOT_DIR/msp-ios-sdk.xcworkspace"
-readonly PODS_DIR="$ROOT_DIR/Pods"
+# Fix PODS_DIR readonly variable conflict
+# Only declare PODS_DIR as readonly if it doesn't already exist
+if [[ -z "${PODS_DIR:-}" ]]; then
+    readonly PODS_DIR="$ROOT_DIR/Pods"
+elif ! readonly -p 2>/dev/null | grep -q "^declare -r PODS_DIR="; then
+    # PODS_DIR exists but is not readonly, make it readonly
+    readonly PODS_DIR
+fi
 readonly WORKSPACE_SPEC="$ROOT_DIR/workspace.yml"
 readonly PROJECT_SPEC="$ROOT_DIR/Examples/MSPDemoApp/project.yml"
 

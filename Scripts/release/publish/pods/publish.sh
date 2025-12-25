@@ -1734,7 +1734,7 @@ release_msp_core() {
     if [[ "$DRY_RUN" != "true" ]]; then
         smart_wait_for_pod_availability "MSPCore" "$VERSION" "final integration module"
     fi
-    
+
     log_success "MSPCore released successfully"
 }
 
@@ -2021,7 +2021,7 @@ main() {
     # ============================================================================
     
     # Skip individual start notifications - only send final success/failure
-    
+
     # Track release statistics
     local total_pods=${#cocoapods_pods[@]}
     local successful_pods=0
