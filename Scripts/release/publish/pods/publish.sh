@@ -354,19 +354,19 @@ update_adapter_sdk_version() {
     
     # Skip adapters that read SDK version from external sources
     if [[ "$adapter" == "MSPGoogleAdapter" || "$adapter" == "MSPFacebookAdapter" ]]; then
-        log::info "PUBLISH" "Skipping getSDKVersion() update for $adapter (reads from external sources)"
+        log_info "PUBLISH" "Skipping getSDKVersion() update for $adapter (reads from external sources)"
         return 0
     fi
     
-    log::info "PUBLISH" "Updating getSDKVersion() in $adapter to version $version"
+    log_info "PUBLISH" "Updating getSDKVersion() in $adapter to version $version"
 
     # Fix: Use full path from project root
     local adapter_dir="${ROOT_DIR}/Sources/Adapters/${adapter}/${adapter}"
 
     # Validate directory exists
     if [[ ! -d "$adapter_dir" ]]; then
-        log::error "PUBLISH" "Adapter directory not found: $adapter_dir"
-        log::error "PUBLISH" "Expected structure: Sources/Adapters/$adapter/$adapter/*.swift"
+        log_error "PUBLISH" "Adapter directory not found: $adapter_dir"
+        log_error "PUBLISH" "Expected structure: Sources/Adapters/$adapter/$adapter/*.swift"
         return 1
     fi
 
@@ -377,15 +377,15 @@ update_adapter_sdk_version() {
     while IFS= read -r file; do
         # Verify file contains getSDKVersion function
         if grep -q "func getSDKVersion()" "$file"; then
-            log::info "PUBLISH" "Updating $file"
+            log_info "PUBLISH" "Updating $file"
 
             # Update the return statement
             # Pattern: return "any.version.string" → return "new.version"
             if sed -i '' 's|return "[^"]*"|return "'"${version}"'"|g' "$file"; then
-                log::info "PUBLISH" "✓ Updated getSDKVersion in $(basename "$file")"
+                log_info "PUBLISH" "✓ Updated getSDKVersion in $(basename "$file")"
                 updated_count=$((updated_count + 1))
             else
-                log::error "PUBLISH" "✗ Failed to update getSDKVersion in $file"
+                log_error "PUBLISH" "✗ Failed to update getSDKVersion in $file"
                 failed=true
             fi
         fi
@@ -393,18 +393,18 @@ update_adapter_sdk_version() {
 
     # Check results
     if [[ "$failed" == "true" ]]; then
-        log::error "PUBLISH" "Failed to update some files in $adapter"
+        log_error "PUBLISH" "Failed to update some files in $adapter"
         return 1
     fi
 
     if [[ $updated_count -eq 0 ]]; then
-        log::warn "PUBLISH" "No getSDKVersion() function found in $adapter"
-        log::warn "PUBLISH" "This may be expected if adapter doesn't implement getSDKVersion()"
+        log_warn "PUBLISH" "No getSDKVersion() function found in $adapter"
+        log_warn "PUBLISH" "This may be expected if adapter doesn't implement getSDKVersion()"
         # Not a failure - some adapters may not have this function
         return 0
     fi
 
-    log::info "PUBLISH" "✓ Successfully updated getSDKVersion() in $updated_count file(s) for $adapter"
+    log_info "PUBLISH" "✓ Successfully updated getSDKVersion() in $updated_count file(s) for $adapter"
     return 0
 }
 
@@ -1143,7 +1143,14 @@ publish_pod_with_resume() {
         # Open lock file descriptor
         exec 200>"$lock_file"
 
-        log::debug "LOCK" "Attempting to acquire lock for GitHub Release: $version_tag"
+        log_debug "LOCK" "Attempting to acquire lock for GitHub Release: $version_tag"
+
+        # Check if flock is available (Linux) or use fallback (macOS)
+        if ! command -v flock >/dev/null 2>&1; then
+            # macOS: flock not available, skip locking (acceptable for single-process releases)
+            log_debug "LOCK" "flock not available (macOS), skipping file locking"
+            return 0
+        fi
 
         while true; do
             # Try to acquire exclusive lock (non-blocking)
@@ -1151,7 +1158,7 @@ publish_pod_with_resume() {
                 # Lock acquired, write lock info
                 echo "$$:$(date -u +%Y-%m-%dT%H:%M:%SZ):$(hostname)" >&200
                 export GITHUB_RELEASE_LOCK_FD=200
-                log::info "LOCK" "✓ Acquired lock for GitHub Release: $version_tag"
+                log_info "LOCK" "✓ Acquired lock for GitHub Release: $version_tag"
                 return 0
             fi
 
@@ -1160,23 +1167,28 @@ publish_pod_with_resume() {
                 # Read lock holder info
                 local lock_holder
                 lock_holder=$(cat "$lock_file" 2>/dev/null || echo "unknown")
-                log::error "LOCK" "Failed to acquire lock for $version_tag after ${timeout}s (holder: $lock_holder)"
+                log_error "LOCK" "Failed to acquire lock for $version_tag after ${timeout}s (holder: $lock_holder)"
                 return 1
             fi
 
             # Wait and retry
-            log::debug "LOCK" "Lock busy, waiting... (${elapsed}/${timeout}s)"
+            log_debug "LOCK" "Lock busy, waiting... (${elapsed}/${timeout}s)"
             sleep $wait_interval
             elapsed=$((elapsed + wait_interval))
         done
     }
 
     release_github_release_lock() {
+        if ! command -v flock >/dev/null 2>&1; then
+            # macOS: No lock to release
+            return 0
+        fi
+
         if [[ -n "${GITHUB_RELEASE_LOCK_FD:-}" ]]; then
             # Release lock by closing file descriptor
             eval "exec ${GITHUB_RELEASE_LOCK_FD}>&-"
             unset GITHUB_RELEASE_LOCK_FD
-            log::info "LOCK" "✓ Released GitHub Release lock"
+            log_info "LOCK" "✓ Released GitHub Release lock"
         fi
     }
 
@@ -1189,7 +1201,7 @@ publish_pod_with_resume() {
         local release_repo="$2"
         local backup_dir="/tmp/msp-release-assets-backup-${version_tag}-$$"
 
-        log::info "BACKUP" "Backing up GitHub Release assets for $version_tag..."
+        log_info "BACKUP" "Backing up GitHub Release assets for $version_tag..."
 
         # Create backup directory
         mkdir -p "$backup_dir"
@@ -1199,7 +1211,7 @@ publish_pod_with_resume() {
         assets=$(gh release view "$version_tag" --repo "$release_repo" --json assets --jq '.assets[].name' 2>/dev/null || echo "")
 
         if [[ -z "$assets" ]]; then
-            log::debug "BACKUP" "No assets to backup"
+            log_debug "BACKUP" "No assets to backup"
             echo "$backup_dir"
             return 0
         fi
@@ -1209,20 +1221,20 @@ publish_pod_with_resume() {
         while IFS= read -r asset_name; do
             [[ -z "$asset_name" ]] && continue
 
-            log::debug "BACKUP" "Downloading asset: $asset_name"
+            log_debug "BACKUP" "Downloading asset: $asset_name"
             if gh release download "$version_tag" \
                 --repo "$release_repo" \
                 --pattern "$asset_name" \
                 --dir "$backup_dir" \
                 --clobber 2>/dev/null; then
                 asset_count=$((asset_count + 1))
-                log::debug "BACKUP" "✓ Backed up: $asset_name"
+                log_debug "BACKUP" "✓ Backed up: $asset_name"
             else
-                log::warn "BACKUP" "Failed to backup: $asset_name"
+                log_warn "BACKUP" "Failed to backup: $asset_name"
             fi
         done <<< "$assets"
 
-        log::info "BACKUP" "✓ Backed up $asset_count asset(s) to: $backup_dir"
+        log_info "BACKUP" "✓ Backed up $asset_count asset(s) to: $backup_dir"
         echo "$backup_dir"
     }
 
@@ -1233,11 +1245,11 @@ publish_pod_with_resume() {
 
         # Check if backup directory exists and has files
         if [[ ! -d "$backup_dir" ]] || [[ -z "$(ls -A "$backup_dir" 2>/dev/null)" ]]; then
-            log::debug "RESTORE" "No assets to restore from: $backup_dir"
+            log_debug "RESTORE" "No assets to restore from: $backup_dir"
             return 0
         fi
 
-        log::info "RESTORE" "Restoring assets to GitHub Release: $version_tag..."
+        log_info "RESTORE" "Restoring assets to GitHub Release: $version_tag..."
 
         # Upload each backed up file
         local restored_count=0
@@ -1247,23 +1259,23 @@ publish_pod_with_resume() {
             local asset_name
             asset_name=$(basename "$asset_file")
 
-            log::debug "RESTORE" "Uploading asset: $asset_name"
+            log_debug "RESTORE" "Uploading asset: $asset_name"
             if gh release upload "$version_tag" \
                 --repo "$release_repo" \
                 "$asset_file" \
                 --clobber 2>/dev/null; then
                 restored_count=$((restored_count + 1))
-                log::debug "RESTORE" "✓ Restored: $asset_name"
+                log_debug "RESTORE" "✓ Restored: $asset_name"
             else
-                log::warn "RESTORE" "Failed to restore: $asset_name"
+                log_warn "RESTORE" "Failed to restore: $asset_name"
             fi
         done
 
-        log::info "RESTORE" "✓ Restored $restored_count asset(s)"
+        log_info "RESTORE" "✓ Restored $restored_count asset(s)"
 
         # Cleanup backup directory
         rm -rf "$backup_dir"
-        log::debug "RESTORE" "Cleaned up backup directory"
+        log_debug "RESTORE" "Cleaned up backup directory"
     }
 
     # ========================================================================
@@ -1281,32 +1293,32 @@ publish_pod_with_resume() {
             return 1  # Not a checksum issue
         fi
 
-        log::warn "PUBLISH" "Detected checksum verification error for $pod_name"
-        log::info "PUBLISH" "This usually happens when GitHub Release source code zip doesn't match git tag"
+        log_warn "PUBLISH" "Detected checksum verification error for $pod_name"
+        log_info "PUBLISH" "This usually happens when GitHub Release source code zip doesn't match git tag"
 
         # Check if pod is source-based (Adapters use git+tag)
         local podspec_file="${ROOT_DIR}/Build/ReleasePodspecs/${pod_name}.podspec"
         if [[ ! -f "$podspec_file" ]]; then
-            log::error "PUBLISH" "Podspec not found: $podspec_file"
+            log_error "PUBLISH" "Podspec not found: $podspec_file"
             return 1
         fi
 
         # Verify this is a source-based distribution (has git: in source)
         if ! grep -q "git:" "$podspec_file"; then
-            log::warn "PUBLISH" "Not a source-based distribution, cannot auto-fix"
+            log_warn "PUBLISH" "Not a source-based distribution, cannot auto-fix"
             return 1
         fi
 
-        log::info "PUBLISH" "Confirmed: $pod_name is source-based (git+tag)"
-        log::info "PUBLISH" "Source-based adapters use main tag: $version_tag"
-        log::info "PUBLISH" "Attempting automatic fix..."
+        log_info "PUBLISH" "Confirmed: $pod_name is source-based (git+tag)"
+        log_info "PUBLISH" "Source-based adapters use main tag: $version_tag"
+        log_info "PUBLISH" "Attempting automatic fix..."
 
         # Source-based adapters use the main tag (e.g., 0.3.0-rc.13), not pod-specific tags
         # Check if main GitHub Release exists
         local release_repo="ParticleMedia/msp-ios-sdk-public"
         if ! gh release view "$version_tag" --repo "$release_repo" &>/dev/null; then
-            log::warn "PUBLISH" "GitHub Release $version_tag doesn't exist in $release_repo"
-            log::info "PUBLISH" "Creating new GitHub Release for main tag..."
+            log_warn "PUBLISH" "GitHub Release $version_tag doesn't exist in $release_repo"
+            log_info "PUBLISH" "Creating new GitHub Release for main tag..."
             
             # Create new release from tag
             local release_notes="MSP iOS SDK ${version_tag}
@@ -1321,20 +1333,20 @@ Automatically created to resolve checksum verification issue."
                 --title "MSP iOS SDK $version_tag" \
                 --notes "$release_notes" \
                 --target "release/${version_tag}"; then
-                log::error "PUBLISH" "Failed to create GitHub Release $version_tag"
+                log_error "PUBLISH" "Failed to create GitHub Release $version_tag"
                 return 1
             fi
 
-            log::info "PUBLISH" "✓ Created GitHub Release $version_tag"
+            log_info "PUBLISH" "✓ Created GitHub Release $version_tag"
         else
-            log::info "PUBLISH" "Found existing GitHub Release: $version_tag"
-            log::info "PUBLISH" "Deleting and recreating to match current git tag..."
+            log_info "PUBLISH" "Found existing GitHub Release: $version_tag"
+            log_info "PUBLISH" "Deleting and recreating to match current git tag..."
 
             # ═══════════════════════════════════════════════════════════════
             # CONCURRENT CONTROL: Acquire lock to prevent race conditions
             # ═══════════════════════════════════════════════════════════════
             if ! acquire_github_release_lock "$version_tag" 120; then
-                log::error "PUBLISH" "Failed to acquire lock for GitHub Release operation"
+                log_error "PUBLISH" "Failed to acquire lock for GitHub Release operation"
                 return 1
             fi
 
@@ -1349,12 +1361,12 @@ Automatically created to resolve checksum verification issue."
 
             # Delete the conflicting release (keep tag)
             if ! gh release delete "$version_tag" --repo "$release_repo" --yes; then
-                log::error "PUBLISH" "Failed to delete GitHub Release $version_tag"
+                log_error "PUBLISH" "Failed to delete GitHub Release $version_tag"
                 release_github_release_lock
                 return 1
             fi
 
-            log::info "PUBLISH" "✓ Deleted GitHub Release $version_tag"
+            log_info "PUBLISH" "✓ Deleted GitHub Release $version_tag"
 
             # Wait for GitHub to process deletion
             sleep 2
@@ -1372,12 +1384,12 @@ Automatically recreated to resolve checksum verification issue."
                 --title "MSP iOS SDK $version_tag" \
                 --notes "$release_notes" \
                 --target "release/${version_tag}"; then
-                log::error "PUBLISH" "Failed to recreate GitHub Release $version_tag"
+                log_error "PUBLISH" "Failed to recreate GitHub Release $version_tag"
                 release_github_release_lock
                 return 1
             fi
 
-            log::info "PUBLISH" "✓ Recreated GitHub Release $version_tag"
+            log_info "PUBLISH" "✓ Recreated GitHub Release $version_tag"
 
             # ═══════════════════════════════════════════════════════════════
             # ASSET RESTORE: Restore binary files to new Release
@@ -1392,14 +1404,83 @@ Automatically recreated to resolve checksum verification issue."
         fi
 
         # Wait for GitHub to generate new source code zip
-        log::info "PUBLISH" "Waiting for GitHub to generate source code archive..."
+        log_info "PUBLISH" "Waiting for GitHub to generate source code archive..."
         sleep 5
 
-        log::info "PUBLISH" "✓ Checksum issue fixed automatically"
-        log::info "PUBLISH" "CocoaPods Trunk will now download fresh source code zip"
+        log_info "PUBLISH" "✓ Checksum issue fixed automatically"
+        log_info "PUBLISH" "CocoaPods Trunk will now download fresh source code zip"
 
         return 0
     }
+
+    # ========================================================================
+    # CRITICAL: Ensure binary distribution pods have valid checksum
+    # ========================================================================
+    if is_binary_distribution "$pod"; then
+        local podspec="$ROOT_DIR/Build/ReleasePodspecs/${pod}.podspec"
+
+        # Check if podspec has sha256
+        if [[ -f "$podspec" ]] && ! grep -q ":sha256" "$podspec"; then
+            log_warn "Binary distribution pod $pod missing sha256, updating..."
+
+            # Calculate checksum from GitHub release
+            local zip_url="https://github.com/ParticleMedia/msp-ios-sdk-public/releases/download/${version}/${pod}-${version}.zip"
+            local zip_checksum
+
+            # Download and calculate checksum
+            zip_checksum=$(curl -sL "$zip_url" 2>/dev/null | shasum -a 256 2>/dev/null | cut -d' ' -f1)
+
+            if [[ -n "$zip_checksum" ]]; then
+                log_info "Calculated checksum from GitHub: $zip_checksum"
+
+                # Update podspec using Ruby
+                ruby <<RUBY_SCRIPT
+podspec_path = '$podspec'
+zip_url = '$zip_url'
+zip_checksum = '$zip_checksum'
+
+podspec_content = File.read(podspec_path)
+# Insert sha256 into existing source block
+# Match: spec.source = { :http => "...", :type => "zip" }
+# Replace with: spec.source = { :http => "...", :type => "zip", :sha256 => "..." }
+if podspec_content.match?(/spec\.source = \{[^}]*:type => "zip"[^}]*\}/)
+  # Add sha256 after :type => "zip"
+  podspec_content.gsub!(
+    /(:type => "zip")(\s*\n\s*\})/,
+    "\\1,\\n    :sha256 => \"#{zip_checksum}\"\\2"
+  )
+  File.write(podspec_path, podspec_content)
+  puts "✅ Updated #{File.basename(podspec_path)} with sha256"
+else
+  puts "⚠️  Could not find source block in podspec"
+end
+RUBY_SCRIPT
+
+                log_success "Updated $pod podspec with sha256: $zip_checksum"
+            else
+                log_error "Failed to calculate checksum for $pod from $zip_url"
+                log_error "Ensure the zip file exists in GitHub release"
+                return 1
+            fi
+        elif [[ -f "$podspec" ]]; then
+            # Verify existing checksum matches GitHub
+            local existing_checksum=$(grep ":sha256" "$podspec" | sed 's/.*"\(.*\)".*/\1/')
+            local zip_url="https://github.com/ParticleMedia/msp-ios-sdk-public/releases/download/${version}/${pod}-${version}.zip"
+            local actual_checksum=$(curl -sL "$zip_url" 2>/dev/null | shasum -a 256 2>/dev/null | cut -d' ' -f1)
+
+            if [[ -n "$actual_checksum" ]] && [[ "$existing_checksum" != "$actual_checksum" ]]; then
+                log_warn "Checksum mismatch for $pod! Updating..."
+                log_info "  Existing: $existing_checksum"
+                log_info "  Actual:   $actual_checksum"
+
+                # Update with correct checksum
+                sed -i.backup "s/:sha256 => \".*\"/:sha256 => \"$actual_checksum\"/" "$podspec"
+                log_success "Updated $pod podspec checksum"
+            elif [[ -n "$actual_checksum" ]]; then
+                log_info "Checksum verified for $pod: $existing_checksum"
+            fi
+        fi
+    fi
 
     # Tier 3: Attempt to publish
     log_info "📦 Publishing $pod $version to CocoaPods Trunk..."
@@ -1431,7 +1512,7 @@ Automatically recreated to resolve checksum verification issue."
         # ========================================================================
         # Check if this is a checksum issue and auto-fix if possible
         if auto_fix_checksum_issue "$pod" "$version" "$publish_output"; then
-            log::info "PUBLISH" "Checksum issue fixed, retrying publication..."
+            log_info "PUBLISH" "Checksum issue fixed, retrying publication..."
 
             # Retry publication after fix
             publish_output=$(pod trunk push "$podspec" --allow-warnings 2>&1 | tee "$log_file"; echo "${PIPESTATUS[0]}")
@@ -1439,7 +1520,7 @@ Automatically recreated to resolve checksum verification issue."
             publish_output="${publish_output%$'\n'*}"
 
             if [[ "$publish_exit_code" == "0" ]]; then
-                log::info "PUBLISH" "✓ Publication succeeded after auto-fix"
+                log_info "PUBLISH" "✓ Publication succeeded after auto-fix"
                 # Update state
                 if command -v msp_state_mark_pod_status &>/dev/null; then
                     msp_state_mark_pod_status "$pod" "published"
@@ -1448,10 +1529,10 @@ Automatically recreated to resolve checksum verification issue."
                 rm -f "$log_file"
                 return 0
             else
-                log::error "PUBLISH" "❌ Publication still failed after auto-fix"
-                log::error "PUBLISH" "Error details:"
+                log_error "PUBLISH" "❌ Publication still failed after auto-fix"
+                log_error "PUBLISH" "Error details:"
                 echo "$publish_output" | while IFS= read -r line; do
-                    log::error "PUBLISH" "  $line"
+                    log_error "PUBLISH" "  $line"
                 done
                 rm -f "$log_file"
                 return 1
