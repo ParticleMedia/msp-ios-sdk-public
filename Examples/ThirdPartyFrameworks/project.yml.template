@@ -1,6 +1,7 @@
 # XcodeGen Project for Third-Party Frameworks
-# Builds SwiftProtobuf, SnapKit, Lottie, Shimmer, and Kingfisher as dynamic frameworks
+# Builds SwiftProtobuf, SnapKit, Lottie, and Kingfisher as dynamic frameworks
 # for XCFramework packaging.
+# Note: Shimmer is now provided via XCFramework (Shimmer Plan B), not built here.
 
 name: ThirdPartyFrameworks
 
@@ -75,23 +76,8 @@ targets:
         PRODUCT_MODULE_NAME: Lottie
         SWIFT_OBJC_INTERFACE_HEADER_NAME: ""
 
-  Shimmer:
-    type: framework
-    platform: iOS
-    sources:
-      - path: ../../Pods/Shimmer/FBShimmering
-        headerVisibility: public
-    settings:
-      base:
-        PRODUCT_NAME: Shimmer
-        PRODUCT_BUNDLE_IDENTIFIER: msp.thirdparty.Shimmer
-        PRODUCT_MODULE_NAME: Shimmer
-        # Objective-C settings
-        CLANG_ENABLE_MODULES: YES
-        DEFINES_MODULE: YES
-        # Generate module map for ObjC
-        MODULEMAP_FILE: ""
-        SWIFT_INSTALL_OBJC_HEADER: NO
+  # Shimmer is now provided via XCFramework (Shimmer Plan B)
+  # Removed: Shimmer target (no longer built from Pods source)
 
   Kingfisher:
     type: framework
@@ -130,12 +116,7 @@ schemes:
     archive:
       config: Release
 
-  Shimmer:
-    build:
-      targets:
-        Shimmer: all
-    archive:
-      config: Release
+  # Shimmer scheme removed (Shimmer Plan B: using XCFramework)
 
   Kingfisher:
     build:
