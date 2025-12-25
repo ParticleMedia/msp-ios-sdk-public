@@ -212,12 +212,19 @@ metrics::end() {
     
     # Try to get milliseconds precision, fallback to seconds
     if command -v gdate &>/dev/null; then
+        # GNU date with milliseconds support
         end_time=$(gdate +%s%3N)
     elif [[ "$(uname)" == "Darwin" ]]; then
-        # macOS date doesn't support %3N, use seconds
-        end_time=$(date +%s)
-        end_time=$((end_time * 1000))
+        # macOS: use Python for high-precision timestamp
+        if command -v python3 &>/dev/null; then
+            end_time=$(python3 -c 'import time; print(int(time.time() * 1000))')
+        else
+            # Fallback to seconds
+            end_time=$(date +%s)
+            end_time=$((end_time * 1000))
+        fi
     else
+        # Linux with milliseconds support
         end_time=$(date +%s%3N 2>/dev/null || date +%s)
         # If date +%s%3N failed, multiply by 1000
         if [[ ${#end_time} -lt 13 ]]; then
