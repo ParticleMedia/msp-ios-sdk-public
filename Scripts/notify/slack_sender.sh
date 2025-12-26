@@ -87,6 +87,15 @@ notify::slack::send_blockkit() {
     
     # For DM: Get user ID and open DM channel
     if [[ -n "${MSP_SLACK_DM_OVERRIDE:-}" ]]; then
+        # TEMPORARY FIX: Disable DM notifications to unblock release
+        # TODO: Update SLACK_BOT_TOKEN when new token is available
+        echo "[SLACK][DM] DM notifications temporarily disabled" >&2
+        # Fall through to webhook channel notification
+        MSP_SLACK_DM_OVERRIDE=""
+    fi
+
+    # Original DM logic (now unreachable, kept for reference)
+    if [[ -n "${MSP_SLACK_DM_OVERRIDE_DISABLED:-}" ]]; then
         local user_id="$MSP_SLACK_DM_OVERRIDE"
         
         # Skip if no bot token

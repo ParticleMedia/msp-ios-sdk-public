@@ -135,17 +135,35 @@ fi
 # Check if this pod uses binary distribution (HTTP zip source)
 if is_binary_distribution "$POD_NAME"; then
     # Binary distribution pods require XCFrameworks
-    # NovaAdapter: XCFrameworks are in Binary/ directory (in zip), not Build/XCFrameworks/
-    if [[ "$POD_NAME" != "NovaAdapter" ]]; then
-        XCFRAMEWORK_PATH="$ROOT_DIR/Build/XCFrameworks/${POD_NAME}.xcframework"
-        
-        if [[ ! -d "$XCFRAMEWORK_PATH" ]]; then
-            log_error "XCFramework not found: $XCFRAMEWORK_PATH"
-            log_error "Run pre-release setup (Step 0) first to build XCFrameworks"
-            exit 1
-        fi
-    fi
-    log_info "Binary distribution pod detected: $POD_NAME (HTTP zip source, XCFramework required)"
+    # Exceptions:
+    # - NovaAdapter: XCFrameworks in Binary/ directory (in zip)
+    # - New adapters: XCFrameworks built on-demand, may not exist yet
+    case "$POD_NAME" in
+        NovaAdapter)
+            # NovaAdapter has XCFrameworks in Binary/ (in zip file)
+            log_info "Binary distribution pod: $POD_NAME (XCFrameworks in Binary/)"
+            ;;
+        MSPPrebidAdapter|MSPGoogleAdapter|MSPFacebookAdapter|AmazonAdapter)
+            # New binary adapters - XCFramework should exist after build-adapters.sh
+            XCFRAMEWORK_PATH="$ROOT_DIR/Build/XCFrameworks/${POD_NAME}.xcframework"
+            if [[ -d "$XCFRAMEWORK_PATH" ]]; then
+                log_info "Binary distribution pod: $POD_NAME (XCFramework found)"
+            else
+                log_warn "XCFramework not found: $XCFRAMEWORK_PATH"
+                log_warn "Will be built during publish if needed"
+            fi
+            ;;
+        *)
+            # Core pods: Require pre-built XCFrameworks
+            XCFRAMEWORK_PATH="$ROOT_DIR/Build/XCFrameworks/${POD_NAME}.xcframework"
+            if [[ ! -d "$XCFRAMEWORK_PATH" ]]; then
+                log_error "XCFramework not found: $XCFRAMEWORK_PATH"
+                log_error "Run pre-release setup (Step 0) first to build XCFrameworks"
+                exit 1
+            fi
+            log_info "Binary distribution pod: $POD_NAME (XCFramework validated)"
+            ;;
+    esac
 else
     # Source distribution pods (git+tag source, no XCFramework required)
     log_info "Source distribution pod detected: $POD_NAME (git+tag source, skipping XCFramework check)"
