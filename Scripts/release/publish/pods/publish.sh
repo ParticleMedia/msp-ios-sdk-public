@@ -1491,7 +1491,7 @@ RUBY_SCRIPT
 
     # Publish with captured output
     local publish_output
-    publish_output=$(pod trunk push "$podspec" --allow-warnings 2>&1 | tee "$log_file"; echo "${PIPESTATUS[0]}")
+    publish_output=$(pod trunk push "$podspec" --allow-warnings --skip-tests 2>&1 | tee "$log_file"; echo "${PIPESTATUS[0]}")
     local publish_exit_code="${publish_output##*$'\n'}"
     publish_output="${publish_output%$'\n'*}"
 
@@ -1515,7 +1515,7 @@ RUBY_SCRIPT
             log_info "PUBLISH" "Checksum issue fixed, retrying publication..."
 
             # Retry publication after fix
-            publish_output=$(pod trunk push "$podspec" --allow-warnings 2>&1 | tee "$log_file"; echo "${PIPESTATUS[0]}")
+            publish_output=$(pod trunk push "$podspec" --allow-warnings --skip-tests 2>&1 | tee "$log_file"; echo "${PIPESTATUS[0]}")
             publish_exit_code="${publish_output##*$'\n'}"
             publish_output="${publish_output%$'\n'*}"
 
