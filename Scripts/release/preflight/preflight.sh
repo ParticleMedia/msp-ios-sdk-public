@@ -226,16 +226,32 @@ preflight_build() {
         return 0
     fi
     
-    # 2) Round-trip test
+    # 2) Ensure XCFrameworks for binary distribution adapters
+    log_step "Ensuring XCFrameworks for binary distribution adapters"
+    local ensure_xcfw_script="$ROOT_DIR/Scripts/release/utils/ensure_xcframeworks.sh"
+
+    if [[ -f "$ensure_xcfw_script" ]] && [[ -x "$ensure_xcfw_script" ]]; then
+        if ! "$ensure_xcfw_script" ensure; then
+            log_error "Failed to ensure XCFrameworks"
+            msp_state_mark_step_failed "preflight_build" "failed to ensure XCFrameworks for binary adapters" "1"
+            return 1
+        fi
+        log_success "All required XCFrameworks ready"
+    else
+        log_warn "XCFramework ensure script not found or not executable: $ensure_xcfw_script"
+        log_warn "Skipping auto-build of missing XCFrameworks"
+    fi
+
+    # 3) Round-trip test
     local round_trip_script="$ROOT_DIR/Scripts/target-switching/round-trip-test.sh"
-    
+
     if [[ ! -f "$round_trip_script" ]]; then
         log_warn "Round-trip test script not found at $round_trip_script"
         log_warn "Skipping build preflight (script missing)"
         msp_state_mark_step_skipped "preflight_build" "preflight build skipped due to missing round-trip script"
         return 0
     fi
-    
+
     log_step "Running round-trip test"
     local cmd="$round_trip_script --loops=1"
     
