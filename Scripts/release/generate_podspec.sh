@@ -31,7 +31,7 @@ GENERATED_PODSPECS_DIR="$ROOT_DIR/Build/ReleasePodspecs"
 # This classification matches the architecture documented in README.md
 # Note: NovaCore is not included here - it's embedded via vendored_frameworks, not published separately
 # NovaAdapter is a pure binary adapter (vendored_frameworks only), so it's included in CORE_MODULES
-CORE_MODULES=("MSPSharedLibraries" "MSPCore" "MSPiOSCore" "MSPOMSDK" "NovaAdapter")
+CORE_MODULES=("MSPSharedLibraries" "MSPGoogleAdsTypes" "MSPCore" "MSPiOSCore" "MSPOMSDK" "NovaAdapter")
 
 # Check if a module is a core module
 is_core_module() {
@@ -65,7 +65,7 @@ MSP_VERSIONED_DEPS_PATTERN="$(IFS='|'; echo "${MSP_VERSIONED_DEPS[*]}")"
 # Note: NovaAdapter uses binary distribution (includes private NovaCore.xcframework)
 #       but is released in Adapters phase (Step 2), NOT in foundation phase.
 # ============================================================================
-BINARY_DISTRIBUTION_PODS=("MSPSharedLibraries" "MSPCore" "MSPiOSCore" "NovaAdapter" "MSPPrebidAdapter" "MSPGoogleAdapter" "MSPFacebookAdapter" "AmazonAdapter")
+BINARY_DISTRIBUTION_PODS=("MSPSharedLibraries" "MSPGoogleAdsTypes" "MSPCore" "MSPiOSCore" "NovaAdapter" "MSPPrebidAdapter" "MSPGoogleAdapter" "MSPFacebookAdapter" "AmazonAdapter")
 
 # Check if a pod uses binary distribution (HTTP zip source)
 # Returns 0 (true) if the pod is in BINARY_DISTRIBUTION_PODS

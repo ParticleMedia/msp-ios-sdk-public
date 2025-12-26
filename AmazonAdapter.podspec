@@ -22,12 +22,10 @@ Pod::Spec.new do |spec|
   else
     # DEVELOPMENT MODE: Source files for internal development
     spec.source = { :path => '.' }
-    spec.source_files = [
-      "Sources/Adapters/AmazonAdapter/AmazonAdapter/**/*.swift",
-      "Sources/Common/MSPGoogleAdsTypes/**/*.swift"
-    ]
+    spec.source_files = "Sources/Adapters/AmazonAdapter/AmazonAdapter/**/*.swift"
   end
 
+  spec.dependency 'MSPGoogleAdsTypes'
   spec.dependency "AmazonPublisherServicesSDK", "4.5.5"
   spec.dependency "AmazonPublisherServicesAdMobAdapter", "2.2.0"
   spec.dependency 'MSPSharedLibraries'

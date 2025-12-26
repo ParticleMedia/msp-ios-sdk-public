@@ -22,14 +22,12 @@ Pod::Spec.new do |spec|
   else
     # DEVELOPMENT MODE: Source files for internal development
     spec.source = { :path => '.' }
-    spec.source_files = [
-      "Sources/Adapters/MSPGoogleAdapter/MSPGoogleAdapter/**/*.swift",
-      "Sources/Common/MSPGoogleAdsTypes/**/*.swift"
-    ]
+    spec.source_files = "Sources/Adapters/MSPGoogleAdapter/MSPGoogleAdapter/**/*.swift"
   end
 
   spec.dependency 'MSPSharedLibraries'
   spec.dependency 'MSPiOSCore'
+  spec.dependency 'MSPGoogleAdsTypes'
   spec.dependency 'Google-Mobile-Ads-SDK', '~> 12.0'
 
   spec.static_framework = true

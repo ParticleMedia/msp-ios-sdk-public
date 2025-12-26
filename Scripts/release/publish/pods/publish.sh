@@ -175,8 +175,8 @@ RELEASE_NOTES_TEMPLATE="${RELEASE_NOTES_TEMPLATE:-}"
 RELEASE_NOTES="${RELEASE_NOTES:-}"
 
 # Default pod modules if PODS_MODULES not set (backward compatibility)
-# Release order: MSPiOSCore → MSPSharedLibraries → Adapters → MSPCore
-DEFAULT_PODS_MODULES="MSPiOSCore MSPSharedLibraries MSPPrebidAdapter MSPCore MSPGoogleAdapter MSPFacebookAdapter NovaAdapter AmazonAdapter"
+# Release order: MSPiOSCore → MSPSharedLibraries → MSPGoogleAdsTypes → Adapters → MSPCore
+DEFAULT_PODS_MODULES="MSPiOSCore MSPSharedLibraries MSPGoogleAdsTypes MSPPrebidAdapter MSPCore MSPGoogleAdapter MSPFacebookAdapter NovaAdapter AmazonAdapter"
 PODS_MODULES="${PODS_MODULES:-$DEFAULT_PODS_MODULES}"
 
 # ============================================================================
@@ -196,7 +196,7 @@ PODS_MODULES="${PODS_MODULES:-$DEFAULT_PODS_MODULES}"
 is_binary_distribution() {
     local pod="$1"
     case "$pod" in
-        MSPiOSCore|MSPSharedLibraries|MSPCore|NovaAdapter|MSPPrebidAdapter|MSPGoogleAdapter|MSPFacebookAdapter|AmazonAdapter)
+        MSPiOSCore|MSPSharedLibraries|MSPGoogleAdsTypes|MSPCore|NovaAdapter|MSPPrebidAdapter|MSPGoogleAdapter|MSPFacebookAdapter|AmazonAdapter)
             return 0
             ;;
         *)
@@ -1702,7 +1702,7 @@ publish_pod_to_cocoapods() {
         # Check if this pod uses binary distribution (needs GitHub release zip)
         # Note: NovaCore is not included - it's embedded via vendored_frameworks, not published separately
         # Stage B: MSPOMSDK removed - OMSDK now embedded in NovaCore
-        local core_modules=("MSPSharedLibraries" "MSPCore" "MSPiOSCore")
+        local core_modules=("MSPSharedLibraries" "MSPGoogleAdsTypes" "MSPCore" "MSPiOSCore")
         local is_binary=false
         
         # Check if it's a core module
@@ -2079,11 +2079,11 @@ release_adapters() {
 
     log_success "Both MSPSharedLibraries and MSPiOSCore are available, proceeding with parallel adapter releases"
     
-    # Extract adapters from PODS_MODULES (exclude MSPSharedLibraries and MSPCore)
+    # Extract adapters from PODS_MODULES (exclude MSPSharedLibraries, MSPGoogleAdsTypes, and MSPCore)
     # Adapters are all modules that are not core modules
     # Note: NovaCore is not included - it's embedded via vendored_frameworks, not published separately
     # Stage B: MSPOMSDK removed - OMSDK now embedded in NovaCore
-    local core_modules=("MSPSharedLibraries" "MSPCore" "MSPiOSCore")
+    local core_modules=("MSPSharedLibraries" "MSPGoogleAdsTypes" "MSPCore" "MSPiOSCore")
     local adapters=()
     
     # Split PODS_MODULES space-separated string and filter out core modules
