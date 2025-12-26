@@ -538,6 +538,17 @@ ensure_release_tag_exists_and_pushed() {
                 log_warning "Local tag $tag exists but points to wrong commit: $tag_commit_sha (expected: $target_commit_sha)"
                 log_info "Deleting incorrect local tag: $tag"
                 git tag -d "$tag" 2>/dev/null || true
+
+                # Wait for Git cache to clear (critical for avoiding "tag already exists" error)
+                log_info "Waiting 2 seconds for Git cache to clear..."
+                sleep 2
+
+                # Verify deletion
+                if git rev-parse -q --verify "refs/tags/$tag" >/dev/null 2>&1; then
+                    log_error "Failed to delete local tag: $tag (still exists after deletion)"
+                    return 1
+                fi
+
                 tag_exists_locally=false
             fi
         fi
@@ -556,6 +567,12 @@ ensure_release_tag_exists_and_pushed() {
                 log_warning "Origin tag $tag exists but points to wrong commit: $origin_tag_sha (expected: $target_commit_sha)"
                 log_info "Deleting incorrect origin tag: $tag"
                 git push --delete origin "refs/tags/$tag" 2>/dev/null || true
+
+                # Wait for remote to process deletion
+                log_info "Waiting 2 seconds for origin to process tag deletion..."
+                sleep 2
+
+                tag_exists_on_origin=false
             fi
         fi
     fi
@@ -574,6 +591,12 @@ ensure_release_tag_exists_and_pushed() {
                     log_warning "Public tag $tag exists but points to wrong commit: $public_tag_sha (expected: $target_commit_sha)"
                     log_info "Deleting incorrect public tag: $tag"
                     git push --delete public "refs/tags/$tag" 2>/dev/null || true
+
+                    # Wait for remote to process deletion
+                    log_info "Waiting 2 seconds for public to process tag deletion..."
+                    sleep 2
+
+                    tag_exists_on_public=false
                 fi
             fi
         fi
@@ -590,21 +613,76 @@ ensure_release_tag_exists_and_pushed() {
     # Create local tag if it doesn't exist or was deleted
     if [[ "$tag_exists_locally" == "false" ]]; then
         log_info "Creating local git tag: $tag at commit $target_commit_sha"
-        if ! git tag "$tag" "$target_commit_sha"; then
-            log_error "Failed to create local tag: $tag"
+
+        # Retry logic: up to 3 attempts with 2-second delays
+        local max_attempts=3
+        local attempt=1
+        local tag_created=false
+
+        while [[ $attempt -le $max_attempts ]]; do
+            if git tag "$tag" "$target_commit_sha" 2>/dev/null; then
+                tag_created=true
+                log_success "Created local tag: $tag at commit $target_commit_sha"
+
+                # Verify tag points to correct commit
+                local verify_sha
+                verify_sha=$(git rev-parse "refs/tags/$tag" 2>/dev/null || echo "")
+                if [[ "$verify_sha" == "$target_commit_sha" ]]; then
+                    log_success "Tag verification passed: $tag → $target_commit_sha"
+                    break
+                else
+                    log_error "Tag verification failed: $tag points to $verify_sha (expected: $target_commit_sha)"
+                    git tag -d "$tag" 2>/dev/null || true
+                    tag_created=false
+                fi
+            else
+                log_warning "Attempt $attempt/$max_attempts failed: tag creation failed"
+            fi
+
+            if [[ $attempt -lt $max_attempts ]]; then
+                log_info "Retrying in 2 seconds..."
+                sleep 2
+            fi
+
+            ((attempt++))
+        done
+
+        if [[ "$tag_created" == "false" ]]; then
+            log_error "Failed to create local tag after $max_attempts attempts: $tag"
             return 1
         fi
-        log_success "Created local tag: $tag at commit $target_commit_sha"
     fi
 
     # Push tag to origin if it doesn't exist or was deleted
     if [[ "$tag_exists_on_origin" == "false" ]]; then
         log_info "Pushing tag to origin: $tag"
-        if ! git push origin "refs/tags/$tag"; then
-            log_error "Failed to push tag to origin: $tag"
+
+        # Retry logic: up to 3 attempts with 2-second delays
+        local max_push_attempts=3
+        local push_attempt=1
+        local push_success=false
+
+        while [[ $push_attempt -le $max_push_attempts ]]; do
+            if git push origin "refs/tags/$tag" 2>/dev/null; then
+                push_success=true
+                log_success "Pushed tag to origin: $tag"
+                break
+            else
+                log_warning "Attempt $push_attempt/$max_push_attempts failed: push to origin failed"
+            fi
+
+            if [[ $push_attempt -lt $max_push_attempts ]]; then
+                log_info "Retrying in 2 seconds..."
+                sleep 2
+            fi
+
+            ((push_attempt++))
+        done
+
+        if [[ "$push_success" == "false" ]]; then
+            log_error "Failed to push tag to origin after $max_push_attempts attempts: $tag"
             return 1
         fi
-        log_success "Pushed tag to origin: $tag"
     fi
 
     # ========================================================================
@@ -694,11 +772,38 @@ ensure_release_tag_exists_and_pushed() {
         log_warning "SKIP_PUBLIC_REMOTE_PUSH=1: Skipping tag push to public remote"
     elif [[ "$tag_exists_on_public" == "false" ]] && git remote | grep -q "^public$"; then
         log_info "Pushing tag to public: $tag"
-        
-        # Attempt to push tag to public remote
-        local push_output
-        push_output=$(git push public "refs/tags/$tag" 2>&1)
-        local push_exit_code=$?
+
+        # Retry logic: up to 3 attempts with 2-second delays
+        local max_public_attempts=3
+        local public_attempt=1
+        local public_push_success=false
+        local push_output=""
+        local push_exit_code=1
+
+        while [[ $public_attempt -le $max_public_attempts ]]; do
+            push_output=$(git push public "refs/tags/$tag" 2>&1)
+            push_exit_code=$?
+
+            if [[ $push_exit_code -eq 0 ]]; then
+                public_push_success=true
+                log_success "Pushed tag to public: $tag"
+                break
+            else
+                log_warning "Attempt $public_attempt/$max_public_attempts failed: push to public failed"
+            fi
+
+            if [[ $public_attempt -lt $max_public_attempts ]]; then
+                log_info "Retrying in 2 seconds..."
+                sleep 2
+            fi
+
+            ((public_attempt++))
+        done
+
+        if [[ "$public_push_success" == "false" ]]; then
+            log_warning "Failed to push tag to public after $max_public_attempts attempts: $tag"
+            # Don't fail hard - public might not be accessible
+        fi
 
         if [[ $push_exit_code -ne 0 ]]; then
             log_error "Failed to push tag to public: $tag"

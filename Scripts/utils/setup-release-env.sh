@@ -11,6 +11,7 @@
 #   local      - Local release (default)
 #   ci         - CI release
 #   rerelease  - Republish existing version
+#   resume     - Resume failed release
 #   test       - Test mode (preflight tier)
 #
 # Examples:
@@ -18,6 +19,7 @@
 #   source Scripts/utils/setup-release-env.sh local    # local release
 #   source Scripts/utils/setup-release-env.sh ci       # CI release
 #   source Scripts/utils/setup-release-env.sh rerelease # rerelease
+#   source Scripts/utils/setup-release-env.sh resume   # resume
 # ============================================================================
 
 # Prevent direct execution (must be sourced)
@@ -122,6 +124,26 @@ setup_test_profile() {
 }
 
 # ============================================================================
+# Profile: Resume (resume failed release)
+# ============================================================================
+setup_resume_profile() {
+    echo "🔧 Setting up environment for: Resume"
+
+    # Start with local profile
+    setup_local_profile
+
+    # Add resume-specific permissions
+    export MSP_ALLOW_EXISTING_TAG=1
+
+    echo "⚠️  Resume mode configured"
+    echo "   MSP_ALLOW_EXISTING_TAG: $MSP_ALLOW_EXISTING_TAG (allow existing tags)"
+    echo ""
+    echo "💡 This profile is used to resume a failed release."
+    echo "   Use: ./Scripts/resume-smart.sh (recommended)"
+    echo "   Or:  ./Scripts/msp-release.sh resume"
+}
+
+# ============================================================================
 # Main
 # ============================================================================
 
@@ -135,6 +157,9 @@ case "$_MSP_PROFILE" in
     rerelease)
         setup_rerelease_profile
         ;;
+    resume)
+        setup_resume_profile
+        ;;
     test)
         setup_test_profile
         ;;
@@ -145,6 +170,7 @@ case "$_MSP_PROFILE" in
         echo "  local      - Local release (default)"
         echo "  ci         - CI release"
         echo "  rerelease  - Republish existing version"
+        echo "  resume     - Resume failed release"
         echo "  test       - Test mode (preflight tier)"
         echo ""
         echo "Usage: source ${BASH_SOURCE[0]} [profile]"
