@@ -1130,6 +1130,69 @@ publish_pod_with_resume() {
     fi
 
     # ========================================================================
+    # Auto-Build Missing XCFrameworks for Binary Distribution Adapters
+    # ========================================================================
+    # For binary distribution adapters, automatically build missing XCFrameworks
+    # to avoid manual intervention and ensure script-level guarantees.
+    #
+    # Applies to: MSPPrebidAdapter, MSPGoogleAdapter, MSPFacebookAdapter, AmazonAdapter
+    # Does NOT apply to:
+    # - NovaAdapter: Uses pre-packaged Binary/NovaCore.xcframework
+    # - Core pods: Require pre-built XCFrameworks from build pipeline
+    # ========================================================================
+    if is_binary_distribution "$pod"; then
+        case "$pod" in
+            MSPPrebidAdapter|MSPGoogleAdapter|MSPFacebookAdapter|AmazonAdapter)
+                local xcframework_path="$ROOT_DIR/Build/XCFrameworks/${pod}.xcframework"
+
+                if [[ ! -d "$xcframework_path" ]]; then
+                    log_warning "XCFramework missing for $pod, auto-building..."
+                    log_info "Path: $xcframework_path"
+
+                    # Build the missing XCFramework
+                    local build_script="$ROOT_DIR/Scripts/xcframeworks/build_module.sh"
+
+                    if [[ ! -x "$build_script" ]]; then
+                        log_error "Build script not found or not executable: $build_script"
+                        log_error "Cannot auto-build XCFramework for $pod"
+                        return 1
+                    fi
+
+                    log_info "Running: $build_script $pod"
+
+                    if "$build_script" "$pod" 2>&1 | tee "/tmp/auto-build-${pod}.log"; then
+                        log_success "✅ Auto-built XCFramework: $pod"
+
+                        # Verify build result
+                        if [[ -d "$xcframework_path" ]]; then
+                            log_info "Verified: $xcframework_path exists"
+                            local size
+                            size=$(du -sh "$xcframework_path" 2>/dev/null | cut -f1)
+                            log_info "Size: $size"
+                        else
+                            log_error "Build reported success but XCFramework not found: $xcframework_path"
+                            return 1
+                        fi
+                    else
+                        log_error "❌ Failed to auto-build XCFramework for $pod"
+                        log_error "Build log: /tmp/auto-build-${pod}.log"
+                        log_error "Please check the build errors above"
+                        return 1
+                    fi
+                else
+                    log_debug "XCFramework exists: $xcframework_path"
+                fi
+                ;;
+            NovaAdapter)
+                log_debug "NovaAdapter uses pre-packaged Binary/, skipping XCFramework check"
+                ;;
+            MSPiOSCore|MSPSharedLibraries|MSPCore)
+                log_debug "Core pod $pod requires pre-built XCFramework from build pipeline"
+                ;;
+        esac
+    fi
+
+    # ========================================================================
     # GitHub Release Lock Mechanism (Concurrent Control)
     # ========================================================================
     # Prevents multiple pods from simultaneously modifying the same GitHub Release
