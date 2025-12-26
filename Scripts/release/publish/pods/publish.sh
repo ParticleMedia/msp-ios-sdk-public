@@ -1489,9 +1489,18 @@ RUBY_SCRIPT
     local log_file
     log_file=$(mktemp)
 
+    # Construct skip-tests flag based on environment variable
+    local skip_tests_flag=""
+    if [[ "${MSP_SKIP_TRUNK_TESTS:-0}" == "1" ]]; then
+        skip_tests_flag="--skip-tests"
+        log_info "PUBLISH" "Using --skip-tests (MSP_SKIP_TRUNK_TESTS=1) - skipping dependency validation"
+    else
+        log_info "PUBLISH" "Using full validation (MSP_SKIP_TRUNK_TESTS=0) - validating all dependencies"
+    fi
+
     # Publish with captured output
     local publish_output
-    publish_output=$(pod trunk push "$podspec" --allow-warnings --skip-tests 2>&1 | tee "$log_file"; echo "${PIPESTATUS[0]}")
+    publish_output=$(pod trunk push "$podspec" --allow-warnings $skip_tests_flag 2>&1 | tee "$log_file"; echo "${PIPESTATUS[0]}")
     local publish_exit_code="${publish_output##*$'\n'}"
     publish_output="${publish_output%$'\n'*}"
 
@@ -1514,8 +1523,8 @@ RUBY_SCRIPT
         if auto_fix_checksum_issue "$pod" "$version" "$publish_output"; then
             log_info "PUBLISH" "Checksum issue fixed, retrying publication..."
 
-            # Retry publication after fix
-            publish_output=$(pod trunk push "$podspec" --allow-warnings --skip-tests 2>&1 | tee "$log_file"; echo "${PIPESTATUS[0]}")
+            # Retry publication after fix (reuse skip_tests_flag from above)
+            publish_output=$(pod trunk push "$podspec" --allow-warnings $skip_tests_flag 2>&1 | tee "$log_file"; echo "${PIPESTATUS[0]}")
             publish_exit_code="${publish_output##*$'\n'}"
             publish_output="${publish_output%$'\n'*}"
 
