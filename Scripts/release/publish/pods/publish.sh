@@ -196,7 +196,7 @@ PODS_MODULES="${PODS_MODULES:-$DEFAULT_PODS_MODULES}"
 is_binary_distribution() {
     local pod="$1"
     case "$pod" in
-        MSPiOSCore|MSPSharedLibraries|MSPCore|NovaAdapter)
+        MSPiOSCore|MSPSharedLibraries|MSPCore|NovaAdapter|MSPPrebidAdapter|MSPGoogleAdapter|MSPFacebookAdapter|AmazonAdapter)
             return 0
             ;;
         *)
