@@ -1433,32 +1433,40 @@ Automatically recreated to resolve checksum verification issue."
             if [[ -n "$zip_checksum" ]]; then
                 log_info "Calculated checksum from GitHub: $zip_checksum"
 
-                # Update podspec using Ruby
-                ruby <<RUBY_SCRIPT
-podspec_path = '$podspec'
-zip_url = '$zip_url'
-zip_checksum = '$zip_checksum'
+                # Update podspec using Ruby (FIXED - use heredoc with single quotes)
+                # Export variables for Ruby to access via ENV
+                export PODSPEC_PATH="$podspec"
+                export ZIP_CHECKSUM="$zip_checksum"
+
+                # Use <<'RUBY_SCRIPT' (with quotes) to prevent shell interpretation
+                if ruby <<'RUBY_SCRIPT'
+require 'pathname'
+
+podspec_path = ENV['PODSPEC_PATH']
+zip_checksum = ENV['ZIP_CHECKSUM']
 
 podspec_content = File.read(podspec_path)
-# Insert sha256 into existing source block
-# Match: spec.source = { :http => "...", :type => "zip" }
-# Replace with: spec.source = { :http => "...", :type => "zip", :sha256 => "..." }
-if podspec_content.match?(/spec\.source = \{[^}]*:type => "zip"[^}]*\}/)
-  # Add sha256 after :type => "zip"
-  # Use sub! instead of gsub! to replace only first occurrence
-  # More robust regex: \s* matches any whitespace, /m for multiline
-  podspec_content.sub!(
-    /(:type\s*=>\s*"zip")(\s*\n\s*\})/m,
-    "\\1,\\n    :sha256 => \"#{zip_checksum}\"\\2"
-  )
+
+# Use block form to avoid shell escaping issues
+# Pattern: :type => "zip"\n  }
+# Replace: :type => "zip",\n    :sha256 => "checksum"\n  }
+if podspec_content.sub!(/(:type\s*=>\s*"zip")(\s*\n\s*\})/) do
+  "#{$1},\n    :sha256 => \"#{zip_checksum}\"#{$2}"
+end
   File.write(podspec_path, podspec_content)
-  puts "✅ Updated #{File.basename(podspec_path)} with sha256"
+  puts "✅ Updated #{Pathname.new(podspec_path).basename} with sha256"
+  exit 0
 else
-  puts "⚠️  Could not find source block in podspec"
+  puts "❌ Could not find :type => \"zip\" in podspec"
+  exit 1
 end
 RUBY_SCRIPT
-
-                log_success "Updated $pod podspec with sha256: $zip_checksum"
+                then
+                    log_success "Updated $pod podspec with sha256: $zip_checksum"
+                else
+                    log_error "Ruby script failed to update podspec"
+                    return 1
+                fi
             else
                 log_error "Failed to calculate checksum for $pod from $zip_url"
                 log_error "Ensure the zip file exists in GitHub release"
