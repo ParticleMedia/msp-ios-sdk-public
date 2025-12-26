@@ -1614,6 +1614,8 @@ RUBY_SCRIPT
                 log_error "PUBLISH" "❌ Publication still failed after auto-fix"
                 log_error "PUBLISH" "Error details:"
                 echo "$publish_output" | while IFS= read -r line; do
+                    # Filter out empty lines to reduce log noise
+                    [[ -n "$line" ]] &&
                     log_error "PUBLISH" "  $line"
                 done
                 rm -f "$log_file"
