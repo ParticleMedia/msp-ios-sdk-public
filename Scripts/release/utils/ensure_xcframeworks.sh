@@ -44,20 +44,20 @@ if [[ -f "$ROOT_DIR/Scripts/release/utils/logger.sh" ]]; then
     source "$ROOT_DIR/Scripts/release/utils/logger.sh" 2>/dev/null || true
 fi
 
-# Ensure all log functions exist (fallback if logger.sh doesn't provide them)
-if ! command -v log_info &>/dev/null; then
+# Create aliases for logger.sh functions (namespace style: log::*)
+# Fallback to simple echo if logger.sh not loaded
+if command -v log::info &>/dev/null; then
+    log_info() { log::info "$@"; }
+    log_error() { log::error "$@"; }
+    log_warning() { log::warn "$@"; }
+    log_success() { log::success "$@"; }
+    log_debug() { log::debug "$@"; }
+else
+    # Fallback functions if logger.sh not available
     log_info() { echo "[INFO] $*"; }
-fi
-if ! command -v log_error &>/dev/null; then
     log_error() { echo "[ERROR] $*" >&2; }
-fi
-if ! command -v log_warning &>/dev/null; then
     log_warning() { echo "[WARN] $*"; }
-fi
-if ! command -v log_success &>/dev/null; then
     log_success() { echo "[SUCCESS] $*"; }
-fi
-if ! command -v log_debug &>/dev/null; then
     log_debug() { [[ "${VERBOSE:-false}" == "true" ]] && echo "[DEBUG] $*" || true; }
 fi
 
