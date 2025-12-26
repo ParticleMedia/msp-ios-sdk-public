@@ -1012,11 +1012,19 @@ do_run() {
         
         if ! preflight_static; then
             log_error "Static preflight failed. Aborting release"
+            # Send failure notification
+            if command -v notify_release_failure &>/dev/null; then
+                notify_release_failure "MSP iOS SDK" "$RELEASE_VERSION" "Static preflight checks failed (git, branch, or version validation)" "Preflight Static"
+            fi
             return 1
         fi
         
         if ! preflight_build; then
             log_error "Build preflight failed. Aborting release"
+            # Send failure notification
+            if command -v notify_release_failure &>/dev/null; then
+                notify_release_failure "MSP iOS SDK" "$RELEASE_VERSION" "Build preflight failed (XCFramework build or round-trip test)" "Preflight Build"
+            fi
             return 1
         fi
         
@@ -1650,11 +1658,19 @@ do_resume() {
         
         if ! preflight_static; then
             log_error "Static preflight failed. Aborting resume"
+            # Send failure notification
+            if command -v notify_release_failure &>/dev/null; then
+                notify_release_failure "MSP iOS SDK" "$RELEASE_VERSION" "Static preflight checks failed (git, branch, or version validation)" "Preflight Static"
+            fi
             return 1
         fi
         
         if ! preflight_build; then
             log_error "Build preflight failed. Aborting resume"
+            # Send failure notification
+            if command -v notify_release_failure &>/dev/null; then
+                notify_release_failure "MSP iOS SDK" "$RELEASE_VERSION" "Build preflight failed (XCFramework build or round-trip test)" "Preflight Build"
+            fi
             return 1
         fi
         
@@ -1667,7 +1683,15 @@ do_resume() {
     log_info "Delegating to: $MODULAR_SCRIPT"
     log_info "Arguments: $RELEASE_VERSION ${REMAINING_ARGS[*]:-}"
     
-    bash "$MODULAR_SCRIPT" "$RELEASE_VERSION" ${REMAINING_ARGS[@]+"${REMAINING_ARGS[@]}"}
+    if ! bash "$MODULAR_SCRIPT" "$RELEASE_VERSION" ${REMAINING_ARGS[@]+"${REMAINING_ARGS[@]}"}; then
+        local exit_code=$?
+        log_error "Resume failed with exit code: $exit_code"
+        # Send failure notification
+        if command -v notify_release_failure &>/dev/null; then
+            notify_release_failure "MSP iOS SDK" "$RELEASE_VERSION" "Release execution failed (pods publish or verification)" "Resume Execution"
+        fi
+        return $exit_code
+    fi
 }
 
 # ============================================================================
