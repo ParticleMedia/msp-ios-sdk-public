@@ -5,6 +5,7 @@
 //  Created by Huanzhi Zhang on 8/8/25.
 //
 import MSPiOSCore
+import MSPGoogleAdsTypes
 import Foundation
 import DTBiOSSDK
 
