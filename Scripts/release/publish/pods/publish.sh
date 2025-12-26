@@ -1938,6 +1938,76 @@ release_msp_shared_libraries() {
     log_success "MSPSharedLibraries released successfully"
 }
 
+# ============================================================================
+# Release MSPGoogleAdsTypes (Step 1.5)
+# ============================================================================
+release_msp_googleadstypes() {
+    log_section "Step 1.5: Releasing MSPGoogleAdsTypes (required by MSPGoogleAdapter and AmazonAdapter)"
+
+    # Start timing
+    if command -v metrics::start &>/dev/null; then
+        metrics::start "pod_MSPGoogleAdsTypes"
+    fi
+
+    # Check if MSPGoogleAdsTypes is already published (idempotency)
+    if [[ "$DRY_RUN" != "true" ]]; then
+        if check_pod_availability "MSPGoogleAdsTypes" "$VERSION"; then
+            log_info "MSPGoogleAdsTypes $VERSION is already published to CocoaPods, skipping release"
+            log_success "MSPGoogleAdsTypes $VERSION already available"
+            if command -v metrics::end &>/dev/null; then
+                metrics::end "pod_MSPGoogleAdsTypes"
+            fi
+            return 0
+        fi
+    fi
+
+    # Update podspec
+    if ! update_podspec_for_release "MSPGoogleAdsTypes" "$VERSION"; then
+        # FAIL-FAST: Immediately abort if podspec generation fails (release tier only)
+        if [[ "${MSP_RELEASE_TIER:-}" == "release" ]]; then
+            log_error "[FAIL-FAST] Podspec generation failed for MSPGoogleAdsTypes. Aborting release."
+            msp_state_mark_step_failed "pods_publish" "Podspec generation failed for MSPGoogleAdsTypes" "1"
+            exit 1
+        fi
+        return 1
+    fi
+
+    # FAIL-FAST: Verify generated podspec exists (release tier only)
+    local podspec_path="$ROOT_DIR/Build/ReleasePodspecs/MSPGoogleAdsTypes.podspec"
+    if [[ "${MSP_RELEASE_TIER:-}" == "release" ]] && [[ ! -f "$podspec_path" ]]; then
+        log_error "[FAIL-FAST] Generated podspec not found: $podspec_path. Aborting release."
+        msp_state_mark_step_failed "pods_publish" "Generated podspec not found: $podspec_path" "1"
+        exit 1
+    fi
+
+    # Create GitHub release
+    create_github_release_for_pod "MSPGoogleAdsTypes" "$VERSION"
+
+    # Publish to CocoaPods
+    # Phase R1.11: Fail-fast if publication fails (prevent wait loop)
+    if ! publish_pod_to_cocoapods "MSPGoogleAdsTypes" "$VERSION"; then
+        if [[ "${MSP_RELEASE_TIER:-}" == "release" ]]; then
+            log_error "[FAIL-FAST] Failed to publish MSPGoogleAdsTypes to CocoaPods. Aborting release."
+            msp_state_mark_step_failed "pods_publish" "Failed to publish MSPGoogleAdsTypes" "1"
+            exit 1
+        fi
+        return 1
+    fi
+
+    # Wait for availability (skip in dry-run mode)
+    if [[ "$DRY_RUN" != "true" ]]; then
+        smart_wait_for_pod_availability "MSPGoogleAdsTypes" "$VERSION" "required by MSPGoogleAdapter and AmazonAdapter"
+    fi
+
+    # End timing
+    if command -v metrics::end &>/dev/null; then
+        metrics::end "pod_MSPGoogleAdsTypes"
+        metrics::record "cocoapods_success_count" 1 "count"
+    fi
+
+    log_success "MSPGoogleAdsTypes released successfully"
+}
+
 # Release single adapter (helper function for parallel processing)
 release_single_adapter() {
     local adapter="$1"
@@ -2602,6 +2672,31 @@ main() {
         # Task 3: Preflight mode allows soft-fail, release/production requires hard-fail
         if [[ "$release_tier" == "release" ]] || [[ "$release_tier" == "production" ]]; then
             log_error "[MSP][ORCH] Release tier ($release_tier): MSPSharedLibraries release failure - aborting"
+            exit 1
+        else
+            log_warn "[MSP][ORCH] Preflight mode: CocoaPods release failed, continuing with other steps"
+        fi
+    fi
+    
+    # Step 1.5: Release MSPGoogleAdsTypes (required by MSPGoogleAdapter and AmazonAdapter)
+    if release_msp_googleadstypes; then
+        ((successful_pods++))
+    else
+        ((failed_pods++))
+        failed_pod_names+=("MSPGoogleAdsTypes")
+        if [[ "$DRY_RUN" != "true" ]]; then
+            # Use new notification system: DM only (no channel spam)
+            if command -v notify::module_error &>/dev/null; then
+                notify::module_error "MSPGoogleAdsTypes" "$VERSION" "Foundation release failed: MSPGoogleAdsTypes publication to CocoaPods Trunk failed"
+            else
+                log_warning "New notification system not available, skipping failure notification"
+            fi
+        fi
+        msp_state_mark_step_failed "pods_publish" "MSPGoogleAdsTypes release failed" "1"
+        # Task 3: Preflight mode allows soft-fail, release/production requires hard-fail
+        if [[ "$release_tier" == "release" ]] || [[ "$release_tier" == "production" ]]; then
+            log_error "[MSP][ORCH] Release tier ($release_tier): MSPGoogleAdsTypes release failure - aborting"
+            log_error "[MSP][ORCH] MSPGoogleAdapter and AmazonAdapter depend on MSPGoogleAdsTypes. Cannot proceed."
             exit 1
         else
             log_warn "[MSP][ORCH] Preflight mode: CocoaPods release failed, continuing with other steps"
