@@ -8,6 +8,7 @@
 import Foundation
 //import shared
 import MSPiOSCore
+import MSPGoogleAdsTypes
 import GoogleMobileAds
 
 public class GoogleNativeAd: MSPiOSCore.NativeAd {

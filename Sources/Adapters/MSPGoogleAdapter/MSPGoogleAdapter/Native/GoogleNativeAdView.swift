@@ -7,6 +7,8 @@
 
 import Foundation
 import GoogleMobileAds
+import MSPiOSCore
+import MSPGoogleAdsTypes
 
 open class GoogleNativeAdView: UIView {
     public var titleLabel: UILabel?
