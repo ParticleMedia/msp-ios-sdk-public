@@ -1445,8 +1445,10 @@ podspec_content = File.read(podspec_path)
 # Replace with: spec.source = { :http => "...", :type => "zip", :sha256 => "..." }
 if podspec_content.match?(/spec\.source = \{[^}]*:type => "zip"[^}]*\}/)
   # Add sha256 after :type => "zip"
-  podspec_content.gsub!(
-    /(:type => "zip")(\s*\n\s*\})/,
+  # Use sub! instead of gsub! to replace only first occurrence
+  # More robust regex: \s* matches any whitespace, /m for multiline
+  podspec_content.sub!(
+    /(:type\s*=>\s*"zip")(\s*\n\s*\})/m,
     "\\1,\\n    :sha256 => \"#{zip_checksum}\"\\2"
   )
   File.write(podspec_path, podspec_content)
