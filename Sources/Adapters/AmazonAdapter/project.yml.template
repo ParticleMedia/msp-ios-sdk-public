@@ -31,6 +31,8 @@ targets:
     dependencies:
       - framework: ../../../Build/XCFrameworks/MSPiOSCore.xcframework
         embed: false
+      - framework: ../../../Build/XCFrameworks/MSPGoogleAdsTypes.xcframework
+        embed: false
       - framework: ../../../Pods/AmazonPublisherServicesSDK/APS_iOS_SDK-4.5.5/DTBiOSSDK.xcframework
         embed: false
       - framework: ../../../Pods/Google-Mobile-Ads-SDK/Frameworks/GoogleMobileAdsFramework/GoogleMobileAds.xcframework

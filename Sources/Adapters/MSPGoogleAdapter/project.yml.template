@@ -33,7 +33,7 @@ targets:
         embed: false
       - framework: ../../../Build/XCFrameworks/MSPGoogleAdsTypes.xcframework
         embed: false
-      - framework: ../../Core/MSPSharedLibraries/PrebidMobile.xcframework
+      - framework: ../../../Build/XCFrameworks/PrebidMobile.xcframework
         embed: false
       - framework: ../../../Pods/Google-Mobile-Ads-SDK/Frameworks/GoogleMobileAdsFramework/GoogleMobileAds.xcframework
         embed: false
