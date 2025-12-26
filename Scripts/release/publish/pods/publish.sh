@@ -1738,7 +1738,7 @@ publish_pod_to_cocoapods() {
         log_info "If publication fails, check:"
         log_info "  1. GitHub Release exists: gh release view $VERSION"
         log_info "  2. Zip file uploaded: gh release view $VERSION --json assets"
-        log_info "  3. Zip URL accessible: curl -I <zip-url>"
+        log_info "  3. Zip URL accessible: curl -I \$ZIP_URL"
     fi
 
     # Publish to CocoaPods (use resume-aware function if in resume mode)
