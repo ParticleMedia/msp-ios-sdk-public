@@ -135,30 +135,29 @@ fi
 # Check if this pod uses binary distribution (HTTP zip source)
 if is_binary_distribution "$POD_NAME"; then
     # Binary distribution pods require XCFrameworks
-    # Exceptions:
-    # - NovaAdapter: XCFrameworks in Binary/ directory (in zip)
-    # - New adapters: XCFrameworks built on-demand, may not exist yet
+    # Handle different cases:
+    # 1. NovaAdapter: XCFrameworks in Binary/ directory (in zip)
+    # 2. New adapters: XCFrameworks built by build-adapters.sh
+    # 3. Core pods: Pre-built XCFrameworks required
     case "$POD_NAME" in
         NovaAdapter)
-            # NovaAdapter has XCFrameworks in Binary/ (in zip file)
             log_info "Binary distribution pod: $POD_NAME (XCFrameworks in Binary/)"
             ;;
         MSPPrebidAdapter|MSPGoogleAdapter|MSPFacebookAdapter|AmazonAdapter)
-            # New binary adapters - XCFramework should exist after build-adapters.sh
             XCFRAMEWORK_PATH="$ROOT_DIR/Build/XCFrameworks/${POD_NAME}.xcframework"
             if [[ -d "$XCFRAMEWORK_PATH" ]]; then
                 log_info "Binary distribution pod: $POD_NAME (XCFramework found)"
             else
-                log_warn "XCFramework not found: $XCFRAMEWORK_PATH"
-                log_warn "Will be built during publish if needed"
+                log_error "XCFramework not found: $XCFRAMEWORK_PATH"
+                log_error "Run: ./Scripts/xcframeworks/build-adapters.sh"
+                exit 1
             fi
             ;;
         *)
-            # Core pods: Require pre-built XCFrameworks
             XCFRAMEWORK_PATH="$ROOT_DIR/Build/XCFrameworks/${POD_NAME}.xcframework"
             if [[ ! -d "$XCFRAMEWORK_PATH" ]]; then
                 log_error "XCFramework not found: $XCFRAMEWORK_PATH"
-                log_error "Run pre-release setup (Step 0) first to build XCFrameworks"
+                log_error "Run pre-release setup (Step 0) first"
                 exit 1
             fi
             log_info "Binary distribution pod: $POD_NAME (XCFramework validated)"
