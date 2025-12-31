@@ -1612,7 +1612,8 @@ do_resume() {
     fi
     
     # Set resume mode flag and version
-    export MSP_RESUME_MODE="true"
+    # Note: Use "1" (not "true") to match checks in other scripts (preflight.sh, verify.sh, etc.)
+    export MSP_RESUME_MODE="1"
     export RELEASE_VERSION="$version"
     
     # Load config (applies CLI overrides, but version should come from state)
