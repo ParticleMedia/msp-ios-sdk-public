@@ -1128,6 +1128,145 @@ probe_zip_url() {
 }
 
 # ============================================================================
+# Ensure zip file exists for binary distribution pod (Resume-safe)
+# ============================================================================
+# If a pod is marked as "published" but its zip file is missing from GitHub
+# Release, this function will recreate and reupload the zip file to ensure
+# podspec generation can proceed (checksum calculation requires zip file).
+#
+# This provides script-level guarantee that Resume can always complete even
+# if previous releases were incomplete (e.g., zip upload failed but podspec
+# was pushed to Trunk).
+#
+# Args:
+#   $1: pod - Pod name
+#   $2: version - Release version
+#
+# Returns:
+#   0 if zip file exists or was successfully recreated
+#   1 if zip file cannot be created (XCFramework missing)
+# ============================================================================
+ensure_zip_file_exists_for_pod() {
+    local pod="$1"
+    local version="$2"
+
+    # Only check binary distribution pods
+    if ! is_binary_distribution "$pod"; then
+        return 0
+    fi
+
+    log_step "Ensuring zip file exists for $pod $version"
+
+    local zip_url="https://github.com/ParticleMedia/msp-ios-sdk-public/releases/download/${version}/${pod}-${version}.zip"
+    local zip_name="${pod}-${version}.zip"
+
+    # Check if zip file exists on GitHub Release
+    log_info "Checking zip file: $zip_url"
+
+    if curl -L -f -I -s "$zip_url" >/dev/null 2>&1; then
+        log_success "✅ Zip file exists on GitHub Release"
+        return 0
+    fi
+
+    log_warning "⚠️  Zip file not found on GitHub Release"
+    log_info "Will recreate and reupload zip file (script-level guarantee)"
+
+    # Check if XCFramework exists locally
+    local xcframework_path="$ROOT_DIR/Build/XCFrameworks/${pod}.xcframework"
+
+    if [[ ! -d "$xcframework_path" ]]; then
+        log_error "❌ XCFramework not found: $xcframework_path"
+        log_error "Cannot recreate zip file without XCFramework"
+        return 1
+    fi
+
+    log_info "✅ XCFramework found: $xcframework_path"
+
+    # Create zip file from XCFramework
+    log_info "Creating zip file from XCFramework..."
+
+    local temp_zip_dir="/tmp/msp_zip_recovery_$$"
+    mkdir -p "$temp_zip_dir"
+
+    # Copy XCFramework to temp directory (same structure as original release)
+    cp -R "$xcframework_path" "$temp_zip_dir/"
+
+    # Create zip
+    log_info "Zipping: $pod.xcframework → $zip_name"
+
+    (
+        cd "$temp_zip_dir" || exit 1
+        if zip -r "$zip_name" "${pod}.xcframework" >/dev/null 2>&1; then
+            log_success "✅ Zip file created: $zip_name"
+        else
+            log_error "❌ Failed to create zip file"
+            exit 1
+        fi
+    )
+
+    if [[ $? -ne 0 ]]; then
+        rm -rf "$temp_zip_dir"
+        return 1
+    fi
+
+    # Move zip to Build/Zips for consistency
+    mkdir -p "$ROOT_DIR/Build/Zips"
+    mv "$temp_zip_dir/$zip_name" "$ROOT_DIR/Build/Zips/"
+
+    # Cleanup temp directory
+    rm -rf "$temp_zip_dir"
+
+    log_success "✅ Zip file created: Build/Zips/$zip_name"
+
+    # Calculate checksum for verification
+    local checksum
+    checksum=$(shasum -a 256 "$ROOT_DIR/Build/Zips/$zip_name" 2>/dev/null | awk '{print $1}')
+    log_info "SHA256: $checksum"
+
+    # Upload to GitHub Release
+    log_info "Uploading zip file to GitHub Release..."
+
+    # Check if release exists
+    if ! gh release view "$version" --repo "ParticleMedia/msp-ios-sdk-public" &>/dev/null; then
+        log_warning "GitHub Release $version does not exist, creating..."
+
+        if ! gh release create "$version" \
+            --repo "ParticleMedia/msp-ios-sdk-public" \
+            --title "Release $version" \
+            --notes "MSP iOS SDK Release $version" \
+            --draft=false \
+            --latest; then
+            log_error "Failed to create GitHub Release"
+            return 1
+        fi
+
+        log_success "✅ GitHub Release created"
+    fi
+
+    # Upload zip (use --clobber to overwrite if exists)
+    if gh release upload "$version" "$ROOT_DIR/Build/Zips/$zip_name" \
+        --repo "ParticleMedia/msp-ios-sdk-public" \
+        --clobber; then
+        log_success "✅ Zip file uploaded to GitHub Release"
+    else
+        log_error "❌ Failed to upload zip file"
+        return 1
+    fi
+
+    # Verify upload (wait a few seconds for GitHub to process)
+    sleep 3
+
+    if curl -L -f -I -s "$zip_url" >/dev/null 2>&1; then
+        log_success "✅ Zip file verified on GitHub Release"
+        return 0
+    else
+        log_warning "⚠️  Zip file upload may not be immediately available (GitHub processing delay)"
+        log_info "Continuing anyway (local zip exists for checksum calculation)"
+        return 0
+    fi
+}
+
+# ============================================================================
 # CocoaPods Trunk Verification (Resume Mechanism)
 # ============================================================================
 
@@ -1943,7 +2082,27 @@ release_msp_ioscore() {
         fi
     fi
 
-    # Update podspec
+    # Ensure zip file exists for binary distribution pods (Resume-safe)
+    # This provides script-level guarantee that podspec generation will succeed
+    # even if previous release was incomplete (zip missing but pod published)
+    if is_binary_distribution "MSPiOSCore"; then
+        log_info "Verifying zip file exists for binary distribution pod..."
+
+        if ! ensure_zip_file_exists_for_pod "MSPiOSCore" "$VERSION"; then
+            log_error "Failed to ensure zip file exists for MSPiOSCore"
+
+            if [[ "${MSP_RELEASE_TIER:-}" == "release" ]]; then
+                log_error "[FAIL-FAST] Cannot proceed without zip file. Aborting."
+                exit 1
+            fi
+
+            return 1
+        fi
+
+        log_success "Zip file verified/recreated for MSPiOSCore"
+    fi
+
+    # Update podspec (now guaranteed to succeed if binary distribution)
     if ! update_podspec_for_release "MSPiOSCore" "$VERSION"; then
         # FAIL-FAST: Immediately abort if podspec generation fails (release tier only)
         if [[ "${MSP_RELEASE_TIER:-}" == "release" ]]; then
@@ -1997,7 +2156,27 @@ release_msp_ioscore() {
 release_msp_shared_libraries() {
     log_section "Step 1: Releasing MSPSharedLibraries (foundation dependency)"
 
-    # Update podspec
+    # Ensure zip file exists for binary distribution pods (Resume-safe)
+    # This provides script-level guarantee that podspec generation will succeed
+    # even if previous release was incomplete (zip missing but pod published)
+    if is_binary_distribution "MSPSharedLibraries"; then
+        log_info "Verifying zip file exists for binary distribution pod..."
+
+        if ! ensure_zip_file_exists_for_pod "MSPSharedLibraries" "$VERSION"; then
+            log_error "Failed to ensure zip file exists for MSPSharedLibraries"
+
+            if [[ "${MSP_RELEASE_TIER:-}" == "release" ]]; then
+                log_error "[FAIL-FAST] Cannot proceed without zip file. Aborting."
+                exit 1
+            fi
+
+            return 1
+        fi
+
+        log_success "Zip file verified/recreated for MSPSharedLibraries"
+    fi
+
+    # Update podspec (now guaranteed to succeed if binary distribution)
     if ! update_podspec_for_release "MSPSharedLibraries" "$VERSION"; then
         # FAIL-FAST: Immediately abort if podspec generation fails (release tier only)
         if [[ "${MSP_RELEASE_TIER:-}" == "release" ]]; then
@@ -2067,7 +2246,27 @@ release_msp_googleadstypes() {
         fi
     fi
 
-    # Update podspec
+    # Ensure zip file exists for binary distribution pods (Resume-safe)
+    # This provides script-level guarantee that podspec generation will succeed
+    # even if previous release was incomplete (zip missing but pod published)
+    if is_binary_distribution "MSPGoogleAdsTypes"; then
+        log_info "Verifying zip file exists for binary distribution pod..."
+
+        if ! ensure_zip_file_exists_for_pod "MSPGoogleAdsTypes" "$VERSION"; then
+            log_error "Failed to ensure zip file exists for MSPGoogleAdsTypes"
+
+            if [[ "${MSP_RELEASE_TIER:-}" == "release" ]]; then
+                log_error "[FAIL-FAST] Cannot proceed without zip file. Aborting."
+                exit 1
+            fi
+
+            return 1
+        fi
+
+        log_success "Zip file verified/recreated for MSPGoogleAdsTypes"
+    fi
+
+    # Update podspec (now guaranteed to succeed if binary distribution)
     if ! update_podspec_for_release "MSPGoogleAdsTypes" "$VERSION"; then
         # FAIL-FAST: Immediately abort if podspec generation fails (release tier only)
         if [[ "${MSP_RELEASE_TIER:-}" == "release" ]]; then
@@ -2133,7 +2332,28 @@ release_single_adapter() {
 
     log_section "Releasing $adapter"
 
-    # Update podspec
+    # Ensure zip file exists for binary distribution pods (Resume-safe)
+    # This provides script-level guarantee that podspec generation will succeed
+    # even if previous release was incomplete (zip missing but pod published)
+    if is_binary_distribution "$adapter"; then
+        log_info "Verifying zip file exists for binary distribution pod..."
+
+        if ! ensure_zip_file_exists_for_pod "$adapter" "$version"; then
+            log_error "Failed to ensure zip file exists for $adapter"
+            echo "ERROR: Failed to ensure zip file exists for $adapter" > "$result_file"
+
+            if [[ "${MSP_RELEASE_TIER:-}" == "release" ]]; then
+                log_error "[FAIL-FAST] Cannot proceed without zip file. Aborting."
+                exit 1
+            fi
+
+            return 1
+        fi
+
+        log_success "Zip file verified/recreated for $adapter"
+    fi
+
+    # Update podspec (now guaranteed to succeed if binary distribution)
     if ! update_podspec_for_release "$adapter" "$version"; then
         echo "ERROR: Failed to update podspec for $adapter" > "$result_file"
         # FAIL-FAST: Immediately abort if podspec generation fails (release tier only)
@@ -2399,7 +2619,27 @@ release_adapters() {
 release_msp_core() {
     log_section "Step 3: Releasing MSPCore (main framework)"
 
-    # Update podspec
+    # Ensure zip file exists for binary distribution pods (Resume-safe)
+    # This provides script-level guarantee that podspec generation will succeed
+    # even if previous release was incomplete (zip missing but pod published)
+    if is_binary_distribution "MSPCore"; then
+        log_info "Verifying zip file exists for binary distribution pod..."
+
+        if ! ensure_zip_file_exists_for_pod "MSPCore" "$VERSION"; then
+            log_error "Failed to ensure zip file exists for MSPCore"
+
+            if [[ "${MSP_RELEASE_TIER:-}" == "release" ]]; then
+                log_error "[FAIL-FAST] Cannot proceed without zip file. Aborting."
+                exit 1
+            fi
+
+            return 1
+        fi
+
+        log_success "Zip file verified/recreated for MSPCore"
+    fi
+
+    # Update podspec (now guaranteed to succeed if binary distribution)
     if ! update_podspec_for_release "MSPCore" "$VERSION"; then
         # FAIL-FAST: Immediately abort if podspec generation fails (release tier only)
         if [[ "${MSP_RELEASE_TIER:-}" == "release" ]]; then
