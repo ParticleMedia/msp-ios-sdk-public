@@ -1171,6 +1171,15 @@ ensure_zip_file_exists_for_pod() {
     log_warning "⚠️  Zip file not found on GitHub Release"
     log_info "Will recreate and reupload zip file (script-level guarantee)"
 
+    # DRY_RUN mode: skip actual zip creation and upload
+    if [[ "${DRY_RUN:-false}" == "true" ]]; then
+        log_info "DRY RUN: Would recreate zip from XCFramework"
+        log_info "DRY RUN: Would upload to GitHub Release"
+        log_info "DRY RUN: Would verify upload"
+        log_success "DRY RUN: Zip file would be verified/recreated"
+        return 0
+    fi
+
     # Check if XCFramework exists locally
     local xcframework_path="$ROOT_DIR/Build/XCFrameworks/${pod}.xcframework"
 
