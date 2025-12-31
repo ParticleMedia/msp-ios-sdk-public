@@ -1847,7 +1847,8 @@ publish_pod_to_cocoapods() {
     fi
 
     # Publish to CocoaPods (use resume-aware function if in resume mode)
-    if [[ "${MSP_RESUME_MODE:-0}" == "1" ]] || [[ "${MSP_RESUME_MODE:-false}" == "true" ]]; then
+    # Note: MSP_RESUME_MODE is set to "1" in msp-release.sh resume command
+    if [[ "${MSP_RESUME_MODE:-0}" == "1" ]]; then
         # Resume mode: use resume-aware publish function
         if ! publish_pod_with_resume "$pod" "$version" "$podspec"; then
             log_error "Failed to publish $pod to CocoaPods"
