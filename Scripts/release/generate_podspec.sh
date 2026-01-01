@@ -108,8 +108,9 @@ calculate_zip_sha256() {
         local checksum
         checksum=$(shasum -a 256 "$local_zip" 2>/dev/null | awk '{print $1}')
         if [[ -n "$checksum" && ${#checksum} -eq 64 ]]; then
-            log_info "Using local zip file for checksum calculation: $local_zip"
-            echo "$checksum"
+            # FIX: 日志输出到 stderr，确保不影响 stdout
+            log_info "Using local zip file for checksum calculation: $local_zip" >&2
+            echo "$checksum"  # 只输出 checksum 到 stdout
             return 0
         fi
     fi
@@ -123,7 +124,8 @@ calculate_zip_sha256() {
     local max_download_attempts=3
 
     while [[ $download_attempt -le $max_download_attempts ]]; do
-        log_info "Downloading zip file for checksum calculation (attempt $download_attempt/$max_download_attempts)..."
+        # FIX: 日志输出到 stderr
+        log_info "Downloading zip file for checksum calculation (attempt $download_attempt/$max_download_attempts)..." >&2
         
         if curl -L -f -s -o "$temp_dir/$zip_name" "$zip_url" 2>/dev/null; then
             # Verify downloaded file is not empty
@@ -134,16 +136,18 @@ calculate_zip_sha256() {
                 checksum=$(shasum -a 256 "$temp_dir/$zip_name" 2>/dev/null | awk '{print $1}')
                 
                 if [[ -n "$checksum" && ${#checksum} -eq 64 ]]; then
-                    log_info "Checksum calculated from GitHub Release: $checksum"
+                    # FIX: 日志输出到 stderr
+                    log_info "Checksum calculated from GitHub Release: $checksum" >&2
                     rm -rf "$temp_dir"
-                    echo "$checksum"
+                    echo "$checksum"  # 只输出 checksum 到 stdout
                     return 0
                 fi
             fi
         fi
 
         if [[ $download_attempt -lt $max_download_attempts ]]; then
-            log_warning "Download attempt $download_attempt failed, retrying in 5 seconds..."
+            # FIX: 日志输出到 stderr（log_warning 本身已经重定向，但为了保险）
+            log_warning "Download attempt $download_attempt failed, retrying in 5 seconds..." >&2
             sleep 5
         fi
         
@@ -154,8 +158,11 @@ calculate_zip_sha256() {
     rm -rf "$temp_dir"
 
     # Failed to calculate checksum
-    log_error "Failed to calculate checksum for $zip_name"
-    log_error "Tried: local zip ($local_zip), GitHub Release ($zip_url)"
+    # FIX: log_error 本身已经重定向到 stderr，但为了保险
+    log_error "Failed to calculate checksum for $zip_name" >&2
+    log_error "Tried: local zip ($local_zip), GitHub Release ($zip_url)" >&2
+    
+    # 返回空字符串（不输出任何内容到 stdout）
     return 1
 }
 
@@ -389,7 +396,36 @@ if is_binary_distribution "$POD_NAME"; then
 
     # Calculate SHA256 checksum from actual zip file
     log_info "Calculating SHA256 checksum for $POD_NAME-$VERSION.zip..."
-    zip_checksum=$(calculate_zip_sha256 "$zip_url" "$POD_NAME" "$VERSION")
+    
+    # FIX: 只捕获 stdout，忽略 stderr（双重保险）
+    zip_checksum=$(calculate_zip_sha256 "$zip_url" "$POD_NAME" "$VERSION" 2>/dev/null)
+
+    # FIX: 验证 checksum 格式（防止日志污染）
+    if [[ -z "$zip_checksum" ]]; then
+        log_error "Failed to calculate checksum for $POD_NAME"
+        log_error "Zip file not accessible:"
+        log_error "  GitHub Release: $zip_url"
+        log_error "  Local Build:    $ROOT_DIR/Build/Zips/${POD_NAME}-${VERSION}.zip"
+        log_error ""
+        log_error "CRITICAL: Binary distribution pods MUST have SHA256 checksum for CocoaPods validation"
+        log_error "Please ensure:"
+        log_error "  1. XCFramework is built: Build/XCFrameworks/${POD_NAME}.xcframework"
+        log_error "  2. Zip is created and uploaded to GitHub Release"
+        log_error "  3. Or run: Scripts/release/package_and_upload.sh $POD_NAME $VERSION"
+        exit 1
+    fi
+
+    # FIX: 清理 checksum：移除所有非十六进制字符（防止日志污染）
+    zip_checksum=$(echo "$zip_checksum" | tr -d '[:space:]' | grep -oE '^[0-9a-f]{64}$' || echo "")
+
+    # FIX: 再次验证格式
+    if [[ -z "$zip_checksum" ]] || [[ ! "$zip_checksum" =~ ^[0-9a-f]{64}$ ]]; then
+        log_error "Invalid checksum format for $POD_NAME: '$zip_checksum'"
+        log_error "Checksum must be exactly 64 hexadecimal characters"
+        log_error "This may indicate that log output was mixed with checksum value"
+        log_error "Please check calculate_zip_sha256() function for log output redirection"
+        exit 1
+    fi
 
     if [[ -n "$zip_checksum" ]]; then
         log_success "SHA256 calculated: $zip_checksum"
