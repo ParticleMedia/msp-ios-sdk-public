@@ -1180,16 +1180,43 @@ ensure_zip_file_exists_for_pod() {
         return 0
     fi
 
+    # Check GitHub CLI authentication before proceeding
+    if ! command -v gh &>/dev/null; then
+        log_error "❌ GitHub CLI (gh) not found"
+        log_error "Please install GitHub CLI: brew install gh"
+        log_error "Then authenticate: gh auth login"
+        return 1
+    fi
+
+    log_info "Checking GitHub CLI authentication..."
+    if ! gh auth status &>/dev/null; then
+        log_error "❌ GitHub CLI authentication failed"
+        log_error "Please authenticate: gh auth login"
+        log_error "Required scopes: repo, workflow"
+        return 1
+    fi
+
+    log_info "✅ GitHub CLI authenticated"
+
     # Check if XCFramework exists locally
     local xcframework_path="$ROOT_DIR/Build/XCFrameworks/${pod}.xcframework"
 
     if [[ ! -d "$xcframework_path" ]]; then
         log_error "❌ XCFramework not found: $xcframework_path"
         log_error "Cannot recreate zip file without XCFramework"
+        log_error "Expected location: $xcframework_path"
+        log_error "Please ensure XCFramework was built successfully"
         return 1
     fi
 
-    log_info "✅ XCFramework found: $xcframework_path"
+    # Verify XCFramework is not empty
+    if [[ ! -s "$xcframework_path/Info.plist" ]] && [[ ! -f "$xcframework_path/$(ls -A "$xcframework_path" | head -1)/Info.plist" ]]; then
+        log_error "❌ XCFramework appears to be empty or corrupted: $xcframework_path"
+        log_error "Please rebuild the XCFramework"
+        return 1
+    fi
+
+    log_info "✅ XCFramework found and verified: $xcframework_path"
 
     # Create zip file from XCFramework
     log_info "Creating zip file from XCFramework..."
@@ -1200,23 +1227,58 @@ ensure_zip_file_exists_for_pod() {
     # Copy XCFramework to temp directory (same structure as original release)
     cp -R "$xcframework_path" "$temp_zip_dir/"
 
-    # Create zip
+    # Check if zip command is available
+    if ! command -v zip &>/dev/null; then
+        log_error "❌ zip command not found"
+        log_error "Please install zip utility"
+        rm -rf "$temp_zip_dir"
+        return 1
+    fi
+
+    # Create zip with detailed error output
     log_info "Zipping: $pod.xcframework → $zip_name"
 
+    local zip_error_output
+    zip_error_output=$(mktemp)
+    
     (
         cd "$temp_zip_dir" || exit 1
-        if zip -r "$zip_name" "${pod}.xcframework" >/dev/null 2>&1; then
+        if zip -r "$zip_name" "${pod}.xcframework" >/dev/null 2>"$zip_error_output"; then
             log_success "✅ Zip file created: $zip_name"
         else
             log_error "❌ Failed to create zip file"
+            log_error "Zip error output:"
+            cat "$zip_error_output" >&2
+            rm -f "$zip_error_output"
             exit 1
         fi
     )
 
-    if [[ $? -ne 0 ]]; then
+    local zip_exit_code=$?
+    rm -f "$zip_error_output"
+
+    if [[ $zip_exit_code -ne 0 ]]; then
         rm -rf "$temp_zip_dir"
         return 1
     fi
+
+    # Verify zip file was created and is not empty
+    if [[ ! -f "$temp_zip_dir/$zip_name" ]]; then
+        log_error "❌ Zip file was not created: $temp_zip_dir/$zip_name"
+        rm -rf "$temp_zip_dir"
+        return 1
+    fi
+
+    local zip_size
+    zip_size=$(stat -f%z "$temp_zip_dir/$zip_name" 2>/dev/null || stat -c%s "$temp_zip_dir/$zip_name" 2>/dev/null || echo "0")
+    
+    if [[ $zip_size -eq 0 ]]; then
+        log_error "❌ Zip file is empty: $temp_zip_dir/$zip_name"
+        rm -rf "$temp_zip_dir"
+        return 1
+    fi
+
+    log_info "✅ Zip file created successfully (size: $zip_size bytes)"
 
     # Move zip to Build/Zips for consistency
     mkdir -p "$ROOT_DIR/Build/Zips"
@@ -1252,27 +1314,68 @@ ensure_zip_file_exists_for_pod() {
         log_success "✅ GitHub Release created"
     fi
 
-    # Upload zip (use --clobber to overwrite if exists)
-    if gh release upload "$version" "$ROOT_DIR/Build/Zips/$zip_name" \
-        --repo "ParticleMedia/msp-ios-sdk-public" \
-        --clobber; then
-        log_success "✅ Zip file uploaded to GitHub Release"
-    else
-        log_error "❌ Failed to upload zip file"
-        return 1
+    # Upload zip with retry mechanism (use --clobber to overwrite if exists)
+    local upload_attempt=1
+    local max_upload_attempts=3
+    local upload_success=false
+
+    while [[ $upload_attempt -le $max_upload_attempts ]]; do
+        log_info "Uploading zip file to GitHub Release (attempt $upload_attempt/$max_upload_attempts)..."
+        
+        if gh release upload "$version" "$ROOT_DIR/Build/Zips/$zip_name" \
+            --repo "ParticleMedia/msp-ios-sdk-public" \
+            --clobber 2>&1; then
+            log_success "✅ Zip file uploaded to GitHub Release"
+            upload_success=true
+            break
+        else
+            log_warning "⚠️  Upload attempt $upload_attempt failed"
+            if [[ $upload_attempt -lt $max_upload_attempts ]]; then
+                log_info "Retrying in 5 seconds..."
+                sleep 5
+            fi
+            upload_attempt=$((upload_attempt + 1))
+        fi
+    done
+
+    if [[ "$upload_success" != "true" ]]; then
+        log_error "❌ Failed to upload zip file after $max_upload_attempts attempts"
+        log_error "Local zip file preserved at: $ROOT_DIR/Build/Zips/$zip_name"
+        log_error "You can manually upload it with:"
+        log_error "  gh release upload $version $ROOT_DIR/Build/Zips/$zip_name --repo ParticleMedia/msp-ios-sdk-public --clobber"
+        log_warning "Continuing anyway (local zip exists for checksum calculation)"
+        return 0  # Return success to allow checksum calculation with local zip
     fi
 
-    # Verify upload (wait a few seconds for GitHub to process)
-    sleep 3
+    # Verify upload (wait longer for GitHub to process)
+    log_info "Waiting for GitHub to process upload..."
+    sleep 10
 
-    if curl -L -f -I -s "$zip_url" >/dev/null 2>&1; then
-        log_success "✅ Zip file verified on GitHub Release"
-        return 0
-    else
+    local verify_attempt=1
+    local max_verify_attempts=3
+    local verify_success=false
+
+    while [[ $verify_attempt -le $max_verify_attempts ]]; do
+        if curl -L -f -I -s "$zip_url" >/dev/null 2>&1; then
+            log_success "✅ Zip file verified on GitHub Release"
+            verify_success=true
+            break
+        else
+            log_warning "⚠️  Verification attempt $verify_attempt failed (GitHub may still be processing)"
+            if [[ $verify_attempt -lt $max_verify_attempts ]]; then
+                log_info "Retrying in 5 seconds..."
+                sleep 5
+            fi
+            verify_attempt=$((verify_attempt + 1))
+        fi
+    done
+
+    if [[ "$verify_success" != "true" ]]; then
         log_warning "⚠️  Zip file upload may not be immediately available (GitHub processing delay)"
         log_info "Continuing anyway (local zip exists for checksum calculation)"
-        return 0
     fi
+
+    return 0
 }
 
 # ============================================================================

@@ -286,6 +286,31 @@ notify::_send_dm() {
 
     log_debug "SLACK_BOT_TOKEN is set: ${SLACK_BOT_TOKEN:0:20}..."
 
+    # Validate token before attempting to use it
+    log_debug "Validating Slack Bot Token..."
+    local auth_response
+    auth_response=$(curl -s -X POST \
+      -H "Authorization: Bearer $SLACK_BOT_TOKEN" \
+      -H "Content-type: application/json" \
+      https://slack.com/api/auth.test 2>&1)
+
+    local auth_ok
+    auth_ok=$(echo "$auth_response" | python3 -c "import sys, json; data=json.load(sys.stdin); print('True' if data.get('ok') else 'False')" 2>/dev/null || echo "false")
+
+    if [[ "$auth_ok" != "True" ]]; then
+        log_error "Slack Bot Token validation failed"
+        local error_msg
+        error_msg=$(echo "$auth_response" | python3 -c "import sys, json; data=json.load(sys.stdin); print(data.get('error', 'unknown error'))" 2>/dev/null || echo "unknown error")
+        log_error "Slack API error: $error_msg"
+        log_debug "Full API response: $auth_response"
+        log_warn "Please check SLACK_BOT_TOKEN in Scripts/config/slack.conf"
+        log_warn "Token may be expired or invalid. Regenerate token at: https://api.slack.com/apps"
+        log_warn "Required scopes: chat:write, im:write, users:read"
+        return 1
+    fi
+
+    log_debug "Slack Bot Token validated successfully"
+
     # Open DM channel with error handling
     log_debug "Opening DM channel with Slack user: $user_id"
     local api_response

@@ -46,7 +46,7 @@ is_core_module() {
 
 # MSP internal dependencies that require version constraints
 # Used for dependency version alignment (aligned with legacy update_adapter_podspec_dependencies)
-MSP_VERSIONED_DEPS=("MSPiOSCore" "MSPSharedLibraries" "MSPPrebidAdapter" "PrebidAdapter")
+MSP_VERSIONED_DEPS=("MSPiOSCore" "MSPSharedLibraries" "MSPPrebidAdapter" "PrebidAdapter" "MSPGoogleAdsTypes")
 MSP_VERSIONED_DEPS_PATTERN="$(IFS='|'; echo "${MSP_VERSIONED_DEPS[*]}")"
 
 # ============================================================================
@@ -81,7 +81,7 @@ is_binary_distribution() {
 
 # MSP internal dependencies that require version constraints
 # Used for dependency version alignment (aligned with legacy update_adapter_podspec_dependencies)
-MSP_VERSIONED_DEPS=("MSPiOSCore" "MSPSharedLibraries" "MSPPrebidAdapter" "PrebidAdapter")
+MSP_VERSIONED_DEPS=("MSPiOSCore" "MSPSharedLibraries" "MSPPrebidAdapter" "PrebidAdapter" "MSPGoogleAdsTypes")
 MSP_VERSIONED_DEPS_PATTERN="$(IFS='|'; echo "${MSP_VERSIONED_DEPS[*]}")"
 
 # ============================================================================
@@ -102,39 +102,60 @@ calculate_zip_sha256() {
     local version="$3"
     local zip_name="${pod_name}-${version}.zip"
 
-    # Try to download from GitHub Release (if published)
+    # Priority 1: Check local Build/Zips directory (most reliable, if zip was just created)
+    local local_zip="$ROOT_DIR/Build/Zips/$zip_name"
+    if [[ -f "$local_zip" ]]; then
+        local checksum
+        checksum=$(shasum -a 256 "$local_zip" 2>/dev/null | awk '{print $1}')
+        if [[ -n "$checksum" && ${#checksum} -eq 64 ]]; then
+            log_info "Using local zip file for checksum calculation: $local_zip"
+            echo "$checksum"
+            return 0
+        fi
+    fi
+
+    # Priority 2: Download from GitHub Release URL (with retry mechanism)
     local temp_dir="/tmp/msp-checksum-$$"
     mkdir -p "$temp_dir"
 
     local checksum=""
+    local download_attempt=1
+    local max_download_attempts=3
 
-    # Attempt 1: Download from GitHub Release URL
-    if curl -L -f -s -o "$temp_dir/$zip_name" "$zip_url" 2>/dev/null; then
-        checksum=$(shasum -a 256 "$temp_dir/$zip_name" 2>/dev/null | awk '{print $1}')
-        rm -rf "$temp_dir"
-
-        if [[ -n "$checksum" ]]; then
-            echo "$checksum"
-            return 0
+    while [[ $download_attempt -le $max_download_attempts ]]; do
+        log_info "Downloading zip file for checksum calculation (attempt $download_attempt/$max_download_attempts)..."
+        
+        if curl -L -f -s -o "$temp_dir/$zip_name" "$zip_url" 2>/dev/null; then
+            # Verify downloaded file is not empty
+            local file_size
+            file_size=$(stat -f%z "$temp_dir/$zip_name" 2>/dev/null || stat -c%s "$temp_dir/$zip_name" 2>/dev/null || echo "0")
+            
+            if [[ $file_size -gt 0 ]]; then
+                checksum=$(shasum -a 256 "$temp_dir/$zip_name" 2>/dev/null | awk '{print $1}')
+                
+                if [[ -n "$checksum" && ${#checksum} -eq 64 ]]; then
+                    log_info "Checksum calculated from GitHub Release: $checksum"
+                    rm -rf "$temp_dir"
+                    echo "$checksum"
+                    return 0
+                fi
+            fi
         fi
-    fi
 
-    # Attempt 2: Check local Build/Zips directory (if zip was just created)
-    local local_zip="$ROOT_DIR/Build/Zips/$zip_name"
-    if [[ -f "$local_zip" ]]; then
-        checksum=$(shasum -a 256 "$local_zip" 2>/dev/null | awk '{print $1}')
-        rm -rf "$temp_dir"
-
-        if [[ -n "$checksum" ]]; then
-            echo "$checksum"
-            return 0
+        if [[ $download_attempt -lt $max_download_attempts ]]; then
+            log_warning "Download attempt $download_attempt failed, retrying in 5 seconds..."
+            sleep 5
         fi
-    fi
+        
+        download_attempt=$((download_attempt + 1))
+    done
 
     # Cleanup
     rm -rf "$temp_dir"
 
     # Failed to calculate checksum
+    log_error "Failed to calculate checksum for $zip_name"
+    log_error "Tried: local zip ($local_zip), GitHub Release ($zip_url)"
     return 1
 }
 
@@ -343,6 +364,7 @@ if grep -qE "spec\\.dependency.*'($MSP_VERSIONED_DEPS_PATTERN)'" "$OUTPUT_PODSPE
     #   spec.dependency 'MSPSharedLibraries'  → spec.dependency 'MSPSharedLibraries', '$VERSION'
     #   spec.dependency 'MSPPrebidAdapter'    → spec.dependency 'MSPPrebidAdapter', '$VERSION'
     #   spec.dependency 'PrebidAdapter'       → spec.dependency 'PrebidAdapter', '$VERSION' (legacy name)
+    #   spec.dependency 'MSPGoogleAdsTypes'   → spec.dependency 'MSPGoogleAdsTypes', '$VERSION'
     
     # Step 1: Remove any existing version constraints first (cleanup, aligned with legacy)
     sed -i "" -E "s/(spec\\.dependency[[:space:]]+'($MSP_VERSIONED_DEPS_PATTERN)')[^#\n]*/\\1/g" "$OUTPUT_PODSPEC"
