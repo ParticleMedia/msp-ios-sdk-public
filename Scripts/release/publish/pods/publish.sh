@@ -1003,41 +1003,6 @@ create_github_release_for_pod() {
         fi
         
         log_info "Created zip file: $zip_name"
-        
-        # Stage A: Calculate SHA256 checksum for podspec
-        local zip_checksum
-        if command -v shasum >/dev/null 2>&1; then
-            zip_checksum=$(shasum -a 256 "$ROOT_DIR/$zip_name" 2>/dev/null | cut -d' ' -f1)
-            log_info "Calculated SHA256 checksum: $zip_checksum"
-        else
-            log_error "shasum command not available, cannot calculate checksum"
-            rm -f "$ROOT_DIR/$zip_name"
-        return 1
-    fi
-        
-        # Stage A: Update podspec with checksum (podspec already generated, add checksum to HTTP source)
-        local podspec="$ROOT_DIR/Build/ReleasePodspecs/${pod}.podspec"
-        if [[ -f "$podspec" ]]; then
-            log_step "Updating podspec with SHA256 checksum"
-            # Use Ruby to properly insert checksum into source hash (more robust than sed)
-            local zip_url="https://github.com/ParticleMedia/msp-ios-sdk-public/releases/download/${version}/${pod}-${version}.zip"
-            ruby <<RUBY_SCRIPT
-podspec_path = '$podspec'
-zip_url = '$zip_url'
-zip_checksum = '$zip_checksum'
-
-podspec_content = File.read(podspec_path)
-# Replace the source block with checksum included
-# Match the exact structure: spec.source = { ... } where ... can be any content including newlines
-new_source = "  spec.source = {\n    :http => \"#{zip_url}\",\n    :type => \"zip\",\n    :sha256 => \"#{zip_checksum}\"\n  }"
-# Use multiline mode and match from spec.source = { to closing brace with proper indentation
-podspec_content.gsub!(/  spec\.source = \{.*?\n  \}/m, new_source)
-File.write(podspec_path, podspec_content)
-RUBY_SCRIPT
-            log_success "Updated podspec with checksum: $zip_checksum"
-        else
-            log_warning "Podspec not found for checksum update: $podspec"
-        fi
     
     # Create or update GitHub release
     local gh_release_created=false
@@ -1062,6 +1027,84 @@ RUBY_SCRIPT
     
     if [[ "$gh_release_created" == "true" ]]; then
             log_success "GitHub release created and zip uploaded for $pod"
+        
+        # FIX: Calculate checksum from GitHub Release zip file (after upload) to ensure consistency
+        # This ensures podspec checksum matches the actual zip file on GitHub Release
+        log_step "Calculating SHA256 checksum from GitHub Release zip file"
+        local zip_url="https://github.com/ParticleMedia/msp-ios-sdk-public/releases/download/${version}/${pod}-${version}.zip"
+        local zip_checksum=""
+        local temp_zip_dir="/tmp/msp-checksum-verify-$$"
+        mkdir -p "$temp_zip_dir"
+        
+        # Wait for GitHub to process the upload (may take a few seconds)
+        log_info "Waiting for GitHub to process upload (5 seconds)..."
+        sleep 5
+        
+        # Download zip from GitHub Release and calculate checksum
+        local download_attempt=1
+        local max_download_attempts=3
+        while [[ $download_attempt -le $max_download_attempts ]]; do
+            log_info "Downloading zip from GitHub Release to verify checksum (attempt $download_attempt/$max_download_attempts)..."
+            if curl -L -f -s -o "$temp_zip_dir/$zip_name" "$zip_url" 2>/dev/null; then
+                local file_size=$(stat -f%z "$temp_zip_dir/$zip_name" 2>/dev/null || stat -c%s "$temp_zip_dir/$zip_name" 2>/dev/null || echo "0")
+                if [[ $file_size -gt 0 ]]; then
+                    if command -v shasum >/dev/null 2>&1; then
+                        zip_checksum=$(shasum -a 256 "$temp_zip_dir/$zip_name" 2>/dev/null | cut -d' ' -f1)
+                        if [[ -n "$zip_checksum" && ${#zip_checksum} -eq 64 ]]; then
+                            log_success "Calculated SHA256 checksum from GitHub Release: $zip_checksum"
+                            rm -rf "$temp_zip_dir"
+                            break
+                        else
+                            log_warning "Invalid checksum format, retrying..."
+                        fi
+                    else
+                        log_error "shasum command not available, cannot calculate checksum"
+                        rm -rf "$temp_zip_dir"
+                        return 1
+                    fi
+                else
+                    log_warning "Downloaded zip file is empty, retrying..."
+                fi
+            else
+                log_warning "Failed to download zip from GitHub Release, retrying..."
+            fi
+            
+            if [[ $download_attempt -lt $max_download_attempts ]]; then
+                sleep 5
+            fi
+            download_attempt=$((download_attempt + 1))
+        done
+        
+        rm -rf "$temp_zip_dir"
+        
+        if [[ -z "$zip_checksum" ]] || [[ ${#zip_checksum} -ne 64 ]]; then
+            log_error "Failed to calculate checksum from GitHub Release zip file"
+            log_error "Podspec checksum may be incorrect. Please verify manually."
+            # Continue anyway - podspec may already have correct checksum from generate_podspec.sh
+        else
+            # Update podspec with checksum from GitHub Release
+            local podspec="$ROOT_DIR/Build/ReleasePodspecs/${pod}.podspec"
+            if [[ -f "$podspec" ]]; then
+                log_step "Updating podspec with SHA256 checksum from GitHub Release"
+                # Use Ruby to properly insert checksum into source hash (more robust than sed)
+                ruby <<RUBY_SCRIPT
+podspec_path = '$podspec'
+zip_url = '$zip_url'
+zip_checksum = '$zip_checksum'
+
+podspec_content = File.read(podspec_path)
+# Replace the source block with checksum included
+# Match the exact structure: spec.source = { ... } where ... can be any content including newlines
+new_source = "  spec.source = {\n    :http => \"#{zip_url}\",\n    :type => \"zip\",\n    :sha256 => \"#{zip_checksum}\"\n  }"
+# Use multiline mode and match from spec.source = { to closing brace with proper indentation
+podspec_content.gsub!(/  spec\.source = \{.*?\n  \}/m, new_source)
+File.write(podspec_path, podspec_content)
+RUBY_SCRIPT
+                log_success "Updated podspec with checksum from GitHub Release: $zip_checksum"
+            else
+                log_warning "Podspec not found for checksum update: $podspec"
+            fi
+        fi
         
         # Track GitHub release creation in state
         if command -v msp_state_mark_git_flag &>/dev/null; then
