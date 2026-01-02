@@ -52,10 +52,9 @@ class NovaInterstitialAdSubviewHandlerCreator {
                 thirdPartyTrackingURL: thirdPartyTrackingURL
             )
             
-        case .html(showTopRightCancelButton: let showTopRightCloseButton):
+        case .html:
             return NovaInterstitialAdHtmlSubviewHandler(
                 interstitialAd: interstitialAd,
-                showTopRightCloseButton: showTopRightCloseButton,
                 delegate: delegate,
                 viewController: viewController,
                 pageIndex: pageIndex
