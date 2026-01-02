@@ -31,8 +31,7 @@ class NovaInterstitialAdHtmlSubviewHandler: NovaInterstitialAdSubviewHandler, No
     var delayTimer: Timer?
     var delaySecondRemaining: Int?
     var pageIndex: Int?
-    
-    private let showTopRightCloseButton: Bool
+    var useCustomClose: Bool
     
     var clickableViews = [UIView]()
     
@@ -64,7 +63,6 @@ class NovaInterstitialAdHtmlSubviewHandler: NovaInterstitialAdSubviewHandler, No
     
     init(
        interstitialAd: NovaInterstitialAdItem,
-       showTopRightCloseButton: Bool,
        delegate: NovaInterstitialAdSubviewBehaviorDelegate,
        viewController: UIViewController?,
        pageIndex: Int?
@@ -72,7 +70,6 @@ class NovaInterstitialAdHtmlSubviewHandler: NovaInterstitialAdSubviewHandler, No
         self.interstitialAd = interstitialAd
         self.delegate = delegate
         self.viewController = viewController
-        self.showTopRightCloseButton = showTopRightCloseButton
         self.pageIndex = pageIndex
         if case .html = interstitialAd.creativeType,
            let model = interstitialAd.htmlModel,
@@ -80,9 +77,11 @@ class NovaInterstitialAdHtmlSubviewHandler: NovaInterstitialAdSubviewHandler, No
            pageIndex >= 0 && pageIndex < model.pages.count {
             self.countdownSecondRemaining = model.pages[pageIndex].closeCountDownSeconds ?? 0
             self.delaySecondRemaining = model.pages[pageIndex].closeDelaySeconds ?? 0
+            self.useCustomClose = model.pages[pageIndex].useCustomClose
         } else {
             self.countdownSecondRemaining = interstitialAd.closeCountDownTimeSeconds ?? 0
             self.delaySecondRemaining = 0
+            self.useCustomClose = false
         }
     }
     
@@ -96,7 +95,8 @@ class NovaInterstitialAdHtmlSubviewHandler: NovaInterstitialAdSubviewHandler, No
             make.edges.equalToSuperview()
         }
         
-        if showTopRightCloseButton {
+        if !useCustomClose {
+            // use native close button
             containerView.addSubview(topRightCloseButton)
             topRightCloseButton.snp.makeConstraints { make in
                 make.top.equalToSuperview().offset(64)
@@ -104,9 +104,9 @@ class NovaInterstitialAdHtmlSubviewHandler: NovaInterstitialAdSubviewHandler, No
                 make.height.equalTo(32)
                 make.width.greaterThanOrEqualTo(32)
             }
+            
+            setupDelayTimerIfNeeded()
         }
-        print("set up delay timer")
-        setupDelayTimerIfNeeded()
     }
     
     func config() {
@@ -137,6 +137,7 @@ class NovaInterstitialAdHtmlSubviewHandler: NovaInterstitialAdSubviewHandler, No
     
     func enableTopRightCloseButton(button: UIButton, clickableArea: UIView) {
         topRightCloseButton.isUserInteractionEnabled = true
+        topRightCloseButton.isHidden = false
         if case .html = self.interstitialAd.creativeType,
            let model = self.interstitialAd.htmlModel,
            let pageIndex = pageIndex,

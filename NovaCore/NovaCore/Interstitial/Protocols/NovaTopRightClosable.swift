@@ -50,6 +50,7 @@ extension NovaTopRightClosable {
             topRightCloseButton.isHidden = true
             delayStartCountDown(delaySeconds: delaySecondRemaining)
         } else {
+            topRightCloseButton.isHidden = false
             setupCountdownTimerIfNeeded()
         }
     }
@@ -92,6 +93,7 @@ extension NovaTopRightClosable {
     }
     
     func enableTopRightCloseButton(button: UIButton, clickableArea: UIView) {
+        topRightCloseButton.isHidden = false
         clickableArea.isUserInteractionEnabled = true
         self.countdownTimer?.invalidate()
         button.setTitle(nil, for: .normal)

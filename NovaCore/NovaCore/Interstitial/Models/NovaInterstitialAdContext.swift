@@ -35,7 +35,7 @@ enum NovaInterstitialAdLayoutType {
     case playable
     case twoPartPlayable
     case skOverlay(appStoreId: Int, thirdPartyTrackingURL: URL)
-    case html(showTopRightCancelButton: Bool)
+    case html
 }
 
 extension NovaInterstitialAdItem {
@@ -72,7 +72,7 @@ extension NovaInterstitialAdItem {
                 return .horizontal(showTopRightCancelButton: false)
             }
         case .html:
-            return .html(showTopRightCancelButton: true)
+            return .html
         }
     }
 }
