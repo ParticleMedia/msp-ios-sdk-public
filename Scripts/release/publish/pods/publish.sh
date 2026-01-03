@@ -1003,41 +1003,6 @@ create_github_release_for_pod() {
         fi
         
         log_info "Created zip file: $zip_name"
-        
-        # Stage A: Calculate SHA256 checksum for podspec
-        local zip_checksum
-        if command -v shasum >/dev/null 2>&1; then
-            zip_checksum=$(shasum -a 256 "$ROOT_DIR/$zip_name" 2>/dev/null | cut -d' ' -f1)
-            log_info "Calculated SHA256 checksum: $zip_checksum"
-        else
-            log_error "shasum command not available, cannot calculate checksum"
-            rm -f "$ROOT_DIR/$zip_name"
-        return 1
-    fi
-        
-        # Stage A: Update podspec with checksum (podspec already generated, add checksum to HTTP source)
-        local podspec="$ROOT_DIR/Build/ReleasePodspecs/${pod}.podspec"
-        if [[ -f "$podspec" ]]; then
-            log_step "Updating podspec with SHA256 checksum"
-            # Use Ruby to properly insert checksum into source hash (more robust than sed)
-            local zip_url="https://github.com/ParticleMedia/msp-ios-sdk-public/releases/download/${version}/${pod}-${version}.zip"
-            ruby <<RUBY_SCRIPT
-podspec_path = '$podspec'
-zip_url = '$zip_url'
-zip_checksum = '$zip_checksum'
-
-podspec_content = File.read(podspec_path)
-# Replace the source block with checksum included
-# Match the exact structure: spec.source = { ... } where ... can be any content including newlines
-new_source = "  spec.source = {\n    :http => \"#{zip_url}\",\n    :type => \"zip\",\n    :sha256 => \"#{zip_checksum}\"\n  }"
-# Use multiline mode and match from spec.source = { to closing brace with proper indentation
-podspec_content.gsub!(/  spec\.source = \{.*?\n  \}/m, new_source)
-File.write(podspec_path, podspec_content)
-RUBY_SCRIPT
-            log_success "Updated podspec with checksum: $zip_checksum"
-        else
-            log_warning "Podspec not found for checksum update: $podspec"
-        fi
     
     # Create or update GitHub release
     local gh_release_created=false
@@ -1062,6 +1027,84 @@ RUBY_SCRIPT
     
     if [[ "$gh_release_created" == "true" ]]; then
             log_success "GitHub release created and zip uploaded for $pod"
+        
+        # FIX: Calculate checksum from GitHub Release zip file (after upload) to ensure consistency
+        # This ensures podspec checksum matches the actual zip file on GitHub Release
+        log_step "Calculating SHA256 checksum from GitHub Release zip file"
+        local zip_url="https://github.com/ParticleMedia/msp-ios-sdk-public/releases/download/${version}/${pod}-${version}.zip"
+        local zip_checksum=""
+        local temp_zip_dir="/tmp/msp-checksum-verify-$$"
+        mkdir -p "$temp_zip_dir"
+        
+        # Wait for GitHub to process the upload (may take a few seconds)
+        log_info "Waiting for GitHub to process upload (5 seconds)..."
+        sleep 5
+        
+        # Download zip from GitHub Release and calculate checksum
+        local download_attempt=1
+        local max_download_attempts=3
+        while [[ $download_attempt -le $max_download_attempts ]]; do
+            log_info "Downloading zip from GitHub Release to verify checksum (attempt $download_attempt/$max_download_attempts)..."
+            if curl -L -f -s -o "$temp_zip_dir/$zip_name" "$zip_url" 2>/dev/null; then
+                local file_size=$(stat -f%z "$temp_zip_dir/$zip_name" 2>/dev/null || stat -c%s "$temp_zip_dir/$zip_name" 2>/dev/null || echo "0")
+                if [[ $file_size -gt 0 ]]; then
+                    if command -v shasum >/dev/null 2>&1; then
+                        zip_checksum=$(shasum -a 256 "$temp_zip_dir/$zip_name" 2>/dev/null | cut -d' ' -f1)
+                        if [[ -n "$zip_checksum" && ${#zip_checksum} -eq 64 ]]; then
+                            log_success "Calculated SHA256 checksum from GitHub Release: $zip_checksum"
+                            rm -rf "$temp_zip_dir"
+                            break
+                        else
+                            log_warning "Invalid checksum format, retrying..."
+                        fi
+                    else
+                        log_error "shasum command not available, cannot calculate checksum"
+                        rm -rf "$temp_zip_dir"
+                        return 1
+                    fi
+                else
+                    log_warning "Downloaded zip file is empty, retrying..."
+                fi
+            else
+                log_warning "Failed to download zip from GitHub Release, retrying..."
+            fi
+            
+            if [[ $download_attempt -lt $max_download_attempts ]]; then
+                sleep 5
+            fi
+            download_attempt=$((download_attempt + 1))
+        done
+        
+        rm -rf "$temp_zip_dir"
+        
+        if [[ -z "$zip_checksum" ]] || [[ ${#zip_checksum} -ne 64 ]]; then
+            log_error "Failed to calculate checksum from GitHub Release zip file"
+            log_error "Podspec checksum may be incorrect. Please verify manually."
+            # Continue anyway - podspec may already have correct checksum from generate_podspec.sh
+        else
+            # Update podspec with checksum from GitHub Release
+            local podspec="$ROOT_DIR/Build/ReleasePodspecs/${pod}.podspec"
+            if [[ -f "$podspec" ]]; then
+                log_step "Updating podspec with SHA256 checksum from GitHub Release"
+                # Use Ruby to properly insert checksum into source hash (more robust than sed)
+                ruby <<RUBY_SCRIPT
+podspec_path = '$podspec'
+zip_url = '$zip_url'
+zip_checksum = '$zip_checksum'
+
+podspec_content = File.read(podspec_path)
+# Replace the source block with checksum included
+# Match the exact structure: spec.source = { ... } where ... can be any content including newlines
+new_source = "  spec.source = {\n    :http => \"#{zip_url}\",\n    :type => \"zip\",\n    :sha256 => \"#{zip_checksum}\"\n  }"
+# Use multiline mode and match from spec.source = { to closing brace with proper indentation
+podspec_content.gsub!(/  spec\.source = \{.*?\n  \}/m, new_source)
+File.write(podspec_path, podspec_content)
+RUBY_SCRIPT
+                log_success "Updated podspec with checksum from GitHub Release: $zip_checksum"
+            else
+                log_warning "Podspec not found for checksum update: $podspec"
+            fi
+        fi
         
         # Track GitHub release creation in state
         if command -v msp_state_mark_git_flag &>/dev/null; then
@@ -1146,86 +1189,29 @@ probe_zip_url() {
 #   0 if zip file exists or was successfully recreated
 #   1 if zip file cannot be created (XCFramework missing)
 # ============================================================================
-ensure_zip_file_exists_for_pod() {
+# ============================================================================
+# Helper: Create Zip from XCFramework(s)
+# ============================================================================
+# Creates a zip file from XCFramework with special handling for complex pods.
+#
+# Args:
+#   $1: pod name
+#   $2: version
+#
+# Returns:
+#   0 if zip created successfully
+#   1 if failed
+# ============================================================================
+create_zip_from_xcframework() {
     local pod="$1"
     local version="$2"
-
-    # Only check binary distribution pods
-    if ! is_binary_distribution "$pod"; then
-        return 0
-    fi
-
-    log_step "Ensuring zip file exists for $pod $version"
-
-    local zip_url="https://github.com/ParticleMedia/msp-ios-sdk-public/releases/download/${version}/${pod}-${version}.zip"
     local zip_name="${pod}-${version}.zip"
 
-    # Check if zip file exists on GitHub Release
-    log_info "Checking zip file: $zip_url"
-
-    if curl -L -f -I -s "$zip_url" >/dev/null 2>&1; then
-        log_success "✅ Zip file exists on GitHub Release"
-        return 0
-    fi
-
-    log_warning "⚠️  Zip file not found on GitHub Release"
-    log_info "Will recreate and reupload zip file (script-level guarantee)"
-
-    # DRY_RUN mode: skip actual zip creation and upload
-    if [[ "${DRY_RUN:-false}" == "true" ]]; then
-        log_info "DRY RUN: Would recreate zip from XCFramework"
-        log_info "DRY RUN: Would upload to GitHub Release"
-        log_info "DRY RUN: Would verify upload"
-        log_success "DRY RUN: Zip file would be verified/recreated"
-        return 0
-    fi
-
-    # Check GitHub CLI authentication before proceeding
-    if ! command -v gh &>/dev/null; then
-        log_error "❌ GitHub CLI (gh) not found"
-        log_error "Please install GitHub CLI: brew install gh"
-        log_error "Then authenticate: gh auth login"
-        return 1
-    fi
-
-    log_info "Checking GitHub CLI authentication..."
-    if ! gh auth status &>/dev/null; then
-        log_error "❌ GitHub CLI authentication failed"
-        log_error "Please authenticate: gh auth login"
-        log_error "Required scopes: repo, workflow"
-        return 1
-    fi
-
-    log_info "✅ GitHub CLI authenticated"
-
-    # Check if XCFramework exists locally
-    local xcframework_path="$ROOT_DIR/Build/XCFrameworks/${pod}.xcframework"
-
-    if [[ ! -d "$xcframework_path" ]]; then
-        log_error "❌ XCFramework not found: $xcframework_path"
-        log_error "Cannot recreate zip file without XCFramework"
-        log_error "Expected location: $xcframework_path"
-        log_error "Please ensure XCFramework was built successfully"
-        return 1
-    fi
-
-    # Verify XCFramework is not empty
-    if [[ ! -s "$xcframework_path/Info.plist" ]] && [[ ! -f "$xcframework_path/$(ls -A "$xcframework_path" | head -1)/Info.plist" ]]; then
-        log_error "❌ XCFramework appears to be empty or corrupted: $xcframework_path"
-        log_error "Please rebuild the XCFramework"
-        return 1
-    fi
-
-    log_info "✅ XCFramework found and verified: $xcframework_path"
-
-    # Create zip file from XCFramework
     log_info "Creating zip file from XCFramework..."
 
+    # Prepare temp directory
     local temp_zip_dir="/tmp/msp_zip_recovery_$$"
     mkdir -p "$temp_zip_dir"
-
-    # Copy XCFramework to temp directory (same structure as original release)
-    cp -R "$xcframework_path" "$temp_zip_dir/"
 
     # Check if zip command is available
     if ! command -v zip &>/dev/null; then
@@ -1235,16 +1221,98 @@ ensure_zip_file_exists_for_pod() {
         return 1
     fi
 
-    # Create zip with detailed error output
-    log_info "Zipping: $pod.xcframework → $zip_name"
+    # ========================================================================
+    # Special handling for different pod types
+    # ========================================================================
+    case "$pod" in
+        MSPSharedLibraries)
+            # MSPSharedLibraries embeds MSPiOSCore and includes ThirdParty
+            log_info "Special handling for MSPSharedLibraries (embeds MSPiOSCore)"
+
+            # Create directory structure
+            mkdir -p "$temp_zip_dir/Binary"
+            mkdir -p "$temp_zip_dir/ThirdParty/PrebidMobile"
+
+            # Copy MSPSharedLibraries.xcframework
+            local shared_lib_path="$ROOT_DIR/Build/XCFrameworks/MSPSharedLibraries.xcframework"
+            if [[ ! -d "$shared_lib_path" ]]; then
+                log_error "❌ MSPSharedLibraries.xcframework not found: $shared_lib_path"
+                rm -rf "$temp_zip_dir"
+                return 1
+            fi
+            cp -R "$shared_lib_path" "$temp_zip_dir/Binary/"
+
+            # Copy embedded MSPiOSCore.xcframework
+            local ios_core_path="$ROOT_DIR/Build/XCFrameworks/MSPiOSCore.xcframework"
+            if [[ ! -d "$ios_core_path" ]]; then
+                log_error "❌ MSPiOSCore.xcframework not found: $ios_core_path"
+                rm -rf "$temp_zip_dir"
+                return 1
+            fi
+            cp -R "$ios_core_path" "$temp_zip_dir/Binary/"
+
+            # Copy ThirdParty PrebidMobile
+            local prebid_path="$ROOT_DIR/ThirdParty/PrebidMobile/PrebidMobile.xcframework"
+            if [[ ! -d "$prebid_path" ]]; then
+                log_error "❌ PrebidMobile.xcframework not found: $prebid_path"
+                rm -rf "$temp_zip_dir"
+                return 1
+            fi
+            cp -R "$prebid_path" "$temp_zip_dir/ThirdParty/PrebidMobile/"
+
+            # Copy Sources (optional, for dev mode)
+            if [[ -d "$ROOT_DIR/Sources" ]]; then
+                cp -R "$ROOT_DIR/Sources" "$temp_zip_dir/"
+            fi
+
+            log_success "✅ Prepared MSPSharedLibraries structure"
+            ;;
+
+        MSPiOSCore)
+            # MSPiOSCore: Binary/MSPiOSCore.xcframework
+            mkdir -p "$temp_zip_dir/Binary"
+
+            local xcframework_path="$ROOT_DIR/Build/XCFrameworks/${pod}.xcframework"
+
+            if [[ ! -d "$xcframework_path" ]]; then
+                log_error "❌ XCFramework not found: $xcframework_path"
+                rm -rf "$temp_zip_dir"
+                return 1
+            fi
+
+            cp -R "$xcframework_path" "$temp_zip_dir/Binary/"
+            log_success "✅ Prepared MSPiOSCore structure"
+            ;;
+
+        *)
+            # Default: Binary/<Pod>.xcframework
+            mkdir -p "$temp_zip_dir/Binary"
+
+            local xcframework_path="$ROOT_DIR/Build/XCFrameworks/${pod}.xcframework"
+
+            if [[ ! -d "$xcframework_path" ]]; then
+                log_error "❌ XCFramework not found: $xcframework_path"
+                rm -rf "$temp_zip_dir"
+                return 1
+            fi
+
+            cp -R "$xcframework_path" "$temp_zip_dir/Binary/"
+            log_success "✅ Prepared $pod structure"
+            ;;
+    esac
+
+    # ========================================================================
+    # Create zip file
+    # ========================================================================
+    log_info "Creating zip: $zip_name"
 
     local zip_error_output
     zip_error_output=$(mktemp)
-    
+
     (
         cd "$temp_zip_dir" || exit 1
-        if zip -r "$zip_name" "${pod}.xcframework" >/dev/null 2>"$zip_error_output"; then
-            log_success "✅ Zip file created: $zip_name"
+        if zip -r "$zip_name" . >/dev/null 2>"$zip_error_output"; then
+            log_success "✅ Zip file created"
         else
             log_error "❌ Failed to create zip file"
             log_error "Zip error output:"
@@ -1271,7 +1339,7 @@ ensure_zip_file_exists_for_pod() {
 
     local zip_size
     zip_size=$(stat -f%z "$temp_zip_dir/$zip_name" 2>/dev/null || stat -c%s "$temp_zip_dir/$zip_name" 2>/dev/null || echo "0")
-    
+
     if [[ $zip_size -eq 0 ]]; then
         log_error "❌ Zip file is empty: $temp_zip_dir/$zip_name"
         rm -rf "$temp_zip_dir"
@@ -1280,18 +1348,184 @@ ensure_zip_file_exists_for_pod() {
 
     log_info "✅ Zip file created successfully (size: $zip_size bytes)"
 
-    # Move zip to Build/Zips for consistency
+    # Move zip to Build/Zips
     mkdir -p "$ROOT_DIR/Build/Zips"
     mv "$temp_zip_dir/$zip_name" "$ROOT_DIR/Build/Zips/"
 
-    # Cleanup temp directory
+    # Cleanup
     rm -rf "$temp_zip_dir"
 
-    log_success "✅ Zip file created: Build/Zips/$zip_name"
+    log_success "✅ Zip created: Build/Zips/$zip_name"
 
-    # Calculate checksum for verification
+    return 0
+}
+
+ensure_zip_file_exists_for_pod() {
+    local pod="$1"
+    local version="$2"
+
+    # Only check binary distribution pods
+    if ! is_binary_distribution "$pod"; then
+        return 0
+    fi
+
+    log_step "Ensuring zip file exists for $pod $version"
+
+    local zip_url="https://github.com/ParticleMedia/msp-ios-sdk-public/releases/download/${version}/${pod}-${version}.zip"
+    local zip_name="${pod}-${version}.zip"
+
+    # ========================================================================
+    # Step 1: Check if zip exists and verify checksum (automatic validation)
+    # ========================================================================
+    log_info "Checking zip file: $zip_url"
+
+    local zip_exists=false
+    if curl -L -f -I -s "$zip_url" >/dev/null 2>&1; then
+        zip_exists=true
+        log_info "✅ Zip file exists on GitHub Release"
+    else
+        log_warning "⚠️  Zip file not found on GitHub Release"
+    fi
+
+    # ========================================================================
+    # Step 2: If zip exists, ALWAYS verify checksum (CDN cache detection)
+    # ========================================================================
+    local need_reupload=false
+
+    if [[ "$zip_exists" == "true" ]]; then
+        log_info "Verifying checksum (automatic CDN cache detection)..."
+
+        # Get expected checksum from local zip or create it
+        local local_zip_path="$ROOT_DIR/Build/Zips/$zip_name"
+        local expected_checksum=""
+
+        if [[ -f "$local_zip_path" ]]; then
+            expected_checksum=$(shasum -a 256 "$local_zip_path" 2>/dev/null | awk '{print $1}')
+            log_info "Expected checksum (from local cache): $expected_checksum"
+        else
+            # Create local zip to get expected checksum
+            log_info "Creating local zip to calculate expected checksum..."
+
+            if ! create_zip_from_xcframework "$pod" "$version"; then
+                log_error "Failed to create local zip for checksum calculation"
+                return 1
+            fi
+
+            expected_checksum=$(shasum -a 256 "$local_zip_path" 2>/dev/null | awk '{print $1}')
+            log_info "Expected checksum (newly calculated): $expected_checksum"
+        fi
+
+        # Download and verify checksum from GitHub
+        log_info "Downloading zip from GitHub to verify checksum..."
+
+        local temp_verify="/tmp/msp-checksum-verify-$$"
+        mkdir -p "$temp_verify"
+
+        if curl -L -f -s -o "$temp_verify/verify.zip" "$zip_url" 2>/dev/null; then
+            local actual_checksum
+            actual_checksum=$(shasum -a 256 "$temp_verify/verify.zip" 2>/dev/null | awk '{print $1}')
+
+            rm -rf "$temp_verify"
+
+            log_info "Expected checksum: $expected_checksum"
+            log_info "GitHub checksum:   $actual_checksum"
+
+            if [[ "$actual_checksum" == "$expected_checksum" ]]; then
+                log_success "✅ Checksum verified - zip is correct"
+                return 0  # ✅ Checksum 匹配，直接返回
+            else
+                log_warning "⚠️  CHECKSUM MISMATCH DETECTED (CDN cache issue)"
+                log_warning "   Expected: $expected_checksum"
+                log_warning "   Got:      $actual_checksum"
+                log_warning "   → Will automatically delete old zip and reupload"
+                need_reupload=true
+            fi
+        else
+            log_warning "Failed to download zip for verification"
+            rm -rf "$temp_verify"
+            need_reupload=true
+        fi
+    else
+        # Zip doesn't exist, need to upload
+        log_info "Zip file not found, will create and upload"
+        need_reupload=true
+    fi
+
+    # ========================================================================
+    # Step 3: If reupload needed, automatically delete and recreate
+    # ========================================================================
+    if [[ "$need_reupload" != "true" ]]; then
+        # Checksum verified, no action needed
+        return 0
+    fi
+
+    # DRY_RUN mode check
+    if [[ "${DRY_RUN:-false}" == "true" ]]; then
+        log_info "DRY RUN: Would recreate and reupload zip file"
+        log_success "DRY RUN: Zip file would be verified/recreated"
+        return 0
+    fi
+
+    log_info "Recreating and reuploading zip file (script-level automatic fix)..."
+
+    # Delete existing zip from GitHub Release (clear CDN cache)
+    if [[ "$zip_exists" == "true" ]]; then
+        log_info "Deleting old zip from GitHub Release to clear CDN cache..."
+
+        # Check GitHub CLI authentication
+        if ! command -v gh &>/dev/null; then
+            log_error "❌ GitHub CLI (gh) not found"
+            log_error "Please install GitHub CLI: brew install gh"
+            log_error "Then authenticate: gh auth login"
+            return 1
+        fi
+
+        if ! gh auth status &>/dev/null; then
+            log_error "❌ GitHub CLI authentication failed"
+            log_error "Please authenticate: gh auth login"
+            return 1
+        fi
+
+        if gh release delete-asset "$version" "$zip_name" \
+            --repo "ParticleMedia/msp-ios-sdk-public" \
+            --yes 2>/dev/null; then
+            log_success "✅ Deleted old zip file"
+        else
+            log_warning "Failed to delete old zip (continuing anyway)"
+        fi
+
+        # Wait for CDN to propagate deletion
+        log_info "Waiting 10 seconds for CDN to clear cache..."
+        sleep 10
+    fi
+
+    # Check GitHub CLI authentication before proceeding
+    if ! command -v gh &>/dev/null; then
+        log_error "❌ GitHub CLI (gh) not found"
+        log_error "Please install GitHub CLI: brew install gh"
+        log_error "Then authenticate: gh auth login"
+        return 1
+    fi
+
+    log_info "Checking GitHub CLI authentication..."
+    if ! gh auth status &>/dev/null; then
+        log_error "❌ GitHub CLI authentication failed"
+        log_error "Please authenticate: gh auth login"
+        log_error "Required scopes: repo, workflow"
+        return 1
+    fi
+
+    log_info "✅ GitHub CLI authenticated"
+
+    # Create zip file using helper function
+    if ! create_zip_from_xcframework "$pod" "$version"; then
+        log_error "Failed to create zip file from XCFramework"
+        return 1
+    fi
+
+    local local_zip_path="$ROOT_DIR/Build/Zips/$zip_name"
     local checksum
-    checksum=$(shasum -a 256 "$ROOT_DIR/Build/Zips/$zip_name" 2>/dev/null | awk '{print $1}')
+    checksum=$(shasum -a 256 "$local_zip_path" 2>/dev/null | awk '{print $1}')
     log_info "SHA256: $checksum"
 
     # Upload to GitHub Release
@@ -1347,32 +1581,99 @@ ensure_zip_file_exists_for_pod() {
         return 0  # Return success to allow checksum calculation with local zip
     fi
 
-    # Verify upload (wait longer for GitHub to process)
-    log_info "Waiting for GitHub to process upload..."
-    sleep 10
+    # ========================================================================
+    # Verify upload with CDN cache invalidation
+    # ========================================================================
+    # Problem: GitHub CDN may cache old versions of zip files
+    # Solution: Wait longer and verify checksum stability
+    log_info "Verifying upload and waiting for CDN propagation..."
 
-    local verify_attempt=1
-    local max_verify_attempts=3
-    local verify_success=false
+    # Increased wait time for CDN propagation (from 10s to 15s)
+    local cdn_wait_time=15
+    log_info "Waiting $cdn_wait_time seconds for CDN to update..."
+    sleep $cdn_wait_time
 
-    while [[ $verify_attempt -le $max_verify_attempts ]]; do
-        if curl -L -f -I -s "$zip_url" >/dev/null 2>&1; then
-            log_success "✅ Zip file verified on GitHub Release"
-            verify_success=true
-            break
+    # Verify zip file is accessible
+    if ! curl -L -f -I -s "$zip_url" >/dev/null 2>&1; then
+        log_warning "⚠️  Zip file not immediately accessible (GitHub processing delay)"
+        log_info "Waiting additional 10 seconds..."
+        sleep 10
+
+        if ! curl -L -f -I -s "$zip_url" >/dev/null 2>&1; then
+            log_error "❌ Zip file still not accessible after 25 seconds"
+            log_error "This may indicate upload failure or GitHub API delay"
+            return 1
+        fi
+    fi
+
+    # ========================================================================
+    # Checksum Stability Verification (CDN Cache Invalidation)
+    # ========================================================================
+    # Verify that the zip file checksum is stable across multiple downloads
+    # This ensures CDN has fully propagated the new version
+    log_info "Verifying checksum stability (CDN cache check)..."
+
+    local expected_checksum
+    expected_checksum=$(shasum -a 256 "$ROOT_DIR/Build/Zips/$zip_name" 2>/dev/null | awk '{print $1}')
+
+    log_info "Expected checksum: $expected_checksum"
+
+    local stable=false
+    local max_attempts=3
+    local attempt=1
+
+    while [[ $attempt -le $max_attempts ]]; do
+        log_info "Checksum verification attempt $attempt/$max_attempts..."
+
+        # Download and calculate checksum
+        local temp_verify="/tmp/msp-verify-$$-$attempt"
+        mkdir -p "$temp_verify"
+
+        if curl -L -f -s -o "$temp_verify/verify.zip" "$zip_url" 2>/dev/null; then
+            local actual_checksum
+            actual_checksum=$(shasum -a 256 "$temp_verify/verify.zip" 2>/dev/null | awk '{print $1}')
+
+            rm -rf "$temp_verify"
+
+            if [[ "$actual_checksum" == "$expected_checksum" ]]; then
+                log_success "✅ Checksum verified: $actual_checksum"
+                stable=true
+                break
+            else
+                log_warning "⚠️  Checksum mismatch (CDN may still be serving old version)"
+                log_warning "   Expected: $expected_checksum"
+                log_warning "   Got:      $actual_checksum"
+
+                if [[ $attempt -lt $max_attempts ]]; then
+                    log_info "Waiting 10 seconds for CDN to catch up..."
+                    sleep 10
+                fi
+            fi
         else
-            log_warning "⚠️  Verification attempt $verify_attempt failed (GitHub may still be processing)"
-            if [[ $verify_attempt -lt $max_verify_attempts ]]; then
-                log_info "Retrying in 5 seconds..."
+            log_error "Failed to download zip for verification"
+            rm -rf "$temp_verify"
+
+            if [[ $attempt -lt $max_attempts ]]; then
                 sleep 5
             fi
-            verify_attempt=$((verify_attempt + 1))
         fi
+
+        ((attempt++))
     done
 
-    if [[ "$verify_success" != "true" ]]; then
-        log_warning "⚠️  Zip file upload may not be immediately available (GitHub processing delay)"
-        log_info "Continuing anyway (local zip exists for checksum calculation)"
+    if [[ "$stable" != "true" ]]; then
+        log_error "❌ Checksum verification failed after $max_attempts attempts"
+        log_error "CDN may be caching old version or upload is corrupted"
+        log_error "This will likely cause CocoaPods validation to fail"
+
+        if [[ "${MSP_RELEASE_TIER:-}" == "release" ]]; then
+            log_error "[FAIL-FAST] Cannot proceed with unstable checksum in release mode"
+            return 1
+        else
+            log_warning "Continuing in non-release mode (may fail during pod trunk push)"
+        fi
+    else
+        log_success "✅ Zip file upload verified with stable checksum"
     fi
 
     return 0
