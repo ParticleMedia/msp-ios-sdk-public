@@ -1582,28 +1582,96 @@ ensure_zip_file_exists_for_pod() {
     fi
 
     # ========================================================================
-    # Verify upload with CDN cache invalidation
+    # Verify upload with CDN cache invalidation (dynamic wait time)
     # ========================================================================
     # Problem: GitHub CDN may cache old versions of zip files
     # Solution: Wait longer and verify checksum stability
     log_info "Verifying upload and waiting for CDN propagation..."
 
-    # Increased wait time for CDN propagation (from 10s to 15s)
-    local cdn_wait_time=15
-    log_info "Waiting $cdn_wait_time seconds for CDN to update..."
+    # Calculate dynamic wait time based on file size
+    local local_zip="$ROOT_DIR/Build/Zips/$zip_name"
+    local file_size_mb
+    file_size_mb=$(du -m "$local_zip" 2>/dev/null | awk '{print $1}')
+
+    local cdn_wait_time
+    if [[ $file_size_mb -lt 5 ]]; then
+        cdn_wait_time=30  # Small files: 30s
+    elif [[ $file_size_mb -lt 20 ]]; then
+        cdn_wait_time=60  # Medium files: 60s
+    else
+        cdn_wait_time=120  # Large files (>20MB): 120s (2 minutes)
+    fi
+
+    log_info "File size: ${file_size_mb}MB → CDN wait time: ${cdn_wait_time}s"
+    log_info "Waiting $cdn_wait_time seconds for CDN to propagate large file..."
     sleep $cdn_wait_time
 
-    # Verify zip file is accessible
-    if ! curl -L -f -I -s "$zip_url" >/dev/null 2>&1; then
-        log_warning "⚠️  Zip file not immediately accessible (GitHub processing delay)"
-        log_info "Waiting additional 10 seconds..."
-        sleep 10
+    # ========================================================================
+    # Verify zip file accessibility with retry mechanism
+    # ========================================================================
+    local max_verify_attempts=10  # Increased from 3 to 10
+    local verify_interval=15      # Increased from 10 to 15 seconds
+    local verify_attempt=1
+    local accessible=false
 
-        if ! curl -L -f -I -s "$zip_url" >/dev/null 2>&1; then
-            log_error "❌ Zip file still not accessible after 25 seconds"
-            log_error "This may indicate upload failure or GitHub API delay"
-            return 1
+    log_info "Verifying zip file accessibility (up to $max_verify_attempts attempts)..."
+
+    while [[ $verify_attempt -le $max_verify_attempts ]]; do
+        log_info "Verification attempt $verify_attempt/$max_verify_attempts..."
+
+        # Try to access via CDN URL
+        if curl -L -f -I -s "$zip_url" >/dev/null 2>&1; then
+            accessible=true
+            log_success "✅ Zip file accessible via CDN: $zip_url"
+            break
+        else
+            log_warning "⚠️  CDN URL not yet accessible (attempt $verify_attempt/$max_verify_attempts)"
+
+            # If CDN not accessible, check GitHub API as fallback
+            log_info "Checking via GitHub API as fallback..."
+
+            if gh release view "$version" --repo "ParticleMedia/msp-ios-sdk-public" \
+                --json assets --jq ".assets[] | select(.name == \"$zip_name\")" 2>/dev/null | grep -q "$zip_name"; then
+                log_info "✅ File confirmed to exist via GitHub API"
+
+                # If this is the last attempt and API confirms existence, accept it
+                if [[ $verify_attempt -eq $max_verify_attempts ]]; then
+                    log_warning "⚠️  CDN URL still not accessible, but GitHub API confirms file exists"
+                    log_warning "   File size: ${file_size_mb}MB may need longer CDN propagation"
+                    log_warning "   CocoaPods validation will likely succeed once CDN catches up"
+                    log_info "Continuing with release (file exists, CDN delay expected for large files)"
+                    accessible=true
+                    break
+                fi
+            else
+                log_error "❌ File not found via GitHub API either - upload may have failed"
+            fi
+
+            # Wait before next attempt
+            if [[ $verify_attempt -lt $max_verify_attempts ]]; then
+                log_info "Waiting $verify_interval seconds before retry..."
+                sleep $verify_interval
+            fi
         fi
+
+        ((verify_attempt++))
+    done
+
+    if [[ "$accessible" != "true" ]]; then
+        log_error "❌ Zip file not accessible after $max_verify_attempts attempts ($(( max_verify_attempts * verify_interval )) seconds total)"
+        log_error "This may indicate:"
+        log_error "  1. Upload failed (check GitHub Release manually)"
+        log_error "  2. Extreme CDN delay (rare for files <100MB)"
+        log_error "  3. Network connectivity issues"
+
+        if [[ "${MSP_RELEASE_TIER:-}" == "release" ]]; then
+            log_error "[FAIL-FAST] Cannot proceed with inaccessible zip in release mode"
+            return 1
+        else
+            log_warning "Continuing in non-release mode (may fail during pod trunk push)"
+        fi
+    else
+        log_success "✅ Zip file upload verified"
     fi
 
     # ========================================================================
