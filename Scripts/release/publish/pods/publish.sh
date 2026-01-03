@@ -1203,6 +1203,37 @@ ensure_zip_file_exists_for_pod() {
     local zip_url="https://github.com/ParticleMedia/msp-ios-sdk-public/releases/download/${version}/${pod}-${version}.zip"
     local zip_name="${pod}-${version}.zip"
 
+    # ========================================================================
+    # Force Re-upload Mode (MSP_FORCE_ZIP_REUPLOAD)
+    # ========================================================================
+    # When MSP_FORCE_ZIP_REUPLOAD=1, always delete and re-upload zip files
+    # This helps clear CDN caches and ensures fresh uploads
+    if [[ "${MSP_FORCE_ZIP_REUPLOAD:-0}" == "1" ]]; then
+        log_warning "MSP_FORCE_ZIP_REUPLOAD=1: Forcing zip file re-upload"
+
+        # Check if zip exists on GitHub Release
+        if curl -L -f -I -s "$zip_url" >/dev/null 2>&1; then
+            log_info "Deleting existing zip file from GitHub Release..."
+
+            # Delete the asset using gh CLI
+            if gh release delete-asset "$version" "$zip_name" \
+                --repo "ParticleMedia/msp-ios-sdk-public" \
+                --yes 2>/dev/null; then
+                log_success "✅ Deleted existing zip file"
+
+                # Wait for CDN to propagate deletion
+                log_info "Waiting 10 seconds for CDN to clear cache..."
+                sleep 10
+            else
+                log_warning "Failed to delete existing zip (may not exist or permission issue)"
+            fi
+        else
+            log_info "No existing zip file to delete"
+        fi
+
+        # Continue with normal re-upload process
+    fi
+
     # Check if zip file exists on GitHub Release
     log_info "Checking zip file: $zip_url"
 
@@ -1390,32 +1421,99 @@ ensure_zip_file_exists_for_pod() {
         return 0  # Return success to allow checksum calculation with local zip
     fi
 
-    # Verify upload (wait longer for GitHub to process)
-    log_info "Waiting for GitHub to process upload..."
-    sleep 10
+    # ========================================================================
+    # Verify upload with CDN cache invalidation
+    # ========================================================================
+    # Problem: GitHub CDN may cache old versions of zip files
+    # Solution: Wait longer and verify checksum stability
+    log_info "Verifying upload and waiting for CDN propagation..."
 
-    local verify_attempt=1
-    local max_verify_attempts=3
-    local verify_success=false
+    # Increased wait time for CDN propagation (from 10s to 15s)
+    local cdn_wait_time=15
+    log_info "Waiting $cdn_wait_time seconds for CDN to update..."
+    sleep $cdn_wait_time
 
-    while [[ $verify_attempt -le $max_verify_attempts ]]; do
-        if curl -L -f -I -s "$zip_url" >/dev/null 2>&1; then
-            log_success "✅ Zip file verified on GitHub Release"
-            verify_success=true
-            break
+    # Verify zip file is accessible
+    if ! curl -L -f -I -s "$zip_url" >/dev/null 2>&1; then
+        log_warning "⚠️  Zip file not immediately accessible (GitHub processing delay)"
+        log_info "Waiting additional 10 seconds..."
+        sleep 10
+
+        if ! curl -L -f -I -s "$zip_url" >/dev/null 2>&1; then
+            log_error "❌ Zip file still not accessible after 25 seconds"
+            log_error "This may indicate upload failure or GitHub API delay"
+            return 1
+        fi
+    fi
+
+    # ========================================================================
+    # Checksum Stability Verification (CDN Cache Invalidation)
+    # ========================================================================
+    # Verify that the zip file checksum is stable across multiple downloads
+    # This ensures CDN has fully propagated the new version
+    log_info "Verifying checksum stability (CDN cache check)..."
+
+    local expected_checksum
+    expected_checksum=$(shasum -a 256 "$ROOT_DIR/Build/Zips/$zip_name" 2>/dev/null | awk '{print $1}')
+
+    log_info "Expected checksum: $expected_checksum"
+
+    local stable=false
+    local max_attempts=3
+    local attempt=1
+
+    while [[ $attempt -le $max_attempts ]]; do
+        log_info "Checksum verification attempt $attempt/$max_attempts..."
+
+        # Download and calculate checksum
+        local temp_verify="/tmp/msp-verify-$$-$attempt"
+        mkdir -p "$temp_verify"
+
+        if curl -L -f -s -o "$temp_verify/verify.zip" "$zip_url" 2>/dev/null; then
+            local actual_checksum
+            actual_checksum=$(shasum -a 256 "$temp_verify/verify.zip" 2>/dev/null | awk '{print $1}')
+
+            rm -rf "$temp_verify"
+
+            if [[ "$actual_checksum" == "$expected_checksum" ]]; then
+                log_success "✅ Checksum verified: $actual_checksum"
+                stable=true
+                break
+            else
+                log_warning "⚠️  Checksum mismatch (CDN may still be serving old version)"
+                log_warning "   Expected: $expected_checksum"
+                log_warning "   Got:      $actual_checksum"
+
+                if [[ $attempt -lt $max_attempts ]]; then
+                    log_info "Waiting 10 seconds for CDN to catch up..."
+                    sleep 10
+                fi
+            fi
         else
-            log_warning "⚠️  Verification attempt $verify_attempt failed (GitHub may still be processing)"
-            if [[ $verify_attempt -lt $max_verify_attempts ]]; then
-                log_info "Retrying in 5 seconds..."
+            log_error "Failed to download zip for verification"
+            rm -rf "$temp_verify"
+
+            if [[ $attempt -lt $max_attempts ]]; then
                 sleep 5
             fi
-            verify_attempt=$((verify_attempt + 1))
         fi
+
+        ((attempt++))
     done
 
-    if [[ "$verify_success" != "true" ]]; then
-        log_warning "⚠️  Zip file upload may not be immediately available (GitHub processing delay)"
-        log_info "Continuing anyway (local zip exists for checksum calculation)"
+    if [[ "$stable" != "true" ]]; then
+        log_error "❌ Checksum verification failed after $max_attempts attempts"
+        log_error "CDN may be caching old version or upload is corrupted"
+        log_error "This will likely cause CocoaPods validation to fail"
+
+        if [[ "${MSP_RELEASE_TIER:-}" == "release" ]]; then
+            log_error "[FAIL-FAST] Cannot proceed with unstable checksum in release mode"
+            return 1
+        else
+            log_warning "Continuing in non-release mode (may fail during pod trunk push)"
+        fi
+    else
+        log_success "✅ Zip file upload verified with stable checksum"
     fi
 
     return 0
