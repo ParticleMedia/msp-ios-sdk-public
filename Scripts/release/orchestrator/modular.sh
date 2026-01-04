@@ -1546,7 +1546,7 @@ main() {
     
     # Step 1: Create release branch
     step "create_release_branch"
-    # In preflight mode, allow branch creation to fail gracefully
+    # In preflight/release mode, allow branch creation to fail gracefully
     # Check if we're already on a release branch or if skip flag is set
     local skip_branch_creation=false
     local skip_reason=""
@@ -1554,13 +1554,13 @@ main() {
         skip_branch_creation=true
         skip_reason="CLI: --skip-create-release-branch"
         log_warn "Skipping branch creation (--skip-create-release-branch flag set)"
-    elif [[ "$RELEASE_TIER" == "preflight" ]]; then
-        # In preflight, check if already on a release branch
+    elif [[ "$RELEASE_TIER" == "preflight" ]] || [[ "$RELEASE_TIER" == "release" ]] || [[ "$RELEASE_TIER" == "production" ]]; then
+        # In preflight/release/production, check if already on a release branch
         local current_branch=$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo "")
         if [[ "$current_branch" =~ ^release/ ]]; then
             skip_branch_creation=true
             skip_reason="tier: already on release branch"
-            log_warn "Already on release branch '$current_branch', skipping branch creation in preflight mode"
+            log_warn "Already on release branch '$current_branch', skipping branch creation in $RELEASE_TIER tier"
         fi
     fi
 
@@ -1577,9 +1577,9 @@ main() {
             fi
             step_done "create_release_branch"
         else
-            if [[ "$RELEASE_TIER" == "preflight" ]]; then
-                log_warn "Branch creation failed in preflight mode, continuing anyway"
-                step_skip "create_release_branch (tier: preflight soft-fail)"
+            if [[ "$RELEASE_TIER" == "preflight" ]] || [[ "$RELEASE_TIER" == "release" ]] || [[ "$RELEASE_TIER" == "production" ]]; then
+                log_warn "Branch creation failed in $RELEASE_TIER tier, continuing anyway"
+                step_skip "create_release_branch (tier: $RELEASE_TIER soft-fail)"
             else
                 step_fail "create_release_branch" $?
                 return 11
