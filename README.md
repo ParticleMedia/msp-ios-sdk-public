@@ -547,6 +547,52 @@ direnv allow
 
 ### Environment Variables
 
+### 🚀 推荐方式: 使用 direnv 自动加载（最优）
+
+**一次配置，永久生效！**
+
+direnv 可以在你 cd 进入目录时自动加载 `.envrc` 文件中的环境变量，完全消除手动 export 的需求。
+
+#### 快速开始
+
+1. **安装 direnv**:
+   ```bash
+   # macOS
+   brew install direnv
+
+   # Linux
+   sudo apt-get install direnv
+   ```
+
+2. **配置 Shell Hook** (添加到 `~/.bashrc` 或 `~/.zshrc`):
+   ```bash
+   eval "$(direnv hook bash)"  # for bash
+   eval "$(direnv hook zsh)"   # for zsh
+   ```
+
+3. **启用 .envrc**:
+   ```bash
+   cd msp-ios-sdk
+   direnv allow
+   ```
+
+4. **完成！** 现在每次 cd 进入目录，环境变量自动加载：
+   ```bash
+   cd msp-ios-sdk
+   # ✅ 环境变量自动加载！
+
+   ./Scripts/msp-release.sh resume
+   # 不需要任何 export！
+   ```
+
+详细配置说明请查看 [DIRENV_SETUP.md](DIRENV_SETUP.md)
+
+---
+
+### 传统方式: 手动设置环境变量
+
+如果你不想使用 direnv，也可以手动设置环境变量：
+
 Only **3 variables** required for local release:
 - `MSP_RELEASE_TIER=release`
 - `MSP_ALLOW_LOCAL_RELEASE=1`
