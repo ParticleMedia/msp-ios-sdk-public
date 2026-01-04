@@ -1243,10 +1243,8 @@ create_github_release_for_pod() {
         fi
     else
         log_info "Creating new release $version"
-            if gh release create "$version" "$ROOT_DIR/$zip_name" --repo "ParticleMedia/msp-ios-sdk-public" --title "Release $version" --notes "Release $version" --latest; then
+            if gh release create "$version" "$ROOT_DIR/$zip_name" --repo "ParticleMedia/msp-ios-sdk-public" --title "Release $version" --notes "Release $version" --draft=false --latest; then
             gh_release_created=true
-                # Ensure release is published (not draft)
-                gh release edit "$version" --repo "ParticleMedia/msp-ios-sdk-public" --draft=false 2>/dev/null || true
         fi
     fi
     
@@ -2551,6 +2549,8 @@ Automatically created to resolve checksum verification issue."
                 --repo "$release_repo" \
                 --title "MSP iOS SDK $version_tag" \
                 --notes "$release_notes" \
+                --draft=false \
+                --latest \
                 --target "release/${version_tag}"; then
                 log_error "PUBLISH" "Failed to create GitHub Release $version_tag"
                 return 1
@@ -2602,6 +2602,8 @@ Automatically recreated to resolve checksum verification issue."
                 --repo "$release_repo" \
                 --title "MSP iOS SDK $version_tag" \
                 --notes "$release_notes" \
+                --draft=false \
+                --latest \
                 --target "release/${version_tag}"; then
                 log_error "PUBLISH" "Failed to recreate GitHub Release $version_tag"
                 release_github_release_lock
