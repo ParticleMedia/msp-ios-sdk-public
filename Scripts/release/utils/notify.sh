@@ -508,8 +508,8 @@ notify::dm() {
     # Send DM using internal helper
     if ! notify::_send_dm "$target_user" "$message"; then
         # Log failure but don't block execution (non-critical)
-        if command -v log::warn &>/dev/null; then
-            log::warn "SLACK_DM" "Failed to send DM notification to user: $target_user"
+        if command -v log_warning &>/dev/null; then
+            log_warning "Failed to send DM notification to user: $target_user"
         fi
         return 1
     fi
@@ -710,9 +710,9 @@ notify::module_error() {
     # The actual user resolution happens inside notify::dm
     if ! notify::dm "$module" "$message"; then
         # Log failure for debugging
-        if command -v log::warn &>/dev/null; then
-            log::warn "NOTIFY" "Failed to send error notification for module: $module"
-            log::warn "NOTIFY" "Error message was: ${short_reason:0:100}..."
+        if command -v log_warning &>/dev/null; then
+            log_warning "Failed to send error notification for module: $module"
+            log_warning "Error message was: ${short_reason:0:100}..."
         fi
     fi
 
