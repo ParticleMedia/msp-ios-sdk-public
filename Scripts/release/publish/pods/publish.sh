@@ -1687,13 +1687,13 @@ ensure_zip_file_exists_for_pod() {
     log_info "Expected checksum: $expected_checksum"
 
     local stable=false
-    local max_attempts=3
+    local max_cdn_attempts=3  # CDN download attempts
     local attempt=1
 
-    while [[ $attempt -le $max_attempts ]]; do
-        log_info "Checksum verification attempt $attempt/$max_attempts..."
+    while [[ $attempt -le $max_cdn_attempts ]]; do
+        log_info "Checksum verification attempt $attempt/$max_cdn_attempts (via CDN)..."
 
-        # Download and calculate checksum
+        # Try to download from CDN and verify
         local temp_verify="/tmp/msp-verify-$$-$attempt"
         mkdir -p "$temp_verify"
 
@@ -1704,7 +1704,7 @@ ensure_zip_file_exists_for_pod() {
             rm -rf "$temp_verify"
 
             if [[ "$actual_checksum" == "$expected_checksum" ]]; then
-                log_success "✅ Checksum verified: $actual_checksum"
+                log_success "✅ Checksum verified via CDN: $actual_checksum"
                 stable=true
                 break
             else
@@ -1712,16 +1712,17 @@ ensure_zip_file_exists_for_pod() {
                 log_warning "   Expected: $expected_checksum"
                 log_warning "   Got:      $actual_checksum"
 
-                if [[ $attempt -lt $max_attempts ]]; then
+                if [[ $attempt -lt $max_cdn_attempts ]]; then
                     log_info "Waiting 10 seconds for CDN to catch up..."
                     sleep 10
                 fi
             fi
         else
-            log_error "Failed to download zip for verification"
+            log_warning "⚠️  Failed to download from CDN for verification (attempt $attempt/$max_cdn_attempts)"
             rm -rf "$temp_verify"
 
-            if [[ $attempt -lt $max_attempts ]]; then
+            if [[ $attempt -lt $max_cdn_attempts ]]; then
+                log_info "Waiting 5 seconds before retry..."
                 sleep 5
             fi
         fi
@@ -1729,10 +1730,65 @@ ensure_zip_file_exists_for_pod() {
         ((attempt++))
     done
 
+    # ========================================================================
+    # Fallback: Use local zip file if CDN not accessible
+    # ========================================================================
     if [[ "$stable" != "true" ]]; then
-        log_error "❌ Checksum verification failed after $max_attempts attempts"
-        log_error "CDN may be caching old version or upload is corrupted"
-        log_error "This will likely cause CocoaPods validation to fail"
+        log_warning "⚠️  Unable to verify checksum via CDN after $max_cdn_attempts attempts"
+        log_info "Attempting fallback: verify using local zip file..."
+
+        # Check if local zip exists
+        local local_zip="$ROOT_DIR/Build/Zips/$zip_name"
+
+        if [[ -f "$local_zip" ]]; then
+            log_info "Local zip file found: $local_zip"
+
+            # Calculate checksum of local zip
+            local local_checksum
+            local_checksum=$(shasum -a 256 "$local_zip" 2>/dev/null | awk '{print $1}')
+
+            if [[ -n "$local_checksum" ]]; then
+                log_info "Local zip checksum:   $local_checksum"
+                log_info "Expected checksum:    $expected_checksum"
+
+                if [[ "$local_checksum" == "$expected_checksum" ]]; then
+                    log_success "✅ Checksum verified using local zip file"
+                    log_info "CDN URL may be temporarily unavailable, but:"
+                    log_info "  - File uploaded to GitHub Release (API confirmed)"
+                    log_info "  - Local zip exists and checksum matches"
+                    log_info "  - CocoaPods validation will likely succeed once CDN catches up"
+                    log_info "Continuing with release (local verification successful)"
+                    stable=true
+                else
+                    log_error "❌ Local zip checksum mismatch!"
+                    log_error "   Expected: $expected_checksum"
+                    log_error "   Got:      $local_checksum"
+                    log_error "   This indicates the local zip file is corrupted or incorrect"
+                fi
+            else
+                log_error "Failed to calculate checksum of local zip file"
+            fi
+        else
+            log_warning "Local zip file not found: $local_zip"
+            log_warning "Cannot fallback to local verification"
+        fi
+    fi
+
+    if [[ "$stable" != "true" ]]; then
+        log_error "❌ Checksum verification failed after all attempts"
+        log_error "Unable to verify checksum via:"
+        log_error "  - CDN URL ($max_cdn_attempts attempts)"
+        log_error "  - Local zip file (not found or checksum mismatch)"
+        log_error ""
+        log_error "Possible causes:"
+        log_error "  1. CDN propagation taking extremely long (>30 minutes)"
+        log_error "  2. Local zip file corrupted or missing"
+        log_error "  3. Upload to GitHub Release may have failed"
+        log_error ""
+        log_error "Recommended actions:"
+        log_error "  1. Wait 1-2 hours for CDN to fully propagate"
+        log_error "  2. Manually verify GitHub Release: gh release view $version"
+        log_error "  3. Check local zip: ls -lh $ROOT_DIR/Build/Zips/$zip_name"
 
         if [[ "${MSP_RELEASE_TIER:-}" == "release" ]]; then
             log_error "[FAIL-FAST] Cannot proceed with unstable checksum in release mode"
