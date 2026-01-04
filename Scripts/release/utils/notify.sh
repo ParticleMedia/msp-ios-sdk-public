@@ -87,6 +87,37 @@ if [[ -f "$ROOT_DIR/Scripts/lib/logging.sh" ]]; then
     source "$ROOT_DIR/Scripts/lib/logging.sh" 2>/dev/null || true
 fi
 
+# Load unified logger system (provides log::warn, log::debug, etc.)
+if [[ -f "$ROOT_DIR/Scripts/release/utils/logger.sh" ]]; then
+    # shellcheck source=Scripts/release/utils/logger.sh
+    source "$ROOT_DIR/Scripts/release/utils/logger.sh" 2>/dev/null || true
+fi
+
+# Fallback: if log:: namespace functions are not available, define them
+# This prevents "command not found" errors in subshells or when logger.sh source fails
+if ! command -v log::warn &>/dev/null; then
+    log::warn() {
+        local module="${1:-GENERAL}"
+        local message="$2"
+        echo "[WARN] [$module] $message" >&2
+    }
+    log::debug() {
+        local module="${1:-GENERAL}"
+        local message="$2"
+        [[ "${MSP_LOG_LEVEL:-1}" -le 0 ]] && echo "[DEBUG] [$module] $message" >&2
+    }
+    log::info() {
+        local module="${1:-GENERAL}"
+        local message="$2"
+        echo "[INFO] [$module] $message" >&2
+    }
+    log::error() {
+        local module="${1:-GENERAL}"
+        local message="$2"
+        echo "[ERROR] [$module] $message" >&2
+    }
+fi
+
 # Fallback logging functions if UI system not available
 if ! command -v log_info &>/dev/null; then
     : "${RED:=[0;31m}"
@@ -260,19 +291,12 @@ notify::_send_dm() {
     local user_id="$1"
     local message="$2"
 
-    # Check if logger functions are available
-    if ! command -v log::debug &>/dev/null; then
-        # Fallback logging if logger not available
-        log_debug() { echo "[DEBUG] $*" >&2; }
-        log_info() { echo "[INFO] $*" >&2; }
-        log_warn() { echo "[WARN] $*" >&2; }
-        log_error() { echo "[ERROR] $*" >&2; }
-    else
-        log_debug() { log::debug "SLACK_DM" "$*"; }
-        log_info() { log::info "SLACK_DM" "$*"; }
-        log_warn() { log::warn "SLACK_DM" "$*"; }
-        log_error() { log::error "SLACK_DM" "$*"; }
-    fi
+    # Define local logging functions for this function's scope
+    # Use simple stderr output - reliable and doesn't depend on external loggers
+    log_debug() { echo "[DEBUG] $*" >&2; }
+    log_info() { echo "[INFO] $*" >&2; }
+    log_warn() { echo "[WARN] $*" >&2; }
+    log_error() { echo "[ERROR] $*" >&2; }
 
     log_debug "Attempting to send DM to user: $user_id"
 

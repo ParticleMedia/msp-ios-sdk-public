@@ -400,6 +400,12 @@ log_warning() {
     log::warn "LEGACY" "$1"
 }
 
+# Backward compatibility alias: log_warn -> log_warning
+# Many scripts use log_warn() (without "ing"), so provide this alias
+log_warn() {
+    log_warning "$@"
+}
+
 log_success() {
     log::success "LEGACY" "$1"
 }

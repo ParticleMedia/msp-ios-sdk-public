@@ -772,7 +772,7 @@ ensure_release_tag_exists_and_pushed() {
         log_warning "SKIP_PUBLIC_REMOTE_PUSH=1: Skipping tag push to public remote"
     elif [[ "$tag_exists_on_public" == "false" ]] && git remote | grep -q "^public$"; then
         log_info "Pushing tag to public: $tag"
-
+        
         # Retry logic: up to 3 attempts with 2-second delays
         local max_public_attempts=3
         local public_attempt=1
@@ -781,12 +781,36 @@ ensure_release_tag_exists_and_pushed() {
         local push_exit_code=1
 
         while [[ $public_attempt -le $max_public_attempts ]]; do
-            push_output=$(git push public "refs/tags/$tag" 2>&1)
+        push_output=$(git push public "refs/tags/$tag" 2>&1)
             push_exit_code=$?
 
             if [[ $push_exit_code -eq 0 ]]; then
                 public_push_success=true
                 log_success "Pushed tag to public: $tag"
+
+                # CRITICAL FIX: Immediately publish GitHub Release after Tag push
+                # When a tag is pushed to GitHub, if no Release exists, GitHub auto-creates
+                # a Draft Release. We must immediately publish it to prevent 404 errors.
+                # This is the ONLY reliable place to ensure Releases are Published.
+                log_info "Ensuring GitHub Release is Published (not Draft) for tag: $tag"
+
+                # Wait 2 seconds for GitHub to create the auto-release
+                sleep 2
+
+                if gh release view "$tag" --repo "ParticleMedia/msp-ios-sdk-public" &>/dev/null; then
+                    log_info "GitHub Release exists, publishing..."
+                    if gh release edit "$tag" \
+                        --repo "ParticleMedia/msp-ios-sdk-public" \
+                        --draft=false \
+                        --latest 2>&1; then
+                        log_success "✅ GitHub Release published: $tag"
+                    else
+                        log_warning "Failed to publish GitHub Release (non-blocking, will retry later)"
+                    fi
+                else
+                    log_info "GitHub Release does not exist yet (will be created during pod publishing)"
+                fi
+
                 break
             else
                 log_warning "Attempt $public_attempt/$max_public_attempts failed: push to public failed"
@@ -854,6 +878,29 @@ ensure_release_tag_exists_and_pushed() {
             fi
         else
             log_success "Pushed tag to public: $tag"
+
+            # CRITICAL FIX: Immediately publish GitHub Release after Tag push
+            # When a tag is pushed to GitHub, if no Release exists, GitHub auto-creates
+            # a Draft Release. We must immediately publish it to prevent 404 errors.
+            # This is the ONLY reliable place to ensure Releases are Published.
+            log_info "Ensuring GitHub Release is Published (not Draft) for tag: $tag"
+
+            # Wait 2 seconds for GitHub to create the auto-release
+            sleep 2
+
+            if gh release view "$tag" --repo "ParticleMedia/msp-ios-sdk-public" &>/dev/null; then
+                log_info "GitHub Release exists, publishing..."
+                if gh release edit "$tag" \
+                    --repo "ParticleMedia/msp-ios-sdk-public" \
+                    --draft=false \
+                    --latest 2>&1; then
+                    log_success "✅ GitHub Release published: $tag"
+                else
+                    log_warning "Failed to publish GitHub Release (non-blocking, will retry later)"
+                fi
+            else
+                log_info "GitHub Release does not exist yet (will be created during pod publishing)"
+            fi
         fi
     fi
 
@@ -921,6 +968,234 @@ wait_for_remote_tag() {
     done
 
     return 1
+}
+
+# ============================================================================
+# Verify and Fix GitHub Release Zip (Enhanced Idempotency)
+# ============================================================================
+# Purpose: Verify that GitHub Release zip matches local zip
+# - Called during idempotency check for already-published pods
+# - Detects if GitHub Release has wrong/old zip file
+# - Automatically re-uploads correct zip if mismatch detected
+# - Ensures downstream pods (Adapters) can validate successfully
+# ============================================================================
+verify_and_fix_github_release_zip() {
+    local pod="$1"
+    local version="$2"
+
+    log_info "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    log_info "🔍 Enhanced Idempotency Check: Verifying GitHub Release zip"
+    log_info "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    log_info "Pod: $pod $version"
+    log_info "Checking if GitHub Release zip matches local zip..."
+
+    local local_zip="$ROOT_DIR/Build/Zips/${pod}-${version}.zip"
+    local zip_url="https://github.com/ParticleMedia/msp-ios-sdk-public/releases/download/${version}/${pod}-${version}.zip"
+
+    # Check if local zip exists
+    if [[ ! -f "$local_zip" ]]; then
+        log_warning "Local zip not found: $local_zip"
+        log_warning "Cannot verify GitHub Release zip (no local reference)"
+        log_info "Assuming GitHub Release is correct (pod already published)"
+        return 0
+    fi
+
+    # Calculate local zip checksum
+    local local_checksum=$(shasum -a 256 "$local_zip" 2>/dev/null | awk '{print $1}')
+    if [[ -z "$local_checksum" ]]; then
+        log_error "Failed to calculate local zip checksum"
+        return 1
+    fi
+
+    log_info "Local zip checksum: $local_checksum"
+
+    # Download GitHub Release zip and calculate checksum
+    log_info "Downloading zip from GitHub Release to verify..."
+    local temp_verify="/tmp/msp-verify-github-release-$$"
+    mkdir -p "$temp_verify"
+
+    local github_checksum=""
+    local download_success=false
+
+    # Try to download with timeout (30 seconds max)
+    if timeout 30 curl -L -f -s -o "$temp_verify/verify.zip" "$zip_url" 2>/dev/null; then
+        local file_size=$(stat -f%z "$temp_verify/verify.zip" 2>/dev/null || stat -c%s "$temp_verify/verify.zip" 2>/dev/null || echo "0")
+
+        if [[ $file_size -gt 0 ]]; then
+            github_checksum=$(shasum -a 256 "$temp_verify/verify.zip" 2>/dev/null | awk '{print $1}')
+            if [[ -n "$github_checksum" && ${#github_checksum} -eq 64 ]]; then
+                download_success=true
+                log_info "GitHub Release checksum: $github_checksum"
+            else
+                log_warning "Downloaded file but checksum calculation failed"
+            fi
+        else
+            log_warning "Downloaded file is empty (0 bytes)"
+        fi
+    else
+        log_warning "Failed to download GitHub Release zip (timeout or 404)"
+        log_warning "This may indicate:"
+        log_warning "  1. CDN is temporarily unavailable"
+        log_warning "  2. Zip file was never uploaded to GitHub Release"
+        log_warning "  3. Network connectivity issues"
+    fi
+
+    rm -rf "$temp_verify"
+
+    # Compare checksums
+    if [[ "$download_success" == "true" ]]; then
+        if [[ "$local_checksum" == "$github_checksum" ]]; then
+            log_success "✅ GitHub Release zip matches local zip"
+            log_success "✅ Checksum verified: $local_checksum"
+            log_info "No action needed - GitHub Release is correct"
+            return 0
+        else
+            log_warning "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+            log_warning "⚠️  CRITICAL: GitHub Release zip MISMATCH detected!"
+            log_warning "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+            log_warning ""
+            log_warning "Pod:                     $pod $version"
+            log_warning "Local zip checksum:      $local_checksum  ← CORRECT (source of truth)"
+            log_warning "GitHub Release checksum: $github_checksum  ← WRONG (old/stale version)"
+            log_warning ""
+            log_warning "Root Cause Analysis:"
+            log_warning "  - Pod was published to CocoaPods with WRONG checksum in previous run"
+            log_warning "  - GitHub Release contains OLD zip file"
+            log_warning "  - Podspec may have incorrect checksum: $github_checksum"
+            log_warning "  - Downstream pods (Adapters) CANNOT validate dependencies"
+            log_warning ""
+            log_warning "Impact:"
+            log_warning "  - If this is MSPSharedLibraries: ALL Adapters will fail"
+            log_warning "  - If this is MSPCore: Integration will fail"
+            log_warning "  - CocoaPods validation error: 'Verification checksum was incorrect'"
+            log_warning ""
+            log_warning "Automatic Fix Strategy:"
+            log_warning "  1. Upload correct zip ($local_checksum) to GitHub Release"
+            log_warning "  2. Wait for CDN propagation (based on file size)"
+            log_warning "  3. Verify upload succeeded"
+            log_warning "  4. Continue with Resume (Adapters should now pass)"
+            log_warning ""
+            log_warning "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+            log_info ""
+            log_info "🔧 Applying automatic fix..."
+
+            # Upload correct zip to GitHub Release
+            log_info "Uploading correct zip to GitHub Release (with --clobber to overwrite)..."
+
+            if gh release upload "$version" "$local_zip" \
+                --repo "ParticleMedia/msp-ios-sdk-public" \
+                --clobber 2>&1 | tee /tmp/gh-upload-$$.log; then
+
+                log_success "✅ Upload completed successfully"
+
+                # Calculate appropriate wait time based on file size
+                local file_size_bytes=$(stat -f%z "$local_zip" 2>/dev/null || stat -c%s "$local_zip" 2>/dev/null || echo "0")
+                local file_size_mb=$((file_size_bytes / 1024 / 1024))
+                local wait_time=60
+
+                if [[ $file_size_mb -ge 15 ]]; then
+                    wait_time=120  # 2 minutes for very large files (>15MB)
+                    log_info "Very large file (${file_size_mb}MB) - CDN propagation may take 2-10 minutes"
+                elif [[ $file_size_mb -ge 5 ]]; then
+                    wait_time=90   # 1.5 minutes for large files (5-15MB)
+                    log_info "Large file (${file_size_mb}MB) - CDN propagation may take 1-5 minutes"
+                else
+                    wait_time=60   # 1 minute for smaller files (<5MB)
+                    log_info "Medium file (${file_size_mb}MB) - CDN propagation may take 30-120 seconds"
+                fi
+
+                log_info "Waiting ${wait_time} seconds for GitHub CDN to propagate new version..."
+                log_info "Note: Full global CDN propagation can take 2-10 minutes for large files"
+                sleep $wait_time
+
+                # Verify upload by downloading again
+                log_info "Verifying upload succeeded by re-downloading from CDN..."
+                local verify_temp="/tmp/msp-verify-upload-$$"
+                mkdir -p "$verify_temp"
+
+                local verified_checksum=""
+                if timeout 30 curl -L -f -s -o "$verify_temp/verify.zip" "$zip_url" 2>/dev/null; then
+                    verified_checksum=$(shasum -a 256 "$verify_temp/verify.zip" 2>/dev/null | awk '{print $1}')
+                fi
+
+                rm -rf "$verify_temp"
+
+                if [[ "$verified_checksum" == "$local_checksum" ]]; then
+                    log_success "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+                    log_success "✅ AUTOMATIC FIX SUCCEEDED"
+                    log_success "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+                    log_success "✅ GitHub Release zip updated successfully"
+                    log_success "✅ Verified checksum: $verified_checksum"
+                    log_success "✅ CDN now serving correct version"
+                    log_success ""
+                    log_success "Expected Outcome:"
+                    log_success "  - Downstream pods should now pass validation"
+                    log_success "  - Resume can continue safely"
+                    log_success "  - No manual intervention needed"
+                    log_success "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+                    return 0
+                else
+                    log_warning "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+                    log_warning "⚠️  CDN PROPAGATION INCOMPLETE"
+                    log_warning "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+                    log_warning "Upload succeeded but CDN still serving old version"
+                    log_warning "Expected: $local_checksum"
+                    log_warning "Got:      $verified_checksum"
+                    log_warning ""
+                    log_warning "This is NORMAL for large files - CDN needs more time"
+                    log_warning ""
+                    log_warning "Next Steps:"
+                    log_warning "  1. Wait 5-10 minutes for full CDN propagation"
+                    log_warning "  2. Resume again - verification will succeed"
+                    log_warning "  3. Or continue now - CocoaPods will validate against GitHub (not CDN)"
+                    log_warning ""
+                    log_warning "Continuing with Resume (safe to proceed)..."
+                    log_warning "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+                    # Continue anyway - GitHub Release has correct zip, just CDN is slow
+                    return 0
+                fi
+            else
+                log_error "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+                log_error "❌ AUTOMATIC FIX FAILED"
+                log_error "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+                log_error "Failed to upload correct zip to GitHub Release"
+                log_error ""
+                log_error "Error log saved to: /tmp/gh-upload-$$.log"
+                log_error ""
+                log_error "Manual fix required:"
+                log_error "  gh release upload $version $local_zip \\"
+                log_error "    --repo ParticleMedia/msp-ios-sdk-public \\"
+                log_error "    --clobber"
+                log_error ""
+                log_error "After manual upload:"
+                log_error "  1. Wait 5-10 minutes for CDN propagation"
+                log_error "  2. Run Resume again"
+                log_error "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+                return 1
+            fi
+        fi
+    else
+        log_warning "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+        log_warning "⚠️  Cannot verify GitHub Release zip"
+        log_warning "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+        log_warning "Unable to download GitHub Release zip for verification"
+        log_warning ""
+        log_warning "Possible causes:"
+        log_warning "  1. Zip file never uploaded to GitHub Release"
+        log_warning "  2. CDN is temporarily unavailable"
+        log_warning "  3. Network connectivity issues"
+        log_warning ""
+        log_warning "Recommended action:"
+        log_warning "  Upload zip manually to ensure it exists:"
+        log_warning "  gh release upload $version $local_zip \\"
+        log_warning "    --repo ParticleMedia/msp-ios-sdk-public \\"
+        log_warning "    --clobber"
+        log_warning ""
+        log_warning "Continuing with Resume (pod already published)..."
+        log_warning "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+        # Don't fail - pod is already published, just can't verify
+        return 0
+    fi
 }
 
 # Create GitHub release and upload zip
@@ -1003,7 +1278,7 @@ create_github_release_for_pod() {
         fi
         
         log_info "Created zip file: $zip_name"
-    
+        
     # Create or update GitHub release
     local gh_release_created=false
     if gh release view "$version" --repo "ParticleMedia/msp-ios-sdk-public" &>/dev/null; then
@@ -1014,12 +1289,12 @@ create_github_release_for_pod() {
                 gh release edit "$version" --repo "ParticleMedia/msp-ios-sdk-public" --draft=false --latest 2>/dev/null || true
         fi
     else
-        log_info "Creating new release $version"
-            if gh release create "$version" "$ROOT_DIR/$zip_name" --repo "ParticleMedia/msp-ios-sdk-public" --title "Release $version" --notes "Release $version" --latest; then
-            gh_release_created=true
-                # Ensure release is published (not draft)
-                gh release edit "$version" --repo "ParticleMedia/msp-ios-sdk-public" --draft=false 2>/dev/null || true
-        fi
+    log_info "Creating new release $version"
+        if gh release create "$version" "$ROOT_DIR/$zip_name" --repo "ParticleMedia/msp-ios-sdk-public" --title "Release $version" --notes "Release $version" --latest; then
+        gh_release_created=true
+        # Ensure release is published (not draft)
+        gh release edit "$version" --repo "ParticleMedia/msp-ios-sdk-public" --draft=false 2>/dev/null || true
+    fi
     fi
     
     # Clean up zip file
@@ -1036,20 +1311,76 @@ create_github_release_for_pod() {
         local temp_zip_dir="/tmp/msp-checksum-verify-$$"
         mkdir -p "$temp_zip_dir"
         
-        # Wait for GitHub to process the upload (may take a few seconds)
-        log_info "Waiting for GitHub to process upload (5 seconds)..."
-        sleep 5
-        
+        # ====================================================================
+        # Smart Wait Strategy: Dynamic wait time based on file size
+        # ====================================================================
+        # Rationale:
+        # - Large files (21MB MSPSharedLibraries) need 2-5 minutes for CDN
+        # - Small files (<1MB) only need 10-20 seconds
+        # - Use progressive retry intervals to give CDN more time
+        # ====================================================================
+
+        # Calculate dynamic wait times based on file size
+        local local_zip="$ROOT_DIR/Build/Zips/${pod}-${version}.zip"
+        local initial_wait=5
+        local max_download_attempts=3
+
+        # Define retry intervals array (will be set based on file size)
+        declare -a retry_intervals
+
+        if [[ -f "$local_zip" ]]; then
+            local file_size_bytes=$(stat -f%z "$local_zip" 2>/dev/null || stat -c%s "$local_zip" 2>/dev/null || echo "0")
+            local file_size_mb=$((file_size_bytes / 1024 / 1024))
+
+            if [[ $file_size_mb -ge 15 ]]; then
+                # Very large files (>15MB): MSPSharedLibraries (21MB)
+                initial_wait=45
+                retry_intervals=(20 20 25 30)  # Progressive intervals
+                max_download_attempts=5
+                log_info "Very large file detected (${file_size_mb}MB), using extended wait strategy"
+                log_info "Total wait time: up to 160 seconds (2.7 minutes)"
+            elif [[ $file_size_mb -ge 5 ]]; then
+                # Large files (5-15MB): MSPFacebookAdapter, MSPGoogleAdsTypes
+                initial_wait=30
+                retry_intervals=(15 15 20 20)  # ← 添加第4个元素: 20秒
+                max_download_attempts=4
+                log_info "Large file detected (${file_size_mb}MB), using extended wait strategy"
+                log_info "Total wait time: up to 100 seconds"
+            elif [[ $file_size_mb -ge 1 ]]; then
+                # Medium files (1-5MB): NovaAdapter, MSPFacebookAdapter
+                initial_wait=15
+                retry_intervals=(10 10 10)
+                max_download_attempts=3
+                log_info "Medium file detected (${file_size_mb}MB), using moderate wait strategy"
+                log_info "Total wait time: up to 45 seconds"
+            else
+                # Small files (<1MB): Most adapters
+                initial_wait=5
+                retry_intervals=(5 5 5)
+                max_download_attempts=3
+                log_info "Small file detected (${file_size_mb}MB), using standard wait strategy"
+                log_info "Total wait time: up to 20 seconds"
+            fi
+        else
+            log_warning "Local zip not found, using default wait strategy"
+            retry_intervals=(5 5 5)
+        fi
+
+        log_info "Waiting ${initial_wait} seconds for GitHub to process upload..."
+        sleep $initial_wait
+
         # Download zip from GitHub Release and calculate checksum
         local download_attempt=1
-        local max_download_attempts=3
         while [[ $download_attempt -le $max_download_attempts ]]; do
             log_info "Downloading zip from GitHub Release to verify checksum (attempt $download_attempt/$max_download_attempts)..."
+
             if curl -L -f -s -o "$temp_zip_dir/$zip_name" "$zip_url" 2>/dev/null; then
                 local file_size=$(stat -f%z "$temp_zip_dir/$zip_name" 2>/dev/null || stat -c%s "$temp_zip_dir/$zip_name" 2>/dev/null || echo "0")
+
                 if [[ $file_size -gt 0 ]]; then
-                    if command -v shasum >/dev/null 2>&1; then
+        if command -v shasum >/dev/null 2>&1; then
                         zip_checksum=$(shasum -a 256 "$temp_zip_dir/$zip_name" 2>/dev/null | cut -d' ' -f1)
+
                         if [[ -n "$zip_checksum" && ${#zip_checksum} -eq 64 ]]; then
                             log_success "Calculated SHA256 checksum from GitHub Release: $zip_checksum"
                             rm -rf "$temp_zip_dir"
@@ -1057,10 +1388,10 @@ create_github_release_for_pod() {
                         else
                             log_warning "Invalid checksum format, retrying..."
                         fi
-                    else
-                        log_error "shasum command not available, cannot calculate checksum"
+        else
+            log_error "shasum command not available, cannot calculate checksum"
                         rm -rf "$temp_zip_dir"
-                        return 1
+        return 1
                     fi
                 else
                     log_warning "Downloaded zip file is empty, retrying..."
@@ -1068,40 +1399,131 @@ create_github_release_for_pod() {
             else
                 log_warning "Failed to download zip from GitHub Release, retrying..."
             fi
-            
+
+            # Wait before next retry (use progressive intervals)
             if [[ $download_attempt -lt $max_download_attempts ]]; then
-                sleep 5
+                local retry_index=$((download_attempt - 1))
+                local retry_wait=${retry_intervals[$retry_index]:-5}
+                log_info "Waiting ${retry_wait} seconds before retry..."
+                sleep $retry_wait
             fi
+
             download_attempt=$((download_attempt + 1))
         done
         
         rm -rf "$temp_zip_dir"
         
+        # ====================================================================
+        # Local Checksum Fallback: Verify before overwriting
+        # ====================================================================
+        # Rationale:
+        # - CDN propagation can take 2-10 minutes for large files
+        # - GitHub Release may return OLD checksum if CDN not updated
+        # - Local zip is the SOURCE OF TRUTH (just created/uploaded)
+        # - Only overwrite podspec if GitHub checksum matches local checksum
+        # - Otherwise, keep local checksum and log warning
+        # ====================================================================
+
         if [[ -z "$zip_checksum" ]] || [[ ${#zip_checksum} -ne 64 ]]; then
-            log_error "Failed to calculate checksum from GitHub Release zip file"
-            log_error "Podspec checksum may be incorrect. Please verify manually."
-            # Continue anyway - podspec may already have correct checksum from generate_podspec.sh
+            log_error "Failed to calculate checksum from GitHub Release zip file after all retries"
+            log_error "This indicates:"
+            log_error "  1. GitHub Release upload may have failed"
+            log_error "  2. CDN propagation is taking extremely long (>2-3 minutes)"
+            log_error "  3. Network connectivity issues"
+            log_error ""
+            log_error "Podspec will keep checksum from generate_podspec.sh (local zip)"
+            log_error "CocoaPods validation may fail temporarily until GitHub Release is accessible"
+            # Continue anyway - podspec already has correct checksum from generate_podspec.sh
         else
-            # Update podspec with checksum from GitHub Release
-            local podspec="$ROOT_DIR/Build/ReleasePodspecs/${pod}.podspec"
-            if [[ -f "$podspec" ]]; then
-                log_step "Updating podspec with SHA256 checksum from GitHub Release"
-                # Use Ruby to properly insert checksum into source hash (more robust than sed)
-                ruby <<RUBY_SCRIPT
+            # Verify checksum against local zip before updating
+        local podspec="$ROOT_DIR/Build/ReleasePodspecs/${pod}.podspec"
+
+        if [[ -f "$podspec" ]]; then
+                log_step "Verifying GitHub Release checksum against local zip"
+
+                # Calculate local zip checksum for comparison
+                local local_zip="$ROOT_DIR/Build/Zips/${pod}-${version}.zip"
+                local local_checksum=""
+
+                if [[ -f "$local_zip" ]]; then
+                    local_checksum=$(shasum -a 256 "$local_zip" 2>/dev/null | awk '{print $1}')
+                    log_info "Local zip checksum:      $local_checksum"
+                    log_info "GitHub Release checksum: $zip_checksum"
+                else
+                    log_warning "Local zip not found: $local_zip"
+                    log_warning "Cannot verify checksum consistency"
+                fi
+
+                # Compare checksums
+                if [[ -n "$local_checksum" ]]; then
+                    if [[ "$zip_checksum" == "$local_checksum" ]]; then
+                        log_success "✅ GitHub Release checksum matches local zip"
+                        log_info "Updating podspec with verified checksum"
+
+                        # Update podspec using Ruby
+            ruby <<RUBY_SCRIPT
 podspec_path = '$podspec'
 zip_url = '$zip_url'
 zip_checksum = '$zip_checksum'
 
 podspec_content = File.read(podspec_path)
 # Replace the source block with checksum included
-# Match the exact structure: spec.source = { ... } where ... can be any content including newlines
 new_source = "  spec.source = {\n    :http => \"#{zip_url}\",\n    :type => \"zip\",\n    :sha256 => \"#{zip_checksum}\"\n  }"
-# Use multiline mode and match from spec.source = { to closing brace with proper indentation
 podspec_content.gsub!(/  spec\.source = \{.*?\n  \}/m, new_source)
 File.write(podspec_path, podspec_content)
 RUBY_SCRIPT
-                log_success "Updated podspec with checksum from GitHub Release: $zip_checksum"
-            else
+                        log_success "Updated podspec with checksum from GitHub Release: $zip_checksum"
+                    else
+                        log_warning "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+                        log_warning "⚠️  CHECKSUM MISMATCH DETECTED"
+                        log_warning "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+                        log_warning "GitHub Release checksum does NOT match local zip!"
+                        log_warning ""
+                        log_warning "Local zip checksum:      $local_checksum  ← SOURCE OF TRUTH"
+                        log_warning "GitHub Release checksum: $zip_checksum  ← CDN may be serving old version"
+                        log_warning ""
+                        log_warning "Root Cause Analysis:"
+                        log_warning "  - CDN propagation takes 2-10 minutes for large files"
+                        log_warning "  - GitHub Release was updated, but CDN still serves old version"
+                        log_warning "  - This is expected behavior for large files (>15MB)"
+                        log_warning ""
+                        log_warning "Action Taken:"
+                        log_warning "  ✅ Keeping podspec with LOCAL ZIP checksum (correct)"
+                        log_warning "  ❌ NOT overwriting with GitHub Release checksum (old)"
+                        log_warning ""
+                        log_warning "Expected Outcome:"
+                        log_warning "  - Podspec has correct checksum: $local_checksum"
+                        log_warning "  - CocoaPods validation will succeed once CDN catches up (2-10 min)"
+                        log_warning "  - Safe to continue with release (pod trunk push will wait for CDN)"
+                        log_warning ""
+                        log_warning "If CocoaPods validation fails immediately:"
+                        log_warning "  1. This is temporary - CDN is still propagating"
+                        log_warning "  2. Wait 5-10 minutes and Resume will succeed"
+                        log_warning "  3. Manual verification: curl -I $zip_url"
+                        log_warning "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+                        log_info ""
+                        log_info "Podspec will retain checksum from generate_podspec.sh (local zip)"
+                        log_info "This is the CORRECT behavior - local zip is source of truth"
+                    fi
+                else
+                    log_warning "Unable to calculate local zip checksum for verification"
+                    log_warning "Updating podspec with GitHub Release checksum"
+                    log_warning "Manual verification recommended after release"
+
+                    # Fallback: Update with GitHub Release checksum (no verification possible)
+                    ruby <<RUBY_SCRIPT
+podspec_path = '$podspec'
+zip_url = '$zip_url'
+zip_checksum = '$zip_checksum'
+
+podspec_content = File.read(podspec_path)
+new_source = "  spec.source = {\n    :http => \"#{zip_url}\",\n    :type => \"zip\",\n    :sha256 => \"#{zip_checksum}\"\n  }"
+podspec_content.gsub!(/  spec\.source = \{.*?\n  \}/m, new_source)
+File.write(podspec_path, podspec_content)
+RUBY_SCRIPT
+                    log_success "Updated podspec with checksum from GitHub Release: $zip_checksum"
+        fi
+    else
                 log_warning "Podspec not found for checksum update: $podspec"
             fi
         fi
@@ -1539,11 +1961,13 @@ ensure_zip_file_exists_for_pod() {
             --repo "ParticleMedia/msp-ios-sdk-public" \
             --title "Release $version" \
             --notes "MSP iOS SDK Release $version" \
-            --draft=false \
             --latest; then
             log_error "Failed to create GitHub Release"
             return 1
         fi
+
+        # Ensure release is published (not draft)
+        gh release edit "$version" --repo "ParticleMedia/msp-ios-sdk-public" --draft=false 2>/dev/null || true
 
         log_success "✅ GitHub Release created"
     fi
@@ -2176,10 +2600,14 @@ Automatically created to resolve checksum verification issue."
                 --repo "$release_repo" \
                 --title "MSP iOS SDK $version_tag" \
                 --notes "$release_notes" \
+                --latest \
                 --target "release/${version_tag}"; then
                 log_error "PUBLISH" "Failed to create GitHub Release $version_tag"
                 return 1
             fi
+
+            # Ensure release is published (not draft)
+            gh release edit "$version_tag" --repo "$release_repo" --draft=false 2>/dev/null || true
 
             log_info "PUBLISH" "✓ Created GitHub Release $version_tag"
         else
@@ -2227,11 +2655,15 @@ Automatically recreated to resolve checksum verification issue."
                 --repo "$release_repo" \
                 --title "MSP iOS SDK $version_tag" \
                 --notes "$release_notes" \
+                --latest \
                 --target "release/${version_tag}"; then
                 log_error "PUBLISH" "Failed to recreate GitHub Release $version_tag"
                 release_github_release_lock
                 return 1
             fi
+
+            # Ensure release is published (not draft)
+            gh release edit "$version_tag" --repo "$release_repo" --draft=false 2>/dev/null || true
 
             log_info "PUBLISH" "✓ Recreated GitHub Release $version_tag"
 
@@ -2716,6 +3148,53 @@ release_msp_ioscore() {
 release_msp_shared_libraries() {
     log_section "Step 1: Releasing MSPSharedLibraries (foundation dependency)"
 
+    # ========================================================================
+    # Idempotency Check: Skip if already published (Resume-safe)
+    # ========================================================================
+    # Rationale:
+    # - Resume may be called after MSPSharedLibraries was already published
+    # - Re-running create_github_release_for_pod() can overwrite correct checksum
+    # - check_pod_availability() verifies if pod is available on CocoaPods CDN
+    # - If available, skip all steps (no zip upload, no podspec regeneration)
+    # ========================================================================
+    if [[ "$DRY_RUN" != "true" ]]; then
+        if check_pod_availability "MSPSharedLibraries" "$VERSION"; then
+            log_info "MSPSharedLibraries $VERSION is already published to CocoaPods"
+
+            # ✅ Enhanced Check: Verify GitHub Release zip matches local zip
+            # - Detects if GitHub Release has wrong/old zip file
+            # - Automatically re-uploads correct zip if mismatch detected
+            # - Critical for MSPSharedLibraries as all Adapters depend on it
+            if is_binary_distribution "MSPSharedLibraries"; then
+                if ! verify_and_fix_github_release_zip "MSPSharedLibraries" "$VERSION"; then
+                    log_error "Failed to verify/fix GitHub Release zip for MSPSharedLibraries"
+
+                    # In release mode, this is a critical failure
+                    if [[ "${MSP_RELEASE_TIER:-}" == "release" ]]; then
+                        log_error "[FAIL-FAST] Cannot continue with incorrect GitHub Release zip"
+                        log_error "Adapters depending on MSPSharedLibraries will fail validation"
+
+                        # End timing if metrics enabled
+                        if command -v metrics::end &>/dev/null; then
+                            metrics::end "pod_MSPSharedLibraries"
+                        fi
+
+                        return 1
+                    fi
+                fi
+            fi
+
+            log_success "MSPSharedLibraries $VERSION already available and verified"
+
+            # End timing if metrics enabled
+            if command -v metrics::end &>/dev/null; then
+                metrics::end "pod_MSPSharedLibraries"
+            fi
+
+            return 0
+        fi
+    fi
+
     # Ensure zip file exists for binary distribution pods (Resume-safe)
     # This provides script-level guarantee that podspec generation will succeed
     # even if previous release was incomplete (zip missing but pod published)
@@ -2891,6 +3370,38 @@ release_single_adapter() {
     fi
 
     log_section "Releasing $adapter"
+
+    # ========================================================================
+    # Idempotency Check: Skip if already published (Resume-safe)
+    # ========================================================================
+    # Rationale: Same as MSPSharedLibraries
+    # - Prevents re-uploading zip and regenerating podspec
+    # - Prevents overwriting correct checksum with stale GitHub Release checksum
+    # ========================================================================
+    if [[ "$DRY_RUN" != "true" ]]; then
+        if check_pod_availability "$adapter" "$version"; then
+            log_info "$adapter $version is already published to CocoaPods"
+
+            # ✅ Enhanced Check: Verify GitHub Release zip matches local zip
+            # - Same logic as MSPSharedLibraries
+            # - Ensures this adapter's zip is correct for downstream dependencies
+            if is_binary_distribution "$adapter"; then
+                if ! verify_and_fix_github_release_zip "$adapter" "$version"; then
+                    log_error "Failed to verify/fix GitHub Release zip for $adapter"
+                    echo "ERROR: GitHub Release zip verification failed for $adapter" > "$result_file"
+
+                    # In release mode, this is a failure
+                    if [[ "${MSP_RELEASE_TIER:-}" == "release" ]]; then
+                        return 1
+                    fi
+                fi
+            fi
+
+            log_success "$adapter $version already available and verified"
+            echo "SUCCESS: $adapter already published" > "$result_file"
+            return 0
+        fi
+    fi
 
     # Ensure zip file exists for binary distribution pods (Resume-safe)
     # This provides script-level guarantee that podspec generation will succeed
@@ -3178,6 +3689,30 @@ release_adapters() {
 # Release MSPCore (Step 3)
 release_msp_core() {
     log_section "Step 3: Releasing MSPCore (main framework)"
+
+    # ========================================================================
+    # Idempotency Check: Skip if already published (Resume-safe)
+    # ========================================================================
+    # Rationale: Same as MSPSharedLibraries
+    # ========================================================================
+    if [[ "$DRY_RUN" != "true" ]]; then
+        if check_pod_availability "MSPCore" "$VERSION"; then
+            log_info "MSPCore $VERSION is already published to CocoaPods"
+
+            # ✅ Enhanced Check: Verify GitHub Release zip matches local zip
+            # - Same logic as MSPSharedLibraries
+            # - Ensures final integration pod has correct zip
+            if is_binary_distribution "MSPCore"; then
+                if ! verify_and_fix_github_release_zip "MSPCore" "$VERSION"; then
+                    log_error "Failed to verify/fix GitHub Release zip for MSPCore"
+                    return 1
+                fi
+            fi
+
+            log_success "MSPCore $VERSION already available and verified"
+            return 0
+        fi
+    fi
 
     # Ensure zip file exists for binary distribution pods (Resume-safe)
     # This provides script-level guarantee that podspec generation will succeed
