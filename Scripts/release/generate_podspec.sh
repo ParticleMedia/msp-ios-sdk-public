@@ -101,69 +101,108 @@ calculate_zip_sha256() {
     local pod_name="$2"
     local version="$3"
     local zip_name="${pod_name}-${version}.zip"
-
-    # Priority 1: Check local Build/Zips directory (most reliable, if zip was just created)
     local local_zip="$ROOT_DIR/Build/Zips/$zip_name"
-    if [[ -f "$local_zip" ]]; then
-        local checksum
-        checksum=$(shasum -a 256 "$local_zip" 2>/dev/null | awk '{print $1}')
-        if [[ -n "$checksum" && ${#checksum} -eq 64 ]]; then
-            # FIX: 日志输出到 stderr，确保不影响 stdout
-            log_info "Using local zip file for checksum calculation: $local_zip" >&2
-            echo "$checksum"  # 只输出 checksum 到 stdout
-            return 0
+
+    # =========================================================================
+    # CRITICAL FIX: Release tier MUST use GitHub Release as source of truth
+    # =========================================================================
+    # Why: Local zip may be stale or incorrect. Only GitHub Release zip is
+    # the definitive version that CocoaPods users will download. Using local
+    # zip causes checksum mismatches and validation failures.
+    #
+    # Test tier: Can use local zip (faster, no network dependency)
+    # Release tier: MUST download from GitHub Release (guarantees consistency)
+    # =========================================================================
+
+    if [[ "${MSP_RELEASE_TIER:-test}" == "release" ]]; then
+        log_info "Release tier detected: calculating checksum from GitHub Release (source of truth)" >&2
+
+        # Step 1: Wait for GitHub CDN propagation
+        log_info "Waiting for GitHub CDN propagation (60 seconds)..." >&2
+        sleep 60
+
+        # Step 2: Download from GitHub Release
+        local temp_zip="/tmp/verify-${pod_name}-${version}-$$.zip"
+        log_info "Downloading from GitHub Release: $zip_url" >&2
+
+        local download_attempt=1
+        local max_attempts=3
+        local checksum=""
+
+        while [[ $download_attempt -le $max_attempts ]]; do
+            if curl -L -f -s -o "$temp_zip" "$zip_url" 2>/dev/null; then
+                local file_size=$(stat -f%z "$temp_zip" 2>/dev/null || stat -c%s "$temp_zip" 2>/dev/null || echo "0")
+
+                if [[ $file_size -gt 0 ]]; then
+                    checksum=$(shasum -a 256 "$temp_zip" 2>/dev/null | awk '{print $1}')
+
+                    if [[ -n "$checksum" && ${#checksum} -eq 64 ]]; then
+                        log_success "✅ Successfully calculated checksum from GitHub Release" >&2
+                        log_info "   Checksum: $checksum" >&2
+                        log_info "   File size: $file_size bytes" >&2
+
+                        # Optional: Verify against local zip if it exists
+                        if [[ -f "$local_zip" ]]; then
+                            local local_checksum=$(shasum -a 256 "$local_zip" 2>/dev/null | awk '{print $1}')
+                            if [[ "$checksum" != "$local_checksum" ]]; then
+                                log_warning "⚠️  Local zip checksum differs from GitHub Release" >&2
+                                log_warning "   Local:  $local_checksum" >&2
+                                log_warning "   GitHub: $checksum" >&2
+                                log_warning "   Using GitHub checksum (source of truth)" >&2
+                            else
+                                log_info "✅ Local zip matches GitHub Release" >&2
+                            fi
+                        fi
+
+                        # Cleanup
+                        rm -f "$temp_zip"
+                        echo "$checksum"
+                        return 0
+                    else
+                        log_warning "Invalid checksum format, retrying..." >&2
+                    fi
+                else
+                    log_warning "Downloaded file is empty, retrying..." >&2
+                fi
+            else
+                log_warning "Download failed (attempt $download_attempt/$max_attempts)" >&2
+            fi
+
+            if [[ $download_attempt -lt $max_attempts ]]; then
+                log_info "Waiting 30 seconds before retry..." >&2
+                sleep 30
+            fi
+
+            ((download_attempt++))
+        done
+
+        # Cleanup on failure
+        rm -f "$temp_zip"
+
+        log_error "❌ Failed to download from GitHub Release after $max_attempts attempts" >&2
+        log_error "   URL: $zip_url" >&2
+        log_error "   This is CRITICAL for release tier - cannot proceed" >&2
+        return 1
+
+    else
+        # Test tier: Use local zip (faster, no network dependency)
+        log_info "Test tier: using local zip for checksum" >&2
+
+        if [[ -f "$local_zip" ]]; then
+            local checksum=$(shasum -a 256 "$local_zip" 2>/dev/null | awk '{print $1}')
+            if [[ -n "$checksum" && ${#checksum} -eq 64 ]]; then
+                log_info "✅ Calculated checksum from local zip: $checksum" >&2
+                echo "$checksum"
+                return 0
+            else
+                log_error "Failed to calculate checksum from local zip" >&2
+                return 1
+            fi
+        else
+            log_error "Local zip not found: $local_zip" >&2
+            return 1
         fi
     fi
-
-    # Priority 2: Download from GitHub Release URL (with retry mechanism)
-    local temp_dir="/tmp/msp-checksum-$$"
-    mkdir -p "$temp_dir"
-
-    local checksum=""
-    local download_attempt=1
-    local max_download_attempts=3
-
-    while [[ $download_attempt -le $max_download_attempts ]]; do
-        # FIX: 日志输出到 stderr
-        log_info "Downloading zip file for checksum calculation (attempt $download_attempt/$max_download_attempts)..." >&2
-        
-        if curl -L -f -s -o "$temp_dir/$zip_name" "$zip_url" 2>/dev/null; then
-            # Verify downloaded file is not empty
-            local file_size
-            file_size=$(stat -f%z "$temp_dir/$zip_name" 2>/dev/null || stat -c%s "$temp_dir/$zip_name" 2>/dev/null || echo "0")
-            
-            if [[ $file_size -gt 0 ]]; then
-                checksum=$(shasum -a 256 "$temp_dir/$zip_name" 2>/dev/null | awk '{print $1}')
-                
-                if [[ -n "$checksum" && ${#checksum} -eq 64 ]]; then
-                    # FIX: 日志输出到 stderr
-                    log_info "Checksum calculated from GitHub Release: $checksum" >&2
-                    rm -rf "$temp_dir"
-                    echo "$checksum"  # 只输出 checksum 到 stdout
-                    return 0
-                fi
-            fi
-        fi
-
-        if [[ $download_attempt -lt $max_download_attempts ]]; then
-            # FIX: 日志输出到 stderr（log_warning 本身已经重定向，但为了保险）
-            log_warning "Download attempt $download_attempt failed, retrying in 5 seconds..." >&2
-            sleep 5
-        fi
-        
-        download_attempt=$((download_attempt + 1))
-    done
-
-    # Cleanup
-    rm -rf "$temp_dir"
-
-    # Failed to calculate checksum
-    # FIX: log_error 本身已经重定向到 stderr，但为了保险
-    log_error "Failed to calculate checksum for $zip_name" >&2
-    log_error "Tried: local zip ($local_zip), GitHub Release ($zip_url)" >&2
-    
-    # 返回空字符串（不输出任何内容到 stdout）
-    return 1
 }
 
 # ============================================================================
