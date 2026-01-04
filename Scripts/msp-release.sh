@@ -1542,6 +1542,179 @@ do_resume() {
         source "$ROOT_DIR/Scripts/release/utils/state.sh"
     fi
     
+    # ============================================================================
+    # CRITICAL FIX: Resume 模式同步 GitHub Release 状态
+    # ============================================================================
+    # Why: Resume 时，本地状态可能与 GitHub Release 不一致：
+    #   - 本地 zip 可能是旧的
+    #   - Podspec 可能使用了旧的 checksum
+    #   - GitHub Release zip 可能被重新上传过
+    #
+    # Solution: 从 GitHub Release 下载 zip，强制同步本地状态
+    #
+    # Benefits:
+    #   - 本地 zip 和 GitHub Release zip 完全一致
+    #   - Podspec 使用正确的 checksum（从 GitHub Release）
+    #   - Task 2 和 Task 3 验证都通过
+    #   - "GitHub Release is single source of truth"
+    # ============================================================================
+    
+    sync_from_github_release() {
+        local version="$1"
+        
+        log_info "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+        log_info "🔄 Resume Mode: Syncing state from GitHub Release"
+        log_info "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+        log_info ""
+        log_info "Version: $version"
+        log_info "Reason: Ensure local state matches GitHub Release (source of truth)"
+        log_info ""
+        
+        # Step 1: Check if GitHub Release exists
+        if ! gh release view "$version" --repo "ParticleMedia/msp-ios-sdk-public" &>/dev/null; then
+            log_warning "GitHub Release $version not found, skipping sync"
+            log_warning "This is expected if this is the first run (not a resume)"
+            log_info ""
+            return 0
+        fi
+        
+        log_success "✅ GitHub Release $version exists"
+        log_info ""
+        
+        # Step 2: Get list of published pods from GitHub Release
+        log_info "Step 1: Fetching assets from GitHub Release..."
+        local assets
+        assets=$(gh release view "$version" --repo "ParticleMedia/msp-ios-sdk-public" --json assets --jq '.assets[].name' 2>/dev/null || echo "")
+        
+        if [[ -z "$assets" ]]; then
+            log_warning "No assets found in GitHub Release, skipping sync"
+            log_info ""
+            return 0
+        fi
+        
+        local asset_count=$(echo "$assets" | grep -c ".zip$" || echo "0")
+        log_info "Found $asset_count zip file(s) in GitHub Release"
+        log_info ""
+        
+        # Step 3: Download zips from GitHub Release
+        log_info "Step 2: Downloading zips from GitHub Release..."
+        log_info ""
+        
+        local download_count=0
+        local skip_count=0
+        local error_count=0
+        
+        # Ensure Build/Zips directory exists
+        mkdir -p "$ROOT_DIR/Build/Zips"
+        
+        # Process each zip file
+        while IFS= read -r asset_name; do
+            if [[ ! "$asset_name" =~ \.zip$ ]]; then
+                continue
+            fi
+            
+            local pod_name="${asset_name%-${version}.zip}"
+            local local_zip="$ROOT_DIR/Build/Zips/$asset_name"
+            local download_url="https://github.com/ParticleMedia/msp-ios-sdk-public/releases/download/${version}/${asset_name}"
+            
+            log_info "  📦 Processing: $asset_name"
+            
+            # Calculate GitHub Release zip checksum
+            local temp_zip="/tmp/resume-sync-${asset_name}-$$.zip"
+            if curl -L -f -s -o "$temp_zip" "$download_url" 2>/dev/null; then
+                local github_checksum=$(shasum -a 256 "$temp_zip" 2>/dev/null | awk '{print $1}')
+                
+                if [[ -z "$github_checksum" || ${#github_checksum} -ne 64 ]]; then
+                    log_error "     ❌ Failed to calculate checksum from GitHub Release"
+                    rm -f "$temp_zip"
+                    ((error_count++))
+                    continue
+                fi
+                
+                # Check if local zip exists and matches
+                if [[ -f "$local_zip" ]]; then
+                    local local_checksum=$(shasum -a 256 "$local_zip" 2>/dev/null | awk '{print $1}')
+                    
+                    if [[ "$local_checksum" == "$github_checksum" ]]; then
+                        log_info "     ✅ Local zip already matches GitHub Release"
+                        log_info "        Checksum: $github_checksum"
+                        rm -f "$temp_zip"
+                        ((skip_count++))
+                        continue
+                    else
+                        log_warning "     ⚠️  Local zip checksum differs from GitHub Release"
+                        log_info "        Local:  $local_checksum"
+                        log_info "        GitHub: $github_checksum"
+                        log_info "        → Replacing with GitHub Release version"
+                    fi
+                else
+                    log_info "     ℹ️  Local zip not found, downloading from GitHub Release"
+                fi
+                
+                # Replace local zip with GitHub Release version
+                mv "$temp_zip" "$local_zip"
+                log_success "     ✅ Downloaded and replaced: $asset_name"
+                log_info "        Checksum: $github_checksum"
+                ((download_count++))
+            else
+                log_error "     ❌ Failed to download from GitHub Release"
+                log_error "        URL: $download_url"
+                rm -f "$temp_zip"
+                ((error_count++))
+            fi
+            
+            log_info ""
+        done <<< "$assets"
+        
+        # Step 4: Summary
+        log_info "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+        log_info "📊 Sync Summary"
+        log_info "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+        log_info "Total zips:     $asset_count"
+        log_info "Downloaded:     $download_count"
+        log_info "Already synced: $skip_count"
+        log_info "Errors:         $error_count"
+        log_info ""
+        
+        if [[ $error_count -gt 0 ]]; then
+            log_warning "⚠️  Some zips failed to sync, but continuing..."
+            log_warning "This may cause checksum mismatches later"
+        else
+            log_success "✅ All zips synced from GitHub Release"
+        fi
+        
+        # Step 5: Delete old podspecs (will be regenerated)
+        log_info ""
+        log_info "Step 3: Removing old podspecs (will be regenerated)..."
+        
+        local podspec_dir="$ROOT_DIR/Build/ReleasePodspecs"
+        if [[ -d "$podspec_dir" ]]; then
+            local podspec_count=$(ls -1 "$podspec_dir"/*.podspec 2>/dev/null | wc -l | tr -d ' ')
+            if [[ "$podspec_count" -gt 0 ]]; then
+                log_info "Removing $podspec_count existing podspec(s)..."
+                rm -f "$podspec_dir"/*.podspec
+                log_success "✅ Removed $podspec_count podspec(s)"
+            else
+                log_info "No existing podspecs found"
+            fi
+        else
+            log_info "Podspec directory does not exist yet"
+        fi
+        
+        log_info ""
+        log_success "✅ Sync complete: local state matches GitHub Release"
+        log_info "   - Local zips updated from GitHub Release"
+        log_info "   - Old podspecs removed (will be regenerated with correct checksums)"
+        log_info ""
+        log_info "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+        log_info ""
+    }
+    
+    # Call sync function after version is determined
+    if [[ -n "$version" ]]; then
+        sync_from_github_release "$version"
+    fi
+    
     # Display resume summary
     log_info "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
     log_info "📋 Resume Summary for $version"
