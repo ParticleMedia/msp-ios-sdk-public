@@ -93,6 +93,31 @@ if [[ -f "$ROOT_DIR/Scripts/release/utils/logger.sh" ]]; then
     source "$ROOT_DIR/Scripts/release/utils/logger.sh" 2>/dev/null || true
 fi
 
+# Fallback: if log:: namespace functions are not available, define them
+# This prevents "command not found" errors in subshells or when logger.sh source fails
+if ! command -v log::warn &>/dev/null; then
+    log::warn() {
+        local module="${1:-GENERAL}"
+        local message="$2"
+        echo "[WARN] [$module] $message" >&2
+    }
+    log::debug() {
+        local module="${1:-GENERAL}"
+        local message="$2"
+        [[ "${MSP_LOG_LEVEL:-1}" -le 0 ]] && echo "[DEBUG] [$module] $message" >&2
+    }
+    log::info() {
+        local module="${1:-GENERAL}"
+        local message="$2"
+        echo "[INFO] [$module] $message" >&2
+    }
+    log::error() {
+        local module="${1:-GENERAL}"
+        local message="$2"
+        echo "[ERROR] [$module] $message" >&2
+    }
+fi
+
 # Fallback logging functions if UI system not available
 if ! command -v log_info &>/dev/null; then
     : "${RED:=[0;31m}"

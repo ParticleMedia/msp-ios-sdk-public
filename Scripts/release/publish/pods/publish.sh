@@ -787,6 +787,30 @@ ensure_release_tag_exists_and_pushed() {
             if [[ $push_exit_code -eq 0 ]]; then
                 public_push_success=true
                 log_success "Pushed tag to public: $tag"
+
+                # CRITICAL FIX: Immediately publish GitHub Release after Tag push
+                # When a tag is pushed to GitHub, if no Release exists, GitHub auto-creates
+                # a Draft Release. We must immediately publish it to prevent 404 errors.
+                # This is the ONLY reliable place to ensure Releases are Published.
+                log_info "Ensuring GitHub Release is Published (not Draft) for tag: $tag"
+
+                # Wait 2 seconds for GitHub to create the auto-release
+                sleep 2
+
+                if gh release view "$tag" --repo "ParticleMedia/msp-ios-sdk-public" &>/dev/null; then
+                    log_info "GitHub Release exists, publishing..."
+                    if gh release edit "$tag" \
+                        --repo "ParticleMedia/msp-ios-sdk-public" \
+                        --draft=false \
+                        --latest 2>&1; then
+                        log_success "✅ GitHub Release published: $tag"
+                    else
+                        log_warning "Failed to publish GitHub Release (non-blocking, will retry later)"
+                    fi
+                else
+                    log_info "GitHub Release does not exist yet (will be created during pod publishing)"
+                fi
+
                 break
             else
                 log_warning "Attempt $public_attempt/$max_public_attempts failed: push to public failed"
@@ -854,6 +878,29 @@ ensure_release_tag_exists_and_pushed() {
             fi
         else
             log_success "Pushed tag to public: $tag"
+
+            # CRITICAL FIX: Immediately publish GitHub Release after Tag push
+            # When a tag is pushed to GitHub, if no Release exists, GitHub auto-creates
+            # a Draft Release. We must immediately publish it to prevent 404 errors.
+            # This is the ONLY reliable place to ensure Releases are Published.
+            log_info "Ensuring GitHub Release is Published (not Draft) for tag: $tag"
+
+            # Wait 2 seconds for GitHub to create the auto-release
+            sleep 2
+
+            if gh release view "$tag" --repo "ParticleMedia/msp-ios-sdk-public" &>/dev/null; then
+                log_info "GitHub Release exists, publishing..."
+                if gh release edit "$tag" \
+                    --repo "ParticleMedia/msp-ios-sdk-public" \
+                    --draft=false \
+                    --latest 2>&1; then
+                    log_success "✅ GitHub Release published: $tag"
+                else
+                    log_warning "Failed to publish GitHub Release (non-blocking, will retry later)"
+                fi
+            else
+                log_info "GitHub Release does not exist yet (will be created during pod publishing)"
+            fi
         fi
     fi
 
