@@ -87,6 +87,12 @@ if [[ -f "$ROOT_DIR/Scripts/lib/logging.sh" ]]; then
     source "$ROOT_DIR/Scripts/lib/logging.sh" 2>/dev/null || true
 fi
 
+# Load unified logger system (provides log::warn, log::debug, etc.)
+if [[ -f "$ROOT_DIR/Scripts/release/utils/logger.sh" ]]; then
+    # shellcheck source=Scripts/release/utils/logger.sh
+    source "$ROOT_DIR/Scripts/release/utils/logger.sh" 2>/dev/null || true
+fi
+
 # Fallback logging functions if UI system not available
 if ! command -v log_info &>/dev/null; then
     : "${RED:=[0;31m}"
