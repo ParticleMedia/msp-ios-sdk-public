@@ -2317,21 +2317,44 @@ RUBY_SCRIPT
                 return 1
             fi
         elif [[ -f "$podspec" ]]; then
-            # Verify existing checksum matches GitHub
+            # ========================================================================
+            # Verify existing checksum matches LOCAL zip file (NOT GitHub Release)
+            # ========================================================================
+            # Rationale:
+            # - generate_podspec.sh already calculated checksum from local zip
+            # - Local zip is the source of truth (just created/uploaded)
+            # - GitHub Release may have CDN delays or old cached versions
+            # - Downloading from GitHub wastes time and may get wrong version
+            # ========================================================================
+
             local existing_checksum=$(grep ":sha256" "$podspec" | sed 's/.*"\(.*\)".*/\1/')
-            local zip_url="https://github.com/ParticleMedia/msp-ios-sdk-public/releases/download/${version}/${pod}-${version}.zip"
-            local actual_checksum=$(curl -sL "$zip_url" 2>/dev/null | shasum -a 256 2>/dev/null | cut -d' ' -f1)
+            local local_zip="$ROOT_DIR/Build/Zips/${pod}-${version}.zip"
 
-            if [[ -n "$actual_checksum" ]] && [[ "$existing_checksum" != "$actual_checksum" ]]; then
-                log_warn "Checksum mismatch for $pod! Updating..."
-                log_info "  Existing: $existing_checksum"
-                log_info "  Actual:   $actual_checksum"
+            if [[ -f "$local_zip" ]]; then
+                local actual_checksum=$(shasum -a 256 "$local_zip" 2>/dev/null | awk '{print $1}')
 
-                # Update with correct checksum
-                sed -i.backup "s/:sha256 => \".*\"/:sha256 => \"$actual_checksum\"/" "$podspec"
-                log_success "Updated $pod podspec checksum"
-            elif [[ -n "$actual_checksum" ]]; then
-                log_info "Checksum verified for $pod: $existing_checksum"
+                if [[ -n "$actual_checksum" ]] && [[ "$existing_checksum" != "$actual_checksum" ]]; then
+                    log_warning "⚠️  Checksum mismatch for $pod!"
+                    log_warning "   Podspec:  $existing_checksum"
+                    log_warning "   Local zip: $actual_checksum"
+                    log_warning "   Updating podspec with correct checksum from local zip..."
+
+                    # Update with checksum from local zip (source of truth)
+                    if [[ "$OSTYPE" == "darwin"* ]]; then
+                        sed -i '' "s/:sha256 => \".*\"/:sha256 => \"$actual_checksum\"/" "$podspec"
+                    else
+                        sed -i "s/:sha256 => \".*\"/:sha256 => \"$actual_checksum\"/" "$podspec"
+                    fi
+
+                    log_success "✅ Updated $pod podspec checksum to match local zip"
+                elif [[ -n "$actual_checksum" ]]; then
+                    log_info "✅ Checksum verified for $pod: $existing_checksum (matches local zip)"
+                else
+                    log_warning "Failed to calculate checksum from local zip: $local_zip"
+                fi
+            else
+                log_warning "Local zip not found: $local_zip"
+                log_warning "Skipping checksum verification"
             fi
         fi
     fi
