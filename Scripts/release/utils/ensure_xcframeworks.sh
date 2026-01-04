@@ -268,6 +268,19 @@ ensure_all_xcframeworks() {
     # Original logic: Check and build Adapters
     # =========================================================================
 
+    # CRITICAL: In release tier, if Foundation Layer is missing, skip Adapters
+    # building. Foundation Layer will be built in pre_release_setup(), and
+    # Adapters will be built later in the release flow.
+    if [[ "$foundation_missing" == "true" ]] && [[ "$release_tier" == "release" || "$release_tier" == "production" ]]; then
+        log_info "Step 1: Skipping Binary Adapters check (Foundation Layer will be built first)"
+        log_info ""
+        log_info "In release tier, Foundation Layer is built in pre_release_setup()."
+        log_info "Adapters will be built after Foundation Layer is ready."
+        log_info ""
+        log_success "✅ Preflight check passed (Foundation Layer will be built in next step)"
+        return 0
+    fi
+
     log_info "Step 1: Checking Binary Adapters..."
 
     # Step 1: Detect missing XCFrameworks
