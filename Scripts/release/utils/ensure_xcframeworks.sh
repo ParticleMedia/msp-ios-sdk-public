@@ -135,6 +135,104 @@ ensure_all_xcframeworks() {
     log_info "🔧 Ensuring XCFrameworks for Binary Adapters"
     log_info "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 
+    # =========================================================================
+    # CRITICAL FIX: Ensure Foundation Layer XCFrameworks exist first
+    # =========================================================================
+    # Why: Binary adapters depend on Foundation Layer XCFrameworks. If these
+    # are missing, adapter builds will fail with "XCFramework not found" errors.
+    #
+    # Foundation Layer includes:
+    #   - MSPiOSCore.xcframework (required by all adapters)
+    #   - MSPGoogleAdsTypes.xcframework (required by MSPGoogleAdapter, AmazonAdapter)
+    #   - PrebidMobile.xcframework (third-party, required by most adapters)
+    #
+    # Note: We only check existence here, not build. Foundation Layer XCFrameworks
+    # should be pre-built by the main release flow (publish.sh). This check ensures
+    # Preflight doesn't fail due to missing Foundation dependencies.
+    # =========================================================================
+
+    log_info "Step 0: Checking Foundation Layer XCFrameworks..."
+
+    local foundation_missing=false
+    local foundation_xcframeworks=("MSPiOSCore" "MSPGoogleAdsTypes")
+
+    for foundation_pod in "${foundation_xcframeworks[@]}"; do
+        local foundation_path="$ROOT_DIR/Build/XCFrameworks/${foundation_pod}.xcframework"
+
+        if [[ -d "$foundation_path" ]]; then
+            log_debug "✓ ${foundation_pod}: XCFramework exists"
+        else
+            log_warning "✗ ${foundation_pod}: XCFramework missing"
+            log_warning "   Path: $foundation_path"
+            foundation_missing=true
+        fi
+    done
+
+    # Check PrebidMobile (third-party, may be pre-packaged)
+    local prebid_path="$ROOT_DIR/Build/XCFrameworks/PrebidMobile.xcframework"
+    local prebid_alt_path="$ROOT_DIR/ThirdParty/PrebidMobile/PrebidMobile.xcframework"
+    if [[ ! -d "$prebid_path" ]]; then
+        # Try alternative path (ThirdParty)
+        if [[ -d "$prebid_alt_path" ]]; then
+            log_debug "✓ PrebidMobile: Found in ThirdParty directory"
+        else
+            log_warning "✗ PrebidMobile: XCFramework missing"
+            log_warning "   Primary path: $prebid_path"
+            log_warning "   Alternative path: $prebid_alt_path"
+            foundation_missing=true
+        fi
+    else
+        log_debug "✓ PrebidMobile: XCFramework exists"
+    fi
+
+    if [[ "$foundation_missing" == "true" ]]; then
+        log_error "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+        log_error "❌ CRITICAL: Foundation Layer XCFrameworks missing"
+        log_error "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+        log_error ""
+        log_error "Binary adapters depend on Foundation Layer XCFrameworks."
+        log_error "These must be built before adapters can be built."
+        log_error ""
+        log_error "Missing XCFrameworks:"
+        for foundation_pod in "${foundation_xcframeworks[@]}"; do
+            local foundation_path="$ROOT_DIR/Build/XCFrameworks/${foundation_pod}.xcframework"
+            if [[ ! -d "$foundation_path" ]]; then
+                log_error "  - $foundation_pod"
+            fi
+        done
+        if [[ ! -d "$prebid_path" ]] && [[ ! -d "$prebid_alt_path" ]]; then
+            log_error "  - PrebidMobile"
+        fi
+        log_error ""
+        log_error "Solution:"
+        log_error "  Foundation Layer XCFrameworks are built during the main release flow."
+        log_error "  If you're running Preflight standalone, build them first:"
+        log_error ""
+        log_error "  # Build MSPiOSCore"
+        log_error "  ./Scripts/xcframeworks/build_module.sh MSPiOSCore"
+        log_error ""
+        log_error "  # Build MSPGoogleAdsTypes"
+        log_error "  ./Scripts/xcframeworks/build_module.sh MSPGoogleAdsTypes"
+        log_error ""
+        log_error "  # PrebidMobile (third-party, usually pre-packaged)"
+        log_error "  # Check: ThirdParty/PrebidMobile/PrebidMobile.xcframework"
+        log_error ""
+        log_error "  Then re-run Preflight:"
+        log_error "  ./Scripts/msp-release.sh preflight"
+        log_error ""
+        log_error "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+        return 1
+    fi
+
+    log_success "✅ Foundation Layer XCFrameworks are ready"
+    log_info ""
+
+    # =========================================================================
+    # Original logic: Check and build Adapters
+    # =========================================================================
+
+    log_info "Step 1: Checking Binary Adapters..."
+
     # Step 1: Detect missing XCFrameworks
     for adapter in "${BINARY_ADAPTERS[@]}"; do
         if check_xcframework_exists "$adapter"; then
