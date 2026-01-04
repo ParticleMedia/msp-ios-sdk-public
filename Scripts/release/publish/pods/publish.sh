@@ -1242,10 +1242,12 @@ create_github_release_for_pod() {
                 gh release edit "$version" --repo "ParticleMedia/msp-ios-sdk-public" --draft=false --latest 2>/dev/null || true
         fi
     else
-        log_info "Creating new release $version"
-            if gh release create "$version" "$ROOT_DIR/$zip_name" --repo "ParticleMedia/msp-ios-sdk-public" --title "Release $version" --notes "Release $version" --draft=false --latest; then
-            gh_release_created=true
-        fi
+    log_info "Creating new release $version"
+        if gh release create "$version" "$ROOT_DIR/$zip_name" --repo "ParticleMedia/msp-ios-sdk-public" --title "Release $version" --notes "Release $version" --latest; then
+        gh_release_created=true
+        # Ensure release is published (not draft)
+        gh release edit "$version" --repo "ParticleMedia/msp-ios-sdk-public" --draft=false 2>/dev/null || true
+    fi
     fi
     
     # Clean up zip file
@@ -1912,11 +1914,13 @@ ensure_zip_file_exists_for_pod() {
             --repo "ParticleMedia/msp-ios-sdk-public" \
             --title "Release $version" \
             --notes "MSP iOS SDK Release $version" \
-            --draft=false \
             --latest; then
             log_error "Failed to create GitHub Release"
             return 1
         fi
+
+        # Ensure release is published (not draft)
+        gh release edit "$version" --repo "ParticleMedia/msp-ios-sdk-public" --draft=false 2>/dev/null || true
 
         log_success "✅ GitHub Release created"
     fi
@@ -2549,12 +2553,14 @@ Automatically created to resolve checksum verification issue."
                 --repo "$release_repo" \
                 --title "MSP iOS SDK $version_tag" \
                 --notes "$release_notes" \
-                --draft=false \
                 --latest \
                 --target "release/${version_tag}"; then
                 log_error "PUBLISH" "Failed to create GitHub Release $version_tag"
                 return 1
             fi
+
+            # Ensure release is published (not draft)
+            gh release edit "$version_tag" --repo "$release_repo" --draft=false 2>/dev/null || true
 
             log_info "PUBLISH" "✓ Created GitHub Release $version_tag"
         else
@@ -2602,13 +2608,15 @@ Automatically recreated to resolve checksum verification issue."
                 --repo "$release_repo" \
                 --title "MSP iOS SDK $version_tag" \
                 --notes "$release_notes" \
-                --draft=false \
                 --latest \
                 --target "release/${version_tag}"; then
                 log_error "PUBLISH" "Failed to recreate GitHub Release $version_tag"
                 release_github_release_lock
                 return 1
             fi
+
+            # Ensure release is published (not draft)
+            gh release edit "$version_tag" --repo "$release_repo" --draft=false 2>/dev/null || true
 
             log_info "PUBLISH" "✓ Recreated GitHub Release $version_tag"
 
