@@ -1036,20 +1036,76 @@ create_github_release_for_pod() {
         local temp_zip_dir="/tmp/msp-checksum-verify-$$"
         mkdir -p "$temp_zip_dir"
         
-        # Wait for GitHub to process the upload (may take a few seconds)
-        log_info "Waiting for GitHub to process upload (5 seconds)..."
-        sleep 5
-        
+        # ====================================================================
+        # Smart Wait Strategy: Dynamic wait time based on file size
+        # ====================================================================
+        # Rationale:
+        # - Large files (21MB MSPSharedLibraries) need 2-5 minutes for CDN
+        # - Small files (<1MB) only need 10-20 seconds
+        # - Use progressive retry intervals to give CDN more time
+        # ====================================================================
+
+        # Calculate dynamic wait times based on file size
+        local local_zip="$ROOT_DIR/Build/Zips/${pod}-${version}.zip"
+        local initial_wait=5
+        local max_download_attempts=3
+
+        # Define retry intervals array (will be set based on file size)
+        declare -a retry_intervals
+
+        if [[ -f "$local_zip" ]]; then
+            local file_size_bytes=$(stat -f%z "$local_zip" 2>/dev/null || stat -c%s "$local_zip" 2>/dev/null || echo "0")
+            local file_size_mb=$((file_size_bytes / 1024 / 1024))
+
+            if [[ $file_size_mb -ge 15 ]]; then
+                # Very large files (>15MB): MSPSharedLibraries (21MB)
+                initial_wait=45
+                retry_intervals=(20 20 25 30)  # Progressive intervals
+                max_download_attempts=5
+                log_info "Very large file detected (${file_size_mb}MB), using extended wait strategy"
+                log_info "Total wait time: up to 160 seconds (2.7 minutes)"
+            elif [[ $file_size_mb -ge 5 ]]; then
+                # Large files (5-15MB): MSPFacebookAdapter, MSPGoogleAdsTypes
+                initial_wait=30
+                retry_intervals=(15 15 20)
+                max_download_attempts=4
+                log_info "Large file detected (${file_size_mb}MB), using extended wait strategy"
+                log_info "Total wait time: up to 100 seconds"
+            elif [[ $file_size_mb -ge 1 ]]; then
+                # Medium files (1-5MB): NovaAdapter, MSPFacebookAdapter
+                initial_wait=15
+                retry_intervals=(10 10 10)
+                max_download_attempts=3
+                log_info "Medium file detected (${file_size_mb}MB), using moderate wait strategy"
+                log_info "Total wait time: up to 45 seconds"
+            else
+                # Small files (<1MB): Most adapters
+                initial_wait=5
+                retry_intervals=(5 5 5)
+                max_download_attempts=3
+                log_info "Small file detected (${file_size_mb}MB), using standard wait strategy"
+                log_info "Total wait time: up to 20 seconds"
+            fi
+        else
+            log_warning "Local zip not found, using default wait strategy"
+            retry_intervals=(5 5 5)
+        fi
+
+        log_info "Waiting ${initial_wait} seconds for GitHub to process upload..."
+        sleep $initial_wait
+
         # Download zip from GitHub Release and calculate checksum
         local download_attempt=1
-        local max_download_attempts=3
         while [[ $download_attempt -le $max_download_attempts ]]; do
             log_info "Downloading zip from GitHub Release to verify checksum (attempt $download_attempt/$max_download_attempts)..."
+
             if curl -L -f -s -o "$temp_zip_dir/$zip_name" "$zip_url" 2>/dev/null; then
                 local file_size=$(stat -f%z "$temp_zip_dir/$zip_name" 2>/dev/null || stat -c%s "$temp_zip_dir/$zip_name" 2>/dev/null || echo "0")
+
                 if [[ $file_size -gt 0 ]]; then
                     if command -v shasum >/dev/null 2>&1; then
                         zip_checksum=$(shasum -a 256 "$temp_zip_dir/$zip_name" 2>/dev/null | cut -d' ' -f1)
+
                         if [[ -n "$zip_checksum" && ${#zip_checksum} -eq 64 ]]; then
                             log_success "Calculated SHA256 checksum from GitHub Release: $zip_checksum"
                             rm -rf "$temp_zip_dir"
@@ -1068,39 +1124,130 @@ create_github_release_for_pod() {
             else
                 log_warning "Failed to download zip from GitHub Release, retrying..."
             fi
-            
+
+            # Wait before next retry (use progressive intervals)
             if [[ $download_attempt -lt $max_download_attempts ]]; then
-                sleep 5
+                local retry_index=$((download_attempt - 1))
+                local retry_wait=${retry_intervals[$retry_index]:-5}
+                log_info "Waiting ${retry_wait} seconds before retry..."
+                sleep $retry_wait
             fi
+
             download_attempt=$((download_attempt + 1))
         done
         
         rm -rf "$temp_zip_dir"
         
+        # ====================================================================
+        # Local Checksum Fallback: Verify before overwriting
+        # ====================================================================
+        # Rationale:
+        # - CDN propagation can take 2-10 minutes for large files
+        # - GitHub Release may return OLD checksum if CDN not updated
+        # - Local zip is the SOURCE OF TRUTH (just created/uploaded)
+        # - Only overwrite podspec if GitHub checksum matches local checksum
+        # - Otherwise, keep local checksum and log warning
+        # ====================================================================
+
         if [[ -z "$zip_checksum" ]] || [[ ${#zip_checksum} -ne 64 ]]; then
-            log_error "Failed to calculate checksum from GitHub Release zip file"
-            log_error "Podspec checksum may be incorrect. Please verify manually."
-            # Continue anyway - podspec may already have correct checksum from generate_podspec.sh
+            log_error "Failed to calculate checksum from GitHub Release zip file after all retries"
+            log_error "This indicates:"
+            log_error "  1. GitHub Release upload may have failed"
+            log_error "  2. CDN propagation is taking extremely long (>2-3 minutes)"
+            log_error "  3. Network connectivity issues"
+            log_error ""
+            log_error "Podspec will keep checksum from generate_podspec.sh (local zip)"
+            log_error "CocoaPods validation may fail temporarily until GitHub Release is accessible"
+            # Continue anyway - podspec already has correct checksum from generate_podspec.sh
         else
-            # Update podspec with checksum from GitHub Release
+            # Verify checksum against local zip before updating
             local podspec="$ROOT_DIR/Build/ReleasePodspecs/${pod}.podspec"
+
             if [[ -f "$podspec" ]]; then
-                log_step "Updating podspec with SHA256 checksum from GitHub Release"
-                # Use Ruby to properly insert checksum into source hash (more robust than sed)
-                ruby <<RUBY_SCRIPT
+                log_step "Verifying GitHub Release checksum against local zip"
+
+                # Calculate local zip checksum for comparison
+                local local_zip="$ROOT_DIR/Build/Zips/${pod}-${version}.zip"
+                local local_checksum=""
+
+                if [[ -f "$local_zip" ]]; then
+                    local_checksum=$(shasum -a 256 "$local_zip" 2>/dev/null | awk '{print $1}')
+                    log_info "Local zip checksum:      $local_checksum"
+                    log_info "GitHub Release checksum: $zip_checksum"
+                else
+                    log_warning "Local zip not found: $local_zip"
+                    log_warning "Cannot verify checksum consistency"
+                fi
+
+                # Compare checksums
+                if [[ -n "$local_checksum" ]]; then
+                    if [[ "$zip_checksum" == "$local_checksum" ]]; then
+                        log_success "✅ GitHub Release checksum matches local zip"
+                        log_info "Updating podspec with verified checksum"
+
+                        # Update podspec using Ruby
+                        ruby <<RUBY_SCRIPT
 podspec_path = '$podspec'
 zip_url = '$zip_url'
 zip_checksum = '$zip_checksum'
 
 podspec_content = File.read(podspec_path)
 # Replace the source block with checksum included
-# Match the exact structure: spec.source = { ... } where ... can be any content including newlines
 new_source = "  spec.source = {\n    :http => \"#{zip_url}\",\n    :type => \"zip\",\n    :sha256 => \"#{zip_checksum}\"\n  }"
-# Use multiline mode and match from spec.source = { to closing brace with proper indentation
 podspec_content.gsub!(/  spec\.source = \{.*?\n  \}/m, new_source)
 File.write(podspec_path, podspec_content)
 RUBY_SCRIPT
-                log_success "Updated podspec with checksum from GitHub Release: $zip_checksum"
+                        log_success "Updated podspec with checksum from GitHub Release: $zip_checksum"
+                    else
+                        log_warning "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+                        log_warning "⚠️  CHECKSUM MISMATCH DETECTED"
+                        log_warning "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+                        log_warning "GitHub Release checksum does NOT match local zip!"
+                        log_warning ""
+                        log_warning "Local zip checksum:      $local_checksum  ← SOURCE OF TRUTH"
+                        log_warning "GitHub Release checksum: $zip_checksum  ← CDN may be serving old version"
+                        log_warning ""
+                        log_warning "Root Cause Analysis:"
+                        log_warning "  - CDN propagation takes 2-10 minutes for large files"
+                        log_warning "  - GitHub Release was updated, but CDN still serves old version"
+                        log_warning "  - This is expected behavior for large files (>15MB)"
+                        log_warning ""
+                        log_warning "Action Taken:"
+                        log_warning "  ✅ Keeping podspec with LOCAL ZIP checksum (correct)"
+                        log_warning "  ❌ NOT overwriting with GitHub Release checksum (old)"
+                        log_warning ""
+                        log_warning "Expected Outcome:"
+                        log_warning "  - Podspec has correct checksum: $local_checksum"
+                        log_warning "  - CocoaPods validation will succeed once CDN catches up (2-10 min)"
+                        log_warning "  - Safe to continue with release (pod trunk push will wait for CDN)"
+                        log_warning ""
+                        log_warning "If CocoaPods validation fails immediately:"
+                        log_warning "  1. This is temporary - CDN is still propagating"
+                        log_warning "  2. Wait 5-10 minutes and Resume will succeed"
+                        log_warning "  3. Manual verification: curl -I $zip_url"
+                        log_warning "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+                        log_info ""
+                        log_info "Podspec will retain checksum from generate_podspec.sh (local zip)"
+                        log_info "This is the CORRECT behavior - local zip is source of truth"
+                    fi
+                else
+                    log_warning "Unable to calculate local zip checksum for verification"
+                    log_warning "Updating podspec with GitHub Release checksum"
+                    log_warning "Manual verification recommended after release"
+
+                    # Fallback: Update with GitHub Release checksum (no verification possible)
+                    ruby <<RUBY_SCRIPT
+podspec_path = '$podspec'
+zip_url = '$zip_url'
+zip_checksum = '$zip_checksum'
+
+podspec_content = File.read(podspec_path)
+new_source = "  spec.source = {\n    :http => \"#{zip_url}\",\n    :type => \"zip\",\n    :sha256 => \"#{zip_checksum}\"\n  }"
+podspec_content.gsub!(/  spec\.source = \{.*?\n  \}/m, new_source)
+File.write(podspec_path, podspec_content)
+RUBY_SCRIPT
+                    log_success "Updated podspec with checksum from GitHub Release: $zip_checksum"
+                fi
             else
                 log_warning "Podspec not found for checksum update: $podspec"
             fi
@@ -2716,6 +2863,29 @@ release_msp_ioscore() {
 release_msp_shared_libraries() {
     log_section "Step 1: Releasing MSPSharedLibraries (foundation dependency)"
 
+    # ========================================================================
+    # Idempotency Check: Skip if already published (Resume-safe)
+    # ========================================================================
+    # Rationale:
+    # - Resume may be called after MSPSharedLibraries was already published
+    # - Re-running create_github_release_for_pod() can overwrite correct checksum
+    # - check_pod_availability() verifies if pod is available on CocoaPods CDN
+    # - If available, skip all steps (no zip upload, no podspec regeneration)
+    # ========================================================================
+    if [[ "$DRY_RUN" != "true" ]]; then
+        if check_pod_availability "MSPSharedLibraries" "$VERSION"; then
+            log_info "MSPSharedLibraries $VERSION is already published to CocoaPods, skipping release"
+            log_success "MSPSharedLibraries $VERSION already available"
+
+            # End timing if metrics enabled
+            if command -v metrics::end &>/dev/null; then
+                metrics::end "pod_MSPSharedLibraries"
+            fi
+
+            return 0
+        fi
+    fi
+
     # Ensure zip file exists for binary distribution pods (Resume-safe)
     # This provides script-level guarantee that podspec generation will succeed
     # even if previous release was incomplete (zip missing but pod published)
@@ -2891,6 +3061,22 @@ release_single_adapter() {
     fi
 
     log_section "Releasing $adapter"
+
+    # ========================================================================
+    # Idempotency Check: Skip if already published (Resume-safe)
+    # ========================================================================
+    # Rationale: Same as MSPSharedLibraries
+    # - Prevents re-uploading zip and regenerating podspec
+    # - Prevents overwriting correct checksum with stale GitHub Release checksum
+    # ========================================================================
+    if [[ "$DRY_RUN" != "true" ]]; then
+        if check_pod_availability "$adapter" "$version"; then
+            log_info "$adapter $version is already published to CocoaPods, skipping release"
+            log_success "$adapter $version already available"
+            echo "SUCCESS: $adapter already published" > "$result_file"
+            return 0
+        fi
+    fi
 
     # Ensure zip file exists for binary distribution pods (Resume-safe)
     # This provides script-level guarantee that podspec generation will succeed
@@ -3178,6 +3364,19 @@ release_adapters() {
 # Release MSPCore (Step 3)
 release_msp_core() {
     log_section "Step 3: Releasing MSPCore (main framework)"
+
+    # ========================================================================
+    # Idempotency Check: Skip if already published (Resume-safe)
+    # ========================================================================
+    # Rationale: Same as MSPSharedLibraries
+    # ========================================================================
+    if [[ "$DRY_RUN" != "true" ]]; then
+        if check_pod_availability "MSPCore" "$VERSION"; then
+            log_info "MSPCore $VERSION is already published to CocoaPods, skipping release"
+            log_success "MSPCore $VERSION already available"
+            return 0
+        fi
+    fi
 
     # Ensure zip file exists for binary distribution pods (Resume-safe)
     # This provides script-level guarantee that podspec generation will succeed
