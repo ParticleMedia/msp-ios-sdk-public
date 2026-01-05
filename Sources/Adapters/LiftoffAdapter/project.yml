@@ -13,7 +13,7 @@ settings:
     PRODUCT_NAME: LiftoffAdapter
     PRODUCT_BUNDLE_IDENTIFIER: com.newsbreak.msp.LiftoffAdapter
     PRODUCT_MODULE_NAME: LiftoffAdapter
-    INFOPLIST_FILE: LiftoffAdapter/Info.plist
+    # INFOPLIST_FILE: LiftoffAdapter/Info.plist
 
 targets:
   LiftoffAdapter:
@@ -31,9 +31,9 @@ targets:
     dependencies:
       - framework: ../../../Build/XCFrameworks/MSPSharedLibraries.xcframework
         embed: false
-      - sdk: Pods/VungleAds.xcframework
+      - framework: ../../../Pods/VungleAds/static/VungleAdsSDK.xcframework
         embed: false
-      - sdk: Pods/SnapKit.xcframework
+      - framework: ../../../ThirdParty/SnapKit/SnapKit.xcframework
         embed: false
     settings:
       base:
@@ -44,7 +44,8 @@ targets:
         FRAMEWORK_SEARCH_PATHS:
           - $(inherited)
           - $(SRCROOT)/../../../Build/XCFrameworks
-          - $(SRCROOT)/../../../Pods
+          - $(SRCROOT)/../../../Pods/VungleAds/static
+          - $(SRCROOT)/../../../ThirdParty/SnapKit
 
   LiftoffAdapterTests:
     type: bundle.unit-test

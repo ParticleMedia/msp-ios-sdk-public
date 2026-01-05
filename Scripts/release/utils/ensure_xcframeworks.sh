@@ -163,7 +163,7 @@ ensure_all_xcframeworks() {
     log_info "Step 0: Checking Foundation Layer XCFrameworks..."
 
     local foundation_missing=false
-    local foundation_xcframeworks=("MSPiOSCore" "MSPGoogleAdsTypes")
+    local foundation_xcframeworks=("MSPiOSCore" "MSPGoogleAdsTypes" "MSPSharedLibraries")
     local release_tier="${MSP_RELEASE_TIER:-preflight}"
 
     for foundation_pod in "${foundation_xcframeworks[@]}"; do
@@ -184,7 +184,23 @@ ensure_all_xcframeworks() {
     if [[ ! -d "$prebid_path" ]]; then
         # Try alternative path (ThirdParty)
         if [[ -d "$prebid_alt_path" ]]; then
-            log_debug "✓ PrebidMobile: Found in ThirdParty directory"
+            log_info "ℹ️  PrebidMobile found in ThirdParty, creating symlink to Build/XCFrameworks..."
+
+            # Ensure Build/XCFrameworks directory exists
+            mkdir -p "$(dirname "$prebid_path")"
+
+            # Create symlink (preferred) or copy as fallback
+            if ln -sf "$prebid_alt_path" "$prebid_path" 2>/dev/null; then
+                log_success "✅ Created symlink: Build/XCFrameworks/PrebidMobile.xcframework -> ThirdParty/PrebidMobile/PrebidMobile.xcframework"
+            else
+                log_warning "⚠️  Symlink failed, copying instead..."
+                if cp -R "$prebid_alt_path" "$prebid_path"; then
+                    log_success "✅ Copied PrebidMobile.xcframework to Build/XCFrameworks/"
+                else
+                    log_error "❌ Failed to copy PrebidMobile.xcframework"
+                    foundation_missing=true
+                fi
+            fi
         else
             log_warning "✗ PrebidMobile: XCFramework missing"
             log_warning "   Primary path: $prebid_path"
