@@ -2639,54 +2639,18 @@ ensure_zip_file_exists_for_pod() {
     checksum=$(shasum -a 256 "$local_zip_path" 2>/dev/null | awk '{print $1}')
     log_info "SHA256: $checksum"
 
-    # Upload to GitHub Release
+    # Phase B: Upload to GitHub Release using unified functions
     log_info "Uploading zip file to GitHub Release..."
 
-    # Check if release exists
-    if ! gh release view "$version" --repo "ParticleMedia/msp-ios-sdk-public" &>/dev/null; then
-        log_warning "GitHub Release $version does not exist, creating..."
-
-        if ! gh release create "$version" \
-            --repo "ParticleMedia/msp-ios-sdk-public" \
-            --title "Release $version" \
-            --notes "MSP iOS SDK Release $version" \
-            --latest; then
-            log_error "Failed to create GitHub Release"
-            return 1
-        fi
-
-        # Ensure release is published (not draft)
-        gh release edit "$version" --repo "ParticleMedia/msp-ios-sdk-public" --draft=false 2>/dev/null || true
-
-        log_success "✅ GitHub Release created"
+    # Step 1: Create/verify GitHub Release (Phase B unified flow)
+    if ! create_or_verify_github_release "$version"; then
+        log_error "Failed to create/verify GitHub Release"
+        return 1
     fi
 
-    # Upload zip with retry mechanism (use --clobber to overwrite if exists)
-    local upload_attempt=1
-    local max_upload_attempts=3
-    local upload_success=false
-
-    while [[ $upload_attempt -le $max_upload_attempts ]]; do
-        log_info "Uploading zip file to GitHub Release (attempt $upload_attempt/$max_upload_attempts)..."
-        
-        if gh release upload "$version" "$ROOT_DIR/Build/Zips/$zip_name" \
-            --repo "ParticleMedia/msp-ios-sdk-public" \
-            --clobber 2>&1; then
-            log_success "✅ Zip file uploaded to GitHub Release"
-            upload_success=true
-            break
-        else
-            log_warning "⚠️  Upload attempt $upload_attempt failed"
-            if [[ $upload_attempt -lt $max_upload_attempts ]]; then
-                log_info "Retrying in 5 seconds..."
-                sleep 5
-            fi
-            upload_attempt=$((upload_attempt + 1))
-        fi
-    done
-
-    if [[ "$upload_success" != "true" ]]; then
-        log_error "❌ Failed to upload zip file after $max_upload_attempts attempts"
+    # Step 2: Upload zip using unified function
+    if ! upload_zip_to_github "$version" "$ROOT_DIR/Build/Zips/$zip_name"; then
+        log_error "❌ Failed to upload zip file"
         log_error "Local zip file preserved at: $ROOT_DIR/Build/Zips/$zip_name"
         log_error "You can manually upload it with:"
         log_error "  gh release upload $version $ROOT_DIR/Build/Zips/$zip_name --repo ParticleMedia/msp-ios-sdk-public --clobber"
@@ -2715,73 +2679,28 @@ ensure_zip_file_exists_for_pod() {
         cdn_wait_time=120  # Large files (>20MB): 120s (2 minutes)
     fi
 
+    # Phase B: Use unified CDN wait and verification
+    # Set CDN wait time based on file size (override default)
+    export MSP_CDN_WAIT_TIME=$cdn_wait_time
     log_info "File size: ${file_size_mb}MB → CDN wait time: ${cdn_wait_time}s"
-    log_info "Waiting $cdn_wait_time seconds for CDN to propagate large file..."
-    sleep $cdn_wait_time
 
-    # ========================================================================
-    # Verify zip file accessibility with retry mechanism
-    # ========================================================================
-    local max_verify_attempts=10  # Increased from 3 to 10
-    local verify_interval=15      # Increased from 10 to 15 seconds
-    local verify_attempt=1
-    local accessible=false
+    # Wait for CDN propagation using unified function
+    wait_for_cdn_propagation "$version"
 
-    log_info "Verifying zip file accessibility (up to $max_verify_attempts attempts)..."
-
-    while [[ $verify_attempt -le $max_verify_attempts ]]; do
-        log_info "Verification attempt $verify_attempt/$max_verify_attempts..."
-
-        # Try to access via CDN URL
-        if curl -L -f -I -s "$zip_url" >/dev/null 2>&1; then
-            accessible=true
-            log_success "✅ Zip file accessible via CDN: $zip_url"
-            break
-        else
-            log_warning "⚠️  CDN URL not yet accessible (attempt $verify_attempt/$max_verify_attempts)"
-
-            # If CDN not accessible, check GitHub API as fallback
-            log_info "Checking via GitHub API as fallback..."
-
-            if gh release view "$version" --repo "ParticleMedia/msp-ios-sdk-public" \
-                --json assets --jq ".assets[] | select(.name == \"$zip_name\")" 2>/dev/null | grep -q "$zip_name"; then
-                log_info "✅ File confirmed to exist via GitHub API"
-
-                # If this is the last attempt and API confirms existence, accept it
-                if [[ $verify_attempt -eq $max_verify_attempts ]]; then
-                    log_warning "⚠️  CDN URL still not accessible, but GitHub API confirms file exists"
-                    log_warning "   File size: ${file_size_mb}MB may need longer CDN propagation"
-                    log_warning "   CocoaPods validation will likely succeed once CDN catches up"
-                    log_info "Continuing with release (file exists, CDN delay expected for large files)"
-                    accessible=true
-                    break
-                fi
-            else
-                log_error "❌ File not found via GitHub API either - upload may have failed"
-            fi
-
-            # Wait before next attempt
-            if [[ $verify_attempt -lt $max_verify_attempts ]]; then
-                log_info "Waiting $verify_interval seconds before retry..."
-                sleep $verify_interval
-            fi
-        fi
-
-        ((verify_attempt++))
-    done
-
-    if [[ "$accessible" != "true" ]]; then
-        log_error "❌ Zip file not accessible after $max_verify_attempts attempts ($(( max_verify_attempts * verify_interval )) seconds total)"
+    # Verify CDN availability using unified function
+    if ! verify_cdn_availability "$version" "$zip_name"; then
+        log_error "❌ Zip file not accessible on CDN"
         log_error "This may indicate:"
         log_error "  1. Upload failed (check GitHub Release manually)"
         log_error "  2. Extreme CDN delay (rare for files <100MB)"
         log_error "  3. Network connectivity issues"
 
-        if [[ "${MSP_RELEASE_TIER:-}" == "release" ]]; then
-            log_error "[FAIL-FAST] Cannot proceed with inaccessible zip in release mode"
+        # Phase B: Remove MSP_RELEASE_TIER check, use DRY_RUN instead
+        if [[ "${MSP_DRY_RUN:-true}" == "false" ]]; then
+            log_error "[FAIL-FAST] Cannot proceed with inaccessible zip in production mode"
             return 1
         else
-            log_warning "Continuing in non-release mode (may fail during pod trunk push)"
+            log_warning "Continuing in DRY_RUN mode (may fail during pod trunk push)"
         fi
     else
         log_success "✅ Zip file upload verified"
