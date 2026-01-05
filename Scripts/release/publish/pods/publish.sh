@@ -971,6 +971,468 @@ wait_for_remote_tag() {
 }
 
 # ============================================================================
+# Unified GitHub Release Management (Phase B Step 2b)
+# ============================================================================
+# Phase B Change: All modes create/verify GitHub Release
+# DRY_RUN controls draft (true) vs published (false) state
+# ============================================================================
+
+# Create or verify GitHub Release (idempotent)
+# Args:
+#   $1: tag - Release tag (e.g., 0.4.0-rc.1)
+# Returns:
+#   0 if success, 1 if failure
+# Environment:
+#   MSP_DRY_RUN - Controls draft vs published (default: true)
+#   MSP_GITHUB_REPO - GitHub repository (default: ParticleMedia/msp-ios-sdk-public)
+#   MSP_ALLOW_EXISTING_RELEASE - Allow existing release with different state (default: false)
+create_or_verify_github_release() {
+    local tag="$1"
+    local dry_run="${MSP_DRY_RUN:-true}"
+    local repo="${MSP_GITHUB_REPO:-ParticleMedia/msp-ios-sdk-public}"
+
+    log_info "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    log_info "GitHub Release: $tag"
+    log_info "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+
+    # Determine expected state
+    local expected_draft
+    if [[ "$dry_run" == "true" ]]; then
+        expected_draft="true"
+        log_info "Mode: DRY_RUN (draft release)"
+    else
+        expected_draft="false"
+        log_info "Mode: PRODUCTION (published release)"
+    fi
+
+    # Check if release already exists
+    if gh release view "$tag" --repo "$repo" >/dev/null 2>&1; then
+        log_info "✓ Release $tag already exists"
+
+        # Get current state
+        local current_draft
+        current_draft=$(gh release view "$tag" --repo "$repo" --json isDraft -q '.isDraft' 2>/dev/null || echo "false")
+
+        log_debug "Current state: draft=$current_draft"
+        log_debug "Expected state: draft=$expected_draft"
+
+        # Verify state matches expectation
+        if [[ "$current_draft" == "$expected_draft" ]]; then
+            log_success "✓ Release state is correct"
+            return 0
+        else
+            log_warning "Release state mismatch:"
+            log_warning "  Current:  draft=$current_draft"
+            log_warning "  Expected: draft=$expected_draft"
+
+            # Handle mismatch
+            if [[ "${MSP_ALLOW_EXISTING_RELEASE:-false}" == "true" ]]; then
+                log_warning "Continuing with existing release (MSP_ALLOW_EXISTING_RELEASE=true)"
+                return 0
+            else
+                log_error "Release state mismatch"
+                log_error "Options:"
+                log_error "  1. Set MSP_ALLOW_EXISTING_RELEASE=true to use existing release"
+                log_error "  2. Delete release: gh release delete $tag --repo $repo --yes"
+                log_error "  3. Change DRY_RUN to match existing state"
+                return 1
+            fi
+        fi
+    fi
+
+    # Release doesn't exist, create it
+    log_info "Creating GitHub Release: $tag"
+
+    # Generate release notes
+    local release_notes
+    release_notes=$(generate_release_notes "$tag")
+
+    local create_args=(
+        "$tag"
+        --repo "$repo"
+        --title "Release $tag"
+        --notes "$release_notes"
+    )
+
+    if [[ "$expected_draft" == "true" ]]; then
+        create_args+=(--draft)
+        log_info "Creating DRAFT release (DRY_RUN mode)"
+    else
+        log_info "Creating PUBLISHED release (production mode)"
+    fi
+
+    # Create release
+    if gh release create "${create_args[@]}" 2>&1 | tee /tmp/gh-release-create-$tag.log; then
+        log_success "✓ Created GitHub Release: $tag"
+        return 0
+    else
+        log_error "✗ Failed to create GitHub Release: $tag"
+        log_error "See log: /tmp/gh-release-create-$tag.log"
+        return 1
+    fi
+}
+
+# Generate release notes
+# Args:
+#   $1: tag - Release tag
+# Returns:
+#   Prints release notes to stdout
+generate_release_notes() {
+    local tag="$1"
+
+    cat <<EOF
+# MSP iOS SDK Release $tag
+
+## Components
+
+This release includes the following components:
+- MSPCore
+- MSPSharedLibraries
+- MSPPrebidAdapter
+- MSPGoogleAdapter
+- MSPFacebookAdapter
+- NovaAdapter
+- AmazonAdapter
+- MolocoAdapter (if applicable)
+- LiftoffAdapter (if applicable)
+
+## Installation
+
+Add to your \`Podfile\`:
+\`\`\`ruby
+pod 'MSPCore', '$tag'
+# ... other pods as needed
+\`\`\`
+
+Then run:
+\`\`\`bash
+pod install
+\`\`\`
+
+## Documentation
+
+See [README.md](https://github.com/ParticleMedia/msp-ios-sdk-public) for complete documentation.
+
+## Changes
+
+See commit history for detailed changes in this release.
+
+---
+
+🚀 Generated with [Claude Code](https://claude.com/claude-code)
+EOF
+}
+
+# Upload zip to GitHub Release (idempotent)
+# Args:
+#   $1: tag - Release tag
+#   $2: zip_path - Path to zip file
+# Returns:
+#   0 if success, 1 if failure
+upload_zip_to_github() {
+    local tag="$1"
+    local zip_path="$2"
+    local repo="${MSP_GITHUB_REPO:-ParticleMedia/msp-ios-sdk-public}"
+
+    local zip_name
+    zip_name=$(basename "$zip_path")
+
+    log_info "Uploading: $zip_name"
+
+    # Verify zip file exists
+    if [[ ! -f "$zip_path" ]]; then
+        log_error "Zip file not found: $zip_path"
+        return 1
+    fi
+
+    # Check if already uploaded (idempotency)
+    if gh release view "$tag" --repo "$repo" --json assets -q ".assets[] | select(.name == \"$zip_name\")" 2>/dev/null | grep -q "$zip_name"; then
+        log_info "✓ $zip_name already uploaded"
+
+        # Optional: Verify file size matches
+        local remote_size
+        remote_size=$(gh release view "$tag" --repo "$repo" --json assets -q ".assets[] | select(.name == \"$zip_name\") | .size" 2>/dev/null || echo "0")
+        local local_size
+        local_size=$(stat -f%z "$zip_path" 2>/dev/null || stat -c%s "$zip_path" 2>/dev/null || echo "0")
+
+        if [[ "$remote_size" == "$local_size" ]] && [[ "$remote_size" != "0" ]]; then
+            log_debug "File size matches: $local_size bytes"
+        else
+            log_warning "File size mismatch: remote=$remote_size, local=$local_size"
+            if [[ "${MSP_FORCE_REUPLOAD:-false}" == "true" ]]; then
+                log_info "Re-uploading (MSP_FORCE_REUPLOAD=true)..."
+            else
+                log_warning "Skipping re-upload (set MSP_FORCE_REUPLOAD=true to force)"
+                return 0
+            fi
+        fi
+
+        if [[ "${MSP_FORCE_REUPLOAD:-false}" != "true" ]]; then
+            return 0
+        fi
+    fi
+
+    # Upload
+    log_debug "Uploading $zip_path to release $tag"
+    if gh release upload "$tag" "$zip_path" --repo "$repo" --clobber 2>&1 | tee /tmp/gh-upload-$zip_name.log; then
+        log_success "✓ Uploaded $zip_name"
+        return 0
+    else
+        log_error "✗ Failed to upload $zip_name"
+        log_error "See log: /tmp/gh-upload-$zip_name.log"
+        return 1
+    fi
+}
+
+# Upload all zips to GitHub Release (batch operation)
+# Args:
+#   $1: tag - Release tag
+#   $@: zip_paths - Array of zip file paths
+# Returns:
+#   0 if all succeed, 1 if any fail
+upload_all_zips_to_github() {
+    local tag="$1"
+    shift
+    local zip_paths=("$@")
+
+    log_info "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    log_info "Uploading Zips to GitHub Release"
+    log_info "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    log_info "Release: $tag"
+    log_info "Zips: ${#zip_paths[@]}"
+
+    local failed=0
+    local uploaded=0
+    local skipped=0
+
+    for zip_path in "${zip_paths[@]}"; do
+        if [[ ! -f "$zip_path" ]]; then
+            log_warning "Zip not found, skipping: $zip_path"
+            ((skipped++))
+            continue
+        fi
+
+        if upload_zip_to_github "$tag" "$zip_path"; then
+            ((uploaded++))
+        else
+            ((failed++))
+        fi
+    done
+
+    log_info "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    log_info "Upload Summary:"
+    log_info "  Total:    ${#zip_paths[@]}"
+    log_info "  Uploaded: $uploaded"
+    log_info "  Skipped:  $skipped"
+    log_info "  Failed:   $failed"
+
+    if [[ $failed -gt 0 ]]; then
+        log_error "Upload failed: $failed zip(s) failed to upload"
+        log_error "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+        return 1
+    else
+        log_success "All zips uploaded ✓"
+        log_success "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+        return 0
+    fi
+}
+
+# Wait for CDN propagation with progress indicator
+# Args:
+#   $1: tag - Release tag (for logging)
+# Returns:
+#   Always 0 (just waits)
+# Environment:
+#   MSP_CDN_WAIT_TIME - Wait time in seconds (default: 120)
+wait_for_cdn_propagation() {
+    local tag="$1"
+    local wait_time="${MSP_CDN_WAIT_TIME:-120}"
+
+    log_info "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    log_info "Waiting for GitHub CDN Propagation"
+    log_info "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    log_info "Release: $tag"
+    log_info "Wait time: ${wait_time}s"
+    log_info "Why: GitHub Release CDN takes 60-120s to propagate globally"
+
+    # Progress bar
+    local elapsed=0
+    while (( elapsed < wait_time )); do
+        sleep 1
+        ((elapsed++))
+
+        # Print progress
+        if (( elapsed % 10 == 0 )); then
+            printf "."
+        fi
+        if (( elapsed % 60 == 0 )); then
+            echo " ${elapsed}s / ${wait_time}s"
+        fi
+    done
+    echo ""
+
+    log_success "✓ CDN propagation wait complete (${wait_time}s)"
+    log_success "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    return 0
+}
+
+# Verify CDN availability for a single zip (HTTP HEAD request)
+# Args:
+#   $1: tag - Release tag
+#   $2: filename - Zip filename
+# Returns:
+#   0 if available, 1 if not
+verify_cdn_availability() {
+    local tag="$1"
+    local filename="$2"
+    local repo="${MSP_GITHUB_REPO:-ParticleMedia/msp-ios-sdk-public}"
+    local url="https://github.com/${repo}/releases/download/${tag}/${filename}"
+
+    log_debug "Verifying CDN: $url"
+
+    # Try HTTP HEAD request (faster than full download)
+    # Retry 3 times with 10s interval
+    local attempt=1
+    local max_attempts=3
+
+    while [[ $attempt -le $max_attempts ]]; do
+        if curl -L -f -I -s "$url" >/dev/null 2>&1; then
+            log_success "✓ $filename is available on CDN"
+            return 0
+        fi
+
+        if [[ $attempt -lt $max_attempts ]]; then
+            log_debug "CDN not ready, retrying in 10s... (attempt $attempt/$max_attempts)"
+            sleep 10
+        fi
+
+        ((attempt++))
+    done
+
+    log_error "✗ $filename not available on CDN after $max_attempts attempts"
+    log_error "URL: $url"
+    return 1
+}
+
+# Verify CDN availability for all zips (batch verification)
+# Args:
+#   $1: tag - Release tag
+#   $@: filenames - Array of zip filenames
+# Returns:
+#   0 if all available, 1 if any unavailable
+verify_all_cdn_availability() {
+    local tag="$1"
+    shift
+    local filenames=("$@")
+
+    log_info "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    log_info "Verifying CDN Availability"
+    log_info "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    log_info "Release: $tag"
+    log_info "Files: ${#filenames[@]}"
+
+    local failed=0
+    local verified=0
+
+    for filename in "${filenames[@]}"; do
+        if verify_cdn_availability "$tag" "$filename"; then
+            ((verified++))
+        else
+            ((failed++))
+        fi
+    done
+
+    log_info "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    log_info "CDN Verification Summary:"
+    log_info "  Total:    ${#filenames[@]}"
+    log_info "  Verified: $verified"
+    log_info "  Failed:   $failed"
+
+    if [[ $failed -gt 0 ]]; then
+        log_error "CDN verification failed: $failed file(s) not available"
+        log_error "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+        log_error "This usually means:"
+        log_error "  1. CDN propagation needs more time"
+        log_error "  2. Zip was not uploaded successfully"
+        log_error "  3. Network connectivity issues"
+        log_error ""
+        log_error "Recommendation: Increase MSP_CDN_WAIT_TIME (current: ${MSP_CDN_WAIT_TIME:-120}s)"
+        return 1
+    else
+        log_success "All files verified on CDN ✓"
+        log_success "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+        return 0
+    fi
+}
+
+# Main GitHub Release workflow (orchestrates all steps)
+# Args:
+#   $1: tag - Release tag
+#   $@: zip_paths - Array of zip file paths
+# Returns:
+#   0 if success, 1 if failure
+prepare_github_release() {
+    local tag="$1"
+    shift
+    local zip_paths=("$@")
+
+    log_info "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    log_info "Preparing GitHub Release (Phase B Unified Flow)"
+    log_info "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    log_info "Tag: $tag"
+    log_info "Zips: ${#zip_paths[@]}"
+    log_info "DRY_RUN: ${MSP_DRY_RUN:-true}"
+
+    # Step 1: Create/verify release
+    log_info ""
+    log_info "Step 1: Create/verify GitHub Release"
+    if ! create_or_verify_github_release "$tag"; then
+        log_error "Failed to create/verify GitHub Release"
+        return 1
+    fi
+
+    # Step 2: Upload zips
+    log_info ""
+    log_info "Step 2: Upload zips to GitHub Release"
+    if ! upload_all_zips_to_github "$tag" "${zip_paths[@]}"; then
+        log_error "Failed to upload zips"
+        return 1
+    fi
+
+    # Step 3: Wait for CDN propagation
+    log_info ""
+    log_info "Step 3: Wait for CDN propagation"
+    wait_for_cdn_propagation "$tag"
+
+    # Step 4: Verify CDN availability
+    log_info ""
+    log_info "Step 4: Verify CDN availability"
+    local filenames=()
+    for zip_path in "${zip_paths[@]}"; do
+        if [[ -f "$zip_path" ]]; then
+            filenames+=("$(basename "$zip_path")")
+        fi
+    done
+
+    if ! verify_all_cdn_availability "$tag" "${filenames[@]}"; then
+        log_error "CDN verification failed"
+
+        # Non-fatal in some cases
+        if [[ "${MSP_SKIP_CDN_VERIFICATION:-false}" == "true" ]]; then
+            log_warning "Continuing despite CDN verification failure (MSP_SKIP_CDN_VERIFICATION=true)"
+        else
+            log_error "Set MSP_SKIP_CDN_VERIFICATION=true to continue anyway (NOT recommended)"
+            return 1
+        fi
+    fi
+
+    log_success "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    log_success "GitHub Release Ready ✓"
+    log_success "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    return 0
+}
+
+# ============================================================================
 # Verify and Fix GitHub Release Zip (Enhanced Idempotency)
 # ============================================================================
 # Purpose: Verify that GitHub Release zip matches local zip
