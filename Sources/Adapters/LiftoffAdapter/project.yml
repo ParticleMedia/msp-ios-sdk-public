@@ -29,6 +29,8 @@ targets:
           - "**/*.test.swift"
           - "**/*.spec.swift"
     dependencies:
+      - framework: ../../../Build/XCFrameworks/MSPiOSCore.xcframework
+        embed: false
       - framework: ../../../Build/XCFrameworks/MSPSharedLibraries.xcframework
         embed: false
       - framework: ../../../Pods/VungleAds/static/VungleAdsSDK.xcframework
