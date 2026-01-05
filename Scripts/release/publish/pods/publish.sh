@@ -176,7 +176,7 @@ RELEASE_NOTES="${RELEASE_NOTES:-}"
 
 # Default pod modules if PODS_MODULES not set (backward compatibility)
 # Release order: MSPiOSCore → MSPSharedLibraries → MSPGoogleAdsTypes → Adapters → MSPCore
-DEFAULT_PODS_MODULES="MSPiOSCore MSPSharedLibraries MSPGoogleAdsTypes MSPPrebidAdapter MSPCore MSPGoogleAdapter MSPFacebookAdapter NovaAdapter AmazonAdapter"
+DEFAULT_PODS_MODULES="MSPiOSCore MSPSharedLibraries MSPGoogleAdsTypes MSPPrebidAdapter MSPCore MSPGoogleAdapter MSPFacebookAdapter NovaAdapter AmazonAdapter MolocoAdapter LiftoffAdapter"
 PODS_MODULES="${PODS_MODULES:-$DEFAULT_PODS_MODULES}"
 
 # ============================================================================
@@ -196,7 +196,7 @@ PODS_MODULES="${PODS_MODULES:-$DEFAULT_PODS_MODULES}"
 is_binary_distribution() {
     local pod="$1"
     case "$pod" in
-        MSPiOSCore|MSPSharedLibraries|MSPGoogleAdsTypes|MSPCore|NovaAdapter|MSPPrebidAdapter|MSPGoogleAdapter|MSPFacebookAdapter|AmazonAdapter)
+        MSPiOSCore|MSPSharedLibraries|MSPGoogleAdsTypes|MSPCore|NovaAdapter|MSPPrebidAdapter|MSPGoogleAdapter|MSPFacebookAdapter|AmazonAdapter|MolocoAdapter|LiftoffAdapter)
             return 0
             ;;
         *)
@@ -2574,7 +2574,7 @@ publish_pod_with_resume() {
     # ========================================================================
     if is_binary_distribution "$pod"; then
         case "$pod" in
-            MSPPrebidAdapter|MSPGoogleAdapter|MSPFacebookAdapter|AmazonAdapter)
+            MSPPrebidAdapter|MSPGoogleAdapter|MSPFacebookAdapter|AmazonAdapter|MolocoAdapter|LiftoffAdapter)
                 local xcframework_path="$ROOT_DIR/Build/XCFrameworks/${pod}.xcframework"
 
                 if [[ ! -d "$xcframework_path" ]]; then
