@@ -115,9 +115,9 @@ msp_state_init() {
     local cli_args="${MSP_RELEASE_ORIGINAL_ARGS:-}"
     local invoked_subcommand="${SUBCOMMAND:-${mode}}"
     
-    # Phase 4 TASK 3: Additional fields for final schema
+    # Phase B Step 4: Use DRY_RUN only, remove release_tier
     local release_mode="${MSP_RELEASE_MODE:-cli}"
-    local release_tier="${MSP_RELEASE_TIER:-preflight}"
+    # Removed: local release_tier="${MSP_RELEASE_TIER:-preflight}"
 
     # Normalize dry_run to boolean
     local dry_run_bool="false"
@@ -149,14 +149,14 @@ msp_state_init() {
         --arg started_at "$now" \
         --arg updated_at "$now" \
         --arg release_mode "$release_mode" \
-        --arg release_tier "$release_tier" \
+        # Removed: --arg release_tier "$release_tier" \
         '{
-            schema_version: 2,
+            schema_version: 3,
             run_id: $run_id,
             mode: $mode,
             version: $version,
             release_mode: $release_mode,
-            release_tier: $release_tier,
+            # Removed: release_tier: $release_tier,
             base_branch: $base_branch,
             release_branch: $release_branch,
             dry_run: $dry_run,

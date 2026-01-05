@@ -1325,13 +1325,16 @@ main() {
     RELEASE_MODE="$(_msp_release_get_mode)"
     echo "[MSP][ORCH] Release mode: ${RELEASE_MODE}"
     
-    # Phase 4 TASK 4: Preflight / Production mode detection
-    local RELEASE_TIER="${MSP_RELEASE_TIER:-preflight}"
-    export MSP_RELEASE_TIER="$RELEASE_TIER"
+    # Phase B Step 4: Use DRY_RUN instead of MSP_RELEASE_TIER
+    local dry_run="${DRY_RUN:-true}"
+    local mode_label="dry-run"
+    if [[ "$dry_run" == "false" ]]; then
+        mode_label="production"
+    fi
     if command -v log::info &>/dev/null; then
-        log::info "ORCH" "Running in ${RELEASE_TIER} tier"
+        log::info "ORCH" "Running in ${mode_label} mode"
     else
-        log_info "[TIER] Running in ${RELEASE_TIER} tier"
+        log_info "[MODE] Running in ${mode_label} mode"
     fi
 
     # Phase 3: Release Tier Safety Checks (must run before any operations)
@@ -1360,7 +1363,8 @@ main() {
         
         # Block real publish if not allowed
         # Local release mode: Bypass config-driven branch restrictions
-        if [[ "$RELEASE_TIER" != "preflight" ]] && ! should_real_publish; then
+        # Phase B: Use DRY_RUN instead of RELEASE_TIER
+        if [[ "$dry_run" == "false" ]] && ! should_real_publish; then
             if [[ "${MSP_ALLOW_LOCAL_RELEASE:-0}" == "1" ]]; then
                 log_warn "[BLOCKED] ⚠️ Config-driven publish check bypassed (local release mode)"
             else
@@ -1370,9 +1374,9 @@ main() {
             fi
         fi
     fi
-    log_info "[TIER] Running in ${RELEASE_TIER} tier"
-    export MSP_RELEASE_TIER="$RELEASE_TIER"
-    echo "[MSP][ORCH] Release tier: ${RELEASE_TIER}"
+    log_info "[MODE] Running in ${mode_label} mode"
+    # Phase B: Removed MSP_RELEASE_TIER export, use DRY_RUN directly
+    echo "[MSP][ORCH] Release mode: ${mode_label}"
     
     # Phase 4 TASK 5: Security protection mechanisms
     log_section "Phase 4: Security Checks"
@@ -1383,8 +1387,9 @@ main() {
     if [[ "$dry_run" == "true" ]]; then
         log_info "[MSP][ORCH] DRY RUN mode: Allowing uncommitted changes"
     elif ! git diff --exit-code >/dev/null 2>&1 || ! git diff --cached --exit-code >/dev/null 2>&1; then
-        if [[ "$RELEASE_TIER" == "preflight" ]]; then
-            log_warn "[MSP][ORCH][WARN] Git working directory is not clean (preflight mode - continuing)"
+        # Phase B: Use DRY_RUN instead of RELEASE_TIER
+        if [[ "$dry_run" == "true" ]]; then
+            log_warn "[MSP][ORCH][WARN] Git working directory is not clean (dry-run mode - continuing)"
             git status --short || true
         else
             log_error "[MSP][ORCH][ERROR] Git working directory is not clean"
@@ -1411,13 +1416,13 @@ main() {
         log_info "[MSP][ORCH] DRY RUN: Skipping tag existence check"
     fi
     
-    # Production release validation
-    if [[ "$RELEASE_TIER" == "production" ]]; then
-        # Version must be >= 1.0.0
+    # Phase B Step 4: Production mode validation (DRY_RUN=false)
+    if [[ "$dry_run" == "false" ]]; then
+        # Version must be >= 1.0.0 for production releases
         if [[ "$VERSION" =~ ^0\. ]]; then
-            log_error "[MSP][ORCH][ERROR] Production release requires version >= 1.0.0"
+            log_error "[MSP][ORCH][ERROR] Production mode requires version >= 1.0.0"
             log_error "Current version: $VERSION"
-            log_error "Use MSP_RELEASE_TIER=preflight for pre-release versions"
+            log_error "Use DRY_RUN=true for pre-release versions"
             exit 1
         fi
         
@@ -1448,10 +1453,10 @@ main() {
             fi
         fi
     else
-        # Preflight: version must be 0.x.y-* or 0.x.y-preflight*
+        # Dry-run mode: version validation warnings
         if [[ ! "$VERSION" =~ ^0\. ]] && [[ ! "$VERSION" =~ -preflight ]] && [[ ! "$VERSION" =~ -.* ]]; then
-            log_warn "[MSP][ORCH] Preflight release with version >= 1.0.0: $VERSION"
-            log_warn "Consider using MSP_RELEASE_TIER=production for production releases"
+            log_warn "[MSP][ORCH] Dry-run mode with version >= 1.0.0: $VERSION"
+            log_warn "Consider using DRY_RUN=false for production releases"
         fi
     fi
     
@@ -1533,10 +1538,10 @@ main() {
         fi
         step_done "pre_release_setup"
     else
-        # In preflight mode, allow pre_release_setup to fail gracefully
-        if [[ "$RELEASE_TIER" == "preflight" ]]; then
-            log_warn "Pre-release setup failed in preflight mode, continuing anyway"
-            step_skip "pre_release_setup (tier: preflight soft-fail)"
+        # Phase B: In dry-run mode, allow pre_release_setup to fail gracefully
+        if [[ "$dry_run" == "true" ]]; then
+            log_warn "Pre-release setup failed in dry-run mode, continuing anyway"
+            step_skip "pre_release_setup (mode: dry-run soft-fail)"
             # Mark overall as failed to prevent success notification
             OVERALL_SUCCESS="false"
         else
@@ -1555,13 +1560,13 @@ main() {
         skip_branch_creation=true
         skip_reason="CLI: --skip-create-release-branch"
         log_warn "Skipping branch creation (--skip-create-release-branch flag set)"
-    elif [[ "$RELEASE_TIER" == "preflight" ]] || [[ "$RELEASE_TIER" == "release" ]] || [[ "$RELEASE_TIER" == "production" ]]; then
-        # In preflight/release/production, check if already on a release branch
+    else
+        # Phase B: In any mode, check if already on a release branch
         local current_branch=$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo "")
         if [[ "$current_branch" =~ ^release/ ]]; then
             skip_branch_creation=true
-            skip_reason="tier: already on release branch"
-            log_warn "Already on release branch '$current_branch', skipping branch creation in $RELEASE_TIER tier"
+            skip_reason="mode: already on release branch"
+            log_warn "Already on release branch '$current_branch', skipping branch creation"
         fi
     fi
 
@@ -1578,9 +1583,10 @@ main() {
             fi
             step_done "create_release_branch"
         else
-            if [[ "$RELEASE_TIER" == "preflight" ]] || [[ "$RELEASE_TIER" == "release" ]] || [[ "$RELEASE_TIER" == "production" ]]; then
-                log_warn "Branch creation failed in $RELEASE_TIER tier, continuing anyway"
-                step_skip "create_release_branch (tier: $RELEASE_TIER soft-fail)"
+            # Phase B: In dry-run mode, allow branch creation to fail gracefully
+            if [[ "$dry_run" == "true" ]]; then
+                log_warn "Branch creation failed in dry-run mode, continuing anyway"
+                step_skip "create_release_branch (mode: dry-run soft-fail)"
             else
                 step_fail "create_release_branch" $?
                 return 11
@@ -1612,14 +1618,13 @@ main() {
             fi
         else
             step_fail "release_cocoapods" $?
-            # Test/preflight tier: allow CocoaPods failure to continue with other steps
-            # Release/production tier: hard-fail (exit entire release)
-            local release_tier="${MSP_RELEASE_TIER:-preflight}"
-            if [[ "$release_tier" == "release" ]] || [[ "$release_tier" == "production" ]]; then
-                log_error "[MSP][ORCH] Release tier ($release_tier): CocoaPods release failure - aborting"
+            # Phase B: Dry-run mode allows CocoaPods failure to continue with other steps
+            # Production mode: hard-fail (exit entire release)
+            if [[ "$dry_run" == "false" ]]; then
+                log_error "[MSP][ORCH] Production mode: CocoaPods release failure - aborting"
                 return 12
             else
-                log_warn "[MSP][ORCH] $release_tier tier: CocoaPods release failed, continuing with other steps"
+                log_warn "[MSP][ORCH] Dry-run mode: CocoaPods release failed, continuing with other steps"
                 # Continue execution - don't return
             fi
         fi
