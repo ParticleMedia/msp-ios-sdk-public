@@ -148,6 +148,7 @@ FORCE=false
 CONFIG_FILE=""
 CLI_VERSION=""
 SUBCOMMAND=""
+PROFILE=""
 
 # ============================================================================
 # Logging Functions
@@ -235,6 +236,21 @@ parse_flags() {
 
             --tier=*)
                 MSP_RELEASE_TIER="${1#*=}"
+                shift
+                ;;
+
+            --profile)
+                if [[ -n "${2:-}" && ! "$2" =~ ^- ]]; then
+                    PROFILE="$2"
+                    shift 2
+                else
+                    log_error "--profile requires a value"
+                    exit 1
+                fi
+                ;;
+
+            --profile=*)
+                PROFILE="${1#*=}"
                 shift
                 ;;
 
@@ -470,6 +486,12 @@ COMMANDS:
 
 GLOBAL FLAGS:
     --config <file>       Load release configuration from YAML file
+    --profile <name>      Use configuration profile (default: local-dev)
+                          Available profiles:
+                            - local-dev: Local development (dry-run, minimal validation)
+                            - ci-test: CI testing (dry-run, full validation, JSON logs)
+                            - production: Production release (publish enabled)
+                            - quick-test: Quick test (no validation)
     --verbose, -V         Enable verbose output (includes config summary)
     --dry-run             Show what would be done without executing
     --no-ansi             Disable colored output
@@ -483,8 +505,15 @@ GLOBAL FLAGS:
 
 OVERRIDE PRIORITY (highest to lowest):
     1. CLI flags (VERSION argument, --skip-pods, etc.)
-    2. Config file values (release.yaml)
-    3. Built-in defaults
+    2. Environment variables (override profile settings)
+    3. Profile settings (from --profile or default profile)
+    4. Config file values (release.yaml)
+    5. Built-in defaults
+
+CONFIGURATION:
+    Profile-based configuration is available via Scripts/config/release.yaml.
+    All profile settings can be overridden via environment variables.
+    See Scripts/config/release.yaml for full configuration options.
 
 EXAMPLES:
     # Show help
@@ -502,6 +531,10 @@ EXAMPLES:
     # Run full release with version
     msp-release.sh run 0.0.3
     msp-release.sh 0.0.3                    # Backward compatibility
+
+    # Run release using profile
+    msp-release.sh --profile=production run 0.4.0-rc.1
+    msp-release.sh --profile=local-dev run 0.4.0-rc.1
 
     # Run release using config file
     msp-release.sh run --config Scripts/release/config/release.yaml
@@ -1931,6 +1964,20 @@ main() {
     
     # Parse all flags first (supports flags before subcommand)
     parse_flags "$@"
+    
+    # Load configuration from profile (if config loader is available)
+    # Use default profile if not specified
+    PROFILE="${PROFILE:-local-dev}"
+    if [[ -f "$ROOT_DIR/Scripts/lib/config_loader.sh" ]]; then
+        # shellcheck source=Scripts/lib/config_loader.sh
+        source "$ROOT_DIR/Scripts/lib/config_loader.sh" 2>/dev/null || true
+        if command -v load_config &>/dev/null; then
+            load_config "$PROFILE" || true
+            if command -v display_config &>/dev/null && [[ "$VERBOSE" == "true" ]]; then
+                display_config
+            fi
+        fi
+    fi
     
     # Detect subcommand from remaining args
     detect_subcommand "${REMAINING_ARGS[@]+"${REMAINING_ARGS[@]}"}"
