@@ -47,7 +47,8 @@ Pod::Spec.new do |spec|
   spec.dependency 'MSPKingfisher'  # Image loading (forked Kingfisher)
   spec.dependency 'lottie-ios'     # Animation support
   spec.dependency 'SnapKit'        # Auto Layout DSL
-  spec.dependency 'Shimmer'        # Loading shimmer effect
+  # Shimmer is provided via vendored_frameworks (XCFramework) in development mode
+  # No spec.dependency needed to avoid duplicate linking
 
   spec.pod_target_xcconfig = {
     'BUILD_LIBRARY_FOR_DISTRIBUTION' => 'YES',
