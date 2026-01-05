@@ -33,6 +33,8 @@ targets:
         embed: false
       - framework: ../../../Build/XCFrameworks/MSPSharedLibraries.xcframework
         embed: false
+      - framework: ../../../Build/XCFrameworks/PrebidMobile.xcframework
+        embed: false
       - framework: ../../../Pods/VungleAds/static/VungleAdsSDK.xcframework
         embed: false
       - framework: ../../../ThirdParty/SnapKit/SnapKit.xcframework
@@ -48,6 +50,7 @@ targets:
           - $(SRCROOT)/../../../Build/XCFrameworks
           - $(SRCROOT)/../../../Pods/VungleAds/static
           - $(SRCROOT)/../../../ThirdParty/SnapKit
+          - $(SRCROOT)/../../../ThirdParty/PrebidMobile
 
   LiftoffAdapterTests:
     type: bundle.unit-test
