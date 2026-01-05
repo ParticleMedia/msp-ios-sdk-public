@@ -23,9 +23,11 @@ readonly _MSP_SAFETY_SOURCED=1
 # Safety Check 1: Block Release Tier from Running Locally
 # ============================================================================
 msp_safety_require_ci_for_release() {
-    local tier="${MSP_RELEASE_TIER:-preflight}"
+    # Phase B: Use DRY_RUN instead of MSP_RELEASE_TIER
+    local dry_run="${DRY_RUN:-true}"
 
-    if [[ "$tier" == "release" || "$tier" == "production" ]]; then
+    # Production mode (DRY_RUN=false) requires CI environment
+    if [[ "$dry_run" == "false" ]]; then
         # Check for CI environment variables (CI, GITHUB_ACTIONS, etc.)
         local ci_detected=false
         if [[ -n "${CI:-}" ]] && [[ "${CI}" == "true" ]]; then
@@ -41,8 +43,8 @@ msp_safety_require_ci_for_release() {
                 log_info "[SAFETY] ℹ️  建议在正式生产环境使用 CI 流水线 (Recommend using CI pipeline for production)"
                 return 0
             fi
-            log_error "[SAFETY] Release tier cannot be executed locally. Use CI pipeline only."
-            log_error "[SAFETY] To run a test release, use: MSP_RELEASE_TIER=preflight"
+            log_error "[SAFETY] Production mode cannot be executed locally. Use CI pipeline only."
+            log_error "[SAFETY] To run a test release, use: DRY_RUN=true"
             log_error "[SAFETY] Or set: export CI=true && export GITHUB_ACTIONS=true"
             log_error ""
             log_error "[SAFETY] ⚠️  重要提示:"
@@ -60,15 +62,11 @@ msp_safety_require_ci_for_release() {
 # Safety Check 2: Require Clean Git State
 # ============================================================================
 msp_safety_require_clean_git() {
-    local tier="${MSP_RELEASE_TIER:-preflight}"
+    # Phase B: Use DRY_RUN directly, removed tier variable
+    local dry_run="${DRY_RUN:-true}"
 
-    if [[ "$tier" == "release" || "$tier" == "production" ]]; then
-        # Allow uncommitted changes in DRY_RUN mode
-        local dry_run="${DRY_RUN:-false}"
-        if [[ "$dry_run" == "true" ]]; then
-            log_info "[SAFETY] ℹ️  DRY RUN mode: Allowing uncommitted changes"
-            return 0
-        fi
+    # Production mode (DRY_RUN=false) requires clean git state
+    if [[ "$dry_run" == "false" ]]; then
         
         log_info "[SAFETY] Checking Git working directory cleanliness..."
 
@@ -97,9 +95,11 @@ msp_safety_require_clean_git() {
 # ============================================================================
 msp_safety_validate_version() {
     local version="$1"
-    local tier="${MSP_RELEASE_TIER:-preflight}"
+    # Phase B: Use DRY_RUN instead of MSP_RELEASE_TIER
+    local dry_run="${DRY_RUN:-true}"
 
-    if [[ "$tier" == "release" || "$tier" == "production" ]]; then
+    # Production mode (DRY_RUN=false) requires version validation
+    if [[ "$dry_run" == "false" ]]; then
         log_info "[SAFETY] Validating version format: $version"
 
         # Check for valid release version patterns
@@ -109,14 +109,14 @@ msp_safety_validate_version() {
         # Reject 0.0.* versions
         if [[ "$version" =~ ^0\.0\. ]]; then
             log_error "[SAFETY] Invalid release version format: $version"
-            log_error "[SAFETY] Release tier cannot use 0.0.* versions (development only)"
+            log_error "[SAFETY] Production mode cannot use 0.0.* versions (development only)"
             return 1
         fi
 
         # Reject versions containing 'preflight', 'test', 'dev'
         if [[ "$version" =~ (preflight|test|dev) ]]; then
             log_error "[SAFETY] Invalid release version format: $version"
-            log_error "[SAFETY] Release tier cannot use test/preflight/dev versions"
+            log_error "[SAFETY] Production mode cannot use test/preflight/dev versions"
             return 1
         fi
 
@@ -139,10 +139,11 @@ msp_safety_validate_version() {
 msp_safety_require_confirmation() {
     local version="$1"
     local force="${MSP_RELEASE_FORCE:-false}"
-    local tier="${MSP_RELEASE_TIER:-preflight}"
-    local dry_run="${DRY_RUN:-false}"
+    # Phase B: Use DRY_RUN directly, removed tier variable
+    local dry_run="${DRY_RUN:-true}"
 
-    if [[ "$tier" == "release" || "$tier" == "production" ]]; then
+    # Production mode (DRY_RUN=false) requires confirmation
+    if [[ "$dry_run" == "false" ]]; then
         # Skip confirmation in DRY_RUN mode
         if [[ "$dry_run" == "true" ]]; then
             log_info "[SAFETY] ℹ️  DRY RUN mode: Skipping confirmation"
@@ -169,7 +170,7 @@ msp_safety_require_confirmation() {
             echo ""
             echo "  Version: $version"
             echo "  Branch:  $current_branch"
-            echo "  Tier:    $tier"
+            echo "  Mode:    production"
             echo ""
             echo "This will:"
             echo "  • Publish CocoaPods to trunk"
@@ -199,9 +200,11 @@ msp_safety_require_confirmation() {
 # Safety Check 5: Validate Branch Name
 # ============================================================================
 msp_safety_validate_branch() {
-    local tier="${MSP_RELEASE_TIER:-preflight}"
+    # Phase B: Use DRY_RUN instead of MSP_RELEASE_TIER
+    local dry_run="${DRY_RUN:-true}"
 
-    if [[ "$tier" == "release" || "$tier" == "production" ]]; then
+    # Production mode (DRY_RUN=false) requires branch validation
+    if [[ "$dry_run" == "false" ]]; then
         # Local release mode: Allow local execution when explicitly enabled
         if [[ "${MSP_ALLOW_LOCAL_RELEASE:-0}" == "1" ]]; then
             log_info "[SAFETY] ℹ️  本地发布模式已启用 (Local release mode enabled)"
@@ -225,7 +228,7 @@ msp_safety_validate_branch() {
            [[ "$current_branch" == "master" ]]; then
             log_info "[SAFETY] ✓ Branch '$current_branch' is allowed for release"
         else
-            log_error "[SAFETY] Release tier cannot run on branch '$current_branch'"
+            log_error "[SAFETY] Production mode cannot run on branch '$current_branch'"
             log_error "[SAFETY] Allowed branches: release/*, main, master"
             return 1
         fi
@@ -238,10 +241,12 @@ msp_safety_validate_branch() {
 # Safety Check 6: Require Changelog
 # ============================================================================
 msp_safety_require_changelog() {
-    local tier="${MSP_RELEASE_TIER:-preflight}"
+    # Phase B: Use DRY_RUN instead of MSP_RELEASE_TIER
+    local dry_run="${DRY_RUN:-true}"
     local repo_root="${ROOT_DIR:-$(git rev-parse --show-toplevel 2>/dev/null)}"
 
-    if [[ "$tier" == "release" || "$tier" == "production" ]]; then
+    # Production mode (DRY_RUN=false) requires changelog
+    if [[ "$dry_run" == "false" ]]; then
         local changelog_file="$repo_root/release.md"
 
         log_info "[SAFETY] Checking for changelog: release.md"
@@ -281,18 +286,19 @@ msp_safety_require_changelog() {
 # ============================================================================
 msp_release_safety_check() {
     local version="$1"
-    local tier="${MSP_RELEASE_TIER:-preflight}"
+    # Phase B: Use DRY_RUN instead of MSP_RELEASE_TIER
+    local dry_run="${DRY_RUN:-true}"
 
-    log_info "[SAFETY] Running safety checks for tier: $tier"
+    log_info "[SAFETY] Running safety checks for mode: $(if [[ "$dry_run" == "false" ]]; then echo "production"; else echo "dry-run"; fi)"
 
-    # Skip all safety checks for preflight tier
-    if [[ "$tier" != "release" && "$tier" != "production" ]]; then
-        log_info "[SAFETY] Preflight tier - skipping production safety checks"
+    # Skip all safety checks for dry-run mode
+    if [[ "$dry_run" == "true" ]]; then
+        log_info "[SAFETY] Dry-run mode - skipping production safety checks"
         return 0
     fi
 
     log_info "[SAFETY] ══════════════════════════════════════════════════════"
-    log_info "[SAFETY] RELEASE TIER SAFETY CHECKS"
+    log_info "[SAFETY] PRODUCTION MODE SAFETY CHECKS"
     log_info "[SAFETY] ══════════════════════════════════════════════════════"
 
     # Run all safety checks in sequence

@@ -936,14 +936,14 @@ wait_for_remote_tag() {
             log_info "Waiting ${sleep_seconds}s before next attempt..."
             sleep "$sleep_seconds"
         else
-            # Phase R1.18: Fail-fast on timeout in release tier
-            if [[ "${MSP_RELEASE_TIER:-}" == "release" ]]; then
+            # Phase B: Fail-fast on timeout in production mode
+            if [[ "${DRY_RUN:-true}" == "false" ]]; then
                 log_error "[FAIL-FAST] Timeout waiting for remote tag '$tag' to be resolvable after $max_attempts attempts"
                 log_error "Tag was pushed but not yet propagated to all GitHub servers"
                 log_error "This is a timing/availability issue, not a code bug"
                 return 1
             else
-                log_warn "Timeout waiting for remote tag (preflight tier - non-blocking)"
+                log_warn "Timeout waiting for remote tag (dry-run mode - non-blocking)"
                 return 0
             fi
         fi
@@ -1660,10 +1660,14 @@ create_github_release_for_pod() {
         return 0
     fi
 
-    # Stage A: All tiers (test/release) create GitHub release and upload binary zip for binary distribution pods
+    # Stage A: All modes (dry-run/production) create GitHub release and upload binary zip for binary distribution pods
     # HTTP binary distribution requires zip to be available before pod trunk push
     if is_binary_distribution "$pod"; then
-        log_info "[${MSP_RELEASE_TIER:-test} tier] Creating GitHub release and uploading binary zip (HTTP distribution)"
+        local mode_label="dry-run"
+        if [[ "${DRY_RUN:-true}" == "false" ]]; then
+            mode_label="production"
+        fi
+        log_info "[$mode_label] Creating GitHub release and uploading binary zip (HTTP distribution)"
         
         # Create zip file from XCFramework
         local zip_name="${pod}-${version}.zip"
@@ -2041,7 +2045,11 @@ RUBY_SCRIPT
 
     # For non-core modules (adapters), no GitHub release needed
     # They use git+tag source in podspec
-    log_info "[${MSP_RELEASE_TIER:-test} tier] Non-core module $pod, skipping GitHub release creation"
+    local mode_label="dry-run"
+    if [[ "${DRY_RUN:-true}" == "false" ]]; then
+        mode_label="production"
+    fi
+    log_info "[$mode_label] Non-core module $pod, skipping GitHub release creation"
     if command -v metrics::end &>/dev/null; then
         metrics::end "publish_${pod}_github_release"
     fi
@@ -2621,11 +2629,11 @@ ensure_zip_file_exists_for_pod() {
         log_error "  2. Manually verify GitHub Release: gh release view $version"
         log_error "  3. Check local zip: ls -lh $ROOT_DIR/Build/Zips/$zip_name"
 
-        if [[ "${MSP_RELEASE_TIER:-}" == "release" ]]; then
-            log_error "[FAIL-FAST] Cannot proceed with unstable checksum in release mode"
+        if [[ "${DRY_RUN:-true}" == "false" ]]; then
+            log_error "[FAIL-FAST] Cannot proceed with unstable checksum in production mode"
             return 1
         else
-            log_warning "Continuing in non-release mode (may fail during pod trunk push)"
+            log_warning "Continuing in dry-run mode (may fail during pod trunk push)"
         fi
     else
         log_success "✅ Zip file upload verified with stable checksum"
@@ -3233,7 +3241,7 @@ RUBY_SCRIPT
         log_error "  - Or GitHub Release zip was replaced after podspec generation"
         log_error ""
         log_error "Solution:"
-        log_error "  1. Regenerate podspec using: MSP_RELEASE_TIER=release ./Scripts/release/generate_podspec.sh $pod $podspec_version"
+        log_error "  1. Regenerate podspec using: DRY_RUN=false ./Scripts/release/generate_podspec.sh $pod $podspec_version"
         log_error "  2. This will force download from GitHub Release to calculate checksum"
         log_error "  3. Re-run publish after regeneration"
         log_error ""
@@ -3359,7 +3367,7 @@ publish_pod_to_cocoapods() {
         log_error "Make sure update_podspec_for_release() was called first"
 
         # Phase R1.7: Fail-fast in release tier to prevent infinite wait loops
-        if [[ "${MSP_RELEASE_TIER:-}" == "release" ]]; then
+        if [[ "${DRY_RUN:-true}" == "false" ]]; then
             log_error "[FAIL-FAST] Podspec not found in release tier. Aborting to prevent wait loop."
             msp_state_mark_step_failed "pods_publish" "Podspec not found: $podspec" "1"
             exit 1
@@ -3374,7 +3382,7 @@ publish_pod_to_cocoapods() {
 
     # Stage A: Probe zip URL availability in release tier (HTTP distribution)
     # Only check for binary distribution pods (core modules)
-        if [[ "${MSP_RELEASE_TIER:-}" == "release" ]]; then
+        if [[ "${DRY_RUN:-true}" == "false" ]]; then
         # Check if this pod uses binary distribution (needs GitHub release zip)
         # Note: NovaCore is not included - it's embedded via vendored_frameworks, not published separately
         # Stage B: MSPOMSDK removed - OMSDK now embedded in NovaCore
@@ -3404,10 +3412,14 @@ publish_pod_to_cocoapods() {
     # Validate podspec if not skipped
     if [[ "$SKIP_VALIDATION" != "true" ]]; then
         # ═══════════════════════════════════════════════════════════════
-        # All tiers: Skip LOCAL validation (HTTP zip not available yet)
+        # All modes: Skip LOCAL validation (HTTP zip not available yet)
         # Validation will be done by CocoaPods Trunk server
         # ═══════════════════════════════════════════════════════════════
-        log_info "[$MSP_RELEASE_TIER tier] Skipping local podspec validation"
+        local mode_label="dry-run"
+        if [[ "${DRY_RUN:-true}" == "false" ]]; then
+            mode_label="production"
+        fi
+        log_info "[$mode_label] Skipping local podspec validation"
         log_info "Reason: HTTP zip source requires GitHub Release to be created first"
         log_info "Validation will be performed by CocoaPods Trunk during publication"
         log_info ""
@@ -3523,7 +3535,7 @@ release_msp_ioscore() {
         if ! ensure_zip_file_exists_for_pod "MSPiOSCore" "$VERSION"; then
             log_error "Failed to ensure zip file exists for MSPiOSCore"
 
-            if [[ "${MSP_RELEASE_TIER:-}" == "release" ]]; then
+            if [[ "${DRY_RUN:-true}" == "false" ]]; then
                 log_error "[FAIL-FAST] Cannot proceed without zip file. Aborting."
                 exit 1
             fi
@@ -3537,7 +3549,7 @@ release_msp_ioscore() {
     # Update podspec (now guaranteed to succeed if binary distribution)
     if ! update_podspec_for_release "MSPiOSCore" "$VERSION"; then
         # FAIL-FAST: Immediately abort if podspec generation fails (release tier only)
-        if [[ "${MSP_RELEASE_TIER:-}" == "release" ]]; then
+        if [[ "${DRY_RUN:-true}" == "false" ]]; then
             log_error "[FAIL-FAST] Podspec generation failed for MSPiOSCore. Aborting release."
             msp_state_mark_step_failed "pods_publish" "Podspec generation failed for MSPiOSCore" "1"
             exit 1
@@ -3547,7 +3559,7 @@ release_msp_ioscore() {
 
     # FAIL-FAST: Verify generated podspec exists (release tier only)
     local podspec_path="$ROOT_DIR/Build/ReleasePodspecs/MSPiOSCore.podspec"
-    if [[ "${MSP_RELEASE_TIER:-}" == "release" ]] && [[ ! -f "$podspec_path" ]]; then
+    if [[ "${DRY_RUN:-true}" == "false" ]] && [[ ! -f "$podspec_path" ]]; then
         log_error "[FAIL-FAST] Generated podspec not found: $podspec_path. Aborting release."
         msp_state_mark_step_failed "pods_publish" "Generated podspec not found: $podspec_path" "1"
         exit 1
@@ -3559,7 +3571,7 @@ release_msp_ioscore() {
     # Publish to CocoaPods
     # Phase R1.11: Fail-fast if publication fails (prevent wait loop)
     if ! publish_pod_to_cocoapods "MSPiOSCore" "$VERSION"; then
-        if [[ "${MSP_RELEASE_TIER:-}" == "release" ]]; then
+        if [[ "${DRY_RUN:-true}" == "false" ]]; then
             log_error "[FAIL-FAST] Failed to publish MSPiOSCore to CocoaPods. Aborting release."
             msp_state_mark_step_failed "pods_publish" "Failed to publish MSPiOSCore" "1"
             exit 1
@@ -3610,7 +3622,7 @@ release_msp_shared_libraries() {
                     log_error "Failed to verify/fix GitHub Release zip for MSPSharedLibraries"
 
                     # In release mode, this is a critical failure
-                    if [[ "${MSP_RELEASE_TIER:-}" == "release" ]]; then
+                    if [[ "${DRY_RUN:-true}" == "false" ]]; then
                         log_error "[FAIL-FAST] Cannot continue with incorrect GitHub Release zip"
                         log_error "Adapters depending on MSPSharedLibraries will fail validation"
 
@@ -3644,7 +3656,7 @@ release_msp_shared_libraries() {
         if ! ensure_zip_file_exists_for_pod "MSPSharedLibraries" "$VERSION"; then
             log_error "Failed to ensure zip file exists for MSPSharedLibraries"
 
-            if [[ "${MSP_RELEASE_TIER:-}" == "release" ]]; then
+            if [[ "${DRY_RUN:-true}" == "false" ]]; then
                 log_error "[FAIL-FAST] Cannot proceed without zip file. Aborting."
                 exit 1
             fi
@@ -3658,7 +3670,7 @@ release_msp_shared_libraries() {
     # Update podspec (now guaranteed to succeed if binary distribution)
     if ! update_podspec_for_release "MSPSharedLibraries" "$VERSION"; then
         # FAIL-FAST: Immediately abort if podspec generation fails (release tier only)
-        if [[ "${MSP_RELEASE_TIER:-}" == "release" ]]; then
+        if [[ "${DRY_RUN:-true}" == "false" ]]; then
             log_error "[FAIL-FAST] Podspec generation failed for MSPSharedLibraries. Aborting release."
             msp_state_mark_step_failed "pods_publish" "Podspec generation failed for MSPSharedLibraries" "1"
             exit 1
@@ -3668,7 +3680,7 @@ release_msp_shared_libraries() {
 
     # FAIL-FAST: Verify generated podspec exists (release tier only)
     local podspec_path="$ROOT_DIR/Build/ReleasePodspecs/MSPSharedLibraries.podspec"
-    if [[ "${MSP_RELEASE_TIER:-}" == "release" ]] && [[ ! -f "$podspec_path" ]]; then
+    if [[ "${DRY_RUN:-true}" == "false" ]] && [[ ! -f "$podspec_path" ]]; then
         log_error "[FAIL-FAST] Generated podspec not found: $podspec_path. Aborting release."
         msp_state_mark_step_failed "pods_publish" "Generated podspec not found: $podspec_path" "1"
         exit 1
@@ -3680,7 +3692,7 @@ release_msp_shared_libraries() {
     # Publish to CocoaPods
     # Phase R1.11: Fail-fast if publication fails (prevent wait loop)
     if ! publish_pod_to_cocoapods "MSPSharedLibraries" "$VERSION"; then
-        if [[ "${MSP_RELEASE_TIER:-}" == "release" ]]; then
+        if [[ "${DRY_RUN:-true}" == "false" ]]; then
             log_error "[FAIL-FAST] Failed to publish MSPSharedLibraries to CocoaPods. Aborting release."
             msp_state_mark_step_failed "pods_publish" "Failed to publish MSPSharedLibraries" "1"
             exit 1
@@ -3734,7 +3746,7 @@ release_msp_googleadstypes() {
         if ! ensure_zip_file_exists_for_pod "MSPGoogleAdsTypes" "$VERSION"; then
             log_error "Failed to ensure zip file exists for MSPGoogleAdsTypes"
 
-            if [[ "${MSP_RELEASE_TIER:-}" == "release" ]]; then
+            if [[ "${DRY_RUN:-true}" == "false" ]]; then
                 log_error "[FAIL-FAST] Cannot proceed without zip file. Aborting."
                 exit 1
             fi
@@ -3748,7 +3760,7 @@ release_msp_googleadstypes() {
     # Update podspec (now guaranteed to succeed if binary distribution)
     if ! update_podspec_for_release "MSPGoogleAdsTypes" "$VERSION"; then
         # FAIL-FAST: Immediately abort if podspec generation fails (release tier only)
-        if [[ "${MSP_RELEASE_TIER:-}" == "release" ]]; then
+        if [[ "${DRY_RUN:-true}" == "false" ]]; then
             log_error "[FAIL-FAST] Podspec generation failed for MSPGoogleAdsTypes. Aborting release."
             msp_state_mark_step_failed "pods_publish" "Podspec generation failed for MSPGoogleAdsTypes" "1"
             exit 1
@@ -3758,7 +3770,7 @@ release_msp_googleadstypes() {
 
     # FAIL-FAST: Verify generated podspec exists (release tier only)
     local podspec_path="$ROOT_DIR/Build/ReleasePodspecs/MSPGoogleAdsTypes.podspec"
-    if [[ "${MSP_RELEASE_TIER:-}" == "release" ]] && [[ ! -f "$podspec_path" ]]; then
+    if [[ "${DRY_RUN:-true}" == "false" ]] && [[ ! -f "$podspec_path" ]]; then
         log_error "[FAIL-FAST] Generated podspec not found: $podspec_path. Aborting release."
         msp_state_mark_step_failed "pods_publish" "Generated podspec not found: $podspec_path" "1"
         exit 1
@@ -3770,7 +3782,7 @@ release_msp_googleadstypes() {
     # Publish to CocoaPods
     # Phase R1.11: Fail-fast if publication fails (prevent wait loop)
     if ! publish_pod_to_cocoapods "MSPGoogleAdsTypes" "$VERSION"; then
-        if [[ "${MSP_RELEASE_TIER:-}" == "release" ]]; then
+        if [[ "${DRY_RUN:-true}" == "false" ]]; then
             log_error "[FAIL-FAST] Failed to publish MSPGoogleAdsTypes to CocoaPods. Aborting release."
             msp_state_mark_step_failed "pods_publish" "Failed to publish MSPGoogleAdsTypes" "1"
             exit 1
@@ -3831,7 +3843,7 @@ release_single_adapter() {
                     echo "ERROR: GitHub Release zip verification failed for $adapter" > "$result_file"
 
                     # In release mode, this is a failure
-                    if [[ "${MSP_RELEASE_TIER:-}" == "release" ]]; then
+                    if [[ "${DRY_RUN:-true}" == "false" ]]; then
                         return 1
                     fi
                 fi
@@ -3853,7 +3865,7 @@ release_single_adapter() {
             log_error "Failed to ensure zip file exists for $adapter"
             echo "ERROR: Failed to ensure zip file exists for $adapter" > "$result_file"
 
-            if [[ "${MSP_RELEASE_TIER:-}" == "release" ]]; then
+            if [[ "${DRY_RUN:-true}" == "false" ]]; then
                 log_error "[FAIL-FAST] Cannot proceed without zip file. Aborting."
                 exit 1
             fi
@@ -3868,7 +3880,7 @@ release_single_adapter() {
     if ! update_podspec_for_release "$adapter" "$version"; then
         echo "ERROR: Failed to update podspec for $adapter" > "$result_file"
         # FAIL-FAST: Immediately abort if podspec generation fails (release tier only)
-        if [[ "${MSP_RELEASE_TIER:-}" == "release" ]]; then
+        if [[ "${DRY_RUN:-true}" == "false" ]]; then
             log_error "[FAIL-FAST] Podspec generation failed for $adapter. Aborting release."
             msp_state_mark_step_failed "pods_publish" "Podspec generation failed for $adapter" "1"
             exit 1
@@ -3913,7 +3925,7 @@ release_single_adapter() {
     log_info "[DEBUG] Constructed podspec_path: $podspec_path"
     log_info "[DEBUG] Checking if file exists: [[ -f \"$podspec_path\" ]]"
 
-    if [[ "${MSP_RELEASE_TIER:-}" == "release" ]] && [[ ! -f "$podspec_path" ]]; then
+    if [[ "${DRY_RUN:-true}" == "false" ]] && [[ ! -f "$podspec_path" ]]; then
         log_error "[DEBUG] File check FAILED"
         log_error "[DEBUG] ROOT_DIR: '${ROOT_DIR}'"
         log_error "[DEBUG] adapter: '$adapter'"
@@ -4163,7 +4175,7 @@ release_msp_core() {
         if ! ensure_zip_file_exists_for_pod "MSPCore" "$VERSION"; then
             log_error "Failed to ensure zip file exists for MSPCore"
 
-            if [[ "${MSP_RELEASE_TIER:-}" == "release" ]]; then
+            if [[ "${DRY_RUN:-true}" == "false" ]]; then
                 log_error "[FAIL-FAST] Cannot proceed without zip file. Aborting."
                 exit 1
             fi
@@ -4177,7 +4189,7 @@ release_msp_core() {
     # Update podspec (now guaranteed to succeed if binary distribution)
     if ! update_podspec_for_release "MSPCore" "$VERSION"; then
         # FAIL-FAST: Immediately abort if podspec generation fails (release tier only)
-        if [[ "${MSP_RELEASE_TIER:-}" == "release" ]]; then
+        if [[ "${DRY_RUN:-true}" == "false" ]]; then
             log_error "[FAIL-FAST] Podspec generation failed for MSPCore. Aborting release."
             msp_state_mark_step_failed "pods_publish" "Podspec generation failed for MSPCore" "1"
             exit 1
@@ -4187,7 +4199,7 @@ release_msp_core() {
 
     # FAIL-FAST: Verify generated podspec exists (release tier only)
     local podspec_path="$ROOT_DIR/Build/ReleasePodspecs/MSPCore.podspec"
-    if [[ "${MSP_RELEASE_TIER:-}" == "release" ]] && [[ ! -f "$podspec_path" ]]; then
+    if [[ "${DRY_RUN:-true}" == "false" ]] && [[ ! -f "$podspec_path" ]]; then
         log_error "[FAIL-FAST] Generated podspec not found: $podspec_path. Aborting release."
         msp_state_mark_step_failed "pods_publish" "Generated podspec not found: $podspec_path" "1"
         exit 1
@@ -4283,20 +4295,20 @@ main() {
     print_section "Starting CocoaPods Release Process for Version: $VERSION"
     
     # Phase 4 TASK 1: CocoaPods release strong validation
+    # Phase B: Removed release_tier variable, use DRY_RUN directly
     local release_mode="${MSP_RELEASE_MODE:-cli}"
-    local release_tier="${MSP_RELEASE_TIER:-preflight}"
     local release_mode_upper=$(echo "$release_mode" | tr '[:lower:]' '[:upper:]' 2>/dev/null || echo "$release_mode" | awk '{print toupper($0)}')
     echo "[MSP][ORCH] Mode: ${release_mode_upper} — linting pods spec"
     
     # Check CocoaPods installation
     if ! command -v pod >/dev/null 2>&1; then
         log_error "CocoaPods is not installed. Please install it with: sudo gem install cocoapods"
-        # Task 3: Preflight mode allows soft-fail
-        if [[ "$release_tier" == "release" ]] || [[ "$release_tier" == "production" ]]; then
-            log_error "[MSP][ORCH] Release tier ($release_tier): CocoaPods not installed - aborting"
+        # Phase B: Production mode requires CocoaPods, dry-run allows soft-fail
+        if [[ "${DRY_RUN:-true}" == "false" ]]; then
+            log_error "[MSP][ORCH] Production mode: CocoaPods not installed - aborting"
             exit 1
         else
-            log_warn "[MSP][ORCH] Preflight mode: CocoaPods not installed, skipping CocoaPods release"
+            log_warn "[MSP][ORCH] Dry-run mode: CocoaPods not installed, skipping CocoaPods release"
             msp_state_mark_step_failed "pods_publish" "CocoaPods not installed" "1"
             return 0
         fi
@@ -4309,12 +4321,12 @@ main() {
     if [[ "$trunk_check" =~ "No session" ]] || [[ "$trunk_check" =~ "authentication" ]] || [[ "$trunk_check" =~ "ERROR" ]]; then
         log_error "CocoaPods trunk session is not valid"
         log_error "Please run: pod trunk register <email> <name>"
-        # Task 3: Preflight mode allows soft-fail
-        if [[ "$release_tier" == "release" ]] || [[ "$release_tier" == "production" ]]; then
-            log_error "[MSP][ORCH] Release tier ($release_tier): CocoaPods trunk session invalid - aborting"
+        # Phase B: Production mode requires valid session, dry-run allows soft-fail
+        if [[ "${DRY_RUN:-true}" == "false" ]]; then
+            log_error "[MSP][ORCH] Production mode: CocoaPods trunk session invalid - aborting"
             exit 1
         else
-            log_warn "[MSP][ORCH] Preflight mode: CocoaPods trunk session invalid, skipping CocoaPods release"
+            log_warn "[MSP][ORCH] Dry-run mode: CocoaPods trunk session invalid, skipping CocoaPods release"
             msp_state_mark_step_failed "pods_publish" "CocoaPods trunk session invalid" "1"
             return 0
         fi
@@ -4322,7 +4334,7 @@ main() {
     log_success "CocoaPods trunk session is valid"
     
     # Phase 4: Strong lint validation for production releases
-    if [[ "$release_tier" == "release" ]] || [[ "$release_tier" == "production" ]]; then
+    if [[ "${DRY_RUN:-true}" == "false" ]]; then
         log_section "Phase 4: Release/Production - Strong Podspec Validation"
         
         # Validate all podspecs before publishing
@@ -4348,9 +4360,9 @@ main() {
                 echo "$lint_output" | grep -E "error:" | head -5
                 lint_errors=$((lint_errors + 1))
                 
-                # Hard fail for release/production
-                if [[ "$release_tier" == "release" ]] || [[ "$release_tier" == "production" ]]; then
-                    log_error "[MSP][ORCH] Release tier ($release_tier): podspec lint errors are not allowed"
+                # Hard fail for production mode
+                if [[ "${DRY_RUN:-true}" == "false" ]]; then
+                    log_error "[MSP][ORCH] Production mode: podspec lint errors are not allowed"
                     exit 1
                 fi
             elif [[ "$lint_output" =~ "warning:" ]]; then
@@ -4415,7 +4427,7 @@ main() {
         msp_state_mark_step_failed "pods_publish" "Failed to create release tag: $VERSION" "1"
 
         # FAIL-FAST in release tier
-        if [[ "${MSP_RELEASE_TIER:-}" == "release" ]] || [[ "${MSP_RELEASE_TIER:-}" == "production" ]]; then
+        if [[ "${DRY_RUN:-true}" == "false" ]]; then
             log_error "[FAIL-FAST] Tag creation failed in release tier. Aborting."
             exit 1
         fi
@@ -4439,7 +4451,7 @@ main() {
             log_error "GitHub Release creation will fail or create draft release"
 
             # FAIL-FAST in release tier (unless MSP_ALLOW_PUBLIC_PUSH_FAILURE is set)
-            if [[ "${MSP_RELEASE_TIER:-}" == "release" ]] || [[ "${MSP_RELEASE_TIER:-}" == "production" ]]; then
+            if [[ "${DRY_RUN:-true}" == "false" ]]; then
                 if [[ "${MSP_ALLOW_PUBLIC_PUSH_FAILURE:-0}" == "1" ]]; then
                     log_warning "MSP_ALLOW_PUBLIC_PUSH_FAILURE=1: Continuing despite tag verification failure"
                 else
@@ -4523,13 +4535,13 @@ main() {
         log_error "[MSP][ORCH] MSPiOSCore release failed (foundation module)"
         log_error "[MSP][ORCH] All other modules depend on MSPiOSCore. Stopping CocoaPods release."
 
-        # Release tier: hard-fail (exit entire release)
-        if [[ "$release_tier" == "release" ]] || [[ "$release_tier" == "production" ]]; then
-            log_error "[MSP][ORCH] Release tier: aborting entire release"
+        # Production mode: hard-fail (exit entire release)
+        if [[ "${DRY_RUN:-true}" == "false" ]]; then
+            log_error "[MSP][ORCH] Production mode: aborting entire release"
             exit 1
         else
-            # Test/preflight tier: stop CocoaPods release but continue with other steps (SPM, verification)
-            log_warn "[MSP][ORCH] $release_tier tier: stopping CocoaPods release, will continue with other steps"
+            # Dry-run mode: stop CocoaPods release but continue with other steps (SPM, verification)
+            log_warn "[MSP][ORCH] Dry-run mode: stopping CocoaPods release, will continue with other steps"
             # Return early to avoid publishing other pods (they will fail anyway)
             return 1
         fi
@@ -4550,12 +4562,12 @@ main() {
             fi
         fi
         msp_state_mark_step_failed "pods_publish" "MSPSharedLibraries release failed" "1"
-        # Task 3: Preflight mode allows soft-fail, release/production requires hard-fail
-        if [[ "$release_tier" == "release" ]] || [[ "$release_tier" == "production" ]]; then
-            log_error "[MSP][ORCH] Release tier ($release_tier): MSPSharedLibraries release failure - aborting"
+        # Phase B: Production mode requires hard-fail, dry-run allows soft-fail
+        if [[ "${DRY_RUN:-true}" == "false" ]]; then
+            log_error "[MSP][ORCH] Production mode: MSPSharedLibraries release failure - aborting"
             exit 1
         else
-            log_warn "[MSP][ORCH] Preflight mode: CocoaPods release failed, continuing with other steps"
+            log_warn "[MSP][ORCH] Dry-run mode: CocoaPods release failed, continuing with other steps"
         fi
     fi
     
@@ -4574,13 +4586,13 @@ main() {
             fi
         fi
         msp_state_mark_step_failed "pods_publish" "MSPGoogleAdsTypes release failed" "1"
-        # Task 3: Preflight mode allows soft-fail, release/production requires hard-fail
-        if [[ "$release_tier" == "release" ]] || [[ "$release_tier" == "production" ]]; then
-            log_error "[MSP][ORCH] Release tier ($release_tier): MSPGoogleAdsTypes release failure - aborting"
+        # Phase B: Production mode requires hard-fail, dry-run allows soft-fail
+        if [[ "${DRY_RUN:-true}" == "false" ]]; then
+            log_error "[MSP][ORCH] Production mode: MSPGoogleAdsTypes release failure - aborting"
             log_error "[MSP][ORCH] MSPGoogleAdapter and AmazonAdapter depend on MSPGoogleAdsTypes. Cannot proceed."
             exit 1
         else
-            log_warn "[MSP][ORCH] Preflight mode: CocoaPods release failed, continuing with other steps"
+            log_warn "[MSP][ORCH] Dry-run mode: CocoaPods release failed, continuing with other steps"
         fi
     fi
     
@@ -4603,13 +4615,13 @@ main() {
             fi
         fi
         msp_state_mark_step_failed "pods_publish" "Adapter release failed" "1"
-        # Task 3: Preflight mode allows soft-fail, release/production requires hard-fail
-        if [[ "$release_tier" == "release" ]] || [[ "$release_tier" == "production" ]]; then
-            log_error "[MSP][ORCH] Release tier ($release_tier): Adapters release failure - aborting"
+        # Phase B: Production mode requires hard-fail, dry-run allows soft-fail
+        if [[ "${DRY_RUN:-true}" == "false" ]]; then
+            log_error "[MSP][ORCH] Production mode: Adapters release failure - aborting"
             log_error "[MSP][ORCH] Cannot proceed to MSPCore (depends on MSPPrebidAdapter)"
             exit 1
         else
-            log_warn "[MSP][ORCH] Preflight mode: CocoaPods release failed, continuing with other steps"
+            log_warn "[MSP][ORCH] Dry-run mode: CocoaPods release failed, continuing with other steps"
         fi
     fi
     
@@ -4628,12 +4640,12 @@ main() {
             fi
         fi
         msp_state_mark_step_failed "pods_publish" "MSPCore release failed" "1"
-        # Task 3: Preflight mode allows soft-fail, release/production requires hard-fail
-        if [[ "$release_tier" == "release" ]] || [[ "$release_tier" == "production" ]]; then
-            log_error "[MSP][ORCH] Release tier ($release_tier): MSPCore release failure - aborting"
+        # Phase B: Production mode requires hard-fail, dry-run allows soft-fail
+        if [[ "${DRY_RUN:-true}" == "false" ]]; then
+            log_error "[MSP][ORCH] Production mode: MSPCore release failure - aborting"
             exit 1
         else
-            log_warn "[MSP][ORCH] Preflight mode: CocoaPods release failed, continuing with other steps"
+            log_warn "[MSP][ORCH] Dry-run mode: CocoaPods release failed, continuing with other steps"
         fi
     fi
     

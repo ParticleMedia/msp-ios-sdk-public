@@ -387,18 +387,19 @@ validate_inputs() {
         exit 1
     fi
     
-    local release_tier="${MSP_RELEASE_TIER:-preflight}"
-    if [[ "$release_tier" == "production" ]]; then
-        # Production release: only allowed on main or release/* branches
+    # Phase B: Use DRY_RUN instead of MSP_RELEASE_TIER
+    local dry_run="${DRY_RUN:-true}"
+    if [[ "$dry_run" == "false" ]]; then
+        # Production mode: only allowed on main or release/* branches
         if [[ "$current_branch" != "main" ]] && [[ ! "$current_branch" =~ ^release/ ]]; then
-            log_error "[MSP][ORCH][ERROR] Production release requires branch 'main' or 'release/*'"
+            log_error "[MSP][ORCH][ERROR] Production mode requires branch 'main' or 'release/*'"
             log_error "Current branch: $current_branch"
-            log_error "Please switch to 'main' or a 'release/*' branch, or use MSP_RELEASE_TIER=preflight for preflight releases"
+            log_error "Please switch to 'main' or a 'release/*' branch, or use DRY_RUN=true for dry-run releases"
             exit 1
         fi
-        log_info "[MSP][ORCH] Production release: branch validation passed ($current_branch)"
+        log_info "[MSP][ORCH] Production mode: branch validation passed ($current_branch)"
     else
-        log_info "[MSP][ORCH] Preflight release: no branch restriction (current: $current_branch)"
+        log_info "[MSP][ORCH] Dry-run mode: no branch restriction (current: $current_branch)"
     fi
     
     log_info "Release orchestrator configuration:"
