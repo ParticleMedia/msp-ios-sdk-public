@@ -2,7 +2,7 @@
 # Minimal Podspec Generator for Release Mode Only
 #
 # Purpose: Generate release podspecs with correct binary paths
-# Scope: ONLY used in MSP_RELEASE_TIER=release
+# Scope: Phase B - Unified tier architecture (all modes use GitHub Release checksums)
 # Input: Existing repo podspec + XCFramework paths
 # Output: Build/ReleasePodspecs/*.podspec
 
@@ -85,10 +85,126 @@ MSP_VERSIONED_DEPS=("MSPiOSCore" "MSPSharedLibraries" "MSPPrebidAdapter" "Prebid
 MSP_VERSIONED_DEPS_PATTERN="$(IFS='|'; echo "${MSP_VERSIONED_DEPS[*]}")"
 
 # ============================================================================
-# Checksum Calculation
+# Unified Checksum Calculation (Phase B)
+# ============================================================================
+# Phase B Change: Always calculate checksum from GitHub Release CDN
+# NO MORE local zip checksums (except debug fallback with explicit flag)
 # ============================================================================
 
-# Calculate SHA256 checksum for a zip file
+# Calculate checksum from GitHub Release CDN (ONLY source of truth)
+# Args:
+#   $1: zip_url - GitHub Release URL
+#   $2: pod_name - Pod name
+#   $3: version - Release version
+# Returns:
+#   Prints SHA256 checksum (64 hex chars) to stdout
+#   Returns 1 if zip file not accessible
+calculate_checksum_from_github() {
+    local zip_url="$1"
+    local pod_name="$2"
+    local version="$3"
+    local zip_name="${pod_name}-${version}.zip"
+
+    log_info "Calculating checksum from GitHub Release CDN" >&2
+    log_debug "URL: $zip_url" >&2
+
+    # Wait for CDN propagation (configurable)
+    local cdn_wait_time="${MSP_CDN_WAIT_TIME:-120}"
+    log_info "Waiting ${cdn_wait_time}s for GitHub CDN propagation..." >&2
+    sleep "$cdn_wait_time"
+
+    # Download and calculate checksum
+    local temp_zip="/tmp/verify-${pod_name}-${version}-$$.zip"
+    local download_attempt=1
+    local max_attempts=3
+    local checksum=""
+
+    while [[ $download_attempt -le $max_attempts ]]; do
+        if curl -L -f -s -o "$temp_zip" "$zip_url" 2>/dev/null; then
+            local file_size=$(stat -f%z "$temp_zip" 2>/dev/null || stat -c%s "$temp_zip" 2>/dev/null || echo "0")
+
+            if [[ $file_size -gt 0 ]]; then
+                checksum=$(shasum -a 256 "$temp_zip" 2>/dev/null | awk '{print $1}')
+
+                if [[ -n "$checksum" && ${#checksum} -eq 64 ]]; then
+                    log_success "✅ Successfully calculated checksum from GitHub Release" >&2
+                    log_info "   Checksum: $checksum" >&2
+                    log_info "   File size: $file_size bytes" >&2
+
+                    # Cleanup
+                    rm -f "$temp_zip"
+                    echo "$checksum"
+                    return 0
+                else
+                    log_warning "Invalid checksum format, retrying..." >&2
+                fi
+            else
+                log_warning "Downloaded file is empty, retrying..." >&2
+            fi
+        else
+            log_warning "Download failed (attempt $download_attempt/$max_attempts)" >&2
+        fi
+
+        if [[ $download_attempt -lt $max_attempts ]]; then
+            log_info "Waiting 30 seconds before retry..." >&2
+            sleep 30
+        fi
+
+        ((download_attempt++))
+    done
+
+    # Cleanup on failure
+    rm -f "$temp_zip"
+
+    log_error "❌ Failed to calculate checksum from GitHub Release" >&2
+    log_error "URL: $zip_url" >&2
+    log_error "Possible causes:" >&2
+    log_error "  1. CDN not yet propagated (increase MSP_CDN_WAIT_TIME)" >&2
+    log_error "  2. GitHub Release not created" >&2
+    log_error "  3. Zip file not uploaded to release" >&2
+    log_error "  4. Network issue or rate limiting" >&2
+    return 1
+}
+
+# Optional: Local checksum fallback (ONLY FOR DEBUGGING)
+# Args:
+#   $1: pod_name - Pod name
+#   $2: version - Release version
+# Returns:
+#   Prints SHA256 checksum (64 hex chars) to stdout
+#   Returns 1 if zip file not found
+calculate_checksum_from_local() {
+    local pod_name="$1"
+    local version="$2"
+    local zip_name="${pod_name}-${version}.zip"
+    local local_zip="$ROOT_DIR/Build/Zips/$zip_name"
+
+    log_warning "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━" >&2
+    log_warning "⚠️  WARNING: Using LOCAL CHECKSUM (debug mode)" >&2
+    log_warning "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━" >&2
+    log_warning "This checksum will NOT match production GitHub Release!" >&2
+    log_warning "This is ONLY for debugging. Do NOT publish with local checksums." >&2
+    log_warning "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━" >&2
+
+    if [[ ! -f "$local_zip" ]]; then
+        log_error "Local zip not found: $local_zip" >&2
+        return 1
+    fi
+
+    local checksum
+    checksum=$(shasum -a 256 "$local_zip" 2>/dev/null | awk '{print $1}')
+
+    if [[ ! "$checksum" =~ ^[a-f0-9]{64}$ ]]; then
+        log_error "Invalid checksum format: $checksum" >&2
+        return 1
+    fi
+
+    log_warning "Local checksum: $checksum (DEBUG ONLY)" >&2
+    echo "$checksum"
+    return 0
+}
+
+# Main checksum calculation entry point (backward compatible)
 # Args:
 #   $1: zip_url - GitHub Release URL
 #   $2: pod_name - Pod name
@@ -100,108 +216,95 @@ calculate_zip_sha256() {
     local zip_url="$1"
     local pod_name="$2"
     local version="$3"
-    local zip_name="${pod_name}-${version}.zip"
-    local local_zip="$ROOT_DIR/Build/Zips/$zip_name"
 
-    # =========================================================================
-    # CRITICAL FIX: Release tier MUST use GitHub Release as source of truth
-    # =========================================================================
-    # Why: Local zip may be stale or incorrect. Only GitHub Release zip is
-    # the definitive version that CocoaPods users will download. Using local
-    # zip causes checksum mismatches and validation failures.
-    #
-    # Test tier: Can use local zip (faster, no network dependency)
-    # Release tier: MUST download from GitHub Release (guarantees consistency)
-    # =========================================================================
+    # ALWAYS try GitHub first (ONLY source of truth)
+    local checksum
+    if checksum=$(calculate_checksum_from_github "$zip_url" "$pod_name" "$version" 2>/dev/null); then
+        echo "$checksum"
+        return 0
+    fi
 
-    if [[ "${MSP_RELEASE_TIER:-test}" == "release" ]]; then
-        log_info "Release tier detected: calculating checksum from GitHub Release (source of truth)" >&2
-
-        # Step 1: Wait for GitHub CDN propagation
-        log_info "Waiting for GitHub CDN propagation (60 seconds)..." >&2
-        sleep 60
-
-        # Step 2: Download from GitHub Release
-        local temp_zip="/tmp/verify-${pod_name}-${version}-$$.zip"
-        log_info "Downloading from GitHub Release: $zip_url" >&2
-
-        local download_attempt=1
-        local max_attempts=3
-        local checksum=""
-
-        while [[ $download_attempt -le $max_attempts ]]; do
-            if curl -L -f -s -o "$temp_zip" "$zip_url" 2>/dev/null; then
-                local file_size=$(stat -f%z "$temp_zip" 2>/dev/null || stat -c%s "$temp_zip" 2>/dev/null || echo "0")
-
-                if [[ $file_size -gt 0 ]]; then
-                    checksum=$(shasum -a 256 "$temp_zip" 2>/dev/null | awk '{print $1}')
-
-                    if [[ -n "$checksum" && ${#checksum} -eq 64 ]]; then
-                        log_success "✅ Successfully calculated checksum from GitHub Release" >&2
-                        log_info "   Checksum: $checksum" >&2
-                        log_info "   File size: $file_size bytes" >&2
-
-                        # Optional: Verify against local zip if it exists
-                        if [[ -f "$local_zip" ]]; then
-                            local local_checksum=$(shasum -a 256 "$local_zip" 2>/dev/null | awk '{print $1}')
-                            if [[ "$checksum" != "$local_checksum" ]]; then
-                                log_warning "⚠️  Local zip checksum differs from GitHub Release" >&2
-                                log_warning "   Local:  $local_checksum" >&2
-                                log_warning "   GitHub: $checksum" >&2
-                                log_warning "   Using GitHub checksum (source of truth)" >&2
-                            else
-                                log_info "✅ Local zip matches GitHub Release" >&2
-                            fi
-                        fi
-
-                        # Cleanup
-                        rm -f "$temp_zip"
-                        echo "$checksum"
-                        return 0
-                    else
-                        log_warning "Invalid checksum format, retrying..." >&2
-                    fi
-                else
-                    log_warning "Downloaded file is empty, retrying..." >&2
-                fi
-            else
-                log_warning "Download failed (attempt $download_attempt/$max_attempts)" >&2
-            fi
-
-            if [[ $download_attempt -lt $max_attempts ]]; then
-                log_info "Waiting 30 seconds before retry..." >&2
-                sleep 30
-            fi
-
-            ((download_attempt++))
-        done
-
-        # Cleanup on failure
-        rm -f "$temp_zip"
-
-        log_error "❌ Failed to download from GitHub Release after $max_attempts attempts" >&2
-        log_error "   URL: $zip_url" >&2
-        log_error "   This is CRITICAL for release tier - cannot proceed" >&2
-        return 1
-
-    else
-        # Test tier: Use local zip (faster, no network dependency)
-        log_info "Test tier: using local zip for checksum" >&2
-
-        if [[ -f "$local_zip" ]]; then
-            local checksum=$(shasum -a 256 "$local_zip" 2>/dev/null | awk '{print $1}')
-            if [[ -n "$checksum" && ${#checksum} -eq 64 ]]; then
-                log_info "✅ Calculated checksum from local zip: $checksum" >&2
-                echo "$checksum"
-                return 0
-            else
-                log_error "Failed to calculate checksum from local zip" >&2
-                return 1
-            fi
-        else
-            log_error "Local zip not found: $local_zip" >&2
-            return 1
+    # Local fallback ONLY if explicitly allowed (debug mode)
+    if [[ "${MSP_ALLOW_LOCAL_CHECKSUM:-false}" == "true" ]]; then
+        log_warning "GitHub checksum failed, falling back to local zip" >&2
+        log_warning "Set MSP_ALLOW_LOCAL_CHECKSUM=false to disable this fallback" >&2
+        if checksum=$(calculate_checksum_from_local "$pod_name" "$version" 2>/dev/null); then
+            echo "$checksum"
+            return 0
         fi
+    fi
+
+    # Both failed
+    log_error "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━" >&2
+    log_error "Failed to calculate checksum for $pod_name $version" >&2
+    log_error "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━" >&2
+    log_error "GitHub checksum failed and local fallback disabled" >&2
+    log_error "Troubleshooting:" >&2
+    log_error "  1. Ensure GitHub Release is created" >&2
+    log_error "  2. Ensure zip is uploaded to release" >&2
+    log_error "  3. Wait for CDN propagation (60-120s)" >&2
+    log_error "  4. Check network connectivity" >&2
+    log_error "" >&2
+    log_error "Debug: Set MSP_ALLOW_LOCAL_CHECKSUM=true to use local zip (NOT for production)" >&2
+    log_error "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━" >&2
+    return 1
+}
+
+# Verify checksum consistency (podspec vs GitHub)
+# Args:
+#   $1: pod_name - Pod name
+#   $2: version - Release version
+# Returns:
+#   0 if checksums match, 1 if mismatch
+verify_podspec_checksum() {
+    local pod_name="$1"
+    local version="$2"
+    local podspec_path="$ROOT_DIR/Build/ReleasePodspecs/${pod_name}.podspec"
+
+    if [[ ! -f "$podspec_path" ]]; then
+        log_error "Podspec not found: $podspec_path" >&2
+        return 1
+    fi
+
+    log_info "Verifying podspec checksum: $pod_name" >&2
+
+    # Extract checksum from podspec
+    local podspec_checksum
+    podspec_checksum=$(grep -A 3 "s.source = {" "$podspec_path" | grep ":sha256" | sed -E "s/.*['\"]([a-f0-9]{64})['\"].*/\1/" | head -1)
+
+    if [[ -z "$podspec_checksum" ]]; then
+        log_error "Failed to extract checksum from podspec" >&2
+        return 1
+    fi
+
+    log_debug "Podspec checksum: $podspec_checksum" >&2
+
+    # Calculate current GitHub checksum
+    local zip_url="https://github.com/ParticleMedia/msp-ios-sdk-public/releases/download/${version}/${pod_name}-${version}.zip"
+    local github_checksum
+    if ! github_checksum=$(calculate_checksum_from_github "$zip_url" "$pod_name" "$version" 2>/dev/null); then
+        log_error "Failed to calculate GitHub checksum for verification" >&2
+        return 1
+    fi
+
+    log_debug "GitHub checksum:  $github_checksum" >&2
+
+    # Compare
+    if [[ "$podspec_checksum" == "$github_checksum" ]]; then
+        log_success "✓ Checksum verified: $pod_name" >&2
+        log_info "Checksum: $podspec_checksum" >&2
+        return 0
+    else
+        log_error "✗ Checksum MISMATCH: $pod_name" >&2
+        log_error "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━" >&2
+        log_error "Podspec checksum:  $podspec_checksum" >&2
+        log_error "GitHub checksum:   $github_checksum" >&2
+        log_error "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━" >&2
+        log_error "This indicates the podspec was generated before GitHub Release was ready" >&2
+        log_error "Or the GitHub Release zip was modified after podspec generation" >&2
+        log_error "" >&2
+        log_error "Action required: Regenerate podspec with current GitHub checksum" >&2
+        return 1
     fi
 }
 
@@ -475,9 +578,9 @@ if is_binary_distribution "$POD_NAME"; then
   # ═══════════════════════════════════════════════════════════════════════════
   # GENERATED FOR RELEASE (Binary Distribution - HTTP Zip)
   # Generated by: Scripts/release/generate_podspec.sh
-  # Tier: ${MSP_RELEASE_TIER:-release}
-  # HTTP zip source: Real distribution format (used by both test and release tiers)
-  # SHA256: Auto-calculated from actual zip file
+  # Phase B: Unified tier architecture - checksum always from GitHub Release CDN
+  # HTTP zip source: Real distribution format (used by all modes)
+  # SHA256: Auto-calculated from GitHub Release CDN (source of truth)
   # ═══════════════════════════════════════════════════════════════════════════
 
   spec.version = "$VERSION"
@@ -511,7 +614,7 @@ else
   # ═══════════════════════════════════════════════════════════════════════════
   # GENERATED FOR RELEASE (Source Distribution - Git Tag)
   # Generated by: Scripts/release/generate_podspec.sh
-  # Tier: ${MSP_RELEASE_TIER:-release}
+  # Phase B: Unified tier architecture
   # Adapters are source-based per architecture (README.md)
   # ═══════════════════════════════════════════════════════════════════════════
 
