@@ -797,18 +797,10 @@ ensure_release_tag_exists_and_pushed() {
                 # Wait 2 seconds for GitHub to create the auto-release
                 sleep 2
 
-                if gh release view "$tag" --repo "ParticleMedia/msp-ios-sdk-public" &>/dev/null; then
-                    log_info "GitHub Release exists, publishing..."
-                    if gh release edit "$tag" \
-                        --repo "ParticleMedia/msp-ios-sdk-public" \
-                        --draft=false \
-                        --latest 2>&1; then
-                        log_success "✅ GitHub Release published: $tag"
-                    else
-                        log_warning "Failed to publish GitHub Release (non-blocking, will retry later)"
-                    fi
-                else
-                    log_info "GitHub Release does not exist yet (will be created during pod publishing)"
+                # Phase B: Use unified GitHub Release function
+                # This will create release if needed, or verify existing release state
+                if ! create_or_verify_github_release "$tag"; then
+                    log_warning "Failed to create/verify GitHub Release (non-blocking, will retry later)"
                 fi
 
                 break
@@ -879,27 +871,19 @@ ensure_release_tag_exists_and_pushed() {
         else
             log_success "Pushed tag to public: $tag"
 
-            # CRITICAL FIX: Immediately publish GitHub Release after Tag push
+            # Phase B: Immediately create/verify GitHub Release after Tag push
             # When a tag is pushed to GitHub, if no Release exists, GitHub auto-creates
-            # a Draft Release. We must immediately publish it to prevent 404 errors.
-            # This is the ONLY reliable place to ensure Releases are Published.
-            log_info "Ensuring GitHub Release is Published (not Draft) for tag: $tag"
+            # a Draft Release. We must immediately create/verify it to prevent 404 errors.
+            # This is the ONLY reliable place to ensure Releases are Created/Published.
+            log_info "Ensuring GitHub Release is Created/Verified for tag: $tag"
 
-            # Wait 2 seconds for GitHub to create the auto-release
+            # Wait 2 seconds for GitHub to create the auto-release (if any)
             sleep 2
 
-            if gh release view "$tag" --repo "ParticleMedia/msp-ios-sdk-public" &>/dev/null; then
-                log_info "GitHub Release exists, publishing..."
-                if gh release edit "$tag" \
-                    --repo "ParticleMedia/msp-ios-sdk-public" \
-                    --draft=false \
-                    --latest 2>&1; then
-                    log_success "✅ GitHub Release published: $tag"
-                else
-                    log_warning "Failed to publish GitHub Release (non-blocking, will retry later)"
-                fi
-            else
-                log_info "GitHub Release does not exist yet (will be created during pod publishing)"
+            # Phase B: Use unified GitHub Release function
+            # This will create release if needed, or verify existing release state
+            if ! create_or_verify_github_release "$tag"; then
+                log_warning "Failed to create/verify GitHub Release (non-blocking, will retry later)"
             fi
         fi
     fi
@@ -1541,12 +1525,13 @@ verify_and_fix_github_release_zip() {
             log_info ""
             log_info "🔧 Applying automatic fix..."
 
-            # Upload correct zip to GitHub Release
-            log_info "Uploading correct zip to GitHub Release (with --clobber to overwrite)..."
+            # Phase B: Use unified upload function with force re-upload
+            log_info "Uploading correct zip to GitHub Release (with force re-upload)..."
+            local old_force_reupload="${MSP_FORCE_REUPLOAD:-false}"
+            export MSP_FORCE_REUPLOAD=true
 
-            if gh release upload "$version" "$local_zip" \
-                --repo "ParticleMedia/msp-ios-sdk-public" \
-                --clobber 2>&1 | tee /tmp/gh-upload-$$.log; then
+            if upload_zip_to_github "$version" "$local_zip"; then
+                export MSP_FORCE_REUPLOAD="$old_force_reupload"
 
                 log_success "✅ Upload completed successfully"
 
@@ -1617,17 +1602,14 @@ verify_and_fix_github_release_zip() {
                     return 0
                 fi
             else
+                export MSP_FORCE_REUPLOAD="$old_force_reupload"
                 log_error "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
                 log_error "❌ AUTOMATIC FIX FAILED"
                 log_error "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
                 log_error "Failed to upload correct zip to GitHub Release"
                 log_error ""
-                log_error "Error log saved to: /tmp/gh-upload-$$.log"
-                log_error ""
                 log_error "Manual fix required:"
-                log_error "  gh release upload $version $local_zip \\"
-                log_error "    --repo ParticleMedia/msp-ios-sdk-public \\"
-                log_error "    --clobber"
+                log_error "  MSP_FORCE_REUPLOAD=true upload_zip_to_github $version $local_zip"
                 log_error ""
                 log_error "After manual upload:"
                 log_error "  1. Wait 5-10 minutes for CDN propagation"
@@ -1649,9 +1631,7 @@ verify_and_fix_github_release_zip() {
         log_warning ""
         log_warning "Recommended action:"
         log_warning "  Upload zip manually to ensure it exists:"
-        log_warning "  gh release upload $version $local_zip \\"
-        log_warning "    --repo ParticleMedia/msp-ios-sdk-public \\"
-        log_warning "    --clobber"
+        log_warning "  MSP_FORCE_REUPLOAD=true upload_zip_to_github $version $local_zip"
         log_warning ""
         log_warning "Continuing with Resume (pod already published)..."
         log_warning "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
@@ -3008,103 +2988,21 @@ publish_pod_with_resume() {
         log_info "PUBLISH" "Source-based adapters use main tag: $version_tag"
         log_info "PUBLISH" "Attempting automatic fix..."
 
-        # Source-based adapters use the main tag (e.g., 0.3.0-rc.13), not pod-specific tags
-        # Check if main GitHub Release exists
+        # Phase B: Source-based adapters use the main tag (e.g., 0.3.0-rc.13), not pod-specific tags
+        # Use unified GitHub Release function to create/verify release
         local release_repo="ParticleMedia/msp-ios-sdk-public"
-        if ! gh release view "$version_tag" --repo "$release_repo" &>/dev/null; then
-            log_warn "PUBLISH" "GitHub Release $version_tag doesn't exist in $release_repo"
-            log_info "PUBLISH" "Creating new GitHub Release for main tag..."
-            
-            # Create new release from tag
-            local release_notes="MSP iOS SDK ${version_tag}
-
-This release includes source code for all adapters.
-Source code is distributed via git tag.
-
-Automatically created to resolve checksum verification issue."
-
-            if ! gh release create "$version_tag" \
-                --repo "$release_repo" \
-                --title "MSP iOS SDK $version_tag" \
-                --notes "$release_notes" \
-                --latest \
-                --target "release/${version_tag}"; then
-                log_error "PUBLISH" "Failed to create GitHub Release $version_tag"
-                return 1
-            fi
-
-            # Ensure release is published (not draft)
-            gh release edit "$version_tag" --repo "$release_repo" --draft=false 2>/dev/null || true
-
-            log_info "PUBLISH" "✓ Created GitHub Release $version_tag"
-        else
-            log_info "PUBLISH" "Found existing GitHub Release: $version_tag"
-            log_info "PUBLISH" "Deleting and recreating to match current git tag..."
-
-            # ═══════════════════════════════════════════════════════════════
-            # CONCURRENT CONTROL: Acquire lock to prevent race conditions
-            # ═══════════════════════════════════════════════════════════════
-            if ! acquire_github_release_lock "$version_tag" 120; then
-                log_error "PUBLISH" "Failed to acquire lock for GitHub Release operation"
-                return 1
-            fi
-
-            # Setup cleanup trap to ensure lock is released on error
-            trap 'release_github_release_lock' EXIT ERR
-
-            # ═══════════════════════════════════════════════════════════════
-            # ASSET BACKUP: Preserve binary files before deletion
-            # ═══════════════════════════════════════════════════════════════
-            local backup_dir
-            backup_dir=$(backup_github_release_assets "$version_tag" "$release_repo")
-
-            # Delete the conflicting release (keep tag)
-            if ! gh release delete "$version_tag" --repo "$release_repo" --yes; then
-                log_error "PUBLISH" "Failed to delete GitHub Release $version_tag"
-                release_github_release_lock
-                return 1
-            fi
-
-            log_info "PUBLISH" "✓ Deleted GitHub Release $version_tag"
-
-            # Wait for GitHub to process deletion
-            sleep 2
-
-            # Recreate release from current tag
-            local release_notes="MSP iOS SDK ${version_tag}
-
-This release includes source code for all adapters.
-Source code is distributed via git tag.
-
-Automatically recreated to resolve checksum verification issue."
-
-            if ! gh release create "$version_tag" \
-                --repo "$release_repo" \
-                --title "MSP iOS SDK $version_tag" \
-                --notes "$release_notes" \
-                --latest \
-                --target "release/${version_tag}"; then
-                log_error "PUBLISH" "Failed to recreate GitHub Release $version_tag"
-                release_github_release_lock
-                return 1
-            fi
-
-            # Ensure release is published (not draft)
-            gh release edit "$version_tag" --repo "$release_repo" --draft=false 2>/dev/null || true
-
-            log_info "PUBLISH" "✓ Recreated GitHub Release $version_tag"
-
-            # ═══════════════════════════════════════════════════════════════
-            # ASSET RESTORE: Restore binary files to new Release
-            # ═══════════════════════════════════════════════════════════════
-            restore_github_release_assets "$version_tag" "$release_repo" "$backup_dir"
-
-            # ═══════════════════════════════════════════════════════════════
-            # Release lock after successful operation
-            # ═══════════════════════════════════════════════════════════════
-            release_github_release_lock
-            trap - EXIT ERR  # Clear trap after successful completion
+        
+        # Set repo for unified function
+        export MSP_GITHUB_REPO="$release_repo"
+        
+        # Phase B: Use unified GitHub Release function
+        # This will create release if needed, or verify existing release state
+        if ! create_or_verify_github_release "$version_tag"; then
+            log_error "PUBLISH" "Failed to create/verify GitHub Release $version_tag"
+            return 1
         fi
+
+        log_info "PUBLISH" "✓ GitHub Release $version_tag created/verified"
 
         # Wait for GitHub to generate new source code zip
         log_info "PUBLISH" "Waiting for GitHub to generate source code archive..."
