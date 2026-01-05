@@ -1741,250 +1741,69 @@ create_github_release_for_pod() {
         
         log_info "Created zip file: $zip_name"
         
-    # Create or update GitHub release
+    # Phase B: Create/verify GitHub Release and upload zip using unified functions
     local gh_release_created=false
-    if gh release view "$version" --repo "ParticleMedia/msp-ios-sdk-public" &>/dev/null; then
-        log_info "Release $version already exists, uploading assets"
-            if gh release upload "$version" "$ROOT_DIR/$zip_name" --repo "ParticleMedia/msp-ios-sdk-public" --clobber; then
-            gh_release_created=true
+    
+    # Step 1: Create/verify GitHub Release (Phase B unified flow)
+    if ! create_or_verify_github_release "$version"; then
+        log_error "Failed to create/verify GitHub Release"
+        return 1
+    fi
 
-            # =====================================================================
-            # CRITICAL VALIDATION: Verify GitHub Release upload succeeded
-            # =====================================================================
-            # Why: GitHub Release CDN propagation takes 30-120 seconds. Immediately
-            # proceeding to podspec generation may result in:
-            #   1. 404 errors (file not yet propagated to CDN)
-            #   2. Stale content (CDN cache returns old version)
-            #   3. Incorrect checksum in podspec (calculated from stale/missing file)
-            #
-            # Solution: Wait for CDN propagation, then verify upload by downloading
-            # and comparing checksums.
-            # =====================================================================
+    # Step 2: Upload zip using unified function
+    if ! upload_zip_to_github "$version" "$ROOT_DIR/$zip_name"; then
+        log_error "Failed to upload zip to GitHub Release"
+        return 1
+    fi
 
-            log_step "Verifying GitHub Release upload (CDN propagation check)"
-
-            # Step 1: Calculate local zip checksum (source of truth)
-            local local_checksum=$(shasum -a 256 "$ROOT_DIR/$zip_name" 2>/dev/null | awk '{print $1}')
-            if [[ -z "$local_checksum" || ${#local_checksum} -ne 64 ]]; then
-                log_error "❌ Failed to calculate checksum from local zip"
-                return 1
-            fi
-            log_info "Local zip checksum (source of truth): $local_checksum"
-
-            # Step 2: Wait for GitHub CDN propagation
-            local cdn_wait_time=60
-            log_info "Waiting for GitHub CDN propagation (${cdn_wait_time} seconds)..."
-            sleep $cdn_wait_time
-
-            # Step 3: Verify upload by downloading and comparing checksum
-            local zip_url="https://github.com/ParticleMedia/msp-ios-sdk-public/releases/download/${version}/${pod}-${version}.zip"
-            local temp_verify_zip="/tmp/verify-upload-${pod}-${version}-$$.zip"
-
-            log_info "Downloading from GitHub Release to verify upload..."
-            log_info "URL: $zip_url"
-
-            local verify_attempt=1
-            local max_verify_attempts=3
-            local upload_verified=false
-
-            while [[ $verify_attempt -le $max_verify_attempts ]]; do
-                log_info "Verification attempt $verify_attempt/$max_verify_attempts"
-
-                if curl -L -f -s -o "$temp_verify_zip" "$zip_url" 2>/dev/null; then
-                    local file_size=$(stat -f%z "$temp_verify_zip" 2>/dev/null || stat -c%s "$temp_verify_zip" 2>/dev/null || echo "0")
-
-                    if [[ $file_size -gt 0 ]]; then
-                        local github_checksum=$(shasum -a 256 "$temp_verify_zip" 2>/dev/null | awk '{print $1}')
-
-                        if [[ -n "$github_checksum" && ${#github_checksum} -eq 64 ]]; then
-                            log_info "GitHub Release checksum: $github_checksum"
-                            log_info "Downloaded file size: $file_size bytes"
-
-                            if [[ "$github_checksum" == "$local_checksum" ]]; then
-                                log_success "✅ Upload verification PASSED"
-                                log_success "   GitHub Release zip matches local zip"
-                                log_success "   Checksum: $github_checksum"
-                                upload_verified=true
-                                rm -f "$temp_verify_zip"
-                                break
-                            else
-                                log_warning "⚠️  Checksum mismatch (attempt $verify_attempt/$max_verify_attempts)"
-                                log_warning "   Local:  $local_checksum"
-                                log_warning "   GitHub: $github_checksum"
-                                log_warning "   This may indicate CDN cache is stale"
-                            fi
-                        else
-                            log_warning "Failed to calculate checksum from downloaded file"
-                        fi
-                    else
-                        log_warning "Downloaded file is empty"
-                    fi
-                else
-                    log_warning "Failed to download from GitHub Release"
-                fi
-
-                # Cleanup and retry
-                rm -f "$temp_verify_zip"
-
-                if [[ $verify_attempt -lt $max_verify_attempts ]]; then
-                    log_info "Waiting 30 seconds before retry..."
-                    sleep 30
-                fi
-
-                ((verify_attempt++))
-            done
-
-            if [[ "$upload_verified" != "true" ]]; then
-                log_error "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-                log_error "❌ CRITICAL: Failed to verify GitHub Release upload"
-                log_error "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-                log_error ""
-                log_error "Pod:       $pod $version"
-                log_error "URL:       $zip_url"
-                log_error "Local:     $local_checksum"
-                log_error "Attempts:  $max_verify_attempts"
-                log_error ""
-                log_error "Possible causes:"
-                log_error "  1. GitHub CDN propagation is slower than expected (>120s)"
-                log_error "  2. GitHub Release asset was corrupted during upload"
-                log_error "  3. Network issues preventing download"
-                log_error "  4. GitHub CDN is serving stale cached version"
-                log_error ""
-                log_error "Impact:"
-                log_error "  - Proceeding may result in incorrect checksum in podspec"
-                log_error "  - This will cause validation failures for all dependent pods"
-                log_error ""
-                log_error "Solution:"
-                log_error "  1. Wait 2-3 minutes for CDN to fully propagate"
-                log_error "  2. Manually verify: curl -L -I $zip_url"
-                log_error "  3. If accessible, re-run this script to continue"
-                log_error ""
-                log_error "🛑 Aborting to prevent incorrect podspec generation"
-                log_error "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-                return 1
-            fi
-
-                # Ensure release is published (not draft) and set as latest
-                gh release edit "$version" --repo "ParticleMedia/msp-ios-sdk-public" --draft=false --latest 2>/dev/null || true
-        fi
+    # Step 3: Wait for CDN propagation and verify availability
+    # Calculate CDN wait time based on file size
+    local file_size_mb
+    file_size_mb=$(du -m "$ROOT_DIR/$zip_name" 2>/dev/null | awk '{print $1}')
+    local cdn_wait_time=60
+    if [[ $file_size_mb -lt 5 ]]; then
+        cdn_wait_time=30
+    elif [[ $file_size_mb -lt 20 ]]; then
+        cdn_wait_time=60
     else
-    log_info "Creating new release $version"
-        if gh release create "$version" "$ROOT_DIR/$zip_name" --repo "ParticleMedia/msp-ios-sdk-public" --title "Release $version" --notes "Release $version" --latest; then
-        gh_release_created=true
-
-        # =====================================================================
-        # CRITICAL VALIDATION: Verify GitHub Release upload succeeded
-        # =====================================================================
-        # (Same validation logic as above for new releases)
-        # =====================================================================
-
-        log_step "Verifying GitHub Release upload (CDN propagation check)"
-
-        # Step 1: Calculate local zip checksum (source of truth)
-        local local_checksum=$(shasum -a 256 "$ROOT_DIR/$zip_name" 2>/dev/null | awk '{print $1}')
-        if [[ -z "$local_checksum" || ${#local_checksum} -ne 64 ]]; then
-            log_error "❌ Failed to calculate checksum from local zip"
-            return 1
-        fi
-        log_info "Local zip checksum (source of truth): $local_checksum"
-
-        # Step 2: Wait for GitHub CDN propagation
-        local cdn_wait_time=60
-        log_info "Waiting for GitHub CDN propagation (${cdn_wait_time} seconds)..."
-        sleep $cdn_wait_time
-
-        # Step 3: Verify upload by downloading and comparing checksum
-        local zip_url="https://github.com/ParticleMedia/msp-ios-sdk-public/releases/download/${version}/${pod}-${version}.zip"
-        local temp_verify_zip="/tmp/verify-upload-${pod}-${version}-$$.zip"
-
-        log_info "Downloading from GitHub Release to verify upload..."
-        log_info "URL: $zip_url"
-
-        local verify_attempt=1
-        local max_verify_attempts=3
-        local upload_verified=false
-
-        while [[ $verify_attempt -le $max_verify_attempts ]]; do
-            log_info "Verification attempt $verify_attempt/$max_verify_attempts"
-
-            if curl -L -f -s -o "$temp_verify_zip" "$zip_url" 2>/dev/null; then
-                local file_size=$(stat -f%z "$temp_verify_zip" 2>/dev/null || stat -c%s "$temp_verify_zip" 2>/dev/null || echo "0")
-
-                if [[ $file_size -gt 0 ]]; then
-                    local github_checksum=$(shasum -a 256 "$temp_verify_zip" 2>/dev/null | awk '{print $1}')
-
-                    if [[ -n "$github_checksum" && ${#github_checksum} -eq 64 ]]; then
-                        log_info "GitHub Release checksum: $github_checksum"
-                        log_info "Downloaded file size: $file_size bytes"
-
-                        if [[ "$github_checksum" == "$local_checksum" ]]; then
-                            log_success "✅ Upload verification PASSED"
-                            log_success "   GitHub Release zip matches local zip"
-                            log_success "   Checksum: $github_checksum"
-                            upload_verified=true
-                            rm -f "$temp_verify_zip"
-                            break
-                        else
-                            log_warning "⚠️  Checksum mismatch (attempt $verify_attempt/$max_verify_attempts)"
-                            log_warning "   Local:  $local_checksum"
-                            log_warning "   GitHub: $github_checksum"
-                            log_warning "   This may indicate CDN cache is stale"
-                        fi
-                    else
-                        log_warning "Failed to calculate checksum from downloaded file"
-                    fi
-                else
-                    log_warning "Downloaded file is empty"
-                fi
-            else
-                log_warning "Failed to download from GitHub Release"
-            fi
-
-            # Cleanup and retry
-            rm -f "$temp_verify_zip"
-
-            if [[ $verify_attempt -lt $max_verify_attempts ]]; then
-                log_info "Waiting 30 seconds before retry..."
-                sleep 30
-            fi
-
-            ((verify_attempt++))
-        done
-
-        if [[ "$upload_verified" != "true" ]]; then
-            log_error "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-            log_error "❌ CRITICAL: Failed to verify GitHub Release upload"
-            log_error "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-            log_error ""
-            log_error "Pod:       $pod $version"
-            log_error "URL:       $zip_url"
-            log_error "Local:     $local_checksum"
-            log_error "Attempts:  $max_verify_attempts"
-            log_error ""
-            log_error "Possible causes:"
-            log_error "  1. GitHub CDN propagation is slower than expected (>120s)"
-            log_error "  2. GitHub Release asset was corrupted during upload"
-            log_error "  3. Network issues preventing download"
-            log_error "  4. GitHub CDN is serving stale cached version"
-            log_error ""
-            log_error "Impact:"
-            log_error "  - Proceeding may result in incorrect checksum in podspec"
-            log_error "  - This will cause validation failures for all dependent pods"
-            log_error ""
-            log_error "Solution:"
-            log_error "  1. Wait 2-3 minutes for CDN to fully propagate"
-            log_error "  2. Manually verify: curl -L -I $zip_url"
-            log_error "  3. If accessible, re-run this script to continue"
-            log_error ""
-            log_error "🛑 Aborting to prevent incorrect podspec generation"
-            log_error "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-            return 1
-        fi
-
-        # Ensure release is published (not draft)
-        gh release edit "$version" --repo "ParticleMedia/msp-ios-sdk-public" --draft=false 2>/dev/null || true
+        cdn_wait_time=120
     fi
+
+    # Set CDN wait time and wait
+    export MSP_CDN_WAIT_TIME=$cdn_wait_time
+    wait_for_cdn_propagation "$version"
+
+    # Verify CDN availability
+    local zip_name="${pod}-${version}.zip"
+    if ! verify_cdn_availability "$version" "$zip_name"; then
+        log_error "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+        log_error "❌ CRITICAL: Failed to verify GitHub Release upload"
+        log_error "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+        log_error ""
+        log_error "Pod:       $pod $version"
+        log_error "URL:       https://github.com/ParticleMedia/msp-ios-sdk-public/releases/download/${version}/${zip_name}"
+        log_error ""
+        log_error "Possible causes:"
+        log_error "  1. GitHub CDN propagation is slower than expected (>120s)"
+        log_error "  2. GitHub Release asset was corrupted during upload"
+        log_error "  3. Network issues preventing download"
+        log_error "  4. GitHub CDN is serving stale cached version"
+        log_error ""
+        log_error "Impact:"
+        log_error "  - Proceeding may result in incorrect checksum in podspec"
+        log_error "  - This will cause validation failures for all dependent pods"
+        log_error ""
+        log_error "Solution:"
+        log_error "  1. Wait 2-3 minutes for CDN to fully propagate"
+        log_error "  2. Manually verify: curl -L -I https://github.com/ParticleMedia/msp-ios-sdk-public/releases/download/${version}/${zip_name}"
+        log_error "  3. If accessible, re-run this script to continue"
+        log_error ""
+        log_error "🛑 Aborting to prevent incorrect podspec generation"
+        log_error "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+        return 1
     fi
+
+    gh_release_created=true
     
     # Clean up zip file
         rm -f "$ROOT_DIR/$zip_name"
