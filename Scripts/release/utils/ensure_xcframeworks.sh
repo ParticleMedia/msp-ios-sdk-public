@@ -164,7 +164,8 @@ ensure_all_xcframeworks() {
 
     local foundation_missing=false
     local foundation_xcframeworks=("MSPiOSCore" "MSPGoogleAdsTypes" "MSPSharedLibraries")
-    local release_tier="${MSP_RELEASE_TIER:-preflight}"
+    # Phase B Step 5: Use DRY_RUN instead of MSP_RELEASE_TIER
+    local dry_run="${DRY_RUN:-true}"
 
     for foundation_pod in "${foundation_xcframeworks[@]}"; do
         local foundation_path="$ROOT_DIR/Build/XCFrameworks/${foundation_pod}.xcframework"
@@ -212,14 +213,14 @@ ensure_all_xcframeworks() {
     fi
 
     if [[ "$foundation_missing" == "true" ]]; then
-        # In release tier, Foundation Layer will be built in pre_release_setup()
-        # Allow missing Foundation Layer during Preflight in release tier
-        if [[ "$release_tier" == "release" ]] || [[ "$release_tier" == "production" ]]; then
+        # Phase B Step 5: In production mode, Foundation Layer will be built in pre_release_setup()
+        # Allow missing Foundation Layer during Preflight in production mode
+        if [[ "$dry_run" == "false" ]]; then
             log_info "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
             log_info "ℹ️  Foundation Layer XCFrameworks missing (expected in release tier)"
             log_info "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
             log_info ""
-            log_info "Release tier detected: Foundation Layer will be built in pre_release_setup()"
+            log_info "Production mode detected: Foundation Layer will be built in pre_release_setup()"
             log_info "This is expected behavior - Preflight runs before pre_release_setup()."
             log_info ""
             log_info "Missing XCFrameworks (will be built shortly):"
@@ -284,13 +285,13 @@ ensure_all_xcframeworks() {
     # Original logic: Check and build Adapters
     # =========================================================================
 
-    # CRITICAL: In release tier, if Foundation Layer is missing, skip Adapters
+    # Phase B Step 5: CRITICAL: In production mode, if Foundation Layer is missing, skip Adapters
     # building. Foundation Layer will be built in pre_release_setup(), and
     # Adapters will be built later in the release flow.
-    if [[ "$foundation_missing" == "true" ]] && [[ "$release_tier" == "release" || "$release_tier" == "production" ]]; then
+    if [[ "$foundation_missing" == "true" ]] && [[ "$dry_run" == "false" ]]; then
         log_info "Step 1: Skipping Binary Adapters check (Foundation Layer will be built first)"
         log_info ""
-        log_info "In release tier, Foundation Layer is built in pre_release_setup()."
+        log_info "In production mode, Foundation Layer is built in pre_release_setup()."
         log_info "Adapters will be built after Foundation Layer is ready."
         log_info ""
         log_success "✅ Preflight check passed (Foundation Layer will be built in next step)"

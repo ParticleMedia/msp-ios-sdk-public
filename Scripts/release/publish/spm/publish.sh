@@ -377,11 +377,11 @@ spm_local_validation() {
     if [[ ! -f "$repo_package_swift" ]]; then
         log_error "[SPM][ERROR] Package.swift not found at: $repo_package_swift"
         log_error "[SPM][ERROR] SPM local validation requires Package.swift to be generated first"
-        # In preflight mode, allow soft-fail
-        if [[ "${MSP_RELEASE_TIER:-preflight}" == "production" ]]; then
+        # Phase B Step 5: In dry-run mode, allow soft-fail
+        if [[ "${DRY_RUN:-true}" == "false" ]]; then
             return 1
         else
-            log_warn "[SPM][WARN] Preflight mode: skipping local validation"
+            log_warn "[SPM][WARN] Dry-run mode: skipping local validation"
             return 0
         fi
     else
@@ -1014,15 +1014,16 @@ main() {
     fi
     
     # Phase 4 TASK 2: SPM Manifest strong validation
+    # Phase B Step 5: Use DRY_RUN instead of MSP_RELEASE_TIER
     local release_mode="${MSP_RELEASE_MODE:-cli}"
-    local release_tier="${MSP_RELEASE_TIER:-preflight}"
+    local dry_run="${DRY_RUN:-true}"
     local release_mode_upper=$(echo "$release_mode" | tr '[:lower:]' '[:upper:]' 2>/dev/null || echo "$release_mode" | awk '{print toupper($0)}')
     echo "[MSP][ORCH] Mode: ${release_mode_upper} — validating SPM manifest"
     
     # Check if swift is available
     if ! command -v swift >/dev/null 2>&1; then
         log_error "Swift is not installed. Cannot validate SPM manifest."
-        if [[ "$release_tier" == "production" ]]; then
+        if [[ "$dry_run" == "false" ]]; then
             exit 1
         fi
     fi

@@ -51,7 +51,8 @@ echo
 VERSION="0.0.1-corecheck-$TIMESTAMP"
 
 echo "[3/4] Running preflight verify: $VERSION ..."
-MSP_RELEASE_TIER=preflight \
+# Phase B Step 5: Use DRY_RUN instead of MSP_RELEASE_TIER
+DRY_RUN=true \
 MSP_RELEASE_MODE=cli \
 MSP_KEEP_SANDBOX=1 \
 bash Scripts/msp-release.sh run "$VERSION" --skip-create-release-branch --skip-remote \
