@@ -527,7 +527,158 @@ This will create 15 test cases covering all combinations of DRY_RUN, VERIFY_SPM_
 
 ## Release & Deployment
 
-### Quick Start
+### Configuration System
+
+MSP iOS SDK release system uses **profile-based configuration** for simplified environment management.
+
+#### Quick Start
+
+```bash
+# Local development (dry-run, minimal validation)
+./Scripts/msp-release.sh --profile=local-dev run 0.4.0-rc.1
+
+# Production release (publish enabled, full validation)
+./Scripts/msp-release.sh --profile=production run 0.4.0-rc.1
+
+# CI testing (dry-run, full validation, JSON logs)
+./Scripts/msp-release.sh --profile=ci-test run 0.4.0-rc.1
+```
+
+#### Available Profiles
+
+| Profile | Purpose | DRY_RUN | Validation | Use Case |
+|---------|---------|---------|------------|----------|
+| **local-dev** | Local development | ✅ true | Minimal | Quick testing, development |
+| **ci-test** | CI/CD testing | ✅ true | Full | Automated CI pipelines |
+| **production** | Production release | ❌ false | Full | Actual CocoaPods releases |
+| **quick-test** | Quick validation | ✅ true | None | Fast sanity checks |
+
+#### Configuration File
+
+Configuration is stored in `Scripts/config/release.yaml`. See the file for detailed settings and comments.
+
+#### Environment Variable Overrides
+
+All profile settings can be overridden using environment variables:
+
+```bash
+# Override specific settings
+DRY_RUN=false ./Scripts/msp-release.sh --profile=local-dev run 0.4.0-rc.1
+MSP_LOG_LEVEL=debug ./Scripts/msp-release.sh --profile=production run 0.4.0-rc.1
+
+# Override multiple settings
+DRY_RUN=false MSP_LOG_LEVEL=debug MSP_MAX_WORKERS=8 \
+  ./Scripts/msp-release.sh --profile=local-dev run 0.4.0-rc.1
+```
+
+#### Configuration Priority
+
+Settings are applied in the following order (highest to lowest):
+
+1. **CLI flags**: `--skip-pods`, `--dry-run`, etc.
+2. **Environment variables**: `DRY_RUN=false`, `MSP_LOG_LEVEL=debug`
+3. **Profile settings**: `--profile=production`
+4. **Config file**: `Scripts/config/release.yaml`
+5. **Built-in defaults**: Hardcoded fallbacks
+
+#### Backward Compatibility
+
+Old environment variable approach still works:
+
+```bash
+# Old way (still supported, shows deprecation warning)
+export MSP_RELEASE_TIER=release
+export MSP_ALLOW_LOCAL_RELEASE=1
+./Scripts/msp-release.sh run 0.4.0-rc.1
+
+# New way (recommended)
+./Scripts/msp-release.sh --profile=production run 0.4.0-rc.1
+```
+
+#### Configuration Variables
+
+The system uses 15 core configuration variables organized by category:
+
+**Core**:
+- `DRY_RUN`: Skip publish steps (CocoaPods push, Git push)
+- `MODE`: Release mode (cli, ci)
+- `LOG_LEVEL`: Logging level (debug, info, warn, error)
+
+**Validation**:
+- `MSP_VALIDATION_PODS`: Validate podspecs
+- `MSP_VALIDATION_SPM`: Validate SPM packages
+- `MSP_VALIDATION_XCFRAMEWORK`: Validate XCFrameworks
+- `MSP_VALIDATION_LOCAL`: Local build validation
+- `MSP_VALIDATION_REMOTE`: Remote validation
+- `MSP_VALIDATION_DEVICE`: Device testing
+
+**Notifications**:
+- `MSP_SLACK_ENABLED`: Enable Slack notifications
+- `MSP_SLACK_ENV`: Slack environment (test, prod)
+- `MSP_EMAIL_ENABLED`: Enable email notifications
+
+**Safety**:
+- `MSP_ALLOW_EXISTING_TAG`: Allow reusing existing Git tags
+- `MSP_ALLOW_EXISTING_RELEASE`: Allow reusing existing GitHub Releases
+- `MSP_KEEP_SANDBOX`: Keep worktree sandbox after completion
+- `MSP_REQUIRE_CONFIRMATION`: Require manual confirmation prompts
+
+**Performance**:
+- `MSP_PARALLEL_BUILDS`: Build XCFrameworks in parallel
+- `MSP_MAX_WORKERS`: Max parallel workers
+- `MSP_CDN_WAIT_TIME`: Seconds to wait for CDN propagation
+
+#### Examples
+
+**Local Development**:
+```bash
+# Quick test with minimal validation
+./Scripts/msp-release.sh --profile=local-dev run 0.4.0-test
+
+# Debug mode
+MSP_LOG_LEVEL=debug ./Scripts/msp-release.sh --profile=local-dev run 0.4.0-test
+
+# Force real publish from local
+DRY_RUN=false ./Scripts/msp-release.sh --profile=local-dev run 0.4.0-test
+```
+
+**Production Release**:
+```bash
+# Standard production release
+./Scripts/msp-release.sh --profile=production run 0.4.0-rc.1
+
+# Production release with debug logging
+MSP_LOG_LEVEL=debug ./Scripts/msp-release.sh --profile=production run 0.4.0-rc.1
+
+# View configuration before releasing
+./Scripts/msp-release.sh --profile=production --verbose config
+```
+
+#### Troubleshooting
+
+**Q: How do I see what configuration is being used?**
+```bash
+./Scripts/msp-release.sh --profile=production --verbose version
+```
+
+**Q: Why is my environment variable not taking effect?**
+Check the priority order. CLI flags and existing environment variables may override your setting.
+
+**Q: Can I create custom profiles?**
+Yes, edit `Scripts/config/release.yaml` and add a new profile section following the existing format.
+
+**Q: Where can I find the full configuration?**
+See `Scripts/config/release.yaml` for all available settings and profiles.
+
+#### Migration from Old System
+
+See [docs/MIGRATION.md](docs/MIGRATION.md) for detailed migration guide from environment variables to profiles.
+
+For complete configuration documentation, see [docs/CONFIGURATION_GUIDE.md](docs/CONFIGURATION_GUIDE.md).
+
+---
+
+### Quick Start (Legacy)
 
 **Local Release** (3 variables needed):
 ```bash
@@ -545,7 +696,7 @@ direnv allow
 ./Scripts/msp-release.sh run 0.3.0-rc.6
 ```
 
-### Environment Variables
+### Environment Variables (Legacy)
 
 ### 🚀 推荐方式: 使用 direnv 自动加载（最优）
 
