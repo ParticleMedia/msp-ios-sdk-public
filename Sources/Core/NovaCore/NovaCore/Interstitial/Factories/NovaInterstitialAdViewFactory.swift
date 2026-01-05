@@ -16,18 +16,27 @@ class NovaInterstitialAdViewFactory: NSObject {
     static func createAdView(
         interstitialAd: NovaInterstitialAdItem,
         viewController: UIViewController,
-        reportHandling: any NovaInterstitialAdReportHandling
+        reportHandling: any NovaInterstitialAdReportHandling,
+        pageIndex: Int? = nil,
+        pageDelegate: NovaInterstitialMultiPageDelegate
     ) -> NovaInterstitialAdViewProtocol {
         let context = NovaInterstitialAdContext(
             interstitialAd: interstitialAd,
             layout: interstitialAd.layoutStyle,
-            tracingId: nil
+            tracingId: nil,
+            pageIndex: pageIndex
         )
-        
-        return NovaInterstitialAdNormalView(
-            context: context,
-            viewController: viewController,
-            reportHandling: reportHandling
-        )
+        if case .html = interstitialAd.creativeType {
+            return NovaInterstitialAdPageView(context: context,
+                                              viewController: viewController,
+                                              reportHandling: reportHandling,
+                                              pageDelegate: pageDelegate)
+        } else {
+            return NovaInterstitialAdNormalView(
+                context: context,
+                viewController: viewController,
+                reportHandling: reportHandling
+            )
+        }
     }
 } 

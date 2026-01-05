@@ -83,7 +83,7 @@ import UIKit
         if let ppid = MSP.shared.ppid {
             eventModel.ppid = ppid
         }
-        if let mspId = UserDefaults.standard.string(forKey: "msp_user_id") {
+        if let mspId = UserDefaults.standard.string(forKey: MSPConstants.USER_DEFAULTS_KEY_MSP_ID) {
             eventModel.mspID = mspId
         }
         eventModel.ifa = ASIdentifierManager.shared().advertisingIdentifier.uuidString
@@ -141,9 +141,8 @@ import UIKit
         if let orgId = MSP.shared.orgId {
             sdkSignal.orgID = Int32(orgId)
         }
-        if let mspId = UserDefaults.standard.string(forKey: "msp_id") {
-            sdkSignal.mspID = mspId
-        }
+        sdkSignal.mspID = UserDefaults.standard.string(forKey: MSPConstants.USER_DEFAULTS_KEY_MSP_ID) ?? ""
+        sdkSignal.clientTs = Int64(Date().timeIntervalSince1970 * 1000)
         sdkSignal.sdkVersion = MSP.shared.version
         sdkSignal.platform = Com_Newsbreak_Monetization_Signals_SdkPlatform.ios
         sdkSignal.uuid = getSDKSignalUUID()
@@ -175,18 +174,14 @@ import UIKit
         deviceSignal.w = Int32(size.width * scale)
         deviceSignal.h = Int32(size.height * scale)
         
+        deviceSignal.volumeLevel = MSPDevice.shared.getVolumeLevel()
         deviceSignal.orientation = MSPDevice.shared.getOrientationString(orientation: UIDevice.current.orientation)
         deviceSignal.fontSize = MSPDevice.shared.getFontSizeString()
         
-        deviceSignal.carrier = MSPDevice.shared.getCarrier()
-        deviceSignal.mccmnc = MSPDevice.shared.getMccMnc()
-        
-        if let connectionType = MSPDevice.shared.connectionType {
-            deviceSignal.connectionType = connectionType
-        }
+        deviceSignal.connectionType = MSPDevice.shared.getConnectionType()
 
         deviceSignal.country = MSPDevice.shared.getCountry()
-        deviceSignal.locale = Locale.preferredLanguages.first ?? ""
+        deviceSignal.locale = Locale.current.identifier
         
         UserAgentManager.shared.start()
         deviceSignal.ua = UserAgentManager.shared.userAgent
@@ -514,7 +509,7 @@ import UIKit
         eventModel.bidRequest.test = !request.testParams.isEmpty
         eventModel.ext.source = request.placementId
         eventModel.ext.placementID = ad?.adInfo[MSPConstants.AD_INFO_NETWORK_AD_UNIT_ID] as? String ?? ""
-        eventModel.ext.userID = UserDefaults.standard.string(forKey: "msp_user_id") ?? ""
+        eventModel.ext.userID = UserDefaults.standard.string(forKey: MSPConstants.USER_DEFAULTS_KEY_MSP_USER_ID) ?? ""
          
         return eventModel
     }
@@ -546,7 +541,7 @@ import UIKit
         } else {
             eventModel.placementID = bidResponse.adUnitId ?? request.placementId
         }
-        eventModel.userID = UserDefaults.standard.string(forKey: "msp_user_id") ?? ""
+        eventModel.userID = UserDefaults.standard.string(forKey: MSPConstants.USER_DEFAULTS_KEY_MSP_USER_ID) ?? ""
         
         if let rawResponseJson = bidResponse.rawResponseInJson,
            let extDict = rawResponseJson["ext"] as? [String:Any],
@@ -651,7 +646,7 @@ import UIKit
         if MSP.shared.isLogSampled {
             return true
         }
-        if let mspUserId = UserDefaults.standard.string(forKey: "msp_user_id"),
+        if let mspUserId = UserDefaults.standard.string(forKey: MSPConstants.USER_DEFAULTS_KEY_MSP_USER_ID),
            let whiteList = MSP.shared.logWhiteList,
            whiteList.contains(mspUserId) {
             return true

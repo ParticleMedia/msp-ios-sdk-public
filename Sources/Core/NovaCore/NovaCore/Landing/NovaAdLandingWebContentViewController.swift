@@ -175,16 +175,19 @@ class NovaAdLandingWebContentViewController: UIViewController {
 
         unifiedWebViewHost.load(webContext.url, referer: "https://www.newsbreak.com/")
         smoothProgress.startUpdatingProgress()
-        NovaAdMetricReporter
-            .logWebEvent(.novaLandingPageStart, encryptedAdToken: webContext.tracingInfo.encryptedAdToken)
+        NovaAdLandingWebLogHelper.logStart(webContext: webContext)
         status = .started
     }
 
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
 
-        NovaAdMetricReporter
-            .logWebEvent(.novaLandingPageClose, encryptedAdToken: webContext.tracingInfo.encryptedAdToken)
+        NovaAdLandingWebLogHelper.logClose(
+            webContext: webContext,
+            status: status,
+            scrollDepth: unifiedWebViewHost.scrollDepth,
+            pageIndex: unifiedWebViewHost.pageIndex
+        )
         status = .closed
     }
 
@@ -208,13 +211,19 @@ private extension NovaAdLandingWebContentViewController {
     }
     
     @objc func appWillResignActive() {
-        NovaAdMetricReporter
-            .logWebEvent(.novaLandingPageJumpOut, encryptedAdToken: webContext.tracingInfo.encryptedAdToken)
+        NovaAdLandingWebLogHelper.logJumpOut(
+            webContext: webContext,
+            scrollDepth: unifiedWebViewHost.scrollDepth,
+            pageIndex: unifiedWebViewHost.pageIndex
+        )
     }
     
     @objc func appWillEnterForeground() {
-        NovaAdMetricReporter
-            .logWebEvent(.novaLandingPageJumpIn, encryptedAdToken: webContext.tracingInfo.encryptedAdToken)
+        NovaAdLandingWebLogHelper.logJumpIn(
+            webContext: webContext,
+            scrollDepth: unifiedWebViewHost.scrollDepth,
+            pageIndex: unifiedWebViewHost.pageIndex
+        )
     }
 }
 
@@ -268,8 +277,11 @@ extension NovaAdLandingWebContentViewController: NovaUnifiedWebViewNavigationDel
     }
 
     func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
-        NovaAdMetricReporter
-            .logWebEvent(.novaLandingPageAllLoad, encryptedAdToken: webContext.tracingInfo.encryptedAdToken)
+        NovaAdLandingWebLogHelper.logLoaded(
+            webContext: webContext,
+            success: true,
+            pageIndex: unifiedWebViewHost.pageIndex
+        )
         loadingTimer?.invalidate()
         loadingTimer = nil
         smoothProgress.stopUpdatingProgress()
@@ -279,8 +291,12 @@ extension NovaAdLandingWebContentViewController: NovaUnifiedWebViewNavigationDel
     }
 
     func webView(_ webView: WKWebView, didFailProvisionalNavigation navigation: WKNavigation!, withError error: Error) {
-        NovaAdMetricReporter
-            .logWebEvent(.novaLandingPageAllLoad, encryptedAdToken: webContext.tracingInfo.encryptedAdToken)
+        NovaAdLandingWebLogHelper.logLoaded(
+            webContext: webContext,
+            success: false,
+            error: error,
+            pageIndex: unifiedWebViewHost.pageIndex
+        )
         loadingTimer?.invalidate()
         loadingTimer = nil
         smoothProgress.stopUpdatingProgress()

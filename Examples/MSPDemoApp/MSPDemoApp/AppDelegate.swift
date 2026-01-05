@@ -1,4 +1,6 @@
 import UIKit
+import LiftoffAdapter
+import MolocoAdapter
 import MSPCore
 import MSPGoogleAdapter
 import NovaAdapter
@@ -30,9 +32,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                                     InitializationParametersCustomKeys.MINTEGRAL_API_KEY:"7c22942b749fe6a6e361b675e96b3ee9",
                                     InitializationParametersCustomKeys.PUBMATIC_PUBLISHER_ID: "156276",
                                     InitializationParametersCustomKeys.PUBMATIC_PROFILE_IDS: [1165],
-                                    InitializationParametersCustomKeys.PUBMATIC_STORE_URL: "https://itunes.apple.com/us/app/pubmatic-sdk-app/id1175273098?mt=8"]
+                                    InitializationParametersCustomKeys.PUBMATIC_STORE_URL: "https://itunes.apple.com/us/app/pubmatic-sdk-app/id1175273098?mt=8",
+                                    InitializationParametersCustomKeys.MOLOCO_APP_KEY: "NEWSBREAK:dX2DtwJM9o9okqwZ",
+                                    InitializationParametersCustomKeys.LIFTOFF_APP_ID: "6937f2485cdd890926d69668"]
         //Note: for pubmatic ad you may need to config your NSAllowsArbitraryLoads key in App's Info.list to get a full experience, see details in https://help.pubmatic.com/openwrap/docs/home-get-started-with-ios-openwrap-sdk-as-primary-ad-sdk#app-transport-security-ats
-        var adNetworkManagers: [AdNetworkManager] = [GoogleManager(), FacebookManager(), NovaManager(), UnityManager(), PubmaticManager(), MintegralManager(), MobilefuseManager(), InmobiManager()]
+        let adNetworkManagers: [AdNetworkManager] = [GoogleManager(), FacebookManager(), NovaManager(), UnityManager(), PubmaticManager(), MintegralManager(), MobilefuseManager(), InmobiManager(), MolocoManager(), LiftoffManager()]
         //MSP.shared.setNovaManager(novaManager: NovaManager())
         
         //MSP.shared.setGoogleManager(googleManager: GoogleManager())
@@ -40,6 +44,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         //MSP.shared.setMetaManager(metaManager: FacebookManager())
         MSP.shared.bidLoaderProvider.facebookBidTokenProvider = FacebookBidTokenProviderHelper()
+        MSP.shared.bidLoaderProvider.molocoBidTokenProvider = MolocoBidTokenProviderHelper()
+        MSP.shared.bidLoaderProvider.liftoffBidTokenProvider = LiftoffBidTokenProviderHelper()
         
         //MSP.shared.setUnityManager(unityManager: UnityManager())
         MSPLogger.shared.setLogLevel(level: MSPLogger.DEBUG)

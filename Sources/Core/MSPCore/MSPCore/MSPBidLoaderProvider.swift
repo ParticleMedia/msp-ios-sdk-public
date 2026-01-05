@@ -13,6 +13,8 @@ import MSPiOSCore
 public class MSPBidLoaderProvider: BidLoaderProvider {
     public var googleQueryInfoFetcher: GoogleQueryInfoFetcher?
     public var facebookBidTokenProvider: FacebookBidTokenProvider?
+    public var molocoBidTokenProvider: MolocoBidTokenProvider?
+    public var liftoffBidTokenProvider: LiftoffBidTokenProvider?
     public weak var bidLoader: BidLoader?
     
     public init() {
@@ -20,22 +22,15 @@ public class MSPBidLoaderProvider: BidLoaderProvider {
     }
     
     public func getBidLoader() -> BidLoader {
-        let bidLoader = PrebidBidLoader(googleQueryInfoFetcher: googleQueryInfoFetcher ?? GoogleQueryInfoFetcherStandalone(), facebookBidTokenProvider: facebookBidTokenProvider ?? FacebookBidTokenProviderStandalone())
+        let tokenProviders = BidTokenProviders()
+            .with(googleQueryInfoFetcher: googleQueryInfoFetcher ?? GoogleQueryInfoFetcherStandalone())
+            .with(facebookBidTokenProvider: facebookBidTokenProvider ?? FacebookBidTokenProviderStandalone())
+            .with(molocoBidTokenProvider: molocoBidTokenProvider ?? MolocoBidTokenProviderStandalone())
+            .with(liftoffBidTokenProvider: liftoffBidTokenProvider ?? LiftoffBidTokenProviderStandalone())
+
+        let bidLoader = PrebidBidLoader(tokenProviders: tokenProviders)
         bidLoader.adMetricReporter = AdMetricReporterImp()
         self.bidLoader = bidLoader
         return bidLoader
     }
-}
-
-public class GoogleQueryInfoFetcherStandalone: GoogleQueryInfoFetcher {
-    
-    public func fetch(completeListener: GoogleQueryInfoListener, adRequest: AdRequest) {
-        completeListener.onComplete(queryInfo: "dummy query info")
-    } 
-}
-
-public class FacebookBidTokenProviderStandalone: FacebookBidTokenProvider {
-    public func fetch(completeListener: any FacebookBidTokenListener, context: Any) {
-        completeListener.onComplete(bidToken: "dummy bidder token")
-    } 
 }

@@ -39,7 +39,19 @@ public final class NovaInterstitialAdItem: NovaNativeBaseAd {
             return .sponsor
         case .carousel:
             return .horizontal
+        case .html:
+            return .unknown
         }
+    }
+
+    // MARK: - NovaNativeMediaProviding
+
+    override func makeImageModel() throws -> NovaAdImageMediaModel {
+        try makeImageModel(with: layoutStyle.mediaOrientation)
+    }
+
+    override func makeVideoModel() throws -> NovaAdVideoMediaModel {
+        try makeVideoModel(with: layoutStyle.mediaOrientation)
     }
 
     init(
@@ -75,7 +87,8 @@ public final class NovaInterstitialAdItem: NovaNativeBaseAd {
         marketingType: NovaAdMarketingType,
         playableInfo: NovaAdPlayableInfo?,
         closeCountDownTimeSeconds: Int?,
-        clickableComponents: [NovaClickableComponent]?
+        clickableComponents: [NovaClickableComponent]?,
+        htmlPageItems: [PageItem]?
     ) throws {
         self.startTimeInMs = startTimeInMs
         self.expirationTimeInMs = expirationTimeInMs
@@ -111,7 +124,8 @@ public final class NovaInterstitialAdItem: NovaNativeBaseAd {
             adDiscountTagInfo: adDiscountTagInfo,
             layoutStyle: layoutStyle,
             marketingType: marketingType,
-            playableInfo: playableInfo
+            playableInfo: playableInfo,
+            htmlPageItems: htmlPageItems
         )
     }
 

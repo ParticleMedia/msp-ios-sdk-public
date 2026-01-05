@@ -58,7 +58,7 @@ final class NovaClickAdActionHandler: NSObject, ActionHandling {
         ]
     }
 
-    func performAction(actionModel: ActionModel) {
+    func performAction(actionModel: ActionModel, customUrl: URL?) {
         guard let actionKey = NovaClickAdActionKey(rawValue: actionModel.actionKey) else { return }
         guard let actionDataModel = SafeAs(actionModel.actionDataModel, NovaClickAdActionDataModel.self) else {
             return
@@ -69,15 +69,15 @@ final class NovaClickAdActionHandler: NSObject, ActionHandling {
         }
 
         self.actionDataModel = actionDataModel
-
+        
         launchingTask = Task(priority: .high) {
             switch actionKey {
             case .launchBrowser:
-                try await launchBrowser(with: actionDataModel.ctrType.url)
+                try await launchBrowser(with: customUrl ?? actionDataModel.ctrType.url)
                 launchingTask = nil
 
             case .launchWebView:
-                try await launchWebView(with: actionDataModel.ctrType.url)
+                try await launchWebView(with: customUrl ?? actionDataModel.ctrType.url)
                 launchingTask = nil
 
             case .launchStore:
@@ -330,7 +330,7 @@ private extension NovaClickAdActionHandler {
     }
 
     func appInstallConversionTracking(to thirdPartyUrl: URL) async throws {
-        _ = try await URLSession.shared.data(from: thirdPartyUrl)
+        NovaTrackingUrlHelper.fire(url: thirdPartyUrl)
     }
 
     @MainActor

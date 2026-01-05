@@ -33,19 +33,37 @@ public final class NovaAdMediaView: UIView {
 
     private var mediaContent: NovaAdMediaContent?
 
-    private lazy var imageView: NovaAdImageView = {
-        mediaContent?.imageController?.imageView ?? .init()
-    }()
+    private var imageView: NovaAdImageView {
+        if let imageView = mediaContent?.imageController?.imageView {
+            return imageView
+        } else {
+            let newImageController = NovaAdImageController()
+            mediaContent?.imageController = newImageController
+            return newImageController.imageView
+        }
+    }
 
-    private lazy var videoView: NovaAdVideoView = {
-        mediaContent?.videoController?.videoView ?? .init()
-    }()
+    private var videoView: NovaAdVideoView {
+        if let videoView = mediaContent?.videoController?.videoView {
+            return videoView
+        } else {
+            let newVideoController = NovaAdVideoController(muted: true)
+            mediaContent?.videoController = newVideoController
+            return newVideoController.videoView
+        }
+    }
 
     private lazy var multipleImagesComponentsProvider: NovaAdMultipleImagesComponentProvider = .init()
 
-    private lazy var playableView: NovaAdPlayableView = {
-        mediaContent?.playableController?.playableView ?? .init()
-    }()
+    private var playableView: NovaAdPlayableView {
+        if let playableView = mediaContent?.playableController?.playableView {
+            return playableView
+        } else {
+            let newPlayableController = NovaAdPlayableController(renderOption: .auto)
+            mediaContent?.playableController = newPlayableController
+            return newPlayableController.playableView
+        }
+    }
 
     private var currentView: UIView?
 
@@ -55,6 +73,7 @@ public final class NovaAdMediaView: UIView {
         let view = LottieAnimationView()
         if let animationPath = NovaResource.getLottieResourceURL("tap_to_try")?.path {
             DebugLogger.data.info("load lottie file success")
+            view.isUserInteractionEnabled = false
             view.animation = LottieAnimation.filepath(animationPath)
             view.loopMode = .loop
             view.adClickArea = .tap_to_try
@@ -76,62 +95,69 @@ extension NovaAdMediaView {
         completion: @escaping (() -> Void) = {}
     ) {
         self.mediaContent = mediaContent
-        if !adMediaAndCurrentViewTypeMatches(mediaContent) {
-            currentView?.removeFromSuperview()
-            let newMediaView: UIView = {
-                switch mediaContent.adMedia {
-                case .image:
-                    return self.imageView
-                case .video:
-                    return self.videoView
-                case .multipleImages:
-                    self.multipleImagesComponentsProvider.multipleImagesView
-                        .addSubview(self.multipleImagesComponentsProvider.multipleImagesIndicator)
-                    self.multipleImagesComponentsProvider.multipleImagesIndicator.snp.makeConstraints { make in
-                        make.directionalHorizontalEdges.equalToSuperview().inset(16.0)
-                        make.bottom.equalToSuperview()
-                        make.height.equalTo(2.0)
-                    }
-                    return self.multipleImagesComponentsProvider.multipleImagesView
-                case .multipleItems(let model):
-                    return NovaAdMultipleItemsViewProvider.getMultipleItemsView(with: model)
-                case .imagePlayable(_, let playableModel):
-                    switch mediaContent.playableController?.renderOption {
-                    case .auto, .none:
-                        switch playableModel.layout {
-                        case .showMedia, .twoPart:
-                            return self.imageView
-                        case .showPlayable:
-                            return self.playableView
-                        }
-                    case .imageOrVideo:
-                        return self.imageView
-                    case .playable:
-                        return self.playableView
-                    }
-                case .videoPlayable(_, let playableModel):
-                    switch mediaContent.playableController?.renderOption {
-                    case .auto, .none:
-                        switch playableModel.layout {
-                        case .showMedia, .twoPart:
-                            return self.videoView
-                        case .showPlayable:
-                            return self.playableView
-                        }
-                    case .imageOrVideo:
-                        return self.videoView
-                    case .playable:
-                        return self.playableView
-                    }
+        currentView?.removeFromSuperview()
+        let newMediaView: UIView? = {
+            switch mediaContent.adMedia {
+            case .image:
+                return self.imageView
+            case .video:
+                return self.videoView
+            case .multipleImages:
+                self.multipleImagesComponentsProvider = NovaAdMultipleImagesComponentProvider()
+                self.multipleImagesComponentsProvider.multipleImagesView
+                    .addSubview(self.multipleImagesComponentsProvider.multipleImagesIndicator)
+                self.multipleImagesComponentsProvider.multipleImagesIndicator.snp.makeConstraints { make in
+                    make.directionalHorizontalEdges.equalToSuperview().inset(16.0)
+                    make.bottom.equalToSuperview()
+                    make.height.equalTo(2.0)
                 }
-            }()
-            addSubview(newMediaView)
-            newMediaView.snp.makeConstraints { make in
-                make.directionalEdges.equalToSuperview()
+                return self.multipleImagesComponentsProvider.multipleImagesView
+            case .multipleItems(let model):
+                return NovaAdMultipleItemsViewProvider.getMultipleItemsView(with: model)
+            case .imagePlayable(_, let playableModel):
+                switch mediaContent.playableController?.renderOption {
+                case .auto, .none:
+                    switch playableModel.layout {
+                    case .showMedia, .twoPart:
+                        return self.imageView
+                    case .showPlayable:
+                        return self.playableView
+                    }
+                case .imageOrVideo:
+                    return self.imageView
+                case .playable:
+                    return self.playableView
+                }
+            case .videoPlayable(_, let playableModel):
+                switch mediaContent.playableController?.renderOption {
+                case .auto, .none:
+                    switch playableModel.layout {
+                    case .showMedia, .twoPart:
+                        return self.videoView
+                    case .showPlayable:
+                        return self.playableView
+                    }
+                case .imageOrVideo:
+                    return self.videoView
+                case .playable:
+                    return self.playableView
+                }
+            case .html:
+                return nil
             }
-            currentView = newMediaView
-            currentView?.adClickArea = .media
+        }()
+        if let newMediaView = newMediaView {
+                addSubview(newMediaView)
+                newMediaView.snp.makeConstraints { make in
+                    make.directionalEdges.equalToSuperview()
+                }
+                currentView = newMediaView
+                currentView?.adClickArea = .media
         }
+
+        tapToTryAnimationView?.removeFromSuperview()
+        discountTag.removeFromSuperview()
+        
         switch mediaContent.adMedia {
         case .image(let model):
             imageView.config(with: model, actionContext: actionContext, completion: completion)
@@ -151,14 +177,7 @@ extension NovaAdMediaView {
             switch (renderOption, layout) {
             case (.auto, .showMedia), (.auto, .twoPart), (.none, .showMedia), (.none, .twoPart), (.imageOrVideo, _):
                 imageView.config(with: imageModel, actionContext: actionContext, completion: completion)
-                if let tapToTryAnimationView {
-                    imageView.addSubview(tapToTryAnimationView)
-                    tapToTryAnimationView.snp.makeConstraints { make in
-                        make.center.equalToSuperview()
-                        make.size.equalTo(72.0)
-                    }
-                    tapToTryAnimationView.play()
-                }
+                setupTapToTry()
             case (.auto, .showPlayable), (.none, .showPlayable), (.playable, _):
                 playableView.config(with: playableModel.playableActionModel, actionContext: actionContext)
             }
@@ -168,29 +187,22 @@ extension NovaAdMediaView {
             switch (renderOption, layout) {
             case (.auto, .showMedia), (.auto, .twoPart), (.none, .showMedia), (.none, .twoPart), (.imageOrVideo, _):
                 videoView.config(with: videoModel, actionContext: actionContext, iabReporter: iabReporter)
-                if let tapToTryAnimationView {
-                    videoView.addSubview(tapToTryAnimationView)
-                    tapToTryAnimationView.snp.makeConstraints { make in
-                        make.center.equalToSuperview()
-                        make.size.equalTo(72.0)
-                    }
-                    tapToTryAnimationView.play()
-                }
+                setupTapToTry()
             case (.auto, .showPlayable), (.none, .showPlayable), (.playable, _):
                 playableView.config(with: playableModel.playableActionModel, actionContext: actionContext)
             }
+        default:
+            break
         }
 
-        if let discountTagInfo = mediaContent.discountTagInfo {
-            addSubview(discountTag)
-            discountTag.config(with: discountTagInfo.style)
-            discountTag.setupNormalLayout(on: self, with: discountTagInfo)
-        }
+        setupDiscountTag()
     }
 
     func prepareForReuse() {
-        videoView.isHidden = true
-        videoView.prepareForReuse()
+        if let videoView = mediaContent?.videoController?.videoView {
+            videoView.isHidden = true
+            videoView.prepareForReuse()
+        }
 
         cleanupBusinessSubviews()
     }
@@ -200,51 +212,23 @@ extension NovaAdMediaView {
         tapToTryAnimationView?.stop()
         tapToTryAnimationView?.removeFromSuperview()
     }
-}
 
-private extension NovaAdMediaView {
-    func adMediaAndCurrentViewTypeMatches(_ mediaContent: NovaAdMediaContent) -> Bool {
-        switch mediaContent.adMedia {
-        case .image:
-            return currentView is NovaAdImageView
-        case .video:
-            return currentView is NovaAdVideoView
-        case .multipleItems:
-            return currentView is AnyMultipleItemsView
-        case .multipleImages:
-            return currentView is NovaAdMultipleImagesView
-        case .imagePlayable(_, let playableModel):
-            switch mediaContent.playableController?.renderOption {
-            case .auto:
-                switch playableModel.layout {
-                case .showMedia, .twoPart:
-                    return currentView is NovaAdImageView
-                case .showPlayable:
-                    return currentView is NovaAdPlayableView
-                }
-            case .imageOrVideo:
-                return currentView is NovaAdImageView
-            case .playable:
-                return currentView is NovaAdPlayableView
-            case nil:
-                return false
+    private func setupTapToTry() {
+        if let tapToTryAnimationView {
+            addSubview(tapToTryAnimationView)
+            tapToTryAnimationView.snp.remakeConstraints { make in
+                make.center.equalToSuperview()
+                make.size.equalTo(72.0)
             }
-        case .videoPlayable(_, let playableModel):
-            switch mediaContent.playableController?.renderOption {
-            case .auto:
-                switch playableModel.layout {
-                case .showMedia, .twoPart:
-                    return currentView is NovaAdVideoView
-                case .showPlayable:
-                    return currentView is NovaAdPlayableView
-                }
-            case .imageOrVideo:
-                return currentView is NovaAdVideoView
-            case .playable:
-                return currentView is NovaAdPlayableView
-            case nil:
-                return false
-            }
+            tapToTryAnimationView.play()
+        }
+    }
+
+    private func setupDiscountTag() {
+        if let discountTagInfo = mediaContent?.discountTagInfo {
+            addSubview(discountTag)
+            discountTag.config(with: discountTagInfo.style)
+            discountTag.setupNormalLayout(on: self, with: discountTagInfo)
         }
     }
 }

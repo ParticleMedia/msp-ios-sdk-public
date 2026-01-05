@@ -7,4 +7,5 @@ enum NovaCreativeType: String, CaseIterable {
     case nativeImage = "IMAGE"
     case nativeVideo = "VIDEO"
     case sponsoredContent = "SPONSORED_IMAGE"
+    case html = "HTML"
 }

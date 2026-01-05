@@ -13,7 +13,9 @@ fi
 
 # Asset Synchronization Script for NovaCore
 # This script synchronizes assets from NBAssets.xcassets to NBResourceBundle.bundle
-# to prevent production bugs caused by out-of-sync assets.
+# to prevent production bugs caused by out-of-sync assets. Only files under
+# NovaCore/NovaCore/Resources are treated as the single source of truth; anything
+# manually placed inside NBResourceBundle.bundle will be overwritten on each run.
 
 set -euo pipefail
 

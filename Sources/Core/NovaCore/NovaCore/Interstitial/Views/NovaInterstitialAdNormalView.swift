@@ -63,6 +63,7 @@ class NovaInterstitialAdNormalView: UIView, NovaInterstitialAdViewProtocol {
                 in: self,
                 showReportButton: reportHandling.novaCanShowReportButton(with: context.interstitialAd.novaAdReportContext)
             )
+        
         subviewHandler.config()
 
         // Setup tap gesture
@@ -85,9 +86,17 @@ class NovaInterstitialAdNormalView: UIView, NovaInterstitialAdViewProtocol {
         subviewHandler.willDisappear()
     }
 
+    func didTapAd(customUrl: URL?) {
+        actionHelper = actionHelper
+            .logNovaClickEvent(with: CACurrentMediaTime() - CACurrentMediaTime(), in: .cta)
+            .handleAdTap(in: nil)
+        context.interstitialAd.delegate?.interstitialAdDidLogClick(context.interstitialAd)
+    }
+
+
     // MARK: Private
 
-    private func setupTapGesture() {
+    internal func setupTapGesture() {
         for clickableView in subviewHandler.clickableViews {
             let tapGesture = UITapGestureRecognizer(target: self, action: #selector(didTapAd(sender:)))
             clickableView.addGestureRecognizer(tapGesture)
@@ -103,14 +112,20 @@ class NovaInterstitialAdNormalView: UIView, NovaInterstitialAdViewProtocol {
             .handleAdTap(in: sender.view)
     }
 
-    private let context: NovaInterstitialAdContext
-    private var actionHelper: NovaActionHelper<NovaActionState.Init>
-    private let reportHandling: any NovaInterstitialAdReportHandling
+    internal let context: NovaInterstitialAdContext
+    internal var actionHelper: NovaActionHelper<NovaActionState.Init>
+    internal let reportHandling: any NovaInterstitialAdReportHandling
 
-    private var playableActionHelper: NovaActionHelper<NovaActionState.Init>?
+    internal var playableActionHelper: NovaActionHelper<NovaActionState.Init>?
     
-    private weak var viewController: UIViewController?
-    private var subviewHandler: NovaInterstitialAdSubviewHandler!
+    internal weak var viewController: UIViewController?
+    internal var subviewHandler: NovaInterstitialAdSubviewHandler!
+    
+    // MARK: - NovaInterstitialAdSubviewBehaviorDelegate
+    
+    func didTapSkipButton() {
+        // Default empty implementation - subclasses can override
+    }
 }
 
 extension NovaInterstitialAdNormalView: NovaInterstitialAdSubviewBehaviorDelegate {

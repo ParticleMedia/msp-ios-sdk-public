@@ -65,7 +65,7 @@ MSP_VERSIONED_DEPS_PATTERN="$(IFS='|'; echo "${MSP_VERSIONED_DEPS[*]}")"
 # Note: NovaAdapter uses binary distribution (includes private NovaCore.xcframework)
 #       but is released in Adapters phase (Step 2), NOT in foundation phase.
 # ============================================================================
-BINARY_DISTRIBUTION_PODS=("MSPSharedLibraries" "MSPGoogleAdsTypes" "MSPCore" "MSPiOSCore" "NovaAdapter" "MSPPrebidAdapter" "MSPGoogleAdapter" "MSPFacebookAdapter" "AmazonAdapter")
+BINARY_DISTRIBUTION_PODS=("MSPSharedLibraries" "MSPGoogleAdsTypes" "MSPCore" "MSPiOSCore" "NovaAdapter" "MSPPrebidAdapter" "MSPGoogleAdapter" "MSPFacebookAdapter" "AmazonAdapter" "MolocoAdapter" "LiftoffAdapter")
 
 # Check if a pod uses binary distribution (HTTP zip source)
 # Returns 0 (true) if the pod is in BINARY_DISTRIBUTION_PODS

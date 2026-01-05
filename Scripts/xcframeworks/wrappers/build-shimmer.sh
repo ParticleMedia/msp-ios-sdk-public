@@ -10,7 +10,7 @@ msp_enforce_main_repo_or_exit
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-ROOT_DIR="$(cd "$SCRIPT_DIR/../.." && pwd)"
+ROOT_DIR="$(cd "$SCRIPT_DIR/../../.." && pwd)"
 
 # Call generic build script
 "$SCRIPT_DIR/../builder.sh" \

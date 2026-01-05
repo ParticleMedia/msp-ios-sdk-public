@@ -36,9 +36,9 @@ pre_install do |installer|
   # Required third-party XCFrameworks for all modes
   required_xcframeworks = [
     'Shimmer',
+    # Note: Kingfisher is NOT required - project uses MSPKingfisher pod (source-based) instead
     'Lottie',
     'SnapKit',
-    'Kingfisher',
     'SwiftProtobuf'
   ]
 
@@ -106,6 +106,8 @@ target 'MSPDemoApp' do
   pod 'MintegralAdapter', :path => 'MintegralAdapter.podspec', :configurations => demoapp_pod_configs
   pod 'PubmaticAdapter', :path => 'PubmaticAdapter.podspec', :configurations => demoapp_pod_configs
   pod 'AmazonAdapter', :path => 'AmazonAdapter.podspec', :configurations => demoapp_pod_configs
+  pod 'MolocoAdapter', :path => 'MolocoAdapter.podspec', :configurations => demoapp_pod_configs
+  pod 'LiftoffAdapter', :path => 'LiftoffAdapter.podspec', :configurations => demoapp_pod_configs
   # SwiftProtobuf is now provided via XCFramework in MSPCore - removed from Podfile
   pod 'MSPSharedLibraries', :path => 'MSPSharedLibraries.podspec', :configurations => demoapp_pod_configs
   # MSPKingfisher replaces official Kingfisher pod to avoid SwiftVerifyEmittedModuleInterface errors

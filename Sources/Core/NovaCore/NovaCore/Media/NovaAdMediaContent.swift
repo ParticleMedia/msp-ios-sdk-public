@@ -82,6 +82,11 @@ public class NovaAdVideoController {
     // MARK: Internal
 
     let videoView: NovaAdVideoView
+    weak var mediaContent: NovaAdMediaContent? {
+        didSet {
+            videoView.mediaContent = mediaContent
+        }
+    }
 }
 
 // MARK: - NovaAdPlayableController
@@ -140,14 +145,17 @@ public class NovaAdMediaContent {
     }()
 
     public lazy var videoController: NovaAdVideoController? = {
+        let controller: NovaAdVideoController?
         switch adMedia {
         case .video(let model):
-            return .init(muted: model.videoInfo.isMute)
+            controller = .init(muted: model.videoInfo.isMute)
         case .videoPlayable(let videoModel, _):
-            return .init(muted: videoModel.videoInfo.isMute)
-        case .image, .multipleItems, .multipleImages, .imagePlayable:
+            controller = .init(muted: videoModel.videoInfo.isMute)
+        case .image, .multipleItems, .multipleImages, .imagePlayable, .html:
             return nil
         }
+        controller?.mediaContent = self
+        return controller
     }()
 
     public lazy var playableController: NovaAdPlayableController? = {
@@ -162,15 +170,23 @@ public class NovaAdMediaContent {
     public var renderRecommendation: NovaAdMediaRenderRecommendation? {
         switch adMedia {
         case .image(let model):
-            if let isVerticalImage = model.isVerticalImage {
-                let aspectRatio = isVerticalImage ? Constants.verticalMediaRatio : Constants.horizontalMediaRatio
-                return .aspectRatio(aspectRatio)
-            } else {
-                return nil
+            switch model.imageLayoutOrientation {
+            case .horizontal:
+                return .aspectRatio(Constants.horizontalMediaRatio)
+            case .vertical:
+                return .aspectRatio(Constants.verticalMediaRatio)
+            case .unknown:
+                return .free
             }
         case .video(let model):
-            let aspectRatio = model.videoInfo.isVertical ? Constants.verticalMediaRatio : Constants.horizontalMediaRatio
-            return .aspectRatio(aspectRatio)
+            switch model.videoLayoutOrientation {
+            case .horizontal:
+                return .aspectRatio(Constants.horizontalMediaRatio)
+            case .vertical:
+                return .aspectRatio(Constants.verticalMediaRatio)
+            case .unknown:
+                return .free
+            }
         case .multipleImages:
             return .free
         case .multipleItems(let model):
@@ -185,23 +201,25 @@ public class NovaAdMediaContent {
             case .auto, .none:
                 switch playableModel.layout {
                 case .showMedia, .twoPart:
-                    if let isVerticalImage = imageModel.isVerticalImage {
-                        return isVerticalImage ?
-                            .aspectRatio(Constants.verticalMediaRatio) :
-                            .aspectRatio(Constants.horizontalMediaRatio)
-                    } else {
-                        return nil
+                    switch imageModel.imageLayoutOrientation {
+                    case .horizontal:
+                        return .aspectRatio(Constants.horizontalMediaRatio)
+                    case .vertical:
+                        return .aspectRatio(Constants.verticalMediaRatio)
+                    case .unknown:
+                        return .free
                     }
                 case .showPlayable:
                     return .free
                 }
             case .imageOrVideo:
-                if let isVerticalImage = imageModel.isVerticalImage {
-                    return isVerticalImage ?
-                        .aspectRatio(Constants.verticalMediaRatio) :
-                        .aspectRatio(Constants.horizontalMediaRatio)
-                } else {
-                    return nil
+                switch imageModel.imageLayoutOrientation {
+                case .horizontal:
+                    return .aspectRatio(Constants.horizontalMediaRatio)
+                case .vertical:
+                    return .aspectRatio(Constants.verticalMediaRatio)
+                case .unknown:
+                    return .free
                 }
             case .playable:
                 return .free
@@ -211,19 +229,31 @@ public class NovaAdMediaContent {
             case .auto, .none:
                 switch playableModel.layout {
                 case .showMedia, .twoPart:
-                    return videoModel.videoInfo.isVertical ?
-                        .aspectRatio(Constants.verticalMediaRatio) :
-                        .aspectRatio(Constants.horizontalMediaRatio)
+                    switch videoModel.videoLayoutOrientation {
+                    case .horizontal:
+                        return .aspectRatio(Constants.horizontalMediaRatio)
+                    case .vertical:
+                        return .aspectRatio(Constants.verticalMediaRatio)
+                    case .unknown:
+                        return .free
+                    }
                 case .showPlayable:
                     return .free
                 }
             case .imageOrVideo:
-                return videoModel.videoInfo.isVertical ?
-                    .aspectRatio(Constants.verticalMediaRatio) :
-                    .aspectRatio(Constants.horizontalMediaRatio)
+                switch videoModel.videoLayoutOrientation {
+                case .horizontal:
+                    return .aspectRatio(Constants.horizontalMediaRatio)
+                case .vertical:
+                    return .aspectRatio(Constants.verticalMediaRatio)
+                case .unknown:
+                    return .free
+                }
             case .playable:
                 return .free
             }
+        case .html:
+            return .free
         }
     }
 
@@ -239,13 +269,28 @@ public class NovaAdMediaContent {
             return .multipleItems
         case .imagePlayable, .videoPlayable:
             return .playable
+        case .html:
+            return .html
         }
     }
 
     // MARK: Internal
 
-    let adMedia: NovaAdMedia
+    var adMedia: NovaAdMedia
     let discountTagInfo: NovaAdDiscountTagInfo?
+    
+    // MARK: - Video State Sync
+    
+    func updateVideoState(_ state: NovaAdVideoState?) {
+        switch adMedia {
+        case .video(let model):
+            model.videoInfo.state = state
+        case .videoPlayable(let videoModel, _):
+            videoModel.videoInfo.state = state
+        default:
+            break
+        }
+    }
 
     // MARK: Private
 

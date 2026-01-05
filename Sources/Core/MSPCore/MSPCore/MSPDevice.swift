@@ -10,6 +10,7 @@ import CoreTelephony
 import AppTrackingTransparency
 import AVFAudio
 import MSPiOSCore
+import PrebidMobile
 
 fileprivate let cellGeneration: [String: Com_Newsbreak_Monetization_Signals_ConnectionType] = [
     CTRadioAccessTechnologyGPRS:            Com_Newsbreak_Monetization_Signals_ConnectionType.cell2G,
@@ -42,7 +43,6 @@ public class MSPDevice {
     private(set) var isLowPowerMode: Bool?
     private(set) var isLowDataMode: Bool?
     private(set) var availableMemory: Int?
-    private(set) var connectionType: Com_Newsbreak_Monetization_Signals_ConnectionType?
     
     var isInForeground: Bool?
     var fontSize: UIContentSizeCategory?
@@ -81,15 +81,6 @@ public class MSPDevice {
         self.isLowPowerMode = ProcessInfo.processInfo.isLowPowerModeEnabled
         fetchLowDataModeStatus { path in
             self.isLowDataMode = path.isConstrained
-            if path.usesInterfaceType(.wifi) {
-                self.connectionType = Com_Newsbreak_Monetization_Signals_ConnectionType.wifi
-            } else if path.usesInterfaceType(.wiredEthernet) {
-                self.connectionType = Com_Newsbreak_Monetization_Signals_ConnectionType.ethernet
-            } else if path.usesInterfaceType(.cellular) {
-                self.connectionType = self.getCellGeneration()
-            } else if path.usesInterfaceType(.loopback) || path.usesInterfaceType(.other) {
-                self.connectionType = Com_Newsbreak_Monetization_Signals_ConnectionType.unspecified
-            }
         }
 
         self.availableMemory = os_proc_available_memory()
@@ -227,38 +218,6 @@ public class MSPDevice {
         }
     }
     
-    private func getCarrierInfo(_ mapper: (CTCarrier) -> String) -> String {
-        let networkInfo = CTTelephonyNetworkInfo()
-        if let carriers = networkInfo.serviceSubscriberCellularProviders?.values,
-           let carrier = carriers.first(where: { carrier in
-            carrier.carrierName?.isEmpty == false
-        }) {
-            return mapper(carrier)
-        }
-        
-        return ""
-    }
-    
-    internal func getCarrier() -> String {
-        return getCarrierInfo { carrier in
-            return carrier.carrierName ?? ""
-        }
-    }
-    
-    internal func getMccMnc() -> String {
-        return getCarrierInfo { carrier in
-            return merge(carrier)
-        }
-    }
-    
-    private func merge(_ carrier: CTCarrier) -> String {
-        guard let mcc = carrier.mobileCountryCode,
-              let mnc = carrier.mobileNetworkCode,
-              !mcc.isEmpty, !mnc.isEmpty else { return "" }
-        
-        return "\(mcc)-\(mnc)"
-    }
-    
     internal func isIDFAAuthorized() -> Bool {
         if #available(iOS 14, *), case .authorized = ATTrackingManager.trackingAuthorizationStatus {
             return true
@@ -273,5 +232,29 @@ public class MSPDevice {
         }
         
         return Locale.current.regionCode ?? ""
+    }
+    
+    internal func getConnectionType() -> Com_Newsbreak_Monetization_Signals_ConnectionType {
+        switch Reachability.shared.currentReachabilityStatus {
+        case .celluar:
+            return getCellGeneration()
+        case .wifi:
+            return Com_Newsbreak_Monetization_Signals_ConnectionType.wifi
+        case .unknown, .offline:
+            return Com_Newsbreak_Monetization_Signals_ConnectionType.unspecified
+        @unknown default:
+            return Com_Newsbreak_Monetization_Signals_ConnectionType.unspecified
+        }
+    }
+    
+    internal func getVolumeLevel() -> Int32 {
+        let audioSession = AVAudioSession.sharedInstance()
+        do {
+            try audioSession.setActive(true)
+            let volume = audioSession.outputVolume
+            return Int32(volume * 100)
+        } catch {
+            return -1
+        }
     }
 }

@@ -1,0 +1,70 @@
+# LiftoffAdapter XcodeGen Project Specification
+# Uses shared template and adds LiftoffAdapter-specific overrides
+# Template: Config/xcodegen/module.project_template.yml
+
+include:
+  - ../../../Configs/xcodegen/module.project_template.yml
+
+name: LiftoffAdapter
+
+settings:
+  base:
+    # Product Configuration
+    PRODUCT_NAME: LiftoffAdapter
+    PRODUCT_BUNDLE_IDENTIFIER: com.newsbreak.msp.LiftoffAdapter
+    PRODUCT_MODULE_NAME: LiftoffAdapter
+    INFOPLIST_FILE: LiftoffAdapter/Info.plist
+
+targets:
+  LiftoffAdapter:
+    type: framework
+    platform: iOS
+    sources:
+      - path: LiftoffAdapter
+        excludes:
+          - "**/*.h"
+          - "**/*.modulemap"
+          - "**/*.md"
+          - "**/Tests/**"
+          - "**/*.test.swift"
+          - "**/*.spec.swift"
+    dependencies:
+      - framework: ../../../Build/XCFrameworks/MSPSharedLibraries.xcframework
+        embed: false
+      - sdk: Pods/VungleAds.xcframework
+        embed: false
+      - sdk: Pods/SnapKit.xcframework
+        embed: false
+    settings:
+      base:
+        BUILD_LIBRARY_FOR_DISTRIBUTION: YES
+        SKIP_INSTALL: NO
+        
+        # Framework Search Paths
+        FRAMEWORK_SEARCH_PATHS:
+          - $(inherited)
+          - $(SRCROOT)/../../../Build/XCFrameworks
+          - $(SRCROOT)/../../../Pods
+
+  LiftoffAdapterTests:
+    type: bundle.unit-test
+    platform: iOS
+    sources:
+      - path: LiftoffAdapterTests
+    dependencies:
+      - target: LiftoffAdapter
+
+schemes:
+  LiftoffAdapter:
+    build:
+      targets:
+        LiftoffAdapter: all
+    run:
+      config: Debug
+    profile:
+      config: Release
+    analyze:
+      config: Debug
+    archive:
+      config: Release
+

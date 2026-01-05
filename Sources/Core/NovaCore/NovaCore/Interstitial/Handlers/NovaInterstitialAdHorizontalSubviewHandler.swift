@@ -179,17 +179,15 @@ class NovaInterstitialAdHorizontalSubviewHandler: NovaInterstitialAdSubviewHandl
         return getClickableViewsFromConfiguration() ?? [advertiserLabel, titleLabel, bodyLabel, ctaButton]
     }
 
-    func didAppear() {
+    func willAppear() {
+        if showTopRightCloseButton {
+            setupCountdownTimerIfNeeded()
+        }
         interstitialAd.mediaContent.videoController?.play()
     }
 
     func didDisappear() {
         interstitialAd.mediaContent.videoController?.pause()
-    }
-
-    func willAppear() {
-        guard showTopRightCloseButton else { return }
-        setupCountdownTimerIfNeeded()
     }
 
     // MARK: Private
@@ -258,7 +256,7 @@ class NovaInterstitialAdHorizontalSubviewHandler: NovaInterstitialAdSubviewHandl
         button.backgroundColor = NovaColorPalettes.Blue.tint500
         button.layer.cornerRadius = 8
         button.clipsToBounds = true
-        button.titleLabel?.font = .Nova.subtitle1
+        button.titleLabel?.font = .Nova.deprecated16Semibold
         button.setTitleColor(NovaColorPalettes.White, for: .normal)
         button.adClickArea = .cta
         return button
@@ -302,7 +300,9 @@ class NovaInterstitialAdHorizontalSubviewHandler: NovaInterstitialAdSubviewHandl
     // MARK: - NovaTopRightClosable
     
     var countdownTimer: Timer?
-    let countdownSecondRemaining: Int
+    var countdownSecondRemaining: Int
+    var delayTimer: Timer? = nil
+    let delaySecondRemaining: Int? = nil
     private let showTopRightCloseButton: Bool
     
     var darkColor: UIColor { NovaColorPalettes.Gray.tint200 }

@@ -26,7 +26,8 @@ public class NovaAdapter: AdNetworkAdapter {
     public var nativeAdItem: NovaNativeAdItem?
     
     public weak var interstitialAd: InterstitialAd?
-    
+    public var interstitialAdItem: NovaInterstitialAdItem?
+
     public var nativeAdView: NativeAdView?
     
     private var adRequest: AdRequest?
@@ -104,7 +105,13 @@ public class NovaAdapter: AdNetworkAdapter {
             let novaNativeAdView = NovaNativeAdView()
             let popupCTAStyle: NovaAdVideoView.Style.PopupCTAStyle = popupCTAEnabled ? .show : .hide
             let progressBarStyle: NovaAdVideoView.Style.ProgressBarStyle = novaNativeAdItem.isVideo ? .show(bottomMargin: 0) : .hide
-            let newVideoStyle: NovaAdVideoView.Style = videoUseControl ? .playButtonOnLeftBottom : .playButtonOnCenter(progressBarStyle: progressBarStyle, popupCTAStyle: popupCTAStyle)
+            let newVideoStyle: NovaAdVideoView.Style = if videoUseControl {
+                .playButtonOnLeftBottom
+            } else if novaNativeAdItem.mediaContent.mediaType == .playable {
+                .clear
+            } else {
+                .playButtonOnCenter(progressBarStyle: progressBarStyle, popupCTAStyle: popupCTAStyle)
+            }
             novaNativeAdItem.mediaContent.videoController?.style = newVideoStyle
             if let nativeAdViewBinder = nativeAdView.nativeAdViewBinder {
                 novaNativeAdView.titleLabel = nativeAdView.nativeAdViewBinder?.titleLabel
@@ -155,6 +162,7 @@ public class NovaAdapter: AdNetworkAdapter {
                 novaNativeAdView.setupViews(with: novaNativeAdItem, clickableViews: clickableViews)
 
                 if let mediaContainer = nativeAdContainer.getMedia() {
+                    mediaContainer.subviews.forEach { $0.removeFromSuperview() }
                     mediaContainer.addSubview(novaNativeAdView.mediaView)
                     novaNativeAdView.mediaView.snp.makeConstraints { make in
                         make.directionalEdges.equalToSuperview()
@@ -244,9 +252,10 @@ public class NovaAdapter: AdNetworkAdapter {
                     abConfig: decodedData.abConfig
                 )
                 let interstitialAdItem = interstitialAdItems.first
-                
-                var novaInterstitialAd = NovaInterstitialAd(adNetworkAdapter: self)
+
+                let novaInterstitialAd = NovaInterstitialAd(adNetworkAdapter: self)
                 novaInterstitialAd.interstitialAdItem = interstitialAdItem
+                self.interstitialAdItem = interstitialAdItem
                 //ad.fullScreenContentDelegate = self
                 DispatchQueue.main.async {
                     novaInterstitialAd.rootViewController = self.adListener?.getRootViewController()
@@ -335,20 +344,66 @@ public class NovaAdapter: AdNetworkAdapter {
     public func sendHideAdEvent(reason: String, adScreenShot: Data?, fullScreenShot: Data?)
     {
         DispatchQueue.main.async {
-            if let adRequest = self.adRequest,
-               let ad = self.nativeAd ?? self.interstitialAd {
-                self.adMetricReporter?.logAdHide(ad: ad, adRequest: adRequest, bidResponse: self, reason: reason, adScreenShot: adScreenShot, fullScreenShot: fullScreenShot)
+            guard let adRequest = self.adRequest else {
+                return
+            }
+
+            if let nativeAd = self.nativeAd {
+                self.adMetricReporter?
+                    .logAdHide(
+                        ad: nativeAd,
+                        adRequest: adRequest,
+                        bidResponse: self,
+                        reason: reason,
+                        adScreenShot: adScreenShot,
+                        fullScreenShot: fullScreenShot
+                    )
                 self.nativeAdItem?.logAdHide(reason: reason)
+            } else if let interstitialAd = self.interstitialAd {
+                self.adMetricReporter?
+                    .logAdHide(
+                        ad: interstitialAd,
+                        adRequest: adRequest,
+                        bidResponse: self,
+                        reason: reason,
+                        adScreenShot: adScreenShot,
+                        fullScreenShot: fullScreenShot
+                    )
+                self.interstitialAdItem?.logAdHide(reason: reason)
             }
         }
     }
     
     public func sendReportAdEvent(reason: String, description: String?, adScreenShot: Data?, fullScreenShot: Data?) {
         DispatchQueue.main.async {
-            if let adRequest = self.adRequest,
-               let ad = self.nativeAd ?? self.interstitialAd {
-                self.adMetricReporter?.logAdReport(ad: ad, adRequest: adRequest, bidResponse: self, reason: reason, description: description, adScreenShot: adScreenShot, fullScreenShot: fullScreenShot)
+            guard let adRequest = self.adRequest else {
+                return
+            }
+
+            if let nativeAd = self.nativeAd {
+                self.adMetricReporter?
+                    .logAdReport(
+                        ad: nativeAd,
+                        adRequest: adRequest,
+                        bidResponse: self,
+                        reason: reason,
+                        description: description,
+                        adScreenShot: adScreenShot,
+                        fullScreenShot: fullScreenShot
+                    )
                 self.nativeAdItem?.logAdHide(reason: reason)
+            } else if let interstitialAd = self.interstitialAd {
+                self.adMetricReporter?
+                    .logAdReport(
+                        ad: interstitialAd,
+                        adRequest: adRequest,
+                        bidResponse: self,
+                        reason: reason,
+                        description: description,
+                        adScreenShot: adScreenShot,
+                        fullScreenShot: fullScreenShot
+                    )
+                self.interstitialAdItem?.logAdHide(reason: reason)
             }
         }
     }

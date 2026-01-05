@@ -102,6 +102,7 @@ extension MSPAuction: AuctionBidListener {
             if self.remainingTaskCnt > 0 {
                 self.remainingTaskCnt = self.remainingTaskCnt - 1
                 self.auctionBidList?.append(bid)
+                MSPLogger.shared.info(message: "[Auction] Bid append to list")
                 self.dispatchGroup.leave()
             }
             self.taskLock.unlock()
@@ -109,6 +110,7 @@ extension MSPAuction: AuctionBidListener {
     }
     
     public func onError(error: String) {
+        MSPLogger.shared.info(message: "[Auction] Ads no filled. Reason: \(error)")
         self.biddingDispatchQueue.async {
             self.taskLock.lock()
             if self.remainingTaskCnt > 0 {

@@ -102,7 +102,8 @@ public enum NovaAdBuilder {
             playableInfo: buildPlayableInfo(adItem.creative.playableItem, for: .native, abConfig: abConfig),
             addOnItem: buildInteractiveBanner(adItem.creative.addonItem),
             eCPMInDollar: Decimal(adItem.price ?? 0),
-            isParallax: isParallax
+            isParallax: isParallax,
+            htmlPageItems: adItem.creative.htmlPageItems
         )
     }
 
@@ -177,9 +178,10 @@ public enum NovaAdBuilder {
                 layoutStyle: NovaNativeLayoutStyle(rawValue: adItem.creative.layout ?? ""),
                 marketingType: buildMarketingType(item: adItem.creative.tagItem),
                 playableInfo: buildPlayableInfo(adItem.creative.playableItem, for: .appOpen, abConfig: abConfig),
-                closeCountDownTimeSeconds: Int(adItem.creative.closeCountDownSeconds ?? ""),
+                closeCountDownTimeSeconds: adItem.creative.closeCountDownTimeSecond ?? 0,
                 clickableComponents: adItem.creative.clickableComponents?
-                    .compactMap { NovaClickableComponent(rawValue: $0) }
+                    .compactMap { NovaClickableComponent(rawValue: $0) },
+                htmlPageItems: adItem.creative.htmlPageItems
             )
             return adItem
         } catch {
@@ -261,9 +263,10 @@ public enum NovaAdBuilder {
                     layoutStyle: NovaNativeLayoutStyle(rawValue: adItem.creative.layout ?? ""),
                     marketingType: buildMarketingType(item: adItem.creative.tagItem),
                     playableInfo: buildPlayableInfo(adItem.creative.playableItem, for: .appOpen, abConfig: abConfig),
-                    closeCountDownTimeSeconds: Int(adItem.creative.closeCountDownSeconds ?? ""),
+                    closeCountDownTimeSeconds: adItem.creative.closeCountDownTimeSecond ?? 0,
                     clickableComponents: adItem.creative.clickableComponents?
-                        .compactMap { NovaClickableComponent(rawValue: $0) }
+                        .compactMap { NovaClickableComponent(rawValue: $0) },
+                    htmlPageItems: adItem.creative.htmlPageItems
                 )
                 return adItem
             } catch {
@@ -303,7 +306,7 @@ private extension NovaAdBuilder {
                 playableArea: AdPlayableArea(rawValue: creative.playableItem?.clickAreaMode ?? "") ?? .all
             )
             return .playable(model: playableModel)
-        case .businessProfile, .fullImage, .nativeImage, .nativeVideo, .sponsoredContent, .carousel:
+        case .businessProfile, .fullImage, .nativeImage, .nativeVideo, .sponsoredContent, .carousel, .html:
             return try buildBaseCtrType(
                 urlStr: creative.ctrUrl,
                 launchOption: creative.launchOption,

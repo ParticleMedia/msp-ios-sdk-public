@@ -7,4 +7,5 @@ public enum NovaCreativeType: String, Codable {
     case carousel = "CAROUSEL"
     case playableImage = "PLAYABLE_IMAGE"
     case playableVideo = "PLAYABLE_VIDEO"
+    case html = "HTML"
 }

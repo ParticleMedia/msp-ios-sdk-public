@@ -35,6 +35,8 @@ public class MSPBidder: MSPiOSCore.Bidder {
             "google": MSP.shared.adNetworkAdapterProvider.getAdNetworkAdapter(adNetwork: .google)?.getSDKVersion() ?? "",
             "facebook": MSP.shared.adNetworkAdapterProvider.getAdNetworkAdapter(adNetwork: .facebook)?.getSDKVersion() ?? "",
             "nova": MSP.shared.adNetworkAdapterProvider.getAdNetworkAdapter(adNetwork: .nova)?.getSDKVersion() ?? "",
+            "moloco": MSP.shared.adNetworkAdapterProvider.getAdNetworkAdapter(adNetwork: .moloco)?.getSDKVersion() ?? "",
+            "liftoff": MSP.shared.adNetworkAdapterProvider.getAdNetworkAdapter(adNetwork: .liftoff)?.getSDKVersion() ?? "",
             "msp": MSP.shared.version
         ]
 

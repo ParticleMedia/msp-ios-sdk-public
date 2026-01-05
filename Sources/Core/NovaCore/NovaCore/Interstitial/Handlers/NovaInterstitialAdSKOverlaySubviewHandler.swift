@@ -163,9 +163,12 @@ class NovaInterstitialAdSKOverlaySubviewHandler: NSObject, NovaInterstitialAdSub
     var clickableViews: [UIView] { 
         getClickableViewsFromConfiguration() ?? [bottomShadow, adTagLabel]
     }
-    
-    func didAppear() {
+
+    func willAppear() {
         interstitialAd.mediaContent.videoController?.play()
+    }
+
+    func didAppear() {
         showSkOverlay()
     }
     
@@ -246,9 +249,7 @@ extension NovaInterstitialAdSKOverlaySubviewHandler: SKOverlayDelegate {
 
     func storeOverlayDidFinishPresentation(_ overlay: SKOverlay, transitionContext: SKOverlay.TransitionContext) {
         DebugLogger.network.info("SKOverlay did show successfully")
-        Task.detached(priority: .userInitiated) {
-            let _ = try await URLSession.shared.data(for: URLRequest(url: self.thirdPartyTrackingURL))
-        }
+        NovaTrackingUrlHelper.fire(url: self.thirdPartyTrackingURL)
         if !(UIApplication.novaTopViewController is NovaInterstitialAdViewController) {
             // If the top view controller is not InterstitialNovaAdViewController, we need to dismiss the SKOverlay
             // this could happen when skoverlay shows after interstitial ad is dismissed

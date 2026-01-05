@@ -33,12 +33,33 @@ public class MSP {
     public var appId: Int64?
     public var org: String?
     public var app: String?
-    public var ppid: String?
+    public var ppid: String? {
+        didSet {
+            DispatchQueue.main.async {
+                self.tryUpdateMSPId()
+            }
+        }
+    }
     public var email: String?
     public var prebidAPIKey: String?
     
     public var isLogSampled = false
     public var logWhiteList: [String]?
+    
+    private init() {
+        NotificationCenter.default.addObserver(self, selector: #selector(self.appWillEnterForeground), name: UIApplication.willEnterForegroundNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.appDidEnterBackground), name: UIApplication.didEnterBackgroundNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.sizeCategoryDidChange), name: UIContentSizeCategory.didChangeNotification, object: nil)
+        DispatchQueue.main.async {
+            self.appWillEnterForeground()
+        }
+    }
+    
+    deinit {
+        NotificationCenter.default.removeObserver(self, name: UIApplication.willEnterForegroundNotification, object: nil)
+        NotificationCenter.default.removeObserver(self, name: UIApplication.didEnterBackgroundNotification, object: nil)
+        NotificationCenter.default.removeObserver(self, name: UIContentSizeCategory.didChangeNotification, object: nil)
+    }
     
     public func initMSP(initParams: InitializationParameters, sdkInitListener: MSPInitListener?, adNetworkManagers: [AdNetworkManager]) {
         // This is a temporary solution to replace MSPManager class in kotlin to solve the Kotlin singleton issue
@@ -59,12 +80,7 @@ public class MSP {
                 self.prebidAPIKey = initParams.getPrebidAPIKey()
             }
             
-            if UserDefaults.standard.string(forKey: "msp_user_id") == nil {
-                self.fetchMSPUserId()
-            } else if UserDefaults.standard.string(forKey: "msp_id") == nil {
-                let mspUserId = UserDefaults.standard.string(forKey: "msp_user_id")
-                UserDefaults.standard.setValue(mspUserId, forKey: "msp_id")
-            }
+            self.tryUpdateMSPId()
             
             self.numInitWaitingForCallbacks = 1 //default vaule is 1 for prebid sdk is alwasys in the dependency
             for manager in adNetworkManagers {
@@ -94,18 +110,29 @@ public class MSP {
             
             UserDefaults.standard.setValue(String(Date().timeIntervalSince1970 * 1000), forKey: "FirstLaunchTime")
             self.blockLatencyInMs = Int32((Date().timeIntervalSince1970 - initStartTime) * 1000)
-            
-            NotificationCenter.default.addObserver(self, selector: #selector(self.appDidBecomeActive), name: UIApplication.didBecomeActiveNotification, object: nil)
-            NotificationCenter.default.addObserver(self, selector: #selector(self.appDidEnterBackground), name: UIApplication.didEnterBackgroundNotification, object: nil)
-            NotificationCenter.default.addObserver(self, selector: #selector(self.sizeCategoryDidChange), name: UIContentSizeCategory.didChangeNotification, object: nil)
         }
     }
     
-    @objc private func appDidBecomeActive() {
+    private func tryUpdateMSPId() {
+        let keyMSPId = MSPConstants.USER_DEFAULTS_KEY_MSP_ID
+        let keyMSPUserId = MSPConstants.USER_DEFAULTS_KEY_MSP_USER_ID
+        if UserDefaults.standard.string(forKey: keyMSPUserId) == nil {
+            self.fetchMSPUserId()
+        } else if UserDefaults.standard.string(forKey: keyMSPId) == nil {
+            let mspUserId = UserDefaults.standard.string(forKey: keyMSPUserId)
+            UserDefaults.standard.setValue(mspUserId, forKey: keyMSPId)
+        }
+    }
+    
+    @objc private func appWillEnterForeground() {
         MSPLogger.shared.info(message: "App becomes active")
         MSPDevice.shared.isInForeground = true
         MSPDevice.shared.fontSize = UIApplication.shared.preferredContentSizeCategory
         MESMetricReporter.shared.tryLogUserSignal(type: Com_Newsbreak_Mes_Events_UserSignalType.intoForeground)
+        
+        if !UserDefaults.standard.bool(forKey: MSP.KEY_MES_USER_SIGNAL_ATTRIBUTION) {
+            MESMetricReporter.shared.tryLogUserSignal(type: Com_Newsbreak_Mes_Events_UserSignalType.attribution)
+        }
     }
     
     @objc private func appDidEnterBackground() {
@@ -133,10 +160,6 @@ public class MSP {
                     }
                     MESMetricReporter.shared.logSDKInit(totalCompleteTimeInMs: totalCompleteTimeInMs, blockLatencyInMs: MSP.shared.blockLatencyInMs, adNetworkCompleteTimeInMs: MSP.shared.adNetworkInitLatencyInMs)
                     MSP.shared.sdkInitListener?.onComplete(status: .SUCCESS, message: "")
-                    
-                    if !UserDefaults.standard.bool(forKey: KEY_MES_USER_SIGNAL_ATTRIBUTION) {
-                        MESMetricReporter.shared.tryLogUserSignal(type: Com_Newsbreak_Mes_Events_UserSignalType.attribution)
-                    }
                 }
             }
         }
@@ -214,9 +237,9 @@ public class MSP {
                     do {
                         // Handle JSON response
                         if let responseDict = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any],
-                           let id = responseDict["id"] as? Int64 {
-                            UserDefaults.standard.setValue(String(id), forKey: "msp_user_id")
-                            UserDefaults.standard.setValue(String(id), forKey: "msp_id")
+                           let id = responseDict["id"] as? Int64, id != 0 {
+                            UserDefaults.standard.setValue(String(id), forKey: MSPConstants.USER_DEFAULTS_KEY_MSP_USER_ID)
+                            UserDefaults.standard.setValue(String(id), forKey: MSPConstants.USER_DEFAULTS_KEY_MSP_ID)
                         }
                     } catch {
                         print("Error parsing response: \(error)")
