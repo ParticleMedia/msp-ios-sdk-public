@@ -1,0 +1,206 @@
+# ============================================================================
+# MSP iOS SDK - Release Configuration
+# ============================================================================
+#
+# Profile-based configuration for release automation.
+# Replaces 32+ environment variables with 15 essential settings.
+#
+# Usage:
+#   ./Scripts/msp-release.sh --profile=production 0.4.0-rc.1
+#   ./Scripts/msp-release.sh --profile=local-dev 0.4.0-rc.1
+#
+# Environment variables can override any setting:
+#   MSP_LOG_LEVEL=debug ./Scripts/msp-release.sh --profile=production 0.4.0-rc.1
+# ============================================================================
+
+# Default profile (used when no --profile specified)
+default_profile: local-dev
+
+# Profile definitions
+profiles:
+  # -------------------------------------------------------------------------
+  # local-dev: Local development and testing
+  # -------------------------------------------------------------------------
+  local-dev:
+    # Core Release Control
+    dry_run: true                    # Skip publish steps (CocoaPods, Git push)
+    mode: cli                        # Release mode: cli or ci
+
+    # Validation Control
+    validation:
+      pods: true                     # Validate podspecs
+      spm: false                     # Skip SPM validation (not ready yet)
+      xcframework: false             # Skip XCFramework validation (faster)
+      local: true                    # Local build validation
+      remote: false                  # Skip remote validation
+      device: false                  # Skip device testing
+
+    # Notification Control
+    notifications:
+      slack:
+        enabled: true
+        env: test                    # Use test Slack channel
+      email:
+        enabled: false
+
+    # Logging
+    logging:
+      level: info                    # Log level: debug, info, warn, error
+      format: pretty                 # Format: pretty or json
+
+    # Safety Controls
+    safety:
+      allow_existing_tag: true       # Allow reusing existing tags (for testing)
+      allow_existing_release: true   # Allow reusing existing GitHub Releases
+      keep_sandbox: true             # Keep worktree sandbox after completion
+      require_confirmation: false    # Skip manual confirmation prompts
+
+    # Performance
+    performance:
+      parallel_builds: true          # Build XCFrameworks in parallel
+      max_workers: 4                 # Max parallel workers
+      cdn_wait_time: 10              # Seconds to wait for CDN (reduced for local)
+
+  # -------------------------------------------------------------------------
+  # ci-test: CI/CD testing (GitHub Actions)
+  # -------------------------------------------------------------------------
+  ci-test:
+    dry_run: true
+    mode: ci
+
+    validation:
+      pods: true
+      spm: false
+      xcframework: true
+      local: true
+      remote: false
+      device: false
+
+    notifications:
+      slack:
+        enabled: true
+        env: test
+      email:
+        enabled: false
+
+    logging:
+      level: info
+      format: json                   # JSON format for CI logs
+
+    safety:
+      allow_existing_tag: true
+      allow_existing_release: true
+      keep_sandbox: false            # Clean up in CI
+      require_confirmation: false
+
+    performance:
+      parallel_builds: true
+      max_workers: 8                 # More workers in CI
+      cdn_wait_time: 60
+
+  # -------------------------------------------------------------------------
+  # production: Production release (actual CocoaPods publish)
+  # -------------------------------------------------------------------------
+  production:
+    dry_run: false                   # Execute all publish steps
+    mode: cli
+
+    validation:
+      pods: true
+      spm: true                      # Full validation
+      xcframework: true
+      local: true
+      remote: true                   # Verify published pods
+      device: true                   # Test on device
+
+    notifications:
+      slack:
+        enabled: true
+        env: prod                    # Production Slack channel
+      email:
+        enabled: true
+        recipients:
+          - msp-team@newsbreak.com
+
+    logging:
+      level: info
+      format: pretty
+
+    safety:
+      allow_existing_tag: false      # Prevent accidental overwrites
+      allow_existing_release: false
+      keep_sandbox: false
+      require_confirmation: true     # Require manual confirmation
+
+    performance:
+      parallel_builds: true
+      max_workers: 6
+      cdn_wait_time: 120             # Full CDN propagation time
+
+  # -------------------------------------------------------------------------
+  # quick-test: Quick validation (minimal checks)
+  # -------------------------------------------------------------------------
+  quick-test:
+    dry_run: true
+    mode: cli
+
+    validation:
+      pods: false                    # Skip all validation
+      spm: false
+      xcframework: false
+      local: false
+      remote: false
+      device: false
+
+    notifications:
+      slack:
+        enabled: false
+      email:
+        enabled: false
+
+    logging:
+      level: warn                    # Only warnings and errors
+      format: pretty
+
+    safety:
+      allow_existing_tag: true
+      allow_existing_release: true
+      keep_sandbox: true
+      require_confirmation: false
+
+    performance:
+      parallel_builds: true
+      max_workers: 8
+      cdn_wait_time: 5               # Minimal wait
+
+# ============================================================================
+# Environment Variable Mapping
+# ============================================================================
+#
+# Old environment variables are mapped to new config keys for backward compatibility.
+#
+# | Old Variable                  | New Config Key                    |
+# |-------------------------------|-----------------------------------|
+# | MSP_RELEASE_TIER              | (removed, use dry_run)            |
+# | DRY_RUN                       | dry_run                           |
+# | MSP_ALLOW_LOCAL_RELEASE       | (removed, use dry_run)            |
+# | MSP_ALLOW_TRUNK_PUSH          | (removed, use dry_run)            |
+# | MSP_PODS_ENABLED              | validation.pods                   |
+# | MSP_SPM_ENABLED               | validation.spm                    |
+# | MSP_XCFRAMEWORK_VALIDATION    | validation.xcframework            |
+# | MSP_SKIP_LOCAL_VALIDATION     | validation.local (inverted)       |
+# | MSP_SKIP_REMOTE_VALIDATION    | validation.remote (inverted)      |
+# | MSP_SKIP_DEVICE_VALIDATION    | validation.device (inverted)      |
+# | MSP_SKIP_PODSPEC_VALIDATION   | validation.pods (inverted)        |
+# | MSP_SLACK_ALERT_ENV           | notifications.slack.env           |
+# | MSP_EMAIL_ENABLED             | notifications.email.enabled       |
+# | MSP_LOG_LEVEL                 | logging.level                     |
+# | MSP_ALLOW_EXISTING_TAG        | safety.allow_existing_tag         |
+# | MSP_ALLOW_EXISTING_RELEASE    | safety.allow_existing_release     |
+# | MSP_KEEP_SANDBOX              | safety.keep_sandbox               |
+# | MSP_REQUIRE_CONFIRMATION      | safety.require_confirmation       |
+# | MSP_PARALLEL_BUILDS           | performance.parallel_builds       |
+# | MSP_MAX_WORKERS               | performance.max_workers           |
+# | MSP_CDN_WAIT_TIME             | performance.cdn_wait_time         |
+# ============================================================================
+
