@@ -2483,14 +2483,33 @@ ensure_zip_file_exists_for_pod() {
     fi
 
     log_info "Checking GitHub CLI authentication..."
-    if ! gh auth status &>/dev/null; then
-        log_error "❌ GitHub CLI authentication failed"
-        log_error "Please authenticate: gh auth login"
+
+    local auth_status_output
+    auth_status_output=$(mktemp)
+
+    if timeout 30 gh auth status &>"$auth_status_output"; then
+        log_success "✅ GitHub CLI authenticated"
+        rm -f "$auth_status_output"
+    else
+        local exit_code=$?
+        log_error "❌ GitHub CLI authentication failed (exit code: $exit_code)"
+        log_error ""
+        log_error "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+        log_error "GitHub CLI Error Output:"
+        log_error "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+        cat "$auth_status_output" >&2
+        log_error "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+        log_error ""
+        log_error "Common solutions:"
+        log_error "  1. Re-authenticate: gh auth login"
+        log_error "  2. Refresh token: gh auth refresh -h github.com"
+        log_error "  3. Check token status: gh auth status"
+        log_error ""
         log_error "Required scopes: repo, workflow"
+
+        rm -f "$auth_status_output"
         return 1
     fi
-
-    log_info "✅ GitHub CLI authenticated"
 
     # Create zip file using helper function
     if ! create_zip_from_xcframework "$pod" "$version"; then
@@ -4033,6 +4052,90 @@ release_single_adapter() {
     return 0
 }
 
+# ============================================================================
+# Helper: Unified GitHub CLI Authentication Check
+# ============================================================================
+# Performs a single authentication check before parallel release to ensure
+# all parallel processes can access GitHub Release APIs.
+#
+# Returns:
+#   0 if authenticated
+#   1 if authentication failed
+# ============================================================================
+unified_github_cli_auth_check() {
+    log_step "🔐 Verifying GitHub CLI authentication (pre-flight check)"
+
+    # Check if gh is installed
+    if ! command -v gh &>/dev/null; then
+        log_error "❌ GitHub CLI (gh) not found"
+        log_error "Please install GitHub CLI: brew install gh"
+        log_error "Or visit: https://cli.github.com"
+        return 1
+    fi
+
+    # Perform authentication check with detailed output
+    local auth_check_output
+    auth_check_output=$(mktemp)
+
+    log_info "Checking GitHub CLI authentication..."
+
+    if timeout 30 gh auth status &>"$auth_check_output"; then
+        log_success "✅ GitHub CLI authenticated"
+
+        # Show account info if available
+        if grep -q "Logged in to github.com" "$auth_check_output"; then
+            local account
+            account=$(grep "Logged in" "$auth_check_output" 2>/dev/null | head -1 | sed -n 's/.*account \([^ ]*\).*/\1/p')
+            if [[ -n "$account" ]]; then
+                log_info "  Account: $account"
+            fi
+
+            # Show token scopes
+            if grep -q "Token scopes:" "$auth_check_output"; then
+                local scopes
+                scopes=$(grep "Token scopes:" "$auth_check_output" 2>/dev/null | sed "s/.*Token scopes: //")
+                log_info "  Scopes: $scopes"
+            fi
+        fi
+
+        rm -f "$auth_check_output"
+        return 0
+    else
+        local exit_code=$?
+        log_error "❌ GitHub CLI authentication failed (exit code: $exit_code)"
+        log_error ""
+        log_error "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+        log_error "GitHub CLI Error Output:"
+        log_error "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+        cat "$auth_check_output" >&2
+        log_error "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+        log_error ""
+        log_error "Common solutions:"
+        log_error "  1. Re-authenticate: gh auth login"
+        log_error "  2. Refresh token: gh auth refresh -h github.com"
+        log_error "  3. Check token status: gh auth status"
+        log_error "  4. Verify scopes include: 'repo', 'workflow'"
+        log_error ""
+        log_error "If the problem persists, try:"
+        log_error "  gh auth logout"
+        log_error "  gh auth login"
+
+        rm -f "$auth_check_output"
+
+        # Optional: Attempt automatic refresh (1 retry)
+        log_warning "⚠️  Attempting to refresh token..."
+        if gh auth refresh -h github.com &>/dev/null; then
+            log_info "Token refreshed, rechecking..."
+            if timeout 30 gh auth status &>/dev/null; then
+                log_success "✅ Authentication successful after refresh"
+                return 0
+            fi
+        fi
+
+        return 1
+    fi
+}
+
 # Release Adapters (Step 2) - Parallel Processing
 release_adapters() {
     log_section "Step 2: Releasing Adapters that depend on MSPSharedLibraries (in parallel)"
@@ -4618,6 +4721,16 @@ main() {
     log_info "  • Both can be released simultaneously"
     log_info "  • Expected time saving: ~25 minutes"
     log_info "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    
+    # Pre-flight check: Verify GitHub CLI authentication before parallel release
+    if ! unified_github_cli_auth_check; then
+        log_error "❌ GitHub CLI authentication check failed"
+        log_error "Cannot proceed with parallel release"
+        log_error "Please fix authentication and retry"
+        return 1
+    fi
+    
+    log_info "Starting parallel releases..."
     
     # Start MSPSharedLibraries in background
     log_info "Starting MSPSharedLibraries release in background..."
