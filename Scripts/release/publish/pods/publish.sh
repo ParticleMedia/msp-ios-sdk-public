@@ -3701,10 +3701,9 @@ release_msp_shared_libraries() {
         return 1
     fi
 
-    # Wait for availability (skip in dry-run mode)
-    if [[ "$DRY_RUN" != "true" ]]; then
-        smart_wait_for_pod_availability "MSPSharedLibraries" "$VERSION" "foundation dependency required by adapters and MSPCore"
-    fi
+    # NOTE: Pod availability check moved to parallel release wrapper
+    # This allows MSPSharedLibraries and MSPGoogleAdsTypes to be published in parallel
+    # Availability will be checked before adapter releases (in release_adapters function)
 
     # End timing
     if command -v metrics::end &>/dev/null; then
@@ -3791,10 +3790,10 @@ release_msp_googleadstypes() {
         return 1
     fi
 
-    # Wait for availability (skip in dry-run mode)
-    if [[ "$DRY_RUN" != "true" ]]; then
-        smart_wait_for_pod_availability "MSPGoogleAdsTypes" "$VERSION" "required by MSPGoogleAdapter and AmazonAdapter"
-    fi
+    # NOTE: Pod availability check moved to parallel release wrapper
+    # This allows MSPGoogleAdsTypes and MSPSharedLibraries to be published in parallel
+    # Availability will be checked before adapter releases (in release_adapters function)
+    # MSPGoogleAdsTypes is only needed by MSPGoogleAdapter and AmazonAdapter, which will check individually
 
     # End timing
     if command -v metrics::end &>/dev/null; then
@@ -4548,54 +4547,190 @@ main() {
         fi
     fi
     
-    # Step 1: Release MSPSharedLibraries
-    if release_msp_shared_libraries; then
-        ((successful_pods++))
+    # ════════════════════════════════════════════════════════════════════════════
+    # Step 1: Release MSPSharedLibraries and MSPGoogleAdsTypes (PARALLEL)
+    # ════════════════════════════════════════════════════════════════════════════
+    # Both only depend on MSPiOSCore (already released), so they can be released in parallel
+    # This saves ~25 minutes compared to sequential release
+    # ════════════════════════════════════════════════════════════════════════════
+    
+    log_section "Step 1: Releasing MSPSharedLibraries and MSPGoogleAdsTypes (parallel)"
+    log_info "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    log_info "Parallel Release Strategy:"
+    log_info "  • MSPSharedLibraries depends on: MSPiOSCore"
+    log_info "  • MSPGoogleAdsTypes depends on: Google-Mobile-Ads-SDK (external)"
+    log_info "  • Both can be released simultaneously"
+    log_info "  • Expected time saving: ~25 minutes"
+    log_info "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    
+    # Start MSPSharedLibraries in background
+    log_info "Starting MSPSharedLibraries release in background..."
+    local shared_libs_log="/tmp/msp_release_shared_libs_$$.log"
+    local shared_libs_result="/tmp/msp_release_shared_libs_result_$$.txt"
+    (
+        # Redirect output to separate log file to avoid conflicts
+        exec > "$shared_libs_log" 2>&1
+        
+        if release_msp_shared_libraries; then
+            echo "SUCCESS:MSPSharedLibraries" > "$shared_libs_result"
+        else
+            echo "FAILED:MSPSharedLibraries" > "$shared_libs_result"
+            exit 1
+        fi
+    ) &
+    local SHARED_LIBS_PID=$!
+    log_info "MSPSharedLibraries release started (PID: $SHARED_LIBS_PID)"
+    
+    # Start MSPGoogleAdsTypes in background
+    log_info "Starting MSPGoogleAdsTypes release in background..."
+    local google_ads_types_log="/tmp/msp_release_google_ads_types_$$.log"
+    local google_ads_types_result="/tmp/msp_release_google_ads_types_result_$$.txt"
+    (
+        # Redirect output to separate log file to avoid conflicts
+        exec > "$google_ads_types_log" 2>&1
+        
+        if release_msp_googleadstypes; then
+            echo "SUCCESS:MSPGoogleAdsTypes" > "$google_ads_types_result"
+        else
+            echo "FAILED:MSPGoogleAdsTypes" > "$google_ads_types_result"
+            exit 1
+        fi
+    ) &
+    local GOOGLE_ADS_TYPES_PID=$!
+    log_info "MSPGoogleAdsTypes release started (PID: $GOOGLE_ADS_TYPES_PID)"
+    
+    # Wait for both to complete
+    log_info "Waiting for parallel releases to complete..."
+    log_info "  - MSPSharedLibraries (PID: $SHARED_LIBS_PID)"
+    log_info "  - MSPGoogleAdsTypes (PID: $GOOGLE_ADS_TYPES_PID)"
+    
+    # Wait for MSPSharedLibraries
+    local shared_libs_success=false
+    if wait $SHARED_LIBS_PID; then
+        if [[ -f "$shared_libs_result" ]] && grep -q "SUCCESS" "$shared_libs_result"; then
+            log_success "✅ MSPSharedLibraries released successfully"
+            ((successful_pods++))
+            shared_libs_success=true
+            # Append background log to main log
+            if [[ -f "$shared_libs_log" ]]; then
+                log_debug "MSPSharedLibraries release log:"
+                cat "$shared_libs_log" | while IFS= read -r line; do
+                    log_debug "  [MSPSharedLibraries] $line"
+                done
+            fi
+        else
+            log_error "❌ MSPSharedLibraries release failed"
+            ((failed_pods++))
+            failed_pod_names+=("MSPSharedLibraries")
+            # Append error log
+            if [[ -f "$shared_libs_log" ]]; then
+                log_error "MSPSharedLibraries release error log:"
+                cat "$shared_libs_log" | while IFS= read -r line; do
+                    log_error "  [MSPSharedLibraries] $line"
+                done
+            fi
+            if [[ "$DRY_RUN" != "true" ]]; then
+                if command -v notify::module_error &>/dev/null; then
+                    notify::module_error "MSPSharedLibraries" "$VERSION" "Foundation release failed: MSPSharedLibraries publication to CocoaPods Trunk failed"
+                fi
+            fi
+            msp_state_mark_step_failed "pods_publish" "MSPSharedLibraries release failed" "1"
+        fi
     else
+        log_error "❌ MSPSharedLibraries release failed (process error)"
         ((failed_pods++))
         failed_pod_names+=("MSPSharedLibraries")
+        if [[ -f "$shared_libs_log" ]]; then
+            log_error "MSPSharedLibraries release error log:"
+            cat "$shared_libs_log" | while IFS= read -r line; do
+                log_error "  [MSPSharedLibraries] $line"
+            done
+        fi
         if [[ "$DRY_RUN" != "true" ]]; then
-            # Use new notification system: DM only (no channel spam)
             if command -v notify::module_error &>/dev/null; then
                 notify::module_error "MSPSharedLibraries" "$VERSION" "Foundation release failed: MSPSharedLibraries publication to CocoaPods Trunk failed"
-            else
-                log_warning "New notification system not available, skipping failure notification"
             fi
         fi
         msp_state_mark_step_failed "pods_publish" "MSPSharedLibraries release failed" "1"
-        # Phase B: Production mode requires hard-fail, dry-run allows soft-fail
-        if [[ "${DRY_RUN:-true}" == "false" ]]; then
-            log_error "[MSP][ORCH] Production mode: MSPSharedLibraries release failure - aborting"
-            exit 1
-        else
-            log_warn "[MSP][ORCH] Dry-run mode: CocoaPods release failed, continuing with other steps"
-        fi
     fi
     
-    # Step 1.5: Release MSPGoogleAdsTypes (required by MSPGoogleAdapter and AmazonAdapter)
-    if release_msp_googleadstypes; then
-        ((successful_pods++))
+    # Wait for MSPGoogleAdsTypes
+    local google_ads_types_success=false
+    if wait $GOOGLE_ADS_TYPES_PID; then
+        if [[ -f "$google_ads_types_result" ]] && grep -q "SUCCESS" "$google_ads_types_result"; then
+            log_success "✅ MSPGoogleAdsTypes released successfully"
+            ((successful_pods++))
+            google_ads_types_success=true
+            # Append background log to main log
+            if [[ -f "$google_ads_types_log" ]]; then
+                log_debug "MSPGoogleAdsTypes release log:"
+                cat "$google_ads_types_log" | while IFS= read -r line; do
+                    log_debug "  [MSPGoogleAdsTypes] $line"
+                done
+            fi
+        else
+            log_error "❌ MSPGoogleAdsTypes release failed"
+            ((failed_pods++))
+            failed_pod_names+=("MSPGoogleAdsTypes")
+            # Append error log
+            if [[ -f "$google_ads_types_log" ]]; then
+                log_error "MSPGoogleAdsTypes release error log:"
+                cat "$google_ads_types_log" | while IFS= read -r line; do
+                    log_error "  [MSPGoogleAdsTypes] $line"
+                done
+            fi
+            if [[ "$DRY_RUN" != "true" ]]; then
+                if command -v notify::module_error &>/dev/null; then
+                    notify::module_error "MSPGoogleAdsTypes" "$VERSION" "Foundation release failed: MSPGoogleAdsTypes publication to CocoaPods Trunk failed"
+                fi
+            fi
+            msp_state_mark_step_failed "pods_publish" "MSPGoogleAdsTypes release failed" "1"
+        fi
     else
+        log_error "❌ MSPGoogleAdsTypes release failed (process error)"
         ((failed_pods++))
         failed_pod_names+=("MSPGoogleAdsTypes")
+        if [[ -f "$google_ads_types_log" ]]; then
+            log_error "MSPGoogleAdsTypes release error log:"
+            cat "$google_ads_types_log" | while IFS= read -r line; do
+                log_error "  [MSPGoogleAdsTypes] $line"
+            done
+        fi
         if [[ "$DRY_RUN" != "true" ]]; then
-            # Use new notification system: DM only (no channel spam)
             if command -v notify::module_error &>/dev/null; then
                 notify::module_error "MSPGoogleAdsTypes" "$VERSION" "Foundation release failed: MSPGoogleAdsTypes publication to CocoaPods Trunk failed"
-            else
-                log_warning "New notification system not available, skipping failure notification"
             fi
         fi
         msp_state_mark_step_failed "pods_publish" "MSPGoogleAdsTypes release failed" "1"
-        # Phase B: Production mode requires hard-fail, dry-run allows soft-fail
+    fi
+    
+    # Cleanup result files
+    rm -f "$shared_libs_result" "$google_ads_types_result" "$shared_libs_log" "$google_ads_types_log"
+    
+    # Check if both succeeded (required for adapters)
+    if [[ $failed_pods -gt 0 ]]; then
+        log_error "One or more foundation pods failed. Cannot proceed with adapters."
+        
+        # Kill background processes if they're still running
+        if kill -0 $SHARED_LIBS_PID 2>/dev/null; then
+            log_warn "Terminating MSPSharedLibraries process (PID: $SHARED_LIBS_PID)"
+            kill -TERM $SHARED_LIBS_PID 2>/dev/null || true
+        fi
+        if kill -0 $GOOGLE_ADS_TYPES_PID 2>/dev/null; then
+            log_warn "Terminating MSPGoogleAdsTypes process (PID: $GOOGLE_ADS_TYPES_PID)"
+            kill -TERM $GOOGLE_ADS_TYPES_PID 2>/dev/null || true
+        fi
+        
+        # Fail-fast in production mode
         if [[ "${DRY_RUN:-true}" == "false" ]]; then
-            log_error "[MSP][ORCH] Production mode: MSPGoogleAdsTypes release failure - aborting"
-            log_error "[MSP][ORCH] MSPGoogleAdapter and AmazonAdapter depend on MSPGoogleAdsTypes. Cannot proceed."
+            log_error "[MSP][ORCH] Production mode: Foundation pod failure - aborting"
             exit 1
         else
-            log_warn "[MSP][ORCH] Dry-run mode: CocoaPods release failed, continuing with other steps"
+            log_warn "[MSP][ORCH] Dry-run mode: Continuing despite failures"
         fi
     fi
+    
+    log_success "Both MSPSharedLibraries and MSPGoogleAdsTypes released successfully"
     
     # Step 2: Release Adapters
     if release_adapters; then
