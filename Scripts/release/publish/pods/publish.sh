@@ -2152,36 +2152,50 @@ create_zip_from_xcframework() {
             mkdir -p "$temp_zip_dir/Binary"
             mkdir -p "$temp_zip_dir/ThirdParty/PrebidMobile"
 
-            # Copy MSPSharedLibraries.xcframework
+            # Copy MSPSharedLibraries.xcframework using ditto (preserves symlinks)
             local shared_lib_path="$ROOT_DIR/Build/XCFrameworks/MSPSharedLibraries.xcframework"
             if [[ ! -d "$shared_lib_path" ]]; then
                 log_error "❌ MSPSharedLibraries.xcframework not found: $shared_lib_path"
                 rm -rf "$temp_zip_dir"
                 return 1
             fi
-            cp -R "$shared_lib_path" "$temp_zip_dir/Binary/"
+            if ! ditto "$shared_lib_path" "$temp_zip_dir/Binary/$(basename "$shared_lib_path")"; then
+                log_error "❌ Failed to copy MSPSharedLibraries.xcframework"
+                rm -rf "$temp_zip_dir"
+                return 1
+            fi
 
-            # Copy embedded MSPiOSCore.xcframework
+            # Copy embedded MSPiOSCore.xcframework using ditto
             local ios_core_path="$ROOT_DIR/Build/XCFrameworks/MSPiOSCore.xcframework"
             if [[ ! -d "$ios_core_path" ]]; then
                 log_error "❌ MSPiOSCore.xcframework not found: $ios_core_path"
                 rm -rf "$temp_zip_dir"
                 return 1
             fi
-            cp -R "$ios_core_path" "$temp_zip_dir/Binary/"
+            if ! ditto "$ios_core_path" "$temp_zip_dir/Binary/$(basename "$ios_core_path")"; then
+                log_error "❌ Failed to copy MSPiOSCore.xcframework"
+                rm -rf "$temp_zip_dir"
+                return 1
+            fi
 
-            # Copy ThirdParty PrebidMobile
+            # Copy ThirdParty PrebidMobile using ditto
             local prebid_path="$ROOT_DIR/ThirdParty/PrebidMobile/PrebidMobile.xcframework"
             if [[ ! -d "$prebid_path" ]]; then
                 log_error "❌ PrebidMobile.xcframework not found: $prebid_path"
                 rm -rf "$temp_zip_dir"
                 return 1
             fi
-            cp -R "$prebid_path" "$temp_zip_dir/ThirdParty/PrebidMobile/"
+            if ! ditto "$prebid_path" "$temp_zip_dir/ThirdParty/PrebidMobile/$(basename "$prebid_path")"; then
+                log_error "❌ Failed to copy PrebidMobile.xcframework"
+                rm -rf "$temp_zip_dir"
+                return 1
+            fi
 
             # Copy Sources (optional, for dev mode)
             if [[ -d "$ROOT_DIR/Sources" ]]; then
-                cp -R "$ROOT_DIR/Sources" "$temp_zip_dir/"
+                if ! ditto "$ROOT_DIR/Sources" "$temp_zip_dir/Sources"; then
+                    log_warning "⚠️  Failed to copy Sources directory (non-critical)"
+                fi
             fi
 
             log_success "✅ Prepared MSPSharedLibraries structure"
@@ -2199,7 +2213,12 @@ create_zip_from_xcframework() {
                 return 1
             fi
 
-            cp -R "$xcframework_path" "$temp_zip_dir/Binary/"
+            if ! ditto "$xcframework_path" "$temp_zip_dir/Binary/$(basename "$xcframework_path")"; then
+                log_error "❌ Failed to copy MSPiOSCore.xcframework"
+                rm -rf "$temp_zip_dir"
+                return 1
+            fi
+
             log_success "✅ Prepared MSPiOSCore structure"
             ;;
 
@@ -2215,7 +2234,12 @@ create_zip_from_xcframework() {
                 return 1
             fi
 
-            cp -R "$xcframework_path" "$temp_zip_dir/Binary/"
+            if ! ditto "$xcframework_path" "$temp_zip_dir/Binary/$(basename "$xcframework_path")"; then
+                log_error "❌ Failed to copy ${pod}.xcframework"
+                rm -rf "$temp_zip_dir"
+                return 1
+            fi
+
             log_success "✅ Prepared $pod structure"
             ;;
     esac
@@ -2225,17 +2249,49 @@ create_zip_from_xcframework() {
     # ========================================================================
     log_info "Creating zip: $zip_name"
 
+    # Pre-flight check: detect broken symbolic links
+    local broken_links
+    broken_links=$(find "$temp_zip_dir" -type l ! -exec test -e {} \; -print 2>/dev/null)
+    if [[ -n "$broken_links" ]]; then
+        log_warning "⚠️  Found broken symbolic links (will attempt to zip anyway):"
+        echo "$broken_links" | while read -r link; do
+            log_warning "  - $link -> $(readlink "$link" 2>/dev/null || echo 'broken')"
+        done
+    fi
+
     local zip_error_output
     zip_error_output=$(mktemp)
 
     (
         cd "$temp_zip_dir" || exit 1
-        if zip -r "$zip_name" . >/dev/null 2>"$zip_error_output"; then
+        # Exclude common problematic files
+        if zip -r "$zip_name" . \
+            -x '*.DS_Store' \
+            -x '__MACOSX/*' \
+            >/dev/null 2>"$zip_error_output"; then
             log_success "✅ Zip file created"
         else
             log_error "❌ Failed to create zip file"
             log_error "Zip error output:"
             cat "$zip_error_output" >&2
+
+            # Enhanced diagnostics
+            log_error "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+            log_error "Enhanced Diagnostics:"
+            log_error "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+            log_error "1. Directory contents:"
+            ls -laR "$temp_zip_dir" 2>&1 | head -50 >&2
+
+            log_error ""
+            log_error "2. Symbolic links:"
+            find "$temp_zip_dir" -type l -ls 2>&1 | head -20 >&2
+
+            log_error ""
+            log_error "3. File permissions:"
+            find "$temp_zip_dir" ! -perm -u+r -ls 2>&1 | head -10 >&2 || echo "  (All files readable)" >&2
+
+            log_error "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+
             rm -f "$zip_error_output"
             exit 1
         fi
