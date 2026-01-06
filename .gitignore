@@ -211,3 +211,8 @@ Tests/notify_runner/__pycache__/
 
 # Generated project.yml files (from templates)
 Sources/Adapters/*/project.yml
+# Phase B temporary reports
+docs/PHASE_B_COMPLETION_REPORT.md
+Docs/PHASE_B_COMPLETION_REPORT.md
+docs/PHASE_B_MIGRATION.md
+Docs/PHASE_B_MIGRATION.md
