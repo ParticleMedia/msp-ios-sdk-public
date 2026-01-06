@@ -315,7 +315,7 @@ _msp_parse_tier_config_value() {
 msp_cfg_get() {
     local key="$1"
     # Phase B: Derive tier from DRY_RUN if not explicitly provided
-    local tier="$2"
+    local tier="${2:-}"
     if [[ -z "$tier" ]]; then
         local dry_run="${DRY_RUN:-true}"
         if [[ "$dry_run" == "false" ]]; then
@@ -376,7 +376,7 @@ msp_cfg_get() {
 is_enabled() {
     local key="$1"
     # Phase B: Derive tier from DRY_RUN if not explicitly provided
-    local tier="$2"
+    local tier="${2:-}"
     if [[ -z "$tier" ]]; then
         local dry_run="${DRY_RUN:-true}"
         if [[ "$dry_run" == "false" ]]; then
