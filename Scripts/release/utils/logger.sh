@@ -21,14 +21,16 @@ export _METRICS_TMP_FILE
 # ============================================================================
 
 # Log levels (numeric priority)
-readonly LOG_LEVEL_DEBUG=0
-readonly LOG_LEVEL_INFO=1
-readonly LOG_LEVEL_WARN=2
-readonly LOG_LEVEL_ERROR=3
-readonly LOG_LEVEL_FATAL=4
+export LOG_LEVEL_DEBUG=0
+export LOG_LEVEL_INFO=1
+export LOG_LEVEL_WARN=2
+export LOG_LEVEL_ERROR=3
+export LOG_LEVEL_FATAL=4
+declare -r LOG_LEVEL_DEBUG LOG_LEVEL_INFO LOG_LEVEL_WARN LOG_LEVEL_ERROR LOG_LEVEL_FATAL
 
 # Current log level (can be overridden by MSP_LOG_LEVEL)
 MSP_LOG_LEVEL="${MSP_LOG_LEVEL:-$LOG_LEVEL_INFO}"
+export MSP_LOG_LEVEL
 
 # Log output destinations
 # Initialize all log-related variables early to avoid "unbound variable" errors
@@ -43,25 +45,19 @@ export MSP_LOG_FILE_ENABLED="${MSP_LOG_FILE_ENABLED}"
 
 # Performance metrics file
 MSP_METRICS_FILE="${MSP_METRICS_FILE:-/tmp/msp-release-metrics-$(date +%Y%m%d-%H%M%S).json}"
+export MSP_METRICS_FILE
 
 # ANSI colors
 # Export colors to avoid "unbound variable" errors when scripts use 'set -u'
-readonly COLOR_RESET='\033[0m'
-export COLOR_RESET
-readonly COLOR_RED='\033[0;31m'
-export COLOR_RED
-readonly COLOR_GREEN='\033[0;32m'
-export COLOR_GREEN
-readonly COLOR_YELLOW='\033[0;33m'
-export COLOR_YELLOW
-readonly COLOR_BLUE='\033[0;34m'
-export COLOR_BLUE
-readonly COLOR_PURPLE='\033[0;35m'
-export COLOR_PURPLE
-readonly COLOR_CYAN='\033[0;36m'
-export COLOR_CYAN
-readonly COLOR_GRAY='\033[0;90m'
-export COLOR_GRAY
+export COLOR_RESET='\033[0m'
+export COLOR_RED='\033[0;31m'
+export COLOR_GREEN='\033[0;32m'
+export COLOR_YELLOW='\033[1;33m'
+export COLOR_BLUE='\033[0;34m'
+export COLOR_PURPLE='\033[0;35m'
+export COLOR_CYAN='\033[0;36m'
+export COLOR_GRAY='\033[0;90m'
+declare -r COLOR_RESET COLOR_RED COLOR_GREEN COLOR_YELLOW COLOR_BLUE COLOR_PURPLE COLOR_CYAN COLOR_GRAY
 
 # ============================================================================
 # Core Logging Functions
