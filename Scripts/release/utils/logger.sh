@@ -99,10 +99,18 @@ _log() {
     local log_level="${MSP_LOG_LEVEL:-${LOG_LEVEL_INFO:-1}}"
     local level_num_safe="${level_num:-1}"
 
-    # Force numeric conversion (adds 0 to ensure it's a number)
-    # Use ${var:-0} to handle empty values, and || 0 to handle non-numeric values
-    log_level=$((log_level + 0)) || log_level=1
-    level_num_safe=$((level_num_safe + 0)) || level_num_safe=1
+    # Force numeric conversion - use pattern matching to check if numeric
+    # This avoids unbound variable errors when non-numeric strings are passed
+    if [[ "$log_level" =~ ^[0-9]+$ ]]; then
+        log_level=$((log_level + 0))
+    else
+        log_level=1
+    fi
+    if [[ "$level_num_safe" =~ ^[0-9]+$ ]]; then
+        level_num_safe=$((level_num_safe + 0))
+    else
+        level_num_safe=1
+    fi
 
     # Use arithmetic comparison
     if (( level_num_safe < log_level )); then
