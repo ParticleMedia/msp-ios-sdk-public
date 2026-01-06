@@ -95,7 +95,9 @@ _log() {
     local color="${5:-$COLOR_RESET}"
 
     # Filter by log level
-    if [[ "$level_num" -lt "$MSP_LOG_LEVEL" ]]; then
+    # Ensure MSP_LOG_LEVEL is defined (defensive check for set -u environments)
+    local log_level="${MSP_LOG_LEVEL:-$LOG_LEVEL_INFO}"
+    if [[ "$level_num" -lt "$log_level" ]]; then
         return 0
     fi
 
