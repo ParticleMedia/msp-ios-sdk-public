@@ -121,7 +121,7 @@ echo ""
 # ============================================================================
 log_section "⚙️  Setting Environment Variables"
 
-if [[ -z "${MSP_RELEASE_TIER:-}" ]]; then
+if [[ -z "${DRY_RUN:-}" ]]; then
     log_info "Environment not configured, setting up..."
 
     if [[ -f "$SCRIPT_DIR/utils/setup-release-env.sh" ]]; then
@@ -143,7 +143,11 @@ if [[ -z "${MSP_RELEASE_TIER:-}" ]]; then
     fi
 else
     log_success "Environment already configured"
-    log_info "MSP_RELEASE_TIER: ${MSP_RELEASE_TIER}"
+    local mode_label="dry-run"
+    if [[ "${DRY_RUN}" == "false" ]]; then
+        mode_label="production"
+    fi
+    log_info "DRY_RUN: ${DRY_RUN} (${mode_label} mode)"
 fi
 
 echo ""
@@ -158,7 +162,7 @@ echo "Version:     $VERSION"
 echo "State File:  $STATE_FILE"
 echo ""
 echo "Environment Variables:"
-echo "  MSP_RELEASE_TIER:          ${MSP_RELEASE_TIER:-<not set>}"
+echo "  DRY_RUN:                   ${DRY_RUN:-<not set>}"
 echo "  MSP_ALLOW_LOCAL_RELEASE:   ${MSP_ALLOW_LOCAL_RELEASE:-<not set>}"
 echo "  MSP_ALLOW_EXISTING_TAG:    ${MSP_ALLOW_EXISTING_TAG:-<not set>}"
 echo "  MSP_ALLOW_TRUNK_PUSH:      ${MSP_ALLOW_TRUNK_PUSH:-<not set>}"

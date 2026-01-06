@@ -224,19 +224,16 @@ parse_flags() {
                 shift
                 ;;
 
-            --tier)
-                if [[ -n "${2:-}" && ! "$2" =~ ^- ]]; then
-                    MSP_RELEASE_TIER="$2"
+            --tier|--tier=*)
+                # Phase B: --tier is deprecated, use --profile instead
+                log_warning "--tier is deprecated in Phase B, use --profile instead"
+                log_warning "  Example: --profile=production (for production mode)"
+                log_warning "  Example: --profile=local-dev (for dry-run mode)"
+                if [[ "$1" == "--tier" ]]; then
                     shift 2
                 else
-                    log_error "--tier requires a value"
-                    exit 1
+                    shift
                 fi
-                ;;
-
-            --tier=*)
-                MSP_RELEASE_TIER="${1#*=}"
-                shift
                 ;;
 
             --profile)
@@ -952,17 +949,21 @@ do_run() {
     
     # Initialize logging system for this release run
     local version="${REMAINING_ARGS[0]:-unknown}"
-    local tier="${MSP_RELEASE_TIER:-test}"
+    local dry_run="${DRY_RUN:-true}"
+    local mode_label="dryrun"
+    if [[ "$dry_run" == "false" ]]; then
+        mode_label="production"
+    fi
     if command -v log::info &>/dev/null; then
         # Generate unique session ID for this release
         export MSP_SESSION_ID="${MSP_SESSION_ID:-$(date +%Y%m%d-%H%M%S)-$$}"
 
-        export MSP_LOG_FILE="/tmp/msp-release-${version}-${tier}-${MSP_SESSION_ID}.log"
-        export MSP_METRICS_FILE="/tmp/msp-release-${version}-${tier}-${MSP_SESSION_ID}-metrics.json"
+        export MSP_LOG_FILE="/tmp/msp-release-${version}-${mode_label}-${MSP_SESSION_ID}.log"
+        export MSP_METRICS_FILE="/tmp/msp-release-${version}-${mode_label}-${MSP_SESSION_ID}-metrics.json"
 
         log::info "MSP" "Starting MSP iOS SDK Release"
         log::info "MSP" "Version: $version"
-        log::info "MSP" "Tier: $tier"
+        log::info "MSP" "Mode: $mode_label (DRY_RUN=$dry_run)"
         log::info "MSP" "Session ID: $MSP_SESSION_ID"
         log::info "MSP" "Log file: $MSP_LOG_FILE"
         log::info "MSP" "Metrics file: $MSP_METRICS_FILE"
@@ -1073,17 +1074,21 @@ do_run() {
     echo "[DEBUG] ========================================" >&2
     echo "[DEBUG] Tier Detection at Script Start" >&2
     echo "[DEBUG] ========================================" >&2
-    echo "[DEBUG] MSP_RELEASE_TIER (env): ${MSP_RELEASE_TIER:-unset}" >&2
+    echo "[DEBUG] DRY_RUN (env): ${DRY_RUN:-unset}" >&2
     echo "[DEBUG] Current branch: $(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo 'unknown')" >&2
     echo "[DEBUG] ========================================" >&2
-    
-    # Set MSP_RELEASE_TIER default (Patch M)
-    if [ -z "${MSP_RELEASE_TIER:-}" ]; then
-      MSP_RELEASE_TIER="preflight"
-      log_info "[TIER] MSP_RELEASE_TIER not set; defaulting to preflight"
+
+    # Set DRY_RUN default (Phase B)
+    if [ -z "${DRY_RUN:-}" ]; then
+      DRY_RUN="true"
+      log_info "[MODE] DRY_RUN not set; defaulting to dry-run mode (true)"
     fi
-    export MSP_RELEASE_TIER
-    log_info "[TIER] Running in ${MSP_RELEASE_TIER} tier"
+    export DRY_RUN
+    local mode_label="dry-run"
+    if [[ "${DRY_RUN}" == "false" ]]; then
+      mode_label="production"
+    fi
+    log_info "[MODE] Running in ${mode_label} mode (DRY_RUN=${DRY_RUN})"
     export MSP_RELEASE_MODE="${MSP_RELEASE_MODE:-cli}"
     echo "[MSP][CLI] Release mode: ${MSP_RELEASE_MODE}"
     

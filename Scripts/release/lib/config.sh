@@ -314,13 +314,25 @@ _msp_parse_tier_config_value() {
 # ============================================================================
 msp_cfg_get() {
     local key="$1"
-    local tier="${2:-${MSP_RELEASE_TIER:-preflight}}"
-    
+    # Phase B: Derive tier from DRY_RUN if not explicitly provided
+    local tier="$2"
+    if [[ -z "$tier" ]]; then
+        local dry_run="${DRY_RUN:-true}"
+        if [[ "$dry_run" == "false" ]]; then
+            tier="release"
+        else
+            tier="preflight"
+        fi
+    fi
+
     # Normalize tier name
     if [[ "$tier" == "production" ]]; then
         tier="release"
     fi
-    
+    if [[ "$tier" == "dry-run" ]] || [[ "$tier" == "dryrun" ]]; then
+        tier="preflight"
+    fi
+
     # Validate tier
     if [[ "$tier" != "preflight" ]] && [[ "$tier" != "release" ]] && [[ "$tier" != "test" ]]; then
         echo "[CONFIG][ERROR] Invalid tier: $tier (must be 'preflight', 'test', or 'release')" >&2
@@ -363,8 +375,17 @@ msp_cfg_get() {
 # ============================================================================
 is_enabled() {
     local key="$1"
-    local tier="${2:-${MSP_RELEASE_TIER:-preflight}}"
-    
+    # Phase B: Derive tier from DRY_RUN if not explicitly provided
+    local tier="$2"
+    if [[ -z "$tier" ]]; then
+        local dry_run="${DRY_RUN:-true}"
+        if [[ "$dry_run" == "false" ]]; then
+            tier="release"
+        else
+            tier="preflight"
+        fi
+    fi
+
     local value
     value=$(msp_cfg_get "$key" "$tier" 2>/dev/null)
     

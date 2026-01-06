@@ -220,44 +220,46 @@ if [[ -f "$ROOT_DIR/Scripts/release/utils/github.sh" ]]; then
 fi
 
 # ============================================================================
-# Release Tier Helpers (Patch M)
+# Release Mode Helpers (Phase B)
 # ============================================================================
-# Helper functions to determine if we're running in preflight or release tier
+# Helper functions to determine if we're running in dry-run or production mode
 
-is_preflight_tier() {
-    # MSP_RELEASE_TIER may be set via env or CLI
-    case "${MSP_RELEASE_TIER:-}" in
-        preflight|PRELFIGHT|Preflight|PREFLIGHT)
-            # Check if preflight is allowed on this branch (Patch M+CONFIG)
-            if command -v should_preflight_run &>/dev/null; then
-                if ! should_preflight_run; then
-                    log_warn "[SKIP] Preflight not allowed on this branch"
-                    return 1
-                fi
+is_dry_run_mode() {
+    # Phase B: Use DRY_RUN for mode control
+    local dry_run="${DRY_RUN:-true}"
+    if [[ "$dry_run" == "true" ]]; then
+        return 0
+    else
+        return 1
+    fi
+}
+
+is_production_mode() {
+    # Phase B: Use DRY_RUN for mode control
+    local dry_run="${DRY_RUN:-true}"
+    if [[ "$dry_run" == "false" ]]; then
+        # Check if real publish is allowed on this branch
+        if command -v should_real_publish &>/dev/null; then
+            if ! should_real_publish; then
+                local branch="$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo unknown)"
+                log_error "[BLOCKED] Real publish not allowed on branch: $branch"
+                log_error "[BLOCKED] Check Scripts/release/config/release_config.yaml for branch policy"
+                return 1
             fi
-            return 0
-            ;;
-        *)
-            return 1
-            ;;
-    esac
+        fi
+        return 0
+    else
+        return 1
+    fi
+}
+
+# Backward compatibility aliases (deprecated)
+is_preflight_tier() {
+    is_dry_run_mode
 }
 
 is_release_tier() {
-    if is_preflight_tier; then
-        return 1
-    fi
-    # Check if real publish is allowed on this branch (Patch M+CONFIG)
-    if command -v should_real_publish &>/dev/null; then
-        if ! should_real_publish; then
-            local branch="$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo unknown)"
-            log_error "[BLOCKED] Real publish not allowed on branch: $branch"
-            log_error "[BLOCKED] Check Scripts/release/config/release_config.yaml for branch policy"
-            return 1
-        fi
-    fi
-    # treat anything not preflight as "release-like" for now
-    return 0
+    is_production_mode
 }
 
 # Source notification utilities

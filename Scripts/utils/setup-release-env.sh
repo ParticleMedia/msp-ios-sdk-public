@@ -12,7 +12,7 @@
 #   ci         - CI release
 #   rerelease  - Republish existing version
 #   resume     - Resume failed release
-#   test       - Test mode (preflight tier)
+#   test       - Test mode (dry-run)
 #
 # Examples:
 #   source Scripts/utils/setup-release-env.sh          # local release
@@ -39,7 +39,7 @@ setup_local_profile() {
     echo "🔧 Setting up environment for: Local Release"
 
     # Core variables (3 required)
-    export MSP_RELEASE_TIER=release
+    export DRY_RUN=false
     export MSP_ALLOW_LOCAL_RELEASE=1
     export MSP_ALLOW_TRUNK_PUSH=1
 
@@ -49,7 +49,7 @@ setup_local_profile() {
     export MSP_SLACK_ALERT_ENV=test
 
     echo "✅ Local release environment configured"
-    echo "   MSP_RELEASE_TIER: $MSP_RELEASE_TIER"
+    echo "   DRY_RUN: $DRY_RUN (production mode)"
     echo "   MSP_ALLOW_LOCAL_RELEASE: $MSP_ALLOW_LOCAL_RELEASE"
     echo "   MSP_ALLOW_TRUNK_PUSH: $MSP_ALLOW_TRUNK_PUSH"
     echo "   MSP_SLACK_ALERT_ENV: $MSP_SLACK_ALERT_ENV (test webhook)"
@@ -69,7 +69,7 @@ setup_ci_profile() {
     echo "🔧 Setting up environment for: CI Release"
 
     # Core variables (2 required for CI)
-    export MSP_RELEASE_TIER=release
+    export DRY_RUN=false
     export MSP_ALLOW_TRUNK_PUSH=1
 
     # Slack: use prod mode (optional)
@@ -79,7 +79,7 @@ setup_ci_profile() {
     # Note: MSP_ALLOW_LOCAL_RELEASE is not needed in CI
 
     echo "✅ CI release environment configured"
-    echo "   MSP_RELEASE_TIER: $MSP_RELEASE_TIER"
+    echo "   DRY_RUN: $DRY_RUN (production mode)"
     echo "   MSP_ALLOW_TRUNK_PUSH: $MSP_ALLOW_TRUNK_PUSH"
     echo "   MSP_SLACK_ALERT_ENV: $MSP_SLACK_ALERT_ENV"
     echo ""
@@ -103,13 +103,13 @@ setup_rerelease_profile() {
 }
 
 # ============================================================================
-# Profile: Test (preflight tier)
+# Profile: Test (dry-run mode)
 # ============================================================================
 setup_test_profile() {
-    echo "🔧 Setting up environment for: Test (Preflight)"
+    echo "🔧 Setting up environment for: Test (Dry-Run)"
 
-    # Use preflight tier (no trunk push)
-    export MSP_RELEASE_TIER=preflight
+    # Use dry-run mode (no trunk push)
+    export DRY_RUN=true
     export MSP_ALLOW_LOCAL_RELEASE=1
     export MSP_ALLOW_TRUNK_PUSH=0
 
@@ -117,7 +117,7 @@ setup_test_profile() {
     export MSP_SLACK_ALERT_ENV=test
 
     echo "✅ Test environment configured"
-    echo "   MSP_RELEASE_TIER: $MSP_RELEASE_TIER"
+    echo "   DRY_RUN: $DRY_RUN (dry-run mode)"
     echo "   MSP_ALLOW_LOCAL_RELEASE: $MSP_ALLOW_LOCAL_RELEASE"
     echo "   MSP_ALLOW_TRUNK_PUSH: $MSP_ALLOW_TRUNK_PUSH (no actual push)"
     echo "   MSP_SLACK_ALERT_ENV: $MSP_SLACK_ALERT_ENV"
@@ -171,7 +171,7 @@ case "$_MSP_PROFILE" in
         echo "  ci         - CI release"
         echo "  rerelease  - Republish existing version"
         echo "  resume     - Resume failed release"
-        echo "  test       - Test mode (preflight tier)"
+        echo "  test       - Test mode (dry-run)"
         echo ""
         echo "Usage: source ${BASH_SOURCE[0]} [profile]"
         return 1
