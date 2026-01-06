@@ -100,8 +100,9 @@ _log() {
     local level_num_safe="${level_num:-1}"
 
     # Force numeric conversion (adds 0 to ensure it's a number)
-    log_level=$((log_level + 0))
-    level_num_safe=$((level_num_safe + 0))
+    # Use ${var:-0} to handle empty values, and || 0 to handle non-numeric values
+    log_level=$((log_level + 0)) || log_level=1
+    level_num_safe=$((level_num_safe + 0)) || level_num_safe=1
 
     # Use arithmetic comparison
     if (( level_num_safe < log_level )); then
