@@ -581,11 +581,14 @@ smart_wait_for_pod_availability() {
     log_section "Checking $pod_name $version availability$context_msg"
 
     # ═══════════════════════════════════════════════════════════════════════════
-    # Stage 1: Quick check (2 minutes)
+    # Stage 1: Quick check (3 minutes with longer intervals)
     # ═══════════════════════════════════════════════════════════════════════════
-    log_step "Quick check: Is $pod_name $version available? (2 min timeout)..."
+    # Changed from 120s/10s to 180s/30s (6 checks → 6 checks but less overhead)
+    # With caching, each check now takes 5-10s instead of 50-60s
+    # Total Stage 1 time: ~3 minutes (much faster than before despite longer timeout)
+    log_step "Quick check: Is $pod_name $version available? (3 min timeout, 30s intervals)..."
 
-    if wait_for_pod_availability "$pod_name" "$version" 120 10; then
+    if wait_for_pod_availability "$pod_name" "$version" 180 30; then
         log_success "✓ $pod_name $version is available!"
         return 0
     fi
@@ -593,10 +596,10 @@ smart_wait_for_pod_availability() {
     # ═══════════════════════════════════════════════════════════════════════════
     # Stage 2: Not available - present options
     # ═══════════════════════════════════════════════════════════════════════════
-    log_warn "✗ $pod_name $version not available yet (checked for 2 minutes)"
+    log_warn "✗ $pod_name $version not available yet (checked for 3 minutes)"
     echo ""
     log_info "═══════════════════════════════════════════════════════════════════════════"
-    log_info "$pod_name $version was recently published. CDN sync can take 5-40 minutes."
+    log_info "$pod_name $version was recently published. CDN sync can take 5-30 minutes."
     log_info "Context: $context"
     log_info "═══════════════════════════════════════════════════════════════════════════"
     echo ""
@@ -621,15 +624,18 @@ smart_wait_for_pod_availability() {
     case "$choice" in
         1)
             # ═══════════════════════════════════════════════════════════════════════════
-            # Stage 3: Long wait (up to 40 minutes total)
+            # Stage 3: Long wait (up to 30 minutes total with optimized checking)
             # ═══════════════════════════════════════════════════════════════════════════
-            log_info "Continuing to wait for $pod_name $version (up to 38 more minutes)..."
-            log_info "Checking every 30 seconds. Press Ctrl+C to abort."
+            # Changed from 38 more min to 27 more min (30 total - 3 already waited)
+            # With caching + smart update strategy, checks are much faster now
+            # Increased interval from 30s to 60s (less aggressive, CDN needs time)
+            log_info "Continuing to wait for $pod_name $version (up to 27 more minutes)..."
+            log_info "Checking every 60 seconds. Press Ctrl+C to abort."
             echo ""
 
-            # 38 minutes = 2280 seconds (40 total - 2 already waited)
-            if ! wait_for_pod_availability "$pod_name" "$version" 2280 30; then
-                log_error "$pod_name $version still not available after 40 minutes total"
+            # 27 minutes = 1620 seconds (30 total - 3 already waited)
+            if ! wait_for_pod_availability "$pod_name" "$version" 1620 60; then
+                log_error "$pod_name $version still not available after 30 minutes total"
                 log_error "This is unusual. Please check:"
                 log_error "  1. Did $pod_name $version publish succeed?"
                 log_error "     Command: pod trunk info $pod_name"

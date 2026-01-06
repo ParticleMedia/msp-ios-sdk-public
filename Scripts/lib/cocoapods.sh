@@ -390,6 +390,43 @@ publish_podspec() {
 
 # Repository operations
 update_specs_repo() {
+    # ═══════════════════════════════════════════════════════════════════════════
+    # Specs Repo Update Caching (Fix for infinite loop issue)
+    # ═══════════════════════════════════════════════════════════════════════════
+    # Problem: update_specs_repo was called repeatedly (every 10s) during pod
+    # availability checks, each taking 50-60 seconds. This caused ~7 min delay
+    # for just 7 update cycles, leading to test timeouts.
+    #
+    # Solution: Cache the update operation. If updated recently (within 5 min),
+    # skip redundant updates. This is safe because:
+    # 1. Pod trunk push takes 1-3 min to propagate to CDN
+    # 2. Checking every 30-60s is sufficient
+    # 3. Multiple checks within 5 min window will see the same CDN state
+    # ═══════════════════════════════════════════════════════════════════════════
+
+    local cache_file="/tmp/msp-cocoapods-specs-repo-last-update"
+    local cache_ttl=300  # 5 minutes (300 seconds)
+    local current_time
+    current_time=$(date +%s)
+
+    # Check if we updated recently
+    if [[ -f "$cache_file" ]]; then
+        local last_update_time
+        last_update_time=$(cat "$cache_file" 2>/dev/null || echo 0)
+        local time_since_update=$((current_time - last_update_time))
+
+        if [[ $time_since_update -lt $cache_ttl ]]; then
+            local remaining=$((cache_ttl - time_since_update))
+            log_info "Specs repository was updated ${time_since_update}s ago (< ${cache_ttl}s TTL)"
+            log_info "Skipping redundant update (will refresh in ${remaining}s if needed)"
+            return $EXIT_SUCCESS
+        else
+            log_debug "Cache expired (${time_since_update}s > ${cache_ttl}s TTL), updating now..."
+        fi
+    else
+        log_debug "No cache found, performing first update..."
+    fi
+
     log_step "Updating CocoaPods specs repository..."
     
     local max_attempts=3
@@ -399,7 +436,9 @@ update_specs_repo() {
         log_debug "Attempt $attempt/$max_attempts: Updating CocoaPods specs repository..."
         
         if bundle exec pod repo update; then
-            log_success "Specs repository updated"
+            # Update cache timestamp on success
+            echo "$current_time" > "$cache_file"
+            log_success "Specs repository updated (cache timestamp: $current_time)"
             return $EXIT_SUCCESS
         else
             log_warn "Specs repository update failed (attempt $attempt/$max_attempts)"
@@ -418,6 +457,19 @@ update_specs_repo() {
     return $EXIT_BUILD_ERROR
 }
 
+# Clear specs repo update cache (for testing/debugging)
+clear_specs_repo_cache() {
+    local cache_file="/tmp/msp-cocoapods-specs-repo-last-update"
+    if [[ -f "$cache_file" ]]; then
+        rm -f "$cache_file"
+        log_info "Cleared specs repository update cache"
+    else
+        log_debug "No cache file to clear"
+    fi
+}
+
+export -f clear_specs_repo_cache
+
 check_pod_availability() {
     local pod_name="$1"
     local version="${2:-}"
@@ -431,19 +483,40 @@ check_pod_availability() {
         log_step "Checking availability of $pod_name..."
     fi
     
+    local last_search_failed=false
+    
     while [[ $attempt -le $max_attempts ]]; do
-        log_debug "Attempt $attempt/$max_attempts: Updating CocoaPods specs repository..."
-        
-        # Update specs repository before checking availability
-        if ! update_specs_repo; then
-            log_warn "Failed to update specs repository (attempt $attempt/$max_attempts)"
-            if [[ $attempt -lt $max_attempts ]]; then
-                local delay=$((attempt * 3))
-                log_info "Retrying in ${delay} seconds..."
-                sleep $delay
+        # ═══════════════════════════════════════════════════════════════════════
+        # Smart Update Strategy (Fix for infinite loop issue)
+        # ═══════════════════════════════════════════════════════════════════════
+        # Only update specs repo on first attempt or after search failure
+        # This reduces redundant updates from ~7 per check to 1-2 per check
+        # ═══════════════════════════════════════════════════════════════════════
+
+        # Update on first attempt, or if previous search failed
+        local should_update=false
+        if [[ $attempt -eq 1 ]]; then
+            should_update=true
+            log_debug "First attempt: Updating CocoaPods specs repository..."
+        elif [[ "$last_search_failed" == "true" ]]; then
+            should_update=true
+            log_debug "Previous search failed, updating specs repository (attempt $attempt/$max_attempts)..."
+        else
+            log_debug "Attempt $attempt/$max_attempts: Reusing cached specs repository..."
+        fi
+
+        # Update specs repository if needed
+        if [[ "$should_update" == "true" ]]; then
+            if ! update_specs_repo; then
+                log_warn "Failed to update specs repository (attempt $attempt/$max_attempts)"
+                if [[ $attempt -lt $max_attempts ]]; then
+                    local delay=$((attempt * 3))
+                    log_info "Retrying in ${delay} seconds..."
+                    sleep $delay
+                fi
+                ((attempt++))
+                continue
             fi
-            ((attempt++))
-            continue
         fi
         
         log_debug "Searching for $pod_name..."
@@ -477,6 +550,8 @@ check_pod_availability() {
                     # Check if podspec file exists in trunk repo (verify CDN propagation)
                     if find "$trunk_spec_path" -path "*/${spec_file_pattern}" -type f -print -quit 2>/dev/null | grep -q "${pod_name}\.podspec\.json"; then
                         log_success "$pod_name version $version is available and ready for validation"
+                        # Clear failure flag on success
+                        last_search_failed=false
                         return $EXIT_SUCCESS
                     else
                         log_warn "$pod_name version $version found in search but not yet available for validation"
@@ -495,7 +570,10 @@ check_pod_availability() {
         else
             log_warn "Pod search failed (attempt $attempt/$max_attempts)"
             log_debug "Search output: $search_output"
-            
+
+            # Mark that search failed (trigger update on next attempt)
+            last_search_failed=true
+
             if [[ $attempt -lt $max_attempts ]]; then
                 local delay=$((attempt * 3))
                 log_info "Retrying in ${delay} seconds..."
