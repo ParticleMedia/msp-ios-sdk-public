@@ -96,8 +96,9 @@ _log() {
 
     # Filter by log level
     # Ensure MSP_LOG_LEVEL is defined (defensive check for set -u environments)
-    local log_level="${MSP_LOG_LEVEL:-$LOG_LEVEL_INFO}"
-    if [[ "$level_num" -lt "$log_level" ]]; then
+    local log_level="${MSP_LOG_LEVEL:-${LOG_LEVEL_INFO:-1}}"
+    # Use arithmetic comparison to avoid variable expansion issues
+    if (( level_num < log_level )); then
         return 0
     fi
 
