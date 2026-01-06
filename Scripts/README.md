@@ -24,10 +24,13 @@ Automation scripts for MSP iOS SDK development, testing, and release.
 
 ## Quick Reference
 
-### Local Release
+### Local Release (Phase B)
 ```bash
-source Scripts/utils/setup-release-env.sh local
-./Scripts/msp-release.sh run 0.3.0-rc.6
+# Profile-based (recommended)
+./Scripts/msp-release.sh --profile=production run 0.3.0-rc.6
+
+# Environment variables
+DRY_RUN=false MSP_ALLOW_TRUNK_PUSH=1 ./Scripts/msp-release.sh run 0.3.0-rc.6
 ```
 
 ### Rerelease (existing version)
@@ -85,29 +88,21 @@ The release system has been simplified from **11 variables → 3 variables** for
 **4 Configuration Profiles**:
 
 ```bash
-# Profile 1: local - Normal local release
-source Scripts/utils/setup-release-env.sh local
-# Sets: MSP_RELEASE_TIER=release
-#       MSP_ALLOW_LOCAL_RELEASE=1
-#       MSP_ALLOW_TRUNK_PUSH=1
+# Profile 1: local-dev - Local development (Phase B)
+./Scripts/msp-release.sh --profile=local-dev run 0.3.0-rc.6
+# Sets: DRY_RUN=true (no actual publishing)
 
-# Profile 2: ci - CI/CD release
-source Scripts/utils/setup-release-env.sh ci
-# Sets: MSP_RELEASE_TIER=release
-#       MSP_ALLOW_TRUNK_PUSH=1
+# Profile 2: production - Production release (Phase B)
+./Scripts/msp-release.sh --profile=production run 0.3.0-rc.6
+# Sets: DRY_RUN=false (full publishing)
 
-# Profile 3: rerelease - Republish existing version
-source Scripts/utils/setup-release-env.sh rerelease
-# Sets: MSP_RELEASE_TIER=release
-#       MSP_ALLOW_LOCAL_RELEASE=1
-#       MSP_ALLOW_TRUNK_PUSH=1
-#       MSP_ALLOW_EXISTING_TAG=1
+# Profile 3: ci-test - CI/CD testing (Phase B)
+./Scripts/msp-release.sh --profile=ci-test run 0.3.0-rc.6
+# Sets: DRY_RUN=true (validation only)
 
-# Profile 4: test - Test mode (preflight, no actual push)
-source Scripts/utils/setup-release-env.sh test
-# Sets: MSP_RELEASE_TIER=preflight
-#       MSP_ALLOW_LOCAL_RELEASE=1
-#       MSP_ALLOW_TRUNK_PUSH=0
+# Profile 4: quick-test - Quick test (Phase B)
+./Scripts/msp-release.sh --profile=quick-test run 0.3.0-rc.6
+# Sets: DRY_RUN=true (minimal validation)
 ```
 
 **Usage**:
@@ -144,12 +139,14 @@ cd msp-ios-sdk
 ./Scripts/msp-release.sh run 0.3.0-rc.6
 ```
 
-#### Method 3: Manual Export
+#### Method 3: Manual Export (Phase B)
 
 ```bash
-export MSP_RELEASE_TIER=release
-export MSP_ALLOW_LOCAL_RELEASE=1
-export MSP_ALLOW_TRUNK_PUSH=1
+# Option 1: Profile-based (recommended)
+./Scripts/msp-release.sh --profile=production run 0.3.0-rc.6
+
+# Option 2: Environment variables
+DRY_RUN=false MSP_ALLOW_TRUNK_PUSH=1 ./Scripts/msp-release.sh run 0.3.0-rc.6
 
 ./Scripts/msp-release.sh run 0.3.0-rc.6
 ```
@@ -278,21 +275,25 @@ swift package resolve
 
 | Variable | Local | CI | Default | Description |
 |----------|-------|----|---------|-------------|
-| `MSP_RELEASE_TIER` | ✅ | ✅ | `preflight` | Release tier: `preflight` or `release` |
-| `MSP_ALLOW_LOCAL_RELEASE` | ✅ | ❌ | `0` | Allow release tier on local machine |
+| ~~`MSP_RELEASE_TIER`~~ | ~~✅~~ | ~~✅~~ | ~~`preflight`~~ | **REMOVED in Phase B** |
+| `DRY_RUN` | ✅ | ✅ | `true` | Skip publish steps when true |
 | `MSP_ALLOW_TRUNK_PUSH` | ✅ | ✅ | `0` | Allow push to CocoaPods Trunk |
 
-**For local release**, you need **3 variables**:
+**For local release** (Phase B), you need **2 variables**:
 ```bash
-MSP_RELEASE_TIER=release
-MSP_ALLOW_LOCAL_RELEASE=1
+DRY_RUN=false
 MSP_ALLOW_TRUNK_PUSH=1
 ```
 
-**For CI release**, you need **2 variables**:
+**For CI release** (Phase B), you need **2 variables**:
 ```bash
-MSP_RELEASE_TIER=release
+DRY_RUN=false
 MSP_ALLOW_TRUNK_PUSH=1
+```
+
+**Or use profile-based configuration** (recommended):
+```bash
+./Scripts/msp-release.sh --profile=production run 0.3.0-rc.6
 ```
 
 #### Optional Variables
@@ -366,7 +367,7 @@ export MSP_SLACK_ALERT_ENV="test"  # or "prod"
 ```yaml
 - name: Release
   env:
-    MSP_RELEASE_TIER: release
+    DRY_RUN: false
     MSP_ALLOW_TRUNK_PUSH: 1
     SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
     MSP_SLACK_ALERT_ENV: prod
@@ -520,12 +521,12 @@ The release system is modular and consists of several layers:
 - Set `DRY_RUN=true` environment variable
 - Useful for testing and debugging
 
-### Release Tiers
+### Release Modes (Phase B)
 
-- **preflight**: Test tier, no trunk push (default)
-- **release**: Production tier, full publishing
+- **DRY_RUN=true**: Test mode, no trunk push (default)
+- **DRY_RUN=false**: Production mode, full publishing
 
-The tier system ensures you can test the release process without affecting production.
+The unified `DRY_RUN` control simplifies the release process and replaces the old dual-tier system.
 
 ---
 
@@ -776,7 +777,7 @@ jobs:
 
       - name: Release
         env:
-          MSP_RELEASE_TIER: release
+          DRY_RUN: false
           MSP_ALLOW_TRUNK_PUSH: 1
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
           MSP_SLACK_ALERT_ENV: prod
@@ -807,7 +808,7 @@ jobs:
 ```bash
 export CI=true
 export GITHUB_ACTIONS=true
-export MSP_RELEASE_TIER=release
+export MSP_RELEASE_TIER=release  # ❌ Deprecated in Phase B
 export MSP_ALLOW_EXISTING_TAG=1
 export MSP_ALLOW_LOCAL_RELEASE=1
 export MSP_ALLOW_PUBLIC_PUSH_FAILURE=1  # ❌ Causes issues

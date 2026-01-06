@@ -343,6 +343,18 @@ preflight → build-core → pods-release → spm-release → publish
 
 For detailed release steps, see internal release documentation.
 
+### Phase B: Simplified Architecture
+
+**Key Changes**:
+- ✅ Removed dual-tier system (preflight/release)
+- ✅ Unified `DRY_RUN` control (true/false)
+- ✅ Profile-based configuration
+- ✅ Automatic release branch creation
+
+**Migration**:
+- Old: `MSP_RELEASE_TIER=release` → New: `DRY_RUN=false`
+- Old: `MSP_RELEASE_TIER=preflight` → New: `DRY_RUN=true`
+
 ---
 
 ## 8. Internal Documentation
@@ -586,13 +598,11 @@ Settings are applied in the following order (highest to lowest):
 Old environment variable approach still works:
 
 ```bash
-# Old way (still supported, shows deprecation warning)
-export MSP_RELEASE_TIER=release
-export MSP_ALLOW_LOCAL_RELEASE=1
-./Scripts/msp-release.sh run 0.4.0-rc.1
-
-# New way (recommended)
+# Option 1: Profile-based (recommended)
 ./Scripts/msp-release.sh --profile=production run 0.4.0-rc.1
+
+# Option 2: Environment variables
+DRY_RUN=false MSP_ALLOW_TRUNK_PUSH=1 ./Scripts/msp-release.sh run 0.4.0-rc.1
 ```
 
 #### Configuration Variables
@@ -744,10 +754,14 @@ direnv 可以在你 cd 进入目录时自动加载 `.envrc` 文件中的环境�
 
 如果你不想使用 direnv，也可以手动设置环境变量：
 
-Only **3 variables** required for local release:
-- `MSP_RELEASE_TIER=release`
-- `MSP_ALLOW_LOCAL_RELEASE=1`
-- `MSP_ALLOW_TRUNK_PUSH=1`
+Only **2 variables** required for production release:
+- `DRY_RUN=false` - Enable production mode
+- `MSP_ALLOW_TRUNK_PUSH=1` - Allow CocoaPods push
+
+**Profile-based setup** (recommended):
+```bash
+./Scripts/msp-release.sh --profile=production run <version>
+```
 
 **Configuration Profiles**:
 - `local` - Local release (default)
