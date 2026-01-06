@@ -1245,18 +1245,19 @@ wait_for_cdn_propagation() {
         sleep 1
         ((elapsed++))
 
-        # Print progress
+        # Print progress (flush output buffer to stderr)
         if (( elapsed % 10 == 0 )); then
-            printf "."
+            printf "." >&2  # Use stderr (unbuffered)
         fi
         if (( elapsed % 60 == 0 )); then
-            echo " ${elapsed}s / ${wait_time}s"
+            printf " ${elapsed}s / ${wait_time}s\n" >&2  # Use stderr + newline
         fi
     done
-    echo ""
+    printf "\n" >&2  # Final newline to stderr
 
-    log_success "✓ CDN propagation wait complete (${wait_time}s)"
-    log_success "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    # Force output to stderr for immediate visibility
+    log_success "✓ CDN propagation wait complete (${wait_time}s)" >&2
+    log_success "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━" >&2
     return 0
 }
 
@@ -1746,11 +1747,11 @@ create_github_release_for_pod() {
     file_size_mb=$(du -m "$ROOT_DIR/$zip_name" 2>/dev/null | awk '{print $1}')
     local cdn_wait_time=60
     if [[ $file_size_mb -lt 5 ]]; then
-        cdn_wait_time=30
+        cdn_wait_time=60   # Small files: 60s (minimum recommended)
     elif [[ $file_size_mb -lt 20 ]]; then
-        cdn_wait_time=60
+        cdn_wait_time=90   # Medium files: 90s
     else
-        cdn_wait_time=120
+        cdn_wait_time=120  # Large files: 120s
     fi
 
     # Set CDN wait time and wait
@@ -2479,9 +2480,9 @@ ensure_zip_file_exists_for_pod() {
 
     local cdn_wait_time
     if [[ $file_size_mb -lt 5 ]]; then
-        cdn_wait_time=30  # Small files: 30s
+        cdn_wait_time=60   # Small files: 60s (minimum recommended by GitHub)
     elif [[ $file_size_mb -lt 20 ]]; then
-        cdn_wait_time=60  # Medium files: 60s
+        cdn_wait_time=90   # Medium files: 90s (extra buffer for reliability)
     else
         cdn_wait_time=120  # Large files (>20MB): 120s (2 minutes)
     fi
