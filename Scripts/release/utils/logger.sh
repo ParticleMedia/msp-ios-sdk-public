@@ -95,10 +95,16 @@ _log() {
     local color="${5:-$COLOR_RESET}"
 
     # Filter by log level
-    # Ensure MSP_LOG_LEVEL is defined (defensive check for set -u environments)
+    # Ensure all variables are numeric (defensive check for set -u environments)
     local log_level="${MSP_LOG_LEVEL:-${LOG_LEVEL_INFO:-1}}"
-    # Use arithmetic comparison to avoid variable expansion issues
-    if (( level_num < log_level )); then
+    local level_num_safe="${level_num:-1}"
+
+    # Force numeric conversion (adds 0 to ensure it's a number)
+    log_level=$((log_level + 0))
+    level_num_safe=$((level_num_safe + 0))
+
+    # Use arithmetic comparison
+    if (( level_num_safe < log_level )); then
         return 0
     fi
 
