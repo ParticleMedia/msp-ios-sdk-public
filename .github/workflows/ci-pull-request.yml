@@ -176,17 +176,34 @@ jobs:
           bash ../Scripts/demoapp/configure.sh --mode=${{ matrix.mode }}
           pod install
 
+      - name: Install xcpretty (if needed)
+        run: |
+          if ! command -v xcpretty &>/dev/null; then
+            echo "Installing xcpretty..."
+            gem install xcpretty || echo "⚠️  xcpretty installation failed, continuing without it"
+          fi
+
       - name: Build DemoApp
         run: |
           cd DemoApp
-          xcodebuild build \
-            -workspace DemoApp.xcworkspace \
-            -scheme DemoApp \
-            -configuration Release \
-            -sdk iphonesimulator \
-            -destination 'platform=iOS Simulator,name=iPhone 15,OS=17.2' \
-            | tee /tmp/xcodebuild-demoapp-${{ matrix.mode }}.log \
-            | xcpretty || exit 1
+          if command -v xcpretty &>/dev/null; then
+            xcodebuild build \
+              -workspace DemoApp.xcworkspace \
+              -scheme DemoApp \
+              -configuration Release \
+              -sdk iphonesimulator \
+              -destination 'platform=iOS Simulator,name=iPhone 15,OS=17.2' \
+              | tee /tmp/xcodebuild-demoapp-${{ matrix.mode }}.log \
+              | xcpretty || exit 1
+          else
+            xcodebuild build \
+              -workspace DemoApp.xcworkspace \
+              -scheme DemoApp \
+              -configuration Release \
+              -sdk iphonesimulator \
+              -destination 'platform=iOS Simulator,name=iPhone 15,OS=17.2' \
+              | tee /tmp/xcodebuild-demoapp-${{ matrix.mode }}.log || exit 1
+          fi
 
           echo "✅ DemoApp (${{ matrix.mode }}) built successfully"
 
