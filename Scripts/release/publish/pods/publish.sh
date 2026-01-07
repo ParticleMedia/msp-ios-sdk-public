@@ -4297,7 +4297,8 @@ unified_github_cli_auth_check() {
 
 # Release Adapters (Step 2) - Parallel Processing
 release_adapters() {
-    local VERSION="$1"
+    # Use global VERSION variable (set at Line 168) instead of local parameter
+    # This allows subshells to access $VERSION for parallel dependency checks
     
     log_title "Releasing Adapters: $VERSION"
 
