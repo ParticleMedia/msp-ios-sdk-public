@@ -2274,6 +2274,14 @@ create_zip_from_xcframework() {
                 if [[ ! -d "$xcframework_path" ]]; then
                     log_error "❌ XCFramework not found: $xcframework_path"
                     log_error "Expected location: Build/XCFrameworks/${pod}.xcframework"
+                    
+                    # Write failure status immediately to trigger fail-fast
+                    if [[ -n "$result_file" ]]; then
+                        echo "ERROR: XCFramework not found at $xcframework_path" > "$result_file"
+                        echo "FAILED" > "$result_file.status" 2>/dev/null || true
+                        echo "1" > "$result_file.exit" 2>/dev/null || true
+                    fi
+                    
                     rm -rf "$temp_zip_dir"
                     return 1
                 fi
@@ -3925,6 +3933,112 @@ release_msp_googleadstypes() {
 }
 
 # Release single adapter (helper function for parallel processing)
+# ============================================================================
+# Function: ensure_novacore_xcframework
+# ============================================================================
+# Ensures NovaCore.xcframework is available in Binary/ directory for NovaAdapter release
+# If not present, builds it from source using existing build scripts
+# ============================================================================
+ensure_novacore_xcframework() {
+    local novacore_binary_path="$ROOT_DIR/Binary/NovaCore.xcframework"
+    local novacore_build_path="$ROOT_DIR/Build/XCFrameworks/NovaCore.xcframework"
+
+    log_section "Ensuring NovaCore.xcframework is available for NovaAdapter"
+
+    # Check if NovaCore.xcframework already exists in Binary/
+    if [[ -d "$novacore_binary_path" ]]; then
+        log_success "✅ NovaCore.xcframework already exists in Binary/"
+
+        # Verify it's a valid XCFramework
+        if [[ -f "$novacore_binary_path/Info.plist" ]]; then
+            log_info "NovaCore.xcframework is valid (Info.plist exists)"
+            return 0
+        else
+            log_warning "⚠️  NovaCore.xcframework in Binary/ is invalid, will rebuild"
+            rm -rf "$novacore_binary_path"
+        fi
+    fi
+
+    # Check if NovaCore.xcframework exists in Build/XCFrameworks/
+    if [[ -d "$novacore_build_path" ]]; then
+        log_info "Found NovaCore.xcframework in Build/XCFrameworks/"
+        log_info "Copying to Binary/ directory..."
+
+        # Create Binary directory if it doesn't exist
+        mkdir -p "$ROOT_DIR/Binary"
+
+        # Copy XCFramework to Binary/
+        if ditto "$novacore_build_path" "$novacore_binary_path"; then
+            log_success "✅ NovaCore.xcframework copied to Binary/"
+            return 0
+        else
+            log_error "❌ Failed to copy NovaCore.xcframework to Binary/"
+            return 1
+        fi
+    fi
+
+    # NovaCore.xcframework doesn't exist anywhere, need to build it
+    log_warning "⚠️  NovaCore.xcframework not found, building from source..."
+    log_info "This will take approximately 3-5 minutes..."
+
+    # Check if build script exists
+    local build_script="$ROOT_DIR/Scripts/xcframeworks/build_module.sh"
+    if [[ ! -x "$build_script" ]]; then
+        log_error "❌ Build script not found or not executable: $build_script"
+        log_error "Cannot build NovaCore.xcframework automatically"
+        log_error "Please build manually:"
+        log_error "  cd $ROOT_DIR"
+        log_error "  ./Scripts/xcframeworks/build_module.sh NovaCore"
+        return 1
+    fi
+
+    # Build NovaCore.xcframework
+    log_info "Running: $build_script NovaCore"
+    if "$build_script" NovaCore; then
+        log_success "✅ NovaCore.xcframework built successfully"
+    else
+        log_error "❌ Failed to build NovaCore.xcframework"
+        log_error "Please check build logs and fix any build errors"
+        log_error "Common issues:"
+        log_error "  1. Missing dependencies (Kingfisher, SnapKit, Lottie, etc.)"
+        log_error "  2. Code signing issues"
+        log_error "  3. Xcode version incompatibility"
+        return 1
+    fi
+
+    # Verify build output
+    if [[ ! -d "$novacore_build_path" ]]; then
+        log_error "❌ NovaCore.xcframework was not created in expected location"
+        log_error "Expected: $novacore_build_path"
+        return 1
+    fi
+
+    # Copy to Binary/ directory
+    log_info "Copying built XCFramework to Binary/ directory..."
+    mkdir -p "$ROOT_DIR/Binary"
+
+    if ditto "$novacore_build_path" "$novacore_binary_path"; then
+        log_success "✅ NovaCore.xcframework deployed to Binary/"
+
+        # Verify final deployment
+        if [[ -f "$novacore_binary_path/Info.plist" ]]; then
+            log_success "✅ NovaCore.xcframework is valid and ready for NovaAdapter release"
+
+            # Show framework size
+            local framework_size=$(du -sh "$novacore_binary_path" 2>/dev/null | cut -f1)
+            log_info "Framework size: $framework_size"
+
+            return 0
+        else
+            log_error "❌ Deployed NovaCore.xcframework is invalid (missing Info.plist)"
+            return 1
+        fi
+    else
+        log_error "❌ Failed to copy NovaCore.xcframework to Binary/"
+        return 1
+    fi
+}
+
 release_single_adapter() {
     local adapter="$1"
     local version="$2"
@@ -4183,6 +4297,27 @@ unified_github_cli_auth_check() {
 
 # Release Adapters (Step 2) - Parallel Processing
 release_adapters() {
+    local VERSION="$1"
+    
+    log_title "Releasing Adapters: $VERSION"
+
+    # ========================================================================
+    # Step 0: Ensure NovaCore.xcframework is available for NovaAdapter
+    # ========================================================================
+    # NovaAdapter requires Binary/NovaCore.xcframework to be present
+    # Build it automatically if it doesn't exist (saves 26+ minutes of wasted time)
+    # ========================================================================
+    log_section "Step 0: Ensuring NovaCore.xcframework is available"
+
+    if ! ensure_novacore_xcframework; then
+        log_error "❌ Failed to ensure NovaCore.xcframework availability"
+        log_error "Cannot proceed with NovaAdapter release"
+        log_error "Please fix the issue and try again"
+        return 1
+    fi
+
+    log_success "✅ NovaCore.xcframework is ready for NovaAdapter"
+    
     log_section "Step 2: Releasing Adapters that depend on MSPSharedLibraries (in parallel)"
     
     # Ensure MSPSharedLibraries and MSPGoogleAdsTypes are available before adapter releases
@@ -4304,28 +4439,54 @@ release_adapters() {
     for adapter in "${adapters[@]}"; do
         log_info "Pre-checking $adapter requirements..."
         
-        # NovaAdapter: Check Binary/NovaCore.xcframework exists
+        # NovaAdapter: Verify Binary/NovaCore.xcframework exists and is valid
         if [[ "$adapter" == "NovaAdapter" ]]; then
             local novacore_path="$ROOT_DIR/Binary/NovaCore.xcframework"
+            
+            # This should never happen if Step 0 succeeded, but double-check
             if [[ ! -d "$novacore_path" ]]; then
                 log_error "❌ Pre-flight check failed: $adapter"
                 log_error "NovaCore.xcframework not found: $novacore_path"
-                log_error "NovaAdapter requires pre-packaged NovaCore.xcframework in Binary/"
-                log_error "Cannot proceed with adapter releases - missing required file"
+                log_error "This should have been built in Step 0"
+                log_error "Something went wrong - cannot proceed"
                 return 1
             fi
-            log_success "✅ NovaAdapter pre-flight check passed"
+            
+            # Verify XCFramework is valid
+            if [[ ! -f "$novacore_path/Info.plist" ]]; then
+                log_error "❌ Pre-flight check failed: $adapter"
+                log_error "NovaCore.xcframework is invalid (missing Info.plist)"
+                log_error "Path: $novacore_path"
+                return 1
+            fi
+            
+            log_success "✅ NovaAdapter pre-flight check passed (NovaCore.xcframework is valid)"
+        else
+            # Other adapters: Check Build/XCFrameworks/<Adapter>.xcframework exists
+            local xcframework_path="$ROOT_DIR/Build/XCFrameworks/${adapter}.xcframework"
+            
+            if [[ ! -d "$xcframework_path" ]]; then
+                log_error "❌ Pre-flight check failed: $adapter"
+                log_error "XCFramework not found: $xcframework_path"
+                log_error "Expected location: Build/XCFrameworks/${adapter}.xcframework"
+                log_error "Cannot proceed with adapter releases - missing required file"
+                log_error ""
+                log_error "Please build the XCFramework first:"
+                log_error "  ./Scripts/xcframeworks/build_module.sh $adapter"
+                return 1
+            fi
+            
+            # Verify XCFramework is valid
+            if [[ ! -f "$xcframework_path/Info.plist" ]]; then
+                log_error "❌ Pre-flight check failed: $adapter"
+                log_error "XCFramework is invalid (missing Info.plist)"
+                log_error "Path: $xcframework_path"
+                log_error "Please rebuild the XCFramework"
+                return 1
+            fi
+            
+            log_success "✅ $adapter pre-flight check passed (XCFramework exists)"
         fi
-        
-        # Add more pre-checks here for other adapters if needed
-        # Example: Check if XCFramework exists for adapters that need it
-        # if [[ "$adapter" == "SomeAdapter" ]]; then
-        #     if [[ ! -d "$ROOT_DIR/Build/XCFrameworks/${adapter}.xcframework" ]]; then
-        #         log_error "❌ Pre-flight check failed: $adapter"
-        #         log_error "XCFramework not found: $ROOT_DIR/Build/XCFrameworks/${adapter}.xcframework"
-        #         return 1
-        #     fi
-        # fi
     done
     
     log_success "All adapter pre-flight checks passed"
