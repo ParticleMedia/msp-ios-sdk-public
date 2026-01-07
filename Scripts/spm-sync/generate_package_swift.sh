@@ -38,11 +38,14 @@ let package = Package(
         .library(name: "MSPiOSCore", targets: ["MSPiOSCore"]),
         .library(name: "NovaCore", targets: ["NovaCore"]),
         .library(name: "MSPOMSDK", targets: ["MSPOMSDK"]),
+        .library(name: "MSPGoogleAdsTypes", targets: ["MSPGoogleAdsTypes"]),
         .library(name: "MSPPrebidAdapter", targets: ["MSPPrebidAdapter"]),
         .library(name: "MSPGoogleAdapter", targets: ["MSPGoogleAdapter"]),
         .library(name: "MSPFacebookAdapter", targets: ["MSPFacebookAdapter"]),
         .library(name: "NovaAdapter", targets: ["NovaAdapter"]),
         .library(name: "AmazonAdapter", targets: ["AmazonAdapter"]),
+        .library(name: "MolocoAdapter", targets: ["MolocoAdapter"]),
+        .library(name: "LiftoffAdapter", targets: ["LiftoffAdapter"]),
         .library(name: "UnityAdapter", targets: ["UnityAdapter"]),
         .library(name: "InmobiAdapter", targets: ["InmobiAdapter"]),
         .library(name: "MobilefuseAdapter", targets: ["MobilefuseAdapter"]),
@@ -85,6 +88,14 @@ let package = Package(
         .binaryTarget(
             name: "PrebidMobile",
             path: "ThirdParty/PrebidMobile/PrebidMobile.xcframework"
+        ),
+        .binaryTarget(
+            name: "MolocoSDKiOS",
+            path: "ThirdParty/MolocoSDKiOS/MolocoSDKiOS.xcframework"
+        ),
+        .binaryTarget(
+            name: "VungleAds",
+            path: "ThirdParty/VungleAds/VungleAds.xcframework"
         ),
         // GoogleMobileAds is now provided via SPM package (swift-package-manager-google-mobile-ads)
         .binaryTarget(
@@ -172,6 +183,26 @@ let package = Package(
                 "AmazonPublisherServicesSDK"
             ],
             path: "Sources/Adapters/AmazonAdapter/AmazonAdapter"
+        ),
+        .target(
+            name: "MolocoAdapter",
+            dependencies: [
+                "MSPSharedLibraries",
+                "MSPiOSCore",
+                "MolocoSDKiOS",
+                .product(name: "SnapKit", package: "SnapKit")
+            ],
+            path: "Sources/Adapters/MolocoAdapter/MolocoAdapter"
+        ),
+        .target(
+            name: "LiftoffAdapter",
+            dependencies: [
+                "MSPSharedLibraries",
+                "MSPiOSCore",
+                "VungleAds",
+                .product(name: "SnapKit", package: "SnapKit")
+            ],
+            path: "Sources/Adapters/LiftoffAdapter/LiftoffAdapter"
         ),
         .target(
             name: "UnityAdapter",

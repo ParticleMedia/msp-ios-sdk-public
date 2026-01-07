@@ -676,6 +676,21 @@ upload_xcframework_to_github_release() {
     
     if [[ "$gh_release_created" == "true" ]]; then
         log_success "Uploaded $framework_name to GitHub Release $version"
+
+        # ====================================================================
+        # Phase 2: Probe zip URL availability
+        # ====================================================================
+        if [[ "$DRY_RUN" != "true" ]]; then
+            local zip_name="$(basename "$zip_path")"
+            log_info ""
+            log_info "Verifying upload: probing zip URL availability..."
+            if ! probe_spm_zip_url "$framework_name" "$version" "$zip_name" 12 5; then
+                log_error "Zip URL not accessible after upload"
+                log_error "This indicates a problem with GitHub Release upload or CDN"
+                return 1
+            fi
+        fi
+
         return 0
     else
         log_error "Failed to upload $framework_name to GitHub Release"
@@ -795,6 +810,57 @@ process_binary_targets_for_cloud_distribution() {
             log_error "Failed to update Package.swift"
             return 1
         fi
+        
+        # ========================================================================
+        # Phase 1: CDN Propagation Wait and Verification
+        # ========================================================================
+        if [[ "$DRY_RUN" != "true" ]]; then
+            # Step 1: Wait for CDN propagation
+            log_info "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+            log_info "Step 1: Wait for CDN propagation"
+            log_info "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+            wait_for_spm_cdn_propagation
+
+            # Step 2: Verify CDN availability
+            log_info "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+            log_info "Step 2: Verify CDN availability"
+            log_info "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+            if ! verify_spm_cdn_availability "$version" "${framework_checksums[@]}"; then
+                log_error "CDN verification failed"
+                echo ""
+
+                if [[ "${MSP_SKIP_SPM_CDN_VERIFICATION:-false}" == "true" ]]; then
+                    log_warning "⚠️  Continuing despite CDN verification failure (MSP_SKIP_SPM_CDN_VERIFICATION=true)"
+                    log_warning "⚠️  Users may experience 404 errors when resolving Package.swift"
+                else
+                    log_error "❌ Aborting SPM release due to CDN verification failure"
+                    log_error "   Set MSP_SKIP_SPM_CDN_VERIFICATION=true to continue anyway (NOT recommended)"
+                    return 1
+                fi
+            fi
+            
+            # Step 3: Verify checksums from CDN (Phase 2)
+            log_info "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+            log_info "Step 3: Verify checksums from CDN"
+            log_info "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+            if ! verify_spm_checksum_from_cdn "$version" "${framework_checksums[@]}"; then
+                log_error "Checksum verification failed"
+                echo ""
+
+                if [[ "${MSP_SKIP_SPM_CHECKSUM_VERIFICATION:-false}" == "true" ]]; then
+                    log_warning "⚠️  Continuing despite checksum verification failure (MSP_SKIP_SPM_CHECKSUM_VERIFICATION=true)"
+                    log_warning "⚠️  Users may experience checksum mismatch errors"
+                else
+                    log_error "❌ Aborting SPM release due to checksum verification failure"
+                    log_error "   Set MSP_SKIP_SPM_CHECKSUM_VERIFICATION=true to continue anyway (NOT recommended)"
+                    return 1
+                fi
+            fi
+        elif [[ "$DRY_RUN" == "true" ]]; then
+            log_info "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+            log_info "DRY RUN: Skipping CDN wait and verification"
+            log_info "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+        fi
     fi
     
     if [[ $failed_count -gt 0 ]]; then
@@ -856,6 +922,62 @@ update_package_swift_binary_targets() {
     echo "$package_content" > "$package_swift"
     
     log_success "Updated Package.swift with cloud distribution URLs and checksums"
+    
+    # ========================================================================
+    # Phase 1: Commit Package.swift to Git
+    # ========================================================================
+    if [[ "$DRY_RUN" != "true" ]] && [[ "${DRY_RUN:-false}" != "1" ]]; then
+        log_step "Committing Package.swift to git"
+
+        # Check if Package.swift has changes
+        if git diff --quiet "$package_swift"; then
+            log_info "Package.swift has no changes, skipping commit"
+        else
+            # Add Package.swift to staging area
+            if ! git add "$package_swift"; then
+                log_error "Failed to git add Package.swift"
+                return 1
+            fi
+
+            # Prepare commit message with framework list
+            local framework_list=""
+            for framework_info in "${framework_checksums[@]}"; do
+                IFS='|' read -r framework_name checksum zip_name <<< "$framework_info"
+                if [[ -n "$framework_list" ]]; then
+                    framework_list+=", "
+                fi
+                framework_list+="$framework_name"
+            done
+
+            # Commit with descriptive message
+            local commit_message="chore(spm): update Package.swift for release $version
+
+Convert binaryTarget definitions from path: to url: + checksum:
+
+Frameworks: $framework_list
+
+This commit updates Package.swift to use remote GitHub Release URLs
+for binary distribution, enabling SPM users to resolve dependencies
+without requiring local XCFrameworks.
+
+🤖 Generated with [Claude Code](https://claude.com/claude-code)
+
+Co-Authored-By: Claude Sonnet 4.5 <noreply@anthropic.com>"
+
+            if ! git commit -m "$commit_message"; then
+                log_error "Failed to git commit Package.swift"
+                return 1
+            fi
+
+            # Show commit info
+            local commit_hash=$(git rev-parse --short HEAD)
+            log_success "✓ Committed Package.swift to git"
+            log_info "  Commit: $commit_hash"
+            log_info "  Message: chore(spm): update Package.swift for release $version"
+        fi
+    else
+        log_info "DRY RUN: Skipping git commit for Package.swift"
+    fi
     
     # Show preview of changes
     if [[ "$DRY_RUN" == "true" ]] || [[ "${DRY_RUN:-false}" == "1" ]] || [[ "${VERBOSE:-false}" == "true" ]]; then
@@ -1404,4 +1526,312 @@ spm_publish_tags() {
         return 1
     fi
     
+}
+
+# ============================================================================
+# CDN Propagation Wait and Verification (Phase 1)
+# Added: 2026-01-07 - Fix for SPM release 404 errors
+# ============================================================================
+
+# Wait for GitHub CDN to propagate Release assets globally
+wait_for_spm_cdn_propagation() {
+    local wait_time="${MSP_SPM_CDN_WAIT_TIME:-120}"
+
+    log_section "Waiting for GitHub CDN Propagation"
+    log_info "What: Waiting for GitHub Release assets to propagate to global CDN nodes"
+    log_info "Why: Users will get 404 errors if they try to resolve Package.swift before CDN is ready"
+    log_info "Wait time: ${wait_time}s (configurable via MSP_SPM_CDN_WAIT_TIME)"
+    echo ""
+
+    # Progress bar with remaining time
+    local start_time=$(date +%s)
+    while true; do
+        local elapsed=$(($(date +%s) - start_time))
+        if [[ $elapsed -ge $wait_time ]]; then
+            break
+        fi
+
+        local remaining=$((wait_time - elapsed))
+        local progress=$((elapsed * 100 / wait_time))
+
+        # Progress bar: [███████░░░] 70% ⏳ CDN Propagation... 84s/120s (remaining: 36s)
+        local bar_length=30
+        local filled=$((progress * bar_length / 100))
+        local empty=$((bar_length - filled))
+
+        printf "\r["
+        printf "%${filled}s" | tr ' ' '█'
+        printf "%${empty}s" | tr ' ' '░'
+        printf "] %3d%% ⏳ CDN Propagation... %ds/%ds (remaining: %ds)  " \
+            "$progress" "$elapsed" "$wait_time" "$remaining" >&2
+
+        sleep 1
+    done
+
+    echo ""
+    log_success "✓ CDN propagation wait complete (${wait_time}s)" >&2
+    echo ""
+}
+
+# Verify CDN availability for all SPM zips
+verify_spm_cdn_availability() {
+    local version="$1"
+    shift
+    local framework_checksums=("$@")
+
+    log_section "Verifying CDN Availability for SPM Zips"
+    log_info "What: Checking if all uploaded zips are accessible via GitHub CDN"
+    log_info "Why: Ensures users won't get 404 errors when resolving Package.swift"
+    echo ""
+
+    local verified=0
+    local failed=0
+    local zip_urls=()
+
+    # Collect all zip URLs
+    for framework_info in "${framework_checksums[@]}"; do
+        IFS='|' read -r framework_name checksum zip_name <<< "$framework_info"
+        local url="https://github.com/ParticleMedia/msp-ios-sdk-public/releases/download/${version}/${zip_name}"
+        zip_urls+=("$url|$framework_name")
+    done
+
+    log_info "Verifying ${#zip_urls[@]} zip file(s)..."
+    echo ""
+
+    # Verify each URL with HTTP HEAD request
+    for url_info in "${zip_urls[@]}"; do
+        IFS='|' read -r url framework_name <<< "$url_info"
+        local filename=$(basename "$url")
+        local max_attempts=5
+        local attempt=1
+        local success=false
+
+        log_step "Verifying: $filename"
+
+        while [[ $attempt -le $max_attempts ]]; do
+            # Use HTTP HEAD to check if URL is accessible (faster than GET)
+            if curl -sSfL --head "$url" >/dev/null 2>&1; then
+                log_success "  ✓ $filename is available on CDN"
+                ((verified++))
+                success=true
+                break
+            else
+                if [[ $attempt -lt $max_attempts ]]; then
+                    log_debug "  CDN not ready for $filename, retrying in 10s... (attempt $attempt/$max_attempts)"
+                    sleep 10
+                fi
+            fi
+            ((attempt++))
+        done
+
+        if [[ "$success" != "true" ]]; then
+            log_error "  ✗ $filename not available on CDN after $max_attempts attempts"
+            log_error "    URL: $url"
+            ((failed++))
+        fi
+    done
+
+    # Summary
+    echo ""
+    log_info "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    log_info "CDN Verification Summary:"
+    log_info "  Total zips:    ${#zip_urls[@]}"
+    log_info "  Verified:      $verified"
+    log_info "  Failed:        $failed"
+    log_info "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+
+    if [[ $failed -gt 0 ]]; then
+        log_error ""
+        log_error "CDN verification failed: $failed file(s) not available"
+        log_error ""
+        log_error "Possible reasons:"
+        log_error "  1. CDN propagation needs more time (try increasing MSP_SPM_CDN_WAIT_TIME)"
+        log_error "  2. GitHub Release upload failed silently"
+        log_error "  3. Network issues between your location and GitHub CDN"
+        log_error ""
+        log_error "Recommendations:"
+        log_error "  1. Check GitHub Release page: https://github.com/ParticleMedia/msp-ios-sdk-public/releases/tag/$version"
+        log_error "  2. Verify all zip files exist in release assets"
+        log_error "  3. Wait a few more minutes and try again"
+        log_error "  4. Increase wait time: export MSP_SPM_CDN_WAIT_TIME=180"
+        log_error ""
+        log_error "To skip this check (NOT recommended):"
+        log_error "  export MSP_SKIP_SPM_CDN_VERIFICATION=true"
+        return 1
+    else
+        log_success "✓ All SPM zips are accessible on CDN"
+        return 0
+    fi
+}
+
+# ============================================================================
+# Zip URL Probing (Phase 2)
+# ============================================================================
+
+# Probe zip URL availability with retries
+probe_spm_zip_url() {
+    local framework_name="$1"
+    local version="$2"
+    local zip_name="$3"
+    local max_attempts="${4:-12}"
+    local sleep_seconds="${5:-5}"
+
+    local zip_url="https://github.com/ParticleMedia/msp-ios-sdk-public/releases/download/${version}/${zip_name}"
+
+    log_step "Probing zip URL availability: $zip_url"
+
+    local attempt=1
+    while [[ $attempt -le $max_attempts ]]; do
+        # Use HTTP HEAD to check if URL is accessible
+        if curl -sSfL --head "$zip_url" >/dev/null 2>&1; then
+            log_success "✓ Zip URL is accessible: $zip_url"
+            return 0
+        else
+            if [[ $attempt -lt $max_attempts ]]; then
+                log_info "  Zip URL not yet accessible (attempt $attempt/$max_attempts), waiting ${sleep_seconds}s..."
+                sleep "$sleep_seconds"
+            else
+                log_error "❌ [FAIL-FAST] Zip URL not accessible after $max_attempts attempts"
+                log_error "   Framework: $framework_name"
+                log_error "   URL: $zip_url"
+                log_error ""
+                log_error "Binary zip must be available before pushing tags (SPM distribution requirement)"
+                log_error ""
+                log_error "Possible causes:"
+                log_error "  1. GitHub Release upload succeeded but file processing failed"
+                log_error "  2. CDN propagation is slower than expected"
+                log_error "  3. Network issues between your location and GitHub CDN"
+                log_error ""
+                log_error "Recommendations:"
+                log_error "  1. Check GitHub Release page: https://github.com/ParticleMedia/msp-ios-sdk-public/releases/tag/$version"
+                log_error "  2. Verify zip file exists in release assets"
+                log_error "  3. Try accessing URL manually: curl -I $zip_url"
+                log_error "  4. Wait a few minutes and retry the release"
+                return 1
+            fi
+        fi
+        ((attempt++))
+    done
+
+    return 1
+}
+
+# ============================================================================
+# Checksum Verification from CDN (Phase 2)
+# ============================================================================
+
+# Verify checksums by downloading from CDN and comparing
+verify_spm_checksum_from_cdn() {
+    local version="$1"
+    shift
+    local framework_checksums=("$@")
+
+    log_section "Verifying Checksums from GitHub Release CDN"
+    log_info "What: Download zips from CDN and verify checksums match Package.swift"
+    log_info "Why: Ensure uploaded files are not corrupted and Package.swift is correct"
+    echo ""
+
+    local verified=0
+    local failed=0
+    local mismatches=()
+
+    # Create temp directory for downloads
+    local temp_verify_dir
+    temp_verify_dir="$(mktemp -d -t msp_spm_checksum_verify_XXXXXX)"
+
+    # Cleanup on exit
+    trap "rm -rf '$temp_verify_dir' 2>/dev/null || true" RETURN
+
+    log_info "Verifying ${#framework_checksums[@]} checksum(s)..."
+    echo ""
+
+    for framework_info in "${framework_checksums[@]}"; do
+        IFS='|' read -r framework_name expected_checksum zip_name <<< "$framework_info"
+
+        local url="https://github.com/ParticleMedia/msp-ios-sdk-public/releases/download/${version}/${zip_name}"
+        local temp_zip="$temp_verify_dir/$zip_name"
+
+        log_step "Verifying: $framework_name"
+        log_info "  Expected checksum: ${expected_checksum:0:16}..."
+
+        # Download zip from CDN
+        log_info "  Downloading from CDN..."
+        if ! curl -sSfL "$url" -o "$temp_zip" 2>/dev/null; then
+            log_error "  ✗ Failed to download $zip_name from CDN"
+            log_error "    URL: $url"
+            ((failed++))
+            mismatches+=("$framework_name: download failed")
+            continue
+        fi
+
+        # Compute checksum from downloaded zip
+        local actual_checksum
+        actual_checksum=$(compute_zip_checksum "$temp_zip" 2>/dev/null)
+
+        if [[ -z "$actual_checksum" ]]; then
+            log_error "  ✗ Failed to compute checksum for downloaded $zip_name"
+            ((failed++))
+            mismatches+=("$framework_name: checksum computation failed")
+            rm -f "$temp_zip"
+            continue
+        fi
+
+        log_info "  Actual checksum:   ${actual_checksum:0:16}..."
+
+        # Compare checksums
+        if [[ "$expected_checksum" == "$actual_checksum" ]]; then
+            log_success "  ✓ Checksum verified for $framework_name"
+            ((verified++))
+        else
+            log_error "  ✗ Checksum mismatch for $framework_name"
+            log_error "    Expected: $expected_checksum"
+            log_error "    Actual:   $actual_checksum"
+            ((failed++))
+            mismatches+=("$framework_name: checksum mismatch")
+        fi
+
+        # Cleanup downloaded zip
+        rm -f "$temp_zip"
+    done
+
+    # Summary
+    echo ""
+    log_info "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    log_info "Checksum Verification Summary:"
+    log_info "  Total:      ${#framework_checksums[@]}"
+    log_info "  Verified:   $verified"
+    log_info "  Failed:     $failed"
+
+    if [[ $failed -gt 0 ]]; then
+        log_info "  Mismatches:"
+        for mismatch in "${mismatches[@]}"; do
+            log_info "    - $mismatch"
+        done
+    fi
+    log_info "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+
+    if [[ $failed -gt 0 ]]; then
+        log_error ""
+        log_error "Checksum verification failed: $failed file(s) with issues"
+        log_error ""
+        log_error "Possible causes:"
+        log_error "  1. File corruption during upload to GitHub Release"
+        log_error "  2. File replaced manually on GitHub Release (without updating Package.swift)"
+        log_error "  3. Local zip file changed after checksum computation"
+        log_error "  4. Network transmission error"
+        log_error ""
+        log_error "Actions required:"
+        log_error "  1. DO NOT push tags yet"
+        log_error "  2. Investigate checksum mismatches"
+        log_error "  3. Re-upload correct files if needed: gh release upload $version <file>"
+        log_error "  4. Update Package.swift with correct checksums"
+        log_error "  5. Retry the release"
+        log_error ""
+        log_error "To skip this check (NOT recommended):"
+        log_error "  export MSP_SKIP_SPM_CHECKSUM_VERIFICATION=true"
+        return 1
+    else
+        log_success "✓ All SPM checksums verified from CDN"
+        return 0
+    fi
 }
