@@ -1,0 +1,79 @@
+name: CocoaPods/SPM Consistency Check
+
+on:
+  pull_request:
+    branches:
+      - main
+      - develop
+      - 'release/**'
+  push:
+    branches:
+      - main
+      - develop
+      - 'release/**'
+
+jobs:
+  consistency-check:
+    name: Verify Pods/SPM Consistency
+    runs-on: macos-14
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.2'
+          bundler-cache: true
+      
+      - name: Install CocoaPods dependencies
+        run: |
+          bundle install
+          bundle exec pod install
+      
+      - name: Build all wrapper xcframeworks
+        run: |
+          chmod +x Scripts/xcframeworks/build-all.sh
+          ./Scripts/xcframeworks/build-all.sh
+      
+      - name: Validate source parity
+        run: |
+          chmod +x Scripts/validation/source-parity.sh
+          ./Scripts/validation/source-parity.sh
+      
+      - name: Regenerate workspace
+        run: |
+          chmod +x Scripts/workspace/update.sh
+          CI=1 ./Scripts/workspace/update.sh
+      
+      - name: Build MSPDemoApp-Pods
+        run: |
+          xcodebuild -workspace msp-ios-sdk.xcworkspace \
+            -scheme MSPDemoApp \
+            -configuration Debug \
+            -sdk iphonesimulator \
+            -destination 'platform=iOS Simulator,name=iPhone 15' \
+            clean build \
+            CODE_SIGN_IDENTITY="" \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGNING_ALLOWED=NO
+      
+      - name: Build MSPDemoApp-SPM
+        run: |
+          xcodebuild -workspace msp-ios-sdk.xcworkspace \
+            -scheme MSPDemoApp-SPM \
+            -configuration Debug \
+            -sdk iphonesimulator \
+            -destination 'platform=iOS Simulator,name=iPhone 15' \
+            clean build \
+            CODE_SIGN_IDENTITY="" \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGNING_ALLOWED=NO
+      
+      - name: Verify both builds succeeded
+        run: |
+          echo "✓ Both CocoaPods and SwiftPM builds completed successfully"
+          echo "✓ Source parity validated"
+          echo "✓ No orphan/ghost files detected"
+

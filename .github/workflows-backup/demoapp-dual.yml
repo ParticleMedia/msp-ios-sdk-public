@@ -1,0 +1,110 @@
+name: DemoApp Dual Integration
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+  workflow_dispatch:
+
+env:
+  DEVELOPER_DIR: /Applications/Xcode_15.4.app/Contents/Developer
+  RUBY_VERSION: '3.1'
+
+jobs:
+  dual-build:
+    runs-on: macos-14
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: ${{ env.RUBY_VERSION }}
+          bundler-cache: true
+
+      - name: Install Xcodegen
+        run: brew install xcodegen
+
+      - name: Install CocoaPods dependencies
+        run: |
+          export LANG=en_US.UTF-8
+          bundle exec pod install
+
+      - name: Build Shimmer XCFramework
+        run: |
+          chmod +x Scripts/xcframeworks/wrappers/build-shimmer.sh
+          export LANG=en_US.UTF-8
+          ./Scripts/xcframeworks/wrappers/build-shimmer.sh
+
+      - name: Verify Shimmer XCFramework
+        run: |
+          if [ ! -d "ShimmerWrapper/Frameworks/Shimmer.xcframework" ]; then
+            echo "ERROR: Shimmer.xcframework not found after build"
+            exit 1
+          fi
+          echo "✓ Shimmer.xcframework verified"
+
+      - name: Build FBAudienceNetwork XCFramework
+        run: |
+          chmod +x Scripts/xcframeworks/wrappers/build-fbaudiencenetwork.sh
+          export LANG=en_US.UTF-8
+          ./Scripts/xcframeworks/wrappers/build-fbaudiencenetwork.sh
+
+      - name: Verify FBAudienceNetwork XCFramework
+        run: |
+          if [ ! -d "FBAudienceNetworkWrapper/Frameworks/FBAudienceNetwork.xcframework" ]; then
+            echo "ERROR: FBAudienceNetwork.xcframework not found after build"
+            exit 1
+          fi
+          echo "✓ FBAudienceNetwork.xcframework verified"
+
+      - name: Generate workspace & project
+        run: |
+          chmod +x Scripts/workspace/update.sh
+          export LANG=en_US.UTF-8
+          CI=1 ./Scripts/workspace/update.sh
+
+      - name: Validate Podspecs
+        run: bundle exec fastlane validate_podspecs_comprehensive
+
+      - name: Validate Swift packages
+        run: |
+          set -euo pipefail
+          packages=(MSPCore MSPSharedLibraries MSPOMSDK PrebidAdapter NovaAdapter NovaCore MSPGoogleAdapter MSPFacebookAdapter MSPiOSCore ShimmerWrapper)
+          for pkg in "${packages[@]}"; do
+            echo "::group::swift build $pkg"
+            (cd "$pkg" && swift build --configuration release)
+            echo "::endgroup::"
+          done
+
+      - name: Build MSPDemoApp (Pods scheme)
+        run: |
+          set -euo pipefail
+          xcodebuild \
+            -workspace msp-ios-sdk.xcworkspace \
+            -scheme MSPDemoApp \
+            -destination 'platform=iOS Simulator,name=iPhone 15' \
+            SKIP_CODE_SIGN=YES \
+            build
+
+      - name: Test MSPDemoApp (Pods scheme)
+        run: |
+          set -euo pipefail
+          xcodebuild \
+            -workspace msp-ios-sdk.xcworkspace \
+            -scheme MSPDemoApp \
+            -destination 'platform=iOS Simulator,name=iPhone 15' \
+            SKIP_CODE_SIGN=YES \
+            test
+
+      - name: Build MSPDemoApp-SPM scheme
+        run: |
+          set -euo pipefail
+          xcodebuild \
+            -workspace msp-ios-sdk.xcworkspace \
+            -scheme MSPDemoApp-SPM \
+            -destination 'platform=iOS Simulator,name=iPhone 15' \
+            SKIP_CODE_SIGN=YES \
+            build
