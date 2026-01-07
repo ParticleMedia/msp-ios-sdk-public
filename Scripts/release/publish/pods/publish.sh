@@ -2128,9 +2128,22 @@ create_zip_from_xcframework() {
 
     log_info "Creating zip file from XCFramework..."
 
-    # Prepare temp directory
-    local temp_zip_dir="/tmp/msp_zip_recovery_$$"
-    mkdir -p "$temp_zip_dir"
+    # Prepare temp directory with unique name (mktemp for atomic uniqueness)
+    # Old approach: local temp_zip_dir="/tmp/msp_zip_recovery_$$"
+    # Problem: $$ returns parent PID in background processes, causing conflicts
+    # Solution: Use mktemp to generate unique directory names
+    local temp_zip_dir
+    temp_zip_dir=$(mktemp -d "/tmp/msp_zip_${pod}_${version}_XXXXXX")
+
+    if [[ -z "$temp_zip_dir" || ! -d "$temp_zip_dir" ]]; then
+        log_error "❌ Failed to create temporary directory"
+        return 1
+    fi
+
+    log_debug "Created temporary directory: $temp_zip_dir (PID: $$, BASHPID: ${BASHPID:-N/A})"
+
+    # Ensure cleanup on exit
+    trap "rm -rf '$temp_zip_dir' 2>/dev/null || true" EXIT INT TERM
 
     # Check if zip command is available
     if ! command -v zip &>/dev/null; then
@@ -2226,21 +2239,53 @@ create_zip_from_xcframework() {
             # Default: Binary/<Pod>.xcframework
             mkdir -p "$temp_zip_dir/Binary"
 
-            local xcframework_path="$ROOT_DIR/Build/XCFrameworks/${pod}.xcframework"
+            # ========================================================================
+            # Special Case: NovaAdapter
+            # ========================================================================
+            # NovaAdapter is unique:
+            # - Uses pre-packaged NovaCore.xcframework from Binary/ directory
+            # - NovaCore is not built by our build system (proprietary/third-party)
+            # - Unlike other adapters that use Build/XCFrameworks/
+            # ========================================================================
+            if [[ "$pod" == "NovaAdapter" ]]; then
+                log_info "NovaAdapter: Using pre-packaged NovaCore.xcframework"
 
-            if [[ ! -d "$xcframework_path" ]]; then
-                log_error "❌ XCFramework not found: $xcframework_path"
-                rm -rf "$temp_zip_dir"
-                return 1
+                local novacore_path="$ROOT_DIR/Binary/NovaCore.xcframework"
+
+                if [[ ! -d "$novacore_path" ]]; then
+                    log_error "❌ NovaCore.xcframework not found: $novacore_path"
+                    log_error "NovaAdapter requires pre-packaged NovaCore.xcframework in Binary/"
+                    rm -rf "$temp_zip_dir"
+                    return 1
+                fi
+
+                if ! ditto "$novacore_path" "$temp_zip_dir/Binary/NovaCore.xcframework"; then
+                    log_error "❌ Failed to copy NovaCore.xcframework"
+                    rm -rf "$temp_zip_dir"
+                    return 1
+                fi
+
+                log_success "✅ Prepared NovaAdapter structure (with NovaCore.xcframework)"
+
+            else
+                # Regular adapters: use Build/XCFrameworks/
+                local xcframework_path="$ROOT_DIR/Build/XCFrameworks/${pod}.xcframework"
+
+                if [[ ! -d "$xcframework_path" ]]; then
+                    log_error "❌ XCFramework not found: $xcframework_path"
+                    log_error "Expected location: Build/XCFrameworks/${pod}.xcframework"
+                    rm -rf "$temp_zip_dir"
+                    return 1
+                fi
+
+                if ! ditto "$xcframework_path" "$temp_zip_dir/Binary/$(basename "$xcframework_path")"; then
+                    log_error "❌ Failed to copy ${pod}.xcframework"
+                    rm -rf "$temp_zip_dir"
+                    return 1
+                fi
+
+                log_success "✅ Prepared $pod structure"
             fi
-
-            if ! ditto "$xcframework_path" "$temp_zip_dir/Binary/$(basename "$xcframework_path")"; then
-                log_error "❌ Failed to copy ${pod}.xcframework"
-                rm -rf "$temp_zip_dir"
-                return 1
-            fi
-
-            log_success "✅ Prepared $pod structure"
             ;;
     esac
 
