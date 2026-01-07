@@ -27,6 +27,9 @@ msp_safety_require_ci_for_release() {
     local dry_run="${DRY_RUN:-true}"
 
     # Production mode (DRY_RUN=false) requires CI environment
+    # TODO: Re-enable this check when CI pipeline is fully set up
+    # For now, allow local execution since all releases are done locally
+    # See README.md for details
     if [[ "$dry_run" == "false" ]]; then
         # Check for CI environment variables (CI, GITHUB_ACTIONS, etc.)
         local ci_detected=false
@@ -37,20 +40,24 @@ msp_safety_require_ci_for_release() {
         fi
         
         if [[ "$ci_detected" == "false" ]]; then
-            # Local release mode: Allow local execution when explicitly enabled
-            if [[ "${MSP_ALLOW_LOCAL_RELEASE:-0}" == "1" ]]; then
-                log_info "[SAFETY] ℹ️  本地发布模式已启用 (Local release mode enabled)"
-                log_info "[SAFETY] ℹ️  建议在正式生产环境使用 CI 流水线 (Recommend using CI pipeline for production)"
-                return 0
-            fi
-            log_error "[SAFETY] Production mode cannot be executed locally. Use CI pipeline only."
-            log_error "[SAFETY] To run a test release, use: DRY_RUN=true"
-            log_error "[SAFETY] Or set: export CI=true && export GITHUB_ACTIONS=true"
-            log_error ""
-            log_error "[SAFETY] ⚠️  重要提示:"
-            log_error "[SAFETY] ⚠️  不要设置 MSP_ALLOW_PUBLIC_PUSH_FAILURE=1"
-            log_error "[SAFETY] ⚠️  这会导致 public remote tag 不一致，CocoaPods 验证失败"
-            return 1
+            # TEMPORARY: Allow local execution for now (all releases are done locally)
+            # TODO: Re-enable CI-only restriction when CI pipeline is ready
+            # See README.md - "Future CI Integration" section
+            log_info "[SAFETY] ℹ️  本地发布模式 (Local release mode)"
+            log_info "[SAFETY] ℹ️  注意: 当前允许本地执行生产模式 (Currently allowing local production mode)"
+            log_info "[SAFETY] ℹ️  未来 CI 流水线就绪后将恢复限制 (CI restriction will be re-enabled when CI pipeline is ready)"
+            return 0
+            
+            # FUTURE: Re-enable this check when CI pipeline is ready
+            # if [[ "${MSP_ALLOW_LOCAL_RELEASE:-0}" == "1" ]]; then
+            #     log_info "[SAFETY] ℹ️  本地发布模式已启用 (Local release mode enabled)"
+            #     log_info "[SAFETY] ℹ️  建议在正式生产环境使用 CI 流水线 (Recommend using CI pipeline for production)"
+            #     return 0
+            # fi
+            # log_error "[SAFETY] Production mode cannot be executed locally. Use CI pipeline only."
+            # log_error "[SAFETY] To run a test release, use: DRY_RUN=true"
+            # log_error "[SAFETY] Or set: export CI=true && export GITHUB_ACTIONS=true"
+            # return 1
         fi
         log_info "[SAFETY] ✓ CI environment detected (CI=${CI:-}, GITHUB_ACTIONS=${GITHUB_ACTIONS:-})"
     fi

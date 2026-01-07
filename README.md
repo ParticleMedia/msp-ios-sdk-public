@@ -539,6 +539,21 @@ This will create 15 test cases covering all combinations of DRY_RUN, VERIFY_SPM_
 
 ## Release & Deployment
 
+### Future CI Integration
+
+> **TODO**: When CI pipeline is fully set up, re-enable the production mode local execution restriction.
+>
+> **Current Status**: All releases are done locally. The safety check that blocks production mode (`DRY_RUN=false`) from running locally has been temporarily disabled.
+>
+> **Location**: `Scripts/release/utils/safety.sh` - `msp_safety_require_ci_for_release()` function
+>
+> **Action Required**: Once CI pipeline is ready:
+> 1. Re-enable the CI environment check in `msp_safety_require_ci_for_release()`
+> 2. Remove the temporary local execution bypass
+> 3. Update this section to reflect CI-only production releases
+>
+> **Related Code**: See commented-out code in `Scripts/release/utils/safety.sh` lines 29-56
+
 ### Configuration System
 
 MSP iOS SDK release system uses **profile-based configuration** for simplified environment management.
