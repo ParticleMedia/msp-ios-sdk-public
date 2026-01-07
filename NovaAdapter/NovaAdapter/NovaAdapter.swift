@@ -40,6 +40,7 @@ public class NovaAdapter: AdNetworkAdapter {
     }
     
     public func initialize(initParams: any InitializationParameters, adapterInitListener: any AdapterInitListener, context: Any?) {
+        NovaDevice.shared.appStoreId = initParams.getAppStoreId()
         adapterInitListener.onComplete(adNetwork: .nova, adapterInitStatus: .SUCCESS, message: "")
     }
     

@@ -8,7 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		21824D017C90F3658C6F8981 /* libPods-NovaCore.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E6422D26A0200EC155CCF2E8 /* libPods-NovaCore.a */; };
-		63519DAF29955CAD4855E1E2 /* (null) in Frameworks */ = {isa = PBXBuildFile; };
+		63519DAF29955CAD4855E1E2 /* BuildFile in Frameworks */ = {isa = PBXBuildFile; };
+		660190C22F0DD15C003C0D7C /* NovaDevice.swift in Sources */ = {isa = PBXBuildFile; fileRef = 660190C12F0DD156003C0D7C /* NovaDevice.swift */; };
 		6639FC032CB0A9880051C764 /* NovaConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6639FC022CB0A9880051C764 /* NovaConstants.swift */; };
 		665EAB812EE6727C00E9DA0F /* NovaInterstitialAdPageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 665EAB802EE6727C00E9DA0F /* NovaInterstitialAdPageView.swift */; };
 		665EAB822EE6727C00E9DA0F /* NovaInterstitialAdPageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 665EAB802EE6727C00E9DA0F /* NovaInterstitialAdPageView.swift */; };
@@ -179,6 +180,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		660190C12F0DD156003C0D7C /* NovaDevice.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NovaDevice.swift; sourceTree = "<group>"; };
 		6639FC022CB0A9880051C764 /* NovaConstants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NovaConstants.swift; sourceTree = "<group>"; };
 		665EAB802EE6727C00E9DA0F /* NovaInterstitialAdPageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NovaInterstitialAdPageView.swift; sourceTree = "<group>"; };
 		665EAB832EE672BF00E9DA0F /* NovaInterstitialAdHtmlSubviewHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NovaInterstitialAdHtmlSubviewHandler.swift; sourceTree = "<group>"; };
@@ -352,7 +354,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				OMSDK_REF /* OMSDK_Newsbreak1.xcframework in Frameworks */,
-				63519DAF29955CAD4855E1E2 /* (null) in Frameworks */,
+				63519DAF29955CAD4855E1E2 /* BuildFile in Frameworks */,
 				21824D017C90F3658C6F8981 /* libPods-NovaCore.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -640,6 +642,7 @@
 		F2A9886A2E55A4C700EAEDB8 /* Foundation */ = {
 			isa = PBXGroup;
 			children = (
+				660190C12F0DD156003C0D7C /* NovaDevice.swift */,
 				F2A989332E55AF8C00EAEDB8 /* Weak.swift */,
 				F2A988682E55A4C700EAEDB8 /* Collection+Extension.swift */,
 				F2A988692E55A4C700EAEDB8 /* TimeInterval+Extension.swift */,
@@ -1045,6 +1048,7 @@
 				8E8C730E2E5EE483007BBEE9 /* NovaColorPalettes.swift in Sources */,
 				8E8C73222E6006DF007BBEE9 /* NovaAdMediaContent.swift in Sources */,
 				8E8C730F2E5EE483007BBEE9 /* NovaAsset.swift in Sources */,
+				660190C22F0DD15C003C0D7C /* NovaDevice.swift in Sources */,
 				8E8C73102E5EE483007BBEE9 /* NovaUIImages.swift in Sources */,
 				8E8C73112E5EE483007BBEE9 /* NovaImages.swift in Sources */,
 				8E8C73122E5EE483007BBEE9 /* NovaFonts.swift in Sources */,
