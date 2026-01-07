@@ -1,0 +1,273 @@
+name: CI - Pull Request
+
+on:
+  pull_request:
+    branches: [main, release/*, feature/*]
+
+# Cancel in-progress runs when a new commit is pushed
+concurrency:
+  group: ci-pr-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  # Job 1: Quick Validation (Fail-fast)
+  # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  quick-validation:
+    name: Quick Validation
+    runs-on: macos-13
+    timeout-minutes: 10
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Select Xcode 15.2
+        run: sudo xcode-select -s /Applications/Xcode_15.2.app
+
+      - name: Cache Ruby Gems
+        uses: actions/cache@v3
+        with:
+          path: vendor/bundle
+          key: ${{ runner.os }}-gems-${{ hashFiles('**/Gemfile.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-gems-
+
+      - name: Install Ruby dependencies
+        run: |
+          bundle config path vendor/bundle
+          bundle install --jobs 4 --retry 3
+
+      - name: Validate Assets
+        run: bash Scripts/validation/validate_assets.sh
+
+      - name: Lint Podspecs (quick)
+        run: |
+          for spec in *.podspec; do
+            if [ -f "$spec" ]; then
+              echo "Linting $spec..."
+              pod spec lint "$spec" --quick --allow-warnings || exit 1
+            fi
+          done
+
+      - name: Shell Script Syntax Check
+        run: |
+          echo "Checking shell script syntax..."
+          find Scripts -name "*.sh" -type f | while read -r script; do
+            echo "  Checking $script"
+            bash -n "$script" || exit 1
+          done
+          echo "✅ All scripts pass syntax check"
+
+      - name: Swift Package Validation
+        if: hashFiles('Package.swift') != ''
+        run: swift package resolve
+
+  # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  # Job 2: Build XCFrameworks (parallel matrix)
+  # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  build-xcframeworks:
+    name: Build ${{ matrix.module }}
+    needs: quick-validation
+    runs-on: macos-13
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        module:
+          - MSPiOSCore
+          - MSPSharedLibraries
+          - MSPPrebidAdapter
+          - MSPGoogleAdapter
+          - MSPFacebookAdapter
+          - AmazonAdapter
+          - MSPCore
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Select Xcode 15.2
+        run: sudo xcode-select -s /Applications/Xcode_15.2.app
+
+      - name: Cache CocoaPods
+        uses: actions/cache@v3
+        with:
+          path: |
+            Pods
+            ~/Library/Caches/CocoaPods
+            ~/.cocoapods
+          key: ${{ runner.os }}-pods-${{ hashFiles('**/Podfile.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-pods-
+
+      - name: Cache DerivedData
+        uses: actions/cache@v3
+        with:
+          path: ~/Library/Developer/Xcode/DerivedData
+          key: ${{ runner.os }}-derived-${{ matrix.module }}-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-derived-${{ matrix.module }}-
+
+      - name: Install GoogleAdapter Dependencies
+        if: matrix.module == 'MSPGoogleAdapter'
+        run: |
+          cd Adapters/MSPGoogleAdapter
+          pod install --repo-update || pod install
+
+      - name: Build XCFramework
+        run: |
+          echo "Building ${{ matrix.module }}..."
+          bash Scripts/xcframeworks/build_module.sh "${{ matrix.module }}"
+
+      - name: Verify XCFramework
+        run: |
+          XCFRAMEWORK_PATH="Build/XCFrameworks/${{ matrix.module }}.xcframework"
+          if [ ! -d "$XCFRAMEWORK_PATH" ]; then
+            echo "❌ XCFramework not found: $XCFRAMEWORK_PATH"
+            exit 1
+          fi
+          echo "✅ XCFramework exists: $XCFRAMEWORK_PATH"
+          du -sh "$XCFRAMEWORK_PATH"
+
+      - name: Upload XCFramework
+        uses: actions/upload-artifact@v3
+        with:
+          name: xcframeworks
+          path: Build/XCFrameworks/${{ matrix.module }}.xcframework
+          retention-days: 7
+
+  # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  # Job 3: Build DemoApp (pods-dev and pods-release)
+  # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  build-demoapp:
+    name: DemoApp (${{ matrix.mode }})
+    needs: build-xcframeworks
+    runs-on: macos-13
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        mode: [pods-dev, pods-release]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Select Xcode 15.2
+        run: sudo xcode-select -s /Applications/Xcode_15.2.app
+
+      - name: Download All XCFrameworks
+        uses: actions/download-artifact@v3
+        with:
+          name: xcframeworks
+          path: Build/XCFrameworks
+
+      - name: Cache CocoaPods (DemoApp)
+        uses: actions/cache@v3
+        with:
+          path: |
+            DemoApp/Pods
+            ~/Library/Caches/CocoaPods
+          key: ${{ runner.os }}-demo-pods-${{ matrix.mode }}-${{ hashFiles('DemoApp/Podfile.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-demo-pods-${{ matrix.mode }}-
+
+      - name: Configure DemoApp (${{ matrix.mode }})
+        run: |
+          cd DemoApp
+          bash ../Scripts/demoapp/configure.sh --mode=${{ matrix.mode }}
+          pod install
+
+      - name: Build DemoApp
+        run: |
+          cd DemoApp
+          xcodebuild build \
+            -workspace DemoApp.xcworkspace \
+            -scheme DemoApp \
+            -configuration Release \
+            -sdk iphonesimulator \
+            -destination 'platform=iOS Simulator,name=iPhone 15,OS=17.2' \
+            | tee /tmp/xcodebuild-demoapp-${{ matrix.mode }}.log \
+            | xcpretty || exit 1
+
+          echo "✅ DemoApp (${{ matrix.mode }}) built successfully"
+
+      - name: Upload Build Logs
+        if: failure()
+        uses: actions/upload-artifact@v3
+        with:
+          name: build-logs-demoapp-${{ matrix.mode }}
+          path: /tmp/xcodebuild-demoapp-${{ matrix.mode }}.log
+          retention-days: 7
+
+  # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  # Job 4: Pods/SPM Consistency Check
+  # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  consistency-check:
+    name: Pods/SPM Consistency
+    needs: build-xcframeworks
+    runs-on: macos-13
+    timeout-minutes: 15
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Select Xcode 15.2
+        run: sudo xcode-select -s /Applications/Xcode_15.2.app
+
+      - name: Download All XCFrameworks
+        uses: actions/download-artifact@v3
+        with:
+          name: xcframeworks
+          path: Build/XCFrameworks
+
+      - name: Generate SPM Package.swift
+        run: |
+          if [ -f "Scripts/spm-sync/generate_package_swift.sh" ]; then
+            bash Scripts/spm-sync/generate_package_swift.sh
+          else
+            echo "⚠️  SPM generation script not found, skipping"
+          fi
+
+      - name: Verify Pods/SPM Consistency
+        run: |
+          if [ -f "Scripts/validation/verify_pods_spm_consistency.sh" ]; then
+            bash Scripts/validation/verify_pods_spm_consistency.sh
+          else
+            echo "⚠️  Consistency check script not found, skipping"
+          fi
+
+      - name: Validate Package.swift
+        if: hashFiles('Package.swift') != ''
+        run: |
+          swift package resolve
+          echo "✅ Package.swift is valid"
+
+  # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  # Final Status Check
+  # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  ci-status:
+    name: CI Status
+    runs-on: ubuntu-latest
+    needs:
+      - quick-validation
+      - build-xcframeworks
+      - build-demoapp
+      - consistency-check
+    if: always()
+    steps:
+      - name: Check CI Status
+        run: |
+          if [[ "${{ needs.quick-validation.result }}" == "success" && \
+                "${{ needs.build-xcframeworks.result }}" == "success" && \
+                "${{ needs.build-demoapp.result }}" == "success" && \
+                "${{ needs.consistency-check.result }}" == "success" ]]; then
+            echo "✅ All CI checks passed"
+            exit 0
+          else
+            echo "❌ Some CI checks failed"
+            echo "  quick-validation: ${{ needs.quick-validation.result }}"
+            echo "  build-xcframeworks: ${{ needs.build-xcframeworks.result }}"
+            echo "  build-demoapp: ${{ needs.build-demoapp.result }}"
+            echo "  consistency-check: ${{ needs.consistency-check.result }}"
+            exit 1
+          fi
+
