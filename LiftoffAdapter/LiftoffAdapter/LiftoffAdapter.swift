@@ -34,6 +34,7 @@ import SnapKit
     private var bidResponse: BidResponse?
     
     public func initialize(initParams: any MSPiOSCore.InitializationParameters, adapterInitListener: any MSPiOSCore.AdapterInitListener, context: Any?) {
+        VungleAds.setIntegrationName("vunglehbs", version: "67")
         let liftoffInitKey = MSPiOSCore.InitializationParametersCustomKeys.LIFTOFF_APP_ID
         let liftoffAppId = initParams.getParameters()?[liftoffInitKey] as? String ?? ""
         VungleAds.initWithAppId(liftoffAppId) { error in
@@ -232,20 +233,20 @@ import SnapKit
                 }
             }
             
-            let clickableViews = [
-                nativeAdContainer.getIcon(),
+            let nilableClickableViews = [
                 nativeAdContainer.getTitle(),
                 nativeAdContainer.getbody(),
+                nativeAdContainer.getMedia(),
                 nativeAdContainer.getAdvertiser(),
                 nativeAdContainer.getCallToAction(),
-                mediaView
-            ].compactMap{ $0 }
+                nativeAdContainer.getIcon()
+            ] + (nativeAdContainer.getCustomClickableViews() ?? [])
             nativeAdItem.registerViewForInteraction(
                 view: nativeAdView,
                 mediaView: mediaView,
                 iconImageView: nativeAdContainer.getIcon(),
                 viewController: adListener?.getRootViewController(),
-                clickableViews: clickableViews
+                clickableViews: nilableClickableViews.compactMap { $0 }
             )
 
             nativeAdView.addSubview(nativeAdContainer)
@@ -367,6 +368,10 @@ extension LiftoffAdapter: VungleInterstitialDelegate {
         if let interstitialAd = self.interstitialAd {
             self.adListener?.onAdDismissed(ad: interstitialAd)
         }
+    }
+    
+    public func interstitialAdDidClick(_ interstitial: VungleInterstitial) {
+        handleAdClicked(interstitial)
     }
     
     private func handleAdImpressed(_ ad: Any) {
