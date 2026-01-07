@@ -75,13 +75,35 @@ jobs:
       fail-fast: false
       matrix:
         module:
+          # ═══════════════════════════════════════════════════════════
+          # Core Modules (4)
+          # ═══════════════════════════════════════════════════════════
           - MSPiOSCore
           - MSPSharedLibraries
-          - MSPPrebidAdapter
-          - MSPGoogleAdapter
-          - MSPFacebookAdapter
-          - AmazonAdapter
+          - NovaCore
           - MSPCore
+          # Note: MSPOMSDK is vendored, not built from source
+
+          # ═══════════════════════════════════════════════════════════
+          # Shared Modules (1)
+          # ═══════════════════════════════════════════════════════════
+          - MSPGoogleAdsTypes
+
+          # ═══════════════════════════════════════════════════════════
+          # Adapter Modules (12) - Alphabetical order
+          # ═══════════════════════════════════════════════════════════
+          - AmazonAdapter
+          - InmobiAdapter
+          - LiftoffAdapter
+          - MintegralAdapter
+          - MobilefuseAdapter
+          - MolocoAdapter
+          - MSPFacebookAdapter
+          - MSPGoogleAdapter
+          - MSPPrebidAdapter
+          - NovaAdapter
+          - PubmaticAdapter
+          - UnityAdapter
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -114,6 +136,46 @@ jobs:
         if: matrix.module == 'MSPGoogleAdapter'
         run: |
           cd Adapters/MSPGoogleAdapter
+          pod install --repo-update || pod install
+
+      - name: Install NovaAdapter Dependencies
+        if: matrix.module == 'NovaAdapter'
+        run: |
+          echo "NovaAdapter requires NovaCore to be built first"
+          # NovaCore should be available from artifacts if built in parallel
+          # Or build it here if needed
+          if [ ! -d "Build/XCFrameworks/NovaCore.xcframework" ]; then
+            echo "Building NovaCore as dependency..."
+            bash Scripts/xcframeworks/build_module.sh NovaCore
+          fi
+
+      - name: Install MolocoAdapter Dependencies
+        if: matrix.module == 'MolocoAdapter'
+        run: |
+          echo "MolocoAdapter requires MolocoSDK..."
+          # Check if MolocoSDK is available via CocoaPods
+          cd Sources/Adapters/MolocoAdapter
+          pod install --repo-update || pod install
+
+      - name: Install LiftoffAdapter Dependencies
+        if: matrix.module == 'LiftoffAdapter'
+        run: |
+          echo "LiftoffAdapter requires VungleAds SDK..."
+          cd Sources/Adapters/LiftoffAdapter
+          pod install --repo-update || pod install
+
+      - name: Install InmobiAdapter Dependencies
+        if: matrix.module == 'InmobiAdapter'
+        run: |
+          echo "InmobiAdapter requires InMobiSDK..."
+          cd Sources/Adapters/InmobiAdapter
+          pod install --repo-update || pod install
+
+      - name: Install UnityAdapter Dependencies
+        if: matrix.module == 'UnityAdapter'
+        run: |
+          echo "UnityAdapter requires IronSourceSDK..."
+          cd Sources/Adapters/UnityAdapter
           pod install --repo-update || pod install
 
       - name: Build XCFramework
