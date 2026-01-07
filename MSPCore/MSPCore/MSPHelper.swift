@@ -116,12 +116,22 @@ public class MSP {
     private func tryUpdateMSPId() {
         let keyMSPId = MSPConstants.USER_DEFAULTS_KEY_MSP_ID
         let keyMSPUserId = MSPConstants.USER_DEFAULTS_KEY_MSP_USER_ID
-        if UserDefaults.standard.string(forKey: keyMSPUserId) == nil {
+        
+        let storedMSPUserIdString = UserDefaults.standard.string(forKey: keyMSPUserId)
+        let storedMSPUserId = storedMSPUserIdString.flatMap { Int64($0) }
+        
+        let storedMSPId = UserDefaults.standard.string(forKey: keyMSPId).flatMap{ Int64($0) }
+        
+        if !isValidId(id: storedMSPUserId) {
             self.fetchMSPUserId()
-        } else if UserDefaults.standard.string(forKey: keyMSPId) == nil {
-            let mspUserId = UserDefaults.standard.string(forKey: keyMSPUserId)
-            UserDefaults.standard.setValue(mspUserId, forKey: keyMSPId)
+        } else if !isValidId(id: storedMSPId) {
+            UserDefaults.standard.setValue(storedMSPUserIdString, forKey: keyMSPId)
         }
+    }
+    
+    private func isValidId(id: Int64?) -> Bool {
+        guard let id = id else { return false }
+        return id > 0
     }
     
     @objc private func appWillEnterForeground() {
@@ -211,7 +221,7 @@ public class MSP {
             "orgID": self.orgId ?? 0,
             "appID": self.appId ?? 0,
             "ppid": self.ppid ?? "",
-            "device_id": ASIdentifierManager.shared().advertisingIdentifier.uuidString ?? "",
+            "device_id": ASIdentifierManager.shared().advertisingIdentifier.uuidString,
             "email": self.email ?? "",
             "token": self.prebidAPIKey ?? ""
         ]
@@ -237,7 +247,8 @@ public class MSP {
                     do {
                         // Handle JSON response
                         if let responseDict = try JSONSerialization.jsonObject(with: data, options: []) as? [String: Any],
-                           let id = responseDict["id"] as? Int64, id != 0 {
+                           let code = responseDict["code"] as? Int64, code == 0,
+                           let id = responseDict["id"] as? Int64, self.isValidId(id: id) {
                             UserDefaults.standard.setValue(String(id), forKey: MSPConstants.USER_DEFAULTS_KEY_MSP_USER_ID)
                             UserDefaults.standard.setValue(String(id), forKey: MSPConstants.USER_DEFAULTS_KEY_MSP_ID)
                         }
