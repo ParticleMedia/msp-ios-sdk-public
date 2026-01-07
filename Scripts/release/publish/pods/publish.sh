@@ -4185,13 +4185,75 @@ unified_github_cli_auth_check() {
 release_adapters() {
     log_section "Step 2: Releasing Adapters that depend on MSPSharedLibraries (in parallel)"
     
-    # Ensure MSPSharedLibraries is available before adapter releases
-    log_step "Verifying MSPSharedLibraries availability before adapter releases..."
-    if ! smart_wait_for_pod_availability "MSPSharedLibraries" "$VERSION" "before parallel adapter releases"; then
-        log_error "MSPSharedLibraries $VERSION not available, cannot proceed with adapter releases"
+    # Ensure MSPSharedLibraries and MSPGoogleAdsTypes are available before adapter releases
+    log_step "Verifying MSPSharedLibraries and MSPGoogleAdsTypes availability before adapter releases..."
+    
+    # Create temporary files for parallel checks
+    local shared_libs_check_file=$(mktemp "/tmp/msp_availability_check_shared_libs_XXXXXX")
+    local google_ads_types_check_file=$(mktemp "/tmp/msp_availability_check_google_ads_types_XXXXXX")
+    
+    # Start MSPSharedLibraries check in background
+    (
+        if smart_wait_for_pod_availability "MSPSharedLibraries" "$VERSION" "before parallel adapter releases"; then
+            echo "SUCCESS:MSPSharedLibraries" > "$shared_libs_check_file"
+            exit 0
+        else
+            echo "FAILED:MSPSharedLibraries" > "$shared_libs_check_file"
+            exit 1
+        fi
+    ) &
+    local SHARED_LIBS_CHECK_PID=$!
+    
+    # Start MSPGoogleAdsTypes check in background
+    (
+        if smart_wait_for_pod_availability "MSPGoogleAdsTypes" "$VERSION" "before parallel adapter releases"; then
+            echo "SUCCESS:MSPGoogleAdsTypes" > "$google_ads_types_check_file"
+            exit 0
+        else
+            echo "FAILED:MSPGoogleAdsTypes" > "$google_ads_types_check_file"
+            exit 1
+        fi
+    ) &
+    local GOOGLE_ADS_TYPES_CHECK_PID=$!
+    
+    log_info "Waiting for both availability checks to complete..."
+    
+    # Wait for both checks to complete
+    local shared_libs_check_result=0
+    local google_ads_types_check_result=0
+    
+    wait $SHARED_LIBS_CHECK_PID || shared_libs_check_result=$?
+    wait $GOOGLE_ADS_TYPES_CHECK_PID || google_ads_types_check_result=$?
+    
+    # Verify both succeeded
+    local shared_libs_available=false
+    local google_ads_types_available=false
+    
+    if [[ -f "$shared_libs_check_file" ]] && grep -q "SUCCESS" "$shared_libs_check_file"; then
+        shared_libs_available=true
+        log_success "✅ MSPSharedLibraries $VERSION is available"
+    else
+        log_error "❌ MSPSharedLibraries $VERSION is not available"
+    fi
+    
+    if [[ -f "$google_ads_types_check_file" ]] && grep -q "SUCCESS" "$google_ads_types_check_file"; then
+        google_ads_types_available=true
+        log_success "✅ MSPGoogleAdsTypes $VERSION is available"
+    else
+        log_error "❌ MSPGoogleAdsTypes $VERSION is not available"
+    fi
+    
+    # Cleanup temp files
+    rm -f "$shared_libs_check_file" "$google_ads_types_check_file"
+    
+    # Check if both are available
+    if [[ "$shared_libs_available" != "true" ]] || [[ "$google_ads_types_available" != "true" ]]; then
+        log_error "One or more required dependencies are not available, cannot proceed with adapter releases"
         return 1
     fi
-
+    
+    log_success "Both MSPSharedLibraries and MSPGoogleAdsTypes are available"
+    
     # CRITICAL: Also ensure MSPiOSCore is available (adapters depend on it)
     log_step "Verifying MSPiOSCore availability before adapter releases..."
     if ! smart_wait_for_pod_availability "MSPiOSCore" "$VERSION" "required by all adapters"; then
@@ -4199,8 +4261,8 @@ release_adapters() {
         log_error "All adapters depend on MSPiOSCore. Please wait for CDN sync and retry."
         return 1
     fi
-
-    log_success "Both MSPSharedLibraries and MSPiOSCore are available, proceeding with parallel adapter releases"
+    
+    log_success "All required dependencies (MSPSharedLibraries, MSPGoogleAdsTypes, MSPiOSCore) are available, proceeding with parallel adapter releases"
     
     # Extract adapters from PODS_MODULES (exclude MSPSharedLibraries, MSPGoogleAdsTypes, and MSPCore)
     # Adapters are all modules that are not core modules
@@ -4230,6 +4292,47 @@ release_adapters() {
     
     log_info "Releasing adapters from PODS_MODULES: ${adapters[*]}"
     
+    # ========================================================================
+    # Step 0.5: Pre-flight checks for all adapters
+    # ========================================================================
+    # Pre-check each adapter's requirements before starting parallel releases
+    # This prevents wasting time on parallel releases that will fail
+    # ========================================================================
+    log_section "Step 0.5: Pre-flight checks for adapters"
+    
+    # Pre-check each adapter's requirements before starting parallel releases
+    for adapter in "${adapters[@]}"; do
+        log_info "Pre-checking $adapter requirements..."
+        
+        # NovaAdapter: Check Binary/NovaCore.xcframework exists
+        if [[ "$adapter" == "NovaAdapter" ]]; then
+            local novacore_path="$ROOT_DIR/Binary/NovaCore.xcframework"
+            if [[ ! -d "$novacore_path" ]]; then
+                log_error "❌ Pre-flight check failed: $adapter"
+                log_error "NovaCore.xcframework not found: $novacore_path"
+                log_error "NovaAdapter requires pre-packaged NovaCore.xcframework in Binary/"
+                log_error "Cannot proceed with adapter releases - missing required file"
+                return 1
+            fi
+            log_success "✅ NovaAdapter pre-flight check passed"
+        fi
+        
+        # Add more pre-checks here for other adapters if needed
+        # Example: Check if XCFramework exists for adapters that need it
+        # if [[ "$adapter" == "SomeAdapter" ]]; then
+        #     if [[ ! -d "$ROOT_DIR/Build/XCFrameworks/${adapter}.xcframework" ]]; then
+        #         log_error "❌ Pre-flight check failed: $adapter"
+        #         log_error "XCFramework not found: $ROOT_DIR/Build/XCFrameworks/${adapter}.xcframework"
+        #         return 1
+        #     fi
+        # fi
+    done
+    
+    log_success "All adapter pre-flight checks passed"
+    
+    # ========================================================================
+    # Step 1: Start parallel adapter releases
+    # ========================================================================
     local pids=()
     local result_files=()
     local temp_dir="/tmp/msp_parallel_release_$$"
@@ -4250,44 +4353,106 @@ release_adapters() {
         log_info "Started parallel release of $adapter (PID: $pid)"
     done
     
-    # Wait for all parallel processes to complete
-    log_info "Waiting for all adapters to complete..."
+    # Wait for all parallel processes to complete with FAIL-FAST
+    log_info "Waiting for all adapters to complete (fail-fast enabled)..."
+    log_info "If any adapter fails, all others will be stopped immediately"
+    
     local success_count=0
     local failure_count=0
     local failed_adapters=()
+    local check_interval=5  # Check every 5 seconds
+    local all_completed=false
     
-    for i in "${!pids[@]}"; do
-        local pid="${pids[$i]}"
-        local adapter="${adapters[$i]}"
-        local result_file="${result_files[$i]}"
+    while [[ "$all_completed" == "false" ]]; do
+        all_completed=true
+        local has_failure=false
+        local failed_adapter=""
         
-        # Wait for this specific process
-        if wait "$pid"; then
-            # Process completed successfully
-            if [[ -f "$result_file" ]] && grep -q "SUCCESS" "$result_file"; then
-                log_success "$adapter released successfully"
-                ((success_count++))
-            else
-                log_error "$adapter release failed"
-                ((failure_count++))
-                failed_adapters+=("$adapter")
+        # Check each process
+        for i in "${!pids[@]}"; do
+            local pid="${pids[$i]}"
+            local adapter="${adapters[$i]}"
+            local result_file="${result_files[$i]}"
+            
+            # Skip if already processed
+            if [[ "${pids[$i]}" == "DONE" ]]; then
+                continue
             fi
-        else
-            # Process failed
-            log_error "$adapter release failed (exit code: $?)"
-            ((failure_count++))
-            failed_adapters+=("$adapter")
+            
+            # Check if process is still running
+            if kill -0 "$pid" 2>/dev/null; then
+                # Process still running
+                all_completed=false
+                
+                # Check if result file indicates failure
+                if [[ -f "$result_file" ]]; then
+                    local result_content=$(cat "$result_file")
+                    if [[ "$result_content" == *"ERROR"* ]] || [[ "$result_content" == *"FAILED"* ]]; then
+                        log_error "❌ FAIL-FAST: $adapter failed, stopping all other adapters"
+                        has_failure=true
+                        failed_adapter="$adapter"
+                        failed_adapters+=("$adapter")
+                        ((failure_count++))
+                        pids[$i]="DONE"
+                        break
+                    fi
+                fi
+            else
+                # Process completed, check result
+                wait "$pid" 2>/dev/null || true
+                local exit_code=$?
+                
+                if [[ -f "$result_file" ]] && grep -q "SUCCESS" "$result_file"; then
+                    log_success "✅ $adapter released successfully"
+                    ((success_count++))
+                    pids[$i]="DONE"
+                else
+                    log_error "❌ $adapter release failed (exit code: $exit_code)"
+                    if [[ -f "$result_file" ]]; then
+                        local result_content=$(cat "$result_file")
+                        log_error "$adapter: $result_content"
+                    fi
+                    has_failure=true
+                    failed_adapter="$adapter"
+                    failed_adapters+=("$adapter")
+                    ((failure_count++))
+                    pids[$i]="DONE"
+                    break
+                fi
+            fi
+        done
+        
+        # If any failure detected, kill all other processes
+        if [[ "$has_failure" == "true" ]]; then
+            log_error "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+            log_error "⚠️  FAIL-FAST TRIGGERED"
+            log_error "Failed adapter: $failed_adapter"
+            log_error "Stopping all running adapters immediately..."
+            log_error "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+            
+            # Kill all remaining processes
+            for i in "${!pids[@]}"; do
+                local pid="${pids[$i]}"
+                local adapter="${adapters[$i]}"
+                
+                if [[ "$pid" != "DONE" ]] && kill -0 "$pid" 2>/dev/null; then
+                    log_warn "Stopping $adapter (PID: $pid)..."
+                    kill -TERM "$pid" 2>/dev/null || true
+                    sleep 1
+                    # Force kill if still running
+                    if kill -0 "$pid" 2>/dev/null; then
+                        kill -KILL "$pid" 2>/dev/null || true
+                    fi
+                    pids[$i]="DONE"
+                fi
+            done
+            
+            break
         fi
         
-        # Show result details
-        if [[ -f "$result_file" ]]; then
-            local result_content
-            result_content=$(cat "$result_file")
-            if [[ "$result_content" == *"ERROR"* ]]; then
-                log_error "$adapter: $result_content"
-            else
-                log_info "$adapter: $result_content"
-            fi
+        # Sleep before next check
+        if [[ "$all_completed" == "false" ]]; then
+            sleep $check_interval
         fi
     done
     
@@ -4295,18 +4460,19 @@ release_adapters() {
     rm -rf "$temp_dir"
     
     # Report final results
-    log_section "Parallel adapter release completed:"
-    log_info "  ✅ Successful: $success_count"
-    log_info "  ❌ Failed: $failure_count"
-    
     if [[ $failure_count -gt 0 ]]; then
+        log_error "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+        log_error "❌ Adapter releases failed"
         log_error "Failed adapters: ${failed_adapters[*]}"
+        log_error "Successful adapters: $success_count"
+        log_error "Failed adapters: $failure_count"
+        log_error "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
         return 1
     fi
     
-    log_success "All adapters released successfully in parallel"
+    log_success "All adapters released successfully ($success_count/$success_count)"
     
-    # Step 2.5: Check availability of MSPSharedLibraries and PrebidAdapter before MSPCore release
+    # Step 2.5: Check availability of dependencies for MSPCore
     if [[ "$DRY_RUN" != "true" ]]; then
         log_section "Step 2.5: Checking availability of dependencies for MSPCore"
         
@@ -4317,26 +4483,27 @@ release_adapters() {
             return 1
         fi
         
-        # Check MSPSharedLibraries availability
-        log_info "Checking MSPSharedLibraries availability..."
-        if ! smart_wait_for_pod_availability "MSPSharedLibraries" "$VERSION" "before parallel adapter releases"; then
-            log_error "MSPSharedLibraries not available, cannot proceed with MSPCore release"
-            return 1
-        fi
+        # Define required dependencies (always check, fail-fast)
+        # These are the pods that MSPCore or commonly used adapters depend on
+        local required_deps=("MSPSharedLibraries" "MSPPrebidAdapter" "MSPGoogleAdsTypes")
         
-        # Check MSPPrebidAdapter availability (MSPCore depends on it)
-        # Only check if MSPPrebidAdapter is in PODS_MODULES
-        if echo "$PODS_MODULES" | grep -q "MSPPrebidAdapter"; then
-            log_info "Checking MSPPrebidAdapter availability..."
-            if ! smart_wait_for_pod_availability "MSPPrebidAdapter" "$VERSION" "required by MSPCore"; then
-                log_error "MSPPrebidAdapter not available, cannot proceed with MSPCore release"
+        # Check required dependencies sequentially (fail-fast)
+        for dep in "${required_deps[@]}"; do
+            # Check if dependency is in PODS_MODULES
+            if ! echo "$PODS_MODULES" | grep -q "$dep"; then
+                log_info "$dep not in PODS_MODULES, skipping availability check"
+                continue
+            fi
+            
+            log_info "Checking $dep availability (required for MSPCore)..."
+            if ! smart_wait_for_pod_availability "$dep" "$VERSION" "required by MSPCore or adapters"; then
+                log_error "$dep not available, cannot proceed with MSPCore release"
                 return 1
             fi
-        else
-            log_info "MSPPrebidAdapter not in PODS_MODULES, skipping availability check"
-        fi
+            log_success "✅ $dep is available"
+        done
         
-        log_success "All dependencies available for MSPCore release"
+        log_success "All required dependencies available for MSPCore release"
     fi
     
     return 0
