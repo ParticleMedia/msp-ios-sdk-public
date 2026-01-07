@@ -193,6 +193,13 @@ class NovaInterstitialAdViewController: UIViewController {
     private var adView: NovaInterstitialAdViewProtocol?
     
     private var pageIndex = 0
+    
+    override var prefersStatusBarHidden: Bool {
+        if case .html = self.interstitialAd.creativeType {
+            return true
+        }
+        return false
+    }
 }
 
 // MARK: - Private Extension
