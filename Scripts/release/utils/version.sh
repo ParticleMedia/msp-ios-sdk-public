@@ -301,12 +301,25 @@ bump_major() {
 # Update Config.plist version
 update_config_plist_version() {
     local version="$1"
-    local config_plist="MSPCore/MSPCore/Resources/Config.plist"
+    
+    # Find Config.plist dynamically (more robust than hardcoded path)
+    local config_plist
+    config_plist=$(find "${ROOT_DIR:-.}" -path "*/MSPCore/MSPCore/Resources/Config.plist" -type f 2>/dev/null | head -1)
+    
+    if [[ -z "$config_plist" ]]; then
+        # Fallback to expected path relative to ROOT_DIR
+        config_plist="${ROOT_DIR:-.}/Sources/Core/MSPCore/MSPCore/Resources/Config.plist"
+    fi
     
     if [[ ! -f "$config_plist" ]]; then
-        log_error "Config.plist not found: $config_plist"
+        log_error "Config.plist not found"
+        log_error "Searched pattern: */MSPCore/MSPCore/Resources/Config.plist"
+        log_error "Expected location: Sources/Core/MSPCore/MSPCore/Resources/Config.plist"
+        log_error "ROOT_DIR: ${ROOT_DIR:-<not set>}"
         return 1
     fi
+    
+    log_info "Found Config.plist: $config_plist"
     
     log_step "Updating SDKVersion in Config.plist to $version"
     

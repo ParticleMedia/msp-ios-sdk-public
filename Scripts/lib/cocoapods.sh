@@ -23,6 +23,12 @@ source "$(dirname "${BASH_SOURCE[0]}")/common.sh"
 source "$(dirname "${BASH_SOURCE[0]}")/logging.sh"
 source "$(dirname "${BASH_SOURCE[0]}")/validation.sh"
 
+# Source process utilities (timeout functions)
+if [[ -f "$(dirname "${BASH_SOURCE[0]}")/process_utils.sh" ]]; then
+    # shellcheck source=Scripts/lib/process_utils.sh
+    source "$(dirname "${BASH_SOURCE[0]}")/process_utils.sh" 2>/dev/null || true
+fi
+
 # CocoaPods constants
 # Note: PODFILE is not readonly to allow override in release scripts
 PODFILE="${PODFILE:-Podfile}"   # allow override, no readonly
@@ -405,56 +411,88 @@ update_specs_repo() {
     # ═══════════════════════════════════════════════════════════════════════════
 
     local cache_file="/tmp/msp-cocoapods-specs-repo-last-update"
+    local cache_lock="${cache_file}.lock"
     local cache_ttl=300  # 5 minutes (300 seconds)
     local current_time
     current_time=$(date +%s)
-
-    # Check if we updated recently
-    if [[ -f "$cache_file" ]]; then
-        local last_update_time
-        last_update_time=$(cat "$cache_file" 2>/dev/null || echo 0)
-        local time_since_update=$((current_time - last_update_time))
-
-        if [[ $time_since_update -lt $cache_ttl ]]; then
-            local remaining=$((cache_ttl - time_since_update))
-            log_info "Specs repository was updated ${time_since_update}s ago (< ${cache_ttl}s TTL)"
-            log_info "Skipping redundant update (will refresh in ${remaining}s if needed)"
-            return $EXIT_SUCCESS
-        else
-            log_debug "Cache expired (${time_since_update}s > ${cache_ttl}s TTL), updating now..."
-        fi
-    else
-        log_debug "No cache found, performing first update..."
-    fi
-
-    log_step "Updating CocoaPods specs repository..."
-    
     local max_attempts=3
     local attempt=1
-    
-    while [[ $attempt -le $max_attempts ]]; do
-        log_debug "Attempt $attempt/$max_attempts: Updating CocoaPods specs repository..."
-        
-        if bundle exec pod repo update; then
-            # Update cache timestamp on success
-            echo "$current_time" > "$cache_file"
-            log_success "Specs repository updated (cache timestamp: $current_time)"
-            return $EXIT_SUCCESS
-        else
-            log_warn "Specs repository update failed (attempt $attempt/$max_attempts)"
-            
-            if [[ $attempt -lt $max_attempts ]]; then
-                local delay=$((attempt * 5))
-                log_info "Retrying in ${delay} seconds..."
-                sleep $delay
-            fi
+
+    # Use file lock to prevent concurrent updates
+    (
+        # Try to acquire lock (non-blocking)
+        if ! flock -n 9; then
+            log_info "Another process is updating specs repo, waiting for lock..."
+            # Wait for lock (blocking)
+            flock 9
+            log_info "Lock acquired, checking cache..."
         fi
-        
-        ((attempt++))
-    done
-    
-    log_error "Specs repository update failed after $max_attempts attempts"
-    return $EXIT_BUILD_ERROR
+
+        # Check cache (now protected by lock)
+        if [[ -f "$cache_file" ]]; then
+            local last_update_time
+            last_update_time=$(cat "$cache_file" 2>/dev/null || echo 0)
+            local time_since_update=$((current_time - last_update_time))
+
+            if [[ $time_since_update -lt $cache_ttl ]]; then
+                local remaining=$((cache_ttl - time_since_update))
+                log_info "Specs repository was updated ${time_since_update}s ago (< ${cache_ttl}s TTL)"
+                log_info "Skipping redundant update (will refresh in ${remaining}s if needed)"
+                exit 0
+            else
+                log_debug "Cache expired (${time_since_update}s > ${cache_ttl}s TTL), updating now..."
+            fi
+        else
+            log_debug "No cache found, performing first update..."
+        fi
+
+        # Perform update (only one process at a time)
+        log_step "Updating CocoaPods specs repository..."
+
+        while [[ $attempt -le $max_attempts ]]; do
+            log_debug "Attempt $attempt/$max_attempts: Updating CocoaPods specs repository..."
+
+            # Run with timeout: 15 minutes (900s)
+            # Rationale: Observed 1-4 min, extreme cases up to 10 min, 15 min provides safety margin
+            if run_with_timeout 900 bundle exec pod repo update; then
+                # Update cache timestamp on success
+                echo "$current_time" > "$cache_file"
+                log_success "Specs repository updated (cache timestamp: $current_time)"
+                exit 0
+            else
+                local exit_code=$?
+                if [[ $exit_code -eq 124 ]]; then
+                    log_error "pod repo update TIMED OUT after 15 minutes"
+                else
+                    log_error "pod repo update failed with exit code $exit_code"
+                fi
+
+                if [[ $attempt -lt $max_attempts ]]; then
+                    log_info "Retrying in 5 seconds..."
+                    sleep 5
+                fi
+            fi
+
+            ((attempt++))
+        done
+
+        log_error "Failed to update specs repository after $max_attempts attempts"
+        exit 1
+
+    ) 9>"$cache_lock"
+
+    local result=$?
+
+    # Clean up lock file if it exists and is old (older than 1 hour)
+    if [[ -f "$cache_lock" ]]; then
+        local lock_age=$((current_time - $(stat -f %m "$cache_lock" 2>/dev/null || stat -c %Y "$cache_lock" 2>/dev/null || echo $current_time)))
+        if [[ $lock_age -gt 3600 ]]; then
+            log_warn "Removing stale lock file (age: ${lock_age}s)"
+            rm -f "$cache_lock"
+        fi
+    fi
+
+    return $result
 }
 
 # Clear specs repo update cache (for testing/debugging)
@@ -528,10 +566,19 @@ check_pod_availability() {
         # Check both cocoapods and trunk repositories to ensure availability
         # since pod spec lint uses trunk repo while pod search might use cocoapods repo
         log_debug "Running: bundle exec pod search '$pod_name' --simple"
-        if search_output=$(bundle exec pod search "$pod_name" --simple 2>&1); then
+        # Run with timeout: 10 minutes (600s)
+        # Rationale: Usually seconds, but large specs repo can be slow
+        if search_output=$(run_with_timeout 600 bundle exec pod search "$pod_name" --simple 2>&1); then
             search_exit_code=0
         else
             search_exit_code=$?
+            if [[ $search_exit_code -eq 124 ]]; then
+                log_error "pod search TIMED OUT after 10 minutes"
+                log_error "This usually indicates specs repo corruption or network issues"
+                # Try to recover by updating specs repo
+                log_info "Attempting to recover by updating specs repo..."
+                run_with_timeout 900 bundle exec pod repo update || true
+            fi
             log_debug "Pod search exit code: $search_exit_code"
             log_debug "Pod search output: $search_output"
         fi
@@ -605,9 +652,9 @@ troubleshoot_cocoapods_network() {
     
     # Strategy 1: Clean cache and retry
     log_info "Strategy 1: Cleaning cache and retrying..."
-    if bundle exec pod cache clean --all >/dev/null 2>&1; then
+        if bundle exec pod cache clean --all >/dev/null 2>&1; then
         log_info "Cache cleaned successfully"
-        if bundle exec pod repo update >/dev/null 2>&1; then
+        if run_with_timeout 900 bundle exec pod repo update >/dev/null 2>&1; then
             log_success "Repository updated after cache clean"
             return $EXIT_SUCCESS
         fi
@@ -660,7 +707,7 @@ try_alternative_cocoapods_sources() {
         if bundle exec pod repo add temp-repo "$source" >/dev/null 2>&1; then
             log_info "Successfully added source: $source"
             # Try to update with this source
-            if bundle exec pod repo update temp-repo >/dev/null 2>&1; then
+            if run_with_timeout 900 bundle exec pod repo update temp-repo >/dev/null 2>&1; then
                 log_success "Source $source is working"
                 return $EXIT_SUCCESS
             fi

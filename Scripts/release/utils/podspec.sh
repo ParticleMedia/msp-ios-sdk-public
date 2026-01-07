@@ -624,18 +624,19 @@ smart_wait_for_pod_availability() {
     case "$choice" in
         1)
             # ═══════════════════════════════════════════════════════════════════════════
-            # Stage 3: Long wait (up to 30 minutes total with optimized checking)
+            # Stage 3: Long wait (up to 57 more minutes total)
             # ═══════════════════════════════════════════════════════════════════════════
-            # Changed from 38 more min to 27 more min (30 total - 3 already waited)
-            # With caching + smart update strategy, checks are much faster now
-            # Increased interval from 30s to 60s (less aggressive, CDN needs time)
-            log_info "Continuing to wait for $pod_name $version (up to 27 more minutes)..."
+            # Increased from 1620s (27 min) to 3420s (57 min)
+            # Total: 180 + 3420 = 3600s (60 minutes)
+            # Rationale: Observed 10-25 min, extreme cases up to 40-60 min
+            log_info "Continuing to wait for $pod_name $version (up to 57 more minutes)..."
+            log_info "CDN propagation can take 10-60 minutes depending on network and load"
             log_info "Checking every 60 seconds. Press Ctrl+C to abort."
             echo ""
 
-            # 27 minutes = 1620 seconds (30 total - 3 already waited)
-            if ! wait_for_pod_availability "$pod_name" "$version" 1620 60; then
-                log_error "$pod_name $version still not available after 30 minutes total"
+            # 57 minutes = 3420 seconds (60 total - 3 already waited)
+            if ! wait_for_pod_availability "$pod_name" "$version" 3420 60; then
+                log_error "$pod_name $version still not available after 60 minutes total"
                 log_error "This is unusual. Please check:"
                 log_error "  1. Did $pod_name $version publish succeed?"
                 log_error "     Command: pod trunk info $pod_name"
