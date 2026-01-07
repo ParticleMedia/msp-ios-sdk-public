@@ -121,6 +121,12 @@ private extension NovaAdMetricReporter {
         if let cv = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String {
             params[NovaAdMetricKeys.CV] = cv
         }
+        params[NovaAdMetricKeys.MAKE] = NovaDevice.shared.make
+        params[NovaAdMetricKeys.MODEL] = NovaDevice.shared.getDeviceModel()
+        if let appStoreId = NovaDevice.shared.appStoreId {
+            params[NovaAdMetricKeys.BUNDLE] = appStoreId
+        }
+        
         //params["session_id"] = "\(HpEngine.sharedInstance().nbSessionId)"
 
         //let user = HpEngine.sharedInstance().user
@@ -189,4 +195,7 @@ struct NovaAdMetricKeys {
     static let OS = "os"
     static let CV = "cv"
     static let OSV = "osv"
+    static let BUNDLE = "bundle"
+    static let MODEL = "model"
+    static let MAKE = "make"
 }

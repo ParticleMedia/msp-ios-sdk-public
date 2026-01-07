@@ -416,6 +416,10 @@ public class InitializationParametersImp: InitializationParameters {
         return host
     }
     
+    public func getAppStoreId() -> String? {
+        return sourceApp
+    }
+    
     public func getConsentString() -> String {
         return ""
     }
