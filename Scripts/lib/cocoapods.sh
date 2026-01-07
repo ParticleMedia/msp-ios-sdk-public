@@ -311,12 +311,31 @@ validate_podspec() {
         lint_cmd="$lint_cmd $option"
     done
     
-    if eval "$lint_cmd"; then
+    log_info "Running pod spec lint (timeout: 30 minutes)..."
+    
+    # Run with timeout: 30 minutes (1800s)
+    # Rationale: Observed 1-5 min, extreme cases up to 20 min (complex deps), 30 min provides safety margin
+    if run_with_timeout 1800 eval "$lint_cmd"; then
         log_success "Podspec validation passed: $(basename "$podspec")"
         return $EXIT_SUCCESS
     else
-        log_error "Podspec validation failed: $(basename "$podspec")"
-        return $EXIT_VALIDATION_ERROR
+        local exit_code=$?
+        if [[ $exit_code -eq 124 ]]; then
+            log_error "❌ TIMEOUT: pod spec lint exceeded 30 minutes"
+            log_error "This usually indicates:"
+            log_error "  1. Dependency resolution hanging"
+            log_error "  2. Network issues downloading dependencies"
+            log_error "  3. Build phase hanging"
+            log_error ""
+            log_error "Troubleshooting:"
+            log_error "  1. Check dependency availability: pod search <dep_name>"
+            log_error "  2. Test locally: $lint_cmd"
+            log_error "  3. Check network: bundle exec pod repo update"
+            return $EXIT_VALIDATION_ERROR
+        else
+            log_error "Podspec validation failed: $(basename "$podspec")"
+            return $EXIT_VALIDATION_ERROR
+        fi
     fi
 }
 

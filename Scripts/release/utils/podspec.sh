@@ -223,12 +223,20 @@ _msp_podspec_lint_once() {
     log_step "Validating podspec: $(basename "$podspec_file")"
 
     # Execute pod spec lint once (no function calls, no recursion possible)
+    # Run with timeout: 30 minutes (1800s)
+    # Rationale: Observed 1-5 min, extreme cases up to 20 min (complex deps), 30 min provides safety margin
     local lint_result=0
-    if pod spec lint "$podspec_file" --allow-warnings --skip-import-validation 2>&1; then
+    if run_with_timeout 1800 pod spec lint "$podspec_file" --allow-warnings --skip-import-validation 2>&1; then
         log_success "Podspec validation passed: $(basename "$podspec_file")"
         lint_result=0
     else
-        log_error "Podspec validation failed: $(basename "$podspec_file")"
+        local exit_code=$?
+        if [[ $exit_code -eq 124 ]]; then
+            log_error "❌ TIMEOUT: pod spec lint exceeded 30 minutes for $(basename "$podspec_file")"
+            log_error "This usually indicates dependency resolution hanging or network issues"
+        else
+            log_error "Podspec validation failed: $(basename "$podspec_file")"
+        fi
         lint_result=1
     fi
 
@@ -450,8 +458,15 @@ msp_run_pod_trunk_push() {
         log_info "[PODS] [CONFIG] Skipping pod trunk push (config: pods.enabled=false, spec: $spec)"
         log_info "[PODS] [CONFIG] Running pod spec lint instead to validate podspec"
 
-        if ! pod spec lint "$spec" --allow-warnings; then
-            log_warn "[PODS] pod spec lint failed for $spec (config: pods.enabled=false). Treating as non-fatal."
+        # Run with timeout: 10 minutes (600s) for quick lint
+        # Rationale: Quick lint is fast (10-60s), but 10 min provides safety margin
+        if ! run_with_timeout 600 pod spec lint "$spec" --allow-warnings; then
+            local exit_code=$?
+            if [[ $exit_code -eq 124 ]]; then
+                log_warn "[PODS] pod spec lint TIMED OUT after 10 minutes (config: pods.enabled=false). Treating as non-fatal."
+            else
+                log_warn "[PODS] pod spec lint failed for $spec (config: pods.enabled=false). Treating as non-fatal."
+            fi
             return 0
         fi
 
@@ -543,7 +558,32 @@ msp_run_pod_trunk_push() {
     
     # Real release tier behavior
     log_info "[PODS] Running pod trunk push for $spec"
-    pod trunk push "$spec" --allow-warnings
+    log_info "[PODS] Timeout: 30 minutes (1800s)"
+    
+    # Run with timeout: 30 minutes (1800s)
+    # Rationale: Observed 5-15 min, extreme cases up to 25 min, 30 min provides safety margin
+    if run_with_timeout 1800 pod trunk push "$spec" --allow-warnings; then
+        log_success "[PODS] ✅ Successfully pushed $spec to trunk"
+        return 0
+    else
+        local exit_code=$?
+        if [[ $exit_code -eq 124 ]]; then
+            log_error "[PODS] ❌ TIMEOUT: pod trunk push exceeded 30 minutes"
+            log_error "[PODS] This usually indicates:"
+            log_error "  1. Network connectivity issues"
+            log_error "  2. CocoaPods trunk server is slow or down"
+            log_error "  3. Podspec validation is taking too long"
+            log_error ""
+            log_error "Troubleshooting:"
+            log_error "  1. Check network: curl -I https://trunk.cocoapods.org"
+            log_error "  2. Check podspec locally: pod spec lint $spec --allow-warnings"
+            log_error "  3. Try again in a few minutes (server may be slow)"
+            return 1
+        else
+            log_error "[PODS] ❌ pod trunk push failed with exit code $exit_code"
+            return $exit_code
+        fi
+    fi
 }
 
 # ============================================================================
