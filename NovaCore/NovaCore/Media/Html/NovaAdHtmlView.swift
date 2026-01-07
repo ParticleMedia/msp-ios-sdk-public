@@ -17,7 +17,7 @@ class NovaAdHtmlView: WKWebView, WKScriptMessageHandler {
     var useCustomUrl: Bool = false
     var useCustomClose: Bool = false
     
-    public init() {
+    public init(supportReportHandling: Bool) {
         
         let config = WKWebViewConfiguration()
         let userController = WKUserContentController()
@@ -46,7 +46,7 @@ class NovaAdHtmlView: WKWebView, WKScriptMessageHandler {
         self.scrollView.showsVerticalScrollIndicator = false
         self.scrollView.showsHorizontalScrollIndicator = false
 
-        injectNovaNativeBridge(enableFeedback: false)
+        injectNovaNativeBridge(enableFeedback: supportReportHandling)
         injectGetAdContextBridge()
         
         addSubviews(passThroughView)

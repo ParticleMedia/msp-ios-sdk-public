@@ -43,6 +43,8 @@ public final class NovaInterstitialAdItem: NovaNativeBaseAd {
             return .unknown
         }
     }
+    
+    public var supportReportHandling: Bool = false
 
     // MARK: - NovaNativeMediaProviding
 
