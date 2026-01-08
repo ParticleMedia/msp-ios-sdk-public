@@ -126,6 +126,13 @@ class NovaInterstitialAdNormalView: UIView, NovaInterstitialAdViewProtocol {
     func didTapSkipButton() {
         // Default empty implementation - subclasses can override
     }
+    
+    func didFailToLoad() {
+        actionHelper = actionHelper
+            .logNovaSkipEvent(with: .error, duration: CACurrentMediaTime() - CACurrentMediaTime())
+            .handleCloseTap()
+        context.interstitialAd.delegate?.interstitialAdDidDismiss(context.interstitialAd)
+    }
 }
 
 extension NovaInterstitialAdNormalView: NovaInterstitialAdSubviewBehaviorDelegate {

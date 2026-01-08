@@ -113,10 +113,10 @@ class NovaInterstitialAdHtmlSubviewHandler: NovaInterstitialAdSubviewHandler, No
         
     }
     
-    func configPage(pageIndex: Int, htmlJSMessageDelegate: NovaAdHtmlJSMessageDelegate?, context: NovaInterstitialAdContext?) {
+    func configPage(pageIndex: Int, htmlActionDelegate: NovaAdHtmlActionDelegate?, context: NovaInterstitialAdContext?) {
         if let htmlModel = interstitialAd.htmlModel,
            pageIndex >= 0 && pageIndex < htmlModel.pages.count {
-            htmlView?.config(with: htmlModel.pages[pageIndex], htmlJSMessageDelegate: htmlJSMessageDelegate, context: context)
+            htmlView?.config(with: htmlModel.pages[pageIndex], htmlActionDelegate: htmlActionDelegate, context: context)
         }
     }
     
