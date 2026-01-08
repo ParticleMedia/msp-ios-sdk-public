@@ -485,7 +485,7 @@ switch_pods_dev() {
     # Safety margin: 20 min = 1.3-2x observed time
     log_info "Running pod install with 20-minute timeout..."
     if command -v run_with_timeout &>/dev/null; then
-        if run_with_timeout 1200 MSP_RELEASE=0 MSP_MODE=pods-dev pod install; then
+        if run_with_timeout 1200 env MSP_RELEASE=0 MSP_MODE=pods-dev pod install; then
             log_success "pod install completed (pure source mode)"
         else
             local exit_code=$?
@@ -652,7 +652,7 @@ switch_pods_release() {
     # Rationale: Same as pods-dev mode - first-time install can be slow
     log_info "Running pod install with 20-minute timeout..."
     if command -v run_with_timeout &>/dev/null; then
-        if run_with_timeout 1200 MSP_RELEASE=1 pod install; then
+        if run_with_timeout 1200 env MSP_RELEASE=1 pod install; then
             log_success "pod install completed"
         else
             local exit_code=$?
