@@ -12,7 +12,11 @@ msp_enforce_main_repo_or_exit
 # Usage:   Source this file and call notify::email::send_success_email
 # ============================================================================
 
-set -euo pipefail
+# Only set strict mode when running as main script, not when sourced
+# This prevents overriding the caller's error handling settings
+if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
+    set -euo pipefail
+fi
 
 # ============================================================================
 # Configuration Variables (loaded from YAML)
