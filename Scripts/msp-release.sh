@@ -1851,6 +1851,9 @@ do_resume() {
     export MSP_RESUME_MODE="1"
     export RELEASE_VERSION="$version"
     
+    # Resume allows existing tag (resume is for retrying failed releases)
+    export MSP_ALLOW_EXISTING_TAG=1
+    
     # Load config (applies CLI overrides, but version should come from state)
     load_release_config
     
