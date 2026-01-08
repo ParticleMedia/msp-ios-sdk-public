@@ -16,12 +16,14 @@ enum NovaAdHtmlJSMessage: String, CaseIterable {
 }
 
 
-public protocol NovaAdHtmlJSMessageDelegate: AnyObject {
+public protocol NovaAdHtmlActionDelegate: AnyObject {
     
     func didTapAdCtr(customUrl: URL?)
     
     func didTapAdReport()
     
     func didTapAdClose()
+    
+    func didFailToLoadPage()
     
 }

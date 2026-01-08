@@ -42,7 +42,7 @@ class NovaInterstitialAdPageView: NovaInterstitialAdNormalView {
                 showReportButton: reportHandling.novaCanShowReportButton(with: context.interstitialAd.novaAdReportContext)
             )
         if let pageIndex = context.pageIndex {
-            subviewHandler.configPage(pageIndex: pageIndex, htmlJSMessageDelegate: self, context: context)
+            subviewHandler.configPage(pageIndex: pageIndex, htmlActionDelegate: self, context: context)
         }
 
         // Setup tap gesture
@@ -51,7 +51,7 @@ class NovaInterstitialAdPageView: NovaInterstitialAdNormalView {
 
 }
 
-extension NovaInterstitialAdPageView: NovaAdHtmlJSMessageDelegate {
+extension NovaInterstitialAdPageView: NovaAdHtmlActionDelegate {
     func didTapAdCtr(customUrl: URL?) {
         self.didTapAd(customUrl: customUrl)
     }
@@ -63,6 +63,10 @@ extension NovaInterstitialAdPageView: NovaAdHtmlJSMessageDelegate {
     
     func didTapAdClose() {
         self.didTapSkipButton()
+    }
+    
+    func didFailToLoadPage() {
+        self.didFailToLoad()
     }
     
 }
