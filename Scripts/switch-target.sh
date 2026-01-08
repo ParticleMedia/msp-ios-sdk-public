@@ -43,6 +43,12 @@ fi
 # shellcheck source=Scripts/target-switching/common.sh
 source "$SWITCH_TARGET_SCRIPT_DIR/target-switching/common.sh"
 
+# Source process utilities for timeout protection
+if [[ -f "$ROOT_DIR/Scripts/lib/process_utils.sh" ]]; then
+    # shellcheck source=Scripts/lib/process_utils.sh
+    source "$ROOT_DIR/Scripts/lib/process_utils.sh" 2>/dev/null || true
+fi
+
 ensure_repo_root
 
 # ============================================================================
@@ -474,11 +480,40 @@ switch_pods_dev() {
     log_info "XCFramework copy phases will be REMOVED by Podfile post_install"
     
     cd "$ROOT_DIR"
-    if MSP_RELEASE=0 MSP_MODE=pods-dev pod install; then
-        log_success "pod install completed (pure source mode)"
+    # Run with timeout: 20 minutes (1200s)
+    # Rationale: First-time install (no Podfile.lock) can take 10-15 min for specs repo update + dependency resolution
+    # Safety margin: 20 min = 1.3-2x observed time
+    log_info "Running pod install with 20-minute timeout..."
+    if command -v run_with_timeout &>/dev/null; then
+        if run_with_timeout 1200 MSP_RELEASE=0 MSP_MODE=pods-dev pod install; then
+            log_success "pod install completed (pure source mode)"
+        else
+            local exit_code=$?
+            if [[ $exit_code -eq 124 ]]; then
+                log_error "pod install TIMED OUT after 20 minutes"
+                log_error "This usually indicates:"
+                log_error "  1. Network connectivity issues"
+                log_error "  2. CocoaPods specs repo update is very slow"
+                log_error "  3. Dependency resolution is taking too long"
+                log_error ""
+                log_error "Troubleshooting:"
+                log_error "  1. Check network: curl -I https://cdn.cocoapods.org"
+                log_error "  2. Manually update specs: pod repo update"
+                log_error "  3. Check Podfile for complex dependencies"
+            else
+                log_error "pod install failed with exit code $exit_code"
+            fi
+            exit 1
+        fi
     else
-        log_error "pod install failed"
-        exit 1
+        # Fallback: run without timeout if run_with_timeout not available
+        log_warn "run_with_timeout not available, running pod install without timeout protection"
+        if MSP_RELEASE=0 MSP_MODE=pods-dev pod install; then
+            log_success "pod install completed (pure source mode)"
+        else
+            log_error "pod install failed"
+            exit 1
+        fi
     fi
     
     # Step 8: Regenerate workspace YAML (AFTER pod install)
@@ -613,11 +648,31 @@ switch_pods_release() {
     log_info "Core modules use BINARY XCFrameworks, adapters use SOURCE"
     
     cd "$ROOT_DIR"
-    if MSP_RELEASE=1 pod install; then
-        log_success "pod install completed"
+    # Run with timeout: 20 minutes (1200s)
+    # Rationale: Same as pods-dev mode - first-time install can be slow
+    log_info "Running pod install with 20-minute timeout..."
+    if command -v run_with_timeout &>/dev/null; then
+        if run_with_timeout 1200 MSP_RELEASE=1 pod install; then
+            log_success "pod install completed"
+        else
+            local exit_code=$?
+            if [[ $exit_code -eq 124 ]]; then
+                log_error "pod install TIMED OUT after 20 minutes"
+                log_error "This usually indicates network or dependency resolution issues"
+            else
+                log_error "pod install failed with exit code $exit_code"
+            fi
+            exit 1
+        fi
     else
-        log_error "pod install failed"
-        exit 1
+        # Fallback: run without timeout if run_with_timeout not available
+        log_warn "run_with_timeout not available, running pod install without timeout protection"
+        if MSP_RELEASE=1 pod install; then
+            log_success "pod install completed"
+        else
+            log_error "pod install failed"
+            exit 1
+        fi
     fi
     
     # Step 6: Generate Xcode project
