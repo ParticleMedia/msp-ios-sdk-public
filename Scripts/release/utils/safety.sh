@@ -165,36 +165,45 @@ msp_safety_require_confirmation() {
         fi
         
         if [[ "$force" != "true" ]]; then
-            local current_branch
-            current_branch="$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo 'unknown')"
+            # Check if interactive mode is enabled (default: non-interactive)
+            local interactive="${INTERACTIVE:-false}"
+            
+            # Only prompt for confirmation if interactive mode is enabled AND stdin is a terminal
+            if [[ "$interactive" == "true" ]] && [[ -t 0 ]]; then
+                local current_branch
+                current_branch="$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo 'unknown')"
 
-            echo ""
-            echo "═══════════════════════════════════════════════════════════"
-            echo "⚠️  RELEASE CONFIRMATION REQUIRED"
-            echo "═══════════════════════════════════════════════════════════"
-            echo ""
-            echo "You are about to perform a REAL RELEASE."
-            echo ""
-            echo "  Version: $version"
-            echo "  Branch:  $current_branch"
-            echo "  Mode:    production"
-            echo ""
-            echo "This will:"
-            echo "  • Publish CocoaPods to trunk"
-            echo "  • Create and push Git tags"
-            echo "  • Push to remote repository"
-            echo ""
-            echo "═══════════════════════════════════════════════════════════"
-            echo ""
-            read -r -p "Continue with REAL RELEASE? (type 'yes' to confirm): " response
-            echo ""
+                echo ""
+                echo "═══════════════════════════════════════════════════════════"
+                echo "⚠️  RELEASE CONFIRMATION REQUIRED"
+                echo "═══════════════════════════════════════════════════════════"
+                echo ""
+                echo "You are about to perform a REAL RELEASE."
+                echo ""
+                echo "  Version: $version"
+                echo "  Branch:  $current_branch"
+                echo "  Mode:    production"
+                echo ""
+                echo "This will:"
+                echo "  • Publish CocoaPods to trunk"
+                echo "  • Create and push Git tags"
+                echo "  • Push to remote repository"
+                echo ""
+                echo "═══════════════════════════════════════════════════════════"
+                echo ""
+                read -r -p "Continue with REAL RELEASE? (type 'yes' to confirm): " response
+                echo ""
 
-            if [[ "$response" != "yes" ]]; then
-                log_error "[SAFETY] Release aborted by user"
-                return 1
+                if [[ "$response" != "yes" ]]; then
+                    log_error "[SAFETY] Release aborted by user"
+                    return 1
+                fi
+
+                log_info "[SAFETY] ✓ User confirmed release"
+            else
+                # Non-interactive mode: auto-confirm
+                log_info "[SAFETY] ✓ Non-interactive mode: Auto-confirming release"
             fi
-
-            log_info "[SAFETY] ✓ User confirmed release"
         else
             log_info "[SAFETY] ✓ Confirmation skipped (--force flag present)"
         fi
