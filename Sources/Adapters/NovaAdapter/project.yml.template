@@ -41,7 +41,7 @@ targets:
         embed: false
       - framework: ../../Core/ThirdParty/Lottie/Lottie.xcframework
         embed: false
-      - framework: ../../Core/ThirdParty/Shimmer/Shimmer.xcframework
+      - framework: ../../../ThirdParty/Shimmer/Shimmer.xcframework
         embed: false
     settings:
       base:
@@ -55,7 +55,7 @@ targets:
           - $(SRCROOT)/../../../Sources/Core/ThirdParty/Kingfisher
           - $(SRCROOT)/../../../Sources/Core/ThirdParty/SnapKit
           - $(SRCROOT)/../../../Sources/Core/ThirdParty/Lottie
-          - $(SRCROOT)/../../../Sources/Core/ThirdParty/Shimmer
+          - $(SRCROOT)/../../../ThirdParty/Shimmer
           - $(SRCROOT)/../../../Sources/Core/ThirdParty/SwiftProtobuf
           - $(SRCROOT)/../../../Sources/Core/MSPOMSDK/OMSDK_Newsbreak1.xcframework
 
