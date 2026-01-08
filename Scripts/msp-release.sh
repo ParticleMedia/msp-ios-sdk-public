@@ -1545,7 +1545,12 @@ do_resume() {
     fi
     
     # Auto-detect version from state file if not provided
-    local version="${1:-}"
+    # Get version from REMAINING_ARGS (passed from CLI) or state file
+    local version=""
+    if [[ ${#REMAINING_ARGS[@]} -gt 0 && ! "${REMAINING_ARGS[0]}" =~ ^- ]]; then
+        version="${REMAINING_ARGS[0]}"
+    fi
+    
     if [[ -z "$version" ]]; then
         if command -v jq >/dev/null 2>&1; then
             version=$(jq -r '.version // empty' "$state_file" 2>/dev/null || echo "")
