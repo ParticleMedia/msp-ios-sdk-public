@@ -89,7 +89,7 @@ class NovaInterstitialAdNormalView: UIView, NovaInterstitialAdViewProtocol {
     func didTapAd(customUrl: URL?) {
         actionHelper = actionHelper
             .logNovaClickEvent(with: CACurrentMediaTime() - CACurrentMediaTime(), in: .cta)
-            .handleAdTap(in: nil)
+            .handleAdTap(in: nil, customUrl: customUrl)
         context.interstitialAd.delegate?.interstitialAdDidLogClick(context.interstitialAd)
     }
 
