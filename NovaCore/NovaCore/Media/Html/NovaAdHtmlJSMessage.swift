@@ -13,6 +13,8 @@ enum NovaAdHtmlJSMessage: String, CaseIterable {
     case getAdContext = "getAdContext"
     
     case novaNativeBridge = "novaNativeBridge"
+    case mraidBridge = "mraidBridge"
+    case consoleLog = "consoleLog"
 }
 
 
