@@ -4300,6 +4300,43 @@ release_single_adapter() {
         return 1
     fi
     
+    # ════════════════════════════════════════════════════════════════════════════
+    # ✨ NEW: Commit version update immediately after successful publish
+    # ════════════════════════════════════════════════════════════════════════════
+    # Why: Ensure working directory is clean for resume
+    # When: Only in production mode (DRY_RUN=false)
+    # Safety: Check for uncommitted changes before commit (idempotent)
+    # ════════════════════════════════════════════════════════════════════════════
+    if [[ "$DRY_RUN" != "true" ]]; then
+        # Check if there are uncommitted changes for this adapter
+        local adapter_path="Sources/Adapters/${adapter}/${adapter}"
+
+        if ! git diff --quiet "$adapter_path" 2>/dev/null; then
+            log_info "Committing $adapter version update to $version..."
+
+            # Stage only adapter-specific files
+            if git add "${adapter_path}/"*.swift 2>/dev/null; then
+                # Commit with detailed message
+                if git commit -m "chore(release): update ${adapter} SDK version to ${version}
+
+- Update getSDKVersion() return value to ${version}
+- Committed immediately after successful publish to CocoaPods
+- Part of release ${version} preparation"; then
+                    log_success "✓ Committed ${adapter} version update"
+                else
+                    log_error "✗ Failed to commit ${adapter} version update"
+                    log_warn "Pod published successfully but version commit failed"
+                    log_warn "You may need to commit manually: git add ${adapter_path} && git commit"
+                    # Don't fail the release - pod is already published
+                fi
+            else
+                log_warn "No Swift files found to commit for ${adapter}"
+            fi
+        else
+            log_info "${adapter} version already committed or no changes"
+        fi
+    fi
+    
     # Note: Availability checking is done after ALL adapters are released
     echo "SUCCESS: $adapter released successfully" > "$result_file"
     return 0
@@ -4968,7 +5005,50 @@ release_msp_core() {
     create_github_release_for_pod "MSPCore" "$VERSION"
     
     # Publish to CocoaPods
-    publish_pod_to_cocoapods "MSPCore" "$VERSION"
+    # ════════════════════════════════════════════════════════════════════════════
+    # ✨ FIX: Check return value to catch publish failures
+    # ════════════════════════════════════════════════════════════════════════════
+    if ! publish_pod_to_cocoapods "MSPCore" "$VERSION"; then
+        log_error "❌ Failed to publish MSPCore to CocoaPods"
+        return 1
+    fi
+    
+    # ════════════════════════════════════════════════════════════════════════════
+    # ✨ NEW: Commit version update immediately after successful publish
+    # ════════════════════════════════════════════════════════════════════════════
+    # Why: Ensure working directory is clean for resume
+    # When: Only in production mode (DRY_RUN=false)
+    # Safety: Check for uncommitted changes before commit (idempotent)
+    # ════════════════════════════════════════════════════════════════════════════
+    if [[ "$DRY_RUN" != "true" ]]; then
+        # Check if there are uncommitted changes for Config.plist
+        local config_plist_path="Sources/Core/MSPCore/MSPCore/Resources/Config.plist"
+
+        if ! git diff --quiet "$config_plist_path" 2>/dev/null; then
+            log_info "Committing MSPCore version update to $VERSION..."
+
+            # Stage only Config.plist
+            if git add "$config_plist_path" 2>/dev/null; then
+                # Commit with detailed message
+                if git commit -m "chore(release): update MSPCore version to ${VERSION}
+
+- Update Config.plist SDKVersion to ${VERSION}
+- Committed immediately after successful publish to CocoaPods
+- Part of release ${VERSION} preparation"; then
+                    log_success "✓ Committed MSPCore version update"
+                else
+                    log_error "✗ Failed to commit MSPCore version update"
+                    log_warn "Pod published successfully but version commit failed"
+                    log_warn "You may need to commit manually: git add $config_plist_path && git commit"
+                    # Don't fail the release - pod is already published
+                fi
+            else
+                log_error "Failed to stage $config_plist_path"
+            fi
+        else
+            log_info "MSPCore version already committed or no changes"
+        fi
+    fi
     
     # Wait for availability (skip in dry-run mode)
     if [[ "$DRY_RUN" != "true" ]]; then
@@ -4980,26 +5060,46 @@ release_msp_core() {
 
 # Commit all changes to release branch
 commit_release_changes() {
-    log_step "Committing all release changes to release branch"
+    log_step "Committing remaining release artifacts (podspecs, generated files)"
     
     if [[ "$DRY_RUN" == "true" ]]; then
-        log_info "DRY RUN: Would commit all changes"
+        log_info "DRY RUN: Would commit remaining changes"
         return 0
     fi
     
-    # Add all changes
-    git add .
-    
+    # ════════════════════════════════════════════════════════════════════════════
+    # ✨ CHANGE: Only add generated files (version numbers already committed)
+    # ════════════════════════════════════════════════════════════════════════════
+    # Add generated release podspecs
+    if [[ -d "Build/ReleasePodspecs" ]]; then
+        git add Build/ReleasePodspecs/*.podspec 2>/dev/null || true
+    fi
+
+    # Add Package.swift if SPM is enabled
+    if [[ -f "Package.swift" ]]; then
+        git add Package.swift 2>/dev/null || true
+    fi
+
+    # Add any other generated artifacts (expand as needed)
+    # git add Build/XCFrameworks/**/*.plist 2>/dev/null || true
+
     # Check if there are changes to commit
     if git diff --cached --quiet; then
-        log_info "No changes to commit"
+        log_info "✓ No additional artifacts to commit"
+        log_info "   (Version number updates were committed separately per-pod)"
         return 0
     fi
+
+    # Commit remaining artifacts
+    git commit -m "chore(release): add generated artifacts for version ${VERSION}
+
+- Generated release podspecs for binary distribution
+- Updated Package.swift for SPM (if enabled)
+- Part of release ${VERSION} finalization
+
+Note: Version number updates were committed separately after each pod publish."
     
-    # Commit changes
-    git commit -m "Release version $VERSION - Update podspecs and version numbers"
-    
-    log_success "Committed all release changes"
+    log_success "✓ Committed remaining release artifacts"
 }
 
 # Main function
