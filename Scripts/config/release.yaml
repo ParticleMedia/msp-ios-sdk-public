@@ -53,7 +53,6 @@ profiles:
       allow_existing_tag: true       # Allow reusing existing tags (for testing)
       allow_existing_release: true   # Allow reusing existing GitHub Releases
       keep_sandbox: true             # Keep worktree sandbox after completion
-      require_confirmation: false    # Skip manual confirmation prompts
 
     # Performance
     performance:
@@ -130,7 +129,6 @@ profiles:
       allow_existing_tag: false      # Prevent accidental overwrites
       allow_existing_release: false
       keep_sandbox: false
-      require_confirmation: true     # Require manual confirmation
 
     performance:
       parallel_builds: true
@@ -198,7 +196,6 @@ profiles:
 # | MSP_ALLOW_EXISTING_TAG        | safety.allow_existing_tag         |
 # | MSP_ALLOW_EXISTING_RELEASE    | safety.allow_existing_release     |
 # | MSP_KEEP_SANDBOX              | safety.keep_sandbox               |
-# | MSP_REQUIRE_CONFIRMATION      | safety.require_confirmation       |
 # | MSP_PARALLEL_BUILDS           | performance.parallel_builds       |
 # | MSP_MAX_WORKERS               | performance.max_workers           |
 # | MSP_CDN_WAIT_TIME             | performance.cdn_wait_time         |
