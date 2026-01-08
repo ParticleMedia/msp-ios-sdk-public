@@ -16,9 +16,9 @@ msp_enforce_main_repo_or_exit
 # - SRP: Focused on ensuring XCFrameworks exist, not on publishing
 # - Reusable: Can be called from msp-release.sh, generate_podspec.sh, etc.
 #
-# Applies to: MSPPrebidAdapter, MSPGoogleAdapter, MSPFacebookAdapter, AmazonAdapter
+# Applies to: MSPPrebidAdapter, MSPGoogleAdapter, MSPFacebookAdapter, AmazonAdapter, MolocoAdapter, LiftoffAdapter, NovaAdapter
+# Note: NovaAdapter also includes pre-packaged NovaCore.xcframework (third-party dependency)
 # Does NOT apply to:
-# - NovaAdapter: Uses pre-packaged Binary/NovaCore.xcframework
 # - Core pods (MSPiOSCore, MSPSharedLibraries, MSPCore): Require pre-built XCFrameworks
 # ============================================================================
 
@@ -66,7 +66,7 @@ fi
 # ============================================================================
 # Binary distribution adapters that require auto-buildable XCFrameworks
 # Must be kept in sync with BINARY_DISTRIBUTION_PODS in generate_podspec.sh
-BINARY_ADAPTERS=("MSPPrebidAdapter" "MSPGoogleAdapter" "MSPFacebookAdapter" "AmazonAdapter" "MolocoAdapter" "LiftoffAdapter")
+BINARY_ADAPTERS=("MSPPrebidAdapter" "MSPGoogleAdapter" "MSPFacebookAdapter" "AmazonAdapter" "MolocoAdapter" "LiftoffAdapter" "NovaAdapter")
 
 # Build script path
 BUILD_SCRIPT="$ROOT_DIR/Scripts/xcframeworks/build_module.sh"

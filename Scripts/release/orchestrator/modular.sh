@@ -507,6 +507,17 @@ release_cocoapods() {
         return 0
     fi
 
+    # Ensure all required XCFrameworks are built before release
+    # This prevents "XCFramework not found" errors during packaging
+    if [[ -f "$ROOT_DIR/Scripts/release/utils/ensure_xcframeworks.sh" ]]; then
+        log_step "Ensuring binary adapter XCFrameworks are built..."
+        if ! "$ROOT_DIR/Scripts/release/utils/ensure_xcframeworks.sh" ensure; then
+            log_error "Failed to ensure XCFrameworks are built"
+            return 1
+        fi
+        log_success "All binary adapter XCFrameworks are ready"
+    fi
+
     export CURRENT_STEP="release_cocoapods"
     mark_step_start "release_cocoapods"
     log_section "Step 2: Releasing CocoaPods"
