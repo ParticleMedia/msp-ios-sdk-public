@@ -145,6 +145,7 @@ SKIP_SPM=false
 ONLY_PODS=false
 ONLY_SPM=false
 FORCE=false
+INTERACTIVE=false
 CONFIG_FILE=""
 CLI_VERSION=""
 SUBCOMMAND=""
@@ -184,6 +185,11 @@ parse_flags() {
 
             --dry-run)
                 DRY_RUN=true
+                shift
+                ;;
+
+            --interactive)
+                INTERACTIVE=true
                 shift
                 ;;
 
@@ -492,6 +498,7 @@ GLOBAL FLAGS:
     --verbose, -V         Enable verbose output (includes config summary)
     --dry-run             Show what would be done without executing
     --no-ansi             Disable colored output
+    --interactive         Enable interactive mode (version selection, confirmation prompts)
     --skip-preflight      Skip preflight validation
     --skip-pods           Skip CocoaPods release
     --skip-spm            Skip SPM release
@@ -554,6 +561,15 @@ EXAMPLES:
     # Resume failed release
     msp-release.sh resume 0.3.0-rc.7
     msp-release.sh resume              # Auto-detect version from state file
+
+    # Interactive mode (version selection + confirmation prompts)
+    msp-release.sh --interactive run
+
+    # One-click release (default, no interaction)
+    msp-release.sh run 0.4.0-rc.1
+
+    # One-click resume (default, no confirmation)
+    msp-release.sh resume 0.3.0-rc.9
 
     # Preflight validation
     msp-release.sh preflight
@@ -1004,9 +1020,12 @@ do_run() {
         apply_cli_overrides
     fi
     
-    # Interactive mode: only in CLI mode and when version is not set
-    # Skip if stdin is not a terminal (non-interactive mode)
-    if [[ "${MSP_RELEASE_MODE:-cli}" == "cli" ]] && [[ -z "${RELEASE_VERSION:-}" ]] && [[ -t 0 ]]; then
+    # Interactive mode: only when explicitly requested via --interactive flag
+    # Requires: CLI mode + version not set + terminal stdin + --interactive flag
+    if [[ "${MSP_RELEASE_MODE:-cli}" == "cli" ]] && \
+       [[ -z "${RELEASE_VERSION:-}" ]] && \
+       [[ -t 0 ]] && \
+       [[ "$INTERACTIVE" == "true" ]]; then
         _msp_interactive_release_setup
     fi
     
@@ -1808,8 +1827,8 @@ do_resume() {
         return 0
     fi
     
-    # Confirm resume
-    if [[ -t 0 ]]; then
+    # Confirm resume only when --interactive flag is set
+    if [[ -t 0 ]] && [[ "$INTERACTIVE" == "true" ]]; then
         echo ""
         read -p "Continue with resume? (y/N): " confirm
         if [[ "$confirm" != "y" && "$confirm" != "Y" ]]; then
