@@ -173,7 +173,6 @@ _load_defaults() {
     MSP_ALLOW_EXISTING_TAG="${MSP_ALLOW_EXISTING_TAG:-true}"
     MSP_ALLOW_EXISTING_RELEASE="${MSP_ALLOW_EXISTING_RELEASE:-true}"
     MSP_KEEP_SANDBOX="${MSP_KEEP_SANDBOX:-true}"
-    MSP_REQUIRE_CONFIRMATION="${MSP_REQUIRE_CONFIRMATION:-false}"
 
     MSP_PARALLEL_BUILDS="${MSP_PARALLEL_BUILDS:-true}"
     MSP_MAX_WORKERS="${MSP_MAX_WORKERS:-4}"
@@ -183,7 +182,7 @@ _load_defaults() {
     export MSP_VALIDATION_PODS MSP_VALIDATION_SPM MSP_VALIDATION_XCFRAMEWORK
     export MSP_VALIDATION_LOCAL MSP_VALIDATION_REMOTE MSP_VALIDATION_DEVICE
     export MSP_SLACK_ENABLED MSP_SLACK_ENV MSP_EMAIL_ENABLED
-    export MSP_ALLOW_EXISTING_TAG MSP_ALLOW_EXISTING_RELEASE MSP_KEEP_SANDBOX MSP_REQUIRE_CONFIRMATION
+    export MSP_ALLOW_EXISTING_TAG MSP_ALLOW_EXISTING_RELEASE MSP_KEEP_SANDBOX
     export MSP_PARALLEL_BUILDS MSP_MAX_WORKERS MSP_CDN_WAIT_TIME
 }
 
@@ -237,11 +236,9 @@ _extract_profile_config() {
     local var_allow_tag="${prefix}safety_allow_existing_tag"
     local var_allow_release="${prefix}safety_allow_existing_release"
     local var_keep_sandbox="${prefix}safety_keep_sandbox"
-    local var_require_confirm="${prefix}safety_require_confirmation"
     MSP_ALLOW_EXISTING_TAG="${!var_allow_tag:-true}"
     MSP_ALLOW_EXISTING_RELEASE="${!var_allow_release:-true}"
     MSP_KEEP_SANDBOX="${!var_keep_sandbox:-true}"
-    MSP_REQUIRE_CONFIRMATION="${!var_require_confirm:-false}"
 
     # Performance
     local var_parallel="${prefix}performance_parallel_builds"
@@ -255,7 +252,7 @@ _extract_profile_config() {
     export MSP_VALIDATION_PODS MSP_VALIDATION_SPM MSP_VALIDATION_XCFRAMEWORK
     export MSP_VALIDATION_LOCAL MSP_VALIDATION_REMOTE MSP_VALIDATION_DEVICE
     export MSP_SLACK_ENABLED MSP_SLACK_ENV MSP_EMAIL_ENABLED
-    export MSP_ALLOW_EXISTING_TAG MSP_ALLOW_EXISTING_RELEASE MSP_KEEP_SANDBOX MSP_REQUIRE_CONFIRMATION
+    export MSP_ALLOW_EXISTING_TAG MSP_ALLOW_EXISTING_RELEASE MSP_KEEP_SANDBOX
     export MSP_PARALLEL_BUILDS MSP_MAX_WORKERS MSP_CDN_WAIT_TIME
 }
 
@@ -330,7 +327,7 @@ _load_env_overrides() {
     export MSP_VALIDATION_PODS MSP_VALIDATION_SPM MSP_VALIDATION_XCFRAMEWORK
     export MSP_VALIDATION_LOCAL MSP_VALIDATION_REMOTE MSP_VALIDATION_DEVICE
     export MSP_SLACK_ENABLED MSP_SLACK_ENV MSP_EMAIL_ENABLED
-    export MSP_ALLOW_EXISTING_TAG MSP_ALLOW_EXISTING_RELEASE MSP_KEEP_SANDBOX MSP_REQUIRE_CONFIRMATION
+    export MSP_ALLOW_EXISTING_TAG MSP_ALLOW_EXISTING_RELEASE MSP_KEEP_SANDBOX
     export MSP_PARALLEL_BUILDS MSP_MAX_WORKERS MSP_CDN_WAIT_TIME
 }
 
@@ -339,7 +336,7 @@ _validate_config() {
     for var in MSP_DRY_RUN MSP_VALIDATION_PODS MSP_VALIDATION_SPM MSP_VALIDATION_XCFRAMEWORK \
                MSP_VALIDATION_LOCAL MSP_VALIDATION_REMOTE MSP_VALIDATION_DEVICE \
                MSP_SLACK_ENABLED MSP_EMAIL_ENABLED \
-               MSP_ALLOW_EXISTING_TAG MSP_ALLOW_EXISTING_RELEASE MSP_KEEP_SANDBOX MSP_REQUIRE_CONFIRMATION \
+               MSP_ALLOW_EXISTING_TAG MSP_ALLOW_EXISTING_RELEASE MSP_KEEP_SANDBOX \
                MSP_PARALLEL_BUILDS; do
         local value="${!var}"
         if [[ "$value" != "true" && "$value" != "false" ]]; then
@@ -401,7 +398,7 @@ display_config() {
     log_info "  Allow Existing Tag: $MSP_ALLOW_EXISTING_TAG"
     log_info "  Allow Existing Release: $MSP_ALLOW_EXISTING_RELEASE"
     log_info "  Keep Sandbox: $MSP_KEEP_SANDBOX"
-    log_info "  Require Confirmation: $MSP_REQUIRE_CONFIRMATION"
+    log_info "  Interactive Mode: ${INTERACTIVE:-false} (controlled by --interactive flag)"
 
     log_info "Performance:"
     log_info "  Parallel Builds: $MSP_PARALLEL_BUILDS"
