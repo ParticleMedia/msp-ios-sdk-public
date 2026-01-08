@@ -1022,6 +1022,40 @@ create_or_verify_github_release() {
             # Handle mismatch
             if [[ "${MSP_ALLOW_EXISTING_RELEASE:-false}" == "true" ]]; then
                 log_warning "Continuing with existing release (MSP_ALLOW_EXISTING_RELEASE=true)"
+
+                # Auto-fix: Publish draft release if production mode expects published
+                # This ensures CDN URLs are accessible for CocoaPods
+                if [[ "$current_draft" == "true" ]] && [[ "$expected_draft" == "false" ]]; then
+                    log_info "Auto-fixing: Publishing draft release to enable CDN access"
+                    log_info "Reason: Draft releases are private, CDN URLs will return 404"
+                    log_info "Action: gh release edit $tag --repo $repo --draft=false"
+
+                    if gh release edit "$tag" --repo "$repo" --draft=false 2>&1 | tee /tmp/gh-release-publish-$tag.log; then
+                        log_success "✅ Published draft release: $tag"
+                        log_info "Waiting 10 seconds for GitHub to propagate release state..."
+                        sleep 10
+
+                        # Verify release is now published
+                        local new_draft
+                        new_draft=$(gh release view "$tag" --repo "$repo" --json isDraft -q '.isDraft' 2>/dev/null || echo "false")
+                        if [[ "$new_draft" == "false" ]]; then
+                            log_success "✅ Release state verified: published"
+                        else
+                            log_warning "⚠️ Release state still draft after publish attempt"
+                            log_warning "⚠️ CDN verification may still fail"
+                        fi
+                    else
+                        log_error "❌ Failed to publish draft release"
+                        log_error "Check log: /tmp/gh-release-publish-$tag.log"
+                        log_warning "Continuing anyway (MSP_ALLOW_EXISTING_RELEASE=true)"
+                    fi
+                elif [[ "$current_draft" == "false" ]] && [[ "$expected_draft" == "true" ]]; then
+                    # Edge case: Published release but dry-run mode expects draft
+                    # We don't convert published → draft (destructive), just warn
+                    log_warning "⚠️ Release is published but DRY_RUN mode expects draft"
+                    log_warning "⚠️ Continuing with published release (safe, non-destructive)"
+                fi
+
                 return 0
             else
                 log_error "Release state mismatch"
