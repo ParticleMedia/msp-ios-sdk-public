@@ -439,12 +439,21 @@ update_specs_repo() {
 
     # Use file lock to prevent concurrent updates
     (
-        # Try to acquire lock (non-blocking)
-        if ! flock -n 9; then
-            log_info "Another process is updating specs repo, waiting for lock..."
-            # Wait for lock (blocking)
-            flock 9
-            log_info "Lock acquired, checking cache..."
+        # Check if flock is available (Linux has it, macOS may need coreutils)
+        if ! command -v flock >/dev/null 2>&1; then
+            log_debug "flock not available (macOS), skipping specs cache locking"
+            log_debug "To enable file locking on macOS, install flock via: brew install coreutils"
+            # Continue without locking (less safe but won't block execution)
+            # Note: CocoaPods has its own locking mechanism via .git/index.lock
+        else
+            # Use flock for file locking
+            # Try to acquire lock (non-blocking)
+            if ! flock -n 9; then
+                log_info "Another process is updating specs repo, waiting for lock..."
+                # Wait for lock (blocking)
+                flock 9
+                log_info "Lock acquired, checking cache..."
+            fi
         fi
 
         # Check cache (now protected by lock)

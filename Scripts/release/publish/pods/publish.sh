@@ -2970,7 +2970,9 @@ publish_pod_with_resume() {
         # Check if flock is available (Linux) or use fallback (macOS)
         if ! command -v flock >/dev/null 2>&1; then
             # macOS: flock not available, skip locking (acceptable for single-process releases)
-            log_debug "LOCK" "flock not available (macOS), skipping file locking"
+            log_debug "LOCK" "flock not available (macOS), skipping GitHub Release file locking"
+            log_debug "LOCK" "To enable file locking on macOS, install flock via: brew install coreutils"
+            log_debug "LOCK" "Parallel uploads may conflict without locking, but will continue"
             return 0
         fi
 
