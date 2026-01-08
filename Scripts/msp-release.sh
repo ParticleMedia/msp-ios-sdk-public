@@ -1858,6 +1858,11 @@ do_resume() {
     # Release might be in draft or published state - both are acceptable
     export MSP_ALLOW_EXISTING_RELEASE=true
     
+    # Resume is non-interactive by design (auto-retry without user confirmation)
+    # Explicitly set to prevent --interactive flag or profile settings from blocking
+    # Even if user passes --interactive, resume should not require manual confirmation
+    export INTERACTIVE=false
+    
     # Load config (applies CLI overrides, but version should come from state)
     load_release_config
     
