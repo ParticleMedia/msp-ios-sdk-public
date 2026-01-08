@@ -2258,8 +2258,27 @@ create_zip_from_xcframework() {
             # - Unlike other adapters that use Build/XCFrameworks/
             # ========================================================================
             if [[ "$pod" == "NovaAdapter" ]]; then
-                log_info "NovaAdapter: Using pre-packaged NovaCore.xcframework"
+                log_info "NovaAdapter: Binary adapter with embedded NovaCore dependency"
 
+                # Copy NovaAdapter.xcframework (NovaAdapter自身的代码)
+                local novaadapter_path="$ROOT_DIR/Build/XCFrameworks/NovaAdapter.xcframework"
+
+                if [[ ! -d "$novaadapter_path" ]]; then
+                    log_error "❌ NovaAdapter.xcframework not found: $novaadapter_path"
+                    log_error "NovaAdapter.xcframework must be built before release"
+                    log_error "Run: ./Scripts/xcframeworks/build_module.sh NovaAdapter"
+                    rm -rf "$temp_zip_dir"
+                    return 1
+                fi
+
+                if ! ditto "$novaadapter_path" "$temp_zip_dir/Binary/NovaAdapter.xcframework"; then
+                    log_error "❌ Failed to copy NovaAdapter.xcframework"
+                    rm -rf "$temp_zip_dir"
+                    return 1
+                fi
+                log_success "✅ Copied NovaAdapter.xcframework"
+
+                # Copy NovaCore.xcframework (第三方依赖)
                 local novacore_path="$ROOT_DIR/Binary/NovaCore.xcframework"
 
                 if [[ ! -d "$novacore_path" ]]; then
@@ -2274,8 +2293,9 @@ create_zip_from_xcframework() {
                     rm -rf "$temp_zip_dir"
                     return 1
                 fi
+                log_success "✅ Copied NovaCore.xcframework"
 
-                log_success "✅ Prepared NovaAdapter structure (with NovaCore.xcframework)"
+                log_success "✅ Prepared NovaAdapter structure (NovaAdapter + NovaCore)"
 
             else
                 # Regular adapters: use Build/XCFrameworks/
