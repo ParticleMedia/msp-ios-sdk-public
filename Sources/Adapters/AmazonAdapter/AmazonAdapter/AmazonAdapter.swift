@@ -9,7 +9,7 @@ import MSPGoogleAdsTypes
 import Foundation
 import DTBiOSSDK
 
-@objc public class AmazonAdapter : NSObject, AdNetworkAdapter {
+@objc public class AmazonNetworkAdapter : NSObject, AdNetworkAdapter {
     private var dtbAdLoader: DTBAdLoader?
     private var dtbAdResponse: DTBAdResponse?
     
@@ -540,7 +540,7 @@ import DTBiOSSDK
     ]
 }
 
-extension AmazonAdapter: DTBAdCallback {
+extension AmazonNetworkAdapter: DTBAdCallback {
     public func onSuccess(_ adResponse: DTBAdResponse!) {
         
         self.dtbAdResponse = adResponse
@@ -548,7 +548,7 @@ extension AmazonAdapter: DTBAdCallback {
         self.bannerView = bannerView
         if let dtbAdSize = self.dtbAdSize,
            let pricePoint = adResponse.pricePoints(dtbAdSize){
-            let priceInDollar = AmazonAdapter.amazonPriceMap[pricePoint]
+            let priceInDollar = AmazonNetworkAdapter.amazonPriceMap[pricePoint]
             self.priceInDollar = priceInDollar
         }
         bannerView.adUnitID = self.googlePlacementId
@@ -582,7 +582,7 @@ extension AmazonAdapter: DTBAdCallback {
     }
     
 }
-extension AmazonAdapter: MSPGADBannerViewDelegate {
+extension AmazonNetworkAdapter: MSPGADBannerViewDelegate {
     public func bannerViewDidReceiveAd(_ bannerView: MSPGADBannerView) {
         MSPLogger.shared.info(message: "[Adapter: Amazon] successfully loaded Google Banner ad")
         DispatchQueue.main.async {

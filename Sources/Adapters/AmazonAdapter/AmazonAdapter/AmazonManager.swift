@@ -10,7 +10,7 @@ import MSPiOSCore
 
 public class AmazonManager: AdNetworkManager {
     public override func getAdNetworkAdapter() -> AdNetworkAdapter? {
-        return AmazonAdapter()
+        return AmazonNetworkAdapter()
     }
 
     public override func getAdBidder(bidderPlacementId: String, bidderFormat: AdFormat?) -> Bidder? {

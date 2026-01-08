@@ -12,7 +12,7 @@ public class AmazonBidder: MSPiOSCore.Bidder {
     public weak var auctionBidListener: AuctionBidListener?
     public weak var adListener: AdListener?
     public var adRequest: AdRequest?
-    public var adNetworkAdapter: AdNetworkAdapter = AmazonAdapter()
+    public var adNetworkAdapter: AdNetworkAdapter = AmazonNetworkAdapter()
 
     public override func requestBid(adRequest: AdRequest, bidListener: any AuctionBidListener, adListener: any AdListener) {
         self.auctionBidListener = bidListener
