@@ -5167,6 +5167,7 @@ main() {
         
         if release_msp_shared_libraries; then
             echo "SUCCESS:MSPSharedLibraries" > "$shared_libs_result"
+            exit 0  # Explicit exit 0 to ensure success branch returns 0
         else
             echo "FAILED:MSPSharedLibraries" > "$shared_libs_result"
             exit 1
@@ -5191,6 +5192,7 @@ main() {
         
         if release_msp_googleadstypes; then
             echo "SUCCESS:MSPGoogleAdsTypes" > "$google_ads_types_result"
+            exit 0  # Explicit exit 0 to ensure success branch returns 0
         else
             echo "FAILED:MSPGoogleAdsTypes" > "$google_ads_types_result"
             exit 1
@@ -5209,121 +5211,195 @@ main() {
     local shared_libs_success=false
     # Timeout: 3 hours (10800s)
     # Rationale: Full release includes build + upload + CDN propagation + verification
+    
+    # ============================================================================
+    # Step 1: Wait for process completion (capture timeout)
+    # ============================================================================
     if wait_with_timeout $SHARED_LIBS_PID 10800 "MSPSharedLibraries release"; then
-        if [[ -f "$shared_libs_result" ]] && grep -q "SUCCESS" "$shared_libs_result"; then
-            log_success "✅ MSPSharedLibraries released successfully"
-            ((successful_pods++))
-            shared_libs_success=true
-            # Append background log to main log (changed from log_debug to log_info for visibility)
-            if [[ -f "$shared_libs_log" ]]; then
-                log_info "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-                log_info "📋 MSPSharedLibraries release log (from background process):"
-                log_info "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-                cat "$shared_libs_log" | while IFS= read -r line; do
-                    log_info "  [MSPSharedLibraries] $line"
-                done
-                log_info "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-            fi
-        else
-            log_error "❌ MSPSharedLibraries release failed"
-            ((failed_pods++))
-            failed_pod_names+=("MSPSharedLibraries")
-            # Append error log
-            if [[ -f "$shared_libs_log" ]]; then
-                log_error "MSPSharedLibraries release error log:"
-                cat "$shared_libs_log" | while IFS= read -r line; do
-                    log_error "  [MSPSharedLibraries] $line"
-                done
-            fi
-            if [[ "$DRY_RUN" != "true" ]]; then
-                if command -v notify::module_error &>/dev/null; then
-                    notify::module_error "MSPSharedLibraries" "$VERSION" "Foundation release failed: MSPSharedLibraries publication to CocoaPods Trunk failed"
-                fi
-            fi
-            msp_state_mark_step_failed "pods_publish" "MSPSharedLibraries release failed" "1"
-        fi
+        local wait_succeeded=true
+        local wait_exit_code=0
     else
-        local exit_code=$?
-        if [[ $exit_code -eq 124 ]]; then
-            log_error "❌ MSPSharedLibraries release TIMED OUT after 3 hours"
-            log_error "This is a critical issue requiring investigation"
-        else
-            log_error "❌ MSPSharedLibraries wait failed with exit code $exit_code"
+        local wait_exit_code=$?
+        local wait_succeeded=false
+    fi
+    
+    # ============================================================================
+    # Step 2: Check result file (GROUND TRUTH - most important)
+    # ============================================================================
+    if [[ -f "$shared_libs_result" ]] && grep -q "SUCCESS" "$shared_libs_result"; then
+        # ────────────────────────────────────────────────────────────────
+        # SUCCESS: Result file confirms success
+        # ────────────────────────────────────────────────────────────────
+        log_success "✅ MSPSharedLibraries released successfully"
+        ((successful_pods++))
+        shared_libs_success=true
+        
+        # If wait failed but result is SUCCESS, log warning (diagnostic only)
+        if [[ "$wait_succeeded" != "true" ]]; then
+            if [[ $wait_exit_code -eq 124 ]]; then
+                log_warn "⚠️ Note: Process timed out but result file indicates success"
+                log_warn "This may indicate a race condition in result file writing"
+            else
+                log_warn "⚠️ Note: wait returned exit code $wait_exit_code, but release actually succeeded"
+                log_warn "This is a known issue with subshell exit code handling (missing explicit exit 0)"
+            fi
         fi
+        
+        # Output log with CORRECT level (log_info for successful release)
+        if [[ -f "$shared_libs_log" ]]; then
+            log_info "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+            log_info "📋 MSPSharedLibraries release log (from background process):"
+            log_info "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+            cat "$shared_libs_log" | while IFS= read -r line; do
+                log_info "  [MSPSharedLibraries] $line"
+            done
+            log_info "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+        fi
+        
+    else
+        # ────────────────────────────────────────────────────────────────
+        # FAILURE: Result file missing or doesn't contain SUCCESS
+        # ────────────────────────────────────────────────────────────────
+        log_error "❌ MSPSharedLibraries release failed"
         ((failed_pods++))
         failed_pod_names+=("MSPSharedLibraries")
+        
+        # Diagnose failure reason
+        if [[ ! -f "$shared_libs_result" ]]; then
+            log_error "Reason: Result file was not created"
+            log_error "This indicates the release function failed before writing result"
+        elif ! grep -q "SUCCESS" "$shared_libs_result"; then
+            log_error "Reason: Result file indicates failure"
+            if [[ -f "$shared_libs_result" ]]; then
+                local result_content=$(cat "$shared_libs_result" 2>/dev/null)
+                log_error "Result file content: $result_content"
+            fi
+        fi
+        
+        # Check if timeout occurred
+        if [[ "$wait_succeeded" != "true" ]] && [[ $wait_exit_code -eq 124 ]]; then
+            log_error "Additional info: Process TIMED OUT after 3 hours"
+            log_error "This is a critical issue requiring investigation"
+        elif [[ "$wait_succeeded" != "true" ]]; then
+            log_error "Additional info: wait returned exit code $wait_exit_code"
+        fi
+        
+        # Output ERROR log (only for actual failures)
         if [[ -f "$shared_libs_log" ]]; then
-            log_error "MSPSharedLibraries release error log:"
+            log_error "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+            log_error "📋 MSPSharedLibraries release error log:"
+            log_error "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
             cat "$shared_libs_log" | while IFS= read -r line; do
                 log_error "  [MSPSharedLibraries] $line"
             done
+            log_error "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
         fi
+        
+        # Send failure notification
         if [[ "$DRY_RUN" != "true" ]]; then
             if command -v notify::module_error &>/dev/null; then
                 notify::module_error "MSPSharedLibraries" "$VERSION" "Foundation release failed: MSPSharedLibraries publication to CocoaPods Trunk failed"
             fi
         fi
-        msp_state_mark_step_failed "pods_publish" "MSPSharedLibraries release timeout/failure" "1"
+        
+        msp_state_mark_step_failed "pods_publish" "MSPSharedLibraries release failed" "1"
     fi
     
     # Wait for MSPGoogleAdsTypes (with timeout)
     local google_ads_types_success=false
     # Timeout: 3 hours (10800s)
+    
+    # ============================================================================
+    # Step 1: Wait for process completion (capture timeout)
+    # ============================================================================
     if wait_with_timeout $GOOGLE_ADS_TYPES_PID 10800 "MSPGoogleAdsTypes release"; then
-        if [[ -f "$google_ads_types_result" ]] && grep -q "SUCCESS" "$google_ads_types_result"; then
-            log_success "✅ MSPGoogleAdsTypes released successfully"
-            ((successful_pods++))
-            google_ads_types_success=true
-            # Append background log to main log (changed from log_debug to log_info for visibility)
-            if [[ -f "$google_ads_types_log" ]]; then
-                log_info "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-                log_info "📋 MSPGoogleAdsTypes release log (from background process):"
-                log_info "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-                cat "$google_ads_types_log" | while IFS= read -r line; do
-                    log_info "  [MSPGoogleAdsTypes] $line"
-                done
-                log_info "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-            fi
-        else
-            log_error "❌ MSPGoogleAdsTypes release failed"
-            ((failed_pods++))
-            failed_pod_names+=("MSPGoogleAdsTypes")
-            # Append error log
-            if [[ -f "$google_ads_types_log" ]]; then
-                log_error "MSPGoogleAdsTypes release error log:"
-                cat "$google_ads_types_log" | while IFS= read -r line; do
-                    log_error "  [MSPGoogleAdsTypes] $line"
-                done
-            fi
-            if [[ "$DRY_RUN" != "true" ]]; then
-                if command -v notify::module_error &>/dev/null; then
-                    notify::module_error "MSPGoogleAdsTypes" "$VERSION" "Foundation release failed: MSPGoogleAdsTypes publication to CocoaPods Trunk failed"
-                fi
-            fi
-            msp_state_mark_step_failed "pods_publish" "MSPGoogleAdsTypes release failed" "1"
-        fi
+        local wait_succeeded=true
+        local wait_exit_code=0
     else
-        local exit_code=$?
-        if [[ $exit_code -eq 124 ]]; then
-            log_error "❌ MSPGoogleAdsTypes release TIMED OUT after 3 hours"
-            log_error "This is a critical issue requiring investigation"
-        else
-            log_error "❌ MSPGoogleAdsTypes wait failed with exit code $exit_code"
+        local wait_exit_code=$?
+        local wait_succeeded=false
+    fi
+    
+    # ============================================================================
+    # Step 2: Check result file (GROUND TRUTH - most important)
+    # ============================================================================
+    if [[ -f "$google_ads_types_result" ]] && grep -q "SUCCESS" "$google_ads_types_result"; then
+        # ────────────────────────────────────────────────────────────────
+        # SUCCESS: Result file confirms success
+        # ────────────────────────────────────────────────────────────────
+        log_success "✅ MSPGoogleAdsTypes released successfully"
+        ((successful_pods++))
+        google_ads_types_success=true
+        
+        # If wait failed but result is SUCCESS, log warning (diagnostic only)
+        if [[ "$wait_succeeded" != "true" ]]; then
+            if [[ $wait_exit_code -eq 124 ]]; then
+                log_warn "⚠️ Note: Process timed out but result file indicates success"
+                log_warn "This may indicate a race condition in result file writing"
+            else
+                log_warn "⚠️ Note: wait returned exit code $wait_exit_code, but release actually succeeded"
+                log_warn "This is a known issue with subshell exit code handling (missing explicit exit 0)"
+            fi
         fi
+        
+        # Output log with CORRECT level (log_info for successful release)
+        if [[ -f "$google_ads_types_log" ]]; then
+            log_info "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+            log_info "📋 MSPGoogleAdsTypes release log (from background process):"
+            log_info "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+            cat "$google_ads_types_log" | while IFS= read -r line; do
+                log_info "  [MSPGoogleAdsTypes] $line"
+            done
+            log_info "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+        fi
+        
+    else
+        # ────────────────────────────────────────────────────────────────
+        # FAILURE: Result file missing or doesn't contain SUCCESS
+        # ────────────────────────────────────────────────────────────────
+        log_error "❌ MSPGoogleAdsTypes release failed"
         ((failed_pods++))
         failed_pod_names+=("MSPGoogleAdsTypes")
+        
+        # Diagnose failure reason
+        if [[ ! -f "$google_ads_types_result" ]]; then
+            log_error "Reason: Result file was not created"
+            log_error "This indicates the release function failed before writing result"
+        elif ! grep -q "SUCCESS" "$google_ads_types_result"; then
+            log_error "Reason: Result file indicates failure"
+            if [[ -f "$google_ads_types_result" ]]; then
+                local result_content=$(cat "$google_ads_types_result" 2>/dev/null)
+                log_error "Result file content: $result_content"
+            fi
+        fi
+        
+        # Check if timeout occurred
+        if [[ "$wait_succeeded" != "true" ]] && [[ $wait_exit_code -eq 124 ]]; then
+            log_error "Additional info: Process TIMED OUT after 3 hours"
+            log_error "This is a critical issue requiring investigation"
+        elif [[ "$wait_succeeded" != "true" ]]; then
+            log_error "Additional info: wait returned exit code $wait_exit_code"
+        fi
+        
+        # Output ERROR log (only for actual failures)
         if [[ -f "$google_ads_types_log" ]]; then
-            log_error "MSPGoogleAdsTypes release error log:"
+            log_error "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+            log_error "📋 MSPGoogleAdsTypes release error log:"
+            log_error "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
             cat "$google_ads_types_log" | while IFS= read -r line; do
                 log_error "  [MSPGoogleAdsTypes] $line"
             done
+            log_error "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
         fi
+        
+        # Send failure notification
         if [[ "$DRY_RUN" != "true" ]]; then
             if command -v notify::module_error &>/dev/null; then
                 notify::module_error "MSPGoogleAdsTypes" "$VERSION" "Foundation release failed: MSPGoogleAdsTypes publication to CocoaPods Trunk failed"
             fi
         fi
-        msp_state_mark_step_failed "pods_publish" "MSPGoogleAdsTypes release timeout/failure" "1"
+        
+        msp_state_mark_step_failed "pods_publish" "MSPGoogleAdsTypes release failed" "1"
     fi
     
     # Cleanup result files
