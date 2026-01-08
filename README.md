@@ -554,6 +554,19 @@ This will create 15 test cases covering all combinations of DRY_RUN, VERIFY_SPM_
 >
 > **Related Code**: See commented-out code in `Scripts/release/utils/safety.sh` lines 29-56
 
+> **TODO**: Restrict feature/* branch real publish when CI is ready
+>
+> **Current Status**: feature/* branches are allowed to perform production releases (`allow_real_publish: true`) because all releases are done locally on feature branches for testing.
+>
+> **Location**: `Scripts/release/config/release_config.yaml` - `branch_policy.rules["feature/.*"]`
+>
+> **Action Required**: Once CI pipeline is ready:
+> 1. Change `feature/.*` branch policy to `allow_real_publish: false`
+> 2. Only allow `release/*`, `main`, and `master` branches to do production releases
+> 3. Feature branches should only be allowed for preflight testing
+>
+> **Security Rationale**: Restricting feature branches prevents accidental production releases from development branches
+
 ### Configuration System
 
 MSP iOS SDK release system uses **profile-based configuration** for simplified environment management.

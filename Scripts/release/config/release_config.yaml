@@ -89,7 +89,8 @@ branch_policy:
       allow_real_publish: true
       allow_test_publish: true
       allow_preflight: true
+    # TODO: Change to false when CI pipeline is ready (currently all releases are done locally)
     "feature/.*":
-      allow_real_publish: false
-      allow_test_publish: false
+      allow_real_publish: true
+      allow_test_publish: true
       allow_preflight: true
