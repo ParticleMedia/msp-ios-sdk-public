@@ -4424,49 +4424,136 @@ release_adapters() {
     
     log_info "Waiting for both availability checks to complete..."
     
-    # Wait for both checks to complete (with timeout)
-    local shared_libs_check_result=0
-    local google_ads_types_check_result=0
-    
-    # Timeout: 90 minutes (5400s) for each check
+    # Maximum wait time: 90 minutes (5400s)
     # Rationale: Each check includes waiting for pod availability (up to 60 min)
-    wait_with_timeout $SHARED_LIBS_CHECK_PID 5400 "MSPSharedLibraries availability check" || shared_libs_check_result=$?
-    wait_with_timeout $GOOGLE_ADS_TYPES_CHECK_PID 5400 "MSPGoogleAdsTypes availability check" || google_ads_types_check_result=$?
-    
+    local timeout_seconds=5400
+    local check_interval=5
+    local elapsed=0
+
+    # Track completion status
+    local shared_libs_check_done=false
+    local google_ads_types_check_done=false
+    local shared_libs_check_exit_code=""
+    local google_ads_types_check_exit_code=""
+
+    # Parallel wait loop with timeout
+    while [[ $elapsed -lt $timeout_seconds ]]; do
+        # Check if MSPSharedLibraries check is still running
+        if [[ "$shared_libs_check_done" == "false" ]]; then
+            if ! kill -0 $SHARED_LIBS_CHECK_PID 2>/dev/null; then
+                # Process has exited, get its exit code via wait
+                wait $SHARED_LIBS_CHECK_PID 2>/dev/null
+                shared_libs_check_exit_code=$?
+                shared_libs_check_done=true
+                log_info "MSPSharedLibraries availability check completed (exit code: $shared_libs_check_exit_code)"
+            fi
+        fi
+
+        # Check if MSPGoogleAdsTypes check is still running
+        if [[ "$google_ads_types_check_done" == "false" ]]; then
+            if ! kill -0 $GOOGLE_ADS_TYPES_CHECK_PID 2>/dev/null; then
+                # Process has exited, get its exit code via wait
+                wait $GOOGLE_ADS_TYPES_CHECK_PID 2>/dev/null
+                google_ads_types_check_exit_code=$?
+                google_ads_types_check_done=true
+                log_info "MSPGoogleAdsTypes availability check completed (exit code: $google_ads_types_check_exit_code)"
+            fi
+        fi
+
+        # Check if both checks are done
+        if [[ "$shared_libs_check_done" == "true" ]] && [[ "$google_ads_types_check_done" == "true" ]]; then
+            log_success "✅ Both availability checks completed"
+            break
+        fi
+
+        # Progress reporting every minute
+        if [[ $((elapsed % 60)) -eq 0 ]] && [[ $elapsed -gt 0 ]]; then
+            local remaining=$((timeout_seconds - elapsed))
+            log_debug "⏱️  Availability checks: ${elapsed}s elapsed, ${remaining}s remaining"
+            if [[ "$shared_libs_check_done" == "false" ]]; then
+                log_debug "   - MSPSharedLibraries: still checking"
+            fi
+            if [[ "$google_ads_types_check_done" == "false" ]]; then
+                log_debug "   - MSPGoogleAdsTypes: still checking"
+            fi
+        fi
+
+        sleep $check_interval
+        elapsed=$((elapsed + check_interval))
+    done
+
     # Check for timeout
-    if [[ $shared_libs_check_result -eq 124 ]] || [[ $google_ads_types_check_result -eq 124 ]]; then
-        log_error "Dependency availability check timed out"
+    if [[ "$shared_libs_check_done" == "false" ]] || [[ "$google_ads_types_check_done" == "false" ]]; then
+        log_error "❌ Dependency availability checks TIMED OUT after ${timeout_seconds}s (90 minutes)"
         log_error "This usually indicates:"
         log_error "  1. Pod trunk push failed silently"
         log_error "  2. CocoaPods CDN sync is stuck"
         log_error "  3. Network connectivity issues"
-        log_error "Check the logs above for more details"
+
+        if [[ "$shared_libs_check_done" == "false" ]]; then
+            log_error "   - MSPSharedLibraries check: timed out"
+            kill -TERM $SHARED_LIBS_CHECK_PID 2>/dev/null || true
+        fi
+        if [[ "$google_ads_types_check_done" == "false" ]]; then
+            log_error "   - MSPGoogleAdsTypes check: timed out"
+            kill -TERM $GOOGLE_ADS_TYPES_CHECK_PID 2>/dev/null || true
+        fi
+
+        # Cleanup temp files
+        rm -f "$shared_libs_check_file" "$google_ads_types_check_file"
+        log_debug "[CLEANUP] Cleaned up dependency availability check temporary resources"
+
         return 1
     fi
-    
-    # Verify both succeeded
+
+    # =========================================================================
+    # Process Results for MSPSharedLibraries Availability
+    # =========================================================================
     local shared_libs_available=false
-    local google_ads_types_available=false
-    
+
+    # Check result file (primary indicator of success)
     if [[ -f "$shared_libs_check_file" ]] && grep -q "SUCCESS" "$shared_libs_check_file"; then
         shared_libs_available=true
         log_success "✅ MSPSharedLibraries $VERSION is available"
     else
         log_error "❌ MSPSharedLibraries $VERSION is not available"
+
+        # Detailed failure reason
+        if [[ "$shared_libs_check_done" == "false" ]]; then
+            log_error "❌ Reason: Timeout (check did not complete in ${timeout_seconds}s)"
+        elif [[ -n "$shared_libs_check_exit_code" ]] && [[ "$shared_libs_check_exit_code" != "0" ]]; then
+            log_error "❌ Reason: Check exit code $shared_libs_check_exit_code"
+        else
+            log_error "❌ Reason: Result file missing or does not contain SUCCESS"
+        fi
     fi
-    
+
+    # =========================================================================
+    # Process Results for MSPGoogleAdsTypes Availability
+    # =========================================================================
+    local google_ads_types_available=false
+
+    # Check result file (primary indicator of success)
     if [[ -f "$google_ads_types_check_file" ]] && grep -q "SUCCESS" "$google_ads_types_check_file"; then
         google_ads_types_available=true
         log_success "✅ MSPGoogleAdsTypes $VERSION is available"
     else
         log_error "❌ MSPGoogleAdsTypes $VERSION is not available"
+
+        # Detailed failure reason
+        if [[ "$google_ads_types_check_done" == "false" ]]; then
+            log_error "❌ Reason: Timeout (check did not complete in ${timeout_seconds}s)"
+        elif [[ -n "$google_ads_types_check_exit_code" ]] && [[ "$google_ads_types_check_exit_code" != "0" ]]; then
+            log_error "❌ Reason: Check exit code $google_ads_types_check_exit_code"
+        else
+            log_error "❌ Reason: Result file missing or does not contain SUCCESS"
+        fi
     fi
-    
+
     # Cleanup temp files (comprehensive)
     rm -f "$shared_libs_check_file" "$google_ads_types_check_file"
-    
     log_debug "[CLEANUP] Cleaned up dependency availability check temporary resources"
-    
+
     # Check if both are available
     if [[ "$shared_libs_available" != "true" ]] || [[ "$google_ads_types_available" != "true" ]]; then
         log_error "One or more required dependencies are not available, cannot proceed with adapter releases"
@@ -4650,30 +4737,33 @@ release_adapters() {
                     fi
                 fi
             else
-                # Process completed, check result (with timeout protection)
-                # Note: This is a safety net, as the process should already be done
-                # But in rare cases (D state), wait might still hang
-                if wait_with_timeout "$pid" 60 "adapter $adapter completion"; then
-                    local exit_code=$?
-                else
-                    local exit_code=$?
-                    if [[ $exit_code -eq 124 ]]; then
-                        log_error "❌ Timeout waiting for adapter $adapter process completion"
-                        # Treat as failure
-                        exit_code=1
-                    fi
-                fi
-                
+                # Process has exited, capture exit code and check result
+                # Note: We already know the process exited (kill -0 failed)
+                # Try to get exit code (may succeed if process just exited)
+                wait "$pid" 2>/dev/null
+                local exit_code=$?
+
+                # Check result file (primary indicator of success)
                 if [[ -f "$result_file" ]] && grep -q "SUCCESS" "$result_file"; then
                     log_success "✅ $adapter released successfully"
                     ((success_count++))
                     pids[$i]="DONE"
                 else
-                    log_error "❌ $adapter release failed (exit code: $exit_code)"
+                    # Detailed failure analysis
+                    log_error "❌ $adapter release failed"
+
                     if [[ -f "$result_file" ]]; then
                         local result_content=$(cat "$result_file")
                         log_error "$adapter: $result_content"
                     fi
+
+                    # Show exit code if available
+                    if [[ -n "$exit_code" ]] && [[ "$exit_code" != "0" ]]; then
+                        log_error "❌ Exit code: $exit_code"
+                    else
+                        log_error "❌ Result file missing or does not contain SUCCESS"
+                    fi
+
                     has_failure=true
                     failed_adapter="$adapter"
                     failed_adapters+=("$adapter")
