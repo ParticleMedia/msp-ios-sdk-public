@@ -111,7 +111,7 @@ extension NovaActionHelper where T == NovaActionState.Init {
 extension NovaActionHelper where T == NovaActionState.NovaEventSent {
     /// NovaActionHelper should be kept alive until the action is performed
     func handleAdTap(in tapView: UIView?, customUrl: URL? = nil) -> NovaActionHelper<NovaActionState.Init> {
-        handleTapAction(in: tapView)
+        handleTapAction(in: tapView, customUrl: customUrl)
         context.onAdViewClick?(tapView)
         return NovaActionHelper<NovaActionState.Init>(from: self)
     }
