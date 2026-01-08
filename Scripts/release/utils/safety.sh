@@ -19,6 +19,12 @@
 [[ -n "${_MSP_SAFETY_SOURCED:-}" ]] && return 0
 readonly _MSP_SAFETY_SOURCED=1
 
+# Source shared validation library for centralized branch validation
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+ROOT_DIR="$(cd "$SCRIPT_DIR/../.." && pwd)"
+# shellcheck source=Scripts/lib/validation.sh
+source "$ROOT_DIR/Scripts/lib/validation.sh" 2>/dev/null || true
+
 # ============================================================================
 # Safety Check 1: Block Release Tier from Running Locally
 # ============================================================================
@@ -227,32 +233,10 @@ msp_safety_validate_branch() {
             log_info "[SAFETY] ℹ️  建议在正式生产环境使用 CI 流水线 (Recommend using CI pipeline for production)"
             return 0
         fi
-        
-        local current_branch
-        current_branch="$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo '')"
 
-        if [[ -z "$current_branch" ]]; then
-            log_error "[SAFETY] Cannot determine current Git branch"
-            return 1
-        fi
-
-        log_info "[SAFETY] Validating branch: $current_branch"
-
-        # Allowed branches: release/*, main, master, feature/*
-        # feature/* branches are allowed because:
-        # - They will create release/* branch in Step 1
-        # - This check happens in preflight (before branch creation)
-        if [[ "$current_branch" =~ ^release/ ]] || \
-           [[ "$current_branch" =~ ^feature/ ]] || \
-           [[ "$current_branch" == "main" ]] || \
-           [[ "$current_branch" == "master" ]]; then
-            log_info "[SAFETY] ✓ Branch '$current_branch' is allowed for release"
-            if [[ "$current_branch" =~ ^feature/ ]]; then
-                log_info "[SAFETY] ℹ️  Feature branch detected: release/* branch will be created in Step 1"
-            fi
-        else
-            log_error "[SAFETY] Production mode cannot run on branch '$current_branch'"
-            log_error "[SAFETY] Allowed branches: release/*, feature/*, main, master"
+        # Use centralized branch validation from validation.sh (DRY principle)
+        # This ensures consistency between safety.sh and modular.sh
+        if ! validate_release_branch; then
             return 1
         fi
     fi

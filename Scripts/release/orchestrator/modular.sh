@@ -99,6 +99,11 @@ if [[ -f "$ROOT_DIR/Scripts/release/utils/logger.sh" ]]; then
     source "$ROOT_DIR/Scripts/release/utils/logger.sh" 2>/dev/null || true
 fi
 
+# Source shared validation library for centralized branch validation
+if [[ -f "$ROOT_DIR/Scripts/lib/validation.sh" ]]; then
+    source "$ROOT_DIR/Scripts/lib/validation.sh" 2>/dev/null || true
+fi
+
 # ============================================================================
 # STEP-Level Logging Functions
 # ============================================================================
@@ -380,24 +385,22 @@ validate_inputs() {
     fi
     
     # Phase 4 TASK 0: Branch validity check for production releases
+    # Use centralized branch validation from validation.sh (DRY principle)
+    # This ensures consistency between safety.sh and modular.sh
     local current_branch
     current_branch="$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo "")"
     if [[ -z "$current_branch" ]]; then
         log_error "Could not determine current git branch"
         exit 1
     fi
-    
+
     # Phase B: Use DRY_RUN instead of MSP_RELEASE_TIER
     local dry_run="${DRY_RUN:-true}"
     if [[ "$dry_run" == "false" ]]; then
         # Production mode branch validation
-        # Allow:
-        # 1. Already on main or release/* (no branch creation needed)
-        # 2. On feature/* branch (will create release/* in Step 1)
-        if [[ "$current_branch" != "main" ]] && [[ ! "$current_branch" =~ ^release/ ]] && [[ ! "$current_branch" =~ ^feature/ ]]; then
-            log_error "[MSP][ORCH][ERROR] Production mode requires branch 'main', 'feature/*', or 'release/*'"
+        if ! validate_release_branch; then
+            log_error "[MSP][ORCH][ERROR] Branch validation failed"
             log_error "Current branch: $current_branch"
-            log_error "If on feature/* branch, a release branch will be created in Step 1"
             log_error "Please switch to a valid branch, or use DRY_RUN=true for dry-run releases"
             exit 1
         fi
