@@ -88,7 +88,7 @@ class NovaInterstitialAdNormalView: UIView, NovaInterstitialAdViewProtocol {
 
     func didTapAd(customUrl: URL?) {
         actionHelper = actionHelper
-            .logNovaClickEvent(with: CACurrentMediaTime() - CACurrentMediaTime(), in: .cta)
+            .logNovaClickEvent(with: CACurrentMediaTime() - startTime, in: .cta)
             .handleAdTap(in: nil, customUrl: customUrl)
         context.interstitialAd.delegate?.interstitialAdDidLogClick(context.interstitialAd)
     }
@@ -129,7 +129,7 @@ class NovaInterstitialAdNormalView: UIView, NovaInterstitialAdViewProtocol {
     
     func didFailToLoad() {
         actionHelper = actionHelper
-            .logNovaSkipEvent(with: .error, duration: CACurrentMediaTime() - CACurrentMediaTime())
+            .logNovaSkipEvent(with: .error, duration: CACurrentMediaTime() - startTime)
             .handleCloseTap()
         context.interstitialAd.delegate?.interstitialAdDidDismiss(context.interstitialAd)
     }
@@ -148,7 +148,7 @@ extension NovaInterstitialAdNormalView: NovaInterstitialAdSubviewBehaviorDelegat
 
     func didTapCloseButton() {
         actionHelper = actionHelper
-            .logNovaSkipEvent(with: .skipButton, duration: CACurrentMediaTime() - CACurrentMediaTime())
+            .logNovaSkipEvent(with: .skipButton, duration: CACurrentMediaTime() - startTime)
             .handleCloseTap()
         context.interstitialAd.delegate?.interstitialAdDidDismiss(context.interstitialAd)
     }
@@ -167,7 +167,7 @@ extension NovaInterstitialAdNormalView: NovaInterstitialAdSubviewBehaviorDelegat
         )
         
         playableActionHelper = playableActionHelper?
-            .logNovaClickEvent(with: CACurrentMediaTime() - CACurrentMediaTime(), in: .playable)
+            .logNovaClickEvent(with: CACurrentMediaTime() - startTime, in: .playable)
             .handleAdTap(in: nil)
     }
 }
