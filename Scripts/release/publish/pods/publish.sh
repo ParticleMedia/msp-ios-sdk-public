@@ -3451,10 +3451,25 @@ RUBY_SCRIPT
     log_info ""
 
     # Publish with captured output
+    # Use temporary file to capture exit code (avoids broken pipe error)
+    local exit_code_file
+    exit_code_file=$(mktemp "/tmp/pod_trunk_exit_code_XXXXXX")
+    register_temp_resource "$exit_code_file"
+
+    # Execute pod trunk push and capture exit code immediately
+    {
+        pod trunk push "$podspec" --allow-warnings $skip_tests_flag 2>&1 | tee "$log_file"
+        echo "${PIPESTATUS[0]}" > "$exit_code_file"
+    } || true
+
+    # Read exit code and output from files
+    local publish_exit_code
+    publish_exit_code=$(cat "$exit_code_file" 2>/dev/null || echo "1")
     local publish_output
-    publish_output=$(pod trunk push "$podspec" --allow-warnings $skip_tests_flag 2>&1 | tee "$log_file"; echo "${PIPESTATUS[0]}")
-    local publish_exit_code="${publish_output##*$'\n'}"
-    publish_output="${publish_output%$'\n'*}"
+    publish_output=$(cat "$log_file" 2>/dev/null || echo "")
+
+    # Cleanup exit code file
+    rm -f "$exit_code_file"
 
     if [[ "$publish_exit_code" == "0" ]]; then
         log_success "✅ $pod $version published successfully"
@@ -3475,10 +3490,23 @@ RUBY_SCRIPT
         if auto_fix_checksum_issue "$pod" "$version" "$publish_output"; then
             log_info "PUBLISH" "Checksum issue fixed, retrying publication..."
 
-            # Retry publication after fix (reuse skip_tests_flag from above)
-            publish_output=$(pod trunk push "$podspec" --allow-warnings $skip_tests_flag 2>&1 | tee "$log_file"; echo "${PIPESTATUS[0]}")
-            publish_exit_code="${publish_output##*$'\n'}"
-            publish_output="${publish_output%$'\n'*}"
+            # Create new temporary file for retry
+            local retry_exit_code_file
+            retry_exit_code_file=$(mktemp "/tmp/pod_trunk_exit_code_retry_XXXXXX")
+            register_temp_resource "$retry_exit_code_file"
+
+            # Retry publication after fix
+            {
+                pod trunk push "$podspec" --allow-warnings $skip_tests_flag 2>&1 | tee "$log_file"
+                echo "${PIPESTATUS[0]}" > "$retry_exit_code_file"
+            } || true
+
+            # Read retry results
+            publish_exit_code=$(cat "$retry_exit_code_file" 2>/dev/null || echo "1")
+            publish_output=$(cat "$log_file" 2>/dev/null || echo "")
+
+            # Cleanup retry exit code file
+            rm -f "$retry_exit_code_file"
 
             if [[ "$publish_exit_code" == "0" ]]; then
                 log_info "PUBLISH" "✓ Publication succeeded after auto-fix"
