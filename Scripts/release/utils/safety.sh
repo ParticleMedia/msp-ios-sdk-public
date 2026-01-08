@@ -253,7 +253,23 @@ msp_safety_require_changelog() {
     local repo_root="${ROOT_DIR:-$(git rev-parse --show-toplevel 2>/dev/null)}"
 
     # Production mode (DRY_RUN=false) requires changelog
+    # But only in CI environment - local releases skip this check
+    # (consistent with msp_safety_require_ci_for_release behavior)
     if [[ "$dry_run" == "false" ]]; then
+        # Check for CI environment - skip changelog check for local releases
+        local ci_detected=false
+        if [[ -n "${CI:-}" ]] && [[ "${CI}" == "true" ]]; then
+            ci_detected=true
+        elif [[ -n "${GITHUB_ACTIONS:-}" ]] && [[ "${GITHUB_ACTIONS}" == "true" ]]; then
+            ci_detected=true
+        fi
+
+        if [[ "$ci_detected" == "false" ]]; then
+            # Local release mode - skip changelog check
+            # All releases are currently done locally, changelog will be required when CI is ready
+            log_info "[SAFETY] ℹ️  Changelog check skipped (local release mode)"
+            return 0
+        fi
         local changelog_file="$repo_root/release.md"
 
         log_info "[SAFETY] Checking for changelog: release.md"
