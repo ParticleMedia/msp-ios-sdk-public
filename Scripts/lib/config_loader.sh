@@ -236,11 +236,9 @@ _extract_profile_config() {
     local var_allow_tag="${prefix}safety_allow_existing_tag"
     local var_allow_release="${prefix}safety_allow_existing_release"
     local var_keep_sandbox="${prefix}safety_keep_sandbox"
-    local var_require_confirm="${prefix}safety_require_confirmation"
     MSP_ALLOW_EXISTING_TAG="${!var_allow_tag:-true}"
     MSP_ALLOW_EXISTING_RELEASE="${!var_allow_release:-true}"
     MSP_KEEP_SANDBOX="${!var_keep_sandbox:-true}"
-    MSP_REQUIRE_CONFIRMATION="${!var_require_confirm:-false}"
 
     # Performance
     local var_parallel="${prefix}performance_parallel_builds"
