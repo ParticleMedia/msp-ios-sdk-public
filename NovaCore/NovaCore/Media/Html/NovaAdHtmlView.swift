@@ -10,7 +10,7 @@ import UIKit
 class NovaAdHtmlView: WKWebView, WKScriptMessageHandler {
     
     // a view for each html page
-    weak var htmlJSMessageDelegate: NovaAdHtmlJSMessageDelegate?
+    weak var htmlActionDelegate: NovaAdHtmlActionDelegate?
     var novaInterstitialAdContext: NovaInterstitialAdContext?
     var impressionTimeInMs: Int?
     
@@ -179,8 +179,8 @@ class NovaAdHtmlView: WKWebView, WKScriptMessageHandler {
         self.evaluateJavaScript(js, completionHandler: nil)
     }
     
-    public func config(with model: NovaAdHtmlPageModel, htmlJSMessageDelegate: NovaAdHtmlJSMessageDelegate?, context: NovaInterstitialAdContext?) {
-        self.htmlJSMessageDelegate = htmlJSMessageDelegate
+    public func config(with model: NovaAdHtmlPageModel, htmlActionDelegate: NovaAdHtmlActionDelegate?, context: NovaInterstitialAdContext?) {
+        self.htmlActionDelegate = htmlActionDelegate
         self.novaInterstitialAdContext = context
         let resource = model.resource
         self.useCustomUrl = model.useClickUrl
@@ -194,6 +194,8 @@ class NovaAdHtmlView: WKWebView, WKScriptMessageHandler {
         } else if let urlString = resource.url, let url = URL(string: urlString) {
             let request = URLRequest(url: url)
             self.load(request)
+        } else {
+            htmlActionDelegate?.didFailToLoadPage()
         }
         self.impressionTimeInMs = Int(Date().timeIntervalSince1970 * 1000)
     }
@@ -210,19 +212,19 @@ class NovaAdHtmlView: WKWebView, WKScriptMessageHandler {
                let urlString = body["customUrl"] as? String {
                 customUrl = URL(string: urlString)
             }
-            htmlJSMessageDelegate?.didTapAdCtr(customUrl: customUrl)
+            htmlActionDelegate?.didTapAdCtr(customUrl: customUrl)
         case NovaAdHtmlJSMessage.adReport.rawValue:
-            htmlJSMessageDelegate?.didTapAdReport()
+            htmlActionDelegate?.didTapAdReport()
         case NovaAdHtmlJSMessage.adClose.rawValue:
             if self.useCustomClose {
-                htmlJSMessageDelegate?.didTapAdClose()
+                htmlActionDelegate?.didTapAdClose()
             }
         case NovaAdHtmlJSMessage.novaNativeBridge.rawValue:
             if let body = message.body as? [String: Any],
                let action = body["action"] as? String {
                 switch action {
                 case "startFeedback":
-                    htmlJSMessageDelegate?.didTapAdReport()
+                    htmlActionDelegate?.didTapAdReport()
                 default:
                     print("⚠️ Unknown novaNativeBridge action:", action)
                 }
@@ -244,8 +246,16 @@ extension NovaAdHtmlView: WKNavigationDelegate {
             return
         }
         userDidClick = false
-        htmlJSMessageDelegate?.didTapAdCtr(customUrl: navigationAction.request.url)
+        htmlActionDelegate?.didTapAdCtr(customUrl: navigationAction.request.url)
         decisionHandler(.cancel)
+    }
+    
+    func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: Error) {
+        htmlActionDelegate?.didFailToLoadPage()
+    }
+    
+    func webView(_ webView: WKWebView, didFailProvisionalNavigation navigation: WKNavigation!, withError error: Error) {
+        htmlActionDelegate?.didFailToLoadPage()
     }
 }
 
@@ -261,9 +271,9 @@ extension NovaAdHtmlView: WKUIDelegate {
         }
         userDidClick = false
         if useCustomUrl {
-            htmlJSMessageDelegate?.didTapAdCtr(customUrl: navigationAction.request.url)
+            htmlActionDelegate?.didTapAdCtr(customUrl: navigationAction.request.url)
         } else {
-            htmlJSMessageDelegate?.didTapAdCtr(customUrl: nil)
+            htmlActionDelegate?.didTapAdCtr(customUrl: nil)
         }
         return nil
     }
