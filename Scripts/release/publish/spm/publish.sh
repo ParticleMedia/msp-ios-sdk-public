@@ -712,8 +712,10 @@ process_binary_targets_for_cloud_distribution() {
     
     # Only scan Build/XCFrameworks/ for core modules
     if [[ -d "$ROOT_DIR/Build/XCFrameworks" ]]; then
-        # Process core modules: NovaCore, NovaAdapter
-        local core_modules=("NovaCore" "NovaAdapter")
+        # Process core modules: Only include actual binary targets
+        # NovaAdapter is a source-based target (.target), not a binary target (.binaryTarget)
+        # It doesn't need binary distribution (zip/CDN)
+        local core_modules=("NovaCore")
         for module in "${core_modules[@]}"; do
             local xcframework_path="$ROOT_DIR/Build/XCFrameworks/${module}.xcframework"
             if [[ -d "$xcframework_path" ]]; then
@@ -1591,6 +1593,13 @@ verify_spm_cdn_availability() {
     # Collect all zip URLs
     for framework_info in "${framework_checksums[@]}"; do
         IFS='|' read -r framework_name checksum zip_name <<< "$framework_info"
+
+        # Skip if zip_name is empty (source-based targets)
+        if [[ -z "$zip_name" ]]; then
+            log_debug "Skipping CDN verification for $framework_name (no zip file, likely source-based target)"
+            continue
+        fi
+
         local url="https://github.com/ParticleMedia/msp-ios-sdk-public/releases/download/${version}/${zip_name}"
         zip_urls+=("$url|$framework_name")
     done
@@ -1602,6 +1611,18 @@ verify_spm_cdn_availability() {
     for url_info in "${zip_urls[@]}"; do
         IFS='|' read -r url framework_name <<< "$url_info"
         local filename=$(basename "$url")
+
+        # Check if filename is actually the version (indicates empty zip_name)
+        if [[ "$filename" == "$version" ]]; then
+            log_error "Invalid URL detected: zip_name appears to be empty"
+            log_error "  Framework: $framework_name"
+            log_error "  URL: $url"
+            log_error "  This framework is likely a source-based target that should not be verified"
+            log_error "  Tip: Check if this framework should be in the binary distribution list"
+            ((failed++))
+            continue
+        fi
+
         local max_attempts=5
         local attempt=1
         local success=false
@@ -1609,8 +1630,11 @@ verify_spm_cdn_availability() {
         log_step "Verifying: $filename"
 
         while [[ $attempt -le $max_attempts ]]; do
-            # Use HTTP HEAD to check if URL is accessible (faster than GET)
-            if curl -sSfL --head "$url" >/dev/null 2>&1; then
+            # Check URL accessibility with HEAD request
+            # - Removed -f: Not needed, we only check accessibility
+            # - Added --max-time: Prevent hanging requests
+            # - Keep -L: Follow redirects (GitHub uses 302)
+            if curl -sSL --head --max-time 15 "$url" >/dev/null 2>&1; then
                 log_success "  ✓ $filename is available on CDN"
                 ((verified++))
                 success=true
