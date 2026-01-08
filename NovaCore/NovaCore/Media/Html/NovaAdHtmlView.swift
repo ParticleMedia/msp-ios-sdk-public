@@ -35,7 +35,6 @@ class NovaAdHtmlView: WKWebView, WKScriptMessageHandler {
         for message in NovaAdHtmlJSMessage.allCases {
             userController.add(self, name: message.rawValue)
         }
-        userController.add(self, name: "consoleLog")
         self.navigationDelegate = self
         self.uiDelegate = self
         self.scrollView.isScrollEnabled = false
@@ -48,7 +47,16 @@ class NovaAdHtmlView: WKWebView, WKScriptMessageHandler {
 
         injectNovaNativeBridge(enableFeedback: supportReportHandling)
         injectGetAdContextBridge()
-        
+
+        // Inject MRAID hook script (detection only)
+        userController.addUserScript(
+            WKUserScript(
+                source: mraidHookSource,
+                injectionTime: .atDocumentStart,
+                forMainFrameOnly: true
+            )
+        )
+
         addSubviews(passThroughView)
         passThroughView.snp.makeConstraints { make in
             make.directionalEdges.equalToSuperview()
@@ -72,7 +80,7 @@ class NovaAdHtmlView: WKWebView, WKScriptMessageHandler {
         self.scrollView.delegate = nil
     }
     deinit {
-        print("htmlview deinit")
+        DebugLogger.data.debug("htmlview deinit")
         for message in NovaAdHtmlJSMessage.allCases {
             configuration.userContentController.removeScriptMessageHandler(forName: message.rawValue)
         }
@@ -94,6 +102,13 @@ class NovaAdHtmlView: WKWebView, WKScriptMessageHandler {
     private lazy var clickEventTimerTask: Task<Void, Error>? = nil
     private var startTime: CFTimeInterval?
     private var userDidClick: Bool = false
+    private var hasRequestedMraidJs: Bool = false
+    private var hasInjectedMraidShim: Bool = false
+    
+    // Minimal MRAID 3.0-compatible surface for HTML creatives
+    private lazy var mraidShimSource: String = loadScript(named: "novaMraid")
+    private lazy var mraidHookSource: String = loadScript(named: "novaMraidHook")
+    private lazy var mraidInitSource: String = loadScript(named: "novaMraidInit")
     
     // MARK: - JS injection
     private func injectNovaNativeBridge(enableFeedback: Bool) {
@@ -170,8 +185,17 @@ class NovaAdHtmlView: WKWebView, WKScriptMessageHandler {
             "encrypted_ad_token": self.novaInterstitialAdContext?.interstitialAd.encryptedAdToken,
             "impression_ts": impressionTimeInMs
         ]
-        let data = try! JSONSerialization.data(withJSONObject: dict)
-        let jsonString = String(data: data, encoding: .utf8)!
+        let data: Data
+        do {
+            data = try JSONSerialization.data(withJSONObject: dict)
+        } catch {
+            DebugLogger.data.error("Failed to serialize ad context: \(String(describing: error), privacy: .public)")
+            return
+        }
+        guard let jsonString = String(data: data, encoding: .utf8) else {
+            DebugLogger.data.error("Failed to encode ad context JSON as UTF-8")
+            return
+        }
         let escaped = jsonString
             .replacingOccurrences(of: "\\", with: "\\\\")
             .replacingOccurrences(of: "\"", with: "\\\"")
@@ -185,6 +209,7 @@ class NovaAdHtmlView: WKWebView, WKScriptMessageHandler {
         let resource = model.resource
         self.useCustomUrl = model.useClickUrl
         self.useCustomClose = model.useCustomClose
+        resetMraidState()
         if let htmlString = resource.htmlString, !htmlString.isEmpty {
             if let urlString = resource.url, let baseURL = URL(string: urlString) {
                 self.loadHTMLString(htmlString, baseURL: baseURL)
@@ -201,10 +226,9 @@ class NovaAdHtmlView: WKWebView, WKScriptMessageHandler {
     }
     
     func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
-        if message.name == "consoleLog" {
-            print("JS Console:", message.body)
-        }
         switch message.name {
+        case NovaAdHtmlJSMessage.consoleLog.rawValue:
+            print("JS Console: \(String(describing: message.body))")
         case NovaAdHtmlJSMessage.adClick.rawValue:
             var customUrl: URL? = nil
             if self.useCustomUrl,
@@ -226,12 +250,27 @@ class NovaAdHtmlView: WKWebView, WKScriptMessageHandler {
                 case "startFeedback":
                     htmlActionDelegate?.didTapAdReport()
                 default:
-                    print("⚠️ Unknown novaNativeBridge action:", action)
+                    DebugLogger.data.debug("Unknown novaNativeBridge action: \(action, privacy: .public)")
                 }
             }
         case NovaAdHtmlJSMessage.getAdContext.rawValue:
             self.attachAdContext()
-        default: print("⚠️ Unknown JS message:", message.name)
+        case NovaAdHtmlJSMessage.mraidBridge.rawValue:
+            guard let jsonString = message.body as? String,
+                  let jsonData = jsonString.data(using: .utf8),
+                  let jsonObject = try? JSONSerialization.jsonObject(with: jsonData) as? [String: Any],
+                  let action = jsonObject["action"] as? String
+            else {
+                DebugLogger.data.error("Failed to parse mraidBridge message: \(String(describing: message.body))")
+                return
+            }
+
+            let params = jsonObject["params"] as? [String: Any] ?? [:]
+
+            // Handle MRAID actions
+            handleMraidAction(action: action, params: params)
+        default:
+            DebugLogger.data.debug("Unknown JS message: \(message.name, privacy: .public)")
         }
     }
 }
@@ -239,17 +278,54 @@ class NovaAdHtmlView: WKWebView, WKScriptMessageHandler {
 extension NovaAdHtmlView: WKNavigationDelegate {
     func webView(_ webView: WKWebView,
                  decidePolicyFor navigationAction: WKNavigationAction,
-                 decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
-
+                 decisionHandler: @escaping (WKNavigationActionPolicy) -> Void)
+    {
+        guard let url = navigationAction.request.url else {
+            decisionHandler(.allow)
+            return
+        }
         guard userDidClick else {
             decisionHandler(.allow)
             return
         }
+
         userDidClick = false
+
+        // Handle mraid:// URL scheme
+        if url.scheme == "mraid" {
+            let command = url.host ?? ""
+            switch command {
+            case "open":
+                handleMraidOpen(url: url)
+            case "close":
+                // Handle close command if needed
+                break
+            case "expand":
+                // Handle expand command if needed
+                break
+            default:
+                break
+            }
+            decisionHandler(.cancel)
+            return
+        }
+
         htmlActionDelegate?.didTapAdCtr(customUrl: navigationAction.request.url)
+
         decisionHandler(.cancel)
     }
-    
+
+    func webView(_ webView: WKWebView, didFinish _: WKNavigation!) {
+        // Only initialize MRAID state for creatives that explicitly requested mraid.js
+        guard hasRequestedMraidJs else {
+            DebugLogger.data.debug("Skipping MRAID init: creative did not request mraid.js")
+            return
+        }
+
+        injectMraidShimIfNeeded()
+        initializeMraidState(in: webView)
+    }
+
     func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: Error) {
         htmlActionDelegate?.didFailToLoadPage()
     }
@@ -279,3 +355,100 @@ extension NovaAdHtmlView: WKUIDelegate {
     }
 }
 
+// MARK: - MRAID Helpers
+
+private extension NovaAdHtmlView {
+    func loadScript(named resourceName: String) -> String {
+        guard let url = NovaResource.getJSScriptResourceURL(resourceName)
+            ?? Bundle.main.url(forResource: resourceName, withExtension: "js")
+        else {
+            assertionFailure("Failed to find \(resourceName).js in bundle")
+            return ""
+        }
+
+        do {
+            return try String(contentsOf: url, encoding: .utf8)
+        } catch {
+            assertionFailure("Failed to load \(resourceName).js from bundle: \(error)")
+            return ""
+        }
+    }
+
+    func resetMraidState() {
+        hasRequestedMraidJs = false
+        hasInjectedMraidShim = false
+    }
+
+    func injectMraidShimIfNeeded() {
+        guard !hasInjectedMraidShim else { return }
+        guard !mraidShimSource.isEmpty else { return }
+
+        hasInjectedMraidShim = true
+        self.evaluateJavaScript(mraidShimSource) { _, error in
+            if let error {
+                DebugLogger.data.error("Failed to inject MRAID shim: \(String(describing: error), privacy: .public)")
+            } else {
+                DebugLogger.data.debug("Injected MRAID shim (novaMraid.js)")
+            }
+        }
+    }
+
+    func handleMraidAction(action: String, params: [String: Any]) {
+        switch action {
+        case "open":
+            handleMraidOpen(params: params)
+        case "close":
+            // Handle close command if needed
+            break
+        case "expand":
+            // Handle expand command if needed
+            break
+        case "mraidRequested":
+            handleMraidRequested(params: params)
+        default:
+            break
+        }
+    }
+
+    func handleMraidRequested(params: [String: Any]) {
+        hasRequestedMraidJs = true
+        injectMraidShimIfNeeded()
+        if let src = params["src"] as? String {
+            DebugLogger.data.debug("MRAID requested via script src: \(src, privacy: .public)")
+        } else {
+            DebugLogger.data.debug("MRAID requested via script src")
+        }
+    }
+
+    func handleMraidOpen(params: [String: Any]) {
+        var customUrl: URL? = nil
+        if let urlString = params["url"] as? String {
+            customUrl = URL(string: urlString)
+        }
+        htmlActionDelegate?.didTapAdCtr(customUrl: customUrl)
+    }
+
+    func handleMraidOpen(url: URL) {
+        // Fallback handler for URL scheme (kept for backward compatibility)
+        // Parse URL parameters from query string if needed in the future
+        // Format: mraid://open?url=encoded_url
+        var customUrl: URL? = nil
+        if let components = URLComponents(url: url, resolvingAgainstBaseURL: false),
+           let queryItems = components.queryItems,
+           let urlString = queryItems.first(where: { $0.name == "url" })?.value
+        {
+            customUrl = URL(string: urlString)
+        }
+        htmlActionDelegate?.didTapAdCtr(customUrl: customUrl)
+    }
+
+    func initializeMraidState(in webView: WKWebView) {
+        guard !mraidInitSource.isEmpty else { return }
+
+        webView.evaluateJavaScript(mraidInitSource) { _, error in
+            if let error = error {
+                DebugLogger.data.error("Failed to initialize MRAID state: \(String(describing: error), privacy: .public)")
+            }
+        }
+    }
+}
