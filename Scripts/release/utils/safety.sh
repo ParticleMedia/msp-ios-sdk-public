@@ -238,14 +238,21 @@ msp_safety_validate_branch() {
 
         log_info "[SAFETY] Validating branch: $current_branch"
 
-        # Allowed branches: release/*, main, master
+        # Allowed branches: release/*, main, master, feature/*
+        # feature/* branches are allowed because:
+        # - They will create release/* branch in Step 1
+        # - This check happens in preflight (before branch creation)
         if [[ "$current_branch" =~ ^release/ ]] || \
+           [[ "$current_branch" =~ ^feature/ ]] || \
            [[ "$current_branch" == "main" ]] || \
            [[ "$current_branch" == "master" ]]; then
             log_info "[SAFETY] ✓ Branch '$current_branch' is allowed for release"
+            if [[ "$current_branch" =~ ^feature/ ]]; then
+                log_info "[SAFETY] ℹ️  Feature branch detected: release/* branch will be created in Step 1"
+            fi
         else
             log_error "[SAFETY] Production mode cannot run on branch '$current_branch'"
-            log_error "[SAFETY] Allowed branches: release/*, main, master"
+            log_error "[SAFETY] Allowed branches: release/*, feature/*, main, master"
             return 1
         fi
     fi
