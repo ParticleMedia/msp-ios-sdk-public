@@ -20,8 +20,11 @@
 readonly _MSP_SAFETY_SOURCED=1
 
 # Source shared validation library for centralized branch validation
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-ROOT_DIR="$(cd "$SCRIPT_DIR/../.." && pwd)"
+if [[ -z "${ROOT_DIR:-}" ]]; then
+    SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+    # SCRIPT_DIR is Scripts/release/utils, need to go up 3 levels to reach repo root
+    ROOT_DIR="$(cd "$SCRIPT_DIR/../../.." && pwd)"
+fi
 # shellcheck source=Scripts/lib/validation.sh
 source "$ROOT_DIR/Scripts/lib/validation.sh" 2>/dev/null || true
 
