@@ -93,7 +93,8 @@ DRY_RUN="${DRY_RUN:-false}"
 VERBOSE="${VERBOSE:-false}"
 
 # Default SPM packages if SPM_PACKAGES not set (backward compatibility)
-DEFAULT_SPM_PACKAGES="NovaCore NovaAdapter"
+# Includes all adapters that support binary distribution
+DEFAULT_SPM_PACKAGES="NovaCore NovaAdapter MSPAmazonAdapter MSPMolocoAdapter MSPLiftoffAdapter"
 SPM_PACKAGES="${SPM_PACKAGES:-$DEFAULT_SPM_PACKAGES}"
 
 # ============================================================================
@@ -1043,7 +1044,7 @@ process_binary_targets_for_cloud_distribution() {
     
     log_step "Scanning for core module XCFrameworks"
     
-    # Only scan Build/XCFrameworks/ for core modules
+    # Scan Build/XCFrameworks/ for core modules and binary adapters
     if [[ -d "$ROOT_DIR/Build/XCFrameworks" ]]; then
         # Process core modules: Only include actual binary targets
         # NovaAdapter is a source-based target (.target), not a binary target (.binaryTarget)
@@ -1056,6 +1057,20 @@ process_binary_targets_for_cloud_distribution() {
                 log_info "Found core module: $module"
             else
                 log_warn "Core module XCFramework not found: $xcframework_path"
+            fi
+        done
+        
+        # Process binary adapter modules (MSPAmazonAdapter, MSPMolocoAdapter, MSPLiftoffAdapter)
+        # These adapters use binary XCFrameworks for distribution
+        local binary_adapters=("MSPAmazonAdapter" "MSPMolocoAdapter" "MSPLiftoffAdapter")
+        for adapter in "${binary_adapters[@]}"; do
+            local xcframework_path="$ROOT_DIR/Build/XCFrameworks/${adapter}.xcframework"
+            if [[ -d "$xcframework_path" ]]; then
+                xcframeworks+=("$xcframework_path")
+                log_info "Found binary adapter: $adapter"
+            else
+                log_warn "Binary adapter XCFramework not found: $xcframework_path"
+                log_warn "  Run: ./Scripts/xcframeworks/build-adapters.sh to build it"
             fi
         done
     fi
@@ -1390,6 +1405,27 @@ main() {
     
     # Validate inputs
     validate_inputs
+    
+    # Step 0: Ensure all required XCFrameworks are built before SPM release
+    # This prevents "XCFramework not found" errors during packaging
+    log_section "Pre-release: Ensuring XCFrameworks are built"
+    if [[ "$DRY_RUN" != "true" ]] && [[ "${DRY_RUN:-false}" != "1" ]]; then
+        if [[ -f "$ROOT_DIR/Scripts/release/utils/ensure_xcframeworks.sh" ]]; then
+            log_step "Ensuring binary adapter XCFrameworks are built..."
+            if ! "$ROOT_DIR/Scripts/release/utils/ensure_xcframeworks.sh" ensure; then
+                log_error "Failed to ensure XCFrameworks are built"
+                log_error "Please run: ./Scripts/xcframeworks/build-adapters.sh"
+                msp_state_mark_step_failed "spm_publish" "XCFramework build failed" "1"
+                return 1
+            fi
+            log_success "All binary adapter XCFrameworks are ready"
+        else
+            log_warn "ensure_xcframeworks.sh not found, skipping XCFramework check"
+            log_warn "Make sure XCFrameworks are built before SPM release"
+        fi
+    else
+        log_info "DRY RUN: Skipping XCFramework build check"
+    fi
     
     # Ensure we're in the project root
     ensure_project_root
@@ -1815,7 +1851,8 @@ spm_publish_tags() {
     log_info "[SPM] Creating and pushing tags for $version"
     
     # Get SPM packages list (from environment or default)
-    local spm_packages_list="${SPM_PACKAGES:-NovaCore NovaAdapter}"
+    # Includes all adapters that support binary distribution
+    local spm_packages_list="${SPM_PACKAGES:-NovaCore NovaAdapter MSPAmazonAdapter MSPMolocoAdapter MSPLiftoffAdapter}"
     
     # Create tags for each SPM package
     for package in $spm_packages_list; do

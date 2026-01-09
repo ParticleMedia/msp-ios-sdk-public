@@ -166,10 +166,35 @@ let package = Package(
         ),
         
         // ═══════════════════════════════════════════════════════════════════════
-        // SECTION 2: THIRD-PARTY SDKs - Binary XCFrameworks (8)
+        // SECTION 2: THIRD-PARTY SDKs - Binary XCFrameworks
         // ═══════════════════════════════════════════════════════════════════════
         // These SDKs don't have native SPM support and must be distributed as XCFrameworks.
         // Canonical path: ThirdParty/<SDKName>/<SDKName>.xcframework
+        //
+        // IMPORTANT: Not all ThirdParty XCFrameworks exist by default.
+        // Available ThirdParty XCFrameworks (always present):
+        //   - ThirdParty/PrebidMobile/PrebidMobile.xcframework ✅
+        //   - ThirdParty/Kingfisher/Kingfisher.xcframework ✅
+        //   - ThirdParty/Lottie/Lottie.xcframework ✅
+        //   - ThirdParty/Shimmer/Shimmer.xcframework ✅
+        //   - ThirdParty/SnapKit/SnapKit.xcframework ✅
+        //   - ThirdParty/SwiftProtobuf/SwiftProtobuf.xcframework ✅
+        //
+        // Missing ThirdParty XCFrameworks (need to be extracted from Pods or use SPM):
+        //   - ThirdParty/FBAudienceNetwork/FBAudienceNetwork.xcframework ❌
+        //   - ThirdParty/IronSourceSDK/IronSourceSDK.xcframework ❌
+        //   - ThirdParty/InMobiSDK/InMobiSDK.xcframework ❌
+        //   - ThirdParty/MintegralAdSDK/*.xcframework ❌
+        //   - ThirdParty/MobileFuseSDK/MobileFuseSDK.xcframework ❌
+        //   - ThirdParty/MolocoSDKiOS/MolocoSDK.xcframework ❌
+        //   - ThirdParty/OpenWrapSDK/OpenWrapSDK.xcframework ❌
+        //   - ThirdParty/AmazonPublisherServicesSDK/AmazonPublisherServicesSDK.xcframework ❌
+        //   - ThirdParty/VungleAds/VungleAdsSDK.xcframework ❌
+        //
+        // For missing XCFrameworks, either:
+        //   1. Extract from CocoaPods Pods directory using sync_thirdparty_pods.sh
+        //   2. Use SPM-native dependencies if available
+        //   3. Comment out the binaryTarget if not needed for SPM release
         
         /// PrebidMobile - Prebid Server bidding SDK
         /// Used by: MSPPrebidAdapter
