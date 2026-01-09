@@ -50,6 +50,8 @@ public class MSP {
         NotificationCenter.default.addObserver(self, selector: #selector(self.appWillEnterForeground), name: UIApplication.willEnterForegroundNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.appDidEnterBackground), name: UIApplication.didEnterBackgroundNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.sizeCategoryDidChange), name: UIContentSizeCategory.didChangeNotification, object: nil)
+        
+        guard UIApplication.shared.applicationState == .inactive else { return }
         DispatchQueue.main.async {
             self.appWillEnterForeground()
         }
