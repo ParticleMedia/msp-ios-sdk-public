@@ -5,7 +5,6 @@ extension Image {
     
     class NovaImage {
         // MARK: - Components
-        let bottomShadow = Image("bottom_shadow", bundle: NovaAsset.getBundle())
         let isolationMode = Image("isolation_mode", bundle: NovaAsset.getBundle())
         let popOver = Image("pop_over", bundle: NovaAsset.getBundle())
 
@@ -29,5 +28,6 @@ extension Image {
         let videoPause = Image("video_pause", bundle: NovaAsset.getBundle())
         let volumeOffLine = Image("volume_off_line", bundle: NovaAsset.getBundle())
         let volumeOnLine = Image("volume_on_line", bundle: NovaAsset.getBundle())
+        let gameFilled = Image("game_filled", bundle: NovaAsset.getBundle())
     }
 }

@@ -464,10 +464,27 @@ private extension NovaAdBuilder {
             }
         }()
 
+        let actionBarFormat: NovaAdPlayableInfo.ActionBarFormat = {
+            guard let formatString = playableItem.actionBarFormat, !formatString.isEmpty else {
+                return .disable
+            }
+            return NovaAdPlayableInfo.ActionBarFormat(rawValue: formatString) ?? .disable
+        }()
+
+        let tapToTryFormat: NovaAdPlayableInfo.TapToTryFormat = {
+            guard let formatString = playableItem.tapToTryFormat, !formatString.isEmpty,
+                  let format = NovaAdPlayableInfo.TapToTryFormat(rawValue: formatString) else {
+                return .default
+            }
+            return format
+        }()
+
         return NovaAdPlayableInfo(
             playableUrl: url,
             playableArea: AdPlayableArea(rawValue: playableItem.clickAreaMode ?? "") ?? .all,
-            layout: layout
+            layout: layout,
+            actionBarFormat: actionBarFormat,
+            tapToTryFormat: tapToTryFormat
         )
     }
 

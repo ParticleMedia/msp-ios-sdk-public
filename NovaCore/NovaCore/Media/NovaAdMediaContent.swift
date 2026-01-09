@@ -8,6 +8,24 @@
 import Foundation
 import UIKit
 
+// MARK: - NovaMediaElementLayout
+
+public struct NovaMediaElementLayout: Equatable {
+    public let safeAreaInsets: UIEdgeInsets
+    public let exclusionRects: [CGRect]
+    let showBottomShadow: Bool
+
+    public init(
+        safeAreaInsets: UIEdgeInsets = .zero,
+        exclusionRects: [CGRect] = [],
+        showBottomShadow: Bool = false
+    ) {
+        self.safeAreaInsets = safeAreaInsets
+        self.exclusionRects = exclusionRects
+        self.showBottomShadow = showBottomShadow
+    }
+}
+
 public class NovaAdImageController {
     public var contentMode: UIView.ContentMode {
         get {
@@ -119,9 +137,10 @@ public class NovaAdPlayableController {
 public class NovaAdMediaContent {
     // MARK: Lifecycle
 
-    init(adMedia: NovaAdMedia, discountTagInfo: NovaAdDiscountTagInfo? = nil) {
+    init(adMedia: NovaAdMedia, discountTagInfo: NovaAdDiscountTagInfo? = nil, elementLayout: NovaMediaElementLayout? = nil) {
         self.adMedia = adMedia
         self.discountTagInfo = discountTagInfo
+        self.elementLayout = elementLayout
     }
 
     // MARK: Public
@@ -267,20 +286,24 @@ public class NovaAdMediaContent {
             return .multipleImages
         case .multipleItems:
             return .multipleItems
-        case .imagePlayable, .videoPlayable:
-            return .playable
+        case .imagePlayable(_, let playableModel):
+            return playableModel.layout == .showMedia ? .image : .playable
+        case .videoPlayable(_, let playableModel):
+            return playableModel.layout == .showMedia ? .video : .playable
         case .html:
             return .html
         }
     }
 
+    public var elementLayout: NovaMediaElementLayout?
+
     // MARK: Internal
 
     var adMedia: NovaAdMedia
     let discountTagInfo: NovaAdDiscountTagInfo?
-    
+
     // MARK: - Video State Sync
-    
+
     func updateVideoState(_ state: NovaAdVideoState?) {
         switch adMedia {
         case .video(let model):

@@ -84,6 +84,8 @@ struct PlayableItem: Codable {
     let url: String?
     let clickAreaMode: String?
     let layout: String?
+    let actionBarFormat: String?
+    let tapToTryFormat: String?
 }
 
 struct VideoItem: Codable {

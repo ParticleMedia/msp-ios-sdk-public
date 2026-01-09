@@ -72,11 +72,17 @@ class NovaInterstitialAdSKOverlaySubviewHandler: NSObject, NovaInterstitialAdSub
         return view
     }()
 
-    private lazy var bottomShadow: UIImageView = {
-        let imageView = UIImageView()
-        imageView.image = .Nova.bottomShadow
-        imageView.adClickArea = .badge
-        return imageView
+    private lazy var bottomShadow: GradientShadowView = {
+        let config = GradientShadowViewConfig(
+            colors: (
+                UIColor.clear,
+                UIColor.black.withAlphaComponent(0.85)
+            ),
+            points: (CGPoint(x: 0.5, y: 0), CGPoint(x: 0.5, y: 1.0))
+        )
+        let view = GradientShadowView(with: config)
+        view.adClickArea = .badge
+        return view
     }()
 
     private lazy var bottomContainerView: UIStackView = {
@@ -141,7 +147,7 @@ class NovaInterstitialAdSKOverlaySubviewHandler: NSObject, NovaInterstitialAdSub
 
     func config() {
         // Configure media view
-        interstitialAd.mediaContent.videoController?.style = .playButtonOnCenter(progressBarStyle: .hide, popupCTAStyle: .show)
+        interstitialAd.mediaContent.videoController?.style = .playButtonOnCenter(progressBarStyle: .hide, popupCTAStyle: .show())
         mediaView.config(
             with: interstitialAd.mediaContent,
             actionContext: .init(

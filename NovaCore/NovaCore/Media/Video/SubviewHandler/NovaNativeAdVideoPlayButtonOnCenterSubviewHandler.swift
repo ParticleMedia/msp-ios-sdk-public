@@ -143,9 +143,20 @@ extension NovaNativeAdVideoPlayButtonOnCenterSubviewHandler: NovaNativeAdVideoSu
     }
 
     func tapVideo(on view: UIView, at location: CGPoint, isPlaying: Bool) {
-        if case .show = popupCTAStyle {
+        if case .show(let safeAreaInsets, let exclusionRects) = popupCTAStyle {
             if !isPlaying {
-                ctaPopoverView.changeState(to: .pop(sourceView: view, sourcePoint: location))
+                ctaPopoverView
+                    .changeState(
+                        to:
+                        .pop(
+                            sourceView: view,
+                            sourcePoint: location,
+                            extraLayoutConfig: .init(
+                                safeAreaInsets: safeAreaInsets,
+                                exclusionRects: exclusionRects
+                            )
+                        )
+                    )
             }
         }
     }

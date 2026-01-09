@@ -12,7 +12,6 @@ extension UIImage {
     class NovaImage {
 
         // MARK: - Components
-        let bottomShadow = UIImage(named: "bottom_shadow", in: NovaAsset.getBundle(), compatibleWith: nil)
         let isolationMode = UIImage(named: "isolation_mode", in: NovaAsset.getBundle(), compatibleWith: nil)
         let popOver = UIImage(named: "pop_over", in: NovaAsset.getBundle(), compatibleWith: nil)
 
@@ -37,5 +36,6 @@ extension UIImage {
         let videoPause = UIImage(named: "video_pause", in: NovaAsset.getBundle(), compatibleWith: nil)
         let volumeOffLine = UIImage(named: "volume_off_line", in: NovaAsset.getBundle(), compatibleWith: nil)
         let volumeOnLine = UIImage(named: "volume_on_line", in: NovaAsset.getBundle(), compatibleWith: nil)
+        let gameFilled = UIImage(named: "game_filled", in: NovaAsset.getBundle(), compatibleWith: nil)
     }
 }

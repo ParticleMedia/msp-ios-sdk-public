@@ -186,9 +186,17 @@ class NovaInterstitialAdTwoPartPlayableSubviewHandler: NovaInterstitialAdSubview
         setupVolumeIcon(muted: interstitialAd.mediaContent.videoController?.muted ?? true)
 
         // Configure media view
-        interstitialAd.mediaContent.videoController?.style = .playButtonOnCenter(progressBarStyle: .hide, popupCTAStyle: .show)
+        interstitialAd.mediaContent.videoController?.style = .playButtonOnCenter(progressBarStyle: .hide, popupCTAStyle: .show())
         interstitialAd.mediaContent.videoController?.delegate = self
         interstitialAd.mediaContent.playableController?.renderOption = .imageOrVideo
+        interstitialAd.mediaContent.elementLayout = .init(
+            safeAreaInsets: .init(
+                top: UIApplication.novaSafeAreaInsets.top + Constants.volumeIconTopPadding + Constants.volumeIconSize,
+                left: 0,
+                bottom: Constants.advertiserBottomPadding + 36, // 36 is advertiserStackView's height
+                right: 0
+            )
+        )
         mediaView.config(
             with: interstitialAd.mediaContent,
             actionContext: .init(
@@ -232,6 +240,9 @@ class NovaInterstitialAdTwoPartPlayableSubviewHandler: NovaInterstitialAdSubview
         static let avatarSize: Double = 36.0
         static let adGuideTextFormat: String = "Ad • Part %d/2"
         static let rightTopButtonSize: Double = 48.0
+        static let volumeIconSize: Double = 32.0
+        static let volumeIconTopPadding: Double = 20.0
+        static let advertiserBottomPadding: Double = 40.0
     }
 
     private var firstPartViews: [UIView] {
@@ -264,9 +275,9 @@ class NovaInterstitialAdTwoPartPlayableSubviewHandler: NovaInterstitialAdSubview
         }
         
         volumeButton.snp.makeConstraints { make in
-            make.top.equalTo(containerView.safeAreaLayoutGuide).offset(20)
+            make.top.equalTo(containerView.safeAreaLayoutGuide).offset(Constants.volumeIconTopPadding)
             make.leading.equalToSuperview().offset(20)
-            make.width.height.equalTo(32)
+            make.width.height.equalTo(Constants.volumeIconSize)
         }
         
         toPlayableButton.snp.makeConstraints { make in
@@ -287,7 +298,7 @@ class NovaInterstitialAdTwoPartPlayableSubviewHandler: NovaInterstitialAdSubview
             } else {
                 make.trailing.lessThanOrEqualToSuperview().offset(-20)
             }
-            make.bottom.equalToSuperview().offset(-40)
+            make.bottom.equalToSuperview().offset(-Constants.advertiserBottomPadding)
         }
 
         if showReportButton {

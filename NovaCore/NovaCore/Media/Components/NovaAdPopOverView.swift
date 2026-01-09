@@ -32,11 +32,16 @@ class NovaAdPopOverView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
 
+    struct ExtraLayoutConfig {
+        let safeAreaInsets: UIEdgeInsets
+        let exclusionRects: [CGRect]
+    }
+
     // MARK: Public
 
     enum State {
         case hide
-        case pop(sourceView: UIView, sourcePoint: CGPoint)
+        case pop(sourceView: UIView, sourcePoint: CGPoint, extraLayoutConfig: ExtraLayoutConfig)
     }
 
     func config(with title: String) {
@@ -47,20 +52,27 @@ class NovaAdPopOverView: UIView {
         switch state {
         case .hide:
             removeFromSuperview()
-        case .pop(sourceView: let sourceView, sourcePoint: let sourcePoint):
+        case let .pop(sourceView, sourcePoint, extraLayoutConfig):
             sourceView.addSubview(self)
             isHidden = false
-            let leadingOffset: Double = {
-                if sourcePoint.x < Constants.padding {
-                    return Constants.padding
-                } else if sourcePoint.x < sourceView.frame.width - Constants.padding - Constants.popoverWidth {
-                    return sourcePoint.x
-                } else {
-                    return sourceView.frame.width - Constants.padding - Constants.popoverWidth
-                }
-            }()
-            snp.makeConstraints { make in
-                make.top.equalToSuperview().offset(sourcePoint.y)
+
+            let insets = extraLayoutConfig.safeAreaInsets
+            let minX = insets.left + Constants.padding
+            let maxX = sourceView.frame.width - insets.right - Constants.padding - Constants.popoverWidth
+
+            let leadingOffset: Double = if sourcePoint.x < minX {
+                minX
+            } else if sourcePoint.x > maxX {
+                maxX
+            } else {
+                sourcePoint.x
+            }
+
+            let maxY = sourceView.frame.height - insets.bottom - Constants.popoverHeight
+            let topOffset: Double = min(sourcePoint.y, maxY)
+
+            snp.remakeConstraints { make in
+                make.top.equalToSuperview().offset(topOffset)
                 make.leading.equalToSuperview().offset(leadingOffset)
             }
         }
