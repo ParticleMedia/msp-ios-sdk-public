@@ -59,5 +59,5 @@ struct NovaAdAppInfo {
 }
 
 private extension NovaAdAppInfo {
-    private static let searchUrlFormat = "https://itunes.apple.com/lookup?entity=software&id=%d"
+    private static let searchUrlFormat = "https://itunes.apple.com/lookup?entity=software&id=%ld"
 } 
