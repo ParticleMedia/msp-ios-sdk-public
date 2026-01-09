@@ -21,18 +21,34 @@ class NovaAdPlayableInfo: Codable {
         case twoPart // TODO: lsy, two part not work in msp native ad
     }
 
+    enum ActionBarFormat: String, Codable {
+        case disable
+        case bottom = "BOTTOM"
+    }
+
+    enum TapToTryFormat: String, Codable {
+        case `default`
+        case gamepadWithText = "GAMEPAD_WITH_TEXT"
+    }
+
     let playableUrl: URL
     let playableArea: AdPlayableArea
     let layout: Layout
+    let actionBarFormat: ActionBarFormat
+    let tapToTryFormat: TapToTryFormat
 
     init(
         playableUrl: URL,
         playableArea: AdPlayableArea,
-        layout: Layout
+        layout: Layout,
+        actionBarFormat: ActionBarFormat = .disable,
+        tapToTryFormat: TapToTryFormat = .default
     ) {
         self.playableUrl = playableUrl
         self.playableArea = playableArea
         self.layout = layout
+        self.actionBarFormat = actionBarFormat
+        self.tapToTryFormat = tapToTryFormat
     }
 
     required init(from decoder: Decoder) throws {
@@ -40,5 +56,20 @@ class NovaAdPlayableInfo: Codable {
         self.playableUrl = try container.decode(URL.self, forKey: .playableUrl)
         self.playableArea = try container.decode(AdPlayableArea.self, forKey: .playableArea)
         self.layout = try container.decode(Layout.self, forKey: .layout)
+        self.actionBarFormat = try container.decode(ActionBarFormat.self, forKey: .actionBarFormat)
+        if let formatString = try? container.decodeIfPresent(String.self, forKey: .tapToTryFormat),
+           let format = TapToTryFormat(rawValue: formatString) {
+            self.tapToTryFormat = format
+        } else {
+            self.tapToTryFormat = .default
+        }
+    }
+
+    enum CodingKeys: String, CodingKey {
+        case playableUrl
+        case playableArea
+        case layout
+        case actionBarFormat
+        case tapToTryFormat
     }
 } 
