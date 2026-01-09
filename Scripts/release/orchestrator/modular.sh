@@ -447,21 +447,32 @@ pre_release_setup() {
         return 0
     fi
 
-    # Build all frameworks using the unified build script
-    log_step "Building all frameworks using unified build script"
+    # Build all frameworks using the unified build scripts
+    log_step "Building core frameworks using unified build script"
 
-    # Use the xcframeworks build script
-    local BUILD_SCRIPT="$ROOT_DIR/Scripts/xcframeworks/build-core.sh"
-    if [[ ! -f "$BUILD_SCRIPT" ]]; then
-        log_warn "Build script not found at $BUILD_SCRIPT, skipping framework build"
+    # Build core XCFrameworks
+    local BUILD_CORE_SCRIPT="$ROOT_DIR/Scripts/xcframeworks/build-core.sh"
+    if [[ ! -f "$BUILD_CORE_SCRIPT" ]]; then
+        log_warn "Build script not found at $BUILD_CORE_SCRIPT, skipping framework build"
         log_info "Frameworks may need to be built manually before release"
         mark_step_success "pre_release_setup"
         return 0
     fi
 
-    if ! bash "$BUILD_SCRIPT"; then
-        fail_step "pre_release_setup" "framework build failed"
+    if ! bash "$BUILD_CORE_SCRIPT"; then
+        fail_step "pre_release_setup" "core framework build failed"
         return 1
+    fi
+
+    # Build adapter XCFrameworks (for binary distribution)
+    log_step "Building adapter frameworks for binary distribution"
+    local BUILD_ADAPTERS_SCRIPT="$ROOT_DIR/Scripts/xcframeworks/build-adapters.sh"
+    if [[ -f "$BUILD_ADAPTERS_SCRIPT" ]]; then
+        if ! bash "$BUILD_ADAPTERS_SCRIPT"; then
+            log_warn "Adapter framework build failed, but continuing (adapters are optional)"
+        fi
+    else
+        log_warn "Adapter build script not found at $BUILD_ADAPTERS_SCRIPT"
     fi
 
     log_success "Pre-release setup completed successfully"

@@ -60,6 +60,8 @@ ADAPTER_MODULES=(
     "PubmaticAdapter"
     "UnityAdapter"
     "AmazonAdapter"
+    "LiftoffAdapter"
+    "MolocoAdapter"
 )
 
 # Core XCFrameworks that adapters depend on
@@ -140,7 +142,7 @@ fi
 
 # Copy all adapter XCFrameworks to Binary/ directory
 log_section "Copying Adapter XCFrameworks to Binary/"
-BINARY_DIR="$ROOT_DIR/Binary"
+# BINARY_DIR is already defined in common.sh as readonly
 mkdir -p "$BINARY_DIR"
 
 for module in "${ADAPTER_MODULES[@]}"; do
