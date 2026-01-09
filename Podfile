@@ -105,9 +105,9 @@ target 'MSPDemoApp' do
   pod 'MobilefuseAdapter', :path => 'MobilefuseAdapter.podspec', :configurations => demoapp_pod_configs
   pod 'MintegralAdapter', :path => 'MintegralAdapter.podspec', :configurations => demoapp_pod_configs
   pod 'PubmaticAdapter', :path => 'PubmaticAdapter.podspec', :configurations => demoapp_pod_configs
-  pod 'AmazonAdapter', :path => 'AmazonAdapter.podspec', :configurations => demoapp_pod_configs
-  pod 'MolocoAdapter', :path => 'MolocoAdapter.podspec', :configurations => demoapp_pod_configs
-  pod 'LiftoffAdapter', :path => 'LiftoffAdapter.podspec', :configurations => demoapp_pod_configs
+  pod 'MSPAmazonAdapter', :path => 'MSPAmazonAdapter.podspec', :configurations => demoapp_pod_configs
+  pod 'MSPMolocoAdapter', :path => 'MSPMolocoAdapter.podspec', :configurations => demoapp_pod_configs
+  pod 'MSPLiftoffAdapter', :path => 'MSPLiftoffAdapter.podspec', :configurations => demoapp_pod_configs
   # SwiftProtobuf is now provided via XCFramework in MSPCore - removed from Podfile
   pod 'MSPSharedLibraries', :path => 'MSPSharedLibraries.podspec', :configurations => demoapp_pod_configs
   # MSPKingfisher replaces official Kingfisher pod to avoid SwiftVerifyEmittedModuleInterface errors
@@ -216,8 +216,8 @@ post_install do |installer|
   # --- Fix adapter modulemaps to use relative paths for Swift Compatibility Header ---
   # This fixes "cannot load underlying module" errors when importing adapters
   adapter_pods = ["MSPPrebidAdapter", "MSPGoogleAdapter", "MSPFacebookAdapter", "NovaAdapter",
-                  "AmazonAdapter", "UnityAdapter", "InmobiAdapter", "MobilefuseAdapter",
-                  "MintegralAdapter", "PubmaticAdapter"]
+                  "MSPAmazonAdapter", "UnityAdapter", "InmobiAdapter", "MobilefuseAdapter",
+                  "MintegralAdapter", "PubmaticAdapter", "MSPMolocoAdapter", "MSPLiftoffAdapter"]
   adapter_pods.each do |pod_name|
     target_support_files = File.join(installer.sandbox.root, "Target Support Files", pod_name)
     if Dir.exist?(target_support_files)

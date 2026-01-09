@@ -14,7 +14,7 @@ import SnapKit
 
 fileprivate typealias BannerCreator = (MolocoSDK.MolocoCreateAdParams, UIViewController) -> MolocoSDK.MolocoBannerAdView?
 
-@objc public class MolocoNetworkAdapter: NSObject, AdNetworkAdapter {
+@objc public class MolocoAdapter: NSObject, AdNetworkAdapter {
     
     public weak var adListener: AdListener?
     public var adRequest: AdRequest?
@@ -344,7 +344,7 @@ fileprivate typealias BannerCreator = (MolocoSDK.MolocoCreateAdParams, UIViewCon
     }
 }
 
-extension MolocoNetworkAdapter: MolocoSDK.BaseAdDelegate {
+extension MolocoAdapter: MolocoSDK.BaseAdDelegate {
     public func didLoad(ad: any MolocoSDK.MolocoAd) {
         if let price = ad.revenue {
             self.priceInDollar = price?.doubleValue
@@ -557,7 +557,7 @@ extension MolocoNetworkAdapter: MolocoSDK.BaseAdDelegate {
     }
 }
 
-extension MolocoNetworkAdapter: MolocoNativeAdDelegate {
+extension MolocoAdapter: MolocoNativeAdDelegate {
     public func didHandleClick(ad: any MolocoAd) {
         handleAdClicked(ad: ad)
     }
@@ -567,10 +567,10 @@ extension MolocoNetworkAdapter: MolocoNativeAdDelegate {
     }
 }
 
-extension MolocoNetworkAdapter: MolocoInterstitialDelegate {
+extension MolocoAdapter: MolocoInterstitialDelegate {
     
 }
 
-extension MolocoNetworkAdapter: MolocoBannerDelegate {
+extension MolocoAdapter: MolocoBannerDelegate {
     
 }

@@ -10,9 +10,9 @@ name: MolocoAdapter
 settings:
   base:
     # Product Configuration
-    PRODUCT_NAME: MolocoAdapter
+    PRODUCT_NAME: MSPMolocoAdapter
     PRODUCT_BUNDLE_IDENTIFIER: com.newsbreak.msp.MolocoAdapter
-    PRODUCT_MODULE_NAME: MolocoAdapter
+    PRODUCT_MODULE_NAME: MSPMolocoAdapter
 
 targets:
   MolocoAdapter:

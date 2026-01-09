@@ -43,9 +43,9 @@ let package = Package(
         .library(name: "MSPGoogleAdapter", targets: ["MSPGoogleAdapter"]),
         .library(name: "MSPFacebookAdapter", targets: ["MSPFacebookAdapter"]),
         .library(name: "NovaAdapter", targets: ["NovaAdapter"]),
-        .library(name: "AmazonAdapter", targets: ["AmazonAdapter"]),
-        .library(name: "MolocoAdapter", targets: ["MolocoAdapter"]),
-        .library(name: "LiftoffAdapter", targets: ["LiftoffAdapter"]),
+        .library(name: "MSPAmazonAdapter", targets: ["MSPAmazonAdapter"]),
+        .library(name: "MSPMolocoAdapter", targets: ["MSPMolocoAdapter"]),
+        .library(name: "MSPLiftoffAdapter", targets: ["MSPLiftoffAdapter"]),
         .library(name: "UnityAdapter", targets: ["UnityAdapter"]),
         .library(name: "InmobiAdapter", targets: ["InmobiAdapter"]),
         .library(name: "MobilefuseAdapter", targets: ["MobilefuseAdapter"]),
@@ -175,7 +175,7 @@ let package = Package(
             path: "Sources/Adapters/NovaAdapter/NovaAdapter"
         ),
         .target(
-            name: "AmazonAdapter",
+            name: "MSPAmazonAdapter",
             dependencies: [
                 "MSPSharedLibraries",
                 "MSPiOSCore",
@@ -185,7 +185,7 @@ let package = Package(
             path: "Sources/Adapters/AmazonAdapter/AmazonAdapter"
         ),
         .target(
-            name: "MolocoAdapter",
+            name: "MSPMolocoAdapter",
             dependencies: [
                 "MSPSharedLibraries",
                 "MSPiOSCore",
@@ -195,7 +195,7 @@ let package = Package(
             path: "Sources/Adapters/MolocoAdapter/MolocoAdapter"
         ),
         .target(
-            name: "LiftoffAdapter",
+            name: "MSPLiftoffAdapter",
             dependencies: [
                 "MSPSharedLibraries",
                 "MSPiOSCore",

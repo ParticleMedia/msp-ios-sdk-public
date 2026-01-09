@@ -10,7 +10,7 @@ import MSPiOSCore
 
 public class MolocoManager: AdNetworkManager {
     public override func getAdNetworkAdapter() -> AdNetworkAdapter? {
-        return MolocoNetworkAdapter()
+        return MolocoAdapter()
     }
 
     public override func getAdBidder(bidderPlacementId: String, bidderFormat: AdFormat?) -> Bidder? {

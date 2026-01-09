@@ -12,7 +12,7 @@ public class MolocoBidder: MSPiOSCore.Bidder {
     public weak var auctionBidListener: AuctionBidListener?
     public weak var adListener: AdListener?
     public var adRequest: AdRequest?
-    public var adNetworkAdapter: AdNetworkAdapter = MolocoNetworkAdapter()
+    public var adNetworkAdapter: AdNetworkAdapter = MolocoAdapter()
 
     public override func requestBid(adRequest: AdRequest, bidListener: any AuctionBidListener, adListener: any AdListener) {
         self.auctionBidListener = bidListener

@@ -16,7 +16,7 @@ msp_enforce_main_repo_or_exit
 # - SRP: Focused on ensuring XCFrameworks exist, not on publishing
 # - Reusable: Can be called from msp-release.sh, generate_podspec.sh, etc.
 #
-# Applies to: MSPPrebidAdapter, MSPGoogleAdapter, MSPFacebookAdapter, AmazonAdapter, MolocoAdapter, LiftoffAdapter, NovaAdapter
+# Applies to: MSPPrebidAdapter, MSPGoogleAdapter, MSPFacebookAdapter, MSPAmazonAdapter, MSPMolocoAdapter, MSPLiftoffAdapter, NovaAdapter
 # Note: NovaAdapter also includes pre-packaged NovaCore.xcframework (third-party dependency)
 # Does NOT apply to:
 # - Core pods (MSPiOSCore, MSPSharedLibraries, MSPCore): Require pre-built XCFrameworks
@@ -66,7 +66,7 @@ fi
 # ============================================================================
 # Binary distribution adapters that require auto-buildable XCFrameworks
 # Must be kept in sync with BINARY_DISTRIBUTION_PODS in generate_podspec.sh
-BINARY_ADAPTERS=("MSPPrebidAdapter" "MSPGoogleAdapter" "MSPFacebookAdapter" "AmazonAdapter" "MolocoAdapter" "LiftoffAdapter" "NovaAdapter")
+BINARY_ADAPTERS=("MSPPrebidAdapter" "MSPGoogleAdapter" "MSPFacebookAdapter" "MSPAmazonAdapter" "MSPMolocoAdapter" "MSPLiftoffAdapter" "NovaAdapter")
 
 # Build script path
 BUILD_SCRIPT="$ROOT_DIR/Scripts/xcframeworks/build_module.sh"
@@ -76,12 +76,30 @@ BUILD_LOG_DIR="/tmp/msp-xcframework-builds"
 mkdir -p "$BUILD_LOG_DIR"
 
 # ============================================================================
+# Mapping Functions: Pod Name → Directory Name
+# ============================================================================
+# Some adapters have different pod names vs directory names
+# Example: MSPAmazonAdapter (pod) → AmazonAdapter (directory)
+# Note: XCFramework name now matches pod name (MSPAmazonAdapter.xcframework)
+
+get_module_dir() {
+    local pod_name="$1"
+    case "$pod_name" in
+        "MSPAmazonAdapter") echo "AmazonAdapter" ;;
+        "MSPMolocoAdapter") echo "MolocoAdapter" ;;
+        "MSPLiftoffAdapter") echo "LiftoffAdapter" ;;
+        *) echo "$pod_name" ;;
+    esac
+}
+
+# ============================================================================
 # Functions
 # ============================================================================
 
 # Check if XCFramework exists for a given adapter
 check_xcframework_exists() {
     local adapter="$1"
+    # XCFramework name matches pod name (unified naming)
     local xcframework_path="$ROOT_DIR/Build/XCFrameworks/${adapter}.xcframework"
 
     if [[ -d "$xcframework_path" ]]; then
@@ -96,7 +114,11 @@ build_xcframework() {
     local adapter="$1"
     local log_file="$BUILD_LOG_DIR/${adapter}-$(date +%Y%m%d-%H%M%S).log"
 
-    log_info "Building XCFramework: $adapter"
+    # Map pod name to directory name (for build script)
+    # XCFramework name now matches pod name (unified naming)
+    local module_dir=$(get_module_dir "$adapter")
+
+    log_info "Building XCFramework: $adapter (module directory: $module_dir)"
     log_info "Build log: $log_file"
 
     if [[ ! -x "$BUILD_SCRIPT" ]]; then
@@ -104,13 +126,13 @@ build_xcframework() {
         return 1
     fi
 
-    # Run build with full output
-    if "$BUILD_SCRIPT" "$adapter" 2>&1 | tee "$log_file"; then
+    # Run build with full output (use directory name, not pod name)
+    if "$BUILD_SCRIPT" "$module_dir" 2>&1 | tee "$log_file"; then
         # Verify build result
         if check_xcframework_exists "$adapter"; then
             local size
             size=$(du -sh "$ROOT_DIR/Build/XCFrameworks/${adapter}.xcframework" 2>/dev/null | cut -f1)
-            log_success "✅ Built XCFramework: $adapter (size: $size)"
+            log_success "✅ Built XCFramework: $adapter (${adapter}.xcframework, size: $size)"
             return 0
         else
             log_error "Build reported success but XCFramework not found"
@@ -143,7 +165,7 @@ ensure_all_xcframeworks() {
     #
     # Foundation Layer includes:
     #   - MSPiOSCore.xcframework (required by all adapters)
-    #   - MSPGoogleAdsTypes.xcframework (required by MSPGoogleAdapter, AmazonAdapter)
+    #   - MSPGoogleAdsTypes.xcframework (required by MSPGoogleAdapter, MSPAmazonAdapter)
     #   - PrebidMobile.xcframework (third-party, required by most adapters)
     #
     # Note: We only check existence here, not build. Foundation Layer XCFrameworks
@@ -401,7 +423,7 @@ Applies to:
   - MSPPrebidAdapter
   - MSPGoogleAdapter
   - MSPFacebookAdapter
-  - AmazonAdapter
+  - MSPAmazonAdapter
 
 Does NOT apply to:
   - NovaAdapter: Uses pre-packaged Binary/

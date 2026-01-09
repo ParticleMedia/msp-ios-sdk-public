@@ -98,7 +98,7 @@ declare -a SPM_APP_PRODUCTS=(
     "MSPGoogleAdapter"
     "MSPFacebookAdapter"
     "NovaAdapter"
-    "AmazonAdapter"
+    "MSPAmazonAdapter"
     "UnityAdapter"
     "InmobiAdapter"
     "MobilefuseAdapter"

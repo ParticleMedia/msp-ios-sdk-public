@@ -60,12 +60,12 @@ MSP_VERSIONED_DEPS_PATTERN="$(IFS='|'; echo "${MSP_VERSIONED_DEPS[*]}")"
 #    MSPiOSCore → MSPSharedLibraries → Adapters → MSPCore
 # 2. Distribution Method: Binary (HTTP zip) vs Source (git+tag)
 #    - Binary: MSPiOSCore, MSPSharedLibraries, MSPCore, NovaAdapter
-#    - Source: MSPPrebidAdapter, MSPGoogleAdapter, MSPFacebookAdapter, AmazonAdapter
+#    - Source: MSPPrebidAdapter, MSPGoogleAdapter, MSPFacebookAdapter, MSPAmazonAdapter
 #
 # Note: NovaAdapter uses binary distribution (includes private NovaCore.xcframework)
 #       but is released in Adapters phase (Step 2), NOT in foundation phase.
 # ============================================================================
-BINARY_DISTRIBUTION_PODS=("MSPSharedLibraries" "MSPGoogleAdsTypes" "MSPCore" "MSPiOSCore" "NovaAdapter" "MSPPrebidAdapter" "MSPGoogleAdapter" "MSPFacebookAdapter" "AmazonAdapter" "MolocoAdapter" "LiftoffAdapter")
+BINARY_DISTRIBUTION_PODS=("MSPSharedLibraries" "MSPGoogleAdsTypes" "MSPCore" "MSPiOSCore" "NovaAdapter" "MSPPrebidAdapter" "MSPGoogleAdapter" "MSPFacebookAdapter" "MSPAmazonAdapter" "MSPMolocoAdapter" "MSPLiftoffAdapter")
 
 # Check if a pod uses binary distribution (HTTP zip source)
 # Returns 0 (true) if the pod is in BINARY_DISTRIBUTION_PODS
@@ -367,10 +367,11 @@ if is_binary_distribution "$POD_NAME"; then
         NovaAdapter)
             log_info "Binary distribution pod: $POD_NAME (XCFrameworks in Binary/)"
             ;;
-        MSPPrebidAdapter|MSPGoogleAdapter|MSPFacebookAdapter|AmazonAdapter)
+        MSPPrebidAdapter|MSPGoogleAdapter|MSPFacebookAdapter|MSPAmazonAdapter|MSPMolocoAdapter|MSPLiftoffAdapter)
+            # XCFramework name matches pod name (unified naming)
             XCFRAMEWORK_PATH="$ROOT_DIR/Build/XCFrameworks/${POD_NAME}.xcframework"
             if [[ -d "$XCFRAMEWORK_PATH" ]]; then
-                log_info "Binary distribution pod: $POD_NAME (XCFramework found)"
+                log_info "Binary distribution pod: $POD_NAME (XCFramework found: ${POD_NAME}.xcframework)"
             else
                 log_error "XCFramework not found: $XCFRAMEWORK_PATH"
                 log_error "Run: ./Scripts/xcframeworks/build-adapters.sh"
@@ -378,6 +379,7 @@ if is_binary_distribution "$POD_NAME"; then
             fi
             ;;
         *)
+            # XCFramework name matches pod name (unified naming)
             XCFRAMEWORK_PATH="$ROOT_DIR/Build/XCFrameworks/${POD_NAME}.xcframework"
             if [[ ! -d "$XCFRAMEWORK_PATH" ]]; then
                 log_error "XCFramework not found: $XCFRAMEWORK_PATH"
@@ -648,6 +650,7 @@ EOF_VENDOR_MULTI
   ]
 EOF_VENDOR_NOVA
     else
+        # XCFramework name matches pod name (unified naming)
         cat >> "$OUTPUT_PODSPEC" <<EOF_VENDOR_SINGLE
   spec.vendored_frameworks = "Binary/${POD_NAME}.xcframework"
 EOF_VENDOR_SINGLE

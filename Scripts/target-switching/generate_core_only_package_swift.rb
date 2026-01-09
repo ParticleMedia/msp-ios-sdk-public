@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
 # -*- coding: utf-8 -*-
 # Generate published-units-only Package.swift for spm-release mode
-# Includes ONLY: MSPSharedLibraries, MSPCore, MSPFacebookAdapter, MSPGoogleAdapter, NovaAdapter, AmazonAdapter, MSPPrebidAdapter
+# Includes ONLY: MSPSharedLibraries, MSPCore, MSPFacebookAdapter, MSPGoogleAdapter, NovaAdapter, MSPAmazonAdapter, MSPPrebidAdapter
 # Excludes: All Pods-only third-party SDKs (FBAudienceNetwork, IronSourceSDK, etc.)
 # Adapters are included but their third-party SDK dependencies are removed
 
@@ -12,7 +12,7 @@ content = File.read(template_path, encoding: 'utf-8')
 
 # Published adapter products (keep these)
 published_adapters = %w[
-  MSPPrebidAdapter MSPGoogleAdapter MSPFacebookAdapter NovaAdapter AmazonAdapter
+  MSPPrebidAdapter MSPGoogleAdapter MSPFacebookAdapter NovaAdapter MSPAmazonAdapter
 ]
 
 # Unpublished adapter products (remove these)
@@ -80,8 +80,8 @@ content.gsub!(/(        \.target\(\n            name: "MSPFacebookAdapter",\n   
 content.gsub!(/(        \.target\(\n            name: "MSPGoogleAdapter",\n            dependencies: \[\n                "MSPSharedLibraries",\n                "MSPiOSCore",\n                )"MSPGoogleAdsTypes",(\n            \],)/m, 
              '\1\2')
 
-# AmazonAdapter: Remove MSPGoogleAdsTypes and AmazonPublisherServicesSDK dependencies
-content.gsub!(/(        \.target\(\n            name: "AmazonAdapter",\n            dependencies: \[\n                "MSPSharedLibraries",\n                "MSPiOSCore",\n                )"MSPGoogleAdsTypes",\n                "AmazonPublisherServicesSDK",(\n            \],)/m, 
+# MSPAmazonAdapter: Remove MSPGoogleAdsTypes and AmazonPublisherServicesSDK dependencies
+content.gsub!(/(        \.target\(\n            name: "MSPAmazonAdapter",\n            dependencies: \[\n                "MSPSharedLibraries",\n                "MSPiOSCore",\n                )"MSPGoogleAdsTypes",\n                "AmazonPublisherServicesSDK",(\n            \],)/m, 
              '\1\2')
 
 # MSPPrebidAdapter: Keep PrebidMobile (it exists and is needed)

@@ -92,12 +92,12 @@ jobs:
           # ═══════════════════════════════════════════════════════════
           # Adapter Modules (12) - Alphabetical order
           # ═══════════════════════════════════════════════════════════
-          - AmazonAdapter
+          - MSPAmazonAdapter
           - InmobiAdapter
-          - LiftoffAdapter
+          - MSPLiftoffAdapter
           - MintegralAdapter
           - MobilefuseAdapter
-          - MolocoAdapter
+          - MSPMolocoAdapter
           - MSPFacebookAdapter
           - MSPGoogleAdapter
           - MSPPrebidAdapter
@@ -149,18 +149,18 @@ jobs:
             bash Scripts/xcframeworks/build_module.sh NovaCore
           fi
 
-      - name: Install MolocoAdapter Dependencies
-        if: matrix.module == 'MolocoAdapter'
+      - name: Install MSPMolocoAdapter Dependencies
+        if: matrix.module == 'MSPMolocoAdapter'
         run: |
-          echo "MolocoAdapter requires MolocoSDK..."
+          echo "MSPMolocoAdapter requires MolocoSDK..."
           # Check if MolocoSDK is available via CocoaPods
           cd Sources/Adapters/MolocoAdapter
           pod install --repo-update || pod install
 
-      - name: Install LiftoffAdapter Dependencies
-        if: matrix.module == 'LiftoffAdapter'
+      - name: Install MSPLiftoffAdapter Dependencies
+        if: matrix.module == 'MSPLiftoffAdapter'
         run: |
-          echo "LiftoffAdapter requires VungleAds SDK..."
+          echo "MSPLiftoffAdapter requires VungleAds SDK..."
           cd Sources/Adapters/LiftoffAdapter
           pod install --repo-update || pod install
 

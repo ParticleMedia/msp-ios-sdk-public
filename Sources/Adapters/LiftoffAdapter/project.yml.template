@@ -10,9 +10,9 @@ name: LiftoffAdapter
 settings:
   base:
     # Product Configuration
-    PRODUCT_NAME: LiftoffAdapter
+    PRODUCT_NAME: MSPLiftoffAdapter
     PRODUCT_BUNDLE_IDENTIFIER: com.newsbreak.msp.LiftoffAdapter
-    PRODUCT_MODULE_NAME: LiftoffAdapter
+    PRODUCT_MODULE_NAME: MSPLiftoffAdapter
 
 targets:
   LiftoffAdapter:

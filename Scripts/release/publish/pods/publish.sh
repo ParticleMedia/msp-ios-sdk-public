@@ -24,7 +24,7 @@ msp_enforce_main_repo_or_exit
 #     ├─ MSPGoogleAdapter
 #     ├─ MSPFacebookAdapter
 #     ├─ NovaAdapter            (binary distribution, but in Adapters phase)
-#     └─ AmazonAdapter
+#     └─ MSPAmazonAdapter
 # Step 3: MSPCore                (depends on: MSPSharedLibraries + MSPPrebidAdapter)
 #
 # Why this order?
@@ -38,7 +38,7 @@ msp_enforce_main_repo_or_exit
 #     - MSPiOSCore, MSPSharedLibraries, MSPCore, NovaAdapter
 #
 # Source Distribution (git+tag source):
-#     - MSPPrebidAdapter, MSPGoogleAdapter, MSPFacebookAdapter, AmazonAdapter
+#     - MSPPrebidAdapter, MSPGoogleAdapter, MSPFacebookAdapter, MSPAmazonAdapter
 #
 # Why NovaAdapter is binary?
 # - NovaAdapter includes private NovaCore.xcframework (not in git repo)
@@ -186,11 +186,31 @@ RELEASE_NOTES="${RELEASE_NOTES:-}"
 
 # Default pod modules if PODS_MODULES not set (backward compatibility)
 # Release order: MSPiOSCore → MSPSharedLibraries → MSPGoogleAdsTypes → Adapters → MSPCore
-DEFAULT_PODS_MODULES="MSPiOSCore MSPSharedLibraries MSPGoogleAdsTypes MSPPrebidAdapter MSPCore MSPGoogleAdapter MSPFacebookAdapter NovaAdapter AmazonAdapter MolocoAdapter LiftoffAdapter"
+DEFAULT_PODS_MODULES="MSPiOSCore MSPSharedLibraries MSPGoogleAdsTypes MSPPrebidAdapter MSPCore MSPGoogleAdapter MSPFacebookAdapter NovaAdapter MSPAmazonAdapter MSPMolocoAdapter MSPLiftoffAdapter"
 PODS_MODULES="${PODS_MODULES:-$DEFAULT_PODS_MODULES}"
 
 # ============================================================================
 # Binary Distribution Detection
+# ============================================================================
+# ============================================================================
+# Mapping Functions: Pod Name → Directory Name
+# ============================================================================
+# Some adapters have different pod names vs directory names
+# Example: MSPAmazonAdapter (pod) → AmazonAdapter (directory)
+# Note: XCFramework name now matches pod name (MSPAmazonAdapter.xcframework)
+
+get_module_dir() {
+    local pod_name="$1"
+    case "$pod_name" in
+        "MSPAmazonAdapter") echo "AmazonAdapter" ;;
+        "MSPMolocoAdapter") echo "MolocoAdapter" ;;
+        "MSPLiftoffAdapter") echo "LiftoffAdapter" ;;
+        *) echo "$pod_name" ;;
+    esac
+}
+
+# ============================================================================
+# Binary Distribution Check
 # ============================================================================
 # Check if a pod uses binary distribution (HTTP zip source from GitHub Releases).
 # This is a DISTRIBUTION METHOD check, NOT a release order check.
@@ -206,7 +226,7 @@ PODS_MODULES="${PODS_MODULES:-$DEFAULT_PODS_MODULES}"
 is_binary_distribution() {
     local pod="$1"
     case "$pod" in
-        MSPiOSCore|MSPSharedLibraries|MSPGoogleAdsTypes|MSPCore|NovaAdapter|MSPPrebidAdapter|MSPGoogleAdapter|MSPFacebookAdapter|AmazonAdapter|MolocoAdapter|LiftoffAdapter)
+        MSPiOSCore|MSPSharedLibraries|MSPGoogleAdsTypes|MSPCore|NovaAdapter|MSPPrebidAdapter|MSPGoogleAdapter|MSPFacebookAdapter|MSPAmazonAdapter|MSPMolocoAdapter|MSPLiftoffAdapter)
             return 0
             ;;
         *)
@@ -288,7 +308,7 @@ show_help() {
     echo "Release Workflow:"
     echo "  1. Publish MSPSharedLibraries (foundation dependency)"
     echo "  2. Wait for MSPSharedLibraries to be released"
-    echo "  3. Publish Adapters (MSPFacebookAdapter, MSPGoogleAdapter, NovaAdapter, AmazonAdapter, PrebidAdapter)"
+    echo "  3. Publish Adapters (MSPFacebookAdapter, MSPGoogleAdapter, NovaAdapter, MSPAmazonAdapter, MSPPrebidAdapter)"
     echo "  4. Wait for Adapters to be released"
     echo "  5. Publish MSPCore (main framework)"
     echo "  6. Commit all changes to release branch"
@@ -1120,9 +1140,9 @@ This release includes the following components:
 - MSPGoogleAdapter
 - MSPFacebookAdapter
 - NovaAdapter
-- AmazonAdapter
-- MolocoAdapter (if applicable)
-- LiftoffAdapter (if applicable)
+- MSPAmazonAdapter
+- MSPMolocoAdapter (if applicable)
+- MSPLiftoffAdapter (if applicable)
 
 ## Installation
 
@@ -2948,19 +2968,23 @@ publish_pod_with_resume() {
     # For binary distribution adapters, automatically build missing XCFrameworks
     # to avoid manual intervention and ensure script-level guarantees.
     #
-    # Applies to: MSPPrebidAdapter, MSPGoogleAdapter, MSPFacebookAdapter, AmazonAdapter
+    # Applies to: MSPPrebidAdapter, MSPGoogleAdapter, MSPFacebookAdapter, MSPAmazonAdapter
     # Does NOT apply to:
     # - NovaAdapter: Uses pre-packaged Binary/NovaCore.xcframework
     # - Core pods: Require pre-built XCFrameworks from build pipeline
     # ========================================================================
     if is_binary_distribution "$pod"; then
         case "$pod" in
-            MSPPrebidAdapter|MSPGoogleAdapter|MSPFacebookAdapter|AmazonAdapter|MolocoAdapter|LiftoffAdapter)
+            MSPPrebidAdapter|MSPGoogleAdapter|MSPFacebookAdapter|MSPAmazonAdapter|MSPMolocoAdapter|MSPLiftoffAdapter)
+                # Map pod name to directory name (for build script)
+                # XCFramework name now matches pod name (unified naming)
+                local module_dir=$(get_module_dir "$pod")
                 local xcframework_path="$ROOT_DIR/Build/XCFrameworks/${pod}.xcframework"
 
                 if [[ ! -d "$xcframework_path" ]]; then
                     log_warning "XCFramework missing for $pod, auto-building..."
-                    log_info "Path: $xcframework_path"
+                    log_info "Expected path: $xcframework_path"
+                    log_info "Building module directory: $module_dir"
 
                     # Build the missing XCFramework
                     local build_script="$ROOT_DIR/Scripts/xcframeworks/build_module.sh"
@@ -2971,12 +2995,12 @@ publish_pod_with_resume() {
                         return 1
                     fi
 
-                    log_info "Running: $build_script $pod"
+                    log_info "Running: $build_script $module_dir"
 
-                    if "$build_script" "$pod" 2>&1 | tee "/tmp/auto-build-${pod}.log"; then
-                        log_success "✅ Auto-built XCFramework: $pod"
+                    if "$build_script" "$module_dir" 2>&1 | tee "/tmp/auto-build-${pod}.log"; then
+                        log_success "✅ Auto-built XCFramework: $pod (${xcframework_name}.xcframework)"
 
-                        # Verify build result
+                        # Verify build result (use mapped XCFramework name)
                         if [[ -d "$xcframework_path" ]]; then
                             log_info "Verified: $xcframework_path exists"
                             local size
@@ -3940,7 +3964,7 @@ release_msp_shared_libraries() {
 # Release MSPGoogleAdsTypes (Step 1.5)
 # ============================================================================
 release_msp_googleadstypes() {
-    log_section "Step 1.5: Releasing MSPGoogleAdsTypes (required by MSPGoogleAdapter and AmazonAdapter)"
+    log_section "Step 1.5: Releasing MSPGoogleAdsTypes (required by MSPGoogleAdapter and MSPAmazonAdapter)"
 
     # Start timing
     if command -v metrics::start &>/dev/null; then
@@ -4015,7 +4039,7 @@ release_msp_googleadstypes() {
     # NOTE: Pod availability check moved to parallel release wrapper
     # This allows MSPGoogleAdsTypes and MSPSharedLibraries to be published in parallel
     # Availability will be checked before adapter releases (in release_adapters function)
-    # MSPGoogleAdsTypes is only needed by MSPGoogleAdapter and AmazonAdapter, which will check individually
+    # MSPGoogleAdsTypes is only needed by MSPGoogleAdapter and MSPAmazonAdapter, which will check individually
 
     # End timing
     if command -v metrics::end &>/dev/null; then
@@ -4660,7 +4684,7 @@ release_adapters() {
     
     if [[ ${#adapters[@]} -eq 0 ]]; then
         log_warn "No adapters found in PODS_MODULES. Using default adapter list for backward compatibility."
-        adapters=("MSPFacebookAdapter" "MSPGoogleAdapter" "NovaAdapter" "AmazonAdapter" "MSPPrebidAdapter")
+        adapters=("MSPFacebookAdapter" "MSPGoogleAdapter" "NovaAdapter" "MSPAmazonAdapter" "MSPPrebidAdapter")
     fi
     
     log_info "Releasing adapters from PODS_MODULES: ${adapters[*]}"
@@ -5263,7 +5287,7 @@ main() {
     
     if [[ ${#cocoapods_pods[@]} -eq 0 ]]; then
         log_warn "PODS_MODULES is empty. Using default pod list for backward compatibility."
-        cocoapods_pods=("MSPSharedLibraries" "MSPFacebookAdapter" "MSPGoogleAdapter" "NovaAdapter" "AmazonAdapter" "MSPPrebidAdapter" "MSPCore")
+        cocoapods_pods=("MSPSharedLibraries" "MSPFacebookAdapter" "MSPGoogleAdapter" "NovaAdapter" "MSPAmazonAdapter" "MSPPrebidAdapter" "MSPCore")
     fi
     
     log_info "Releasing pods from PODS_MODULES: ${cocoapods_pods[*]}"

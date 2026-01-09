@@ -87,7 +87,7 @@ pods:
   #   - MSPGoogleAdapter      (depends on MSPCore, MSPiOSCore, MSPGoogleAdsTypes)
   #   - MSPFacebookAdapter    (depends on MSPCore, MSPiOSCore)
   #   - NovaAdapter           (depends on NovaCore, MSPiOSCore)
-  #   - AmazonAdapter          (depends on MSPCore, MSPiOSCore)
+  #   - MSPAmazonAdapter          (depends on MSPCore, MSPiOSCore)
   #   - UnityAdapter           (depends on MSPCore, MSPiOSCore)
   #   - InmobiAdapter          (depends on MSPCore, MSPiOSCore)
   #   - MobilefuseAdapter      (depends on MSPCore, MSPiOSCore)
@@ -107,7 +107,7 @@ pods:
     - MSPGoogleAdsTypes
     
     # Adapter modules (alphabetical, but dependencies already satisfied above)
-    - AmazonAdapter
+    - MSPAmazonAdapter
     - InmobiAdapter
     - MintegralAdapter
     - MobilefuseAdapter
@@ -184,7 +184,7 @@ spm:
     - MSPGoogleAdsTypes
     
     # Adapter packages
-    - AmazonAdapter
+    - MSPAmazonAdapter
     - InmobiAdapter
     - MintegralAdapter
     - MobilefuseAdapter
@@ -288,7 +288,7 @@ notifications:
 #   2. MSPGoogleAdapter        - Google AdMob/Ad Manager adapter
 #   3. MSPFacebookAdapter     - Meta Audience Network adapter
 #   4. NovaAdapter            - Nova ad format adapter
-#   5. AmazonAdapter           - Amazon Publisher Services adapter
+#   5. MSPAmazonAdapter           - Amazon Publisher Services adapter
 #   6. UnityAdapter            - Unity Ads adapter
 #   7. InmobiAdapter           - InMobi adapter
 #   8. MobilefuseAdapter       - MobileFuse adapter

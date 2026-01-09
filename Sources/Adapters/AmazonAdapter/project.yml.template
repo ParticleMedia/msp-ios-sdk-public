@@ -10,9 +10,9 @@ name: AmazonAdapter
 settings:
   base:
     # Product Configuration
-    PRODUCT_NAME: AmazonAdapter
+    PRODUCT_NAME: MSPAmazonAdapter
     PRODUCT_BUNDLE_IDENTIFIER: msp.AmazonAdapter
-    PRODUCT_MODULE_NAME: AmazonAdapter
+    PRODUCT_MODULE_NAME: MSPAmazonAdapter
 
 targets:
   AmazonAdapter:

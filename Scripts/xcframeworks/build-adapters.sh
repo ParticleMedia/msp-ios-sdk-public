@@ -37,6 +37,23 @@ fi
 log_title "Building Adapter Modules"
 
 # ============================================================================
+# Mapping Functions: Pod Name → Directory Name
+# ============================================================================
+# Some adapters have different pod names vs directory names
+# Example: MSPAmazonAdapter (pod) → AmazonAdapter (directory)
+# Note: XCFramework name now matches pod name (MSPAmazonAdapter.xcframework)
+
+get_module_dir() {
+    local pod_name="$1"
+    case "$pod_name" in
+        "MSPAmazonAdapter") echo "AmazonAdapter" ;;
+        "MSPMolocoAdapter") echo "MolocoAdapter" ;;
+        "MSPLiftoffAdapter") echo "LiftoffAdapter" ;;
+        *) echo "$pod_name" ;;
+    esac
+}
+
+# ============================================================================
 # Generate project.yml from templates (Template Architecture)
 # ============================================================================
 log_section "Generating project.yml from templates"
@@ -48,6 +65,7 @@ else
 fi
 
 # All adapter modules (including MSPGoogleAdsTypes which is a Common module)
+# Note: These are POD NAMES, not directory names
 ADAPTER_MODULES=(
     "MSPGoogleAdsTypes"
     "NovaAdapter"
@@ -59,9 +77,9 @@ ADAPTER_MODULES=(
     "MobilefuseAdapter"
     "PubmaticAdapter"
     "UnityAdapter"
-    "AmazonAdapter"
-    "LiftoffAdapter"
-    "MolocoAdapter"
+    "MSPAmazonAdapter"
+    "MSPLiftoffAdapter"
+    "MSPMolocoAdapter"
 )
 
 # Core XCFrameworks that adapters depend on
@@ -97,30 +115,29 @@ SUCCESS_COUNT=0
 FAIL_COUNT=0
 FAILED_MODULES=()
 
-for module in "${ADAPTER_MODULES[@]}"; do
-    log_section "Building $module"
-    
-    # Determine PRODUCT_NAME
-    PRODUCT_NAME="$module"
-    if [[ "$module" == "PrebidAdapter" ]]; then
-        PRODUCT_NAME="MSPPrebidAdapter"
-    fi
-    
+for pod_name in "${ADAPTER_MODULES[@]}"; do
+    log_section "Building $pod_name"
+
+    # Map pod name to directory name (for build_module.sh)
+    module_dir=$(get_module_dir "$pod_name")
+
+    # XCFramework name now matches pod name (unified naming)
     # For Round 3, force rebuild all adapters to use new build system
     # Remove existing XCFramework to ensure fresh build with new pipeline
-    XCFRAMEWORK_OUTPUT="$ROOT_DIR/Build/XCFrameworks/$PRODUCT_NAME.xcframework"
+    XCFRAMEWORK_OUTPUT="$ROOT_DIR/Build/XCFrameworks/$pod_name.xcframework"
     if [[ -d "$XCFRAMEWORK_OUTPUT" ]]; then
-        log_info "Removing existing $PRODUCT_NAME.xcframework for fresh rebuild..."
+        log_info "Removing existing $pod_name.xcframework for fresh rebuild..."
         rm -rf "$XCFRAMEWORK_OUTPUT"
     fi
-    
-    if "$BUILD_MODULE_SCRIPT" "$module"; then
+
+    # build_module.sh expects directory name, not pod name
+    if "$BUILD_MODULE_SCRIPT" "$module_dir"; then
         ((SUCCESS_COUNT++))
-        log_success "$module: BUILD SUCCEEDED"
+        log_success "$pod_name: BUILD SUCCEEDED"
     else
         ((FAIL_COUNT++))
-        FAILED_MODULES+=("$module")
-        log_error "$module: BUILD FAILED"
+        FAILED_MODULES+=("$pod_name")
+        log_error "$pod_name: BUILD FAILED"
     fi
 done
 
@@ -145,15 +162,15 @@ log_section "Copying Adapter XCFrameworks to Binary/"
 # BINARY_DIR is already defined in common.sh as readonly
 mkdir -p "$BINARY_DIR"
 
-for module in "${ADAPTER_MODULES[@]}"; do
-    PRODUCT_NAME="$module"
-    XCFRAMEWORK_SRC="$ROOT_DIR/Build/XCFrameworks/$PRODUCT_NAME.xcframework"
-    XCFRAMEWORK_DST="$BINARY_DIR/$PRODUCT_NAME.xcframework"
-    
+for pod_name in "${ADAPTER_MODULES[@]}"; do
+    # XCFramework name matches pod name (unified naming)
+    XCFRAMEWORK_SRC="$ROOT_DIR/Build/XCFrameworks/$pod_name.xcframework"
+    XCFRAMEWORK_DST="$BINARY_DIR/$pod_name.xcframework"
+
     if [[ -d "$XCFRAMEWORK_SRC" ]]; then
         rm -rf "$XCFRAMEWORK_DST"
         cp -R "$XCFRAMEWORK_SRC" "$XCFRAMEWORK_DST"
-        log_success "Copied $PRODUCT_NAME.xcframework to Binary/"
+        log_success "Copied $pod_name.xcframework to Binary/"
     else
         log_warn "Not found: $XCFRAMEWORK_SRC"
     fi
