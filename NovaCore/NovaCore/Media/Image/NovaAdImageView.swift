@@ -44,7 +44,8 @@ class NovaAdImageView: UIView {
     func config(
         with mediaModel: NovaAdImageMediaModel,
         actionContext: NovaAdMediaActionContext?,
-        completion: @escaping () -> Void
+        completion: @escaping () -> Void,
+        showBottomShadow: Bool = false
     ) {
         // Initialize start time for click tracking
         startTime = CACurrentMediaTime()
@@ -70,6 +71,45 @@ class NovaAdImageView: UIView {
         } else {
             isUserInteractionEnabled = false
         }
+        setupBottomShadow(showBottomShadow: showBottomShadow)
+    }
+    
+    private func setupBottomShadow(showBottomShadow: Bool) {
+        bottomShadowView?.removeFromSuperview()
+        bottomShadowView = nil
+        
+        guard showBottomShadow else {
+            return
+        }
+        
+        // Use fixed shadow configuration
+        let config = GradientShadowViewConfig(
+            colors: (
+                UIColor.clear,
+                UIColor.black.withAlphaComponent(0.85)
+            ),
+            points: (CGPoint(x: 0.5, y: 0), CGPoint(x: 0.5, y: 1.0)),
+            shadowColor: .clear,
+            shadowOpacity: 0,
+            shadowOffset: .zero,
+            shadowRadius: 0
+        )
+        
+        let shadowView = GradientShadowView(with: config)
+        shadowView.isUserInteractionEnabled = false
+        addSubview(shadowView)
+        
+        // Place shadow above contentImageView
+        insertSubview(shadowView, aboveSubview: contentImageView)
+        
+        shadowView.snp.makeConstraints { make in
+            make.leading.trailing.bottom.equalToSuperview()
+            // Default height similar to interstitial handlers
+            let screenWidth = UIScreen.main.bounds.width
+            make.height.equalTo(screenWidth * 280 / 375)
+        }
+        
+        bottomShadowView = shadowView
     }
 
     // MARK: Private
@@ -90,6 +130,8 @@ class NovaAdImageView: UIView {
     private var mediaModel: NovaAdImageMediaModel?
     private var actionContext: NovaAdMediaActionContext?
     private var actionHelper: NovaActionHelper<NovaActionState.Init>?
+    
+    private var bottomShadowView: GradientShadowView?
 
     private func setupActionHelper() {
         guard let actionContext else {

@@ -5,56 +5,70 @@
 //  Created by Patrick on 2025/1/27.
 //
 
-import Foundation
 import UIKit
 
-// MARK: - GradientShadowViewConfig
+public struct GradientShadowViewConfig {
+    let (startColor, endColor): (UIColor, UIColor)
+    let (startPosition, endPosition): (CGPoint, CGPoint)
+    let shadowColor: UIColor
+    let shadowOpacity: Float
+    let shadowOffset: CGSize
+    let shadowRadius: CGFloat
 
-struct GradientShadowViewConfig {
-    let colors: (UIColor, UIColor)
-    let points: (CGPoint, CGPoint)
-    
-    init(colors: (UIColor, UIColor), points: (CGPoint, CGPoint)) {
-        self.colors = colors
-        self.points = points
+    public init(
+        colors: (UIColor, UIColor),
+        points: (CGPoint, CGPoint),
+        shadowColor: UIColor = .clear,
+        shadowOpacity: Float = 0,
+        shadowOffset: CGSize = .zero,
+        shadowRadius: CGFloat = 0
+    ) {
+        self.startColor = colors.0
+        self.endColor = colors.1
+        self.startPosition = points.0
+        self.endPosition = points.1
+        self.shadowColor = shadowColor
+        self.shadowOpacity = shadowOpacity
+        self.shadowOffset = shadowOffset
+        self.shadowRadius = shadowRadius
     }
 }
 
-// MARK: - GradientShadowView
+public class GradientShadowView: UIView {
+    private let gradientLayer = CAGradientLayer()
+    private let config: GradientShadowViewConfig
 
-class GradientShadowView: UIView {
-    
-    // MARK: Lifecycle
-    
-    init(with config: GradientShadowViewConfig) {
+    public init(with config: GradientShadowViewConfig) {
         self.config = config
         super.init(frame: .zero)
         setupGradient()
+        setupShadow()
     }
-    
+
+    @available(*, unavailable)
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
-    // MARK: Private
-    
-    private let config: GradientShadowViewConfig
-    
+
     private func setupGradient() {
-        let gradientLayer = CAGradientLayer()
         gradientLayer.colors = [
-            config.colors.0.cgColor,
-            config.colors.1.cgColor
+            config.startColor.cgColor,
+            config.endColor.cgColor
         ]
-        gradientLayer.startPoint = config.points.0
-        gradientLayer.endPoint = config.points.1
+        gradientLayer.startPoint = config.startPosition
+        gradientLayer.endPoint = config.endPosition
         layer.addSublayer(gradientLayer)
     }
-    
-    override func layoutSubviews() {
+
+    private func setupShadow() {
+        layer.shadowColor = config.shadowColor.cgColor
+        layer.shadowOpacity = config.shadowOpacity
+        layer.shadowOffset = config.shadowOffset
+        layer.shadowRadius = config.shadowRadius
+    }
+
+    override public func layoutSubviews() {
         super.layoutSubviews()
-        if let gradientLayer = layer.sublayers?.first as? CAGradientLayer {
-            gradientLayer.frame = bounds
-        }
+        gradientLayer.frame = bounds
     }
 }

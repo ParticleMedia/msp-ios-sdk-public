@@ -160,7 +160,7 @@ class NovaInterstitialAdVerticalSubviewHandler: NovaInterstitialAdSubviewHandler
         adTagLabel.setTitle("SPONSORED", for: .normal)
         
         // Configure media view
-        interstitialAd.mediaContent.videoController?.style = .playButtonOnCenter(progressBarStyle: .hide, popupCTAStyle: .show)
+        interstitialAd.mediaContent.videoController?.style = .playButtonOnCenter(progressBarStyle: .hide, popupCTAStyle: .show())
         mediaView.config(
             with: interstitialAd.mediaContent,
             actionContext: .init(
@@ -286,13 +286,21 @@ class NovaInterstitialAdVerticalSubviewHandler: NovaInterstitialAdSubviewHandler
         return button
     }()
 
-    private lazy var bottomShadow: UIImageView = {
-        let imageView = UIImageView()
-        imageView.contentMode = .scaleAspectFill
-        imageView.clipsToBounds = true
-        imageView.image = .Nova.bottomShadow
-        imageView.adClickArea = .badge
-        return imageView
+    private lazy var bottomShadow: GradientShadowView = {
+        let config = GradientShadowViewConfig(
+            colors: (
+                UIColor.clear,
+                UIColor.black.withAlphaComponent(0.85)
+            ),
+            points: (CGPoint(x: 0.5, y: 0), CGPoint(x: 0.5, y: 1.0)),
+            shadowColor: .clear,
+            shadowOpacity: 0,
+            shadowOffset: .zero,
+            shadowRadius: 0
+        )
+        let view = GradientShadowView(with: config)
+        view.adClickArea = .badge
+        return view
     }()
 
     private lazy var advertiserInfoStackView: UIStackView = {

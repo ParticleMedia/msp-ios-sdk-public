@@ -93,6 +93,8 @@ public class NovaAdapter: AdNetworkAdapter {
         let videoUseControl = adRequest?.customParams["video_use_control"] as? Bool ?? true
         // default false, popup cta will be enabled if set to true
         let popupCTAEnabled = adRequest?.customParams["popup_cta_enabled"] as? Bool ?? false
+        let mediaElementLayout = createMediaElementLayout(from: adRequest?.customParams)
+        // TODO: lsy, 我看了下调用，这个不是已经在主线程了吗
         guard let nativeAdView = nativeAdView as? NativeAdView,
               let novaNativeAd = nativeAd as? NovaNativeAd,
               let novaNativeAdItem = novaNativeAd.nativeAdItem
@@ -102,7 +104,10 @@ public class NovaAdapter: AdNetworkAdapter {
         }
 
         let novaNativeAdView = NovaNativeAdView()
-        let popupCTAStyle: NovaAdVideoView.Style.PopupCTAStyle = popupCTAEnabled ? .show : .hide
+        let popupCTAStyle: NovaAdVideoView.Style.PopupCTAStyle = popupCTAEnabled ? .show(
+            safeAreaInsets: mediaElementLayout?.safeAreaInsets ?? .zero,
+            exclusionRects: mediaElementLayout?.exclusionRects ?? []
+        ) : .hide
         let progressBarStyle: NovaAdVideoView.Style.ProgressBarStyle = novaNativeAdItem.isVideo ? .show(bottomMargin: 0) : .hide
         let newVideoStyle: NovaAdVideoView.Style = if videoUseControl {
             .playButtonOnLeftBottom
@@ -112,6 +117,8 @@ public class NovaAdapter: AdNetworkAdapter {
             .playButtonOnCenter(progressBarStyle: progressBarStyle, popupCTAStyle: popupCTAStyle)
         }
         novaNativeAdItem.mediaContent.videoController?.style = newVideoStyle
+        novaNativeAdItem.mediaContent.elementLayout = mediaElementLayout
+
         if let nativeAdViewBinder = nativeAdView.nativeAdViewBinder {
             novaNativeAdView.titleLabel = nativeAdView.nativeAdViewBinder?.titleLabel
             novaNativeAdView.bodyLabel = nativeAdView.nativeAdViewBinder?.bodyLabel
@@ -127,10 +134,6 @@ public class NovaAdapter: AdNetworkAdapter {
                 novaNativeAdView.icon
             ].compactMap {
                 $0
-            }
-                
-            if let customClickableViews = novaNativeAdView.customClickableViews {
-                clickableViews.append(contentsOf: customClickableViews)
             }
                 
             novaNativeAdView.setupViews(with: novaNativeAdItem, clickableViews: clickableViews)
@@ -313,6 +316,29 @@ public class NovaAdapter: AdNetworkAdapter {
             // It's always OK to cast nil to nil
             return nil
         }
+    }
+    
+    // MARK: - Element Layout Helper
+    
+    private func createMediaElementLayout(from customParams: [String: Any]?) -> NovaMediaElementLayout? {
+        guard let customParams = customParams else {
+            return nil
+        }
+        
+        let safeAreaInsets = customParams["media_safe_area_insets"] as? UIEdgeInsets ?? .zero
+        let exclusionRects = customParams["media_exclusion_rects"] as? [CGRect] ?? []
+        let showBottomShadow = customParams["media_show_bottom_shadow"] as? Bool ?? false
+        
+        // Only create if at least one value is non-default
+        if safeAreaInsets != .zero || !exclusionRects.isEmpty || showBottomShadow {
+            return NovaMediaElementLayout(
+                safeAreaInsets: safeAreaInsets,
+                exclusionRects: exclusionRects,
+                showBottomShadow: showBottomShadow
+            )
+        }
+        
+        return nil
     }
     
     public func loadTestAdCreative(adString: String, adListener: any AdListener, context: Any, adRequest: AdRequest) {

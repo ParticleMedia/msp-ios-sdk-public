@@ -83,6 +83,12 @@ public final class NovaAdMediaView: UIView {
             return nil
         }
     }()
+
+    private lazy var tapToTryStaticView: NovaAdTapToTryStaticView = {
+        let view = NovaAdTapToTryStaticView()
+        view.isUserInteractionEnabled = false
+        return view
+    }()
 }
 
 // MARK: - methods
@@ -147,22 +153,25 @@ extension NovaAdMediaView {
             }
         }()
         if let newMediaView = newMediaView {
-                addSubview(newMediaView)
-                newMediaView.snp.makeConstraints { make in
-                    make.directionalEdges.equalToSuperview()
-                }
-                currentView = newMediaView
-                currentView?.adClickArea = .media
+            addSubview(newMediaView)
+            newMediaView.snp.makeConstraints { make in
+                make.directionalEdges.equalToSuperview()
+            }
+            currentView = newMediaView
+            currentView?.adClickArea = .media
         }
 
         tapToTryAnimationView?.removeFromSuperview()
+        tapToTryStaticView.removeFromSuperview()
         discountTag.removeFromSuperview()
+        
+        let showBottomShadow = mediaContent.elementLayout?.showBottomShadow ?? false
         
         switch mediaContent.adMedia {
         case .image(let model):
-            imageView.config(with: model, actionContext: actionContext, completion: completion)
+            imageView.config(with: model, actionContext: actionContext, completion: completion, showBottomShadow: showBottomShadow)
         case .video(let model):
-            videoView.config(with: model, actionContext: actionContext, iabReporter: iabReporter)
+            videoView.config(with: model, actionContext: actionContext, iabReporter: iabReporter, showBottomShadow: showBottomShadow)
         case .multipleImages(let model):
             multipleImagesComponentsProvider.config(with: model, actionContext: actionContext)
         case .multipleItems(let model):
@@ -176,8 +185,8 @@ extension NovaAdMediaView {
             let layout = playableModel.layout
             switch (renderOption, layout) {
             case (.auto, .showMedia), (.auto, .twoPart), (.none, .showMedia), (.none, .twoPart), (.imageOrVideo, _):
-                imageView.config(with: imageModel, actionContext: actionContext, completion: completion)
-                setupTapToTry()
+                imageView.config(with: imageModel, actionContext: actionContext, completion: completion, showBottomShadow: showBottomShadow)
+                setupTapToTry(with: playableModel)
             case (.auto, .showPlayable), (.none, .showPlayable), (.playable, _):
                 playableView.config(with: playableModel.playableActionModel, actionContext: actionContext)
             }
@@ -186,8 +195,8 @@ extension NovaAdMediaView {
             let layout = playableModel.layout
             switch (renderOption, layout) {
             case (.auto, .showMedia), (.auto, .twoPart), (.none, .showMedia), (.none, .twoPart), (.imageOrVideo, _):
-                videoView.config(with: videoModel, actionContext: actionContext, iabReporter: iabReporter)
-                setupTapToTry()
+                videoView.config(with: videoModel, actionContext: actionContext, iabReporter: iabReporter, showBottomShadow: showBottomShadow)
+                setupTapToTry(with: playableModel)
             case (.auto, .showPlayable), (.none, .showPlayable), (.playable, _):
                 playableView.config(with: playableModel.playableActionModel, actionContext: actionContext)
             }
@@ -211,16 +220,33 @@ extension NovaAdMediaView {
         discountTag.removeFromSuperview()
         tapToTryAnimationView?.stop()
         tapToTryAnimationView?.removeFromSuperview()
+        tapToTryStaticView.removeFromSuperview()
     }
 
-    private func setupTapToTry() {
-        if let tapToTryAnimationView {
-            addSubview(tapToTryAnimationView)
-            tapToTryAnimationView.snp.remakeConstraints { make in
-                make.center.equalToSuperview()
-                make.size.equalTo(72.0)
+    private func setupTapToTry(with mediaModel: NovaAdPlayableMediaModel) {
+        switch mediaModel.tapToTryFormat {
+        case .default:
+            if let tapToTryAnimationView {
+                addSubview(tapToTryAnimationView)
+                tapToTryAnimationView.snp.remakeConstraints { make in
+                    make.center.equalToSuperview()
+                    make.size.equalTo(72.0)
+                }
+                tapToTryAnimationView.play()
             }
-            tapToTryAnimationView.play()
+        case .gamepadWithText:
+            addSubview(tapToTryStaticView)
+            let bottomOffset: CGFloat = {
+                let defaultOffset: CGFloat = 16
+                if let safeAreaBottom = mediaContent?.elementLayout?.safeAreaInsets.bottom, safeAreaBottom > 0 {
+                    return -(safeAreaBottom + defaultOffset)
+                }
+                return -defaultOffset
+            }()
+            tapToTryStaticView.snp.remakeConstraints { make in
+                make.centerX.equalToSuperview()
+                make.bottom.equalToSuperview().offset(bottomOffset)
+            }
         }
     }
 

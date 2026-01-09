@@ -6,6 +6,7 @@
 //
 import CoreMedia
 import UIKit
+@_implementationOnly import SnapKit
 
 // MARK: - NovaNativeAdVideoViewExtraConfig
 
@@ -89,7 +90,7 @@ public final class NovaAdVideoView: UIView {
         
         public enum PopupCTAStyle: Equatable {
             case hide
-            case show
+            case show(safeAreaInsets: UIEdgeInsets = .zero, exclusionRects: [CGRect] = [])
         }
 
         public static func == (lhs: NovaAdVideoView.Style, rhs: NovaAdVideoView.Style) -> Bool {
@@ -167,6 +168,8 @@ public final class NovaAdVideoView: UIView {
     // MARK: - Subviews
 
     private lazy var endCard: NovaAdEndCard = .init(delegate: self)
+    
+    private var bottomShadowView: GradientShadowView?
 
     private var state: NovaAdVideoState? {
         get {
@@ -204,7 +207,8 @@ extension NovaAdVideoView {
     func config(
         with model: NovaAdVideoMediaModel,
         actionContext: NovaAdMediaActionContext?,
-        iabReporter: IABMetricReporter?
+        iabReporter: IABMetricReporter?,
+        showBottomShadow: Bool = false
     ) {
         self.mediaModel = model
         self.actionContext = actionContext
@@ -231,6 +235,7 @@ extension NovaAdVideoView {
         setupTapGesture()
         configEndCard()
         subviewHandler?.config(with: model)
+        setupBottomShadow(showBottomShadow: showBottomShadow)
     }
 
     func prepareForReuse() {
@@ -238,6 +243,8 @@ extension NovaAdVideoView {
         state = nil
         mediaModel = nil
         videoStartPlayingAfterFinishLoading = false
+        bottomShadowView?.removeFromSuperview()
+        bottomShadowView = nil
     }
 
     enum PlayStrategy {
@@ -620,6 +627,45 @@ private extension NovaAdVideoView {
                 UITapGestureRecognizer(target: self, action: #selector(didClickAd))
             )
         }
+    }
+    
+    private func setupBottomShadow(showBottomShadow: Bool) {
+        bottomShadowView?.removeFromSuperview()
+        bottomShadowView = nil
+        
+        guard showBottomShadow else {
+            return
+        }
+        
+        // Use fixed shadow configuration
+        let config = GradientShadowViewConfig(
+            colors: (
+                UIColor.clear,
+                UIColor.black.withAlphaComponent(0.85)
+            ),
+            points: (CGPoint(x: 0.5, y: 0), CGPoint(x: 0.5, y: 1.0)),
+            shadowColor: .clear,
+            shadowOpacity: 0,
+            shadowOffset: .zero,
+            shadowRadius: 0
+        )
+        
+        let shadowView = GradientShadowView(with: config)
+        shadowView.isUserInteractionEnabled = false
+        addSubview(shadowView)
+        
+        // Place shadow above playerView but below popup CTA
+        let playerView = videoPlayer.getPlayerView()
+        insertSubview(shadowView, aboveSubview: playerView)
+        
+        shadowView.snp.makeConstraints { make in
+            make.leading.trailing.bottom.equalToSuperview()
+            // Default height similar to interstitial handlers
+            let screenWidth = UIScreen.main.bounds.width
+            make.height.equalTo(screenWidth * 280 / 375)
+        }
+        
+        bottomShadowView = shadowView
     }
 }
 

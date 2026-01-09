@@ -67,10 +67,12 @@ struct NovaAdEndCardViewModel {
             }
         }()
 
+        let appInfo = ad.appInfo?.valueIfReady
+
         return .init(
             style: style,
-            iconUrl: ad.appInfo?.appIconUrl ?? ad.iconURL,
-            advertiser: ad.appInfo?.appName ?? ad.advertiser,
+            iconUrl: appInfo?.appIconUrl ?? ad.iconURL,
+            advertiser: appInfo?.appName ?? ad.advertiser,
             description: ad.headline,
             body: ad.body,
             ctaText: ad.callToAction,
