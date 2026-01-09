@@ -289,6 +289,12 @@ verify_spm_cdn_availability() {
     log_info "Verifying ${#zip_urls[@]} zip file(s)..."
     echo ""
 
+    # Guard against empty array (set -u will fail on empty array iteration)
+    if [[ ${#zip_urls[@]} -eq 0 ]]; then
+        log_success "No binary zip URLs to verify (all targets are source-based or skipped)"
+        return 0
+    fi
+
     # Verify each URL with HTTP HEAD request
     for url_info in "${zip_urls[@]}"; do
         IFS='|' read -r url framework_name <<< "$url_info"

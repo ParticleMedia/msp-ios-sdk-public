@@ -477,7 +477,10 @@ in_block {
 # Note: MSPiOSCore is now a separate pod, so adapters should keep this dependency
 # Stage B: MSPOMSDK removed - OMSDK now embedded in NovaCore
 if [[ "$POD_NAME" == "NovaAdapter" ]]; then
+    # Filter out embedded dependencies (NovaCore, MSPKingfisher), but add public Kingfisher dependency
     grep "spec\\.dependency" "$SOURCE_PODSPEC" | grep -vE "(NovaCore|MSPKingfisher)" >> "$OUTPUT_PODSPEC" 2>/dev/null || true
+    # Add Kingfisher dependency (binary distribution requires public Kingfisher, not internal MSPKingfisher)
+    echo "  spec.dependency 'Kingfisher', '~> 7.0'" >> "$OUTPUT_PODSPEC"
 elif is_binary_distribution "$POD_NAME"; then
     # Binary distribution pods: keep all dependencies
     grep "spec\\.dependency" "$SOURCE_PODSPEC" >> "$OUTPUT_PODSPEC" 2>/dev/null || true
