@@ -390,13 +390,16 @@ update_adapter_sdk_version() {
     
     log_info "PUBLISH" "Updating getSDKVersion() in $adapter to version $version"
 
-    # Fix: Use full path from project root
-    local adapter_dir="${ROOT_DIR}/Sources/Adapters/${adapter}/${adapter}"
+    # Map pod name to directory name (for adapters with renamed modules)
+    # Example: MSPAmazonAdapter (pod) → AmazonAdapter (directory)
+    local module_dir=$(get_module_dir "$adapter")
+    local adapter_dir="${ROOT_DIR}/Sources/Adapters/${module_dir}/${module_dir}"
 
     # Validate directory exists
     if [[ ! -d "$adapter_dir" ]]; then
         log_error "PUBLISH" "Adapter directory not found: $adapter_dir"
-        log_error "PUBLISH" "Expected structure: Sources/Adapters/$adapter/$adapter/*.swift"
+        log_error "PUBLISH" "Expected structure: Sources/Adapters/$module_dir/$module_dir/*.swift"
+        log_error "PUBLISH" "Pod name: $adapter, Directory name: $module_dir"
         return 1
     fi
 
@@ -4333,7 +4336,9 @@ release_single_adapter() {
     # ════════════════════════════════════════════════════════════════════════════
     if [[ "$DRY_RUN" != "true" ]]; then
         # Check if there are uncommitted changes for this adapter
-        local adapter_path="Sources/Adapters/${adapter}/${adapter}"
+        # Map pod name to directory name (for adapters with renamed modules)
+        local module_dir=$(get_module_dir "$adapter")
+        local adapter_path="Sources/Adapters/${module_dir}/${module_dir}"
 
         if ! git diff --quiet "$adapter_path" 2>/dev/null; then
             log_info "Committing $adapter version update to $version..."
