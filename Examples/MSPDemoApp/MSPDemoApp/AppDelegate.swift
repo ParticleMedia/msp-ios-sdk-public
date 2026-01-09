@@ -1,6 +1,6 @@
 import UIKit
-import LiftoffAdapter
-import MolocoAdapter
+import MSPLiftoffAdapter
+import MSPMolocoAdapter
 import MSPCore
 import MSPGoogleAdapter
 import NovaAdapter
