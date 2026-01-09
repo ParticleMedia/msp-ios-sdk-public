@@ -4315,7 +4315,7 @@ release_single_adapter() {
             log_info "Committing $adapter version update to $version..."
 
             # Stage only adapter-specific files
-            if git add "${adapter_path}/"*.swift 2>/dev/null; then
+            if git add "${adapter_path}/*.swift" 2>/dev/null; then
                 # Commit with detailed message
                 if git commit -m "chore(release): update ${adapter} SDK version to ${version}
 
