@@ -153,10 +153,11 @@ show_help() {
     echo "  --version, -v           Show version information"
     echo ""
     echo "SPM Release Workflow:"
-    echo "  1. Update NovaCore Package.swift version"
-    echo "  2. Update NovaAdapter Package.swift version and dependency"
-    echo "  3. Create git tags for SPM packages"
-    echo "  4. Push tags to remote"
+    echo "  1. Ensure all XCFrameworks are built (binary adapters)"
+    echo "  2. Sync ThirdParty XCFrameworks from Pods directory"
+    echo "  3. Process binary targets and generate Package.swift with remote URLs"
+    echo "  4. Create unified SPM git tag (all products share same version)"
+    echo "  5. Push tag to remote"
 }
 
 # Validate inputs
@@ -1848,46 +1849,54 @@ spm_publish_tags() {
     fi
     
     # Real release tier behavior
-    log_info "[SPM] Creating and pushing tags for $version"
-    
-    # Get SPM packages list (from environment or default)
-    # Includes all adapters that support binary distribution
-    local spm_packages_list="${SPM_PACKAGES:-NovaCore NovaAdapter MSPAmazonAdapter MSPMolocoAdapter MSPLiftoffAdapter}"
-    
-    # Create tags for each SPM package
-    for package in $spm_packages_list; do
-        local tag_name="${package}-${version}"
-        
-        log_step "Creating git tag for SPM package: $tag_name"
-        
-        # Check if tag already exists locally
-        if git tag -l | grep -q "^${tag_name}$"; then
-            log_warning "Tag $tag_name already exists locally, deleting..."
-            if git tag -d "$tag_name" 2>/dev/null; then
-                log_info "Deleted local tag: $tag_name"
-            else
-                log_warning "Failed to delete local tag: $tag_name (may not exist)"
-            fi
-        fi
-        
-        # Check if tag exists on remote
-        if git ls-remote --tags origin 2>/dev/null | grep -q "refs/tags/${tag_name}$"; then
-            log_warning "Tag $tag_name already exists on remote, deleting..."
-            if git push origin ":refs/tags/${tag_name}" 2>/dev/null; then
-                log_info "Deleted remote tag: $tag_name"
-            else
-                log_warning "Failed to delete remote tag: $tag_name (may not exist or no permission)"
-            fi
-        fi
-        
-        # Create tag
-        if git tag "$tag_name"; then
-            log_success "Created tag: $tag_name"
+    log_info "[SPM] Creating and pushing tag for version: $version"
+    log_info "[SPM] All SPM products will share the same version tag (standard SPM practice)"
+
+    # SPM standard: Single tag for entire Package.swift
+    # All products (NovaCore, NovaAdapter, MSPAmazonAdapter, etc.) use the same version
+    local tag_name="$version"
+
+    log_step "Creating unified SPM git tag: $tag_name"
+
+    # Check if tag already exists locally
+    if git tag -l | grep -q "^${tag_name}$"; then
+        log_warning "Tag $tag_name already exists locally, deleting..."
+        if git tag -d "$tag_name" 2>/dev/null; then
+            log_info "Deleted local tag: $tag_name"
         else
-            log_error "Failed to create tag: $tag_name"
-            return 1
+            log_warning "Failed to delete local tag: $tag_name (may not exist)"
         fi
-    done
+    fi
+
+    # Check if tag exists on remote
+    if git ls-remote --tags origin 2>/dev/null | grep -q "refs/tags/${tag_name}$"; then
+        log_warning "Tag $tag_name already exists on remote, deleting..."
+        if git push origin ":refs/tags/${tag_name}" 2>/dev/null; then
+            log_info "Deleted remote tag: $tag_name"
+        else
+            log_warning "Failed to delete remote tag: $tag_name (may not exist or no permission)"
+        fi
+    fi
+
+    # Create tag
+    if git tag -a "$tag_name" -m "SPM Release $version
+
+Products included:
+- MSPAds (umbrella product)
+- MSPCore, MSPiOSCore, MSPSharedLibraries (core modules)
+- NovaCore, NovaAdapter (Nova ad network)
+- MSPAmazonAdapter (Amazon Publisher Services)
+- MSPMolocoAdapter (Moloco advertising)
+- MSPLiftoffAdapter (Liftoff/Vungle advertising)
+- MSPGoogleAdapter, MSPFacebookAdapter, MSPPrebidAdapter (adapters)
+- And more...
+
+All binary XCFrameworks are available via GitHub Release assets."; then
+        log_success "Created unified SPM tag: $tag_name"
+    else
+        log_error "Failed to create tag: $tag_name"
+        return 1
+    fi
     
     # Push tags to remote
     log_step "Pushing tags to remote"
