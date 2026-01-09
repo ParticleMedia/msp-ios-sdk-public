@@ -333,6 +333,10 @@ extension NovaAdHtmlView: WKNavigationDelegate {
     func webView(_ webView: WKWebView, didFailProvisionalNavigation navigation: WKNavigation!, withError error: Error) {
         htmlActionDelegate?.didFailToLoadPage()
     }
+    
+    func webViewWebContentProcessDidTerminate(_ webView: WKWebView) {
+        htmlActionDelegate?.didFailToLoadPage()
+    }
 }
 
 extension NovaAdHtmlView: WKUIDelegate {
