@@ -1,6 +1,6 @@
 # AI Agent Interaction Protocol
 
-> **Version**: 1.1  
+> **Version**: 1.2  
 > **Last Updated**: 2026-01-09  
 > **Applies To**: All AI Agents (Codex, Cursor, GitHub Copilot, etc.)
 
@@ -29,7 +29,37 @@ Before starting any task, every agent must verify the following conditions:
 
 ---
 
-## 2. Authorized Toolbox
+## 2. Git & Pull Request (PR) Workflow
+
+**Core Tenet**: A disciplined Git workflow is essential for team collaboration and maintaining a clean project history. All contributors, including AI Agents, must adhere to these rules.
+
+### 2.1 Branching Strategy
+
+- **Main Branch**: The `main` branch is protected and considered production-ready. Direct pushes are forbidden.
+- **Feature Branches**: All new features, bug fixes, or chores must be developed in separate branches.
+- **Branch Naming Convention**: Branches must be named using the following prefixes, followed by a short, descriptive name (using hyphens for separation):
+    - `feature/<description>`
+    - `fix/<description>`
+    - `chore/<description>`
+
+### 2.2 Commit Message Format
+
+- **Specification**: All commit messages **must** strictly follow the **Conventional Commits v1.0.0** specification.
+- **Format**: `<type>(<scope>): <subject>`
+- **Permitted Types**: `feat`, `fix`, `chore`, `docs`, `refactor`, `style`, `test`.
+- **Example**: `feat(adapter): Add MyNewAdAdapter with basic loading`
+
+### 2.3 Pull Request (PR) Process
+
+- **PR Title**: The PR title must be clear and descriptive. If applicable, it should reference the corresponding Jira issue ID. (e.g., `[MSP-123] feat(core): Add support for banner ad refresh`)
+- **Pre-Review Checklist**: Before requesting a review on a PR, you **must** ensure that:
+    1. All automated tests pass successfully.
+    2. The code adheres to the project's style and linting rules.
+    3. The PR is rebased on the latest `main` branch.
+
+---
+
+## 3. Authorized Toolbox
 
 The following scripts are the primary, authorized tools for project automation. Agents should call these scripts directly.
 
@@ -43,7 +73,7 @@ The following scripts are the primary, authorized tools for project automation. 
 
 ---
 
-## 3. Standard Operating Procedures (SOPs)
+## 4. Standard Operating Procedures (SOPs)
 
 ### SOP-1: Adding a New Ad Network Adapter (e.g., "MyNewAdAdapter")
 
@@ -73,7 +103,7 @@ Use this procedure when an agent task has failed or left the workspace in an inc
 
 ---
 
-## 4. Read-Only Zone
+## 5. Read-Only Zone
 
 > **[For Non-Claude Agents Only]**  
 > The following files are read-only for tactical agents. Only Claude or human developers may modify them when explicitly requested.
@@ -87,7 +117,7 @@ The following files define the project's core strategy and architecture. They ar
 
 ---
 
-## 5. Escalation Protocol to Claude / Human
+## 6. Escalation Protocol to Claude / Human
 
 **[Critical]** If any of the following conditions are met, the Agent must immediately halt its current task and report the condition to the user, recommending escalation to Claude or a human developer.
 
