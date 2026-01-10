@@ -634,6 +634,24 @@ if is_binary_distribution "$POD_NAME"; then
                 fi
             done <<< "$missing_imports"
         fi
+        
+        # Add user_target_xcconfig to ensure swiftinterface validation can find dependencies
+        # This is needed because Xcode validates swiftinterface using the framework's own config,
+        # not the consumer project's config. By setting user_target_xcconfig, we ensure
+        # that CocoaPods-generated module search paths are available during swiftinterface validation.
+        # Check if this pod has external dependencies (SnapKit, Kingfisher, PrebidMobile)
+        if grep -q "spec\\.dependency.*['\"](SnapKit|Kingfisher|PrebidMobile)['\"]" "$OUTPUT_PODSPEC" 2>/dev/null; then
+            # Check if user_target_xcconfig already exists
+            if ! grep -q "spec\\.user_target_xcconfig" "$OUTPUT_PODSPEC" 2>/dev/null; then
+                log_info "Adding user_target_xcconfig to ensure swiftinterface validation can find dependencies"
+                cat >> "$OUTPUT_PODSPEC" <<'EOF_USER_XCCONFIG'
+  spec.user_target_xcconfig = {
+    'SWIFT_INCLUDE_PATHS' => '$(inherited) $(PODS_CONFIGURATION_BUILD_DIR)',
+  }
+EOF_USER_XCCONFIG
+                log_info "Added user_target_xcconfig with SWIFT_INCLUDE_PATHS for swiftinterface validation"
+            fi
+        fi
     else
         log_debug "XCFramework not found at $xcframework_path, skipping swiftinterface import check"
     fi

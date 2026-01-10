@@ -32,10 +32,24 @@ init_paths
 # Constants
 # ============================================================================
 
-readonly SPM_WORKSPACE="$ROOT_DIR/msp-ios-sdk.xcworkspace"
+# Fix SPM_WORKSPACE readonly variable conflict
+# Only declare SPM_WORKSPACE as readonly if it doesn't already exist
+if [[ -z "${SPM_WORKSPACE:-}" ]]; then
+    readonly SPM_WORKSPACE="$ROOT_DIR/msp-ios-sdk.xcworkspace"
+elif ! readonly -p 2>/dev/null | grep -q "^declare -r SPM_WORKSPACE="; then
+    # SPM_WORKSPACE exists but is not readonly, make it readonly
+    readonly SPM_WORKSPACE
+fi
 # Note: Podfile specifies workspace 'msp-ios-sdk', so CocoaPods also creates msp-ios-sdk.xcworkspace
 # Both SPM and Pods modes use the same workspace name, but with different contents
-readonly PODS_WORKSPACE="$ROOT_DIR/msp-ios-sdk.xcworkspace"
+# Fix PODS_WORKSPACE readonly variable conflict
+# Only declare PODS_WORKSPACE as readonly if it doesn't already exist
+if [[ -z "${PODS_WORKSPACE:-}" ]]; then
+    readonly PODS_WORKSPACE="$ROOT_DIR/msp-ios-sdk.xcworkspace"
+elif ! readonly -p 2>/dev/null | grep -q "^declare -r PODS_WORKSPACE="; then
+    # PODS_WORKSPACE exists but is not readonly, make it readonly
+    readonly PODS_WORKSPACE
+fi
 # Fix PODS_DIR readonly variable conflict
 # Only declare PODS_DIR as readonly if it doesn't already exist
 if [[ -z "${PODS_DIR:-}" ]]; then
