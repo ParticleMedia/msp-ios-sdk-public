@@ -599,7 +599,7 @@ if is_binary_distribution "$POD_NAME"; then
         log_info "Scanning swiftinterface files for missing dependencies..."
         
         # Extract imports from swiftinterface
-        local missing_imports
+        missing_imports=""
         missing_imports=$(extract_swiftinterface_imports "$xcframework_path" "$POD_NAME")
         
         if [[ -n "$missing_imports" ]]; then
