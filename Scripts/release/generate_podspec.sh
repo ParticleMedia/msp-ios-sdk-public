@@ -582,7 +582,7 @@ fi
 # ═══════════════════════════════════════════════════════════════════════════
 if is_binary_distribution "$POD_NAME"; then
     # Find XCFramework path
-    local xcframework_path=""
+    xcframework_path=""
     case "$POD_NAME" in
         NovaAdapter)
             xcframework_path="$ROOT_DIR/Binary/NovaAdapter.xcframework"
