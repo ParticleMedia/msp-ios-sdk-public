@@ -439,7 +439,17 @@ EOF_HEADER
     extract_field "static_framework" "$SOURCE_PODSPEC"
 } | grep -v "^\s*#" >> "$OUTPUT_PODSPEC"
 
-# Extract xcconfig (multiline handling)
+# ═══════════════════════════════════════════════════════════════════════════
+# Extract and clean pod_target_xcconfig (fix for binary distribution issues)
+# ═══════════════════════════════════════════════════════════════════════════
+# Fixes:
+# 1. Remove BUILD_LIBRARY_FOR_DISTRIBUTION: NO (binary frameworks are YES)
+# 2. Remove SWIFT_INCLUDE_PATHS override (let CocoaPods auto-handle dependencies)
+# 3. Keep only necessary configs (DEFINES_MODULE, VALID_ARCHS, FRAMEWORK_SEARCH_PATHS)
+# ═══════════════════════════════════════════════════════════════════════════
+
+# Extract pod_target_xcconfig to temp file for processing
+TEMP_XCCONFIG=$(mktemp)
 awk '
 /spec\.pod_target_xcconfig/ {
     print
@@ -454,8 +464,43 @@ in_block {
         in_block = 0
     }
 }
-' "$SOURCE_PODSPEC" >> "$OUTPUT_PODSPEC"
+' "$SOURCE_PODSPEC" > "$TEMP_XCCONFIG"
 
+# Clean up pod_target_xcconfig: remove problematic configs
+if [[ -s "$TEMP_XCCONFIG" ]]; then
+    # Remove BUILD_LIBRARY_FOR_DISTRIBUTION, SWIFT_EMIT_MODULE_INTERFACE, SWIFT_INSTALL_MODULE_FOR_DEPLOYMENT
+    # Remove SWIFT_INCLUDE_PATHS (let CocoaPods auto-handle dependency module paths)
+    # Keep: DEFINES_MODULE, VALID_ARCHS, FRAMEWORK_SEARCH_PATHS
+    sed -i '' \
+        -e "/'BUILD_LIBRARY_FOR_DISTRIBUTION'/d" \
+        -e "/\"BUILD_LIBRARY_FOR_DISTRIBUTION\"/d" \
+        -e "/'SWIFT_EMIT_MODULE_INTERFACE'/d" \
+        -e "/\"SWIFT_EMIT_MODULE_INTERFACE\"/d" \
+        -e "/'SWIFT_INSTALL_MODULE_FOR_DEPLOYMENT'/d" \
+        -e "/\"SWIFT_INSTALL_MODULE_FOR_DEPLOYMENT\"/d" \
+        -e "/'SWIFT_INCLUDE_PATHS'/d" \
+        -e "/\"SWIFT_INCLUDE_PATHS\"/d" \
+        "$TEMP_XCCONFIG"
+    
+    # Write cleaned config to output
+    cat "$TEMP_XCCONFIG" >> "$OUTPUT_PODSPEC"
+    log_info "Cleaned pod_target_xcconfig: removed BUILD_LIBRARY_FOR_DISTRIBUTION and SWIFT_INCLUDE_PATHS"
+else
+    # No pod_target_xcconfig found, create minimal one for binary distribution pods
+    if is_binary_distribution "$POD_NAME"; then
+        cat >> "$OUTPUT_PODSPEC" <<'EOF_XCCONFIG'
+  spec.pod_target_xcconfig = {
+    'DEFINES_MODULE' => 'YES',
+    'FRAMEWORK_SEARCH_PATHS' => '$(inherited) $(PODS_ROOT)/../Build/XCFrameworks',
+  }
+EOF_XCCONFIG
+        log_info "Added minimal pod_target_xcconfig for binary distribution pod"
+    fi
+fi
+rm -f "$TEMP_XCCONFIG"
+
+# Extract user_target_xcconfig (keep as-is, but clean SWIFT_INCLUDE_PATHS if present)
+TEMP_USER_XCCONFIG=$(mktemp)
 awk '
 /spec\.user_target_xcconfig/ {
     print
@@ -470,12 +515,55 @@ in_block {
         in_block = 0
     }
 }
-' "$SOURCE_PODSPEC" >> "$OUTPUT_PODSPEC"
+' "$SOURCE_PODSPEC" > "$TEMP_USER_XCCONFIG"
 
-# Extract dependencies
-# NovaAdapter: filter out NovaCore, MSPKingfisher dependencies (embedded)
-# Note: MSPiOSCore is now a separate pod, so adapters should keep this dependency
-# Stage B: MSPOMSDK removed - OMSDK now embedded in NovaCore
+if [[ -s "$TEMP_USER_XCCONFIG" ]]; then
+    # Remove SWIFT_INCLUDE_PATHS from user_target_xcconfig as well
+    sed -i '' \
+        -e "/'SWIFT_INCLUDE_PATHS'/d" \
+        -e "/\"SWIFT_INCLUDE_PATHS\"/d" \
+        "$TEMP_USER_XCCONFIG"
+    cat "$TEMP_USER_XCCONFIG" >> "$OUTPUT_PODSPEC"
+fi
+rm -f "$TEMP_USER_XCCONFIG"
+
+# ═══════════════════════════════════════════════════════════════════════════
+# Extract dependencies and detect missing imports from swiftinterface
+# ═══════════════════════════════════════════════════════════════════════════
+
+# Function to extract imports from swiftinterface files
+extract_swiftinterface_imports() {
+    local xcframework_path="$1"
+    local pod_name="$2"
+    
+    if [[ ! -d "$xcframework_path" ]]; then
+        return 0
+    fi
+    
+    # System modules to skip (common iOS/Swift system modules)
+    local system_modules="Foundation|Swift|UIKit|_Concurrency|_StringProcessing|_SwiftConcurrencyShims|os|Darwin|ObjectiveC|Dispatch|CoreFoundation|CoreGraphics|QuartzCore|AVFoundation|AVKit|WebKit|StoreKit|SystemConfiguration|Security|CFNetwork|MobileCoreServices|ImageIO|Accelerate|Metal|MetalKit|SceneKit|SpriteKit|GameplayKit|ModelIO|CoreML|Vision|NaturalLanguage|Speech|MediaPlayer|MediaAccessibility|MapKit|CoreLocation|CoreMotion|HealthKit|HomeKit|LocalAuthentication|PassKit|QuickLook|SafariServices|Social|Twitter|WatchConnectivity|WatchKit|UserNotifications|Intents|IntentsUI|CallKit|Contacts|ContactsUI|EventKit|EventKitUI|MessageUI|MultipeerConnectivity|NetworkExtension|NotificationCenter|Photos|PhotosUI|ReplayKit|VideoSubscriberAccount|iAd|AdSupport|JavaScriptCore|GLKit|OpenGLES|OpenAL|AudioToolbox|AudioUnit|CoreAudio|CoreMedia|CoreVideo|CoreText|CoreData|CloudKit|CoreSpotlight|CoreTelephony|ExternalAccessory|GameController|GSS|IOKit|IOSurface|IOText|IOBluetooth|IOBluetoothUI|IOHIDFamily|libkern|libresolv|libsystem|libxpc|mach"
+    
+    # Find all swiftinterface files and extract imports
+    local temp_imports=$(mktemp)
+    
+    while IFS= read -r -d '' swiftinterface_file; do
+        # Extract non-system imports
+        grep "^import " "$swiftinterface_file" 2>/dev/null | \
+            grep -vE "import (${system_modules})" | \
+            sed 's/^import //' | \
+            sed 's/[[:space:]]*$//' >> "$temp_imports" 2>/dev/null || true
+    done < <(find "$xcframework_path" -name "*.swiftinterface" -type f -print0 2>/dev/null)
+    
+    # Filter out empty lines and the pod itself, then return unique imports
+    if [[ -f "$temp_imports" ]] && [[ -s "$temp_imports" ]]; then
+        grep -v "^${pod_name}$" "$temp_imports" | grep -v "^$" | sort -u
+        rm -f "$temp_imports"
+    else
+        rm -f "$temp_imports"
+    fi
+}
+
+# Extract dependencies from source podspec
 if [[ "$POD_NAME" == "NovaAdapter" ]]; then
     # Filter out embedded dependencies (NovaCore, MSPKingfisher), but add public Kingfisher dependency
     grep "spec\\.dependency" "$SOURCE_PODSPEC" | grep -vE "(NovaCore|MSPKingfisher)" >> "$OUTPUT_PODSPEC" 2>/dev/null || true
@@ -487,6 +575,68 @@ elif is_binary_distribution "$POD_NAME"; then
 else
     # Source distribution pods: keep all dependencies (including MSPiOSCore, which is now a separate pod)
     grep "spec\\.dependency" "$SOURCE_PODSPEC" >> "$OUTPUT_PODSPEC" 2>/dev/null || true
+fi
+
+# ═══════════════════════════════════════════════════════════════════════════
+# Detect missing dependencies from swiftinterface imports (for binary pods)
+# ═══════════════════════════════════════════════════════════════════════════
+if is_binary_distribution "$POD_NAME"; then
+    # Find XCFramework path
+    local xcframework_path=""
+    case "$POD_NAME" in
+        NovaAdapter)
+            xcframework_path="$ROOT_DIR/Binary/NovaAdapter.xcframework"
+            ;;
+        MSPPrebidAdapter|MSPGoogleAdapter|MSPFacebookAdapter|MSPAmazonAdapter|MSPMolocoAdapter|MSPLiftoffAdapter)
+            xcframework_path="$ROOT_DIR/Build/XCFrameworks/${POD_NAME}.xcframework"
+            ;;
+        *)
+            xcframework_path="$ROOT_DIR/Build/XCFrameworks/${POD_NAME}.xcframework"
+            ;;
+    esac
+    
+    if [[ -d "$xcframework_path" ]]; then
+        log_info "Scanning swiftinterface files for missing dependencies..."
+        
+        # Extract imports from swiftinterface
+        local missing_imports
+        missing_imports=$(extract_swiftinterface_imports "$xcframework_path" "$POD_NAME")
+        
+        if [[ -n "$missing_imports" ]]; then
+            # Check each import against declared dependencies
+            while IFS= read -r import_module; do
+                if [[ -z "$import_module" ]]; then
+                    continue
+                fi
+                
+                # Check if dependency is already declared
+                if ! grep -q "spec\\.dependency.*['\"]${import_module}['\"]" "$OUTPUT_PODSPEC" 2>/dev/null; then
+                    log_warn "Missing dependency detected in swiftinterface: $import_module"
+                    
+                    # Add dependency based on module name
+                    case "$import_module" in
+                        PrebidMobile)
+                            log_info "Adding PrebidMobile dependency (required by swiftinterface)"
+                            echo "  spec.dependency 'PrebidMobile', '~> 2.0'" >> "$OUTPUT_PODSPEC"
+                            ;;
+                        SnapKit)
+                            log_info "Adding SnapKit dependency (required by swiftinterface)"
+                            echo "  spec.dependency 'SnapKit'" >> "$OUTPUT_PODSPEC"
+                            ;;
+                        Kingfisher)
+                            log_info "Adding Kingfisher dependency (required by swiftinterface)"
+                            echo "  spec.dependency 'Kingfisher', '~> 7.0'" >> "$OUTPUT_PODSPEC"
+                            ;;
+                        *)
+                            log_warn "Unknown import module: $import_module (may need manual dependency addition)"
+                            ;;
+                    esac
+                fi
+            done <<< "$missing_imports"
+        fi
+    else
+        log_debug "XCFramework not found at $xcframework_path, skipping swiftinterface import check"
+    fi
 fi
 
 # ═══════════════════════════════════════════════════════════════════════════
