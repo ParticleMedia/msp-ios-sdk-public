@@ -4340,27 +4340,45 @@ release_single_adapter() {
         local module_dir=$(get_module_dir "$adapter")
         local adapter_path="Sources/Adapters/${module_dir}/${module_dir}"
 
-        if ! git diff --quiet "$adapter_path" 2>/dev/null; then
+        if ! git diff --quiet -- "$ROOT_DIR/$adapter_path" 2>/dev/null; then
             log_info "Committing $adapter version update to $version..."
 
-            # Stage only adapter-specific files
-            if git add "${adapter_path}/*.swift" 2>/dev/null; then
+            # Change to ROOT_DIR to ensure correct relative paths for git
+            pushd "$ROOT_DIR" > /dev/null || {
+                log_error "Failed to change to ROOT_DIR: $ROOT_DIR"
+                # Don't fail release - pod is already published
+                return 0
+            }
+
+            # Find and stage Swift files (avoid glob expansion issues)
+            local swift_files_staged=0
+            while IFS= read -r -d '' swift_file; do
+                if git add "$swift_file" 2>/dev/null; then
+                    ((swift_files_staged++))
+                    log_debug "Staged: $swift_file"
+                else
+                    log_warn "Failed to stage: $swift_file"
+                fi
+            done < <(find "$adapter_path" -name "*.swift" -type f -print0 2>/dev/null)
+
+            if [[ $swift_files_staged -gt 0 ]]; then
                 # Commit with detailed message
                 if git commit -m "chore(release): update ${adapter} SDK version to ${version}
 
 - Update getSDKVersion() return value to ${version}
 - Committed immediately after successful publish to CocoaPods
 - Part of release ${version} preparation"; then
-                    log_success "✓ Committed ${adapter} version update"
+                    log_success "✓ Committed ${adapter} version update ($swift_files_staged files)"
                 else
                     log_error "✗ Failed to commit ${adapter} version update"
                     log_warn "Pod published successfully but version commit failed"
-                    log_warn "You may need to commit manually: git add ${adapter_path} && git commit"
-                    # Don't fail the release - pod is already published
+                    log_warn "You may need to commit manually: cd $ROOT_DIR && git add ${adapter_path} && git commit"
                 fi
             else
-                log_warn "No Swift files found to commit for ${adapter}"
+                log_warn "No Swift files found or staged for ${adapter} in ${adapter_path}"
             fi
+
+            popd > /dev/null || true
         else
             log_info "${adapter} version already committed or no changes"
         fi
@@ -5051,13 +5069,27 @@ release_msp_core() {
     # ════════════════════════════════════════════════════════════════════════════
     if [[ "$DRY_RUN" != "true" ]]; then
         # Check if there are uncommitted changes for Config.plist
-        local config_plist_path="Sources/Core/MSPCore/MSPCore/Resources/Config.plist"
+        local config_plist_rel_path="Sources/Core/MSPCore/MSPCore/Resources/Config.plist"
+        local config_plist_abs_path="$ROOT_DIR/$config_plist_rel_path"
 
-        if ! git diff --quiet "$config_plist_path" 2>/dev/null; then
+        # Validate file exists before attempting git operations
+        if [[ ! -f "$config_plist_abs_path" ]]; then
+            log_warn "Config.plist not found at: $config_plist_abs_path"
+            log_warn "Skipping MSPCore version commit (file may have been moved or renamed)"
+        elif ! git diff --quiet -- "$config_plist_abs_path" 2>/dev/null; then
             log_info "Committing MSPCore version update to $VERSION..."
 
-            # Stage only Config.plist
-            if git add "$config_plist_path" 2>/dev/null; then
+            # Change to ROOT_DIR to ensure correct relative paths for git
+            pushd "$ROOT_DIR" > /dev/null || {
+                log_error "Failed to change to ROOT_DIR: $ROOT_DIR"
+                log_warn "Skipping MSPCore version commit due to directory change failure"
+                # Don't fail release - pod is already published
+                # Return early to avoid executing git commands in wrong directory
+                return 0
+            }
+
+            # Stage Config.plist using relative path (git prefers relative paths)
+            if git add "$config_plist_rel_path"; then
                 # Commit with detailed message
                 if git commit -m "chore(release): update MSPCore version to ${VERSION}
 
@@ -5068,12 +5100,16 @@ release_msp_core() {
                 else
                     log_error "✗ Failed to commit MSPCore version update"
                     log_warn "Pod published successfully but version commit failed"
-                    log_warn "You may need to commit manually: git add $config_plist_path && git commit"
-                    # Don't fail the release - pod is already published
+                    log_warn "You may need to commit manually: cd $ROOT_DIR && git add $config_plist_rel_path && git commit"
                 fi
             else
-                log_error "Failed to stage $config_plist_path"
+                log_error "Failed to stage $config_plist_rel_path"
+                log_error "Git add exit code: $?"
+                log_warn "Current directory: $(pwd)"
+                log_warn "File exists check: $(ls -la "$config_plist_abs_path" 2>&1 || echo 'File not found')"
             fi
+
+            popd > /dev/null || true
         else
             log_info "MSPCore version already committed or no changes"
         fi

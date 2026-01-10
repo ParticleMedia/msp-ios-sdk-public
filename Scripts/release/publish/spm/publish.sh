@@ -943,10 +943,13 @@ upload_xcframework_to_github_release() {
         return 1
     fi
     
+    local zip_name
+    zip_name=$(basename "$zip_path")
+    
     log_step "Uploading $framework_name to GitHub Release"
     
     if [[ "$DRY_RUN" == "true" ]] || [[ "${DRY_RUN:-false}" == "1" ]]; then
-        local zip_url="https://github.com/ParticleMedia/msp-ios-sdk-public/releases/download/${version}/$(basename "$zip_path")"
+        local zip_url="https://github.com/ParticleMedia/msp-ios-sdk-public/releases/download/${version}/${zip_name}"
         log_info "DRY RUN: Would upload $zip_path to GitHub Release $version"
         log_info "DRY RUN: Generated URL: $zip_url"
         return 0
@@ -956,6 +959,29 @@ upload_xcframework_to_github_release() {
     if ! command -v gh >/dev/null 2>&1; then
         log_error "GitHub CLI (gh) is not available"
         return 1
+    fi
+    
+    # ════════════════════════════════════════════════════════════════════════════
+    # Idempotency Check: Skip if asset already exists with correct size
+    # ════════════════════════════════════════════════════════════════════════════
+    local local_size
+    local_size=$(stat -f%z "$zip_path" 2>/dev/null || stat -c%s "$zip_path" 2>/dev/null || echo "0")
+    
+    local remote_asset_info
+    remote_asset_info=$(gh release view "$version" --repo "ParticleMedia/msp-ios-sdk-public" --json assets -q ".assets[] | select(.name == \"$zip_name\")" 2>/dev/null || echo "")
+    
+    if [[ -n "$remote_asset_info" ]]; then
+        local remote_size
+        remote_size=$(echo "$remote_asset_info" | jq -r '.size' 2>/dev/null || echo "0")
+        
+        if [[ "$local_size" == "$remote_size" ]] && [[ "$local_size" != "0" ]]; then
+            log_success "✓ $framework_name already uploaded with correct size ($local_size bytes)"
+            log_info "  Skipping upload (asset exists from CocoaPods release)"
+            return 0
+        else
+            log_info "$framework_name exists but size mismatch (local: $local_size, remote: $remote_size)"
+            log_info "Re-uploading with --clobber..."
+        fi
     fi
     
     # Create or update GitHub release with retry logic
@@ -1172,11 +1198,46 @@ process_binary_targets_for_cloud_distribution() {
         # Phase 1: CDN Propagation Wait and Verification
         # ========================================================================
         if [[ "$DRY_RUN" != "true" ]]; then
-            # Step 1: Wait for CDN propagation
-            log_info "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-            log_info "Step 1: Wait for CDN propagation"
-            log_info "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-            wait_for_spm_cdn_propagation
+            # ════════════════════════════════════════════════════════════════════════════
+            # Optimization: Skip CDN wait if assets already verified accessible
+            # ════════════════════════════════════════════════════════════════════════════
+            # CocoaPods release already uploaded zips and waited for CDN propagation.
+            # Do a quick check first - if assets are already accessible, skip the wait.
+            # ════════════════════════════════════════════════════════════════════════════
+
+            local cdn_already_ready=true
+            log_info "Quick CDN accessibility check (skipping full wait if already ready)..."
+
+            for framework_info in "${framework_checksums[@]}"; do
+                IFS='|' read -r framework_name checksum zip_name <<< "$framework_info"
+                local zip_url="https://github.com/ParticleMedia/msp-ios-sdk-public/releases/download/${version}/${zip_name}"
+                
+                # Quick HEAD request to check if file is accessible
+                local http_code
+                http_code=$(curl -sI -o /dev/null -w "%{http_code}" --connect-timeout 5 --max-time 10 "$zip_url" 2>/dev/null || echo "000")
+                if [[ "$http_code" == "000" ]]; then
+                    log_debug "  $framework_name: curl failed (network issue?), will wait for CDN"
+                    cdn_already_ready=false
+                    break
+                elif ! echo "$http_code" | grep -q "^200\|^302"; then
+                    cdn_already_ready=false
+                    log_info "  $framework_name: HTTP $http_code, will wait for CDN"
+                    break
+                else
+                    log_info "  $framework_name: Already accessible ✓"
+                fi
+            done
+
+            if [[ "$cdn_already_ready" == "true" ]]; then
+                log_success "✓ All CDN assets already accessible (skipping propagation wait)"
+                log_info "  CocoaPods release likely already completed CDN propagation"
+            else
+                # Original CDN wait logic
+                log_info "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+                log_info "Step 1: Wait for CDN propagation"
+                log_info "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+                wait_for_spm_cdn_propagation
+            fi
 
             # Step 2: Verify CDN availability
             log_info "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
@@ -1864,28 +1925,60 @@ spm_publish_tags() {
 
     log_step "Creating unified SPM git tag: $tag_name"
 
-    # Check if tag already exists locally
+    # ════════════════════════════════════════════════════════════════════════════
+    # Idempotent Tag Handling: Check if tag already exists and points to HEAD
+    # ════════════════════════════════════════════════════════════════════════════
+    # If CocoaPods has already created and pushed the tag correctly, skip recreation
+    # This prevents unnecessary tag deletion/recreation and potential race conditions
+    # ════════════════════════════════════════════════════════════════════════════
+
+    local current_head_sha
+    current_head_sha=$(git rev-parse HEAD 2>/dev/null)
+
+    local local_tag_sha=""
+    local remote_tag_sha=""
+    local tag_is_correct=false
+
+    # Check local tag
     if git tag -l | grep -q "^${tag_name}$"; then
-        log_warning "Tag $tag_name already exists locally, deleting..."
-        if git tag -d "$tag_name" 2>/dev/null; then
-            log_info "Deleted local tag: $tag_name"
+        local_tag_sha=$(git rev-parse "refs/tags/${tag_name}" 2>/dev/null || echo "")
+        if [[ "$local_tag_sha" == "$current_head_sha" ]]; then
+            log_info "Local tag $tag_name already exists and points to correct commit"
+            tag_is_correct=true
         else
-            log_warning "Failed to delete local tag: $tag_name (may not exist)"
+            log_warning "Local tag $tag_name exists but points to wrong commit"
+            log_warning "  Expected: $current_head_sha"
+            log_warning "  Actual:   $local_tag_sha"
+            log_info "Deleting incorrect local tag..."
+            git tag -d "$tag_name" 2>/dev/null || true
         fi
     fi
 
-    # Check if tag exists on remote
-    if git ls-remote --tags origin 2>/dev/null | grep -q "refs/tags/${tag_name}$"; then
-        log_warning "Tag $tag_name already exists on remote, deleting..."
-        if git push origin ":refs/tags/${tag_name}" 2>/dev/null; then
-            log_info "Deleted remote tag: $tag_name"
+    # Check remote tag (origin) with timeout
+    remote_tag_sha=$(timeout 30 git ls-remote --tags origin "refs/tags/${tag_name}" 2>/dev/null | cut -f1 || echo "")
+    if [[ -n "$remote_tag_sha" ]]; then
+        if [[ "$remote_tag_sha" == "$current_head_sha" ]]; then
+            log_info "Remote tag $tag_name already exists on origin and points to correct commit"
+            # If both local and remote are correct, skip all tag operations
+            if [[ "$tag_is_correct" == "true" ]]; then
+                log_success "✓ Tag $tag_name already exists and is correct (skipping tag creation)"
+                log_info "  This tag was likely created by CocoaPods release"
+                return 0
+            fi
         else
-            log_warning "Failed to delete remote tag: $tag_name (may not exist or no permission)"
+            log_warning "Remote tag $tag_name exists on origin but points to wrong commit"
+            log_warning "  Expected: $current_head_sha"
+            log_warning "  Actual:   $remote_tag_sha"
+            log_info "Deleting incorrect remote tag..."
+            timeout 30 git push origin ":refs/tags/${tag_name}" 2>/dev/null || true
+            sleep 2  # Wait for remote to process deletion
         fi
     fi
 
-    # Create tag
-    if git tag -a "$tag_name" -m "SPM Release $version
+    # Only create tag if it doesn't exist locally or was deleted
+    if ! git tag -l | grep -q "^${tag_name}$"; then
+        # Create tag
+        if git tag -a "$tag_name" -m "SPM Release $version
 
 Products included:
 - MSPAds (umbrella product)
@@ -1898,19 +1991,24 @@ Products included:
 - And more...
 
 All binary XCFrameworks are available via GitHub Release assets."; then
-        log_success "Created unified SPM tag: $tag_name"
-    else
-        log_error "Failed to create tag: $tag_name"
-        return 1
+            log_success "Created unified SPM tag: $tag_name"
+        else
+            log_error "Failed to create tag: $tag_name"
+            return 1
+        fi
     fi
-    
-    # Push tags to remote
-    log_step "Pushing tags to remote"
-    if git push origin --tags; then
-        log_success "Pushed tags to remote"
+
+    # Push tags to remote (only if not already there)
+    if [[ -z "$remote_tag_sha" ]] || [[ "$remote_tag_sha" != "$current_head_sha" ]]; then
+        log_step "Pushing tags to remote"
+        if git push origin --tags; then
+            log_success "Pushed tags to remote"
+        else
+            log_error "Failed to push tags to remote"
+            return 1
+        fi
     else
-        log_error "Failed to push tags to remote"
-        return 1
+        log_info "Tag already exists on remote with correct SHA, skipping push"
     fi
     
 }
