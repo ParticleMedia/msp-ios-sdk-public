@@ -452,6 +452,12 @@ verify_spm_checksum_from_cdn() {
     for framework_info in "${framework_checksums[@]}"; do
         IFS='|' read -r framework_name expected_checksum zip_name <<< "$framework_info"
 
+        # Skip source-based targets (no zip file)
+        if [[ -z "$zip_name" ]] || [[ ! "$zip_name" =~ \.zip$ ]]; then
+            log_debug "Skipping checksum verification for $framework_name (source-based target, no zip file)"
+            continue
+        fi
+
         local url="https://github.com/ParticleMedia/msp-ios-sdk-public/releases/download/${version}/${zip_name}"
         local temp_zip="$temp_verify_dir/$zip_name"
 
@@ -1308,13 +1314,19 @@ update_package_swift_binary_targets() {
     cp "$package_swift" "$backup_file"
     log_info "Created backup: $backup_file"
     
-    # Read Package.swift content
+    # Read Package.swift content (for backup only, not for overwriting)
     local package_content
     package_content=$(cat "$package_swift")
     
     # Process each framework using the standalone Ruby script
     for framework_info in "${framework_checksums[@]}"; do
         IFS='|' read -r framework_name checksum zip_name <<< "$framework_info"
+        
+        # Skip source-based targets (no zip file)
+        if [[ -z "$zip_name" ]] || [[ ! "$zip_name" =~ \.zip$ ]]; then
+            log_debug "Skipping $framework_name (source-based target, no zip file)"
+            continue
+        fi
         
         local url="https://github.com/ParticleMedia/msp-ios-sdk-public/releases/download/${version}/${zip_name}"
         
@@ -1336,8 +1348,13 @@ update_package_swift_binary_targets() {
         fi
     done
     
-    # Write updated content
-    echo "$package_content" > "$package_swift"
+    # ════════════════════════════════════════════════════════════════════════════
+    # FIX: Don't overwrite Package.swift - Ruby script already updated it in-place
+    # ════════════════════════════════════════════════════════════════════════════
+    # Ruby script modifies Package.swift directly, so we don't need to write it again
+    # The original echo "$package_content" > "$package_swift" was overwriting Ruby's changes!
+    # ════════════════════════════════════════════════════════════════════════════
+    # REMOVED: echo "$package_content" > "$package_swift"
     
     log_success "Updated Package.swift with cloud distribution URLs and checksums"
     
