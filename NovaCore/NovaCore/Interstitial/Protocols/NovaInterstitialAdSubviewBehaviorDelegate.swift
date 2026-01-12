@@ -15,6 +15,8 @@ protocol NovaInterstitialAdSubviewBehaviorDelegate: AnyObject {
     func didTapSkipButton()
 
     func didTapPlayableAd(with playableModel: PlayableModel)
+
+    func didTapCustomAdView(clickArea: ClickableAdArea)
 }
 
 extension NovaInterstitialAdSubviewBehaviorDelegate {

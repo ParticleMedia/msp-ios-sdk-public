@@ -87,9 +87,7 @@ class NovaInterstitialAdNormalView: UIView, NovaInterstitialAdViewProtocol {
     }
 
     func didTapAd(customUrl: URL?) {
-        actionHelper = actionHelper
-            .logNovaClickEvent(with: CACurrentMediaTime() - startTime, in: .cta)
-            .handleAdTap(in: nil, customUrl: customUrl)
+        handleAdTap(clickArea: .cta, view: nil, customUrl: customUrl)
     }
 
 
@@ -106,9 +104,7 @@ class NovaInterstitialAdNormalView: UIView, NovaInterstitialAdViewProtocol {
     @objc func didTapAd(sender: UITapGestureRecognizer) {
         let clickArea = sender.view?.adClickArea ?? .cta
         let nbClickArea = ClickableAdArea(rawValue: clickArea.rawValue) ?? .cta
-        actionHelper = actionHelper
-            .logNovaClickEvent(with: CACurrentMediaTime() - startTime, in: nbClickArea)
-            .handleAdTap(in: sender.view)
+        handleAdTap(clickArea: nbClickArea, view: sender.view, customUrl: nil)
     }
 
     internal let context: NovaInterstitialAdContext
@@ -168,5 +164,17 @@ extension NovaInterstitialAdNormalView: NovaInterstitialAdSubviewBehaviorDelegat
         playableActionHelper = playableActionHelper?
             .logNovaClickEvent(with: CACurrentMediaTime() - startTime, in: .playable)
             .handleAdTap(in: nil)
+    }
+
+    func didTapCustomAdView(clickArea: ClickableAdArea) {
+        handleAdTap(clickArea: clickArea, view: nil, customUrl: nil)
+    }
+}
+
+private extension NovaInterstitialAdNormalView {
+    func handleAdTap(clickArea: ClickableAdArea, view: UIView?, customUrl: URL?) {
+        actionHelper = actionHelper
+            .logNovaClickEvent(with: CACurrentMediaTime() - startTime, in: clickArea)
+            .handleAdTap(in: view, customUrl: customUrl)
     }
 }

@@ -186,7 +186,9 @@ extension NovaAdMediaView {
             switch (renderOption, layout) {
             case (.auto, .showMedia), (.auto, .twoPart), (.none, .showMedia), (.none, .twoPart), (.imageOrVideo, _):
                 imageView.config(with: imageModel, actionContext: actionContext, completion: completion, showBottomShadow: showBottomShadow)
-                setupTapToTry(with: playableModel)
+                if mediaContent.elementLayout?.showTapToTry ?? true {
+                    setupTapToTry(with: playableModel)
+                }
             case (.auto, .showPlayable), (.none, .showPlayable), (.playable, _):
                 playableView.config(with: playableModel.playableActionModel, actionContext: actionContext)
             }
@@ -196,7 +198,9 @@ extension NovaAdMediaView {
             switch (renderOption, layout) {
             case (.auto, .showMedia), (.auto, .twoPart), (.none, .showMedia), (.none, .twoPart), (.imageOrVideo, _):
                 videoView.config(with: videoModel, actionContext: actionContext, iabReporter: iabReporter, showBottomShadow: showBottomShadow)
-                setupTapToTry(with: playableModel)
+                if mediaContent.elementLayout?.showTapToTry ?? true {
+                    setupTapToTry(with: playableModel)
+                }
             case (.auto, .showPlayable), (.none, .showPlayable), (.playable, _):
                 playableView.config(with: playableModel.playableActionModel, actionContext: actionContext)
             }
