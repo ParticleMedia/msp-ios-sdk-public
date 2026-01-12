@@ -480,12 +480,16 @@ switch_pods_dev() {
     log_info "XCFramework copy phases will be REMOVED by Podfile post_install"
     
     cd "$ROOT_DIR"
+    # UTF-8 environment required for CocoaPods (prevents "Unicode Normalization not appropriate for ASCII-8BIT" error)
+    export LANG="en_US.UTF-8"
+    export LC_ALL="en_US.UTF-8"
+    export RUBYOPT="-EUTF-8:UTF-8"
     # Run with timeout: 30 minutes (1800s)
     # Rationale: First-time install (no Podfile.lock) can take 15-20 min for specs repo update + dependency resolution
     # Safety margin: 30 min = 1.5-2x observed time (increased from 20 min due to observed timeouts)
     log_info "Running pod install with 30-minute timeout..."
     if command -v run_with_timeout &>/dev/null; then
-        if run_with_timeout 1800 env MSP_RELEASE=0 MSP_MODE=pods-dev pod install; then
+        if run_with_timeout 1800 env LANG="en_US.UTF-8" LC_ALL="en_US.UTF-8" RUBYOPT="-EUTF-8:UTF-8" MSP_RELEASE=0 MSP_MODE=pods-dev pod install; then
             log_success "pod install completed (pure source mode)"
         else
             local exit_code=$?
@@ -508,7 +512,7 @@ switch_pods_dev() {
     else
         # Fallback: run without timeout if run_with_timeout not available
         log_warn "run_with_timeout not available, running pod install without timeout protection"
-        if MSP_RELEASE=0 MSP_MODE=pods-dev pod install; then
+        if env LANG="en_US.UTF-8" LC_ALL="en_US.UTF-8" RUBYOPT="-EUTF-8:UTF-8" MSP_RELEASE=0 MSP_MODE=pods-dev pod install; then
             log_success "pod install completed (pure source mode)"
         else
             log_error "pod install failed"
@@ -648,11 +652,15 @@ switch_pods_release() {
     log_info "Core modules use BINARY XCFrameworks, adapters use SOURCE"
     
     cd "$ROOT_DIR"
+    # UTF-8 environment required for CocoaPods (prevents "Unicode Normalization not appropriate for ASCII-8BIT" error)
+    export LANG="en_US.UTF-8"
+    export LC_ALL="en_US.UTF-8"
+    export RUBYOPT="-EUTF-8:UTF-8"
     # Run with timeout: 30 minutes (1800s)
     # Rationale: Same as pods-dev mode - first-time install can be slow (increased from 20 min)
     log_info "Running pod install with 30-minute timeout..."
     if command -v run_with_timeout &>/dev/null; then
-        if run_with_timeout 1800 env MSP_RELEASE=1 pod install; then
+        if run_with_timeout 1800 env LANG="en_US.UTF-8" LC_ALL="en_US.UTF-8" RUBYOPT="-EUTF-8:UTF-8" MSP_RELEASE=1 pod install; then
             log_success "pod install completed"
         else
             local exit_code=$?
@@ -667,7 +675,7 @@ switch_pods_release() {
     else
         # Fallback: run without timeout if run_with_timeout not available
         log_warn "run_with_timeout not available, running pod install without timeout protection"
-        if MSP_RELEASE=1 pod install; then
+        if env LANG="en_US.UTF-8" LC_ALL="en_US.UTF-8" RUBYOPT="-EUTF-8:UTF-8" MSP_RELEASE=1 pod install; then
             log_success "pod install completed"
         else
             log_error "pod install failed"
