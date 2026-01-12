@@ -7,7 +7,6 @@
 import WebKit
 
 enum NovaAdHtmlJSMessage: String, CaseIterable {
-    case adClick = "adClick"
     case adReport = "adReport"
     case adClose = "adClose"
     case getAdContext = "getAdContext"
@@ -18,9 +17,9 @@ enum NovaAdHtmlJSMessage: String, CaseIterable {
 }
 
 
-public protocol NovaAdHtmlActionDelegate: AnyObject {
+protocol NovaAdHtmlActionDelegate: AnyObject {
     
-    func didTapAdCtr(customUrl: URL?)
+    func didTapAdCtr(customUrl: URL?, clickArea: String?)
     
     func didTapAdReport()
     

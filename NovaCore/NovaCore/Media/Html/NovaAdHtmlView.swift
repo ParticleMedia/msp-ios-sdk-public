@@ -127,6 +127,13 @@ class NovaAdHtmlView: WKWebView, WKScriptMessageHandler {
             },
             startFeedback: function() {
                 window.webkit.messageHandlers.novaNativeBridge.postMessage({ action: 'startFeedback' });
+            },
+            
+            open: function(payload) {
+                window.webkit.messageHandlers.novaNativeBridge.postMessage({
+                    action: 'open',
+                    payload: payload || "{}"
+                });
             }
         };
         """
@@ -229,14 +236,6 @@ class NovaAdHtmlView: WKWebView, WKScriptMessageHandler {
         switch message.name {
         case NovaAdHtmlJSMessage.consoleLog.rawValue:
             print("JS Console: \(String(describing: message.body))")
-        case NovaAdHtmlJSMessage.adClick.rawValue:
-            var customUrl: URL? = nil
-            if self.useCustomUrl,
-               let body = message.body as? [String: Any],
-               let urlString = body["customUrl"] as? String {
-                customUrl = URL(string: urlString)
-            }
-            htmlActionDelegate?.didTapAdCtr(customUrl: customUrl)
         case NovaAdHtmlJSMessage.adReport.rawValue:
             htmlActionDelegate?.didTapAdReport()
         case NovaAdHtmlJSMessage.adClose.rawValue:
@@ -249,6 +248,27 @@ class NovaAdHtmlView: WKWebView, WKScriptMessageHandler {
                 switch action {
                 case "startFeedback":
                     htmlActionDelegate?.didTapAdReport()
+                case "open":
+                    var customUrl: URL? = nil
+                    var clickAreaString: String = ""
+
+                    if let jsonString = body["payload"] as? String,
+                       let data = jsonString.data(using: .utf8),
+                       let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any] {
+
+                        // payload is [string : string?] per doc
+                        if let urlString = json["url"] as? String,
+                           !urlString.isEmpty {
+                            customUrl = URL(string: urlString)
+                        }
+
+                        clickAreaString = (json["click_area_name"] as? String) ?? ""
+                    }
+
+                    htmlActionDelegate?.didTapAdCtr(
+                        customUrl: customUrl,
+                        clickArea: clickAreaString
+                    )
                 default:
                     DebugLogger.data.debug("Unknown novaNativeBridge action: \(action, privacy: .public)")
                 }
@@ -310,7 +330,7 @@ extension NovaAdHtmlView: WKNavigationDelegate {
             return
         }
 
-        htmlActionDelegate?.didTapAdCtr(customUrl: navigationAction.request.url)
+        htmlActionDelegate?.didTapAdCtr(customUrl: navigationAction.request.url, clickArea: nil)
 
         decisionHandler(.cancel)
     }
@@ -351,9 +371,9 @@ extension NovaAdHtmlView: WKUIDelegate {
         }
         userDidClick = false
         if useCustomUrl {
-            htmlActionDelegate?.didTapAdCtr(customUrl: navigationAction.request.url)
+            htmlActionDelegate?.didTapAdCtr(customUrl: navigationAction.request.url, clickArea: nil)
         } else {
-            htmlActionDelegate?.didTapAdCtr(customUrl: nil)
+            htmlActionDelegate?.didTapAdCtr(customUrl: nil, clickArea: nil)
         }
         return nil
     }
@@ -429,7 +449,7 @@ private extension NovaAdHtmlView {
         if let urlString = params["url"] as? String {
             customUrl = URL(string: urlString)
         }
-        htmlActionDelegate?.didTapAdCtr(customUrl: customUrl)
+        htmlActionDelegate?.didTapAdCtr(customUrl: customUrl, clickArea: nil)
     }
 
     func handleMraidOpen(url: URL) {
@@ -443,7 +463,7 @@ private extension NovaAdHtmlView {
         {
             customUrl = URL(string: urlString)
         }
-        htmlActionDelegate?.didTapAdCtr(customUrl: customUrl)
+        htmlActionDelegate?.didTapAdCtr(customUrl: customUrl, clickArea: nil)
     }
 
     func initializeMraidState(in webView: WKWebView) {

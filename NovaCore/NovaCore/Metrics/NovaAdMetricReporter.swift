@@ -36,7 +36,7 @@ class NovaAdMetricReporter: NSObject {
         encryptedAdToken: String,
         adUnitId: String,
         durationInMs: Int? = nil,
-        clickArea: ClickableAdArea? = nil
+        clickArea: String? = nil
     ) {
         // Third party click tracking
         AdsThirdPartyMetricReporter.logClick(thirdPartyClickTrackingUrls: thirdPartyClickTrackingUrls)
@@ -47,7 +47,7 @@ class NovaAdMetricReporter: NSObject {
             params[NovaAdMetricKeys.DURATION_MS] = "\(durationInMs)"
         }
         if let clickArea {
-            params[NovaAdMetricKeys.CLICK_AREA_NAME] = clickArea.rawValue
+            params[NovaAdMetricKeys.CLICK_AREA_NAME] = clickArea
         }
         params[NovaAdMetricKeys.AD_UNIT_ID] = adUnitId
         params[NovaAdMetricKeys.USER_ID] = UserDefaults.standard.string(forKey: "msp_user_id") ?? ""
