@@ -125,9 +125,11 @@ class NovaInterstitialAdNormalView: UIView, NovaInterstitialAdViewProtocol {
     }
     
     func didFailToLoad() {
-        actionHelper = actionHelper
-            .logNovaSkipEvent(with: .error, duration: CACurrentMediaTime() - startTime)
-            .handleCloseTap()
+        DispatchQueue.main.async {
+            self.actionHelper = self.actionHelper
+                .logNovaSkipEvent(with: .error, duration: CACurrentMediaTime() - self.startTime)
+                .handleCloseTap()
+        }
         context.interstitialAd.delegate?.interstitialAdDidDismiss(context.interstitialAd)
     }
 }
