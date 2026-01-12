@@ -640,16 +640,24 @@ if is_binary_distribution "$POD_NAME"; then
         # not the consumer project's config. By setting user_target_xcconfig, we ensure
         # that CocoaPods-generated module search paths are available during swiftinterface validation.
         # Check if this pod has external dependencies (SnapKit, Kingfisher, PrebidMobile)
-        if grep -q "spec\\.dependency.*['\"](SnapKit|Kingfisher|PrebidMobile)['\"]" "$OUTPUT_PODSPEC" 2>/dev/null; then
-            # Check if user_target_xcconfig already exists
-            if ! grep -q "spec\\.user_target_xcconfig" "$OUTPUT_PODSPEC" 2>/dev/null; then
-                log_info "Adding user_target_xcconfig to ensure swiftinterface validation can find dependencies"
-                cat >> "$OUTPUT_PODSPEC" <<'EOF_USER_XCCONFIG'
+        # FIX: Use -E for extended regex to match (A|B|C) pattern
+        if grep -qE "spec\\.dependency.*['\"](SnapKit|Kingfisher|PrebidMobile)['\"]" "$OUTPUT_PODSPEC" 2>/dev/null; then
+            # FIX: Always ensure SWIFT_INCLUDE_PATHS is present in user_target_xcconfig
+            if ! grep -q "SWIFT_INCLUDE_PATHS" "$OUTPUT_PODSPEC" 2>/dev/null; then
+                if grep -q "spec\\.user_target_xcconfig" "$OUTPUT_PODSPEC" 2>/dev/null; then
+                    # user_target_xcconfig exists but missing SWIFT_INCLUDE_PATHS, add it
+                    log_info "Adding SWIFT_INCLUDE_PATHS to existing user_target_xcconfig"
+                    sed -i '' "s/spec\.user_target_xcconfig = {/spec.user_target_xcconfig = {\n    'SWIFT_INCLUDE_PATHS' => '\$(inherited) \$(PODS_CONFIGURATION_BUILD_DIR)',/" "$OUTPUT_PODSPEC"
+                else
+                    # user_target_xcconfig doesn't exist, create new one
+                    log_info "Adding user_target_xcconfig to ensure swiftinterface validation can find dependencies"
+                    cat >> "$OUTPUT_PODSPEC" <<'EOF_USER_XCCONFIG'
   spec.user_target_xcconfig = {
     'SWIFT_INCLUDE_PATHS' => '$(inherited) $(PODS_CONFIGURATION_BUILD_DIR)',
   }
 EOF_USER_XCCONFIG
-                log_info "Added user_target_xcconfig with SWIFT_INCLUDE_PATHS for swiftinterface validation"
+                fi
+                log_info "Added SWIFT_INCLUDE_PATHS for swiftinterface validation"
             fi
         fi
     else
