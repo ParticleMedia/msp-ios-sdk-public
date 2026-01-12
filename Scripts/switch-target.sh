@@ -63,6 +63,118 @@ INFO_PLIST_OUTPUT="$ROOT_DIR/Examples/MSPDemoApp/MSPDemoApp/Info.plist"
 # HELPER FUNCTIONS
 # ============================================================================
 
+# Check if pod install error is network-related
+is_network_error() {
+    local error_output="$1"
+    # Check for common network error patterns
+    if echo "$error_output" | grep -qiE "(network|connection|timeout|DNS|resolve|unreachable|failed to download|CDN|specs repo|repository)" || \
+       echo "$error_output" | grep -qiE "(curl|fetch|download).*failed" || \
+       echo "$error_output" | grep -qiE "Unable to find.*spec" || \
+       echo "$error_output" | grep -qiE "CDN.*error"; then
+        return 0  # Network error detected
+    fi
+    return 1  # Not a network error
+}
+
+# Run pod install with automatic retry on network errors
+run_pod_install_with_retry() {
+    local msp_release="${1:-0}"
+    local msp_mode="${2:-pods-dev}"
+    local max_attempts=3  # Initial attempt + 2 retries
+    local retry_delay=10  # Wait 10 seconds between retries
+    local attempt=1
+    local last_error_output=""
+    
+    # UTF-8 environment required for CocoaPods
+    export LANG="en_US.UTF-8"
+    export LC_ALL="en_US.UTF-8"
+    export RUBYOPT="-EUTF-8:UTF-8"
+    
+    while [[ $attempt -le $max_attempts ]]; do
+        if [[ $attempt -gt 1 ]]; then
+            log_info "Retrying pod install (attempt $attempt/$max_attempts) after ${retry_delay}s delay..."
+            sleep $retry_delay
+        fi
+        
+        log_info "Running pod install (attempt $attempt/$max_attempts)..."
+        
+        # Capture both stdout and stderr
+        local temp_output
+        temp_output="$(mktemp)"
+        
+        # Build pod install command with environment variables
+        local pod_cmd_args=()
+        pod_cmd_args+=(env)
+        pod_cmd_args+=(LANG="en_US.UTF-8")
+        pod_cmd_args+=(LC_ALL="en_US.UTF-8")
+        pod_cmd_args+=(RUBYOPT="-EUTF-8:UTF-8")
+        pod_cmd_args+=(MSP_RELEASE="$msp_release")
+        if [[ "$msp_mode" == "pods-dev" ]]; then
+            pod_cmd_args+=(MSP_MODE="pods-dev")
+        fi
+        pod_cmd_args+=(pod install)
+        
+        # Run pod install with timeout
+        local exit_code=0
+        if command -v run_with_timeout &>/dev/null; then
+            if run_with_timeout 1800 "${pod_cmd_args[@]}" > "$temp_output" 2>&1; then
+                log_success "pod install completed successfully (attempt $attempt)"
+                rm -f "$temp_output"
+                return 0
+            else
+                exit_code=$?
+            fi
+        else
+            # Fallback: run without timeout
+            if "${pod_cmd_args[@]}" > "$temp_output" 2>&1; then
+                log_success "pod install completed successfully (attempt $attempt)"
+                rm -f "$temp_output"
+                return 0
+            else
+                exit_code=$?
+            fi
+        fi
+        
+        # Read error output
+        last_error_output="$(cat "$temp_output" 2>/dev/null || echo "")"
+        rm -f "$temp_output"
+        
+        # Check if it's a timeout (exit code 124)
+        if [[ $exit_code -eq 124 ]]; then
+            log_error "pod install TIMED OUT after 30 minutes (attempt $attempt/$max_attempts)"
+            if [[ $attempt -lt $max_attempts ]]; then
+                log_info "Timeout may be due to network issues, will retry..."
+            else
+                log_error "All retry attempts exhausted"
+                return 1
+            fi
+        # Check if it's a network error
+        elif is_network_error "$last_error_output"; then
+            log_warn "Network error detected in pod install (attempt $attempt/$max_attempts)"
+            log_info "Error details: $(echo "$last_error_output" | tail -5 | sed 's/^/  /')"
+            if [[ $attempt -lt $max_attempts ]]; then
+                log_info "Will retry after ${retry_delay}s..."
+            else
+                log_error "All retry attempts exhausted"
+                log_error "Final error output:"
+                echo "$last_error_output" | tail -20 | sed 's/^/  /' >&2
+                return 1
+            fi
+        else
+            # Non-network error, don't retry
+            log_error "pod install failed with non-network error (exit code $exit_code)"
+            log_error "Error output:"
+            echo "$last_error_output" | tail -20 | sed 's/^/  /' >&2
+            return 1
+        fi
+        
+        ((attempt++))
+    done
+    
+    log_error "pod install failed after $max_attempts attempts"
+    return 1
+}
+
 print_usage() {
     log_info "Usage: $0 {pods-dev|pods-release|spm-release}"
     log_info ""
@@ -480,44 +592,22 @@ switch_pods_dev() {
     log_info "XCFramework copy phases will be REMOVED by Podfile post_install"
     
     cd "$ROOT_DIR"
-    # UTF-8 environment required for CocoaPods (prevents "Unicode Normalization not appropriate for ASCII-8BIT" error)
-    export LANG="en_US.UTF-8"
-    export LC_ALL="en_US.UTF-8"
-    export RUBYOPT="-EUTF-8:UTF-8"
-    # Run with timeout: 30 minutes (1800s)
+    # Run pod install with automatic retry on network errors
+    # Retry logic: up to 3 attempts (initial + 2 retries), 10s delay between retries
+    # Timeout: 30 minutes per attempt
     # Rationale: First-time install (no Podfile.lock) can take 15-20 min for specs repo update + dependency resolution
     # Safety margin: 30 min = 1.5-2x observed time (increased from 20 min due to observed timeouts)
-    log_info "Running pod install with 30-minute timeout..."
-    if command -v run_with_timeout &>/dev/null; then
-        if run_with_timeout 1800 env LANG="en_US.UTF-8" LC_ALL="en_US.UTF-8" RUBYOPT="-EUTF-8:UTF-8" MSP_RELEASE=0 MSP_MODE=pods-dev pod install; then
-            log_success "pod install completed (pure source mode)"
-        else
-            local exit_code=$?
-            if [[ $exit_code -eq 124 ]]; then
-                log_error "pod install TIMED OUT after 30 minutes"
-                log_error "This usually indicates:"
-                log_error "  1. Network connectivity issues"
-                log_error "  2. CocoaPods specs repo update is very slow"
-                log_error "  3. Dependency resolution is taking too long"
-                log_error ""
-                log_error "Troubleshooting:"
-                log_error "  1. Check network: curl -I https://cdn.cocoapods.org"
-                log_error "  2. Manually update specs: pod repo update"
-                log_error "  3. Check Podfile for complex dependencies"
-            else
-                log_error "pod install failed with exit code $exit_code"
-            fi
-            exit 1
-        fi
+    log_info "Running pod install with automatic network error retry (max 3 attempts, 10s delay)..."
+    if run_pod_install_with_retry 0 "pods-dev"; then
+        log_success "pod install completed (pure source mode)"
     else
-        # Fallback: run without timeout if run_with_timeout not available
-        log_warn "run_with_timeout not available, running pod install without timeout protection"
-        if env LANG="en_US.UTF-8" LC_ALL="en_US.UTF-8" RUBYOPT="-EUTF-8:UTF-8" MSP_RELEASE=0 MSP_MODE=pods-dev pod install; then
-            log_success "pod install completed (pure source mode)"
-        else
-            log_error "pod install failed"
-            exit 1
-        fi
+        log_error "pod install failed after all retry attempts"
+        log_error ""
+        log_error "Troubleshooting:"
+        log_error "  1. Check network: curl -I https://cdn.cocoapods.org"
+        log_error "  2. Manually update specs: pod repo update"
+        log_error "  3. Check Podfile for complex dependencies"
+        exit 1
     fi
     
     # Step 8: Regenerate workspace YAML (AFTER pod install)
@@ -652,35 +742,17 @@ switch_pods_release() {
     log_info "Core modules use BINARY XCFrameworks, adapters use SOURCE"
     
     cd "$ROOT_DIR"
-    # UTF-8 environment required for CocoaPods (prevents "Unicode Normalization not appropriate for ASCII-8BIT" error)
-    export LANG="en_US.UTF-8"
-    export LC_ALL="en_US.UTF-8"
-    export RUBYOPT="-EUTF-8:UTF-8"
-    # Run with timeout: 30 minutes (1800s)
+    # Run pod install with automatic retry on network errors
+    # Retry logic: up to 3 attempts (initial + 2 retries), 10s delay between retries
+    # Timeout: 30 minutes per attempt
     # Rationale: Same as pods-dev mode - first-time install can be slow (increased from 20 min)
-    log_info "Running pod install with 30-minute timeout..."
-    if command -v run_with_timeout &>/dev/null; then
-        if run_with_timeout 1800 env LANG="en_US.UTF-8" LC_ALL="en_US.UTF-8" RUBYOPT="-EUTF-8:UTF-8" MSP_RELEASE=1 pod install; then
-            log_success "pod install completed"
-        else
-            local exit_code=$?
-            if [[ $exit_code -eq 124 ]]; then
-                log_error "pod install TIMED OUT after 30 minutes"
-                log_error "This usually indicates network or dependency resolution issues"
-            else
-                log_error "pod install failed with exit code $exit_code"
-            fi
-            exit 1
-        fi
+    log_info "Running pod install with automatic network error retry (max 3 attempts, 10s delay)..."
+    if run_pod_install_with_retry 1 ""; then
+        log_success "pod install completed"
     else
-        # Fallback: run without timeout if run_with_timeout not available
-        log_warn "run_with_timeout not available, running pod install without timeout protection"
-        if env LANG="en_US.UTF-8" LC_ALL="en_US.UTF-8" RUBYOPT="-EUTF-8:UTF-8" MSP_RELEASE=1 pod install; then
-            log_success "pod install completed"
-        else
-            log_error "pod install failed"
-            exit 1
-        fi
+        log_error "pod install failed after all retry attempts"
+        log_error "This usually indicates network or dependency resolution issues"
+        exit 1
     fi
     
     # Step 6: Generate Xcode project
