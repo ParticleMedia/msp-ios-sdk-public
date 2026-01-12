@@ -2587,17 +2587,9 @@ ensure_zip_file_exists_for_pod() {
     if [[ "$zip_exists" == "true" ]]; then
         log_info "Deleting old zip from GitHub Release to clear CDN cache..."
 
-        # Check GitHub CLI authentication
-        if ! command -v gh &>/dev/null; then
-            log_error "❌ GitHub CLI (gh) not found"
-            log_error "Please install GitHub CLI: brew install gh"
-            log_error "Then authenticate: gh auth login"
-            return 1
-        fi
-
-        if ! gh auth status &>/dev/null; then
-            log_error "❌ GitHub CLI authentication failed"
-            log_error "Please authenticate: gh auth login"
+        # Use unified GitHub CLI authentication check
+        if ! unified_github_cli_auth_check; then
+            log_error "❌ GitHub CLI authentication failed - cannot delete old zip"
             return 1
         fi
 
@@ -2614,40 +2606,11 @@ ensure_zip_file_exists_for_pod() {
         sleep 10
     fi
 
-    # Check GitHub CLI authentication before proceeding
-    if ! command -v gh &>/dev/null; then
-        log_error "❌ GitHub CLI (gh) not found"
-        log_error "Please install GitHub CLI: brew install gh"
-        log_error "Then authenticate: gh auth login"
-        return 1
-    fi
-
-    log_info "Checking GitHub CLI authentication..."
-
-    local auth_status_output
-    auth_status_output=$(mktemp)
-
-    if timeout 30 gh auth status &>"$auth_status_output"; then
-        log_success "✅ GitHub CLI authenticated"
-        rm -f "$auth_status_output"
-    else
-        local exit_code=$?
-        log_error "❌ GitHub CLI authentication failed (exit code: $exit_code)"
-        log_error ""
-        log_error "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-        log_error "GitHub CLI Error Output:"
-        log_error "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-        cat "$auth_status_output" >&2
-        log_error "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-        log_error ""
-        log_error "Common solutions:"
-        log_error "  1. Re-authenticate: gh auth login"
-        log_error "  2. Refresh token: gh auth refresh -h github.com"
-        log_error "  3. Check token status: gh auth status"
-        log_error ""
-        log_error "Required scopes: repo, workflow"
-
-        rm -f "$auth_status_output"
+    # Use unified GitHub CLI authentication check (reuse pre-flight check result)
+    # Note: This should have been checked earlier, but we verify again here for safety
+    if ! unified_github_cli_auth_check; then
+        log_error "❌ GitHub CLI authentication failed"
+        log_error "This should have been caught in the pre-flight check"
         return 1
     fi
 
@@ -4497,6 +4460,20 @@ release_adapters() {
 
     log_success "✅ NovaCore.xcframework is ready for NovaAdapter"
     
+    # Pre-flight check: GitHub CLI authentication (required for binary distribution adapters)
+    # This check happens before parallel adapter releases to fail fast if authentication is broken
+    if [[ "${DRY_RUN:-true}" == "false" ]]; then
+        log_step "Pre-flight check: GitHub CLI authentication"
+        if ! unified_github_cli_auth_check; then
+            log_error "❌ GitHub CLI authentication failed - cannot proceed with adapter releases"
+            log_error "Binary distribution adapters require GitHub CLI to upload zip files"
+            log_error "Please fix GitHub CLI authentication before retrying"
+            return 1
+        fi
+    else
+        log_info "Dry-run mode: Skipping GitHub CLI authentication check"
+    fi
+    
     log_section "Step 2: Releasing Adapters that depend on MSPSharedLibraries (in parallel)"
     
     # Ensure MSPSharedLibraries and MSPGoogleAdsTypes are available before adapter releases
@@ -5250,6 +5227,20 @@ main() {
         fi
     fi
     log_success "CocoaPods trunk session is valid"
+    
+    # Check GitHub CLI authentication (required for binary distribution pods)
+    # This check must happen before any adapter releases that may need to upload zips
+    if [[ "${DRY_RUN:-true}" == "false" ]]; then
+        log_step "Checking GitHub CLI authentication (pre-flight check)"
+        if ! unified_github_cli_auth_check; then
+            log_error "[MSP][ORCH] Production mode: GitHub CLI authentication failed - aborting"
+            log_error "Please fix GitHub CLI authentication before retrying the release"
+            msp_state_mark_step_failed "pods_publish" "GitHub CLI authentication failed" "1"
+            exit 1
+        fi
+    else
+        log_info "Dry-run mode: Skipping GitHub CLI authentication check"
+    fi
     
     # Phase 4: Strong lint validation for production releases
     if [[ "${DRY_RUN:-true}" == "false" ]]; then
