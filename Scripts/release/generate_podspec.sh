@@ -469,7 +469,7 @@ in_block {
 # Clean up pod_target_xcconfig: remove problematic configs
 if [[ -s "$TEMP_XCCONFIG" ]]; then
     # Remove BUILD_LIBRARY_FOR_DISTRIBUTION, SWIFT_EMIT_MODULE_INTERFACE, SWIFT_INSTALL_MODULE_FOR_DEPLOYMENT
-    # Remove SWIFT_INCLUDE_PATHS (let CocoaPods auto-handle dependency module paths)
+    # Remove old SWIFT_INCLUDE_PATHS (will add correct one for release mode)
     # Keep: DEFINES_MODULE, VALID_ARCHS, FRAMEWORK_SEARCH_PATHS
     sed -i '' \
         -e "/'BUILD_LIBRARY_FOR_DISTRIBUTION'/d" \
@@ -481,20 +481,25 @@ if [[ -s "$TEMP_XCCONFIG" ]]; then
         -e "/'SWIFT_INCLUDE_PATHS'/d" \
         -e "/\"SWIFT_INCLUDE_PATHS\"/d" \
         "$TEMP_XCCONFIG"
-    
+
     # Write cleaned config to output
     cat "$TEMP_XCCONFIG" >> "$OUTPUT_PODSPEC"
-    log_info "Cleaned pod_target_xcconfig: removed BUILD_LIBRARY_FOR_DISTRIBUTION and SWIFT_INCLUDE_PATHS"
+
+    # FIX: Add SWIFT_INCLUDE_PATHS to pod_target_xcconfig for swiftinterface validation
+    # This is needed because Xcode validates swiftinterface in pod target context
+    sed -i '' "s/spec\.pod_target_xcconfig = {/spec.pod_target_xcconfig = {\n    'SWIFT_INCLUDE_PATHS' => '\$(inherited) \$(PODS_CONFIGURATION_BUILD_DIR)',/" "$OUTPUT_PODSPEC"
+    log_info "Cleaned pod_target_xcconfig: removed old SWIFT_INCLUDE_PATHS, added release-mode SWIFT_INCLUDE_PATHS"
 else
     # No pod_target_xcconfig found, create minimal one for binary distribution pods
     if is_binary_distribution "$POD_NAME"; then
         cat >> "$OUTPUT_PODSPEC" <<'EOF_XCCONFIG'
   spec.pod_target_xcconfig = {
+    'SWIFT_INCLUDE_PATHS' => '$(inherited) $(PODS_CONFIGURATION_BUILD_DIR)',
     'DEFINES_MODULE' => 'YES',
     'FRAMEWORK_SEARCH_PATHS' => '$(inherited) $(PODS_ROOT)/../Build/XCFrameworks',
   }
 EOF_XCCONFIG
-        log_info "Added minimal pod_target_xcconfig for binary distribution pod"
+        log_info "Added minimal pod_target_xcconfig for binary distribution pod (with SWIFT_INCLUDE_PATHS)"
     fi
 fi
 rm -f "$TEMP_XCCONFIG"
