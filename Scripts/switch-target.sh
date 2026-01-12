@@ -480,17 +480,17 @@ switch_pods_dev() {
     log_info "XCFramework copy phases will be REMOVED by Podfile post_install"
     
     cd "$ROOT_DIR"
-    # Run with timeout: 20 minutes (1200s)
-    # Rationale: First-time install (no Podfile.lock) can take 10-15 min for specs repo update + dependency resolution
-    # Safety margin: 20 min = 1.3-2x observed time
-    log_info "Running pod install with 20-minute timeout..."
+    # Run with timeout: 30 minutes (1800s)
+    # Rationale: First-time install (no Podfile.lock) can take 15-20 min for specs repo update + dependency resolution
+    # Safety margin: 30 min = 1.5-2x observed time (increased from 20 min due to observed timeouts)
+    log_info "Running pod install with 30-minute timeout..."
     if command -v run_with_timeout &>/dev/null; then
-        if run_with_timeout 1200 env MSP_RELEASE=0 MSP_MODE=pods-dev pod install; then
+        if run_with_timeout 1800 env MSP_RELEASE=0 MSP_MODE=pods-dev pod install; then
             log_success "pod install completed (pure source mode)"
         else
             local exit_code=$?
             if [[ $exit_code -eq 124 ]]; then
-                log_error "pod install TIMED OUT after 20 minutes"
+                log_error "pod install TIMED OUT after 30 minutes"
                 log_error "This usually indicates:"
                 log_error "  1. Network connectivity issues"
                 log_error "  2. CocoaPods specs repo update is very slow"
@@ -648,16 +648,16 @@ switch_pods_release() {
     log_info "Core modules use BINARY XCFrameworks, adapters use SOURCE"
     
     cd "$ROOT_DIR"
-    # Run with timeout: 20 minutes (1200s)
-    # Rationale: Same as pods-dev mode - first-time install can be slow
-    log_info "Running pod install with 20-minute timeout..."
+    # Run with timeout: 30 minutes (1800s)
+    # Rationale: Same as pods-dev mode - first-time install can be slow (increased from 20 min)
+    log_info "Running pod install with 30-minute timeout..."
     if command -v run_with_timeout &>/dev/null; then
-        if run_with_timeout 1200 env MSP_RELEASE=1 pod install; then
+        if run_with_timeout 1800 env MSP_RELEASE=1 pod install; then
             log_success "pod install completed"
         else
             local exit_code=$?
             if [[ $exit_code -eq 124 ]]; then
-                log_error "pod install TIMED OUT after 20 minutes"
+                log_error "pod install TIMED OUT after 30 minutes"
                 log_error "This usually indicates network or dependency resolution issues"
             else
                 log_error "pod install failed with exit code $exit_code"
