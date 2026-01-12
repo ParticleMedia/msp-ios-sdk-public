@@ -35,22 +35,29 @@ class NovaAdPlayableTopBar: UIView {
     private lazy var titleLabel: UILabel = {
         let label = UILabel()
         label.font = .Nova.body2
-        label.textColor = NovaColorPalettes.White.withAlphaComponent(0.9)
+        label.textColor = UIColor(
+            light: NovaColorPalettes.Gray.tint800,
+            dark: NovaColorPalettes.White.withAlphaComponent(0.9)
+        )
         label.numberOfLines = 1
         return label
     }()
     
     private lazy var closeButton: UIButton = {
         let button = UIButton()
-        let image = UIImage.Nova.crossCircleFilled?.withTintColor(NovaColorPalettes.White, renderingMode: .alwaysOriginal)
+        let image = UIImage.Nova.crossCircleFilled?
+            .withTintColor(
+                UIColor(light: NovaColorPalettes.Gray.tint800, dark: NovaColorPalettes.White),
+                renderingMode: .alwaysOriginal
+            )
         button.setImage(image, for: .normal)
         button.addTarget(self, action: #selector(didTapCloseButton), for: .touchUpInside)
         return button
     }()
     
     private func setupUI() {
-        backgroundColor = NovaColorPalettes.Gray.tint900
-        
+        backgroundColor = UIColor(light: NovaColorPalettes.White, dark: NovaColorPalettes.Gray.tint800)
+
         addSubview(titleLabel)
         addSubview(closeButton)
         
