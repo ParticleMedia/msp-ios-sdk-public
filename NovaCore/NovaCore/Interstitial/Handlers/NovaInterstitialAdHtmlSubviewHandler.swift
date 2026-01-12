@@ -87,7 +87,7 @@ class NovaInterstitialAdHtmlSubviewHandler: NovaInterstitialAdSubviewHandler, No
     
     func setupSubviews(in containerView: UIView, showReportButton: Bool) {
         self.parentView = containerView
-        let htmlView = NovaAdHtmlView(supportReportHandling: interstitialAd.supportReportHandling)
+        let htmlView = NovaAdHtmlView(supportReportHandling: showReportButton)
         self.htmlView = htmlView
         containerView.addSubview(htmlView)
 
