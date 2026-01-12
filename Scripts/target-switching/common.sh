@@ -58,19 +58,54 @@ elif ! readonly -p 2>/dev/null | grep -q "^declare -r PODS_DIR="; then
     # PODS_DIR exists but is not readonly, make it readonly
     readonly PODS_DIR
 fi
-readonly WORKSPACE_SPEC="$ROOT_DIR/workspace.yml"
-readonly PROJECT_SPEC="$ROOT_DIR/Examples/MSPDemoApp/project.yml"
+# Fix WORKSPACE_SPEC readonly variable conflict
+if [[ -z "${WORKSPACE_SPEC:-}" ]]; then
+    readonly WORKSPACE_SPEC="$ROOT_DIR/workspace.yml"
+elif ! readonly -p 2>/dev/null | grep -q "^declare -r WORKSPACE_SPEC="; then
+    readonly WORKSPACE_SPEC
+fi
+# Fix PROJECT_SPEC readonly variable conflict
+if [[ -z "${PROJECT_SPEC:-}" ]]; then
+    readonly PROJECT_SPEC="$ROOT_DIR/Examples/MSPDemoApp/project.yml"
+elif ! readonly -p 2>/dev/null | grep -q "^declare -r PROJECT_SPEC="; then
+    readonly PROJECT_SPEC
+fi
 
 # Package.swift paths (Template-based architecture)
 # Package.swift.template - Developer-maintained, tracked in Git
 # Package.swift - Generated from template in SPM mode, deleted in Pods mode
-readonly PACKAGE_SWIFT="$ROOT_DIR/Package.swift"
-readonly PACKAGE_SWIFT_TEMPLATE="$ROOT_DIR/Package.swift.template"
-readonly PACKAGE_SWIFT_DISABLED="$ROOT_DIR/Package.swift.disabled"  # Legacy, will be removed
+# Fix PACKAGE_SWIFT readonly variable conflict
+if [[ -z "${PACKAGE_SWIFT:-}" ]]; then
+    readonly PACKAGE_SWIFT="$ROOT_DIR/Package.swift"
+elif ! readonly -p 2>/dev/null | grep -q "^declare -r PACKAGE_SWIFT="; then
+    readonly PACKAGE_SWIFT
+fi
+# Fix PACKAGE_SWIFT_TEMPLATE readonly variable conflict
+if [[ -z "${PACKAGE_SWIFT_TEMPLATE:-}" ]]; then
+    readonly PACKAGE_SWIFT_TEMPLATE="$ROOT_DIR/Package.swift.template"
+elif ! readonly -p 2>/dev/null | grep -q "^declare -r PACKAGE_SWIFT_TEMPLATE="; then
+    readonly PACKAGE_SWIFT_TEMPLATE
+fi
+# Fix PACKAGE_SWIFT_DISABLED readonly variable conflict (Legacy, will be removed)
+if [[ -z "${PACKAGE_SWIFT_DISABLED:-}" ]]; then
+    readonly PACKAGE_SWIFT_DISABLED="$ROOT_DIR/Package.swift.disabled"
+elif ! readonly -p 2>/dev/null | grep -q "^declare -r PACKAGE_SWIFT_DISABLED="; then
+    readonly PACKAGE_SWIFT_DISABLED
+fi
 
 # XCFramework directories
-readonly XCFRAMEWORK_DIR="$ROOT_DIR/Build/XCFrameworks"
-readonly BINARY_DIR="$ROOT_DIR/Binary"  # Future migration target
+# Fix XCFRAMEWORK_DIR readonly variable conflict
+if [[ -z "${XCFRAMEWORK_DIR:-}" ]]; then
+    readonly XCFRAMEWORK_DIR="$ROOT_DIR/Build/XCFrameworks"
+elif ! readonly -p 2>/dev/null | grep -q "^declare -r XCFRAMEWORK_DIR="; then
+    readonly XCFRAMEWORK_DIR
+fi
+# Fix BINARY_DIR readonly variable conflict
+if [[ -z "${BINARY_DIR:-}" ]]; then
+    readonly BINARY_DIR="$ROOT_DIR/Binary"
+elif ! readonly -p 2>/dev/null | grep -q "^declare -r BINARY_DIR="; then
+    readonly BINARY_DIR
+fi
 
 # ============================================================================
 # Package.swift State Management
