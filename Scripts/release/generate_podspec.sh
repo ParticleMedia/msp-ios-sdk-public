@@ -640,33 +640,39 @@ if is_binary_distribution "$POD_NAME"; then
             done <<< "$missing_imports"
         fi
         
-        # Add user_target_xcconfig to ensure swiftinterface validation can find dependencies
-        # This is needed because Xcode validates swiftinterface using the framework's own config,
-        # not the consumer project's config. By setting user_target_xcconfig, we ensure
-        # that CocoaPods-generated module search paths are available during swiftinterface validation.
-        # Check if this pod has external dependencies (SnapKit, Kingfisher, PrebidMobile)
-        # FIX: Use -E for extended regex to match (A|B|C) pattern
-        if grep -qE "spec\\.dependency.*['\"](SnapKit|Kingfisher|PrebidMobile)['\"]" "$OUTPUT_PODSPEC" 2>/dev/null; then
-            # FIX: Always ensure SWIFT_INCLUDE_PATHS is present in user_target_xcconfig
-            if ! grep -q "SWIFT_INCLUDE_PATHS" "$OUTPUT_PODSPEC" 2>/dev/null; then
-                if grep -q "spec\\.user_target_xcconfig" "$OUTPUT_PODSPEC" 2>/dev/null; then
-                    # user_target_xcconfig exists but missing SWIFT_INCLUDE_PATHS, add it
-                    log_info "Adding SWIFT_INCLUDE_PATHS to existing user_target_xcconfig"
-                    sed -i '' "s/spec\.user_target_xcconfig = {/spec.user_target_xcconfig = {\n    'SWIFT_INCLUDE_PATHS' => '\$(inherited) \$(PODS_CONFIGURATION_BUILD_DIR)',/" "$OUTPUT_PODSPEC"
-                else
-                    # user_target_xcconfig doesn't exist, create new one
-                    log_info "Adding user_target_xcconfig to ensure swiftinterface validation can find dependencies"
-                    cat >> "$OUTPUT_PODSPEC" <<'EOF_USER_XCCONFIG'
+    else
+        log_debug "XCFramework not found at $xcframework_path, skipping swiftinterface import check"
+    fi
+    
+    # ═══════════════════════════════════════════════════════════════════════════
+    # CRITICAL FIX: Add user_target_xcconfig for ALL binary distribution pods
+    # ═══════════════════════════════════════════════════════════════════════════
+    # Why user_target_xcconfig instead of pod_target_xcconfig:
+    # - pod_target_xcconfig only affects the pod's own target
+    # - Xcode validates swiftinterface using the consumer project's context
+    # - user_target_xcconfig affects all targets that use this pod, including validation
+    # - This ensures module search paths are available during swiftinterface validation
+    # ═══════════════════════════════════════════════════════════════════════════
+    # Check if user_target_xcconfig already exists and has SWIFT_INCLUDE_PATHS
+    if grep -q "spec\\.user_target_xcconfig" "$OUTPUT_PODSPEC" 2>/dev/null; then
+        # user_target_xcconfig exists, check if SWIFT_INCLUDE_PATHS is present
+        if ! grep -A 10 "spec\\.user_target_xcconfig" "$OUTPUT_PODSPEC" | grep -q "SWIFT_INCLUDE_PATHS" 2>/dev/null; then
+            # user_target_xcconfig exists but missing SWIFT_INCLUDE_PATHS, add it
+            log_info "Adding SWIFT_INCLUDE_PATHS to existing user_target_xcconfig (required for swiftinterface validation)"
+            sed -i '' "s/spec\.user_target_xcconfig = {/spec.user_target_xcconfig = {\n    'SWIFT_INCLUDE_PATHS' => '\$(inherited) \$(PODS_CONFIGURATION_BUILD_DIR)',/" "$OUTPUT_PODSPEC"
+        else
+            log_debug "user_target_xcconfig already contains SWIFT_INCLUDE_PATHS"
+        fi
+    else
+        # user_target_xcconfig doesn't exist, create new one
+        # This is REQUIRED for all binary distribution pods to ensure swiftinterface validation works
+        log_info "Adding user_target_xcconfig with SWIFT_INCLUDE_PATHS (required for swiftinterface validation)"
+        cat >> "$OUTPUT_PODSPEC" <<'EOF_USER_XCCONFIG'
   spec.user_target_xcconfig = {
     'SWIFT_INCLUDE_PATHS' => '$(inherited) $(PODS_CONFIGURATION_BUILD_DIR)',
   }
 EOF_USER_XCCONFIG
-                fi
-                log_info "Added SWIFT_INCLUDE_PATHS for swiftinterface validation"
-            fi
-        fi
-    else
-        log_debug "XCFramework not found at $xcframework_path, skipping swiftinterface import check"
+        log_info "Added user_target_xcconfig for swiftinterface validation (affects all consumer targets)"
     fi
 fi
 
