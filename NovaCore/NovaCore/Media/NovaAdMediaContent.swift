@@ -14,15 +14,18 @@ public struct NovaMediaElementLayout: Equatable {
     public let safeAreaInsets: UIEdgeInsets
     public let exclusionRects: [CGRect]
     let showBottomShadow: Bool
+    var showTapToTry: Bool
 
     public init(
         safeAreaInsets: UIEdgeInsets = .zero,
         exclusionRects: [CGRect] = [],
-        showBottomShadow: Bool = false
+        showBottomShadow: Bool = false,
+        showTapToTry: Bool = true
     ) {
         self.safeAreaInsets = safeAreaInsets
         self.exclusionRects = exclusionRects
         self.showBottomShadow = showBottomShadow
+        self.showTapToTry = showTapToTry
     }
 }
 
