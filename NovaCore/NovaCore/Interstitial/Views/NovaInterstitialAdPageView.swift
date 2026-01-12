@@ -52,8 +52,8 @@ class NovaInterstitialAdPageView: NovaInterstitialAdNormalView {
 }
 
 extension NovaInterstitialAdPageView: NovaAdHtmlActionDelegate {
-    func didTapAdCtr(customUrl: URL?) {
-        self.didTapAd(customUrl: customUrl)
+    func didTapAdCtr(customUrl: URL?, clickArea: String?) {
+        self.didTapAd(customUrl: customUrl, clickArea: clickArea)
     }
     
     func didTapAdReport() {

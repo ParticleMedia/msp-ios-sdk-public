@@ -85,9 +85,11 @@ class NovaInterstitialAdNormalView: UIView, NovaInterstitialAdViewProtocol {
     func willDisappear() {
         subviewHandler.willDisappear()
     }
-
-    func didTapAd(customUrl: URL?) {
-        handleAdTap(clickArea: .cta, view: nil, customUrl: customUrl)
+    
+    func didTapAd(customUrl: URL?, clickArea: String?) {
+        actionHelper = actionHelper
+            .logCustomAreaNovaClickEvent(with: CACurrentMediaTime() - startTime, in: clickArea)
+            .handleAdTap(in: nil, customUrl: customUrl)
     }
 
 
