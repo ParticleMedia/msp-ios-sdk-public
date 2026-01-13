@@ -1,0 +1,47 @@
+// IMPORTANT: This is a generated template. You MUST:
+// 1. Replace all TODO comments with actual implementation
+// 2. Remove the `fail()` call and add real assertions
+// 3. Add test cases for each public method of the class
+//
+// Generated from: Tests/templates/unit_test_spec.swift.template
+
+import Quick
+import Nimble
+@testable import {{module_name}}
+
+class {{class_name}}Spec: QuickSpec {
+    override class func spec() {
+        describe("{{class_name}}") {
+            var sut: {{class_name}}!
+            // TODO: Define mock dependencies here
+
+            beforeEach {
+                // TODO: Initialize mock dependencies here
+                sut = {{class_name}}(/* TODO: inject mocks */)
+            }
+
+            afterEach {
+                sut = nil
+            }
+
+            // MARK: - Initialization
+            describe("initialization") {
+                it("should be created successfully") {
+                    expect(sut).notTo(beNil())
+                }
+            }
+
+            // MARK: - [Feature Name]
+            context("when <condition>") {
+                it("should <expected behavior>") {
+                    // Arrange
+
+                    // Act
+
+                    // Assert
+                    fail("Test not implemented. Please replace this with a real assertion.")
+                }
+            }
+        }
+    }
+}

@@ -9,6 +9,11 @@ Scripts/
 ├── msp-release.sh              # Main release orchestrator
 ├── switch-target.sh            # Mode switching (pods-dev/pods-release/spm-release)
 ├── resume-smart.sh             # Smart resume for interrupted releases
+├── tools/                      # Shared automation tools (for all AI agents)
+│   ├── get-test-template.sh    # Print unit test template
+│   └── validate-script.sh      # Validate script with shellcheck
+├── templates/                  # Shared templates
+│   └── release-notes-template.md
 ├── release/
 │   ├── orchestrator/           # Release coordination
 │   │   └── modular.sh          # Modular release workflow
@@ -170,3 +175,33 @@ Required tools:
 - `cocoapods` - Pod management
 - `gh` - GitHub CLI (for releases)
 - `jq` - JSON processing
+- `shellcheck` - Shell script validation (for tools/)
+
+## Shared Tools (AI Agents)
+
+The `tools/` directory contains scripts shared across all AI agents (Claude, Cursor, Copilot, Codex).
+
+| Tool | Usage | Description |
+|------|-------|-------------|
+| `get-test-template.sh` | `./Scripts/tools/get-test-template.sh` | Print Quick/Nimble unit test template |
+| `validate-script.sh` | `./Scripts/tools/validate-script.sh <path>` | Validate shell script with shellcheck |
+
+### Usage Example
+
+```bash
+# Get test template
+./Scripts/tools/get-test-template.sh
+
+# Validate a script
+./Scripts/tools/validate-script.sh Scripts/msp-release.sh
+```
+
+### Adding New Tools
+
+1. Create script in `Scripts/tools/`
+2. Add `set -euo pipefail` at the top
+3. Make executable: `chmod +x Scripts/tools/<name>.sh`
+4. Document in `AGENTS.md` Section 3.1
+5. (Optional) Create Claude wrapper in `.claude/tools/`
+
+See also: [Docs/AI_AGENTS.md](../Docs/AI_AGENTS.md) for full AI agent architecture.

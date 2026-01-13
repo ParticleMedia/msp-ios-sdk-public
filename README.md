@@ -41,13 +41,24 @@ open msp-ios-sdk.xcworkspace
 msp-ios-sdk/
 ├── Sources/
 │   ├── Core/           # Core modules (MSPCore, MSPiOSCore, NovaCore, etc.)
-│   └── Adapters/       # Ad network adapters
+│   ├── Adapters/       # Ad network adapters
+│   └── tools/          # Shared Swift development tools
+├── Tests/
+│   └── templates/      # Test templates
 ├── ThirdParty/         # Pre-built third-party XCFrameworks
 ├── Binary/             # Built XCFrameworks for release
 ├── Examples/           # MSPDemoApp
-├── Scripts/            # Automation scripts
+├── Scripts/
 │   ├── msp-release.sh  # Main release entrypoint
-│   └── switch-target.sh # Mode switching
+│   ├── switch-target.sh # Mode switching
+│   ├── tools/          # Shared automation tools
+│   └── templates/      # Release templates
+├── .claude/            # Claude AI configuration
+│   ├── skills/         # Reusable knowledge modules
+│   ├── agents/         # Autonomous sub-agents
+│   └── commands/       # Slash commands
+├── AGENTS.md           # AI agent operations manual
+├── constitution.md     # Project governance rules
 ├── Podfile             # CocoaPods dependencies (source of truth)
 ├── Package.swift.template # SPM package template
 └── *.podspec           # Pod specifications
@@ -64,6 +75,7 @@ msp-ios-sdk/
 
 ## Documentation
 
+### Technical Docs
 - [Docs/INDEX.md](Docs/INDEX.md) - Documentation navigation
 - [Docs/ARCHITECTURE.md](Docs/ARCHITECTURE.md) - System architecture
 - [Docs/RELEASE.md](Docs/RELEASE.md) - Release semantics
@@ -71,6 +83,11 @@ msp-ios-sdk/
 - [Docs/THIRD_PARTY_UPGRADES.md](Docs/THIRD_PARTY_UPGRADES.md) - Dependency management
 - [Docs/TROUBLESHOOTING.md](Docs/TROUBLESHOOTING.md) - Common issues
 - [Scripts/README.md](Scripts/README.md) - Scripts reference
+
+### AI & Governance
+- [Docs/AI_AGENTS.md](Docs/AI_AGENTS.md) - AI agent architecture
+- [AGENTS.md](AGENTS.md) - Operations manual for AI agents
+- [constitution.md](constitution.md) - Project governance rules
 
 ## Requirements
 

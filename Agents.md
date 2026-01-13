@@ -1,148 +1,107 @@
 # AI Agent Interaction Protocol
-
-> **Version**: 1.2  
-> **Last Updated**: 2026-01-09  
+> **Version**: 1.0
+> **Last Updated**: 2026-01-12
 > **Applies To**: All AI Agents (Codex, Cursor, GitHub Copilot, etc.)
 
-This document is the primary operational manual for all AI Agents contributing to this project. It defines the rules of engagement, standard operating procedures, and safety protocols. Adherence to this document is mandatory.
+This document is the primary operational manual for all AI Agents contributing to this project. It defines rules, SOPs, and safety protocols. Adherence is mandatory.
 
 ---
-
 ## 0. Pre-Task Checklist
-
-Before starting any task, every agent must verify the following conditions:
-
-- [ ] **Clean Working Directory**: Run `git status` to confirm no uncommitted changes
-- [ ] **Correct Branch**: Confirm you are on the intended working branch
-- [ ] **Development Mode**: Run `./Scripts/switch-target.sh pods-dev` to ensure the SDK is in development mode
-- [ ] **Context Loaded**: (Claude only) Load the relevant `.claude/CLAUDE.md` for the target directory
+Before starting any task, verify:
+- [ ] Clean Working Directory (`git status`).
+- [ ] On the correct branch.
+- [ ] In development mode (`./Scripts/switch-target.sh pods-dev`).
 
 ---
-
-## 1. Core Principles & Constitution
-
-**Foundation**: All actions performed by an AI Agent must strictly adhere to the principles laid out in `constitution.md`.
-
-**Prime Directive**: When in doubt, ask for clarification rather than making an assumption. It is better to interrupt than to be incorrect.
-
-**Tool-First Approach**: Always prefer using the project's existing automation scripts over performing manual file operations for build, release, or validation tasks.
+## 1. Core Principles
+**Foundation**: All actions must adhere to the principles in all applicable `constitution.md` files.
+**Prime Directive**: When in doubt, ask for clarification.
+**Tool-First Approach**: Always prefer using existing automation scripts.
 
 ---
-
 ## 2. Git & Pull Request (PR) Workflow
-
-**Core Tenet**: A disciplined Git workflow is essential for team collaboration and maintaining a clean project history. All contributors, including AI Agents, must adhere to these rules.
-
-### 2.1 Branching Strategy
-
-- **Main Branch**: The `main` branch is protected and considered production-ready. Direct pushes are forbidden.
-- **Feature Branches**: All new features, bug fixes, or chores must be developed in separate branches.
-- **Branch Naming Convention**: Branches must be named using the following prefixes, followed by a short, descriptive name (using hyphens for separation):
-    - `feature/<description>`
-    - `fix/<description>`
-    - `chore/<description>`
-
-### 2.2 Commit Message Format
-
-- **Specification**: All commit messages **must** strictly follow the **Conventional Commits v1.0.0** specification.
-- **Format**: `<type>(<scope>): <subject>`
-- **Permitted Types**: `feat`, `fix`, `chore`, `docs`, `refactor`, `style`, `test`.
-- **Example**: `feat(adapter): Add MyNewAdAdapter with basic loading`
-
-### 2.3 Pull Request (PR) Process
-
-- **PR Title**: The PR title must be clear and descriptive. If applicable, it should reference the corresponding Jira issue ID. (e.g., `[MSP-123] feat(core): Add support for banner ad refresh`)
-- **Pre-Review Checklist**: Before requesting a review on a PR, you **must** ensure that:
-    1. All automated tests pass successfully.
-    2. The code adheres to the project's style and linting rules.
-    3. The PR is rebased on the latest `main` branch.
+**Core Tenet**: A disciplined Git workflow is essential.
+**2.1 Branching**: Use `feature/`, `fix/`, or `chore/` prefixes.
+**2.2 Commits**: Must follow Conventional Commits v1.0.0.
+**2.3 PRs**: Title must be clear (e.g., `[MSP-123] feat: ...`). Must be rebased on `main` and pass all checks before review.
 
 ---
-
 ## 3. Authorized Toolbox
-
-The following scripts are the primary, authorized tools for project automation. Agents should call these scripts directly.
-
-| Script | Function | Common Usage |
-|--------|----------|--------------|
-| `./Scripts/switch-target.sh <mode>` | Switches the SDK's operational mode | Run with `pods-dev` before starting any coding task |
-| `./Scripts/target-switching/round-trip-test.sh` | Performs a full round-trip validation across all modes | Run after significant changes to validate project integrity |
-| `./Scripts/msp-release.sh --tier Preflight <ver>` | Executes a comprehensive pre-release validation | Run before finalizing a feature or fix to ensure it passes release checks |
-| `pod install` | Installs CocoaPods dependencies | Run after modifying the `Podfile` |
-| `XcodeGen` | Generates the Xcode project | Run after modifying any `*.yml.template` file |
+| Script | Function |
+|---|---|
+| `./Scripts/switch-target.sh <mode>` | Switches the SDK's operational mode. |
+| `./Scripts/target-switching/round-trip-test.sh` | Performs a full round-trip validation. |
+| `./Scripts/msp-release.sh --tier Preflight <ver>` | Executes a pre-release validation. |
+| `pod install` | Installs CocoaPods dependencies. |
+| `XcodeGen` | Generates the Xcode project. |
 
 ---
+## 3.1 Shared Tools
+Executable scripts available to all agents:
 
+### Scripts/tools/ (Automation & CI)
+| Tool | Usage | Purpose |
+|------|-------|---------|
+| `get-test-template.sh` | `./Scripts/tools/get-test-template.sh` | Print unit test template |
+| `validate-script.sh` | `./Scripts/tools/validate-script.sh <path>` | Run shellcheck on script |
+
+### Sources/tools/ (Swift Development)
+| Tool | Usage | Purpose |
+|------|-------|---------|
+| `find-class.sh` | `./Sources/tools/find-class.sh <TypeName>` | Find type definition |
+| `list-public-api.sh` | `./Sources/tools/list-public-api.sh <ModulePath>` | List public API surface |
+| `check-imports.sh` | `./Sources/tools/check-imports.sh [ModulePath]` | Check for forbidden imports |
+
+---
+## 3.2 Shared Templates
+Templates are available for consistent output across agents:
+
+| Template | Location | Purpose |
+|----------|----------|---------|
+| Unit Test | `Tests/templates/unit_test_spec.swift.template` | Quick/Nimble test boilerplate |
+| Release Notes | `Scripts/templates/release-notes-template.md` | Changelog entry format |
+
+**Placeholders**: Use `{{placeholder_name}}` syntax. Common placeholders:
+- `{{module_name}}` - Swift module name
+- `{{class_name}}` - Class under test
+
+---
 ## 4. Standard Operating Procedures (SOPs)
+### SOP-4.1: General Workflow
+1. Create a new branch.
+2. Make code changes.
+3. Write or update tests according to the constitution.
+4. Write a Conventional Commit message.
 
-### SOP-1: Adding a New Ad Network Adapter (e.g., "MyNewAdAdapter")
+### SOP-4.2: Domain-Specific Workflow: `Sources/`
+*   **Context**: When working on Swift/Objective-C files inside `Sources/`.
+*   **Procedure**: Follow SOP-4.1, and additionally ensure all new public APIs are documented with Swift DocC.
 
-1. **Modify Podfile**: Add the new dependency (e.g., `pod 'MyNewAdSDK', '~> 1.2.3'`).
-2. **Install Dependencies**: Execute `pod install`.
-3. **Consult Naming Conventions**: Refer to `ARCHITECTURE.md` ("Naming Conventions") to determine the correct directory and class name for the new adapter.
-4. **Create Source Files**: Create the directory and source files under `Sources/Adapters/`.
-5. **Implement Protocol**: Implement the `AdNetworkAdapter` protocol in your new class.
-6. **Update Project**: Add the new module definition to `Sources/Adapters/project.yml.template`.
-7. **Generate Project**: Execute `XcodeGen`.
-8. **Add Test Case**: Add a new UI control or test case in `Examples/MSPDemoApp/` to load and display an ad from the new adapter.
-9. **Validate**: Execute `./Scripts/target-switching/round-trip-test.sh` to ensure the change is compatible with all modes.
-
-### SOP-2: Recovering from a Failed Agent Task
-
-Use this procedure when an agent task has failed or left the workspace in an inconsistent state.
-
-1. **Stash or Revert Changes**: 
-   - To preserve changes: `git stash push -m "WIP: <description>"`
-   - To discard changes: `git checkout .`
-2. **Clean Untracked Files** (if needed): `git clean -fd` (use with caution)
-3. **Switch to Development Mode**: `./Scripts/switch-target.sh pods-dev`
-4. **Run Validation**: `./Scripts/target-switching/round-trip-test.sh`
-5. **Assess Results**:
-   - If test passes: The workspace is clean. Document what went wrong for future reference.
-   - If test fails: Escalate to Claude or a human developer with full error logs.
+### SOP-4.3: Writing Unit Tests
+*   **Context**: When asked to write unit tests.
+*   **Procedure**:
+    1.  Adhere to all TDD principles in `Sources/constitution.md` and readability principles in `Tests/constitution.md`.
+    2.  Use **Quick & Nimble**.
+    3.  Use the template at `Tests/templates/unit_test_spec.swift.template` for boilerplate.
+    4.  Place files correctly: Specs in `Tests/<Module>Tests/Specs/`, Mocks in `Tests/<Module>Tests/Mocks/`.
+    5.  Follow the BDD style (`describe-context-it`).
 
 ---
-
-## 5. Read-Only Zone
-
-> **[For Non-Claude Agents Only]**  
-> The following files are read-only for tactical agents. Only Claude or human developers may modify them when explicitly requested.
-
-The following files define the project's core strategy and architecture. They are provided for context only:
-
-- `constitution.md`
-- `.claude/CLAUDE.md` (and any sub-directory versions)
+## 5. Read-Only Zone (for non-Claude Agents only)
+The following files are read-only for tactical agents:
+- `constitution.md` (all versions)
+- `.claude/` (the entire directory)
 - `ARCHITECTURE.md`
 - `README.md`
 
 ---
-
 ## 6. Escalation Protocol to Claude / Human
+[Critical] If any of the following conditions are met, the Agent **must halt** and recommend escalation.
 
-**[Critical]** If any of the following conditions are met, the Agent must immediately halt its current task and report the condition to the user, recommending escalation to Claude or a human developer.
-
-| Rule | Condition | Rationale |
-|------|-----------|-----------|
-| **E-1** (Public API Change) | Any modification is made to a `public` or `open` API, including function signatures, properties, or protocol definitions (`AdNetworkAdapter`) | Protects external API contracts |
-| **E-2** (Constitutional File Change) | Any attempt is made to modify a file defined as a Single Source of Truth in the Constitution (e.g., `Podfile`, `*.yml.template`, `msp-release.sh`) **outside of an approved SOP** | Protects build determinism |
-| **E-3** (Complexity Threshold) | A single task's code modifications (diff) exceed 150 lines, span more than 5 files, or affect any file in `Sources/Core/MSPCore/` or `Sources/Core/MSPiOSCore/` | Prevents scope creep in critical modules |
-| **E-4** (Consecutive Failures) | An attempt to fix a specific build or test error fails twice in a row with the same error message | Prevents infinite retry loops |
-| **E-5** (Dependency Graph Change) | A new third-party dependency is added to the `Podfile`, or an existing one has its major version number changed (e.g., `1.x` to `2.x`) | Guards against supply chain issues |
-
----
-
-## Appendix: Quick Reference
-
-```bash
-# Switch to development mode
-./Scripts/switch-target.sh pods-dev
-
-# Validate all modes
-./Scripts/target-switching/round-trip-test.sh
-
-# Pre-release check
-./Scripts/msp-release.sh --tier Preflight 1.0.0
-
-# Full release
-./Scripts/msp-release.sh --profile=production run 1.0.0
-```
+| Rule | Condition |
+|---|---|
+| E-1 | Any modification is made to a `public` or `open` API. |
+| E-2 | Any attempt is made to modify a `constitution.md` file or an SSOT file (e.g., `Podfile`) outside of an approved SOP. |
+| E-3 | A single task's diff exceeds 150 lines, spans >5 files, or affects `Sources/Core/`. |
+| E-4 | An attempt to fix an error fails twice in a row with the same error. |
+| E-5 | A new dependency is added, or an existing one has its major version changed. |
