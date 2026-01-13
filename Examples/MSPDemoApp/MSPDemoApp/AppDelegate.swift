@@ -3,7 +3,7 @@ import MSPLiftoffAdapter
 import MSPMolocoAdapter
 import MSPCore
 import MSPGoogleAdapter
-import NovaAdapter
+import MSPNovaAdapter
 import UnityAdapter
 import PubmaticAdapter
 import MintegralAdapter
