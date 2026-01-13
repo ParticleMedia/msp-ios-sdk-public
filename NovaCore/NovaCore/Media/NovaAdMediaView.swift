@@ -240,17 +240,12 @@ extension NovaAdMediaView {
             }
         case .gamepadWithText:
             addSubview(tapToTryStaticView)
-            let bottomOffset: CGFloat = {
-                let defaultOffset: CGFloat = 16
-                if let safeAreaBottom = mediaContent?.elementLayout?.safeAreaInsets.bottom, safeAreaBottom > 0 {
-                    return -(safeAreaBottom + defaultOffset)
-                }
-                return -defaultOffset
-            }()
             tapToTryStaticView.snp.remakeConstraints { make in
-                make.centerX.equalToSuperview()
-                make.bottom.equalToSuperview().offset(bottomOffset)
+                make.center.equalToSuperview()
+                make.size.equalTo(64.0)
             }
+            tapToTryStaticView.layer.cornerRadius = 32.0
+            tapToTryStaticView.layer.masksToBounds = true
         }
     }
 
