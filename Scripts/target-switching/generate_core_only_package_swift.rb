@@ -52,10 +52,10 @@ content.gsub!(/        \/\/\/ Mintegral SDK - Multi-module advertising SDK\n    
 content.gsub!(/        \/\/\/ OpenWrapSDK - PubMatic OpenWrap SDK\n        \/\/\/ Used by: PubmaticAdapter\n        \.binaryTarget\(\n            name: "OpenWrapSDK",\n            path: "ThirdParty\/OpenWrapSDK\/OpenWrapSDK\.xcframework"\n        \),\n        \n/, '')
 
 # AmazonPublisherServicesSDK
-content.gsub!(/        \/\/\/ AmazonPublisherServicesSDK - Amazon APS SDK\n        \/\/\/ Used by: AmazonAdapter\n        \.binaryTarget\(\n            name: "AmazonPublisherServicesSDK",\n            path: "ThirdParty\/AmazonPublisherServicesSDK\/AmazonPublisherServicesSDK\.xcframework"\n        \),\n        \n/, '')
+content.gsub!(/        \/\/\/ AmazonPublisherServicesSDK - Amazon APS SDK\n        \/\/\/ Used by: MSPAmazonAdapter\n        \.binaryTarget\(\n            name: "AmazonPublisherServicesSDK",\n            path: "ThirdParty\/AmazonPublisherServicesSDK\/AmazonPublisherServicesSDK\.xcframework"\n        \),\n        \n/, '')
 
 # Remove MSPGoogleAdsTypes target (depends on Google Mobile Ads SDK which is Pods-only)
-content.gsub!(/        \/\/\/ MSPGoogleAdsTypes - Abstraction layer for GoogleMobileAds SDK\n        \/\/\/ Provides unified API across CocoaPods and SPM builds\n        \/\/\/ Used by: MSPGoogleAdapter, AmazonAdapter\n        \.target\(\n            name: "MSPGoogleAdsTypes",\n            dependencies: \[\n                \.product\(name: "GoogleMobileAds", package: "swift-package-manager-google-mobile-ads"\),\n            \],\n            path: "Sources\/Common\/MSPGoogleAdsTypes"\n        \),\n        \n/m, '')
+content.gsub!(/        \/\/\/ MSPGoogleAdsTypes - Abstraction layer for GoogleMobileAds SDK\n        \/\/\/ Provides unified API across CocoaPods and SPM builds\n        \/\/\/ Used by: MSPGoogleAdapter, MSPAmazonAdapter\n        \.target\(\n            name: "MSPGoogleAdsTypes",\n            dependencies: \[\n                \.product\(name: "GoogleMobileAds", package: "swift-package-manager-google-mobile-ads"\),\n            \],\n            path: "Sources\/Common\/MSPGoogleAdsTypes"\n        \),\n        \n/m, '')
 
 # Remove unpublished adapter targets
 unpublished_adapter_targets = [
@@ -67,7 +67,11 @@ unpublished_adapter_targets = [
 ]
 
 unpublished_adapter_targets.each do |comment_name, target_name, path_name|
-  pattern = /        \/\/\/ #{comment_name}.*?\n        \.target\(\n            name: "#{target_name}",\n            dependencies: \[.*?\n            \],\n            path: "Sources\/Adapters\/#{path_name}\/#{path_name}"\n        \),\n        \n/m
+  # Pattern matches target definition followed by either:
+  # 1. Empty line + indentation (middle of targets array): \n        \n
+  # 2. End of targets array (last element before ]): directly before \n    ]
+  # Note: Comments may span multiple lines (/// name and /// Dependencies)
+  pattern = /        \/\/\/ #{comment_name}[^\n]*\n(?:        \/\/\/[^\n]*\n)*        \.target\(\n            name: "#{target_name}",\n            dependencies: \[[^\]]*\],\n            path: "Sources\/Adapters\/#{path_name}\/#{path_name}"\n        \),\n(?:        \n|(?=    \]))/m
   content.gsub!(pattern, '')
 end
 
