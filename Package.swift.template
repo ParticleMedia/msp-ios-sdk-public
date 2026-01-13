@@ -53,7 +53,7 @@ let package = Package(
         .library(name: "MSPPrebidAdapter", targets: ["MSPPrebidAdapter"]),
         .library(name: "MSPGoogleAdapter", targets: ["MSPGoogleAdapter"]),
         .library(name: "MSPFacebookAdapter", targets: ["MSPFacebookAdapter"]),
-        .library(name: "NovaAdapter", targets: ["NovaAdapter"]),
+        .library(name: "MSPNovaAdapter", targets: ["MSPNovaAdapter"]),
         .library(name: "MSPAmazonAdapter", targets: ["MSPAmazonAdapter"]),
         .library(name: "MSPMolocoAdapter", targets: ["MSPMolocoAdapter"]),
         .library(name: "MSPLiftoffAdapter", targets: ["MSPLiftoffAdapter"]),
@@ -341,12 +341,12 @@ let package = Package(
             path: "Sources/Adapters/MSPFacebookAdapter/MSPFacebookAdapter"
         ),
         
-        /// NovaAdapter - Nova ad format adapter
+        /// MSPNovaAdapter - Nova ad format adapter
         /// Dependencies: MSPSharedLibraries, MSPiOSCore, NovaCoreLinker, Kingfisher, SnapKit
         /// Uses NovaCoreLinker to ensure Lottie is linked with NovaCore
         /// OMSDK is embedded in NovaCore binary
         .target(
-            name: "NovaAdapter",
+            name: "MSPNovaAdapter",
             dependencies: [
                 "MSPSharedLibraries",
                 "MSPiOSCore",

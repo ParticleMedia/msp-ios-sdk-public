@@ -94,7 +94,7 @@ VERBOSE="${VERBOSE:-false}"
 
 # Default SPM packages if SPM_PACKAGES not set (backward compatibility)
 # Includes all adapters that support binary distribution
-DEFAULT_SPM_PACKAGES="NovaCore NovaAdapter MSPAmazonAdapter MSPMolocoAdapter MSPLiftoffAdapter"
+DEFAULT_SPM_PACKAGES="NovaCore MSPNovaAdapter MSPAmazonAdapter MSPMolocoAdapter MSPLiftoffAdapter"
 SPM_PACKAGES="${SPM_PACKAGES:-$DEFAULT_SPM_PACKAGES}"
 
 # ============================================================================
@@ -1077,7 +1077,7 @@ process_binary_targets_for_cloud_distribution() {
         log_info "[SPM][INFO] Package.swift found at: $repo_package_swift"
     fi
     
-    # Find XCFrameworks for core modules (NovaCore, NovaAdapter) in Build/XCFrameworks/
+    # Find XCFrameworks for core modules (NovaCore, MSPNovaAdapter) in Build/XCFrameworks/
     # For real release, we only process core modules, not all third-party SDKs
     local xcframeworks=()
     
@@ -1086,7 +1086,7 @@ process_binary_targets_for_cloud_distribution() {
     # Scan Build/XCFrameworks/ for core modules and binary adapters
     if [[ -d "$ROOT_DIR/Build/XCFrameworks" ]]; then
         # Process core modules: Only include actual binary targets
-        # NovaAdapter is a source-based target (.target), not a binary target (.binaryTarget)
+        # MSPNovaAdapter is a source-based target (.target), not a binary target (.binaryTarget)
         # It doesn't need binary distribution (zip/CDN)
         local core_modules=("NovaCore")
         for module in "${core_modules[@]}"; do
@@ -1458,7 +1458,7 @@ release_spm_package() {
     fi
     
     # Update dependencies if this package depends on other SPM packages
-    # For example, NovaAdapter depends on NovaCore
+    # For example, MSPNovaAdapter depends on NovaCore
     if [[ "$package_name" == "NovaAdapter" ]]; then
         if [[ -n "$package_file" ]]; then
             update_package_swift_dependency "$package_file" "NovaCore" "$version"
@@ -1936,7 +1936,7 @@ spm_publish_tags() {
     log_info "[SPM] All SPM products will share the same version tag (standard SPM practice)"
 
     # SPM standard: Single tag for entire Package.swift
-    # All products (NovaCore, NovaAdapter, MSPAmazonAdapter, etc.) use the same version
+    # All products (NovaCore, MSPNovaAdapter, MSPAmazonAdapter, etc.) use the same version
     local tag_name="$version"
 
     log_step "Creating unified SPM git tag: $tag_name"
@@ -1999,7 +1999,7 @@ spm_publish_tags() {
 Products included:
 - MSPAds (umbrella product)
 - MSPCore, MSPiOSCore, MSPSharedLibraries (core modules)
-- NovaCore, NovaAdapter (Nova ad network)
+- NovaCore, MSPNovaAdapter (Nova ad network)
 - MSPAmazonAdapter (Amazon Publisher Services)
 - MSPMolocoAdapter (Moloco advertising)
 - MSPLiftoffAdapter (Liftoff/Vungle advertising)

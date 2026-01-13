@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
 # -*- coding: utf-8 -*-
 # Generate published-units-only Package.swift for spm-release mode
-# Includes ONLY: MSPSharedLibraries, MSPCore, MSPFacebookAdapter, MSPGoogleAdapter, NovaAdapter, MSPAmazonAdapter, MSPPrebidAdapter
+# Includes ONLY: MSPSharedLibraries, MSPCore, MSPFacebookAdapter, MSPGoogleAdapter, MSPNovaAdapter, MSPAmazonAdapter, MSPPrebidAdapter
 # Excludes: All Pods-only third-party SDKs (FBAudienceNetwork, IronSourceSDK, etc.)
 # Adapters are included but their third-party SDK dependencies are removed
 
@@ -12,7 +12,7 @@ content = File.read(template_path, encoding: 'utf-8')
 
 # Published adapter products (keep these)
 published_adapters = %w[
-  MSPPrebidAdapter MSPGoogleAdapter MSPFacebookAdapter NovaAdapter MSPAmazonAdapter
+  MSPPrebidAdapter MSPGoogleAdapter MSPFacebookAdapter MSPNovaAdapter MSPAmazonAdapter
 ]
 
 # Unpublished adapter products (remove these)
@@ -87,7 +87,7 @@ content.gsub!(/(        \.target\(\n            name: "MSPAmazonAdapter",\n     
 # MSPPrebidAdapter: Keep PrebidMobile (it exists and is needed)
 # No change needed - PrebidMobile is already included
 
-# NovaAdapter: Keep as-is (depends on NovaCoreLinker, MSPOMSDK, Kingfisher, SnapKit - all valid)
+# MSPNovaAdapter: Keep as-is (depends on NovaCoreLinker, MSPOMSDK, Kingfisher, SnapKit - all valid)
 # No change needed
 
 # Remove Shimmer target (removed from NovaCore)

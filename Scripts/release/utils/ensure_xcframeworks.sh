@@ -66,7 +66,7 @@ fi
 # ============================================================================
 # Binary distribution adapters that require auto-buildable XCFrameworks
 # Must be kept in sync with BINARY_DISTRIBUTION_PODS in generate_podspec.sh
-BINARY_ADAPTERS=("MSPPrebidAdapter" "MSPGoogleAdapter" "MSPFacebookAdapter" "MSPAmazonAdapter" "MSPMolocoAdapter" "MSPLiftoffAdapter" "NovaAdapter")
+BINARY_ADAPTERS=("MSPPrebidAdapter" "MSPGoogleAdapter" "MSPFacebookAdapter" "MSPAmazonAdapter" "MSPMolocoAdapter" "MSPLiftoffAdapter" "MSPNovaAdapter")
 
 # Build script path
 BUILD_SCRIPT="$ROOT_DIR/Scripts/xcframeworks/build_module.sh"

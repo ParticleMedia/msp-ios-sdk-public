@@ -1,9 +1,9 @@
 Pod::Spec.new do |spec|
-  spec.name         = "NovaAdapter"
+  spec.name         = "MSPNovaAdapter"
   spec.version      = "0.0.95"
   spec.summary      = "an adapter for Nova ads"
   spec.description  = "an adapter for Nova ads for MSP S2S"
-  spec.homepage     = "https://github.com/aimsp/msp-ios-sdk/NovaAdapter"
+  spec.homepage     = "https://github.com/aimsp/msp-ios-sdk/MSPNovaAdapter"
   spec.license      = "Copyright"
   spec.author       = { "huanzhiNB" => "huanzhi.zhang@newsbreak.com" }
   spec.platform     = :ios, '15.0'
@@ -18,7 +18,7 @@ Pod::Spec.new do |spec|
   if msp_release
     # RELEASE MODE: Binary XCFramework for external distribution
     spec.source = { :git => "https://github.com/ParticleMedia/msp-ios-sdk-public.git", :tag => spec.version.to_s }
-    spec.vendored_frameworks = "Binary/NovaAdapter.xcframework"
+    spec.vendored_frameworks = "Binary/MSPNovaAdapter.xcframework"
   else
     # DEVELOPMENT MODE: Source files for internal development
     spec.source = { :path => '.' }

@@ -31,7 +31,7 @@ GENERATED_PODSPECS_DIR="$ROOT_DIR/Build/ReleasePodspecs"
 # This classification matches the architecture documented in README.md
 # Note: NovaCore is not included here - it's embedded via vendored_frameworks, not published separately
 # NovaAdapter is a pure binary adapter (vendored_frameworks only), so it's included in CORE_MODULES
-CORE_MODULES=("MSPSharedLibraries" "MSPGoogleAdsTypes" "MSPCore" "MSPiOSCore" "MSPOMSDK" "NovaAdapter")
+CORE_MODULES=("MSPSharedLibraries" "MSPGoogleAdsTypes" "MSPCore" "MSPiOSCore" "MSPOMSDK" "MSPNovaAdapter")
 
 # Check if a module is a core module
 is_core_module() {
@@ -65,7 +65,7 @@ MSP_VERSIONED_DEPS_PATTERN="$(IFS='|'; echo "${MSP_VERSIONED_DEPS[*]}")"
 # Note: NovaAdapter uses binary distribution (includes private NovaCore.xcframework)
 #       but is released in Adapters phase (Step 2), NOT in foundation phase.
 # ============================================================================
-BINARY_DISTRIBUTION_PODS=("MSPSharedLibraries" "MSPGoogleAdsTypes" "MSPCore" "MSPiOSCore" "NovaAdapter" "MSPPrebidAdapter" "MSPGoogleAdapter" "MSPFacebookAdapter" "MSPAmazonAdapter" "MSPMolocoAdapter" "MSPLiftoffAdapter")
+BINARY_DISTRIBUTION_PODS=("MSPSharedLibraries" "MSPGoogleAdsTypes" "MSPCore" "MSPiOSCore" "MSPNovaAdapter" "MSPPrebidAdapter" "MSPGoogleAdapter" "MSPFacebookAdapter" "MSPAmazonAdapter" "MSPMolocoAdapter" "MSPLiftoffAdapter")
 
 # Check if a pod uses binary distribution (HTTP zip source)
 # Returns 0 (true) if the pod is in BINARY_DISTRIBUTION_PODS
@@ -569,7 +569,7 @@ extract_swiftinterface_imports() {
 }
 
 # Extract dependencies from source podspec
-if [[ "$POD_NAME" == "NovaAdapter" ]]; then
+if [[ "$POD_NAME" == "MSPNovaAdapter" ]]; then
     # Filter out embedded dependencies (NovaCore, MSPKingfisher), but add public Kingfisher dependency
     grep "spec\\.dependency" "$SOURCE_PODSPEC" | grep -vE "(NovaCore|MSPKingfisher)" >> "$OUTPUT_PODSPEC" 2>/dev/null || true
     # Add Kingfisher dependency (binary distribution requires public Kingfisher, not internal MSPKingfisher)
@@ -590,7 +590,7 @@ if is_binary_distribution "$POD_NAME"; then
     xcframework_path=""
     case "$POD_NAME" in
         NovaAdapter)
-            xcframework_path="$ROOT_DIR/Binary/NovaAdapter.xcframework"
+            xcframework_path="$ROOT_DIR/Binary/MSPNovaAdapter.xcframework"
             ;;
         MSPPrebidAdapter|MSPGoogleAdapter|MSPFacebookAdapter|MSPAmazonAdapter|MSPMolocoAdapter|MSPLiftoffAdapter)
             xcframework_path="$ROOT_DIR/Build/XCFrameworks/${POD_NAME}.xcframework"
@@ -831,11 +831,11 @@ if is_binary_distribution "$POD_NAME"; then
     "ThirdParty/PrebidMobile/PrebidMobile.xcframework"
   ]
 EOF_VENDOR_MULTI
-    elif [[ "$POD_NAME" == "NovaAdapter" ]]; then
+    elif [[ "$POD_NAME" == "MSPNovaAdapter" ]]; then
         # NovaAdapter: pure binary distribution with embedded NovaCore
         cat >> "$OUTPUT_PODSPEC" <<'EOF_VENDOR_NOVA'
   spec.vendored_frameworks = [
-    "Binary/NovaAdapter.xcframework",
+    "Binary/MSPNovaAdapter.xcframework",
     "Binary/NovaCore.xcframework"
   ]
 EOF_VENDOR_NOVA
@@ -907,7 +907,7 @@ if is_binary_distribution "$POD_NAME"; then
     fi
 else
     # Adapters: check if NovaAdapter (special case: pure binary distribution)
-    if [[ "$POD_NAME" == "NovaAdapter" ]]; then
+    if [[ "$POD_NAME" == "MSPNovaAdapter" ]]; then
         # NovaAdapter: must have vendored_frameworks only (no source_files)
         if ! grep -q "spec.vendored_frameworks" "$OUTPUT_PODSPEC"; then
             log_error "Generated podspec missing vendored_frameworks (NovaAdapter)"

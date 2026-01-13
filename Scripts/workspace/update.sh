@@ -64,7 +64,7 @@ done
 
 declare -a SPM_APP_PRODUCTS=(
   "MSPCore"
-  "NovaAdapter"
+  "MSPNovaAdapter"
   "PrebidAdapter"
   "MSPGoogleAdapter"
   "MSPFacebookAdapter"

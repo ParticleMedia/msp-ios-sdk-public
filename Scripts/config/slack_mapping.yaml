@@ -60,7 +60,7 @@ module_owner:
   MSPSharedLibraries: U0910UJPD7B
   MSPFacebookAdapter: U0910UJPD7B
   MSPGoogleAdapter: U0910UJPD7B
-  NovaAdapter: U0910UJPD7B
+  MSPNovaAdapter: U0910UJPD7B
   AmazonAdapter: U0910UJPD7B
   MSPPrebidAdapter: U0910UJPD7B
   MSPCore: U0910UJPD7B

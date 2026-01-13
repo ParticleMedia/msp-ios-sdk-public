@@ -71,10 +71,10 @@ init_config_defaults() {
     CONFIG_DM_ON_FAILURE="true"
     
     # Default pod modules (in dependency order)
-    CONFIG_PODS_MODULES="MSPSharedLibraries MSPPrebidAdapter MSPCore MSPGoogleAdapter MSPFacebookAdapter NovaAdapter MSPAmazonAdapter MSPMolocoAdapter MSPLiftoffAdapter"
+    CONFIG_PODS_MODULES="MSPSharedLibraries MSPPrebidAdapter MSPCore MSPGoogleAdapter MSPFacebookAdapter MSPNovaAdapter MSPAmazonAdapter MSPMolocoAdapter MSPLiftoffAdapter"
     
     # Default SPM packages
-    CONFIG_SPM_PACKAGES="NovaCore NovaAdapter"
+    CONFIG_SPM_PACKAGES="NovaCore MSPNovaAdapter"
     
     # Remote verification defaults
     CONFIG_PODS_REMOTE_URL=""

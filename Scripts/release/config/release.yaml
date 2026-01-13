@@ -40,7 +40,7 @@ pods:
     - MSPCore
     - MSPGoogleAdapter
     - MSPFacebookAdapter
-    - NovaAdapter
+    - MSPNovaAdapter
     - AmazonAdapter
 
 # ============================================================================
@@ -53,7 +53,7 @@ spm:
   # SPM packages to release
   packages:
     - NovaCore
-    - NovaAdapter
+    - MSPNovaAdapter
 
 # ============================================================================
 # Notification Configuration

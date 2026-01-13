@@ -23,7 +23,7 @@ msp_enforce_main_repo_or_exit
 #     ├─ MSPPrebidAdapter
 #     ├─ MSPGoogleAdapter
 #     ├─ MSPFacebookAdapter
-#     ├─ NovaAdapter            (binary distribution, but in Adapters phase)
+#     ├─ MSPNovaAdapter            (binary distribution, but in Adapters phase)
 #     └─ MSPAmazonAdapter
 # Step 3: MSPCore                (depends on: MSPSharedLibraries + MSPPrebidAdapter)
 #
@@ -35,13 +35,13 @@ msp_enforce_main_repo_or_exit
 # DIMENSION 2: DISTRIBUTION METHOD (implementation detail)
 # ─────────────────────────────────────────────────────────────
 # Binary Distribution (HTTP zip source from GitHub Releases):
-#     - MSPiOSCore, MSPSharedLibraries, MSPCore, NovaAdapter
+#     - MSPiOSCore, MSPSharedLibraries, MSPCore, MSPNovaAdapter
 #
 # Source Distribution (git+tag source):
 #     - MSPPrebidAdapter, MSPGoogleAdapter, MSPFacebookAdapter, MSPAmazonAdapter
 #
-# Why NovaAdapter is binary?
-# - NovaAdapter includes private NovaCore.xcframework (not in git repo)
+# Why MSPNovaAdapter is binary?
+# - MSPNovaAdapter includes private NovaCore.xcframework (not in git repo)
 # - Must use HTTP zip to bundle Binary/NovaCore.xcframework
 # - But release order remains in Adapters phase (Step 2)
 #
@@ -186,7 +186,7 @@ RELEASE_NOTES="${RELEASE_NOTES:-}"
 
 # Default pod modules if PODS_MODULES not set (backward compatibility)
 # Release order: MSPiOSCore → MSPSharedLibraries → MSPGoogleAdsTypes → Adapters → MSPCore
-DEFAULT_PODS_MODULES="MSPiOSCore MSPSharedLibraries MSPGoogleAdsTypes MSPPrebidAdapter MSPCore MSPGoogleAdapter MSPFacebookAdapter NovaAdapter MSPAmazonAdapter MSPMolocoAdapter MSPLiftoffAdapter"
+DEFAULT_PODS_MODULES="MSPiOSCore MSPSharedLibraries MSPGoogleAdsTypes MSPPrebidAdapter MSPCore MSPGoogleAdapter MSPFacebookAdapter MSPNovaAdapter MSPAmazonAdapter MSPMolocoAdapter MSPLiftoffAdapter"
 PODS_MODULES="${PODS_MODULES:-$DEFAULT_PODS_MODULES}"
 
 # ============================================================================
@@ -219,7 +219,7 @@ get_module_dir() {
 # - MSPiOSCore: Foundation framework (binary only)
 # - MSPSharedLibraries: Contains multiple XCFrameworks + PrebidMobile
 # - MSPCore: Main framework (binary distribution)
-# - NovaAdapter: Includes private NovaCore.xcframework (binary only)
+# - MSPNovaAdapter: Includes private NovaCore.xcframework (binary only)
 #
 # Note: Must match BINARY_DISTRIBUTION_PODS in generate_podspec.sh
 # ============================================================================
@@ -308,7 +308,7 @@ show_help() {
     echo "Release Workflow:"
     echo "  1. Publish MSPSharedLibraries (foundation dependency)"
     echo "  2. Wait for MSPSharedLibraries to be released"
-    echo "  3. Publish Adapters (MSPFacebookAdapter, MSPGoogleAdapter, NovaAdapter, MSPAmazonAdapter, MSPPrebidAdapter)"
+    echo "  3. Publish Adapters (MSPFacebookAdapter, MSPGoogleAdapter, MSPNovaAdapter, MSPAmazonAdapter, MSPPrebidAdapter)"
     echo "  4. Wait for Adapters to be released"
     echo "  5. Publish MSPCore (main framework)"
     echo "  6. Commit all changes to release branch"
@@ -1142,7 +1142,7 @@ This release includes the following components:
 - MSPPrebidAdapter
 - MSPGoogleAdapter
 - MSPFacebookAdapter
-- NovaAdapter
+- MSPNovaAdapter
 - MSPAmazonAdapter
 - MSPMolocoAdapter (if applicable)
 - MSPLiftoffAdapter (if applicable)
@@ -1907,7 +1907,7 @@ create_github_release_for_pod() {
                 log_info "Large file detected (${file_size_mb}MB), using extended wait strategy"
                 log_info "Total wait time: up to 100 seconds"
             elif [[ $file_size_mb -ge 1 ]]; then
-                # Medium files (1-5MB): NovaAdapter, MSPFacebookAdapter
+                # Medium files (1-5MB): MSPNovaAdapter, MSPFacebookAdapter
                 initial_wait=15
                 retry_intervals=(10 10 10)
                 max_download_attempts=3
@@ -2307,9 +2307,9 @@ create_zip_from_xcframework() {
             mkdir -p "$temp_zip_dir/Binary"
 
             # ========================================================================
-            # Special Case: NovaAdapter
+            # Special Case: MSPNovaAdapter
             # ========================================================================
-            # NovaAdapter is unique:
+            # MSPNovaAdapter is unique:
             # - Uses pre-packaged NovaCore.xcframework from Binary/ directory
             # - NovaCore is not built by our build system (proprietary/third-party)
             # - Unlike other adapters that use Build/XCFrameworks/
@@ -2317,23 +2317,23 @@ create_zip_from_xcframework() {
             if [[ "$pod" == "NovaAdapter" ]]; then
                 log_info "NovaAdapter: Binary adapter with embedded NovaCore dependency"
 
-                # Copy NovaAdapter.xcframework (NovaAdapter自身的代码)
+                # Copy MSPNovaAdapter.xcframework (NovaAdapter自身的代码)
                 local novaadapter_path="$ROOT_DIR/Build/XCFrameworks/NovaAdapter.xcframework"
 
                 if [[ ! -d "$novaadapter_path" ]]; then
-                    log_error "❌ NovaAdapter.xcframework not found: $novaadapter_path"
+                    log_error "❌ MSPNovaAdapter.xcframework not found: $novaadapter_path"
                     log_error "NovaAdapter.xcframework must be built before release"
-                    log_error "Run: ./Scripts/xcframeworks/build_module.sh NovaAdapter"
+                    log_error "Run: ./Scripts/xcframeworks/build_module.sh MSPNovaAdapter"
                     rm -rf "$temp_zip_dir"
                     return 1
                 fi
 
                 if ! ditto "$novaadapter_path" "$temp_zip_dir/Binary/NovaAdapter.xcframework"; then
-                    log_error "❌ Failed to copy NovaAdapter.xcframework"
+                    log_error "❌ Failed to copy MSPNovaAdapter.xcframework"
                     rm -rf "$temp_zip_dir"
                     return 1
                 fi
-                log_success "✅ Copied NovaAdapter.xcframework"
+                log_success "✅ Copied MSPNovaAdapter.xcframework"
 
                 # Copy NovaCore.xcframework (第三方依赖)
                 local novacore_path="$ROOT_DIR/Binary/NovaCore.xcframework"
@@ -2352,7 +2352,7 @@ create_zip_from_xcframework() {
                 fi
                 log_success "✅ Copied NovaCore.xcframework"
 
-                log_success "✅ Prepared NovaAdapter structure (NovaAdapter + NovaCore)"
+                log_success "✅ Prepared MSPNovaAdapter structure (NovaAdapter + NovaCore)"
 
             else
                 # Regular adapters: use Build/XCFrameworks/
@@ -2936,7 +2936,7 @@ publish_pod_with_resume() {
     #
     # Applies to: MSPPrebidAdapter, MSPGoogleAdapter, MSPFacebookAdapter, MSPAmazonAdapter
     # Does NOT apply to:
-    # - NovaAdapter: Uses pre-packaged Binary/NovaCore.xcframework
+    # - MSPNovaAdapter: Uses pre-packaged Binary/NovaCore.xcframework
     # - Core pods: Require pre-built XCFrameworks from build pipeline
     # ========================================================================
     if is_binary_distribution "$pod"; then
@@ -2986,7 +2986,7 @@ publish_pod_with_resume() {
                     log_debug "XCFramework exists: $xcframework_path"
                 fi
                 ;;
-            NovaAdapter)
+            MSPNovaAdapter)
                 log_debug "NovaAdapter uses pre-packaged Binary/, skipping XCFramework check"
                 ;;
             MSPiOSCore|MSPSharedLibraries|MSPCore)
@@ -4020,14 +4020,14 @@ release_msp_googleadstypes() {
 # ============================================================================
 # Function: ensure_novacore_xcframework
 # ============================================================================
-# Ensures NovaCore.xcframework is available in Binary/ directory for NovaAdapter release
+# Ensures NovaCore.xcframework is available in Binary/ directory for MSPNovaAdapter release
 # If not present, builds it from source using existing build scripts
 # ============================================================================
 ensure_novacore_xcframework() {
     local novacore_binary_path="$ROOT_DIR/Binary/NovaCore.xcframework"
     local novacore_build_path="$ROOT_DIR/Build/XCFrameworks/NovaCore.xcframework"
 
-    log_section "Ensuring NovaCore.xcframework is available for NovaAdapter"
+    log_section "Ensuring NovaCore.xcframework is available for MSPNovaAdapter"
 
     # Check if NovaCore.xcframework already exists in Binary/
     if [[ -d "$novacore_binary_path" ]]; then
@@ -4106,7 +4106,7 @@ ensure_novacore_xcframework() {
 
         # Verify final deployment
         if [[ -f "$novacore_binary_path/Info.plist" ]]; then
-            log_success "✅ NovaCore.xcframework is valid and ready for NovaAdapter release"
+            log_success "✅ NovaCore.xcframework is valid and ready for MSPNovaAdapter release"
 
             # Show framework size
             local framework_size=$(du -sh "$novacore_binary_path" 2>/dev/null | cut -f1)
@@ -4444,21 +4444,21 @@ release_adapters() {
     log_title "Releasing Adapters: $VERSION"
 
     # ========================================================================
-    # Step 0: Ensure NovaCore.xcframework is available for NovaAdapter
+    # Step 0: Ensure NovaCore.xcframework is available for MSPNovaAdapter
     # ========================================================================
-    # NovaAdapter requires Binary/NovaCore.xcframework to be present
+    # MSPNovaAdapter requires Binary/NovaCore.xcframework to be present
     # Build it automatically if it doesn't exist (saves 26+ minutes of wasted time)
     # ========================================================================
     log_section "Step 0: Ensuring NovaCore.xcframework is available"
 
     if ! ensure_novacore_xcframework; then
         log_error "❌ Failed to ensure NovaCore.xcframework availability"
-        log_error "Cannot proceed with NovaAdapter release"
+        log_error "Cannot proceed with MSPNovaAdapter release"
         log_error "Please fix the issue and try again"
         return 1
     fi
 
-    log_success "✅ NovaCore.xcframework is ready for NovaAdapter"
+    log_success "✅ NovaCore.xcframework is ready for MSPNovaAdapter"
     
     # Pre-flight check: GitHub CLI authentication (required for binary distribution adapters)
     # This check happens before parallel adapter releases to fail fast if authentication is broken
@@ -4701,7 +4701,7 @@ release_adapters() {
     for adapter in "${adapters[@]}"; do
         log_info "Pre-checking $adapter requirements..."
         
-        # NovaAdapter: Verify Binary/NovaCore.xcframework exists and is valid
+        # MSPNovaAdapter: Verify Binary/NovaCore.xcframework exists and is valid
         if [[ "$adapter" == "NovaAdapter" ]]; then
             local novacore_path="$ROOT_DIR/Binary/NovaCore.xcframework"
             
@@ -4722,7 +4722,7 @@ release_adapters() {
                 return 1
             fi
             
-            log_success "✅ NovaAdapter pre-flight check passed (NovaCore.xcframework is valid)"
+            log_success "✅ MSPNovaAdapter pre-flight check passed (NovaCore.xcframework is valid)"
         else
             # Other adapters: Check Build/XCFrameworks/<Adapter>.xcframework exists
             local xcframework_path="$ROOT_DIR/Build/XCFrameworks/${adapter}.xcframework"

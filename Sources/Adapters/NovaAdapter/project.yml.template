@@ -10,9 +10,9 @@ name: NovaAdapter
 settings:
   base:
     # Product Configuration
-    PRODUCT_NAME: NovaAdapter
-    PRODUCT_BUNDLE_IDENTIFIER: msp.NovaAdapter
-    PRODUCT_MODULE_NAME: NovaAdapter
+    PRODUCT_NAME: MSPNovaAdapter
+    PRODUCT_BUNDLE_IDENTIFIER: msp.MSPNovaAdapter
+    PRODUCT_MODULE_NAME: MSPNovaAdapter
 
 targets:
   NovaAdapter:

@@ -96,7 +96,7 @@ target 'MSPDemoApp' do
   pod 'MSPGoogleAdsTypes', :path => 'MSPGoogleAdsTypes.podspec', :configurations => demoapp_pod_configs
   
   # Adapter modules (source pods)
-  pod 'NovaAdapter', :path => 'NovaAdapter.podspec', :configurations => demoapp_pod_configs
+  pod 'MSPNovaAdapter', :path => 'MSPNovaAdapter.podspec', :configurations => demoapp_pod_configs
   pod 'MSPPrebidAdapter', :path => 'MSPPrebidAdapter.podspec', :configurations => demoapp_pod_configs
   pod 'MSPGoogleAdapter', :path => 'MSPGoogleAdapter.podspec', :configurations => demoapp_pod_configs
   pod 'MSPFacebookAdapter', :path => 'MSPFacebookAdapter.podspec', :configurations => demoapp_pod_configs
@@ -215,7 +215,7 @@ post_install do |installer|
   
   # --- Fix adapter modulemaps to use relative paths for Swift Compatibility Header ---
   # This fixes "cannot load underlying module" errors when importing adapters
-  adapter_pods = ["MSPPrebidAdapter", "MSPGoogleAdapter", "MSPFacebookAdapter", "NovaAdapter",
+  adapter_pods = ["MSPPrebidAdapter", "MSPGoogleAdapter", "MSPFacebookAdapter", "MSPNovaAdapter",
                   "MSPAmazonAdapter", "UnityAdapter", "InmobiAdapter", "MobilefuseAdapter",
                   "MintegralAdapter", "PubmaticAdapter", "MSPMolocoAdapter", "MSPLiftoffAdapter"]
   adapter_pods.each do |pod_name|

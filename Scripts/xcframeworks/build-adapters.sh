@@ -49,6 +49,7 @@ get_module_dir() {
         "MSPAmazonAdapter") echo "AmazonAdapter" ;;
         "MSPMolocoAdapter") echo "MolocoAdapter" ;;
         "MSPLiftoffAdapter") echo "LiftoffAdapter" ;;
+        "MSPNovaAdapter") echo "NovaAdapter" ;;
         *) echo "$pod_name" ;;
     esac
 }
@@ -68,7 +69,7 @@ fi
 # Note: These are POD NAMES, not directory names
 ADAPTER_MODULES=(
     "MSPGoogleAdsTypes"
-    "NovaAdapter"
+    "MSPNovaAdapter"
     "MSPPrebidAdapter"
     "MSPGoogleAdapter"
     "MSPFacebookAdapter"
