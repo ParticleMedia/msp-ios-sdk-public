@@ -10,7 +10,7 @@ import VungleAdsSDK
 import MSPiOSCore
 import UIKit
 import PrebidMobile
-import SnapKit
+@_implementationOnly import SnapKit
 
 @objc public class LiftoffAdapter: NSObject, AdNetworkAdapter {
     

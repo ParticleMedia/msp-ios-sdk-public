@@ -3,9 +3,9 @@ import Foundation
 import MSPiOSCore
 import PrebidMobile
 import NovaCore
-import Kingfisher
+@_implementationOnly import Kingfisher
 import UIKit
-import SnapKit
+@_implementationOnly import SnapKit
 
 public class NovaAdapter: AdNetworkAdapter {
     public func getSDKVersion() -> String {

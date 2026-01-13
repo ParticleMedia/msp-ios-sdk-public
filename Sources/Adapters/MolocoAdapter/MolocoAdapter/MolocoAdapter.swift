@@ -10,7 +10,7 @@ import MolocoSDK
 import MSPiOSCore
 import UIKit
 import PrebidMobile
-import SnapKit
+@_implementationOnly import SnapKit
 
 fileprivate typealias BannerCreator = (MolocoSDK.MolocoCreateAdParams, UIViewController) -> MolocoSDK.MolocoBannerAdView?
 
