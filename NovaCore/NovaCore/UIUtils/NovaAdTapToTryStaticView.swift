@@ -26,55 +26,25 @@ class NovaAdTapToTryStaticView: UIView {
 
     // MARK: Private
 
-    private lazy var leftIconImageView: UIImageView = {
+    private lazy var centerImageIcon: UIImageView = {
         let imageView = UIImageView()
         imageView.image = UIImage.Nova.gameFilled
         imageView.contentMode = .scaleAspectFit
         return imageView
     }()
 
-    private lazy var textLabel: UILabel = {
-        let label = UILabel()
-        label.text = "Tap to Try"
-        label.font = .Nova.subtitle1
-        label.textColor = NovaColorPalettes.White
-        return label
-    }()
-
-    private lazy var rightIconImageView: UIImageView = {
-        let imageView = UIImageView()
-        imageView.image = UIImage.Nova.chevronRightLine?.withRenderingMode(.alwaysTemplate)
-        imageView.tintColor = NovaColorPalettes.White
-        return imageView
-    }()
-
-    private lazy var containerStackView: UIStackView = {
-        let stackView = UIStackView(arrangedSubviews: [leftIconImageView, textLabel, rightIconImageView])
-        stackView.axis = .horizontal
-        stackView.spacing = 8
-        stackView.alignment = .center
-        return stackView
-    }()
-
     private func setupViews() {
-        isUserInteractionEnabled = false
         backgroundColor = NovaColorPalettes.Black.withAlphaComponent(0.4)
-        addSubview(containerStackView)
-        containerStackView.snp.makeConstraints { make in
-            make.edges.equalToSuperview().inset(UIEdgeInsets(top: 4, left: 8, bottom: 4, right: 8))
+        addSubview(centerImageIcon)
+        centerImageIcon.snp.makeConstraints { make in
+            make.center.equalToSuperview()
+            make.height.equalToSuperview().multipliedBy(40.0 / 56.0)
+            make.width.equalToSuperview().multipliedBy(40.0 / 56.0)
         }
 
-        leftIconImageView.snp.makeConstraints { make in
-            make.width.height.equalTo(24)
-        }
-
-        rightIconImageView.snp.makeConstraints { make in
-            make.width.height.equalTo(16)
-        }
-
+        layer.borderWidth = 1
+        layer.borderColor = NovaColorPalettes.White.withAlphaComponent(0.6).cgColor
         adClickArea = .tap_to_try
-        layer.cornerRadius = 16.0
-        layer.masksToBounds = true
     }
 }
 
