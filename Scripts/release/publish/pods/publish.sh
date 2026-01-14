@@ -3583,7 +3583,6 @@ publish_pod_to_cocoapods() {
         if [[ "${DRY_RUN:-true}" == "false" ]]; then
             log_error "[FAIL-FAST] Podspec not found in release tier. Aborting to prevent wait loop."
             msp_state_mark_step_failed "pods_publish" "Podspec not found: $podspec" "1"
-            exit 1
         fi
         return 1
     fi
@@ -3615,7 +3614,7 @@ publish_pod_to_cocoapods() {
             if ! probe_zip_url "$pod" "$version"; then
                 log_error "[FAIL-FAST] Binary zip not available, cannot publish to CocoaPods"
                 msp_state_mark_step_failed "pods_publish" "Binary zip not available: ${pod}-${version}.zip" "1"
-                exit 1
+                return 1
             fi
         else
             log_info "$pod: Skipping zip verification (source-based distribution via git+tag)"
@@ -4182,12 +4181,6 @@ release_single_adapter() {
         if ! ensure_zip_file_exists_for_pod "$adapter" "$version"; then
             log_error "Failed to ensure zip file exists for $adapter"
             echo "ERROR: Failed to ensure zip file exists for $adapter" > "$result_file"
-
-            if [[ "${DRY_RUN:-true}" == "false" ]]; then
-                log_error "[FAIL-FAST] Cannot proceed without zip file. Aborting."
-                exit 1
-            fi
-
             return 1
         fi
 
@@ -4201,7 +4194,6 @@ release_single_adapter() {
         if [[ "${DRY_RUN:-true}" == "false" ]]; then
             log_error "[FAIL-FAST] Podspec generation failed for $adapter. Aborting release."
             msp_state_mark_step_failed "pods_publish" "Podspec generation failed for $adapter" "1"
-            exit 1
         fi
         return 1
     fi
@@ -4258,7 +4250,7 @@ release_single_adapter() {
         echo "ERROR: Generated podspec not found: $podspec_path" > "$result_file"
         log_error "[FAIL-FAST] Generated podspec not found: $podspec_path. Aborting release."
         msp_state_mark_step_failed "pods_publish" "Generated podspec not found: $podspec_path" "1"
-        exit 1
+        return 1
     fi
 
     log_info "[DEBUG] ✅ Podspec file exists: $podspec_path"
@@ -4758,24 +4750,28 @@ release_adapters() {
     # ========================================================================
     local pids=()
     local result_files=()
+    local log_files=()
     local temp_dir="/tmp/msp_parallel_release_$$"
-    
+
     # Create temporary directory for result files
     mkdir -p "$temp_dir"
-    
+
     # Start all adapter releases in parallel
     for adapter in "${adapters[@]}"; do
         local result_file="$temp_dir/${adapter}_result.txt"
+        local log_file="$temp_dir/${adapter}_log.txt"
         result_files+=("$result_file")
+        log_files+=("$log_file")
         register_temp_resource "$result_file"
-        
-        # Start adapter release in background
-        release_single_adapter "$adapter" "$VERSION" "$result_file" &
+        register_temp_resource "$log_file"
+
+        # Start adapter release in background with output redirection
+        release_single_adapter "$adapter" "$VERSION" "$result_file" > "$log_file" 2>&1 &
         local pid=$!
         pids+=("$pid")
         register_child_pid $pid "$adapter release"
-        
-        log_info "Started parallel release of $adapter (PID: $pid)"
+
+        log_info "Started parallel release of $adapter (PID: $pid, log: $log_file)"
     done
     
     # Register temp directory
@@ -4816,7 +4812,23 @@ release_adapters() {
                 if [[ -f "$result_file" ]]; then
                     local result_content=$(cat "$result_file")
                     if [[ "$result_content" == *"ERROR"* ]] || [[ "$result_content" == *"FAILED"* ]]; then
-                        log_error "❌ FAIL-FAST: $adapter failed, stopping all other adapters"
+                        log_error "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+                        log_error "❌ FAIL-FAST: $adapter failed while still running"
+                        log_error "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+                        log_error "Result: $result_content"
+
+                        # Show last 30 lines of log file for debugging
+                        local log_file="${log_files[$i]}"
+                        if [[ -f "$log_file" ]]; then
+                            log_error ""
+                            log_error "Last 30 lines of $adapter log ($log_file):"
+                            log_error "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+                            tail -30 "$log_file" >&2
+                            log_error "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+                            log_error ""
+                            log_error "Full log available at: $log_file"
+                        fi
+
                         has_failure=true
                         failed_adapter="$adapter"
                         failed_adapters+=("$adapter")
@@ -4839,18 +4851,39 @@ release_adapters() {
                     pids[$i]="DONE"
                 else
                     # Detailed failure analysis
+                    log_error "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
                     log_error "❌ $adapter release failed"
+                    log_error "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 
+                    # Show result file content
                     if [[ -f "$result_file" ]]; then
                         local result_content=$(cat "$result_file")
-                        log_error "$adapter: $result_content"
+                        if [[ -n "$result_content" ]]; then
+                            log_error "Result: $result_content"
+                        else
+                            log_error "Result file is empty: $result_file"
+                        fi
+                    else
+                        log_error "Result file not found: $result_file"
                     fi
 
                     # Show exit code if available
                     if [[ -n "$exit_code" ]] && [[ "$exit_code" != "0" ]]; then
-                        log_error "❌ Exit code: $exit_code"
+                        log_error "Exit code: $exit_code"
+                    fi
+
+                    # Show last 30 lines of log file for debugging
+                    local log_file="${log_files[$i]}"
+                    if [[ -f "$log_file" ]]; then
+                        log_error ""
+                        log_error "Last 30 lines of $adapter log ($log_file):"
+                        log_error "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+                        tail -30 "$log_file" >&2
+                        log_error "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+                        log_error ""
+                        log_error "Full log available at: $log_file"
                     else
-                        log_error "❌ Result file missing or does not contain SUCCESS"
+                        log_error "Log file not found: $log_file"
                     fi
 
                     has_failure=true
