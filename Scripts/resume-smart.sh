@@ -133,11 +133,9 @@ if [[ -z "${DRY_RUN:-}" ]]; then
             log_info "Using 'local' profile (resume profile not available)"
             source "$SCRIPT_DIR/utils/setup-release-env.sh" local
 
-            # Manually add resume-specific settings (must match do_resume() in msp-release.sh)
-            export MSP_ALLOW_EXISTING_TAG=1
+            # Manually add resume-specific settings
             export MSP_ALLOW_EXISTING_RELEASE=true
             export INTERACTIVE=false
-            log_info "Added: MSP_ALLOW_EXISTING_TAG=1 (for resume)"
             log_info "Added: MSP_ALLOW_EXISTING_RELEASE=true (for resume)"
             log_info "Added: INTERACTIVE=false (non-interactive mode)"
         fi

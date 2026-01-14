@@ -1883,9 +1883,6 @@ do_resume() {
     export MSP_RESUME_MODE="1"
     export RELEASE_VERSION="$version"
     
-    # Resume allows existing tag (resume is for retrying failed releases)
-    export MSP_ALLOW_EXISTING_TAG=1
-    
     # Resume allows existing release (resume is for retrying failed releases)
     # Release might be in draft or published state - both are acceptable
     export MSP_ALLOW_EXISTING_RELEASE=true

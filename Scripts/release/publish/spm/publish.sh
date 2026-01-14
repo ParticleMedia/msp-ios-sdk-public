@@ -1682,7 +1682,7 @@ main() {
             local package_tag="${package}-${VERSION}"
             if git rev-parse "$package_tag" >/dev/null 2>&1; then
                 log_warn "Tag $package_tag already exists"
-                if [[ "${MSP_ALLOW_EXISTING_TAG:-0}" != "1" ]]; then
+                if [[ "${MSP_ALLOW_EXISTING_TAG:-0}" != "1" && "${MSP_ALLOW_EXISTING_TAG:-false}" != "true" ]]; then
                     manifest_errors+=("Tag already exists: $package_tag (use MSP_ALLOW_EXISTING_TAG=1 to override)")
                 else
                     manifest_warnings+=("Tag already exists (override allowed): $package_tag")

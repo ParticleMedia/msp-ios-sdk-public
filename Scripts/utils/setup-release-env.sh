@@ -92,14 +92,10 @@ setup_ci_profile() {
 setup_rerelease_profile() {
     echo "🔧 Setting up environment for: Rerelease"
 
-    # Start with local profile
+    # Start with local profile (MSP_ALLOW_EXISTING_TAG defaults to true in config_loader)
     setup_local_profile
 
-    # Add rerelease permission
-    export MSP_ALLOW_EXISTING_TAG=1
-
     echo "⚠️  Rerelease mode enabled"
-    echo "   MSP_ALLOW_EXISTING_TAG: $MSP_ALLOW_EXISTING_TAG"
 }
 
 # ============================================================================
@@ -129,14 +125,10 @@ setup_test_profile() {
 setup_resume_profile() {
     echo "🔧 Setting up environment for: Resume"
 
-    # Start with local profile
+    # Start with local profile (MSP_ALLOW_EXISTING_TAG defaults to true in config_loader)
     setup_local_profile
 
-    # Add resume-specific permissions
-    export MSP_ALLOW_EXISTING_TAG=1
-
     echo "⚠️  Resume mode configured"
-    echo "   MSP_ALLOW_EXISTING_TAG: $MSP_ALLOW_EXISTING_TAG (allow existing tags)"
     echo ""
     echo "💡 This profile is used to resume a failed release."
     echo "   Use: ./Scripts/resume-smart.sh (recommended)"
