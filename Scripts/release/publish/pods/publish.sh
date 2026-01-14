@@ -653,7 +653,12 @@ ensure_release_tag_exists_and_pushed() {
         local tag_created=false
 
         while [[ $attempt -le $max_attempts ]]; do
-            if git tag "$tag" "$target_commit_sha" 2>/dev/null; then
+            # Capture error output to diagnose failures
+            local tag_error_output
+            tag_error_output=$(git tag "$tag" "$target_commit_sha" 2>&1)
+            local tag_exit_code=$?
+            
+            if [[ $tag_exit_code -eq 0 ]]; then
                 tag_created=true
                 log_success "Created local tag: $tag at commit $target_commit_sha"
 
@@ -670,6 +675,16 @@ ensure_release_tag_exists_and_pushed() {
                 fi
             else
                 log_warning "Attempt $attempt/$max_attempts failed: tag creation failed"
+                if [[ -n "$tag_error_output" ]]; then
+                    log_warning "Git error: $tag_error_output"
+                fi
+                
+                # Additional check: verify tag doesn't exist locally (might be a stale reference)
+                if git rev-parse -q --verify "refs/tags/$tag" >/dev/null 2>&1; then
+                    log_warning "Tag $tag still exists locally, attempting to delete..."
+                    git tag -d "$tag" 2>/dev/null || true
+                    sleep 1
+                fi
             fi
 
             if [[ $attempt -lt $max_attempts ]]; then
