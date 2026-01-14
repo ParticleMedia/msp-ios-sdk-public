@@ -148,6 +148,19 @@ check_base_branch() {
 check_release_branch() {
     log_step "Checking if release branch already exists: $RELEASE_BRANCH"
     
+    # In resume mode, don't delete existing branches - just use them
+    if [[ "${MSP_RESUME_MODE:-0}" == "1" ]]; then
+        if git show-ref --verify --quiet "refs/heads/$RELEASE_BRANCH"; then
+            log_info "Release branch '$RELEASE_BRANCH' already exists locally (resume mode: keeping it)"
+            return 0
+        fi
+        if git show-ref --verify --quiet "refs/remotes/origin/$RELEASE_BRANCH"; then
+            log_info "Release branch '$RELEASE_BRANCH' already exists on remote (resume mode: keeping it)"
+            return 0
+        fi
+    fi
+    
+    # Normal mode: delete existing branches to recreate fresh
     if git show-ref --verify --quiet "refs/heads/$RELEASE_BRANCH"; then
         log_warning "Release branch '$RELEASE_BRANCH' already exists locally"
         if [[ "$DRY_RUN" != "true" ]]; then
@@ -176,6 +189,25 @@ create_release_branch() {
         return 0
     fi
     
+    # In resume mode, if branch already exists, just checkout to it
+    if [[ "${MSP_RESUME_MODE:-0}" == "1" ]]; then
+        if git show-ref --verify --quiet "refs/heads/$RELEASE_BRANCH"; then
+            log_info "Release branch '$RELEASE_BRANCH' already exists (resume mode: checking out)"
+            git checkout "$RELEASE_BRANCH"
+            log_success "Checked out existing release branch: $RELEASE_BRANCH"
+            return 0
+        fi
+        # If branch exists on remote but not locally, fetch and checkout
+        if git show-ref --verify --quiet "refs/remotes/origin/$RELEASE_BRANCH"; then
+            log_info "Release branch '$RELEASE_BRANCH' exists on remote (resume mode: fetching and checking out)"
+            git fetch origin "$RELEASE_BRANCH"
+            git checkout -b "$RELEASE_BRANCH" "origin/$RELEASE_BRANCH" || git checkout "$RELEASE_BRANCH"
+            log_success "Checked out existing release branch from remote: $RELEASE_BRANCH"
+            return 0
+        fi
+    fi
+    
+    # Normal mode: create new branch
     # Ensure we're on the base branch
     # Clean untracked files that might conflict with checkout
     # This is safe in CI/sandbox environments where untracked files are from script copying
