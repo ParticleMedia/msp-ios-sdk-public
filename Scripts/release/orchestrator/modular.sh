@@ -1439,7 +1439,7 @@ main() {
     # Check if tag exists (unless override allowed or DRY_RUN mode)
     if [[ -n "$VERSION" ]] && [[ "${DRY_RUN:-false}" != "true" ]]; then
         if git rev-parse "v${VERSION}" >/dev/null 2>&1 || git rev-parse "$VERSION" >/dev/null 2>&1; then
-            if [[ "${MSP_ALLOW_EXISTING_TAG:-0}" != "1" ]]; then
+            if [[ "${MSP_ALLOW_EXISTING_TAG:-0}" != "1" && "${MSP_ALLOW_EXISTING_TAG:-false}" != "true" ]]; then
                 log_error "[MSP][ORCH][ERROR] Tag already exists: $VERSION"
                 log_error "Use MSP_ALLOW_EXISTING_TAG=1 to override (not recommended)"
                 exit 1

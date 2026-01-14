@@ -276,7 +276,6 @@ while true; do
     # Set version and release notes
     export VERSION="$TEST_VERSION"
     export RELEASE_NOTES="Preflight Real Release Simulation - Loop"
-    export MSP_ALLOW_EXISTING_TAG="1"
     
     # Set ROOT_DIR to sandbox
     export ROOT_DIR="$SANDBOX_DIR"
