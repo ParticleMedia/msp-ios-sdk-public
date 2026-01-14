@@ -568,6 +568,20 @@ extract_swiftinterface_imports() {
     fi
 }
 
+get_prebidmobile_version() {
+    local plist_path="$ROOT_DIR/ThirdParty/PrebidMobile/PrebidMobile.xcframework/ios-arm64/PrebidMobile.framework/Info.plist"
+    local version=""
+
+    if [[ -f "$plist_path" ]]; then
+        version=$(/usr/libexec/PlistBuddy -c "Print :CFBundleShortVersionString" "$plist_path" 2>/dev/null || true)
+        if [[ -z "$version" ]]; then
+            version=$(plutil -p "$plist_path" 2>/dev/null | awk -F'=> ' '/CFBundleShortVersionString/ {gsub(/[\" ]/,"",$2); print $2; exit}')
+        fi
+    fi
+
+    echo "$version"
+}
+
 # Extract dependencies from source podspec
 if [[ "$POD_NAME" == "MSPNovaAdapter" ]]; then
     # Filter out embedded dependencies (NovaCore, MSPKingfisher), but add public Kingfisher dependency
@@ -621,8 +635,14 @@ if is_binary_distribution "$POD_NAME"; then
                     # Add dependency based on module name
                     case "$import_module" in
                         PrebidMobile)
-                            log_info "Adding PrebidMobile dependency (required by swiftinterface)"
-                            echo "  spec.dependency 'PrebidMobile', '~> 2.0'" >> "$OUTPUT_PODSPEC"
+                            local prebidmobile_version
+                            prebidmobile_version="$(get_prebidmobile_version)"
+                            if [[ -z "$prebidmobile_version" ]]; then
+                                prebidmobile_version="2.0.4"
+                                log_warn "PrebidMobile version not found; defaulting to $prebidmobile_version"
+                            fi
+                            log_info "Adding PrebidMobile dependency (required by swiftinterface): $prebidmobile_version"
+                            echo "  spec.dependency 'PrebidMobile', '${prebidmobile_version}'" >> "$OUTPUT_PODSPEC"
                             ;;
                         SnapKit)
                             log_info "Adding SnapKit dependency (required by swiftinterface)"
