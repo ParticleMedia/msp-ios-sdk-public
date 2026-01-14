@@ -1,0 +1,118 @@
+# Codex CLI Tool Policy
+# Version: 1.0
+# Last Updated: 2026-01-14
+#
+# This file defines the security policy for Codex CLI tool invocations.
+# Actual tool definitions are in AGENTS.md Section 3.1-3.2 (single source of truth).
+
+version: 1
+
+metadata:
+  sync_with: "../AGENTS.md Section 3.1-3.2"
+  purpose: "Security policy enforcement, not tool documentation"
+  note: |
+    This file only defines WHAT is allowed/denied.
+    For tool documentation, see AGENTS.md.
+
+policy:
+  # Core philosophy: Trust but verify
+  allow_shell: true
+
+  # Safe zones: scripts in these directories are pre-approved
+  allowed_scripts_dirs:
+    - "./Scripts/tools/"
+    - "./Sources/tools/"
+    - "./Tests/"
+
+  # Safe read-only commands (no approval needed)
+  allowed_readonly_commands:
+    - "git status"
+    - "git diff"
+    - "git log"
+    - "git branch"
+    - "git show"
+    - "ls"
+    - "cat"
+    - "head"
+    - "tail"
+    - "grep"
+    - "find"
+    - "wc"
+    - "xcodebuild -list"
+    - "xcodebuild -showBuildSettings"
+    - "swift --version"
+    - "pod --version"
+    - "which"
+    - "echo"
+
+  # Safe build/test commands (approval recommended but not required)
+  allowed_build_commands:
+    - "swift build"
+    - "swift test"
+    - "xcodebuild build"
+    - "xcodebuild test"
+    - "pod install"
+    - "pod update"
+
+  # Danger zone: explicitly denied patterns
+  denied_patterns:
+    - pattern: "git push"
+      reason: "Use PR workflow instead"
+      alternative: "Create PR via gh pr create"
+      severity: "high"
+
+    - pattern: "git push --force"
+      reason: "Destructive operation"
+      alternative: "Never force push; fix issues properly"
+      severity: "critical"
+
+    - pattern: "pod trunk push"
+      reason: "Release must go through msp-release.sh"
+      alternative: "./Scripts/msp-release.sh --tier Preflight"
+      severity: "critical"
+
+    - pattern: "rm -rf /"
+      reason: "Catastrophic deletion"
+      alternative: "Be specific with paths"
+      severity: "critical"
+
+    - pattern: "rm -rf ~"
+      reason: "Home directory deletion"
+      alternative: "Be specific with paths"
+      severity: "critical"
+
+    - pattern: "sudo"
+      reason: "Should not require elevated privileges"
+      alternative: "Fix permissions at root cause"
+      severity: "high"
+
+    - pattern: "> constitution.md"
+      reason: "Constitution is read-only for agents"
+      alternative: "Propose changes to human for review"
+      severity: "critical"
+
+    - pattern: "> AGENTS.md"
+      reason: "AGENTS.md is read-only for tactical agents"
+      alternative: "Propose changes to human for review"
+      severity: "critical"
+
+    - pattern: ".xcodeproj"
+      reason: "Per Article I.2, never modify .xcodeproj directly"
+      alternative: "Modify *.yml.template and run XcodeGen"
+      severity: "critical"
+
+  # Escape hatch: for exceptional cases
+  escape_hatch:
+    enabled: true
+    requires_justification: true
+    format: |
+      ## Tool Approval Request
+      **Command**: [the command]
+      **Reason**: [why standard approach doesn't work]
+      **Risk Assessment**: [potential side effects]
+      **Rollback Plan**: [how to undo if it fails]
+      **Constitutional Justification**: [which article permits this]
+
+# NOTE: Do not add tool definitions here.
+# All tool definitions are in AGENTS.md Section 3.1-3.2.
+# This file only enforces policy.
