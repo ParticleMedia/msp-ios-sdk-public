@@ -1,9 +1,17 @@
 ---
 name: architect
 description: A skill for designing major architectural decisions and feature implementations. Produces mini-design documents with API contracts, module responsibilities, and constitutional compliance.
-allowed-tools: Read, Glob
+category: strategic
+shared: false
+applicable_agents: [claude-code]
+required_model: opus
+allowed-tools: [Read, Glob]
 ---
 # Architect Skill
+
+> **Type**: Strategic Skill
+> **Exclusive**: Claude Code (Opus) only
+> **Purpose**: Deep architectural reasoning and design
 
 ## Purpose
 Guide major architectural decisions and feature design by producing structured design documents that comply with the project's constitution.
