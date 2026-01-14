@@ -20,7 +20,8 @@ import PackageDescription
 let package = Package(
     name: "msp-ios-sdk",
     platforms: [
-        .iOS(.v15)
+        .iOS(.v15),
+        .macOS(.v10_15)  // Required by Kingfisher and Lottie dependencies
     ],
     
     // ═══════════════════════════════════════════════════════════════════════════
