@@ -205,6 +205,7 @@ get_module_dir() {
         "MSPAmazonAdapter") echo "AmazonAdapter" ;;
         "MSPMolocoAdapter") echo "MolocoAdapter" ;;
         "MSPLiftoffAdapter") echo "LiftoffAdapter" ;;
+        "MSPNovaAdapter") echo "NovaAdapter" ;;
         *) echo "$pod_name" ;;
     esac
 }
