@@ -364,7 +364,7 @@ if is_binary_distribution "$POD_NAME"; then
     # 2. New adapters: XCFrameworks built by build-adapters.sh
     # 3. Core pods: Pre-built XCFrameworks required
     case "$POD_NAME" in
-        NovaAdapter)
+        MSPNovaAdapter)
             log_info "Binary distribution pod: $POD_NAME (XCFrameworks in Binary/)"
             ;;
         MSPPrebidAdapter|MSPGoogleAdapter|MSPFacebookAdapter|MSPAmazonAdapter|MSPMolocoAdapter|MSPLiftoffAdapter)
@@ -589,7 +589,7 @@ if is_binary_distribution "$POD_NAME"; then
     # Find XCFramework path
     xcframework_path=""
     case "$POD_NAME" in
-        NovaAdapter)
+        MSPNovaAdapter)
             xcframework_path="$ROOT_DIR/Binary/MSPNovaAdapter.xcframework"
             ;;
         MSPPrebidAdapter|MSPGoogleAdapter|MSPFacebookAdapter|MSPAmazonAdapter|MSPMolocoAdapter|MSPLiftoffAdapter)
