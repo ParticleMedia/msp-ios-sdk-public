@@ -1681,17 +1681,45 @@ do_resume() {
             
             log_info "  📦 Processing: $asset_name"
             
-            # Calculate GitHub Release zip checksum
+            # Download with retry mechanism
             local temp_zip="/tmp/resume-sync-${asset_name}-$$.zip"
-            if curl -L -f -s -o "$temp_zip" "$download_url" 2>/dev/null; then
-                local github_checksum=$(shasum -a 256 "$temp_zip" 2>/dev/null | awk '{print $1}')
-                
-                if [[ -z "$github_checksum" || ${#github_checksum} -ne 64 ]]; then
-                    log_error "     ❌ Failed to calculate checksum from GitHub Release"
-                    rm -f "$temp_zip"
-                    ((error_count++))
-                    continue
+            local download_success=false
+            local github_checksum=""
+            local max_retries=3
+            local retry_delay=5
+
+            for ((retry=1; retry<=max_retries; retry++)); do
+                if [[ $retry -gt 1 ]]; then
+                    log_info "     Retrying download (attempt $retry/$max_retries)..."
+                    sleep $retry_delay
                 fi
+
+                # Download with timeout (60 seconds)
+                if timeout 60 curl -L -f -s -o "$temp_zip" "$download_url" 2>/dev/null; then
+                    local file_size=$(stat -f%z "$temp_zip" 2>/dev/null || stat -c%s "$temp_zip" 2>/dev/null || echo "0")
+
+                    if [[ $file_size -gt 0 ]]; then
+                        github_checksum=$(shasum -a 256 "$temp_zip" 2>/dev/null | awk '{print $1}')
+
+                        if [[ -n "$github_checksum" && ${#github_checksum} -eq 64 ]]; then
+                            download_success=true
+                            break
+                        else
+                            log_warning "     ⚠️  Downloaded file but checksum calculation failed, retrying..."
+                            rm -f "$temp_zip"
+                        fi
+                    else
+                        log_warning "     ⚠️  Downloaded file is empty (0 bytes), retrying..."
+                        rm -f "$temp_zip"
+                    fi
+                else
+                    if [[ $retry -lt $max_retries ]]; then
+                        log_warning "     ⚠️  Download failed (attempt $retry/$max_retries), will retry..."
+                    fi
+                fi
+            done
+
+            if [[ "$download_success" == "true" ]]; then
                 
                 # Check if local zip exists and matches
                 if [[ -f "$local_zip" ]]; then
@@ -1719,8 +1747,12 @@ do_resume() {
                 log_info "        Checksum: $github_checksum"
                 ((download_count++))
             else
-                log_error "     ❌ Failed to download from GitHub Release"
+                log_error "     ❌ Failed to download from GitHub Release after $max_retries attempts"
                 log_error "        URL: $download_url"
+                log_error "        Possible causes:"
+                log_error "          1. Network connectivity issues"
+                log_error "          2. GitHub CDN temporarily unavailable"
+                log_error "          3. File does not exist in GitHub Release"
                 rm -f "$temp_zip"
                 ((error_count++))
             fi
