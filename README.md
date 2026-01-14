@@ -40,28 +40,35 @@ open msp-ios-sdk.xcworkspace
 ```
 msp-ios-sdk/
 ├── Sources/
-│   ├── Core/           # Core modules (MSPCore, MSPiOSCore, NovaCore, etc.)
-│   ├── Adapters/       # Ad network adapters
-│   └── tools/          # Shared Swift development tools
+│   ├── Core/              # Core modules (MSPCore, MSPiOSCore, NovaCore, etc.)
+│   ├── Adapters/          # Ad network adapters
+│   └── tools/             # Shared Swift development tools
 ├── Tests/
-│   └── templates/      # Test templates
-├── ThirdParty/         # Pre-built third-party XCFrameworks
-├── Binary/             # Built XCFrameworks for release
-├── Examples/           # MSPDemoApp
+│   └── templates/         # Test templates
+├── ThirdParty/            # Pre-built third-party XCFrameworks
+├── Binary/                # Built XCFrameworks for release
+├── Examples/              # MSPDemoApp
 ├── Scripts/
-│   ├── msp-release.sh  # Main release entrypoint
-│   ├── switch-target.sh # Mode switching
-│   ├── tools/          # Shared automation tools
-│   └── templates/      # Release templates
-├── .claude/            # Claude AI configuration
-│   ├── skills/         # Reusable knowledge modules
-│   ├── agents/         # Autonomous sub-agents
-│   └── commands/       # Slash commands
-├── AGENTS.md           # AI agent operations manual
-├── constitution.md     # Project governance rules
-├── Podfile             # CocoaPods dependencies (source of truth)
+│   ├── msp-release.sh     # Main release entrypoint
+│   ├── switch-target.sh   # Mode switching
+│   ├── tools/             # Shared automation tools
+│   └── templates/         # Release templates
+│
+├── .agents-shared/        # Shared AI capability layer
+│   ├── protocols/         # Task tier, escalation, handoff protocols
+│   └── skills/            # Shared skills for all agents
+├── .claude/               # Claude Code configuration
+│   ├── skills/            # Claude-exclusive strategic skills
+│   ├── agents/            # Autonomous sub-agents
+│   └── commands/          # Slash commands
+├── .codex/                # Codex CLI configuration
+├── .cursor/               # Cursor IDE configuration
+│
+├── AGENTS.md              # AI agent operations manual (v2.0)
+├── constitution.md        # Project governance rules
+├── Podfile                # CocoaPods dependencies (source of truth)
 ├── Package.swift.template # SPM package template
-└── *.podspec           # Pod specifications
+└── *.podspec              # Pod specifications
 ```
 
 ## Release Profiles
@@ -85,9 +92,17 @@ msp-ios-sdk/
 - [Scripts/README.md](Scripts/README.md) - Scripts reference
 
 ### AI & Governance
-- [Docs/AI_AGENTS.md](Docs/AI_AGENTS.md) - AI agent architecture
-- [AGENTS.md](AGENTS.md) - Operations manual for AI agents
+- [Docs/AI_AGENTS.md](Docs/AI_AGENTS.md) - Comprehensive AI agent architecture (v2.0)
+- [AGENTS.md](AGENTS.md) - Operations manual for AI agents (v2.0)
+- [.agents-shared/](.agents-shared/) - Shared capability layer (protocols, skills)
 - [constitution.md](constitution.md) - Project governance rules
+
+### Supported AI Agents
+| Agent | Config | Use Case |
+|-------|--------|----------|
+| Claude Code | `.claude/` | Strategic analysis, architecture (Tier 2-3) |
+| Codex CLI | `.codex/` | Quick execution, one-shot tasks (Tier 0-1) |
+| Cursor IDE | `.cursor/` | Interactive development (Tier 1-2) |
 
 ## Requirements
 

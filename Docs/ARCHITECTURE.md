@@ -1,5 +1,12 @@
 # Architecture
 
+> **Version**: 2.0
+> **Last Updated**: 2026-01-14
+
+This document describes the technical architecture of the MSP iOS SDK, including module structure, distribution model, and AI-assisted development infrastructure.
+
+---
+
 ## Module Structure
 
 ### Core Modules
@@ -120,3 +127,64 @@ To avoid Swift module/class name collisions, adapters with MSP prefix use:
 - Pod name: `MSPAmazonAdapter`
 - Module name: `MSPAmazonAdapter`
 - Class name: `AmazonAdapter` (no prefix)
+
+---
+
+## AI-Assisted Development Infrastructure
+
+The project includes a comprehensive multi-agent AI infrastructure for development assistance.
+
+### Agent Architecture
+
+```
+┌─────────────────────────────────────────────────────────┐
+│                    Human Developer                       │
+└─────────────────────────────────────────────────────────┘
+                           │
+         ┌─────────────────┼─────────────────┐
+         ▼                 ▼                 ▼
+   ┌───────────┐    ┌───────────┐    ┌───────────┐
+   │  Claude   │    │  Codex    │    │  Cursor   │
+   │  Code     │    │  CLI      │    │  IDE      │
+   │ (Tier 2-3)│    │ (Tier 0-1)│    │ (Tier 1-2)│
+   └─────┬─────┘    └─────┬─────┘    └─────┬─────┘
+         │                │                │
+         └────────────────┴────────────────┘
+                          │
+                          ▼
+         ┌────────────────────────────────────┐
+         │    .agents-shared/ (Shared Layer)  │
+         │  ├── protocols/                    │
+         │  └── skills/                       │
+         └────────────────────────────────────┘
+                          │
+                          ▼
+         ┌────────────────────────────────────┐
+         │        Governance Layer            │
+         │  constitution.md    AGENTS.md      │
+         └────────────────────────────────────┘
+```
+
+### Task Tier System
+
+| Tier | Name | Agent | Model | Example |
+|------|------|-------|-------|---------|
+| 0 | Trivial | Codex | Haiku | Fix typo |
+| 1 | Standard | Codex/Cursor | Sonnet 3.5 | Add unit test |
+| 2 | Complex | Claude/Cursor | Sonnet 4 | Fix bug |
+| 3 | Strategic | Claude | Opus | Design API |
+
+### Key Directories
+
+| Directory | Purpose |
+|-----------|---------|
+| `.agents-shared/` | Shared protocols and skills |
+| `.claude/` | Claude Code configuration |
+| `.codex/` | Codex CLI configuration |
+| `.cursor/` | Cursor IDE configuration |
+
+### Related Documentation
+
+- [AI_AGENTS.md](AI_AGENTS.md) - Comprehensive AI agent documentation
+- [AGENTS.md](../AGENTS.md) - Operations manual for all agents
+- [constitution.md](../constitution.md) - Project governance rules
