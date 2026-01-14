@@ -226,7 +226,7 @@ get_module_dir() {
 is_binary_distribution() {
     local pod="$1"
     case "$pod" in
-        MSPiOSCore|MSPSharedLibraries|MSPGoogleAdsTypes|MSPCore|NovaAdapter|MSPPrebidAdapter|MSPGoogleAdapter|MSPFacebookAdapter|MSPAmazonAdapter|MSPMolocoAdapter|MSPLiftoffAdapter)
+        MSPiOSCore|MSPSharedLibraries|MSPGoogleAdsTypes|MSPCore|MSPNovaAdapter|MSPPrebidAdapter|MSPGoogleAdapter|MSPFacebookAdapter|MSPAmazonAdapter|MSPMolocoAdapter|MSPLiftoffAdapter)
             return 0
             ;;
         *)
@@ -1737,61 +1737,22 @@ create_github_release_for_pod() {
         fi
         log_info "[$mode_label] Creating GitHub release and uploading binary zip (HTTP distribution)"
         
-        # Create zip file from XCFramework
+        # Use unified create_zip_from_xcframework function to handle all pod types correctly
+        # This function handles special cases like MSPNovaAdapter, MSPSharedLibraries, etc.
+        if ! create_zip_from_xcframework "$pod" "$version"; then
+            log_error "Failed to create zip file from XCFramework"
+            return 1
+        fi
+        
         local zip_name="${pod}-${version}.zip"
-        local xcframework_path="$ROOT_DIR/Build/XCFrameworks/${pod}.xcframework"
-        local temp_zip_dir="/tmp/msp_release_zip_$$"
+        local local_zip_path="$ROOT_DIR/Build/Zips/$zip_name"
         
-        mkdir -p "$temp_zip_dir/Binary"
-        
-        if [[ ! -d "$xcframework_path" ]]; then
-            log_error "XCFramework not found: $xcframework_path"
-            rm -rf "$temp_zip_dir"
-            return 1
-        fi
-
-        # Copy XCFramework to temp directory structure
-        cp -R "$xcframework_path" "$temp_zip_dir/Binary/${pod}.xcframework"
-        
-        # Handle MSPSharedLibraries special case (includes PrebidMobile and source files for hybrid mode)
-        if [[ "$pod" == "MSPSharedLibraries" ]]; then
-            local prebid_path="$ROOT_DIR/Build/XCFrameworks/PrebidMobile.xcframework"
-            if [[ -d "$prebid_path" ]]; then
-                mkdir -p "$temp_zip_dir/ThirdParty/PrebidMobile"
-                cp -R "$prebid_path" "$temp_zip_dir/ThirdParty/PrebidMobile/PrebidMobile.xcframework"
-            fi
-            
-            # Include MSPiOSCore.xcframework (embedded in MSPSharedLibraries)
-            local mspioscore_path="$ROOT_DIR/Build/XCFrameworks/MSPiOSCore.xcframework"
-            if [[ -d "$mspioscore_path" ]]; then
-                cp -R "$mspioscore_path" "$temp_zip_dir/Binary/MSPiOSCore.xcframework"
-                log_info "Included MSPiOSCore.xcframework in zip"
-            else
-                log_warning "MSPiOSCore.xcframework not found: $mspioscore_path"
-            fi
-            
-            # Hybrid mode: Include source files for MSPSharedLibraries
-            # This allows CocoaPods to compile source and properly expose MSPiOSCore module
-            local source_path="$ROOT_DIR/Sources/Core/MSPSharedLibraries"
-            if [[ -d "$source_path" ]]; then
-                mkdir -p "$temp_zip_dir/Sources/Core"
-                cp -R "$source_path" "$temp_zip_dir/Sources/Core/MSPSharedLibraries"
-                log_info "Included source files in zip: Sources/Core/MSPSharedLibraries/"
-            else
-                log_warning "Source path not found: $source_path (hybrid mode may not work)"
-            fi
-    fi
-
-    # Create zip file
-        (cd "$temp_zip_dir" && zip -r "$ROOT_DIR/$zip_name" . >/dev/null 2>&1)
-        rm -rf "$temp_zip_dir"
-        
-        if [[ ! -f "$ROOT_DIR/$zip_name" ]]; then
-            log_error "Failed to create zip file: $zip_name"
+        if [[ ! -f "$local_zip_path" ]]; then
+            log_error "Zip file was not created: $local_zip_path"
             return 1
         fi
         
-        log_info "Created zip file: $zip_name"
+        log_info "Created zip file: $local_zip_path"
         
     # Phase B: Create/verify GitHub Release and upload zip using unified functions
     local gh_release_created=false
@@ -1803,7 +1764,7 @@ create_github_release_for_pod() {
     fi
 
     # Step 2: Upload zip using unified function
-    if ! upload_zip_to_github "$version" "$ROOT_DIR/$zip_name"; then
+    if ! upload_zip_to_github "$version" "$local_zip_path"; then
         log_error "Failed to upload zip to GitHub Release"
         return 1
     fi
@@ -2314,21 +2275,21 @@ create_zip_from_xcframework() {
             # - NovaCore is not built by our build system (proprietary/third-party)
             # - Unlike other adapters that use Build/XCFrameworks/
             # ========================================================================
-            if [[ "$pod" == "NovaAdapter" ]]; then
-                log_info "NovaAdapter: Binary adapter with embedded NovaCore dependency"
+            if [[ "$pod" == "MSPNovaAdapter" ]]; then
+                log_info "MSPNovaAdapter: Binary adapter with embedded NovaCore dependency"
 
-                # Copy MSPNovaAdapter.xcframework (NovaAdapter自身的代码)
-                local novaadapter_path="$ROOT_DIR/Build/XCFrameworks/NovaAdapter.xcframework"
+                # Copy MSPNovaAdapter.xcframework (MSPNovaAdapter自身的代码)
+                local novaadapter_path="$ROOT_DIR/Build/XCFrameworks/MSPNovaAdapter.xcframework"
 
                 if [[ ! -d "$novaadapter_path" ]]; then
                     log_error "❌ MSPNovaAdapter.xcframework not found: $novaadapter_path"
-                    log_error "NovaAdapter.xcframework must be built before release"
+                    log_error "MSPNovaAdapter.xcframework must be built before release"
                     log_error "Run: ./Scripts/xcframeworks/build_module.sh MSPNovaAdapter"
                     rm -rf "$temp_zip_dir"
                     return 1
                 fi
 
-                if ! ditto "$novaadapter_path" "$temp_zip_dir/Binary/NovaAdapter.xcframework"; then
+                if ! ditto "$novaadapter_path" "$temp_zip_dir/Binary/MSPNovaAdapter.xcframework"; then
                     log_error "❌ Failed to copy MSPNovaAdapter.xcframework"
                     rm -rf "$temp_zip_dir"
                     return 1
@@ -2340,7 +2301,7 @@ create_zip_from_xcframework() {
 
                 if [[ ! -d "$novacore_path" ]]; then
                     log_error "❌ NovaCore.xcframework not found: $novacore_path"
-                    log_error "NovaAdapter requires pre-packaged NovaCore.xcframework in Binary/"
+                    log_error "MSPNovaAdapter requires pre-packaged NovaCore.xcframework in Binary/"
                     rm -rf "$temp_zip_dir"
                     return 1
                 fi
@@ -2352,7 +2313,7 @@ create_zip_from_xcframework() {
                 fi
                 log_success "✅ Copied NovaCore.xcframework"
 
-                log_success "✅ Prepared MSPNovaAdapter structure (NovaAdapter + NovaCore)"
+                log_success "✅ Prepared MSPNovaAdapter structure (MSPNovaAdapter + NovaCore)"
 
             else
                 # Regular adapters: use Build/XCFrameworks/
@@ -2987,7 +2948,7 @@ publish_pod_with_resume() {
                 fi
                 ;;
             MSPNovaAdapter)
-                log_debug "NovaAdapter uses pre-packaged Binary/, skipping XCFramework check"
+                log_debug "MSPNovaAdapter uses pre-packaged Binary/, skipping XCFramework check"
                 ;;
             MSPiOSCore|MSPSharedLibraries|MSPCore)
                 log_debug "Core pod $pod requires pre-built XCFramework from build pipeline"
@@ -4676,7 +4637,7 @@ release_adapters() {
     
     if [[ ${#adapters[@]} -eq 0 ]]; then
         log_warn "No adapters found in PODS_MODULES. Using default adapter list for backward compatibility."
-        adapters=("MSPFacebookAdapter" "MSPGoogleAdapter" "NovaAdapter" "MSPAmazonAdapter" "MSPPrebidAdapter")
+        adapters=("MSPFacebookAdapter" "MSPGoogleAdapter" "MSPNovaAdapter" "MSPAmazonAdapter" "MSPPrebidAdapter")
     fi
     
     log_info "Releasing adapters from PODS_MODULES: ${adapters[*]}"
@@ -4694,7 +4655,7 @@ release_adapters() {
         log_info "Pre-checking $adapter requirements..."
         
         # MSPNovaAdapter: Verify Binary/NovaCore.xcframework exists and is valid
-        if [[ "$adapter" == "NovaAdapter" ]]; then
+        if [[ "$adapter" == "MSPNovaAdapter" ]]; then
             local novacore_path="$ROOT_DIR/Binary/NovaCore.xcframework"
             
             # This should never happen if Step 0 succeeded, but double-check
@@ -5352,7 +5313,7 @@ main() {
     
     if [[ ${#cocoapods_pods[@]} -eq 0 ]]; then
         log_warn "PODS_MODULES is empty. Using default pod list for backward compatibility."
-        cocoapods_pods=("MSPSharedLibraries" "MSPFacebookAdapter" "MSPGoogleAdapter" "NovaAdapter" "MSPAmazonAdapter" "MSPPrebidAdapter" "MSPCore")
+        cocoapods_pods=("MSPSharedLibraries" "MSPFacebookAdapter" "MSPGoogleAdapter" "MSPNovaAdapter" "MSPAmazonAdapter" "MSPPrebidAdapter" "MSPCore")
     fi
     
     log_info "Releasing pods from PODS_MODULES: ${cocoapods_pods[*]}"
