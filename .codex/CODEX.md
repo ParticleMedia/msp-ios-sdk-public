@@ -1,6 +1,6 @@
 # Codex CLI Operational Directives
 
-> **Version**: 1.0
+> **Version**: 1.1
 > **Last Updated**: 2026-01-14
 > **Applies To**: Codex CLI Agent
 
@@ -9,6 +9,7 @@
 ## 1. Core Imports (Mandatory Reading Order)
 
 ```
+@./instructions.md                                          # [Quick Start] Condensed skills reference
 @../constitution.md                                         # [Highest Priority] Supreme law
 @../AGENTS.md                                              # Cross-agent operational rules
 @../.agents-shared/protocols/task-tier.protocol.md         # Task classification

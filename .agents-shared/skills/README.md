@@ -44,7 +44,12 @@ A **Skill** is a documented procedure for completing a specific type of task. It
 ```
 
 ### Codex
-Read the skill file, understand the procedure, execute according to steps.
+Codex auto-loads condensed skill references from `.codex/instructions.md` on startup. For detailed procedures, read the full skill file:
+```bash
+# Skills are automatically available via instructions.md
+# For full details, reference the skill file:
+cat .agents-shared/skills/unit-test-generator.skill.md
+```
 
 ### Cursor
 ```
