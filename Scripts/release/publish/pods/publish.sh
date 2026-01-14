@@ -4099,6 +4099,214 @@ ensure_novacore_xcframework() {
     fi
 }
 
+# ============================================================================
+# Helper: Ensure Adapter Version is Committed
+# ============================================================================
+# Checks if adapter version file matches target version and commits if needed.
+# This handles the case where pod was published but version commit was interrupted.
+#
+# Args:
+#   $1: adapter name (e.g., MSPPrebidAdapter)
+#   $2: target version (e.g., 1.0.0-rc.24)
+#
+# Returns:
+#   0: Version committed successfully or no action needed
+#   1: Fatal error (e.g., directory not found)
+# ============================================================================
+ensure_adapter_version_committed() {
+    local adapter="$1"
+    local version="$2"
+
+    # Skip if in dry-run mode
+    if [[ "$DRY_RUN" == "true" ]]; then
+        return 0
+    fi
+
+    # Skip adapters that read SDK version from external sources
+    if [[ "$adapter" == "MSPGoogleAdapter" || "$adapter" == "MSPFacebookAdapter" ]]; then
+        log_info "[$adapter] Skipping version commit check (reads from external sources)"
+        return 0
+    fi
+
+    log_info "[$adapter] Checking version file state..."
+
+    # Map pod name to directory name
+    local module_dir=$(get_module_dir "$adapter")
+    local adapter_path="Sources/Adapters/${module_dir}/${module_dir}"
+    local adapter_abs_path="$ROOT_DIR/$adapter_path"
+
+    # Validate directory exists
+    if [[ ! -d "$adapter_abs_path" ]]; then
+        log_error "[$adapter] Directory not found: $adapter_abs_path"
+        return 1
+    fi
+
+    # Read current version from Swift files
+    local current_version=""
+    local version_file=""
+    while IFS= read -r -d '' swift_file; do
+        if grep -q "func getSDKVersion()" "$swift_file"; then
+            current_version=$(grep 'return "' "$swift_file" | sed 's/.*return "\([^"]*\)".*/\1/')
+            version_file="$swift_file"
+            break
+        fi
+    done < <(find "$adapter_abs_path" -name "*.swift" -type f -print0 2>/dev/null)
+
+    # Check if version file was found
+    if [[ -z "$version_file" ]]; then
+        log_warn "[$adapter] No getSDKVersion() function found, skipping version commit check"
+        return 0
+    fi
+
+    log_info "[$adapter] Current version: $current_version, Target version: $version"
+
+    # Case 1: Version mismatch - update and commit
+    if [[ "$current_version" != "$version" ]]; then
+        log_info "[$adapter] Version mismatch detected, updating to $version..."
+
+        if ! update_adapter_sdk_version "$adapter" "$version"; then
+            log_error "[$adapter] Failed to update SDK version"
+            return 1
+        fi
+
+        log_info "[$adapter] Version updated, committing changes..."
+    else
+        log_info "[$adapter] Version already correct ($version)"
+    fi
+
+    # Case 2: Check if there are uncommitted changes
+    if ! git diff --quiet -- "$adapter_abs_path" 2>/dev/null; then
+        log_info "[$adapter] Uncommitted version changes detected, committing now..."
+
+        # Change to ROOT_DIR for git operations
+        pushd "$ROOT_DIR" > /dev/null || {
+            log_error "[$adapter] Failed to change to ROOT_DIR: $ROOT_DIR"
+            return 0  # Non-fatal: pod is already published
+        }
+
+        # Find and stage Swift files
+        local swift_files_staged=0
+        while IFS= read -r -d '' swift_file; do
+            if git add "$swift_file" 2>/dev/null; then
+                ((swift_files_staged++))
+                log_debug "[$adapter] Staged: $swift_file"
+            else
+                log_warn "[$adapter] Failed to stage: $swift_file"
+            fi
+        done < <(find "$adapter_path" -name "*.swift" -type f -print0 2>/dev/null)
+
+        if [[ $swift_files_staged -gt 0 ]]; then
+            # Commit with detailed message
+            if git commit -m "chore(release): update ${adapter} SDK version to ${version}
+
+- Update getSDKVersion() return value to ${version}
+- Committed during resume/idempotency check
+- Part of release ${version} preparation"; then
+                log_success "[$adapter] ✓ Committed version update ($swift_files_staged files)"
+            else
+                log_error "[$adapter] ✗ Failed to commit version update"
+                log_warn "[$adapter] You may need to commit manually: cd $ROOT_DIR && git add ${adapter_path} && git commit"
+            fi
+        else
+            log_warn "[$adapter] No Swift files found or staged in ${adapter_path}"
+        fi
+
+        popd > /dev/null || true
+    else
+        log_info "[$adapter] Version already committed, no action needed"
+    fi
+
+    return 0
+}
+
+# ============================================================================
+# Helper: Ensure MSPCore Version is Committed
+# ============================================================================
+# Checks if MSPCore Config.plist version matches target version and commits if needed.
+# This handles the case where pod was published but version commit was interrupted.
+#
+# Args:
+#   $1: target version (e.g., 1.0.0-rc.24)
+#
+# Returns:
+#   0: Version committed successfully or no action needed
+#   1: Fatal error (e.g., Config.plist not found)
+# ============================================================================
+ensure_mspcore_version_committed() {
+    local version="$1"
+
+    # Skip if in dry-run mode
+    if [[ "$DRY_RUN" == "true" ]]; then
+        return 0
+    fi
+
+    log_info "[MSPCore] Checking Config.plist version state..."
+
+    # Locate Config.plist
+    local config_plist_rel_path="Sources/Core/MSPCore/MSPCore/Resources/Config.plist"
+    local config_plist_abs_path="$ROOT_DIR/$config_plist_rel_path"
+
+    # Validate file exists
+    if [[ ! -f "$config_plist_abs_path" ]]; then
+        log_error "[MSPCore] Config.plist not found at: $config_plist_abs_path"
+        return 1
+    fi
+
+    # Read current version from Config.plist
+    local current_version=""
+    current_version=$(grep -A1 "SDKVersion" "$config_plist_abs_path" | grep "<string>" | sed 's/.*<string>\(.*\)<\/string>.*/\1/')
+
+    log_info "[MSPCore] Current version: $current_version, Target version: $version"
+
+    # Case 1: Version mismatch - update and commit
+    if [[ "$current_version" != "$version" ]]; then
+        log_info "[MSPCore] Version mismatch detected, updating to $version..."
+
+        if ! update_config_plist_version "$version"; then
+            log_error "[MSPCore] Failed to update Config.plist version"
+            return 1
+        fi
+
+        log_info "[MSPCore] Config.plist updated, committing changes..."
+    else
+        log_info "[MSPCore] Version already correct ($version)"
+    fi
+
+    # Case 2: Check if there are uncommitted changes
+    if ! git diff --quiet -- "$config_plist_abs_path" 2>/dev/null; then
+        log_info "[MSPCore] Uncommitted Config.plist changes detected, committing now..."
+
+        # Change to ROOT_DIR for git operations
+        pushd "$ROOT_DIR" > /dev/null || {
+            log_error "[MSPCore] Failed to change to ROOT_DIR: $ROOT_DIR"
+            return 0  # Non-fatal: pod is already published
+        }
+
+        # Stage Config.plist
+        if git add "$config_plist_rel_path"; then
+            # Commit with detailed message
+            if git commit -m "chore(release): update MSPCore version to ${version}
+
+- Update Config.plist SDKVersion to ${version}
+- Committed during resume/idempotency check
+- Part of release ${version} preparation"; then
+                log_success "[MSPCore] ✓ Committed version update"
+            else
+                log_error "[MSPCore] ✗ Failed to commit version update"
+                log_warn "[MSPCore] You may need to commit manually: cd $ROOT_DIR && git add $config_plist_rel_path && git commit"
+            fi
+        else
+            log_error "[MSPCore] Failed to stage $config_plist_rel_path"
+        fi
+
+        popd > /dev/null || true
+    else
+        log_info "[MSPCore] Version already committed, no action needed"
+    fi
+
+    return 0
+}
+
 release_single_adapter() {
     local adapter="$1"
     local version="$2"
@@ -4141,6 +4349,17 @@ release_single_adapter() {
                         return 1
                     fi
                 fi
+            fi
+
+            # ✨ NEW: Ensure version file is committed (handles interrupted commits)
+            # - Checks if version file matches target version
+            # - Commits if version is correct but uncommitted
+            # - Updates and commits if version is incorrect
+            if ! ensure_adapter_version_committed "$adapter" "$version"; then
+                log_error "Failed to ensure $adapter version is committed"
+                # Don't fail the release - pod is already published
+                # Just log warning and continue
+                log_warn "Continuing despite version commit issue (pod already published)"
             fi
 
             log_success "$adapter $version already available and verified"
@@ -4983,6 +5202,17 @@ release_msp_core() {
                     log_error "Failed to verify/fix GitHub Release zip for MSPCore"
                     return 1
                 fi
+            fi
+
+            # ✨ NEW: Ensure Config.plist version is committed (handles interrupted commits)
+            # - Checks if Config.plist version matches target version
+            # - Commits if version is correct but uncommitted
+            # - Updates and commits if version is incorrect
+            if ! ensure_mspcore_version_committed "$VERSION"; then
+                log_error "Failed to ensure MSPCore version is committed"
+                # Don't fail the release - pod is already published
+                # Just log warning and continue
+                log_warn "Continuing despite version commit issue (pod already published)"
             fi
 
             log_success "MSPCore $VERSION already available and verified"
