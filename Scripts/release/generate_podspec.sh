@@ -630,28 +630,33 @@ if is_binary_distribution "$POD_NAME"; then
                 
                 # Check if dependency is already declared
                 if ! grep -q "spec\\.dependency.*['\"]${import_module}['\"]" "$OUTPUT_PODSPEC" 2>/dev/null; then
-                    log_warn "Missing dependency detected in swiftinterface: $import_module"
-                    
-                    # Add dependency based on module name
                     case "$import_module" in
                         PrebidMobile)
                             prebidmobile_version="$(get_prebidmobile_version)"
                             if [[ -z "$prebidmobile_version" ]]; then
                                 prebidmobile_version="2.0.4"
-                                log_warn "PrebidMobile version not found; defaulting to $prebidmobile_version"
+                                log_warn "PrebidMobile version not found; defaulting to $prebidmobile_version (vendored)"
                             fi
-                            log_info "Adding PrebidMobile dependency (required by swiftinterface): $prebidmobile_version"
-                            echo "  spec.dependency 'PrebidMobile', '${prebidmobile_version}'" >> "$OUTPUT_PODSPEC"
+
+                            if grep -q "spec\\.dependency.*['\"]MSPSharedLibraries['\"]" "$OUTPUT_PODSPEC" 2>/dev/null || [[ "$POD_NAME" == "MSPSharedLibraries" ]]; then
+                                log_info "PrebidMobile import satisfied by vendored XCFramework via MSPSharedLibraries (version: $prebidmobile_version); skipping pod dependency to avoid duplicate embed"
+                            else
+                                log_warn "PrebidMobile import detected but MSPSharedLibraries dependency missing; expected vendored PrebidMobile.xcframework to supply the module"
+                                log_warn "Please add MSPSharedLibraries as the dependency instead of a direct PrebidMobile pod"
+                            fi
                             ;;
                         SnapKit)
+                            log_warn "Missing dependency detected in swiftinterface: $import_module"
                             log_info "Adding SnapKit dependency (required by swiftinterface)"
                             echo "  spec.dependency 'SnapKit'" >> "$OUTPUT_PODSPEC"
                             ;;
                         Kingfisher)
+                            log_warn "Missing dependency detected in swiftinterface: $import_module"
                             log_info "Adding Kingfisher dependency (required by swiftinterface)"
                             echo "  spec.dependency 'Kingfisher', '~> 7.0'" >> "$OUTPUT_PODSPEC"
                             ;;
                         *)
+                            log_warn "Missing dependency detected in swiftinterface: $import_module"
                             log_warn "Unknown import module: $import_module (may need manual dependency addition)"
                             ;;
                     esac
