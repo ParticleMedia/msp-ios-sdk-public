@@ -673,7 +673,8 @@ spm_local_validation() {
     fi
     
     cleanup_temp_dir() {
-        if [[ "$cleanup_on_exit" == "true" ]]; then
+        local cleanup_flag="${cleanup_on_exit:-true}"
+        if [[ "$cleanup_flag" == "true" ]]; then
             log_step "Cleaning up temporary directory"
             rm -rf "$SPM_LOCAL_TMPDIR" 2>/dev/null || true
         fi
@@ -724,6 +725,9 @@ import PackageDescription
 
 let package = Package(
     name: "MSP_SPMLocalTest",
+    platforms: [
+        .macOS(.v10_15)
+    ],
     dependencies: [
         .package(path: "$repo_abs_path")
     ],
