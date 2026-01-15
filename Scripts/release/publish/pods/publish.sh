@@ -1752,23 +1752,44 @@ create_github_release_for_pod() {
             mode_label="production"
         fi
         log_info "[$mode_label] Creating GitHub release and uploading binary zip (HTTP distribution)"
-        
-        # Use unified create_zip_from_xcframework function to handle all pod types correctly
-        # This function handles special cases like MSPNovaAdapter, MSPSharedLibraries, etc.
-        if ! create_zip_from_xcframework "$pod" "$version"; then
-            log_error "Failed to create zip file from XCFramework"
-            return 1
-        fi
-        
+
         local zip_name="${pod}-${version}.zip"
         local local_zip_path="$ROOT_DIR/Build/Zips/$zip_name"
-        
+
+        # ════════════════════════════════════════════════════════════════════════════
+        # OPTIMIZATION: Skip zip creation if valid local zip already exists
+        # ════════════════════════════════════════════════════════════════════════════
+        # This avoids redundant zip creation when ensure_zip_file_exists_for_pod()
+        # has already created/verified the zip. Combined with deterministic zip (C),
+        # this ensures consistent checksums and faster execution.
+        # ════════════════════════════════════════════════════════════════════════════
+        if [[ -f "$local_zip_path" ]]; then
+            local zip_size
+            zip_size=$(stat -f%z "$local_zip_path" 2>/dev/null || stat -c%s "$local_zip_path" 2>/dev/null || echo "0")
+            if [[ $zip_size -gt 0 ]]; then
+                log_info "✅ Using existing zip file: $local_zip_path (size: $zip_size bytes)"
+                log_info "   Skipping redundant zip creation (optimization B)"
+            else
+                log_warning "Local zip exists but is empty, recreating..."
+                if ! create_zip_from_xcframework "$pod" "$version"; then
+                    log_error "Failed to create zip file from XCFramework"
+                    return 1
+                fi
+            fi
+        else
+            # Use unified create_zip_from_xcframework function to handle all pod types correctly
+            # This function handles special cases like MSPNovaAdapter, MSPSharedLibraries, etc.
+            if ! create_zip_from_xcframework "$pod" "$version"; then
+                log_error "Failed to create zip file from XCFramework"
+                return 1
+            fi
+            log_info "Created zip file: $local_zip_path"
+        fi
+
         if [[ ! -f "$local_zip_path" ]]; then
-            log_error "Zip file was not created: $local_zip_path"
+            log_error "Zip file not found after creation: $local_zip_path"
             return 1
         fi
-        
-        log_info "Created zip file: $local_zip_path"
         
     # Phase B: Create/verify GitHub Release and upload zip using unified functions
     local gh_release_created=false
@@ -2395,8 +2416,20 @@ create_zip_from_xcframework() {
 
     (
         cd "$temp_zip_dir" || exit 1
+
+        # ════════════════════════════════════════════════════════════════════════════
+        # DETERMINISTIC ZIP: Normalize timestamps for reproducible checksums
+        # ════════════════════════════════════════════════════════════════════════════
+        # Problem: zip includes file timestamps in archive, causing different checksums
+        #          even for identical content (non-deterministic behavior)
+        # Solution: Set all file timestamps to a fixed epoch before creating zip
+        # Reference: https://reproducible-builds.org/docs/archives/
+        # ════════════════════════════════════════════════════════════════════════════
+        find . -exec touch -t 202001010000.00 {} \; 2>/dev/null
+
         # Exclude common problematic files
-        if zip -r "$zip_name" . \
+        # -X: exclude extra file attributes (uid/gid, extended attributes)
+        if zip -X -r "$zip_name" . \
             -x '*.DS_Store' \
             -x '__MACOSX/*' \
             >/dev/null 2>"$zip_error_output"; then
