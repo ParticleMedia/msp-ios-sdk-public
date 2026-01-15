@@ -16,8 +16,7 @@ class NovaInterstitialAdSubviewHandlerCreator {
     static func create(
         interstitialAd: NovaInterstitialAdItem,
         delegate: NovaInterstitialAdSubviewBehaviorDelegate,
-        viewController: UIViewController?,
-        pageIndex: Int? = nil
+        viewController: UIViewController?
     ) -> NovaInterstitialAdSubviewHandler {
         // Prefer playable variants when creativeType indicates playable
         switch interstitialAd.layoutTypeInInterstitial {
@@ -52,12 +51,12 @@ class NovaInterstitialAdSubviewHandlerCreator {
                 thirdPartyTrackingURL: thirdPartyTrackingURL
             )
             
-        case .html:
-            return NovaInterstitialAdHtmlSubviewHandler(
+        case let .html(model):
+            return NovaInterstitialAdPageSubviewHandler(
                 interstitialAd: interstitialAd,
                 delegate: delegate,
                 viewController: viewController,
-                pageIndex: pageIndex
+                htmlMediaModel: model
             )
         }
 

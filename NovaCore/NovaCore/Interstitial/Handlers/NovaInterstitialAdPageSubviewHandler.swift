@@ -1,5 +1,5 @@
 //
-//  NovaInterstitialAdH5SubviewHandler.swift
+//  NovaInterstitialAdPageSubviewHandler.swift
 //  NovaCore
 //
 //  Created by Huanzhi Zhang on 10/29/25.
@@ -9,7 +9,7 @@ import UIKit
 import WebKit
 @_implementationOnly import SnapKit
 
-class NovaInterstitialAdHtmlSubviewHandler: NovaInterstitialAdSubviewHandler, NovaTopRightClosable {
+class NovaInterstitialAdPageSubviewHandler: NovaInterstitialAdSubviewHandler, NovaTopRightClosable {
     var darkColor: UIColor { NovaColorPalettes.Gray.tint200 }
     
     enum LayoutMetrics {
@@ -25,14 +25,15 @@ class NovaInterstitialAdHtmlSubviewHandler: NovaInterstitialAdSubviewHandler, No
     private let interstitialAd: NovaInterstitialAdItem
     private weak var delegate: NovaInterstitialAdSubviewBehaviorDelegate?
     private weak var viewController: UIViewController?
-    private weak var parentView: UIView?
+    private weak var containerView: UIView?
     var countdownTimer: Timer?
     var countdownSecondRemaining: Int
     var delayTimer: Timer?
     var delaySecondRemaining: Int?
-    var pageIndex: Int?
     var useCustomClose: Bool
-    
+    private var htmlMediaModel: NovaAdHtmlMediaModel
+    private var showReportButton: Bool = false
+
     var clickableViews = [UIView]()
     
     private(set) lazy var topRightCloseButton: UIButton = {
@@ -62,69 +63,33 @@ class NovaInterstitialAdHtmlSubviewHandler: NovaInterstitialAdSubviewHandler, No
     private var htmlView: NovaAdHtmlView?
     
     init(
-       interstitialAd: NovaInterstitialAdItem,
-       delegate: NovaInterstitialAdSubviewBehaviorDelegate,
-       viewController: UIViewController?,
-       pageIndex: Int?
+        interstitialAd: NovaInterstitialAdItem,
+        delegate: NovaInterstitialAdSubviewBehaviorDelegate,
+        viewController: UIViewController?,
+        htmlMediaModel: NovaAdHtmlMediaModel
     ) {
         self.interstitialAd = interstitialAd
         self.delegate = delegate
         self.viewController = viewController
-        self.pageIndex = pageIndex
-        if case .html = interstitialAd.creativeType,
-           let model = interstitialAd.htmlModel,
-           let pageIndex = pageIndex,
-           pageIndex >= 0 && pageIndex < model.pages.count {
-            self.countdownSecondRemaining = model.pages[pageIndex].closeCountDownSeconds ?? 0
-            self.delaySecondRemaining = model.pages[pageIndex].closeDelaySeconds ?? 0
-            self.useCustomClose = model.pages[pageIndex].useCustomClose
-        } else {
-            self.countdownSecondRemaining = interstitialAd.closeCountDownTimeSeconds ?? 0
-            self.delaySecondRemaining = 0
-            self.useCustomClose = false
-        }
+        self.htmlMediaModel = htmlMediaModel
+        self.countdownSecondRemaining = htmlMediaModel.currentPage.closeCountDownSeconds ?? 0
+        self.delaySecondRemaining = htmlMediaModel.currentPage.closeDelaySeconds
+        self.useCustomClose = htmlMediaModel.currentPage.useCustomClose
     }
     
     func setupSubviews(in containerView: UIView, showReportButton: Bool) {
-        self.parentView = containerView
-        let htmlView = NovaAdHtmlView(supportReportHandling: showReportButton)
-        self.htmlView = htmlView
-        containerView.addSubview(htmlView)
-
-        htmlView.snp.makeConstraints { make in
-            make.edges.equalToSuperview()
-        }
-        
-        if !useCustomClose {
-            // use native close button
-            containerView.addSubview(topRightCloseButton)
-            topRightCloseButton.snp.makeConstraints { make in
-                make.top.equalToSuperview().offset(64)
-                make.trailing.equalToSuperview().offset(-16)
-                make.height.equalTo(32)
-                make.width.greaterThanOrEqualTo(32)
-            }
-            
-            setupDelayTimerIfNeeded()
-        }
+        self.containerView = containerView
+        self.showReportButton = showReportButton
+        ensureHtmlView(in: containerView, showReportButton: showReportButton)
+        setupTopRightClose()
     }
     
     func config() {
-        
-    }
-    
-    func configPage(pageIndex: Int, htmlActionDelegate: NovaAdHtmlActionDelegate?, context: NovaInterstitialAdContext?) {
-        if let htmlModel = interstitialAd.htmlModel,
-           pageIndex >= 0 && pageIndex < htmlModel.pages.count {
-            htmlView?.config(with: htmlModel.pages[pageIndex], htmlActionDelegate: htmlActionDelegate, context: context)
-        }
+        renderCurrentPage()
     }
     
     @objc private func didTapCloseButton() {
-        htmlView?.removeFromSuperview()
-        htmlView?.pauseAllMediaPlayback()
-        htmlView = nil
-        delegate?.didTapSkipButton()
+        showNextPageIfNeededOrClose()
     }
     
     func didAppear() {
@@ -138,11 +103,7 @@ class NovaInterstitialAdHtmlSubviewHandler: NovaInterstitialAdSubviewHandler, No
     func enableTopRightCloseButton(button: UIButton, clickableArea: UIView) {
         topRightCloseButton.isUserInteractionEnabled = true
         topRightCloseButton.isHidden = false
-        if case .html = self.interstitialAd.creativeType,
-           let model = self.interstitialAd.htmlModel,
-           let pageIndex = pageIndex,
-           pageIndex >= 0 && pageIndex < model.pages.count - 1 {
-            // not the last page
+        if htmlMediaModel.hasNextPage {
             configTopRightButtonForSkip()
         } else {
             configTopRightButtonForClose()
@@ -156,7 +117,6 @@ class NovaInterstitialAdHtmlSubviewHandler: NovaInterstitialAdSubviewHandler, No
         var config = UIButton.Configuration.plain()
         config.baseForegroundColor = .white       // text + chevron should be white since bg is translucent
         config.attributedTitle = AttributedString("SKIP")
-        let font = UIFont.systemFont(ofSize: 14, weight: .medium)
         config.image = UIImage(systemName: "chevron.right")
         config.imagePlacement = .trailing
         config.imagePadding = 4
@@ -187,5 +147,98 @@ class NovaInterstitialAdHtmlSubviewHandler: NovaInterstitialAdSubviewHandler, No
 
         topRightCloseButton.configuration = config
 
+    }
+}
+
+extension NovaInterstitialAdPageSubviewHandler: NovaAdHtmlActionDelegate {
+    func didTapAdCtr(customUrl: URL?, clickArea: ClickableAdArea) {
+        delegate?.didTapCustomAdView(customUrl: customUrl, clickArea: clickArea)
+    }
+
+    func didTapAdReport() {
+        delegate?.didTapFeedbackButton()
+    }
+
+    func didTapAdClose() {
+        showNextPageIfNeededOrClose()
+    }
+
+    func didFailToLoadPage() {
+        showNextPageIfNeededOrClose()
+    }
+}
+
+private extension NovaInterstitialAdPageSubviewHandler {
+    func configurePage() {
+        htmlView?
+            .config(
+                with: htmlMediaModel.currentPage,
+                htmlActionDelegate: self,
+                tracingInfo: .init(adUnitId: interstitialAd.adUnitId, encryptedToken: interstitialAd.encryptedAdToken)
+            )
+    }
+
+    func showNextPageIfNeededOrClose() {
+        do {
+            try htmlMediaModel.toNextPage()
+            renderCurrentPage()
+        } catch {
+            delegate?.didTapCloseButton()
+        }
+    }
+
+    func ensureHtmlView(in containerView: UIView, showReportButton: Bool) {
+        guard htmlView == nil else { return }
+        let view = NovaAdHtmlView(supportReportHandling: showReportButton)
+        htmlView = view
+        containerView.addSubview(view)
+
+        view.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
+        }
+    }
+
+    func setupTopRightClose() {
+        resetTimers()
+
+        countdownSecondRemaining = htmlMediaModel.currentPage.closeCountDownSeconds ?? 0
+        delaySecondRemaining = htmlMediaModel.currentPage.closeDelaySeconds
+        useCustomClose = htmlMediaModel.currentPage.useCustomClose
+
+        if useCustomClose {
+            topRightCloseButton.isHidden = true
+            topRightCloseButton.isUserInteractionEnabled = false
+            topRightCloseButton.removeFromSuperview()
+        } else if let containerView {
+            if topRightCloseButton.superview == nil {
+                containerView.addSubview(topRightCloseButton)
+                topRightCloseButton.snp.makeConstraints { make in
+                    make.top.equalToSuperview().offset(64)
+                    make.trailing.equalToSuperview().offset(-16)
+                    make.height.equalTo(32)
+                    make.width.greaterThanOrEqualTo(32)
+                }
+            }
+            setupDelayTimerIfNeeded()
+        }
+    }
+
+    func resetTimers() {
+        countdownTimer?.invalidate()
+        countdownTimer = nil
+        delayTimer?.invalidate()
+        delayTimer = nil
+    }
+
+    func renderCurrentPage() {
+        guard let containerView else {
+            delegate?.didTapCloseButton()
+            return
+        }
+        ensureHtmlView(in: containerView, showReportButton: showReportButton)
+        htmlView?.pauseAllMediaPlayback()
+        setupTopRightClose()
+        configurePage()
+        containerView.bringSubviewToFront(topRightCloseButton)
     }
 }

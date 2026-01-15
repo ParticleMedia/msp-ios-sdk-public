@@ -16,7 +16,6 @@ struct NovaInterstitialAdContext {
         self.interstitialAd = interstitialAd
         self.layout = layout
         self.tracingId = tracingId
-        self.pageIndex = pageIndex
     }
 
     // MARK: Internal
@@ -24,7 +23,6 @@ struct NovaInterstitialAdContext {
     let interstitialAd: NovaInterstitialAdItem
     let layout: NovaInterstitialAdLayout
     let tracingId: UUID?
-    let pageIndex: Int? // the current page index for multi page ads
 }
 
 // MARK: - NovaInterstitialAdLayoutType
@@ -35,7 +33,7 @@ enum NovaInterstitialAdLayoutType {
     case playable
     case twoPartPlayable
     case skOverlay(appStoreId: Int, thirdPartyTrackingURL: URL)
-    case html
+    case html(model: NovaAdHtmlMediaModel)
 }
 
 extension NovaInterstitialAdItem {
@@ -71,8 +69,8 @@ extension NovaInterstitialAdItem {
                 DebugLogger.ui.error("missing interstitial layout: \(self.adId)")
                 return .horizontal(showTopRightCancelButton: false)
             }
-        case .html:
-            return .html
+        case let .html(model):
+            return .html(model: model)
         }
     }
 }
