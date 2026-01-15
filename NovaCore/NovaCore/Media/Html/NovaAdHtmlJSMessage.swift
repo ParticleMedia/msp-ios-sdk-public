@@ -19,8 +19,8 @@ enum NovaAdHtmlJSMessage: String, CaseIterable {
 
 protocol NovaAdHtmlActionDelegate: AnyObject {
     
-    func didTapAdCtr(customUrl: URL?, clickArea: String?)
-    
+    func didTapAdCtr(customUrl: URL?, clickArea: ClickableAdArea)
+
     func didTapAdReport()
     
     func didTapAdClose()

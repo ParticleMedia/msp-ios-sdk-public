@@ -20,7 +20,6 @@ protocol NovaInterstitialAdSubviewHandler {
     func didDisappear()
     func willAppear()
     func willDisappear()
-    func configPage(pageIndex: Int, htmlActionDelegate: NovaAdHtmlActionDelegate?, context: NovaInterstitialAdContext?)
 }
 
 // MARK: - Default Implementation
@@ -30,5 +29,4 @@ extension NovaInterstitialAdSubviewHandler {
     func didDisappear() {}
     func willAppear() {}
     func willDisappear() {}
-    func configPage(pageIndex: Int, htmlActionDelegate: NovaAdHtmlActionDelegate?, context: NovaInterstitialAdContext?) {}
 }

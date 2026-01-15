@@ -117,21 +117,6 @@ class NovaInterstitialAdNormalView: UIView, NovaInterstitialAdViewProtocol {
     
     internal weak var viewController: UIViewController?
     internal var subviewHandler: NovaInterstitialAdSubviewHandler!
-    
-    // MARK: - NovaInterstitialAdSubviewBehaviorDelegate
-    
-    func didTapSkipButton() {
-        // Default empty implementation - subclasses can override
-    }
-    
-    func didFailToLoad() {
-        DispatchQueue.main.async {
-            self.actionHelper = self.actionHelper
-                .logNovaSkipEvent(with: .error, duration: CACurrentMediaTime() - self.startTime)
-                .handleCloseTap()
-        }
-        context.interstitialAd.delegate?.interstitialAdDidDismiss(context.interstitialAd)
-    }
 }
 
 extension NovaInterstitialAdNormalView: NovaInterstitialAdSubviewBehaviorDelegate {
@@ -170,8 +155,8 @@ extension NovaInterstitialAdNormalView: NovaInterstitialAdSubviewBehaviorDelegat
             .handleAdTap(in: nil)
     }
 
-    func didTapCustomAdView(clickArea: ClickableAdArea) {
-        handleAdTap(clickArea: clickArea, view: nil, customUrl: nil)
+    func didTapCustomAdView(customUrl: URL?, clickArea: ClickableAdArea) {
+        handleAdTap(clickArea: clickArea, view: nil, customUrl: customUrl)
     }
 }
 
