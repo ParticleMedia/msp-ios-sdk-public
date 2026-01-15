@@ -3,6 +3,6 @@
 <plist version="1.0">
 <dict>
 	<key>SDKVersion</key>
-	<string>0.2.1-migration</string>
+	<string>1.0.0-rc.27</string>
 </dict>
 </plist>
