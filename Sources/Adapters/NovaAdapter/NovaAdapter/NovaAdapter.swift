@@ -9,7 +9,7 @@ import UIKit
 
 public class NovaAdapter: AdNetworkAdapter {
     public func getSDKVersion() -> String {
-        return "0.0.112"
+        return "1.0.0-rc.25"
     }
     
     public func setAdMetricReporter(adMetricReporter: any MSPiOSCore.AdMetricReporter) {
