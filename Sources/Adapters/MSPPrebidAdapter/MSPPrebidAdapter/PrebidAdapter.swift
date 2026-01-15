@@ -6,7 +6,7 @@ import UIKit
 
 @objc public class PrebidAdapter : NSObject, AdNetworkAdapter {
     public func getSDKVersion() -> String {
-        return ""
+        return "1.0.0-rc.27"
     }
     
     public func getAdNetwork() -> MSPiOSCore.AdNetwork {
