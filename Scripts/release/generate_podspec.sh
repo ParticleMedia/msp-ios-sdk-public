@@ -635,7 +635,6 @@ if is_binary_distribution "$POD_NAME"; then
                     # Add dependency based on module name
                     case "$import_module" in
                         PrebidMobile)
-                            local prebidmobile_version
                             prebidmobile_version="$(get_prebidmobile_version)"
                             if [[ -z "$prebidmobile_version" ]]; then
                                 prebidmobile_version="2.0.4"
