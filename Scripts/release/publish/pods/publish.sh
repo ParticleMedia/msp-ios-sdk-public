@@ -2016,31 +2016,45 @@ RUBY_SCRIPT
                         log_warning "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
                         log_warning "GitHub Release checksum does NOT match local zip!"
                         log_warning ""
-                        log_warning "Local zip checksum:      $local_checksum  ← SOURCE OF TRUTH"
-                        log_warning "GitHub Release checksum: $zip_checksum  ← CDN may be serving old version"
+                        log_warning "Local zip checksum:      $local_checksum"
+                        log_warning "GitHub Release checksum: $zip_checksum  ← CORRECT (just uploaded)"
                         log_warning ""
                         log_warning "Root Cause Analysis:"
-                        log_warning "  - CDN propagation takes 2-10 minutes for large files"
-                        log_warning "  - GitHub Release was updated, but CDN still serves old version"
-                        log_warning "  - This is expected behavior for large files (>15MB)"
+                        log_warning "  - Local zip file may be stale or modified"
+                        log_warning "  - GitHub Release zip is the source of truth (just uploaded)"
+                        log_warning "  - Podspec MUST match GitHub Release checksum for validation"
                         log_warning ""
                         log_warning "Action Taken:"
-                        log_warning "  ✅ Keeping podspec with LOCAL ZIP checksum (correct)"
-                        log_warning "  ❌ NOT overwriting with GitHub Release checksum (old)"
+                        log_warning "  ✅ Updating podspec with GitHub Release checksum (correct)"
+                        log_warning "  ✅ Updating local zip to match GitHub Release"
                         log_warning ""
-                        log_warning "Expected Outcome:"
-                        log_warning "  - Podspec has correct checksum: $local_checksum"
-                        log_warning "  - CocoaPods validation will succeed once CDN catches up (2-10 min)"
-                        log_warning "  - Safe to continue with release (pod trunk push will wait for CDN)"
-                        log_warning ""
-                        log_warning "If CocoaPods validation fails immediately:"
-                        log_warning "  1. This is temporary - CDN is still propagating"
-                        log_warning "  2. Wait 5-10 minutes and Resume will succeed"
-                        log_warning "  3. Manual verification: curl -I $zip_url"
-                        log_warning "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+                        
+                        # Update podspec with GitHub Release checksum (source of truth)
+                        ruby <<RUBY_SCRIPT
+podspec_path = '$podspec'
+zip_url = '$zip_url'
+zip_checksum = '$zip_checksum'
+
+podspec_content = File.read(podspec_path)
+# Replace the source block with checksum included
+new_source = "  spec.source = {\n    :http => \"#{zip_url}\",\n    :type => \"zip\",\n    :sha256 => \"#{zip_checksum}\"\n  }"
+podspec_content.gsub!(/  spec\.source = \{.*?\n  \}/m, new_source)
+File.write(podspec_path, podspec_content)
+RUBY_SCRIPT
+                        log_success "✅ Updated podspec with GitHub Release checksum: $zip_checksum"
+                        
+                        # Update local zip to match GitHub Release (for consistency)
+                        log_info "Updating local zip to match GitHub Release..."
+                        local local_zip="$ROOT_DIR/Build/Zips/${pod}-${version}.zip"
+                        if curl -L -f -s -o "$local_zip" "$zip_url" 2>/dev/null; then
+                            log_success "✅ Updated local zip to match GitHub Release"
+                        else
+                            log_warning "⚠️  Failed to update local zip (non-critical)"
+                        fi
+                        
                         log_info ""
-                        log_info "Podspec will retain checksum from generate_podspec.sh (local zip)"
-                        log_info "This is the CORRECT behavior - local zip is source of truth"
+                        log_info "Podspec now has correct checksum matching GitHub Release"
+                        log_info "This ensures CocoaPods validation will succeed"
                     fi
                 else
                     log_warning "Unable to calculate local zip checksum for verification"
