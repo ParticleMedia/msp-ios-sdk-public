@@ -53,6 +53,8 @@ enum ClickableAdArea: String {
     case auto_jump
     // immersive popover
     case cta_popover
+    // html ad
+    case html
 }
 
 extension UIView {

@@ -192,8 +192,6 @@ class NovaInterstitialAdViewController: UIViewController {
 
     private var adView: NovaInterstitialAdViewProtocol?
     
-    private var pageIndex = 0
-    
     override var prefersStatusBarHidden: Bool {
         if case .html = self.interstitialAd.creativeType {
             return true
@@ -209,9 +207,7 @@ private extension NovaInterstitialAdViewController {
         let adView = NovaInterstitialAdViewFactory.createAdView(
             interstitialAd: interstitialAd,
             viewController: self,
-            reportHandling: reportHandling,
-            pageIndex: pageIndex,
-            pageDelegate: self
+            reportHandling: reportHandling
         )
 
         // Add the view to the view hierarchy
@@ -221,51 +217,5 @@ private extension NovaInterstitialAdViewController {
         }
 
         self.adView = adView
-        
-        if case .html = self.interstitialAd.creativeType {
-            pageIndex += 1
-        }
     }
-}
-
-extension NovaInterstitialAdViewController: NovaInterstitialMultiPageDelegate {
-    
-    func novaInterstitialDidSkipPage() {
-        if case .html = self.interstitialAd.creativeType,
-           let model = self.interstitialAd.htmlModel,
-           pageIndex < model.pages.count {
-            self.showNextPage()
-        } else {
-            (self.adView as? NovaInterstitialAdNormalView)?.didTapCloseButton()
-        }
-    }
-    
-    func novaInterstitialDidDismissAd() {
-        
-    }
-    
-    func showNextPage() {
-        if let currentView = self.adView {
-            currentView.removeFromSuperview()
-        }
-        
-        let adView = NovaInterstitialAdViewFactory.createAdView(
-            interstitialAd: interstitialAd,
-            viewController: self,
-            reportHandling: reportHandling,
-            pageIndex: pageIndex,
-            pageDelegate: self
-        )
-        
-        // Add the view to the view hierarchy
-        view.addSubview(adView)
-        adView.snp.makeConstraints { make in
-            make.edges.equalToSuperview()
-        }
-        
-        self.adView = adView
-        
-        pageIndex += 1
-    }
-    
 }

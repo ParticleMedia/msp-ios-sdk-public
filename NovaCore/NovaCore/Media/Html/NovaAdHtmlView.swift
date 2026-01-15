@@ -8,10 +8,15 @@ import WebKit
 import UIKit
 
 class NovaAdHtmlView: WKWebView, WKScriptMessageHandler {
-    
+
+    struct TracingInfo {
+        let adUnitId: String
+        let encryptedToken: String
+    }
+
     // a view for each html page
     weak var htmlActionDelegate: NovaAdHtmlActionDelegate?
-    var novaInterstitialAdContext: NovaInterstitialAdContext?
+    var tracingInfo: TracingInfo?
     var impressionTimeInMs: Int?
     
     var useCustomUrl: Bool = false
@@ -183,15 +188,16 @@ class NovaAdHtmlView: WKWebView, WKScriptMessageHandler {
     
     private func attachAdContext() {
         
-        let dict: [String: Any] = [
+        let raw: [String: Any?] = [
             "os": UIDevice.current.systemName,
             "osv": UIDevice.current.systemVersion,
             "bundle": Bundle.main.bundleIdentifier ?? "",
             "cv": Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String,
-            "ad_unit_id": self.novaInterstitialAdContext?.interstitialAd.adUnitId,
-            "encrypted_ad_token": self.novaInterstitialAdContext?.interstitialAd.encryptedAdToken,
+            "ad_unit_id": tracingInfo?.adUnitId,
+            "encrypted_ad_token": tracingInfo?.encryptedToken,
             "impression_ts": impressionTimeInMs
         ]
+        let dict: [String: Any] = raw.compactMapValues { $0 }
         let data: Data
         do {
             data = try JSONSerialization.data(withJSONObject: dict)
@@ -210,24 +216,18 @@ class NovaAdHtmlView: WKWebView, WKScriptMessageHandler {
         self.evaluateJavaScript(js, completionHandler: nil)
     }
     
-    public func config(with model: NovaAdHtmlPageModel, htmlActionDelegate: NovaAdHtmlActionDelegate?, context: NovaInterstitialAdContext?) {
+    public func config(with model: NovaAdHtmlPageModel, htmlActionDelegate: NovaAdHtmlActionDelegate?, tracingInfo: TracingInfo) {
         self.htmlActionDelegate = htmlActionDelegate
-        self.novaInterstitialAdContext = context
+        self.tracingInfo = tracingInfo
         let resource = model.resource
         self.useCustomUrl = model.useClickUrl
         self.useCustomClose = model.useCustomClose
         resetMraidState()
-        if let htmlString = resource.htmlString, !htmlString.isEmpty {
-            if let urlString = resource.url, let baseURL = URL(string: urlString) {
-                self.loadHTMLString(htmlString, baseURL: baseURL)
-            } else {
-                self.loadHTMLString(htmlString, baseURL: nil)
-            }
-        } else if let urlString = resource.url, let url = URL(string: urlString) {
-            let request = URLRequest(url: url)
-            self.load(request)
-        } else {
-            htmlActionDelegate?.didFailToLoadPage()
+        switch resource {
+        case let .html(html, baseUrl):
+            loadHTMLString(html, baseURL: baseUrl)
+        case let .url(url):
+            load(URLRequest(url: url))
         }
         self.impressionTimeInMs = Int(Date().timeIntervalSince1970 * 1000)
     }
@@ -267,7 +267,7 @@ class NovaAdHtmlView: WKWebView, WKScriptMessageHandler {
 
                     htmlActionDelegate?.didTapAdCtr(
                         customUrl: customUrl,
-                        clickArea: clickAreaString
+                        clickArea: ClickableAdArea(rawValue: clickAreaString) ?? .html
                     )
                 default:
                     DebugLogger.data.debug("Unknown novaNativeBridge action: \(action, privacy: .public)")
@@ -330,7 +330,7 @@ extension NovaAdHtmlView: WKNavigationDelegate {
             return
         }
 
-        htmlActionDelegate?.didTapAdCtr(customUrl: navigationAction.request.url, clickArea: nil)
+        htmlActionDelegate?.didTapAdCtr(customUrl: navigationAction.request.url, clickArea: .html)
 
         decisionHandler(.cancel)
     }
@@ -371,9 +371,9 @@ extension NovaAdHtmlView: WKUIDelegate {
         }
         userDidClick = false
         if useCustomUrl {
-            htmlActionDelegate?.didTapAdCtr(customUrl: navigationAction.request.url, clickArea: nil)
+            htmlActionDelegate?.didTapAdCtr(customUrl: navigationAction.request.url, clickArea: .html)
         } else {
-            htmlActionDelegate?.didTapAdCtr(customUrl: nil, clickArea: nil)
+            htmlActionDelegate?.didTapAdCtr(customUrl: nil, clickArea: .html)
         }
         return nil
     }
@@ -449,7 +449,7 @@ private extension NovaAdHtmlView {
         if let urlString = params["url"] as? String {
             customUrl = URL(string: urlString)
         }
-        htmlActionDelegate?.didTapAdCtr(customUrl: customUrl, clickArea: nil)
+        htmlActionDelegate?.didTapAdCtr(customUrl: customUrl, clickArea: .html)
     }
 
     func handleMraidOpen(url: URL) {
@@ -463,7 +463,7 @@ private extension NovaAdHtmlView {
         {
             customUrl = URL(string: urlString)
         }
-        htmlActionDelegate?.didTapAdCtr(customUrl: customUrl, clickArea: nil)
+        htmlActionDelegate?.didTapAdCtr(customUrl: customUrl, clickArea: .html)
     }
 
     func initializeMraidState(in webView: WKWebView) {

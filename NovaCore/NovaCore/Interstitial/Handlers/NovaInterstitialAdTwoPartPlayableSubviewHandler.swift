@@ -449,7 +449,7 @@ class NovaInterstitialAdTwoPartPlayableSubviewHandler: NovaInterstitialAdSubview
 extension NovaInterstitialAdTwoPartPlayableSubviewHandler: NovaAdAppInstallBannerDelegate {
     func appInstallBannerDidTap(_ banner: NovaAdAppInstallBanner, subview: UIView) {
         let clickArea = subview.adClickArea ?? .cta
-        delegate?.didTapCustomAdView(clickArea: clickArea)
+        delegate?.didTapCustomAdView(customUrl: nil, clickArea: clickArea)
     }
 }
 
