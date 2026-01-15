@@ -87,7 +87,7 @@ import DTBiOSSDK
     }
     
     public func getSDKVersion() -> String {
-        return ""
+        return "1.0.0-rc.26"
     }
     
     public func sendClickAdEvent(ad: MSPAd) {
