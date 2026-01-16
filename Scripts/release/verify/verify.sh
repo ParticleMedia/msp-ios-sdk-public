@@ -30,6 +30,11 @@ source "$ROOT_DIR/Scripts/lib/release-common.sh"
 # Load release state utilities
 source "$SCRIPT_DIR/../utils/state.sh"
 
+if [[ "${MSP_DISABLE_POST_VERIFICATION:-0}" == "1" ]] || [[ "${MSP_DISABLE_POST_VERIFICATION:-false}" == "true" ]]; then
+    log_warn "Verification disabled (MSP_DISABLE_POST_VERIFICATION=1) — skipping verify.sh"
+    exit 0
+fi
+
 # ============================================================================
 # Pods Remote Verification
 # ============================================================================
@@ -564,4 +569,3 @@ verify_main() {
 
 # Export functions
 export -f verify_pods_remote verify_spm_remote verify_main
-

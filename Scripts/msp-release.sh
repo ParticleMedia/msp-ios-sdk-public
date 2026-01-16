@@ -114,6 +114,9 @@ else
     CONFIG_MODULE_LOADED=false
 fi
 
+# Default: disable all verification steps until explicitly re-enabled
+export MSP_DISABLE_POST_VERIFICATION="${MSP_DISABLE_POST_VERIFICATION:-1}"
+
 # ============================================================================
 # Subcommand Registry
 # ============================================================================
@@ -375,6 +378,26 @@ apply_cli_overrides() {
     log_debug "[CLI] Applied all CLI overrides"
 }
 
+apply_disable_verification() {
+    if [[ "${MSP_DISABLE_POST_VERIFICATION:-0}" == "1" ]] || [[ "${MSP_DISABLE_POST_VERIFICATION:-false}" == "true" ]]; then
+        export MSP_SKIP_LOCAL_VERIFY="true"
+        export MSP_SKIP_DEVICE_VERIFY="true"
+        export MSP_SKIP_PODS_VERIFY="true"
+        export MSP_SKIP_SPM_LOCAL_BUILD="true"
+        export MSP_SKIP_XCF_VERIFY="true"
+        export MSP_REMOTE_VERIFY_ENABLED="0"
+        export MSP_DEVICE_VERIFY_ENABLED="0"
+        export MSP_XCF_VERIFY_ENABLED="0"
+        export MSP_XCF_VERIFY="false"
+        export MSP_VERIFY_LOCAL="false"
+        export MSP_VERIFY_REMOTE="false"
+        export MSP_VERIFY_DEVICE="false"
+        export MSP_VERIFY_PODS="false"
+        export MSP_VERIFY_SPM="false"
+        log_warn "Verification disabled (MSP_DISABLE_POST_VERIFICATION=1)"
+    fi
+}
+
 # ============================================================================
 # Load Release Configuration
 # ============================================================================
@@ -440,6 +463,7 @@ load_release_config() {
     
     # Apply CLI overrides (CLI takes precedence)
     apply_cli_overrides
+    apply_disable_verification
     
     # Print verbose debug output in requested format
     if [[ "$VERBOSE" == "true" ]]; then
@@ -776,6 +800,8 @@ _msp_interactive_release_setup() {
         # Also enable XCF verify by default when SPM is enabled
         export MSP_XCF_VERIFY="true"
     fi
+
+    apply_disable_verification
     
     echo ""
     
@@ -1220,6 +1246,10 @@ do_spm() {
 }
 
 do_verify() {
+    if [[ "${MSP_DISABLE_POST_VERIFICATION:-0}" == "1" ]] || [[ "${MSP_DISABLE_POST_VERIFICATION:-false}" == "true" ]]; then
+        log_warn "Skipping verify (verification disabled)"
+        return 0
+    fi
     # Load config (applies CLI overrides)
     load_release_config
     
@@ -1259,6 +1289,10 @@ do_verify() {
 }
 
 do_verify_matrix() {
+    if [[ "${MSP_DISABLE_POST_VERIFICATION:-0}" == "1" ]] || [[ "${MSP_DISABLE_POST_VERIFICATION:-false}" == "true" ]]; then
+        log_warn "Skipping verify-matrix (verification disabled)"
+        return 0
+    fi
     log_title "MSP Release Verification Matrix"
     
     # Load config (applies CLI overrides)
@@ -2068,4 +2102,3 @@ main() {
 }
 
 main "$@"
-

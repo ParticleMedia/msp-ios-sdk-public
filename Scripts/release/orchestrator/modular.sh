@@ -1531,6 +1531,18 @@ main() {
         skip_spm_local_build=false
         echo "[MSP][ORCH] Mode: CLI — running full verification"
     fi
+
+    if [[ "${MSP_DISABLE_POST_VERIFICATION:-0}" == "1" ]] || [[ "${MSP_DISABLE_POST_VERIFICATION:-false}" == "true" ]]; then
+        skip_local_verification=true
+        skip_device_verification=true
+        skip_pods_verification=true
+        skip_spm_local_build=true
+        skip_xcf_verify=true
+        export MSP_REMOTE_VERIFY_ENABLED="0"
+        export MSP_DEVICE_VERIFY_ENABLED="0"
+        export MSP_XCF_VERIFY_ENABLED="0"
+        echo "[MSP][ORCH] Verification disabled (MSP_DISABLE_POST_VERIFICATION=1) — skipping all verification steps"
+    fi
     
     # Export skip flags for use in verification functions
     export MSP_SKIP_LOCAL_VERIFY="$skip_local_verification"

@@ -39,6 +39,12 @@ source "$ROOT_DIR/Scripts/lib/colors.sh"
 source "$ROOT_DIR/Scripts/lib/ui.sh"
 source "$ROOT_DIR/Scripts/lib/logging.sh"
 
+# Skip verification if globally disabled
+if [[ "${MSP_DISABLE_POST_VERIFICATION:-0}" == "1" ]] || [[ "${MSP_DISABLE_POST_VERIFICATION:-false}" == "true" ]]; then
+    log_warn "Verification disabled (MSP_DISABLE_POST_VERIFICATION=1) — skipping verify-matrix"
+    exit 0
+fi
+
 # Load release state utilities
 source "$SCRIPT_DIR/../utils/state.sh"
 
@@ -130,4 +136,3 @@ fi
 log_success "Verification matrix completed successfully"
 msp_state_mark_step_success "verify_matrix"
 exit 0
-

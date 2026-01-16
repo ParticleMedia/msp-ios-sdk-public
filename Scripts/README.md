@@ -96,6 +96,12 @@ msp-release.sh run
         └── Remote integration tests
 ```
 
+## TODO
+
+- Re-enable post-release verification steps (local/remote/device/XCF) once SPM local build issues are resolved. Currently disabled by default via `MSP_DISABLE_POST_VERIFICATION=1`.
+- Add a documented verification profile or flag to toggle post-release checks without touching preflight.
+- Re-enable CI-only restriction for production releases when CI pipeline is ready (`Scripts/release/utils/safety.sh`).
+
 ## Advanced Commands
 
 ### Verify Matrix
