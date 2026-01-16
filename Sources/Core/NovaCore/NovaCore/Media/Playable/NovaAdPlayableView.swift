@@ -35,42 +35,51 @@ class NovaAdPlayableView: UIView {
         playableWebView.configuration.userContentController.removeScriptMessageHandler(forName: "mraidBridge")
     }
 
-    func config(with playableModel: PlayableModel, actionContext: NovaAdMediaActionContext?) {
+    func config(
+        with playableModel: PlayableModel,
+        actionContext: NovaAdMediaActionContext?,
+        actionHelper: NovaActionHelper<NovaActionState.Init>? = nil
+    ) {
         playableWebView.load(URLRequest(url: playableModel.playableUrl))
         startTime = CACurrentMediaTime()
-        guard let actionContext else {
-            assertionFailure("Playable ad lack of tracing and action info")
-            return
-        }
 
-        actionHelper = {
-            if let weakVC = actionContext.viewController {
-                return NovaActionHelper
-                    .build(
-                        with:
-                        .adInViewController(
-                            model: .init(
-                                tracingInfo: actionContext.adActionTracingInfo,
-                                extraInfo: actionContext.adActionExtraInfo,
-                                ctrType: playableModel.launchAdType
-                            ),
-                            viewController: weakVC
-                        )
-                    )
-            } else {
-                return NovaActionHelper
-                    .build(
-                        with:
-                        .adInView(
-                            model: .init(
-                                tracingInfo: actionContext.adActionTracingInfo,
-                                extraInfo: actionContext.adActionExtraInfo,
-                                ctrType: playableModel.launchAdType
+        if let actionHelper = actionHelper {
+            self.actionHelper = actionHelper
+        } else {
+            guard let actionContext else {
+                assertionFailure("Playable ad lack of tracing and action info")
+                return
+            }
+
+            self.actionHelper = {
+                if let weakVC = actionContext.viewController {
+                    return NovaActionHelper
+                        .build(
+                            with:
+                            .adInViewController(
+                                model: .init(
+                                    tracingInfo: actionContext.adActionTracingInfo,
+                                    extraInfo: actionContext.adActionExtraInfo,
+                                    ctrType: playableModel.launchAdType
+                                ),
+                                viewController: weakVC
                             )
                         )
-                    )
-            }
-        }()
+                } else {
+                    return NovaActionHelper
+                        .build(
+                            with:
+                            .adInView(
+                                model: .init(
+                                    tracingInfo: actionContext.adActionTracingInfo,
+                                    extraInfo: actionContext.adActionExtraInfo,
+                                    ctrType: playableModel.launchAdType
+                                )
+                            )
+                        )
+                }
+            }()
+        }
     }
 
     // MARK: Private

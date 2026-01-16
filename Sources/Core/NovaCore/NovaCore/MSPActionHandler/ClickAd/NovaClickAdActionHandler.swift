@@ -255,6 +255,14 @@ private extension NovaClickAdActionHandler {
             throw NovaClickAdError.topViewControllerNotFound(adId: actionDataModel.tracingInfo.adId)
         }
 
+        let appInstallBannerDisplayMode: NovaAdPlayableViewController.Config.AppInstallBannerDisplayMode = {
+            if actionDataModel.extraInfo.playableConfig?.actionBarFormat == .bottom {
+                return .bottom
+            } else {
+                return .disable
+            }
+        }()
+
         let config = NovaAdPlayableViewController.Config(
             playableConfigs: (
                 model: playableModel,
@@ -264,7 +272,8 @@ private extension NovaClickAdActionHandler {
                     viewController: nil
                 )
             ),
-            title: actionDataModel.extraInfo.advertiser
+            advertiser: actionDataModel.extraInfo.advertiser,
+            appInstallBannerDisplayMode: appInstallBannerDisplayMode
         )
 
         let vc = NovaAdPlayableViewController(with: config)

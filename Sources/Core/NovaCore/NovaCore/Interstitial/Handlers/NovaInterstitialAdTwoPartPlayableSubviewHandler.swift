@@ -133,7 +133,14 @@ class NovaInterstitialAdTwoPartPlayableSubviewHandler: NovaInterstitialAdSubview
         return topBar
     }()
 
+    private lazy var bottomBar: UIView = {
+        let view = UIView()
+        view.backgroundColor = UIColor(light: NovaColorPalettes.White, dark: NovaColorPalettes.Gray.tint800)
+        return view
+    }()
+
     private lazy var playableView: NovaAdMediaView = .init()
+    private var appInstallBanner: NovaAdAppInstallBanner?
 
     private weak var parentView: UIView?
     private var isInPlayableMode = false
@@ -187,9 +194,18 @@ class NovaInterstitialAdTwoPartPlayableSubviewHandler: NovaInterstitialAdSubview
         setupVolumeIcon(muted: interstitialAd.mediaContent.videoController?.muted ?? true)
 
         // Configure media view
-        interstitialAd.mediaContent.videoController?.style = .playButtonOnCenter(progressBarStyle: .hide, popupCTAStyle: .show)
+        interstitialAd.mediaContent.videoController?.style = .playButtonOnCenter(progressBarStyle: .hide, popupCTAStyle: .show())
         interstitialAd.mediaContent.videoController?.delegate = self
         interstitialAd.mediaContent.playableController?.renderOption = .imageOrVideo
+        interstitialAd.mediaContent.elementLayout = .init(
+            safeAreaInsets: .init(
+                top: UIApplication.novaSafeAreaInsets.top + Constants.volumeIconTopPadding + Constants.volumeIconSize,
+                left: 0,
+                bottom: Constants.advertiserBottomPadding + 36, // 36 is advertiserStackView's height
+                right: 0
+            ),
+            showTapToTry: false
+        )
         mediaView.config(
             with: interstitialAd.mediaContent,
             actionContext: .init(
@@ -233,6 +249,9 @@ class NovaInterstitialAdTwoPartPlayableSubviewHandler: NovaInterstitialAdSubview
         static let avatarSize: Double = 36.0
         static let adGuideTextFormat: String = "Ad • Part %d/2"
         static let rightTopButtonSize: Double = 48.0
+        static let volumeIconSize: Double = 32.0
+        static let volumeIconTopPadding: Double = 20.0
+        static let advertiserBottomPadding: Double = 40.0
     }
 
     private var firstPartViews: [UIView] {
@@ -248,10 +267,14 @@ class NovaInterstitialAdTwoPartPlayableSubviewHandler: NovaInterstitialAdSubview
     }
 
     private var secondPartViews: [UIView] {
-        return [
+        var views: [UIView] = [
             playableTopBar,
             playableView
         ]
+        if let appInstallBanner {
+            views.append(contentsOf: [appInstallBanner, bottomBar])
+        }
+        return views
     }
 
     private func setupFirstPartConstraints(in containerView: UIView, showReportButton: Bool) {
@@ -265,9 +288,9 @@ class NovaInterstitialAdTwoPartPlayableSubviewHandler: NovaInterstitialAdSubview
         }
         
         volumeButton.snp.makeConstraints { make in
-            make.top.equalTo(containerView.safeAreaLayoutGuide).offset(20)
+            make.top.equalTo(containerView.safeAreaLayoutGuide).offset(Constants.volumeIconTopPadding)
             make.leading.equalToSuperview().offset(20)
-            make.width.height.equalTo(32)
+            make.width.height.equalTo(Constants.volumeIconSize)
         }
         
         toPlayableButton.snp.makeConstraints { make in
@@ -288,7 +311,7 @@ class NovaInterstitialAdTwoPartPlayableSubviewHandler: NovaInterstitialAdSubview
             } else {
                 make.trailing.lessThanOrEqualToSuperview().offset(-20)
             }
-            make.bottom.equalToSuperview().offset(-40)
+            make.bottom.equalToSuperview().offset(-Constants.advertiserBottomPadding)
         }
 
         if showReportButton {
@@ -324,6 +347,7 @@ class NovaInterstitialAdTwoPartPlayableSubviewHandler: NovaInterstitialAdSubview
         secondPartViews.forEach { $0.isHidden = false }
         isInPlayableMode = true
         NovaAdMetricReporter.logPlayableTapToTry(encryptedAdToken: interstitialAd.encryptedAdToken, reason: reason)
+        setupAppInfoBannerIfNeeded()
     }
 
     @objc private func didTapVolumeButton() {
@@ -349,6 +373,85 @@ class NovaInterstitialAdTwoPartPlayableSubviewHandler: NovaInterstitialAdSubview
         volumeButton.setImage(muted ? volumeOffImage : volumeOnImage, for: .normal)
         volumeButton.tintColor = UIColor.white
     }
+
+    private func setupAppInfoBannerIfNeeded() {
+        guard let playableActionModel else {
+            return
+        }
+
+        guard case .appInstall = playableActionModel.launchAdType else {
+            return
+        }
+
+        guard let playableConfig = interstitialAd.actionExtraInfo.playableConfig,
+              playableConfig.actionBarFormat == .bottom,
+              let appInfo = playableConfig.appInfo else {
+            return
+        }
+
+        Task {
+            do {
+                let appInfo = try await appInfo.value()
+                await MainActor.run {
+                    let bannerConfig = NovaAdAppInstallBanner.Config(
+                        appInfo: appInfo,
+                        callToAction: playableConfig.callToAction
+                    )
+                    self.createAndShowBanner(with: bannerConfig)
+                }
+            } catch {
+                DebugLogger.data.error("Load app info failed: \(error.localizedDescription)")
+            }
+        }
+    }
+
+    private var playableActionModel: PlayableModel? {
+        switch interstitialAd.mediaContent.adMedia {
+        case let .imagePlayable(_, playableMediaModel),
+             let .videoPlayable(_, playableMediaModel):
+            return playableMediaModel.playableActionModel
+        default:
+            return nil
+        }
+    }
+
+    @MainActor
+    private func createAndShowBanner(with bannerConfig: NovaAdAppInstallBanner.Config) {
+        guard appInstallBanner == nil, let parentView else {
+            return
+        }
+
+        let banner = NovaAdAppInstallBanner(config: bannerConfig)
+        banner.delegate = self
+        appInstallBanner = banner
+
+        parentView.insertSubview(bottomBar, aboveSubview: playableView)
+        parentView.insertSubview(banner, aboveSubview: playableView)
+
+        bottomBar.snp.makeConstraints { make in
+            make.bottom.directionalHorizontalEdges.equalToSuperview()
+            make.height.equalTo(UIApplication.novaSafeAreaInsets.bottom + 22)
+        }
+        banner.snp.makeConstraints { make in
+            make.directionalHorizontalEdges.equalToSuperview()
+            make.bottom.equalTo(bottomBar.snp.top)
+        }
+
+        playableView.snp.remakeConstraints { make in
+            make.top.equalTo(playableTopBar.snp.bottom)
+            make.leading.trailing.equalToSuperview()
+            make.bottom.equalTo(banner.snp.top)
+        }
+
+        banner.showWithAnimation()
+    }
+}
+
+extension NovaInterstitialAdTwoPartPlayableSubviewHandler: NovaAdAppInstallBannerDelegate {
+    func appInstallBannerDidTap(_ banner: NovaAdAppInstallBanner, subview: UIView) {
+        let clickArea = subview.adClickArea ?? .cta
+        delegate?.didTapCustomAdView(customUrl: nil, clickArea: clickArea)
+    }
 }
 
 extension NovaInterstitialAdTwoPartPlayableSubviewHandler: NovaAdVideoViewDelegate {
@@ -372,4 +475,3 @@ extension NovaInterstitialAdTwoPartPlayableSubviewHandler: NovaClickAreaConfigur
 
     var clickableComponents: [NovaClickableComponent]? { interstitialAd.clickableComponents }
 }
-

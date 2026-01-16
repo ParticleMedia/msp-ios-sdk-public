@@ -7,21 +7,24 @@
 import WebKit
 
 enum NovaAdHtmlJSMessage: String, CaseIterable {
-    case adClick = "adClick"
     case adReport = "adReport"
     case adClose = "adClose"
     case getAdContext = "getAdContext"
     
     case novaNativeBridge = "novaNativeBridge"
+    case mraidBridge = "mraidBridge"
+    case consoleLog = "consoleLog"
 }
 
 
-public protocol NovaAdHtmlJSMessageDelegate: AnyObject {
+protocol NovaAdHtmlActionDelegate: AnyObject {
     
-    func didTapAdCtr(customUrl: URL?)
-    
+    func didTapAdCtr(customUrl: URL?, clickArea: ClickableAdArea)
+
     func didTapAdReport()
     
     func didTapAdClose()
+    
+    func didFailToLoadPage()
     
 }

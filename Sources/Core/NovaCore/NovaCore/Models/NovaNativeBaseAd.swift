@@ -7,6 +7,11 @@
 import Foundation
 import UIKit
 
+enum NovaPopupCTAStyleVariant: String {
+    case legacy
+    case v2
+}
+
 // MARK: - NovaNativeBaseAd
 
 public class NovaNativeBaseAd: NovaBaseAd, NovaNativeMediaProviding {
@@ -41,7 +46,8 @@ public class NovaNativeBaseAd: NovaBaseAd, NovaNativeMediaProviding {
         layoutStyle: NovaNativeLayoutStyle?,
         marketingType: NovaAdMarketingType,
         playableInfo: NovaAdPlayableInfo?,
-        htmlPageItems: [PageItem]?
+        htmlPageItems: [PageItem]?,
+        popupCTAStyleVariant: NovaPopupCTAStyleVariant
     ) throws {
         self.creativeType = creativeType
         self.headline = headline
@@ -58,7 +64,8 @@ public class NovaNativeBaseAd: NovaBaseAd, NovaNativeMediaProviding {
         self.adDiscountTagInfo = adDiscountTagInfo
         self.marketingType = marketingType
         self._playableInfo = playableInfo
-        self.htmlPageItems = htmlPageItems
+        self._htmlPageItems = htmlPageItems
+        self.popupCTAStyleVariant = popupCTAStyleVariant
         // give it a default value to make it compile
         self.mediaContent = NovaAdMediaContent(adMedia: Self.defaultAdMedia)
 
@@ -76,21 +83,8 @@ public class NovaNativeBaseAd: NovaBaseAd, NovaNativeMediaProviding {
             encryptedAdToken: encryptedAdToken,
             supportOCPM: supportOCPM
         )
+        setupAppInfo()
         self.mediaContent = try NovaAdMediaContent(adMedia: getAdMedia(), discountTagInfo: self.adDiscountTagInfo)
-        self.htmlModel = getHtmlModel()
-
-        Task {
-            if case let .appInstall(model) = adCtrType {
-                appInfo = await {
-                    do {
-                        return try await NovaAdAppInfo.appInfo(for: model.storeId)
-                    } catch {
-                        DebugLogger.data.error("Get app info failed with reason: \(error.localizedDescription)")
-                        return nil
-                    }
-                }()
-            }
-        }
     }
 
     required init(from decoder: Decoder) throws {
@@ -111,10 +105,13 @@ public class NovaNativeBaseAd: NovaBaseAd, NovaNativeMediaProviding {
         adDiscountTagInfo = try container.decodeIfPresent(NovaAdDiscountTagInfo.self, forKey: .adDiscountTagInfo)
         marketingType = try container.decode(NovaAdMarketingType.self, forKey: .marketingType)
         _playableInfo = try container.decodeIfPresent(NovaAdPlayableInfo.self, forKey: .playableInfo)
+        _htmlPageItems = try container.decodeIfPresent([PageItem].self, forKey: .pageItems)
         mediaContent = NovaAdMediaContent(adMedia: Self.defaultAdMedia)
+        popupCTAStyleVariant = .legacy
 
         let superDecoder = try container.superDecoder()
         try super.init(from: superDecoder)
+        setupAppInfo()
         mediaContent = try NovaAdMediaContent(adMedia: getAdMedia(), discountTagInfo: adDiscountTagInfo)
     }
 
@@ -139,6 +136,7 @@ public class NovaNativeBaseAd: NovaBaseAd, NovaNativeMediaProviding {
         case adDiscountTagInfo
         case marketingType
         case playableInfo
+        case pageItems
     }
 
     public var creativeType: NovaCreativeType
@@ -158,11 +156,11 @@ public class NovaNativeBaseAd: NovaBaseAd, NovaNativeMediaProviding {
     /// Icon URL.
     public var iconURL: URL?
 
+    let popupCTAStyleVariant: NovaPopupCTAStyleVariant
+
     // media used to render media view
     public private(set) var mediaContent: NovaAdMediaContent
     
-    // media used to render html webview
-    public private(set) var htmlModel: NovaAdHtmlMediaModel?
 
     // MARK: - Discount Tag
 
@@ -170,7 +168,7 @@ public class NovaNativeBaseAd: NovaBaseAd, NovaNativeMediaProviding {
 
     // MARK: - App install
 
-    var appInfo: NovaAdAppInfo?
+    var appInfo: AsyncValue<NovaAdAppInfo>?
 
     // MARK: - DPA
 
@@ -212,6 +210,7 @@ public class NovaNativeBaseAd: NovaBaseAd, NovaNativeMediaProviding {
         try container.encodeIfPresent(adDiscountTagInfo, forKey: .adDiscountTagInfo)
         try container.encode(marketingType, forKey: .marketingType)
         try container.encode(_playableInfo, forKey: .playableInfo)
+        try container.encode(_htmlPageItems, forKey: .pageItems)
 
         let superEncoder = container.superEncoder()
         try super.encode(to: superEncoder)
@@ -253,9 +252,9 @@ public class NovaNativeBaseAd: NovaBaseAd, NovaNativeMediaProviding {
     // MARK: - Playable Ad
 
     var _playableInfo: NovaAdPlayableInfo?
-    
+
     // MARK: - HTML Ad
-    var htmlPageItems: [PageItem]?
+    var _htmlPageItems: [PageItem]?
 }
 
 // MARK: - Media Extension
@@ -280,25 +279,17 @@ extension NovaNativeBaseAd {
                 throw NovaAdMediaError.invalid(adId: adId, creativeType: creativeType, message: "missing multiple items info")
             }
         case .playableImage:
-            guard case let .playable(model) = adCtrType else {
-                throw NovaAdMediaError.invalid(adId: adId, creativeType: creativeType, message: "missing playable info")
-            }
-
             return try .imagePlayable(
                 imageModel: makeImageModel(),
-                playableModel: .init(playableActionModel: model, layout: _playableInfo?.layout)
+                playableModel: makePlayableModel()
             )
         case .playableVideo:
-            guard case let .playable(model) = adCtrType else {
-                throw NovaAdMediaError.invalid(adId: adId, creativeType: creativeType, message: "missing playable info")
-            }
-
             return try .videoPlayable(
                 videoModel: makeVideoModel(),
-                playableModel: .init(playableActionModel: model, layout: _playableInfo?.layout)
+                playableModel: makePlayableModel()
             )
         case .html:
-            return .html
+            return try .html(model: makeHtmlModel())
         }
     }
     
@@ -358,30 +349,101 @@ extension NovaNativeBaseAd {
                 videoLayoutOrientation: orientation ?? (_videoInfo.isLayoutVertical ? .vertical : .horizontal),
                 adCtrType: adCtrType,
                 callToAction: callToAction,
+                advertiser: advertiser,
+                iconURL: iconURL,
+                popupCTAStyleVariant: popupCTAStyleVariant,
                 endCardModel: endCardModel
             )
         } else {
             throw NovaAdMediaError.invalid(adId: adId, creativeType: creativeType, message: "missing video info")
         }
     }
-    
-    func getHtmlModel() -> NovaAdHtmlMediaModel? {
-        var pages = [NovaAdHtmlPageModel]()
-        if let htmlPageItems = self.htmlPageItems {
-            for pageItem in htmlPageItems {
-                let resource = NovaAdHtmlResource(url: pageItem.url, htmlString: pageItem.html)
-                let closeCountDownSeconds = pageItem.skipCountdown ?? 0
-                let closeDelaySeconds = pageItem.skipDelay ?? 0
-                let useClickUrl = pageItem.useClickUrl ?? false
-                let useCustomClose = pageItem.useCustomClose ?? false
-                let pageModel = NovaAdHtmlPageModel(resource: resource, closeCountDownSeconds: closeCountDownSeconds, closeDelaySeconds: closeDelaySeconds, useClickUrl: useClickUrl, useCustomClose: useCustomClose)
-                pages.append(pageModel)
-            }
+
+    func makePlayableModel() throws -> NovaAdPlayableMediaModel {
+        guard let info = _playableInfo, case let .playable(model) = adCtrType else {
+            throw NovaAdMediaError.invalid(adId: adId, creativeType: creativeType, message: "missing playable info")
         }
-        if !pages.isEmpty {
-            return NovaAdHtmlMediaModel(pages: pages)
-        } else {
-            return nil
+
+        return .init(
+            playableActionModel: model,
+            layout: info.layout,
+            actionBarFormat: info.actionBarFormat,
+            tapToTryFormat: info.tapToTryFormat,
+            appInfo: appInfo
+        )
+    }
+
+    func makeHtmlModel() throws -> NovaAdHtmlMediaModel {
+        guard let _htmlPageItems else {
+            throw NovaAdMediaError.invalid(adId: adId, creativeType: creativeType, message: "missing html page items")
+        }
+
+        let validPageItems = _htmlPageItems.compactMap { (pageItem) -> NovaAdHtmlPageModel? in
+            guard let resource: NovaAdHtmlResource = {
+                let url: URL? = if let urlString = pageItem.url, let url = URL(string: urlString) {
+                    url
+                } else {
+                    nil
+                }
+
+                if let html = pageItem.html {
+                    return .html(html, baseUrl: url)
+                } else if let url {
+                    return .url(url)
+                } else {
+                    return nil
+                }
+            }() else {
+                return nil
+            }
+
+            return NovaAdHtmlPageModel(
+                resource: resource,
+                closeCountDownSeconds: pageItem.skipCountdown ?? 0,
+                closeDelaySeconds: pageItem.skipDelay ?? 0,
+                useClickUrl: pageItem.useClickUrl ?? false,
+                useCustomClose: pageItem.useCustomClose ?? false
+            )
+        }
+
+        do {
+            return try NovaAdHtmlMediaModel(pages: validPageItems)
+        } catch {
+            throw NovaAdMediaError.invalid(adId: adId, creativeType: creativeType, message: error.localizedDescription)
         }
     }
+
+
+    func setupAppInfo() {
+        let appStoreId: Int? = {
+            switch adCtrType {
+            case .openWeb:
+                return nil
+            case let .appInstall(model):
+                return model.storeId
+            case let .playable(model):
+                switch model.launchAdType {
+                case .openWeb:
+                    return nil
+                case let .appInstall(model):
+                    return model.storeId
+                case .playable:
+                    assertionFailure("playable ad can not have playable as launch type")
+                    return nil
+                }
+            }
+        }()
+
+        appInfo = {
+            if let appStoreId {
+                return AsyncValue(priority: .background, operation: {
+                    try await NovaAdAppInfo.appInfo(for: appStoreId)
+                })
+            } else {
+                return nil
+            }
+        }()
+    }
+
+
 }

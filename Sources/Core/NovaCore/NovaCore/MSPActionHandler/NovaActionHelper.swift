@@ -85,6 +85,21 @@ extension NovaActionHelper where T == NovaActionState.Init {
                 encryptedAdToken: context.tracingInfo.encryptedAdToken,
                 adUnitId: context.tracingInfo.adUnitId,
                 durationInMs: durationInMs,
+                clickArea: area?.rawValue
+            )
+        return NovaActionHelper<NovaActionState.NovaEventSent>(from: self)
+    }
+    
+    func logCustomAreaNovaClickEvent(
+        with duration: CFTimeInterval? = nil, in area: String? = nil
+    ) -> NovaActionHelper<NovaActionState.NovaEventSent> {
+        let durationInMs = duration.flatMap { ($0 * 1000).safeToInt() }
+        NovaAdMetricReporter
+            .logAdClick(
+                thirdPartyClickTrackingUrls: context.tracingInfo.thirdPartyClickTrackingUrls,
+                encryptedAdToken: context.tracingInfo.encryptedAdToken,
+                adUnitId: context.tracingInfo.adUnitId,
+                durationInMs: durationInMs,
                 clickArea: area
             )
         return NovaActionHelper<NovaActionState.NovaEventSent>(from: self)
@@ -111,7 +126,7 @@ extension NovaActionHelper where T == NovaActionState.Init {
 extension NovaActionHelper where T == NovaActionState.NovaEventSent {
     /// NovaActionHelper should be kept alive until the action is performed
     func handleAdTap(in tapView: UIView?, customUrl: URL? = nil) -> NovaActionHelper<NovaActionState.Init> {
-        handleTapAction(in: tapView)
+        handleTapAction(in: tapView, customUrl: customUrl)
         context.onAdViewClick?(tapView)
         return NovaActionHelper<NovaActionState.Init>(from: self)
     }

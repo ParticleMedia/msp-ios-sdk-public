@@ -26,6 +26,7 @@ enum AbConfigKeys {
     static let multipleItemsStyle = "ios_carousel_style"
     static let immersivePlayableUIStyle = "immersive_playable_ui"
     static let enableOCPMShadow = "enable_ocpm_shadow"
+    static let popupCTAStyle = "popup_cta_style"
 }
 
 // MARK: - AdScene
@@ -64,6 +65,7 @@ public enum NovaAdBuilder {
         } ?? []
 
         let supportOCPM = parseSupportOCPM(from: abConfig)
+        let popupCTAStyleVariant = parsePopupCTAStyleVariant(from: abConfig)
 
         return try NovaNativeAdItem(
             adUnitId: adUnitId,
@@ -103,7 +105,8 @@ public enum NovaAdBuilder {
             addOnItem: buildInteractiveBanner(adItem.creative.addonItem),
             eCPMInDollar: Decimal(adItem.price ?? 0),
             isParallax: isParallax,
-            htmlPageItems: adItem.creative.htmlPageItems
+            htmlPageItems: adItem.creative.htmlPageItems,
+            popupCTAStyleVariant: popupCTAStyleVariant
         )
     }
 
@@ -138,6 +141,7 @@ public enum NovaAdBuilder {
         let startTimeInMs = Double(adItem.startTimeMs ?? "")
         let expirationTimeInMs = Double(adItem.expirationMs ?? "")
         let supportOCPM = parseSupportOCPM(from: abConfig)
+        let popupCTAStyleVariant = parsePopupCTAStyleVariant(from: abConfig)
 
         do {
             let adItem = try NovaInterstitialAdItem(
@@ -181,7 +185,8 @@ public enum NovaAdBuilder {
                 closeCountDownTimeSeconds: adItem.creative.closeCountDownTimeSecond ?? 0,
                 clickableComponents: adItem.creative.clickableComponents?
                     .compactMap { NovaClickableComponent(rawValue: $0) },
-                htmlPageItems: adItem.creative.htmlPageItems
+                htmlPageItems: adItem.creative.htmlPageItems,
+                popupCTAStyleVariant: popupCTAStyleVariant
             )
             return adItem
         } catch {
@@ -223,6 +228,7 @@ public enum NovaAdBuilder {
             let startTimeInMs = Double(adItem.startTimeMs ?? "")
             let expirationTimeInMs = Double(adItem.expirationMs ?? "")
             let supportOCPM = parseSupportOCPM(from: abConfig)
+            let popupCTAStyleVariant = parsePopupCTAStyleVariant(from: abConfig)
 
             do {
                 let adItem = try NovaInterstitialAdItem(
@@ -266,7 +272,8 @@ public enum NovaAdBuilder {
                     closeCountDownTimeSeconds: adItem.creative.closeCountDownTimeSecond ?? 0,
                     clickableComponents: adItem.creative.clickableComponents?
                         .compactMap { NovaClickableComponent(rawValue: $0) },
-                    htmlPageItems: adItem.creative.htmlPageItems
+                    htmlPageItems: adItem.creative.htmlPageItems,
+                    popupCTAStyleVariant: popupCTAStyleVariant
                 )
                 return adItem
             } catch {
@@ -464,10 +471,27 @@ private extension NovaAdBuilder {
             }
         }()
 
+        let actionBarFormat: NovaAdPlayableInfo.ActionBarFormat = {
+            guard let formatString = playableItem.actionBarFormat, !formatString.isEmpty else {
+                return .disable
+            }
+            return NovaAdPlayableInfo.ActionBarFormat(rawValue: formatString) ?? .disable
+        }()
+
+        let tapToTryFormat: NovaAdPlayableInfo.TapToTryFormat = {
+            guard let formatString = playableItem.tapToTryFormat, !formatString.isEmpty,
+                  let format = NovaAdPlayableInfo.TapToTryFormat(rawValue: formatString) else {
+                return .default
+            }
+            return format
+        }()
+
         return NovaAdPlayableInfo(
             playableUrl: url,
             playableArea: AdPlayableArea(rawValue: playableItem.clickAreaMode ?? "") ?? .all,
-            layout: layout
+            layout: layout,
+            actionBarFormat: actionBarFormat,
+            tapToTryFormat: tapToTryFormat
         )
     }
 
@@ -476,5 +500,12 @@ private extension NovaAdBuilder {
             return false
         }
         return value.lowercased() == "true"
+    }
+
+    static func parsePopupCTAStyleVariant(from abConfig: [String: String]?) -> NovaPopupCTAStyleVariant {
+        guard let value = abConfig?[AbConfigKeys.popupCTAStyle]?.lowercased() else {
+            return .legacy
+        }
+        return value == "v2" ? .v2 : .legacy
     }
 }

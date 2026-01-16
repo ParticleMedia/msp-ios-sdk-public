@@ -33,7 +33,12 @@ import PrebidMobile
     
     private var bidResponse: BidResponse?
     
+    /// Retains the VungleBannerView to ensure delegate callbacks are received.
+    /// Without this reference, the view may be deallocated before `bannerAdDidLoad(_:)` is called.
+    private var bannerView: VungleBannerView?
+    
     public func initialize(initParams: any MSPiOSCore.InitializationParameters, adapterInitListener: any MSPiOSCore.AdapterInitListener, context: Any?) {
+        VungleAds.setIntegrationName("vunglehbs", version: "67")
         let liftoffInitKey = MSPiOSCore.InitializationParametersCustomKeys.LIFTOFF_APP_ID
         let liftoffAppId = initParams.getParameters()?[liftoffInitKey] as? String ?? ""
         VungleAds.initWithAppId(liftoffAppId) { error in
@@ -136,15 +141,14 @@ import PrebidMobile
             return
         }
         
-        let bannerSize: VungleAdSize? = switch adRequest.adSize {
-        case let it where it?.width == 320 && it?.height == 50:
-            VungleAdSize.VungleAdSizeBannerRegular
-        case let it where it?.width == 300 && it?.height == 250:
-            VungleAdSize.VungleAdSizeMREC
-        case let it where it?.width == 728 && it?.height == 90:
-            VungleAdSize.VungleAdSizeLeaderboard
-        default:
-            nil
+        let bannerSize: VungleAdSize? = adRequest.adSize.flatMap {
+            switch ($0.width, $0.height) {
+            case (320, 50):  return VungleAdSize.VungleAdSizeBannerRegular
+            case (300, 250): return VungleAdSize.VungleAdSizeMREC
+            case (728, 90):  return VungleAdSize.VungleAdSizeLeaderboard
+            case (300, 50):  return VungleAdSize.VungleAdSizeBannerShort
+            default: return VungleAdSize.VungleAdSizeFromCGSize(CGSize(width: $0.width, height: $0.height))
+            }
         }
         
         guard let bannerSize = bannerSize else {
@@ -152,17 +156,17 @@ import PrebidMobile
             return
         }
         
-        let bannerView = VungleBannerView(placementId: placementReferenceId, vungleAdSize: bannerSize)
+        self.bannerView = VungleBannerView(placementId: placementReferenceId, vungleAdSize: bannerSize)
         
-        bannerView.delegate = self
-        bannerView.translatesAutoresizingMaskIntoConstraints = false
+        self.bannerView?.delegate = self
+        self.bannerView?.translatesAutoresizingMaskIntoConstraints = false
         
         guard let adm = winningBid.adm else {
             auctionBidListener.onError(error: "Failed to load liftoff banner ad: adm is nil")
             return
         }
         
-        bannerView.load(adm)
+        self.bannerView?.load(adm)
     }
     
     private func loadMultiformatAd(_ placementId: String, _ winningBid: Bid, _ adRequest: MSPiOSCore.AdRequest, _ auctionBidListener: any MSPiOSCore.AuctionBidListener) {
@@ -198,6 +202,9 @@ import PrebidMobile
             bannerView.delegate = nil
         }
         
+        bannerView?.removeFromSuperview()
+        bannerView?.delegate = nil 
+        bannerView = nil
         bannerAd?.destroy()
         bannerAd = nil
         
@@ -232,20 +239,20 @@ import PrebidMobile
                 }
             }
             
-            let clickableViews = [
-                nativeAdContainer.getIcon(),
+            let nilableClickableViews = [
                 nativeAdContainer.getTitle(),
                 nativeAdContainer.getbody(),
+                nativeAdContainer.getMedia(),
                 nativeAdContainer.getAdvertiser(),
                 nativeAdContainer.getCallToAction(),
-                mediaView
-            ].compactMap{ $0 }
+                nativeAdContainer.getIcon()
+            ] + (nativeAdContainer.getCustomClickableViews() ?? [])
             nativeAdItem.registerViewForInteraction(
                 view: nativeAdView,
                 mediaView: mediaView,
                 iconImageView: nativeAdContainer.getIcon(),
                 viewController: adListener?.getRootViewController(),
-                clickableViews: clickableViews
+                clickableViews: nilableClickableViews.compactMap { $0 }
             )
 
             nativeAdView.addSubview(nativeAdContainer)
@@ -369,6 +376,10 @@ extension LiftoffAdapter: VungleInterstitialDelegate {
         }
     }
     
+    public func interstitialAdDidClick(_ interstitial: VungleInterstitial) {
+        handleAdClicked(interstitial)
+    }
+    
     private func handleAdImpressed(_ ad: Any) {
         let mspAd = getMSPAd(ad: ad)
         
@@ -429,12 +440,22 @@ extension LiftoffAdapter: VungleBannerViewDelegate {
         let item = DispatchWorkItem {
             if let adRequest = self.adRequest,
                let auctionBidListener = self.auctionBidListener {
-                
+
                 MSPLogger.shared.info(message: "[Adapter: Liftoff] successfully loaded Liftoff banner ad")
-                
-                let bannerAd = BannerAd(adView: banner, adNetworkAdapter: self)
+
+                // IMPORTANT: VungleBannerView contains a WebView subview that gets removed when
+                // removeFromSuperview() is called, resulting in no content being displayed.
+                // Solution: Wrap VungleBannerView in a container view to prevent direct removal.
+                let containerView = UIView()
+                containerView.translatesAutoresizingMaskIntoConstraints = false
+                containerView.addSubview(banner)
+                banner.snp.makeConstraints { make in
+                    make.edges.equalTo(containerView)
+                }
+
+                let bannerAd = BannerAd(adView: containerView, adNetworkAdapter: self)
                 self.bannerAd = bannerAd
-                
+
                 self.performHandleAdLoaded(
                     mspAd: bannerAd,
                     creativeId: banner.creativeId,
@@ -443,7 +464,7 @@ extension LiftoffAdapter: VungleBannerViewDelegate {
                 )
             }
         }
-        
+
         DispatchQueue.main.async(execute: item)
     }
     

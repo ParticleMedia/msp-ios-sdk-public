@@ -36,7 +36,7 @@ class NovaAdMetricReporter: NSObject {
         encryptedAdToken: String,
         adUnitId: String,
         durationInMs: Int? = nil,
-        clickArea: ClickableAdArea? = nil
+        clickArea: String? = nil
     ) {
         // Third party click tracking
         AdsThirdPartyMetricReporter.logClick(thirdPartyClickTrackingUrls: thirdPartyClickTrackingUrls)
@@ -47,7 +47,7 @@ class NovaAdMetricReporter: NSObject {
             params[NovaAdMetricKeys.DURATION_MS] = "\(durationInMs)"
         }
         if let clickArea {
-            params[NovaAdMetricKeys.CLICK_AREA_NAME] = clickArea.rawValue
+            params[NovaAdMetricKeys.CLICK_AREA_NAME] = clickArea
         }
         params[NovaAdMetricKeys.AD_UNIT_ID] = adUnitId
         params[NovaAdMetricKeys.USER_ID] = UserDefaults.standard.string(forKey: "msp_user_id") ?? ""
@@ -121,6 +121,12 @@ private extension NovaAdMetricReporter {
         if let cv = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String {
             params[NovaAdMetricKeys.CV] = cv
         }
+        params[NovaAdMetricKeys.MAKE] = NovaDevice.shared.make
+        params[NovaAdMetricKeys.MODEL] = NovaDevice.shared.getDeviceModel()
+        if let appStoreId = NovaDevice.shared.appStoreId {
+            params[NovaAdMetricKeys.BUNDLE] = appStoreId
+        }
+        
         //params["session_id"] = "\(HpEngine.sharedInstance().nbSessionId)"
 
         //let user = HpEngine.sharedInstance().user
@@ -189,4 +195,7 @@ struct NovaAdMetricKeys {
     static let OS = "os"
     static let CV = "cv"
     static let OSV = "osv"
+    static let BUNDLE = "bundle"
+    static let MODEL = "model"
+    static let MAKE = "make"
 }

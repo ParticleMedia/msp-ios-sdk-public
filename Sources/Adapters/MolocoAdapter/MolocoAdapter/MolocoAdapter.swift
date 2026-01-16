@@ -262,12 +262,15 @@ fileprivate typealias BannerCreator = (MolocoSDK.MolocoCreateAdParams, UIViewCon
                 }
             }
 
-            for view in [nativeAdView, nativeAdContainer.getTitle(), nativeAdContainer.getbody(), nativeAdContainer.getMedia(), nativeAdContainer.getAdvertiser(), nativeAdContainer.getCallToAction()] {
-                if let view = view {
-                    let tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleNativeAdClick))
-                    view.addGestureRecognizer(tapGesture)
-                }
-            }
+            let nilableClickableViews = [
+                nativeAdContainer.getTitle(),
+                nativeAdContainer.getbody(),
+                nativeAdContainer.getAdvertiser(),
+                nativeAdContainer.getCallToAction(),
+                nativeAdContainer.getIcon()
+            ] + (nativeAdContainer.getCustomClickableViews() ?? [])
+            
+            setupClickableViews(clickableViews: nilableClickableViews.compactMap { $0 })
 
             nativeAdView.addSubview(nativeAdContainer)
             nativeAdContainer.snp.makeConstraints{ make in
@@ -275,6 +278,17 @@ fileprivate typealias BannerCreator = (MolocoSDK.MolocoCreateAdParams, UIViewCon
                 make.width.lessThanOrEqualTo(nativeAdView)
                 make.height.lessThanOrEqualTo(nativeAdView)
             }
+        }
+    }
+    
+    private func setupClickableViews(clickableViews: [UIView]) {
+        for view in clickableViews {
+            let tapGesture = UITapGestureRecognizer(
+                target: self,
+                action: #selector(handleNativeAdClick)
+            )
+            view.addGestureRecognizer(tapGesture)
+            view.isUserInteractionEnabled = true
         }
     }
     

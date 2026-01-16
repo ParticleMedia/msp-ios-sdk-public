@@ -16,10 +16,12 @@ struct AdActionExtraInfo {
     init(
         videoMediaModel: NovaAdVideoMediaModel? = nil,
         advertiser: String? = nil,
+        playableConfig: PlayableConfig? = nil,
         onAdViewClick: ((UIView?) -> Void)? = nil
     ) {
         self.videoMediaModel = videoMediaModel
         self.advertiser = advertiser
+        self.playableConfig = playableConfig
         self.onAdViewClick = onAdViewClick
     }
 
@@ -30,7 +32,26 @@ struct AdActionExtraInfo {
     // needed for some ads missing landing page title
     let advertiser: String?
 
+    let playableConfig: PlayableConfig?
+
     let onAdViewClick: ((UIView?) -> Void)?
+
+    // Playable ad specific configuration
+    struct PlayableConfig {
+        let actionBarFormat: NovaAdPlayableInfo.ActionBarFormat?
+        let appInfo: AsyncValue<NovaAdAppInfo>?
+        let callToAction: String?
+
+        init(
+            actionBarFormat: NovaAdPlayableInfo.ActionBarFormat? = nil,
+            appInfo: AsyncValue<NovaAdAppInfo>? = nil,
+            callToAction: String? = nil,
+        ) {
+            self.actionBarFormat = actionBarFormat
+            self.appInfo = appInfo
+            self.callToAction = callToAction
+        }
+    }
 }
 
 // MARK: - AdActionTracingInfo
@@ -108,14 +129,30 @@ extension NovaBaseAd {
 
         let advertiser = (self as? NovaNativeBaseAd)?.advertiser
 
-        return AdActionExtraInfo(videoMediaModel: videoMediaModel, advertiser: advertiser) { adView in
+        let playableConfig: AdActionExtraInfo.PlayableConfig? = {
+            guard let nativeBaseAd = self as? NovaNativeBaseAd else {
+                return nil
+            }
+
+            switch nativeBaseAd.mediaContent.adMedia {
+            case let .imagePlayable(_, playableModel), let .videoPlayable(_, playableModel):
+                return AdActionExtraInfo.PlayableConfig(
+                        actionBarFormat: playableModel.actionBarFormat,
+                        appInfo: playableModel.appInfo,
+                        callToAction: nativeBaseAd.callToAction
+                    )
+            default:
+                return nil
+            }
+        }()
+
+        return AdActionExtraInfo(videoMediaModel: videoMediaModel, advertiser: advertiser, playableConfig: playableConfig) { adView in
             switch self {
             case let nativeAd as NovaNativeAdItem:
                 nativeAd.delegate?
                     .nativeAdDidLogClick(
                         nativeAd,
-                        clickAreaName: NovaAdMetricReporter
-                            .convertNovaClickAreaNameToMetric(clickArea: adView?.adClickArea?.rawValue) ?? ""
+                        clickAreaName: NovaAdMetricReporter.convertNovaClickAreaNameToMetric(clickArea: adView?.adClickArea?.rawValue) ?? ""
                     )
             case let interstitialAd as NovaInterstitialAdItem:
                 interstitialAd.delegate?.interstitialAdDidLogClick(interstitialAd)

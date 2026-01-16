@@ -40,6 +40,7 @@ public class NovaAdapter: AdNetworkAdapter {
     }
     
     public func initialize(initParams: any InitializationParameters, adapterInitListener: any AdapterInitListener, context: Any?) {
+        NovaDevice.shared.appStoreId = initParams.getAppStoreId()
         adapterInitListener.onComplete(adNetwork: .nova, adapterInitStatus: .SUCCESS, message: "")
     }
     
@@ -92,101 +93,102 @@ public class NovaAdapter: AdNetworkAdapter {
         let videoUseControl = adRequest?.customParams["video_use_control"] as? Bool ?? true
         // default false, popup cta will be enabled if set to true
         let popupCTAEnabled = adRequest?.customParams["popup_cta_enabled"] as? Bool ?? false
+        let mediaElementLayout = createMediaElementLayout(from: adRequest?.customParams)
         // TODO: lsy, 我看了下调用，这个不是已经在主线程了吗
-        DispatchQueue.main.async {
-            guard let nativeAdView = nativeAdView as? NativeAdView,
-                  let novaNativeAd = nativeAd as? NovaNativeAd,
-                  let novaNativeAdItem = novaNativeAd.nativeAdItem
-            else {
-                self.adListener?.onError(msg: "fail to render native view")
-                return
+        guard let nativeAdView = nativeAdView as? NativeAdView,
+              let novaNativeAd = nativeAd as? NovaNativeAd,
+              let novaNativeAdItem = novaNativeAd.nativeAdItem
+        else {
+            self.adListener?.onError(msg: "fail to render native view")
+            return
+        }
+
+        let novaNativeAdView = NovaNativeAdView()
+        let popupCTAStyle: NovaAdVideoView.Style.PopupCTAStyle = popupCTAEnabled ? .show(
+            safeAreaInsets: mediaElementLayout?.safeAreaInsets ?? .zero,
+            exclusionRects: mediaElementLayout?.exclusionRects ?? []
+        ) : .hide
+        let progressBarStyle: NovaAdVideoView.Style.ProgressBarStyle = novaNativeAdItem.isVideo ? .show(bottomMargin: 0) : .hide
+        let newVideoStyle: NovaAdVideoView.Style = if videoUseControl {
+            .playButtonOnLeftBottom
+        } else if novaNativeAdItem.mediaContent.mediaType == .playable {
+            .clear
+        } else {
+            .playButtonOnCenter(progressBarStyle: progressBarStyle, popupCTAStyle: popupCTAStyle)
+        }
+        novaNativeAdItem.mediaContent.videoController?.style = newVideoStyle
+        novaNativeAdItem.mediaContent.elementLayout = mediaElementLayout
+
+        if let nativeAdViewBinder = nativeAdView.nativeAdViewBinder {
+            novaNativeAdView.titleLabel = nativeAdView.nativeAdViewBinder?.titleLabel
+            novaNativeAdView.bodyLabel = nativeAdView.nativeAdViewBinder?.bodyLabel
+            novaNativeAdView.advertiserLabel = nativeAdView.nativeAdViewBinder?.advertiserLabel
+            novaNativeAdView.callToActionButton = nativeAdView.nativeAdViewBinder?.callToActionButton
+            novaNativeAdView.customClickableViews = nativeAdView.nativeAdViewBinder?.customClickableViews
+
+            var clickableViews: [UIView] = [
+                novaNativeAdView.titleLabel,
+                novaNativeAdView.bodyLabel,
+                novaNativeAdView.advertiserLabel,
+                novaNativeAdView.callToActionButton,
+                novaNativeAdView.icon
+            ].compactMap {
+                $0
             }
+                
+            novaNativeAdView.setupViews(with: novaNativeAdItem, clickableViews: clickableViews)
 
-            let novaNativeAdView = NovaNativeAdView()
-            let popupCTAStyle: NovaAdVideoView.Style.PopupCTAStyle = popupCTAEnabled ? .show : .hide
-            let progressBarStyle: NovaAdVideoView.Style.ProgressBarStyle = novaNativeAdItem.isVideo ? .show(bottomMargin: 0) : .hide
-            let newVideoStyle: NovaAdVideoView.Style = if videoUseControl {
-                .playButtonOnLeftBottom
-            } else if novaNativeAdItem.mediaContent.mediaType == .playable {
-                .clear
-            } else {
-                .playButtonOnCenter(progressBarStyle: progressBarStyle, popupCTAStyle: popupCTAStyle)
+            nativeAdView.nativeAdViewBinder?.setUpViews(parentView: novaNativeAdView)
+        } else if let nativeAdContainer = nativeAdView.nativeAdContainer {
+            novaNativeAdView.titleLabel = nativeAdContainer.getTitle()
+            novaNativeAdView.bodyLabel = nativeAdContainer.getbody()
+            novaNativeAdView.advertiserLabel = nativeAdContainer.getAdvertiser()
+            novaNativeAdView.callToActionButton = nativeAdContainer.getCallToAction()
+            novaNativeAdView.icon = nativeAdContainer.getIcon()
+            novaNativeAdView.customClickableViews = nativeAdContainer.getCustomClickableViews()
+
+            var clickableViews: [UIView] = [
+                novaNativeAdView.titleLabel,
+                novaNativeAdView.bodyLabel,
+                novaNativeAdView.advertiserLabel,
+                novaNativeAdView.callToActionButton,
+                novaNativeAdView.icon
+            ].compactMap {
+                $0
             }
-            novaNativeAdItem.mediaContent.videoController?.style = newVideoStyle
-            if let nativeAdViewBinder = nativeAdView.nativeAdViewBinder {
-                novaNativeAdView.titleLabel = nativeAdView.nativeAdViewBinder?.titleLabel
-                novaNativeAdView.bodyLabel = nativeAdView.nativeAdViewBinder?.bodyLabel
-                novaNativeAdView.advertiserLabel = nativeAdView.nativeAdViewBinder?.advertiserLabel
-                novaNativeAdView.callToActionButton = nativeAdView.nativeAdViewBinder?.callToActionButton
-                novaNativeAdView.customClickableViews = nativeAdView.nativeAdViewBinder?.customClickableViews
-
-                var clickableViews: [UIView] = [
-                    novaNativeAdView.titleLabel,
-                    novaNativeAdView.bodyLabel,
-                    novaNativeAdView.advertiserLabel,
-                    novaNativeAdView.callToActionButton,
-                    novaNativeAdView.icon
-                ].compactMap {
-                    $0
-                }
                 
-                if let customClickableViews = novaNativeAdView.customClickableViews {
-                    clickableViews.append(contentsOf: customClickableViews)
-                }
+            if let customClickableViews = novaNativeAdView.customClickableViews {
+                clickableViews.append(contentsOf: customClickableViews)
+            }
                 
-                novaNativeAdView.setupViews(with: novaNativeAdItem, clickableViews: clickableViews)
+            novaNativeAdView.setupViews(with: novaNativeAdItem, clickableViews: clickableViews)
 
-                nativeAdView.nativeAdViewBinder?.setUpViews(parentView: novaNativeAdView)
-            } else if let nativeAdContainer = nativeAdView.nativeAdContainer {
-                novaNativeAdView.titleLabel = nativeAdContainer.getTitle()
-                novaNativeAdView.bodyLabel = nativeAdContainer.getbody()
-                novaNativeAdView.advertiserLabel = nativeAdContainer.getAdvertiser()
-                novaNativeAdView.callToActionButton = nativeAdContainer.getCallToAction()
-                novaNativeAdView.icon = nativeAdContainer.getIcon()
-                novaNativeAdView.customClickableViews = nativeAdContainer.getCustomClickableViews()
-
-                var clickableViews: [UIView] = [
-                    novaNativeAdView.titleLabel,
-                    novaNativeAdView.bodyLabel,
-                    novaNativeAdView.advertiserLabel,
-                    novaNativeAdView.callToActionButton,
-                    novaNativeAdView.icon
-                ].compactMap {
-                    $0
-                }
-                
-                if let customClickableViews = novaNativeAdView.customClickableViews {
-                    clickableViews.append(contentsOf: customClickableViews)
-                }
-                
-                novaNativeAdView.setupViews(with: novaNativeAdItem, clickableViews: clickableViews)
-
-                if let mediaContainer = nativeAdContainer.getMedia() {
-                    mediaContainer.subviews.forEach { $0.removeFromSuperview() }
-                    mediaContainer.addSubview(novaNativeAdView.mediaView)
-                    novaNativeAdView.mediaView.snp.makeConstraints { make in
-                        make.directionalEdges.equalToSuperview()
-                    }
-                }
-
-                if let iconView = nativeAdContainer.getIcon(),
-                   let iconURL = novaNativeAdItem.iconURL {
-                    iconView.kf.setImage(with: iconURL)
-                }
-
-                novaNativeAdView.addSubview(nativeAdContainer)
-                nativeAdContainer.snp.makeConstraints { make in
+            if let mediaContainer = nativeAdContainer.getMedia() {
+                mediaContainer.subviews.forEach { $0.removeFromSuperview() }
+                mediaContainer.addSubview(novaNativeAdView.mediaView)
+                novaNativeAdView.mediaView.snp.makeConstraints { make in
                     make.directionalEdges.equalToSuperview()
-                    make.size.equalToSuperview()
                 }
             }
-            
-            nativeAdView.addSubview(novaNativeAdView)
-            novaNativeAdView.snp.makeConstraints { make in
-                make.directionalEdges.equalToSuperview()
-                make.width.lessThanOrEqualToSuperview()
-                make.height.lessThanOrEqualToSuperview()
+
+            if let iconView = nativeAdContainer.getIcon(),
+               let iconURL = novaNativeAdItem.iconURL
+            {
+                iconView.kf.setImage(with: iconURL)
             }
+
+            novaNativeAdView.addSubview(nativeAdContainer)
+            nativeAdContainer.snp.makeConstraints { make in
+                make.directionalEdges.equalToSuperview()
+                make.size.equalToSuperview()
+            }
+        }
+            
+        nativeAdView.addSubview(novaNativeAdView)
+        novaNativeAdView.snp.makeConstraints { make in
+            make.directionalEdges.equalToSuperview()
+            make.width.lessThanOrEqualToSuperview()
+            make.height.lessThanOrEqualToSuperview()
         }
     }
     
@@ -314,6 +316,29 @@ public class NovaAdapter: AdNetworkAdapter {
             // It's always OK to cast nil to nil
             return nil
         }
+    }
+    
+    // MARK: - Element Layout Helper
+    
+    private func createMediaElementLayout(from customParams: [String: Any]?) -> NovaMediaElementLayout? {
+        guard let customParams = customParams else {
+            return nil
+        }
+        
+        let safeAreaInsets = customParams["media_safe_area_insets"] as? UIEdgeInsets ?? .zero
+        let exclusionRects = customParams["media_exclusion_rects"] as? [CGRect] ?? []
+        let showBottomShadow = customParams["media_show_bottom_shadow"] as? Bool ?? false
+        
+        // Only create if at least one value is non-default
+        if safeAreaInsets != .zero || !exclusionRects.isEmpty || showBottomShadow {
+            return NovaMediaElementLayout(
+                safeAreaInsets: safeAreaInsets,
+                exclusionRects: exclusionRects,
+                showBottomShadow: showBottomShadow
+            )
+        }
+        
+        return nil
     }
     
     public func loadTestAdCreative(adString: String, adListener: any AdListener, context: Any, adRequest: AdRequest) {

@@ -14,6 +14,8 @@ fileprivate struct ITunesRequestResponse: Codable {
 
 fileprivate struct ITunesResult: Codable {
     let artworkUrl60: String?
+    let artworkUrl100: String?
+    let artworkUrl512: String?
     let trackName: String
     let description: String?
 }
@@ -43,7 +45,9 @@ struct NovaAdAppInfo {
             throw NovaAdAppInfoError.noResult(appId: appId)
         }
         return NovaAdAppInfo(
-            appIconUrl: URL(string: firstItunesResult.artworkUrl60 ?? ""),
+            appIconUrl: URL(
+                string: firstItunesResult.artworkUrl512 ?? firstItunesResult.artworkUrl100 ?? firstItunesResult.artworkUrl60 ?? ""
+            ),
             appName: firstItunesResult.trackName,
             appDescription: firstItunesResult.description
         )
@@ -55,5 +59,5 @@ struct NovaAdAppInfo {
 }
 
 private extension NovaAdAppInfo {
-    private static let searchUrlFormat = "https://itunes.apple.com/lookup?entity=softwarn&id=%d"
+    private static let searchUrlFormat = "https://itunes.apple.com/lookup?entity=software&id=%ld"
 } 
