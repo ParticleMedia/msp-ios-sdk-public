@@ -687,9 +687,9 @@ spm_local_validation() {
         return 1
     }
     
-    # Initialize minimal SwiftPM executable package
+    # Initialize minimal SwiftPM library package
     log_step "Initializing SwiftPM test package"
-    if ! swift package init --type executable --name MSP_SPMLocalTest 2>&1; then
+    if ! swift package init --type library --name MSP_SPMLocalTest 2>&1; then
         log_error "Failed to initialize Swift package"
         return 1
     fi
@@ -726,13 +726,13 @@ import PackageDescription
 let package = Package(
     name: "MSP_SPMLocalTest",
     platforms: [
-        .macOS(.v10_15)
+        .iOS(.v15)
     ],
     dependencies: [
         .package(path: "$repo_abs_path")
     ],
     targets: [
-        .executableTarget(
+        .target(
             name: "MSP_SPMLocalTest",
             dependencies: [
                 .product(name: "$spm_product_name", package: "msp-ios-sdk")
@@ -744,18 +744,17 @@ EOF
     
     log_info "Test Package.swift created with dependency on: $repo_abs_path"
     
-    # Update main.swift to import the product
-    log_step "Updating main.swift to import SPM product"
-    local main_swift="$SPM_LOCAL_TMPDIR/Sources/MSP_SPMLocalTest/main.swift"
-    if [[ -f "$main_swift" ]]; then
-        cat > "$main_swift" << EOF
+    # Update library source to import the product
+    log_step "Updating library source to import SPM product"
+    local source_swift="$SPM_LOCAL_TMPDIR/Sources/MSP_SPMLocalTest/MSP_SPMLocalTest.swift"
+    if [[ -f "$source_swift" ]]; then
+        cat > "$source_swift" << EOF
 import Foundation
 import ${spm_product_name}
 
-print("MSP SPM Local Validation Test")
-print("If you see this, the local build succeeded.")
+// No runtime code needed; import validates SPM linkage.
 EOF
-        log_info "main.swift updated with import: $spm_product_name"
+        log_info "Library source updated with import: $spm_product_name"
     fi
     
     # Run swift package resolve
@@ -785,24 +784,31 @@ EOF
     
     log_success "Swift package resolved successfully"
     
-    # Run swift build -c release
-    log_step "Building Swift package (release configuration)"
+    # Build for iOS to match supported platform
+    log_step "Building Swift package (iOS release configuration)"
     local build_output
     local build_exit_code
+    local build_cmd=(
+        xcodebuild
+        -scheme MSP_SPMLocalTest
+        -destination "generic/platform=iOS"
+        -configuration Release
+        build
+    )
     
     if [[ "$VERBOSE" == "true" ]]; then
-        if swift build -c release 2>&1; then
+        if "${build_cmd[@]}" 2>&1; then
             build_exit_code=0
         else
             build_exit_code=$?
         fi
     else
-        build_output=$(swift build -c release 2>&1)
+        build_output=$("${build_cmd[@]}" 2>&1)
         build_exit_code=$?
     fi
     
     if [[ $build_exit_code -ne 0 ]]; then
-        log_error "swift build failed (exit code: $build_exit_code)"
+        log_error "xcodebuild failed (exit code: $build_exit_code)"
         if [[ "$VERBOSE" != "true" && -n "$build_output" ]]; then
             log_info "Build output (last 20 lines):"
             echo "$build_output" | tail -20 | sed 's/^/  /'
