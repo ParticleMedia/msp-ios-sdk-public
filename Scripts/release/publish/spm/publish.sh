@@ -674,9 +674,10 @@ spm_local_validation() {
     
     cleanup_temp_dir() {
         local cleanup_flag="${cleanup_on_exit:-true}"
-        if [[ "$cleanup_flag" == "true" ]]; then
+        local tmpdir="${SPM_LOCAL_TMPDIR:-}"
+        if [[ "$cleanup_flag" == "true" && -n "$tmpdir" ]]; then
             log_step "Cleaning up temporary directory"
-            rm -rf "$SPM_LOCAL_TMPDIR" 2>/dev/null || true
+            rm -rf "$tmpdir" 2>/dev/null || true
         fi
     }
     
@@ -784,15 +785,26 @@ EOF
     
     log_success "Swift package resolved successfully"
     
+    # Generate Xcode project for xcodebuild (required to have a scheme)
+    log_step "Generating Xcode project for test package"
+    if ! swift package generate-xcodeproj --skip-extra-files 2>&1; then
+        log_error "Failed to generate Xcode project"
+        return 1
+    fi
+    
     # Build for iOS to match supported platform
     log_step "Building Swift package (iOS release configuration)"
     local build_output
     local build_exit_code
     local build_cmd=(
         xcodebuild
+        -project MSP_SPMLocalTest.xcodeproj
         -scheme MSP_SPMLocalTest
-        -destination "generic/platform=iOS"
+        -destination "generic/platform=iOS Simulator"
         -configuration Release
+        CODE_SIGNING_REQUIRED=NO
+        CODE_SIGNING_ALLOWED=NO
+        CODE_SIGN_IDENTITY=
         build
     )
     
