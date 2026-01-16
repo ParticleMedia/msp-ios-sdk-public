@@ -658,7 +658,6 @@ spm_local_validation() {
     
     # Create temp directory
     log_step "Creating temporary test package"
-    local SPM_LOCAL_TMPDIR
     SPM_LOCAL_TMPDIR="$(mktemp -d -t msp_spm_local_XXXXXX)"
     if [[ ! -d "$SPM_LOCAL_TMPDIR" ]]; then
         log_error "Failed to create temporary directory"
@@ -674,14 +673,14 @@ spm_local_validation() {
     
     cleanup_temp_dir() {
         local cleanup_flag="${cleanup_on_exit:-true}"
-        local tmpdir="${SPM_LOCAL_TMPDIR:-}"
+        local tmpdir="${1:-}"
         if [[ "$cleanup_flag" == "true" && -n "$tmpdir" ]]; then
             log_step "Cleaning up temporary directory"
             rm -rf "$tmpdir" 2>/dev/null || true
         fi
     }
     
-    trap cleanup_temp_dir EXIT
+    trap "cleanup_temp_dir \"$SPM_LOCAL_TMPDIR\"" EXIT
     
     cd "$SPM_LOCAL_TMPDIR" || {
         log_error "Failed to change to temporary directory"
@@ -791,6 +790,14 @@ EOF
         log_error "Failed to generate Xcode project"
         return 1
     fi
+    if [[ ! -f "MSP_SPMLocalTest.xcodeproj/project.pbxproj" ]]; then
+        log_error "Generated Xcode project not found (MSP_SPMLocalTest.xcodeproj)"
+        return 1
+    fi
+    if ! xcodebuild -list -project MSP_SPMLocalTest.xcodeproj | grep -q "MSP_SPMLocalTest"; then
+        log_error "Scheme MSP_SPMLocalTest not found in generated project"
+        return 1
+    fi
     
     # Build for iOS to match supported platform
     log_step "Building Swift package (iOS release configuration)"
@@ -800,7 +807,7 @@ EOF
         xcodebuild
         -project MSP_SPMLocalTest.xcodeproj
         -scheme MSP_SPMLocalTest
-        -destination "generic/platform=iOS Simulator"
+        -destination "generic/platform=iOS"
         -configuration Release
         CODE_SIGNING_REQUIRED=NO
         CODE_SIGNING_ALLOWED=NO
