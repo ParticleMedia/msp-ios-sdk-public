@@ -7,6 +7,7 @@ extension Image {
         // MARK: - Components
         let isolationMode = Image("isolation_mode", bundle: NovaAsset.getBundle())
         let popOver = Image("pop_over", bundle: NovaAsset.getBundle())
+        let popOverFilledBlue = Image("pop_over_filled_blue", bundle: NovaAsset.getBundle())
 
 
         // MARK: - Icons

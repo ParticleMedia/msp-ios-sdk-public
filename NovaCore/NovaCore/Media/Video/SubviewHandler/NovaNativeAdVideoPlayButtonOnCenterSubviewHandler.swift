@@ -92,7 +92,14 @@ extension NovaNativeAdVideoPlayButtonOnCenterSubviewHandler: NovaNativeAdVideoSu
     func config(with videoModel: NovaAdVideoMediaModel) {
         if let callToAction = videoModel.callToAction,
            case .show = popupCTAStyle {
-            ctaPopoverView.config(with: callToAction)
+            ctaPopoverView.config(
+                with: NovaAdPopOverViewModel(
+                    callToAction: callToAction,
+                    advertiser: videoModel.advertiser,
+                    iconURL: videoModel.iconURL,
+                    styleVariant: videoModel.popupCTAStyleVariant
+                )
+            )
             ctaPopoverView.addGestureRecognizer(
                 UITapGestureRecognizer(target: self, action: #selector(didTapPopoverView(_:)))
             )

@@ -88,7 +88,8 @@ public final class NovaInterstitialAdItem: NovaNativeBaseAd {
         playableInfo: NovaAdPlayableInfo?,
         closeCountDownTimeSeconds: Int?,
         clickableComponents: [NovaClickableComponent]?,
-        htmlPageItems: [PageItem]?
+        htmlPageItems: [PageItem]?,
+        popupCTAStyleVariant: NovaPopupCTAStyleVariant
     ) throws {
         self.startTimeInMs = startTimeInMs
         self.expirationTimeInMs = expirationTimeInMs
@@ -125,7 +126,8 @@ public final class NovaInterstitialAdItem: NovaNativeBaseAd {
             layoutStyle: layoutStyle,
             marketingType: marketingType,
             playableInfo: playableInfo,
-            htmlPageItems: htmlPageItems
+            htmlPageItems: htmlPageItems,
+            popupCTAStyleVariant: popupCTAStyleVariant
         )
     }
 

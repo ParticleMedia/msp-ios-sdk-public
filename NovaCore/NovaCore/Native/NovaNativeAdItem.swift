@@ -35,7 +35,8 @@ public final class NovaNativeAdItem: NovaNativeBaseAd {
         addOnItem: NovaNativeAdInteractiveBanner?,
         eCPMInDollar: Decimal,
         isParallax: Bool,
-        htmlPageItems: [PageItem]?
+        htmlPageItems: [PageItem]?,
+        popupCTAStyleVariant: NovaPopupCTAStyleVariant
     ) throws {
         self.addOnItem = addOnItem
         self.eCPMInDollar = eCPMInDollar
@@ -71,7 +72,8 @@ public final class NovaNativeAdItem: NovaNativeBaseAd {
             layoutStyle: layoutStyle,
             marketingType: marketingType,
             playableInfo: playableInfo,
-            htmlPageItems: htmlPageItems
+            htmlPageItems: htmlPageItems,
+            popupCTAStyleVariant: popupCTAStyleVariant
         )
     }
 
