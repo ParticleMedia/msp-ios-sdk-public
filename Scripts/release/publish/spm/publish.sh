@@ -687,6 +687,14 @@ spm_local_validation() {
         return 1
     }
     
+    # Keep all caches/artifacts inside the temp directory to avoid permission issues
+    local build_path="$SPM_LOCAL_TMPDIR/.build"
+    local module_cache_path="$SPM_LOCAL_TMPDIR/.clang-module-cache"
+    local cache_root="$SPM_LOCAL_TMPDIR/.cache"
+    mkdir -p "$build_path" "$module_cache_path" "$cache_root" 2>/dev/null || true
+    export CLANG_MODULE_CACHE_PATH="$module_cache_path"
+    export XDG_CACHE_HOME="$cache_root"
+    
     # Initialize minimal SwiftPM library package
     log_step "Initializing SwiftPM test package"
     if ! swift package init --type library --name MSP_SPMLocalTest 2>&1; then
@@ -763,13 +771,13 @@ EOF
     local resolve_exit_code
     
     if [[ "$VERBOSE" == "true" ]]; then
-        if swift package resolve 2>&1; then
+        if swift package --disable-sandbox resolve 2>&1; then
             resolve_exit_code=0
         else
             resolve_exit_code=$?
         fi
     else
-        resolve_output=$(swift package resolve 2>&1)
+        resolve_output=$(swift package --disable-sandbox resolve 2>&1)
         resolve_exit_code=$?
     fi
     
@@ -784,39 +792,37 @@ EOF
     
     log_success "Swift package resolved successfully"
     
-    # Generate Xcode project for xcodebuild (required to have a scheme)
-    log_step "Generating Xcode project for test package"
-    if ! swift package generate-xcodeproj --skip-extra-files 2>&1; then
-        log_error "Failed to generate Xcode project"
+    # Prepare SwiftPM build inputs (Swift 6 removed generate-xcodeproj)
+    log_step "Preparing SwiftPM build environment"
+    local ios_sdk_path
+    ios_sdk_path="$(xcrun --sdk iphoneos --show-sdk-path 2>/dev/null || true)"
+    if [[ -z "$ios_sdk_path" || ! -d "$ios_sdk_path" ]]; then
+        log_error "Failed to locate iOS SDK path via xcrun"
         return 1
     fi
-    if [[ ! -f "MSP_SPMLocalTest.xcodeproj/project.pbxproj" ]]; then
-        log_error "Generated Xcode project not found (MSP_SPMLocalTest.xcodeproj)"
-        return 1
-    fi
-    if ! xcodebuild -list -project MSP_SPMLocalTest.xcodeproj | grep -q "MSP_SPMLocalTest"; then
-        log_error "Scheme MSP_SPMLocalTest not found in generated project"
-        return 1
-    fi
+    
+    local ios_triple="${MSP_SPM_IOS_TRIPLE:-arm64-apple-ios15.0}"
+    mkdir -p "$build_path" "$module_cache_path" "$cache_root" 2>/dev/null || true
     
     # Build for iOS to match supported platform
     log_step "Building Swift package (iOS release configuration)"
-    local build_output
-    local build_exit_code
+    log_info "Using SDK: $ios_sdk_path"
+    log_info "Using triple: $ios_triple"
+    
+    local build_output=""
+    local build_exit_code=0
     local build_cmd=(
-        xcodebuild
-        -project MSP_SPMLocalTest.xcodeproj
-        -scheme MSP_SPMLocalTest
-        -destination "generic/platform=iOS"
-        -configuration Release
-        CODE_SIGNING_REQUIRED=NO
-        CODE_SIGNING_ALLOWED=NO
-        CODE_SIGN_IDENTITY=
-        build
+        swift build
+        --disable-sandbox
+        --configuration release
+        --triple "$ios_triple"
+        --sdk "$ios_sdk_path"
+        --build-path "$build_path"
+        --product MSP_SPMLocalTest
     )
     
     if [[ "$VERBOSE" == "true" ]]; then
-        if "${build_cmd[@]}" 2>&1; then
+        if "${build_cmd[@]}"; then
             build_exit_code=0
         else
             build_exit_code=$?
@@ -827,7 +833,7 @@ EOF
     fi
     
     if [[ $build_exit_code -ne 0 ]]; then
-        log_error "xcodebuild failed (exit code: $build_exit_code)"
+        log_error "swift build failed (exit code: $build_exit_code)"
         if [[ "$VERBOSE" != "true" && -n "$build_output" ]]; then
             log_info "Build output (last 20 lines):"
             echo "$build_output" | tail -20 | sed 's/^/  /'
@@ -837,7 +843,7 @@ EOF
         return 1
     fi
     
-    log_success "Swift package built successfully"
+    log_success "Swift package built successfully (SwiftPM iOS build)"
     
     # Produce summary
     ui_divider
