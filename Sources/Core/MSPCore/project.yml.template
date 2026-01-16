@@ -18,6 +18,9 @@ targets:
   MSPCore:
     type: framework
     platform: iOS
+    headers:
+      public:
+        - path: MSPCore/MSPCore.h
     sources:
       - path: MSPCore
         excludes:
@@ -46,6 +49,9 @@ targets:
       base:
         BUILD_LIBRARY_FOR_DISTRIBUTION: YES
         SKIP_INSTALL: NO
+        CLANG_ENABLE_MODULES: YES
+        SWIFT_INSTALL_OBJC_HEADER: YES
+        PUBLIC_HEADERS_FOLDER_PATH: Headers
         
         # Framework Search Paths - Core XCFrameworks only
         # Third-party dependencies are provided via Pods at application level
@@ -108,6 +114,16 @@ targets:
           - -lMSPPrebidAdapter
         
         OTHER_SWIFT_FLAGS: "-no-verify-emitted-module-interface"
+    postBuildScripts:
+      - name: Copy Modulemap
+        script: |
+          set -e
+          MODULEMAP_SOURCE="${SRCROOT}/MSPCore/MSPCore.modulemap"
+          MODULEMAP_DEST="${TARGET_BUILD_DIR}/${PRODUCT_NAME}.framework/Modules/module.modulemap"
+          if [ -f "$MODULEMAP_SOURCE" ]; then
+            mkdir -p "$(dirname "$MODULEMAP_DEST")"
+            cp "$MODULEMAP_SOURCE" "$MODULEMAP_DEST"
+          fi
 
 schemes:
   MSPCore-XCFramework:

@@ -1,5 +1,5 @@
 framework module MSPiOSCore {
-    
-    // Versions
-    header "MSPiOSCore.h"
+    umbrella header "MSPiOSCore.h"
+    export *
+    module * { export * }
 }

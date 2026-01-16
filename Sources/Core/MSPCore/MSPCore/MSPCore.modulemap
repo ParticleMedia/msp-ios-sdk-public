@@ -1,5 +1,5 @@
 framework module MSPCore {
-    
-    // Versions
-    header "MSPCore.h"
+    umbrella header "MSPCore.h"
+    export *
+    module * { export * }
 }

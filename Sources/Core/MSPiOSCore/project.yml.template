@@ -14,6 +14,9 @@ targets:
   MSPiOSCore:
     type: framework
     platform: iOS
+    headers:
+      public:
+        - path: MSPiOSCore/MSPiOSCore.h
     sources:
       - path: MSPiOSCore
         excludes:
@@ -28,6 +31,9 @@ targets:
       base:
         BUILD_LIBRARY_FOR_DISTRIBUTION: YES
         SKIP_INSTALL: NO
+        CLANG_ENABLE_MODULES: YES
+        SWIFT_INSTALL_OBJC_HEADER: YES
+        PUBLIC_HEADERS_FOLDER_PATH: Headers
         
         # Swift Module Interface Settings (explicit for XCFramework distribution)
         SWIFT_EMIT_MODULE_INTERFACE: YES
@@ -39,6 +45,16 @@ targets:
         # All dependencies are standard iOS frameworks (Foundation, etc.)
         FRAMEWORK_SEARCH_PATHS:
           - $(inherited)
+    postBuildScripts:
+      - name: Copy Modulemap
+        script: |
+          set -e
+          MODULEMAP_SOURCE="${SRCROOT}/MSPiOSCore/MSPiOSCore.modulemap"
+          MODULEMAP_DEST="${TARGET_BUILD_DIR}/${PRODUCT_NAME}.framework/Modules/module.modulemap"
+          if [ -f "$MODULEMAP_SOURCE" ]; then
+            mkdir -p "$(dirname "$MODULEMAP_DEST")"
+            cp "$MODULEMAP_SOURCE" "$MODULEMAP_DEST"
+          fi
 
 schemes:
   MSPiOSCore-XCFramework:
@@ -53,4 +69,3 @@ schemes:
       config: Debug
     archive:
       config: Release
-
