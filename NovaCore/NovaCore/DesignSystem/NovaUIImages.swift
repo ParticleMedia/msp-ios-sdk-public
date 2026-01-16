@@ -14,6 +14,7 @@ extension UIImage {
         // MARK: - Components
         let isolationMode = UIImage(named: "isolation_mode", in: NovaAsset.getBundle(), compatibleWith: nil)
         let popOver = UIImage(named: "pop_over", in: NovaAsset.getBundle(), compatibleWith: nil)
+        let popOverFilledBlue = UIImage(named: "pop_over_filled_blue", in: NovaAsset.getBundle(), compatibleWith: nil)
 
         // MARK: - Icons
         let arrowClockwiseLine = UIImage(named: "arrow_clockwise_line", in: NovaAsset.getBundle(), compatibleWith: nil)

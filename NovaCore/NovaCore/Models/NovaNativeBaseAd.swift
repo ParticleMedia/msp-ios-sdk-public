@@ -7,6 +7,11 @@
 import Foundation
 import UIKit
 
+enum NovaPopupCTAStyleVariant: String {
+    case legacy
+    case v2
+}
+
 // MARK: - NovaNativeBaseAd
 
 public class NovaNativeBaseAd: NovaBaseAd, NovaNativeMediaProviding {
@@ -41,7 +46,8 @@ public class NovaNativeBaseAd: NovaBaseAd, NovaNativeMediaProviding {
         layoutStyle: NovaNativeLayoutStyle?,
         marketingType: NovaAdMarketingType,
         playableInfo: NovaAdPlayableInfo?,
-        htmlPageItems: [PageItem]?
+        htmlPageItems: [PageItem]?,
+        popupCTAStyleVariant: NovaPopupCTAStyleVariant
     ) throws {
         self.creativeType = creativeType
         self.headline = headline
@@ -59,6 +65,7 @@ public class NovaNativeBaseAd: NovaBaseAd, NovaNativeMediaProviding {
         self.marketingType = marketingType
         self._playableInfo = playableInfo
         self._htmlPageItems = htmlPageItems
+        self.popupCTAStyleVariant = popupCTAStyleVariant
         // give it a default value to make it compile
         self.mediaContent = NovaAdMediaContent(adMedia: Self.defaultAdMedia)
 
@@ -100,6 +107,7 @@ public class NovaNativeBaseAd: NovaBaseAd, NovaNativeMediaProviding {
         _playableInfo = try container.decodeIfPresent(NovaAdPlayableInfo.self, forKey: .playableInfo)
         _htmlPageItems = try container.decodeIfPresent([PageItem].self, forKey: .pageItems)
         mediaContent = NovaAdMediaContent(adMedia: Self.defaultAdMedia)
+        popupCTAStyleVariant = .legacy
 
         let superDecoder = try container.superDecoder()
         try super.init(from: superDecoder)
@@ -147,6 +155,8 @@ public class NovaNativeBaseAd: NovaBaseAd, NovaNativeMediaProviding {
 
     /// Icon URL.
     public var iconURL: URL?
+
+    let popupCTAStyleVariant: NovaPopupCTAStyleVariant
 
     // media used to render media view
     public private(set) var mediaContent: NovaAdMediaContent
@@ -339,6 +349,9 @@ extension NovaNativeBaseAd {
                 videoLayoutOrientation: orientation ?? (_videoInfo.isLayoutVertical ? .vertical : .horizontal),
                 adCtrType: adCtrType,
                 callToAction: callToAction,
+                advertiser: advertiser,
+                iconURL: iconURL,
+                popupCTAStyleVariant: popupCTAStyleVariant,
                 endCardModel: endCardModel
             )
         } else {
