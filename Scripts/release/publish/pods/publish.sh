@@ -2228,6 +2228,43 @@ EOF
         done
     }
 
+    # Ensure ObjC import works: add umbrella modulemap + Swift-generated header if missing
+    ensure_objc_modulemap_and_header() {
+        local xcframework_path="$1"
+        local module_name="$2"
+        [[ -d "$xcframework_path" ]] || return
+
+        find "$xcframework_path" -type d -name "${module_name}.framework" | while read -r framework_dir; do
+            # Skip embedded Frameworks/ to avoid touching dependencies
+            if echo "$framework_dir" | grep -q "/Frameworks/"; then
+                continue
+            fi
+            local modules_dir="$framework_dir/Modules"
+            local headers_dir="$framework_dir/Headers"
+            local modulemap="$modules_dir/module.modulemap"
+            local umbrella="${module_name}-Swift.h"
+
+            mkdir -p "$modules_dir" "$headers_dir"
+
+            if [[ ! -f "$headers_dir/$umbrella" ]]; then
+                cat > "$headers_dir/$umbrella" <<EOF
+#pragma once
+#import <Foundation/Foundation.h>
+EOF
+                log_warn "Added stub umbrella header for $module_name: $headers_dir/$umbrella"
+            fi
+
+            cat > "$modulemap" <<EOF
+framework module $module_name {
+  umbrella header "$umbrella"
+  export *
+  module * { export * }
+}
+EOF
+            log_warn "Ensured umbrella modulemap for $module_name at $modulemap"
+        done
+    }
+
     log_info "Creating zip file from XCFramework..."
 
     # Prepare temp directory with unique name (mktemp for atomic uniqueness)
@@ -2294,6 +2331,7 @@ EOF
                 return 1
             fi
             ensure_modulemaps_in_xcframework "$temp_zip_dir/Binary/$(basename "$ios_core_path")"
+            ensure_objc_modulemap_and_header "$temp_zip_dir/Binary/$(basename "$ios_core_path")" "MSPiOSCore"
 
             # Copy ThirdParty PrebidMobile using ditto
             local prebid_path="$ROOT_DIR/ThirdParty/PrebidMobile/PrebidMobile.xcframework"
@@ -2420,6 +2458,9 @@ EOF
                 log_success "✅ Prepared $pod structure"
             fi
             ensure_modulemaps_in_xcframework "$temp_zip_dir/Binary/$(basename "$xcframework_path")"
+            if [[ "$pod" == "MSPiOSCore" || "$pod" == "MSPCore" ]]; then
+                ensure_objc_modulemap_and_header "$temp_zip_dir/Binary/$(basename "$xcframework_path")" "$pod"
+            fi
             ;;
     esac
 
