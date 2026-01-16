@@ -2205,6 +2205,29 @@ create_zip_from_xcframework() {
     local version="$2"
     local zip_name="${pod}-${version}.zip"
 
+    # Ensure each framework slice has a modulemap (ObjC @import support)
+    ensure_modulemaps_in_xcframework() {
+        local xcframework_path="$1"
+        [[ -d "$xcframework_path" ]] || return
+
+        find "$xcframework_path" -type d -name "*.framework" | while read -r framework_dir; do
+            local module_name
+            module_name="$(basename "$framework_dir" .framework)"
+            local modulemap="$framework_dir/Modules/module.modulemap"
+
+            if [[ ! -f "$modulemap" ]]; then
+                mkdir -p "$(dirname "$modulemap")"
+                cat > "$modulemap" <<EOF
+framework module $module_name {
+  export *
+  module * { export * }
+}
+EOF
+                log_warn "Added missing module.modulemap for $module_name (pure Swift module)"
+            fi
+        done
+    }
+
     log_info "Creating zip file from XCFramework..."
 
     # Prepare temp directory with unique name (mktemp for atomic uniqueness)
@@ -2256,6 +2279,7 @@ create_zip_from_xcframework() {
                 rm -rf "$temp_zip_dir"
                 return 1
             fi
+            ensure_modulemaps_in_xcframework "$temp_zip_dir/Binary/$(basename "$shared_lib_path")"
 
             # Copy embedded MSPiOSCore.xcframework using ditto
             local ios_core_path="$ROOT_DIR/Build/XCFrameworks/MSPiOSCore.xcframework"
@@ -2269,6 +2293,7 @@ create_zip_from_xcframework() {
                 rm -rf "$temp_zip_dir"
                 return 1
             fi
+            ensure_modulemaps_in_xcframework "$temp_zip_dir/Binary/$(basename "$ios_core_path")"
 
             # Copy ThirdParty PrebidMobile using ditto
             local prebid_path="$ROOT_DIR/ThirdParty/PrebidMobile/PrebidMobile.xcframework"
@@ -2282,6 +2307,7 @@ create_zip_from_xcframework() {
                 rm -rf "$temp_zip_dir"
                 return 1
             fi
+            ensure_modulemaps_in_xcframework "$temp_zip_dir/ThirdParty/PrebidMobile/$(basename "$prebid_path")"
 
             # Copy Sources (optional, for dev mode)
             if [[ -d "$ROOT_DIR/Sources" ]]; then
@@ -2393,6 +2419,7 @@ create_zip_from_xcframework() {
 
                 log_success "✅ Prepared $pod structure"
             fi
+            ensure_modulemaps_in_xcframework "$temp_zip_dir/Binary/$(basename "$xcframework_path")"
             ;;
     esac
 
