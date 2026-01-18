@@ -655,6 +655,11 @@ spm_local_validation() {
     
     # Get SPM product name with fallback
     local spm_product_name="${SPM_REMOTE_PRODUCT_NAME:-MSPAds}"
+    local spm_import_name="$spm_product_name"
+    if [[ "$spm_product_name" == "MSPAds" ]]; then
+        # MSPAds is a composite product; import one of its targets instead.
+        spm_import_name="MSPCoreLinker"
+    fi
     
     # Create temp directory
     log_step "Creating temporary test package"
@@ -704,6 +709,21 @@ spm_local_validation() {
     
     log_success "Swift package initialized"
     
+    # Ensure core-only Package.swift for local validation to avoid missing third-party binaries
+    if [[ -f "$ROOT_DIR/Scripts/target-switching/common.sh" ]]; then
+        # shellcheck source=Scripts/target-switching/common.sh
+        source "$ROOT_DIR/Scripts/target-switching/common.sh" 2>/dev/null || true
+        if command -v ensure_package_swift_enabled &>/dev/null; then
+            log_step "Ensuring core-only Package.swift for SPM local validation"
+            if ! ensure_package_swift_enabled "spm-release"; then
+                log_error "[SPM][ERROR] Failed to generate core-only Package.swift for local validation"
+                return 1
+            fi
+        else
+            log_warn "[SPM][WARN] ensure_package_swift_enabled not available; using existing Package.swift"
+        fi
+    fi
+
     # Get absolute path to repo Package.swift
     local repo_package_swift="$ROOT_DIR/Package.swift"
     if [[ ! -f "$repo_package_swift" ]]; then
@@ -736,6 +756,9 @@ let package = Package(
     platforms: [
         .iOS(.v15)
     ],
+    products: [
+        .library(name: "MSP_SPMLocalTest", targets: ["MSP_SPMLocalTest"])
+    ],
     dependencies: [
         .package(path: "$repo_abs_path")
     ],
@@ -758,11 +781,11 @@ EOF
     if [[ -f "$source_swift" ]]; then
         cat > "$source_swift" << EOF
 import Foundation
-import ${spm_product_name}
+import ${spm_import_name}
 
 // No runtime code needed; import validates SPM linkage.
 EOF
-        log_info "Library source updated with import: $spm_product_name"
+        log_info "Library source updated with import: $spm_import_name"
     fi
     
     # Run swift package resolve

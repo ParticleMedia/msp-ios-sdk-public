@@ -161,6 +161,7 @@ let package = Package(
             name: "MSPCoreLinker",
             dependencies: [
                 "MSPCore",
+                "PrebidMobile",
                 .product(name: "SwiftProtobuf", package: "swift-protobuf"),
             ],
             path: "Sources/Common/MSPCoreWrapper"
