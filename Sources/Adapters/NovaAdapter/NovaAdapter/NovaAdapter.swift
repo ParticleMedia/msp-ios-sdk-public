@@ -174,7 +174,9 @@ public class NovaAdapter: AdNetworkAdapter {
             if let iconView = nativeAdContainer.getIcon(),
                let iconURL = novaNativeAdItem.iconURL
             {
-                iconView.kf.setImage(with: iconURL)
+                DispatchQueue.main.async {
+                    iconView.kf.setImage(with: iconURL)
+                }
             }
 
             novaNativeAdView.addSubview(nativeAdContainer)
@@ -505,4 +507,3 @@ extension NovaAdapter: NovaInterstitialAdDelegate {
         }
     }
 }
-
