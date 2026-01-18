@@ -124,6 +124,17 @@ targets:
             mkdir -p "$(dirname "$MODULEMAP_DEST")"
             cp "$MODULEMAP_SOURCE" "$MODULEMAP_DEST"
           fi
+      - name: Ensure Umbrella Header
+        script: |
+          set -e
+          HEADER_SOURCE="${SRCROOT}/MSPCore/MSPCore.h"
+          HEADERS_DIR="${TARGET_BUILD_DIR}/${PRODUCT_NAME}.framework/Headers"
+          if [ -f "$HEADER_SOURCE" ]; then
+            mkdir -p "$HEADERS_DIR"
+            if [ ! -f "$HEADERS_DIR/MSPCore.h" ]; then
+              cp "$HEADER_SOURCE" "$HEADERS_DIR/MSPCore.h"
+            fi
+          fi
 
 schemes:
   MSPCore-XCFramework:
