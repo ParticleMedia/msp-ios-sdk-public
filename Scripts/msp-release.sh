@@ -384,6 +384,7 @@ apply_disable_verification() {
         export MSP_SKIP_DEVICE_VERIFY="true"
         export MSP_SKIP_PODS_VERIFY="true"
         export MSP_SKIP_SPM_LOCAL_BUILD="true"
+        export SKIP_SPM_LOCAL_VALIDATION="true"
         export MSP_SKIP_XCF_VERIFY="true"
         export MSP_REMOTE_VERIFY_ENABLED="0"
         export MSP_DEVICE_VERIFY_ENABLED="0"

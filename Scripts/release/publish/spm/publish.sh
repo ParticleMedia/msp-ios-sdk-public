@@ -629,6 +629,20 @@ _msp_spm_should_skip_step() {
 
 # SPM Local Build Validation
 spm_local_validation() {
+    # Global kill-switch for post-release verification
+    if [[ "${MSP_DISABLE_POST_VERIFICATION:-0}" == "1" ]] || [[ "${MSP_DISABLE_POST_VERIFICATION:-false}" == "true" ]]; then
+        log_info "Skipping SPM local build validation (MSP_DISABLE_POST_VERIFICATION=1)"
+        msp_state_mark_step_skipped "spm_local_validation" "SPM local validation skipped due to MSP_DISABLE_POST_VERIFICATION=1"
+        return 0
+    fi
+    
+    # Honor orchestrator/CLI skip flag
+    if [[ "${MSP_SKIP_SPM_LOCAL_BUILD:-false}" == "true" ]] || [[ "${MSP_SKIP_SPM_LOCAL_BUILD:-0}" == "1" ]]; then
+        log_info "Skipping SPM local build validation (MSP_SKIP_SPM_LOCAL_BUILD=true)"
+        msp_state_mark_step_skipped "spm_local_validation" "SPM local validation skipped due to MSP_SKIP_SPM_LOCAL_BUILD"
+        return 0
+    fi
+    
     # Check if we should skip this step in resume mode
     if _msp_spm_should_skip_step "spm_local_validation"; then
         log_info "Resuming: skipping spm_local_validation (status already success/skipped)"

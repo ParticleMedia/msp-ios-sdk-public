@@ -99,6 +99,7 @@ msp-release.sh run
 ## TODO
 
 - Re-enable post-release verification steps (local/remote/device/XCF) once SPM local build issues are resolved. Currently disabled by default via `MSP_DISABLE_POST_VERIFICATION=1`.
+- Re-enable SPM 本地构建验证（`spm_local_validation`）逻辑并移除 `SKIP_SPM_LOCAL_VALIDATION`/`MSP_SKIP_SPM_LOCAL_BUILD` 的默认跳过，待 SPM 发布恢复稳定后再执行真实本地验证。
 - Add a documented verification profile or flag to toggle post-release checks without touching preflight.
 - Re-enable CI-only restriction for production releases when CI pipeline is ready (`Scripts/release/utils/safety.sh`).
 
