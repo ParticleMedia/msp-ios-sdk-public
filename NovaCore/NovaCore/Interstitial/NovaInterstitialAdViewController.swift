@@ -136,8 +136,9 @@ class NovaInterstitialAdViewController: UIViewController {
                 // TODO: Implement tracing functionality when needed
                 print("Tracing impression for ID: \(tracingID)")
             }
+            
+            interstitialAd.delegate?.interstitialAdDidDisplay(interstitialAd)
         }
-        interstitialAd.delegate?.interstitialAdDidDisplay(interstitialAd)
 
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(handleApplicationWillEnterForeground(_:)),
