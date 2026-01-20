@@ -51,7 +51,7 @@ This protocol defines how to classify tasks into tiers, which determines:
 ```yaml
 tier: 0
 agent: codex
-model: haiku-3.5
+recommended_model: haiku-3.5  # User may override
 human_review: optional
 cost_estimate: "$0.01 / task"
 ```
@@ -85,7 +85,7 @@ File: path/to/file.swift:L42
 ```yaml
 tier: 1
 agent: codex | cursor
-model: sonnet-3.5
+recommended_model: sonnet-3.5  # User may override
 human_review: recommended
 cost_estimate: "$0.05 - $0.20 / task"
 ```
@@ -137,7 +137,7 @@ tier: 2
 agent:
   analysis: claude-code
   execution: codex | cursor
-model:
+recommended_model:  # User may override
   analysis: sonnet-4
   execution: sonnet-3.5 | sonnet-4
 human_review: required
@@ -201,8 +201,8 @@ Expected: [expected result]
 **Configuration**:
 ```yaml
 tier: 3
-agent: claude-code (opus only)
-model: opus-4.5
+agent: claude-code
+recommended_model: opus-4.5  # For strategic reasoning - user may override
 human_review: required + multi-person
 cost_estimate: "$5.00 - $20.00 / task"
 ```

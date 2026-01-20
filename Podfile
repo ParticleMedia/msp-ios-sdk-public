@@ -5,6 +5,16 @@ use_modular_headers!
 
 workspace 'msp-ios-sdk'
 
+# ============================================================================
+# Testing Dependencies
+# ============================================================================
+# Shared testing pods for all test targets
+def testing_pods
+  pod 'Quick', '~> 7.0'
+  pod 'Nimble', '~> 13.0'
+  pod 'OHHTTPStubs', '~> 9.1'
+end
+
 # pods-dev mode: full integration for source-based development
 # pods-release mode: no integration (XcodeGen manages project)
 msp_mode = ENV['MSP_MODE'] || 'pods-release'
@@ -117,11 +127,38 @@ target 'MSPDemoApp' do
   pod 'lottie-ios', '4.5.2', :configurations => demoapp_pod_configs
   # SwiftProtobuf is needed by MSPCore at compile time
   pod 'SwiftProtobuf', '~> 1.28.2', :configurations => demoapp_pod_configs
-  
+
   # NOTE: MSPThirdParty pod is NOT needed because:
   # - Third-party SDKs (FBAudienceNetwork, InMobiSDK, etc.) are provided by their own CocoaPods
   # - PrebidMobile.xcframework is already included in MSPSharedLibraries.podspec (in all modes)
   # - CocoaPods automatically embeds these frameworks when :integrate_targets => true (pods-dev mode)
+end
+
+# ============================================================================
+# Test Targets
+# ============================================================================
+# MSPCore module tests
+target 'MSPCoreTests' do
+  project 'Examples/MSPDemoApp/MSPDemoApp'
+  testing_pods
+end
+
+# MSPiOSCore module tests
+target 'MSPiOSCoreTests' do
+  project 'Examples/MSPDemoApp/MSPDemoApp'
+  testing_pods
+end
+
+# NovaCore module tests
+target 'NovaCoreTests' do
+  project 'Examples/MSPDemoApp/MSPDemoApp'
+  testing_pods
+end
+
+# Adapter module tests
+target 'AdapterTests' do
+  project 'Examples/MSPDemoApp/MSPDemoApp'
+  testing_pods
 end
 
 post_install do |installer|
@@ -132,7 +169,9 @@ post_install do |installer|
   puts "[post_install] MSP_MODE=#{msp_mode}"
   puts "[post_install] pods-dev mode: #{is_pods_dev ? 'YES (pure source, no XCFrameworks)' : 'NO (binary mode)'}"
   
-  installer.pods_project.targets.each do |target|
+  # Apply settings across all generated pod projects when multiple projects are enabled.
+  all_pod_targets = installer.generated_projects.flat_map(&:targets)
+  all_pod_targets.each do |target|
     target.build_configurations.each do |config|
       config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '15.0'
       
@@ -142,13 +181,23 @@ post_install do |installer|
       config.build_settings['SWIFT_INSTALL_MODULE_FOR_DEPLOYMENT'] = 'NO'
       config.build_settings['BUILD_LIBRARY_FOR_DISTRIBUTION'] = 'NO'
       
-      config.build_settings['OTHER_SWIFT_FLAGS'] ||= ''
+      swift_flags = config.build_settings['OTHER_SWIFT_FLAGS'].to_s
+      swift_flags = '$(inherited)' if swift_flags.strip.empty?
+      swift_flags = "$(inherited) #{swift_flags}" unless swift_flags.include?('$(inherited)')
       # Remove -import-underlying-module flag from ALL pods
       # This flag causes "cannot load underlying module" errors for pods without ObjC code
-      config.build_settings['OTHER_SWIFT_FLAGS'] = config.build_settings['OTHER_SWIFT_FLAGS'].to_s.gsub(/-import-underlying-module/, '').strip
+      swift_flags = swift_flags.gsub(/-import-underlying-module/, '').strip
       # Remove any existing -no-verify-emitted-module-interface if present, then add it
-      config.build_settings['OTHER_SWIFT_FLAGS'] = config.build_settings['OTHER_SWIFT_FLAGS'].to_s.gsub(/\s*-no-verify-emitted-module-interface\s*/, '').strip
-      config.build_settings['OTHER_SWIFT_FLAGS'] << ' -no-verify-emitted-module-interface' unless config.build_settings['OTHER_SWIFT_FLAGS'].include?('-no-verify-emitted-module-interface')
+      swift_flags = swift_flags.gsub(/\s*-no-verify-emitted-module-interface\s*/, '').strip
+      swift_flags << ' -no-verify-emitted-module-interface' unless swift_flags.include?('-no-verify-emitted-module-interface')
+      config.build_settings['OTHER_SWIFT_FLAGS'] = swift_flags
+
+      swift_conditions = config.build_settings['SWIFT_ACTIVE_COMPILATION_CONDITIONS'].to_s
+      unless swift_conditions.include?('COCOAPODS')
+        swift_conditions = swift_conditions.strip
+        swift_conditions = swift_conditions.empty? ? '$(inherited)' : swift_conditions
+        config.build_settings['SWIFT_ACTIVE_COMPILATION_CONDITIONS'] = "#{swift_conditions} COCOAPODS"
+      end
 
       # Note: Kingfisher-specific patching removed - now using MSPKingfisher wrapper
       # which has BUILD_LIBRARY_FOR_DISTRIBUTION=NO set in its podspec
@@ -228,7 +277,7 @@ post_install do |installer|
   
   # --- Configure pure Swift adapters to not generate ObjC module ---
   # Remove umbrella header references to prevent "cannot load underlying module" errors
-  installer.pods_project.targets.each do |target|
+  all_pod_targets.each do |target|
     if adapter_pods.include?(target.name)
       puts "[post_install] Configuring pure Swift module for #{target.name}"
     target.build_configurations.each do |config|
@@ -236,6 +285,33 @@ post_install do |installer|
         config.build_settings['DEFINES_MODULE'] = 'YES'
         config.build_settings['SWIFT_OBJC_INTERFACE_HEADER_NAME'] = ''
         config.build_settings['GENERATE_INFOPLIST_FILE'] = 'NO'
+      end
+    end
+  end
+
+  # Ensure Quick/Nimble compile with the project Swift version.
+  swift_test_pods = ["Quick", "Nimble"]
+  objc_bridge_pods = {
+    "Quick" => '${PODS_ROOT}/../Scripts/headers/Quick-Bridging.h',
+    "Nimble" => '${PODS_ROOT}/../Scripts/headers/Nimble-Bridging.h',
+    "CwlCatchException" => '${PODS_ROOT}/Headers/Public/CwlCatchExceptionSupport/CwlCatchExceptionSupport-umbrella.h',
+    "CwlPreconditionTesting" => '${PODS_ROOT}/../Scripts/headers/CwlPreconditionTesting-Bridging.h'
+  }
+  all_pod_targets.each do |target|
+    next unless swift_test_pods.include?(target.name)
+    target.build_configurations.each do |config|
+      config.build_settings['SWIFT_VERSION'] = '5.0'
+    end
+  end
+  all_pod_targets.each do |target|
+    next unless objc_bridge_pods.key?(target.name)
+    target.build_configurations.each do |config|
+      config.build_settings['SWIFT_OBJC_BRIDGING_HEADER'] = objc_bridge_pods[target.name]
+      if target.name == "Quick" || target.name == "Nimble"
+        swift_flags = config.build_settings['OTHER_SWIFT_FLAGS'].to_s
+        unless swift_flags.include?('-import-objc-header')
+          config.build_settings['OTHER_SWIFT_FLAGS'] = "#{swift_flags} -import-objc-header #{objc_bridge_pods[target.name]}".strip
+        end
       end
     end
   end

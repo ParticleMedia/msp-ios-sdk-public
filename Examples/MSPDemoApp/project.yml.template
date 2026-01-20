@@ -52,8 +52,18 @@ targetTemplates:
         LD_RUNPATH_SEARCH_PATHS:
           - "$(inherited)"
           - "@executable_path/Frameworks"
+  TestTarget:
+    type: bundle.unit-test
+    platform: iOS
+    settings:
+      base:
+        ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES: "YES"
+        SWIFT_VERSION: "5.0"
+        TEST_HOST: "$(BUILT_PRODUCTS_DIR)/MSPDemoApp.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/MSPDemoApp"
+{{ PODS_SETTINGS }}
+    dependencies:
+      - target: MSPDemoApp
 targets:
 {{ MODE_TARGETS }}
 schemes:
 {{ MODE_SCHEMES }}
-
