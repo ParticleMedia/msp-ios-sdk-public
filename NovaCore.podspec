@@ -35,7 +35,10 @@ Pod::Spec.new do |spec|
     # OMSDK_Newsbreak1.xcframework is vendored directly (no MSPOMSDK wrapper)
     spec.source = { :path => '.' }
     spec.source_files = "Sources/Core/NovaCore/NovaCore/**/*.{swift,h,m}"
-    spec.resources = "Sources/Core/NovaCore/NovaCore/Resources/**/*"
+    spec.resources = [
+      "Sources/Core/NovaCore/NovaCore/NBResourceBundle.bundle",
+      "Sources/Core/NovaCore/NovaCore/Resources/**/*"
+    ]
     spec.vendored_frameworks = [
       "Sources/Core/MSPOMSDK/OMSDK_Newsbreak1.xcframework",
       "ThirdParty/Shimmer/Shimmer.xcframework"
