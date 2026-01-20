@@ -1,0 +1,18 @@
+# Test Target Template for XcodeGen
+# Usage: Include via templates: [TestTarget] in project.yml
+# This template defines common settings for all unit test targets
+
+TestTarget:
+  type: bundle.unit-test
+  platform: iOS
+  settings:
+    base:
+      ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES: "YES"
+      SWIFT_VERSION: "5.0"
+      IPHONEOS_DEPLOYMENT_TARGET: "15.0"
+      PODS_ROOT: "$(SRCROOT)/../../Pods"
+      PODS_PODFILE_DIR_PATH: "$(SRCROOT)/../.."
+      LD_RUNPATH_SEARCH_PATHS:
+        - "$(inherited)"
+        - "@executable_path/Frameworks"
+        - "@loader_path/Frameworks"

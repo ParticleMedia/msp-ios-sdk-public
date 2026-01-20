@@ -1,0 +1,78 @@
+name: Unit Tests
+
+on:
+  push:
+    branches: [main, develop, 'feature/**']
+  pull_request:
+    branches: [main, develop]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: Run Unit Tests
+    runs-on: macos-14
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Xcode
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: '15.2'
+
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.2'
+          bundler-cache: true
+
+      - name: Cache CocoaPods
+        uses: actions/cache@v4
+        with:
+          path: Pods
+          key: ${{ runner.os }}-pods-${{ hashFiles('**/Podfile.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-pods-
+
+      - name: Install CocoaPods
+        run: |
+          bundle exec pod install --repo-update
+
+      - name: Run Unit Tests
+        run: |
+          xcodebuild test \
+            -workspace msp-ios-sdk.xcworkspace \
+            -scheme AllTests \
+            -destination 'platform=iOS Simulator,name=iPhone 15,OS=17.2' \
+            -enableCodeCoverage YES \
+            -resultBundlePath build/TestResults.xcresult \
+            | xcpretty --color
+
+      - name: Generate Coverage Report
+        if: success()
+        run: |
+          xcrun xccov view --report --json build/TestResults.xcresult > build/coverage.json
+
+      - name: Check Coverage Threshold
+        if: success()
+        run: |
+          COVERAGE=$(jq '.lineCoverage' build/coverage.json)
+          THRESHOLD=0.50
+          echo "Line coverage: $COVERAGE"
+          if (( $(echo "$COVERAGE < $THRESHOLD" | bc -l) )); then
+            echo "❌ Coverage ($COVERAGE) is below threshold ($THRESHOLD)"
+            exit 1
+          fi
+          echo "✅ Coverage meets threshold"
+
+      - name: Upload Test Results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: build/TestResults.xcresult
+          retention-days: 7

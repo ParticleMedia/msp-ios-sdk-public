@@ -48,10 +48,7 @@ Reference via `@file` in Chat/Composer:
 │   └── README.md
 ├── protocols/             # Shared standards and rules
 │   ├── task-tier.protocol.md
-│   ├── model-selection.protocol.md
-│   ├── output-format.protocol.md
-│   ├── escalation.protocol.md
-│   └── handoff.protocol.md
+│   └── output-format.protocol.md
 └── templates/             # Template index
     └── README.md
 ```

@@ -1,7 +1,7 @@
 # AI Agent Architecture
 
-> **Version**: 2.0
-> **Last Updated**: 2026-01-14
+> **Version**: 3.0
+> **Last Updated**: 2026-01-20
 
 This document describes the comprehensive AI agent infrastructure for the MSP iOS SDK project, enabling consistent collaboration between human developers and multiple AI assistants.
 
@@ -56,15 +56,19 @@ The architecture separates concerns into:
          │  ┌─────────────────────┐  ┌─────────────────────────┐ │
          │  │     protocols/      │  │        skills/          │ │
          │  │  ├─ task-tier       │  │  ├─ constitutional-     │ │
-         │  │  ├─ model-selection │  │  │   auditor           │ │
-         │  │  ├─ escalation      │  │  ├─ scripts-failure-   │ │
-         │  │  ├─ handoff         │  │  │   analyst           │ │
-         │  │  └─ output-format   │  │  ├─ sources-bug-       │ │
-         │  └─────────────────────┘  │  │   analyst           │ │
+         │  │  └─ output-format   │  │  │   auditor           │ │
+         │  └─────────────────────┘  │  ├─ scripts-failure-   │ │
+         │                           │  │   analyst           │ │
+         │                           │  ├─ sources-bug-       │ │
+         │                           │  │   analyst           │ │
          │                           │  ├─ unit-test-         │ │
          │                           │  │   generator         │ │
          │                           │  ├─ quick-fix          │ │
-         │                           │  └─ refactor-pattern   │ │
+         │                           │  ├─ refactor-pattern   │ │
+         │                           │  ├─ planner            │ │
+         │                           │  ├─ architect          │ │
+         │                           │  ├─ deep-reviewer      │ │
+         │                           │  └─ document-writer    │ │
          │                           └─────────────────────────┘ │
          └───────────────────────────────────────────────────────┘
                                  │
@@ -94,32 +98,28 @@ The architecture separates concerns into:
 
 ```
 msp-ios-sdk/
-├── AGENTS.md                       # Operations manual for ALL agents (v2.0)
+├── AGENTS.md                       # Operations manual for ALL agents (v3.0)
 ├── constitution.md                 # Supreme law (root)
 │
 ├── .agents-shared/                 # Shared capability layer
 │   ├── README.md                   # Overview
 │   ├── protocols/                  # Shared standards
 │   │   ├── task-tier.protocol.md
-│   │   ├── model-selection.protocol.md
-│   │   ├── escalation.protocol.md
-│   │   ├── handoff.protocol.md
 │   │   └── output-format.protocol.md
-│   └── skills/                     # Shared skills
+│   └── skills/                     # All skills (shared across agents)
 │       ├── constitutional-auditor.skill.md
 │       ├── scripts-failure-analyst.skill.md
 │       ├── sources-bug-analyst.skill.md
 │       ├── unit-test-generator.skill.md
 │       ├── quick-fix.skill.md
-│       └── refactor-pattern.skill.md
+│       ├── refactor-pattern.skill.md
+│       ├── planner.skill.md              # Strategic planning
+│       ├── architect.skill.md            # Architectural design
+│       ├── deep-reviewer.skill.md        # Comprehensive review
+│       └── document-writer.skill.md      # Documentation synthesis
 │
 ├── .claude/                        # Claude Code configuration
-│   ├── CLAUDE.md                   # Strategic directives (v2.0)
-│   ├── skills/                     # Claude-exclusive skills
-│   │   ├── planner.skill.md
-│   │   ├── architect.skill.md
-│   │   ├── deep-reviewer.skill.md
-│   │   └── document-writer.skill.md
+│   ├── CLAUDE.md                   # Strategic directives (v3.0)
 │   ├── agents/                     # Sub-agents
 │   │   └── code-reviewer.agent.md
 │   └── commands/                   # Slash commands
@@ -190,11 +190,13 @@ Tasks are classified into 4 tiers based on complexity:
 
 **Task Tiers**: 2-3
 
-**Exclusive Skills**:
+**Strategic Skills** (recommended for Claude Code with Opus model):
 - `planner.skill.md` - Multi-phase task planning
 - `architect.skill.md` - Architectural design
 - `deep-reviewer.skill.md` - 6-dimensional code review
 - `document-writer.skill.md` - Technical documentation synthesis
+
+Note: All skills are now shared across agents. These strategic skills are *recommended* for Claude Code with Opus model due to their complexity.
 
 **Best For**:
 - Planning complex multi-step implementations
@@ -269,34 +271,36 @@ $ codex "fix force unwrap on line 42"
 
 ## Skill Organization
 
-### Shared Skills (`.agents-shared/skills/`)
+All skills are now shared in `.agents-shared/skills/` and accessible to all agents (Claude Code, Codex, Cursor).
 
-All agents can use these procedural, repeatable skills:
+### Analysis Skills
 
-**Analysis Skills**:
-| Skill | Purpose | When to Use |
-|-------|---------|-------------|
-| `constitutional-auditor` | Check compliance | Before commit, during review |
-| `scripts-failure-analyst` | Diagnose CI/CD failures | When scripts fail |
-| `sources-bug-analyst` | Diagnose Swift crashes | When app crashes |
+| Skill | Purpose | When to Use | Recommended Model |
+|-------|---------|-------------|-------------------|
+| `constitutional-auditor` | Check compliance | Before commit, during review | Sonnet 3.5 |
+| `scripts-failure-analyst` | Diagnose CI/CD failures | When scripts fail | Sonnet 4 |
+| `sources-bug-analyst` | Diagnose Swift crashes | When app crashes | Sonnet 4 |
 
-**Generation Skills**:
-| Skill | Purpose | When to Use |
-|-------|---------|-------------|
-| `unit-test-generator` | Generate tests | After implementing feature |
-| `quick-fix` | Mechanical fixes | Linter violations, typos |
-| `refactor-pattern` | Apply refactoring | Code smell detected |
+### Generation Skills
 
-### Claude-Exclusive Skills (`.claude/skills/`)
+| Skill | Purpose | When to Use | Recommended Model |
+|-------|---------|-------------|-------------------|
+| `unit-test-generator` | Generate tests | After implementing feature | Haiku/Sonnet 3.5 |
+| `quick-fix` | Mechanical fixes | Linter violations, typos | Haiku |
+| `refactor-pattern` | Apply refactoring | Code smell detected | Sonnet 3.5 |
 
-Only Claude Code can use these strategic skills (require Opus):
+### Strategic Skills
 
-| Skill | Purpose | When to Use |
-|-------|---------|-------------|
-| `planner` | Task planning | Complex features, >5 files |
-| `architect` | API design | New modules, public API |
-| `deep-reviewer` | Comprehensive review | Complex PRs, pre-release |
-| `document-writer` | Documentation | Architecture docs, ADRs |
+These skills are recommended for Claude Code with Opus model due to their deep reasoning requirements, but any agent can invoke them if needed:
+
+| Skill | Purpose | When to Use | Recommended Model |
+|-------|---------|-------------|-------------------|
+| `planner` | Task planning | Complex features, >5 files | Opus 4.5 |
+| `architect` | API design | New modules, public API | Opus 4.5 |
+| `deep-reviewer` | Comprehensive review | Complex PRs, pre-release | Opus 4.5 |
+| `document-writer` | Documentation | Architecture docs, ADRs | Opus 4.5 |
+
+**Note**: Model recommendations are guidelines, not requirements. Users can manually select models based on their needs and budget.
 
 ---
 
@@ -321,30 +325,9 @@ task:
   model: sonnet-3-5
 ```
 
-### Escalation Protocol (`.agents-shared/protocols/escalation.protocol.md`)
-
-Defines when to escalate:
-
-**Automatic Triggers**:
-- Public API modification
-- Constitution/SSOT changes
-- >150 lines diff, >5 files
-- Error repeats twice
-- New/major dependency change
-- Root cause unclear
-- Task requires Opus
-
-### Handoff Protocol (`.agents-shared/protocols/handoff.protocol.md`)
-
-Defines agent-to-agent transfers:
-
-**Downward**: Claude Code → Codex/Cursor (planning → execution)
-**Upward**: Codex/Cursor → Claude Code (blocked → analysis)
-**Lateral**: Codex ↔ Cursor (mode switch)
-
 ---
 
-## Model Selection
+## Model Recommendations
 
 ### Model Capabilities
 
@@ -355,14 +338,18 @@ Defines agent-to-agent transfers:
 | **Sonnet 3.5** | Standard code generation | $3 input / $15 output |
 | **Haiku 3.5** | Simple, fast tasks | $0.25 input / $1.25 output |
 
-### Tier → Model Mapping
+### Tier → Model Recommendations
 
-| Tier | Primary Model | Fallback |
-|------|---------------|----------|
-| 0 (Trivial) | Haiku 3.5 | Sonnet 3.5 |
-| 1 (Standard) | Sonnet 3.5 | Sonnet 4 |
-| 2 (Complex) | Sonnet 4 | Opus 4.5 |
-| 3 (Strategic) | **Opus 4.5** | N/A (require Opus) |
+These are recommended mappings, not hard requirements. Users can manually select models based on task needs and budget:
+
+| Tier | Recommended Model | Alternative | Notes |
+|------|-------------------|-------------|-------|
+| 0 (Trivial) | Haiku 3.5 | Sonnet 3.5 | Optimize for speed and cost |
+| 1 (Standard) | Sonnet 3.5 | Sonnet 4 | Balance of capability and cost |
+| 2 (Complex) | Sonnet 4 | Opus 4.5 | Deep analysis recommended |
+| 3 (Strategic) | Opus 4.5 | Sonnet 4 | Strategic reasoning preferred |
+
+**User Override**: Users can always manually select any model. These are suggestions based on task complexity.
 
 ---
 
@@ -434,32 +421,31 @@ Requirements:
 [Select code] Add guard let to safely unwrap bidResponse
 ```
 
-### Multi-Agent Collaboration
+### Multi-Agent Workflow (Using Speckit)
 
 ```
 1. Human: "Implement OAuth authentication"
 
-2. Claude Code [Tier 3]:
-   - Uses planner.skill.md
-   - Produces 4-phase plan
-   - Identifies 12 subtasks by tier
+2. Claude Code [Planning Phase]:
+   - Run /speckit.specify to create specification
+   - Run /speckit.plan to design architecture
+   - Run /speckit.tasks to break down implementation
 
-3. Claude Code → Codex [Handoff]:
-   - Tier 0-1 subtasks delegated
-   - "Add AuthManager class" (Tier 1)
-   - "Generate unit tests" (Tier 1)
+3. Human: Reviews and approves plan
 
-4. Codex executes subtasks
+4. Implementation Phase:
+   - Run /speckit.implement for automated execution
+   - OR manually assign tasks to agents:
+     - Codex: Tier 0-1 tasks (tests, simple classes)
+     - Cursor: Tier 1-2 tasks (interactive implementation)
+     - Claude: Tier 2-3 tasks (complex analysis, design decisions)
 
-5. Codex → Claude Code [Escalation]:
-   - "OAuth flow unclear, need design decision"
+5. Verification Phase:
+   - Run tests
+   - Constitutional audit
+   - Human review
 
-6. Claude Code [Tier 3]:
-   - Uses architect.skill.md
-   - Designs OAuth flow
-   - Updates plan
-
-7. Continue until complete
+Note: Speckit workflow replaces the previous escalation/handoff mechanisms with a structured, plan-driven approach.
 ```
 
 ---
@@ -482,11 +468,22 @@ Requirements:
    ```
 3. Document in `AGENTS.md` Section 3.2
 
-### New Claude-Exclusive Skill
+### New Skill (All skills are now shared)
 
-1. Create `.claude/skills/<name>.skill.md`
-2. Include frontmatter with `shared: false`, `required_model: opus`
-3. Document in `.claude/CLAUDE.md` Section 5
+1. Create `.agents-shared/skills/<name>.skill.md`
+2. Include YAML frontmatter:
+   ```yaml
+   ---
+   name: skill-name
+   description: Brief description
+   category: analysis | generation | strategic
+   shared: true
+   applicable_agents: [claude-code, codex, cursor]
+   recommended_model: haiku | sonnet-3.5 | sonnet-4 | opus  # User may override
+   allowed-tools: [Read, Edit, Grep]
+   ---
+   ```
+3. Document in `AGENTS.md` Section 3
 
 ### New Protocol
 

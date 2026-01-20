@@ -258,62 +258,7 @@ agent: claude-code
 
 ---
 
-## 4. Special Formats
-
-### Handoff Format
-
-When handing off to another agent:
-
-```yaml
----
-handoff:
-  type: downward | upward | lateral
-  from: [agent-name]
-  to: [agent-name]
-  timestamp: [ISO8601]
-
-context:
-  task_summary: "..."
-  decisions: [...]
-  files: [...]
-  constraints: [...]
-
-verification:
-  commands: [...]
-  success_criteria: [...]
----
-```
-
-See `handoff.protocol.md` for full specification.
-
----
-
-### Escalation Format
-
-When escalating to a higher-tier agent:
-
-```yaml
----
-escalation:
-  from: [agent-name]
-  to: [agent-name]
-  reason: [architecture|public_api|complexity|unclear]
-  timestamp: [ISO8601]
-
-context:
-  original_task: "..."
-  blocker: "..."
-  work_completed: [...]
-
-questions: [...]
----
-```
-
-See `escalation.protocol.md` for full specification.
-
----
-
-## 5. Markdown Best Practices
+## 4. Markdown Best Practices
 
 ### Code Blocks
 Always specify language for syntax highlighting:
@@ -341,7 +286,7 @@ Use tables for structured data:
 
 ---
 
-## 6. Verification Section Requirements
+## 5. Verification Section Requirements
 
 The Verification section MUST include:
 
@@ -363,7 +308,7 @@ The Verification section MUST include:
 
 ---
 
-## 7. Constitutional Compliance Section
+## 6. Constitutional Compliance Section
 
 For Tier 2-3 tasks, MUST cite relevant constitutional articles:
 
@@ -377,7 +322,7 @@ For Tier 2-3 tasks, MUST cite relevant constitutional articles:
 
 ---
 
-## 8. Forbidden Patterns
+## 7. Forbidden Patterns
 
 ### ❌ Don't: Vague descriptions
 ```markdown
@@ -417,7 +362,7 @@ Expected: 3/3 tests pass
 
 ---
 
-## 9. Output Size Guidelines
+## 8. Output Size Guidelines
 
 | Tier | Max Length | Rationale |
 |------|------------|-----------|
@@ -430,7 +375,7 @@ If exceeding guidelines, consider breaking into multiple tasks or creating separ
 
 ---
 
-## 10. Governance
+## 9. Governance
 
 - **Enforcement**: Automated checks can validate frontmatter format
 - **Updates**: Protocol changes require cross-agent testing
