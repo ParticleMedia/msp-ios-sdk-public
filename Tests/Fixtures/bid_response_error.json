@@ -1,0 +1,7 @@
+{
+  "error": {
+    "code": "NO_BID",
+    "message": "No bid available for this request"
+  },
+  "bidId": null
+}

@@ -1,7 +1,7 @@
 # Shared Skills
 
-> **Version**: 1.0
-> **Last Updated**: 2026-01-14
+> **Version**: 2.0
+> **Last Updated**: 2026-01-20
 
 This directory contains **Skills** - reusable multi-step procedures that any agent can invoke.
 
@@ -19,6 +19,14 @@ A **Skill** is a documented procedure for completing a specific type of task. It
 
 ## Current Skills
 
+### Strategic Skills
+| Skill | Description | Applicable Agents | Recommended Model |
+|-------|-------------|-------------------|-------------------|
+| `planner.skill.md` | Complex task planning and multi-phase breakdown | All | Opus |
+| `architect.skill.md` | Architectural design and API contracts | All | Opus |
+| `deep-reviewer.skill.md` | Comprehensive code review | All | Opus |
+| `document-writer.skill.md` | Technical documentation synthesis | All | Opus |
+
 ### Analysis Skills
 | Skill | Description | Applicable Agents |
 |-------|-------------|-------------------|
@@ -30,7 +38,7 @@ A **Skill** is a documented procedure for completing a specific type of task. It
 | Skill | Description | Applicable Agents |
 |-------|-------------|-------------------|
 | `unit-test-generator.skill.md` | Generate Quick/Nimble unit test boilerplate | All |
-| `quick-fix.skill.md` | Apply simple, well-defined fixes | Codex, Cursor |
+| `quick-fix.skill.md` | Apply simple, well-defined fixes | All |
 | `refactor-pattern.skill.md` | Execute pattern-based refactoring | All |
 
 ---
