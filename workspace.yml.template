@@ -1,0 +1,21 @@
+# ============================================================================
+# workspace.yml.template - Developer-maintained workspace template
+# ============================================================================
+# This file is the SOURCE OF TRUTH for workspace configuration.
+# The actual workspace.yml is GENERATED from this template by generate_workspace.sh
+#
+# DO NOT edit workspace.yml directly - edit this template instead!
+#
+# Placeholders:
+#   {{ MODE_PROJECTS }} - Replaced with mode-specific projects (Pods or SPM)
+# ============================================================================
+
+workspace:
+  name: msp-ios-sdk
+  projects:
+    # MSPDemoApp project (always included)
+    - name: MSPDemoApp
+      path: Examples/MSPDemoApp/project.yml
+      type: file
+{{ MODE_PROJECTS }}
+

@@ -1,4 +1,15 @@
 #!/bin/bash
+# --- MSP Worktree Safety Guard (Patch K, shared) ---
+# shellcheck source=/dev/null
+if command -v git >/dev/null 2>&1; then
+  MSP_REPO_ROOT="$(git rev-parse --show-toplevel 2>/dev/null || true)"
+  if [ -n "$MSP_REPO_ROOT" ] && [ -f "$MSP_REPO_ROOT/Scripts/lib/worktree_guard.sh" ]; then
+    # shellcheck source=/dev/null
+    . "$MSP_REPO_ROOT/Scripts/lib/worktree_guard.sh"
+    msp_enforce_main_repo_or_exit
+  fi
+fi
+# --- End MSP Worktree Safety Guard (Patch K, shared) ---
 
 # Common utility functions and variables for MSP iOS SDK build system
 # This module provides shared functionality used across all build scripts
@@ -24,11 +35,11 @@
 
 # Environment detection
 detect_environment() {
-    if [[ -n "${GITHUB_ACTIONS}" ]]; then
+    if [[ -n "${GITHUB_ACTIONS:-}" ]]; then
         echo "github-actions"
-    elif [[ -n "${CI}" ]]; then
+    elif [[ -n "${CI:-}" ]]; then
         echo "ci"
-    elif [[ -n "${FL_BUILDLOG_PATH}" ]]; then
+    elif [[ -n "${FL_BUILDLOG_PATH:-}" ]]; then
         echo "fastlane"
     else
         echo "local"
@@ -198,8 +209,8 @@ wait_for_process() {
 # Cleanup utilities
 cleanup_build_artifacts() {
     local artifacts=(
-        "outputMSPiOSCore"
-        "outputNova"
+        "Build/Temp/MSPiOSCore"
+        "Build/Temp/NovaCore"
         "DerivedData"
         "*.xcarchive"
         "*.dSYM.zip"

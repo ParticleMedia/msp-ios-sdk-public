@@ -1,0 +1,67 @@
+#!/usr/bin/env bash
+
+# Mock curl binary for testing
+# Logs all invocations and can simulate failures based on environment variables
+# Supports Slack API patterns without assuming message content or SLACK_BOT_TOKEN
+#
+# IMPORTANT: This mock does NOT require or validate SLACK_BOT_TOKEN.
+# Tests rely ONLY on:
+#   - MSP_SLACK_DM_OVERRIDE
+#   - MSP_SLACK_ALERT_ENV
+#   - MSP_SLACK_TEST_WEBHOOK
+# The real SLACK_BOT_TOKEN will be injected manually by the user if needed.
+
+MOCK_LOG="${MOCK_LOG:-./mock_invocations.log}"
+
+# Log the invocation (matches mock/git style)
+echo "[MOCK] curl $*" >> "$MOCK_LOG" 2>&1
+
+# Parse arguments to detect operation type
+is_dm_api=false
+is_webhook=false
+
+# Check for DM API calls (conversations.open or chat.postMessage)
+if echo "$*" | grep -q "conversations.open\|chat.postMessage"; then
+    is_dm_api=true
+fi
+
+# Check for webhook calls
+if echo "$*" | grep -q "hooks.slack.com"; then
+    is_webhook=true
+fi
+
+# Failure simulation (config-driven)
+if [[ "${MOCK_CURL_FAIL:-0}" == "1" ]]; then
+    echo "error: curl command failed" >&2
+    exit 1
+fi
+
+if [[ "${MOCK_CURL_FAIL_ON_DM:-0}" == "1" ]] && [[ "$is_dm_api" == "true" ]]; then
+    echo "error: DM API call failed" >&2
+    exit 1
+fi
+
+if [[ "${MOCK_CURL_FAIL_ON_WEBHOOK:-0}" == "1" ]] && [[ "$is_webhook" == "true" ]]; then
+    echo "error: webhook call failed" >&2
+    exit 1
+fi
+
+# Pattern-based responses for Slack API
+# No assumptions about message content - just respond based on URL pattern
+
+if echo "$*" | grep -q "conversations.open"; then
+    # Return mock channel ID for DM channel opening
+    echo '{"ok":true,"channel":{"id":"C1234567890"}}'
+elif echo "$*" | grep -q "chat.postMessage"; then
+    # Return mock timestamp for message posting
+    echo '{"ok":true,"ts":"1234567890.123456"}'
+elif echo "$*" | grep -q "hooks.slack.com"; then
+    # Return simple "ok" for webhook calls
+    echo "ok"
+else
+    # For all other URLs, return nothing (success)
+    :
+fi
+
+exit 0
+

@@ -1,0 +1,61 @@
+# MSPPrebidAdapter XcodeGen Project Specification
+# Uses shared template and adds MSPPrebidAdapter-specific overrides
+# Template: Config/xcodegen/module.project_template.yml
+
+include:
+  - ../../../Configs/xcodegen/module.project_template.yml
+
+name: MSPPrebidAdapter
+
+settings:
+  base:
+    # Product Configuration
+    PRODUCT_NAME: MSPPrebidAdapter
+    PRODUCT_BUNDLE_IDENTIFIER: msp.MSPPrebidAdapter
+    PRODUCT_MODULE_NAME: MSPPrebidAdapter
+
+targets:
+  MSPPrebidAdapter:
+    type: framework
+    platform: iOS
+    sources:
+      - path: MSPPrebidAdapter
+        excludes:
+          - "**/*.h"
+          - "**/*.modulemap"
+          - "**/*.md"
+          - "**/Tests/**"
+          - "**/*.test.swift"
+          - "**/*.spec.swift"
+          - "MSPPrebidAdapter.docc/**"
+    dependencies:
+      - framework: ../../../Build/XCFrameworks/MSPiOSCore.xcframework
+        embed: false
+      - framework: ../../Core/MSPOMSDK/OMSDK_Newsbreak1.xcframework
+        embed: false
+      - framework: ../../../Build/XCFrameworks/PrebidMobile.xcframework
+        embed: false
+    settings:
+      base:
+        BUILD_LIBRARY_FOR_DISTRIBUTION: YES
+        SKIP_INSTALL: NO
+        
+        # Framework Search Paths - XCFrameworks only
+        FRAMEWORK_SEARCH_PATHS:
+          - $(inherited)
+          - $(SRCROOT)/../../../Build/XCFrameworks
+          - $(SRCROOT)/../../Core/MSPOMSDK
+
+schemes:
+  MSPPrebidAdapter:
+    build:
+      targets:
+        MSPPrebidAdapter: all
+    run:
+      config: Debug
+    profile:
+      config: Release
+    analyze:
+      config: Debug
+    archive:
+      config: Release

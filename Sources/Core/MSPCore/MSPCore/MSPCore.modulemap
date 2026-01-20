@@ -1,0 +1,5 @@
+framework module MSPCore {
+    umbrella header "MSPCore.h"
+    export *
+    module * { export * }
+}

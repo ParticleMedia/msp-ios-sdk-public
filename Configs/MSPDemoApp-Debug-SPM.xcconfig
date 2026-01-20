@@ -1,0 +1,2 @@
+#include "MSPDemoApp-SPM-Shared.xcconfig"
+SWIFT_ACTIVE_COMPILATION_CONDITIONS = $(inherited) MSP_INTEGRATION_SPM DEBUG

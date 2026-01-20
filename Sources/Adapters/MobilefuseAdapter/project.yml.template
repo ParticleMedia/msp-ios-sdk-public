@@ -1,0 +1,68 @@
+# MobilefuseAdapter XcodeGen Project Specification
+# Uses shared template and adds MobilefuseAdapter-specific overrides
+# Template: Config/xcodegen/module.project_template.yml
+
+include:
+  - ../../../Configs/xcodegen/module.project_template.yml
+
+name: MobilefuseAdapter
+
+settings:
+  base:
+    # Product Configuration
+    PRODUCT_NAME: MobilefuseAdapter
+    PRODUCT_BUNDLE_IDENTIFIER: msp.MobilefuseAdapter
+    PRODUCT_MODULE_NAME: MobilefuseAdapter
+
+targets:
+  MobilefuseAdapter:
+    type: framework
+    platform: iOS
+    sources:
+      - path: MobilefuseAdapter
+        excludes:
+          - "**/*.h"
+          - "**/*.modulemap"
+          - "**/*.md"
+          - "**/Tests/**"
+          - "**/*.test.swift"
+          - "**/*.spec.swift"
+          - "MobilefuseAdapter.docc/**"
+    dependencies:
+      - framework: ../../../Build/XCFrameworks/MSPiOSCore.xcframework
+        embed: false
+      - framework: ../../Core/MSPSharedLibraries/PrebidMobile.xcframework
+        embed: false
+      - framework: ../../../Sources/Wrappers/MobileFuseSDKWrapper/Frameworks/MobileFuseSDK.xcframework
+        embed: false
+    settings:
+      base:
+        BUILD_LIBRARY_FOR_DISTRIBUTION: YES
+        SKIP_INSTALL: NO
+        
+        # Framework Search Paths - XCFrameworks only
+        FRAMEWORK_SEARCH_PATHS:
+          - $(inherited)
+          - $(SRCROOT)/../../../Build/XCFrameworks
+          - $(SRCROOT)/../../Core/MSPSharedLibraries
+          - $(SRCROOT)/../../../Sources/Core/ThirdParty/Kingfisher
+          - $(SRCROOT)/../../../Sources/Core/ThirdParty/SnapKit
+          - $(SRCROOT)/../../../Sources/Core/ThirdParty/Lottie
+          - $(SRCROOT)/../../../Sources/Core/ThirdParty/Shimmer
+          - $(SRCROOT)/../../../Sources/Core/ThirdParty/SwiftProtobuf
+          - $(SRCROOT)/../../../Sources/Core/MSPOMSDK/OMSDK_Newsbreak1.xcframework
+          - $(SRCROOT)/../../../Sources/Wrappers/MobileFuseSDKWrapper/Frameworks
+
+schemes:
+  MobilefuseAdapter:
+    build:
+      targets:
+        MobilefuseAdapter: all
+    run:
+      config: Debug
+    profile:
+      config: Release
+    analyze:
+      config: Debug
+    archive:
+      config: Release
