@@ -1,0 +1,59 @@
+# ============================================================================
+# project.yml.template - Developer-maintained project template
+# ============================================================================
+# This file is the SOURCE OF TRUTH for MSPDemoApp project configuration.
+# The actual project.yml is GENERATED from this template by generate_workspace.sh
+#
+# DO NOT edit project.yml directly - edit this template instead!
+#
+# Placeholders:
+#   {{ PACKAGES_BLOCK }}      - SPM packages section (empty in Pods mode)
+#   {{ PODS_SETTINGS }}       - Pods-specific build settings
+#   {{ MODE_TARGETS }}        - Mode-specific targets (MSPDemoApp or MSPDemoApp-SPM)
+#   {{ MODE_SCHEMES }}        - Mode-specific schemes
+# ============================================================================
+
+name: MSPDemoApp
+options:
+  minimumXcodeGenVersion: 2.38.0
+  deploymentTarget:
+    iOS: "15.0"
+configs:
+  Debug: debug
+  Release: release
+settings:
+  base:
+    CURRENT_PROJECT_VERSION: 1
+    DEVELOPMENT_TEAM: 4PEHUZX8QH
+    INFOPLIST_FILE: MSPDemoApp/Info.plist
+    IPHONEOS_DEPLOYMENT_TARGET: "15.0"
+    MARKETING_VERSION: 0.0.117
+    PRODUCT_BUNDLE_IDENTIFIER: MSPDemoApp.MSPDemoApp
+    SWIFT_VERSION: 5.0
+    TARGETED_DEVICE_FAMILY: "1,2"
+{{ PACKAGES_BLOCK }}
+targetTemplates:
+  BaseAppTarget:
+    type: application
+    platform: iOS
+    sources:
+      - path: MSPDemoApp
+    info:
+      path: MSPDemoApp/Info.plist
+      properties:
+        UILaunchStoryboardName: LaunchScreen
+        UIMainStoryboardFile: Main
+    settings:
+      base:
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
+        SWIFT_VERSION: 5.0
+{{ PODS_SETTINGS }}
+        LD_RUNPATH_SEARCH_PATHS:
+          - "$(inherited)"
+          - "@executable_path/Frameworks"
+targets:
+{{ MODE_TARGETS }}
+schemes:
+{{ MODE_SCHEMES }}
+

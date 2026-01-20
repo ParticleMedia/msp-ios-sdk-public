@@ -1,0 +1,82 @@
+include:
+  - ../../../Configs/xcodegen/module.project_template.yml
+
+name: MSPiOSCore
+
+settings:
+  base:
+    # Product Configuration
+    PRODUCT_NAME: MSPiOSCore
+    PRODUCT_BUNDLE_IDENTIFIER: msp.MSPiOSCore
+    PRODUCT_MODULE_NAME: MSPiOSCore
+
+targets:
+  MSPiOSCore:
+    type: framework
+    platform: iOS
+    headers:
+      public:
+        - path: MSPiOSCore/MSPiOSCore.h
+    sources:
+      - path: MSPiOSCore
+        excludes:
+          - "**/*.md"
+          - "**/Tests/**"
+          - "**/*.test.swift"
+          - "**/*.spec.swift"
+          - "MSPiOSCore.docc/**"
+          - "**/*.h"
+          - "**/*.modulemap"
+    settings:
+      base:
+        BUILD_LIBRARY_FOR_DISTRIBUTION: YES
+        SKIP_INSTALL: NO
+        CLANG_ENABLE_MODULES: YES
+        SWIFT_INSTALL_OBJC_HEADER: YES
+        PUBLIC_HEADERS_FOLDER_PATH: Headers
+        
+        # Swift Module Interface Settings (explicit for XCFramework distribution)
+        SWIFT_EMIT_MODULE_INTERFACE: YES
+        SWIFT_INSTALL_MODULE_FOR_DEPLOYMENT: YES
+        ENABLE_LIBRARY_EVOLUTION: YES
+        
+        # Framework Search Paths
+        # MSPiOSCore is a core module with no external framework dependencies
+        # All dependencies are standard iOS frameworks (Foundation, etc.)
+        FRAMEWORK_SEARCH_PATHS:
+          - $(inherited)
+    postBuildScripts:
+      - name: Copy Modulemap
+        script: |
+          set -e
+          MODULEMAP_SOURCE="${SRCROOT}/MSPiOSCore/MSPiOSCore.modulemap"
+          MODULEMAP_DEST="${TARGET_BUILD_DIR}/${PRODUCT_NAME}.framework/Modules/module.modulemap"
+          if [ -f "$MODULEMAP_SOURCE" ]; then
+            mkdir -p "$(dirname "$MODULEMAP_DEST")"
+            cp "$MODULEMAP_SOURCE" "$MODULEMAP_DEST"
+          fi
+      - name: Ensure Umbrella Header
+        script: |
+          set -e
+          HEADER_SOURCE="${SRCROOT}/MSPiOSCore/MSPiOSCore.h"
+          HEADERS_DIR="${TARGET_BUILD_DIR}/${PRODUCT_NAME}.framework/Headers"
+          if [ -f "$HEADER_SOURCE" ]; then
+            mkdir -p "$HEADERS_DIR"
+            if [ ! -f "$HEADERS_DIR/MSPiOSCore.h" ]; then
+              cp "$HEADER_SOURCE" "$HEADERS_DIR/MSPiOSCore.h"
+            fi
+          fi
+
+schemes:
+  MSPiOSCore-XCFramework:
+    build:
+      targets:
+        MSPiOSCore: all
+    run:
+      config: Debug
+    profile:
+      config: Release
+    analyze:
+      config: Debug
+    archive:
+      config: Release

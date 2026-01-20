@@ -1,0 +1,105 @@
+pipeline {
+    agent {
+        label 'macos'
+    }
+    
+    environment {
+        LANG = 'en_US.UTF-8'
+    }
+    
+    stages {
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }
+        
+        stage('Setup') {
+            steps {
+                sh '''
+                    bundle install
+                    bundle exec pod install
+                '''
+            }
+        }
+        
+        stage('Build Wrappers') {
+            steps {
+                sh '''
+                    chmod +x Scripts/xcframeworks/build-all.sh
+                    ./Scripts/xcframeworks/build-all.sh
+                '''
+            }
+        }
+        
+        stage('Validate Parity') {
+            steps {
+                sh '''
+                    chmod +x Scripts/validation/source-parity.sh
+                    ./Scripts/validation/source-parity.sh
+                '''
+            }
+        }
+        
+        stage('Regenerate Workspace') {
+            steps {
+                sh '''
+                    chmod +x Scripts/workspace/update.sh
+                    CI=1 ./Scripts/workspace/update.sh
+                '''
+            }
+        }
+        
+        stage('Build CocoaPods') {
+            steps {
+                sh '''
+                    xcodebuild -workspace msp-ios-sdk.xcworkspace \
+                        -scheme MSPDemoApp \
+                        -configuration Debug \
+                        -sdk iphonesimulator \
+                        -destination 'platform=iOS Simulator,name=iPhone 15' \
+                        clean build \
+                        CODE_SIGN_IDENTITY="" \
+                        CODE_SIGNING_REQUIRED=NO \
+                        CODE_SIGNING_ALLOWED=NO
+                '''
+            }
+        }
+        
+        stage('Build SwiftPM') {
+            steps {
+                sh '''
+                    xcodebuild -workspace msp-ios-sdk.xcworkspace \
+                        -scheme MSPDemoApp-SPM \
+                        -configuration Debug \
+                        -sdk iphonesimulator \
+                        -destination 'platform=iOS Simulator,name=iPhone 15' \
+                        clean build \
+                        CODE_SIGN_IDENTITY="" \
+                        CODE_SIGNING_REQUIRED=NO \
+                        CODE_SIGNING_ALLOWED=NO
+                '''
+            }
+        }
+        
+        stage('Verify') {
+            steps {
+                sh '''
+                    echo "✓ Both CocoaPods and SwiftPM builds completed successfully"
+                    echo "✓ Source parity validated"
+                    echo "✓ No orphan/ghost files detected"
+                '''
+            }
+        }
+    }
+    
+    post {
+        always {
+            cleanWs()
+        }
+        failure {
+            echo "Build failed - Pods/SPM consistency check failed"
+        }
+    }
+}
+

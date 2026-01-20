@@ -1,0 +1,53 @@
+# MSPGoogleAdsTypes XcodeGen Project Specification
+# Provides unified Google Ads types for CocoaPods/SPM compatibility
+
+include:
+  - ../../../Configs/xcodegen/module.project_template.yml
+
+name: MSPGoogleAdsTypes
+
+settings:
+  base:
+    PRODUCT_NAME: MSPGoogleAdsTypes
+    PRODUCT_BUNDLE_IDENTIFIER: msp.MSPGoogleAdsTypes
+    PRODUCT_MODULE_NAME: MSPGoogleAdsTypes
+
+targets:
+  MSPGoogleAdsTypes:
+    type: framework
+    platform: iOS
+    sources:
+      - path: .
+        includes:
+          - "**/*.swift"
+        excludes:
+          - "**/*.h"
+          - "**/*.modulemap"
+          - "**/*.md"
+          - "**/Tests/**"
+    dependencies:
+      - framework: ../../../Pods/Google-Mobile-Ads-SDK/Frameworks/GoogleMobileAdsFramework/GoogleMobileAds.xcframework
+        embed: false
+    settings:
+      base:
+        BUILD_LIBRARY_FOR_DISTRIBUTION: YES
+        SKIP_INSTALL: NO
+        
+        FRAMEWORK_SEARCH_PATHS:
+          - $(inherited)
+          - $(SRCROOT)/../../../Pods/Google-Mobile-Ads-SDK/Frameworks/GoogleMobileAdsFramework
+
+schemes:
+  MSPGoogleAdsTypes:
+    build:
+      targets:
+        MSPGoogleAdsTypes: all
+    run:
+      config: Debug
+    profile:
+      config: Release
+    analyze:
+      config: Debug
+    archive:
+      config: Release
+

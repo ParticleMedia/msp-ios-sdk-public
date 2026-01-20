@@ -1,4 +1,19 @@
 #!/bin/bash
+# --- MSP Worktree Safety Guard (Patch K, shared) ---
+# shellcheck source=/dev/null
+if command -v git >/dev/null 2>&1; then
+  MSP_REPO_ROOT="$(git rev-parse --show-toplevel 2>/dev/null || true)"
+  if [ -n "$MSP_REPO_ROOT" ] && [ -f "$MSP_REPO_ROOT/Scripts/lib/worktree_guard.sh" ]; then
+    # shellcheck source=/dev/null
+    . "$MSP_REPO_ROOT/Scripts/lib/worktree_guard.sh"
+    msp_enforce_main_repo_or_exit
+  fi
+fi
+# --- End MSP Worktree Safety Guard (Patch K, shared) ---
+
+# Prevent multiple sourcing
+[[ -n "${_MSP_COCOAPODS_SOURCED:-}" ]] && return 0
+readonly _MSP_COCOAPODS_SOURCED=1
 
 # CocoaPods operations for MSP iOS SDK build system
 # This module provides comprehensive CocoaPods management with dependency handling and validation
@@ -8,8 +23,15 @@ source "$(dirname "${BASH_SOURCE[0]}")/common.sh"
 source "$(dirname "${BASH_SOURCE[0]}")/logging.sh"
 source "$(dirname "${BASH_SOURCE[0]}")/validation.sh"
 
+# Source process utilities (timeout functions)
+if [[ -f "$(dirname "${BASH_SOURCE[0]}")/process_utils.sh" ]]; then
+    # shellcheck source=Scripts/lib/process_utils.sh
+    source "$(dirname "${BASH_SOURCE[0]}")/process_utils.sh" 2>/dev/null || true
+fi
+
 # CocoaPods constants
-readonly PODFILE="Podfile"
+# Note: PODFILE is not readonly to allow override in release scripts
+PODFILE="${PODFILE:-Podfile}"   # allow override, no readonly
 readonly PODFILE_LOCK="Podfile.lock"
 readonly PODS_DIR="Pods"
 readonly PODSPEC_EXTENSION=".podspec"
@@ -289,12 +311,31 @@ validate_podspec() {
         lint_cmd="$lint_cmd $option"
     done
     
-    if eval "$lint_cmd"; then
+    log_info "Running pod spec lint (timeout: 30 minutes)..."
+    
+    # Run with timeout: 30 minutes (1800s)
+    # Rationale: Observed 1-5 min, extreme cases up to 20 min (complex deps), 30 min provides safety margin
+    if run_with_timeout 1800 eval "$lint_cmd"; then
         log_success "Podspec validation passed: $(basename "$podspec")"
         return $EXIT_SUCCESS
     else
-        log_error "Podspec validation failed: $(basename "$podspec")"
-        return $EXIT_VALIDATION_ERROR
+        local exit_code=$?
+        if [[ $exit_code -eq 124 ]]; then
+            log_error "❌ TIMEOUT: pod spec lint exceeded 30 minutes"
+            log_error "This usually indicates:"
+            log_error "  1. Dependency resolution hanging"
+            log_error "  2. Network issues downloading dependencies"
+            log_error "  3. Build phase hanging"
+            log_error ""
+            log_error "Troubleshooting:"
+            log_error "  1. Check dependency availability: pod search <dep_name>"
+            log_error "  2. Test locally: $lint_cmd"
+            log_error "  3. Check network: bundle exec pod repo update"
+            return $EXIT_VALIDATION_ERROR
+        else
+            log_error "Podspec validation failed: $(basename "$podspec")"
+            return $EXIT_VALIDATION_ERROR
+        fi
     fi
 }
 
@@ -374,33 +415,126 @@ publish_podspec() {
 
 # Repository operations
 update_specs_repo() {
-    log_step "Updating CocoaPods specs repository..."
-    
+    # ═══════════════════════════════════════════════════════════════════════════
+    # Specs Repo Update Caching (Fix for infinite loop issue)
+    # ═══════════════════════════════════════════════════════════════════════════
+    # Problem: update_specs_repo was called repeatedly (every 10s) during pod
+    # availability checks, each taking 50-60 seconds. This caused ~7 min delay
+    # for just 7 update cycles, leading to test timeouts.
+    #
+    # Solution: Cache the update operation. If updated recently (within 5 min),
+    # skip redundant updates. This is safe because:
+    # 1. Pod trunk push takes 1-3 min to propagate to CDN
+    # 2. Checking every 30-60s is sufficient
+    # 3. Multiple checks within 5 min window will see the same CDN state
+    # ═══════════════════════════════════════════════════════════════════════════
+
+    local cache_file="/tmp/msp-cocoapods-specs-repo-last-update"
+    local cache_lock="${cache_file}.lock"
+    local cache_ttl=300  # 5 minutes (300 seconds)
+    local current_time
+    current_time=$(date +%s)
     local max_attempts=3
     local attempt=1
-    
-    while [[ $attempt -le $max_attempts ]]; do
-        log_debug "Attempt $attempt/$max_attempts: Updating CocoaPods specs repository..."
-        
-        if bundle exec pod repo update; then
-            log_success "Specs repository updated"
-            return $EXIT_SUCCESS
+
+    # Use file lock to prevent concurrent updates
+    (
+        # Check if flock is available (Linux has it, macOS may need coreutils)
+        if ! command -v flock >/dev/null 2>&1; then
+            log_debug "flock not available (macOS), skipping specs cache locking"
+            log_debug "To enable file locking on macOS, install flock via: brew install coreutils"
+            # Continue without locking (less safe but won't block execution)
+            # Note: CocoaPods has its own locking mechanism via .git/index.lock
         else
-            log_warn "Specs repository update failed (attempt $attempt/$max_attempts)"
-            
-            if [[ $attempt -lt $max_attempts ]]; then
-                local delay=$((attempt * 5))
-                log_info "Retrying in ${delay} seconds..."
-                sleep $delay
+            # Use flock for file locking
+            # Try to acquire lock (non-blocking)
+            if ! flock -n 9; then
+                log_info "Another process is updating specs repo, waiting for lock..."
+                # Wait for lock (blocking)
+                flock 9
+                log_info "Lock acquired, checking cache..."
             fi
         fi
-        
-        ((attempt++))
-    done
-    
-    log_error "Specs repository update failed after $max_attempts attempts"
-    return $EXIT_BUILD_ERROR
+
+        # Check cache (now protected by lock)
+        if [[ -f "$cache_file" ]]; then
+            local last_update_time
+            last_update_time=$(cat "$cache_file" 2>/dev/null || echo 0)
+            local time_since_update=$((current_time - last_update_time))
+
+            if [[ $time_since_update -lt $cache_ttl ]]; then
+                local remaining=$((cache_ttl - time_since_update))
+                log_info "Specs repository was updated ${time_since_update}s ago (< ${cache_ttl}s TTL)"
+                log_info "Skipping redundant update (will refresh in ${remaining}s if needed)"
+                exit 0
+            else
+                log_debug "Cache expired (${time_since_update}s > ${cache_ttl}s TTL), updating now..."
+            fi
+        else
+            log_debug "No cache found, performing first update..."
+        fi
+
+        # Perform update (only one process at a time)
+        log_step "Updating CocoaPods specs repository..."
+
+        while [[ $attempt -le $max_attempts ]]; do
+            log_debug "Attempt $attempt/$max_attempts: Updating CocoaPods specs repository..."
+
+            # Run with timeout: 15 minutes (900s)
+            # Rationale: Observed 1-4 min, extreme cases up to 10 min, 15 min provides safety margin
+            if run_with_timeout 900 bundle exec pod repo update; then
+                # Update cache timestamp on success
+                echo "$current_time" > "$cache_file"
+                log_success "Specs repository updated (cache timestamp: $current_time)"
+                exit 0
+            else
+                local exit_code=$?
+                if [[ $exit_code -eq 124 ]]; then
+                    log_error "pod repo update TIMED OUT after 15 minutes"
+                else
+                    log_error "pod repo update failed with exit code $exit_code"
+                fi
+
+                if [[ $attempt -lt $max_attempts ]]; then
+                    log_info "Retrying in 5 seconds..."
+                    sleep 5
+                fi
+            fi
+
+            ((attempt++))
+        done
+
+        log_error "Failed to update specs repository after $max_attempts attempts"
+        exit 1
+
+    ) 9>"$cache_lock"
+
+    local result=$?
+
+    # Clean up lock file if it exists and is old (older than 1 hour)
+    if [[ -f "$cache_lock" ]]; then
+        local lock_age=$((current_time - $(stat -f %m "$cache_lock" 2>/dev/null || stat -c %Y "$cache_lock" 2>/dev/null || echo $current_time)))
+        if [[ $lock_age -gt 3600 ]]; then
+            log_warn "Removing stale lock file (age: ${lock_age}s)"
+            rm -f "$cache_lock"
+        fi
+    fi
+
+    return $result
 }
+
+# Clear specs repo update cache (for testing/debugging)
+clear_specs_repo_cache() {
+    local cache_file="/tmp/msp-cocoapods-specs-repo-last-update"
+    if [[ -f "$cache_file" ]]; then
+        rm -f "$cache_file"
+        log_info "Cleared specs repository update cache"
+    else
+        log_debug "No cache file to clear"
+    fi
+}
+
+export -f clear_specs_repo_cache
 
 check_pod_availability() {
     local pod_name="$1"
@@ -415,19 +549,40 @@ check_pod_availability() {
         log_step "Checking availability of $pod_name..."
     fi
     
+    local last_search_failed=false
+    
     while [[ $attempt -le $max_attempts ]]; do
-        log_debug "Attempt $attempt/$max_attempts: Updating CocoaPods specs repository..."
-        
-        # Update specs repository before checking availability
-        if ! update_specs_repo; then
-            log_warn "Failed to update specs repository (attempt $attempt/$max_attempts)"
-            if [[ $attempt -lt $max_attempts ]]; then
-                local delay=$((attempt * 3))
-                log_info "Retrying in ${delay} seconds..."
-                sleep $delay
+        # ═══════════════════════════════════════════════════════════════════════
+        # Smart Update Strategy (Fix for infinite loop issue)
+        # ═══════════════════════════════════════════════════════════════════════
+        # Only update specs repo on first attempt or after search failure
+        # This reduces redundant updates from ~7 per check to 1-2 per check
+        # ═══════════════════════════════════════════════════════════════════════
+
+        # Update on first attempt, or if previous search failed
+        local should_update=false
+        if [[ $attempt -eq 1 ]]; then
+            should_update=true
+            log_debug "First attempt: Updating CocoaPods specs repository..."
+        elif [[ "$last_search_failed" == "true" ]]; then
+            should_update=true
+            log_debug "Previous search failed, updating specs repository (attempt $attempt/$max_attempts)..."
+        else
+            log_debug "Attempt $attempt/$max_attempts: Reusing cached specs repository..."
+        fi
+
+        # Update specs repository if needed
+        if [[ "$should_update" == "true" ]]; then
+            if ! update_specs_repo; then
+                log_warn "Failed to update specs repository (attempt $attempt/$max_attempts)"
+                if [[ $attempt -lt $max_attempts ]]; then
+                    local delay=$((attempt * 3))
+                    log_info "Retrying in ${delay} seconds..."
+                    sleep $delay
+                fi
+                ((attempt++))
+                continue
             fi
-            ((attempt++))
-            continue
         fi
         
         log_debug "Searching for $pod_name..."
@@ -439,10 +594,19 @@ check_pod_availability() {
         # Check both cocoapods and trunk repositories to ensure availability
         # since pod spec lint uses trunk repo while pod search might use cocoapods repo
         log_debug "Running: bundle exec pod search '$pod_name' --simple"
-        if search_output=$(bundle exec pod search "$pod_name" --simple 2>&1); then
+        # Run with timeout: 10 minutes (600s)
+        # Rationale: Usually seconds, but large specs repo can be slow
+        if search_output=$(run_with_timeout 600 bundle exec pod search "$pod_name" --simple 2>&1); then
             search_exit_code=0
         else
             search_exit_code=$?
+            if [[ $search_exit_code -eq 124 ]]; then
+                log_error "pod search TIMED OUT after 10 minutes"
+                log_error "This usually indicates specs repo corruption or network issues"
+                # Try to recover by updating specs repo
+                log_info "Attempting to recover by updating specs repo..."
+                run_with_timeout 900 bundle exec pod repo update || true
+            fi
             log_debug "Pod search exit code: $search_exit_code"
             log_debug "Pod search output: $search_output"
         fi
@@ -461,6 +625,8 @@ check_pod_availability() {
                     # Check if podspec file exists in trunk repo (verify CDN propagation)
                     if find "$trunk_spec_path" -path "*/${spec_file_pattern}" -type f -print -quit 2>/dev/null | grep -q "${pod_name}\.podspec\.json"; then
                         log_success "$pod_name version $version is available and ready for validation"
+                        # Clear failure flag on success
+                        last_search_failed=false
                         return $EXIT_SUCCESS
                     else
                         log_warn "$pod_name version $version found in search but not yet available for validation"
@@ -479,7 +645,10 @@ check_pod_availability() {
         else
             log_warn "Pod search failed (attempt $attempt/$max_attempts)"
             log_debug "Search output: $search_output"
-            
+
+            # Mark that search failed (trigger update on next attempt)
+            last_search_failed=true
+
             if [[ $attempt -lt $max_attempts ]]; then
                 local delay=$((attempt * 3))
                 log_info "Retrying in ${delay} seconds..."
@@ -511,9 +680,9 @@ troubleshoot_cocoapods_network() {
     
     # Strategy 1: Clean cache and retry
     log_info "Strategy 1: Cleaning cache and retrying..."
-    if bundle exec pod cache clean --all >/dev/null 2>&1; then
+        if bundle exec pod cache clean --all >/dev/null 2>&1; then
         log_info "Cache cleaned successfully"
-        if bundle exec pod repo update >/dev/null 2>&1; then
+        if run_with_timeout 900 bundle exec pod repo update >/dev/null 2>&1; then
             log_success "Repository updated after cache clean"
             return $EXIT_SUCCESS
         fi
@@ -566,7 +735,7 @@ try_alternative_cocoapods_sources() {
         if bundle exec pod repo add temp-repo "$source" >/dev/null 2>&1; then
             log_info "Successfully added source: $source"
             # Try to update with this source
-            if bundle exec pod repo update temp-repo >/dev/null 2>&1; then
+            if run_with_timeout 900 bundle exec pod repo update temp-repo >/dev/null 2>&1; then
                 log_success "Source $source is working"
                 return $EXIT_SUCCESS
             fi
@@ -810,3 +979,14 @@ export -f try_without_problematic_deps
 export -f clean_pod_cache
 export -f show_pod_info setup_bundle_integration
 export -f full_pod_setup
+
+# ---------------------------------------------------------------------
+# UTF-8 FIX PATCH
+# CocoaPods requires UTF-8 or pod install will crash with:
+#   "Unicode Normalization not appropriate for ASCII-8BIT"
+export LANG="en_US.UTF-8"
+export LC_ALL="en_US.UTF-8"
+export RUBYOPT="-EUTF-8:UTF-8"
+log_info "[UTF8] UTF-8 environment applied for pod install"
+# ---------------------------------------------------------------------
+

@@ -1,0 +1,61 @@
+# MSPSharedLibraries XcodeGen Project Specification
+# Uses shared template and adds MSPSharedLibraries-specific overrides
+# Template: Config/xcodegen/module.project_template.yml
+
+include:
+  - ../../../Configs/xcodegen/module.project_template.yml
+
+name: MSPSharedLibraries
+
+settings:
+  base:
+    # Product Configuration
+    PRODUCT_NAME: MSPSharedLibraries
+    PRODUCT_BUNDLE_IDENTIFIER: msp.MSPSharedLibraries
+    PRODUCT_MODULE_NAME: MSPSharedLibraries
+    
+    # Module-specific override: Do not install ObjC header
+    SWIFT_INSTALL_OBJC_HEADER: NO
+
+targets:
+  MSPSharedLibraries:
+    type: framework
+    platform: iOS
+    sources:
+      - path: MSPSharedLibraries
+        excludes:
+          - "**/*.h"
+          - "**/*.modulemap"
+          - "**/*.md"
+          - "**/Tests/**"
+          - "**/*.test.swift"
+          - "**/*.spec.swift"
+    dependencies:
+      # MSPSharedLibraries depends on MSPiOSCore (re-exported in Shim.swift)
+      - framework: ../../../Build/XCFrameworks/MSPiOSCore.xcframework
+        embed: false
+      # Stage B: MSPOMSDK removed - OMSDK now embedded in NovaCore
+      # MSPSharedLibraries no longer depends on MSPOMSDK.xcframework
+    settings:
+      base:
+        BUILD_LIBRARY_FOR_DISTRIBUTION: YES
+        SKIP_INSTALL: NO
+        
+        # Framework Search Paths - XCFrameworks only
+        FRAMEWORK_SEARCH_PATHS:
+          - $(inherited)
+          - $(SRCROOT)/../../../Build/XCFrameworks
+
+schemes:
+  MSPSharedLibraries-XCFramework:
+    build:
+      targets:
+        MSPSharedLibraries: all
+    run:
+      config: Debug
+    profile:
+      config: Release
+    analyze:
+      config: Debug
+    archive:
+      config: Release

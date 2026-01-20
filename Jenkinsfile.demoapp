@@ -1,0 +1,115 @@
+pipeline {
+    agent any
+
+    options {
+        ansiColor('xterm')
+        timestamps()
+    }
+
+    environment {
+        DEVELOPER_DIR = '/Applications/Xcode_15.4.app/Contents/Developer'
+        SLACK_CHANNEL = '#msp-ios-sdk'
+        SLACK_CONFIG  = 'Scripts/config/slack.conf'
+        LANG = 'en_US.UTF-8'
+        LC_ALL = 'en_US.UTF-8'
+        ARTIFACTS_DIR = 'artifacts'
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }
+
+        stage('Install Dependencies') {
+            steps {
+                sh '''
+                    set -euo pipefail
+                    bundle install
+                '''
+            }
+        }
+
+        stage('Prepare Workspace & Pods') {
+            steps {
+                sh '''
+                    set -euo pipefail
+                    ./Scripts/workspace/update.sh
+                    bundle exec pod install
+                '''
+            }
+        }
+
+        stage('Build MSPDemoApp (Pods)') {
+            steps {
+                sh '''
+                    set -euo pipefail
+                    rm -rf build ${ARTIFACTS_DIR}
+                    mkdir -p ${ARTIFACTS_DIR}
+                    xcodebuild \
+                        -workspace msp-ios-sdk.xcworkspace \
+                        -scheme MSPDemoApp \
+                        -configuration Release \
+                        -destination 'generic/platform=iOS' \
+                        SKIP_CODE_SIGN=YES \
+                        build \
+                        | tee build/pods-build.log
+
+                    cd build/Release-iphoneos
+                    rm -rf Payload
+                    mkdir Payload
+                    cp -R MSPDemoApp.app Payload/
+                    zip -r MSPDemoApp-Pods.ipa Payload > /dev/null
+                    mv MSPDemoApp-Pods.ipa ../../${ARTIFACTS_DIR}/
+                '''
+            }
+        }
+
+        stage('Build MSPDemoApp-SPM') {
+            steps {
+                sh '''
+                    set -euo pipefail
+                    xcodebuild \
+                        -workspace msp-ios-sdk.xcworkspace \
+                        -scheme MSPDemoApp-SPM \
+                        -configuration Release \
+                        -destination 'generic/platform=iOS' \
+                        SKIP_CODE_SIGN=YES \
+                        build \
+                        | tee build/spm-build.log
+
+                    cd build/Release-iphoneos
+                    rm -rf Payload
+                    mkdir Payload
+                    cp -R MSPDemoApp-SPM.app Payload/
+                    zip -r MSPDemoApp-SPM.ipa Payload > /dev/null
+                    mv MSPDemoApp-SPM.ipa ../../${ARTIFACTS_DIR}/
+                '''
+            }
+        }
+
+        stage('TODO: Firebase Upload') {
+            steps {
+                echo 'TODO: Upload generated IPAs to Firebase App Distribution.'
+                echo 'FIXME: Implement Firebase authentication + CLI upload once requirements are finalized.'
+            }
+        }
+    }
+
+    post {
+        success {
+            slackSend channel: env.SLACK_CHANNEL,
+                      color: 'good',
+                      message: "✅ DemoApp build pipeline succeeded. IPAs available in ${env.ARTIFACTS_DIR}."
+        }
+        failure {
+            slackSend channel: env.SLACK_CHANNEL,
+                      color: 'danger',
+                      message: "❌ DemoApp build pipeline failed. Check Jenkins logs."
+        }
+        always {
+            archiveArtifacts artifacts: "${env.ARTIFACTS_DIR}/**", onlyIfSuccessful: false, allowEmptyArchive: true
+        }
+    }
+}

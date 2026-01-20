@@ -1,0 +1,96 @@
+# MSP Release System — Unified Configuration Schema (v1.0)
+
+tier:
+  default: preflight    # preflight | production
+
+pods:
+  enabled: true         # Whether to run CocoaPods publish
+  lint: true            # Whether to run podspec lint
+
+spm:
+  enabled: true         # Whether to run SPM publish
+  tags: true            # Whether to create/push Git tags for SPM
+
+branch:
+  create: true          # Whether to create release/* branch
+  push: true            # Whether to push the release branch
+
+build:
+  pre_release_setup: true
+  skip_pre_release_setup: false
+
+verify:
+  remote: true
+  local: true
+  device: false
+  xcframework: true
+
+behavior:
+  fail_fast: true
+
+notifications:
+  slack: true
+  email: true
+  github_release: true
+
+# Tier-specific overrides
+preflight:
+  pods:
+    enabled: false
+  spm:
+    enabled: false
+  branch:
+    create: false
+    push: false
+  verify:
+    local: true
+    remote: false
+    xcframework: true
+
+test:
+  pods:
+    enabled: true
+  spm:
+    enabled: true
+  branch:
+    create: true
+    push: true
+  verify:
+    local: true
+    remote: true
+    device: true
+    xcframework: true
+
+release:
+  pods:
+    enabled: true
+  spm:
+    enabled: true
+  branch:
+    create: true
+    push: true
+  verify:
+    local: true
+    remote: true
+    xcframework: true
+
+# Branch access control policy
+branch_policy:
+  rules:
+    "release/.*":
+      allow_real_publish: true
+      allow_test_publish: true
+      allow_preflight: true
+    "main":
+      allow_real_publish: true
+      allow_test_publish: true
+      allow_preflight: true
+    "master":
+      allow_real_publish: true
+      allow_test_publish: true
+      allow_preflight: true
+    # TODO: Change to false when CI pipeline is ready (currently all releases are done locally)
+    "feature/.*":
+      allow_real_publish: true
+      allow_test_publish: true
+      allow_preflight: true

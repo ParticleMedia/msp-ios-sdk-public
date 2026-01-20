@@ -1,4 +1,15 @@
 #!/bin/bash
+# --- MSP Worktree Safety Guard (Patch K, shared) ---
+# shellcheck source=/dev/null
+if command -v git >/dev/null 2>&1; then
+  MSP_REPO_ROOT="$(git rev-parse --show-toplevel 2>/dev/null || true)"
+  if [ -n "$MSP_REPO_ROOT" ] && [ -f "$MSP_REPO_ROOT/Scripts/lib/worktree_guard.sh" ]; then
+    # shellcheck source=/dev/null
+    . "$MSP_REPO_ROOT/Scripts/lib/worktree_guard.sh"
+    msp_enforce_main_repo_or_exit
+  fi
+fi
+# --- End MSP Worktree Safety Guard (Patch K, shared) ---
 
 # Asset Validation Script for NovaCore
 # This script validates that NBAssets.xcassets and NBResourceBundle.bundle contain the same assets
@@ -9,7 +20,18 @@ set -euo pipefail
 # Script configuration
 readonly SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 readonly PROJECT_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
-readonly NOVACORE_DIR="$PROJECT_ROOT/NovaCore/NovaCore"
+# Try new structure first (Sources/Core/), fallback to old structure
+if [[ -d "$PROJECT_ROOT/Sources/Core/NovaCore/NovaCore" ]]; then
+    readonly NOVACORE_DIR="$PROJECT_ROOT/Sources/Core/NovaCore/NovaCore"
+elif [[ -d "$PROJECT_ROOT/NovaCore/NovaCore" ]]; then
+    readonly NOVACORE_DIR="$PROJECT_ROOT/NovaCore/NovaCore"
+else
+    echo "ERROR: NovaCore directory not found" >&2
+    echo "Checked locations:" >&2
+    echo "  - $PROJECT_ROOT/Sources/Core/NovaCore/NovaCore" >&2
+    echo "  - $PROJECT_ROOT/NovaCore/NovaCore" >&2
+    exit 1
+fi
 readonly ASSETS_SOURCE="$NOVACORE_DIR/NBAssets.xcassets"
 readonly BUNDLE_TARGET="$NOVACORE_DIR/NBResourceBundle.bundle"
 readonly TEMP_DIR="/tmp/nova_asset_validation_$$"
@@ -20,11 +42,27 @@ readonly EXIT_VALIDATION_FAILED=1
 readonly EXIT_MISSING_FILES=2
 readonly EXIT_INVALID_ARGS=3
 
-# Color output functions
-print_info() { echo -e "\033[0;34m[INFO]\033[0m $1"; }
-print_success() { echo -e "\033[0;32m[SUCCESS]\033[0m $1"; }
-print_warning() { echo -e "\033[0;33m[WARNING]\033[0m $1"; }
-print_error() { echo -e "\033[0;31m[ERROR]\033[0m $1"; }
+# Source UI system
+readonly ROOT_DIR="$(cd "$SCRIPT_DIR/../.." && pwd)"
+# shellcheck source=Scripts/lib/paths.sh
+source "$ROOT_DIR/Scripts/lib/paths.sh" 2>/dev/null || true
+# shellcheck source=Scripts/lib/colors.sh
+source "$ROOT_DIR/Scripts/lib/colors.sh" 2>/dev/null || true
+# shellcheck source=Scripts/lib/ui.sh
+source "$ROOT_DIR/Scripts/lib/ui.sh" 2>/dev/null || true
+
+# Color output functions (use UI system if available, fallback to simple functions)
+if command -v log_info &>/dev/null; then
+    print_info() { log_info "[INFO] $1"; }
+    print_success() { log_success "[SUCCESS] $1"; }
+    print_warning() { log_warn "[WARNING] $1"; }
+    print_error() { log_error "[ERROR] $1"; }
+else
+    print_info() { echo "[INFO] $1"; }
+    print_success() { echo "[SUCCESS] $1"; }
+    print_warning() { echo "[WARNING] $1"; }
+    print_error() { echo "[ERROR] $1" >&2; }
+fi
 
 # Cleanup function
 cleanup() {

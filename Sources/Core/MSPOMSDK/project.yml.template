@@ -1,0 +1,55 @@
+# MSPOMSDK XcodeGen Project Specification
+# Uses shared template and adds MSPOMSDK-specific overrides
+# Template: Config/xcodegen/module.project_template.yml
+
+include:
+  - ../../../Configs/xcodegen/module.project_template.yml
+
+name: MSPOMSDK
+
+settings:
+  base:
+    # Product Configuration
+    PRODUCT_NAME: MSPOMSDK
+    PRODUCT_BUNDLE_IDENTIFIER: msp.MSPOMSDK
+    PRODUCT_MODULE_NAME: MSPOMSDK
+
+targets:
+  MSPOMSDK:
+    type: framework
+    platform: iOS
+    sources:
+      - path: MSPOMSDK
+        excludes:
+          - "**/*.h"
+          - "**/*.modulemap"
+          - "**/*.md"
+          - "**/Tests/**"
+          - "**/*.test.swift"
+          - "**/*.spec.swift"
+    settings:
+      base:
+        BUILD_LIBRARY_FOR_DISTRIBUTION: YES
+        SKIP_INSTALL: NO
+        
+        # Module-specific Swift flags for module interface verification
+        OTHER_SWIFT_FLAGS: $(inherited) -no-verify-emitted-module-interface
+        
+        # Framework Search Paths - Include OMSDK_Newsbreak1.xcframework
+        FRAMEWORK_SEARCH_PATHS:
+          - $(inherited)
+          - $(SRCROOT)/OMSDK_Newsbreak1.xcframework
+
+schemes:
+  MSPOMSDK-XCFramework:
+    build:
+      targets:
+        MSPOMSDK: all
+    run:
+      config: Debug
+    profile:
+      config: Release
+    analyze:
+      config: Debug
+    archive:
+      config: Release

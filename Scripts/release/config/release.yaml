@@ -1,0 +1,76 @@
+# ============================================================================
+# MSP iOS SDK Release Configuration
+# ============================================================================
+# This file defines the release configuration for the MSP iOS SDK.
+# It is used by msp-release.sh to configure the release process.
+#
+# Usage:
+#   ./Scripts/msp-release.sh run --config Scripts/release/config/release.yaml
+#
+# Override Priority (highest to lowest):
+#   1. CLI flags (e.g., --skip-pods)
+#   2. This config file
+#   3. Built-in defaults
+#
+# For production releases, copy this file and fill in the version field.
+# ============================================================================
+
+# Release version (required for actual releases)
+# Example: "0.0.3", "1.0.0-beta.1"
+version: ""
+
+# Release branch name (auto-generated if empty: "release/<version>")
+release_branch: ""
+
+# Base branch to create release from
+base_branch: "main"
+
+# ============================================================================
+# CocoaPods Configuration
+# ============================================================================
+pods:
+  # Enable/disable CocoaPods release
+  enabled: false
+  
+  # Pods to release (in dependency order)
+  # Note: Order matters! Dependencies must be listed before dependents.
+  modules:
+    - MSPSharedLibraries
+    - MSPPrebidAdapter
+    - MSPCore
+    - MSPGoogleAdapter
+    - MSPFacebookAdapter
+    - MSPNovaAdapter
+    - AmazonAdapter
+
+# ============================================================================
+# Swift Package Manager Configuration
+# ============================================================================
+spm:
+  # Enable/disable SPM release
+  enabled: false
+  
+  # SPM packages to release
+  packages:
+    - NovaCore
+    - MSPNovaAdapter
+
+# ============================================================================
+# Notification Configuration
+# ============================================================================
+notifications:
+  # Slack channel for release notifications
+  slack_channel: "#msp-release"
+  
+  # Send DM to executor on failure
+  dm_on_failure: true
+
+# ============================================================================
+# Advanced Options (optional)
+# ============================================================================
+# options:
+#   dry_run: false
+#   verbose: false
+#   skip_validation: false
+#   parallel_adapters: true
+

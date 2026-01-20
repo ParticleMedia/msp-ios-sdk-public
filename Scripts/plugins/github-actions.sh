@@ -1,4 +1,9 @@
 #!/bin/bash
+# --- MSP Worktree Safety Guard (Patch L, shared) ---
+# shellcheck source=/dev/null
+. "$(git rev-parse --show-toplevel 2>/dev/null)/Scripts/lib/worktree_guard.sh"
+msp_enforce_main_repo_or_exit
+# --- End MSP Worktree Safety Guard (Patch L, shared) ---
 
 # GitHub Actions Plugin for MSP iOS SDK build system
 # This plugin provides GitHub Actions specific optimizations and integrations

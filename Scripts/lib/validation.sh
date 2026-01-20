@@ -1,4 +1,15 @@
 #!/bin/bash
+# --- MSP Worktree Safety Guard (Patch K, shared) ---
+# shellcheck source=/dev/null
+if command -v git >/dev/null 2>&1; then
+  MSP_REPO_ROOT="$(git rev-parse --show-toplevel 2>/dev/null || true)"
+  if [ -n "$MSP_REPO_ROOT" ] && [ -f "$MSP_REPO_ROOT/Scripts/lib/worktree_guard.sh" ]; then
+    # shellcheck source=/dev/null
+    . "$MSP_REPO_ROOT/Scripts/lib/worktree_guard.sh"
+    msp_enforce_main_repo_or_exit
+  fi
+fi
+# --- End MSP Worktree Safety Guard (Patch K, shared) ---
 
 # Validation and checking functions for MSP iOS SDK build system
 # This module provides comprehensive validation for commands, paths, configurations, and build requirements
@@ -505,6 +516,51 @@ validate_essential() {
     return $EXIT_SUCCESS
 }
 
+# ============================================================================
+# Branch Validation for Release Operations
+# ============================================================================
+# Centralized branch validation logic to ensure DRY principle
+# Used by both safety.sh and modular.sh
+# ============================================================================
+validate_release_branch() {
+    local dry_run="${DRY_RUN:-true}"
+
+    # Only validate in production mode
+    if [[ "$dry_run" != "false" ]]; then
+        return 0
+    fi
+
+    local current_branch
+    current_branch="$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo '')"
+
+    if [[ -z "$current_branch" ]]; then
+        log_error "[BRANCH_VALIDATION] Cannot determine current Git branch"
+        return 1
+    fi
+
+    log_info "[BRANCH_VALIDATION] Validating branch: $current_branch"
+
+    # Allowed branches: release/*, feature/*, main, master
+    # Explanation:
+    # - release/*: Already on a release branch (no branch creation needed)
+    # - feature/*: Feature branches will create release/* branch in Step 1
+    # - main/master: Main branches (will create release/* branch in Step 1)
+    if [[ "$current_branch" =~ ^release/ ]] || \
+       [[ "$current_branch" =~ ^feature/ ]] || \
+       [[ "$current_branch" == "main" ]] || \
+       [[ "$current_branch" == "master" ]]; then
+        log_info "[BRANCH_VALIDATION] ✓ Branch '$current_branch' is allowed for release"
+        if [[ "$current_branch" =~ ^feature/ ]]; then
+            log_info "[BRANCH_VALIDATION] ℹ️  Feature branch detected: release/* branch will be created in Step 1"
+        fi
+        return 0
+    else
+        log_error "[BRANCH_VALIDATION] Production mode cannot run on branch '$current_branch'"
+        log_error "[BRANCH_VALIDATION] Allowed branches: release/*, feature/*, main, master"
+        return 1
+    fi
+}
+
 # Export validation functions
 export -f check_command_exists check_command_group
 export -f get_command_version check_command_version
@@ -513,3 +569,4 @@ export -f check_file_permissions make_executable
 export -f validate_xcode_installation validate_cocoapods_installation validate_ruby_environment
 export -f validate_project_structure validate_build_environment validate_configuration
 export -f validate_all validate_essential
+export -f validate_release_branch

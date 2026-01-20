@@ -1,0 +1,43 @@
+#!/usr/bin/env bash
+
+# Mock gh binary for testing
+# Logs all invocations and can simulate failures
+
+MOCK_LOG="${MOCK_LOG:-./mock_invocations.log}"
+
+# Log the invocation
+echo "[MOCK] gh $*" >> "$MOCK_LOG" 2>&1
+
+# Parse command
+case "${1:-}" in
+    release)
+        case "${2:-}" in
+            create)
+                # Create release
+                if [[ "${MOCK_GH_FAIL_ON_CREATE:-0}" == "1" ]]; then
+                    echo "error: failed to create release" >&2
+                    exit 1
+                fi
+                ;;
+            delete)
+                # Delete release
+                if [[ "${MOCK_GH_FAIL_ON_DELETE:-0}" == "1" ]]; then
+                    echo "error: failed to delete release" >&2
+                    exit 1
+                fi
+                ;;
+            view|upload)
+                # View or upload (usually succeeds)
+                ;;
+            *)
+                # Unknown release subcommand
+                ;;
+        esac
+        ;;
+    *)
+        # Unknown gh command
+        ;;
+esac
+
+exit 0
+

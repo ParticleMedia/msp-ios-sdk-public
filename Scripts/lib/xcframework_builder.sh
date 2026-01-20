@@ -1,4 +1,15 @@
 #!/bin/bash
+# --- MSP Worktree Safety Guard (Patch K, shared) ---
+# shellcheck source=/dev/null
+if command -v git >/dev/null 2>&1; then
+  MSP_REPO_ROOT="$(git rev-parse --show-toplevel 2>/dev/null || true)"
+  if [ -n "$MSP_REPO_ROOT" ] && [ -f "$MSP_REPO_ROOT/Scripts/lib/worktree_guard.sh" ]; then
+    # shellcheck source=/dev/null
+    . "$MSP_REPO_ROOT/Scripts/lib/worktree_guard.sh"
+    msp_enforce_main_repo_or_exit
+  fi
+fi
+# --- End MSP Worktree Safety Guard (Patch K, shared) ---
 
 # XCFramework Builder Library for MSP iOS SDK
 # This module provides centralized XCFramework building logic
@@ -102,15 +113,19 @@ build_for_platform() {
     local derived_data_path="/tmp/${scheme}-${platform}-DerivedData"
     local archive_path="/tmp/${scheme}-${platform}.xcarchive"
     
-    # For projects that need CocoaPods (like NovaCore), always use the main workspace
+    # Determine build command - prefer workspace if available, otherwise use project
     local build_command
     if [[ -f "msp-ios-sdk.xcworkspace" ]]; then
         build_command="xcodebuild -workspace msp-ios-sdk.xcworkspace"
-        echo "🔧 Using main workspace for build (CocoaPods integration)"
+        echo "🔧 Using main workspace for build"
     elif [[ -f "$project_path.xcworkspace" ]]; then
         build_command="xcodebuild -workspace $project_path.xcworkspace"
-    else
+    elif [[ -d "$project_path.xcodeproj" ]]; then
         build_command="xcodebuild -project $project_path.xcodeproj"
+        echo "🔧 Using project file for build (no workspace needed)"
+    else
+        echo "❌ ERROR: No workspace or project found at: $project_path"
+        return 1
     fi
     
         # Execute build with retry logic

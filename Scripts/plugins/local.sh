@@ -1,4 +1,9 @@
 #!/bin/bash
+# --- MSP Worktree Safety Guard (Patch L, shared) ---
+# shellcheck source=/dev/null
+. "$(git rev-parse --show-toplevel 2>/dev/null)/Scripts/lib/worktree_guard.sh"
+msp_enforce_main_repo_or_exit
+# --- End MSP Worktree Safety Guard (Patch L, shared) ---
 
 # Fix Unicode encoding issues for CocoaPods
 export LANG=en_US.UTF-8
@@ -387,14 +392,25 @@ case $choice in
     9) Scripts/validate.sh --podspecs ;;
     10) Scripts/build.sh --status ;;
     11) Scripts/build.sh --clean ;;
-    12) if ! bundle exec pod install --repo-update; then echo "Primary pod install failed, trying with GitHub source backup..."; cp Podfile Podfile.backup; cat > Podfile.temp << 'EOF'
+    12) if ! bundle exec pod install --repo-update; then
+        echo "Primary pod install failed, trying with GitHub source backup..."
+        cp Podfile Podfile.backup
+        cat > Podfile.temp << 'EOF2'
 # Fallback Podfile with GitHub source
 source 'https://github.com/CocoaPods/Specs.git'
 source 'https://cdn.cocoapods.org/'
-EOF
-grep -v "^source " Podfile.backup >> Podfile.temp; if bundle exec pod install --podfile=Podfile.temp --no-repo-update; then echo "Pod install succeeded with GitHub source backup"; mv Podfile.temp Podfile; else echo "Pod install failed even with GitHub source backup"; mv Podfile.backup Podfile; rm -f Podfile.temp; fi; fi ;;
-    13) Scripts/build.sh --env-info ;;
-    0) echo "Goodbye!" ;;
+EOF2
+        grep -v \"^source \" Podfile.backup >> Podfile.temp
+        if bundle exec pod install --podfile=Podfile.temp --no-repo-update; then
+            echo "Pod install succeeded with GitHub source backup"
+            mv Podfile.temp Podfile
+        else
+            echo "Pod install failed even with GitHub source backup"
+            mv Podfile.backup Podfile
+            rm -f Podfile.temp
+    fi
+    fi
+    ;;
     *) echo "Invalid option" ;;
 esac
 EOF
