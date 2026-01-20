@@ -1,0 +1,70 @@
+# CHANGELOG Entry Template
+#
+# This file defines the schema for changelog entries.
+# Use this as a reference when adding new entries to CHANGELOG.md.
+#
+# IMPORTANT: Do NOT reconstruct historical entries.
+# Only document changes at the time they are released.
+
+# Entry Schema
+entry:
+  # Version string (required)
+  # Format: MAJOR.MINOR.PATCH or MAJOR.MINOR.PATCH-PRERELEASE
+  # Examples: "1.0.0", "1.0.0-rc.1", "1.0.0-beta.2"
+  version: "X.Y.Z"
+
+  # Release date (required)
+  # Format: YYYY-MM-DD
+  date: "YYYY-MM-DD"
+
+  # Categories (use only applicable ones)
+  categories:
+    # New features
+    added:
+      - "Description of new feature"
+
+    # Changes in existing functionality
+    changed:
+      - "Description of change"
+
+    # Deprecated features (to be removed in future)
+    deprecated:
+      - "Description of deprecated feature"
+
+    # Removed features
+    removed:
+      - "Description of removed feature"
+
+    # Bug fixes
+    fixed:
+      - "Description of fix"
+
+    # Security fixes
+    security:
+      - "Description of security fix"
+
+# Example Entry (for CHANGELOG.md)
+#
+# ## [1.0.0] - 2024-01-15
+#
+# ### Added
+# - New adapter for ExampleNetwork
+# - Support for iOS 17 features
+#
+# ### Changed
+# - Updated minimum iOS version to 15.0
+#
+# ### Fixed
+# - Resolved memory leak in ad loading
+#
+# ### Removed
+# - Deprecated v1 API methods
+
+# Rules
+rules:
+  - Do NOT reconstruct past entries from git history
+  - Do NOT infer changes from code diffs
+  - Only add entries for actual releases
+  - Each release gets one entry, added at release time
+  - Use imperative mood ("Add feature" not "Added feature")
+  - Keep descriptions concise and factual

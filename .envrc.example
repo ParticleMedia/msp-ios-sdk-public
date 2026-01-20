@@ -1,0 +1,48 @@
+# MSP iOS SDK Release Environment (direnv template)
+# ============================================================================
+# Usage:
+#   1. Copy this file: cp .envrc.example .envrc
+#   2. Edit .envrc if needed (optional, defaults work for most cases)
+#   3. Allow direnv: direnv allow
+#   4. Environment loads automatically when you cd into this directory
+# ============================================================================
+
+# ============================================================================
+# Release Configuration (3 variables - all you need!)
+# ============================================================================
+
+# Release tier: preflight (test) or release (production)
+export MSP_RELEASE_TIER=release
+
+# Allow local release (required for non-CI environments)
+export MSP_ALLOW_LOCAL_RELEASE=1
+
+# Allow push to CocoaPods Trunk (required for publishing)
+export MSP_ALLOW_TRUNK_PUSH=1
+
+# ============================================================================
+# Optional: Rerelease Configuration
+# ============================================================================
+# Uncomment if you need to republish an existing version
+
+# export MSP_ALLOW_EXISTING_TAG=1
+
+# ============================================================================
+# Optional: Slack Notification (uses slack.conf by default)
+# ============================================================================
+# Uncomment if you want to override slack.conf settings
+
+# Slack environment: test (safe) or prod (production channel)
+# export MSP_SLACK_ALERT_ENV=test
+
+# Slack webhook URL (overrides slack.conf)
+# export SLACK_WEBHOOK_URL="https://hooks.slack.com/services/YOUR/WEBHOOK/URL"
+
+# ============================================================================
+# Info
+# ============================================================================
+echo "✅ MSP Release environment loaded (direnv)"
+echo "   Release tier: $MSP_RELEASE_TIER"
+echo "   Local release: enabled"
+echo "   Trunk push: enabled"
+

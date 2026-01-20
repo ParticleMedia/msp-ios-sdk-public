@@ -1,0 +1,6 @@
+framework module Shimmer {
+  umbrella header "FBShimmering.h"
+  
+  export *
+  module * { export * }
+}

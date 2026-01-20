@@ -1,0 +1,72 @@
+{
+  "cursor_rules": {
+    "version": "1.0",
+    "last_updated": "2026-01-14",
+    "description": "Cursor IDE rules for MSP iOS SDK project",
+
+    "core_principles": [
+      "Always read constitution.md before making changes",
+      "Never modify .xcodeproj files directly - use *.yml.template",
+      "Follow existing code patterns and conventions",
+      "Escalate to Claude Code for architectural decisions"
+    ],
+
+    "file_restrictions": {
+      "read_only": [
+        "constitution.md",
+        "AGENTS.md",
+        "ARCHITECTURE.md",
+        ".claude/**/*"
+      ],
+      "never_modify": [
+        "**/*.xcodeproj/**",
+        "**/*.xcworkspace/**"
+      ],
+      "requires_human_approval": [
+        "**/Podfile",
+        "**/*.yml.template"
+      ]
+    },
+
+    "code_style": {
+      "swift": {
+        "prefer_guard": true,
+        "avoid_force_unwrap": true,
+        "use_trailing_closures": true,
+        "max_line_length": 120
+      },
+      "shell": {
+        "use_shellcheck": true,
+        "prefer_posix": true,
+        "use_set_flags": "set -euo pipefail"
+      }
+    },
+
+    "testing": {
+      "framework": "Quick/Nimble",
+      "style": "BDD (describe-context-it)",
+      "template": "Tests/templates/unit_test_spec.swift.template",
+      "location": "Tests/{ModuleName}Tests/{ClassName}Spec.swift"
+    },
+
+    "escalation_triggers": [
+      "Public/Open API changes",
+      "Changes to >7 files",
+      "Architectural decisions needed",
+      "Constitution modifications",
+      "Root cause unclear after investigation"
+    ],
+
+    "verification_commands": {
+      "unit_tests": "swift test --filter {TestName}Spec",
+      "integration": "./Scripts/target-switching/round-trip-test.sh",
+      "shellcheck": "shellcheck {script.sh}"
+    },
+
+    "context_references": {
+      "constitution": "@../constitution.md",
+      "agents_shared": "@../.agents-shared/",
+      "task_tiers": "@../.agents-shared/protocols/task-tier.protocol.md"
+    }
+  }
+}

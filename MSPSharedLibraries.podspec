@@ -20,6 +20,7 @@ Pod::Spec.new do |spec|
   spec.summary      = "An utility helper for MSP"
 
   spec.ios.deployment_target = '15.0'
+  spec.swift_version = '5.0'
 
   # This description is used to generate tags and improve search results.
   #   * Think: What does it do? Why did you write it? What is the focus?
@@ -80,7 +81,25 @@ Pod::Spec.new do |spec|
   #  Supports git, hg, bzr, svn and HTTP.
   #
 
-  spec.source       = { :git => "https://github.com/ParticleMedia/msp-ios-sdk-public.git", :tag => "#{spec.version}" }
+  # ═══════════════════════════════════════════════════════════════════════════
+  # DUAL-MODE SUPPORT: Development (source) vs Release (binary)
+  # ═══════════════════════════════════════════════════════════════════════════
+  msp_release = ENV['MSP_RELEASE'] == '1'
+
+  if msp_release
+    # RELEASE MODE: Binary XCFramework for external distribution
+    spec.source = { :git => "https://github.com/ParticleMedia/msp-ios-sdk-public.git", :tag => spec.version.to_s }
+    spec.vendored_frameworks = [
+      "Binary/MSPSharedLibraries.xcframework",
+      "ThirdParty/PrebidMobile/PrebidMobile.xcframework"
+    ]
+  else
+    # DEVELOPMENT MODE: Source files for internal development
+    # NOTE: Still need PrebidMobile.xcframework as it's a binary-only third-party SDK
+    spec.source = { :path => '.' }
+    spec.source_files = "Sources/Core/MSPSharedLibraries/MSPSharedLibraries/**/*.{swift,h,m}"
+    spec.vendored_frameworks = "ThirdParty/PrebidMobile/PrebidMobile.xcframework"
+  end
 
   # ――― Source Code ―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――― #
   #
@@ -90,19 +109,23 @@ Pod::Spec.new do |spec|
   #  Not including the public_header_files will make all headers public.
   #
 
-  spec.source_files  = "MSPSharedLibraries/MSPSharedLibraries/**/*.{h,m,swift}"
-  spec.exclude_files = "Classes/Exclude"
-
-  #spec.dependency 'GoogleAdapter'
-  spec.vendored_frameworks = "MSPSharedLibraries/PrebidMobile.xcframework", "MSPSharedLibraries/MSPiOSCore.xcframework"
-
-  # spec.public_header_files = "Classes/**/*.h"
-  # s.pod_target_xcconfig = { 'HEADER_SEARCH_PATHS' => '$(PODS_TARGET_SRCROOT)/PrebidMobile.xcframework/Headers $(PODS_TARGET_SRCROOT)/MSPiOSCore.xcframework/Headers' }
-
-  spec.pod_target_xcconfig = { 'VALID_ARCHS' => 'x86_64 armv7 arm64' }
-  spec.user_target_xcconfig = { 'EXCLUDED_ARCHS[sdk=iphonesimulator*]' => 'arm64' }
+  spec.platform     = :ios, '15.0'
+  spec.requires_arc  = true
 
   spec.static_framework = true
+
+  # MSPiOSCore is now a separate pod (Stage A: independent binary distribution)
+  spec.dependency 'MSPiOSCore'
+
+  spec.pod_target_xcconfig = {
+    'BUILD_LIBRARY_FOR_DISTRIBUTION' => 'YES',
+    'FRAMEWORK_SEARCH_PATHS' => '$(inherited) $(PODS_ROOT)/../Build/XCFrameworks',
+    'SWIFT_INCLUDE_PATHS' => '$(inherited) $(PODS_ROOT)/../Build/XCFrameworks'
+  }
+  spec.user_target_xcconfig = {
+    'FRAMEWORK_SEARCH_PATHS' => '$(inherited) $(PODS_ROOT)/../Build/XCFrameworks',
+    'SWIFT_INCLUDE_PATHS' => '$(inherited) $(PODS_ROOT)/../Build/XCFrameworks'
+  }
 
 
 

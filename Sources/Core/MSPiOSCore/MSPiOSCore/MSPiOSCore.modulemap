@@ -1,0 +1,5 @@
+framework module MSPiOSCore {
+    umbrella header "MSPiOSCore.h"
+    export *
+    module * { export * }
+}

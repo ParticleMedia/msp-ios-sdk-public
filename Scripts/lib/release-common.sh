@@ -1,86 +1,311 @@
 #!/bin/bash
+# --- MSP Worktree Safety Guard (Patch K, shared) ---
+# shellcheck source=/dev/null
+if command -v git >/dev/null 2>&1; then
+  MSP_REPO_ROOT="$(git rev-parse --show-toplevel 2>/dev/null || true)"
+  if [ -n "$MSP_REPO_ROOT" ] && [ -f "$MSP_REPO_ROOT/Scripts/lib/worktree_guard.sh" ]; then
+    # shellcheck source=/dev/null
+    . "$MSP_REPO_ROOT/Scripts/lib/worktree_guard.sh"
+    msp_enforce_main_repo_or_exit
+  fi
+fi
+# --- End MSP Worktree Safety Guard (Patch K, shared) ---
 
 # Release Common Library
 # Shared functions and configurations for all release scripts
+#
+# Phase 3 Step 1: Refactored to use modular utils/
+# This file now sources utility modules and provides backward compatibility wrappers
 
-# Colors for output
-RED='\033[0;31m'
-GREEN='\033[0;32m'
-YELLOW='\033[1;33m'
-BLUE='\033[0;34m'
-PURPLE='\033[0;35m'
-NC='\033[0m' # No Color
+# ============================================================================
+# ROOT_DIR Calculation
+# ============================================================================
+# ============================================
+# Unified ROOT_DIR resolution (final version)
+# ============================================
+if [[ -z "${ROOT_DIR:-}" ]]; then
+    # First try Git repo root (most reliable)
+    if command -v git >/dev/null 2>&1; then
+        git_root="$(git rev-parse --show-toplevel 2>/dev/null || echo "")"
+        if [[ -n "$git_root" ]]; then
+            ROOT_DIR="$git_root"
+        fi
+    fi
 
-# Logging functions
+    # Fallback to walking up from SCRIPT_DIR
+    if [[ -z "${ROOT_DIR:-}" ]]; then
+        SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+        ROOT_DIR="$SCRIPT_DIR"
+        while [[ "$ROOT_DIR" != "/" ]] && [[ "${ROOT_DIR##*/}" != "Scripts" ]]; do
+            ROOT_DIR="$(dirname "$ROOT_DIR")"
+        done
+        if [[ "${ROOT_DIR##*/}" == "Scripts" ]]; then
+            ROOT_DIR="$(dirname "$ROOT_DIR")"
+        fi
+    fi
+fi
+
+export ROOT_DIR
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+# ============================================================================
+# UI System Loading (UI-First Rule)
+# ============================================================================
+# Load UI system in order: colors.sh → ui.sh → logging.sh
+# This ensures all logging functions are available before utils modules are loaded
+
+# Handle NO_ANSI flag by setting NO_COLOR (logging.sh respects NO_COLOR)
+if [[ "${NO_ANSI:-false}" == "true" ]]; then
+    export NO_COLOR=1
+fi
+
+# Source colors.sh
+if [[ -f "$ROOT_DIR/Scripts/lib/colors.sh" ]]; then
+    # shellcheck source=Scripts/lib/colors.sh
+    source "$ROOT_DIR/Scripts/lib/colors.sh" 2>/dev/null || true
+fi
+
+# Source ui.sh (depends on colors.sh)
+if [[ -f "$ROOT_DIR/Scripts/lib/ui.sh" ]]; then
+    # shellcheck source=Scripts/lib/ui.sh
+    source "$ROOT_DIR/Scripts/lib/ui.sh" 2>/dev/null || true
+fi
+
+# Source logging.sh (depends on colors.sh and ui.sh)
+if [[ -f "$ROOT_DIR/Scripts/lib/logging.sh" ]]; then
+    # shellcheck source=Scripts/lib/logging.sh
+    source "$ROOT_DIR/Scripts/lib/logging.sh" 2>/dev/null || true
+fi
+
+# ============================================================================
+# Fallback Logging Functions (if UI system not available)
+# ============================================================================
+# Only define fallbacks if logging functions are not available
+if ! command -v log_info &>/dev/null; then
+    # Fallback color definitions
+    : "${RED:=\033[0;31m}"
+    : "${GREEN:=\033[0;32m}"
+    : "${YELLOW:=\033[1;33m}"
+    : "${BLUE:=\033[0;34m}"
+    : "${PURPLE:=\033[0;35m}"
+    : "${NC:=\033[0m}"
+    
+    # Fallback logging functions
 log_info() {
+        if [[ "${NO_ANSI:-false}" == "true" ]]; then
+            echo "[INFO] $1"
+        else
     echo -e "${BLUE}ℹ️  $1${NC}"
+        fi
 }
 
 log_success() {
+        if [[ "${NO_ANSI:-false}" == "true" ]]; then
+            echo "[SUCCESS] $1"
+        else
     echo -e "${GREEN}✅ $1${NC}"
+        fi
 }
 
 log_warning() {
+        if [[ "${NO_ANSI:-false}" == "true" ]]; then
+            echo "[WARN] $1"
+        else
     echo -e "${YELLOW}⚠️  $1${NC}"
+        fi
 }
 
 log_error() {
-    echo -e "${RED}❌ $1${NC}"
+        if [[ "${NO_ANSI:-false}" == "true" ]]; then
+            echo "[ERROR] $1" >&2
+        else
+            echo -e "${RED}❌ $1${NC}" >&2
+        fi
 }
 
 log_step() {
+        if [[ "${NO_ANSI:-false}" == "true" ]]; then
+            echo "[STEP] $1"
+        else
     echo -e "${BLUE}🔧 $1${NC}"
+        fi
 }
 
 log_release() {
+        if [[ "${NO_ANSI:-false}" == "true" ]]; then
+            echo "[RELEASE] $1"
+        else
     echo -e "${PURPLE}🚀 $1${NC}"
+        fi
 }
 
 log_debug() {
-    if [[ "$VERBOSE" == "true" ]]; then
+        if [[ "${VERBOSE:-false}" == "true" ]]; then
+            if [[ "${NO_ANSI:-false}" == "true" ]]; then
+                echo "[DEBUG] $1"
+            else
         echo -e "${BLUE}🔍 $1${NC}"
+            fi
     fi
 }
 
 print_section() {
+        if [[ "${NO_ANSI:-false}" == "true" ]]; then
+            echo ""
+            echo "=== $1 ==="
+            echo ""
+        else
     echo ""
     echo "═══════════════════════════════════════════════════════════════════"
     echo "$1"
     echo "═══════════════════════════════════════════════════════════════════"
     echo ""
+        fi
 }
 
 print_subsection() {
+        if [[ "${NO_ANSI:-false}" == "true" ]]; then
+            echo "--- $1 ---"
+        else
     echo -e "${BLUE}--- $1 ---${NC}"
+        fi
+    }
+    
+    # Alias log_warn to log_warning for compatibility
+    log_warn() {
+        log_warning "$@"
+    }
+fi
+
+# ============================================================================
+# Source Utility Modules
+# ============================================================================
+# Source modules in dependency order (git, version, retry, state, podspec, github, notify)
+# Utils modules will source UI system themselves, but release-common.sh has already loaded it
+
+# Source git utilities
+if [[ -f "$ROOT_DIR/Scripts/release/utils/git.sh" ]]; then
+    # shellcheck source=Scripts/release/utils/git.sh
+    source "$ROOT_DIR/Scripts/release/utils/git.sh" 2>/dev/null || true
+fi
+
+# Source version utilities
+if [[ -f "$ROOT_DIR/Scripts/release/utils/version.sh" ]]; then
+    # shellcheck source=Scripts/release/utils/version.sh
+    source "$ROOT_DIR/Scripts/release/utils/version.sh" 2>/dev/null || true
+fi
+
+# Source retry utilities
+if [[ -f "$ROOT_DIR/Scripts/release/utils/retry.sh" ]]; then
+    # shellcheck source=Scripts/release/utils/retry.sh
+    source "$ROOT_DIR/Scripts/release/utils/retry.sh" 2>/dev/null || true
+fi
+
+# Source state utilities
+if [[ -f "$ROOT_DIR/Scripts/release/utils/state.sh" ]]; then
+    # shellcheck source=Scripts/release/utils/state.sh
+    source "$ROOT_DIR/Scripts/release/utils/state.sh" 2>/dev/null || true
+fi
+
+# Source podspec utilities
+if [[ -f "$ROOT_DIR/Scripts/release/utils/podspec.sh" ]]; then
+    # shellcheck source=Scripts/release/utils/podspec.sh
+    source "$ROOT_DIR/Scripts/release/utils/podspec.sh" 2>/dev/null || true
+fi
+
+# Source GitHub utilities
+if [[ -f "$ROOT_DIR/Scripts/release/utils/github.sh" ]]; then
+    # shellcheck source=Scripts/release/utils/github.sh
+    source "$ROOT_DIR/Scripts/release/utils/github.sh" 2>/dev/null || true
+fi
+
+# ============================================================================
+# Release Mode Helpers (Phase B)
+# ============================================================================
+# Helper functions to determine if we're running in dry-run or production mode
+
+is_dry_run_mode() {
+    # Phase B: Use DRY_RUN for mode control
+    local dry_run="${DRY_RUN:-true}"
+    if [[ "$dry_run" == "true" ]]; then
+        return 0
+    else
+        return 1
+    fi
 }
 
+is_production_mode() {
+    # Phase B: Use DRY_RUN for mode control
+    local dry_run="${DRY_RUN:-true}"
+    if [[ "$dry_run" == "false" ]]; then
+        # Check if real publish is allowed on this branch
+        if command -v should_real_publish &>/dev/null; then
+            if ! should_real_publish; then
+                local branch="$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo unknown)"
+                log_error "[BLOCKED] Real publish not allowed on branch: $branch"
+                log_error "[BLOCKED] Check Scripts/release/config/release_config.yaml for branch policy"
+                return 1
+            fi
+        fi
+        return 0
+    else
+        return 1
+    fi
+}
+
+# Backward compatibility aliases (deprecated)
+is_preflight_tier() {
+    is_dry_run_mode
+}
+
+is_release_tier() {
+    is_production_mode
+}
+
+# Source notification utilities
+# Source release config loader (Patch M+CONFIG)
+if [[ -f "$ROOT_DIR/Scripts/release/lib/config.sh" ]]; then
+    # shellcheck source=Scripts/release/lib/config.sh
+    source "$ROOT_DIR/Scripts/release/lib/config.sh" 2>/dev/null || true
+fi
+if [[ -f "$ROOT_DIR/Scripts/release/utils/notify.sh" ]]; then
+    # shellcheck source=Scripts/release/utils/notify.sh
+    source "$ROOT_DIR/Scripts/release/utils/notify.sh" 2>/dev/null || true
+fi
+
+# ============================================================================
+# Pod Configuration
+# ============================================================================
 # Pod configurations - Single source of truth
 # Order matters: dependencies must be released before dependents
+# Stage B: MSPOMSDK removed - OMSDK now embedded in NovaCore
+# Release order based on dependencies (8 pods total: 7 release + MSPiOSCore)
 POD_RELEASE_ORDER=(
     "MSPSharedLibraries"    # No dependencies
-    "MSPOMSDK"              # Depends on MSPSharedLibraries
     "MSPFacebookAdapter"    # Depends on MSPSharedLibraries
     "MSPGoogleAdapter"      # Depends on MSPSharedLibraries
-    "NovaAdapter"           # Depends on MSPSharedLibraries, MSPOMSDK
+    "NovaAdapter"           # Depends on MSPSharedLibraries (OMSDK via NovaCore)
     "AmazonAdapter"         # Depends on MSPSharedLibraries
     "PrebidAdapter"         # Depends on MSPSharedLibraries
     "MSPCore"               # Depends on MSPSharedLibraries, PrebidAdapter
+    "MSPiOSCore"            # No dependencies
 )
 
 # All pods to be released
 ALL_PODS=("MSPSharedLibraries" "PrebidAdapter" "NovaAdapter" "MSPFacebookAdapter" "MSPGoogleAdapter" "AmazonAdapter" "MSPCore")
 
 # Dependency mapping (using functions instead of associative arrays for bash 3.x compatibility)
+# Stage B: MSPOMSDK removed - OMSDK now embedded in NovaCore
 get_pod_dependencies_internal() {
     case "$1" in
         "MSPSharedLibraries") echo "" ;;
-        "MSPOMSDK") echo "MSPSharedLibraries" ;;
         "MSPFacebookAdapter") echo "MSPSharedLibraries" ;;
         "MSPGoogleAdapter") echo "MSPSharedLibraries" ;;
-        "NovaAdapter") echo "MSPSharedLibraries MSPOMSDK" ;;
+        "NovaAdapter") echo "MSPSharedLibraries" ;;  # Stage B: OMSDK via NovaCore
         "AmazonAdapter") echo "MSPSharedLibraries" ;;
         "PrebidAdapter") echo "MSPSharedLibraries" ;;
         "MSPCore") echo "MSPSharedLibraries PrebidAdapter" ;;
+        "MSPiOSCore") echo "" ;;
         *) echo "" ;;
     esac
 }
@@ -163,46 +388,9 @@ validate_release_order() {
     return 0
 }
 
-# Function to update podspec dependency version
-update_podspec_dependency_version() {
-    local podspec_file="$1"
-    local dependency_name="$2"
-    local version="$3"
-    
-    if [[ ! -f "$podspec_file" ]]; then
-        log_error "Podspec file not found: $podspec_file"
-        return 1
-    fi
-    
-    # Update dependency version
-    sed -i '' "s|spec\.dependency '$dependency_name'[^,]*|spec.dependency '$dependency_name', '$version'|g" "$podspec_file"
-    
-    log_success "Updated $dependency_name dependency to version $version in $podspec_file"
-}
-
-# Function to update podspec to HTTP zip format
-update_podspec_to_zip_format() {
-    local podspec_file="$1"
-    local version="$2"
-    
-    if [[ ! -f "$podspec_file" ]]; then
-        log_error "Podspec file not found: $podspec_file"
-        return 1
-    fi
-    
-    # Create backup
-    cp "$podspec_file" "${podspec_file}.backup"
-    
-    # Update version
-    sed -i '' "s|spec\.version.*=.*\".*\"|spec.version = \"${version}\"|g" "$podspec_file"
-    
-    # Update source to use HTTP zip format
-    sed -i '' "s|spec\.source.*=.*{.*:git.*=>.*\"https://github\.com/.*\.git\".*:tag.*=>.*\"#{spec\.version}\".*}|spec.source = {\n    http: \"https://github.com/ParticleMedia/msp-ios-sdk-public/releases/download/${version}/$(basename "$podspec_file" .podspec)-${version}.zip\",\n    type: \"zip\"\n  }|g" "$podspec_file"
-    
-    
-    log_success "Updated $podspec_file to use HTTP zip source format"
-}
-
+# ============================================================================
+# Project Utilities
+# ============================================================================
 # Function to get project root
 get_project_root() {
     cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd
@@ -216,583 +404,9 @@ ensure_project_root() {
     fi
 }
 
-# Retry logic with exponential backoff
-retry_with_backoff() {
-    local max_attempts="$1"
-    local base_delay="$2"
-    local command_name="$3"
-    shift 3
-    local command=("$@")
-    
-    local attempt=1
-    
-    while [[ $attempt -le $max_attempts ]]; do
-        log_debug "Attempt $attempt/$max_attempts: $command_name"
-        
-        if "${command[@]}"; then
-            log_success "$command_name succeeded on attempt $attempt"
-            return 0
-        else
-            log_warning "$command_name failed (attempt $attempt/$max_attempts)"
-            
-            if [[ $attempt -lt $max_attempts ]]; then
-                # Exponential backoff: base_delay * 2^(attempt-1)
-                local delay=$((base_delay * (1 << (attempt - 1))))
-                log_info "Retrying $command_name in ${delay} seconds..."
-                sleep $delay
-            fi
-        fi
-        
-        ((attempt++))
-    done
-    
-    log_error "$command_name failed after $max_attempts attempts"
-    return 1
-}
-
-# Validate podspec with retry logic
-validate_podspec_with_retry() {
-    local podspec="$1"
-    local max_attempts=3
-    local base_delay=5
-    
-    log_step "Validating podspec with retry: $(basename "$podspec")"
-    
-    retry_with_backoff $max_attempts $base_delay "podspec validation" \
-        validate_podspec "$podspec"
-}
-
-# Publish podspec with retry logic
-publish_podspec_with_retry() {
-    local podspec="$1"
-    local max_attempts=3
-    local base_delay=10
-    
-    log_step "Publishing podspec with retry: $(basename "$podspec")"
-    
-    # First update the specs repo with retry
-    if ! retry_with_backoff 3 5 "specs repo update" update_specs_repo; then
-        log_warning "Failed to update specs repo, continuing anyway..."
-    fi
-    
-    # Then publish with retry
-    retry_with_backoff $max_attempts $base_delay "podspec publishing" \
-        publish_podspec "$podspec"
-}
-
-# GitHub release with retry logic
-create_github_release_with_retry() {
-    local pod="$1"
-    local version="$2"
-    local max_attempts=3
-    local base_delay=5
-    
-    log_step "Creating GitHub release with retry for $pod"
-    
-    retry_with_backoff $max_attempts $base_delay "GitHub release creation" \
-        create_github_release_internal "$pod" "$version"
-}
-
-# Internal GitHub release function (to be called by retry logic)
-create_github_release_internal() {
-    local pod="$1"
-    local version="$2"
-    
-    # Create zip file
-    local zip_name="${pod}-${version}.zip"
-    if [[ -d "$pod" ]]; then
-        zip -r "$zip_name" "$pod" >/dev/null 2>&1
-    else
-        log_warning "Pod directory $pod not found, skipping zip creation"
-        return 0
-    fi
-    
-    # Create or update GitHub release
-    if gh release view "$version" --repo "ParticleMedia/msp-ios-sdk-public" &>/dev/null; then
-        log_info "Release $version already exists, uploading assets"
-        gh release upload "$version" "$zip_name" --repo "ParticleMedia/msp-ios-sdk-public" --clobber
-    else
-        log_info "Creating new release $version"
-        gh release create "$version" "$zip_name" --repo "ParticleMedia/msp-ios-sdk-public"
-    fi
-    
-    # Clean up zip file
-    rm -f "$zip_name"
-    
-    return 0
-}
-
-# Slack Notification Functions
-# =============================
-
-# Load Slack configuration from config file if it exists
-# Falls back to environment variables if config file is not found
-# Environment variables take precedence over config file values
-load_slack_config() {
-    # Get the directory where this script is located
-    local script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-    # Resolve the config file path relative to the script directory
-    # Script is in Scripts/lib/, config is in Scripts/config/
-    local config_dir="$(cd "$script_dir/../config" 2>/dev/null && pwd)"
-    if [[ -z "$config_dir" ]]; then
-        # Fallback: try to find config directory from project root
-        local project_root="$(cd "$script_dir/../.." 2>/dev/null && pwd)"
-        if [[ -n "$project_root" ]]; then
-            config_dir="$project_root/Scripts/config"
-        fi
-    fi
-    local config_file="${config_dir}/slack.conf"
-    
-    if [[ -f "$config_file" ]]; then
-        log_debug "Loading Slack configuration from: $config_file"
-        
-        # Read the config file line by line
-        while IFS= read -r line || [[ -n "$line" ]]; do
-            # Skip comments and empty lines
-            [[ "$line" =~ ^[[:space:]]*# ]] && continue
-            [[ -z "${line// }" ]] && continue
-            
-            # Parse key=value pairs
-            if [[ "$line" =~ ^[[:space:]]*([^=]+)=(.*)$ ]]; then
-                local key="${BASH_REMATCH[1]}"
-                local value="${BASH_REMATCH[2]}"
-                
-                # Remove leading/trailing whitespace from key
-                key=$(echo "$key" | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
-                
-                # Remove leading/trailing whitespace and quotes from value
-                value=$(echo "$value" | sed 's/^[[:space:]]*//;s/[[:space:]]*$//' | sed 's/^"\(.*\)"$/\1/' | sed "s/^'\(.*\)'$/\1/")
-                
-                # Only set if not already set in environment (environment takes precedence)
-                if [[ -n "$key" ]] && [[ -n "$value" ]]; then
-                    case "$key" in
-                        SLACK_WEBHOOK_URL)
-                            [[ -z "${SLACK_WEBHOOK_URL:-}" ]] && export SLACK_WEBHOOK_URL="$value"
-                            ;;
-                        SLACK_CHANNEL)
-                            [[ -z "${SLACK_CHANNEL:-}" ]] && export SLACK_CHANNEL="$value"
-                            ;;
-                        SLACK_USERNAME)
-                            [[ -z "${SLACK_USERNAME:-}" ]] && export SLACK_USERNAME="$value"
-                            ;;
-                        SLACK_ICON_EMOJI)
-                            [[ -z "${SLACK_ICON_EMOJI:-}" ]] && export SLACK_ICON_EMOJI="$value"
-                            ;;
-                    esac
-                fi
-            fi
-        done < "$config_file"
-    else
-        log_debug "Slack config file not found: $config_file (using environment variables or defaults)"
-    fi
-}
-
-# Load Slack configuration (environment variables take precedence)
-load_slack_config
-
-# Slack configuration with defaults
-SLACK_WEBHOOK_URL="${SLACK_WEBHOOK_URL:-}"
-SLACK_CHANNEL="${SLACK_CHANNEL:-#releases}"
-SLACK_USERNAME="${SLACK_USERNAME:-MSP iOS SDK Bot}"
-SLACK_ICON_EMOJI="${SLACK_ICON_EMOJI:-:rocket:}"
-
-# Environment detection
-get_environment() {
-    if [[ -n "$JENKINS_URL" ]]; then
-        echo "jenkins"
-    elif [[ -n "$GITHUB_ACTIONS" ]]; then
-        echo "github-actions"
-    elif [[ -n "$CI" ]]; then
-        echo "ci"
-    else
-        echo "local"
-    fi
-}
-
-# Convert markdown to Slack formatting
-format_release_notes_for_slack() {
-    local release_notes="$1"
-    
-    if [[ -z "$release_notes" ]]; then
-        echo ""
-        return
-    fi
-    
-    # Convert markdown headers to Slack bold
-    local formatted_notes=$(echo "$release_notes" | sed 's/^## \(.*\)$/*\1*/g')
-    formatted_notes=$(echo "$formatted_notes" | sed 's/^### \(.*\)$/*\1*/g')
-    
-    # Convert markdown lists to Slack formatting
-    formatted_notes=$(echo "$formatted_notes" | sed 's/^- /• /g')
-    
-    # Clean up extra whitespace but preserve line breaks
-    formatted_notes=$(echo "$formatted_notes" | sed 's/^[[:space:]]*//g' | sed 's/[[:space:]]*$//g')
-    
-    # Replace multiple newlines with single newline
-    formatted_notes=$(echo "$formatted_notes" | tr -s '\n')
-    
-    # Truncate if too long for Slack (count characters including newlines)
-    local char_count=$(echo "$formatted_notes" | wc -c)
-    if [[ $char_count -gt 200 ]]; then
-        # Truncate to 197 characters and add ellipsis
-        formatted_notes=$(echo "$formatted_notes" | head -c 197)
-        formatted_notes="${formatted_notes}..."
-    fi
-    
-    echo "$formatted_notes"
-}
-
-# Get environment-specific information
-get_environment_info() {
-    local env=$(get_environment)
-    case "$env" in
-        "jenkins")
-            echo "Jenkins Build #${BUILD_NUMBER:-unknown}"
-            ;;
-        "github-actions")
-            echo "GitHub Actions - ${GITHUB_WORKFLOW:-unknown workflow}"
-            ;;
-        "ci")
-            echo "CI Environment"
-            ;;
-        "local")
-            # Handle hostnames with spaces properly
-            local hostname=$(hostname)
-            echo "Local Development - $(whoami)@${hostname}"
-            ;;
-        *)
-            echo "Unknown Environment"
-            ;;
-    esac
-}
-
-# Send Slack notification
-send_slack_notification() {
-    local message="$1"
-    local color="${2:-good}"
-    local title="${3:-}"
-    local fields="${4:-}"
-    
-    if [[ -z "$SLACK_WEBHOOK_URL" ]]; then
-        log_warning "SLACK_WEBHOOK_URL not set, skipping Slack notification"
-        return 0
-    fi
-    
-    # Escape special characters for JSON
-    local escaped_message=$(echo "$message" | sed 's/"/\\"/g' | sed 's/\\/\\\\/g')
-    local escaped_title=$(echo "$title" | sed 's/"/\\"/g' | sed 's/\\/\\\\/g')
-    local escaped_footer=$(get_environment_info | sed 's/"/\\"/g' | sed 's/\\/\\\\/g')
-    
-    # Build the JSON payload
-    local json_payload=$(cat <<EOF
-{
-    "channel": "$SLACK_CHANNEL",
-    "username": "$SLACK_USERNAME",
-    "icon_emoji": "$SLACK_ICON_EMOJI",
-    "text": "$escaped_message",
-    "attachments": [
-        {
-            "color": "$color",
-            "title": "$escaped_title",
-            "fields": [$fields],
-            "footer": "$escaped_footer",
-            "ts": $(date +%s)
-        }
-    ]
-}
-EOF
-)
-    
-    # Send the notification
-    local response=$(curl -s -X POST -H 'Content-type: application/json' \
-        --data "$json_payload" \
-        "$SLACK_WEBHOOK_URL" 2>/dev/null)
-    
-    if [[ "$response" == "ok" ]]; then
-        log_success "Slack notification sent successfully"
-    else
-        log_warning "Failed to send Slack notification: $response"
-    fi
-}
-
-# Send release success notification
-notify_release_success() {
-    local release_type="$1"
-    local version="$2"
-    local pods="$3"
-    local duration="${4:-unknown}"
-    local release_notes="${5:-}"
-    
-    local message="🚀 *${release_type} Release Successful!*"
-    local title="Release Details"
-    local fields=""
-    
-    # Add version field
-    fields+="{\"title\": \"Version\", \"value\": \"$version\", \"short\": true},"
-    
-    # Add pods field
-    if [[ -n "$pods" ]]; then
-        fields+="{\"title\": \"Released Pods\", \"value\": \"$pods\", \"short\": true},"
-    fi
-    
-    # Add duration field
-    fields+="{\"title\": \"Duration\", \"value\": \"$duration\", \"short\": true},"
-    
-    # Add environment field
-    fields+="{\"title\": \"Environment\", \"value\": \"$(get_environment_info)\", \"short\": true}"
-    
-    # Add release notes if provided
-    if [[ -n "$release_notes" ]]; then
-        local formatted_notes=$(format_release_notes_for_slack "$release_notes")
-        fields+=",{\"title\": \"Release Notes\", \"value\": \"$formatted_notes\", \"short\": false}"
-    fi
-    
-    send_slack_notification "$message" "good" "$title" "$fields"
-}
-
-# Send release failure notification
-notify_release_failure() {
-    local release_type="$1"
-    local version="$2"
-    local error_message="$3"
-    local failed_step="${4:-unknown}"
-    
-    local message="❌ *${release_type} Release Failed!*"
-    local title="Release Error Details"
-    local fields=""
-    
-    # Add version field
-    fields+="{\"title\": \"Version\", \"value\": \"$version\", \"short\": true},"
-    
-    # Add failed step field
-    fields+="{\"title\": \"Failed Step\", \"value\": \"$failed_step\", \"short\": true},"
-    
-    # Add error message field
-    fields+="{\"title\": \"Error Message\", \"value\": \"$error_message\", \"short\": false},"
-    
-    # Add environment field
-    fields+="{\"title\": \"Environment\", \"value\": \"$(get_environment_info)\", \"short\": true}"
-    
-    send_slack_notification "$message" "danger" "$title" "$fields"
-}
-
-# Send release warning notification
-notify_release_warning() {
-    local release_type="$1"
-    local version="$2"
-    local warning_message="$3"
-    local warning_step="${4:-unknown}"
-    
-    local message="⚠️ *${release_type} Release Completed with Warnings*"
-    local title="Release Warning Details"
-    local fields=""
-    
-    # Add version field
-    fields+="{\"title\": \"Version\", \"value\": \"$version\", \"short\": true},"
-    
-    # Add warning step field
-    fields+="{\"title\": \"Warning Step\", \"value\": \"$warning_step\", \"short\": true},"
-    
-    # Add warning message field
-    fields+="{\"title\": \"Warning Message\", \"value\": \"$warning_message\", \"short\": false},"
-    
-    # Add environment field
-    fields+="{\"title\": \"Environment\", \"value\": \"$(get_environment_info)\", \"short\": true}"
-    
-    send_slack_notification "$message" "warning" "$title" "$fields"
-}
-
-# Send release start notification
-notify_release_start() {
-    local release_type="$1"
-    local version="$2"
-    local pods="$3"
-    local release_notes="${4:-}"
-    
-    local message="🔄 *${release_type} Release Started*"
-    local title="Release Information"
-    local fields=""
-    
-    # Add version field
-    fields+="{\"title\": \"Version\", \"value\": \"$version\", \"short\": true},"
-    
-    # Add pods field
-    if [[ -n "$pods" ]]; then
-        fields+="{\"title\": \"Pods to Release\", \"value\": \"$pods\", \"short\": true},"
-    fi
-    
-    # Add environment field
-    fields+="{\"title\": \"Environment\", \"value\": \"$(get_environment_info)\", \"short\": true}"
-    
-    # Add release notes if provided
-    if [[ -n "$release_notes" ]]; then
-        local formatted_notes=$(format_release_notes_for_slack "$release_notes")
-        fields+=",{\"title\": \"Release Notes\", \"value\": \"$formatted_notes\", \"short\": false}"
-    fi
-    
-    send_slack_notification "$message" "#36a64f" "$title" "$fields"
-}
-
-# Send individual pod release notification
-notify_pod_release() {
-    local pod="$1"
-    local version="$2"
-    local pod_status="$3"  # success, failure, warning
-    local message="$4"
-    
-    local emoji=""
-    local color=""
-    
-    case "$pod_status" in
-        "success")
-            emoji="✅"
-            color="good"
-            ;;
-        "failure")
-            emoji="❌"
-            color="danger"
-            ;;
-        "warning")
-            emoji="⚠️"
-            color="warning"
-            ;;
-        *)
-            emoji="ℹ️"
-            color="#36a64f"
-            ;;
-    esac
-    
-    local slack_message="${emoji} *${pod}* v${version}"
-    if [[ -n "$message" ]]; then
-        slack_message+="
-$message"
-    fi
-    
-    local fields="{\"title\": \"Pod\", \"value\": \"$pod\", \"short\": true},"
-    fields+="{\"title\": \"Version\", \"value\": \"$version\", \"short\": true},"
-    fields+="{\"title\": \"Status\", \"value\": \"$pod_status\", \"short\": true}"
-    
-    send_slack_notification "$slack_message" "$color" "Pod Release Update" "$fields"
-}
-
-# Send release summary notification
-notify_release_summary() {
-    local release_type="$1"
-    local version="$2"
-    local total_pods="$3"
-    local successful_pods="$4"
-    local failed_pods="$5"
-    local duration="$6"
-    
-    local message="📊 *${release_type} Release Summary*"
-    local title="Release Statistics"
-    local fields=""
-    
-    # Add version field
-    fields+="{\"title\": \"Version\", \"value\": \"$version\", \"short\": true},"
-    
-    # Add total pods field
-    fields+="{\"title\": \"Total Pods\", \"value\": \"$total_pods\", \"short\": true},"
-    
-    # Add successful pods field
-    fields+="{\"title\": \"Successful\", \"value\": \"$successful_pods\", \"short\": true},"
-    
-    # Add failed pods field
-    fields+="{\"title\": \"Failed\", \"value\": \"$failed_pods\", \"short\": true},"
-    
-    # Add duration field
-    fields+="{\"title\": \"Duration\", \"value\": \"$duration\", \"short\": true},"
-    
-    # Add environment field
-    fields+="{\"title\": \"Environment\", \"value\": \"$(get_environment_info)\", \"short\": true}"
-    
-    local color="good"
-    if [[ "$failed_pods" -gt 0 ]]; then
-        color="danger"
-    elif [[ "$successful_pods" -lt "$total_pods" ]]; then
-        color="warning"
-    fi
-    
-    send_slack_notification "$message" "$color" "$title" "$fields"
-}
-
-# Send combined release success notification with summary
-notify_release_success_with_summary() {
-    local release_type="$1"
-    local version="$2"
-    local pods="$3"
-    local duration="${4:-unknown}"
-    local release_notes="${5:-}"
-    local total_pods="$6"
-    local successful_pods="$7"
-    local failed_pods="$8"
-    local release_branch="${9:-}"
-    
-    local message="🚀 *${release_type} Release Successful!*"
-    local title="Release Details & Summary"
-    local fields=""
-    
-    # Add version field
-    fields+="{\"title\": \"Version\", \"value\": \"$version\", \"short\": true}"
-    
-    # Add release branch field if provided
-    if [[ -n "$release_branch" ]]; then
-        fields+=",{\"title\": \"Release Branch\", \"value\": \"$release_branch\", \"short\": true}"
-    fi
-    
-    # Add duration field
-    fields+=",{\"title\": \"Duration\", \"value\": \"$duration\", \"short\": true}"
-    
-    # Add released pods field
-    if [[ -n "$pods" ]]; then
-        fields+=",{\"title\": \"Released Pods\", \"value\": \"$pods\", \"short\": true}"
-    fi
-    
-    # Add environment field
-    fields+=",{\"title\": \"Environment\", \"value\": \"$(get_environment_info)\", \"short\": true}"
-    
-    # Add release notes if provided
-    if [[ -n "$release_notes" ]]; then
-        local formatted_notes=$(format_release_notes_for_slack "$release_notes")
-        fields+=",{\"title\": \"Release Notes\", \"value\": \"$formatted_notes\", \"short\": false}"
-    fi
-    
-    # Add summary statistics
-    fields+=",{\"title\": \"Total Pods\", \"value\": \"$total_pods\", \"short\": true}"
-    fields+=",{\"title\": \"Successful\", \"value\": \"$successful_pods\", \"short\": true}"
-    fields+=",{\"title\": \"Failed\", \"value\": \"$failed_pods\", \"short\": true}"
-    
-    local color="good"
-    if [[ "$failed_pods" -gt 0 ]]; then
-        color="danger"
-    elif [[ "$successful_pods" -lt "$total_pods" ]]; then
-        color="warning"
-    fi
-    
-    send_slack_notification "$message" "$color" "$title" "$fields"
-}
-
-# Test Slack notification
-test_slack_notification() {
-    log_step "Testing Slack notification..."
-    
-    if [[ -z "$SLACK_WEBHOOK_URL" ]]; then
-        log_error "SLACK_WEBHOOK_URL not set. Please set it to test notifications."
-        return 1
-    fi
-    
-    local message="🧪 *Test Notification*"
-    local title="Slack Integration Test"
-    local fields="{\"title\": \"Test\", \"value\": \"This is a test notification from MSP iOS SDK Release Bot\", \"short\": false},"
-    fields+="{\"title\": \"Environment\", \"value\": \"$(get_environment_info)\", \"short\": true},"
-    fields+="{\"title\": \"Timestamp\", \"value\": \"$(date)\", \"short\": true}"
-    
-    send_slack_notification "$message" "good" "$title" "$fields"
-}
-
+# ============================================================================
 # Release Notes Generation Functions
-# ==================================
-
+# ============================================================================
 # Generate release notes from git commits
 generate_release_notes_from_git() {
     local version="$1"
@@ -979,36 +593,77 @@ get_release_notes() {
     esac
 }
 
-# Update Config.plist version
-update_config_plist_version() {
-    local version="$1"
-    local config_plist="MSPCore/MSPCore/Resources/Config.plist"
-    
-    if [[ ! -f "$config_plist" ]]; then
-        log_error "Config.plist not found: $config_plist"
-        return 1
-    fi
-    
-    log_step "Updating SDKVersion in Config.plist to $version"
-    
-    # Create backup
-    cp "$config_plist" "${config_plist}.backup"
-    
-    # Update SDKVersion in Config.plist
-    sed -i '' "s|<string>.*</string>|<string>${version}</string>|g" "$config_plist"
-    
-    log_success "Updated SDKVersion in Config.plist to $version"
+# ============================================================================
+# Slack Notification Functions (Extracted to notify/slack.sh)
+# ============================================================================
+# Phase 1 Refactoring: Slack functions have been extracted to a dedicated module.
+# This source statement provides backward compatibility.
+# See: Scripts/notify/slack.sh for the implementation.
+
+# Source the Slack notification module
+if [[ -f "$ROOT_DIR/Scripts/notify/slack.sh" ]]; then
+    # shellcheck source=Scripts/notify/slack.sh
+    source "$ROOT_DIR/Scripts/notify/slack.sh"
+else
+    # Fallback: Define stub functions if module not found
+    log_warning "notify/slack.sh not found - Slack notifications will be disabled"
+    send_slack_notification() { log_warning "Slack notifications disabled (module not found)"; }
+    notify_release_success() { :; }
+    notify_release_failure() { :; }
+    notify_release_warning() { :; }
+    notify_release_start() { :; }
+    notify_pod_release() { :; }
+    notify_release_summary() { :; }
+    notify_release_success_with_summary() { :; }
+    test_slack_notification() { log_error "Slack notifications disabled (module not found)"; return 1; }
+fi
+
+# Backward compatibility: Re-export environment functions
+# These are now defined in notify/slack.sh but may be used by other scripts
+get_environment() {
+    get_slack_environment
 }
 
-# Export functions for use in other scripts
-export -f log_info log_success log_warning log_error log_step log_release log_debug print_section print_subsection
+get_environment_info() {
+    get_slack_environment_info
+}
+
+# ============================================================================
+# Backward Compatibility Wrappers
+# ============================================================================
+# Legacy function names for functions moved to utils modules
+
+# Podspec functions (now in utils/podspec.sh)
+update_podspec_dependency_version() {
+    update_podspec_dependencies "$@"
+}
+
+update_podspec_to_zip_format() {
+    update_podspec_source_to_zip "$@"
+}
+
+# ============================================================================
+# Export Functions
+# ============================================================================
+# Export logging functions
+export -f log_info log_success log_warning log_error log_step log_release log_debug print_section print_subsection log_warn 2>/dev/null || true
+
+# Export pod configuration functions
 export -f get_pod_dependencies is_valid_pod get_release_order_for_pod validate_release_order
-export -f update_podspec_dependency_version update_podspec_to_zip_format
+
+# Export project utilities
 export -f get_project_root ensure_project_root
-export -f retry_with_backoff validate_podspec_with_retry publish_podspec_with_retry
-export -f create_github_release_with_retry create_github_release_internal
-export -f get_environment get_environment_info format_release_notes_for_slack send_slack_notification
-export -f notify_release_success notify_release_failure notify_release_warning notify_release_start notify_release_success_with_summary
-export -f notify_pod_release notify_release_summary test_slack_notification
+
+# Export release notes functions
 export -f generate_release_notes_from_git generate_release_notes_from_template generate_simple_release_notes prompt_for_release_notes get_release_notes
-export -f update_config_plist_version
+
+# Export environment functions (backward compatibility wrappers)
+export -f get_environment get_environment_info
+
+# Export legacy podspec functions (backward compatibility)
+export -f update_podspec_dependency_version update_podspec_to_zip_format
+export -f is_preflight_tier is_release_tier 2>/dev/null || true
+
+# Note: Functions from utils modules are exported by their respective modules
+# Note: Slack notification functions are exported by Scripts/notify/slack.sh
+# Note: Functions from utils/notify.sh are exported by that module

@@ -1,0 +1,110 @@
+---
+# ============================================================================
+# Slack Notification Configuration (Config-Driven Development)
+# ============================================================================
+#
+# This file contains BUSINESS LOGIC and CONFIG (not secrets).
+# For secrets (webhooks, tokens), see slack.conf (gitignored).
+#
+# Architecture:
+#   - Secrets Layer: slack.conf (webhooks, tokens) - gitignored
+#   - Config Layer: THIS FILE (mappings, templates) - committed to git
+#   - Logic Layer: notify.sh (smart routing implementation)
+#
+# ============================================================================
+# Smart DM Routing: email_map
+# ============================================================================
+#
+# Maps git user.email → Slack UserID for automatic DM routing.
+# When a release is published, the system:
+#   1. Gets release author's git user.email
+#   2. Looks up UserID in email_map
+#   3. Sends DM to that UserID
+#
+# This ensures the actual release author gets notified automatically,
+# without needing to hardcode UserIDs in slack.conf.
+#
+# To add a new team member:
+#   1. Get their Slack UserID (from Slack profile → More → Copy member ID)
+#   2. Add mapping: their.email@newsbreak.com: U0XXXXXXXXX
+#
+email_map:
+  pengyu.gou@newsbreak.com: U0910UJPD7B
+  han.xiang@newsbreak.com: U02FEJU9ZGX
+  huanzhi.zhang@newsbreak.com: U0207LGEDC4
+  ling.yang@newsbreak.com: U023FKM4Y14
+  mingming.luo@newsbreak.com: U092NFAJ5FC
+  shanyu.li@newsbreak.com: U06KJEVH06R
+
+# ============================================================================
+# Module Ownership: module_owner
+# ============================================================================
+#
+# Fallback routing when email_map lookup fails.
+# Used when:
+#   - Release author's email is not in email_map
+#   - Email lookup fails for any reason
+#
+# Routing priority:
+#   1. email_map[author_email]      - Smart routing (preferred)
+#   2. module_owner[module_name]    - Module-specific fallback
+#   3. module_owner[default]        - Final fallback
+#
+# Example:
+#   - Author: unknown.dev@newsbreak.com (not in email_map)
+#   - Module: MSPCore
+#   - Lookup: module_owner[MSPCore] → U0910UJPD7B
+#
+module_owner:
+  default: U0910UJPD7B
+  MSPSharedLibraries: U0910UJPD7B
+  MSPFacebookAdapter: U0910UJPD7B
+  MSPGoogleAdapter: U0910UJPD7B
+  MSPNovaAdapter: U0910UJPD7B
+  AmazonAdapter: U0910UJPD7B
+  MSPPrebidAdapter: U0910UJPD7B
+  MSPCore: U0910UJPD7B
+
+# ============================================================================
+# Channel Alerts: alerts
+# ============================================================================
+#
+# Configuration for public channel notifications (not DMs).
+# Used for broadcast messages to the team channel.
+#
+# channel: Slack channel ID (from channel URL or API)
+# webhook: DEPRECATED - Now in slack.conf as SLACK_WEBHOOK_URL
+#
+alerts:
+  channel: C093RJJBGRZ
+  # webhook: REMOVED - Now configured in slack.conf as SLACK_WEBHOOK_URL
+  # This separates secrets (slack.conf, gitignored) from config (this file, committed)
+  # For backward compatibility, webhook can still be specified here but it's deprecated
+
+# ============================================================================
+# Message Templates: templates
+# ============================================================================
+#
+# Config-driven message templates for notifications.
+# Supports variable substitution: {{VARIABLE_NAME}}
+#
+# Available variables:
+#   {{MODULE}}   - Module name (e.g., MSPCore)
+#   {{VERSION}}  - Version number (e.g., 0.3.0-rc.6)
+#   {{AUTHOR}}   - Release author name
+#   {{ENV}}      - Environment (test/release)
+#   {{ERROR}}    - Error message (for error template)
+#
+templates:
+  success: |
+    🎉 Module Released Successfully
+    Module: {{MODULE}}
+    Version: {{VERSION}}
+    Released by: {{AUTHOR}}
+    Environment: {{ENV}}
+  error: |
+    ❌ Module Release Failed
+    Module: {{MODULE}}
+    Version: {{VERSION}}
+    Error: {{ERROR}}
+

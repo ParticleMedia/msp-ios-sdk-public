@@ -1,0 +1,18 @@
+// MSPDemoApp-Debug-SPM.xcconfig
+// Debug configuration for SPM build mode
+
+// Framework search paths for XCFrameworks
+FRAMEWORK_SEARCH_PATHS = $(inherited) $(SRCROOT)/../../Build/XCFrameworks $(SRCROOT)/../../ThirdParty/PrebidMobile
+
+// Swift include paths
+SWIFT_INCLUDE_PATHS = $(inherited) $(SRCROOT)/../../Build/XCFrameworks
+
+// Library search paths
+LIBRARY_SEARCH_PATHS = $(inherited)
+
+// Other linker flags
+OTHER_LDFLAGS = $(inherited) -ObjC
+
+// Debug settings
+DEBUG_INFORMATION_FORMAT = dwarf-with-dsym
+SWIFT_OPTIMIZATION_LEVEL = -Onone

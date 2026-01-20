@@ -1,0 +1,131 @@
+# NovaCore XcodeGen Project Specification
+# Uses shared template and adds NovaCore-specific overrides
+# Template: Config/xcodegen/module.project_template.yml
+# NO PODS DEPENDENCIES - Uses only XCFramework dependencies
+
+include:
+  - ../../../Configs/xcodegen/module.project_template.yml
+
+name: NovaCore
+
+settings:
+  base:
+    # Product Configuration
+    PRODUCT_NAME: NovaCore
+    PRODUCT_BUNDLE_IDENTIFIER: msp.NovaCore
+    PRODUCT_MODULE_NAME: NovaCore
+    
+    # Framework Search Paths - Core XCFrameworks only
+    # Third-party dependencies (Kingfisher, SnapKit, Lottie) are provided
+    # via Pods at application level, not as XCFrameworks
+    FRAMEWORK_SEARCH_PATHS:
+      - $(inherited)
+      - $(SRCROOT)/../../../Build/XCFrameworks
+
+targets:
+  NovaCore:
+    type: framework
+    platform: iOS
+    sources:
+      - path: NovaCore
+        excludes:
+          - "**/*.h"
+          - "**/*.modulemap"
+          - "**/*.md"
+          - "**/Tests/**"
+          - "**/*.test.swift"
+          - "**/*.spec.swift"
+          - "NovaCore.docc/**"
+    dependencies:
+      - framework: ../MSPOMSDK/OMSDK_Newsbreak1.xcframework
+        embed: false
+      # Shimmer XCFramework dependency (Plan B: unified XCFramework architecture)
+      # Path is relative to project.yml location: Sources/Core/NovaCore/
+      # Shimmer.xcframework is in ThirdParty/Shimmer/ (repo root)
+      - framework: ../../../ThirdParty/Shimmer/Shimmer.xcframework
+        embed: false
+      # Third-party dependencies (Kingfisher, SnapKit, Lottie) are provided
+      # via Pods at application level. Core XCFrameworks use @_implementationOnly
+      # imports and do NOT embed these frameworks.
+    settings:
+      base:
+        # Module-specific Swift flags
+        # Include paths for Pod modules (Kingfisher from MSPKingfisher) pre-built in shared DerivedData
+        # Using -Xcc -I to also add Clang header search paths for the underlying ObjC module
+        OTHER_SWIFT_FLAGS: >-
+          $(inherited) 
+          -no-verify-emitted-module-interface 
+          -Xcc -I$(SRCROOT)/../../../.generated/DerivedData/build-shared/Build/Products/Release-iphoneos/MSPKingfisher
+          -Xcc -I$(SRCROOT)/../../../.generated/DerivedData/build-shared/Build/Products/Release-iphonesimulator/MSPKingfisher
+        # Swift module search paths for Pod modules - uses $(PLATFORM_NAME) for platform-specific paths
+        # When building for iOS: Release-iphoneos, when building for Simulator: Release-iphonesimulator
+        SWIFT_INCLUDE_PATHS[sdk=iphoneos*]:
+          - $(inherited)
+          - $(SRCROOT)/../../../.generated/DerivedData/build-shared/Build/Products/Release-iphoneos/MSPKingfisher
+          - $(SRCROOT)/../../../.generated/DerivedData/build-shared/Build/Products/Release-iphoneos/SnapKit
+          - $(SRCROOT)/../../../.generated/DerivedData/build-shared/Build/Products/Release-iphoneos/lottie-ios
+        SWIFT_INCLUDE_PATHS[sdk=iphonesimulator*]:
+          - $(inherited)
+          - $(SRCROOT)/../../../.generated/DerivedData/build-shared/Build/Products/Release-iphonesimulator/MSPKingfisher
+          - $(SRCROOT)/../../../.generated/DerivedData/build-shared/Build/Products/Release-iphonesimulator/SnapKit
+          - $(SRCROOT)/../../../.generated/DerivedData/build-shared/Build/Products/Release-iphonesimulator/lottie-ios
+        # Header search paths for ObjC interop
+        HEADER_SEARCH_PATHS[sdk=iphoneos*]:
+          - $(inherited)
+          - $(SRCROOT)/../../../.generated/DerivedData/build-shared/Build/Products/Release-iphoneos/MSPKingfisher
+          - $(SRCROOT)/../../../.generated/DerivedData/build-shared/Build/Products/Release-iphoneos/SnapKit
+          - $(SRCROOT)/../../../.generated/DerivedData/build-shared/Build/Products/Release-iphoneos/lottie-ios
+        HEADER_SEARCH_PATHS[sdk=iphonesimulator*]:
+          - $(inherited)
+          - $(SRCROOT)/../../../.generated/DerivedData/build-shared/Build/Products/Release-iphonesimulator/MSPKingfisher
+          - $(SRCROOT)/../../../.generated/DerivedData/build-shared/Build/Products/Release-iphonesimulator/SnapKit
+          - $(SRCROOT)/../../../.generated/DerivedData/build-shared/Build/Products/Release-iphonesimulator/lottie-ios
+        # Phase 4 Step 5: Library search paths for static libraries
+        LIBRARY_SEARCH_PATHS[sdk=iphoneos*]:
+          - $(inherited)
+          - $(SRCROOT)/../../../.generated/DerivedData/build-shared/Build/Products/Release-iphoneos/SnapKit
+          - $(SRCROOT)/../../../.generated/DerivedData/build-shared/Build/Products/Release-iphoneos/MSPKingfisher
+          - $(SRCROOT)/../../../.generated/DerivedData/build-shared/Build/Products/Release-iphoneos/lottie-ios
+        LIBRARY_SEARCH_PATHS[sdk=iphonesimulator*]:
+          - $(inherited)
+          - $(SRCROOT)/../../../.generated/DerivedData/build-shared/Build/Products/Release-iphonesimulator/SnapKit
+          - $(SRCROOT)/../../../.generated/DerivedData/build-shared/Build/Products/Release-iphonesimulator/MSPKingfisher
+          - $(SRCROOT)/../../../.generated/DerivedData/build-shared/Build/Products/Release-iphonesimulator/lottie-ios
+        # Phase 4 Step 5: Link static libraries
+        # SnapKit, MSPKingfisher, lottie-ios: Swift static libraries, regular linking should work
+        OTHER_LDFLAGS[sdk=iphoneos*]:
+          - $(inherited)
+          # Link SnapKit (Swift static library, regular linking)
+          - -L$(SRCROOT)/../../../.generated/DerivedData/build-shared/Build/Products/Release-iphoneos/SnapKit
+          - -lSnapKit
+          # Link MSPKingfisher (Swift static library, regular linking)
+          - -L$(SRCROOT)/../../../.generated/DerivedData/build-shared/Build/Products/Release-iphoneos/MSPKingfisher
+          - -lMSPKingfisher
+          # Link lottie-ios (Swift static library, regular linking)
+          - -L$(SRCROOT)/../../../.generated/DerivedData/build-shared/Build/Products/Release-iphoneos/lottie-ios
+          - -llottie-ios
+        OTHER_LDFLAGS[sdk=iphonesimulator*]:
+          - $(inherited)
+          # Link SnapKit (Swift static library, regular linking)
+          - -L$(SRCROOT)/../../../.generated/DerivedData/build-shared/Build/Products/Release-iphonesimulator/SnapKit
+          - -lSnapKit
+          # Link MSPKingfisher (Swift static library, regular linking)
+          - -L$(SRCROOT)/../../../.generated/DerivedData/build-shared/Build/Products/Release-iphonesimulator/MSPKingfisher
+          - -lMSPKingfisher
+          # Link lottie-ios (Swift static library, regular linking)
+          - -L$(SRCROOT)/../../../.generated/DerivedData/build-shared/Build/Products/Release-iphonesimulator/lottie-ios
+          - -llottie-ios
+
+schemes:
+  NovaCore-XCFramework:
+    build:
+      targets:
+        NovaCore: all
+    run:
+      config: Debug
+    profile:
+      config: Release
+    analyze:
+      config: Debug
+    archive:
+      config: Release
