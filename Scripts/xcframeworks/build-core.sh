@@ -89,9 +89,11 @@ log_step "Pre-building Pod dependencies for Core modules"
 # These Pods provide Swift modules needed by Core modules:
 # - MSPKingfisher: provides Kingfisher module (used by NovaCore)
 # - SnapKit: used by NovaCore
-# - lottie-ios: used by NovaCore  
-# - MSPPrebidAdapter: used by MSPCore
-POD_SCHEMES_TO_PREBUILD=("MSPKingfisher" "SnapKit" "lottie-ios" "MSPPrebidAdapter" "SwiftProtobuf")
+# - lottie-ios: used by NovaCore
+# - SwiftProtobuf: used by MSPCore
+# NOTE: MSPPrebidAdapter is NOT pre-built here because it depends on MSPiOSCore.
+#       It will be rebuilt AFTER MSPiOSCore.xcframework is created to ensure ABI compatibility.
+POD_SCHEMES_TO_PREBUILD=("MSPKingfisher" "SnapKit" "lottie-ios" "SwiftProtobuf")
 
 for pod_scheme in "${POD_SCHEMES_TO_PREBUILD[@]}"; do
     log_info "Pre-building $pod_scheme for iOS..."
@@ -146,6 +148,63 @@ ARCHIVES_DIR="$ROOT_DIR/Build/Archives"
 XCFRAMEWORKS_DIR="$ROOT_DIR/Build/XCFrameworks"
 LOGS_DIR="$ROOT_DIR/Build/Logs"
 mkdir -p "$ARCHIVES_DIR" "$XCFRAMEWORKS_DIR" "$LOGS_DIR"
+
+# -----------------------------------------------------------
+# Function: rebuild_msp_prebid_adapter
+# Purpose: Rebuild MSPPrebidAdapter AFTER MSPiOSCore.xcframework is built
+# This ensures MSPPrebidAdapter is compiled against the new MSPiOSCore types,
+# avoiding ABI mismatch when MSPCore links both together.
+# -----------------------------------------------------------
+rebuild_msp_prebid_adapter() {
+    log_step "Rebuilding MSPPrebidAdapter (post-MSPiOSCore)"
+    log_info "This ensures ABI compatibility between MSPPrebidAdapter and MSPiOSCore.xcframework"
+
+    # Clean old MSPPrebidAdapter build artifacts to force fresh compilation
+    local PREBID_BUILD_DIR="$SHARED_DERIVED_DATA/Build/Products"
+    rm -rf "$PREBID_BUILD_DIR/Release-iphoneos/MSPPrebidAdapter"
+    rm -rf "$PREBID_BUILD_DIR/Release-iphonesimulator/MSPPrebidAdapter"
+
+    # Rebuild for iOS
+    log_info "Rebuilding MSPPrebidAdapter for iOS..."
+    if xcodebuild -workspace "$WORKSPACE_FILE" \
+        -scheme "MSPPrebidAdapter" \
+        -configuration Release \
+        -destination "generic/platform=iOS" \
+        -derivedDataPath "$SHARED_DERIVED_DATA" \
+        build 2>&1 | tee "/tmp/rebuild_MSPPrebidAdapter.log" | grep -E "(BUILD SUCCEEDED|BUILD FAILED|error)" | tail -3; then
+        if grep -q "BUILD SUCCEEDED" "/tmp/rebuild_MSPPrebidAdapter.log"; then
+            log_success "MSPPrebidAdapter (iOS) rebuilt successfully"
+        else
+            log_error "MSPPrebidAdapter (iOS) rebuild failed"
+            return 1
+        fi
+    else
+        if grep -q "BUILD SUCCEEDED" "/tmp/rebuild_MSPPrebidAdapter.log"; then
+            log_success "MSPPrebidAdapter (iOS) rebuilt successfully (despite warnings)"
+        else
+            log_error "MSPPrebidAdapter (iOS) rebuild failed"
+            return 1
+        fi
+    fi
+
+    # Rebuild for Simulator
+    log_info "Rebuilding MSPPrebidAdapter for Simulator..."
+    if xcodebuild -workspace "$WORKSPACE_FILE" \
+        -scheme "MSPPrebidAdapter" \
+        -configuration Release \
+        -destination "generic/platform=iOS Simulator" \
+        -derivedDataPath "$SHARED_DERIVED_DATA" \
+        build 2>&1 | tee "/tmp/rebuild_MSPPrebidAdapter_sim.log" | grep -E "(BUILD SUCCEEDED|BUILD FAILED|error)" | tail -3; then
+        if grep -q "BUILD SUCCEEDED" "/tmp/rebuild_MSPPrebidAdapter_sim.log"; then
+            log_success "MSPPrebidAdapter (Simulator) rebuilt successfully"
+        else
+            log_warn "MSPPrebidAdapter (Simulator) rebuild had issues, continuing..."
+        fi
+    fi
+
+    log_success "MSPPrebidAdapter rebuilt with new MSPiOSCore.xcframework"
+    return 0
+}
 
 # -----------------------------------------------------------
 # Function: fix_pod_modulemaps
@@ -312,8 +371,30 @@ FAILED_MODULES=()
 
 for module in "${CORE_MODULES[@]}"; do
     log_section "Building $module"
-    
+
     case "$module" in
+        MSPiOSCore)
+            # MSPiOSCore: Build first, then rebuild MSPPrebidAdapter to ensure ABI compatibility
+            if "$BUILD_MODULE_SCRIPT" "$module"; then
+                ((SUCCESS_COUNT++))
+                log_success "$module: BUILD SUCCEEDED (xcodegen mode)"
+
+                # CRITICAL: Rebuild MSPPrebidAdapter now that MSPiOSCore.xcframework exists
+                # This ensures MSPPrebidAdapter uses the new MSPiOSCore types
+                log_section "Rebuilding MSPPrebidAdapter (ABI sync)"
+                if ! rebuild_msp_prebid_adapter; then
+                    log_error "Failed to rebuild MSPPrebidAdapter after MSPiOSCore"
+                    log_error "MSPCore build would fail due to ABI mismatch"
+                    exit 1
+                fi
+            else
+                ((FAIL_COUNT++))
+                FAILED_MODULES+=("$module")
+                log_error "$module: BUILD FAILED (xcodegen mode)"
+                log_error "Aborting core module build pipeline"
+                exit 1
+            fi
+            ;;
         MSPCore)
             # MSPCore needs explicit modulemap injection for MSPPrebidAdapter and SwiftProtobuf
             if build_mspcore_with_modulemaps; then

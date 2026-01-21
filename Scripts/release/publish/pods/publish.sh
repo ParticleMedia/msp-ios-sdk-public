@@ -2430,6 +2430,41 @@ EOF
 
                 log_success "✅ Prepared MSPNovaAdapter structure (MSPNovaAdapter + NovaCore)"
 
+            elif [[ "$pod" == "MSPMolocoAdapter" ]]; then
+                log_info "MSPMolocoAdapter: Bundle SnapKit binary to match build-time dependency"
+
+                local xcframework_path="$ROOT_DIR/Build/XCFrameworks/${pod}.xcframework"
+                if [[ ! -d "$xcframework_path" ]]; then
+                    log_error "❌ XCFramework not found: $xcframework_path"
+                    log_error "Expected location: Build/XCFrameworks/${pod}.xcframework"
+                    rm -rf "$temp_zip_dir"
+                    return 1
+                fi
+
+                if ! ditto "$xcframework_path" "$temp_zip_dir/Binary/$(basename "$xcframework_path")"; then
+                    log_error "❌ Failed to copy ${pod}.xcframework"
+                    rm -rf "$temp_zip_dir"
+                    return 1
+                fi
+                ensure_modulemaps_in_xcframework "$temp_zip_dir/Binary/$(basename "$xcframework_path")"
+
+                local snapkit_path="$ROOT_DIR/ThirdParty/SnapKit/SnapKit.xcframework"
+                if [[ ! -d "$snapkit_path" ]]; then
+                    log_error "❌ SnapKit.xcframework not found: $snapkit_path"
+                    rm -rf "$temp_zip_dir"
+                    return 1
+                fi
+
+                mkdir -p "$temp_zip_dir/ThirdParty/SnapKit"
+                if ! ditto "$snapkit_path" "$temp_zip_dir/ThirdParty/SnapKit/$(basename "$snapkit_path")"; then
+                    log_error "❌ Failed to copy SnapKit.xcframework"
+                    rm -rf "$temp_zip_dir"
+                    return 1
+                fi
+                ensure_modulemaps_in_xcframework "$temp_zip_dir/ThirdParty/SnapKit/$(basename "$snapkit_path")"
+
+                log_success "✅ Prepared MSPMolocoAdapter structure (MSPMolocoAdapter + SnapKit)"
+
             else
                 # Regular adapters: use Build/XCFrameworks/
                 local xcframework_path="$ROOT_DIR/Build/XCFrameworks/${pod}.xcframework"
