@@ -10,7 +10,7 @@ import CoreTelephony
 import AppTrackingTransparency
 import AVFAudio
 import MSPiOSCore
-import PrebidMobile
+@_implementationOnly import PrebidMobile
 
 fileprivate let cellGeneration: [String: Com_Newsbreak_Monetization_Signals_ConnectionType] = [
     CTRadioAccessTechnologyGPRS:            Com_Newsbreak_Monetization_Signals_ConnectionType.cell2G,

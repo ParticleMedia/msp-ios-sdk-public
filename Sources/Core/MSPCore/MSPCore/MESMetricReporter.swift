@@ -7,7 +7,7 @@
 
 import Foundation
 import MSPiOSCore
-import PrebidMobile
+@_implementationOnly import PrebidMobile
 import AdSupport
 import UIKit
 //import SwiftProtobuf

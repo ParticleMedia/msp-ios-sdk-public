@@ -7,7 +7,7 @@
 
 import Foundation
 import MSPiOSCore
-import PrebidMobile
+@_implementationOnly import PrebidMobile
 
 public class AdMetricReporterImp: AdMetricReporter {
     public func logAdHide(ad: MSPiOSCore.MSPAd, adRequest: MSPiOSCore.AdRequest, bidResponse: Any, reason: String, adScreenShot: Data?, fullScreenShot: Data?) {

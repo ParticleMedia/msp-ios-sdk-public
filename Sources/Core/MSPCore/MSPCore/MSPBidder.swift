@@ -7,7 +7,7 @@
 
 import Foundation
 import MSPiOSCore
-import PrebidMobile
+@_implementationOnly import PrebidMobile
 import UIKit
 
 public class MSPBidder: MSPiOSCore.Bidder {
