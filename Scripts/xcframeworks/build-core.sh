@@ -150,60 +150,26 @@ LOGS_DIR="$ROOT_DIR/Build/Logs"
 mkdir -p "$ARCHIVES_DIR" "$XCFRAMEWORKS_DIR" "$LOGS_DIR"
 
 # -----------------------------------------------------------
-# Function: rebuild_msp_prebid_adapter
-# Purpose: Rebuild MSPPrebidAdapter AFTER MSPiOSCore.xcframework is built
-# This ensures MSPPrebidAdapter is compiled against the new MSPiOSCore types,
-# avoiding ABI mismatch when MSPCore links both together.
+# Function: build_msp_prebid_adapter_xcframework
+# Purpose: Build MSPPrebidAdapter.xcframework AFTER MSPiOSCore.xcframework
+# Uses XcodeGen standalone project (not workspace) to ensure it links against
+# MSPiOSCore.xcframework (binary) instead of Pod source version.
 # -----------------------------------------------------------
-rebuild_msp_prebid_adapter() {
-    log_step "Rebuilding MSPPrebidAdapter (post-MSPiOSCore)"
-    log_info "This ensures ABI compatibility between MSPPrebidAdapter and MSPiOSCore.xcframework"
+build_msp_prebid_adapter_xcframework() {
+    log_step "Building MSPPrebidAdapter.xcframework (post-MSPiOSCore)"
+    log_info "Using XcodeGen standalone project to link against MSPiOSCore.xcframework"
 
-    # Clean old MSPPrebidAdapter build artifacts to force fresh compilation
-    local PREBID_BUILD_DIR="$SHARED_DERIVED_DATA/Build/Products"
-    rm -rf "$PREBID_BUILD_DIR/Release-iphoneos/MSPPrebidAdapter"
-    rm -rf "$PREBID_BUILD_DIR/Release-iphonesimulator/MSPPrebidAdapter"
+    # Clean old XCFramework
+    rm -rf "$XCFRAMEWORKS_DIR/MSPPrebidAdapter.xcframework"
 
-    # Rebuild for iOS
-    log_info "Rebuilding MSPPrebidAdapter for iOS..."
-    if xcodebuild -workspace "$WORKSPACE_FILE" \
-        -scheme "MSPPrebidAdapter" \
-        -configuration Release \
-        -destination "generic/platform=iOS" \
-        -derivedDataPath "$SHARED_DERIVED_DATA" \
-        build 2>&1 | tee "/tmp/rebuild_MSPPrebidAdapter.log" | grep -E "(BUILD SUCCEEDED|BUILD FAILED|error)" | tail -3; then
-        if grep -q "BUILD SUCCEEDED" "/tmp/rebuild_MSPPrebidAdapter.log"; then
-            log_success "MSPPrebidAdapter (iOS) rebuilt successfully"
-        else
-            log_error "MSPPrebidAdapter (iOS) rebuild failed"
-            return 1
-        fi
+    # Use build_module.sh which uses XcodeGen project (links XCFrameworks, not Pod sources)
+    if "$BUILD_MODULE_SCRIPT" "MSPPrebidAdapter"; then
+        log_success "MSPPrebidAdapter.xcframework built successfully"
+        return 0
     else
-        if grep -q "BUILD SUCCEEDED" "/tmp/rebuild_MSPPrebidAdapter.log"; then
-            log_success "MSPPrebidAdapter (iOS) rebuilt successfully (despite warnings)"
-        else
-            log_error "MSPPrebidAdapter (iOS) rebuild failed"
-            return 1
-        fi
+        log_error "MSPPrebidAdapter.xcframework build failed"
+        return 1
     fi
-
-    # Rebuild for Simulator
-    log_info "Rebuilding MSPPrebidAdapter for Simulator..."
-    if xcodebuild -workspace "$WORKSPACE_FILE" \
-        -scheme "MSPPrebidAdapter" \
-        -configuration Release \
-        -destination "generic/platform=iOS Simulator" \
-        -derivedDataPath "$SHARED_DERIVED_DATA" \
-        build 2>&1 | tee "/tmp/rebuild_MSPPrebidAdapter_sim.log" | grep -E "(BUILD SUCCEEDED|BUILD FAILED|error)" | tail -3; then
-        if grep -q "BUILD SUCCEEDED" "/tmp/rebuild_MSPPrebidAdapter_sim.log"; then
-            log_success "MSPPrebidAdapter (Simulator) rebuilt successfully"
-        else
-            log_warn "MSPPrebidAdapter (Simulator) rebuild had issues, continuing..."
-        fi
-    fi
-
-    log_success "MSPPrebidAdapter rebuilt with new MSPiOSCore.xcframework"
-    return 0
 }
 
 # -----------------------------------------------------------
@@ -213,7 +179,8 @@ rebuild_msp_prebid_adapter() {
 fix_pod_modulemaps() {
     log_info "Fixing Pod modulemaps (converting absolute paths to relative)"
     for plat in iphoneos iphonesimulator; do
-        for pod in MSPPrebidAdapter SwiftProtobuf; do
+        # Note: MSPPrebidAdapter is now an XCFramework, only SwiftProtobuf needs modulemap fix
+        for pod in SwiftProtobuf; do
             local MODULE_DIR="$SHARED_DERIVED_DATA/Build/Products/Release-$plat/$pod"
             local MODULEMAP="$MODULE_DIR/$pod.modulemap"
             if [[ -f "$MODULEMAP" ]]; then
@@ -239,7 +206,8 @@ EOF
 # -----------------------------------------------------------
 # Function: build_mspcore_with_modulemaps
 # Purpose: Build MSPCore using XcodeGen project with explicit modulemap injection
-# MSPCore needs MSPPrebidAdapter and SwiftProtobuf which require Clang modulemaps
+# MSPCore needs SwiftProtobuf which requires Clang modulemap injection
+# MSPPrebidAdapter is linked as XCFramework (built earlier in pipeline)
 # -----------------------------------------------------------
 build_mspcore_with_modulemaps() {
     local MODULE_NAME="MSPCore"
@@ -266,15 +234,14 @@ build_mspcore_with_modulemaps() {
     rm -rf "$IOS_ARCHIVE" "$SIM_ARCHIVE"
     
     # Build iOS archive with explicit modulemap paths
-    # IMPORTANT: Use WORKSPACE instead of standalone project to ensure MSPCore links
-    # against the same source-based MSPiOSCore that MSPPrebidAdapter was built against.
-    # This avoids ABI mismatch between source and XCFramework versions.
+    # Use standalone project to link against XCFramework versions of dependencies.
+    # MSPPrebidAdapter.xcframework is built earlier in the pipeline.
     log_step "Building $MODULE_NAME iOS archive"
     local POD_BASE_IOS="$SHARED_DERIVED_DATA/Build/Products/Release-iphoneos"
-    local SWIFT_FLAGS_IOS="-no-verify-emitted-module-interface -Xcc -fmodule-map-file=$POD_BASE_IOS/MSPPrebidAdapter/MSPPrebidAdapter.modulemap -Xcc -fmodule-map-file=$POD_BASE_IOS/SwiftProtobuf/SwiftProtobuf.modulemap"
+    local SWIFT_FLAGS_IOS="-no-verify-emitted-module-interface -Xcc -fmodule-map-file=$POD_BASE_IOS/SwiftProtobuf/SwiftProtobuf.modulemap"
 
     if ! xcodebuild archive \
-        -workspace "$WORKSPACE_FILE" \
+        -project "$PROJECT_FILE" \
         -scheme "$SCHEME_NAME" \
         -configuration Release \
         -destination "generic/platform=iOS" \
@@ -300,10 +267,10 @@ build_mspcore_with_modulemaps() {
     # Build Simulator archive
     log_step "Building $MODULE_NAME Simulator archive"
     local POD_BASE_SIM="$SHARED_DERIVED_DATA/Build/Products/Release-iphonesimulator"
-    local SWIFT_FLAGS_SIM="-no-verify-emitted-module-interface -Xcc -fmodule-map-file=$POD_BASE_SIM/MSPPrebidAdapter/MSPPrebidAdapter.modulemap -Xcc -fmodule-map-file=$POD_BASE_SIM/SwiftProtobuf/SwiftProtobuf.modulemap"
+    local SWIFT_FLAGS_SIM="-no-verify-emitted-module-interface -Xcc -fmodule-map-file=$POD_BASE_SIM/SwiftProtobuf/SwiftProtobuf.modulemap"
 
     if ! xcodebuild archive \
-        -workspace "$WORKSPACE_FILE" \
+        -project "$PROJECT_FILE" \
         -scheme "$SCHEME_NAME" \
         -configuration Release \
         -destination "generic/platform=iOS Simulator" \
@@ -365,6 +332,7 @@ CORE_MODULES=(
     "MSPiOSCore"
     "MSPSharedLibraries"
     "NovaCore"
+    "MSPPrebidAdapter"  # Must be after MSPiOSCore, before MSPCore
     "MSPCore"
 )
 
@@ -376,20 +344,12 @@ for module in "${CORE_MODULES[@]}"; do
     log_section "Building $module"
 
     case "$module" in
-        MSPiOSCore)
-            # MSPiOSCore: Build first, then rebuild MSPPrebidAdapter to ensure ABI compatibility
-            if "$BUILD_MODULE_SCRIPT" "$module"; then
+        MSPPrebidAdapter)
+            # MSPPrebidAdapter: Build using XcodeGen standalone project
+            # This links against MSPiOSCore.xcframework (built earlier), ensuring ABI compatibility
+            if build_msp_prebid_adapter_xcframework; then
                 ((SUCCESS_COUNT++))
                 log_success "$module: BUILD SUCCEEDED (xcodegen mode)"
-
-                # CRITICAL: Rebuild MSPPrebidAdapter now that MSPiOSCore.xcframework exists
-                # This ensures MSPPrebidAdapter uses the new MSPiOSCore types
-                log_section "Rebuilding MSPPrebidAdapter (ABI sync)"
-                if ! rebuild_msp_prebid_adapter; then
-                    log_error "Failed to rebuild MSPPrebidAdapter after MSPiOSCore"
-                    log_error "MSPCore build would fail due to ABI mismatch"
-                    exit 1
-                fi
             else
                 ((FAIL_COUNT++))
                 FAILED_MODULES+=("$module")

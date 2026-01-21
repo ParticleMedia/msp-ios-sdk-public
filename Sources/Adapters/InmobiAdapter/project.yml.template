@@ -31,7 +31,7 @@ targets:
     dependencies:
       - framework: ../../../Build/XCFrameworks/MSPiOSCore.xcframework
         embed: false
-      - framework: ../../Core/MSPSharedLibraries/PrebidMobile.xcframework
+      - framework: ../../../Build/XCFrameworks/MSPSharedLibraries.xcframework
         embed: false
       - framework: ../../../Sources/Wrappers/InMobiSDKWrapper/Frameworks/InMobiSDK.xcframework
         embed: false

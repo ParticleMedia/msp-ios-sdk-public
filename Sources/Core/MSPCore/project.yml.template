@@ -35,6 +35,8 @@ targets:
         embed: false
       - framework: ../../../Build/XCFrameworks/MSPSharedLibraries.xcframework
         embed: false
+      - framework: ../../../Build/XCFrameworks/MSPPrebidAdapter.xcframework
+        embed: false
       - framework: ../../../Build/XCFrameworks/PrebidMobile.xcframework
         embed: false
       - framework: ../../../Sources/Core/MSPOMSDK/OMSDK_Newsbreak1.xcframework
@@ -42,9 +44,6 @@ targets:
       # Third-party dependencies (Kingfisher, SnapKit, Lottie, Shimmer, SwiftProtobuf)
       # are provided via Pods at application level. Core XCFrameworks use
       # @_implementationOnly imports and do NOT embed these frameworks.
-      # MSPPrebidAdapter is now a source pod, not an XCFramework
-      # At build time, MSPPrebidAdapter will be available via workspace
-      # At app level, MSPPrebidAdapter is provided as a source pod
     settings:
       base:
         BUILD_LIBRARY_FOR_DISTRIBUTION: YES
@@ -63,47 +62,39 @@ targets:
 
         # Swift Include Paths for Pod modules - Platform-specific paths
         # Pod modules are pre-built into shared DerivedData and injected via build script
+        # Note: MSPPrebidAdapter is now an XCFramework dependency (not from DerivedData)
         SWIFT_INCLUDE_PATHS:
           - $(inherited)
           - $(SRCROOT)/../../../.generated/DerivedData/build-shared/Build/Products/Release-$(PLATFORM_NAME)/MSPKingfisher
           - $(SRCROOT)/../../../.generated/DerivedData/build-shared/Build/Products/Release-$(PLATFORM_NAME)/SnapKit
           - $(SRCROOT)/../../../.generated/DerivedData/build-shared/Build/Products/Release-$(PLATFORM_NAME)/lottie-ios
           - $(SRCROOT)/../../../.generated/DerivedData/build-shared/Build/Products/Release-$(PLATFORM_NAME)/Shimmer
-          - $(SRCROOT)/../../../.generated/DerivedData/build-shared/Build/Products/Release-$(PLATFORM_NAME)/MSPPrebidAdapter
           - $(SRCROOT)/../../../.generated/DerivedData/build-shared/Build/Products/Release-$(PLATFORM_NAME)/SwiftProtobuf
-        
+
         HEADER_SEARCH_PATHS:
           - $(inherited)
-          - $(SRCROOT)/../../../.generated/DerivedData/build-shared/Build/Products/Release-$(PLATFORM_NAME)/MSPPrebidAdapter
           - $(SRCROOT)/../../../.generated/DerivedData/build-shared/Build/Products/Release-$(PLATFORM_NAME)/SwiftProtobuf
         
-        # Phase 4 Final E2E Fix: Library search paths for static libraries (SnapKit, SwiftProtobuf, MSPPrebidAdapter)
+        # Library search paths for static libraries (SnapKit, SwiftProtobuf)
+        # Note: MSPPrebidAdapter is now an XCFramework dependency
         LIBRARY_SEARCH_PATHS[sdk=iphoneos*]:
           - $(inherited)
           - $(SRCROOT)/../../../.generated/DerivedData/build-shared/Build/Products/Release-iphoneos/SnapKit
           - $(SRCROOT)/../../../.generated/DerivedData/build-shared/Build/Products/Release-iphoneos/SwiftProtobuf
-          - $(SRCROOT)/../../../.generated/DerivedData/build-shared/Build/Products/Release-iphoneos/MSPPrebidAdapter
         LIBRARY_SEARCH_PATHS[sdk=iphonesimulator*]:
           - $(inherited)
           - $(SRCROOT)/../../../.generated/DerivedData/build-shared/Build/Products/Release-iphonesimulator/SnapKit
           - $(SRCROOT)/../../../.generated/DerivedData/build-shared/Build/Products/Release-iphonesimulator/SwiftProtobuf
-          - $(SRCROOT)/../../../.generated/DerivedData/build-shared/Build/Products/Release-iphonesimulator/MSPPrebidAdapter
-        # Phase 4 Final E2E Fix: Link static libraries (SnapKit, SwiftProtobuf, MSPPrebidAdapter)
-        # All are Swift static libraries, regular linking should work
+        # Link static libraries (SnapKit, SwiftProtobuf)
+        # MSPPrebidAdapter is linked via XCFramework dependency
         OTHER_LDFLAGS[sdk=iphoneos*]:
           - $(inherited)
-          # Force load MSPPrebidAdapter static library to ensure all symbols are included
-          - -force_load $(SRCROOT)/../../../.generated/DerivedData/build-shared/Build/Products/Release-iphoneos/MSPPrebidAdapter/libMSPPrebidAdapter.a
-          # Link other static libraries
           - -L$(SRCROOT)/../../../.generated/DerivedData/build-shared/Build/Products/Release-iphoneos/SnapKit
           - -lSnapKit
           - -L$(SRCROOT)/../../../.generated/DerivedData/build-shared/Build/Products/Release-iphoneos/SwiftProtobuf
           - -lSwiftProtobuf
         OTHER_LDFLAGS[sdk=iphonesimulator*]:
           - $(inherited)
-          # Force load MSPPrebidAdapter static library to ensure all symbols are included
-          - -force_load $(SRCROOT)/../../../.generated/DerivedData/build-shared/Build/Products/Release-iphonesimulator/MSPPrebidAdapter/libMSPPrebidAdapter.a
-          # Link other static libraries
           - -L$(SRCROOT)/../../../.generated/DerivedData/build-shared/Build/Products/Release-iphonesimulator/SnapKit
           - -lSnapKit
           - -L$(SRCROOT)/../../../.generated/DerivedData/build-shared/Build/Products/Release-iphonesimulator/SwiftProtobuf
