@@ -140,6 +140,8 @@ end
 # MSPCore module tests
 target 'MSPCoreTests' do
   project 'Examples/MSPDemoApp/MSPDemoApp'
+  pod 'MSPCore', :path => 'MSPCore.podspec'
+  pod 'MSPiOSCore', :path => 'MSPiOSCore.podspec'
   testing_pods
 end
 
