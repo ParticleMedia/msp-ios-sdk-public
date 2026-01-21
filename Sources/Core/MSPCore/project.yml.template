@@ -92,26 +92,22 @@ targets:
         # All are Swift static libraries, regular linking should work
         OTHER_LDFLAGS[sdk=iphoneos*]:
           - $(inherited)
-          # Link SnapKit (Swift static library, regular linking)
+          # Force load MSPPrebidAdapter static library to ensure all symbols are included
+          - -force_load $(SRCROOT)/../../../.generated/DerivedData/build-shared/Build/Products/Release-iphoneos/MSPPrebidAdapter/libMSPPrebidAdapter.a
+          # Link other static libraries
           - -L$(SRCROOT)/../../../.generated/DerivedData/build-shared/Build/Products/Release-iphoneos/SnapKit
           - -lSnapKit
-          # Link SwiftProtobuf (Swift static library, regular linking)
           - -L$(SRCROOT)/../../../.generated/DerivedData/build-shared/Build/Products/Release-iphoneos/SwiftProtobuf
           - -lSwiftProtobuf
-          # Link MSPPrebidAdapter (Swift static library, regular linking)
-          - -L$(SRCROOT)/../../../.generated/DerivedData/build-shared/Build/Products/Release-iphoneos/MSPPrebidAdapter
-          - -lMSPPrebidAdapter
         OTHER_LDFLAGS[sdk=iphonesimulator*]:
           - $(inherited)
-          # Link SnapKit (Swift static library, regular linking)
+          # Force load MSPPrebidAdapter static library to ensure all symbols are included
+          - -force_load $(SRCROOT)/../../../.generated/DerivedData/build-shared/Build/Products/Release-iphonesimulator/MSPPrebidAdapter/libMSPPrebidAdapter.a
+          # Link other static libraries
           - -L$(SRCROOT)/../../../.generated/DerivedData/build-shared/Build/Products/Release-iphonesimulator/SnapKit
           - -lSnapKit
-          # Link SwiftProtobuf (Swift static library, regular linking)
           - -L$(SRCROOT)/../../../.generated/DerivedData/build-shared/Build/Products/Release-iphonesimulator/SwiftProtobuf
           - -lSwiftProtobuf
-          # Link MSPPrebidAdapter (Swift static library, regular linking)
-          - -L$(SRCROOT)/../../../.generated/DerivedData/build-shared/Build/Products/Release-iphonesimulator/MSPPrebidAdapter
-          - -lMSPPrebidAdapter
         
         OTHER_SWIFT_FLAGS: "-no-verify-emitted-module-interface"
     postBuildScripts:
