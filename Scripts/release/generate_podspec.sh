@@ -587,8 +587,8 @@ if [[ "$POD_NAME" == "MSPNovaAdapter" ]]; then
     # Filter out embedded dependencies (NovaCore, Kingfisher, SnapKit, Lottie, MSPKingfisher) — NovaAdapter links them statically in the binary XCFramework
     grep "spec\\.dependency" "$SOURCE_PODSPEC" | grep -vE "(NovaCore|MSPKingfisher|Kingfisher|SnapKit|Lottie)" >> "$OUTPUT_PODSPEC" 2>/dev/null || true
 elif [[ "$POD_NAME" == "MSPMolocoAdapter" ]]; then
-    # Keep MolocoSDK and SnapKit dependencies (SnapKit still required during lint/link)
-    grep "spec\\.dependency" "$SOURCE_PODSPEC" >> "$OUTPUT_PODSPEC" 2>/dev/null || true
+    # Keep MolocoSDK and MSP deps, but drop SnapKit (bundled in release zip)
+    grep "spec\\.dependency" "$SOURCE_PODSPEC" | grep -vE "SnapKit" >> "$OUTPUT_PODSPEC" 2>/dev/null || true
 elif is_binary_distribution "$POD_NAME"; then
     # Binary distribution pods: keep all dependencies
     grep "spec\\.dependency" "$SOURCE_PODSPEC" >> "$OUTPUT_PODSPEC" 2>/dev/null || true
@@ -881,6 +881,14 @@ EOF_VENDOR_MULTI
     "Binary/NovaCore.xcframework"
   ]
 EOF_VENDOR_NOVA
+    elif [[ "$POD_NAME" == "MSPMolocoAdapter" ]]; then
+        # MolocoAdapter: bundle SnapKit binary to match build-time dependency
+        cat >> "$OUTPUT_PODSPEC" <<'EOF_VENDOR_MOLOCO'
+  spec.vendored_frameworks = [
+    "Binary/MSPMolocoAdapter.xcframework",
+    "ThirdParty/SnapKit/SnapKit.xcframework"
+  ]
+EOF_VENDOR_MOLOCO
     else
         # XCFramework name matches pod name (unified naming)
         cat >> "$OUTPUT_PODSPEC" <<EOF_VENDOR_SINGLE
