@@ -95,6 +95,8 @@ These files require human approval to modify:
 
 ## Active Technologies
 - Swift 5.0 + CocoaPods, Quick, Nimble, OHHTTPStubs, XcodeGen (fix-unit-tests)
+- Swift 5.0 + Quick ~> 7.0, Nimble ~> 13.0, Combine (debug-viewmodel-tests)
+- N/A (unit tests only) (debug-viewmodel-tests)
 
 ## Recent Changes
 - fix-unit-tests: Added Swift 5.0 + CocoaPods, Quick, Nimble, OHHTTPStubs, XcodeGen
