@@ -266,12 +266,15 @@ build_mspcore_with_modulemaps() {
     rm -rf "$IOS_ARCHIVE" "$SIM_ARCHIVE"
     
     # Build iOS archive with explicit modulemap paths
+    # IMPORTANT: Use WORKSPACE instead of standalone project to ensure MSPCore links
+    # against the same source-based MSPiOSCore that MSPPrebidAdapter was built against.
+    # This avoids ABI mismatch between source and XCFramework versions.
     log_step "Building $MODULE_NAME iOS archive"
     local POD_BASE_IOS="$SHARED_DERIVED_DATA/Build/Products/Release-iphoneos"
     local SWIFT_FLAGS_IOS="-no-verify-emitted-module-interface -Xcc -fmodule-map-file=$POD_BASE_IOS/MSPPrebidAdapter/MSPPrebidAdapter.modulemap -Xcc -fmodule-map-file=$POD_BASE_IOS/SwiftProtobuf/SwiftProtobuf.modulemap"
-    
+
     if ! xcodebuild archive \
-        -project "$PROJECT_FILE" \
+        -workspace "$WORKSPACE_FILE" \
         -scheme "$SCHEME_NAME" \
         -configuration Release \
         -destination "generic/platform=iOS" \
@@ -298,9 +301,9 @@ build_mspcore_with_modulemaps() {
     log_step "Building $MODULE_NAME Simulator archive"
     local POD_BASE_SIM="$SHARED_DERIVED_DATA/Build/Products/Release-iphonesimulator"
     local SWIFT_FLAGS_SIM="-no-verify-emitted-module-interface -Xcc -fmodule-map-file=$POD_BASE_SIM/MSPPrebidAdapter/MSPPrebidAdapter.modulemap -Xcc -fmodule-map-file=$POD_BASE_SIM/SwiftProtobuf/SwiftProtobuf.modulemap"
-    
+
     if ! xcodebuild archive \
-        -project "$PROJECT_FILE" \
+        -workspace "$WORKSPACE_FILE" \
         -scheme "$SCHEME_NAME" \
         -configuration Release \
         -destination "generic/platform=iOS Simulator" \
