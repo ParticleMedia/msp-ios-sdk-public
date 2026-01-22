@@ -470,7 +470,8 @@ in_block {
 if [[ -s "$TEMP_XCCONFIG" ]]; then
     # Remove BUILD_LIBRARY_FOR_DISTRIBUTION, SWIFT_EMIT_MODULE_INTERFACE, SWIFT_INSTALL_MODULE_FOR_DEPLOYMENT
     # Remove old SWIFT_INCLUDE_PATHS (will add correct one for release mode)
-    # Keep: DEFINES_MODULE, VALID_ARCHS, FRAMEWORK_SEARCH_PATHS
+    # Remove FRAMEWORK_SEARCH_PATHS (dev mode path doesn't exist in lint env, vendored_frameworks handles paths)
+    # Keep: DEFINES_MODULE, VALID_ARCHS
     sed -i '' \
         -e "/'BUILD_LIBRARY_FOR_DISTRIBUTION'/d" \
         -e "/\"BUILD_LIBRARY_FOR_DISTRIBUTION\"/d" \
@@ -480,6 +481,8 @@ if [[ -s "$TEMP_XCCONFIG" ]]; then
         -e "/\"SWIFT_INSTALL_MODULE_FOR_DEPLOYMENT\"/d" \
         -e "/'SWIFT_INCLUDE_PATHS'/d" \
         -e "/\"SWIFT_INCLUDE_PATHS\"/d" \
+        -e "/'FRAMEWORK_SEARCH_PATHS'/d" \
+        -e "/\"FRAMEWORK_SEARCH_PATHS\"/d" \
         "$TEMP_XCCONFIG"
 
     # Write cleaned config to output
@@ -492,11 +495,12 @@ if [[ -s "$TEMP_XCCONFIG" ]]; then
 else
     # No pod_target_xcconfig found, create minimal one for binary distribution pods
     if is_binary_distribution "$POD_NAME"; then
+        # Note: FRAMEWORK_SEARCH_PATHS removed - vendored_frameworks handles paths automatically
+        # The old path $(PODS_ROOT)/../Build/XCFrameworks was for dev mode and doesn't exist in lint env
         cat >> "$OUTPUT_PODSPEC" <<'EOF_XCCONFIG'
   spec.pod_target_xcconfig = {
     'SWIFT_INCLUDE_PATHS' => '$(inherited) $(PODS_CONFIGURATION_BUILD_DIR)',
     'DEFINES_MODULE' => 'YES',
-    'FRAMEWORK_SEARCH_PATHS' => '$(inherited) $(PODS_ROOT)/../Build/XCFrameworks',
   }
 EOF_XCCONFIG
         log_info "Added minimal pod_target_xcconfig for binary distribution pod (with SWIFT_INCLUDE_PATHS)"
@@ -523,10 +527,13 @@ in_block {
 ' "$SOURCE_PODSPEC" > "$TEMP_USER_XCCONFIG"
 
 if [[ -s "$TEMP_USER_XCCONFIG" ]]; then
-    # Remove SWIFT_INCLUDE_PATHS from user_target_xcconfig as well
+    # Remove SWIFT_INCLUDE_PATHS and FRAMEWORK_SEARCH_PATHS from user_target_xcconfig
+    # FRAMEWORK_SEARCH_PATHS points to dev paths that don't exist in lint env
     sed -i '' \
         -e "/'SWIFT_INCLUDE_PATHS'/d" \
         -e "/\"SWIFT_INCLUDE_PATHS\"/d" \
+        -e "/'FRAMEWORK_SEARCH_PATHS'/d" \
+        -e "/\"FRAMEWORK_SEARCH_PATHS\"/d" \
         "$TEMP_USER_XCCONFIG"
     cat "$TEMP_USER_XCCONFIG" >> "$OUTPUT_PODSPEC"
 fi
