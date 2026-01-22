@@ -5,12 +5,11 @@
 //  Created by Shanyu Li on 2025/9/29.
 //
 
-import UIKit
 import MSPiOSCore
 import NovaCore
+import UIKit
 
 final class ReportHandlerAdapter: NovaInterstitialAdReportHandling {
-
     private weak var outer: (any InterstitialAdReportHandling)?
     private weak var ad: InterstitialAd?
 
@@ -29,7 +28,7 @@ final class ReportHandlerAdapter: NovaInterstitialAdReportHandling {
             "adSetId": context.adSetId,
             "adRequestId": context.adRequestId,
             "encryptedToken": context.encryptedToken,
-            "extra": context.extra
+            "extra": context.extra,
         ]
         outer?.startReportFlow(from: presentingVC, for: ad, metadata: metadata)
     }

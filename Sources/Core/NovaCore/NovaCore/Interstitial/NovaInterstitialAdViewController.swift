@@ -29,7 +29,7 @@ public struct NovaAdReportContext {
         adSetId: String,
         adRequestId: String,
         encryptedToken: String,
-        extra: [String : Any] = [:]
+        extra: [String: Any] = [:]
     ) {
         self.advertiser = advertiser
         self.headline = headline
@@ -44,7 +44,7 @@ public struct NovaAdReportContext {
 
 extension NovaInterstitialAdItem {
     var novaAdReportContext: NovaAdReportContext {
-        return .init(
+        .init(
             advertiser: advertiser,
             headline: headline,
             body: body,
@@ -87,7 +87,7 @@ class NovaInterstitialAdViewController: UIViewController {
     // MARK: Internal
 
     override var preferredStatusBarStyle: UIStatusBarStyle {
-        return .darkContent
+        .darkContent
     }
 
     override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
@@ -101,7 +101,7 @@ class NovaInterstitialAdViewController: UIViewController {
 
     override var shouldAutorotate: Bool {
         // Allow rotation on iPad, disable on iPhone
-        return UIDevice.current.userInterfaceIdiom == .pad
+        UIDevice.current.userInterfaceIdiom == .pad
     }
 
     override func viewDidLoad() {
@@ -136,14 +136,15 @@ class NovaInterstitialAdViewController: UIViewController {
                 // TODO: Implement tracing functionality when needed
                 print("Tracing impression for ID: \(tracingID)")
             }
-            
+
             interstitialAd.delegate?.interstitialAdDidDisplay(interstitialAd)
         }
 
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(handleApplicationWillEnterForeground(_:)),
-                                               name: UIApplication.willEnterForegroundNotification,
-                                               object: nil)
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(handleApplicationWillEnterForeground(_:)),
+            name: UIApplication.willEnterForegroundNotification,
+            object: nil)
     }
 
     override func viewWillDisappear(_ animated: Bool) {
@@ -159,17 +160,18 @@ class NovaInterstitialAdViewController: UIViewController {
         // End playing - protocol method handles the specifics
         adView?.didDisappear()
 
-        NotificationCenter.default.removeObserver(self,
-                                                  name: UIApplication.willEnterForegroundNotification,
-                                                  object: nil)
+        NotificationCenter.default.removeObserver(
+            self,
+            name: UIApplication.willEnterForegroundNotification,
+            object: nil)
     }
 
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
         super.viewWillTransition(to: size, with: coordinator)
 
         // TODO: lsy, check out if this logic works
-        guard let _ = self.adView as? NovaInterstitialAdNormalView,
-              UIDevice.current.userInterfaceIdiom == .pad
+        guard self.adView as? NovaInterstitialAdNormalView != nil,
+            UIDevice.current.userInterfaceIdiom == .pad
         else {
             return
         }
@@ -192,7 +194,7 @@ class NovaInterstitialAdViewController: UIViewController {
     private var didAppear: Bool = false
 
     private var adView: NovaInterstitialAdViewProtocol?
-    
+
     override var prefersStatusBarHidden: Bool {
         if case .html = self.interstitialAd.creativeType {
             return true

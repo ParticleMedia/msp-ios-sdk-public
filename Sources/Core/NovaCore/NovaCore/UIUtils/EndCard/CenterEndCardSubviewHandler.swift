@@ -5,9 +5,9 @@
 //  Created by Shanyu Li on 2025/8/19.
 //
 
-import UIKit
-
 // MARK: - CenterEndCardSubviewHandler
+
+import UIKit
 
 final class CenterEndCardSubviewHandler {
     // MARK: Lifecycle
@@ -118,10 +118,11 @@ final class CenterEndCardSubviewHandler {
             button.setTitleColor(NovaColorPalettes.White, for: .normal)
 
             button.layer.backgroundColor = NovaColorPalettes.Blue.tint500.cgColor
-            button.layer.borderColor = UIColor(
-                light: NovaColorPalettes.Black.withAlphaComponent(0.6),
-                dark: NovaColorPalettes.Gray.tint200
-            ).cgColor
+            button.layer.borderColor =
+                UIColor(
+                    light: NovaColorPalettes.Black.withAlphaComponent(0.6),
+                    dark: NovaColorPalettes.Gray.tint200
+                ).cgColor
             button.layer.cornerRadius = 8.0
 
             button.adClickArea = .cta_endcard
@@ -206,6 +207,6 @@ extension CenterEndCardSubviewHandler: NovaAdEndCardSubviewHandling {
     }
 
     func clickableViews() -> [UIView] {
-        return centerCard.tappableViews
+        centerCard.tappableViews
     }
 }

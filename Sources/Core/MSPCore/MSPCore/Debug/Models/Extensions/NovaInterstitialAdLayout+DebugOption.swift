@@ -3,7 +3,7 @@ import MSPiOSCore
 
 extension NovaInterstitialAdLayout: DebugOption {
     var id: String { rawValue }
-    
+
     var displayTitle: String {
         switch self {
         case .horizontal: return "Horizontal"
@@ -13,8 +13,8 @@ extension NovaInterstitialAdLayout: DebugOption {
         case .endCard: return "End Card"
         }
     }
-    
+
     var isVisible: Bool { true }
-    
+
     var placementIdAttachment: String? { nil }
-} 
+}

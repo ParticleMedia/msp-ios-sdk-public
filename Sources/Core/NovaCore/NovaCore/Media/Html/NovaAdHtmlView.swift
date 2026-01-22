@@ -4,11 +4,10 @@
 //
 //  Created by Huanzhi Zhang on 10/29/25.
 //
-import WebKit
 import UIKit
+import WebKit
 
 class NovaAdHtmlView: WKWebView, WKScriptMessageHandler {
-
     struct TracingInfo {
         let adUnitId: String
         let encryptedToken: String
@@ -18,16 +17,15 @@ class NovaAdHtmlView: WKWebView, WKScriptMessageHandler {
     weak var htmlActionDelegate: NovaAdHtmlActionDelegate?
     var tracingInfo: TracingInfo?
     var impressionTimeInMs: Int?
-    
+
     var useCustomUrl: Bool = false
     var useCustomClose: Bool = false
-    
+
     public init(supportReportHandling: Bool) {
-        
         let config = WKWebViewConfiguration()
         let userController = WKUserContentController()
         config.userContentController = userController
-        
+
         let prefs = WKPreferences()
         prefs.javaScriptEnabled = true
         config.preferences = prefs
@@ -35,7 +33,7 @@ class NovaAdHtmlView: WKWebView, WKScriptMessageHandler {
         config.mediaTypesRequiringUserActionForPlayback = []
         config.requiresUserActionForMediaPlayback = false
         config.preferences.javaScriptCanOpenWindowsAutomatically = true
-        
+
         super.init(frame: .zero, configuration: config)
         for message in NovaAdHtmlJSMessage.allCases {
             userController.add(self, name: message.rawValue)
@@ -67,12 +65,12 @@ class NovaAdHtmlView: WKWebView, WKScriptMessageHandler {
             make.directionalEdges.equalToSuperview()
         }
     }
-    
+
     @available(*, unavailable)
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
+
     public func destory() {
         self.clickEventTimerTask?.cancel()
         self.clickEventTimerTask = nil
@@ -90,7 +88,7 @@ class NovaAdHtmlView: WKWebView, WKScriptMessageHandler {
             configuration.userContentController.removeScriptMessageHandler(forName: message.rawValue)
         }
     }
-    
+
     private lazy var passThroughView: NovaAdPassThroughTapView = {
         let passThroughView = NovaAdPassThroughTapView()
         passThroughView.passThroughTapHandler = { [weak self] in
@@ -103,50 +101,50 @@ class NovaAdHtmlView: WKWebView, WKScriptMessageHandler {
         }
         return passThroughView
     }()
-    
+
     private lazy var clickEventTimerTask: Task<Void, Error>? = nil
     private var startTime: CFTimeInterval?
     private var userDidClick: Bool = false
     private var hasRequestedMraidJs: Bool = false
     private var hasInjectedMraidShim: Bool = false
-    
+
     // Minimal MRAID 3.0-compatible surface for HTML creatives
     private lazy var mraidShimSource: String = loadScript(named: "novaMraid")
     private lazy var mraidHookSource: String = loadScript(named: "novaMraidHook")
     private lazy var mraidInitSource: String = loadScript(named: "novaMraidInit")
-    
+
     // MARK: - JS injection
     private func injectNovaNativeBridge(enableFeedback: Bool) {
         // Precompute static capability map
         let enableFeedbackString = enableFeedback ? "true" : "false"
 
         let js = """
-        window.novaNativeBridge = {
-            supports: function(feature) {
-                switch (feature) {
-                    case 'feedback':
-                        return \(enableFeedbackString);
-                    default:
-                        return false;
+            window.novaNativeBridge = {
+                supports: function(feature) {
+                    switch (feature) {
+                        case 'feedback':
+                            return \(enableFeedbackString);
+                        default:
+                            return false;
+                    }
+                },
+                startFeedback: function() {
+                    window.webkit.messageHandlers.novaNativeBridge.postMessage({ action: 'startFeedback' });
+                },
+                
+                open: function(payload) {
+                    window.webkit.messageHandlers.novaNativeBridge.postMessage({
+                        action: 'open',
+                        payload: payload || "{}"
+                    });
                 }
-            },
-            startFeedback: function() {
-                window.webkit.messageHandlers.novaNativeBridge.postMessage({ action: 'startFeedback' });
-            },
-            
-            open: function(payload) {
-                window.webkit.messageHandlers.novaNativeBridge.postMessage({
-                    action: 'open',
-                    payload: payload || "{}"
-                });
-            }
-        };
-        """
+            };
+            """
 
         let script = WKUserScript(source: js, injectionTime: .atDocumentStart, forMainFrameOnly: false)
         configuration.userContentController.addUserScript(script)
     }
-    
+
     private func injectGetAdContextBridge() {
         let js = """
             if (!window.__getAdContextBridgeInjected) {
@@ -180,14 +178,14 @@ class NovaAdHtmlView: WKWebView, WKScriptMessageHandler {
             }
             """
 
-        let script = WKUserScript(source: js,
-                                  injectionTime: .atDocumentStart,
-                                  forMainFrameOnly: false)
+        let script = WKUserScript(
+            source: js,
+            injectionTime: .atDocumentStart,
+            forMainFrameOnly: false)
         configuration.userContentController.addUserScript(script)
     }
-    
+
     private func attachAdContext() {
-        
         let raw: [String: Any?] = [
             "os": UIDevice.current.systemName,
             "osv": UIDevice.current.systemVersion,
@@ -195,7 +193,7 @@ class NovaAdHtmlView: WKWebView, WKScriptMessageHandler {
             "cv": Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String,
             "ad_unit_id": tracingInfo?.adUnitId,
             "encrypted_ad_token": tracingInfo?.encryptedToken,
-            "impression_ts": impressionTimeInMs
+            "impression_ts": impressionTimeInMs,
         ]
         let dict: [String: Any] = raw.compactMapValues { $0 }
         let data: Data
@@ -209,14 +207,17 @@ class NovaAdHtmlView: WKWebView, WKScriptMessageHandler {
             DebugLogger.data.error("Failed to encode ad context JSON as UTF-8")
             return
         }
-        let escaped = jsonString
+        let escaped =
+            jsonString
             .replacingOccurrences(of: "\\", with: "\\\\")
             .replacingOccurrences(of: "\"", with: "\\\"")
         let js = "window.onAdContext(\"\(escaped)\")"
         self.evaluateJavaScript(js, completionHandler: nil)
     }
-    
-    public func config(with model: NovaAdHtmlPageModel, htmlActionDelegate: NovaAdHtmlActionDelegate?, tracingInfo: TracingInfo) {
+
+    public func config(
+        with model: NovaAdHtmlPageModel, htmlActionDelegate: NovaAdHtmlActionDelegate?, tracingInfo: TracingInfo
+    ) {
         self.htmlActionDelegate = htmlActionDelegate
         self.tracingInfo = tracingInfo
         let resource = model.resource
@@ -231,7 +232,7 @@ class NovaAdHtmlView: WKWebView, WKScriptMessageHandler {
         }
         self.impressionTimeInMs = Int(Date().timeIntervalSince1970 * 1000)
     }
-    
+
     func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
         switch message.name {
         case NovaAdHtmlJSMessage.consoleLog.rawValue:
@@ -244,7 +245,8 @@ class NovaAdHtmlView: WKWebView, WKScriptMessageHandler {
             }
         case NovaAdHtmlJSMessage.novaNativeBridge.rawValue:
             if let body = message.body as? [String: Any],
-               let action = body["action"] as? String {
+                let action = body["action"] as? String
+            {
                 switch action {
                 case "startFeedback":
                     htmlActionDelegate?.didTapAdReport()
@@ -253,12 +255,13 @@ class NovaAdHtmlView: WKWebView, WKScriptMessageHandler {
                     var clickAreaString: String = ""
 
                     if let jsonString = body["payload"] as? String,
-                       let data = jsonString.data(using: .utf8),
-                       let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any] {
-
+                        let data = jsonString.data(using: .utf8),
+                        let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any]
+                    {
                         // payload is [string : string?] per doc
                         if let urlString = json["url"] as? String,
-                           !urlString.isEmpty {
+                            !urlString.isEmpty
+                        {
                             customUrl = URL(string: urlString)
                         }
 
@@ -277,9 +280,9 @@ class NovaAdHtmlView: WKWebView, WKScriptMessageHandler {
             self.attachAdContext()
         case NovaAdHtmlJSMessage.mraidBridge.rawValue:
             guard let jsonString = message.body as? String,
-                  let jsonData = jsonString.data(using: .utf8),
-                  let jsonObject = try? JSONSerialization.jsonObject(with: jsonData) as? [String: Any],
-                  let action = jsonObject["action"] as? String
+                let jsonData = jsonString.data(using: .utf8),
+                let jsonObject = try? JSONSerialization.jsonObject(with: jsonData) as? [String: Any],
+                let action = jsonObject["action"] as? String
             else {
                 DebugLogger.data.error("Failed to parse mraidBridge message: \(String(describing: message.body))")
                 return
@@ -296,10 +299,11 @@ class NovaAdHtmlView: WKWebView, WKScriptMessageHandler {
 }
 
 extension NovaAdHtmlView: WKNavigationDelegate {
-    func webView(_ webView: WKWebView,
-                 decidePolicyFor navigationAction: WKNavigationAction,
-                 decisionHandler: @escaping (WKNavigationActionPolicy) -> Void)
-    {
+    func webView(
+        _ webView: WKWebView,
+        decidePolicyFor navigationAction: WKNavigationAction,
+        decisionHandler: @escaping (WKNavigationActionPolicy) -> Void
+    ) {
         guard let url = navigationAction.request.url else {
             decisionHandler(.allow)
             return
@@ -349,11 +353,11 @@ extension NovaAdHtmlView: WKNavigationDelegate {
     func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: Error) {
         htmlActionDelegate?.didFailToLoadPage()
     }
-    
+
     func webView(_ webView: WKWebView, didFailProvisionalNavigation navigation: WKNavigation!, withError error: Error) {
         htmlActionDelegate?.didFailToLoadPage()
     }
-    
+
     func webViewWebContentProcessDidTerminate(_ webView: WKWebView) {
         htmlActionDelegate?.didFailToLoadPage()
     }
@@ -383,8 +387,9 @@ extension NovaAdHtmlView: WKUIDelegate {
 
 private extension NovaAdHtmlView {
     func loadScript(named resourceName: String) -> String {
-        guard let url = NovaResource.getJSScriptResourceURL(resourceName)
-            ?? Bundle.main.url(forResource: resourceName, withExtension: "js")
+        guard
+            let url = NovaResource.getJSScriptResourceURL(resourceName)
+                ?? Bundle.main.url(forResource: resourceName, withExtension: "js")
         else {
             assertionFailure("Failed to find \(resourceName).js in bundle")
             return ""
@@ -458,8 +463,8 @@ private extension NovaAdHtmlView {
         // Format: mraid://open?url=encoded_url
         var customUrl: URL? = nil
         if let components = URLComponents(url: url, resolvingAgainstBaseURL: false),
-           let queryItems = components.queryItems,
-           let urlString = queryItems.first(where: { $0.name == "url" })?.value
+            let queryItems = components.queryItems,
+            let urlString = queryItems.first(where: { $0.name == "url" })?.value
         {
             customUrl = URL(string: urlString)
         }
@@ -471,7 +476,8 @@ private extension NovaAdHtmlView {
 
         webView.evaluateJavaScript(mraidInitSource) { _, error in
             if let error = error {
-                DebugLogger.data.error("Failed to initialize MRAID state: \(String(describing: error), privacy: .public)")
+                DebugLogger.data.error(
+                    "Failed to initialize MRAID state: \(String(describing: error), privacy: .public)")
             }
         }
     }

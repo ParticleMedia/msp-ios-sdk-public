@@ -14,6 +14,6 @@ struct ActionModel {
 
 extension ActionModel: Equatable {
     static func == (lhs: ActionModel, rhs: ActionModel) -> Bool {
-        return lhs.actionKey == rhs.actionKey
+        lhs.actionKey == rhs.actionKey
     }
 }

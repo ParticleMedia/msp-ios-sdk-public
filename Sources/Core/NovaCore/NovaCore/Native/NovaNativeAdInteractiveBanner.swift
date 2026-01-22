@@ -9,7 +9,7 @@ final class NovaNativeAdInteractiveBanner {
     let imageUrl: URL
     let displayTime: DispatchTimeInterval
     var hasShown: Bool
-    
+
     init(
         type: InteractiveBannerType,
         imageUrl: URL,

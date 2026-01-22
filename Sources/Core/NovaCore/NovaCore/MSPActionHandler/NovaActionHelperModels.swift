@@ -5,10 +5,10 @@
 //  Created by Shanyu Li on 2025/8/11.
 //
 
+// MARK: - AdActionExtraInfo
+
 import Foundation
 import UIKit
-
-// MARK: - AdActionExtraInfo
 
 struct AdActionExtraInfo {
     // MARK: Lifecycle
@@ -137,22 +137,25 @@ extension NovaBaseAd {
             switch nativeBaseAd.mediaContent.adMedia {
             case let .imagePlayable(_, playableModel), let .videoPlayable(_, playableModel):
                 return AdActionExtraInfo.PlayableConfig(
-                        actionBarFormat: playableModel.actionBarFormat,
-                        appInfo: playableModel.appInfo,
-                        callToAction: nativeBaseAd.callToAction
-                    )
+                    actionBarFormat: playableModel.actionBarFormat,
+                    appInfo: playableModel.appInfo,
+                    callToAction: nativeBaseAd.callToAction
+                )
             default:
                 return nil
             }
         }()
 
-        return AdActionExtraInfo(videoMediaModel: videoMediaModel, advertiser: advertiser, playableConfig: playableConfig) { adView in
+        return AdActionExtraInfo(
+            videoMediaModel: videoMediaModel, advertiser: advertiser, playableConfig: playableConfig
+        ) { adView in
             switch self {
             case let nativeAd as NovaNativeAdItem:
                 nativeAd.delegate?
                     .nativeAdDidLogClick(
                         nativeAd,
-                        clickAreaName: NovaAdMetricReporter.convertNovaClickAreaNameToMetric(clickArea: adView?.adClickArea?.rawValue) ?? ""
+                        clickAreaName: NovaAdMetricReporter.convertNovaClickAreaNameToMetric(
+                            clickArea: adView?.adClickArea?.rawValue) ?? ""
                     )
             case let interstitialAd as NovaInterstitialAdItem:
                 interstitialAd.delegate?.interstitialAdDidLogClick(interstitialAd)
@@ -164,7 +167,7 @@ extension NovaBaseAd {
     }
 
     var actionTracingInfo: AdActionTracingInfo {
-        return AdActionTracingInfo(
+        AdActionTracingInfo(
             adId: adId,
             adSetId: adSetId,
             requestId: requestId,

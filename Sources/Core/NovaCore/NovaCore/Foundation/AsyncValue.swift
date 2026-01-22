@@ -5,8 +5,6 @@
 //  Created by Shanyu Li on 2025/12/26.
 //
 
-import Foundation
-
 /// A single-shot async container that produces at most one value.
 ///
 /// - `value()` suspends with async/await until the result is available.
@@ -15,8 +13,9 @@ import Foundation
 /// - `cancel()` cancels the producer and resumes all awaiters with `CancellationError`.
 ///
 /// Multiple callers can await `value()` concurrently and will receive the same outcome.
-public final class AsyncValue<T> {
+import Foundation
 
+public final class AsyncValue<T> {
     enum State {
         case pending
         case success(T)
@@ -138,4 +137,3 @@ public final class AsyncValue<T> {
         }
     }
 }
-

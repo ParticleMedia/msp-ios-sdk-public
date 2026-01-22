@@ -10,10 +10,10 @@ import MSPiOSCore
 
 public class LiftoffManager: AdNetworkManager {
     public override func getAdNetworkAdapter() -> AdNetworkAdapter? {
-        return LiftoffAdapter()
+        LiftoffAdapter()
     }
 
     public override func getAdBidder(bidderPlacementId: String, bidderFormat: AdFormat?) -> Bidder? {
-        return LiftoffBidder(name: "liftoff", bidderPlacementId: bidderPlacementId, bidderFormat: bidderFormat)
+        LiftoffBidder(name: "liftoff", bidderPlacementId: bidderPlacementId, bidderFormat: bidderFormat)
     }
 }

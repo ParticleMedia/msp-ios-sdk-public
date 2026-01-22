@@ -10,4 +10,3 @@ import UIKit
 public protocol ImageController: AnyObject {
     var contentMode: UIView.ContentMode { get set }
 }
-

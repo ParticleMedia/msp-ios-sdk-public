@@ -1,9 +1,9 @@
-import Foundation
+// Import SectionTitles from DebugSectionData
 import Combine
+import Foundation
 import MSPiOSCore
 import UIKit
 
-// Import SectionTitles from DebugSectionData
 private typealias SectionTitles = DebugSectionData.SectionTitles
 private typealias SectionIds = DebugSectionData.SectionIds
 
@@ -42,17 +42,17 @@ class DebugAdLoadViewModel: AdListener {
     @Published private(set) var sections: [DebugAdLoadSectionViewModel] = []
     private let originalSectionData: [DebugSection]
     let placements: [String]
-    private(set) var isPlacementSectionVisible = true // Toggle state for placement section
+    private(set) var isPlacementSectionVisible = true  // Toggle state for placement section
     var visibleSectionsPublisher: AnyPublisher<[DebugAdLoadSectionViewModel], Never> {
         $sections.map { $0.filter { $0.visible } }.eraseToAnyPublisher()
     }
-    
+
     private let debugSectionsRepository: DebugSectionsRepository
     private let placementsRepository: PlacementsRepository
     private let loadAdRepository: LoadAdRepository
     private(set) var ad: MSPAd?
     private weak var debugAdLoadViewController: DebugAdLoadViewController?
-    
+
     // Toast signal publisher
     private let toastSignalSubject = PassthroughSubject<ToastSignal, Never>()
     var toastSignalPublisher: AnyPublisher<ToastSignal, Never> {
@@ -63,7 +63,7 @@ class DebugAdLoadViewModel: AdListener {
     var adPresentationPublisher: AnyPublisher<DebugAdPresentationSignal, Never> {
         adPresentationSubject.receive(on: DispatchQueue.main).eraseToAnyPublisher()
     }
-    
+
     init(
         debugSectionsRepository: DebugSectionsRepository = TestDebugSectionsService(),
         placementsRepository: PlacementsRepository = AdConfigPlacementsService(),
@@ -78,72 +78,70 @@ class DebugAdLoadViewModel: AdListener {
         setDefaultSelections()
         updateSectionVisibility()
     }
-    
+
     private func createSectionViewModels() -> [DebugAdLoadSectionViewModel] {
-        return originalSectionData.enumerated().map { index, data in
+        originalSectionData.enumerated().map { index, data in
             let sectionViewModel = DebugAdLoadSectionViewModel(from: data)
-            
+
             // Set initial visibility based on showCondition
             sectionViewModel.visible = shouldShowSection(data)
-            
+
             return sectionViewModel
         }
     }
-    
+
     private func shouldShowSection(_ section: DebugSection) -> Bool {
         guard let showCondition = section.showCondition else {
             // If showCondition is nil, section is always visible
             return true
         }
-        
+
         // Check if all required option IDs are in the current selection
         let selectedOptionIds = getSelectedOptionIds()
         return showCondition.isSubset(of: selectedOptionIds)
     }
-    
+
     private func getSelectedOptionIds() -> Set<String> {
         var selectedIds: Set<String> = []
-        
+
         for section in sections {
             if let selectedCell = section.selectedCell() {
                 selectedIds.insert(selectedCell.id)
             }
         }
-        
+
         return selectedIds
     }
-    
+
     private func setDefaultSelections() {
         // Set default selections based on showCondition requirements
-        for (index, section) in sections.enumerated() {
-            if index < originalSectionData.count {
-                let sectionData = originalSectionData[index]
-                
-                // Skip default selection for placement section
-                guard sectionData.id != SectionIds.placement else {
-                    continue
-                }
-                
-                // If this section has a showCondition, set the first available option as default
-                if let showCondition = sectionData.showCondition {
-                    for requiredId in showCondition {
-                        for i in 0..<section.numberOfCells {
-                            if let cell = section.cellViewModel(at: i), cell.id == requiredId {
-                                section.selectCell(at: i)
-                                break
-                            }
+        for (index, section) in sections.enumerated() where index < originalSectionData.count {
+            let sectionData = originalSectionData[index]
+
+            // Skip default selection for placement section
+            guard sectionData.id != SectionIds.placement else {
+                continue
+            }
+
+            // If this section has a showCondition, set the first available option as default
+            if let showCondition = sectionData.showCondition {
+                for requiredId in showCondition {
+                    for i in 0..<section.numberOfCells {
+                        if let cell = section.cellViewModel(at: i), cell.id == requiredId {
+                            section.selectCell(at: i)
+                            break
                         }
                     }
-                } else {
-                    // For sections without showCondition, set the first option as default
-                    if section.numberOfCells > 0 {
-                        section.selectCell(at: 0)
-                    }
+                }
+            } else {
+                // For sections without showCondition, set the first option as default
+                if section.numberOfCells > 0 {
+                    section.selectCell(at: 0)
                 }
             }
         }
     }
-    
+
     func selectOption(section: Int, row: Int) {
         let sectionVM = sections[section]
         sectionVM.selectCell(at: row)
@@ -151,28 +149,27 @@ class DebugAdLoadViewModel: AdListener {
         // Trigger Combine update
         sections = sections
     }
-    
+
     private func updateSectionVisibility() {
         // Update visibility for all sections based on their showCondition
-        for (index, section) in sections.enumerated() {
-            if index < originalSectionData.count {
-                let shouldShow = shouldShowSection(originalSectionData[index])
-                // Never hide placement section
-                if originalSectionData[index].id != SectionIds.placement {
-                    section.visible = shouldShow
-                } else {
-                    section.visible = true // Always show placement section
-                }
+        for (index, section) in sections.enumerated() where index < originalSectionData.count {
+            let shouldShow = shouldShowSection(originalSectionData[index])
+            // Never hide placement section
+            if originalSectionData[index].id != SectionIds.placement {
+                section.visible = shouldShow
+            } else {
+                section.visible = true  // Always show placement section
             }
         }
     }
-    
+
     // Get test parameters from selected options
     func getTestParameters() -> [String: String] {
         var testParamsDict: [String: Any] = [:]
         for (index, section) in sections.enumerated() {
             if let selectedCell = section.selectedCell(),
-               index < originalSectionData.count {
+                index < originalSectionData.count
+            {
                 let originalOptions = originalSectionData[index].options
                 if let selectedOption = originalOptions.first(where: { $0.id == selectedCell.id }) {
                     if let testParamOption = selectedOption as? TestParamPresentable {
@@ -192,24 +189,25 @@ class DebugAdLoadViewModel: AdListener {
         }
         testParamsDict["test_ad"] = true
         guard let jsonData = try? JSONSerialization.data(withJSONObject: testParamsDict, options: []),
-              let jsonString = String(data: jsonData, encoding: .utf8) else {
+            let jsonString = String(data: jsonData, encoding: .utf8)
+        else {
             return [:]
         }
         return ["test": jsonString]
     }
-    
+
     func getSelectedOptions() -> [String: DebugOption] {
         var selectedOptions: [String: DebugOption] = [:]
-        
+
         for section in sections {
             if let selectedCell = section.selectedCell() {
                 selectedOptions[section.title] = selectedCell.debugOption
             }
         }
-        
+
         return selectedOptions
     }
-    
+
     /// Loads an ad using the current selections
     func loadAd() {
         // Get selected placement option
@@ -218,7 +216,7 @@ class DebugAdLoadViewModel: AdListener {
             toastSignalSubject.send(ToastSignal(message: "You must choose a placement", style: .error, duration: nil))
             return
         }
-        
+
         let adFormat = selectedOptions.values.compactMap { $0 as? AdFormat }.first ?? .banner
         let testParams = getTestParameters()
         toastSignalSubject.send(ToastSignal(message: Strings.loading, style: .loading, duration: nil))
@@ -230,7 +228,7 @@ class DebugAdLoadViewModel: AdListener {
             customParams: nil
         )
     }
-    
+
     // MARK: - AdListener
     func onError(msg: String) {
         print(Strings.adError + msg)
@@ -275,17 +273,17 @@ class DebugAdLoadViewModel: AdListener {
         print(Strings.interstitialDismissed + "\(ad)")
     }
     func getRootViewController() -> UIViewController? {
-        return debugAdLoadViewController
+        debugAdLoadViewController
     }
-    
+
     func setViewController(_ viewController: DebugAdLoadViewController) {
         self.debugAdLoadViewController = viewController
     }
-    
+
     // Toggle placement section visibility
     func togglePlacementSection() {
         isPlacementSectionVisible.toggle()
         // Update the section's visible cells without affecting section visibility
-        sections = sections // Trigger Combine update
+        sections = sections  // Trigger Combine update
     }
 }

@@ -8,6 +8,7 @@
 import Foundation
 @_implementationOnly import MSPPrebidAdapter
 import MSPiOSCore
+
 //import shared
 
 public class MSPBidLoaderProvider: BidLoaderProvider {
@@ -16,11 +17,10 @@ public class MSPBidLoaderProvider: BidLoaderProvider {
     public var molocoBidTokenProvider: MolocoBidTokenProvider?
     public var liftoffBidTokenProvider: LiftoffBidTokenProvider?
     public weak var bidLoader: BidLoader?
-    
+
     public init() {
-        
     }
-    
+
     public func getBidLoader() -> BidLoader {
         let tokenProviders = BidTokenProviders()
             .with(googleQueryInfoFetcher: googleQueryInfoFetcher ?? GoogleQueryInfoFetcherStandalone())

@@ -1,6 +1,6 @@
-import UIKit
 import Combine
 @_implementationOnly import SnapKit
+import UIKit
 
 private enum UIConfig {
     static let labelLeading: CGFloat = 16
@@ -14,16 +14,16 @@ class DebugRadioCell: UITableViewCell {
     private var subscriptions = Set<AnyCancellable>()
     private let radioView = DebugRadioView()
     private let titleLabel = UILabel()
-    
+
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         setupUI()
     }
-    
+
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
+
     private func setupUI() {
         contentView.addSubview(radioView)
         contentView.addSubview(titleLabel)
@@ -38,7 +38,7 @@ class DebugRadioCell: UITableViewCell {
             make.bottom.equalToSuperview().inset(UIConfig.labelBottom)
         }
     }
-    
+
     func configure(with viewModel: DebugRadioCellViewModel) {
         titleLabel.text = viewModel.title
         subscriptions.removeAll()
@@ -50,4 +50,4 @@ class DebugRadioCell: UITableViewCell {
             }
             .store(in: &subscriptions)
     }
-} 
+}

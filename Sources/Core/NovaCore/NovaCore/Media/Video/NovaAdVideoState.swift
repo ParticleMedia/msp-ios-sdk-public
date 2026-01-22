@@ -1,7 +1,6 @@
 import CoreMedia
 
 struct NovaAdVideoState {
-
     enum PlayState: Equatable {
         case showCover(autoPlay: Bool, coverURL: URL)
         case loading

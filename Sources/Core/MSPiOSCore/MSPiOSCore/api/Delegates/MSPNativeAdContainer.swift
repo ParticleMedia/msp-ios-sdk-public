@@ -18,24 +18,24 @@ public enum MSPNativeElement: Equatable {
 
 public protocol MSPNativeAdContainer: UIView {
     func getTitle() -> UILabel?
-    
+
     func getbody() -> UILabel?
-    
+
     func getAdvertiser() -> UILabel?
-    
+
     func getCallToAction() -> UIButton?
-    
+
     func getMedia() -> UIView?
-    
+
     func getIcon() -> UIImageView?
-    
+
     func getCustomClickableViews() -> [UIView]?
-    
+
     func getDisplayContext() -> [MSPNativeElement: MSPNativeDisplayContext]?
 }
 
 extension MSPNativeAdContainer {
     public func getDisplayContext() -> [MSPNativeElement: MSPNativeDisplayContext]? {
-        return nil
+        nil
     }
 }

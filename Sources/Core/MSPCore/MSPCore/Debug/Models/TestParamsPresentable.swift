@@ -7,4 +7,4 @@ protocol TestParamsPresentable {
 
 protocol TestParamPresentable {
     var keyValuePairs: [(String, String)] { get }
-} 
+}

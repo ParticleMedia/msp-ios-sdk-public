@@ -6,9 +6,8 @@
 //
 
 import Foundation
-import UIKit
 @_implementationOnly import SnapKit
-
+import UIKit
 
 // MARK: - NovaInterstitialAdContentViewModel
 

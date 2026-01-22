@@ -4,27 +4,26 @@
 //
 //  Created by Huanzhi Zhang on 2/5/25.
 //
+//import shared
 import Foundation
 import MSPiOSCore
-//import shared
-import PrebidMobile
 import MTGSDK
-import MTGSDKBidding
 import MTGSDKBanner
+import MTGSDKBidding
 import MTGSDKNewInterstitial
+import PrebidMobile
 
-
-@objc public class MintegralAdapter : NSObject, AdNetworkAdapter {
+@objc public class MintegralAdapter: NSObject, AdNetworkAdapter {
     public func getSDKVersion() -> String {
-        return ""
+        ""
     }
-    
+
 
     public weak var adListener: AdListener?
     public var adRequest: AdRequest?
     public weak var auctionBidListener: AuctionBidListener?
     public var bidderPlacementId: String?
-    
+
     public var adUnitId: String?
 
     public weak var bannerAd: BannerAd?
@@ -36,16 +35,18 @@ import MTGSDKNewInterstitial
     public var mintegralNativeAdManager: MTGBidNativeAdManager?
     public var nativeAdItem: MTGCampaign?
     public weak var nativeAd: MintegralNativeAd?
-    
+
     private var adMetricReporter: AdMetricReporter?
-    
+
     private var mtgBidResponse: MTGBiddingResponse?
 
 
-    public func loadAdCreative(bidResponse: Any, auctionBidListener: any MSPiOSCore.AuctionBidListener, adListener: any MSPiOSCore.AdListener, context: Any, adRequest: MSPiOSCore.AdRequest, bidderPlacementId: String, bidderFormat: MSPiOSCore.AdFormat?, params: [String:String]?) {
-
+    public func loadAdCreative(
+        bidResponse: Any, auctionBidListener: any MSPiOSCore.AuctionBidListener, adListener: any MSPiOSCore.AdListener,
+        context: Any, adRequest: MSPiOSCore.AdRequest, bidderPlacementId: String, bidderFormat: MSPiOSCore.AdFormat?,
+        params: [String: String]?
+    ) {
         DispatchQueue.main.async {
-
             self.auctionBidListener = auctionBidListener
             self.adListener = adListener
             self.adRequest = adRequest
@@ -54,32 +55,39 @@ import MTGSDKNewInterstitial
             let adFormat = bidderFormat ?? adRequest.adFormat
             self.adUnitId = params?["mintegralAdUnitAd"] as? String
             if adFormat == .interstitial {
-                self.loadInterstitialAd(auctionBidListener: auctionBidListener, adListener: adListener, adRequest: adRequest, bidderPlacementId: bidderPlacementId, params: params)
-                
+                self.loadInterstitialAd(
+                    auctionBidListener: auctionBidListener, adListener: adListener, adRequest: adRequest,
+                    bidderPlacementId: bidderPlacementId, params: params)
             } else if adFormat == .native {
-                self.loadNativeAd(auctionBidListener: auctionBidListener, adListener: adListener, adRequest: adRequest, bidderPlacementId: bidderPlacementId, params: params)
-                
+                self.loadNativeAd(
+                    auctionBidListener: auctionBidListener, adListener: adListener, adRequest: adRequest,
+                    bidderPlacementId: bidderPlacementId, params: params)
             } else {
-                self.loadBanenrAd(auctionBidListener: auctionBidListener, adListener: adListener, adRequest: adRequest, bidderPlacementId: bidderPlacementId, params: params)
-                
+                self.loadBanenrAd(
+                    auctionBidListener: auctionBidListener, adListener: adListener, adRequest: adRequest,
+                    bidderPlacementId: bidderPlacementId, params: params)
             }
         }
     }
 
-    public func initialize(initParams: any MSPiOSCore.InitializationParameters, adapterInitListener: any MSPiOSCore.AdapterInitListener, context: Any?) {
-        MTGSDK.sharedInstance().setAppID(initParams.getParameters()?[InitializationParametersCustomKeys.MINTEGRAL_APP_ID] as? String ?? "",
-                                         apiKey: initParams.getParameters()?[InitializationParametersCustomKeys.MINTEGRAL_API_KEY] as? String ?? "")
+    public func initialize(
+        initParams: any MSPiOSCore.InitializationParameters, adapterInitListener: any MSPiOSCore.AdapterInitListener,
+        context: Any?
+    ) {
+        MTGSDK.sharedInstance().setAppID(
+            initParams.getParameters()?[InitializationParametersCustomKeys.MINTEGRAL_APP_ID] as? String ?? "",
+            apiKey: initParams.getParameters()?[InitializationParametersCustomKeys.MINTEGRAL_API_KEY] as? String ?? "")
         adapterInitListener.onComplete(adNetwork: .mintegral, adapterInitStatus: .SUCCESS, message: "")
     }
 
     public func destroyAd() {
-
     }
 
     public func prepareViewForInteraction(nativeAd: MSPiOSCore.NativeAd, nativeAdView: Any) {
         DispatchQueue.main.async {
             guard let nativeAdView = nativeAdView as? NativeAdView,
-                  let nativeAdItem = self.nativeAdItem else {return}
+                let nativeAdItem = self.nativeAdItem
+            else { return }
 
             if let nativeAdContainer = nativeAdView.nativeAdContainer {
                 let mediaView = MTGMediaView()
@@ -105,7 +113,7 @@ import MTGSDKNewInterstitial
                         //mediaView.heightAnchor.constraint(equalTo: mediaContainer.heightAnchor)
                     ])
                 }
-                
+
                 let adChoiceView = MTGAdChoicesView()
                 adChoiceView.isHidden = false
                 nativeAdContainer.addSubview(adChoiceView)
@@ -117,16 +125,21 @@ import MTGSDKNewInterstitial
                     //mediaView.heightAnchor.constraint(equalTo: mediaContainer.heightAnchor)
                 ])
 
-                var clickableViews = [UIView]()
+                var clickableViews: [UIView] = []
 
-                for view in [nativeAdView, nativeAdContainer.getTitle(), nativeAdContainer.getbody(), nativeAdContainer.getMedia(), nativeAdContainer.getAdvertiser(), nativeAdContainer.getCallToAction()] {
+                for view in [
+                    nativeAdView, nativeAdContainer.getTitle(), nativeAdContainer.getbody(),
+                    nativeAdContainer.getMedia(), nativeAdContainer.getAdvertiser(),
+                    nativeAdContainer.getCallToAction(),
+                ] {
                     if let view = view {
                         //let tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleNativeAdClick))
                         //view.addGestureRecognizer(tapGesture)
                         clickableViews.append(view)
                     }
                 }
-                self.mintegralNativeAdManager?.registerView(forInteraction: mediaView, withClickableViews: clickableViews, with: nativeAdItem)
+                self.mintegralNativeAdManager?.registerView(
+                    forInteraction: mediaView, withClickableViews: clickableViews, with: nativeAdItem)
 
                 nativeAdView.addSubview(nativeAdContainer)
                 NSLayoutConstraint.activate([
@@ -149,19 +162,24 @@ import MTGSDKNewInterstitial
     public func handleAdLoaded(ad: MSPAd, auctionBidListener: AuctionBidListener, bidderPlacementId: String) {
         // to do: move this to ios core
         AdCache.shared.saveAd(placementId: bidderPlacementId, ad: ad)
-        let auctionBid = AuctionBid(bidderName: "mintegral", bidderPlacementId: bidderPlacementId, ecpm: ad.adInfo["price"] as? Double ?? 0.0)
+        let auctionBid = AuctionBid(
+            bidderName: "mintegral", bidderPlacementId: bidderPlacementId, ecpm: ad.adInfo["price"] as? Double ?? 0.0)
         auctionBid.ad = ad
         auctionBidListener.onSuccess(bid: auctionBid)
         if let adRequest = self.adRequest {
-            self.adMetricReporter?.logAdResponse(ad: ad, adRequest: adRequest, errorCode: .ERROR_CODE_SUCCESS, errorMessage: nil)
+            self.adMetricReporter?.logAdResponse(
+                ad: ad, adRequest: adRequest, errorCode: .ERROR_CODE_SUCCESS, errorMessage: nil)
         }
     }
-    
+
     public func getAdNetwork() -> MSPiOSCore.AdNetwork {
-        return .mintegral
+        .mintegral
     }
-    
-    private func loadBanenrAd(auctionBidListener: any MSPiOSCore.AuctionBidListener, adListener: any MSPiOSCore.AdListener, adRequest: MSPiOSCore.AdRequest, bidderPlacementId: String, params: [String:String]?) {
+
+    private func loadBanenrAd(
+        auctionBidListener: any MSPiOSCore.AuctionBidListener, adListener: any MSPiOSCore.AdListener,
+        adRequest: MSPiOSCore.AdRequest, bidderPlacementId: String, params: [String: String]?
+    ) {
         var floor: NSNumber?
         if let floorStr = params?["floor"] {
             floor = NumberFormatter().number(from: floorStr)
@@ -172,14 +190,16 @@ import MTGSDKNewInterstitial
             basePrice: floor ?? 0.0,
             unitSize: CGSize(width: adRequest.adSize?.width ?? 320, height: adRequest.adSize?.height ?? 50)
         )
-        MTGBiddingRequest.getBidWith(bannerParam) {[weak self] bidResponse in
+        MTGBiddingRequest.getBidWith(bannerParam) { [weak self] bidResponse in
             if bidResponse.success {
                 self?.mtgBidResponse = bidResponse
                 bidResponse.notifyWin()
-                self?.bannerView = MTGBannerAdView(bannerAdViewWithAdSize: CGSize(width: adRequest.adSize?.width ?? 320, height: adRequest.adSize?.height ?? 50),
-                                                   placementId: bidderPlacementId,
-                                                   unitId: self?.adUnitId ?? "",
-                                                   rootViewController: adListener.getRootViewController())
+                self?.bannerView = MTGBannerAdView(
+                    bannerAdViewWithAdSize: CGSize(
+                        width: adRequest.adSize?.width ?? 320, height: adRequest.adSize?.height ?? 50),
+                    placementId: bidderPlacementId,
+                    unitId: self?.adUnitId ?? "",
+                    rootViewController: adListener.getRootViewController())
                 self?.bannerView?.delegate = self
                 self?.bannerView?.autoRefreshTime = 0
                 self?.bannerView?.loadBannerAd(withBidToken: bidResponse.bidToken)
@@ -188,22 +208,27 @@ import MTGSDKNewInterstitial
             }
         }
     }
-    
-    private func loadNativeAd(auctionBidListener: any MSPiOSCore.AuctionBidListener, adListener: any MSPiOSCore.AdListener, adRequest: MSPiOSCore.AdRequest, bidderPlacementId: String, params: [String:String]?) {
+
+    private func loadNativeAd(
+        auctionBidListener: any MSPiOSCore.AuctionBidListener, adListener: any MSPiOSCore.AdListener,
+        adRequest: MSPiOSCore.AdRequest, bidderPlacementId: String, params: [String: String]?
+    ) {
         var floor: NSNumber?
         if let floorStr = params?["floor"] {
             floor = NumberFormatter().number(from: floorStr)
         }
-        let nativeParams = MTGBiddingRequestParameter(placementId: bidderPlacementId,
-                                                      unitId: self.adUnitId ?? "",
-                                                      basePrice: floor ?? 0.0)
-        MTGBiddingRequest.getBidWith(nativeParams) {[weak self] bidResponse in
+        let nativeParams = MTGBiddingRequestParameter(
+            placementId: bidderPlacementId,
+            unitId: self.adUnitId ?? "",
+            basePrice: floor ?? 0.0)
+        MTGBiddingRequest.getBidWith(nativeParams) { [weak self] bidResponse in
             if bidResponse.success {
                 self?.mtgBidResponse = bidResponse
                 bidResponse.notifyWin()
-                self?.mintegralNativeAdManager = MTGBidNativeAdManager(placementId: bidderPlacementId,
-                                                                       unitID: self?.adUnitId ?? "",
-                                                                       presenting: adListener.getRootViewController())
+                self?.mintegralNativeAdManager = MTGBidNativeAdManager(
+                    placementId: bidderPlacementId,
+                    unitID: self?.adUnitId ?? "",
+                    presenting: adListener.getRootViewController())
                 self?.mintegralNativeAdManager?.delegate = self
                 self?.mintegralNativeAdManager?.load(withBidToken: bidResponse.bidToken)
             } else {
@@ -211,50 +236,60 @@ import MTGSDKNewInterstitial
             }
         }
     }
-    
-    private func loadInterstitialAd(auctionBidListener: any MSPiOSCore.AuctionBidListener, adListener: any MSPiOSCore.AdListener, adRequest: MSPiOSCore.AdRequest, bidderPlacementId: String, params: [String:String]?) {
+
+    private func loadInterstitialAd(
+        auctionBidListener: any MSPiOSCore.AuctionBidListener, adListener: any MSPiOSCore.AdListener,
+        adRequest: MSPiOSCore.AdRequest, bidderPlacementId: String, params: [String: String]?
+    ) {
         var floor: NSNumber?
         if let floorStr = params?["floor"] {
             floor = NumberFormatter().number(from: floorStr)
         }
-        
-        let interstitialParams = MTGBiddingRequestParameter(placementId: bidderPlacementId,
-                                                            unitId: self.adUnitId ?? "",
-                                                            basePrice: floor ?? 0.0)
-        
-        MTGBiddingRequest.getBidWith(interstitialParams) {[weak self] bidResponse in
-            guard let self  = self else {
+
+        let interstitialParams = MTGBiddingRequestParameter(
+            placementId: bidderPlacementId,
+            unitId: self.adUnitId ?? "",
+            basePrice: floor ?? 0.0)
+
+        MTGBiddingRequest.getBidWith(interstitialParams) { [weak self] bidResponse in
+            guard let self = self else {
                 auctionBidListener.onError(error: "Mintegral bid fail")
                 return
             }
             if bidResponse.success {
                 self.mtgBidResponse = bidResponse
                 bidResponse.notifyWin()
-                self.mintegralInterstitialAdManager = MTGNewInterstitialBidAdManager(placementId:bidderPlacementId,
-                                                                                  unitId:self.adUnitId ?? "",
-                                                                                  delegate:self )
+                self.mintegralInterstitialAdManager = MTGNewInterstitialBidAdManager(
+                    placementId: bidderPlacementId,
+                    unitId: self.adUnitId ?? "",
+                    delegate: self)
                 self.mintegralInterstitialAdManager?.loadAd(withBidToken: bidResponse.bidToken)
             } else {
                 auctionBidListener.onError(error: "Mintegral bid fail")
             }
         }
     }
-    
-    public func sendHideAdEvent(reason: String, adScreenShot: Data?, fullScreenShot: Data?)
-    {
+
+    public func sendHideAdEvent(reason: String, adScreenShot: Data?, fullScreenShot: Data?) {
         if let adRequest = self.adRequest,
-           let ad = (self.bannerAd ?? self.nativeAd) ?? self.interstitialAd {
-            self.adMetricReporter?.logAdHide(ad: ad, adRequest: adRequest, bidResponse: self, reason: reason, adScreenShot: adScreenShot, fullScreenShot: fullScreenShot)
+            let ad = (self.bannerAd ?? self.nativeAd) ?? self.interstitialAd
+        {
+            self.adMetricReporter?.logAdHide(
+                ad: ad, adRequest: adRequest, bidResponse: self, reason: reason, adScreenShot: adScreenShot,
+                fullScreenShot: fullScreenShot)
         }
     }
-    
+
     public func sendReportAdEvent(reason: String, description: String?, adScreenShot: Data?, fullScreenShot: Data?) {
         if let adRequest = self.adRequest,
-           let ad = (self.bannerAd ?? self.nativeAd) ?? self.interstitialAd {
-            self.adMetricReporter?.logAdReport(ad: ad, adRequest: adRequest, bidResponse: self, reason: reason, description: description, adScreenShot: adScreenShot, fullScreenShot: fullScreenShot)
+            let ad = (self.bannerAd ?? self.nativeAd) ?? self.interstitialAd
+        {
+            self.adMetricReporter?.logAdReport(
+                ad: ad, adRequest: adRequest, bidResponse: self, reason: reason, description: description,
+                adScreenShot: adScreenShot, fullScreenShot: fullScreenShot)
         }
     }
-    
+
     public func sendClickAdEvent(ad: MSPAd) {
         if let adRequest = self.adRequest {
             self.adMetricReporter?.logAdClick(ad: ad, adRequest: adRequest, bidResponse: nil)
@@ -265,7 +300,7 @@ import MTGSDKNewInterstitial
 extension MintegralAdapter: MTGBannerAdViewDelegate {
     public func adViewLoadSuccess(_ adView: MTGBannerAdView!) {
         DispatchQueue.main.async {
-            guard let auctionBidListener = self.auctionBidListener else {return}
+            guard let auctionBidListener = self.auctionBidListener else { return }
             if let bannerView = self.bannerView {
                 MSPLogger.shared.info(message: "[Adapter: Mintegral] successfully loaded Mintegral Banner ad")
                 let bannerAd = BannerAd(adView: bannerView, adNetworkAdapter: self)
@@ -274,7 +309,9 @@ extension MintegralAdapter: MTGBannerAdViewDelegate {
                 bannerAd.adInfo[MSPConstants.AD_INFO_NETWORK_NAME] = AdNetwork.mintegral.rawValue
                 bannerAd.adInfo[MSPConstants.AD_INFO_NETWORK_AD_UNIT_ID] = self.bidderPlacementId
                 bannerAd.adInfo[MSPConstants.AD_INFO_NETWORK_CREATIVE_ID] = adView.creativeId
-                self.handleAdLoaded(ad: bannerAd, auctionBidListener: auctionBidListener, bidderPlacementId: self.bidderPlacementId ?? "mintegral_placement_id")
+                self.handleAdLoaded(
+                    ad: bannerAd, auctionBidListener: auctionBidListener,
+                    bidderPlacementId: self.bidderPlacementId ?? "mintegral_placement_id")
             }
         }
     }
@@ -283,7 +320,9 @@ extension MintegralAdapter: MTGBannerAdViewDelegate {
         MSPLogger.shared.info(message: "[Adapter: Mintegral] Fail to load Mintegral banner ad")
         self.auctionBidListener?.onError(error: "fail to load ad")
         if let adRequest = self.adRequest {
-            self.adMetricReporter?.logAdResponse(ad: nil, adRequest: adRequest, errorCode: .ERROR_CODE_INTERNAL_ERROR, errorMessage: error.localizedDescription)
+            self.adMetricReporter?.logAdResponse(
+                ad: nil, adRequest: adRequest, errorCode: .ERROR_CODE_INTERNAL_ERROR,
+                errorMessage: error.localizedDescription)
         }
     }
 
@@ -308,30 +347,24 @@ extension MintegralAdapter: MTGBannerAdViewDelegate {
     }
 
     public func adViewWillLeaveApplication(_ adView: MTGBannerAdView!) {
-
     }
 
     public func adViewWillOpenFullScreen(_ adView: MTGBannerAdView!) {
-
     }
 
     public func adViewCloseFullScreen(_ adView: MTGBannerAdView!) {
-
     }
 
     public func adViewClosed(_ adView: MTGBannerAdView!) {
-
     }
-
-
 }
 
 
 extension MintegralAdapter: MTGNewInterstitialBidAdDelegate {
     public func newInterstitialBidAdResourceLoadSuccess(_ adManager: MTGNewInterstitialBidAdManager) {
         DispatchQueue.main.async {
-            guard let auctionBidListener = self.auctionBidListener else {return}
-            
+            guard let auctionBidListener = self.auctionBidListener else { return }
+
             if let mintegralInterstitialAdManager = self.mintegralInterstitialAdManager {
                 MSPLogger.shared.info(message: "[Adapter: Mintegral] successfully loaded Mintegral Interstitial ad")
                 let interstitialAd = MintegralInterstitialAd(adNetworkAdapter: self)
@@ -341,8 +374,11 @@ extension MintegralAdapter: MTGNewInterstitialBidAdDelegate {
                 interstitialAd.adInfo[MSPConstants.AD_INFO_PRICE] = self.mtgBidResponse?.price ?? 0.0
                 interstitialAd.adInfo[MSPConstants.AD_INFO_NETWORK_NAME] = AdNetwork.mintegral.rawValue
                 interstitialAd.adInfo[MSPConstants.AD_INFO_NETWORK_AD_UNIT_ID] = self.bidderPlacementId
-                interstitialAd.adInfo[MSPConstants.AD_INFO_NETWORK_CREATIVE_ID] = adManager.getCreativeId(withUnitId: adManager.currentUnitId)
-                self.handleAdLoaded(ad: interstitialAd, auctionBidListener: auctionBidListener, bidderPlacementId: self.bidderPlacementId ?? "mintegral")
+                interstitialAd.adInfo[MSPConstants.AD_INFO_NETWORK_CREATIVE_ID] = adManager.getCreativeId(
+                    withUnitId: adManager.currentUnitId)
+                self.handleAdLoaded(
+                    ad: interstitialAd, auctionBidListener: auctionBidListener,
+                    bidderPlacementId: self.bidderPlacementId ?? "mintegral")
             }
         }
     }
@@ -351,7 +387,7 @@ extension MintegralAdapter: MTGNewInterstitialBidAdDelegate {
         MSPLogger.shared.info(message: "[Adapter: Mintegral] Fail to load Mintegral Interstitial ad")
         self.auctionBidListener?.onError(error: "fail to load ad")
     }
-    
+
     public func newInterstitialBidAdShowSuccess(_ adManager: MTGNewInterstitialBidAdManager) {
         DispatchQueue.main.async {
             if let adRequest = self.adRequest {
@@ -362,7 +398,7 @@ extension MintegralAdapter: MTGNewInterstitialBidAdDelegate {
             }
         }
     }
-    
+
     public func newInterstitialBidAdClicked(_ adManager: MTGNewInterstitialBidAdManager) {
         // to do: investigate why it is called multiple times
         DispatchQueue.main.async {
@@ -372,7 +408,7 @@ extension MintegralAdapter: MTGNewInterstitialBidAdDelegate {
             }
         }
     }
-    
+
     public func newInterstitialBidAdDidClosed(_ adManager: MTGNewInterstitialBidAdManager) {
         if let interstitialAd = self.interstitialAd {
             adListener?.onAdDismissed(ad: interstitialAd)
@@ -384,14 +420,15 @@ extension MintegralAdapter: MTGBidNativeAdManagerDelegate, MTGMediaViewDelegate 
     public func nativeAdsLoaded(_ nativeAds: [Any]?, bidNativeManager: MTGBidNativeAdManager) {
         if let nativeAdItem = nativeAds?[0] as? MTGCampaign {
             MSPLogger.shared.info(message: "[Adapter: Mintegral] successfully loaded Mintegral Native ad")
-            DispatchQueue.main.async{
+            DispatchQueue.main.async {
                 self.nativeAdItem = nativeAdItem
                 if let auctionBidListener = self.auctionBidListener {
-                    var mintegralNativeAd = MintegralNativeAd(adNetworkAdapter: self,
-                                                              title:  nativeAdItem.appName,
-                                                              body: nativeAdItem.appDesc,
-                                                                advertiser: "",
-                                                              callToAction: nativeAdItem.adCall)
+                    var mintegralNativeAd = MintegralNativeAd(
+                        adNetworkAdapter: self,
+                        title: nativeAdItem.appName,
+                        body: nativeAdItem.appDesc,
+                        advertiser: "",
+                        callToAction: nativeAdItem.adCall)
                     mintegralNativeAd.nativeAdItem = nativeAdItem
                     self.nativeAd = mintegralNativeAd
                     mintegralNativeAd.adInfo[MSPConstants.AD_INFO_PRICE] = self.mtgBidResponse?.price ?? 0.0
@@ -399,22 +436,23 @@ extension MintegralAdapter: MTGBidNativeAdManagerDelegate, MTGMediaViewDelegate 
                     mintegralNativeAd.adInfo[MSPConstants.AD_INFO_NETWORK_AD_UNIT_ID] = self.bidderPlacementId
                     mintegralNativeAd.adInfo[MSPConstants.AD_INFO_NETWORK_CREATIVE_ID] = nativeAdItem.creativeId
                     if let adListener = self.adListener,
-                       let adRequest = self.adRequest,
-                       let auctionBidListener = self.auctionBidListener {
-                        self.handleAdLoaded(ad: mintegralNativeAd, auctionBidListener: auctionBidListener, bidderPlacementId: self.bidderPlacementId ?? adRequest.placementId)
-
+                        let adRequest = self.adRequest,
+                        let auctionBidListener = self.auctionBidListener
+                    {
+                        self.handleAdLoaded(
+                            ad: mintegralNativeAd, auctionBidListener: auctionBidListener,
+                            bidderPlacementId: self.bidderPlacementId ?? adRequest.placementId)
                     }
-
                 }
             }
         }
     }
-    
+
     public func nativeAdsFailedToLoadWithError(_ error: Error, bidNativeManager: MTGBidNativeAdManager) {
         MSPLogger.shared.info(message: "[Adapter: Mintegral] Fail to load Mintegral Native ad")
         self.auctionBidListener?.onError(error: "fail to load ad")
     }
-    
+
     public func nativeAdDidClick(_ nativeAd: MTGCampaign, bidNativeManager: MTGBidNativeAdManager) {
         DispatchQueue.main.async {
             if let nativeAd = self.nativeAd {
@@ -423,7 +461,7 @@ extension MintegralAdapter: MTGBidNativeAdManagerDelegate, MTGMediaViewDelegate 
             }
         }
     }
-    
+
     public func nativeAdImpression(with type: MTGAdSourceType, bidNativeManager: MTGBidNativeAdManager) {
         //TO do: investigate why it is not working
         /*
@@ -440,11 +478,12 @@ extension MintegralAdapter: MTGBidNativeAdManagerDelegate, MTGMediaViewDelegate 
         }
          */
     }
-    
+
     public func nativeAdImpression(with type: MTGAdSourceType, mediaView: MTGMediaView) {
         DispatchQueue.main.async {
             if let nativeAd = self.nativeAd,
-               let adRequest = self.adRequest {
+                let adRequest = self.adRequest
+            {
                 self.adListener?.onAdImpression(ad: nativeAd)
                 self.adMetricReporter?.logAdImpression(ad: nativeAd, adRequest: adRequest, bidResponse: self)
             }

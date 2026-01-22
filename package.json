@@ -1,0 +1,13 @@
+{
+  "name": "msp-ios-sdk",
+  "version": "1.0.0",
+  "description": "MSP iOS SDK - Media Service Platform iOS SDK",
+  "private": true,
+  "scripts": {
+    "prepare": "husky install"
+  },
+  "devDependencies": {
+    "husky": "^9.1.7"
+  }
+}
+

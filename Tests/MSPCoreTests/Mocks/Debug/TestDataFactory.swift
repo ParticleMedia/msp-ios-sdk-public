@@ -22,20 +22,20 @@ enum TestDataFactory {
     }
 
     static func createProductionLikeSections(placements: [String]) -> [DebugSection] {
-        return [
+        [
             DebugSectionData.placementSection(placements: placements),
             DebugSectionData.adNetworkSection(),
             DebugSectionData.adFormatSection(),
             DebugSectionData.creativeTypeSection(),
             DebugSectionData.layoutSection(),
-            DebugSectionData.highEngagementSection()
+            DebugSectionData.highEngagementSection(),
         ]
     }
 
     static func createMinimalSections() -> [MockDebugSection] {
-        return [
+        [
             createSimpleSection(id: "section1", title: "Section 1", optionCount: 2),
-            createSimpleSection(id: "section2", title: "Section 2", optionCount: 3)
+            createSimpleSection(id: "section2", title: "Section 2", optionCount: 3),
         ]
     }
 }

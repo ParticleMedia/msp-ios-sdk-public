@@ -1,5 +1,5 @@
-import Quick
 import Nimble
+import Quick
 
 class MSPCorePlaceholderSpec: QuickSpec {
     override class func spec() {

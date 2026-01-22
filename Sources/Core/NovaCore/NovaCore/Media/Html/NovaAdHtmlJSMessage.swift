@@ -10,7 +10,7 @@ enum NovaAdHtmlJSMessage: String, CaseIterable {
     case adReport = "adReport"
     case adClose = "adClose"
     case getAdContext = "getAdContext"
-    
+
     case novaNativeBridge = "novaNativeBridge"
     case mraidBridge = "mraidBridge"
     case consoleLog = "consoleLog"
@@ -18,13 +18,11 @@ enum NovaAdHtmlJSMessage: String, CaseIterable {
 
 
 protocol NovaAdHtmlActionDelegate: AnyObject {
-    
     func didTapAdCtr(customUrl: URL?, clickArea: ClickableAdArea)
 
     func didTapAdReport()
-    
+
     func didTapAdClose()
-    
+
     func didFailToLoadPage()
-    
 }

@@ -11,7 +11,7 @@ enum NovaAdMultipleItemsViewProvider {
     static func getMultipleItemsView(
         with mediaModel: NovaAdMultipleItemsMediaModel
     ) -> any AnyMultipleItemsView {
-        return {
+        {
             switch mediaModel.info.style {
             case .carousel:
                 return NovaAdCarouselView()

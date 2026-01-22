@@ -1,14 +1,14 @@
-import Foundation
 import Combine
+import Foundation
 import MSPiOSCore
 
 class DebugRadioCellViewModel {
     let debugOption: DebugOption
-    
+
     var id: String {
         debugOption.id
     }
-    
+
     var title: String {
         debugOption.displayTitle
     }
@@ -17,7 +17,7 @@ class DebugRadioCellViewModel {
     var isSelectedPublisher: AnyPublisher<Bool, Never> {
         $isSelected.eraseToAnyPublisher()
     }
-    
+
     init(
         debugOption: DebugOption,
         isSelected: Bool = false
@@ -25,7 +25,7 @@ class DebugRadioCellViewModel {
         self.debugOption = debugOption
         self.isSelected = isSelected
     }
-    
+
     func setSelected(_ selected: Bool) {
         isSelected = selected
     }

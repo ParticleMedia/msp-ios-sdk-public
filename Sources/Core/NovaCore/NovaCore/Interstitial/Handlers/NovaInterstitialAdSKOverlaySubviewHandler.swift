@@ -6,9 +6,9 @@
 //
 
 import Foundation
-import UIKit
-import StoreKit
 @_implementationOnly import SnapKit
+import StoreKit
+import UIKit
 
 class NovaInterstitialAdSKOverlaySubviewHandler: NSObject, NovaInterstitialAdSubviewHandler {
     private let interstitialAd: NovaInterstitialAdItem
@@ -32,7 +32,8 @@ class NovaInterstitialAdSKOverlaySubviewHandler: NSObject, NovaInterstitialAdSub
 
     private lazy var closeButton: UIButton = {
         let button = UIButton(type: .system)
-        let image = UIImage.Nova.crossCircleFilled?.withTintColor(NovaColorPalettes.White, renderingMode: .alwaysOriginal)
+        let image = UIImage.Nova.crossCircleFilled?.withTintColor(
+            NovaColorPalettes.White, renderingMode: .alwaysOriginal)
         button.setImage(image, for: .normal)
         button.addTarget(self, action: #selector(didTapCloseButton), for: .touchUpInside)
         button.accessibilityIdentifier = "close"
@@ -120,24 +121,24 @@ class NovaInterstitialAdSKOverlaySubviewHandler: NSObject, NovaInterstitialAdSub
         mediaView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
         }
-        
+
         topGradientView.snp.makeConstraints { make in
             make.top.leading.trailing.equalToSuperview()
             make.height.equalTo(166.0)
         }
-        
+
         closeButton.snp.makeConstraints { make in
             make.top.equalTo(containerView.safeAreaLayoutGuide).offset(Constants.subviewPadding)
             make.trailing.equalToSuperview().offset(-Constants.subviewPadding)
             make.height.width.equalTo(Constants.closeButtonSize)
         }
-        
+
         bottomShadow.snp.makeConstraints { make in
             make.leading.trailing.bottom.equalToSuperview()
             let screenWidth = UIScreen.main.bounds.width
             make.height.equalTo(screenWidth * 280 / 375)
         }
-        
+
         bottomContainerView.snp.makeConstraints { make in
             make.leading.equalToSuperview().offset(Constants.subviewPadding)
             make.trailing.lessThanOrEqualToSuperview().offset(Constants.subviewPadding)
@@ -147,7 +148,8 @@ class NovaInterstitialAdSKOverlaySubviewHandler: NSObject, NovaInterstitialAdSub
 
     func config() {
         // Configure media view
-        interstitialAd.mediaContent.videoController?.style = .playButtonOnCenter(progressBarStyle: .hide, popupCTAStyle: .show())
+        interstitialAd.mediaContent.videoController?.style = .playButtonOnCenter(
+            progressBarStyle: .hide, popupCTAStyle: .show())
         mediaView.config(
             with: interstitialAd.mediaContent,
             actionContext: .init(
@@ -156,7 +158,7 @@ class NovaInterstitialAdSKOverlaySubviewHandler: NSObject, NovaInterstitialAdSub
                 viewController: nil
             )
         )
-        
+
         // Show/hide volume button based on media type
         if case .video = interstitialAd.mediaContent.adMedia {
             volumeButton.isHidden = false
@@ -166,7 +168,7 @@ class NovaInterstitialAdSKOverlaySubviewHandler: NSObject, NovaInterstitialAdSub
         }
     }
 
-    var clickableViews: [UIView] { 
+    var clickableViews: [UIView] {
         getClickableViewsFromConfiguration() ?? [bottomShadow, adTagLabel]
     }
 
@@ -177,12 +179,12 @@ class NovaInterstitialAdSKOverlaySubviewHandler: NSObject, NovaInterstitialAdSub
     func didAppear() {
         showSkOverlay()
     }
-    
+
     func didDisappear() {
         interstitialAd.mediaContent.videoController?.pause()
         dismissSkOverlay()
     }
-    
+
     func willDisappear() {
         dismissSkOverlay()
     }
@@ -193,7 +195,7 @@ class NovaInterstitialAdSKOverlaySubviewHandler: NSObject, NovaInterstitialAdSub
         static let closeButtonSize: Double = 32.0
         static let volumeButtonSize: Double = 32.0
         static let subviewPadding: Double = 17.0
-        static let progressBarBottomMargin = 22.0 + 34.0 // UIDevice.bottomRoundAreaHeight equivalent
+        static let progressBarBottomMargin = 22.0 + 34.0  // UIDevice.bottomRoundAreaHeight equivalent
     }
 
     private func setupVolumeIcon(muted: Bool) {

@@ -18,7 +18,7 @@ public struct AdItem: Codable {
     let adId: String
     let adsetId: String
     let requestId: String
-    let price: Double? // price in dollar
+    let price: Double?  // price in dollar
 }
 
 struct Creative: Codable {
@@ -53,7 +53,7 @@ struct Creative: Codable {
     let carouselItems: [MultipleItemsItem]?
     let tagItem: TagItem?
     let playableItem: PlayableItem?
-    
+
     let htmlPageItems: [PageItem]?
 }
 

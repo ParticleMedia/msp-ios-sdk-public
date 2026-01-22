@@ -1,12 +1,12 @@
+/// Error types that can occur during debug operations
 import Foundation
 
-/// Error types that can occur during debug operations
 enum DebugError: Error, LocalizedError {
     case failedToGeneratePlacementId
     case invalidSelection
     case missingRequiredOptions
     case sdkError(String)
-    
+
     var errorDescription: String? {
         switch self {
         case .failedToGeneratePlacementId:
@@ -19,4 +19,4 @@ enum DebugError: Error, LocalizedError {
             return "SDK Error: \(message)"
         }
     }
-} 
+}

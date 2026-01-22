@@ -42,19 +42,20 @@ final class NovaClickAdActionHandler: NSObject, ActionHandling {
     // MARK: Lifecycle
 
     deinit {
-        NotificationCenter.default.removeObserver(self,
-                                                  name: UIApplication.willResignActiveNotification,
-                                                  object: nil)
+        NotificationCenter.default.removeObserver(
+            self,
+            name: UIApplication.willResignActiveNotification,
+            object: nil)
     }
 
     // MARK: Internal
 
     func supportedActions() -> [String: Any.Type] {
-        return [
+        [
             NovaClickAdActionKey.launchBrowser.rawValue: NovaClickAdActionDataModel.self,
             NovaClickAdActionKey.launchWebView.rawValue: NovaClickAdActionDataModel.self,
             NovaClickAdActionKey.launchStore.rawValue: NovaClickAdActionDataModel.self,
-            NovaClickAdActionKey.launchPlayable.rawValue: NovaClickAdActionDataModel.self
+            NovaClickAdActionKey.launchPlayable.rawValue: NovaClickAdActionDataModel.self,
         ]
     }
 
@@ -69,7 +70,7 @@ final class NovaClickAdActionHandler: NSObject, ActionHandling {
         }
 
         self.actionDataModel = actionDataModel
-        
+
         launchingTask = Task(priority: .high) {
             switch actionKey {
             case .launchBrowser:
@@ -285,9 +286,10 @@ private extension NovaClickAdActionHandler {
 
 private extension NovaClickAdActionHandler {
     @objc func handleApplicationWillResignActive(_ aNoticiation: Notification) {
-        NotificationCenter.default.removeObserver(self,
-                                                  name: UIApplication.willResignActiveNotification,
-                                                  object: nil)
+        NotificationCenter.default.removeObserver(
+            self,
+            name: UIApplication.willResignActiveNotification,
+            object: nil)
         guard let actionDataModel, webType != nil else {
             assertionFailure("Invalid status, missing data model.")
             return
@@ -305,7 +307,7 @@ private extension NovaClickAdActionHandler {
     @MainActor
     func checkIfAliveAfter5s(webType: NovaAdLandingPageType) async {
         Task { [weak self] in
-            try? await Task.sleep(seconds: 5.0) // 5 seconds
+            try? await Task.sleep(seconds: 5.0)  // 5 seconds
             if let actionDataModel = self?.actionDataModel {
                 NovaAdMetricReporter
                     .logWebEvent(
@@ -345,8 +347,8 @@ private extension NovaClickAdActionHandler {
     @MainActor
     func getLandingPageVideoHeight(of extraInfo: AdActionExtraInfo) async -> Double? {
         guard let videoMediaModel = extraInfo.videoMediaModel,
-              videoMediaModel.videoInfo.isPlayOnLandingPage,
-              let videoUrl = URL(string: videoMediaModel.videoInfo.videoUrlStr)
+            videoMediaModel.videoInfo.isPlayOnLandingPage,
+            let videoUrl = URL(string: videoMediaModel.videoInfo.videoUrlStr)
         else {
             return nil
         }
@@ -368,10 +370,10 @@ private extension NovaClickAdActionHandler {
         of model: NovaClickAdActionDataModel
     ) async -> NovaAdLandingWebCoordinatorViewController.NestedVCDetentStyle {
         if model.clickPart.area == .media,
-           let topVideoHeight = await getLandingPageVideoHeight(of: model.extraInfo),
-           let landingPageMediaInitialFrame = model.clickPart.inWindowFrame,
-           let screenHeight = UIApplication.novaCurrentWindowScene?.screen.bounds.height,
-           let videoMediaModel = model.extraInfo.videoMediaModel
+            let topVideoHeight = await getLandingPageVideoHeight(of: model.extraInfo),
+            let landingPageMediaInitialFrame = model.clickPart.inWindowFrame,
+            let screenHeight = UIApplication.novaCurrentWindowScene?.screen.bounds.height,
+            let videoMediaModel = model.extraInfo.videoMediaModel
         {
             let context = NovaAdLandingWebCoordinatorViewController.LandingVideoContext(
                 initialFrame: landingPageMediaInitialFrame,

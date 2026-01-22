@@ -133,7 +133,7 @@ public final class NovaInterstitialAdItem: NovaNativeBaseAd {
 
     required init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        
+
         startTimeInMs = try container.decodeIfPresent(Double.self, forKey: .startTimeInMs)
         expirationTimeInMs = try container.decodeIfPresent(Double.self, forKey: .expirationTimeInMs)
         _layoutStyle = try container.decodeIfPresent(NovaInterstitialAdLayout.self, forKey: .novaInterstitialAdLayout)
@@ -164,7 +164,7 @@ public final class NovaInterstitialAdItem: NovaNativeBaseAd {
         let superEncoder = container.superEncoder()
         try super.encode(to: superEncoder)
     }
-    
+
     public func present(rootViewController: UIViewController, reportHandling: NovaInterstitialAdReportHandling) {
         requestToDisplay(rootViewController: rootViewController, reportHandling: reportHandling)
     }

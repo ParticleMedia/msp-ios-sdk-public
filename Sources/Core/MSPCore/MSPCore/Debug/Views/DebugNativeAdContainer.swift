@@ -1,7 +1,7 @@
 import Foundation
 import MSPiOSCore
-import UIKit
 @_implementationOnly import SnapKit
+import UIKit
 
 class DebugNativeAdContainer: UIView, MSPNativeAdContainer {
     private lazy var titleLabel: UILabel = {
@@ -10,7 +10,7 @@ class DebugNativeAdContainer: UIView, MSPNativeAdContainer {
         label.textColor = .label
         return label
     }()
-    
+
     private lazy var bodyLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont.systemFont(ofSize: 14, weight: .regular)
@@ -19,7 +19,7 @@ class DebugNativeAdContainer: UIView, MSPNativeAdContainer {
         label.textAlignment = .natural
         return label
     }()
-    
+
     private lazy var advertiserLabel: UILabel = {
         let label = UILabel()
         label.font = UIFont.systemFont(ofSize: 12, weight: .regular)
@@ -27,12 +27,12 @@ class DebugNativeAdContainer: UIView, MSPNativeAdContainer {
         label.textColor = .tertiaryLabel
         return label
     }()
-    
+
     private lazy var icon: UIImageView = {
         let view = UIImageView()
         return view
     }()
-    
+
     private lazy var ctaButton: UIButton = {
         let button = UIButton()
         button.semanticContentAttribute = .forceRightToLeft
@@ -44,28 +44,28 @@ class DebugNativeAdContainer: UIView, MSPNativeAdContainer {
         button.setContentCompressionResistancePriority(.required, for: .horizontal)
         return button
     }()
-    
+
     private lazy var mediaView: UIView = {
         let view = UIView()
         return view
     }()
-    
+
     override init(frame: CGRect) {
         super.init(frame: frame)
         setUpViews()
     }
-    
+
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
+
     private func setUpViews() {
         let subViews = [titleLabel, bodyLabel, advertiserLabel, ctaButton, mediaView, icon]
         for view in subViews {
             self.addSubview(view)
         }
         self.titleLabel.setContentCompressionResistancePriority(.required, for: .vertical)
-        
+
         mediaView.contentMode = .scaleAspectFill
         mediaView.clipsToBounds = true
         mediaView.snp.makeConstraints { make in
@@ -74,7 +74,7 @@ class DebugNativeAdContainer: UIView, MSPNativeAdContainer {
             make.height.equalTo(mediaView.snp.width).multipliedBy(1.0 / AdsMediaConstants.defaultAspectRatio)
         }
         mediaView.isHidden = false
-        
+
         titleLabel.snp.makeConstraints { make in
             make.leading.equalToSuperview().offset(Constants.paddingSmall)
             make.top.equalTo(mediaView.snp.bottom).offset(Constants.paddingSmall)
@@ -102,38 +102,38 @@ class DebugNativeAdContainer: UIView, MSPNativeAdContainer {
             make.height.equalTo(Constants.ctaButtonHeight)
         }
     }
-    
+
     private enum Constants {
         static let paddingSmall: Double = 12.0
         static let ctaButtonHeight: Double = 26.0
         static let adWidth: Double = UIScreen.main.bounds.width - 32.0
     }
-    
+
     enum AdsMediaConstants {
         static let iPadAspectRatio: Double = 0.56
         static let defaultAspectRatio: Double = 1200.0 / 627.0
         static let verticalVideoDefaultAspectRatio: Double = 9.0 / 16.0
     }
-    
+
     func getTitle() -> UILabel? {
-        return titleLabel
+        titleLabel
     }
     func getbody() -> UILabel? {
-        return bodyLabel
+        bodyLabel
     }
     func getAdvertiser() -> UILabel? {
-        return advertiserLabel
+        advertiserLabel
     }
     func getCallToAction() -> UIButton? {
-        return ctaButton
+        ctaButton
     }
     func getMedia() -> UIView? {
-        return mediaView
+        mediaView
     }
     func getIcon() -> UIImageView? {
-        return self.icon
+        self.icon
     }
     func getCustomClickableViews() -> [UIView]? {
-        return nil
+        nil
     }
 }

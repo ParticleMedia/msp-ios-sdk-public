@@ -16,7 +16,7 @@ extension NovaNativeAdView {
             assertionFailure("Native ad view should have an associated ad")
             return
         }
-        
+
         if !nativeAd.hasLoadedLogged {
             logAdLoaded()
         }
@@ -81,7 +81,7 @@ private extension NovaNativeAdView {
             nativeAd?.mediaContent.videoController?.pause()
         }
     }
-    
+
     func logAdImpression() {
         guard let nativeAd else {
             assertionFailure("Native ad view should have an associated ad")

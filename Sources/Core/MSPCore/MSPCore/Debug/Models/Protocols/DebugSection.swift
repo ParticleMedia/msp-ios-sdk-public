@@ -1,7 +1,7 @@
+// Protocol for debug section data
 import Foundation
 import MSPiOSCore
 
-// Protocol for debug section data
 protocol DebugSection {
     var id: String { get }
     var title: String { get }

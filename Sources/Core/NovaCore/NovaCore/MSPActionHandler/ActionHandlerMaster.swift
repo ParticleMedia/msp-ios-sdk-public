@@ -20,7 +20,7 @@ final class ActionHandlerMaster: NSObject {
         for actionHandler in actionHandlers {
             let supportedActions = actionHandler.supportedActions
             for (actionKey, actionModelDataType) in supportedActions() {
-                if let _  = actionMapping[actionKey] {
+                if actionMapping[actionKey] != nil {
                     assertionFailure("2 action hanlders registerd to the same action key = \(actionKey)")
                 } else {
                     actionMapping[actionKey] = (actionModelDataType: actionModelDataType, actionHandler: actionHandler)
@@ -30,7 +30,7 @@ final class ActionHandlerMaster: NSObject {
     }
 
     private func canCast(_ object: Any, _ objectType: Any.Type) -> Bool {
-        return sequence(
+        sequence(
             first: Mirror(reflecting: object), next: { $0.superclassMirror }
         )
         .contains { $0.subjectType == objectType }
@@ -52,13 +52,17 @@ extension ActionHandlerMaster: ActionHandling {
         let actionKey = actionModel.actionKey
         let actionDataModel = actionModel.actionDataModel
 
-        assert(Mirror(reflecting: actionDataModel).displayStyle == .struct, "actionDataModel should be immutable struct. actionKey = \(actionKey), actionDataModel=\(actionDataModel)")
+        assert(
+            Mirror(reflecting: actionDataModel).displayStyle == .struct,
+            "actionDataModel should be immutable struct. actionKey = \(actionKey), actionDataModel=\(actionDataModel)")
 
         if let (actionModelDataType, actionHandler) = actionMapping[actionKey] {
             if canCast(actionDataModel, actionModelDataType) {
                 actionHandler.performAction(actionModel: actionModel, customUrl: customUrl)
             } else {
-                assertionFailure("Unmatched actionDataModel type. Expecting \(actionModelDataType) for actionKey = \(actionKey), actionDataModel=\(actionDataModel)")
+                assertionFailure(
+                    "Unmatched actionDataModel type. Expecting \(actionModelDataType) for actionKey = \(actionKey), actionDataModel=\(actionDataModel)"
+                )
             }
         } else {
             assertionFailure("No action hanlder is registed for actionKey = \(actionKey)")

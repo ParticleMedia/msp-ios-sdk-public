@@ -79,7 +79,7 @@ extension NovaNativeAdVideoPlayButtonOnCenterSubviewHandler: NovaNativeAdVideoSu
         switch progressBarStyle {
         case .hide, .none:
             progressView.isHidden = true
-        case .show(bottomMargin: let bottomMargin):
+        case .show(let bottomMargin):
             progressView.isHidden = false
             progressView.snp.makeConstraints { make in
                 make.horizontalEdges.equalToSuperview()
@@ -91,7 +91,8 @@ extension NovaNativeAdVideoPlayButtonOnCenterSubviewHandler: NovaNativeAdVideoSu
 
     func config(with videoModel: NovaAdVideoMediaModel) {
         if let callToAction = videoModel.callToAction,
-           case .show = popupCTAStyle {
+            case .show = popupCTAStyle
+        {
             ctaPopoverView.config(
                 with: NovaAdPopOverViewModel(
                     callToAction: callToAction,
@@ -109,7 +110,7 @@ extension NovaNativeAdVideoPlayButtonOnCenterSubviewHandler: NovaNativeAdVideoSu
     @MainActor
     func sync(with state: NovaAdVideoState) {
         switch state.playState {
-        case .showCover(_, coverURL: let coverURL):
+        case .showCover(_, let coverURL):
             coverImageView.kf.setImage(with: coverURL)
             coverImageView.isHidden = false
             playImageView.isHidden = false
@@ -122,7 +123,7 @@ extension NovaNativeAdVideoPlayButtonOnCenterSubviewHandler: NovaNativeAdVideoSu
             if case .show = popupCTAStyle {
                 ctaPopoverView.changeState(to: .hide)
             }
-        case .playing(currentTime: let currentTime, videoLength: let videoLength):
+        case .playing(let currentTime, let videoLength):
             let currentTimeInterval = CMTimeGetSeconds(currentTime)
             coverImageView.isHidden = true
             playImageView.isHidden = true
@@ -130,12 +131,12 @@ extension NovaNativeAdVideoPlayButtonOnCenterSubviewHandler: NovaNativeAdVideoSu
             if case .show = popupCTAStyle {
                 ctaPopoverView.changeState(to: .hide)
             }
-        case .paused(currentTime: let currentTime, videoLength: let videoLength, _):
+        case .paused(let currentTime, let videoLength, _):
             let currentTimeInterval = CMTimeGetSeconds(currentTime)
             coverImageView.isHidden = true
             playImageView.isHidden = false
             progressView.updateProgress(Float(currentTimeInterval / videoLength))
-        case .endPlaying(shouldShowPlayButton: let shouldShowPlayButton):
+        case .endPlaying(let shouldShowPlayButton):
             coverImageView.isHidden = true
             playImageView.isHidden = !shouldShowPlayButton
             if case .show = popupCTAStyle {
@@ -156,14 +157,14 @@ extension NovaNativeAdVideoPlayButtonOnCenterSubviewHandler: NovaNativeAdVideoSu
                 ctaPopoverView
                     .changeState(
                         to:
-                        .pop(
-                            sourceView: view,
-                            sourcePoint: location,
-                            extraLayoutConfig: .init(
-                                safeAreaInsets: safeAreaInsets,
-                                exclusionRects: exclusionRects
+                            .pop(
+                                sourceView: view,
+                                sourcePoint: location,
+                                extraLayoutConfig: .init(
+                                    safeAreaInsets: safeAreaInsets,
+                                    exclusionRects: exclusionRects
+                                )
                             )
-                        )
                     )
             }
         }

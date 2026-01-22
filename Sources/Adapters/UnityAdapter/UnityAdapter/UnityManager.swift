@@ -10,10 +10,10 @@ import MSPiOSCore
 
 public class UnityManager: AdNetworkManager {
     public override func getAdNetworkAdapter() -> AdNetworkAdapter? {
-        return UnityAdapter()
+        UnityAdapter()
     }
-    
+
     public override func getAdBidder(bidderPlacementId: String, bidderFormat: AdFormat?) -> Bidder? {
-        return UnityBidder(name: "unity", bidderPlacementId: bidderPlacementId, bidderFormat: bidderFormat)
+        UnityBidder(name: "unity", bidderPlacementId: bidderPlacementId, bidderFormat: bidderFormat)
     }
 }

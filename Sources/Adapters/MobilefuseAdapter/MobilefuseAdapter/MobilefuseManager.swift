@@ -10,10 +10,10 @@ import MSPiOSCore
 
 public class MobilefuseManager: AdNetworkManager {
     public override func getAdNetworkAdapter() -> AdNetworkAdapter? {
-        return MobilefuseAdapter()
+        MobilefuseAdapter()
     }
 
     public override func getAdBidder(bidderPlacementId: String, bidderFormat: AdFormat?) -> Bidder? {
-        return MobilefuseBidder(name: "mobilefuse", bidderPlacementId: bidderPlacementId, bidderFormat: bidderFormat)
+        MobilefuseBidder(name: "mobilefuse", bidderPlacementId: bidderPlacementId, bidderFormat: bidderFormat)
     }
 }

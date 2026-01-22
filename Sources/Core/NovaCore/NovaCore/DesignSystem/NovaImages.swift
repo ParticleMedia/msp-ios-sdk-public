@@ -2,7 +2,7 @@ import SwiftUI
 
 extension Image {
     static let Nova = NovaImage()
-    
+
     class NovaImage {
         // MARK: - Components
         let isolationMode = Image("isolation_mode", bundle: NovaAsset.getBundle())

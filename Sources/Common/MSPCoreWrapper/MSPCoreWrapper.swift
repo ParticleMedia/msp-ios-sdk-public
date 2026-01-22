@@ -13,4 +13,3 @@ import SwiftProtobuf
 
 // Force SwiftProtobuf to be linked by referencing a symbol
 private let _forceSwiftProtobufLink: Any.Type = SwiftProtobuf.Message.self
-

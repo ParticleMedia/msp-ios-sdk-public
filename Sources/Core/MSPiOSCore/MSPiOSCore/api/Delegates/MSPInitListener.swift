@@ -7,7 +7,6 @@
 
 import Foundation
 
-
 public protocol MSPInitListener: AnyObject {
     func onComplete(status: MSPInitStatus, message: String)
 }

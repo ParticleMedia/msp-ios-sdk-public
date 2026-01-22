@@ -1,6 +1,5 @@
-import Foundation
-
 // import shared
+import Foundation
 import MSPiOSCore
 import NovaCore
 
@@ -8,7 +7,7 @@ public class NovaNativeAd: NativeAd {
     // MARK: Public
 
     override public var mediaContainer: (any AdMediaContainer)? {
-        return mediaContainerAdapter
+        mediaContainerAdapter
     }
 
     public private(set) var priceInDollar: Double?
@@ -27,9 +26,9 @@ public class NovaNativeAd: NativeAd {
     }
 
     override public func isValid() -> Bool {
-        return nativeAdItem != nil
+        nativeAdItem != nil
     }
-    
+
     func setPriceInDollar(_ priceInDollar: Double?) {
         self.priceInDollar = priceInDollar
     }

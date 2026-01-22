@@ -151,7 +151,7 @@ public final class NovaNativeAdItem: NovaNativeBaseAd {
 
 extension NovaNativeAdItem {
     public var novaAdReportContext: NovaAdReportContext {
-        return .init(
+        .init(
             advertiser: advertiser,
             headline: headline,
             body: body,

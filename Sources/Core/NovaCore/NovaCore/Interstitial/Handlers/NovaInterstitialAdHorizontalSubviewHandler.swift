@@ -6,8 +6,8 @@
 //
 
 import Foundation
-import UIKit
 @_implementationOnly import SnapKit
+import UIKit
 
 // MARK: - NovaInterstitialAdHorizontalSubviewHandler
 
@@ -16,10 +16,10 @@ class NovaInterstitialAdHorizontalSubviewHandler: NovaInterstitialAdSubviewHandl
     // MARK: Lifecycle
 
     init(
-       interstitialAd: NovaInterstitialAdItem,
-       showTopRightCloseButton: Bool,
-       delegate: NovaInterstitialAdSubviewBehaviorDelegate,
-       viewController: UIViewController?
+        interstitialAd: NovaInterstitialAdItem,
+        showTopRightCloseButton: Bool,
+        delegate: NovaInterstitialAdSubviewBehaviorDelegate,
+        viewController: UIViewController?
     ) {
         self.interstitialAd = interstitialAd
         self.delegate = delegate
@@ -32,7 +32,7 @@ class NovaInterstitialAdHorizontalSubviewHandler: NovaInterstitialAdSubviewHandl
 
     func setupSubviews(in containerView: UIView, showReportButton: Bool) {
         self.parentView = containerView
-        
+
         containerView.addSubview(adTagLabel)
         containerView.addSubview(mediaView)
         containerView.addSubview(advertiserLabel)
@@ -46,9 +46,9 @@ class NovaInterstitialAdHorizontalSubviewHandler: NovaInterstitialAdSubviewHandl
             make.leading.equalTo(16)
         }
 
-        let isIPadAndLandscapeMode = UIDevice.current.userInterfaceIdiom == .pad && (
-            UIDevice.current.orientation == .landscapeLeft || UIDevice.current.orientation == .landscapeRight
-        )
+        let isIPadAndLandscapeMode =
+            UIDevice.current.userInterfaceIdiom == .pad
+            && (UIDevice.current.orientation == .landscapeLeft || UIDevice.current.orientation == .landscapeRight)
 
         mediaView.snp.makeConstraints { make in
             make.top.equalTo(adTagLabel.snp.bottom).offset(16)
@@ -60,14 +60,14 @@ class NovaInterstitialAdHorizontalSubviewHandler: NovaInterstitialAdSubviewHandl
         case .aspectRatio(let ratio):
             mediaView.snp.makeConstraints { make in
                 if isIPadAndLandscapeMode {
-                    make.height.equalTo(containerView.snp.height).multipliedBy(CGFloat(1.0/3.0))
+                    make.height.equalTo(containerView.snp.height).multipliedBy(CGFloat(1.0 / 3.0))
                 } else {
-                    make.height.equalTo(mediaView.snp.width).multipliedBy(CGFloat(1.0/ratio))
+                    make.height.equalTo(mediaView.snp.width).multipliedBy(CGFloat(1.0 / ratio))
                 }
             }
         case .aspectRatioAndOffset(let ratio, let offset):
             mediaView.snp.makeConstraints { make in
-                make.height.equalTo(mediaView.snp.width).multipliedBy(CGFloat(1.0/ratio)).offset(offset)
+                make.height.equalTo(mediaView.snp.width).multipliedBy(CGFloat(1.0 / ratio)).offset(offset)
             }
         case .minHeight(let minHeight):
             mediaView.snp.makeConstraints { make in
@@ -76,7 +76,7 @@ class NovaInterstitialAdHorizontalSubviewHandler: NovaInterstitialAdSubviewHandl
         case .free, .none:
             mediaView.snp.makeConstraints { make in
                 if isIPadAndLandscapeMode {
-                    make.height.equalTo(containerView.snp.height).multipliedBy(CGFloat(1.0/3.0))
+                    make.height.equalTo(containerView.snp.height).multipliedBy(CGFloat(1.0 / 3.0))
                 } else {
                     make.height
                         .equalTo(mediaView.snp.width).multipliedBy(CGFloat(1.0 / AdsMediaConstants.defaultAspectRatio))
@@ -108,13 +108,13 @@ class NovaInterstitialAdHorizontalSubviewHandler: NovaInterstitialAdSubviewHandl
             make.leading.equalTo(16)
             make.trailing.lessThanOrEqualTo(-16)
         }
-        
+
         bodyLabel.snp.makeConstraints { make in
             make.top.equalTo(titleLabel.snp.bottom).offset(20)
             make.leading.equalTo(16)
             make.trailing.lessThanOrEqualTo(-16)
         }
-        
+
         if showTopRightCloseButton {
             ctaButton.snp.makeConstraints { make in
                 make.top.equalTo(bodyLabel.snp.bottom).offset(72)
@@ -163,7 +163,7 @@ class NovaInterstitialAdHorizontalSubviewHandler: NovaInterstitialAdSubviewHandl
                 viewController: Weak(viewController)
             )
         )
-        
+
         advertiserLabel.text = interstitialAd.advertiser
         titleLabel.text = interstitialAd.headline
         bodyLabel.text = interstitialAd.body
@@ -176,7 +176,7 @@ class NovaInterstitialAdHorizontalSubviewHandler: NovaInterstitialAdSubviewHandl
     }
 
     var clickableViews: [UIView] {
-        return getClickableViewsFromConfiguration() ?? [advertiserLabel, titleLabel, bodyLabel, ctaButton]
+        getClickableViewsFromConfiguration() ?? [advertiserLabel, titleLabel, bodyLabel, ctaButton]
     }
 
     func willAppear() {
@@ -199,7 +199,9 @@ class NovaInterstitialAdHorizontalSubviewHandler: NovaInterstitialAdSubviewHandl
     private(set) lazy var adTagLabel: UILabel = {
         let label = UILabel()
         label.font = .Nova.body2
-        label.textColor = UIColor(light: NovaColorPalettes.Black.withAlphaComponent(0.6), dark: NovaColorPalettes.White.withAlphaComponent(0.6))
+        label.textColor = UIColor(
+            light: NovaColorPalettes.Black.withAlphaComponent(0.6),
+            dark: NovaColorPalettes.White.withAlphaComponent(0.6))
         label.numberOfLines = 1
         label.text = NSLocalizedString("Advertisement ", comment: "")
         label.adClickArea = .badge
@@ -216,7 +218,9 @@ class NovaInterstitialAdHorizontalSubviewHandler: NovaInterstitialAdSubviewHandl
     private lazy var advertiserLabel: UILabel = {
         let label = UILabel()
         label.font = .Nova.body1
-        label.textColor = UIColor(light: NovaColorPalettes.Black.withAlphaComponent(0.6), dark: NovaColorPalettes.White.withAlphaComponent(0.6))
+        label.textColor = UIColor(
+            light: NovaColorPalettes.Black.withAlphaComponent(0.6),
+            dark: NovaColorPalettes.White.withAlphaComponent(0.6))
         label.numberOfLines = 1
         label.adClickArea = .advertiser
         return label
@@ -224,7 +228,9 @@ class NovaInterstitialAdHorizontalSubviewHandler: NovaInterstitialAdSubviewHandl
 
     private lazy var feedbackButton: UIButton = {
         let button = UIButton()
-        let image = UIImage.Nova.ellipsisHorizontalOutline?.withTintColor(UIColor(light: NovaColorPalettes.Gray.tint500, dark: NovaColorPalettes.Gray.tint200), renderingMode: .alwaysOriginal)
+        let image = UIImage.Nova.ellipsisHorizontalOutline?.withTintColor(
+            UIColor(light: NovaColorPalettes.Gray.tint500, dark: NovaColorPalettes.Gray.tint200),
+            renderingMode: .alwaysOriginal)
         button.setImage(image, for: .normal)
         button.addTarget(self, action: #selector(didTapFeedbackButton), for: .touchUpInside)
         return button
@@ -233,7 +239,9 @@ class NovaInterstitialAdHorizontalSubviewHandler: NovaInterstitialAdSubviewHandl
     private lazy var titleLabel: UILabel = {
         let label = UILabel()
         label.font = .Nova.headline1
-        label.textColor = UIColor(light: NovaColorPalettes.Black.withAlphaComponent(0.85), dark: NovaColorPalettes.White.withAlphaComponent(0.9))
+        label.textColor = UIColor(
+            light: NovaColorPalettes.Black.withAlphaComponent(0.85),
+            dark: NovaColorPalettes.White.withAlphaComponent(0.9))
         label.numberOfLines = 4
         label.lineBreakMode = .byWordWrapping
         label.adClickArea = .headline
@@ -243,7 +251,9 @@ class NovaInterstitialAdHorizontalSubviewHandler: NovaInterstitialAdSubviewHandl
     private lazy var bodyLabel: UILabel = {
         let label = UILabel()
         label.font = .Nova.body1
-        label.textColor = UIColor(light: NovaColorPalettes.Black.withAlphaComponent(0.6), dark: NovaColorPalettes.White.withAlphaComponent(0.6))
+        label.textColor = UIColor(
+            light: NovaColorPalettes.Black.withAlphaComponent(0.6),
+            dark: NovaColorPalettes.White.withAlphaComponent(0.6))
         label.lineBreakMode = .byWordWrapping
         label.numberOfLines = 3
         label.setContentCompressionResistancePriority(.defaultLow, for: .vertical)
@@ -269,22 +279,27 @@ class NovaInterstitialAdHorizontalSubviewHandler: NovaInterstitialAdSubviewHandl
         button.layer.cornerRadius = 8
         button.clipsToBounds = true
         button.titleLabel?.font = .Nova.subtitle1
-        button.setTitleColor(UIColor(light: NovaColorPalettes.Black.withAlphaComponent(0.85), dark: NovaColorPalettes.White.withAlphaComponent(0.9)), for: .normal)
+        button.setTitleColor(
+            UIColor(
+                light: NovaColorPalettes.Black.withAlphaComponent(0.85),
+                dark: NovaColorPalettes.White.withAlphaComponent(0.9)), for: .normal)
         button.addTarget(self, action: #selector(didTapCloseButton), for: .touchUpInside)
         return button
     }()
-    
+
     private(set) lazy var topRightCloseButton: UIButton = {
         let button = UIButton()
         button.titleLabel?.font = .systemFont(ofSize: 16, weight: .regular)
-        button.setTitleColor(UIColor(light: NovaColorPalettes.Gray.tint600, dark: NovaColorPalettes.Gray.tint200), for: .normal)
+        button.setTitleColor(
+            UIColor(light: NovaColorPalettes.Gray.tint600, dark: NovaColorPalettes.Gray.tint200), for: .normal)
         button.layer.borderWidth = 1.5
         button.layer.cornerRadius = 12
-        button.layer.borderColor = UIColor(light: NovaColorPalettes.Gray.tint600, dark: NovaColorPalettes.Gray.tint200).cgColor
+        button.layer.borderColor =
+            UIColor(light: NovaColorPalettes.Gray.tint600, dark: NovaColorPalettes.Gray.tint200).cgColor
         button.isUserInteractionEnabled = false
         return button
     }()
-    
+
     private(set) lazy var topRightCloseButtonArea: UIView = {
         let view = UIView()
         view.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(didTapCloseButton)))
@@ -296,15 +311,15 @@ class NovaInterstitialAdHorizontalSubviewHandler: NovaInterstitialAdSubviewHandl
     private let interstitialAd: NovaInterstitialAdItem
     private weak var delegate: NovaInterstitialAdSubviewBehaviorDelegate?
     private weak var viewController: UIViewController?
-    
+
     // MARK: - NovaTopRightClosable
-    
+
     var countdownTimer: Timer?
     var countdownSecondRemaining: Int
     var delayTimer: Timer? = nil
     let delaySecondRemaining: Int? = nil
     private let showTopRightCloseButton: Bool
-    
+
     var darkColor: UIColor { NovaColorPalettes.Gray.tint200 }
 
     @objc private func didTapCloseButton() {
