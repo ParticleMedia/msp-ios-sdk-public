@@ -10,10 +10,10 @@ import MSPiOSCore
 
 public class InmobiManager: AdNetworkManager {
     public override func getAdNetworkAdapter() -> AdNetworkAdapter? {
-        return InmobiAdapter()
+        InmobiAdapter()
     }
 
     public override func getAdBidder(bidderPlacementId: String, bidderFormat: AdFormat?) -> Bidder? {
-        return InmobiBidder(name: "inmobi", bidderPlacementId: bidderPlacementId, bidderFormat: bidderFormat)
+        InmobiBidder(name: "inmobi", bidderPlacementId: bidderPlacementId, bidderFormat: bidderFormat)
     }
 }

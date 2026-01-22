@@ -160,7 +160,7 @@ public class NovaNativeBaseAd: NovaBaseAd, NovaNativeMediaProviding {
 
     // media used to render media view
     public private(set) var mediaContent: NovaAdMediaContent
-    
+
 
     // MARK: - Discount Tag
 
@@ -218,13 +218,14 @@ public class NovaNativeBaseAd: NovaBaseAd, NovaNativeMediaProviding {
 
     // MARK: Private
 
-    private static let defaultAdMedia: NovaAdMedia = .image(model: .init(
-        resource: .imageURLStr(""),
-        isImageClickable: false,
-        adCtrType: .openWeb(model: .init(url: URL(string: "https://example.com")!, openBrowser: false)),
-        imageLayoutOrientation: .unknown,
-        shouldShowImageBorder: false
-    ))
+    private static let defaultAdMedia: NovaAdMedia = .image(
+        model: .init(
+            resource: .imageURLStr(""),
+            isImageClickable: false,
+            adCtrType: .openWeb(model: .init(url: URL(string: "https://example.com")!, openBrowser: false)),
+            imageLayoutOrientation: .unknown,
+            shouldShowImageBorder: false
+        ))
 
     // MARK: - Image
 
@@ -276,7 +277,8 @@ extension NovaNativeBaseAd {
             if let _multipleItemsInfo {
                 return .multipleItems(model: .init(info: _multipleItemsInfo))
             } else {
-                throw NovaAdMediaError.invalid(adId: adId, creativeType: creativeType, message: "missing multiple items info")
+                throw NovaAdMediaError.invalid(
+                    adId: adId, creativeType: creativeType, message: "missing multiple items info")
             }
         case .playableImage:
             return try .imagePlayable(
@@ -292,7 +294,7 @@ extension NovaNativeBaseAd {
             return try .html(model: makeHtmlModel())
         }
     }
-    
+
     public var isVideo: Bool {
         switch creativeType {
         case .playableVideo, .nativeVideo:
@@ -303,11 +305,12 @@ extension NovaNativeBaseAd {
     }
 
     func makeImageModel(with orientation: NovaNativeMediaLayoutOrientation?) throws -> NovaAdImageMediaModel {
-        let imageFallbackOrientation: NovaNativeMediaLayoutOrientation = if let _isImageLayoutVertical {
-            _isImageLayoutVertical ? .vertical : .horizontal
-        } else {
-            .unknown
-        }
+        let imageFallbackOrientation: NovaNativeMediaLayoutOrientation =
+            if let _isImageLayoutVertical {
+                _isImageLayoutVertical ? .vertical : .horizontal
+            } else {
+                .unknown
+            }
         if let _imageURLs {
             let urls = _imageURLs.compactMap { URL(string: $0) }
             if let first = urls.first {
@@ -379,21 +382,24 @@ extension NovaNativeBaseAd {
         }
 
         let validPageItems = _htmlPageItems.compactMap { (pageItem) -> NovaAdHtmlPageModel? in
-            guard let resource: NovaAdHtmlResource = {
-                let url: URL? = if let urlString = pageItem.url, let url = URL(string: urlString) {
-                    url
-                } else {
-                    nil
-                }
+            guard
+                let resource: NovaAdHtmlResource = {
+                    let url: URL? =
+                        if let urlString = pageItem.url, let url = URL(string: urlString) {
+                            url
+                        } else {
+                            nil
+                        }
 
-                if let html = pageItem.html {
-                    return .html(html, baseUrl: url)
-                } else if let url {
-                    return .url(url)
-                } else {
-                    return nil
-                }
-            }() else {
+                    if let html = pageItem.html {
+                        return .html(html, baseUrl: url)
+                    } else if let url {
+                        return .url(url)
+                    } else {
+                        return nil
+                    }
+                }()
+            else {
                 return nil
             }
 
@@ -436,14 +442,14 @@ extension NovaNativeBaseAd {
 
         appInfo = {
             if let appStoreId {
-                return AsyncValue(priority: .background, operation: {
-                    try await NovaAdAppInfo.appInfo(for: appStoreId)
-                })
+                return AsyncValue(
+                    priority: .background,
+                    operation: {
+                        try await NovaAdAppInfo.appInfo(for: appStoreId)
+                    })
             } else {
                 return nil
             }
         }()
     }
-
-
 }

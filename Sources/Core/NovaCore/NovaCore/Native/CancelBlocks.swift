@@ -7,7 +7,6 @@
 
 import Foundation
 
-
 typealias DispatchCancelableBlock = (Bool) -> (Void)
 
 func dispatchMainAsyncAfter(delay: Double, block: DispatchWorkItem?) -> DispatchCancelableBlock? {

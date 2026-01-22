@@ -5,8 +5,8 @@
 //  Created by Shanyu Li on 2025/9/28.
 //
 
-import NovaCore
 import MSPiOSCore
+import NovaCore
 
 public protocol NovaNativeAdMediaTypeProviding {
     var mediaType: NovaAdMediaType? { get }

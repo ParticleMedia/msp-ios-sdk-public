@@ -1,6 +1,6 @@
-import Foundation
-
 // MARK: - NovaAdBuildError
+
+import Foundation
 
 enum NovaAdBuildError: LocalizedError {
     case invalidCreativeType
@@ -54,15 +54,18 @@ public enum NovaAdBuilder {
         let iconURL = adItem.creative.iconUrl.flatMap(URL.init(string:))
         let videoInfo = NovaAdBuilder.buildVideoInfo(adItem.creative.videoItem, adId: adItem.adId)
 
-        let thirdPartyViewTrackingUrls = adItem.creative.thirdPartyViewTrackingUrls?.map {
-            NovaAdUrlTransformer.replaceMacro(in: $0)
-        } ?? []
-        let thirdPartyImpressionTrackingUrls = adItem.creative.thirdPartyImpressionTrackingUrls?.map {
-            NovaAdUrlTransformer.replaceMacro(in: $0)
-        } ?? []
-        let thirdPartyClickTrackingUrls = adItem.creative.thirdPartyClickTrackingUrls?.map {
-            NovaAdUrlTransformer.replaceMacro(in: $0)
-        } ?? []
+        let thirdPartyViewTrackingUrls =
+            adItem.creative.thirdPartyViewTrackingUrls?.map {
+                NovaAdUrlTransformer.replaceMacro(in: $0)
+            } ?? []
+        let thirdPartyImpressionTrackingUrls =
+            adItem.creative.thirdPartyImpressionTrackingUrls?.map {
+                NovaAdUrlTransformer.replaceMacro(in: $0)
+            } ?? []
+        let thirdPartyClickTrackingUrls =
+            adItem.creative.thirdPartyClickTrackingUrls?.map {
+                NovaAdUrlTransformer.replaceMacro(in: $0)
+            } ?? []
 
         let supportOCPM = parseSupportOCPM(from: abConfig)
         let popupCTAStyleVariant = parsePopupCTAStyleVariant(from: abConfig)
@@ -128,15 +131,18 @@ public enum NovaAdBuilder {
         let videoInfo = buildVideoInfo(adItem.creative.videoItem, adId: adItem.adId)
         let iconURL = adItem.creative.iconUrl.flatMap(URL.init(string:))
 
-        let thirdPartyViewTrackingUrls = adItem.creative.thirdPartyViewTrackingUrls?.map {
-            NovaAdUrlTransformer.replaceMacro(in: $0)
-        } ?? []
-        let thirdPartyImpressionTrackingUrls = adItem.creative.thirdPartyImpressionTrackingUrls?.map {
-            NovaAdUrlTransformer.replaceMacro(in: $0)
-        } ?? []
-        let thirdPartyClickTrackingUrls = adItem.creative.thirdPartyClickTrackingUrls?.map {
-            NovaAdUrlTransformer.replaceMacro(in: $0)
-        } ?? []
+        let thirdPartyViewTrackingUrls =
+            adItem.creative.thirdPartyViewTrackingUrls?.map {
+                NovaAdUrlTransformer.replaceMacro(in: $0)
+            } ?? []
+        let thirdPartyImpressionTrackingUrls =
+            adItem.creative.thirdPartyImpressionTrackingUrls?.map {
+                NovaAdUrlTransformer.replaceMacro(in: $0)
+            } ?? []
+        let thirdPartyClickTrackingUrls =
+            adItem.creative.thirdPartyClickTrackingUrls?.map {
+                NovaAdUrlTransformer.replaceMacro(in: $0)
+            } ?? []
 
         let startTimeInMs = Double(adItem.startTimeMs ?? "")
         let expirationTimeInMs = Double(adItem.expirationMs ?? "")
@@ -200,11 +206,10 @@ public enum NovaAdBuilder {
         adUnitId: String,
         abConfig: [String: String]?
     ) -> [NovaInterstitialAdItem] {
-        return adItems.compactMap { (adItem: AdItem) -> NovaInterstitialAdItem? in
+        adItems.compactMap { (adItem: AdItem) -> NovaInterstitialAdItem? in
             guard let creativeType = try? NovaAdBuilder.buildCreativeType(creative: adItem.creative) else {
                 DebugLogger.data.error("Missing valid creative type: ad id: \(adItem.adId)")
                 return nil
-
             }
             guard let adCtrType = try? NovaAdBuilder.buildCtrType(creative: adItem.creative) else {
                 DebugLogger.data.error("Missing valid ctr type: ad id: \(adItem.adId)")
@@ -215,15 +220,18 @@ public enum NovaAdBuilder {
 
             let videoInfo = buildVideoInfo(adItem.creative.videoItem, adId: adItem.adId)
 
-            let thirdPartyViewTrackingUrls = adItem.creative.thirdPartyViewTrackingUrls?.map {
-                NovaAdUrlTransformer.replaceMacro(in: $0)
-            } ?? []
-            let thirdPartyImpressionTrackingUrls = adItem.creative.thirdPartyImpressionTrackingUrls?.map {
-                NovaAdUrlTransformer.replaceMacro(in: $0)
-            } ?? []
-            let thirdPartyClickTrackingUrls = adItem.creative.thirdPartyClickTrackingUrls?.map {
-                NovaAdUrlTransformer.replaceMacro(in: $0)
-            } ?? []
+            let thirdPartyViewTrackingUrls =
+                adItem.creative.thirdPartyViewTrackingUrls?.map {
+                    NovaAdUrlTransformer.replaceMacro(in: $0)
+                } ?? []
+            let thirdPartyImpressionTrackingUrls =
+                adItem.creative.thirdPartyImpressionTrackingUrls?.map {
+                    NovaAdUrlTransformer.replaceMacro(in: $0)
+                } ?? []
+            let thirdPartyClickTrackingUrls =
+                adItem.creative.thirdPartyClickTrackingUrls?.map {
+                    NovaAdUrlTransformer.replaceMacro(in: $0)
+                } ?? []
 
             let startTimeInMs = Double(adItem.startTimeMs ?? "")
             let expirationTimeInMs = Double(adItem.expirationMs ?? "")
@@ -298,7 +306,7 @@ private extension NovaAdBuilder {
         switch NovaCreativeType(rawValue: creative.creativeType ?? "") {
         case .playableImage, .playableVideo:
             guard let playableUrlStr = creative.playableItem?.url,
-                  let playableUrl = URL(string: NovaAdUrlTransformer.replaceMacro(in: playableUrlStr))
+                let playableUrl = URL(string: NovaAdUrlTransformer.replaceMacro(in: playableUrlStr))
             else {
                 throw NovaAdBuildError.invalidPlayableUrlStr
             }
@@ -363,10 +371,10 @@ private extension NovaAdBuilder {
 
     static func buildInteractiveBanner(_ addOnItem: AddOnItem?) -> NovaNativeAdInteractiveBanner? {
         guard let type = addOnItem?.type,
-              let type = InteractiveBannerType(rawValue: type),
-              let url = addOnItem?.imageUrl,
-              let imageUrl = URL(string: url),
-              let displayTime = addOnItem?.displayTime
+            let type = InteractiveBannerType(rawValue: type),
+            let url = addOnItem?.imageUrl,
+            let imageUrl = URL(string: url),
+            let displayTime = addOnItem?.displayTime
         else {
             return nil
         }
@@ -386,16 +394,18 @@ private extension NovaAdBuilder {
         }
         let items = items?.compactMap { (item: MultipleItemsItem) -> NovaNativeMultipleItemsItem? in
             guard let imageUrlStr = item.imageUrl, let imageURL = URL(string: imageUrlStr),
-                  let body = item.body,
-                  let callToAction = item.callToAction
+                let body = item.body,
+                let callToAction = item.callToAction
             else {
                 return nil
             }
-            guard let ctrUrl = item.ctrUrl, let ctrType = try? Self.buildBaseCtrType(
-                urlStr: ctrUrl,
-                launchOption: launchOption,
-                appStoreId: item.appStoreId ?? externalAppStoreId
-            ) else {
+            guard let ctrUrl = item.ctrUrl,
+                let ctrType = try? Self.buildBaseCtrType(
+                    urlStr: ctrUrl,
+                    launchOption: launchOption,
+                    appStoreId: item.appStoreId ?? externalAppStoreId
+                )
+            else {
                 return nil
             }
 
@@ -406,14 +416,16 @@ private extension NovaAdBuilder {
                 ctrType: ctrType
             )
         }
-        let style = NovaAdMultipleItemsInfo.Style(
-            rawValue: abConfig?[AbConfigKeys.multipleItemsStyle] ?? ""
-        ) ?? .carousel
+        let style =
+            NovaAdMultipleItemsInfo.Style(
+                rawValue: abConfig?[AbConfigKeys.multipleItemsStyle] ?? ""
+            ) ?? .carousel
 
         do {
             return try NovaAdMultipleItemsInfo(items: items ?? [], style: style)
         } catch {
-            DebugLogger.data.error("Ad With Id: \(adId) failed to build multiple items info: \(error.localizedDescription)")
+            DebugLogger.data.error(
+                "Ad With Id: \(adId) failed to build multiple items info: \(error.localizedDescription)")
             return nil
         }
     }
@@ -423,9 +435,10 @@ private extension NovaAdBuilder {
             return nil
         }
 
-        let backgroundStyle = NovaAdDiscountTagStyle.Background(
-            rawValue: (abConfig?[AbConfigKeys.discountTagStyle] ?? "")
-        ) ?? .default
+        let backgroundStyle =
+            NovaAdDiscountTagStyle.Background(
+                rawValue: (abConfig?[AbConfigKeys.discountTagStyle] ?? "")
+            ) ?? .default
         return try? NovaAdDiscountTagInfo(from: item, backgroundStyle: backgroundStyle)
     }
 
@@ -480,7 +493,8 @@ private extension NovaAdBuilder {
 
         let tapToTryFormat: NovaAdPlayableInfo.TapToTryFormat = {
             guard let formatString = playableItem.tapToTryFormat, !formatString.isEmpty,
-                  let format = NovaAdPlayableInfo.TapToTryFormat(rawValue: formatString) else {
+                let format = NovaAdPlayableInfo.TapToTryFormat(rawValue: formatString)
+            else {
                 return .default
             }
             return format

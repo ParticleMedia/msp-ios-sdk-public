@@ -1,6 +1,6 @@
 import Foundation
 
-enum MultipleItemsInfoError: LocalizedError  {
+enum MultipleItemsInfoError: LocalizedError {
     case notEnoughItems
 
     var errorDescription: String? {
@@ -13,10 +13,10 @@ enum MultipleItemsInfoError: LocalizedError  {
 
 struct NovaAdMultipleItemsInfo: Codable {
     enum Style: String, Codable {
-        case carousel    = "DEFAULT"
-        case collection   = "COLLECTION"
+        case carousel = "DEFAULT"
+        case collection = "COLLECTION"
     }
-	var items: [NovaNativeMultipleItemsItem]
+    var items: [NovaNativeMultipleItemsItem]
     var style: Style
 
     init(items: [NovaNativeMultipleItemsItem], style: Style) throws {
@@ -36,4 +36,4 @@ struct NovaAdMultipleItemsInfo: Codable {
             self.style = .collection
         }
     }
-} 
+}

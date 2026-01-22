@@ -6,8 +6,8 @@
 //
 
 import Foundation
-import UIKit
 @_implementationOnly import SnapKit
+import UIKit
 
 // MARK: - NovaInterstitialAdVerticalSubviewHandler
 
@@ -32,7 +32,7 @@ class NovaInterstitialAdVerticalSubviewHandler: NovaInterstitialAdSubviewHandler
     func setupSubviews(in containerView: UIView, showReportButton: Bool) {
         // TODO: - GPY need ipad layout
         self.parentView = containerView
-        
+
         containerView.addSubview(mediaView)
         containerView.addSubview(bottomShadow)
         containerView.addSubview(closeButton)
@@ -87,7 +87,7 @@ class NovaInterstitialAdVerticalSubviewHandler: NovaInterstitialAdSubviewHandler
                 make.height.equalTo(LayoutMetrics.bottomButtonHeight)
                 make.trailing.equalTo(containerView.snp.centerX).offset(-8)
             }
-            
+
             ctaButton.snp.makeConstraints { make in
                 make.leading.equalTo(containerView.snp.centerX).offset(8)
                 make.trailing.equalTo(containerView.snp.trailing).offset(-LayoutMetrics.horizontalMargin)
@@ -140,15 +140,15 @@ class NovaInterstitialAdVerticalSubviewHandler: NovaInterstitialAdSubviewHandler
         if let advertiserText = interstitialAd.advertiser {
             advertiserLabel.text = advertiserText
         }
-        
+
         if let bodyText = interstitialAd.body {
             bodyLabel.text = bodyText
         }
-        
+
         if let ctaText = interstitialAd.callToAction {
             ctaButton.setTitle(ctaText, for: .normal)
         }
-        
+
         // Configure advertiser avatar
         if let iconURL = interstitialAd.iconURL {
             advertiserAvatar.isHidden = false
@@ -156,12 +156,13 @@ class NovaInterstitialAdVerticalSubviewHandler: NovaInterstitialAdSubviewHandler
         } else {
             advertiserAvatar.isHidden = true
         }
-        
+
         closeButton.setTitle("Close", for: .normal)
         adTagLabel.setTitle("SPONSORED", for: .normal)
-        
+
         // Configure media view
-        interstitialAd.mediaContent.videoController?.style = .playButtonOnCenter(progressBarStyle: .hide, popupCTAStyle: .show())
+        interstitialAd.mediaContent.videoController?.style = .playButtonOnCenter(
+            progressBarStyle: .hide, popupCTAStyle: .show())
         mediaView.config(
             with: interstitialAd.mediaContent,
             actionContext: .init(
@@ -170,7 +171,7 @@ class NovaInterstitialAdVerticalSubviewHandler: NovaInterstitialAdSubviewHandler
                 viewController: Weak(viewController)
             )
         )
-        
+
         if case .video = interstitialAd.mediaContent.adMedia {
             volumeButton.isHidden = false
             setupVolumeIcon(muted: interstitialAd.mediaContent.videoController?.muted ?? true)
@@ -186,7 +187,7 @@ class NovaInterstitialAdVerticalSubviewHandler: NovaInterstitialAdSubviewHandler
             adTagLabel,
             advertiserAvatar,
             advertiserLabel,
-            bodyLabel
+            bodyLabel,
         ]
     }
 
@@ -200,7 +201,7 @@ class NovaInterstitialAdVerticalSubviewHandler: NovaInterstitialAdSubviewHandler
     func didDisappear() {
         interstitialAd.mediaContent.videoController?.pause()
     }
-    
+
     private lazy var volumeButton: UIButton = {
         var configuration = UIButton.Configuration.plain()
         configuration.background.backgroundInsets = NSDirectionalEdgeInsets(
@@ -313,7 +314,8 @@ class NovaInterstitialAdVerticalSubviewHandler: NovaInterstitialAdSubviewHandler
 
     private lazy var feedbackButton: UIButton = {
         let button = UIButton()
-        let image = UIImage.Nova.ellipsisHorizontalOutline?.withTintColor(NovaColorPalettes.White, renderingMode: .alwaysOriginal)
+        let image = UIImage.Nova.ellipsisHorizontalOutline?.withTintColor(
+            NovaColorPalettes.White, renderingMode: .alwaysOriginal)
         button.setImage(image, for: .normal)
         button.tintColor = UIColor.white
         button.addTarget(self, action: #selector(didTapFeedbackButton), for: .touchUpInside)
@@ -325,18 +327,19 @@ class NovaInterstitialAdVerticalSubviewHandler: NovaInterstitialAdSubviewHandler
         view.adClickArea = .media
         return view
     }()
-    
+
     private(set) lazy var topRightCloseButton: UIButton = {
         let button = UIButton()
         button.titleLabel?.font = .systemFont(ofSize: 16, weight: .regular)
-        button.setTitleColor(UIColor(light: NovaColorPalettes.Gray.tint600, dark: NovaColorPalettes.Gray.tint600), for: .normal)
+        button.setTitleColor(
+            UIColor(light: NovaColorPalettes.Gray.tint600, dark: NovaColorPalettes.Gray.tint600), for: .normal)
         button.layer.borderWidth = 0
         button.layer.cornerRadius = 12
         button.backgroundColor = NovaColorPalettes.White
         button.isUserInteractionEnabled = false
         return button
     }()
-    
+
     private(set) lazy var topRightCloseButtonArea: UIView = {
         let view = UIView()
         view.isUserInteractionEnabled = false
@@ -348,23 +351,24 @@ class NovaInterstitialAdVerticalSubviewHandler: NovaInterstitialAdSubviewHandler
     private let interstitialAd: NovaInterstitialAdItem
     private weak var delegate: NovaInterstitialAdSubviewBehaviorDelegate?
     private weak var viewController: UIViewController?
-    
+
     // MARK: - NovaTopRightClosable
-    
+
     var countdownTimer: Timer?
     var countdownSecondRemaining: Int
     var delayTimer: Timer? = nil
     var delaySecondRemaining: Int? = nil
     private let showTopRightCloseButton: Bool
-    
+
     var darkColor: UIColor {
-        interstitialAd.layoutStyle == .verticalCancelTopRight ? NovaColorPalettes.Gray.tint600 : NovaColorPalettes.Gray.tint200
+        interstitialAd.layoutStyle == .verticalCancelTopRight
+            ? NovaColorPalettes.Gray.tint600 : NovaColorPalettes.Gray.tint200
     }
 
     private func setupVolumeIcon(muted: Bool) {
         let volumeOnImage = UIImage.Nova.volumeOnLine?.withTintColor(NovaColorPalettes.White)
         let volumeOffImage = UIImage.Nova.volumeOffLine?.withTintColor(NovaColorPalettes.White)
-        volumeButton.setImage(muted ? volumeOffImage: volumeOnImage, for: .normal)
+        volumeButton.setImage(muted ? volumeOffImage : volumeOnImage, for: .normal)
     }
 
     @objc private func didTapVolumeButton() {
@@ -386,9 +390,9 @@ class NovaInterstitialAdVerticalSubviewHandler: NovaInterstitialAdSubviewHandler
 
 extension NovaInterstitialAdVerticalSubviewHandler {
     static var bottomRoundAreaHeight: CGFloat {
-        return UIApplication.novaHasTopSafeArea ? 34.0 : 0.0
+        UIApplication.novaHasTopSafeArea ? 34.0 : 0.0
     }
-    
+
     enum LayoutMetrics {
         static let avatarSize = 24.0
         static let horizontalMargin = 16.0

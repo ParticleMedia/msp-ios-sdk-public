@@ -6,12 +6,11 @@
 //
 
 import Foundation
-import UIKit
 @_implementationOnly import SnapKit
+import UIKit
 import WebKit
 
 class NovaInterstitialAdPlayableSubviewHandler: NovaInterstitialAdSubviewHandler {
-
     private lazy var topGradientView: GradientShadowView = {
         let config = GradientShadowViewConfig(
             colors: (
@@ -74,7 +73,8 @@ class NovaInterstitialAdPlayableSubviewHandler: NovaInterstitialAdSubviewHandler
 
     private lazy var closeButton: UIButton = {
         let button = UIButton(type: .system)
-        let image = UIImage.Nova.crossCircleFilled?.withTintColor(NovaColorPalettes.White, renderingMode: .alwaysOriginal)
+        let image = UIImage.Nova.crossCircleFilled?.withTintColor(
+            NovaColorPalettes.White, renderingMode: .alwaysOriginal)
         button.setImage(image, for: .normal)
         button.addTarget(self, action: #selector(didTapCloseButton), for: .touchUpInside)
         button.accessibilityIdentifier = "close"
@@ -135,7 +135,7 @@ class NovaInterstitialAdPlayableSubviewHandler: NovaInterstitialAdSubviewHandler
 
         advertiserLabel.text = interstitialAd.advertiser
         adTagLabel.text = NSLocalizedString("Ad", comment: "ad")
-        
+
         // Configure playable content
         interstitialAd.mediaContent.playableController?.renderOption = .playable
         mediaView

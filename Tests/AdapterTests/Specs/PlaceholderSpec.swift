@@ -1,5 +1,5 @@
-import Quick
 import Nimble
+import Quick
 
 class AdapterPlaceholderSpec: QuickSpec {
     override class func spec() {

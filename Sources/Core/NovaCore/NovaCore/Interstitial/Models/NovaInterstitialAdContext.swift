@@ -5,14 +5,17 @@
 //  Created by Patrick on 2025/1/27.
 //
 
-import Foundation
-
 // MARK: - NovaInterstitialAdContext
+
+import Foundation
 
 struct NovaInterstitialAdContext {
     // MARK: Lifecycle
 
-    init(interstitialAd: NovaInterstitialAdItem, layout: NovaInterstitialAdLayout, tracingId: UUID?, pageIndex: Int? = nil) {
+    init(
+        interstitialAd: NovaInterstitialAdItem, layout: NovaInterstitialAdLayout, tracingId: UUID?,
+        pageIndex: Int? = nil
+    ) {
         self.interstitialAd = interstitialAd
         self.layout = layout
         self.tracingId = tracingId

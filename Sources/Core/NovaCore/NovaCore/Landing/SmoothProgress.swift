@@ -5,7 +5,6 @@ protocol SmoothProgressDelegate: AnyObject {
 }
 
 class SmoothProgress {
-
     private weak var delegate: SmoothProgressDelegate?
     private var timer: Timer?
     private var tick: Double = 0
@@ -26,13 +25,15 @@ class SmoothProgress {
         self.timer?.invalidate()
         self.timer = nil
 
-        let timer = Timer(timeInterval: 0.1, repeats: true, block: { [weak self] _ in
-            guard let self = self else { return }
+        let timer = Timer(
+            timeInterval: 0.1, repeats: true,
+            block: { [weak self] _ in
+                guard let self = self else { return }
 
-            let tickProgress = 1.0 - 1.0 / (self.tick * 0.1 + 1)
-            self.delegate?.didUpdateProgress(max(tickProgress, self.realProgress))
-            self.tick = self.tick + 1
-        })
+                let tickProgress = 1.0 - 1.0 / (self.tick * 0.1 + 1)
+                self.delegate?.didUpdateProgress(max(tickProgress, self.realProgress))
+                self.tick = self.tick + 1
+            })
         self.timer = timer
         RunLoop.current.add(timer, forMode: .common)
     }
@@ -47,6 +48,4 @@ class SmoothProgress {
     func receiveRealProgress(_ progress: Double) {
         self.realProgress = progress
     }
-
 }
-

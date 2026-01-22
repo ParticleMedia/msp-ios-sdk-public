@@ -8,7 +8,7 @@
 public struct MSPConstants {
     public static let GOOGLE_AD_MULTI_CONTENT_URLS = "google_ads_multi_content_urls"
     public static let USER_ID = "user_id"
-    
+
     // User defaults key used to store NB user id.
     public static let USER_DEFAULTS_KEY_MSP_USER_ID = "msp_user_id"
     /* User defaults key used to store msp id fetched from id server.
@@ -18,7 +18,7 @@ public struct MSPConstants {
      * to both msp_user_id and msp_id.
      */
     public static let USER_DEFAULTS_KEY_MSP_ID = "msp_id"
-    
+
     public static let AD_INFO_OPENRTB_NURL = "nurl"
     public static let AD_INFO_OPENRTB_BURL = "burl"
 

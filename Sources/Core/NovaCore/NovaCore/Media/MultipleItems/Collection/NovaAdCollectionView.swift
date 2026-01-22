@@ -33,7 +33,8 @@ class NovaAdCollectionView: UIView {
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFit
         imageView.isUserInteractionEnabled = true
-        imageView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(didTapMainImageView(sender:))))
+        imageView.addGestureRecognizer(
+            UITapGestureRecognizer(target: self, action: #selector(didTapMainImageView(sender:))))
         imageView.adClickArea = .media
         imageView.layer.borderWidth = 0.5
         imageView.layer.borderColor = NovaColorPalettes.Gray.tint200.cgColor
@@ -45,7 +46,8 @@ class NovaAdCollectionView: UIView {
             let imageView = UIImageView()
             imageView.contentMode = .scaleAspectFit
             imageView.isUserInteractionEnabled = true
-            imageView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(self.didTapTripleView(sender:))))
+            imageView.addGestureRecognizer(
+                UITapGestureRecognizer(target: self, action: #selector(self.didTapTripleView(sender:))))
             imageView.layer.borderWidth = 0.5
             imageView.layer.borderColor = NovaColorPalettes.Gray.tint200.cgColor
             imageView.adClickArea = .media
@@ -107,29 +109,31 @@ private extension NovaAdCollectionView {
 
         actionHelper = {
             if let weakVC = actionContext.viewController {
-                return NovaActionHelper
+                return
+                    NovaActionHelper
                     .build(
                         with:
-                        .adInViewController(
-                            model: .init(
-                                tracingInfo: actionContext.adActionTracingInfo,
-                                extraInfo: actionContext.adActionExtraInfo,
-                                ctrType: firstItemCtrType
-                            ),
-                            viewController: weakVC
-                        )
+                            .adInViewController(
+                                model: .init(
+                                    tracingInfo: actionContext.adActionTracingInfo,
+                                    extraInfo: actionContext.adActionExtraInfo,
+                                    ctrType: firstItemCtrType
+                                ),
+                                viewController: weakVC
+                            )
                     )
             } else {
-                return NovaActionHelper
+                return
+                    NovaActionHelper
                     .build(
                         with:
-                        .adInView(
-                            model: .init(
-                                tracingInfo: actionContext.adActionTracingInfo,
-                                extraInfo: actionContext.adActionExtraInfo,
-                                ctrType: firstItemCtrType
+                            .adInView(
+                                model: .init(
+                                    tracingInfo: actionContext.adActionTracingInfo,
+                                    extraInfo: actionContext.adActionExtraInfo,
+                                    ctrType: firstItemCtrType
+                                )
                             )
-                        )
                     )
             }
         }()
@@ -155,29 +159,31 @@ private extension NovaAdCollectionView {
 
         actionHelper = {
             if let weakVC = actionContext.viewController {
-                return NovaActionHelper
+                return
+                    NovaActionHelper
                     .build(
                         with:
-                        .adInViewController(
-                            model: .init(
-                                tracingInfo: actionContext.adActionTracingInfo,
-                                extraInfo: actionContext.adActionExtraInfo,
-                                ctrType: itemCtrType
-                            ),
-                            viewController: weakVC
-                        )
+                            .adInViewController(
+                                model: .init(
+                                    tracingInfo: actionContext.adActionTracingInfo,
+                                    extraInfo: actionContext.adActionExtraInfo,
+                                    ctrType: itemCtrType
+                                ),
+                                viewController: weakVC
+                            )
                     )
             } else {
-                return NovaActionHelper
+                return
+                    NovaActionHelper
                     .build(
                         with:
-                        .adInView(
-                            model: .init(
-                                tracingInfo: actionContext.adActionTracingInfo,
-                                extraInfo: actionContext.adActionExtraInfo,
-                                ctrType: itemCtrType
+                            .adInView(
+                                model: .init(
+                                    tracingInfo: actionContext.adActionTracingInfo,
+                                    extraInfo: actionContext.adActionExtraInfo,
+                                    ctrType: itemCtrType
+                                )
                             )
-                        )
                     )
             }
         }()

@@ -5,10 +5,10 @@
 //  Created by Patrick on 2025/1/27.
 //
 
+// MARK: - NovaInterstitialAdSubviewHandlerCreator
+
 import Foundation
 import UIKit
-
-// MARK: - NovaInterstitialAdSubviewHandlerCreator
 
 class NovaInterstitialAdSubviewHandlerCreator {
     // MARK: Internal
@@ -50,7 +50,7 @@ class NovaInterstitialAdSubviewHandlerCreator {
                 appStoreId: appStoreId,
                 thirdPartyTrackingURL: thirdPartyTrackingURL
             )
-            
+
         case let .html(model):
             return NovaInterstitialAdPageSubviewHandler(
                 interstitialAd: interstitialAd,
@@ -59,6 +59,5 @@ class NovaInterstitialAdSubviewHandlerCreator {
                 htmlMediaModel: model
             )
         }
-
     }
-} 
+}

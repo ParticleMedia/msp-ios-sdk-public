@@ -7,23 +7,24 @@
 
 import Foundation
 
-
 public protocol AdMetricReporter: AnyObject {
-    
     func logAdImpression(ad: MSPAd, adRequest: AdRequest, bidResponse: Any)
-    
+
     func logAdClick(ad: MSPAd, adRequest: AdRequest, bidResponse: Any?)
-    
-    func logGetAdFromCache(cacheKey: String, fill: Bool ,ad: MSPAd?)
-    
+
+    func logGetAdFromCache(cacheKey: String, fill: Bool, ad: MSPAd?)
+
     func logAdResult(placementId: String, ad: MSPAd?, fill: Bool, isFromCache: Bool)
-    
-    func logAdHide(ad: MSPAd, adRequest: AdRequest, bidResponse: Any, reason: String, adScreenShot: Data?, fullScreenShot: Data?)
-    
-    func logAdReport(ad: MSPAd, adRequest: AdRequest, bidResponse: Any, reason: String, description: String?, adScreenShot: Data?, fullScreenShot: Data?)
-    
-    func logAdResponse(ad: MSPiOSCore.MSPAd?, adRequest: MSPiOSCore.AdRequest, errorCode: MSPErrorCode, errorMessage: String?)
-    
+
+    func logAdHide(
+        ad: MSPAd, adRequest: AdRequest, bidResponse: Any, reason: String, adScreenShot: Data?, fullScreenShot: Data?)
+
+    func logAdReport(
+        ad: MSPAd, adRequest: AdRequest, bidResponse: Any, reason: String, description: String?, adScreenShot: Data?,
+        fullScreenShot: Data?)
+
+    func logAdResponse(
+        ad: MSPiOSCore.MSPAd?, adRequest: MSPiOSCore.AdRequest, errorCode: MSPErrorCode, errorMessage: String?)
 }
 
 public enum MSPErrorCode: Int {
@@ -34,4 +35,3 @@ public enum MSPErrorCode: Int {
     case ERROR_CODE_INTERNAL_ERROR = 4
     case ERROR_CODE_NETWORK_ERROR = 5
 }
-

@@ -4,49 +4,60 @@
 //
 //  Created by Huanzhi Zhang on 8/8/25.
 //
-import MSPiOSCore
-import MSPGoogleAdsTypes
-import Foundation
 import DTBiOSSDK
+import Foundation
+import MSPGoogleAdsTypes
+import MSPiOSCore
 
-@objc public class AmazonAdapter : NSObject, AdNetworkAdapter {
+@objc public class AmazonAdapter: NSObject, AdNetworkAdapter {
     private var dtbAdLoader: DTBAdLoader?
     private var dtbAdResponse: DTBAdResponse?
-    
+
     private var bannerView: MSPGAMBannerView?
     public weak var auctionBidListener: AuctionBidListener?
     public var bidderPlacementId: String?
-    public var googlePlacementId: String? // placement id used in google banner view
+    public var googlePlacementId: String?  // placement id used in google banner view
     private var dtbAdSize: DTBAdSize?
 
     public var adRequest: AdRequest?
     private var adMetricReporter: AdMetricReporter?
-    
+
     private var bannerAd: BannerAd?
-    
+
     public weak var adListener: AdListener?
     public var priceInDollar: Double?
-    
-    public func loadAdCreative(bidResponse: Any, auctionBidListener: any MSPiOSCore.AuctionBidListener, adListener: any MSPiOSCore.AdListener, context: Any, adRequest: MSPiOSCore.AdRequest, bidderPlacementId: String, bidderFormat: MSPiOSCore.AdFormat?, params: [String : String]?) {
+
+    public func loadAdCreative(
+        bidResponse: Any, auctionBidListener: any MSPiOSCore.AuctionBidListener, adListener: any MSPiOSCore.AdListener,
+        context: Any, adRequest: MSPiOSCore.AdRequest, bidderPlacementId: String, bidderFormat: MSPiOSCore.AdFormat?,
+        params: [String: String]?
+    ) {
         self.adListener = adListener
         self.auctionBidListener = auctionBidListener
         self.bidderPlacementId = bidderPlacementId
         self.adRequest = adRequest
         if let params = params,
-           let googlePlacementId = params["googlePlacementId"] {
+            let googlePlacementId = params["googlePlacementId"]
+        {
             self.googlePlacementId = googlePlacementId
         }
         let dtbAdLoader = DTBAdLoader()
         self.dtbAdLoader = dtbAdLoader
-        let dtbAdSize = DTBAdSize(bannerAdSizeWithWidth: adRequest.adSize?.width ?? 320, height: adRequest.adSize?.height ?? 50, andSlotUUID: bidderPlacementId)
+        let dtbAdSize = DTBAdSize(
+            bannerAdSizeWithWidth: adRequest.adSize?.width ?? 320, height: adRequest.adSize?.height ?? 50,
+            andSlotUUID: bidderPlacementId)
         self.dtbAdSize = dtbAdSize
         dtbAdLoader.setAdSizes([dtbAdSize])
         dtbAdLoader.loadAd(self)
     }
-    
-    public func initialize(initParams: any MSPiOSCore.InitializationParameters, adapterInitListener: any MSPiOSCore.AdapterInitListener, context: Any?) {
+
+    public func initialize(
+        initParams: any MSPiOSCore.InitializationParameters, adapterInitListener: any MSPiOSCore.AdapterInitListener,
+        context: Any?
+    ) {
         if let params = initParams.getParameters(),
-           let appKey = params[InitializationParametersCustomKeys.AMAZON_APP_KEY] as? String {
+            let appKey = params[InitializationParametersCustomKeys.AMAZON_APP_KEY] as? String
+        {
             DTBAds.sharedInstance().setAppKey(appKey)
         }
         DTBAds.sharedInstance().mraidPolicy = CUSTOM_MRAID
@@ -54,42 +65,45 @@ import DTBiOSSDK
         DTBAds.sharedInstance().useGeoLocation = true
         adapterInitListener.onComplete(adNetwork: .amazon, adapterInitStatus: .SUCCESS, message: "")
     }
-    
+
     public func destroyAd() {
-        
     }
-    
+
     public func prepareViewForInteraction(nativeAd: MSPiOSCore.NativeAd, nativeAdView: Any) {
-        
     }
-    
+
     public func setAdMetricReporter(adMetricReporter: any MSPiOSCore.AdMetricReporter) {
         self.adMetricReporter = adMetricReporter
     }
-    
+
     public func getAdNetwork() -> MSPiOSCore.AdNetwork {
-        return .amazon
+        .amazon
     }
-    
-    public func sendHideAdEvent(reason: String, adScreenShot: Data?, fullScreenShot: Data?)
-    {
+
+    public func sendHideAdEvent(reason: String, adScreenShot: Data?, fullScreenShot: Data?) {
         if let adRequest = self.adRequest,
-           let ad = self.bannerAd {
-            self.adMetricReporter?.logAdHide(ad: ad, adRequest: adRequest, bidResponse: self, reason: reason, adScreenShot: adScreenShot, fullScreenShot: fullScreenShot)
+            let ad = self.bannerAd
+        {
+            self.adMetricReporter?.logAdHide(
+                ad: ad, adRequest: adRequest, bidResponse: self, reason: reason, adScreenShot: adScreenShot,
+                fullScreenShot: fullScreenShot)
         }
     }
-    
+
     public func sendReportAdEvent(reason: String, description: String?, adScreenShot: Data?, fullScreenShot: Data?) {
         if let adRequest = self.adRequest,
-           let ad = self.bannerAd {
-            self.adMetricReporter?.logAdReport(ad: ad, adRequest: adRequest, bidResponse: self, reason: reason, description: description, adScreenShot: adScreenShot, fullScreenShot: fullScreenShot)
+            let ad = self.bannerAd
+        {
+            self.adMetricReporter?.logAdReport(
+                ad: ad, adRequest: adRequest, bidResponse: self, reason: reason, description: description,
+                adScreenShot: adScreenShot, fullScreenShot: fullScreenShot)
         }
     }
-    
+
     public func getSDKVersion() -> String {
-        return ""
+        ""
     }
-    
+
     public func sendClickAdEvent(ad: MSPAd) {
         if let adRequest = adRequest {
             self.adMetricReporter?.logAdClick(ad: ad, adRequest: adRequest, bidResponse: self)
@@ -542,12 +556,12 @@ import DTBiOSSDK
 
 extension AmazonAdapter: DTBAdCallback {
     public func onSuccess(_ adResponse: DTBAdResponse!) {
-        
         self.dtbAdResponse = adResponse
         let bannerView = MSPGAMBannerView(adSize: getGADAdSize())
         self.bannerView = bannerView
         if let dtbAdSize = self.dtbAdSize,
-           let pricePoint = adResponse.pricePoints(dtbAdSize){
+            let pricePoint = adResponse.pricePoints(dtbAdSize)
+        {
             let priceInDollar = AmazonAdapter.amazonPriceMap[pricePoint]
             self.priceInDollar = priceInDollar
         }
@@ -557,22 +571,25 @@ extension AmazonAdapter: DTBAdCallback {
         let gamRequest = MSPGADRequest()
         gamRequest.customTargeting = adResponse.customTargeting()
         bannerView.load(gamRequest)
-        
     }
-    
+
     public func onFailure(_ error: DTBAdError) {
         MSPLogger.shared.info(message: "[Adapter: Amazon] Fail to receive ad")
         self.auctionBidListener?.onError(error: String(error.rawValue))
-        self.adMetricReporter?.logAdResult(placementId: adRequest?.placementId ?? "", ad: nil, fill: false, isFromCache: false)
+        self.adMetricReporter?.logAdResult(
+            placementId: adRequest?.placementId ?? "", ad: nil, fill: false, isFromCache: false)
         if let adRequest = self.adRequest {
-            self.adMetricReporter?.logAdResponse(ad: nil, adRequest: adRequest, errorCode: .ERROR_CODE_INTERNAL_ERROR, errorMessage: String(error.rawValue))
+            self.adMetricReporter?.logAdResponse(
+                ad: nil, adRequest: adRequest, errorCode: .ERROR_CODE_INTERNAL_ERROR,
+                errorMessage: String(error.rawValue))
         }
     }
-    
+
     func getGADAdSize() -> MSPGADAdSize {
         if let adRequest = adRequest {
             if let width = adRequest.adSize?.width,
-               let height = adRequest.adSize?.height {
+                let height = adRequest.adSize?.height
+            {
                 if width == 300, height == 250 {
                     return MSPGADAdSizeMediumRectangle
                 }
@@ -580,7 +597,6 @@ extension AmazonAdapter: DTBAdCallback {
         }
         return MSPGADAdSizeBanner
     }
-    
 }
 extension AmazonAdapter: MSPGADBannerViewDelegate {
     public func bannerViewDidReceiveAd(_ bannerView: MSPGADBannerView) {
@@ -591,35 +607,42 @@ extension AmazonAdapter: MSPGADBannerViewDelegate {
             if let priceInDollar = self.priceInDollar {
                 bannerAd.adInfo[MSPConstants.AD_INFO_PRICE] = priceInDollar
             }
-            
+
             bannerAd.adInfo[MSPConstants.AD_INFO_NETWORK_NAME] = AdNetwork.amazon.rawValue
             bannerAd.adInfo[MSPConstants.AD_INFO_NETWORK_AD_UNIT_ID] = self.bidderPlacementId
             if let adListener = self.adListener,
-               let adRequest = self.adRequest,
-               let auctionBidListener = self.auctionBidListener {
+                let adRequest = self.adRequest,
+                let auctionBidListener = self.auctionBidListener
+            {
                 //handleAdLoaded(ad: bannerAd, listener: adListener, adRequest: adRequest)
-                self.handleAdLoaded(ad: bannerAd, auctionBidListener: auctionBidListener, bidderPlacementId: self.bidderPlacementId ?? adRequest.placementId)
-                self.adMetricReporter?.logAdResult(placementId: adRequest.placementId, ad: bannerAd, fill: true, isFromCache: false)
+                self.handleAdLoaded(
+                    ad: bannerAd, auctionBidListener: auctionBidListener,
+                    bidderPlacementId: self.bidderPlacementId ?? adRequest.placementId)
+                self.adMetricReporter?.logAdResult(
+                    placementId: adRequest.placementId, ad: bannerAd, fill: true, isFromCache: false)
             }
         }
     }
-    
+
     public func bannerView(_ bannerView: MSPGADBannerView, didFailToReceiveAdWithError error: Error) {
         MSPLogger.shared.info(message: "[Adapter: Amazon] Fail to load Google Banner ad")
         self.auctionBidListener?.onError(error: error.localizedDescription)
-        self.adMetricReporter?.logAdResult(placementId: adRequest?.placementId ?? "", ad: nil, fill: false, isFromCache: false)
+        self.adMetricReporter?.logAdResult(
+            placementId: adRequest?.placementId ?? "", ad: nil, fill: false, isFromCache: false)
         if let adRequest = self.adRequest {
-            self.adMetricReporter?.logAdResponse(ad: nil, adRequest: adRequest, errorCode: .ERROR_CODE_INTERNAL_ERROR, errorMessage: error.localizedDescription)
+            self.adMetricReporter?.logAdResponse(
+                ad: nil, adRequest: adRequest, errorCode: .ERROR_CODE_INTERNAL_ERROR,
+                errorMessage: error.localizedDescription)
         }
     }
-    
+
     public func bannerViewDidRecordClick(_ bannerView: MSPGADBannerView) {
         if let googleAd = self.bannerAd {
             self.adListener?.onAdClick(ad: googleAd)
             self.sendClickAdEvent(ad: googleAd)
         }
     }
-    
+
     public func bannerViewDidRecordImpression(_ bannerView: MSPGADBannerView) {
         if let googleAd = self.bannerAd {
             self.adListener?.onAdImpression(ad: googleAd)
@@ -628,14 +651,16 @@ extension AmazonAdapter: MSPGADBannerViewDelegate {
             }
         }
     }
-    
+
     public func handleAdLoaded(ad: MSPAd, auctionBidListener: AuctionBidListener, bidderPlacementId: String) {
         // to do: move this to ios core
         AdCache.shared.saveAd(placementId: bidderPlacementId, ad: ad)
-        let auctionBid = AuctionBid(bidderName: "msp", bidderPlacementId: bidderPlacementId, ecpm: ad.adInfo["price"] as? Double ?? 0.0)
+        let auctionBid = AuctionBid(
+            bidderName: "msp", bidderPlacementId: bidderPlacementId, ecpm: ad.adInfo["price"] as? Double ?? 0.0)
         auctionBidListener.onSuccess(bid: auctionBid)
         if let adRequest = self.adRequest {
-            self.adMetricReporter?.logAdResponse(ad: ad, adRequest: adRequest, errorCode: .ERROR_CODE_SUCCESS, errorMessage: nil)
+            self.adMetricReporter?.logAdResponse(
+                ad: ad, adRequest: adRequest, errorCode: .ERROR_CODE_SUCCESS, errorMessage: nil)
         }
     }
 }

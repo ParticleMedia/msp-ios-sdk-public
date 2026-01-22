@@ -10,10 +10,10 @@ import MSPiOSCore
 
 public class PubmaticManager: AdNetworkManager {
     public override func getAdNetworkAdapter() -> AdNetworkAdapter? {
-        return PubmaticAdapter()
+        PubmaticAdapter()
     }
 
     public override func getAdBidder(bidderPlacementId: String, bidderFormat: AdFormat?) -> Bidder? {
-        return PubmaticBidder(name: "pubmatic", bidderPlacementId: bidderPlacementId, bidderFormat: bidderFormat)
+        PubmaticBidder(name: "pubmatic", bidderPlacementId: bidderPlacementId, bidderFormat: bidderFormat)
     }
 }

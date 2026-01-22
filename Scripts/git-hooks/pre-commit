@@ -1,0 +1,208 @@
+#!/bin/bash
+
+# Git pre-commit hook to automatically format Swift files
+# This hook formats staged Swift files before commit
+
+set -e
+
+# Colors for output
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+NC='\033[0m' # No Color
+
+# Function to find swift-format
+find_swift_format() {
+    # Check system PATH first
+    if command -v swift-format &> /dev/null; then
+        echo "$(which swift-format)"
+        return 0
+    fi
+    
+    # Check Xcode toolchain
+    if [ -f "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swift-format" ]; then
+        echo "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swift-format"
+        return 0
+    fi
+    
+    # Check Command Line Tools
+    if [ -f "/Library/Developer/CommandLineTools/usr/bin/swift-format" ]; then
+        echo "/Library/Developer/CommandLineTools/usr/bin/swift-format"
+        return 0
+    fi
+    
+    # Check if DEVELOPER_DIR is set (common in CI environments)
+    if [ -n "${DEVELOPER_DIR:-}" ] && [ -f "$DEVELOPER_DIR/Toolchains/XcodeDefault.xctoolchain/usr/bin/swift-format" ]; then
+        echo "$DEVELOPER_DIR/Toolchains/XcodeDefault.xctoolchain/usr/bin/swift-format"
+        return 0
+    fi
+    
+    return 1
+}
+
+# Find swift-format
+SWIFT_FORMAT=$(find_swift_format)
+
+if [ -z "$SWIFT_FORMAT" ] || [ ! -f "$SWIFT_FORMAT" ]; then
+    echo -e "${YELLOW}⚠️  swift-format not found. Skipping formatting check.${NC}"
+    echo -e "${YELLOW}   Install swift-format: https://github.com/apple/swift-format${NC}"
+    echo -e "${YELLOW}   Or ensure Xcode is properly installed.${NC}"
+    exit 0
+fi
+
+# Get list of staged Swift files
+staged_files=$(git diff --cached --name-only --diff-filter=ACM | grep '\.swift$' || true)
+
+if [ -z "$staged_files" ]; then
+    # No Swift files staged, nothing to do
+    exit 0
+fi
+
+echo -e "${GREEN}🔍 Checking Swift code formatting...${NC}"
+
+# Track if any files were modified
+modified=false
+unformatted_files=""
+syntax_errors=""
+
+# Get project root (needed for exclusion library)
+# Note: When installed, this hook is in .git/hooks/, so we need to go up to project root
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PROJECT_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
+
+# Source exclusion patterns library
+# Path from project root: Scripts/lib/swift_format_exclusions.sh
+EXCLUSIONS_LIB="$PROJECT_ROOT/Scripts/lib/swift_format_exclusions.sh"
+if [ -f "$EXCLUSIONS_LIB" ]; then
+    source "$EXCLUSIONS_LIB"
+else
+    echo -e "${YELLOW}⚠️  Warning: Exclusion library not found at $EXCLUSIONS_LIB${NC}" >&2
+    echo -e "${YELLOW}   Falling back to default exclusion patterns${NC}" >&2
+fi
+
+# Check and format each staged Swift file
+for file in $staged_files; do
+    # Skip if file doesn't exist (might have been deleted)
+    if [ ! -f "$file" ]; then
+        continue
+    fi
+    
+    # Skip files matching exclusion patterns from config file
+    if should_exclude_swift_file "$file" "$PROJECT_ROOT/swift-format-exclusions.txt"; then
+        continue
+    fi
+    
+    # Read configuration file path from .swift-format if it exists
+    SWIFT_FORMAT_CONFIG_FILE="$PROJECT_ROOT/.swift-format"
+    CONFIG_FILE="$PROJECT_ROOT/swift-format.json"  # Default fallback
+    
+    if [ -f "$SWIFT_FORMAT_CONFIG_FILE" ]; then
+        # Parse .swift-format file to extract --configuration path
+        config_path=$(grep -E "^--configuration" "$SWIFT_FORMAT_CONFIG_FILE" | sed 's/^--configuration[[:space:]]*//' | tr -d '[:space:]')
+        
+        if [ -n "$config_path" ]; then
+            # If path is relative, make it relative to project root
+            if [[ "$config_path" != /* ]]; then
+                CONFIG_FILE="$PROJECT_ROOT/$config_path"
+            else
+                CONFIG_FILE="$config_path"
+            fi
+        fi
+    fi
+    
+    # Run lint and capture both output and exit code
+    set +e
+    if [ -f "$CONFIG_FILE" ]; then
+        lint_output=$("$SWIFT_FORMAT" lint --configuration "$CONFIG_FILE" "$file" 2>&1)
+        lint_exit_code=$?
+    else
+        lint_output=$("$SWIFT_FORMAT" lint "$file" 2>&1)
+        lint_exit_code=$?
+    fi
+    set -e
+    
+    # If lint fails (non-zero exit) or has warnings, file needs formatting
+    if [ $lint_exit_code -ne 0 ] || [ -n "$lint_output" ]; then
+        echo -e "${YELLOW}📝 Formatting: $file${NC}"
+        
+        # Get preserve script path
+        PRESERVE_SCRIPT="$PROJECT_ROOT/Scripts/lib/preserve-file-header.sh"
+        
+        # Capture format output to check for syntax errors vs formatting issues
+        set +e
+        if [ -f "$CONFIG_FILE" ]; then
+            format_output=$("$SWIFT_FORMAT" -i --configuration "$CONFIG_FILE" "$file" 2>&1)
+            format_exit_code=$?
+        else
+            format_output=$("$SWIFT_FORMAT" -i "$file" 2>&1)
+            format_exit_code=$?
+        fi
+        set -e
+        
+        if [ $format_exit_code -eq 0 ]; then
+            # Formatting succeeded
+            # Preserve file header comments (move imports back after header)
+            if [ -f "$PRESERVE_SCRIPT" ]; then
+                "$PRESERVE_SCRIPT" "$file" > /dev/null 2>&1 || true
+            fi
+            
+            # Re-stage the formatted file
+            git add "$file" || {
+                echo -e "${RED}❌ Failed to stage formatted file: $file${NC}" >&2
+                exit 1
+            }
+            modified=true
+            echo -e "${GREEN}✅ Formatted: $file${NC}"
+        else
+            # Formatting failed - check if it's a syntax error or formatting issue
+            if echo "$format_output" | grep -q "error:"; then
+                # Syntax error in the code - warn but don't block commit
+                echo -e "${YELLOW}⚠️  Syntax error in $file (skipping formatting):${NC}"
+                echo -e "${YELLOW}   $(echo "$format_output" | grep "error:" | head -1)${NC}"
+                echo -e "${YELLOW}   Please fix the syntax error before committing.${NC}"
+                syntax_errors="$syntax_errors $file"
+            else
+                # Formatting issue - should be fixable
+                unformatted_files="$unformatted_files $file"
+                echo -e "${RED}❌ Failed to format: $file${NC}"
+                if [ -n "$format_output" ]; then
+                    echo -e "${RED}   $(echo "$format_output" | head -2)${NC}"
+                fi
+            fi
+        fi
+    fi
+done
+
+# Handle syntax errors (warn but don't block)
+if [ -n "$syntax_errors" ]; then
+    echo ""
+    echo -e "${YELLOW}⚠️  Files with syntax errors (formatting skipped):${NC}"
+    for file in $syntax_errors; do
+        echo -e "${YELLOW}   - $file${NC}"
+    done
+    echo -e "${YELLOW}💡 Please fix syntax errors before committing.${NC}"
+    echo ""
+fi
+
+# Handle formatting failures (block commit)
+if [ -n "$unformatted_files" ]; then
+    echo ""
+    echo -e "${RED}❌ Some files could not be formatted automatically:${NC}"
+    for file in $unformatted_files; do
+        echo -e "${RED}   - $file${NC}"
+    done
+    echo -e "${YELLOW}💡 Please format these files manually:${NC}"
+    echo -e "${YELLOW}   $SWIFT_FORMAT -i --configuration \"$CONFIG_FILE\" <file>${NC}"
+    echo ""
+    echo -e "${YELLOW}Or skip formatting check for this commit:${NC}"
+    echo -e "${YELLOW}   git commit --no-verify${NC}"
+    exit 1
+fi
+
+if [ "$modified" = true ]; then
+    echo -e "${GREEN}✅ Swift files have been automatically formatted and staged.${NC}"
+    echo -e "${YELLOW}💡 You may need to review the changes before committing.${NC}"
+fi
+
+exit 0
+

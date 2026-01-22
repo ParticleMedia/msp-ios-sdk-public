@@ -39,7 +39,8 @@ class NovaAdCarouselView: UIView {
         layout.minimumInteritemSpacing = Constants.Padding
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
         collectionView.backgroundColor = .clear
-        collectionView.register(NovaAdCarouselCell.self, forCellWithReuseIdentifier: NSStringFromClass(NovaAdCarouselCell.self))
+        collectionView.register(
+            NovaAdCarouselCell.self, forCellWithReuseIdentifier: NSStringFromClass(NovaAdCarouselCell.self))
         collectionView.showsHorizontalScrollIndicator = false
         collectionView.showsVerticalScrollIndicator = false
         collectionView.delegate = self
@@ -63,12 +64,18 @@ private extension NovaAdCarouselView {
 }
 
 extension NovaAdCarouselView: UICollectionViewDelegateFlowLayout {
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        return CGSize(width: 220, height: 283)
+    func collectionView(
+        _ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout,
+        sizeForItemAt indexPath: IndexPath
+    ) -> CGSize {
+        CGSize(width: 220, height: 283)
     }
 
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
-        return UIEdgeInsets(top: 0, left: Constants.Padding, bottom: 0, right: Constants.Padding)
+    func collectionView(
+        _ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout,
+        insetForSectionAt section: Int
+    ) -> UIEdgeInsets {
+        UIEdgeInsets(top: 0, left: Constants.Padding, bottom: 0, right: Constants.Padding)
     }
 
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
@@ -78,14 +85,17 @@ extension NovaAdCarouselView: UICollectionViewDelegateFlowLayout {
 
 extension NovaAdCarouselView: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return items?.count ?? 0
+        items?.count ?? 0
     }
 
-    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        guard let cell = collectionView.dequeueReusableCell(
-            withReuseIdentifier: NSStringFromClass(NovaAdCarouselCell.self),
-            for: indexPath
-        ) as? NovaAdCarouselCell else {
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell
+    {
+        guard
+            let cell = collectionView.dequeueReusableCell(
+                withReuseIdentifier: NSStringFromClass(NovaAdCarouselCell.self),
+                for: indexPath
+            ) as? NovaAdCarouselCell
+        else {
             return UICollectionViewCell()
         }
 
@@ -114,29 +124,31 @@ extension NovaAdCarouselView: NovaAdCarouselCellDelegate {
 
         actionHelper = {
             if let weakVC = actionContext.viewController {
-                return NovaActionHelper
+                return
+                    NovaActionHelper
                     .build(
                         with:
-                        .adInViewController(
-                            model: .init(
-                                tracingInfo: actionContext.adActionTracingInfo,
-                                extraInfo: actionContext.adActionExtraInfo,
-                                ctrType: adCtrType
-                            ),
-                            viewController: weakVC
-                        )
+                            .adInViewController(
+                                model: .init(
+                                    tracingInfo: actionContext.adActionTracingInfo,
+                                    extraInfo: actionContext.adActionExtraInfo,
+                                    ctrType: adCtrType
+                                ),
+                                viewController: weakVC
+                            )
                     )
             } else {
-                return NovaActionHelper
+                return
+                    NovaActionHelper
                     .build(
                         with:
-                        .adInView(
-                            model: .init(
-                                tracingInfo: actionContext.adActionTracingInfo,
-                                extraInfo: actionContext.adActionExtraInfo,
-                                ctrType: adCtrType
+                            .adInView(
+                                model: .init(
+                                    tracingInfo: actionContext.adActionTracingInfo,
+                                    extraInfo: actionContext.adActionExtraInfo,
+                                    ctrType: adCtrType
+                                )
                             )
-                        )
                     )
             }
         }()

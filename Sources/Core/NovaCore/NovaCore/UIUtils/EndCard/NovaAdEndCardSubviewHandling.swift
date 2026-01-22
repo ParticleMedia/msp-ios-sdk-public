@@ -4,10 +4,10 @@
 //  Created by Shanyu Li on 2025/2/13.
 //
 
+// MARK: - NovaAdEndCardSubviewBehaviorDelegate
+
 import Foundation
 import UIKit
-
-// MARK: - NovaAdEndCardSubviewBehaviorDelegate
 
 protocol NovaAdEndCardSubviewBehaviorDelegate: AnyObject {
     func didTapCloseButton()

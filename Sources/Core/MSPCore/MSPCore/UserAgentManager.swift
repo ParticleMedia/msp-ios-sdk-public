@@ -6,8 +6,8 @@
 //
 
 import Foundation
-import WebKit
 import UIKit
+import WebKit
 
 private enum StorageUtils {
     private static let key = "cached_user_agent"
@@ -22,7 +22,6 @@ private enum StorageUtils {
 }
 
 final internal class UserAgentManager {
-
     static let shared = UserAgentManager()
 
     private init() {}
@@ -43,7 +42,8 @@ final internal class UserAgentManager {
 
     private func fallbackUserAgent() -> String {
         let osVersion = UIDevice.current.systemVersion
-        return "Mozilla/5.0 (iPhone; CPU iPhone OS \(osVersion.replacingOccurrences(of: ".", with: "_")) like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148"
+        return
+            "Mozilla/5.0 (iPhone; CPU iPhone OS \(osVersion.replacingOccurrences(of: ".", with: "_")) like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148"
     }
 
     private func updateSystemUserAgent() {

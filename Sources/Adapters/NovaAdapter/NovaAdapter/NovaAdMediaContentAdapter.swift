@@ -5,12 +5,12 @@
 //  Created by Shanyu Li on 2025/9/23.
 //
 
+// MARK: - NovaAdMediaContentAdapter
+
 import Foundation
 import MSPiOSCore
 import NovaCore
 import UIKit
-
-// MARK: - NovaAdMediaContentAdapter
 
 class NovaAdMediaContainerAdapter: AdMediaContainer {
     // MARK: Lifecycle
@@ -44,15 +44,15 @@ class NovaAdMediaContainerAdapter: AdMediaContainer {
     let playableControllerAdapter: NovaAdPlayableControllerAdapter?
 
     var imageController: (any MSPiOSCore.ImageController)? {
-        return imageControllerAdapter
+        imageControllerAdapter
     }
 
     var videoController: (any MSPiOSCore.VideoController)? {
-        return videoControllerAdapter
+        videoControllerAdapter
     }
 
     var playableController: (any MSPiOSCore.PlayableController)? {
-        return playableControllerAdapter
+        playableControllerAdapter
     }
 }
 
@@ -101,7 +101,7 @@ class NovaAdVideoControllerAdapter: VideoController {
 
     var muted: Bool {
         get {
-            videoController.muted 
+            videoController.muted
         }
         set {
             videoController.muted = newValue

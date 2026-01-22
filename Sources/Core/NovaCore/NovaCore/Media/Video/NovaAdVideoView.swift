@@ -5,8 +5,8 @@
 //  Created by Felix Dai on 2022/9/20.
 //
 import CoreMedia
-import UIKit
 @_implementationOnly import SnapKit
+import UIKit
 
 // MARK: - NovaNativeAdVideoViewExtraConfig
 
@@ -87,7 +87,7 @@ public final class NovaAdVideoView: UIView {
                 }
             }
         }
-        
+
         public enum PopupCTAStyle: Equatable {
             case hide
             case show(safeAreaInsets: UIEdgeInsets = .zero, exclusionRects: [CGRect] = [])
@@ -99,7 +99,10 @@ public final class NovaAdVideoView: UIView {
                 return true
             case (.playButtonOnLeftBottom, .playButtonOnLeftBottom):
                 return true
-            case (.playButtonOnCenter(let lhsProgressBarStyle, let lhsPopupCTAStyle), .playButtonOnCenter(let rhsProgressBarStyle, let rhsPopupCTAStyle)):
+            case (
+                .playButtonOnCenter(let lhsProgressBarStyle, let lhsPopupCTAStyle),
+                .playButtonOnCenter(let rhsProgressBarStyle, let rhsPopupCTAStyle)
+            ):
                 return lhsProgressBarStyle == rhsProgressBarStyle && lhsPopupCTAStyle == rhsPopupCTAStyle
             case (.landingPage, .landingPage):
                 return true
@@ -123,7 +126,7 @@ public final class NovaAdVideoView: UIView {
 
     var muted: Bool {
         get {
-            return mediaModel?.videoInfo.state?.isMute ?? mediaModel?.videoInfo.isMute ?? true
+            mediaModel?.videoInfo.state?.isMute ?? mediaModel?.videoInfo.isMute ?? true
         }
         set {
             let oldValue = muted
@@ -162,18 +165,18 @@ public final class NovaAdVideoView: UIView {
     private weak var iabReporter: IABMetricReporter?
 
     private var isPausedByUser = false
-    
+
     weak var mediaContent: NovaAdMediaContent?
 
     // MARK: - Subviews
 
     private lazy var endCard: NovaAdEndCard = .init(delegate: self)
-    
+
     private var bottomShadowView: GradientShadowView?
 
     private var state: NovaAdVideoState? {
         get {
-            return mediaModel?.videoInfo.state
+            mediaModel?.videoInfo.state
         }
         set {
             if let newState = newValue {
@@ -222,7 +225,9 @@ extension NovaAdVideoView {
                 return state
             }
             if let coverUrlStr = model.videoInfo.coverUrlStr, let url = URL(string: coverUrlStr) {
-                return .init(playState: .showCover(autoPlay: model.videoInfo.isAuto, coverURL: url), isMute: model.videoInfo.isMute)
+                return .init(
+                    playState: .showCover(autoPlay: model.videoInfo.isAuto, coverURL: url),
+                    isMute: model.videoInfo.isMute)
             } else {
                 return .init(
                     playState: model.videoInfo.isAuto ? .loading : .endPlaying(shouldShowPlayButton: true),
@@ -324,7 +329,7 @@ extension NovaAdVideoView {
 
     var nova_isFullyVisibleOnScreen: Bool {
         // Placeholder implementation - should check if view is fully visible
-        return true
+        true
     }
 }
 
@@ -358,13 +363,13 @@ private extension NovaAdVideoView {
         videoPlayer.seek(to: .zero, completionHandler: nil)
         startPlaying()
     }
-    
+
     private func videoPlayerSeekTo(_ currentTime: CMTime) {
         // Normalize CMTime to valid bounds before seeking
         let normalizedTime = normalizeSeekTime(currentTime)
         videoPlayer.seek(to: normalizedTime, completionHandler: nil)
     }
-    
+
     /// Normalizes a CMTime to valid bounds for seeking operations
     ///
     /// - Parameter time: The CMTime to normalize
@@ -379,7 +384,7 @@ private extension NovaAdVideoView {
             }
             return .zero
         }
-        
+
         // Handle indefinite times (check if time is kCMTimeIndefinite)
         if CMTimeCompare(time, CMTime.indefinite) == 0 {
             // Fallback to current playback position or zero
@@ -389,12 +394,12 @@ private extension NovaAdVideoView {
             }
             return .zero
         }
-        
+
         // Only clamp negative times to zero (preserve precision for valid times)
         if CMTimeCompare(time, .zero) < 0 {
             return .zero
         }
-        
+
         // For times beyond duration, use the original time if it's close to duration
         // Only clamp if significantly beyond duration
         let duration = videoPlayer.maximumTimeDuration()
@@ -407,7 +412,7 @@ private extension NovaAdVideoView {
                 return maxTime
             }
         }
-        
+
         return time
     }
 
@@ -441,7 +446,7 @@ private extension NovaAdVideoView {
         iabReporter?.logVideoResume()
         let resumeTime = CACurrentMediaTime()
         if let encryptedAdToken = actionContext?.adActionTracingInfo.encryptedAdToken,
-           let lastPauseTime, resumeKind == .resume
+            let lastPauseTime, resumeKind == .resume
         {
             NovaAdVideoMetricReporter.logVideoResume(
                 encryptedAdToken: encryptedAdToken,
@@ -454,7 +459,7 @@ private extension NovaAdVideoView {
         }
         lastResumeTime = resumeTime
     }
-    
+
     private func setupStartTime(delayTime: TimeInterval? = nil) {
         if startTime == nil {
             startTime = CACurrentMediaTime() + (delayTime ?? 0.0)
@@ -503,29 +508,31 @@ private extension NovaAdVideoView {
         }
 
         if let weakVC = actionContext.viewController {
-            actionHelper = NovaActionHelper
+            actionHelper =
+                NovaActionHelper
                 .build(
                     with:
-                    .adInViewController(
-                        model: .init(
-                            tracingInfo: actionContext.adActionTracingInfo,
-                            extraInfo: actionContext.adActionExtraInfo,
-                            ctrType: mediaModel.adCtrType
-                        ),
-                        viewController: weakVC
-                    )
+                        .adInViewController(
+                            model: .init(
+                                tracingInfo: actionContext.adActionTracingInfo,
+                                extraInfo: actionContext.adActionExtraInfo,
+                                ctrType: mediaModel.adCtrType
+                            ),
+                            viewController: weakVC
+                        )
                 )
         } else {
-            actionHelper = NovaActionHelper
+            actionHelper =
+                NovaActionHelper
                 .build(
                     with:
-                    .adInView(
-                        model: .init(
-                            tracingInfo: actionContext.adActionTracingInfo,
-                            extraInfo: actionContext.adActionExtraInfo,
-                            ctrType: mediaModel.adCtrType
+                        .adInView(
+                            model: .init(
+                                tracingInfo: actionContext.adActionTracingInfo,
+                                extraInfo: actionContext.adActionExtraInfo,
+                                ctrType: mediaModel.adCtrType
+                            )
                         )
-                    )
                 )
         }
     }
@@ -628,15 +635,15 @@ private extension NovaAdVideoView {
             )
         }
     }
-    
+
     private func setupBottomShadow(showBottomShadow: Bool) {
         bottomShadowView?.removeFromSuperview()
         bottomShadowView = nil
-        
+
         guard showBottomShadow else {
             return
         }
-        
+
         // Use fixed shadow configuration
         let config = GradientShadowViewConfig(
             colors: (
@@ -649,22 +656,22 @@ private extension NovaAdVideoView {
             shadowOffset: .zero,
             shadowRadius: 0
         )
-        
+
         let shadowView = GradientShadowView(with: config)
         shadowView.isUserInteractionEnabled = false
         addSubview(shadowView)
-        
+
         // Place shadow above playerView but below popup CTA
         let playerView = videoPlayer.getPlayerView()
         insertSubview(shadowView, aboveSubview: playerView)
-        
+
         shadowView.snp.makeConstraints { make in
             make.leading.trailing.bottom.equalToSuperview()
             // Default height similar to interstitial handlers
             let screenWidth = UIScreen.main.bounds.width
             make.height.equalTo(screenWidth * 280 / 375)
         }
-        
+
         bottomShadowView = shadowView
     }
 }
@@ -691,10 +698,10 @@ extension NovaAdVideoView: NovaVideoPlayerDelegate {
             let newIsMute = state?.isMute ?? true
             state = .init(
                 playState:
-                .playing(
-                    currentTime: videoPlayer.currentTime(),
-                    videoLength: videoPlayer.maximumTimeDuration()
-                ),
+                    .playing(
+                        currentTime: videoPlayer.currentTime(),
+                        videoLength: videoPlayer.maximumTimeDuration()
+                    ),
                 isMute: newIsMute
             )
             videoStartPlayingAfterFinishLoading = true
@@ -718,11 +725,11 @@ extension NovaAdVideoView: NovaVideoPlayerDelegate {
             let newIsMute = state?.isMute ?? true
             state = .init(
                 playState:
-                .paused(
-                    currentTime: videoPlayer.currentTime(),
-                    videoLength: videoPlayer.maximumTimeDuration(),
-                    endKind: videoPlayer.getVideoEndKind()
-                ),
+                    .paused(
+                        currentTime: videoPlayer.currentTime(),
+                        videoLength: videoPlayer.maximumTimeDuration(),
+                        endKind: videoPlayer.getVideoEndKind()
+                    ),
                 isMute: newIsMute
             )
             if let encryptedAdToken = actionContext?.adActionTracingInfo.encryptedAdToken, let lastResumeTime {
@@ -801,7 +808,7 @@ extension NovaAdVideoView: NovaVideoPlayerDelegate {
         guard let encryptedAdToken = self.actionContext?.adActionTracingInfo.encryptedAdToken else { return }
 
         // Log Start
-        
+
         NovaAdVideoMetricReporter.logVideoStart(
             encryptedAdToken: encryptedAdToken,
             videoInfo: videoInfo,
@@ -809,11 +816,11 @@ extension NovaAdVideoView: NovaVideoPlayerDelegate {
             configTime: configTime,
             novaVideoPlayer: videoPlayer
         )
-        
+
         iabReporter?.logVideoStart(duration: videoCurrentTimeInterval, volume: videoPlayer.isPlayerMuted() ? 0.0 : 1.0)
-        
+
         // Log End
-        
+
         NovaAdVideoMetricReporter.logVideoEnd(
             encryptedAdToken: encryptedAdToken,
             percentage: videoCurrentTimeInterval / videoLength,
@@ -822,12 +829,13 @@ extension NovaAdVideoView: NovaVideoPlayerDelegate {
             configTime: configTime,
             novaVideoPlayer: videoPlayer
         )
-        
+
         // Log Progress
-        
-        NovaAdVideoMetricReporter.logVideoProgress(encryptedAdToken: encryptedAdToken,
-                                                   percentage: videoCurrentTimeInterval / videoLength,
-                                                   duration: videoCurrentTimeInterval)
+
+        NovaAdVideoMetricReporter.logVideoProgress(
+            encryptedAdToken: encryptedAdToken,
+            percentage: videoCurrentTimeInterval / videoLength,
+            duration: videoCurrentTimeInterval)
         iabReporter?.logVideoProgress(percentage: videoCurrentTimeInterval / videoLength)
     }
 
@@ -835,9 +843,10 @@ extension NovaAdVideoView: NovaVideoPlayerDelegate {
 
     func player(_ player: NovaPlayer, didFailWithError error: Error?) {
         if let encryptedAdToken = actionContext?.adActionTracingInfo.encryptedAdToken, let configTime {
-            NovaAdVideoMetricReporter.logVideoError(encryptedAdToken: encryptedAdToken,
-                                                    error: error?.localizedDescription ?? "",
-                                                    duration: CACurrentMediaTime() - configTime)
+            NovaAdVideoMetricReporter.logVideoError(
+                encryptedAdToken: encryptedAdToken,
+                error: error?.localizedDescription ?? "",
+                duration: CACurrentMediaTime() - configTime)
         }
     }
 
@@ -852,9 +861,10 @@ extension NovaAdVideoView: NovaVideoPlayerDelegate {
             endCard.isHidden = false
             // TODO: lsy, should we stop the video player here?
         }
-        
+
         if let videoInfo = mediaModel?.videoInfo,
-           let encryptedAdToken = self.actionContext?.adActionTracingInfo.encryptedAdToken {
+            let encryptedAdToken = self.actionContext?.adActionTracingInfo.encryptedAdToken
+        {
             NovaAdVideoMetricReporter.logVideoEnd(
                 encryptedAdToken: encryptedAdToken,
                 percentage: 1.0,
@@ -864,7 +874,7 @@ extension NovaAdVideoView: NovaVideoPlayerDelegate {
                 novaVideoPlayer: videoPlayer
             )
         }
-        
+
         delegate?.videoViewDidPlayToEndTime()
     }
 }
@@ -878,15 +888,16 @@ extension NovaAdVideoView: NovaAdVideoSubviewBehaviorDelegate {
         guard state != nil else {
             return
         }
-        
+
         let currentMuteState = videoPlayer.isPlayerMuted()
         muted = !currentMuteState
     }
-    
+
     func reportMute(currentMuteState: Bool) {
         if let encryptedAdToken = actionContext?.adActionTracingInfo.encryptedAdToken {
-            NovaAdVideoMetricReporter.logVideoMute(encryptedAdToken: encryptedAdToken,
-                                                   isMute: currentMuteState)
+            NovaAdVideoMetricReporter.logVideoMute(
+                encryptedAdToken: encryptedAdToken,
+                isMute: currentMuteState)
         }
         iabReporter?.logVideoVolumeChange(to: !currentMuteState ? 0.0 : 1.0)
     }
@@ -923,6 +934,6 @@ extension NovaAdVideoView: NovaAdEndCardDelegate {
 
 extension CMTime {
     var timeInterval: TimeInterval {
-        return CMTimeGetSeconds(self)
+        CMTimeGetSeconds(self)
     }
 }

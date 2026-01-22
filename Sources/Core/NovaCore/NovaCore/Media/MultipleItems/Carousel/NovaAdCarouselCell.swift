@@ -56,19 +56,22 @@ class NovaAdCarouselCell: UICollectionViewCell {
         imageView.contentMode = .scaleAspectFill
         imageView.adClickArea = .media
         imageView.isUserInteractionEnabled = true
-        imageView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(didTapClickableArea(sender:))))
+        imageView.addGestureRecognizer(
+            UITapGestureRecognizer(target: self, action: #selector(didTapClickableArea(sender:))))
         return imageView
     }()
 
     private lazy var bodyLabel: UILabel = {
         let label = UILabel()
         label.font = .Nova.body2
-        label.textColor = UIColor(light: NovaColorPalettes.Black.withAlphaComponent(0.85), dark: NovaColorPalettes.White)
+        label.textColor = UIColor(
+            light: NovaColorPalettes.Black.withAlphaComponent(0.85), dark: NovaColorPalettes.White)
         label.numberOfLines = 2
         label.lineBreakMode = .byTruncatingTail
         label.accessibilityLabel = "body"
         label.isUserInteractionEnabled = true
-        label.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(didTapClickableArea(sender:))))
+        label.addGestureRecognizer(
+            UITapGestureRecognizer(target: self, action: #selector(didTapClickableArea(sender:))))
         return label
     }()
 

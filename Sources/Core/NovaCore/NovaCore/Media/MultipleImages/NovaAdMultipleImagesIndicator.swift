@@ -6,8 +6,8 @@
 //
 
 import Foundation
-import UIKit
 @_implementationOnly import SnapKit
+import UIKit
 
 protocol NovaAdMultipleImagesIndicatorDelegate: AnyObject {
     func multipleImagesIndicator(_ imagesIndicator: NovaAdMultipleImagesIndicator, didTapIndex: Int)

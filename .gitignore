@@ -133,6 +133,7 @@ InMobiSDKWrapper/Frameworks/*.xcframework
 # Node / editor
 node_modules/
 .idea/
+# Note: .husky directory should be committed to the repository (Husky best practice)
 
 # Ruby / Bundler artifacts
 bin/

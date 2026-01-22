@@ -11,4 +11,4 @@ extension NovaInterstitialAdLayout: TestParamPresentable {
         case .horizontalCancelTopRight: return [("is_vertical", "false"), ("layout", rawValue)]
         }
     }
-} 
+}

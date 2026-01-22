@@ -30,13 +30,13 @@ struct NovaNativeMultipleItemsItem: Codable {
 
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        
+
         let imageUrlString = try container.decode(String.self, forKey: .imageUrl)
         guard let imageUrl = URL(string: imageUrlString) else {
             throw DecodingError.dataCorruptedError(forKey: .imageUrl, in: container, debugDescription: "Invalid URL")
         }
         self.imageUrl = imageUrl
-        
+
         self.body = try container.decode(String.self, forKey: .body)
         self.callToAction = try container.decode(String.self, forKey: .callToAction)
         self.ctrType = try container.decodeIfPresent(AdCtrType.self, forKey: .ctrType)
@@ -44,10 +44,10 @@ struct NovaNativeMultipleItemsItem: Codable {
 
     func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
-        
+
         try container.encode(imageUrl.absoluteString, forKey: .imageUrl)
         try container.encode(body, forKey: .body)
         try container.encode(callToAction, forKey: .callToAction)
         try container.encodeIfPresent(ctrType, forKey: .ctrType)
     }
-} 
+}

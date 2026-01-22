@@ -53,8 +53,8 @@ enum NovaInterstitialAdLayout: String, Codable, CaseIterable {
 
 enum NovaAdMarketingType: String, Codable {
     case unknown
-    case normal     = "NORMAL"
-    case dpa        = "DPA"
+    case normal = "NORMAL"
+    case dpa = "DPA"
 }
 
 enum NovaNativeAdEndCardStyle: String, Codable {
@@ -70,4 +70,4 @@ enum NovaClickableComponent: String, Codable {
     case cta = "cta"
     case icon = "icon"
     case all = "all"
-} 
+}

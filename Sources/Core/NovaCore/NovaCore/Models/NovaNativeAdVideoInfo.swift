@@ -1,5 +1,4 @@
 final class NovaNativeAdVideoInfo: Codable {
-
     let cacheKey: String
 
     let coverUrlStr: String?
@@ -11,11 +10,11 @@ final class NovaNativeAdVideoInfo: Codable {
 
     // Backward compatibility property
     var isVertical: Bool {
-        return isLayoutVertical
+        isLayoutVertical
     }
 
     let isVideoClickable: Bool
-    
+
     let isPlayOnLandingPage: Bool
 
     let isAuto: Bool
@@ -30,16 +29,17 @@ final class NovaNativeAdVideoInfo: Codable {
 
     var didStart: Bool = false
 
-    init(adId: String,
-         coverUrlStr: String?,
-         videoUrlStr: String,
-         isLayoutVertical: Bool,
-         isVideoClickable: Bool,
-         isPlayOnLandingPage: Bool,
-         isAuto: Bool,
-         isMute: Bool,
-         isLoop: Bool,
-         endCardStyle: NovaNativeAdEndCardStyle?
+    init(
+        adId: String,
+        coverUrlStr: String?,
+        videoUrlStr: String,
+        isLayoutVertical: Bool,
+        isVideoClickable: Bool,
+        isPlayOnLandingPage: Bool,
+        isAuto: Bool,
+        isMute: Bool,
+        isLoop: Bool,
+        endCardStyle: NovaNativeAdEndCardStyle?
     ) {
         self.cacheKey = adId
         self.coverUrlStr = coverUrlStr
@@ -52,9 +52,9 @@ final class NovaNativeAdVideoInfo: Codable {
         self.isLoop = isLoop
         self.endCardStyle = endCardStyle
     }
-    
+
     // MARK: - Codable
-    
+
     enum CodingKeys: String, CodingKey {
         case cacheKey
         case coverUrlStr
@@ -67,10 +67,10 @@ final class NovaNativeAdVideoInfo: Codable {
         case isLoop
         case endCardStyle
     }
-    
+
     required init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        
+
         cacheKey = try container.decode(String.self, forKey: .cacheKey)
         coverUrlStr = try? container.decode(String.self, forKey: .coverUrlStr)
         videoUrlStr = try container.decode(String.self, forKey: .videoUrlStr)
@@ -82,7 +82,7 @@ final class NovaNativeAdVideoInfo: Codable {
         isLoop = try container.decode(Bool.self, forKey: .isLoop)
         endCardStyle = try container.decodeIfPresent(NovaNativeAdEndCardStyle.self, forKey: .endCardStyle)
     }
-    
+
     func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
 

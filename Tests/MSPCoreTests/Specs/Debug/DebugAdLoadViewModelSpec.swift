@@ -2,6 +2,7 @@ import Combine
 import Nimble
 import Quick
 import UIKit
+
 @testable import MSPCore
 @testable import MSPiOSCore
 
@@ -71,7 +72,9 @@ class DebugAdLoadViewModelSpec: QuickSpec {
 
             context("visibility rules") {
                 it("shows Nova sections when Nova + Interstitial are selected") {
-                    let sections = TestDataFactory.createProductionLikeSections(placements: [TestConstants.Placements.placement1])
+                    let sections = TestDataFactory.createProductionLikeSections(placements: [
+                        TestConstants.Placements.placement1
+                    ])
                     placementsRepository.placementsToReturn = [TestConstants.Placements.placement1]
                     sectionsRepository.sectionsToReturn = sections
 
@@ -92,7 +95,8 @@ class DebugAdLoadViewModelSpec: QuickSpec {
                         optionId: AdFormat.interstitial.id
                     )
 
-                    let creativeTypeVisible = sectionVisible(in: sut, sectionId: DebugSectionData.SectionIds.creativeType)
+                    let creativeTypeVisible = sectionVisible(
+                        in: sut, sectionId: DebugSectionData.SectionIds.creativeType)
                     let layoutVisible = sectionVisible(in: sut, sectionId: DebugSectionData.SectionIds.layout)
 
                     expect(creativeTypeVisible).to(beTrue())
@@ -100,7 +104,9 @@ class DebugAdLoadViewModelSpec: QuickSpec {
                 }
 
                 it("hides Nova sections when conditions are not met") {
-                    let sections = TestDataFactory.createProductionLikeSections(placements: [TestConstants.Placements.placement1])
+                    let sections = TestDataFactory.createProductionLikeSections(placements: [
+                        TestConstants.Placements.placement1
+                    ])
                     placementsRepository.placementsToReturn = [TestConstants.Placements.placement1]
                     sectionsRepository.sectionsToReturn = sections
 
@@ -128,7 +134,8 @@ class DebugAdLoadViewModelSpec: QuickSpec {
                         optionId: AdFormat.banner.id
                     )
 
-                    let creativeTypeVisible = sectionVisible(in: sut, sectionId: DebugSectionData.SectionIds.creativeType)
+                    let creativeTypeVisible = sectionVisible(
+                        in: sut, sectionId: DebugSectionData.SectionIds.creativeType)
                     let layoutVisible = sectionVisible(in: sut, sectionId: DebugSectionData.SectionIds.layout)
 
                     expect(creativeTypeVisible).to(beFalse())
@@ -138,7 +145,9 @@ class DebugAdLoadViewModelSpec: QuickSpec {
 
             context("test parameter generation") {
                 it("includes basic parameters for selected options") {
-                    let sections = TestDataFactory.createProductionLikeSections(placements: [TestConstants.Placements.placement1])
+                    let sections = TestDataFactory.createProductionLikeSections(placements: [
+                        TestConstants.Placements.placement1
+                    ])
                     placementsRepository.placementsToReturn = [TestConstants.Placements.placement1]
                     sectionsRepository.sectionsToReturn = sections
 
@@ -160,7 +169,9 @@ class DebugAdLoadViewModelSpec: QuickSpec {
                 }
 
                 it("includes Nova-specific parameters when selected") {
-                    let sections = TestDataFactory.createProductionLikeSections(placements: [TestConstants.Placements.placement1])
+                    let sections = TestDataFactory.createProductionLikeSections(placements: [
+                        TestConstants.Placements.placement1
+                    ])
                     placementsRepository.placementsToReturn = [TestConstants.Placements.placement1]
                     sectionsRepository.sectionsToReturn = sections
 
@@ -193,7 +204,9 @@ class DebugAdLoadViewModelSpec: QuickSpec {
 
             context("ad callbacks") {
                 it("emits ad presentation signal on successful load") {
-                    let sections = TestDataFactory.createProductionLikeSections(placements: [TestConstants.Placements.placement1])
+                    let sections = TestDataFactory.createProductionLikeSections(placements: [
+                        TestConstants.Placements.placement1
+                    ])
                     placementsRepository.placementsToReturn = [TestConstants.Placements.placement1]
                     sectionsRepository.sectionsToReturn = sections
 
@@ -228,7 +241,9 @@ class DebugAdLoadViewModelSpec: QuickSpec {
                 }
 
                 it("emits toast signal on load error") {
-                    let sections = TestDataFactory.createProductionLikeSections(placements: [TestConstants.Placements.placement1])
+                    let sections = TestDataFactory.createProductionLikeSections(placements: [
+                        TestConstants.Placements.placement1
+                    ])
                     placementsRepository.placementsToReturn = [TestConstants.Placements.placement1]
                     sectionsRepository.sectionsToReturn = sections
 
@@ -260,7 +275,9 @@ class DebugAdLoadViewModelSpec: QuickSpec {
                 }
 
                 it("does not clear the ad reference on dismissal") {
-                    let sections = TestDataFactory.createProductionLikeSections(placements: [TestConstants.Placements.placement1])
+                    let sections = TestDataFactory.createProductionLikeSections(placements: [
+                        TestConstants.Placements.placement1
+                    ])
                     placementsRepository.placementsToReturn = [TestConstants.Placements.placement1]
                     sectionsRepository.sectionsToReturn = sections
 
@@ -292,7 +309,7 @@ class DebugAdLoadViewModelSpec: QuickSpec {
 }
 
 private func sectionVisible(in viewModel: DebugAdLoadViewModel, sectionId: String) -> Bool? {
-    return viewModel.sections.first(where: { $0.id == sectionId })?.visible
+    viewModel.sections.first(where: { $0.id == sectionId })?.visible
 }
 
 private func selectOption(in viewModel: DebugAdLoadViewModel, sectionId: String, optionId: String) {
@@ -302,16 +319,19 @@ private func selectOption(in viewModel: DebugAdLoadViewModel, sectionId: String,
     viewModel.selectOption(section: sectionIndex, row: optionIndex)
 }
 
-private func firstOptionId(in viewModel: DebugAdLoadViewModel, sectionId: String, excluding excludedId: String) -> String? {
+private func firstOptionId(in viewModel: DebugAdLoadViewModel, sectionId: String, excluding excludedId: String)
+    -> String?
+{
     guard let section = viewModel.sections.first(where: { $0.id == sectionId }) else { return nil }
     return section.cellViewModels.first(where: { $0.id != excludedId })?.id
 }
 
 private func decodeTestParams(from params: [String: String]) -> [String: Any] {
     guard let jsonString = params["test"],
-          let data = jsonString.data(using: .utf8),
-          let object = try? JSONSerialization.jsonObject(with: data, options: []),
-          let dict = object as? [String: Any] else {
+        let data = jsonString.data(using: .utf8),
+        let object = try? JSONSerialization.jsonObject(with: data, options: []),
+        let dict = object as? [String: Any]
+    else {
         return [:]
     }
     return dict
@@ -327,25 +347,25 @@ private class MockAdNetworkAdapter: AdNetworkAdapter {
         bidderPlacementId: String,
         bidderFormat: AdFormat?,
         params: [String: String]?
-    ) { }
+    ) {}
 
     func initialize(
         initParams: InitializationParameters,
         adapterInitListener: AdapterInitListener,
         context: Any?
-    ) { }
+    ) {}
 
-    func destroyAd() { }
+    func destroyAd() {}
 
-    func prepareViewForInteraction(nativeAd: NativeAd, nativeAdView: Any) { }
+    func prepareViewForInteraction(nativeAd: NativeAd, nativeAdView: Any) {}
 
-    func setAdMetricReporter(adMetricReporter: AdMetricReporter) { }
+    func setAdMetricReporter(adMetricReporter: AdMetricReporter) {}
 
     func getAdNetwork() -> AdNetwork { .unknown }
 
-    func sendHideAdEvent(reason: String, adScreenShot: Data?, fullScreenShot: Data?) { }
+    func sendHideAdEvent(reason: String, adScreenShot: Data?, fullScreenShot: Data?) {}
 
-    func sendReportAdEvent(reason: String, description: String?, adScreenShot: Data?, fullScreenShot: Data?) { }
+    func sendReportAdEvent(reason: String, description: String?, adScreenShot: Data?, fullScreenShot: Data?) {}
 
     func getSDKVersion() -> String { "0.0.0" }
 }

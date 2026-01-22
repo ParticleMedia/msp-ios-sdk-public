@@ -5,11 +5,11 @@
 //  Created by Shanyu Li on 2025/5/13.
 //
 
+// MARK: - NovaAdPlayableView
+
 import Foundation
 import UIKit
 import WebKit
-
-// MARK: - NovaAdPlayableView
 
 class NovaAdPlayableView: UIView {
     // MARK: Lifecycle
@@ -53,29 +53,31 @@ class NovaAdPlayableView: UIView {
 
             self.actionHelper = {
                 if let weakVC = actionContext.viewController {
-                    return NovaActionHelper
+                    return
+                        NovaActionHelper
                         .build(
                             with:
-                            .adInViewController(
-                                model: .init(
-                                    tracingInfo: actionContext.adActionTracingInfo,
-                                    extraInfo: actionContext.adActionExtraInfo,
-                                    ctrType: playableModel.launchAdType
-                                ),
-                                viewController: weakVC
-                            )
+                                .adInViewController(
+                                    model: .init(
+                                        tracingInfo: actionContext.adActionTracingInfo,
+                                        extraInfo: actionContext.adActionExtraInfo,
+                                        ctrType: playableModel.launchAdType
+                                    ),
+                                    viewController: weakVC
+                                )
                         )
                 } else {
-                    return NovaActionHelper
+                    return
+                        NovaActionHelper
                         .build(
                             with:
-                            .adInView(
-                                model: .init(
-                                    tracingInfo: actionContext.adActionTracingInfo,
-                                    extraInfo: actionContext.adActionExtraInfo,
-                                    ctrType: playableModel.launchAdType
+                                .adInView(
+                                    model: .init(
+                                        tracingInfo: actionContext.adActionTracingInfo,
+                                        extraInfo: actionContext.adActionExtraInfo,
+                                        ctrType: playableModel.launchAdType
+                                    )
                                 )
-                            )
                         )
                 }
             }()
@@ -176,9 +178,9 @@ extension NovaAdPlayableView: WKScriptMessageHandler {
 
         // Parse JSON message from JavaScript
         guard let jsonString = message.body as? String,
-              let jsonData = jsonString.data(using: .utf8),
-              let jsonObject = try? JSONSerialization.jsonObject(with: jsonData) as? [String: Any],
-              let action = jsonObject["action"] as? String
+            let jsonData = jsonString.data(using: .utf8),
+            let jsonObject = try? JSONSerialization.jsonObject(with: jsonData) as? [String: Any],
+            let action = jsonObject["action"] as? String
         else {
             return
         }
@@ -314,8 +316,9 @@ private extension NovaAdPlayableView {
     }
 
     func loadScript(named resourceName: String) -> String {
-        guard let url = NovaResource.getJSScriptResourceURL(resourceName)
-            ?? Bundle.main.url(forResource: resourceName, withExtension: "js")
+        guard
+            let url = NovaResource.getJSScriptResourceURL(resourceName)
+                ?? Bundle.main.url(forResource: resourceName, withExtension: "js")
         else {
             assertionFailure("Failed to find \(resourceName).js in bundle")
             return ""

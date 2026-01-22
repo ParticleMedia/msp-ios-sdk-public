@@ -7,7 +7,6 @@
 
 import Foundation
 
-
 public enum MSPInitStatus {
     case SUCCESS
 

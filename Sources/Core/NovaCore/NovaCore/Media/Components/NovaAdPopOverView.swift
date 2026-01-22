@@ -76,12 +76,13 @@ class NovaAdPopOverView: UIView {
         if currentVariant == variant {
             return
         }
-        let nextView: (UIView & NovaAdPopOverContentView) = switch variant {
-        case .legacy:
-            NovaAdPopOverLegacyView()
-        case .v2:
-            NovaAdPopOverV2View()
-        }
+        let nextView: (UIView & NovaAdPopOverContentView) =
+            switch variant {
+            case .legacy:
+                NovaAdPopOverLegacyView()
+            case .v2:
+                NovaAdPopOverV2View()
+            }
 
         contentView?.removeFromSuperview()
         contentView = nextView
@@ -152,13 +153,14 @@ private final class NovaAdPopOverLegacyView: UIView, NovaAdPopOverContentView {
             let maxX = sourceView.frame.width - insets.right - NovaAdPopOverView.Constants.padding - popoverSize.width
             let desiredLeading = sourcePoint.x
 
-            let leadingOffset: CGFloat = if desiredLeading < minX {
-                minX
-            } else if desiredLeading > maxX {
-                maxX
-            } else {
-                desiredLeading
-            }
+            let leadingOffset: CGFloat =
+                if desiredLeading < minX {
+                    minX
+                } else if desiredLeading > maxX {
+                    maxX
+                } else {
+                    desiredLeading
+                }
 
             let maxY = sourceView.frame.height - insets.bottom - popoverSize.height
             let minY = insets.top + NovaAdPopOverView.Constants.padding
@@ -288,13 +290,14 @@ private final class NovaAdPopOverV2View: UIView, NovaAdPopOverContentView {
             let maxX = sourceView.frame.width - insets.right - NovaAdPopOverView.Constants.padding - popoverSize.width
             let desiredLeading = sourcePoint.x - (popoverSize.width / 2.0)
 
-            let leadingOffset: CGFloat = if desiredLeading < minX {
-                minX
-            } else if desiredLeading > maxX {
-                maxX
-            } else {
-                desiredLeading
-            }
+            let leadingOffset: CGFloat =
+                if desiredLeading < minX {
+                    minX
+                } else if desiredLeading > maxX {
+                    maxX
+                } else {
+                    desiredLeading
+                }
 
             let maxY = sourceView.frame.height - insets.bottom - popoverSize.height
             let minY = insets.top + NovaAdPopOverView.Constants.padding
@@ -397,7 +400,8 @@ private final class NovaAdPopOverV2View: UIView, NovaAdPopOverContentView {
         let contentHeight = max(textHeight, hasLogo ? Constants.logoSize : 0.0, Constants.arrowSize)
         let leftPadding = hasLogo ? Constants.horizontalPaddingWithLogo : Constants.noLogoPadding
 
-        var width = leftPadding + textWidth + Constants.elementSpacing + Constants.arrowSize + Constants.horizontalPadding
+        var width =
+            leftPadding + textWidth + Constants.elementSpacing + Constants.arrowSize + Constants.horizontalPadding
         if hasLogo {
             width += Constants.logoSize + Constants.elementSpacing
         }

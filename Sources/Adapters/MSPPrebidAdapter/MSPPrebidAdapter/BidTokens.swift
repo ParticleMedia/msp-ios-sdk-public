@@ -32,10 +32,10 @@ public class BidTokens {
         self.molocoBidToken = molocoBidToken
         return self
     }
-    
+
     @discardableResult
     public func with(liftoffBidToken: String?) -> Self {
         self.liftoffBidToken = liftoffBidToken
         return self
     }
- }
+}

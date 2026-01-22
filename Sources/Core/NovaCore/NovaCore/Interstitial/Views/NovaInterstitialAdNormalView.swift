@@ -6,15 +6,15 @@
 //
 
 import Foundation
-import UIKit
 @_implementationOnly import SnapKit
+import UIKit
 
 // MARK: - NovaInterstitialAdNormalView
 
 class NovaInterstitialAdNormalView: UIView, NovaInterstitialAdViewProtocol {
     // logging
     private let startTime: CFTimeInterval
-    
+
     // MARK: Lifecycle
 
     init(
@@ -38,7 +38,7 @@ class NovaInterstitialAdNormalView: UIView, NovaInterstitialAdViewProtocol {
                 viewController: Weak(viewController)
             )
         )
-        
+
         super.init(frame: .zero)
         setupSubviews()
     }
@@ -61,9 +61,10 @@ class NovaInterstitialAdNormalView: UIView, NovaInterstitialAdViewProtocol {
         subviewHandler
             .setupSubviews(
                 in: self,
-                showReportButton: reportHandling.novaCanShowReportButton(with: context.interstitialAd.novaAdReportContext)
+                showReportButton: reportHandling.novaCanShowReportButton(
+                    with: context.interstitialAd.novaAdReportContext)
             )
-        
+
         subviewHandler.config()
 
         // Setup tap gesture
@@ -85,9 +86,10 @@ class NovaInterstitialAdNormalView: UIView, NovaInterstitialAdViewProtocol {
     func willDisappear() {
         subviewHandler.willDisappear()
     }
-    
+
     func didTapAd(customUrl: URL?, clickArea: String?) {
-        actionHelper = actionHelper
+        actionHelper =
+            actionHelper
             .logCustomAreaNovaClickEvent(with: CACurrentMediaTime() - startTime, in: clickArea)
             .handleAdTap(in: nil, customUrl: customUrl)
     }
@@ -114,7 +116,7 @@ class NovaInterstitialAdNormalView: UIView, NovaInterstitialAdViewProtocol {
     internal let reportHandling: any NovaInterstitialAdReportHandling
 
     internal var playableActionHelper: NovaActionHelper<NovaActionState.Init>?
-    
+
     internal weak var viewController: UIViewController?
     internal var subviewHandler: NovaInterstitialAdSubviewHandler!
 }
@@ -131,12 +133,13 @@ extension NovaInterstitialAdNormalView: NovaInterstitialAdSubviewBehaviorDelegat
     }
 
     func didTapCloseButton() {
-        actionHelper = actionHelper
+        actionHelper =
+            actionHelper
             .logNovaSkipEvent(with: .skipButton, duration: CACurrentMediaTime() - startTime)
             .handleCloseTap()
         context.interstitialAd.delegate?.interstitialAdDidDismiss(context.interstitialAd)
     }
-    
+
     func didTapPlayableAd(with playableModel: PlayableModel) {
         // Create a new action helper for playable ad
         playableActionHelper = NovaActionHelper.build(
@@ -149,7 +152,7 @@ extension NovaInterstitialAdNormalView: NovaInterstitialAdSubviewBehaviorDelegat
                 viewController: Weak(viewController)
             )
         )
-        
+
         playableActionHelper = playableActionHelper?
             .logNovaClickEvent(with: CACurrentMediaTime() - startTime, in: .playable)
             .handleAdTap(in: nil)
@@ -162,7 +165,8 @@ extension NovaInterstitialAdNormalView: NovaInterstitialAdSubviewBehaviorDelegat
 
 private extension NovaInterstitialAdNormalView {
     func handleAdTap(clickArea: ClickableAdArea, view: UIView?, customUrl: URL?) {
-        actionHelper = actionHelper
+        actionHelper =
+            actionHelper
             .logNovaClickEvent(with: CACurrentMediaTime() - startTime, in: clickArea)
             .handleAdTap(in: view, customUrl: customUrl)
     }

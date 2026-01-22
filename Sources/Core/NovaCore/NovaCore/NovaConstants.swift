@@ -7,9 +7,8 @@
 
 import Foundation
 
-
 public class NovaConstants {
     public static let shared = NovaConstants()
-    
+
     public var NovaEventHostUrl = "https://dsp.newsbreak.com"
 }

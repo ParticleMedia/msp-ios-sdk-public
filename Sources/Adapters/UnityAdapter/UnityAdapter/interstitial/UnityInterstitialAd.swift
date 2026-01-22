@@ -6,26 +6,27 @@
 //
 
 import Foundation
-import MSPiOSCore
 import IronSource
-
+import MSPiOSCore
 
 public class UnityInterstitialAd: MSPiOSCore.InterstitialAd {
     public weak var rootViewController: UIViewController?
     public var interstitialAdItem: LPMInterstitialAd?
-    
+
     public override func show() {
         if let interstitialAdItem = self.interstitialAdItem,
-           let rootViewController = self.rootViewController,
-           interstitialAdItem.isAdReady() {
+            let rootViewController = self.rootViewController,
+            interstitialAdItem.isAdReady()
+        {
             interstitialAdItem.showAd(viewController: rootViewController, placementName: nil)
         }
     }
-    
+
     public override func show(rootViewController: UIViewController?) {
         if let interstitialAdItem = self.interstitialAdItem,
-           let rootViewController = rootViewController,
-           interstitialAdItem.isAdReady() {
+            let rootViewController = rootViewController,
+            interstitialAdItem.isAdReady()
+        {
             interstitialAdItem.showAd(viewController: rootViewController, placementName: nil)
         }
     }

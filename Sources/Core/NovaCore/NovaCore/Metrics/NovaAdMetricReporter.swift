@@ -8,14 +8,14 @@
 import Foundation
 import UIKit
 
-
 class NovaAdMetricReporter: NSObject {
-    static func logAdImpression(thirdPartyImpressionTrackingUrls: [String],
-                                encryptedAdToken: String,
-                                adUnitId: String,
-                                startTimeInMs: Double? = nil,
-                                expirationTimeInMs: Double? = nil)
-    {
+    static func logAdImpression(
+        thirdPartyImpressionTrackingUrls: [String],
+        encryptedAdToken: String,
+        adUnitId: String,
+        startTimeInMs: Double? = nil,
+        expirationTimeInMs: Double? = nil
+    ) {
         // Third party impression tracking
         AdsThirdPartyMetricReporter.logImpression(thirdPartyImpressionTrackingUrls: thirdPartyImpressionTrackingUrls)
 
@@ -65,7 +65,7 @@ class NovaAdMetricReporter: NSObject {
 
     static func logAdHide(reason: String, encryptedAdToken: String) {
         let params: [String: String] = [
-            NovaAdMetricKeys.REASON: reason,
+            NovaAdMetricKeys.REASON: reason
         ]
 
         logNovaAdEvent(.hideAd, encryptedAdToken: encryptedAdToken, params: params)
@@ -101,7 +101,7 @@ class NovaAdMetricReporter: NSObject {
     static func logVideoEvent(_ event: NovaAdEvent, encryptedAdToken: String, params: [String: String] = [:]) {
         logNovaAdEvent(event, encryptedAdToken: encryptedAdToken, params: params)
     }
-    
+
     static func logWebEvent(_ event: NovaAdEvent, encryptedAdToken: String, params: [String: String] = [:]) {
         logNovaAdEvent(event, encryptedAdToken: encryptedAdToken, params: params)
     }
@@ -117,7 +117,7 @@ private extension NovaAdMetricReporter {
         params[NovaAdMetricKeys.ENCRYPTED_AD_TOKEN] = encryptedAdToken
         params[NovaAdMetricKeys.EVENT_TIME] = "\(Int64(Date().timeIntervalSince1970 * 1000))"
         params[NovaAdMetricKeys.OS] = "ios"
-        params[NovaAdMetricKeys.OSV] =  UIDevice.current.systemVersion
+        params[NovaAdMetricKeys.OSV] = UIDevice.current.systemVersion
         if let cv = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String {
             params[NovaAdMetricKeys.CV] = cv
         }
@@ -126,7 +126,7 @@ private extension NovaAdMetricReporter {
         if let appStoreId = NovaDevice.shared.appStoreId {
             params[NovaAdMetricKeys.BUNDLE] = appStoreId
         }
-        
+
         //params["session_id"] = "\(HpEngine.sharedInstance().nbSessionId)"
 
         //let user = HpEngine.sharedInstance().user
@@ -150,7 +150,7 @@ extension NovaAdMetricReporter {
         guard let clickArea else {
             return nil
         }
-        
+
         switch clickArea {
         case "icon", "advertiser", "badge":
             return clickArea
@@ -187,11 +187,11 @@ struct NovaAdMetricKeys {
     static let REASON = "reason"
     static let ERROR = "error"
     static let OFFSET = "offset"
-    
+
     static let EVENT_TYPE = "event_type"
     static let ENCRYPTED_AD_TOKEN = "encrypted_ad_token"
     static let EVENT_TIME = "event_time"
-    
+
     static let OS = "os"
     static let CV = "cv"
     static let OSV = "osv"

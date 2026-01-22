@@ -8,7 +8,6 @@
 import Foundation
 
 class NovaAdMultipleImagesComponentProvider {
-
     lazy var multipleImagesView: NovaAdMultipleImagesView = {
         let imagesView = NovaAdMultipleImagesView()
         imagesView.delegate = self

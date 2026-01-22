@@ -10,7 +10,7 @@ import UIKit
 
 open class BannerAd: MSPAd {
     public var adView: UIView
-    
+
     public init(adView: UIView, adNetworkAdapter: AdNetworkAdapter) {
         self.adView = adView
         super.init(adNetworkAdapter: adNetworkAdapter)

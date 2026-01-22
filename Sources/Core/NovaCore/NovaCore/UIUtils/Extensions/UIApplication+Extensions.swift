@@ -3,7 +3,7 @@ import UIKit
 
 extension UIApplication {
     class var novaWindowScenes: [UIWindowScene] {
-        return Self.shared.connectedScenes.compactMap({ $0 as? UIWindowScene })
+        Self.shared.connectedScenes.compactMap({ $0 as? UIWindowScene })
     }
 
     class var novaSharedKeyWindow: UIWindow? {
@@ -24,7 +24,7 @@ extension UIApplication {
     }
 
     class var novaSafeAreaInsets: UIEdgeInsets {
-        return Self.novaSharedKeyWindow?.safeAreaInsets ?? .zero
+        Self.novaSharedKeyWindow?.safeAreaInsets ?? .zero
     }
 
     class var novaTopViewController: UIViewController? {
@@ -57,4 +57,3 @@ extension UIApplication {
         }
     }
 }
-

@@ -32,7 +32,7 @@ public class BidTokenProviders {
         self.molocoBidTokenProvider = molocoBidTokenProvider
         return self
     }
-    
+
     @discardableResult
     public func with(liftoffBidTokenProvider: LiftoffBidTokenProvider) -> Self {
         self.liftoffBidTokenProvider = liftoffBidTokenProvider

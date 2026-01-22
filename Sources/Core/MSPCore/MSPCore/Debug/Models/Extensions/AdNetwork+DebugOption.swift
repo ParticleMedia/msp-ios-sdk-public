@@ -3,7 +3,7 @@ import MSPiOSCore
 
 extension AdNetwork: DebugOption {
     var id: String { rawValue }
-    
+
     var displayTitle: String {
         switch self {
         case .facebook: return "Facebook"
@@ -22,7 +22,7 @@ extension AdNetwork: DebugOption {
         @unknown default: return ""
         }
     }
-    
+
     var isVisible: Bool {
         switch self {
         case .facebook, .google, .nova, .pubmatic, .moloco, .liftoff: return true
@@ -33,4 +33,4 @@ extension AdNetwork: DebugOption {
         @unknown default: return false
         }
     }
-} 
+}

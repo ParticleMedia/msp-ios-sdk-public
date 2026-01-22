@@ -5,9 +5,9 @@
 //  Created by Shanyu Li on 2025/8/7.
 //
 
-import UIKit
 internal import Lottie
 @_implementationOnly import SnapKit
+import UIKit
 
 // MARK: - NovaAdMediaView
 
@@ -164,14 +164,16 @@ extension NovaAdMediaView {
         tapToTryAnimationView?.removeFromSuperview()
         tapToTryStaticView.removeFromSuperview()
         discountTag.removeFromSuperview()
-        
+
         let showBottomShadow = mediaContent.elementLayout?.showBottomShadow ?? false
-        
+
         switch mediaContent.adMedia {
         case .image(let model):
-            imageView.config(with: model, actionContext: actionContext, completion: completion, showBottomShadow: showBottomShadow)
+            imageView.config(
+                with: model, actionContext: actionContext, completion: completion, showBottomShadow: showBottomShadow)
         case .video(let model):
-            videoView.config(with: model, actionContext: actionContext, iabReporter: iabReporter, showBottomShadow: showBottomShadow)
+            videoView.config(
+                with: model, actionContext: actionContext, iabReporter: iabReporter, showBottomShadow: showBottomShadow)
         case .multipleImages(let model):
             multipleImagesComponentsProvider.config(with: model, actionContext: actionContext)
         case .multipleItems(let model):
@@ -185,7 +187,9 @@ extension NovaAdMediaView {
             let layout = playableModel.layout
             switch (renderOption, layout) {
             case (.auto, .showMedia), (.auto, .twoPart), (.none, .showMedia), (.none, .twoPart), (.imageOrVideo, _):
-                imageView.config(with: imageModel, actionContext: actionContext, completion: completion, showBottomShadow: showBottomShadow)
+                imageView.config(
+                    with: imageModel, actionContext: actionContext, completion: completion,
+                    showBottomShadow: showBottomShadow)
                 if mediaContent.elementLayout?.showTapToTry ?? true {
                     setupTapToTry(with: playableModel)
                 }
@@ -197,7 +201,9 @@ extension NovaAdMediaView {
             let layout = playableModel.layout
             switch (renderOption, layout) {
             case (.auto, .showMedia), (.auto, .twoPart), (.none, .showMedia), (.none, .twoPart), (.imageOrVideo, _):
-                videoView.config(with: videoModel, actionContext: actionContext, iabReporter: iabReporter, showBottomShadow: showBottomShadow)
+                videoView.config(
+                    with: videoModel, actionContext: actionContext, iabReporter: iabReporter,
+                    showBottomShadow: showBottomShadow)
                 if mediaContent.elementLayout?.showTapToTry ?? true {
                     setupTapToTry(with: playableModel)
                 }

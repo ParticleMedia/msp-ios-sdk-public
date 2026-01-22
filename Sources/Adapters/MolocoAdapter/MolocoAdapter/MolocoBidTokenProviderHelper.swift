@@ -11,17 +11,17 @@ import MolocoSDK
 
 public class MolocoBidTokenProviderHelper: MolocoBidTokenProvider {
     public init() {
-        
     }
-    
+
     public func fetch(completeListener: any MolocoBidTokenListener, context: Any) {
         Moloco.shared.getBidToken(params: .init(mediation: "")) { bidToken, error in
             if error != nil {
-                MSPLogger.shared.info(message: "Failed to get moloco bid token: \(String(describing: error?.localizedDescription))")
+                MSPLogger.shared.info(
+                    message: "Failed to get moloco bid token: \(String(describing: error?.localizedDescription))")
                 completeListener.onComplete(molocoBidToken: "")
-                return 
+                return
             }
-            
+
             if let bidToken = bidToken {
                 MSPLogger.shared.info(message: "Get moloco bid token successfully")
                 completeListener.onComplete(molocoBidToken: bidToken)
@@ -29,7 +29,6 @@ public class MolocoBidTokenProviderHelper: MolocoBidTokenProvider {
                 MSPLogger.shared.info(message: "Failed to get moloco bid token: bidToken is nil")
                 completeListener.onComplete(molocoBidToken: "")
             }
-            
         }
     }
 }

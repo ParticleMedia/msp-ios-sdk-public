@@ -1,10 +1,9 @@
-import SafariServices
-import WebKit
-import UIKit
 import Foundation
+import SafariServices
+import UIKit
+import WebKit
 
 class NovaAdLandingWebContentViewController: UIViewController {
-
     var initialLoadDidRedirectTo: ((WKWebView) -> Void)?
     var didGoBackToInitialLoad: ((WKWebView) -> Void)?
     var webViewDidScroll: ((UIScrollView) -> Void)?
@@ -59,7 +58,8 @@ class NovaAdLandingWebContentViewController: UIViewController {
         self.webContext = webContext
         self.navigationModel = navigationModel
         super.init(nibName: nil, bundle: nil)
-        self.unifiedWebViewHost = NovaUnifiedWebViewBuilder
+        self.unifiedWebViewHost =
+            NovaUnifiedWebViewBuilder
             .buildWebViewHost(
                 enableNBUserAgent: false,
                 enableJSBridge: false,
@@ -91,8 +91,12 @@ class NovaAdLandingWebContentViewController: UIViewController {
             self?.bottomView.configButton(canGoForward: canGoForward)
         }
 
-        NotificationCenter.default.addObserver(self, selector: #selector(appWillResignActive), name: UIApplication.willResignActiveNotification, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(appWillEnterForeground), name: UIApplication.willEnterForegroundNotification, object: nil)
+        NotificationCenter.default.addObserver(
+            self, selector: #selector(appWillResignActive), name: UIApplication.willResignActiveNotification,
+            object: nil)
+        NotificationCenter.default.addObserver(
+            self, selector: #selector(appWillEnterForeground), name: UIApplication.willEnterForegroundNotification,
+            object: nil)
     }
 
     required init?(coder: NSCoder) {
@@ -110,23 +114,26 @@ class NovaAdLandingWebContentViewController: UIViewController {
         self.loadingTimer = nil
         self.smoothProgress.stopUpdatingProgress()
         NotificationCenter.default.removeObserver(self, name: UIApplication.willResignActiveNotification, object: nil)
-        NotificationCenter.default.removeObserver(self, name: UIApplication.willEnterForegroundNotification, object: nil)
+        NotificationCenter.default.removeObserver(
+            self, name: UIApplication.willEnterForegroundNotification, object: nil)
     }
 
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        let naviViewModel = self.navigationModel ?? NovaWebViewNavigationViewModel(
-            title: webContext.extraInfo.advertiser,
-            leftButtonIcon: UIImage.Nova.crossOutline,
-            leftButtonTapActionHandler: { [weak self] in
-                self?.navigationViewDidClickBackButton()
-            },
-            rightButtonIcon: nil,
-            rightButtonTapActionHandler: { [weak self] in
-                self?.navigationViewDidClickBackButton()
-            }
-        )
+        let naviViewModel =
+            self.navigationModel
+            ?? NovaWebViewNavigationViewModel(
+                title: webContext.extraInfo.advertiser,
+                leftButtonIcon: UIImage.Nova.crossOutline,
+                leftButtonTapActionHandler: { [weak self] in
+                    self?.navigationViewDidClickBackButton()
+                },
+                rightButtonIcon: nil,
+                rightButtonTapActionHandler: { [weak self] in
+                    self?.navigationViewDidClickBackButton()
+                }
+            )
         naviView.config(viewModel: naviViewModel)
 
         bottomView.delegate = self
@@ -135,34 +142,33 @@ class NovaAdLandingWebContentViewController: UIViewController {
 
         self.view.addSubviews([naviView, webView, loadingView, progressView, bottomView])
 
-        let navigationBarHeight: CGFloat = self.navigationModel?.navigationBarHeight ?? (
-            UIApplication.novaSafeAreaInsets.top + 44 + 1
-        )
+        let navigationBarHeight: CGFloat =
+            self.navigationModel?.navigationBarHeight ?? (UIApplication.novaSafeAreaInsets.top + 44 + 1)
         NSLayoutConstraint.activate([
             naviView.topAnchor.constraint(equalTo: view.topAnchor),
             naviView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             naviView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            naviView.heightAnchor.constraint(equalToConstant: navigationBarHeight)
+            naviView.heightAnchor.constraint(equalToConstant: navigationBarHeight),
         ])
 
         webView.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             webView.topAnchor.constraint(equalTo: naviView.bottomAnchor),
             webView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            webView.trailingAnchor.constraint(equalTo: view.trailingAnchor)
+            webView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
         ])
 
         NSLayoutConstraint.activate([
             progressView.topAnchor.constraint(equalTo: view.topAnchor, constant: navigationBarHeight),
             progressView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            progressView.trailingAnchor.constraint(equalTo: view.trailingAnchor)
+            progressView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
         ])
 
         NSLayoutConstraint.activate([
             loadingView.topAnchor.constraint(equalTo: view.topAnchor, constant: navigationBarHeight),
             loadingView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             loadingView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            loadingView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
+            loadingView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
         ])
 
         NSLayoutConstraint.activate([
@@ -170,7 +176,7 @@ class NovaAdLandingWebContentViewController: UIViewController {
             bottomView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             bottomView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
             bottomView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            bottomView.heightAnchor.constraint(equalToConstant: 56)
+            bottomView.heightAnchor.constraint(equalToConstant: 56),
         ])
 
         unifiedWebViewHost.load(webContext.url, referer: "https://www.newsbreak.com/")
@@ -209,7 +215,7 @@ private extension NovaAdLandingWebContentViewController {
     func navigationViewDidClickBackButton() {
         dismiss(animated: true)
     }
-    
+
     @objc func appWillResignActive() {
         NovaAdLandingWebLogHelper.logJumpOut(
             webContext: webContext,
@@ -217,7 +223,7 @@ private extension NovaAdLandingWebContentViewController {
             pageIndex: unifiedWebViewHost.pageIndex
         )
     }
-    
+
     @objc func appWillEnterForeground() {
         NovaAdLandingWebLogHelper.logJumpIn(
             webContext: webContext,
@@ -254,26 +260,28 @@ extension NovaAdLandingWebContentViewController: NovaUnifiedWebViewNavigationDel
     }
 
     func webView(_ webView: WKWebView, didStartProvisionalNavigation navigation: WKNavigation!) {}
-    
+
     func webView(_ webView: WKWebView, didCommit navigation: WKNavigation!) {
         loadingTimer?.invalidate()
-        loadingTimer = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true, block: { [weak self] _ in
-            guard let self else { return }
+        loadingTimer = Timer.scheduledTimer(
+            withTimeInterval: 0.1, repeats: true,
+            block: { [weak self] _ in
+                guard let self else { return }
 
-            let progress = self.webView.estimatedProgress
-            let contentHeight = self.webView.scrollView.contentSize.height
-            if progress > 0.88 || contentHeight > self.webView.bounds.height {
-                self.smoothProgress.stopUpdatingProgress()
-                self.loadingTimer?.invalidate()
-                self.loadingTimer = nil
-                self.loadingView.isHidden = true
-                self.progressView.isHidden = true
-            }
-        })
+                let progress = self.webView.estimatedProgress
+                let contentHeight = self.webView.scrollView.contentSize.height
+                if progress > 0.88 || contentHeight > self.webView.bounds.height {
+                    self.smoothProgress.stopUpdatingProgress()
+                    self.loadingTimer?.invalidate()
+                    self.loadingTimer = nil
+                    self.loadingView.isHidden = true
+                    self.progressView.isHidden = true
+                }
+            })
     }
 
     func webView(_ webView: WKWebView, policyFor navigationAction: WKNavigationAction) -> WKNavigationActionPolicy? {
-        return nil
+        nil
     }
 
     func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
@@ -304,24 +312,22 @@ extension NovaAdLandingWebContentViewController: NovaUnifiedWebViewNavigationDel
         progressView.isHidden = true
         status = .allLoaded
     }
-    
-    func webViewInitialLoadDidRedirect(_ webView: WKWebView){
-        self.initialLoadDidRedirectTo?(webView);
+
+    func webViewInitialLoadDidRedirect(_ webView: WKWebView) {
+        self.initialLoadDidRedirectTo?(webView)
     }
-    
+
     func webViewDidGoBackToInitialLoad(_ webView: WKWebView) {
-        self.didGoBackToInitialLoad?(webView);
+        self.didGoBackToInitialLoad?(webView)
     }
 }
 
 // MARK: - SmmothProgressDelegate
 
 extension NovaAdLandingWebContentViewController: SmoothProgressDelegate {
-
     func didUpdateProgress(_ progress: Double) {
         self.progressView.setProgress(Float(progress), animated: true)
     }
-
 }
 
 // MARK: - WebViewBottomViewDelegate
@@ -346,7 +352,7 @@ extension NovaAdLandingWebContentViewController: UIScrollViewDelegate {
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
         webViewDidScroll?(scrollView)
     }
-    
+
     func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
         webViewDidEndDragging?(scrollView, decelerate)
     }

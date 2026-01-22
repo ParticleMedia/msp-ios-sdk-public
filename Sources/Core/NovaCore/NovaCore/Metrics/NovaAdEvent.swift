@@ -19,7 +19,7 @@ enum NovaAdEvent: String {
     case videoUnMute = "video_unmute"
 
     case videoProgress = "video_progress"
-    
+
     // web events
     case novaLandingPageLaunchFailed = "nova_landing_page_launch_failed"
     case novaLandingPageStart = "nova_landing_page_start"

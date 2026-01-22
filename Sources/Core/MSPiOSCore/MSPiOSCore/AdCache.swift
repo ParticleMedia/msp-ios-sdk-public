@@ -9,10 +9,10 @@ import Foundation
 
 public class AdCache {
     public static let shared = AdCache()
-    
-    private var adCache = [String:MSPAd]()
+
+    private var adCache: [String: MSPAd] = [:]
     public var adMetricReporter: AdMetricReporter?
-    
+
     public func peakAd(placementId: String) -> MSPAd? {
         guard let ad = adCache[placementId] else {
             return nil
@@ -24,12 +24,13 @@ public class AdCache {
             return nil
         }
     }
-    
+
     public func getAd(placementId: String) -> MSPAd? {
         let value = adCache.removeValue(forKey: placementId)
-        
+
         if let ad = value,
-           ad.isValid() {
+            ad.isValid()
+        {
             adMetricReporter?.logGetAdFromCache(cacheKey: placementId, fill: true, ad: ad)
             return ad
         } else {
@@ -37,7 +38,7 @@ public class AdCache {
             return nil
         }
     }
-    
+
     public func saveAd(placementId: String, ad: MSPAd) {
         adCache[placementId] = ad
     }

@@ -1,4 +1,5 @@
 import MSPiOSCore
+
 @testable import MSPCore
 
 class MockLoadAdRepository: LoadAdRepository {
@@ -37,6 +38,6 @@ class MockLoadAdRepository: LoadAdRepository {
     }
 
     func getAd(placementId: String) -> MSPAd? {
-        return storedAds[placementId]
+        storedAds[placementId]
     }
 }

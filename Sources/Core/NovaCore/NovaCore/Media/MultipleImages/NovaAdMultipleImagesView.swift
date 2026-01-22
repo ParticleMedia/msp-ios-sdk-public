@@ -110,7 +110,8 @@ private extension NovaAdMultipleImagesView {
                 userInfo: nil,
                 repeats: true
             )
-            self.progressTimer = Timer
+            self.progressTimer =
+                Timer
                 .scheduledTimer(
                     timeInterval: 0.1,
                     target: self,
@@ -163,29 +164,31 @@ private extension NovaAdMultipleImagesView {
         }
 
         if let weakVC = actionContext.viewController {
-            actionHelper = NovaActionHelper
+            actionHelper =
+                NovaActionHelper
                 .build(
                     with:
-                    .adInViewController(
-                        model: .init(
-                            tracingInfo: actionContext.adActionTracingInfo,
-                            extraInfo: actionContext.adActionExtraInfo,
-                            ctrType: mediaModel.adCtrType
-                        ),
-                        viewController: weakVC
-                    )
+                        .adInViewController(
+                            model: .init(
+                                tracingInfo: actionContext.adActionTracingInfo,
+                                extraInfo: actionContext.adActionExtraInfo,
+                                ctrType: mediaModel.adCtrType
+                            ),
+                            viewController: weakVC
+                        )
                 )
         } else {
-            actionHelper = NovaActionHelper
+            actionHelper =
+                NovaActionHelper
                 .build(
                     with:
-                    .adInView(
-                        model: .init(
-                            tracingInfo: actionContext.adActionTracingInfo,
-                            extraInfo: actionContext.adActionExtraInfo,
-                            ctrType: mediaModel.adCtrType
+                        .adInView(
+                            model: .init(
+                                tracingInfo: actionContext.adActionTracingInfo,
+                                extraInfo: actionContext.adActionExtraInfo,
+                                ctrType: mediaModel.adCtrType
+                            )
                         )
-                    )
                 )
         }
     }
@@ -213,14 +216,17 @@ private extension NovaAdMultipleImagesView {
 
 extension NovaAdMultipleImagesView: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return imageURLExtractor?.totalItemsCount ?? 0
+        imageURLExtractor?.totalItemsCount ?? 0
     }
 
-    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        guard let cell = collectionView.dequeueReusableCell(
-            withReuseIdentifier: NSStringFromClass(NovaAdMultipleImagesViewCell.self),
-            for: indexPath
-        ) as? NovaAdMultipleImagesViewCell else {
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell
+    {
+        guard
+            let cell = collectionView.dequeueReusableCell(
+                withReuseIdentifier: NSStringFromClass(NovaAdMultipleImagesViewCell.self),
+                for: indexPath
+            ) as? NovaAdMultipleImagesViewCell
+        else {
             return UICollectionViewCell()
         }
         if let url = imageURLExtractor?.getImageURL(with: indexPath.item) {
@@ -228,7 +234,6 @@ extension NovaAdMultipleImagesView: UICollectionViewDataSource {
         }
         return cell
     }
-
 }
 
 extension NovaAdMultipleImagesView: UICollectionViewDelegateFlowLayout {
@@ -236,8 +241,11 @@ extension NovaAdMultipleImagesView: UICollectionViewDelegateFlowLayout {
         actionHelper = actionHelper?.logNovaClickEvent(in: .media).handleAdTap(in: self)
     }
 
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        return collectionView.bounds.size
+    func collectionView(
+        _ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout,
+        sizeForItemAt indexPath: IndexPath
+    ) -> CGSize {
+        collectionView.bounds.size
     }
 }
 
@@ -263,7 +271,7 @@ extension NovaAdMultipleImagesView: UIScrollViewDelegate {
     }
 }
 
-fileprivate class ImageURLExtractor {
+private class ImageURLExtractor {
     private let imageURLs: [URL]
     private var _indexOfCurrentImage: Int
     var indexOfCurrentImage: Int {
@@ -281,10 +289,10 @@ fileprivate class ImageURLExtractor {
     }
 
     func getImageURL(with index: Int) -> URL {
-        return imageURLs[getImageIndex(with: index)]
+        imageURLs[getImageIndex(with: index)]
     }
 
     private func getImageIndex(with item: Int) -> Int {
-        return item % imageURLs.count
+        item % imageURLs.count
     }
 }

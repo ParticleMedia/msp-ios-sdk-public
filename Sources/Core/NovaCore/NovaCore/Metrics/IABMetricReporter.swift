@@ -1,11 +1,9 @@
-
 //import OMSDK_Static_Newsbreak1
 //import OMID
 @_implementationOnly import OMSDK_Newsbreak1
 import UIKit
 
 class IABMetricReporter {
-
     private struct Constants {
         static let resourceBundleName = "NBResourceBundle.bundle"
         static let jsFileName = "omsdk-v1"
@@ -30,17 +28,18 @@ class IABMetricReporter {
     private var videoRecord: VideoEventRecord?
 
     private let omidJS: String? = {
-        
-        let url = Bundle(for: IABMetricReporter.self).url(forResource: "NBResourceBundle", withExtension: "bundle") ?? Bundle.main.bundleURL
+        let url =
+            Bundle(for: IABMetricReporter.self).url(forResource: "NBResourceBundle", withExtension: "bundle")
+            ?? Bundle.main.bundleURL
         //let bundlePath = (Bundle.main.resourcePath! as NSString).appendingPathComponent(Constants.resourceBundleName)
         let bundle = Bundle(url: url)
         if let jsFilePath = bundle?.path(forResource: Constants.jsFileName, ofType: "js"),
-           let contents = try? String(contentsOfFile: jsFilePath) {
+            let contents = try? String(contentsOfFile: jsFilePath)
+        {
             return contents
         } else {
             return ""
         }
-         
     }()
 
     init() {
@@ -49,17 +48,22 @@ class IABMetricReporter {
         }
     }
 
-    func startSession(adView: UIView,
-                             contentUrl: String,
-                             thirdPartyViewTrackingUrls: [String],
-                             hasVideo: Bool) {
+    func startSession(
+        adView: UIView,
+        contentUrl: String,
+        thirdPartyViewTrackingUrls: [String],
+        hasVideo: Bool
+    ) {
         guard OMIDNewsbreak1SDK.shared.isActive else {
             assertionFailure("failed to active IAB SDK")
             return
         }
 
-        guard let partner = OMIDNewsbreak1Partner(name: Constants.partnerName,
-                                                 versionString: "1.0") else {
+        guard
+            let partner = OMIDNewsbreak1Partner(
+                name: Constants.partnerName,
+                versionString: "1.0")
+        else {
             assertionFailure("failed to create partner")
             return
         }
@@ -67,18 +71,21 @@ class IABMetricReporter {
         var resources: [OMIDNewsbreak1VerificationScriptResource] = []
         for thirdPartyViewTrackingUrl in thirdPartyViewTrackingUrls {
             if let resourceURL = URL(string: thirdPartyViewTrackingUrl),
-               let scriptResource = OMIDNewsbreak1VerificationScriptResource(url: resourceURL, vendorKey: "iabtechlab.com-omid", parameters: "iabtechlab-Newsbreak1") {
+                let scriptResource = OMIDNewsbreak1VerificationScriptResource(
+                    url: resourceURL, vendorKey: "iabtechlab.com-omid", parameters: "iabtechlab-Newsbreak1")
+            {
                 //DebugLogging.info(.ads, "iAB tracking resource created, resourceURL = \(resourceURL)")
                 resources.append(scriptResource)
             }
         }
 
         do {
-            let context = try OMIDNewsbreak1AdSessionContext(partner: partner,
-                                                            script: self.omidJS ?? "",
-                                                            resources: resources,
-                                                            contentUrl: contentUrl,
-                                                            customReferenceIdentifier: nil)
+            let context = try OMIDNewsbreak1AdSessionContext(
+                partner: partner,
+                script: self.omidJS ?? "",
+                resources: resources,
+                contentUrl: contentUrl,
+                customReferenceIdentifier: nil)
 
             let configuration = try OMIDNewsbreak1AdSessionConfiguration(
                 creativeType: .nativeDisplay,

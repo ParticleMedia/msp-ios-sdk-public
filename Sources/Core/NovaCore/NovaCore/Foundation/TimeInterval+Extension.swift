@@ -28,7 +28,7 @@ extension TimeInterval {
             return nil
         }
     }
-    
+
     func makeFinite() -> Double? {
         if self.isNaN || self.isInfinite {
             return nil
@@ -36,7 +36,7 @@ extension TimeInterval {
             return self
         }
     }
-    
+
     func msString() -> String {
         guard isFinite, !isNaN else { return "0" }
         let ms = self * 1000

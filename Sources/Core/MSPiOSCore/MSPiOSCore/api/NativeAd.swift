@@ -32,23 +32,24 @@ open class NativeAd: MSPAd {
         self.icon = builder.icon
         super.init(adNetworkAdapter: adNetworkAdapter)
     }
-    
-    public init(adNetworkAdapter: AdNetworkAdapter,
-                title: String,
-                body: String,
-                advertiser: String,
-                callToAction: String) {
+
+    public init(
+        adNetworkAdapter: AdNetworkAdapter,
+        title: String,
+        body: String,
+        advertiser: String,
+        callToAction: String
+    ) {
         self.title = title
         self.body = body
         self.advertiser = advertiser
         self.callToAction = callToAction
         super.init(adNetworkAdapter: adNetworkAdapter)
     }
-    
+
     public func prepareViewForInteraction(nativeAdView: Any) {
-        
     }
-    
+
     public class Builder {
         public let adNetworkAdapter: AdNetworkAdapter
         public var title: String = ""
@@ -63,43 +64,43 @@ open class NativeAd: MSPAd {
         public init(adNetworkAdapter: AdNetworkAdapter) {
             self.adNetworkAdapter = adNetworkAdapter
         }
-        
+
         @discardableResult
         public func title(_ title: String) -> Builder {
             self.title = title
             return self
         }
-        
+
         @discardableResult
         public func body(_ body: String) -> Builder {
             self.body = body
             return self
         }
-        
+
         @discardableResult
         public func advertiser(_ advertiser: String) -> Builder {
             self.advertiser = advertiser
             return self
         }
-        
+
         @discardableResult
         public func callToAction(_ callToAction: String) -> Builder {
             self.callToAction = callToAction
             return self
         }
-        
+
         @discardableResult
         public func optionsView(_ optionsView: Any) -> Builder {
             self.optionsView = optionsView
             return self
         }
-        
+
         @discardableResult
         public func mediaView(_ mediaView: Any) -> Builder {
             self.mediaView = mediaView
             return self
         }
-        
+
         @discardableResult
         public func icon(_ icon: Any) -> Builder {
             self.icon = icon
@@ -107,8 +108,7 @@ open class NativeAd: MSPAd {
         }
 
         public func build() -> NativeAd {
-            return NativeAd(adNetworkAdapter: adNetworkAdapter, builder: self)
+            NativeAd(adNetworkAdapter: adNetworkAdapter, builder: self)
         }
     }
 }
-

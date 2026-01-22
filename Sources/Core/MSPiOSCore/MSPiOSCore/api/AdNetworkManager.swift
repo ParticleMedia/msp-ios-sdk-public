@@ -8,13 +8,13 @@
 import Foundation
 
 open class AdNetworkManager {
-    public init(){}
-    
+    public init() {}
+
     open func getAdNetworkAdapter() -> AdNetworkAdapter? {
-       return nil
-    } 
-    
+        nil
+    }
+
     open func getAdBidder(bidderPlacementId: String, bidderFormat: AdFormat?) -> Bidder? {
-        return nil
+        nil
     }
 }

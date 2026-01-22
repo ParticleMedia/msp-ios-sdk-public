@@ -5,8 +5,8 @@
 //  Created by Shanyu Li on 2025/8/7.
 //
 
-import UIKit
 @_implementationOnly import Kingfisher
+import UIKit
 
 enum NovaAdImageResource {
     case imageURLStr(String)
@@ -48,7 +48,7 @@ struct NovaAdImageResourceDownloader {
         let (data, response) = try await URLSession.shared.data(from: url)
         let httpResponse = response as! HTTPURLResponse
         let statusCode = httpResponse.statusCode
-        guard (200 ... 299).contains(statusCode) else {
+        guard (200...299).contains(statusCode) else {
             throw NovaAdImageResourceError.downloadError((url, "Invalid status code: \(statusCode)"))
         }
         guard let image = UIImage(data: data) else {

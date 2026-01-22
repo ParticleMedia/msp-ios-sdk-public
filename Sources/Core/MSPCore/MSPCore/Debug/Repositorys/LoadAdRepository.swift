@@ -11,4 +11,4 @@ protocol LoadAdRepository {
     )
 
     func getAd(placementId: String) -> MSPAd?
-} 
+}

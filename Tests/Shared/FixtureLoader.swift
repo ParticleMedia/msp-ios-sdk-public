@@ -1,6 +1,6 @@
+/// Utility for loading test fixture files
 import Foundation
 
-/// Utility for loading test fixture files
 enum FixtureLoader {
     /// Returns the path to a fixture file
     /// - Parameter filename: Name of the fixture file (e.g., "bid_response_success.json")
@@ -8,8 +8,10 @@ enum FixtureLoader {
     static func path(for filename: String) -> String? {
         // Try to find the fixture in the test bundle
         for bundle in Bundle.allBundles {
-            if let path = bundle.path(forResource: filename.replacingOccurrences(of: ".json", with: ""),
-                                       ofType: "json") {
+            if let path = bundle.path(
+                forResource: filename.replacingOccurrences(of: ".json", with: ""),
+                ofType: "json")
+            {
                 return path
             }
         }

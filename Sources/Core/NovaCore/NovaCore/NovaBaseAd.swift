@@ -91,7 +91,8 @@ public class NovaBaseAd: NSObject, Codable {
         imageUrlStr = try container.decodeIfPresent(String.self, forKey: .imageUrlStr)
         adCtrType = try container.decode(AdCtrType.self, forKey: .ctrType)
         thirdPartyViewTrackingUrls = try container.decode([String].self, forKey: .thirdPartyViewTrackingUrls)
-        thirdPartyImpressionTrackingUrls = try container.decode([String].self, forKey: .thirdPartyImpressionTrackingUrls)
+        thirdPartyImpressionTrackingUrls = try container.decode(
+            [String].self, forKey: .thirdPartyImpressionTrackingUrls)
         thirdPartyClickTrackingUrls = try container.decode([String].self, forKey: .thirdPartyClickTrackingUrls)
         encryptedAdToken = try container.decode(String.self, forKey: .encryptedAdToken)
         priceInDollar = try container.decodeIfPresent(Double.self, forKey: .priceInDollar)

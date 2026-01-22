@@ -63,6 +63,29 @@ INFO_PLIST_OUTPUT="$ROOT_DIR/Examples/MSPDemoApp/MSPDemoApp/Info.plist"
 # HELPER FUNCTIONS
 # ============================================================================
 
+# Check if npm install is needed for Git hooks (Husky)
+# This is a non-blocking warning - script continues regardless
+check_npm_install() {
+    # Only check if package.json exists (indicating this repo uses npm)
+    if [[ -f "$ROOT_DIR/package.json" ]]; then
+        if [[ ! -d "$ROOT_DIR/node_modules" ]]; then
+            log_warn "Git hooks not installed (node_modules missing)"
+            log_info "Run 'npm install' to set up commit hooks (Husky)"
+            log_info "This ensures commit message format validation"
+            echo ""
+        elif [[ ! -d "$ROOT_DIR/node_modules/husky" ]]; then
+            log_warn "Husky not found in node_modules"
+            log_info "Run 'npm install' to set up Git commit hooks"
+            echo ""
+        elif [[ ! -d "$ROOT_DIR/.husky" ]]; then
+            log_warn "Husky hooks directory (.husky/) not found"
+            log_info "Git hooks may not be properly configured"
+            log_info "Try running 'npm install' to fix this"
+            echo ""
+        fi
+    fi
+}
+
 # Check if pod install error is network-related
 is_network_error() {
     local error_output="$1"
@@ -471,7 +494,8 @@ switch_pods_dev() {
     log_info "MSP_RELEASE=0, MSP_MODE=pods-dev"
     log_info ""
     
-    # Export environment variables for podspecs and Podfile
+    check_npm_install
+    
     export MSP_RELEASE=0
     export MSP_MODE=pods-dev
     
@@ -696,7 +720,8 @@ switch_pods_release() {
     log_info "MSP_RELEASE=1, MSP_MODE=pods-release"
     log_info ""
     
-    # Export environment variables for podspecs and Podfile
+    check_npm_install
+    
     export MSP_RELEASE=1
     export MSP_MODE=pods-release
     
@@ -832,6 +857,8 @@ switch_spm_release() {
     log_title "Switching to SPM-RELEASE Mode"
     log_info "Mode: Swift Package Manager with binary XCFrameworks"
     log_info ""
+    
+    check_npm_install
     
     # Step 1: Validate XCFrameworks exist
     log_section "XCFramework Validation"

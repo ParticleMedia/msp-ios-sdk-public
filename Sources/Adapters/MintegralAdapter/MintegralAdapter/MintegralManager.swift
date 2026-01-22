@@ -11,10 +11,10 @@ import MSPiOSCore
 
 public class MintegralManager: AdNetworkManager {
     public override func getAdNetworkAdapter() -> AdNetworkAdapter? {
-        return MintegralAdapter()
+        MintegralAdapter()
     }
 
     public override func getAdBidder(bidderPlacementId: String, bidderFormat: AdFormat?) -> Bidder? {
-        return MintegralBidder(name: "mintegral", bidderPlacementId: bidderPlacementId, bidderFormat: bidderFormat)
+        MintegralBidder(name: "mintegral", bidderPlacementId: bidderPlacementId, bidderFormat: bidderFormat)
     }
 }

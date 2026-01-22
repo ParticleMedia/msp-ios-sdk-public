@@ -1,6 +1,6 @@
 import Foundation
-import UIKit
 @_implementationOnly import Kingfisher
+import UIKit
 
 open class NovaNativeAdView: UIView {
     // MARK: - Properties
@@ -20,7 +20,7 @@ open class NovaNativeAdView: UIView {
                 tapGesture.accessibilityLabel = $0.accessibilityIdentifier
                 $0.addGestureRecognizer(tapGesture)
                 // TODO: - GPY now container has no adClickArea, maybe add in the future
-//                assert($0.adClickArea != nil)
+                //                assert($0.adClickArea != nil)
             }
         }
     }
@@ -31,7 +31,7 @@ open class NovaNativeAdView: UIView {
 
     // Used to trigger impression check repeatedly until logged.
     var timer: Timer?
-    
+
     // Track start time for click events
     private var startTime: CFTimeInterval = 0
 
@@ -53,14 +53,14 @@ open class NovaNativeAdView: UIView {
         unregisterAd()
         //iABMetricReporter?.stopSession()
     }
-    
+
     func bindView(nativeAd: NovaNativeAdItem) {
         titleLabel = UILabel()
         bodyLabel = UILabel()
         advertiserLabel = UILabel()
         callToActionButton = UIButton(type: .custom)
     }
-    
+
     public func setupViews(with nativeAd: NovaNativeAdItem, clickableViews: [UIView]? = nil) {
         register(nativeAd)
         // Create action context for the media view
@@ -87,24 +87,24 @@ open class NovaNativeAdView: UIView {
 extension NovaNativeAdView {
     func register(_ nativeAd: NovaNativeAdItem) {
         self.nativeAd = nativeAd
-        
+
         // Initialize start time for click tracking
         startTime = CACurrentMediaTime()
-        
+
         titleLabel?.adClickArea = .headline
         bodyLabel?.adClickArea = .body
         advertiserLabel?.adClickArea = .advertiser
         callToActionButton?.adClickArea = .cta
         icon?.adClickArea = .icon
-        
+
         actionHelper = NovaActionHelper.build(
             with: .adInView(
                 model: AdActionModel(
                     tracingInfo: nativeAd.actionTracingInfo,
                     extraInfo: nativeAd.actionExtraInfo,
                     ctrType: nativeAd.adCtrType
-                    )
                 )
+            )
         )
 
         // In case previous OMIDSDK's session is left started without a stop.
@@ -127,7 +127,7 @@ extension NovaNativeAdView {
 private extension NovaNativeAdView {
     static func buildIABMetricReporterFor(nativeAd: NovaNativeAdItem, adView: UIView) -> IABMetricReporter? {
         let ctrUrlStr = nativeAd.adCtrType.url.absoluteString
-        
+
         guard !nativeAd.thirdPartyViewTrackingUrls.isEmpty else { return nil }
 
         let reporter = IABMetricReporter()
@@ -146,9 +146,10 @@ private extension NovaNativeAdView {
         }
 
         let clickArea = sender.view?.adClickArea ?? .cta
-        
+
         if let actionHelper = actionHelper {
-            self.actionHelper = actionHelper
+            self.actionHelper =
+                actionHelper
                 .logNovaClickEvent(with: CACurrentMediaTime() - startTime, in: clickArea)
                 .handleAdTap(in: sender.view)
         }
