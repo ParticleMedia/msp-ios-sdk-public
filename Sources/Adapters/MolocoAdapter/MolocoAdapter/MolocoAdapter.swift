@@ -270,32 +270,17 @@ private typealias BannerCreator = (MolocoSDK.MolocoCreateAdParams, UIViewControl
             nativeAdContainer.translatesAutoresizingMaskIntoConstraints = false
 
             let assets = nativeAdItem.assets
-
-            var mediaView = assets?.videoView
-            if mediaView == nil && assets?.mainImage != nil {
-                mediaView = UIImageView(image: assets?.mainImage)
-            }
-
-            nativeAdContainer.getIcon()?.image = assets?.appIcon
-
-            if let mediaContainer = nativeAdContainer.getMedia(),
-                let mediaView = mediaView
-            {
-                mediaContainer.addSubview(mediaView)
-                mediaView.snp.makeConstraints { make in
-                    make.edges.equalTo(mediaContainer)
-                }
-            }
+            setupAssets(assets: assets, nativeAdContainer: nativeAdContainer)
 
             let nilableClickableViews =
                 [
                     nativeAdContainer.getTitle(),
                     nativeAdContainer.getbody(),
+                    nativeAdContainer.getMedia(),
                     nativeAdContainer.getAdvertiser(),
                     nativeAdContainer.getCallToAction(),
                     nativeAdContainer.getIcon(),
                 ] + (nativeAdContainer.getCustomClickableViews() ?? [])
-
             setupClickableViews(clickableViews: nilableClickableViews.compactMap { $0 })
 
             nativeAdView.addSubview(nativeAdContainer)
@@ -303,6 +288,37 @@ private typealias BannerCreator = (MolocoSDK.MolocoCreateAdParams, UIViewControl
                 make.edges.equalTo(nativeAdView)
                 make.width.lessThanOrEqualTo(nativeAdView)
                 make.height.lessThanOrEqualTo(nativeAdView)
+            }
+        }
+    }
+
+    private func setupAssets(assets: MolocoNativeAdAssests?, nativeAdContainer: MSPNativeAdContainer) {
+        guard let assets = assets,
+            let mediaContainer = nativeAdContainer.getMedia()
+        else {
+            MSPLogger.shared.info(message: "Moloco native assets is nil")
+            return
+        }
+
+        nativeAdContainer.getIcon()?.image = assets.appIcon
+
+        if let mediaView = assets.videoView {
+            mediaContainer.addSubview(mediaView)
+            mediaView.snp.makeConstraints { make in
+                make.directionalEdges.equalToSuperview()
+            }
+        } else if let image = assets.mainImage {
+            let width = image.size.width
+            guard width != 0 else { return }
+            
+            let height = image.size.height
+
+            let mediaView = UIImageView(image: image)
+            mediaContainer.addSubview(mediaView)
+            mediaView.snp.makeConstraints { make in
+                make.leading.trailing.equalToSuperview()
+                make.centerY.equalToSuperview()
+                make.height.equalTo(mediaView.snp.width).multipliedBy(height / width)
             }
         }
     }
