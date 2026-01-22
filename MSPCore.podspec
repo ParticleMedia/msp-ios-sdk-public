@@ -16,7 +16,7 @@ Pod::Spec.new do |spec|
   spec.swift_version = '5.0'
 
   spec.description  = "An utility for MSP settings"
-  spec.homepage     = "https://github.com/aimsp/msp-ios-sdk/MSPCore"
+  spec.homepage     = "https://github.com/ParticleMedia/msp-ios-sdk-public"
 
   spec.license      = "Copyright"
 

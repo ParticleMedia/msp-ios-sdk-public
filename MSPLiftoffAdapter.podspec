@@ -4,7 +4,7 @@ Pod::Spec.new do |spec|
   spec.version      = "0.0.1"
   spec.summary      = "an adapter for Liftoff SDK"
   spec.description  = "an adapter for Liftoff SDK"
-  spec.homepage     = "https://github.com/aimsp/msp-ios-sdk/LiftoffAdapter"
+  spec.homepage     = "https://github.com/ParticleMedia/msp-ios-sdk-public"
   spec.license      = "Copyright"
   spec.author       = { "Mingming Luo" => "mingming.luo@newsbreak.com" }
   spec.platform     = :ios, '15.0'

@@ -3,7 +3,7 @@ Pod::Spec.new do |spec|
   spec.version      = "0.0.95"
   spec.summary      = "an adapter for Nova ads"
   spec.description  = "an adapter for Nova ads for MSP S2S"
-  spec.homepage     = "https://github.com/aimsp/msp-ios-sdk/MSPNovaAdapter"
+  spec.homepage     = "https://github.com/ParticleMedia/msp-ios-sdk-public"
   spec.license      = "Copyright"
   spec.author       = { "huanzhiNB" => "huanzhi.zhang@newsbreak.com" }
   spec.platform     = :ios, '15.0'

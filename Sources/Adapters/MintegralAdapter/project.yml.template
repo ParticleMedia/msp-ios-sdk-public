@@ -33,6 +33,8 @@ targets:
         embed: false
       - framework: ../../../Build/XCFrameworks/MSPSharedLibraries.xcframework
         embed: false
+      - framework: ../../../Build/XCFrameworks/PrebidMobile.xcframework
+        embed: false
       - framework: ../../../Pods/MintegralAdSDK/Fmk/MTGSDK.xcframework
         embed: false
       - framework: ../../../Pods/MintegralAdSDK/Fmk/MTGSDKBanner.xcframework
