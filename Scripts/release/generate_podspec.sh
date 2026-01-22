@@ -584,8 +584,13 @@ get_prebidmobile_version() {
 
 # Extract dependencies from source podspec
 if [[ "$POD_NAME" == "MSPNovaAdapter" ]]; then
-    # Filter out embedded dependencies (NovaCore, Kingfisher, SnapKit, Lottie, MSPKingfisher) — NovaAdapter links them statically in the binary XCFramework
-    grep "spec\\.dependency" "$SOURCE_PODSPEC" | grep -vE "(NovaCore|MSPKingfisher|Kingfisher|SnapKit|Lottie)" >> "$OUTPUT_PODSPEC" 2>/dev/null || true
+    # Filter out NovaCore (vendored) and MSPKingfisher (internal wrapper, convert to public Kingfisher)
+    # Keep SnapKit dependency as-is (required for linking)
+    grep "spec\\.dependency" "$SOURCE_PODSPEC" | grep -vE "(NovaCore|MSPKingfisher|Lottie)" >> "$OUTPUT_PODSPEC" 2>/dev/null || true
+    # Add public Kingfisher dependency (replaces internal MSPKingfisher wrapper)
+    if ! grep -q "spec\\.dependency.*'Kingfisher'" "$OUTPUT_PODSPEC" 2>/dev/null; then
+        echo "  spec.dependency 'Kingfisher', '~> 7.0'" >> "$OUTPUT_PODSPEC"
+    fi
 elif [[ "$POD_NAME" == "MSPMolocoAdapter" ]]; then
     # Keep MolocoSDK and MSP deps, but drop SnapKit (bundled in release zip)
     grep "spec\\.dependency" "$SOURCE_PODSPEC" | grep -vE "SnapKit" >> "$OUTPUT_PODSPEC" 2>/dev/null || true
@@ -647,31 +652,19 @@ if is_binary_distribution "$POD_NAME"; then
                             fi
                             ;;
                         SnapKit)
-                            if [[ "$POD_NAME" == "MSPNovaAdapter" ]]; then
-                                log_info "Missing dependency detected in swiftinterface ($import_module) but skipped — statically linked into MSPNovaAdapter"
-                            else
-                                log_warn "Missing dependency detected in swiftinterface: $import_module"
-                                log_info "Adding SnapKit dependency (required by swiftinterface)"
-                                echo "  spec.dependency 'SnapKit'" >> "$OUTPUT_PODSPEC"
-                            fi
+                            log_warn "Missing dependency detected in swiftinterface: $import_module"
+                            log_info "Adding SnapKit dependency (required by swiftinterface)"
+                            echo "  spec.dependency 'SnapKit'" >> "$OUTPUT_PODSPEC"
                             ;;
                         Kingfisher)
-                            if [[ "$POD_NAME" == "MSPNovaAdapter" ]]; then
-                                log_info "Missing dependency detected in swiftinterface ($import_module) but skipped — statically linked into MSPNovaAdapter"
-                            else
-                                log_warn "Missing dependency detected in swiftinterface: $import_module"
-                                log_info "Adding Kingfisher dependency (required by swiftinterface)"
-                                echo "  spec.dependency 'Kingfisher', '~> 7.0'" >> "$OUTPUT_PODSPEC"
-                            fi
+                            log_warn "Missing dependency detected in swiftinterface: $import_module"
+                            log_info "Adding Kingfisher dependency (required by swiftinterface)"
+                            echo "  spec.dependency 'Kingfisher', '~> 7.0'" >> "$OUTPUT_PODSPEC"
                             ;;
                         Lottie|Lottie_iOS|lottie_ios)
-                            if [[ "$POD_NAME" == "MSPNovaAdapter" ]]; then
-                                log_info "Missing dependency detected in swiftinterface ($import_module) but skipped — statically linked into MSPNovaAdapter"
-                            else
-                                log_warn "Missing dependency detected in swiftinterface: $import_module"
-                                log_info "Adding Lottie dependency (required by swiftinterface)"
-                                echo "  spec.dependency 'lottie-ios', '4.5.2'" >> "$OUTPUT_PODSPEC"
-                            fi
+                            log_warn "Missing dependency detected in swiftinterface: $import_module"
+                            log_info "Adding Lottie dependency (required by swiftinterface)"
+                            echo "  spec.dependency 'lottie-ios', '4.5.2'" >> "$OUTPUT_PODSPEC"
                             ;;
                         *)
                             log_warn "Missing dependency detected in swiftinterface: $import_module"
