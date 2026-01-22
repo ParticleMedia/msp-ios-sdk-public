@@ -33,7 +33,7 @@ targets:
         embed: false
       - framework: ../../../Build/XCFrameworks/MSPSharedLibraries.xcframework
         embed: false
-      - framework: ../../../Sources/Wrappers/MobileFuseSDKWrapper/Frameworks/MobileFuseSDK.xcframework
+      - framework: ../../../Pods/MobileFuseSDK/MobileFuseSDK.xcframework
         embed: false
     settings:
       base:
@@ -51,7 +51,7 @@ targets:
           - $(SRCROOT)/../../../Sources/Core/ThirdParty/Shimmer
           - $(SRCROOT)/../../../Sources/Core/ThirdParty/SwiftProtobuf
           - $(SRCROOT)/../../../Sources/Core/MSPOMSDK/OMSDK_Newsbreak1.xcframework
-          - $(SRCROOT)/../../../Sources/Wrappers/MobileFuseSDKWrapper/Frameworks
+          - $(SRCROOT)/../../../Pods/MobileFuseSDK
 
 schemes:
   MobilefuseAdapter:

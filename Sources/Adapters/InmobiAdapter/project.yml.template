@@ -33,7 +33,7 @@ targets:
         embed: false
       - framework: ../../../Build/XCFrameworks/MSPSharedLibraries.xcframework
         embed: false
-      - framework: ../../../Sources/Wrappers/InMobiSDKWrapper/Frameworks/InMobiSDK.xcframework
+      - framework: ../../../Pods/InMobiSDK/InMobiSDK.xcframework
         embed: false
     settings:
       base:
@@ -51,7 +51,7 @@ targets:
           - $(SRCROOT)/../../../Sources/Core/ThirdParty/Shimmer
           - $(SRCROOT)/../../../Sources/Core/ThirdParty/SwiftProtobuf
           - $(SRCROOT)/../../../Sources/Core/MSPOMSDK/OMSDK_Newsbreak1.xcframework
-          - $(SRCROOT)/../../../Sources/Wrappers/InMobiSDKWrapper/Frameworks
+          - $(SRCROOT)/../../../Pods/InMobiSDK
 
 schemes:
   InmobiAdapter:
