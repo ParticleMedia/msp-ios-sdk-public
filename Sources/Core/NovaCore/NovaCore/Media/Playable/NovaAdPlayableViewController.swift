@@ -5,9 +5,9 @@
 //  Created by Shanyu Li on 2025/8/18.
 //
 
-import UIKit
-
 // MARK: - NovaAdPlayableViewController
+
+import UIKit
 
 class NovaAdPlayableViewController: UIViewController {
     // MARK: Lifecycle
@@ -87,7 +87,8 @@ class NovaAdPlayableViewController: UIViewController {
         var configuration = UIButton.Configuration.plain()
         configuration.contentInsets = NSDirectionalEdgeInsets(top: 10.0, leading: 10.0, bottom: 10.0, trailing: 10.0)
         configuration.image = .Nova.crossLine?.withRenderingMode(.alwaysTemplate)
-        configuration.baseForegroundColor = UIColor(light: NovaColorPalettes.Gray.tint800, dark: NovaColorPalettes.White)
+        configuration.baseForegroundColor = UIColor(
+            light: NovaColorPalettes.Gray.tint800, dark: NovaColorPalettes.White)
         let button = UIButton(configuration: configuration)
         button.addTarget(self, action: #selector(didTapCloseButton), for: .touchUpInside)
         return button
@@ -148,13 +149,15 @@ class NovaAdPlayableViewController: UIViewController {
     private func setupAppInfoBannerIfNeeded() {
         let playableModel = config.playableConfigs.model
         guard case .appInstall = playableModel.launchAdType,
-              config.appInstallBannerDisplayMode == .bottom else {
+            config.appInstallBannerDisplayMode == .bottom
+        else {
             return
         }
 
         guard let actionContext = config.playableConfigs.actionContext,
-              let playableConfig = actionContext.adActionExtraInfo.playableConfig,
-              let appInfo = playableConfig.appInfo else {
+            let playableConfig = actionContext.adActionExtraInfo.playableConfig,
+            let appInfo = playableConfig.appInfo
+        else {
             return
         }
 
@@ -199,11 +202,13 @@ class NovaAdPlayableViewController: UIViewController {
     private func handleBannerTap(on view: UIView?) {
         let playableModel = config.playableConfigs.model
         guard case .appInstall = playableModel.launchAdType,
-              let actionHelper = actionHelper else {
+            let actionHelper = actionHelper
+        else {
             return
         }
 
-        self.actionHelper = actionHelper
+        self.actionHelper =
+            actionHelper
             .logNovaClickEvent(with: CACurrentMediaTime() - startTime, in: view?.adClickArea)
             .handleAdTap(in: view)
     }

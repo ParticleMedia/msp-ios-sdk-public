@@ -9,7 +9,7 @@ import Foundation
 
 public enum AdNetwork: String, CaseIterable {
     case unknown = "Unknown"
-    
+
     case google = "google"
     case facebook = "facebook"
     case prebid = "prebid"

@@ -8,8 +8,8 @@
 //
 
 import Foundation
-@_exported import NovaCore
 import Lottie
+@_exported import NovaCore
 import Shimmer
 
 // Force Lottie to be linked by referencing a symbol
@@ -17,4 +17,3 @@ private let _forceLottieLink: Any.Type = LottieAnimationView.self
 
 // Force Shimmer to be linked by referencing a symbol
 private let _forceShimmerLink: AnyClass? = FBShimmeringView.self
-

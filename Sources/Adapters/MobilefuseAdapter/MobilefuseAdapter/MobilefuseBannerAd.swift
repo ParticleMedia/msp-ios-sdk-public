@@ -14,6 +14,5 @@ public class MobilefuseBannerAd: MSPiOSCore.BannerAd {
         if let bannerView = self.adView as? MFBannerAd {
             bannerView.show()
         }
-
     }
 }

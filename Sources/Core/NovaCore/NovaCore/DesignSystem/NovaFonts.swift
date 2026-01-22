@@ -5,9 +5,9 @@
 //  Created by Wei Wu on 6/7/23.
 //
 
+// https://www.figma.com/file/QGyK88wpVY510IuIBoE5tX/🟡Foundation-(WIP)?type=design&node-id=118-1818&mode=design&t=V4Ya56QB07TW2wVs-0
 import SwiftUI
 
-// https://www.figma.com/file/QGyK88wpVY510IuIBoE5tX/🟡Foundation-(WIP)?type=design&node-id=118-1818&mode=design&t=V4Ya56QB07TW2wVs-0
 extension Font {
     class NovaFont {
         let display1 = Font.system(size: 24, weight: .black)
@@ -24,6 +24,6 @@ extension Font {
         let caption1 = Font.system(size: 12, weight: .regular)
         let caption2 = Font.system(size: 11, weight: .regular)
     }
-    
+
     static let Nova = NovaFont()
 }

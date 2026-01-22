@@ -5,9 +5,9 @@
 //  Created by Shanyu Li on 2025/8/7.
 //
 
-import Foundation
-
 // MARK: - NovaAdMediaError
+
+import Foundation
 
 enum NovaAdMediaError: LocalizedError {
     case creativeTypeMissing(adId: String)

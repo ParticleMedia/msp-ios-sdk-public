@@ -5,16 +5,16 @@
 //  Created by Patrick on 2025/1/27.
 //
 
+// MARK: - NovaInterstitialAdSubviewHandler
+
 import Foundation
 import UIKit
-
-// MARK: - NovaInterstitialAdSubviewHandler
 
 protocol NovaInterstitialAdSubviewHandler {
     func setupSubviews(in containerView: UIView, showReportButton: Bool)
     func config()
     var clickableViews: [UIView] { get }
-    
+
     // Optional methods
     func didAppear()
     func didDisappear()

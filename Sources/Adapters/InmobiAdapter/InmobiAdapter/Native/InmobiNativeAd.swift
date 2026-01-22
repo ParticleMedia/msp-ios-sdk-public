@@ -6,8 +6,8 @@
 //
 
 import Foundation
-import MSPiOSCore
 import InMobiSDK
+import MSPiOSCore
 
 public class InmobiNativeAd: NativeAd {
     public var nativeAdItem: IMNative?

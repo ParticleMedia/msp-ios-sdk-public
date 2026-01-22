@@ -7,13 +7,11 @@
 
 import Foundation
 
-
 public protocol InitializationParameters: AdapterParameters {
-    
     func getPrebidAPIKey() -> String
-    
+
     func getPrebidHostUrl() -> String
-    
+
     func getAppStoreId() -> String?
 }
 

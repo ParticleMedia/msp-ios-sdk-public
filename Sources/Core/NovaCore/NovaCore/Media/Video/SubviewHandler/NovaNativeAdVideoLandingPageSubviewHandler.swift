@@ -4,8 +4,8 @@
 //  Created by Shanyu Li on 2025/2/5.
 //
 
-@_implementationOnly import SnapKit
 import CoreMedia
+@_implementationOnly import SnapKit
 import UIKit
 
 final class NovaNativeAdVideoLandingPageSubviewHandler: NSObject {
@@ -82,7 +82,7 @@ final class NovaNativeAdVideoLandingPageSubviewHandler: NSObject {
         volumeButton,
         videoProgressText,
         progressView,
-        videoLengthText
+        videoLengthText,
     ]
 
     private let playImage = UIImage.Nova.playFilled?.withTintColor(NovaColorPalettes.White).imageByResize(
@@ -155,7 +155,7 @@ extension NovaNativeAdVideoLandingPageSubviewHandler: NovaNativeAdVideoSubviewHa
     }
 
     func sync(with state: NovaAdVideoState) {
-        volumeButton.setImage(state.isMute ? volumeOffImage: volumeOnImage, for: .normal)
+        volumeButton.setImage(state.isMute ? volumeOffImage : volumeOnImage, for: .normal)
         switch state.playState {
         case .showCover, .endPlaying, .loading:
             closeButton.isHidden = false

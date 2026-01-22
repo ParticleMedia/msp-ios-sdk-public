@@ -5,8 +5,8 @@
 //  Created by Shanyu Li on 2025/2/5.
 //
 
-@_implementationOnly import SnapKit
 import CoreMedia
+@_implementationOnly import SnapKit
 import UIKit
 
 final class NovaNativeAdVideoPlayButtonOnLeftBottomSubviewHandler: NSObject {
@@ -137,9 +137,9 @@ extension NovaNativeAdVideoPlayButtonOnLeftBottomSubviewHandler: NovaNativeAdVid
 
     @MainActor
     func sync(with state: NovaAdVideoState) {
-        volumeButton.setImage(state.isMute ? volumeOffImage: volumeOnImage, for: .normal)
+        volumeButton.setImage(state.isMute ? volumeOffImage : volumeOnImage, for: .normal)
         switch state.playState {
-        case .showCover(_, coverURL: let coverURL):
+        case .showCover(_, let coverURL):
             coverImage.kf.setImage(with: coverURL)
             coverImage.isHidden = false
             startButton.isHidden = false
@@ -174,7 +174,7 @@ extension NovaNativeAdVideoPlayButtonOnLeftBottomSubviewHandler: NovaNativeAdVid
             } else {
                 countText.isHidden = true
             }
-        case .endPlaying(shouldShowPlayButton: let shouldShowPlayButton):
+        case .endPlaying(let shouldShowPlayButton):
             coverImage.isHidden = true
             startButton.isHidden = !shouldShowPlayButton
             panel.isHidden = true
@@ -188,4 +188,3 @@ extension NovaNativeAdVideoPlayButtonOnLeftBottomSubviewHandler: NovaNativeAdVid
         subviews.forEach { $0.removeFromSuperview() }
     }
 }
-

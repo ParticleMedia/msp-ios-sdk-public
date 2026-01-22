@@ -5,10 +5,10 @@
 //  Created by Shanyu Li on 2025/8/6.
 //
 
+// MARK: - NovaNativeAdVideoClearSubviewHandler
+
 import Foundation
 import UIKit
-
-// MARK: - NovaNativeAdVideoClearSubviewHandler
 
 final class NovaNativeAdVideoClearSubviewHandler: NSObject {}
 

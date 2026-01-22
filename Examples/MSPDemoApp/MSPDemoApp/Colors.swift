@@ -1,9 +1,7 @@
 import Foundation
 import UIKit
 
-
 public extension UIColor {
-
     @objc convenience init(light: UIColor, dark: UIColor) {
         self.init(dynamicProvider: { $0.userInterfaceStyle == .dark ? dark : light })
     }
@@ -81,45 +79,53 @@ public extension UIColor {
         let blue = hexValue & 0xFF
         self.init(red: red, green: green, blue: blue, alpha: alphaValue)
     }
-    
+
     var rgba: (red: CGFloat, green: CGFloat, blue: CGFloat, alpha: CGFloat) {
-        var r: CGFloat = 0, g: CGFloat = 0, b: CGFloat = 0, a: CGFloat = 0
+        var r: CGFloat = 0
+        var g: CGFloat = 0
+        var b: CGFloat = 0
+        var a: CGFloat = 0
         if getRed(&r, green: &g, blue: &b, alpha: &a) {
-            return (r,g,b,a)
+            return (r, g, b, a)
         }
         return (0, 0, 0, 0)
     }
 
     // hue, saturation, brightness and alpha components from UIColor**
     var hsba: (hue: CGFloat, saturation: CGFloat, brightness: CGFloat, alpha: CGFloat) {
-        var hue: CGFloat = 0, saturation: CGFloat = 0, brightness: CGFloat = 0, alpha: CGFloat = 0
+        var hue: CGFloat = 0
+        var saturation: CGFloat = 0
+        var brightness: CGFloat = 0
+        var alpha: CGFloat = 0
         if getHue(&hue, saturation: &saturation, brightness: &brightness, alpha: &alpha) {
             return (hue, saturation, brightness, alpha)
         }
-        return (0,0,0,0)
+        return (0, 0, 0, 0)
     }
 
     var htmlRGB: String {
         let rgbaCache = rgba
-        return String(format: "#%02x%02x%02x", Int(round(rgbaCache.red * 255)), Int(round(rgbaCache.green * 255)), Int(round(rgbaCache.blue * 255)))
+        return String(
+            format: "#%02x%02x%02x", Int(round(rgbaCache.red * 255)), Int(round(rgbaCache.green * 255)),
+            Int(round(rgbaCache.blue * 255)))
     }
 
     var htmlRGBA: String {
         let rgbaCache = rgba
-        return String(format: "#%02x%02x%02x%02x", Int(round(rgbaCache.red * 255)), Int(round(rgbaCache.green * 255)), Int(round(rgbaCache.blue * 255)), Int(round(rgbaCache.alpha * 255)) )
+        return String(
+            format: "#%02x%02x%02x%02x", Int(round(rgbaCache.red * 255)), Int(round(rgbaCache.green * 255)),
+            Int(round(rgbaCache.blue * 255)), Int(round(rgbaCache.alpha * 255)))
     }
-    
-//    class var PrimaryText: UIColor {
-//        return UIColor(light: Palettes.Gray.tint800, dark: Palettes.Gray.tint200)
-//    }
-//
-//    class var SecondaryText: UIColor {
-//        return UIColor(light: Palettes.Gray.tint500, dark: Palettes.Gray.tint400)
-//    }
-    
-//    class var NBRed: UIColor {
-//        return Palettes.App.tint400
-//    }
-    
-    
+
+    //    class var PrimaryText: UIColor {
+    //        return UIColor(light: Palettes.Gray.tint800, dark: Palettes.Gray.tint200)
+    //    }
+    //
+    //    class var SecondaryText: UIColor {
+    //        return UIColor(light: Palettes.Gray.tint500, dark: Palettes.Gray.tint400)
+    //    }
+
+    //    class var NBRed: UIColor {
+    //        return Palettes.App.tint400
+    //    }
 }

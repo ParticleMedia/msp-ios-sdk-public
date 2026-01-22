@@ -1,15 +1,14 @@
-import Foundation
-import MSPiOSCore
 //import shared
 
+import Foundation
+import MSPiOSCore
+
 public class GoogleManager: AdNetworkManager {
-    
     public override func getAdNetworkAdapter() -> AdNetworkAdapter? {
-        return GoogleAdapter()
-    }
-    
-    public override func getAdBidder(bidderPlacementId: String, bidderFormat: AdFormat?) -> Bidder? {
-        return GoogleBidder(name: "google", bidderPlacementId: bidderPlacementId, bidderFormat: bidderFormat)
+        GoogleAdapter()
     }
 
+    public override func getAdBidder(bidderPlacementId: String, bidderFormat: AdFormat?) -> Bidder? {
+        GoogleBidder(name: "google", bidderPlacementId: bidderPlacementId, bidderFormat: bidderFormat)
+    }
 }

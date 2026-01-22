@@ -7,11 +7,8 @@
 
 import Foundation
 
-
 public protocol AdNetworkAdapterProvider: AnyObject {
-    
     func getAdNetworkAdapter(adNetwork: AdNetwork) -> AdNetworkAdapter?
-    
+
     func getAdNetworkAdaptersCount() -> Int
-    
 }

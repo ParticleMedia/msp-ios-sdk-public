@@ -8,8 +8,7 @@
 import Foundation
 
 public protocol AuctionBidListener: AnyObject {
-    
     func onSuccess(bid: AuctionBid)
-    
+
     func onError(error: String)
 }

@@ -3,7 +3,7 @@ import MSPiOSCore
 
 extension NovaCreativeType: DebugOption {
     var id: String { rawValue }
-    
+
     var displayTitle: String {
         switch self {
         case .nativeImage: return "Image"
@@ -14,7 +14,7 @@ extension NovaCreativeType: DebugOption {
         case .html: return "Html"
         }
     }
-    
+
     var isVisible: Bool {
         switch self {
         case .nativeImage, .nativeVideo: return true
@@ -23,6 +23,6 @@ extension NovaCreativeType: DebugOption {
             return false
         }
     }
-    
+
     var placementIdAttachment: String? { nil }
 }

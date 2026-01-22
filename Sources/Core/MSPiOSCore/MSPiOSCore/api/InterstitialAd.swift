@@ -27,7 +27,7 @@ open class InterstitialAd: MSPAd {
     open func show() {
         fatalError("Subclass must override show() method")
     }
-    
+
     open func show(rootViewController: UIViewController?) {
         show()
     }
@@ -37,6 +37,5 @@ open class InterstitialAd: MSPAd {
     }
 
     open func dismiss(animated: Bool) {
-
     }
 }

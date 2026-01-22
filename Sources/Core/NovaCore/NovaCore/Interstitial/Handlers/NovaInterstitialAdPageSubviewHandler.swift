@@ -5,13 +5,13 @@
 //  Created by Huanzhi Zhang on 10/29/25.
 //
 import Foundation
+@_implementationOnly import SnapKit
 import UIKit
 import WebKit
-@_implementationOnly import SnapKit
 
 class NovaInterstitialAdPageSubviewHandler: NovaInterstitialAdSubviewHandler, NovaTopRightClosable {
     var darkColor: UIColor { NovaColorPalettes.Gray.tint200 }
-    
+
     enum LayoutMetrics {
         static let avatarSize = 24.0
         static let horizontalMargin = 16.0
@@ -21,7 +21,7 @@ class NovaInterstitialAdPageSubviewHandler: NovaInterstitialAdSubviewHandler, No
         static let volumeButtonWidth = 32.0
         static let volumeButtonBottomMargin = 28.0
     }
-    
+
     private let interstitialAd: NovaInterstitialAdItem
     private weak var delegate: NovaInterstitialAdSubviewBehaviorDelegate?
     private weak var viewController: UIViewController?
@@ -34,8 +34,8 @@ class NovaInterstitialAdPageSubviewHandler: NovaInterstitialAdSubviewHandler, No
     private var htmlMediaModel: NovaAdHtmlMediaModel
     private var showReportButton: Bool = false
 
-    var clickableViews = [UIView]()
-    
+    var clickableViews: [UIView] = []
+
     private(set) lazy var topRightCloseButton: UIButton = {
         let button = UIButton()
         button.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(didTapCloseButton)))
@@ -47,21 +47,21 @@ class NovaInterstitialAdPageSubviewHandler: NovaInterstitialAdSubviewHandler, No
         button.isUserInteractionEnabled = false
         return button
     }()
-    
+
     private(set) lazy var topRightCloseButtonArea: UIView = {
         let view = UIView()
         view.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(didTapCloseButton)))
         return view
     }()
-    
+
     private lazy var mediaView: NovaAdMediaView = {
         let view = NovaAdMediaView()
         view.adClickArea = .media
         return view
     }()
-    
+
     private var htmlView: NovaAdHtmlView?
-    
+
     init(
         interstitialAd: NovaInterstitialAdItem,
         delegate: NovaInterstitialAdSubviewBehaviorDelegate,
@@ -76,30 +76,30 @@ class NovaInterstitialAdPageSubviewHandler: NovaInterstitialAdSubviewHandler, No
         self.delaySecondRemaining = htmlMediaModel.currentPage.closeDelaySeconds
         self.useCustomClose = htmlMediaModel.currentPage.useCustomClose
     }
-    
+
     func setupSubviews(in containerView: UIView, showReportButton: Bool) {
         self.containerView = containerView
         self.showReportButton = showReportButton
         ensureHtmlView(in: containerView, showReportButton: showReportButton)
         setupTopRightClose()
     }
-    
+
     func config() {
         renderCurrentPage()
     }
-    
+
     @objc private func didTapCloseButton() {
         showNextPageIfNeededOrClose()
     }
-    
+
     func didAppear() {
         htmlView?.setAllMediaPlaybackSuspended(false, completionHandler: nil)
     }
-    
+
     func willDisappear() {
         htmlView?.setAllMediaPlaybackSuspended(true, completionHandler: nil)
     }
-    
+
     func enableTopRightCloseButton(button: UIButton, clickableArea: UIView) {
         topRightCloseButton.isUserInteractionEnabled = true
         topRightCloseButton.isHidden = false
@@ -109,13 +109,13 @@ class NovaInterstitialAdPageSubviewHandler: NovaInterstitialAdSubviewHandler, No
             configTopRightButtonForClose()
         }
     }
-    
+
     func configTopRightButtonForSkip() {
         topRightCloseButton.setTitle(nil, for: .normal)
 
         topRightCloseButton.titleLabel?.font = UIFont.systemFont(ofSize: 14, weight: .medium)
         var config = UIButton.Configuration.plain()
-        config.baseForegroundColor = .white       // text + chevron should be white since bg is translucent
+        config.baseForegroundColor = .white  // text + chevron should be white since bg is translucent
         config.attributedTitle = AttributedString("SKIP")
         config.image = UIImage(systemName: "chevron.right")
         config.imagePlacement = .trailing
@@ -130,7 +130,7 @@ class NovaInterstitialAdPageSubviewHandler: NovaInterstitialAdSubviewHandler, No
         topRightCloseButton.configuration = config
         topRightCloseButton.translatesAutoresizingMaskIntoConstraints = false
     }
-    
+
     func configTopRightButtonForClose() {
         topRightCloseButton.setTitle(nil, for: .normal)
 
@@ -146,7 +146,6 @@ class NovaInterstitialAdPageSubviewHandler: NovaInterstitialAdSubviewHandler, No
         )
 
         topRightCloseButton.configuration = config
-
     }
 }
 

@@ -7,12 +7,12 @@
 
 import Foundation
 
-fileprivate struct ITunesRequestResponse: Codable {
+private struct ITunesRequestResponse: Codable {
     let resultCount: Int
     let results: [ITunesResult]
 }
 
-fileprivate struct ITunesResult: Codable {
+private struct ITunesResult: Codable {
     let artworkUrl60: String?
     let artworkUrl100: String?
     let artworkUrl512: String?
@@ -46,7 +46,8 @@ struct NovaAdAppInfo {
         }
         return NovaAdAppInfo(
             appIconUrl: URL(
-                string: firstItunesResult.artworkUrl512 ?? firstItunesResult.artworkUrl100 ?? firstItunesResult.artworkUrl60 ?? ""
+                string: firstItunesResult.artworkUrl512 ?? firstItunesResult.artworkUrl100 ?? firstItunesResult
+                    .artworkUrl60 ?? ""
             ),
             appName: firstItunesResult.trackName,
             appDescription: firstItunesResult.description
@@ -60,4 +61,4 @@ struct NovaAdAppInfo {
 
 private extension NovaAdAppInfo {
     private static let searchUrlFormat = "https://itunes.apple.com/lookup?entity=software&id=%ld"
-} 
+}

@@ -5,10 +5,10 @@
 //  Created by Patrick on 2025/1/27.
 //
 
+// MARK: - NovaInterstitialAdViewProtocol
+
 import Foundation
 import UIKit
-
-// MARK: - NovaInterstitialAdViewProtocol
 
 protocol NovaInterstitialAdViewProtocol: UIView {
     func setupSubviews()

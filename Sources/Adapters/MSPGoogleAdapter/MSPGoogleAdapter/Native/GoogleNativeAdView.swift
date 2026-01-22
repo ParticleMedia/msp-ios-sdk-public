@@ -7,28 +7,28 @@
 
 import Foundation
 import GoogleMobileAds
-import MSPiOSCore
 import MSPGoogleAdsTypes
+import MSPiOSCore
 
 open class GoogleNativeAdView: UIView {
     public var titleLabel: UILabel?
     public var bodyLabel: UILabel?
     public var advertiserLabel: UILabel?
     public var callToActionButton: UIButton?
-    
+
     public let gadMediaView: MSPGADMediaView = {
         let mediaView = MSPGADMediaView()
         mediaView.translatesAutoresizingMaskIntoConstraints = false
         mediaView.contentMode = .scaleAspectFill
         return mediaView
     }()
-    
+
     public let nativeAdView: MSPGADNativeAdView = {
         let view = MSPGADNativeAdView()
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }()
-    
+
     open func setUpView() {
         self.addSubview(self.nativeAdView)
         NSLayoutConstraint.activate([
@@ -38,7 +38,7 @@ open class GoogleNativeAdView: UIView {
             self.nativeAdView.trailingAnchor.constraint(equalTo: self.trailingAnchor),
         ])
     }
-    
+
     public func bindViewWithNativeViewBinder(binder: GoogleNativeAdViewBinder, nativeAd: MSPGADNativeAd) {
         if let titleLabelTag = binder.titleLabelTag {
             nativeAdView.headlineView = nativeAdView.viewWithTag(titleLabelTag)
@@ -55,16 +55,16 @@ open class GoogleNativeAdView: UIView {
         if let mediaViewTag = binder.mediaViewTag {
             nativeAdView.mediaView = nativeAdView.viewWithTag(mediaViewTag) as? MSPGADMediaView
         }
-        
+
         self.setUpView(nativeAd: nativeAd)
     }
-    
+
     public func bindView(nativeAd: MSPGADNativeAd) {
         titleLabel = UILabel()
         bodyLabel = UILabel()
         advertiserLabel = UILabel()
         callToActionButton = UIButton(type: .custom)
-        
+
         self.nativeAdView.advertiserView = self.advertiserLabel
         self.nativeAdView.headlineView = self.titleLabel
         self.nativeAdView.bodyView = self.bodyLabel
@@ -72,10 +72,10 @@ open class GoogleNativeAdView: UIView {
         self.nativeAdView.callToActionView?.isUserInteractionEnabled = false
         self.nativeAdView.mediaView = self.gadMediaView
     }
-    
+
     open func setUpView(nativeAd: MSPGADNativeAd) {
         self.setUpView()
-        
+
         (nativeAdView.headlineView as? UILabel)?.text = nativeAd.headline
         (nativeAdView.bodyView as? UILabel)?.text = nativeAd.headline
         (nativeAdView.advertiserView as? UILabel)?.text = nativeAd.headline
@@ -84,7 +84,7 @@ open class GoogleNativeAdView: UIView {
         self.gadMediaView.contentMode = .scaleAspectFill
         self.gadMediaView.mediaContent = nativeAd.mediaContent
         self.nativeAdView.mediaView = gadMediaView
-        
+
         self.nativeAdView.nativeAd = nativeAd
     }
 }

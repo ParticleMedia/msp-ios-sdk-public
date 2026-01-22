@@ -2,7 +2,7 @@ name: CI - Pull Request Validation
 
 on:
   pull_request:
-    branches: [ main, develop ]
+    branches: [main, develop]
   push:
     # Run on all branches for comprehensive testing
     branches-ignore: []
@@ -11,46 +11,168 @@ on:
 
 env:
   DEVELOPER_DIR: /Applications/Xcode_16.4.app/Contents/Developer
-  RUBY_VERSION: '3.1'
+  RUBY_VERSION: "3.1"
 
 jobs:
   validate:
     runs-on: macos-15
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-        
+
       - name: Setup Ruby
         uses: ruby/setup-ruby@v1
         with:
           ruby-version: ${{ env.RUBY_VERSION }}
           bundler-cache: true
           bundler-cache-clean: true
-          
+
       - name: Install dependencies
         run: |
           # Add current platform to Gemfile.lock to handle platform compatibility
           bundle lock --add-platform $(ruby -e "puts RUBY_PLATFORM") || bundle lock --add-platform arm64-darwin-23
           bundle install
           pod install
-          
+
       - name: Verify pod installation
         run: |
           bundle exec fastlane verify_pod_installation
-          
+
+      - name: Setup Swift Format
+        run: |
+          echo "🔧 Setting up swift-format..."
+
+          # Function to find swift-format
+          find_swift_format() {
+            # Check system PATH first
+            if command -v swift-format &> /dev/null; then
+              echo "$(which swift-format)"
+              return 0
+            fi
+            
+            # Check Xcode toolchain (using DEVELOPER_DIR if set)
+            DEVELOPER_DIR="${DEVELOPER_DIR:-/Applications/Xcode_16.4.app/Contents/Developer}"
+            if [ -f "$DEVELOPER_DIR/Toolchains/XcodeDefault.xctoolchain/usr/bin/swift-format" ]; then
+              echo "$DEVELOPER_DIR/Toolchains/XcodeDefault.xctoolchain/usr/bin/swift-format"
+              return 0
+            fi
+            
+            # Check default Xcode location
+            if [ -f "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swift-format" ]; then
+              echo "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swift-format"
+              return 0
+            fi
+            
+            return 1
+          }
+
+          # Try to find existing swift-format
+          SWIFT_FORMAT=$(find_swift_format)
+
+          if [ -z "$SWIFT_FORMAT" ] || [ ! -f "$SWIFT_FORMAT" ]; then
+            echo "📦 swift-format not found, installing from source..."
+            # Build swift-format from source
+            git clone --depth 1 https://github.com/apple/swift-format.git /tmp/swift-format
+            cd /tmp/swift-format
+            swift build -c release
+            sudo cp .build/release/swift-format /usr/local/bin/swift-format
+            cd -
+            rm -rf /tmp/swift-format
+            SWIFT_FORMAT="swift-format"
+          else
+            echo "✅ Found swift-format at: $SWIFT_FORMAT"
+            # Create a symlink or add to PATH for easier access
+            if [ "$SWIFT_FORMAT" != "swift-format" ] && ! command -v swift-format &> /dev/null; then
+              sudo ln -sf "$SWIFT_FORMAT" /usr/local/bin/swift-format || true
+            fi
+          fi
+
+          swift-format --version
+
+      - name: Check Swift Format
+        run: |
+          echo "🔍 Checking Swift code formatting..."
+
+          # Read exclusion patterns from config file and build find command
+          EXCLUSIONS=""
+          if [ -f "swift-format-exclusions.txt" ]; then
+            while IFS= read -r line || [ -n "$line" ]; do
+              # Skip empty lines and comments
+              line=$(echo "$line" | sed 's/#.*$//' | sed 's/^[[:space:]]*//' | sed 's/[[:space:]]*$//')
+              if [ -z "$line" ]; then
+                continue
+              fi
+              # Parse name: and path: patterns
+              if [[ "$line" =~ ^name:(.+)$ ]]; then
+                EXCLUSIONS="$EXCLUSIONS -not -name \"${BASH_REMATCH[1]}\""
+              elif [[ "$line" =~ ^path:(.+)$ ]]; then
+                pattern="${BASH_REMATCH[1]}"
+                # Handle both ./path and */path patterns
+                if [[ "$pattern" == ./* ]]; then
+                  EXCLUSIONS="$EXCLUSIONS -not -path \"$pattern\""
+                else
+                  base_pattern="${pattern#*/}"
+                  EXCLUSIONS="$EXCLUSIONS -not -path \"./$base_pattern\" -not -path \"$pattern\""
+                fi
+              fi
+            done < swift-format-exclusions.txt
+          else
+            # Fallback to default exclusions if config file not found
+            EXCLUSIONS="-not -name \"*.pb.swift\" -not -path \"./Pods/*\" -not -path \"*/Pods/*\" -not -path \"./build/*\" -not -path \"*/build/*\" -not -path \"./DerivedData/*\" -not -path \"*/DerivedData/*\" -not -path \"./.build/*\" -not -path \"*/.build/*\" -not -path \"./output*/*\" -not -path \"*/output*/*\" -not -path \"*/xcframework/*\" -not -path \"./.git/*\" -not -path \"*/.swiftpm/*\""
+          fi
+
+          # Find all Swift files (excluding patterns from config file)
+          swift_files=$(eval "find . -name \"*.swift\" $EXCLUSIONS")
+
+          if [ -z "$swift_files" ]; then
+            echo "ℹ️ No Swift files found to format"
+            exit 0
+          fi
+
+          # Check formatting using configuration file
+          CONFIG_FILE="swift-format.json"
+          unformatted_files=""
+          for file in $swift_files; do
+            if [ -f "$CONFIG_FILE" ]; then
+              if ! swift-format lint --configuration "$CONFIG_FILE" "$file" > /dev/null 2>&1; then
+                unformatted_files="$unformatted_files $file"
+              fi
+            else
+              if ! swift-format lint "$file" > /dev/null 2>&1; then
+                unformatted_files="$unformatted_files $file"
+              fi
+            fi
+          done
+
+          if [ -n "$unformatted_files" ]; then
+            echo "❌ The following files are not properly formatted:"
+            for file in $unformatted_files; do
+              echo "  - $file"
+            done
+            echo ""
+            echo "💡 To fix formatting issues, run:"
+            echo "   swift-format -i <file>"
+            echo ""
+            echo "Or format all files:"
+            echo "   swift-format -i <file1> <file2> ..."
+            exit 1
+          else
+            echo "✅ All Swift files are properly formatted"
+          fi
+
       - name: Validate asset synchronization
         run: |
           echo "🔍 Validating asset synchronization..."
           chmod +x Scripts/lib/asset_validation.sh
-          
+
           # Validate that assets are properly synchronized
           ./Scripts/lib/asset_validation.sh --verbose --json --ci-mode
-          
+
       - name: Validate CocoaPods specs (comprehensive)
         run: |
           bundle exec fastlane validate_podspecs_comprehensive
-          
+
       - name: Run ultra-minimal validation
         run: |
           # Set CI environment variable
@@ -60,34 +182,34 @@ jobs:
           CI: true
           DEVELOPER_DIR: /Applications/Xcode_16.4.app/Contents/Developer
           SKIP_CODE_SIGN: "1"
-          
+
       - name: Build frameworks (CI-optimized)
         run: |
           # Set CI environment variables
           export CI=true
           export DEVELOPER_DIR="/Applications/Xcode_16.4.app/Contents/Developer"
           export SKIP_CODE_SIGN="1"
-          
+
           echo "🔧 Building XCFrameworks with CI optimizations..."
-          
+
           # Temporarily disable GoogleAdapter for CI build (requires internal MarketplaceKit)
           echo "⚠️ Temporarily disabling GoogleAdapter for CI build (requires internal MarketplaceKit framework)"
           sed -i '' 's/pod '\''GoogleAdapter'\''/#pod '\''GoogleAdapter'\''/g' Podfile
-          
+
           # Install pods without GoogleAdapter
           echo "📦 Installing pods without GoogleAdapter..."
           pod install
-          
+
           # Build MSPiOSCore with CI optimizations
           echo "📱 Building MSPiOSCore.xcframework..."
           SKIP_CODE_SIGN=1 ./Scripts/buildiOSCoreXCFramework.sh
-          
+
           # Build NovaCore with CI optimizations
           echo "🚀 Building NovaCore.xcframework..."
           SKIP_CODE_SIGN=1 ./Scripts/buildNovaXCFramework.sh
-          
+
           echo "✅ XCFramework builds completed successfully"
-          
+
           # Restore original Podfile
           echo "🔄 Restoring original Podfile..."
           git checkout -- Podfile
@@ -95,7 +217,7 @@ jobs:
           CI: true
           DEVELOPER_DIR: /Applications/Xcode_16.4.app/Contents/Developer
           SKIP_CODE_SIGN: "1"
-          
+
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
         with:
@@ -109,35 +231,35 @@ jobs:
     name: MSPDemoApp Compilation Check
     runs-on: macos-15
     needs: validate
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-        
+
       - name: Setup Ruby
         uses: ruby/setup-ruby@v1
         with:
           ruby-version: ${{ env.RUBY_VERSION }}
           bundler-cache: true
           bundler-cache-clean: true
-          
+
       - name: Download XCFrameworks from validate job
         uses: actions/download-artifact@v4
         with:
           name: xcframeworks
           path: .
-          
+
       - name: Install dependencies
         run: |
           # Add current platform to Gemfile.lock to handle platform compatibility
           bundle lock --add-platform $(ruby -e "puts RUBY_PLATFORM") || bundle lock --add-platform arm64-darwin-23
           bundle install
           pod install
-          
+
       - name: Fix SwiftProtobuf compatibility issues
         run: |
           echo "🔧 Fixing SwiftProtobuf compatibility issues..."
-          
+
           # Check if SwiftProtobuf Pod exists and has syntax issues
           if [ -d "Pods/SwiftProtobuf" ]; then
             echo "📱 Found SwiftProtobuf Pod, checking for syntax issues..."
@@ -161,19 +283,19 @@ jobs:
           else
             echo "ℹ️ SwiftProtobuf Pod not found, skipping compatibility fixes"
           fi
-          
+
       - name: Build and validate MSPDemoApp (CI-optimized)
         run: |
           # Set CI environment variables
           export CI=true
           export DEVELOPER_DIR="/Applications/Xcode_16.4.app/Contents/Developer"
           export SKIP_CODE_SIGN="1"
-          
+
           echo "🔧 Building MSPDemoApp with CI optimizations..."
-          
+
           # First, try to build with CI-specific optimizations
           cd MSPDemoApp
-          
+
           # Set CI-specific build flags to handle Pod compilation issues
           export SWIFT_OPTIMIZATION_LEVEL="-Onone"
           export SWIFT_COMPILATION_MODE="wholemodule"
@@ -182,23 +304,23 @@ jobs:
           export VALID_ARCHS="arm64 x86_64"
           export ARCHS="arm64 x86_64"
           export EXCLUDED_ARCHS=""
-          
+
           echo "🔧 Attempting CI-optimized build..."
-          
+
           # Ensure XCFrameworks are properly linked
           echo "🔧 Verifying XCFramework availability..."
           if [ ! -d "../MSPSharedLibraries/MSPiOSCore.xcframework" ]; then
             echo "❌ MSPiOSCore.xcframework not found, cannot proceed with build"
             exit 1
           fi
-          
+
           if [ ! -d "../NovaAdapter/NovaCore.xcframework" ]; then
             echo "❌ NovaCore.xcframework not found, cannot proceed with build"
             exit 1
           fi
-          
+
           echo "✅ XCFrameworks verified, proceeding with build..."
-          
+
           # Try building with CI optimizations
           if xcodebuild -workspace ../msp-ios-sdk.xcworkspace \
                         -scheme MSPDemoApp \
@@ -263,7 +385,7 @@ jobs:
           CI: true
           DEVELOPER_DIR: /Applications/Xcode_16.4.app/Contents/Developer
           SKIP_CODE_SIGN: "1"
-          
+
       - name: Upload demo app artifacts
         uses: actions/upload-artifact@v4
         with:
@@ -272,4 +394,3 @@ jobs:
             MSPDemoApp/build/
             /tmp/MSPDemoApp-DerivedData/
           retention-days: 7
-

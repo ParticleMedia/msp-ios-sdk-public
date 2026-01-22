@@ -9,7 +9,6 @@ import Foundation
 import UIKit
 
 extension UIView {
-
     static func ignoreAutoresizing(_ views: [UIView]) {
         views.forEach { $0.translatesAutoresizingMaskIntoConstraints = false }
     }
@@ -61,7 +60,7 @@ extension UIView {
     private static var msp_adClickAreaKey: UInt8 = 0
     var adClickArea: ClickableAdArea? {
         get {
-            return objc_getAssociatedObject(self, &Self.msp_adClickAreaKey) as? ClickableAdArea
+            objc_getAssociatedObject(self, &Self.msp_adClickAreaKey) as? ClickableAdArea
         }
         set {
             objc_setAssociatedObject(self, &Self.msp_adClickAreaKey, newValue, .OBJC_ASSOCIATION_RETAIN)
@@ -74,7 +73,7 @@ extension UIView {
     var frameInWindow: CGRect {
         convert(frame, to: window)
     }
-    
+
     var onTop: Bool {
         guard let window else {
             return false
@@ -93,26 +92,26 @@ extension UIView {
     }
 
     var novaIsFullyVisibleOnScreen: Bool {
-        return novaIsVisibleOnScreen(partially: false)
+        novaIsVisibleOnScreen(partially: false)
     }
 
     var novaIsPartiallyVisibleOnScreen: Bool {
-        return novaIsVisibleOnScreen(partially: true)
+        novaIsVisibleOnScreen(partially: true)
     }
 
     private func novaIsVisibleOnScreen(partially: Bool) -> Bool {
-        if isHidden  {
+        if isHidden {
             return false
         }
-        
+
         if alpha == 0 {
             return false
         }
-        
+
         if superview == nil {
             return false
         }
-        
+
         if window == nil {
             return false
         }
@@ -125,10 +124,11 @@ extension UIView {
 
         let topSafeArea = rootViewController.view.safeAreaInsets.top
         let bottomSafeArea = rootViewController.view.safeAreaInsets.bottom
-        let rootViewBounds = CGRect(x: 0,
-                                    y: topSafeArea,
-                                    width: rootViewController.view.bounds.width,
-                                    height: rootViewController.view.bounds.height - topSafeArea - bottomSafeArea)
+        let rootViewBounds = CGRect(
+            x: 0,
+            y: topSafeArea,
+            width: rootViewController.view.bounds.width,
+            height: rootViewController.view.bounds.height - topSafeArea - bottomSafeArea)
 
         if partially {
             return rootViewBounds.intersects(viewFrame)

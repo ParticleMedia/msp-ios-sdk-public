@@ -8,9 +8,8 @@ import UIKit
 
 extension UIImage {
     static let Nova = NovaImage()
-    
-    class NovaImage {
 
+    class NovaImage {
         // MARK: - Components
         let isolationMode = UIImage(named: "isolation_mode", in: NovaAsset.getBundle(), compatibleWith: nil)
         let popOver = UIImage(named: "pop_over", in: NovaAsset.getBundle(), compatibleWith: nil)
@@ -19,7 +18,8 @@ extension UIImage {
         // MARK: - Icons
         let arrowClockwiseLine = UIImage(named: "arrow_clockwise_line", in: NovaAsset.getBundle(), compatibleWith: nil)
         let chevronLeftLine = UIImage(named: "chevron_left_line", in: NovaAsset.getBundle(), compatibleWith: nil)
-        let chevronRightCircleFilled = UIImage(named: "chevron_right_circle_filled", in: NovaAsset.getBundle(), compatibleWith: nil)
+        let chevronRightCircleFilled = UIImage(
+            named: "chevron_right_circle_filled", in: NovaAsset.getBundle(), compatibleWith: nil)
         let chevronRightLine = UIImage(named: "chevron_right_line", in: NovaAsset.getBundle(), compatibleWith: nil)
         let contextFilled = UIImage(named: "context_filled", in: NovaAsset.getBundle(), compatibleWith: nil)
         let crossCircleFilled = UIImage(named: "cross_circle_filled", in: NovaAsset.getBundle(), compatibleWith: nil)
@@ -28,8 +28,10 @@ extension UIImage {
         let crossLine = UIImage(named: "cross_line", in: NovaAsset.getBundle(), compatibleWith: nil)
         let crossOutline = UIImage(named: "cross_outline", in: NovaAsset.getBundle(), compatibleWith: nil)
         let downloadLine = UIImage(named: "download_line", in: NovaAsset.getBundle(), compatibleWith: nil)
-        let ellipsisHorizontalCircleLine = UIImage(named: "ellipsis_horizontal_circle_line", in: NovaAsset.getBundle(), compatibleWith: nil)
-        let ellipsisHorizontalOutline = UIImage(named: "ellipsis_horizontal_outline", in: NovaAsset.getBundle(), compatibleWith: nil)
+        let ellipsisHorizontalCircleLine = UIImage(
+            named: "ellipsis_horizontal_circle_line", in: NovaAsset.getBundle(), compatibleWith: nil)
+        let ellipsisHorizontalOutline = UIImage(
+            named: "ellipsis_horizontal_outline", in: NovaAsset.getBundle(), compatibleWith: nil)
         let pauseFilled = UIImage(named: "pause_filled", in: NovaAsset.getBundle(), compatibleWith: nil)
         let pauseLine = UIImage(named: "pause_line", in: NovaAsset.getBundle(), compatibleWith: nil)
         let playFilled = UIImage(named: "play_filled", in: NovaAsset.getBundle(), compatibleWith: nil)

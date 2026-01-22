@@ -5,20 +5,19 @@
 //  Created by Shanyu Li on 2025/4/15.
 //
 
+/// Area to the playable web view after clicking
 import Foundation
 
-/// Area to the playable web view after clicking
-enum AdPlayableArea: String, Codable{
-    case all    = "ALL"
-    case media  = "MEDIA"
+enum AdPlayableArea: String, Codable {
+    case all = "ALL"
+    case media = "MEDIA"
 }
 
 class NovaAdPlayableInfo: Codable {
-
     enum Layout: String, Codable {
         case showMedia
         case showPlayable
-        case twoPart // TODO: lsy, two part not work in msp native ad
+        case twoPart  // TODO: lsy, two part not work in msp native ad
     }
 
     enum ActionBarFormat: String, Codable {
@@ -58,7 +57,8 @@ class NovaAdPlayableInfo: Codable {
         self.layout = try container.decode(Layout.self, forKey: .layout)
         self.actionBarFormat = try container.decode(ActionBarFormat.self, forKey: .actionBarFormat)
         if let formatString = try? container.decodeIfPresent(String.self, forKey: .tapToTryFormat),
-           let format = TapToTryFormat(rawValue: formatString) {
+            let format = TapToTryFormat(rawValue: formatString)
+        {
             self.tapToTryFormat = format
         } else {
             self.tapToTryFormat = .default
@@ -72,4 +72,4 @@ class NovaAdPlayableInfo: Codable {
         case actionBarFormat
         case tapToTryFormat
     }
-} 
+}

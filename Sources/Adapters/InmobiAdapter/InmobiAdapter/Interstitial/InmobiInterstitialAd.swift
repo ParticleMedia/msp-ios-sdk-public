@@ -5,9 +5,8 @@
 //  Created by Huanzhi Zhang on 2/5/25.
 //
 import Foundation
-import MSPiOSCore
 import InMobiSDK
-
+import MSPiOSCore
 
 public class InmobiInterstitialAd: MSPiOSCore.InterstitialAd {
     public weak var rootViewController: UIViewController?
@@ -15,16 +14,18 @@ public class InmobiInterstitialAd: MSPiOSCore.InterstitialAd {
 
     public override func show() {
         if let interstitialAdItem = self.interstitialAdItem,
-           let rootViewController = self.rootViewController,
-           interstitialAdItem.isReady() {
+            let rootViewController = self.rootViewController,
+            interstitialAdItem.isReady()
+        {
             interstitialAdItem.show(from: rootViewController)
         }
     }
 
     public override func show(rootViewController: UIViewController?) {
         if let interstitialAdItem = self.interstitialAdItem,
-           let rootViewController = rootViewController,
-           interstitialAdItem.isReady() {
+            let rootViewController = rootViewController,
+            interstitialAdItem.isReady()
+        {
             interstitialAdItem.show(from: rootViewController)
         }
     }

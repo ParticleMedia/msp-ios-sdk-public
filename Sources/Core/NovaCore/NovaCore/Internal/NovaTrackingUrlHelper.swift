@@ -4,8 +4,8 @@
 //
 //  Created by Huanzhi Zhang on 12/18/25.
 //
-import WebKit
 import Foundation
+import WebKit
 
 class NovaTrackingUrlHelper: NSObject {
     static let shared = NovaTrackingUrlHelper()
@@ -18,7 +18,7 @@ class NovaTrackingUrlHelper: NSObject {
         shared.getUserAgent { ua in
             var request = URLRequest(url: url)
             request.setValue(ua, forHTTPHeaderField: "User-Agent")
-            
+
             Task.detached(priority: .userInitiated) {
                 do {
                     _ = try await URLSession.shared.data(for: request)
@@ -40,7 +40,7 @@ class NovaTrackingUrlHelper: NSObject {
             NovaTrackingUrlHelper.referenceWebView = webView
             webView.evaluateJavaScript("navigator.userAgent") { (result, error) in
                 let ua = result as? String
-                
+
                 self?.cachedUserAgent = ua
                 completion(ua)
             }

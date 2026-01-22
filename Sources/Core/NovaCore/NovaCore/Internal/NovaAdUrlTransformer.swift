@@ -23,7 +23,7 @@ enum NovaAdUrlTransformer {
 
 private extension NovaAdUrlTransformer {
     static func createReplacementByMacroDict() -> [String: String] {
-        return [
+        [
             .adIdPlainMacro: ASIdentifierManager.shared().advertisingIdentifier.uuidString,
             .adIdTypeMacro: .adIdTypeValue,
             .adIdIsLatMacro: isIDFAAuthorized() ? .adIdIsLatTrue : .adidIsLatFalse,
@@ -33,10 +33,12 @@ private extension NovaAdUrlTransformer {
     }
 
     static func createReplacementByRegexMacroDict() -> [String: String] {
-        return [.gdprConsentMacroRegex: .gdprConsentValue]
+        [.gdprConsentMacroRegex: .gdprConsentValue]
     }
 
-    static func replaceAll(regexMacro: String, with replacement: String, in originalText: String) -> String {
+    static func replaceAll(regexMacro: String, with replacement: String, in originalText: String)
+        -> String
+    {
         do {
             let regex = try NSRegularExpression(pattern: regexMacro, options: [])
 
@@ -50,7 +52,7 @@ private extension NovaAdUrlTransformer {
             return originalText
         }
     }
-    
+
     static func isIDFAAuthorized() -> Bool {
         if #available(iOS 14, *), case .authorized = ATTrackingManager.trackingAuthorizationStatus {
             return true
@@ -58,7 +60,6 @@ private extension NovaAdUrlTransformer {
             return false
         }
     }
-
 }
 
 private extension String {
@@ -72,6 +73,6 @@ private extension String {
     static let siteValue = "newsbreak.com"
     static let gdprMacro = "${GDPR}"
     static let gdprValue = ""
-    static let gdprConsentMacroRegex = "\\$\\{GDPR_CONSENT_.+\\}"
+    static let gdprConsentMacroRegex = #"\$\{GDPR_CONSENT_.+\}"#
     static let gdprConsentValue = ""
 }

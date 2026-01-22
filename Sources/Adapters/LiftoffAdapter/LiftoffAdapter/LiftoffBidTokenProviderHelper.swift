@@ -11,9 +11,8 @@ import VungleAdsSDK
 
 public class LiftoffBidTokenProviderHelper: LiftoffBidTokenProvider {
     public init() {
-        
     }
-    
+
     public func fetch(completeListener: any LiftoffBidTokenListener, context: Any) {
         let biddingToken = VungleAds.getBiddingToken()
         completeListener.onComplete(liftoffBidToken: biddingToken)

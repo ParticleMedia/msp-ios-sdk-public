@@ -72,7 +72,7 @@ class NovaAdDiscountTag: UIView {
             }
         }
         switch info.position {
-            // TODO: lsy, 因为外界没法感知 discount tag，放在左下角或者右下角的情况可能被外界文字遮挡。
+        // TODO: lsy, 因为外界没法感知 discount tag，放在左下角或者右下角的情况可能被外界文字遮挡。
         case .topLeft, .bottomLeft:
             snp.makeConstraints { make in
                 make.top.equalTo(mediaView.safeAreaLayoutGuide.snp.top).offset(verticalPadding)
@@ -83,16 +83,16 @@ class NovaAdDiscountTag: UIView {
                 make.top.equalTo(mediaView.safeAreaLayoutGuide.snp.top).offset(verticalPadding)
                 make.trailing.equalTo(mediaView.safeAreaLayoutGuide.snp.trailing).offset(-horizontalPadding)
             }
-//        case .bottomLeft:
-//            snp.makeConstraints { make in
-//                make.leading.equalTo(mediaView.snp.leading).offset(horizontalPadding)
-//                make.bottom.equalTo(mediaView.snp.bottom).offset(-verticalPadding)
-//            }
-//        case .bottomRight:
-//            snp.makeConstraints { make in
-//                make.trailing.equalTo(mediaView.snp.trailing).offset(-horizontalPadding)
-//                make.bottom.equalTo(mediaView.snp.bottom).offset(-verticalPadding)
-//            }
+        //        case .bottomLeft:
+        //            snp.makeConstraints { make in
+        //                make.leading.equalTo(mediaView.snp.leading).offset(horizontalPadding)
+        //                make.bottom.equalTo(mediaView.snp.bottom).offset(-verticalPadding)
+        //            }
+        //        case .bottomRight:
+        //            snp.makeConstraints { make in
+        //                make.trailing.equalTo(mediaView.snp.trailing).offset(-horizontalPadding)
+        //                make.bottom.equalTo(mediaView.snp.bottom).offset(-verticalPadding)
+        //            }
         }
     }
 
@@ -132,7 +132,6 @@ class NovaAdDiscountTag: UIView {
                     .equalTo(mediaView.snp.top)
                     .offset(verticalPadding + UIApplication.novaSafeAreaInsets.top)
                 make.leading.equalTo(mediaView.snp.leading).offset(horizontalPadding)
-
             }
         case .topRight:
             snp.makeConstraints { make in
@@ -197,7 +196,7 @@ private extension NovaAdDiscountTag {
                 case .default, .red:
                     return " "
                 case .redEmblem:
-                    return "\n"
+                    return "\u{000A}"
                 }
             }()
             let (originalPriceTextColor, originalPriceTextFont): (UIColor, UIFont) = {
@@ -219,7 +218,7 @@ private extension NovaAdDiscountTag {
                 attributes: [
                     .foregroundColor: originalPriceTextColor,
                     .font: originalPriceTextFont,
-                    .strikethroughStyle: NSNumber(integerLiteral: NSUnderlineStyle.single.rawValue)
+                    .strikethroughStyle: NSNumber(integerLiteral: NSUnderlineStyle.single.rawValue),
                 ]
             )
             let finalString = NSMutableAttributedString(attributedString: newPriceString)

@@ -103,6 +103,6 @@ extension HorizontalEndCardSubviewHandler: NovaAdEndCardSubviewHandling {
     }
 
     func clickableViews() -> [UIView] {
-        return [ctaStackView]
+        [ctaStackView]
     }
 }

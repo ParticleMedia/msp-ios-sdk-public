@@ -36,14 +36,15 @@ class NovaAdEndCard: UIView {
     }
 
     func config(with viewModel: NovaAdEndCardViewModel) {
-        subviewHandler = NovaAdEndCardSubviewHandlerCreator
+        subviewHandler =
+            NovaAdEndCardSubviewHandlerCreator
             .create(with: viewModel.style, delegate: self)
         subviewHandler?.set(on: self)
         subviewHandler?.config(with: viewModel)
     }
 
     func clickableViews() -> [UIView] {
-        return (subviewHandler?.clickableViews() ?? []) + [self]
+        (subviewHandler?.clickableViews() ?? []) + [self]
     }
 }
 

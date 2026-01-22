@@ -1,5 +1,5 @@
-import UIKit
 @_implementationOnly import SnapKit
+import UIKit
 
 class DebugSectionHeaderView: UIView {
     // MARK: - Properties
@@ -17,7 +17,7 @@ class DebugSectionHeaderView: UIView {
     }
     var tapAction: (() -> Void)?
     private var isPlacementSection: Bool = false
-    
+
     // MARK: - Initialization
     init(isPlacementSection: Bool = false) {
         self.isPlacementSection = isPlacementSection
@@ -26,19 +26,19 @@ class DebugSectionHeaderView: UIView {
         setupConstraints()
         setupGestureRecognizer()
     }
-    
+
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
+
     // MARK: - Setup
     private func setupView() {
         backgroundColor = .systemBackground
-        
+
         // Title Label
         titleLabel.font = .boldSystemFont(ofSize: 16)
         addSubview(titleLabel)
-        
+
         // Disclosure Indicator (only for placement section)
         if isPlacementSection {
             disclosureIndicator.image = UIImage(systemName: "chevron.down")
@@ -47,7 +47,7 @@ class DebugSectionHeaderView: UIView {
             addSubview(disclosureIndicator)
         }
     }
-    
+
     private func setupConstraints() {
         titleLabel.snp.makeConstraints { make in
             make.leading.equalTo(self).offset(16)
@@ -55,7 +55,7 @@ class DebugSectionHeaderView: UIView {
             make.top.equalTo(self).offset(10)
             make.bottom.equalTo(self).offset(-10)
         }
-        
+
         if isPlacementSection {
             disclosureIndicator.snp.makeConstraints { make in
                 make.trailing.equalTo(self).offset(-16)
@@ -64,7 +64,7 @@ class DebugSectionHeaderView: UIView {
             }
         }
     }
-    
+
     private func setupGestureRecognizer() {
         if isPlacementSection {
             let tapGesture = UITapGestureRecognizer(target: self, action: #selector(headerTapped))
@@ -72,16 +72,17 @@ class DebugSectionHeaderView: UIView {
             isUserInteractionEnabled = true
         }
     }
-    
+
     // MARK: - Actions
     @objc private func headerTapped() {
         tapAction?()
     }
-    
+
     // MARK: - Helper
     private func updateDisclosureIndicator() {
         if isPlacementSection {
-            disclosureIndicator.image = isExpanded ? UIImage(systemName: "chevron.down") : UIImage(systemName: "chevron.right")
+            disclosureIndicator.image =
+                isExpanded ? UIImage(systemName: "chevron.down") : UIImage(systemName: "chevron.right")
         }
     }
 }

@@ -11,7 +11,7 @@ extension AdFormat: DebugOption {
         @unknown default: return "unknown"
         }
     }
-    
+
     var displayTitle: String {
         switch self {
         case .banner: return "Banner"
@@ -21,11 +21,11 @@ extension AdFormat: DebugOption {
         @unknown default: return "Unknown"
         }
     }
-    
+
     var isVisible: Bool {
         switch self {
         case .banner, .interstitial, .multi_format, .native: return true
         @unknown default: return false
         }
     }
-} 
+}

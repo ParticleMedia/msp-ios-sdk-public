@@ -7,7 +7,6 @@
 
 import UIKit
 
-
 protocol NovaAdVideoSubviewBehaviorDelegate: AnyObject {
     func didTapStartButton()
 

@@ -1,6 +1,7 @@
 import Combine
 import Nimble
 import Quick
+
 @testable import MSPCore
 @testable import MSPiOSCore
 
@@ -13,7 +14,7 @@ class DebugAdLoadSectionViewModelSpec: QuickSpec {
             beforeEach {
                 options = [
                     MockDebugOption(id: "option-1", displayTitle: "Option 1"),
-                    MockDebugOption(id: "option-2", displayTitle: "Option 2")
+                    MockDebugOption(id: "option-2", displayTitle: "Option 2"),
                 ]
                 sectionData = MockDebugSection(
                     id: "section-id",

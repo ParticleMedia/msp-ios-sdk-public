@@ -1,7 +1,7 @@
-import UIKit
+import Combine
 import MSPiOSCore
 @_implementationOnly import SnapKit
-import Combine
+import UIKit
 
 private enum UIConfig {
     // Layout
@@ -47,7 +47,7 @@ class DebugAdLoadViewController: UIViewController, UITableViewDataSource, UITabl
     }()
     private var visibleSections: [DebugAdLoadSectionViewModel] = []
     private var cancellables = Set<AnyCancellable>()
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
         title = UIConfig.title
@@ -57,7 +57,7 @@ class DebugAdLoadViewController: UIViewController, UITableViewDataSource, UITabl
         setupButtons()
         bindViewModel()
     }
-    
+
     private func setupTableView() {
         view.addSubview(tableView)
         tableView.dataSource = self
@@ -68,14 +68,14 @@ class DebugAdLoadViewController: UIViewController, UITableViewDataSource, UITabl
             make.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom).inset(UIConfig.tableBottomInset)
         }
     }
-    
+
     private func setupButtons() {
         view.addSubview(loadAdButton)
         view.addSubview(destroyButton)
-        
+
         // Add action handlers
         loadAdButton.addTarget(self, action: #selector(loadAdButtonTapped), for: .touchUpInside)
-        
+
         loadAdButton.snp.makeConstraints { make in
             make.leading.equalToSuperview().offset(UIConfig.buttonLeading)
             make.bottom.equalTo(view.safeAreaLayoutGuide.snp.bottom).inset(UIConfig.buttonBottom)
@@ -90,11 +90,11 @@ class DebugAdLoadViewController: UIViewController, UITableViewDataSource, UITabl
             make.width.equalTo(loadAdButton)
         }
     }
-    
+
     @objc private func loadAdButtonTapped() {
         viewModel.loadAd()
     }
-    
+
     private func bindViewModel() {
         viewModel.visibleSectionsPublisher
             .receive(on: DispatchQueue.main)
@@ -111,7 +111,8 @@ class DebugAdLoadViewController: UIViewController, UITableViewDataSource, UITabl
                 guard let self = self else { return }
                 let duration = signal.duration ?? 2.0
                 ToastManager.shared.dismiss()
-                ToastManager.shared.show(message: signal.message, style: signal.style, in: self.view, duration: duration)
+                ToastManager.shared.show(
+                    message: signal.message, style: signal.style, in: self.view, duration: duration)
             }
             .store(in: &cancellables)
 
@@ -121,7 +122,8 @@ class DebugAdLoadViewController: UIViewController, UITableViewDataSource, UITabl
                 DispatchQueue.main.async {
                     switch signal {
                     case .native(let nativeAd):
-                        let container = DebugNativeAdContainer(frame: CGRect(origin: .zero, size: UIConfig.nativeAdSize))
+                        let container = DebugNativeAdContainer(
+                            frame: CGRect(origin: .zero, size: UIConfig.nativeAdSize))
                         let adView = NativeAdView(nativeAd: nativeAd, nativeAdContainer: container)
                         let adVC = DebugAdContainerViewController(adView: adView, preferredSize: UIConfig.nativeAdSize)
                         self.navigationController?.pushViewController(adVC, animated: true)
@@ -136,25 +138,27 @@ class DebugAdLoadViewController: UIViewController, UITableViewDataSource, UITabl
             }
             .store(in: &cancellables)
     }
-    
+
     // MARK: - UITableViewDataSource
     func numberOfSections(in tableView: UITableView) -> Int {
-        return visibleSections.count
+        visibleSections.count
     }
-    
+
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         // For placement section, return 0 rows when collapsed
-        if visibleSections[section].title == DebugSectionData.SectionTitles.placement && !viewModel.isPlacementSectionVisible {
+        if visibleSections[section].title == DebugSectionData.SectionTitles.placement
+            && !viewModel.isPlacementSectionVisible
+        {
             return 0
         }
         return visibleSections[section].numberOfCells
     }
-    
+
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
         let isPlacementSection = visibleSections[section].title == DebugSectionData.SectionTitles.placement
         let headerView = DebugSectionHeaderView(isPlacementSection: isPlacementSection)
         headerView.title = visibleSections[section].title
-        
+
         if isPlacementSection {
             headerView.isExpanded = viewModel.isPlacementSectionVisible
             headerView.tapAction = {
@@ -162,18 +166,18 @@ class DebugAdLoadViewController: UIViewController, UITableViewDataSource, UITabl
                 self?.placementSectionHeaderTapped()
             }
         }
-        
+
         return headerView
     }
-    
+
     @objc private func placementSectionHeaderTapped() {
         viewModel.togglePlacementSection()
     }
-    
+
     func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        return 44
+        44
     }
-    
+
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cellVM = visibleSections[indexPath.section].cellViewModel(at: indexPath.row)!
         let cell = tableView.dequeueReusableCell(withIdentifier: UIConfig.radioCellReuseId, for: indexPath)
@@ -182,12 +186,14 @@ class DebugAdLoadViewController: UIViewController, UITableViewDataSource, UITabl
         cell.selectionStyle = .none
         return cell
     }
-    
+
     // MARK: - UITableViewDelegate
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let sectionIdx = indexPath.section
         let rowIdx = indexPath.row
-        guard let realSectionIdx = viewModel.sections.firstIndex(where: { $0 === visibleSections[sectionIdx] }) else { return }
+        guard let realSectionIdx = viewModel.sections.firstIndex(where: { $0 === visibleSections[sectionIdx] }) else {
+            return
+        }
         viewModel.selectOption(section: realSectionIdx, row: rowIdx)
         tableView.deselectRow(at: indexPath, animated: true)
     }

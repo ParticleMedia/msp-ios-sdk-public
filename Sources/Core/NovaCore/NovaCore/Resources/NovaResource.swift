@@ -11,11 +11,11 @@ class NovaResource {
     // MARK: Internal
 
     static func getLottieResourceURL(_ name: String) -> URL? {
-        return getResourceURL(name, withExtension: "json", subdirectory: "Lottie")
+        getResourceURL(name, withExtension: "json", subdirectory: "Lottie")
     }
 
     static func getJSScriptResourceURL(_ name: String) -> URL? {
-        return getResourceURL(name, withExtension: "js", subdirectory: "Scripts")
+        getResourceURL(name, withExtension: "js", subdirectory: "Scripts")
     }
 
     // MARK: Private
@@ -28,6 +28,6 @@ class NovaResource {
     }
 
     private static func getResourceURL(_ name: String, withExtension: String, subdirectory: String) -> URL? {
-        return resourceBundle?.url(forResource: name, withExtension: withExtension, subdirectory: subdirectory)
+        resourceBundle?.url(forResource: name, withExtension: withExtension, subdirectory: subdirectory)
     }
 }

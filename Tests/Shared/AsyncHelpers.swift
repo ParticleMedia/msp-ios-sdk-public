@@ -1,7 +1,7 @@
+/// Async test helpers extending Nimble's waitUntil
 import Foundation
 import Nimble
 
-/// Async test helpers extending Nimble's waitUntil
 extension AsyncDefaults {
     /// Default timeout for async tests (5 seconds)
     public static var timeout: NimbleTimeInterval = .seconds(5)

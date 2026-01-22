@@ -61,7 +61,7 @@ extension NovaClickAreaConfigurable {
                     advertiser,
                     adTag,
                     cta,
-                    icon
+                    icon,
                 ].compactMap { $0 }
             }
         }

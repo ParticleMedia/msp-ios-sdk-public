@@ -3,28 +3,28 @@ import MSPiOSCore
 
 struct PlacementOption: DebugOption, DebugOptionIdentifiable, DebugDisplayable {
     let placementId: String
-    
+
     var id: String {
-        return placementId
+        placementId
     }
-    
+
     var title: String {
-        return placementId
+        placementId
     }
-    
+
     var placementIdAttachment: String? {
-        return placementId
+        placementId
     }
-    
+
     // DebugDisplayable protocol implementation
     var displayText: String {
-        return placementId
+        placementId
     }
-    
+
     var displayTitle: String {
-        return placementId
+        placementId
     }
-    
+
     var isVisible: Bool {
         true
     }

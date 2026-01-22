@@ -1,0 +1,32 @@
+# Swift Format Exclusions Configuration
+# This file defines patterns for files and directories to exclude from Swift formatting
+#
+# Format:
+#   name:<pattern>  - Exclude files matching the name pattern (e.g., *.pb.swift)
+#   path:<pattern>  - Exclude files in paths matching the pattern (e.g., */Pods/*)
+#
+# Examples:
+#   name:*.pb.swift
+#   path:*/Pods/*
+
+# Generated files
+name:*.pb.swift
+
+# Dependencies
+path:*/Pods/*
+path:*/Pods.xcodeproj/*
+
+# Build directories
+path:*/build/*
+path:*/DerivedData/*
+path:*/.build/*
+path:*/output*/*
+path:*/xcframework/*
+
+# Git and metadata
+path:*/.git/*
+path:*/.swiftpm/*
+path:*/xcuserdata/*
+path:*/xcshareddata/*
+path:*/Package.resolved*
+

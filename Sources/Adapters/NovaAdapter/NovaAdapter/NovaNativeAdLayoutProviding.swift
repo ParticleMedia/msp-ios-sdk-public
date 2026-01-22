@@ -1,5 +1,5 @@
-import NovaCore
 import MSPiOSCore
+import NovaCore
 
 public protocol NovaNativeAdLayoutProviding {
     var layout: NovaNativeLayoutStyle? { get }

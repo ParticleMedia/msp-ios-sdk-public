@@ -16,15 +16,16 @@ enum NovaAdDiscountTagInfoError: LocalizedError {
         case .invalidTagTextStyle:
             return "The tag text style is invalid."
         case let .incorrectTextStyleParameters(textType, parametersCount):
-            return "The text style '\(textType.rawValue)' requires a different number of parameters than provided (\(parametersCount))."
+            return
+                "The text style '\(textType.rawValue)' requires a different number of parameters than provided (\(parametersCount))."
         }
     }
 }
 
 struct NovaAdDiscountTagStyle {
     enum TextType: String {
-        case priceOff      = "PRICE_OFF"
-        case priceSales    = "PRICE_SALES"
+        case priceOff = "PRICE_OFF"
+        case priceSales = "PRICE_SALES"
     }
 
     enum Text {
@@ -33,9 +34,9 @@ struct NovaAdDiscountTagStyle {
     }
 
     enum Background: String {
-        case `default`     = "DEFAULT"
-        case red           = "RED"
-        case redEmblem     = "RED_EMBLEM"
+        case `default` = "DEFAULT"
+        case red = "RED"
+        case redEmblem = "RED_EMBLEM"
     }
 
     let text: Text
@@ -44,10 +45,10 @@ struct NovaAdDiscountTagStyle {
 
 struct NovaAdDiscountTagInfo {
     enum Position: String {
-        case topLeft       = "TOP_LEFT"
-        case topRight      = "TOP_RIGHT"
-        case bottomLeft    = "BOTTOM_LEFT"
-        case bottomRight   = "BOTTOM_RIGHT"
+        case topLeft = "TOP_LEFT"
+        case topRight = "TOP_RIGHT"
+        case bottomLeft = "BOTTOM_LEFT"
+        case bottomRight = "BOTTOM_RIGHT"
     }
 
     let position: Position
@@ -62,13 +63,15 @@ struct NovaAdDiscountTagInfo {
             switch textStyleType {
             case .priceOff:
                 guard tagItem.texts.count == 1 else {
-                    throw NovaAdDiscountTagInfoError
+                    throw
+                        NovaAdDiscountTagInfoError
                         .incorrectTextStyleParameters(textType: textStyleType, parametersCount: tagItem.texts.count)
                 }
                 return .priceOff(percentageText: tagItem.texts.first!)
             case .priceSales:
                 guard tagItem.texts.count == 2 else {
-                    throw NovaAdDiscountTagInfoError
+                    throw
+                        NovaAdDiscountTagInfoError
                         .incorrectTextStyleParameters(textType: textStyleType, parametersCount: tagItem.texts.count)
                 }
                 return .priceSales(newPrice: tagItem.texts[0], originalPrice: tagItem.texts[1])
@@ -79,7 +82,7 @@ struct NovaAdDiscountTagInfo {
     }
 
     func convertToTagItem() -> TagItem {
-        return {
+        {
             switch style.text {
             case let .priceOff(percentageText: text):
                 TagItem(
@@ -114,4 +117,4 @@ extension NovaAdDiscountTagInfo: Codable {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(tagItem, forKey: .tagItem)
     }
-} 
+}

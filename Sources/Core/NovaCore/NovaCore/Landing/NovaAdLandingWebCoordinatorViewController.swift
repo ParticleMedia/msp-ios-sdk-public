@@ -5,10 +5,9 @@
 //  Created by Shanyu Li on 2025/8/12.
 //
 
-import UIKit
-
 import Foundation
 @_implementationOnly import SnapKit
+import UIKit
 
 class NovaAdLandingWebCoordinatorViewController: UIViewController {
     struct LandingVideoContext {
@@ -90,7 +89,7 @@ class NovaAdLandingWebCoordinatorViewController: UIViewController {
             switch detentStyle {
             case .fullscreen:
                 return NovaAdLandingWebContentViewController(webContext: webContext)
-            case .partOfScreen(height: let height, landingVideoContext: _):
+            case .partOfScreen(let height, landingVideoContext: _):
                 let navigationModel = NovaWebViewNavigationViewModel(
                     includingStatusBar: false,
                     title: nil,
@@ -125,7 +124,8 @@ class NovaAdLandingWebCoordinatorViewController: UIViewController {
                         if self.translationYWhenWebFirstlyScrollToTop == nil {
                             self.translationYWhenWebFirstlyScrollToTop = translationY
                         }
-                        let newContainerHeight = containerMaxHeight - (translationY - self.translationYWhenWebFirstlyScrollToTop!)
+                        let newContainerHeight =
+                            containerMaxHeight - (translationY - self.translationYWhenWebFirstlyScrollToTop!)
                         let finalHeight: CGFloat? = {
                             switch newContainerHeight {
                             case ..<height:
@@ -222,14 +222,18 @@ class NovaAdLandingWebCoordinatorViewController: UIViewController {
             if let videoView {
                 view.insertSubview(videoView, at: 0)
                 videoView.snp.makeConstraints { make in
-                    videoViewTopConstraint = make.top
+                    videoViewTopConstraint =
+                        make.top
                         .equalToSuperview()
                         .offset(landingVideoContext.initialFrame.origin.y).constraint
-                    videoViewLeadingConstraint = make.leading
+                    videoViewLeadingConstraint =
+                        make.leading
                         .equalToSuperview()
                         .offset(landingVideoContext.initialFrame.origin.x).constraint
-                    videoViewWidthConstraint = make.width.equalTo(landingVideoContext.initialFrame.size.width).constraint
-                    videoViewHeightConstraint = make.height
+                    videoViewWidthConstraint =
+                        make.width.equalTo(landingVideoContext.initialFrame.size.width).constraint
+                    videoViewHeightConstraint =
+                        make.height
                         .equalTo(landingVideoContext.initialFrame.size.height).constraint
                 }
                 view.layoutIfNeeded()
@@ -249,7 +253,8 @@ class NovaAdLandingWebCoordinatorViewController: UIViewController {
                 self.videoViewTopConstraint?.update(offset: Constants.statusBarHeight)
                 self.videoViewLeadingConstraint?.update(offset: 0)
                 self.videoViewWidthConstraint?.update(offset: self.view.frame.width)
-                self.videoViewHeightConstraint?.update(offset: self.view.frame.height - Constants.statusBarHeight - height)
+                self.videoViewHeightConstraint?.update(
+                    offset: self.view.frame.height - Constants.statusBarHeight - height)
                 self.view.layoutIfNeeded()
             } completion: { _ in
                 self.videoView?.toggleAllSubviewVisibilityAndRecover(after: 3.0)

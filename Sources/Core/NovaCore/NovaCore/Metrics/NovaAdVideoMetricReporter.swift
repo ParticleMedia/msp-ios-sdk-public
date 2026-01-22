@@ -22,24 +22,23 @@ class NovaAdVideoMetricReporter {
     struct ProgressDurationPoint {
         let duration: Double
         let event: NovaAdEvent
-        let params: [String:String]
+        let params: [String: String]
     }
 
     class LogRecord {
-
         var didLogStart: Bool = false
         var didLogEnd: Bool = false
         var ratioPoints: [ProgressPercentagePoint] = [
             ProgressPercentagePoint(percentage: 0.25, event: .videoFirstQuartile),
             ProgressPercentagePoint(percentage: 0.50, event: .videoMidPoint),
-            ProgressPercentagePoint(percentage: 0.75, event: .videoThirdQuartile)
+            ProgressPercentagePoint(percentage: 0.75, event: .videoThirdQuartile),
         ]
         var timePoints: [ProgressDurationPoint] = [
-            ProgressDurationPoint(duration: 3.0, event: .videoProgress, params: [NovaAdMetricKeys.OFFSET:"3.0"])
+            ProgressDurationPoint(duration: 3.0, event: .videoProgress, params: [NovaAdMetricKeys.OFFSET: "3.0"])
         ]
     }
 
-    private static var allVideoLogRecords = [String: LogRecord]()
+    private static var allVideoLogRecords: [String: LogRecord] = [:]
 
     static func makeRecord(encryptedAdToken: String) {
         if allVideoLogRecords[encryptedAdToken] != nil {
@@ -74,24 +73,28 @@ class NovaAdVideoMetricReporter {
             return
         }
         record.didLogStart = true
-        let params = NovaAdVideoMetricReporter.getVideoParams(videoInfo: videoInfo, startTime: startTime, configTime: configTime, novaVideoPlayer: novaVideoPlayer)
+        let params = NovaAdVideoMetricReporter.getVideoParams(
+            videoInfo: videoInfo, startTime: startTime, configTime: configTime, novaVideoPlayer: novaVideoPlayer)
         NovaAdMetricReporter.logVideoEvent(.videoStart, encryptedAdToken: encryptedAdToken, params: params)
     }
 
-    static func logVideoProgress(encryptedAdToken: String,
-                                        percentage: Double,
-                                        duration: Double) {
+    static func logVideoProgress(
+        encryptedAdToken: String,
+        percentage: Double,
+        duration: Double
+    ) {
         guard let record = allVideoLogRecords[encryptedAdToken] else {
             return
         }
 
         if let point = record.ratioPoints.first, percentage >= point.percentage {
             record.ratioPoints.removeFirst()
-            NovaAdMetricReporter.logVideoEvent(point.event, encryptedAdToken: encryptedAdToken, params:["duration_ms": duration.msString()])
+            NovaAdMetricReporter.logVideoEvent(
+                point.event, encryptedAdToken: encryptedAdToken, params: ["duration_ms": duration.msString()])
         }
         if let point = record.timePoints.first, duration >= point.duration {
             record.timePoints.removeFirst()
-            var params = [String: String]()
+            var params: [String: String] = [:]
             for (key, value) in point.params {
                 params[key] = value
             }
@@ -99,13 +102,14 @@ class NovaAdVideoMetricReporter {
             NovaAdMetricReporter.logVideoEvent(point.event, encryptedAdToken: encryptedAdToken, params: params)
         }
     }
-    
-    static func logVideoEnd(encryptedAdToken: String,
-                            percentage: Double,
-                            videoInfo: NovaNativeAdVideoInfo?,
-                            startTime: Double?,
-                            configTime: Double?,
-                            novaVideoPlayer: NovaVideoPlayer?
+
+    static func logVideoEnd(
+        encryptedAdToken: String,
+        percentage: Double,
+        videoInfo: NovaNativeAdVideoInfo?,
+        startTime: Double?,
+        configTime: Double?,
+        novaVideoPlayer: NovaVideoPlayer?
     ) {
         guard let record = allVideoLogRecords[encryptedAdToken] else {
             return
@@ -114,51 +118,61 @@ class NovaAdVideoMetricReporter {
         guard !record.didLogEnd else {
             return
         }
-        
+
         guard percentage >= 1.0 else {
             return
         }
-    
+
         record.didLogEnd = true
-        let params = NovaAdVideoMetricReporter.getVideoParams(videoInfo: videoInfo, startTime: startTime, configTime: configTime, novaVideoPlayer: novaVideoPlayer)
+        let params = NovaAdVideoMetricReporter.getVideoParams(
+            videoInfo: videoInfo, startTime: startTime, configTime: configTime, novaVideoPlayer: novaVideoPlayer)
         NovaAdMetricReporter.logVideoEvent(.videoComplete, encryptedAdToken: encryptedAdToken, params: params)
     }
 
-    static func logVideoPause(encryptedAdToken: String,
-                                     duration: Double,
-                                     reason: NovaAdVideoMetricReporter.NovaAdEventPauseReason?,
-                                     videoInfo: NovaNativeAdVideoInfo?,
-                                     startTime: Double?,
-                                     configTime: Double?,
-                                     novaVideoPlayer: NovaVideoPlayer?) {
-        var params = NovaAdVideoMetricReporter.getVideoParams(videoInfo: videoInfo, startTime: startTime, configTime: configTime, novaVideoPlayer: novaVideoPlayer, duration: duration)
+    static func logVideoPause(
+        encryptedAdToken: String,
+        duration: Double,
+        reason: NovaAdVideoMetricReporter.NovaAdEventPauseReason?,
+        videoInfo: NovaNativeAdVideoInfo?,
+        startTime: Double?,
+        configTime: Double?,
+        novaVideoPlayer: NovaVideoPlayer?
+    ) {
+        var params = NovaAdVideoMetricReporter.getVideoParams(
+            videoInfo: videoInfo, startTime: startTime, configTime: configTime, novaVideoPlayer: novaVideoPlayer,
+            duration: duration)
         if let reason {
             params[NovaAdMetricKeys.REASON] = reason.rawValue
         }
         NovaAdMetricReporter.logVideoEvent(.videoPause, encryptedAdToken: encryptedAdToken, params: params)
     }
 
-    static func logVideoResume(encryptedAdToken: String,
-                                      duration: Double,
-                                      videoInfo: NovaNativeAdVideoInfo?,
-                                      startTime: Double?,
-                                      configTime: Double?,
-                                      novaVideoPlayer: NovaVideoPlayer?) {
-        let params = NovaAdVideoMetricReporter.getVideoParams(videoInfo: videoInfo, startTime: startTime, configTime: configTime, novaVideoPlayer: novaVideoPlayer, duration: duration)
+    static func logVideoResume(
+        encryptedAdToken: String,
+        duration: Double,
+        videoInfo: NovaNativeAdVideoInfo?,
+        startTime: Double?,
+        configTime: Double?,
+        novaVideoPlayer: NovaVideoPlayer?
+    ) {
+        let params = NovaAdVideoMetricReporter.getVideoParams(
+            videoInfo: videoInfo, startTime: startTime, configTime: configTime, novaVideoPlayer: novaVideoPlayer,
+            duration: duration)
         NovaAdMetricReporter.logVideoEvent(.videoResume, encryptedAdToken: encryptedAdToken, params: params)
     }
 
     static func logVideoMute(encryptedAdToken: String, isMute: Bool) {
         NovaAdMetricReporter.logVideoEvent(isMute ? .videoMute : .videoUnMute, encryptedAdToken: encryptedAdToken)
     }
-    
-    private static func getVideoParams(videoInfo: NovaNativeAdVideoInfo?,
-                                       startTime: Double?,
-                                       configTime: Double?,
-                                       novaVideoPlayer: NovaVideoPlayer?,
-                                       duration: Double? = nil) -> [String: String] {
-        
-        var params = [String: String]()
+
+    private static func getVideoParams(
+        videoInfo: NovaNativeAdVideoInfo?,
+        startTime: Double?,
+        configTime: Double?,
+        novaVideoPlayer: NovaVideoPlayer?,
+        duration: Double? = nil
+    ) -> [String: String] {
+        var params: [String: String] = [:]
         let currentTime = CACurrentMediaTime()
         if let duration = duration {
             params[NovaAdMetricKeys.DURATION_MS] = duration.msString()
@@ -185,4 +199,3 @@ class NovaAdVideoMetricReporter {
         return params
     }
 }
-

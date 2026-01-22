@@ -5,10 +5,10 @@
 //  Created by Patrick on 2025/1/27.
 //
 
+// MARK: - NovaInterstitialAdViewFactory
+
 import Foundation
 import UIKit
-
-// MARK: - NovaInterstitialAdViewFactory
 
 class NovaInterstitialAdViewFactory: NSObject {
     // MARK: Internal
@@ -29,4 +29,4 @@ class NovaInterstitialAdViewFactory: NSObject {
             reportHandling: reportHandling
         )
     }
-} 
+}

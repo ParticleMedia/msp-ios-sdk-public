@@ -34,12 +34,12 @@ class DebugToast: UIView {
         label.textAlignment = .center
         return label
     }()
-    
+
     private lazy var activityIndicator: CustomSpinnerView = {
         let indicator = CustomSpinnerView(frame: CGRect(x: 0, y: 0, width: 24, height: 24))
         return indicator
     }()
-    
+
     private lazy var stack: UIStackView = {
         let s: UIStackView
         if style == .loading {
@@ -54,15 +54,15 @@ class DebugToast: UIView {
         s.translatesAutoresizingMaskIntoConstraints = false
         return s
     }()
-    
+
     private let style: DebugToastStyle
-    
+
     init(message: String, style: DebugToastStyle) {
         self.style = style
         super.init(frame: .zero)
         setView(message: message)
     }
-    
+
     private func setView(message: String) {
         backgroundColor = {
             switch style {
@@ -85,15 +85,18 @@ class DebugToast: UIView {
             activityIndicator.startAnimating()
         }
     }
-    
+
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
+
     func dismiss() {
-        UIView.animate(withDuration: 0.2, animations: {
-            self.alpha = 0
-        }) { _ in
+        UIView.animate(
+            withDuration: 0.2,
+            animations: {
+                self.alpha = 0
+            }
+        ) { _ in
             self.removeFromSuperview()
         }
     }
@@ -104,7 +107,7 @@ class ToastManager {
     private var currentToast: DebugToast?
     private var dismissWorkItem: DispatchWorkItem?
     private init() {}
-    
+
     @discardableResult
     func show(message: String, style: DebugToastStyle, in view: UIView, duration: TimeInterval = 2.0) -> DebugToast {
         dismissCurrentToast()
@@ -133,17 +136,17 @@ class ToastManager {
         }
         return toast
     }
-    
+
     func dismissCurrentToast() {
         dismissWorkItem?.cancel()
         currentToast?.dismiss()
         currentToast = nil
     }
-    
+
     func dismiss() {
         dismissCurrentToast()
     }
-} 
+}
 
 // Add CustomSpinnerView
 class CustomSpinnerView: UIView {
@@ -170,7 +173,8 @@ class CustomSpinnerView: UIView {
         let size = min(bounds.width, bounds.height)
         let radius = size / 2 - lineWidth
         let center = CGPoint(x: bounds.midX, y: bounds.midY)
-        let circularPath = UIBezierPath(arcCenter: center, radius: radius, startAngle: 0, endAngle: .pi * 1.5, clockwise: true)
+        let circularPath = UIBezierPath(
+            arcCenter: center, radius: radius, startAngle: 0, endAngle: .pi * 1.5, clockwise: true)
         spinnerLayer.path = circularPath.cgPath
         spinnerLayer.lineWidth = lineWidth
         spinnerLayer.frame = bounds
@@ -196,4 +200,4 @@ class CustomSpinnerView: UIView {
         isAnimating = false
         layer.removeAnimation(forKey: animationKey)
     }
-} 
+}

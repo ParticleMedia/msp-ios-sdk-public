@@ -10,7 +10,7 @@ import Foundation
 struct OpenWebModel: Codable {
     let url: URL
     let openBrowser: Bool
-    
+
     init(url: URL, openBrowser: Bool) {
         self.url = url
         self.openBrowser = openBrowser
@@ -21,7 +21,7 @@ struct AppInstallModel: Codable {
     let storeId: Int
     // If app store can not be opened, fallback to open web
     let fallbackWebModel: OpenWebModel
-    
+
     init(storeId: Int, fallbackWebModel: OpenWebModel) {
         self.storeId = storeId
         self.fallbackWebModel = fallbackWebModel
@@ -57,7 +57,7 @@ indirect enum AdCtrType: Codable {
             return model.playableUrl
         }
     }
-    
+
     // TODO: - GPY Add additional properties or functionality as needed
     var appStoreId: String? {
         switch self {
@@ -68,18 +68,18 @@ indirect enum AdCtrType: Codable {
             return model.launchAdType.appStoreId
         }
     }
-    
+
     var launchOption: NovaAdLaunchOption {
         switch self {
         case .openWeb(let model):
-            return model.openBrowser ? .launchBrowser: .launchWebView
+            return model.openBrowser ? .launchBrowser : .launchWebView
         case .appInstall(let model):
             return model.fallbackWebModel.openBrowser ? .launchBrowser : .launchWebView
         case .playable(let model):
             return model.launchAdType.launchOption
         }
     }
-    
+
     private enum CodingKeys: String, CodingKey {
         case type
         case openWebModel
@@ -129,4 +129,4 @@ indirect enum AdCtrType: Codable {
             self = .playable(model: model)
         }
     }
-} 
+}

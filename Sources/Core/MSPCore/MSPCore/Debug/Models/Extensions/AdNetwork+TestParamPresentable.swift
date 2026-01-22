@@ -17,4 +17,4 @@ extension AdNetwork: TestParamPresentable {
             return []
         }
     }
-} 
+}

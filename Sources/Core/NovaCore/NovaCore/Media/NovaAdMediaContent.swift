@@ -5,10 +5,10 @@
 //  Created by Shanyu Li on 2025/8/28.
 //
 
+// MARK: - NovaMediaElementLayout
+
 import Foundation
 import UIKit
-
-// MARK: - NovaMediaElementLayout
 
 public struct NovaMediaElementLayout: Equatable {
     public let safeAreaInsets: UIEdgeInsets
@@ -140,7 +140,10 @@ public class NovaAdPlayableController {
 public class NovaAdMediaContent {
     // MARK: Lifecycle
 
-    init(adMedia: NovaAdMedia, discountTagInfo: NovaAdDiscountTagInfo? = nil, elementLayout: NovaMediaElementLayout? = nil) {
+    init(
+        adMedia: NovaAdMedia, discountTagInfo: NovaAdDiscountTagInfo? = nil,
+        elementLayout: NovaMediaElementLayout? = nil
+    ) {
         self.adMedia = adMedia
         self.discountTagInfo = discountTagInfo
         self.elementLayout = elementLayout

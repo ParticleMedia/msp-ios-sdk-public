@@ -7,12 +7,11 @@
 
 import CoreImage
 import CoreImage.CIFilterBuiltins
-import UIKit
 @_implementationOnly import SnapKit
+import UIKit
 
 class NovaAdImageView: UIView {
     // MARK: Lifecycle
-    
     // Track start time for click events
     private var startTime: CFTimeInterval = 0
 
@@ -49,7 +48,7 @@ class NovaAdImageView: UIView {
     ) {
         // Initialize start time for click tracking
         startTime = CACurrentMediaTime()
-        
+
         self.mediaModel = mediaModel
         self.actionContext = actionContext
 
@@ -73,15 +72,15 @@ class NovaAdImageView: UIView {
         }
         setupBottomShadow(showBottomShadow: showBottomShadow)
     }
-    
+
     private func setupBottomShadow(showBottomShadow: Bool) {
         bottomShadowView?.removeFromSuperview()
         bottomShadowView = nil
-        
+
         guard showBottomShadow else {
             return
         }
-        
+
         // Use fixed shadow configuration
         let config = GradientShadowViewConfig(
             colors: (
@@ -94,21 +93,21 @@ class NovaAdImageView: UIView {
             shadowOffset: .zero,
             shadowRadius: 0
         )
-        
+
         let shadowView = GradientShadowView(with: config)
         shadowView.isUserInteractionEnabled = false
         addSubview(shadowView)
-        
+
         // Place shadow above contentImageView
         insertSubview(shadowView, aboveSubview: contentImageView)
-        
+
         shadowView.snp.makeConstraints { make in
             make.leading.trailing.bottom.equalToSuperview()
             // Default height similar to interstitial handlers
             let screenWidth = UIScreen.main.bounds.width
             make.height.equalTo(screenWidth * 280 / 375)
         }
-        
+
         bottomShadowView = shadowView
     }
 
@@ -130,7 +129,7 @@ class NovaAdImageView: UIView {
     private var mediaModel: NovaAdImageMediaModel?
     private var actionContext: NovaAdMediaActionContext?
     private var actionHelper: NovaActionHelper<NovaActionState.Init>?
-    
+
     private var bottomShadowView: GradientShadowView?
 
     private func setupActionHelper() {
@@ -144,29 +143,31 @@ class NovaAdImageView: UIView {
         }
 
         if let weakVC = actionContext.viewController {
-            actionHelper = NovaActionHelper
+            actionHelper =
+                NovaActionHelper
                 .build(
                     with:
-                    .adInViewController(
-                        model: .init(
-                            tracingInfo: actionContext.adActionTracingInfo,
-                            extraInfo: actionContext.adActionExtraInfo,
-                            ctrType: mediaModel.adCtrType
-                        ),
-                        viewController: weakVC
-                    )
+                        .adInViewController(
+                            model: .init(
+                                tracingInfo: actionContext.adActionTracingInfo,
+                                extraInfo: actionContext.adActionExtraInfo,
+                                ctrType: mediaModel.adCtrType
+                            ),
+                            viewController: weakVC
+                        )
                 )
         } else {
-            actionHelper = NovaActionHelper
+            actionHelper =
+                NovaActionHelper
                 .build(
                     with:
-                    .adInView(
-                        model: .init(
-                            tracingInfo: actionContext.adActionTracingInfo,
-                            extraInfo: actionContext.adActionExtraInfo,
-                            ctrType: mediaModel.adCtrType
+                        .adInView(
+                            model: .init(
+                                tracingInfo: actionContext.adActionTracingInfo,
+                                extraInfo: actionContext.adActionExtraInfo,
+                                ctrType: mediaModel.adCtrType
+                            )
                         )
-                    )
                 )
         }
     }
@@ -176,7 +177,7 @@ class NovaAdImageView: UIView {
             DebugLogger.ui.info("image media model is not set, but image tapped")
             return
         }
-        
+
         switch mediaModel.adCtrType {
         case .openWeb, .appInstall:
             actionHelper = actionHelper?

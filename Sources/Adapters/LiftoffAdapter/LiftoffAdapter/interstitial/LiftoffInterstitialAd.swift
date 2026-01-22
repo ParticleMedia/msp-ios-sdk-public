@@ -7,25 +7,27 @@
 
 import Foundation
 import MSPiOSCore
-import VungleAdsSDK
 import UIKit
+import VungleAdsSDK
 
 public class LiftoffInterstitialAd: MSPiOSCore.InterstitialAd {
     public weak var rootViewController: UIViewController?
     public var interstitialAdItem: VungleInterstitial?
-    
+
     public override func show() {
         if let interstitialAdItem = self.interstitialAdItem,
-           let rootViewController = self.rootViewController {
+            let rootViewController = self.rootViewController
+        {
             DispatchQueue.main.async {
                 interstitialAdItem.present(with: rootViewController)
             }
         }
     }
-    
+
     public override func show(rootViewController: UIViewController?) {
         if let interstitialAdItem = self.interstitialAdItem,
-           let rootViewController = rootViewController {
+            let rootViewController = rootViewController
+        {
             DispatchQueue.main.async {
                 interstitialAdItem.present(with: rootViewController)
             }

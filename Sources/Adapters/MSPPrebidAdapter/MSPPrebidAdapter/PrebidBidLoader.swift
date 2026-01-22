@@ -1,28 +1,29 @@
-import Foundation
 //import shared
+import Foundation
 import MSPiOSCore
 import PrebidMobile
 
-public class PrebidBidLoader : BidLoader {
-    
+public class PrebidBidLoader: BidLoader {
     public var bidRequester: PBMBidRequester?
     public var configId: String?
     public weak var bidListener: BidListener?
-    
+
     public var adRequest: AdRequest?
-    
+
     public var googleQueryInfo: String?
     public var facebookBidToken: String?
     public var molocoBidToken: String?
     public var liftoffBidToken: String?
     private let dispatchGroup = DispatchGroup()
     public var adMetricReporter: AdMetricReporter?
-    
+
     public override init(tokenProviders: BidTokenProviders) {
         super.init(tokenProviders: tokenProviders)
     }
-    
-    public override func loadBid(placementId: String, adParams: [String : Any], bidListener: any BidListener, adRequest: AdRequest) {
+
+    public override func loadBid(
+        placementId: String, adParams: [String: Any], bidListener: any BidListener, adRequest: AdRequest
+    ) {
         self.configId = placementId
         self.bidListener = bidListener
         self.adRequest = adRequest
@@ -44,7 +45,7 @@ public class PrebidBidLoader : BidLoader {
 
         self.dispatchGroup.enter()
         self.molocoBidTokenProvider.fetch(completeListener: self, context: self)
-        
+
         self.dispatchGroup.enter()
         self.liftoffBidTokenProvider.fetch(completeListener: self, context: self)
 
@@ -57,23 +58,25 @@ public class PrebidBidLoader : BidLoader {
             completion(bidTokens)
         }
     }
-    
+
     public func loadBidWithTokens(bidTokens: BidTokens, adRequest: AdRequest) {
         let width = Int(adRequest.adSize?.width ?? 320)
         let height = Int(adRequest.adSize?.height ?? 50)
         let adSize = CGSize(width: width, height: height)
-        let adUnitConfig = getAdUnitConfig(configId: configId ?? "demo-ios-article-top",
-                                           bidTokens: bidTokens,
-                                           requestUUID: adRequest.requestId,
-                                           prebidBannerAdSize: adSize,
-                                           adRequest: adRequest)
-        
-        let bidRequester = PBMBidRequester(connection: ServerConnection.shared,
-                                           sdkConfiguration: Prebid.shared,
-                                           targeting: Targeting.shared,
-                                           adUnitConfiguration: adUnitConfig)
+        let adUnitConfig = getAdUnitConfig(
+            configId: configId ?? "demo-ios-article-top",
+            bidTokens: bidTokens,
+            requestUUID: adRequest.requestId,
+            prebidBannerAdSize: adSize,
+            adRequest: adRequest)
+
+        let bidRequester = PBMBidRequester(
+            connection: ServerConnection.shared,
+            sdkConfiguration: Prebid.shared,
+            targeting: Targeting.shared,
+            adUnitConfiguration: adUnitConfig)
         self.bidRequester = bidRequester
-        
+
         bidRequester.requestBids { [weak self] bidResponse, error in
             guard let self = self else { return }
 
@@ -81,12 +84,13 @@ public class PrebidBidLoader : BidLoader {
                 bidListener?.onError(msg: error.localizedDescription)
                 return
             }
-            
+
             if let bidResponse = bidResponse {
                 guard let seat = bidResponse.winningBidSeat else {
                     let errorMessage = "no fill"
                     bidListener?.onError(msg: errorMessage)
-                    adMetricReporter?.logAdResponse(ad: nil, adRequest: adRequest, errorCode: .ERROR_CODE_NO_FILL, errorMessage: errorMessage)
+                    adMetricReporter?.logAdResponse(
+                        ad: nil, adRequest: adRequest, errorCode: .ERROR_CODE_NO_FILL, errorMessage: errorMessage)
                     return
                 }
                 if self.bidListener == nil {
@@ -107,21 +111,23 @@ public class PrebidBidLoader : BidLoader {
             } else {
                 let errorMessage = "missing response"
                 bidListener?.onError(msg: errorMessage)
-                adMetricReporter?.logAdResponse(ad: nil, adRequest: adRequest, errorCode: .ERROR_CODE_NETWORK_ERROR, errorMessage: errorMessage)
+                adMetricReporter?.logAdResponse(
+                    ad: nil, adRequest: adRequest, errorCode: .ERROR_CODE_NETWORK_ERROR, errorMessage: errorMessage)
             }
         }
     }
-    
-    
-    public func getAdUnitConfig(configId: String,
-                                bidTokens: BidTokens,
-                                requestUUID: String,
-                                prebidBannerAdSize: CGSize,
-                                adRequest: AdRequest) -> AdUnitConfig {
-        
-        let adUnitConfig = adRequest.adFormat == .interstitial ?
-        AdUnitConfig(configId: configId) :
-        AdUnitConfig(configId: configId, size: prebidBannerAdSize)
+
+
+    public func getAdUnitConfig(
+        configId: String,
+        bidTokens: BidTokens,
+        requestUUID: String,
+        prebidBannerAdSize: CGSize,
+        adRequest: AdRequest
+    ) -> AdUnitConfig {
+        let adUnitConfig =
+            adRequest.adFormat == .interstitial
+            ? AdUnitConfig(configId: configId) : AdUnitConfig(configId: configId, size: prebidBannerAdSize)
         if adRequest.adFormat == .banner {
             adUnitConfig.adConfiguration.bannerParameters.api = PrebidConstants.supportedRenderingBannerAPISignals
             adUnitConfig.adFormats = [.display]
@@ -138,35 +144,32 @@ public class PrebidBidLoader : BidLoader {
             adUnitConfig.adConfiguration.isInterstitialAd = true
             adUnitConfig.adConfiguration.bannerParameters.api = PrebidConstants.supportedRenderingBannerAPISignals
         }
-        
+
         var userExt = Targeting.shared.userExt ?? [String: AnyHashable]()
         userExt["geo"] = getGeoDict()
         Targeting.shared.userExt = userExt
-        
+
         if let userId = UserDefaults.standard.string(forKey: MSPConstants.USER_DEFAULTS_KEY_MSP_USER_ID) {
             adUnitConfig.addContextData(key: MSPConstants.USER_ID, value: userId)
         }
-        
+
         let customParams = adRequest.customParams
-        for (key, value) in customParams {
-            if value is String {
-                adUnitConfig.removeContextData(for: key)
-                adUnitConfig.addContextData(key: key, value: value as? String ?? "")
-                if key == MSPConstants.USER_ID,
-                   let appUserId = value as? String {
-                    // override user id in bid context and local cache with provided in the ad request
-                    UserDefaults.standard.setValue(appUserId, forKey: MSPConstants.USER_DEFAULTS_KEY_MSP_USER_ID)
-                }
+        for (key, value) in customParams where value is String {
+            adUnitConfig.removeContextData(for: key)
+            adUnitConfig.addContextData(key: key, value: value as? String ?? "")
+            if key == MSPConstants.USER_ID,
+                let appUserId = value as? String
+            {
+                // override user id in bid context and local cache with provided in the ad request
+                UserDefaults.standard.setValue(appUserId, forKey: MSPConstants.USER_DEFAULTS_KEY_MSP_USER_ID)
             }
         }
-        
-        
+
+
         let testParams = adRequest.testParams
-        for (key, value) in testParams {
-            if value is String {
-                adUnitConfig.removeContextData(for: key)
-                adUnitConfig.addContextData(key: key, value: value as? String ?? "")
-            }
+        for (key, value) in testParams where value is String {
+            adUnitConfig.removeContextData(for: key)
+            adUnitConfig.addContextData(key: key, value: value as? String ?? "")
         }
 
         if let gadQueryInfo = bidTokens.googleQueryInfo {
@@ -181,18 +184,18 @@ public class PrebidBidLoader : BidLoader {
         if let liftoffBidToken = bidTokens.liftoffBidToken {
             adUnitConfig.addContextData(key: "liftoff_bid_token", value: liftoffBidToken)
         }
-        
+
         if adRequest.adFormat == .native || adRequest.adFormat == .multi_format {
-            var assets = [NativeAsset]()
+            var assets: [NativeAsset] = []
             assets.append(NativeAssetTitle(length: 100, required: true))
             adUnitConfig.nativeAdConfiguration?.markupRequestObject.assets = assets
         }
-        
+
         return adUnitConfig
     }
-    
+
     private func getGeoDict() -> [String: String] {
-        var geoDict = [String: String]()
+        var geoDict: [String: String] = [:]
         geoDict["city"] = adRequest?.geo?.city
         geoDict["state_code"] = adRequest?.geo?.stateCode
         geoDict["zipcode"] = adRequest?.geo?.zipCode

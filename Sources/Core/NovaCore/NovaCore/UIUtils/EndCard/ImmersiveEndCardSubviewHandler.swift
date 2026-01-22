@@ -68,7 +68,7 @@ final class ImmersiveEndCardSubviewHandler {
 
     private lazy var subviewStackView: UIStackView = {
         let stackView = UIStackView(
-            arrangedSubviews: [iconView, nameLabel, descriptionLabel, ctaLabel, closeButton ]
+            arrangedSubviews: [iconView, nameLabel, descriptionLabel, ctaLabel, closeButton]
         )
         iconView.snp.makeConstraints { make in
             make.size.equalTo(Constants.iconSize)
@@ -121,6 +121,6 @@ extension ImmersiveEndCardSubviewHandler: NovaAdEndCardSubviewHandling {
     }
 
     func clickableViews() -> [UIView] {
-        return [iconView, nameLabel, descriptionLabel,  ctaLabel]
+        [iconView, nameLabel, descriptionLabel, ctaLabel]
     }
 }

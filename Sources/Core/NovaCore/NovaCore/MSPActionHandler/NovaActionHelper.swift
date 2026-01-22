@@ -52,7 +52,7 @@ struct NovaActionHelper<T> {
 
 extension NovaActionHelper where T == Any {
     static func build(with context: NovaActionContext) -> NovaActionHelper<NovaActionState.Init> {
-        return NovaActionHelper<NovaActionState.Init>(with: context)
+        NovaActionHelper<NovaActionState.Init>(with: context)
     }
 }
 
@@ -89,7 +89,7 @@ extension NovaActionHelper where T == NovaActionState.Init {
             )
         return NovaActionHelper<NovaActionState.NovaEventSent>(from: self)
     }
-    
+
     func logCustomAreaNovaClickEvent(
         with duration: CFTimeInterval? = nil, in area: String? = nil
     ) -> NovaActionHelper<NovaActionState.NovaEventSent> {
@@ -105,7 +105,9 @@ extension NovaActionHelper where T == NovaActionState.Init {
         return NovaActionHelper<NovaActionState.NovaEventSent>(from: self)
     }
 
-    func logNovaSkipEvent(with reason: NovaAdSkipReason, duration: CFTimeInterval) -> NovaActionHelper<NovaActionState.NovaEventSent> {
+    func logNovaSkipEvent(with reason: NovaAdSkipReason, duration: CFTimeInterval) -> NovaActionHelper<
+        NovaActionState.NovaEventSent
+    > {
         NovaAdMetricReporter
             .logAdSkip(
                 reason: reason,
@@ -114,10 +116,10 @@ extension NovaActionHelper where T == NovaActionState.Init {
             )
         return NovaActionHelper<NovaActionState.NovaEventSent>(from: self)
     }
-    
+
     func logNovaReportEvent() -> NovaActionHelper<NovaActionState.NovaEventSent> {
         // TODO: - GPY not implemented
-        return NovaActionHelper<NovaActionState.NovaEventSent>(from: self)
+        NovaActionHelper<NovaActionState.NovaEventSent>(from: self)
     }
 }
 
@@ -141,10 +143,10 @@ extension NovaActionHelper where T == NovaActionState.NovaEventSent {
         vc.dismiss(animated: true)
         return NovaActionHelper<NovaActionState.Init>(from: self)
     }
-    
+
     func handleReportTap() -> NovaActionHelper<NovaActionState.Init> {
         // TODO: - GPY not implemented
-        return NovaActionHelper<NovaActionState.Init>(from: self)
+        NovaActionHelper<NovaActionState.Init>(from: self)
     }
 }
 
@@ -163,7 +165,7 @@ private extension NovaActionHelper {
 
     static func tapActionKey(from ctrType: AdCtrType) -> NovaClickAdActionKey {
         switch ctrType {
-        case .openWeb(model: let model):
+        case .openWeb(let model):
             if model.openBrowser {
                 return .launchBrowser
             } else {
@@ -189,7 +191,7 @@ private extension NovaActionHelper where T == NovaActionState.NovaEventSent {
 
     static func generateCtrActionDateModels(from context: NovaActionContext, in tapView: UIView?) -> [ActionModel] {
         switch context {
-        case .adInViewController(model: let model, _):
+        case .adInViewController(let model, _):
             let tapActionModel = ActionModel(
                 actionKey: tapActionKey(from: model.ctrType).rawValue,
                 actionDataModel: NovaClickAdActionDataModel(
@@ -201,7 +203,7 @@ private extension NovaActionHelper where T == NovaActionState.NovaEventSent {
                 )
             )
             return [tapActionModel]
-        case .adInView(model: let model):
+        case .adInView(let model):
             let tapActionModel = ActionModel(
                 actionKey: tapActionKey(from: model.ctrType).rawValue,
                 actionDataModel: NovaClickAdActionDataModel(
