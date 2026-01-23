@@ -136,6 +136,7 @@ class NovaAdPlayableView: UIView {
     private var userDidClick: Bool = false
     private var hasRequestedMraidJs: Bool = false
     private var hasInjectedMraidShim: Bool = false
+    private var hasFinishedLoad: Bool = false
 
     // Minimal MRAID 3.0-compatible surface for playable creatives
     private lazy var mraidShimSource: String = loadScript(named: "novaMraid")
@@ -225,6 +226,7 @@ extension NovaAdPlayableView: WKNavigationDelegate {
     }
 
     func webView(_ webView: WKWebView, didFinish _: WKNavigation!) {
+        hasFinishedLoad = true
         // Only initialize MRAID state for creatives that explicitly requested mraid.js
         guard hasRequestedMraidJs else {
             DebugLogger.data.info("Skipping MRAID init: creative did not request mraid.js")
@@ -273,6 +275,9 @@ private extension NovaAdPlayableView {
     func handleMraidRequested(params: [String: Any]) {
         hasRequestedMraidJs = true
         injectMraidShimIfNeeded()
+        if hasFinishedLoad {
+            initializeMraidState(in: playableWebView)
+        }
         if let src = params["src"] as? String {
             DebugLogger.data.info("MRAID requested via script src: \(src)")
         } else {
