@@ -876,15 +876,13 @@ EOF_VENDOR_MULTI
     elif [[ "$POD_NAME" == "MSPNovaAdapter" ]]; then
         # NovaAdapter: pure binary distribution with embedded NovaCore
         # NovaCore uses AVFoundation/AVFAudio which depend on AudioToolbox/CoreAudio
-        # CoreAudioTypes is header-only (no linkable library in iOS SDK 18+), so we use weak_frameworks
-        # to satisfy the auto-link requirement from swiftCoreAudio without causing linker errors
+        # CoreAudioTypes was removed from iOS SDK 18+ - types are now available via CoreAudio/AudioToolbox
         cat >> "$OUTPUT_PODSPEC" <<'EOF_VENDOR_NOVA'
   spec.vendored_frameworks = [
     "Binary/MSPNovaAdapter.xcframework",
     "Binary/NovaCore.xcframework"
   ]
   spec.frameworks = 'AVFoundation', 'AVFAudio', 'AudioToolbox', 'CoreAudio'
-  spec.weak_frameworks = 'CoreAudioTypes'
 EOF_VENDOR_NOVA
     elif [[ "$POD_NAME" == "MSPMolocoAdapter" ]]; then
         # MolocoAdapter: bundle SnapKit binary to match build-time dependency

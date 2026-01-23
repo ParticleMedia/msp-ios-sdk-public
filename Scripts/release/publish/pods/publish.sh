@@ -3574,15 +3574,8 @@ RUBY_SCRIPT
     register_temp_resource "$exit_code_file"
 
     # Execute pod trunk push and capture exit code immediately
-    # Use --skip-import-validation only for MSPNovaAdapter to avoid CoreAudioTypes
-    # linker issues in iOS SDK 18+ (header-only framework, caused by NovaCore's swiftCoreAudio)
-    local skip_import_flag=""
-    if [[ "$pod" == "MSPNovaAdapter" ]]; then
-        skip_import_flag="--skip-import-validation"
-        log_info "Using --skip-import-validation for $pod (CoreAudioTypes workaround)"
-    fi
     {
-        pod trunk push "$podspec" --allow-warnings $skip_import_flag $skip_tests_flag 2>&1 | tee "$log_file"
+        pod trunk push "$podspec" --allow-warnings $skip_tests_flag 2>&1 | tee "$log_file"
         echo "${PIPESTATUS[0]}" > "$exit_code_file"
     } || true
 
@@ -3619,9 +3612,9 @@ RUBY_SCRIPT
             retry_exit_code_file=$(mktemp "/tmp/pod_trunk_exit_code_retry_XXXXXX")
             register_temp_resource "$retry_exit_code_file"
 
-            # Retry publication after fix (reuse skip_import_flag from initial attempt)
+            # Retry publication after fix
             {
-                pod trunk push "$podspec" --allow-warnings $skip_import_flag $skip_tests_flag 2>&1 | tee "$log_file"
+                pod trunk push "$podspec" --allow-warnings $skip_tests_flag 2>&1 | tee "$log_file"
                 echo "${PIPESTATUS[0]}" > "$retry_exit_code_file"
             } || true
 
