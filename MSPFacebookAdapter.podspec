@@ -3,7 +3,7 @@ Pod::Spec.new do |spec|
   spec.version      = "0.0.92"
   spec.summary      = "an adapter for Meta SDK"
   spec.description  = "an adapter for Meta SDK for MSP S2S"
-  spec.homepage     = "https://github.com/aimsp/msp-ios-sdk/MetaAdapter"
+  spec.homepage     = "https://github.com/ParticleMedia/msp-ios-sdk-public"
   spec.license      = "Copyright"
   spec.author       = { "huanzhiNB" => "huanzhi.zhang@newsbreak.com" }
   spec.platform     = :ios, '15.0'

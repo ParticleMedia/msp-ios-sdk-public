@@ -89,9 +89,11 @@ log_step "Pre-building Pod dependencies for Core modules"
 # These Pods provide Swift modules needed by Core modules:
 # - MSPKingfisher: provides Kingfisher module (used by NovaCore)
 # - SnapKit: used by NovaCore
-# - lottie-ios: used by NovaCore  
-# - MSPPrebidAdapter: used by MSPCore
-POD_SCHEMES_TO_PREBUILD=("MSPKingfisher" "SnapKit" "lottie-ios" "MSPPrebidAdapter" "SwiftProtobuf")
+# - lottie-ios: used by NovaCore
+# - SwiftProtobuf: used by MSPCore
+# NOTE: MSPPrebidAdapter is NOT pre-built here because it depends on MSPiOSCore.
+#       It will be rebuilt AFTER MSPiOSCore.xcframework is created to ensure ABI compatibility.
+POD_SCHEMES_TO_PREBUILD=("MSPKingfisher" "SnapKit" "lottie-ios" "SwiftProtobuf")
 
 for pod_scheme in "${POD_SCHEMES_TO_PREBUILD[@]}"; do
     log_info "Pre-building $pod_scheme for iOS..."
@@ -148,13 +150,37 @@ LOGS_DIR="$ROOT_DIR/Build/Logs"
 mkdir -p "$ARCHIVES_DIR" "$XCFRAMEWORKS_DIR" "$LOGS_DIR"
 
 # -----------------------------------------------------------
+# Function: build_msp_prebid_adapter_xcframework
+# Purpose: Build MSPPrebidAdapter.xcframework AFTER MSPiOSCore.xcframework
+# Uses XcodeGen standalone project (not workspace) to ensure it links against
+# MSPiOSCore.xcframework (binary) instead of Pod source version.
+# -----------------------------------------------------------
+build_msp_prebid_adapter_xcframework() {
+    log_step "Building MSPPrebidAdapter.xcframework (post-MSPiOSCore)"
+    log_info "Using XcodeGen standalone project to link against MSPiOSCore.xcframework"
+
+    # Clean old XCFramework
+    rm -rf "$XCFRAMEWORKS_DIR/MSPPrebidAdapter.xcframework"
+
+    # Use build_module.sh which uses XcodeGen project (links XCFrameworks, not Pod sources)
+    if "$BUILD_MODULE_SCRIPT" "MSPPrebidAdapter"; then
+        log_success "MSPPrebidAdapter.xcframework built successfully"
+        return 0
+    else
+        log_error "MSPPrebidAdapter.xcframework build failed"
+        return 1
+    fi
+}
+
+# -----------------------------------------------------------
 # Function: fix_pod_modulemaps
 # Purpose: Fix absolute paths in Pod modulemaps to use relative paths
 # -----------------------------------------------------------
 fix_pod_modulemaps() {
     log_info "Fixing Pod modulemaps (converting absolute paths to relative)"
     for plat in iphoneos iphonesimulator; do
-        for pod in MSPPrebidAdapter SwiftProtobuf; do
+        # Note: MSPPrebidAdapter is now an XCFramework, only SwiftProtobuf needs modulemap fix
+        for pod in SwiftProtobuf; do
             local MODULE_DIR="$SHARED_DERIVED_DATA/Build/Products/Release-$plat/$pod"
             local MODULEMAP="$MODULE_DIR/$pod.modulemap"
             if [[ -f "$MODULEMAP" ]]; then
@@ -180,7 +206,8 @@ EOF
 # -----------------------------------------------------------
 # Function: build_mspcore_with_modulemaps
 # Purpose: Build MSPCore using XcodeGen project with explicit modulemap injection
-# MSPCore needs MSPPrebidAdapter and SwiftProtobuf which require Clang modulemaps
+# MSPCore needs SwiftProtobuf which requires Clang modulemap injection
+# MSPPrebidAdapter is linked as XCFramework (built earlier in pipeline)
 # -----------------------------------------------------------
 build_mspcore_with_modulemaps() {
     local MODULE_NAME="MSPCore"
@@ -207,10 +234,12 @@ build_mspcore_with_modulemaps() {
     rm -rf "$IOS_ARCHIVE" "$SIM_ARCHIVE"
     
     # Build iOS archive with explicit modulemap paths
+    # Use standalone project to link against XCFramework versions of dependencies.
+    # MSPPrebidAdapter.xcframework is built earlier in the pipeline.
     log_step "Building $MODULE_NAME iOS archive"
     local POD_BASE_IOS="$SHARED_DERIVED_DATA/Build/Products/Release-iphoneos"
-    local SWIFT_FLAGS_IOS="-no-verify-emitted-module-interface -Xcc -fmodule-map-file=$POD_BASE_IOS/MSPPrebidAdapter/MSPPrebidAdapter.modulemap -Xcc -fmodule-map-file=$POD_BASE_IOS/SwiftProtobuf/SwiftProtobuf.modulemap"
-    
+    local SWIFT_FLAGS_IOS="-no-verify-emitted-module-interface -Xcc -fmodule-map-file=$POD_BASE_IOS/SwiftProtobuf/SwiftProtobuf.modulemap"
+
     if ! xcodebuild archive \
         -project "$PROJECT_FILE" \
         -scheme "$SCHEME_NAME" \
@@ -238,8 +267,8 @@ build_mspcore_with_modulemaps() {
     # Build Simulator archive
     log_step "Building $MODULE_NAME Simulator archive"
     local POD_BASE_SIM="$SHARED_DERIVED_DATA/Build/Products/Release-iphonesimulator"
-    local SWIFT_FLAGS_SIM="-no-verify-emitted-module-interface -Xcc -fmodule-map-file=$POD_BASE_SIM/MSPPrebidAdapter/MSPPrebidAdapter.modulemap -Xcc -fmodule-map-file=$POD_BASE_SIM/SwiftProtobuf/SwiftProtobuf.modulemap"
-    
+    local SWIFT_FLAGS_SIM="-no-verify-emitted-module-interface -Xcc -fmodule-map-file=$POD_BASE_SIM/SwiftProtobuf/SwiftProtobuf.modulemap"
+
     if ! xcodebuild archive \
         -project "$PROJECT_FILE" \
         -scheme "$SCHEME_NAME" \
@@ -303,6 +332,7 @@ CORE_MODULES=(
     "MSPiOSCore"
     "MSPSharedLibraries"
     "NovaCore"
+    "MSPPrebidAdapter"  # Must be after MSPiOSCore, before MSPCore
     "MSPCore"
 )
 
@@ -312,8 +342,22 @@ FAILED_MODULES=()
 
 for module in "${CORE_MODULES[@]}"; do
     log_section "Building $module"
-    
+
     case "$module" in
+        MSPPrebidAdapter)
+            # MSPPrebidAdapter: Build using XcodeGen standalone project
+            # This links against MSPiOSCore.xcframework (built earlier), ensuring ABI compatibility
+            if build_msp_prebid_adapter_xcframework; then
+                ((SUCCESS_COUNT++))
+                log_success "$module: BUILD SUCCEEDED (xcodegen mode)"
+            else
+                ((FAIL_COUNT++))
+                FAILED_MODULES+=("$module")
+                log_error "$module: BUILD FAILED (xcodegen mode)"
+                log_error "Aborting core module build pipeline"
+                exit 1
+            fi
+            ;;
         MSPCore)
             # MSPCore needs explicit modulemap injection for MSPPrebidAdapter and SwiftProtobuf
             if build_mspcore_with_modulemaps; then

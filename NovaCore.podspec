@@ -10,7 +10,7 @@ Pod::Spec.new do |spec|
   spec.version      = "0.0.95"
   spec.summary      = "Nova ad format engine"
   spec.description  = "Core rendering and logic for Nova ad format."
-  spec.homepage     = "https://github.com/aimsp/msp-ios-sdk/NovaCore"
+  spec.homepage     = "https://github.com/ParticleMedia/msp-ios-sdk-public"
   spec.license      = "Copyright"
   spec.author       = { "pengyu.gou" => "pengyu.gou@newsbreak.com" }
 
@@ -28,7 +28,7 @@ Pod::Spec.new do |spec|
   if msp_release
     # RELEASE MODE: Binary XCFramework for external distribution
     # OMSDK is embedded in NovaCore.xcframework
-    spec.source = { :git => "https://github.com/aimsp/msp-ios-sdk-public.git", :tag => "#{spec.version}" }
+    spec.source = { :git => "https://github.com/ParticleMedia/msp-ios-sdk-public", :tag => "#{spec.version}" }
     spec.vendored_frameworks = "Binary/NovaCore.xcframework"
   else
     # DEVELOPMENT MODE: Source files for internal development
