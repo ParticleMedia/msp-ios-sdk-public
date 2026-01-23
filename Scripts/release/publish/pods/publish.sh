@@ -1021,7 +1021,7 @@ wait_for_remote_tag() {
 #   MSP_ALLOW_EXISTING_RELEASE - Allow existing release with different state (default: false)
 create_or_verify_github_release() {
     local tag="$1"
-    local dry_run="${MSP_DRY_RUN:-true}"
+    local dry_run="${MSP_DRY_RUN:-false}"
     local repo="${MSP_GITHUB_REPO:-ParticleMedia/msp-ios-sdk-public}"
 
     log_info "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
@@ -1449,7 +1449,7 @@ prepare_github_release() {
     log_info "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
     log_info "Tag: $tag"
     log_info "Zips: ${#zip_paths[@]}"
-    log_info "DRY_RUN: ${MSP_DRY_RUN:-true}"
+    log_info "DRY_RUN: ${MSP_DRY_RUN:-false}"
 
     # Step 1: Create/verify release
     log_info ""
@@ -2809,7 +2809,7 @@ ensure_zip_file_exists_for_pod() {
         log_error "  3. Network connectivity issues"
 
         # Phase B: Remove MSP_RELEASE_TIER check, use DRY_RUN instead
-        if [[ "${MSP_DRY_RUN:-true}" == "false" ]]; then
+        if [[ "${MSP_DRY_RUN:-false}" == "false" ]]; then
             log_error "[FAIL-FAST] Cannot proceed with inaccessible zip in production mode"
             return 1
         else
