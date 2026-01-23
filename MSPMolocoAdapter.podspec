@@ -27,7 +27,7 @@ Pod::Spec.new do |spec|
     spec.exclude_files = "Classes/Exclude"
   end
 
-  spec.dependency 'MolocoSDKiOS', '~> 4.2'
+  spec.dependency 'MolocoSDKiOS'
   spec.dependency 'MSPSharedLibraries'
   spec.dependency 'MSPiOSCore'  # Required for binary distribution (swiftinterface imports MSPiOSCore)
   spec.dependency 'SnapKit'

@@ -27,7 +27,7 @@ Pod::Spec.new do |spec|
     spec.exclude_files = "Classes/Exclude"
   end
 
-  spec.dependency 'VungleAds', '~> 7.6'
+  spec.dependency 'VungleAds'
   spec.dependency 'MSPSharedLibraries'
   spec.dependency 'MSPiOSCore'  # Required for binary distribution (swiftinterface imports MSPiOSCore)
   spec.dependency 'SnapKit'
