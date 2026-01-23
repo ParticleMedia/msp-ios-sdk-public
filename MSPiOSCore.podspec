@@ -22,7 +22,7 @@ Pod::Spec.new do |spec|
   spec.ios.deployment_target = '15.0'
   spec.swift_version = '5.0'
 
-  spec.homepage     = "https://github.com/aimsp/msp-ios-sdk/MSPiOSCore"
+  spec.homepage     = "https://github.com/ParticleMedia/msp-ios-sdk-public"
   spec.license      = "Copyright"
   spec.author       = { "huanzhiNB" => "huanzhi.zhang@newsbreak.com" }
 

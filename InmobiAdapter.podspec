@@ -3,7 +3,7 @@ Pod::Spec.new do |spec|
   spec.version      = "0.0.92"
   spec.summary      = "an adapter for Inmobi SDK"
   spec.description  = "an adapter for Inmobi SDK for MSP C2S"
-  spec.homepage     = "https://github.com/aimsp/msp-ios-sdk/InmobiAdapter"
+  spec.homepage     = "https://github.com/ParticleMedia/msp-ios-sdk-public"
   spec.license      = "Copyright"
   spec.author       = { "huanzhiNB" => "huanzhi.zhang@newsbreak.com" }
   spec.platform     = :ios, '15.0'

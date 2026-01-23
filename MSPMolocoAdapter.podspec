@@ -4,7 +4,7 @@ Pod::Spec.new do |spec|
   spec.version      = "0.0.1"
   spec.summary      = "an adapter for Moloco SDK"
   spec.description  = "an adapter for Moloco SDK"
-  spec.homepage     = "https://github.com/aimsp/msp-ios-sdk/MolocoAdapter"
+  spec.homepage     = "https://github.com/ParticleMedia/msp-ios-sdk-public"
   spec.license      = "Copyright"
   spec.author       = { "Mingming Luo" => "mingming.luo@newsbreak.com" }
   spec.platform     = :ios, '15.0'

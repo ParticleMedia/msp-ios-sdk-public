@@ -28,7 +28,7 @@ Pod::Spec.new do |spec|
   #   * Write the description between the DESC delimiters below.
   #   * Finally, don't worry about the indent, CocoaPods strips it!
   spec.description  = "An utility for MSP settings"
-  spec.homepage     = "https://github.com/aimsp/msp-ios-sdk/MSPSharedLibraries"
+  spec.homepage     = "https://github.com/ParticleMedia/msp-ios-sdk-public"
   # spec.screenshots  = "www.example.com/screenshots_1.gif", "www.example.com/screenshots_2.gif"
 
 
