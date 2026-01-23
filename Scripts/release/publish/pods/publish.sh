@@ -1021,7 +1021,7 @@ wait_for_remote_tag() {
 #   MSP_ALLOW_EXISTING_RELEASE - Allow existing release with different state (default: false)
 create_or_verify_github_release() {
     local tag="$1"
-    local dry_run="${MSP_DRY_RUN:-true}"
+    local dry_run="${MSP_DRY_RUN:-false}"
     local repo="${MSP_GITHUB_REPO:-ParticleMedia/msp-ios-sdk-public}"
 
     log_info "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
@@ -1449,7 +1449,7 @@ prepare_github_release() {
     log_info "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
     log_info "Tag: $tag"
     log_info "Zips: ${#zip_paths[@]}"
-    log_info "DRY_RUN: ${MSP_DRY_RUN:-true}"
+    log_info "DRY_RUN: ${MSP_DRY_RUN:-false}"
 
     # Step 1: Create/verify release
     log_info ""
@@ -2430,6 +2430,41 @@ EOF
 
                 log_success "✅ Prepared MSPNovaAdapter structure (MSPNovaAdapter + NovaCore)"
 
+            elif [[ "$pod" == "MSPMolocoAdapter" ]]; then
+                log_info "MSPMolocoAdapter: Bundle SnapKit binary to match build-time dependency"
+
+                local xcframework_path="$ROOT_DIR/Build/XCFrameworks/${pod}.xcframework"
+                if [[ ! -d "$xcframework_path" ]]; then
+                    log_error "❌ XCFramework not found: $xcframework_path"
+                    log_error "Expected location: Build/XCFrameworks/${pod}.xcframework"
+                    rm -rf "$temp_zip_dir"
+                    return 1
+                fi
+
+                if ! ditto "$xcframework_path" "$temp_zip_dir/Binary/$(basename "$xcframework_path")"; then
+                    log_error "❌ Failed to copy ${pod}.xcframework"
+                    rm -rf "$temp_zip_dir"
+                    return 1
+                fi
+                ensure_modulemaps_in_xcframework "$temp_zip_dir/Binary/$(basename "$xcframework_path")"
+
+                local snapkit_path="$ROOT_DIR/ThirdParty/SnapKit/SnapKit.xcframework"
+                if [[ ! -d "$snapkit_path" ]]; then
+                    log_error "❌ SnapKit.xcframework not found: $snapkit_path"
+                    rm -rf "$temp_zip_dir"
+                    return 1
+                fi
+
+                mkdir -p "$temp_zip_dir/ThirdParty/SnapKit"
+                if ! ditto "$snapkit_path" "$temp_zip_dir/ThirdParty/SnapKit/$(basename "$snapkit_path")"; then
+                    log_error "❌ Failed to copy SnapKit.xcframework"
+                    rm -rf "$temp_zip_dir"
+                    return 1
+                fi
+                ensure_modulemaps_in_xcframework "$temp_zip_dir/ThirdParty/SnapKit/$(basename "$snapkit_path")"
+
+                log_success "✅ Prepared MSPMolocoAdapter structure (MSPMolocoAdapter + SnapKit)"
+
             else
                 # Regular adapters: use Build/XCFrameworks/
                 local xcframework_path="$ROOT_DIR/Build/XCFrameworks/${pod}.xcframework"
@@ -2774,7 +2809,7 @@ ensure_zip_file_exists_for_pod() {
         log_error "  3. Network connectivity issues"
 
         # Phase B: Remove MSP_RELEASE_TIER check, use DRY_RUN instead
-        if [[ "${MSP_DRY_RUN:-true}" == "false" ]]; then
+        if [[ "${MSP_DRY_RUN:-false}" == "false" ]]; then
             log_error "[FAIL-FAST] Cannot proceed with inaccessible zip in production mode"
             return 1
         else
@@ -3539,8 +3574,15 @@ RUBY_SCRIPT
     register_temp_resource "$exit_code_file"
 
     # Execute pod trunk push and capture exit code immediately
+    # Use --skip-import-validation only for MSPNovaAdapter to avoid CoreAudioTypes
+    # linker issues in iOS SDK 18+ (header-only framework, caused by NovaCore's swiftCoreAudio)
+    local skip_import_flag=""
+    if [[ "$pod" == "MSPNovaAdapter" ]]; then
+        skip_import_flag="--skip-import-validation"
+        log_info "Using --skip-import-validation for $pod (CoreAudioTypes workaround)"
+    fi
     {
-        pod trunk push "$podspec" --allow-warnings $skip_tests_flag 2>&1 | tee "$log_file"
+        pod trunk push "$podspec" --allow-warnings $skip_import_flag $skip_tests_flag 2>&1 | tee "$log_file"
         echo "${PIPESTATUS[0]}" > "$exit_code_file"
     } || true
 
@@ -3577,9 +3619,9 @@ RUBY_SCRIPT
             retry_exit_code_file=$(mktemp "/tmp/pod_trunk_exit_code_retry_XXXXXX")
             register_temp_resource "$retry_exit_code_file"
 
-            # Retry publication after fix
+            # Retry publication after fix (reuse skip_import_flag from initial attempt)
             {
-                pod trunk push "$podspec" --allow-warnings $skip_tests_flag 2>&1 | tee "$log_file"
+                pod trunk push "$podspec" --allow-warnings $skip_import_flag $skip_tests_flag 2>&1 | tee "$log_file"
                 echo "${PIPESTATUS[0]}" > "$retry_exit_code_file"
             } || true
 

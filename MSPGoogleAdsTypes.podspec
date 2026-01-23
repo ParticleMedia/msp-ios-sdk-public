@@ -3,7 +3,7 @@ Pod::Spec.new do |spec|
   spec.version      = "0.3.0"
   spec.summary      = "Type abstraction layer for GoogleMobileAds SDK"
   spec.description  = "Provides MSP-prefixed type aliases for GoogleMobileAds types to enable consistent API across adapters"
-  spec.homepage     = "https://github.com/aimsp/msp-ios-sdk"
+  spec.homepage     = "https://github.com/ParticleMedia/msp-ios-sdk-public"
   spec.license      = "Copyright"
   spec.author       = { "MSP Team" => "msp@newsbreak.com" }
   spec.platform     = :ios, '15.0'
