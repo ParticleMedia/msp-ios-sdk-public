@@ -4147,7 +4147,7 @@ release_msp_googleadstypes() {
 # Function: ensure_novacore_xcframework
 # ============================================================================
 # Ensures NovaCore.xcframework is available in Binary/ directory for MSPNovaAdapter release
-# If not present, builds it from source using existing build scripts
+# ALWAYS rebuilds NovaCore to ensure source code changes are included
 # ============================================================================
 ensure_novacore_xcframework() {
     local novacore_binary_path="$ROOT_DIR/Binary/NovaCore.xcframework"
@@ -4155,40 +4155,23 @@ ensure_novacore_xcframework() {
 
     log_section "Ensuring NovaCore.xcframework is available for MSPNovaAdapter"
 
-    # Check if NovaCore.xcframework already exists in Binary/
+    # ALWAYS rebuild NovaCore to ensure source code changes are included
+    # Previous logic only checked if Binary/ exists, which caused stale binary issues
+    # when source code was updated but binary was not rebuilt
+    log_info "Rebuilding NovaCore.xcframework to include latest source code changes..."
+
+    # Clean up old binaries to ensure fresh build
     if [[ -d "$novacore_binary_path" ]]; then
-        log_success "✅ NovaCore.xcframework already exists in Binary/"
-
-        # Verify it's a valid XCFramework
-        if [[ -f "$novacore_binary_path/Info.plist" ]]; then
-            log_info "NovaCore.xcframework is valid (Info.plist exists)"
-            return 0
-        else
-            log_warning "⚠️  NovaCore.xcframework in Binary/ is invalid, will rebuild"
-            rm -rf "$novacore_binary_path"
-        fi
+        log_info "Removing old Binary/NovaCore.xcframework..."
+        rm -rf "$novacore_binary_path"
     fi
-
-    # Check if NovaCore.xcframework exists in Build/XCFrameworks/
     if [[ -d "$novacore_build_path" ]]; then
-        log_info "Found NovaCore.xcframework in Build/XCFrameworks/"
-        log_info "Copying to Binary/ directory..."
-
-        # Create Binary directory if it doesn't exist
-        mkdir -p "$ROOT_DIR/Binary"
-
-        # Copy XCFramework to Binary/
-        if ditto "$novacore_build_path" "$novacore_binary_path"; then
-            log_success "✅ NovaCore.xcframework copied to Binary/"
-            return 0
-        else
-            log_error "❌ Failed to copy NovaCore.xcframework to Binary/"
-            return 1
-        fi
+        log_info "Removing old Build/XCFrameworks/NovaCore.xcframework..."
+        rm -rf "$novacore_build_path"
     fi
 
-    # NovaCore.xcframework doesn't exist anywhere, need to build it
-    log_warning "⚠️  NovaCore.xcframework not found, building from source..."
+    # Build NovaCore.xcframework from source
+    log_info "Building NovaCore.xcframework from source..."
     log_info "This will take approximately 3-5 minutes..."
 
     # Check if build script exists
