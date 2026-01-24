@@ -15,6 +15,9 @@ source "$ROOT_DIR/Scripts/lib/paths.sh"
 
 # Initialize paths
 init_paths
+# shellcheck source=Scripts/lib/demoapp_config.sh
+source "$ROOT_DIR/Scripts/lib/demoapp_config.sh"
+demoapp_load_config || true
 PROJECT_SPEC="$ROOT_DIR/MSPDemoApp/project.yml"
 WORKSPACE_SPEC="$ROOT_DIR/workspace.yml"
 WORKSPACE_PATH="$ROOT_DIR/msp-ios-sdk.xcworkspace"
@@ -160,9 +163,9 @@ targets:
   MSPDemoApp:
     templates:
       - BaseAppTarget
-    configFiles:
-      Debug: ../Pods/Target Support Files/Pods-MSPDemoApp/Pods-MSPDemoApp.debug.xcconfig
-      Release: ../Pods/Target Support Files/Pods-MSPDemoApp/Pods-MSPDemoApp.release.xcconfig
+YAML
+emit_demoapp_pods_config_files "$PROJECT_SPEC" "$ROOT_DIR/MSPDemoApp" "$DEMOAPP_PODS_XCCONFIG_DEBUG_REL_ROOT" "$DEMOAPP_PODS_XCCONFIG_RELEASE_REL_ROOT" "    "
+cat >> "$PROJECT_SPEC" <<'YAML'
     prebuildScripts:
       - name: "[CP] Check Pods Manifest.lock"
         script: |
@@ -220,14 +223,7 @@ cat >> "$PROJECT_SPEC" <<'YAML'
         ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES: YES
         TEST_HOST: "$(BUILT_PRODUCTS_DIR)/MSPDemoApp.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/MSPDemoApp"
 YAML
-if [[ -f "$ROOT_DIR/Pods/Target Support Files/Pods-MSPDemoApp/Pods-MSPDemoApp.debug.xcconfig" ]] && \
-   [[ -f "$ROOT_DIR/Pods/Target Support Files/Pods-MSPDemoApp/Pods-MSPDemoApp.release.xcconfig" ]]; then
-  cat >> "$PROJECT_SPEC" <<'YAML'
-    configFiles:
-      Debug: ../Pods/Target Support Files/Pods-MSPDemoApp/Pods-MSPDemoApp.debug.xcconfig
-      Release: ../Pods/Target Support Files/Pods-MSPDemoApp/Pods-MSPDemoApp.release.xcconfig
-YAML
-fi
+emit_demoapp_pods_config_files "$PROJECT_SPEC" "$ROOT_DIR/MSPDemoApp" "$DEMOAPP_PODS_XCCONFIG_DEBUG_REL_ROOT" "$DEMOAPP_PODS_XCCONFIG_RELEASE_REL_ROOT" "    "
 cat >> "$PROJECT_SPEC" <<'YAML'
     dependencies:
       - target: MSPDemoApp
@@ -240,6 +236,8 @@ cat >> "$PROJECT_SPEC" <<'YAML'
       base:
         ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES: YES
 YAML
+emit_demoapp_pods_config_files "$PROJECT_SPEC" "$ROOT_DIR/MSPDemoApp" "$DEMOAPP_PODS_XCCONFIG_DEBUG_REL_ROOT" "$DEMOAPP_PODS_XCCONFIG_RELEASE_REL_ROOT" "    "
+cat >> "$PROJECT_SPEC" <<'YAML'
 if [[ -f "$ROOT_DIR/Pods/Target Support Files/Pods-MSPDemoApp/Pods-MSPDemoApp.debug.xcconfig" ]] && \
    [[ -f "$ROOT_DIR/Pods/Target Support Files/Pods-MSPDemoApp/Pods-MSPDemoApp.release.xcconfig" ]]; then
   cat >> "$PROJECT_SPEC" <<'YAML'
