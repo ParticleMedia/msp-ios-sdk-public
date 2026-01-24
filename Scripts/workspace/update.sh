@@ -219,6 +219,16 @@ cat >> "$PROJECT_SPEC" <<'YAML'
       base:
         ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES: YES
         TEST_HOST: "$(BUILT_PRODUCTS_DIR)/MSPDemoApp.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/MSPDemoApp"
+YAML
+if [[ -f "$ROOT_DIR/Pods/Target Support Files/Pods-MSPDemoApp/Pods-MSPDemoApp.debug.xcconfig" ]] && \
+   [[ -f "$ROOT_DIR/Pods/Target Support Files/Pods-MSPDemoApp/Pods-MSPDemoApp.release.xcconfig" ]]; then
+  cat >> "$PROJECT_SPEC" <<'YAML'
+    configFiles:
+      Debug: ../Pods/Target Support Files/Pods-MSPDemoApp/Pods-MSPDemoApp.debug.xcconfig
+      Release: ../Pods/Target Support Files/Pods-MSPDemoApp/Pods-MSPDemoApp.release.xcconfig
+YAML
+fi
+cat >> "$PROJECT_SPEC" <<'YAML'
     dependencies:
       - target: MSPDemoApp
   MSPDemoAppUITests:
@@ -229,6 +239,16 @@ cat >> "$PROJECT_SPEC" <<'YAML'
     settings:
       base:
         ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES: YES
+YAML
+if [[ -f "$ROOT_DIR/Pods/Target Support Files/Pods-MSPDemoApp/Pods-MSPDemoApp.debug.xcconfig" ]] && \
+   [[ -f "$ROOT_DIR/Pods/Target Support Files/Pods-MSPDemoApp/Pods-MSPDemoApp.release.xcconfig" ]]; then
+  cat >> "$PROJECT_SPEC" <<'YAML'
+    configFiles:
+      Debug: ../Pods/Target Support Files/Pods-MSPDemoApp/Pods-MSPDemoApp.debug.xcconfig
+      Release: ../Pods/Target Support Files/Pods-MSPDemoApp/Pods-MSPDemoApp.release.xcconfig
+YAML
+fi
+cat >> "$PROJECT_SPEC" <<'YAML'
     dependencies:
       - target: MSPDemoApp
 schemes:
