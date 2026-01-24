@@ -2602,6 +2602,106 @@ EOF
     return 0
 }
 
+# ============================================================================
+# ZIP Staleness Detection (Script-Level Safety Guard)
+# ============================================================================
+# Goal: Prevent stale zip reuse when XCFramework inputs are newer.
+# This applies to ALL binary distribution pods.
+# ============================================================================
+
+# Get input paths that are packaged into the zip for a given pod.
+# Output: one path per line.
+get_zip_inputs_for_pod() {
+    local pod="$1"
+
+    case "$pod" in
+        MSPSharedLibraries)
+            echo "$ROOT_DIR/Build/XCFrameworks/MSPSharedLibraries.xcframework"
+            echo "$ROOT_DIR/Build/XCFrameworks/MSPiOSCore.xcframework"
+            echo "$ROOT_DIR/ThirdParty/PrebidMobile/PrebidMobile.xcframework"
+            # Sources are included (optional) for dev mode; include them if present.
+            if [[ -d "$ROOT_DIR/Sources" ]]; then
+                echo "$ROOT_DIR/Sources"
+            fi
+            ;;
+        MSPNovaAdapter)
+            echo "$ROOT_DIR/Build/XCFrameworks/MSPNovaAdapter.xcframework"
+            echo "$ROOT_DIR/Binary/NovaCore.xcframework"
+            ;;
+        MSPMolocoAdapter)
+            echo "$ROOT_DIR/Build/XCFrameworks/MSPMolocoAdapter.xcframework"
+            echo "$ROOT_DIR/ThirdParty/SnapKit/SnapKit.xcframework"
+            ;;
+        *)
+            echo "$ROOT_DIR/Build/XCFrameworks/${pod}.xcframework"
+            ;;
+    esac
+}
+
+# Get latest mtime (epoch seconds) for a file or directory (recursive for dirs).
+latest_mtime() {
+    local path="$1"
+
+    if [[ -f "$path" ]]; then
+        stat -f %m "$path" 2>/dev/null || stat -c %Y "$path" 2>/dev/null || return 1
+        return 0
+    fi
+
+    if [[ -d "$path" ]]; then
+        local latest
+        latest=$(find "$path" -type f -print0 2>/dev/null | xargs -0 stat -f %m 2>/dev/null | sort -n | tail -1)
+        if [[ -z "$latest" ]]; then
+            latest=$(stat -f %m "$path" 2>/dev/null || stat -c %Y "$path" 2>/dev/null || echo "")
+        fi
+        [[ -n "$latest" ]] && echo "$latest"
+        return 0
+    fi
+
+    return 1
+}
+
+# Return 0 if zip needs refresh (missing or older than any input), else 1.
+zip_needs_refresh() {
+    local pod="$1"
+    local version="$2"
+    local zip_path="$ROOT_DIR/Build/Zips/${pod}-${version}.zip"
+
+    if [[ ! -f "$zip_path" ]]; then
+        log_info "Local zip missing: $zip_path"
+        return 0
+    fi
+
+    local zip_mtime
+    zip_mtime=$(stat -f %m "$zip_path" 2>/dev/null || stat -c %Y "$zip_path" 2>/dev/null || echo "")
+    if [[ -z "$zip_mtime" ]]; then
+        log_warning "Could not read zip mtime: $zip_path (treating as stale)"
+        return 0
+    fi
+
+    local input_path
+    while IFS= read -r input_path; do
+        [[ -z "$input_path" ]] && continue
+        if [[ ! -e "$input_path" ]]; then
+            log_warning "Zip input missing: $input_path (treating as stale)"
+            return 0
+        fi
+
+        local input_mtime
+        input_mtime=$(latest_mtime "$input_path" || echo "")
+        if [[ -z "$input_mtime" ]]; then
+            log_warning "Could not read mtime for: $input_path (treating as stale)"
+            return 0
+        fi
+
+        if (( input_mtime > zip_mtime )); then
+            log_info "Local zip stale: $input_path newer than $zip_path"
+            return 0
+        fi
+    done < <(get_zip_inputs_for_pod "$pod")
+
+    return 1
+}
+
 ensure_zip_file_exists_for_pod() {
     local pod="$1"
     local version="$2"
@@ -2615,6 +2715,27 @@ ensure_zip_file_exists_for_pod() {
 
     local zip_url="https://github.com/ParticleMedia/msp-ios-sdk-public/releases/download/${version}/${pod}-${version}.zip"
     local zip_name="${pod}-${version}.zip"
+    local local_zip_path="$ROOT_DIR/Build/Zips/$zip_name"
+
+    # ========================================================================
+    # Step 0: Local zip staleness check (prevents stale zip reuse)
+    # ========================================================================
+    local force_reupload="${MSP_FORCE_REUPLOAD:-false}"
+
+    if [[ "${MSP_SKIP_ZIP_STALE_CHECK:-false}" != "true" ]]; then
+        if zip_needs_refresh "$pod" "$version"; then
+            if [[ "${DRY_RUN:-false}" == "true" ]]; then
+                log_info "DRY RUN: Would refresh local zip for $pod"
+            else
+                log_info "Refreshing local zip for $pod (inputs updated)..."
+                if ! create_zip_from_xcframework "$pod" "$version"; then
+                    log_error "Failed to refresh local zip for $pod"
+                    return 1
+                fi
+            fi
+            force_reupload=true
+        fi
+    fi
 
     # ========================================================================
     # Step 1: Check if zip exists and verify checksum (automatic validation)
@@ -2635,57 +2756,61 @@ ensure_zip_file_exists_for_pod() {
     local need_reupload=false
 
     if [[ "$zip_exists" == "true" ]]; then
-        log_info "Verifying checksum (automatic CDN cache detection)..."
-
-        # Get expected checksum from local zip or create it
-        local local_zip_path="$ROOT_DIR/Build/Zips/$zip_name"
-        local expected_checksum=""
-
-        if [[ -f "$local_zip_path" ]]; then
-            expected_checksum=$(shasum -a 256 "$local_zip_path" 2>/dev/null | awk '{print $1}')
-            log_info "Expected checksum (from local cache): $expected_checksum"
+        if [[ "$force_reupload" == "true" ]]; then
+            log_info "Forcing reupload (MSP_FORCE_REUPLOAD=true or local zip refreshed)"
+            need_reupload=true
         else
-            # Create local zip to get expected checksum
-            log_info "Creating local zip to calculate expected checksum..."
+            log_info "Verifying checksum (automatic CDN cache detection)..."
 
-            if ! create_zip_from_xcframework "$pod" "$version"; then
-                log_error "Failed to create local zip for checksum calculation"
-                return 1
+            # Get expected checksum from local zip or create it
+            local expected_checksum=""
+
+            if [[ -f "$local_zip_path" ]]; then
+                expected_checksum=$(shasum -a 256 "$local_zip_path" 2>/dev/null | awk '{print $1}')
+                log_info "Expected checksum (from local cache): $expected_checksum"
+            else
+                # Create local zip to get expected checksum
+                log_info "Creating local zip to calculate expected checksum..."
+
+                if ! create_zip_from_xcframework "$pod" "$version"; then
+                    log_error "Failed to create local zip for checksum calculation"
+                    return 1
+                fi
+
+                expected_checksum=$(shasum -a 256 "$local_zip_path" 2>/dev/null | awk '{print $1}')
+                log_info "Expected checksum (newly calculated): $expected_checksum"
             fi
 
-            expected_checksum=$(shasum -a 256 "$local_zip_path" 2>/dev/null | awk '{print $1}')
-            log_info "Expected checksum (newly calculated): $expected_checksum"
-        fi
+            # Download and verify checksum from GitHub
+            log_info "Downloading zip from GitHub to verify checksum..."
 
-        # Download and verify checksum from GitHub
-        log_info "Downloading zip from GitHub to verify checksum..."
+            local temp_verify="/tmp/msp-checksum-verify-$$"
+            mkdir -p "$temp_verify"
 
-        local temp_verify="/tmp/msp-checksum-verify-$$"
-        mkdir -p "$temp_verify"
+            if curl -L -f -s -o "$temp_verify/verify.zip" "$zip_url" 2>/dev/null; then
+                local actual_checksum
+                actual_checksum=$(shasum -a 256 "$temp_verify/verify.zip" 2>/dev/null | awk '{print $1}')
 
-        if curl -L -f -s -o "$temp_verify/verify.zip" "$zip_url" 2>/dev/null; then
-            local actual_checksum
-            actual_checksum=$(shasum -a 256 "$temp_verify/verify.zip" 2>/dev/null | awk '{print $1}')
+                rm -rf "$temp_verify"
 
-            rm -rf "$temp_verify"
+                log_info "Expected checksum: $expected_checksum"
+                log_info "GitHub checksum:   $actual_checksum"
 
-            log_info "Expected checksum: $expected_checksum"
-            log_info "GitHub checksum:   $actual_checksum"
-
-            if [[ "$actual_checksum" == "$expected_checksum" ]]; then
-                log_success "✅ Checksum verified - zip is correct"
-                return 0  # ✅ Checksum 匹配，直接返回
+                if [[ "$actual_checksum" == "$expected_checksum" ]]; then
+                    log_success "✅ Checksum verified - zip is correct"
+                    return 0  # ✅ Checksum 匹配，直接返回
+                else
+                    log_warning "⚠️  CHECKSUM MISMATCH DETECTED (CDN cache issue)"
+                    log_warning "   Expected: $expected_checksum"
+                    log_warning "   Got:      $actual_checksum"
+                    log_warning "   → Will automatically delete old zip and reupload"
+                    need_reupload=true
+                fi
             else
-                log_warning "⚠️  CHECKSUM MISMATCH DETECTED (CDN cache issue)"
-                log_warning "   Expected: $expected_checksum"
-                log_warning "   Got:      $actual_checksum"
-                log_warning "   → Will automatically delete old zip and reupload"
+                log_warning "Failed to download zip for verification"
+                rm -rf "$temp_verify"
                 need_reupload=true
             fi
-        else
-            log_warning "Failed to download zip for verification"
-            rm -rf "$temp_verify"
-            need_reupload=true
         fi
     else
         # Zip doesn't exist, need to upload
