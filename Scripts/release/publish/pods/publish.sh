@@ -4148,10 +4148,13 @@ release_msp_googleadstypes() {
 # ============================================================================
 # Ensures NovaCore.xcframework is available in Binary/ directory for MSPNovaAdapter release
 # ALWAYS rebuilds NovaCore to ensure source code changes are included
+# Pre-builds Pod dependencies (Kingfisher, SnapKit, Lottie) before building NovaCore
 # ============================================================================
 ensure_novacore_xcframework() {
     local novacore_binary_path="$ROOT_DIR/Binary/NovaCore.xcframework"
     local novacore_build_path="$ROOT_DIR/Build/XCFrameworks/NovaCore.xcframework"
+    local workspace_file="$ROOT_DIR/msp-ios-sdk.xcworkspace"
+    local shared_derived_data="$ROOT_DIR/.generated/DerivedData/build-shared"
 
     log_section "Ensuring NovaCore.xcframework is available for MSPNovaAdapter"
 
@@ -4170,7 +4173,69 @@ ensure_novacore_xcframework() {
         rm -rf "$novacore_build_path"
     fi
 
-    # Build NovaCore.xcframework from source
+    # -----------------------------------------------------------
+    # Step 1: Pre-build Pod dependencies that NovaCore needs
+    # NovaCore imports: Kingfisher (via MSPKingfisher), SnapKit, Lottie
+    # These must be built to shared DerivedData before NovaCore can compile
+    # -----------------------------------------------------------
+    log_info "Pre-building Pod dependencies for NovaCore..."
+
+    # Check if workspace exists
+    if [[ ! -d "$workspace_file" ]]; then
+        log_error "❌ Workspace not found: $workspace_file"
+        log_error "NovaCore requires workspace for Pod dependencies"
+        return 1
+    fi
+
+    # Create shared DerivedData directory
+    mkdir -p "$shared_derived_data"
+
+    # Pod schemes that NovaCore depends on
+    local pod_schemes=("MSPKingfisher" "SnapKit" "lottie-ios")
+
+    for pod_scheme in "${pod_schemes[@]}"; do
+        log_info "Pre-building $pod_scheme for iOS..."
+        if xcodebuild -workspace "$workspace_file" \
+            -scheme "$pod_scheme" \
+            -configuration Release \
+            -destination "generic/platform=iOS" \
+            -derivedDataPath "$shared_derived_data" \
+            build 2>&1 | tee "/tmp/build_${pod_scheme}.log" | grep -E "(BUILD SUCCEEDED|BUILD FAILED|error:)" | tail -3; then
+            if grep -q "BUILD SUCCEEDED" "/tmp/build_${pod_scheme}.log"; then
+                log_success "  $pod_scheme (iOS) built successfully"
+            else
+                log_error "  $pod_scheme (iOS) build failed"
+                log_error "  Check log: /tmp/build_${pod_scheme}.log"
+                return 1
+            fi
+        else
+            if grep -q "BUILD SUCCEEDED" "/tmp/build_${pod_scheme}.log"; then
+                log_success "  $pod_scheme (iOS) built successfully (despite warnings)"
+            else
+                log_error "  $pod_scheme (iOS) build failed"
+                return 1
+            fi
+        fi
+
+        log_info "Pre-building $pod_scheme for Simulator..."
+        if xcodebuild -workspace "$workspace_file" \
+            -scheme "$pod_scheme" \
+            -configuration Release \
+            -destination "generic/platform=iOS Simulator" \
+            -derivedDataPath "$shared_derived_data" \
+            build 2>&1 | tee "/tmp/build_${pod_scheme}_sim.log" | grep -E "(BUILD SUCCEEDED|BUILD FAILED|error:)" | tail -3; then
+            if grep -q "BUILD SUCCEEDED" "/tmp/build_${pod_scheme}_sim.log"; then
+                log_success "  $pod_scheme (Simulator) built successfully"
+            fi
+        fi
+    done
+
+    log_success "All Pod dependencies pre-built for NovaCore"
+    log_info "Pod modules available at: $shared_derived_data/Build/Products/"
+
+    # -----------------------------------------------------------
+    # Step 2: Build NovaCore.xcframework from source
+    # -----------------------------------------------------------
     log_info "Building NovaCore.xcframework from source..."
     log_info "This will take approximately 3-5 minutes..."
 
