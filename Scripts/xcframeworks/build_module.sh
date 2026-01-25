@@ -208,7 +208,7 @@ log_step "Building iOS device archive"
 # These settings are overridden by project.yml for MSP modules, so they only affect Pods
 EXTRA_SWIFT_FLAGS=""
 if [[ "$MODULE_NAME" == "NovaAdapter" ]]; then
-    EXTRA_SWIFT_FLAGS=" -Xfrontend -disable-autolink-framework -Xfrontend CoreAudioTypes"
+    EXTRA_SWIFT_FLAGS=" -Xfrontend -disable-autolink-framework -Xfrontend CoreAudioTypes -Xfrontend -disable-autolink-framework -Xfrontend UIUtilities"
 fi
 IOS_BUILD_SETTINGS=(
     BUILD_LIBRARY_FOR_DISTRIBUTION=YES
