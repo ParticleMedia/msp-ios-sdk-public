@@ -2428,7 +2428,24 @@ EOF
                 fi
                 log_success "✅ Copied NovaCore.xcframework"
 
-                log_success "✅ Prepared MSPNovaAdapter structure (MSPNovaAdapter + NovaCore)"
+                # Copy SnapKit.xcframework (bundle to match build-time dependency symbols)
+                local snapkit_path="$ROOT_DIR/ThirdParty/SnapKit/SnapKit.xcframework"
+
+                if [[ ! -d "$snapkit_path" ]]; then
+                    log_error "❌ SnapKit.xcframework not found: $snapkit_path"
+                    rm -rf "$temp_zip_dir"
+                    return 1
+                fi
+
+                mkdir -p "$temp_zip_dir/ThirdParty/SnapKit"
+                if ! ditto "$snapkit_path" "$temp_zip_dir/ThirdParty/SnapKit/$(basename "$snapkit_path")"; then
+                    log_error "❌ Failed to copy SnapKit.xcframework"
+                    rm -rf "$temp_zip_dir"
+                    return 1
+                fi
+                ensure_modulemaps_in_xcframework "$temp_zip_dir/ThirdParty/SnapKit/$(basename "$snapkit_path")"
+
+                log_success "✅ Prepared MSPNovaAdapter structure (MSPNovaAdapter + NovaCore + SnapKit)"
 
             elif [[ "$pod" == "MSPMolocoAdapter" ]]; then
                 log_info "MSPMolocoAdapter: Bundle SnapKit binary to match build-time dependency"
@@ -2627,6 +2644,7 @@ get_zip_inputs_for_pod() {
         MSPNovaAdapter)
             echo "$ROOT_DIR/Build/XCFrameworks/MSPNovaAdapter.xcframework"
             echo "$ROOT_DIR/Binary/NovaCore.xcframework"
+            echo "$ROOT_DIR/ThirdParty/SnapKit/SnapKit.xcframework"
             ;;
         MSPMolocoAdapter)
             echo "$ROOT_DIR/Build/XCFrameworks/MSPMolocoAdapter.xcframework"
