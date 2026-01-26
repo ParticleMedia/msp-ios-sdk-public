@@ -591,9 +591,8 @@ get_prebidmobile_version() {
 
 # Extract dependencies from source podspec
 if [[ "$POD_NAME" == "MSPNovaAdapter" ]]; then
-    # Filter out NovaCore (vendored) and MSPKingfisher (internal wrapper, convert to public Kingfisher)
-    # Keep SnapKit dependency as-is (required for linking)
-    grep "spec\\.dependency" "$SOURCE_PODSPEC" | grep -vE "(NovaCore|MSPKingfisher|Lottie)" >> "$OUTPUT_PODSPEC" 2>/dev/null || true
+    # Filter out NovaCore (vendored), SnapKit (bundled), and MSPKingfisher (internal wrapper, convert to public Kingfisher)
+    grep "spec\\.dependency" "$SOURCE_PODSPEC" | grep -vE "(NovaCore|MSPKingfisher|Lottie|SnapKit)" >> "$OUTPUT_PODSPEC" 2>/dev/null || true
     # Add public Kingfisher dependency (replaces internal MSPKingfisher wrapper)
     if ! grep -q "spec\\.dependency.*'Kingfisher'" "$OUTPUT_PODSPEC" 2>/dev/null; then
         echo "  spec.dependency 'Kingfisher', '~> 7.0'" >> "$OUTPUT_PODSPEC"
@@ -659,9 +658,13 @@ if is_binary_distribution "$POD_NAME"; then
                             fi
                             ;;
                         SnapKit)
-                            log_warn "Missing dependency detected in swiftinterface: $import_module"
-                            log_info "Adding SnapKit dependency (required by swiftinterface)"
-                            echo "  spec.dependency 'SnapKit'" >> "$OUTPUT_PODSPEC"
+                            if [[ "$POD_NAME" == "MSPNovaAdapter" || "$POD_NAME" == "MSPMolocoAdapter" ]]; then
+                                log_info "SnapKit import satisfied by bundled XCFramework for $POD_NAME; skipping pod dependency"
+                            else
+                                log_warn "Missing dependency detected in swiftinterface: $import_module"
+                                log_info "Adding SnapKit dependency (required by swiftinterface)"
+                                echo "  spec.dependency 'SnapKit'" >> "$OUTPUT_PODSPEC"
+                            fi
                             ;;
                         Kingfisher)
                             log_warn "Missing dependency detected in swiftinterface: $import_module"
@@ -874,17 +877,16 @@ if is_binary_distribution "$POD_NAME"; then
   ]
 EOF_VENDOR_MULTI
     elif [[ "$POD_NAME" == "MSPNovaAdapter" ]]; then
-        # NovaAdapter: pure binary distribution with embedded NovaCore
+        # NovaAdapter: pure binary distribution with embedded NovaCore + bundled SnapKit
         # NovaCore uses AVFoundation/AVFAudio which depend on AudioToolbox/CoreAudio
-        # CoreAudioTypes is header-only (no linkable library in iOS SDK 18+), so we use weak_frameworks
-        # to satisfy the auto-link requirement from swiftCoreAudio without causing linker errors
+        # CoreAudioTypes was removed from iOS SDK 18+ - types are now available via CoreAudio/AudioToolbox
         cat >> "$OUTPUT_PODSPEC" <<'EOF_VENDOR_NOVA'
   spec.vendored_frameworks = [
     "Binary/MSPNovaAdapter.xcframework",
-    "Binary/NovaCore.xcframework"
+    "Binary/NovaCore.xcframework",
+    "ThirdParty/SnapKit/SnapKit.xcframework"
   ]
   spec.frameworks = 'AVFoundation', 'AVFAudio', 'AudioToolbox', 'CoreAudio'
-  spec.weak_frameworks = 'CoreAudioTypes'
 EOF_VENDOR_NOVA
     elif [[ "$POD_NAME" == "MSPMolocoAdapter" ]]; then
         # MolocoAdapter: bundle SnapKit binary to match build-time dependency

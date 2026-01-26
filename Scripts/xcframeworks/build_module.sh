@@ -206,11 +206,15 @@ fi
 log_step "Building iOS device archive"
 # Add verification skip flags for Pods targets (applies to all targets in workspace)
 # These settings are overridden by project.yml for MSP modules, so they only affect Pods
+EXTRA_SWIFT_FLAGS=""
+if [[ "$MODULE_NAME" == "NovaAdapter" ]]; then
+    EXTRA_SWIFT_FLAGS=" -Xfrontend -disable-autolink-framework -Xfrontend CoreAudioTypes -Xfrontend -disable-autolink-framework -Xfrontend UIUtilities"
+fi
 IOS_BUILD_SETTINGS=(
     BUILD_LIBRARY_FOR_DISTRIBUTION=YES
     SKIP_INSTALL=NO
     SWIFT_VERIFY_EMITTED_MODULE_INTERFACE=NO
-    OTHER_SWIFT_FLAGS="-no-verify-emitted-module-interface"
+    OTHER_SWIFT_FLAGS="-no-verify-emitted-module-interface${EXTRA_SWIFT_FLAGS}"
 )
 
 # Add Pod search paths for Core modules - ONLY iOS paths for iOS archive
@@ -229,7 +233,7 @@ if [[ -n "${POD_IOS_MODULES:-}" ]]; then
     done
     if [[ -n "$IOS_I_FLAGS" ]]; then
         # Update OTHER_SWIFT_FLAGS to include ONLY iOS Pod module paths + modulemap flags
-        swift_flags="-no-verify-emitted-module-interface$IOS_I_FLAGS$IOS_MODULEMAP_FLAGS"
+        swift_flags="-no-verify-emitted-module-interface$IOS_I_FLAGS$IOS_MODULEMAP_FLAGS${EXTRA_SWIFT_FLAGS}"
         IOS_BUILD_SETTINGS[3]="OTHER_SWIFT_FLAGS=$swift_flags"
         # Add HEADER_SEARCH_PATHS for Clang to find module headers
         IOS_BUILD_SETTINGS+=("HEADER_SEARCH_PATHS=\$(inherited)$IOS_HEADER_PATHS")
@@ -272,7 +276,7 @@ SIM_BUILD_SETTINGS=(
     BUILD_LIBRARY_FOR_DISTRIBUTION=YES
     SKIP_INSTALL=NO
     SWIFT_VERIFY_EMITTED_MODULE_INTERFACE=NO
-    OTHER_SWIFT_FLAGS="-no-verify-emitted-module-interface"
+    OTHER_SWIFT_FLAGS="-no-verify-emitted-module-interface${EXTRA_SWIFT_FLAGS}"
 )
 
 # Add Pod search paths for Core modules - ONLY Simulator paths for Simulator archive
@@ -291,7 +295,7 @@ if [[ -n "${POD_SIM_MODULES:-}" ]]; then
     done
     if [[ -n "$SIM_I_FLAGS" ]]; then
         # Update OTHER_SWIFT_FLAGS to include ONLY Simulator Pod module paths + modulemap flags
-        swift_flags="-no-verify-emitted-module-interface$SIM_I_FLAGS$SIM_MODULEMAP_FLAGS"
+        swift_flags="-no-verify-emitted-module-interface$SIM_I_FLAGS$SIM_MODULEMAP_FLAGS${EXTRA_SWIFT_FLAGS}"
         SIM_BUILD_SETTINGS[3]="OTHER_SWIFT_FLAGS=$swift_flags"
         # Add HEADER_SEARCH_PATHS for Clang to find module headers
         SIM_BUILD_SETTINGS+=("HEADER_SEARCH_PATHS=\$(inherited)$SIM_HEADER_PATHS")
@@ -552,4 +556,3 @@ if [[ -f "$PROJECT_DIR/project.yml" ]]; then
     rm -f "$PROJECT_DIR/project.yml"
     log_info "  Removed: $PROJECT_DIR/project.yml"
 fi
-
