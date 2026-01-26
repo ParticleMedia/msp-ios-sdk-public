@@ -226,7 +226,7 @@ _msp_podspec_lint_once() {
     # Run with timeout: 30 minutes (1800s)
     # Rationale: Observed 1-5 min, extreme cases up to 20 min (complex deps), 30 min provides safety margin
     local lint_result=0
-    if run_with_timeout 1800 pod spec lint "$podspec_file" --allow-warnings --skip-import-validation 2>&1; then
+    if run_with_timeout 1800 pod spec lint "$podspec_file" --allow-warnings 2>&1; then
         log_success "Podspec validation passed: $(basename "$podspec_file")"
         lint_result=0
     else
