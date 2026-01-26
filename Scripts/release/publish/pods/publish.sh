@@ -5049,6 +5049,13 @@ release_adapters() {
     # Ensure MSPSharedLibraries and MSPGoogleAdsTypes are available before adapter releases
     log_step "Verifying MSPSharedLibraries and MSPGoogleAdsTypes availability before adapter releases..."
     
+    # Update specs repo once before parallel dependency availability checks
+    log_step "Updating CocoaPods specs repository before parallel availability checks..."
+    if ! update_specs_repo; then
+        log_error "Failed to update specs repository before availability checks"
+        return 1
+    fi
+
     # Create temporary files for parallel checks
     local shared_libs_check_file=$(mktemp "/tmp/msp_availability_check_shared_libs_XXXXXX")
     local google_ads_types_check_file=$(mktemp "/tmp/msp_availability_check_google_ads_types_XXXXXX")
@@ -5322,6 +5329,13 @@ release_adapters() {
     done
     
     log_success "All adapter pre-flight checks passed"
+
+    # Update specs repo once before parallel adapter releases
+    log_step "Updating CocoaPods specs repository before parallel adapter releases..."
+    if ! update_specs_repo; then
+        log_error "Failed to update specs repository before adapter releases"
+        return 1
+    fi
     
     # ========================================================================
     # Step 1: Start parallel adapter releases
