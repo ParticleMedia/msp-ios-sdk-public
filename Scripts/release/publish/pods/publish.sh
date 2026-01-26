@@ -2428,7 +2428,24 @@ EOF
                 fi
                 log_success "✅ Copied NovaCore.xcframework"
 
-                log_success "✅ Prepared MSPNovaAdapter structure (MSPNovaAdapter + NovaCore)"
+                # Copy SnapKit.xcframework (bundle to match build-time dependency symbols)
+                local snapkit_path="$ROOT_DIR/ThirdParty/SnapKit/SnapKit.xcframework"
+
+                if [[ ! -d "$snapkit_path" ]]; then
+                    log_error "❌ SnapKit.xcframework not found: $snapkit_path"
+                    rm -rf "$temp_zip_dir"
+                    return 1
+                fi
+
+                mkdir -p "$temp_zip_dir/ThirdParty/SnapKit"
+                if ! ditto "$snapkit_path" "$temp_zip_dir/ThirdParty/SnapKit/$(basename "$snapkit_path")"; then
+                    log_error "❌ Failed to copy SnapKit.xcframework"
+                    rm -rf "$temp_zip_dir"
+                    return 1
+                fi
+                ensure_modulemaps_in_xcframework "$temp_zip_dir/ThirdParty/SnapKit/$(basename "$snapkit_path")"
+
+                log_success "✅ Prepared MSPNovaAdapter structure (MSPNovaAdapter + NovaCore + SnapKit)"
 
             elif [[ "$pod" == "MSPMolocoAdapter" ]]; then
                 log_info "MSPMolocoAdapter: Bundle SnapKit binary to match build-time dependency"
@@ -2602,6 +2619,107 @@ EOF
     return 0
 }
 
+# ============================================================================
+# ZIP Staleness Detection (Script-Level Safety Guard)
+# ============================================================================
+# Goal: Prevent stale zip reuse when XCFramework inputs are newer.
+# This applies to ALL binary distribution pods.
+# ============================================================================
+
+# Get input paths that are packaged into the zip for a given pod.
+# Output: one path per line.
+get_zip_inputs_for_pod() {
+    local pod="$1"
+
+    case "$pod" in
+        MSPSharedLibraries)
+            echo "$ROOT_DIR/Build/XCFrameworks/MSPSharedLibraries.xcframework"
+            echo "$ROOT_DIR/Build/XCFrameworks/MSPiOSCore.xcframework"
+            echo "$ROOT_DIR/ThirdParty/PrebidMobile/PrebidMobile.xcframework"
+            # Sources are included (optional) for dev mode; include them if present.
+            if [[ -d "$ROOT_DIR/Sources" ]]; then
+                echo "$ROOT_DIR/Sources"
+            fi
+            ;;
+        MSPNovaAdapter)
+            echo "$ROOT_DIR/Build/XCFrameworks/MSPNovaAdapter.xcframework"
+            echo "$ROOT_DIR/Binary/NovaCore.xcframework"
+            echo "$ROOT_DIR/ThirdParty/SnapKit/SnapKit.xcframework"
+            ;;
+        MSPMolocoAdapter)
+            echo "$ROOT_DIR/Build/XCFrameworks/MSPMolocoAdapter.xcframework"
+            echo "$ROOT_DIR/ThirdParty/SnapKit/SnapKit.xcframework"
+            ;;
+        *)
+            echo "$ROOT_DIR/Build/XCFrameworks/${pod}.xcframework"
+            ;;
+    esac
+}
+
+# Get latest mtime (epoch seconds) for a file or directory (recursive for dirs).
+latest_mtime() {
+    local path="$1"
+
+    if [[ -f "$path" ]]; then
+        stat -f %m "$path" 2>/dev/null || stat -c %Y "$path" 2>/dev/null || return 1
+        return 0
+    fi
+
+    if [[ -d "$path" ]]; then
+        local latest
+        latest=$(find "$path" -type f -print0 2>/dev/null | xargs -0 stat -f %m 2>/dev/null | sort -n | tail -1)
+        if [[ -z "$latest" ]]; then
+            latest=$(stat -f %m "$path" 2>/dev/null || stat -c %Y "$path" 2>/dev/null || echo "")
+        fi
+        [[ -n "$latest" ]] && echo "$latest"
+        return 0
+    fi
+
+    return 1
+}
+
+# Return 0 if zip needs refresh (missing or older than any input), else 1.
+zip_needs_refresh() {
+    local pod="$1"
+    local version="$2"
+    local zip_path="$ROOT_DIR/Build/Zips/${pod}-${version}.zip"
+
+    if [[ ! -f "$zip_path" ]]; then
+        log_info "Local zip missing: $zip_path"
+        return 0
+    fi
+
+    local zip_mtime
+    zip_mtime=$(stat -f %m "$zip_path" 2>/dev/null || stat -c %Y "$zip_path" 2>/dev/null || echo "")
+    if [[ -z "$zip_mtime" ]]; then
+        log_warning "Could not read zip mtime: $zip_path (treating as stale)"
+        return 0
+    fi
+
+    local input_path
+    while IFS= read -r input_path; do
+        [[ -z "$input_path" ]] && continue
+        if [[ ! -e "$input_path" ]]; then
+            log_warning "Zip input missing: $input_path (treating as stale)"
+            return 0
+        fi
+
+        local input_mtime
+        input_mtime=$(latest_mtime "$input_path" || echo "")
+        if [[ -z "$input_mtime" ]]; then
+            log_warning "Could not read mtime for: $input_path (treating as stale)"
+            return 0
+        fi
+
+        if (( input_mtime > zip_mtime )); then
+            log_info "Local zip stale: $input_path newer than $zip_path"
+            return 0
+        fi
+    done < <(get_zip_inputs_for_pod "$pod")
+
+    return 1
+}
+
 ensure_zip_file_exists_for_pod() {
     local pod="$1"
     local version="$2"
@@ -2615,6 +2733,27 @@ ensure_zip_file_exists_for_pod() {
 
     local zip_url="https://github.com/ParticleMedia/msp-ios-sdk-public/releases/download/${version}/${pod}-${version}.zip"
     local zip_name="${pod}-${version}.zip"
+    local local_zip_path="$ROOT_DIR/Build/Zips/$zip_name"
+
+    # ========================================================================
+    # Step 0: Local zip staleness check (prevents stale zip reuse)
+    # ========================================================================
+    local force_reupload="${MSP_FORCE_REUPLOAD:-false}"
+
+    if [[ "${MSP_SKIP_ZIP_STALE_CHECK:-false}" != "true" ]]; then
+        if zip_needs_refresh "$pod" "$version"; then
+            if [[ "${DRY_RUN:-false}" == "true" ]]; then
+                log_info "DRY RUN: Would refresh local zip for $pod"
+            else
+                log_info "Refreshing local zip for $pod (inputs updated)..."
+                if ! create_zip_from_xcframework "$pod" "$version"; then
+                    log_error "Failed to refresh local zip for $pod"
+                    return 1
+                fi
+            fi
+            force_reupload=true
+        fi
+    fi
 
     # ========================================================================
     # Step 1: Check if zip exists and verify checksum (automatic validation)
@@ -2635,57 +2774,61 @@ ensure_zip_file_exists_for_pod() {
     local need_reupload=false
 
     if [[ "$zip_exists" == "true" ]]; then
-        log_info "Verifying checksum (automatic CDN cache detection)..."
-
-        # Get expected checksum from local zip or create it
-        local local_zip_path="$ROOT_DIR/Build/Zips/$zip_name"
-        local expected_checksum=""
-
-        if [[ -f "$local_zip_path" ]]; then
-            expected_checksum=$(shasum -a 256 "$local_zip_path" 2>/dev/null | awk '{print $1}')
-            log_info "Expected checksum (from local cache): $expected_checksum"
+        if [[ "$force_reupload" == "true" ]]; then
+            log_info "Forcing reupload (MSP_FORCE_REUPLOAD=true or local zip refreshed)"
+            need_reupload=true
         else
-            # Create local zip to get expected checksum
-            log_info "Creating local zip to calculate expected checksum..."
+            log_info "Verifying checksum (automatic CDN cache detection)..."
 
-            if ! create_zip_from_xcframework "$pod" "$version"; then
-                log_error "Failed to create local zip for checksum calculation"
-                return 1
+            # Get expected checksum from local zip or create it
+            local expected_checksum=""
+
+            if [[ -f "$local_zip_path" ]]; then
+                expected_checksum=$(shasum -a 256 "$local_zip_path" 2>/dev/null | awk '{print $1}')
+                log_info "Expected checksum (from local cache): $expected_checksum"
+            else
+                # Create local zip to get expected checksum
+                log_info "Creating local zip to calculate expected checksum..."
+
+                if ! create_zip_from_xcframework "$pod" "$version"; then
+                    log_error "Failed to create local zip for checksum calculation"
+                    return 1
+                fi
+
+                expected_checksum=$(shasum -a 256 "$local_zip_path" 2>/dev/null | awk '{print $1}')
+                log_info "Expected checksum (newly calculated): $expected_checksum"
             fi
 
-            expected_checksum=$(shasum -a 256 "$local_zip_path" 2>/dev/null | awk '{print $1}')
-            log_info "Expected checksum (newly calculated): $expected_checksum"
-        fi
+            # Download and verify checksum from GitHub
+            log_info "Downloading zip from GitHub to verify checksum..."
 
-        # Download and verify checksum from GitHub
-        log_info "Downloading zip from GitHub to verify checksum..."
+            local temp_verify="/tmp/msp-checksum-verify-$$"
+            mkdir -p "$temp_verify"
 
-        local temp_verify="/tmp/msp-checksum-verify-$$"
-        mkdir -p "$temp_verify"
+            if curl -L -f -s -o "$temp_verify/verify.zip" "$zip_url" 2>/dev/null; then
+                local actual_checksum
+                actual_checksum=$(shasum -a 256 "$temp_verify/verify.zip" 2>/dev/null | awk '{print $1}')
 
-        if curl -L -f -s -o "$temp_verify/verify.zip" "$zip_url" 2>/dev/null; then
-            local actual_checksum
-            actual_checksum=$(shasum -a 256 "$temp_verify/verify.zip" 2>/dev/null | awk '{print $1}')
+                rm -rf "$temp_verify"
 
-            rm -rf "$temp_verify"
+                log_info "Expected checksum: $expected_checksum"
+                log_info "GitHub checksum:   $actual_checksum"
 
-            log_info "Expected checksum: $expected_checksum"
-            log_info "GitHub checksum:   $actual_checksum"
-
-            if [[ "$actual_checksum" == "$expected_checksum" ]]; then
-                log_success "✅ Checksum verified - zip is correct"
-                return 0  # ✅ Checksum 匹配，直接返回
+                if [[ "$actual_checksum" == "$expected_checksum" ]]; then
+                    log_success "✅ Checksum verified - zip is correct"
+                    return 0  # ✅ Checksum 匹配，直接返回
+                else
+                    log_warning "⚠️  CHECKSUM MISMATCH DETECTED (CDN cache issue)"
+                    log_warning "   Expected: $expected_checksum"
+                    log_warning "   Got:      $actual_checksum"
+                    log_warning "   → Will automatically delete old zip and reupload"
+                    need_reupload=true
+                fi
             else
-                log_warning "⚠️  CHECKSUM MISMATCH DETECTED (CDN cache issue)"
-                log_warning "   Expected: $expected_checksum"
-                log_warning "   Got:      $actual_checksum"
-                log_warning "   → Will automatically delete old zip and reupload"
+                log_warning "Failed to download zip for verification"
+                rm -rf "$temp_verify"
                 need_reupload=true
             fi
-        else
-            log_warning "Failed to download zip for verification"
-            rm -rf "$temp_verify"
-            need_reupload=true
         fi
     else
         # Zip doesn't exist, need to upload
@@ -3574,15 +3717,8 @@ RUBY_SCRIPT
     register_temp_resource "$exit_code_file"
 
     # Execute pod trunk push and capture exit code immediately
-    # Use --skip-import-validation only for MSPNovaAdapter to avoid CoreAudioTypes
-    # linker issues in iOS SDK 18+ (header-only framework, caused by NovaCore's swiftCoreAudio)
-    local skip_import_flag=""
-    if [[ "$pod" == "MSPNovaAdapter" ]]; then
-        skip_import_flag="--skip-import-validation"
-        log_info "Using --skip-import-validation for $pod (CoreAudioTypes workaround)"
-    fi
     {
-        pod trunk push "$podspec" --allow-warnings $skip_import_flag $skip_tests_flag 2>&1 | tee "$log_file"
+        pod trunk push "$podspec" --allow-warnings $skip_tests_flag 2>&1 | tee "$log_file"
         echo "${PIPESTATUS[0]}" > "$exit_code_file"
     } || true
 
@@ -3619,9 +3755,9 @@ RUBY_SCRIPT
             retry_exit_code_file=$(mktemp "/tmp/pod_trunk_exit_code_retry_XXXXXX")
             register_temp_resource "$retry_exit_code_file"
 
-            # Retry publication after fix (reuse skip_import_flag from initial attempt)
+            # Retry publication after fix
             {
-                pod trunk push "$podspec" --allow-warnings $skip_import_flag $skip_tests_flag 2>&1 | tee "$log_file"
+                pod trunk push "$podspec" --allow-warnings $skip_tests_flag 2>&1 | tee "$log_file"
                 echo "${PIPESTATUS[0]}" > "$retry_exit_code_file"
             } || true
 
@@ -4154,48 +4290,96 @@ release_msp_googleadstypes() {
 # Function: ensure_novacore_xcframework
 # ============================================================================
 # Ensures NovaCore.xcframework is available in Binary/ directory for MSPNovaAdapter release
-# If not present, builds it from source using existing build scripts
+# ALWAYS rebuilds NovaCore to ensure source code changes are included
+# Pre-builds Pod dependencies (Kingfisher, SnapKit, Lottie) before building NovaCore
 # ============================================================================
 ensure_novacore_xcframework() {
     local novacore_binary_path="$ROOT_DIR/Binary/NovaCore.xcframework"
     local novacore_build_path="$ROOT_DIR/Build/XCFrameworks/NovaCore.xcframework"
+    local workspace_file="$ROOT_DIR/msp-ios-sdk.xcworkspace"
+    local shared_derived_data="$ROOT_DIR/.generated/DerivedData/build-shared"
 
     log_section "Ensuring NovaCore.xcframework is available for MSPNovaAdapter"
 
-    # Check if NovaCore.xcframework already exists in Binary/
+    # ALWAYS rebuild NovaCore to ensure source code changes are included
+    # Previous logic only checked if Binary/ exists, which caused stale binary issues
+    # when source code was updated but binary was not rebuilt
+    log_info "Rebuilding NovaCore.xcframework to include latest source code changes..."
+
+    # Clean up old binaries to ensure fresh build
     if [[ -d "$novacore_binary_path" ]]; then
-        log_success "✅ NovaCore.xcframework already exists in Binary/"
-
-        # Verify it's a valid XCFramework
-        if [[ -f "$novacore_binary_path/Info.plist" ]]; then
-            log_info "NovaCore.xcframework is valid (Info.plist exists)"
-            return 0
-        else
-            log_warning "⚠️  NovaCore.xcframework in Binary/ is invalid, will rebuild"
-            rm -rf "$novacore_binary_path"
-        fi
+        log_info "Removing old Binary/NovaCore.xcframework..."
+        rm -rf "$novacore_binary_path"
     fi
-
-    # Check if NovaCore.xcframework exists in Build/XCFrameworks/
     if [[ -d "$novacore_build_path" ]]; then
-        log_info "Found NovaCore.xcframework in Build/XCFrameworks/"
-        log_info "Copying to Binary/ directory..."
-
-        # Create Binary directory if it doesn't exist
-        mkdir -p "$ROOT_DIR/Binary"
-
-        # Copy XCFramework to Binary/
-        if ditto "$novacore_build_path" "$novacore_binary_path"; then
-            log_success "✅ NovaCore.xcframework copied to Binary/"
-            return 0
-        else
-            log_error "❌ Failed to copy NovaCore.xcframework to Binary/"
-            return 1
-        fi
+        log_info "Removing old Build/XCFrameworks/NovaCore.xcframework..."
+        rm -rf "$novacore_build_path"
     fi
 
-    # NovaCore.xcframework doesn't exist anywhere, need to build it
-    log_warning "⚠️  NovaCore.xcframework not found, building from source..."
+    # -----------------------------------------------------------
+    # Step 1: Pre-build Pod dependencies that NovaCore needs
+    # NovaCore imports: Kingfisher (via MSPKingfisher), SnapKit, Lottie
+    # These must be built to shared DerivedData before NovaCore can compile
+    # -----------------------------------------------------------
+    log_info "Pre-building Pod dependencies for NovaCore..."
+
+    # Check if workspace exists
+    if [[ ! -d "$workspace_file" ]]; then
+        log_error "❌ Workspace not found: $workspace_file"
+        log_error "NovaCore requires workspace for Pod dependencies"
+        return 1
+    fi
+
+    # Create shared DerivedData directory
+    mkdir -p "$shared_derived_data"
+
+    # Pod schemes that NovaCore depends on
+    local pod_schemes=("MSPKingfisher" "SnapKit" "lottie-ios")
+
+    for pod_scheme in "${pod_schemes[@]}"; do
+        log_info "Pre-building $pod_scheme for iOS..."
+        if xcodebuild -workspace "$workspace_file" \
+            -scheme "$pod_scheme" \
+            -configuration Release \
+            -destination "generic/platform=iOS" \
+            -derivedDataPath "$shared_derived_data" \
+            build 2>&1 | tee "/tmp/build_${pod_scheme}.log" | grep -E "(BUILD SUCCEEDED|BUILD FAILED|error:)" | tail -3; then
+            if grep -q "BUILD SUCCEEDED" "/tmp/build_${pod_scheme}.log"; then
+                log_success "  $pod_scheme (iOS) built successfully"
+            else
+                log_error "  $pod_scheme (iOS) build failed"
+                log_error "  Check log: /tmp/build_${pod_scheme}.log"
+                return 1
+            fi
+        else
+            if grep -q "BUILD SUCCEEDED" "/tmp/build_${pod_scheme}.log"; then
+                log_success "  $pod_scheme (iOS) built successfully (despite warnings)"
+            else
+                log_error "  $pod_scheme (iOS) build failed"
+                return 1
+            fi
+        fi
+
+        log_info "Pre-building $pod_scheme for Simulator..."
+        if xcodebuild -workspace "$workspace_file" \
+            -scheme "$pod_scheme" \
+            -configuration Release \
+            -destination "generic/platform=iOS Simulator" \
+            -derivedDataPath "$shared_derived_data" \
+            build 2>&1 | tee "/tmp/build_${pod_scheme}_sim.log" | grep -E "(BUILD SUCCEEDED|BUILD FAILED|error:)" | tail -3; then
+            if grep -q "BUILD SUCCEEDED" "/tmp/build_${pod_scheme}_sim.log"; then
+                log_success "  $pod_scheme (Simulator) built successfully"
+            fi
+        fi
+    done
+
+    log_success "All Pod dependencies pre-built for NovaCore"
+    log_info "Pod modules available at: $shared_derived_data/Build/Products/"
+
+    # -----------------------------------------------------------
+    # Step 2: Build NovaCore.xcframework from source
+    # -----------------------------------------------------------
+    log_info "Building NovaCore.xcframework from source..."
     log_info "This will take approximately 3-5 minutes..."
 
     # Check if build script exists

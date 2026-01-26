@@ -228,7 +228,7 @@ build_demoapp() {
     if xcodebuild -workspace msp-ios-sdk.xcworkspace \
         -scheme MSPDemoApp \
         -configuration Debug \
-        -destination "platform=iOS Simulator,name=iPhone 16" \
+        -destination "platform=iOS Simulator,OS=18.5,name=iPhone 16" \
         build 2>&1 | tee "$log_file" | tail -3; then
         
         if grep -q "BUILD SUCCEEDED" "$log_file"; then

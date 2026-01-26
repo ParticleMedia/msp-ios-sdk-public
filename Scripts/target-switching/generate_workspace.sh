@@ -21,6 +21,8 @@ ROOT_DIR="$(cd "$SCRIPT_DIR/../.." && pwd)"
 
 # shellcheck source=Scripts/target-switching/common.sh
 source "$SCRIPT_DIR/common.sh"
+# shellcheck source=Scripts/lib/demoapp_config.sh
+source "$ROOT_DIR/Scripts/lib/demoapp_config.sh"
 
 ensure_repo_root
 
@@ -175,6 +177,10 @@ fi
 if [[ "$EFFECTIVE_MODE" == "pods" ]]; then
     XCCONFIG_DEBUG="../../Pods/Target Support Files/Pods-MSPDemoApp/Pods-MSPDemoApp.debug.xcconfig"
     XCCONFIG_RELEASE="../../Pods/Target Support Files/Pods-MSPDemoApp/Pods-MSPDemoApp.release.xcconfig"
+    if demoapp_load_config; then
+        XCCONFIG_DEBUG="${DEMOAPP_PODS_XCCONFIG_DEBUG_REL_EXAMPLES}"
+        XCCONFIG_RELEASE="${DEMOAPP_PODS_XCCONFIG_RELEASE_REL_EXAMPLES}"
+    fi
 
     cat <<'YAML' > "$MODE_TARGETS_FILE"
   MSPDemoApp:
@@ -182,13 +188,7 @@ if [[ "$EFFECTIVE_MODE" == "pods" ]]; then
       - BaseAppTarget
 YAML
     PROJECT_DIR="$(dirname "$PROJECT_SPEC")"
-    if [[ -f "$PROJECT_DIR/$XCCONFIG_DEBUG" ]] && [[ -f "$PROJECT_DIR/$XCCONFIG_RELEASE" ]]; then
-        cat <<YAML >> "$MODE_TARGETS_FILE"
-    configFiles:
-      Debug: $XCCONFIG_DEBUG
-      Release: $XCCONFIG_RELEASE
-YAML
-    fi
+    emit_demoapp_pods_config_files "$MODE_TARGETS_FILE" "$PROJECT_DIR" "$XCCONFIG_DEBUG" "$XCCONFIG_RELEASE" "    "
 
     if [[ "$TARGET_MODE" == "pods-release" ]]; then
         echo "pods-release: Adding [CP] Copy XCFrameworks and [CP] Embed Pods Frameworks phases" >&2
@@ -326,6 +326,9 @@ YAML
       base:
         ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES: YES
         TEST_HOST: "$(BUILT_PRODUCTS_DIR)/MSPDemoApp.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/MSPDemoApp"
+YAML
+    emit_demoapp_pods_config_files "$MODE_TARGETS_FILE" "$PROJECT_DIR" "$XCCONFIG_DEBUG" "$XCCONFIG_RELEASE" "    "
+    cat <<'YAML' >> "$MODE_TARGETS_FILE"
     dependencies:
       - target: MSPDemoApp
   MSPDemoAppUITests:
@@ -336,6 +339,9 @@ YAML
     settings:
       base:
         ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES: YES
+YAML
+    emit_demoapp_pods_config_files "$MODE_TARGETS_FILE" "$PROJECT_DIR" "$XCCONFIG_DEBUG" "$XCCONFIG_RELEASE" "    "
+    cat <<'YAML' >> "$MODE_TARGETS_FILE"
     dependencies:
       - target: MSPDemoApp
 YAML
