@@ -49,6 +49,20 @@ is_core_module() {
 MSP_VERSIONED_DEPS=("MSPiOSCore" "MSPSharedLibraries" "MSPPrebidAdapter" "PrebidAdapter" "MSPGoogleAdsTypes")
 MSP_VERSIONED_DEPS_PATTERN="$(IFS='|'; echo "${MSP_VERSIONED_DEPS[*]}")"
 
+# Pods that should consume SnapKit from MSPSharedLibraries in release mode.
+# This avoids duplicate SnapKit.xcframeworks across adapters.
+SNAPKIT_FROM_SHARED_LIBS_PODS=("MSPNovaAdapter" "MSPMolocoAdapter" "MSPLiftoffAdapter" "MSPCore")
+
+should_strip_snapkit_dependency() {
+    local module="$1"
+    for pod in "${SNAPKIT_FROM_SHARED_LIBS_PODS[@]}"; do
+        if [[ "$module" == "$pod" ]]; then
+            return 0
+        fi
+    done
+    return 1
+}
+
 # ============================================================================
 # Binary Distribution Pods (HTTP zip source)
 # ============================================================================
@@ -591,14 +605,14 @@ get_prebidmobile_version() {
 
 # Extract dependencies from source podspec
 if [[ "$POD_NAME" == "MSPNovaAdapter" ]]; then
-    # Filter out NovaCore (vendored), SnapKit (bundled), and MSPKingfisher (internal wrapper, convert to public Kingfisher)
+    # Filter out NovaCore (vendored), SnapKit (provided via MSPSharedLibraries), and MSPKingfisher (internal wrapper, convert to public Kingfisher)
     grep "spec\\.dependency" "$SOURCE_PODSPEC" | grep -vE "(NovaCore|MSPKingfisher|Lottie|SnapKit)" >> "$OUTPUT_PODSPEC" 2>/dev/null || true
     # Add public Kingfisher dependency (replaces internal MSPKingfisher wrapper)
     if ! grep -q "spec\\.dependency.*'Kingfisher'" "$OUTPUT_PODSPEC" 2>/dev/null; then
         echo "  spec.dependency 'Kingfisher', '~> 7.0'" >> "$OUTPUT_PODSPEC"
     fi
 elif [[ "$POD_NAME" == "MSPMolocoAdapter" ]]; then
-    # Keep MolocoSDK and MSP deps, but drop SnapKit (bundled in release zip)
+    # Keep MolocoSDK and MSP deps; SnapKit is provided via MSPSharedLibraries in release
     grep "spec\\.dependency" "$SOURCE_PODSPEC" | grep -vE "SnapKit" >> "$OUTPUT_PODSPEC" 2>/dev/null || true
 elif is_binary_distribution "$POD_NAME"; then
     # Binary distribution pods: keep all dependencies
@@ -606,6 +620,11 @@ elif is_binary_distribution "$POD_NAME"; then
 else
     # Source distribution pods: keep all dependencies (including MSPiOSCore, which is now a separate pod)
     grep "spec\\.dependency" "$SOURCE_PODSPEC" >> "$OUTPUT_PODSPEC" 2>/dev/null || true
+fi
+
+# If SnapKit is supplied by MSPSharedLibraries, remove direct dependency to avoid duplicates.
+if should_strip_snapkit_dependency "$POD_NAME"; then
+    sed -i '' "/spec\\.dependency.*['\"]SnapKit['\"]/d" "$OUTPUT_PODSPEC"
 fi
 
 # ═══════════════════════════════════════════════════════════════════════════
@@ -658,8 +677,8 @@ if is_binary_distribution "$POD_NAME"; then
                             fi
                             ;;
                         SnapKit)
-                            if [[ "$POD_NAME" == "MSPNovaAdapter" || "$POD_NAME" == "MSPMolocoAdapter" ]]; then
-                                log_info "SnapKit import satisfied by bundled XCFramework for $POD_NAME; skipping pod dependency"
+                            if should_strip_snapkit_dependency "$POD_NAME"; then
+                                log_info "SnapKit import satisfied by MSPSharedLibraries for $POD_NAME; skipping pod dependency"
                             else
                                 log_warn "Missing dependency detected in swiftinterface: $import_module"
                                 log_info "Adding SnapKit dependency (required by swiftinterface)"
@@ -869,33 +888,25 @@ fi
 if is_binary_distribution "$POD_NAME"; then
     # Binary distribution pods: binary XCFrameworks
     if [[ "$POD_NAME" == "MSPSharedLibraries" ]]; then
-        # MSPSharedLibraries: includes PrebidMobile only (MSPiOSCore is now a separate dependency)
+        # MSPSharedLibraries: includes PrebidMobile and SnapKit (MSPiOSCore is now a separate dependency)
         cat >> "$OUTPUT_PODSPEC" <<'EOF_VENDOR_MULTI'
   spec.vendored_frameworks = [
     "Binary/MSPSharedLibraries.xcframework",
-    "ThirdParty/PrebidMobile/PrebidMobile.xcframework"
+    "ThirdParty/PrebidMobile/PrebidMobile.xcframework",
+    "ThirdParty/SnapKit/SnapKit.xcframework"
   ]
 EOF_VENDOR_MULTI
     elif [[ "$POD_NAME" == "MSPNovaAdapter" ]]; then
-        # NovaAdapter: pure binary distribution with embedded NovaCore + bundled SnapKit
+        # NovaAdapter: pure binary distribution with embedded NovaCore
         # NovaCore uses AVFoundation/AVFAudio which depend on AudioToolbox/CoreAudio
         # CoreAudioTypes was removed from iOS SDK 18+ - types are now available via CoreAudio/AudioToolbox
         cat >> "$OUTPUT_PODSPEC" <<'EOF_VENDOR_NOVA'
   spec.vendored_frameworks = [
     "Binary/MSPNovaAdapter.xcframework",
-    "Binary/NovaCore.xcframework",
-    "ThirdParty/SnapKit/SnapKit.xcframework"
+    "Binary/NovaCore.xcframework"
   ]
   spec.frameworks = 'AVFoundation', 'AVFAudio', 'AudioToolbox', 'CoreAudio'
 EOF_VENDOR_NOVA
-    elif [[ "$POD_NAME" == "MSPMolocoAdapter" ]]; then
-        # MolocoAdapter: bundle SnapKit binary to match build-time dependency
-        cat >> "$OUTPUT_PODSPEC" <<'EOF_VENDOR_MOLOCO'
-  spec.vendored_frameworks = [
-    "Binary/MSPMolocoAdapter.xcframework",
-    "ThirdParty/SnapKit/SnapKit.xcframework"
-  ]
-EOF_VENDOR_MOLOCO
     else
         # XCFramework name matches pod name (unified naming)
         cat >> "$OUTPUT_PODSPEC" <<EOF_VENDOR_SINGLE

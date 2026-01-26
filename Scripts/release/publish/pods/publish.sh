@@ -2388,7 +2388,7 @@ EOF
     # ========================================================================
     case "$pod" in
         MSPSharedLibraries)
-            # MSPSharedLibraries embeds MSPiOSCore and includes ThirdParty
+            # MSPSharedLibraries embeds MSPiOSCore and includes ThirdParty (PrebidMobile + SnapKit)
             log_info "Special handling for MSPSharedLibraries (embeds MSPiOSCore)"
 
             # Create directory structure
@@ -2437,6 +2437,21 @@ EOF
                 return 1
             fi
             ensure_modulemaps_in_xcframework "$temp_zip_dir/ThirdParty/PrebidMobile/$(basename "$prebid_path")"
+
+            # Copy ThirdParty SnapKit using ditto
+            local snapkit_path="$ROOT_DIR/ThirdParty/SnapKit/SnapKit.xcframework"
+            if [[ ! -d "$snapkit_path" ]]; then
+                log_error "❌ SnapKit.xcframework not found: $snapkit_path"
+                rm -rf "$temp_zip_dir"
+                return 1
+            fi
+            mkdir -p "$temp_zip_dir/ThirdParty/SnapKit"
+            if ! ditto "$snapkit_path" "$temp_zip_dir/ThirdParty/SnapKit/$(basename "$snapkit_path")"; then
+                log_error "❌ Failed to copy SnapKit.xcframework"
+                rm -rf "$temp_zip_dir"
+                return 1
+            fi
+            ensure_modulemaps_in_xcframework "$temp_zip_dir/ThirdParty/SnapKit/$(basename "$snapkit_path")"
 
             # Copy Sources (optional, for dev mode)
             if [[ -d "$ROOT_DIR/Sources" ]]; then
@@ -2518,28 +2533,10 @@ EOF
                     return 1
                 fi
                 log_success "✅ Copied NovaCore.xcframework"
-
-                # Copy SnapKit.xcframework (bundle to match build-time dependency symbols)
-                local snapkit_path="$ROOT_DIR/ThirdParty/SnapKit/SnapKit.xcframework"
-
-                if [[ ! -d "$snapkit_path" ]]; then
-                    log_error "❌ SnapKit.xcframework not found: $snapkit_path"
-                    rm -rf "$temp_zip_dir"
-                    return 1
-                fi
-
-                mkdir -p "$temp_zip_dir/ThirdParty/SnapKit"
-                if ! ditto "$snapkit_path" "$temp_zip_dir/ThirdParty/SnapKit/$(basename "$snapkit_path")"; then
-                    log_error "❌ Failed to copy SnapKit.xcframework"
-                    rm -rf "$temp_zip_dir"
-                    return 1
-                fi
-                ensure_modulemaps_in_xcframework "$temp_zip_dir/ThirdParty/SnapKit/$(basename "$snapkit_path")"
-
-                log_success "✅ Prepared MSPNovaAdapter structure (MSPNovaAdapter + NovaCore + SnapKit)"
+                log_success "✅ Prepared MSPNovaAdapter structure (MSPNovaAdapter + NovaCore)"
 
             elif [[ "$pod" == "MSPMolocoAdapter" ]]; then
-                log_info "MSPMolocoAdapter: Bundle SnapKit binary to match build-time dependency"
+                log_info "MSPMolocoAdapter: Binary adapter (SnapKit provided via MSPSharedLibraries)"
 
                 local xcframework_path="$ROOT_DIR/Build/XCFrameworks/${pod}.xcframework"
                 if [[ ! -d "$xcframework_path" ]]; then
@@ -2555,23 +2552,7 @@ EOF
                     return 1
                 fi
                 ensure_modulemaps_in_xcframework "$temp_zip_dir/Binary/$(basename "$xcframework_path")"
-
-                local snapkit_path="$ROOT_DIR/ThirdParty/SnapKit/SnapKit.xcframework"
-                if [[ ! -d "$snapkit_path" ]]; then
-                    log_error "❌ SnapKit.xcframework not found: $snapkit_path"
-                    rm -rf "$temp_zip_dir"
-                    return 1
-                fi
-
-                mkdir -p "$temp_zip_dir/ThirdParty/SnapKit"
-                if ! ditto "$snapkit_path" "$temp_zip_dir/ThirdParty/SnapKit/$(basename "$snapkit_path")"; then
-                    log_error "❌ Failed to copy SnapKit.xcframework"
-                    rm -rf "$temp_zip_dir"
-                    return 1
-                fi
-                ensure_modulemaps_in_xcframework "$temp_zip_dir/ThirdParty/SnapKit/$(basename "$snapkit_path")"
-
-                log_success "✅ Prepared MSPMolocoAdapter structure (MSPMolocoAdapter + SnapKit)"
+                log_success "✅ Prepared MSPMolocoAdapter structure (MSPMolocoAdapter)"
 
             else
                 # Regular adapters: use Build/XCFrameworks/
@@ -2727,6 +2708,7 @@ get_zip_inputs_for_pod() {
             echo "$ROOT_DIR/Build/XCFrameworks/MSPSharedLibraries.xcframework"
             echo "$ROOT_DIR/Build/XCFrameworks/MSPiOSCore.xcframework"
             echo "$ROOT_DIR/ThirdParty/PrebidMobile/PrebidMobile.xcframework"
+            echo "$ROOT_DIR/ThirdParty/SnapKit/SnapKit.xcframework"
             # Sources are included (optional) for dev mode; include them if present.
             if [[ -d "$ROOT_DIR/Sources" ]]; then
                 echo "$ROOT_DIR/Sources"
@@ -2735,11 +2717,9 @@ get_zip_inputs_for_pod() {
         MSPNovaAdapter)
             echo "$ROOT_DIR/Build/XCFrameworks/MSPNovaAdapter.xcframework"
             echo "$ROOT_DIR/Binary/NovaCore.xcframework"
-            echo "$ROOT_DIR/ThirdParty/SnapKit/SnapKit.xcframework"
             ;;
         MSPMolocoAdapter)
             echo "$ROOT_DIR/Build/XCFrameworks/MSPMolocoAdapter.xcframework"
-            echo "$ROOT_DIR/ThirdParty/SnapKit/SnapKit.xcframework"
             ;;
         *)
             echo "$ROOT_DIR/Build/XCFrameworks/${pod}.xcframework"
