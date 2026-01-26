@@ -378,22 +378,121 @@ update_podspec_for_release() {
     log_success "Generated release podspec for $pod at Build/ReleasePodspecs/${pod}.podspec"
 }
 
+# Adapter SDK version configuration (config-driven)
+ADAPTER_SDK_VERSION_CONFIG_LOADED="false"
+
+load_adapter_sdk_version_config() {
+    if [[ "${ADAPTER_SDK_VERSION_CONFIG_LOADED:-false}" == "true" ]]; then
+        return 0
+    fi
+
+    local config_file="${ADAPTER_SDK_VERSION_CONFIG_FILE:-$ROOT_DIR/Scripts/config/adapter_sdk_version.conf}"
+    if [[ ! -f "$config_file" ]]; then
+        log_error "Adapter SDK version config not found: $config_file"
+        return 1
+    fi
+
+    # shellcheck source=/dev/null
+    source "$config_file"
+
+    if [[ -z "${ADAPTER_SDK_VERSION_TOOL:-}" ]]; then
+        log_error "Adapter SDK version config missing ADAPTER_SDK_VERSION_TOOL"
+        return 1
+    fi
+    if [[ -z "${ADAPTER_SDK_VERSION_FUNCTION:-}" ]]; then
+        log_error "Adapter SDK version config missing ADAPTER_SDK_VERSION_FUNCTION"
+        return 1
+    fi
+    if [[ -z "${ADAPTER_SDK_VERSION_STRICT:-}" ]]; then
+        log_error "Adapter SDK version config missing ADAPTER_SDK_VERSION_STRICT"
+        return 1
+    fi
+    ADAPTER_SDK_VERSION_CONFIG_LOADED="true"
+    return 0
+}
+
+adapter_sdk_version_should_skip() {
+    local adapter="$1"
+
+    if ! load_adapter_sdk_version_config; then
+        return 1
+    fi
+
+    if [[ -z "${ADAPTER_SDK_VERSION_SKIP_ADAPTERS:-}" ]]; then
+        return 1
+    fi
+
+    if [[ " ${ADAPTER_SDK_VERSION_SKIP_ADAPTERS} " == *" ${adapter} "* ]]; then
+        return 0
+    fi
+
+    return 1
+}
+
+resolve_adapter_sdk_version_tool() {
+    if ! load_adapter_sdk_version_config; then
+        return 1
+    fi
+
+    local tool="${ADAPTER_SDK_VERSION_TOOL}"
+    if [[ "$tool" != /* ]]; then
+        tool="$ROOT_DIR/$tool"
+    fi
+
+    if [[ ! -x "$tool" ]]; then
+        log_error "Adapter SDK version tool not found or not executable: $tool"
+        return 1
+    fi
+
+    echo "$tool"
+    return 0
+}
+
+check_adapter_sdk_version() {
+    local adapter="$1"
+    local version="$2"
+
+    if adapter_sdk_version_should_skip "$adapter"; then
+        log_info "PUBLISH" "Skipping ${ADAPTER_SDK_VERSION_FUNCTION}() check for $adapter (config skip list)"
+        return 0
+    fi
+
+    local module_dir
+    module_dir=$(get_module_dir "$adapter")
+    local adapter_dir="${ROOT_DIR}/Sources/Adapters/${module_dir}/${module_dir}"
+
+    if [[ ! -d "$adapter_dir" ]]; then
+        log_error "PUBLISH" "Adapter directory not found: $adapter_dir"
+        return 1
+    fi
+
+    local tool
+    if ! tool=$(resolve_adapter_sdk_version_tool); then
+        return 1
+    fi
+
+    if "$tool" --path "$adapter_dir" --function "$ADAPTER_SDK_VERSION_FUNCTION" --version "$version" --check; then
+        return 0
+    fi
+    return $?
+}
+
 # Update adapter SDK version
 update_adapter_sdk_version() {
     local adapter="$1"
     local version="$2"
-    
-    # Skip adapters that read SDK version from external sources
-    if [[ "$adapter" == "MSPGoogleAdapter" || "$adapter" == "MSPFacebookAdapter" ]]; then
-        log_info "PUBLISH" "Skipping getSDKVersion() update for $adapter (reads from external sources)"
+
+    if adapter_sdk_version_should_skip "$adapter"; then
+        log_info "PUBLISH" "Skipping ${ADAPTER_SDK_VERSION_FUNCTION}() update for $adapter (config skip list)"
         return 0
     fi
-    
-    log_info "PUBLISH" "Updating getSDKVersion() in $adapter to version $version"
+
+    log_info "PUBLISH" "Updating ${ADAPTER_SDK_VERSION_FUNCTION}() in $adapter to version $version"
 
     # Map pod name to directory name (for adapters with renamed modules)
     # Example: MSPAmazonAdapter (pod) → AmazonAdapter (directory)
-    local module_dir=$(get_module_dir "$adapter")
+    local module_dir
+    module_dir=$(get_module_dir "$adapter")
     local adapter_dir="${ROOT_DIR}/Sources/Adapters/${module_dir}/${module_dir}"
 
     # Validate directory exists
@@ -404,41 +503,33 @@ update_adapter_sdk_version() {
         return 1
     fi
 
-    # Find and update Swift files containing getSDKVersion
-    local updated_count=0
-    local failed=false
-
-    while IFS= read -r file; do
-        # Verify file contains getSDKVersion function
-        if grep -q "func getSDKVersion()" "$file"; then
-            log_info "PUBLISH" "Updating $file"
-
-            # Update the return statement
-            # Pattern: return "any.version.string" → return "new.version"
-            if sed -i '' 's|return "[^"]*"|return "'"${version}"'"|g' "$file"; then
-                log_info "PUBLISH" "✓ Updated getSDKVersion in $(basename "$file")"
-                updated_count=$((updated_count + 1))
-            else
-                log_error "PUBLISH" "✗ Failed to update getSDKVersion in $file"
-                failed=true
-            fi
-        fi
-    done < <(find "$adapter_dir" -name "*.swift" -type f)
-
-    # Check results
-    if [[ "$failed" == "true" ]]; then
-        log_error "PUBLISH" "Failed to update some files in $adapter"
+    local tool
+    if ! tool=$(resolve_adapter_sdk_version_tool); then
         return 1
     fi
 
-    if [[ $updated_count -eq 0 ]]; then
-        log_warn "PUBLISH" "No getSDKVersion() function found in $adapter"
-        log_warn "PUBLISH" "This may be expected if adapter doesn't implement getSDKVersion()"
-        # Not a failure - some adapters may not have this function
+    if "$tool" --path "$adapter_dir" --function "$ADAPTER_SDK_VERSION_FUNCTION" --version "$version"; then
+        log_info "PUBLISH" "✓ Updated ${ADAPTER_SDK_VERSION_FUNCTION}() for $adapter"
         return 0
     fi
 
-    log_info "PUBLISH" "✓ Successfully updated getSDKVersion() in $updated_count file(s) for $adapter"
+    local rc=$?
+    case "$rc" in
+        2)
+            log_warn "PUBLISH" "No ${ADAPTER_SDK_VERSION_FUNCTION}() found in $adapter"
+            ;;
+        3)
+            log_warn "PUBLISH" "No string literal found inside ${ADAPTER_SDK_VERSION_FUNCTION}() for $adapter"
+            ;;
+        *)
+            log_error "PUBLISH" "Failed to update ${ADAPTER_SDK_VERSION_FUNCTION}() for $adapter (exit $rc)"
+            ;;
+    esac
+
+    if [[ "${ADAPTER_SDK_VERSION_STRICT}" == "true" ]]; then
+        return 1
+    fi
+
     return 0
 }
 
@@ -4463,16 +4554,17 @@ ensure_adapter_version_committed() {
         return 0
     fi
 
-    # Skip adapters that read SDK version from external sources
-    if [[ "$adapter" == "MSPGoogleAdapter" || "$adapter" == "MSPFacebookAdapter" ]]; then
-        log_info "[$adapter] Skipping version commit check (reads from external sources)"
+    # Skip adapters based on config
+    if adapter_sdk_version_should_skip "$adapter"; then
+        log_info "[$adapter] Skipping version commit check (config skip list)"
         return 0
     fi
 
     log_info "[$adapter] Checking version file state..."
 
     # Map pod name to directory name
-    local module_dir=$(get_module_dir "$adapter")
+    local module_dir
+    module_dir=$(get_module_dir "$adapter")
     local adapter_path="Sources/Adapters/${module_dir}/${module_dir}"
     local adapter_abs_path="$ROOT_DIR/$adapter_path"
 
@@ -4482,40 +4574,44 @@ ensure_adapter_version_committed() {
         return 1
     fi
 
-    # Read current version from Swift files
-    local current_version=""
-    local version_file=""
-    while IFS= read -r -d '' swift_file; do
-        if grep -q "func getSDKVersion()" "$swift_file"; then
-            current_version=$(grep 'return "' "$swift_file" | sed 's/.*return "\([^"]*\)".*/\1/')
-            version_file="$swift_file"
-            break
-        fi
-    done < <(find "$adapter_abs_path" -name "*.swift" -type f -print0 2>/dev/null)
-
-    # Check if version file was found
-    if [[ -z "$version_file" ]]; then
-        log_warn "[$adapter] No getSDKVersion() function found, skipping version commit check"
-        return 0
+    if ! load_adapter_sdk_version_config; then
+        log_error "[$adapter] Failed to load adapter SDK version config"
+        return 1
     fi
 
-    log_info "[$adapter] Current version: $current_version, Target version: $version"
-
-    # Case 1: Version mismatch - update and commit
-    if [[ "$current_version" != "$version" ]]; then
-        log_info "[$adapter] Version mismatch detected, updating to $version..."
-
-        if ! update_adapter_sdk_version "$adapter" "$version"; then
-            log_error "[$adapter] Failed to update SDK version"
+    local rc=0
+    check_adapter_sdk_version "$adapter" "$version" || rc=$?
+    case "$rc" in
+        0)
+            log_info "[$adapter] ${ADAPTER_SDK_VERSION_FUNCTION}() already matches $version"
+            ;;
+        1)
+            log_info "[$adapter] ${ADAPTER_SDK_VERSION_FUNCTION}() mismatch detected, updating to $version..."
+            if ! update_adapter_sdk_version "$adapter" "$version"; then
+                log_error "[$adapter] Failed to update SDK version"
+                return 1
+            fi
+            ;;
+        2)
+            log_warn "[$adapter] No ${ADAPTER_SDK_VERSION_FUNCTION}() found; skipping version commit check"
+            if [[ "${ADAPTER_SDK_VERSION_STRICT}" == "true" ]]; then
+                return 1
+            fi
+            return 0
+            ;;
+        3)
+            log_warn "[$adapter] No string literal in ${ADAPTER_SDK_VERSION_FUNCTION}(); skipping version commit check"
+            if [[ "${ADAPTER_SDK_VERSION_STRICT}" == "true" ]]; then
+                return 1
+            fi
+            return 0
+            ;;
+        *)
+            log_error "[$adapter] SDK version check failed (exit $rc)"
             return 1
-        fi
+            ;;
+    esac
 
-        log_info "[$adapter] Version updated, committing changes..."
-    else
-        log_info "[$adapter] Version already correct ($version)"
-    fi
-
-    # Case 2: Check if there are uncommitted changes
     if ! git diff --quiet -- "$adapter_abs_path" 2>/dev/null; then
         log_info "[$adapter] Uncommitted version changes detected, committing now..."
 
@@ -4540,7 +4636,7 @@ ensure_adapter_version_committed() {
             # Commit with detailed message
             if git commit -m "chore(release): update ${adapter} SDK version to ${version}
 
-- Update getSDKVersion() return value to ${version}
+- Update ${ADAPTER_SDK_VERSION_FUNCTION}() return value to ${version}
 - Committed during resume/idempotency check
 - Part of release ${version} preparation"; then
                 log_success "[$adapter] ✓ Committed version update ($swift_files_staged files)"
@@ -4558,6 +4654,45 @@ ensure_adapter_version_committed() {
     fi
 
     return 0
+}
+
+# ============================================================================
+# Helper: Commit Adapter Version Updates (Post-All)
+# ============================================================================
+# Runs after all adapters are released successfully to avoid git index contention.
+#
+# Args:
+#   $1: target version (e.g., 1.0.0-rc.24)
+#   $@: adapter names
+#
+# Returns:
+#   0: All commits handled (or no action needed)
+#   1: One or more adapters failed commit/update
+# ============================================================================
+commit_adapter_version_updates() {
+    local version="$1"
+    shift
+    local adapters=("$@")
+
+    if [[ "$DRY_RUN" == "true" ]]; then
+        return 0
+    fi
+
+    if [[ ${#adapters[@]} -eq 0 ]]; then
+        return 0
+    fi
+
+    log_section "Post-Release: Committing adapter SDK version updates"
+
+    local failed=0
+    for adapter in "${adapters[@]}"; do
+        if ! ensure_adapter_version_committed "$adapter" "$version"; then
+            log_warn "[$adapter] Version commit/update failed"
+            failed=1
+        fi
+    done
+
+    return $failed
 }
 
 # ============================================================================
@@ -4692,17 +4827,6 @@ release_single_adapter() {
                 fi
             fi
 
-            # ✨ NEW: Ensure version file is committed (handles interrupted commits)
-            # - Checks if version file matches target version
-            # - Commits if version is correct but uncommitted
-            # - Updates and commits if version is incorrect
-            if ! ensure_adapter_version_committed "$adapter" "$version"; then
-                log_error "Failed to ensure $adapter version is committed"
-                # Don't fail the release - pod is already published
-                # Just log warning and continue
-                log_warn "Continuing despite version commit issue (pod already published)"
-            fi
-
             log_success "$adapter $version already available and verified"
             echo "SUCCESS: $adapter already published" > "$result_file"
             return 0
@@ -4804,12 +4928,6 @@ release_single_adapter() {
 
     log_info "[DEBUG] update_adapter_podspec_dependencies succeeded for $adapter"
     
-    # Update SDK version in adapter code
-    if ! update_adapter_sdk_version "$adapter" "$version"; then
-        echo "ERROR: Failed to update SDK version for $adapter" > "$result_file"
-        return 1
-    fi
-    
     # Adapters use source-based distribution (git+tag), no GitHub release needed
     log_info "$adapter: Skipping GitHub release (source-based distribution via git+tag)"
     
@@ -4817,63 +4935,6 @@ release_single_adapter() {
     if ! publish_pod_to_cocoapods "$adapter" "$version"; then
         echo "ERROR: Failed to publish $adapter to CocoaPods" > "$result_file"
         return 1
-    fi
-    
-    # ════════════════════════════════════════════════════════════════════════════
-    # ✨ NEW: Commit version update immediately after successful publish
-    # ════════════════════════════════════════════════════════════════════════════
-    # Why: Ensure working directory is clean for resume
-    # When: Only in production mode (DRY_RUN=false)
-    # Safety: Check for uncommitted changes before commit (idempotent)
-    # ════════════════════════════════════════════════════════════════════════════
-    if [[ "$DRY_RUN" != "true" ]]; then
-        # Check if there are uncommitted changes for this adapter
-        # Map pod name to directory name (for adapters with renamed modules)
-        local module_dir=$(get_module_dir "$adapter")
-        local adapter_path="Sources/Adapters/${module_dir}/${module_dir}"
-
-        if ! git diff --quiet -- "$ROOT_DIR/$adapter_path" 2>/dev/null; then
-            log_info "Committing $adapter version update to $version..."
-
-            # Change to ROOT_DIR to ensure correct relative paths for git
-            pushd "$ROOT_DIR" > /dev/null || {
-                log_error "Failed to change to ROOT_DIR: $ROOT_DIR"
-                # Don't fail release - pod is already published
-                return 0
-            }
-
-            # Find and stage Swift files (avoid glob expansion issues)
-            local swift_files_staged=0
-            while IFS= read -r -d '' swift_file; do
-                if git add "$swift_file" 2>/dev/null; then
-                    ((swift_files_staged++))
-                    log_debug "Staged: $swift_file"
-                else
-                    log_warn "Failed to stage: $swift_file"
-                fi
-            done < <(find "$adapter_path" -name "*.swift" -type f -print0 2>/dev/null)
-
-            if [[ $swift_files_staged -gt 0 ]]; then
-                # Commit with detailed message
-                if git commit -m "chore(release): update ${adapter} SDK version to ${version}
-
-- Update getSDKVersion() return value to ${version}
-- Committed immediately after successful publish to CocoaPods
-- Part of release ${version} preparation"; then
-                    log_success "✓ Committed ${adapter} version update ($swift_files_staged files)"
-                else
-                    log_error "✗ Failed to commit ${adapter} version update"
-                    log_warn "Pod published successfully but version commit failed"
-                    log_warn "You may need to commit manually: cd $ROOT_DIR && git add ${adapter_path} && git commit"
-                fi
-            else
-                log_warn "No Swift files found or staged for ${adapter} in ${adapter_path}"
-            fi
-
-            popd > /dev/null || true
-        else
-            log_info "${adapter} version already committed or no changes"
-        fi
     fi
     
     # Note: Availability checking is done after ALL adapters are released
@@ -5484,6 +5545,12 @@ release_adapters() {
     fi
     
     log_success "All adapters released successfully ($success_count/$success_count)"
+
+    # Post-all: commit adapter SDK version updates once all adapters succeed
+    if ! commit_adapter_version_updates "$VERSION" "${adapters[@]}"; then
+        log_warn "One or more adapter version commits failed"
+        log_warn "Pods are published; you may need to commit version updates manually"
+    fi
     
     # Step 2.5: Check availability of dependencies for MSPCore
     if [[ "$DRY_RUN" != "true" ]]; then
