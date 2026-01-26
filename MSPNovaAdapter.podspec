@@ -29,7 +29,7 @@ Pod::Spec.new do |spec|
   spec.dependency 'MSPiOSCore'
   spec.dependency 'NovaCore'  # OMSDK is included via NovaCore
   spec.dependency 'MSPKingfisher'  # Internal wrapper; generate_podspec.sh converts to public Kingfisher for release
-  spec.dependency 'SnapKit'
+  spec.dependency 'MSPSnapKit'
 
   spec.static_framework = true
 

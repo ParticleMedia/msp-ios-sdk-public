@@ -532,7 +532,7 @@ fi
 if [[ -n "$NOVA_PROJECT" ]]; then
     if [[ ! -d "$ROOT_DIR/Pods" ]]; then
         color_error "❌ ERROR: Pods directory not found"
-        color_error "NovaCore requires Pods dependencies (Kingfisher, SnapKit, Shimmer, lottie-ios, MSPOMSDK)"
+        color_error "NovaCore requires Pods dependencies (Kingfisher, MSPSnapKit, Shimmer, lottie-ios, MSPOMSDK)"
         color_error "Please run 'pod install' first, or switch to Pods mode:"
         color_error "  ./Scripts/switch-target.sh pods-dev"
         exit 1

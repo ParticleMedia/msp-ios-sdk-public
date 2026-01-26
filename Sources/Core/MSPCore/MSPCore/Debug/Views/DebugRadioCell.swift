@@ -1,5 +1,5 @@
 import Combine
-@_implementationOnly import SnapKit
+@_implementationOnly import MSPSnapKit
 import UIKit
 
 private enum UIConfig {

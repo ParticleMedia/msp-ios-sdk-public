@@ -1,6 +1,6 @@
 import Foundation
 import MSPiOSCore
-@_implementationOnly import SnapKit
+@_implementationOnly import MSPSnapKit
 import UIKit
 
 class DebugNativeAdContainer: UIView, MSPNativeAdContainer {

@@ -28,7 +28,7 @@ ensure_repo_root
 # Note: Shimmer is now provided via XCFramework (Shimmer Plan B), not built from Pods source
 THIRDPARTY_TARGETS=(
     "SwiftProtobuf:SwiftProtobuf"
-    "SnapKit:SnapKit"
+    "MSPSnapKit:MSPSnapKit"
     "Lottie:Lottie"
     # "Shimmer:Shimmer" - Removed: Shimmer Plan B (using XCFramework)
     "Kingfisher:Kingfisher"

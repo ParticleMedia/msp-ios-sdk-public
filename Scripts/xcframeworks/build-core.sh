@@ -73,7 +73,7 @@ if [[ ! -d "$WORKSPACE_FILE" ]]; then
 fi
 
 log_info "Using workspace: $WORKSPACE_FILE"
-log_info "Core modules will resolve Pod dependencies (MSPPrebidAdapter, MSPKingfisher, SnapKit, etc.) via workspace"
+log_info "Core modules will resolve Pod dependencies (MSPPrebidAdapter, MSPKingfisher, MSPSnapKit, etc.) via workspace"
 
 # -----------------------------------------------------------
 # Step 1 — Pre-build Pod dependencies that Core modules need
@@ -88,12 +88,12 @@ log_step "Pre-building Pod dependencies for Core modules"
 # List of Pod schemes to pre-build for Core module compilation
 # These Pods provide Swift modules needed by Core modules:
 # - MSPKingfisher: provides Kingfisher module (used by NovaCore)
-# - SnapKit: used by NovaCore
+# - MSPSnapKit: used by NovaCore
 # - lottie-ios: used by NovaCore
 # - SwiftProtobuf: used by MSPCore
 # NOTE: MSPPrebidAdapter is NOT pre-built here because it depends on MSPiOSCore.
 #       It will be rebuilt AFTER MSPiOSCore.xcframework is created to ensure ABI compatibility.
-POD_SCHEMES_TO_PREBUILD=("MSPKingfisher" "SnapKit" "lottie-ios" "SwiftProtobuf")
+POD_SCHEMES_TO_PREBUILD=("MSPKingfisher" "MSPSnapKit" "lottie-ios" "SwiftProtobuf")
 
 for pod_scheme in "${POD_SCHEMES_TO_PREBUILD[@]}"; do
     log_info "Pre-building $pod_scheme for iOS..."
@@ -411,4 +411,3 @@ if [[ $CLEANED_COUNT -gt 0 ]]; then
 else
     log_info "  No project.yml files to clean up"
 fi
-

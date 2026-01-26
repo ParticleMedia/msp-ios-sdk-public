@@ -30,7 +30,7 @@ Pod::Spec.new do |spec|
   spec.dependency 'VungleAds'
   spec.dependency 'MSPSharedLibraries'
   spec.dependency 'MSPiOSCore'  # Required for binary distribution (swiftinterface imports MSPiOSCore)
-  spec.dependency 'SnapKit'
+  spec.dependency 'MSPSnapKit'
 
   spec.static_framework = true
 

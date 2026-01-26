@@ -75,11 +75,7 @@ let package = Package(
             from: "11.0.0"
         ),
         
-        // SnapKit - Required by NovaAdapter
-        .package(
-            url: "https://github.com/SnapKit/SnapKit.git",
-            from: "5.7.0"
-        ),
+        // MSPSnapKit is provided as a binary target (see ThirdParty section)
         
         // Kingfisher - Required by NovaAdapter
         .package(
@@ -179,7 +175,7 @@ let package = Package(
         //   - ThirdParty/Kingfisher/Kingfisher.xcframework ✅
         //   - ThirdParty/Lottie/Lottie.xcframework ✅
         //   - ThirdParty/Shimmer/Shimmer.xcframework ✅
-        //   - ThirdParty/SnapKit/SnapKit.xcframework ✅
+        //   - ThirdParty/MSPSnapKit/MSPSnapKit.xcframework ✅
         //   - ThirdParty/SwiftProtobuf/SwiftProtobuf.xcframework ✅
         //
         // Missing ThirdParty XCFrameworks (need to be extracted from Pods or use SPM):
@@ -204,6 +200,12 @@ let package = Package(
         .binaryTarget(
             name: "PrebidMobile",
             path: "ThirdParty/PrebidMobile/PrebidMobile.xcframework"
+        ),
+        
+        /// MSPSnapKit - MSP private SnapKit wrapper (prevents host collisions)
+        .binaryTarget(
+            name: "MSPSnapKit",
+            path: "ThirdParty/MSPSnapKit/MSPSnapKit.xcframework"
         ),
         
         /// FBAudienceNetwork - Meta Audience Network SDK
@@ -344,7 +346,7 @@ let package = Package(
         ),
         
         /// MSPNovaAdapter - Nova ad format adapter
-        /// Dependencies: MSPSharedLibraries, MSPiOSCore, NovaCoreLinker, Kingfisher, SnapKit
+        /// Dependencies: MSPSharedLibraries, MSPiOSCore, NovaCoreLinker, Kingfisher, MSPSnapKit
         /// Uses NovaCoreLinker to ensure Lottie is linked with NovaCore
         /// OMSDK is embedded in NovaCore binary
         .target(
@@ -354,7 +356,7 @@ let package = Package(
                 "MSPiOSCore",
                 "NovaCoreLinker",
                 .product(name: "Kingfisher", package: "Kingfisher"),
-                .product(name: "SnapKit", package: "SnapKit"),
+                "MSPSnapKit",
             ],
             path: "Sources/Adapters/NovaAdapter/NovaAdapter"
         ),
@@ -373,27 +375,27 @@ let package = Package(
         ),
         
         /// MSPMolocoAdapter - Moloco advertising adapter
-        /// Dependencies: MSPSharedLibraries, MSPiOSCore, MolocoSDKiOS, SnapKit
+        /// Dependencies: MSPSharedLibraries, MSPiOSCore, MolocoSDKiOS, MSPSnapKit
         .target(
             name: "MSPMolocoAdapter",
             dependencies: [
                 "MSPSharedLibraries",
                 "MSPiOSCore",
                 "MolocoSDKiOS",
-                .product(name: "SnapKit", package: "SnapKit"),
+                "MSPSnapKit",
             ],
             path: "Sources/Adapters/MolocoAdapter/MolocoAdapter"
         ),
         
         /// MSPLiftoffAdapter - Liftoff (Vungle) advertising adapter
-        /// Dependencies: MSPSharedLibraries, MSPiOSCore, VungleAds, SnapKit
+        /// Dependencies: MSPSharedLibraries, MSPiOSCore, VungleAds, MSPSnapKit
         .target(
             name: "MSPLiftoffAdapter",
             dependencies: [
                 "MSPSharedLibraries",
                 "MSPiOSCore",
                 "VungleAds",
-                .product(name: "SnapKit", package: "SnapKit"),
+                "MSPSnapKit",
             ],
             path: "Sources/Adapters/LiftoffAdapter/LiftoffAdapter"
         ),

@@ -56,7 +56,7 @@ targets:
           - $(SRCROOT)/../../../Build/XCFrameworks
           - $(SRCROOT)/../../Core/MSPSharedLibraries
           - $(SRCROOT)/../../../Sources/Core/ThirdParty/Kingfisher
-          - $(SRCROOT)/../../../Sources/Core/ThirdParty/SnapKit
+          - $(SRCROOT)/../../../Sources/Core/ThirdParty/MSPSnapKit
           - $(SRCROOT)/../../../Sources/Core/ThirdParty/Lottie
           - $(SRCROOT)/../../../Sources/Core/ThirdParty/Shimmer
           - $(SRCROOT)/../../../Sources/Core/ThirdParty/SwiftProtobuf

@@ -36,7 +36,7 @@ targets:
         embed: false
       - framework: ../../../Pods/VungleAds/static/VungleAdsSDK.xcframework
         embed: false
-      - framework: ../../../ThirdParty/SnapKit/SnapKit.xcframework
+      - framework: ../../../ThirdParty/MSPSnapKit/MSPSnapKit.xcframework
         embed: false
     settings:
       base:
@@ -48,7 +48,7 @@ targets:
           - $(inherited)
           - $(SRCROOT)/../../../Build/XCFrameworks
           - $(SRCROOT)/../../../Pods/VungleAds/static
-          - $(SRCROOT)/../../../ThirdParty/SnapKit
+          - $(SRCROOT)/../../../ThirdParty/MSPSnapKit
           - $(SRCROOT)/../../../ThirdParty/PrebidMobile
 
   LiftoffAdapterTests:

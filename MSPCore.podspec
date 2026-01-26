@@ -46,7 +46,7 @@ Pod::Spec.new do |spec|
   spec.dependency 'MSPSharedLibraries'
   spec.dependency 'MSPPrebidAdapter'
   spec.dependency 'SwiftProtobuf'   # Protocol Buffers for MES events
-  spec.dependency 'SnapKit'         # Auto Layout DSL
+  spec.dependency 'MSPSnapKit'         # Auto Layout DSL
 
   spec.static_framework = true
 

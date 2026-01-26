@@ -108,7 +108,7 @@ if [[ $CORE_MISSING -gt 0 ]]; then
     log_info "To build core modules: ./Scripts/xcframeworks/build-core.sh"
 fi
 
-# Third-party dependencies (Kingfisher, SnapKit, etc.) are resolved via CocoaPods
+# Third-party dependencies (Kingfisher, MSPSnapKit, etc.) are resolved via CocoaPods
 # No need to check for XCFrameworks - the workspace build will find them in Pods/
 log_info "Third-party dependencies will be resolved via CocoaPods workspace"
 

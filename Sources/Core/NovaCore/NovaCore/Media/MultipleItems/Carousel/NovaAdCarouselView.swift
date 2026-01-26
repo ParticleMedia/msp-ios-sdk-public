@@ -5,7 +5,7 @@
 //  Created by Shanyu Li on 2024/7/17.
 //
 
-@_implementationOnly import SnapKit
+@_implementationOnly import MSPSnapKit
 import UIKit
 
 // MARK: - NovaAdCarouselView

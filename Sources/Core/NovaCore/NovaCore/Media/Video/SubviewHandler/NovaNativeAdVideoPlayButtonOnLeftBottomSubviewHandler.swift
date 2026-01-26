@@ -6,7 +6,7 @@
 //
 
 import CoreMedia
-@_implementationOnly import SnapKit
+@_implementationOnly import MSPSnapKit
 import UIKit
 
 final class NovaNativeAdVideoPlayButtonOnLeftBottomSubviewHandler: NSObject {

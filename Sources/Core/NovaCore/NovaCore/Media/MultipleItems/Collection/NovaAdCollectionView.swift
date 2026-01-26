@@ -6,7 +6,7 @@
 //
 
 @_implementationOnly import Kingfisher
-@_implementationOnly import SnapKit
+@_implementationOnly import MSPSnapKit
 import UIKit
 
 // MARK: - NovaAdCollectionView

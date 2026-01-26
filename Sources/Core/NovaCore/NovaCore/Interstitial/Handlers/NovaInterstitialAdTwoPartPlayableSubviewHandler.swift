@@ -6,7 +6,7 @@
 //
 
 import Foundation
-@_implementationOnly import SnapKit
+@_implementationOnly import MSPSnapKit
 import UIKit
 import WebKit
 

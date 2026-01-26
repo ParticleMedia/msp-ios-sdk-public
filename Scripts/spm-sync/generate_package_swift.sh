@@ -9,7 +9,7 @@ set -euo pipefail
 # Generate a LOCAL development Package.swift that:
 # - Uses Build/XCFrameworks/* for MSP internal binaries
 # - Uses ThirdParty/<SDK>/<SDK>.xcframework for ad-network SDKs extracted from Pods
-# - Uses SPM for UI libs like SnapKit / Kingfisher
+# - Uses SPM for UI libs like Kingfisher (SnapKit is provided as MSPSnapKit binary)
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 PKG_FILE="$ROOT_DIR/Package.swift"
@@ -56,7 +56,6 @@ let package = Package(
         // Google Mobile Ads SDK - Required by MSPGoogleAdsTypes
         .package(url: "https://github.com/googleads/swift-package-manager-google-mobile-ads.git", from: "11.0.0"),
         // UI / utility libraries that are cleanly supported via SPM
-        .package(url: "https://github.com/SnapKit/SnapKit.git", from: "5.7.1"),
         .package(url: "https://github.com/onevcat/Kingfisher.git", from: "8.6.2"),
     ],
     targets: [
@@ -88,6 +87,10 @@ let package = Package(
         .binaryTarget(
             name: "PrebidMobile",
             path: "ThirdParty/PrebidMobile/PrebidMobile.xcframework"
+        ),
+        .binaryTarget(
+            name: "MSPSnapKit",
+            path: "ThirdParty/MSPSnapKit/MSPSnapKit.xcframework"
         ),
         .binaryTarget(
             name: "MolocoSDKiOS",
@@ -170,7 +173,7 @@ let package = Package(
                 "NovaCore",
                 "MSPOMSDK",
                 .product(name: "Kingfisher", package: "Kingfisher"),
-                .product(name: "SnapKit", package: "SnapKit")
+                "MSPSnapKit"
             ],
             path: "Sources/Adapters/NovaAdapter/NovaAdapter"
         ),
@@ -190,7 +193,7 @@ let package = Package(
                 "MSPSharedLibraries",
                 "MSPiOSCore",
                 "MolocoSDKiOS",
-                .product(name: "SnapKit", package: "SnapKit")
+                "MSPSnapKit"
             ],
             path: "Sources/Adapters/MolocoAdapter/MolocoAdapter"
         ),
@@ -200,7 +203,7 @@ let package = Package(
                 "MSPSharedLibraries",
                 "MSPiOSCore",
                 "VungleAds",
-                .product(name: "SnapKit", package: "SnapKit")
+                "MSPSnapKit"
             ],
             path: "Sources/Adapters/LiftoffAdapter/LiftoffAdapter"
         ),
@@ -253,4 +256,3 @@ let package = Package(
 SWIFT
 
 log "✅ Package.swift generated."
-

@@ -34,7 +34,7 @@ targets:
         embed: false
       - framework: ../../../ThirdParty/PrebidMobile/PrebidMobile.xcframework
         embed: false
-      - framework: ../../../ThirdParty/SnapKit/SnapKit.xcframework
+      - framework: ../../../ThirdParty/MSPSnapKit/MSPSnapKit.xcframework
         embed: false
       - framework: ../../../Pods/MolocoSDKiOS/MolocoSDK.xcframework
         embed: false
@@ -50,7 +50,7 @@ targets:
           - $(SRCROOT)/../../../Build/XCFrameworks
           - $(SRCROOT)/../../../Pods/MolocoSDKiOS
           - $(SRCROOT)/../../../ThirdParty/PrebidMobile
-          - $(SRCROOT)/../../../ThirdParty/SnapKit
+          - $(SRCROOT)/../../../ThirdParty/MSPSnapKit
           - $(SRCROOT)/../../../ThirdParty/Lottie
           - $(SRCROOT)/../../../ThirdParty/Shimmer
           - $(SRCROOT)/../../../ThirdParty/SwiftProtobuf

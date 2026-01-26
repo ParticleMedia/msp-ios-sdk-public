@@ -2388,7 +2388,7 @@ EOF
     # ========================================================================
     case "$pod" in
         MSPSharedLibraries)
-            # MSPSharedLibraries embeds MSPiOSCore and includes ThirdParty (PrebidMobile + SnapKit)
+            # MSPSharedLibraries embeds MSPiOSCore and includes ThirdParty (PrebidMobile + MSPSnapKit)
             log_info "Special handling for MSPSharedLibraries (embeds MSPiOSCore)"
 
             # Create directory structure
@@ -2438,20 +2438,20 @@ EOF
             fi
             ensure_modulemaps_in_xcframework "$temp_zip_dir/ThirdParty/PrebidMobile/$(basename "$prebid_path")"
 
-            # Copy ThirdParty SnapKit using ditto
-            local snapkit_path="$ROOT_DIR/ThirdParty/SnapKit/SnapKit.xcframework"
+            # Copy ThirdParty MSPSnapKit using ditto
+            local snapkit_path="$ROOT_DIR/ThirdParty/MSPSnapKit/MSPSnapKit.xcframework"
             if [[ ! -d "$snapkit_path" ]]; then
-                log_error "❌ SnapKit.xcframework not found: $snapkit_path"
+                log_error "❌ MSPSnapKit.xcframework not found: $snapkit_path"
                 rm -rf "$temp_zip_dir"
                 return 1
             fi
-            mkdir -p "$temp_zip_dir/ThirdParty/SnapKit"
-            if ! ditto "$snapkit_path" "$temp_zip_dir/ThirdParty/SnapKit/$(basename "$snapkit_path")"; then
-                log_error "❌ Failed to copy SnapKit.xcframework"
+            mkdir -p "$temp_zip_dir/ThirdParty/MSPSnapKit"
+            if ! ditto "$snapkit_path" "$temp_zip_dir/ThirdParty/MSPSnapKit/$(basename "$snapkit_path")"; then
+                log_error "❌ Failed to copy MSPSnapKit.xcframework"
                 rm -rf "$temp_zip_dir"
                 return 1
             fi
-            ensure_modulemaps_in_xcframework "$temp_zip_dir/ThirdParty/SnapKit/$(basename "$snapkit_path")"
+            ensure_modulemaps_in_xcframework "$temp_zip_dir/ThirdParty/MSPSnapKit/$(basename "$snapkit_path")"
 
             # Copy Sources (optional, for dev mode)
             if [[ -d "$ROOT_DIR/Sources" ]]; then
@@ -2536,7 +2536,7 @@ EOF
                 log_success "✅ Prepared MSPNovaAdapter structure (MSPNovaAdapter + NovaCore)"
 
             elif [[ "$pod" == "MSPMolocoAdapter" ]]; then
-                log_info "MSPMolocoAdapter: Binary adapter (SnapKit provided via MSPSharedLibraries)"
+                log_info "MSPMolocoAdapter: Binary adapter (MSPSnapKit provided via MSPSharedLibraries)"
 
                 local xcframework_path="$ROOT_DIR/Build/XCFrameworks/${pod}.xcframework"
                 if [[ ! -d "$xcframework_path" ]]; then
@@ -2708,7 +2708,7 @@ get_zip_inputs_for_pod() {
             echo "$ROOT_DIR/Build/XCFrameworks/MSPSharedLibraries.xcframework"
             echo "$ROOT_DIR/Build/XCFrameworks/MSPiOSCore.xcframework"
             echo "$ROOT_DIR/ThirdParty/PrebidMobile/PrebidMobile.xcframework"
-            echo "$ROOT_DIR/ThirdParty/SnapKit/SnapKit.xcframework"
+            echo "$ROOT_DIR/ThirdParty/MSPSnapKit/MSPSnapKit.xcframework"
             # Sources are included (optional) for dev mode; include them if present.
             if [[ -d "$ROOT_DIR/Sources" ]]; then
                 echo "$ROOT_DIR/Sources"
@@ -4362,7 +4362,7 @@ release_msp_googleadstypes() {
 # ============================================================================
 # Ensures NovaCore.xcframework is available in Binary/ directory for MSPNovaAdapter release
 # ALWAYS rebuilds NovaCore to ensure source code changes are included
-# Pre-builds Pod dependencies (Kingfisher, SnapKit, Lottie) before building NovaCore
+# Pre-builds Pod dependencies (Kingfisher, MSPSnapKit, Lottie) before building NovaCore
 # ============================================================================
 ensure_novacore_xcframework() {
     local novacore_binary_path="$ROOT_DIR/Binary/NovaCore.xcframework"
@@ -4389,7 +4389,7 @@ ensure_novacore_xcframework() {
 
     # -----------------------------------------------------------
     # Step 1: Pre-build Pod dependencies that NovaCore needs
-    # NovaCore imports: Kingfisher (via MSPKingfisher), SnapKit, Lottie
+    # NovaCore imports: Kingfisher (via MSPKingfisher), MSPSnapKit, Lottie
     # These must be built to shared DerivedData before NovaCore can compile
     # -----------------------------------------------------------
     log_info "Pre-building Pod dependencies for NovaCore..."
@@ -4405,7 +4405,7 @@ ensure_novacore_xcframework() {
     mkdir -p "$shared_derived_data"
 
     # Pod schemes that NovaCore depends on
-    local pod_schemes=("MSPKingfisher" "SnapKit" "lottie-ios")
+    local pod_schemes=("MSPKingfisher" "MSPSnapKit" "lottie-ios")
 
     for pod_scheme in "${pod_schemes[@]}"; do
         log_info "Pre-building $pod_scheme for iOS..."
@@ -4472,7 +4472,7 @@ ensure_novacore_xcframework() {
         log_error "❌ Failed to build NovaCore.xcframework"
         log_error "Please check build logs and fix any build errors"
         log_error "Common issues:"
-        log_error "  1. Missing dependencies (Kingfisher, SnapKit, Lottie, etc.)"
+        log_error "  1. Missing dependencies (Kingfisher, MSPSnapKit, Lottie, etc.)"
         log_error "  2. Code signing issues"
         log_error "  3. Xcode version incompatibility"
         return 1

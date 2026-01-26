@@ -37,7 +37,7 @@ targets:
         embed: false
       - framework: ../../Core/ThirdParty/Kingfisher/Kingfisher.xcframework
         embed: false
-      - framework: ../../Core/ThirdParty/SnapKit/SnapKit.xcframework
+      - framework: ../../Core/ThirdParty/MSPSnapKit/MSPSnapKit.xcframework
         embed: false
       - framework: ../../Core/ThirdParty/Lottie/Lottie.xcframework
         embed: false
@@ -55,7 +55,7 @@ targets:
           - $(inherited)
           - $(SRCROOT)/../../../Build/XCFrameworks
           - $(SRCROOT)/../../../Sources/Core/ThirdParty/Kingfisher
-          - $(SRCROOT)/../../../Sources/Core/ThirdParty/SnapKit
+          - $(SRCROOT)/../../../Sources/Core/ThirdParty/MSPSnapKit
           - $(SRCROOT)/../../../Sources/Core/ThirdParty/Lottie
           - $(SRCROOT)/../../../ThirdParty/Shimmer
           - $(SRCROOT)/../../../Sources/Core/ThirdParty/SwiftProtobuf
