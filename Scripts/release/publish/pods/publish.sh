@@ -5725,6 +5725,31 @@ Note: Version number updates were committed separately after each pod publish."
     log_success "✓ Committed remaining release artifacts"
 }
 
+# Ensure CocoaPods workspace exists before release flow (needed for NovaCore rebuild)
+ensure_release_workspace() {
+    local workspace="$ROOT_DIR/msp-ios-sdk.xcworkspace"
+
+    if [[ -L "$workspace" || -d "$workspace" ]]; then
+        log_info "Workspace already exists: $workspace"
+        return 0
+    fi
+
+    local switch_script="$ROOT_DIR/Scripts/switch-target.sh"
+    if [[ ! -x "$switch_script" ]]; then
+        log_error "switch-target.sh not found or not executable: $switch_script"
+        return 1
+    fi
+
+    log_step "Workspace missing; preparing via pods-release"
+    if "$switch_script" pods-release; then
+        log_success "Workspace prepared via pods-release"
+        return 0
+    fi
+
+    log_error "Failed to prepare workspace via pods-release"
+    return 1
+}
+
 # Main function
 main() {
     # Initialize state for standalone pods flow
@@ -5751,6 +5776,13 @@ main() {
     
     # Check release branch
     check_release_branch
+
+    # Ensure workspace exists early (required for NovaCore rebuild in adapters phase)
+    if ! ensure_release_workspace; then
+        log_error "[MSP][ORCH] Workspace preparation failed - aborting"
+        msp_state_mark_step_failed "pods_publish" "Workspace preparation failed" "1"
+        exit 1
+    fi
     
     # Record start time for duration calculation
     local start_time=$(date +%s)
