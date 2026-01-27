@@ -11,8 +11,8 @@ import PackageDescription
 // For remote distribution, replace local paths with URL + checksum pairs.
 //
 // Canonical Paths:
-// - Core XCFrameworks:     Build/XCFrameworks/<Module>.xcframework
-// - Third-party SDKs:      ThirdParty/<SDKName>/<SDKName>.xcframework
+// - Core XCFrameworks:     Build/ReleaseArtifacts/XCFrameworks/<Module>.xcframework
+// - Third-party SDKs:      Build/ReleaseArtifacts/XCFrameworks/<SDKName>.xcframework
 // - Adapter Sources:       Sources/Adapters/<AdapterName>/<AdapterName>/
 //
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -75,11 +75,7 @@ let package = Package(
             from: "11.0.0"
         ),
         
-        // SnapKit - Required by NovaAdapter
-        .package(
-            url: "https://github.com/SnapKit/SnapKit.git",
-            from: "5.7.0"
-        ),
+        // MSPSnapKit is provided as a binary target (see ThirdParty section)
         
         // Kingfisher - Required by NovaAdapter
         .package(
@@ -115,17 +111,17 @@ let package = Package(
         
         .binaryTarget(
             name: "MSPSharedLibraries",
-            path: "Build/XCFrameworks/MSPSharedLibraries.xcframework"
+            path: "Build/ReleaseArtifacts/XCFrameworks/MSPSharedLibraries.xcframework"
         ),
         
         .binaryTarget(
             name: "MSPiOSCore",
-            path: "Build/XCFrameworks/MSPiOSCore.xcframework"
+            path: "Build/ReleaseArtifacts/XCFrameworks/MSPiOSCore.xcframework"
         ),
         
         .binaryTarget(
             name: "NovaCore",
-            path: "Build/XCFrameworks/NovaCore.xcframework"
+            path: "Build/ReleaseArtifacts/XCFrameworks/NovaCore.xcframework"
         ),
         
         /// Shimmer - Facebook shimmering effect library (Objective-C)
@@ -151,7 +147,7 @@ let package = Package(
         
         .binaryTarget(
             name: "MSPCore",
-            path: "Build/XCFrameworks/MSPCore.xcframework"
+            path: "Build/ReleaseArtifacts/XCFrameworks/MSPCore.xcframework"
         ),
         
         /// MSPCoreLinker - ensures SwiftProtobuf is linked with MSPCore
@@ -171,27 +167,27 @@ let package = Package(
         // SECTION 2: THIRD-PARTY SDKs - Binary XCFrameworks
         // ═══════════════════════════════════════════════════════════════════════
         // These SDKs don't have native SPM support and must be distributed as XCFrameworks.
-        // Canonical path: ThirdParty/<SDKName>/<SDKName>.xcframework
+        // Canonical path: Build/ReleaseArtifacts/XCFrameworks/<SDKName>.xcframework
         //
         // IMPORTANT: Not all ThirdParty XCFrameworks exist by default.
-        // Available ThirdParty XCFrameworks (always present):
-        //   - ThirdParty/PrebidMobile/PrebidMobile.xcframework ✅
-        //   - ThirdParty/Kingfisher/Kingfisher.xcframework ✅
-        //   - ThirdParty/Lottie/Lottie.xcframework ✅
-        //   - ThirdParty/Shimmer/Shimmer.xcframework ✅
-        //   - ThirdParty/SnapKit/SnapKit.xcframework ✅
-        //   - ThirdParty/SwiftProtobuf/SwiftProtobuf.xcframework ✅
+        // Available XCFrameworks (always present after build):
+        //   - Build/ReleaseArtifacts/XCFrameworks/PrebidMobile.xcframework ✅
+        //   - Build/ReleaseArtifacts/XCFrameworks/Kingfisher.xcframework ✅
+        //   - Build/ReleaseArtifacts/XCFrameworks/Lottie.xcframework ✅
+        //   - Build/ReleaseArtifacts/XCFrameworks/Shimmer.xcframework ✅
+        //   - Build/ReleaseArtifacts/XCFrameworks/MSPSnapKit.xcframework ✅
+        //   - Build/ReleaseArtifacts/XCFrameworks/SwiftProtobuf.xcframework ✅
         //
-        // Missing ThirdParty XCFrameworks (need to be extracted from Pods or use SPM):
-        //   - ThirdParty/FBAudienceNetwork/FBAudienceNetwork.xcframework ❌
-        //   - ThirdParty/IronSourceSDK/IronSourceSDK.xcframework ❌
-        //   - ThirdParty/InMobiSDK/InMobiSDK.xcframework ❌
-        //   - ThirdParty/MintegralAdSDK/*.xcframework ❌
-        //   - ThirdParty/MobileFuseSDK/MobileFuseSDK.xcframework ❌
-        //   - ThirdParty/MolocoSDKiOS/MolocoSDK.xcframework ❌
-        //   - ThirdParty/OpenWrapSDK/OpenWrapSDK.xcframework ❌
-        //   - ThirdParty/AmazonPublisherServicesSDK/AmazonPublisherServicesSDK.xcframework ❌
-        //   - ThirdParty/VungleAds/VungleAdsSDK.xcframework ❌
+        // Missing XCFrameworks (need to be extracted from Pods or use SPM):
+        //   - Build/ReleaseArtifacts/XCFrameworks/FBAudienceNetwork.xcframework ❌
+        //   - Build/ReleaseArtifacts/XCFrameworks/IronSourceSDK.xcframework ❌
+        //   - Build/ReleaseArtifacts/XCFrameworks/InMobiSDK.xcframework ❌
+        //   - Build/ReleaseArtifacts/XCFrameworks/MintegralAdSDK*.xcframework ❌
+        //   - Build/ReleaseArtifacts/XCFrameworks/MobileFuseSDK.xcframework ❌
+        //   - Build/ReleaseArtifacts/XCFrameworks/MolocoSDK.xcframework ❌
+        //   - Build/ReleaseArtifacts/XCFrameworks/OpenWrapSDK.xcframework ❌
+        //   - Build/ReleaseArtifacts/XCFrameworks/AmazonPublisherServicesSDK.xcframework ❌
+        //   - Build/ReleaseArtifacts/XCFrameworks/VungleAdsSDK.xcframework ❌
         //
         // For missing XCFrameworks, either:
         //   1. Extract from CocoaPods Pods directory using sync_thirdparty_pods.sh
@@ -203,35 +199,41 @@ let package = Package(
         /// Note: Same binary used by CocoaPods for Pods ↔︎ SPM compatibility
         .binaryTarget(
             name: "PrebidMobile",
-            path: "ThirdParty/PrebidMobile/PrebidMobile.xcframework"
+            path: "Build/ReleaseArtifacts/XCFrameworks/PrebidMobile.xcframework"
+        ),
+        
+        /// MSPSnapKit - MSP private SnapKit wrapper (prevents host collisions)
+        .binaryTarget(
+            name: "MSPSnapKit",
+            path: "Build/ReleaseArtifacts/XCFrameworks/MSPSnapKit.xcframework"
         ),
         
         /// FBAudienceNetwork - Meta Audience Network SDK
         /// Used by: MSPFacebookAdapter
         .binaryTarget(
             name: "FBAudienceNetwork",
-            path: "ThirdParty/FBAudienceNetwork/FBAudienceNetwork.xcframework"
+            path: "Build/ReleaseArtifacts/XCFrameworks/FBAudienceNetwork.xcframework"
         ),
         
         /// IronSourceSDK - Unity LevelPlay / IronSource SDK
         /// Used by: UnityAdapter
         .binaryTarget(
             name: "IronSourceSDK",
-            path: "ThirdParty/IronSourceSDK/IronSourceSDK.xcframework"
+            path: "Build/ReleaseArtifacts/XCFrameworks/IronSourceSDK.xcframework"
         ),
         
         /// InMobiSDK - InMobi advertising SDK
         /// Used by: InmobiAdapter
         .binaryTarget(
             name: "InMobiSDK",
-            path: "ThirdParty/InMobiSDK/InMobiSDK.xcframework"
+            path: "Build/ReleaseArtifacts/XCFrameworks/InMobiSDK.xcframework"
         ),
         
         /// MobileFuseSDK - MobileFuse advertising SDK
         /// Used by: MobilefuseAdapter
         .binaryTarget(
             name: "MobileFuseSDK",
-            path: "ThirdParty/MobileFuseSDK/MobileFuseSDK.xcframework"
+            path: "Build/ReleaseArtifacts/XCFrameworks/MobileFuseSDK.xcframework"
         ),
         
         /// Mintegral SDK - Multi-module advertising SDK
@@ -239,51 +241,51 @@ let package = Package(
         /// Subspecs: MTGSDK (core), MTGSDKBidding, MTGSDKBanner, MTGSDKNewInterstitial
         .binaryTarget(
             name: "MTGSDK",
-            path: "ThirdParty/MintegralAdSDK/MTGSDK.xcframework"
+            path: "Build/ReleaseArtifacts/XCFrameworks/MTGSDK.xcframework"
         ),
         .binaryTarget(
             name: "MTGSDKBidding",
-            path: "ThirdParty/MintegralAdSDK/MTGSDKBidding.xcframework"
+            path: "Build/ReleaseArtifacts/XCFrameworks/MTGSDKBidding.xcframework"
         ),
         .binaryTarget(
             name: "MTGSDKBanner",
-            path: "ThirdParty/MintegralAdSDK/MTGSDKBanner.xcframework"
+            path: "Build/ReleaseArtifacts/XCFrameworks/MTGSDKBanner.xcframework"
         ),
         .binaryTarget(
             name: "MTGSDKNewInterstitial",
-            path: "ThirdParty/MintegralAdSDK/MTGSDKNewInterstitial.xcframework"
+            path: "Build/ReleaseArtifacts/XCFrameworks/MTGSDKNewInterstitial.xcframework"
         ),
         .binaryTarget(
             name: "MTGSDKInterstitialVideo",
-            path: "ThirdParty/MintegralAdSDK/MTGSDKInterstitialVideo.xcframework"
+            path: "Build/ReleaseArtifacts/XCFrameworks/MTGSDKInterstitialVideo.xcframework"
         ),
         
         /// OpenWrapSDK - PubMatic OpenWrap SDK
         /// Used by: PubmaticAdapter
         .binaryTarget(
             name: "OpenWrapSDK",
-            path: "ThirdParty/OpenWrapSDK/OpenWrapSDK.xcframework"
+            path: "Build/ReleaseArtifacts/XCFrameworks/OpenWrapSDK.xcframework"
         ),
         
         /// AmazonPublisherServicesSDK - Amazon APS SDK
         /// Used by: MSPAmazonAdapter
         .binaryTarget(
             name: "AmazonPublisherServicesSDK",
-            path: "ThirdParty/AmazonPublisherServicesSDK/AmazonPublisherServicesSDK.xcframework"
+            path: "Build/ReleaseArtifacts/XCFrameworks/AmazonPublisherServicesSDK.xcframework"
         ),
         
         /// MolocoSDKiOS - Moloco advertising SDK
         /// Used by: MSPMolocoAdapter
         .binaryTarget(
             name: "MolocoSDKiOS",
-            path: "ThirdParty/MolocoSDKiOS/MolocoSDK.xcframework"
+            path: "Build/ReleaseArtifacts/XCFrameworks/MolocoSDK.xcframework"
         ),
         
         /// VungleAds - Vungle / Liftoff advertising SDK
         /// Used by: MSPLiftoffAdapter
         .binaryTarget(
             name: "VungleAds",
-            path: "ThirdParty/VungleAds/VungleAdsSDK.xcframework"
+            path: "Build/ReleaseArtifacts/XCFrameworks/VungleAdsSDK.xcframework"
         ),
         
         // ═══════════════════════════════════════════════════════════════════════
@@ -344,7 +346,7 @@ let package = Package(
         ),
         
         /// MSPNovaAdapter - Nova ad format adapter
-        /// Dependencies: MSPSharedLibraries, MSPiOSCore, NovaCoreLinker, Kingfisher, SnapKit
+        /// Dependencies: MSPSharedLibraries, MSPiOSCore, NovaCoreLinker, Kingfisher, MSPSnapKit
         /// Uses NovaCoreLinker to ensure Lottie is linked with NovaCore
         /// OMSDK is embedded in NovaCore binary
         .target(
@@ -354,7 +356,7 @@ let package = Package(
                 "MSPiOSCore",
                 "NovaCoreLinker",
                 .product(name: "Kingfisher", package: "Kingfisher"),
-                .product(name: "SnapKit", package: "SnapKit"),
+                "MSPSnapKit",
             ],
             path: "Sources/Adapters/NovaAdapter/NovaAdapter"
         ),
@@ -373,27 +375,27 @@ let package = Package(
         ),
         
         /// MSPMolocoAdapter - Moloco advertising adapter
-        /// Dependencies: MSPSharedLibraries, MSPiOSCore, MolocoSDKiOS, SnapKit
+        /// Dependencies: MSPSharedLibraries, MSPiOSCore, MolocoSDKiOS, MSPSnapKit
         .target(
             name: "MSPMolocoAdapter",
             dependencies: [
                 "MSPSharedLibraries",
                 "MSPiOSCore",
                 "MolocoSDKiOS",
-                .product(name: "SnapKit", package: "SnapKit"),
+                "MSPSnapKit",
             ],
             path: "Sources/Adapters/MolocoAdapter/MolocoAdapter"
         ),
         
         /// MSPLiftoffAdapter - Liftoff (Vungle) advertising adapter
-        /// Dependencies: MSPSharedLibraries, MSPiOSCore, VungleAds, SnapKit
+        /// Dependencies: MSPSharedLibraries, MSPiOSCore, VungleAds, MSPSnapKit
         .target(
             name: "MSPLiftoffAdapter",
             dependencies: [
                 "MSPSharedLibraries",
                 "MSPiOSCore",
                 "VungleAds",
-                .product(name: "SnapKit", package: "SnapKit"),
+                "MSPSnapKit",
             ],
             path: "Sources/Adapters/LiftoffAdapter/LiftoffAdapter"
         ),

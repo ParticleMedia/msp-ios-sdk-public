@@ -77,7 +77,7 @@ pods:
   #   - MSPOMSDK              (depends on MSPSharedLibraries)
   #   - MSPCore               (depends on MSPSharedLibraries, SwiftProtobuf)
   #   - MSPiOSCore            (depends on MSPCore, MSPSharedLibraries)
-  #   - NovaCore              (depends on MSPiOSCore, MSPOMSDK, MSPKingfisher, lottie-ios, SnapKit, Shimmer)
+  #   - NovaCore              (depends on MSPiOSCore, MSPOMSDK, MSPKingfisher, lottie-ios, MSPSnapKit, Shimmer)
   #
   # Common Modules:
   #   - MSPGoogleAdsTypes    (abstraction layer for Google Mobile Ads SDK)
@@ -297,4 +297,3 @@ notifications:
 #
 # TOTAL: 16 modules (5 core + 1 common + 10 adapters)
 # ============================================================================
-

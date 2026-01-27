@@ -5,7 +5,7 @@
 //  Created by Felix Dai on 2022/9/20.
 //
 import CoreMedia
-@_implementationOnly import SnapKit
+@_implementationOnly import MSPSnapKit
 import UIKit
 
 // MARK: - NovaNativeAdVideoViewExtraConfig

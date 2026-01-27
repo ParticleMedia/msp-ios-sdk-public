@@ -76,25 +76,28 @@ MSPGoogleAdapter/*.xcframework/
 # Swift Package Manager artifacts (duplicate entries removed - see above)
 
 # Ignore all generated third-party XCFrameworks
-Build/XCFrameworks/*Kingfisher*
-Build/XCFrameworks/*SnapKit*
-Build/XCFrameworks/*Lottie*
-Build/XCFrameworks/*Shimmer*
-Build/XCFrameworks/*SwiftProtobuf*
-Build/XCFrameworks/*Amazon*
-Build/XCFrameworks/*DTBiOSSDK*
-Build/XCFrameworks/*InMobi*
-Build/XCFrameworks/*IronSource*
-Build/XCFrameworks/*MobileFuse*
-Build/XCFrameworks/*MTG*
-Build/XCFrameworks/*OpenWrap*
-Build/XCFrameworks/*FBAudienceNetwork*
+Build/ReleaseArtifacts/XCFrameworks/*Kingfisher*
+Build/ReleaseArtifacts/XCFrameworks/*SnapKit*
+Build/ReleaseArtifacts/XCFrameworks/*Lottie*
+Build/ReleaseArtifacts/XCFrameworks/*Shimmer*
+Build/ReleaseArtifacts/XCFrameworks/*SwiftProtobuf*
+Build/ReleaseArtifacts/XCFrameworks/*Amazon*
+Build/ReleaseArtifacts/XCFrameworks/*DTBiOSSDK*
+Build/ReleaseArtifacts/XCFrameworks/*InMobi*
+Build/ReleaseArtifacts/XCFrameworks/*IronSource*
+Build/ReleaseArtifacts/XCFrameworks/*MobileFuse*
+Build/ReleaseArtifacts/XCFrameworks/*MTG*
+Build/ReleaseArtifacts/XCFrameworks/*OpenWrap*
+Build/ReleaseArtifacts/XCFrameworks/*FBAudienceNetwork*
 
-# Ignore archives
-Build/Archives/*
+# Ignore release artifacts
+Build/ReleaseArtifacts/Archives/*
+Build/ReleaseArtifacts/Zips/*
+Build/ReleaseArtifacts/Binary/*
+Build/ReleaseArtifacts/ThirdParty/*
 
 # Ignore adapter XCFrameworks (no longer used - adapters are source-only)
-Build/XCFrameworks/*Adapter*
+Build/ReleaseArtifacts/XCFrameworks/*Adapter*
 
 # Ignore downloaded Kingfisher source files (downloaded via prepare_command during pod install)
 ThirdParty/MSPKingfisher/Sources/
@@ -103,11 +106,11 @@ ThirdParty/MSPKingfisher/Sources/
 **/*.xcframework
 
 # Internal SDK XCFrameworks (must be committed)
-!Build/XCFrameworks/MSPCore.xcframework
-!Build/XCFrameworks/MSPiOSCore.xcframework
-!Build/XCFrameworks/NovaCore.xcframework
-!Build/XCFrameworks/MSPSharedLibraries.xcframework
-!Build/XCFrameworks/MSPOMSDK.xcframework
+!Build/ReleaseArtifacts/XCFrameworks/MSPCore.xcframework
+!Build/ReleaseArtifacts/XCFrameworks/MSPiOSCore.xcframework
+!Build/ReleaseArtifacts/XCFrameworks/NovaCore.xcframework
+!Build/ReleaseArtifacts/XCFrameworks/MSPSharedLibraries.xcframework
+!Build/ReleaseArtifacts/XCFrameworks/MSPOMSDK.xcframework
 !Sources/Core/MSPOMSDK/OMSDK_Newsbreak1.xcframework
 
 # PrebidMobile.xcframework - CANONICAL PATH (synchronized between CocoaPods and SPM)

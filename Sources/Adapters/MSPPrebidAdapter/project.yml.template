@@ -29,11 +29,11 @@ targets:
           - "**/*.spec.swift"
           - "MSPPrebidAdapter.docc/**"
     dependencies:
-      - framework: ../../../Build/XCFrameworks/MSPiOSCore.xcframework
+      - framework: ../../../Build/ReleaseArtifacts/XCFrameworks/MSPiOSCore.xcframework
         embed: false
       - framework: ../../Core/MSPOMSDK/OMSDK_Newsbreak1.xcframework
         embed: false
-      - framework: ../../../Build/XCFrameworks/PrebidMobile.xcframework
+      - framework: ../../../Build/ReleaseArtifacts/XCFrameworks/PrebidMobile.xcframework
         embed: false
     settings:
       base:
@@ -43,7 +43,7 @@ targets:
         # Framework Search Paths - XCFrameworks only
         FRAMEWORK_SEARCH_PATHS:
           - $(inherited)
-          - $(SRCROOT)/../../../Build/XCFrameworks
+          - $(SRCROOT)/../../../Build/ReleaseArtifacts/XCFrameworks
           - $(SRCROOT)/../../Core/MSPOMSDK
 
 schemes:

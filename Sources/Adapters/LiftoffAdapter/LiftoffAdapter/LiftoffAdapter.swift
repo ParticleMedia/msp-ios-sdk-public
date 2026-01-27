@@ -8,7 +8,7 @@
 import Foundation
 import MSPiOSCore
 import PrebidMobile
-@_implementationOnly import SnapKit
+@_implementationOnly import MSPSnapKit
 import UIKit
 import VungleAdsSDK
 

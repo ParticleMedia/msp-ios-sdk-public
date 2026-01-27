@@ -430,7 +430,8 @@ update_specs_repo() {
     # ═══════════════════════════════════════════════════════════════════════════
 
     local cache_file="/tmp/msp-cocoapods-specs-repo-last-update"
-    local cache_lock="${cache_file}.lock"
+    local cache_lock_file="${cache_file}.lock"
+    local cache_lock_dir="${cache_file}.lockdir"
     local cache_ttl=300  # 5 minutes (300 seconds)
     local current_time
     current_time=$(date +%s)
@@ -439,12 +440,23 @@ update_specs_repo() {
 
     # Use file lock to prevent concurrent updates
     (
+        local lock_acquired=false
         # Check if flock is available (Linux has it, macOS may need coreutils)
         if ! command -v flock >/dev/null 2>&1; then
-            log_debug "flock not available (macOS), skipping specs cache locking"
-            log_debug "To enable file locking on macOS, install flock via: brew install coreutils"
-            # Continue without locking (less safe but won't block execution)
-            # Note: CocoaPods has its own locking mechanism via .git/index.lock
+            log_debug "flock not available (macOS), using mkdir lock for specs update"
+            # Best-effort lock using mkdir (portable)
+            local lock_wait=0
+            while ! mkdir "$cache_lock_dir" 2>/dev/null; do
+                sleep 1
+                lock_wait=$((lock_wait + 1))
+                if [[ $lock_wait -ge 60 ]]; then
+                    log_warn "Timed out waiting for specs update lock; proceeding without lock"
+                    break
+                fi
+            done
+            if [[ -d "$cache_lock_dir" ]]; then
+                lock_acquired=true
+            fi
         else
             # Use flock for file locking
             # Try to acquire lock (non-blocking)
@@ -454,6 +466,10 @@ update_specs_repo() {
                 flock 9
                 log_info "Lock acquired, checking cache..."
             fi
+        fi
+
+        if [[ "$lock_acquired" == "true" ]]; then
+            trap 'rmdir "'"$cache_lock_dir"'" 2>/dev/null || true' EXIT
         fi
 
         # Check cache (now protected by lock)
@@ -507,16 +523,23 @@ update_specs_repo() {
         log_error "Failed to update specs repository after $max_attempts attempts"
         exit 1
 
-    ) 9>"$cache_lock"
+    ) 9>"$cache_lock_file"
 
     local result=$?
 
     # Clean up lock file if it exists and is old (older than 1 hour)
-    if [[ -f "$cache_lock" ]]; then
-        local lock_age=$((current_time - $(stat -f %m "$cache_lock" 2>/dev/null || stat -c %Y "$cache_lock" 2>/dev/null || echo $current_time)))
+    if [[ -e "$cache_lock_file" ]]; then
+        local lock_age=$((current_time - $(stat -f %m "$cache_lock_file" 2>/dev/null || stat -c %Y "$cache_lock_file" 2>/dev/null || echo $current_time)))
         if [[ $lock_age -gt 3600 ]]; then
             log_warn "Removing stale lock file (age: ${lock_age}s)"
-            rm -f "$cache_lock"
+            rm -f "$cache_lock_file"
+        fi
+    fi
+    if [[ -d "$cache_lock_dir" ]]; then
+        local lock_dir_age=$((current_time - $(stat -f %m "$cache_lock_dir" 2>/dev/null || stat -c %Y "$cache_lock_dir" 2>/dev/null || echo $current_time)))
+        if [[ $lock_dir_age -gt 3600 ]]; then
+            log_warn "Removing stale lock dir (age: ${lock_dir_age}s)"
+            rmdir "$cache_lock_dir" 2>/dev/null || true
         fi
     fi
 
@@ -989,4 +1012,3 @@ export LC_ALL="en_US.UTF-8"
 export RUBYOPT="-EUTF-8:UTF-8"
 log_info "[UTF8] UTF-8 environment applied for pod install"
 # ---------------------------------------------------------------------
-

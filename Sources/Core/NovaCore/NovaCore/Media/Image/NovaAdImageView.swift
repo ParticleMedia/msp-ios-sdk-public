@@ -7,7 +7,7 @@
 
 import CoreImage
 import CoreImage.CIFilterBuiltins
-@_implementationOnly import SnapKit
+@_implementationOnly import MSPSnapKit
 import UIKit
 
 class NovaAdImageView: UIView {

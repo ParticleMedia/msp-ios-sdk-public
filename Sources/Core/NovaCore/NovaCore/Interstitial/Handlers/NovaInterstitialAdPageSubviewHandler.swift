@@ -5,7 +5,7 @@
 //  Created by Huanzhi Zhang on 10/29/25.
 //
 import Foundation
-@_implementationOnly import SnapKit
+@_implementationOnly import MSPSnapKit
 import UIKit
 import WebKit
 

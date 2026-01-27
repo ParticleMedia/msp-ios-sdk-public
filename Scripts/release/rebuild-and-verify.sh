@@ -28,9 +28,9 @@ echo
 # --------------------------------------------------------
 # Step 1 — Clean previous builds
 # --------------------------------------------------------
-echo "[1/4] Cleaning Build/XCFrameworks ..."
-rm -rf Build/XCFrameworks
-mkdir -p Build/XCFrameworks
+echo "[1/4] Cleaning Build/ReleaseArtifacts/XCFrameworks ..."
+rm -rf Build/ReleaseArtifacts/XCFrameworks
+mkdir -p Build/ReleaseArtifacts/XCFrameworks
 echo "Done."
 echo
 

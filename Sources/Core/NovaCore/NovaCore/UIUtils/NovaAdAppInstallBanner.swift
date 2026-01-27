@@ -8,7 +8,7 @@
 import Foundation
 import UIKit
 @_implementationOnly import Kingfisher
-@_implementationOnly import SnapKit
+@_implementationOnly import MSPSnapKit
 
 // MARK: - NovaAdAppInstallBanner
 

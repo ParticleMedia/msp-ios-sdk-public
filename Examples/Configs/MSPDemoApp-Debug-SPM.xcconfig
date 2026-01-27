@@ -2,10 +2,10 @@
 // Debug configuration for SPM build mode
 
 // Framework search paths for XCFrameworks
-FRAMEWORK_SEARCH_PATHS = $(inherited) $(SRCROOT)/../../Build/XCFrameworks $(SRCROOT)/../../ThirdParty/PrebidMobile
+FRAMEWORK_SEARCH_PATHS = $(inherited) $(SRCROOT)/../../Build/ReleaseArtifacts/XCFrameworks $(SRCROOT)/../../ThirdParty/PrebidMobile
 
 // Swift include paths
-SWIFT_INCLUDE_PATHS = $(inherited) $(SRCROOT)/../../Build/XCFrameworks
+SWIFT_INCLUDE_PATHS = $(inherited) $(SRCROOT)/../../Build/ReleaseArtifacts/XCFrameworks
 
 // Library search paths
 LIBRARY_SEARCH_PATHS = $(inherited)

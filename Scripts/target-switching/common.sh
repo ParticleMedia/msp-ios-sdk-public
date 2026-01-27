@@ -96,13 +96,13 @@ fi
 # XCFramework directories
 # Fix XCFRAMEWORK_DIR readonly variable conflict
 if [[ -z "${XCFRAMEWORK_DIR:-}" ]]; then
-    readonly XCFRAMEWORK_DIR="$ROOT_DIR/Build/XCFrameworks"
+    readonly XCFRAMEWORK_DIR="$ROOT_DIR/Build/ReleaseArtifacts/XCFrameworks"
 elif ! readonly -p 2>/dev/null | grep -q "^declare -r XCFRAMEWORK_DIR="; then
     readonly XCFRAMEWORK_DIR
 fi
 # Fix BINARY_DIR readonly variable conflict
 if [[ -z "${BINARY_DIR:-}" ]]; then
-    readonly BINARY_DIR="$ROOT_DIR/Binary"
+    readonly BINARY_DIR="$ROOT_DIR/Build/ReleaseArtifacts/Binary"
 elif ! readonly -p 2>/dev/null | grep -q "^declare -r BINARY_DIR="; then
     readonly BINARY_DIR
 fi
@@ -420,16 +420,18 @@ safe_remove_directory() {
     # Protect critical XCFrameworks - NEVER delete these directories or their contents
     # Updated for new SDK architecture (Round 26)
     local protected_paths=(
-        # Canonical ThirdParty location
+        # Canonical ReleaseArtifacts location
+        "Build/ReleaseArtifacts/XCFrameworks/PrebidMobile.xcframework"
+        # Vendor location (source of truth for PrebidMobile)
         "ThirdParty/PrebidMobile/PrebidMobile.xcframework"
         # Embedded OMSDK
         "Sources/Core/MSPOMSDK/OMSDK_Newsbreak1.xcframework"
         # Core XCFrameworks in Build/
-        "Build/XCFrameworks/MSPSharedLibraries.xcframework"
-        "Build/XCFrameworks/MSPiOSCore.xcframework"
-        "Build/XCFrameworks/NovaCore.xcframework"
-        "Build/XCFrameworks/MSPCore.xcframework"
-        "Build/XCFrameworks/MSPOMSDK.xcframework"
+        "Build/ReleaseArtifacts/XCFrameworks/MSPSharedLibraries.xcframework"
+        "Build/ReleaseArtifacts/XCFrameworks/MSPiOSCore.xcframework"
+        "Build/ReleaseArtifacts/XCFrameworks/NovaCore.xcframework"
+        "Build/ReleaseArtifacts/XCFrameworks/MSPCore.xcframework"
+        "Build/ReleaseArtifacts/XCFrameworks/MSPOMSDK.xcframework"
     )
     
     # Check if the directory path matches any protected XCFramework
@@ -442,8 +444,8 @@ safe_remove_directory() {
     done
     
     # Also protect parent directories that contain protected XCFrameworks
-    if [[ "$dir_path" == "$ROOT_DIR/ThirdParty/PrebidMobile" ]] || \
-       [[ "$dir_path" == "$ROOT_DIR/Build/XCFrameworks" ]] || \
+    if [[ "$dir_path" == "$ROOT_DIR/Build/ReleaseArtifacts/XCFrameworks" ]] || \
+       [[ "$dir_path" == "$ROOT_DIR/ThirdParty/PrebidMobile" ]] || \
        [[ "$dir_path" == "$ROOT_DIR/Sources/Core/MSPOMSDK" ]]; then
         log_error "Refusing to delete directory containing protected XCFrameworks: $dir_path"
         return 1
@@ -503,16 +505,16 @@ safe_remove_directory() {
 
 # Core XCFrameworks required for both SPM and Pods modes
 CORE_XCFRAMEWORKS=(
-    "Build/XCFrameworks/MSPSharedLibraries.xcframework"
-    "Build/XCFrameworks/MSPiOSCore.xcframework"
-    "Build/XCFrameworks/NovaCore.xcframework"
-    "Build/XCFrameworks/MSPCore.xcframework"
-    "Build/XCFrameworks/MSPOMSDK.xcframework"
+    "Build/ReleaseArtifacts/XCFrameworks/MSPSharedLibraries.xcframework"
+    "Build/ReleaseArtifacts/XCFrameworks/MSPiOSCore.xcframework"
+    "Build/ReleaseArtifacts/XCFrameworks/NovaCore.xcframework"
+    "Build/ReleaseArtifacts/XCFrameworks/MSPCore.xcframework"
+    "Build/ReleaseArtifacts/XCFrameworks/MSPOMSDK.xcframework"
 )
 
 # Third-party XCFrameworks (canonical paths)
 THIRDPARTY_XCFRAMEWORKS=(
-    "ThirdParty/PrebidMobile/PrebidMobile.xcframework"
+    "Build/ReleaseArtifacts/XCFrameworks/PrebidMobile.xcframework"
 )
 
 # Embedded XCFrameworks
@@ -743,4 +745,3 @@ validate_environment() {
     
     return $errors
 }
-

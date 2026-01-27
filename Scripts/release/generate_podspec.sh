@@ -49,6 +49,20 @@ is_core_module() {
 MSP_VERSIONED_DEPS=("MSPiOSCore" "MSPSharedLibraries" "MSPPrebidAdapter" "PrebidAdapter" "MSPGoogleAdsTypes")
 MSP_VERSIONED_DEPS_PATTERN="$(IFS='|'; echo "${MSP_VERSIONED_DEPS[*]}")"
 
+# Pods that should consume MSPSnapKit from MSPSharedLibraries in release mode.
+# This avoids duplicate MSPSnapKit.xcframeworks across adapters.
+SNAPKIT_FROM_SHARED_LIBS_PODS=("MSPNovaAdapter" "MSPMolocoAdapter" "MSPLiftoffAdapter" "MSPCore")
+
+should_strip_mspsnapkit_dependency() {
+    local module="$1"
+    for pod in "${SNAPKIT_FROM_SHARED_LIBS_PODS[@]}"; do
+        if [[ "$module" == "$pod" ]]; then
+            return 0
+        fi
+    done
+    return 1
+}
+
 # ============================================================================
 # Binary Distribution Pods (HTTP zip source)
 # ============================================================================
@@ -369,7 +383,7 @@ if is_binary_distribution "$POD_NAME"; then
             ;;
         MSPPrebidAdapter|MSPGoogleAdapter|MSPFacebookAdapter|MSPAmazonAdapter|MSPMolocoAdapter|MSPLiftoffAdapter)
             # XCFramework name matches pod name (unified naming)
-            XCFRAMEWORK_PATH="$ROOT_DIR/Build/XCFrameworks/${POD_NAME}.xcframework"
+            XCFRAMEWORK_PATH="$ROOT_DIR/Build/ReleaseArtifacts/XCFrameworks/${POD_NAME}.xcframework"
             if [[ -d "$XCFRAMEWORK_PATH" ]]; then
                 log_info "Binary distribution pod: $POD_NAME (XCFramework found: ${POD_NAME}.xcframework)"
             else
@@ -380,7 +394,7 @@ if is_binary_distribution "$POD_NAME"; then
             ;;
         *)
             # XCFramework name matches pod name (unified naming)
-            XCFRAMEWORK_PATH="$ROOT_DIR/Build/XCFrameworks/${POD_NAME}.xcframework"
+            XCFRAMEWORK_PATH="$ROOT_DIR/Build/ReleaseArtifacts/XCFrameworks/${POD_NAME}.xcframework"
             if [[ ! -d "$XCFRAMEWORK_PATH" ]]; then
                 log_error "XCFramework not found: $XCFRAMEWORK_PATH"
                 log_error "Run pre-release setup (Step 0) first"
@@ -496,7 +510,7 @@ else
     # No pod_target_xcconfig found, create minimal one for binary distribution pods
     if is_binary_distribution "$POD_NAME"; then
         # Note: FRAMEWORK_SEARCH_PATHS removed - vendored_frameworks handles paths automatically
-        # The old path $(PODS_ROOT)/../Build/XCFrameworks was for dev mode and doesn't exist in lint env
+        # The old path $(PODS_ROOT)/../Build/ReleaseArtifacts/XCFrameworks was for dev mode and doesn't exist in lint env
         cat >> "$OUTPUT_PODSPEC" <<'EOF_XCCONFIG'
   spec.pod_target_xcconfig = {
     'SWIFT_INCLUDE_PATHS' => '$(inherited) $(PODS_CONFIGURATION_BUILD_DIR)',
@@ -576,7 +590,7 @@ extract_swiftinterface_imports() {
 }
 
 get_prebidmobile_version() {
-    local plist_path="$ROOT_DIR/ThirdParty/PrebidMobile/PrebidMobile.xcframework/ios-arm64/PrebidMobile.framework/Info.plist"
+    local plist_path="$ROOT_DIR/Build/ReleaseArtifacts/XCFrameworks/PrebidMobile.xcframework/ios-arm64/PrebidMobile.framework/Info.plist"
     local version=""
 
     if [[ -f "$plist_path" ]]; then
@@ -591,21 +605,26 @@ get_prebidmobile_version() {
 
 # Extract dependencies from source podspec
 if [[ "$POD_NAME" == "MSPNovaAdapter" ]]; then
-    # Filter out NovaCore (vendored), SnapKit (bundled), and MSPKingfisher (internal wrapper, convert to public Kingfisher)
-    grep "spec\\.dependency" "$SOURCE_PODSPEC" | grep -vE "(NovaCore|MSPKingfisher|Lottie|SnapKit)" >> "$OUTPUT_PODSPEC" 2>/dev/null || true
+    # Filter out NovaCore (vendored), MSPSnapKit (provided via MSPSharedLibraries), and MSPKingfisher (internal wrapper, convert to public Kingfisher)
+    grep "spec\\.dependency" "$SOURCE_PODSPEC" | grep -vE "(NovaCore|MSPKingfisher|Lottie|MSPSnapKit)" >> "$OUTPUT_PODSPEC" 2>/dev/null || true
     # Add public Kingfisher dependency (replaces internal MSPKingfisher wrapper)
     if ! grep -q "spec\\.dependency.*'Kingfisher'" "$OUTPUT_PODSPEC" 2>/dev/null; then
         echo "  spec.dependency 'Kingfisher', '~> 7.0'" >> "$OUTPUT_PODSPEC"
     fi
 elif [[ "$POD_NAME" == "MSPMolocoAdapter" ]]; then
-    # Keep MolocoSDK and MSP deps, but drop SnapKit (bundled in release zip)
-    grep "spec\\.dependency" "$SOURCE_PODSPEC" | grep -vE "SnapKit" >> "$OUTPUT_PODSPEC" 2>/dev/null || true
+    # Keep MolocoSDK and MSP deps; MSPSnapKit is provided via MSPSharedLibraries in release
+    grep "spec\\.dependency" "$SOURCE_PODSPEC" | grep -vE "MSPSnapKit" >> "$OUTPUT_PODSPEC" 2>/dev/null || true
 elif is_binary_distribution "$POD_NAME"; then
     # Binary distribution pods: keep all dependencies
     grep "spec\\.dependency" "$SOURCE_PODSPEC" >> "$OUTPUT_PODSPEC" 2>/dev/null || true
 else
     # Source distribution pods: keep all dependencies (including MSPiOSCore, which is now a separate pod)
     grep "spec\\.dependency" "$SOURCE_PODSPEC" >> "$OUTPUT_PODSPEC" 2>/dev/null || true
+fi
+
+# If MSPSnapKit is supplied by MSPSharedLibraries, remove direct dependency to avoid duplicates.
+if should_strip_mspsnapkit_dependency "$POD_NAME"; then
+    sed -i '' "/spec\\.dependency.*['\"]MSPSnapKit['\"]/d" "$OUTPUT_PODSPEC"
 fi
 
 # ═══════════════════════════════════════════════════════════════════════════
@@ -616,13 +635,13 @@ if is_binary_distribution "$POD_NAME"; then
     xcframework_path=""
     case "$POD_NAME" in
         MSPNovaAdapter)
-            xcframework_path="$ROOT_DIR/Binary/MSPNovaAdapter.xcframework"
+            xcframework_path="$ROOT_DIR/Build/ReleaseArtifacts/Binary/MSPNovaAdapter.xcframework"
             ;;
         MSPPrebidAdapter|MSPGoogleAdapter|MSPFacebookAdapter|MSPAmazonAdapter|MSPMolocoAdapter|MSPLiftoffAdapter)
-            xcframework_path="$ROOT_DIR/Build/XCFrameworks/${POD_NAME}.xcframework"
+            xcframework_path="$ROOT_DIR/Build/ReleaseArtifacts/XCFrameworks/${POD_NAME}.xcframework"
             ;;
         *)
-            xcframework_path="$ROOT_DIR/Build/XCFrameworks/${POD_NAME}.xcframework"
+            xcframework_path="$ROOT_DIR/Build/ReleaseArtifacts/XCFrameworks/${POD_NAME}.xcframework"
             ;;
     esac
     
@@ -657,13 +676,12 @@ if is_binary_distribution "$POD_NAME"; then
                                 log_warn "Please add MSPSharedLibraries as the dependency instead of a direct PrebidMobile pod"
                             fi
                             ;;
-                        SnapKit)
-                            if [[ "$POD_NAME" == "MSPNovaAdapter" || "$POD_NAME" == "MSPMolocoAdapter" ]]; then
-                                log_info "SnapKit import satisfied by bundled XCFramework for $POD_NAME; skipping pod dependency"
+                        MSPSnapKit)
+                            if should_strip_mspsnapkit_dependency "$POD_NAME"; then
+                                log_info "MSPSnapKit import satisfied by MSPSharedLibraries for $POD_NAME; skipping pod dependency"
                             else
                                 log_warn "Missing dependency detected in swiftinterface: $import_module"
-                                log_info "Adding SnapKit dependency (required by swiftinterface)"
-                                echo "  spec.dependency 'SnapKit'" >> "$OUTPUT_PODSPEC"
+                                log_warn "MSPSnapKit should be vendored via MSPSharedLibraries; skipping pod dependency"
                             fi
                             ;;
                         Kingfisher)
@@ -788,7 +806,7 @@ if is_binary_distribution "$POD_NAME"; then
         log_error ""
         log_error "CRITICAL: Binary distribution pods MUST have SHA256 checksum for CocoaPods validation"
         log_error "Please ensure:"
-        log_error "  1. XCFramework is built: Build/XCFrameworks/${POD_NAME}.xcframework"
+        log_error "  1. XCFramework is built: Build/ReleaseArtifacts/XCFrameworks/${POD_NAME}.xcframework"
         log_error "  2. Zip is created and uploaded to GitHub Release"
         log_error "  3. Or run: Scripts/release/package_and_upload.sh $POD_NAME $VERSION"
         exit 1
@@ -837,7 +855,7 @@ EOF_RELEASE
         log_error ""
         log_error "CRITICAL: Binary distribution pods MUST have SHA256 checksum for CocoaPods validation"
         log_error "Please ensure:"
-        log_error "  1. XCFramework is built: Build/XCFrameworks/${POD_NAME}.xcframework"
+        log_error "  1. XCFramework is built: Build/ReleaseArtifacts/XCFrameworks/${POD_NAME}.xcframework"
         log_error "  2. Zip is created and uploaded to GitHub Release"
         log_error "  3. Or run: Scripts/release/package_and_upload.sh $POD_NAME $VERSION"
         exit 1
@@ -869,11 +887,12 @@ fi
 if is_binary_distribution "$POD_NAME"; then
     # Binary distribution pods: binary XCFrameworks
     if [[ "$POD_NAME" == "MSPSharedLibraries" ]]; then
-        # MSPSharedLibraries: includes PrebidMobile only (MSPiOSCore is now a separate dependency)
+        # MSPSharedLibraries: includes PrebidMobile and MSPSnapKit (MSPiOSCore is now a separate dependency)
         cat >> "$OUTPUT_PODSPEC" <<'EOF_VENDOR_MULTI'
   spec.vendored_frameworks = [
     "Binary/MSPSharedLibraries.xcframework",
-    "ThirdParty/PrebidMobile/PrebidMobile.xcframework"
+    "ThirdParty/PrebidMobile/PrebidMobile.xcframework",
+    "ThirdParty/MSPSnapKit/MSPSnapKit.xcframework"
   ]
 EOF_VENDOR_MULTI
     elif [[ "$POD_NAME" == "MSPNovaAdapter" ]]; then
@@ -888,14 +907,6 @@ EOF_VENDOR_MULTI
   ]
   spec.frameworks = 'AVFoundation', 'AVFAudio', 'AudioToolbox', 'CoreAudio'
 EOF_VENDOR_NOVA
-    elif [[ "$POD_NAME" == "MSPMolocoAdapter" ]]; then
-        # MolocoAdapter: bundle SnapKit binary to match build-time dependency
-        cat >> "$OUTPUT_PODSPEC" <<'EOF_VENDOR_MOLOCO'
-  spec.vendored_frameworks = [
-    "Binary/MSPMolocoAdapter.xcframework",
-    "ThirdParty/SnapKit/SnapKit.xcframework"
-  ]
-EOF_VENDOR_MOLOCO
     else
         # XCFramework name matches pod name (unified naming)
         cat >> "$OUTPUT_PODSPEC" <<EOF_VENDOR_SINGLE
