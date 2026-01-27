@@ -32,7 +32,7 @@ targets:
           - "**/*.spec.swift"
     dependencies:
       # MSPSharedLibraries depends on MSPiOSCore (re-exported in Shim.swift)
-      - framework: ../../../Build/XCFrameworks/MSPiOSCore.xcframework
+      - framework: ../../../Build/ReleaseArtifacts/XCFrameworks/MSPiOSCore.xcframework
         embed: false
       # Stage B: MSPOMSDK removed - OMSDK now embedded in NovaCore
       # MSPSharedLibraries no longer depends on MSPOMSDK.xcframework
@@ -44,7 +44,7 @@ targets:
         # Framework Search Paths - XCFrameworks only
         FRAMEWORK_SEARCH_PATHS:
           - $(inherited)
-          - $(SRCROOT)/../../../Build/XCFrameworks
+          - $(SRCROOT)/../../../Build/ReleaseArtifacts/XCFrameworks
 
 schemes:
   MSPSharedLibraries-XCFramework:

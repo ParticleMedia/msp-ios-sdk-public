@@ -28,7 +28,7 @@ ensure_repo_root
 # Note: Shimmer is now provided via XCFramework (Shimmer Plan B), not built from Pods source
 THIRDPARTY_TARGETS=(
     "SwiftProtobuf:SwiftProtobuf"
-    "SnapKit:SnapKit"
+    "MSPSnapKit:MSPSnapKit"
     "Lottie:Lottie"
     # "Shimmer:Shimmer" - Removed: Shimmer Plan B (using XCFramework)
     "Kingfisher:Kingfisher"
@@ -37,8 +37,11 @@ THIRDPARTY_TARGETS=(
 # Project and output directories
 THIRDPARTY_PROJECT_DIR="$ROOT_DIR/Examples/ThirdPartyFrameworks"
 THIRDPARTY_PROJECT="$THIRDPARTY_PROJECT_DIR/ThirdPartyFrameworks.xcodeproj"
-ARCHIVES_DIR="$ROOT_DIR/Build/Archives/ThirdParty"
-THIRDPARTY_OUTPUT_DIR="$ROOT_DIR/ThirdParty"
+ARCHIVES_DIR="$ROOT_DIR/Build/ReleaseArtifacts/Archives/ThirdParty"
+# Canonical output: ReleaseArtifacts/XCFrameworks
+THIRDPARTY_OUTPUT_DIR="$ROOT_DIR/Build/ReleaseArtifacts/XCFrameworks"
+# Vendor SDKs source directory
+THIRDPARTY_LINK_DIR="$ROOT_DIR/ThirdParty"
 DERIVED_DATA="$ROOT_DIR/.generated/DerivedData/build-thirdparty"
 
 SUCCESS_COUNT=0
@@ -96,7 +99,7 @@ build_single_xcframework() {
     
     local ios_archive="$ARCHIVES_DIR/${output_name}-iOS.xcarchive"
     local sim_archive="$ARCHIVES_DIR/${output_name}-Simulator.xcarchive"
-    local output_dir="$THIRDPARTY_OUTPUT_DIR/${output_name}"
+    local output_dir="$THIRDPARTY_OUTPUT_DIR"
     local xcframework_output="$output_dir/${output_name}.xcframework"
     
     log_section "Building $output_name"
@@ -199,28 +202,6 @@ for target_spec in "${THIRDPARTY_TARGETS[@]}"; do
 done
 
 # ============================================================================
-# Create symlinks for adapter builds
-# ============================================================================
-
-log_section "Creating symlinks for adapter builds"
-
-mkdir -p "$ROOT_DIR/Sources/Core/ThirdParty"
-
-for target_spec in "${THIRDPARTY_TARGETS[@]}"; do
-    IFS=':' read -r scheme_name output_name <<< "$target_spec"
-    xcf_path="$THIRDPARTY_OUTPUT_DIR/$output_name/$output_name.xcframework"
-    link_dir="$ROOT_DIR/Sources/Core/ThirdParty/$output_name"
-    link_path="$link_dir/$output_name.xcframework"
-    
-    if [[ -d "$xcf_path" ]]; then
-        mkdir -p "$link_dir"
-        rm -f "$link_path"
-        ln -sf "$xcf_path" "$link_path"
-        log_info "  Linked: Sources/Core/ThirdParty/$output_name/$output_name.xcframework"
-    fi
-done
-
-# ============================================================================
 # Summary Report
 # ============================================================================
 
@@ -233,10 +214,10 @@ printf "├───────────────────────
 
 for target_spec in "${THIRDPARTY_TARGETS[@]}"; do
     IFS=':' read -r scheme_name output_name <<< "$target_spec"
-    xcf_path="$THIRDPARTY_OUTPUT_DIR/$output_name/$output_name.xcframework"
+    xcf_path="$THIRDPARTY_OUTPUT_DIR/$output_name.xcframework"
     
     if [[ -d "$xcf_path" ]]; then
-        printf "│ %-25s │ %-10s │ ThirdParty/%-15s │\n" "$output_name" "✅ OK" "$output_name/"
+        printf "│ %-25s │ %-10s │ ReleaseArtifacts/%-10s │\n" "$output_name" "✅ OK" "XCFrameworks"
     else
         printf "│ %-25s │ %-10s │ %-27s │\n" "$output_name" "❌ MISSING" "-"
     fi
@@ -255,39 +236,25 @@ log_success "All third-party XCFrameworks built successfully!"
 log_info "Output directory: $THIRDPARTY_OUTPUT_DIR"
 
 # ============================================================================
-# Copy third-party XCFrameworks to Build/XCFrameworks for core module builds
+# Ensure vendor-provided XCFrameworks are available in ReleaseArtifacts
 # ============================================================================
 
-log_section "Copying third-party XCFrameworks to Build/XCFrameworks"
+log_section "Copying vendor XCFrameworks into ReleaseArtifacts/XCFrameworks"
 
-XCFRAMEWORKS_BUILD_DIR="$ROOT_DIR/Build/XCFrameworks"
-mkdir -p "$XCFRAMEWORKS_BUILD_DIR"
-
-for target_spec in "${THIRDPARTY_TARGETS[@]}"; do
-    IFS=':' read -r scheme_name output_name <<< "$target_spec"
-    source_xcf="$THIRDPARTY_OUTPUT_DIR/$output_name/$output_name.xcframework"
-    target_xcf="$XCFRAMEWORKS_BUILD_DIR/$output_name.xcframework"
-    
+VENDOR_XCFS=("PrebidMobile" "Shimmer")
+for name in "${VENDOR_XCFS[@]}"; do
+    source_xcf="$THIRDPARTY_LINK_DIR/$name/$name.xcframework"
+    target_xcf="$THIRDPARTY_OUTPUT_DIR/$name.xcframework"
     if [[ -d "$source_xcf" ]]; then
-        # Remove existing symlink or directory
         rm -rf "$target_xcf"
-        # Create symlink (more efficient than copy)
-        ln -sf "$(realpath "$source_xcf" 2>/dev/null || echo "$source_xcf")" "$target_xcf"
-        log_info "  Linked: Build/XCFrameworks/$output_name.xcframework -> ThirdParty/$output_name/$output_name.xcframework"
+        if ditto "$source_xcf" "$target_xcf"; then
+            log_info "  Copied: Build/ReleaseArtifacts/XCFrameworks/$name.xcframework <- ThirdParty/$name/$name.xcframework"
+        else
+            log_warn "  Failed to copy: $name.xcframework from ThirdParty/$name/"
+        fi
     else
-        log_warn "  Skipping: $output_name.xcframework not found in ThirdParty/"
+        log_warn "  Skipping: $name.xcframework not found in ThirdParty/$name/"
     fi
 done
 
-# Link PrebidMobile.xcframework (exists in ThirdParty, not built by this script)
-PREBID_SOURCE="$THIRDPARTY_OUTPUT_DIR/PrebidMobile/PrebidMobile.xcframework"
-PREBID_TARGET="$XCFRAMEWORKS_BUILD_DIR/PrebidMobile.xcframework"
-if [[ -d "$PREBID_SOURCE" ]]; then
-    rm -rf "$PREBID_TARGET"
-    ln -sf "$(realpath "$PREBID_SOURCE" 2>/dev/null || echo "$PREBID_SOURCE")" "$PREBID_TARGET"
-    log_info "  Linked: Build/XCFrameworks/PrebidMobile.xcframework -> ThirdParty/PrebidMobile/PrebidMobile.xcframework"
-else
-    log_warn "  Skipping: PrebidMobile.xcframework not found in ThirdParty/PrebidMobile/"
-fi
-
-log_success "Third-party XCFrameworks linked to Build/XCFrameworks"
+log_success "Third-party XCFrameworks ready in ReleaseArtifacts/XCFrameworks"

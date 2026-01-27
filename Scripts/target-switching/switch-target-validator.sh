@@ -124,11 +124,11 @@ check_missing_artifacts() {
     
     # Check Core XCFrameworks
     local core_xcframeworks=(
-        "Build/XCFrameworks/MSPSharedLibraries.xcframework"
-        "Build/XCFrameworks/MSPiOSCore.xcframework"
-        "Build/XCFrameworks/NovaCore.xcframework"
-        "Build/XCFrameworks/MSPCore.xcframework"
-        "Build/XCFrameworks/MSPOMSDK.xcframework"
+        "Build/ReleaseArtifacts/XCFrameworks/MSPSharedLibraries.xcframework"
+        "Build/ReleaseArtifacts/XCFrameworks/MSPiOSCore.xcframework"
+        "Build/ReleaseArtifacts/XCFrameworks/NovaCore.xcframework"
+        "Build/ReleaseArtifacts/XCFrameworks/MSPCore.xcframework"
+        "Build/ReleaseArtifacts/XCFrameworks/MSPOMSDK.xcframework"
     )
     
     for xcf in "${core_xcframeworks[@]}"; do
@@ -148,7 +148,7 @@ check_missing_artifacts() {
     
     # Check ThirdParty XCFrameworks
     local thirdparty_xcframeworks=(
-        "ThirdParty/PrebidMobile/PrebidMobile.xcframework"
+        "Build/ReleaseArtifacts/XCFrameworks/PrebidMobile.xcframework"
     )
     
     for xcf in "${thirdparty_xcframeworks[@]}"; do
@@ -213,12 +213,12 @@ check_wrapper_validity() {
     
     # Core XCFrameworks to validate
     local core_xcframeworks=(
-        "Build/XCFrameworks/MSPSharedLibraries.xcframework"
-        "Build/XCFrameworks/MSPiOSCore.xcframework"
-        "Build/XCFrameworks/NovaCore.xcframework"
-        "Build/XCFrameworks/MSPCore.xcframework"
-        "Build/XCFrameworks/MSPOMSDK.xcframework"
-        "ThirdParty/PrebidMobile/PrebidMobile.xcframework"
+        "Build/ReleaseArtifacts/XCFrameworks/MSPSharedLibraries.xcframework"
+        "Build/ReleaseArtifacts/XCFrameworks/MSPiOSCore.xcframework"
+        "Build/ReleaseArtifacts/XCFrameworks/NovaCore.xcframework"
+        "Build/ReleaseArtifacts/XCFrameworks/MSPCore.xcframework"
+        "Build/ReleaseArtifacts/XCFrameworks/MSPOMSDK.xcframework"
+        "Build/ReleaseArtifacts/XCFrameworks/PrebidMobile.xcframework"
     )
     
     for xcf_rel in "${core_xcframeworks[@]}"; do

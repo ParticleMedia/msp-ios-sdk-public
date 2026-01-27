@@ -5,7 +5,7 @@ import MSPiOSCore
 import MobilefuseAdapter
 import NovaCore
 import PrebidMobile
-import SnapKit
+import MSPSnapKit
 import UIKit
 
 public enum AdType: String {

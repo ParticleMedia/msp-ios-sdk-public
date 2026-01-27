@@ -166,7 +166,7 @@ MSPCORE_NAME="MSPCore"
 MSPCORE_PODSPEC="MSPCore.podspec"
 MSPCORE_SCHEME="MSPCore"
 MSPCORE_SOURCE_DIR="MSPCore/MSPCore"
-MSPCORE_DEPENDENCIES=("MSPSharedLibraries" "PrebidAdapter" "SwiftProtobuf" "SnapKit")
+MSPCORE_DEPENDENCIES=("MSPSharedLibraries" "PrebidAdapter" "SwiftProtobuf" "MSPSnapKit")
 
 # Validation functions
 validate_environment() {
@@ -386,7 +386,7 @@ NOTES:
     - MSPSharedLibraries (MSPiOSCore.xcframework)
     - PrebidAdapter
     - SwiftProtobuf
-    - SnapKit
+    - MSPSnapKit
 
 EOF
 }

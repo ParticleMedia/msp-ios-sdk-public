@@ -136,14 +136,14 @@ fi
 # ═══════════════════════════════════════════════════════════
 echo ""
 echo "Checking XCFramework structure..."
-if [ -d "Build/XCFrameworks" ]; then
-    xcframework_count=$(find Build/XCFrameworks -name "*.xcframework" -type d 2>/dev/null | wc -l | xargs)
+if [ -d "Build/ReleaseArtifacts/XCFrameworks" ]; then
+    xcframework_count=$(find Build/ReleaseArtifacts/XCFrameworks -name "*.xcframework" -type d 2>/dev/null | wc -l | xargs)
 
     if [ "$xcframework_count" -gt 0 ]; then
         echo "  ✅ Found $xcframework_count XCFrameworks"
 
         # Verify each XCFramework has Info.plist
-        find Build/XCFrameworks -name "*.xcframework" -type d | while read -r xcf; do
+        find Build/ReleaseArtifacts/XCFrameworks -name "*.xcframework" -type d | while read -r xcf; do
             if [ -f "$xcf/Info.plist" ]; then
                 echo "    ✅ $(basename "$xcf") has valid Info.plist"
             else
@@ -155,7 +155,7 @@ if [ -d "Build/XCFrameworks" ]; then
         echo "  ℹ️  No XCFrameworks found (will be built during CI)"
     fi
 else
-    echo "  ℹ️  Build/XCFrameworks directory does not exist (will be created during build)"
+    echo "  ℹ️  Build/ReleaseArtifacts/XCFrameworks directory does not exist (will be created during build)"
 fi
 
 # ═══════════════════════════════════════════════════════════

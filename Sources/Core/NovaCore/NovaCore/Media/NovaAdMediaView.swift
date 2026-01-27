@@ -6,7 +6,7 @@
 //
 
 internal import Lottie
-@_implementationOnly import SnapKit
+@_implementationOnly import MSPSnapKit
 import UIKit
 
 // MARK: - NovaAdMediaView

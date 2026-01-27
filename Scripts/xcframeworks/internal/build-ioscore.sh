@@ -53,7 +53,7 @@ show_usage() {
     color_info "What this script does:"
     echo "  1. Builds MSPiOSCore.xcframework for iOS device and simulator"
     echo "  2. Creates universal binary with arm64 and x86_64 architectures"
-    echo "  3. Deploys to Build/XCFrameworks/MSPiOSCore.xcframework"
+    echo "  3. Deploys to Build/ReleaseArtifacts/XCFrameworks/MSPiOSCore.xcframework"
     echo ""
     color_warning "Note: Code signing requires valid iOS Development certificate."
     color_warning "Use SKIP_CODE_SIGN=1 if you don't have signing certificates."
@@ -164,13 +164,13 @@ main() {
         "MSPCore" \
         "Sources/Core/MSPCore/MSPCore" \
         "Build/Temp/MSPiOSCore/xcframework" \
-        "Build/XCFrameworks" \
+        "Build/ReleaseArtifacts/XCFrameworks" \
         "MSPiOSCore.xcframework"; then
         
         echo "✅ MSPiOSCore XCFramework built successfully"
         
         # Validate the built XCFramework
-        if validate_xcframework "Build/XCFrameworks/MSPiOSCore.xcframework" "MSPiOSCore"; then
+        if validate_xcframework "Build/ReleaseArtifacts/XCFrameworks/MSPiOSCore.xcframework" "MSPiOSCore"; then
             echo "✅ MSPiOSCore XCFramework validation passed"
         else
             echo "❌ ERROR: MSPiOSCore XCFramework validation failed"
@@ -180,11 +180,11 @@ main() {
         # Show build summary
         echo "🔧 Build Summary"
         color_success "🎉 MSPiOSCore.xcframework build completed successfully!"
-        color_info "📁 Output location: Build/XCFrameworks/MSPiOSCore.xcframework"
+        color_info "📁 Output location: Build/ReleaseArtifacts/XCFrameworks/MSPiOSCore.xcframework"
         
         # Show framework size
         if command -v du &> /dev/null; then
-            local framework_size=$(du -sh "Build/XCFrameworks/MSPiOSCore.xcframework" 2>/dev/null | cut -f1)
+            local framework_size=$(du -sh "Build/ReleaseArtifacts/XCFrameworks/MSPiOSCore.xcframework" 2>/dev/null | cut -f1)
             color_info "📦 Framework size: $framework_size"
         fi
         

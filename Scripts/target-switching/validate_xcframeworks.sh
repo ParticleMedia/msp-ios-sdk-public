@@ -191,7 +191,7 @@ main() {
     local total_errors=0
     
     # Validate Core XCFrameworks
-    log_section "Core XCFrameworks (Build/XCFrameworks/)"
+    log_section "Core XCFrameworks (Build/ReleaseArtifacts/XCFrameworks/)"
     for xcf in "${CORE_XCFRAMEWORKS[@]}"; do
         if ! validate_xcframework "$xcf"; then
             ((total_errors++))
@@ -256,7 +256,7 @@ main() {
         log_info ""
         log_info "To fix missing XCFrameworks:"
         log_info "  1. Run: ./Scripts/xcframeworks/build-core.sh"
-        log_info "  2. Ensure ThirdParty/PrebidMobile/PrebidMobile.xcframework exists"
+        log_info "  2. Ensure Build/ReleaseArtifacts/XCFrameworks/PrebidMobile.xcframework exists"
         log_info ""
         log_info "NOTE: Adapter XCFrameworks are NOT required (adapters are source-only)."
         exit 1

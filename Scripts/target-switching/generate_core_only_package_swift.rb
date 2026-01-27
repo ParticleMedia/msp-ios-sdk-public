@@ -91,7 +91,7 @@ content.gsub!(/(        \.target\(\n            name: "MSPAmazonAdapter",\n     
 # MSPPrebidAdapter: Keep PrebidMobile (it exists and is needed)
 # No change needed - PrebidMobile is already included
 
-# MSPNovaAdapter: Keep as-is (depends on NovaCoreLinker, MSPOMSDK, Kingfisher, SnapKit - all valid)
+# MSPNovaAdapter: Keep as-is (depends on NovaCoreLinker, MSPOMSDK, Kingfisher, MSPSnapKit - all valid)
 # No change needed
 
 # Remove Shimmer target (removed from NovaCore)
@@ -105,4 +105,3 @@ content.gsub!(/"Shimmer",\n                /, '')
 
 # Write filtered content
 File.write(output_path, content)
-

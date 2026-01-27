@@ -358,7 +358,7 @@ ${RELEASE_NOTES}
 ## State & Artifacts
 
 - **State file:** ${STATE_FILE}
-- **XCFramework dir:** Build/XCFrameworks (if available)
+- **XCFramework dir:** Build/ReleaseArtifacts/XCFrameworks (if available)
 EOF
 
 echo "Release report generated: $OUTPUT_FILE"

@@ -67,8 +67,8 @@ run_xcframework_verification() {
     # Multi-path fallback (same as worktree)
     local xcframeworks_dir="${XCFRAMEWORKS_DIR:-}"
     if [[ -z "$xcframeworks_dir" ]]; then
-        if [[ -d "$ROOT_DIR/Build/XCFrameworks" ]]; then
-            xcframeworks_dir="$ROOT_DIR/Build/XCFrameworks"
+        if [[ -d "$ROOT_DIR/Build/ReleaseArtifacts/XCFrameworks" ]]; then
+            xcframeworks_dir="$ROOT_DIR/Build/ReleaseArtifacts/XCFrameworks"
         elif [[ -d "$ROOT_DIR/build/xcframeworks" ]]; then
             xcframeworks_dir="$ROOT_DIR/build/xcframeworks"
         else

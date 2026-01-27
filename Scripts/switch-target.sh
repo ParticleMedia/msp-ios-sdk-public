@@ -217,15 +217,15 @@ validate_xcframeworks_for_release() {
     log_step "Validating XCFrameworks for release mode"
     
     local errors=0
-    local xcf_dir="$ROOT_DIR/Build/XCFrameworks"
-    local bin_dir="$ROOT_DIR/Binary"
+    local xcf_dir="$ROOT_DIR/Build/ReleaseArtifacts/XCFrameworks"
+    local bin_dir="$ROOT_DIR/Build/ReleaseArtifacts/Binary"
     
-    # Check if Binary/ exists and use it instead
+    # Check if ReleaseArtifacts/Binary exists and use it instead
     if [[ -d "$bin_dir" ]] && [[ "$(ls -A "$bin_dir" 2>/dev/null)" ]]; then
         xcf_dir="$bin_dir"
-        log_info "Using Binary/ directory for XCFrameworks"
+        log_info "Using ReleaseArtifacts/Binary for XCFrameworks"
     else
-        log_info "Using Build/XCFrameworks/ for XCFrameworks"
+        log_info "Using Build/ReleaseArtifacts/XCFrameworks for XCFrameworks"
     fi
     
     # Required core XCFrameworks

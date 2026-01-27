@@ -6,7 +6,7 @@
 //
 
 import Foundation
-@_implementationOnly import SnapKit
+@_implementationOnly import MSPSnapKit
 import UIKit
 
 class NovaAdLandingWebCoordinatorViewController: UIViewController {
@@ -41,14 +41,14 @@ class NovaAdLandingWebCoordinatorViewController: UIViewController {
     private var nestedLandingWebViewController: NovaAdLandingWebContentViewController? = nil
 
     // video animation
-    private var videoViewLeadingConstraint: SnapKit.Constraint?
-    private var videoViewTopConstraint: SnapKit.Constraint?
-    private var videoViewWidthConstraint: SnapKit.Constraint?
-    private var videoViewHeightConstraint: SnapKit.Constraint?
+    private var videoViewLeadingConstraint: MSPSnapKit.Constraint?
+    private var videoViewTopConstraint: MSPSnapKit.Constraint?
+    private var videoViewWidthConstraint: MSPSnapKit.Constraint?
+    private var videoViewHeightConstraint: MSPSnapKit.Constraint?
 
     // container vc animation
-    private var containerVCHeight: SnapKit.Constraint?
-    private var containerVCBottom: SnapKit.Constraint?
+    private var containerVCHeight: MSPSnapKit.Constraint?
+    private var containerVCBottom: MSPSnapKit.Constraint?
     private var containerCurrentHeight: Double = 0
     private var containerGesture: UIPanGestureRecognizer?
     private var translationYWhenWebFirstlyScrollToTop: CGFloat?

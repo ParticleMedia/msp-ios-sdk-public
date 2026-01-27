@@ -45,10 +45,10 @@ Pod::Spec.new do |spec|
     'SWIFT_EMIT_MODULE_INTERFACE' => 'NO',
     'SWIFT_INSTALL_MODULE_FOR_DEPLOYMENT' => 'NO',
     'DEFINES_MODULE' => 'YES',
-    'FRAMEWORK_SEARCH_PATHS' => '$(inherited) $(PODS_ROOT)/../Build/XCFrameworks $(PODS_ROOT)/../ThirdParty/PrebidMobile $(PODS_ROOT)/../ThirdParty/PrebidMobile/PrebidMobile.xcframework/$(PLATFORM_NAME)'
+    'FRAMEWORK_SEARCH_PATHS' => '$(inherited) $(PODS_ROOT)/../Build/ReleaseArtifacts/XCFrameworks $(PODS_ROOT)/../ThirdParty/PrebidMobile $(PODS_ROOT)/../ThirdParty/PrebidMobile/PrebidMobile.xcframework/$(PLATFORM_NAME)'
   }
 
   spec.user_target_xcconfig = {
-    'FRAMEWORK_SEARCH_PATHS' => '$(inherited) $(PODS_ROOT)/../Build/XCFrameworks $(PODS_ROOT)/../ThirdParty/PrebidMobile'
+    'FRAMEWORK_SEARCH_PATHS' => '$(inherited) $(PODS_ROOT)/../Build/ReleaseArtifacts/XCFrameworks $(PODS_ROOT)/../ThirdParty/PrebidMobile'
   }
 end

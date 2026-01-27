@@ -65,8 +65,8 @@ fi
 log_title "Building XCFramework: $MODULE_NAME"
 
 # Create output directories
-ARCHIVES_DIR="$ROOT_DIR/Build/Archives"
-XCFRAMEWORKS_DIR="$ROOT_DIR/Build/XCFrameworks"
+ARCHIVES_DIR="$ROOT_DIR/Build/ReleaseArtifacts/Archives"
+XCFRAMEWORKS_DIR="$ROOT_DIR/Build/ReleaseArtifacts/XCFrameworks"
 mkdir -p "$ARCHIVES_DIR" "$XCFRAMEWORKS_DIR"
 
 # Generate Xcode project from project.yml
@@ -150,15 +150,15 @@ if [[ "$MODULE_NAME" =~ ^(MSPCore|NovaCore|MSPiOSCore|MSPSharedLibraries|MSPOMSD
         exit 1
     fi
     
-    # Add Swift include paths to find pre-built Pod modules (Kingfisher, SnapKit, etc.)
+    # Add Swift include paths to find pre-built Pod modules (Kingfisher, MSPSnapKit, etc.)
     # Pod modules are built in shared DerivedData by build-core.sh
     SHARED_DERIVED_DATA="$ROOT_DIR/.generated/DerivedData/build-shared"
     
     # Build SEPARATE path arrays for iOS and Simulator Pod modules
     # CRITICAL: Each archive must ONLY see its own platform's modules to avoid redefinition errors
-    # NovaCore needs: Kingfisher, SnapKit, Lottie
+    # NovaCore needs: Kingfisher, MSPSnapKit, Lottie
     # MSPCore needs: MSPPrebidAdapter
-    POD_MODULES=("MSPKingfisher" "SnapKit" "lottie-ios" "MSPPrebidAdapter")
+    POD_MODULES=("MSPKingfisher" "MSPSnapKit" "lottie-ios" "MSPPrebidAdapter")
     POD_IOS_MODULES=""
     POD_SIM_MODULES=""
     
@@ -182,8 +182,8 @@ if [[ "$MODULE_NAME" =~ ^(MSPCore|NovaCore|MSPiOSCore|MSPSharedLibraries|MSPOMSD
     log_info "Found Pod modules (Simulator): $POD_SIM_MODULES"
     
     # Add FRAMEWORK_SEARCH_PATHS for third-party XCFrameworks (if needed)
-    # Third-party XCFrameworks are built by build-thirdparty.sh and linked to Build/XCFrameworks/
-    THIRDPARTY_XCFRAMEWORKS_DIR="$ROOT_DIR/Build/XCFrameworks"
+    # Third-party XCFrameworks are built by build-thirdparty.sh and linked to Build/ReleaseArtifacts/XCFrameworks/
+    THIRDPARTY_XCFRAMEWORKS_DIR="$ROOT_DIR/Build/ReleaseArtifacts/XCFrameworks"
     
     log_info "Core module $MODULE_NAME: Using PROJECT mode (avoids Pods scheme conflicts)"
     log_info "  iOS Swift include paths: $POD_IOS_MODULES"

@@ -117,18 +117,18 @@ preflight_static() {
         log_info "Version validation passed: $version"
     fi
     
-    # 4) Binary directory existence
-    log_step "Checking Binary directory"
-    if [[ ! -d "$ROOT_DIR/Binary" ]]; then
-        log_warn "Binary directory not found at $ROOT_DIR/Binary"
+    # 4) ReleaseArtifacts Binary directory existence
+    log_step "Checking ReleaseArtifacts/Binary directory"
+    if [[ ! -d "$ROOT_DIR/Build/ReleaseArtifacts/Binary" ]]; then
+        log_warn "ReleaseArtifacts/Binary directory not found at $ROOT_DIR/Build/ReleaseArtifacts/Binary"
         ((warnings++))
     else
-        log_info "Binary directory exists"
+        log_info "ReleaseArtifacts/Binary directory exists"
     fi
     
     # 5) Light XCFramework existence check
     log_step "Checking core XCFrameworks"
-    local xcframeworks_dir="$ROOT_DIR/Build/XCFrameworks"
+    local xcframeworks_dir="$ROOT_DIR/Build/ReleaseArtifacts/XCFrameworks"
     # Stage B: MSPOMSDK removed - OMSDK now embedded in NovaCore
     local required_frameworks=(
         "MSPSharedLibraries"
@@ -335,4 +335,3 @@ fi
 
 # Export functions
 export -f preflight_static preflight_build run_preflight_main
-
