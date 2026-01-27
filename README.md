@@ -45,8 +45,12 @@ msp-ios-sdk/
 │   └── tools/             # Shared Swift development tools
 ├── Tests/
 │   └── templates/         # Test templates
-├── ThirdParty/            # Pre-built third-party XCFrameworks
-├── Binary/                # Built XCFrameworks for release
+├── ThirdParty/            # Vendor SDKs
+├── Build/ReleaseArtifacts/  # Canonical build outputs
+│   ├── XCFrameworks/      # All built XCFrameworks (core/adapters/third-party)
+│   ├── Archives/          # xcodebuild archives
+│   ├── Binary/            # Staging area for release zips (Binary/ inside zip)
+│   └── Zips/              # Release zip outputs
 ├── Examples/              # MSPDemoApp
 ├── Scripts/
 │   ├── msp-release.sh     # Main release entrypoint

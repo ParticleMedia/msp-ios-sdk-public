@@ -55,12 +55,12 @@ Pod::Spec.new do |spec|
 
   spec.pod_target_xcconfig = {
     'BUILD_LIBRARY_FOR_DISTRIBUTION' => 'YES',
-    'FRAMEWORK_SEARCH_PATHS' => '$(inherited) $(PODS_ROOT)/../Build/XCFrameworks $(PODS_ROOT)/../ThirdParty/Shimmer',
-    'SWIFT_INCLUDE_PATHS' => '$(inherited) $(PODS_ROOT)/../Build/XCFrameworks'
+    'FRAMEWORK_SEARCH_PATHS' => '$(inherited) $(PODS_ROOT)/../Build/ReleaseArtifacts/XCFrameworks $(PODS_ROOT)/../ThirdParty/Shimmer',
+    'SWIFT_INCLUDE_PATHS' => '$(inherited) $(PODS_ROOT)/../Build/ReleaseArtifacts/XCFrameworks'
   }
   spec.user_target_xcconfig = {
-    'FRAMEWORK_SEARCH_PATHS' => '$(inherited) $(PODS_ROOT)/../Build/XCFrameworks',
-    'SWIFT_INCLUDE_PATHS' => '$(inherited) $(PODS_ROOT)/../Build/XCFrameworks'
+    'FRAMEWORK_SEARCH_PATHS' => '$(inherited) $(PODS_ROOT)/../Build/ReleaseArtifacts/XCFrameworks',
+    'SWIFT_INCLUDE_PATHS' => '$(inherited) $(PODS_ROOT)/../Build/ReleaseArtifacts/XCFrameworks'
   }
 
 end

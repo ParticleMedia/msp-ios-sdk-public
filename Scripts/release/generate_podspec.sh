@@ -383,7 +383,7 @@ if is_binary_distribution "$POD_NAME"; then
             ;;
         MSPPrebidAdapter|MSPGoogleAdapter|MSPFacebookAdapter|MSPAmazonAdapter|MSPMolocoAdapter|MSPLiftoffAdapter)
             # XCFramework name matches pod name (unified naming)
-            XCFRAMEWORK_PATH="$ROOT_DIR/Build/XCFrameworks/${POD_NAME}.xcframework"
+            XCFRAMEWORK_PATH="$ROOT_DIR/Build/ReleaseArtifacts/XCFrameworks/${POD_NAME}.xcframework"
             if [[ -d "$XCFRAMEWORK_PATH" ]]; then
                 log_info "Binary distribution pod: $POD_NAME (XCFramework found: ${POD_NAME}.xcframework)"
             else
@@ -394,7 +394,7 @@ if is_binary_distribution "$POD_NAME"; then
             ;;
         *)
             # XCFramework name matches pod name (unified naming)
-            XCFRAMEWORK_PATH="$ROOT_DIR/Build/XCFrameworks/${POD_NAME}.xcframework"
+            XCFRAMEWORK_PATH="$ROOT_DIR/Build/ReleaseArtifacts/XCFrameworks/${POD_NAME}.xcframework"
             if [[ ! -d "$XCFRAMEWORK_PATH" ]]; then
                 log_error "XCFramework not found: $XCFRAMEWORK_PATH"
                 log_error "Run pre-release setup (Step 0) first"
@@ -510,7 +510,7 @@ else
     # No pod_target_xcconfig found, create minimal one for binary distribution pods
     if is_binary_distribution "$POD_NAME"; then
         # Note: FRAMEWORK_SEARCH_PATHS removed - vendored_frameworks handles paths automatically
-        # The old path $(PODS_ROOT)/../Build/XCFrameworks was for dev mode and doesn't exist in lint env
+        # The old path $(PODS_ROOT)/../Build/ReleaseArtifacts/XCFrameworks was for dev mode and doesn't exist in lint env
         cat >> "$OUTPUT_PODSPEC" <<'EOF_XCCONFIG'
   spec.pod_target_xcconfig = {
     'SWIFT_INCLUDE_PATHS' => '$(inherited) $(PODS_CONFIGURATION_BUILD_DIR)',
@@ -590,7 +590,7 @@ extract_swiftinterface_imports() {
 }
 
 get_prebidmobile_version() {
-    local plist_path="$ROOT_DIR/ThirdParty/PrebidMobile/PrebidMobile.xcframework/ios-arm64/PrebidMobile.framework/Info.plist"
+    local plist_path="$ROOT_DIR/Build/ReleaseArtifacts/XCFrameworks/PrebidMobile.xcframework/ios-arm64/PrebidMobile.framework/Info.plist"
     local version=""
 
     if [[ -f "$plist_path" ]]; then
@@ -635,13 +635,13 @@ if is_binary_distribution "$POD_NAME"; then
     xcframework_path=""
     case "$POD_NAME" in
         MSPNovaAdapter)
-            xcframework_path="$ROOT_DIR/Binary/MSPNovaAdapter.xcframework"
+            xcframework_path="$ROOT_DIR/Build/ReleaseArtifacts/Binary/MSPNovaAdapter.xcframework"
             ;;
         MSPPrebidAdapter|MSPGoogleAdapter|MSPFacebookAdapter|MSPAmazonAdapter|MSPMolocoAdapter|MSPLiftoffAdapter)
-            xcframework_path="$ROOT_DIR/Build/XCFrameworks/${POD_NAME}.xcframework"
+            xcframework_path="$ROOT_DIR/Build/ReleaseArtifacts/XCFrameworks/${POD_NAME}.xcframework"
             ;;
         *)
-            xcframework_path="$ROOT_DIR/Build/XCFrameworks/${POD_NAME}.xcframework"
+            xcframework_path="$ROOT_DIR/Build/ReleaseArtifacts/XCFrameworks/${POD_NAME}.xcframework"
             ;;
     esac
     
@@ -806,7 +806,7 @@ if is_binary_distribution "$POD_NAME"; then
         log_error ""
         log_error "CRITICAL: Binary distribution pods MUST have SHA256 checksum for CocoaPods validation"
         log_error "Please ensure:"
-        log_error "  1. XCFramework is built: Build/XCFrameworks/${POD_NAME}.xcframework"
+        log_error "  1. XCFramework is built: Build/ReleaseArtifacts/XCFrameworks/${POD_NAME}.xcframework"
         log_error "  2. Zip is created and uploaded to GitHub Release"
         log_error "  3. Or run: Scripts/release/package_and_upload.sh $POD_NAME $VERSION"
         exit 1
@@ -855,7 +855,7 @@ EOF_RELEASE
         log_error ""
         log_error "CRITICAL: Binary distribution pods MUST have SHA256 checksum for CocoaPods validation"
         log_error "Please ensure:"
-        log_error "  1. XCFramework is built: Build/XCFrameworks/${POD_NAME}.xcframework"
+        log_error "  1. XCFramework is built: Build/ReleaseArtifacts/XCFrameworks/${POD_NAME}.xcframework"
         log_error "  2. Zip is created and uploaded to GitHub Release"
         log_error "  3. Or run: Scripts/release/package_and_upload.sh $POD_NAME $VERSION"
         exit 1

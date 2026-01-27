@@ -20,7 +20,7 @@ settings:
     # via Pods at application level, not as XCFrameworks
     FRAMEWORK_SEARCH_PATHS:
       - $(inherited)
-      - $(SRCROOT)/../../../Build/XCFrameworks
+      - $(SRCROOT)/../../../Build/ReleaseArtifacts/XCFrameworks
 
 targets:
   NovaCore:
@@ -41,8 +41,7 @@ targets:
         embed: false
       # Shimmer XCFramework dependency (Plan B: unified XCFramework architecture)
       # Path is relative to project.yml location: Sources/Core/NovaCore/
-      # Shimmer.xcframework is in ThirdParty/Shimmer/ (repo root)
-      - framework: ../../../ThirdParty/Shimmer/Shimmer.xcframework
+      - framework: ../../../Build/ReleaseArtifacts/XCFrameworks/Shimmer.xcframework
         embed: false
       # Third-party dependencies (Kingfisher, MSPSnapKit, Lottie) are provided
       # via Pods at application level. Core XCFrameworks use @_implementationOnly

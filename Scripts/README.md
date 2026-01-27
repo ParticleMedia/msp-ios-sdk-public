@@ -96,6 +96,21 @@ msp-release.sh run
         └── Remote integration tests
 ```
 
+### Release Artifacts (Canonical Paths)
+
+All build outputs are consolidated under:
+
+```
+Build/ReleaseArtifacts/
+├── XCFrameworks/   # Built XCFrameworks (core/adapters/third-party)
+├── Archives/       # Xcode archives
+├── Binary/         # Release staging (Binary/ inside pod zip)
+└── Zips/           # Release zip outputs
+```
+
+Legacy paths (compat only):
+None. `Build/ReleaseArtifacts/` is the single source of truth.
+
 ## TODO
 
 - Re-enable post-release verification steps (local/remote/device/XCF) once SPM local build issues are resolved. Currently disabled by default via `MSP_DISABLE_POST_VERIFICATION=1`.

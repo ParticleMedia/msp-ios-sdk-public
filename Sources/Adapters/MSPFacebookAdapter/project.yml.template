@@ -29,9 +29,9 @@ targets:
           - "**/*.spec.swift"
           - "FacebookAdapter.docc/**"
     dependencies:
-      - framework: ../../../Build/XCFrameworks/MSPiOSCore.xcframework
+      - framework: ../../../Build/ReleaseArtifacts/XCFrameworks/MSPiOSCore.xcframework
         embed: false
-      - framework: ../../../Build/XCFrameworks/PrebidMobile.xcframework
+      - framework: ../../../Build/ReleaseArtifacts/XCFrameworks/PrebidMobile.xcframework
         embed: false
       - framework: ../../../Pods/FBAudienceNetwork/Static/FBAudienceNetwork.xcframework
         embed: false
@@ -43,13 +43,8 @@ targets:
         # Framework Search Paths - XCFrameworks only
         FRAMEWORK_SEARCH_PATHS:
           - $(inherited)
-          - $(SRCROOT)/../../../Build/XCFrameworks
+          - $(SRCROOT)/../../../Build/ReleaseArtifacts/XCFrameworks
           - $(SRCROOT)/../../Core/MSPSharedLibraries
-          - $(SRCROOT)/../../../Sources/Core/ThirdParty/Kingfisher
-          - $(SRCROOT)/../../../Sources/Core/ThirdParty/MSPSnapKit
-          - $(SRCROOT)/../../../Sources/Core/ThirdParty/Lottie
-          - $(SRCROOT)/../../../Sources/Core/ThirdParty/Shimmer
-          - $(SRCROOT)/../../../Sources/Core/ThirdParty/SwiftProtobuf
           - $(SRCROOT)/../../../Sources/Core/MSPOMSDK/OMSDK_Newsbreak1.xcframework
           - $(SRCROOT)/../../../Sources/Wrappers/FBAudienceNetworkWrapper/Frameworks
         

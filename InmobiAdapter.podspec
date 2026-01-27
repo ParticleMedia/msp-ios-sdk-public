@@ -40,11 +40,11 @@ Pod::Spec.new do |spec|
     'SWIFT_EMIT_MODULE_INTERFACE' => 'NO',
     'SWIFT_INSTALL_MODULE_FOR_DEPLOYMENT' => 'NO',
     'DEFINES_MODULE' => 'YES',
-    'FRAMEWORK_SEARCH_PATHS' => '$(inherited) $(PODS_ROOT)/../Build/XCFrameworks',
-    'SWIFT_INCLUDE_PATHS' => '$(inherited) $(PODS_ROOT)/../Build/XCFrameworks'
+    'FRAMEWORK_SEARCH_PATHS' => '$(inherited) $(PODS_ROOT)/../Build/ReleaseArtifacts/XCFrameworks',
+    'SWIFT_INCLUDE_PATHS' => '$(inherited) $(PODS_ROOT)/../Build/ReleaseArtifacts/XCFrameworks'
   }
   spec.user_target_xcconfig = {
-    'FRAMEWORK_SEARCH_PATHS' => '$(inherited) $(PODS_ROOT)/../Build/XCFrameworks',
-    'SWIFT_INCLUDE_PATHS' => '$(inherited) $(PODS_ROOT)/../Build/XCFrameworks'
+    'FRAMEWORK_SEARCH_PATHS' => '$(inherited) $(PODS_ROOT)/../Build/ReleaseArtifacts/XCFrameworks',
+    'SWIFT_INCLUDE_PATHS' => '$(inherited) $(PODS_ROOT)/../Build/ReleaseArtifacts/XCFrameworks'
   }
 end

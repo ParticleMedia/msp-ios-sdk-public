@@ -94,7 +94,7 @@ CORE_XCFRAMEWORKS=(
 log_section "Checking core XCFrameworks (optional for adapter builds)"
 CORE_MISSING=0
 for framework in "${CORE_XCFRAMEWORKS[@]}"; do
-    XCFRAMEWORK_PATH="$ROOT_DIR/Build/XCFrameworks/$framework.xcframework"
+    XCFRAMEWORK_PATH="$ROOT_DIR/Build/ReleaseArtifacts/XCFrameworks/$framework.xcframework"
     if [[ ! -d "$XCFRAMEWORK_PATH" ]]; then
         log_warn "Core XCFramework not found: $XCFRAMEWORK_PATH (adapter builds may fail)"
         ((CORE_MISSING++)) || true
@@ -125,7 +125,7 @@ for pod_name in "${ADAPTER_MODULES[@]}"; do
     # XCFramework name now matches pod name (unified naming)
     # For Round 3, force rebuild all adapters to use new build system
     # Remove existing XCFramework to ensure fresh build with new pipeline
-    XCFRAMEWORK_OUTPUT="$ROOT_DIR/Build/XCFrameworks/$pod_name.xcframework"
+    XCFRAMEWORK_OUTPUT="$ROOT_DIR/Build/ReleaseArtifacts/XCFrameworks/$pod_name.xcframework"
     if [[ -d "$XCFRAMEWORK_OUTPUT" ]]; then
         log_info "Removing existing $pod_name.xcframework for fresh rebuild..."
         rm -rf "$XCFRAMEWORK_OUTPUT"
@@ -158,27 +158,27 @@ if [[ $FAIL_COUNT -gt 0 ]]; then
     log_warn "Continuing without blocking the pipeline."
 fi
 
-# Copy all adapter XCFrameworks to Binary/ directory
-log_section "Copying Adapter XCFrameworks to Binary/"
+# Copy all adapter XCFrameworks to ReleaseArtifacts/Binary directory
+log_section "Copying Adapter XCFrameworks to ReleaseArtifacts/Binary"
 # BINARY_DIR is already defined in common.sh as readonly
 mkdir -p "$BINARY_DIR"
 
 for pod_name in "${ADAPTER_MODULES[@]}"; do
     # XCFramework name matches pod name (unified naming)
-    XCFRAMEWORK_SRC="$ROOT_DIR/Build/XCFrameworks/$pod_name.xcframework"
+    XCFRAMEWORK_SRC="$ROOT_DIR/Build/ReleaseArtifacts/XCFrameworks/$pod_name.xcframework"
     XCFRAMEWORK_DST="$BINARY_DIR/$pod_name.xcframework"
 
     if [[ -d "$XCFRAMEWORK_SRC" ]]; then
         rm -rf "$XCFRAMEWORK_DST"
         cp -R "$XCFRAMEWORK_SRC" "$XCFRAMEWORK_DST"
-        log_success "Copied $pod_name.xcframework to Binary/"
+        log_success "Copied $pod_name.xcframework to ReleaseArtifacts/Binary"
     else
         log_warn "Not found: $XCFRAMEWORK_SRC"
     fi
 done
 
 log_section "Final Summary"
-log_info "Binary/ directory contents:"
+log_info "ReleaseArtifacts/Binary contents:"
 ls -1 "$BINARY_DIR" 2>/dev/null | while read -r xcf; do
     log_success "  ✓ $xcf"
 done || true

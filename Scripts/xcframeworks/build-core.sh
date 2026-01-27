@@ -144,8 +144,8 @@ log_info "Pod modules available at: $SHARED_DERIVED_DATA/Build/Products/Release-
 # -----------------------------------------------------------
 
 # Output directories
-ARCHIVES_DIR="$ROOT_DIR/Build/Archives"
-XCFRAMEWORKS_DIR="$ROOT_DIR/Build/XCFrameworks"
+ARCHIVES_DIR="$ROOT_DIR/Build/ReleaseArtifacts/Archives"
+XCFRAMEWORKS_DIR="$ROOT_DIR/Build/ReleaseArtifacts/XCFrameworks"
 LOGS_DIR="$ROOT_DIR/Build/Logs"
 mkdir -p "$ARCHIVES_DIR" "$XCFRAMEWORKS_DIR" "$LOGS_DIR"
 

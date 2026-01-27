@@ -19,7 +19,7 @@ msp_enforce_main_repo_or_exit
 #   - DerivedData cache
 #
 # Safety:
-#   - Never deletes Build/XCFrameworks/ or ThirdParty/
+#   - Never deletes Build/ReleaseArtifacts/XCFrameworks/ or ThirdParty/
 #   - Never deletes Sources/
 #   - Never modifies Package.swift (that's handled by switch-target.sh)
 #
@@ -52,7 +52,7 @@ log_title "SwiftPM Environment Cleanup"
 
 # Safety info
 log_info "Protected directories (will NOT be deleted):"
-log_info "  - Build/XCFrameworks/"
+log_info "  - Build/ReleaseArtifacts/XCFrameworks/"
 log_info "  - ThirdParty/"
 log_info "  - Sources/"
 

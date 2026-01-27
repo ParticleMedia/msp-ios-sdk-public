@@ -71,8 +71,7 @@ Package.swift is generated from `Package.swift.template`:
 | `Sources/Adapters/` | Adapter module source code |
 | `Sources/Common/` | Shared code (MSPGoogleAdsTypes) |
 | `ThirdParty/` | Pre-built third-party XCFrameworks |
-| `Binary/` | Built XCFrameworks for distribution |
-| `Build/XCFrameworks/` | XCFramework build output |
+| `Build/ReleaseArtifacts/` | Canonical build and release outputs |
 | `Examples/` | MSPDemoApp |
 | `Pods/` | CocoaPods dependencies (generated) |
 
@@ -80,10 +79,10 @@ Package.swift is generated from `Package.swift.template`:
 
 ### XCFramework Build
 
-Core modules are built to `Build/XCFrameworks/`:
+Core modules are built to `Build/ReleaseArtifacts/XCFrameworks/`:
 
 ```
-Build/XCFrameworks/
+Build/ReleaseArtifacts/XCFrameworks/
 ├── MSPSharedLibraries.xcframework
 ├── MSPOMSDK.xcframework
 ├── MSPCore.xcframework
@@ -93,10 +92,10 @@ Build/XCFrameworks/
 
 ### Binary Distribution
 
-For release, XCFrameworks are copied to `Binary/`:
+For release packaging, XCFrameworks are staged under `Build/ReleaseArtifacts/Binary/`:
 
 ```
-Binary/
+Build/ReleaseArtifacts/Binary/
 ├── MSPCore.xcframework
 ├── MSPiOSCore.xcframework
 ├── MSPSharedLibraries.xcframework

@@ -2396,7 +2396,7 @@ EOF
             mkdir -p "$temp_zip_dir/ThirdParty/PrebidMobile"
 
             # Copy MSPSharedLibraries.xcframework using ditto (preserves symlinks)
-            local shared_lib_path="$ROOT_DIR/Build/XCFrameworks/MSPSharedLibraries.xcframework"
+            local shared_lib_path="$ROOT_DIR/Build/ReleaseArtifacts/XCFrameworks/MSPSharedLibraries.xcframework"
             if [[ ! -d "$shared_lib_path" ]]; then
                 log_error "❌ MSPSharedLibraries.xcframework not found: $shared_lib_path"
                 rm -rf "$temp_zip_dir"
@@ -2410,7 +2410,7 @@ EOF
             ensure_modulemaps_in_xcframework "$temp_zip_dir/Binary/$(basename "$shared_lib_path")"
 
             # Copy embedded MSPiOSCore.xcframework using ditto
-            local ios_core_path="$ROOT_DIR/Build/XCFrameworks/MSPiOSCore.xcframework"
+            local ios_core_path="$ROOT_DIR/Build/ReleaseArtifacts/XCFrameworks/MSPiOSCore.xcframework"
             if [[ ! -d "$ios_core_path" ]]; then
                 log_error "❌ MSPiOSCore.xcframework not found: $ios_core_path"
                 rm -rf "$temp_zip_dir"
@@ -2425,7 +2425,7 @@ EOF
             ensure_objc_modulemap_and_header "$temp_zip_dir/Binary/$(basename "$ios_core_path")" "MSPiOSCore"
 
             # Copy ThirdParty PrebidMobile using ditto
-            local prebid_path="$ROOT_DIR/ThirdParty/PrebidMobile/PrebidMobile.xcframework"
+            local prebid_path="$ROOT_DIR/Build/ReleaseArtifacts/XCFrameworks/PrebidMobile.xcframework"
             if [[ ! -d "$prebid_path" ]]; then
                 log_error "❌ PrebidMobile.xcframework not found: $prebid_path"
                 rm -rf "$temp_zip_dir"
@@ -2438,8 +2438,8 @@ EOF
             fi
             ensure_modulemaps_in_xcframework "$temp_zip_dir/ThirdParty/PrebidMobile/$(basename "$prebid_path")"
 
-            # Copy ThirdParty MSPSnapKit using ditto
-            local snapkit_path="$ROOT_DIR/ThirdParty/MSPSnapKit/MSPSnapKit.xcframework"
+            # Copy MSPSnapKit using ditto
+            local snapkit_path="$ROOT_DIR/Build/ReleaseArtifacts/XCFrameworks/MSPSnapKit.xcframework"
             if [[ ! -d "$snapkit_path" ]]; then
                 log_error "❌ MSPSnapKit.xcframework not found: $snapkit_path"
                 rm -rf "$temp_zip_dir"
@@ -2467,7 +2467,7 @@ EOF
             # MSPiOSCore: Binary/MSPiOSCore.xcframework
             mkdir -p "$temp_zip_dir/Binary"
 
-            local xcframework_path="$ROOT_DIR/Build/XCFrameworks/${pod}.xcframework"
+            local xcframework_path="$ROOT_DIR/Build/ReleaseArtifacts/XCFrameworks/${pod}.xcframework"
 
             if [[ ! -d "$xcframework_path" ]]; then
                 log_error "❌ XCFramework not found: $xcframework_path"
@@ -2494,13 +2494,13 @@ EOF
             # MSPNovaAdapter is unique:
             # - Uses pre-packaged NovaCore.xcframework from Binary/ directory
             # - NovaCore is not built by our build system (proprietary/third-party)
-            # - Unlike other adapters that use Build/XCFrameworks/
+            # - Unlike other adapters that use Build/ReleaseArtifacts/XCFrameworks/
             # ========================================================================
             if [[ "$pod" == "MSPNovaAdapter" ]]; then
                 log_info "MSPNovaAdapter: Binary adapter with embedded NovaCore dependency"
 
                 # Copy MSPNovaAdapter.xcframework (MSPNovaAdapter自身的代码)
-                local novaadapter_path="$ROOT_DIR/Build/XCFrameworks/MSPNovaAdapter.xcframework"
+                local novaadapter_path="$ROOT_DIR/Build/ReleaseArtifacts/XCFrameworks/MSPNovaAdapter.xcframework"
 
                 if [[ ! -d "$novaadapter_path" ]]; then
                     log_error "❌ MSPNovaAdapter.xcframework not found: $novaadapter_path"
@@ -2518,7 +2518,7 @@ EOF
                 log_success "✅ Copied MSPNovaAdapter.xcframework"
 
                 # Copy NovaCore.xcframework (第三方依赖)
-                local novacore_path="$ROOT_DIR/Binary/NovaCore.xcframework"
+                local novacore_path="$ROOT_DIR/Build/ReleaseArtifacts/Binary/NovaCore.xcframework"
 
                 if [[ ! -d "$novacore_path" ]]; then
                     log_error "❌ NovaCore.xcframework not found: $novacore_path"
@@ -2538,10 +2538,10 @@ EOF
             elif [[ "$pod" == "MSPMolocoAdapter" ]]; then
                 log_info "MSPMolocoAdapter: Binary adapter (MSPSnapKit provided via MSPSharedLibraries)"
 
-                local xcframework_path="$ROOT_DIR/Build/XCFrameworks/${pod}.xcframework"
+                local xcframework_path="$ROOT_DIR/Build/ReleaseArtifacts/XCFrameworks/${pod}.xcframework"
                 if [[ ! -d "$xcframework_path" ]]; then
                     log_error "❌ XCFramework not found: $xcframework_path"
-                    log_error "Expected location: Build/XCFrameworks/${pod}.xcframework"
+                    log_error "Expected location: Build/ReleaseArtifacts/XCFrameworks/${pod}.xcframework"
                     rm -rf "$temp_zip_dir"
                     return 1
                 fi
@@ -2555,12 +2555,12 @@ EOF
                 log_success "✅ Prepared MSPMolocoAdapter structure (MSPMolocoAdapter)"
 
             else
-                # Regular adapters: use Build/XCFrameworks/
-                local xcframework_path="$ROOT_DIR/Build/XCFrameworks/${pod}.xcframework"
+                # Regular adapters: use Build/ReleaseArtifacts/XCFrameworks/
+                local xcframework_path="$ROOT_DIR/Build/ReleaseArtifacts/XCFrameworks/${pod}.xcframework"
 
                 if [[ ! -d "$xcframework_path" ]]; then
                     log_error "❌ XCFramework not found: $xcframework_path"
-                    log_error "Expected location: Build/XCFrameworks/${pod}.xcframework"
+                    log_error "Expected location: Build/ReleaseArtifacts/XCFrameworks/${pod}.xcframework"
                     
                     # Write failure status immediately to trigger fail-fast
                     if [[ -n "$result_file" ]]; then
@@ -2705,24 +2705,24 @@ get_zip_inputs_for_pod() {
 
     case "$pod" in
         MSPSharedLibraries)
-            echo "$ROOT_DIR/Build/XCFrameworks/MSPSharedLibraries.xcframework"
-            echo "$ROOT_DIR/Build/XCFrameworks/MSPiOSCore.xcframework"
-            echo "$ROOT_DIR/ThirdParty/PrebidMobile/PrebidMobile.xcframework"
-            echo "$ROOT_DIR/ThirdParty/MSPSnapKit/MSPSnapKit.xcframework"
+            echo "$ROOT_DIR/Build/ReleaseArtifacts/XCFrameworks/MSPSharedLibraries.xcframework"
+            echo "$ROOT_DIR/Build/ReleaseArtifacts/XCFrameworks/MSPiOSCore.xcframework"
+            echo "$ROOT_DIR/Build/ReleaseArtifacts/XCFrameworks/PrebidMobile.xcframework"
+            echo "$ROOT_DIR/Build/ReleaseArtifacts/XCFrameworks/MSPSnapKit.xcframework"
             # Sources are included (optional) for dev mode; include them if present.
             if [[ -d "$ROOT_DIR/Sources" ]]; then
                 echo "$ROOT_DIR/Sources"
             fi
             ;;
         MSPNovaAdapter)
-            echo "$ROOT_DIR/Build/XCFrameworks/MSPNovaAdapter.xcframework"
-            echo "$ROOT_DIR/Binary/NovaCore.xcframework"
+            echo "$ROOT_DIR/Build/ReleaseArtifacts/XCFrameworks/MSPNovaAdapter.xcframework"
+            echo "$ROOT_DIR/Build/ReleaseArtifacts/Binary/NovaCore.xcframework"
             ;;
         MSPMolocoAdapter)
-            echo "$ROOT_DIR/Build/XCFrameworks/MSPMolocoAdapter.xcframework"
+            echo "$ROOT_DIR/Build/ReleaseArtifacts/XCFrameworks/MSPMolocoAdapter.xcframework"
             ;;
         *)
-            echo "$ROOT_DIR/Build/XCFrameworks/${pod}.xcframework"
+            echo "$ROOT_DIR/Build/ReleaseArtifacts/XCFrameworks/${pod}.xcframework"
             ;;
     esac
 }
@@ -3286,7 +3286,7 @@ publish_pod_with_resume() {
                 # Map pod name to directory name (for build script)
                 # XCFramework name now matches pod name (unified naming)
                 local module_dir=$(get_module_dir "$pod")
-                local xcframework_path="$ROOT_DIR/Build/XCFrameworks/${pod}.xcframework"
+                local xcframework_path="$ROOT_DIR/Build/ReleaseArtifacts/XCFrameworks/${pod}.xcframework"
 
                 if [[ ! -d "$xcframework_path" ]]; then
                     log_warning "XCFramework missing for $pod, auto-building..."
@@ -4365,8 +4365,8 @@ release_msp_googleadstypes() {
 # Pre-builds Pod dependencies (Kingfisher, MSPSnapKit, Lottie) before building NovaCore
 # ============================================================================
 ensure_novacore_xcframework() {
-    local novacore_binary_path="$ROOT_DIR/Binary/NovaCore.xcframework"
-    local novacore_build_path="$ROOT_DIR/Build/XCFrameworks/NovaCore.xcframework"
+    local novacore_binary_path="$ROOT_DIR/Build/ReleaseArtifacts/Binary/NovaCore.xcframework"
+    local novacore_build_path="$ROOT_DIR/Build/ReleaseArtifacts/XCFrameworks/NovaCore.xcframework"
     local workspace_file="$ROOT_DIR/msp-ios-sdk.xcworkspace"
     local shared_derived_data="$ROOT_DIR/.generated/DerivedData/build-shared"
 
@@ -4383,7 +4383,7 @@ ensure_novacore_xcframework() {
         rm -rf "$novacore_binary_path"
     fi
     if [[ -d "$novacore_build_path" ]]; then
-        log_info "Removing old Build/XCFrameworks/NovaCore.xcframework..."
+        log_info "Removing old Build/ReleaseArtifacts/XCFrameworks/NovaCore.xcframework..."
         rm -rf "$novacore_build_path"
     fi
 
@@ -4487,7 +4487,7 @@ ensure_novacore_xcframework() {
 
     # Copy to Binary/ directory
     log_info "Copying built XCFramework to Binary/ directory..."
-    mkdir -p "$ROOT_DIR/Binary"
+    mkdir -p "$ROOT_DIR/Build/ReleaseArtifacts/Binary"
 
     if ditto "$novacore_build_path" "$novacore_binary_path"; then
         log_success "✅ NovaCore.xcframework deployed to Binary/"
@@ -5280,7 +5280,7 @@ release_adapters() {
         
         # MSPNovaAdapter: Verify Binary/NovaCore.xcframework exists and is valid
         if [[ "$adapter" == "MSPNovaAdapter" ]]; then
-            local novacore_path="$ROOT_DIR/Binary/NovaCore.xcframework"
+            local novacore_path="$ROOT_DIR/Build/ReleaseArtifacts/Binary/NovaCore.xcframework"
             
             # This should never happen if Step 0 succeeded, but double-check
             if [[ ! -d "$novacore_path" ]]; then
@@ -5301,13 +5301,13 @@ release_adapters() {
             
             log_success "✅ MSPNovaAdapter pre-flight check passed (NovaCore.xcframework is valid)"
         else
-            # Other adapters: Check Build/XCFrameworks/<Adapter>.xcframework exists
-            local xcframework_path="$ROOT_DIR/Build/XCFrameworks/${adapter}.xcframework"
+            # Other adapters: Check Build/ReleaseArtifacts/XCFrameworks/<Adapter>.xcframework exists
+            local xcframework_path="$ROOT_DIR/Build/ReleaseArtifacts/XCFrameworks/${adapter}.xcframework"
             
             if [[ ! -d "$xcframework_path" ]]; then
                 log_error "❌ Pre-flight check failed: $adapter"
                 log_error "XCFramework not found: $xcframework_path"
-                log_error "Expected location: Build/XCFrameworks/${adapter}.xcframework"
+                log_error "Expected location: Build/ReleaseArtifacts/XCFrameworks/${adapter}.xcframework"
                 log_error "Cannot proceed with adapter releases - missing required file"
                 log_error ""
                 log_error "Please build the XCFramework first:"
@@ -5765,7 +5765,7 @@ commit_release_changes() {
     fi
 
     # Add any other generated artifacts (expand as needed)
-    # git add Build/XCFrameworks/**/*.plist 2>/dev/null || true
+    # git add Build/ReleaseArtifacts/XCFrameworks/**/*.plist 2>/dev/null || true
 
     # Check if there are changes to commit
     if git diff --cached --quiet; then
@@ -5809,6 +5809,86 @@ ensure_release_workspace() {
 
     log_error "Failed to prepare workspace via pods-release"
     return 1
+}
+
+# Force rebuild of all binary XCFrameworks before publishing.
+# This guarantees the published binaries match the current source, even on resume.
+rebuild_release_binaries() {
+    if [[ "${DRY_RUN:-true}" == "true" ]]; then
+        log_info "DRY RUN: Skipping binary rebuild (no binaries will be published)"
+        return 0
+    fi
+
+    log_section "Rebuilding binary XCFrameworks (forced for release)"
+
+    local build_core_script="$ROOT_DIR/Scripts/xcframeworks/build-core.sh"
+    if [[ ! -x "$build_core_script" ]]; then
+        log_error "build-core.sh not found or not executable: $build_core_script"
+        return 1
+    fi
+    log_step "Building core XCFrameworks"
+    if ! bash "$build_core_script"; then
+        log_error "Core XCFramework build failed"
+        return 1
+    fi
+
+    local build_adapters_script="$ROOT_DIR/Scripts/xcframeworks/build-adapters.sh"
+    if [[ ! -x "$build_adapters_script" ]]; then
+        log_error "build-adapters.sh not found or not executable: $build_adapters_script"
+        return 1
+    fi
+    log_step "Building adapter XCFrameworks"
+    if ! bash "$build_adapters_script"; then
+        log_error "Adapter XCFramework build script failed"
+        return 1
+    fi
+
+    # Verify required binary XCFrameworks exist after rebuild
+    local required=(
+        "MSPiOSCore"
+        "MSPSharedLibraries"
+        "MSPGoogleAdsTypes"
+        "MSPPrebidAdapter"
+        "MSPGoogleAdapter"
+        "MSPFacebookAdapter"
+        "MSPAmazonAdapter"
+        "MSPMolocoAdapter"
+        "MSPLiftoffAdapter"
+        "MSPNovaAdapter"
+        "MSPCore"
+    )
+    local missing=0
+    for pod in "${required[@]}"; do
+        local path="$ROOT_DIR/Build/ReleaseArtifacts/XCFrameworks/${pod}.xcframework"
+        if [[ ! -d "$path" ]]; then
+            log_error "Missing rebuilt XCFramework: $path"
+            missing=1
+        fi
+    done
+
+    # Ensure ReleaseArtifacts/Binary/MSPNovaAdapter.xcframework is refreshed for podspec generation
+    local nova_build="$ROOT_DIR/Build/ReleaseArtifacts/XCFrameworks/MSPNovaAdapter.xcframework"
+    local nova_binary="$ROOT_DIR/Build/ReleaseArtifacts/Binary/MSPNovaAdapter.xcframework"
+    if [[ -d "$nova_build" ]]; then
+        rm -rf "$nova_binary"
+        if cp -R "$nova_build" "$nova_binary"; then
+            log_success "Updated ReleaseArtifacts/Binary/MSPNovaAdapter.xcframework"
+        else
+            log_error "Failed to copy MSPNovaAdapter.xcframework to ReleaseArtifacts/Binary"
+            missing=1
+        fi
+    else
+        log_error "MSPNovaAdapter.xcframework not found at: $nova_build"
+        missing=1
+    fi
+
+    if [[ "$missing" -ne 0 ]]; then
+        log_error "Binary rebuild verification failed"
+        return 1
+    fi
+
+    log_success "All binary XCFrameworks rebuilt successfully"
+    return 0
 }
 
 # Main function
@@ -5860,6 +5940,12 @@ main() {
     
     # Mark pods_publish step as running
     msp_state_mark_step_running "pods_publish"
+
+    # Force rebuild all binary XCFrameworks for every publish run (including resume)
+    if ! rebuild_release_binaries; then
+        msp_state_mark_step_failed "pods_publish" "Binary XCFramework rebuild failed" "1"
+        exit 1
+    fi
     
     print_section "Starting CocoaPods Release Process for Version: $VERSION"
     

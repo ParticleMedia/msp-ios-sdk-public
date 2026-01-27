@@ -28,13 +28,13 @@ targets:
           - "**/*.test.swift"
           - "**/*.spec.swift"
     dependencies:
-      - framework: ../../../Build/XCFrameworks/MSPiOSCore.xcframework
+      - framework: ../../../Build/ReleaseArtifacts/XCFrameworks/MSPiOSCore.xcframework
         embed: false
-      - framework: ../../../Build/XCFrameworks/MSPSharedLibraries.xcframework
+      - framework: ../../../Build/ReleaseArtifacts/XCFrameworks/MSPSharedLibraries.xcframework
         embed: false
-      - framework: ../../../ThirdParty/PrebidMobile/PrebidMobile.xcframework
+      - framework: ../../../Build/ReleaseArtifacts/XCFrameworks/PrebidMobile.xcframework
         embed: false
-      - framework: ../../../ThirdParty/MSPSnapKit/MSPSnapKit.xcframework
+      - framework: ../../../Build/ReleaseArtifacts/XCFrameworks/MSPSnapKit.xcframework
         embed: false
       - framework: ../../../Pods/MolocoSDKiOS/MolocoSDK.xcframework
         embed: false
@@ -47,13 +47,8 @@ targets:
         # Framework Search Paths
         FRAMEWORK_SEARCH_PATHS:
           - $(inherited)
-          - $(SRCROOT)/../../../Build/XCFrameworks
+          - $(SRCROOT)/../../../Build/ReleaseArtifacts/XCFrameworks
           - $(SRCROOT)/../../../Pods/MolocoSDKiOS
-          - $(SRCROOT)/../../../ThirdParty/PrebidMobile
-          - $(SRCROOT)/../../../ThirdParty/MSPSnapKit
-          - $(SRCROOT)/../../../ThirdParty/Lottie
-          - $(SRCROOT)/../../../ThirdParty/Shimmer
-          - $(SRCROOT)/../../../ThirdParty/SwiftProtobuf
 
   MolocoAdapterTests:
     type: bundle.unit-test
