@@ -68,8 +68,44 @@ init_paths() {
         export ROOT_DIR
         ROOT_DIR=$(get_repo_root)
     fi
+
+    init_release_artifacts_paths
+    ensure_release_artifacts_layout
 }
 
+# Initialize release artifacts path variables (canonical build outputs)
+init_release_artifacts_paths() {
+    if [[ -z "${RELEASE_ARTIFACTS_DIR:-}" ]]; then
+        export RELEASE_ARTIFACTS_DIR="$ROOT_DIR/Build/ReleaseArtifacts"
+    fi
+    if [[ -z "${RELEASE_XCFRAMEWORKS_DIR:-}" ]]; then
+        export RELEASE_XCFRAMEWORKS_DIR="$RELEASE_ARTIFACTS_DIR/XCFrameworks"
+    fi
+    if [[ -z "${RELEASE_ARCHIVES_DIR:-}" ]]; then
+        export RELEASE_ARCHIVES_DIR="$RELEASE_ARTIFACTS_DIR/Archives"
+    fi
+    if [[ -z "${RELEASE_ZIPS_DIR:-}" ]]; then
+        export RELEASE_ZIPS_DIR="$RELEASE_ARTIFACTS_DIR/Zips"
+    fi
+    if [[ -z "${RELEASE_BINARY_DIR:-}" ]]; then
+        export RELEASE_BINARY_DIR="$RELEASE_ARTIFACTS_DIR/Binary"
+    fi
+    if [[ -z "${RELEASE_THIRDPARTY_DIR:-}" ]]; then
+        export RELEASE_THIRDPARTY_DIR="$RELEASE_ARTIFACTS_DIR/ThirdParty"
+    fi
+}
+
+# Ensure release artifacts directories exist
+ensure_release_artifacts_layout() {
+    init_release_artifacts_paths
+
+    mkdir -p \
+        "$RELEASE_XCFRAMEWORKS_DIR" \
+        "$RELEASE_ARCHIVES_DIR" \
+        "$RELEASE_ZIPS_DIR" \
+        "$RELEASE_BINARY_DIR" \
+        "$RELEASE_THIRDPARTY_DIR"
+}
 # Validate that we're in the MSP iOS SDK repository
 # Usage: validate_repo_root [ROOT_DIR]
 # Returns: 0 if valid, 1 if invalid
@@ -87,4 +123,3 @@ validate_repo_root() {
     
     return 1
 }
-

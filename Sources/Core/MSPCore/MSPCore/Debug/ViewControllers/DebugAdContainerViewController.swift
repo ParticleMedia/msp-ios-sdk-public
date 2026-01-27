@@ -1,4 +1,4 @@
-@_implementationOnly import SnapKit
+@_implementationOnly import MSPSnapKit
 import UIKit
 
 class DebugAdContainerViewController: UIViewController {

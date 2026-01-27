@@ -28,15 +28,15 @@ targets:
           - "**/*.test.swift"
           - "**/*.spec.swift"
     dependencies:
-      - framework: ../../../Build/XCFrameworks/MSPiOSCore.xcframework
+      - framework: ../../../Build/ReleaseArtifacts/XCFrameworks/MSPiOSCore.xcframework
         embed: false
-      - framework: ../../../Build/XCFrameworks/MSPSharedLibraries.xcframework
+      - framework: ../../../Build/ReleaseArtifacts/XCFrameworks/MSPSharedLibraries.xcframework
         embed: false
-      - framework: ../../../Build/XCFrameworks/PrebidMobile.xcframework
+      - framework: ../../../Build/ReleaseArtifacts/XCFrameworks/PrebidMobile.xcframework
         embed: false
       - framework: ../../../Pods/VungleAds/static/VungleAdsSDK.xcframework
         embed: false
-      - framework: ../../../ThirdParty/SnapKit/SnapKit.xcframework
+      - framework: ../../../Build/ReleaseArtifacts/XCFrameworks/MSPSnapKit.xcframework
         embed: false
     settings:
       base:
@@ -46,10 +46,8 @@ targets:
         # Framework Search Paths
         FRAMEWORK_SEARCH_PATHS:
           - $(inherited)
-          - $(SRCROOT)/../../../Build/XCFrameworks
+          - $(SRCROOT)/../../../Build/ReleaseArtifacts/XCFrameworks
           - $(SRCROOT)/../../../Pods/VungleAds/static
-          - $(SRCROOT)/../../../ThirdParty/SnapKit
-          - $(SRCROOT)/../../../ThirdParty/PrebidMobile
 
   LiftoffAdapterTests:
     type: bundle.unit-test

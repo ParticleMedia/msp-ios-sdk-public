@@ -1149,20 +1149,20 @@ process_binary_targets_for_cloud_distribution() {
         log_info "[SPM][INFO] Package.swift found at: $repo_package_swift"
     fi
     
-    # Find XCFrameworks for core modules (NovaCore, MSPNovaAdapter) in Build/XCFrameworks/
+    # Find XCFrameworks for core modules (NovaCore, MSPNovaAdapter) in Build/ReleaseArtifacts/XCFrameworks/
     # For real release, we only process core modules, not all third-party SDKs
     local xcframeworks=()
     
     log_step "Scanning for core module XCFrameworks"
     
-    # Scan Build/XCFrameworks/ for core modules and binary adapters
-    if [[ -d "$ROOT_DIR/Build/XCFrameworks" ]]; then
+    # Scan Build/ReleaseArtifacts/XCFrameworks/ for core modules and binary adapters
+    if [[ -d "$ROOT_DIR/Build/ReleaseArtifacts/XCFrameworks" ]]; then
         # Process core modules: Only include actual binary targets
         # MSPNovaAdapter is a source-based target (.target), not a binary target (.binaryTarget)
         # It doesn't need binary distribution (zip/CDN)
         local core_modules=("NovaCore")
         for module in "${core_modules[@]}"; do
-            local xcframework_path="$ROOT_DIR/Build/XCFrameworks/${module}.xcframework"
+            local xcframework_path="$ROOT_DIR/Build/ReleaseArtifacts/XCFrameworks/${module}.xcframework"
             if [[ -d "$xcframework_path" ]]; then
                 xcframeworks+=("$xcframework_path")
                 log_info "Found core module: $module"
@@ -1175,7 +1175,7 @@ process_binary_targets_for_cloud_distribution() {
         # These adapters use binary XCFrameworks for distribution
         local binary_adapters=("MSPAmazonAdapter" "MSPMolocoAdapter" "MSPLiftoffAdapter")
         for adapter in "${binary_adapters[@]}"; do
-            local xcframework_path="$ROOT_DIR/Build/XCFrameworks/${adapter}.xcframework"
+            local xcframework_path="$ROOT_DIR/Build/ReleaseArtifacts/XCFrameworks/${adapter}.xcframework"
             if [[ -d "$xcframework_path" ]]; then
                 xcframeworks+=("$xcframework_path")
                 log_info "Found binary adapter: $adapter"
@@ -1195,7 +1195,7 @@ process_binary_targets_for_cloud_distribution() {
     # fi
     
     if [[ ${#xcframeworks[@]} -eq 0 ]]; then
-        log_warn "No XCFrameworks found in ThirdParty/ or Build/XCFrameworks/"
+        log_warn "No XCFrameworks found in ThirdParty/ or Build/ReleaseArtifacts/XCFrameworks/"
         return 0
     fi
     

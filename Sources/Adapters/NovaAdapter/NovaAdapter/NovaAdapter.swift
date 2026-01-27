@@ -4,7 +4,7 @@ import Foundation
 import MSPiOSCore
 import NovaCore
 import PrebidMobile
-@_implementationOnly import SnapKit
+@_implementationOnly import MSPSnapKit
 import UIKit
 
 public class NovaAdapter: AdNetworkAdapter {

@@ -1,6 +1,6 @@
 import Combine
 import MSPiOSCore
-@_implementationOnly import SnapKit
+@_implementationOnly import MSPSnapKit
 import UIKit
 
 private enum UIConfig {

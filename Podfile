@@ -20,7 +20,7 @@ end
 msp_mode = ENV['MSP_MODE'] || 'pods-release'
 # Force integrate to always generate workspace (required by build-core.sh)
 # Core XCFramework build requires workspace to:
-# - Pre-build Pod dependencies (MSPKingfisher, SnapKit, lottie-ios, MSPPrebidAdapter, SwiftProtobuf)
+# - Pre-build Pod dependencies (MSPKingfisher, MSPSnapKit, lottie-ios, MSPPrebidAdapter, SwiftProtobuf)
 # - Resolve Pod Swift modules in shared DerivedData
 integrate = true  # Was: (msp_mode == 'pods-dev')
 
@@ -48,7 +48,7 @@ pre_install do |installer|
     'Shimmer',
     # Note: Kingfisher is NOT required - project uses MSPKingfisher pod (source-based) instead
     'Lottie',
-    'SnapKit',
+    'MSPSnapKit',
     'SwiftProtobuf'
   ]
 
@@ -122,6 +122,8 @@ target 'MSPDemoApp' do
   pod 'MSPSharedLibraries', :path => 'MSPSharedLibraries.podspec', :configurations => demoapp_pod_configs
   # MSPKingfisher replaces official Kingfisher pod to avoid SwiftVerifyEmittedModuleInterface errors
   pod 'MSPKingfisher', :path => 'ThirdParty/MSPKingfisher/MSPKingfisher.podspec', :configurations => demoapp_pod_configs
+  # MSPSnapKit is a private SnapKit wrapper to avoid collisions with host SnapKit
+  pod 'MSPSnapKit', :path => 'ThirdParty/MSPSnapKit/MSPSnapKit.podspec', :configurations => demoapp_pod_configs
   # Lottie is needed by NovaCore at compile time
   # Shimmer is now provided via XCFramework (Shimmer Plan B)
   pod 'lottie-ios', '4.5.2', :configurations => demoapp_pod_configs

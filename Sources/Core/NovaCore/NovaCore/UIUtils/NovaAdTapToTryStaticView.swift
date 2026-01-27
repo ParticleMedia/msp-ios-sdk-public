@@ -7,7 +7,7 @@
 
 import Foundation
 import UIKit
-@_implementationOnly import SnapKit
+@_implementationOnly import MSPSnapKit
 
 // MARK: - NovaAdTapToTryStaticView
 

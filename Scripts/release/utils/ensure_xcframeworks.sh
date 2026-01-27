@@ -88,6 +88,7 @@ get_module_dir() {
         "MSPAmazonAdapter") echo "AmazonAdapter" ;;
         "MSPMolocoAdapter") echo "MolocoAdapter" ;;
         "MSPLiftoffAdapter") echo "LiftoffAdapter" ;;
+        "MSPNovaAdapter") echo "NovaAdapter" ;;
         *) echo "$pod_name" ;;
     esac
 }
@@ -100,7 +101,7 @@ get_module_dir() {
 check_xcframework_exists() {
     local adapter="$1"
     # XCFramework name matches pod name (unified naming)
-    local xcframework_path="$ROOT_DIR/Build/XCFrameworks/${adapter}.xcframework"
+    local xcframework_path="$ROOT_DIR/Build/ReleaseArtifacts/XCFrameworks/${adapter}.xcframework"
 
     if [[ -d "$xcframework_path" ]]; then
         return 0  # Exists
@@ -131,7 +132,7 @@ build_xcframework() {
         # Verify build result
         if check_xcframework_exists "$adapter"; then
             local size
-            size=$(du -sh "$ROOT_DIR/Build/XCFrameworks/${adapter}.xcframework" 2>/dev/null | cut -f1)
+            size=$(du -sh "$ROOT_DIR/Build/ReleaseArtifacts/XCFrameworks/${adapter}.xcframework" 2>/dev/null | cut -f1)
             log_success "✅ Built XCFramework: $adapter (${adapter}.xcframework, size: $size)"
             return 0
         else
@@ -190,7 +191,7 @@ ensure_all_xcframeworks() {
     local dry_run="${DRY_RUN:-true}"
 
     for foundation_pod in "${foundation_xcframeworks[@]}"; do
-        local foundation_path="$ROOT_DIR/Build/XCFrameworks/${foundation_pod}.xcframework"
+        local foundation_path="$ROOT_DIR/Build/ReleaseArtifacts/XCFrameworks/${foundation_pod}.xcframework"
 
         if [[ -d "$foundation_path" ]]; then
             log_debug "✓ ${foundation_pod}: XCFramework exists"
@@ -202,36 +203,13 @@ ensure_all_xcframeworks() {
     done
 
     # Check PrebidMobile (third-party, may be pre-packaged)
-    local prebid_path="$ROOT_DIR/Build/XCFrameworks/PrebidMobile.xcframework"
-    local prebid_alt_path="$ROOT_DIR/ThirdParty/PrebidMobile/PrebidMobile.xcframework"
-    if [[ ! -d "$prebid_path" ]]; then
-        # Try alternative path (ThirdParty)
-        if [[ -d "$prebid_alt_path" ]]; then
-            log_info "ℹ️  PrebidMobile found in ThirdParty, creating symlink to Build/XCFrameworks..."
-
-            # Ensure Build/XCFrameworks directory exists
-            mkdir -p "$(dirname "$prebid_path")"
-
-            # Create symlink (preferred) or copy as fallback
-            if ln -sf "$prebid_alt_path" "$prebid_path" 2>/dev/null; then
-                log_success "✅ Created symlink: Build/XCFrameworks/PrebidMobile.xcframework -> ThirdParty/PrebidMobile/PrebidMobile.xcframework"
-            else
-                log_warning "⚠️  Symlink failed, copying instead..."
-                if cp -R "$prebid_alt_path" "$prebid_path"; then
-                    log_success "✅ Copied PrebidMobile.xcframework to Build/XCFrameworks/"
-                else
-                    log_error "❌ Failed to copy PrebidMobile.xcframework"
-                    foundation_missing=true
-                fi
-            fi
-        else
-            log_warning "✗ PrebidMobile: XCFramework missing"
-            log_warning "   Primary path: $prebid_path"
-            log_warning "   Alternative path: $prebid_alt_path"
-            foundation_missing=true
-        fi
-    else
+    local prebid_path="$ROOT_DIR/Build/ReleaseArtifacts/XCFrameworks/PrebidMobile.xcframework"
+    if [[ -d "$prebid_path" ]]; then
         log_debug "✓ PrebidMobile: XCFramework exists"
+    else
+        log_warning "✗ PrebidMobile: XCFramework missing"
+        log_warning "   Expected path: $prebid_path"
+        foundation_missing=true
     fi
 
     if [[ "$foundation_missing" == "true" ]]; then
@@ -247,12 +225,12 @@ ensure_all_xcframeworks() {
             log_info ""
             log_info "Missing XCFrameworks (will be built shortly):"
             for foundation_pod in "${foundation_xcframeworks[@]}"; do
-                local foundation_path="$ROOT_DIR/Build/XCFrameworks/${foundation_pod}.xcframework"
+                local foundation_path="$ROOT_DIR/Build/ReleaseArtifacts/XCFrameworks/${foundation_pod}.xcframework"
                 if [[ ! -d "$foundation_path" ]]; then
                     log_info "  - $foundation_pod"
                 fi
             done
-            if [[ ! -d "$prebid_path" ]] && [[ ! -d "$prebid_alt_path" ]]; then
+            if [[ ! -d "$prebid_path" ]]; then
                 log_info "  - PrebidMobile"
             fi
             log_info ""
@@ -270,12 +248,12 @@ ensure_all_xcframeworks() {
             log_error ""
             log_error "Missing XCFrameworks:"
             for foundation_pod in "${foundation_xcframeworks[@]}"; do
-                local foundation_path="$ROOT_DIR/Build/XCFrameworks/${foundation_pod}.xcframework"
+                local foundation_path="$ROOT_DIR/Build/ReleaseArtifacts/XCFrameworks/${foundation_pod}.xcframework"
                 if [[ ! -d "$foundation_path" ]]; then
                     log_error "  - $foundation_pod"
                 fi
             done
-            if [[ ! -d "$prebid_path" ]] && [[ ! -d "$prebid_alt_path" ]]; then
+            if [[ ! -d "$prebid_path" ]]; then
                 log_error "  - PrebidMobile"
             fi
             log_error ""
@@ -289,8 +267,8 @@ ensure_all_xcframeworks() {
             log_error "  # Build MSPGoogleAdsTypes"
             log_error "  ./Scripts/xcframeworks/build_module.sh MSPGoogleAdsTypes"
             log_error ""
-            log_error "  # PrebidMobile (third-party, usually pre-packaged)"
-            log_error "  # Check: ThirdParty/PrebidMobile/PrebidMobile.xcframework"
+            log_error "  # PrebidMobile (third-party)"
+            log_error "  ./Scripts/xcframeworks/build-thirdparty.sh"
             log_error ""
             log_error "  Then re-run Preflight:"
             log_error "  ./Scripts/msp-release.sh preflight"
@@ -424,9 +402,11 @@ Applies to:
   - MSPGoogleAdapter
   - MSPFacebookAdapter
   - MSPAmazonAdapter
+  - MSPMolocoAdapter
+  - MSPLiftoffAdapter
+  - MSPNovaAdapter
 
 Does NOT apply to:
-  - NovaAdapter: Uses pre-packaged Binary/
   - Core pods: Require pre-built XCFrameworks
 
 Build logs:

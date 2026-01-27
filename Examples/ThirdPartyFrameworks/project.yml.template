@@ -1,6 +1,6 @@
 # XcodeGen Project for Third-Party Frameworks
-# Builds SwiftProtobuf, SnapKit, Lottie, and Kingfisher for XCFramework packaging.
-# Kingfisher/SnapKit are built as static frameworks to allow static linkage into MSPNovaAdapter.
+# Builds SwiftProtobuf, MSPSnapKit, Lottie, and Kingfisher for XCFramework packaging.
+# Kingfisher/MSPSnapKit are built as static frameworks to allow static linkage into MSPNovaAdapter.
 # Note: Shimmer is now provided via XCFramework (Shimmer Plan B), not built here.
 
 name: ThirdPartyFrameworks
@@ -47,18 +47,18 @@ targets:
         PRODUCT_MODULE_NAME: SwiftProtobuf
         SWIFT_OBJC_INTERFACE_HEADER_NAME: ""
 
-  SnapKit:
+  MSPSnapKit:
     type: framework
     platform: iOS
     sources:
-      - path: ../../Pods/SnapKit/Sources
+      - path: ../../ThirdParty/MSPSnapKit/Sources
         excludes:
           - "**/*.md"
     settings:
       base:
-        PRODUCT_NAME: SnapKit
-        PRODUCT_BUNDLE_IDENTIFIER: msp.thirdparty.SnapKit
-        PRODUCT_MODULE_NAME: SnapKit
+        PRODUCT_NAME: MSPSnapKit
+        PRODUCT_BUNDLE_IDENTIFIER: msp.thirdparty.MSPSnapKit
+        PRODUCT_MODULE_NAME: MSPSnapKit
         SWIFT_OBJC_INTERFACE_HEADER_NAME: ""
         MACH_O_TYPE: staticlib
 
@@ -108,10 +108,10 @@ schemes:
     archive:
       config: Release
 
-  SnapKit:
+  MSPSnapKit:
     build:
       targets:
-        SnapKit: all
+        MSPSnapKit: all
     archive:
       config: Release
 

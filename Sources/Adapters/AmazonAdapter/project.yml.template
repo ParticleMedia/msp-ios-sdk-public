@@ -29,9 +29,9 @@ targets:
           - "**/*.spec.swift"
           - "AmazonAdapter.docc/**"
     dependencies:
-      - framework: ../../../Build/XCFrameworks/MSPiOSCore.xcframework
+      - framework: ../../../Build/ReleaseArtifacts/XCFrameworks/MSPiOSCore.xcframework
         embed: false
-      - framework: ../../../Build/XCFrameworks/MSPGoogleAdsTypes.xcframework
+      - framework: ../../../Build/ReleaseArtifacts/XCFrameworks/MSPGoogleAdsTypes.xcframework
         embed: false
       - framework: ../../../Pods/AmazonPublisherServicesSDK/APS_iOS_SDK-4.5.5/DTBiOSSDK.xcframework
         embed: false
@@ -45,13 +45,8 @@ targets:
         # Framework Search Paths - XCFrameworks only
         FRAMEWORK_SEARCH_PATHS:
           - $(inherited)
-          - $(SRCROOT)/../../../Build/XCFrameworks
+          - $(SRCROOT)/../../../Build/ReleaseArtifacts/XCFrameworks
           - $(SRCROOT)/../../Core/MSPSharedLibraries
-          - $(SRCROOT)/../../../Sources/Core/ThirdParty/Kingfisher
-          - $(SRCROOT)/../../../Sources/Core/ThirdParty/SnapKit
-          - $(SRCROOT)/../../../Sources/Core/ThirdParty/Lottie
-          - $(SRCROOT)/../../../Sources/Core/ThirdParty/Shimmer
-          - $(SRCROOT)/../../../Sources/Core/ThirdParty/SwiftProtobuf
           - $(SRCROOT)/../../../Sources/Core/MSPOMSDK/OMSDK_Newsbreak1.xcframework
           - $(SRCROOT)/../../../Pods/AmazonPublisherServicesSDK/APS_iOS_SDK-4.5.5
           - $(SRCROOT)/../../../Pods/Google-Mobile-Ads-SDK/Frameworks/GoogleMobileAdsFramework

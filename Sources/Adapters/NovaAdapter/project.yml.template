@@ -29,19 +29,19 @@ targets:
           - "**/*.spec.swift"
           - "NovaAdapter.docc/**"
     dependencies:
-      - framework: ../../../Build/XCFrameworks/MSPiOSCore.xcframework
+      - framework: ../../../Build/ReleaseArtifacts/XCFrameworks/MSPiOSCore.xcframework
         embed: false
-      - framework: ../../../Build/XCFrameworks/PrebidMobile.xcframework
+      - framework: ../../../Build/ReleaseArtifacts/XCFrameworks/PrebidMobile.xcframework
         embed: false
-      - framework: ../../../Build/XCFrameworks/NovaCore.xcframework
+      - framework: ../../../Build/ReleaseArtifacts/XCFrameworks/NovaCore.xcframework
         embed: false
-      - framework: ../../Core/ThirdParty/Kingfisher/Kingfisher.xcframework
+      - framework: ../../../Build/ReleaseArtifacts/XCFrameworks/Kingfisher.xcframework
         embed: false
-      - framework: ../../Core/ThirdParty/SnapKit/SnapKit.xcframework
+      - framework: ../../../Build/ReleaseArtifacts/XCFrameworks/MSPSnapKit.xcframework
         embed: false
-      - framework: ../../Core/ThirdParty/Lottie/Lottie.xcframework
+      - framework: ../../../Build/ReleaseArtifacts/XCFrameworks/Lottie.xcframework
         embed: false
-      - framework: ../../../ThirdParty/Shimmer/Shimmer.xcframework
+      - framework: ../../../Build/ReleaseArtifacts/XCFrameworks/Shimmer.xcframework
         embed: false
     settings:
       base:
@@ -53,12 +53,7 @@ targets:
         # Framework Search Paths - XCFrameworks only
         FRAMEWORK_SEARCH_PATHS:
           - $(inherited)
-          - $(SRCROOT)/../../../Build/XCFrameworks
-          - $(SRCROOT)/../../../Sources/Core/ThirdParty/Kingfisher
-          - $(SRCROOT)/../../../Sources/Core/ThirdParty/SnapKit
-          - $(SRCROOT)/../../../Sources/Core/ThirdParty/Lottie
-          - $(SRCROOT)/../../../ThirdParty/Shimmer
-          - $(SRCROOT)/../../../Sources/Core/ThirdParty/SwiftProtobuf
+          - $(SRCROOT)/../../../Build/ReleaseArtifacts/XCFrameworks
           - $(SRCROOT)/../../../Sources/Core/MSPOMSDK/OMSDK_Newsbreak1.xcframework
 
 schemes:

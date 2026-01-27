@@ -378,22 +378,121 @@ update_podspec_for_release() {
     log_success "Generated release podspec for $pod at Build/ReleasePodspecs/${pod}.podspec"
 }
 
+# Adapter SDK version configuration (config-driven)
+ADAPTER_SDK_VERSION_CONFIG_LOADED="false"
+
+load_adapter_sdk_version_config() {
+    if [[ "${ADAPTER_SDK_VERSION_CONFIG_LOADED:-false}" == "true" ]]; then
+        return 0
+    fi
+
+    local config_file="${ADAPTER_SDK_VERSION_CONFIG_FILE:-$ROOT_DIR/Scripts/config/adapter_sdk_version.conf}"
+    if [[ ! -f "$config_file" ]]; then
+        log_error "Adapter SDK version config not found: $config_file"
+        return 1
+    fi
+
+    # shellcheck source=/dev/null
+    source "$config_file"
+
+    if [[ -z "${ADAPTER_SDK_VERSION_TOOL:-}" ]]; then
+        log_error "Adapter SDK version config missing ADAPTER_SDK_VERSION_TOOL"
+        return 1
+    fi
+    if [[ -z "${ADAPTER_SDK_VERSION_FUNCTION:-}" ]]; then
+        log_error "Adapter SDK version config missing ADAPTER_SDK_VERSION_FUNCTION"
+        return 1
+    fi
+    if [[ -z "${ADAPTER_SDK_VERSION_STRICT:-}" ]]; then
+        log_error "Adapter SDK version config missing ADAPTER_SDK_VERSION_STRICT"
+        return 1
+    fi
+    ADAPTER_SDK_VERSION_CONFIG_LOADED="true"
+    return 0
+}
+
+adapter_sdk_version_should_skip() {
+    local adapter="$1"
+
+    if ! load_adapter_sdk_version_config; then
+        return 1
+    fi
+
+    if [[ -z "${ADAPTER_SDK_VERSION_SKIP_ADAPTERS:-}" ]]; then
+        return 1
+    fi
+
+    if [[ " ${ADAPTER_SDK_VERSION_SKIP_ADAPTERS} " == *" ${adapter} "* ]]; then
+        return 0
+    fi
+
+    return 1
+}
+
+resolve_adapter_sdk_version_tool() {
+    if ! load_adapter_sdk_version_config; then
+        return 1
+    fi
+
+    local tool="${ADAPTER_SDK_VERSION_TOOL}"
+    if [[ "$tool" != /* ]]; then
+        tool="$ROOT_DIR/$tool"
+    fi
+
+    if [[ ! -x "$tool" ]]; then
+        log_error "Adapter SDK version tool not found or not executable: $tool"
+        return 1
+    fi
+
+    echo "$tool"
+    return 0
+}
+
+check_adapter_sdk_version() {
+    local adapter="$1"
+    local version="$2"
+
+    if adapter_sdk_version_should_skip "$adapter"; then
+        log_info "PUBLISH" "Skipping ${ADAPTER_SDK_VERSION_FUNCTION}() check for $adapter (config skip list)"
+        return 0
+    fi
+
+    local module_dir
+    module_dir=$(get_module_dir "$adapter")
+    local adapter_dir="${ROOT_DIR}/Sources/Adapters/${module_dir}/${module_dir}"
+
+    if [[ ! -d "$adapter_dir" ]]; then
+        log_error "PUBLISH" "Adapter directory not found: $adapter_dir"
+        return 1
+    fi
+
+    local tool
+    if ! tool=$(resolve_adapter_sdk_version_tool); then
+        return 1
+    fi
+
+    if "$tool" --path "$adapter_dir" --function "$ADAPTER_SDK_VERSION_FUNCTION" --version "$version" --check; then
+        return 0
+    fi
+    return $?
+}
+
 # Update adapter SDK version
 update_adapter_sdk_version() {
     local adapter="$1"
     local version="$2"
-    
-    # Skip adapters that read SDK version from external sources
-    if [[ "$adapter" == "MSPGoogleAdapter" || "$adapter" == "MSPFacebookAdapter" ]]; then
-        log_info "PUBLISH" "Skipping getSDKVersion() update for $adapter (reads from external sources)"
+
+    if adapter_sdk_version_should_skip "$adapter"; then
+        log_info "PUBLISH" "Skipping ${ADAPTER_SDK_VERSION_FUNCTION}() update for $adapter (config skip list)"
         return 0
     fi
-    
-    log_info "PUBLISH" "Updating getSDKVersion() in $adapter to version $version"
+
+    log_info "PUBLISH" "Updating ${ADAPTER_SDK_VERSION_FUNCTION}() in $adapter to version $version"
 
     # Map pod name to directory name (for adapters with renamed modules)
     # Example: MSPAmazonAdapter (pod) → AmazonAdapter (directory)
-    local module_dir=$(get_module_dir "$adapter")
+    local module_dir
+    module_dir=$(get_module_dir "$adapter")
     local adapter_dir="${ROOT_DIR}/Sources/Adapters/${module_dir}/${module_dir}"
 
     # Validate directory exists
@@ -404,41 +503,33 @@ update_adapter_sdk_version() {
         return 1
     fi
 
-    # Find and update Swift files containing getSDKVersion
-    local updated_count=0
-    local failed=false
-
-    while IFS= read -r file; do
-        # Verify file contains getSDKVersion function
-        if grep -q "func getSDKVersion()" "$file"; then
-            log_info "PUBLISH" "Updating $file"
-
-            # Update the return statement
-            # Pattern: return "any.version.string" → return "new.version"
-            if sed -i '' 's|return "[^"]*"|return "'"${version}"'"|g' "$file"; then
-                log_info "PUBLISH" "✓ Updated getSDKVersion in $(basename "$file")"
-                updated_count=$((updated_count + 1))
-            else
-                log_error "PUBLISH" "✗ Failed to update getSDKVersion in $file"
-                failed=true
-            fi
-        fi
-    done < <(find "$adapter_dir" -name "*.swift" -type f)
-
-    # Check results
-    if [[ "$failed" == "true" ]]; then
-        log_error "PUBLISH" "Failed to update some files in $adapter"
+    local tool
+    if ! tool=$(resolve_adapter_sdk_version_tool); then
         return 1
     fi
 
-    if [[ $updated_count -eq 0 ]]; then
-        log_warn "PUBLISH" "No getSDKVersion() function found in $adapter"
-        log_warn "PUBLISH" "This may be expected if adapter doesn't implement getSDKVersion()"
-        # Not a failure - some adapters may not have this function
+    if "$tool" --path "$adapter_dir" --function "$ADAPTER_SDK_VERSION_FUNCTION" --version "$version"; then
+        log_info "PUBLISH" "✓ Updated ${ADAPTER_SDK_VERSION_FUNCTION}() for $adapter"
         return 0
     fi
 
-    log_info "PUBLISH" "✓ Successfully updated getSDKVersion() in $updated_count file(s) for $adapter"
+    local rc=$?
+    case "$rc" in
+        2)
+            log_warn "PUBLISH" "No ${ADAPTER_SDK_VERSION_FUNCTION}() found in $adapter"
+            ;;
+        3)
+            log_warn "PUBLISH" "No string literal found inside ${ADAPTER_SDK_VERSION_FUNCTION}() for $adapter"
+            ;;
+        *)
+            log_error "PUBLISH" "Failed to update ${ADAPTER_SDK_VERSION_FUNCTION}() for $adapter (exit $rc)"
+            ;;
+    esac
+
+    if [[ "${ADAPTER_SDK_VERSION_STRICT}" == "true" ]]; then
+        return 1
+    fi
+
     return 0
 }
 
@@ -2297,7 +2388,7 @@ EOF
     # ========================================================================
     case "$pod" in
         MSPSharedLibraries)
-            # MSPSharedLibraries embeds MSPiOSCore and includes ThirdParty
+            # MSPSharedLibraries embeds MSPiOSCore and includes ThirdParty (PrebidMobile + MSPSnapKit)
             log_info "Special handling for MSPSharedLibraries (embeds MSPiOSCore)"
 
             # Create directory structure
@@ -2305,7 +2396,7 @@ EOF
             mkdir -p "$temp_zip_dir/ThirdParty/PrebidMobile"
 
             # Copy MSPSharedLibraries.xcframework using ditto (preserves symlinks)
-            local shared_lib_path="$ROOT_DIR/Build/XCFrameworks/MSPSharedLibraries.xcframework"
+            local shared_lib_path="$ROOT_DIR/Build/ReleaseArtifacts/XCFrameworks/MSPSharedLibraries.xcframework"
             if [[ ! -d "$shared_lib_path" ]]; then
                 log_error "❌ MSPSharedLibraries.xcframework not found: $shared_lib_path"
                 rm -rf "$temp_zip_dir"
@@ -2319,7 +2410,7 @@ EOF
             ensure_modulemaps_in_xcframework "$temp_zip_dir/Binary/$(basename "$shared_lib_path")"
 
             # Copy embedded MSPiOSCore.xcframework using ditto
-            local ios_core_path="$ROOT_DIR/Build/XCFrameworks/MSPiOSCore.xcframework"
+            local ios_core_path="$ROOT_DIR/Build/ReleaseArtifacts/XCFrameworks/MSPiOSCore.xcframework"
             if [[ ! -d "$ios_core_path" ]]; then
                 log_error "❌ MSPiOSCore.xcframework not found: $ios_core_path"
                 rm -rf "$temp_zip_dir"
@@ -2334,7 +2425,7 @@ EOF
             ensure_objc_modulemap_and_header "$temp_zip_dir/Binary/$(basename "$ios_core_path")" "MSPiOSCore"
 
             # Copy ThirdParty PrebidMobile using ditto
-            local prebid_path="$ROOT_DIR/ThirdParty/PrebidMobile/PrebidMobile.xcframework"
+            local prebid_path="$ROOT_DIR/Build/ReleaseArtifacts/XCFrameworks/PrebidMobile.xcframework"
             if [[ ! -d "$prebid_path" ]]; then
                 log_error "❌ PrebidMobile.xcframework not found: $prebid_path"
                 rm -rf "$temp_zip_dir"
@@ -2346,6 +2437,21 @@ EOF
                 return 1
             fi
             ensure_modulemaps_in_xcframework "$temp_zip_dir/ThirdParty/PrebidMobile/$(basename "$prebid_path")"
+
+            # Copy MSPSnapKit using ditto
+            local snapkit_path="$ROOT_DIR/Build/ReleaseArtifacts/XCFrameworks/MSPSnapKit.xcframework"
+            if [[ ! -d "$snapkit_path" ]]; then
+                log_error "❌ MSPSnapKit.xcframework not found: $snapkit_path"
+                rm -rf "$temp_zip_dir"
+                return 1
+            fi
+            mkdir -p "$temp_zip_dir/ThirdParty/MSPSnapKit"
+            if ! ditto "$snapkit_path" "$temp_zip_dir/ThirdParty/MSPSnapKit/$(basename "$snapkit_path")"; then
+                log_error "❌ Failed to copy MSPSnapKit.xcframework"
+                rm -rf "$temp_zip_dir"
+                return 1
+            fi
+            ensure_modulemaps_in_xcframework "$temp_zip_dir/ThirdParty/MSPSnapKit/$(basename "$snapkit_path")"
 
             # Copy Sources (optional, for dev mode)
             if [[ -d "$ROOT_DIR/Sources" ]]; then
@@ -2361,7 +2467,7 @@ EOF
             # MSPiOSCore: Binary/MSPiOSCore.xcframework
             mkdir -p "$temp_zip_dir/Binary"
 
-            local xcframework_path="$ROOT_DIR/Build/XCFrameworks/${pod}.xcframework"
+            local xcframework_path="$ROOT_DIR/Build/ReleaseArtifacts/XCFrameworks/${pod}.xcframework"
 
             if [[ ! -d "$xcframework_path" ]]; then
                 log_error "❌ XCFramework not found: $xcframework_path"
@@ -2388,13 +2494,13 @@ EOF
             # MSPNovaAdapter is unique:
             # - Uses pre-packaged NovaCore.xcframework from Binary/ directory
             # - NovaCore is not built by our build system (proprietary/third-party)
-            # - Unlike other adapters that use Build/XCFrameworks/
+            # - Unlike other adapters that use Build/ReleaseArtifacts/XCFrameworks/
             # ========================================================================
             if [[ "$pod" == "MSPNovaAdapter" ]]; then
                 log_info "MSPNovaAdapter: Binary adapter with embedded NovaCore dependency"
 
                 # Copy MSPNovaAdapter.xcframework (MSPNovaAdapter自身的代码)
-                local novaadapter_path="$ROOT_DIR/Build/XCFrameworks/MSPNovaAdapter.xcframework"
+                local novaadapter_path="$ROOT_DIR/Build/ReleaseArtifacts/XCFrameworks/MSPNovaAdapter.xcframework"
 
                 if [[ ! -d "$novaadapter_path" ]]; then
                     log_error "❌ MSPNovaAdapter.xcframework not found: $novaadapter_path"
@@ -2412,7 +2518,7 @@ EOF
                 log_success "✅ Copied MSPNovaAdapter.xcframework"
 
                 # Copy NovaCore.xcframework (第三方依赖)
-                local novacore_path="$ROOT_DIR/Binary/NovaCore.xcframework"
+                local novacore_path="$ROOT_DIR/Build/ReleaseArtifacts/Binary/NovaCore.xcframework"
 
                 if [[ ! -d "$novacore_path" ]]; then
                     log_error "❌ NovaCore.xcframework not found: $novacore_path"
@@ -2427,33 +2533,15 @@ EOF
                     return 1
                 fi
                 log_success "✅ Copied NovaCore.xcframework"
-
-                # Copy SnapKit.xcframework (bundle to match build-time dependency symbols)
-                local snapkit_path="$ROOT_DIR/ThirdParty/SnapKit/SnapKit.xcframework"
-
-                if [[ ! -d "$snapkit_path" ]]; then
-                    log_error "❌ SnapKit.xcframework not found: $snapkit_path"
-                    rm -rf "$temp_zip_dir"
-                    return 1
-                fi
-
-                mkdir -p "$temp_zip_dir/ThirdParty/SnapKit"
-                if ! ditto "$snapkit_path" "$temp_zip_dir/ThirdParty/SnapKit/$(basename "$snapkit_path")"; then
-                    log_error "❌ Failed to copy SnapKit.xcframework"
-                    rm -rf "$temp_zip_dir"
-                    return 1
-                fi
-                ensure_modulemaps_in_xcframework "$temp_zip_dir/ThirdParty/SnapKit/$(basename "$snapkit_path")"
-
-                log_success "✅ Prepared MSPNovaAdapter structure (MSPNovaAdapter + NovaCore + SnapKit)"
+                log_success "✅ Prepared MSPNovaAdapter structure (MSPNovaAdapter + NovaCore)"
 
             elif [[ "$pod" == "MSPMolocoAdapter" ]]; then
-                log_info "MSPMolocoAdapter: Bundle SnapKit binary to match build-time dependency"
+                log_info "MSPMolocoAdapter: Binary adapter (MSPSnapKit provided via MSPSharedLibraries)"
 
-                local xcframework_path="$ROOT_DIR/Build/XCFrameworks/${pod}.xcframework"
+                local xcframework_path="$ROOT_DIR/Build/ReleaseArtifacts/XCFrameworks/${pod}.xcframework"
                 if [[ ! -d "$xcframework_path" ]]; then
                     log_error "❌ XCFramework not found: $xcframework_path"
-                    log_error "Expected location: Build/XCFrameworks/${pod}.xcframework"
+                    log_error "Expected location: Build/ReleaseArtifacts/XCFrameworks/${pod}.xcframework"
                     rm -rf "$temp_zip_dir"
                     return 1
                 fi
@@ -2464,31 +2552,15 @@ EOF
                     return 1
                 fi
                 ensure_modulemaps_in_xcframework "$temp_zip_dir/Binary/$(basename "$xcframework_path")"
-
-                local snapkit_path="$ROOT_DIR/ThirdParty/SnapKit/SnapKit.xcframework"
-                if [[ ! -d "$snapkit_path" ]]; then
-                    log_error "❌ SnapKit.xcframework not found: $snapkit_path"
-                    rm -rf "$temp_zip_dir"
-                    return 1
-                fi
-
-                mkdir -p "$temp_zip_dir/ThirdParty/SnapKit"
-                if ! ditto "$snapkit_path" "$temp_zip_dir/ThirdParty/SnapKit/$(basename "$snapkit_path")"; then
-                    log_error "❌ Failed to copy SnapKit.xcframework"
-                    rm -rf "$temp_zip_dir"
-                    return 1
-                fi
-                ensure_modulemaps_in_xcframework "$temp_zip_dir/ThirdParty/SnapKit/$(basename "$snapkit_path")"
-
-                log_success "✅ Prepared MSPMolocoAdapter structure (MSPMolocoAdapter + SnapKit)"
+                log_success "✅ Prepared MSPMolocoAdapter structure (MSPMolocoAdapter)"
 
             else
-                # Regular adapters: use Build/XCFrameworks/
-                local xcframework_path="$ROOT_DIR/Build/XCFrameworks/${pod}.xcframework"
+                # Regular adapters: use Build/ReleaseArtifacts/XCFrameworks/
+                local xcframework_path="$ROOT_DIR/Build/ReleaseArtifacts/XCFrameworks/${pod}.xcframework"
 
                 if [[ ! -d "$xcframework_path" ]]; then
                     log_error "❌ XCFramework not found: $xcframework_path"
-                    log_error "Expected location: Build/XCFrameworks/${pod}.xcframework"
+                    log_error "Expected location: Build/ReleaseArtifacts/XCFrameworks/${pod}.xcframework"
                     
                     # Write failure status immediately to trigger fail-fast
                     if [[ -n "$result_file" ]]; then
@@ -2633,25 +2705,24 @@ get_zip_inputs_for_pod() {
 
     case "$pod" in
         MSPSharedLibraries)
-            echo "$ROOT_DIR/Build/XCFrameworks/MSPSharedLibraries.xcframework"
-            echo "$ROOT_DIR/Build/XCFrameworks/MSPiOSCore.xcframework"
-            echo "$ROOT_DIR/ThirdParty/PrebidMobile/PrebidMobile.xcframework"
+            echo "$ROOT_DIR/Build/ReleaseArtifacts/XCFrameworks/MSPSharedLibraries.xcframework"
+            echo "$ROOT_DIR/Build/ReleaseArtifacts/XCFrameworks/MSPiOSCore.xcframework"
+            echo "$ROOT_DIR/Build/ReleaseArtifacts/XCFrameworks/PrebidMobile.xcframework"
+            echo "$ROOT_DIR/Build/ReleaseArtifacts/XCFrameworks/MSPSnapKit.xcframework"
             # Sources are included (optional) for dev mode; include them if present.
             if [[ -d "$ROOT_DIR/Sources" ]]; then
                 echo "$ROOT_DIR/Sources"
             fi
             ;;
         MSPNovaAdapter)
-            echo "$ROOT_DIR/Build/XCFrameworks/MSPNovaAdapter.xcframework"
-            echo "$ROOT_DIR/Binary/NovaCore.xcframework"
-            echo "$ROOT_DIR/ThirdParty/SnapKit/SnapKit.xcframework"
+            echo "$ROOT_DIR/Build/ReleaseArtifacts/XCFrameworks/MSPNovaAdapter.xcframework"
+            echo "$ROOT_DIR/Build/ReleaseArtifacts/Binary/NovaCore.xcframework"
             ;;
         MSPMolocoAdapter)
-            echo "$ROOT_DIR/Build/XCFrameworks/MSPMolocoAdapter.xcframework"
-            echo "$ROOT_DIR/ThirdParty/SnapKit/SnapKit.xcframework"
+            echo "$ROOT_DIR/Build/ReleaseArtifacts/XCFrameworks/MSPMolocoAdapter.xcframework"
             ;;
         *)
-            echo "$ROOT_DIR/Build/XCFrameworks/${pod}.xcframework"
+            echo "$ROOT_DIR/Build/ReleaseArtifacts/XCFrameworks/${pod}.xcframework"
             ;;
     esac
 }
@@ -3215,7 +3286,7 @@ publish_pod_with_resume() {
                 # Map pod name to directory name (for build script)
                 # XCFramework name now matches pod name (unified naming)
                 local module_dir=$(get_module_dir "$pod")
-                local xcframework_path="$ROOT_DIR/Build/XCFrameworks/${pod}.xcframework"
+                local xcframework_path="$ROOT_DIR/Build/ReleaseArtifacts/XCFrameworks/${pod}.xcframework"
 
                 if [[ ! -d "$xcframework_path" ]]; then
                     log_warning "XCFramework missing for $pod, auto-building..."
@@ -4291,11 +4362,11 @@ release_msp_googleadstypes() {
 # ============================================================================
 # Ensures NovaCore.xcframework is available in Binary/ directory for MSPNovaAdapter release
 # ALWAYS rebuilds NovaCore to ensure source code changes are included
-# Pre-builds Pod dependencies (Kingfisher, SnapKit, Lottie) before building NovaCore
+# Pre-builds Pod dependencies (Kingfisher, MSPSnapKit, Lottie) before building NovaCore
 # ============================================================================
 ensure_novacore_xcframework() {
-    local novacore_binary_path="$ROOT_DIR/Binary/NovaCore.xcframework"
-    local novacore_build_path="$ROOT_DIR/Build/XCFrameworks/NovaCore.xcframework"
+    local novacore_binary_path="$ROOT_DIR/Build/ReleaseArtifacts/Binary/NovaCore.xcframework"
+    local novacore_build_path="$ROOT_DIR/Build/ReleaseArtifacts/XCFrameworks/NovaCore.xcframework"
     local workspace_file="$ROOT_DIR/msp-ios-sdk.xcworkspace"
     local shared_derived_data="$ROOT_DIR/.generated/DerivedData/build-shared"
 
@@ -4312,13 +4383,13 @@ ensure_novacore_xcframework() {
         rm -rf "$novacore_binary_path"
     fi
     if [[ -d "$novacore_build_path" ]]; then
-        log_info "Removing old Build/XCFrameworks/NovaCore.xcframework..."
+        log_info "Removing old Build/ReleaseArtifacts/XCFrameworks/NovaCore.xcframework..."
         rm -rf "$novacore_build_path"
     fi
 
     # -----------------------------------------------------------
     # Step 1: Pre-build Pod dependencies that NovaCore needs
-    # NovaCore imports: Kingfisher (via MSPKingfisher), SnapKit, Lottie
+    # NovaCore imports: Kingfisher (via MSPKingfisher), MSPSnapKit, Lottie
     # These must be built to shared DerivedData before NovaCore can compile
     # -----------------------------------------------------------
     log_info "Pre-building Pod dependencies for NovaCore..."
@@ -4334,7 +4405,7 @@ ensure_novacore_xcframework() {
     mkdir -p "$shared_derived_data"
 
     # Pod schemes that NovaCore depends on
-    local pod_schemes=("MSPKingfisher" "SnapKit" "lottie-ios")
+    local pod_schemes=("MSPKingfisher" "MSPSnapKit" "lottie-ios")
 
     for pod_scheme in "${pod_schemes[@]}"; do
         log_info "Pre-building $pod_scheme for iOS..."
@@ -4401,7 +4472,7 @@ ensure_novacore_xcframework() {
         log_error "❌ Failed to build NovaCore.xcframework"
         log_error "Please check build logs and fix any build errors"
         log_error "Common issues:"
-        log_error "  1. Missing dependencies (Kingfisher, SnapKit, Lottie, etc.)"
+        log_error "  1. Missing dependencies (Kingfisher, MSPSnapKit, Lottie, etc.)"
         log_error "  2. Code signing issues"
         log_error "  3. Xcode version incompatibility"
         return 1
@@ -4416,7 +4487,7 @@ ensure_novacore_xcframework() {
 
     # Copy to Binary/ directory
     log_info "Copying built XCFramework to Binary/ directory..."
-    mkdir -p "$ROOT_DIR/Binary"
+    mkdir -p "$ROOT_DIR/Build/ReleaseArtifacts/Binary"
 
     if ditto "$novacore_build_path" "$novacore_binary_path"; then
         log_success "✅ NovaCore.xcframework deployed to Binary/"
@@ -4463,16 +4534,17 @@ ensure_adapter_version_committed() {
         return 0
     fi
 
-    # Skip adapters that read SDK version from external sources
-    if [[ "$adapter" == "MSPGoogleAdapter" || "$adapter" == "MSPFacebookAdapter" ]]; then
-        log_info "[$adapter] Skipping version commit check (reads from external sources)"
+    # Skip adapters based on config
+    if adapter_sdk_version_should_skip "$adapter"; then
+        log_info "[$adapter] Skipping version commit check (config skip list)"
         return 0
     fi
 
     log_info "[$adapter] Checking version file state..."
 
     # Map pod name to directory name
-    local module_dir=$(get_module_dir "$adapter")
+    local module_dir
+    module_dir=$(get_module_dir "$adapter")
     local adapter_path="Sources/Adapters/${module_dir}/${module_dir}"
     local adapter_abs_path="$ROOT_DIR/$adapter_path"
 
@@ -4482,40 +4554,44 @@ ensure_adapter_version_committed() {
         return 1
     fi
 
-    # Read current version from Swift files
-    local current_version=""
-    local version_file=""
-    while IFS= read -r -d '' swift_file; do
-        if grep -q "func getSDKVersion()" "$swift_file"; then
-            current_version=$(grep 'return "' "$swift_file" | sed 's/.*return "\([^"]*\)".*/\1/')
-            version_file="$swift_file"
-            break
-        fi
-    done < <(find "$adapter_abs_path" -name "*.swift" -type f -print0 2>/dev/null)
-
-    # Check if version file was found
-    if [[ -z "$version_file" ]]; then
-        log_warn "[$adapter] No getSDKVersion() function found, skipping version commit check"
-        return 0
+    if ! load_adapter_sdk_version_config; then
+        log_error "[$adapter] Failed to load adapter SDK version config"
+        return 1
     fi
 
-    log_info "[$adapter] Current version: $current_version, Target version: $version"
-
-    # Case 1: Version mismatch - update and commit
-    if [[ "$current_version" != "$version" ]]; then
-        log_info "[$adapter] Version mismatch detected, updating to $version..."
-
-        if ! update_adapter_sdk_version "$adapter" "$version"; then
-            log_error "[$adapter] Failed to update SDK version"
+    local rc=0
+    check_adapter_sdk_version "$adapter" "$version" || rc=$?
+    case "$rc" in
+        0)
+            log_info "[$adapter] ${ADAPTER_SDK_VERSION_FUNCTION}() already matches $version"
+            ;;
+        1)
+            log_info "[$adapter] ${ADAPTER_SDK_VERSION_FUNCTION}() mismatch detected, updating to $version..."
+            if ! update_adapter_sdk_version "$adapter" "$version"; then
+                log_error "[$adapter] Failed to update SDK version"
+                return 1
+            fi
+            ;;
+        2)
+            log_warn "[$adapter] No ${ADAPTER_SDK_VERSION_FUNCTION}() found; skipping version commit check"
+            if [[ "${ADAPTER_SDK_VERSION_STRICT}" == "true" ]]; then
+                return 1
+            fi
+            return 0
+            ;;
+        3)
+            log_warn "[$adapter] No string literal in ${ADAPTER_SDK_VERSION_FUNCTION}(); skipping version commit check"
+            if [[ "${ADAPTER_SDK_VERSION_STRICT}" == "true" ]]; then
+                return 1
+            fi
+            return 0
+            ;;
+        *)
+            log_error "[$adapter] SDK version check failed (exit $rc)"
             return 1
-        fi
+            ;;
+    esac
 
-        log_info "[$adapter] Version updated, committing changes..."
-    else
-        log_info "[$adapter] Version already correct ($version)"
-    fi
-
-    # Case 2: Check if there are uncommitted changes
     if ! git diff --quiet -- "$adapter_abs_path" 2>/dev/null; then
         log_info "[$adapter] Uncommitted version changes detected, committing now..."
 
@@ -4540,7 +4616,7 @@ ensure_adapter_version_committed() {
             # Commit with detailed message
             if git commit -m "chore(release): update ${adapter} SDK version to ${version}
 
-- Update getSDKVersion() return value to ${version}
+- Update ${ADAPTER_SDK_VERSION_FUNCTION}() return value to ${version}
 - Committed during resume/idempotency check
 - Part of release ${version} preparation"; then
                 log_success "[$adapter] ✓ Committed version update ($swift_files_staged files)"
@@ -4558,6 +4634,45 @@ ensure_adapter_version_committed() {
     fi
 
     return 0
+}
+
+# ============================================================================
+# Helper: Commit Adapter Version Updates (Post-All)
+# ============================================================================
+# Runs after all adapters are released successfully to avoid git index contention.
+#
+# Args:
+#   $1: target version (e.g., 1.0.0-rc.24)
+#   $@: adapter names
+#
+# Returns:
+#   0: All commits handled (or no action needed)
+#   1: One or more adapters failed commit/update
+# ============================================================================
+commit_adapter_version_updates() {
+    local version="$1"
+    shift
+    local adapters=("$@")
+
+    if [[ "$DRY_RUN" == "true" ]]; then
+        return 0
+    fi
+
+    if [[ ${#adapters[@]} -eq 0 ]]; then
+        return 0
+    fi
+
+    log_section "Post-Release: Committing adapter SDK version updates"
+
+    local failed=0
+    for adapter in "${adapters[@]}"; do
+        if ! ensure_adapter_version_committed "$adapter" "$version"; then
+            log_warn "[$adapter] Version commit/update failed"
+            failed=1
+        fi
+    done
+
+    return $failed
 }
 
 # ============================================================================
@@ -4692,17 +4807,6 @@ release_single_adapter() {
                 fi
             fi
 
-            # ✨ NEW: Ensure version file is committed (handles interrupted commits)
-            # - Checks if version file matches target version
-            # - Commits if version is correct but uncommitted
-            # - Updates and commits if version is incorrect
-            if ! ensure_adapter_version_committed "$adapter" "$version"; then
-                log_error "Failed to ensure $adapter version is committed"
-                # Don't fail the release - pod is already published
-                # Just log warning and continue
-                log_warn "Continuing despite version commit issue (pod already published)"
-            fi
-
             log_success "$adapter $version already available and verified"
             echo "SUCCESS: $adapter already published" > "$result_file"
             return 0
@@ -4804,12 +4908,6 @@ release_single_adapter() {
 
     log_info "[DEBUG] update_adapter_podspec_dependencies succeeded for $adapter"
     
-    # Update SDK version in adapter code
-    if ! update_adapter_sdk_version "$adapter" "$version"; then
-        echo "ERROR: Failed to update SDK version for $adapter" > "$result_file"
-        return 1
-    fi
-    
     # Adapters use source-based distribution (git+tag), no GitHub release needed
     log_info "$adapter: Skipping GitHub release (source-based distribution via git+tag)"
     
@@ -4817,63 +4915,6 @@ release_single_adapter() {
     if ! publish_pod_to_cocoapods "$adapter" "$version"; then
         echo "ERROR: Failed to publish $adapter to CocoaPods" > "$result_file"
         return 1
-    fi
-    
-    # ════════════════════════════════════════════════════════════════════════════
-    # ✨ NEW: Commit version update immediately after successful publish
-    # ════════════════════════════════════════════════════════════════════════════
-    # Why: Ensure working directory is clean for resume
-    # When: Only in production mode (DRY_RUN=false)
-    # Safety: Check for uncommitted changes before commit (idempotent)
-    # ════════════════════════════════════════════════════════════════════════════
-    if [[ "$DRY_RUN" != "true" ]]; then
-        # Check if there are uncommitted changes for this adapter
-        # Map pod name to directory name (for adapters with renamed modules)
-        local module_dir=$(get_module_dir "$adapter")
-        local adapter_path="Sources/Adapters/${module_dir}/${module_dir}"
-
-        if ! git diff --quiet -- "$ROOT_DIR/$adapter_path" 2>/dev/null; then
-            log_info "Committing $adapter version update to $version..."
-
-            # Change to ROOT_DIR to ensure correct relative paths for git
-            pushd "$ROOT_DIR" > /dev/null || {
-                log_error "Failed to change to ROOT_DIR: $ROOT_DIR"
-                # Don't fail release - pod is already published
-                return 0
-            }
-
-            # Find and stage Swift files (avoid glob expansion issues)
-            local swift_files_staged=0
-            while IFS= read -r -d '' swift_file; do
-                if git add "$swift_file" 2>/dev/null; then
-                    ((swift_files_staged++))
-                    log_debug "Staged: $swift_file"
-                else
-                    log_warn "Failed to stage: $swift_file"
-                fi
-            done < <(find "$adapter_path" -name "*.swift" -type f -print0 2>/dev/null)
-
-            if [[ $swift_files_staged -gt 0 ]]; then
-                # Commit with detailed message
-                if git commit -m "chore(release): update ${adapter} SDK version to ${version}
-
-- Update getSDKVersion() return value to ${version}
-- Committed immediately after successful publish to CocoaPods
-- Part of release ${version} preparation"; then
-                    log_success "✓ Committed ${adapter} version update ($swift_files_staged files)"
-                else
-                    log_error "✗ Failed to commit ${adapter} version update"
-                    log_warn "Pod published successfully but version commit failed"
-                    log_warn "You may need to commit manually: cd $ROOT_DIR && git add ${adapter_path} && git commit"
-                fi
-            else
-                log_warn "No Swift files found or staged for ${adapter} in ${adapter_path}"
-            fi
-
-            popd > /dev/null || true
-        else
-            log_info "${adapter} version already committed or no changes"
-        fi
     fi
     
     # Note: Availability checking is done after ALL adapters are released
@@ -5008,6 +5049,13 @@ release_adapters() {
     # Ensure MSPSharedLibraries and MSPGoogleAdsTypes are available before adapter releases
     log_step "Verifying MSPSharedLibraries and MSPGoogleAdsTypes availability before adapter releases..."
     
+    # Update specs repo once before parallel dependency availability checks
+    log_step "Updating CocoaPods specs repository before parallel availability checks..."
+    if ! update_specs_repo; then
+        log_error "Failed to update specs repository before availability checks"
+        return 1
+    fi
+
     # Create temporary files for parallel checks
     local shared_libs_check_file=$(mktemp "/tmp/msp_availability_check_shared_libs_XXXXXX")
     local google_ads_types_check_file=$(mktemp "/tmp/msp_availability_check_google_ads_types_XXXXXX")
@@ -5232,7 +5280,7 @@ release_adapters() {
         
         # MSPNovaAdapter: Verify Binary/NovaCore.xcframework exists and is valid
         if [[ "$adapter" == "MSPNovaAdapter" ]]; then
-            local novacore_path="$ROOT_DIR/Binary/NovaCore.xcframework"
+            local novacore_path="$ROOT_DIR/Build/ReleaseArtifacts/Binary/NovaCore.xcframework"
             
             # This should never happen if Step 0 succeeded, but double-check
             if [[ ! -d "$novacore_path" ]]; then
@@ -5253,13 +5301,13 @@ release_adapters() {
             
             log_success "✅ MSPNovaAdapter pre-flight check passed (NovaCore.xcframework is valid)"
         else
-            # Other adapters: Check Build/XCFrameworks/<Adapter>.xcframework exists
-            local xcframework_path="$ROOT_DIR/Build/XCFrameworks/${adapter}.xcframework"
+            # Other adapters: Check Build/ReleaseArtifacts/XCFrameworks/<Adapter>.xcframework exists
+            local xcframework_path="$ROOT_DIR/Build/ReleaseArtifacts/XCFrameworks/${adapter}.xcframework"
             
             if [[ ! -d "$xcframework_path" ]]; then
                 log_error "❌ Pre-flight check failed: $adapter"
                 log_error "XCFramework not found: $xcframework_path"
-                log_error "Expected location: Build/XCFrameworks/${adapter}.xcframework"
+                log_error "Expected location: Build/ReleaseArtifacts/XCFrameworks/${adapter}.xcframework"
                 log_error "Cannot proceed with adapter releases - missing required file"
                 log_error ""
                 log_error "Please build the XCFramework first:"
@@ -5281,6 +5329,13 @@ release_adapters() {
     done
     
     log_success "All adapter pre-flight checks passed"
+
+    # Update specs repo once before parallel adapter releases
+    log_step "Updating CocoaPods specs repository before parallel adapter releases..."
+    if ! update_specs_repo; then
+        log_error "Failed to update specs repository before adapter releases"
+        return 1
+    fi
     
     # ========================================================================
     # Step 1: Start parallel adapter releases
@@ -5484,6 +5539,12 @@ release_adapters() {
     fi
     
     log_success "All adapters released successfully ($success_count/$success_count)"
+
+    # Post-all: commit adapter SDK version updates once all adapters succeed
+    if ! commit_adapter_version_updates "$VERSION" "${adapters[@]}"; then
+        log_warn "One or more adapter version commits failed"
+        log_warn "Pods are published; you may need to commit version updates manually"
+    fi
     
     # Step 2.5: Check availability of dependencies for MSPCore
     if [[ "$DRY_RUN" != "true" ]]; then
@@ -5704,7 +5765,7 @@ commit_release_changes() {
     fi
 
     # Add any other generated artifacts (expand as needed)
-    # git add Build/XCFrameworks/**/*.plist 2>/dev/null || true
+    # git add Build/ReleaseArtifacts/XCFrameworks/**/*.plist 2>/dev/null || true
 
     # Check if there are changes to commit
     if git diff --cached --quiet; then
@@ -5723,6 +5784,111 @@ commit_release_changes() {
 Note: Version number updates were committed separately after each pod publish."
     
     log_success "✓ Committed remaining release artifacts"
+}
+
+# Ensure CocoaPods workspace exists before release flow (needed for NovaCore rebuild)
+ensure_release_workspace() {
+    local workspace="$ROOT_DIR/msp-ios-sdk.xcworkspace"
+
+    if [[ -L "$workspace" || -d "$workspace" ]]; then
+        log_info "Workspace already exists: $workspace"
+        return 0
+    fi
+
+    local switch_script="$ROOT_DIR/Scripts/switch-target.sh"
+    if [[ ! -x "$switch_script" ]]; then
+        log_error "switch-target.sh not found or not executable: $switch_script"
+        return 1
+    fi
+
+    log_step "Workspace missing; preparing via pods-release"
+    if "$switch_script" pods-release; then
+        log_success "Workspace prepared via pods-release"
+        return 0
+    fi
+
+    log_error "Failed to prepare workspace via pods-release"
+    return 1
+}
+
+# Force rebuild of all binary XCFrameworks before publishing.
+# This guarantees the published binaries match the current source, even on resume.
+rebuild_release_binaries() {
+    if [[ "${DRY_RUN:-true}" == "true" ]]; then
+        log_info "DRY RUN: Skipping binary rebuild (no binaries will be published)"
+        return 0
+    fi
+
+    log_section "Rebuilding binary XCFrameworks (forced for release)"
+
+    local build_core_script="$ROOT_DIR/Scripts/xcframeworks/build-core.sh"
+    if [[ ! -x "$build_core_script" ]]; then
+        log_error "build-core.sh not found or not executable: $build_core_script"
+        return 1
+    fi
+    log_step "Building core XCFrameworks"
+    if ! bash "$build_core_script"; then
+        log_error "Core XCFramework build failed"
+        return 1
+    fi
+
+    local build_adapters_script="$ROOT_DIR/Scripts/xcframeworks/build-adapters.sh"
+    if [[ ! -x "$build_adapters_script" ]]; then
+        log_error "build-adapters.sh not found or not executable: $build_adapters_script"
+        return 1
+    fi
+    log_step "Building adapter XCFrameworks"
+    if ! bash "$build_adapters_script"; then
+        log_error "Adapter XCFramework build script failed"
+        return 1
+    fi
+
+    # Verify required binary XCFrameworks exist after rebuild
+    local required=(
+        "MSPiOSCore"
+        "MSPSharedLibraries"
+        "MSPGoogleAdsTypes"
+        "MSPPrebidAdapter"
+        "MSPGoogleAdapter"
+        "MSPFacebookAdapter"
+        "MSPAmazonAdapter"
+        "MSPMolocoAdapter"
+        "MSPLiftoffAdapter"
+        "MSPNovaAdapter"
+        "MSPCore"
+    )
+    local missing=0
+    for pod in "${required[@]}"; do
+        local path="$ROOT_DIR/Build/ReleaseArtifacts/XCFrameworks/${pod}.xcframework"
+        if [[ ! -d "$path" ]]; then
+            log_error "Missing rebuilt XCFramework: $path"
+            missing=1
+        fi
+    done
+
+    # Ensure ReleaseArtifacts/Binary/MSPNovaAdapter.xcframework is refreshed for podspec generation
+    local nova_build="$ROOT_DIR/Build/ReleaseArtifacts/XCFrameworks/MSPNovaAdapter.xcframework"
+    local nova_binary="$ROOT_DIR/Build/ReleaseArtifacts/Binary/MSPNovaAdapter.xcframework"
+    if [[ -d "$nova_build" ]]; then
+        rm -rf "$nova_binary"
+        if cp -R "$nova_build" "$nova_binary"; then
+            log_success "Updated ReleaseArtifacts/Binary/MSPNovaAdapter.xcframework"
+        else
+            log_error "Failed to copy MSPNovaAdapter.xcframework to ReleaseArtifacts/Binary"
+            missing=1
+        fi
+    else
+        log_error "MSPNovaAdapter.xcframework not found at: $nova_build"
+        missing=1
+    fi
+
+    if [[ "$missing" -ne 0 ]]; then
+        log_error "Binary rebuild verification failed"
+        return 1
+    fi
+
+    log_success "All binary XCFrameworks rebuilt successfully"
+    return 0
 }
 
 # Main function
@@ -5751,6 +5917,13 @@ main() {
     
     # Check release branch
     check_release_branch
+
+    # Ensure workspace exists early (required for NovaCore rebuild in adapters phase)
+    if ! ensure_release_workspace; then
+        log_error "[MSP][ORCH] Workspace preparation failed - aborting"
+        msp_state_mark_step_failed "pods_publish" "Workspace preparation failed" "1"
+        exit 1
+    fi
     
     # Record start time for duration calculation
     local start_time=$(date +%s)
@@ -5767,6 +5940,12 @@ main() {
     
     # Mark pods_publish step as running
     msp_state_mark_step_running "pods_publish"
+
+    # Force rebuild all binary XCFrameworks for every publish run (including resume)
+    if ! rebuild_release_binaries; then
+        msp_state_mark_step_failed "pods_publish" "Binary XCFramework rebuild failed" "1"
+        exit 1
+    fi
     
     print_section "Starting CocoaPods Release Process for Version: $VERSION"
     

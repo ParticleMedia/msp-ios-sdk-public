@@ -30,7 +30,7 @@ Pod::Spec.new do |spec|
   spec.dependency 'VungleAds'
   spec.dependency 'MSPSharedLibraries'
   spec.dependency 'MSPiOSCore'  # Required for binary distribution (swiftinterface imports MSPiOSCore)
-  spec.dependency 'SnapKit'
+  spec.dependency 'MSPSnapKit'
 
   spec.static_framework = true
 
@@ -44,12 +44,12 @@ Pod::Spec.new do |spec|
     'SWIFT_EMIT_MODULE_INTERFACE' => 'NO',
     'SWIFT_INSTALL_MODULE_FOR_DEPLOYMENT' => 'NO',
     'DEFINES_MODULE' => 'YES',
-    'FRAMEWORK_SEARCH_PATHS' => '$(inherited) $(PODS_ROOT)/../Build/XCFrameworks',
-    'SWIFT_INCLUDE_PATHS' => '$(inherited) $(PODS_ROOT)/../Build/XCFrameworks'
+    'FRAMEWORK_SEARCH_PATHS' => '$(inherited) $(PODS_ROOT)/../Build/ReleaseArtifacts/XCFrameworks',
+    'SWIFT_INCLUDE_PATHS' => '$(inherited) $(PODS_ROOT)/../Build/ReleaseArtifacts/XCFrameworks'
   }
   spec.user_target_xcconfig = {
     'EXCLUDED_ARCHS[sdk=iphonesimulator*]' => 'arm64',
-    'FRAMEWORK_SEARCH_PATHS' => '$(inherited) $(PODS_ROOT)/../Build/XCFrameworks',
-    'SWIFT_INCLUDE_PATHS' => '$(inherited) $(PODS_ROOT)/../Build/XCFrameworks'
+    'FRAMEWORK_SEARCH_PATHS' => '$(inherited) $(PODS_ROOT)/../Build/ReleaseArtifacts/XCFrameworks',
+    'SWIFT_INCLUDE_PATHS' => '$(inherited) $(PODS_ROOT)/../Build/ReleaseArtifacts/XCFrameworks'
   }
 end
