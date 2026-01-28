@@ -4,10 +4,9 @@
   "description": "MSP iOS SDK - Media Service Platform iOS SDK",
   "private": true,
   "scripts": {
-    "prepare": "husky install"
+    "prepare": "husky"
   },
   "devDependencies": {
     "husky": "^9.1.7"
   }
 }
-
