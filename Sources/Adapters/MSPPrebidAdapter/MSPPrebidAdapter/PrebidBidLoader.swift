@@ -167,9 +167,10 @@ public class PrebidBidLoader: BidLoader {
 
 
         let testParams = adRequest.testParams
-        for (key, value) in testParams where value is String {
-            adUnitConfig.removeContextData(for: key)
-            adUnitConfig.addContextData(key: key, value: value as? String ?? "")
+        let testKey = "test"
+        adUnitConfig.removeContextData(for: testKey)
+        if let testParamsJSON = toJSONString(testParams) {
+            adUnitConfig.addContextData(key: testKey, value: testParamsJSON ?? "")
         }
 
         if let gadQueryInfo = bidTokens.googleQueryInfo {
@@ -192,6 +193,12 @@ public class PrebidBidLoader: BidLoader {
         }
 
         return adUnitConfig
+    }
+
+    private func toJSONString(_ dict: [String: Any]) -> String? {
+        guard JSONSerialization.isValidJSONObject(dict) else { return nil }
+        guard let data = try? JSONSerialization.data(withJSONObject: dict, options: []) else { return nil }
+        return String(data: data, encoding: .utf8)
     }
 
     private func getGeoDict() -> [String: String] {
