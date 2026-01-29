@@ -29,7 +29,7 @@ Pod::Spec.new do |spec|
   spec.dependency 'MSPSharedLibraries'
   spec.dependency 'MSPiOSCore'
 
-  spec.static_framework = true
+  spec.static_framework = false
 
   # PURE SWIFT MODULE — prevent Clang module generation
   spec.public_header_files = []
