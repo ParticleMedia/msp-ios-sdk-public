@@ -413,6 +413,68 @@ publish_podspec() {
     fi
 }
 
+# ============================================================================
+# Stale Specs Repo Cleanup
+# ============================================================================
+# Problem: Temporary CocoaPods repos (e.g., tmp-msp_local_specs_*) can become
+# stale when their source directory is deleted (e.g., after system reboot).
+# This causes every `pod repo update` to fail.
+#
+# Solution: Proactively clean up orphaned repos at the start of any specs
+# operation. A repo is considered orphaned if:
+# 1. Its name starts with "tmp-" or "temp-"
+# 2. It references a non-existent local path as its origin
+# ============================================================================
+cleanup_stale_specs_repos() {
+    local repos_dir="$HOME/.cocoapods/repos"
+    local cleaned_count=0
+
+    if [[ ! -d "$repos_dir" ]]; then
+        return 0
+    fi
+
+    log_debug "Checking for stale CocoaPods specs repos..."
+
+    # Find all directories in repos that might be stale
+    for repo_dir in "$repos_dir"/tmp-* "$repos_dir"/temp-*; do
+        if [[ -d "$repo_dir" ]]; then
+            local repo_name
+            repo_name=$(basename "$repo_dir")
+
+            # Check if the repo's remote origin exists
+            local remote_url
+            remote_url=$(git -C "$repo_dir" config --get remote.origin.url 2>/dev/null || echo "")
+
+            if [[ -n "$remote_url" ]]; then
+                # If remote URL is a local path, check if it exists
+                if [[ "$remote_url" == /* ]] || [[ "$remote_url" == file://* ]]; then
+                    local local_path="${remote_url#file://}"
+                    if [[ ! -d "$local_path" ]]; then
+                        log_warn "Removing stale specs repo '$repo_name' (origin '$local_path' no longer exists)"
+                        rm -rf "$repo_dir"
+                        ((cleaned_count++))
+                    fi
+                fi
+            else
+                # No remote URL configured - likely corrupted
+                log_warn "Removing corrupted specs repo '$repo_name' (no remote origin)"
+                rm -rf "$repo_dir"
+                ((cleaned_count++))
+            fi
+        fi
+    done
+
+    if [[ $cleaned_count -gt 0 ]]; then
+        log_success "Cleaned up $cleaned_count stale specs repo(s)"
+    else
+        log_debug "No stale specs repos found"
+    fi
+
+    return 0
+}
+
+export -f cleanup_stale_specs_repos
+
 # Repository operations
 update_specs_repo() {
     # ═══════════════════════════════════════════════════════════════════════════
@@ -429,10 +491,15 @@ update_specs_repo() {
     # 3. Multiple checks within 5 min window will see the same CDN state
     # ═══════════════════════════════════════════════════════════════════════════
 
+    # First, clean up any stale repos that might cause update failures
+    cleanup_stale_specs_repos
+
     local cache_file="/tmp/msp-cocoapods-specs-repo-last-update"
+    local cache_failure_file="/tmp/msp-cocoapods-specs-repo-last-failure"
     local cache_lock_file="${cache_file}.lock"
     local cache_lock_dir="${cache_file}.lockdir"
-    local cache_ttl=300  # 5 minutes (300 seconds)
+    local cache_ttl=300         # 5 minutes for successful updates
+    local failure_cache_ttl=60  # 60 seconds for failed updates (prevents rapid retries)
     local current_time
     current_time=$(date +%s)
     local max_attempts=3
@@ -472,7 +539,7 @@ update_specs_repo() {
             trap 'rmdir "'"$cache_lock_dir"'" 2>/dev/null || true' EXIT
         fi
 
-        # Check cache (now protected by lock)
+        # Check success cache (now protected by lock)
         if [[ -f "$cache_file" ]]; then
             local last_update_time
             last_update_time=$(cat "$cache_file" 2>/dev/null || echo 0)
@@ -486,8 +553,20 @@ update_specs_repo() {
             else
                 log_debug "Cache expired (${time_since_update}s > ${cache_ttl}s TTL), updating now..."
             fi
-        else
-            log_debug "No cache found, performing first update..."
+        fi
+
+        # Check failure cache (prevent rapid retries after failures)
+        if [[ -f "$cache_failure_file" ]]; then
+            local last_failure_time
+            last_failure_time=$(cat "$cache_failure_file" 2>/dev/null || echo 0)
+            local time_since_failure=$((current_time - last_failure_time))
+
+            if [[ $time_since_failure -lt $failure_cache_ttl ]]; then
+                local remaining=$((failure_cache_ttl - time_since_failure))
+                log_warn "Specs repo update failed ${time_since_failure}s ago, cooling down..."
+                log_info "Skipping retry (will retry in ${remaining}s)"
+                exit 1
+            fi
         fi
 
         # Perform update (only one process at a time)
@@ -499,8 +578,10 @@ update_specs_repo() {
             # Run with timeout: 15 minutes (900s)
             # Rationale: Observed 1-4 min, extreme cases up to 10 min, 15 min provides safety margin
             if run_with_timeout 900 bundle exec pod repo update; then
-                # Update cache timestamp on success
+                # Update success cache timestamp
                 echo "$current_time" > "$cache_file"
+                # Clear failure cache on success
+                rm -f "$cache_failure_file"
                 log_success "Specs repository updated (cache timestamp: $current_time)"
                 exit 0
             else
@@ -520,7 +601,10 @@ update_specs_repo() {
             ((attempt++))
         done
 
+        # Cache the failure to prevent rapid retries
+        echo "$current_time" > "$cache_failure_file"
         log_error "Failed to update specs repository after $max_attempts attempts"
+        log_info "Failure cached for ${failure_cache_ttl}s to prevent rapid retries"
         exit 1
 
     ) 9>"$cache_lock_file"
@@ -549,9 +633,20 @@ update_specs_repo() {
 # Clear specs repo update cache (for testing/debugging)
 clear_specs_repo_cache() {
     local cache_file="/tmp/msp-cocoapods-specs-repo-last-update"
+    local cache_failure_file="/tmp/msp-cocoapods-specs-repo-last-failure"
+    local cleared=false
+
     if [[ -f "$cache_file" ]]; then
         rm -f "$cache_file"
-        log_info "Cleared specs repository update cache"
+        cleared=true
+    fi
+    if [[ -f "$cache_failure_file" ]]; then
+        rm -f "$cache_failure_file"
+        cleared=true
+    fi
+
+    if [[ "$cleared" == "true" ]]; then
+        log_info "Cleared specs repository update cache (success and failure)"
     else
         log_debug "No cache file to clear"
     fi
@@ -746,27 +841,42 @@ troubleshoot_cocoapods_network() {
 # Try alternative CocoaPods sources
 try_alternative_cocoapods_sources() {
     log_debug "Trying alternative CocoaPods sources..."
-    
+
     # Add alternative sources
     local sources=(
         "https://github.com/CocoaPods/Specs.git"
         "https://cdn.cocoapods.org/"
     )
-    
+
+    # Use unique repo name to avoid conflicts
+    local temp_repo_name="temp-msp-fallback-$$"
+
+    # Ensure cleanup on exit (trap within function scope)
+    local cleanup_needed=false
+
     for source in "${sources[@]}"; do
         log_debug "Trying source: $source"
-        if bundle exec pod repo add temp-repo "$source" >/dev/null 2>&1; then
+        if bundle exec pod repo add "$temp_repo_name" "$source" >/dev/null 2>&1; then
+            cleanup_needed=true
             log_info "Successfully added source: $source"
             # Try to update with this source
-            if run_with_timeout 900 bundle exec pod repo update temp-repo >/dev/null 2>&1; then
+            if run_with_timeout 900 bundle exec pod repo update "$temp_repo_name" >/dev/null 2>&1; then
                 log_success "Source $source is working"
+                # Clean up the temp repo - we don't need to keep it
+                bundle exec pod repo remove "$temp_repo_name" >/dev/null 2>&1 || true
                 return $EXIT_SUCCESS
             fi
             # Clean up if it didn't work
-            bundle exec pod repo remove temp-repo >/dev/null 2>&1
+            bundle exec pod repo remove "$temp_repo_name" >/dev/null 2>&1 || true
+            cleanup_needed=false
         fi
     done
-    
+
+    # Final cleanup just in case
+    if [[ "$cleanup_needed" == "true" ]]; then
+        bundle exec pod repo remove "$temp_repo_name" >/dev/null 2>&1 || true
+    fi
+
     return $EXIT_BUILD_ERROR
 }
 

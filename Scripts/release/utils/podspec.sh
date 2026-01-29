@@ -556,27 +556,43 @@ msp_run_pod_trunk_push() {
     
     # Run with timeout: 30 minutes (1800s)
     # Rationale: Observed 5-15 min, extreme cases up to 25 min, 30 min provides safety margin
-    if run_with_timeout 1800 pod trunk push "$spec" --allow-warnings; then
+    # Use tee to capture output in real-time while also displaying it
+    local push_log_file
+    push_log_file=$(mktemp "/tmp/pod_trunk_push_${RANDOM}.log")
+
+    # Ensure cleanup on exit (normal or interrupted)
+    trap "rm -f '$push_log_file'" EXIT INT TERM
+
+    log_info "[PODS] Executing: pod trunk push \"$spec\" --allow-warnings"
+    log_info "[PODS] Output will be captured to: $push_log_file"
+
+    # Run with timeout and capture output in real-time using tee
+    # tee outputs to both stdout (for real-time viewing) and file (for later reference)
+    # Use PIPESTATUS to get the actual exit code of run_with_timeout, not tee
+    run_with_timeout 1800 pod trunk push "$spec" --allow-warnings 2>&1 | tee "$push_log_file"
+    local exit_code=${PIPESTATUS[0]}
+
+    if [[ $exit_code -eq 0 ]]; then
         log_success "[PODS] ✅ Successfully pushed $spec to trunk"
+        rm -f "$push_log_file"
         return 0
+    elif [[ $exit_code -eq 124 ]]; then
+        log_error "[PODS] ❌ TIMEOUT: pod trunk push exceeded 30 minutes"
+        log_error "[PODS] This usually indicates:"
+        log_error "  1. Network connectivity issues"
+        log_error "  2. CocoaPods trunk server is slow or down"
+        log_error "  3. Podspec validation is taking too long"
+        log_error ""
+        log_error "Troubleshooting:"
+        log_error "  1. Check network: curl -I https://trunk.cocoapods.org"
+        log_error "  2. Check podspec locally: pod spec lint $spec --allow-warnings"
+        log_error "  3. Try again in a few minutes (server may be slow)"
+        log_error "  4. Review captured output: $push_log_file"
+        return 1
     else
-        local exit_code=$?
-        if [[ $exit_code -eq 124 ]]; then
-            log_error "[PODS] ❌ TIMEOUT: pod trunk push exceeded 30 minutes"
-            log_error "[PODS] This usually indicates:"
-            log_error "  1. Network connectivity issues"
-            log_error "  2. CocoaPods trunk server is slow or down"
-            log_error "  3. Podspec validation is taking too long"
-            log_error ""
-            log_error "Troubleshooting:"
-            log_error "  1. Check network: curl -I https://trunk.cocoapods.org"
-            log_error "  2. Check podspec locally: pod spec lint $spec --allow-warnings"
-            log_error "  3. Try again in a few minutes (server may be slow)"
-            return 1
-        else
-            log_error "[PODS] ❌ pod trunk push failed with exit code $exit_code"
-            return $exit_code
-        fi
+        log_error "[PODS] ❌ pod trunk push failed with exit code $exit_code"
+        log_error "[PODS] Review captured output for details: $push_log_file"
+        return $exit_code
     fi
 }
 

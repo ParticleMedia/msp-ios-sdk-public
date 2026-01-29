@@ -21,6 +21,12 @@ ROOT_DIR="$(cd "$XCFRAMEWORKS_SCRIPT_DIR/../.." && pwd)"
 # shellcheck source=Scripts/target-switching/common.sh
 source "$XCFRAMEWORKS_SCRIPT_DIR/../target-switching/common.sh"
 
+# Load process utilities for timeout protection
+if [[ -f "$ROOT_DIR/Scripts/lib/process_utils.sh" ]]; then
+    # shellcheck source=Scripts/lib/process_utils.sh
+    source "$ROOT_DIR/Scripts/lib/process_utils.sh"
+fi
+
 ensure_repo_root
 
 BUILD_MODULE_SCRIPT="$XCFRAMEWORKS_SCRIPT_DIR/build_module.sh"
@@ -102,7 +108,7 @@ for pod_scheme in "${POD_SCHEMES_TO_PREBUILD[@]}"; do
         -configuration Release \
         -destination "generic/platform=iOS" \
         -derivedDataPath "$SHARED_DERIVED_DATA" \
-        build 2>&1 | tee "/tmp/build_${pod_scheme}.log" | grep -E "(BUILD SUCCEEDED|BUILD FAILED|error)" | tail -3; then
+        build 2>&1 | tee "/tmp/build_${pod_scheme}.log"; then
         if grep -q "BUILD SUCCEEDED" "/tmp/build_${pod_scheme}.log"; then
             log_success "$pod_scheme (iOS) built successfully"
         else
@@ -125,7 +131,7 @@ for pod_scheme in "${POD_SCHEMES_TO_PREBUILD[@]}"; do
         -configuration Release \
         -destination "generic/platform=iOS Simulator" \
         -derivedDataPath "$SHARED_DERIVED_DATA" \
-        build 2>&1 | tee "/tmp/build_${pod_scheme}_sim.log" | grep -E "(BUILD SUCCEEDED|BUILD FAILED|error)" | tail -3; then
+        build 2>&1 | tee "/tmp/build_${pod_scheme}_sim.log"; then
         if grep -q "BUILD SUCCEEDED" "/tmp/build_${pod_scheme}_sim.log"; then
             log_success "$pod_scheme (Simulator) built successfully"
         else
@@ -251,11 +257,16 @@ build_mspcore_with_modulemaps() {
         SKIP_INSTALL=NO \
         SWIFT_VERIFY_EMITTED_MODULE_INTERFACE=NO \
         "OTHER_SWIFT_FLAGS=$SWIFT_FLAGS_IOS" \
-        2>&1 | tee "$LOGS_DIR/$MODULE_NAME-iOS.log" | grep -E "(ARCHIVE SUCCEEDED|ARCHIVE FAILED|error:)" | tail -5; then
+        2>&1 | tee "$LOGS_DIR/$MODULE_NAME-iOS.log"; then
         if ! grep -q "ARCHIVE SUCCEEDED" "$LOGS_DIR/$MODULE_NAME-iOS.log"; then
             log_error "$MODULE_NAME iOS archive failed"
             return 1
         fi
+    fi
+    
+    if ! grep -q "ARCHIVE SUCCEEDED" "$LOGS_DIR/$MODULE_NAME-iOS.log"; then
+        log_error "$MODULE_NAME iOS archive failed"
+        return 1
     fi
     
     if [[ ! -d "$IOS_ARCHIVE" ]]; then
@@ -269,22 +280,43 @@ build_mspcore_with_modulemaps() {
     local POD_BASE_SIM="$SHARED_DERIVED_DATA/Build/Products/Release-iphonesimulator"
     local SWIFT_FLAGS_SIM="-no-verify-emitted-module-interface -Xcc -fmodule-map-file=$POD_BASE_SIM/SwiftProtobuf/SwiftProtobuf.modulemap"
 
-    if ! xcodebuild archive \
-        -project "$PROJECT_FILE" \
-        -scheme "$SCHEME_NAME" \
+    # Use timeout wrapper if available (from process_utils.sh)
+    local build_cmd="xcodebuild archive \
+        -project \"$PROJECT_FILE\" \
+        -scheme \"$SCHEME_NAME\" \
         -configuration Release \
-        -destination "generic/platform=iOS Simulator" \
-        -archivePath "$SIM_ARCHIVE" \
-        -derivedDataPath "$ROOT_DIR/.generated/DerivedData/build-$MODULE_NAME" \
+        -destination \"generic/platform=iOS Simulator\" \
+        -archivePath \"$SIM_ARCHIVE\" \
+        -derivedDataPath \"$ROOT_DIR/.generated/DerivedData/build-$MODULE_NAME\" \
         BUILD_LIBRARY_FOR_DISTRIBUTION=YES \
         SKIP_INSTALL=NO \
         SWIFT_VERIFY_EMITTED_MODULE_INTERFACE=NO \
-        "OTHER_SWIFT_FLAGS=$SWIFT_FLAGS_SIM" \
-        2>&1 | tee "$LOGS_DIR/$MODULE_NAME-Simulator.log" | grep -E "(ARCHIVE SUCCEEDED|ARCHIVE FAILED|error:)" | tail -5; then
-        if ! grep -q "ARCHIVE SUCCEEDED" "$LOGS_DIR/$MODULE_NAME-Simulator.log"; then
-            log_error "$MODULE_NAME Simulator archive failed"
-            return 1
+        \"OTHER_SWIFT_FLAGS=$SWIFT_FLAGS_SIM\""
+
+    # Build with timeout protection (3600 seconds = 1 hour)
+    local build_timeout=3600
+    if command -v run_with_timeout >/dev/null 2>&1 && [[ -n "${TIMEOUT_CMD:-}" ]]; then
+        log_info "Using timeout protection (${build_timeout}s) for Simulator archive build"
+        if ! run_with_timeout $build_timeout bash -c "$build_cmd" 2>&1 | tee "$LOGS_DIR/$MODULE_NAME-Simulator.log"; then
+            if ! grep -q "ARCHIVE SUCCEEDED" "$LOGS_DIR/$MODULE_NAME-Simulator.log"; then
+                log_error "$MODULE_NAME Simulator archive failed or timed out"
+                return 1
+            fi
         fi
+    else
+        # Fallback: build without timeout (original behavior)
+        log_warn "timeout wrapper not available, building without timeout protection"
+        if ! bash -c "$build_cmd" 2>&1 | tee "$LOGS_DIR/$MODULE_NAME-Simulator.log"; then
+            if ! grep -q "ARCHIVE SUCCEEDED" "$LOGS_DIR/$MODULE_NAME-Simulator.log"; then
+                log_error "$MODULE_NAME Simulator archive failed"
+                return 1
+            fi
+        fi
+    fi
+    
+    if ! grep -q "ARCHIVE SUCCEEDED" "$LOGS_DIR/$MODULE_NAME-Simulator.log"; then
+        log_error "$MODULE_NAME Simulator archive failed"
+        return 1
     fi
     
     if [[ ! -d "$SIM_ARCHIVE" ]]; then
