@@ -193,7 +193,7 @@ class NovaAdVideoMetricReporter {
             let player = novaVideoPlayer.player
             let videoLength = player.maximumDuration
             params[NovaAdMetricKeys.VIDEO_LENGTH_MS] = videoLength.msString()
-            params[NovaAdMetricKeys.POSITION_MS] = videoLength.msString()
+            params[NovaAdMetricKeys.POSITION_MS] = player.currentTimeInterval.msString()
             params[NovaAdMetricKeys.LOOP_COUNT] = String(player.loopCount)
         }
         return params
