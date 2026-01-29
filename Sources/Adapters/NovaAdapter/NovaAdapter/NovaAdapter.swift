@@ -185,8 +185,14 @@ public class NovaAdapter: AdNetworkAdapter {
             if let iconView = nativeAdContainer.getIcon(),
                 let iconURL = novaNativeAdItem.iconURL
             {
-                DispatchQueue.main.async {
-                    iconView.kf.setImage(with: iconURL)
+                if Thread.isMainThread {
+                    MainActor.assumeIsolated {
+                        iconView.kf.setImage(with: iconURL)
+                    }
+                } else {
+                    Task { @MainActor [iconView] in
+                        iconView.kf.setImage(with: iconURL)
+                    }
                 }
             }
 
