@@ -236,6 +236,33 @@ log_success "All third-party XCFrameworks built successfully!"
 log_info "Output directory: $THIRDPARTY_OUTPUT_DIR"
 
 # ============================================================================
+# Copy built XCFrameworks back to ThirdParty/ for Podfile pre_install check
+# ============================================================================
+# The Podfile pre_install hook expects XCFrameworks at ThirdParty/{name}/{name}.xcframework
+# This ensures pod install works correctly after build-thirdparty.sh runs
+
+log_section "Copying built XCFrameworks to ThirdParty/ (for Podfile compatibility)"
+
+for target_spec in "${THIRDPARTY_TARGETS[@]}"; do
+    IFS=':' read -r scheme_name output_name <<< "$target_spec"
+    source_xcf="$THIRDPARTY_OUTPUT_DIR/$output_name.xcframework"
+    target_dir="$THIRDPARTY_LINK_DIR/$output_name"
+    target_xcf="$target_dir/$output_name.xcframework"
+    
+    if [[ -d "$source_xcf" ]]; then
+        mkdir -p "$target_dir"
+        rm -rf "$target_xcf"
+        if ditto "$source_xcf" "$target_xcf"; then
+            log_info "  Copied: ThirdParty/$output_name/$output_name.xcframework <- ReleaseArtifacts"
+        else
+            log_warn "  Failed to copy: $output_name.xcframework to ThirdParty/$output_name/"
+        fi
+    fi
+done
+
+log_success "Built XCFrameworks synced to ThirdParty/"
+
+# ============================================================================
 # Ensure vendor-provided XCFrameworks are available in ReleaseArtifacts
 # ============================================================================
 
