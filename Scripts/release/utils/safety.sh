@@ -136,10 +136,12 @@ msp_safety_validate_version() {
             return 1
         fi
 
-        # Validate format: X.Y.Z or X.Y.Z-qualifier.N
-        if [[ ! "$version" =~ ^[0-9]+\.[0-9]+\.[0-9]+(-[a-z]+\.[0-9]+)?$ ]]; then
+        # Validate format: SemVer 2.0 compliant
+        # Valid: X.Y.Z, X.Y.Z-qualifier, X.Y.Z-qualifier.N, X.Y.Z-qualifier.N.identifier
+        # Examples: 1.0.0, 1.0.0-migration, 1.0.0-rc.1, 1.0.0-beta.2.fix
+        if [[ ! "$version" =~ ^[0-9]+\.[0-9]+\.[0-9]+(-[a-zA-Z0-9]+(\.[a-zA-Z0-9]+)*)?$ ]]; then
             log_error "[SAFETY] Invalid release version format: $version"
-            log_error "[SAFETY] Expected format: X.Y.Z, X.Y.Z-hotfix.N, or X.Y.Z-rc.N"
+            log_error "[SAFETY] Expected SemVer format: X.Y.Z or X.Y.Z-prerelease"
             return 1
         fi
 
