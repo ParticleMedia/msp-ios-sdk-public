@@ -41,6 +41,14 @@ A **Skill** is a documented procedure for completing a specific type of task. It
 | `quick-fix.skill.md` | Apply simple, well-defined fixes | All |
 | `refactor-pattern.skill.md` | Execute pattern-based refactoring | All |
 
+### Knowledge Management Skills
+| Skill | Description | Applicable Agents |
+|-------|-------------|-------------------|
+| `context-add.skill.md` | Manually add context entry to preserve debugging experience | All |
+| `context-list.skill.md` | List, search, and manage context entries | All |
+
+**Note**: Context system also includes `/context.init` command for extracting context from commit history. See `Scripts/context/` for implementation details.
+
 ---
 
 ## How to Use a Skill
