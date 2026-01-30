@@ -260,7 +260,7 @@ private typealias BannerCreator = (MolocoSDK.MolocoCreateAdParams, UIViewControl
         nativeAd = nil
     }
 
-    public func prepareViewForInteraction(nativeAd: MSPiOSCore.NativeAd, nativeAdView: Any) {
+    @MainActor public func prepareViewForInteraction(nativeAd: MSPiOSCore.NativeAd, nativeAdView: Any) {
         guard let nativeAdView = nativeAdView as? NativeAdView,
             let nativeAdItem = self.nativeAdItem
         else { return }

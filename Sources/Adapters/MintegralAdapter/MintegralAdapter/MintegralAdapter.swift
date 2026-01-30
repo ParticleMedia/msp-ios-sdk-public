@@ -83,7 +83,7 @@ import PrebidMobile
     public func destroyAd() {
     }
 
-    public func prepareViewForInteraction(nativeAd: MSPiOSCore.NativeAd, nativeAdView: Any) {
+    @MainActor public func prepareViewForInteraction(nativeAd: MSPiOSCore.NativeAd, nativeAdView: Any) {
         DispatchQueue.main.async {
             guard let nativeAdView = nativeAdView as? NativeAdView,
                 let nativeAdItem = self.nativeAdItem

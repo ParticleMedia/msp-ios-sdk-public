@@ -896,13 +896,15 @@ if is_binary_distribution "$POD_NAME"; then
   ]
 EOF_VENDOR_MULTI
     elif [[ "$POD_NAME" == "MSPNovaAdapter" ]]; then
-        # NovaAdapter: pure binary distribution with embedded NovaCore + bundled SnapKit
+        # NovaAdapter: pure binary distribution with embedded NovaCore + bundled SnapKit + OMSDK
         # NovaCore uses AVFoundation/AVFAudio which depend on AudioToolbox/CoreAudio
         # CoreAudioTypes was removed from iOS SDK 18+ - types are now available via CoreAudio/AudioToolbox
+        # NovaCore dynamically links OMSDK_Newsbreak1.framework at runtime
         cat >> "$OUTPUT_PODSPEC" <<'EOF_VENDOR_NOVA'
   spec.vendored_frameworks = [
     "Binary/MSPNovaAdapter.xcframework",
     "Binary/NovaCore.xcframework",
+    "Binary/OMSDK_Newsbreak1.xcframework",
     "ThirdParty/SnapKit/SnapKit.xcframework"
   ]
   spec.frameworks = 'AVFoundation', 'AVFAudio', 'AudioToolbox', 'CoreAudio'
