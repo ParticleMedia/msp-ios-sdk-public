@@ -2533,7 +2533,24 @@ EOF
                     return 1
                 fi
                 log_success "✅ Copied NovaCore.xcframework"
-                log_success "✅ Prepared MSPNovaAdapter structure (MSPNovaAdapter + NovaCore)"
+
+                # Copy OMSDK_Newsbreak1.xcframework (NovaCore runtime dependency)
+                local omsdk_path="$ROOT_DIR/Sources/Core/MSPOMSDK/OMSDK_Newsbreak1.xcframework"
+
+                if [[ ! -d "$omsdk_path" ]]; then
+                    log_error "❌ OMSDK_Newsbreak1.xcframework not found: $omsdk_path"
+                    log_error "NovaCore requires OMSDK_Newsbreak1.xcframework at runtime"
+                    rm -rf "$temp_zip_dir"
+                    return 1
+                fi
+
+                if ! ditto "$omsdk_path" "$temp_zip_dir/Binary/OMSDK_Newsbreak1.xcframework"; then
+                    log_error "❌ Failed to copy OMSDK_Newsbreak1.xcframework"
+                    rm -rf "$temp_zip_dir"
+                    return 1
+                fi
+                log_success "✅ Copied OMSDK_Newsbreak1.xcframework"
+                log_success "✅ Prepared MSPNovaAdapter structure (MSPNovaAdapter + NovaCore + OMSDK)"
 
             elif [[ "$pod" == "MSPMolocoAdapter" ]]; then
                 log_info "MSPMolocoAdapter: Binary adapter (MSPSnapKit provided via MSPSharedLibraries)"

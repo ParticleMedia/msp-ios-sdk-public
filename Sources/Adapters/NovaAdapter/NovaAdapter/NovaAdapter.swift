@@ -95,6 +95,7 @@ public class NovaAdapter: AdNetworkAdapter {
     }
 
     // TODO: lsy, 其实我感觉这种解析逻辑应该全部扔进 nova core 里面
+    @MainActor
     public func prepareViewForInteraction(nativeAd: MSPiOSCore.NativeAd, nativeAdView: Any) {
         // "video_use_control": default true, for immersive-video, video will not show controller if set to false
         let videoUseControl = adRequest?.customParams["video_use_control"] as? Bool ?? true
@@ -183,17 +184,9 @@ public class NovaAdapter: AdNetworkAdapter {
             }
 
             if let iconView = nativeAdContainer.getIcon(),
-                let iconURL = novaNativeAdItem.iconURL
+               let iconURL = novaNativeAdItem.iconURL
             {
-                if Thread.isMainThread {
-                    MainActor.assumeIsolated {
-                        iconView.kf.setImage(with: iconURL)
-                    }
-                } else {
-                    Task { @MainActor [iconView] in
-                        iconView.kf.setImage(with: iconURL)
-                    }
-                }
+                iconView.kf.setImage(with: iconURL)
             }
 
             novaNativeAdView.addSubview(nativeAdContainer)

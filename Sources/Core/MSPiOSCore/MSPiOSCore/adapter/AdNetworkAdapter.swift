@@ -20,7 +20,7 @@ public protocol AdNetworkAdapter: AnyObject {
 
     func destroyAd()
 
-    func prepareViewForInteraction(nativeAd: NativeAd, nativeAdView: Any)
+    @MainActor func prepareViewForInteraction(nativeAd: NativeAd, nativeAdView: Any)
 
     func setAdMetricReporter(adMetricReporter: AdMetricReporter)
 
