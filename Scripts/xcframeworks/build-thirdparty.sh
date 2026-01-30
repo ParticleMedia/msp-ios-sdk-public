@@ -31,7 +31,8 @@ THIRDPARTY_TARGETS=(
     "MSPSnapKit:MSPSnapKit"
     "Lottie:Lottie"
     # "Shimmer:Shimmer" - Removed: Shimmer Plan B (using XCFramework)
-    "Kingfisher:Kingfisher"
+    # "Kingfisher:Kingfisher" - Removed: MSPKingfisher/Sources doesn't exist during pre_install
+    #                          (downloaded via podspec prepare_command during pod install)
 )
 
 # Project and output directories

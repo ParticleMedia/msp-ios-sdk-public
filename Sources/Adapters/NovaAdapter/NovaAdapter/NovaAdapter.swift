@@ -183,16 +183,20 @@ public class NovaAdapter: AdNetworkAdapter {
                 }
             }
 
-            if let iconView = nativeAdContainer.getIcon(),
-               let iconURL = novaNativeAdItem.iconURL
-            {
-                iconView.kf.setImage(with: iconURL)
-            }
-
+            // Add nativeAdContainer to hierarchy BEFORE setting image
+            // This ensures iconView is retained by the view hierarchy when Kingfisher accesses it
             novaNativeAdView.addSubview(nativeAdContainer)
             nativeAdContainer.snp.makeConstraints { make in
                 make.directionalEdges.equalToSuperview()
                 make.size.equalToSuperview()
+            }
+
+            // Set icon image AFTER view is in hierarchy to prevent crash
+            // when iconView is a weak reference that may be deallocated
+            if let iconView = nativeAdContainer.getIcon(),
+               let iconURL = novaNativeAdItem.iconURL
+            {
+                iconView.kf.setImage(with: iconURL)
             }
         }
 
