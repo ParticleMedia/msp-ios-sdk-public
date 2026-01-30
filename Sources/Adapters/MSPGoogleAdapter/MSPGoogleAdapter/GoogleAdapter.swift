@@ -14,7 +14,7 @@ import PrebidMobile
         self.adMetricReporter = adMetricReporter
     }
 
-    public func prepareViewForInteraction(nativeAd: MSPiOSCore.NativeAd, nativeAdView: Any) {
+    @MainActor public func prepareViewForInteraction(nativeAd: MSPiOSCore.NativeAd, nativeAdView: Any) {
         guard let nativeAdView = nativeAdView as? MSPiOSCore.NativeAdView,
             let gadNativeAdItem = self.nativeAdItem
         else { return }

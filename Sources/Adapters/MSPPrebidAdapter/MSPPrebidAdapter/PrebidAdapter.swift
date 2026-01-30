@@ -17,7 +17,7 @@ import UIKit
         self.adMetricReporter = adMetricReporter
     }
 
-    public func prepareViewForInteraction(nativeAd: MSPiOSCore.NativeAd, nativeAdView: Any) {
+    @MainActor public func prepareViewForInteraction(nativeAd: MSPiOSCore.NativeAd, nativeAdView: Any) {
     }
 
     // MARK: - BannerEventHandler

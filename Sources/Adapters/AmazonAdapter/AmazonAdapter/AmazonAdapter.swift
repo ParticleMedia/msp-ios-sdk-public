@@ -69,7 +69,7 @@ import MSPiOSCore
     public func destroyAd() {
     }
 
-    public func prepareViewForInteraction(nativeAd: MSPiOSCore.NativeAd, nativeAdView: Any) {
+    @MainActor public func prepareViewForInteraction(nativeAd: MSPiOSCore.NativeAd, nativeAdView: Any) {
     }
 
     public func setAdMetricReporter(adMetricReporter: any MSPiOSCore.AdMetricReporter) {

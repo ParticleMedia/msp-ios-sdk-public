@@ -121,7 +121,7 @@ import PrebidMobile
     public func destroyAd() {
     }
 
-    public func prepareViewForInteraction(nativeAd: MSPiOSCore.NativeAd, nativeAdView: Any) {
+    @MainActor public func prepareViewForInteraction(nativeAd: MSPiOSCore.NativeAd, nativeAdView: Any) {
         guard let nativeAdView = nativeAdView as? NativeAdView,
             let nativeAdItem = self.nativeAdItem
         else { return }

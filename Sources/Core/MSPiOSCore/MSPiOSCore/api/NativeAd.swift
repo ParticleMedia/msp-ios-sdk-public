@@ -47,7 +47,7 @@ open class NativeAd: MSPAd {
         super.init(adNetworkAdapter: adNetworkAdapter)
     }
 
-    public func prepareViewForInteraction(nativeAdView: Any) {
+    @MainActor public func prepareViewForInteraction(nativeAdView: Any) {
     }
 
     public class Builder {
