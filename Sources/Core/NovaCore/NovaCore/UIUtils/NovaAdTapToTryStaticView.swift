@@ -6,8 +6,8 @@
 //
 
 import Foundation
-import UIKit
 @_implementationOnly import MSPSnapKit
+import UIKit
 
 // MARK: - NovaAdTapToTryStaticView
 
@@ -44,7 +44,6 @@ class NovaAdTapToTryStaticView: UIView {
 
         layer.borderWidth = 1
         layer.borderColor = NovaColorPalettes.White.withAlphaComponent(0.6).cgColor
-        adClickArea = .tap_to_try
+        adClickArea = .tapToTry
     }
 }
-

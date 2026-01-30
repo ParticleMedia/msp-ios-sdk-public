@@ -76,7 +76,7 @@ public final class NovaAdMediaView: UIView {
             view.isUserInteractionEnabled = false
             view.animation = LottieAnimation.filepath(animationPath)
             view.loopMode = .loop
-            view.adClickArea = .tap_to_try
+            view.adClickArea = .tapToTry
             return view
         } else {
             DebugLogger.data.error("can not load lottie file")

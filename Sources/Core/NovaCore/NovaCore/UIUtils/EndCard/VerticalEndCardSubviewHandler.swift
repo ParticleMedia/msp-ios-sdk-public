@@ -63,7 +63,7 @@ final class VerticalEndCardSubviewHandler {
         stackView.axis = .horizontal
         stackView.alignment = .center
         stackView.spacing = Constants.stackViewHorizontalSpacing
-        stackView.adClickArea = .cta_endcard
+        stackView.adClickArea = .ctaEndcard
         return stackView
     }()
 

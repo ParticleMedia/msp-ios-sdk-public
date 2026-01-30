@@ -29,29 +29,34 @@
 
 
 extension ConstraintMakerRelatable {
-  
     @discardableResult
-    public func equalToSuperview<T: ConstraintRelatableTarget>(_ closure: (ConstraintView) -> T, _ file: String = #file, line: UInt = #line) -> ConstraintMakerEditable {
+    public func equalToSuperview<T: ConstraintRelatableTarget>(
+        _ closure: (ConstraintView) -> T, _ file: String = #file, line: UInt = #line
+    ) -> ConstraintMakerEditable {
         guard let other = self.description.item.superview else {
             fatalError("Expected superview but found nil when attempting make constraint `equalToSuperview`.")
         }
         return self.relatedTo(closure(other), relation: .equal, file: file, line: line)
     }
-  
+
     @discardableResult
-    public func lessThanOrEqualToSuperview<T: ConstraintRelatableTarget>(_ closure: (ConstraintView) -> T, _ file: String = #file, line: UInt = #line) -> ConstraintMakerEditable {
+    public func lessThanOrEqualToSuperview<T: ConstraintRelatableTarget>(
+        _ closure: (ConstraintView) -> T, _ file: String = #file, line: UInt = #line
+    ) -> ConstraintMakerEditable {
         guard let other = self.description.item.superview else {
             fatalError("Expected superview but found nil when attempting make constraint `lessThanOrEqualToSuperview`.")
         }
         return self.relatedTo(closure(other), relation: .lessThanOrEqual, file: file, line: line)
     }
-  
+
     @discardableResult
-    public func greaterThanOrEqualToSuperview<T: ConstraintRelatableTarget>(_ closure: (ConstraintView) -> T, _ file: String = #file, line: UInt = #line) -> ConstraintMakerEditable {
+    public func greaterThanOrEqualToSuperview<T: ConstraintRelatableTarget>(
+        _ closure: (ConstraintView) -> T, _ file: String = #file, line: UInt = #line
+    ) -> ConstraintMakerEditable {
         guard let other = self.description.item.superview else {
-            fatalError("Expected superview but found nil when attempting make constraint `greaterThanOrEqualToSuperview`.")
+            fatalError(
+                "Expected superview but found nil when attempting make constraint `greaterThanOrEqualToSuperview`.")
         }
         return self.relatedTo(closure(other), relation: .greaterThanOrEqual, file: file, line: line)
     }
-  
 }

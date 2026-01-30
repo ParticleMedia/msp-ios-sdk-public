@@ -6,9 +6,9 @@
 //
 
 import Foundation
-import UIKit
 @_implementationOnly import Kingfisher
 @_implementationOnly import MSPSnapKit
+import UIKit
 
 // MARK: - NovaAdAppInstallBanner
 
@@ -73,7 +73,8 @@ class NovaAdAppInstallBanner: UIView {
     private lazy var bodyLabel: UILabel = {
         let label = UILabel()
         label.font = .Nova.caption1
-        label.textColor = UIColor(light: NovaColorPalettes.Gray.tint500, dark: NovaColorPalettes.White.withAlphaComponent(0.6))
+        label.textColor = UIColor(
+            light: NovaColorPalettes.Gray.tint500, dark: NovaColorPalettes.White.withAlphaComponent(0.6))
         label.numberOfLines = 1
         label.lineBreakMode = .byTruncatingTail
         label.adClickArea = .body
@@ -84,9 +85,11 @@ class NovaAdAppInstallBanner: UIView {
         var config = UIButton.Configuration.filled()
         config.baseBackgroundColor = NovaColorPalettes.Blue.tint500
         config.baseForegroundColor = .white
-        config.attributedTitle = AttributedString("", attributes: AttributeContainer([
-            .font: UIFont.Nova.subtitle1
-        ]))
+        config.attributedTitle = AttributedString(
+            "",
+            attributes: AttributeContainer([
+                .font: UIFont.Nova.subtitle1
+            ]))
         config.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 16, bottom: 0, trailing: 16)
         let button = UIButton(configuration: config)
         button.layer.cornerRadius = 8
@@ -173,4 +176,3 @@ fileprivate extension UILabel {
         }
     }
 }
-

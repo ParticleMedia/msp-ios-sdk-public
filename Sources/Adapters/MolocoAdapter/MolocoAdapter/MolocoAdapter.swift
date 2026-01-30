@@ -6,10 +6,10 @@
 //
 
 import Foundation
+@_implementationOnly import MSPSnapKit
 import MSPiOSCore
 import MolocoSDK
 import PrebidMobile
-@_implementationOnly import MSPSnapKit
 import UIKit
 
 private typealias BannerCreator = (MolocoSDK.MolocoCreateAdParams, UIViewController) -> MolocoSDK.MolocoBannerAdView?
@@ -310,7 +310,7 @@ private typealias BannerCreator = (MolocoSDK.MolocoCreateAdParams, UIViewControl
         } else if let image = assets.mainImage {
             let width = image.size.width
             guard width != 0 else { return }
-            
+
             let height = image.size.height
 
             let mediaView = UIImageView(image: image)
