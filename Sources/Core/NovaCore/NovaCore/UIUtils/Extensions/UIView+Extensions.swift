@@ -24,38 +24,6 @@ extension UIView {
     func addSubviewsAndIgnoreAutoResizing(_ views: UIView...) { addSubviewsAndIgnoreAutoResizing(views) }
 }
 
-// Clickable Area
-enum ClickableAdArea: String {
-    case icon
-    case advertiser
-    case sponsor
-    case headline
-    case body
-    case cta
-    case media
-    case badge
-    case shadow
-    // engagement signal
-    case like
-    case comment
-    case share
-    // end card
-    case advertiser_endcard
-    case body_endcard
-    case cta_endcard
-    case icon_endcard
-    case blank_endcard
-    // playable ad
-    case tap_to_try
-    case playable
-    // using to simulate a click action
-    case auto_jump
-    // immersive popover
-    case cta_popover
-    // html ad
-    case html
-}
-
 extension UIView {
     private static var msp_adClickAreaKey: UInt8 = 0
     var adClickArea: ClickableAdArea? {

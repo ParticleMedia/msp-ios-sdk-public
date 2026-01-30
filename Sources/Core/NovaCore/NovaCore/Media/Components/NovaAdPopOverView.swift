@@ -32,7 +32,7 @@ class NovaAdPopOverView: UIView {
 
     override init(frame: CGRect) {
         super.init(frame: frame)
-        adClickArea = .cta_popover
+        adClickArea = .ctaPopover
         applyStyle(.legacy)
     }
 

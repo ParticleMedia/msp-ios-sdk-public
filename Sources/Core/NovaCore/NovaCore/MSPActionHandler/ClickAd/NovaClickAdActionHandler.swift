@@ -231,7 +231,7 @@ private extension NovaClickAdActionHandler {
             try presentPlayableVC(with: playableModel)
         case .media:
             switch actionDataModel?.clickPart.area {
-            case .media, .tap_to_try, .auto_jump:
+            case .media, .tapToTry, .autoJump:
                 playableModel.hasBeenPlayed = true
                 try presentPlayableVC(with: playableModel)
             default:

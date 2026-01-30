@@ -31,7 +31,7 @@ final class CenterEndCardSubviewHandler {
             self.delegate = delegate
             super.init(frame: .zero)
             setupSubviews()
-            adClickArea = .blank_endcard
+            adClickArea = .blankEndcard
         }
 
         required init?(coder: NSCoder) {
@@ -72,7 +72,7 @@ final class CenterEndCardSubviewHandler {
             imageView.snp.makeConstraints { make in
                 make.width.height.equalTo(Constants.avatarSize)
             }
-            imageView.adClickArea = .icon_endcard
+            imageView.adClickArea = .iconEndcard
             return imageView
         }()
 
@@ -81,7 +81,7 @@ final class CenterEndCardSubviewHandler {
             label.font = .Nova.headline2
             label.textColor = NovaColorPalettes.Black
             label.numberOfLines = 1
-            label.adClickArea = .advertiser_endcard
+            label.adClickArea = .advertiserEndcard
             label.isUserInteractionEnabled = true
             label.textAlignment = .center
             return label
@@ -93,7 +93,7 @@ final class CenterEndCardSubviewHandler {
             label.textColor = NovaColorPalettes.Black
             label.numberOfLines = 2
             label.setContentCompressionResistancePriority(.required, for: .vertical)
-            label.adClickArea = .body_endcard
+            label.adClickArea = .bodyEndcard
             label.isUserInteractionEnabled = true
             label.textAlignment = .center
             return label
@@ -105,7 +105,7 @@ final class CenterEndCardSubviewHandler {
             label.textColor = NovaColorPalettes.Gray.tint500
             label.numberOfLines = 3
             label.setContentCompressionResistancePriority(.required, for: .vertical)
-            label.adClickArea = .body_endcard
+            label.adClickArea = .bodyEndcard
             label.isUserInteractionEnabled = true
             label.textAlignment = .center
             return label
@@ -125,7 +125,7 @@ final class CenterEndCardSubviewHandler {
                 ).cgColor
             button.layer.cornerRadius = 8.0
 
-            button.adClickArea = .cta_endcard
+            button.adClickArea = .ctaEndcard
 
             return button
         }()

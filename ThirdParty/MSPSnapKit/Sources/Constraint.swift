@@ -28,7 +28,6 @@
 #endif
 
 public final class Constraint {
-
     internal let sourceLocation: (String, UInt)
     internal let label: String?
 
@@ -43,41 +42,40 @@ public final class Constraint {
     }
     private var priority: ConstraintPriorityTarget {
         didSet {
-          self.updateConstantAndPriorityIfNeeded()
+            self.updateConstantAndPriorityIfNeeded()
         }
     }
     public var layoutConstraints: [LayoutConstraint]
-    
+
     public var isActive: Bool {
         set {
             if newValue {
                 activate()
-            }
-            else {
+            } else {
                 deactivate()
             }
         }
-        
+
         get {
-            for layoutConstraint in self.layoutConstraints {
-                if layoutConstraint.isActive {
-                    return true
-                }
+            for layoutConstraint in self.layoutConstraints where layoutConstraint.isActive {
+                return true
             }
             return false
         }
     }
-    
+
     // MARK: Initialization
 
-    internal init(from: ConstraintItem,
-                  to: ConstraintItem,
-                  relation: ConstraintRelation,
-                  sourceLocation: (String, UInt),
-                  label: String?,
-                  multiplier: ConstraintMultiplierTarget,
-                  constant: ConstraintConstantTarget,
-                  priority: ConstraintPriorityTarget) {
+    internal init(
+        from: ConstraintItem,
+        to: ConstraintItem,
+        relation: ConstraintRelation,
+        sourceLocation: (String, UInt),
+        label: String?,
+        multiplier: ConstraintMultiplierTarget,
+        constant: ConstraintConstantTarget,
+        priority: ConstraintPriorityTarget
+    ) {
         self.from = from
         self.to = to
         self.relation = relation
@@ -130,31 +128,31 @@ public final class Constraint {
                             fatalError()
                         }
                     } else if self.from.attributes == .directionalEdges && self.to.attributes == .directionalMargins {
-                      switch layoutFromAttribute {
-                      case .leading:
-                        layoutToAttribute = .leadingMargin
-                      case .trailing:
-                        layoutToAttribute = .trailingMargin
-                      case .top:
-                        layoutToAttribute = .topMargin
-                      case .bottom:
-                        layoutToAttribute = .bottomMargin
-                      default:
-                        fatalError()
-                      }
+                        switch layoutFromAttribute {
+                        case .leading:
+                            layoutToAttribute = .leadingMargin
+                        case .trailing:
+                            layoutToAttribute = .trailingMargin
+                        case .top:
+                            layoutToAttribute = .topMargin
+                        case .bottom:
+                            layoutToAttribute = .bottomMargin
+                        default:
+                            fatalError()
+                        }
                     } else if self.from.attributes == .directionalMargins && self.to.attributes == .directionalEdges {
-                      switch layoutFromAttribute {
-                      case .leadingMargin:
-                        layoutToAttribute = .leading
-                      case .trailingMargin:
-                        layoutToAttribute = .trailing
-                      case .topMargin:
-                        layoutToAttribute = .top
-                      case .bottomMargin:
-                        layoutToAttribute = .bottom
-                      default:
-                        fatalError()
-                      }
+                        switch layoutFromAttribute {
+                        case .leadingMargin:
+                            layoutToAttribute = .leading
+                        case .trailingMargin:
+                            layoutToAttribute = .trailing
+                        case .topMargin:
+                            layoutToAttribute = .top
+                        case .bottomMargin:
+                            layoutToAttribute = .bottom
+                        default:
+                            fatalError()
+                        }
                     } else if self.from.attributes == self.to.attributes {
                         layoutToAttribute = layoutFromAttribute
                     } else {
@@ -178,7 +176,8 @@ public final class Constraint {
             #endif
 
             // get layout constant
-            let layoutConstant: CGFloat = self.constant.constraintConstantTargetValueFor(layoutAttribute: layoutToAttribute)
+            let layoutConstant: CGFloat = self.constant.constraintConstantTargetValueFor(
+                layoutAttribute: layoutToAttribute)
 
             // get layout to
             var layoutTo: AnyObject? = self.to.target
@@ -215,12 +214,12 @@ public final class Constraint {
 
     // MARK: Public
 
-    @available(*, deprecated, renamed:"activate()")
+    @available(*, deprecated, renamed: "activate()")
     public func install() {
         self.activate()
     }
 
-    @available(*, deprecated, renamed:"deactivate()")
+    @available(*, deprecated, renamed: "deactivate()")
     public func uninstall() {
         self.deactivate()
     }
@@ -246,12 +245,12 @@ public final class Constraint {
     }
 
     #if canImport(UIKit)
-    @discardableResult
-    @available(iOS 11.0, tvOS 11.0, *)
-    public func update(inset: ConstraintDirectionalInsetTarget) -> Constraint {
-      self.constant = inset.constraintDirectionalInsetTargetValue
-      return self
-    }
+        @discardableResult
+        @available(iOS 11.0, tvOS 11.0, *)
+        public func update(inset: ConstraintDirectionalInsetTarget) -> Constraint {
+            self.constant = inset.constraintDirectionalInsetTargetValue
+            return self
+        }
     #endif
 
     @discardableResult
@@ -266,36 +265,40 @@ public final class Constraint {
         return self
     }
 
-    @available(*, deprecated, renamed:"update(offset:)")
-    public func updateOffset(amount: ConstraintOffsetTarget) -> Void { self.update(offset: amount) }
+    @available(*, deprecated, renamed: "update(offset:)")
+    public func updateOffset(amount: ConstraintOffsetTarget) { self.update(offset: amount) }
 
-    @available(*, deprecated, renamed:"update(inset:)")
-    public func updateInsets(amount: ConstraintInsetTarget) -> Void { self.update(inset: amount) }
+    @available(*, deprecated, renamed: "update(inset:)")
+    public func updateInsets(amount: ConstraintInsetTarget) { self.update(inset: amount) }
 
-    @available(*, deprecated, renamed:"update(priority:)")
-    public func updatePriority(amount: ConstraintPriorityTarget) -> Void { self.update(priority: amount) }
+    @available(*, deprecated, renamed: "update(priority:)")
+    public func updatePriority(amount: ConstraintPriorityTarget) { self.update(priority: amount) }
 
-    @available(*, deprecated, message:"Use update(priority: ConstraintPriorityTarget) instead.")
-    public func updatePriorityRequired() -> Void {}
+    @available(*, deprecated, message: "Use update(priority: ConstraintPriorityTarget) instead.")
+    public func updatePriorityRequired() {}
 
-    @available(*, deprecated, message:"Use update(priority: ConstraintPriorityTarget) instead.")
-    public func updatePriorityHigh() -> Void { fatalError("Must be implemented by Concrete subclass.") }
+    @available(*, deprecated, message: "Use update(priority: ConstraintPriorityTarget) instead.")
+    public func updatePriorityHigh() { fatalError("Must be implemented by Concrete subclass.") }
 
-    @available(*, deprecated, message:"Use update(priority: ConstraintPriorityTarget) instead.")
-    public func updatePriorityMedium() -> Void { fatalError("Must be implemented by Concrete subclass.") }
+    @available(*, deprecated, message: "Use update(priority: ConstraintPriorityTarget) instead.")
+    public func updatePriorityMedium() { fatalError("Must be implemented by Concrete subclass.") }
 
-    @available(*, deprecated, message:"Use update(priority: ConstraintPriorityTarget) instead.")
-    public func updatePriorityLow() -> Void { fatalError("Must be implemented by Concrete subclass.") }
+    @available(*, deprecated, message: "Use update(priority: ConstraintPriorityTarget) instead.")
+    public func updatePriorityLow() { fatalError("Must be implemented by Concrete subclass.") }
 
     // MARK: Internal
 
     internal func updateConstantAndPriorityIfNeeded() {
         for layoutConstraint in self.layoutConstraints {
-            let attribute = (layoutConstraint.secondAttribute == .notAnAttribute) ? layoutConstraint.firstAttribute : layoutConstraint.secondAttribute
+            let attribute =
+                (layoutConstraint.secondAttribute == .notAnAttribute)
+                ? layoutConstraint.firstAttribute : layoutConstraint.secondAttribute
             layoutConstraint.constant = self.constant.constraintConstantTargetValueFor(layoutAttribute: attribute)
 
             let requiredPriority = ConstraintPriority.required.value
-            if (layoutConstraint.priority.rawValue < requiredPriority), (self.priority.constraintPriorityTargetValue != requiredPriority) {
+            if layoutConstraint.priority.rawValue < requiredPriority,
+                self.priority.constraintPriorityTargetValue != requiredPriority
+            {
                 layoutConstraint.priority = LayoutPriority(rawValue: self.priority.constraintPriorityTargetValue)
             }
         }
@@ -317,11 +320,15 @@ public final class Constraint {
             for layoutConstraint in layoutConstraints {
                 let existingLayoutConstraint = existingLayoutConstraints.first { $0 == layoutConstraint }
                 guard let updateLayoutConstraint = existingLayoutConstraint else {
-                    fatalError("Updated constraint could not find existing matching constraint to update: \(layoutConstraint)")
+                    fatalError(
+                        "Updated constraint could not find existing matching constraint to update: \(layoutConstraint)")
                 }
 
-                let updateLayoutAttribute = (updateLayoutConstraint.secondAttribute == .notAnAttribute) ? updateLayoutConstraint.firstAttribute : updateLayoutConstraint.secondAttribute
-                updateLayoutConstraint.constant = self.constant.constraintConstantTargetValueFor(layoutAttribute: updateLayoutAttribute)
+                let updateLayoutAttribute =
+                    (updateLayoutConstraint.secondAttribute == .notAnAttribute)
+                    ? updateLayoutConstraint.firstAttribute : updateLayoutConstraint.secondAttribute
+                updateLayoutConstraint.constant = self.constant.constraintConstantTargetValueFor(
+                    layoutAttribute: updateLayoutAttribute)
             }
         } else {
             NSLayoutConstraint.activate(layoutConstraints)

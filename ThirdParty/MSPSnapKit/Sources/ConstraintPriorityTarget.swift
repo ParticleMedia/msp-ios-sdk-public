@@ -29,57 +29,43 @@
 
 
 public protocol ConstraintPriorityTarget {
-    
     var constraintPriorityTargetValue: Float { get }
-    
 }
 
 extension Int: ConstraintPriorityTarget {
-    
     public var constraintPriorityTargetValue: Float {
-        return Float(self)
+        Float(self)
     }
-    
 }
 
 extension UInt: ConstraintPriorityTarget {
-    
     public var constraintPriorityTargetValue: Float {
-        return Float(self)
+        Float(self)
     }
-    
 }
 
 extension Float: ConstraintPriorityTarget {
-    
     public var constraintPriorityTargetValue: Float {
-        return self
+        self
     }
-    
 }
 
 extension Double: ConstraintPriorityTarget {
-    
     public var constraintPriorityTargetValue: Float {
-        return Float(self)
+        Float(self)
     }
-    
 }
 
 extension CGFloat: ConstraintPriorityTarget {
-    
     public var constraintPriorityTargetValue: Float {
-        return Float(self)
+        Float(self)
     }
-    
 }
 
 #if canImport(UIKit)
-extension UILayoutPriority: ConstraintPriorityTarget {
-
-    public var constraintPriorityTargetValue: Float {
-        return self.rawValue
+    extension UILayoutPriority: ConstraintPriorityTarget {
+        public var constraintPriorityTargetValue: Float {
+            self.rawValue
+        }
     }
-
-}
 #endif
