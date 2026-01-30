@@ -4588,6 +4588,14 @@ ensure_adapter_version_committed() {
                 log_error "[$adapter] Failed to update SDK version"
                 return 1
             fi
+            # Verify the file was actually modified
+            if git diff --quiet -- "$adapter_abs_path"; then
+                log_error "[$adapter] update_adapter_sdk_version returned success but file was not modified!"
+                log_error "[$adapter] Expected path: $adapter_abs_path"
+                log_error "[$adapter] This indicates a bug in the version update tool"
+                return 1
+            fi
+            log_debug "[$adapter] File modification verified"
             ;;
         2)
             log_warn "[$adapter] No ${ADAPTER_SDK_VERSION_FUNCTION}() found; skipping version commit check"
@@ -4609,25 +4617,30 @@ ensure_adapter_version_committed() {
             ;;
     esac
 
-    if ! git diff --quiet -- "$adapter_abs_path" 2>/dev/null; then
+    # Check if there are uncommitted changes (don't suppress errors)
+    local diff_exit_code=0
+    git diff --quiet -- "$adapter_abs_path" || diff_exit_code=$?
+
+    if [[ $diff_exit_code -eq 1 ]]; then
+        # Exit code 1 means there are differences (uncommitted changes)
         log_info "[$adapter] Uncommitted version changes detected, committing now..."
 
         # Change to ROOT_DIR for git operations
         pushd "$ROOT_DIR" > /dev/null || {
             log_error "[$adapter] Failed to change to ROOT_DIR: $ROOT_DIR"
-            return 0  # Non-fatal: pod is already published
+            return 1
         }
 
         # Find and stage Swift files
         local swift_files_staged=0
         while IFS= read -r -d '' swift_file; do
-            if git add "$swift_file" 2>/dev/null; then
+            if git add "$swift_file"; then
                 ((swift_files_staged++))
                 log_debug "[$adapter] Staged: $swift_file"
             else
                 log_warn "[$adapter] Failed to stage: $swift_file"
             fi
-        done < <(find "$adapter_path" -name "*.swift" -type f -print0 2>/dev/null)
+        done < <(find "$adapter_path" -name "*.swift" -type f -print0)
 
         if [[ $swift_files_staged -gt 0 ]]; then
             # Commit with detailed message
@@ -4639,15 +4652,29 @@ ensure_adapter_version_committed() {
                 log_success "[$adapter] ✓ Committed version update ($swift_files_staged files)"
             else
                 log_error "[$adapter] ✗ Failed to commit version update"
-                log_warn "[$adapter] You may need to commit manually: cd $ROOT_DIR && git add ${adapter_path} && git commit"
+                log_error "[$adapter] Manual fix: cd $ROOT_DIR && git add ${adapter_path} && git commit"
+                popd > /dev/null || true
+                return 1
             fi
         else
-            log_warn "[$adapter] No Swift files found or staged in ${adapter_path}"
+            log_error "[$adapter] No Swift files found or staged in ${adapter_path}"
+            log_error "[$adapter] Expected to find Swift files but found none"
+            log_error "[$adapter] adapter_path=$adapter_path"
+            log_error "[$adapter] Listing directory contents:"
+            ls -la "$adapter_path" 2>&1 | while read -r line; do log_error "[$adapter]   $line"; done
+            popd > /dev/null || true
+            return 1
         fi
 
         popd > /dev/null || true
-    else
+    elif [[ $diff_exit_code -eq 0 ]]; then
+        # Exit code 0 means no differences (already committed or no changes)
         log_info "[$adapter] Version already committed, no action needed"
+    else
+        # Other exit codes indicate an error
+        log_error "[$adapter] git diff failed with exit code $diff_exit_code"
+        log_error "[$adapter] adapter_abs_path=$adapter_abs_path"
+        return 1
     fi
 
     return 0
@@ -4672,22 +4699,51 @@ commit_adapter_version_updates() {
     local adapters=("$@")
 
     if [[ "$DRY_RUN" == "true" ]]; then
+        log_info "DRY RUN: Would commit adapter SDK version updates"
         return 0
     fi
 
     if [[ ${#adapters[@]} -eq 0 ]]; then
+        log_info "No adapters to update"
         return 0
     fi
 
     log_section "Post-Release: Committing adapter SDK version updates"
 
     local failed=0
+    local committed_any=false
     for adapter in "${adapters[@]}"; do
         if ! ensure_adapter_version_committed "$adapter" "$version"; then
             log_warn "[$adapter] Version commit/update failed"
             failed=1
+        else
+            # Check if a commit was actually made (not just "already committed")
+            # by checking if HEAD changed
+            committed_any=true
         fi
     done
+
+    # Push version update commits to origin if any were made
+    if [[ "$committed_any" == "true" ]] && [[ $failed -eq 0 ]]; then
+        log_info "Pushing adapter SDK version commits to origin..."
+
+        # Get current branch
+        local current_branch
+        current_branch=$(git rev-parse --abbrev-ref HEAD 2>/dev/null) || {
+            log_warn "Failed to get current branch, skipping push"
+            log_warn "You may need to push manually: git push origin HEAD"
+            return $failed
+        }
+
+        # Push to origin
+        if git push origin "$current_branch" 2>&1; then
+            log_success "✓ Pushed adapter SDK version commits to origin/$current_branch"
+        else
+            log_warn "Failed to push adapter SDK version commits"
+            log_warn "You may need to push manually: git push origin $current_branch"
+            # Don't fail the release for push failure - pods are already published
+        fi
+    fi
 
     return $failed
 }
@@ -5558,9 +5614,24 @@ release_adapters() {
     log_success "All adapters released successfully ($success_count/$success_count)"
 
     # Post-all: commit adapter SDK version updates once all adapters succeed
+    log_section "Post-Release: Updating adapter SDK versions"
     if ! commit_adapter_version_updates "$VERSION" "${adapters[@]}"; then
-        log_warn "One or more adapter version commits failed"
-        log_warn "Pods are published; you may need to commit version updates manually"
+        log_error "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+        log_error "⚠️  Adapter SDK version update failed!"
+        log_error "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+        log_error "Pods are published but getSDKVersion() was not updated."
+        log_error "This means the adapter version numbers are out of sync."
+        log_error ""
+        log_error "Manual fix required:"
+        log_error "  1. Update each adapter's getSDKVersion() to return \"$VERSION\""
+        log_error "  2. Commit the changes"
+        log_error "  3. Push to remote"
+        log_error ""
+        log_error "Affected adapters: ${adapters[*]}"
+        log_error "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+        # Don't return 1 here - pods are already published, we just warn
+    else
+        log_success "✓ All adapter SDK versions updated and committed"
     fi
     
     # Step 2.5: Check availability of dependencies for MSPCore
