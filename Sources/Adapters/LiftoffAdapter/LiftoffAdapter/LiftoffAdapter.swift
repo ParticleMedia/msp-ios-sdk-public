@@ -6,9 +6,9 @@
 //
 
 import Foundation
+@_implementationOnly import MSPSnapKit
 import MSPiOSCore
 import PrebidMobile
-@_implementationOnly import MSPSnapKit
 import UIKit
 import VungleAdsSDK
 

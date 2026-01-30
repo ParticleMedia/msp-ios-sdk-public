@@ -88,7 +88,7 @@ class NovaAdMetricReporter: NSObject {
             params["duration_ms"] = "\(durationInMs)"
         }
         if let clickArea {
-            params[NovaAdMetricKeys.CLICK_AREA_NAME] = clickArea.rawValue
+            params[NovaAdMetricKeys.CLICK_AREA_NAME] = clickArea.stringValue
         }
 
         logNovaAdEvent(.playableTapToTry, encryptedAdToken: encryptedAdToken, params: params)

@@ -155,7 +155,7 @@ extension NovaBaseAd {
                     .nativeAdDidLogClick(
                         nativeAd,
                         clickAreaName: NovaAdMetricReporter.convertNovaClickAreaNameToMetric(
-                            clickArea: adView?.adClickArea?.rawValue) ?? ""
+                            clickArea: adView?.adClickArea?.stringValue) ?? ""
                     )
             case let interstitialAd as NovaInterstitialAdItem:
                 interstitialAd.delegate?.interstitialAdDidLogClick(interstitialAd)

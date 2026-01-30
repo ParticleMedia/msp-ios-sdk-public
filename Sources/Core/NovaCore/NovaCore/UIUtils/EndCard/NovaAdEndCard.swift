@@ -28,7 +28,7 @@ class NovaAdEndCard: UIView {
         self.delegate = delegate
         super.init(frame: .zero)
         backgroundColor = .black.withAlphaComponent(0.75)
-        self.adClickArea = .blank_endcard
+        self.adClickArea = .blankEndcard
     }
 
     required init?(coder: NSCoder) {

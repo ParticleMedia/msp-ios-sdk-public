@@ -270,7 +270,7 @@ class NovaAdHtmlView: WKWebView, WKScriptMessageHandler {
 
                     htmlActionDelegate?.didTapAdCtr(
                         customUrl: customUrl,
-                        clickArea: ClickableAdArea(rawValue: clickAreaString) ?? .html
+                        clickArea: ClickableAdArea(from: clickAreaString)
                     )
                 default:
                     DebugLogger.data.debug("Unknown novaNativeBridge action: \(action, privacy: .public)")

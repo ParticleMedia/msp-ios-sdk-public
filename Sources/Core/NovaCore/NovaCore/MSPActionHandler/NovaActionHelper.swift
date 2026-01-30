@@ -85,7 +85,7 @@ extension NovaActionHelper where T == NovaActionState.Init {
                 encryptedAdToken: context.tracingInfo.encryptedAdToken,
                 adUnitId: context.tracingInfo.adUnitId,
                 durationInMs: durationInMs,
-                clickArea: area?.rawValue
+                clickArea: area?.stringValue
             )
         return NovaActionHelper<NovaActionState.NovaEventSent>(from: self)
     }

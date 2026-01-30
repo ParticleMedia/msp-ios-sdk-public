@@ -1,10 +1,10 @@
 import Foundation
 @_implementationOnly import Kingfisher
+@_implementationOnly import MSPSnapKit
 //import shared
 import MSPiOSCore
 import NovaCore
 import PrebidMobile
-@_implementationOnly import MSPSnapKit
 import UIKit
 
 public class NovaAdapter: AdNetworkAdapter {

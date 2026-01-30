@@ -56,9 +56,9 @@ extension ConstraintInsets: ConstraintRelatableTarget {
 }
 
 #if canImport(UIKit)
-@available(iOS 11.0, tvOS 11.0, *)
-extension ConstraintDirectionalInsets: ConstraintRelatableTarget {
-}
+    @available(iOS 11.0, tvOS 11.0, *)
+    extension ConstraintDirectionalInsets: ConstraintRelatableTarget {
+    }
 #endif
 
 extension ConstraintItem: ConstraintRelatableTarget {

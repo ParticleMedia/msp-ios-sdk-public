@@ -1,11 +1,11 @@
 import AppTrackingTransparency
 import Foundation
 import MSPCore
+import MSPSnapKit
 import MSPiOSCore
 import MobilefuseAdapter
 import NovaCore
 import PrebidMobile
-import MSPSnapKit
 import UIKit
 
 public enum AdType: String {

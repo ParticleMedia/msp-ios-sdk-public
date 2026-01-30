@@ -29,7 +29,7 @@ final class NovaNativeAdVideoPlayButtonOnCenterSubviewHandler: NSObject {
     private lazy var progressView: NovaVideoProgressView = .init()
     private lazy var ctaPopoverView: NovaAdPopOverView = {
         let popoverView = NovaAdPopOverView()
-        popoverView.adClickArea = .cta_popover
+        popoverView.adClickArea = .ctaPopover
         return popoverView
     }()
 

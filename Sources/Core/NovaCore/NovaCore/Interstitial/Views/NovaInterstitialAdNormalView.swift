@@ -107,8 +107,7 @@ class NovaInterstitialAdNormalView: UIView, NovaInterstitialAdViewProtocol {
 
     @objc func didTapAd(sender: UITapGestureRecognizer) {
         let clickArea = sender.view?.adClickArea ?? .cta
-        let nbClickArea = ClickableAdArea(rawValue: clickArea.rawValue) ?? .cta
-        handleAdTap(clickArea: nbClickArea, view: sender.view, customUrl: nil)
+        handleAdTap(clickArea: clickArea, view: sender.view, customUrl: nil)
     }
 
     internal let context: NovaInterstitialAdContext

@@ -22,7 +22,7 @@ final class ImmersiveEndCardSubviewHandler {
         let imageView = UIImageView()
         imageView.layer.cornerRadius = Constants.iconCornerRadius
         imageView.clipsToBounds = true
-        imageView.adClickArea = .icon_endcard
+        imageView.adClickArea = .iconEndcard
         return imageView
     }()
 
@@ -31,7 +31,7 @@ final class ImmersiveEndCardSubviewHandler {
         label.font = .Nova.headline1
         label.textColor = NovaColorPalettes.White
         label.numberOfLines = 1
-        label.adClickArea = .advertiser_endcard
+        label.adClickArea = .advertiserEndcard
         return label
     }()
 
@@ -41,7 +41,7 @@ final class ImmersiveEndCardSubviewHandler {
         label.textColor = NovaColorPalettes.Gray.tint200
         label.textAlignment = .center
         label.numberOfLines = 2
-        label.adClickArea = .body_endcard
+        label.adClickArea = .bodyEndcard
         return label
     }()
 
@@ -53,7 +53,7 @@ final class ImmersiveEndCardSubviewHandler {
         ctaLabel.textAlignment = .center
         ctaLabel.layer.cornerRadius = Constants.ctaCornerRadius
         ctaLabel.layer.masksToBounds = true
-        ctaLabel.adClickArea = .cta_endcard
+        ctaLabel.adClickArea = .ctaEndcard
         return ctaLabel
     }()
 
