@@ -238,7 +238,8 @@ import VungleAdsSDK
         nativeAd = nil
     }
 
-    @MainActor public func prepareViewForInteraction(nativeAd: MSPiOSCore.NativeAd, nativeAdView: Any) {
+@MainActor
+ public func prepareViewForInteraction(nativeAd: MSPiOSCore.NativeAd, nativeAdView: Any) {
         guard let nativeAdView = nativeAdView as? NativeAdView,
             let nativeAdItem = self.nativeAd?.nativeAdItem
         else { return }

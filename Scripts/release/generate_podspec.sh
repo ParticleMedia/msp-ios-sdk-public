@@ -609,7 +609,7 @@ if [[ "$POD_NAME" == "MSPNovaAdapter" ]]; then
     grep "spec\\.dependency" "$SOURCE_PODSPEC" | grep -vE "(NovaCore|MSPKingfisher|Lottie|MSPSnapKit)" >> "$OUTPUT_PODSPEC" 2>/dev/null || true
     # Add public Kingfisher dependency (replaces internal MSPKingfisher wrapper)
     if ! grep -q "spec\\.dependency.*'Kingfisher'" "$OUTPUT_PODSPEC" 2>/dev/null; then
-        echo "  spec.dependency 'Kingfisher', '~> 7.0'" >> "$OUTPUT_PODSPEC"
+        echo "  spec.dependency 'Kingfisher', '7.12.0'" >> "$OUTPUT_PODSPEC"
     fi
 elif [[ "$POD_NAME" == "MSPMolocoAdapter" ]]; then
     # Keep MolocoSDK and MSP deps; MSPSnapKit is provided via MSPSharedLibraries in release
@@ -687,7 +687,7 @@ if is_binary_distribution "$POD_NAME"; then
                         Kingfisher)
                             log_warn "Missing dependency detected in swiftinterface: $import_module"
                             log_info "Adding Kingfisher dependency (required by swiftinterface)"
-                            echo "  spec.dependency 'Kingfisher', '~> 7.0'" >> "$OUTPUT_PODSPEC"
+                            echo "  spec.dependency 'Kingfisher', '7.12.0'" >> "$OUTPUT_PODSPEC"
                             ;;
                         Lottie|Lottie_iOS|lottie_ios)
                             log_warn "Missing dependency detected in swiftinterface: $import_module"
