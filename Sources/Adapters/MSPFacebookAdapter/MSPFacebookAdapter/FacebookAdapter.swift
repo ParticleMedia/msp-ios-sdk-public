@@ -15,7 +15,8 @@ import UIKit
         self.adMetricReporter = adMetricReporter
     }
 
-    @MainActor public func prepareViewForInteraction(nativeAd: MSPiOSCore.NativeAd, nativeAdView: Any) {
+@MainActor
+ public func prepareViewForInteraction(nativeAd: MSPiOSCore.NativeAd, nativeAdView: Any) {
         guard let nativeAdView = nativeAdView as? NativeAdView,
             let mediaView = nativeAd.mediaView as? FBMediaView,
             let fbNativeAdItem = self.nativeAdItem

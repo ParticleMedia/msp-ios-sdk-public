@@ -56,7 +56,7 @@ let package = Package(
         // Google Mobile Ads SDK - Required by MSPGoogleAdsTypes
         .package(url: "https://github.com/googleads/swift-package-manager-google-mobile-ads.git", from: "11.0.0"),
         // UI / utility libraries that are cleanly supported via SPM
-        .package(url: "https://github.com/onevcat/Kingfisher.git", from: "8.6.2"),
+        .package(url: "https://github.com/onevcat/Kingfisher.git", exact: "7.12.0"),
     ],
     targets: [
 

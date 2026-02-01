@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name         = "MSPKingfisher"
-  s.version      = "8.6.2-local"
+  s.version      = "7.12.0-local"
   s.summary      = "MSP wrapper for Kingfisher to disable Swift interface verification."
   s.description  = "Wraps the real Kingfisher library so we can disable BUILD_LIBRARY_FOR_DISTRIBUTION and avoid SwiftVerifyEmittedModuleInterface errors."
 
@@ -9,7 +9,7 @@ Pod::Spec.new do |s|
   s.author       = { "onevcat" => "onevcat@onevcat.com" }
 
   # Use the real Kingfisher source from the public repo
-  s.source       = { :git => "https://github.com/onevcat/Kingfisher.git", :tag => "8.6.2" }
+  s.source       = { :git => "https://github.com/onevcat/Kingfisher.git", :tag => "7.12.0" }
 
   s.swift_version = "5.0"
   s.platform     = :ios, "15.0"
@@ -21,7 +21,7 @@ Pod::Spec.new do |s|
   s.prepare_command = <<-CMD
     if [ ! -d "Sources" ]; then
       echo "Downloading Kingfisher source..."
-      git clone --depth 1 --branch 8.6.2 https://github.com/onevcat/Kingfisher.git temp_kingfisher
+      git clone --depth 1 --branch 7.12.0 https://github.com/onevcat/Kingfisher.git temp_kingfisher
       cp -R temp_kingfisher/Sources .
       rm -rf temp_kingfisher
     fi
@@ -43,4 +43,3 @@ Pod::Spec.new do |s|
     "SWIFT_INSTALL_MODULE_FOR_DEPLOYMENT" => "NO"
   }
 end
-
