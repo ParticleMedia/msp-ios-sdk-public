@@ -66,7 +66,8 @@ public class AdNetworkAdapterStandalone: AdNetworkAdapter {
     public func setAdMetricReporter(adMetricReporter: any MSPiOSCore.AdMetricReporter) {
     }
 
-    @MainActor public func prepareViewForInteraction(nativeAd: NativeAd, nativeAdView: Any) {
+@MainActor
+ public func prepareViewForInteraction(nativeAd: NativeAd, nativeAdView: Any) {
     }
 
     public func loadAdCreative(
