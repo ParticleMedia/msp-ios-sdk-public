@@ -1,0 +1,14 @@
+stage2:
+  requires:
+    - MSPiOSCore
+stage3:
+  requires:
+    - MSPiOSCore
+    - MSPSharedLibraries
+stage4:
+  requires:
+    - MSPiOSCore
+    - MSPSharedLibraries
+    - NovaCore
+    - MSPGoogleAdsTypes
+    - MSPPrebidAdapter
