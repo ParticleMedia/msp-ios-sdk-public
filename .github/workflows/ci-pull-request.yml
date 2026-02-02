@@ -102,6 +102,12 @@ jobs:
       - name: Shell Script Syntax Check
         run: bash Scripts/ci/validate-shell-syntax.sh Scripts
 
+      - name: Validate Test Cases
+        run: |
+          echo "Validating test case definitions..."
+          python3 Scripts/tools/test-cases.py validate
+          echo "✅ Test case validation passed"
+
       - name: Swift Package Validation
         if: hashFiles('Package.swift') != ''
         run: swift package resolve

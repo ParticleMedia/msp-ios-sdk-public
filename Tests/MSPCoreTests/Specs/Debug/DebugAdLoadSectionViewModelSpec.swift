@@ -23,7 +23,7 @@ class DebugAdLoadSectionViewModelSpec: QuickSpec {
                 )
             }
 
-            it("creates view models from section data") {
+            it("[DAL001] creates view models from section data") {
                 let sut = DebugAdLoadSectionViewModel(from: sectionData)
 
                 expect(sut.id).to(equal(sectionData.id))
@@ -32,14 +32,14 @@ class DebugAdLoadSectionViewModelSpec: QuickSpec {
                 expect(sut.cellViewModel(at: 0)?.id).to(equal(options[0].id))
             }
 
-            it("exposes accessors and respects bounds") {
+            it("[DAL002] exposes accessors and respects bounds") {
                 let sut = DebugAdLoadSectionViewModel(from: sectionData)
 
                 expect(sut.cellViewModel(at: -1)).to(beNil())
                 expect(sut.cellViewModel(at: options.count)).to(beNil())
             }
 
-            it("updates selection state and returns the selected cell") {
+            it("[DAL003] updates selection state and returns the selected cell") {
                 let sut = DebugAdLoadSectionViewModel(from: sectionData)
 
                 sut.selectCell(at: 1)
@@ -50,7 +50,7 @@ class DebugAdLoadSectionViewModelSpec: QuickSpec {
                 expect(sut.cellViewModel(at: 1)?.isSelected).to(beTrue())
             }
 
-            it("toggles visibility") {
+            it("[DAL004] toggles visibility") {
                 let sut = DebugAdLoadSectionViewModel(from: sectionData)
 
                 expect(sut.visible).to(beTrue())
@@ -58,7 +58,7 @@ class DebugAdLoadSectionViewModelSpec: QuickSpec {
                 expect(sut.visible).to(beFalse())
             }
 
-            it("handles empty options") {
+            it("[DAL005] handles empty options") {
                 let emptySection = MockDebugSection(id: "empty", title: "Empty", options: [])
                 let sut = DebugAdLoadSectionViewModel(from: emptySection)
 
