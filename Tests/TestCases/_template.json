@@ -1,0 +1,52 @@
+{
+  "$schema": "./schema.json",
+  "_comment": "READ README.md BEFORE CREATING NEW FILES",
+  "_rules": {
+    "id_format": "[PREFIX###] - PREFIX is 2-4 uppercase letters unique to this module",
+    "naming": "JSON filename (module) must be substring of Swift test file name",
+    "examples": [
+      "DebugAdLoad.json (prefix: DAL) → DAL001, DAL002",
+      "UserProfile.json (prefix: UP) → UP001, UP002"
+    ]
+  },
+  "module": "ModuleName",
+  "prefix": "MN",
+  "description": "Test cases for ModuleName feature",
+  "cases": [
+    {
+      "id": "MN001",
+      "type": "behavior",
+      "feature": "Feature Name",
+      "scenario": "Scenario description",
+      "given": [
+        "Precondition 1",
+        "Precondition 2"
+      ],
+      "when": "Action performed",
+      "then": [
+        "Expected outcome 1",
+        "Expected outcome 2"
+      ],
+      "priority": "high",
+      "tags": ["smoke", "regression"]
+    },
+    {
+      "id": "MN002",
+      "type": "unit",
+      "class": "ClassName",
+      "method": "methodName",
+      "description": "Should do something when condition",
+      "given": {
+        "input": "value",
+        "state": "initial"
+      },
+      "when": "methodName(input)",
+      "then": {
+        "output": "expected",
+        "state": "final"
+      },
+      "priority": "medium",
+      "tags": ["unit"]
+    }
+  ]
+}
