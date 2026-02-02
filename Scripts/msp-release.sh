@@ -1918,10 +1918,12 @@ do_resume() {
     export MSP_RESUME_MODE="1"
     export RELEASE_VERSION="$version"
     
-    # Resume allows existing release (resume is for retrying failed releases)
+    # Resume allows existing release and tag (resume is for retrying failed releases)
     # Release might be in draft or published state - both are acceptable
+    # Tag might already exist from a previous attempt - this is expected
     export MSP_ALLOW_EXISTING_RELEASE=true
-    
+    export MSP_ALLOW_EXISTING_TAG=true
+
     # Resume is non-interactive by design (auto-retry without user confirmation)
     # Explicitly set to prevent --interactive flag or profile settings from blocking
     # Even if user passes --interactive, resume should not require manual confirmation
