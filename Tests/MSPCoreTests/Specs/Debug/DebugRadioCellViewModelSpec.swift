@@ -17,12 +17,12 @@ class DebugRadioCellViewModelSpec: QuickSpec {
                 cancellables = []
             }
 
-            it("exposes the option id and title") {
+            it("\[DRC001] exposes the option id and title") {
                 expect(sut.id).to(equal(option.id))
                 expect(sut.title).to(equal(option.displayTitle))
             }
 
-            it("updates selection state and publishes changes") {
+            it("\[DRC002] updates selection state and publishes changes") {
                 var received: [Bool] = []
                 sut.isSelectedPublisher
                     .sink { value in

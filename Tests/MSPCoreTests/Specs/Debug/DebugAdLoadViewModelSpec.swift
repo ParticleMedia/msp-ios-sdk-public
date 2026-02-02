@@ -22,7 +22,7 @@ class DebugAdLoadViewModelSpec: QuickSpec {
             }
 
             context("initialization") {
-                it("creates sections from repository data") {
+                it("[DAL006] creates sections from repository data") {
                     let placements = [TestConstants.Placements.placement1]
                     let sections = TestDataFactory.createMinimalSections()
                     placementsRepository.placementsToReturn = placements
@@ -41,7 +41,7 @@ class DebugAdLoadViewModelSpec: QuickSpec {
                     expect(sut.sections.first?.numberOfCells).to(equal(sections.first?.options.count))
                 }
 
-                it("sets default selection for sections without showCondition") {
+                it("[DAL007] sets default selection for sections without showCondition") {
                     let sections = TestDataFactory.createMinimalSections()
                     placementsRepository.placementsToReturn = [TestConstants.Placements.placement1]
                     sectionsRepository.sectionsToReturn = sections
@@ -55,7 +55,7 @@ class DebugAdLoadViewModelSpec: QuickSpec {
                     expect(sut.sections.first?.selectedIndex()).to(equal(0))
                 }
 
-                it("handles empty placements and sections") {
+                it("[DAL008] handles empty placements and sections") {
                     placementsRepository.placementsToReturn = []
                     sectionsRepository.sectionsToReturn = []
 
@@ -71,7 +71,7 @@ class DebugAdLoadViewModelSpec: QuickSpec {
             }
 
             context("visibility rules") {
-                it("shows Nova sections when Nova + Interstitial are selected") {
+                it("[DAL009] shows Nova sections when Nova + Interstitial are selected") {
                     let sections = TestDataFactory.createProductionLikeSections(placements: [
                         TestConstants.Placements.placement1
                     ])
@@ -103,7 +103,7 @@ class DebugAdLoadViewModelSpec: QuickSpec {
                     expect(layoutVisible).to(beTrue())
                 }
 
-                it("hides Nova sections when conditions are not met") {
+                it("[DAL010] hides Nova sections when conditions are not met") {
                     let sections = TestDataFactory.createProductionLikeSections(placements: [
                         TestConstants.Placements.placement1
                     ])
@@ -144,7 +144,7 @@ class DebugAdLoadViewModelSpec: QuickSpec {
             }
 
             context("test parameter generation") {
-                it("includes basic parameters for selected options") {
+                it("[DAL011] includes basic parameters for selected options") {
                     let sections = TestDataFactory.createProductionLikeSections(placements: [
                         TestConstants.Placements.placement1
                     ])
@@ -168,7 +168,7 @@ class DebugAdLoadViewModelSpec: QuickSpec {
                     expect(params["ad_network"] as? String).to(equal("msp_google"))
                 }
 
-                it("includes Nova-specific parameters when selected") {
+                it("[DAL012] includes Nova-specific parameters when selected") {
                     let sections = TestDataFactory.createProductionLikeSections(placements: [
                         TestConstants.Placements.placement1
                     ])
@@ -203,7 +203,7 @@ class DebugAdLoadViewModelSpec: QuickSpec {
             }
 
             context("ad callbacks") {
-                it("emits ad presentation signal on successful load") {
+                it("[DAL013] emits ad presentation signal on successful load") {
                     let sections = TestDataFactory.createProductionLikeSections(placements: [
                         TestConstants.Placements.placement1
                     ])
@@ -240,7 +240,7 @@ class DebugAdLoadViewModelSpec: QuickSpec {
                     expect(receivedSignal).toEventuallyNot(beNil())
                 }
 
-                it("emits toast signal on load error") {
+                it("[DAL014] emits toast signal on load error") {
                     let sections = TestDataFactory.createProductionLikeSections(placements: [
                         TestConstants.Placements.placement1
                     ])
@@ -274,7 +274,7 @@ class DebugAdLoadViewModelSpec: QuickSpec {
                     expect(lastMessage).toEventually(equal(TestConstants.Messages.errorMessage))
                 }
 
-                it("does not clear the ad reference on dismissal") {
+                it("[DAL015] does not clear the ad reference on dismissal") {
                     let sections = TestDataFactory.createProductionLikeSections(placements: [
                         TestConstants.Placements.placement1
                     ])

@@ -23,6 +23,12 @@ When working in Sources/:
 When working in Scripts/:
 @../Scripts/AGENTS-SCRIPTS.md
 
+## 2.2 Technical Context Imports
+
+When working on unit tests or TDD:
+@../.context/testing/tech/ctx-testing-001-test-doubles.md
+@../Tests/TestCases/README.md (MUST READ before creating test cases)
+
 ## 3. Strategic Roles
 
 ### Role A: Strategic Planner
