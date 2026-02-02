@@ -54,12 +54,14 @@ pre_install do |installer|
 
   missing_xcframeworks = []
   required_xcframeworks.each do |name|
-    xcf_path = File.join(__dir__, "ThirdParty/#{name}/#{name}.xcframework")
-    unless Dir.exist?(xcf_path)
+    # Check canonical path: Build/ReleaseArtifacts/XCFrameworks/ (per README)
+    canonical_path = File.join(__dir__, "Build/ReleaseArtifacts/XCFrameworks/#{name}.xcframework")
+    
+    if Dir.exist?(canonical_path)
+      puts "[pre_install]   Found: #{name}.xcframework"
+    else
       missing_xcframeworks << name
       puts "[pre_install]   Missing: #{name}.xcframework"
-    else
-      puts "[pre_install]   Found: #{name}.xcframework"
     end
   end
 
@@ -82,12 +84,13 @@ pre_install do |installer|
 
     puts "[pre_install] ✅ Third-party XCFrameworks built successfully (#{build_duration.round(1)}s)"
 
-    # Verify all frameworks were built
+    # Verify all frameworks were built in canonical location
     missing_xcframeworks.each do |name|
-      xcf_path = File.join(__dir__, "ThirdParty/#{name}/#{name}.xcframework")
-      unless Dir.exist?(xcf_path)
-        raise "[pre_install] ERROR: #{name}.xcframework still missing after build"
+      canonical_path = File.join(__dir__, "Build/ReleaseArtifacts/XCFrameworks/#{name}.xcframework")
+      unless Dir.exist?(canonical_path)
+        raise "[pre_install] ERROR: #{name}.xcframework still missing after build (expected: Build/ReleaseArtifacts/XCFrameworks/#{name}.xcframework)"
       end
+      puts "[pre_install]   Verified: #{name}.xcframework in canonical location"
     end
   else
     puts "[pre_install] ✅ All required XCFrameworks exist"

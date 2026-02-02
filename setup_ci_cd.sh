@@ -41,6 +41,23 @@ print_section() {
     color_highlight "═══════════════════════════════════════════════════════════════"
 }
 
+require_path() {
+    local path="$1"
+    local type="${2:-any}"
+    if [[ "$type" == "dir" && ! -d "$path" ]]; then
+        print_error "Required directory missing: $path"
+        exit 1
+    fi
+    if [[ "$type" == "file" && ! -f "$path" ]]; then
+        print_error "Required file missing: $path"
+        exit 1
+    fi
+    if [[ "$type" == "any" && ! -e "$path" ]]; then
+        print_error "Required path missing: $path"
+        exit 1
+    fi
+}
+
 # Check if we're in the right directory
 if [ ! -f "Podfile" ]; then
     print_error "This script must be run from the root of the MSP iOS SDK project"
@@ -49,6 +66,15 @@ fi
 
 # Ensure we're in the project root
 ensure_project_root
+
+print_step "Validating required paths..."
+require_path "Scripts" "dir"
+require_path "Scripts/lib" "dir"
+require_path "Scripts/ci/ci_validate.sh" "file"
+require_path "Scripts/tests/run-unit-tests.sh" "file"
+require_path ".github/workflows" "dir"
+require_path "Examples/MSPDemoApp" "dir"
+print_success "Required paths validated"
 
 print_section "MSP iOS SDK CI/CD Setup"
 echo "This script will set up the CI/CD environment with Fastlane and GitHub Actions"
@@ -119,18 +145,30 @@ fi
 # Create .gitignore entries if needed
 print_step "Checking .gitignore configuration..."
 if [ -f ".gitignore" ]; then
-    if ! grep -q "Gemfile.lock" .gitignore; then
-        echo "Gemfile.lock" >> .gitignore
-        print_success "Added Gemfile.lock to .gitignore"
+    if [[ -n "${CI:-}" ]]; then
+        print_warning "CI environment detected; skipping .gitignore updates"
     else
-        print_success "Gemfile.lock already in .gitignore"
-    fi
-    
-    if ! grep -q ".bundle/" .gitignore; then
-        echo ".bundle/" >> .gitignore
-        print_success "Added .bundle/ to .gitignore"
-    else
-        print_success ".bundle/ already in .gitignore"
+        if [[ "${ALLOW_GITIGNORE_UPDATE:-0}" == "1" ]]; then
+            if ! grep -q "Gemfile.lock" .gitignore; then
+                echo "Gemfile.lock" >> .gitignore
+                print_success "Added Gemfile.lock to .gitignore"
+            else
+                print_success "Gemfile.lock already in .gitignore"
+            fi
+            if ! grep -q ".bundle/" .gitignore; then
+                echo ".bundle/" >> .gitignore
+                print_success "Added .bundle/ to .gitignore"
+            else
+                print_success ".bundle/ already in .gitignore"
+            fi
+        else
+            if ! grep -q "Gemfile.lock" .gitignore; then
+                print_warning "Gemfile.lock missing from .gitignore (set ALLOW_GITIGNORE_UPDATE=1 to add)"
+            fi
+            if ! grep -q ".bundle/" .gitignore; then
+                print_warning ".bundle/ missing from .gitignore (set ALLOW_GITIGNORE_UPDATE=1 to add)"
+            fi
+        fi
     fi
 else
     print_warning ".gitignore not found, consider creating one"
@@ -184,4 +222,3 @@ echo ""
 
 print_success "Setup script completed successfully!"
 echo "Your MSP iOS SDK project is now ready for CI/CD automation!"
-

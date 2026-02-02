@@ -118,6 +118,13 @@ ThirdParty/MSPKingfisher/Sources/
 !ThirdParty/PrebidMobile/
 !ThirdParty/PrebidMobile/PrebidMobile.xcframework
 !ThirdParty/PrebidMobile/PrebidMobile.xcframework/**
+
+# Kingfisher.xcframework - Pre-built for NovaAdapter dependency
+# Required because MSPKingfisher/Sources is not available during pre_install hook
+# NovaAdapter's project.yml.template references this XCFramework
+!ThirdParty/Kingfisher/
+!ThirdParty/Kingfisher/Kingfisher.xcframework
+!ThirdParty/Kingfisher/Kingfisher.xcframework/**
 Scripts/xcframeworks/output-temp/
 ExtractedFrameworks/
 

@@ -5,7 +5,7 @@ on:
     branches:
       - main
       - develop
-      - feature/newsbreak_msp_migration
+      - feature/*
     types:
       - opened
       - edited
@@ -15,7 +15,7 @@ on:
     branches:
       - main
       - develop
-      - feature/newsbreak_msp_migration
+      - feature/*
     types:
       - opened
       - edited

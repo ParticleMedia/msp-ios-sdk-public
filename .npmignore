@@ -1,0 +1,20 @@
+# Node artifacts
+node_modules/
+dist/
+build/
+coverage/
+*.log
+
+# Env
+.env*
+
+# OS/editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# CI / tooling
+.npmrc
+.git/
+.github/

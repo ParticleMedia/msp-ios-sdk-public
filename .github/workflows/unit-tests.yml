@@ -1,10 +1,11 @@
 name: Unit Tests
 
+# NOTE: This workflow now runs only on direct pushes.
+# For pull requests, unit tests are integrated into the main CI workflow
+# (see ci-pull-request.yml -> unit-tests job)
 on:
   push:
     branches: [main, develop, 'feature/**']
-  pull_request:
-    branches: [main, develop]
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -38,24 +39,28 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-pods-
 
-      - name: Install CocoaPods
+      - name: Prepare workspace
         run: |
-          bundle exec pod install --repo-update
+          bash Scripts/workspace/update.sh
 
       - name: Run Unit Tests
         run: |
-          xcodebuild test \
-            -workspace msp-ios-sdk.xcworkspace \
-            -scheme AllTests \
-            -destination 'platform=iOS Simulator,name=iPhone 15,OS=17.2' \
-            -enableCodeCoverage YES \
-            -resultBundlePath build/TestResults.xcresult \
-            | xcpretty --color
+          bash Scripts/tests/run-unit-tests.sh AllTests 'platform=iOS Simulator,name=iPhone 15,OS=17.2'
 
       - name: Generate Coverage Report
         if: success()
         run: |
           xcrun xccov view --report --json build/TestResults.xcresult > build/coverage.json
+
+      - name: Ensure coverage tools
+        if: success()
+        run: |
+          if ! command -v jq &>/dev/null; then
+            brew install jq
+          fi
+          if ! command -v bc &>/dev/null; then
+            brew install bc
+          fi
 
       - name: Check Coverage Threshold
         if: success()

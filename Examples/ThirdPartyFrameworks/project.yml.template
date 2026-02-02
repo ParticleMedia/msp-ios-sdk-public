@@ -84,21 +84,10 @@ targets:
   # Shimmer is now provided via XCFramework (Shimmer Plan B)
   # Removed: Shimmer target (no longer built from Pods source)
 
-  Kingfisher:
-    type: framework
-    platform: iOS
-    sources:
-      - path: ../../ThirdParty/MSPKingfisher/Sources
-        excludes:
-          - "**/*.md"
-          - "**/Documentation.docc/**"
-    settings:
-      base:
-        PRODUCT_NAME: Kingfisher
-        PRODUCT_BUNDLE_IDENTIFIER: msp.thirdparty.Kingfisher
-        PRODUCT_MODULE_NAME: Kingfisher
-        SWIFT_OBJC_INTERFACE_HEADER_NAME: ""
-        MACH_O_TYPE: staticlib
+  # Kingfisher is NOT built here - project uses MSPKingfisher pod (source-based) instead
+  # MSPKingfisher/Sources is gitignored and only exists after pod install's prepare_command runs
+  # Pre-built Kingfisher.xcframework exists in ThirdParty/Kingfisher/ if needed
+  # Removed: Kingfisher target (causes XcodeGen validation error during pre_install hook)
 
 schemes:
   SwiftProtobuf:
@@ -123,10 +112,4 @@ schemes:
       config: Release
 
   # Shimmer scheme removed (Shimmer Plan B: using XCFramework)
-
-  Kingfisher:
-    build:
-      targets:
-        Kingfisher: all
-    archive:
-      config: Release
+  # Kingfisher scheme removed (using MSPKingfisher pod instead)

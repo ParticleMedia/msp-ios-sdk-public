@@ -4,14 +4,14 @@ on:
   push:
     branches: [ main, develop ]
     paths:
-      - 'NovaCore/NovaCore/NBAssets.xcassets/**'
-      - 'NovaCore/NovaCore/NBResourceBundle.bundle/**'
+      - 'Sources/Core/NovaCore/NovaCore/NBAssets.xcassets/**'
+      - 'Sources/Core/NovaCore/NovaCore/NBResourceBundle.bundle/**'
       - 'Scripts/lib/asset_*.sh'
   pull_request:
     branches: [ main, develop ]
     paths:
-      - 'NovaCore/NovaCore/NBAssets.xcassets/**'
-      - 'NovaCore/NovaCore/NBResourceBundle.bundle/**'
+      - 'Sources/Core/NovaCore/NovaCore/NBAssets.xcassets/**'
+      - 'Sources/Core/NovaCore/NovaCore/NBResourceBundle.bundle/**'
       - 'Scripts/lib/asset_*.sh'
   workflow_dispatch:
     inputs:
@@ -33,7 +33,7 @@ jobs:
       - name: Setup Ruby
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: '3.0'
+          ruby-version: '3.1.6'
           bundler-cache: true
           
       - name: Install dependencies
@@ -140,7 +140,7 @@ jobs:
       - name: Setup Ruby
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: '3.0'
+          ruby-version: '3.1.6'
           bundler-cache: true
           
       - name: Install dependencies

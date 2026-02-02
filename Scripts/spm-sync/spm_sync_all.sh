@@ -29,8 +29,12 @@ main() {
 
   # Optional integration with your existing switch-target system
   if [[ -x "$ROOT_DIR/Scripts/target-switching/validate_xcframeworks.sh" ]]; then
-    log "Running validate_xcframeworks.sh..."
-    "$ROOT_DIR/Scripts/target-switching/validate_xcframeworks.sh" || err "validate_xcframeworks.sh reported problems."
+    if [[ "${SKIP_XCFRAMEWORK_VALIDATION:-0}" == "1" ]]; then
+      log "Skipping validate_xcframeworks.sh (SKIP_XCFRAMEWORK_VALIDATION=1)"
+    else
+      log "Running validate_xcframeworks.sh..."
+      "$ROOT_DIR/Scripts/target-switching/validate_xcframeworks.sh" || err "validate_xcframeworks.sh reported problems."
+    fi
   fi
 
   if [[ -x "$ROOT_DIR/Scripts/switch-target.sh" ]]; then
@@ -42,4 +46,3 @@ main() {
 }
 
 main "$@"
-
