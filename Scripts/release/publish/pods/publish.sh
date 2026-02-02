@@ -5409,7 +5409,45 @@ release_adapters() {
         log_error "Failed to update specs repository before adapter releases"
         return 1
     fi
-    
+
+    # ========================================================================
+    # Step 0.9: Update adapter SDK versions BEFORE release
+    # ========================================================================
+    # Update getSDKVersion() in all adapters to match the release version.
+    # This must happen BEFORE release so that published binaries have correct version.
+    # Commit is deferred to post-release to avoid git conflicts during parallel builds.
+    # ========================================================================
+    if [[ "$DRY_RUN" != "true" ]]; then
+        log_section "Step 0.9: Updating adapter SDK versions"
+        log_info "Updating getSDKVersion() in adapters to $VERSION..."
+
+        if ! load_adapter_sdk_version_config; then
+            log_warn "Failed to load adapter SDK version config, skipping version update"
+        else
+            local version_update_failed=0
+            for adapter in "${adapters[@]}"; do
+                if adapter_sdk_version_should_skip "$adapter"; then
+                    log_info "[$adapter] Skipping version update (config skip list)"
+                    continue
+                fi
+
+                log_info "[$adapter] Updating SDK version to $VERSION..."
+                if update_adapter_sdk_version "$adapter" "$VERSION"; then
+                    log_success "[$adapter] ✓ SDK version updated"
+                else
+                    log_warn "[$adapter] Failed to update SDK version (non-fatal)"
+                    version_update_failed=1
+                fi
+            done
+
+            if [[ $version_update_failed -eq 0 ]]; then
+                log_success "All adapter SDK versions updated to $VERSION"
+            else
+                log_warn "Some adapters failed to update SDK version (will continue with release)"
+            fi
+        fi
+    fi
+
     # ========================================================================
     # Step 1: Start parallel adapter releases
     # ========================================================================

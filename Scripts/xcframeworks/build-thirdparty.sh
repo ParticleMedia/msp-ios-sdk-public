@@ -100,19 +100,23 @@ log_success "ThirdPartyFrameworks.xcodeproj generated"
 build_single_xcframework() {
     local scheme_name="$1"
     local output_name="$2"
-    
+
     local ios_archive="$ARCHIVES_DIR/${output_name}-iOS.xcarchive"
     local sim_archive="$ARCHIVES_DIR/${output_name}-Simulator.xcarchive"
     local output_dir="$THIRDPARTY_OUTPUT_DIR"
     local xcframework_output="$output_dir/${output_name}.xcframework"
-    
+
     log_section "Building $output_name"
-    
+
     # Clean previous archives
     rm -rf "$ios_archive" "$sim_archive"
     mkdir -p "$ARCHIVES_DIR"
     mkdir -p "$output_dir"
-    
+
+    # Disable autolink for UIUtilities (private Apple framework that causes pod lint failures)
+    # This prevents LC_LINKER_OPTION commands for UIUtilities from being embedded in the binary
+    local AUTOLINK_DISABLE_FLAGS="-Xfrontend -disable-autolink-framework -Xfrontend UIUtilities"
+
     # Archive for iOS device
     log_step "Archiving $output_name for iOS device"
     if ! xcodebuild archive \
@@ -124,11 +128,12 @@ build_single_xcframework() {
         -derivedDataPath "$DERIVED_DATA" \
         BUILD_LIBRARY_FOR_DISTRIBUTION=YES \
         SKIP_INSTALL=NO \
+        OTHER_SWIFT_FLAGS="\$(inherited) $AUTOLINK_DISABLE_FLAGS" \
         -quiet 2>&1; then
         log_error "iOS archive failed for $output_name"
         return 1
     fi
-    
+
     # Archive for iOS Simulator
     log_step "Archiving $output_name for iOS Simulator"
     if ! xcodebuild archive \
@@ -140,6 +145,7 @@ build_single_xcframework() {
         -derivedDataPath "$DERIVED_DATA" \
         BUILD_LIBRARY_FOR_DISTRIBUTION=YES \
         SKIP_INSTALL=NO \
+        OTHER_SWIFT_FLAGS="\$(inherited) $AUTOLINK_DISABLE_FLAGS" \
         -quiet 2>&1; then
         log_error "Simulator archive failed for $output_name"
         return 1

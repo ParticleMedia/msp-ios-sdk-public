@@ -54,6 +54,8 @@ targets:
         OTHER_SWIFT_FLAGS: >-
           $(inherited) 
           -no-verify-emitted-module-interface 
+          -Xfrontend -disable-autolink-framework -Xfrontend Kingfisher
+          -Xfrontend -disable-autolink-framework -Xfrontend UIUtilities
           -Xcc -I$(SRCROOT)/../../../.generated/DerivedData/build-shared/Build/Products/Release-iphoneos/MSPKingfisher
           -Xcc -I$(SRCROOT)/../../../.generated/DerivedData/build-shared/Build/Products/Release-iphonesimulator/MSPKingfisher
         # Swift module search paths for Pod modules - uses $(PLATFORM_NAME) for platform-specific paths

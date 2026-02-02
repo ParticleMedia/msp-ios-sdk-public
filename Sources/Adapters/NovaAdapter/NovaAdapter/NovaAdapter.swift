@@ -1,7 +1,5 @@
 import Foundation
-@_implementationOnly import Kingfisher
 @_implementationOnly import MSPSnapKit
-//import shared
 import MSPiOSCore
 import NovaCore
 import PrebidMobile
@@ -185,7 +183,7 @@ public class NovaAdapter: AdNetworkAdapter {
             if let iconView = nativeAdContainer.getIcon(),
                 let iconURL = novaNativeAdItem.iconURL
             {
-                iconView.kf.setImage(with: iconURL)
+                NovaImageLoader.setImage(for: iconView, with: iconURL)
             }
 
             novaNativeAdView.addSubview(nativeAdContainer)
