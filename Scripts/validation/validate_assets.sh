@@ -16,8 +16,32 @@ critical_dirs=(
     "Sources/Adapters"
     "Sources/Common"
     "Scripts"
-    "DemoApp"
 )
+
+echo ""
+echo "Checking DemoApp layout..."
+demoapp_candidates=(
+    "DemoApp"
+    "MSPDemoApp"
+    "Examples/MSPDemoApp"
+)
+
+demoapp_found=false
+for candidate in "${demoapp_candidates[@]}"; do
+    if [ -d "$candidate" ]; then
+        echo "  ✅ $candidate exists"
+        demoapp_found=true
+        break
+    fi
+done
+
+if [ "$demoapp_found" = false ]; then
+    echo "  ❌ DemoApp directory not found (expected one of: ${demoapp_candidates[*]})"
+    exit 1
+fi
+
+echo ""
+echo "Checking critical directories..."
 
 for dir in "${critical_dirs[@]}"; do
     if [ -d "$dir" ]; then

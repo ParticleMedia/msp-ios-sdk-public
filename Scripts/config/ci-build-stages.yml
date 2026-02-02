@@ -1,0 +1,32 @@
+stage1:
+  modules:
+    - MSPiOSCore
+stage2:
+  modules:
+    - MSPSharedLibraries
+stage3:
+  modules:
+    - NovaCore
+    - MSPGoogleAdsTypes
+stage4:
+  modules:
+    - MSPCore
+adapters:
+  modules:
+    - MSPAmazonAdapter
+    - InmobiAdapter
+    - MSPLiftoffAdapter
+    - MintegralAdapter
+    - MobilefuseAdapter
+    - MSPMolocoAdapter
+    - MSPFacebookAdapter
+    - MSPGoogleAdapter
+    - MSPPrebidAdapter
+    - MSPNovaAdapter
+    - PubmaticAdapter
+    - UnityAdapter
+  module_dir_overrides:
+    MSPAmazonAdapter: AmazonAdapter
+    MSPLiftoffAdapter: LiftoffAdapter
+    MSPMolocoAdapter: MolocoAdapter
+    MSPNovaAdapter: NovaAdapter

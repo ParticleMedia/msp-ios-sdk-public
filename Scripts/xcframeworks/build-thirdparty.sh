@@ -26,6 +26,9 @@ ensure_repo_root
 # Third-party libraries to build
 # Format: "SchemeName:OutputName"
 # Note: Shimmer is now provided via XCFramework (Shimmer Plan B), not built from Pods source
+# Note: Kingfisher is NOT built here - project uses MSPKingfisher pod (source-based) instead
+#       MSPKingfisher/Sources is gitignored and only created during pod install prepare_command
+#       Pre-built Kingfisher.xcframework exists in ThirdParty/Kingfisher/ if needed
 THIRDPARTY_TARGETS=(
     "SwiftProtobuf:SwiftProtobuf"
     "MSPSnapKit:MSPSnapKit"
@@ -269,7 +272,9 @@ log_success "Built XCFrameworks synced to ThirdParty/"
 
 log_section "Copying vendor XCFrameworks into ReleaseArtifacts/XCFrameworks"
 
-VENDOR_XCFS=("PrebidMobile" "Shimmer")
+# Note: Kingfisher is not built from source (MSPKingfisher/Sources not available during pre_install)
+# but the pre-built XCFramework in ThirdParty/Kingfisher/ needs to be copied for NovaAdapter builds
+VENDOR_XCFS=("PrebidMobile" "Shimmer" "Kingfisher")
 for name in "${VENDOR_XCFS[@]}"; do
     source_xcf="$THIRDPARTY_LINK_DIR/$name/$name.xcframework"
     target_xcf="$THIRDPARTY_OUTPUT_DIR/$name.xcframework"

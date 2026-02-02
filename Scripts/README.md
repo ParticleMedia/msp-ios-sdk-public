@@ -42,6 +42,26 @@ Scripts/
 └── config/                     # Configuration files
 ```
 
+## CI Scripts and Config (GitHub Actions)
+
+CI workflows call scripts in `Scripts/ci/` and use config in `Scripts/config/`:
+
+- Scripts
+  - `ensure-xcodegen.sh` - install/check XcodeGen
+  - `lint-podspecs.sh` - lint podspecs (quick)
+  - `validate-shell-syntax.sh` - bash syntax check
+  - `install-pods.sh` - CocoaPods install (fallback + repo-update)
+  - `verify-xcframework.sh` - verify single XCFramework exists
+  - `verify-xcframework-deps.sh` - verify stage dependencies
+  - `validate-workspace-schemes.sh` - verify workspace schemes
+  - `prebuild-pod-deps.sh` - prebuild Pod schemes
+  - `generate-workspace.sh` - generate workspace + DemoApp project
+
+- Config
+  - `ci-build-stages.yml` - stage module order + adapter mapping
+  - `ci-framework-deps.yml` - required XCFrameworks per stage
+  - `ci-pod-schemes.yml` - required/prebuilt Pod schemes
+
 ## Release System Architecture
 
 ### Entrypoints

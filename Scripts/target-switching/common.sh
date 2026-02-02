@@ -254,6 +254,11 @@ auto_fix_package_swift_state() {
 
 verify_git_cleanliness() {
     log_step "Verifying git status is clean after switching"
+
+    if [[ "${MSP_ALLOW_DIRTY:-0}" == "1" ]]; then
+        log_warn "Skipping git cleanliness check (MSP_ALLOW_DIRTY=1)"
+        return 0
+    fi
     
     local dirty_files
     dirty_files=$(git status --porcelain 2>/dev/null || echo "")

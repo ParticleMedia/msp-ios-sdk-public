@@ -2,7 +2,7 @@ name: CI - Pull Request
 
 on:
   pull_request:
-    branches: [main, release/*, feature/*]
+    branches: [main, develop, release/*, feature/*]
 
 # Cancel in-progress runs when a new commit is pushed
 concurrency:
@@ -11,11 +11,58 @@ concurrency:
 
 jobs:
   # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  # Job 0: Load CI Config (config-driven matrix)
+  # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  prepare-ci-config:
+    name: Prepare CI Config
+    runs-on: ubuntu-latest
+    outputs:
+      stage1_module: ${{ steps.read-config.outputs.stage1_module }}
+      stage2_module: ${{ steps.read-config.outputs.stage2_module }}
+      stage3_modules: ${{ steps.read-config.outputs.stage3_modules }}
+      stage4_module: ${{ steps.read-config.outputs.stage4_module }}
+      adapter_modules: ${{ steps.read-config.outputs.adapter_modules }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Read CI config
+        id: read-config
+        run: |
+          ruby -e 'require "yaml"; require "json";
+          data = YAML.load_file("Scripts/config/ci-build-stages.yml") || {};
+          def stage_modules(data, key)
+            stage = data[key] || {};
+            mods = stage["modules"] || [];
+            abort("Missing modules for #{key} in Scripts/config/ci-build-stages.yml") unless mods.is_a?(Array) && !mods.empty?;
+            mods
+          end
+          stage1 = stage_modules(data, "stage1");
+          stage2 = stage_modules(data, "stage2");
+          stage3 = stage_modules(data, "stage3");
+          stage4 = stage_modules(data, "stage4");
+          abort("stage1 must contain exactly 1 module") unless stage1.size == 1;
+          abort("stage2 must contain exactly 1 module") unless stage2.size == 1;
+          abort("stage4 must contain exactly 1 module") unless stage4.size == 1;
+          adapters = data["adapters"] || {};
+          adapter_modules = adapters["modules"] || [];
+          abort("Missing adapters.modules in Scripts/config/ci-build-stages.yml") unless adapter_modules.is_a?(Array) && !adapter_modules.empty?;
+          overrides = adapters["module_dir_overrides"] || {};
+          payload = adapter_modules.map { |name| { "name" => name, "dir" => (overrides[name] || name) } };
+          File.open(ENV["GITHUB_OUTPUT"], "a") do |f|
+            f.puts "stage1_module=#{stage1.first}";
+            f.puts "stage2_module=#{stage2.first}";
+            f.puts "stage3_modules=#{stage3.to_json}";
+            f.puts "stage4_module=#{stage4.first}";
+            f.puts "adapter_modules=#{payload.to_json}";
+          end'
+
+  # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   # Job 1: Quick Validation (Fail-fast)
   # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   quick-validation:
     name: Quick Validation
-    runs-on: macos-13
+    runs-on: macos-15
     timeout-minutes: 10
     steps:
       - name: Checkout code
@@ -30,8 +77,16 @@ jobs:
         if: hashFiles('Gemfile') != ''
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: '3.0'
+          ruby-version: '3.1.6'
           bundler-cache: true
+
+      - name: Validate CI config YAML
+        run: |
+          ruby -e "require 'yaml'; %w[Scripts/config/ci-build-stages.yml Scripts/config/ci-pod-schemes.yml Scripts/config/ci-framework-deps.yml].each { |f| YAML.load_file(f) }"
+          echo "✅ CI config YAML is valid"
+
+      - name: Ensure XcodeGen
+        run: bash Scripts/ci/ensure-xcodegen.sh
 
       - name: Install Ruby dependencies
         if: hashFiles('Gemfile') != ''
@@ -42,68 +97,38 @@ jobs:
         run: bash Scripts/validation/validate_assets.sh
 
       - name: Lint Podspecs (quick)
-        run: |
-          for spec in *.podspec; do
-            if [ -f "$spec" ]; then
-              echo "Linting $spec..."
-              pod spec lint "$spec" --quick --allow-warnings || exit 1
-            fi
-          done
+        run: bash Scripts/ci/lint-podspecs.sh --allow-warnings
 
       - name: Shell Script Syntax Check
-        run: |
-          echo "Checking shell script syntax..."
-          find Scripts -name "*.sh" -type f | while read -r script; do
-            echo "  Checking $script"
-            bash -n "$script" || exit 1
-          done
-          echo "✅ All scripts pass syntax check"
+        run: bash Scripts/ci/validate-shell-syntax.sh Scripts
 
       - name: Swift Package Validation
         if: hashFiles('Package.swift') != ''
         run: swift package resolve
 
+      - name: Upload Quick Validation Logs
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: quick-validation-logs
+          path: |
+            BuildReports/**
+            /tmp/*.log
+          retention-days: 7
+
   # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  # Job 2: Build XCFrameworks (parallel matrix)
+  # Job 2: Build Core XCFrameworks Stage 1 (no dependencies)
   # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  build-xcframeworks:
-    name: Build ${{ matrix.module }}
-    needs: quick-validation
+  # Reference: Scripts/xcframeworks/build-core.sh
+  # Build order: see Scripts/config/ci-build-stages.yml
+  # Stage 1 module defined in config (base framework, no dependencies)
+  build-core-stage1:
+    name: Build ${{ needs.prepare-ci-config.outputs.stage1_module }}
+    needs: [quick-validation, prepare-ci-config]
     runs-on: macos-latest
     timeout-minutes: 30
-    strategy:
-      fail-fast: false
-      matrix:
-        module:
-          # ═══════════════════════════════════════════════════════════
-          # Core Modules (4)
-          # ═══════════════════════════════════════════════════════════
-          - MSPiOSCore
-          - MSPSharedLibraries
-          - NovaCore
-          - MSPCore
-          # Note: MSPOMSDK is vendored, not built from source
-
-          # ═══════════════════════════════════════════════════════════
-          # Shared Modules (1)
-          # ═══════════════════════════════════════════════════════════
-          - MSPGoogleAdsTypes
-
-          # ═══════════════════════════════════════════════════════════
-          # Adapter Modules (12) - Alphabetical order
-          # ═══════════════════════════════════════════════════════════
-          - MSPAmazonAdapter
-          - InmobiAdapter
-          - MSPLiftoffAdapter
-          - MintegralAdapter
-          - MobilefuseAdapter
-          - MSPMolocoAdapter
-          - MSPFacebookAdapter
-          - MSPGoogleAdapter
-          - MSPPrebidAdapter
-          - NovaAdapter
-          - PubmaticAdapter
-          - UnityAdapter
+    env:
+      STAGE1_MODULE: ${{ needs.prepare-ci-config.outputs.stage1_module }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -112,6 +137,226 @@ jobs:
         uses: maxim-lobanov/setup-xcode@v1
         with:
           xcode-version: '16.4'
+
+      - name: Setup Ruby
+        if: hashFiles('Gemfile') != ''
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.1.6'
+          bundler-cache: true
+
+      - name: Ensure XcodeGen
+        run: bash Scripts/ci/ensure-xcodegen.sh
+
+      - name: Cache CocoaPods
+        uses: actions/cache@v3
+        with:
+          path: |
+            Pods
+            ~/Library/Caches/CocoaPods
+            ~/.cocoapods
+          key: ${{ runner.os }}-pods-${{ hashFiles('**/Podfile.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-pods-
+
+      - name: Cache DerivedData
+        uses: actions/cache@v3
+        with:
+          path: ~/Library/Developer/Xcode/DerivedData
+          key: ${{ runner.os }}-derived-${{ env.STAGE1_MODULE }}-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-derived-${{ env.STAGE1_MODULE }}-
+
+      - name: Install Root Dependencies
+        run: bash Scripts/ci/install-pods.sh --repo-update
+
+      - name: Build XCFramework
+        run: |
+          echo "Building ${STAGE1_MODULE}..."
+          bash Scripts/xcframeworks/build_module.sh "$STAGE1_MODULE"
+
+      - name: Verify XCFramework
+        run: bash Scripts/ci/verify-xcframework.sh "$STAGE1_MODULE"
+
+      - name: Prepare XCFramework for Upload
+        run: |
+          mkdir -p Build/Staging/core-stage1
+          cp -R "Build/ReleaseArtifacts/XCFrameworks/$STAGE1_MODULE.xcframework" Build/Staging/core-stage1/
+
+      - name: Upload XCFramework
+        uses: actions/upload-artifact@v4
+        with:
+          name: core-stage1-xcframeworks
+          path: Build/Staging/core-stage1/
+          retention-days: 7
+
+      - name: Upload XCFramework Build Logs
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: core-stage1-build-logs-${{ env.STAGE1_MODULE }}
+          path: |
+            BuildReports/**
+            /tmp/*.log
+          retention-days: 7
+
+  # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  # Job 3: Build Core XCFrameworks Stage 2 (depends on stage1 output)
+  # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  # Stage 2 module defined in config (depends on stage1)
+  build-core-stage2:
+    name: Build ${{ needs.prepare-ci-config.outputs.stage2_module }}
+    needs: [build-core-stage1, prepare-ci-config]
+    runs-on: macos-latest
+    timeout-minutes: 30
+    env:
+      STAGE2_MODULE: ${{ needs.prepare-ci-config.outputs.stage2_module }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Xcode
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: '16.4'
+
+      - name: Setup Ruby
+        if: hashFiles('Gemfile') != ''
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.1.6'
+          bundler-cache: true
+
+      - name: Ensure XcodeGen
+        run: bash Scripts/ci/ensure-xcodegen.sh
+
+      - name: Prepare Build Directory
+        run: |
+          mkdir -p Build/ReleaseArtifacts/XCFrameworks
+
+      - name: Download Stage 1 XCFrameworks
+        uses: actions/download-artifact@v4
+        with:
+          name: core-stage1-xcframeworks
+          path: Build/ReleaseArtifacts/XCFrameworks
+          merge-multiple: true
+
+      - name: Fix Artifact Paths
+        run: |
+          bash Scripts/ci/fix-artifact-paths.sh
+
+      - name: Verify Required XCFrameworks
+        run: bash Scripts/ci/verify-xcframework-deps.sh stage2
+
+      - name: Cache CocoaPods
+        uses: actions/cache@v3
+        with:
+          path: |
+            Pods
+            ~/Library/Caches/CocoaPods
+            ~/.cocoapods
+          key: ${{ runner.os }}-pods-${{ hashFiles('**/Podfile.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-pods-
+
+      - name: Cache DerivedData
+        uses: actions/cache@v3
+        with:
+          path: ~/Library/Developer/Xcode/DerivedData
+          key: ${{ runner.os }}-derived-${{ env.STAGE2_MODULE }}-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-derived-${{ env.STAGE2_MODULE }}-
+
+      - name: Install Root Dependencies
+        run: bash Scripts/ci/install-pods.sh --repo-update
+
+      - name: Build XCFramework
+        run: |
+          echo "Building ${STAGE2_MODULE}..."
+          bash Scripts/xcframeworks/build_module.sh "$STAGE2_MODULE"
+
+      - name: Verify XCFramework
+        run: bash Scripts/ci/verify-xcframework.sh "$STAGE2_MODULE"
+
+      - name: Prepare XCFramework for Upload
+        run: |
+          mkdir -p Build/Staging/core-stage2
+          cp -R "Build/ReleaseArtifacts/XCFrameworks/$STAGE2_MODULE.xcframework" Build/Staging/core-stage2/
+
+      - name: Upload XCFramework
+        uses: actions/upload-artifact@v4
+        with:
+          name: core-stage2-xcframeworks
+          path: Build/Staging/core-stage2/
+          retention-days: 7
+
+      - name: Upload XCFramework Build Logs
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: core-stage2-build-logs-${{ env.STAGE2_MODULE }}
+          path: |
+            BuildReports/**
+            /tmp/*.log
+          retention-days: 7
+
+  # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  # Job 4: Build Core XCFrameworks Stage 3 (depends on stage1/stage2 outputs)
+  # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  # Stage 3 modules defined in config (may depend on stage1/stage2)
+  build-core-stage3:
+    name: Build ${{ matrix.module }}
+    needs: [build-core-stage2, prepare-ci-config]
+    runs-on: macos-latest
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        module: ${{ fromJson(needs.prepare-ci-config.outputs.stage3_modules) }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Xcode
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: '16.4'
+
+      - name: Setup Ruby
+        if: hashFiles('Gemfile') != ''
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.1.6'
+          bundler-cache: true
+
+      - name: Ensure XcodeGen
+        run: bash Scripts/ci/ensure-xcodegen.sh
+
+      - name: Prepare Build Directory
+        run: |
+          mkdir -p Build/ReleaseArtifacts/XCFrameworks
+
+      - name: Download Stage 1 XCFrameworks
+        uses: actions/download-artifact@v4
+        with:
+          name: core-stage1-xcframeworks
+          path: Build/ReleaseArtifacts/XCFrameworks
+          merge-multiple: true
+
+      - name: Download Stage 2 XCFrameworks
+        uses: actions/download-artifact@v4
+        with:
+          name: core-stage2-xcframeworks
+          path: Build/ReleaseArtifacts/XCFrameworks
+          merge-multiple: true
+
+      - name: Fix Artifact Paths
+        run: |
+          bash Scripts/ci/fix-artifact-paths.sh
+
+      - name: Verify Required XCFrameworks
+        run: bash Scripts/ci/verify-xcframework-deps.sh stage3
 
       - name: Cache CocoaPods
         uses: actions/cache@v3
@@ -132,51 +377,40 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-derived-${{ matrix.module }}-
 
-      - name: Install GoogleAdapter Dependencies
-        if: matrix.module == 'MSPGoogleAdapter'
-        run: |
-          cd Adapters/MSPGoogleAdapter
-          pod install --repo-update || pod install
+      - name: Generate Workspace and MSPDemoApp Project
+        run: bash Scripts/ci/generate-workspace.sh
 
-      - name: Install NovaAdapter Dependencies
-        if: matrix.module == 'NovaAdapter'
+      - name: Install Root Dependencies
+        run: bash Scripts/ci/install-pods.sh --repo-update
+
+      - name: Verify Pods Installation
         run: |
-          echo "NovaAdapter requires NovaCore to be built first"
-          # NovaCore should be available from artifacts if built in parallel
-          # Or build it here if needed
-          if [ ! -d "Build/XCFrameworks/NovaCore.xcframework" ]; then
-            echo "Building NovaCore as dependency..."
-            bash Scripts/xcframeworks/build_module.sh NovaCore
+          echo "Verifying Pods installation..."
+          if [ ! -d "Pods" ]; then
+            echo "❌ Pods directory not found after pod install"
+            exit 1
           fi
+          # With :generate_multiple_pod_projects => true, Pods/Pods.xcodeproj may not exist
+          # Instead, check for individual Pod projects
+          POD_PROJECTS=$(find Pods -maxdepth 2 -name "*.xcodeproj" -type d 2>/dev/null | wc -l | tr -d ' ')
+          if [ "$POD_PROJECTS" -eq 0 ]; then
+            # Fallback: check for Pods.xcodeproj (legacy mode)
+            if [ ! -d "Pods/Pods.xcodeproj" ]; then
+              echo "❌ No Pod projects found after pod install"
+              echo "This usually means pod install failed. Checking for errors..."
+              exit 1
+            fi
+          fi
+          echo "✅ Pods installed successfully (found $POD_PROJECTS Pod project(s))"
 
-      - name: Install MSPMolocoAdapter Dependencies
-        if: matrix.module == 'MSPMolocoAdapter'
-        run: |
-          echo "MSPMolocoAdapter requires MolocoSDK..."
-          # Check if MolocoSDK is available via CocoaPods
-          cd Sources/Adapters/MolocoAdapter
-          pod install --repo-update || pod install
+      - name: Regenerate Workspace After Pod Install
+        run: bash Scripts/ci/regenerate-workspace.sh
 
-      - name: Install MSPLiftoffAdapter Dependencies
-        if: matrix.module == 'MSPLiftoffAdapter'
-        run: |
-          echo "MSPLiftoffAdapter requires VungleAds SDK..."
-          cd Sources/Adapters/LiftoffAdapter
-          pod install --repo-update || pod install
+      - name: Verify Workspace and Schemes
+        run: bash Scripts/ci/validate-workspace-schemes.sh msp-ios-sdk.xcworkspace
 
-      - name: Install InmobiAdapter Dependencies
-        if: matrix.module == 'InmobiAdapter'
-        run: |
-          echo "InmobiAdapter requires InMobiSDK..."
-          cd Sources/Adapters/InmobiAdapter
-          pod install --repo-update || pod install
-
-      - name: Install UnityAdapter Dependencies
-        if: matrix.module == 'UnityAdapter'
-        run: |
-          echo "UnityAdapter requires IronSourceSDK..."
-          cd Sources/Adapters/UnityAdapter
-          pod install --repo-update || pod install
+      - name: Pre-build Pod Dependencies
+        run: bash Scripts/ci/prebuild-pod-deps.sh
 
       - name: Build XCFramework
         run: |
@@ -184,34 +418,44 @@ jobs:
           bash Scripts/xcframeworks/build_module.sh "${{ matrix.module }}"
 
       - name: Verify XCFramework
+        run: bash Scripts/ci/verify-xcframework.sh "${{ matrix.module }}"
+
+      - name: Prepare XCFramework for Upload
         run: |
-          XCFRAMEWORK_PATH="Build/XCFrameworks/${{ matrix.module }}.xcframework"
-          if [ ! -d "$XCFRAMEWORK_PATH" ]; then
-            echo "❌ XCFramework not found: $XCFRAMEWORK_PATH"
-            exit 1
-          fi
-          echo "✅ XCFramework exists: $XCFRAMEWORK_PATH"
-          du -sh "$XCFRAMEWORK_PATH"
+          mkdir -p Build/Staging/core-stage3
+          cp -R "Build/ReleaseArtifacts/XCFrameworks/${{ matrix.module }}.xcframework" Build/Staging/core-stage3/
 
       - name: Upload XCFramework
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
-          name: xcframeworks
-          path: Build/XCFrameworks/${{ matrix.module }}.xcframework
+          name: core-stage3-xcframeworks-${{ matrix.module }}
+          path: Build/Staging/core-stage3/
+          retention-days: 7
+
+      - name: Upload XCFramework Build Logs
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: core-stage3-build-logs-${{ matrix.module }}
+          path: |
+            BuildReports/**
+            /tmp/*.log
           retention-days: 7
 
   # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  # Job 3: Build DemoApp (pods-dev and pods-release)
+  # Job 5: Build Adapter XCFrameworks (depends on core stages 1-3)
   # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  build-demoapp:
-    name: DemoApp (${{ matrix.mode }})
-    needs: build-xcframeworks
+  # Adapters: Built after core stages 1-3, before stage4 (see config)
+  # Stage4 depends on adapter outputs
+  build-adapter-xcframeworks:
+    name: Build Adapter ${{ matrix.module.name }}
+    needs: [build-core-stage1, build-core-stage2, build-core-stage3, prepare-ci-config]
     runs-on: macos-latest
-    timeout-minutes: 20
+    timeout-minutes: 30
     strategy:
       fail-fast: false
       matrix:
-        mode: [pods-dev, pods-release]
+        module: ${{ fromJson(needs.prepare-ci-config.outputs.adapter_modules) }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -221,27 +465,339 @@ jobs:
         with:
           xcode-version: '16.4'
 
-      - name: Download All XCFrameworks
-        uses: actions/download-artifact@v3
+      - name: Setup Ruby
+        if: hashFiles('Gemfile') != ''
+        uses: ruby/setup-ruby@v1
         with:
-          name: xcframeworks
-          path: Build/XCFrameworks
+          ruby-version: '3.1.6'
+          bundler-cache: true
+
+      - name: Ensure XcodeGen
+        run: bash Scripts/ci/ensure-xcodegen.sh
+
+      - name: Prepare Build Directory
+        run: |
+          mkdir -p Build/ReleaseArtifacts/XCFrameworks
+
+      - name: Download Stage 1 XCFrameworks
+        uses: actions/download-artifact@v4
+        with:
+          name: core-stage1-xcframeworks
+          path: Build/ReleaseArtifacts/XCFrameworks
+          merge-multiple: true
+
+      - name: Download Stage 2 XCFrameworks
+        uses: actions/download-artifact@v4
+        with:
+          name: core-stage2-xcframeworks
+          path: Build/ReleaseArtifacts/XCFrameworks
+          merge-multiple: true
+
+      - name: Download Stage 3 XCFrameworks (NovaCore)
+        uses: actions/download-artifact@v4
+        with:
+          name: core-stage3-xcframeworks-NovaCore
+          path: Build/ReleaseArtifacts/XCFrameworks
+          merge-multiple: true
+
+      - name: Download Stage 3 XCFrameworks (MSPGoogleAdsTypes)
+        uses: actions/download-artifact@v4
+        with:
+          name: core-stage3-xcframeworks-MSPGoogleAdsTypes
+          path: Build/ReleaseArtifacts/XCFrameworks
+          merge-multiple: true
+
+      - name: Fix Artifact Paths
+        run: |
+          bash Scripts/ci/fix-artifact-paths.sh
+
+      - name: Cache CocoaPods
+        uses: actions/cache@v3
+        with:
+          path: |
+            Pods
+            ~/Library/Caches/CocoaPods
+            ~/.cocoapods
+          key: ${{ runner.os }}-pods-${{ hashFiles('**/Podfile.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-pods-
+
+      - name: Cache DerivedData
+        uses: actions/cache@v3
+        with:
+          path: ~/Library/Developer/Xcode/DerivedData
+          key: ${{ runner.os }}-derived-${{ matrix.module.name }}-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-derived-${{ matrix.module.name }}-
+
+      - name: Install Root Dependencies
+        run: bash Scripts/ci/install-pods.sh --repo-update
+
+      - name: Build XCFramework
+        run: |
+          MODULE_NAME="${{ matrix.module.name }}"
+          MODULE_DIR="${{ matrix.module.dir }}"
+          echo "Building ${MODULE_NAME} (dir: ${MODULE_DIR})..."
+          bash Scripts/xcframeworks/build_module.sh "$MODULE_DIR"
+          if [ "$MODULE_DIR" != "$MODULE_NAME" ]; then
+            if [ -d "Build/ReleaseArtifacts/XCFrameworks/$MODULE_DIR.xcframework" ]; then
+              mv "Build/ReleaseArtifacts/XCFrameworks/$MODULE_DIR.xcframework" "Build/ReleaseArtifacts/XCFrameworks/${MODULE_NAME}.xcframework"
+            fi
+          fi
+
+      - name: Verify XCFramework
+        run: bash Scripts/ci/verify-xcframework.sh "${{ matrix.module.name }}"
+
+      - name: Prepare XCFramework for Upload
+        run: |
+          mkdir -p Build/Staging/adapters
+          cp -R "Build/ReleaseArtifacts/XCFrameworks/${{ matrix.module.name }}.xcframework" Build/Staging/adapters/
+
+      - name: Upload XCFramework
+        uses: actions/upload-artifact@v4
+        with:
+          name: adapter-xcframeworks-${{ matrix.module.name }}
+          path: Build/Staging/adapters/
+          retention-days: 7
+
+      - name: Upload XCFramework Build Logs
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: adapter-build-logs-${{ matrix.module.name }}
+          path: |
+            BuildReports/**
+            /tmp/*.log
+          retention-days: 7
+
+  # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  # Job 6: Build Core XCFrameworks Stage 4 (depends on adapters)
+  # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  # Stage 4 module defined in config (depends on stages 1-3 and adapters)
+  build-core-stage4:
+    name: Build ${{ needs.prepare-ci-config.outputs.stage4_module }}
+    needs: [build-adapter-xcframeworks, prepare-ci-config]
+    runs-on: macos-latest
+    timeout-minutes: 30
+    env:
+      STAGE4_MODULE: ${{ needs.prepare-ci-config.outputs.stage4_module }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Xcode
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: '16.4'
+
+      - name: Setup Ruby
+        if: hashFiles('Gemfile') != ''
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.1.6'
+          bundler-cache: true
+
+      - name: Ensure XcodeGen
+        run: bash Scripts/ci/ensure-xcodegen.sh
+
+      - name: Prepare Build Directory
+        run: |
+          mkdir -p Build/ReleaseArtifacts/XCFrameworks
+
+      - name: Download Stage 1 XCFrameworks
+        uses: actions/download-artifact@v4
+        with:
+          name: core-stage1-xcframeworks
+          path: Build/ReleaseArtifacts/XCFrameworks
+          merge-multiple: true
+
+      - name: Download Stage 2 XCFrameworks
+        uses: actions/download-artifact@v4
+        with:
+          name: core-stage2-xcframeworks
+          path: Build/ReleaseArtifacts/XCFrameworks
+          merge-multiple: true
+
+      - name: Download Stage 3 XCFrameworks (NovaCore)
+        uses: actions/download-artifact@v4
+        with:
+          name: core-stage3-xcframeworks-NovaCore
+          path: Build/ReleaseArtifacts/XCFrameworks
+          merge-multiple: true
+
+      - name: Download Stage 3 XCFrameworks (MSPGoogleAdsTypes)
+        uses: actions/download-artifact@v4
+        with:
+          name: core-stage3-xcframeworks-MSPGoogleAdsTypes
+          path: Build/ReleaseArtifacts/XCFrameworks
+          merge-multiple: true
+
+      - name: Download Adapter XCFrameworks
+        run: |
+          mkdir -p Build/ReleaseArtifacts/XCFrameworks
+          # Download all adapter artifacts using gh CLI
+          gh run download ${{ github.run_id }} \
+            --pattern "adapter-xcframeworks-*" \
+            --dir Build/ReleaseArtifacts/XCFrameworks
+        env:
+          GH_TOKEN: ${{ github.token }}
+
+      - name: Fix Artifact Paths
+        run: |
+          bash Scripts/ci/fix-artifact-paths.sh
+
+      - name: Verify Required XCFrameworks
+        run: bash Scripts/ci/verify-xcframework-deps.sh stage4
+
+      - name: Cache CocoaPods
+        uses: actions/cache@v3
+        with:
+          path: |
+            Pods
+            ~/Library/Caches/CocoaPods
+            ~/.cocoapods
+          key: ${{ runner.os }}-pods-${{ hashFiles('**/Podfile.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-pods-
+
+      - name: Cache DerivedData
+        uses: actions/cache@v3
+        with:
+          path: ~/Library/Developer/Xcode/DerivedData
+          key: ${{ runner.os }}-derived-${{ env.STAGE4_MODULE }}-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-derived-${{ env.STAGE4_MODULE }}-
+
+      - name: Install Root Dependencies
+        run: bash Scripts/ci/install-pods.sh --repo-update
+
+      - name: Pre-build Pod Dependencies
+        run: bash Scripts/ci/prebuild-pod-deps.sh
+
+      - name: Build XCFramework
+        run: |
+          echo "Building ${STAGE4_MODULE}..."
+          bash Scripts/xcframeworks/build_module.sh "$STAGE4_MODULE"
+
+      - name: Verify XCFramework
+        run: bash Scripts/ci/verify-xcframework.sh "$STAGE4_MODULE"
+
+      - name: Prepare XCFramework for Upload
+        run: |
+          mkdir -p Build/Staging/core-stage4
+          cp -R "Build/ReleaseArtifacts/XCFrameworks/$STAGE4_MODULE.xcframework" Build/Staging/core-stage4/
+
+      - name: Upload XCFramework
+        uses: actions/upload-artifact@v4
+        with:
+          name: core-stage4-xcframeworks
+          path: Build/Staging/core-stage4/
+          retention-days: 7
+
+      - name: Upload XCFramework Build Logs
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: core-stage4-build-logs-${{ env.STAGE4_MODULE }}
+          path: |
+            BuildReports/**
+            /tmp/*.log
+          retention-days: 7
+
+  # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  # Job 7: Build DemoApp (pods-dev only for source testing)
+  # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  build-demoapp:
+    name: DemoApp (pods-dev)
+    needs: [build-core-stage1, build-core-stage2, build-core-stage3, build-core-stage4, build-adapter-xcframeworks]
+    runs-on: macos-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Xcode
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: '16.4'
+
+      - name: Setup Ruby
+        if: hashFiles('Gemfile') != ''
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.1.6'
+          bundler-cache: true
+
+      - name: Ensure XcodeGen
+        run: bash Scripts/ci/ensure-xcodegen.sh
+
+      - name: Download Stage 1 XCFrameworks
+        uses: actions/download-artifact@v4
+        with:
+          name: core-stage1-xcframeworks
+          path: Build/ReleaseArtifacts/XCFrameworks
+          merge-multiple: true
+
+      - name: Download Stage 2 XCFrameworks
+        uses: actions/download-artifact@v4
+        with:
+          name: core-stage2-xcframeworks
+          path: Build/ReleaseArtifacts/XCFrameworks
+          merge-multiple: true
+
+      - name: Download Stage 3 XCFrameworks (NovaCore)
+        uses: actions/download-artifact@v4
+        with:
+          name: core-stage3-xcframeworks-NovaCore
+          path: Build/ReleaseArtifacts/XCFrameworks
+          merge-multiple: true
+
+      - name: Download Stage 3 XCFrameworks (MSPGoogleAdsTypes)
+        uses: actions/download-artifact@v4
+        with:
+          name: core-stage3-xcframeworks-MSPGoogleAdsTypes
+          path: Build/ReleaseArtifacts/XCFrameworks
+          merge-multiple: true
+
+      - name: Download Stage 4 XCFrameworks
+        uses: actions/download-artifact@v4
+        with:
+          name: core-stage4-xcframeworks
+          path: Build/ReleaseArtifacts/XCFrameworks
+          merge-multiple: true
+
+      - name: Download Adapter XCFrameworks
+        run: |
+          mkdir -p Build/ReleaseArtifacts/XCFrameworks
+          # Download all adapter artifacts using gh CLI
+          gh run download ${{ github.run_id }} \
+            --pattern "adapter-xcframeworks-*" \
+            --dir Build/ReleaseArtifacts/XCFrameworks
+        env:
+          GH_TOKEN: ${{ github.token }}
+
+      - name: Fix Artifact Paths
+        run: |
+          bash Scripts/ci/fix-artifact-paths.sh
 
       - name: Cache CocoaPods (DemoApp)
         uses: actions/cache@v3
         with:
           path: |
-            DemoApp/Pods
+            Pods
             ~/Library/Caches/CocoaPods
-          key: ${{ runner.os }}-demo-pods-${{ matrix.mode }}-${{ hashFiles('DemoApp/Podfile.lock') }}
+            ~/.cocoapods
+          key: ${{ runner.os }}-demo-pods-pods-dev-${{ hashFiles('Podfile.lock') }}
           restore-keys: |
-            ${{ runner.os }}-demo-pods-${{ matrix.mode }}-
+            ${{ runner.os }}-demo-pods-pods-dev-
 
-      - name: Configure DemoApp (${{ matrix.mode }})
+      - name: Configure DemoApp Workspace (pods-dev)
         run: |
-          cd DemoApp
-          bash ../Scripts/demoapp/configure.sh --mode=${{ matrix.mode }}
-          pod install
+          export MSP_MODE=pods-dev
+          CI=\"\" bash Scripts/workspace/update.sh
+
+      - name: Install Root Dependencies
+        run: bash Scripts/ci/install-pods.sh --repo-update
 
       - name: Install xcpretty (if needed)
         run: |
@@ -252,42 +808,41 @@ jobs:
 
       - name: Build DemoApp
         run: |
-          cd DemoApp
           if command -v xcpretty &>/dev/null; then
             xcodebuild build \
-              -workspace DemoApp.xcworkspace \
-              -scheme DemoApp \
+              -workspace msp-ios-sdk.xcworkspace \
+              -scheme MSPDemoApp \
               -configuration Release \
               -sdk iphonesimulator \
               -destination 'platform=iOS Simulator,name=iPhone 15,OS=17.2' \
-              | tee /tmp/xcodebuild-demoapp-${{ matrix.mode }}.log \
+              | tee /tmp/xcodebuild-demoapp-pods-dev.log \
               | xcpretty || exit 1
           else
             xcodebuild build \
-              -workspace DemoApp.xcworkspace \
-              -scheme DemoApp \
+              -workspace msp-ios-sdk.xcworkspace \
+              -scheme MSPDemoApp \
               -configuration Release \
               -sdk iphonesimulator \
               -destination 'platform=iOS Simulator,name=iPhone 15,OS=17.2' \
-              | tee /tmp/xcodebuild-demoapp-${{ matrix.mode }}.log || exit 1
+              | tee /tmp/xcodebuild-demoapp-pods-dev.log || exit 1
           fi
 
-          echo "✅ DemoApp (${{ matrix.mode }}) built successfully"
+          echo "✅ DemoApp (pods-dev) built successfully"
 
       - name: Upload Build Logs
         if: failure()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
-          name: build-logs-demoapp-${{ matrix.mode }}
-          path: /tmp/xcodebuild-demoapp-${{ matrix.mode }}.log
+          name: build-logs-demoapp-pods-dev
+          path: /tmp/xcodebuild-demoapp-pods-dev.log
           retention-days: 7
 
   # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  # Job 4: Pods/SPM Consistency Check
+  # Job 8: Pods/SPM Consistency Check (runs in parallel with build-demoapp)
   # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   consistency-check:
     name: Pods/SPM Consistency
-    needs: build-xcframeworks
+    needs: [build-core-stage1, build-core-stage2, build-core-stage3, build-core-stage4, build-adapter-xcframeworks]
     runs-on: macos-latest
     timeout-minutes: 15
     steps:
@@ -299,11 +854,162 @@ jobs:
         with:
           xcode-version: '16.4'
 
-      - name: Download All XCFrameworks
-        uses: actions/download-artifact@v3
+      - name: Setup Ruby
+        if: hashFiles('Gemfile') != ''
+        uses: ruby/setup-ruby@v1
         with:
-          name: xcframeworks
-          path: Build/XCFrameworks
+          ruby-version: '3.1.6'
+          bundler-cache: true
+
+      - name: Ensure XcodeGen
+        run: bash Scripts/ci/ensure-xcodegen.sh
+
+      - name: Download Stage 1 XCFrameworks
+        uses: actions/download-artifact@v4
+        with:
+          name: core-stage1-xcframeworks
+          path: Build/ReleaseArtifacts/XCFrameworks
+          merge-multiple: true
+
+      - name: Download Stage 2 XCFrameworks
+        uses: actions/download-artifact@v4
+        with:
+          name: core-stage2-xcframeworks
+          path: Build/ReleaseArtifacts/XCFrameworks
+          merge-multiple: true
+
+      - name: Download Stage 3 XCFrameworks (NovaCore)
+        uses: actions/download-artifact@v4
+        with:
+          name: core-stage3-xcframeworks-NovaCore
+          path: Build/ReleaseArtifacts/XCFrameworks
+          merge-multiple: true
+
+      - name: Download Stage 3 XCFrameworks (MSPGoogleAdsTypes)
+        uses: actions/download-artifact@v4
+        with:
+          name: core-stage3-xcframeworks-MSPGoogleAdsTypes
+          path: Build/ReleaseArtifacts/XCFrameworks
+          merge-multiple: true
+
+      - name: Download Stage 4 XCFrameworks
+        uses: actions/download-artifact@v4
+        with:
+          name: core-stage4-xcframeworks
+          path: Build/ReleaseArtifacts/XCFrameworks
+          merge-multiple: true
+
+      - name: Download Adapter XCFrameworks
+        run: |
+          mkdir -p Build/ReleaseArtifacts/XCFrameworks
+          # Download all adapter artifacts using gh CLI
+          gh run download ${{ github.run_id }} \
+            --pattern "adapter-xcframeworks-*" \
+            --dir Build/ReleaseArtifacts/XCFrameworks
+        env:
+          GH_TOKEN: ${{ github.token }}
+
+      - name: Fix Artifact Paths
+        run: |
+          bash Scripts/ci/fix-artifact-paths.sh
+
+      - name: Cache CocoaPods
+        uses: actions/cache@v3
+        with:
+          path: |
+            Pods
+            ~/Library/Caches/CocoaPods
+            ~/.cocoapods
+          key: ${{ runner.os }}-pods-${{ hashFiles('**/Podfile.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-pods-
+
+      - name: Install Root Dependencies
+        run: bash Scripts/ci/install-pods.sh --repo-update
+
+      - name: Pre-build Pod Dependencies
+        run: bash Scripts/ci/prebuild-pod-deps.sh
+
+      - name: Extract Third-Party SDKs from Pods
+        run: |
+          if [ -f "Scripts/spm-sync/extract_from_pods.sh" ]; then
+            bash Scripts/spm-sync/extract_from_pods.sh || echo "⚠️  Third-party extraction had warnings"
+          elif [ -f "Scripts/spm/sync_thirdparty_pods.sh" ]; then
+            bash Scripts/spm/sync_thirdparty_pods.sh --force || echo "⚠️  Third-party sync had warnings"
+          else
+            echo "⚠️  No third-party extraction script found, skipping"
+          fi
+
+      - name: Copy Third-Party SDK XCFrameworks
+        run: |
+          # Copy third-party SDK XCFrameworks from ThirdParty/ to Build/ReleaseArtifacts/XCFrameworks/
+          # These are pre-built binaries required by SPM Package.swift validation
+          mkdir -p Build/ReleaseArtifacts/XCFrameworks
+
+          THIRD_PARTY_SDKS=(
+            "FBAudienceNetwork"
+            "IronSourceSDK"
+            "InMobiSDK"
+            "MobileFuseSDK"
+            "OpenWrapSDK"
+            "AmazonPublisherServicesSDK"
+            "VungleAds"
+            "MolocoSDKiOS"
+          )
+
+          for sdk in "${THIRD_PARTY_SDKS[@]}"; do
+            # Find the SDK directory in ThirdParty (directory name may differ from SDK name)
+            if [ -d "ThirdParty/${sdk}" ]; then
+              source_dir="ThirdParty/${sdk}"
+            elif [ -d "ThirdParty/${sdk}SDK" ]; then
+              source_dir="ThirdParty/${sdk}SDK"
+            else
+              echo "⚠️  ${sdk} not found in ThirdParty/, skipping"
+              continue
+            fi
+
+            # Find the XCFramework
+            xcframework=$(find "$source_dir" -name "*.xcframework" -type d -maxdepth 1 | head -1)
+            if [ -n "$xcframework" ]; then
+              cp -R "$xcframework" "Build/ReleaseArtifacts/XCFrameworks/"
+              echo "✓ Copied ${sdk}.xcframework"
+            else
+              echo "⚠️  ${sdk}.xcframework not found in $source_dir"
+            fi
+          done
+
+          # Also need MSPOMSDK which is in Sources/Core/MSPOMSDK/
+          if [ ! -d "Build/ReleaseArtifacts/XCFrameworks/MSPOMSDK.xcframework" ]; then
+            if [ -d "Sources/Core/MSPOMSDK/MSPOMSDK.xcframework" ]; then
+              cp -R "Sources/Core/MSPOMSDK/MSPOMSDK.xcframework" "Build/ReleaseArtifacts/XCFrameworks/"
+              echo "✓ Copied MSPOMSDK.xcframework from Sources/Core/MSPOMSDK/"
+            fi
+          fi
+
+          # Copy MolocoSDKiOS and VungleAds from Pods/ (installed by CocoaPods)
+          if [ ! -d "Build/ReleaseArtifacts/XCFrameworks/MolocoSDKiOS.xcframework" ]; then
+            if [ -d "Pods/MolocoSDKiOS/MolocoSDK.xcframework" ]; then
+              cp -R "Pods/MolocoSDKiOS/MolocoSDK.xcframework" "Build/ReleaseArtifacts/XCFrameworks/MolocoSDKiOS.xcframework"
+              echo "✓ Copied MolocoSDK.xcframework from Pods/ as MolocoSDKiOS.xcframework"
+            else
+              echo "⚠️  MolocoSDK.xcframework not found in Pods/MolocoSDKiOS/"
+            fi
+          fi
+
+          if [ ! -d "Build/ReleaseArtifacts/XCFrameworks/VungleAds.xcframework" ]; then
+            if [ -d "Pods/VungleAds/static/VungleAdsSDK.xcframework" ]; then
+              cp -R "Pods/VungleAds/static/VungleAdsSDK.xcframework" "Build/ReleaseArtifacts/XCFrameworks/VungleAds.xcframework"
+              echo "✓ Copied VungleAdsSDK.xcframework from Pods/ as VungleAds.xcframework"
+            else
+              echo "⚠️  VungleAdsSDK.xcframework not found in Pods/VungleAds/static/"
+            fi
+          fi
+
+      - name: Build MSPOMSDK XCFramework
+        run: |
+          if [ ! -d "Build/ReleaseArtifacts/XCFrameworks/MSPOMSDK.xcframework" ]; then
+            bash Scripts/xcframeworks/build_module.sh MSPOMSDK
+          fi
 
       - name: Generate SPM Package.swift
         run: |
@@ -327,6 +1033,130 @@ jobs:
           swift package resolve
           echo "✅ Package.swift is valid"
 
+      - name: Upload Consistency Logs
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: consistency-logs
+          path: |
+            BuildReports/**
+            /tmp/*.log
+          retention-days: 7
+
+  # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  # Job 9: Unit Tests
+  # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  unit-tests:
+    name: Unit Tests
+    needs: [build-demoapp]
+    runs-on: macos-15
+    timeout-minutes: 30
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Xcode
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: '16.4'
+
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.1.6'
+          bundler-cache: true
+
+      - name: Ensure XcodeGen
+        run: bash Scripts/ci/ensure-xcodegen.sh
+
+      - name: Cache CocoaPods
+        uses: actions/cache@v3
+        with:
+          path: |
+            Pods
+            ~/Library/Caches/CocoaPods
+            ~/.cocoapods
+          key: ${{ runner.os }}-pods-${{ hashFiles('**/Podfile.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-pods-
+
+      - name: Configure Workspace (pods-dev)
+        run: |
+          export MSP_MODE=pods-dev
+          CI="" bash Scripts/workspace/update.sh
+
+      - name: Install Dependencies
+        run: bash Scripts/ci/install-pods.sh --repo-update
+
+      - name: Regenerate Workspace After Pod Install
+        run: bash Scripts/ci/regenerate-workspace.sh
+
+      - name: Verify Workspace and Schemes
+        run: bash Scripts/ci/validate-workspace-schemes.sh msp-ios-sdk.xcworkspace
+
+      - name: Inject AdMob App ID for CI
+        run: |
+          INFO_PLIST="Examples/MSPDemoApp/MSPDemoApp/Info.plist"
+          if [ -f "$INFO_PLIST" ]; then
+            /usr/libexec/PlistBuddy -c "Add :GADApplicationIdentifier string ca-app-pub-3940256099942544~1458002511" "$INFO_PLIST" 2>/dev/null || \
+            /usr/libexec/PlistBuddy -c "Set :GADApplicationIdentifier ca-app-pub-3940256099942544~1458002511" "$INFO_PLIST"
+            /usr/libexec/PlistBuddy -c "Add :NSUserTrackingUsageDescription string Used for ad measurement in CI" "$INFO_PLIST" 2>/dev/null || \
+            /usr/libexec/PlistBuddy -c "Set :NSUserTrackingUsageDescription Used for ad measurement in CI" "$INFO_PLIST"
+          else
+            echo "⚠️  Info.plist not found, skipping"
+          fi
+
+      - name: Run Unit Tests
+        run: |
+          bash Scripts/tests/run-unit-tests.sh AllTests 'platform=iOS Simulator,name=iPhone 16,OS=18.5'
+
+      - name: Generate Coverage Report
+        if: always()
+        continue-on-error: true
+        run: |
+          if [ -d build/TestResults.xcresult ]; then
+            xcrun xccov view --report --json build/TestResults.xcresult > build/coverage.json || echo "⚠️  Coverage report generation failed"
+          else
+            echo "⚠️  No TestResults.xcresult; skipping coverage generation"
+          fi
+
+      - name: Report Coverage (Informational)
+        if: always()
+        continue-on-error: true
+        run: |
+          if ! command -v jq &>/dev/null; then
+            brew install jq
+          fi
+          if [ -f build/coverage.json ]; then
+            COVERAGE=$(jq '.lineCoverage' build/coverage.json)
+            echo "📊 Code Coverage Report"
+            echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+            echo "Line coverage: $(echo "$COVERAGE * 100" | bc -l | xargs printf "%.2f")%"
+            echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+          else
+            echo "⚠️  Coverage data not available"
+          fi
+
+      - name: Upload Unit Test Logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: unit-test-logs
+          path: |
+            BuildReports/**
+            /tmp/*.log
+          retention-days: 7
+
+      - name: Upload Test Results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: unit-test-results
+          path: |
+            build/TestResults.xcresult
+            build/coverage.json
+          retention-days: 7
+
   # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
   # Final Status Check
   # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -335,25 +1165,39 @@ jobs:
     runs-on: ubuntu-latest
     needs:
       - quick-validation
-      - build-xcframeworks
+      - build-core-stage1
+      - build-core-stage2
+      - build-core-stage3
+      - build-core-stage4
+      - build-adapter-xcframeworks
       - build-demoapp
       - consistency-check
+      - unit-tests
     if: always()
     steps:
       - name: Check CI Status
         run: |
           if [[ "${{ needs.quick-validation.result }}" == "success" && \
-                "${{ needs.build-xcframeworks.result }}" == "success" && \
+                "${{ needs.build-core-stage1.result }}" == "success" && \
+                "${{ needs.build-core-stage2.result }}" == "success" && \
+                "${{ needs.build-core-stage3.result }}" == "success" && \
+                "${{ needs.build-core-stage4.result }}" == "success" && \
+                "${{ needs.build-adapter-xcframeworks.result }}" == "success" && \
                 "${{ needs.build-demoapp.result }}" == "success" && \
-                "${{ needs.consistency-check.result }}" == "success" ]]; then
+                "${{ needs.consistency-check.result }}" == "success" && \
+                "${{ needs.unit-tests.result }}" == "success" ]]; then
             echo "✅ All CI checks passed"
             exit 0
           else
             echo "❌ Some CI checks failed"
             echo "  quick-validation: ${{ needs.quick-validation.result }}"
-            echo "  build-xcframeworks: ${{ needs.build-xcframeworks.result }}"
+            echo "  build-core-stage1: ${{ needs.build-core-stage1.result }}"
+            echo "  build-core-stage2: ${{ needs.build-core-stage2.result }}"
+            echo "  build-core-stage3: ${{ needs.build-core-stage3.result }}"
+            echo "  build-core-stage4: ${{ needs.build-core-stage4.result }}"
+            echo "  build-adapter-xcframeworks: ${{ needs.build-adapter-xcframeworks.result }}"
             echo "  build-demoapp: ${{ needs.build-demoapp.result }}"
             echo "  consistency-check: ${{ needs.consistency-check.result }}"
+            echo "  unit-tests: ${{ needs.unit-tests.result }}"
             exit 1
           fi
-

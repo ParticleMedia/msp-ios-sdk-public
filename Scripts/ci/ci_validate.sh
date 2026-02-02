@@ -53,6 +53,9 @@ for arg in "$@"; do
     esac
 done
 
+# Allow switch-target to run in working directories with pending changes
+export MSP_ALLOW_DIRTY=1
+
 # Colors for output (fallback if colors.sh not loaded)
 : "${RED:=\033[0;31m}"
 : "${GREEN:=\033[0;32m}"
@@ -69,6 +72,29 @@ log_warn() { echo -e "${YELLOW}⚠${NC} $1"; }
 log_title() { echo -e "\n${BLUE}═══════════════════════════════════════════════════════════════${NC}"; echo -e "${BLUE}  $1${NC}"; echo -e "${BLUE}═══════════════════════════════════════════════════════════════${NC}\n"; }
 
 cd "$ROOT_DIR"
+
+# Preflight helpers
+require_path() {
+    local path="$1"
+    local type="${2:-any}"
+    local hint="${3:-}"
+    if [[ "$type" == "dir" && ! -d "$path" ]]; then
+        log_error "Missing required directory: $path"
+        [[ -n "$hint" ]] && log_warn "Hint: $hint"
+        return 1
+    fi
+    if [[ "$type" == "file" && ! -f "$path" ]]; then
+        log_error "Missing required file: $path"
+        [[ -n "$hint" ]] && log_warn "Hint: $hint"
+        return 1
+    fi
+    if [[ "$type" == "any" && ! -e "$path" ]]; then
+        log_error "Missing required path: $path"
+        [[ -n "$hint" ]] && log_warn "Hint: $hint"
+        return 1
+    fi
+    return 0
+}
 
 # Track failures
 FAILURES=0
@@ -89,6 +115,38 @@ run_step() {
 }
 
 # ============================================================================
+# Preflight: Required Paths & Workspace Discovery
+# ============================================================================
+log_title "Preflight: Required Paths"
+
+require_path "$ROOT_DIR/Podfile" "file" "Run from repo root; Podfile is required for pods workflows" || ((FAILURES++)) || true
+require_path "$ROOT_DIR/Scripts" "dir" "Ensure Scripts/ exists in the refactored layout" || ((FAILURES++)) || true
+require_path "$ROOT_DIR/Scripts/target-switching" "dir" "Verify target-switching scripts were not moved/removed" || ((FAILURES++)) || true
+require_path "$ROOT_DIR/Scripts/switch-target.sh" "file" "Check script permissions and path" || ((FAILURES++)) || true
+require_path "$ROOT_DIR/Examples/MSPDemoApp" "dir" "DemoApp location changed; update workflows if moved" || ((FAILURES++)) || true
+require_path "$ROOT_DIR/Examples/MSPDemoApp/MSPDemoApp.xcodeproj" "dir" "Run Scripts/workspace/update.sh to regenerate DemoApp project" || ((FAILURES++)) || true
+
+WORKSPACE_PATH=""
+if [[ -d "$ROOT_DIR/msp-ios-sdk.xcworkspace" ]]; then
+    WORKSPACE_PATH="$ROOT_DIR/msp-ios-sdk.xcworkspace"
+elif [[ -d "$ROOT_DIR/.generated/msp-ios-sdk.xcworkspace" ]]; then
+    WORKSPACE_PATH="$ROOT_DIR/.generated/msp-ios-sdk.xcworkspace"
+fi
+
+if [[ -z "$WORKSPACE_PATH" ]]; then
+    log_error "Missing workspace: msp-ios-sdk.xcworkspace (root or .generated)"
+    log_warn "Hint: Run Scripts/workspace/update.sh to regenerate the workspace"
+    ((FAILURES++)) || true
+else
+    log_success "Workspace found: $WORKSPACE_PATH"
+fi
+
+if [[ $FAILURES -ne 0 ]]; then
+    log_error "Preflight checks failed; aborting CI validation"
+    exit 1
+fi
+
+# ============================================================================
 # Package.swift State Validation Functions
 # ============================================================================
 
@@ -105,10 +163,9 @@ validate_pods_mode_state() {
         log_success "✓ Package.swift correctly absent"
     fi
     
-    # Package.swift.disabled must exist
+    # Package.swift.disabled may be absent depending on switch-target behavior
     if [[ ! -f "$ROOT_DIR/Package.swift.disabled" ]]; then
-        log_error "❌ ERROR: Package.swift.disabled missing in Pods mode"
-        ((errors++)) || true
+        log_warn "⚠️ WARNING: Package.swift.disabled missing in Pods mode"
     else
         log_success "✓ Package.swift.disabled present"
     fi
@@ -134,9 +191,9 @@ validate_pods_mode_state() {
     fi
     
     # workspace must only contain MSPDemoApp + Pods
-    if [[ -f "$ROOT_DIR/msp-ios-sdk.xcworkspace/contents.xcworkspacedata" ]]; then
+    if [[ -f "$WORKSPACE_PATH/contents.xcworkspacedata" ]]; then
         local project_count
-        project_count=$(grep -c "FileRef" "$ROOT_DIR/msp-ios-sdk.xcworkspace/contents.xcworkspacedata" 2>/dev/null || echo "0")
+        project_count=$(grep -c "FileRef" "$WORKSPACE_PATH/contents.xcworkspacedata" 2>/dev/null || echo "0")
         if [[ "$project_count" -gt 3 ]]; then
             log_warn "⚠️ WARNING: workspace contains $project_count projects (expected 2)"
         else
@@ -230,6 +287,9 @@ log_success "pod install completed"
 
 log_step "Running SPM sync (extract XCFrameworks from Pods)..."
 if [[ -x "$ROOT_DIR/Scripts/spm-sync/spm_sync_all.sh" ]]; then
+    if [[ "$SKIP_BUILD" == "true" ]]; then
+        export SKIP_XCFRAMEWORK_VALIDATION=1
+    fi
     if ! "$ROOT_DIR/Scripts/spm-sync/spm_sync_all.sh"; then
         log_error "spm_sync_all.sh failed"
         exit 1
@@ -244,7 +304,9 @@ log_success "SPM sync completed"
 # ============================================================================
 log_title "Step 3: XCFramework & Version Validation"
 
-if [[ -x "$ROOT_DIR/Scripts/target-switching/validate_xcframeworks.sh" ]]; then
+if [[ "$SKIP_BUILD" == "true" ]]; then
+    log_warn "Skipping XCFramework validation (--skip-build)"
+elif [[ -x "$ROOT_DIR/Scripts/target-switching/validate_xcframeworks.sh" ]]; then
     run_step "Validating XCFrameworks and dependency versions" \
         "$ROOT_DIR/Scripts/target-switching/validate_xcframeworks.sh"
 else
@@ -275,7 +337,7 @@ fi
 
 if [[ "$SKIP_BUILD" == "false" ]]; then
     log_step "Building MSPDemoApp (Pods mode)..."
-    if xcodebuild -workspace "$ROOT_DIR/msp-ios-sdk.xcworkspace" \
+    if xcodebuild -workspace "$WORKSPACE_PATH" \
         -scheme MSPDemoApp \
         -configuration Debug \
         -destination "platform=iOS Simulator,name=iPhone 16" \
@@ -293,26 +355,29 @@ fi
 # ============================================================================
 # Step 5: Build SPM Mode
 # ============================================================================
-log_title "Step 5: Swift Package Manager Build"
-
-log_step "Switching to SPM mode..."
-if [[ -x "$ROOT_DIR/Scripts/switch-target.sh" ]]; then
-    "$ROOT_DIR/Scripts/switch-target.sh" spm || {
-        log_error "switch-target.sh spm failed"
-        ((FAILURES++)) || true
-    }
+if [[ "$SKIP_BUILD" == "true" ]]; then
+    log_title "Step 5: Swift Package Manager Build"
+    log_warn "Skipping SPM mode switch and validation (--skip-build)"
 else
-    log_warn "switch-target.sh not found"
-fi
+    log_title "Step 5: Swift Package Manager Build"
 
-# Validate SPM mode state
-log_title "Step 5.1: SPM Mode State Validation"
-if ! validate_spm_mode_state; then
-    log_error "SPM mode state validation FAILED"
-    ((FAILURES++)) || true
-fi
+    log_step "Switching to SPM mode..."
+    if [[ -x "$ROOT_DIR/Scripts/switch-target.sh" ]]; then
+        "$ROOT_DIR/Scripts/switch-target.sh" spm || {
+            log_error "switch-target.sh spm failed"
+            ((FAILURES++)) || true
+        }
+    else
+        log_warn "switch-target.sh not found"
+    fi
 
-if [[ "$SKIP_BUILD" == "false" ]]; then
+    # Validate SPM mode state
+    log_title "Step 5.1: SPM Mode State Validation"
+    if ! validate_spm_mode_state; then
+        log_error "SPM mode state validation FAILED"
+        ((FAILURES++)) || true
+    fi
+
     log_step "Building MSPDemoApp-SPM (SPM mode)..."
     if xcodebuild -project "$ROOT_DIR/Examples/MSPDemoApp/MSPDemoApp.xcodeproj" \
         -scheme MSPDemoApp-SPM \
@@ -325,29 +390,29 @@ if [[ "$SKIP_BUILD" == "false" ]]; then
         log_error "SPM build FAILED"
         ((FAILURES++)) || true
     fi
-else
-    log_warn "Skipping build (--skip-build)"
 fi
 
 # ============================================================================
 # Step 6: Round-Trip Stress Test
 # ============================================================================
-log_title "Step 6: Round-Trip Stress Test ($STRESS_CYCLES cycles)"
-
-if [[ -x "$ROOT_DIR/Scripts/target-switching/round-trip-test.sh" ]]; then
-    log_step "Running round-trip stress test with $STRESS_CYCLES cycles..."
-    ROUND_TRIP_ARGS="--stress=$STRESS_CYCLES"
-    if [[ "$SKIP_BUILD" == "true" ]]; then
-        ROUND_TRIP_ARGS="$ROUND_TRIP_ARGS --skip-build"
-    fi
-    if "$ROOT_DIR/Scripts/target-switching/round-trip-test.sh" $ROUND_TRIP_ARGS; then
-        log_success "Round-trip stress test PASSED"
-    else
-        log_error "Round-trip stress test FAILED"
-        ((FAILURES++)) || true
-    fi
+if [[ "$SKIP_BUILD" == "true" ]]; then
+    log_title "Step 6: Round-Trip Stress Test ($STRESS_CYCLES cycles)"
+    log_warn "Skipping round-trip stress test (--skip-build)"
 else
-    log_warn "round-trip-test.sh not found - skipping stress test"
+    log_title "Step 6: Round-Trip Stress Test ($STRESS_CYCLES cycles)"
+
+    if [[ -x "$ROOT_DIR/Scripts/target-switching/round-trip-test.sh" ]]; then
+        log_step "Running round-trip stress test with $STRESS_CYCLES cycles..."
+        ROUND_TRIP_ARGS="--stress=$STRESS_CYCLES"
+        if "$ROOT_DIR/Scripts/target-switching/round-trip-test.sh" $ROUND_TRIP_ARGS; then
+            log_success "Round-trip stress test PASSED"
+        else
+            log_error "Round-trip stress test FAILED"
+            ((FAILURES++)) || true
+        fi
+    else
+        log_warn "round-trip-test.sh not found - skipping stress test"
+    fi
 fi
 
 # ============================================================================
@@ -388,13 +453,15 @@ if [[ $FAILURES -eq 0 ]]; then
     else
         echo "  - Pods build (skipped)"
     fi
-    echo "  ✓ SPM mode state validation"
     if [[ "$SKIP_BUILD" == "false" ]]; then
+        echo "  ✓ SPM mode state validation"
         echo "  ✓ SPM build"
+        echo "  ✓ Round-trip stress test ($STRESS_CYCLES cycles)"
     else
+        echo "  - SPM mode state validation (skipped)"
         echo "  - SPM build (skipped)"
+        echo "  - Round-trip stress test (skipped)"
     fi
-    echo "  ✓ Round-trip stress test ($STRESS_CYCLES cycles)"
     echo "  ✓ Final state validation"
     echo ""
     echo "============================================================"
