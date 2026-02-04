@@ -8,7 +8,7 @@
 import Foundation
 
 public protocol AdMetricReporter: AnyObject {
-    func logAdImpression(ad: MSPAd, adRequest: AdRequest, bidResponse: Any)
+    func logAdImpression(ad: MSPAd, adRequest: AdRequest, bidResponse: Any?)
 
     func logAdClick(ad: MSPAd, adRequest: AdRequest, bidResponse: Any?)
 
