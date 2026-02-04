@@ -223,10 +223,10 @@ import UIKit
         }
     }
 
-    public func logAdImpression(ad: MSPiOSCore.MSPAd, adRequest: MSPiOSCore.AdRequest, bidResponse: Any) {
+    public func logAdImpression(ad: MSPiOSCore.MSPAd, adRequest: MSPiOSCore.AdRequest, bidResponse: Any?) {
         var eventModel = Com_Newsbreak_Mes_Events_AdImpressionEvent()
         eventModel.tsMs = UInt64(Date().timeIntervalSince1970 * 1000)
-        if bidResponse is BidResponse,
+        if  let bidResponse = bidResponse,
             let mBidResponse = bidResponse as? BidResponse
         {
             eventModel.requestContext = generateRequestContext(ad: ad, request: adRequest, bidResponse: mBidResponse)

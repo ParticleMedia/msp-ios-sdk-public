@@ -28,7 +28,7 @@ public class AdMetricReporterImp: AdMetricReporter {
             adScreenshot: adScreenShot, fullScreenShot: fullScreenShot)
     }
 
-    public func logAdImpression(ad: MSPiOSCore.MSPAd, adRequest: MSPiOSCore.AdRequest, bidResponse: Any) {
+    public func logAdImpression(ad: MSPiOSCore.MSPAd, adRequest: MSPiOSCore.AdRequest, bidResponse: Any?) {
         MESMetricReporter.shared.logAdImpression(ad: ad, adRequest: adRequest, bidResponse: bidResponse)
     }
 

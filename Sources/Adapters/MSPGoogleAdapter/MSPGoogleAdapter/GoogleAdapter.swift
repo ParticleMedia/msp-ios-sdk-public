@@ -364,10 +364,9 @@ import PrebidMobile
 
     public func sendClickAdEvent(ad: MSPAd) {
         DispatchQueue.main.async {
-            if let adRequest = self.adRequest,
-                let bidResponse = self.bidResponse
+            if let adRequest = self.adRequest
             {
-                self.adMetricReporter?.logAdClick(ad: ad, adRequest: adRequest, bidResponse: bidResponse)
+                self.adMetricReporter?.logAdClick(ad: ad, adRequest: adRequest, bidResponse: self.bidResponse)
             }
         }
     }
@@ -437,10 +436,9 @@ extension GoogleAdapter: MSPGADBannerViewDelegate {
     public func bannerViewDidRecordImpression(_ bannerView: MSPGADBannerView) {
         DispatchQueue.main.async {
             if let googleAd = self.bannerAd {
-                if let adRequest = self.adRequest,
-                    let bidResponse = self.bidResponse
+                if let adRequest = self.adRequest
                 {
-                    self.adMetricReporter?.logAdImpression(ad: googleAd, adRequest: adRequest, bidResponse: bidResponse)
+                    self.adMetricReporter?.logAdImpression(ad: googleAd, adRequest: adRequest, bidResponse: self.bidResponse)
                 }
                 self.adListener?.onAdImpression(ad: googleAd)
             }
@@ -509,10 +507,9 @@ extension GoogleAdapter: MSPGADNativeAdDelegate {
     public func nativeAdDidRecordImpression(_ nativeAd: MSPGADNativeAd) {
         DispatchQueue.main.async {
             if let nativeAd = self.nativeAd {
-                if let adRequest = self.adRequest,
-                    let bidResponse = self.bidResponse
+                if let adRequest = self.adRequest
                 {
-                    self.adMetricReporter?.logAdImpression(ad: nativeAd, adRequest: adRequest, bidResponse: bidResponse)
+                    self.adMetricReporter?.logAdImpression(ad: nativeAd, adRequest: adRequest, bidResponse: self.bidResponse)
                 }
                 self.adListener?.onAdImpression(ad: nativeAd)
             }
@@ -531,11 +528,10 @@ extension GoogleAdapter: MSPGADFullScreenContentDelegate {
     public func adDidRecordImpression(_ ad: MSPGADFullScreenPresentingAd) {
         DispatchQueue.main.async {
             if let interstitialAd = self.interstitialAd {
-                if let adRequest = self.adRequest,
-                    let bidResponse = self.bidResponse
+                if let adRequest = self.adRequest
                 {
                     self.adMetricReporter?.logAdImpression(
-                        ad: interstitialAd, adRequest: adRequest, bidResponse: bidResponse)
+                        ad: interstitialAd, adRequest: adRequest, bidResponse: self.bidResponse)
                 }
                 self.adListener?.onAdImpression(ad: interstitialAd)
             }
