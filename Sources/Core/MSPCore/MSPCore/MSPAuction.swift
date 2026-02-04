@@ -17,29 +17,35 @@ public class MSPAuction: Auction {
     private var remainingTaskCnt = 0
 
     private let taskLock = NSLock()
+    private var completionCalled = false
 
 
     public override func startAuction(auctionListener: any AuctionListener, adListener: (any AdListener)?) {
         MSPLogger.shared.info(message: "[Auction: Load Ad] started")
         auctionBidList = [AuctionBid]()
         remainingTaskCnt = bidders.count
+        isTimeout = false
+        completionCalled = false
         for bidder in bidders {
             dispatchGroup.enter()
             fetchBid(bidder: bidder, cacheOnly: cacheOnly, auctionBidListener: self, adListener: adListener)
         }
 
         let timeoutWorkItem = DispatchWorkItem { [weak self] in
-            self?.isTimeout = true
-            self?.biddingDispatchQueue.async {
-                if let winnerBid = self?.getWinnerBid() {
-                    MSPLogger.shared.info(
-                        message:
-                            "[Auction: Load Ad] time out. winner: \(winnerBid.bidderName),\(winnerBid.ecpm),\(winnerBid.bidderPlacementId)"
-                    )
-                    auctionListener.onSuccess(winningBid: winnerBid)
-                } else {
-                    MSPLogger.shared.info(message: "[Auction: Load Ad] time out. No winning bid")
-                    auctionListener.onError(error: "request time out: client auction no winning bid")
+            self?.biddingDispatchQueue.async { [weak self] in
+                guard let self else { return }
+                self.finishOnceOnBiddingQueue {
+                    self.isTimeout = true
+                    if let winnerBid = self.getWinnerBid() {
+                        MSPLogger.shared.info(
+                            message:
+                                "[Auction: Load Ad] time out. winner: \(winnerBid.bidderName),\(winnerBid.ecpm),\(winnerBid.bidderPlacementId)"
+                        )
+                        auctionListener.onSuccess(winningBid: winnerBid)
+                    } else {
+                        MSPLogger.shared.info(message: "[Auction: Load Ad] time out. No winning bid")
+                        auctionListener.onError(error: "request time out: client auction no winning bid")
+                    }
                 }
             }
         }
@@ -49,23 +55,33 @@ public class MSPAuction: Auction {
         DispatchQueue.global().asyncAfter(deadline: .now() + (timeout / 1000.0), execute: timeoutWorkItem)
 
         dispatchGroup.notify(queue: biddingDispatchQueue) { [weak self] in
-            if let isTimeout = self?.isTimeout,
-                isTimeout
-            {
+            guard let self else { return }
+            if self.isTimeout {
                 return
             }
             timeoutWorkItem.cancel()
-            if let winnerBid = self?.getWinnerBid() {
-                MSPLogger.shared.info(
-                    message:
-                        "[Auction: Load Ad] completed. winner: \(winnerBid.bidderName),\(winnerBid.ecpm),\(winnerBid.bidderPlacementId)"
-                )
-                auctionListener.onSuccess(winningBid: winnerBid)
-            } else {
-                MSPLogger.shared.info(message: "[Auction: Load Ad] completed. No winning bid")
-                auctionListener.onError(error: "client auction no winning bid")
+            self.finishOnceOnBiddingQueue {
+                if let winnerBid = self.getWinnerBid() {
+                    MSPLogger.shared.info(
+                        message:
+                            "[Auction: Load Ad] completed. winner: \(winnerBid.bidderName),\(winnerBid.ecpm),\(winnerBid.bidderPlacementId)"
+                    )
+                    auctionListener.onSuccess(winningBid: winnerBid)
+                } else {
+                    MSPLogger.shared.info(message: "[Auction: Load Ad] completed. No winning bid")
+                    auctionListener.onError(error: "client auction no winning bid")
+                }
             }
         }
+    }
+
+    private func finishOnceOnBiddingQueue(_ block: () -> Void) {
+        dispatchPrecondition(condition: .onQueue(biddingDispatchQueue))
+        if completionCalled {
+            return
+        }
+        completionCalled = true
+        block()
     }
 
     private func fetchBid(
