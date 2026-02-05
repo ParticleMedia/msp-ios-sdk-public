@@ -14,6 +14,7 @@ public class NovaInterstitialAd: MSPiOSCore.InterstitialAd {
     public weak var rootViewController: UIViewController?
     public var interstitialAdItem: NovaInterstitialAdItem?
 
+
     public override func show() {
         if let rootViewController = rootViewController {
             let reportAdapter = ReportHandlerAdapter(outer: nil, ad: self)

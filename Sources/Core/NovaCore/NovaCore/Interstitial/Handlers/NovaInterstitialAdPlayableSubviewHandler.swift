@@ -138,6 +138,7 @@ class NovaInterstitialAdPlayableSubviewHandler: NovaInterstitialAdSubviewHandler
 
         // Configure playable content
         interstitialAd.mediaContent.playableController?.renderOption = .playable
+        interstitialAd.mediaContent.playableController?.delegate = self
         mediaView
             .config(
                 with: interstitialAd.mediaContent,
@@ -180,4 +181,10 @@ extension NovaInterstitialAdPlayableSubviewHandler: NovaClickAreaConfigurable {
     var icon: UIImageView? { advertiserAvatar }
 
     var clickableComponents: [NovaClickableComponent]? { interstitialAd.clickableComponents }
+}
+
+extension NovaInterstitialAdPlayableSubviewHandler: NovaAdPlayableViewDelegate {
+    func playableViewDidRequestClose() {
+        delegate?.didTapCloseButton()
+    }
 }
