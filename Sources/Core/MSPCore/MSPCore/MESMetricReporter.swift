@@ -230,7 +230,7 @@ import UIKit
             let mBidResponse = bidResponse as? BidResponse
         {
             eventModel.requestContext = generateRequestContext(ad: ad, request: adRequest, bidResponse: mBidResponse)
-            eventModel.ad = generateAdContext(ad: ad, request: adRequest, bidResponse: mBidResponse)
+            eventModel.ad = generateAdContext(ad: ad, adRequest: adRequest, bidResponse: mBidResponse)
         } else {
             eventModel.requestContext = generateRequestContext(ad: ad, request: adRequest)
             eventModel.ad = generateAdContext(ad: ad)
@@ -260,7 +260,7 @@ import UIKit
             let mBidResponse = bidResponse as? BidResponse
         {
             eventModel.requestContext = generateRequestContext(ad: ad, request: adRequest, bidResponse: mBidResponse)
-            eventModel.ad = generateAdContext(ad: ad, request: adRequest, bidResponse: mBidResponse)
+            eventModel.ad = generateAdContext(ad: ad, adRequest: adRequest, bidResponse: mBidResponse)
         } else {
             eventModel.requestContext = generateRequestContext(ad: ad, request: adRequest)
             eventModel.ad = generateAdContext(ad: ad)
@@ -445,7 +445,11 @@ import UIKit
         eventModel.tsMs = UInt64(Date().timeIntervalSince1970 * 1000)
         eventModel.reason = reason
         eventModel.requestContext = generateRequestContext(ad: ad, request: adRequest)
-        eventModel.ad = generateAdContext(ad: ad, adScreenShot: adScreenshot, fullScreenShot: fullScreenShot)
+        eventModel.ad = generateAdContext(ad: ad,
+                                          adRequest: adRequest,
+                                          bidResponse: bidResponse as? BidResponse,
+                                          adScreenShot: adScreenshot,
+                                          fullScreenShot: fullScreenShot)
         eventModel.os = .ios
         if let org = MSP.shared.org {
             eventModel.org = org
@@ -473,7 +477,11 @@ import UIKit
             eventModel.description_p = description
         }
         eventModel.requestContext = generateRequestContext(ad: ad, request: adRequest)
-        eventModel.ad = generateAdContext(ad: ad, adScreenShot: adScreenshot, fullScreenShot: fullScreenShot)
+        eventModel.ad = generateAdContext(ad: ad,
+                                          adRequest: adRequest,
+                                          bidResponse: bidResponse as? BidResponse,
+                                          adScreenShot: adScreenshot,
+                                          fullScreenShot: fullScreenShot)
         eventModel.os = .ios
         if let org = MSP.shared.org {
             eventModel.org = org
@@ -558,56 +566,59 @@ import UIKit
 
         return eventModel
     }
-
-    func generateAdContext(ad: MSPAd, request: AdRequest, bidResponse: BidResponse)
-        -> Com_Newsbreak_Monetization_Common_Ad
-    {
+    
+    private func generateAdContext(ad: MSPAd,
+                                   adRequest: AdRequest? = nil,
+                                   bidResponse: BidResponse? = nil,
+                                   adScreenShot: Data? = nil,
+                                   fullScreenShot: Data? = nil) -> Com_Newsbreak_Monetization_Common_Ad {
         var eventModel = Com_Newsbreak_Monetization_Common_Ad()
+        
         eventModel.tsMs = UInt64(Date().timeIntervalSince1970 * 1000)
-        if ad is MSPiOSCore.NativeAd,
-            let nativeAd = ad as? MSPiOSCore.NativeAd
-        {
-            eventModel.title = nativeAd.title
-            eventModel.body = nativeAd.body
-            eventModel.advertiser = nativeAd.advertiser
-            eventModel.type = .native
-        } else if ad is InterstitialAd {
-            eventModel.type = .interstitial
-        } else if ad is BannerAd {
-            eventModel.type = .display
-        }
-
-        eventModel.seatBid = generateSeatBid(ad: ad, request: request, bidResponse: bidResponse)
-
-        return eventModel
-    }
-
-    func generateAdContext(ad: MSPAd, adScreenShot: Data? = nil, fullScreenShot: Data? = nil)
-        -> Com_Newsbreak_Monetization_Common_Ad
-    {
-        var eventModel = Com_Newsbreak_Monetization_Common_Ad()
-        eventModel.tsMs = UInt64(Date().timeIntervalSince1970 * 1000)
-        if ad is MSPiOSCore.NativeAd,
-            let nativeAd = ad as? MSPiOSCore.NativeAd
-        {
-            eventModel.title = nativeAd.title
-            eventModel.body = nativeAd.body
-            eventModel.advertiser = nativeAd.advertiser
-            eventModel.type = .native
-        } else if ad is InterstitialAd {
-            eventModel.type = .interstitial
-        } else if ad is BannerAd {
-            eventModel.type = .display
-        }
-
+        setAdContextTypeInfo(adContext: &eventModel, ad: ad)
         if let adScreenShot = adScreenShot {
             eventModel.adScreenshot = adScreenShot
         }
         if let fullScreenShot = fullScreenShot {
             eventModel.fullScreenshot = fullScreenShot
         }
+        if let adRequest = adRequest,
+           let bidResponse = bidResponse {
+            eventModel.seatBid = generateSeatBid(ad: ad, request: adRequest, bidResponse: bidResponse)
+        } else {
+            eventModel.seatBid = generateSeatBid(ad: ad)
+        }
+        
+        return eventModel
+    }
+    
+    private func setAdContextTypeInfo( adContext: inout Com_Newsbreak_Monetization_Common_Ad, ad: MSPAd) {
+        if ad is MSPiOSCore.NativeAd,
+            let nativeAd = ad as? MSPiOSCore.NativeAd
+        {
+            adContext.title = nativeAd.title
+            adContext.body = nativeAd.body
+            adContext.advertiser = nativeAd.advertiser
+            adContext.type = .native
+        } else if ad is InterstitialAd {
+            adContext.type = .interstitial
+        } else if ad is BannerAd {
+            adContext.type = .display
+        }
+    }
 
+    func generateSeatBid(ad: MSPAd, request: AdRequest, bidResponse: BidResponse)
+        -> Com_Google_Openrtb_BidResponse.SeatBid
+    {
+        var eventModel = Com_Google_Openrtb_BidResponse.SeatBid()
+        eventModel.seat = bidResponse.winningBidSeat ?? ""
+        eventModel.bid = [generateBid(ad: ad, request: request, bidResponse: bidResponse)]
+        return eventModel
+    }
+    
+    private func generateSeatBid(ad: MSPAd) -> Com_Google_Openrtb_BidResponse.SeatBid {
         var seatBid = Com_Google_Openrtb_BidResponse.SeatBid()
+        
         if let seat = ad.adInfo[MSPConstants.AD_INFO_NETWORK_NAME] as? String {
             seatBid.seat = seat
         } else {
@@ -625,19 +636,8 @@ import UIKit
         bid.adomain = [""]
         bid.impid = ""
         seatBid.bid = [bid]
-
-        eventModel.seatBid = seatBid
-
-        return eventModel
-    }
-
-    func generateSeatBid(ad: MSPAd, request: AdRequest, bidResponse: BidResponse)
-        -> Com_Google_Openrtb_BidResponse.SeatBid
-    {
-        var eventModel = Com_Google_Openrtb_BidResponse.SeatBid()
-        eventModel.seat = bidResponse.winningBidSeat ?? ""
-        eventModel.bid = [generateBid(ad: ad, request: request, bidResponse: bidResponse)]
-        return eventModel
+        
+        return seatBid
     }
 
     func generateBid(ad: MSPAd, request: AdRequest, bidResponse: BidResponse)
