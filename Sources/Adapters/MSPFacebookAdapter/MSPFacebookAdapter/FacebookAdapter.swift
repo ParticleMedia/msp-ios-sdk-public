@@ -15,16 +15,14 @@ import UIKit
         self.adMetricReporter = adMetricReporter
     }
 
-    @MainActor
-    public func prepareViewForInteraction(nativeAd: MSPiOSCore.NativeAd, nativeAdView: Any) {
+@MainActor
+ public func prepareViewForInteraction(nativeAd: MSPiOSCore.NativeAd, nativeAdView: Any) {
         guard let nativeAdView = nativeAdView as? NativeAdView,
             let mediaView = nativeAd.mediaView as? FBMediaView,
             let fbNativeAdItem = self.nativeAdItem
         else { return }
         //let fbNativeAdView = UIView()
         nativeAdView.translatesAutoresizingMaskIntoConstraints = false
-        fbNativeAdItem.unregisterView()
-
         if let nativeAdViewBinder = nativeAdView.nativeAdViewBinder {
             let fbSubViews = [
                 nativeAdView.nativeAdViewBinder?.titleLabel, nativeAdView.nativeAdViewBinder?.bodyLabel,
