@@ -39,6 +39,10 @@ targets:
     dependencies:
       - framework: ../MSPOMSDK/OMSDK_Newsbreak1.xcframework
         embed: false
+      # MSPiOSCore XCFramework dependency (core module)
+      # Path is relative to project.yml location: Sources/Core/NovaCore/
+      - framework: ../../../Build/ReleaseArtifacts/XCFrameworks/MSPiOSCore.xcframework
+        embed: false
       # Shimmer XCFramework dependency (Plan B: unified XCFramework architecture)
       # Path is relative to project.yml location: Sources/Core/NovaCore/
       - framework: ../../../Build/ReleaseArtifacts/XCFrameworks/Shimmer.xcframework
