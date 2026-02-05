@@ -5,6 +5,7 @@
 //
 
 import Foundation
+import MSPiOSCore
 import UIKit
 
 enum NovaPopupCTAStyleVariant: String {
@@ -160,6 +161,10 @@ public class NovaNativeBaseAd: NovaBaseAd, NovaNativeMediaProviding {
 
     // media used to render media view
     public private(set) var mediaContent: NovaAdMediaContent
+
+    /// Optional MRAID delegate for this ad. If not set, SDK falls back to default
+    /// MRAID behaviors (play video with AVPlayer, save picture to Photos, and
+    /// create calendar events with EventKit).
 
 
     // MARK: - Discount Tag

@@ -149,11 +149,24 @@ class NovaAdVideoControllerDelegateAdapter: NovaAdVideoViewDelegate {
 class NovaAdPlayableControllerAdapter: PlayableController {
     init(playableController: NovaAdPlayableController) {
         self.playableController = playableController
+        self.delegateAdapter = NovaAdPlayableControllerDelegateAdapter(playableController: nil)
+        playableController.delegate = delegateAdapter
+        self.delegateAdapter.playableController = self
     }
 
     // MARK: Internal
 
     let playableController: NovaAdPlayableController
+    let delegateAdapter: NovaAdPlayableControllerDelegateAdapter
+
+    var delegate: (any MSPiOSCore.PlayableControllerDelegate)? {
+        get {
+            delegateAdapter.playableControllerDelegate
+        }
+        set {
+            delegateAdapter.playableControllerDelegate = newValue
+        }
+    }
 
     var renderMode: PlayableRenderMode {
         get {
@@ -180,5 +193,20 @@ class NovaAdPlayableControllerAdapter: PlayableController {
                 playableController.renderOption = .auto
             }
         }
+    }
+}
+
+// MARK: - NovaAdPlayableControllerDelegateAdapter
+
+class NovaAdPlayableControllerDelegateAdapter: NovaAdPlayableViewDelegate {
+    init(playableController: (any PlayableController)?) {
+        self.playableController = playableController
+    }
+
+    weak var playableController: (any PlayableController)?
+    weak var playableControllerDelegate: PlayableControllerDelegate?
+
+    func playableViewDidRequestClose() {
+        playableControllerDelegate?.playableControllerDidRequestClose(playableController)
     }
 }

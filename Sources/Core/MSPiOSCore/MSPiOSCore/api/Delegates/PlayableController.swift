@@ -12,5 +12,14 @@ public enum PlayableRenderMode {
 }
 
 public protocol PlayableController: AnyObject {
+    var delegate: PlayableControllerDelegate? { get set }
     var renderMode: PlayableRenderMode { get set }
+}
+
+public protocol PlayableControllerDelegate: AnyObject {
+    func playableControllerDidRequestClose(_ controller: PlayableController?)
+}
+
+public extension PlayableControllerDelegate {
+    func playableControllerDidRequestClose(_ controller: PlayableController?) {}
 }

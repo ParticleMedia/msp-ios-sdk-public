@@ -10,6 +10,7 @@ public class NovaNativeAd: NativeAd {
         mediaContainerAdapter
     }
 
+
     public private(set) var priceInDollar: Double?
 
     var nativeAdItem: NovaNativeAdItem? {
