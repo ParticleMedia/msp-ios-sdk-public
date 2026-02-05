@@ -118,6 +118,7 @@ class NovaAdPlayableViewController: UIViewController {
     private let config: Config
 
     private func config(with config: Config) {
+        playableView.delegate = self
         startTime = CACurrentMediaTime()
         guard let actionContext = config.playableConfigs.actionContext else {
             playableView.config(with: config.playableConfigs.model, actionContext: nil)
@@ -224,6 +225,12 @@ extension NovaAdPlayableViewController: NovaAdAppInstallBannerDelegate {
 
 private extension NovaAdPlayableViewController {
     @objc func didTapCloseButton() {
+        dismiss(animated: true)
+    }
+}
+
+extension NovaAdPlayableViewController: NovaAdPlayableViewDelegate {
+    func playableViewDidRequestClose() {
         dismiss(animated: true)
     }
 }

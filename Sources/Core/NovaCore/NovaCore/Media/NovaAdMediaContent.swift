@@ -8,6 +8,7 @@
 // MARK: - NovaMediaElementLayout
 
 import Foundation
+import MSPiOSCore
 import UIKit
 
 public struct NovaMediaElementLayout: Equatable {
@@ -130,6 +131,15 @@ public class NovaAdPlayableController {
 
     public var renderOption: RenderOption
 
+    public weak var delegate: NovaAdPlayableViewDelegate? {
+        get {
+            playableView.delegate
+        }
+        set {
+            playableView.delegate = newValue
+        }
+    }
+
     // MARK: Internal
 
     let playableView: NovaAdPlayableView
@@ -186,7 +196,8 @@ public class NovaAdMediaContent {
     public lazy var playableController: NovaAdPlayableController? = {
         switch adMedia {
         case .imagePlayable, .videoPlayable:
-            return .init(renderOption: .auto)
+            let controller = NovaAdPlayableController(renderOption: .auto)
+            return controller
         default:
             return nil
         }
