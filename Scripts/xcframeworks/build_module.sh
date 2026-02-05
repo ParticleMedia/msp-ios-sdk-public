@@ -561,3 +561,6 @@ if [[ -f "$PROJECT_DIR/project.yml" ]]; then
     rm -f "$PROJECT_DIR/project.yml"
     log_info "  Removed: $PROJECT_DIR/project.yml"
 fi
+
+# Explicit success exit to ensure correct exit code under set -e
+exit 0

@@ -443,3 +443,6 @@ if [[ $CLEANED_COUNT -gt 0 ]]; then
 else
     log_info "  No project.yml files to clean up"
 fi
+
+# Explicit success exit to ensure correct exit code under set -e
+exit 0
