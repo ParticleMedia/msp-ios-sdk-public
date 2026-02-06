@@ -3898,6 +3898,51 @@ RUBY_SCRIPT
             fi
         fi
 
+        # Auto-retry on CocoaPods server errors (HTTP 500 / CDN issues)
+        if grep -q "internal server error" "$log_file" || grep -q "server error occurred" "$log_file"; then
+            local max_server_retries=3
+            local server_retry_delay=15
+            local server_retry=1
+
+            while [[ $server_retry -le $max_server_retries ]]; do
+                log_warn "⚠️  CocoaPods server error detected (attempt $server_retry/$max_server_retries)"
+                log_info "Waiting ${server_retry_delay}s before retry..."
+                sleep "$server_retry_delay"
+
+                local retry_exit_code_file
+                retry_exit_code_file=$(mktemp "/tmp/pod_trunk_exit_code_server_retry_XXXXXX")
+                register_temp_resource "$retry_exit_code_file"
+
+                {
+                    pod trunk push "$podspec" --allow-warnings $skip_tests_flag 2>&1 | tee "$log_file"
+                    echo "${PIPESTATUS[0]}" > "$retry_exit_code_file"
+                } || true
+
+                publish_exit_code=$(cat "$retry_exit_code_file" 2>/dev/null || echo "1")
+                publish_output=$(cat "$log_file" 2>/dev/null || echo "")
+                rm -f "$retry_exit_code_file"
+
+                if [[ "$publish_exit_code" == "0" ]]; then
+                    log_success "✅ $pod $version published successfully (after server retry $server_retry)"
+                    if command -v msp_state_mark_pod_status &>/dev/null; then
+                        msp_state_mark_pod_status "$pod" "published"
+                        msp_state_set_pod_trunk_verified "$pod" "true"
+                    fi
+                    rm -f "$log_file"
+                    return 0
+                fi
+
+                # If no longer a server error, break out and fall through to real failure
+                if ! grep -q "internal server error" "$log_file" && ! grep -q "server error occurred" "$log_file"; then
+                    log_warn "Error is no longer a server error, stopping retries"
+                    break
+                fi
+
+                ((server_retry++)) || true
+            done
+            log_error "❌ CocoaPods server error persisted after $max_server_retries retries"
+        fi
+
         # Real failure
         log_error "❌ Failed to publish $pod $version"
 
