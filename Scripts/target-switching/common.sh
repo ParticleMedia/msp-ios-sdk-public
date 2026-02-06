@@ -402,7 +402,7 @@ safe_remove_workspace() {
     while [[ $retry_count -lt $max_retries ]] && [[ -d "$workspace_path" ]]; do
         sleep 1
         rm -rf "$workspace_path" 2>/dev/null || true
-        ((retry_count++))
+        ((retry_count++)) || true
     done
     
     # Final check
@@ -491,7 +491,7 @@ safe_remove_directory() {
     while [[ $retry_count -lt $max_retries ]] && [[ -d "$dir_path" ]]; do
         sleep 1
         rm -rf "$dir_path" 2>/dev/null || true
-        ((retry_count++))
+        ((retry_count++)) || true
     done
     
     # Final check
@@ -549,10 +549,10 @@ check_xcframeworks_exist() {
         local xcf_path="$ROOT_DIR/$xcf"
         if [[ ! -d "$xcf_path" ]]; then
             log_warning "Core XCFramework missing: $xcf"
-            ((missing++))
+            ((missing++)) || true
         elif [[ ! -f "$xcf_path/Info.plist" ]]; then
             log_warning "Core XCFramework invalid (missing Info.plist): $xcf"
-            ((missing++))
+            ((missing++)) || true
         fi
     done
     
@@ -561,10 +561,10 @@ check_xcframeworks_exist() {
         local xcf_path="$ROOT_DIR/$xcf"
         if [[ ! -d "$xcf_path" ]]; then
             log_warning "ThirdParty XCFramework missing: $xcf"
-            ((missing++))
+            ((missing++)) || true
         elif [[ ! -f "$xcf_path/Info.plist" ]]; then
             log_warning "ThirdParty XCFramework invalid (missing Info.plist): $xcf"
-            ((missing++))
+            ((missing++)) || true
         fi
     done
     
@@ -580,10 +580,10 @@ check_required_xcframeworks() {
         local xcf_path="$ROOT_DIR/$xcf"
         if [[ ! -d "$xcf_path" ]]; then
             log_warning "Required XCFramework missing: $xcf"
-            ((missing++))
+            ((missing++)) || true
         elif [[ ! -f "$xcf_path/Info.plist" ]]; then
             log_warning "Required XCFramework invalid (missing Info.plist): $xcf"
-            ((missing++))
+            ((missing++)) || true
         fi
     done
     
@@ -592,10 +592,10 @@ check_required_xcframeworks() {
         local xcf_path="$ROOT_DIR/$xcf"
         if [[ ! -d "$xcf_path" ]]; then
             log_warning "Required ThirdParty XCFramework missing: $xcf"
-            ((missing++))
+            ((missing++)) || true
         elif [[ ! -f "$xcf_path/Info.plist" ]]; then
             log_warning "Required ThirdParty XCFramework invalid (missing Info.plist): $xcf"
-            ((missing++))
+            ((missing++)) || true
         fi
     done
     
@@ -604,10 +604,10 @@ check_required_xcframeworks() {
         local xcf_path="$ROOT_DIR/$xcf"
         if [[ ! -d "$xcf_path" ]]; then
             log_warning "Required embedded XCFramework missing: $xcf"
-            ((missing++))
+            ((missing++)) || true
         elif [[ ! -f "$xcf_path/Info.plist" ]]; then
             log_warning "Required embedded XCFramework invalid (missing Info.plist): $xcf"
-            ((missing++))
+            ((missing++)) || true
         fi
     done
     
@@ -622,7 +622,7 @@ check_adapter_sources() {
         local adapter_path="$ROOT_DIR/$adapter"
         if [[ ! -d "$adapter_path" ]]; then
             log_warning "Adapter source missing: $adapter"
-            ((missing++))
+            ((missing++)) || true
         fi
     done
     

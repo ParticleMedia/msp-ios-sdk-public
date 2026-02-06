@@ -307,7 +307,7 @@ verify_spm_cdn_availability() {
             log_error "  URL: $url"
             log_error "  This framework is likely a source-based target that should not be verified"
             log_error "  Tip: Check if this framework should be in the binary distribution list"
-            ((failed++))
+            ((failed++)) || true
             continue
         fi
 
@@ -324,7 +324,7 @@ verify_spm_cdn_availability() {
             # - Keep -L: Follow redirects (GitHub uses 302)
             if curl -sSL --head --max-time 15 "$url" >/dev/null 2>&1; then
                 log_success "  ✓ $filename is available on CDN"
-                ((verified++))
+                ((verified++)) || true
                 success=true
                 break
             else
@@ -333,13 +333,13 @@ verify_spm_cdn_availability() {
                     sleep 10
                 fi
             fi
-            ((attempt++))
+            ((attempt++)) || true
         done
 
         if [[ "$success" != "true" ]]; then
             log_error "  ✗ $filename not available on CDN after $max_attempts attempts"
             log_error "    URL: $url"
-            ((failed++))
+            ((failed++)) || true
         fi
     done
 
@@ -418,7 +418,7 @@ probe_spm_zip_url() {
                 return 1
             fi
         fi
-        ((attempt++))
+        ((attempt++)) || true
     done
 
     return 1
@@ -469,7 +469,7 @@ verify_spm_checksum_from_cdn() {
         if ! curl -sSfL "$url" -o "$temp_zip" 2>/dev/null; then
             log_error "  ✗ Failed to download $zip_name from CDN"
             log_error "    URL: $url"
-            ((failed++))
+            ((failed++)) || true
             continue
         fi
 
@@ -482,20 +482,20 @@ verify_spm_checksum_from_cdn() {
             actual_checksum=$(sha256sum "$temp_zip" | cut -d' ' -f1)
         else
             log_error "  ✗ No checksum tool available (shasum or sha256sum)"
-            ((failed++))
+            ((failed++)) || true
             continue
         fi
 
         # Compare checksums
         if [[ "$actual_checksum" == "$expected_checksum" ]]; then
             log_success "  ✓ Checksum matches: ${actual_checksum:0:16}..."
-            ((verified++))
+            ((verified++)) || true
         else
             log_error "  ✗ Checksum mismatch!"
             log_error "    Expected: ${expected_checksum:0:16}..."
             log_error "    Actual:   ${actual_checksum:0:16}..."
             mismatches+=("$framework_name")
-            ((failed++))
+            ((failed++)) || true
         fi
     done
 
@@ -1074,7 +1074,7 @@ upload_xcframework_to_github_release() {
                 gh_release_created=true
                 break
             else
-                ((retry_count++))
+                ((retry_count++)) || true
                 if [[ $retry_count -lt $max_retries ]]; then
                     log_warn "Upload failed, retrying in 5 seconds..."
                     sleep 5
@@ -1086,7 +1086,7 @@ upload_xcframework_to_github_release() {
                 gh_release_created=true
                 break
             else
-                ((retry_count++))
+                ((retry_count++)) || true
                 if [[ $retry_count -lt $max_retries ]]; then
                     log_warn "Release creation failed, retrying in 5 seconds..."
                     sleep 5
@@ -1221,7 +1221,7 @@ process_binary_targets_for_cloud_distribution() {
         # Create deterministic zip
         if ! create_deterministic_zip "$xcframework_path" "$zip_path" "$framework_name"; then
             log_error "Failed to create zip for $framework_name"
-            ((failed_count++))
+            ((failed_count++)) || true
             continue
         fi
         
@@ -1231,7 +1231,7 @@ process_binary_targets_for_cloud_distribution() {
         if [[ -z "$checksum" ]]; then
             log_error "Failed to compute checksum for $framework_name"
             rm -f "$zip_path"
-            ((failed_count++))
+            ((failed_count++)) || true
             
             # Send Slack alert on checksum failure
             if [[ "$DRY_RUN" != "true" ]]; then
@@ -1249,14 +1249,14 @@ process_binary_targets_for_cloud_distribution() {
         if [[ "$DRY_RUN" != "true" ]]; then
             if ! upload_xcframework_to_github_release "$zip_path" "$framework_name" "$version"; then
                 log_error "Failed to upload $framework_name to GitHub Release"
-                ((failed_count++))
+                ((failed_count++)) || true
                 continue
             fi
         else
             log_info "DRY RUN: Would upload $framework_name to GitHub Release"
         fi
         
-        ((processed_count++))
+        ((processed_count++)) || true
         log_success "Processed $framework_name (checksum: ${checksum:0:16}...)"
     done
     
@@ -1884,10 +1884,10 @@ main() {
     # Release each SPM package in order
     for package in "${spm_packages_array[@]}"; do
         if release_spm_package "$package" "$VERSION"; then
-            ((successful_packages++))
+            ((successful_packages++)) || true
             successful_package_names+=("$package")
         else
-            ((failed_packages++))
+            ((failed_packages++)) || true
             failed_package_names+=("$package")
             if [[ "$DRY_RUN" != "true" ]]; then
                 notify_release_failure "SPM" "$VERSION" "$package release failed" "Package Release"

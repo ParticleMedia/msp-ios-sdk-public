@@ -80,10 +80,10 @@ preflight_static() {
     if [[ -n "$(git status --porcelain 2>/dev/null)" ]]; then
         if [[ "${DRY_RUN:-false}" == "true" ]]; then
             log_warn "Working tree is not clean (DRY RUN mode - continuing)"
-            ((warnings++))
+            ((warnings++)) || true
         else
             log_error "Working tree is not clean. Please commit or stash changes."
-            ((errors++))
+            ((errors++)) || true
         fi
     else
         log_info "Working tree is clean"
@@ -99,7 +99,7 @@ preflight_static() {
     if [[ -n "$base_branch" && "$current_branch" != "$base_branch" ]] && \
        [[ -n "$release_branch" && "$current_branch" != "$release_branch" ]]; then
         log_warn "Current branch '$current_branch' does not match BASE_BRANCH='$base_branch' or RELEASE_BRANCH='$release_branch'"
-        ((warnings++))
+        ((warnings++)) || true
     else
         log_info "Branch check passed (current: $current_branch)"
     fi
@@ -109,10 +109,10 @@ preflight_static() {
     local version="${RELEASE_VERSION:-}"
     if [[ -z "$version" ]]; then
         log_warn "RELEASE_VERSION is not set (version check skipped)"
-        ((warnings++))
+        ((warnings++)) || true
     elif [[ ! "$version" =~ ^[0-9]+\.[0-9]+\.[0-9]+.*$ ]]; then
         log_warn "Version '$version' does not match semver pattern (X.Y.Z)"
-        ((warnings++))
+        ((warnings++)) || true
     else
         log_info "Version validation passed: $version"
     fi
@@ -121,7 +121,7 @@ preflight_static() {
     log_step "Checking ReleaseArtifacts/Binary directory"
     if [[ ! -d "$ROOT_DIR/Build/ReleaseArtifacts/Binary" ]]; then
         log_warn "ReleaseArtifacts/Binary directory not found at $ROOT_DIR/Build/ReleaseArtifacts/Binary"
-        ((warnings++))
+        ((warnings++)) || true
     else
         log_info "ReleaseArtifacts/Binary directory exists"
     fi
@@ -141,7 +141,7 @@ preflight_static() {
     for framework in "${required_frameworks[@]}"; do
         if [[ -d "$xcframeworks_dir/${framework}.xcframework" ]]; then
             log_info "Found: ${framework}.xcframework"
-            ((found_count++))
+            ((found_count++)) || true
         else
             log_warn "Missing: ${framework}.xcframework"
         fi
@@ -163,7 +163,7 @@ preflight_static() {
         log_info "git: available"
     else
         log_error "git: not found (required)"
-        ((errors++))
+        ((errors++)) || true
     fi
     
     # pod (warn only)
@@ -171,7 +171,7 @@ preflight_static() {
         log_info "pod: available"
     else
         log_warn "pod: not found (CocoaPods releases will fail)"
-        ((warnings++))
+        ((warnings++)) || true
     fi
     
     # xcodebuild (warn only)
@@ -179,7 +179,7 @@ preflight_static() {
         log_info "xcodebuild: available"
     else
         log_warn "xcodebuild: not found (builds will fail)"
-        ((warnings++))
+        ((warnings++)) || true
     fi
     
     # Final summary

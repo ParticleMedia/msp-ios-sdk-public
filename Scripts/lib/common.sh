@@ -197,7 +197,7 @@ wait_for_process() {
     
     while is_process_running "$process_name" && [[ $count -lt $timeout ]]; do
         sleep 1
-        ((count++))
+        ((count++)) || true
     done
     
     if [[ $count -ge $timeout ]]; then
