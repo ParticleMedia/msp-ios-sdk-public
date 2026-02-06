@@ -380,10 +380,10 @@ for module in "${CORE_MODULES[@]}"; do
             # MSPPrebidAdapter: Build using XcodeGen standalone project
             # This links against MSPiOSCore.xcframework (built earlier), ensuring ABI compatibility
             if build_msp_prebid_adapter_xcframework; then
-                ((SUCCESS_COUNT++))
+                ((SUCCESS_COUNT++)) || true
                 log_success "$module: BUILD SUCCEEDED (xcodegen mode)"
             else
-                ((FAIL_COUNT++))
+                ((FAIL_COUNT++)) || true
                 FAILED_MODULES+=("$module")
                 log_error "$module: BUILD FAILED (xcodegen mode)"
                 log_error "Aborting core module build pipeline"
@@ -393,10 +393,10 @@ for module in "${CORE_MODULES[@]}"; do
         MSPCore)
             # MSPCore needs explicit modulemap injection for MSPPrebidAdapter and SwiftProtobuf
             if build_mspcore_with_modulemaps; then
-                ((SUCCESS_COUNT++))
+                ((SUCCESS_COUNT++)) || true
                 log_success "$module: BUILD SUCCEEDED (xcodegen + modulemap mode)"
             else
-                ((FAIL_COUNT++))
+                ((FAIL_COUNT++)) || true
                 FAILED_MODULES+=("$module")
                 log_error "$module: BUILD FAILED (xcodegen + modulemap mode)"
                 log_error "Aborting core module build pipeline"
@@ -406,10 +406,10 @@ for module in "${CORE_MODULES[@]}"; do
         *)
             # Other modules: Build via XcodeGen project + build_module.sh
             if "$BUILD_MODULE_SCRIPT" "$module"; then
-                ((SUCCESS_COUNT++))
+                ((SUCCESS_COUNT++)) || true
                 log_success "$module: BUILD SUCCEEDED (xcodegen mode)"
             else
-                ((FAIL_COUNT++))
+                ((FAIL_COUNT++)) || true
                 FAILED_MODULES+=("$module")
                 log_error "$module: BUILD FAILED (xcodegen mode)"
                 log_error "Aborting core module build pipeline"
