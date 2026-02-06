@@ -92,7 +92,7 @@ handle_error() {
     color_warning "Stack trace:"
     local frame=0
     while caller $frame; do
-        ((frame++))
+        ((frame++)) || true
     done
     exit $exit_code
 }
@@ -237,7 +237,7 @@ build_archive() {
                 sleep 5
             fi
             
-            ((attempt++))
+            ((attempt++)) || true
         done
         
         color_error "❌ All $max_attempts build attempts failed with Release configuration"
@@ -416,7 +416,7 @@ install_cocoapods_with_retry() {
             fi
         fi
         
-        ((attempt++))
+        ((attempt++)) || true
     done
     
     color_error "Failed to install CocoaPods dependencies after $max_attempts attempts"

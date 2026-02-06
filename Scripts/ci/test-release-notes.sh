@@ -159,37 +159,37 @@ run_all_tests() {
     
     # Run tests
     if test_git_release_notes; then
-        ((tests_passed++))
+        ((tests_passed++)) || true
     else
-        ((tests_failed++))
+        ((tests_failed++)) || true
     fi
     
     echo ""
     if test_template_release_notes; then
-        ((tests_passed++))
+        ((tests_passed++)) || true
     else
-        ((tests_failed++))
+        ((tests_failed++)) || true
     fi
     
     echo ""
     if test_custom_template_release_notes; then
-        ((tests_passed++))
+        ((tests_passed++)) || true
     else
-        ((tests_failed++))
+        ((tests_failed++)) || true
     fi
     
     echo ""
     if test_get_release_notes; then
-        ((tests_passed++))
+        ((tests_passed++)) || true
     else
-        ((tests_failed++))
+        ((tests_failed++)) || true
     fi
     
     echo ""
     if test_slack_with_release_notes; then
-        ((tests_passed++))
+        ((tests_passed++)) || true
     else
-        ((tests_failed++))
+        ((tests_failed++)) || true
     fi
     
     # Print results

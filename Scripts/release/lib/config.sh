@@ -254,7 +254,7 @@ _msp_parse_tier_config_value() {
         # Calculate indentation
         local indent=0
         while [[ ${line:$indent:1} == " " ]]; do
-            ((indent++))
+            ((indent++)) || true
         done
         
         local stripped="${line:$indent}"
@@ -295,7 +295,7 @@ _msp_parse_tier_config_value() {
                         fi
                     else
                         # Move to next level
-                        ((path_index++))
+                        ((path_index++)) || true
                         last_indent=$indent
                     fi
                 fi

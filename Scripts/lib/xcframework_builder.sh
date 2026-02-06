@@ -148,7 +148,7 @@ build_for_platform() {
             return 0
         else
             echo "⚠️ Build attempt $attempt failed for $scheme on $platform"
-            ((attempt++))
+            ((attempt++)) || true
             
             if [[ $attempt -le $MAX_BUILD_ATTEMPTS ]]; then
                 echo "ℹ️ Retrying build in 5 seconds..."

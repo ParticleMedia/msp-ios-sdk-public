@@ -357,7 +357,7 @@ validate_all_podspecs() {
     
     # Validate each podspec
     for podspec in "${podspecs[@]}"; do
-        ((total_specs++))
+        ((total_specs++)) || true
         
         if ! validate_podspec "$podspec" >/dev/null 2>&1; then
             failed_specs+=("$(basename "$podspec")")
@@ -452,14 +452,14 @@ cleanup_stale_specs_repos() {
                     if [[ ! -d "$local_path" ]]; then
                         log_warn "Removing stale specs repo '$repo_name' (origin '$local_path' no longer exists)"
                         rm -rf "$repo_dir"
-                        ((cleaned_count++))
+                        ((cleaned_count++)) || true
                     fi
                 fi
             else
                 # No remote URL configured - likely corrupted
                 log_warn "Removing corrupted specs repo '$repo_name' (no remote origin)"
                 rm -rf "$repo_dir"
-                ((cleaned_count++))
+                ((cleaned_count++)) || true
             fi
         fi
     done
@@ -598,7 +598,7 @@ update_specs_repo() {
                 fi
             fi
 
-            ((attempt++))
+            ((attempt++)) || true
         done
 
         # Cache the failure to prevent rapid retries
@@ -698,7 +698,7 @@ check_pod_availability() {
                     log_info "Retrying in ${delay} seconds..."
                     sleep $delay
                 fi
-                ((attempt++))
+                ((attempt++)) || true
                 continue
             fi
         fi
@@ -777,7 +777,7 @@ check_pod_availability() {
             fi
         fi
         
-        ((attempt++))
+        ((attempt++)) || true
     done
     
     log_error "$pod_name not found in CocoaPods repository after $max_attempts attempts"

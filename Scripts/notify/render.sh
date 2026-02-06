@@ -1825,7 +1825,7 @@ for module_name, data in modules.items():
     local i=0
     while [[ $i -lt ${#verification_items[@]} ]]; do
         verification_text="$verification_text"$'\n'"${verification_items[$i]}"
-        ((i++))
+        ((i++)) || true
     done
     
     python3 -c "

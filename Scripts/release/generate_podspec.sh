@@ -178,7 +178,7 @@ calculate_checksum_from_github() {
             sleep 30
         fi
 
-        ((download_attempt++))
+        ((download_attempt++)) || true
     done
 
     # Cleanup on failure

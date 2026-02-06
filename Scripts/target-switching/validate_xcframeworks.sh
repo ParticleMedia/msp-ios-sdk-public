@@ -59,7 +59,7 @@ validate_xcframework() {
     local slice_count=0
     for slice in "$ROOT_DIR/$xcf_path"/ios-*; do
         if [[ -d "$slice" ]]; then
-            ((slice_count++))
+            ((slice_count++)) || true
         fi
     done
     
@@ -154,7 +154,7 @@ validate_dependency_versions() {
         else
             log_error "❌ SwiftProtobuf version mismatch: Pods=$pods_swiftprotobuf, SPM=$spm_swiftprotobuf"
             log_error "   Update Package.swift to use exact: \"$pods_swiftprotobuf\""
-            ((errors++))
+            ((errors++)) || true
         fi
     else
         log_warn "⚠ SwiftProtobuf: Pods=$pods_swiftprotobuf, SPM=$spm_swiftprotobuf (unable to verify)"
@@ -171,7 +171,7 @@ validate_dependency_versions() {
         else
             log_error "❌ Lottie version mismatch: Pods=$pods_lottie, SPM=$spm_lottie"
             log_error "   Update Package.swift to use exact: \"$pods_lottie\""
-            ((errors++))
+            ((errors++)) || true
         fi
     else
         log_warn "⚠ Lottie: Pods=$pods_lottie, SPM=$spm_lottie (unable to verify)"
@@ -194,7 +194,7 @@ main() {
     log_section "Core XCFrameworks (Build/ReleaseArtifacts/XCFrameworks/)"
     for xcf in "${CORE_XCFRAMEWORKS[@]}"; do
         if ! validate_xcframework "$xcf"; then
-            ((total_errors++))
+            ((total_errors++)) || true
         fi
     done
     
@@ -202,7 +202,7 @@ main() {
     log_section "ThirdParty XCFrameworks"
     for xcf in "${THIRDPARTY_XCFRAMEWORKS[@]}"; do
         if ! validate_xcframework "$xcf"; then
-            ((total_errors++))
+            ((total_errors++)) || true
         fi
     done
     
@@ -210,7 +210,7 @@ main() {
     log_section "Embedded XCFrameworks"
     for xcf in "${EMBEDDED_XCFRAMEWORKS[@]}"; do
         if ! validate_xcframework "$xcf"; then
-            ((total_errors++))
+            ((total_errors++)) || true
         fi
     done
     

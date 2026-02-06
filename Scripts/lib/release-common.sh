@@ -524,7 +524,7 @@ prompt_for_release_notes() {
     
     while IFS= read -r line; do
         if [[ -z "$line" ]]; then
-            ((empty_lines++))
+            ((empty_lines++)) || true
             if [[ $empty_lines -ge 2 ]]; then
                 break
             fi

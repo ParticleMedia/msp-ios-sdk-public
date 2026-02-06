@@ -1764,7 +1764,7 @@ do_resume() {
                         log_info "     ✅ Local zip already matches GitHub Release"
                         log_info "        Checksum: $github_checksum"
                         rm -f "$temp_zip"
-                        ((skip_count++))
+                        ((skip_count++)) || true
                         continue
                     else
                         log_warning "     ⚠️  Local zip checksum differs from GitHub Release"
@@ -1780,7 +1780,7 @@ do_resume() {
                 mv "$temp_zip" "$local_zip"
                 log_success "     ✅ Downloaded and replaced: $asset_name"
                 log_info "        Checksum: $github_checksum"
-                ((download_count++))
+                ((download_count++)) || true
             else
                 log_error "     ❌ Failed to download from GitHub Release after $max_retries attempts"
                 log_error "        URL: $download_url"
@@ -1789,7 +1789,7 @@ do_resume() {
                 log_error "          2. GitHub CDN temporarily unavailable"
                 log_error "          3. File does not exist in GitHub Release"
                 rm -f "$temp_zip"
-                ((error_count++))
+                ((error_count++)) || true
             fi
             
             log_info ""
