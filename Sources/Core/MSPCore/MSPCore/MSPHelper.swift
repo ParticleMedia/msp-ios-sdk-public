@@ -56,8 +56,8 @@ public class MSP {
             self, selector: #selector(self.sizeCategoryDidChange), name: UIContentSizeCategory.didChangeNotification,
             object: nil)
 
-        guard UIApplication.shared.applicationState == .inactive else { return }
         DispatchQueue.main.async {
+            guard UIApplication.shared.applicationState == .inactive else { return }
             self.appWillEnterForeground()
         }
     }
