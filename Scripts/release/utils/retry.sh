@@ -150,7 +150,7 @@ retry() {
             fi
         fi
         
-        ((attempt++))
+        ((attempt++)) || true
     done
     
     log_error "$command_name failed after $max_attempts attempts"
@@ -184,7 +184,7 @@ retry_with_backoff() {
             fi
         fi
         
-        ((attempt++))
+        ((attempt++)) || true
     done
     
     log_error "$command_name failed after $max_attempts attempts"

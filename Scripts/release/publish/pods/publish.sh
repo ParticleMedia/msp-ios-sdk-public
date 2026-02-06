@@ -784,8 +784,7 @@ ensure_release_tag_exists_and_pushed() {
                 sleep 2
             fi
 
-            ((attempt++))
-        done
+            ((attempt++)) || true        done
 
         if [[ "$tag_created" == "false" ]]; then
             log_error "Failed to create local tag after $max_attempts attempts: $tag"
@@ -816,8 +815,7 @@ ensure_release_tag_exists_and_pushed() {
                 sleep 2
             fi
 
-            ((push_attempt++))
-        done
+            ((push_attempt++)) || true        done
 
         if [[ "$push_success" == "false" ]]; then
             log_error "Failed to push tag to origin after $max_push_attempts attempts: $tag"
@@ -953,8 +951,7 @@ ensure_release_tag_exists_and_pushed() {
                 sleep 2
             fi
 
-            ((public_attempt++))
-        done
+            ((public_attempt++)) || true        done
 
         if [[ "$public_push_success" == "false" ]]; then
             log_warning "Failed to push tag to public after $max_public_attempts attempts: $tag"
@@ -1088,8 +1085,7 @@ wait_for_remote_tag() {
             fi
         fi
 
-        ((attempt++))
-    done
+        ((attempt++)) || true    done
 
     return 1
 }
@@ -1366,15 +1362,12 @@ upload_all_zips_to_github() {
     for zip_path in "${zip_paths[@]}"; do
         if [[ ! -f "$zip_path" ]]; then
             log_warning "Zip not found, skipping: $zip_path"
-            ((skipped++))
-            continue
+            ((skipped++)) || true            continue
         fi
 
         if upload_zip_to_github "$tag" "$zip_path"; then
-            ((uploaded++))
-        else
-            ((failed++))
-        fi
+            ((uploaded++)) || true        else
+            ((failed++)) || true        fi
     done
 
     log_info "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
@@ -1417,8 +1410,7 @@ wait_for_cdn_propagation() {
     local elapsed=0
     while (( elapsed < wait_time )); do
         sleep 1
-        ((elapsed++))
-
+        ((elapsed++)) || true
         # Print progress (flush output buffer to stderr)
         if (( elapsed % 10 == 0 )); then
             printf "." >&2  # Use stderr (unbuffered)
@@ -1465,8 +1457,7 @@ verify_cdn_availability() {
             sleep 10
         fi
 
-        ((attempt++))
-    done
+        ((attempt++)) || true    done
 
     log_error "✗ $filename not available on CDN after $max_attempts attempts"
     log_error "URL: $url"
@@ -1495,10 +1486,8 @@ verify_all_cdn_availability() {
 
     for filename in "${filenames[@]}"; do
         if verify_cdn_availability "$tag" "$filename"; then
-            ((verified++))
-        else
-            ((failed++))
-        fi
+            ((verified++)) || true        else
+            ((failed++)) || true        fi
     done
 
     log_info "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
@@ -2253,8 +2242,7 @@ probe_zip_url() {
                 return 1
             fi
         fi
-        ((attempt++))
-    done
+        ((attempt++)) || true    done
     
     return 1
 }
@@ -3103,8 +3091,7 @@ ensure_zip_file_exists_for_pod() {
             fi
         fi
 
-        ((attempt++))
-    done
+        ((attempt++)) || true    done
 
     # ========================================================================
     # Fallback: Use local zip file if CDN not accessible
@@ -4067,8 +4054,7 @@ wait_for_pod_availability() {
                 return 1
             fi
         fi
-        ((attempt++))
-    done
+        ((attempt++)) || true    done
     
     return 1
 }
@@ -4635,8 +4621,7 @@ ensure_adapter_version_committed() {
         local swift_files_staged=0
         while IFS= read -r -d '' swift_file; do
             if git add "$swift_file"; then
-                ((swift_files_staged++))
-                log_debug "[$adapter] Staged: $swift_file"
+                ((swift_files_staged++)) || true                log_debug "[$adapter] Staged: $swift_file"
             else
                 log_warn "[$adapter] Failed to stage: $swift_file"
             fi
@@ -5535,8 +5520,7 @@ release_adapters() {
                         has_failure=true
                         failed_adapter="$adapter"
                         failed_adapters+=("$adapter")
-                        ((failure_count++))
-                        pids[$i]="DONE"
+                        ((failure_count++)) || true                        pids[$i]="DONE"
                         break
                     fi
                 fi
@@ -5550,8 +5534,7 @@ release_adapters() {
                 # Check result file (primary indicator of success)
                 if [[ -f "$result_file" ]] && grep -q "SUCCESS" "$result_file"; then
                     log_success "✅ $adapter released successfully"
-                    ((success_count++))
-                    pids[$i]="DONE"
+                    ((success_count++)) || true                    pids[$i]="DONE"
                 else
                     # Detailed failure analysis
                     log_error "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
@@ -5592,8 +5575,7 @@ release_adapters() {
                     has_failure=true
                     failed_adapter="$adapter"
                     failed_adapters+=("$adapter")
-                    ((failure_count++))
-                    pids[$i]="DONE"
+                    ((failure_count++)) || true                    pids[$i]="DONE"
                     break
                 fi
             fi
@@ -6095,11 +6077,11 @@ main() {
         fi
     fi
     
-    # Check trunk session status (stronger check)
+    # Check trunk session status (positive indicator check)
     log_step "Checking CocoaPods trunk session"
     local trunk_check
-    trunk_check=$(pod trunk me 2>&1 || echo "ERROR")
-    if [[ "$trunk_check" =~ "No session" ]] || [[ "$trunk_check" =~ "authentication" ]] || [[ "$trunk_check" =~ "ERROR" ]]; then
+    trunk_check=$(pod trunk me 2>&1 || true)
+    if ! echo "$trunk_check" | grep -q "Name:"; then
         log_error "CocoaPods trunk session is not valid"
         log_error "Please run: pod trunk register <email> <name>"
         # Phase B: Production mode requires valid session, dry-run allows soft-fail
@@ -6312,10 +6294,8 @@ main() {
 
     # Step 0: Release MSPiOSCore (foundation - required by all modules)
     if release_msp_ioscore; then
-        ((successful_pods++))
-    else
-        ((failed_pods++))
-        failed_pod_names+=("MSPiOSCore")
+        ((successful_pods++)) || true    else
+        ((failed_pods++)) || true        failed_pod_names+=("MSPiOSCore")
         if [[ "$DRY_RUN" != "true" ]]; then
             # Use new notification system: DM only (no channel spam)
             if command -v notify::module_error &>/dev/null; then
@@ -6493,13 +6473,11 @@ main() {
 
         # Mark as failed
         if [[ "$shared_libs_done" == "false" ]]; then
-            ((failed_pods++))
-            failed_pod_names+=("MSPSharedLibraries")
+            ((failed_pods++)) || true            failed_pod_names+=("MSPSharedLibraries")
             msp_state_mark_step_failed "pods_publish" "MSPSharedLibraries release timeout" "124"
         fi
         if [[ "$google_ads_types_done" == "false" ]]; then
-            ((failed_pods++))
-            failed_pod_names+=("MSPGoogleAdsTypes")
+            ((failed_pods++)) || true            failed_pod_names+=("MSPGoogleAdsTypes")
             msp_state_mark_step_failed "pods_publish" "MSPGoogleAdsTypes release timeout" "124"
         fi
     fi
@@ -6512,8 +6490,7 @@ main() {
     # Check result file (primary indicator of success)
     if [[ -f "$shared_libs_result" ]] && grep -q "SUCCESS" "$shared_libs_result"; then
         log_success "✅ MSPSharedLibraries released successfully"
-        ((successful_pods++))
-        shared_libs_success=true
+        ((successful_pods++)) || true        shared_libs_success=true
 
         # Append background log to main log
         if [[ -f "$shared_libs_log" ]]; then
@@ -6527,8 +6504,7 @@ main() {
         fi
     else
         log_error "❌ MSPSharedLibraries release failed"
-        ((failed_pods++))
-        failed_pod_names+=("MSPSharedLibraries")
+        ((failed_pods++)) || true        failed_pod_names+=("MSPSharedLibraries")
 
         # Append error log
         if [[ -f "$shared_libs_log" ]]; then
@@ -6563,8 +6539,7 @@ main() {
     # Check result file (primary indicator of success)
     if [[ -f "$google_ads_types_result" ]] && grep -q "SUCCESS" "$google_ads_types_result"; then
         log_success "✅ MSPGoogleAdsTypes released successfully"
-        ((successful_pods++))
-        google_ads_types_success=true
+        ((successful_pods++)) || true        google_ads_types_success=true
 
         # Append background log to main log
         if [[ -f "$google_ads_types_log" ]]; then
@@ -6578,8 +6553,7 @@ main() {
         fi
     else
         log_error "❌ MSPGoogleAdsTypes release failed"
-        ((failed_pods++))
-        failed_pod_names+=("MSPGoogleAdsTypes")
+        ((failed_pods++)) || true        failed_pod_names+=("MSPGoogleAdsTypes")
 
         # Append error log
         if [[ -f "$google_ads_types_log" ]]; then
@@ -6665,10 +6639,8 @@ main() {
     
     # Step 3: Release MSPCore
     if release_msp_core; then
-        ((successful_pods++))
-    else
-        ((failed_pods++))
-        failed_pod_names+=("MSPCore")
+        ((successful_pods++)) || true    else
+        ((failed_pods++)) || true        failed_pod_names+=("MSPCore")
         if [[ "$DRY_RUN" != "true" ]]; then
             # Use new notification system: DM only (no channel spam)
             if command -v notify::module_error &>/dev/null; then

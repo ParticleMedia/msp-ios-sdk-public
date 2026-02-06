@@ -191,7 +191,7 @@ run_pod_install_with_retry() {
             return 1
         fi
         
-        ((attempt++))
+        ((attempt++)) || true
     done
     
     log_error "pod install failed after $max_attempts attempts"

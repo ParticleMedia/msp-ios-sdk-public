@@ -444,7 +444,7 @@ generate_report() {
             local issue_num=1
             while IFS= read -r issue; do
                 echo "  $issue_num. $issue"
-                ((issue_num++))
+                ((issue_num++)) || true
             done < "$TEMP_DIR/issues.txt"
             echo ""
             
@@ -522,7 +522,7 @@ main() {
             local issue_num=1
             while IFS= read -r issue; do
                 print_error "  $issue_num. $issue"
-                ((issue_num++))
+                ((issue_num++)) || true
             done < "$TEMP_DIR/issues.txt"
             echo ""
             print_info "🔧 TO FIX: Run ./Scripts/lib/asset_sync.sh"

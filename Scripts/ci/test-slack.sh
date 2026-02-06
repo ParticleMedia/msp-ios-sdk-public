@@ -120,17 +120,17 @@ test_pod_release_notifications() {
     
     # Test success notification
     if notify_pod_release "MSPCore" "$TEST_VERSION" "success" "Test success message"; then
-        ((success_count++))
+        ((success_count++)) || true
     fi
     
     # Test failure notification
     if notify_pod_release "NovaCore" "$TEST_VERSION" "failure" "Test failure message"; then
-        ((success_count++))
+        ((success_count++)) || true
     fi
     
     # Test warning notification
     if notify_pod_release "FacebookAdapter" "$TEST_VERSION" "warning" "Test warning message"; then
-        ((success_count++))
+        ((success_count++)) || true
     fi
     
     if [[ $success_count -eq $total_pods ]]; then

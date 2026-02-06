@@ -343,7 +343,7 @@ check_gitignore() {
     local tracked_xcframeworks=0
     while IFS= read -r -d '' file; do
         if [[ "$file" == *".xcframework"* ]]; then
-            ((tracked_xcframeworks++))
+            ((tracked_xcframeworks++)) || true
             if [[ $tracked_xcframeworks -eq 1 ]]; then
                 print_warn "Tracked xcframeworks found (showing first few):"
             fi
@@ -371,7 +371,7 @@ check_stale_caches() {
     local swiftpm_count=0
     while IFS= read -r -d '' dir; do
         if [[ "$dir" == "$ROOT_DIR"* ]]; then
-            ((swiftpm_count++))
+            ((swiftpm_count++)) || true
             if [[ $swiftpm_count -eq 1 ]]; then
                 print_warn "Stale .swiftpm/ directories found:"
             fi
@@ -391,7 +391,7 @@ check_stale_caches() {
     local sourcepackages_count=0
     while IFS= read -r -d '' dir; do
         if [[ "$dir" == "$ROOT_DIR"* ]]; then
-            ((sourcepackages_count++))
+            ((sourcepackages_count++)) || true
             if [[ $sourcepackages_count -eq 1 ]]; then
                 print_warn "Stale SourcePackages/ directories found:"
             fi
