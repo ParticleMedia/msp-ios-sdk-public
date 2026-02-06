@@ -18,6 +18,9 @@ class NovaInterstitialAdSKOverlaySubviewHandler: NSObject, NovaInterstitialAdSub
     private let thirdPartyTrackingURL: URL
     private var overlay: SKOverlay?
     private var skOverlayIsShowing: Bool = false
+    private var skOverlayNeedToBeShown: Bool = false
+    private var adClickedWillOpenAppStoreObserver: NSObjectProtocol?
+    private var adClickedDidReturnFromAppStoreObserver: NSObjectProtocol?
 
     private lazy var topGradientView: GradientShadowView = {
         let config = GradientShadowViewConfig(
@@ -109,6 +112,34 @@ class NovaInterstitialAdSKOverlaySubviewHandler: NSObject, NovaInterstitialAdSub
         self.viewController = viewController
         self.appStoreId = appStoreId
         self.thirdPartyTrackingURL = thirdPartyTrackingURL
+        super.init()
+
+        adClickedWillOpenAppStoreObserver = NotificationCenter.default
+            .addObserver(
+                forName: .adClickedWillOpenAppStore,
+                object: nil,
+                queue: .main
+            ) { [weak self] _ in
+                self?.adClickedWillOpenAppStore()
+            }
+
+        adClickedDidReturnFromAppStoreObserver = NotificationCenter.default
+            .addObserver(
+                forName: .adClickedDidReturnFromAppStore,
+                object: nil,
+                queue: .main
+            ) { [weak self] _ in
+                self?.adClickedDidReturnFromAppStore()
+            }
+    }
+
+    deinit {
+        if let adClickedWillOpenAppStoreObserver {
+            NotificationCenter.default.removeObserver(adClickedWillOpenAppStoreObserver)
+        }
+        if let adClickedDidReturnFromAppStoreObserver {
+            NotificationCenter.default.removeObserver(adClickedDidReturnFromAppStoreObserver)
+        }
     }
 
     func setupSubviews(in containerView: UIView, showReportButton: Bool) {
@@ -182,10 +213,12 @@ class NovaInterstitialAdSKOverlaySubviewHandler: NSObject, NovaInterstitialAdSub
 
     func didDisappear() {
         interstitialAd.mediaContent.videoController?.pause()
+        skOverlayNeedToBeShown = false
         dismissSkOverlay()
     }
 
     func willDisappear() {
+        skOverlayNeedToBeShown = false
         dismissSkOverlay()
     }
 
@@ -227,6 +260,27 @@ class NovaInterstitialAdSKOverlaySubviewHandler: NSObject, NovaInterstitialAdSub
             skOverlayIsShowing = false
             overlay = nil
         }
+    }
+
+    private func adClickedWillOpenAppStore() {
+        guard skOverlayIsShowing else {
+            return
+        }
+        skOverlayNeedToBeShown = true
+        dismissSkOverlay()
+    }
+
+    private func adClickedDidReturnFromAppStore() {
+        guard skOverlayNeedToBeShown else {
+            return
+        }
+        skOverlayNeedToBeShown = false
+
+        // Only restore overlay when the interstitial is still on top.
+        guard UIApplication.novaTopViewController is NovaInterstitialAdViewController else {
+            return
+        }
+        showSkOverlay()
     }
 
     @objc private func didTapVolumeButton() {
