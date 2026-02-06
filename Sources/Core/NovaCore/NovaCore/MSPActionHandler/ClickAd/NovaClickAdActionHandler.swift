@@ -10,6 +10,11 @@ import Foundation
 import StoreKit
 import UIKit
 
+extension Notification.Name {
+    static let adClickedWillOpenAppStore = Notification.Name("adClickedWillOpenAppStore")
+    static let adClickedDidReturnFromAppStore = Notification.Name("adClickedDidReturnFromAppStore")
+}
+
 enum NovaAdLandingPageType: String {
     case safari
     case unified
@@ -195,6 +200,7 @@ private extension NovaClickAdActionHandler {
                 Task.detached(priority: .userInitiated) {
                     try await self.appInstallConversionTracking(to: appInstallModel.fallbackWebModel.url)
                 }
+                NotificationCenter.default.post(name: .adClickedWillOpenAppStore, object: nil)
                 vc.present(storeViewController, animated: true) {
                     self.storeVCIsShowing = true
                 }
@@ -412,6 +418,7 @@ extension NovaClickAdActionHandler: SKStoreProductViewControllerDelegate {
         Task { @MainActor in
             viewController.dismiss(animated: true) { [weak self] in
                 self?.storeVCIsShowing = false
+                NotificationCenter.default.post(name: .adClickedDidReturnFromAppStore, object: nil)
             }
         }
     }

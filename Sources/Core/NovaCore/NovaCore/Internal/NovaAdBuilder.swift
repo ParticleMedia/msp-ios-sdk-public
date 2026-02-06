@@ -25,7 +25,6 @@ enum AbConfigKeys {
     static let discountTagStyle = "ios_discount_tag_style"
     static let multipleItemsStyle = "ios_carousel_style"
     static let immersivePlayableUIStyle = "immersive_playable_ui"
-    static let enableOCPMShadow = "enable_ocpm_shadow"
     static let popupCTAStyle = "popup_cta_style"
 }
 
@@ -67,7 +66,7 @@ public enum NovaAdBuilder {
                 NovaAdUrlTransformer.replaceMacro(in: $0)
             } ?? []
 
-        let supportOCPM = parseSupportOCPM(from: abConfig)
+        let ctaStyle = adItem.creative.ctaStyle.flatMap(NovaAdCtaStyle.init(rawValue:))
         let popupCTAStyleVariant = parsePopupCTAStyleVariant(from: abConfig)
 
         return try NovaNativeAdItem(
@@ -82,7 +81,7 @@ public enum NovaAdBuilder {
             thirdPartyClickTrackingUrls: thirdPartyClickTrackingUrls,
             priceInDollar: adItem.price,
             encryptedAdToken: adItem.encryptedAdToken,
-            supportOCPM: supportOCPM,
+            ctaStyle: ctaStyle,
             creativeType: creativeType,
             headline: adItem.creative.headline,
             body: adItem.creative.body,
@@ -146,7 +145,7 @@ public enum NovaAdBuilder {
 
         let startTimeInMs = Double(adItem.startTimeMs ?? "")
         let expirationTimeInMs = Double(adItem.expirationMs ?? "")
-        let supportOCPM = parseSupportOCPM(from: abConfig)
+        let ctaStyle = adItem.creative.ctaStyle.flatMap(NovaAdCtaStyle.init(rawValue:))
         let popupCTAStyleVariant = parsePopupCTAStyleVariant(from: abConfig)
 
         do {
@@ -162,7 +161,7 @@ public enum NovaAdBuilder {
                 thirdPartyClickTrackingUrls: thirdPartyClickTrackingUrls,
                 priceInDollar: adItem.price,
                 encryptedAdToken: adItem.encryptedAdToken,
-                supportOCPM: supportOCPM,
+                ctaStyle: ctaStyle,
                 creativeType: creativeType,
                 startTimeInMs: startTimeInMs,
                 expirationTimeInMs: expirationTimeInMs,
@@ -235,7 +234,7 @@ public enum NovaAdBuilder {
 
             let startTimeInMs = Double(adItem.startTimeMs ?? "")
             let expirationTimeInMs = Double(adItem.expirationMs ?? "")
-            let supportOCPM = parseSupportOCPM(from: abConfig)
+            let ctaStyle = adItem.creative.ctaStyle.flatMap(NovaAdCtaStyle.init(rawValue:))
             let popupCTAStyleVariant = parsePopupCTAStyleVariant(from: abConfig)
 
             do {
@@ -251,7 +250,7 @@ public enum NovaAdBuilder {
                     thirdPartyClickTrackingUrls: thirdPartyClickTrackingUrls,
                     priceInDollar: adItem.price,
                     encryptedAdToken: adItem.encryptedAdToken,
-                    supportOCPM: supportOCPM,
+                    ctaStyle: ctaStyle,
                     creativeType: creativeType,
                     startTimeInMs: startTimeInMs,
                     expirationTimeInMs: expirationTimeInMs,
@@ -507,13 +506,6 @@ private extension NovaAdBuilder {
             actionBarFormat: actionBarFormat,
             tapToTryFormat: tapToTryFormat
         )
-    }
-
-    static func parseSupportOCPM(from abConfig: [String: String]?) -> Bool {
-        guard let value = abConfig?[AbConfigKeys.enableOCPMShadow] else {
-            return false
-        }
-        return value.lowercased() == "true"
     }
 
     static func parsePopupCTAStyleVariant(from abConfig: [String: String]?) -> NovaPopupCTAStyleVariant {

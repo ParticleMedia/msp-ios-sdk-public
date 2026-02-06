@@ -30,7 +30,7 @@ public class NovaNativeBaseAd: NovaBaseAd, NovaNativeMediaProviding {
         thirdPartyClickTrackingUrls: [String],
         priceInDollar: Double?,
         encryptedAdToken: String,
-        supportOCPM: Bool,
+        ctaStyle: NovaAdCtaStyle?,
         creativeType: NovaCreativeType,
         headline: String?,
         body: String?,
@@ -82,7 +82,7 @@ public class NovaNativeBaseAd: NovaBaseAd, NovaNativeMediaProviding {
             thirdPartyClickTrackingUrls: thirdPartyClickTrackingUrls,
             priceInDollar: priceInDollar,
             encryptedAdToken: encryptedAdToken,
-            supportOCPM: supportOCPM
+            ctaStyle: ctaStyle
         )
         setupAppInfo()
         self.mediaContent = try NovaAdMediaContent(adMedia: getAdMedia(), discountTagInfo: self.adDiscountTagInfo)
