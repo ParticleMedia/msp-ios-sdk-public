@@ -133,10 +133,10 @@ for pod_name in "${ADAPTER_MODULES[@]}"; do
 
     # build_module.sh expects directory name, not pod name
     if "$BUILD_MODULE_SCRIPT" "$module_dir"; then
-        ((SUCCESS_COUNT++))
+        ((SUCCESS_COUNT++)) || true
         log_success "$pod_name: BUILD SUCCEEDED"
     else
-        ((FAIL_COUNT++))
+        ((FAIL_COUNT++)) || true
         FAILED_MODULES+=("$pod_name")
         log_error "$pod_name: BUILD FAILED"
     fi
