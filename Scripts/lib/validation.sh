@@ -540,7 +540,7 @@ validate_release_branch() {
 
     log_info "[BRANCH_VALIDATION] Validating branch: $current_branch"
 
-    # Allowed branches: release/*, feature/*, main, master
+    # Allowed branches: release/*, feature/*, main, master, develop
     # Explanation:
     # - release/*: Already on a release branch (no branch creation needed)
     # - feature/*: Feature branches will create release/* branch in Step 1
@@ -548,7 +548,8 @@ validate_release_branch() {
     if [[ "$current_branch" =~ ^release/ ]] || \
        [[ "$current_branch" =~ ^feature/ ]] || \
        [[ "$current_branch" == "main" ]] || \
-       [[ "$current_branch" == "master" ]]; then
+       [[ "$current_branch" == "master" ]] || \
+       [[ "$current_branch" == "develop" ]]; then
         log_info "[BRANCH_VALIDATION] ✓ Branch '$current_branch' is allowed for release"
         if [[ "$current_branch" =~ ^feature/ ]]; then
             log_info "[BRANCH_VALIDATION] ℹ️  Feature branch detected: release/* branch will be created in Step 1"
@@ -556,7 +557,7 @@ validate_release_branch() {
         return 0
     else
         log_error "[BRANCH_VALIDATION] Production mode cannot run on branch '$current_branch'"
-        log_error "[BRANCH_VALIDATION] Allowed branches: release/*, feature/*, main, master"
+        log_error "[BRANCH_VALIDATION] Allowed branches: release/*, feature/*, main, master, develop"
         return 1
     fi
 }
