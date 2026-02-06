@@ -85,6 +85,10 @@ branch_policy:
       allow_real_publish: true
       allow_test_publish: true
       allow_preflight: true
+    "develop":
+      allow_real_publish: true
+      allow_test_publish: true
+      allow_preflight: true
     "master":
       allow_real_publish: true
       allow_test_publish: true
