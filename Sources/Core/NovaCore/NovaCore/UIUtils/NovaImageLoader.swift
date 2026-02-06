@@ -1,8 +1,9 @@
-import UIKit
 @_implementationOnly import Kingfisher
+import UIKit
 
 /// Public utility for loading images from URLs.
 /// This wraps Kingfisher internally so adapters don't need to import Kingfisher directly.
+@MainActor
 public enum NovaImageLoader {
     /// Load an image from a URL into an image view.
     /// - Parameters:

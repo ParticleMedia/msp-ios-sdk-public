@@ -23,6 +23,7 @@ public struct AdItem: Codable {
 
 struct Creative: Codable {
     let ctrUrl: String
+    let ctaStyle: String?
     let appStoreId: String?
     let headline: String?
     let body: String?

@@ -53,7 +53,7 @@ extension NovaInterstitialAdItem {
             case .horizontal:
                 return .horizontal(showTopRightCancelButton: false)
             case .vertical:
-                if case let .appInstall(appInstallModel) = adCtrType, supportOCPM {
+                if case let .appInstall(appInstallModel) = adCtrType, ctaStyle == .downloadBanner {
                     return .skOverlay(
                         appStoreId: appInstallModel.storeId,
                         thirdPartyTrackingURL: appInstallModel.fallbackWebModel.url

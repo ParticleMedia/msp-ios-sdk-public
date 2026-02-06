@@ -43,8 +43,8 @@ public class NovaBaseAd: NSObject, Codable {
     /// Encoded ids for server tracking.
     let encryptedAdToken: String
 
-    /// Support OCPM Billing
-    let supportOCPM: Bool
+    /// CTA style variant from ad response.
+    let ctaStyle: NovaAdCtaStyle?
 
     // Indicate if a nova ad has logged impression
     var hasImpressionLogged: Bool = false
@@ -66,7 +66,7 @@ public class NovaBaseAd: NSObject, Codable {
         thirdPartyClickTrackingUrls: [String],
         priceInDollar: Double?,
         encryptedAdToken: String,
-        supportOCPM: Bool
+        ctaStyle: NovaAdCtaStyle?
     ) {
         self.adUnitId = adUnitId
         self.requestId = requestId
@@ -79,7 +79,7 @@ public class NovaBaseAd: NSObject, Codable {
         self.thirdPartyClickTrackingUrls = thirdPartyClickTrackingUrls
         self.priceInDollar = priceInDollar
         self.encryptedAdToken = encryptedAdToken
-        self.supportOCPM = supportOCPM
+        self.ctaStyle = ctaStyle
     }
 
     public required init(from decoder: Decoder) throws {
@@ -96,7 +96,7 @@ public class NovaBaseAd: NSObject, Codable {
         thirdPartyClickTrackingUrls = try container.decode([String].self, forKey: .thirdPartyClickTrackingUrls)
         encryptedAdToken = try container.decode(String.self, forKey: .encryptedAdToken)
         priceInDollar = try container.decodeIfPresent(Double.self, forKey: .priceInDollar)
-        supportOCPM = try container.decodeIfPresent(Bool.self, forKey: .supportOCPM) ?? false
+        ctaStyle = try container.decodeIfPresent(NovaAdCtaStyle.self, forKey: .ctaStyle)
     }
 
     // MARK: - Codable
@@ -113,7 +113,7 @@ public class NovaBaseAd: NSObject, Codable {
         case thirdPartyClickTrackingUrls
         case encryptedAdToken
         case priceInDollar
-        case supportOCPM
+        case ctaStyle
     }
 
     public func encode(to encoder: Encoder) throws {
@@ -129,7 +129,7 @@ public class NovaBaseAd: NSObject, Codable {
         try container.encode(thirdPartyClickTrackingUrls, forKey: .thirdPartyClickTrackingUrls)
         try container.encode(encryptedAdToken, forKey: .encryptedAdToken)
         try container.encodeIfPresent(priceInDollar, forKey: .priceInDollar)
-        try container.encode(supportOCPM, forKey: .supportOCPM)
+        try container.encodeIfPresent(ctaStyle, forKey: .ctaStyle)
     }
 
     func priceInCents() -> Float {
