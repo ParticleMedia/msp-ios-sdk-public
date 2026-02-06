@@ -37,12 +37,12 @@ test_log() {
 
 test_success() {
     log_success "$1"
-    ((TESTS_PASSED++))
+    ((TESTS_PASSED++)) || true
 }
 
 test_failure() {
     log_error "$1"
-    ((TESTS_FAILED++))
+    ((TESTS_FAILED++)) || true
 }
 
 test_warning() {
@@ -52,7 +52,7 @@ test_warning() {
 # Test 1: Check if webhook URL is set
 test_webhook_url() {
     test_log "Test 1: Checking if SLACK_WEBHOOK_URL is set"
-    ((TOTAL_TESTS++))
+    ((TOTAL_TESTS++)) || true
     
     if [[ -n "$SLACK_WEBHOOK_URL" ]]; then
         test_success "SLACK_WEBHOOK_URL is set"
@@ -67,7 +67,7 @@ test_webhook_url() {
 # Test 2: Test basic notification
 test_basic_notification() {
     test_log "Test 2: Testing basic Slack notification"
-    ((TOTAL_TESTS++))
+    ((TOTAL_TESTS++)) || true
     
     if test_slack_notification; then
         test_success "Basic notification sent successfully"
@@ -81,7 +81,7 @@ test_basic_notification() {
 # Test 3: Test environment detection
 test_environment_detection() {
     test_log "Test 3: Testing environment detection"
-    ((TOTAL_TESTS++))
+    ((TOTAL_TESTS++)) || true
     
     local env=$(get_environment)
     local env_info=$(get_environment_info)
@@ -98,7 +98,7 @@ test_environment_detection() {
 # Test 4: Test release start notification
 test_release_start() {
     test_log "Test 4: Testing release start notification"
-    ((TOTAL_TESTS++))
+    ((TOTAL_TESTS++)) || true
     
     if notify_release_start "Test Release" "$TEST_VERSION" "$TEST_PODS"; then
         test_success "Release start notification sent"
@@ -112,7 +112,7 @@ test_release_start() {
 # Test 5: Test pod release notifications
 test_pod_release_notifications() {
     test_log "Test 5: Testing pod release notifications"
-    ((TOTAL_TESTS++))
+    ((TOTAL_TESTS++)) || true
     
     local success_count=0
     local total_pods=3
@@ -145,7 +145,7 @@ test_pod_release_notifications() {
 # Test 6: Test release success notification
 test_release_success() {
     test_log "Test 6: Testing release success notification"
-    ((TOTAL_TESTS++))
+    ((TOTAL_TESTS++)) || true
     
     if notify_release_success "Test Release" "$TEST_VERSION" "$TEST_PODS" "5 minutes"; then
         test_success "Release success notification sent"
@@ -159,7 +159,7 @@ test_release_success() {
 # Test 7: Test release failure notification
 test_release_failure() {
     test_log "Test 7: Testing release failure notification"
-    ((TOTAL_TESTS++))
+    ((TOTAL_TESTS++)) || true
     
     if notify_release_failure "Test Release" "$TEST_VERSION" "Test error message" "Test step"; then
         test_success "Release failure notification sent"
@@ -173,7 +173,7 @@ test_release_failure() {
 # Test 8: Test release warning notification
 test_release_warning() {
     test_log "Test 8: Testing release warning notification"
-    ((TOTAL_TESTS++))
+    ((TOTAL_TESTS++)) || true
     
     if notify_release_warning "Test Release" "$TEST_VERSION" "Test warning message" "Test step"; then
         test_success "Release warning notification sent"
@@ -187,7 +187,7 @@ test_release_warning() {
 # Test 9: Test release summary notification
 test_release_summary() {
     test_log "Test 9: Testing release summary notification"
-    ((TOTAL_TESTS++))
+    ((TOTAL_TESTS++)) || true
     
     if notify_release_summary "Test Release" "$TEST_VERSION" "3" "2" "1" "10 minutes"; then
         test_success "Release summary notification sent"
@@ -201,7 +201,7 @@ test_release_summary() {
 # Test 10: Test webhook connectivity
 test_webhook_connectivity() {
     test_log "Test 10: Testing webhook connectivity"
-    ((TOTAL_TESTS++))
+    ((TOTAL_TESTS++)) || true
     
     if [[ -z "$SLACK_WEBHOOK_URL" ]]; then
         test_failure "SLACK_WEBHOOK_URL not set, skipping connectivity test"

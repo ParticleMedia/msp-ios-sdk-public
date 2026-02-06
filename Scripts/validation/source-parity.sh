@@ -182,7 +182,7 @@ compare_file_lists() {
         echo -e "${RED}✗ Files in CocoaPods but missing in SPM:${NC}"
         echo "$only_in_pods" | while read -r file; do
             echo "  - $file"
-            ((ERRORS++))
+            ((ERRORS++)) || true
         done
     fi
     
@@ -190,7 +190,7 @@ compare_file_lists() {
         echo -e "${RED}✗ Files in SPM but missing in CocoaPods (ORPHAN/GHOST FILES):${NC}"
         echo "$only_in_spm" | while read -r file; do
             echo "  - $file"
-            ((ERRORS++))
+            ((ERRORS++)) || true
         done
     fi
     
@@ -226,7 +226,7 @@ validate_module() {
         else
             xcode_sources=$(find "$spm_path" -name "*.swift" -type f | sort)
         fi
-        ((WARNINGS++))
+        ((WARNINGS++)) || true
     fi
     
     local xcode_count=$(echo "$xcode_sources" | grep -c . || echo "0")
@@ -238,7 +238,7 @@ validate_module() {
     if [[ $? -ne 0 ]]; then
         echo -e "${RED}ERROR: Failed to extract SPM sources${NC}" >&2
         echo "$spm_sources" >&2
-        ((ERRORS++))
+        ((ERRORS++)) || true
         return 1
     fi
     

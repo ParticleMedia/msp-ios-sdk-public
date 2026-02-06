@@ -84,7 +84,7 @@ for mapping in "${THIRDPARTY_MAPPINGS[@]}"; do
     POD_PATH="$PODS_DIR/$pod_name"
     if [[ ! -d "$POD_PATH" ]]; then
         log_warn "  Pod not found in Pods directory: $pod_name (may not be installed)"
-        ((SKIPPED_COUNT++))
+        ((SKIPPED_COUNT++)) || true
         continue
     fi
 
@@ -104,7 +104,7 @@ for mapping in "${THIRDPARTY_MAPPINGS[@]}"; do
 
     if [[ -z "$XCFRAMEWORK_SOURCE" ]]; then
         log_error "  XCFramework not found in Pod: $xcframework_name.xcframework"
-        ((FAILED_COUNT++))
+        ((FAILED_COUNT++)) || true
         continue
     fi
 
@@ -117,7 +117,7 @@ for mapping in "${THIRDPARTY_MAPPINGS[@]}"; do
     # Check if destination already exists
     if [[ -d "$DEST_PATH" ]] && [[ "$FORCE_SYNC" != "true" ]]; then
         log_warn "  Already exists (use --force to overwrite): $DEST_PATH"
-        ((SKIPPED_COUNT++))
+        ((SKIPPED_COUNT++)) || true
         continue
     fi
 
@@ -130,10 +130,10 @@ for mapping in "${THIRDPARTY_MAPPINGS[@]}"; do
     if [[ -d "$DEST_PATH" ]]; then
         SIZE=$(du -sh "$DEST_PATH" 2>/dev/null | cut -f1)
         log_success "  Synced: $xcframework_name.xcframework ($SIZE)"
-        ((SYNCED_COUNT++))
+        ((SYNCED_COUNT++)) || true
     else
         log_error "  Failed to copy: $xcframework_name.xcframework"
-        ((FAILED_COUNT++))
+        ((FAILED_COUNT++)) || true
     fi
 done
 
