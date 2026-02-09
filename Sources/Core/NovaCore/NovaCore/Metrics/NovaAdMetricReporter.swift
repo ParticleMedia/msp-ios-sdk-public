@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import QuartzCore
 import UIKit
 
 class NovaAdMetricReporter: NSObject {
@@ -18,6 +19,11 @@ class NovaAdMetricReporter: NSObject {
     ) {
         // Third party impression tracking
         AdsThirdPartyMetricReporter.logImpression(thirdPartyImpressionTrackingUrls: thirdPartyImpressionTrackingUrls)
+
+        NovaAdImpressionTimeTracker.trackImpressionTime(
+            encryptedAdToken: encryptedAdToken,
+            impressionTime: CACurrentMediaTime()
+        )
 
         var params: [String: String] = [:]
         if let startTimeInMs, let expirationTimeInMs {
@@ -36,7 +42,7 @@ class NovaAdMetricReporter: NSObject {
         encryptedAdToken: String,
         adUnitId: String,
         durationInMs: Int? = nil,
-        clickArea: String? = nil
+        clickArea: ClickableAdArea? = nil
     ) {
         // Third party click tracking
         AdsThirdPartyMetricReporter.logClick(thirdPartyClickTrackingUrls: thirdPartyClickTrackingUrls)
@@ -47,18 +53,20 @@ class NovaAdMetricReporter: NSObject {
             params[NovaAdMetricKeys.DURATION_MS] = "\(durationInMs)"
         }
         if let clickArea {
-            params[NovaAdMetricKeys.CLICK_AREA_NAME] = clickArea
+            params[NovaAdMetricKeys.CLICK_AREA_NAME] = clickArea.stringValue
         }
         params[NovaAdMetricKeys.AD_UNIT_ID] = adUnitId
         params[NovaAdMetricKeys.USER_ID] = UserDefaults.standard.string(forKey: "msp_user_id") ?? ""
         logNovaAdEvent(.click, encryptedAdToken: encryptedAdToken, params: params)
     }
 
-    static func logAdSkip(reason: NovaAdSkipReason, encryptedAdToken: String, durationInMs: String) {
-        let params: [String: String] = [
-            NovaAdMetricKeys.ACTION: reason.rawValue,
-            NovaAdMetricKeys.DURATION_MS: durationInMs,
+    static func logAdSkip(reason: NovaAdSkipReason, encryptedAdToken: String, durationInMs: Int?) {
+        var params: [String: String] = [
+            NovaAdMetricKeys.ACTION: reason.rawValue
         ]
+        if let durationInMs {
+            params[NovaAdMetricKeys.DURATION_MS] = "\(durationInMs)"
+        }
 
         logNovaAdEvent(.skipAd, encryptedAdToken: encryptedAdToken, params: params)
     }
@@ -90,7 +98,6 @@ class NovaAdMetricReporter: NSObject {
         if let clickArea {
             params[NovaAdMetricKeys.CLICK_AREA_NAME] = clickArea.stringValue
         }
-
         logNovaAdEvent(.playableTapToTry, encryptedAdToken: encryptedAdToken, params: params)
     }
 
@@ -98,11 +105,29 @@ class NovaAdMetricReporter: NSObject {
         logNovaAdEvent(.unhideAd, encryptedAdToken: encryptedAdToken)
     }
 
+    static func logDownloadBannerJumpOut(
+        encryptedAdToken: String,
+        durationInMs: Int?
+    ) {
+        var params: [String: String] = [:]
+        if let durationInMs {
+            params[NovaAdMetricKeys.DOWNLOAD_BANNER_DURATION_MS] = "\(durationInMs)"
+        }
+        params.merge(NovaAdImpressionTimeTracker.durationParams(encryptedAdToken: encryptedAdToken)) {
+            current, _ in current
+        }
+        logNovaAdEvent(.downloadBannerJumpOut, encryptedAdToken: encryptedAdToken, params: params)
+    }
+
     static func logVideoEvent(_ event: NovaAdEvent, encryptedAdToken: String, params: [String: String] = [:]) {
         logNovaAdEvent(event, encryptedAdToken: encryptedAdToken, params: params)
     }
 
     static func logWebEvent(_ event: NovaAdEvent, encryptedAdToken: String, params: [String: String] = [:]) {
+        logNovaAdEvent(event, encryptedAdToken: encryptedAdToken, params: params)
+    }
+
+    static func logImageEvent(_ event: NovaAdEvent, encryptedAdToken: String, params: [String: String] = [:]) {
         logNovaAdEvent(event, encryptedAdToken: encryptedAdToken, params: params)
     }
 }
@@ -146,24 +171,40 @@ private extension NovaAdMetricReporter {
 }
 
 extension NovaAdMetricReporter {
-    static func convertNovaClickAreaNameToMetric(clickArea: String?) -> String? {
+    static func convertNovaClickAreaNameToMetric(clickArea: ClickableAdArea?) -> String? {
         guard let clickArea else {
             return nil
         }
 
         switch clickArea {
-        case "icon", "advertiser", "badge":
-            return clickArea
-        case "headline":
+        case .icon,
+            .advertiser,
+            .badge,
+            .sponsor,
+            .shadow,
+            .iconEndcard,
+            .advertiserEndcard,
+            .bodyEndcard,
+            .ctaEndcard,
+            .tapToTry,
+            .autoJump,
+            .blankEndcard,
+            .like,
+            .comment,
+            .share,
+            .playable,
+            .ctaPopover,
+            .html,
+            .custom:
+            return clickArea.stringValue
+        case .headline:
             return "headlineLabel"
-        case "body":
+        case .body:
             return "bodyLabel"
-        case "media":
-            return "mediaView"
-        case "cta":
+        case .cta:
             return "ctaButton"
-        default:
-            return nil
+        case .media:
+            return "mediaView"
         }
     }
 }
@@ -180,6 +221,7 @@ struct NovaAdMetricKeys {
     static let IS_PLAY_AUTOMATICALLY = "is_play_automatically"
     static let IS_MUTE = "is_mute"
     static let IS_LOOP = "is_loop"
+    static let IS_VIDEO_CLICKABLE = "is_video_clickable"
     static let AD_UNIT_ID = "ad_unit_id"
     static let USER_ID = "user_id"
     static let CLICK_AREA_NAME = "click_area_name"
@@ -187,6 +229,11 @@ struct NovaAdMetricKeys {
     static let REASON = "reason"
     static let ERROR = "error"
     static let OFFSET = "offset"
+    static let DOWNLOAD_BANNER_DURATION_MS = "download_banner_duration_ms"
+    static let SHOW_COUNT = "show_count"
+    static let SESSION_DWELL_TIME_MS = "session_dwell_time_ms"
+    static let TOTAL_DWELL_TIME_MS = "total_dwell_time_ms"
+    static let TOTAL_WATCH_TIME_MS = "total_watch_time_ms"
 
     static let EVENT_TYPE = "event_type"
     static let ENCRYPTED_AD_TOKEN = "encrypted_ad_token"

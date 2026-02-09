@@ -85,7 +85,7 @@ extension NovaActionHelper where T == NovaActionState.Init {
                 encryptedAdToken: context.tracingInfo.encryptedAdToken,
                 adUnitId: context.tracingInfo.adUnitId,
                 durationInMs: durationInMs,
-                clickArea: area?.stringValue
+                clickArea: area
             )
         return NovaActionHelper<NovaActionState.NovaEventSent>(from: self)
     }
@@ -94,13 +94,14 @@ extension NovaActionHelper where T == NovaActionState.Init {
         with duration: CFTimeInterval? = nil, in area: String? = nil
     ) -> NovaActionHelper<NovaActionState.NovaEventSent> {
         let durationInMs = duration.flatMap { ($0 * 1000).safeToInt() }
+        let customArea = area.map { ClickableAdArea(from: $0) }
         NovaAdMetricReporter
             .logAdClick(
                 thirdPartyClickTrackingUrls: context.tracingInfo.thirdPartyClickTrackingUrls,
                 encryptedAdToken: context.tracingInfo.encryptedAdToken,
                 adUnitId: context.tracingInfo.adUnitId,
                 durationInMs: durationInMs,
-                clickArea: area
+                clickArea: customArea
             )
         return NovaActionHelper<NovaActionState.NovaEventSent>(from: self)
     }
@@ -112,7 +113,7 @@ extension NovaActionHelper where T == NovaActionState.Init {
             .logAdSkip(
                 reason: reason,
                 encryptedAdToken: context.tracingInfo.encryptedAdToken,
-                durationInMs: duration.msString()
+                durationInMs: (duration * 1000).safeToInt()
             )
         return NovaActionHelper<NovaActionState.NovaEventSent>(from: self)
     }

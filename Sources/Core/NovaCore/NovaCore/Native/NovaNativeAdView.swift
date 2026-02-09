@@ -115,10 +115,21 @@ extension NovaNativeAdView {
     }
 
     func unregisterAd() {
-        nativeAd = nil
+        guard let nativeAd else {
+            stopTimerIfNeeded()
+            iABMetricReporter?.stopSession()
+            return
+        }
 
         stopTimerIfNeeded()
         iABMetricReporter?.stopSession()
+
+        let token = nativeAd.encryptedAdToken
+        NovaAdImpressionTimeTracker.clear(encryptedAdToken: token)
+        NovaAdImageMetricReporter.clear(encryptedAdToken: token)
+        NovaAdVideoMetricReporter.clear(encryptedAdToken: token)
+
+        self.nativeAd = nil
     }
 }
 

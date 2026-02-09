@@ -34,4 +34,10 @@ enum NovaAdEvent: String {
 
     // playable
     case playableTapToTry = "playable_tap_to_try"
+
+    // SKOverlay events
+    case downloadBannerJumpOut = "download_banner_jump_out"
+
+    // image events
+    case imageDwell = "image_dwell"
 }
