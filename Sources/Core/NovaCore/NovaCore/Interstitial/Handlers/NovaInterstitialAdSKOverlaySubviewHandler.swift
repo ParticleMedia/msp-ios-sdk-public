@@ -18,6 +18,7 @@ class NovaInterstitialAdSKOverlaySubviewHandler: NSObject, NovaInterstitialAdSub
     private let thirdPartyTrackingURL: URL
     private var overlay: SKOverlay?
     private var skOverlayIsShowing: Bool = false
+    private var skOverlayShowTimestamp: Double?
     private var skOverlayNeedToBeShown: Bool = false
     private var adClickedWillOpenAppStoreObserver: NSObjectProtocol?
     private var adClickedDidReturnFromAppStoreObserver: NSObjectProtocol?
@@ -113,7 +114,12 @@ class NovaInterstitialAdSKOverlaySubviewHandler: NSObject, NovaInterstitialAdSub
         self.appStoreId = appStoreId
         self.thirdPartyTrackingURL = thirdPartyTrackingURL
         super.init()
-
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(appDidEnterBackground),
+            name: UIApplication.didEnterBackgroundNotification,
+            object: nil
+        )
         adClickedWillOpenAppStoreObserver = NotificationCenter.default
             .addObserver(
                 forName: .adClickedWillOpenAppStore,
@@ -134,6 +140,8 @@ class NovaInterstitialAdSKOverlaySubviewHandler: NSObject, NovaInterstitialAdSub
     }
 
     deinit {
+        NotificationCenter.default.removeObserver(self)
+
         if let adClickedWillOpenAppStoreObserver {
             NotificationCenter.default.removeObserver(adClickedWillOpenAppStoreObserver)
         }
@@ -259,7 +267,23 @@ class NovaInterstitialAdSKOverlaySubviewHandler: NSObject, NovaInterstitialAdSub
             SKOverlay.dismiss(in: scene)
             skOverlayIsShowing = false
             overlay = nil
+            skOverlayShowTimestamp = nil
         }
+    }
+
+    @objc private func appDidEnterBackground() {
+        guard skOverlayIsShowing else { return }
+        var durationInMs: Int?
+        if let skOverlayShowTimestamp {
+            let duration = CACurrentMediaTime() - skOverlayShowTimestamp
+            if duration.isFinite, !duration.isNaN, let durationValue = (duration * 1000).safeToInt() {
+                durationInMs = durationValue
+            }
+        }
+        NovaAdMetricReporter.logDownloadBannerJumpOut(
+            encryptedAdToken: interstitialAd.encryptedAdToken,
+            durationInMs: durationInMs
+        )
     }
 
     private func adClickedWillOpenAppStore() {
@@ -311,6 +335,9 @@ extension NovaInterstitialAdSKOverlaySubviewHandler: SKOverlayDelegate {
 
     func storeOverlayDidFinishPresentation(_ overlay: SKOverlay, transitionContext: SKOverlay.TransitionContext) {
         DebugLogger.network.info("SKOverlay did show successfully")
+        if skOverlayShowTimestamp == nil {
+            skOverlayShowTimestamp = CACurrentMediaTime()
+        }
         NovaTrackingUrlHelper.fire(url: self.thirdPartyTrackingURL)
         if !(UIApplication.novaTopViewController is NovaInterstitialAdViewController) {
             // If the top view controller is not InterstitialNovaAdViewController, we need to dismiss the SKOverlay

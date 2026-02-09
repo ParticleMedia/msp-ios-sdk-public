@@ -157,8 +157,6 @@ public final class NovaAdVideoView: UIView {
 
     private var configTime: Double? = nil
     private var startTime: Double? = nil
-    private var lastResumeTime: Double? = nil
-    private var lastPauseTime: Double? = nil
 
     private var actionHelper: NovaActionHelper<NovaActionState.Init>?
 
@@ -296,7 +294,6 @@ extension NovaAdVideoView {
         videoPlayer.stop(endKind: .none)
         videoPlayer.player.playbackLoops = false
         videoPlayer.player.playbackFreezesAtEnd = true
-        lastPauseTime = CACurrentMediaTime()
     }
 
     func toggleAllSubviewVisibilityAndRecover(after time: TimeInterval) {
@@ -444,33 +441,31 @@ private extension NovaAdVideoView {
         videoPlayer.delegate = self
         videoPlayer.play()
         iabReporter?.logVideoResume()
-        let resumeTime = CACurrentMediaTime()
-        if let encryptedAdToken = actionContext?.adActionTracingInfo.encryptedAdToken,
-            let lastPauseTime, resumeKind == .resume
-        {
+        if let actionContext {
+            let encryptedAdToken = actionContext.adActionTracingInfo.encryptedAdToken
+            let reason: NovaAdVideoMetricReporter.NovaAdEventPauseReason =
+                switch resumeKind {
+                case .resume:
+                    .manual
+                case .startAutoPlayInFeed:
+                    .auto
+                }
             NovaAdVideoMetricReporter.logVideoResume(
                 encryptedAdToken: encryptedAdToken,
-                duration: resumeTime - lastPauseTime,
-                videoInfo: mediaModel?.videoInfo,
-                startTime: startTime,
-                configTime: configTime,
-                novaVideoPlayer: videoPlayer
+                reason: reason
             )
         }
-        lastResumeTime = resumeTime
     }
 
     private func setupStartTime(delayTime: TimeInterval? = nil) {
         if startTime == nil {
             startTime = CACurrentMediaTime() + (delayTime ?? 0.0)
-            lastResumeTime = startTime
         }
     }
 
     func pauseVideo(endKind: NovaVideoEndKind) {
         videoPlayer.pause(endKind: endKind)
         iabReporter?.logVideoPause()
-        lastPauseTime = CACurrentMediaTime()
     }
 
     func setupPlayer(videoInfo: NovaNativeAdVideoInfo) {
@@ -480,7 +475,8 @@ private extension NovaAdVideoView {
         }
 
         self.configTime = CACurrentMediaTime()
-        if let encryptedAdToken = self.actionContext?.adActionTracingInfo.encryptedAdToken {
+        if let actionContext {
+            let encryptedAdToken = actionContext.adActionTracingInfo.encryptedAdToken
             NovaAdVideoMetricReporter.makeRecord(encryptedAdToken: encryptedAdToken)
         }
         let playInfo = NovaPlayInfo(
@@ -732,8 +728,8 @@ extension NovaAdVideoView: NovaVideoPlayerDelegate {
                     ),
                 isMute: newIsMute
             )
-            if let encryptedAdToken = actionContext?.adActionTracingInfo.encryptedAdToken, let lastResumeTime {
-                let duration = CACurrentMediaTime() - lastResumeTime
+            if let actionContext {
+                let encryptedAdToken = actionContext.adActionTracingInfo.encryptedAdToken
                 let reason: NovaAdVideoMetricReporter.NovaAdEventPauseReason? = {
                     switch videoPlayer.getVideoEndKind() {
                     case .pause:
@@ -747,12 +743,10 @@ extension NovaAdVideoView: NovaVideoPlayerDelegate {
                 NovaAdVideoMetricReporter
                     .logVideoPause(
                         encryptedAdToken: encryptedAdToken,
-                        duration: duration,
                         reason: reason,
-                        videoInfo: videoInfo,
-                        startTime: startTime,
-                        configTime: configTime,
-                        novaVideoPlayer: videoPlayer
+                        loopCount: loopCount,
+                        positionTime: videoPlayer.currentTimeInterval(),
+                        videoLength: videoPlayer.maximumTimeDuration()
                     )
             }
         default:
@@ -805,16 +799,28 @@ extension NovaAdVideoView: NovaVideoPlayerDelegate {
             )
 
         guard let videoInfo = mediaModel?.videoInfo else { return }
-        guard let encryptedAdToken = self.actionContext?.adActionTracingInfo.encryptedAdToken else { return }
+        guard let actionContext else { return }
+
+        let encryptedAdToken = actionContext.adActionTracingInfo.encryptedAdToken
+        NovaAdVideoMetricReporter.trackVideoMediaTime(
+            encryptedAdToken: encryptedAdToken,
+            positionTime: videoCurrentTimeInterval,
+            videoLength: videoLength,
+            isPlaying: videoPlayer.isVideoPlaying()
+        )
 
         // Log Start
 
         NovaAdVideoMetricReporter.logVideoStart(
             encryptedAdToken: encryptedAdToken,
-            videoInfo: videoInfo,
-            startTime: startTime,
-            configTime: configTime,
-            novaVideoPlayer: videoPlayer
+            isAuto: videoInfo.isAuto,
+            isMute: videoInfo.isMute,
+            isLoop: videoInfo.isLoop,
+            isVideoClickable: videoInfo.isVideoClickable,
+            videoLength: videoLength,
+            latency: startTime.flatMap { start in
+                configTime.map { start - $0 }
+            }
         )
 
         iabReporter?.logVideoStart(duration: videoCurrentTimeInterval, volume: videoPlayer.isPlayerMuted() ? 0.0 : 1.0)
@@ -823,11 +829,7 @@ extension NovaAdVideoView: NovaVideoPlayerDelegate {
 
         NovaAdVideoMetricReporter.logVideoEnd(
             encryptedAdToken: encryptedAdToken,
-            percentage: videoCurrentTimeInterval / videoLength,
-            videoInfo: videoInfo,
-            startTime: startTime,
-            configTime: configTime,
-            novaVideoPlayer: videoPlayer
+            percentage: videoCurrentTimeInterval / videoLength
         )
 
         // Log Progress
@@ -842,11 +844,11 @@ extension NovaAdVideoView: NovaVideoPlayerDelegate {
     func playerTimePassed60sAfterPlay(_ player: NovaPlayer) {}
 
     func player(_ player: NovaPlayer, didFailWithError error: Error?) {
-        if let encryptedAdToken = actionContext?.adActionTracingInfo.encryptedAdToken, let configTime {
+        if let actionContext {
+            let encryptedAdToken = actionContext.adActionTracingInfo.encryptedAdToken
             NovaAdVideoMetricReporter.logVideoError(
                 encryptedAdToken: encryptedAdToken,
-                error: error?.localizedDescription ?? "",
-                duration: CACurrentMediaTime() - configTime)
+                error: error?.localizedDescription ?? "")
         }
     }
 
@@ -862,16 +864,11 @@ extension NovaAdVideoView: NovaVideoPlayerDelegate {
             // TODO: lsy, should we stop the video player here?
         }
 
-        if let videoInfo = mediaModel?.videoInfo,
-            let encryptedAdToken = self.actionContext?.adActionTracingInfo.encryptedAdToken
-        {
+        if let actionContext {
+            let encryptedAdToken = actionContext.adActionTracingInfo.encryptedAdToken
             NovaAdVideoMetricReporter.logVideoEnd(
                 encryptedAdToken: encryptedAdToken,
-                percentage: 1.0,
-                videoInfo: videoInfo,
-                startTime: startTime,
-                configTime: configTime,
-                novaVideoPlayer: videoPlayer
+                percentage: 1.0
             )
         }
 
@@ -894,7 +891,8 @@ extension NovaAdVideoView: NovaAdVideoSubviewBehaviorDelegate {
     }
 
     func reportMute(currentMuteState: Bool) {
-        if let encryptedAdToken = actionContext?.adActionTracingInfo.encryptedAdToken {
+        if let actionContext {
+            let encryptedAdToken = actionContext.adActionTracingInfo.encryptedAdToken
             NovaAdVideoMetricReporter.logVideoMute(
                 encryptedAdToken: encryptedAdToken,
                 isMute: currentMuteState)

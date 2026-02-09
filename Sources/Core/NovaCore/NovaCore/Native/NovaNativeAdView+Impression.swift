@@ -1,5 +1,8 @@
 import Foundation
+import ObjectiveC
 import UIKit
+
+private var isImageShowingAssociatedKey: UInt8 = 0
 
 extension NovaNativeAdView {
     // MARK: - Constants
@@ -27,6 +30,7 @@ extension NovaNativeAdView {
             DispatchQueue.main.async {
                 self?.detectImpression()
                 self?.detectVideoOnScreen()
+                self?.detectImageOnScreen()
             }
         }
         timer.tolerance = 0.1
@@ -43,12 +47,32 @@ extension NovaNativeAdView {
         if nativeAd?.mediaContent.videoController?.videoView.superview == self.mediaView {
             nativeAd?.mediaContent.videoController?.stop()
         }
+        if isImageShowing, let nativeAd {
+            NovaAdImageMetricReporter.logImageDwell(
+                encryptedAdToken: nativeAd.encryptedAdToken
+            )
+            isImageShowing = false
+        }
     }
 }
 
 // MARK: - Private methods
 
 private extension NovaNativeAdView {
+    var isImageShowing: Bool {
+        get {
+            (objc_getAssociatedObject(self, &isImageShowingAssociatedKey) as? NSNumber)?.boolValue ?? false
+        }
+        set {
+            objc_setAssociatedObject(
+                self,
+                &isImageShowingAssociatedKey,
+                NSNumber(value: newValue),
+                .OBJC_ASSOCIATION_RETAIN_NONATOMIC
+            )
+        }
+    }
+
     func detectImpression() {
         guard nativeAd?.hasImpressionLogged != true else { return }
         guard let window = self.window else { return }
@@ -79,6 +103,35 @@ private extension NovaNativeAdView {
             nativeAd?.mediaContent.videoController?.play()
         } else {
             nativeAd?.mediaContent.videoController?.pause()
+        }
+    }
+
+    func detectImageOnScreen() {
+        guard let nativeAd else { return }
+        guard let imageView = nativeAd.mediaContent.imageController?.imageView else { return }
+
+        if imageView.superview != self.mediaView {
+            stopTimerIfNeeded()
+            return
+        }
+
+        let isVisible = mediaView.novaIsPartiallyVisibleOnScreen
+        let isOnTop = mediaView.onTop
+        let appState = UIApplication.shared.applicationState
+        let shouldShow = isVisible && isOnTop && appState == .active
+
+        if shouldShow {
+            if !isImageShowing {
+                let token = nativeAd.encryptedAdToken
+                NovaAdImageMetricReporter.makeRecord(encryptedAdToken: token)
+                NovaAdImageMetricReporter.trackImageShowTime(encryptedAdToken: token)
+                isImageShowing = true
+            }
+        } else if isImageShowing {
+            NovaAdImageMetricReporter.logImageDwell(
+                encryptedAdToken: nativeAd.encryptedAdToken
+            )
+            isImageShowing = false
         }
     }
 

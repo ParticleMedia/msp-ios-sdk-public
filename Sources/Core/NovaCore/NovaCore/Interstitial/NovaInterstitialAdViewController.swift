@@ -79,6 +79,13 @@ class NovaInterstitialAdViewController: UIViewController {
         super.init(nibName: nil, bundle: nil)
     }
 
+    deinit {
+        let token = interstitialAd.encryptedAdToken
+        NovaAdImpressionTimeTracker.clear(encryptedAdToken: token)
+        NovaAdImageMetricReporter.clear(encryptedAdToken: token)
+        NovaAdVideoMetricReporter.clear(encryptedAdToken: token)
+    }
+
     @available(*, unavailable)
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
