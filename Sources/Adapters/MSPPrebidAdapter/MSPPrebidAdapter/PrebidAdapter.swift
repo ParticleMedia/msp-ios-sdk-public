@@ -17,8 +17,8 @@ import UIKit
         self.adMetricReporter = adMetricReporter
     }
 
-@MainActor
- public func prepareViewForInteraction(nativeAd: MSPiOSCore.NativeAd, nativeAdView: Any) {
+    @MainActor
+    public func prepareViewForInteraction(nativeAd: MSPiOSCore.NativeAd, nativeAdView: Any) {
     }
 
     // MARK: - BannerEventHandler
@@ -323,7 +323,7 @@ extension PrebidAdapter: InterstitialAdUnitDelegate {
     ) {
         DispatchQueue.main.async {
             MSPLogger.shared.info(message: "[Adapter: Prebid] Fail to load Prebid Interstitial ad")
-            self.adListener?.onError(msg: error?.localizedDescription ?? "")
+            self.auctionBidListener?.onError(error: error?.localizedDescription ?? "")
             self.adMetricReporter?.logAdResult(
                 placementId: self.adRequest?.placementId ?? "", ad: nil, fill: false, isFromCache: false)
             if let adRequest = self.adRequest {

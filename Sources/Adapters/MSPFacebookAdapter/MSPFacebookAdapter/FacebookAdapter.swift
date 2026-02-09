@@ -15,8 +15,8 @@ import UIKit
         self.adMetricReporter = adMetricReporter
     }
 
-@MainActor
- public func prepareViewForInteraction(nativeAd: MSPiOSCore.NativeAd, nativeAdView: Any) {
+    @MainActor
+    public func prepareViewForInteraction(nativeAd: MSPiOSCore.NativeAd, nativeAdView: Any) {
         guard let nativeAdView = nativeAdView as? NativeAdView,
             let mediaView = nativeAd.mediaView as? FBMediaView,
             let fbNativeAdItem = self.nativeAdItem
@@ -144,7 +144,7 @@ import UIKit
             guard bidResponse is BidResponse,
                 let mBidResponse = bidResponse as? BidResponse
             else {
-                self.adListener?.onError(msg: "no valid response")
+                self.auctionBidListener?.onError(error: "no valid response")
                 return
             }
 
@@ -156,14 +156,14 @@ import UIKit
                 let prebidExtDict = self.SafeAs(bidExtDict["prebid"], [String: Any].self),
                 let adType = self.SafeAs(prebidExtDict["type"], String.self)
             else {
-                self.adListener?.onError(msg: "no valid response")
+                self.auctionBidListener?.onError(error: "no valid response")
                 return
             }
 
             switch adType {
             case "native":
                 guard let placementId = self.getFBPlacementId(from: adString) else {
-                    self.adListener?.onError(msg: "Missing FB payload or placementId")
+                    self.auctionBidListener?.onError(error: "Missing FB payload or placementId")
                     return
                 }
                 self.nativeAdItem = FBNativeAd(placementID: placementId)
@@ -174,7 +174,7 @@ import UIKit
             case "banner":
                 if adRequest.adFormat == .interstitial {
                     guard let placementId = self.getFBPlacementId(from: adString) else {
-                        self.adListener?.onError(msg: "Missing FB payload or placementId")
+                        self.auctionBidListener?.onError(error: "Missing FB payload or placementId")
                         return
                     }
                     let facebookInterstitialAdItem = FBInterstitialAd(placementID: placementId)
@@ -184,7 +184,7 @@ import UIKit
                     facebookInterstitialAdItem.load(withBidPayload: adString)
                 }
             default:
-                self.adListener?.onError(msg: "unknown adType")
+                self.auctionBidListener?.onError(error: "unknown adType")
             }
         }
     }
@@ -219,18 +219,19 @@ import UIKit
 
     private func getFBPlacementId(from payload: String) -> String? {
         guard let data = payload.data(using: .utf8) else {
-            self.adListener?.onError(msg: "Failed to get data from FB payload")
+            self.auctionBidListener?.onError(error: "Failed to get data from FB payload")
             return nil
         }
 
         do {
             guard let dict = SafeAs(try JSONSerialization.jsonObject(with: data), [String: Any].self) else {
-                self.adListener?.onError(msg: "Failed to convert FB payload to json dict")
+                self.auctionBidListener?.onError(error: "Failed to convert FB payload to json dict")
                 return nil
             }
             return SafeAs(dict["resolved_placement_id"], String.self)
         } catch {
-            self.adListener?.onError(msg: "Failed to json serialize FB payload, error = \(error.localizedDescription)")
+            self.auctionBidListener?.onError(
+                error: "Failed to json serialize FB payload, error = \(error.localizedDescription)")
             return nil
         }
     }
@@ -326,7 +327,7 @@ extension FacebookAdapter: FBNativeAdDelegate {
     public func nativeAd(_ nativeAd: FBNativeAd, didFailWithError error: Error) {
         DispatchQueue.main.async {
             MSPLogger.shared.info(message: "[Adapter: Facebook] Fail to load Facebook Native ad")
-            self.adListener?.onError(msg: error.localizedDescription)
+            self.auctionBidListener?.onError(error: error.localizedDescription)
             if let adRequest = self.adRequest {
                 self.adMetricReporter?.logAdResponse(
                     ad: nil, adRequest: adRequest, errorCode: .ERROR_CODE_INTERNAL_ERROR,
@@ -391,7 +392,7 @@ extension FacebookAdapter: FBInterstitialAdDelegate {
     public func interstitialAd(_ interstitialAd: FBInterstitialAd, didFailWithError error: Error) {
         DispatchQueue.main.async {
             MSPLogger.shared.info(message: "[Adapter: Facebook] Fail to load Facebook Interstitial ad")
-            self.adListener?.onError(msg: error.localizedDescription)
+            self.auctionBidListener?.onError(error: error.localizedDescription)
             self.adMetricReporter?.logAdResult(
                 placementId: self.adRequest?.placementId ?? "", ad: nil, fill: false, isFromCache: false)
             if let adRequest = self.adRequest {
