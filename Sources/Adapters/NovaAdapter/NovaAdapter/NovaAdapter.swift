@@ -71,7 +71,7 @@ public class NovaAdapter: AdNetworkAdapter {
                 let prebidExtDict = self.SafeAs(bidExtDict["prebid"], [String: Any].self),
                 let adType = self.SafeAs(prebidExtDict["type"], String.self)
             else {
-                self.adListener?.onError(msg: "no valid response")
+                self.auctionBidListener?.onError(error: "no valid response")
                 self.adMetricReporter?.logAdResult(
                     placementId: adRequest.placementId, ad: nil, fill: false, isFromCache: false)
                 return
@@ -104,7 +104,7 @@ public class NovaAdapter: AdNetworkAdapter {
             let novaNativeAd = nativeAd as? NovaNativeAd,
             let novaNativeAdItem = novaNativeAd.nativeAdItem
         else {
-            self.adListener?.onError(msg: "fail to render native view")
+            self.auctionBidListener?.onError(error: "fail to render native view")
             return
         }
 
@@ -191,7 +191,6 @@ public class NovaAdapter: AdNetworkAdapter {
                 make.directionalEdges.equalToSuperview()
                 make.size.equalToSuperview()
             }
-
         }
 
         nativeAdView.addSubview(novaNativeAdView)
@@ -213,7 +212,7 @@ public class NovaAdapter: AdNetworkAdapter {
                 !ads.isEmpty,
                 let adItem = ads.first
             else {
-                self.adListener?.onError(msg: "no valid response")
+                self.auctionBidListener?.onError(error: "no valid response")
                 self.adMetricReporter?.logAdResult(
                     placementId: adRequest?.placementId ?? "", ad: nil, fill: false, isFromCache: false)
                 return
@@ -312,7 +311,7 @@ public class NovaAdapter: AdNetworkAdapter {
             default:
                 MSPLogger.shared.info(message: "[Adapter: Nova] Fail to load Nova ad")
                 let errorMessage = "unknown adType"
-                self.adListener?.onError(msg: errorMessage)
+                self.auctionBidListener?.onError(error: errorMessage)
                 self.adMetricReporter?.logAdResult(
                     placementId: adRequest?.placementId ?? "", ad: nil, fill: false, isFromCache: false)
                 if let adRequest = self.adRequest {
@@ -325,7 +324,7 @@ public class NovaAdapter: AdNetworkAdapter {
             MSPLogger.shared
                 .info(message: "[Adapter: Nova] Fail to load Nova ad with error: \(error.localizedDescription)")
             let errorMessage = "error decode nova ad string"
-            self.adListener?.onError(msg: errorMessage)
+            self.auctionBidListener?.onError(error: errorMessage)
             self.adMetricReporter?.logAdResult(
                 placementId: adRequest?.placementId ?? "", ad: nil, fill: false, isFromCache: false)
             if let adRequest = self.adRequest {
