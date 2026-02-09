@@ -29,11 +29,18 @@ class NovaUnifiedWebViewHost: NSObject {
         "newsbreak",
         "com.amazon.mobile.shopping.web",
         "itms-apps",
+        "itms-services",
+    ]
+    private let appStoreHosts: Set<String> = [
+        "apps.apple.com",
+        "itunes.apple.com",
     ]
 
-    init(config: NovaUnifiedWebViewConfig,
-                jsBridgeHandlerMaster: NovaJSBridgeHandlerMaster?,
-                navigationDelegate: NovaUnifiedWebViewNavigationDelegate?) {
+    init(
+        config: NovaUnifiedWebViewConfig,
+        jsBridgeHandlerMaster: NovaJSBridgeHandlerMaster?,
+        navigationDelegate: NovaUnifiedWebViewNavigationDelegate?
+    ) {
         self.config = config
         self.jsBridgeHandlerMaster = jsBridgeHandlerMaster
         self.navigationDelegate = navigationDelegate
@@ -62,7 +69,8 @@ class NovaUnifiedWebViewHost: NSObject {
                         NBJS.callNative = callNativeObj.postMessage.bind(callNativeObj);
                     }
                 """
-            let wkUserScript = WKUserScript(source: injectedJS, injectionTime: .atDocumentStart, forMainFrameOnly: false)
+            let wkUserScript = WKUserScript(
+                source: injectedJS, injectionTime: .atDocumentStart, forMainFrameOnly: false)
             userContentController.addUserScript(wkUserScript)
         }
 
@@ -84,7 +92,7 @@ class NovaUnifiedWebViewHost: NSObject {
     }
 
     func webView() -> WKWebView {
-        return wkWebView!
+        wkWebView!
     }
 
     func load(_ url: URL, referer: String? = nil) {
@@ -98,15 +106,15 @@ class NovaUnifiedWebViewHost: NSObject {
 
         self.wkWebView?.load(request)
     }
-    
+
     var scrollDepth: Double? {
         guard let scrollView = wkWebView?.scrollView else {
             return nil
         }
-        
+
         return Double(scrollView.contentOffset.y) / Double(scrollView.contentSize.height)
     }
-    
+
     var pageIndex: Int? {
         wkWebView?.backForwardList.backList.count
     }
@@ -115,31 +123,78 @@ class NovaUnifiedWebViewHost: NSObject {
 
     private func canonicalizeAppStoreURL(_ url: URL) -> URL {
         guard var comps = URLComponents(url: url, resolvingAgainstBaseURL: false),
-              let scheme = comps.scheme?.lowercased() else { return url }
+            let scheme = comps.scheme?.lowercased()
+        else { return url }
         // scheme could be `itms-appss`
         if scheme.hasPrefix("itms-apps") { comps.scheme = "itms-apps" }
         if scheme.hasPrefix("itms-services") { comps.scheme = "itms-services" }
         return comps.url ?? url
     }
 
-    private func webView(_ webView: WKWebView, policyFor navigationAction: WKNavigationAction) -> WKNavigationActionPolicy {
+    private func isAppStoreWebURL(_ url: URL) -> Bool {
+        guard let host = url.host?.lowercased() else {
+            return false
+        }
+        return appStoreHosts.contains(host)
+    }
+
+    // App Store product pages usually contain `/app/` and a numeric `id`.
+    private func isLikelyAppStoreProductPath(_ path: String) -> Bool {
+        let lowercasedPath = path.lowercased()
+        guard lowercasedPath.contains("/app/") else {
+            return false
+        }
+        return lowercasedPath.range(of: "/id\\d+", options: .regularExpression) != nil
+    }
+
+    // Converts App Store web links (http/https) into itms-apps deep links.
+    private func itmsAppStoreURL(fromWebURL url: URL) -> URL? {
+        guard var comps = URLComponents(url: url, resolvingAgainstBaseURL: false),
+            let scheme = comps.scheme?.lowercased(),
+            ["http", "https"].contains(scheme),
+            isAppStoreWebURL(url),
+            isLikelyAppStoreProductPath(comps.path)
+        else {
+            return nil
+        }
+        comps.scheme = "itms-apps"
+        return comps.url
+    }
+
+    @discardableResult
+    private func openOutsideIfPossible(_ url: URL) -> Bool {
+        if UIApplication.shared.canOpenURL(url) {
+            UIApplication.shared.open(url)
+            return true
+        }
+        return false
+    }
+
+    private func webView(_ webView: WKWebView, policyFor navigationAction: WKNavigationAction)
+        -> WKNavigationActionPolicy
+    {
         let sourceFrame: WKFrameInfo? = navigationAction.sourceFrame
         let targetFrame: WKFrameInfo? = navigationAction.targetFrame
 
         guard let originalUrl = navigationAction.request.url else {
             return .allow
         }
-        
+
         if !webView.canGoBack && navigationAction.navigationType == .linkActivated {
             navigationDelegate?.webViewInitialLoadDidRedirect(webView)
         }
         isGoingBackForward = navigationAction.navigationType == .backForward
 
         let url = canonicalizeAppStoreURL(originalUrl)
+        if let appStoreURL = itmsAppStoreURL(fromWebURL: url),
+            openOutsideIfPossible(appStoreURL)
+        {
+            return .cancel
+        }
         if let scheme = url.scheme,
-           nativeSchemes.contains(scheme),
-           UIApplication.shared.canOpenURL(url) {
-            UIApplication.shared.open(url)
+            nativeSchemes.contains(scheme),
+            openOutsideIfPossible(url)
+        {
             return .cancel
         }
 
@@ -154,7 +209,9 @@ class NovaUnifiedWebViewHost: NSObject {
 
         // for google ad in iframe. we should avoid redirect in main frame when click.
         if let source = sourceFrame, !source.isMainFrame, let target = targetFrame, target.isMainFrame {
-            if let navigationDelegate = self.navigationDelegate, navigationDelegate.webView(self.webView(), canRedirectTo: url) {
+            if let navigationDelegate = self.navigationDelegate,
+                navigationDelegate.webView(self.webView(), canRedirectTo: url)
+            {
                 navigationDelegate.openWebPage(url)
             }
             return .cancel
@@ -162,7 +219,9 @@ class NovaUnifiedWebViewHost: NSObject {
 
         // link open new page
         if navigationAction.navigationType == .linkActivated && targetFrame == nil {
-            if let navigationDelegate = self.navigationDelegate, navigationDelegate.webView(self.webView(), canRedirectTo: url) {
+            if let navigationDelegate = self.navigationDelegate,
+                navigationDelegate.webView(self.webView(), canRedirectTo: url)
+            {
                 navigationDelegate.openWebPage(url)
             }
             return .cancel
@@ -170,7 +229,9 @@ class NovaUnifiedWebViewHost: NSObject {
 
         // link page in place
         if navigationAction.navigationType == .linkActivated, let target = targetFrame, target.isMainFrame {
-            if let navigationDelegate = self.navigationDelegate, navigationDelegate.webView(self.webView(), canRedirectTo: url) {
+            if let navigationDelegate = self.navigationDelegate,
+                navigationDelegate.webView(self.webView(), canRedirectTo: url)
+            {
                 navigationDelegate.openWebPage(url)
             }
             return .cancel
@@ -178,13 +239,13 @@ class NovaUnifiedWebViewHost: NSObject {
 
         return .allow
     }
-    
+
     func SafeAs<T, U>(_ object: T?, _ objectType: U.Type) -> U? {
         if let object = object {
             if let temp = object as? U {
                 return temp
             } else {
-    //            assertionFailure("cannot cast \(object) to \(objectType)")
+                //            assertionFailure("cannot cast \(object) to \(objectType)")
                 return nil
             }
         } else {
@@ -202,7 +263,6 @@ extension NovaUnifiedWebViewHost: WKScriptMessageHandler {
 }
 
 extension NovaUnifiedWebViewHost: WKNavigationDelegate {
-
     func webView(_ webView: WKWebView, didCommit navigation: WKNavigation!) {
         self.navigationDelegate?.webView(webView, didCommit: navigation)
     }
@@ -211,10 +271,12 @@ extension NovaUnifiedWebViewHost: WKNavigationDelegate {
         self.navigationDelegate?.webView(webView, didStartProvisionalNavigation: navigation)
     }
 
-    func webView(_ webView: WKWebView,
-                        decidePolicyFor navigationAction: WKNavigationAction,
-                        preferences: WKWebpagePreferences,
-                        decisionHandler: @escaping (WKNavigationActionPolicy, WKWebpagePreferences) -> Void) {
+    func webView(
+        _ webView: WKWebView,
+        decidePolicyFor navigationAction: WKNavigationAction,
+        preferences: WKWebpagePreferences,
+        decisionHandler: @escaping (WKNavigationActionPolicy, WKWebpagePreferences) -> Void
+    ) {
         if let policy = self.navigationDelegate?.webView(webView, policyFor: navigationAction) {
             decisionHandler(policy, preferences)
         } else {
@@ -223,14 +285,19 @@ extension NovaUnifiedWebViewHost: WKNavigationDelegate {
         }
     }
 
-    func webView(_ webView: WKWebView,
-                        decidePolicyFor navigationAction: WKNavigationAction,
-                        decisionHandler: @escaping (WKNavigationActionPolicy) -> Void) {
+    func webView(
+        _ webView: WKWebView,
+        decidePolicyFor navigationAction: WKNavigationAction,
+        decisionHandler: @escaping (WKNavigationActionPolicy) -> Void
+    ) {
         let actionPolicy = self.webView(webView, policyFor: navigationAction)
         decisionHandler(actionPolicy)
     }
 
-    func webView(_ webView: WKWebView, decidePolicyFor navigationResponse: WKNavigationResponse, decisionHandler: @escaping (WKNavigationResponsePolicy) -> Void) {
+    func webView(
+        _ webView: WKWebView, decidePolicyFor navigationResponse: WKNavigationResponse,
+        decisionHandler: @escaping (WKNavigationResponsePolicy) -> Void
+    ) {
         self.navigationDelegate?.webView(webView, decidePolicyFor: navigationResponse, decisionHandler: decisionHandler)
     }
 
@@ -250,18 +317,37 @@ extension NovaUnifiedWebViewHost: WKNavigationDelegate {
     func webViewWebContentProcessDidTerminate(_ webView: WKWebView) {
         self.navigationDelegate?.webViewWebContentProcessDidTerminate(webView)
     }
-
 }
 
 extension NovaUnifiedWebViewHost: WKUIDelegate {
-    func webView(_ webView: WKWebView, createWebViewWith configuration: WKWebViewConfiguration, for navigationAction: WKNavigationAction, windowFeatures: WKWindowFeatures) -> WKWebView? {
+    func webView(
+        _ webView: WKWebView, createWebViewWith configuration: WKWebViewConfiguration,
+        for navigationAction: WKNavigationAction, windowFeatures: WKWindowFeatures
+    ) -> WKWebView? {
         guard let url = navigationAction.request.url else {
             return nil
         }
 
-        if ["http", "https"].contains(url.scheme?.lowercased() ?? "") {
-            if let navigationDelegate = self.navigationDelegate, navigationDelegate.webView(self.webView(), canRedirectTo: url) {
-                navigationDelegate.openWebPage(url)
+        let canonicalURL = canonicalizeAppStoreURL(url)
+
+        if let appStoreURL = itmsAppStoreURL(fromWebURL: canonicalURL),
+            openOutsideIfPossible(appStoreURL)
+        {
+            return nil
+        }
+
+        if let scheme = canonicalURL.scheme?.lowercased(),
+            nativeSchemes.contains(scheme),
+            openOutsideIfPossible(canonicalURL)
+        {
+            return nil
+        }
+
+        if ["http", "https"].contains(canonicalURL.scheme?.lowercased() ?? "") {
+            if let navigationDelegate = self.navigationDelegate,
+                navigationDelegate.webView(self.webView(), canRedirectTo: canonicalURL)
+            {
+                navigationDelegate.openWebPage(canonicalURL)
             }
         }
 
