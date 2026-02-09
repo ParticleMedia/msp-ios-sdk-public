@@ -5241,8 +5241,9 @@ release_adapters() {
         if [[ "$shared_libs_check_done" == "false" ]]; then
             if ! kill -0 $SHARED_LIBS_CHECK_PID 2>/dev/null; then
                 # Process has exited, get its exit code via wait
-                wait $SHARED_LIBS_CHECK_PID 2>/dev/null
-                shared_libs_check_exit_code=$?
+                # Use || to prevent set -e from killing the script on non-zero child exit
+                shared_libs_check_exit_code=0
+                wait $SHARED_LIBS_CHECK_PID 2>/dev/null || shared_libs_check_exit_code=$?
                 shared_libs_check_done=true
                 log_info "MSPSharedLibraries availability check completed (exit code: $shared_libs_check_exit_code)"
             fi
@@ -5252,8 +5253,9 @@ release_adapters() {
         if [[ "$google_ads_types_check_done" == "false" ]]; then
             if ! kill -0 $GOOGLE_ADS_TYPES_CHECK_PID 2>/dev/null; then
                 # Process has exited, get its exit code via wait
-                wait $GOOGLE_ADS_TYPES_CHECK_PID 2>/dev/null
-                google_ads_types_check_exit_code=$?
+                # Use || to prevent set -e from killing the script on non-zero child exit
+                google_ads_types_check_exit_code=0
+                wait $GOOGLE_ADS_TYPES_CHECK_PID 2>/dev/null || google_ads_types_check_exit_code=$?
                 google_ads_types_check_done=true
                 log_info "MSPGoogleAdsTypes availability check completed (exit code: $google_ads_types_check_exit_code)"
             fi
@@ -6499,8 +6501,9 @@ main() {
         if [[ "$shared_libs_done" == "false" ]]; then
             if ! kill -0 $SHARED_LIBS_PID 2>/dev/null; then
                 # Process has exited, get its exit code via wait
-                wait $SHARED_LIBS_PID 2>/dev/null
-                shared_libs_exit_code=$?
+                # Use || to prevent set -e from killing the script on non-zero child exit
+                shared_libs_exit_code=0
+                wait $SHARED_LIBS_PID 2>/dev/null || shared_libs_exit_code=$?
                 shared_libs_done=true
                 log_info "MSPSharedLibraries process completed (exit code: $shared_libs_exit_code)"
             fi
@@ -6510,8 +6513,9 @@ main() {
         if [[ "$google_ads_types_done" == "false" ]]; then
             if ! kill -0 $GOOGLE_ADS_TYPES_PID 2>/dev/null; then
                 # Process has exited, get its exit code via wait
-                wait $GOOGLE_ADS_TYPES_PID 2>/dev/null
-                google_ads_types_exit_code=$?
+                # Use || to prevent set -e from killing the script on non-zero child exit
+                google_ads_types_exit_code=0
+                wait $GOOGLE_ADS_TYPES_PID 2>/dev/null || google_ads_types_exit_code=$?
                 google_ads_types_done=true
                 log_info "MSPGoogleAdsTypes process completed (exit code: $google_ads_types_exit_code)"
             fi
