@@ -88,6 +88,48 @@ ensure_demoapp_xcodeproj() {
 
 ensure_demoapp_xcodeproj
 
+# CocoaPods does not run prepare_command for local pods (:path =>).
+# In CI (fresh checkout), MSPKingfisher/Sources/ won't exist because it's
+# gitignored.  Mirror the podspec's prepare_command here so the pod compiles.
+ensure_mspkingfisher_sources() {
+  local podspec="ThirdParty/MSPKingfisher/MSPKingfisher.podspec"
+  local sources_dir="ThirdParty/MSPKingfisher/Sources"
+
+  if [ -d "$sources_dir" ]; then
+    return 0
+  fi
+
+  if [ ! -f "$podspec" ]; then
+    echo "$LOG_PREFIX ⚠️  MSPKingfisher.podspec not found, skipping source download"
+    return 0
+  fi
+
+  # Extract the :tag value from the podspec (e.g. "7.12.0")
+  local version
+  version=$(grep -m1 ':tag' "$podspec" | sed 's/.*"\(.*\)".*/\1/')
+
+  if [ -z "$version" ]; then
+    echo "$LOG_PREFIX ❌ Could not determine Kingfisher version from $podspec" >&2
+    return 1
+  fi
+
+  echo "$LOG_PREFIX Downloading Kingfisher $version sources (prepare_command doesn't run for local pods)..."
+  local temp_dir
+  temp_dir=$(mktemp -d)
+  # shellcheck disable=SC2064  # intentional: expand $temp_dir now
+  trap "rm -rf '$temp_dir'" RETURN
+
+  if git clone --depth 1 --branch "$version" https://github.com/onevcat/Kingfisher.git "$temp_dir/kingfisher"; then
+    cp -R "$temp_dir/kingfisher/Sources" "$sources_dir"
+    echo "$LOG_PREFIX ✅ Kingfisher $version sources downloaded to $sources_dir"
+  else
+    echo "$LOG_PREFIX ❌ Failed to clone Kingfisher $version" >&2
+    return 1
+  fi
+}
+
+ensure_mspkingfisher_sources
+
 if [ "$REPO_UPDATE" -eq 1 ]; then
   if "${POD_CMD[@]}" install --repo-update; then
     echo "✅ pod install --repo-update completed"
