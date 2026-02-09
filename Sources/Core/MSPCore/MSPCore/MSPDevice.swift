@@ -41,6 +41,7 @@ public class MSPDevice {
     private(set) var isLowPowerMode: Bool?
     private(set) var isLowDataMode: Bool?
     private(set) var availableMemory: Int?
+    private(set) var os: Com_Newsbreak_Monetization_Common_OsType?
 
     var isInForeground: Bool?
     var fontSize: UIContentSizeCategory?
@@ -80,7 +81,7 @@ public class MSPDevice {
         fetchLowDataModeStatus { path in
             self.isLowDataMode = path.isConstrained
         }
-
+        self.os = UIDevice.current.userInterfaceIdiom == .pad ? .ipados : .ios
         self.availableMemory = os_proc_available_memory()
     }
 
@@ -202,6 +203,10 @@ public class MSPDevice {
 
         // Format the string with +HH:mm or -HH:mm
         return String(format: "%+03d:%02d", hours, minutes)
+    }
+    
+    internal func getOSType() -> Com_Newsbreak_Monetization_Common_OsType {
+        return self.os ?? .ios
     }
 
     internal func getDeviceModel() -> String {
