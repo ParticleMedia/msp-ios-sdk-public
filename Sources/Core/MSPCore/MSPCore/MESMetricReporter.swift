@@ -64,7 +64,7 @@ import UIKit
     ) {
         var eventModel = Com_Newsbreak_Mes_Events_SdkInitEvent()
         eventModel.clientTsMs = UInt64(Date().timeIntervalSince1970 * 1000)
-        eventModel.os = .ios
+        eventModel.os = MSPDevice.shared.getOSType()
         if let org = MSP.shared.org {
             eventModel.org = org
         }
@@ -207,7 +207,7 @@ import UIKit
             eventModel.seat = seat
         }
 
-        eventModel.os = .ios
+        eventModel.os = MSPDevice.shared.getOSType()
         if let org = MSP.shared.org {
             eventModel.org = org
         }
@@ -236,7 +236,7 @@ import UIKit
             eventModel.ad = generateAdContext(ad: ad)
         }
 
-        eventModel.os = .ios
+        eventModel.os = MSPDevice.shared.getOSType()
         if let org = MSP.shared.org {
             eventModel.org = org
         }
@@ -266,7 +266,7 @@ import UIKit
             eventModel.ad = generateAdContext(ad: ad)
         }
 
-        eventModel.os = .ios
+        eventModel.os = MSPDevice.shared.getOSType()
         if let org = MSP.shared.org {
             eventModel.org = org
         }
@@ -289,7 +289,7 @@ import UIKit
         eventModel.fill = fill
         eventModel.isFromCache = isFromCache
 
-        eventModel.os = .ios
+        eventModel.os = MSPDevice.shared.getOSType()
         if let org = MSP.shared.org {
             eventModel.org = org
         }
@@ -311,7 +311,7 @@ import UIKit
         guard shouldLogSampledMESEvent() else { return }
         var eventModel = Com_Newsbreak_Mes_Events_AdResponse()
         eventModel.clientTsMs = UInt64(Date().timeIntervalSince1970 * 1000)
-        eventModel.os = .ios
+        eventModel.os = MSPDevice.shared.getOSType()
         if let org = MSP.shared.org {
             eventModel.org = org
         }
@@ -353,7 +353,7 @@ import UIKit
         guard shouldLogSampledMESEvent() else { return }
         var eventModel = Com_Newsbreak_Mes_Events_LoadAd()
         eventModel.clientTsMs = UInt64(Date().timeIntervalSince1970 * 1000)
-        eventModel.os = .ios
+        eventModel.os = MSPDevice.shared.getOSType()
         if let org = MSP.shared.org {
             eventModel.org = org
         }
@@ -386,7 +386,7 @@ import UIKit
         guard shouldLogSampledMESEvent() else { return }
         var eventModel = Com_Newsbreak_Mes_Events_GetAdEvent()
         eventModel.clientTsMs = UInt64(Date().timeIntervalSince1970 * 1000)
-        eventModel.os = .ios
+        eventModel.os = MSPDevice.shared.getOSType()
         if let org = MSP.shared.org {
             eventModel.org = org
         }
@@ -419,7 +419,7 @@ import UIKit
         var eventModel = Com_Newsbreak_Mes_Events_AdRequest()
 
         eventModel.clientTsMs = UInt64(Date().timeIntervalSince1970 * 1000)
-        eventModel.os = .ios
+        eventModel.os = MSPDevice.shared.getOSType()
         if let org = MSP.shared.org {
             eventModel.org = org
         }
@@ -445,12 +445,12 @@ import UIKit
         eventModel.tsMs = UInt64(Date().timeIntervalSince1970 * 1000)
         eventModel.reason = reason
         eventModel.requestContext = generateRequestContext(ad: ad, request: adRequest)
+        eventModel.os = MSPDevice.shared.getOSType()
         eventModel.ad = generateAdContext(ad: ad,
                                           adRequest: adRequest,
                                           bidResponse: bidResponse as? BidResponse,
                                           adScreenShot: adScreenshot,
                                           fullScreenShot: fullScreenShot)
-        eventModel.os = .ios
         if let org = MSP.shared.org {
             eventModel.org = org
         }
@@ -477,12 +477,12 @@ import UIKit
             eventModel.description_p = description
         }
         eventModel.requestContext = generateRequestContext(ad: ad, request: adRequest)
+        eventModel.os = MSPDevice.shared.getOSType()
         eventModel.ad = generateAdContext(ad: ad,
                                           adRequest: adRequest,
                                           bidResponse: bidResponse as? BidResponse,
                                           adScreenShot: adScreenshot,
                                           fullScreenShot: fullScreenShot)
-        eventModel.os = .ios
         if let org = MSP.shared.org {
             eventModel.org = org
         }
