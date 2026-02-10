@@ -153,6 +153,7 @@ CONFIG_FILE=""
 CLI_VERSION=""
 SUBCOMMAND=""
 PROFILE=""
+POD_WAIT_CHOICE=""
 
 # ============================================================================
 # Logging Functions
@@ -257,6 +258,25 @@ parse_flags() {
 
             --profile=*)
                 PROFILE="${1#*=}"
+                shift
+                ;;
+
+            --pod-wait-choice)
+                if [[ -n "${2:-}" && "$2" =~ ^[123]$ ]]; then
+                    POD_WAIT_CHOICE="$2"
+                    shift 2
+                else
+                    log_error "--pod-wait-choice requires a value: 1, 2, or 3"
+                    exit 1
+                fi
+                ;;
+
+            --pod-wait-choice=*)
+                POD_WAIT_CHOICE="${1#*=}"
+                if [[ ! "$POD_WAIT_CHOICE" =~ ^[123]$ ]]; then
+                    log_error "--pod-wait-choice requires a value: 1, 2, or 3"
+                    exit 1
+                fi
                 shift
                 ;;
 
@@ -374,6 +394,10 @@ apply_cli_overrides() {
     export SKIP_PREFLIGHT="$SKIP_PREFLIGHT"
     export NO_ANSI="$NO_ANSI"
     export MSP_RELEASE_FORCE="$FORCE"
+    if [[ -n "$POD_WAIT_CHOICE" ]]; then
+        export MSP_POD_WAIT_CHOICE="$POD_WAIT_CHOICE"
+        log_debug "[CLI] Override: MSP_POD_WAIT_CHOICE=$POD_WAIT_CHOICE"
+    fi
 
     log_debug "[CLI] Applied all CLI overrides"
 }
@@ -529,6 +553,8 @@ GLOBAL FLAGS:
     --skip-spm            Skip SPM release
     --only-pods           Only run CocoaPods release (implies --skip-spm)
     --only-spm            Only run SPM release (implies --skip-pods)
+    --pod-wait-choice N   Preselect pod availability prompt choice (1/2/3)
+                          1=continue waiting, 2=proceed anyway, 3=exit
     --version, -v         Show version information
     --help, -h            Show this help message
 
@@ -575,6 +601,7 @@ EXAMPLES:
     # CocoaPods release only
     msp-release.sh pods 0.0.3
     msp-release.sh run 0.0.3 --only-pods
+    msp-release.sh run 0.0.3 --only-pods --pod-wait-choice 1
 
     # SPM release only
     msp-release.sh spm 0.0.3

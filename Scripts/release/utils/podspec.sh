@@ -661,12 +661,22 @@ smart_wait_for_pod_availability() {
 
     local choice
 
+    # Explicit override from CLI/env: MSP_POD_WAIT_CHOICE=1|2|3
+    if [[ -n "${MSP_POD_WAIT_CHOICE:-}" ]]; then
+        if [[ "${MSP_POD_WAIT_CHOICE}" =~ ^[123]$ ]]; then
+            choice="${MSP_POD_WAIT_CHOICE}"
+            log_info "[Configured] Auto-selecting pod wait option: ${choice}"
+        else
+            log_warn "Invalid MSP_POD_WAIT_CHOICE='${MSP_POD_WAIT_CHOICE}', falling back to default behavior"
+        fi
+    fi
+
     # CI/Batch mode or non-interactive: auto-select option 1
     # Check if stdin is a TTY (interactive) or if CI/BATCH_MODE is set
-    if [[ "${CI:-false}" == "true" ]] || [[ "${BATCH_MODE:-false}" == "true" ]] || ! [[ -t 0 ]]; then
+    if [[ -z "${choice:-}" ]] && ( [[ "${CI:-false}" == "true" ]] || [[ "${BATCH_MODE:-false}" == "true" ]] || ! [[ -t 0 ]] ); then
         log_info "[Non-Interactive Mode] Auto-selecting: Continue waiting (option 1)"
         choice="1"
-    else
+    elif [[ -z "${choice:-}" ]]; then
         # Interactive mode: ask user
         read -p "Choose [1/2/3]: " choice
     fi
@@ -705,8 +715,12 @@ smart_wait_for_pod_availability() {
             log_warn "Proceeding without $pod_name $version availability confirmation"
             log_warn "Subsequent operations may fail if pod not synced to CDN yet"
             echo ""
-            read -p "Press Enter to continue..."
-            echo ""
+            if [[ -z "${MSP_POD_WAIT_CHOICE:-}" ]] && [[ -t 0 ]]; then
+                read -p "Press Enter to continue..."
+                echo ""
+            else
+                log_info "[Configured/Non-Interactive Mode] Continuing without additional confirmation"
+            fi
             return 0
             ;;
 
@@ -725,4 +739,3 @@ smart_wait_for_pod_availability() {
 
 # Export the function
 export -f smart_wait_for_pod_availability 2>/dev/null || true
-

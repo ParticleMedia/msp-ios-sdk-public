@@ -89,6 +89,28 @@ CI workflows call scripts in `Scripts/ci/` and use config in `Scripts/config/`:
 | `pods <version>` | CocoaPods-only release |
 | `spm <version>` | SPM-only release |
 
+### Common Options
+
+For `run/pods/spm` workflows, these options are commonly used:
+
+| Option | Description |
+|--------|-------------|
+| `--profile=<name>` | Select release profile (`production`, `local-dev`, `ci-test`, `quick-test`) |
+| `--only-pods` | Run CocoaPods release only |
+| `--only-spm` | Run SPM release only |
+| `--pod-wait-choice <1\|2\|3>` | Preselect pod availability wait strategy to avoid interactive prompt |
+
+`--pod-wait-choice` mapping:
+- `1`: Continue waiting for CocoaPods CDN propagation (recommended for just-published pods)
+- `2`: Proceed without availability confirmation
+- `3`: Exit and retry later
+
+You can also set this via environment variable:
+
+```bash
+MSP_POD_WAIT_CHOICE=1 ./Scripts/msp-release.sh --profile=production run 1.0.0 --only-pods
+```
+
 ### Release Flow
 
 ```
