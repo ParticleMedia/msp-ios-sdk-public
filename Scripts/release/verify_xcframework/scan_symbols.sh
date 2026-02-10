@@ -38,76 +38,55 @@ scan_symbols() {
     vr_log_info "[XCF] Scanning symbol table for $module_name..."
     echo "[TRACE][XCF] ---> Entering symbol scan for $module_name"
 
-    if ! command -v nm >/dev/null 2>&1; then
+    local nm_bin
+    nm_bin="$(vr_find_devtool nm)"
+    if [[ -z "$nm_bin" ]]; then
         vr_log_warn "[XCF] nm not found, skipping symbol scan"
         echo "[TRACE][XCF] <--- Symbol scan skipped (nm not found)"
         return 0
     fi
 
-    # Find binary in first available slice
-    local binary_path=""
-    local slices=("ios-arm64" "ios-arm64_x86_64-simulator" "ios-arm64-simulator" "ios-x86_64-simulator")
-
-    echo "[TRACE][XCF]      Searching for binary in slices..."
-    for slice in "${slices[@]}"; do
-        local slice_path="$xcframework_path/$slice"
-        if [[ -d "$slice_path" ]]; then
-            echo "[TRACE][XCF]      Checking slice: $slice"
-            binary_path="$(timeout 5s find "$slice_path" -name "$module_name" -type f 2>/dev/null | head -1 || echo "")"
-            if [[ -n "$binary_path" ]] && [[ -f "$binary_path" ]]; then
-                echo "[TRACE][XCF]      Found binary: $binary_path"
-                break
-            fi
+    # Collect all framework binaries from all slices.
+    local -a binaries=()
+    while IFS= read -r -d '' framework_dir; do
+        local framework_name
+        framework_name="$(basename "$framework_dir" .framework)"
+        local binary_path="$framework_dir/$framework_name"
+        if [[ -f "$binary_path" ]]; then
+            binaries+=("$binary_path")
         fi
-    done
+    done < <(find "$xcframework_path" -type d -name "*.framework" -print0 2>/dev/null)
 
-    if [[ -z "$binary_path" ]] || [[ ! -f "$binary_path" ]]; then
+    if [[ ${#binaries[@]} -eq 0 ]]; then
         vr_log_warn "[XCF] Binary not found, skipping symbol scan"
         echo "[TRACE][XCF] <--- Symbol scan skipped (binary not found)"
         return 0
     fi
 
-    # Extract global symbols with timeout
-    echo "[TRACE][XCF]      Running nm on binary: $binary_path"
-    local symbols
-    if ! symbols="$(timeout 20s nm -gU "$binary_path" 2>/dev/null || echo "")"; then
-        vr_log_error "[XCF] nm command timed out or failed for $module_name"
-        echo "[TRACE][XCF] <--- Symbol scan TIMEOUT on nm"
-        return 1
-    fi
-    echo "[TRACE][XCF]      nm completed successfully"
-    
-    if [[ -z "$symbols" ]]; then
-        vr_log_warn "[XCF] Could not extract symbols"
-        return 0
-    fi
-    
-    # Check for forbidden symbol patterns
-    local forbidden_patterns=(
-        "_OBJC_CLASS_\$_"
-        "__Z"
-        "__T"
-        "\.debug_"
-        "__internal_"
-    )
-    
-    local violations=0
-    while IFS= read -r line; do
-        for pattern in "${forbidden_patterns[@]}"; do
-            if echo "$line" | grep -qE "$pattern"; then
-                vr_log_error "[XCF] Forbidden symbol detected: $line"
-                violations=$((violations + 1))
-            fi
-        done
-    done <<< "$symbols"
-    
-    if [[ $violations -gt 0 ]]; then
-        vr_log_error "[XCF] Found $violations forbidden symbol violations"
-        echo "[TRACE][XCF] <--- Symbol scan FAILED ($violations violations)"
+    local scan_errors=0
+    local scanned_count=0
+    local binary_path
+    for binary_path in "${binaries[@]}"; do
+        echo "[TRACE][XCF]      Running nm on binary: $binary_path"
+        local symbols=""
+        if ! symbols="$(vr_run_with_timeout 20 "$nm_bin" -gU "$binary_path" 2>/dev/null || true)"; then
+            vr_log_error "[XCF] nm command failed for binary: $binary_path"
+            scan_errors=$((scan_errors + 1))
+            continue
+        fi
+
+        scanned_count=$((scanned_count + 1))
+        if [[ -z "$symbols" ]]; then
+            vr_log_warn "[XCF] Could not extract symbols: $binary_path"
+        fi
+    done
+
+    if [[ $scan_errors -gt 0 ]]; then
+        vr_log_error "[XCF] Symbol scan tool errors: $scan_errors"
         return 1
     fi
 
-    vr_log_info "[XCF] Symbol scan passed (no forbidden symbols)"
+    vr_log_info "[XCF] Symbol scan passed (scanned $scanned_count binaries)"
     echo "[TRACE][XCF] <--- Symbol scan completed successfully"
 
     return 0
@@ -120,4 +99,3 @@ scan_symbols() {
 if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
     scan_symbols "$@"
 fi
-

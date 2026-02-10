@@ -68,8 +68,52 @@ vr_detect_root_dir() {
 }
 
 # ============================================================================
+# Toolchain Helpers
+# ============================================================================
+
+vr_find_devtool() {
+    local tool="$1"
+
+    # Prefer active Xcode toolchain binaries for reproducibility.
+    if command -v xcrun >/dev/null 2>&1; then
+        local tool_path
+        tool_path="$(xcrun --find "$tool" 2>/dev/null || true)"
+        if [[ -n "$tool_path" ]] && [[ -x "$tool_path" ]]; then
+            echo "$tool_path"
+            return 0
+        fi
+    fi
+
+    command -v "$tool" 2>/dev/null || true
+}
+
+vr_run_with_timeout() {
+    local seconds="$1"
+    shift
+
+    local cmd_name="${1:-}"
+    local timeout_bin=""
+    if [[ -n "${MSP_TIMEOUT_CMD:-}" ]] && command -v "${MSP_TIMEOUT_CMD}" >/dev/null 2>&1; then
+        timeout_bin="$(command -v "${MSP_TIMEOUT_CMD}")"
+    elif command -v gtimeout >/dev/null 2>&1; then
+        timeout_bin="$(command -v gtimeout)"
+    elif command -v timeout >/dev/null 2>&1; then
+        timeout_bin="$(command -v timeout)"
+    fi
+
+    # timeout(1) cannot execute shell functions directly.
+    if [[ -n "$timeout_bin" ]] && ! declare -F "$cmd_name" >/dev/null 2>&1; then
+        "$timeout_bin" "${seconds}s" "$@"
+        return $?
+    fi
+
+    # Fallback for environments without timeout(1) (e.g. default macOS).
+    "$@"
+}
+
+# ============================================================================
 # Export Functions
 # ============================================================================
 
-export -f vr_log_info vr_log_warn vr_log_error vr_detect_root_dir 2>/dev/null || true
-
+export -f vr_log_info vr_log_warn vr_log_error vr_detect_root_dir \
+         vr_find_devtool vr_run_with_timeout 2>/dev/null || true

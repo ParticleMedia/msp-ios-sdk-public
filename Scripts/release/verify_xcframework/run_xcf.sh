@@ -122,7 +122,7 @@ run_xcframework_verification() {
         # Copy XCFramework to sandbox
         echo "[TRACE][XCF]      Copying to sandbox..."
         local sandbox_xcf="$SANDBOX_DIR/${module_name}.xcframework"
-        if ! timeout 30s cp -R "$xcf_path" "$sandbox_xcf" 2>/dev/null; then
+        if ! vr_run_with_timeout 30 cp -R "$xcf_path" "$sandbox_xcf" 2>/dev/null; then
             vr_log_error "[XCF] Failed to copy $module_name to sandbox (timeout or error)"
             echo "[TRACE][XCF]      Copy FAILED or TIMEOUT"
             XCF_VERIFY_MODULE_NAMES+=("$module_name")
@@ -151,7 +151,7 @@ run_xcframework_verification() {
 
         # 2. Swift module scan
         echo "[TRACE][XCF]      Starting Swift module scan..."
-        if ! timeout 60s scan_swiftmodules "$sandbox_xcf" "$module_name" >/dev/null 2>&1; then
+        if ! vr_run_with_timeout 60 scan_swiftmodules "$sandbox_xcf" "$module_name" >/dev/null 2>&1; then
             vr_log_error "[XCF] Swift module scan failed for $module_name"
             echo "[TRACE][XCF]      Swift module scan FAILED or TIMEOUT"
             module_success=0
@@ -160,7 +160,7 @@ run_xcframework_verification() {
 
         # 3. Dependency scan
         echo "[TRACE][XCF]      Starting dependency scan..."
-        if ! timeout 60s scan_dependencies "$sandbox_xcf" "$module_name" >/dev/null 2>&1; then
+        if ! vr_run_with_timeout 60 scan_dependencies "$sandbox_xcf" "$module_name" >/dev/null 2>&1; then
             vr_log_error "[XCF] Dependency scan failed for $module_name"
             echo "[TRACE][XCF]      Dependency scan FAILED or TIMEOUT"
             module_success=0
@@ -169,7 +169,7 @@ run_xcframework_verification() {
 
         # 4. Plist scan
         echo "[TRACE][XCF]      Starting plist scan..."
-        if ! timeout 60s scan_plist "$sandbox_xcf" "$module_name" >/dev/null 2>&1; then
+        if ! vr_run_with_timeout 60 scan_plist "$sandbox_xcf" "$module_name" >/dev/null 2>&1; then
             vr_log_error "[XCF] Plist scan failed for $module_name"
             echo "[TRACE][XCF]      Plist scan FAILED or TIMEOUT"
             module_success=0
@@ -178,7 +178,7 @@ run_xcframework_verification() {
 
         # 5. Symbol scan
         echo "[TRACE][XCF]      Starting symbol scan..."
-        if ! timeout 60s scan_symbols "$sandbox_xcf" "$module_name" >/dev/null 2>&1; then
+        if ! vr_run_with_timeout 60 scan_symbols "$sandbox_xcf" "$module_name" >/dev/null 2>&1; then
             vr_log_error "[XCF] Symbol scan failed for $module_name"
             echo "[TRACE][XCF]      Symbol scan FAILED or TIMEOUT"
             module_success=0
@@ -188,7 +188,7 @@ run_xcframework_verification() {
         # 6. Size scan
         echo "[TRACE][XCF]      Starting size scan..."
         local size_report="$SANDBOX_DIR/${module_name}.size_report.json"
-        if ! scan_warnings="$(timeout 30s scan_size "$sandbox_xcf" "$module_name" "$size_report" 2>&1)"; then
+        if ! scan_warnings="$(vr_run_with_timeout 30 scan_size "$sandbox_xcf" "$module_name" "$size_report" 2>&1)"; then
             vr_log_warn "[XCF] Size scan failed for $module_name"
             echo "[TRACE][XCF]      Size scan FAILED or TIMEOUT"
         else
@@ -254,7 +254,26 @@ run_xcframework_verification() {
     json_modules="$json_modules}"
 
     export XCF_VERIFY_MODULES_JSON="$json_modules"
-    
+
+    # Return non-zero when any module fails, so orchestrator can block release.
+    local total_modules=${#XCF_VERIFY_MODULE_NAMES[@]}
+    local failed_modules=0
+    local module_result
+    for module_result in "${XCF_VERIFY_MODULE_RESULTS[@]}"; do
+        if [[ "$module_result" != "1" ]]; then
+            failed_modules=$((failed_modules + 1))
+        fi
+    done
+
+    export XCF_VERIFY_TOTAL_MODULES="$total_modules"
+    export XCF_VERIFY_FAILED_MODULES="$failed_modules"
+
+    if [[ "$failed_modules" -gt 0 ]]; then
+        vr_log_error "[XCF] Verification failed: ${failed_modules}/${total_modules} module(s) failed"
+        return 1
+    fi
+
+    vr_log_info "[XCF] Verification passed: ${total_modules}/${total_modules} module(s) passed"
     return 0
 }
 
@@ -265,4 +284,3 @@ run_xcframework_verification() {
 if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
     run_xcframework_verification "$@"
 fi
-

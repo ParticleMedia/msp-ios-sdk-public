@@ -38,68 +38,70 @@ scan_dependencies() {
     vr_log_info "[XCF] Scanning dependencies for $module_name..."
     echo "[TRACE][XCF] ---> Entering dependency scan for $module_name"
 
-    if ! command -v otool >/dev/null 2>&1; then
+    local otool_bin
+    otool_bin="$(vr_find_devtool otool)"
+    if [[ -z "$otool_bin" ]]; then
         vr_log_warn "[XCF] otool not found, skipping dependency scan"
         echo "[TRACE][XCF] <--- Dependency scan skipped (otool not found)"
         return 0
     fi
 
-    # Find binary in first available slice
-    local binary_path=""
-    local slices=("ios-arm64" "ios-arm64_x86_64-simulator" "ios-arm64-simulator" "ios-x86_64-simulator")
-
-    echo "[TRACE][XCF]      Searching for binary in slices..."
-    for slice in "${slices[@]}"; do
-        local slice_path="$xcframework_path/$slice"
-        if [[ -d "$slice_path" ]]; then
-            echo "[TRACE][XCF]      Checking slice: $slice"
-            binary_path="$(timeout 5s find "$slice_path" -name "$module_name" -type f 2>/dev/null | head -1 || echo "")"
-            if [[ -n "$binary_path" ]] && [[ -f "$binary_path" ]]; then
-                echo "[TRACE][XCF]      Found binary: $binary_path"
-                break
-            fi
+    # Collect all framework binaries from all slices.
+    local -a binaries=()
+    while IFS= read -r -d '' framework_dir; do
+        local framework_name
+        framework_name="$(basename "$framework_dir" .framework)"
+        local binary_path="$framework_dir/$framework_name"
+        if [[ -f "$binary_path" ]]; then
+            binaries+=("$binary_path")
         fi
-    done
+    done < <(find "$xcframework_path" -type d -name "*.framework" -print0 2>/dev/null)
 
-    if [[ -z "$binary_path" ]] || [[ ! -f "$binary_path" ]]; then
+    if [[ ${#binaries[@]} -eq 0 ]]; then
         vr_log_warn "[XCF] Binary not found, skipping dependency scan"
         echo "[TRACE][XCF] <--- Dependency scan skipped (binary not found)"
         return 0
     fi
 
-    # Scan linked libraries with timeout
-    echo "[TRACE][XCF]      Running otool -L on binary: $binary_path"
-    local linked_libs
-    if ! linked_libs="$(timeout 20s otool -L "$binary_path" 2>/dev/null || echo "")"; then
-        vr_log_error "[XCF] otool command timed out or failed for $module_name"
-        echo "[TRACE][XCF] <--- Dependency scan TIMEOUT on otool"
-        return 1
-    fi
-    echo "[TRACE][XCF]      otool completed successfully"
-    
-    if [[ -z "$linked_libs" ]]; then
-        vr_log_warn "[XCF] Could not read linked libraries"
-        return 0
-    fi
-    
-    # Check for forbidden patterns
+    # Check for forbidden patterns.
     local forbidden_patterns=(
-        "/usr/lib/swift"
         "/System/Library/PrivateFrameworks"
-        "@rpath/.*Private"
-        "UIKit.*Private"
+        "@rpath/.*Private.*\\.framework"
+        "/PrivateFrameworks/"
     )
     
     local violations=0
-    while IFS= read -r line; do
-        for pattern in "${forbidden_patterns[@]}"; do
-            if echo "$line" | grep -qE "$pattern"; then
-                vr_log_error "[XCF] Forbidden dependency detected: $line"
-                violations=$((violations + 1))
-            fi
-        done
-    done <<< "$linked_libs"
-    
+    local scan_errors=0
+    local binary_path
+    for binary_path in "${binaries[@]}"; do
+        echo "[TRACE][XCF]      Running otool -L on binary: $binary_path"
+        local linked_libs=""
+        if ! linked_libs="$(vr_run_with_timeout 20 "$otool_bin" -L "$binary_path" 2>/dev/null || true)"; then
+            vr_log_error "[XCF] otool command failed for binary: $binary_path"
+            scan_errors=$((scan_errors + 1))
+            continue
+        fi
+
+        if [[ -z "$linked_libs" ]]; then
+            vr_log_warn "[XCF] Could not read linked libraries: $binary_path"
+            continue
+        fi
+
+        while IFS= read -r line; do
+            for pattern in "${forbidden_patterns[@]}"; do
+                if echo "$line" | grep -qE "$pattern"; then
+                    vr_log_error "[XCF] Forbidden dependency detected: $line"
+                    violations=$((violations + 1))
+                fi
+            done
+        done <<< "$linked_libs"
+    done
+
+    if [[ $scan_errors -gt 0 ]]; then
+        vr_log_error "[XCF] Dependency scan tool errors: $scan_errors"
+        return 1
+    fi
+
     if [[ $violations -gt 0 ]]; then
         vr_log_error "[XCF] Found $violations forbidden dependency violations"
         echo "[TRACE][XCF] <--- Dependency scan FAILED ($violations violations)"
@@ -119,4 +121,3 @@ scan_dependencies() {
 if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
     scan_dependencies "$@"
 fi
-

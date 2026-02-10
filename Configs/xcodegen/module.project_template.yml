@@ -43,6 +43,8 @@ settings:
     
     # Module Configuration
     DEFINES_MODULE: YES
+    MARKETING_VERSION: "1.0"
+    CURRENT_PROJECT_VERSION: "1"
     
     # Pure Swift Framework Settings (no ObjC bridging)
     # Turn framework into PURE Swift framework (no ObjC bridging layer)
