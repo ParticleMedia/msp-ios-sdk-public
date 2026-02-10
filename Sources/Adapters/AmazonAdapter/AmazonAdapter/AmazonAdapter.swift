@@ -69,8 +69,8 @@ import MSPiOSCore
     public func destroyAd() {
     }
 
-@MainActor
- public func prepareViewForInteraction(nativeAd: MSPiOSCore.NativeAd, nativeAdView: Any) {
+    @MainActor
+    public func prepareViewForInteraction(nativeAd: MSPiOSCore.NativeAd, nativeAdView: Any) {
     }
 
     public func setAdMetricReporter(adMetricReporter: any MSPiOSCore.AdMetricReporter) {
@@ -102,7 +102,7 @@ import MSPiOSCore
     }
 
     public func getSDKVersion() -> String {
-        ""
+        "3.1.1"
     }
 
     public func sendClickAdEvent(ad: MSPAd) {
