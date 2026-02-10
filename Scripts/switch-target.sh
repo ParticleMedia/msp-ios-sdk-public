@@ -372,6 +372,139 @@ prestage_xcframeworks() {
     fi
 }
 
+# Ensure a pod that uses prepare_command (git clone) has FULL source before pod install.
+# CocoaPods generates the pod target from source_files at pod install time. If Sources/ was
+# missing or partial, the generated project has incomplete files and "missing type" build errors.
+#
+# We use "canary paths": a list of relative paths (files or dirs) under the source root that must
+# exist. If all exist, we treat the tree as complete. No magic file counts—just paths that only
+# exist in a full clone (e.g. Image/ for Kingfisher, or key .swift files for flat layouts).
+#
+# Usage: ensure_prepare_command_pod_sources <pod_name> <pod_dir_rel> <git_url> <branch_or_tag> \
+#   <clone_subdir_name> <source_dir_in_repo> <canary1> [canary2 ...]
+#
+# Example: ensure_prepare_command_pod_sources "MSPKingfisher" "ThirdParty/MSPKingfisher" \
+#   "https://github.com/onevcat/Kingfisher.git" "$(get_podspec_git_tag ThirdParty/MSPKingfisher/MSPKingfisher.podspec)" "kingfisher" "Sources" "Image" "General"
+ensure_prepare_command_pod_sources() {
+    local pod_name="$1"
+    local pod_dir_rel="$2"
+    local git_url="$3"
+    local branch_or_tag="$4"
+    local clone_subdir_name="$5"   # e.g. kingfisher -> clone into temp/kingfisher
+    local source_dir_in_repo="$6"  # e.g. Sources -> we copy temp/kingfisher/Sources to pod_dir/Sources
+    shift 6
+    local canary_paths=("$@")      # paths under source root that must exist (files or dirs)
+
+    local pod_dir="$ROOT_DIR/$pod_dir_rel"
+    local sources_dir="$pod_dir/$source_dir_in_repo"
+    local canaries_ok=1
+
+    if [[ -d "$sources_dir" ]]; then
+        for path in "${canary_paths[@]}"; do
+            [[ -z "$path" ]] && continue
+            if [[ ! -e "$sources_dir/$path" ]]; then
+                canaries_ok=0
+                break
+            fi
+        done
+        if [[ $canaries_ok -eq 1 ]]; then
+            log_success "$pod_name sources already present (canary paths OK)"
+            return 0
+        fi
+        log_info "$pod_name source tree incomplete (canary path(s) missing); re-downloading"
+        rm -rf "$sources_dir"
+    fi
+
+    log_step "Ensuring $pod_name sources (required for pods-dev; avoids 'missing type' build errors)"
+    if [[ ! -d "$pod_dir" ]]; then
+        log_error "$pod_name directory missing: $pod_dir"
+        exit 1
+    fi
+
+    local tmp_dir
+    tmp_dir="$(mktemp -d)"
+    local clone_log
+    clone_log="$(mktemp)"
+    trap 'rm -f "$clone_log"' EXIT
+
+    log_info "Downloading $pod_name source (branch/tag: $branch_or_tag)..."
+    if ! git clone --depth 1 --branch "$branch_or_tag" "$git_url" "$tmp_dir/$clone_subdir_name" > "$clone_log" 2>&1; then
+        log_error "Failed to clone $pod_name source (network or git issue)"
+        log_info "Git clone output (for troubleshooting):"
+        sed 's/^/  /' "$clone_log" >&2
+        log_info "Ensure you have network access and git installed, then re-run switch-target.sh pods-dev"
+        rm -rf "$tmp_dir"
+        exit 1
+    fi
+
+    local cloned_sources="$tmp_dir/$clone_subdir_name/$source_dir_in_repo"
+    if [[ ! -d "$cloned_sources" ]]; then
+        log_error "Cloned $pod_name repo missing $source_dir_in_repo/ directory"
+        rm -rf "$tmp_dir"
+        exit 1
+    fi
+
+    rm -rf "$sources_dir"
+    cp -R "$cloned_sources" "$sources_dir"
+    rm -rf "$tmp_dir"
+    rm -f "$clone_log"
+
+    for path in "${canary_paths[@]}"; do
+        [[ -z "$path" ]] && continue
+        if [[ ! -e "$sources_dir/$path" ]]; then
+            log_error "$pod_name source tree incomplete after copy (missing $source_dir_in_repo/$path)"
+            exit 1
+        fi
+    done
+    log_success "$pod_name sources ready at $sources_dir"
+    return 0
+}
+
+# Read git tag from a podspec (s.source => { :git => "...", :tag => "X.Y.Z" }). Single source of truth for version.
+get_podspec_git_tag() {
+    local podspec_path="$ROOT_DIR/$1"
+    if [[ ! -f "$podspec_path" ]]; then
+        log_error "Podspec not found: $podspec_path"
+        return 1
+    fi
+    local tag
+    tag=$(sed -n 's/.*:tag *=> *"\([^"]*\)".*/\1/p' "$podspec_path" | head -1)
+    if [[ -z "$tag" ]]; then
+        log_error "Could not read :tag from podspec: $podspec_path"
+        return 1
+    fi
+    echo "$tag"
+}
+
+# Ensure all pods that rely on prepare_command (git clone) have full source before pod install.
+# Each pod lists "canary" paths (relative to Sources/) that must exist; no magic file counts.
+# Version (branch/tag) is read from each podspec so we only maintain it in one place.
+ensure_all_prepare_command_pod_sources() {
+    local kf_tag snap_tag
+    kf_tag=$(get_podspec_git_tag "ThirdParty/MSPKingfisher/MSPKingfisher.podspec") || return 1
+    snap_tag=$(get_podspec_git_tag "ThirdParty/MSPSnapKit/MSPSnapKit.podspec") || return 1
+
+    # MSPKingfisher: Kingfisher has Sources/{Cache,Extensions,General,Image,...}; need Image + General for core types
+    ensure_prepare_command_pod_sources \
+        "MSPKingfisher" \
+        "ThirdParty/MSPKingfisher" \
+        "https://github.com/onevcat/Kingfisher.git" \
+        "$kf_tag" \
+        "kingfisher" \
+        "Sources" \
+        "Image" "General"
+
+    # MSPSnapKit: SnapKit has flat Sources/*.swift; require two core files so we don't accept empty or truncated copy
+    ensure_prepare_command_pod_sources \
+        "MSPSnapKit" \
+        "ThirdParty/MSPSnapKit" \
+        "https://github.com/SnapKit/SnapKit.git" \
+        "$snap_tag" \
+        "snapkit" \
+        "Sources" \
+        "Constraint.swift" "LayoutConstraint.swift"
+}
+
 # Validate final state for a mode
 validate_final_state() {
     local mode="$1"
@@ -611,6 +744,12 @@ switch_pods_dev() {
     # Step 7: Run pod install (AFTER project generation)
     # CRITICAL: pod install requires MSPDemoApp.xcodeproj to exist
     log_section "CocoaPods Installation"
+    # Ensure all pods that use prepare_command (git clone) have full source before pod install
+    # (e.g. MSPKingfisher, MSPSnapKit). Otherwise CocoaPods generates incomplete targets and "missing type" errors.
+    if ! ensure_all_prepare_command_pod_sources; then
+        log_error "Prepare-command pod sources are required for pods-dev build; fix the error above and re-run"
+        exit 1
+    fi
     log_step "Running pod install (MSP_RELEASE=0, MSP_MODE=pods-dev)"
     log_info "All modules compiled from SOURCE (path-based pods)"
     log_info "XCFramework copy phases will be REMOVED by Podfile post_install"
