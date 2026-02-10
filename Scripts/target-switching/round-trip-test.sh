@@ -219,16 +219,28 @@ get_git_status() {
     git status --porcelain 2>/dev/null | head -10 || echo ""
 }
 
+# Resolve DemoApp build destination for RTT.
+# Default to generic simulator to avoid hard dependency on a specific model/OS.
+resolve_demoapp_destination() {
+    if [[ -n "${RTT_SIMULATOR_DESTINATION:-}" ]]; then
+        echo "$RTT_SIMULATOR_DESTINATION"
+    else
+        echo "generic/platform=iOS Simulator"
+    fi
+}
+
 # Build DemoApp
 build_demoapp() {
     local mode="$1"
     local log_file="$BUILD_LOG_DIR/${mode}-build-${TIMESTAMP}.log"
+    local destination
+    destination="$(resolve_demoapp_destination)"
     
     cd "$ROOT_DIR"
     if xcodebuild -workspace msp-ios-sdk.xcworkspace \
         -scheme MSPDemoApp \
         -configuration Debug \
-        -destination "platform=iOS Simulator,name=iPhone 16,OS=18.5" \
+        -destination "$destination" \
         build 2>&1 | tee "$log_file" | tail -3; then
         
         if grep -q "BUILD SUCCEEDED" "$log_file"; then

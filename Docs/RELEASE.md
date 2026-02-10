@@ -50,7 +50,13 @@
 ```bash
 ./Scripts/msp-release.sh --profile=production run 1.0.0
 ./Scripts/msp-release.sh --profile=local-dev run 1.0.0
+./Scripts/msp-release.sh --profile=production run 1.0.0 --only-pods --pod-wait-choice 1
 ```
+
+`--pod-wait-choice` can preselect CocoaPods availability handling when CDN sync is delayed:
+- `1`: continue waiting (recommended)
+- `2`: proceed anyway
+- `3`: exit
 
 ## DRY_RUN Semantics
 
@@ -76,6 +82,7 @@ Execute a full release:
 ```bash
 ./Scripts/msp-release.sh run <version>
 ./Scripts/msp-release.sh --profile=production run 1.0.0
+./Scripts/msp-release.sh --profile=production run 1.0.0 --only-pods --pod-wait-choice 1
 ```
 
 ### resume

@@ -20,6 +20,9 @@ open msp-ios-sdk.xcworkspace
 # Production release
 ./Scripts/msp-release.sh --profile=production run 1.0.0
 
+# Production release (auto-select pod wait option 1 to avoid interactive prompt)
+./Scripts/msp-release.sh --profile=production run 1.0.0 --only-pods --pod-wait-choice 1
+
 # Resume interrupted release
 ./Scripts/msp-release.sh resume
 
