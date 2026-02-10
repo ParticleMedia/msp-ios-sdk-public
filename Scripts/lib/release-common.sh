@@ -426,10 +426,10 @@ generate_release_notes_from_git() {
     if [[ -n "$previous_version" ]]; then
         release_notes="## ${release_type} ${version}\n\n"
         release_notes+="### Changes since ${previous_version}:\n\n"
-        
-        # Get commits since previous version
-        local commits=$(git log --oneline --pretty=format:"- %s (%h)" "${previous_version}..HEAD" 2>/dev/null)
-        
+
+        # Get only PR merge commits (squash-merged PRs contain "(#NNN)" in subject)
+        local commits=$(git log --oneline --pretty=format:"- %s" --grep='(#' "${previous_version}..HEAD" 2>/dev/null)
+
         if [[ -n "$commits" ]]; then
             release_notes+="$commits"
         else

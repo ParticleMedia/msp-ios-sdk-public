@@ -100,10 +100,16 @@ msp_state_init() {
     local path
     path="$(msp_state_file_path)"
 
-    # If file exists, only update timestamp
+    # If file exists but is not valid JSON, remove it and recreate
     if [[ -f "$path" ]]; then
-        _msp_state_update_json ".timestamps.updated_at = \"$(_msp_state_now)\"" || return 0
-        return 0
+        if jq empty "$path" 2>/dev/null; then
+            # Valid JSON — just update timestamp
+            _msp_state_update_json ".timestamps.updated_at = \"$(_msp_state_now)\"" || return 0
+            return 0
+        else
+            # Corrupted or empty file — remove so we can recreate below
+            rm -f "$path"
+        fi
     fi
 
     # Get values from environment
