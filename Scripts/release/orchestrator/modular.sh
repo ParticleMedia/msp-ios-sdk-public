@@ -1235,11 +1235,12 @@ run_xcframework_verification() {
         return 0
     fi
     
-    # Run XCFramework verification (soft-fail: never breaks release)
+    # Run XCFramework verification (hard-fail: blocks release on invalid artifacts)
     if source "$verify_script" && run_xcframework_verification; then
         log_info "XCFramework verification completed"
     else
-        log_warn "XCFramework verification encountered errors (non-blocking)"
+        log_error "XCFramework verification failed (blocking release)"
+        return 1
     fi
     
     # Write XCFramework verification results to state file
@@ -1782,7 +1783,7 @@ main() {
         fi
     fi
     
-    # Step 8: Run XCFramework deep verification (soft-fail, never breaks release)
+    # Step 8: Run XCFramework deep verification (hard-fail, blocks release)
     step "run_xcframework_verification"
     export CURRENT_STEP="run_xcframework_verification"
     # Config-driven gating
@@ -1798,7 +1799,7 @@ main() {
         else
             step_fail "run_xcframework_verification" $?
             fail_step "run_xcframework_verification" "XCFramework verification failed"
-            # Soft-fail: continue anyway
+            return 1
         fi
     fi
     
