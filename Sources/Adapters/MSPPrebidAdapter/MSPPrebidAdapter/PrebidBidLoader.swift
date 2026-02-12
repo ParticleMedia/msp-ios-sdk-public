@@ -81,18 +81,19 @@ public class PrebidBidLoader: BidLoader {
             guard let self = self else { return }
 
             if let error = error {
-                bidListener?.onError(msg: error.localizedDescription)
+                bidListener?.onError(msg: error.localizedDescription, loadInfo: [:])
                 return
             }
 
             if let bidResponse = bidResponse {
                 guard let seat = bidResponse.winningBidSeat else {
                     let errorMessage = "no fill"
-                    bidListener?.onError(msg: errorMessage)
+                    bidListener?.onError(msg: errorMessage, loadInfo: buildLoadInfo(bidResponse: bidResponse))
                     adMetricReporter?.logAdResponse(
                         ad: nil, adRequest: adRequest, errorCode: .ERROR_CODE_NO_FILL, errorMessage: errorMessage)
                     return
                 }
+
                 if self.bidListener == nil {
                 }
                 if seat == "msp_google" {
@@ -110,7 +111,7 @@ public class PrebidBidLoader: BidLoader {
                 }
             } else {
                 let errorMessage = "missing response"
-                bidListener?.onError(msg: errorMessage)
+                bidListener?.onError(msg: errorMessage, loadInfo: buildLoadInfo(bidResponse: bidResponse))
                 adMetricReporter?.logAdResponse(
                     ad: nil, adRequest: adRequest, errorCode: .ERROR_CODE_NETWORK_ERROR, errorMessage: errorMessage)
             }
@@ -209,6 +210,18 @@ public class PrebidBidLoader: BidLoader {
         geoDict["lat"] = adRequest?.geo?.lat
         geoDict["lon"] = adRequest?.geo?.lon
         return geoDict
+    }
+
+    private func buildLoadInfo(bidResponse: BidResponse?) -> [String: Any] {
+        var loadInfo: [String: Any] = [:]
+
+        if let requestId = bidResponse?.rawResponse?.requestID,
+            !requestId.isEmpty
+        {
+            loadInfo["request_id"] = requestId
+        }
+
+        return loadInfo
     }
 }
 

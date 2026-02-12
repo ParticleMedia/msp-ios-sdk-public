@@ -11,15 +11,32 @@ import UIKit
 public protocol AdListener: AnyObject {
     //Deprecated after SDK Bidding:
     //func onAdLoaded(ad: MSPAd)
-    func onError(msg: String)
+    func onError(msg: String, loadInfo: [String: Any])
 
     func onAdImpression(ad: MSPAd)
 
     func onAdClick(ad: MSPAd)
 
-    func onAdLoaded(placementId: String)
+    func onAdLoaded(placementId: String, loadInfo: [String: Any])
 
     func onAdDismissed(ad: InterstitialAd)
 
     func getRootViewController() -> UIViewController?
+}
+
+// MARK: - Backward Compatibility
+public extension AdListener {
+    func onError(msg: String) {
+    }
+
+    func onError(msg: String, loadInfo: [String: Any]) {
+        onError(msg: msg)
+    }
+
+    func onAdLoaded(placementId: String) {
+    }
+
+    func onAdLoaded(placementId: String, loadInfo: [String: Any]) {
+        onAdLoaded(placementId: placementId)
+    }
 }

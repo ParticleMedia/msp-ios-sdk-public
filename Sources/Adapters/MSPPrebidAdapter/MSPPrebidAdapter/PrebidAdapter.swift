@@ -194,6 +194,9 @@ extension PrebidAdapter: BannerViewDelegate {
                 prebidAd.adInfo[MSPConstants.AD_INFO_OPENRTB_NURL] = self.replaceMacroAuctionPrice(
                     url: nurl, price: self.priceInDollar)
             }
+            if let requestId = self.bidResponse?.rawResponse?.requestID {
+                prebidAd.adInfo[MSPConstants.AD_INFO_BID_REQUEST_ID] = requestId
+            }
 
             prebidAd.adInfo[MSPConstants.AD_INFO_NETWORK_NAME] = self.bidResponse?.winningBidSeat
             prebidAd.adInfo[MSPConstants.AD_INFO_NETWORK_CREATIVE_ID] = self.bidResponse?.winningBid?.bid.crid
@@ -216,7 +219,10 @@ extension PrebidAdapter: BannerViewDelegate {
         // to do: move this to ios core
         AdCache.shared.saveAd(placementId: bidderPlacementId, ad: ad)
         let auctionBid = AuctionBid(
-            bidderName: "msp", bidderPlacementId: bidderPlacementId, ecpm: ad.adInfo["price"] as? Double ?? 0.0)
+            bidderName: "msp",
+            bidderPlacementId: bidderPlacementId,
+            ecpm: ad.adInfo["price"] as? Double ?? 0.0,
+            loadInfo: buildLoadInfo(bidResponse: self.bidResponse))
         auctionBid.ad = ad
         auctionBidListener.onSuccess(bid: auctionBid)
         if let adRequest = self.adRequest {
@@ -228,7 +234,7 @@ extension PrebidAdapter: BannerViewDelegate {
     @objc public func bannerView(_ bannerView: BannerView, didFailToReceiveAdWith error: Error) {
         DispatchQueue.main.async {
             MSPLogger.shared.info(message: "[Adapter: Prebid] Fail to load Prebid Banner ad")
-            self.auctionBidListener?.onError(error: "fail to get ad")
+            self.handleAuctionBidError(error: "fail to get ad", bidResponse: self.bidResponse)
             self.adMetricReporter?.logAdResult(
                 placementId: self.adRequest?.placementId ?? "", ad: nil, fill: false, isFromCache: false)
             if let adRequest = self.adRequest {
@@ -258,6 +264,29 @@ extension PrebidAdapter: BannerViewDelegate {
             return url
         }
         return url?.replacingOccurrences(of: "${AUCTION_PRICE}", with: String(price))
+    }
+
+    private func handleAuctionBidError(error: String, bidResponse: BidResponse? = nil) {
+        guard let auctionBidListener = self.auctionBidListener else { return }
+
+        if let bidResponse = bidResponse {
+            let requestId = bidResponse.rawResponse?.requestID ?? ""
+            auctionBidListener.onError(error: error, loadInfo: buildLoadInfo(bidResponse: bidResponse))
+        } else {
+            auctionBidListener.onError(error: error)
+        }
+    }
+
+    private func buildLoadInfo(bidResponse: BidResponse?) -> [String: Any] {
+        var loadInfo: [String: Any] = [:]
+
+        if let requestId = bidResponse?.rawResponse?.requestID,
+            !requestId.isEmpty
+        {
+            loadInfo["request_id"] = requestId
+        }
+
+        return loadInfo
     }
 }
 
@@ -303,6 +332,9 @@ extension PrebidAdapter: InterstitialAdUnitDelegate {
 
             interstitialAd.adInfo[MSPConstants.AD_INFO_NETWORK_NAME] = self.bidResponse?.winningBidSeat
             interstitialAd.adInfo[MSPConstants.AD_INFO_NETWORK_CREATIVE_ID] = self.bidResponse?.winningBid?.bid.crid
+            if let requestId = self.bidResponse?.rawResponse?.requestID {
+                interstitialAd.adInfo[MSPConstants.AD_INFO_BID_REQUEST_ID] = requestId
+            }
             if let adListener = self.adListener,
                 let adRequest = self.adRequest,
                 let auctionBidListener = self.auctionBidListener
@@ -323,7 +355,7 @@ extension PrebidAdapter: InterstitialAdUnitDelegate {
     ) {
         DispatchQueue.main.async {
             MSPLogger.shared.info(message: "[Adapter: Prebid] Fail to load Prebid Interstitial ad")
-            self.auctionBidListener?.onError(error: error?.localizedDescription ?? "")
+            self.handleAuctionBidError(error: error?.localizedDescription ?? "", bidResponse: self.bidResponse)
             self.adMetricReporter?.logAdResult(
                 placementId: self.adRequest?.placementId ?? "", ad: nil, fill: false, isFromCache: false)
             if let adRequest = self.adRequest {

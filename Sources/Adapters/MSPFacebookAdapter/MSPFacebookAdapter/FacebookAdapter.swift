@@ -144,7 +144,7 @@ import UIKit
             guard bidResponse is BidResponse,
                 let mBidResponse = bidResponse as? BidResponse
             else {
-                self.auctionBidListener?.onError(error: "no valid response")
+                self.handleAuctionBidError(error: "no valid response")
                 return
             }
 
@@ -156,14 +156,14 @@ import UIKit
                 let prebidExtDict = self.SafeAs(bidExtDict["prebid"], [String: Any].self),
                 let adType = self.SafeAs(prebidExtDict["type"], String.self)
             else {
-                self.auctionBidListener?.onError(error: "no valid response")
+                self.handleAuctionBidError(error: "no valid response")
                 return
             }
 
             switch adType {
             case "native":
                 guard let placementId = self.getFBPlacementId(from: adString) else {
-                    self.auctionBidListener?.onError(error: "Missing FB payload or placementId")
+                    self.handleAuctionBidError(error: "Missing FB payload or placementId", bidResponse: mBidResponse)
                     return
                 }
                 self.nativeAdItem = FBNativeAd(placementID: placementId)
@@ -174,7 +174,8 @@ import UIKit
             case "banner":
                 if adRequest.adFormat == .interstitial {
                     guard let placementId = self.getFBPlacementId(from: adString) else {
-                        self.auctionBidListener?.onError(error: "Missing FB payload or placementId")
+                        self.handleAuctionBidError(
+                            error: "Missing FB payload or placementId", bidResponse: mBidResponse)
                         return
                     }
                     let facebookInterstitialAdItem = FBInterstitialAd(placementID: placementId)
@@ -184,7 +185,7 @@ import UIKit
                     facebookInterstitialAdItem.load(withBidPayload: adString)
                 }
             default:
-                self.auctionBidListener?.onError(error: "unknown adType")
+                self.handleAuctionBidError(error: "unknown adType", bidResponse: mBidResponse)
             }
         }
     }
@@ -219,19 +220,21 @@ import UIKit
 
     private func getFBPlacementId(from payload: String) -> String? {
         guard let data = payload.data(using: .utf8) else {
-            self.auctionBidListener?.onError(error: "Failed to get data from FB payload")
+            self.handleAuctionBidError(error: "Failed to get data from FB payload", bidResponse: self.bidResponse)
             return nil
         }
 
         do {
             guard let dict = SafeAs(try JSONSerialization.jsonObject(with: data), [String: Any].self) else {
-                self.auctionBidListener?.onError(error: "Failed to convert FB payload to json dict")
+                self.handleAuctionBidError(
+                    error: "Failed to convert FB payload to json dict", bidResponse: self.bidResponse)
                 return nil
             }
             return SafeAs(dict["resolved_placement_id"], String.self)
         } catch {
-            self.auctionBidListener?.onError(
-                error: "Failed to json serialize FB payload, error = \(error.localizedDescription)")
+            self.handleAuctionBidError(
+                error: "Failed to json serialize FB payload, error = \(error.localizedDescription)",
+                bidResponse: self.bidResponse)
             return nil
         }
     }
@@ -240,7 +243,10 @@ import UIKit
         // to do: move this to ios core
         AdCache.shared.saveAd(placementId: bidderPlacementId, ad: ad)
         let auctionBid = AuctionBid(
-            bidderName: "msp", bidderPlacementId: bidderPlacementId, ecpm: ad.adInfo["price"] as? Double ?? 0.0)
+            bidderName: "msp",
+            bidderPlacementId: bidderPlacementId,
+            ecpm: ad.adInfo["price"] as? Double ?? 0.0,
+            loadInfo: buildLoadInfo(bidResponse: self.bidResponse))
         auctionBid.ad = ad
         auctionBidListener.onSuccess(bid: auctionBid)
         if let adRequest = self.adRequest {
@@ -286,6 +292,29 @@ import UIKit
             }
         }
     }
+
+    private func handleAuctionBidError(error: String, bidResponse: BidResponse? = nil) {
+        guard let auctionBidListener = self.auctionBidListener else { return }
+
+        if let bidResponse = bidResponse {
+            let requestId = bidResponse.rawResponse?.requestID ?? ""
+            auctionBidListener.onError(error: error, loadInfo: buildLoadInfo(bidResponse: bidResponse))
+        } else {
+            auctionBidListener.onError(error: error)
+        }
+    }
+
+    private func buildLoadInfo(bidResponse: BidResponse?) -> [String: Any] {
+        var loadInfo: [String: Any] = [:]
+
+        if let requestId = bidResponse?.rawResponse?.requestID,
+            !requestId.isEmpty
+        {
+            loadInfo["request_id"] = requestId
+        }
+
+        return loadInfo
+    }
 }
 
 
@@ -311,6 +340,9 @@ extension FacebookAdapter: FBNativeAdDelegate {
             facebookNativeAd.adInfo[MSPConstants.AD_INFO_NETWORK_NAME] = AdNetwork.facebook.rawValue
             facebookNativeAd.adInfo[MSPConstants.AD_INFO_NETWORK_AD_UNIT_ID] = nativeAd.placementID
             facebookNativeAd.adInfo[MSPConstants.AD_INFO_NETWORK_CREATIVE_ID] = self.bidResponse?.winningBid?.bid.crid
+            if let requestId = self.bidResponse?.rawResponse?.requestID {
+                facebookNativeAd.adInfo[MSPConstants.AD_INFO_BID_REQUEST_ID] = requestId
+            }
             self.nativeAdItem = nativeAd
             if let adListener = self.adListener,
                 let adRequest = self.adRequest,
@@ -327,7 +359,7 @@ extension FacebookAdapter: FBNativeAdDelegate {
     public func nativeAd(_ nativeAd: FBNativeAd, didFailWithError error: Error) {
         DispatchQueue.main.async {
             MSPLogger.shared.info(message: "[Adapter: Facebook] Fail to load Facebook Native ad")
-            self.auctionBidListener?.onError(error: error.localizedDescription)
+            self.handleAuctionBidError(error: error.localizedDescription, bidResponse: self.bidResponse)
             if let adRequest = self.adRequest {
                 self.adMetricReporter?.logAdResponse(
                     ad: nil, adRequest: adRequest, errorCode: .ERROR_CODE_INTERNAL_ERROR,
@@ -374,6 +406,9 @@ extension FacebookAdapter: FBInterstitialAdDelegate {
             facebookInterstitialAd.adInfo[MSPConstants.AD_INFO_NETWORK_AD_UNIT_ID] = interstitialAd.placementID
             facebookInterstitialAd.adInfo[MSPConstants.AD_INFO_NETWORK_CREATIVE_ID] =
                 self.bidResponse?.winningBid?.bid.crid
+            if let requestId = self.bidResponse?.rawResponse?.requestID {
+                facebookInterstitialAd.adInfo[MSPConstants.AD_INFO_BID_REQUEST_ID] = requestId
+            }
 
             if let adListener = self.adListener,
                 let adRequest = self.adRequest,
@@ -392,7 +427,7 @@ extension FacebookAdapter: FBInterstitialAdDelegate {
     public func interstitialAd(_ interstitialAd: FBInterstitialAd, didFailWithError error: Error) {
         DispatchQueue.main.async {
             MSPLogger.shared.info(message: "[Adapter: Facebook] Fail to load Facebook Interstitial ad")
-            self.auctionBidListener?.onError(error: error.localizedDescription)
+            self.handleAuctionBidError(error: error.localizedDescription)
             self.adMetricReporter?.logAdResult(
                 placementId: self.adRequest?.placementId ?? "", ad: nil, fill: false, isFromCache: false)
             if let adRequest = self.adRequest {

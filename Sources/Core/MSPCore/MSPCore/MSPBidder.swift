@@ -94,7 +94,7 @@ extension MSPBidder: BidListener {
         }
     }
 
-    public func onError(msg: String) {
-        auctionBidListener?.onError(error: msg)
+    public func onError(msg: String, loadInfo: [String: Any]) {
+        auctionBidListener?.onError(error: msg, loadInfo: loadInfo)
     }
 }

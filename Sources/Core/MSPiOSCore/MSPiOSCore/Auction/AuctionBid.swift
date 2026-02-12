@@ -12,13 +12,21 @@ public class AuctionBid {
     public var bidderPlacementId: String
     public var ecpm: Double
     public var fromCache: Bool
+    public var loadInfo: [String: Any]
 
     public var ad: MSPAd?
 
-    public init(bidderName: String, bidderPlacementId: String, ecpm: Double, fromCache: Bool = false) {
+    public init(
+        bidderName: String,
+        bidderPlacementId: String,
+        ecpm: Double,
+        fromCache: Bool = false,
+        loadInfo: [String: Any] = [:]
+    ) {
         self.bidderName = bidderName
         self.bidderPlacementId = bidderPlacementId
         self.ecpm = ecpm
         self.fromCache = fromCache
+        self.loadInfo = loadInfo
     }
 }

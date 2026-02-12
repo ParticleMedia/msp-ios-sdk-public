@@ -11,7 +11,10 @@ import AdSupport
 import Foundation
 import MSPiOSCore
 @_implementationOnly import PrebidMobile
+@_implementationOnly import SwiftProtobuf
 import UIKit
+
+private typealias ReportCompletion = (Bool, Error?) -> Void
 
 @objc public class MESMetricReporter: NSObject {
     @objc public static let shared = MESMetricReporter()
@@ -30,15 +33,34 @@ import UIKit
         case loadAd = "load_ad"
         case getAd = "get_ad"
         case userSignal = "user_signal"
+        case adBidLost = "ad_bid_lost"
     }
 
-    func report(event type: AdEventType, with data: Data, completion: @escaping (Bool, Error?) -> Void) {
-        let host = MSP.shared.mesHost ?? "mes.newsbreak.com"
+    private func reportData(event: AdEventType, with data: Message, completion: ReportCompletion? = nil) {
+        do {
+            let tracingData = try data.serializedData()
+            report(event: event, with: tracingData, completion: completion)
+        } catch {
+            MSPLogger.shared.error(message: "Failed to serialize protobuf data for event \(event.rawValue):\(error)")
+            completion?(false, error)
+        }
+    }
+
+    private func report(event: AdEventType, with data: Data, completion: ReportCompletion?) {
+        innerReport(event: event, with: data) { success, error in
+            completion?(success, error)
+        }
+    }
+
+    private func innerReport(event type: AdEventType, with data: Data, completion: @escaping ReportCompletion) {
+        let host = MSP.shared.mesHost.isEmpty ? "mes.newsbreak.com" : MSP.shared.mesHost
         let urlStr = host + "/v1/event/" + type.rawValue
         guard let url = URL(string: urlStr) else {
+            let error = NSError(domain: "", code: -1, userInfo: [NSLocalizedDescriptionKey: "Invalid URL: \(urlStr)"])
+            completion(false, error)
             return
         }
-        var request = try URLRequest(url: url)
+        var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.setValue("application/x-protobuf", forHTTPHeaderField: "Content-Type")
         request.httpBody = data
@@ -112,12 +134,7 @@ import UIKit
         eventModel.sdkSignal = getSdkSignal()
         eventModel.deviceSignal = getDeviceSignal()
 
-        do {
-            let tracingData = try eventModel.serializedData()
-            report(event: .sdkInit, with: tracingData) { success, error in
-            }
-        } catch {
-        }
+        reportData(event: .sdkInit, with: eventModel)
     }
 
     private func getAppSignal() -> Com_Newsbreak_Monetization_Signals_AppSignal {
@@ -215,18 +232,13 @@ import UIKit
             eventModel.app = app
         }
 
-        do {
-            let tracingData = try eventModel.serializedData()
-            report(event: .getAdFromCache, with: tracingData) { success, error in
-            }
-        } catch {
-        }
+        reportData(event: .getAdFromCache, with: eventModel)
     }
 
     public func logAdImpression(ad: MSPiOSCore.MSPAd, adRequest: MSPiOSCore.AdRequest, bidResponse: Any?) {
         var eventModel = Com_Newsbreak_Mes_Events_AdImpressionEvent()
         eventModel.tsMs = UInt64(Date().timeIntervalSince1970 * 1000)
-        if  let bidResponse = bidResponse,
+        if let bidResponse = bidResponse,
             let mBidResponse = bidResponse as? BidResponse
         {
             eventModel.requestContext = generateRequestContext(ad: ad, request: adRequest, bidResponse: mBidResponse)
@@ -244,12 +256,8 @@ import UIKit
             eventModel.app = app
         }
         eventModel.mspSdkVersion = MSP.shared.version
-        do {
-            let tracingData = try eventModel.serializedData()
-            report(event: .adImpression, with: tracingData) { success, error in
-            }
-        } catch {
-        }
+
+        reportData(event: .adImpression, with: eventModel)
     }
 
     public func logAdClick(ad: MSPiOSCore.MSPAd, adRequest: MSPiOSCore.AdRequest, bidResponse: Any?) {
@@ -274,12 +282,8 @@ import UIKit
             eventModel.app = app
         }
         eventModel.mspSdkVersion = MSP.shared.version
-        do {
-            let tracingData = try eventModel.serializedData()
-            report(event: .adClick, with: tracingData) { success, error in
-            }
-        } catch {
-        }
+
+        reportData(event: .adClick, with: eventModel)
     }
 
     public func logAdResult(placementId: String, ad: MSPAd?, fill: Bool, isFromCache: Bool) {
@@ -297,12 +301,7 @@ import UIKit
             eventModel.app = app
         }
 
-        do {
-            let tracingData = try eventModel.serializedData()
-            report(event: .loadAdResult, with: tracingData) { success, error in
-            }
-        } catch {
-        }
+        reportData(event: .loadAdResult, with: eventModel)
     }
 
     public func logAdResponse(
@@ -339,12 +338,7 @@ import UIKit
 
         eventModel.mspSdkVersion = MSP.shared.version
 
-        do {
-            let tracingData = try eventModel.serializedData()
-            report(event: .adResponse, with: tracingData) { success, error in
-            }
-        } catch {
-        }
+        reportData(event: .adResponse, with: eventModel)
     }
 
     public func logLoadAd(
@@ -374,12 +368,7 @@ import UIKit
             eventModel.latency = Int32(latency)
         }
 
-        do {
-            let tracingData = try eventModel.serializedData()
-            report(event: .loadAd, with: tracingData) { success, error in
-            }
-        } catch {
-        }
+        reportData(event: .loadAd, with: eventModel)
     }
 
     public func logGetAd(ad: MSPAd?, placementId: String, errorMessage: String? = nil) {
@@ -406,12 +395,7 @@ import UIKit
             eventModel.errorMessage = errorMessage
         }
 
-        do {
-            let tracingData = try eventModel.serializedData()
-            report(event: .getAd, with: tracingData) { success, error in
-            }
-        } catch {
-        }
+        reportData(event: .getAd, with: eventModel)
     }
 
     public func logAdRequest(adRequest: AdRequest) {
@@ -429,12 +413,7 @@ import UIKit
         eventModel.mspSdkVersion = MSP.shared.version
         eventModel.requestContext = generateRequestContext(ad: nil, request: adRequest)
 
-        do {
-            let tracingData = try eventModel.serializedData()
-            report(event: .adRequest, with: tracingData) { success, error in
-            }
-        } catch {
-        }
+        reportData(event: .adRequest, with: eventModel)
     }
 
     public func logAdHide(
@@ -446,11 +425,12 @@ import UIKit
         eventModel.reason = reason
         eventModel.requestContext = generateRequestContext(ad: ad, request: adRequest)
         eventModel.os = MSPDevice.shared.getOSType()
-        eventModel.ad = generateAdContext(ad: ad,
-                                          adRequest: adRequest,
-                                          bidResponse: bidResponse as? BidResponse,
-                                          adScreenShot: adScreenshot,
-                                          fullScreenShot: fullScreenShot)
+        eventModel.ad = generateAdContext(
+            ad: ad,
+            adRequest: adRequest,
+            bidResponse: bidResponse as? BidResponse,
+            adScreenShot: adScreenshot,
+            fullScreenShot: fullScreenShot)
         if let org = MSP.shared.org {
             eventModel.org = org
         }
@@ -458,12 +438,7 @@ import UIKit
             eventModel.app = app
         }
 
-        do {
-            let tracingData = try eventModel.serializedData()
-            report(event: .adHide, with: tracingData) { success, error in
-            }
-        } catch {
-        }
+        reportData(event: .adHide, with: eventModel)
     }
 
     public func logAdReport(
@@ -478,11 +453,12 @@ import UIKit
         }
         eventModel.requestContext = generateRequestContext(ad: ad, request: adRequest)
         eventModel.os = MSPDevice.shared.getOSType()
-        eventModel.ad = generateAdContext(ad: ad,
-                                          adRequest: adRequest,
-                                          bidResponse: bidResponse as? BidResponse,
-                                          adScreenShot: adScreenshot,
-                                          fullScreenShot: fullScreenShot)
+        eventModel.ad = generateAdContext(
+            ad: ad,
+            adRequest: adRequest,
+            bidResponse: bidResponse as? BidResponse,
+            adScreenShot: adScreenshot,
+            fullScreenShot: fullScreenShot)
         if let org = MSP.shared.org {
             eventModel.org = org
         }
@@ -490,12 +466,7 @@ import UIKit
             eventModel.app = app
         }
 
-        do {
-            let tracingData = try eventModel.serializedData()
-            report(event: .adReport, with: tracingData) { success, error in
-            }
-        } catch {
-        }
+        reportData(event: .adReport, with: eventModel)
     }
 
     func generateRequestContext(ad: MSPAd, request: AdRequest, bidResponse: BidResponse)
@@ -518,6 +489,22 @@ import UIKit
         eventModel.bidRequest.id = request.requestId
         eventModel.bidRequest.test = !request.testParams.isEmpty
         eventModel.ext.source = request.placementId
+        eventModel.ext.placementID = ad?.adInfo[MSPConstants.AD_INFO_NETWORK_AD_UNIT_ID] as? String ?? ""
+        eventModel.ext.userID = UserDefaults.standard.string(forKey: MSPConstants.USER_DEFAULTS_KEY_MSP_USER_ID) ?? ""
+
+        return eventModel
+    }
+
+    func generateRequestContext(ad: MSPAd?, requestId: String?) -> Com_Newsbreak_Monetization_Common_RequestContext {
+        var eventModel = Com_Newsbreak_Monetization_Common_RequestContext()
+        eventModel.tsMs = UInt64(Date().timeIntervalSince1970 * 1000)
+        eventModel.bidRequest = Com_Google_Openrtb_BidRequest()
+
+        eventModel.ext = Com_Newsbreak_Monetization_Common_RequestContextExt()
+
+        if let requestId = requestId {
+            eventModel.bidRequest.id = requestId
+        }
         eventModel.ext.placementID = ad?.adInfo[MSPConstants.AD_INFO_NETWORK_AD_UNIT_ID] as? String ?? ""
         eventModel.ext.userID = UserDefaults.standard.string(forKey: MSPConstants.USER_DEFAULTS_KEY_MSP_USER_ID) ?? ""
 
@@ -566,14 +553,16 @@ import UIKit
 
         return eventModel
     }
-    
-    private func generateAdContext(ad: MSPAd,
-                                   adRequest: AdRequest? = nil,
-                                   bidResponse: BidResponse? = nil,
-                                   adScreenShot: Data? = nil,
-                                   fullScreenShot: Data? = nil) -> Com_Newsbreak_Monetization_Common_Ad {
+
+    private func generateAdContext(
+        ad: MSPAd,
+        adRequest: AdRequest? = nil,
+        bidResponse: BidResponse? = nil,
+        adScreenShot: Data? = nil,
+        fullScreenShot: Data? = nil
+    ) -> Com_Newsbreak_Monetization_Common_Ad {
         var eventModel = Com_Newsbreak_Monetization_Common_Ad()
-        
+
         eventModel.tsMs = UInt64(Date().timeIntervalSince1970 * 1000)
         setAdContextTypeInfo(adContext: &eventModel, ad: ad)
         if let adScreenShot = adScreenShot {
@@ -583,16 +572,17 @@ import UIKit
             eventModel.fullScreenshot = fullScreenShot
         }
         if let adRequest = adRequest,
-           let bidResponse = bidResponse {
+            let bidResponse = bidResponse
+        {
             eventModel.seatBid = generateSeatBid(ad: ad, request: adRequest, bidResponse: bidResponse)
         } else {
             eventModel.seatBid = generateSeatBid(ad: ad)
         }
-        
+
         return eventModel
     }
-    
-    private func setAdContextTypeInfo( adContext: inout Com_Newsbreak_Monetization_Common_Ad, ad: MSPAd) {
+
+    private func setAdContextTypeInfo(adContext: inout Com_Newsbreak_Monetization_Common_Ad, ad: MSPAd) {
         if ad is MSPiOSCore.NativeAd,
             let nativeAd = ad as? MSPiOSCore.NativeAd
         {
@@ -615,10 +605,10 @@ import UIKit
         eventModel.bid = [generateBid(ad: ad, request: request, bidResponse: bidResponse)]
         return eventModel
     }
-    
+
     private func generateSeatBid(ad: MSPAd) -> Com_Google_Openrtb_BidResponse.SeatBid {
         var seatBid = Com_Google_Openrtb_BidResponse.SeatBid()
-        
+
         if let seat = ad.adInfo[MSPConstants.AD_INFO_NETWORK_NAME] as? String {
             seatBid.seat = seat
         } else {
@@ -636,7 +626,7 @@ import UIKit
         bid.adomain = [""]
         bid.impid = ""
         seatBid.bid = [bid]
-        
+
         return seatBid
     }
 
@@ -692,24 +682,35 @@ import UIKit
         eventModel.deviceSignal = getDeviceSignal()
         eventModel.appSignal = getAppSignal()
 
-        do {
-            let tracingData = try eventModel.serializedData()
+        let isAttribution = type == Com_Newsbreak_Mes_Events_UserSignalType.attribution
 
-            let isAttribution = type == Com_Newsbreak_Mes_Events_UserSignalType.attribution
-
-            report(event: .userSignal, with: tracingData) { success, error in
-                if success && error == nil && isAttribution {
-                    MSPLogger.shared.info(message: "Logging user signal succeeded")
-                    if isAttribution {
-                        UserDefaults.standard.set(true, forKey: MSP.KEY_MES_USER_SIGNAL_ATTRIBUTION)
-                    }
-                }
-
-                if let error = error {
-                    MSPLogger.shared.info(message: "Logging user signal failed: \(error)")
-                }
+        reportData(event: .userSignal, with: eventModel) { success, error in
+            if success && error == nil && isAttribution {
+                MSPLogger.shared.info(message: "Logging user signal succeeded")
+                UserDefaults.standard.set(true, forKey: MSP.KEY_MES_USER_SIGNAL_ATTRIBUTION)
             }
-        } catch {
+
+            if let error = error {
+                MSPLogger.shared.info(message: "Logging user signal failed: \(error)")
+            }
         }
+    }
+
+    func logAdBidLost(winnerBidderName: String, winnerPrice: Float, ad: MSPAd?, requestId: String?) {
+        var eventModel = Com_Newsbreak_Mes_Events_AdBidLostEvent()
+
+        eventModel.tsMs = UInt64(Date().timeIntervalSince1970 * 1000)
+        eventModel.requestContext = generateRequestContext(ad: ad, requestId: requestId)
+        if let ad = ad {
+            eventModel.ad = generateAdContext(ad: ad)
+        }
+        eventModel.os = .ios
+        eventModel.org = MSP.shared.org ?? ""
+        eventModel.app = MSP.shared.app ?? ""
+        eventModel.mspSdkVersion = MSP.shared.version
+        eventModel.winnerBidderName = winnerBidderName
+        eventModel.winnerPrice = winnerPrice
+
+        reportData(event: .adBidLost, with: eventModel)
     }
 }
