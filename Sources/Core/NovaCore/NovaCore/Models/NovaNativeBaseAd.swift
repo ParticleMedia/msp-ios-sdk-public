@@ -116,6 +116,12 @@ public class NovaNativeBaseAd: NovaBaseAd, NovaNativeMediaProviding {
         mediaContent = try NovaAdMediaContent(adMedia: getAdMedia(), discountTagInfo: adDiscountTagInfo)
     }
 
+    deinit {
+        NovaAdImpressionTimeTracker.clear(encryptedAdToken: encryptedAdToken)
+        NovaAdImageMetricReporter.clear(encryptedAdToken: encryptedAdToken)
+        NovaAdVideoMetricReporter.clear(encryptedAdToken: encryptedAdToken)
+    }
+
     // MARK: Internal
 
     // MARK: - Codable
