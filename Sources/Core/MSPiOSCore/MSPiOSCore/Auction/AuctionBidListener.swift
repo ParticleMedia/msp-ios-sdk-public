@@ -8,7 +8,17 @@
 import Foundation
 
 public protocol AuctionBidListener: AnyObject {
-    func onSuccess(bid: AuctionBid)
+    func onSuccess(bid: AuctionBid, loadInfo: [String: Any])
 
-    func onError(error: String)
+    func onError(error: String, loadInfo: [String: Any])
+}
+
+public extension AuctionBidListener {
+    func onSuccess(bid: AuctionBid) {
+        onSuccess(bid: bid, loadInfo: [:])
+    }
+
+    func onError(error: String) {
+        onError(error: error, loadInfo: [:])
+    }
 }

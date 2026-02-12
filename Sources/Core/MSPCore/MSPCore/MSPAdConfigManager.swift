@@ -11,6 +11,8 @@ import MSPiOSCore
 public class MSPAdConfigManager {
     public static let shared = MSPAdConfigManager()
 
+    private let MSP_LOG_AD_BID_LOST_RATE_KEY = "ad_bid_lost"
+
     public var adConfig: AdConfig?
     public var externalAdConfigPlacements: [String: Placement] = [:]
     public var MSP_AD_CONFIG_KEY = "map_ad_config"
@@ -34,6 +36,9 @@ public class MSPAdConfigManager {
                 }
                 if let logConfigJson = configData["log_config"] as? [String: Any] {
                     self.parseLogConfig(data: logConfigJson)
+                }
+                if let eventSamplingRateJson = configData["event_sampling_rate"] as? [String: Any] {
+                    self.parseConfig(with: eventSamplingRateJson)
                 }
 
             case .failure(let error):
@@ -74,6 +79,11 @@ public class MSPAdConfigManager {
         if let whiteList = data[MSP_LOG_WHITELIST_KEY] as? [String] {
             MSP.shared.logWhiteList = whiteList
         }
+    }
+
+    private func parseConfig(with eventSamplingRate: [String: Any]) {
+        let adBidLostRate = (eventSamplingRate[MSP_LOG_AD_BID_LOST_RATE_KEY] as? Double) ?? 0.01
+        MSP.shared.updateShouldLogAdBidLost(by: adBidLostRate)
     }
 
     func fetchAdConfigData(completion: @escaping (Result<[String: Any], Error>) -> Void) {

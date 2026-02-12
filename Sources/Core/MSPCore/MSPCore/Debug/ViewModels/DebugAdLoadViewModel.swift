@@ -230,8 +230,9 @@ class DebugAdLoadViewModel: AdListener {
     }
 
     // MARK: - AdListener
-    func onError(msg: String) {
+    func onError(msg: String, loadInfo: [String: Any]) {
         print(Strings.adError + msg)
+        tryNotifyLoss(loadInfo: loadInfo, loadSuccess: false, ad: nil)
         toastSignalSubject.send(ToastSignal(message: msg, style: .error, duration: nil))
     }
     func onAdImpression(ad: MSPAd) {
@@ -240,13 +241,14 @@ class DebugAdLoadViewModel: AdListener {
     func onAdClick(ad: MSPAd) {
         print(Strings.adClick + "\(ad)")
     }
-    func onAdLoaded(placementId: String) {
+    func onAdLoaded(placementId: String, loadInfo: [String: Any]) {
         guard let ad = loadAdRepository.getAd(placementId: placementId) else {
             print(Strings.noAdFound + placementId)
             toastSignalSubject.send(ToastSignal(message: Strings.noAdFoundForPlacementId, style: .error, duration: nil))
             return
         }
         self.ad = ad
+        tryNotifyLoss(loadInfo: loadInfo, loadSuccess: true, ad: ad)
         print(Strings.adLoaded + placementId)
         toastSignalSubject.send(ToastSignal(message: Strings.adLoadedSuccessfully, style: .success, duration: 2.0))
         if let price = ad.adInfo[MSPConstants.AD_INFO_PRICE] as? Double {
@@ -285,5 +287,15 @@ class DebugAdLoadViewModel: AdListener {
         isPlacementSectionVisible.toggle()
         // Update the section's visible cells without affecting section visibility
         sections = sections  // Trigger Combine update
+    }
+
+    /// `MSP.shared.notifyLoss` should only called
+    /// when msp ad failed in bid with other bidder.
+    /// This method is only for test purpose.
+    private func tryNotifyLoss(loadInfo: [String: Any], loadSuccess: Bool, ad: MSPAd?) {
+        let requestId = loadInfo["request_id"] as? String
+        let statusString = loadSuccess ? "succeeded" : "failed"
+        print("notifyLoss: ad load \(statusString), requestId = \(requestId ?? "no valid requestId")")
+        MSP.shared.notifyLoss(winnerBidderName: "demo_app_test", winnerPrice: 0.1, ad: ad, requestId: requestId)
     }
 }

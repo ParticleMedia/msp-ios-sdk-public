@@ -204,9 +204,9 @@ public class MSPDevice {
         // Format the string with +HH:mm or -HH:mm
         return String(format: "%+03d:%02d", hours, minutes)
     }
-    
+
     internal func getOSType() -> Com_Newsbreak_Monetization_Common_OsType {
-        return self.os ?? .ios
+        self.os ?? .ios
     }
 
     internal func getDeviceModel() -> String {

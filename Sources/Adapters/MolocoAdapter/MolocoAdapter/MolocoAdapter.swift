@@ -65,7 +65,7 @@ private typealias BannerCreator = (MolocoSDK.MolocoCreateAdParams, UIViewControl
             guard bidResponse is BidResponse,
                 let mBidResponse = bidResponse as? BidResponse
             else {
-                auctionBidListener.onError(error: "Failed to load Moloco ad: invalid bidResponse")
+                self.handleAuctionBidError(error: "Failed to load Moloco ad: invalid bidResponse")
                 return
             }
 
@@ -81,7 +81,7 @@ private typealias BannerCreator = (MolocoSDK.MolocoCreateAdParams, UIViewControl
             guard let bidResponse = bidResponse as? BidResponse,
                 let winningBid = bidResponse.winningBid
             else {
-                auctionBidListener.onError(error: "Failed to load Moloco ad: no winning bid")
+                self.handleAuctionBidError(error: "Failed to load Moloco ad: no winning bid", bidResponse: mBidResponse)
                 return
             }
 
@@ -102,7 +102,8 @@ private typealias BannerCreator = (MolocoSDK.MolocoCreateAdParams, UIViewControl
             case .multi_format:
                 self.loadMultiformatAd(bidderPlacementId, winningBid, rootViewController, adRequest, auctionBidListener)
             @unknown default:
-                auctionBidListener.onError(error: "Failed to load moloco ad: unknown ad format: \(adFormat)")
+                self.handleAuctionBidError(
+                    error: "Failed to load moloco ad: unknown ad format: \(adFormat)", bidResponse: bidResponse)
             }
         }
     }
@@ -114,21 +115,24 @@ private typealias BannerCreator = (MolocoSDK.MolocoCreateAdParams, UIViewControl
     ) {
         let adUnitId = getOriginalAdUnitId(winner: winningBid)
         guard let adUnitId = adUnitId else {
-            auctionBidListener.onError(error: "Failed to load moloco interstitial ad: adUnitId is nil")
+            self.handleAuctionBidError(
+                error: "Failed to load moloco interstitial ad: adUnitId is nil", bidResponse: self.bidResponse)
             return
         }
 
         self.interstitialAdItem = Moloco.shared.createInterstitial(params: .init(adUnit: adUnitId, mediation: ""))
 
         guard let interstitialAdItem = self.interstitialAdItem else {
-            auctionBidListener.onError(error: "Failed to load moloco interstitial ad: invalid configuration")
+            self.handleAuctionBidError(
+                error: "Failed to load moloco interstitial ad: invalid configuration", bidResponse: self.bidResponse)
             return
         }
 
         interstitialAdItem.interstitialDelegate = self
 
         guard let adm = winningBid.adm else {
-            auctionBidListener.onError(error: "Failed to load moloco interstitial ad: adm is nil")
+            self.handleAuctionBidError(
+                error: "Failed to load moloco interstitial ad: adm is nil", bidResponse: bidResponse)
             return
         }
 
@@ -140,14 +144,16 @@ private typealias BannerCreator = (MolocoSDK.MolocoCreateAdParams, UIViewControl
         let adUnitId = getOriginalAdUnitId(winner: winningBid)
 
         guard let adUnitId = adUnitId else {
-            auctionBidListener.onError(error: "Failed to load moloco native ad: adUnitId is nil")
+            self.handleAuctionBidError(
+                error: "Failed to load moloco native ad: adUnitId is nil", bidResponse: self.bidResponse)
             return
         }
 
         self.nativeAdItem = Moloco.shared.createNativeAd(params: .init(adUnit: adUnitId, mediation: ""))
 
         guard let nativeAdItem = self.nativeAdItem else {
-            auctionBidListener.onError(error: "Failed to load moloco native ad: invalid configuration")
+            self.handleAuctionBidError(
+                error: "Failed to load moloco native ad: invalid configuration", bidResponse: self.bidResponse)
             return
         }
 
@@ -155,7 +161,8 @@ private typealias BannerCreator = (MolocoSDK.MolocoCreateAdParams, UIViewControl
         nativeAdItem.delegate = self
 
         guard let adm = winningBid.adm else {
-            auctionBidListener.onError(error: "Failed to load moloco native ad: adm is nil")
+            self.handleAuctionBidError(
+                error: "Failed to load moloco native ad: adm is nil", bidResponse: self.bidResponse)
             return
         }
 
@@ -168,14 +175,16 @@ private typealias BannerCreator = (MolocoSDK.MolocoCreateAdParams, UIViewControl
         _ adRequest: MSPiOSCore.AdRequest, _ auctionBidListener: AuctionBidListener
     ) {
         guard let viewController = viewController else {
-            auctionBidListener.onError(error: "Failed to load moloco banner ad: rootViewController is nil")
+            self.handleAuctionBidError(
+                error: "Failed to load moloco banner ad: rootViewController is nil", bidResponse: self.bidResponse)
             return
         }
 
         let adUnitId = getOriginalAdUnitId(winner: winningBid)
 
         guard let adUnitId = adUnitId else {
-            auctionBidListener.onError(error: "Failed to load moloco banner ad: adUnitId is nil")
+            self.handleAuctionBidError(
+                error: "Failed to load moloco banner ad: adUnitId is nil", bidResponse: self.bidResponse)
             return
         }
 
@@ -190,14 +199,16 @@ private typealias BannerCreator = (MolocoSDK.MolocoCreateAdParams, UIViewControl
             }
 
         guard let bannerCreator = bannerCreator else {
-            auctionBidListener.onError(error: "Failed to load moloco banner ad: invalid ad size")
+            self.handleAuctionBidError(
+                error: "Failed to load moloco banner ad: invalid ad size", bidResponse: self.bidResponse)
             return
         }
 
         self.bannerView = bannerCreator(.init(adUnit: adUnitId, mediation: ""), viewController)
 
         guard let bannerView = bannerView else {
-            auctionBidListener.onError(error: "Failed to load moloco banner ad: invalid configuration")
+            self.handleAuctionBidError(
+                error: "Failed to load moloco banner ad: invalid configuration", bidResponse: self.bidResponse)
             return
         }
 
@@ -205,7 +216,8 @@ private typealias BannerCreator = (MolocoSDK.MolocoCreateAdParams, UIViewControl
         bannerView.translatesAutoresizingMaskIntoConstraints = false
 
         guard let adm = winningBid.adm else {
-            auctionBidListener.onError(error: "Failed to load moloco banner ad: adm is nil")
+            self.handleAuctionBidError(
+                error: "Failed to load moloco banner ad: adm is nil", bidResponse: self.bidResponse)
             return
         }
 
@@ -224,10 +236,12 @@ private typealias BannerCreator = (MolocoSDK.MolocoCreateAdParams, UIViewControl
             case "banner":
                 self.loadBannerAd(placementId, winningBid, viewController, adRequest, auctionBidListener)
             default:
-                auctionBidListener.onError(error: "Failed to load moloco ad: unsupported ad type: \(type)")
+                self.handleAuctionBidError(
+                    error: "Failed to load moloco ad: unsupported ad type: \(type)", bidResponse: self.bidResponse)
             }
         } else {
-            auctionBidListener.onError(error: "Failed to load moloco ad: prebid type is nil")
+            self.handleAuctionBidError(
+                error: "Failed to load moloco ad: prebid type is nil", bidResponse: self.bidResponse)
         }
     }
 
@@ -260,8 +274,8 @@ private typealias BannerCreator = (MolocoSDK.MolocoCreateAdParams, UIViewControl
         nativeAd = nil
     }
 
-@MainActor
- public func prepareViewForInteraction(nativeAd: MSPiOSCore.NativeAd, nativeAdView: Any) {
+    @MainActor
+    public func prepareViewForInteraction(nativeAd: MSPiOSCore.NativeAd, nativeAdView: Any) {
         guard let nativeAdView = nativeAdView as? NativeAdView,
             let nativeAdItem = self.nativeAdItem
         else { return }
@@ -401,13 +415,39 @@ private typealias BannerCreator = (MolocoSDK.MolocoCreateAdParams, UIViewControl
     public func handleAdLoaded(ad: MSPAd, auctionBidListener: AuctionBidListener, bidderPlacementId: String) {
         AdCache.shared.saveAd(placementId: bidderPlacementId, ad: ad)
         let auctionBid = AuctionBid(
-            bidderName: "moloco", bidderPlacementId: bidderPlacementId, ecpm: ad.adInfo["price"] as? Double ?? 0.0)
+            bidderName: "moloco",
+            bidderPlacementId: bidderPlacementId,
+            ecpm: ad.adInfo["price"] as? Double ?? 0.0,
+            loadInfo: buildLoadInfo(bidResponse: self.bidResponse))
         auctionBid.ad = ad
         auctionBidListener.onSuccess(bid: auctionBid)
         if let adRequest = self.adRequest {
             self.adMetricReporter?.logAdResponse(
                 ad: ad, adRequest: adRequest, errorCode: .ERROR_CODE_SUCCESS, errorMessage: nil)
         }
+    }
+
+    private func handleAuctionBidError(error: String, bidResponse: BidResponse? = nil) {
+        guard let auctionBidListener = self.auctionBidListener else { return }
+
+        if let bidResponse = bidResponse {
+            let requestId = bidResponse.rawResponse?.requestID ?? ""
+            auctionBidListener.onError(error: error, loadInfo: buildLoadInfo(bidResponse: bidResponse))
+        } else {
+            auctionBidListener.onError(error: error)
+        }
+    }
+
+    private func buildLoadInfo(bidResponse: BidResponse?) -> [String: Any] {
+        var loadInfo: [String: Any] = [:]
+
+        if let requestId = bidResponse?.rawResponse?.requestID,
+            !requestId.isEmpty
+        {
+            loadInfo["request_id"] = requestId
+        }
+
+        return loadInfo
     }
 }
 
@@ -518,6 +558,9 @@ extension MolocoAdapter: MolocoSDK.BaseAdDelegate {
         if let creativeId = creativeId {
             mspAd.adInfo[MSPConstants.AD_INFO_NETWORK_CREATIVE_ID] = creativeId
         }
+        if let requestId = self.bidResponse?.rawResponse?.requestID {
+            mspAd.adInfo[MSPConstants.AD_INFO_BID_REQUEST_ID] = requestId
+        }
 
         // Store burl for billing tracking
         if let burl = self.bidResponse?.winningBid?.bid.burl {
@@ -543,7 +586,7 @@ extension MolocoAdapter: MolocoSDK.BaseAdDelegate {
         DispatchQueue.main.async {
             MSPLogger.shared.info(message: "[Adapter: Moloco] Fail to load Moloco ad")
 
-            self.auctionBidListener?.onError(error: "fail to load ad")
+            self.handleAuctionBidError(error: "fail to load ad", bidResponse: self.bidResponse)
 
             self.adMetricReporter?.logAdResult(
                 placementId: self.adRequest?.placementId ?? "",

@@ -161,8 +161,9 @@ import PrebidMobile
     public func handleAdLoaded(ad: MSPAd, auctionBidListener: AuctionBidListener, bidderPlacementId: String) {
         // to do: move this to ios core
         AdCache.shared.saveAd(placementId: bidderPlacementId, ad: ad)
-        let auctionBid = AuctionBid(
-            bidderName: "inmobi", bidderPlacementId: bidderPlacementId, ecpm: ad.adInfo["price"] as? Double ?? 0.0)
+        let auctionBid = AuctionBid(bidderName: "inmobi",
+                                    bidderPlacementId: bidderPlacementId,
+                                    ecpm: ad.adInfo["price"] as? Double ?? 0.0)
         auctionBid.ad = ad
         auctionBidListener.onSuccess(bid: auctionBid)
         if let adRequest = self.adRequest {

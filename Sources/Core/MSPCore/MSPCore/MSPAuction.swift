@@ -18,6 +18,7 @@ public class MSPAuction: Auction {
 
     private let taskLock = NSLock()
     private var completionCalled = false
+    private var loadInfo: [String: Any] = [:]
 
 
     public override func startAuction(auctionListener: any AuctionListener, adListener: (any AdListener)?) {
@@ -41,10 +42,11 @@ public class MSPAuction: Auction {
                             message:
                                 "[Auction: Load Ad] time out. winner: \(winnerBid.bidderName),\(winnerBid.ecpm),\(winnerBid.bidderPlacementId)"
                         )
-                        auctionListener.onSuccess(winningBid: winnerBid)
+                        auctionListener.onSuccess(winningBid: winnerBid, loadInfo: winnerBid.loadInfo)
                     } else {
                         MSPLogger.shared.info(message: "[Auction: Load Ad] time out. No winning bid")
-                        auctionListener.onError(error: "request time out: client auction no winning bid")
+                        auctionListener.onError(
+                            error: "request time out: client auction no winning bid", loadInfo: self.loadInfo)
                     }
                 }
             }
@@ -66,10 +68,10 @@ public class MSPAuction: Auction {
                         message:
                             "[Auction: Load Ad] completed. winner: \(winnerBid.bidderName),\(winnerBid.ecpm),\(winnerBid.bidderPlacementId)"
                     )
-                    auctionListener.onSuccess(winningBid: winnerBid)
+                    auctionListener.onSuccess(winningBid: winnerBid, loadInfo: winnerBid.loadInfo)
                 } else {
                     MSPLogger.shared.info(message: "[Auction: Load Ad] completed. No winning bid")
-                    auctionListener.onError(error: "client auction no winning bid")
+                    auctionListener.onError(error: "client auction no winning bid", loadInfo: self.loadInfo)
                 }
             }
         }
@@ -97,10 +99,12 @@ public class MSPAuction: Auction {
                     "[Auction: Load Ad] Ad filled from cache: \(bidder.name), price: \(cachedAd.adInfo["price"]), bidderPlacementId:\(bidder.bidderPlacementId)"
             )
             let auctionBid = AuctionBid(
-                bidderName: bidder.name, bidderPlacementId: bidder.bidderPlacementId,
-                ecpm: cachedAd.adInfo["price"] as? Double ?? 0.0, fromCache: true)
+                bidderName: bidder.name,
+                bidderPlacementId: bidder.bidderPlacementId,
+                ecpm: cachedAd.adInfo["price"] as? Double ?? 0.0,
+                fromCache: true)
             auctionBid.ad = cachedAd
-            auctionBidListener.onSuccess(bid: auctionBid)
+            auctionBidListener.onSuccess(bid: auctionBid, loadInfo: buildLoadInfo(ad: cachedAd))
         } else if cacheOnly {
             auctionBidListener.onError(error: "no cached ad in cache")
         } else if let adRequest = self.adRequest,
@@ -110,6 +114,19 @@ public class MSPAuction: Auction {
         } else {
             auctionBidListener.onError(error: "fail to load a bid request")
         }
+    }
+
+    private func buildLoadInfo(ad: MSPAd) -> [String: Any] {
+        var loadInfo: [String: Any] = [:]
+
+        if let requestId = ad.adInfo[MSPConstants.AD_INFO_BID_REQUEST_ID] as? String,
+            !requestId.isEmpty
+        {
+            loadInfo["request_id"] = requestId
+            ad.adInfo.removeValue(forKey: MSPConstants.AD_INFO_BID_REQUEST_ID)
+        }
+
+        return loadInfo
     }
 
     private func getWinnerBid() -> AuctionBid? {
@@ -124,7 +141,7 @@ public class MSPAuction: Auction {
 }
 
 extension MSPAuction: AuctionBidListener {
-    public func onSuccess(bid: MSPiOSCore.AuctionBid) {
+    public func onSuccess(bid: MSPiOSCore.AuctionBid, loadInfo: [String: Any]) {
         MSPLogger.shared.info(
             message: "[Auction] Ads filled from bidder: \(bid.bidderName). bidderPlacementId: \(bid.bidderPlacementId)")
         self.biddingDispatchQueue.async {
@@ -139,10 +156,11 @@ extension MSPAuction: AuctionBidListener {
         }
     }
 
-    public func onError(error: String) {
+    public func onError(error: String, loadInfo: [String: Any]) {
         MSPLogger.shared.info(message: "[Auction] Ads no filled. Reason: \(error)")
         self.biddingDispatchQueue.async {
             self.taskLock.lock()
+            self.loadInfo = loadInfo
             if self.remainingTaskCnt > 0 {
                 self.remainingTaskCnt = self.remainingTaskCnt - 1
                 self.dispatchGroup.leave()
