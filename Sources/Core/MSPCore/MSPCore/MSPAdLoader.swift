@@ -198,11 +198,11 @@ public class MSPAdLoader: NSObject {
 
 
 extension MSPAdLoader: AuctionListener {
-    public func onSuccess(winningBid: MSPiOSCore.AuctionBid) {
+    public func onSuccess(winningBid: MSPiOSCore.AuctionBid, loadInfo: [String: Any]) {
         DispatchQueue.main.async {
             self.winnerBidderPlacementId = winningBid.bidderPlacementId
             if let placementId = self.adRequest?.placementId {
-                self.adListener?.onAdLoaded(placementId: placementId)
+                self.adListener?.onAdLoaded(placementId: placementId, loadInfo: loadInfo)
                 if let adRequest = self.adRequest,
                     let ad = winningBid.ad,
                     let loadStartTime = self.loadStartTime
@@ -215,8 +215,8 @@ extension MSPAdLoader: AuctionListener {
         }
     }
 
-    public func onError(error: String) {
-        adListener?.onError(msg: error)
+    public func onError(error: String, loadInfo: [String: Any]) {
+        adListener?.onError(msg: error, loadInfo: loadInfo)
         if let adRequest = self.adRequest,
             let loadStartTime = self.loadStartTime
         {

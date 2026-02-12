@@ -45,6 +45,8 @@ public class MSP {
     public var isLogSampled = false
     public var logWhiteList: [String]?
 
+    private var shouldLogAdBidLost = false
+
     private init() {
         NotificationCenter.default.addObserver(
             self, selector: #selector(self.appWillEnterForeground), name: UIApplication.willEnterForegroundNotification,
@@ -347,21 +349,18 @@ public class MSP {
         return topViewController
     }
 
+    private func computeShouldLog(by sampleRate: Double) -> Bool {
+        let isFinite = sampleRate.isFinite
+        let shouldLog = Double.random(in: 0..<1) < sampleRate
+        return isFinite && shouldLog
+    }
+
     public func updateLogSample(sampleRate: Double) {
-        guard sampleRate.isFinite else {
-            self.isLogSampled = false
-            return
-        }
-        if sampleRate <= 0 {
-            self.isLogSampled = false
-            return
-        }
-        if sampleRate >= 1 {
-            self.isLogSampled = true
-            return
-        }
-        self.isLogSampled = Double.random(in: 0..<1) < sampleRate
-        return
+        self.isLogSampled = computeShouldLog(by: sampleRate)
+    }
+
+    func updateShouldLogAdBidLost(by sampleRate: Double) {
+        self.shouldLogAdBidLost = computeShouldLog(by: sampleRate)
     }
 
     static func getMSPVersion() -> String {
@@ -382,6 +381,12 @@ public class MSP {
         }
 
         return version
+    }
+
+    public func notifyLoss(winnerBidderName: String, winnerPrice: Float, ad: MSPAd?, requestId: String?) {
+        guard shouldLogAdBidLost else { return }
+        MESMetricReporter.shared.logAdBidLost(
+            winnerBidderName: winnerBidderName, winnerPrice: winnerPrice, ad: ad, requestId: requestId)
     }
 }
 

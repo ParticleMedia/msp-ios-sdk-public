@@ -51,7 +51,7 @@ public class NovaAdapter: AdNetworkAdapter {
             guard bidResponse is BidResponse,
                 let mBidResponse = bidResponse as? BidResponse
             else {
-                auctionBidListener.onError(error: "no valid response")
+                self.handleAuctionBidError(error: "no valid response")
                 self.adMetricReporter?.logAdResult(
                     placementId: adRequest.placementId, ad: nil, fill: false, isFromCache: false)
                 return
@@ -71,7 +71,7 @@ public class NovaAdapter: AdNetworkAdapter {
                 let prebidExtDict = self.SafeAs(bidExtDict["prebid"], [String: Any].self),
                 let adType = self.SafeAs(prebidExtDict["type"], String.self)
             else {
-                self.auctionBidListener?.onError(error: "no valid response")
+                self.handleAuctionBidError(error: "no valid response")
                 self.adMetricReporter?.logAdResult(
                     placementId: adRequest.placementId, ad: nil, fill: false, isFromCache: false)
                 return
@@ -104,7 +104,7 @@ public class NovaAdapter: AdNetworkAdapter {
             let novaNativeAd = nativeAd as? NovaNativeAd,
             let novaNativeAdItem = novaNativeAd.nativeAdItem
         else {
-            self.auctionBidListener?.onError(error: "fail to render native view")
+            self.handleAuctionBidError(error: "fail to render native view", bidResponse: self.bidResponse)
             return
         }
 
@@ -212,7 +212,7 @@ public class NovaAdapter: AdNetworkAdapter {
                 !ads.isEmpty,
                 let adItem = ads.first
             else {
-                self.auctionBidListener?.onError(error: "no valid response")
+                self.handleAuctionBidError(error: "no valid response")
                 self.adMetricReporter?.logAdResult(
                     placementId: adRequest?.placementId ?? "", ad: nil, fill: false, isFromCache: false)
                 return
@@ -245,6 +245,9 @@ public class NovaAdapter: AdNetworkAdapter {
                     nativeAd.adInfo[MSPConstants.AD_INFO_NETWORK_NAME] = AdNetwork.nova.rawValue
                     nativeAd.adInfo[MSPConstants.AD_INFO_NETWORK_AD_UNIT_ID] = self.adUnitId
                     nativeAd.adInfo[MSPConstants.AD_INFO_NETWORK_CREATIVE_ID] = self.bidResponse?.winningBid?.bid.crid
+                    if let requestId = self.bidResponse?.rawResponse?.requestID {
+                        nativeAd.adInfo[MSPConstants.AD_INFO_BID_REQUEST_ID] = requestId
+                    }
 
                     nativeAd.nativeAdItem = nativeAdItem
                     self.nativeAdItem = nativeAdItem
@@ -284,6 +287,9 @@ public class NovaAdapter: AdNetworkAdapter {
                     novaInterstitialAd.adInfo[MSPConstants.AD_INFO_NETWORK_AD_UNIT_ID] = self.adUnitId
                     novaInterstitialAd.adInfo[MSPConstants.AD_INFO_NETWORK_CREATIVE_ID] =
                         self.bidResponse?.winningBid?.bid.crid
+                    if let requestId = self.bidResponse?.rawResponse?.requestID {
+                        novaInterstitialAd.adInfo[MSPConstants.AD_INFO_BID_REQUEST_ID] = requestId
+                    }
                     interstitialAdItem?.delegate = self
 
                     if let adListener = self.adListener,
@@ -311,7 +317,7 @@ public class NovaAdapter: AdNetworkAdapter {
             default:
                 MSPLogger.shared.info(message: "[Adapter: Nova] Fail to load Nova ad")
                 let errorMessage = "unknown adType"
-                self.auctionBidListener?.onError(error: errorMessage)
+                self.handleAuctionBidError(error: errorMessage, bidResponse: self.bidResponse)
                 self.adMetricReporter?.logAdResult(
                     placementId: adRequest?.placementId ?? "", ad: nil, fill: false, isFromCache: false)
                 if let adRequest = self.adRequest {
@@ -324,7 +330,7 @@ public class NovaAdapter: AdNetworkAdapter {
             MSPLogger.shared
                 .info(message: "[Adapter: Nova] Fail to load Nova ad with error: \(error.localizedDescription)")
             let errorMessage = "error decode nova ad string"
-            self.auctionBidListener?.onError(error: errorMessage)
+            self.handleAuctionBidError(error: errorMessage, bidResponse: self.bidResponse)
             self.adMetricReporter?.logAdResult(
                 placementId: adRequest?.placementId ?? "", ad: nil, fill: false, isFromCache: false)
             if let adRequest = self.adRequest {
@@ -383,13 +389,28 @@ public class NovaAdapter: AdNetworkAdapter {
         // to do: move this to ios core
         AdCache.shared.saveAd(placementId: bidderPlacementId, ad: ad)
         let auctionBid = AuctionBid(
-            bidderName: "msp", bidderPlacementId: bidderPlacementId, ecpm: ad.adInfo["price"] as? Double ?? 0.0)
+            bidderName: "msp",
+            bidderPlacementId: bidderPlacementId,
+            ecpm: ad.adInfo["price"] as? Double ?? 0.0,
+            loadInfo: buildLoadInfo(bidResponse: self.bidResponse))
         auctionBid.ad = ad
         auctionBidListener.onSuccess(bid: auctionBid)
         if let adRequest = self.adRequest {
             self.adMetricReporter?.logAdResponse(
                 ad: ad, adRequest: adRequest, errorCode: .ERROR_CODE_SUCCESS, errorMessage: nil)
         }
+    }
+
+    private func buildLoadInfo(bidResponse: BidResponse?) -> [String: Any] {
+        var loadInfo: [String: Any] = [:]
+
+        if let requestId = bidResponse?.rawResponse?.requestID,
+            !requestId.isEmpty
+        {
+            loadInfo["request_id"] = requestId
+        }
+
+        return loadInfo
     }
 
     public func getAdNetwork() -> MSPiOSCore.AdNetwork {
@@ -469,6 +490,16 @@ public class NovaAdapter: AdNetworkAdapter {
             {
                 self.adMetricReporter?.logAdClick(ad: ad, adRequest: adRequest, bidResponse: bidResponse)
             }
+        }
+    }
+
+    private func handleAuctionBidError(error: String, bidResponse: BidResponse? = nil) {
+        guard let auctionBidListener = self.auctionBidListener else { return }
+
+        if let bidResponse = bidResponse {
+            auctionBidListener.onError(error: error, loadInfo: buildLoadInfo(bidResponse: bidResponse))
+        } else {
+            auctionBidListener.onError(error: error)
         }
     }
 }

@@ -65,7 +65,7 @@ import VungleAdsSDK
             guard bidResponse is BidResponse,
                 let mBidResponse = bidResponse as? BidResponse
             else {
-                auctionBidListener.onError(error: "Failed to load Liftoff ad: invalid bidResponse")
+                self.handleAuctionBidError(error: "Failed to load Liftoff ad: invalid bidResponse")
                 return
             }
 
@@ -81,7 +81,8 @@ import VungleAdsSDK
             guard let bidResponse = bidResponse as? BidResponse,
                 let winningBid = bidResponse.winningBid
             else {
-                auctionBidListener.onError(error: "Failed to load Liftoff ad: no winning bid")
+                self.handleAuctionBidError(
+                    error: "Failed to load Liftoff ad: no winning bid", bidResponse: self.bidResponse)
                 return
             }
 
@@ -102,7 +103,8 @@ import VungleAdsSDK
             case .multi_format:
                 self.loadMultiformatAd(bidderPlacementId, winningBid, adRequest, auctionBidListener)
             @unknown default:
-                auctionBidListener.onError(error: "Failed to load liftoff ad: unknown ad format: \(adFormat)")
+                self.handleAuctionBidError(
+                    error: "Failed to load liftoff ad: unknown ad format: \(adFormat)", bidResponse: self.bidResponse)
             }
         }
     }
@@ -113,7 +115,9 @@ import VungleAdsSDK
     ) {
         let placementReferenceId = getPlacementReferenceId(winner: winningBid)
         guard let placementReferenceId = placementReferenceId else {
-            auctionBidListener.onError(error: "Failed to load liftoff interstitial ad: placementReferenceId is nil")
+            self.handleAuctionBidError(
+                error: "Failed to load liftoff interstitial ad: placementReferenceId is nil",
+                bidResponse: self.bidResponse)
             return
         }
 
@@ -122,7 +126,8 @@ import VungleAdsSDK
         interstitialAdItem.delegate = self
 
         guard let adm = winningBid.adm else {
-            auctionBidListener.onError(error: "Failed to load liftoff interstitial ad: adm is nil")
+            self.handleAuctionBidError(
+                error: "Failed to load liftoff interstitial ad: adm is nil", bidResponse: self.bidResponse)
             return
         }
 
@@ -133,7 +138,8 @@ import VungleAdsSDK
         let placementReferenceId = getPlacementReferenceId(winner: winningBid)
 
         guard let placementReferenceId = placementReferenceId else {
-            auctionBidListener.onError(error: "Failed to load liftoff native ad: placementReferenceId is nil")
+            self.handleAuctionBidError(
+                error: "Failed to load liftoff native ad: placementReferenceId is nil", bidResponse: self.bidResponse)
             return
         }
 
@@ -142,7 +148,8 @@ import VungleAdsSDK
         nativeAdItem.delegate = self
 
         guard let adm = winningBid.adm else {
-            auctionBidListener.onError(error: "Failed to load liftoff native ad: adm is nil")
+            self.handleAuctionBidError(
+                error: "Failed to load liftoff native ad: adm is nil", bidResponse: self.bidResponse)
             return
         }
 
@@ -156,7 +163,8 @@ import VungleAdsSDK
         let placementReferenceId = getPlacementReferenceId(winner: winningBid)
 
         guard let placementReferenceId = placementReferenceId else {
-            auctionBidListener.onError(error: "Failed to load liftoff banner ad: placementReferenceId is nil")
+            self.handleAuctionBidError(
+                error: "Failed to load liftoff banner ad: placementReferenceId is nil", bidResponse: self.bidResponse)
             return
         }
 
@@ -171,7 +179,8 @@ import VungleAdsSDK
         }
 
         guard let bannerSize = bannerSize else {
-            auctionBidListener.onError(error: "Failed to load liftoff banner ad: invalid ad size")
+            self.handleAuctionBidError(
+                error: "Failed to load liftoff banner ad: invalid ad size", bidResponse: self.bidResponse)
             return
         }
 
@@ -181,7 +190,8 @@ import VungleAdsSDK
         self.bannerView?.translatesAutoresizingMaskIntoConstraints = false
 
         guard let adm = winningBid.adm else {
-            auctionBidListener.onError(error: "Failed to load liftoff banner ad: adm is nil")
+            self.handleAuctionBidError(
+                error: "Failed to load liftoff banner ad: adm is nil", bidResponse: self.bidResponse)
             return
         }
 
@@ -199,10 +209,12 @@ import VungleAdsSDK
             case "banner":
                 self.loadBannerAd(placementId, winningBid, adRequest, auctionBidListener)
             default:
-                auctionBidListener.onError(error: "Failed to load liftoff ad: unsupported ad type: \(type)")
+                self.handleAuctionBidError(
+                    error: "Failed to load liftoff ad: unsupported ad type: \(type)", bidResponse: self.bidResponse)
             }
         } else {
-            auctionBidListener.onError(error: "Failed to load liftoff ad: prebid type is nil")
+            self.handleAuctionBidError(
+                error: "Failed to load liftoff ad: prebid type is nil", bidResponse: self.bidResponse)
         }
     }
 
@@ -238,8 +250,8 @@ import VungleAdsSDK
         nativeAd = nil
     }
 
-@MainActor
- public func prepareViewForInteraction(nativeAd: MSPiOSCore.NativeAd, nativeAdView: Any) {
+    @MainActor
+    public func prepareViewForInteraction(nativeAd: MSPiOSCore.NativeAd, nativeAdView: Any) {
         guard let nativeAdView = nativeAdView as? NativeAdView,
             let nativeAdItem = self.nativeAd?.nativeAdItem
         else { return }
@@ -324,7 +336,10 @@ import VungleAdsSDK
     public func handleAdLoaded(ad: MSPAd, auctionBidListener: AuctionBidListener, bidderPlacementId: String) {
         AdCache.shared.saveAd(placementId: bidderPlacementId, ad: ad)
         let auctionBid = AuctionBid(
-            bidderName: "liftoff", bidderPlacementId: bidderPlacementId, ecpm: ad.adInfo["price"] as? Double ?? 0.0)
+            bidderName: "liftoff",
+            bidderPlacementId: bidderPlacementId,
+            ecpm: ad.adInfo["price"] as? Double ?? 0.0,
+            loadInfo: buildLoadInfo(bidResponse: self.bidResponse))
         auctionBid.ad = ad
         auctionBidListener.onSuccess(bid: auctionBid)
         if let adRequest = self.adRequest {
@@ -344,6 +359,29 @@ import VungleAdsSDK
         default:
             nil
         }
+    }
+
+    private func handleAuctionBidError(error: String, bidResponse: BidResponse? = nil) {
+        guard let auctionBidListener = self.auctionBidListener else { return }
+
+        if let bidResponse = bidResponse {
+            let requestId = bidResponse.rawResponse?.requestID ?? ""
+            auctionBidListener.onError(error: error, loadInfo: buildLoadInfo(bidResponse: bidResponse))
+        } else {
+            auctionBidListener.onError(error: error)
+        }
+    }
+
+    private func buildLoadInfo(bidResponse: BidResponse?) -> [String: Any] {
+        var loadInfo: [String: Any] = [:]
+
+        if let requestId = bidResponse?.rawResponse?.requestID,
+            !requestId.isEmpty
+        {
+            loadInfo["request_id"] = requestId
+        }
+
+        return loadInfo
     }
 }
 
@@ -455,6 +493,9 @@ extension LiftoffAdapter: VungleInterstitialDelegate {
         mspAd.adInfo[MSPConstants.AD_INFO_NETWORK_AD_UNIT_ID] = self.bidderPlacementId
         if let creativeId = creativeId {
             mspAd.adInfo[MSPConstants.AD_INFO_NETWORK_CREATIVE_ID] = creativeId
+        }
+        if let requestId = self.bidResponse?.rawResponse?.requestID {
+            mspAd.adInfo[MSPConstants.AD_INFO_BID_REQUEST_ID] = requestId
         }
 
         self.handleAdLoaded(
