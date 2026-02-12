@@ -115,20 +115,8 @@ extension NovaNativeAdView {
     }
 
     func unregisterAd() {
-        guard let nativeAd else {
-            stopTimerIfNeeded()
-            iABMetricReporter?.stopSession()
-            return
-        }
-
         stopTimerIfNeeded()
         iABMetricReporter?.stopSession()
-
-        let token = nativeAd.encryptedAdToken
-        NovaAdImpressionTimeTracker.clear(encryptedAdToken: token)
-        NovaAdImageMetricReporter.clear(encryptedAdToken: token)
-        NovaAdVideoMetricReporter.clear(encryptedAdToken: token)
-
         self.nativeAd = nil
     }
 }
@@ -151,7 +139,7 @@ private extension NovaNativeAdView {
     }
 
     @objc func didTapAdView(sender: UIGestureRecognizer) {
-        guard let nativeAd = self.nativeAd else {
+        guard self.nativeAd != nil else {
             assertionFailure("Native ad view should have an associated ad")
             return
         }

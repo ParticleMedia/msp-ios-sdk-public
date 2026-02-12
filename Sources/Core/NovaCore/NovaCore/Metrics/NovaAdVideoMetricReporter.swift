@@ -38,6 +38,7 @@ class NovaAdVideoMetricReporter {
         var timePoints: [ProgressDurationPoint] = [
             ProgressDurationPoint(duration: 3.0, event: .videoProgress, params: [NovaAdMetricKeys.OFFSET: "3.0"])
         ]
+        var isPaused: Bool = false
         var cumulativeMediaTime: Double = 0
         var lastPositionTime: Double?
         var lastMediaSampleTime: Double?
@@ -174,12 +175,18 @@ class NovaAdVideoMetricReporter {
             params[NovaAdMetricKeys.TOTAL_WATCH_TIME_MS] = "\(totalWatchTimeInMs)"
         }
         NovaAdMetricReporter.logVideoEvent(.videoPause, encryptedAdToken: encryptedAdToken, params: params)
+        record?.isPaused = true
     }
 
     static func logVideoResume(
         encryptedAdToken: String,
         reason: NovaAdEventPauseReason
     ) {
+        guard let record = allVideoLogRecords[encryptedAdToken] else { return }
+        guard record.didLogStart else { return }
+        guard record.isPaused else { return }
+        record.isPaused = false
+
         var params: [String: String] = [
             NovaAdMetricKeys.REASON: reason.rawValue
         ]
