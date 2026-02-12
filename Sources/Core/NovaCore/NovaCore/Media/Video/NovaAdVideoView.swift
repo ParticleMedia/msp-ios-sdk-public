@@ -133,9 +133,8 @@ public final class NovaAdVideoView: UIView {
             videoPlayer.setPlayerMute(newValue)
             if oldValue != newValue {
                 reportMute(currentMuteState: newValue)
-                if let currentState = state {
-                    state = .init(playState: currentState.playState, isMute: newValue)
-                }
+                mediaModel?.videoInfo.state?.updateMuteState(newValue)
+                notifyStateDidChange()
             }
         }
     }
@@ -173,30 +172,24 @@ public final class NovaAdVideoView: UIView {
     private var bottomShadowView: GradientShadowView?
 
     private var state: NovaAdVideoState? {
-        get {
-            mediaModel?.videoInfo.state
+        mediaModel?.videoInfo.state
+    }
+
+    /// Notify side effects after mutating state in place.
+    private func notifyStateDidChange() {
+        guard let state else { return }
+        if case .showCover = state.playState {
+        } else {
+            willAutoPlayingAfterShowCover = false
         }
-        set {
-            if let newState = newValue {
-                if case .showCover = newState.playState {
-                } else {
-                    willAutoPlayingAfterShowCover = false
-                }
-                mediaModel?.videoInfo.state = newState
-                mediaContent?.updateVideoState(newState)
-                subviewHandler?.sync(with: newState)
-            } else {
-                // When setting to nil, don't clear videoInfo.state as it's used for persistent state storage
-                // Only clear UI-related state
-                willAutoPlayingAfterShowCover = false
-            }
-        }
+        mediaContent?.updateVideoState(state)
+        subviewHandler?.sync(with: state)
     }
 
     private var loopCount: Int = 0 {
         didSet {
             if oldValue != loopCount {
-                mediaModel?.videoInfo.state?.loopCount = loopCount
+                mediaModel?.videoInfo.state?.updateLoopCount(loopCount)
             }
         }
     }
@@ -218,21 +211,19 @@ extension NovaAdVideoView {
 
         setupPlayer(videoInfo: model.videoInfo)
 
-        state = {
-            if let state = model.videoInfo.state {
-                return state
-            }
+        if model.videoInfo.state == nil {
             if let coverUrlStr = model.videoInfo.coverUrlStr, let url = URL(string: coverUrlStr) {
-                return .init(
+                mediaModel?.videoInfo.state = .init(
                     playState: .showCover(autoPlay: model.videoInfo.isAuto, coverURL: url),
                     isMute: model.videoInfo.isMute)
             } else {
-                return .init(
+                mediaModel?.videoInfo.state = .init(
                     playState: model.videoInfo.isAuto ? .loading : .endPlaying(shouldShowPlayButton: true),
                     isMute: model.videoInfo.isMute
                 )
             }
-        }()
+        }
+        notifyStateDidChange()
         muted = model.videoInfo.state?.isMute ?? model.videoInfo.isMute
         setupActionHelper()
         setupTapGesture()
@@ -243,7 +234,7 @@ extension NovaAdVideoView {
 
     func prepareForReuse() {
         videoPlayer.stop(endKind: .none)
-        state = nil
+        willAutoPlayingAfterShowCover = false
         mediaModel = nil
         videoStartPlayingAfterFinishLoading = false
         bottomShadowView?.removeFromSuperview()
@@ -346,11 +337,11 @@ private extension NovaAdVideoView {
             startPlaying()
         case .playing(let currentTime, _):
             videoPlayerSeekTo(currentTime)
-            // TODO: lsy, 感觉这个后面不一定是 `startAutoPlayInFeed` 了
             resumeVideo(resumeKind: .startAutoPlayInFeed)
-        case .paused(let currentTime, _, _):
+        case .paused(let currentTime, _, let endKind):
             videoPlayerSeekTo(currentTime)
-            resumeVideo(resumeKind: .resume)
+            let resumeKind: VideoResumeKind = (endKind == .pause) ? .resume : .startAutoPlayInFeed
+            resumeVideo(resumeKind: resumeKind)
         case .endPlaying:
             break
         }
@@ -691,15 +682,13 @@ extension NovaAdVideoView: NovaVideoPlayerDelegate {
             if case .playing = state?.playState {
                 break
             }
-            let newIsMute = state?.isMute ?? true
-            state = .init(
-                playState:
-                    .playing(
-                        currentTime: videoPlayer.currentTime(),
-                        videoLength: videoPlayer.maximumTimeDuration()
-                    ),
-                isMute: newIsMute
+            mediaModel?.videoInfo.state?.transition(
+                to: .playing(
+                    currentTime: videoPlayer.currentTime(),
+                    videoLength: videoPlayer.maximumTimeDuration()
+                )
             )
+            notifyStateDidChange()
             videoStartPlayingAfterFinishLoading = true
         case .stopped:
             let shouldShowPlayButton: Bool = {
@@ -712,22 +701,19 @@ extension NovaAdVideoView: NovaVideoPlayerDelegate {
                     return true
                 }
             }()
-            let newIsMute = state?.isMute ?? true
-            state = .init(
-                playState: .endPlaying(shouldShowPlayButton: shouldShowPlayButton),
-                isMute: newIsMute
+            mediaModel?.videoInfo.state?.transition(
+                to: .endPlaying(shouldShowPlayButton: shouldShowPlayButton)
             )
+            notifyStateDidChange()
         case .paused:
-            let newIsMute = state?.isMute ?? true
-            state = .init(
-                playState:
-                    .paused(
-                        currentTime: videoPlayer.currentTime(),
-                        videoLength: videoPlayer.maximumTimeDuration(),
-                        endKind: videoPlayer.getVideoEndKind()
-                    ),
-                isMute: newIsMute
+            mediaModel?.videoInfo.state?.transition(
+                to: .paused(
+                    currentTime: videoPlayer.currentTime(),
+                    videoLength: videoPlayer.maximumTimeDuration(),
+                    endKind: videoPlayer.getVideoEndKind()
+                )
             )
+            notifyStateDidChange()
             if let actionContext {
                 let encryptedAdToken = actionContext.adActionTracingInfo.encryptedAdToken
                 let reason: NovaAdVideoMetricReporter.NovaAdEventPauseReason? = {
@@ -764,29 +750,20 @@ extension NovaAdVideoView: NovaVideoPlayerDelegate {
             return
         }
         switch state?.playState {
-        case .playing(currentTime: _, _):
+        case .playing:
             if videoStartPlayingAfterFinishLoading {
                 videoStartPlayingAfterFinishLoading = false
                 delegate?.videoViewDidChangeToPlay()
             }
-            let newIsMute = state?.isMute ?? true
-            state = .init(
-                playState: .playing(currentTime: videoCurrent, videoLength: videoLength),
-                isMute: newIsMute
+            mediaModel?.videoInfo.state?.updatePlayingTime(
+                currentTime: videoCurrent, videoLength: videoLength
             )
-        case .paused(currentTime: _, _, _):
-            let endKind: NovaVideoEndKind = {
-                if let state, case .paused(_, _, let endKind) = state.playState {
-                    return endKind
-                } else {
-                    return .none
-                }
-            }()
-            let newIsMute = state?.isMute ?? true
-            state = .init(
-                playState: .paused(currentTime: videoCurrent, videoLength: videoLength, endKind: endKind),
-                isMute: newIsMute
+            notifyStateDidChange()
+        case .paused:
+            mediaModel?.videoInfo.state?.updatePausedTime(
+                currentTime: videoCurrent, videoLength: videoLength
             )
+            notifyStateDidChange()
         default:
             break
         }

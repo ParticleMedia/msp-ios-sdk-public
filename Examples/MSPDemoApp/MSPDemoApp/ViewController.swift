@@ -170,6 +170,19 @@ class ViewController: UIViewController {
         button13.frame = CGRect(x: 100, y: 700, width: 200, height: 50)
         view.addSubview(button13)
 
+        let adListButton = UIButton(type: .system)
+        adListButton.setTitle("Ad List (Reuse Test)", for: .normal)
+        adListButton.backgroundColor = .systemPurple
+        adListButton.setTitleColor(.white, for: .normal)
+        adListButton.layer.cornerRadius = 8
+        adListButton.addAction(
+            UIAction { [weak self] _ in
+                let vc = DemoAdListViewController()
+                self?.navigationController?.pushViewController(vc, animated: true)
+            }, for: .touchUpInside)
+        adListButton.frame = CGRect(x: 100, y: 750, width: 200, height: 50)
+        view.addSubview(adListButton)
+
         let debugButton = UIButton(type: .system)
         debugButton.setTitle("Debug Ad Load", for: .normal)
         debugButton.backgroundColor = .systemOrange
@@ -179,7 +192,7 @@ class ViewController: UIViewController {
             UIAction { _ in
                 MSP.shared.showMediationDebugger()
             }, for: .touchUpInside)
-        debugButton.frame = CGRect(x: 100, y: 750, width: 200, height: 50)
+        debugButton.frame = CGRect(x: 100, y: 810, width: 200, height: 50)
         view.addSubview(debugButton)
     }
 

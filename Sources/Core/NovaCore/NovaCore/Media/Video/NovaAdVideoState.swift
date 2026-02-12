@@ -14,7 +14,31 @@ struct NovaAdVideoState {
         self.isMute = isMute
     }
 
-    var playState: PlayState
-    var isMute: Bool
-    var loopCount: Int = 0
+    private(set) var playState: PlayState
+    private(set) var isMute: Bool
+    private(set) var loopCount: Int = 0
+
+    // MARK: - Mutating Updates
+
+    mutating func transition(to playState: PlayState) {
+        self.playState = playState
+    }
+
+    mutating func updatePlayingTime(currentTime: CMTime, videoLength: TimeInterval) {
+        guard case .playing = playState else { return }
+        playState = .playing(currentTime: currentTime, videoLength: videoLength)
+    }
+
+    mutating func updatePausedTime(currentTime: CMTime, videoLength: TimeInterval) {
+        guard case .paused(_, _, let endKind) = playState else { return }
+        playState = .paused(currentTime: currentTime, videoLength: videoLength, endKind: endKind)
+    }
+
+    mutating func updateMuteState(_ isMute: Bool) {
+        self.isMute = isMute
+    }
+
+    mutating func updateLoopCount(_ count: Int) {
+        self.loopCount = count
+    }
 }
