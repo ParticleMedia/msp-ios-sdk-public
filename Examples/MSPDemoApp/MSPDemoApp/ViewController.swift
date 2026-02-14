@@ -11,6 +11,7 @@ class ViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        view.backgroundColor = .white
 
         let button1 = UIButton(type: .system)
         button1.setTitle("Prebid Banner View", for: .normal)
