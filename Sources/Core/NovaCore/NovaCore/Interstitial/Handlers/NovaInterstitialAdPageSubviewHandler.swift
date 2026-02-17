@@ -162,8 +162,8 @@ extension NovaInterstitialAdPageSubviewHandler: NovaAdHtmlActionDelegate {
         showNextPageIfNeededOrClose()
     }
 
-    func didFailToLoadPage() {
-        showNextPageIfNeededOrClose()
+    func didFailToLoadPage(errorMessage: String?) {
+        delegate?.didFailToLoad(errorMessage: errorMessage)
     }
 }
 

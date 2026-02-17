@@ -24,5 +24,5 @@ protocol NovaAdHtmlActionDelegate: AnyObject {
 
     func didTapAdClose()
 
-    func didFailToLoadPage()
+    func didFailToLoadPage(errorMessage: String?)
 }

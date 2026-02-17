@@ -60,9 +60,10 @@ class NovaAdMetricReporter: NSObject {
         logNovaAdEvent(.click, encryptedAdToken: encryptedAdToken, params: params)
     }
 
+
     static func logAdSkip(reason: NovaAdSkipReason, encryptedAdToken: String, durationInMs: Int?) {
         var params: [String: String] = [
-            NovaAdMetricKeys.ACTION: reason.rawValue
+            NovaAdMetricKeys.ACTION: reason.stringValue
         ]
         if let durationInMs {
             params[NovaAdMetricKeys.DURATION_MS] = "\(durationInMs)"
