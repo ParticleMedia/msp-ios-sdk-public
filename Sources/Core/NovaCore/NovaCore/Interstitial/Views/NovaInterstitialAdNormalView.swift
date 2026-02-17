@@ -118,6 +118,18 @@ class NovaInterstitialAdNormalView: UIView, NovaInterstitialAdViewProtocol {
 
     internal weak var viewController: UIViewController?
     internal var subviewHandler: NovaInterstitialAdSubviewHandler!
+
+    // MARK: - NovaInterstitialAdSubviewBehaviorDelegate
+
+    func didFailToLoad(errorMessage: String?) {
+        
+        let isActive = UIApplication.shared.applicationState == .active ? 1 : 0
+        let concatErrorMessage = "error:\(isActive):\(errorMessage ?? "")"
+        self.actionHelper = self.actionHelper
+            .logNovaSkipEvent(with: .error(concatErrorMessage), duration: CACurrentMediaTime() - self.startTime)
+            .handleCloseTap()
+        context.interstitialAd.delegate?.interstitialAdDidDismiss(context.interstitialAd)
+    }
 }
 
 extension NovaInterstitialAdNormalView: NovaInterstitialAdSubviewBehaviorDelegate {
