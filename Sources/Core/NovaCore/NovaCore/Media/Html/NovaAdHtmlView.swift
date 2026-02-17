@@ -311,15 +311,25 @@ extension NovaAdHtmlView: WKNavigationDelegate {
     }
 
     func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: Error) {
-        htmlActionDelegate?.didFailToLoadPage()
+        htmlActionDelegate?.didFailToLoadPage(errorMessage: getWebErrorMessage(error: error))
     }
 
     func webView(_ webView: WKWebView, didFailProvisionalNavigation navigation: WKNavigation!, withError error: Error) {
-        htmlActionDelegate?.didFailToLoadPage()
+        htmlActionDelegate?.didFailToLoadPage(errorMessage: getWebErrorMessage(error: error))
     }
 
     func webViewWebContentProcessDidTerminate(_ webView: WKWebView) {
-        htmlActionDelegate?.didFailToLoadPage()
+        htmlActionDelegate?.didFailToLoadPage(errorMessage: "Web Content Process Did Terminate")
+    }
+    
+    func getWebErrorMessage(error: Error) -> String? {
+        var errorMessage: String?
+        if let castedNSError = error as? NSError {
+            errorMessage = "\(castedNSError.domain):\(castedNSError.code)"
+        } else {
+            errorMessage = error.localizedDescription
+        }
+        return errorMessage
     }
 }
 
