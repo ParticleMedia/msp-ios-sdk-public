@@ -121,6 +121,21 @@ class DemoAdViewController: UIViewController {
             return "demo-ios-launch-fullscreen-google-c2s"
         }
     }()
+    
+    private lazy var testAdNetworkString: String? = {
+        switch adType {
+        case .prebidBanner, .prebidInterstitial:
+            return "pubmatic"
+        case .googleBanner, .googleNative, .googleInterstitial:
+            return "msp_google"
+        case .novaNative, .novaInterstitialHorizontalImage, .novaInterstitialVerticalImage, .novaInterstitialHorizontalVideo, .novaInterstitialVerticalVideo, .novaInterstitialHighEngagement, .novaInterstitialEndCard:
+            return "msp_nova"
+        case .facebookNative, .facebookInterstitial:
+            return "msp_fb"
+        default:
+            return nil
+        }
+    }()
 
     private lazy var adFormat: MSPiOSCore.AdFormat = {
         switch adType {
@@ -155,40 +170,38 @@ class DemoAdViewController: UIViewController {
         var adLoader = MSPAdLoader()
         self.adLoader = adLoader
         var customParams: [String: Any] = [:]
-        var testParams: [String: String] = [:]
-        if adType == .novaNative {
-            testParams["test"] =
-                "{\"ad_network\":\"msp_nova\",\"test_ad\":true,\"creative_type\":\"video\",\"is_vertical\":true}"
-        } else if adType == .novaInterstitialHorizontalImage {
-            testParams["test"] =
-                "{\"ad_network\":\"msp_nova\",\"test_ad\":true,\"creative_type\":\"image\",\"is_vertical\":false}"
-        } else if adType == .novaInterstitialVerticalImage {
-            testParams["test"] =
-                "{\"ad_network\":\"msp_nova\",\"test_ad\":true,\"creative_type\":\"image\",\"is_vertical\":true}"
-        } else if adType == .novaInterstitialHorizontalVideo {
-            testParams["test"] =
-                "{\"ad_network\":\"msp_nova\",\"test_ad\":true,\"creative_type\":\"video\",\"is_vertical\":false}"
-        } else if adType == .novaInterstitialVerticalVideo {
-            testParams["test"] =
-                "{\"ad_network\":\"msp_nova\",\"test_ad\":true,\"creative_type\":\"video\",\"is_vertical\":true}"
-        } else if adType == .novaInterstitialHighEngagement {
-            testParams["test"] =
-                "{\"ad_network\":\"msp_nova\",\"test_ad\":true,\"creative_type\":\"video\",\"is_vertical\":false,\"layout\": \"cancel_top_right\"}"
-        } else if adType == .novaInterstitialEndCard {
-            testParams["test"] =
-                "{\"ad_network\":\"msp_nova\",\"test_ad\":true,\"creative_type\":\"video\",\"is_vertical\":true,\"layout\": \"end_card_2_part\"}"
-        } else if adType == .prebidBanner {
-            testParams["test"] = "{\"ad_network\":\"pubmatic\",\"test_ad\":true}"
-        } else if adType == .googleBanner || adType == .googleInterstitial || adType == .googleNative {
-            testParams["test"] = "{\"ad_network\":\"msp_google\",\"test_ad\":true}"
-        } else if adType == .facebookNative || adType == .facebookInterstitial {
-            testParams["test"] = "{\"ad_network\":\"msp_fb\",\"test_ad\":true}"
-        } else if adType == .clientBiddingBanner {
-            testParams["test"] = "{\"ad_network\":\"msp_google\",\"test_ad\":true}"
-        } else if adType == .prebidInterstitial {
-            testParams["test"] = "{\"ad_network\":\"pubmatic\",\"test_ad\":true}"
+        
+        var testParams: [String: Any] = [:]
+        if let testAdNetworkString = testAdNetworkString {
+            testParams["test_ad"] = true
+            testParams["ad_network"] = testAdNetworkString
         }
-        testParams["mobilefuse"] = "true"
+        
+        switch adType {
+        case .novaInterstitialHorizontalImage:
+            testParams["creative_type"] = "image"
+            testParams["is_vertical"] = false
+        case .novaInterstitialVerticalImage:
+            testParams["creative_type"] = "image"
+            testParams["is_vertical"] = true
+        case .novaInterstitialHorizontalVideo:
+            testParams["creative_type"] = "video"
+            testParams["is_vertical"] = false
+        case .novaInterstitialVerticalVideo:
+            testParams["creative_type"] = "video"
+            testParams["is_vertical"] = true
+        case .novaInterstitialHighEngagement:
+            testParams["creative_type"] = "video"
+            testParams["is_vertical"] = false
+            testParams["layout"] = "cancel_top_right"
+        case .novaInterstitialEndCard:
+            testParams["creative_type"] = "video"
+            testParams["is_vertical"] = true
+            testParams["layout"] = "end_card_2_part"
+        default:
+            break
+        }
+        
         customParams[MSPConstants.GOOGLE_AD_MULTI_CONTENT_URLS] = ["https://www.google.com", "https://newsbreak.com"]
 
         let adRequest = AdRequest(
@@ -216,8 +229,8 @@ extension DemoAdViewController: AdListener {
     func onAdDismissed(ad: MSPiOSCore.InterstitialAd) {
         print("ad event: on ad dismissed")
     }
-
-    func onAdLoaded(placementId: String) {
+    
+    func onAdLoaded(placementId: String, loadInfo: [String : Any]) {
         if let ad = self.adLoader?.getAd(placementId: placementId) {
             self.onAdLoaded(ad: ad)
         }
@@ -285,6 +298,10 @@ extension DemoAdViewController: AdListener {
                 interstitialAd.show()
             }
         }
+    }
+    
+    func onError(msg: String, loadInfo: [String: Any]) {
+        onError(msg: msg)
     }
 
     func onError(msg: String) {
