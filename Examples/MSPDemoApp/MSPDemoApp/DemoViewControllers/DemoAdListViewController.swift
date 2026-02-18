@@ -231,6 +231,10 @@ private class AdPositionListener: AdListener {
             self.controller?.handleAdLoaded(position: self.position, placementId: placementId)
         }
     }
+    
+    func onAdLoaded(placementId: String, loadInfo: [String: Any]) {
+        onAdLoaded(placementId: placementId)
+    }
 
     func onAdLoaded(ad: MSPAd) {
         // Not used - we fetch via getAd in onAdLoaded(placementId:)
@@ -245,6 +249,10 @@ private class AdPositionListener: AdListener {
     }
 
     func onAdDismissed(ad: InterstitialAd) {}
+    
+    func onError(msg: String, loadInfo: [String: Any]) {
+        onError(msg: msg)
+    }
 
     func onError(msg: String) {
         DispatchQueue.main.async { [weak self] in
