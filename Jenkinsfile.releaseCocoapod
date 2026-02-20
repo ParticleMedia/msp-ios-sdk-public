@@ -1,0 +1,129 @@
+// ============================================================================
+// MSP iOS SDK - Full Release Pipeline (CocoaPods + SPM via msp-release.sh)
+// ============================================================================
+// Integrates the unified release flow: preflight, pre_release_setup, create
+// release branch, CocoaPods (Trunk), SPM, push, verification.
+// Uses: ./Scripts/msp-release.sh --profile=production run <VERSION>
+// ============================================================================
+
+pipeline {
+    agent any
+
+    options {
+        ansiColor('xterm')
+        timestamps()
+    }
+
+    parameters {
+        string(
+            name: 'VERSION',
+            defaultValue: '',
+            description: 'Release version (e.g. 1.2.3). Required for running the release. Leave blank to skip release (e.g. for pipeline validation).'
+        )
+        string(
+            name: 'RELEASE_NOTES',
+            defaultValue: '',
+            description: 'Optional release notes. Leave blank for default/auto.'
+        )
+        booleanParam(
+            name: 'SKIP_PREFLIGHT',
+            defaultValue: false,
+            description: 'Skip preflight checks (static + build). Use only when preflight was already run.'
+        )
+        booleanParam(
+            name: 'ONLY_PODS',
+            defaultValue: false,
+            description: 'Run only CocoaPods release (skip SPM).'
+        )
+    }
+
+    environment {
+        DEVELOPER_DIR = '/Applications/Xcode_15.4.app/Contents/Developer'
+        SLACK_CHANNEL = '#msp-ios-sdk'
+        SLACK_CONFIG  = 'Scripts/config/slack.conf'
+        LANG = 'en_US.UTF-8'
+        LC_ALL = 'en_US.UTF-8'
+        // So release safety/scripts treat this as CI (e.g. allow production when run from Jenkins)
+        CI = 'true'
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }
+
+        stage('Install Ruby dependencies') {
+            steps {
+                sh '''
+                    set -euo pipefail
+                    bundle install
+                '''
+            }
+        }
+
+        stage('Prepare workspace') {
+            steps {
+                sh '''
+                    set -euo pipefail
+                    ./Scripts/workspace/update.sh
+                    bundle exec pod install
+                '''
+            }
+        }
+
+        stage('Run full release (msp-release.sh)') {
+            when {
+                expression { params.VERSION?.trim() }
+            }
+            steps {
+                script {
+                    def version = params.VERSION.trim()
+                    def args = ['--profile=production', '--no-ansi']
+                    if (params.SKIP_PREFLIGHT) { args << '--skip-preflight' }
+                    if (params.ONLY_PODS) { args << '--only-pods' }
+                    args << 'run' << version
+                    def argsStr = args.join(' ')
+                    def envVars = ["VERSION=${version}"]
+                    if (params.RELEASE_NOTES?.trim()) {
+                        envVars << "RELEASE_NOTES=${params.RELEASE_NOTES.trim()}"
+                    }
+                    withEnv(envVars) {
+                        sh """
+                            set -euo pipefail
+                            ./Scripts/msp-release.sh ${argsStr}
+                        """
+                    }
+                }
+            }
+        }
+
+        stage('Skip release (no version)') {
+            when {
+                expression { !params.VERSION?.trim() }
+            }
+            steps {
+                echo 'VERSION parameter is empty. Skipping release. Set VERSION (e.g. 1.2.3) to run the full release.'
+            }
+        }
+    }
+
+    post {
+        success {
+            script {
+                def msg = params.VERSION?.trim()
+                    ? "✅ Release pipeline succeeded: ${params.VERSION} (${env.BUILD_TAG})"
+                    : "✅ Release pipeline (no version) succeeded: ${env.BUILD_TAG}"
+                slackSend channel: env.SLACK_CHANNEL,
+                          color: 'good',
+                          message: msg
+            }
+        }
+        failure {
+            slackSend channel: env.SLACK_CHANNEL,
+                      color: 'danger',
+                      message: "❌ Release pipeline failed: ${env.BUILD_TAG}. Check Jenkins logs."
+        }
+    }
+}
