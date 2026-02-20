@@ -5507,6 +5507,22 @@ release_adapters() {
             else
                 log_warn "Some adapters failed to update SDK version (will continue with release)"
             fi
+
+            # Update NovaCore NovaConstants.version (property) to match release version
+            local novacore_dir="${ROOT_DIR}/Sources/Core/NovaCore/NovaCore"
+            local tool="${ADAPTER_SDK_VERSION_TOOL}"
+            if [[ -d "$novacore_dir" ]] && [[ -n "$tool" ]]; then
+                tool="${tool/#\~/$HOME}"
+                if [[ "$tool" != /* ]]; then
+                    tool="$ROOT_DIR/$tool"
+                fi
+                log_info "[NovaCore] Updating NovaConstants.version to $VERSION..."
+                if "$tool" --path "$novacore_dir" --function version --version "$VERSION" --pattern property; then
+                    log_success "[NovaCore] ✓ NovaConstants.version updated"
+                else
+                    log_warn "[NovaCore] Failed to update NovaConstants.version (non-fatal)"
+                fi
+            fi
         fi
     fi
 
