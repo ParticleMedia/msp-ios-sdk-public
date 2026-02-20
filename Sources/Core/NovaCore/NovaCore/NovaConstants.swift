@@ -11,4 +11,6 @@ public class NovaConstants {
     public static let shared = NovaConstants()
 
     public var NovaEventHostUrl = "https://dsp.newsbreak.com"
+    
+    public var version = "0.0.0"
 }

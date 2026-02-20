@@ -144,6 +144,7 @@ private extension NovaAdMetricReporter {
         params[NovaAdMetricKeys.EVENT_TIME] = "\(Int64(Date().timeIntervalSince1970 * 1000))"
         params[NovaAdMetricKeys.OS] = "ios"
         params[NovaAdMetricKeys.OSV] = UIDevice.current.systemVersion
+        params[NovaAdMetricKeys.SDKV] = NovaConstants.shared.version
         if let cv = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String {
             params[NovaAdMetricKeys.CV] = cv
         }
@@ -246,4 +247,5 @@ struct NovaAdMetricKeys {
     static let BUNDLE = "bundle"
     static let MODEL = "model"
     static let MAKE = "make"
+    static let SDKV = "sdkv"
 }
