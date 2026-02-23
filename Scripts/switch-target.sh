@@ -27,6 +27,25 @@ msp_enforce_main_repo_or_exit
 
 set -euo pipefail
 
+# Log exit reason on failure (helps debug silent failures from set -e or subshells)
+_log_exit_reason() {
+  local e=$?
+  if [[ $e -ne 0 ]]; then
+    local red=""
+    local nc=""
+    if [[ -t 2 ]] && [[ "${NO_COLOR:-}" != "1" ]]; then
+      red="\033[1;31m"
+      nc="\033[0m"
+    fi
+    echo -e "${red}ERROR: switch-target.sh exiting with code $e.${nc}" >&2
+    if [[ -n "${LAST_ERROR:-}" ]]; then
+      echo -e "${red}ERROR MESSAGE: ${LAST_ERROR}${nc}" >&2
+    fi
+  fi
+  exit $e
+}
+trap _log_exit_reason EXIT
+
 # Source common functions
 # IMPORTANT: Save SCRIPT_DIR before sourcing common.sh, which will overwrite it
 SWITCH_TARGET_SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
