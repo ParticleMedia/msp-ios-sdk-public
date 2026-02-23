@@ -251,6 +251,24 @@ public class MSPDevice {
             return Com_Newsbreak_Monetization_Signals_ConnectionType.unspecified
         }
     }
+    
+    internal func getConnectionTypeString() -> String {
+        let connectionType = getConnectionType()
+        switch connectionType {
+        case .wifi:
+            return "wifi"
+        case .cell2G:
+            return "2g"
+        case .cell3G:
+            return "3g"
+        case .cell4G:
+            return "4g"
+        case .cell5G:
+            return "5g"
+        default:
+            return "unknown"
+        }
+    }
 
     internal func getVolumeLevel() -> Int32 {
         let audioSession = AVAudioSession.sharedInstance()
