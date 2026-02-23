@@ -131,6 +131,25 @@ fi
 
 source "$ROOT_DIR/Scripts/lib/release-common.sh"
 
+# Log exit reason on failure (helps debug silent failures from set -e or subshells)
+_log_exit_reason() {
+  local e=$?
+  if [[ $e -ne 0 ]]; then
+    local red=""
+    local nc=""
+    if [[ -t 2 ]] && [[ "${NO_COLOR:-}" != "1" ]]; then
+      red="\033[1;31m"
+      nc="\033[0m"
+    fi
+    echo -e "${red}ERROR: $(basename "$0") exiting with code $e.${nc}" >&2
+    if [[ -n "${LAST_ERROR:-}" ]]; then
+      echo -e "${red}ERROR MESSAGE: ${LAST_ERROR}${nc}" >&2
+    fi
+  fi
+  exit $e
+}
+trap _log_exit_reason EXIT
+
 # Source process utilities (timeout and cleanup functions)
 if [[ -f "$ROOT_DIR/Scripts/lib/process_utils.sh" ]]; then
     # shellcheck source=Scripts/lib/process_utils.sh
