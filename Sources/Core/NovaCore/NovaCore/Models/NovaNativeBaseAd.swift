@@ -178,7 +178,24 @@ public class NovaNativeBaseAd: NovaBaseAd, NovaNativeMediaProviding {
     var adDiscountTagInfo: NovaAdDiscountTagInfo?
 
     // MARK: - App install
-
+    lazy var appStoreId: Int? = {
+        switch adCtrType {
+        case .openWeb:
+            return nil
+        case let .appInstall(model):
+            return model.storeId
+        case let .playable(model):
+            switch model.launchAdType {
+            case .openWeb:
+                return nil
+            case let .appInstall(model):
+                return model.storeId
+            case .playable:
+                assertionFailure("playable ad can not have playable as launch type")
+                return nil
+            }
+        }
+    }()
     var appInfo: AsyncValue<NovaAdAppInfo>?
 
     // MARK: - DPA
@@ -419,7 +436,8 @@ extension NovaNativeBaseAd {
                 closeCountDownSeconds: pageItem.skipCountdown ?? 0,
                 closeDelaySeconds: pageItem.skipDelay ?? 0,
                 useClickUrl: pageItem.useClickUrl ?? false,
-                useCustomClose: pageItem.useCustomClose ?? false
+                useCustomClose: pageItem.useCustomClose ?? false,
+                appStoreId: self.appStoreId
             )
         }
 
@@ -432,25 +450,6 @@ extension NovaNativeBaseAd {
 
 
     func setupAppInfo() {
-        let appStoreId: Int? = {
-            switch adCtrType {
-            case .openWeb:
-                return nil
-            case let .appInstall(model):
-                return model.storeId
-            case let .playable(model):
-                switch model.launchAdType {
-                case .openWeb:
-                    return nil
-                case let .appInstall(model):
-                    return model.storeId
-                case .playable:
-                    assertionFailure("playable ad can not have playable as launch type")
-                    return nil
-                }
-            }
-        }()
-
         appInfo = {
             if let appStoreId {
                 return AsyncValue(

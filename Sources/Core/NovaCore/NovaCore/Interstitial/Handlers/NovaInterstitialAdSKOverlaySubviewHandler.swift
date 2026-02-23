@@ -16,9 +16,8 @@ class NovaInterstitialAdSKOverlaySubviewHandler: NSObject, NovaInterstitialAdSub
     private weak var viewController: UIViewController?
     private let appStoreId: Int
     private let thirdPartyTrackingURL: URL
-    private var overlay: SKOverlay?
-    private var skOverlayIsShowing: Bool = false
-    private var skOverlayShowTimestamp: Double?
+    private lazy var skOverlayController = NovaSKOverlayController(encryptedAdToken: interstitialAd.encryptedAdToken, overlayDelegate: self)
+    private var skOverlayShowTimestamp: CFTimeInterval?
     private var skOverlayNeedToBeShown: Bool = false
     private var adClickedWillOpenAppStoreObserver: NSObjectProtocol?
     private var adClickedDidReturnFromAppStoreObserver: NSObjectProtocol?
@@ -246,33 +245,17 @@ class NovaInterstitialAdSKOverlaySubviewHandler: NSObject, NovaInterstitialAdSub
     }
 
     private func showSkOverlay() {
-        guard let scene = viewController?.view.window?.windowScene, !skOverlayIsShowing else {
-            return
-        }
-
-        let config = SKOverlay.AppConfiguration(
-            appIdentifier: "\(appStoreId)",
-            position: .bottom
-        )
-        config.userDismissible = false
-        let overlay = SKOverlay(configuration: config)
-        overlay.delegate = self
-        overlay.present(in: scene)
-        skOverlayIsShowing = true
-        self.overlay = overlay
+        let scene = viewController?.view.window?.windowScene
+        skOverlayController.show(appStoreId: appStoreId, scene: scene)
     }
 
     private func dismissSkOverlay() {
-        if let scene = viewController?.view.window?.windowScene {
-            SKOverlay.dismiss(in: scene)
-            skOverlayIsShowing = false
-            overlay = nil
-            skOverlayShowTimestamp = nil
-        }
+        skOverlayController.dismiss()
+        skOverlayShowTimestamp = nil
     }
 
     @objc private func appDidEnterBackground() {
-        guard skOverlayIsShowing else { return }
+        guard skOverlayController.isShowing else { return }
         var durationInMs: Int?
         if let skOverlayShowTimestamp {
             let duration = CACurrentMediaTime() - skOverlayShowTimestamp
@@ -287,7 +270,7 @@ class NovaInterstitialAdSKOverlaySubviewHandler: NSObject, NovaInterstitialAdSub
     }
 
     private func adClickedWillOpenAppStore() {
-        guard skOverlayIsShowing else {
+        guard skOverlayController.isShowing else {
             return
         }
         skOverlayNeedToBeShown = true

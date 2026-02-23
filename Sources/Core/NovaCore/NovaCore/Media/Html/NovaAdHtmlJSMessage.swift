@@ -24,5 +24,11 @@ protocol NovaAdHtmlActionDelegate: AnyObject {
 
     func didTapAdClose()
 
+    func didFailToLoadPage()
+
+    /// Show App Store overlay (e.g. when HTML sends OPEN_IOS_STORE_OVERLAY). Implementer owns overlay and dismisses on lifecycle (willDisappear, page change).
+    func showSKOverlay(appStoreId: Int?)
+
     func didFailToLoadPage(errorMessage: String?)
+
 }

@@ -21,6 +21,7 @@ class NovaAdHtmlView: WKWebView, WKScriptMessageHandler {
 
     var useCustomUrl: Bool = false
     var useCustomClose: Bool = false
+    var appStoreId: Int?
 
     public init(supportReportHandling: Bool) {
         let config = WKWebViewConfiguration()
@@ -118,6 +119,8 @@ class NovaAdHtmlView: WKWebView, WKScriptMessageHandler {
                     switch (feature) {
                         case 'feedback':
                             return \(enableFeedbackString);
+                        case 'skoverlay':
+                            return true;
                         default:
                             return false;
                     }
@@ -130,6 +133,13 @@ class NovaAdHtmlView: WKWebView, WKScriptMessageHandler {
                     window.webkit.messageHandlers.novaNativeBridge.postMessage({
                         action: 'open',
                         payload: payload || "{}"
+                    });
+                },
+
+                sendNativeAction: function(paramsString) {
+                    window.webkit.messageHandlers.novaNativeBridge.postMessage({
+                        action: 'sendNativeAction',
+                        payload: typeof paramsString === 'string' ? paramsString : JSON.stringify(paramsString || {})
                     });
                 }
             };
@@ -209,11 +219,26 @@ class NovaAdHtmlView: WKWebView, WKScriptMessageHandler {
         self.evaluateJavaScript(js, completionHandler: nil)
     }
 
+    private func handleSendNativeAction(_ paramsString: String?) {
+        guard let jsonString = paramsString,
+              let data = jsonString.data(using: .utf8),
+              let params = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
+              let action = params["action"] as? String
+        else { return }
+        switch action {
+        case "OPEN_IOS_STORE_OVERLAY":
+            htmlActionDelegate?.showSKOverlay(appStoreId: appStoreId)
+        default:
+            DebugLogger.data.debug("Unknown sendNativeAction: \(action, privacy: .public)")
+        }
+    }
+
     public func config(
         with model: NovaAdHtmlPageModel, htmlActionDelegate: NovaAdHtmlActionDelegate?, tracingInfo: TracingInfo
     ) {
         self.htmlActionDelegate = htmlActionDelegate
         self.tracingInfo = tracingInfo
+        self.appStoreId = model.appStoreId
         let resource = model.resource
         self.useCustomUrl = model.useClickUrl
         self.useCustomClose = model.useCustomClose
@@ -266,6 +291,8 @@ class NovaAdHtmlView: WKWebView, WKScriptMessageHandler {
                         customUrl: customUrl,
                         clickArea: ClickableAdArea(from: clickAreaString)
                     )
+                case "sendNativeAction":
+                    handleSendNativeAction(body["payload"] as? String)
                 default:
                     DebugLogger.data.debug("Unknown novaNativeBridge action: \(action, privacy: .public)")
                 }
