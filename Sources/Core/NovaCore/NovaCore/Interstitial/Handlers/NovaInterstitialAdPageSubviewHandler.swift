@@ -240,10 +240,15 @@ private extension NovaInterstitialAdPageSubviewHandler {
 
     func ensureHtmlView(in containerView: UIView, showReportButton: Bool) {
         guard htmlView == nil else { return }
-        let view = NovaAdHtmlView(supportReportHandling: showReportButton)
+        let view: NovaAdHtmlView
+        if let cachedHtmlView = self.interstitialAd.cachedHtmlView {
+            view = cachedHtmlView
+            self.interstitialAd.cachedHtmlView = nil
+        } else {
+            view = NovaAdHtmlView(supportReportHandling: showReportButton)
+        }
         htmlView = view
         containerView.addSubview(view)
-
         view.snp.makeConstraints { make in
             make.edges.equalToSuperview()
         }

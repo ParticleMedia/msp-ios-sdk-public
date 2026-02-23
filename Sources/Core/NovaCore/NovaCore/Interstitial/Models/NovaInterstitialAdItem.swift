@@ -24,6 +24,9 @@ public final class NovaInterstitialAdItem: NovaNativeBaseAd {
     // MARK: - Layout
 
     private var _layoutStyle: NovaInterstitialAdLayout?
+    
+    public var shouldPreloadHtml: Bool
+    var cachedHtmlView: NovaAdHtmlView?
 
     var layoutStyle: NovaInterstitialAdLayout {
         if let _layoutStyle {
@@ -89,13 +92,15 @@ public final class NovaInterstitialAdItem: NovaNativeBaseAd {
         closeCountDownTimeSeconds: Int?,
         clickableComponents: [NovaClickableComponent]?,
         htmlPageItems: [PageItem]?,
-        popupCTAStyleVariant: NovaPopupCTAStyleVariant
+        popupCTAStyleVariant: NovaPopupCTAStyleVariant,
+        shouldPreloadHtml: Bool
     ) throws {
         self.startTimeInMs = startTimeInMs
         self.expirationTimeInMs = expirationTimeInMs
         self._layoutStyle = novaInterstitialAdLayout
         self.closeCountDownTimeSeconds = closeCountDownTimeSeconds
         self.clickableComponents = clickableComponents
+        self.shouldPreloadHtml = shouldPreloadHtml
 
         try super.init(
             adUnitId: adUnitId,
@@ -139,6 +144,7 @@ public final class NovaInterstitialAdItem: NovaNativeBaseAd {
         _layoutStyle = try container.decodeIfPresent(NovaInterstitialAdLayout.self, forKey: .novaInterstitialAdLayout)
         closeCountDownTimeSeconds = try container.decodeIfPresent(Int.self, forKey: .closeCountDownTimeSeconds)
         clickableComponents = try container.decodeIfPresent([NovaClickableComponent].self, forKey: .clickableComponents)
+        shouldPreloadHtml = try container.decodeIfPresent(Bool.self, forKey: .shouldPreloadHtml) ?? false
         let superDecoder = try container.superDecoder()
         try super.init(from: superDecoder)
     }
@@ -153,6 +159,7 @@ public final class NovaInterstitialAdItem: NovaNativeBaseAd {
         case novaInterstitialAdLayout
         case closeCountDownTimeSeconds
         case clickableComponents
+        case shouldPreloadHtml
     }
 
     public override func encode(to encoder: Encoder) throws {
@@ -186,5 +193,15 @@ public final class NovaInterstitialAdItem: NovaNativeBaseAd {
         viewController?.dismiss(animated: animated) {
             self.delegate?.interstitialAdDidDismiss(self)
         }
+    }
+    
+    public func preloadHtmlView(enableFeedback: Bool, completion: @escaping () -> Void) {
+        guard case let .html(model) = layoutTypeInInterstitial else {
+            completion()
+            return
+        }
+        let htmlView = NovaAdHtmlView(supportReportHandling: enableFeedback)
+        cachedHtmlView = htmlView
+        htmlView.preload(with: model.currentPage, completion: completion)
     }
 }

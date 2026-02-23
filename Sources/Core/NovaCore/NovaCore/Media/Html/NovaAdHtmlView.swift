@@ -21,7 +21,22 @@ class NovaAdHtmlView: WKWebView, WKScriptMessageHandler {
 
     var useCustomUrl: Bool = false
     var useCustomClose: Bool = false
+<<<<<<< huanzhiNB/h5Preload
+    
+    var pageResource: NovaAdHtmlResource?
+
+    private var preloadCompletionHandler: (() -> Void)?
+    private var preloadState: PreloadState = .idle
+
+    private enum PreloadState {
+        case idle
+        case pending
+        case finishedWithSuccess
+        case finishedWithoutSuccess
+    }
+=======
     var appStoreId: Int?
+>>>>>>> develop
 
     public init(supportReportHandling: Bool) {
         let config = WKWebViewConfiguration()
@@ -243,13 +258,29 @@ class NovaAdHtmlView: WKWebView, WKScriptMessageHandler {
         self.useCustomUrl = model.useClickUrl
         self.useCustomClose = model.useCustomClose
         mraidController.resetState()
+        if pageResource == nil || pageResource != resource || preloadState != .finishedWithSuccess {
+            switch resource {
+            case let .html(html, baseUrl):
+                loadHTMLString(html, baseURL: baseUrl)
+            case let .url(url):
+                load(URLRequest(url: url))
+            }
+            pageResource = resource
+        }
+        self.impressionTimeInMs = Int(Date().timeIntervalSince1970 * 1000)
+    }
+    
+    public func preload(with model: NovaAdHtmlPageModel, completion: @escaping () -> Void) {
+        preloadCompletionHandler = completion
+        preloadState = .pending
+        let resource = model.resource
+        self.pageResource = resource
         switch resource {
         case let .html(html, baseUrl):
             loadHTMLString(html, baseURL: baseUrl)
         case let .url(url):
             load(URLRequest(url: url))
         }
-        self.impressionTimeInMs = Int(Date().timeIntervalSince1970 * 1000)
     }
 
     func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
@@ -335,18 +366,50 @@ extension NovaAdHtmlView: WKNavigationDelegate {
 
     func webView(_ webView: WKWebView, didFinish _: WKNavigation!) {
         mraidController.handlePageFinished()
+        if preloadState == .pending {
+            handlePreloadCompletion(true)
+        }
     }
 
     func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: Error) {
-        htmlActionDelegate?.didFailToLoadPage(errorMessage: getWebErrorMessage(error: error))
+        if preloadState == .pending {
+            handlePreloadCompletion(false)
+        } else {
+            htmlActionDelegate?.didFailToLoadPage(errorMessage: getWebErrorMessage(error: error))
+        }
     }
 
     func webView(_ webView: WKWebView, didFailProvisionalNavigation navigation: WKNavigation!, withError error: Error) {
-        htmlActionDelegate?.didFailToLoadPage(errorMessage: getWebErrorMessage(error: error))
+        if preloadState == .pending {
+            handlePreloadCompletion(false)
+        } else {
+            htmlActionDelegate?.didFailToLoadPage(errorMessage: getWebErrorMessage(error: error))
+        }
     }
 
     func webViewWebContentProcessDidTerminate(_ webView: WKWebView) {
-        htmlActionDelegate?.didFailToLoadPage(errorMessage: "Web Content Process Did Terminate")
+        if preloadState == .pending {
+            handlePreloadCompletion(false)
+        } else {
+            htmlActionDelegate?.didFailToLoadPage(errorMessage: "Web Content Process Did Terminate")
+        }
+    }
+    
+    private func handlePreloadCompletion(_ isSuccess: Bool) {
+        guard preloadState == .pending,
+              let completionHandler = preloadCompletionHandler else {
+            // preload completion should only be handled once for each ad
+            return
+        }
+        if isSuccess {
+            preloadState = .finishedWithSuccess
+        } else {
+            preloadState = .finishedWithoutSuccess
+        }
+        preloadCompletionHandler = nil
+        DispatchQueue.main.async {
+            completionHandler()
+        }
     }
     
     func getWebErrorMessage(error: Error) -> String? {
