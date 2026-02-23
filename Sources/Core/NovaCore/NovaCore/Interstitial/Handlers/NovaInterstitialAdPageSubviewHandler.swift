@@ -6,10 +6,11 @@
 //
 import Foundation
 @_implementationOnly import MSPSnapKit
+import StoreKit
 import UIKit
 import WebKit
 
-class NovaInterstitialAdPageSubviewHandler: NovaInterstitialAdSubviewHandler, NovaTopRightClosable {
+class NovaInterstitialAdPageSubviewHandler: NSObject, NovaInterstitialAdSubviewHandler, NovaTopRightClosable {
     var darkColor: UIColor { NovaColorPalettes.Gray.tint200 }
 
     enum LayoutMetrics {
@@ -62,6 +63,9 @@ class NovaInterstitialAdPageSubviewHandler: NovaInterstitialAdSubviewHandler, No
 
     private var htmlView: NovaAdHtmlView?
 
+    private lazy var skOverlayController = NovaSKOverlayController(encryptedAdToken: interstitialAd.encryptedAdToken, overlayDelegate: self)
+    private var adClickedWillOpenAppStoreObserver: NSObjectProtocol?
+
     init(
         interstitialAd: NovaInterstitialAdItem,
         delegate: NovaInterstitialAdSubviewBehaviorDelegate,
@@ -75,6 +79,25 @@ class NovaInterstitialAdPageSubviewHandler: NovaInterstitialAdSubviewHandler, No
         self.countdownSecondRemaining = htmlMediaModel.currentPage.closeCountDownSeconds ?? 0
         self.delaySecondRemaining = htmlMediaModel.currentPage.closeDelaySeconds
         self.useCustomClose = htmlMediaModel.currentPage.useCustomClose
+        super.init()
+        adClickedWillOpenAppStoreObserver = NotificationCenter.default.addObserver(
+            forName: .adClickedWillOpenAppStore,
+            object: nil,
+            queue: .main
+        ) { [weak self] _ in
+            self?.adClickedWillOpenAppStore()
+        }
+    }
+
+    deinit {
+        if let adClickedWillOpenAppStoreObserver {
+            NotificationCenter.default.removeObserver(adClickedWillOpenAppStoreObserver)
+        }
+    }
+
+    private func adClickedWillOpenAppStore() {
+        guard skOverlayController.isShowing else { return }
+        skOverlayController.dismiss()
     }
 
     func setupSubviews(in containerView: UIView, showReportButton: Bool) {
@@ -97,7 +120,12 @@ class NovaInterstitialAdPageSubviewHandler: NovaInterstitialAdSubviewHandler, No
     }
 
     func willDisappear() {
+        skOverlayController.dismiss()
         htmlView?.setAllMediaPlaybackSuspended(true, completionHandler: nil)
+    }
+    
+    func didDisappear() {
+        skOverlayController.dismiss()
     }
 
     func enableTopRightCloseButton(button: UIButton, clickableArea: UIView) {
@@ -165,6 +193,29 @@ extension NovaInterstitialAdPageSubviewHandler: NovaAdHtmlActionDelegate {
     func didFailToLoadPage(errorMessage: String?) {
         delegate?.didFailToLoad(errorMessage: errorMessage)
     }
+
+    func showSKOverlay(appStoreId: Int?) {
+        guard let appStoreId else { return }
+        let scene = htmlView?.window?.windowScene
+        skOverlayController.show(appStoreId: appStoreId, scene: scene, userDismissible: true)
+    }
+}
+
+// MARK: - SKOverlayDelegate
+
+extension NovaInterstitialAdPageSubviewHandler: SKOverlayDelegate {
+    func storeOverlayDidFailToLoad(_ overlay: SKOverlay, error: Error) {
+        DebugLogger.network.error("Failed to load SKOverlay: \(error.localizedDescription)")
+    }
+
+    func storeOverlayDidFinishPresentation(_ overlay: SKOverlay, transitionContext: SKOverlay.TransitionContext) {
+        if let urlString = interstitialAd.thirdPartyClickTrackingUrls.first, let url = URL(string: urlString) {
+            NovaTrackingUrlHelper.fire(url: url)
+        }
+        if !(UIApplication.novaTopViewController is NovaInterstitialAdViewController) {
+            skOverlayController.dismiss()
+        }
+    }
 }
 
 private extension NovaInterstitialAdPageSubviewHandler {
@@ -179,6 +230,7 @@ private extension NovaInterstitialAdPageSubviewHandler {
 
     func showNextPageIfNeededOrClose() {
         do {
+            skOverlayController.dismiss()
             try htmlMediaModel.toNextPage()
             renderCurrentPage()
         } catch {
