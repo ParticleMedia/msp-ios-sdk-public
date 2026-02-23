@@ -7,7 +7,7 @@
 
 import Foundation
 
-enum NovaAdHtmlResource {
+enum NovaAdHtmlResource: Equatable {
     case html(String, baseUrl: URL?)
     case url(URL)
 }

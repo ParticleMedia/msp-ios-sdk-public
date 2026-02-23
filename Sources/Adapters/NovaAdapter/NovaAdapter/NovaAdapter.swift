@@ -260,8 +260,6 @@ public class NovaAdapter: AdNetworkAdapter {
                         self.handleAdLoaded(
                             ad: nativeAd, auctionBidListener: auctionBidListener,
                             bidderPlacementId: self.bidderPlacementId ?? adRequest.placementId)
-                        self.adMetricReporter?.logAdResult(
-                            placementId: adRequest.placementId, ad: nativeAd, fill: true, isFromCache: false)
                     }
                 }
 
@@ -301,9 +299,19 @@ public class NovaAdapter: AdNetworkAdapter {
                             self.handleAdLoaded(
                                 ad: novaInterstitialAd, auctionBidListener: auctionBidListener,
                                 bidderPlacementId: self.bidderPlacementId ?? adRequest.placementId)
-                            self.adMetricReporter?.logAdResult(
-                                placementId: adRequest.placementId, ad: novaInterstitialAd, fill: true,
-                                isFromCache: false)
+                        } else if interstitialAdItem?.creativeType == .html {
+                            if interstitialAdItem?.shouldPreloadHtml == true {
+                                let enableFeedback = adRequest.customParams["html_enable_feedback"] as? Bool ?? false
+                                interstitialAdItem?.preloadHtmlView(enableFeedback: enableFeedback) {
+                                    self.handleAdLoaded(
+                                        ad: novaInterstitialAd, auctionBidListener: auctionBidListener,
+                                        bidderPlacementId: self.bidderPlacementId ?? adRequest.placementId)
+                                }
+                            } else {
+                                self.handleAdLoaded(
+                                    ad: novaInterstitialAd, auctionBidListener: auctionBidListener,
+                                    bidderPlacementId: self.bidderPlacementId ?? adRequest.placementId)
+                            }
                         } else {
                             DispatchQueue.main.async {
                                 self.handleAdLoaded(
@@ -398,6 +406,9 @@ public class NovaAdapter: AdNetworkAdapter {
         if let adRequest = self.adRequest {
             self.adMetricReporter?.logAdResponse(
                 ad: ad, adRequest: adRequest, errorCode: .ERROR_CODE_SUCCESS, errorMessage: nil)
+            self.adMetricReporter?.logAdResult(
+                placementId: adRequest.placementId, ad: ad, fill: true,
+                isFromCache: false)
         }
     }
 

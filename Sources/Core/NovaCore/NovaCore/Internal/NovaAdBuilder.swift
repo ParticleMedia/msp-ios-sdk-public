@@ -26,6 +26,7 @@ enum AbConfigKeys {
     static let multipleItemsStyle = "ios_carousel_style"
     static let immersivePlayableUIStyle = "immersive_playable_ui"
     static let popupCTAStyle = "popup_cta_style"
+    static let shouldPreloadHtml = "preload"
 }
 
 // MARK: - AdScene
@@ -112,94 +113,6 @@ public enum NovaAdBuilder {
         )
     }
 
-    public static func buildInterstitialAd(
-        adItem: AdItem,
-        adUnitId: String,
-        eCPMInDollar: Decimal,
-        abConfig: [String: String]? = nil
-    ) -> NovaInterstitialAdItem? {
-        guard let creativeType = try? NovaAdBuilder.buildCreativeType(creative: adItem.creative) else {
-            DebugLogger.data.error("Missing valid creative type: ad id: \(adItem.adId)")
-            return nil
-        }
-        guard let adCtrType = try? NovaAdBuilder.buildCtrType(creative: adItem.creative) else {
-            DebugLogger.data.error("Missing valid ctr type: ad id: \(adItem.adId)")
-            return nil
-        }
-
-        let videoInfo = buildVideoInfo(adItem.creative.videoItem, adId: adItem.adId)
-        let iconURL = adItem.creative.iconUrl.flatMap(URL.init(string:))
-
-        let thirdPartyViewTrackingUrls =
-            adItem.creative.thirdPartyViewTrackingUrls?.map {
-                NovaAdUrlTransformer.replaceMacro(in: $0)
-            } ?? []
-        let thirdPartyImpressionTrackingUrls =
-            adItem.creative.thirdPartyImpressionTrackingUrls?.map {
-                NovaAdUrlTransformer.replaceMacro(in: $0)
-            } ?? []
-        let thirdPartyClickTrackingUrls =
-            adItem.creative.thirdPartyClickTrackingUrls?.map {
-                NovaAdUrlTransformer.replaceMacro(in: $0)
-            } ?? []
-
-        let startTimeInMs = Double(adItem.startTimeMs ?? "")
-        let expirationTimeInMs = Double(adItem.expirationMs ?? "")
-        let ctaStyle = adItem.creative.ctaStyle.flatMap(NovaAdCtaStyle.init(rawValue:))
-        let popupCTAStyleVariant = parsePopupCTAStyleVariant(from: abConfig)
-
-        do {
-            let adItem = try NovaInterstitialAdItem(
-                adUnitId: adUnitId,
-                requestId: adItem.requestId,
-                adId: adItem.adId,
-                adSetId: adItem.adsetId,
-                imageUrlStr: adItem.creative.imageUrl,
-                adCtrType: adCtrType,
-                thirdPartyViewTrackingUrls: thirdPartyViewTrackingUrls,
-                thirdPartyImpressionTrackingUrls: thirdPartyImpressionTrackingUrls,
-                thirdPartyClickTrackingUrls: thirdPartyClickTrackingUrls,
-                priceInDollar: adItem.price,
-                encryptedAdToken: adItem.encryptedAdToken,
-                ctaStyle: ctaStyle,
-                creativeType: creativeType,
-                startTimeInMs: startTimeInMs,
-                expirationTimeInMs: expirationTimeInMs,
-                headline: adItem.creative.headline,
-                body: adItem.creative.body,
-                callToAction: adItem.creative.callToAction,
-                advertiser: adItem.creative.advertiser,
-                iconUrl: iconURL,
-                isVerticalImage: adItem.creative.isVerticalImage,
-                isImageClickable: adItem.creative.isImageClickable ?? false,
-                imageContentMode: NovaNativeImageContentMode(rawValue: adItem.creative.imageScaleMode ?? ""),
-                imageUrls: adItem.creative.imageUrls,
-                novaInterstitialAdLayout: NovaInterstitialAdLayout(rawValue: adItem.creative.layout ?? ""),
-                videoInfo: videoInfo,
-                multipleItemsInfo: buildMultipleItemsInfo(
-                    adItem.creative.carouselItems,
-                    externalAppStoreId: adItem.creative.appStoreId,
-                    launchOption: adItem.creative.launchOption,
-                    abConfig: abConfig,
-                    adId: adItem.adId
-                ),
-                adDiscountTagInfo: buildAdDiscountTagInfo(adItem.creative.tagItem, abConfig: abConfig),
-                layoutStyle: NovaNativeLayoutStyle(rawValue: adItem.creative.layout ?? ""),
-                marketingType: buildMarketingType(item: adItem.creative.tagItem),
-                playableInfo: buildPlayableInfo(adItem.creative.playableItem, for: .appOpen, abConfig: abConfig),
-                closeCountDownTimeSeconds: adItem.creative.closeCountDownTimeSecond ?? 0,
-                clickableComponents: adItem.creative.clickableComponents?
-                    .compactMap { NovaClickableComponent(rawValue: $0) },
-                htmlPageItems: adItem.creative.htmlPageItems,
-                popupCTAStyleVariant: popupCTAStyleVariant
-            )
-            return adItem
-        } catch {
-            DebugLogger.data.error("Failed to build interstitial ad item: \(error.localizedDescription)")
-            return nil
-        }
-    }
-
     public static func buildInterstitialAds(
         adItems: [AdItem],
         adUnitId: String,
@@ -236,6 +149,12 @@ public enum NovaAdBuilder {
             let expirationTimeInMs = Double(adItem.expirationMs ?? "")
             let ctaStyle = adItem.creative.ctaStyle.flatMap(NovaAdCtaStyle.init(rawValue:))
             let popupCTAStyleVariant = parsePopupCTAStyleVariant(from: abConfig)
+            let shouldPreloadHtml = {
+                if let shouldPreloadString = abConfig?[AbConfigKeys.shouldPreloadHtml] {
+                    return shouldPreloadString == "true"
+                }
+                return false
+            }()
 
             do {
                 let adItem = try NovaInterstitialAdItem(
@@ -280,7 +199,8 @@ public enum NovaAdBuilder {
                     clickableComponents: adItem.creative.clickableComponents?
                         .compactMap { NovaClickableComponent(rawValue: $0) },
                     htmlPageItems: adItem.creative.htmlPageItems,
-                    popupCTAStyleVariant: popupCTAStyleVariant
+                    popupCTAStyleVariant: popupCTAStyleVariant,
+                    shouldPreloadHtml: shouldPreloadHtml
                 )
                 return adItem
             } catch {
