@@ -21,7 +21,6 @@ class NovaAdHtmlView: WKWebView, WKScriptMessageHandler {
 
     var useCustomUrl: Bool = false
     var useCustomClose: Bool = false
-<<<<<<< huanzhiNB/h5Preload
     
     var pageResource: NovaAdHtmlResource?
 
@@ -34,9 +33,7 @@ class NovaAdHtmlView: WKWebView, WKScriptMessageHandler {
         case finishedWithSuccess
         case finishedWithoutSuccess
     }
-=======
     var appStoreId: Int?
->>>>>>> develop
 
     public init(supportReportHandling: Bool) {
         let config = WKWebViewConfiguration()
