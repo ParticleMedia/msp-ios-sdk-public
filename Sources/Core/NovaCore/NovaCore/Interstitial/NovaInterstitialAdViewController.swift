@@ -91,8 +91,8 @@ class NovaInterstitialAdViewController: UIViewController {
     }
 
     override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
-        // Support all orientations on iPad, portrait only on iPhone
-        if UIDevice.current.userInterfaceIdiom == .pad {
+        // Support all orientations on iPad or H5 Ad, portrait only on iPhone
+        if UIDevice.current.userInterfaceIdiom == .pad || self.interstitialAd.creativeType == .html {
             return [.portrait, .landscapeLeft, .landscapeRight, .portraitUpsideDown]
         } else {
             return .portrait
@@ -100,8 +100,13 @@ class NovaInterstitialAdViewController: UIViewController {
     }
 
     override var shouldAutorotate: Bool {
-        // Allow rotation on iPad, disable on iPhone
-        UIDevice.current.userInterfaceIdiom == .pad
+        if case .html = self.interstitialAd.creativeType {
+            // disable rotation on H5 Ad
+            return false
+        } else {
+            // Allow rotation on iPad, disable on iPhone
+            return UIDevice.current.userInterfaceIdiom == .pad
+        }
     }
 
     override func viewDidLoad() {
