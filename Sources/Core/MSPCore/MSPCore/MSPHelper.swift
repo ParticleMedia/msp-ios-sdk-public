@@ -76,7 +76,7 @@ public class MSP {
     ) {
         // This is a temporary solution to replace MSPManager class in kotlin to solve the Kotlin singleton issue
         DispatchQueue.main.async {
-            let initStartTime = Date().timeIntervalSince1970
+            let initStartTime = ProcessInfo.processInfo.systemUptime
             self.initStartTime = initStartTime
             AdCache.shared.adMetricReporter = AdMetricReporterImp()
             if initParams is InitializationParametersImp {
@@ -123,7 +123,7 @@ public class MSP {
             Prebid.shared.shareGeoLocation = true
 
             UserDefaults.standard.setValue(String(Date().timeIntervalSince1970 * 1000), forKey: "FirstLaunchTime")
-            self.blockLatencyInMs = Int32((Date().timeIntervalSince1970 - initStartTime) * 1000)
+            self.blockLatencyInMs = Int32((ProcessInfo.processInfo.systemUptime - initStartTime) * 1000)
         }
     }
 
@@ -181,7 +181,7 @@ public class MSP {
                     MSPLogger.shared.info(message: "MSP SDK is initialized successfully")
                     var totalCompleteTimeInMs: Int32?
                     if let initStartTime = MSP.shared.initStartTime {
-                        totalCompleteTimeInMs = Int32((Date().timeIntervalSince1970 - initStartTime) * 1000)
+                        totalCompleteTimeInMs = Int32((ProcessInfo.processInfo.systemUptime - initStartTime) * 1000)
                     }
                     MESMetricReporter.shared.logSDKInit(
                         totalCompleteTimeInMs: totalCompleteTimeInMs, blockLatencyInMs: MSP.shared.blockLatencyInMs,
