@@ -16,17 +16,13 @@ final class MraidCommandHandler: NSObject, NovaMraidSupporting {
 
     init(
         webView: WKWebView,
-        mraidDelegate: MraidBehaviorDelegate? = nil,
-        calendarEventTitle: String = "Event"
+        mraidDelegate: MraidBehaviorDelegate? = nil
     ) {
         self.webView = webView
         self.mraidDelegate = mraidDelegate
-        self.mraidCalendarEventDefaultTitle = calendarEventTitle
-        self.defaultHandler = MraidDefaultHandler(calendarEventTitle: calendarEventTitle)
+        self.defaultHandler = MraidDefaultHandler()
         super.init()
     }
-
-    let mraidCalendarEventDefaultTitle: String
 
     var mraidWebView: WKWebView { webView }
 
@@ -64,17 +60,13 @@ final class MraidCommandHandler: NSObject, NovaMraidSupporting {
     }
 
     func handleMraidStorePicture(params: [String: Any]) {
-        guard let uri = params["uri"] as? String ?? params["url"] as? String,
-            let url = URL(string: uri)
-        else {
-            mraidLogError("[MRAID Native] storePicture invalid or missing uri")
-            return
-        }
-        defaultHandler.storePicture(url: url)
+        mraidLogInfo("[MRAID Native] Received storePicture request: \(params)")
+        fireMraidError(message: "Store picture is not supported.", action: "storePicture")
     }
 
     func handleMraidCreateCalendarEvent(params: [String: Any]) {
-        defaultHandler.createCalendarEvent(params: params)
+        mraidLogInfo("[MRAID Native] Received createCalendarEvent request: \(params)")
+        fireMraidError(message: "Create calendar event is not supported.", action: "createCalendarEvent")
     }
 
     func handleMraidMessageBody(_ body: Any) {

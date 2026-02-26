@@ -62,13 +62,11 @@ final class MraidController: NSObject {
 
     init(
         webView: WKWebView,
-        mraidDelegate: MraidBehaviorDelegate? = nil,
-        calendarEventTitle: String = "Event"
+        mraidDelegate: MraidBehaviorDelegate? = nil
     ) {
         let handler = MraidCommandHandler(
             webView: webView,
-            mraidDelegate: mraidDelegate,
-            calendarEventTitle: calendarEventTitle
+            mraidDelegate: mraidDelegate
         )
         self.commandHandler = handler
         self.jsBridge = MraidJsToNativeBridge(commandHandler: handler)
