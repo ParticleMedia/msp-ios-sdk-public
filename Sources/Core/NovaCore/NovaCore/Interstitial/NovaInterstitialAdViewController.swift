@@ -91,11 +91,27 @@ class NovaInterstitialAdViewController: UIViewController {
     }
 
     override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
-        // Support all orientations on iPad or H5 Ad, portrait only on iPhone
-        if UIDevice.current.userInterfaceIdiom == .pad || self.interstitialAd.creativeType == .html {
-            return [.portrait, .landscapeLeft, .landscapeRight, .portraitUpsideDown]
-        } else {
+
+        guard UIDevice.current.userInterfaceIdiom == .pad || self.interstitialAd.creativeType == .html else {
             return .portrait
+        }
+        if UIDevice.current.userInterfaceIdiom == .pad {
+            return [.portrait, .landscapeLeft, .landscapeRight, .portraitUpsideDown]
+        }
+        let scene = UIApplication.shared.connectedScenes
+                .compactMap { $0 as? UIWindowScene }
+                .first { $0.activationState == .foregroundActive }
+
+        guard let orientation = scene?.interfaceOrientation else {
+            return .portrait
+        }
+
+        switch orientation {
+        case .portrait: return .portrait
+        case .portraitUpsideDown: return .portraitUpsideDown
+        case .landscapeLeft: return .landscapeLeft
+        case .landscapeRight: return .landscapeRight
+        default: return .portrait
         }
     }
 
@@ -176,7 +192,8 @@ class NovaInterstitialAdViewController: UIViewController {
 
         // TODO: lsy, check out if this logic works
         guard self.adView as? NovaInterstitialAdNormalView != nil,
-            UIDevice.current.userInterfaceIdiom == .pad
+              UIDevice.current.userInterfaceIdiom == .pad,
+              self.interstitialAd.creativeType != .html
         else {
             return
         }
