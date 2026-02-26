@@ -45,7 +45,7 @@ extension NovaNativeAdView {
         timer.invalidate()
         self.timer = nil
         if nativeAd?.mediaContent.videoController?.videoView.superview == self.mediaView {
-            nativeAd?.mediaContent.videoController?.stop()
+            nativeAd?.mediaContent.videoController?.pause()
         }
         if isImageShowing, let nativeAd {
             NovaAdImageMetricReporter.logImageDwell(
