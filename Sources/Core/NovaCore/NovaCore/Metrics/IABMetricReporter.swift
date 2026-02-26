@@ -8,7 +8,7 @@ class IABMetricReporter {
         static let resourceBundleName = "NBResourceBundle.bundle"
         static let jsFileName = "omsdk-v1"
 
-        static let partnerName = "Newsbreak"
+        static let partnerName = "Newsbreak1"
     }
 
     private var session: OMIDNewsbreak1AdSession?
