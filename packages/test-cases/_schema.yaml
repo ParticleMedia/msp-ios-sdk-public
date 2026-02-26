@@ -1,0 +1,194 @@
+# Test Case YAML Schema Definition
+# Version: 2.0
+# Purpose: Defines the structure for test case YAML files in packages/test-cases/
+# Validation: Use jsonschema (Python) with YAML loader, or yamale
+
+# --- JSON Schema (expressed in YAML for readability) ---
+# To validate: load this as JSON Schema, load test case YAML, validate with jsonschema
+
+$schema: "https://json-schema.org/draft/2020-12/schema"
+title: "MSP iOS SDK Test Case Definition"
+description: "Schema for YAML-based test case definitions following BDD and unit test patterns"
+type: object
+additionalProperties: false
+
+required:
+  - module
+  - prefix
+  - description
+  - bundle
+  - cases
+
+properties:
+  module:
+    type: string
+    description: "Module name (must be substring of Swift test filename)"
+    pattern: "^[A-Z][a-zA-Z0-9]+$"
+    examples: ["DebugAdLoad", "DebugRadioCell"]
+
+  prefix:
+    type: string
+    description: "2-4 uppercase letter prefix, registered in _prefixes.yaml"
+    pattern: "^[A-Z]{2,4}$"
+    examples: ["DAL", "DRC"]
+
+  bundle:
+    type: string
+    description: "Xcode test target that runs these tests"
+    enum: ["MSPCoreTests", "NovaCoreTests", "MSPiOSCoreTests", "AdapterTests"]
+
+  description:
+    type: string
+    description: "What this module's tests cover"
+    maxLength: 200
+
+  created:
+    type: string
+    format: date
+    description: "ISO 8601 date when first created"
+
+  updated:
+    type: string
+    format: date
+    description: "ISO 8601 date of last modification"
+
+  cases:
+    type: array
+    minItems: 1
+    items:
+      $ref: "#/$defs/test_case"
+
+$defs:
+  test_case:
+    type: object
+    additionalProperties: false
+    required:
+      - id
+      - type
+      - description
+    properties:
+      id:
+        type: string
+        description: "Unique test case ID: {PREFIX}{NNN}"
+        pattern: "^[A-Z]{2,4}[0-9]{3}$"
+        examples: ["DAL001", "DRC002"]
+
+      type:
+        type: string
+        enum: ["unit", "behavior"]
+        description: "Test type: unit (class/method) or behavior (BDD Given/When/Then)"
+
+      description:
+        type: string
+        description: "What this test case verifies"
+        maxLength: 300
+
+      priority:
+        type: string
+        enum: ["critical", "high", "medium", "low"]
+        default: "medium"
+        description: "Test priority level"
+
+      tags:
+        type: array
+        items:
+          type: string
+          pattern: "^[a-z][a-z0-9-]*$"
+        description: "Categorization tags (lowercase, hyphenated)"
+
+      file:
+        type: string
+        description: "Path to the Swift spec file implementing this test case"
+        pattern: "^Tests/.+\\.swift$"
+
+      status:
+        type: string
+        enum: ["planned", "implemented", "skipped"]
+        default: "implemented"
+        description: "Implementation status of this test case"
+
+      fixtures:
+        type: array
+        description: "Mock-data fixture paths used by this test case"
+        items:
+          type: string
+          pattern: "^[a-z0-9_/]+\\.json$"
+
+      regression_for:
+        type: string
+        description: "Branch name or ticket ID of the bugfix this test guards"
+        examples: ["fix/empty-placements-crash", "JIRA-1234"]
+
+      # BDD fields (behavior type)
+      given:
+        type: string
+        description: "Precondition (required for behavior type)"
+      when:
+        type: string
+        description: "Action under test (required for behavior type)"
+      then:
+        type: string
+        description: "Expected outcome (required for behavior type)"
+
+      # Unit test fields (unit type)
+      class:
+        type: string
+        description: "Class under test (required for unit type)"
+      method:
+        type: string
+        description: "Method under test (required for unit type)"
+
+      # Test doubles specification
+      doubles:
+        type: object
+        description: "Map of dependency name to test double specification"
+        additionalProperties:
+          $ref: "#/$defs/test_double"
+
+    # Conditional validation
+    allOf:
+      # behavior type requires given/when/then
+      - if:
+          properties:
+            type:
+              const: "behavior"
+        then:
+          required: ["given", "when", "then"]
+      - if:
+          properties:
+            type:
+              const: "unit"
+        then:
+          required: ["class", "method"]
+      # implemented status (or absent = default implemented) requires file
+      - if:
+          properties:
+            status:
+              const: "implemented"
+        then:
+          required: ["file"]
+      - if:
+          not:
+            required: ["status"]
+        then:
+          required: ["file"]
+
+  test_double:
+    type: object
+    additionalProperties: false
+    required:
+      - type
+      - class
+    properties:
+      type:
+        type: string
+        enum: ["dummy", "stub", "spy", "mock", "fake"]
+        description: "Meszaros taxonomy type"
+      class:
+        type: string
+        description: "Swift class name of the test double"
+        pattern: "^(Dummy|Stub|Spy|Mock|Fake)[A-Z][a-zA-Z0-9]+$"
+      reason:
+        type: string
+        description: "Why this double type was chosen (AI guidance)"
+        maxLength: 200

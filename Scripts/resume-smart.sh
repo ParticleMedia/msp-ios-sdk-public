@@ -15,45 +15,46 @@
 #   - Resume release with all fixes in place
 # ============================================================================
 
-set -e
-set -o pipefail
+set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 
 cd "$ROOT_DIR"
 
-# Colors
-RED='\033[0;31m'
-GREEN='\033[0;32m'
-YELLOW='\033[1;33m'
-BLUE='\033[0;34m'
-NC='\033[0m' # No Color
+# Source unified color/logging system
+if [[ -f "$ROOT_DIR/Scripts/lib/common.sh" ]]; then
+    # shellcheck source=Scripts/lib/common.sh
+    source "$ROOT_DIR/Scripts/lib/common.sh" 2>/dev/null || true
+fi
 
-# Logging functions
-log_info() {
-    echo -e "${BLUE}ℹ️  $1${NC}"
-}
+# Fallback colors if common.sh not available
+: "${RED:='\033[0;31m'}"
+: "${GREEN:='\033[0;32m'}"
+: "${YELLOW:='\033[1;33m'}"
+: "${BLUE:='\033[0;34m'}"
+: "${NC:='\033[0m'}"
 
-log_success() {
-    echo -e "${GREEN}✅ $1${NC}"
-}
-
-log_warning() {
-    echo -e "${YELLOW}⚠️  $1${NC}"
-}
-
-log_error() {
-    echo -e "${RED}❌ $1${NC}" >&2
-}
-
-log_section() {
-    echo ""
-    echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
-    echo -e "${BLUE}$1${NC}"
-    echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
-    echo ""
-}
+# Logging functions (use log::* if available)
+if command -v log::info &>/dev/null; then
+    log_info() { log::info "RESUME" "$1"; }
+    log_success() { log::success "RESUME" "$1"; }
+    log_warning() { log::warn "RESUME" "$1"; }
+    log_error() { log::error "RESUME" "$1"; }
+    log_section() { log_section "$1"; }
+else
+    log_info() { echo -e "${BLUE}ℹ️  $1${NC}"; }
+    log_success() { echo -e "${GREEN}✅ $1${NC}"; }
+    log_warning() { echo -e "${YELLOW}⚠️  $1${NC}"; }
+    log_error() { echo -e "${RED}❌ $1${NC}" >&2; }
+    log_section() {
+        echo ""
+        echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+        echo -e "${BLUE}$1${NC}"
+        echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
+        echo ""
+    }
+fi
 
 # ============================================================================
 # Step 1: Detect version from state file
@@ -63,23 +64,23 @@ log_section "🔍 Detecting Resume Information"
 STATE_FILE=$(ls -t ~/.msp-state/release-*.json 2>/dev/null | head -1)
 
 if [[ ! -f "$STATE_FILE" ]]; then
-    log_error "No resume state file found"
-    log_info "Expected location: ~/.msp-state/release-*.json"
-    log_info ""
-    log_info "This script is used to resume a failed release."
-    log_info "If you want to start a new release, use:"
-    log_info "  ./Scripts/msp-release.sh --version X.Y.Z"
+    log::error "RESUME" "No resume state file found"
+    log::info "RESUME" "Expected location: ~/.msp-state/release-*.json"
+    log::info "RESUME" ""
+    log::info "RESUME" "This script is used to resume a failed release."
+    log::info "RESUME" "If you want to start a new release, use:"
+    log::info "RESUME" "  ./Scripts/msp-release.sh --version X.Y.Z"
     exit 1
 fi
 
 VERSION=$(basename "$STATE_FILE" | grep -oE '[0-9]+\.[0-9]+\.[0-9]+(-[a-z0-9.]+)?')
 
 if [[ -z "$VERSION" ]]; then
-    log_error "Failed to parse version from state file: $STATE_FILE"
+    log::error "RESUME" "Failed to parse version from state file: $STATE_FILE"
     exit 1
 fi
 
-log_info "Resume Information:"
+log::info "RESUME" "Resume Information:"
 echo "   Version:     $VERSION"
 echo "   State File:  $STATE_FILE"
 echo ""
@@ -92,26 +93,26 @@ log_section "🔀 Ensuring Correct Branch"
 RELEASE_BRANCH="release/$VERSION"
 CURRENT_BRANCH=$(git branch --show-current)
 
-log_info "Current Branch:  $CURRENT_BRANCH"
-log_info "Target Branch:   $RELEASE_BRANCH"
+log::info "RESUME" "Current Branch:  $CURRENT_BRANCH"
+log::info "RESUME" "Target Branch:   $RELEASE_BRANCH"
 echo ""
 
 if [[ "$CURRENT_BRANCH" != "$RELEASE_BRANCH" ]]; then
-    log_warning "Not on release branch, switching..."
+    log::warn "RESUME" "Not on release branch, switching..."
 
     # Check if release branch exists
     if git show-ref --verify --quiet "refs/heads/$RELEASE_BRANCH"; then
         git checkout "$RELEASE_BRANCH"
-        log_success "Switched to $RELEASE_BRANCH"
+        log::success "RESUME" "Switched to $RELEASE_BRANCH"
     else
-        log_error "Release branch does not exist: $RELEASE_BRANCH"
-        log_info ""
-        log_info "Available branches:"
+        log::error "RESUME" "Release branch does not exist: $RELEASE_BRANCH"
+        log::info "RESUME" ""
+        log::info "RESUME" "Available branches:"
         git branch -a | grep -E "release/|feature/"
         exit 1
     fi
 else
-    log_success "Already on correct branch: $RELEASE_BRANCH"
+    log::success "RESUME" "Already on correct branch: $RELEASE_BRANCH"
 fi
 
 echo ""
@@ -122,34 +123,32 @@ echo ""
 log_section "⚙️  Setting Environment Variables"
 
 if [[ -z "${DRY_RUN:-}" ]]; then
-    log_info "Environment not configured, setting up..."
+    log::info "RESUME" "Environment not configured, setting up..."
 
     if [[ -f "$SCRIPT_DIR/utils/setup-release-env.sh" ]]; then
         # Use resume profile if available, otherwise use local
         if grep -q "setup_resume_profile" "$SCRIPT_DIR/utils/setup-release-env.sh" 2>/dev/null; then
-            log_info "Using 'resume' profile"
+            log::info "RESUME" "Using 'resume' profile"
             source "$SCRIPT_DIR/utils/setup-release-env.sh" resume
         else
-            log_info "Using 'local' profile (resume profile not available)"
+            log::info "RESUME" "Using 'local' profile (resume profile not available)"
             source "$SCRIPT_DIR/utils/setup-release-env.sh" local
 
             # Manually add resume-specific settings
             export MSP_ALLOW_EXISTING_RELEASE=true
-            export INTERACTIVE=false
-            log_info "Added: MSP_ALLOW_EXISTING_RELEASE=true (for resume)"
-            log_info "Added: INTERACTIVE=false (non-interactive mode)"
+            log::info "RESUME" "Added: MSP_ALLOW_EXISTING_RELEASE=true (for resume)"
         fi
     else
-        log_error "setup-release-env.sh not found"
+        log::error "RESUME" "setup-release-env.sh not found"
         exit 1
     fi
 else
-    log_success "Environment already configured"
+    log::success "RESUME" "Environment already configured"
     local mode_label="dry-run"
     if [[ "${DRY_RUN}" == "false" ]]; then
         mode_label="production"
     fi
-    log_info "DRY_RUN: ${DRY_RUN} (${mode_label} mode)"
+    log::info "RESUME" "DRY_RUN: ${DRY_RUN} (${mode_label} mode)"
 fi
 
 echo ""
@@ -177,12 +176,9 @@ echo ""
 # ============================================================================
 log_section "🚀 Ready to Resume"
 
-echo "This will resume the release from where it failed."
+echo "Resuming the release from where it failed."
 echo ""
-echo "Press Enter to continue, or Ctrl+C to cancel..."
-read -r
-
-log_info "Starting resume..."
+log::info "RESUME" "Starting resume..."
 echo ""
 
 # Execute resume

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # --- MSP Worktree Safety Guard (Patch L, shared) ---
 # shellcheck source=/dev/null
 . "$(git rev-parse --show-toplevel 2>/dev/null)/Scripts/lib/worktree_guard.sh"
@@ -25,28 +25,29 @@ msp_enforce_main_repo_or_exit
 # Internal Helpers
 # ============================================================================
 
-# Compute repository root based on this file's location
-# state.sh is located at Scripts/release/utils/state.sh
 _msp_state_repo_root() {
     local script_dir
-    script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-    # ../../.. -> <repo_root>
-    cd "${script_dir}/../../.." && pwd
+    # Use fallback if directory doesn't exist (can happen on release branch)
+    if [[ -d "$(dirname "${BASH_SOURCE[0]}")" ]]; then
+        script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+        # ../../.. -> <repo_root>
+        cd "${script_dir}/../../.." && pwd
+    else
+        # Fallback: use git to find root
+        git rev-parse --show-toplevel 2>/dev/null || pwd
+    fi
 }
 
-# Get absolute path to state file
 msp_state_file_path() {
     local root
     root="$(_msp_state_repo_root)"
     echo "${root}/.msp-release-state.json"
 }
 
-# Get current timestamp in ISO8601 format
 _msp_state_now() {
     date -u +"%Y-%m-%dT%H:%M:%SZ"
 }
 
-# Safely update JSON file via jq
 _msp_state_update_json() {
     local jq_filter="$1"
     local path
@@ -121,8 +122,10 @@ msp_state_init() {
     local cli_args="${MSP_RELEASE_ORIGINAL_ARGS:-}"
     local invoked_subcommand="${SUBCOMMAND:-${mode}}"
     
-    # Phase B Step 4: Use DRY_RUN only, remove release_tier
-    local release_mode="${MSP_RELEASE_MODE:-cli}"
+    # Phase 5: Simple vs Full release mode (FR-007)
+    # - simple: Skip verification phase (default)
+    # - full: Include verification phase (--full flag)
+    local release_mode="${MSP_RELEASE_MODE:-simple}"
     # Removed: local release_tier="${MSP_RELEASE_TIER:-preflight}"
 
     # Normalize dry_run to boolean
@@ -155,14 +158,12 @@ msp_state_init() {
         --arg started_at "$now" \
         --arg updated_at "$now" \
         --arg release_mode "$release_mode" \
-        # Removed: --arg release_tier "$release_tier" \
         '{
             schema_version: 3,
             run_id: $run_id,
             mode: $mode,
             version: $version,
             release_mode: $release_mode,
-            # Removed: release_tier: $release_tier,
             base_branch: $base_branch,
             release_branch: $release_branch,
             dry_run: $dry_run,
@@ -232,20 +233,16 @@ msp_state_mark_step_running() {
     local now
     now="$(_msp_state_now)"
 
-    # Check if step exists
     local step_exists
     step_exists=$(jq -e ".steps[\"$step_name\"] != null" "$path" 2>/dev/null || echo "false")
 
     if [[ "$step_exists" == "true" ]]; then
-        # Increment attempt (or set to 1 if missing)
         local current_attempt
         current_attempt=$(jq -r ".steps[\"$step_name\"].attempt // 1" "$path" 2>/dev/null || echo "1")
         local new_attempt=$((current_attempt + 1))
 
-        # Update existing step
         _msp_state_update_json ".steps[\"$step_name\"].status = \"running\" | .steps[\"$step_name\"].attempt = $new_attempt | .steps[\"$step_name\"].started_at = (if .steps[\"$step_name\"].started_at == null then \"$now\" else .steps[\"$step_name\"].started_at end) | .timestamps.updated_at = \"$now\"" || return 0
     else
-        # Create new step
         _msp_state_update_json ".steps[\"$step_name\"] = {status: \"running\", attempt: 1, started_at: \"$now\", completed_at: null, notes: null} | .timestamps.updated_at = \"$now\"" || return 0
     fi
 
@@ -267,15 +264,12 @@ msp_state_mark_step_success() {
     local now
     now="$(_msp_state_now)"
 
-    # Ensure step exists, then update
     local step_exists
     step_exists=$(jq -e ".steps[\"$step_name\"] != null" "$path" 2>/dev/null || echo "false")
 
     if [[ "$step_exists" != "true" ]]; then
-        # Create step first
         _msp_state_update_json ".steps[\"$step_name\"] = {status: \"success\", attempt: 1, started_at: \"$now\", completed_at: \"$now\", notes: null} | .timestamps.updated_at = \"$now\"" || return 0
     else
-        # Update existing step
         _msp_state_update_json ".steps[\"$step_name\"].status = \"success\" | .steps[\"$step_name\"].started_at = (if .steps[\"$step_name\"].started_at == null then \"$now\" else .steps[\"$step_name\"].started_at end) | .steps[\"$step_name\"].completed_at = \"$now\" | .timestamps.updated_at = \"$now\"" || return 0
     fi
 
@@ -299,12 +293,10 @@ msp_state_mark_step_failed() {
     local now
     now="$(_msp_state_now)"
 
-    # Truncate message if too long (limit to 500 chars)
     if [[ ${#message} -gt 500 ]]; then
         message="${message:0:497}..."
     fi
 
-    # Escape message for JSON
     local message_json
     message_json=$(printf '%s' "$message" | jq -Rs .)
 
@@ -405,7 +397,6 @@ msp_state_mark_git_flag() {
 
     [[ -f "$path" ]] || return 0
 
-    # Normalize to JSON boolean
     local json_bool="false"
     if [[ "$bool_value" == "true" ]] || [[ "$bool_value" == "1" ]]; then
         json_bool="true"
@@ -431,7 +422,6 @@ msp_state_touch() {
     return 0
 }
 
-# Set tag name in state
 msp_state_set_tag_name() {
     local name="$1"
 
@@ -444,7 +434,6 @@ msp_state_set_tag_name() {
 
     [[ -f "$path" ]] || return 0
 
-    # Escape name for JSON
     local name_json
     name_json=$(printf '%s' "$name" | jq -Rs .)
 
@@ -453,7 +442,6 @@ msp_state_set_tag_name() {
     return 0
 }
 
-# Reset git-related flags in the state after a successful rollback
 msp_state_reset_git_flags() {
     if ! msp_state_is_enabled; then
         return 0
@@ -473,7 +461,6 @@ msp_state_reset_git_flags() {
 # Pod-Level State Management (Resume Mechanism)
 # ============================================================================
 
-# Mark pod status in state file
 # Args: pod_name, status (published|failed|pending|inconsistent)
 msp_state_mark_pod_status() {
     local pod="$1"
@@ -489,7 +476,6 @@ msp_state_mark_pod_status() {
         return 0
     fi
 
-    # Update pod status with timestamp
     local timestamp
     timestamp="$(_msp_state_now)"
 
@@ -498,7 +484,6 @@ msp_state_mark_pod_status() {
     return 0
 }
 
-# Get pod status from state file
 # Args: pod_name
 # Returns: status string (published|failed|pending|inconsistent|unknown)
 msp_state_get_pod_status() {
@@ -523,7 +508,6 @@ msp_state_get_pod_status() {
     return 0
 }
 
-# Set pod trunk verification status
 # Args: pod_name, verified (true|false)
 msp_state_set_pod_trunk_verified() {
     local pod="$1"
@@ -542,7 +526,6 @@ msp_state_set_pod_trunk_verified() {
     local timestamp
     timestamp="$(_msp_state_now)"
 
-    # Normalize to JSON boolean
     local json_bool="false"
     if [[ "$verified" == "true" ]] || [[ "$verified" == "1" ]]; then
         json_bool="true"
@@ -553,7 +536,6 @@ msp_state_set_pod_trunk_verified() {
     return 0
 }
 
-# Get pod trunk verification status
 # Args: pod_name
 # Returns: true|false|unknown
 msp_state_get_pod_trunk_verified() {
@@ -578,7 +560,81 @@ msp_state_get_pod_trunk_verified() {
     return 0
 }
 
-# Increment resume count
+# Args: pod_name, value (true|false)
+msp_state_set_pod_github_release_created() {
+    local pod="$1"
+    local value="$2"  # "true" | "false"
+
+    if ! msp_state_is_enabled; then
+        return 0
+    fi
+
+    local path
+    path="$(msp_state_file_path)"
+    [[ ! -f "$path" ]] && return 0
+
+    local json_value="false"
+    if [[ "$value" == "true" || "$value" == "1" ]]; then
+        json_value="true"
+    fi
+
+    local timestamp
+    timestamp="$(_msp_state_now)"
+
+    _msp_state_update_json \
+        ".pods[\"$pod\"].github_release_created = $json_value | \
+         .pods[\"$pod\"].github_release_verified_at = \"$timestamp\" | \
+         .timestamps.updated_at = \"$timestamp\"" || return 0
+
+    return 0
+}
+
+# Args: pod_name
+# Returns: true|false|unknown
+msp_state_get_pod_github_release_created() {
+    local pod="$1"
+
+    if ! msp_state_is_enabled; then
+        echo "unknown"
+        return 0
+    fi
+
+    local path
+    path="$(msp_state_file_path)"
+    [[ ! -f "$path" ]] && echo "unknown" && return 0
+
+    local value
+    value=$(jq -r --arg pod "$pod" \
+        '.pods[$pod].github_release_created // "unknown"' \
+        "$path" 2>/dev/null || echo "unknown")
+
+    echo "$value"
+    return 0
+}
+
+# Args: pod_name, url
+msp_state_set_pod_github_release_url() {
+    local pod="$1"
+    local url="$2"
+
+    if ! msp_state_is_enabled; then
+        return 0
+    fi
+
+    local path
+    path="$(msp_state_file_path)"
+    [[ ! -f "$path" ]] && return 0
+
+    local timestamp
+    timestamp="$(_msp_state_now)"
+
+    _msp_state_update_json \
+        ".pods[\"$pod\"].github_release_url = \"$url\" | \
+         .timestamps.updated_at = \"$timestamp\"" || return 0
+
+    return 0
+}
+
 msp_state_increment_resume_count() {
     if ! msp_state_is_enabled; then
         return 0
@@ -614,4 +670,7 @@ export -f msp_state_mark_pod_status
 export -f msp_state_get_pod_status
 export -f msp_state_set_pod_trunk_verified
 export -f msp_state_get_pod_trunk_verified
+export -f msp_state_set_pod_github_release_created
+export -f msp_state_get_pod_github_release_created
+export -f msp_state_set_pod_github_release_url
 export -f msp_state_increment_resume_count

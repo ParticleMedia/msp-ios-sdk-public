@@ -1,6 +1,15 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Asset validation script - Enhanced version
-set -e
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+ROOT_DIR="$(cd "$SCRIPT_DIR/../.." && pwd)"
+
+# R033: Source spm.sh module for unified SPM operations
+if [[ -f "$ROOT_DIR/Scripts/lib/spm.sh" ]]; then
+    # shellcheck source=Scripts/lib/spm.sh
+    source "$ROOT_DIR/Scripts/lib/spm.sh" 2>/dev/null || true
+fi
 
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo "🔍 Asset Validation"
@@ -71,7 +80,7 @@ for spec in *.podspec; do
     fi
 done
 
-if [ $podspec_count -eq 0 ]; then
+if [ "$podspec_count" -eq 0 ]; then
     echo "  ❌ No podspec files found"
     exit 1
 fi
@@ -83,7 +92,33 @@ echo "  Found $podspec_count podspec files"
 # ═══════════════════════════════════════════════════════════
 echo ""
 echo "Checking Swift Package Manager files..."
-if [ -f "Package.swift" ]; then
+# R033: Use spm_check_manifest_exists if available
+if command -v spm_check_manifest_exists &>/dev/null; then
+    if spm_check_manifest_exists "."; then
+        echo "  ✅ Package.swift exists"
+
+        # R033: Use spm_validate_manifest for validation
+        if command -v spm_validate_manifest &>/dev/null; then
+            if ! spm_validate_manifest "." 2>/dev/null; then
+                echo "  ❌ Package.swift has invalid syntax"
+                exit 1
+            fi
+        else
+            # Fallback to basic grep check
+            if ! grep -q "import PackageDescription" "Package.swift"; then
+                echo "  ❌ Package.swift has invalid syntax"
+                exit 1
+            fi
+        fi
+
+        # Check if Package.swift defines any products
+        if ! grep -q "products:" "Package.swift"; then
+            echo "  ⚠️  Package.swift has no products defined"
+        fi
+    else
+        echo "  ⚠️  Package.swift not found (SPM not configured)"
+    fi
+elif [ -f "Package.swift" ]; then
     echo "  ✅ Package.swift exists"
 
     # Verify Package.swift syntax (basic check)
@@ -150,7 +185,7 @@ find Scripts -name "*.sh" -type f | while read -r script; do
     fi
 done
 
-if [ $non_executable_count -gt 0 ]; then
+if [ "$non_executable_count" -gt 0 ]; then
     echo "  ⚠️  Found $non_executable_count non-executable scripts"
     echo "  Run: find Scripts -name '*.sh' -type f -exec chmod +x {} \\;"
 fi

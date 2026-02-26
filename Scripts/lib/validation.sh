@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # --- MSP Worktree Safety Guard (Patch K, shared) ---
 # shellcheck source=/dev/null
 if command -v git >/dev/null 2>&1; then
@@ -14,9 +14,7 @@ fi
 # Validation and checking functions for MSP iOS SDK build system
 # This module provides comprehensive validation for commands, paths, configurations, and build requirements
 
-# Source dependencies
 source "$(dirname "${BASH_SOURCE[0]}")/common.sh"
-source "$(dirname "${BASH_SOURCE[0]}")/logging.sh"
 
 # Required commands for different operations (using functions for bash 3.x compatibility)
 get_required_commands() {
@@ -58,10 +56,10 @@ check_command_exists() {
     local description="${2:-$command}"
     
     if command -v "$command" >/dev/null 2>&1; then
-        log_debug "Command '$command' found: $(command -v "$command")"
+        log::debug "VALIDATE" "Command '$command' found: $(command -v "$command")"
         return $EXIT_SUCCESS
     else
-        log_error "Required command '$description' not found in PATH"
+        log::error "VALIDATE" "Required command '$description' not found in PATH"
         return $EXIT_COMMAND_NOT_FOUND
     fi
 }
@@ -72,12 +70,13 @@ check_command_group() {
     local failed_commands=()
     
     if [[ -z "$commands" ]]; then
-        log_error "Unknown command group: $group"
+        log::error "VALIDATE" "Unknown command group: $group"
         return $EXIT_VALIDATION_ERROR
     fi
+
+    log::step "VALIDATE" "Checking $group commands..."
     
-    log_step "Checking $group commands..."
-    
+    # shellcheck disable=SC2086 -- intentional word-splitting: commands is a space-delimited name list
     for command in $commands; do
         if ! check_command_exists "$command" >/dev/null 2>&1; then
             failed_commands+=("$command")
@@ -85,10 +84,10 @@ check_command_group() {
     done
     
     if [[ ${#failed_commands[@]} -eq 0 ]]; then
-        log_success "All $group commands available"
+        log::success "VALIDATE" "All $group commands available"
         return $EXIT_SUCCESS
     else
-        log_error "Missing $group commands: ${failed_commands[*]}"
+        log::error "VALIDATE" "Missing $group commands: ${failed_commands[*]}"
         return $EXIT_COMMAND_NOT_FOUND
     fi
 }
@@ -124,7 +123,7 @@ check_command_version() {
     local min_version="${2:-$(get_min_version "$command")}"
     
     if [[ -z "$min_version" ]]; then
-        log_debug "No minimum version specified for $command"
+        log::debug "VALIDATE" "No minimum version specified for $command"
         return $EXIT_SUCCESS
     fi
     
@@ -135,15 +134,15 @@ check_command_version() {
     local current_version=$(get_command_version "$command")
     
     if [[ "$current_version" == "unknown" ]]; then
-        log_warn "Could not determine version for $command"
+        log::warn "VALIDATE" "Could not determine version for $command"
         return $EXIT_SUCCESS
     fi
-    
+
     if version_greater_equal "$current_version" "$min_version"; then
-        log_debug "$command version $current_version meets minimum requirement ($min_version)"
+        log::debug "VALIDATE" "$command version $current_version meets minimum requirement ($min_version)"
         return $EXIT_SUCCESS
     else
-        log_error "$command version $current_version is below minimum requirement ($min_version)"
+        log::error "VALIDATE" "$command version $current_version is below minimum requirement ($min_version)"
         return $EXIT_VALIDATION_ERROR
     fi
 }
@@ -157,28 +156,28 @@ check_path_exists() {
     case "$type" in
         "file")
             if [[ -f "$path" ]]; then
-                log_debug "File exists: $path"
+                log::debug "VALIDATE" "File exists: $path"
                 return $EXIT_SUCCESS
             else
-                log_error "Required file not found: $description ($path)"
+                log::error "VALIDATE" "Required file not found: $description ($path)"
                 return $EXIT_VALIDATION_ERROR
             fi
             ;;
         "directory")
             if [[ -d "$path" ]]; then
-                log_debug "Directory exists: $path"
+                log::debug "VALIDATE" "Directory exists: $path"
                 return $EXIT_SUCCESS
             else
-                log_error "Required directory not found: $description ($path)"
+                log::error "VALIDATE" "Required directory not found: $description ($path)"
                 return $EXIT_VALIDATION_ERROR
             fi
             ;;
         *)
             if [[ -e "$path" ]]; then
-                log_debug "Path exists: $path"
+                log::debug "VALIDATE" "Path exists: $path"
                 return $EXIT_SUCCESS
             else
-                log_error "Required path not found: $description ($path)"
+                log::error "VALIDATE" "Required path not found: $description ($path)"
                 return $EXIT_VALIDATION_ERROR
             fi
             ;;
@@ -191,12 +190,13 @@ check_file_group() {
     local failed_files=()
     
     if [[ -z "$files" ]]; then
-        log_error "Unknown file group: $group"
+        log::error "VALIDATE" "Unknown file group: $group"
         return $EXIT_VALIDATION_ERROR
     fi
+
+    log::step "VALIDATE" "Checking $group files..."
     
-    log_step "Checking $group files..."
-    
+    # shellcheck disable=SC2086 -- intentional word-splitting: files is a space-delimited path list
     for file in $files; do
         if ! check_path_exists "$file" "$file" "file" >/dev/null 2>&1; then
             failed_files+=("$file")
@@ -204,10 +204,10 @@ check_file_group() {
     done
     
     if [[ ${#failed_files[@]} -eq 0 ]]; then
-        log_success "All $group files found"
+        log::success "VALIDATE" "All $group files found"
         return $EXIT_SUCCESS
     else
-        log_error "Missing $group files: ${failed_files[*]}"
+        log::error "VALIDATE" "Missing $group files: ${failed_files[*]}"
         return $EXIT_VALIDATION_ERROR
     fi
 }
@@ -218,7 +218,7 @@ check_file_permissions() {
     local required_perms="$2" # r, w, x, rw, rx, wx, rwx
     
     if [[ ! -e "$file" ]]; then
-        log_error "Cannot check permissions: file does not exist: $file"
+        log::error "VALIDATE" "Cannot check permissions: file does not exist: $file"
         return $EXIT_VALIDATION_ERROR
     fi
     
@@ -236,17 +236,17 @@ check_file_permissions() {
         "rx") $has_read && $has_execute ;;
         "wx") $has_write && $has_execute ;;
         "rwx") $has_read && $has_write && $has_execute ;;
-        *) 
-            log_error "Invalid permission specification: $required_perms"
+        *)
+            log::error "VALIDATE" "Invalid permission specification: $required_perms"
             return $EXIT_VALIDATION_ERROR
             ;;
     esac
-    
+
     local result=$?
     if [[ $result -eq 0 ]]; then
-        log_debug "File $file has required permissions: $required_perms"
+        log::debug "VALIDATE" "File $file has required permissions: $required_perms"
     else
-        log_error "File $file missing required permissions: $required_perms"
+        log::error "VALIDATE" "File $file missing required permissions: $required_perms"
     fi
     
     return $result
@@ -254,265 +254,241 @@ check_file_permissions() {
 
 make_executable() {
     local file="$1"
-    
+
     if [[ ! -f "$file" ]]; then
-        log_error "Cannot make executable: file does not exist: $file"
+        log::error "VALIDATE" "Cannot make executable: file does not exist: $file"
         return $EXIT_VALIDATION_ERROR
     fi
-    
+
     if ! check_file_permissions "$file" "x" >/dev/null 2>&1; then
-        log_step "Making $file executable..."
+        log::step "VALIDATE" "Making $file executable..."
         if chmod +x "$file"; then
-            log_success "Made $file executable"
+            log::success "VALIDATE" "Made $file executable"
             return $EXIT_SUCCESS
         else
-            log_error "Failed to make $file executable"
+            log::error "VALIDATE" "Failed to make $file executable"
             return $EXIT_VALIDATION_ERROR
         fi
     else
-        log_debug "$file is already executable"
+        log::debug "VALIDATE" "$file is already executable"
         return $EXIT_SUCCESS
     fi
 }
 
 # Xcode and iOS development validation
 validate_xcode_installation() {
-    log_step "Validating Xcode installation..."
-    
-    # Check if Xcode is installed
+    log::step "VALIDATE" "Validating Xcode installation..."
+
     if ! check_command_exists "xcode-select" "Xcode command line tools"; then
         return $EXIT_VALIDATION_ERROR
     fi
-    
-    # Check if Xcode path is set
+
     local xcode_path
     xcode_path=$(xcode-select -p 2>/dev/null)
     if [[ $? -ne 0 ]] || [[ -z "$xcode_path" ]]; then
-        log_error "Xcode path not set. Run: sudo xcode-select --install"
+        log::error "VALIDATE" "Xcode path not set. Run: sudo xcode-select --install"
         return $EXIT_VALIDATION_ERROR
     fi
-    
-    # Check if Xcode version meets requirements
+
     if ! check_command_version "xcodebuild"; then
         return $EXIT_VALIDATION_ERROR
     fi
-    
-    # Check for iOS SDK
+
     local ios_sdk_path
     ios_sdk_path=$(xcrun --sdk iphoneos --show-sdk-path 2>/dev/null)
     if [[ $? -ne 0 ]] || [[ ! -d "$ios_sdk_path" ]]; then
-        log_error "iOS SDK not found"
+        log::error "VALIDATE" "iOS SDK not found"
         return $EXIT_VALIDATION_ERROR
     fi
-    
-    # Check for iOS Simulator SDK
+
     local ios_sim_sdk_path
     ios_sim_sdk_path=$(xcrun --sdk iphonesimulator --show-sdk-path 2>/dev/null)
     if [[ $? -ne 0 ]] || [[ ! -d "$ios_sim_sdk_path" ]]; then
-        log_error "iOS Simulator SDK not found"
+        log::error "VALIDATE" "iOS Simulator SDK not found"
         return $EXIT_VALIDATION_ERROR
     fi
-    
-    log_success "Xcode installation validated"
-    log_debug "Xcode path: $xcode_path"
-    log_debug "iOS SDK: $ios_sdk_path"
-    log_debug "iOS Simulator SDK: $ios_sim_sdk_path"
-    
+
+    log::success "VALIDATE" "Xcode installation validated"
+    log::debug "VALIDATE" "Xcode path: $xcode_path"
+    log::debug "VALIDATE" "iOS SDK: $ios_sdk_path"
+    log::debug "VALIDATE" "iOS Simulator SDK: $ios_sim_sdk_path"
+
     return $EXIT_SUCCESS
 }
 
 validate_cocoapods_installation() {
-    log_step "Validating CocoaPods installation..."
-    
+    log::step "VALIDATE" "Validating CocoaPods installation..."
+
     if ! check_command_group "cocoapods"; then
         return $EXIT_VALIDATION_ERROR
     fi
-    
+
     if ! check_command_version "pod"; then
         return $EXIT_VALIDATION_ERROR
     fi
-    
-    # Check if we can access CocoaPods specs repo
+
     if ! bundle exec pod repo list >/dev/null 2>&1; then
-        log_warn "CocoaPods specs repo may need updating"
+        log::warn "VALIDATE" "CocoaPods specs repo may need updating"
     fi
-    
-    log_success "CocoaPods installation validated"
+
+    log::success "VALIDATE" "CocoaPods installation validated"
     return $EXIT_SUCCESS
 }
 
 validate_ruby_environment() {
-    log_step "Validating Ruby environment..."
-    
+    log::step "VALIDATE" "Validating Ruby environment..."
+
     if ! check_command_version "ruby"; then
         return $EXIT_VALIDATION_ERROR
     fi
-    
+
     if ! check_command_version "bundle"; then
         return $EXIT_VALIDATION_ERROR
     fi
-    
-    # Check if Gemfile exists and bundle is up to date
+
     if [[ -f "Gemfile" ]]; then
         if [[ -f "Gemfile.lock" ]]; then
             if ! bundle check >/dev/null 2>&1; then
-                log_warn "Bundle dependencies need updating. Run: bundle install"
+                log::warn "VALIDATE" "Bundle dependencies need updating. Run: bundle install"
             fi
         else
-            log_warn "Gemfile.lock not found. Run: bundle install"
+            log::warn "VALIDATE" "Gemfile.lock not found. Run: bundle install"
         fi
     fi
-    
-    log_success "Ruby environment validated"
+
+    log::success "VALIDATE" "Ruby environment validated"
     return $EXIT_SUCCESS
 }
 
 # Project-specific validation
 validate_project_structure() {
-    log_step "Validating project structure..."
-    
-    # Check for workspace file
+    log::step "VALIDATE" "Validating project structure..."
+
     if ! check_file_group "ios_project"; then
         return $EXIT_VALIDATION_ERROR
     fi
-    
-    # Check for essential directories
+
     local essential_dirs=(
         "MSPCore"
-        "MSPiOSCore" 
+        "MSPiOSCore"
         "NovaCore"
         "Scripts"
     )
-    
+
     for dir in "${essential_dirs[@]}"; do
         if ! check_path_exists "$dir" "$dir directory" "directory"; then
             return $EXIT_VALIDATION_ERROR
         fi
     done
-    
-    # Check build scripts
+
     if ! check_file_group "build_scripts"; then
         return $EXIT_VALIDATION_ERROR
     fi
-    
-    # Make build scripts executable
+
     for script in Scripts/buildiOSCoreXCFramework.sh Scripts/buildNovaXCFramework.sh Scripts/makeBuild.sh; do
         if [[ -f "$script" ]]; then
             make_executable "$script"
         fi
     done
-    
-    log_success "Project structure validated"
+
+    log::success "VALIDATE" "Project structure validated"
     return $EXIT_SUCCESS
 }
 
 validate_build_environment() {
-    log_step "Validating build environment..."
-    
-    # Check basic commands
+    log::step "VALIDATE" "Validating build environment..."
+
     if ! check_command_group "base"; then
         return $EXIT_VALIDATION_ERROR
     fi
-    
-    # Check Xcode installation
+
     if ! validate_xcode_installation; then
         return $EXIT_VALIDATION_ERROR
     fi
-    
-    # Check CocoaPods if needed
+
     if [[ -f "Podfile" ]]; then
         if ! validate_cocoapods_installation; then
             return $EXIT_VALIDATION_ERROR
         fi
     fi
-    
-    # Check Ruby environment if Gemfile exists
+
     if [[ -f "Gemfile" ]]; then
         if ! validate_ruby_environment; then
             return $EXIT_VALIDATION_ERROR
         fi
     fi
-    
-    log_success "Build environment validated"
+
+    log::success "VALIDATE" "Build environment validated"
     return $EXIT_SUCCESS
 }
 
-# Configuration validation
 validate_configuration() {
-    log_step "Validating configuration..."
-    
-    # Validate SKIP_CODE_SIGN setting
+    log::step "VALIDATE" "Validating configuration..."
+
     local skip_code_sign=$(get_env_bool SKIP_CODE_SIGN false)
     if [[ "$skip_code_sign" == "true" ]]; then
-        log_info "Code signing disabled (development mode)"
+        log::info "VALIDATE" "Code signing disabled (development mode)"
     else
-        log_info "Code signing enabled (production mode)"
-        
+        log::info "VALIDATE" "Code signing enabled (production mode)"
+
         # In production mode, we might want to check for signing certificates
         # This is optional and can be implemented based on specific needs
     fi
-    
-    # Validate configuration setting
+
     local config="${CONFIGURATION:-Release}"
     case "$config" in
         "Debug"|"Release")
-            log_debug "Build configuration: $config"
+            log::debug "VALIDATE" "Build configuration: $config"
             ;;
         *)
-            log_warn "Unusual build configuration: $config"
+            log::warn "VALIDATE" "Unusual build configuration: $config"
             ;;
     esac
-    
-    # Validate deployment target
+
     local deployment_target="${IPHONEOS_DEPLOYMENT_TARGET:-15.0}"
     if version_greater_equal "$deployment_target" "15.0"; then
-        log_debug "iOS deployment target: $deployment_target"
+        log::debug "VALIDATE" "iOS deployment target: $deployment_target"
     else
-        log_warn "iOS deployment target $deployment_target may be too low"
+        log::warn "VALIDATE" "iOS deployment target $deployment_target may be too low"
     fi
-    
-    log_success "Configuration validated"
+
+    log::success "VALIDATE" "Configuration validated"
     return $EXIT_SUCCESS
 }
 
-# Comprehensive validation function
 validate_all() {
     local validation_failed=false
-    
+
     print_section "Environment Validation"
-    
-    # Run all validations
+
     validate_project_structure || validation_failed=true
     validate_build_environment || validation_failed=true
     validate_configuration || validation_failed=true
-    
+
     if [[ "$validation_failed" == "true" ]]; then
-        log_error "Environment validation failed"
+        log::error "VALIDATE" "Environment validation failed"
         return $EXIT_VALIDATION_ERROR
     else
-        log_success "Environment validation completed successfully"
+        log::success "VALIDATE" "Environment validation completed successfully"
         return $EXIT_SUCCESS
     fi
 }
 
-# Quick validation for essential components only
 validate_essential() {
-    log_step "Running essential validation checks..."
-    
-    # Check we're in the right directory
+    log::step "VALIDATE" "Running essential validation checks..."
+
     if ! check_path_exists "msp-ios-sdk.xcworkspace" "iOS workspace" "file"; then
         return $EXIT_VALIDATION_ERROR
     fi
-    
-    # Check essential commands
+
     local essential_commands=("xcodebuild" "bash")
     for cmd in "${essential_commands[@]}"; do
         if ! check_command_exists "$cmd"; then
             return $EXIT_VALIDATION_ERROR
         fi
     done
-    
-    log_success "Essential validation completed"
+
+    log::success "VALIDATE" "Essential validation completed"
     return $EXIT_SUCCESS
 }
 
@@ -534,11 +510,11 @@ validate_release_branch() {
     current_branch="$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo '')"
 
     if [[ -z "$current_branch" ]]; then
-        log_error "[BRANCH_VALIDATION] Cannot determine current Git branch"
+        log::error "VALIDATE" "[BRANCH_VALIDATION] Cannot determine current Git branch"
         return 1
     fi
 
-    log_info "[BRANCH_VALIDATION] Validating branch: $current_branch"
+    log::info "VALIDATE" "[BRANCH_VALIDATION] Validating branch: $current_branch"
 
     # Allowed branches: release/*, feature/*, main, master, develop
     # Explanation:
@@ -548,16 +524,15 @@ validate_release_branch() {
     if [[ "$current_branch" =~ ^release/ ]] || \
        [[ "$current_branch" =~ ^feature/ ]] || \
        [[ "$current_branch" == "main" ]] || \
-       [[ "$current_branch" == "master" ]] || \
-       [[ "$current_branch" == "develop" ]]; then
-        log_info "[BRANCH_VALIDATION] ✓ Branch '$current_branch' is allowed for release"
+       [[ "$current_branch" == "master" ]]; then
+        log::info "VALIDATE" "[BRANCH_VALIDATION] ✓ Branch '$current_branch' is allowed for release"
         if [[ "$current_branch" =~ ^feature/ ]]; then
-            log_info "[BRANCH_VALIDATION] ℹ️  Feature branch detected: release/* branch will be created in Step 1"
+            log::info "VALIDATE" "[BRANCH_VALIDATION] ℹ️  Feature branch detected: release/* branch will be created in Step 1"
         fi
         return 0
     else
-        log_error "[BRANCH_VALIDATION] Production mode cannot run on branch '$current_branch'"
-        log_error "[BRANCH_VALIDATION] Allowed branches: release/*, feature/*, main, master, develop"
+        log::error "VALIDATE" "[BRANCH_VALIDATION] Production mode cannot run on branch '$current_branch'"
+        log::error "VALIDATE" "[BRANCH_VALIDATION] Allowed branches: release/*, feature/*, main, master"
         return 1
     fi
 }

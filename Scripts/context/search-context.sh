@@ -5,15 +5,13 @@ set -euo pipefail
 # Purpose: Search for relevant context entries based on keywords
 # Usage: ./Scripts/context/search-context.sh <keywords...>
 
-# Get script directory and load common functions
-# shellcheck disable=SC2155
-readonly SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+readonly SCRIPT_DIR
 # shellcheck source=./common.sh
 source "$SCRIPT_DIR/common.sh"
 
-# Configuration
-# shellcheck disable=SC2155
-readonly REPO_ROOT=$(get_repo_root)
+REPO_ROOT=$(get_repo_root)
+readonly REPO_ROOT
 readonly CONTEXT_DIR="$REPO_ROOT/.context"
 
 # Usage information
@@ -214,6 +212,7 @@ search_contexts() {
     done
 
     # Search in each domain
+    # shellcheck disable=SC2086 -- intentional word-splitting: domains is a space-delimited name list
     for domain in $domains; do
         local domain_dir="$CONTEXT_DIR/$domain"
 
@@ -264,7 +263,7 @@ display_results() {
     local count=0
 
     while IFS='|' read -r filepath match_count; do
-        if [ $count -ge "$limit" ]; then
+        if [ "$count" -ge "$limit" ]; then
             break
         fi
 
@@ -301,7 +300,7 @@ display_results() {
         count=$((count + 1))
     done <<< "$results"
 
-    if [ $count -eq 0 ]; then
+    if [ "$count" -eq 0 ]; then
         echo "ℹ️  No results to display"
     else
         echo "📊 Showing $count result(s)"

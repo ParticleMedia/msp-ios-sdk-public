@@ -1,0 +1,61 @@
+# Template for new test case modules
+# Copy this file to {subdirectory}/{ModuleName}.yaml
+# Register prefix in _prefixes.yaml FIRST
+#
+# Rules:
+#   - ID format: [PREFIX###] (PREFIX = 2-4 uppercase letters, ### = 3-digit seq)
+#   - Module name must be substring of Swift test filename
+#   - Validate: python Scripts/tools/test-cases.py validate
+#   - Sync check: python Scripts/tools/test-cases.py sync
+#   - Coverage: python Scripts/tools/test-cases.py coverage
+
+module: ModuleName
+prefix: MOD
+description: "Test cases for ModuleName feature"
+bundle: MSPCoreTests  # enum: MSPCoreTests | NovaCoreTests | MSPiOSCoreTests | AdapterTests
+created: "2026-01-01"
+updated: "2026-01-01"
+
+cases:
+  - id: MOD001
+    type: behavior
+    description: "Scenario description"
+    priority: high
+    tags: [smoke]
+    file: Tests/MSPCoreTests/Specs/ModuleNameSpec.swift
+    status: implemented  # enum: planned | implemented | skipped
+    fixtures:
+      - debug/ad_config.json
+    given: "Precondition"
+    when: "Action performed"
+    then: "Expected outcome"
+    doubles:
+      repository:
+        type: mock
+        class: MockSomeRepository
+        reason: "Need to verify fetch calls and stub return values"
+
+  - id: MOD002
+    type: unit
+    description: "Should do something when condition"
+    priority: medium
+    tags: [unit]
+    file: Tests/MSPCoreTests/Specs/ModuleNameSpec.swift
+    status: implemented
+    class: ClassName
+    method: "methodName()"
+    doubles:
+      dependency:
+        type: stub
+        class: StubSomeDependency
+        reason: "Provide canned response, no verification needed"
+
+  - id: MOD003
+    type: behavior
+    description: "Future test not yet implemented"
+    priority: low
+    tags: [planned]
+    status: planned  # no file required for planned status
+    given: "Some precondition"
+    when: "Some action"
+    then: "Some expectation"

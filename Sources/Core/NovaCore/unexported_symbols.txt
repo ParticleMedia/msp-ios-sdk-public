@@ -1,0 +1,30 @@
+# Hide all SnapKit symbols
+_$s7SnapKit*
+_$s*7SnapKit*
+_$sSo*7SnapKit*
+_$sSo*SnapKit*
+_OBJC_CLASS_$_*SnapKit*
+_OBJC_METACLASS_$_*SnapKit*
+
+# Hide all Kingfisher symbols
+_$s10Kingfisher*
+_$s*10Kingfisher*
+_$sSo*10Kingfisher*
+_$sSo*Kingfisher*
+_OBJC_CLASS_$_*Kingfisher*
+_OBJC_METACLASS_$_*Kingfisher*
+
+# Hide all Lottie symbols
+_$s6Lottie*
+_$s*6Lottie*
+_$sSo*6Lottie*
+_$sSo*Lottie*
+_OBJC_CLASS_$_*Lottie*
+_OBJC_METACLASS_$_*Lottie*
+_OBJC_CLASS_$_*lottie*
+_OBJC_METACLASS_$_*lottie*
+
+# Hide all Shimmer symbols
+_*Shimmer*
+_OBJC_CLASS_$_*Shimmer*
+_OBJC_METACLASS_$_*Shimmer*

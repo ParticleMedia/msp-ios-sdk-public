@@ -1,18 +1,26 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # Script to format all Swift files in the project
 # This script finds all Swift files (excluding Pods, build directories, etc.) and formats them
 
-set -e
+set -euo pipefail
 
-# Colors for output
-GREEN='\033[0;32m'
-YELLOW='\033[1;33m'
-RED='\033[0;31m'
-BLUE='\033[0;34m'
-NC='\033[0m' # No Color
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+ROOT_DIR="$(cd "$SCRIPT_DIR/../.." && pwd)"
 
-# Function to find swift-format
+# Source unified color/logging system
+if [[ -f "$ROOT_DIR/Scripts/lib/common.sh" ]]; then
+    # shellcheck source=Scripts/lib/common.sh
+    source "$ROOT_DIR/Scripts/lib/common.sh" 2>/dev/null || true
+fi
+
+# Fallback colors if common.sh not available
+: "${GREEN:='\033[0;32m'}"
+: "${YELLOW:='\033[1;33m'}"
+: "${RED:='\033[0;31m'}"
+: "${BLUE:='\033[0;34m'}"
+: "${NC:='\033[0m'}"
+
 find_swift_format() {
     # Check system PATH first
     if command -v swift-format &> /dev/null; then
@@ -41,12 +49,9 @@ find_swift_format() {
     return 1
 }
 
-# Paths
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"   # .../Scripts/tools
-SCRIPTS_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"                  # .../Scripts
-PROJECT_ROOT="$(cd "$SCRIPTS_DIR/.." && pwd)"                # repo root
+SCRIPTS_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
+PROJECT_ROOT="$ROOT_DIR"
 
-# Source exclusion patterns library
 source "$SCRIPTS_DIR/lib/swift_format_exclusions.sh"
 
 
@@ -137,7 +142,7 @@ error_files=""
 echo -e "${BLUE}🔧 Formatting files...${NC}"
 echo ""
 
-for file in $swift_files; do
+while IFS= read -r file; do
     # Skip if file doesn't exist
     if [ ! -f "$file" ]; then
         continue
@@ -176,7 +181,7 @@ for file in $swift_files; do
             echo -e "${GREEN}   ✓ Already formatted${NC}"
         elif [ ! -d .git ]; then
             # Not in git repo, can't check diff - assume formatted if lint passed
-            if [ $lint_exit_code -eq 0 ] && [ -z "$lint_output" ]; then
+            if [ "$lint_exit_code" -eq 0 ] && [ -z "$lint_output" ]; then
                 echo -e "${GREEN}   ✓ Already formatted${NC}"
             else
                 formatted_count=$((formatted_count + 1))
@@ -192,7 +197,7 @@ for file in $swift_files; do
         error_files="$error_files $file"
         echo -e "${RED}   ❌ Error formatting${NC}"
     fi
-done
+done <<< "$swift_files"
 
 echo ""
 echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
@@ -211,20 +216,20 @@ echo -e "${GREEN}✅ Formatting Summary${NC}"
 echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
 echo -e "${GREEN}   Total files scanned:${NC}     $file_count"
 echo -e "${GREEN}   Files formatted:${NC}         $formatted_count"
-if [ $already_formatted -gt 0 ]; then
+if [ "$already_formatted" -gt 0 ]; then
     echo -e "${GREEN}   Already formatted:${NC}       $already_formatted"
 fi
-if [ $changed_files -gt 0 ] && [ -d .git ]; then
+if [ "$changed_files" -gt 0 ] && [ -d .git ]; then
     echo -e "${GREEN}   Files changed:${NC}           $changed_files"
 fi
 
-if [ $error_count -gt 0 ]; then
+if [ "$error_count" -gt 0 ]; then
     echo -e "${RED}   Errors:${NC}                   $error_count"
     echo ""
     echo -e "${RED}❌ Files with errors:${NC}"
-    for file in $error_files; do
+    while IFS= read -r file; do
         echo -e "${RED}   - $file${NC}"
-    done
+    done <<< "$(echo "$error_files" | tr ' ' '\n' | grep -v '^$')"
     echo ""
     echo -e "${YELLOW}💡 Some files could not be formatted. Please check the errors above.${NC}"
     exit 1
@@ -232,7 +237,7 @@ else
     echo -e "${GREEN}   Errors:${NC}                  0"
     echo ""
     
-    if [ $changed_files -gt 0 ] && [ -d .git ]; then
+    if [ "$changed_files" -gt 0 ] && [ -d .git ]; then
         echo -e "${GREEN}📊 Code Statistics:${NC}"
         git_diff_stat=$(git diff --shortstat 2>/dev/null)
         if [ -n "$git_diff_stat" ]; then

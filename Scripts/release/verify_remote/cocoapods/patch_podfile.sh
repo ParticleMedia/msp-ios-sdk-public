@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # --- MSP Worktree Safety Guard (Patch L, shared) ---
 # shellcheck source=/dev/null
 . "$(git rev-parse --show-toplevel 2>/dev/null)/Scripts/lib/worktree_guard.sh"
@@ -7,15 +7,14 @@ msp_enforce_main_repo_or_exit
 # ============================================================================
 # Patch Podfile for Remote CocoaPods Verification
 # ============================================================================
-# Purpose: Generate Podfile to use remote source instead of local path
+# Purpose: Generate Podfile for trunk-based verification (consumer perspective)
 #
 # Usage:   ./patch_podfile.sh <sandbox_path>
-#          (reads MSP_VERIFY_PODS_URL, MSP_VERIFY_PODS_VERSION from environment)
+#          (reads MSP_VERIFY_PODS_VERSION from environment)
 # ============================================================================
 
 set -euo pipefail
 
-# Source common utilities
 source "$(dirname "$0")/../common/utils.sh"
 
 # ============================================================================
@@ -24,35 +23,38 @@ source "$(dirname "$0")/../common/utils.sh"
 
 patch_podfile() {
     local sandbox="$1"
-    
-    if [[ -z "$sandbox" ]]; then
-        vr_log_error "Sandbox path required"
-        return 1
-    fi
-    
-    # Read configuration from environment
-    local remote_url="${MSP_VERIFY_PODS_URL:-}"
-    local remote_version="${MSP_VERIFY_PODS_VERSION:-}"
-    
-    if [[ -z "$remote_url" ]] || [[ -z "$remote_version" ]]; then
-        vr_log_error "MSP_VERIFY_PODS_URL and MSP_VERIFY_PODS_VERSION required"
-        return 1
-    fi
-    
-    # Generate Podfile in sandbox/DemoApp/
-    local podfile_path="$sandbox/DemoApp/Podfile"
-    
-    cat > "$podfile_path" <<EOF
-platform :ios, '13.0'
-use_frameworks!
 
-target 'MSPDemoApp' do
-  pod 'MSP', :git => '$remote_url', :tag => '$remote_version'
-end
-EOF
-    
-    vr_log_info "[PODS] Patched Podfile (URL=$remote_url, version=$remote_version)"
-    
+    if [[ -z "$sandbox" ]]; then
+        vr_log::error "PODS" "Sandbox path required"
+        return 1
+    fi
+
+    # Read configuration from environment
+    local pod_name="${MSP_VERIFY_PODS_NAME:-MSPCore}"
+    local remote_version="${MSP_VERIFY_PODS_VERSION:-}"
+
+    if [[ -z "$remote_version" ]]; then
+        vr_log::error "PODS" "MSP_VERIFY_PODS_VERSION required"
+        return 1
+    fi
+
+    # Read Podfile template (config-driven)
+    local script_dir
+    script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+    local template="$script_dir/Podfile.verify-template"
+
+    if [[ ! -f "$template" ]]; then
+        vr_log::error "PODS" "Podfile template not found: $template"
+        return 1
+    fi
+
+    local podfile_path="$sandbox/DemoApp/Podfile"
+    sed -e "s|{{POD_NAME}}|$pod_name|g" \
+        -e "s|{{POD_VERSION}}|$remote_version|g" \
+        "$template" > "$podfile_path"
+
+    vr_log::info "PODS" "[PODS] Patched Podfile (pod=$pod_name, version=$remote_version)"
+
     return 0
 }
 

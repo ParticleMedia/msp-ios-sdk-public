@@ -1,0 +1,14 @@
+# ============================================================================
+# Podfile Template for Local Verification Sandbox
+# ============================================================================
+# Placeholders (substituted by inject_sdk_pods.sh):
+#   {{PLATFORM_VERSION}} - iOS deployment target (default: 15.0)
+#   {{POD_ENTRIES}}      - One or more `pod 'Name', 'Version'` lines
+# ============================================================================
+
+platform :ios, '{{PLATFORM_VERSION}}'
+use_frameworks!
+
+target 'MSPDemoApp' do
+{{POD_ENTRIES}}
+end

@@ -6,14 +6,14 @@ enum TestDataFactory {
         title: String,
         optionCount: Int,
         showCondition: Set<String>? = nil
-    ) -> MockDebugSection {
+    ) -> FakeDebugSection {
         let options = (0..<optionCount).map { index in
-            MockDebugOption(
+            FakeDebugOption(
                 id: "\(id)_option_\(index)",
                 displayTitle: "Option \(index)"
             )
         }
-        return MockDebugSection(
+        return FakeDebugSection(
             id: id,
             title: title,
             options: options,
@@ -32,7 +32,7 @@ enum TestDataFactory {
         ]
     }
 
-    static func createMinimalSections() -> [MockDebugSection] {
+    static func createMinimalSections() -> [FakeDebugSection] {
         [
             createSimpleSection(id: "section1", title: "Section 1", optionCount: 2),
             createSimpleSection(id: "section2", title: "Section 2", optionCount: 3),

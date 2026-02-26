@@ -1,0 +1,35 @@
+# ============================================================================
+# CocoaPods Configuration
+# ============================================================================
+# R040: Centralized CocoaPods settings (previously hardcoded in 6+ files)
+#
+# Usage: Source Scripts/lib/config_loader.sh and call load_cocoapods_config()
+# ============================================================================
+
+# Specs Repository URLs
+# Previously hardcoded in: local.sh, release_orchestration.sh, build-nova.sh
+specs_repo_url: "https://github.com/CocoaPods/Specs.git"
+cdn_url: "https://cdn.cocoapods.org/"
+
+# Timeouts (seconds)
+# Previously hardcoded in: switch-target.sh, cocoapods.sh, podspec.sh
+pod_install_timeout: 1800      # 30 minutes
+repo_update_timeout: 900       # 15 minutes
+spec_lint_timeout: 1800        # 30 minutes
+quick_lint_timeout: 600        # 10 minutes
+trunk_push_timeout: 1800       # 30 minutes
+search_timeout: 600            # 10 minutes
+
+# Retry Settings
+# Previously hardcoded in: cocoapods.sh, switch-target.sh
+max_update_attempts: 3
+retry_delay: 10
+lock_timeout: 60
+
+# Cache Settings (seconds)
+# Previously hardcoded in: cocoapods.sh
+cache_ttl: 300                 # 5 minutes
+failure_cache_ttl: 60          # 1 minute
+
+# Network Settings
+connect_timeout: 10

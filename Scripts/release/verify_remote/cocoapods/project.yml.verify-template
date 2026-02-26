@@ -1,0 +1,41 @@
+# ============================================================================
+# Minimal project.yml for CocoaPods Remote Verification Sandbox
+# ============================================================================
+# This is a stripped-down version of Examples/MSPDemoApp/project.yml.
+# The full project.yml references test targets, external paths (../../Tests/),
+# and Pods config files (../../Pods/Target Support Files/...) that do not exist
+# in an isolated sandbox.
+#
+# Only the app target is needed — pod install just requires a valid .xcodeproj.
+# ============================================================================
+
+name: MSPDemoApp
+options:
+  deploymentTarget:
+    iOS: "15.0"
+configs:
+  Debug: debug
+  Release: release
+settings:
+  base:
+    SWIFT_VERSION: 5.0
+    PRODUCT_BUNDLE_IDENTIFIER: com.msp.DemoApp.VerifySandbox
+    TARGETED_DEVICE_FAMILY: "1,2"
+targets:
+  MSPDemoApp:
+    type: application
+    platform: iOS
+    sources:
+      - path: MSPDemoApp
+    info:
+      path: MSPDemoApp/Info.plist
+    settings:
+      base:
+        LD_RUNPATH_SEARCH_PATHS:
+          - "$(inherited)"
+          - "@executable_path/Frameworks"
+schemes:
+  MSPDemoApp:
+    build:
+      targets:
+        MSPDemoApp: all

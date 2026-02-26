@@ -27,6 +27,16 @@ ROOT_DIR="$(cd "$SCRIPT_DIR/../.." && pwd)"
 # shellcheck source=Scripts/target-switching/common.sh
 source "$SCRIPT_DIR/common.sh"
 
+# R036c: Source cocoapods.sh module for unified pod operations
+COCOAPODS_MODULE_AVAILABLE=false
+if [[ -f "$ROOT_DIR/Scripts/lib/cocoapods.sh" ]]; then
+    # shellcheck source=Scripts/lib/cocoapods.sh
+    source "$ROOT_DIR/Scripts/lib/cocoapods.sh" 2>/dev/null || true
+    if command -v install_pods &>/dev/null; then
+        COCOAPODS_MODULE_AVAILABLE=true
+    fi
+fi
+
 ensure_repo_root
 
 FORCE="${1:-}"
@@ -36,47 +46,47 @@ if [[ "$FORCE" != "--force" ]]; then
         read -p "Continue with CocoaPods cleanup and reinstall? (y/N): " -n 1 -r
         echo
         if [[ ! $REPLY =~ ^[Yy]$ ]]; then
-            log_info "Cleanup cancelled."
+            log::info "TARGET" "Cleanup cancelled."
             exit 0
         fi
     fi
 fi
 
 if [[ ! -f "$ROOT_DIR/Podfile" ]]; then
-    log_error "Podfile not found. Not a CocoaPods project."
+    log::error "TARGET" "Podfile not found. Not a CocoaPods project."
     exit 1
 fi
 
 log_title "CocoaPods Environment Cleanup"
 
 # Safety info
-log_info "Protected directories (will NOT be deleted):"
-log_info "  - Build/ReleaseArtifacts/XCFrameworks/"
-log_info "  - ThirdParty/"
-log_info "  - Sources/"
-log_info "  - Package.swift.template (developer-maintained)"
+log::info "TARGET" "Protected directories (will NOT be deleted):"
+log::info "TARGET" "  - Build/ReleaseArtifacts/XCFrameworks/"
+log::info "TARGET" "  - ThirdParty/"
+log::info "TARGET" "  - Sources/"
+log::info "TARGET" "  - Package.swift.template (developer-maintained)"
 
 # ============================================================================
 # Step 1: Deintegrate CocoaPods
 # ============================================================================
 log_section "Deintegrating CocoaPods"
-log_step "Running pod deintegrate"
+log::step "TARGET" "Running pod deintegrate"
 cd "$ROOT_DIR"
 if command -v bundle &>/dev/null && [[ -f "$ROOT_DIR/Gemfile" ]]; then
     if bundle exec pod deintegrate 2>/dev/null; then
-        log_success "CocoaPods deintegrated"
+        log::success "TARGET" "CocoaPods deintegrated"
     else
-        log_info "pod deintegrate failed (may not be integrated)"
+        log::info "TARGET" "pod deintegrate failed (may not be integrated)"
     fi
 else
     if command -v pod &>/dev/null; then
         if pod deintegrate 2>/dev/null; then
-            log_success "CocoaPods deintegrated"
+            log::success "TARGET" "CocoaPods deintegrated"
         else
-            log_info "pod deintegrate failed (may not be integrated)"
+            log::info "TARGET" "pod deintegrate failed (may not be integrated)"
         fi
     else
-        log_warn "pod command not available, skipping deintegrate"
+        log::warn "TARGET" "pod command not available, skipping deintegrate"
     fi
 fi
 
@@ -84,63 +94,63 @@ fi
 # Step 2: Remove Pods directory
 # ============================================================================
 log_section "Removing Pods Directory"
-log_step "Removing Pods directory"
+log::step "TARGET" "Removing Pods directory"
 if [[ -d "$PODS_DIR" ]]; then
     if safe_remove_directory "$PODS_DIR" "Pods"; then
-        log_success "Pods directory removed"
+        log::success "TARGET" "Pods directory removed"
     else
-        log_warn "Failed to remove Pods directory"
+        log::warn "TARGET" "Failed to remove Pods directory"
     fi
 else
-    log_info "Pods directory not found"
+    log::info "TARGET" "Pods directory not found"
 fi
 
 # ============================================================================
 # Step 3: Remove Podfile.lock
 # ============================================================================
 log_section "Removing Podfile.lock"
-log_step "Removing Podfile.lock"
+log::step "TARGET" "Removing Podfile.lock"
 if [[ -f "$ROOT_DIR/Podfile.lock" ]]; then
     rm -f "$ROOT_DIR/Podfile.lock"
-    log_success "Podfile.lock removed"
+    log::success "TARGET" "Podfile.lock removed"
 else
-    log_info "Podfile.lock not found"
+    log::info "TARGET" "Podfile.lock not found"
 fi
 
 # ============================================================================
 # Step 4: Remove CocoaPods workspace
 # ============================================================================
 log_section "Removing CocoaPods Workspace"
-log_step "Removing CocoaPods workspace"
+log::step "TARGET" "Removing CocoaPods workspace"
 if [[ -d "$PODS_WORKSPACE" ]]; then
     if safe_remove_workspace "$PODS_WORKSPACE"; then
-        log_success "CocoaPods workspace removed"
+        log::success "TARGET" "CocoaPods workspace removed"
     else
-        log_warn "Failed to remove CocoaPods workspace"
+        log::warn "TARGET" "Failed to remove CocoaPods workspace"
     fi
 else
-    log_info "CocoaPods workspace not found"
+    log::info "TARGET" "CocoaPods workspace not found"
 fi
 
 # ============================================================================
 # Step 5: Clean DerivedData
 # ============================================================================
 log_section "Cleaning DerivedData"
-log_step "Cleaning DerivedData cache"
+log::step "TARGET" "Cleaning DerivedData cache"
 DERIVED_DATA_DIR="$HOME/Library/Developer/Xcode/DerivedData"
 if [[ -d "$DERIVED_DATA_DIR" ]]; then
     # Use find to remove contents, ignoring errors for locked files
     find "$DERIVED_DATA_DIR" -mindepth 1 -maxdepth 1 -exec rm -rf {} + 2>/dev/null || true
-    log_success "DerivedData cleaned"
+    log::success "TARGET" "DerivedData cleaned"
 else
-    log_info "DerivedData directory not found"
+    log::info "TARGET" "DerivedData directory not found"
 fi
 
 # ============================================================================
 # Step 6: Install CocoaPods
 # ============================================================================
 log_section "Installing CocoaPods"
-log_step "Running pod install"
+log::step "TARGET" "Running pod install"
 cd "$ROOT_DIR"
 
 # Ensure UTF-8 encoding for CocoaPods
@@ -148,26 +158,39 @@ export LANG=en_US.UTF-8
 export LC_ALL=en_US.UTF-8
 
 pod_exit_code=0
-if command -v bundle &>/dev/null && [[ -f "$ROOT_DIR/Gemfile" ]]; then
-    if bundle exec pod install 2>&1; then
-        log_success "CocoaPods installed"
+
+# R036c: Use cocoapods.sh module's install_pods() if available
+if [[ "$COCOAPODS_MODULE_AVAILABLE" == "true" ]]; then
+    if install_pods 2>&1; then
+        log::success "TARGET" "CocoaPods installed (via cocoapods.sh module)"
     else
         pod_exit_code=$?
-        log_error "pod install failed (exit code: $pod_exit_code)"
-        log_info "This may be due to network issues or dependency conflicts"
-        log_info "Try running manually: bundle exec pod install"
+        log::error "TARGET" "pod install failed (exit code: $pod_exit_code)"
+        log::info "TARGET" "This may be due to network issues or dependency conflicts"
+        log::info "TARGET" "Try running manually: bundle exec pod install"
+    fi
+elif command -v bundle &>/dev/null && [[ -f "$ROOT_DIR/Gemfile" ]]; then
+    # Fallback: Direct bundle exec pod install
+    if bundle exec pod install 2>&1; then
+        log::success "TARGET" "CocoaPods installed"
+    else
+        pod_exit_code=$?
+        log::error "TARGET" "pod install failed (exit code: $pod_exit_code)"
+        log::info "TARGET" "This may be due to network issues or dependency conflicts"
+        log::info "TARGET" "Try running manually: bundle exec pod install"
     fi
 else
+    # Fallback: Direct pod install
     if command -v pod &>/dev/null; then
         if pod install 2>&1; then
-            log_success "CocoaPods installed"
+            log::success "TARGET" "CocoaPods installed"
         else
             pod_exit_code=$?
-            log_error "pod install failed (exit code: $pod_exit_code)"
-            log_info "Try running manually: pod install"
+            log::error "TARGET" "pod install failed (exit code: $pod_exit_code)"
+            log::info "TARGET" "Try running manually: pod install"
         fi
     else
-        log_error "pod command not available"
+        log::error "TARGET" "pod command not available"
         exit 1
     fi
 fi
@@ -178,8 +201,8 @@ fi
 log_title "Cleanup Complete"
 
 if [[ $pod_exit_code -eq 0 ]]; then
-    log_success "CocoaPods environment cleaned and reinstalled"
+    log::success "TARGET" "CocoaPods environment cleaned and reinstalled"
 else
-    log_warn "CocoaPods environment cleaned but pod install had issues (exit: $pod_exit_code)"
+    log::warn "TARGET" "CocoaPods environment cleaned but pod install had issues (exit: $pod_exit_code)"
     exit $pod_exit_code
 fi

@@ -38,7 +38,9 @@ msp_enforce_main_repo_or_exit
 # ============================================================================
 
 # Prevent multiple sourcing
-[[ -n "${_NOTIFY_SLACK_SOURCED:-}" ]] && return 0
+if [[ -n "${_NOTIFY_SLACK_SOURCED:-}" ]]; then
+    return 0
+fi
 readonly _NOTIFY_SLACK_SOURCED=1
 
 # ============================================================================
@@ -48,25 +50,38 @@ _NOTIFY_SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 _NOTIFY_ROOT_DIR="$(cd "$_NOTIFY_SCRIPT_DIR/../.." && pwd)"
 
 # ============================================================================
-# Logging Stubs (can be overridden by sourcing lib/logging.sh first)
+# Logging System (prefer common.sh, fallback to local stubs)
 # ============================================================================
-if ! command -v log_debug &>/dev/null; then
+# Try to source common.sh which provides unified logging via logger.sh
+if [[ -f "$_NOTIFY_ROOT_DIR/Scripts/lib/common.sh" ]]; then
+    # shellcheck source=Scripts/lib/common.sh
+    source "$_NOTIFY_ROOT_DIR/Scripts/lib/common.sh" 2>/dev/null || true
+fi
+
+# Provide fallback stubs if log::* API not available
+if ! command -v log::debug &>/dev/null; then
+    # Define both log_* (legacy) and log::* (new) fallbacks
     log_debug() { :; }
-fi
-if ! command -v log_info &>/dev/null; then
     log_info() { echo "ℹ️  $1"; }
-fi
-if ! command -v log_success &>/dev/null; then
     log_success() { echo "✅ $1"; }
-fi
-if ! command -v log_warning &>/dev/null; then
     log_warning() { echo "⚠️  $1"; }
-fi
-if ! command -v log_error &>/dev/null; then
     log_error() { echo "❌ $1" >&2; }
-fi
-if ! command -v log_step &>/dev/null; then
     log_step() { echo "🔧 $1"; }
+    # Also define log::* namespace fallbacks for direct calls
+    log::debug() { :; }
+    log::info() { local module="${1:-GENERAL}"; shift; echo "[INFO] [$module] $*" >&2; }
+    log::success() { local module="${1:-GENERAL}"; shift; echo "[SUCCESS] [$module] $*" >&2; }
+    log::warn() { local module="${1:-GENERAL}"; shift; echo "[WARN] [$module] $*" >&2; }
+    log::error() { local module="${1:-GENERAL}"; shift; echo "[ERROR] [$module] $*" >&2; }
+    log::step() { local module="${1:-GENERAL}"; shift; echo "[STEP] [$module] $*" >&2; }
+else
+    # Use log::* wrappers with SLACK module
+    log_debug() { log::debug "SLACK" "$1"; }
+    log_info() { log::info "SLACK" "$1"; }
+    log_success() { log::success "SLACK" "$1"; }
+    log_warning() { log::warn "SLACK" "$1"; }
+    log_error() { log::error "SLACK" "$1"; }
+    log_step() { log::step "SLACK" "$1"; }
 fi
 
 # ============================================================================
@@ -77,9 +92,9 @@ fi
 load_slack_config() {
     local config_dir="$_NOTIFY_ROOT_DIR/Scripts/config"
     local config_file="${config_dir}/slack.conf"
-    
+
     if [[ -f "$config_file" ]]; then
-        log_debug "Loading Slack configuration from: $config_file"
+        log::debug "NOTIFY" "Loading Slack configuration from: $config_file"
         
         # Read the config file line by line
         while IFS= read -r line || [[ -n "$line" ]]; do
@@ -132,7 +147,7 @@ load_slack_config() {
             fi
         done < "$config_file"
     else
-        log_debug "Slack config file not found: $config_file (using environment variables or defaults)"
+        log::debug "NOTIFY" "Slack config file not found: $config_file (using environment variables or defaults)"
     fi
 }
 
@@ -153,19 +168,19 @@ select_slack_webhook() {
             # Test mode: use test webhook if available
             if [[ -n "${MSP_SLACK_TEST_WEBHOOK:-}" ]]; then
                 export SLACK_WEBHOOK_URL="$MSP_SLACK_TEST_WEBHOOK"
-                log_info "[SLACK] Using TEST webhook (MSP_SLACK_ALERT_ENV=test)" 2>/dev/null || true
+                log::info "NOTIFY" "[SLACK] Using TEST webhook (MSP_SLACK_ALERT_ENV=test)" 2>/dev/null || true
             else
-                log_warn "[SLACK] MSP_SLACK_ALERT_ENV=test but MSP_SLACK_TEST_WEBHOOK not set" 2>/dev/null || true
-                log_warn "[SLACK] Falling back to production webhook" 2>/dev/null || true
+                log::warn "NOTIFY" "[SLACK] MSP_SLACK_ALERT_ENV=test but MSP_SLACK_TEST_WEBHOOK not set" 2>/dev/null || true
+                log::warn "NOTIFY" "[SLACK] Falling back to production webhook" 2>/dev/null || true
             fi
             ;;
         prod|production)
             # Production mode: use production webhook (already set)
-            log_info "[SLACK] Using PRODUCTION webhook (MSP_SLACK_ALERT_ENV=${alert_env})" 2>/dev/null || true
+            log::info "NOTIFY" "[SLACK] Using PRODUCTION webhook (MSP_SLACK_ALERT_ENV=${alert_env})" 2>/dev/null || true
             ;;
         *)
             # Unknown mode: warn and use production webhook
-            log_warn "[SLACK] Unknown MSP_SLACK_ALERT_ENV: ${alert_env}, using production webhook" 2>/dev/null || true
+            log::warn "NOTIFY" "[SLACK] Unknown MSP_SLACK_ALERT_ENV: ${alert_env}, using production webhook" 2>/dev/null || true
             ;;
     esac
 }
@@ -270,7 +285,7 @@ send_slack_notification() {
     local fields="${4:-}"
     
     if [[ -z "$SLACK_WEBHOOK_URL" ]]; then
-        log_warning "SLACK_WEBHOOK_URL not set, skipping Slack notification"
+        log::warn "NOTIFY" "SLACK_WEBHOOK_URL not set, skipping Slack notification"
         return 0
     fi
     
@@ -310,9 +325,9 @@ EOF
         "$SLACK_WEBHOOK_URL" 2>/dev/null)
     
     if [[ "$response" == "ok" ]]; then
-        log_success "Slack notification sent successfully"
+        log::success "NOTIFY" "Slack notification sent successfully"
     else
-        log_warning "Failed to send Slack notification: $response"
+        log::warn "NOTIFY" "Failed to send Slack notification: $response"
     fi
 }
 
@@ -582,10 +597,10 @@ notify_release_success_with_summary() {
 
 # Test Slack notification
 test_slack_notification() {
-    log_step "Testing Slack notification..."
+    log::step "NOTIFY" "Testing Slack notification..."
     
     if [[ -z "$SLACK_WEBHOOK_URL" ]]; then
-        log_error "SLACK_WEBHOOK_URL not set. Please set it to test notifications."
+        log::error "NOTIFY" "SLACK_WEBHOOK_URL not set. Please set it to test notifications."
         return 1
     fi
     

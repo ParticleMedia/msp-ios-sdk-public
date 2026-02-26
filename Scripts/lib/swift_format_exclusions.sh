@@ -1,15 +1,13 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # Swift Format Exclusions Library
 # Provides functions to read and apply exclusion rules from swift-format-exclusions.txt
 
-# Get the project root directory
 get_project_root() {
     local script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
     echo "$(cd "$script_dir/../.." && pwd)"
 }
 
-# Get the exclusions config file path
 get_exclusions_config_file() {
     local project_root="${1:-$(get_project_root)}"
     echo "$project_root/swift-format-exclusions.txt"
@@ -22,24 +20,21 @@ get_exclusions_config_file() {
 read_exclusion_patterns() {
     local config_file="${1:-$(get_exclusions_config_file)}"
     
-    # Initialize arrays (global variables, not local)
+    # Global variables, not local — intentional so callers can read the results
     NAME_PATTERNS=()
     PATH_PATTERNS=()
-    
+
     if [ ! -f "$config_file" ]; then
         return 1
     fi
     
-    # Read config file line by line
     while IFS= read -r line || [ -n "$line" ]; do
-        # Skip empty lines and comments
         line=$(echo "$line" | sed 's/#.*$//' | sed 's/^[[:space:]]*//' | sed 's/[[:space:]]*$//')
-        
+
         if [ -z "$line" ]; then
             continue
         fi
-        
-        # Parse name: and path: patterns
+
         if [[ "$line" =~ ^name:(.+)$ ]]; then
             NAME_PATTERNS+=("${BASH_REMATCH[1]}")
         elif [[ "$line" =~ ^path:(.+)$ ]]; then
@@ -59,14 +54,11 @@ get_swift_format_find_exclusions() {
     local path_patterns=()
     local exclusions=""
     
-    # Read patterns from config
     if ! read_exclusion_patterns "$config_file"; then
-        # Fallback to default patterns if config file not found
         echo "-not -name \"*.pb.swift\" -not -path \"./Pods/*\" -not -path \"*/Pods/*\" -not -path \"./build/*\" -not -path \"*/build/*\" -not -path \"./DerivedData/*\" -not -path \"*/DerivedData/*\" -not -path \"./.build/*\" -not -path \"*/.build/*\" -not -path \"./output*/*\" -not -path \"*/output*/*\" -not -path \"*/xcframework/*\" -not -path \"./.git/*\" -not -path \"*/Pods.xcodeproj/*\" -not -path \"*/xcuserdata/*\" -not -path \"*/xcshareddata/*\""
         return 0
     fi
-    
-    # Build find command exclusions
+
     for pattern in "${NAME_PATTERNS[@]}"; do
         exclusions="$exclusions -not -name \"$pattern\""
     done
@@ -96,9 +88,7 @@ should_exclude_swift_file() {
         return 1
     fi
     
-    # Read patterns from config
     if ! read_exclusion_patterns "$config_file"; then
-        # Fallback to default patterns if config file not found
         if [[ "$file_path" == *.pb.swift ]]; then
             return 0
         fi
@@ -119,25 +109,18 @@ should_exclude_swift_file() {
         return 1
     fi
     
-    # Check name patterns
     local filename=$(basename "$file_path")
     for pattern in "${NAME_PATTERNS[@]}"; do
-        # Simple glob matching
         if [[ "$filename" == $pattern ]]; then
             return 0
         fi
     done
     
-    # Check path patterns
     for pattern in "${PATH_PATTERNS[@]}"; do
-        # Convert pattern to a matchable format
-        # For patterns like */Pods/*, we want to match any path containing /Pods/
-        # For patterns like ./Pods/*, we want to match paths starting with Pods/
         local match_pattern="$pattern"
-        
-        # Remove leading */ or ./
+
+        # Strip leading */ or ./ and trailing /* to get the bare segment to match against
         match_pattern="${match_pattern#*/}"
-        # Remove trailing /* if present
         match_pattern="${match_pattern%/*}"
         
         # For directory matching, we need to check if the path contains the directory

@@ -62,10 +62,31 @@ fi
 # shellcheck source=Scripts/target-switching/common.sh
 source "$SWITCH_TARGET_SCRIPT_DIR/target-switching/common.sh"
 
+# Ensure logger functions are available in subprocess
+# (Force reload by unsetting the guard variable, as parent may have already sourced)
+if [[ -f "$ROOT_DIR/Scripts/release/utils/logger.sh" ]]; then
+    unset MSP_LOGGER_LOADED
+    # shellcheck source=Scripts/release/utils/logger.sh
+    source "$ROOT_DIR/Scripts/release/utils/logger.sh" 2>/dev/null || true
+fi
+
 # Source process utilities for timeout protection
 if [[ -f "$ROOT_DIR/Scripts/lib/process_utils.sh" ]]; then
     # shellcheck source=Scripts/lib/process_utils.sh
     source "$ROOT_DIR/Scripts/lib/process_utils.sh" 2>/dev/null || true
+fi
+
+# R029c: Source xcodegen module for unified generation
+if [[ -f "$ROOT_DIR/Scripts/lib/xcodegen.sh" ]]; then
+    # shellcheck source=Scripts/lib/xcodegen.sh
+    source "$ROOT_DIR/Scripts/lib/xcodegen.sh" 2>/dev/null || true
+fi
+
+# R040d: Source config loader extension for CocoaPods settings
+if [[ -f "$ROOT_DIR/Scripts/lib/config_loader_ext.sh" ]]; then
+    # shellcheck source=Scripts/lib/config_loader_ext.sh
+    source "$ROOT_DIR/Scripts/lib/config_loader_ext.sh" 2>/dev/null || true
+    load_cocoapods_config 2>/dev/null || true
 fi
 
 ensure_repo_root
@@ -88,18 +109,18 @@ check_npm_install() {
     # Only check if package.json exists (indicating this repo uses npm)
     if [[ -f "$ROOT_DIR/package.json" ]]; then
         if [[ ! -d "$ROOT_DIR/node_modules" ]]; then
-            log_warn "Git hooks not installed (node_modules missing)"
-            log_info "Run 'npm install' to set up commit hooks (Husky)"
-            log_info "This ensures commit message format validation"
+            log::warn "TARGET" "Git hooks not installed (node_modules missing)"
+            log::info "TARGET" "Run 'npm install' to set up commit hooks (Husky)"
+            log::info "TARGET" "This ensures commit message format validation"
             echo ""
         elif [[ ! -d "$ROOT_DIR/node_modules/husky" ]]; then
-            log_warn "Husky not found in node_modules"
-            log_info "Run 'npm install' to set up Git commit hooks"
+            log::warn "TARGET" "Husky not found in node_modules"
+            log::info "TARGET" "Run 'npm install' to set up Git commit hooks"
             echo ""
         elif [[ ! -d "$ROOT_DIR/.husky" ]]; then
-            log_warn "Husky hooks directory (.husky/) not found"
-            log_info "Git hooks may not be properly configured"
-            log_info "Try running 'npm install' to fix this"
+            log::warn "TARGET" "Husky hooks directory (.husky/) not found"
+            log::info "TARGET" "Git hooks may not be properly configured"
+            log::info "TARGET" "Try running 'npm install' to fix this"
             echo ""
         fi
     fi
@@ -122,8 +143,10 @@ is_network_error() {
 run_pod_install_with_retry() {
     local msp_release="${1:-0}"
     local msp_mode="${2:-pods-dev}"
-    local max_attempts=3  # Initial attempt + 2 retries
-    local retry_delay=10  # Wait 10 seconds between retries
+    # R040d: Use configurable values from cocoapods-config.yaml
+    local max_attempts="${PODS_MAX_UPDATE_ATTEMPTS:-3}"  # Initial attempt + retries
+    local retry_delay="${PODS_RETRY_DELAY:-10}"          # Wait between retries
+    local pod_install_timeout="${PODS_POD_INSTALL_TIMEOUT:-1800}"
     local attempt=1
     local last_error_output=""
     
@@ -134,11 +157,11 @@ run_pod_install_with_retry() {
     
     while [[ $attempt -le $max_attempts ]]; do
         if [[ $attempt -gt 1 ]]; then
-            log_info "Retrying pod install (attempt $attempt/$max_attempts) after ${retry_delay}s delay..."
+            log::info "TARGET" "Retrying pod install (attempt $attempt/$max_attempts) after ${retry_delay}s delay..."
             sleep $retry_delay
         fi
         
-        log_info "Running pod install (attempt $attempt/$max_attempts)..."
+        log::info "TARGET" "Running pod install (attempt $attempt/$max_attempts)..."
         
         # Capture both stdout and stderr
         local temp_output
@@ -154,13 +177,13 @@ run_pod_install_with_retry() {
         if [[ "$msp_mode" == "pods-dev" ]]; then
             pod_cmd_args+=(MSP_MODE="pods-dev")
         fi
-        pod_cmd_args+=(pod install)
+        pod_cmd_args+=(bundle exec pod install)
         
         # Run pod install with timeout
         local exit_code=0
         if command -v run_with_timeout &>/dev/null; then
-            if run_with_timeout 1800 "${pod_cmd_args[@]}" > "$temp_output" 2>&1; then
-                log_success "pod install completed successfully (attempt $attempt)"
+            if run_with_timeout "$pod_install_timeout" "${pod_cmd_args[@]}" > "$temp_output" 2>&1; then
+                log::success "TARGET" "pod install completed successfully (attempt $attempt)"
                 rm -f "$temp_output"
                 return 0
             else
@@ -169,7 +192,7 @@ run_pod_install_with_retry() {
         else
             # Fallback: run without timeout
             if "${pod_cmd_args[@]}" > "$temp_output" 2>&1; then
-                log_success "pod install completed successfully (attempt $attempt)"
+                log::success "TARGET" "pod install completed successfully (attempt $attempt)"
                 rm -f "$temp_output"
                 return 0
             else
@@ -183,29 +206,29 @@ run_pod_install_with_retry() {
         
         # Check if it's a timeout (exit code 124)
         if [[ $exit_code -eq 124 ]]; then
-            log_error "pod install TIMED OUT after 30 minutes (attempt $attempt/$max_attempts)"
+            log::error "TARGET" "pod install TIMED OUT after $((pod_install_timeout/60)) minutes (attempt $attempt/$max_attempts)"
             if [[ $attempt -lt $max_attempts ]]; then
-                log_info "Timeout may be due to network issues, will retry..."
+                log::info "TARGET" "Timeout may be due to network issues, will retry..."
             else
-                log_error "All retry attempts exhausted"
+                log::error "TARGET" "All retry attempts exhausted"
                 return 1
             fi
         # Check if it's a network error
         elif is_network_error "$last_error_output"; then
-            log_warn "Network error detected in pod install (attempt $attempt/$max_attempts)"
-            log_info "Error details: $(echo "$last_error_output" | tail -5 | sed 's/^/  /')"
+            log::warn "TARGET" "Network error detected in pod install (attempt $attempt/$max_attempts)"
+            log::info "TARGET" "Error details: $(echo "$last_error_output" | tail -5 | sed 's/^/  /')"
             if [[ $attempt -lt $max_attempts ]]; then
-                log_info "Will retry after ${retry_delay}s..."
+                log::info "TARGET" "Will retry after ${retry_delay}s..."
             else
-                log_error "All retry attempts exhausted"
-                log_error "Final error output:"
+                log::error "TARGET" "All retry attempts exhausted"
+                log::error "TARGET" "Final error output:"
                 echo "$last_error_output" | tail -20 | sed 's/^/  /' >&2
                 return 1
             fi
         else
             # Non-network error, don't retry
-            log_error "pod install failed with non-network error (exit code $exit_code)"
-            log_error "Error output:"
+            log::error "TARGET" "pod install failed with non-network error (exit code $exit_code)"
+            log::error "TARGET" "Error output:"
             echo "$last_error_output" | tail -20 | sed 's/^/  /' >&2
             return 1
         fi
@@ -213,27 +236,27 @@ run_pod_install_with_retry() {
         ((attempt++)) || true
     done
     
-    log_error "pod install failed after $max_attempts attempts"
+    log::error "TARGET" "pod install failed after $max_attempts attempts"
     return 1
 }
 
 print_usage() {
-    log_info "Usage: $0 {pods-dev|pods-release|spm-release}"
-    log_info ""
-    log_info "Modes:"
-    log_info "  pods-dev      CocoaPods with source files (internal development)"
-    log_info "  pods-release  CocoaPods with binary XCFrameworks (pre-release validation)"
-    log_info "  spm-release   Swift Package Manager with binary XCFrameworks"
-    log_info ""
-    log_info "Examples:"
-    log_info "  $0 pods-dev      # Switch to development mode (default for SDK engineers)"
-    log_info "  $0 pods-release  # Switch to release validation mode"
-    log_info "  $0 spm-release   # Switch to SPM release mode"
+    log::info "TARGET" "Usage: $0 {pods-dev|pods-release|spm-release}"
+    log::info "TARGET" ""
+    log::info "TARGET" "Modes:"
+    log::info "TARGET" "  pods-dev      CocoaPods with source files (internal development)"
+    log::info "TARGET" "  pods-release  CocoaPods with binary XCFrameworks (pre-release validation)"
+    log::info "TARGET" "  spm-release   Swift Package Manager with binary XCFrameworks"
+    log::info "TARGET" ""
+    log::info "TARGET" "Examples:"
+    log::info "TARGET" "  $0 pods-dev      # Switch to development mode (default for SDK engineers)"
+    log::info "TARGET" "  $0 pods-release  # Switch to release validation mode"
+    log::info "TARGET" "  $0 spm-release   # Switch to SPM release mode"
 }
 
 # Validate XCFrameworks exist for release modes
 validate_xcframeworks_for_release() {
-    log_step "Validating XCFrameworks for release mode"
+    log::step "TARGET" "Validating XCFrameworks for release mode"
     
     local errors=0
     local xcf_dir="$ROOT_DIR/Build/ReleaseArtifacts/XCFrameworks"
@@ -242,9 +265,9 @@ validate_xcframeworks_for_release() {
     # Check if ReleaseArtifacts/Binary exists and use it instead
     if [[ -d "$bin_dir" ]] && [[ "$(ls -A "$bin_dir" 2>/dev/null)" ]]; then
         xcf_dir="$bin_dir"
-        log_info "Using ReleaseArtifacts/Binary for XCFrameworks"
+        log::info "TARGET" "Using ReleaseArtifacts/Binary for XCFrameworks"
     else
-        log_info "Using Build/ReleaseArtifacts/XCFrameworks for XCFrameworks"
+        log::info "TARGET" "Using Build/ReleaseArtifacts/XCFrameworks for XCFrameworks"
     fi
     
     # Required core XCFrameworks
@@ -258,49 +281,61 @@ validate_xcframeworks_for_release() {
     
     for xcf in "${required_xcframeworks[@]}"; do
         if [[ ! -d "$xcf_dir/${xcf}.xcframework" ]]; then
-            log_error "Missing required XCFramework: ${xcf}.xcframework"
+            log::error "TARGET" "Missing required XCFramework: ${xcf}.xcframework"
             ((errors++)) || true
         elif [[ ! -f "$xcf_dir/${xcf}.xcframework/Info.plist" ]]; then
-            log_error "Invalid XCFramework (no Info.plist): ${xcf}.xcframework"
+            log::error "TARGET" "Invalid XCFramework (no Info.plist): ${xcf}.xcframework"
             ((errors++)) || true
         fi
     done
     
     if [[ $errors -gt 0 ]]; then
-        log_error "$errors XCFramework(s) missing or invalid"
-        log_info ""
-        log_info "To build missing XCFrameworks:"
-        log_info "  ./Scripts/xcframeworks/build-core.sh"
+        log::error "TARGET" "$errors XCFramework(s) missing or invalid"
+        log::info "TARGET" ""
+        log::info "TARGET" "To build missing XCFrameworks:"
+        log::info "TARGET" "  ./Scripts/xcframeworks/build-core.sh"
         return 1
     fi
     
-    log_success "All required XCFrameworks validated"
+    log::success "TARGET" "All required XCFrameworks validated"
     return 0
 }
 
 # Generate Info.plist from template
 generate_info_plist() {
-    log_step "Generating Info.plist from template"
+    log::step "TARGET" "Generating Info.plist from template"
     
     if [[ -f "$INFO_PLIST_TEMPLATE" ]]; then
         cp "$INFO_PLIST_TEMPLATE" "$INFO_PLIST_OUTPUT"
-        log_success "Info.plist generated"
+        log::success "TARGET" "Info.plist generated"
     else
-        log_warn "Info.plist.template not found - skipping"
+        log::warn "TARGET" "Info.plist.template not found - skipping"
     fi
 }
 
 # Run xcodegen
 run_xcodegen() {
-    log_step "Generating Xcode project from YAML"
-    
+    log::step "TARGET" "Generating Xcode project from YAML"
+
     if ! command -v xcodegen &>/dev/null; then
         log_fatal "xcodegen not found. Install via: brew install xcodegen"
         exit 1
     fi
-    
-    if xcodegen generate --spec "$PROJECT_SPEC" 2>&1; then
-        log_success "Xcode project generated"
+
+    # R029c: Use xcodegen.sh module if available, fallback to direct call
+    local xcodegen_success=false
+    if command -v xcodegen_generate &>/dev/null; then
+        if xcodegen_generate "$PROJECT_SPEC" "$(dirname "$PROJECT_SPEC")" 2>&1; then
+            xcodegen_success=true
+        fi
+    else
+        if xcodegen generate --spec "$PROJECT_SPEC" 2>&1; then
+            xcodegen_success=true
+        fi
+    fi
+
+    if [[ "$xcodegen_success" == "true" ]]; then
+        log::success "TARGET" "Xcode project generated"
     else
         log_fatal "xcodegen failed"
         exit 1
@@ -311,20 +346,20 @@ run_xcodegen() {
 # The actual workspace is generated inside .generated/ to keep root clean
 # The symlink allows developers to always use: open msp-ios-sdk.xcworkspace
 create_workspace_symlink() {
-    log_step "Creating workspace symlink at project root"
+    log::step "TARGET" "Creating workspace symlink at project root"
     
     local GENERATED_WORKSPACE="$ROOT_DIR/.generated/msp-ios-sdk.xcworkspace"
     local ROOT_SYMLINK="$ROOT_DIR/msp-ios-sdk.xcworkspace"
     
     if [[ ! -d "$GENERATED_WORKSPACE" ]]; then
-        log_error "Generated workspace not found at: $GENERATED_WORKSPACE"
-        log_error "Workspace generation must have failed - cannot create symlink"
+        log::error "TARGET" "Generated workspace not found at: $GENERATED_WORKSPACE"
+        log::error "TARGET" "Workspace generation must have failed - cannot create symlink"
         return 1
     fi
     
     # Verify workspace is valid (has contents.xcworkspacedata)
     if [[ ! -f "$GENERATED_WORKSPACE/contents.xcworkspacedata" ]]; then
-        log_error "Workspace exists but is invalid (missing contents.xcworkspacedata): $GENERATED_WORKSPACE"
+        log::error "TARGET" "Workspace exists but is invalid (missing contents.xcworkspacedata): $GENERATED_WORKSPACE"
         return 1
     fi
     
@@ -333,9 +368,9 @@ create_workspace_symlink() {
     
     # Create symlink pointing to generated workspace
     if ln -sf ".generated/msp-ios-sdk.xcworkspace" "$ROOT_SYMLINK"; then
-        log_success "Workspace symlink created: msp-ios-sdk.xcworkspace → .generated/msp-ios-sdk.xcworkspace"
+        log::success "TARGET" "Workspace symlink created: msp-ios-sdk.xcworkspace → .generated/msp-ios-sdk.xcworkspace"
     else
-        log_error "Failed to create workspace symlink"
+        log::error "TARGET" "Failed to create workspace symlink"
         return 1
     fi
     
@@ -344,7 +379,7 @@ create_workspace_symlink() {
 
 # Pre-stage XCFrameworks for Pods build
 prestage_xcframeworks() {
-    log_step "Pre-staging XCFrameworks for Pods build"
+    log::step "TARGET" "Pre-staging XCFrameworks for Pods build"
     
     local DD_PREFIX="$HOME/Library/Developer/Xcode/DerivedData"
     local TARGET_DIRS=()
@@ -359,7 +394,7 @@ prestage_xcframeworks() {
     
     local SCRIPTS_DIR="$PODS_DIR/Target Support Files"
     if [[ ! -d "$SCRIPTS_DIR" ]]; then
-        log_warn "Pods/Target Support Files not found - skipping XCFramework staging"
+        log::warn "TARGET" "Pods/Target Support Files not found - skipping XCFramework staging"
         return 0
     fi
     
@@ -385,9 +420,9 @@ prestage_xcframeworks() {
     done
     
     if [[ $total_staged -gt 0 ]]; then
-        log_success "Pre-staged XCFrameworks to ${#TARGET_DIRS[@]} location(s)"
+        log::success "TARGET" "Pre-staged XCFrameworks to ${#TARGET_DIRS[@]} location(s)"
     else
-        log_warn "No XCFrameworks staged"
+        log::warn "TARGET" "No XCFrameworks staged"
     fi
 }
 
@@ -529,37 +564,37 @@ validate_final_state() {
     local mode="$1"
     local errors=0
     
-    log_step "Validating final state for $mode"
+    log::step "TARGET" "Validating final state for $mode"
     
     case "$mode" in
         pods-dev|pods-release)
             # Pods/ must exist
             if [[ ! -d "$PODS_DIR" ]]; then
-                log_error "Pods/ directory missing"
+                log::error "TARGET" "Pods/ directory missing"
                 ((errors++)) || true
             fi
             
             # Package.swift must NOT exist
             if [[ -f "$PACKAGE_SWIFT" ]]; then
-                log_error "Package.swift exists (should be removed in Pods mode)"
+                log::error "TARGET" "Package.swift exists (should be removed in Pods mode)"
                 ((errors++)) || true
             fi
             
             # Package.swift.template must exist
             if [[ ! -f "$PACKAGE_SWIFT_TEMPLATE" ]]; then
-                log_error "Package.swift.template missing"
+                log::error "TARGET" "Package.swift.template missing"
                 ((errors++)) || true
             fi
             
             # project.yml must have MSPDemoApp target
             if ! grep -q "^  MSPDemoApp:$" "$PROJECT_SPEC" 2>/dev/null; then
-                log_error "project.yml missing MSPDemoApp target"
+                log::error "TARGET" "project.yml missing MSPDemoApp target"
                 ((errors++)) || true
             fi
             
             # project.yml must have packages: {}
             if ! grep -q "^packages: {}$" "$PROJECT_SPEC" 2>/dev/null; then
-                log_error "project.yml should have packages: {} in Pods mode"
+                log::error "TARGET" "project.yml should have packages: {} in Pods mode"
                 ((errors++)) || true
             fi
             ;;
@@ -567,30 +602,30 @@ validate_final_state() {
         spm-release)
             # Pods/ must NOT exist
             if [[ -d "$PODS_DIR" ]]; then
-                log_error "Pods/ directory exists (should be removed in SPM mode)"
+                log::error "TARGET" "Pods/ directory exists (should be removed in SPM mode)"
                 ((errors++)) || true
             fi
             
             # Package.swift must exist
             if [[ ! -f "$PACKAGE_SWIFT" ]]; then
-                log_error "Package.swift missing (required for SPM mode)"
+                log::error "TARGET" "Package.swift missing (required for SPM mode)"
                 ((errors++)) || true
             fi
             
             # project.yml must have MSPDemoApp-SPM target
             if ! grep -q "^  MSPDemoApp-SPM:$" "$PROJECT_SPEC" 2>/dev/null; then
-                log_error "project.yml missing MSPDemoApp-SPM target"
+                log::error "TARGET" "project.yml missing MSPDemoApp-SPM target"
                 ((errors++)) || true
             fi
             ;;
     esac
     
     if [[ $errors -gt 0 ]]; then
-        log_error "Validation failed with $errors error(s)"
+        log::error "TARGET" "Validation failed with $errors error(s)"
         return 1
     fi
     
-    log_success "Validation passed"
+    log::success "TARGET" "Validation passed"
     return 0
 }
 
@@ -630,9 +665,9 @@ print_summary() {
     echo ""
     
     if [[ "$status" == "SUCCESS" ]]; then
-        log_success "Ready for ${mode} workflow"
+        log::success "TARGET" "Ready for ${mode} workflow"
     else
-        log_error "Switch failed - see errors above"
+        log::error "TARGET" "Switch failed - see errors above"
     fi
 }
 
@@ -642,9 +677,9 @@ print_summary() {
 
 switch_pods_dev() {
     log_title "Switching to PODS-DEV Mode"
-    log_info "Mode: CocoaPods with source files (internal development)"
-    log_info "MSP_RELEASE=0, MSP_MODE=pods-dev"
-    log_info ""
+    log::info "TARGET" "Mode: CocoaPods with source files (internal development)"
+    log::info "TARGET" "MSP_RELEASE=0, MSP_MODE=pods-dev"
+    log::info "TARGET" ""
     
     check_npm_install
     
@@ -653,27 +688,27 @@ switch_pods_dev() {
     
     # Step 1: Clean SPM artifacts
     log_section "Environment Cleanup"
-    log_step "Cleaning SPM artifacts"
+    log::step "TARGET" "Cleaning SPM artifacts"
     if "$SWITCH_TARGET_SCRIPT_DIR/target-switching/cleanup_spm.sh" --force 2>/dev/null; then
-        log_success "SPM cleanup completed"
+        log::success "TARGET" "SPM cleanup completed"
     else
-        log_warn "SPM cleanup had warnings (continuing)"
+        log::warn "TARGET" "SPM cleanup had warnings (continuing)"
     fi
     
     # Step 2: Remove Package.swift
-    log_step "Removing Package.swift"
+    log::step "TARGET" "Removing Package.swift"
     ensure_package_swift_disabled
     
     # Step 3: Clean existing Pods to force regeneration
     # This ensures CocoaPods removes XCFramework copy phases in pods-dev mode
-    log_step "Cleaning existing Pods (force regeneration)"
+    log::step "TARGET" "Cleaning existing Pods (force regeneration)"
     if [[ -d "$PODS_DIR" ]]; then
         rm -rf "$PODS_DIR"
-        log_success "Pods/ removed"
+        log::success "TARGET" "Pods/ removed"
     fi
     if [[ -f "$ROOT_DIR/Podfile.lock" ]]; then
         rm -f "$ROOT_DIR/Podfile.lock"
-        log_success "Podfile.lock removed"
+        log::success "TARGET" "Podfile.lock removed"
     fi
     
     # Also clean DemoApp Pods directory if it exists
@@ -681,39 +716,39 @@ switch_pods_dev() {
     local DEMOAPP_PODFILE_LOCK="$ROOT_DIR/Examples/DemoApp/Podfile.lock"
     if [[ -d "$DEMOAPP_PODS_DIR" ]]; then
         rm -rf "$DEMOAPP_PODS_DIR"
-        log_success "Examples/DemoApp/Pods/ removed"
+        log::success "TARGET" "Examples/DemoApp/Pods/ removed"
     fi
     if [[ -f "$DEMOAPP_PODFILE_LOCK" ]]; then
         rm -f "$DEMOAPP_PODFILE_LOCK"
-        log_success "Examples/DemoApp/Podfile.lock removed"
+        log::success "TARGET" "Examples/DemoApp/Podfile.lock removed"
     fi
     
     # Step 4: Generate project.yml from templates (BEFORE pod install)
     # CRITICAL: MSPDemoApp.xcodeproj must exist BEFORE pod install runs
     log_section "YAML Generation"
-    log_step "Generating project.yml from templates (excluding MSPDemoApp - handled by generate_workspace.sh)"
+    log::step "TARGET" "Generating project.yml from templates (excluding MSPDemoApp - handled by generate_workspace.sh)"
     if [[ -x "$SWITCH_TARGET_SCRIPT_DIR/target-switching/generate_project_templates.sh" ]]; then
         "$SWITCH_TARGET_SCRIPT_DIR/target-switching/generate_project_templates.sh"
     fi
     
     # Step 4.5: Generate workspace YAML (which also generates MSPDemoApp/project.yml with proper placeholders)
     # CRITICAL: generate_workspace.sh generates MSPDemoApp/project.yml with placeholders replaced
-    log_step "Generating workspace/project YAML (includes MSPDemoApp/project.yml)"
+    log::step "TARGET" "Generating workspace/project YAML (includes MSPDemoApp/project.yml)"
     if "$SWITCH_TARGET_SCRIPT_DIR/target-switching/generate_workspace.sh" pods-dev; then
-        log_success "Workspace YAML generated (MSPDemoApp/project.yml created with placeholders replaced)"
+        log::success "TARGET" "Workspace YAML generated (MSPDemoApp/project.yml created with placeholders replaced)"
     else
-        log_error "Workspace YAML generation failed"
+        log::error "TARGET" "Workspace YAML generation failed"
         exit 1
     fi
     
     # Step 5: Generate MSPDemoApp.xcodeproj from project.yml (BEFORE pod install)
     # CRITICAL: Podfile references 'Examples/MSPDemoApp/MSPDemoApp' - project MUST exist
     log_section "Xcode Project Generation (Pre-pod-install)"
-    log_step "Generating MSPDemoApp.xcodeproj from project.yml"
+    log::step "TARGET" "Generating MSPDemoApp.xcodeproj from project.yml"
     
     if [[ ! -f "$PROJECT_SPEC" ]]; then
-        log_error "project.yml not found: $PROJECT_SPEC"
-        log_error "Workspace YAML generation must have failed"
+        log::error "TARGET" "project.yml not found: $PROJECT_SPEC"
+        log::error "TARGET" "Workspace YAML generation must have failed"
         exit 1
     fi
     
@@ -725,53 +760,65 @@ switch_pods_dev() {
     # Generate MSPDemoApp project (run from project directory for correct relative paths)
     local PROJECT_DIR="$(dirname "$PROJECT_SPEC")"
     local PROJECT_YML_NAME="$(basename "$PROJECT_SPEC")"
-    if ! (cd "$PROJECT_DIR" && xcodegen generate --spec "$PROJECT_YML_NAME" 2>&1); then
-        log_error "Failed to generate MSPDemoApp.xcodeproj from project.yml"
-        log_error "This must succeed before pod install can run"
+    # R029c: Use xcodegen.sh module if available, fallback to direct call
+    local demoapp_xcodegen_success=false
+    if command -v xcodegen_generate &>/dev/null; then
+        if xcodegen_generate "$PROJECT_SPEC" "$PROJECT_DIR" 2>&1; then
+            demoapp_xcodegen_success=true
+        fi
+    else
+        if (cd "$PROJECT_DIR" && xcodegen generate --spec "$PROJECT_YML_NAME" 2>&1); then
+            demoapp_xcodegen_success=true
+        fi
+    fi
+
+    if [[ "$demoapp_xcodegen_success" != "true" ]]; then
+        log::error "TARGET" "Failed to generate MSPDemoApp.xcodeproj from project.yml"
+        log::error "TARGET" "This must succeed before pod install can run"
         exit 1
     fi
     
     # Verify project was generated at expected location
     local EXPECTED_PROJECT="$PROJECT_DIR/MSPDemoApp.xcodeproj"
     if [[ ! -d "$EXPECTED_PROJECT" ]]; then
-        log_error "MSPDemoApp.xcodeproj not found at expected location: $EXPECTED_PROJECT"
-        log_error "XcodeGen generation appeared to succeed but project is missing"
+        log::error "TARGET" "MSPDemoApp.xcodeproj not found at expected location: $EXPECTED_PROJECT"
+        log::error "TARGET" "XcodeGen generation appeared to succeed but project is missing"
         exit 1
     fi
     
-    log_success "MSPDemoApp.xcodeproj generated: $EXPECTED_PROJECT"
+    log::success "TARGET" "MSPDemoApp.xcodeproj generated: $EXPECTED_PROJECT"
     
     # Step 6: Precondition check before pod install
     log_section "Precondition Check"
-    log_step "Verifying MSPDemoApp.xcodeproj exists before pod install"
+    log::step "TARGET" "Verifying MSPDemoApp.xcodeproj exists before pod install"
     local PODFILE_PROJECT_PATH="$ROOT_DIR/Examples/MSPDemoApp/MSPDemoApp.xcodeproj"
     if [[ ! -d "$PODFILE_PROJECT_PATH" ]]; then
-        log_error "MSPDemoApp.xcodeproj missing at Podfile-expected path: $PODFILE_PROJECT_PATH"
-        log_error "Podfile references: project 'Examples/MSPDemoApp/MSPDemoApp'"
-        log_error "Project generation step must have failed - cannot proceed with pod install"
+        log::error "TARGET" "MSPDemoApp.xcodeproj missing at Podfile-expected path: $PODFILE_PROJECT_PATH"
+        log::error "TARGET" "Podfile references: project 'Examples/MSPDemoApp/MSPDemoApp'"
+        log::error "TARGET" "Project generation step must have failed - cannot proceed with pod install"
         exit 1
     fi
     
     if [[ ! -f "$PODFILE_PROJECT_PATH/project.pbxproj" ]]; then
-        log_error "MSPDemoApp.xcodeproj exists but is invalid (missing project.pbxproj)"
-        log_error "XcodeGen generation may have failed silently"
+        log::error "TARGET" "MSPDemoApp.xcodeproj exists but is invalid (missing project.pbxproj)"
+        log::error "TARGET" "XcodeGen generation may have failed silently"
         exit 1
     fi
     
-    log_success "MSPDemoApp.xcodeproj verified: $PODFILE_PROJECT_PATH"
-    
+    log::success "TARGET" "MSPDemoApp.xcodeproj verified: $PODFILE_PROJECT_PATH"
+
+    # Step 6.5: Ensure prepare_command pod sources exist before pod install
+    # MSPKingfisher/MSPSnapKit Sources/ are gitignored and must be downloaded
+    # before pod install can resolve them. On a clean clone these won't exist.
+    log::step "TARGET" "Ensuring prepare_command pod sources (MSPKingfisher, MSPSnapKit)"
+    ensure_all_prepare_command_pod_sources
+
     # Step 7: Run pod install (AFTER project generation)
     # CRITICAL: pod install requires MSPDemoApp.xcodeproj to exist
     log_section "CocoaPods Installation"
-    # Ensure all pods that use prepare_command (git clone) have full source before pod install
-    # (e.g. MSPKingfisher, MSPSnapKit). Otherwise CocoaPods generates incomplete targets and "missing type" errors.
-    if ! ensure_all_prepare_command_pod_sources; then
-        log_error "Prepare-command pod sources are required for pods-dev build; fix the error above and re-run"
-        exit 1
-    fi
-    log_step "Running pod install (MSP_RELEASE=0, MSP_MODE=pods-dev)"
-    log_info "All modules compiled from SOURCE (path-based pods)"
-    log_info "XCFramework copy phases will be REMOVED by Podfile post_install"
+    log::step "TARGET" "Running pod install (MSP_RELEASE=0, MSP_MODE=pods-dev)"
+    log::info "TARGET" "All modules compiled from SOURCE (path-based pods)"
+    log::info "TARGET" "XCFramework copy phases will be REMOVED by Podfile post_install"
     
     cd "$ROOT_DIR"
     # Run pod install with automatic retry on network errors
@@ -779,16 +826,16 @@ switch_pods_dev() {
     # Timeout: 30 minutes per attempt
     # Rationale: First-time install (no Podfile.lock) can take 15-20 min for specs repo update + dependency resolution
     # Safety margin: 30 min = 1.5-2x observed time (increased from 20 min due to observed timeouts)
-    log_info "Running pod install with automatic network error retry (max 3 attempts, 10s delay)..."
+    log::info "TARGET" "Running pod install with automatic network error retry (max 3 attempts, 10s delay)..."
     if run_pod_install_with_retry 0 "pods-dev"; then
-        log_success "pod install completed (pure source mode)"
+        log::success "TARGET" "pod install completed (pure source mode)"
     else
-        log_error "pod install failed after all retry attempts"
-        log_error ""
-        log_error "Troubleshooting:"
-        log_error "  1. Check network: curl -I https://cdn.cocoapods.org"
-        log_error "  2. Manually update specs: pod repo update"
-        log_error "  3. Check Podfile for complex dependencies"
+        log::error "TARGET" "pod install failed after all retry attempts"
+        log::error "TARGET" ""
+        log::error "TARGET" "Troubleshooting:"
+        log::error "TARGET" "  1. Check network: curl -I https://cdn.cocoapods.org"
+        log::error "TARGET" "  2. Manually update specs: pod repo update"
+        log::error "TARGET" "  3. Check Podfile for complex dependencies"
         exit 1
     fi
     
@@ -798,19 +845,19 @@ switch_pods_dev() {
     # CocoaPods owns the build graph and dependencies after pod install.
     # XcodeGen must only run BEFORE pod install (Step 5).
     log_section "Workspace YAML Regeneration"
-    log_step "Regenerating workspace YAML (includes Pods project)"
-    log_info "Note: MSPDemoApp.xcodeproj is NOT regenerated - CocoaPods owns build dependencies"
+    log::step "TARGET" "Regenerating workspace YAML (includes Pods project)"
+    log::info "TARGET" "Note: MSPDemoApp.xcodeproj is NOT regenerated - CocoaPods owns build dependencies"
     if "$SWITCH_TARGET_SCRIPT_DIR/target-switching/generate_workspace.sh" pods-dev; then
-        log_success "Workspace YAML regenerated (includes Pods project)"
+        log::success "TARGET" "Workspace YAML regenerated (includes Pods project)"
     else
-        log_error "Workspace YAML regeneration failed"
+        log::error "TARGET" "Workspace YAML regeneration failed"
         exit 1
     fi
     
     # Step 9: Create workspace symlink at root
     log_section "Workspace Symlink"
     if ! create_workspace_symlink; then
-        log_error "Failed to create workspace symlink - workspace generation must have failed"
+        log::error "TARGET" "Failed to create workspace symlink - workspace generation must have failed"
         print_summary "pods-dev" "FAILED"
         exit 1
     fi
@@ -830,8 +877,8 @@ switch_pods_dev() {
     log_section "Final Workspace Verification"
     local FINAL_WORKSPACE="$ROOT_DIR/msp-ios-sdk.xcworkspace"
     if [[ ! -L "$FINAL_WORKSPACE" ]] && [[ ! -d "$FINAL_WORKSPACE" ]]; then
-        log_error "Workspace does not exist at expected location: $FINAL_WORKSPACE"
-        log_error "This violates the pods-dev contract - workspace MUST exist on success"
+        log::error "TARGET" "Workspace does not exist at expected location: $FINAL_WORKSPACE"
+        log::error "TARGET" "This violates the pods-dev contract - workspace MUST exist on success"
         print_summary "pods-dev" "FAILED"
         exit 1
     fi
@@ -840,32 +887,32 @@ switch_pods_dev() {
         local SYMLINK_TARGET
         SYMLINK_TARGET="$(readlink "$FINAL_WORKSPACE" 2>/dev/null || echo "")"
         if [[ -z "$SYMLINK_TARGET" ]] || [[ ! -d "$ROOT_DIR/$SYMLINK_TARGET" ]]; then
-            log_error "Workspace symlink is broken: $FINAL_WORKSPACE → $SYMLINK_TARGET"
-            log_error "Target does not exist or is not accessible"
+            log::error "TARGET" "Workspace symlink is broken: $FINAL_WORKSPACE → $SYMLINK_TARGET"
+            log::error "TARGET" "Target does not exist or is not accessible"
             print_summary "pods-dev" "FAILED"
             exit 1
         fi
     fi
     
-    log_success "Workspace verified: $FINAL_WORKSPACE exists and is valid"
+    log::success "TARGET" "Workspace verified: $FINAL_WORKSPACE exists and is valid"
     
     # Step 12: Git cleanliness check
     log_section "Git Status Check"
-    verify_git_cleanliness || log_warn "Git status not fully clean"
+    verify_git_cleanliness || log::warn "TARGET" "Git status not fully clean"
     
     # Step 13: Open Xcode
     log_section "Opening Xcode"
     if [[ -L "$ROOT_DIR/msp-ios-sdk.xcworkspace" ]] || [[ -d "$ROOT_DIR/msp-ios-sdk.xcworkspace" ]]; then
         open "$ROOT_DIR/msp-ios-sdk.xcworkspace"
-        log_success "Opened workspace"
+        log::success "TARGET" "Opened workspace"
     fi
     
     print_summary "pods-dev" "SUCCESS"
     
     log_section "Next Steps"
-    log_info "1. Build MSPDemoApp target in Xcode"
-    log_info "2. All modules compile from source files"
-    log_info "3. Make code changes and iterate quickly"
+    log::info "TARGET" "1. Build MSPDemoApp target in Xcode"
+    log::info "TARGET" "2. All modules compile from source files"
+    log::info "TARGET" "3. Make code changes and iterate quickly"
 }
 
 # ============================================================================
@@ -874,9 +921,9 @@ switch_pods_dev() {
 
 switch_pods_release() {
     log_title "Switching to PODS-RELEASE Mode"
-    log_info "Mode: CocoaPods with binary XCFrameworks (pre-release validation)"
-    log_info "MSP_RELEASE=1, MSP_MODE=pods-release"
-    log_info ""
+    log::info "TARGET" "Mode: CocoaPods with binary XCFrameworks (pre-release validation)"
+    log::info "TARGET" "MSP_RELEASE=1, MSP_MODE=pods-release"
+    log::info "TARGET" ""
     
     check_npm_install
     
@@ -886,55 +933,59 @@ switch_pods_release() {
     # Step 1: Validate XCFrameworks exist
     log_section "XCFramework Validation"
     if ! validate_xcframeworks_for_release; then
-        log_error "Cannot switch to pods-release without XCFrameworks"
-        log_info "Build XCFrameworks first: ./Scripts/xcframeworks/build-core.sh"
+        log::error "TARGET" "Cannot switch to pods-release without XCFrameworks"
+        log::info "TARGET" "Build XCFrameworks first: ./Scripts/xcframeworks/build-core.sh"
         exit 1
     fi
     
     # Step 2: Clean SPM artifacts
     log_section "Environment Cleanup"
-    log_step "Cleaning SPM artifacts"
+    log::step "TARGET" "Cleaning SPM artifacts"
     if "$SWITCH_TARGET_SCRIPT_DIR/target-switching/cleanup_spm.sh" --force 2>/dev/null; then
-        log_success "SPM cleanup completed"
+        log::success "TARGET" "SPM cleanup completed"
     else
-        log_warn "SPM cleanup had warnings (continuing)"
+        log::warn "TARGET" "SPM cleanup had warnings (continuing)"
     fi
     
     # Step 3: Remove Package.swift
-    log_step "Removing Package.swift"
+    log::step "TARGET" "Removing Package.swift"
     ensure_package_swift_disabled
     
     # Step 4: Generate project.yml from templates
     log_section "YAML Generation"
-    log_step "Generating project.yml from templates"
+    log::step "TARGET" "Generating project.yml from templates"
     if [[ -x "$SWITCH_TARGET_SCRIPT_DIR/target-switching/generate_project_templates.sh" ]]; then
         "$SWITCH_TARGET_SCRIPT_DIR/target-switching/generate_project_templates.sh"
     fi
     
-    log_step "Generating workspace/project YAML"
+    log::step "TARGET" "Generating workspace/project YAML"
     if "$SWITCH_TARGET_SCRIPT_DIR/target-switching/generate_workspace.sh" pods-release; then
-        log_success "YAML generated"
+        log::success "TARGET" "YAML generated"
     else
-        log_error "YAML generation failed"
+        log::error "TARGET" "YAML generation failed"
         exit 1
     fi
     
+    # Step 4.5: Ensure prepare_command pod sources exist before pod install
+    log::step "TARGET" "Ensuring prepare_command pod sources (MSPKingfisher, MSPSnapKit)"
+    ensure_all_prepare_command_pod_sources
+
     # Step 5: Run pod install (with MSP_RELEASE=1)
     log_section "CocoaPods Installation"
-    log_step "Running pod install (MSP_RELEASE=1)"
-    log_info "Core modules use BINARY XCFrameworks, adapters use SOURCE"
-    
+    log::step "TARGET" "Running pod install (MSP_RELEASE=1)"
+    log::info "TARGET" "Core modules use BINARY XCFrameworks, adapters use SOURCE"
+
     cd "$ROOT_DIR"
     # Run pod install with automatic retry on network errors
     # Retry logic: up to 3 attempts (initial + 2 retries), 10s delay between retries
     # Timeout: 30 minutes per attempt
     # Rationale: Same as pods-dev mode - first-time install can be slow (increased from 20 min)
-    log_info "Running pod install with automatic network error retry (max 3 attempts, 10s delay)..."
+    log::info "TARGET" "Running pod install with automatic network error retry (max 3 attempts, 10s delay)..."
     if run_pod_install_with_retry 1 ""; then
-        log_success "pod install completed"
+        log::success "TARGET" "pod install completed"
     else
-        log_error "pod install failed after all retry attempts"
-        log_error "This usually indicates network or dependency resolution issues"
+        log::error "TARGET" "pod install failed after all retry attempts"
+        log::error "TARGET" "This usually indicates network or dependency resolution issues"
         exit 1
     fi
     
@@ -945,7 +996,7 @@ switch_pods_release() {
     # Step 7: Create workspace symlink at root
     log_section "Workspace Symlink"
     if ! create_workspace_symlink; then
-        log_error "Failed to create workspace symlink - workspace generation must have failed"
+        log::error "TARGET" "Failed to create workspace symlink - workspace generation must have failed"
         print_summary "pods-release" "FAILED"
         exit 1
     fi
@@ -969,8 +1020,8 @@ switch_pods_release() {
     log_section "Final Workspace Verification"
     local FINAL_WORKSPACE="$ROOT_DIR/msp-ios-sdk.xcworkspace"
     if [[ ! -L "$FINAL_WORKSPACE" ]] && [[ ! -d "$FINAL_WORKSPACE" ]]; then
-        log_error "Workspace does not exist at expected location: $FINAL_WORKSPACE"
-        log_error "This violates the pods-release contract - workspace MUST exist on success"
+        log::error "TARGET" "Workspace does not exist at expected location: $FINAL_WORKSPACE"
+        log::error "TARGET" "This violates the pods-release contract - workspace MUST exist on success"
         print_summary "pods-release" "FAILED"
         exit 1
     fi
@@ -979,32 +1030,32 @@ switch_pods_release() {
         local SYMLINK_TARGET
         SYMLINK_TARGET="$(readlink "$FINAL_WORKSPACE" 2>/dev/null || echo "")"
         if [[ -z "$SYMLINK_TARGET" ]] || [[ ! -d "$ROOT_DIR/$SYMLINK_TARGET" ]]; then
-            log_error "Workspace symlink is broken: $FINAL_WORKSPACE → $SYMLINK_TARGET"
-            log_error "Target does not exist or is not accessible"
+            log::error "TARGET" "Workspace symlink is broken: $FINAL_WORKSPACE → $SYMLINK_TARGET"
+            log::error "TARGET" "Target does not exist or is not accessible"
             print_summary "pods-release" "FAILED"
             exit 1
         fi
     fi
     
-    log_success "Workspace verified: $FINAL_WORKSPACE exists and is valid"
+    log::success "TARGET" "Workspace verified: $FINAL_WORKSPACE exists and is valid"
     
     # Step 11: Git cleanliness check
     log_section "Git Status Check"
-    verify_git_cleanliness || log_warn "Git status not fully clean"
+    verify_git_cleanliness || log::warn "TARGET" "Git status not fully clean"
     
     # Step 12: Open Xcode
     log_section "Opening Xcode"
     if [[ -L "$ROOT_DIR/msp-ios-sdk.xcworkspace" ]] || [[ -d "$ROOT_DIR/msp-ios-sdk.xcworkspace" ]]; then
         open "$ROOT_DIR/msp-ios-sdk.xcworkspace"
-        log_success "Opened workspace"
+        log::success "TARGET" "Opened workspace"
     fi
     
     print_summary "pods-release" "SUCCESS"
     
     log_section "Next Steps"
-    log_info "1. Build MSPDemoApp target in Xcode"
-    log_info "2. Verify XCFrameworks link correctly"
-    log_info "3. Run integration tests before release"
+    log::info "TARGET" "1. Build MSPDemoApp target in Xcode"
+    log::info "TARGET" "2. Verify XCFrameworks link correctly"
+    log::info "TARGET" "3. Run integration tests before release"
 }
 
 # ============================================================================
@@ -1013,67 +1064,67 @@ switch_pods_release() {
 
 switch_spm_release() {
     log_title "Switching to SPM-RELEASE Mode"
-    log_info "Mode: Swift Package Manager with binary XCFrameworks"
-    log_info ""
+    log::info "TARGET" "Mode: Swift Package Manager with binary XCFrameworks"
+    log::info "TARGET" ""
     
     check_npm_install
     
     # Step 1: Validate XCFrameworks exist
     log_section "XCFramework Validation"
     if ! validate_xcframeworks_for_release; then
-        log_error "Cannot switch to spm-release without XCFrameworks"
-        log_info "Build XCFrameworks first: ./Scripts/xcframeworks/build-core.sh"
+        log::error "TARGET" "Cannot switch to spm-release without XCFrameworks"
+        log::info "TARGET" "Build XCFrameworks first: ./Scripts/xcframeworks/build-core.sh"
         exit 1
     fi
     
     # Step 2: Clean CocoaPods artifacts
     log_section "Environment Cleanup"
-    log_step "Cleaning CocoaPods artifacts"
+    log::step "TARGET" "Cleaning CocoaPods artifacts"
     
     # Remove workspace first
     if [[ -d "$PODS_WORKSPACE" ]]; then
         safe_remove_workspace "$PODS_WORKSPACE"
-        log_success "Workspace removed"
+        log::success "TARGET" "Workspace removed"
     fi
     
     # Remove Pods directory
     if [[ -d "$PODS_DIR" ]]; then
         if safe_remove_directory "$PODS_DIR" "Pods"; then
-            log_success "Pods/ removed"
+            log::success "TARGET" "Pods/ removed"
         else
-            log_error "Failed to remove Pods/"
+            log::error "TARGET" "Failed to remove Pods/"
             exit 1
         fi
     fi
     
     # Step 3: Clean SPM caches
-    log_step "Cleaning SPM caches"
+    log::step "TARGET" "Cleaning SPM caches"
     if "$SWITCH_TARGET_SCRIPT_DIR/target-switching/cleanup_spm.sh" --force 2>/dev/null; then
-        log_success "SPM cleanup completed"
+        log::success "TARGET" "SPM cleanup completed"
     else
-        log_warn "SPM cleanup had warnings (continuing)"
+        log::warn "TARGET" "SPM cleanup had warnings (continuing)"
     fi
     
     # Step 4: Generate Package.swift from template
     log_section "Package.swift Generation"
-    log_step "Generating Package.swift from template"
+    log::step "TARGET" "Generating Package.swift from template"
     if ! ensure_package_swift_enabled "spm-release"; then
-        log_error "Failed to generate Package.swift"
+        log::error "TARGET" "Failed to generate Package.swift"
         exit 1
     fi
     
     # Step 5: Generate project.yml from templates
     log_section "YAML Generation"
-    log_step "Generating project.yml from templates"
+    log::step "TARGET" "Generating project.yml from templates"
     if [[ -x "$SWITCH_TARGET_SCRIPT_DIR/target-switching/generate_project_templates.sh" ]]; then
         "$SWITCH_TARGET_SCRIPT_DIR/target-switching/generate_project_templates.sh"
     fi
     
-    log_step "Generating workspace/project YAML"
+    log::step "TARGET" "Generating workspace/project YAML"
     if "$SWITCH_TARGET_SCRIPT_DIR/target-switching/generate_workspace.sh" spm-release; then
-        log_success "YAML generated"
+        log::success "TARGET" "YAML generated"
     else
-        log_error "YAML generation failed"
+        log::error "TARGET" "YAML generation failed"
         exit 1
     fi
     
@@ -1091,20 +1142,20 @@ switch_spm_release() {
     
     # Step 9: Validate XCFrameworks in Package.swift paths
     log_section "Package.swift Validation"
-    log_step "Verifying XCFramework paths in Package.swift"
+    log::step "TARGET" "Verifying XCFramework paths in Package.swift"
     
     local missing_refs=0
     for xcf in "MSPSharedLibraries" "MSPiOSCore" "MSPCore" "NovaCore" "MSPOMSDK"; do
         if ! grep -q "\"${xcf}\"" "$PACKAGE_SWIFT" 2>/dev/null; then
-            log_warn "Package.swift missing reference to: $xcf"
+            log::warn "TARGET" "Package.swift missing reference to: $xcf"
             ((missing_refs++)) || true
         fi
     done
     
     if [[ $missing_refs -eq 0 ]]; then
-        log_success "All XCFramework references found in Package.swift"
+        log::success "TARGET" "All XCFramework references found in Package.swift"
     else
-        log_warn "$missing_refs module(s) not referenced in Package.swift"
+        log::warn "TARGET" "$missing_refs module(s) not referenced in Package.swift"
     fi
     
     # Step 10: Validate final state
@@ -1116,7 +1167,7 @@ switch_spm_release() {
     
     # Step 11: Git cleanliness check
     log_section "Git Status Check"
-    verify_git_cleanliness || log_warn "Git status not fully clean"
+    verify_git_cleanliness || log::warn "TARGET" "Git status not fully clean"
     
     # Step 12: Open Xcode project
     # Note: SPM mode uses the .xcodeproj directly with Package.swift dependencies
@@ -1124,15 +1175,15 @@ switch_spm_release() {
     local PROJECT_DIR="$(dirname "$PROJECT_SPEC")"
     if [[ -d "$PROJECT_DIR/MSPDemoApp.xcodeproj" ]]; then
         open "$PROJECT_DIR/MSPDemoApp.xcodeproj"
-        log_success "Opened SPM project"
+        log::success "TARGET" "Opened SPM project"
     fi
     
     print_summary "spm-release" "SUCCESS"
     
     log_section "Next Steps"
-    log_info "1. Wait for Xcode to resolve packages"
-    log_info "2. Build MSPDemoApp-SPM target"
-    log_info "3. Verify all XCFrameworks link correctly"
+    log::info "TARGET" "1. Wait for Xcode to resolve packages"
+    log::info "TARGET" "2. Build MSPDemoApp-SPM target"
+    log::info "TARGET" "3. Verify all XCFrameworks link correctly"
 }
 
 # ============================================================================
@@ -1140,16 +1191,16 @@ switch_spm_release() {
 # ============================================================================
 
 switch_legacy_pods() {
-    log_warn "Deprecated: 'pods' mode is now 'pods-dev'"
-    log_info "Redirecting to pods-dev mode..."
-    log_info ""
+    log::warn "TARGET" "Deprecated: 'pods' mode is now 'pods-dev'"
+    log::info "TARGET" "Redirecting to pods-dev mode..."
+    log::info "TARGET" ""
     switch_pods_dev
 }
 
 switch_legacy_spm() {
-    log_warn "Deprecated: 'spm' mode is now 'spm-release'"
-    log_info "Redirecting to spm-release mode..."
-    log_info ""
+    log::warn "TARGET" "Deprecated: 'spm' mode is now 'spm-release'"
+    log::info "TARGET" "Redirecting to spm-release mode..."
+    log::info "TARGET" ""
     switch_spm_release
 }
 
@@ -1186,8 +1237,8 @@ case "$MODE" in
         exit 0
         ;;
     *)
-        log_error "Unknown mode: $MODE"
-        log_info ""
+        log::error "TARGET" "Unknown mode: $MODE"
+        log::info "TARGET" ""
         print_usage
         exit 1
         ;;

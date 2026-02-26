@@ -103,7 +103,7 @@ git push origin <version>
 
 **Cause:** Publishing pods out of dependency order
 
-**Fix:** Verify modules are listed in correct order in release.yaml.template. Dependencies must be published before dependents.
+**Fix:** Verify modules are listed in correct order in Scripts/config/release.yaml. Dependencies must be published before dependents.
 
 ## SPM Failures
 

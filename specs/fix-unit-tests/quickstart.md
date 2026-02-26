@@ -10,7 +10,7 @@
 
 ## Steps
 1. Regenerate the workspace via the standard target-switching script.
-2. Run the unit test suite using the AllTests scheme.
+2. Run the unit test suite using the MSPTests scheme.
 3. Build the demo app target using the default build action.
 4. Run the round-trip validation script before commit.
 

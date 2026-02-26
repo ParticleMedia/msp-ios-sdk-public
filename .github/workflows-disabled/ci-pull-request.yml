@@ -104,6 +104,18 @@ jobs:
       - name: Shell Script Syntax Check
         run: bash Scripts/ci/validate-shell-syntax.sh Scripts
 
+      - name: Bash Unit Tests
+        run: |
+          echo "Running bash unit tests..."
+          bash Scripts/tests/unit/run_all.sh
+          echo "✅ Bash unit tests passed"
+
+      - name: Bash Integration Tests
+        run: |
+          echo "Running bash integration tests (release state)..."
+          bash Scripts/tests/release_state/run_all.sh
+          echo "✅ Bash integration tests passed"
+
       - name: Validate Test Cases
         run: |
           echo "Validating test case definitions..."
@@ -1116,7 +1128,7 @@ jobs:
 
       - name: Run Unit Tests
         run: |
-          bash Scripts/tests/run-unit-tests.sh AllTests 'platform=iOS Simulator,name=iPhone 16,OS=18.5'
+          bash Scripts/tests/run-unit-tests.sh MSPTests 'platform=iOS Simulator,name=iPhone 16,OS=18.5'
 
       - name: Generate Coverage Report
         if: always()

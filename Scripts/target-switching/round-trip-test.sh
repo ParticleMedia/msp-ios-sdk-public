@@ -30,26 +30,47 @@ msp_enforce_main_repo_or_exit
 #   1 - Round-trip test failed
 # ============================================================================
 
-set -eo pipefail
+set -euo pipefail
 
-# Source common functions
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT_DIR="$(cd "$SCRIPT_DIR/../.." && pwd)"
 
 # shellcheck source=Scripts/target-switching/common.sh
 source "$SCRIPT_DIR/common.sh"
 
+# R042c: Source config loader extension for test settings
+if [[ -f "$ROOT_DIR/Scripts/lib/config_loader_ext.sh" ]]; then
+    # shellcheck source=Scripts/lib/config_loader_ext.sh
+    source "$ROOT_DIR/Scripts/lib/config_loader_ext.sh" 2>/dev/null || true
+    load_test_config 2>/dev/null || true
+fi
+# Default integration test destination from config or fallback
+# Note: OS version must match available simulators (check with `xcrun simctl list`)
+TEST_DESTINATION="${TEST_INTEGRATION_TEST_DESTINATION:-platform=iOS Simulator,name=iPhone 15,OS=18.5}"
+
 ensure_repo_root
 
 # ============================================================================
-# Colors
+# Colors (sourced from common.sh via colors.sh, fallback just in case)
 # ============================================================================
-RED='\033[0;31m'
-GREEN='\033[0;32m'
-YELLOW='\033[1;33m'
-BLUE='\033[0;34m'
-BOLD='\033[1m'
-NC='\033[0m'
+: "${RED:='\033[0;31m'}"
+: "${GREEN:='\033[0;32m'}"
+: "${YELLOW:='\033[1;33m'}"
+: "${BLUE:='\033[0;34m'}"
+: "${BOLD:='\033[1m'}"
+: "${NC:='\033[0m'}"
+
+# Source unified logging system if available (for log::* API)
+# Note: Unset guard first to ensure functions are available in subprocess
+if [[ -f "$ROOT_DIR/Scripts/release/utils/logger.sh" ]]; then
+    unset MSP_LOGGER_LOADED
+    # shellcheck source=Scripts/release/utils/logger.sh
+    source "$ROOT_DIR/Scripts/release/utils/logger.sh" 2>/dev/null || true
+fi
+if [[ -f "$ROOT_DIR/Scripts/lib/common.sh" ]]; then
+    # shellcheck source=Scripts/lib/common.sh
+    source "$ROOT_DIR/Scripts/lib/common.sh" 2>/dev/null || true
+fi
 
 # ============================================================================
 # Parse Arguments
@@ -94,8 +115,23 @@ mkdir -p "$BUILD_LOG_DIR"
 TIMESTAMP=$(date +%Y%m%d_%H%M%S)
 
 # ============================================================================
-# Structured Logging Functions (RTT-specific, non-conflicting with release system)
+# Structured Logging Functions (RTT-specific namespace)
 # ============================================================================
+# Use log::* API if available, otherwise use local formatting
+
+if command -v log::step &>/dev/null; then
+    # Use unified logging API
+    rtt_log::step()    { log::step "$1" "$2"; }
+    rtt_log::success() { log::success "$1" "$2"; }
+    rtt_log::warn()    { log::warn "$1" "$2"; }
+    rtt_log::error()   { log::error "$1" "$2"; }
+else
+    # Fallback to local formatting
+    rtt_log::step()    { echo "  $2"; }
+    rtt_log::success() { echo -e "  ${GREEN}✓${NC} $2"; }
+    rtt_log::warn()    { echo -e "  ${YELLOW}⚠${NC} $2"; }
+    rtt_log::error()   { echo -e "  ${RED}✗${NC} $2"; }
+fi
 
 rtt_log_step() {
     echo "  $1"
@@ -122,11 +158,11 @@ log_header() {
 }
 
 log_step() {
-    rtt_log_step "$1"
+    rtt_log::step "TARGET" "$1"
 }
 
 log_ok() {
-    rtt_log_success "$1"
+    rtt_log::success "TARGET" "$1"
 }
 
 log_fail() {
@@ -134,7 +170,7 @@ log_fail() {
 }
 
 log_warn() {
-    rtt_log_warning "$1"
+    rtt_log::warn "TARGET" "$1"
 }
 
 log_info() {
@@ -359,11 +395,11 @@ verify_mode_signature() {
 auto_repair_mode() {
     local mode="$1"
     
-    rtt_log_warning "Auto-repair: Retrying switch to $mode"
+    rtt_log::warn "TARGET" "Auto-repair: Retrying switch to $mode"
     
     # Retry switch
     if "$ROOT_DIR/Scripts/switch-target.sh" "$mode" >/dev/null 2>&1; then
-        rtt_log_success "Auto-repair: Switch retry succeeded"
+        rtt_log::success "TARGET" "Auto-repair: Switch retry succeeded"
         return 0
     else
         rtt_log_fail "Auto-repair: Switch retry failed"
@@ -385,16 +421,16 @@ test_pods_dev() {
     log_header "PODS-DEV${is_final:+ (return)}"
     
     # [X.0] Pre-flight check: Podfile existence (STEP A)
-    rtt_log_step "[${phase_num}.0] Pre-flight: Podfile existence check"
+    rtt_log::step "TARGET" "[${phase_num}.0] Pre-flight: Podfile existence check"
     if [[ ! -f "$ROOT_DIR/Podfile" ]]; then
         rtt_log_fail "Podfile not found at $ROOT_DIR/Podfile — this indicates an environment problem (CocoaPods will not work)."
         phase_result="FAIL"
         return 1
     fi
-    rtt_log_success "Podfile exists"
+    rtt_log::success "TARGET" "Podfile exists"
     
     # [X.1] Switch mode (with enhanced logging - STEP B)
-    rtt_log_step "[${phase_num}.1] Switch mode"
+    rtt_log::step "TARGET" "[${phase_num}.1] Switch mode"
     local pods_dev_log
     pods_dev_log="$(mktemp)"
     local switch_output
@@ -403,7 +439,7 @@ test_pods_dev() {
         if [[ "$AUTO_FIX" == "true" ]] && [[ $switch_retries -eq 0 ]]; then
             ((switch_retries++)) || true
             if auto_repair_mode "pods-dev"; then
-                rtt_log_success "Switch → OK (after auto-repair)"
+                rtt_log::success "TARGET" "Switch → OK (after auto-repair)"
             else
                 rtt_log_fail "Switch failed (auto-repair also failed)"
                 echo "---------- POD INSTALL OUTPUT ----------"
@@ -425,32 +461,32 @@ test_pods_dev() {
             return 1
         fi
     }
-    rtt_log_success "Switch → OK"
+    rtt_log::success "TARGET" "Switch → OK"
     # Clean up log file on success (STEP D)
     rm -f "$pods_dev_log" 2>/dev/null || true
     
     # [X.2] Git Clean Gate (immediately after switch)
-    rtt_log_step "[${phase_num}.2] Git Clean Gate"
+    rtt_log::step "TARGET" "[${phase_num}.2] Git Clean Gate"
     if ! check_git_clean; then
         rtt_log_fail "Git → DIRTY (RTT FAILURE)"
         get_git_status | sed 's/^/    /'
         phase_result="FAIL"
         return 1
     fi
-    rtt_log_success "Git → CLEAN"
+    rtt_log::success "TARGET" "Git → CLEAN"
     
     # [X.3] Mode Verification
-    rtt_log_step "[${phase_num}.3] Mode Verification"
+    rtt_log::step "TARGET" "[${phase_num}.3] Mode Verification"
     if ! verify_mode_signature "pods-dev"; then
         rtt_log_fail "Mode signature verification failed"
         ((errors++)) || true
         phase_result="FAIL"
     else
-        rtt_log_success "Mode signature → OK"
+        rtt_log::success "TARGET" "Mode signature → OK"
     fi
     
     # [X.4] Validate workspace/YAML
-    rtt_log_step "[${phase_num}.4] Workspace/YAML validation"
+    rtt_log::step "TARGET" "[${phase_num}.4] Workspace/YAML validation"
     if ! validate_workspace_symlink; then
         rtt_log_fail "Workspace symlink missing"
         ((errors++)) || true
@@ -464,16 +500,16 @@ test_pods_dev() {
     fi
     
     if [[ $errors -eq 0 ]]; then
-        rtt_log_success "Workspace/YAML → OK"
+        rtt_log::success "TARGET" "Workspace/YAML → OK"
     else
         phase_result="FAIL"
         return 1
     fi
     
     # [X.5] Build DemoApp (only for pods-dev)
-    rtt_log_step "[${phase_num}.5] Build DemoApp"
+    rtt_log::step "TARGET" "[${phase_num}.5] Build DemoApp"
     if build_demoapp "pods-dev"; then
-        rtt_log_success "Build DemoApp → OK"
+        rtt_log::success "TARGET" "Build DemoApp → OK"
     else
         rtt_log_fail "Build DemoApp → FAILED"
         phase_result="FAIL"
@@ -481,14 +517,14 @@ test_pods_dev() {
     fi
     
     # [X.6] Final Git Clean Gate
-    rtt_log_step "[${phase_num}.6] Final Git Clean Gate"
+    rtt_log::step "TARGET" "[${phase_num}.6] Final Git Clean Gate"
     if ! check_git_clean; then
         rtt_log_fail "Git → DIRTY (RTT FAILURE)"
         get_git_status | sed 's/^/    /'
         phase_result="FAIL"
         return 1
     fi
-    rtt_log_success "Git → CLEAN"
+    rtt_log::success "TARGET" "Git → CLEAN"
     
     # Store result for summary
     if [[ "$is_final" == "final" ]]; then
@@ -510,22 +546,22 @@ test_pods_release() {
     log_header "PODS-RELEASE"
     
     # [X.1] Switch mode
-    rtt_log_step "[${phase_num}.1] Switch mode"
+    rtt_log::step "TARGET" "[${phase_num}.1] Switch mode"
     local switch_output
     local switch_exit_code=0
     switch_output=$("$ROOT_DIR/Scripts/switch-target.sh" pods-release 2>&1) || switch_exit_code=$?
     
     if [[ $switch_exit_code -eq 0 ]]; then
-        rtt_log_success "Switch → OK"
+        rtt_log::success "TARGET" "Switch → OK"
         switch_succeeded=true
     elif is_xcframework_missing_error "$switch_output"; then
-        rtt_log_warning "Switch → WARN: core XCFrameworks missing (ignored for RTT)"
+        rtt_log::warn "TARGET" "Switch → WARN: core XCFrameworks missing (ignored for RTT)"
         # Continue RTT - this is expected
     elif is_hard_error "$switch_output"; then
         if [[ "$AUTO_FIX" == "true" ]]; then
             if auto_repair_mode "pods-release"; then
                 switch_succeeded=true
-                rtt_log_success "Switch → OK (after auto-repair)"
+                rtt_log::success "TARGET" "Switch → OK (after auto-repair)"
             else
                 rtt_log_fail "Switch → FAILED (hard error, auto-repair failed)"
                 echo "$switch_output" | tail -10 | sed 's/^/    /'
@@ -546,51 +582,51 @@ test_pods_release() {
     fi
     
     # [X.2] Git Clean Gate (immediately after switch)
-    rtt_log_step "[${phase_num}.2] Git Clean Gate"
+    rtt_log::step "TARGET" "[${phase_num}.2] Git Clean Gate"
     if ! check_git_clean; then
         rtt_log_fail "Git → DIRTY (RTT FAILURE)"
         get_git_status | sed 's/^/    /'
         phase_result="FAIL"
         return 1
     fi
-    rtt_log_success "Git → CLEAN"
+    rtt_log::success "TARGET" "Git → CLEAN"
     
     # [X.3] Mode Verification (only if switch succeeded)
     if [[ "$switch_succeeded" == "true" ]]; then
-        rtt_log_step "[${phase_num}.3] Mode Verification"
+        rtt_log::step "TARGET" "[${phase_num}.3] Mode Verification"
         if ! verify_mode_signature "pods-release"; then
             rtt_log_fail "Mode signature verification failed"
             ((errors++)) || true
             phase_result="FAIL"
         else
-            rtt_log_success "Mode signature → OK"
+            rtt_log::success "TARGET" "Mode signature → OK"
         fi
         
         # [X.4] YAML/workspace validation
-        rtt_log_step "[${phase_num}.4] Workspace/YAML validation"
+        rtt_log::step "TARGET" "[${phase_num}.4] Workspace/YAML validation"
         if validate_workspace_symlink && validate_yaml_files; then
-            rtt_log_success "Workspace/YAML → OK"
+            rtt_log::success "TARGET" "Workspace/YAML → OK"
         else
             rtt_log_fail "Workspace/YAML → FAILED"
             ((errors++)) || true
             phase_result="FAIL"
         fi
     else
-        rtt_log_step "[${phase_num}.3] Mode Verification"
-        log_info "Skipped (switch failed due to missing XCFrameworks)"
-        rtt_log_step "[${phase_num}.4] Workspace/YAML validation"
-        log_info "Skipped (switch failed due to missing XCFrameworks)"
+        rtt_log::step "TARGET" "[${phase_num}.3] Mode Verification"
+        log::info "TARGET" "Skipped (switch failed due to missing XCFrameworks)"
+        rtt_log::step "TARGET" "[${phase_num}.4] Workspace/YAML validation"
+        log::info "TARGET" "Skipped (switch failed due to missing XCFrameworks)"
     fi
     
     # [X.5] Final Git Clean Gate
-    rtt_log_step "[${phase_num}.5] Final Git Clean Gate"
+    rtt_log::step "TARGET" "[${phase_num}.5] Final Git Clean Gate"
     if ! check_git_clean; then
         rtt_log_fail "Git → DIRTY (RTT FAILURE)"
         get_git_status | sed 's/^/    /'
         phase_result="FAIL"
         return 1
     fi
-    rtt_log_success "Git → CLEAN"
+    rtt_log::success "TARGET" "Git → CLEAN"
     
     # Store result for summary
     RTT_PODS_RELEASE="$phase_result"
@@ -612,22 +648,22 @@ test_spm_release() {
     log_header "SPM-RELEASE"
     
     # [X.1] Switch mode
-    rtt_log_step "[${phase_num}.1] Switch mode"
+    rtt_log::step "TARGET" "[${phase_num}.1] Switch mode"
     local switch_output
     local switch_exit_code=0
     switch_output=$("$ROOT_DIR/Scripts/switch-target.sh" spm-release 2>&1) || switch_exit_code=$?
     
     if [[ $switch_exit_code -eq 0 ]]; then
-        rtt_log_success "Switch → OK"
+        rtt_log::success "TARGET" "Switch → OK"
         switch_succeeded=true
     elif is_xcframework_missing_error "$switch_output"; then
-        rtt_log_warning "Switch → WARN: core XCFrameworks missing (ignored for RTT)"
+        rtt_log::warn "TARGET" "Switch → WARN: core XCFrameworks missing (ignored for RTT)"
         # Continue RTT - this is expected
     elif is_hard_error "$switch_output"; then
         if [[ "$AUTO_FIX" == "true" ]]; then
             if auto_repair_mode "spm-release"; then
                 switch_succeeded=true
-                rtt_log_success "Switch → OK (after auto-repair)"
+                rtt_log::success "TARGET" "Switch → OK (after auto-repair)"
             else
                 rtt_log_fail "Switch → FAILED (hard error, auto-repair failed)"
                 echo "$switch_output" | tail -10 | sed 's/^/    /'
@@ -648,51 +684,51 @@ test_spm_release() {
     fi
     
     # [X.2] Git Clean Gate (immediately after switch)
-    rtt_log_step "[${phase_num}.2] Git Clean Gate"
+    rtt_log::step "TARGET" "[${phase_num}.2] Git Clean Gate"
     if ! check_git_clean; then
         rtt_log_fail "Git → DIRTY (RTT FAILURE)"
         get_git_status | sed 's/^/    /'
         phase_result="FAIL"
         return 1
     fi
-    rtt_log_success "Git → CLEAN"
+    rtt_log::success "TARGET" "Git → CLEAN"
     
     # [X.3] Mode Verification (only if switch succeeded)
     if [[ "$switch_succeeded" == "true" ]]; then
-        rtt_log_step "[${phase_num}.3] Mode Verification"
+        rtt_log::step "TARGET" "[${phase_num}.3] Mode Verification"
         if ! verify_mode_signature "spm-release"; then
             rtt_log_fail "Mode signature verification failed"
             ((errors++)) || true
             phase_result="FAIL"
         else
-            rtt_log_success "Mode signature → OK"
+            rtt_log::success "TARGET" "Mode signature → OK"
         fi
         
         # [X.4] Package.swift validation
-        rtt_log_step "[${phase_num}.4] Package.swift validation"
+        rtt_log::step "TARGET" "[${phase_num}.4] Package.swift validation"
         if validate_package_swift; then
-            rtt_log_success "Package.swift → OK"
+            rtt_log::success "TARGET" "Package.swift → OK"
         else
             rtt_log_fail "Package.swift → FAILED (missing or invalid)"
             ((errors++)) || true
             phase_result="FAIL"
         fi
     else
-        rtt_log_step "[${phase_num}.3] Mode Verification"
-        log_info "Skipped (switch failed due to missing XCFrameworks)"
-        rtt_log_step "[${phase_num}.4] Package.swift validation"
-        log_info "Skipped (switch failed due to missing XCFrameworks)"
+        rtt_log::step "TARGET" "[${phase_num}.3] Mode Verification"
+        log::info "TARGET" "Skipped (switch failed due to missing XCFrameworks)"
+        rtt_log::step "TARGET" "[${phase_num}.4] Package.swift validation"
+        log::info "TARGET" "Skipped (switch failed due to missing XCFrameworks)"
     fi
     
     # [X.5] Final Git Clean Gate
-    rtt_log_step "[${phase_num}.5] Final Git Clean Gate"
+    rtt_log::step "TARGET" "[${phase_num}.5] Final Git Clean Gate"
     if ! check_git_clean; then
         rtt_log_fail "Git → DIRTY (RTT FAILURE)"
         get_git_status | sed 's/^/    /'
         phase_result="FAIL"
         return 1
     fi
-    rtt_log_success "Git → CLEAN"
+    rtt_log::success "TARGET" "Git → CLEAN"
     
     # Store result for summary
     RTT_SPM_RELEASE="$phase_result"
@@ -755,7 +791,7 @@ run_single_loop() {
     
     # Verify final state: RTT fully reversible
     if check_git_clean; then
-        rtt_log_success "RTT fully reversible (git clean)"
+        rtt_log::success "TARGET" "RTT fully reversible (git clean)"
     else
         rtt_log_fail "RTT not fully reversible (git dirty)"
         return 1

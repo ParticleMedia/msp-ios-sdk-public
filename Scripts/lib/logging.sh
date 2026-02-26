@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # --- MSP Worktree Safety Guard (Patch K, shared) ---
 # shellcheck source=/dev/null
 if command -v git >/dev/null 2>&1; then
@@ -14,7 +14,6 @@ fi
 # Logging and output functions for MSP iOS SDK build system
 # This module provides comprehensive logging with environment-aware formatting
 
-# Source common utilities
 source "$(dirname "${BASH_SOURCE[0]}")/common.sh"
 
 # Color definitions (conditional to avoid readonly conflicts)
@@ -39,7 +38,6 @@ source "$(dirname "${BASH_SOURCE[0]}")/common.sh"
 # Current log level (can be overridden by environment variable)
 LOG_LEVEL=${LOG_LEVEL:-$LOG_LEVEL_INFO}
 
-# Output format detection
 should_use_colors() {
     case "$BUILD_ENVIRONMENT" in
         "local")
@@ -66,7 +64,6 @@ should_use_structured_output() {
     esac
 }
 
-# Color utility functions
 colorize() {
     local color="$1"
     local text="$2"
@@ -78,7 +75,6 @@ colorize() {
     fi
 }
 
-# Emoji support
 get_emoji() {
     local type="$1"
     
@@ -155,31 +151,37 @@ EOF
 }
 
 # Specific log level functions
-log_trace() {
-    log_with_level $LOG_LEVEL_TRACE "TRACE" "$COLOR_GRAY" "debug" "$1"
-}
+# Note: If logger.sh is already loaded (MSP_LOGGER_LOADED=1), it provides these
+# functions via backward compat wrappers. We only define them here as fallback.
 
-log_debug() {
-    log_with_level $LOG_LEVEL_DEBUG "DEBUG" "$COLOR_BLUE" "debug" "$1"
-}
+if [[ -z "${MSP_LOGGER_LOADED:-}" ]]; then
+    # logger.sh not loaded - define original logging functions
+    log_trace() {
+        log_with_level $LOG_LEVEL_TRACE "TRACE" "$COLOR_GRAY" "debug" "$1"
+    }
 
-log_info() {
-    log_with_level $LOG_LEVEL_INFO "INFO" "$COLOR_WHITE" "info" "$1"
-}
+    log_debug() {
+        log_with_level $LOG_LEVEL_DEBUG "DEBUG" "$COLOR_BLUE" "debug" "$1"
+    }
 
-log_warn() {
-    log_with_level $LOG_LEVEL_WARN "WARN" "$COLOR_YELLOW" "warning" "$1"
-}
+    log_info() {
+        log_with_level $LOG_LEVEL_INFO "INFO" "$COLOR_WHITE" "info" "$1"
+    }
 
-log_error() {
-    log_with_level $LOG_LEVEL_ERROR "ERROR" "$COLOR_RED" "error" "$1" >&2
-}
+    log_warn() {
+        log_with_level $LOG_LEVEL_WARN "WARN" "$COLOR_YELLOW" "warning" "$1"
+    }
 
-log_fatal() {
-    log_with_level $LOG_LEVEL_FATAL "FATAL" "$COLOR_RED" "error" "$1" >&2
-}
+    log_error() {
+        log_with_level $LOG_LEVEL_ERROR "ERROR" "$COLOR_RED" "error" "$1" >&2
+    }
 
-# Success and status functions
+    log_fatal() {
+        log_with_level $LOG_LEVEL_FATAL "FATAL" "$COLOR_RED" "error" "$1" >&2
+    }
+fi
+
+# Success and status functions (always define - not in logger.sh compat layer)
 log_success() {
     log_with_level $LOG_LEVEL_INFO "SUCCESS" "$COLOR_GREEN" "success" "$1"
 }
@@ -422,7 +424,6 @@ dump_environment() {
     fi
 }
 
-# Set log level from environment
 set_log_level_from_env() {
     local level_str="${LOG_LEVEL_STR:-${DEBUG_LEVEL:-}}"
     
@@ -435,26 +436,22 @@ set_log_level_from_env() {
         "fatal") LOG_LEVEL=$LOG_LEVEL_FATAL ;;
     esac
     
-    # Enable debug logging if DEBUG=1
     if [[ "$(get_env_bool DEBUG false)" == "true" ]]; then
         LOG_LEVEL=$LOG_LEVEL_DEBUG
     fi
 }
 
-# Initialize logging
 init_logging() {
     set_log_level_from_env
-    
+
     # Ensure NO_ANSI overrides all colored output
     if [[ "${NO_ANSI:-}" == "1" ]]; then
         export NO_COLOR=1
     fi
-    
-    # Dump environment in debug mode
+
     dump_environment
 }
 
-# Export logging functions
 export -f should_use_colors should_use_structured_output
 export -f colorize get_emoji
 export -f log_with_level log_trace log_debug log_info log_warn log_error log_fatal

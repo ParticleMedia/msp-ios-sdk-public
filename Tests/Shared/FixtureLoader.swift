@@ -6,7 +6,6 @@ enum FixtureLoader {
     /// - Parameter filename: Name of the fixture file (e.g., "bid_response_success.json")
     /// - Returns: Full path to the fixture file, or nil if not found
     static func path(for filename: String) -> String? {
-        // Try to find the fixture in the test bundle
         for bundle in Bundle.allBundles {
             if let path = bundle.path(
                 forResource: filename.replacingOccurrences(of: ".json", with: ""),
@@ -16,11 +15,14 @@ enum FixtureLoader {
             }
         }
 
-        // Fallback: Check the Fixtures directory relative to the source root
+        // Fallback: Check packages/mock-data/ relative to the project root
         let fixturesPath = URL(fileURLWithPath: #file)
             .deletingLastPathComponent()
             .deletingLastPathComponent()
-            .appendingPathComponent("Fixtures")
+            .deletingLastPathComponent()
+            .appendingPathComponent("packages")
+            .appendingPathComponent("mock-data")
+            .appendingPathComponent("debug")
             .appendingPathComponent(filename)
 
         if FileManager.default.fileExists(atPath: fixturesPath.path) {

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # --- MSP Worktree Safety Guard (Patch K, shared) ---
 # shellcheck source=/dev/null
 if command -v git >/dev/null 2>&1; then
@@ -14,11 +14,14 @@ fi
 # CI/CD specific functions for MSP iOS SDK build system
 # This module provides CI environment detection, optimization, and integration features
 
-# Source dependencies
 source "$(dirname "${BASH_SOURCE[0]}")/common.sh"
-source "$(dirname "${BASH_SOURCE[0]}")/logging.sh"
 
-# CI Environment detection
+# R031f: Source checksum module for unified checksum computation
+if [[ -f "$(dirname "${BASH_SOURCE[0]}")/checksum.sh" ]]; then
+    # shellcheck source=Scripts/lib/checksum.sh
+    source "$(dirname "${BASH_SOURCE[0]}")/checksum.sh" 2>/dev/null || true
+fi
+
 detect_ci_provider() {
     if [[ -n "${GITHUB_ACTIONS}" ]]; then
         echo "github-actions"
@@ -132,26 +135,23 @@ get_build_number() {
     esac
 }
 
-# CI-specific optimizations
 configure_ci_environment() {
     local ci_provider
     ci_provider=$(detect_ci_provider)
-    
+
     if [[ "$ci_provider" == "none" ]]; then
-        log_debug "Not in CI environment, skipping CI configuration"
+        log::debug "CI" "Not in CI environment, skipping CI configuration"
         return $EXIT_SUCCESS
     fi
-    
-    log_step "Configuring environment for $ci_provider..."
-    
-    # Common CI optimizations
+
+    log::step "CI" "Configuring environment for $ci_provider..."
+
     export CI_MODE=true
     export FASTLANE_DISABLE_COLORS=true
     export FASTLANE_SKIP_UPDATE_CHECK=true
     export COCOAPODS_DISABLE_STATS=true
     export HOMEBREW_NO_AUTO_UPDATE=1
-    
-    # Provider-specific optimizations
+
     case "$ci_provider" in
         "github-actions")
             configure_github_actions
@@ -166,30 +166,25 @@ configure_ci_environment() {
             configure_generic_ci
             ;;
     esac
-    
-    log_success "CI environment configured for $ci_provider"
+
+    log::success "CI" "CI environment configured for $ci_provider"
 }
 
 configure_github_actions() {
-    log_debug "Configuring GitHub Actions specific settings..."
-    
-    # Enable problem matchers
+    log::debug "CI" "Configuring GitHub Actions specific settings..."
+
     echo "::add-matcher::.github/problem-matchers/xcodebuild.json" 2>/dev/null || true
-    
-    # Configure git for GitHub Actions
+
     if [[ -n "${GITHUB_ACTOR}" ]]; then
         git config --global user.name "${GITHUB_ACTOR}"
         git config --global user.email "${GITHUB_ACTOR}@users.noreply.github.com"
     fi
-    
-    # Set environment variables for better caching
+
     export COCOAPODS_CACHE_DIR="${HOME}/.cocoapods_cache"
     export BUNDLE_CACHE_DIR="${HOME}/.bundle_cache"
-    
-    # Optimize for GitHub Actions runners
+
     export XCODE_XCCONFIG_FILE="${RUNNER_TEMP}/ci.xcconfig"
-    
-    # Create temporary xcconfig for CI optimizations
+
     cat > "${XCODE_XCCONFIG_FILE}" << EOF
 // CI-specific build optimizations
 COMPILER_INDEX_STORE_ENABLE = NO
@@ -201,34 +196,25 @@ EOF
 }
 
 configure_gitlab_ci() {
-    log_debug "Configuring GitLab CI specific settings..."
-    
-    # GitLab CI optimizations
+    log::debug "CI" "Configuring GitLab CI specific settings..."
+
     export GITLAB_CI_MODE=true
-    
-    # Configure caching paths
     export COCOAPODS_CACHE_DIR="${CI_PROJECT_DIR}/.cocoapods_cache"
     export BUNDLE_CACHE_DIR="${CI_PROJECT_DIR}/.bundle_cache"
 }
 
 configure_circleci() {
-    log_debug "Configuring CircleCI specific settings..."
-    
-    # CircleCI optimizations
+    log::debug "CI" "Configuring CircleCI specific settings..."
+
     export CIRCLE_CI_MODE=true
-    
-    # Configure caching paths
     export COCOAPODS_CACHE_DIR="/tmp/cocoapods_cache"
     export BUNDLE_CACHE_DIR="/tmp/bundle_cache"
 }
 
 configure_generic_ci() {
-    log_debug "Configuring generic CI settings..."
-    
-    # Generic CI optimizations
+    log::debug "CI" "Configuring generic CI settings..."
+
     export GENERIC_CI_MODE=true
-    
-    # Use temporary directories for caching
     export COCOAPODS_CACHE_DIR="/tmp/cocoapods_cache"
     export BUNDLE_CACHE_DIR="/tmp/bundle_cache"
 }
@@ -236,11 +222,11 @@ configure_generic_ci() {
 # Artifact management
 create_ci_artifacts_dir() {
     local artifacts_dir="${CI_ARTIFACTS_DIR:-artifacts}"
-    
+
     ensure_directory "$artifacts_dir"
     export CI_ARTIFACTS_DIR="$artifacts_dir"
-    
-    log_debug "CI artifacts directory: $artifacts_dir"
+
+    log::debug "CI" "CI artifacts directory: $artifacts_dir"
     echo "$artifacts_dir"
 }
 
@@ -248,40 +234,40 @@ save_build_artifact() {
     local source_path="$1"
     local artifact_name="$2"
     local artifact_type="${3:-file}"
-    
+
     local artifacts_dir
     artifacts_dir=$(create_ci_artifacts_dir)
-    
+
     if [[ ! -e "$source_path" ]]; then
-        log_warn "Artifact source not found: $source_path"
+        log::warn "CI" "Artifact source not found: $source_path"
         return $EXIT_VALIDATION_ERROR
     fi
-    
+
     local destination="$artifacts_dir/$artifact_name"
-    
-    log_step "Saving $artifact_type artifact: $artifact_name..."
-    
+
+    log::step "CI" "Saving $artifact_type artifact: $artifact_name..."
+
     if [[ -d "$source_path" ]]; then
         # Directory artifact - create archive
         local archive_path="$destination.tar.gz"
         if tar -czf "$archive_path" -C "$(dirname "$source_path")" "$(basename "$source_path")"; then
             log_artifact "$artifact_type" "$artifact_name" "$archive_path" "$(get_file_size "$archive_path")"
-            log_success "Directory artifact saved: $archive_path"
+            log::success "CI" "Directory artifact saved: $archive_path"
         else
-            log_error "Failed to create directory artifact: $archive_path"
+            log::error "CI" "Failed to create directory artifact: $archive_path"
             return $EXIT_GENERAL_ERROR
         fi
     else
         # File artifact - copy directly
         if cp "$source_path" "$destination"; then
             log_artifact "$artifact_type" "$artifact_name" "$destination" "$(get_file_size "$destination")"
-            log_success "File artifact saved: $destination"
+            log::success "CI" "File artifact saved: $destination"
         else
-            log_error "Failed to copy file artifact: $destination"
+            log::error "CI" "Failed to copy file artifact: $destination"
             return $EXIT_GENERAL_ERROR
         fi
     fi
-    
+
     return $EXIT_SUCCESS
 }
 
@@ -290,17 +276,17 @@ save_framework_artifacts() {
         "MSPSharedLibraries/MSPiOSCore.xcframework:MSPiOSCore.xcframework"
         "NovaAdapter/NovaCore.xcframework:NovaCore.xcframework"
     )
-    
-    log_step "Saving framework artifacts..."
-    
+
+    log::step "CI" "Saving framework artifacts..."
+
     for framework_spec in "${frameworks[@]}"; do
         local source_path="${framework_spec%:*}"
         local artifact_name="${framework_spec#*:}"
-        
+
         if [[ -d "$source_path" ]]; then
             save_build_artifact "$source_path" "$artifact_name" "framework"
         else
-            log_debug "Framework not found, skipping: $source_path"
+            log::debug "CI" "Framework not found, skipping: $source_path"
         fi
     done
 }
@@ -311,10 +297,11 @@ save_log_artifacts() {
         "fastlane*.log"
         "pod*.log"
     )
-    
-    log_step "Saving log artifacts..."
-    
+
+    log::step "CI" "Saving log artifacts..."
+
     for log_pattern in "${log_files[@]}"; do
+        # shellcheck disable=SC2086 -- intentional glob expansion: log_pattern is a glob to match log files
         for log_file in $log_pattern; do
             if [[ -f "$log_file" ]]; then
                 save_build_artifact "$log_file" "$(basename "$log_file")" "log"
@@ -328,7 +315,7 @@ report_build_status() {
     local status="$1"
     local message="${2:-}"
     local details="${3:-}"
-    
+
     case "$(detect_ci_provider)" in
         "github-actions")
             report_github_actions_status "$status" "$message" "$details"
@@ -337,9 +324,9 @@ report_build_status() {
             report_gitlab_ci_status "$status" "$message" "$details"
             ;;
         *)
-            log_info "Build status: $status"
+            log::info "CI" "Build status: $status"
             if [[ -n "$message" ]]; then
-                log_info "Message: $message"
+                log::info "CI" "Message: $message"
             fi
             ;;
     esac
@@ -375,17 +362,17 @@ report_github_actions_status() {
 report_gitlab_ci_status() {
     local status="$1"
     local message="${2:-}"
-    
+
     # GitLab CI uses job status, so we just log appropriately
     case "$status" in
         "success")
-            log_success "$message"
+            log::success "CI" "$message"
             ;;
         "failure")
-            log_error "$message"
+            log::error "CI" "$message"
             ;;
         "warning")
-            log_warn "$message"
+            log::warn "CI" "$message"
             ;;
     esac
 }
@@ -394,35 +381,35 @@ report_gitlab_ci_status() {
 dump_ci_environment() {
     if [[ $LOG_LEVEL -le $LOG_LEVEL_DEBUG ]]; then
         print_subsection "CI Environment Information"
-        
+
         local ci_provider
         ci_provider=$(detect_ci_provider)
-        
-        log_debug "CI Provider: $ci_provider"
-        log_debug "Is CI: $(is_ci_environment && echo "true" || echo "false")"
-        log_debug "Is PR: $(is_pull_request && echo "true" || echo "false")"
-        log_debug "Branch: $(get_branch_name)"
-        log_debug "Commit: $(get_commit_sha)"
-        log_debug "Build Number: $(get_build_number)"
-        
+
+        log::debug "CI" "CI Provider: $ci_provider"
+        log::debug "CI" "Is CI: $(is_ci_environment && echo "true" || echo "false")"
+        log::debug "CI" "Is PR: $(is_pull_request && echo "true" || echo "false")"
+        log::debug "CI" "Branch: $(get_branch_name)"
+        log::debug "CI" "Commit: $(get_commit_sha)"
+        log::debug "CI" "Build Number: $(get_build_number)"
+
         # Provider-specific information
         case "$ci_provider" in
             "github-actions")
-                log_debug "GitHub Repository: ${GITHUB_REPOSITORY:-unknown}"
-                log_debug "GitHub Actor: ${GITHUB_ACTOR:-unknown}"
-                log_debug "GitHub Event: ${GITHUB_EVENT_NAME:-unknown}"
-                log_debug "GitHub Workflow: ${GITHUB_WORKFLOW:-unknown}"
-                log_debug "GitHub Job: ${GITHUB_JOB:-unknown}"
+                log::debug "CI" "GitHub Repository: ${GITHUB_REPOSITORY:-unknown}"
+                log::debug "CI" "GitHub Actor: ${GITHUB_ACTOR:-unknown}"
+                log::debug "CI" "GitHub Event: ${GITHUB_EVENT_NAME:-unknown}"
+                log::debug "CI" "GitHub Workflow: ${GITHUB_WORKFLOW:-unknown}"
+                log::debug "CI" "GitHub Job: ${GITHUB_JOB:-unknown}"
                 ;;
             "gitlab-ci")
-                log_debug "GitLab Project: ${CI_PROJECT_PATH:-unknown}"
-                log_debug "GitLab Pipeline: ${CI_PIPELINE_ID:-unknown}"
-                log_debug "GitLab Job: ${CI_JOB_NAME:-unknown}"
+                log::debug "CI" "GitLab Project: ${CI_PROJECT_PATH:-unknown}"
+                log::debug "CI" "GitLab Pipeline: ${CI_PIPELINE_ID:-unknown}"
+                log::debug "CI" "GitLab Job: ${CI_JOB_NAME:-unknown}"
                 ;;
             "circleci")
-                log_debug "Circle Project: ${CIRCLE_PROJECT_REPONAME:-unknown}"
-                log_debug "Circle Build: ${CIRCLE_BUILD_NUM:-unknown}"
-                log_debug "Circle Job: ${CIRCLE_JOB:-unknown}"
+                log::debug "CI" "Circle Project: ${CIRCLE_PROJECT_REPONAME:-unknown}"
+                log::debug "CI" "Circle Build: ${CIRCLE_BUILD_NUM:-unknown}"
+                log::debug "CI" "Circle Job: ${CIRCLE_JOB:-unknown}"
                 ;;
         esac
     fi
@@ -450,22 +437,22 @@ start_performance_monitoring() {
         } > "$monitor_file" &
         
         echo $! > "/tmp/performance_monitor.pid"
-        log_debug "Started performance monitoring (PID: $!)"
+        log::debug "CI" "Started performance monitoring (PID: $!)"
     fi
 }
 
 stop_performance_monitoring() {
     local pid_file="/tmp/performance_monitor.pid"
     local monitor_file="/tmp/build_performance.log"
-    
+
     if [[ -f "$pid_file" ]]; then
         local pid
         pid=$(cat "$pid_file")
         if kill "$pid" 2>/dev/null; then
-            log_debug "Stopped performance monitoring (PID: $pid)"
+            log::debug "CI" "Stopped performance monitoring (PID: $pid)"
         fi
         rm -f "$pid_file"
-        
+
         # Save performance log as artifact
         if [[ -f "$monitor_file" ]]; then
             save_build_artifact "$monitor_file" "performance.log" "log"
@@ -480,17 +467,16 @@ setup_ci_caching() {
         "${BUNDLE_CACHE_DIR:-$HOME/.bundle}"
         "DerivedData"
     )
-    
-    log_step "Setting up CI caching..."
-    
+
+    log::step "CI" "Setting up CI caching..."
+
     for cache_dir in "${cache_dirs[@]}"; do
         if [[ -n "$cache_dir" ]]; then
             ensure_directory "$cache_dir"
-            log_debug "Cache directory prepared: $cache_dir"
+            log::debug "CI" "Cache directory prepared: $cache_dir"
         fi
     done
-    
-    # Provider-specific caching setup
+
     case "$(detect_ci_provider)" in
         "github-actions")
             setup_github_actions_caching
@@ -499,8 +485,8 @@ setup_ci_caching() {
             setup_gitlab_ci_caching
             ;;
     esac
-    
-    log_success "CI caching setup completed"
+
+    log::success "CI" "CI caching setup completed"
 }
 
 setup_github_actions_caching() {
@@ -509,9 +495,13 @@ setup_github_actions_caching() {
     local cache_key_base="ios-build"
     local cache_key_suffix
     
-    # Create cache key based on dependencies
     if [[ -f "Podfile.lock" ]]; then
-        cache_key_suffix=$(sha256sum "Podfile.lock" | cut -d' ' -f1)
+        # R031f: Use checksum.sh module if available, fallback to sha256sum
+        if command -v checksum_compute_sha256 &>/dev/null; then
+            cache_key_suffix=$(checksum_compute_sha256 "Podfile.lock")
+        else
+            cache_key_suffix=$(sha256sum "Podfile.lock" | cut -d' ' -f1)
+        fi
     else
         cache_key_suffix="no-podfile"
     fi
@@ -522,63 +512,49 @@ setup_github_actions_caching() {
 setup_gitlab_ci_caching() {
     # GitLab CI caching is handled by .gitlab-ci.yml,
     # but we can prepare the cache directories
-    log_debug "GitLab CI caching prepared"
+    log::debug "CI" "GitLab CI caching prepared"
 }
 
 # Cleanup for CI
 cleanup_ci_environment() {
-    log_step "Cleaning up CI environment..."
-    
-    # Stop performance monitoring
+    log::step "CI" "Cleaning up CI environment..."
+
     stop_performance_monitoring
-    
-    # Save artifacts
     save_framework_artifacts
     save_log_artifacts
-    
-    # Clean up temporary files
+
     local temp_files=(
         "/tmp/xcodebuild*.log"
         "/tmp/build*.log"
         "${XCODE_XCCONFIG_FILE:-}"
     )
-    
+
     for temp_file in "${temp_files[@]}"; do
         if [[ -n "$temp_file" ]] && [[ -f "$temp_file" ]]; then
             rm -f "$temp_file"
         fi
     done
-    
-    log_success "CI environment cleanup completed"
+
+    log::success "CI" "CI environment cleanup completed"
 }
 
 # Main CI initialization
 init_ci() {
     if is_ci_environment; then
-        log_info "Initializing CI environment..."
-        
-        # Configure CI environment
+        log::info "CI" "Initializing CI environment..."
+
         configure_ci_environment
-        
-        # Dump environment information
         dump_ci_environment
-        
-        # Setup caching
         setup_ci_caching
-        
-        # Start performance monitoring
         start_performance_monitoring
-        
-        # Setup cleanup trap
         trap cleanup_ci_environment EXIT
-        
-        log_success "CI environment initialized"
+
+        log::success "CI" "CI environment initialized"
     else
-        log_debug "Not in CI environment, skipping CI initialization"
+        log::debug "CI" "Not in CI environment, skipping CI initialization"
     fi
 }
 
-# Export CI functions
 export -f detect_ci_provider is_ci_environment is_pull_request
 export -f get_branch_name get_commit_sha get_build_number
 export -f configure_ci_environment

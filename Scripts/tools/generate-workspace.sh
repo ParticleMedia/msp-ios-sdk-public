@@ -10,7 +10,6 @@ msp_enforce_main_repo_or_exit
 
 set -euo pipefail
 
-# Source shared libraries
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT_DIR="$(cd "$SCRIPT_DIR/../.." && pwd)"
 
@@ -21,7 +20,6 @@ source "$ROOT_DIR/Scripts/lib/colors.sh"
 # shellcheck source=Scripts/lib/ui.sh
 source "$ROOT_DIR/Scripts/lib/ui.sh"
 
-# Initialize paths
 init_paths
 
 WORKSPACE_SPEC="$ROOT_DIR/workspace.yml"
@@ -29,15 +27,15 @@ WORKSPACE_PATH="$ROOT_DIR/msp-ios-sdk.xcworkspace"
 WORKSPACE_DATA="$WORKSPACE_PATH/contents.xcworkspacedata"
 
 if [[ ! -f "$WORKSPACE_SPEC" ]]; then
-    log_error "workspace.yml not found: $WORKSPACE_SPEC"
-    log_info "Run './Scripts/switch-target.sh [spm-release|pods-dev]' first"
+    log::error "TOOLS" "workspace.yml not found: $WORKSPACE_SPEC"
+    log::info "TOOLS" "Run './Scripts/switch-target.sh [spm-release|pods-dev]' first"
     exit 1
 fi
 
 log_title "Generating Xcode Workspace"
 
 # Parse workspace.yml to extract project paths
-log_step "Parsing workspace.yml"
+log::step "TOOLS" "Parsing workspace.yml"
 
 # Extract project paths from workspace.yml
 PROJECT_PATHS=()
@@ -50,17 +48,17 @@ while IFS= read -r line; do
 done < <(grep -E "^[[:space:]]*path:" "$WORKSPACE_SPEC" || true)
 
 if [[ ${#PROJECT_PATHS[@]} -eq 0 ]]; then
-    log_error "No projects found in workspace.yml"
+    log::error "TOOLS" "No projects found in workspace.yml"
     exit 1
 fi
 
-log_info "Found ${#PROJECT_PATHS[@]} project(s) in workspace.yml"
+log::info "TOOLS" "Found ${#PROJECT_PATHS[@]} project(s) in workspace.yml"
 
 # Create workspace directory
 mkdir -p "$WORKSPACE_PATH"
 
 # Generate workspace contents
-log_step "Generating workspace contents"
+log::step "TOOLS" "Generating workspace contents"
 {
     cat <<'XML'
 <?xml version="1.0" encoding="UTF-8"?>
@@ -85,8 +83,8 @@ XML
             
             # Check if project exists, if not, it needs to be generated
             if [[ ! -d "$ROOT_DIR/$xcodeproj_path" ]]; then
-                log_warn "Project not found: $xcodeproj_path"
-                log_info "Run 'xcodegen generate --spec $project_path' first"
+                log::warn "TOOLS" "Project not found: $xcodeproj_path"
+                log::info "TOOLS" "Run 'xcodegen generate --spec $project_path' first"
             fi
             
             cat <<XML
@@ -100,6 +98,6 @@ XML
     echo "</Workspace>"
 } > "$WORKSPACE_DATA"
 
-log_success "Workspace generated: $WORKSPACE_PATH"
-log_info "Workspace contains ${#PROJECT_PATHS[@]} project(s)"
+log::success "TOOLS" "Workspace generated: $WORKSPACE_PATH"
+log::info "TOOLS" "Workspace contains ${#PROJECT_PATHS[@]} project(s)"
 

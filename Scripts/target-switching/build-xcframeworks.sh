@@ -27,12 +27,12 @@ log_title "Building All XCFrameworks"
 BUILD_SCRIPT="$ROOT_DIR/Scripts/xcframeworks/build-all.sh"
 
 if [[ ! -f "$BUILD_SCRIPT" ]]; then
-    log_error "build-all.sh not found: $BUILD_SCRIPT"
+    log::error "TARGET" "build-all.sh not found: $BUILD_SCRIPT"
     exit 1
 fi
 
-log_step "Running build-all.sh"
+log::step "TARGET" "Running build-all.sh"
 "$BUILD_SCRIPT"
 
 log_title "Build Complete"
-log_success "All xcframeworks built successfully"
+log::success "TARGET" "All xcframeworks built successfully"

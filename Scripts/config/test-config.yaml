@@ -1,0 +1,30 @@
+# ============================================================================
+# Test Configuration
+# ============================================================================
+# R042: Centralized test/simulator settings (previously hardcoded in 12+ files)
+#
+# Usage: Source Scripts/lib/config_loader.sh and call load_test_config()
+# ============================================================================
+
+# Simulator Device Name
+# Previously hardcoded in: sdk-package-size.sh, round-trip-test.sh, run-unit-tests.sh,
+#                          build-mspcore.sh, demo_app_builder.sh, xcode.sh,
+#                          verify_local/pods.sh, ci_validate.sh, verify_remote/pods.sh,
+#                          verify.sh, sample_app.sh (12+ files)
+# Set to "auto" to detect the best available simulator on the current machine.
+simulator_device: "auto"
+
+# Simulator OS Version
+# Previously hardcoded in: round-trip-test.sh, ci_validate.sh
+# Set to "auto" to detect the latest iOS version available on the current machine.
+simulator_os: "auto"
+
+# Test Destinations
+# Set to "auto" to construct from auto-detected device/OS above.
+destinations:
+  unit_test: "auto"
+  integration_test: "auto"
+  
+# Test Timeouts (seconds)
+unit_test_timeout: 300
+integration_test_timeout: 600

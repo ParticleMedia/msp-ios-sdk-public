@@ -1,13 +1,24 @@
 ---
 id: ctx-ci-001
-title: GitHub Actions Artifact 上传导致 XCFramework 结构丢失
-layer: experience
+title: "GitHub Actions Artifact 上传导致 XCFramework 结构丢失"
 domain: ci
-tags: [github-actions, artifact, xcframework, info-plist, v4]
-created: 2026-01-29
-source: manual
+layer: experience
+tags:
+  - github-actions
+  - artifact-upload
+  - xcframework
+  - info-plist
+  - directory-structure
+triggers:
+  - "Info.plist not found after artifact download"
+  - "XCFramework structure lost in GitHub Actions"
+  - "upload-artifact v4 directory structure"
+  - "multiple xcframeworks artifact upload"
+summary: "GitHub Actions upload-artifact v4 flattens XCFramework dirs; use staging directory to preserve structure"
+version: "1.0"
 status: active
-confidence: high
+created: "2026-01-29"
+updated: "2026-02-22"
 ---
 
 # GitHub Actions Artifact 上传导致 XCFramework 结构丢失
@@ -88,3 +99,10 @@ confidence: high
 - 相关 commit: b399756c (fix(ci): preserve xcframework directory structure in artifact uploads)
 - 相关文件: `.github/workflows/ci-pull-request.yml`
 - GitHub Actions 文档: https://github.com/actions/upload-artifact/tree/v4
+
+## 关联 Playbooks
+
+| Playbook | 关系 |
+|----------|------|
+| [ctx-ci-002](./ctx-ci-002-matrix-artifact-conflict.md) | 互补 — Matrix 构建时的 Artifact 命名策略 |
+| [ctx-sources-004](../../sources/tech/ctx-sources-004-script-best-practices.md) | 上游 — 脚本安全规则和 config-driven 原则 |

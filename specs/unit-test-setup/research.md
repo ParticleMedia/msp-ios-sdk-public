@@ -81,7 +81,7 @@ Create 4 independent test bundles: MSPCoreTests, MSPiOSCoreTests, NovaCoreTests,
 ### Key Findings
 - Test targets must use `inherit! :search_paths` in Podfile to access app dependencies
 - `TEST_HOST` and `BUNDLE_LOADER` required for hosted unit tests
-- AllTests scheme aggregates all test targets for single-command execution
+- MSPTests scheme aggregates all test targets for single-command execution
 
 ---
 

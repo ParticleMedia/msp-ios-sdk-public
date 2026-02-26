@@ -1,0 +1,543 @@
+{
+  "version": "2.0",
+  "generated_at": "2026-02-26T03:03:45Z",
+  "generator": "Scripts/tools/generate-context-index.py",
+  "entry_count": 18,
+  "domains": {
+    "compatibility": {
+      "count": 0,
+      "layers": []
+    },
+    "sources": {
+      "count": 6,
+      "layers": [
+        "experience",
+        "tech"
+      ]
+    },
+    "integration": {
+      "count": 2,
+      "layers": [
+        "experience"
+      ]
+    },
+    "testing": {
+      "count": 3,
+      "layers": [
+        "tech"
+      ]
+    },
+    "architecture": {
+      "count": 0,
+      "layers": []
+    },
+    "release": {
+      "count": 3,
+      "layers": [
+        "experience"
+      ]
+    },
+    "ci": {
+      "count": 4,
+      "layers": [
+        "experience"
+      ]
+    }
+  },
+  "entries": [
+    {
+      "id": "ctx-ci-001",
+      "path": ".context/ci/experience/ctx-ci-001-artifact-structure-loss.md",
+      "title": "GitHub Actions Artifact 上传导致 XCFramework 结构丢失",
+      "domain": "ci",
+      "layer": "experience",
+      "tags": [
+        "github-actions",
+        "artifact-upload",
+        "xcframework",
+        "info-plist",
+        "directory-structure"
+      ],
+      "triggers": [
+        "Info.plist not found after artifact download",
+        "XCFramework structure lost in GitHub Actions",
+        "upload-artifact v4 directory structure",
+        "multiple xcframeworks artifact upload"
+      ],
+      "summary": "GitHub Actions upload-artifact v4 flattens XCFramework dirs; use staging directory to preserve structure",
+      "status": "active",
+      "updated": "2026-02-22"
+    },
+    {
+      "id": "ctx-ci-002",
+      "path": ".context/ci/experience/ctx-ci-002-matrix-artifact-conflict.md",
+      "title": "GitHub Actions Matrix 构建中 Artifact 名称冲突",
+      "domain": "ci",
+      "layer": "experience",
+      "tags": [
+        "github-actions",
+        "matrix-build",
+        "artifact-conflict",
+        "upload-artifact-v4"
+      ],
+      "triggers": [
+        "matrix build artifact overwrite conflict",
+        "only last matrix job artifact preserved",
+        "upload-artifact v4 same name conflict",
+        "GitHub Actions matrix artifact naming"
+      ],
+      "summary": "GitHub Actions v4 matrix builds overwrite same-name artifacts; use unique names with matrix variable",
+      "status": "active",
+      "updated": "2026-02-22"
+    },
+    {
+      "id": "ctx-ci-003",
+      "path": ".context/ci/experience/ctx-ci-003-duplicate-build-abi-conflict.md",
+      "title": "模块重复构建导致 Swift 编译器 ABI 冲突崩溃",
+      "domain": "ci",
+      "layer": "experience",
+      "tags": [
+        "swift-compiler-crash",
+        "abi-conflict",
+        "duplicate-build",
+        "cocoapods",
+        "xcframework",
+        "sil-deserialization"
+      ],
+      "triggers": [
+        "Swift compiler crash deserializing SIL function",
+        "duplicate module build ABI conflict",
+        "module in both pod schemes and build stages",
+        "compiler crash PerformanceSILLinker"
+      ],
+      "summary": "Module built in both pod prebuild and xcframework stages causes Swift compiler ABI conflict crash",
+      "status": "active",
+      "updated": "2026-02-22"
+    },
+    {
+      "id": "ctx-ci-004",
+      "path": ".context/ci/experience/ctx-ci-004-preinstall-source-dependency.md",
+      "title": "Podfile pre_install hook 中构建脚本依赖未就绪的源码目录",
+      "domain": "ci",
+      "layer": "experience",
+      "tags": [
+        "cocoapods",
+        "pre-install-hook",
+        "xcodegen",
+        "chicken-egg",
+        "gitignore",
+        "prepare-command"
+      ],
+      "triggers": [
+        "XcodeGen missing source directory in CI",
+        "pre_install hook depends on prepare_command directory",
+        "pod install fails in CI but works locally",
+        "chicken-egg source directory dependency"
+      ],
+      "summary": "pre_install hook fails in CI because gitignored source dir is created by prepare_command after hook runs",
+      "status": "active",
+      "updated": "2026-02-22"
+    },
+    {
+      "id": "ctx-integration-001",
+      "path": ".context/integration/experience/ctx-integration-001-novacore-duplicate-symbols.md",
+      "title": "NovaCore.xcframework 静态链接第三方库导致使用方 duplicate symbol crash",
+      "domain": "integration",
+      "layer": "experience",
+      "tags": [
+        "duplicate-symbol",
+        "xcframework",
+        "static-linking",
+        "novacore",
+        "unexported-symbols",
+        "snapkit",
+        "kingfisher"
+      ],
+      "triggers": [
+        "NovaCore duplicate symbol crash with SnapKit or Kingfisher",
+        "xcframework static link third-party library conflict",
+        "UNEXPORTED_SYMBOLS_FILE usage for symbol hiding",
+        "host app duplicate symbol linker error"
+      ],
+      "summary": "NovaCore statically links SnapKit/Kingfisher/Lottie causing duplicate symbols; solved with UNEXPORTED_SYMBOLS_FILE",
+      "status": "active",
+      "updated": "2026-02-22"
+    },
+    {
+      "id": "ctx-integration-002",
+      "path": ".context/integration/experience/ctx-integration-002-facebook-adapter-flat-namespace-crash.md",
+      "title": "MSPFacebookAdapter mh_dylib + dynamic_lookup 导致 Release strip 后 flat namespace crash",
+      "domain": "integration",
+      "layer": "experience",
+      "tags": [
+        "facebook-adapter",
+        "dynamic-lookup",
+        "flat-namespace",
+        "staticlib",
+        "mh-dylib",
+        "linker-crash"
+      ],
+      "triggers": [
+        "flat namespace crash after Release strip",
+        "dynamic_lookup causes runtime crash",
+        "mh_dylib vs staticlib adapter choice",
+        "FBAudienceNetwork adapter linking strategy"
+      ],
+      "summary": "mh_dylib + dynamic_lookup causes flat namespace crash after strip; switch to staticlib + headers-only shim",
+      "status": "active",
+      "updated": "2026-02-22"
+    },
+    {
+      "id": "ctx-release-001",
+      "path": ".context/release/experience/ctx-release-001.md",
+      "title": "Pod 发布后使用方启动 crash - FB SDK 静态链接冲突",
+      "domain": "release",
+      "layer": "experience",
+      "tags": [
+        "facebook",
+        "static-linking",
+        "xcframework",
+        "crash",
+        "symbol-conflict",
+        "shim-framework"
+      ],
+      "triggers": [
+        "FB SDK crash after pod release",
+        "FBFinalClassViolationException on app launch",
+        "duplicate symbol FBAudienceNetwork",
+        "shim framework for static linking"
+      ],
+      "summary": "FBAudienceNetwork static linking in XCFramework causes duplicate symbol crash; solved with shim framework",
+      "status": "active",
+      "updated": "2026-02-22"
+    },
+    {
+      "id": "ctx-release-002",
+      "path": ".context/release/experience/ctx-release-002.md",
+      "title": "Pod trunk push 失败但脚本显示成功 - 退出码捕获错误",
+      "domain": "release",
+      "layer": "experience",
+      "tags": [
+        "pod-trunk-push",
+        "shell-pipeline",
+        "exit-code",
+        "pipestatus",
+        "tee"
+      ],
+      "triggers": [
+        "pod trunk push succeeds but version not published",
+        "shell pipeline exit code incorrect",
+        "PIPESTATUS tee exit code",
+        "CI shows success but pod not released"
+      ],
+      "summary": "Shell pipeline with tee masks pod trunk push failure; use PIPESTATUS[0] to capture real exit code",
+      "status": "active",
+      "updated": "2026-02-22"
+    },
+    {
+      "id": "ctx-release-003",
+      "path": ".context/release/experience/ctx-release-003.md",
+      "title": "Pod 发布后使用方 crash - Kingfisher 静态链接重复",
+      "domain": "release",
+      "layer": "experience",
+      "tags": [
+        "kingfisher",
+        "static-linking",
+        "xcframework",
+        "duplicate-symbol",
+        "novacore",
+        "wrapper-api"
+      ],
+      "triggers": [
+        "Kingfisher objc_retain crash after pod release",
+        "NovaCore duplicate Kingfisher symbols",
+        "static linked third-party library crash in xcframework",
+        "wrapper API to avoid duplicate symbol"
+      ],
+      "summary": "Kingfisher statically linked in NovaCore causes duplicate symbol crash; solved with wrapper API pattern",
+      "status": "active",
+      "updated": "2026-02-22"
+    },
+    {
+      "id": "ctx-sources-006",
+      "path": ".context/sources/experience/ctx-sources-006-protobuf-implementationonly.md",
+      "title": "Protobuf 生成文件缺少 @_implementationOnly 导致 CI 构建失败",
+      "domain": "sources",
+      "layer": "experience",
+      "tags": [
+        "protobuf",
+        "swift-protobuf",
+        "implementation-only",
+        "xcframework",
+        "swiftinterface",
+        "ci",
+        "build"
+      ],
+      "triggers": [
+        "cannot load underlying module for 'SwiftProtobuf'",
+        "failed to build module 'MSPCore' for importation",
+        "import SwiftProtobuf",
+        "swiftinterface leak",
+        "protobuf 生成文件",
+        "pb.swift",
+        "protoc post-process"
+      ],
+      "summary": "protoc 生成的 .pb.swift 默认使用 import SwiftProtobuf，会泄漏到 .swiftinterface，导致消费方 CI 构建失败。需后处理为 @_implementationOnly import。",
+      "status": "active",
+      "updated": "2026-02-26"
+    },
+    {
+      "id": "ctx-sources-001",
+      "path": ".context/sources/tech/ctx-sources-001-swift-best-practices.md",
+      "title": "Swift 最佳实践 (AI-First)",
+      "domain": "sources",
+      "layer": "tech",
+      "tags": [
+        "swift",
+        "optionals",
+        "error-handling",
+        "memory",
+        "closures",
+        "value-types"
+      ],
+      "triggers": [
+        "swift",
+        "optional",
+        "unwrap",
+        "closure",
+        "weak self",
+        "Result",
+        "enum",
+        "struct",
+        "class",
+        "let",
+        "var",
+        "access control"
+      ],
+      "summary": "Swift 5.0 / iOS 15+ 硬规则与软规则，覆盖 optionals、闭包捕获、值类型/引用类型、错误处理、访问控制",
+      "status": "active",
+      "updated": "2026-02-22"
+    },
+    {
+      "id": "ctx-sources-002",
+      "path": ".context/sources/tech/ctx-sources-002-uikit-best-practices.md",
+      "title": "UIKit 最佳实践 (AI-First)",
+      "domain": "sources",
+      "layer": "tech",
+      "tags": [
+        "uikit",
+        "viewcontroller",
+        "autolayout",
+        "tableview",
+        "collectionview",
+        "delegate",
+        "memory"
+      ],
+      "triggers": [
+        "UIKit",
+        "UIViewController",
+        "UITableView",
+        "UICollectionView",
+        "AutoLayout",
+        "constraint",
+        "delegate",
+        "viewDidLoad",
+        "main thread",
+        "DispatchQueue"
+      ],
+      "summary": "UIKit 开发硬规则与软规则，覆盖生命周期、AutoLayout、TableView/CollectionView、delegate 模式、主线程安全",
+      "status": "active",
+      "updated": "2026-02-22"
+    },
+    {
+      "id": "ctx-sources-003",
+      "path": ".context/sources/tech/ctx-sources-003-mvvm-repo.md",
+      "title": "MVVM-Repository 架构指南 (AI-First)",
+      "domain": "sources",
+      "layer": "tech",
+      "tags": [
+        "mvvm",
+        "repository",
+        "viewmodel",
+        "protocol",
+        "dependency-injection",
+        "architecture"
+      ],
+      "triggers": [
+        "ViewModel",
+        "Repository",
+        "DataSource",
+        "MVVM",
+        "dependency injection",
+        "protocol",
+        "layer",
+        "architecture",
+        "binding"
+      ],
+      "summary": "MVVM-Repository 分层架构硬规则与软规则，覆盖层职责、依赖注入、数据流、测试策略",
+      "status": "active",
+      "updated": "2026-02-22"
+    },
+    {
+      "id": "ctx-sources-004",
+      "path": ".context/sources/tech/ctx-sources-004-script-best-practices.md",
+      "title": "脚本最佳实践 (AI-First)",
+      "domain": "sources",
+      "layer": "tech",
+      "tags": [
+        "bash",
+        "python",
+        "scripts",
+        "config-driven",
+        "posix",
+        "automation"
+      ],
+      "triggers": [
+        "script",
+        "bash",
+        "shell",
+        "python",
+        "sh",
+        "automation",
+        "config",
+        "yaml",
+        "set -euo",
+        "pipefail",
+        "subprocess"
+      ],
+      "summary": "Bash/Python 脚本硬规则与软规则，覆盖 config-driven 开发、POSIX 兼容、错误处理、原子写入、语言选择",
+      "status": "active",
+      "updated": "2026-02-22"
+    },
+    {
+      "id": "ctx-sources-005",
+      "path": ".context/sources/tech/ctx-sources-005-code-comment-best-practices.md",
+      "title": "Code Comment 最佳实践 (AI-First)",
+      "domain": "sources",
+      "layer": "tech",
+      "tags": [
+        "comment",
+        "documentation",
+        "docc",
+        "mark",
+        "todo",
+        "fixme",
+        "inline-comment"
+      ],
+      "triggers": [
+        "comment",
+        "注释",
+        "documentation",
+        "DocC",
+        "///",
+        "MARK",
+        "TODO",
+        "FIXME",
+        "doc comment",
+        "文档注释"
+      ],
+      "summary": "Swift 代码注释硬规则与软规则，覆盖 DocC 文档注释、内联注释、MARK 组织、TODO/FIXME 规范、AI 过度注释防治",
+      "status": "active",
+      "updated": "2026-02-23"
+    },
+    {
+      "id": "ctx-testing-001",
+      "path": ".context/testing/tech/ctx-testing-001-unit-test-quick-nimble.md",
+      "title": "Unit Test 最佳实践 — Quick/Nimble (AI-First)",
+      "domain": "testing",
+      "layer": "tech",
+      "tags": [
+        "unit-test",
+        "quick",
+        "nimble",
+        "test-doubles",
+        "meszaros",
+        "tdd",
+        "yaml-first",
+        "test-state",
+        "async-spec"
+      ],
+      "triggers": [
+        "unit test",
+        "Quick",
+        "Nimble",
+        "QuickSpec",
+        "AsyncSpec",
+        "TestState",
+        "expect",
+        "mock",
+        "stub",
+        "spy",
+        "fake",
+        "dummy",
+        "test double",
+        "@testable"
+      ],
+      "summary": "Quick/Nimble 单元测试硬规则与软规则，覆盖 @TestState、AsyncSpec、Meszaros 测试替身、YAML-first 工作流、断言模式",
+      "status": "active",
+      "updated": "2026-02-22"
+    },
+    {
+      "id": "ctx-testing-002",
+      "path": ".context/testing/tech/ctx-testing-002-bdd-best-practices.md",
+      "title": "BDD 最佳实践 — Given/When/Then (AI-First)",
+      "domain": "testing",
+      "layer": "tech",
+      "tags": [
+        "bdd",
+        "given-when-then",
+        "quick",
+        "describe",
+        "context",
+        "it",
+        "behavior-driven",
+        "test-state"
+      ],
+      "triggers": [
+        "BDD",
+        "behavior",
+        "Given",
+        "When",
+        "Then",
+        "describe",
+        "context",
+        "it",
+        "scenario",
+        "acceptance",
+        "TestState",
+        "beforeEach"
+      ],
+      "summary": "BDD 行为驱动开发硬规则与软规则，覆盖 describe/context/it 结构、Given-When-Then 模式、命名规范",
+      "status": "active",
+      "updated": "2026-02-23"
+    },
+    {
+      "id": "ctx-testing-003",
+      "path": ".context/testing/tech/ctx-testing-003-bugfix-regression.md",
+      "title": "Bugfix 回归测试策略 (AI-First)",
+      "domain": "testing",
+      "layer": "tech",
+      "tags": [
+        "bugfix",
+        "regression",
+        "yaml-first",
+        "tdd",
+        "red-green-refactor",
+        "traceability"
+      ],
+      "triggers": [
+        "bugfix",
+        "regression",
+        "fix",
+        "bug",
+        "hotfix",
+        "regression_for",
+        "reproduce",
+        "red-green-refactor"
+      ],
+      "summary": "Bugfix 回归测试硬规则与软规则，覆盖复现→YAML→红→绿→重构→提交的完整工作流",
+      "status": "active",
+      "updated": "2026-02-23"
+    }
+  ]
+}

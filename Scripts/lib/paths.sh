@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # --- MSP Worktree Safety Guard (Patch K, shared) ---
 # shellcheck source=/dev/null
 if command -v git >/dev/null 2>&1; then
@@ -13,7 +13,6 @@ fi
 # Path resolution utilities for MSP iOS SDK build system
 # Provides standardized functions for determining script and repository paths
 
-# Get the directory where the current script is located
 get_script_dir() {
     local script_path="${BASH_SOURCE[1]:-${BASH_SOURCE[0]}}"
     cd "$(dirname "$script_path")" && pwd
@@ -73,7 +72,6 @@ init_paths() {
     ensure_release_artifacts_layout
 }
 
-# Initialize release artifacts path variables (canonical build outputs)
 init_release_artifacts_paths() {
     if [[ -z "${RELEASE_ARTIFACTS_DIR:-}" ]]; then
         export RELEASE_ARTIFACTS_DIR="$ROOT_DIR/Build/ReleaseArtifacts"
@@ -95,7 +93,6 @@ init_release_artifacts_paths() {
     fi
 }
 
-# Ensure release artifacts directories exist
 ensure_release_artifacts_layout() {
     init_release_artifacts_paths
 

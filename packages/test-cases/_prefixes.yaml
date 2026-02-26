@@ -1,0 +1,10 @@
+# Prefix Registry
+# Each prefix must be unique across all test case modules.
+# Register new prefixes here BEFORE creating test case files.
+# Validation: python Scripts/tools/test-cases.py validate
+
+prefixes:
+  DAL: DebugAdLoad
+  DRC: DebugRadioCell
+  MVS: MSPVersion
+  NMS: NovaMraidSupporting

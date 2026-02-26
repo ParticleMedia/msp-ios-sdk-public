@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # --- MSP Worktree Safety Guard (Patch K, shared) ---
 # shellcheck source=/dev/null
 if command -v git >/dev/null 2>&1; then
@@ -17,9 +17,16 @@ fi
 
 set -euo pipefail
 
-# Script configuration
-readonly SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-readonly PROJECT_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+readonly SCRIPT_DIR
+PROJECT_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
+readonly PROJECT_ROOT
+
+# R031f: Source checksum module for unified checksum computation
+if [[ -f "$SCRIPT_DIR/checksum.sh" ]]; then
+    # shellcheck source=Scripts/lib/checksum.sh
+    source "$SCRIPT_DIR/checksum.sh" 2>/dev/null || true
+fi
 # Try new structure first (Sources/Core/), fallback to old structure
 if [[ -d "$PROJECT_ROOT/Sources/Core/NovaCore/NovaCore" ]]; then
     readonly NOVACORE_DIR="$PROJECT_ROOT/Sources/Core/NovaCore/NovaCore"
@@ -42,21 +49,17 @@ readonly EXIT_VALIDATION_FAILED=1
 readonly EXIT_MISSING_FILES=2
 readonly EXIT_INVALID_ARGS=3
 
-# Source UI system
-readonly ROOT_DIR="$(cd "$SCRIPT_DIR/../.." && pwd)"
-# shellcheck source=Scripts/lib/paths.sh
-source "$ROOT_DIR/Scripts/lib/paths.sh" 2>/dev/null || true
-# shellcheck source=Scripts/lib/colors.sh
-source "$ROOT_DIR/Scripts/lib/colors.sh" 2>/dev/null || true
-# shellcheck source=Scripts/lib/ui.sh
-source "$ROOT_DIR/Scripts/lib/ui.sh" 2>/dev/null || true
+ROOT_DIR="$(cd "$SCRIPT_DIR/../.." && pwd)"
+readonly ROOT_DIR
+# shellcheck source=Scripts/lib/common.sh
+source "$ROOT_DIR/Scripts/lib/common.sh" 2>/dev/null || true
 
-# Color output functions (use UI system if available, fallback to simple functions)
-if command -v log_info &>/dev/null; then
-    print_info() { log_info "[INFO] $1"; }
-    print_success() { log_success "[SUCCESS] $1"; }
-    print_warning() { log_warn "[WARNING] $1"; }
-    print_error() { log_error "[ERROR] $1"; }
+# Color output functions (use unified logging if available, fallback to simple functions)
+if command -v log::info &>/dev/null; then
+    print_info() { log::info "ASSET" "$1"; }
+    print_success() { log::success "ASSET" "$1"; }
+    print_warning() { log::warn "ASSET" "$1"; }
+    print_error() { log::error "ASSET" "$1"; }
 else
     print_info() { echo "[INFO] $1"; }
     print_success() { echo "[SUCCESS] $1"; }
@@ -64,7 +67,6 @@ else
     print_error() { echo "[ERROR] $1" >&2; }
 fi
 
-# Cleanup function
 cleanup() {
     if [[ -d "$TEMP_DIR" ]]; then
         rm -rf "$TEMP_DIR"
@@ -72,7 +74,6 @@ cleanup() {
 }
 trap cleanup EXIT
 
-# Usage information
 usage() {
     cat << EOF
 Usage: $0 [OPTIONS]
@@ -104,7 +105,6 @@ EXAMPLES:
 EOF
 }
 
-# Parse command line arguments
 parse_arguments() {
     local verbose=false
     local quiet=false
@@ -156,7 +156,6 @@ parse_arguments() {
         esac
     done
     
-    # Export options for use in other functions
     export VERBOSE="$verbose"
     export QUIET="$quiet"
     export JSON_OUTPUT="$json_output"
@@ -166,14 +165,14 @@ parse_arguments() {
     export CI_MODE="$ci_mode"
 }
 
-# Conditional output functions
-log_info() {
+# Conditional output functions (local to this script)
+asset_log_info() {
     if [[ "$QUIET" != "true" ]]; then
         print_info "$1"
     fi
 }
 
-log_verbose() {
+asset_asset_log_verbose() {
     if [[ "$VERBOSE" == "true" && "$QUIET" != "true" ]]; then
         echo "  $1"
     fi
@@ -207,7 +206,6 @@ json_result() {
     fi
 }
 
-# Validate required paths
 validate_paths() {
     local missing_paths=()
     
@@ -233,12 +231,11 @@ validate_paths() {
         exit $EXIT_MISSING_FILES
     fi
     
-    log_info "Validating asset synchronization..."
-    log_verbose "Source: $ASSETS_SOURCE"
-    log_verbose "Target: $BUNDLE_TARGET"
+    asset_log_info "Validating asset synchronization..."
+    asset_asset_log_verbose "Source: $ASSETS_SOURCE"
+    asset_asset_log_verbose "Target: $BUNDLE_TARGET"
 }
 
-# Content-based validation using checksums and asset comparison
 validate_asset_sync() {
     local source_count=0
     local bundle_valid=false
@@ -246,7 +243,7 @@ validate_asset_sync() {
     
     # Count source assets quickly
     source_count=$(find "$ASSETS_SOURCE" -name "*.imageset" -type d | wc -l)
-    log_verbose "Found $source_count assets in source"
+    asset_log_verbose "Found $source_count assets in source"
     
     # Check if bundle exists and has proper structure
     if [[ ! -d "$BUNDLE_TARGET" ]]; then
@@ -262,7 +259,7 @@ validate_asset_sync() {
                 issues+=("Assets.car is empty")
             else
                 bundle_valid=true
-                log_verbose "Assets.car found with $file_size bytes"
+                asset_log_verbose "Assets.car found with $file_size bytes"
                 
                 # Content-based validation: Compare source assets with bundle
                 if [[ "$TIMESTAMP_ONLY" != "true" ]]; then
@@ -282,8 +279,8 @@ validate_asset_sync() {
                         fi
                     done < <(find "$ASSETS_SOURCE" -type f -print0)
                     
-                    log_verbose "Bundle timestamp: $bundle_timestamp"
-                    log_verbose "Source timestamp: $source_timestamp"
+                    asset_log_verbose "Bundle timestamp: $bundle_timestamp"
+                    asset_log_verbose "Source timestamp: $source_timestamp"
                     
                     # If source is newer than bundle, they're out of sync
                     if [[ $source_timestamp -gt $bundle_timestamp ]]; then
@@ -315,14 +312,12 @@ validate_asset_sync() {
     fi
     echo "${#issues[@]}" > "$TEMP_DIR/issue_count.txt"
     
-    log_verbose "Validation completed - found ${#issues[@]} issues"
+    asset_log_verbose "Validation completed - found ${#issues[@]} issues"
 }
 
-# Validate asset content by comparing source with compiled bundle
 validate_asset_content() {
-    log_verbose "Performing content-based validation..."
+    asset_log_verbose "Performing content-based validation..."
     
-    # Create a temporary compiled bundle from current source
     local temp_compile_dir="$TEMP_DIR/temp_compile"
     mkdir -p "$temp_compile_dir"
     
@@ -342,8 +337,8 @@ validate_asset_content() {
             local temp_size=$(stat -f%z "$temp_assets_car" 2>/dev/null || echo "0")
             local current_size=$(stat -f%z "$current_assets_car" 2>/dev/null || echo "0")
             
-            log_verbose "Temporary compiled size: $temp_size bytes"
-            log_verbose "Current bundle size: $current_size bytes"
+            asset_log_verbose "Temporary compiled size: $temp_size bytes"
+            asset_log_verbose "Current bundle size: $current_size bytes"
             
             if [[ $temp_size -ne $current_size ]]; then
                 local size_diff=$((current_size - temp_size))
@@ -375,19 +370,26 @@ validate_asset_content() {
                 bundle_valid=false
             else
                 # Compare checksums for exact content match
-                local temp_checksum=$(shasum -a 256 "$temp_assets_car" 2>/dev/null | cut -d' ' -f1)
-                local current_checksum=$(shasum -a 256 "$current_assets_car" 2>/dev/null | cut -d' ' -f1)
+                # R031f: Use checksum.sh module if available, fallback to shasum
+                local temp_checksum current_checksum
+                if command -v checksum_compute_sha256 &>/dev/null; then
+                    temp_checksum=$(checksum_compute_sha256 "$temp_assets_car")
+                    current_checksum=$(checksum_compute_sha256 "$current_assets_car")
+                else
+                    temp_checksum=$(shasum -a 256 "$temp_assets_car" 2>/dev/null | cut -d' ' -f1)
+                    current_checksum=$(shasum -a 256 "$current_assets_car" 2>/dev/null | cut -d' ' -f1)
+                fi
                 
-                log_verbose "Temporary compiled checksum: $temp_checksum"
-                log_verbose "Current bundle checksum: $current_checksum"
+                asset_log_verbose "Temporary compiled checksum: $temp_checksum"
+                asset_log_verbose "Current bundle checksum: $current_checksum"
                 
                 if [[ "$temp_checksum" != "$current_checksum" ]]; then
                     # In CI mode, if file sizes match but checksums differ, it's likely due to
                     # different compilation environments but same assets
                     if [[ "$CI_MODE" == "true" && $temp_size -eq $current_size ]]; then
-                        log_verbose "CI mode: File sizes match but checksums differ"
-                        log_verbose "This is likely due to different compilation environments"
-                        log_verbose "Assets are functionally equivalent (same size)"
+                        asset_log_verbose "CI mode: File sizes match but checksums differ"
+                        asset_log_verbose "This is likely due to different compilation environments"
+                        asset_log_verbose "Assets are functionally equivalent (same size)"
                     else
                         issues+=("Asset content differs - checksum mismatch")
                         issues+=("Expected checksum: $temp_checksum")
@@ -396,25 +398,21 @@ validate_asset_content() {
                         bundle_valid=false
                     fi
                 else
-                    log_verbose "Asset content matches - bundle is up to date"
+                    asset_log_verbose "Asset content matches - bundle is up to date"
                 fi
             fi
         else
-            log_verbose "Could not compare assets - compilation or bundle file missing"
+            asset_log_verbose "Could not compare assets - compilation or bundle file missing"
         fi
         
-        # Clean up temporary files
         rm -rf "$temp_compile_dir"
     else
-        log_verbose "Could not compile assets for comparison - actool failed"
+        asset_log_verbose "Could not compile assets for comparison - actool failed"
         # Don't fail validation just because we can't do content comparison
         # Timestamp validation will still work
     fi
 }
 
-# No longer needed - using fast validation approach
-
-# Generate detailed report
 generate_report() {
     local report_file="${REPORT_FILE:-$TEMP_DIR/validation_report.txt}"
     local source_count=$(cat "$TEMP_DIR/source_count.txt")
@@ -466,41 +464,31 @@ generate_report() {
     } > "$report_file"
     
     if [[ "$REPORT_FILE" != "" ]]; then
-        log_info "Detailed report saved to: $report_file"
+        asset_log_info "Detailed report saved to: $report_file"
     fi
 }
 
-# Main validation function
 main() {
-    # Parse arguments
     parse_arguments "$@"
-    
-    # Create temporary directory
+
     mkdir -p "$TEMP_DIR"
-    
+
     # Change to project root for relative path consistency
     cd "$PROJECT_ROOT"
-    
-    # Start JSON output if requested
+
     if [[ "$JSON_OUTPUT" == "true" ]]; then
         json_start
     fi
-    
-    # Validate paths
+
     validate_paths
-    
-    # Run fast validation
     validate_asset_sync
-    
-    # Get validation results
+
     local source_count=$(cat "$TEMP_DIR/source_count.txt")
     local bundle_valid=$(cat "$TEMP_DIR/bundle_valid.txt")
     local issue_count=$(cat "$TEMP_DIR/issue_count.txt")
-    
-    # Generate report
+
     generate_report
-    
-    # Output results
+
     if [[ $issue_count -eq 0 ]]; then
         if [[ "$JSON_OUTPUT" == "true" ]]; then
             json_result "success" "All assets are synchronized"
@@ -531,5 +519,4 @@ main() {
     fi
 }
 
-# Run main function
 main "$@"

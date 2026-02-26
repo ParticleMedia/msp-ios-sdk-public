@@ -6,6 +6,12 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
 UPDATE_SCRIPT="$PROJECT_ROOT/Scripts/workspace/update.sh"
 
+# R029f: Source xcodegen module for unified generation
+if [[ -f "$PROJECT_ROOT/Scripts/lib/xcodegen.sh" ]]; then
+    # shellcheck source=Scripts/lib/xcodegen.sh
+    source "$PROJECT_ROOT/Scripts/lib/xcodegen.sh" 2>/dev/null || true
+fi
+
 if [ ! -x "$UPDATE_SCRIPT" ]; then
   echo "❌ Workspace update script not found or not executable: $UPDATE_SCRIPT" >&2
   exit 1
@@ -21,10 +27,23 @@ DEMOAPP_XCODEPROJ="$DEMOAPP_DIR/MSPDemoApp.xcodeproj"
 
 if [ -f "$DEMOAPP_SPEC" ]; then
   echo "$LOG_PREFIX Generating MSPDemoApp.xcodeproj from $DEMOAPP_SPEC..."
-  (cd "$DEMOAPP_DIR" && xcodegen generate --spec project.yml) || {
+  # R029f: Use xcodegen.sh module if available, fallback to direct call
+  ci_xcodegen_success=false
+  if command -v xcodegen_generate &>/dev/null; then
+    if xcodegen_generate "$DEMOAPP_SPEC" "$DEMOAPP_DIR"; then
+      ci_xcodegen_success=true
+    fi
+  else
+    if (cd "$DEMOAPP_DIR" && xcodegen generate --spec project.yml); then
+      ci_xcodegen_success=true
+    fi
+  fi
+
+  if [[ "$ci_xcodegen_success" != "true" ]]; then
     echo "❌ Failed to generate MSPDemoApp.xcodeproj in $DEMOAPP_DIR" >&2
     exit 1
-  }
+  fi
+
   if [ ! -d "$DEMOAPP_XCODEPROJ" ]; then
     echo "❌ MSPDemoApp.xcodeproj not found after generation: $DEMOAPP_XCODEPROJ" >&2
     exit 1

@@ -3,7 +3,7 @@ import Quick
 import WebKit
 @testable import NovaCore
 
-final class MraidSupportStub: NovaMraidSupporting {
+final class StubMraidSupport: NovaMraidSupporting {
     let mraidWebView: WKWebView
     var hasRequestedMraidJs: Bool = false
     var hasInjectedMraidShim: Bool = false
@@ -21,7 +21,7 @@ final class MraidSupportStub: NovaMraidSupporting {
     func handleMraidCreateCalendarEvent(params: [String: Any]) {}
 }
 
-final class TestWebView: WKWebView {
+final class FakeTestWebView: WKWebView {
     var lastEvaluatedJS: String?
 
     init() {
@@ -44,12 +44,12 @@ final class TestWebView: WKWebView {
 class NovaMraidSupportingSpec: QuickSpec {
     override class func spec() {
         describe("NovaMraidSupporting") {
-            var webView: TestWebView!
-            var sut: MraidSupportStub!
+            var webView: FakeTestWebView!
+            var sut: StubMraidSupport!
 
             beforeEach {
-                webView = TestWebView()
-                sut = MraidSupportStub(webView: webView)
+                webView = FakeTestWebView()
+                sut = StubMraidSupport(webView: webView)
             }
 
             afterEach {
@@ -58,7 +58,7 @@ class NovaMraidSupportingSpec: QuickSpec {
             }
 
             context("when expand is called") {
-                it("fires an error event to JS") {
+                it("[NMS001] fires an error event to JS") {
                     waitUntil { done in
                         sut.handleMraidExpand(params: [:])
 
@@ -73,7 +73,7 @@ class NovaMraidSupportingSpec: QuickSpec {
             }
 
             context("when resize is called") {
-                it("fires an error event to JS") {
+                it("[NMS002] fires an error event to JS") {
                     waitUntil { done in
                         sut.handleMraidResize(params: [:])
 

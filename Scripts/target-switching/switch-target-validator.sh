@@ -17,7 +17,6 @@ msp_enforce_main_repo_or_exit
 
 set -euo pipefail
 
-# Source shared libraries
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT_DIR="$(cd "$SCRIPT_DIR/../.." && pwd)"
 
@@ -30,7 +29,6 @@ source "$ROOT_DIR/Scripts/lib/validation-helpers.sh"
 # shellcheck source=Scripts/lib/wrapper-config.sh
 source "$ROOT_DIR/Scripts/lib/wrapper-config.sh"
 
-# Initialize paths and counters
 init_paths
 init_validation_counters
 
@@ -435,7 +433,7 @@ main() {
     
     if command -v log_title &>/dev/null; then
         log_title "Target Switching Validator"
-        log_info "Repository: $ROOT_DIR"
+        log::info "TARGET" "Repository: $ROOT_DIR"
     else
         echo "============================================================================"
         echo "Target Switching Validator"
@@ -447,8 +445,8 @@ main() {
     
     # Safety check
     if ! validate_repo_root "$ROOT_DIR"; then
-        if command -v log_error &>/dev/null; then
-            log_error "Not in MSP iOS SDK repository. Aborting."
+        if command -v log::error &>/dev/null; then
+            log::error "TARGET" "Not in MSP iOS SDK repository. Aborting."
         else
             echo -e "${RED}ERROR: Not in MSP iOS SDK repository. Aborting.${NC}" >&2
         fi

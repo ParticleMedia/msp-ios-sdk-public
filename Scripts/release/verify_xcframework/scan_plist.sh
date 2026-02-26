@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # --- MSP Worktree Safety Guard (Patch L, shared) ---
 # shellcheck source=/dev/null
 . "$(git rev-parse --show-toplevel 2>/dev/null)/Scripts/lib/worktree_guard.sh"
@@ -14,7 +14,6 @@ msp_enforce_main_repo_or_exit
 
 set -euo pipefail
 
-# Source common utilities
 source "$(dirname "$0")/../verify_remote/common/utils.sh"
 
 # ============================================================================
@@ -26,42 +25,40 @@ scan_plist() {
     local module_name="$2"
     
     if [[ -z "$xcframework_path" ]] || [[ ! -d "$xcframework_path" ]]; then
-        vr_log_error "[XCF] Invalid XCFramework path: $xcframework_path"
+        vr_log::error "VERIFY" "[XCF] Invalid XCFramework path: $xcframework_path"
         return 1
     fi
     
     if [[ -z "$module_name" ]]; then
-        vr_log_error "[XCF] Module name required"
+        vr_log::error "VERIFY" "[XCF] Module name required"
         return 1
     fi
     
-    vr_log_info "[XCF] Scanning Info.plist and umbrella headers for $module_name..."
+    vr_log::info "VERIFY" "[XCF] Scanning Info.plist and umbrella headers for $module_name..."
     echo "[TRACE][XCF] ---> Entering plist scan for $module_name"
 
     local errors=0
 
-    # Check Info.plist
     echo "[TRACE][XCF]      Checking Info.plist..."
     local plist_path="$xcframework_path/Info.plist"
     if [[ ! -f "$plist_path" ]]; then
-        vr_log_error "[XCF] Missing Info.plist"
+        vr_log::error "VERIFY" "[XCF] Missing Info.plist"
         errors=$((errors + 1))
     else
-        vr_log_info "[XCF] Found Info.plist"
+        vr_log::info "VERIFY" "[XCF] Found Info.plist"
 
-        # Validate CFBundlePackageType with timeout
         if command -v plutil >/dev/null 2>&1; then
             echo "[TRACE][XCF]      Running plutil on Info.plist..."
             local package_type
-            if ! package_type="$(vr_run_with_timeout 10 plutil -extract CFBundlePackageType raw "$plist_path" 2>/dev/null || echo "")"; then
-                vr_log_error "[XCF] plutil command timed out"
+            if ! package_type="$(timeout 10s plutil -extract CFBundlePackageType raw "$plist_path" 2>/dev/null || echo "")"; then
+                vr_log::error "VERIFY" "[XCF] plutil command timed out"
                 echo "[TRACE][XCF]      plutil TIMEOUT"
                 errors=$((errors + 1))
             elif [[ "$package_type" != "XFWK" ]]; then
-                vr_log_error "[XCF] Invalid CFBundlePackageType: $package_type (expected XFWK)"
+                vr_log::error "VERIFY" "[XCF] Invalid CFBundlePackageType: $package_type (expected XFWK)"
                 errors=$((errors + 1))
             else
-                vr_log_info "[XCF] CFBundlePackageType is correct: XFWK"
+                vr_log::info "VERIFY" "[XCF] CFBundlePackageType is correct: XFWK"
                 echo "[TRACE][XCF]      plutil completed successfully"
             fi
         fi
@@ -80,37 +77,31 @@ scan_plist() {
             continue
         fi
 
-        local found_framework_in_slice=0
-        while IFS= read -r -d '' slice_framework; do
-            found_framework_in_slice=1
-            scanned_frameworks=$((scanned_frameworks + 1))
+        local umbrella_path="$slice_path/Headers/$module_name.h"
+        if [[ -f "$umbrella_path" ]]; then
+            umbrella_found=1
+            vr_log::info "VERIFY" "[XCF] Found umbrella header in $slice"
+            echo "[TRACE][XCF]      Found umbrella: $umbrella_path"
 
-            local framework_name
-            framework_name="$(basename "$slice_framework" .framework)"
-            local slice_plist="$slice_framework/Info.plist"
-
-            if [[ ! -f "$slice_plist" ]]; then
-                vr_log_error "[XCF] Missing framework Info.plist in slice: $slice ($framework_name)"
-                slice_plist_errors=$((slice_plist_errors + 1))
-                continue
-            fi
-
-            local short_version=""
-            local bundle_version=""
-            if command -v /usr/libexec/PlistBuddy >/dev/null 2>&1; then
-                short_version=$(/usr/libexec/PlistBuddy -c "Print :CFBundleShortVersionString" "$slice_plist" 2>/dev/null || true)
-                bundle_version=$(/usr/libexec/PlistBuddy -c "Print :CFBundleVersion" "$slice_plist" 2>/dev/null || true)
-            fi
-
-            # Fallback to plutil parsing if PlistBuddy is unavailable or key missing
-            if [[ -z "$short_version" ]] || [[ -z "$bundle_version" ]]; then
-                local plist_dump
-                plist_dump="$(plutil -p "$slice_plist" 2>/dev/null || true)"
-                if [[ -z "$short_version" ]]; then
-                    short_version="$(echo "$plist_dump" | awk -F'=> ' '/CFBundleShortVersionString/ {gsub(/[\" ]/,"",$2); print $2; exit}')"
-                fi
-                if [[ -z "$bundle_version" ]]; then
-                    bundle_version="$(echo "$plist_dump" | awk -F'=> ' '/CFBundleVersion/ {gsub(/[\" ]/,"",$2); print $2; exit}')"
+            # Check if umbrella header references exist (with protection against infinite loops)
+            if command -v grep >/dev/null 2>&1; then
+                echo "[TRACE][XCF]      Scanning umbrella header references..."
+                local referenced_headers
+                if ! referenced_headers="$(timeout 10s grep -E '^#import|<.*\.h>' "$umbrella_path" 2>/dev/null | sed -E 's/.*["<]([^">]+)\.h[">].*/\1.h/' || echo "")"; then
+                    vr_log::warn "VERIFY" "[XCF] grep command timed out on umbrella header"
+                    echo "[TRACE][XCF]      grep TIMEOUT on umbrella header"
+                else
+                    if [[ -n "$referenced_headers" ]]; then
+                        local iteration_count=0
+                        while IFS= read -r header && [[ $iteration_count -lt 1000 ]]; do
+                            iteration_count=$((iteration_count + 1))
+                            local header_path="$slice_path/Headers/$header"
+                            if [[ ! -f "$header_path" ]]; then
+                                vr_log::warn "VERIFY" "[XCF] Umbrella header references missing file: $header"
+                            fi
+                        done <<< "$referenced_headers"
+                        echo "[TRACE][XCF]      Processed $iteration_count header references"
+                    fi
                 fi
             fi
 
@@ -192,7 +183,8 @@ scan_plist() {
     done
     
     if [[ $umbrella_found -eq 0 ]]; then
-        vr_log_warn "[XCF] Umbrella header not found (acceptable for pure Swift frameworks)"
+        vr_log::error "VERIFY" "[XCF] Missing umbrella header (Headers/$module_name.h)"
+        errors=$((errors + 1))
     fi
 
     if [[ $scanned_frameworks -eq 0 ]]; then
@@ -202,12 +194,12 @@ scan_plist() {
     fi
 
     if [[ $errors -gt 0 ]]; then
-        vr_log_error "[XCF] Found $errors critical errors in plist/umbrella validation"
+        vr_log::error "VERIFY" "[XCF] Found $errors critical errors in plist/umbrella validation"
         echo "[TRACE][XCF] <--- Plist scan FAILED ($errors errors)"
         return 1
     fi
 
-    vr_log_info "[XCF] Info.plist and umbrella header validation passed"
+    vr_log::info "VERIFY" "[XCF] Info.plist and umbrella header validation passed"
     echo "[TRACE][XCF] <--- Plist scan completed successfully"
 
     return 0

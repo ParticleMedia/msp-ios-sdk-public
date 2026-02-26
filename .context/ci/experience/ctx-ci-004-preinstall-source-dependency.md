@@ -1,13 +1,25 @@
 ---
 id: ctx-ci-004
-title: Podfile pre_install hook 中构建脚本依赖未就绪的源码目录
-layer: experience
+title: "Podfile pre_install hook 中构建脚本依赖未就绪的源码目录"
 domain: ci
-tags: [cocoapods, pre_install, xcodegen, prepare_command, chicken-egg, gitignore]
-created: 2026-01-30
-source: manual
+layer: experience
+tags:
+  - cocoapods
+  - pre-install-hook
+  - xcodegen
+  - chicken-egg
+  - gitignore
+  - prepare-command
+triggers:
+  - "XcodeGen missing source directory in CI"
+  - "pre_install hook depends on prepare_command directory"
+  - "pod install fails in CI but works locally"
+  - "chicken-egg source directory dependency"
+summary: "pre_install hook fails in CI because gitignored source dir is created by prepare_command after hook runs"
+version: "1.0"
 status: active
-confidence: high
+created: "2026-01-30"
+updated: "2026-02-22"
 ---
 
 # Podfile pre_install hook 中构建脚本依赖未就绪的源码目录
@@ -202,3 +214,10 @@ done
   - `ThirdParty/MSPKingfisher/MSPKingfisher.podspec`
   - `.gitignore`
 - CocoaPods 文档: [prepare_command](https://guides.cocoapods.org/syntax/podspec.html#prepare_command)
+
+## 关联 Playbooks
+
+| Playbook | 关系 |
+|----------|------|
+| [ctx-sources-004](../../sources/tech/ctx-sources-004-script-best-practices.md) | 上游 — 脚本执行时序和依赖管理原则 |
+| [ctx-release-002](../../release/experience/ctx-release-002.md) | 同类 — Shell 管道 exit code 问题（另一种 CI 脚本陷阱） |

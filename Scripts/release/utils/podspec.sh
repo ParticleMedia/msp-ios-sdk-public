@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # --- MSP Worktree Safety Guard (Patch L, shared) ---
 # shellcheck source=/dev/null
 . "$(git rev-parse --show-toplevel 2>/dev/null)/Scripts/lib/worktree_guard.sh"
@@ -9,61 +9,31 @@ msp_enforce_main_repo_or_exit
 # Provides functions for podspec manipulation and validation
 
 # ============================================================================
-# ROOT_DIR and UI System Loading
+# ROOT_DIR and UI System Loading (using path-helpers.sh)
 # ============================================================================
-# ============================================
-# Unified ROOT_DIR resolution (final version)
-# ============================================
-if [[ -z "${ROOT_DIR:-}" ]]; then
-    # First try Git repo root (most reliable)
-    if command -v git >/dev/null 2>&1; then
-        git_root="$(git rev-parse --show-toplevel 2>/dev/null || echo "")"
-        if [[ -n "$git_root" ]]; then
-            ROOT_DIR="$git_root"
-        fi
-    fi
+# shellcheck source=Scripts/lib/path-helpers.sh
+source "$(git rev-parse --show-toplevel 2>/dev/null)/Scripts/lib/path-helpers.sh"
 
-    # Fallback to walking up from SCRIPT_DIR
-    if [[ -z "${ROOT_DIR:-}" ]]; then
-        SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-        ROOT_DIR="$SCRIPT_DIR"
-        while [[ "$ROOT_DIR" != "/" ]] && [[ "${ROOT_DIR##*/}" != "Scripts" ]]; do
-            ROOT_DIR="$(dirname "$ROOT_DIR")"
-        done
-        if [[ "${ROOT_DIR##*/}" == "Scripts" ]]; then
-            ROOT_DIR="$(dirname "$ROOT_DIR")"
-        fi
-    fi
-fi
-
-export ROOT_DIR
-
-# Source UI system in order: colors.sh → ui.sh → logging.sh
-# Handle NO_ANSI flag by setting NO_COLOR (logging.sh respects NO_COLOR)
+# Handle NO_ANSI flag by setting NO_COLOR
 if [[ "${NO_ANSI:-false}" == "true" ]]; then
     export NO_COLOR=1
 fi
 
-# Source colors.sh
-if [[ -f "$ROOT_DIR/Scripts/lib/colors.sh" ]]; then
-    # shellcheck source=Scripts/lib/colors.sh
-    source "$ROOT_DIR/Scripts/lib/colors.sh" 2>/dev/null || true
+# Source common.sh which provides unified logging via logger.sh
+if [[ -f "$ROOT_DIR/Scripts/lib/common.sh" ]]; then
+    # shellcheck source=Scripts/lib/common.sh
+    source "$ROOT_DIR/Scripts/lib/common.sh" 2>/dev/null || true
 fi
 
-# Source ui.sh (depends on colors.sh)
-if [[ -f "$ROOT_DIR/Scripts/lib/ui.sh" ]]; then
-    # shellcheck source=Scripts/lib/ui.sh
-    source "$ROOT_DIR/Scripts/lib/ui.sh" 2>/dev/null || true
+# R040d: Source config loader extension for CocoaPods settings
+if [[ -f "$ROOT_DIR/Scripts/lib/config_loader_ext.sh" ]]; then
+    # shellcheck source=Scripts/lib/config_loader_ext.sh
+    source "$ROOT_DIR/Scripts/lib/config_loader_ext.sh" 2>/dev/null || true
+    load_cocoapods_config 2>/dev/null || true
 fi
 
-# Source logging.sh (depends on colors.sh and ui.sh)
-if [[ -f "$ROOT_DIR/Scripts/lib/logging.sh" ]]; then
-    # shellcheck source=Scripts/lib/logging.sh
-    source "$ROOT_DIR/Scripts/lib/logging.sh" 2>/dev/null || true
-fi
-
-# Fallback logging functions if UI system not available
-if ! command -v log_info &>/dev/null; then
+# Fallback logging functions if neither logging system loaded
+if ! command -v log_info &>/dev/null && ! command -v log::info &>/dev/null; then
     : "${RED:=[0;31m}"
     : "${GREEN:=[0;32m}"
     : "${YELLOW:=[1;33m}"
@@ -121,85 +91,73 @@ if ! command -v log_info &>/dev/null; then
     }
     
     log_warn() {
-        log_warning "$@"
+        log::warn "PODSPEC" "$@"
     }
 fi
 
 
-# Source cocoapods.sh for podspec validation and publishing functions
 if [[ -f "$ROOT_DIR/Scripts/lib/cocoapods.sh" ]]; then
     # shellcheck source=Scripts/lib/cocoapods.sh
     source "$ROOT_DIR/Scripts/lib/cocoapods.sh" 2>/dev/null || true
 fi
 
-# Update podspec version
 update_podspec_version() {
     local podspec_file="$1"
     local version="$2"
     
     if [[ ! -f "$podspec_file" ]]; then
-        log_error "Podspec file not found: $podspec_file"
+        log::error "PODSPEC" "Podspec file not found: $podspec_file"
         return 1
     fi
     
-    log_step "Updating version in $podspec_file to $version"
-    
-    # Create backup
-    cp "$podspec_file" "${podspec_file}.backup"
-    
-    # Update version
+    log::step "PODSPEC" "Updating version in $podspec_file to $version"
+
+    # Update version (in-place, no backup needed — files are in worktree)
     sed -i '' "s|spec\.version.*=.*\".*\"|spec.version = \"${version}\"|g" "$podspec_file"
-    
-    log_success "Updated version in $podspec_file to $version"
+
+    log::success "PODSPEC" "Updated version in $podspec_file to $version"
 }
 
-# Update podspec source to HTTP zip format
 update_podspec_source_to_zip() {
     local podspec_file="$1"
     local version="$2"
-    
+
     if [[ ! -f "$podspec_file" ]]; then
-        log_error "Podspec file not found: $podspec_file"
+        log::error "PODSPEC" "Podspec file not found: $podspec_file"
         return 1
     fi
+
+    log::step "PODSPEC" "Updating source in $podspec_file to HTTP zip format"
     
-    log_step "Updating source in $podspec_file to HTTP zip format"
-    
-    # Create backup
-    cp "$podspec_file" "${podspec_file}.backup"
-    
-    # Get pod name from podspec file
     local pod_name=$(basename "$podspec_file" .podspec)
     local http_url="https://github.com/ParticleMedia/msp-ios-sdk-public/releases/download/${version}/${pod_name}-${version}.zip"
     
-    # Update source to use HTTP zip format
     sed -i '' "s|spec\.source.*=.*{.*:git.*=>.*\"https://github\.com/.*\.git\".*:tag.*=>.*\"#{spec\.version}\".*}|spec.source = {\n    http: \"${http_url}\",\n    type: \"zip\"\n  }|g" "$podspec_file"
     
-    log_success "Updated $podspec_file to use HTTP zip source format"
+    log::success "PODSPEC" "Updated $podspec_file to use HTTP zip source format"
 }
 
-# Update podspec dependencies
 update_podspec_dependencies() {
     local podspec_file="$1"
     local dependency_name="$2"
     local version="$3"
     
     if [[ ! -f "$podspec_file" ]]; then
-        log_error "Podspec file not found: $podspec_file"
+        log::error "PODSPEC" "Podspec file not found: $podspec_file"
         return 1
     fi
     
     if [[ -z "$dependency_name" || -z "$version" ]]; then
-        log_error "Dependency name and version are required"
+        log::error "PODSPEC" "Dependency name and version are required"
         return 1
     fi
     
-    log_step "Updating $dependency_name dependency to version $version in $podspec_file"
+    log::step "PODSPEC" "Updating $dependency_name dependency to version $version in $podspec_file"
     
     # Update dependency version
     sed -i '' "s|spec\.dependency '$dependency_name'[^,]*|spec.dependency '$dependency_name', '$version'|g" "$podspec_file"
     
-    log_success "Updated $dependency_name dependency to version $version in $podspec_file"
+    log::success "PODSPEC" "Updated $dependency_name dependency to version $version in $podspec_file"
 }
 
 # Phase R1.9: Private function to execute pod spec lint exactly once (no recursion)
@@ -208,34 +166,36 @@ _msp_podspec_lint_once() {
 
     # Recursion guard: Fail-fast if already inside validation
     if [[ -n "${_MSP_VALIDATE_PODSPEC_GUARD:-}" ]]; then
-        log_error "[RECURSION DETECTED] Already inside podspec validation, aborting to prevent infinite loop"
+        log::error "PODSPEC" "[RECURSION DETECTED] Already inside podspec validation, aborting to prevent infinite loop"
         return 1
     fi
 
     if [[ ! -f "$podspec_file" ]]; then
-        log_error "Podspec file not found: $podspec_file"
+        log::error "PODSPEC" "Podspec file not found: $podspec_file"
         return 1
     fi
 
-    # Set recursion guard
-    export _MSP_VALIDATE_PODSPEC_GUARD=1
+    # Set recursion guard (do NOT export - each process has its own guard)
+    _MSP_VALIDATE_PODSPEC_GUARD=1
 
-    log_step "Validating podspec: $(basename "$podspec_file")"
+    log::step "PODSPEC" "Validating podspec: $(basename "$podspec_file")"
+
+    # R040d: Use configurable timeout from cocoapods-config.yaml
+    local lint_timeout="${PODS_SPEC_LINT_TIMEOUT:-1800}"
 
     # Execute pod spec lint once (no function calls, no recursion possible)
-    # Run with timeout: 30 minutes (1800s)
     # Rationale: Observed 1-5 min, extreme cases up to 20 min (complex deps), 30 min provides safety margin
     local lint_result=0
-    if run_with_timeout 1800 pod spec lint "$podspec_file" --allow-warnings 2>&1; then
-        log_success "Podspec validation passed: $(basename "$podspec_file")"
+    if run_with_timeout "$lint_timeout" pod spec lint "$podspec_file" --allow-warnings 2>&1; then
+        log::success "PODSPEC" "Podspec validation passed: $(basename "$podspec_file")"
         lint_result=0
     else
         local exit_code=$?
         if [[ $exit_code -eq 124 ]]; then
-            log_error "❌ TIMEOUT: pod spec lint exceeded 30 minutes for $(basename "$podspec_file")"
-            log_error "This usually indicates dependency resolution hanging or network issues"
+            log::error "PODSPEC" "❌ TIMEOUT: pod spec lint exceeded $((lint_timeout/60)) minutes for $(basename "$podspec_file")"
+            log::error "PODSPEC" "This usually indicates dependency resolution hanging or network issues"
         else
-            log_error "Podspec validation failed: $(basename "$podspec_file")"
+            log::error "PODSPEC" "Podspec validation failed: $(basename "$podspec_file")"
         fi
         lint_result=1
     fi
@@ -251,7 +211,7 @@ validate_podspec() {
     local podspec_file="$1"
 
     if [[ ! -f "$podspec_file" ]]; then
-        log_error "Podspec file not found: $podspec_file"
+        log::error "PODSPEC" "Podspec file not found: $podspec_file"
         return 1
     fi
 
@@ -265,16 +225,16 @@ _msp_podspec_publish_once() {
     local podspec_file="$1"
 
     if [[ ! -f "$podspec_file" ]]; then
-        log_error "Podspec file not found: $podspec_file"
+        log::error "PODSPEC" "Podspec file not found: $podspec_file"
         return 1
     fi
 
-    log_step "Publishing podspec: $podspec_file"
+    log::step "PODSPEC" "Publishing podspec: $podspec_file"
     if msp_run_pod_trunk_push "$podspec_file"; then
-        log_success "Podspec published: $podspec_file"
+        log::success "PODSPEC" "Podspec published: $podspec_file"
         return 0
     else
-        log_error "Failed to publish podspec: $podspec_file"
+        log::error "PODSPEC" "Failed to publish podspec: $podspec_file"
         return 1
     fi
 }
@@ -285,25 +245,25 @@ publish_podspec() {
 
     # Recursion guard (Phase R1.15)
     if [[ "${_MSP_PUBLISH_PODSPEC_GUARD:-0}" == "1" ]]; then
-        log_error "[BUG] publish_podspec recursion detected"
+        log::error "PODSPEC" "[BUG] publish_podspec recursion detected"
         return 1
     fi
 
-    export _MSP_PUBLISH_PODSPEC_GUARD=1
+    # Guard variables - do NOT export (each process has its own guard)
+    _MSP_PUBLISH_PODSPEC_GUARD=1
     _msp_podspec_publish_once "$podspec_file"
     local result=$?
-    export _MSP_PUBLISH_PODSPEC_GUARD=0
+    _MSP_PUBLISH_PODSPEC_GUARD=0
 
     return $result
 }
 
-# Check if pod is available (wrapper around check_pod_availability from cocoapods.sh)
 check_pod_available() {
     local pod_name="$1"
     local version="${2:-}"
     
     if [[ -z "$pod_name" ]]; then
-        log_error "Pod name is required"
+        log::error "PODSPEC" "Pod name is required"
         return 1
     fi
     
@@ -315,12 +275,12 @@ check_pod_available() {
             check_pod_availability "$pod_name"
         fi
     else
-        log_step "Checking if pod $pod_name is available"
+        log::step "PODSPEC" "Checking if pod $pod_name is available"
         if pod search "$pod_name" --simple 2>/dev/null | grep -q "$pod_name"; then
-            log_success "Pod $pod_name is available"
+            log::success "PODSPEC" "Pod $pod_name is available"
             return 0
         else
-            log_warning "Pod $pod_name is not available"
+            log::warn "PODSPEC" "Pod $pod_name is not available"
             return 1
         fi
     fi
@@ -341,7 +301,7 @@ validate_podspec_with_retry() {
     local max_attempts=3
     local base_delay=5
 
-    log_step "Validating podspec with retry: $(basename "$podspec")"
+    log::step "PODSPEC" "Validating podspec with retry: $(basename "$podspec")"
 
     # Call _msp_podspec_lint_once in retry loop (breaks recursion chain)
     if command -v retry_with_backoff &>/dev/null; then
@@ -355,19 +315,19 @@ validate_podspec_with_retry() {
 # Publish podspec with retry logic
 publish_podspec_with_retry() {
     local podspec="$1"
-    local max_attempts=3
-    local base_delay=10
+    local max_attempts=5
+    local base_delay=60
     
-    log_step "Publishing podspec with retry: $(basename "$podspec")"
+    log::step "PODSPEC" "Publishing podspec with retry: $(basename "$podspec")"
     
     # First update the specs repo with retry (if function exists)
     if command -v update_specs_repo &>/dev/null && command -v retry_with_backoff &>/dev/null; then
         if ! retry_with_backoff 3 5 "specs repo update" update_specs_repo; then
-            log_warning "Failed to update specs repo, continuing anyway..."
+            log::warn "PODSPEC" "Failed to update specs repo, continuing anyway..."
         fi
     elif command -v update_specs_repo &>/dev/null; then
         # Try without retry if retry_with_backoff not available
-        update_specs_repo || log_warning "Failed to update specs repo, continuing anyway..."
+        update_specs_repo || log::warn "PODSPEC" "Failed to update specs repo, continuing anyway..."
     fi
     
     # Then publish with retry (Phase R1.15: call private implementation directly)
@@ -387,7 +347,7 @@ wait_for_pod_availability() {
     local interval="${4:-10}"   # Default 10 seconds
     
     if [[ -z "$pod_name" ]]; then
-        log_error "Pod name is required"
+        log::error "PODSPEC" "Pod name is required"
         return 1
     fi
     
@@ -412,21 +372,21 @@ wait_for_pod_availability() {
                 sleep "$interval"
                 elapsed=$((elapsed + interval))
             done
-            log_error "Pod $pod_name not available after ${max_wait} seconds"
+            log::error "PODSPEC" "Pod $pod_name not available after ${max_wait} seconds"
             return 1
         fi
     else
-        log_warning "check_pod_availability not available, cannot wait for pod"
+        log::warn "PODSPEC" "check_pod_availability not available, cannot wait for pod"
         return 1
     fi
 }
 
 # Export functions
 export -f update_podspec_version update_podspec_source_to_zip update_podspec_dependencies \
-export -f msp_run_pod_trunk_push 2>/dev/null || true
     validate_podspec publish_podspec check_pod_available \
     update_podspec_dependency_version update_podspec_to_zip_format \
-    validate_podspec_with_retry publish_podspec_with_retry wait_for_pod_availability 2>/dev/null || true
+    validate_podspec_with_retry publish_podspec_with_retry wait_for_pod_availability \
+    msp_run_pod_trunk_push 2>/dev/null || true
 
 
 # ============================================================================
@@ -436,7 +396,7 @@ msp_run_pod_trunk_push() {
     local spec="$1"
     
     if [[ -z "$spec" ]]; then
-        log_error "[PODS] msp_run_pod_trunk_push: spec file is required"
+        log::error "PODSPEC" "[PODS] msp_run_pod_trunk_push: spec file is required"
         return 1
     fi
 
@@ -455,17 +415,18 @@ msp_run_pod_trunk_push() {
 
     # Config-driven gating: skip if pods.enabled is false
     if ! is_enabled "pods.enabled"; then
-        log_info "[PODS] [CONFIG] Skipping pod trunk push (config: pods.enabled=false, spec: $spec)"
-        log_info "[PODS] [CONFIG] Running pod spec lint instead to validate podspec"
+        log::info "PODSPEC" "[PODS] [CONFIG] Skipping pod trunk push (config: pods.enabled=false, spec: $spec)"
+        log::info "PODSPEC" "[PODS] [CONFIG] Running pod spec lint instead to validate podspec"
 
-        # Run with timeout: 10 minutes (600s) for quick lint
+        # R040d: Use configurable timeout from cocoapods-config.yaml
+        local quick_lint_timeout="${PODS_QUICK_LINT_TIMEOUT:-600}"
         # Rationale: Quick lint is fast (10-60s), but 10 min provides safety margin
-        if ! run_with_timeout 600 pod spec lint "$spec" --allow-warnings; then
+        if ! run_with_timeout "$quick_lint_timeout" pod spec lint "$spec" --allow-warnings; then
             local exit_code=$?
             if [[ $exit_code -eq 124 ]]; then
-                log_warn "[PODS] pod spec lint TIMED OUT after 10 minutes (config: pods.enabled=false). Treating as non-fatal."
+                log::warn "PODSPEC" "[PODS] pod spec lint TIMED OUT after $((quick_lint_timeout/60)) minutes (config: pods.enabled=false). Treating as non-fatal."
             else
-                log_warn "[PODS] pod spec lint failed for $spec (config: pods.enabled=false). Treating as non-fatal."
+                log::warn "PODSPEC" "[PODS] pod spec lint failed for $spec (config: pods.enabled=false). Treating as non-fatal."
             fi
             return 0
         fi
@@ -476,8 +437,8 @@ msp_run_pod_trunk_push() {
     # Real release tier behavior - check config (Patch M+CONFIG)
     if ! should_real_publish; then
         local branch="$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo unknown)"
-        log_error "[PODS][BLOCKED] Real pod trunk push not allowed on branch: $branch"
-        log_error "[PODS][BLOCKED] Check Scripts/release/config/release_config.yaml for branch policy"
+        log::error "PODSPEC" "[PODS][BLOCKED] Real pod trunk push not allowed on branch: $branch"
+        log::error "PODSPEC" "[PODS][BLOCKED] Check Scripts/config/release.yaml for branch policy"
         return 1
     fi
     
@@ -502,15 +463,15 @@ msp_run_pod_trunk_push() {
         pod_version=$(grep -E "^[[:space:]]*spec\.version[[:space:]]*=" "$spec" | head -1 | sed -E "s/.*spec\.version[[:space:]]*=[[:space:]]*['\"]([^'\"]+)['\"].*/\1/" || \
                       grep -E "^[[:space:]]*spec\.version[[:space:]]*=" "$spec" | head -1 | sed -E "s/.*spec\.version[[:space:]]*=[[:space:]]*([^[:space:]]+).*/\1/")
     else
-        log_error "[PODS] Podspec file not found: $spec"
+        log::error "PODSPEC" "[PODS] Podspec file not found: $spec"
         return 1
     fi
     
     if [[ -z "$pod_name" ]] || [[ -z "$pod_version" ]]; then
-        log_warn "[PODS] Could not extract pod name or version from podspec, skipping idempotency check"
-        log_warn "[PODS] Pod name: ${pod_name:-<empty>}, Version: ${pod_version:-<empty>}"
+        log::warn "PODSPEC" "[PODS] Could not extract pod name or version from podspec, skipping idempotency check"
+        log::warn "PODSPEC" "[PODS] Pod name: ${pod_name:-<empty>}, Version: ${pod_version:-<empty>}"
     else
-        log_info "[PODS] Performing idempotency check: querying CocoaPods trunk for ${pod_name}..."
+        log::info "PODSPEC" "[PODS] Performing idempotency check: querying CocoaPods trunk for ${pod_name}..."
         
         # Execute pod trunk info and capture output + exit code
         local trunk_info_output
@@ -531,30 +492,31 @@ msp_run_pod_trunk_push() {
             # The space and parenthesis ensure we don't match 0.1.0 when looking for 0.1.0-rc.1
             # Use -- to separate options from pattern to avoid issues with version strings starting with -
             if echo "$trunk_info_output" | grep -- "- ${pod_version} (" >/dev/null 2>&1; then
-                log_success "[PODS] ✅ ${pod_name} ${pod_version} already published to CocoaPods trunk"
-                log_info "[PODS] Idempotency: Skipping duplicate pod trunk push"
+                log::success "PODSPEC" "[PODS] ✅ ${pod_name} ${pod_version} already published to CocoaPods trunk"
+                log::info "PODSPEC" "[PODS] Idempotency: Skipping duplicate pod trunk push"
                 local publish_timestamp
                 publish_timestamp=$(echo "$trunk_info_output" | grep -- "- ${pod_version} (" | head -1 | sed 's/.*(\(.*\))/\1/')
-                log_info "[PODS] Published timestamp: ${publish_timestamp:-unknown}"
+                log::info "PODSPEC" "[PODS] Published timestamp: ${publish_timestamp:-unknown}"
                 return 0
             else
-                log_info "[PODS] Version ${pod_version} not found in trunk, proceeding with publish"
+                log::info "PODSPEC" "[PODS] Version ${pod_version} not found in trunk, proceeding with publish"
             fi
         else
             # Command failed - could be network error, pod doesn't exist yet, or auth issue
             # Fail-safe: Don't skip, proceed with publish attempt
-            log_info "[PODS] ⚠️  pod trunk info failed (exit code: ${trunk_info_exit_code})"
-            log_info "[PODS] This may be normal for first-time pod publishing or network issues"
-            log_info "[PODS] Proceeding with publish attempt (fail-safe behavior)"
+            log::info "PODSPEC" "[PODS] ⚠️  pod trunk info failed (exit code: ${trunk_info_exit_code})"
+            log::info "PODSPEC" "[PODS] This may be normal for first-time pod publishing or network issues"
+            log::info "PODSPEC" "[PODS] Proceeding with publish attempt (fail-safe behavior)"
         fi
     fi
     
     # Production mode (DRY_RUN=false) - proceed with trunk push
     # Note: MSP_ALLOW_TRUNK_PUSH guard removed - redundant with DRY_RUN control
-    log_info "[PODS] Running pod trunk push for $spec"
-    log_info "[PODS] Timeout: 30 minutes (1800s)"
-    
-    # Run with timeout: 30 minutes (1800s)
+    # R040d: Use configurable timeout from cocoapods-config.yaml
+    local trunk_push_timeout="${PODS_TRUNK_PUSH_TIMEOUT:-1800}"
+    log::info "PODSPEC" "[PODS] Running pod trunk push for $spec"
+    log::info "PODSPEC" "[PODS] Timeout: $((trunk_push_timeout/60)) minutes (${trunk_push_timeout}s)"
+
     # Rationale: Observed 5-15 min, extreme cases up to 25 min, 30 min provides safety margin
     # Use tee to capture output in real-time while also displaying it
     local push_log_file
@@ -563,35 +525,35 @@ msp_run_pod_trunk_push() {
     # Ensure cleanup on exit (normal or interrupted)
     trap "rm -f '$push_log_file'" EXIT INT TERM
 
-    log_info "[PODS] Executing: pod trunk push \"$spec\" --allow-warnings"
-    log_info "[PODS] Output will be captured to: $push_log_file"
+    log::info "PODSPEC" "[PODS] Executing: pod trunk push \"$spec\" --allow-warnings"
+    log::info "PODSPEC" "[PODS] Output will be captured to: $push_log_file"
 
     # Run with timeout and capture output in real-time using tee
     # tee outputs to both stdout (for real-time viewing) and file (for later reference)
     # Use PIPESTATUS to get the actual exit code of run_with_timeout, not tee
-    run_with_timeout 1800 pod trunk push "$spec" --allow-warnings 2>&1 | tee "$push_log_file"
+    run_with_timeout "$trunk_push_timeout" pod trunk push "$spec" --allow-warnings 2>&1 | tee "$push_log_file"
     local exit_code=${PIPESTATUS[0]}
 
     if [[ $exit_code -eq 0 ]]; then
-        log_success "[PODS] ✅ Successfully pushed $spec to trunk"
+        log::success "PODSPEC" "[PODS] ✅ Successfully pushed $spec to trunk"
         rm -f "$push_log_file"
         return 0
     elif [[ $exit_code -eq 124 ]]; then
-        log_error "[PODS] ❌ TIMEOUT: pod trunk push exceeded 30 minutes"
-        log_error "[PODS] This usually indicates:"
-        log_error "  1. Network connectivity issues"
-        log_error "  2. CocoaPods trunk server is slow or down"
-        log_error "  3. Podspec validation is taking too long"
-        log_error ""
-        log_error "Troubleshooting:"
-        log_error "  1. Check network: curl -I https://trunk.cocoapods.org"
-        log_error "  2. Check podspec locally: pod spec lint $spec --allow-warnings"
-        log_error "  3. Try again in a few minutes (server may be slow)"
-        log_error "  4. Review captured output: $push_log_file"
+        log::error "PODSPEC" "[PODS] ❌ TIMEOUT: pod trunk push exceeded $((trunk_push_timeout/60)) minutes"
+        log::error "PODSPEC" "[PODS] This usually indicates:"
+        log::error "PODSPEC" "  1. Network connectivity issues"
+        log::error "PODSPEC" "  2. CocoaPods trunk server is slow or down"
+        log::error "PODSPEC" "  3. Podspec validation is taking too long"
+        log::error "PODSPEC" ""
+        log::error "PODSPEC" "Troubleshooting:"
+        log::error "PODSPEC" "  1. Check network: curl -I https://trunk.cocoapods.org"
+        log::error "PODSPEC" "  2. Check podspec locally: pod spec lint $spec --allow-warnings"
+        log::error "PODSPEC" "  3. Try again in a few minutes (server may be slow)"
+        log::error "PODSPEC" "  4. Review captured output: $push_log_file"
         return 1
     else
-        log_error "[PODS] ❌ pod trunk push failed with exit code $exit_code"
-        log_error "[PODS] Review captured output for details: $push_log_file"
+        log::error "PODSPEC" "[PODS] ❌ pod trunk push failed with exit code $exit_code"
+        log::error "PODSPEC" "[PODS] Review captured output for details: $push_log_file"
         return $exit_code
     fi
 }
@@ -614,12 +576,12 @@ smart_wait_for_pod_availability() {
 
     # Skip waiting in DRY_RUN mode
     if [[ "${DRY_RUN:-false}" == "true" ]]; then
-        log_info "DRY RUN: Skipping pod availability wait for $pod_name $version"
+        log::info "PODSPEC" "DRY RUN: Skipping pod availability wait for $pod_name $version"
         return 0
     fi
 
     if [[ -z "$pod_name" || -z "$version" ]]; then
-        log_error "Usage: smart_wait_for_pod_availability <pod_name> <version> [context]"
+        log::error "PODSPEC" "Usage: smart_wait_for_pod_availability <pod_name> <version> [context]"
         return 1
     fi
 
@@ -636,105 +598,44 @@ smart_wait_for_pod_availability() {
     # Changed from 120s/10s to 180s/30s (6 checks → 6 checks but less overhead)
     # With caching, each check now takes 5-10s instead of 50-60s
     # Total Stage 1 time: ~3 minutes (much faster than before despite longer timeout)
-    log_step "Quick check: Is $pod_name $version available? (3 min timeout, 30s intervals)..."
+    log::step "PODSPEC" "Quick check: Is $pod_name $version available? (3 min timeout, 30s intervals)..."
 
     if wait_for_pod_availability "$pod_name" "$version" 180 30; then
-        log_success "✓ $pod_name $version is available!"
+        log::success "PODSPEC" "✓ $pod_name $version is available!"
         return 0
     fi
 
     # ═══════════════════════════════════════════════════════════════════════════
-    # Stage 2: Not available - present options
+    # Stage 2: Not available yet — auto-continue waiting
     # ═══════════════════════════════════════════════════════════════════════════
-    log_warn "✗ $pod_name $version not available yet (checked for 3 minutes)"
-    echo ""
-    log_info "═══════════════════════════════════════════════════════════════════════════"
-    log_info "$pod_name $version was recently published. CDN sync can take 5-30 minutes."
-    log_info "Context: $context"
-    log_info "═══════════════════════════════════════════════════════════════════════════"
-    echo ""
-    log_info "Options:"
-    log_info "  1. Continue waiting (up to 40 more minutes) - Recommended for just-published pods"
-    log_info "  2. Try proceeding anyway (may fail if pod not synced)"
-    log_info "  3. Exit and retry later (safe choice)"
-    echo ""
-
-    local choice
-
-    # Explicit override from CLI/env: MSP_POD_WAIT_CHOICE=1|2|3
-    if [[ -n "${MSP_POD_WAIT_CHOICE:-}" ]]; then
-        if [[ "${MSP_POD_WAIT_CHOICE}" =~ ^[123]$ ]]; then
-            choice="${MSP_POD_WAIT_CHOICE}"
-            log_info "[Configured] Auto-selecting pod wait option: ${choice}"
-        else
-            log_warn "Invalid MSP_POD_WAIT_CHOICE='${MSP_POD_WAIT_CHOICE}', falling back to default behavior"
-        fi
+    log::warn "PODSPEC" "✗ $pod_name $version not available yet (checked for 3 minutes)"
+    log::info "PODSPEC" "$pod_name $version was recently published. CDN sync can take 5-30 minutes."
+    if [[ -n "$context" ]]; then
+        log::info "PODSPEC" "Context: $context"
     fi
 
-    # CI/Batch mode or non-interactive: auto-select option 1
-    # Check if stdin is a TTY (interactive) or if CI/BATCH_MODE is set
-    if [[ -z "${choice:-}" ]] && ( [[ "${CI:-false}" == "true" ]] || [[ "${BATCH_MODE:-false}" == "true" ]] || ! [[ -t 0 ]] ); then
-        log_info "[Non-Interactive Mode] Auto-selecting: Continue waiting (option 1)"
-        choice="1"
-    elif [[ -z "${choice:-}" ]]; then
-        # Interactive mode: ask user
-        read -p "Choose [1/2/3]: " choice
+    # ═══════════════════════════════════════════════════════════════════════════
+    # Stage 3: Long wait (up to 57 more minutes, 60 total)
+    # ═══════════════════════════════════════════════════════════════════════════
+    # Rationale: Observed 10-25 min, extreme cases up to 40-60 min
+    log::info "PODSPEC" "Continuing to wait for $pod_name $version (up to 57 more minutes)..."
+    log::info "PODSPEC" "CDN propagation can take 10-60 minutes. Checking every 60 seconds."
+
+    # 57 minutes = 3420 seconds (60 total - 3 already waited)
+    if ! wait_for_pod_availability "$pod_name" "$version" 3420 60; then
+        log::error "PODSPEC" "$pod_name $version still not available after 60 minutes total"
+        log::error "PODSPEC" "This is unusual. Please check:"
+        log::error "PODSPEC" "  1. Did $pod_name $version publish succeed?"
+        log::error "PODSPEC" "     Command: pod trunk info $pod_name"
+        log::error "PODSPEC" "  2. Is CocoaPods CDN having issues?"
+        log::error "PODSPEC" "     Check: https://status.cocoapods.org"
+        log::error "PODSPEC" "  3. Try manual check:"
+        log::error "PODSPEC" "     pod repo update && pod search $pod_name | grep $version"
+        return 1
     fi
 
-    case "$choice" in
-        1)
-            # ═══════════════════════════════════════════════════════════════════════════
-            # Stage 3: Long wait (up to 57 more minutes total)
-            # ═══════════════════════════════════════════════════════════════════════════
-            # Increased from 1620s (27 min) to 3420s (57 min)
-            # Total: 180 + 3420 = 3600s (60 minutes)
-            # Rationale: Observed 10-25 min, extreme cases up to 40-60 min
-            log_info "Continuing to wait for $pod_name $version (up to 57 more minutes)..."
-            log_info "CDN propagation can take 10-60 minutes depending on network and load"
-            log_info "Checking every 60 seconds. Press Ctrl+C to abort."
-            echo ""
-
-            # 57 minutes = 3420 seconds (60 total - 3 already waited)
-            if ! wait_for_pod_availability "$pod_name" "$version" 3420 60; then
-                log_error "$pod_name $version still not available after 60 minutes total"
-                log_error "This is unusual. Please check:"
-                log_error "  1. Did $pod_name $version publish succeed?"
-                log_error "     Command: pod trunk info $pod_name"
-                log_error "  2. Is CocoaPods CDN having issues?"
-                log_error "     Check: https://status.cocoapods.org"
-                log_error "  3. Try manual check:"
-                log_error "     pod repo update && pod search $pod_name | grep $version"
-                return 1
-            fi
-
-            log_success "✓ $pod_name $version is now available!"
-            return 0
-            ;;
-
-        2)
-            log_warn "Proceeding without $pod_name $version availability confirmation"
-            log_warn "Subsequent operations may fail if pod not synced to CDN yet"
-            echo ""
-            if [[ -z "${MSP_POD_WAIT_CHOICE:-}" ]] && [[ -t 0 ]]; then
-                read -p "Press Enter to continue..."
-                echo ""
-            else
-                log_info "[Configured/Non-Interactive Mode] Continuing without additional confirmation"
-            fi
-            return 0
-            ;;
-
-        3)
-            log_info "Exiting. Please retry after CDN sync completes."
-            log_info "To check manually: pod search $pod_name | grep $version"
-            return 1
-            ;;
-
-        *)
-            log_error "Invalid choice: $choice"
-            return 1
-            ;;
-    esac
+    log::success "PODSPEC" "✓ $pod_name $version is now available!"
+    return 0
 }
 
 # Export the function

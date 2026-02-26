@@ -40,14 +40,14 @@ Tests/
 # Or use xcodebuild directly
 xcodebuild test \
   -workspace msp-ios-sdk.xcworkspace \
-  -scheme AllTests \
+  -scheme MSPTests \
   -destination 'platform=iOS Simulator,name=iPhone 15'
 ```
 
 ### Xcode
 
 1. Open `msp-ios-sdk.xcworkspace`
-2. Select `AllTests` scheme
+2. Select `MSPTests` scheme
 3. Press `Cmd+U` to run tests
 
 ## Writing Tests
@@ -159,7 +159,7 @@ Tests run automatically on:
 
 ### Tests Not Running
 
-1. Check scheme is set to `AllTests`
+1. Check scheme is set to `MSPTests`
 2. Run `pod install` if dependencies are missing
 3. Verify simulator is available
 

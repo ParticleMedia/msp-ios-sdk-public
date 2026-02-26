@@ -16,7 +16,6 @@ msp_enforce_main_repo_or_exit
 
 set -euo pipefail
 
-# Source shared libraries
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT_DIR="$(cd "$SCRIPT_DIR/../.." && pwd)"
 
@@ -31,7 +30,14 @@ source "$ROOT_DIR/Scripts/lib/validation-helpers.sh"
 # shellcheck source=Scripts/lib/wrapper-config.sh
 source "$ROOT_DIR/Scripts/lib/wrapper-config.sh"
 
-# Initialize paths and counters
+# Ensure logger functions are available in subprocess
+# (Force reload by unsetting the guard variable, as parent may have already sourced)
+if [[ -f "$ROOT_DIR/Scripts/release/utils/logger.sh" ]]; then
+    unset MSP_LOGGER_LOADED
+    # shellcheck source=Scripts/release/utils/logger.sh
+    source "$ROOT_DIR/Scripts/release/utils/logger.sh" 2>/dev/null || true
+fi
+
 init_paths
 init_validation_counters
 
@@ -320,11 +326,11 @@ check_stale_files() {
 
 main() {
     log_title "Wrapper Package Validator"
-    log_info "Repository: $ROOT_DIR"
+    log::info "XCFW" "Repository: $ROOT_DIR"
     
     # Safety check
     if ! validate_repo_root "$ROOT_DIR"; then
-        log_error "Not in MSP iOS SDK repository. Aborting."
+        log::error "XCFW" "Not in MSP iOS SDK repository. Aborting."
         exit 1
     fi
     

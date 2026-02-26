@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # --- MSP Worktree Safety Guard (Patch L, shared) ---
 # shellcheck source=/dev/null
 . "$(git rev-parse --show-toplevel 2>/dev/null)/Scripts/lib/worktree_guard.sh"
@@ -13,10 +13,9 @@ readonly PLUGIN_NAME="fastlane"
 readonly PLUGIN_VERSION="1.0.0"
 readonly PLUGIN_DESCRIPTION="Fastlane Integration Plugin"
 
-# Source dependencies
+# Source dependencies (common.sh provides unified logging)
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$SCRIPT_DIR/../lib/common.sh"
-source "$SCRIPT_DIR/../lib/logging.sh"
 
 # Plugin activation check
 is_plugin_active() {
@@ -29,7 +28,7 @@ plugin_init() {
         return $EXIT_SUCCESS
     fi
     
-    log_debug "Initializing Fastlane integration plugin..."
+    log::debug "PLUGIN" "Initializing Fastlane integration plugin..."
     
     # Configure Fastlane environment
     configure_fastlane_environment
@@ -43,12 +42,12 @@ plugin_init() {
     # Configure reporting
     configure_fastlane_reporting
     
-    log_success "Fastlane integration plugin initialized"
+    log::success "PLUGIN" "Fastlane integration plugin initialized"
 }
 
 # Environment configuration
 configure_fastlane_environment() {
-    log_step "Configuring Fastlane environment..."
+    log::step "PLUGIN" "Configuring Fastlane environment..."
     
     # Fastlane-specific settings
     export FASTLANE_INTEGRATION_MODE=true
@@ -74,12 +73,12 @@ configure_fastlane_environment() {
     export COCOAPODS_DISABLE_STATS=true
     export HOMEBREW_NO_AUTO_UPDATE=1
     
-    log_debug "Fastlane environment configured"
+    log::debug "PLUGIN" "Fastlane environment configured"
 }
 
 # Fastlane optimizations
 setup_fastlane_optimizations() {
-    log_step "Setting up Fastlane optimizations..."
+    log::step "PLUGIN" "Setting up Fastlane optimizations..."
     
     # Configure paths for Fastlane integration
     setup_fastlane_paths
@@ -90,11 +89,11 @@ setup_fastlane_optimizations() {
     # Configure build optimizations
     setup_fastlane_build_optimizations
     
-    log_success "Fastlane optimizations configured"
+    log::success "PLUGIN" "Fastlane optimizations configured"
 }
 
 setup_fastlane_paths() {
-    log_debug "Configuring Fastlane paths..."
+    log::debug "PLUGIN" "Configuring Fastlane paths..."
     
     # Use Fastlane's build log path if available
     if [[ -n "${FL_BUILDLOG_PATH}" ]]; then
@@ -117,11 +116,11 @@ setup_fastlane_paths() {
     ensure_directory "$COCOAPODS_CACHE_DIR"
     ensure_directory "$BUNDLE_CACHE_DIR"
     
-    log_debug "Fastlane paths configured"
+    log::debug "PLUGIN" "Fastlane paths configured"
 }
 
 setup_fastlane_caching() {
-    log_debug "Setting up Fastlane caching..."
+    log::debug "PLUGIN" "Setting up Fastlane caching..."
     
     # Configure bundler for Fastlane
     if command -v bundle >/dev/null 2>&1; then
@@ -138,11 +137,11 @@ setup_fastlane_caching() {
     export CP_HOME_DIR="$COCOAPODS_CACHE_DIR"
     export CP_REPOS_DIR="$COCOAPODS_CACHE_DIR/repos"
     
-    log_debug "Fastlane caching configured"
+    log::debug "PLUGIN" "Fastlane caching configured"
 }
 
 setup_fastlane_build_optimizations() {
-    log_debug "Setting up Fastlane build optimizations..."
+    log::debug "PLUGIN" "Setting up Fastlane build optimizations..."
     
     # Create Fastlane-specific xcconfig
     local xcconfig_file="$FASTLANE_CACHE_DIR/fastlane.xcconfig"
@@ -155,7 +154,7 @@ setup_fastlane_build_optimizations() {
     export MAX_PARALLEL_JOBS="$cores"
     export FASTLANE_PARALLEL_BUILDS=YES
     
-    log_debug "Fastlane build optimizations configured"
+    log::debug "PLUGIN" "Fastlane build optimizations configured"
 }
 
 create_fastlane_xcconfig() {
@@ -192,12 +191,12 @@ CLANG_WARN_DOCUMENTATION_COMMENTS = NO
 GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR
 EOF
     
-    log_debug "Created Fastlane Xcode configuration: $xcconfig_file"
+    log::debug "PLUGIN" "Created Fastlane Xcode configuration: $xcconfig_file"
 }
 
 # Lane integration
 setup_lane_integration() {
-    log_step "Setting up Fastlane lane integration..."
+    log::step "PLUGIN" "Setting up Fastlane lane integration..."
     
     # Detect current lane
     detect_current_lane
@@ -208,7 +207,7 @@ setup_lane_integration() {
     # Setup callbacks
     setup_fastlane_callbacks
     
-    log_success "Lane integration configured"
+    log::success "PLUGIN" "Lane integration configured"
 }
 
 detect_current_lane() {
@@ -218,7 +217,7 @@ detect_current_lane() {
     export CURRENT_FASTLANE_LANE="$current_lane"
     export CURRENT_FASTLANE_PLATFORM="$current_platform"
     
-    log_debug "Detected Fastlane lane: $current_platform:$current_lane"
+    log::debug "PLUGIN" "Detected Fastlane lane: $current_platform:$current_lane"
 }
 
 configure_lane_specific_settings() {
@@ -242,11 +241,11 @@ configure_lane_specific_settings() {
             ;;
     esac
     
-    log_debug "Lane-specific settings configured for: $lane"
+    log::debug "PLUGIN" "Lane-specific settings configured for: $lane"
 }
 
 configure_test_lane_settings() {
-    log_debug "Configuring test lane settings..."
+    log::debug "PLUGIN" "Configuring test lane settings..."
     
     export FASTLANE_TEST_MODE=true
     export COLLECT_TEST_RESULTS=true
@@ -257,7 +256,7 @@ configure_test_lane_settings() {
 }
 
 configure_build_lane_settings() {
-    log_debug "Configuring build lane settings..."
+    log::debug "PLUGIN" "Configuring build lane settings..."
     
     export FASTLANE_BUILD_MODE=true
     export ENABLE_BUILD_ANALYSIS=true
@@ -268,7 +267,7 @@ configure_build_lane_settings() {
 }
 
 configure_release_lane_settings() {
-    log_debug "Configuring release lane settings..."
+    log::debug "PLUGIN" "Configuring release lane settings..."
     
     export FASTLANE_RELEASE_MODE=true
     export SKIP_CODE_SIGN=0  # Enable code signing for releases
@@ -278,7 +277,7 @@ configure_release_lane_settings() {
 }
 
 configure_validation_lane_settings() {
-    log_debug "Configuring validation lane settings..."
+    log::debug "PLUGIN" "Configuring validation lane settings..."
     
     export FASTLANE_VALIDATION_MODE=true
     export STRICT_VALIDATION=true
@@ -289,13 +288,13 @@ configure_validation_lane_settings() {
 }
 
 configure_default_lane_settings() {
-    log_debug "Configuring default lane settings..."
+    log::debug "PLUGIN" "Configuring default lane settings..."
     
     export FASTLANE_DEFAULT_MODE=true
 }
 
 setup_fastlane_callbacks() {
-    log_debug "Setting up Fastlane callbacks..."
+    log::debug "PLUGIN" "Setting up Fastlane callbacks..."
     
     # Export callback functions
     export -f fastlane_build_started fastlane_build_completed
@@ -314,7 +313,7 @@ setup_callback_triggers() {
 
 # Reporting configuration
 configure_fastlane_reporting() {
-    log_step "Configuring Fastlane reporting..."
+    log::step "PLUGIN" "Configuring Fastlane reporting..."
     
     # Setup build reporting
     setup_fastlane_build_reporting
@@ -325,11 +324,11 @@ configure_fastlane_reporting() {
     # Setup validation reporting
     setup_fastlane_validation_reporting
     
-    log_success "Fastlane reporting configured"
+    log::success "PLUGIN" "Fastlane reporting configured"
 }
 
 setup_fastlane_build_reporting() {
-    log_debug "Setting up Fastlane build reporting..."
+    log::debug "PLUGIN" "Setting up Fastlane build reporting..."
     
     export FASTLANE_BUILD_REPORTING=true
     export BUILD_REPORT_FILE="${BUILD_LOGS_DIR:-$PWD}/build-report.json"
@@ -337,7 +336,7 @@ setup_fastlane_build_reporting() {
 }
 
 setup_fastlane_test_reporting() {
-    log_debug "Setting up Fastlane test reporting..."
+    log::debug "PLUGIN" "Setting up Fastlane test reporting..."
     
     export FASTLANE_TEST_REPORTING=true
     export TEST_REPORT_FILE="${BUILD_LOGS_DIR:-$PWD}/test-report.json"
@@ -345,7 +344,7 @@ setup_fastlane_test_reporting() {
 }
 
 setup_fastlane_validation_reporting() {
-    log_debug "Setting up Fastlane validation reporting..."
+    log::debug "PLUGIN" "Setting up Fastlane validation reporting..."
     
     export FASTLANE_VALIDATION_REPORTING=true
     export VALIDATION_REPORT_FILE="${BUILD_LOGS_DIR:-$PWD}/validation-report.json"
@@ -359,7 +358,7 @@ run_fastlane_lane() {
     shift 2
     local args=("$@")
     
-    log_step "Running Fastlane lane: $platform:$lane"
+    log::step "PLUGIN" "Running Fastlane lane: $platform:$lane"
     
     # Check if bundle exec should be used
     local fastlane_cmd="fastlane"
@@ -369,10 +368,10 @@ run_fastlane_lane() {
     
     # Run the lane
     if $fastlane_cmd "$platform" "$lane" "${args[@]}"; then
-        log_success "Fastlane lane completed: $platform:$lane"
+        log::success "PLUGIN" "Fastlane lane completed: $platform:$lane"
         return $EXIT_SUCCESS
     else
-        log_error "Fastlane lane failed: $platform:$lane"
+        log::error "PLUGIN" "Fastlane lane failed: $platform:$lane"
         return $EXIT_BUILD_ERROR
     fi
 }
@@ -389,32 +388,32 @@ get_fastlane_lane_list() {
 }
 
 validate_fastlane_setup() {
-    log_step "Validating Fastlane setup..."
+    log::step "PLUGIN" "Validating Fastlane setup..."
     
     # Check if Fastlane is installed
     if ! command -v fastlane >/dev/null 2>&1; then
         if command -v bundle >/dev/null 2>&1 && bundle exec fastlane version >/dev/null 2>&1; then
-            log_success "Fastlane available via bundle exec"
+            log::success "PLUGIN" "Fastlane available via bundle exec"
         else
-            log_error "Fastlane not available"
+            log::error "PLUGIN" "Fastlane not available"
             return $EXIT_COMMAND_NOT_FOUND
         fi
     else
-        log_success "Fastlane command available"
+        log::success "PLUGIN" "Fastlane command available"
     fi
     
     # Check if Fastfile exists
     if [[ ! -f "fastlane/Fastfile" ]]; then
-        log_error "Fastfile not found"
+        log::error "PLUGIN" "Fastfile not found"
         return $EXIT_VALIDATION_ERROR
     fi
     
     # Check if Appfile exists
     if [[ ! -f "fastlane/Appfile" ]]; then
-        log_warn "Appfile not found (optional)"
+        log::warn "PLUGIN" "Appfile not found (optional)"
     fi
     
-    log_success "Fastlane setup validated"
+    log::success "PLUGIN" "Fastlane setup validated"
 }
 
 # Callback functions
@@ -423,7 +422,7 @@ fastlane_lane_started() {
     local platform="$2"
     
     if [[ "$FASTLANE_CALLBACKS_ENABLED" == "true" ]]; then
-        log_info "🚀 Fastlane lane started: $platform:$lane"
+        log::info "PLUGIN" "🚀 Fastlane lane started: $platform:$lane"
         
         # Record start time
         export FASTLANE_LANE_START_TIME=$(date +%s)
@@ -444,9 +443,9 @@ fastlane_lane_completed() {
         fi
         
         if [[ "$status" == "success" ]]; then
-            log_success "✅ Fastlane lane completed: $platform:$lane ($duration)"
+            log::success "PLUGIN" "✅ Fastlane lane completed: $platform:$lane ($duration)"
         else
-            log_error "❌ Fastlane lane failed: $platform:$lane ($duration)"
+            log::error "PLUGIN" "❌ Fastlane lane failed: $platform:$lane ($duration)"
         fi
     fi
 }
@@ -455,7 +454,7 @@ fastlane_build_started() {
     local framework="$1"
     
     if [[ "$FASTLANE_BUILD_REPORTING" == "true" ]]; then
-        log_info "🔨 Build started: $framework"
+        log::info "PLUGIN" "🔨 Build started: $framework"
         
         # Record in build report
         if [[ -n "$BUILD_REPORT_FILE" ]]; then
@@ -471,9 +470,9 @@ fastlane_build_completed() {
     
     if [[ "$FASTLANE_BUILD_REPORTING" == "true" ]]; then
         if [[ "$status" == "success" ]]; then
-            log_success "✅ Build completed: $framework ($duration)"
+            log::success "PLUGIN" "✅ Build completed: $framework ($duration)"
         else
-            log_error "❌ Build failed: $framework ($duration)"
+            log::error "PLUGIN" "❌ Build failed: $framework ($duration)"
         fi
         
         # Record in build report
@@ -487,7 +486,7 @@ fastlane_test_started() {
     local scheme="$1"
     
     if [[ "$FASTLANE_TEST_REPORTING" == "true" ]]; then
-        log_info "🧪 Tests started: $scheme"
+        log::info "PLUGIN" "🧪 Tests started: $scheme"
         
         # Record in test report
         if [[ -n "$TEST_REPORT_FILE" ]]; then
@@ -503,9 +502,9 @@ fastlane_test_completed() {
     
     if [[ "$FASTLANE_TEST_REPORTING" == "true" ]]; then
         if [[ "$status" == "success" ]]; then
-            log_success "✅ Tests completed: $scheme ($duration)"
+            log::success "PLUGIN" "✅ Tests completed: $scheme ($duration)"
         else
-            log_error "❌ Tests failed: $scheme ($duration)"
+            log::error "PLUGIN" "❌ Tests failed: $scheme ($duration)"
         fi
         
         # Record in test report
@@ -519,7 +518,7 @@ fastlane_validation_started() {
     local component="$1"
     
     if [[ "$FASTLANE_VALIDATION_REPORTING" == "true" ]]; then
-        log_info "🔍 Validation started: $component"
+        log::info "PLUGIN" "🔍 Validation started: $component"
         
         # Record in validation report
         if [[ -n "$VALIDATION_REPORT_FILE" ]]; then
@@ -535,9 +534,9 @@ fastlane_validation_completed() {
     
     if [[ "$FASTLANE_VALIDATION_REPORTING" == "true" ]]; then
         if [[ "$status" == "success" ]]; then
-            log_success "✅ Validation completed: $component ($duration)"
+            log::success "PLUGIN" "✅ Validation completed: $component ($duration)"
         else
-            log_error "❌ Validation failed: $component ($duration)"
+            log::error "PLUGIN" "❌ Validation failed: $component ($duration)"
         fi
         
         # Record in validation report
@@ -553,7 +552,7 @@ plugin_cleanup() {
         return $EXIT_SUCCESS
     fi
     
-    log_debug "Cleaning up Fastlane integration plugin..."
+    log::debug "PLUGIN" "Cleaning up Fastlane integration plugin..."
     
     # Generate final reports
     generate_fastlane_reports
@@ -569,12 +568,12 @@ plugin_cleanup() {
         fi
     done
     
-    log_debug "Fastlane integration plugin cleanup completed"
+    log::debug "PLUGIN" "Fastlane integration plugin cleanup completed"
 }
 
 generate_fastlane_reports() {
     if [[ "$FASTLANE_BUILD_REPORTING" == "true" ]] && [[ -n "$BUILD_REPORT_FILE" ]]; then
-        log_debug "Generating Fastlane build report..."
+        log::debug "PLUGIN" "Generating Fastlane build report..."
         
         # Create JSON build report
         cat > "$BUILD_REPORT_FILE" << EOF
@@ -613,7 +612,7 @@ handle_plugin_command() {
             generate_fastlane_reports
             ;;
         *)
-            log_warn "Unknown Fastlane plugin command: $command"
+            log::warn "PLUGIN" "Unknown Fastlane plugin command: $command"
             return $EXIT_GENERAL_ERROR
             ;;
     esac

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # --- MSP Worktree Safety Guard (Patch L, shared) ---
 # shellcheck source=/dev/null
 . "$(git rev-parse --show-toplevel 2>/dev/null)/Scripts/lib/worktree_guard.sh"
@@ -6,14 +6,18 @@ msp_enforce_main_repo_or_exit
 # --- End MSP Worktree Safety Guard (Patch L, shared) ---
 set -euo pipefail
 
-# Source shared libraries
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT_DIR="$(cd "$SCRIPT_DIR/../.." && pwd)"
 
 # shellcheck source=Scripts/lib/paths.sh
 source "$ROOT_DIR/Scripts/lib/paths.sh"
 
-# Initialize paths
+# R029e: Source xcodegen module for unified generation
+if [[ -f "$ROOT_DIR/Scripts/lib/xcodegen.sh" ]]; then
+    # shellcheck source=Scripts/lib/xcodegen.sh
+    source "$ROOT_DIR/Scripts/lib/xcodegen.sh" 2>/dev/null || true
+fi
+
 init_paths
 # shellcheck source=Scripts/lib/demoapp_config.sh
 source "$ROOT_DIR/Scripts/lib/demoapp_config.sh"
@@ -376,7 +380,7 @@ schemes:
       config: Debug
     archive:
       config: Release
-  AllTests:
+  MSPTests:
     build:
       targets:
         MSPDemoApp: all
@@ -465,13 +469,22 @@ XML
   echo "</Workspace>"
 } > "$WORKSPACE_DATA"
 
-XCODEGEN_BIN="$(command -v xcodegen || true)"
-if [[ -z "$XCODEGEN_BIN" ]]; then
-  echo "$LOG_PREFIX xcodegen is not installed. Install via 'brew install xcodegen' (2.38.0+ required) and re-run this script." >&2
-else
-  echo "$LOG_PREFIX Running xcodegen generate"
-  if ! "$XCODEGEN_BIN" generate --spec "$PROJECT_SPEC"; then
+# R029e: Use xcodegen.sh module if available, fallback to direct call
+if command -v xcodegen_generate &>/dev/null; then
+  echo "$LOG_PREFIX Running xcodegen generate via xcodegen.sh module"
+  if ! xcodegen_generate "$PROJECT_SPEC" "$(dirname "$PROJECT_SPEC")"; then
     echo "$LOG_PREFIX xcodegen failed. Ensure version 2.38.0+ is installed (run 'brew upgrade xcodegen')." >&2
+  fi
+else
+  # Fallback to direct xcodegen call
+  XCODEGEN_BIN="$(command -v xcodegen || true)"
+  if [[ -z "$XCODEGEN_BIN" ]]; then
+    echo "$LOG_PREFIX xcodegen is not installed. Install via 'brew install xcodegen' (2.38.0+ required) and re-run this script." >&2
+  else
+    echo "$LOG_PREFIX Running xcodegen generate"
+    if ! "$XCODEGEN_BIN" generate --spec "$PROJECT_SPEC"; then
+      echo "$LOG_PREFIX xcodegen failed. Ensure version 2.38.0+ is installed (run 'brew upgrade xcodegen')." >&2
+    fi
   fi
 fi
 

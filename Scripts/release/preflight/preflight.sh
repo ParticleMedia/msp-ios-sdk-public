@@ -1,42 +1,25 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # --- MSP Worktree Safety Guard (Patch L, shared) ---
 # shellcheck source=/dev/null
 . "$(git rev-parse --show-toplevel 2>/dev/null)/Scripts/lib/worktree_guard.sh"
 msp_enforce_main_repo_or_exit
 # --- End MSP Worktree Safety Guard (Patch L, shared) ---
 
+# Load path helpers (sets ROOT_DIR)
+# shellcheck source=Scripts/lib/path-helpers.sh
+source "$(git rev-parse --show-toplevel 2>/dev/null)/Scripts/lib/path-helpers.sh"
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-# ============================================
-# Unified ROOT_DIR resolution (final version)
-# ============================================
-if [[ -z "${ROOT_DIR:-}" ]]; then
-    # First try Git repo root (most reliable)
-    if command -v git >/dev/null 2>&1; then
-        git_root="$(git rev-parse --show-toplevel 2>/dev/null || echo "")"
-        if [[ -n "$git_root" ]]; then
-            ROOT_DIR="$git_root"
-        fi
-    fi
-
-    # Fallback to walking up from SCRIPT_DIR
-    if [[ -z "${ROOT_DIR:-}" ]]; then
-        ROOT_DIR="$SCRIPT_DIR"
-        while [[ "$ROOT_DIR" != "/" ]] && [[ "${ROOT_DIR##*/}" != "Scripts" ]]; do
-            ROOT_DIR="$(dirname "$ROOT_DIR")"
-        done
-        if [[ "${ROOT_DIR##*/}" == "Scripts" ]]; then
-            ROOT_DIR="$(dirname "$ROOT_DIR")"
-        fi
-    fi
-fi
-
-export ROOT_DIR
 
 # shellcheck source=Scripts/lib/release-common.sh
 source "$ROOT_DIR/Scripts/lib/release-common.sh"
 
 # Load release state utilities
 source "$ROOT_DIR/Scripts/release/utils/state.sh"
+
+# Load unified logging system (if not already loaded)
+if [[ -f "$ROOT_DIR/Scripts/release/utils/logger.sh" ]]; then
+    source "$ROOT_DIR/Scripts/release/utils/logger.sh" 2>/dev/null || true
+fi
 
 # ============================================================================
 # Resume Helper
@@ -64,7 +47,7 @@ _msp_preflight_should_skip_step() {
 preflight_static() {
     # Check if we should skip this step in resume mode
     if _msp_preflight_should_skip_step "preflight_static"; then
-        log_info "Resuming: skipping preflight_static (status already success/skipped)"
+        log::info "PREFLIGHT" "Resuming: skipping preflight_static (status already success/skipped)"
         return 0
     fi
     
@@ -76,58 +59,87 @@ preflight_static() {
     local warnings=0
     
     # 1) Clean working tree check
-    log_step "Checking git working tree"
+    log::step "PREFLIGHT" "Checking git working tree"
     if [[ -n "$(git status --porcelain 2>/dev/null)" ]]; then
         if [[ "${DRY_RUN:-false}" == "true" ]]; then
-            log_warn "Working tree is not clean (DRY RUN mode - continuing)"
+            log::warn "PREFLIGHT" "Working tree is not clean (DRY RUN mode - continuing)"
             ((warnings++)) || true
         else
-            log_error "Working tree is not clean. Please commit or stash changes."
+            log::error "PREFLIGHT" "Working tree is not clean. Please commit or stash changes."
             ((errors++)) || true
         fi
     else
-        log_info "Working tree is clean"
+        log::info "PREFLIGHT" "Working tree is clean"
     fi
     
     # 2) Branch consistency
-    log_step "Checking branch consistency"
+    log::step "PREFLIGHT" "Checking branch consistency"
     local current_branch
     current_branch=$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo "unknown")
     local base_branch="${BASE_BRANCH:-}"
     local release_branch="${RELEASE_BRANCH:-}"
-    
+
     if [[ -n "$base_branch" && "$current_branch" != "$base_branch" ]] && \
        [[ -n "$release_branch" && "$current_branch" != "$release_branch" ]]; then
-        log_warn "Current branch '$current_branch' does not match BASE_BRANCH='$base_branch' or RELEASE_BRANCH='$release_branch'"
+        log::warn "PREFLIGHT" "Current branch '$current_branch' does not match BASE_BRANCH='$base_branch' or RELEASE_BRANCH='$release_branch'"
         ((warnings++)) || true
     else
-        log_info "Branch check passed (current: $current_branch)"
+        log::info "PREFLIGHT" "Branch check passed (current: $current_branch)"
     fi
-    
+
+    # 2.5) Auto-push unpushed commits
+    #      Prevents "branch not pushed" failures later in the release pipeline.
+    if [[ "$current_branch" != "unknown" && "$current_branch" != "HEAD" ]]; then
+        log::step "PREFLIGHT" "Checking for unpushed commits"
+        local unpushed_count=0
+        if git rev-parse --verify "origin/$current_branch" &>/dev/null; then
+            unpushed_count=$(git rev-list "origin/$current_branch..HEAD" --count 2>/dev/null || echo "0")
+        else
+            # Remote tracking branch does not exist yet — all local commits are unpushed
+            unpushed_count=$(git rev-list HEAD --count 2>/dev/null || echo "0")
+        fi
+
+        if [[ "$unpushed_count" -gt 0 ]]; then
+            log::info "PREFLIGHT" "$unpushed_count unpushed commit(s) on '$current_branch', pushing to origin..."
+            if [[ "${DRY_RUN:-false}" == "true" ]]; then
+                log::info "PREFLIGHT" "DRY RUN: Would run 'git push -u origin $current_branch'"
+            else
+                if git push -u origin "$current_branch" 2>&1; then
+                    log::success "PREFLIGHT" "Pushed $unpushed_count commit(s) to origin/$current_branch"
+                else
+                    log::warn "PREFLIGHT" "Failed to push to origin/$current_branch (will continue)"
+                    ((warnings++)) || true
+                fi
+            fi
+        else
+            log::info "PREFLIGHT" "Branch is up to date with origin"
+        fi
+    fi
+
     # 3) Version validation
-    log_step "Validating release version"
+    log::step "PREFLIGHT" "Validating release version"
     local version="${RELEASE_VERSION:-}"
     if [[ -z "$version" ]]; then
-        log_warn "RELEASE_VERSION is not set (version check skipped)"
+        log::warn "PREFLIGHT" "RELEASE_VERSION is not set (version check skipped)"
         ((warnings++)) || true
     elif [[ ! "$version" =~ ^[0-9]+\.[0-9]+\.[0-9]+.*$ ]]; then
-        log_warn "Version '$version' does not match semver pattern (X.Y.Z)"
+        log::warn "PREFLIGHT" "Version '$version' does not match semver pattern (X.Y.Z)"
         ((warnings++)) || true
     else
-        log_info "Version validation passed: $version"
+        log::info "PREFLIGHT" "Version validation passed: $version"
     fi
     
     # 4) ReleaseArtifacts Binary directory existence
-    log_step "Checking ReleaseArtifacts/Binary directory"
+    log::step "PREFLIGHT" "Checking ReleaseArtifacts/Binary directory"
     if [[ ! -d "$ROOT_DIR/Build/ReleaseArtifacts/Binary" ]]; then
-        log_warn "ReleaseArtifacts/Binary directory not found at $ROOT_DIR/Build/ReleaseArtifacts/Binary"
+        log::warn "PREFLIGHT" "ReleaseArtifacts/Binary directory not found at $ROOT_DIR/Build/ReleaseArtifacts/Binary"
         ((warnings++)) || true
     else
-        log_info "ReleaseArtifacts/Binary directory exists"
+        log::info "PREFLIGHT" "ReleaseArtifacts/Binary directory exists"
     fi
     
     # 5) Light XCFramework existence check
-    log_step "Checking core XCFrameworks"
+    log::step "PREFLIGHT" "Checking core XCFrameworks"
     local xcframeworks_dir="$ROOT_DIR/Build/ReleaseArtifacts/XCFrameworks"
     # Stage B: MSPOMSDK removed - OMSDK now embedded in NovaCore
     local required_frameworks=(
@@ -140,59 +152,59 @@ preflight_static() {
     local found_count=0
     for framework in "${required_frameworks[@]}"; do
         if [[ -d "$xcframeworks_dir/${framework}.xcframework" ]]; then
-            log_info "Found: ${framework}.xcframework"
+            log::info "PREFLIGHT" "Found: ${framework}.xcframework"
             ((found_count++)) || true
         else
-            log_warn "Missing: ${framework}.xcframework"
+            log::warn "PREFLIGHT" "Missing: ${framework}.xcframework"
         fi
     done
     
     if [[ $found_count -eq ${#required_frameworks[@]} ]]; then
-        log_info "All ${#required_frameworks[@]} core XCFrameworks found"
+        log::info "PREFLIGHT" "All ${#required_frameworks[@]} core XCFrameworks found"
     elif [[ $found_count -gt 0 ]]; then
-        log_warn "Only $found_count/${#required_frameworks[@]} core XCFrameworks found"
+        log::warn "PREFLIGHT" "Only $found_count/${#required_frameworks[@]} core XCFrameworks found"
     else
-        log_warn "No core XCFrameworks found (build preflight will enforce)"
+        log::warn "PREFLIGHT" "No core XCFrameworks found (build preflight will enforce)"
     fi
     
     # 6) Command availability check
-    log_step "Checking required commands"
+    log::step "PREFLIGHT" "Checking required commands"
     
     # git (required)
     if command -v git &>/dev/null; then
-        log_info "git: available"
+        log::info "PREFLIGHT" "git: available"
     else
-        log_error "git: not found (required)"
+        log::error "PREFLIGHT" "git: not found (required)"
         ((errors++)) || true
     fi
     
     # pod (warn only)
     if command -v pod &>/dev/null; then
-        log_info "pod: available"
+        log::info "PREFLIGHT" "pod: available"
     else
-        log_warn "pod: not found (CocoaPods releases will fail)"
+        log::warn "PREFLIGHT" "pod: not found (CocoaPods releases will fail)"
         ((warnings++)) || true
     fi
     
     # xcodebuild (warn only)
     if command -v xcodebuild &>/dev/null; then
-        log_info "xcodebuild: available"
+        log::info "PREFLIGHT" "xcodebuild: available"
     else
-        log_warn "xcodebuild: not found (builds will fail)"
+        log::warn "PREFLIGHT" "xcodebuild: not found (builds will fail)"
         ((warnings++)) || true
     fi
     
     # Final summary
     local exit_code=0
     if [[ $errors -gt 0 ]]; then
-        log_error "Static preflight checks failed with $errors error(s) and $warnings warning(s)"
+        log::error "PREFLIGHT" "Static preflight checks failed with $errors error(s) and $warnings warning(s)"
         exit_code=1
     elif [[ $warnings -gt 0 ]]; then
-        log_warn "Static preflight checks passed with $warnings warning(s)"
-        log_success "Static preflight checks passed (with warnings)"
+        log::warn "PREFLIGHT" "Static preflight checks passed with $warnings warning(s)"
+        log::success "PREFLIGHT" "Static preflight checks passed (with warnings)"
         exit_code=0
     else
-        log_success "Static preflight checks passed"
+        log::success "PREFLIGHT" "Static preflight checks passed"
         exit_code=0
     fi
     
@@ -211,7 +223,7 @@ preflight_static() {
 preflight_build() {
     # Check if we should skip this step in resume mode
     if _msp_preflight_should_skip_step "preflight_build"; then
-        log_info "Resuming: skipping preflight_build (status already success/skipped)"
+        log::info "PREFLIGHT" "Resuming: skipping preflight_build (status already success/skipped)"
         return 0
     fi
     
@@ -221,51 +233,51 @@ preflight_build() {
     
     # 1) DRY_RUN shortcut
     if [[ "${DRY_RUN:-false}" == "true" ]]; then
-        log_info "DRY RUN: Skipping build preflight"
+        log::info "PREFLIGHT" "DRY RUN: Skipping build preflight"
         msp_state_mark_step_skipped "preflight_build" "preflight build skipped due to DRY_RUN"
         return 0
     fi
     
     # 2) Ensure XCFrameworks for binary distribution adapters
-    log_step "Ensuring XCFrameworks for binary distribution adapters"
+    log::step "PREFLIGHT" "Ensuring XCFrameworks for binary distribution adapters"
     local ensure_xcfw_script="$ROOT_DIR/Scripts/release/utils/ensure_xcframeworks.sh"
 
     if [[ -f "$ensure_xcfw_script" ]] && [[ -x "$ensure_xcfw_script" ]]; then
         if ! "$ensure_xcfw_script" ensure; then
-            log_error "Failed to ensure XCFrameworks"
+            log::error "PREFLIGHT" "Failed to ensure XCFrameworks"
             msp_state_mark_step_failed "preflight_build" "failed to ensure XCFrameworks for binary adapters" "1"
             return 1
         fi
-        log_success "All required XCFrameworks ready"
+        log::success "PREFLIGHT" "All required XCFrameworks ready"
     else
-        log_warn "XCFramework ensure script not found or not executable: $ensure_xcfw_script"
-        log_warn "Skipping auto-build of missing XCFrameworks"
+        log::warn "PREFLIGHT" "XCFramework ensure script not found or not executable: $ensure_xcfw_script"
+        log::warn "PREFLIGHT" "Skipping auto-build of missing XCFrameworks"
     fi
 
     # 3) Round-trip test
     local round_trip_script="$ROOT_DIR/Scripts/target-switching/round-trip-test.sh"
 
     if [[ ! -f "$round_trip_script" ]]; then
-        log_warn "Round-trip test script not found at $round_trip_script"
-        log_warn "Skipping build preflight (script missing)"
+        log::warn "PREFLIGHT" "Round-trip test script not found at $round_trip_script"
+        log::warn "PREFLIGHT" "Skipping build preflight (script missing)"
         msp_state_mark_step_skipped "preflight_build" "preflight build skipped due to missing round-trip script"
         return 0
     fi
 
-    log_step "Running round-trip test"
+    log::step "PREFLIGHT" "Running round-trip test"
     local cmd="$round_trip_script --loops=1"
     
     if [[ "$VERBOSE" == "true" ]]; then
-        log_info "Command: $cmd"
+        log::info "PREFLIGHT" "Command: $cmd"
     fi
     
     if ! bash "$round_trip_script" --loops=1; then
-        log_error "Round-trip test failed"
+        log::error "PREFLIGHT" "Round-trip test failed"
         msp_state_mark_step_failed "preflight_build" "preflight build checks failed" "1"
         return 1
     fi
     
-    log_success "Build preflight checks passed"
+    log::success "PREFLIGHT" "Build preflight checks passed"
     msp_state_mark_step_success "preflight_build"
     return 0
 }
@@ -276,7 +288,12 @@ preflight_build() {
 run_preflight_main() {
     # Initialize state for standalone preflight
     msp_state_init "preflight"
-    
+
+    # Start Phase 1: Preflight
+    if command -v log_phase_start &>/dev/null; then
+        log_phase_start "$PHASE_PREFLIGHT"
+    fi
+
     local static_only=false
     local build_only=false
     
@@ -292,7 +309,7 @@ run_preflight_main() {
                 shift
                 ;;
             *)
-                log_warn "Unknown flag: $1"
+                log::warn "PREFLIGHT" "Unknown flag: $1"
                 shift
                 ;;
         esac
@@ -303,28 +320,46 @@ run_preflight_main() {
         # Only build checks
         msp_state_mark_step_skipped "preflight_static" "preflight static skipped due to --build-only"
         if ! preflight_build; then
+            if command -v log_phase_end &>/dev/null; then
+                log_phase_end "failed"
+            fi
             return 1
         fi
     elif [[ "$static_only" == "true" ]]; then
         # Only static checks
         if ! preflight_static; then
+            if command -v log_phase_end &>/dev/null; then
+                log_phase_end "failed"
+            fi
             return 1
         fi
         msp_state_mark_step_skipped "preflight_build" "preflight build skipped due to --static-only"
     else
         # Default: both checks
         if ! preflight_static; then
-            log_error "Static preflight failed"
+            log::error "PREFLIGHT" "Static preflight failed"
+            if command -v log_phase_end &>/dev/null; then
+                log_phase_end "failed"
+            fi
             return 1
         fi
-        
+
         if ! preflight_build; then
-            log_error "Build preflight failed"
+            log::error "PREFLIGHT" "Build preflight failed"
+            if command -v log_phase_end &>/dev/null; then
+                log_phase_end "failed"
+            fi
             return 1
         fi
     fi
-    
-    log_success "All preflight checks passed"
+
+    log::success "PREFLIGHT" "All preflight checks passed"
+
+    # End Phase 1: Preflight
+    if command -v log_phase_end &>/dev/null; then
+        log_phase_end "success"
+    fi
+
     return 0
 }
 

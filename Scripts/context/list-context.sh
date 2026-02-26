@@ -5,15 +5,13 @@ set -euo pipefail
 # Purpose: List and filter context entries, manage the context index
 # Usage: ./Scripts/context/list-context.sh [OPTIONS]
 
-# Get script directory and load common functions
-# shellcheck disable=SC2155
-readonly SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+readonly SCRIPT_DIR
 # shellcheck source=./common.sh
 source "$SCRIPT_DIR/common.sh"
 
-# Configuration
-# shellcheck disable=SC2155
-readonly REPO_ROOT=$(get_repo_root)
+REPO_ROOT=$(get_repo_root)
+readonly REPO_ROOT
 readonly CONTEXT_DIR="$REPO_ROOT/.context"
 readonly INDEX_FILE="$CONTEXT_DIR/index.md"
 

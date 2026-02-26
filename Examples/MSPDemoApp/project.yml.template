@@ -38,11 +38,6 @@ targetTemplates:
     platform: iOS
     sources:
       - path: MSPDemoApp
-    info:
-      path: MSPDemoApp/Info.plist
-      properties:
-        UILaunchStoryboardName: LaunchScreen
-        UIMainStoryboardFile: Main
     settings:
       base:
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
@@ -55,6 +50,10 @@ targetTemplates:
   TestTarget:
     type: bundle.unit-test
     platform: iOS
+    sources:
+      - path: ../../Tests/Shared
+        excludes:
+          - "**/.DS_Store"
     settings:
       base:
         ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES: "YES"

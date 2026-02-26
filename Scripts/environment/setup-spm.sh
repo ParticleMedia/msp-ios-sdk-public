@@ -10,14 +10,12 @@ msp_enforce_main_repo_or_exit
 
 set -euo pipefail
 
-# Source shared libraries
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT_DIR="$(cd "$SCRIPT_DIR/../.." && pwd)"
 
 # shellcheck source=Scripts/lib/paths.sh
 source "$ROOT_DIR/Scripts/lib/paths.sh"
 
-# Initialize paths
 init_paths
 
 LOG_PREFIX="[setup-spm]"

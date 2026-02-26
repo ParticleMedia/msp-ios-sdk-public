@@ -1,0 +1,11 @@
+{
+  "bidId": "test-bid-123",
+  "price": 2.50,
+  "currency": "USD",
+  "adMarkup": "<html><body>Test Ad</body></html>",
+  "width": 320,
+  "height": 50,
+  "creativeId": "creative-456",
+  "dealId": null,
+  "networkName": "test-network"
+}

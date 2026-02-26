@@ -10,7 +10,6 @@ msp_enforce_main_repo_or_exit
 
 set -euo pipefail
 
-# Source shared libraries
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT_DIR="$(cd "$SCRIPT_DIR/../.." && pwd)"
 
@@ -21,7 +20,14 @@ source "$ROOT_DIR/Scripts/lib/colors.sh"
 # shellcheck source=Scripts/lib/ui.sh
 source "$ROOT_DIR/Scripts/lib/ui.sh"
 
-# Initialize paths
+# Ensure logger functions are available in subprocess
+# (Force reload by unsetting the guard variable, as parent may have already sourced)
+if [[ -f "$ROOT_DIR/Scripts/release/utils/logger.sh" ]]; then
+    unset MSP_LOGGER_LOADED
+    # shellcheck source=Scripts/release/utils/logger.sh
+    source "$ROOT_DIR/Scripts/release/utils/logger.sh" 2>/dev/null || true
+fi
+
 init_paths
 
 # Wrapper definitions: scheme_name:output_wrapper:sdk_name:source_path:pods_dir
@@ -67,7 +73,6 @@ WRAPPER_KEYS=(
     "InMobiSDK"
 )
 
-# Function to generate Package.swift for a wrapper
 generate_package_swift() {
     local wrapper_name="$1"
     local sdk_name="$2"
@@ -110,10 +115,9 @@ let package = Package(
 )
 PACKAGE_SWIFT
     
-    log_info "Generated: $package_path"
+    log::info "XCFW" "Generated: $package_path"
 }
 
-# Function to generate wrapper source file
 generate_wrapper_source() {
     local wrapper_name="$1"
     local module_name="$2"
@@ -127,32 +131,30 @@ generate_wrapper_source() {
 @_exported import ${module_name}
 SWIFT_SOURCE
     
-    log_info "Generated: $source_file"
+    log::info "XCFW" "Generated: $source_file"
 }
 
-# Function to create wrapper directory structure
 create_wrapper_structure() {
     local wrapper_name="$1"
     
     mkdir -p "$ROOT_DIR/${wrapper_name}/Frameworks"
     mkdir -p "$ROOT_DIR/${wrapper_name}/Sources/${wrapper_name}/include"
     
-    log_info "Created directory structure for $wrapper_name"
+    log::info "XCFW" "Created directory structure for $wrapper_name"
 }
 
-# Function to process a single wrapper
 process_wrapper() {
     local wrapper_key="$1"
     local wrapper_config
     wrapper_config=$(get_wrapper_config "$wrapper_key")
     
     if [[ -z "$wrapper_config" ]]; then
-        log_error "Unknown wrapper: $wrapper_key"
+        log::error "XCFW" "Unknown wrapper: $wrapper_key"
         return 1
     fi
     
     IFS=':' read -r scheme output_wrapper sdk_name source_path pods_dir <<< "$wrapper_config" || {
-        log_error "Failed to parse wrapper config for: $wrapper_key"
+        log::error "XCFW" "Failed to parse wrapper config for: $wrapper_key"
         return 1
     }
     
@@ -163,7 +165,6 @@ process_wrapper() {
     echo "Source Path: $source_path"
     echo "Pods Dir: $pods_dir"
     
-    # Create directory structure
     create_wrapper_structure "$output_wrapper"
     
     # Determine module name (for binary target)
@@ -185,29 +186,29 @@ process_wrapper() {
     
     # Build xcframework if source path is provided (copy mode) or scheme is provided (build mode)
     if [[ -n "$source_path" ]]; then
-        log_step "Building xcframework (copy mode)"
+        log::step "XCFW" "Building xcframework (copy mode)"
         "$SCRIPT_DIR/builder.sh" \
             --copy \
             --source-path "$ROOT_DIR/$source_path" \
             --output "$output_wrapper" \
             --sdk-name "$sdk_name" \
             --pods-dir "$ROOT_DIR/$pods_dir" || {
-            log_warn "Failed to build xcframework for $wrapper_key"
+            log::warn "XCFW" "Failed to build xcframework for $wrapper_key"
         }
     elif [[ -n "$scheme" ]]; then
-        log_step "Building xcframework (build mode)"
+        log::step "XCFW" "Building xcframework (build mode)"
         "$SCRIPT_DIR/builder.sh" \
             --scheme "$scheme" \
             --output "$output_wrapper" \
             --sdk-name "$sdk_name" \
             --pods-dir "$ROOT_DIR/$pods_dir" || {
-            log_warn "Failed to build xcframework for $wrapper_key"
+            log::warn "XCFW" "Failed to build xcframework for $wrapper_key"
         }
     else
-        log_warn "No build method specified for $wrapper_key"
+        log::warn "XCFW" "No build method specified for $wrapper_key"
     fi
     
-    log_success "Completed: $wrapper_key"
+    log::success "XCFW" "Completed: $wrapper_key"
 }
 
 # Main execution
@@ -215,7 +216,6 @@ MAIN() {
     local process_all=false
     local specific_wrapper=""
     
-    # Parse arguments
     while [[ $# -gt 0 ]]; do
         case $1 in
             --all)
@@ -227,8 +227,8 @@ MAIN() {
                 shift 2
                 ;;
             *)
-                log_error "Unknown option: $1"
-                log_info "Usage: $0 [--all] [--wrapper <name>]"
+                log::error "XCFW" "Unknown option: $1"
+                log::info "XCFW" "Usage: $0 [--all] [--wrapper <name>]"
                 exit 1
                 ;;
         esac
@@ -237,19 +237,19 @@ MAIN() {
     log_title "Wrapper Generator"
     
     if [[ "$process_all" == true ]]; then
-        log_info "Processing all wrappers..."
+        log::info "XCFW" "Processing all wrappers..."
         for wrapper_key in "${WRAPPER_KEYS[@]}"; do
             process_wrapper "$wrapper_key"
         done
     elif [[ -n "$specific_wrapper" ]]; then
         process_wrapper "$specific_wrapper"
     else
-        log_error "Must specify --all or --wrapper <name>"
+        log::error "XCFW" "Must specify --all or --wrapper <name>"
         exit 1
     fi
     
     log_title "Wrapper Generation Complete"
-    log_success "All wrappers processed successfully"
+    log::success "XCFW" "All wrappers processed successfully"
 }
 
 MAIN "$@"
