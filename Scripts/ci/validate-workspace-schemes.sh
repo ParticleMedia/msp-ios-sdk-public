@@ -46,18 +46,16 @@ fi
 
 echo "$LOG_PREFIX Listing schemes in $WORKSPACE_FILE..."
 
-# Get xcodebuild -list output for debugging
 XCODEBUILD_OUTPUT=$(xcodebuild -workspace "$WORKSPACE_FILE" -list 2>&1)
 XCODEBUILD_EXIT_CODE=$?
 
-if [ $XCODEBUILD_EXIT_CODE -ne 0 ]; then
+if [ "$XCODEBUILD_EXIT_CODE" -ne 0 ]; then
   echo "❌ Failed to list schemes from workspace: $WORKSPACE_FILE" >&2
   echo "xcodebuild output:" >&2
   echo "$XCODEBUILD_OUTPUT" >&2
   exit 1
 fi
 
-# Extract schemes from output
 # Match "Schemes:" at beginning of line (with optional leading whitespace)
 ALL_SCHEMES=$(echo "$XCODEBUILD_OUTPUT" | awk '
   /^[[:space:]]*Schemes:/{in_section=1; next}
@@ -90,6 +88,7 @@ MISSING_LIST=""
 
 echo ""
 echo "$LOG_PREFIX Checking required Pod schemes from $CONFIG_FILE..."
+# shellcheck disable=SC2086 -- intentional word-splitting: REQUIRED_SCHEMES is a space-delimited name list
 for scheme in $REQUIRED_SCHEMES; do
   # Check for exact match first
   if printf '%s\n' "$ALL_SCHEMES" | grep -Fqx "$scheme"; then

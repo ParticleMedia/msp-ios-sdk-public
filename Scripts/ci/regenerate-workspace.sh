@@ -34,7 +34,6 @@ if [ ! -d "$WORKSPACE_PATH" ]; then
 fi
 
 echo "$LOG_PREFIX Verifying workspace contains Pod projects..."
-# Check if workspace contains Pod projects
 if [ -f "$WORKSPACE_PATH/contents.xcworkspacedata" ]; then
   POD_PROJECTS_COUNT=$(grep -c "Pods/" "$WORKSPACE_PATH/contents.xcworkspacedata" || echo "0")
   echo "$LOG_PREFIX Found $POD_PROJECTS_COUNT Pod project reference(s) in workspace"

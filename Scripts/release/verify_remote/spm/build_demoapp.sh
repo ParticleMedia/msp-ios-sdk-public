@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # --- MSP Worktree Safety Guard (Patch L, shared) ---
 # shellcheck source=/dev/null
 . "$(git rev-parse --show-toplevel 2>/dev/null)/Scripts/lib/worktree_guard.sh"
@@ -14,7 +14,6 @@ msp_enforce_main_repo_or_exit
 
 set -euo pipefail
 
-# Source common utilities
 source "$(dirname "$0")/../common/utils.sh"
 
 # ============================================================================
@@ -25,37 +24,37 @@ build_demoapp_spm() {
     local sandbox="$1"
     
     if [[ -z "$sandbox" ]]; then
-        vr_log_error "Sandbox path required"
+        vr_log::error "SPM" "Sandbox path required"
         return 1
     fi
     
     if [[ ! -d "$sandbox" ]]; then
-        vr_log_error "Sandbox directory does not exist: $sandbox"
+        vr_log::error "SPM" "Sandbox directory does not exist: $sandbox"
         return 1
     fi
     
     pushd "$sandbox" >/dev/null || {
-        vr_log_error "Failed to change to sandbox directory"
+        vr_log::error "SPM" "Failed to change to sandbox directory"
         return 1
     }
     
     # Step 1: Resolve package dependencies
-    vr_log_info "[SPM] Running swift package resolve..."
+    vr_log::info "SPM" "[SPM] Running swift package resolve..."
     if ! swift package resolve; then
-        vr_log_error "[SPM] swift package resolve failed"
+        vr_log::error "SPM" "[SPM] swift package resolve failed"
         popd >/dev/null
         return 1
     fi
     
     # Step 2: Build the package
-    vr_log_info "[SPM] Building DemoApp via swift build..."
+    vr_log::info "SPM" "[SPM] Building DemoApp via swift build..."
     if ! swift build --configuration release; then
-        vr_log_error "[SPM] Swift build failed"
+        vr_log::error "SPM" "[SPM] Swift build failed"
         popd >/dev/null
         return 1
     fi
     
-    vr_log_info "[SPM] Swift build succeeded"
+    vr_log::info "SPM" "[SPM] Swift build succeeded"
     
     popd >/dev/null
     return 0

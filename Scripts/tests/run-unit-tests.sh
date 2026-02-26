@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 set -euo pipefail
 
 # MSP iOS SDK Unit Test Runner
@@ -7,8 +7,16 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT_DIR="$(cd "$SCRIPT_DIR/../.." && pwd)"
 
-SCHEME="${1:-AllTests}"
-DESTINATION="${2:-platform=iOS Simulator,name=iPhone 15}"
+# R042c: Source config loader extension for test settings
+if [[ -f "$ROOT_DIR/Scripts/lib/config_loader_ext.sh" ]]; then
+    # shellcheck source=Scripts/lib/config_loader_ext.sh
+    source "$ROOT_DIR/Scripts/lib/config_loader_ext.sh" 2>/dev/null || true
+    load_test_config 2>/dev/null || true
+fi
+
+SCHEME="${1:-MSPTests}"
+# R042c: Use configurable destination from test-config.yaml
+DESTINATION="${2:-${TEST_UNIT_TEST_DESTINATION:-platform=iOS Simulator,name=iPhone 15}}"
 
 WORKSPACE_PATH=""
 PROJECT_PATH=""

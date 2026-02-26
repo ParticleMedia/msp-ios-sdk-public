@@ -2,17 +2,14 @@
 # Common functions for context management scripts
 # This file should be sourced by other scripts: source "$(dirname "$0")/common.sh"
 
-# Get repository root directory
 get_repo_root() {
     git rev-parse --show-toplevel 2>/dev/null || pwd
 }
 
-# Get current date in YYYY-MM-DD format
 get_current_date() {
     date +%Y-%m-%d
 }
 
-# Generate next context ID for a given domain
 # Usage: generate_context_id <domain>
 generate_context_id() {
     local domain="$1"
@@ -20,21 +17,21 @@ generate_context_id() {
     repo_root=$(get_repo_root)
     local context_dir="$repo_root/.context/$domain"
 
-    # Find highest sequence number
+    # Find highest sequence number (recursive to support layered directories)
     local max_seq=0
     if [ -d "$context_dir" ]; then
-        for file in "$context_dir"/ctx-"$domain"-*.md; do
+        while IFS= read -r file; do
             if [ -f "$file" ]; then
-                # Extract sequence number from filename
+                # Extract sequence number from filename (e.g., ctx-release-001-slug.md → 001)
                 local seq
-                seq=$(basename "$file" .md | sed "s/ctx-$domain-//")
+                seq=$(basename "$file" .md | sed "s/ctx-$domain-//" | grep -oE '^[0-9]+')
                 # Remove leading zeros for arithmetic comparison
                 seq=$((10#$seq 2>/dev/null || echo 0))
                 if [ "$seq" -gt "$max_seq" ]; then
                     max_seq=$seq
                 fi
             fi
-        done
+        done < <(find "$context_dir" -name "ctx-$domain-*.md" 2>/dev/null)
     fi
 
     # Increment and format with leading zeros
@@ -42,7 +39,6 @@ generate_context_id() {
     printf "ctx-%s-%03d" "$domain" "$next_seq"
 }
 
-# Validate domain exists
 # Usage: validate_domain <domain>
 validate_domain() {
     local domain="$1"
@@ -52,13 +48,12 @@ validate_domain() {
 
     if [ ! -f "$domain_config" ]; then
         echo "ERROR: Domain '$domain' is not configured" >&2
-        echo "Available domains: release, ci, integration, compatibility" >&2
+        echo "Available domains: release, ci, integration, compatibility, testing, sources, architecture" >&2
         return 1
     fi
     return 0
 }
 
-# Validate layer value
 # Usage: validate_layer <layer>
 validate_layer() {
     local layer="$1"
@@ -74,7 +69,6 @@ validate_layer() {
     esac
 }
 
-# Validate context ID format
 # Usage: validate_context_id <id>
 validate_context_id() {
     local id="$1"
@@ -88,14 +82,12 @@ validate_context_id() {
     return 0
 }
 
-# Extract domain from context ID
 # Usage: get_domain_from_id <id>
 get_domain_from_id() {
     local id="$1"
     echo "$id" | sed 's/^ctx-\([^-]*\)-.*$/\1/'
 }
 
-# Update index.md after adding/modifying context
 # Usage: update_index
 update_index() {
     local repo_root
@@ -111,7 +103,7 @@ update_index() {
 
     # Count total entries
     local total=0
-    for domain in release ci integration compatibility; do
+    for domain in release ci integration compatibility testing sources architecture; do
         local count
         count=$(find "$repo_root/.context/$domain" -name "ctx-*.md" 2>/dev/null | wc -l | tr -d ' ')
         total=$((total + count))
@@ -119,22 +111,22 @@ update_index() {
     echo "> **Total Entries**: $total" >> "$temp_file"
     echo "" >> "$temp_file"
 
-    # Count by layer
+    # Count by layer (recursive search)
     local business_count=0
     local experience_count=0
     local tech_count=0
-    for domain in release ci integration compatibility; do
-        for file in "$repo_root/.context/$domain"/ctx-*.md; do
+    for domain in release ci integration compatibility testing sources architecture; do
+        while IFS= read -r file; do
             if [ -f "$file" ]; then
-                local layer
-                layer=$(grep "^layer:" "$file" | sed 's/layer: *//')
-                case "$layer" in
+                local file_layer
+                file_layer=$(grep "^layer:" "$file" | sed 's/layer: *//')
+                case "$file_layer" in
                     business) business_count=$((business_count + 1)) ;;
                     experience) experience_count=$((experience_count + 1)) ;;
                     tech) tech_count=$((tech_count + 1)) ;;
                 esac
             fi
-        done
+        done < <(find "$repo_root/.context/$domain" -name "ctx-*.md" 2>/dev/null)
     done
 
     echo "## By Layer" >> "$temp_file"
@@ -153,13 +145,16 @@ update_index() {
     echo "" >> "$temp_file"
 
     # Generate tables for each domain
-    for domain in release ci integration compatibility; do
+    for domain in release ci integration compatibility testing sources architecture; do
         local domain_name
         case "$domain" in
             release) domain_name="Release" ;;
             ci) domain_name="CI" ;;
             integration) domain_name="Integration" ;;
             compatibility) domain_name="Compatibility" ;;
+            testing) domain_name="Testing" ;;
+            sources) domain_name="Sources" ;;
+            architecture) domain_name="Architecture" ;;
         esac
 
         local count
@@ -171,20 +166,20 @@ update_index() {
         if [ "$count" -eq 0 ]; then
             echo "| - | No entries yet | - | - | - | - |" >> "$temp_file"
         else
-            # List all context files
-            for file in "$repo_root/.context/$domain"/ctx-*.md; do
+            # List all context files (recursive to support layered directories)
+            while IFS= read -r file; do
                 if [ -f "$file" ]; then
-                    local id title layer tags created status
-                    id=$(grep "^id:" "$file" | sed 's/id: *//')
-                    title=$(grep "^title:" "$file" | sed 's/title: *//')
-                    layer=$(grep "^layer:" "$file" | sed 's/layer: *//')
-                    tags=$(grep "^tags:" "$file" | sed 's/tags: *//')
-                    created=$(grep "^created:" "$file" | sed 's/created: *//')
-                    status=$(grep "^status:" "$file" | sed 's/status: *//')
+                    local entry_id entry_title entry_layer entry_tags entry_created entry_status
+                    entry_id=$(grep "^id:" "$file" | sed 's/id: *//')
+                    entry_title=$(grep "^title:" "$file" | sed 's/title: *//')
+                    entry_layer=$(grep "^layer:" "$file" | sed 's/layer: *//')
+                    entry_tags=$(grep "^tags:" "$file" | sed 's/tags: *//')
+                    entry_created=$(grep "^created:" "$file" | sed 's/created: *//')
+                    entry_status=$(grep "^status:" "$file" | sed 's/status: *//')
 
-                    echo "| $id | $title | $layer | $tags | $created | $status |" >> "$temp_file"
+                    echo "| $entry_id | $entry_title | $entry_layer | $entry_tags | $entry_created | $entry_status |" >> "$temp_file"
                 fi
-            done
+            done < <(find "$repo_root/.context/$domain" -name "ctx-*.md" 2>/dev/null | sort)
         fi
         echo "" >> "$temp_file"
     done
@@ -200,7 +195,6 @@ update_index() {
     mv "$temp_file" "$index_file"
 }
 
-# Escape special characters for sed
 escape_sed() {
     echo "$1" | sed -e 's/[\/&]/\\&/g'
 }

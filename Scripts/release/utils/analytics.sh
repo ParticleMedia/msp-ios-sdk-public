@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # MSP iOS SDK - Analytics and Reporting
 
 # ============================================================================
@@ -12,7 +12,6 @@ mkdir -p "$ANALYTICS_DIR" 2>/dev/null || true
 # Metrics Analysis
 # ============================================================================
 
-# Parse metrics JSON file and generate report
 analytics::parse_metrics() {
     local metrics_file="$1"
 
@@ -35,7 +34,6 @@ analytics::parse_metrics() {
     fi
 }
 
-# Compare multiple metrics files
 analytics::compare() {
     local file1="$1"
     local file2="$2"
@@ -48,7 +46,6 @@ analytics::compare() {
     # TODO: Implement comparison logic
 }
 
-# Generate HTML report
 analytics::html_report() {
     local metrics_file="$1"
     local output_file="${2:-$ANALYTICS_DIR/report.html}"
@@ -106,7 +103,6 @@ analytics::html_report() {
 </html>
 EOF
 
-    # Replace placeholder with actual data
     local json_data
     json_data=$(cat "$metrics_file")
     sed -i.bak "s/METRICS_DATA_PLACEHOLDER/$json_data/" "$output_file" 2>/dev/null || \
@@ -120,7 +116,6 @@ EOF
 # Log Analysis
 # ============================================================================
 
-# Analyze log file for errors and warnings
 analytics::analyze_logs() {
     local log_file="$1"
 
@@ -134,26 +129,22 @@ analytics::analyze_logs() {
     echo "==================================================================="
     echo ""
 
-    # Count by log level
     echo "Log Level Distribution:"
     echo "-------------------------------------------------------------------"
     grep -o '\[DEBUG\]\|\[INFO\]\|\[WARN\]\|\[ERROR\]\|\[FATAL\]' "$log_file" | sort | uniq -c | \
         awk '{printf "  %-10s %5d\n", $2, $1}'
     echo ""
 
-    # Show all errors
     echo "Errors:"
     echo "-------------------------------------------------------------------"
     grep '\[ERROR\]' "$log_file" | tail -20
     echo ""
 
-    # Show all warnings
     echo "Warnings:"
     echo "-------------------------------------------------------------------"
     grep '\[WARN\]' "$log_file" | tail -20
     echo ""
 
-    # Module activity
     echo "Most Active Modules:"
     echo "-------------------------------------------------------------------"
     grep -o '\[[A-Z][A-Z_]*\]' "$log_file" | sort | uniq -c | sort -rn | head -10 | \
@@ -163,7 +154,6 @@ analytics::analyze_logs() {
     echo "==================================================================="
 }
 
-# Generate summary statistics
 analytics::summary() {
     local metrics_file="$1"
     local log_file="$2"
@@ -174,7 +164,6 @@ analytics::summary() {
     echo "==================================================================="
     echo ""
 
-    # Parse metrics
     if [[ -f "$metrics_file" ]]; then
         echo "Performance Metrics:"
         echo "-------------------------------------------------------------------"
@@ -182,7 +171,6 @@ analytics::summary() {
         echo ""
     fi
 
-    # Analyze logs
     if [[ -f "$log_file" ]]; then
         analytics::analyze_logs "$log_file"
     fi

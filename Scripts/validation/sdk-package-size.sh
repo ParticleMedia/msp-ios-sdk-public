@@ -38,7 +38,7 @@ REGRESSION_THRESHOLD_PCT=25  # Fail if size increases > 25%
 OUTPUT_DIR="$SCRIPT_DIR/output"
 JSON_REPORT="$OUTPUT_DIR/sdk-size.json"
 TEMP_DIR=$(mktemp -d)
-trap "rm -rf $TEMP_DIR" EXIT
+trap 'rm -rf "$TEMP_DIR"' EXIT
 
 mkdir -p "$OUTPUT_DIR"
 
@@ -62,7 +62,7 @@ find_xcframeworks() {
 
 # Function to build CocoaPods archive
 build_cocoapods_archive() {
-    log_step "Building CocoaPods archive"
+    log::step "VALIDATE" "Building CocoaPods archive"
     
     local build_dir="$TEMP_DIR/cocoapods"
     mkdir -p "$build_dir"
@@ -75,7 +75,7 @@ build_cocoapods_archive() {
         -derivedDataPath "$build_dir/DerivedData" \
         clean build \
         > "$build_dir/build.log" 2>&1 || {
-        log_error "CocoaPods build failed"
+        log::error "VALIDATE" "CocoaPods build failed"
         tail -20 "$build_dir/build.log"
         return 1
     }
@@ -91,7 +91,7 @@ build_cocoapods_archive() {
 
 # Function to build SwiftPM archive
 build_spm_archive() {
-    log_step "Building SwiftPM archive"
+    log::step "VALIDATE" "Building SwiftPM archive"
     
     local build_dir="$TEMP_DIR/spm"
     mkdir -p "$build_dir"
@@ -279,7 +279,7 @@ fi
             echo "        \"name\": \"$name\","
             echo "        \"size_mb\": $size,"
             echo "        \"size_formatted\": \"$(format_size $size)\""
-            if [ $i -lt $((${#LARGE_FRAMEWORKS[@]} - 1)) ]; then
+            if [ "$i" -lt $((${#LARGE_FRAMEWORKS[@]} - 1)) ]; then
                 echo "      },"
             else
                 echo "      }"

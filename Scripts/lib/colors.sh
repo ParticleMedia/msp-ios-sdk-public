@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # --- MSP Worktree Safety Guard (Patch K, shared) ---
 # shellcheck source=/dev/null
 if command -v git >/dev/null 2>&1; then
@@ -21,38 +21,15 @@ fi
 #   - Zero dependency failures
 # ============================================================================
 
+# shellcheck source=Scripts/lib/path-helpers.sh
+source "$(git rev-parse --show-toplevel 2>/dev/null)/Scripts/lib/path-helpers.sh"
 COLOR_SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-# ============================================
-# Unified ROOT_DIR resolution (final version)
-# ============================================
-if [[ -z "${ROOT_DIR:-}" ]]; then
-    # First try Git repo root (most reliable)
-    if command -v git >/dev/null 2>&1; then
-        git_root="$(git rev-parse --show-toplevel 2>/dev/null || echo "")"
-        if [[ -n "$git_root" ]]; then
-            ROOT_DIR="$git_root"
-        fi
-    fi
 
-    # Fallback to walking up from COLOR_SCRIPT_DIR
-    if [[ -z "${ROOT_DIR:-}" ]]; then
-        ROOT_DIR="$COLOR_SCRIPT_DIR"
-        while [[ "$ROOT_DIR" != "/" ]] && [[ "${ROOT_DIR##*/}" != "Scripts" ]]; do
-            ROOT_DIR="$(dirname "$ROOT_DIR")"
-        done
-        if [[ "${ROOT_DIR##*/}" == "Scripts" ]]; then
-            ROOT_DIR="$(dirname "$ROOT_DIR")"
-        fi
-    fi
-fi
-
-export ROOT_DIR
-
-# Try loading logging.sh first (preferred path for color logic)
+# Try loading common.sh first (provides unified logging with color logic)
 if ! declare -f colorize >/dev/null 2>&1; then
-    if [[ -f "$COLOR_SCRIPT_DIR/logging.sh" ]]; then
-        # shellcheck source=Scripts/lib/logging.sh
-        source "$COLOR_SCRIPT_DIR/logging.sh"
+    if [[ -f "$COLOR_SCRIPT_DIR/common.sh" ]]; then
+        # shellcheck source=Scripts/lib/common.sh
+        source "$COLOR_SCRIPT_DIR/common.sh"
     fi
 fi
 

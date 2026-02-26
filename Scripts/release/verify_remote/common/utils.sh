@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # --- MSP Worktree Safety Guard (Patch L, shared) ---
 # shellcheck source=/dev/null
 . "$(git rev-parse --show-toplevel 2>/dev/null)/Scripts/lib/worktree_guard.sh"
@@ -30,6 +30,11 @@ vr_log_error() {
     echo "[VR][ERROR] $*" >&2
 }
 
+# Double-colon aliases used by verification scripts
+vr_log::info()  { vr_log_info "$@"; }
+vr_log::warn()  { vr_log_warn "$@"; }
+vr_log::error() { vr_log_error "$@"; }
+
 # ============================================================================
 # ROOT_DIR Detection
 # ============================================================================
@@ -40,7 +45,6 @@ vr_detect_root_dir() {
         return 0
     fi
     
-    # Try git rev-parse --show-toplevel
     if command -v git >/dev/null 2>&1; then
         local git_root
         git_root="$(git rev-parse --show-toplevel 2>/dev/null || echo "")"
@@ -63,7 +67,7 @@ vr_detect_root_dir() {
     done
     
     # If we get here, we failed to find the root
-    vr_log_error "Failed to detect repository root directory"
+    vr_log::error "REMOTE" "Failed to detect repository root directory"
     return 1
 }
 
@@ -115,5 +119,7 @@ vr_run_with_timeout() {
 # Export Functions
 # ============================================================================
 
-export -f vr_log_info vr_log_warn vr_log_error vr_detect_root_dir \
+export -f vr_log_info vr_log_warn vr_log_error \
+         vr_log::info vr_log::warn vr_log::error \
+         vr_detect_root_dir \
          vr_find_devtool vr_run_with_timeout 2>/dev/null || true

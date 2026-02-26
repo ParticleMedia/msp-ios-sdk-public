@@ -1,6 +1,6 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # DemoApp configuration script - Enhanced version
-set -e
+set -euo pipefail
 
 MODE="${1:---mode=pods-dev}"
 

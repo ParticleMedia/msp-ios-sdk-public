@@ -1,3 +1,7 @@
+// Meszaros Type: Mock (Stub + Spy)
+// - Stub: shouldSucceed, mockAd, storedAds provide canned responses
+// - Spy: loadAdCallCount, lastLoadedPlacementId, lastLoadedAdFormat,
+//        lastLoadedTestParams, lastAdListener record interactions
 import MSPiOSCore
 
 @testable import MSPCore
@@ -31,9 +35,9 @@ class MockLoadAdRepository: LoadAdRepository {
             if let ad = mockAd {
                 storedAds[placementId] = ad
             }
-            adListener.onAdLoaded(placementId: placementId)
+            adListener.onAdLoaded(placementId: placementId, loadInfo: [:])
         } else {
-            adListener.onError(msg: errorMessage)
+            adListener.onError(msg: errorMessage, loadInfo: [:])
         }
     }
 

@@ -13,14 +13,20 @@ msp_enforce_main_repo_or_exit
 # Usage:   ./Scripts/target-switching/generate_project_templates.sh
 # ============================================================================
 
-set -eo pipefail
+set -euo pipefail
 
-# Source common functions
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT_DIR="$(cd "$SCRIPT_DIR/../.." && pwd)"
 
 # shellcheck source=Scripts/target-switching/common.sh
 source "$SCRIPT_DIR/common.sh"
+
+# Ensure logger functions are available in subprocess
+if [[ -f "$ROOT_DIR/Scripts/release/utils/logger.sh" ]]; then
+    unset MSP_LOGGER_LOADED
+    # shellcheck source=Scripts/release/utils/logger.sh
+    source "$ROOT_DIR/Scripts/release/utils/logger.sh" 2>/dev/null || true
+fi
 
 ensure_repo_root
 
@@ -42,10 +48,10 @@ while IFS= read -r template; do
     # Simple copy (templates are ready to use as-is)
     # In the future, can add variable substitution if needed
     if cp "$template" "$output" 2>/dev/null; then
-        log_info "  ✓ Generated $output_rel"
+        log::info "TARGET" "  ✓ Generated $output_rel"
         ((GENERATED_COUNT++)) || true
     else
-        log_warn "  ✗ Failed to generate $output_rel"
+        log::warn "TARGET" "  ✗ Failed to generate $output_rel"
         ((FAILED_COUNT++)) || true
     fi
 done < <(find "$ROOT_DIR" -name "project.yml.template" \
@@ -56,16 +62,16 @@ done < <(find "$ROOT_DIR" -name "project.yml.template" \
     -print 2>/dev/null | LC_ALL=C sort || true)
 
 if [[ $GENERATED_COUNT -gt 0 ]]; then
-    log_success "Generated $GENERATED_COUNT project.yml file(s) from templates"
+    log::success "TARGET" "Generated $GENERATED_COUNT project.yml file(s) from templates"
 fi
 
 if [[ $FAILED_COUNT -gt 0 ]]; then
-    log_warn "Failed to generate $FAILED_COUNT project.yml file(s)"
+    log::warn "TARGET" "Failed to generate $FAILED_COUNT project.yml file(s)"
     exit 1
 fi
 
 if [[ $GENERATED_COUNT -eq 0 ]]; then
-    log_warn "No project.yml.template files found!"
+    log::warn "TARGET" "No project.yml.template files found!"
 fi
 
 exit 0

@@ -11,19 +11,23 @@ set -euo pipefail
 # Discovers and runs all test cases in cases/ directory
 
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+root_dir="$(cd "$script_dir/../../.." && pwd)"
 cases_dir="${script_dir}/cases"
 helpers="${script_dir}/helpers.sh"
 mock_dir="${script_dir}/mock"
 
-# Source helpers
 # shellcheck source=Scripts/tests/release_state/helpers.sh
 source "${helpers}"
+if [[ -f "$root_dir/Scripts/lib/common.sh" ]]; then
+    # shellcheck source=Scripts/lib/common.sh
+    source "$root_dir/Scripts/lib/common.sh" 2>/dev/null || true
+fi
 
-# Colors for output
-RED='\033[0;31m'
-GREEN='\033[0;32m'
-YELLOW='\033[1;33m'
-NC='\033[0m'
+# Fallback colors if common.sh not available
+: "${RED:='\033[0;31m'}"
+: "${GREEN:='\033[0;32m'}"
+: "${YELLOW:='\033[1;33m'}"
+: "${NC:='\033[0m'}"
 
 main() {
     local failed=0
@@ -44,7 +48,7 @@ main() {
         exit 1
     fi
     
-    for case_script in $case_scripts; do
+    while IFS= read -r case_script; do
         total=$((total + 1))
         if run_test_case "${case_script}"; then
             passed=$((passed + 1))
@@ -54,7 +58,7 @@ main() {
             echo -e "${RED}[FAIL]${NC} $(basename "${case_script}")"
         fi
         echo ""
-    done
+    done <<< "$case_scripts"
     
     echo "========================================"
     echo "Test Summary: ${passed}/${total} passed"

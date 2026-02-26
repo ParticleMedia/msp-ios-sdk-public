@@ -12,14 +12,33 @@ msp_enforce_main_repo_or_exit
 # Usage:   ./Scripts/xcframeworks/build-thirdparty.sh
 # ============================================================================
 
-set -eo pipefail
+set -euo pipefail
 
-# Source common functions
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT_DIR="$(cd "$SCRIPT_DIR/../.." && pwd)"
 
 # shellcheck source=Scripts/target-switching/common.sh
 source "$SCRIPT_DIR/../target-switching/common.sh"
+
+# Ensure logger functions are available in subprocess
+# (Force reload by unsetting the guard variable, as parent may have already sourced)
+if [[ -f "$ROOT_DIR/Scripts/release/utils/logger.sh" ]]; then
+    unset MSP_LOGGER_LOADED
+    # shellcheck source=Scripts/release/utils/logger.sh
+    source "$ROOT_DIR/Scripts/release/utils/logger.sh" 2>/dev/null || true
+fi
+
+# R029f: Source xcodegen module for unified generation
+if [[ -f "$ROOT_DIR/Scripts/lib/xcodegen.sh" ]]; then
+    # shellcheck source=Scripts/lib/xcodegen.sh
+    source "$ROOT_DIR/Scripts/lib/xcodegen.sh" 2>/dev/null || true
+fi
+
+# R025d: Source shared XCFramework build module
+if [[ -f "$ROOT_DIR/Scripts/lib/shared/xcframework_build.sh" ]]; then
+    # shellcheck source=Scripts/lib/shared/xcframework_build.sh
+    source "$ROOT_DIR/Scripts/lib/shared/xcframework_build.sh" 2>/dev/null || true
+fi
 
 ensure_repo_root
 
@@ -64,7 +83,7 @@ log_section "Generating project.yml from templates"
 if [[ -x "$ROOT_DIR/Scripts/target-switching/generate_project_templates.sh" ]]; then
     "$ROOT_DIR/Scripts/target-switching/generate_project_templates.sh"
 else
-    log_warn "generate_project_templates.sh not found or not executable"
+    log::warn "XCFW" "generate_project_templates.sh not found or not executable"
 fi
 
 # ============================================================================
@@ -74,24 +93,36 @@ fi
 log_section "Generating ThirdPartyFrameworks Xcode project"
 
 if [[ ! -f "$THIRDPARTY_PROJECT_DIR/project.yml" ]]; then
-    log_error "project.yml not found at $THIRDPARTY_PROJECT_DIR"
-    log_error "Make sure project.yml.template exists and generate_project_templates.sh ran successfully"
+    log::error "XCFW" "project.yml not found at $THIRDPARTY_PROJECT_DIR"
+    log::error "XCFW" "Make sure project.yml.template exists and generate_project_templates.sh ran successfully"
     exit 1
 fi
 
 # Generate project from project.yml
-log_step "Running XcodeGen"
-if ! (cd "$THIRDPARTY_PROJECT_DIR" && xcodegen generate --spec project.yml); then
-    log_error "Failed to generate Xcode project"
+log::step "XCFW" "Running XcodeGen"
+# R029f: Use xcodegen.sh module if available, fallback to direct call
+thirdparty_xcodegen_success=false
+if command -v xcodegen_generate &>/dev/null; then
+    if xcodegen_generate "$THIRDPARTY_PROJECT_DIR/project.yml" "$THIRDPARTY_PROJECT_DIR"; then
+        thirdparty_xcodegen_success=true
+    fi
+else
+    if (cd "$THIRDPARTY_PROJECT_DIR" && xcodegen generate --spec project.yml); then
+        thirdparty_xcodegen_success=true
+    fi
+fi
+
+if [[ "$thirdparty_xcodegen_success" != "true" ]]; then
+    log::error "XCFW" "Failed to generate Xcode project"
     exit 1
 fi
 
 if [[ ! -d "$THIRDPARTY_PROJECT" ]]; then
-    log_error "XcodeGen did not create project: $THIRDPARTY_PROJECT"
+    log::error "XCFW" "XcodeGen did not create project: $THIRDPARTY_PROJECT"
     exit 1
 fi
 
-log_success "ThirdPartyFrameworks.xcodeproj generated"
+log::success "XCFW" "ThirdPartyFrameworks.xcodeproj generated"
 
 # ============================================================================
 # Build XCFrameworks
@@ -108,7 +139,6 @@ build_single_xcframework() {
 
     log_section "Building $output_name"
 
-    # Clean previous archives
     rm -rf "$ios_archive" "$sim_archive"
     mkdir -p "$ARCHIVES_DIR"
     mkdir -p "$output_dir"
@@ -118,7 +148,7 @@ build_single_xcframework() {
     local AUTOLINK_DISABLE_FLAGS="-Xfrontend -disable-autolink-framework -Xfrontend UIUtilities"
 
     # Archive for iOS device
-    log_step "Archiving $output_name for iOS device"
+    log::step "XCFW" "Archiving $output_name for iOS device"
     if ! xcodebuild archive \
         -project "$THIRDPARTY_PROJECT" \
         -scheme "$scheme_name" \
@@ -130,12 +160,12 @@ build_single_xcframework() {
         SKIP_INSTALL=NO \
         OTHER_SWIFT_FLAGS="\$(inherited) $AUTOLINK_DISABLE_FLAGS" \
         -quiet 2>&1; then
-        log_error "iOS archive failed for $output_name"
+        log::error "XCFW" "iOS archive failed for $output_name"
         return 1
     fi
 
     # Archive for iOS Simulator
-    log_step "Archiving $output_name for iOS Simulator"
+    log::step "XCFW" "Archiving $output_name for iOS Simulator"
     if ! xcodebuild archive \
         -project "$THIRDPARTY_PROJECT" \
         -scheme "$scheme_name" \
@@ -147,7 +177,7 @@ build_single_xcframework() {
         SKIP_INSTALL=NO \
         OTHER_SWIFT_FLAGS="\$(inherited) $AUTOLINK_DISABLE_FLAGS" \
         -quiet 2>&1; then
-        log_error "Simulator archive failed for $output_name"
+        log::error "XCFW" "Simulator archive failed for $output_name"
         return 1
     fi
     
@@ -164,38 +194,37 @@ build_single_xcframework() {
     fi
     
     if [[ -z "$ios_framework" ]] || [[ ! -d "$ios_framework" ]]; then
-        log_error "iOS framework not found in archive for $output_name"
-        log_info "Archive contents:"
+        log::error "XCFW" "iOS framework not found in archive for $output_name"
+        log::info "XCFW" "Archive contents:"
         find "$ios_archive/Products" -type d -name "*.framework" 2>/dev/null || true
         return 1
     fi
     
     if [[ -z "$sim_framework" ]] || [[ ! -d "$sim_framework" ]]; then
-        log_error "Simulator framework not found in archive for $output_name"
+        log::error "XCFW" "Simulator framework not found in archive for $output_name"
         return 1
     fi
     
-    log_info "Found iOS framework: $ios_framework"
-    log_info "Found Simulator framework: $sim_framework"
+    log::info "XCFW" "Found iOS framework: $ios_framework"
+    log::info "XCFW" "Found Simulator framework: $sim_framework"
     
-    # Create XCFramework
-    log_step "Creating XCFramework for $output_name"
+    log::step "XCFW" "Creating XCFramework for $output_name"
     rm -rf "$xcframework_output"
     
     if ! xcodebuild -create-xcframework \
         -framework "$ios_framework" \
         -framework "$sim_framework" \
         -output "$xcframework_output" 2>&1; then
-        log_error "Failed to create XCFramework for $output_name"
+        log::error "XCFW" "Failed to create XCFramework for $output_name"
         return 1
     fi
     
     if [[ ! -d "$xcframework_output" ]]; then
-        log_error "XCFramework not created: $xcframework_output"
+        log::error "XCFW" "XCFramework not created: $xcframework_output"
         return 1
     fi
     
-    log_success "$output_name.xcframework created successfully"
+    log::success "XCFW" "$output_name.xcframework created successfully"
     return 0
 }
 
@@ -238,12 +267,12 @@ printf "│ Success: %-3d                    Failed: %-3d                   │\
 printf "└─────────────────────────────────────────────────────────────────┘\n"
 
 if [[ $FAIL_COUNT -gt 0 ]]; then
-    log_error "Failed to build $FAIL_COUNT third-party XCFramework(s): ${FAILED_MODULES[*]}"
+    log::error "XCFW" "Failed to build $FAIL_COUNT third-party XCFramework(s): ${FAILED_MODULES[*]}"
     exit 1
 fi
 
-log_success "All third-party XCFrameworks built successfully!"
-log_info "Output directory: $THIRDPARTY_OUTPUT_DIR"
+log::success "XCFW" "All third-party XCFrameworks built successfully!"
+log::info "XCFW" "Output directory: $THIRDPARTY_OUTPUT_DIR"
 
 # ============================================================================
 # Copy built XCFrameworks back to ThirdParty/ for Podfile pre_install check
@@ -263,14 +292,14 @@ for target_spec in "${THIRDPARTY_TARGETS[@]}"; do
         mkdir -p "$target_dir"
         rm -rf "$target_xcf"
         if ditto "$source_xcf" "$target_xcf"; then
-            log_info "  Copied: ThirdParty/$output_name/$output_name.xcframework <- ReleaseArtifacts"
+            log::info "XCFW" "  Copied: ThirdParty/$output_name/$output_name.xcframework <- ReleaseArtifacts"
         else
-            log_warn "  Failed to copy: $output_name.xcframework to ThirdParty/$output_name/"
+            log::warn "XCFW" "  Failed to copy: $output_name.xcframework to ThirdParty/$output_name/"
         fi
     fi
 done
 
-log_success "Built XCFrameworks synced to ThirdParty/"
+log::success "XCFW" "Built XCFrameworks synced to ThirdParty/"
 
 # ============================================================================
 # Ensure vendor-provided XCFrameworks are available in ReleaseArtifacts
@@ -287,13 +316,13 @@ for name in "${VENDOR_XCFS[@]}"; do
     if [[ -d "$source_xcf" ]]; then
         rm -rf "$target_xcf"
         if ditto "$source_xcf" "$target_xcf"; then
-            log_info "  Copied: Build/ReleaseArtifacts/XCFrameworks/$name.xcframework <- ThirdParty/$name/$name.xcframework"
+            log::info "XCFW" "  Copied: Build/ReleaseArtifacts/XCFrameworks/$name.xcframework <- ThirdParty/$name/$name.xcframework"
         else
-            log_warn "  Failed to copy: $name.xcframework from ThirdParty/$name/"
+            log::warn "XCFW" "  Failed to copy: $name.xcframework from ThirdParty/$name/"
         fi
     else
-        log_warn "  Skipping: $name.xcframework not found in ThirdParty/$name/"
+        log::warn "XCFW" "  Skipping: $name.xcframework not found in ThirdParty/$name/"
     fi
 done
 
-log_success "Third-party XCFrameworks ready in ReleaseArtifacts/XCFrameworks"
+log::success "XCFW" "Third-party XCFrameworks ready in ReleaseArtifacts/XCFrameworks"

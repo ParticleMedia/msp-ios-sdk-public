@@ -1,0 +1,45 @@
+module: NovaMraidSupporting
+prefix: NMS
+description: "Test cases for NovaMraidSupporting protocol default implementations"
+bundle: NovaCoreTests
+created: '2026-02-23'
+updated: '2026-02-23'
+cases:
+- id: NMS001
+  type: behavior
+  description: "Fires an error event to JS when expand is called"
+  priority: high
+  tags: [behavior, mraid, error-handling]
+  file: Tests/NovaCoreTests/Specs/Mraid/NovaMraidSupportingSpec.swift
+  status: implemented
+  given: "A stub conforming to NovaMraidSupporting with a TestWebView"
+  when: "handleMraidExpand(params:) is called with empty params"
+  then: "WebView evaluates JS containing fireEvent error with expand action"
+  doubles:
+    mraidSupport:
+      type: stub
+      class: StubMraidSupport
+      reason: "Minimal NovaMraidSupporting conformance for default impl testing"
+    webView:
+      type: fake
+      class: FakeTestWebView
+      reason: "Captures evaluateJavaScript calls for assertion"
+- id: NMS002
+  type: behavior
+  description: "Fires an error event to JS when resize is called"
+  priority: high
+  tags: [behavior, mraid, error-handling]
+  file: Tests/NovaCoreTests/Specs/Mraid/NovaMraidSupportingSpec.swift
+  status: implemented
+  given: "A stub conforming to NovaMraidSupporting with a TestWebView"
+  when: "handleMraidResize(params:) is called with empty params"
+  then: "WebView evaluates JS containing fireEvent error with resize action"
+  doubles:
+    mraidSupport:
+      type: stub
+      class: StubMraidSupport
+      reason: "Minimal NovaMraidSupporting conformance for default impl testing"
+    webView:
+      type: fake
+      class: FakeTestWebView
+      reason: "Captures evaluateJavaScript calls for assertion"

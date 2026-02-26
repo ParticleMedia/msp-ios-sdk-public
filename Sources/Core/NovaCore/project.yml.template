@@ -14,6 +14,10 @@ settings:
     PRODUCT_NAME: NovaCore
     PRODUCT_BUNDLE_IDENTIFIER: msp.NovaCore
     PRODUCT_MODULE_NAME: NovaCore
+
+    # Hide statically linked third-party symbols (Kingfisher, SnapKit, Lottie, Shimmer)
+    # to prevent duplicate symbol crashes when SDK consumers also use these libraries
+    UNEXPORTED_SYMBOLS_FILE: $(SRCROOT)/unexported_symbols.txt
     
     # Framework Search Paths - Core XCFrameworks only
     # Third-party dependencies (Kingfisher, MSPSnapKit, Lottie) are provided

@@ -233,7 +233,7 @@ echo "Total files checked: $TOTAL_FILES"
 echo "Violations found: $VIOLATIONS"
 echo ""
 
-if [ $VIOLATIONS -eq 0 ]; then
+if [ "$VIOLATIONS" -eq 0 ]; then
     echo -e "${GREEN}✅ All checks passed!${NC}"
     echo ""
     exit 0

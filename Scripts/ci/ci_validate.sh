@@ -39,6 +39,31 @@ if [[ -f "$ROOT_DIR/Scripts/lib/colors.sh" ]]; then
     source "$ROOT_DIR/Scripts/lib/colors.sh" 2>/dev/null || true
 fi
 
+# R033: Source spm.sh module for unified SPM operations
+if [[ -f "$ROOT_DIR/Scripts/lib/spm.sh" ]]; then
+    # shellcheck source=Scripts/lib/spm.sh
+    source "$ROOT_DIR/Scripts/lib/spm.sh" 2>/dev/null || true
+fi
+
+# R036c: Source cocoapods.sh module for unified pod operations
+COCOAPODS_MODULE_AVAILABLE=false
+if [[ -f "$ROOT_DIR/Scripts/lib/cocoapods.sh" ]]; then
+    # shellcheck source=Scripts/lib/cocoapods.sh
+    source "$ROOT_DIR/Scripts/lib/cocoapods.sh" 2>/dev/null || true
+    if command -v install_pods &>/dev/null; then
+        COCOAPODS_MODULE_AVAILABLE=true
+    fi
+fi
+
+# R042c: Source config loader extension for test settings
+if [[ -f "$ROOT_DIR/Scripts/lib/config_loader_ext.sh" ]]; then
+    # shellcheck source=Scripts/lib/config_loader_ext.sh
+    source "$ROOT_DIR/Scripts/lib/config_loader_ext.sh" 2>/dev/null || true
+    load_test_config 2>/dev/null || true
+fi
+# Default simulator destination from config or fallback
+CI_SIMULATOR_DESTINATION="${TEST_UNIT_TEST_DESTINATION:-platform=iOS Simulator,name=iPhone 15}"
+
 # Parse arguments
 STRESS_CYCLES=2
 SKIP_BUILD=false
@@ -79,18 +104,18 @@ require_path() {
     local type="${2:-any}"
     local hint="${3:-}"
     if [[ "$type" == "dir" && ! -d "$path" ]]; then
-        log_error "Missing required directory: $path"
-        [[ -n "$hint" ]] && log_warn "Hint: $hint"
+        log::error "CI" "Missing required directory: $path"
+        [[ -n "$hint" ]] && log::warn "CI" "Hint: $hint"
         return 1
     fi
     if [[ "$type" == "file" && ! -f "$path" ]]; then
-        log_error "Missing required file: $path"
-        [[ -n "$hint" ]] && log_warn "Hint: $hint"
+        log::error "CI" "Missing required file: $path"
+        [[ -n "$hint" ]] && log::warn "CI" "Hint: $hint"
         return 1
     fi
     if [[ "$type" == "any" && ! -e "$path" ]]; then
-        log_error "Missing required path: $path"
-        [[ -n "$hint" ]] && log_warn "Hint: $hint"
+        log::error "CI" "Missing required path: $path"
+        [[ -n "$hint" ]] && log::warn "CI" "Hint: $hint"
         return 1
     fi
     return 0
@@ -103,12 +128,12 @@ run_step() {
     local step_name="$1"
     shift
     
-    log_step "$step_name"
+    log::step "CI" "$step_name"
     if "$@"; then
-        log_success "$step_name completed"
+        log::success "CI" "$step_name completed"
         return 0
     else
-        log_error "$step_name FAILED"
+        log::error "CI" "$step_name FAILED"
         ((FAILURES++)) || true
         return 1
     fi
@@ -134,15 +159,15 @@ elif [[ -d "$ROOT_DIR/.generated/msp-ios-sdk.xcworkspace" ]]; then
 fi
 
 if [[ -z "$WORKSPACE_PATH" ]]; then
-    log_error "Missing workspace: msp-ios-sdk.xcworkspace (root or .generated)"
-    log_warn "Hint: Run Scripts/workspace/update.sh to regenerate the workspace"
+    log::error "CI" "Missing workspace: msp-ios-sdk.xcworkspace (root or .generated)"
+    log::warn "CI" "Hint: Run Scripts/workspace/update.sh to regenerate the workspace"
     ((FAILURES++)) || true
 else
-    log_success "Workspace found: $WORKSPACE_PATH"
+    log::success "CI" "Workspace found: $WORKSPACE_PATH"
 fi
 
 if [[ $FAILURES -ne 0 ]]; then
-    log_error "Preflight checks failed; aborting CI validation"
+    log::error "CI" "Preflight checks failed; aborting CI validation"
     exit 1
 fi
 
@@ -151,42 +176,50 @@ fi
 # ============================================================================
 
 validate_pods_mode_state() {
-    log_step "Validating Pods mode state..."
+    log::step "CI" "Validating Pods mode state..."
     local errors=0
-    
+
     # Package.swift must NOT exist
-    if [[ -f "$ROOT_DIR/Package.swift" ]]; then
-        log_error "❌ ERROR: Package.swift should NOT exist in Pods mode"
-        log_error "   This causes Xcode to auto-detect SPM packages"
+    # R033: Use spm_check_manifest_exists if available
+    local package_exists=false
+    if command -v spm_check_manifest_exists &>/dev/null; then
+        spm_check_manifest_exists "$ROOT_DIR" && package_exists=true
+    elif [[ -f "$ROOT_DIR/Package.swift" ]]; then
+        package_exists=true
+    fi
+
+    if [[ "$package_exists" == "true" ]]; then
+        log::error "CI" "❌ ERROR: Package.swift should NOT exist in Pods mode"
+        log::error "CI" "   This causes Xcode to auto-detect SPM packages"
         ((errors++)) || true
     else
-        log_success "✓ Package.swift correctly absent"
+        log::success "CI" "✓ Package.swift correctly absent"
     fi
     
     # Package.swift.disabled may be absent depending on switch-target behavior
     if [[ ! -f "$ROOT_DIR/Package.swift.disabled" ]]; then
-        log_warn "⚠️ WARNING: Package.swift.disabled missing in Pods mode"
+        log::warn "CI" "⚠️ WARNING: Package.swift.disabled missing in Pods mode"
     else
-        log_success "✓ Package.swift.disabled present"
+        log::success "CI" "✓ Package.swift.disabled present"
     fi
     
     # Pods directory must exist
     if [[ ! -d "$ROOT_DIR/Pods" ]]; then
-        log_error "❌ ERROR: Pods/ directory missing"
+        log::error "CI" "❌ ERROR: Pods/ directory missing"
         ((errors++)) || true
     else
-        log_success "✓ Pods/ directory present"
+        log::success "CI" "✓ Pods/ directory present"
     fi
     
     # project.yml must have packages: {}
     if [[ -f "$ROOT_DIR/Examples/MSPDemoApp/project.yml" ]]; then
         if ! grep -q "^packages: {}$" "$ROOT_DIR/Examples/MSPDemoApp/project.yml" 2>/dev/null; then
             if grep -q "msp-ios-sdk" "$ROOT_DIR/Examples/MSPDemoApp/project.yml" 2>/dev/null; then
-                log_error "❌ ERROR: project.yml contains SPM package references"
+                log::error "CI" "❌ ERROR: project.yml contains SPM package references"
                 ((errors++)) || true
             fi
         else
-            log_success "✓ project.yml has empty packages block"
+            log::success "CI" "✓ project.yml has empty packages block"
         fi
     fi
     
@@ -195,9 +228,9 @@ validate_pods_mode_state() {
         local project_count
         project_count=$(grep -c "FileRef" "$WORKSPACE_PATH/contents.xcworkspacedata" 2>/dev/null || echo "0")
         if [[ "$project_count" -gt 3 ]]; then
-            log_warn "⚠️ WARNING: workspace contains $project_count projects (expected 2)"
+            log::warn "CI" "⚠️ WARNING: workspace contains $project_count projects (expected 2)"
         else
-            log_success "✓ workspace contains correct number of projects"
+            log::success "CI" "✓ workspace contains correct number of projects"
         fi
     fi
     
@@ -205,40 +238,40 @@ validate_pods_mode_state() {
 }
 
 validate_spm_mode_state() {
-    log_step "Validating SPM mode state..."
+    log::step "CI" "Validating SPM mode state..."
     local errors=0
     
     # Package.swift must exist
     if [[ ! -f "$ROOT_DIR/Package.swift" ]]; then
-        log_error "❌ ERROR: Package.swift missing in SPM mode"
+        log::error "CI" "❌ ERROR: Package.swift missing in SPM mode"
         ((errors++)) || true
     else
-        log_success "✓ Package.swift present"
+        log::success "CI" "✓ Package.swift present"
     fi
     
     # Package.swift.disabled must NOT exist
     if [[ -f "$ROOT_DIR/Package.swift.disabled" ]]; then
-        log_error "❌ ERROR: Package.swift.disabled should NOT exist in SPM mode"
+        log::error "CI" "❌ ERROR: Package.swift.disabled should NOT exist in SPM mode"
         ((errors++)) || true
     else
-        log_success "✓ Package.swift.disabled correctly absent"
+        log::success "CI" "✓ Package.swift.disabled correctly absent"
     fi
     
     # Pods directory must NOT exist
     if [[ -d "$ROOT_DIR/Pods" ]]; then
-        log_error "❌ ERROR: Pods/ directory exists in SPM mode"
+        log::error "CI" "❌ ERROR: Pods/ directory exists in SPM mode"
         ((errors++)) || true
     else
-        log_success "✓ Pods/ directory absent"
+        log::success "CI" "✓ Pods/ directory absent"
     fi
     
     # project.yml must have SPM target
     if [[ -f "$ROOT_DIR/Examples/MSPDemoApp/project.yml" ]]; then
         if ! grep -q "MSPDemoApp-SPM:" "$ROOT_DIR/Examples/MSPDemoApp/project.yml" 2>/dev/null; then
-            log_error "❌ ERROR: project.yml missing MSPDemoApp-SPM target"
+            log::error "CI" "❌ ERROR: project.yml missing MSPDemoApp-SPM target"
             ((errors++)) || true
         else
-            log_success "✓ project.yml has MSPDemoApp-SPM target"
+            log::success "CI" "✓ project.yml has MSPDemoApp-SPM target"
         fi
     fi
     
@@ -250,22 +283,22 @@ validate_spm_mode_state() {
 # ============================================================================
 log_title "Step 1: Environment Cleanup"
 
-log_step "Cleaning CocoaPods environment..."
+log::step "CI" "Cleaning CocoaPods environment..."
 if [[ -x "$ROOT_DIR/Scripts/target-switching/cleanup_pods.sh" ]]; then
-    "$ROOT_DIR/Scripts/target-switching/cleanup_pods.sh" --force || log_warn "Pods cleanup had warnings"
+    "$ROOT_DIR/Scripts/target-switching/cleanup_pods.sh" --force || log::warn "CI" "Pods cleanup had warnings"
 else
     rm -rf "$ROOT_DIR/Pods" "$ROOT_DIR/Podfile.lock" 2>/dev/null || true
 fi
-log_success "CocoaPods cleanup done"
+log::success "CI" "CocoaPods cleanup done"
 
-log_step "Cleaning SPM environment..."
+log::step "CI" "Cleaning SPM environment..."
 if [[ -x "$ROOT_DIR/Scripts/target-switching/cleanup_spm.sh" ]]; then
-    "$ROOT_DIR/Scripts/target-switching/cleanup_spm.sh" --force || log_warn "SPM cleanup had warnings"
+    "$ROOT_DIR/Scripts/target-switching/cleanup_spm.sh" --force || log::warn "CI" "SPM cleanup had warnings"
 else
     rm -rf "$ROOT_DIR/.swiftpm" "$ROOT_DIR/.build" "$ROOT_DIR/Package.resolved" 2>/dev/null || true
     find "$ROOT_DIR/Examples" -type d -name ".swiftpm" -exec rm -rf {} + 2>/dev/null || true
 fi
-log_success "SPM cleanup done"
+log::success "CI" "SPM cleanup done"
 
 # ============================================================================
 # Step 2: Sync from Pods (prepare for both modes)
@@ -274,30 +307,40 @@ log_title "Step 2: CocoaPods Installation & Sync"
 
 # First, ensure Package.swift exists (restore if disabled)
 if [[ -f "$ROOT_DIR/Package.swift.disabled" ]] && [[ ! -f "$ROOT_DIR/Package.swift" ]]; then
-    log_step "Restoring Package.swift for initial sync..."
+    log::step "CI" "Restoring Package.swift for initial sync..."
     mv "$ROOT_DIR/Package.swift.disabled" "$ROOT_DIR/Package.swift"
 fi
 
-log_step "Running pod install..."
-if ! pod install; then
-    log_error "pod install failed"
-    exit 1
+# R036c: Use cocoapods.sh module's install_pods() if available
+log::step "CI" "Running pod install..."
+if [[ "$COCOAPODS_MODULE_AVAILABLE" == "true" ]]; then
+    if ! install_pods; then
+        log::error "CI" "pod install failed (via cocoapods.sh module)"
+        exit 1
+    fi
+    log::success "CI" "pod install completed (via cocoapods.sh module)"
+else
+    # Fallback: Direct pod install
+    if ! pod install; then
+        log::error "CI" "pod install failed"
+        exit 1
+    fi
+    log::success "CI" "pod install completed"
 fi
-log_success "pod install completed"
 
-log_step "Running SPM sync (extract XCFrameworks from Pods)..."
+log::step "CI" "Running SPM sync (extract XCFrameworks from Pods)..."
 if [[ -x "$ROOT_DIR/Scripts/spm-sync/spm_sync_all.sh" ]]; then
     if [[ "$SKIP_BUILD" == "true" ]]; then
         export SKIP_XCFRAMEWORK_VALIDATION=1
     fi
     if ! "$ROOT_DIR/Scripts/spm-sync/spm_sync_all.sh"; then
-        log_error "spm_sync_all.sh failed"
+        log::error "CI" "spm_sync_all.sh failed"
         exit 1
     fi
 else
-    log_warn "spm_sync_all.sh not found - skipping XCFramework extraction"
+    log::warn "CI" "spm_sync_all.sh not found - skipping XCFramework extraction"
 fi
-log_success "SPM sync completed"
+log::success "CI" "SPM sync completed"
 
 # ============================================================================
 # Step 3: Validate XCFrameworks and Versions
@@ -305,12 +348,12 @@ log_success "SPM sync completed"
 log_title "Step 3: XCFramework & Version Validation"
 
 if [[ "$SKIP_BUILD" == "true" ]]; then
-    log_warn "Skipping XCFramework validation (--skip-build)"
+    log::warn "CI" "Skipping XCFramework validation (--skip-build)"
 elif [[ -x "$ROOT_DIR/Scripts/target-switching/validate_xcframeworks.sh" ]]; then
     run_step "Validating XCFrameworks and dependency versions" \
         "$ROOT_DIR/Scripts/target-switching/validate_xcframeworks.sh"
 else
-    log_warn "validate_xcframeworks.sh not found - skipping validation"
+    log::warn "CI" "validate_xcframeworks.sh not found - skipping validation"
 fi
 
 # ============================================================================
@@ -318,38 +361,38 @@ fi
 # ============================================================================
 log_title "Step 4: CocoaPods Build"
 
-log_step "Switching to Pods mode..."
+log::step "CI" "Switching to Pods mode..."
 if [[ -x "$ROOT_DIR/Scripts/switch-target.sh" ]]; then
     "$ROOT_DIR/Scripts/switch-target.sh" pods || {
-        log_error "switch-target.sh pods failed"
+        log::error "CI" "switch-target.sh pods failed"
         ((FAILURES++)) || true
     }
 else
-    log_warn "switch-target.sh not found"
+    log::warn "CI" "switch-target.sh not found"
 fi
 
 # Validate Pods mode state
 log_title "Step 4.1: Pods Mode State Validation"
 if ! validate_pods_mode_state; then
-    log_error "Pods mode state validation FAILED"
+    log::error "CI" "Pods mode state validation FAILED"
     ((FAILURES++)) || true
 fi
 
 if [[ "$SKIP_BUILD" == "false" ]]; then
-    log_step "Building MSPDemoApp (Pods mode)..."
+    log::step "CI" "Building MSPDemoApp (Pods mode)..."
     if xcodebuild -workspace "$WORKSPACE_PATH" \
         -scheme MSPDemoApp \
         -configuration Debug \
-        -destination "platform=iOS Simulator,name=iPhone 16" \
+        -destination "$CI_SIMULATOR_DESTINATION" \
         -quiet \
         build; then
-        log_success "Pods build SUCCEEDED"
+        log::success "CI" "Pods build SUCCEEDED"
     else
-        log_error "Pods build FAILED"
+        log::error "CI" "Pods build FAILED"
         ((FAILURES++)) || true
     fi
 else
-    log_warn "Skipping build (--skip-build)"
+    log::warn "CI" "Skipping build (--skip-build)"
 fi
 
 # ============================================================================
@@ -357,37 +400,37 @@ fi
 # ============================================================================
 if [[ "$SKIP_BUILD" == "true" ]]; then
     log_title "Step 5: Swift Package Manager Build"
-    log_warn "Skipping SPM mode switch and validation (--skip-build)"
+    log::warn "CI" "Skipping SPM mode switch and validation (--skip-build)"
 else
     log_title "Step 5: Swift Package Manager Build"
 
-    log_step "Switching to SPM mode..."
+    log::step "CI" "Switching to SPM mode..."
     if [[ -x "$ROOT_DIR/Scripts/switch-target.sh" ]]; then
         "$ROOT_DIR/Scripts/switch-target.sh" spm || {
-            log_error "switch-target.sh spm failed"
+            log::error "CI" "switch-target.sh spm failed"
             ((FAILURES++)) || true
         }
     else
-        log_warn "switch-target.sh not found"
+        log::warn "CI" "switch-target.sh not found"
     fi
 
     # Validate SPM mode state
     log_title "Step 5.1: SPM Mode State Validation"
     if ! validate_spm_mode_state; then
-        log_error "SPM mode state validation FAILED"
+        log::error "CI" "SPM mode state validation FAILED"
         ((FAILURES++)) || true
     fi
 
-    log_step "Building MSPDemoApp-SPM (SPM mode)..."
+    log::step "CI" "Building MSPDemoApp-SPM (SPM mode)..."
     if xcodebuild -project "$ROOT_DIR/Examples/MSPDemoApp/MSPDemoApp.xcodeproj" \
         -scheme MSPDemoApp-SPM \
         -configuration Debug \
-        -destination "platform=iOS Simulator,name=iPhone 16" \
+        -destination "$CI_SIMULATOR_DESTINATION" \
         -quiet \
         build; then
-        log_success "SPM build SUCCEEDED"
+        log::success "CI" "SPM build SUCCEEDED"
     else
-        log_error "SPM build FAILED"
+        log::error "CI" "SPM build FAILED"
         ((FAILURES++)) || true
     fi
 fi
@@ -397,21 +440,21 @@ fi
 # ============================================================================
 if [[ "$SKIP_BUILD" == "true" ]]; then
     log_title "Step 6: Round-Trip Stress Test ($STRESS_CYCLES cycles)"
-    log_warn "Skipping round-trip stress test (--skip-build)"
+    log::warn "CI" "Skipping round-trip stress test (--skip-build)"
 else
     log_title "Step 6: Round-Trip Stress Test ($STRESS_CYCLES cycles)"
 
     if [[ -x "$ROOT_DIR/Scripts/target-switching/round-trip-test.sh" ]]; then
-        log_step "Running round-trip stress test with $STRESS_CYCLES cycles..."
+        log::step "CI" "Running round-trip stress test with $STRESS_CYCLES cycles..."
         ROUND_TRIP_ARGS="--stress=$STRESS_CYCLES"
         if "$ROOT_DIR/Scripts/target-switching/round-trip-test.sh" $ROUND_TRIP_ARGS; then
-            log_success "Round-trip stress test PASSED"
+            log::success "CI" "Round-trip stress test PASSED"
         else
-            log_error "Round-trip stress test FAILED"
+            log::error "CI" "Round-trip stress test FAILED"
             ((FAILURES++)) || true
         fi
     else
-        log_warn "round-trip-test.sh not found - skipping stress test"
+        log::warn "CI" "round-trip-test.sh not found - skipping stress test"
     fi
 fi
 
@@ -420,17 +463,17 @@ fi
 # ============================================================================
 log_title "Step 7: Final State Validation"
 
-log_step "Switching back to Pods mode..."
+log::step "CI" "Switching back to Pods mode..."
 if [[ -x "$ROOT_DIR/Scripts/switch-target.sh" ]]; then
     "$ROOT_DIR/Scripts/switch-target.sh" pods || {
-        log_error "Final switch-target.sh pods failed"
+        log::error "CI" "Final switch-target.sh pods failed"
         ((FAILURES++)) || true
     }
 fi
 
-log_step "Final Pods mode state validation..."
+log::step "CI" "Final Pods mode state validation..."
 if ! validate_pods_mode_state; then
-    log_error "Final Pods mode state validation FAILED"
+    log::error "CI" "Final Pods mode state validation FAILED"
     ((FAILURES++)) || true
 fi
 
@@ -441,7 +484,7 @@ log_title "CI Validation Summary"
 
 echo "============================================================"
 if [[ $FAILURES -eq 0 ]]; then
-    log_success "ALL VALIDATIONS PASSED"
+    log::success "CI" "ALL VALIDATIONS PASSED"
     echo ""
     echo "  ✓ Environment cleanup"
     echo "  ✓ CocoaPods installation"
@@ -467,7 +510,7 @@ if [[ $FAILURES -eq 0 ]]; then
     echo "============================================================"
     exit 0
 else
-    log_error "VALIDATION FAILED with $FAILURES error(s)"
+    log::error "CI" "VALIDATION FAILED with $FAILURES error(s)"
     echo ""
     echo "  Check the output above for details."
     echo ""

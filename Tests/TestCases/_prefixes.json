@@ -1,7 +1,0 @@
-{
-  "_comment": "Prefix registry - ensure each prefix is unique. Sync script validates this.",
-  "prefixes": {
-    "DAL": "DebugAdLoad",
-    "DRC": "DebugRadioCell"
-  }
-}

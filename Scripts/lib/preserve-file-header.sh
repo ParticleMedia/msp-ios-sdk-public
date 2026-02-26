@@ -1,10 +1,10 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # Script to preserve file header comments when formatting Swift files
 # This script moves import statements back after file header comments
 # Handles cases where swift-format moves imports before file headers
 
-set -e
+set -euo pipefail
 
 if [ $# -ne 1 ]; then
     echo "Usage: $0 <swift-file>"

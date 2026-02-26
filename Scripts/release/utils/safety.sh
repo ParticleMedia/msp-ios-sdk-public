@@ -7,7 +7,8 @@
 #
 # Safety Features:
 #   1. Block Release tier from running locally (requires CI environment)
-#      - Local release can be enabled via MSP_ALLOW_LOCAL_RELEASE=1
+#      - Local release is enabled by default (MSP_ALLOW_LOCAL_RELEASE=1)
+#      - Set MSP_ALLOW_LOCAL_RELEASE=0 in Jenkins CI to enforce CI-only releases
 #   2. Require clean Git state
 #   3. Validate version format
 #   4. Require confirmation unless --force is passed
@@ -49,26 +50,20 @@ msp_safety_require_ci_for_release() {
         fi
         
         if [[ "$ci_detected" == "false" ]]; then
-            # TEMPORARY: Allow local execution for now (all releases are done locally)
-            # TODO: Re-enable CI-only restriction when CI pipeline is ready
+            # TEMPORARY: Local releases allowed while CI pipeline is not yet set up.
+            # TODO(CI-ready): Re-enable CI-only restriction. Future logic:
+            #   if [[ "${MSP_ALLOW_LOCAL_RELEASE:-0}" == "1" ]]; then
+            #       return 0  # explicit override for emergencies
+            #   fi
+            #   log::error "SAFETY" "Production mode cannot be executed locally. Use CI pipeline only."
+            #   return 1
             # See README.md - "Future CI Integration" section
-            log_info "[SAFETY] ℹ️  本地发布模式 (Local release mode)"
-            log_info "[SAFETY] ℹ️  注意: 当前允许本地执行生产模式 (Currently allowing local production mode)"
-            log_info "[SAFETY] ℹ️  未来 CI 流水线就绪后将恢复限制 (CI restriction will be re-enabled when CI pipeline is ready)"
+            log::info "SAFETY" "[SAFETY] ℹ️  本地发布模式 (Local release mode)"
+            log::info "SAFETY" "[SAFETY] ℹ️  注意: 当前允许本地执行生产模式 (Currently allowing local production mode)"
+            log::info "SAFETY" "[SAFETY] ℹ️  未来 CI 流水线就绪后将恢复限制 (CI restriction will be re-enabled when CI pipeline is ready)"
             return 0
-            
-            # FUTURE: Re-enable this check when CI pipeline is ready
-            # if [[ "${MSP_ALLOW_LOCAL_RELEASE:-0}" == "1" ]]; then
-            #     log_info "[SAFETY] ℹ️  本地发布模式已启用 (Local release mode enabled)"
-            #     log_info "[SAFETY] ℹ️  建议在正式生产环境使用 CI 流水线 (Recommend using CI pipeline for production)"
-            #     return 0
-            # fi
-            # log_error "[SAFETY] Production mode cannot be executed locally. Use CI pipeline only."
-            # log_error "[SAFETY] To run a test release, use: DRY_RUN=true"
-            # log_error "[SAFETY] Or set: export CI=true && export GITHUB_ACTIONS=true"
-            # return 1
         fi
-        log_info "[SAFETY] ✓ CI environment detected (CI=${CI:-}, GITHUB_ACTIONS=${GITHUB_ACTIONS:-})"
+        log::info "SAFETY" "[SAFETY] ✓ CI environment detected (CI=${CI:-}, GITHUB_ACTIONS=${GITHUB_ACTIONS:-})"
     fi
 
     return 0
@@ -84,23 +79,23 @@ msp_safety_require_clean_git() {
     # Production mode (DRY_RUN=false) requires clean git state
     if [[ "$dry_run" == "false" ]]; then
         
-        log_info "[SAFETY] Checking Git working directory cleanliness..."
+        log::info "SAFETY" "[SAFETY] Checking Git working directory cleanliness..."
 
         if ! git diff --quiet 2>/dev/null; then
-            log_error "[SAFETY] Release tier requires a clean working directory."
-            log_error "[SAFETY] You have unstaged changes. Commit or stash them before release."
+            log::error "SAFETY" "[SAFETY] Release tier requires a clean working directory."
+            log::error "SAFETY" "[SAFETY] You have unstaged changes. Commit or stash them before release."
             git status --short
             return 1
         fi
 
         if ! git diff --cached --quiet 2>/dev/null; then
-            log_error "[SAFETY] Release tier requires a clean working directory."
-            log_error "[SAFETY] You have staged changes. Commit them before release."
+            log::error "SAFETY" "[SAFETY] Release tier requires a clean working directory."
+            log::error "SAFETY" "[SAFETY] You have staged changes. Commit them before release."
             git status --short
             return 1
         fi
 
-        log_info "[SAFETY] ✓ Git working directory is clean"
+        log::info "SAFETY" "[SAFETY] ✓ Git working directory is clean"
     fi
 
     return 0
@@ -116,7 +111,7 @@ msp_safety_validate_version() {
 
     # Production mode (DRY_RUN=false) requires version validation
     if [[ "$dry_run" == "false" ]]; then
-        log_info "[SAFETY] Validating version format: $version"
+        log::info "SAFETY" "[SAFETY] Validating version format: $version"
 
         # Check for valid release version patterns
         # Valid: X.Y.Z, X.Y.Z-hotfix.N, X.Y.Z-rc.N
@@ -124,15 +119,15 @@ msp_safety_validate_version() {
 
         # Reject 0.0.* versions
         if [[ "$version" =~ ^0\.0\. ]]; then
-            log_error "[SAFETY] Invalid release version format: $version"
-            log_error "[SAFETY] Production mode cannot use 0.0.* versions (development only)"
+            log::error "SAFETY" "[SAFETY] Invalid release version format: $version"
+            log::error "SAFETY" "[SAFETY] Production mode cannot use 0.0.* versions (development only)"
             return 1
         fi
 
         # Reject versions containing 'preflight', 'test', 'dev'
         if [[ "$version" =~ (preflight|test|dev) ]]; then
-            log_error "[SAFETY] Invalid release version format: $version"
-            log_error "[SAFETY] Production mode cannot use test/preflight/dev versions"
+            log::error "SAFETY" "[SAFETY] Invalid release version format: $version"
+            log::error "SAFETY" "[SAFETY] Production mode cannot use test/preflight/dev versions"
             return 1
         fi
 
@@ -140,12 +135,12 @@ msp_safety_validate_version() {
         # Valid: X.Y.Z, X.Y.Z-qualifier, X.Y.Z-qualifier.N, X.Y.Z-qualifier.N.identifier
         # Examples: 1.0.0, 1.0.0-migration, 1.0.0-rc.1, 1.0.0-beta.2.fix
         if [[ ! "$version" =~ ^[0-9]+\.[0-9]+\.[0-9]+(-[a-zA-Z0-9]+(\.[a-zA-Z0-9]+)*)?$ ]]; then
-            log_error "[SAFETY] Invalid release version format: $version"
-            log_error "[SAFETY] Expected SemVer format: X.Y.Z or X.Y.Z-prerelease"
+            log::error "SAFETY" "[SAFETY] Invalid release version format: $version"
+            log::error "SAFETY" "[SAFETY] Expected SemVer format: X.Y.Z or X.Y.Z-prerelease"
             return 1
         fi
 
-        log_info "[SAFETY] ✓ Version format is valid: $version"
+        log::info "SAFETY" "[SAFETY] ✓ Version format is valid: $version"
     fi
 
     return 0
@@ -164,60 +159,20 @@ msp_safety_require_confirmation() {
     if [[ "$dry_run" == "false" ]]; then
         # Skip confirmation in DRY_RUN mode
         if [[ "$dry_run" == "true" ]]; then
-            log_info "[SAFETY] ℹ️  DRY RUN mode: Skipping confirmation"
+            log::info "SAFETY" "[SAFETY] ℹ️  DRY RUN mode: Skipping confirmation"
             return 0
         fi
         
-        # Local release mode: Allow local execution when explicitly enabled
-        if [[ "${MSP_ALLOW_LOCAL_RELEASE:-0}" == "1" ]]; then
-            log_info "[SAFETY] ℹ️  本地发布模式已启用 (Local release mode enabled)"
-            log_info "[SAFETY] ℹ️  建议在正式生产环境使用 CI 流水线 (Recommend using CI pipeline for production)"
+        # Local release mode: Allow local execution (defaults to enabled)
+        # MSP_ALLOW_LOCAL_RELEASE defaults to 1 for local development
+        # Will be set to 0 in Jenkins CI environment
+        if [[ "${MSP_ALLOW_LOCAL_RELEASE:-1}" == "1" ]]; then
+            log::info "SAFETY" "[SAFETY] ℹ️  本地发布模式已启用 (Local release mode enabled)"
+            log::info "SAFETY" "[SAFETY] ℹ️  建议在正式生产环境使用 CI 流水线 (Recommend using CI pipeline for production)"
             return 0
         fi
-        
-        if [[ "$force" != "true" ]]; then
-            # Check if interactive mode is enabled (default: non-interactive)
-            local interactive="${INTERACTIVE:-false}"
-            
-            # Only prompt for confirmation if interactive mode is enabled AND stdin is a terminal
-            if [[ "$interactive" == "true" ]] && [[ -t 0 ]]; then
-                local current_branch
-                current_branch="$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo 'unknown')"
 
-                echo ""
-                echo "═══════════════════════════════════════════════════════════"
-                echo "⚠️  RELEASE CONFIRMATION REQUIRED"
-                echo "═══════════════════════════════════════════════════════════"
-                echo ""
-                echo "You are about to perform a REAL RELEASE."
-                echo ""
-                echo "  Version: $version"
-                echo "  Branch:  $current_branch"
-                echo "  Mode:    production"
-                echo ""
-                echo "This will:"
-                echo "  • Publish CocoaPods to trunk"
-                echo "  • Create and push Git tags"
-                echo "  • Push to remote repository"
-                echo ""
-                echo "═══════════════════════════════════════════════════════════"
-                echo ""
-                read -r -p "Continue with REAL RELEASE? (type 'yes' to confirm): " response
-                echo ""
-
-                if [[ "$response" != "yes" ]]; then
-                    log_error "[SAFETY] Release aborted by user"
-                    return 1
-                fi
-
-                log_info "[SAFETY] ✓ User confirmed release"
-            else
-                # Non-interactive mode: auto-confirm
-                log_info "[SAFETY] ✓ Non-interactive mode: Auto-confirming release"
-            fi
-        else
-            log_info "[SAFETY] ✓ Confirmation skipped (--force flag present)"
-        fi
+        log::info "SAFETY" "[SAFETY] ✓ Production release confirmed (non-interactive)"
     fi
 
     return 0
@@ -233,9 +188,11 @@ msp_safety_validate_branch() {
     # Production mode (DRY_RUN=false) requires branch validation
     if [[ "$dry_run" == "false" ]]; then
         # Local release mode: Allow local execution when explicitly enabled
-        if [[ "${MSP_ALLOW_LOCAL_RELEASE:-0}" == "1" ]]; then
-            log_info "[SAFETY] ℹ️  本地发布模式已启用 (Local release mode enabled)"
-            log_info "[SAFETY] ℹ️  建议在正式生产环境使用 CI 流水线 (Recommend using CI pipeline for production)"
+        # MSP_ALLOW_LOCAL_RELEASE defaults to 1 (enabled) for local development
+        # Will be set to 0 in Jenkins CI environment
+        if [[ "${MSP_ALLOW_LOCAL_RELEASE:-1}" == "1" ]]; then
+            log::info "SAFETY" "[SAFETY] ℹ️  本地发布模式已启用 (Local release mode enabled)"
+            log::info "SAFETY" "[SAFETY] ℹ️  建议在正式生产环境使用 CI 流水线 (Recommend using CI pipeline for production)"
             return 0
         fi
 
@@ -272,24 +229,24 @@ msp_safety_require_changelog() {
         if [[ "$ci_detected" == "false" ]]; then
             # Local release mode - skip changelog check
             # All releases are currently done locally, changelog will be required when CI is ready
-            log_info "[SAFETY] ℹ️  Changelog check skipped (local release mode)"
+            log::info "SAFETY" "[SAFETY] ℹ️  Changelog check skipped (local release mode)"
             return 0
         fi
         local changelog_file="$repo_root/release.md"
 
-        log_info "[SAFETY] Checking for changelog: release.md"
+        log::info "SAFETY" "[SAFETY] Checking for changelog: release.md"
 
         if [[ ! -f "$changelog_file" ]]; then
-            log_error "[SAFETY] Missing release.md"
-            log_error "[SAFETY] A release cannot proceed without documented changes"
-            log_error "[SAFETY] Create release.md with a '## Changes' section"
+            log::error "SAFETY" "[SAFETY] Missing release.md"
+            log::error "SAFETY" "[SAFETY] A release cannot proceed without documented changes"
+            log::error "SAFETY" "[SAFETY] Create release.md with a '## Changes' section"
             return 1
         fi
 
         # Check if file has content under "## Changes"
         if ! grep -q "## Changes" "$changelog_file" 2>/dev/null; then
-            log_error "[SAFETY] release.md exists but does not contain '## Changes' section"
-            log_error "[SAFETY] Document your changes before proceeding with release"
+            log::error "SAFETY" "[SAFETY] release.md exists but does not contain '## Changes' section"
+            log::error "SAFETY" "[SAFETY] Document your changes before proceeding with release"
             return 1
         fi
 
@@ -298,12 +255,12 @@ msp_safety_require_changelog() {
         changes_content=$(sed -n '/## Changes/,/^##/p' "$changelog_file" | tail -n +2 | sed '$d' | grep -v '^[[:space:]]*$' | head -1)
 
         if [[ -z "$changes_content" ]]; then
-            log_error "[SAFETY] release.md '## Changes' section is empty"
-            log_error "[SAFETY] Document your changes before proceeding with release"
+            log::error "SAFETY" "[SAFETY] release.md '## Changes' section is empty"
+            log::error "SAFETY" "[SAFETY] Document your changes before proceeding with release"
             return 1
         fi
 
-        log_info "[SAFETY] ✓ Changelog present and contains changes"
+        log::info "SAFETY" "[SAFETY] ✓ Changelog present and contains changes"
     fi
 
     return 0
@@ -317,17 +274,17 @@ msp_release_safety_check() {
     # Phase B: Use DRY_RUN instead of MSP_RELEASE_TIER
     local dry_run="${DRY_RUN:-true}"
 
-    log_info "[SAFETY] Running safety checks for mode: $(if [[ "$dry_run" == "false" ]]; then echo "production"; else echo "dry-run"; fi)"
+    log::info "SAFETY" "[SAFETY] Running safety checks for mode: $(if [[ "$dry_run" == "false" ]]; then echo "production"; else echo "dry-run"; fi)"
 
     # Skip all safety checks for dry-run mode
     if [[ "$dry_run" == "true" ]]; then
-        log_info "[SAFETY] Dry-run mode - skipping production safety checks"
+        log::info "SAFETY" "[SAFETY] Dry-run mode - skipping production safety checks"
         return 0
     fi
 
-    log_info "[SAFETY] ══════════════════════════════════════════════════════"
-    log_info "[SAFETY] PRODUCTION MODE SAFETY CHECKS"
-    log_info "[SAFETY] ══════════════════════════════════════════════════════"
+    log::info "SAFETY" "[SAFETY] ══════════════════════════════════════════════════════"
+    log::info "SAFETY" "[SAFETY] PRODUCTION MODE SAFETY CHECKS"
+    log::info "SAFETY" "[SAFETY] ══════════════════════════════════════════════════════"
 
     # Run all safety checks in sequence
     if ! msp_safety_require_ci_for_release; then
@@ -354,9 +311,9 @@ msp_release_safety_check() {
         return 1
     fi
 
-    log_info "[SAFETY] ══════════════════════════════════════════════════════"
-    log_success "[SAFETY] ✅ All safety checks passed"
-    log_info "[SAFETY] ══════════════════════════════════════════════════════"
+    log::info "SAFETY" "[SAFETY] ══════════════════════════════════════════════════════"
+    log::success "SAFETY" "[SAFETY] ✅ All safety checks passed"
+    log::info "SAFETY" "[SAFETY] ══════════════════════════════════════════════════════"
 
     return 0
 }

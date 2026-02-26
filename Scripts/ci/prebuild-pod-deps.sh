@@ -67,7 +67,6 @@ mkdir -p "$SHARED_DERIVED_DATA"
 
 echo "$LOG_PREFIX Pre-building Pod dependencies for: $SCHEMES"
 
-# Get all available schemes from workspace
 echo "$LOG_PREFIX Listing available schemes in workspace..."
 ALL_SCHEMES=$(xcodebuild -workspace "$WORKSPACE_FILE" -list 2>&1 | awk '
   /^[[:space:]]*Schemes:/{in_section=1; next}
@@ -80,7 +79,6 @@ if [ -z "$ALL_SCHEMES" ]; then
   exit 1
 fi
 
-# Function to find actual scheme name (may have suffix like "MSPSnapKit (MSPSnapKit project)")
 find_scheme_name() {
   local scheme="$1"
   # Check for exact match first
@@ -94,6 +92,7 @@ find_scheme_name() {
   fi
 }
 
+# shellcheck disable=SC2086 -- intentional word-splitting: SCHEMES is a space-delimited name list
 for scheme in $SCHEMES; do
   # Find actual scheme name (may have suffix)
   ACTUAL_SCHEME=$(find_scheme_name "$scheme")

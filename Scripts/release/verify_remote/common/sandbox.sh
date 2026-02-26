@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # --- MSP Worktree Safety Guard (Patch L, shared) ---
 # shellcheck source=/dev/null
 . "$(git rev-parse --show-toplevel 2>/dev/null)/Scripts/lib/worktree_guard.sh"
@@ -14,7 +14,6 @@ msp_enforce_main_repo_or_exit
 
 set -euo pipefail
 
-# Source common utilities
 # Use absolute path resolution to handle being sourced from different directories
 SCRIPT_DIR_COMMON="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$SCRIPT_DIR_COMMON/utils.sh"
@@ -26,9 +25,8 @@ source "$SCRIPT_DIR_COMMON/utils.sh"
 vr_create_sandbox() {
     local label="${1:-verify}"
     
-    # Ensure ROOT_DIR is detected
     if ! vr_detect_root_dir; then
-        vr_log_error "Cannot create sandbox: ROOT_DIR detection failed"
+        vr_log::error "REMOTE" "Cannot create sandbox: ROOT_DIR detection failed"
         return 1
     fi
     
@@ -38,15 +36,15 @@ vr_create_sandbox() {
     sandbox_path="$(mktemp -d "$sandbox_template" 2>/dev/null || echo "")"
     
     if [[ -z "$sandbox_path" ]]; then
-        vr_log_error "Failed to create sandbox directory"
+        vr_log::error "REMOTE" "Failed to create sandbox directory"
         return 1
     fi
     
     # Log friendly message to stderr (not stdout, to avoid polluting command substitution)
-    vr_log_info "Created sandbox: $sandbox_path" >&2
-    vr_log_info "[DEBUG] sandbox created at: $sandbox_path" >&2
-    vr_log_info "[DEBUG] sandbox exists: $([ -d "$sandbox_path" ] && echo 'YES' || echo 'NO')" >&2
-    vr_log_info "[DEBUG] sandbox permissions: $(ls -ld "$sandbox_path" 2>/dev/null || echo 'N/A')" >&2
+    vr_log::info "REMOTE" "Created sandbox: $sandbox_path" >&2
+    vr_log::info "REMOTE" "[DEBUG] sandbox created at: $sandbox_path" >&2
+    vr_log::info "REMOTE" "[DEBUG] sandbox exists: $([ -d "$sandbox_path" ] && echo 'YES' || echo 'NO')" >&2
+    vr_log::info "REMOTE" "[DEBUG] sandbox permissions: $(ls -ld "$sandbox_path" 2>/dev/null || echo 'N/A')" >&2
     
     # Echo the sandbox path to stdout (no extra text)
     echo "$sandbox_path"
@@ -63,14 +61,14 @@ vr_cleanup_sandbox() {
     # [PATCH H] Respect MSP_KEEP_SANDBOX flag
     if [[ "${MSP_KEEP_SANDBOX:-0}" == "1" ]]; then
         if [[ -n "$dir" && -d "$dir" ]]; then
-            vr_log_info "[PATCH H] Keeping sandbox for debugging: $dir"
+            vr_log::info "REMOTE" "[PATCH H] Keeping sandbox for debugging: $dir"
         fi
         return 0
     fi
     
     if [[ -n "$dir" && -d "$dir" ]]; then
         rm -rf "$dir" || true
-        vr_log_info "Sandbox cleaned: $dir"
+        vr_log::info "REMOTE" "Sandbox cleaned: $dir"
     fi
 }
 

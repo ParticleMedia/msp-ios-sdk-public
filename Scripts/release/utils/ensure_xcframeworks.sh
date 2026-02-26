@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # --- MSP Worktree Safety Guard (Patch L, shared) ---
 # shellcheck source=/dev/null
 . "$(git rev-parse --show-toplevel 2>/dev/null)/Scripts/lib/worktree_guard.sh"
@@ -22,8 +22,7 @@ msp_enforce_main_repo_or_exit
 # - Core pods (MSPiOSCore, MSPSharedLibraries, MSPCore): Require pre-built XCFrameworks
 # ============================================================================
 
-set -e
-set -o pipefail
+set -euo pipefail
 
 # ============================================================================
 # Environment Setup
@@ -39,9 +38,17 @@ fi
 export ROOT_DIR
 
 # Load logging utilities
+# Force reload by unsetting the guard variable (ensures functions are available in this subprocess)
+unset MSP_LOGGER_LOADED
 if [[ -f "$ROOT_DIR/Scripts/release/utils/logger.sh" ]]; then
     # shellcheck source=Scripts/release/utils/logger.sh
     source "$ROOT_DIR/Scripts/release/utils/logger.sh" 2>/dev/null || true
+fi
+
+# R027d: Source shared XCFramework validation module
+if [[ -f "$ROOT_DIR/Scripts/lib/shared/xcframework_validate.sh" ]]; then
+    # shellcheck source=Scripts/lib/shared/xcframework_validate.sh
+    source "$ROOT_DIR/Scripts/lib/shared/xcframework_validate.sh" 2>/dev/null || true
 fi
 
 # Create aliases for logger.sh functions (namespace style: log::*)
@@ -97,7 +104,6 @@ get_module_dir() {
 # Functions
 # ============================================================================
 
-# Check if XCFramework exists for a given adapter
 check_xcframework_exists() {
     local adapter="$1"
     # XCFramework name matches pod name (unified naming)
@@ -110,53 +116,47 @@ check_xcframework_exists() {
     fi
 }
 
-# Build XCFramework for a given adapter
 build_xcframework() {
     local adapter="$1"
     local log_file="$BUILD_LOG_DIR/${adapter}-$(date +%Y%m%d-%H%M%S).log"
 
-    # Map pod name to directory name (for build script)
-    # XCFramework name now matches pod name (unified naming)
     local module_dir=$(get_module_dir "$adapter")
 
-    log_info "Building XCFramework: $adapter (module directory: $module_dir)"
-    log_info "Build log: $log_file"
+    log::info "XCFW" "Building XCFramework: $adapter (module directory: $module_dir)"
+    log::info "XCFW" "Build log: $log_file"
 
     if [[ ! -x "$BUILD_SCRIPT" ]]; then
-        log_error "Build script not found or not executable: $BUILD_SCRIPT"
+        log::error "XCFW" "Build script not found or not executable: $BUILD_SCRIPT"
         return 1
     fi
 
-    # Run build with full output (use directory name, not pod name)
     if "$BUILD_SCRIPT" "$module_dir" 2>&1 | tee "$log_file"; then
-        # Verify build result
         if check_xcframework_exists "$adapter"; then
             local size
             size=$(du -sh "$ROOT_DIR/Build/ReleaseArtifacts/XCFrameworks/${adapter}.xcframework" 2>/dev/null | cut -f1)
-            log_success "✅ Built XCFramework: $adapter (${adapter}.xcframework, size: $size)"
+            log::success "XCFW" "✅ Built XCFramework: $adapter (${adapter}.xcframework, size: $size)"
             return 0
         else
-            log_error "Build reported success but XCFramework not found"
-            log_error "Check build log: $log_file"
+            log::error "XCFW" "Build reported success but XCFramework not found"
+            log::error "XCFW" "Check build log: $log_file"
             return 1
         fi
     else
-        log_error "❌ Failed to build XCFramework: $adapter"
-        log_error "Check build log: $log_file"
+        log::error "XCFW" "❌ Failed to build XCFramework: $adapter"
+        log::error "XCFW" "Check build log: $log_file"
         return 1
     fi
 }
 
-# Ensure all binary distribution adapters have XCFrameworks
 ensure_all_xcframeworks() {
     local missing_count=0
     local built_count=0
     local failed_count=0
     local missing_adapters=()
 
-    log_info "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-    log_info "🔧 Ensuring XCFrameworks for Binary Adapters"
-    log_info "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    log::info "XCFW" "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    log::info "XCFW" "🔧 Ensuring XCFrameworks for Binary Adapters"
+    log::info "XCFW" "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 
     # =========================================================================
     # CRITICAL FIX: Ensure Foundation Layer XCFrameworks exist first
@@ -183,7 +183,7 @@ ensure_all_xcframeworks() {
     # strictly require Foundation Layer to exist (standalone preflight mode).
     # =========================================================================
 
-    log_info "Step 0: Checking Foundation Layer XCFrameworks..."
+    log::info "XCFW" "Step 0: Checking Foundation Layer XCFrameworks..."
 
     local foundation_missing=false
     local foundation_xcframeworks=("MSPiOSCore" "MSPGoogleAdsTypes" "MSPSharedLibraries")
@@ -194,10 +194,10 @@ ensure_all_xcframeworks() {
         local foundation_path="$ROOT_DIR/Build/ReleaseArtifacts/XCFrameworks/${foundation_pod}.xcframework"
 
         if [[ -d "$foundation_path" ]]; then
-            log_debug "✓ ${foundation_pod}: XCFramework exists"
+            log::debug "XCFW" "✓ ${foundation_pod}: XCFramework exists"
         else
-            log_warning "✗ ${foundation_pod}: XCFramework missing"
-            log_warning "   Path: $foundation_path"
+            log::warn "XCFW" "✗ ${foundation_pod}: XCFramework missing"
+            log::warn "XCFW" "   Path: $foundation_path"
             foundation_missing=true
         fi
     done
@@ -205,10 +205,10 @@ ensure_all_xcframeworks() {
     # Check PrebidMobile (third-party, may be pre-packaged)
     local prebid_path="$ROOT_DIR/Build/ReleaseArtifacts/XCFrameworks/PrebidMobile.xcframework"
     if [[ -d "$prebid_path" ]]; then
-        log_debug "✓ PrebidMobile: XCFramework exists"
+        log::debug "XCFW" "✓ PrebidMobile: XCFramework exists"
     else
-        log_warning "✗ PrebidMobile: XCFramework missing"
-        log_warning "   Expected path: $prebid_path"
+        log::warn "XCFW" "✗ PrebidMobile: XCFramework missing"
+        log::warn "XCFW" "   Expected path: $prebid_path"
         foundation_missing=true
     fi
 
@@ -216,69 +216,69 @@ ensure_all_xcframeworks() {
         # Phase B Step 5: In production mode, Foundation Layer will be built in pre_release_setup()
         # Allow missing Foundation Layer during Preflight in production mode
         if [[ "$dry_run" == "false" ]]; then
-            log_info "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-            log_info "ℹ️  Foundation Layer XCFrameworks missing (expected in release tier)"
-            log_info "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-            log_info ""
-            log_info "Production mode detected: Foundation Layer will be built in pre_release_setup()"
-            log_info "This is expected behavior - Preflight runs before pre_release_setup()."
-            log_info ""
-            log_info "Missing XCFrameworks (will be built shortly):"
+            log::info "XCFW" "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+            log::info "XCFW" "ℹ️  Foundation Layer XCFrameworks missing (expected in release tier)"
+            log::info "XCFW" "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+            log::info "XCFW" ""
+            log::info "XCFW" "Production mode detected: Foundation Layer will be built in pre_release_setup()"
+            log::info "XCFW" "This is expected behavior - Preflight runs before pre_release_setup()."
+            log::info "XCFW" ""
+            log::info "XCFW" "Missing XCFrameworks (will be built shortly):"
             for foundation_pod in "${foundation_xcframeworks[@]}"; do
                 local foundation_path="$ROOT_DIR/Build/ReleaseArtifacts/XCFrameworks/${foundation_pod}.xcframework"
                 if [[ ! -d "$foundation_path" ]]; then
-                    log_info "  - $foundation_pod"
+                    log::info "XCFW" "  - $foundation_pod"
                 fi
             done
             if [[ ! -d "$prebid_path" ]]; then
-                log_info "  - PrebidMobile"
+                log::info "XCFW" "  - PrebidMobile"
             fi
-            log_info ""
-            log_info "Continuing Preflight - Foundation Layer will be built in next step"
-            log_info "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-            log_info ""
+            log::info "XCFW" ""
+            log::info "XCFW" "Continuing Preflight - Foundation Layer will be built in next step"
+            log::info "XCFW" "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+            log::info "XCFW" ""
         else
             # Preflight tier: Strictly require Foundation Layer
-            log_error "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-            log_error "❌ CRITICAL: Foundation Layer XCFrameworks missing"
-            log_error "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-            log_error ""
-            log_error "Binary adapters depend on Foundation Layer XCFrameworks."
-            log_error "These must be built before adapters can be built."
-            log_error ""
-            log_error "Missing XCFrameworks:"
+            log::error "XCFW" "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+            log::error "XCFW" "❌ CRITICAL: Foundation Layer XCFrameworks missing"
+            log::error "XCFW" "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+            log::error "XCFW" ""
+            log::error "XCFW" "Binary adapters depend on Foundation Layer XCFrameworks."
+            log::error "XCFW" "These must be built before adapters can be built."
+            log::error "XCFW" ""
+            log::error "XCFW" "Missing XCFrameworks:"
             for foundation_pod in "${foundation_xcframeworks[@]}"; do
                 local foundation_path="$ROOT_DIR/Build/ReleaseArtifacts/XCFrameworks/${foundation_pod}.xcframework"
                 if [[ ! -d "$foundation_path" ]]; then
-                    log_error "  - $foundation_pod"
+                    log::error "XCFW" "  - $foundation_pod"
                 fi
             done
             if [[ ! -d "$prebid_path" ]]; then
-                log_error "  - PrebidMobile"
+                log::error "XCFW" "  - PrebidMobile"
             fi
-            log_error ""
-            log_error "Solution:"
-            log_error "  Foundation Layer XCFrameworks must be built before Preflight."
-            log_error "  Build them first:"
-            log_error ""
-            log_error "  # Build MSPiOSCore"
-            log_error "  ./Scripts/xcframeworks/build_module.sh MSPiOSCore"
-            log_error ""
-            log_error "  # Build MSPGoogleAdsTypes"
-            log_error "  ./Scripts/xcframeworks/build_module.sh MSPGoogleAdsTypes"
-            log_error ""
-            log_error "  # PrebidMobile (third-party)"
-            log_error "  ./Scripts/xcframeworks/build-thirdparty.sh"
-            log_error ""
-            log_error "  Then re-run Preflight:"
-            log_error "  ./Scripts/msp-release.sh preflight"
-            log_error ""
-            log_error "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+            log::error "XCFW" ""
+            log::error "XCFW" "Solution:"
+            log::error "XCFW" "  Foundation Layer XCFrameworks must be built before Preflight."
+            log::error "XCFW" "  Build them first:"
+            log::error "XCFW" ""
+            log::error "XCFW" "  # Build MSPiOSCore"
+            log::error "XCFW" "  ./Scripts/xcframeworks/build_module.sh MSPiOSCore"
+            log::error "XCFW" ""
+            log::error "XCFW" "  # Build MSPGoogleAdsTypes"
+            log::error "XCFW" "  ./Scripts/xcframeworks/build_module.sh MSPGoogleAdsTypes"
+            log::error "XCFW" ""
+            log::error "XCFW" "  # PrebidMobile (third-party)"
+            log::error "XCFW" "  ./Scripts/xcframeworks/build-thirdparty.sh"
+            log::error "XCFW" ""
+            log::error "XCFW" "  Then re-run Preflight:"
+            log::error "XCFW" "  ./Scripts/msp-release.sh preflight"
+            log::error "XCFW" ""
+            log::error "XCFW" "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
             return 1
         fi
     else
-        log_success "✅ Foundation Layer XCFrameworks are ready"
-        log_info ""
+        log::success "XCFW" "✅ Foundation Layer XCFrameworks are ready"
+        log::info "XCFW" ""
     fi
 
     # =========================================================================
@@ -289,23 +289,23 @@ ensure_all_xcframeworks() {
     # building. Foundation Layer will be built in pre_release_setup(), and
     # Adapters will be built later in the release flow.
     if [[ "$foundation_missing" == "true" ]] && [[ "$dry_run" == "false" ]]; then
-        log_info "Step 1: Skipping Binary Adapters check (Foundation Layer will be built first)"
-        log_info ""
-        log_info "In production mode, Foundation Layer is built in pre_release_setup()."
-        log_info "Adapters will be built after Foundation Layer is ready."
-        log_info ""
-        log_success "✅ Preflight check passed (Foundation Layer will be built in next step)"
+        log::info "XCFW" "Step 1: Skipping Binary Adapters check (Foundation Layer will be built first)"
+        log::info "XCFW" ""
+        log::info "XCFW" "In production mode, Foundation Layer is built in pre_release_setup()."
+        log::info "XCFW" "Adapters will be built after Foundation Layer is ready."
+        log::info "XCFW" ""
+        log::success "XCFW" "✅ Preflight check passed (Foundation Layer will be built in next step)"
         return 0
     fi
 
-    log_info "Step 1: Checking Binary Adapters..."
+    log::info "XCFW" "Step 1: Checking Binary Adapters..."
 
     # Step 1: Detect missing XCFrameworks
     for adapter in "${BINARY_ADAPTERS[@]}"; do
         if check_xcframework_exists "$adapter"; then
-            log_debug "✓ $adapter: XCFramework exists"
+            log::debug "XCFW" "✓ $adapter: XCFramework exists"
         else
-            log_warning "✗ $adapter: XCFramework missing"
+            log::warn "XCFW" "✗ $adapter: XCFramework missing"
             missing_adapters+=("$adapter")
             missing_count=$((missing_count + 1))
         fi
@@ -313,11 +313,11 @@ ensure_all_xcframeworks() {
 
     # Step 2: Build missing XCFrameworks
     if [[ $missing_count -eq 0 ]]; then
-        log_success "✅ All XCFrameworks exist (${#BINARY_ADAPTERS[@]}/${#BINARY_ADAPTERS[@]})"
+        log::success "XCFW" "✅ All XCFrameworks exist (${#BINARY_ADAPTERS[@]}/${#BINARY_ADAPTERS[@]})"
         return 0
     fi
 
-    log_info "Found $missing_count missing XCFramework(s), building..."
+    log::info "XCFW" "Found $missing_count missing XCFramework(s), building..."
     echo ""
 
     for adapter in "${missing_adapters[@]}"; do
@@ -330,21 +330,21 @@ ensure_all_xcframeworks() {
     done
 
     # Step 3: Report results
-    log_info "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-    log_info "📊 Build Summary"
-    log_info "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
-    log_info "Total adapters:   ${#BINARY_ADAPTERS[@]}"
-    log_info "Already existed:  $((${#BINARY_ADAPTERS[@]} - missing_count))"
-    log_info "Missing:          $missing_count"
-    log_info "Built:            $built_count"
-    log_info "Failed:           $failed_count"
+    log::info "XCFW" "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    log::info "XCFW" "📊 Build Summary"
+    log::info "XCFW" "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    log::info "XCFW" "Total adapters:   ${#BINARY_ADAPTERS[@]}"
+    log::info "XCFW" "Already existed:  $((${#BINARY_ADAPTERS[@]} - missing_count))"
+    log::info "XCFW" "Missing:          $missing_count"
+    log::info "XCFW" "Built:            $built_count"
+    log::info "XCFW" "Failed:           $failed_count"
 
     if [[ $failed_count -gt 0 ]]; then
-        log_error "❌ Failed to build $failed_count XCFramework(s)"
-        log_error "Check build logs in: $BUILD_LOG_DIR"
+        log::error "XCFW" "❌ Failed to build $failed_count XCFramework(s)"
+        log::error "XCFW" "Check build logs in: $BUILD_LOG_DIR"
         return 1
     else
-        log_success "✅ All XCFrameworks ready (${#BINARY_ADAPTERS[@]}/${#BINARY_ADAPTERS[@]})"
+        log::success "XCFW" "✅ All XCFrameworks ready (${#BINARY_ADAPTERS[@]}/${#BINARY_ADAPTERS[@]})"
         return 0
     fi
 }
@@ -362,22 +362,22 @@ main() {
             ;;
         check|--check)
             # Check-only mode (no build)
-            log_info "Checking XCFrameworks (check-only mode)..."
+            log::info "XCFW" "Checking XCFrameworks (check-only mode)..."
             local missing_count=0
             for adapter in "${BINARY_ADAPTERS[@]}"; do
                 if check_xcframework_exists "$adapter"; then
-                    log_debug "✓ $adapter: XCFramework exists"
+                    log::debug "XCFW" "✓ $adapter: XCFramework exists"
                 else
-                    log_warning "✗ $adapter: XCFramework missing"
+                    log::warn "XCFW" "✗ $adapter: XCFramework missing"
                     missing_count=$((missing_count + 1))
                 fi
             done
 
             if [[ $missing_count -gt 0 ]]; then
-                log_error "❌ $missing_count XCFramework(s) missing"
+                log::error "XCFW" "❌ $missing_count XCFramework(s) missing"
                 exit 1
             else
-                log_success "✅ All XCFrameworks exist"
+                log::success "XCFW" "✅ All XCFrameworks exist"
                 exit 0
             fi
             ;;
@@ -420,8 +420,8 @@ EOF
             exit 0
             ;;
         *)
-            log_error "Unknown mode: $mode"
-            log_error "Use --help for usage information"
+            log::error "XCFW" "Unknown mode: $mode"
+            log::error "XCFW" "Use --help for usage information"
             exit 1
             ;;
     esac

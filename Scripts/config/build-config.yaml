@@ -1,0 +1,36 @@
+# ============================================================================
+# Build Configuration
+# ============================================================================
+# R041: Centralized build settings (previously hardcoded in 15+ files)
+#
+# Usage: Source Scripts/lib/config_loader.sh and call load_build_config()
+# ============================================================================
+
+# iOS Deployment Target
+# Previously hardcoded in: xcode.sh, common.sh, xcframework_builder.sh,
+#                          asset_sync.sh, workspace/update.sh (5+ files)
+ios_deployment_target: "15.0"
+
+# Swift Version
+# Previously hardcoded in: generate_workspace.sh, workspace/update.sh (6+ files)
+swift_version: "5.0"
+swift_tools_version: "5.9"
+
+# Architectures
+# Previously hardcoded in: xcode.sh, switch-target.sh, validate_xcframework.sh
+device_architectures:
+  - arm64
+simulator_architectures:
+  - arm64
+  - x86_64
+
+# XCFramework Configuration
+# Previously hardcoded in: validate_xcframework.sh, verify_no_fb_symbols.sh
+xcframework_slices:
+  device: "ios-arm64"
+  simulator: "ios-arm64_x86_64-simulator"
+
+# Build Timeouts (seconds)
+# Previously hardcoded in: xcframework_builder.sh, build-core.sh
+xcframework_build_timeout: 1800
+archive_timeout: 900

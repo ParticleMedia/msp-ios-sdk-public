@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # --- MSP Worktree Safety Guard (Patch L, shared) ---
 # shellcheck source=/dev/null
 . "$(git rev-parse --show-toplevel 2>/dev/null)/Scripts/lib/worktree_guard.sh"
@@ -8,7 +8,7 @@ msp_enforce_main_repo_or_exit
 # Removes report files and temporary artifacts before committing
 # Reports are visible in working directory but never committed
 
-set -e
+set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 cd "$ROOT_DIR" || exit 1

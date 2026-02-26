@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # --- MSP Worktree Safety Guard (Patch L, shared) ---
 # shellcheck source=/dev/null
 . "$(git rev-parse --show-toplevel 2>/dev/null)/Scripts/lib/worktree_guard.sh"
@@ -15,12 +15,11 @@ msp_enforce_main_repo_or_exit
 
 set -euo pipefail
 
-# Source common utilities
 source "$(dirname "$0")/../verify_remote/common/utils.sh"
 
 # Ensure ROOT_DIR is detected
 vr_detect_root_dir || {
-    vr_log_error "Failed to detect ROOT_DIR"
+    vr_log::error "LOCAL" "Failed to detect ROOT_DIR"
     return 1
 }
 
@@ -32,7 +31,7 @@ inject_sdk_spm() {
     local sandbox="$1"
     
     if [[ -z "$sandbox" ]]; then
-        vr_log_error "Sandbox path required"
+        vr_log::error "LOCAL" "Sandbox path required"
         return 1
     fi
     
@@ -42,7 +41,7 @@ inject_sdk_spm() {
     
     # Read released modules from state file
     if [[ ! -f "$state_file" ]]; then
-        vr_log_warn "[LOCAL] State file not found, skipping SPM injection"
+        vr_log::warn "LOCAL" "[LOCAL] State file not found, skipping SPM injection"
         return 0
     fi
     
@@ -55,7 +54,7 @@ inject_sdk_spm() {
     fi
     
     if [[ -z "$version" ]]; then
-        vr_log_warn "[LOCAL] Version not found in state file, skipping SPM injection"
+        vr_log::warn "LOCAL" "[LOCAL] Version not found in state file, skipping SPM injection"
         return 0
     fi
     
@@ -89,7 +88,7 @@ let package = Package(
 )
 EOF
     
-    vr_log_info "[LOCAL] Injected SPM dependencies: URL=$remote_url, version=$version, module=MSPCore"
+    vr_log::info "LOCAL" "[LOCAL] Injected SPM dependencies: URL=$remote_url, version=$version, module=MSPCore"
     
     return 0
 }

@@ -1,0 +1,285 @@
+module: DebugAdLoad
+prefix: DAL
+description: "Test cases for Debug Ad Load feature (DebugAdLoadSectionViewModel, DebugAdLoadViewModel)"
+bundle: MSPCoreTests
+created: '2026-02-22'
+updated: '2026-02-23'
+cases:
+- id: DAL001
+  type: unit
+  description: "Creates view models from section data"
+  priority: high
+  tags: [unit, initialization]
+  file: Tests/MSPCoreTests/Specs/Debug/DebugAdLoadSectionViewModelSpec.swift
+  status: implemented
+  class: DebugAdLoadSectionViewModel
+  method: init(from:)
+  doubles:
+    sectionData:
+      type: fake
+      class: FakeDebugSection
+      reason: "Value-type with working implementation for test data setup"
+    options:
+      type: fake
+      class: FakeDebugOption
+      reason: "Value-type providing option data"
+- id: DAL002
+  type: unit
+  description: "Exposes accessors and respects bounds"
+  priority: medium
+  tags: [unit, boundary]
+  file: Tests/MSPCoreTests/Specs/Debug/DebugAdLoadSectionViewModelSpec.swift
+  status: implemented
+  class: DebugAdLoadSectionViewModel
+  method: cellViewModel(at:)
+  doubles:
+    sectionData:
+      type: fake
+      class: FakeDebugSection
+      reason: "Value-type with working implementation for test data setup"
+- id: DAL003
+  type: unit
+  description: "Updates selection state and returns the selected cell"
+  priority: high
+  tags: [unit, selection]
+  file: Tests/MSPCoreTests/Specs/Debug/DebugAdLoadSectionViewModelSpec.swift
+  status: implemented
+  class: DebugAdLoadSectionViewModel
+  method: selectCell(at:)
+  doubles:
+    sectionData:
+      type: fake
+      class: FakeDebugSection
+      reason: "Value-type with working implementation for test data setup"
+- id: DAL004
+  type: unit
+  description: "Toggles visibility"
+  priority: low
+  tags: [unit, visibility]
+  file: Tests/MSPCoreTests/Specs/Debug/DebugAdLoadSectionViewModelSpec.swift
+  status: implemented
+  class: DebugAdLoadSectionViewModel
+  method: visible
+  doubles:
+    sectionData:
+      type: fake
+      class: FakeDebugSection
+      reason: "Value-type with working implementation for test data setup"
+- id: DAL005
+  type: unit
+  description: "Handles empty options"
+  priority: medium
+  tags: [unit, edge-case]
+  file: Tests/MSPCoreTests/Specs/Debug/DebugAdLoadSectionViewModelSpec.swift
+  status: implemented
+  class: DebugAdLoadSectionViewModel
+  method: init(from:)
+  doubles:
+    sectionData:
+      type: fake
+      class: FakeDebugSection
+      reason: "Value-type with empty options for edge case"
+- id: DAL006
+  type: unit
+  description: "Creates sections from repository data"
+  priority: high
+  tags: [unit, initialization]
+  file: Tests/MSPCoreTests/Specs/Debug/DebugAdLoadViewModelSpec.swift
+  status: implemented
+  class: DebugAdLoadViewModel
+  method: init
+  doubles:
+    sectionsRepository:
+      type: mock
+      class: MockDebugSectionsRepository
+      reason: "Stub return values + spy fetchCallCount"
+    placementsRepository:
+      type: mock
+      class: MockPlacementsRepository
+      reason: "Stub placement list + spy fetchCallCount"
+- id: DAL007
+  type: unit
+  description: "Sets default selection for sections without showCondition"
+  priority: medium
+  tags: [unit, initialization, default]
+  file: Tests/MSPCoreTests/Specs/Debug/DebugAdLoadViewModelSpec.swift
+  status: implemented
+  class: DebugAdLoadViewModel
+  method: init
+  doubles:
+    sectionsRepository:
+      type: mock
+      class: MockDebugSectionsRepository
+      reason: "Stub sections without showCondition"
+    placementsRepository:
+      type: mock
+      class: MockPlacementsRepository
+      reason: "Stub placement list"
+- id: DAL008
+  type: unit
+  description: "Handles empty placements and sections"
+  priority: medium
+  tags: [unit, edge-case]
+  file: Tests/MSPCoreTests/Specs/Debug/DebugAdLoadViewModelSpec.swift
+  status: implemented
+  class: DebugAdLoadViewModel
+  method: init
+  doubles:
+    sectionsRepository:
+      type: mock
+      class: MockDebugSectionsRepository
+      reason: "Stub empty sections"
+    placementsRepository:
+      type: mock
+      class: MockPlacementsRepository
+      reason: "Stub empty placements"
+- id: DAL009
+  type: behavior
+  description: "Shows Nova sections when Nova + Interstitial are selected"
+  priority: high
+  tags: [behavior, visibility]
+  file: Tests/MSPCoreTests/Specs/Debug/DebugAdLoadViewModelSpec.swift
+  status: implemented
+  given: "Production-like sections; Nova ad network selected; Interstitial format selected"
+  when: "Visibility rules are applied"
+  then: "Creative type section is visible; Layout section is visible"
+  doubles:
+    sectionsRepository:
+      type: mock
+      class: MockDebugSectionsRepository
+      reason: "Stub production-like sections"
+    placementsRepository:
+      type: mock
+      class: MockPlacementsRepository
+      reason: "Stub placement list"
+- id: DAL010
+  type: behavior
+  description: "Hides Nova sections when conditions are not met"
+  priority: high
+  tags: [behavior, visibility]
+  file: Tests/MSPCoreTests/Specs/Debug/DebugAdLoadViewModelSpec.swift
+  status: implemented
+  given: "Production-like sections; Non-Nova ad network selected; Banner format selected"
+  when: "Visibility rules are applied"
+  then: "Creative type section is hidden; Layout section is hidden"
+  doubles:
+    sectionsRepository:
+      type: mock
+      class: MockDebugSectionsRepository
+      reason: "Stub production-like sections"
+    placementsRepository:
+      type: mock
+      class: MockPlacementsRepository
+      reason: "Stub placement list"
+- id: DAL011
+  type: unit
+  description: "Includes basic parameters for selected options"
+  priority: high
+  tags: [unit, parameters]
+  file: Tests/MSPCoreTests/Specs/Debug/DebugAdLoadViewModelSpec.swift
+  status: implemented
+  class: DebugAdLoadViewModel
+  method: getTestParameters()
+  doubles:
+    sectionsRepository:
+      type: mock
+      class: MockDebugSectionsRepository
+      reason: "Stub sections with selectable options"
+    placementsRepository:
+      type: mock
+      class: MockPlacementsRepository
+      reason: "Stub placement list"
+- id: DAL012
+  type: unit
+  description: "Includes Nova-specific parameters when selected"
+  priority: high
+  tags: [unit, parameters, nova]
+  file: Tests/MSPCoreTests/Specs/Debug/DebugAdLoadViewModelSpec.swift
+  status: implemented
+  class: DebugAdLoadViewModel
+  method: getTestParameters()
+  doubles:
+    sectionsRepository:
+      type: mock
+      class: MockDebugSectionsRepository
+      reason: "Stub sections with Nova options"
+    placementsRepository:
+      type: mock
+      class: MockPlacementsRepository
+      reason: "Stub placement list"
+- id: DAL013
+  type: behavior
+  description: "Emits ad presentation signal on successful load"
+  priority: high
+  tags: [behavior, callback, success]
+  file: Tests/MSPCoreTests/Specs/Debug/DebugAdLoadViewModelSpec.swift
+  status: implemented
+  given: "Valid placement selected; Mock ad configured to succeed"
+  when: "loadAd() is called"
+  then: "adPresentationPublisher emits signal"
+  doubles:
+    loadAdRepository:
+      type: mock
+      class: MockLoadAdRepository
+      reason: "Stub shouldSucceed=true, mockAd; spy loadAdCallCount"
+    adNetworkAdapter:
+      type: dummy
+      class: DummyAdNetworkAdapter
+      reason: "Satisfy BannerAd constructor, never exercised"
+    sectionsRepository:
+      type: mock
+      class: MockDebugSectionsRepository
+      reason: "Stub sections for ViewModel init"
+    placementsRepository:
+      type: mock
+      class: MockPlacementsRepository
+      reason: "Stub placements for ViewModel init"
+- id: DAL014
+  type: behavior
+  description: "Emits toast signal on load error"
+  priority: high
+  tags: [behavior, callback, error]
+  file: Tests/MSPCoreTests/Specs/Debug/DebugAdLoadViewModelSpec.swift
+  status: implemented
+  given: "Valid placement selected; Mock ad configured to fail"
+  when: "loadAd() is called"
+  then: "toastSignalPublisher emits error message"
+  doubles:
+    loadAdRepository:
+      type: mock
+      class: MockLoadAdRepository
+      reason: "Stub shouldSucceed=false; spy loadAdCallCount"
+    sectionsRepository:
+      type: mock
+      class: MockDebugSectionsRepository
+      reason: "Stub sections for ViewModel init"
+    placementsRepository:
+      type: mock
+      class: MockPlacementsRepository
+      reason: "Stub placements for ViewModel init"
+- id: DAL015
+  type: unit
+  description: "Does not clear the ad reference on dismissal"
+  priority: medium
+  tags: [unit, lifecycle]
+  file: Tests/MSPCoreTests/Specs/Debug/DebugAdLoadViewModelSpec.swift
+  status: implemented
+  class: DebugAdLoadViewModel
+  method: onAdDismissed(ad:)
+  doubles:
+    loadAdRepository:
+      type: mock
+      class: MockLoadAdRepository
+      reason: "Stub loaded ad for dismissal test"
+    adNetworkAdapter:
+      type: dummy
+      class: DummyAdNetworkAdapter
+      reason: "Satisfy InterstitialAd constructor, never exercised"
+    sectionsRepository:
+      type: mock
+      class: MockDebugSectionsRepository
+      reason: "Stub sections for ViewModel init"
+    placementsRepository:
+      type: mock
+      class: MockPlacementsRepository
+      reason: "Stub placements for ViewModel init"

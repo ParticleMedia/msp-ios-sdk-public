@@ -5,15 +5,13 @@ set -euo pipefail
 # Purpose: Manually add a new context entry to the knowledge base
 # Usage: ./Scripts/context/add-context.sh
 
-# Get script directory and load common functions
-# shellcheck disable=SC2155
-readonly SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+readonly SCRIPT_DIR
 # shellcheck source=./common.sh
 source "$SCRIPT_DIR/common.sh"
 
-# Configuration
-# shellcheck disable=SC2155
-readonly REPO_ROOT=$(get_repo_root)
+REPO_ROOT=$(get_repo_root)
+readonly REPO_ROOT
 readonly CONTEXT_DIR="$REPO_ROOT/.context"
 
 # Colors for better UX (optional, fallback to plain text)
@@ -72,14 +70,17 @@ collect_domain() {
     echo ""
     echo "请选择此上下文所属的领域："
     echo ""
-    echo "  [1] release      - 发布系统: Pod 发布、版本管理、集成问题"
-    echo "  [2] ci           - CI/CD: 构建、自动化流程"
-    echo "  [3] integration  - 集成兼容: 编译链接、crash 问题"
+    echo "  [1] release       - 发布系统: Pod 发布、版本管理、集成问题"
+    echo "  [2] ci            - CI/CD: 构建、自动化流程"
+    echo "  [3] integration   - 集成兼容: 编译链接、crash 问题"
     echo "  [4] compatibility - 版本兼容: 迁移升级、兼容性问题"
+    echo "  [5] testing       - 测试策略: 单元测试、TDD、测试架构"
+    echo "  [6] sources       - 源码开发: Swift 代码、架构、设计模式"
+    echo "  [7] architecture  - 系统架构: 模块设计、组织结构"
     echo ""
 
     while true; do
-        printf "选择 [1-4]: "
+        printf "选择 [1-7]: "
         read -r choice
 
         case "$choice" in
@@ -87,7 +88,10 @@ collect_domain() {
             2) echo "ci"; return 0 ;;
             3) echo "integration"; return 0 ;;
             4) echo "compatibility"; return 0 ;;
-            *) echo "❌ 无效选择，请输入 1-4" ;;
+            5) echo "testing"; return 0 ;;
+            6) echo "sources"; return 0 ;;
+            7) echo "architecture"; return 0 ;;
+            *) echo "❌ 无效选择，请输入 1-7" ;;
         esac
     done
 }
@@ -163,7 +167,7 @@ collect_problem() {
 
     while true; do
         read -r line
-        if [ -z "$line" ] && [ $line_count -gt 0 ]; then
+        if [ -z "$line" ] && [ "$line_count" -gt 0 ]; then
             break
         fi
         if [ -n "$line" ]; then
@@ -198,7 +202,7 @@ collect_root_cause() {
 
     while true; do
         read -r line
-        if [ -z "$line" ] && [ $line_count -gt 0 ]; then
+        if [ -z "$line" ] && [ "$line_count" -gt 0 ]; then
             break
         fi
         if [ -n "$line" ]; then
@@ -233,7 +237,7 @@ collect_solution() {
 
     while true; do
         read -r line
-        if [ -z "$line" ] && [ $line_count -gt 0 ]; then
+        if [ -z "$line" ] && [ "$line_count" -gt 0 ]; then
             break
         fi
         if [ -n "$line" ]; then
@@ -308,6 +312,7 @@ check_duplicates() {
                 local existing_lower
                 existing_lower=$(echo "$existing_title" | tr '[:upper:]' '[:lower:]')
 
+                # shellcheck disable=SC2086 -- intentional word-splitting: keywords is a space-delimited name list
                 for keyword in $keywords; do
                     if echo "$existing_lower" | grep -q "$keyword"; then
                         similar_contexts="$similar_contexts\n  - $existing_title ($(basename "$file" .md))"
@@ -419,7 +424,7 @@ main() {
     echo ""
     print_success "上下文已成功创建: $context_id"
     echo ""
-    echo "文件位置: $CONTEXT_DIR/$domain/$context_id.md"
+    echo "文件位置: $CONTEXT_DIR/$domain/$layer/$context_id.md"
     echo ""
 }
 
@@ -445,8 +450,10 @@ create_context_file() {
     local created_date
     created_date=$(get_current_date)
 
-    # Create context file path
-    local context_file="$CONTEXT_DIR/$domain/$context_id.md"
+    # Create context file path (layered: domain/layer/id.md)
+    local context_dir_path="$CONTEXT_DIR/$domain/$layer"
+    mkdir -p "$context_dir_path"
+    local context_file="$context_dir_path/$context_id.md"
 
     # Check if file already exists
     if [ -f "$context_file" ]; then

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # --- MSP Worktree Safety Guard (Patch L, shared) ---
 # shellcheck source=/dev/null
 . "$(git rev-parse --show-toplevel 2>/dev/null)/Scripts/lib/worktree_guard.sh"
@@ -8,14 +8,12 @@ msp_enforce_main_repo_or_exit
 # MSPiOSCore XCFramework Build Script
 # This script now uses the shared XCFramework builder library
 
-# Source the shared libraries
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT_DIR="$(cd "$SCRIPT_DIR/../../.." && pwd)"
 
-# Ensure we're in repo root
 cd "$ROOT_DIR" || exit 1
 
-# Source with fallback
+
 if [[ -f "$ROOT_DIR/Scripts/lib/colors.sh" ]]; then
     source "$ROOT_DIR/Scripts/lib/colors.sh"
 else
@@ -33,7 +31,12 @@ else
     exit 1
 fi
 
-# Usage function
+# R029f: Source xcodegen module for unified generation
+if [[ -f "$ROOT_DIR/Scripts/lib/xcodegen.sh" ]]; then
+    # shellcheck source=Scripts/lib/xcodegen.sh
+    source "$ROOT_DIR/Scripts/lib/xcodegen.sh" 2>/dev/null || true
+fi
+
 show_usage() {
     color_highlight "═══════════════════════════════════════════════════════════════"
     color_highlight "MSPiOSCore XCFramework Build Script - Usage Instructions"
@@ -60,26 +63,20 @@ show_usage() {
     echo ""
 }
 
-# Check for help flag
 if [[ "$1" == "-h" || "$1" == "--help" || "$1" == "help" ]]; then
     show_usage
     exit 0
 fi
 
-# Default code signing behavior (enabled by default)
 SKIP_CODE_SIGN=${SKIP_CODE_SIGN:-0}
 
-# CI environment detection
 CI=${CI:-false}
 if [ "$CI" = "true" ]; then
     color_warning "🔧 CI environment detected - enabling optimizations"
 fi
 
-# Enable strict error handling
-set -e
-set -o pipefail
+set -euo pipefail
 
-# Utility functions
 ensure_project_root() {
     # Simple function to ensure we're in the right directory
     if [[ ! -f ".git/config" ]] && [[ ! -d "MSPDemoApp" ]] && [[ ! -d "MSPiOSCore" ]]; then
@@ -102,14 +99,12 @@ main() {
         exit 1
     fi
     
-    # Show build configuration
     if [[ "$SKIP_CODE_SIGN" == "1" ]]; then
         color_warning "🔓 Code signing: DISABLED (development mode)"
     else
         color_success "🔒 Code signing: ENABLED (production mode)"
     fi
     
-    # Check required commands
     echo "🔧 Checking required commands..."
     if ! command -v xcodebuild &> /dev/null; then
         echo "❌ ERROR: xcodebuild command not found"
@@ -117,17 +112,14 @@ main() {
     fi
     echo "✅ All required commands are available"
     
-    # Check required files and generate MSPCore project from XcodeGen
     echo "🔧 Checking required project files and generating MSPCore project..."
-    
-    # Check if XcodeGen is available
+
     if ! command -v xcodegen &> /dev/null; then
         color_error "❌ ERROR: xcodegen command not found"
         color_error "Please install XcodeGen: brew install xcodegen"
         exit 1
     fi
     
-    # Generate MSPCore project from project.yml (XcodeGen-managed)
     MSPCORE_PROJECT_SPEC="$ROOT_DIR/Sources/Core/MSPCore/project.yml"
     if [[ ! -f "$MSPCORE_PROJECT_SPEC" ]]; then
         color_error "❌ ERROR: Sources/Core/MSPCore/project.yml not found"
@@ -136,14 +128,25 @@ main() {
     fi
     
     echo "🔧 Generating MSPCore.xcodeproj from project.yml..."
-    if xcodegen generate --spec "$MSPCORE_PROJECT_SPEC"; then
+    # R029f: Use xcodegen.sh module if available, fallback to direct call
+    local mspcore_xcodegen_success=false
+    if command -v xcodegen_generate &>/dev/null; then
+        if xcodegen_generate "$MSPCORE_PROJECT_SPEC" "$(dirname "$MSPCORE_PROJECT_SPEC")"; then
+            mspcore_xcodegen_success=true
+        fi
+    else
+        if xcodegen generate --spec "$MSPCORE_PROJECT_SPEC"; then
+            mspcore_xcodegen_success=true
+        fi
+    fi
+
+    if [[ "$mspcore_xcodegen_success" == "true" ]]; then
         echo "✅ MSPCore.xcodeproj generated successfully from project.yml"
     else
         color_error "❌ ERROR: Failed to generate MSPCore.xcodeproj from project.yml"
         exit 1
     fi
     
-    # Verify generated project exists
     if [[ ! -d "Sources/Core/MSPCore/MSPCore.xcodeproj" ]]; then
         color_error "❌ ERROR: Generated MSPCore.xcodeproj not found"
         color_error "Expected: Sources/Core/MSPCore/MSPCore.xcodeproj"
@@ -151,13 +154,11 @@ main() {
     fi
     echo "✅ MSPCore project found (generated from project.yml)"
     
-    # Clean previous build artifacts
     echo "🔧 Cleaning previous build artifacts..."
     rm -rf "Build/Temp/MSPiOSCore/xcframework"
     mkdir -p "Build/Temp/MSPiOSCore/xcframework"
     echo "✅ Build directory cleaned and created"
     
-    # Build XCFramework using shared library
     # Note: MSPCore source builds MSPiOSCore.xcframework (output name differs from source)
     if build_xcframework \
         "MSPCore" \
@@ -169,7 +170,6 @@ main() {
         
         echo "✅ MSPiOSCore XCFramework built successfully"
         
-        # Validate the built XCFramework
         if validate_xcframework "Build/ReleaseArtifacts/XCFrameworks/MSPiOSCore.xcframework" "MSPiOSCore"; then
             echo "✅ MSPiOSCore XCFramework validation passed"
         else
@@ -177,12 +177,10 @@ main() {
             exit 1
         fi
         
-        # Show build summary
         echo "🔧 Build Summary"
         color_success "🎉 MSPiOSCore.xcframework build completed successfully!"
         color_info "📁 Output location: Build/ReleaseArtifacts/XCFrameworks/MSPiOSCore.xcframework"
         
-        # Show framework size
         if command -v du &> /dev/null; then
             local framework_size=$(du -sh "Build/ReleaseArtifacts/XCFrameworks/MSPiOSCore.xcframework" 2>/dev/null | cut -f1)
             color_info "📦 Framework size: $framework_size"
@@ -195,5 +193,4 @@ main() {
     fi
 }
 
-# Execute main function
 main "$@"

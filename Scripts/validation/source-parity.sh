@@ -10,7 +10,6 @@ msp_enforce_main_repo_or_exit
 
 set -euo pipefail
 
-# Source shared libraries
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT_DIR="$(cd "$SCRIPT_DIR/../.." && pwd)"
 
@@ -21,13 +20,11 @@ source "$ROOT_DIR/Scripts/lib/colors.sh"
 # shellcheck source=Scripts/lib/ui.sh
 source "$ROOT_DIR/Scripts/lib/ui.sh"
 
-# Initialize paths
 init_paths
 
 ERRORS=0
 WARNINGS=0
 
-# Function to extract source files from Xcode project target
 extract_xcode_sources() {
     local project_path="$1"
     local target_name="$2"
@@ -267,13 +264,13 @@ fi
 
 # Summary
 log_title "Validation Summary"
-log_info "Errors: $ERRORS"
-log_info "Warnings: $WARNINGS"
+log::info "VALIDATE" "Errors: $ERRORS"
+log::info "VALIDATE" "Warnings: $WARNINGS"
 
 if [[ $ERRORS -gt 0 ]]; then
-    log_error "Validation FAILED"
+    log::error "VALIDATE" "Validation FAILED"
     exit 1
 else
-    log_success "Validation PASSED"
+    log::success "VALIDATE" "Validation PASSED"
     exit 0
 fi

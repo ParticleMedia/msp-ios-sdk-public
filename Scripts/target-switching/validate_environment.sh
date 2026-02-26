@@ -16,7 +16,6 @@ msp_enforce_main_repo_or_exit
 
 set -euo pipefail
 
-# Source common functions
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT_DIR="$(cd "$SCRIPT_DIR/../.." && pwd)"
 
@@ -28,12 +27,12 @@ ensure_repo_root
 TARGET="${1:-}"
 
 if [[ -z "$TARGET" ]]; then
-    log_error "Usage: $0 [spm|pods]"
+    log::error "TARGET" "Usage: $0 [spm|pods]"
     exit 1
 fi
 
 if [[ "$TARGET" != "spm" ]] && [[ "$TARGET" != "pods" ]]; then
-    log_error "Invalid target. Must be 'spm' or 'pods'"
+    log::error "TARGET" "Invalid target. Must be 'spm' or 'pods'"
     exit 1
 fi
 
@@ -51,9 +50,9 @@ fi
 log_title "Validation Complete"
 
 if [[ $ERRORS -eq 0 ]]; then
-    log_success "Environment validation PASSED"
+    log::success "TARGET" "Environment validation PASSED"
     exit 0
 else
-    log_error "Environment validation FAILED ($ERRORS error(s))"
+    log::error "TARGET" "Environment validation FAILED ($ERRORS error(s))"
     exit 1
 fi

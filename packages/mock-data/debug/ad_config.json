@@ -1,0 +1,18 @@
+{
+  "adUnitId": "test-ad-unit-001",
+  "adType": "banner",
+  "refreshInterval": 30,
+  "timeout": 5000,
+  "networks": [
+    {
+      "name": "google",
+      "enabled": true,
+      "priority": 1
+    },
+    {
+      "name": "facebook",
+      "enabled": true,
+      "priority": 2
+    }
+  ]
+}

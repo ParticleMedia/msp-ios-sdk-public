@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # --- MSP Worktree Safety Guard (Patch L, shared) ---
 # shellcheck source=/dev/null
 . "$(git rev-parse --show-toplevel 2>/dev/null)/Scripts/lib/worktree_guard.sh"
@@ -40,7 +40,7 @@ msp_load_release_config() {
         return 1
     fi
     
-    MSP_RELEASE_CONFIG_FILE="$repo_root/Scripts/release/config/release_config.yaml"
+    MSP_RELEASE_CONFIG_FILE="$repo_root/Scripts/config/release.yaml"
     
     if [[ ! -f "$MSP_RELEASE_CONFIG_FILE" ]]; then
         echo "[CONFIG][WARN] Configuration file not found: $MSP_RELEASE_CONFIG_FILE" >&2
@@ -360,7 +360,7 @@ msp_cfg_get() {
     
     if [[ -z "$value" ]]; then
         echo "[CONFIG][ERROR] Configuration key '$key' not found for tier '$tier'" >&2
-        echo "[CONFIG][ERROR] Check Scripts/release/config/release_config.yaml" >&2
+        echo "[CONFIG][ERROR] Check Scripts/config/release.yaml" >&2
         return 1
     fi
     

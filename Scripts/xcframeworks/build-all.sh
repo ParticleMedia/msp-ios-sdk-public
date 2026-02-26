@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # --- MSP Worktree Safety Guard (Patch L, shared) ---
 # shellcheck source=/dev/null
 . "$(git rev-parse --show-toplevel 2>/dev/null)/Scripts/lib/worktree_guard.sh"
@@ -13,12 +13,19 @@ msp_enforce_main_repo_or_exit
 
 set -euo pipefail
 
-# Source common functions
 XCFRAMEWORKS_SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT_DIR="$(cd "$XCFRAMEWORKS_SCRIPT_DIR/../.." && pwd)"
 
 # shellcheck source=Scripts/target-switching/common.sh
 source "$XCFRAMEWORKS_SCRIPT_DIR/../target-switching/common.sh"
+
+# Ensure logger functions are available in subprocess
+# (Force reload by unsetting the guard variable, as parent may have already sourced)
+if [[ -f "$ROOT_DIR/Scripts/release/utils/logger.sh" ]]; then
+    unset MSP_LOGGER_LOADED
+    # shellcheck source=Scripts/release/utils/logger.sh
+    source "$ROOT_DIR/Scripts/release/utils/logger.sh" 2>/dev/null || true
+fi
 
 ensure_repo_root
 
@@ -37,14 +44,14 @@ START_TIME=$(date +%s)
 # Build core modules
 log_section "Building Core Modules"
 if ! "$BUILD_CORE_SCRIPT"; then
-    log_error "Core modules build failed - aborting pipeline"
+    log::error "XCFW" "Core modules build failed - aborting pipeline"
     exit 1
 fi
 
 # Build adapter modules
 log_section "Building Adapter Modules"
 if ! "$BUILD_ADAPTERS_SCRIPT"; then
-    log_error "Adapter modules build failed"
+    log::error "XCFW" "Adapter modules build failed"
     exit 1
 fi
 
@@ -52,7 +59,7 @@ END_TIME=$(date +%s)
 DURATION=$((END_TIME - START_TIME))
 
 # Generate build report
-log_step "Generating build report"
+log::step "XCFW" "Generating build report"
 {
     cat <<EOF
 # XCFramework Build Report
@@ -123,6 +130,6 @@ ls -la build/XCFrameworks/*.xcframework
 EOF
 } > "$REPORT_FILE"
 
-log_success "Build report generated: $REPORT_FILE"
+log::success "XCFW" "Build report generated: $REPORT_FILE"
 log_title "All XCFrameworks Build Complete"
-log_success "Total build time: ${DURATION} seconds"
+log::success "XCFW" "Total build time: ${DURATION} seconds"

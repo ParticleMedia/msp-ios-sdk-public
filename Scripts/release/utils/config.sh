@@ -28,7 +28,6 @@ msp_enforce_main_repo_or_exit
 #   3. Default values (set by init_config_defaults)
 # ============================================================================
 
-# Prevent multiple sourcing
 [[ -n "${_RELEASE_CONFIG_SOURCED:-}" ]] && return 0
 readonly _RELEASE_CONFIG_SOURCED=1
 
@@ -38,7 +37,6 @@ readonly _RELEASE_CONFIG_SOURCED=1
 # Note: Bash 3.x on macOS doesn't support associative arrays declared with
 # `declare -A` at global scope reliably. We use a workaround with separate vars.
 
-# Scalar values
 CONFIG_VERSION=""
 CONFIG_RELEASE_BRANCH=""
 CONFIG_BASE_BRANCH=""
@@ -51,20 +49,23 @@ CONFIG_PODS_REMOTE_PRIMARY_PRODUCT=""
 CONFIG_SPM_REMOTE_URL=""
 CONFIG_SPM_REMOTE_PRODUCT_NAME=""
 
-# Array values (space-separated strings for bash 3.x compatibility)
 CONFIG_PODS_MODULES=""
 CONFIG_SPM_PACKAGES=""
 
-# Config file path (for debugging)
 CONFIG_FILE_PATH=""
 
 # ============================================================================
 # Default Values
 # ============================================================================
+
+# @description Initialize all CONFIG_* variables with sensible defaults.
+#              Called automatically when this module is sourced.
+#              Can be called again to reset config to defaults.
+# @return void
 init_config_defaults() {
     CONFIG_VERSION=""
     CONFIG_RELEASE_BRANCH=""
-    CONFIG_BASE_BRANCH="main"
+    CONFIG_BASE_BRANCH=""
     CONFIG_PODS_ENABLED="true"
     CONFIG_SPM_ENABLED="true"
     CONFIG_SLACK_CHANNEL="#msp-release"
@@ -90,7 +91,6 @@ init_config_defaults() {
     CONFIG_FILE_PATH=""
 }
 
-# Initialize defaults on source
 init_config_defaults
 
 # ============================================================================
@@ -99,7 +99,10 @@ init_config_defaults
 # This parser handles the specific YAML structure of release.yaml.
 # It is NOT a general-purpose YAML parser.
 
-# Parse a simple YAML value (strips quotes and whitespace)
+# @description Parse a simple YAML value by stripping quotes and whitespace.
+#              Handles both single and double quotes.
+# @param $1 value - Raw value string from YAML line
+# @return Cleaned value string via stdout
 _parse_yaml_value() {
     local value="$1"
     # Remove leading/trailing whitespace
@@ -113,7 +116,11 @@ _parse_yaml_value() {
     echo "$value"
 }
 
-# Parse array items from YAML (handles "- item" format)
+# @description Parse array items from YAML (handles "- item" format).
+#              Reads file and extracts array values under a given key.
+# @param $1 file - Path to YAML file
+# @param $2 start_key - Key name that starts the array section
+# @return Space-separated string of array values via stdout
 _parse_yaml_array() {
     local file="$1"
     local start_key="$2"
@@ -156,7 +163,11 @@ _parse_yaml_array() {
     echo "$result"
 }
 
-# Load configuration from YAML file
+# @description Load configuration from YAML file into CONFIG_* variables.
+#              Resets to defaults first, then applies file values.
+#              Arrays (modules, packages) are parsed separately.
+# @param $1 config_file - Path to release.yaml config file
+# @return 0 on success, 1 on error (file not found or invalid)
 load_config() {
     local config_file="$1"
     
@@ -287,10 +298,15 @@ load_config() {
 # Config Getters (for cleaner access)
 # ============================================================================
 
+# @description Get the configured release version.
+# @return Version string via stdout (may be empty)
 get_config_version() {
     echo "$CONFIG_VERSION"
 }
 
+# @description Get the release branch name.
+#              Falls back to "release/{version}" if not explicitly set.
+# @return Branch name string via stdout (may be empty if no version set)
 get_config_release_branch() {
     if [[ -n "$CONFIG_RELEASE_BRANCH" ]]; then
         echo "$CONFIG_RELEASE_BRANCH"
@@ -301,54 +317,81 @@ get_config_release_branch() {
     fi
 }
 
+# @description Get the base branch for releases (default: main).
+# @return Branch name string via stdout
 get_config_base_branch() {
     echo "$CONFIG_BASE_BRANCH"
 }
 
+# @description Check if CocoaPods publishing is enabled.
+# @return "true" or "false" via stdout
 get_config_pods_enabled() {
     echo "$CONFIG_PODS_ENABLED"
 }
 
+# @description Check if SPM publishing is enabled.
+# @return "true" or "false" via stdout
 get_config_spm_enabled() {
     echo "$CONFIG_SPM_ENABLED"
 }
 
+# @description Get the list of pod modules to release.
+# @return Space-separated module names via stdout
 get_config_pods_modules() {
     echo "$CONFIG_PODS_MODULES"
 }
 
+# @description Get the list of SPM packages to release.
+# @return Space-separated package names via stdout
 get_config_spm_packages() {
     echo "$CONFIG_SPM_PACKAGES"
 }
 
+# @description Get the Slack channel for notifications.
+# @return Channel name string via stdout
 get_config_slack_channel() {
     echo "$CONFIG_SLACK_CHANNEL"
 }
 
+# @description Check if DM should be sent on failure.
+# @return "true" or "false" via stdout
 get_config_dm_on_failure() {
     echo "$CONFIG_DM_ON_FAILURE"
 }
 
+# @description Get the remote CocoaPods spec repo URL.
+# @return URL string via stdout (may be empty)
 get_config_pods_remote_url() {
     echo "$CONFIG_PODS_REMOTE_URL"
 }
 
+# @description Get the primary product name for pods remote verification.
+# @return Product name string via stdout
 get_config_pods_remote_primary_product() {
     echo "$CONFIG_PODS_REMOTE_PRIMARY_PRODUCT"
 }
 
+# @description Get the remote SPM repository URL.
+# @return URL string via stdout (may be empty)
 get_config_spm_remote_url() {
     echo "$CONFIG_SPM_REMOTE_URL"
 }
 
+# @description Get the SPM product name for remote verification.
+# @return Product name string via stdout
 get_config_spm_remote_product_name() {
     echo "$CONFIG_SPM_REMOTE_PRODUCT_NAME"
 }
 
+# @description Check if strict SPM verification is enabled.
+# @return "true" or "false" via stdout
 get_config_verify_spm_strict() {
     echo "$CONFIG_VERIFY_SPM_STRICT"
 }
 
+# @description Get the version to use for matrix verification.
+#              Falls back to default if not explicitly set.
+# @return Version string via stdout
 get_config_verify_matrix_version() {
     echo "${CONFIG_VERIFY_MATRIX_VERSION:-$CONFIG_VERIFY_MATRIX_DEFAULT_VERSION}"
 }
@@ -357,30 +400,44 @@ get_config_verify_matrix_version() {
 # Config Setters (for CLI overrides)
 # ============================================================================
 
+# @description Set the release version (CLI override).
+# @param $1 version - Version string (e.g., "1.2.3")
 set_config_version() {
     CONFIG_VERSION="$1"
 }
 
+# @description Set the release branch name (CLI override).
+# @param $1 branch - Branch name string
 set_config_release_branch() {
     CONFIG_RELEASE_BRANCH="$1"
 }
 
+# @description Set the base branch (CLI override).
+# @param $1 branch - Branch name string
 set_config_base_branch() {
     CONFIG_BASE_BRANCH="$1"
 }
 
+# @description Enable or disable CocoaPods publishing (CLI override).
+# @param $1 enabled - "true" or "false"
 set_config_pods_enabled() {
     CONFIG_PODS_ENABLED="$1"
 }
 
+# @description Enable or disable SPM publishing (CLI override).
+# @param $1 enabled - "true" or "false"
 set_config_spm_enabled() {
     CONFIG_SPM_ENABLED="$1"
 }
 
+# @description Set the list of pod modules to release (CLI override).
+# @param $1 modules - Space-separated module names
 set_config_pods_modules() {
     CONFIG_PODS_MODULES="$1"
 }
 
+# @description Set the list of SPM packages to release (CLI override).
+# @param $1 packages - Space-separated package names
 set_config_spm_packages() {
     CONFIG_SPM_PACKAGES="$1"
 }
@@ -389,6 +446,10 @@ set_config_spm_packages() {
 # Config Validation
 # ============================================================================
 
+# @description Validate the current configuration for required values.
+#              Emits warnings for missing or suspicious values.
+#              Applies default values where appropriate.
+# @return 0 on success (always succeeds, only emits warnings)
 validate_config() {
     local errors=0
     
@@ -396,9 +457,9 @@ validate_config() {
     # This is checked at runtime, not here
     
     # Base branch should not be empty
+    # base_branch is allowed to be empty (auto-detect current branch at runtime)
     if [[ -z "$CONFIG_BASE_BRANCH" ]]; then
-        echo "Warning: base_branch is empty, using 'main'" >&2
-        CONFIG_BASE_BRANCH="main"
+        : # Empty is valid — modular.sh will auto-detect via git branch --show-current
     fi
     
     # At least one of pods or spm should be enabled
@@ -413,6 +474,9 @@ validate_config() {
 # Config Summary (for verbose output)
 # ============================================================================
 
+# @description Print a formatted summary of the current configuration.
+#              Displays version, branches, modules, and notification settings.
+# @return void (prints to stdout)
 print_config_summary() {
     echo ""
     echo "┌─────────────────────────────────────────────────────────────────┐"
@@ -431,10 +495,10 @@ print_config_summary() {
     printf "│ %-20s %-42s │\n" "Base Branch:" "$CONFIG_BASE_BRANCH"
     echo "├─────────────────────────────────────────────────────────────────┤"
     printf "│ %-20s %-42s │\n" "Pods Enabled:" "$CONFIG_PODS_ENABLED"
-    printf "│ %-20s %-42s │\n" "Pods Modules:" "$(echo $CONFIG_PODS_MODULES | wc -w | tr -d ' ') module(s)"
+    printf "│ %-20s %-42s │\n" "Pods Modules:" "$(echo "$CONFIG_PODS_MODULES" | wc -w | tr -d ' ') module(s)"
     echo "├─────────────────────────────────────────────────────────────────┤"
     printf "│ %-20s %-42s │\n" "SPM Enabled:" "$CONFIG_SPM_ENABLED"
-    printf "│ %-20s %-42s │\n" "SPM Packages:" "$(echo $CONFIG_SPM_PACKAGES | wc -w | tr -d ' ') package(s)"
+    printf "│ %-20s %-42s │\n" "SPM Packages:" "$(echo "$CONFIG_SPM_PACKAGES" | wc -w | tr -d ' ') package(s)"
     echo "├─────────────────────────────────────────────────────────────────┤"
     printf "│ %-20s %-42s │\n" "Slack Channel:" "$CONFIG_SLACK_CHANNEL"
     printf "│ %-20s %-42s │\n" "DM on Failure:" "$CONFIG_DM_ON_FAILURE"
@@ -442,7 +506,9 @@ print_config_summary() {
     echo ""
 }
 
-# Print detailed config (for debugging)
+# @description Print all CONFIG_* variable values for debugging.
+#              Useful for troubleshooting configuration issues.
+# @return void (prints to stdout)
 print_config_debug() {
     echo "=== Config Debug ==="
     echo "CONFIG_FILE_PATH=$CONFIG_FILE_PATH"

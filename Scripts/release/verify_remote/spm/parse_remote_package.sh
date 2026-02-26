@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # --- MSP Worktree Safety Guard (Patch L, shared) ---
 # shellcheck source=/dev/null
 . "$(git rev-parse --show-toplevel 2>/dev/null)/Scripts/lib/worktree_guard.sh"
@@ -15,7 +15,6 @@ msp_enforce_main_repo_or_exit
 
 set -euo pipefail
 
-# Source common utilities
 source "$(dirname "$0")/../common/utils.sh"
 
 # ============================================================================
@@ -27,11 +26,10 @@ parse_remote_package() {
     local remote_url="$2"
     
     if [[ -z "$sandbox" ]] || [[ -z "$remote_url" ]]; then
-        vr_log_error "Sandbox path and remote URL required"
+        vr_log::error "SPM" "Sandbox path and remote URL required"
         return 1
     fi
     
-    # Create tmp directory in sandbox
     mkdir -p "$sandbox/tmp"
     local remote_package_file="$sandbox/tmp/Package.swift.remote"
     
@@ -54,10 +52,10 @@ parse_remote_package() {
         fi
         
         package_url="https://raw.githubusercontent.com/${repo_owner}/${repo_name}/${branch}/Package.swift"
-        vr_log_info "[SPM] Detected GitHub repository, using raw URL: $package_url"
+        vr_log::info "SPM" "[SPM] Detected GitHub repository, using raw URL: $package_url"
     else
         # Non-GitHub URL: try to get default branch and construct raw URL
-        vr_log_info "[SPM] Non-GitHub repository detected, attempting to determine default branch..."
+        vr_log::info "SPM" "[SPM] Non-GitHub repository detected, attempting to determine default branch..."
         local default_branch="main"
         if command -v git >/dev/null 2>&1; then
             local branch_info
@@ -70,13 +68,12 @@ parse_remote_package() {
         # For non-GitHub, try common patterns
         # Pattern 1: <url>/raw/<branch>/Package.swift
         package_url="${remote_url%.git}/raw/${default_branch}/Package.swift"
-        vr_log_info "[SPM] Attempting raw URL pattern: $package_url"
+        vr_log::info "SPM" "[SPM] Attempting raw URL pattern: $package_url"
     fi
     
-    # Download Package.swift
-    vr_log_info "[SPM] Downloading remote Package.swift from: $package_url"
+    vr_log::info "SPM" "[SPM] Downloading remote Package.swift from: $package_url"
     if ! curl -sSfL "$package_url" -o "$remote_package_file" 2>/dev/null; then
-        vr_log_warn "[SPM] Failed to download Package.swift from: $package_url"
+        vr_log::warn "SPM" "[SPM] Failed to download Package.swift from: $package_url"
         # Try alternative: use version tag in URL
         if [[ "$remote_url" =~ ^https://github.com/([^/]+)/([^/]+) ]]; then
             local repo_owner="${BASH_REMATCH[1]}"
@@ -85,11 +82,11 @@ parse_remote_package() {
             local version="${MSP_VERIFY_SPM_VERSION:-}"
             if [[ -n "$version" ]]; then
                 package_url="https://raw.githubusercontent.com/${repo_owner}/${repo_name}/${version}/Package.swift"
-                vr_log_info "[SPM] Retrying with version tag: $package_url"
+                vr_log::info "SPM" "[SPM] Retrying with version tag: $package_url"
                 if curl -sSfL "$package_url" -o "$remote_package_file" 2>/dev/null; then
-                    vr_log_info "[SPM] Successfully downloaded Package.swift using version tag"
+                    vr_log::info "SPM" "[SPM] Successfully downloaded Package.swift using version tag"
                 else
-                    vr_log_warn "[SPM] Failed to download Package.swift (all attempts failed)"
+                    vr_log::warn "SPM" "[SPM] Failed to download Package.swift (all attempts failed)"
                     return 1
                 fi
             else
@@ -99,11 +96,11 @@ parse_remote_package() {
             return 1
         fi
     else
-        vr_log_info "[SPM] Successfully downloaded Package.swift"
+        vr_log::info "SPM" "[SPM] Successfully downloaded Package.swift"
     fi
     
     # Parse package name using Python (more reliable than sed/awk for Swift syntax)
-    vr_log_info "[SPM] Parsing package name and product name..."
+    vr_log::info "SPM" "[SPM] Parsing package name and product name..."
     
     local package_name
     local product_name
@@ -137,7 +134,7 @@ PYTHON_SCRIPT
     rm -f "$parse_script"
     
     if [[ -z "$package_name" ]]; then
-        vr_log_warn "[SPM] Failed to parse package name from remote Package.swift"
+        vr_log::warn "SPM" "[SPM] Failed to parse package name from remote Package.swift"
         return 1
     fi
     
@@ -168,16 +165,15 @@ PYTHON_SCRIPT
     rm -f "$parse_script"
     
     if [[ -z "$product_name" ]]; then
-        vr_log_warn "[SPM] Failed to parse product name from remote Package.swift"
+        vr_log::warn "SPM" "[SPM] Failed to parse product name from remote Package.swift"
         return 1
     fi
     
-    # Export variables
     export REMOTE_PACKAGE_NAME="$package_name"
     export REMOTE_PRODUCT_NAME="$product_name"
     
-    vr_log_info "[SPM] Parsed package name: $package_name"
-    vr_log_info "[SPM] Parsed product name: $product_name"
+    vr_log::info "SPM" "[SPM] Parsed package name: $package_name"
+    vr_log::info "SPM" "[SPM] Parsed product name: $product_name"
     
     return 0
 }

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # --- MSP Worktree Safety Guard (Patch L, shared) ---
 # shellcheck source=/dev/null
 . "$(git rev-parse --show-toplevel 2>/dev/null)/Scripts/lib/worktree_guard.sh"
@@ -9,61 +9,24 @@ msp_enforce_main_repo_or_exit
 # Provides retry logic with exponential backoff and condition waiting
 
 # ============================================================================
-# ROOT_DIR and UI System Loading
+# ROOT_DIR and UI System Loading (using path-helpers.sh)
 # ============================================================================
-# ============================================
-# Unified ROOT_DIR resolution (final version)
-# ============================================
-if [[ -z "${ROOT_DIR:-}" ]]; then
-    # First try Git repo root (most reliable)
-    if command -v git >/dev/null 2>&1; then
-        git_root="$(git rev-parse --show-toplevel 2>/dev/null || echo "")"
-        if [[ -n "$git_root" ]]; then
-            ROOT_DIR="$git_root"
-        fi
-    fi
+# shellcheck source=Scripts/lib/path-helpers.sh
+source "$(git rev-parse --show-toplevel 2>/dev/null)/Scripts/lib/path-helpers.sh"
 
-    # Fallback to walking up from SCRIPT_DIR
-    if [[ -z "${ROOT_DIR:-}" ]]; then
-        SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-        ROOT_DIR="$SCRIPT_DIR"
-        while [[ "$ROOT_DIR" != "/" ]] && [[ "${ROOT_DIR##*/}" != "Scripts" ]]; do
-            ROOT_DIR="$(dirname "$ROOT_DIR")"
-        done
-        if [[ "${ROOT_DIR##*/}" == "Scripts" ]]; then
-            ROOT_DIR="$(dirname "$ROOT_DIR")"
-        fi
-    fi
-fi
-
-export ROOT_DIR
-
-# Source UI system in order: colors.sh → ui.sh → logging.sh
-# Handle NO_ANSI flag by setting NO_COLOR (logging.sh respects NO_COLOR)
+# Handle NO_ANSI flag by setting NO_COLOR
 if [[ "${NO_ANSI:-false}" == "true" ]]; then
     export NO_COLOR=1
 fi
 
-# Source colors.sh
-if [[ -f "$ROOT_DIR/Scripts/lib/colors.sh" ]]; then
-    # shellcheck source=Scripts/lib/colors.sh
-    source "$ROOT_DIR/Scripts/lib/colors.sh" 2>/dev/null || true
-fi
-
-# Source ui.sh (depends on colors.sh)
-if [[ -f "$ROOT_DIR/Scripts/lib/ui.sh" ]]; then
-    # shellcheck source=Scripts/lib/ui.sh
-    source "$ROOT_DIR/Scripts/lib/ui.sh" 2>/dev/null || true
-fi
-
-# Source logging.sh (depends on colors.sh and ui.sh)
-if [[ -f "$ROOT_DIR/Scripts/lib/logging.sh" ]]; then
-    # shellcheck source=Scripts/lib/logging.sh
-    source "$ROOT_DIR/Scripts/lib/logging.sh" 2>/dev/null || true
+# Source common.sh which provides unified logging via logger.sh
+if [[ -f "$ROOT_DIR/Scripts/lib/common.sh" ]]; then
+    # shellcheck source=Scripts/lib/common.sh
+    source "$ROOT_DIR/Scripts/lib/common.sh" 2>/dev/null || true
 fi
 
 # Fallback logging functions if UI system not available
-if ! command -v log_info &>/dev/null; then
+if ! command -v log::info &>/dev/null; then
     : "${RED:=\033[0;31m}"
     : "${GREEN:=\033[0;32m}"
     : "${YELLOW:=\033[1;33m}"
@@ -121,11 +84,10 @@ if ! command -v log_info &>/dev/null; then
     }
     
     log_warn() {
-        log_warning "$@"
+        log::warn "RETRY" "$@"
     }
 fi
 
-# Simple retry function
 retry() {
     local max_attempts="$1"
     local delay="$2"
@@ -136,16 +98,16 @@ retry() {
     local attempt=1
     
     while [[ $attempt -le $max_attempts ]]; do
-        log_debug "Attempt $attempt/$max_attempts: $command_name"
+        log::debug "RETRY" "Attempt $attempt/$max_attempts: $command_name"
         
         if "${command[@]}"; then
-            log_success "$command_name succeeded on attempt $attempt"
+            log::success "RETRY" "$command_name succeeded on attempt $attempt"
             return 0
         else
-            log_warning "$command_name failed (attempt $attempt/$max_attempts)"
+            log::warn "RETRY" "$command_name failed (attempt $attempt/$max_attempts)"
             
             if [[ $attempt -lt $max_attempts ]]; then
-                log_info "Retrying $command_name in ${delay} seconds..."
+                log::info "RETRY" "Retrying $command_name in ${delay} seconds..."
                 sleep "$delay"
             fi
         fi
@@ -153,11 +115,10 @@ retry() {
         ((attempt++)) || true
     done
     
-    log_error "$command_name failed after $max_attempts attempts"
+    log::error "RETRY" "$command_name failed after $max_attempts attempts"
     return 1
 }
 
-# Retry logic with exponential backoff
 retry_with_backoff() {
     local max_attempts="$1"
     local base_delay="$2"
@@ -168,18 +129,18 @@ retry_with_backoff() {
     local attempt=1
     
     while [[ $attempt -le $max_attempts ]]; do
-        log_debug "Attempt $attempt/$max_attempts: $command_name"
+        log::debug "RETRY" "Attempt $attempt/$max_attempts: $command_name"
         
         if "${command[@]}"; then
-            log_success "$command_name succeeded on attempt $attempt"
+            log::success "RETRY" "$command_name succeeded on attempt $attempt"
             return 0
         else
-            log_warning "$command_name failed (attempt $attempt/$max_attempts)"
+            log::warn "RETRY" "$command_name failed (attempt $attempt/$max_attempts)"
             
             if [[ $attempt -lt $max_attempts ]]; then
                 # Exponential backoff: base_delay * 2^(attempt-1)
                 local delay=$((base_delay * (1 << (attempt - 1))))
-                log_info "Retrying $command_name in ${delay} seconds..."
+                log::info "RETRY" "Retrying $command_name in ${delay} seconds..."
                 sleep $delay
             fi
         fi
@@ -187,11 +148,10 @@ retry_with_backoff() {
         ((attempt++)) || true
     done
     
-    log_error "$command_name failed after $max_attempts attempts"
+    log::error "RETRY" "$command_name failed after $max_attempts attempts"
     return 1
 }
 
-# Wait for a condition to be true
 wait_for_condition() {
     local condition_command="$1"
     local timeout="${2:-300}"  # Default 5 minutes
@@ -200,11 +160,11 @@ wait_for_condition() {
     
     local elapsed=0
     
-    log_step "Waiting for $description (timeout: ${timeout}s, interval: ${interval}s)"
+    log::step "RETRY" "Waiting for $description (timeout: ${timeout}s, interval: ${interval}s)"
     
     while [[ $elapsed -lt $timeout ]]; do
         if eval "$condition_command"; then
-            log_success "$description is now true"
+            log::success "RETRY" "$description is now true"
             return 0
         fi
         
@@ -212,11 +172,11 @@ wait_for_condition() {
         elapsed=$((elapsed + interval))
         
         if [[ $((elapsed % 30)) -eq 0 ]]; then
-            log_info "Still waiting for $description... (${elapsed}s elapsed)"
+            log::info "RETRY" "Still waiting for $description... (${elapsed}s elapsed)"
         fi
     done
     
-    log_error "$description did not become true within ${timeout} seconds"
+    log::warning "RETRY" "$description did not become true within ${timeout} seconds"
     return 1
 }
 

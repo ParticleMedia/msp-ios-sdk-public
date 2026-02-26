@@ -52,7 +52,7 @@ open msp-ios-sdk.xcworkspace
 ### Option B: Xcode
 
 1. Open `msp-ios-sdk.xcworkspace`
-2. Select `AllTests` scheme
+2. Select `MSPTests` scheme
 3. Press `Cmd+U` to run tests
 
 ### Option C: xcodebuild
@@ -60,7 +60,7 @@ open msp-ios-sdk.xcworkspace
 ```bash
 xcodebuild test \
   -workspace msp-ios-sdk.xcworkspace \
-  -scheme AllTests \
+  -scheme MSPTests \
   -destination 'platform=iOS Simulator,name=iPhone 15,OS=17.5'
 ```
 
@@ -255,7 +255,7 @@ Tests run automatically on:
 
 ### Tests Not Running
 
-1. Check scheme is set to `AllTests`
+1. Check scheme is set to `MSPTests`
 2. Verify `pod install` completed successfully
 3. Check simulator is available
 

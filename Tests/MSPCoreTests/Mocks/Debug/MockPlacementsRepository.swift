@@ -1,3 +1,6 @@
+// Meszaros Type: Mock (Stub + Spy)
+// - Stub: placementsToReturn provides canned responses
+// - Spy: fetchCallCount records interactions
 @testable import MSPCore
 
 class MockPlacementsRepository: PlacementsRepository {

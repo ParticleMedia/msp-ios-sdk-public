@@ -122,7 +122,7 @@ Tests/
 
 # Configuration Files (modifications)
 Podfile                          # Add testing_pods function and test targets
-Examples/MSPDemoApp/project.yml  # Add test target definitions and AllTests scheme
+Examples/MSPDemoApp/project.yml  # Add test target definitions and MSPTests scheme
 Configs/xcodegen/
 └── test.target_template.yml     # New template for test targets
 

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # --- MSP Worktree Safety Guard (Patch L, shared) ---
 # shellcheck source=/dev/null
 . "$(git rev-parse --show-toplevel 2>/dev/null)/Scripts/lib/worktree_guard.sh"
@@ -34,57 +34,20 @@ msp_enforce_main_repo_or_exit
 # ============================================================================
 
 # ============================================================================
-# ROOT_DIR and UI System Loading
+# ROOT_DIR and UI System Loading (using path-helpers.sh)
 # ============================================================================
-# ============================================
-# Unified ROOT_DIR resolution (final version)
-# ============================================
-if [[ -z "${ROOT_DIR:-}" ]]; then
-    # First try Git repo root (most reliable)
-    if command -v git >/dev/null 2>&1; then
-        git_root="$(git rev-parse --show-toplevel 2>/dev/null || echo "")"
-        if [[ -n "$git_root" ]]; then
-            ROOT_DIR="$git_root"
-        fi
-    fi
+# shellcheck source=Scripts/lib/path-helpers.sh
+source "$(git rev-parse --show-toplevel 2>/dev/null)/Scripts/lib/path-helpers.sh"
 
-    # Fallback to walking up from SCRIPT_DIR
-    if [[ -z "${ROOT_DIR:-}" ]]; then
-        SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-        ROOT_DIR="$SCRIPT_DIR"
-        while [[ "$ROOT_DIR" != "/" ]] && [[ "${ROOT_DIR##*/}" != "Scripts" ]]; do
-            ROOT_DIR="$(dirname "$ROOT_DIR")"
-        done
-        if [[ "${ROOT_DIR##*/}" == "Scripts" ]]; then
-            ROOT_DIR="$(dirname "$ROOT_DIR")"
-        fi
-    fi
-fi
-
-export ROOT_DIR
-
-# Source UI system in order: colors.sh → ui.sh → logging.sh
-# Handle NO_ANSI flag by setting NO_COLOR (logging.sh respects NO_COLOR)
+# Handle NO_ANSI flag by setting NO_COLOR
 if [[ "${NO_ANSI:-false}" == "true" ]]; then
     export NO_COLOR=1
 fi
 
-# Source colors.sh
-if [[ -f "$ROOT_DIR/Scripts/lib/colors.sh" ]]; then
-    # shellcheck source=Scripts/lib/colors.sh
-    source "$ROOT_DIR/Scripts/lib/colors.sh" 2>/dev/null || true
-fi
-
-# Source ui.sh (depends on colors.sh)
-if [[ -f "$ROOT_DIR/Scripts/lib/ui.sh" ]]; then
-    # shellcheck source=Scripts/lib/ui.sh
-    source "$ROOT_DIR/Scripts/lib/ui.sh" 2>/dev/null || true
-fi
-
-# Source logging.sh (depends on colors.sh and ui.sh)
-if [[ -f "$ROOT_DIR/Scripts/lib/logging.sh" ]]; then
-    # shellcheck source=Scripts/lib/logging.sh
-    source "$ROOT_DIR/Scripts/lib/logging.sh" 2>/dev/null || true
+# Source common.sh which provides unified logging via logger.sh
+if [[ -f "$ROOT_DIR/Scripts/lib/common.sh" ]]; then
+    # shellcheck source=Scripts/lib/common.sh
+    source "$ROOT_DIR/Scripts/lib/common.sh" 2>/dev/null || true
 fi
 
 # Load unified logger system (provides log::warn, log::debug, etc.)
@@ -104,7 +67,8 @@ if ! command -v log::warn &>/dev/null; then
     log::debug() {
         local module="${1:-GENERAL}"
         local message="$2"
-        [[ "${MSP_LOG_LEVEL:-1}" -le 0 ]] && echo "[DEBUG] [$module] $message" >&2
+        # Note: Must use || true to prevent set -e from triggering when condition is false
+        [[ "${MSP_LOG_LEVEL:-1}" -le 0 ]] && echo "[DEBUG] [$module] $message" >&2 || true
     }
     log::info() {
         local module="${1:-GENERAL}"
@@ -119,7 +83,7 @@ if ! command -v log::warn &>/dev/null; then
 fi
 
 # Fallback logging functions if UI system not available
-if ! command -v log_info &>/dev/null; then
+if ! command -v log::info &>/dev/null; then
     : "${RED:=[0;31m}"
     : "${GREEN:=[0;32m}"
     : "${YELLOW:=[1;33m}"
@@ -177,19 +141,18 @@ if ! command -v log_info &>/dev/null; then
     }
     
     log_warn() {
-        log_warning "$@"
+        log::warn "NOTIFY" "$@"
     }
 fi
 
 
-# Source Slack notification module
 if [[ -f "$ROOT_DIR/Scripts/notify/slack.sh" ]]; then
     # shellcheck source=Scripts/notify/slack.sh
-    source "$ROOT_DIR/Scripts/notify/slack.sh" 2>/dev/null || true
+    source "$ROOT_DIR/Scripts/notify/slack.sh"
 else
     # Fallback: Define stub functions if module not found
-    log_warning "notify/slack.sh not found - Slack notifications will be disabled"
-    send_slack_notification() { log_warning "Slack notifications disabled (module not found)"; }
+    log::warn "NOTIFY" "notify/slack.sh not found - Slack notifications will be disabled"
+    send_slack_notification() { log::warn "NOTIFY" "Slack notifications disabled (module not found)"; }
     notify_release_success() { :; }
     notify_release_failure() { :; }
     notify_release_warning() { :; }
@@ -199,7 +162,6 @@ else
     notify_release_success_with_summary() { :; }
 fi
 
-# Notify release start
 notify_start() {
     local release_type="${1:-Release}"
     local version="${2:-}"
@@ -211,7 +173,6 @@ notify_start() {
     fi
 }
 
-# Notify release success
 notify_success() {
     local release_type="${1:-Release}"
     local version="${2:-}"
@@ -226,7 +187,6 @@ notify_success() {
     fi
 }
 
-# Notify release failure
 notify_failure() {
     local release_type="${1:-Release}"
     local version="${2:-}"
@@ -244,7 +204,6 @@ notify_failure() {
     fi
 }
 
-# Notify release warning
 notify_warning() {
     local release_type="${1:-Release}"
     local version="${2:-}"
@@ -259,7 +218,6 @@ notify_warning() {
     fi
 }
 
-# Notify release summary
 notify_summary() {
     local release_type="${1:-Release}"
     local version="${2:-}"
@@ -298,20 +256,20 @@ notify::_send_dm() {
     log_warn() { echo "[WARN] $*" >&2; }
     log_error() { echo "[ERROR] $*" >&2; }
 
-    log_debug "Attempting to send DM to user: $user_id"
+    log::debug "NOTIFY" "Attempting to send DM to user: $user_id"
 
     # Check for bot token
     if [[ -z "${SLACK_BOT_TOKEN:-}" ]]; then
-        log_error "SLACK_BOT_TOKEN not set - DM will not be sent"
-        log_warn "Please configure SLACK_BOT_TOKEN in Scripts/config/slack.conf"
-        log_warn "DM message was: ${message:0:100}..."
+        log::error "NOTIFY" "SLACK_BOT_TOKEN not set - DM will not be sent"
+        log::warn "NOTIFY" "Please configure SLACK_BOT_TOKEN in Scripts/config/slack.conf"
+        log::warn "NOTIFY" "DM message was: ${message:0:100}..."
         return 1  # Return failure status
     fi
 
-    log_debug "SLACK_BOT_TOKEN is set: ${SLACK_BOT_TOKEN:0:20}..."
+    log::debug "NOTIFY" "SLACK_BOT_TOKEN is set: ${SLACK_BOT_TOKEN:0:20}..."
 
     # Validate token before attempting to use it
-    log_debug "Validating Slack Bot Token..."
+    log::debug "NOTIFY" "Validating Slack Bot Token..."
     local auth_response
     auth_response=$(curl -s -X POST \
       -H "Authorization: Bearer $SLACK_BOT_TOKEN" \
@@ -322,21 +280,20 @@ notify::_send_dm() {
     auth_ok=$(echo "$auth_response" | python3 -c "import sys, json; data=json.load(sys.stdin); print('True' if data.get('ok') else 'False')" 2>/dev/null || echo "false")
 
     if [[ "$auth_ok" != "True" ]]; then
-        log_error "Slack Bot Token validation failed"
+        log::error "NOTIFY" "Slack Bot Token validation failed"
         local error_msg
         error_msg=$(echo "$auth_response" | python3 -c "import sys, json; data=json.load(sys.stdin); print(data.get('error', 'unknown error'))" 2>/dev/null || echo "unknown error")
-        log_error "Slack API error: $error_msg"
-        log_debug "Full API response: $auth_response"
-        log_warn "Please check SLACK_BOT_TOKEN in Scripts/config/slack.conf"
-        log_warn "Token may be expired or invalid. Regenerate token at: https://api.slack.com/apps"
-        log_warn "Required scopes: chat:write, im:write, users:read"
+        log::error "NOTIFY" "Slack API error: $error_msg"
+        log::debug "NOTIFY" "Full API response: $auth_response"
+        log::warn "NOTIFY" "Please check SLACK_BOT_TOKEN in Scripts/config/slack.conf"
+        log::warn "NOTIFY" "Token may be expired or invalid. Regenerate token at: https://api.slack.com/apps"
+        log::warn "NOTIFY" "Required scopes: chat:write, im:write, users:read"
         return 1
     fi
 
-    log_debug "Slack Bot Token validated successfully"
+    log::debug "NOTIFY" "Slack Bot Token validated successfully"
 
-    # Open DM channel with error handling
-    log_debug "Opening DM channel with Slack user: $user_id"
+    log::debug "NOTIFY" "Opening DM channel with Slack user: $user_id"
     local api_response
     api_response=$(curl -s -X POST \
       -H "Authorization: Bearer $SLACK_BOT_TOKEN" \
@@ -349,29 +306,27 @@ notify::_send_dm() {
     ok_status=$(echo "$api_response" | python3 -c "import sys, json; data=json.load(sys.stdin); print('True' if data.get('ok') else 'False')" 2>/dev/null || echo "false")
 
     if [[ "$ok_status" != "True" ]]; then
-        log_error "Failed to open DM channel with user: $user_id"
+        log::error "NOTIFY" "Failed to open DM channel with user: $user_id"
         # Extract error message from API response
         local error_msg
         error_msg=$(echo "$api_response" | python3 -c "import sys, json; data=json.load(sys.stdin); print(data.get('error', 'unknown error'))" 2>/dev/null || echo "unknown error")
-        log_error "Slack API error: $error_msg"
-        log_debug "Full API response: $api_response"
+        log::error "NOTIFY" "Slack API error: $error_msg"
+        log::debug "NOTIFY" "Full API response: $api_response"
         return 1
     fi
 
-    # Extract channel ID
     local channel
     channel=$(echo "$api_response" | python3 -c "import sys, json; print(json.load(sys.stdin).get('channel',{}).get('id',''))" 2>/dev/null || echo "")
 
     if [[ -z "$channel" ]]; then
-        log_error "Failed to extract channel ID from Slack API response"
-        log_debug "API response: $api_response"
+        log::error "NOTIFY" "Failed to extract channel ID from Slack API response"
+        log::debug "NOTIFY" "API response: $api_response"
         return 1
     fi
 
-    log_debug "DM channel opened successfully: $channel"
+    log::debug "NOTIFY" "DM channel opened successfully: $channel"
 
-    # Send message with error handling
-    log_debug "Sending message to channel: $channel"
+    log::debug "NOTIFY" "Sending message to channel: $channel"
     local send_response
     send_response=$(curl -s -X POST \
       -H "Authorization: Bearer $SLACK_BOT_TOKEN" \
@@ -379,20 +334,19 @@ notify::_send_dm() {
       --data "{\"channel\":\"$channel\",\"text\":\"$message\"}" \
       https://slack.com/api/chat.postMessage 2>&1)
 
-    # Check send response
     local send_ok
     send_ok=$(echo "$send_response" | python3 -c "import sys, json; data=json.load(sys.stdin); print('True' if data.get('ok') else 'False')" 2>/dev/null || echo "false")
 
     if [[ "$send_ok" != "True" ]]; then
-        log_error "Failed to send DM to user: $user_id"
+        log::error "NOTIFY" "Failed to send DM to user: $user_id"
         local error_msg
         error_msg=$(echo "$send_response" | python3 -c "import sys, json; data=json.load(sys.stdin); print(data.get('error', 'unknown error'))" 2>/dev/null || echo "unknown error")
-        log_error "Slack API error: $error_msg"
-        log_debug "Full API response: $send_response"
+        log::error "NOTIFY" "Slack API error: $error_msg"
+        log::debug "NOTIFY" "Full API response: $send_response"
         return 1
     fi
 
-    log_info "✓ DM sent successfully to user: $user_id"
+    log::info "NOTIFY" "✓ DM sent successfully to user: $user_id"
     return 0
 }
 
@@ -412,12 +366,10 @@ notify::_send_webhook() {
     return 0
 }
 
-# Load Slack mapping configuration
 notify::load_mapping() {
     local mapping_file="$ROOT_DIR/Scripts/config/slack_mapping.yaml"
     [[ ! -f "$mapping_file" ]] && return 1
 
-    # Load existing mappings (email_map, module_owner, alerts)
     eval "$(python3 - <<EOF
 import yaml, json, sys
 d=yaml.safe_load(open("$mapping_file"))
@@ -427,7 +379,6 @@ print("SLACK_ALERTS='"+json.dumps(d.get("alerts",{})).replace("'","'\"'\"'")+"'"
 EOF
 )" || return 1
 
-    # Load templates section (optional, soft-fail if missing or malformed)
     local templates_json
     templates_json=$(python3 - <<EOF
 import yaml, json, sys
@@ -449,7 +400,7 @@ EOF
     # Only set template variables if parsing succeeded and templates exist
     if [[ -n "$templates_json" ]]; then
         eval "$templates_json" 2>/dev/null || {
-            log_warning "Failed to load Slack message templates from YAML; using built-in defaults"
+            log::warn "NOTIFY" "Failed to load Slack message templates from YAML; using built-in defaults"
             unset NOTIFY_TEMPLATE_SUCCESS
             unset NOTIFY_TEMPLATE_ERROR
         }
@@ -515,7 +466,7 @@ notify::dm() {
         target_user="$MSP_SLACK_DM_OVERRIDE"
     elif notify::is_test_mode; then
         # TEST MODE: Override required
-        log_warning "TEST MODE active but MSP_SLACK_DM_OVERRIDE not set; skipping DM (soft-fail)"
+        log::warn "NOTIFY" "TEST MODE active but MSP_SLACK_DM_OVERRIDE not set; skipping DM (soft-fail)"
         return 0
     else
         # PROD MODE: Use resolved user or provided user
@@ -533,14 +484,13 @@ notify::dm() {
     if ! notify::_send_dm "$target_user" "$message"; then
         # Log failure but don't block execution (non-critical)
         if command -v log_warning &>/dev/null; then
-            log_warning "Failed to send DM notification to user: $target_user"
+            log::warn "NOTIFY" "Failed to send DM notification to user: $target_user"
         fi
         return 1
     fi
     return 0
 }
 
-# Send message to Slack channel
 # TEST MODE: Uses MSP_SLACK_TEST_WEBHOOK (ignores YAML webhook for safety)
 # PROD MODE: Uses alerts.webhook from slack_mapping.yaml
 notify::channel() {
@@ -550,7 +500,7 @@ notify::channel() {
     if notify::is_test_mode; then
         local test_webhook="${MSP_SLACK_TEST_WEBHOOK:-}"
         if [[ -z "$test_webhook" ]]; then
-            log_warning "TEST MODE active but MSP_SLACK_TEST_WEBHOOK not set; skipping channel message (soft-fail)"
+            log::warn "NOTIFY" "TEST MODE active but MSP_SLACK_TEST_WEBHOOK not set; skipping channel message (soft-fail)"
             return 0
         fi
         
@@ -569,7 +519,7 @@ notify::channel() {
     # Try environment variable first (highest priority)
     if [[ -n "${SLACK_WEBHOOK_URL:-}" ]]; then
         webhook_url="$SLACK_WEBHOOK_URL"
-        log_debug "Using SLACK_WEBHOOK_URL from environment/slack.conf: ${webhook_url:0:40}..."
+        log::debug "NOTIFY" "Using SLACK_WEBHOOK_URL from environment/slack.conf: ${webhook_url:0:40}..."
     else
         # Fallback to YAML webhook (deprecated)
         if [[ -z "${SLACK_ALERTS:-}" ]]; then
@@ -582,7 +532,7 @@ EOF
         ) 2>/dev/null || true
 
         if [[ -n "$webhook_url" ]]; then
-            log_debug "Using webhook from slack_mapping.yaml (deprecated, please migrate to SLACK_WEBHOOK_URL in slack.conf)"
+            log::debug "NOTIFY" "Using webhook from slack_mapping.yaml (deprecated, please migrate to SLACK_WEBHOOK_URL in slack.conf)"
         fi
     fi
 
@@ -735,8 +685,8 @@ notify::module_error() {
     if ! notify::dm "$module" "$message"; then
         # Log failure for debugging
         if command -v log_warning &>/dev/null; then
-            log_warning "Failed to send error notification for module: $module"
-            log_warning "Error message was: ${short_reason:0:100}..."
+            log::warn "NOTIFY" "Failed to send error notification for module: $module"
+            log::warn "NOTIFY" "Error message was: ${short_reason:0:100}..."
         fi
     fi
 
@@ -784,6 +734,77 @@ notify::release_success_channel() {
     return 0
 }
 
+# ============================================================================
+# Non-Blocking Wrapper Functions (FR-034)
+# ============================================================================
+# These wrapper functions ensure Slack notification failures NEVER block release
+
+# Send release summary (non-blocking)
+# @description High-level wrapper that sends release summary to both channel and DM
+# @param $1 version - Release version
+# @param $2 status - "success" or "failure"
+# @param $3 details - Optional additional details
+# @return Always returns 0 (non-blocking)
+notify::send_release_summary() {
+    local version="$1"
+    local status="${2:-success}"
+    local details="${3:-}"
+
+    # Build message based on status
+    local emoji=""
+    local message=""
+
+    if [[ "$status" == "success" ]]; then
+        emoji="🎉"
+        message="$emoji MSP iOS SDK Release $version — SUCCESS"
+    else
+        emoji="❌"
+        message="$emoji MSP iOS SDK Release $version — FAILED"
+    fi
+
+    # Add details if provided
+    if [[ -n "$details" ]]; then
+        message="$message"$'\n'"$details"
+    fi
+
+    # Add verification status if available
+    if [[ -n "${REMOTE_VERIFY_STATUS:-}" ]]; then
+        message="$message"$'\n\n'"Verification:"$'\n'"$REMOTE_VERIFY_STATUS"
+    fi
+
+    # Send to channel (non-blocking)
+    notify::channel "$message" 2>/dev/null || {
+        log::warn "NOTIFY" "Channel notification failed (continuing release)"
+    }
+
+    # Send DM (non-blocking)
+    notify::dm "" "$message" 2>/dev/null || {
+        log::warn "NOTIFY" "DM notification failed (continuing release)"
+    }
+
+    # Always return 0 to never block release (FR-034)
+    return 0
+}
+
+# Safe wrapper for any notification call
+# @description Wraps notification function call to ensure it never blocks
+# @param $@ function_name and arguments
+# @return Always returns 0
+notify::safe() {
+    local func="$1"
+    shift
+
+    # Call the notification function in a subshell with timeout
+    {
+        timeout 30 "$func" "$@" 2>/dev/null
+    } || {
+        log::warn "NOTIFY" "Notification call timed out or failed: $func"
+    }
+
+    # Always return 0 (FR-034)
+    return 0
+}
+
 # Export Slack notification functions
-export -f notify::is_test_mode notify::load_mapping notify::resolve_user notify::dm notify::channel notify::module_success notify::module_error notify::build_success_message notify::build_error_message notify::render_message notify::_send_dm notify::_send_webhook notify::release_success_dm notify::release_success_channel 2>/dev/null || true
+export -f notify::is_test_mode notify::load_mapping notify::resolve_user notify::dm notify::channel notify::module_success notify::module_error notify::build_success_message notify::build_error_message notify::render_message notify::_send_dm notify::_send_webhook notify::release_success_dm notify::release_success_channel notify::send_release_summary notify::safe 2>/dev/null || true
 

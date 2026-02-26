@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # --- MSP Worktree Safety Guard (Patch L, shared) ---
 # shellcheck source=/dev/null
 . "$(git rev-parse --show-toplevel 2>/dev/null)/Scripts/lib/worktree_guard.sh"
@@ -9,61 +9,24 @@ msp_enforce_main_repo_or_exit
 # Provides version validation, comparison, and manipulation functions
 
 # ============================================================================
-# ROOT_DIR and UI System Loading
+# ROOT_DIR and UI System Loading (using path-helpers.sh)
 # ============================================================================
-# ============================================
-# Unified ROOT_DIR resolution (final version)
-# ============================================
-if [[ -z "${ROOT_DIR:-}" ]]; then
-    # First try Git repo root (most reliable)
-    if command -v git >/dev/null 2>&1; then
-        git_root="$(git rev-parse --show-toplevel 2>/dev/null || echo "")"
-        if [[ -n "$git_root" ]]; then
-            ROOT_DIR="$git_root"
-        fi
-    fi
+# shellcheck source=Scripts/lib/path-helpers.sh
+source "$(git rev-parse --show-toplevel 2>/dev/null)/Scripts/lib/path-helpers.sh"
 
-    # Fallback to walking up from SCRIPT_DIR
-    if [[ -z "${ROOT_DIR:-}" ]]; then
-        SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-        ROOT_DIR="$SCRIPT_DIR"
-        while [[ "$ROOT_DIR" != "/" ]] && [[ "${ROOT_DIR##*/}" != "Scripts" ]]; do
-            ROOT_DIR="$(dirname "$ROOT_DIR")"
-        done
-        if [[ "${ROOT_DIR##*/}" == "Scripts" ]]; then
-            ROOT_DIR="$(dirname "$ROOT_DIR")"
-        fi
-    fi
-fi
-
-export ROOT_DIR
-
-# Source UI system in order: colors.sh → ui.sh → logging.sh
-# Handle NO_ANSI flag by setting NO_COLOR (logging.sh respects NO_COLOR)
+# Handle NO_ANSI flag by setting NO_COLOR
 if [[ "${NO_ANSI:-false}" == "true" ]]; then
     export NO_COLOR=1
 fi
 
-# Source colors.sh
-if [[ -f "$ROOT_DIR/Scripts/lib/colors.sh" ]]; then
-    # shellcheck source=Scripts/lib/colors.sh
-    source "$ROOT_DIR/Scripts/lib/colors.sh" 2>/dev/null || true
-fi
-
-# Source ui.sh (depends on colors.sh)
-if [[ -f "$ROOT_DIR/Scripts/lib/ui.sh" ]]; then
-    # shellcheck source=Scripts/lib/ui.sh
-    source "$ROOT_DIR/Scripts/lib/ui.sh" 2>/dev/null || true
-fi
-
-# Source logging.sh (depends on colors.sh and ui.sh)
-if [[ -f "$ROOT_DIR/Scripts/lib/logging.sh" ]]; then
-    # shellcheck source=Scripts/lib/logging.sh
-    source "$ROOT_DIR/Scripts/lib/logging.sh" 2>/dev/null || true
+# Source common.sh which provides unified logging via logger.sh
+if [[ -f "$ROOT_DIR/Scripts/lib/common.sh" ]]; then
+    # shellcheck source=Scripts/lib/common.sh
+    source "$ROOT_DIR/Scripts/lib/common.sh" 2>/dev/null || true
 fi
 
 # Fallback logging functions if UI system not available
-if ! command -v log_info &>/dev/null; then
+if ! command -v log::info &>/dev/null; then
     : "${RED:=\033[0;31m}"
     : "${GREEN:=\033[0;32m}"
     : "${YELLOW:=\033[1;33m}"
@@ -121,16 +84,15 @@ if ! command -v log_info &>/dev/null; then
     }
     
     log_warn() {
-        log_warning "$@"
+        log::warn "VERSION" "$@"
     }
 fi
 
-# Validate version format (semantic versioning: X.Y.Z)
 validate_version_format() {
     local version="$1"
     
     if [[ -z "$version" ]]; then
-        log_error "Version is required"
+        log::error "VERSION" "Version is required"
         return 1
     fi
     
@@ -138,7 +100,7 @@ validate_version_format() {
     if [[ "$version" =~ ^[0-9]+\.[0-9]+\.[0-9]+(-[a-zA-Z0-9.-]+)?$ ]]; then
         return 0
     else
-        log_error "Invalid version format: $version (expected X.Y.Z or X.Y.Z-suffix)"
+        log::error "VERSION" "Invalid version format: $version (expected X.Y.Z or X.Y.Z-suffix)"
         return 1
     fi
 }
@@ -150,33 +112,28 @@ compare_versions() {
     local version2="$2"
     
     if [[ -z "$version1" || -z "$version2" ]]; then
-        log_error "Both versions are required for comparison"
+        log::error "VERSION" "Both versions are required for comparison"
         return 3
     fi
     
-    # Remove suffix for comparison
     local v1_base="${version1%-*}"
     local v2_base="${version2%-*}"
     
-    # Split into major.minor.patch
     IFS='.' read -r -a v1_parts <<< "$v1_base"
     IFS='.' read -r -a v2_parts <<< "$v2_base"
     
-    # Compare major
     if [[ ${v1_parts[0]} -gt ${v2_parts[0]} ]]; then
         return 1
     elif [[ ${v1_parts[0]} -lt ${v2_parts[0]} ]]; then
         return 2
     fi
     
-    # Compare minor
     if [[ ${v1_parts[1]} -gt ${v2_parts[1]} ]]; then
         return 1
     elif [[ ${v1_parts[1]} -lt ${v2_parts[1]} ]]; then
         return 2
     fi
     
-    # Compare patch
     if [[ ${v1_parts[2]} -gt ${v2_parts[2]} ]]; then
         return 1
     elif [[ ${v1_parts[2]} -lt ${v2_parts[2]} ]]; then
@@ -187,13 +144,12 @@ compare_versions() {
     return 0
 }
 
-# Suggest next version based on current version
 suggest_next_version() {
     local current_version="$1"
     local bump_type="${2:-patch}"  # patch, minor, or major
     
     if [[ -z "$current_version" ]]; then
-        log_error "Current version is required"
+        log::error "VERSION" "Current version is required"
         return 1
     fi
     
@@ -208,7 +164,7 @@ suggest_next_version() {
             bump_major "$current_version"
             ;;
         *)
-            log_error "Invalid bump type: $bump_type (expected patch, minor, or major)"
+            log::error "VERSION" "Invalid bump type: $bump_type (expected patch, minor, or major)"
             return 1
             ;;
     esac
@@ -219,7 +175,7 @@ bump_patch() {
     local version="$1"
     
     if [[ -z "$version" ]]; then
-        log_error "Version is required"
+        log::error "VERSION" "Version is required"
         return 1
     fi
     
@@ -247,7 +203,7 @@ bump_minor() {
     local version="$1"
     
     if [[ -z "$version" ]]; then
-        log_error "Version is required"
+        log::error "VERSION" "Version is required"
         return 1
     fi
     
@@ -275,7 +231,7 @@ bump_major() {
     local version="$1"
     
     if [[ -z "$version" ]]; then
-        log_error "Version is required"
+        log::error "VERSION" "Version is required"
         return 1
     fi
     
@@ -298,7 +254,6 @@ bump_major() {
     echo "$new_version"
 }
 
-# Update Config.plist version
 update_config_plist_version() {
     local version="$1"
     
@@ -312,24 +267,29 @@ update_config_plist_version() {
     fi
     
     if [[ ! -f "$config_plist" ]]; then
-        log_error "Config.plist not found"
-        log_error "Searched pattern: */MSPCore/MSPCore/Resources/Config.plist"
-        log_error "Expected location: Sources/Core/MSPCore/MSPCore/Resources/Config.plist"
-        log_error "ROOT_DIR: ${ROOT_DIR:-<not set>}"
+        log::error "VERSION" "Config.plist not found"
+        log::error "VERSION" "Searched pattern: */MSPCore/MSPCore/Resources/Config.plist"
+        log::error "VERSION" "Expected location: Sources/Core/MSPCore/MSPCore/Resources/Config.plist"
+        log::error "VERSION" "ROOT_DIR: ${ROOT_DIR:-<not set>}"
         return 1
     fi
     
-    log_info "Found Config.plist: $config_plist"
+    log::info "VERSION" "Found Config.plist: $config_plist"
     
-    log_step "Updating SDKVersion in Config.plist to $version"
+    log::step "VERSION" "Updating SDKVersion in Config.plist to $version"
     
-    # Create backup
-    cp "$config_plist" "${config_plist}.backup"
-    
-    # Update SDKVersion in Config.plist
-    sed -i '' "s|<string>.*</string>|<string>${version}</string>|g" "$config_plist"
-    
-    log_success "Updated SDKVersion in Config.plist to $version"
+    # Update SDKVersion in Config.plist (atomic: write to temp, verify, then move)
+    local temp_plist="${config_plist}.tmp.$$"
+    sed "s|<string>.*</string>|<string>${version}</string>|g" "$config_plist" > "$temp_plist"
+
+    if grep -q "<string>${version}</string>" "$temp_plist"; then
+        mv "$temp_plist" "$config_plist"
+        log::success "VERSION" "Updated SDKVersion in Config.plist to $version"
+    else
+        rm -f "$temp_plist"
+        log::error "VERSION" "Failed to update Config.plist — version string not found in output"
+        return 1
+    fi
 }
 
 # Export functions

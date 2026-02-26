@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # validate-script.sh
 # Validates a shell script using shellcheck.
 # Usage: ./Scripts/tools/validate-script.sh <script-path>

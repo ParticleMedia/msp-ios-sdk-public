@@ -1,13 +1,25 @@
 ---
 id: ctx-ci-003
-title: 模块重复构建导致 Swift 编译器 ABI 冲突崩溃
-layer: experience
+title: "模块重复构建导致 Swift 编译器 ABI 冲突崩溃"
 domain: ci
-tags: [swift, abi-conflict, cocoapods, xcframework, compiler-crash, duplicate-build]
-created: 2026-01-29
-source: manual
+layer: experience
+tags:
+  - swift-compiler-crash
+  - abi-conflict
+  - duplicate-build
+  - cocoapods
+  - xcframework
+  - sil-deserialization
+triggers:
+  - "Swift compiler crash deserializing SIL function"
+  - "duplicate module build ABI conflict"
+  - "module in both pod schemes and build stages"
+  - "compiler crash PerformanceSILLinker"
+summary: "Module built in both pod prebuild and xcframework stages causes Swift compiler ABI conflict crash"
+version: "1.0"
 status: active
-confidence: high
+created: "2026-01-29"
+updated: "2026-02-22"
 ---
 
 # 模块重复构建导致 Swift 编译器 ABI 冲突崩溃
@@ -121,7 +133,7 @@ adapters:
 
 2. **unit-tests 失败**:
    ```
-   error: The workspace named "msp-ios-sdk" does not contain a scheme named "AllTests".
+   error: The workspace named "msp-ios-sdk" does not contain a scheme named "MSPTests".
    ```
 
 ### 根因
@@ -181,3 +193,10 @@ adapters:
   - `Scripts/ci/prebuild-pod-deps.sh`
   - `.github/workflows/ci-pull-request.yml`
 - Apple 文档: Swift ABI Stability
+
+## 关联 Playbooks
+
+| Playbook | 关系 |
+|----------|------|
+| [ctx-sources-004](../../sources/tech/ctx-sources-004-script-best-practices.md) | 上游 — config-driven 构建编排避免重复构建 |
+| [ctx-integration-001](../../integration/experience/ctx-integration-001-novacore-duplicate-symbols.md) | 同类 — 另一种 duplicate symbol 场景（静态链接） |

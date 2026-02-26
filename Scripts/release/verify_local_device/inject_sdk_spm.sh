@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # --- MSP Worktree Safety Guard (Patch L, shared) ---
 # shellcheck source=/dev/null
 . "$(git rev-parse --show-toplevel 2>/dev/null)/Scripts/lib/worktree_guard.sh"
@@ -15,12 +15,10 @@ msp_enforce_main_repo_or_exit
 
 set -euo pipefail
 
-# Source common utilities
 source "$(dirname "$0")/../verify_remote/common/utils.sh"
 
-# Ensure ROOT_DIR is detected
 vr_detect_root_dir || {
-    vr_log_error "Failed to detect ROOT_DIR"
+    vr_log::error "DEVICE" "Failed to detect ROOT_DIR"
     return 1
 }
 
@@ -32,7 +30,7 @@ inject_sdk_spm() {
     local sandbox="$1"
     
     if [[ -z "$sandbox" ]]; then
-        vr_log_error "Sandbox path required"
+        vr_log::error "DEVICE" "Sandbox path required"
         return 1
     fi
     
@@ -40,13 +38,11 @@ inject_sdk_spm() {
     local package_path="$demoapp_dir/Package.swift"
     local state_file="$ROOT_DIR/.msp-release-state.json"
     
-    # Read released modules from state file
     if [[ ! -f "$state_file" ]]; then
-        vr_log_warn "[DEVICE] State file not found, skipping SPM injection"
+        vr_log::warn "DEVICE" "[DEVICE] State file not found, skipping SPM injection"
         return 0
     fi
     
-    # Extract version and remote URL from state file
     local version=""
     local remote_url="${MSP_VERIFY_SPM_URL:-}"
     
@@ -55,7 +51,7 @@ inject_sdk_spm() {
     fi
     
     if [[ -z "$version" ]]; then
-        vr_log_warn "[DEVICE] Version not found in state file, skipping SPM injection"
+        vr_log::warn "DEVICE" "[DEVICE] Version not found in state file, skipping SPM injection"
         return 0
     fi
     
@@ -64,7 +60,6 @@ inject_sdk_spm() {
         remote_url="https://github.com/ParticleMedia/msp-ios-sdk-public.git"
     fi
     
-    # Generate Package.swift
     cat > "$package_path" <<EOF
 // swift-tools-version: 5.9
 import PackageDescription
@@ -86,7 +81,7 @@ let package = Package(
 )
 EOF
     
-    vr_log_info "[DEVICE] Injected SDK SPM dependency: MSPCore $version"
+    vr_log::info "DEVICE" "[DEVICE] Injected SDK SPM dependency: MSPCore $version"
     
     return 0
 }

@@ -1,3 +1,6 @@
+// Meszaros Type: Mock (Stub + Spy)
+// - Stub: sectionsToReturn provides canned responses
+// - Spy: fetchCallCount, lastFetchedPlacements record interactions
 @testable import MSPCore
 
 class MockDebugSectionsRepository: DebugSectionsRepository {

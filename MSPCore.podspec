@@ -35,7 +35,9 @@ Pod::Spec.new do |spec|
     # DEVELOPMENT MODE: Source files for internal development
     spec.source = { :path => '.' }
     spec.source_files = "Sources/Core/MSPCore/MSPCore/**/*.{swift,h,m}"
-    spec.resources = "Sources/Core/MSPCore/MSPCore/Resources/**/*"
+    spec.resource_bundles = {
+      'MSPCoreResources' => ['Sources/Core/MSPCore/MSPCore/Resources/**/*']
+    }
   end
 
   spec.platform     = :ios, '15.0'

@@ -2,7 +2,7 @@
 import Foundation
 import Nimble
 
-extension AsyncDefaults {
+extension PollingDefaults {
     /// Default timeout for async tests (5 seconds)
     public static var timeout: NimbleTimeInterval = .seconds(5)
 }

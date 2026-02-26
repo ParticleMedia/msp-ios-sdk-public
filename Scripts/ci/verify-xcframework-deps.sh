@@ -44,6 +44,7 @@ fi
 MISSING=0
 MISSING_LIST=""
 
+# shellcheck disable=SC2086 -- intentional word-splitting: REQUIRED_SCHEMES is a space-delimited name list
 for framework in $REQUIRED_SCHEMES; do
   # Use canonical path per README: Build/ReleaseArtifacts/XCFrameworks/
   path="Build/ReleaseArtifacts/XCFrameworks/${framework}.xcframework"

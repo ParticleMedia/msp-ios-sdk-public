@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # get-test-template.sh
 # Prints the Quick/Nimble unit test template content.
 # Usage: ./Scripts/tools/get-test-template.sh

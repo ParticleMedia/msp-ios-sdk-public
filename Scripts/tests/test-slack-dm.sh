@@ -10,39 +10,41 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT_DIR="$(cd "$SCRIPT_DIR/../.." && pwd)"
 
-# Colors for output
-RED='\033[0;31m'
-GREEN='\033[0;32m'
-YELLOW='\033[1;33m'
-BLUE='\033[0;34m'
-NC='\033[0m' # No Color
+# Source unified color/logging system
+if [[ -f "$ROOT_DIR/Scripts/lib/common.sh" ]]; then
+    # shellcheck source=Scripts/lib/common.sh
+    source "$ROOT_DIR/Scripts/lib/common.sh" 2>/dev/null || true
+fi
+
+# Fallback colors if common.sh not available
+: "${RED:='\033[0;31m'}"
+: "${GREEN:='\033[0;32m'}"
+: "${YELLOW:='\033[1;33m'}"
+: "${BLUE:='\033[0;34m'}"
+: "${NC:='\033[0m'}"
 
 # ============================================================================
-# Helper Functions
+# Helper Functions (use log::* if available)
 # ============================================================================
-print_header() {
-    echo
-    echo "======================================"
-    echo "$1"
-    echo "======================================"
-    echo
-}
-
-print_step() {
-    echo -e "${BLUE}[STEP]${NC} $1"
-}
-
-print_success() {
-    echo -e "${GREEN}[✓]${NC} $1"
-}
-
-print_error() {
-    echo -e "${RED}[✗]${NC} $1"
-}
-
-print_warning() {
-    echo -e "${YELLOW}[⚠]${NC} $1"
-}
+if command -v log::info &>/dev/null; then
+    print_header() { log_section "$1"; }
+    print_step() { log::step "TEST" "$1"; }
+    print_success() { log::success "TEST" "$1"; }
+    print_error() { log::error "TEST" "$1"; }
+    print_warning() { log::warn "TEST" "$1"; }
+else
+    print_header() {
+        echo
+        echo "======================================"
+        echo "$1"
+        echo "======================================"
+        echo
+    }
+    print_step() { echo -e "${BLUE}[STEP]${NC} $1"; }
+    print_success() { echo -e "${GREEN}[✓]${NC} $1"; }
+    print_error() { echo -e "${RED}[✗]${NC} $1"; }
+    print_warning() { echo -e "${YELLOW}[⚠]${NC} $1"; }
+fi
 
 # ============================================================================
 # Main Test

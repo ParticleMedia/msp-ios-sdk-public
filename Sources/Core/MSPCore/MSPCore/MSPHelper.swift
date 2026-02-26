@@ -365,9 +365,17 @@ public class MSP {
 
     static func getMSPVersion() -> String {
         let bundle = Bundle(for: MSP.self)
-        guard let url = bundle.url(forResource: "MSPCoreResources", withExtension: "bundle"),
-            let resourceBundle = Bundle(url: url),
-            let plistURL = resourceBundle.url(forResource: "Config", withExtension: "plist"),
+        // Dev mode: CocoaPods resource_bundles generates MSPCoreResources.bundle
+        // Release mode: Config.plist is embedded directly in the framework bundle
+        let resourceBundle: Bundle
+        if let url = bundle.url(forResource: "MSPCoreResources", withExtension: "bundle"),
+           let nested = Bundle(url: url) {
+            resourceBundle = nested
+        } else {
+            resourceBundle = bundle
+        }
+
+        guard let plistURL = resourceBundle.url(forResource: "Config", withExtension: "plist"),
             let data = try? Data(contentsOf: plistURL)
         else {
             return ""

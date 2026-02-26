@@ -56,18 +56,6 @@ public class MSPBidder: MSPiOSCore.Bidder {
         return ""
     }
 
-    private func getMSPVersion() -> String {
-        let bundle = Bundle(for: MSPBidder.self)
-        if let url = bundle.url(forResource: "MSPCoreResources", withExtension: "bundle"),
-            let resourceBundle = Bundle(url: url),
-            let plistURL = resourceBundle.url(forResource: "Info", withExtension: "plist"),
-            let dict = NSDictionary(contentsOf: plistURL),
-            let version = dict["CFBundleShortVersionString"] as? String
-        {
-            return version
-        }
-        return ""
-    }
 }
 
 extension MSPBidder: BidListener {

@@ -1,107 +1,123 @@
 #!/usr/bin/env ruby
 # -*- coding: utf-8 -*-
-# Generate published-units-only Package.swift for spm-release mode
-# Includes ONLY: MSPSharedLibraries, MSPCore, MSPFacebookAdapter, MSPGoogleAdapter, MSPNovaAdapter, MSPAmazonAdapter, MSPPrebidAdapter
-# Excludes: All Pods-only third-party SDKs (FBAudienceNetwork, IronSourceSDK, etc.)
-# Adapters are included but their third-party SDK dependencies are removed
+# Generate core-only Package.swift for spm-release mode
+#
+# Keeps:    Core binary targets (MSPSharedLibraries, MSPiOSCore, MSPCore, NovaCore)
+#           Published adapters (MSPPrebidAdapter, MSPGoogleAdapter, MSPFacebookAdapter,
+#                              MSPNovaAdapter, MSPAmazonAdapter, MSPMolocoAdapter, MSPLiftoffAdapter)
+#           Linker targets (MSPCoreLinker, NovaCoreLinker)
+#           SPM-native dependencies (Kingfisher, SwiftProtobuf, Lottie)
+#           Available third-party binary targets (PrebidMobile, MSPSnapKit)
+#
+# Removes:  Unpublished adapters (Unity, Inmobi, Mobilefuse, Mintegral, Pubmatic)
+#           Pods-only third-party binary targets (FBAudienceNetwork, IronSourceSDK, etc.)
+#           Pods-only source targets (MSPGoogleAdsTypes, Shimmer)
+#           Google Mobile Ads SPM dependency
+#
+# Strips:   Pods-only dependencies from published adapter targets
 
 template_path = ARGV[0]
 output_path = ARGV[1]
 
 content = File.read(template_path, encoding: 'utf-8')
 
-# Published adapter products (keep these)
-published_adapters = %w[
-  MSPPrebidAdapter MSPGoogleAdapter MSPFacebookAdapter MSPNovaAdapter MSPAmazonAdapter
+# ============================================================================
+# Configuration
+# ============================================================================
+
+# Third-party binary targets to remove (Pods-only, no local XCFrameworks)
+THIRDPARTY_BINARY_TARGETS = %w[
+  FBAudienceNetwork IronSourceSDK InMobiSDK MobileFuseSDK
+  MTGSDK MTGSDKBidding MTGSDKBanner MTGSDKNewInterstitial MTGSDKInterstitialVideo
+  OpenWrapSDK AmazonPublisherServicesSDK MolocoSDKiOS VungleAds
 ]
 
-# Unpublished adapter products (remove these)
-unpublished_adapters = %w[
+# Unpublished adapter names (products + targets removed entirely)
+UNPUBLISHED_ADAPTERS = %w[
   UnityAdapter InmobiAdapter MobilefuseAdapter MintegralAdapter PubmaticAdapter
 ]
 
-# Remove unpublished adapter products
-unpublished_adapters.each do |adapter|
-  content.gsub!(/        \.library\(name: "#{adapter}", targets: \["#{adapter}"\]\),\n/, '')
-end
+# Source targets to remove (depend on Pods-only external packages)
+REMOVE_SOURCE_TARGETS = %w[MSPGoogleAdsTypes Shimmer]
 
-# Update adapter products comment
-content.gsub!(/        \/\/ Adapter Module Products \(10\) - Swift Source Targets/, 
-             '        // Adapter Module Products (5 published) - Swift Source Targets')
-
-# Remove Google Mobile Ads SDK dependency (Pods-only, not exposed to SPM)
-content.gsub!(/        \/\/ Google Mobile Ads SDK - Required by MSPGoogleAdapter, AmazonAdapter\n        \.package\(\n            url: "https:\/\/github\.com\/googleads\/swift-package-manager-google-mobile-ads\.git",\n            from: "11\.0\.0"\n        \),\n        \n/, '')
-
-# Remove ALL Pods-only third-party SDK binary targets (not exposed to SPM)
-# FBAudienceNetwork
-content.gsub!(/        \/\/\/ FBAudienceNetwork - Meta Audience Network SDK\n        \/\/\/ Used by: MSPFacebookAdapter\n        \.binaryTarget\(\n            name: "FBAudienceNetwork",\n            path: "ThirdParty\/FBAudienceNetwork\/FBAudienceNetwork\.xcframework"\n        \),\n        \n/, '')
-
-# IronSourceSDK
-content.gsub!(/        \/\/\/ IronSourceSDK - Unity LevelPlay \/ IronSource SDK\n        \/\/\/ Used by: UnityAdapter\n        \.binaryTarget\(\n            name: "IronSourceSDK",\n            path: "ThirdParty\/IronSourceSDK\/IronSourceSDK\.xcframework"\n        \),\n        \n/, '')
-
-# InMobiSDK
-content.gsub!(/        \/\/\/ InMobiSDK - InMobi advertising SDK\n        \/\/\/ Used by: InmobiAdapter\n        \.binaryTarget\(\n            name: "InMobiSDK",\n            path: "ThirdParty\/InMobiSDK\/InMobiSDK\.xcframework"\n        \),\n        \n/, '')
-
-# MobileFuseSDK
-content.gsub!(/        \/\/\/ MobileFuseSDK - MobileFuse advertising SDK\n        \/\/\/ Used by: MobilefuseAdapter\n        \.binaryTarget\(\n            name: "MobileFuseSDK",\n            path: "ThirdParty\/MobileFuseSDK\/MobileFuseSDK\.xcframework"\n        \),\n        \n/, '')
-
-# Mintegral SDK (all 5 targets)
-content.gsub!(/        \/\/\/ Mintegral SDK - Multi-module advertising SDK\n        \/\/\/ Used by: MintegralAdapter\n        \/\/\/ Subspecs: MTGSDK \(core\), MTGSDKBidding, MTGSDKBanner, MTGSDKNewInterstitial\n        \.binaryTarget\(\n            name: "MTGSDK",\n            path: "ThirdParty\/MintegralAdSDK\/MTGSDK\.xcframework"\n        \),\n        \.binaryTarget\(\n            name: "MTGSDKBidding",\n            path: "ThirdParty\/MintegralAdSDK\/MTGSDKBidding\.xcframework"\n        \),\n        \.binaryTarget\(\n            name: "MTGSDKBanner",\n            path: "ThirdParty\/MintegralAdSDK\/MTGSDKBanner\.xcframework"\n        \),\n        \.binaryTarget\(\n            name: "MTGSDKNewInterstitial",\n            path: "ThirdParty\/MintegralAdSDK\/MTGSDKNewInterstitial\.xcframework"\n        \),\n        \.binaryTarget\(\n            name: "MTGSDKInterstitialVideo",\n            path: "ThirdParty\/MintegralAdSDK\/MTGSDKInterstitialVideo\.xcframework"\n        \),\n        \n/m, '')
-
-# OpenWrapSDK
-content.gsub!(/        \/\/\/ OpenWrapSDK - PubMatic OpenWrap SDK\n        \/\/\/ Used by: PubmaticAdapter\n        \.binaryTarget\(\n            name: "OpenWrapSDK",\n            path: "ThirdParty\/OpenWrapSDK\/OpenWrapSDK\.xcframework"\n        \),\n        \n/, '')
-
-# AmazonPublisherServicesSDK
-content.gsub!(/        \/\/\/ AmazonPublisherServicesSDK - Amazon APS SDK\n        \/\/\/ Used by: MSPAmazonAdapter\n        \.binaryTarget\(\n            name: "AmazonPublisherServicesSDK",\n            path: "ThirdParty\/AmazonPublisherServicesSDK\/AmazonPublisherServicesSDK\.xcframework"\n        \),\n        \n/, '')
-
-# Remove MSPGoogleAdsTypes target (depends on Google Mobile Ads SDK which is Pods-only)
-content.gsub!(/        \/\/\/ MSPGoogleAdsTypes - Abstraction layer for GoogleMobileAds SDK\n        \/\/\/ Provides unified API across CocoaPods and SPM builds\n        \/\/\/ Used by: MSPGoogleAdapter, MSPAmazonAdapter\n        \.target\(\n            name: "MSPGoogleAdsTypes",\n            dependencies: \[\n                \.product\(name: "GoogleMobileAds", package: "swift-package-manager-google-mobile-ads"\),\n            \],\n            path: "Sources\/Common\/MSPGoogleAdsTypes"\n        \),\n        \n/m, '')
-
-# Remove unpublished adapter targets
-unpublished_adapter_targets = [
-  ['UnityAdapter', 'UnityAdapter', 'UnityAdapter'],
-  ['InmobiAdapter', 'InmobiAdapter', 'InmobiAdapter'],
-  ['MobilefuseAdapter', 'MobilefuseAdapter', 'MobilefuseAdapter'],
-  ['MintegralAdapter', 'MintegralAdapter', 'MintegralAdapter'],
-  ['PubmaticAdapter', 'PubmaticAdapter', 'PubmaticAdapter']
+# Dependencies to strip globally from any target's dependency list
+# These reference binary targets or source targets being removed
+STRIP_DEPS = %w[
+  FBAudienceNetwork MSPGoogleAdsTypes AmazonPublisherServicesSDK
+  MolocoSDKiOS VungleAds
 ]
 
-unpublished_adapter_targets.each do |comment_name, target_name, path_name|
-  # Pattern matches target definition followed by either:
-  # 1. Empty line + indentation (middle of targets array): \n        \n
-  # 2. End of targets array (last element before ]): directly before \n    ]
-  # Note: Comments may span multiple lines (/// name and /// Dependencies)
-  pattern = /        \/\/\/ #{comment_name}[^\n]*\n(?:        \/\/\/[^\n]*\n)*        \.target\(\n            name: "#{target_name}",\n            dependencies: \[[^\]]*\],\n            path: "Sources\/Adapters\/#{path_name}\/#{path_name}"\n        \),\n(?:        \n|(?=    \]))/m
-  content.gsub!(pattern, '')
+# ============================================================================
+# Step 1: Remove unpublished adapter product lines
+# ============================================================================
+UNPUBLISHED_ADAPTERS.each do |adapter|
+  content.gsub!(/^        \.library\(name: "#{adapter}", targets: \["#{adapter}"\]\),\n/, '')
 end
 
-# Modify published adapter targets to remove Pods-only third-party SDK dependencies
-# MSPFacebookAdapter: Remove FBAudienceNetwork dependency
-content.gsub!(/(        \.target\(\n            name: "MSPFacebookAdapter",\n            dependencies: \[\n                "MSPSharedLibraries",\n                "MSPiOSCore",\n                )"FBAudienceNetwork",(\n            \],)/m, 
-             '\1\2')
+# ============================================================================
+# Step 2: Remove Google Mobile Ads SPM dependency
+# ============================================================================
+# Pattern: comment line + .package( block + trailing blank line
+content.gsub!(
+  /^        \/\/ Google Mobile Ads SDK[^\n]*\n        \.package\(\n            url: "[^"]*google-mobile-ads[^"]*",\n            from: "[^"]*"\n        \),\n        \n/,
+  '')
 
-# MSPGoogleAdapter: Remove MSPGoogleAdsTypes dependency (depends on Pods-only Google Mobile Ads)
-content.gsub!(/(        \.target\(\n            name: "MSPGoogleAdapter",\n            dependencies: \[\n                "MSPSharedLibraries",\n                "MSPiOSCore",\n                )"MSPGoogleAdsTypes",(\n            \],)/m, 
-             '\1\2')
+# ============================================================================
+# Step 3: Remove third-party binary targets by name (path-agnostic)
+# ============================================================================
+# Uses name-based matching so path changes in template don't break removal
+THIRDPARTY_BINARY_TARGETS.each do |name|
+  # Match: optional /// comment lines + .binaryTarget(name: "X", path: "..."), + optional blank line
+  content.gsub!(
+    /(?:^        \/\/\/[^\n]*\n)*^        \.binaryTarget\(\n            name: "#{Regexp.escape(name)}",\n            path: "[^"]*"\n        \),\n(?:        \n)?/,
+    ''
+  )
+end
 
-# MSPAmazonAdapter: Remove MSPGoogleAdsTypes and AmazonPublisherServicesSDK dependencies
-content.gsub!(/(        \.target\(\n            name: "MSPAmazonAdapter",\n            dependencies: \[\n                "MSPSharedLibraries",\n                "MSPiOSCore",\n                )"MSPGoogleAdsTypes",\n                "AmazonPublisherServicesSDK",(\n            \],)/m, 
-             '\1\2')
+# ============================================================================
+# Step 4: Remove Pods-only source targets (MSPGoogleAdsTypes, Shimmer)
+# ============================================================================
+REMOVE_SOURCE_TARGETS.each do |name|
+  # Match: optional /// comments + .target(name: "X", ...) block + optional blank line
+  # /m makes . match newlines for the lazy inner match
+  content.gsub!(
+    /(?:^        \/\/\/[^\n]*\n)*^        \.target\(\n            name: "#{Regexp.escape(name)}",.*?\n        \),\n(?:        \n)?/m,
+    ''
+  )
+end
 
-# MSPPrebidAdapter: Keep PrebidMobile (it exists and is needed)
-# No change needed - PrebidMobile is already included
+# ============================================================================
+# Step 5: Remove unpublished adapter targets
+# ============================================================================
+UNPUBLISHED_ADAPTERS.each do |name|
+  content.gsub!(
+    /(?:^        \/\/\/[^\n]*\n)*^        \.target\(\n            name: "#{Regexp.escape(name)}",.*?\n        \),\n(?:        \n)?/m,
+    ''
+  )
+end
 
-# MSPNovaAdapter: Keep as-is (depends on NovaCoreLinker, MSPOMSDK, Kingfisher, MSPSnapKit - all valid)
-# No change needed
+# ============================================================================
+# Step 6: Strip removed dependencies from published adapter targets
+# ============================================================================
+STRIP_DEPS.each do |dep|
+  # Remove dependency line: 16 spaces + "DepName", + newline
+  content.gsub!(/^                "#{Regexp.escape(dep)}",\n/, '')
+end
 
-# Remove Shimmer target (removed from NovaCore)
-content.gsub!(/        \/\/\/ Shimmer - Facebook shimmering effect library \(Objective-C\)\n        \/\/\/ Bundled from CocoaPods for SPM compatibility\n        \.target\(\n            name: "Shimmer",\n            dependencies: \[\],\n            path: "ThirdParty\/Shimmer\/Shimmer",\n            publicHeadersPath: "include"\n        \),\n        \n/m, '')
+# ============================================================================
+# Step 7: Remove Shimmer from NovaCoreLinker
+# ============================================================================
+content.gsub!('ensures Lottie and Shimmer are linked with NovaCore',
+             'ensures Lottie is linked with NovaCore')
+content.gsub!('undefined Lottie/Shimmer symbols',
+             'undefined Lottie symbols')
+content.gsub!(/^                "Shimmer",\n/, '')
 
-# Remove Shimmer from NovaCoreLinker dependencies and update comment
-content.gsub!(/        \/\/\/ NovaCoreLinker - ensures Lottie and Shimmer are linked with NovaCore\n        \/\/\/ NovaCore\.xcframework has undefined Lottie\/Shimmer symbols that need runtime linking/, 
-             '        /// NovaCoreLinker - ensures Lottie is linked with NovaCore\n        /// NovaCore.xcframework has undefined Lottie symbols that need runtime linking')
-
-content.gsub!(/"Shimmer",\n                /, '')
+# ============================================================================
+# Step 8: Update comment counts
+# ============================================================================
+published_count = 12 - UNPUBLISHED_ADAPTERS.size
+content.gsub!(/Adapter Module Products \(\d+\)/, "Adapter Module Products (#{published_count})")
 
 # Write filtered content
 File.write(output_path, content)

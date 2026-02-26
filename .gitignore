@@ -27,6 +27,9 @@ build/
 .swiftpm/
 SourcePackages/
 Packages/
+# Exception: packages/ (lowercase) is our centralized resource hub, not SPM
+# On macOS (case-insensitive), Packages/ matches packages/ - we need to exclude ours
+!packages/
 Package.resolved
 .build/
 /.build/
@@ -60,6 +63,9 @@ workspace.yml
 
 # CocoaPods
 Pods/
+# Exception: Scripts/release/publish/pods/ is NOT the CocoaPods Pods directory
+# On macOS (case-insensitive), Pods/ matches pods/ - we need to exclude our scripts
+!Scripts/release/publish/pods/
 Podfile.lock
 
 # Generated XCFrameworks / build outputs
@@ -162,6 +168,10 @@ release_backup_*/
 /tmp/release_backup_*/
 *_test*
 *test_*
+
+# But allow Scripts/tests/ (unit test infrastructure)
+!Scripts/tests/
+!Scripts/tests/**
 *_cocoapods.podspec
 
 # Slack configuration (contains sensitive webhook URL)
@@ -181,8 +191,6 @@ Tmp/
 **/project.yml
 !**/*.template
 
-# Auto-generated Info.plist (generated from Info.plist.template)
-Examples/MSPDemoApp/MSPDemoApp/Info.plist
 
 # Root workspace symlink (points to .generated/msp-ios-sdk.xcworkspace)
 msp-ios-sdk.xcworkspace

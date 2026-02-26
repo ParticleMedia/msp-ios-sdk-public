@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # --- MSP Worktree Safety Guard (Patch L, shared) ---
 # shellcheck source=/dev/null
 . "$(git rev-parse --show-toplevel 2>/dev/null)/Scripts/lib/worktree_guard.sh"
@@ -26,10 +26,10 @@ PODS_DIR="$ROOT_DIR/Pods"
 THIRDPARTY_DIR="$ROOT_DIR/ThirdParty"
 
 log() { echo "[sync_thirdparty_pods] $*"; }
-log_info() { echo "[INFO] $*"; }
-log_success() { echo "[✓] $*"; }
-log_warn() { echo "[⚠️ ] $*"; }
-log_error() { echo "[✗] $*" >&2; }
+log::info() { echo "[INFO] $*"; }
+log::success() { echo "[✓] $*"; }
+log::warn() { echo "[⚠️ ] $*"; }
+log::error() { echo "[✗] $*" >&2; }
 
 # Mapping: Pod name → ThirdParty directory name → XCFramework filename
 # Format: "PodName:ThirdPartyDir:XCFrameworkName"
@@ -49,23 +49,21 @@ THIRDPARTY_MAPPINGS=(
     "VungleAds:VungleAds:VungleAdsSDK"
 )
 
-# Parse arguments
 FORCE_SYNC=false
 if [[ "${1:-}" == "--force" ]]; then
     FORCE_SYNC=true
-    log_info "Force sync enabled - will overwrite existing XCFrameworks"
+    log::info "SPM" "Force sync enabled - will overwrite existing XCFrameworks"
 fi
 
-# Check if Pods directory exists
 if [[ ! -d "$PODS_DIR" ]]; then
-    log_error "Pods directory not found: $PODS_DIR"
-    log_error "Please run 'pod install' first"
+    log::error "SPM" "Pods directory not found: $PODS_DIR"
+    log::error "SPM" "Please run 'pod install' first"
     exit 1
 fi
 
 log "Syncing third-party XCFrameworks from Pods to ThirdParty"
-log_info "Pods directory: $PODS_DIR"
-log_info "ThirdParty directory: $THIRDPARTY_DIR"
+log::info "SPM" "Pods directory: $PODS_DIR"
+log::info "SPM" "ThirdParty directory: $THIRDPARTY_DIR"
 echo ""
 
 # Create ThirdParty directory if it doesn't exist
@@ -78,13 +76,13 @@ FAILED_COUNT=0
 for mapping in "${THIRDPARTY_MAPPINGS[@]}"; do
     IFS=':' read -r pod_name thirdparty_dir xcframework_name <<< "$mapping"
 
-    log_info "Processing: $pod_name → ThirdParty/$thirdparty_dir/$xcframework_name.xcframework"
+    log::info "SPM" "Processing: $pod_name → ThirdParty/$thirdparty_dir/$xcframework_name.xcframework"
 
     # Check if Pod exists in Pods directory
     POD_PATH="$PODS_DIR/$pod_name"
     if [[ ! -d "$POD_PATH" ]]; then
-        log_warn "  Pod not found in Pods directory: $pod_name (may not be installed)"
-        ((SKIPPED_COUNT++)) || true
+        log::warn "SPM" "  Pod not found in Pods directory: $pod_name (may not be installed)"
+        ((SKIPPED_COUNT++))
         continue
     fi
 
@@ -103,8 +101,8 @@ for mapping in "${THIRDPARTY_MAPPINGS[@]}"; do
     fi
 
     if [[ -z "$XCFRAMEWORK_SOURCE" ]]; then
-        log_error "  XCFramework not found in Pod: $xcframework_name.xcframework"
-        ((FAILED_COUNT++)) || true
+        log::error "SPM" "  XCFramework not found in Pod: $xcframework_name.xcframework"
+        ((FAILED_COUNT++))
         continue
     fi
 
@@ -116,24 +114,24 @@ for mapping in "${THIRDPARTY_MAPPINGS[@]}"; do
 
     # Check if destination already exists
     if [[ -d "$DEST_PATH" ]] && [[ "$FORCE_SYNC" != "true" ]]; then
-        log_warn "  Already exists (use --force to overwrite): $DEST_PATH"
-        ((SKIPPED_COUNT++)) || true
+        log::warn "SPM" "  Already exists (use --force to overwrite): $DEST_PATH"
+        ((SKIPPED_COUNT++))
         continue
     fi
 
     # Copy XCFramework
-    log_info "  Copying: $(basename "$XCFRAMEWORK_SOURCE") → ThirdParty/$thirdparty_dir/"
+    log::info "SPM" "  Copying: $(basename "$XCFRAMEWORK_SOURCE") → ThirdParty/$thirdparty_dir/"
     rm -rf "$DEST_PATH"
     cp -R "$XCFRAMEWORK_SOURCE" "$DEST_PATH"
 
     # Verify copy
     if [[ -d "$DEST_PATH" ]]; then
         SIZE=$(du -sh "$DEST_PATH" 2>/dev/null | cut -f1)
-        log_success "  Synced: $xcframework_name.xcframework ($SIZE)"
-        ((SYNCED_COUNT++)) || true
+        log::success "SPM" "  Synced: $xcframework_name.xcframework ($SIZE)"
+        ((SYNCED_COUNT++))
     else
-        log_error "  Failed to copy: $xcframework_name.xcframework"
-        ((FAILED_COUNT++)) || true
+        log::error "SPM" "  Failed to copy: $xcframework_name.xcframework"
+        ((FAILED_COUNT++))
     fi
 done
 
@@ -147,13 +145,13 @@ log "  Failed:   $FAILED_COUNT"
 log "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 
 if [[ $FAILED_COUNT -gt 0 ]]; then
-    log_warn "Some XCFrameworks failed to sync"
-    log_warn "This may cause SPM build failures"
+    log::warn "SPM" "Some XCFrameworks failed to sync"
+    log::warn "SPM" "This may cause SPM build failures"
     exit 1
 elif [[ $SYNCED_COUNT -gt 0 ]]; then
-    log_success "✅ ThirdParty XCFrameworks synced successfully"
+    log::success "SPM" "✅ ThirdParty XCFrameworks synced successfully"
     exit 0
 else
-    log_warn "No XCFrameworks were synced (all already exist or pods not installed)"
+    log::warn "SPM" "No XCFrameworks were synced (all already exist or pods not installed)"
     exit 0
 fi

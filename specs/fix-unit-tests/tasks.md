@@ -45,14 +45,14 @@ description: "Task list for Fix Unit Test Builds"
 
 **Goal**: All unit test targets compile and run without dependency-related errors.
 
-**Independent Test**: Run the AllTests scheme and confirm all test targets build and execute.
+**Independent Test**: Run the MSPTests scheme and confirm all test targets build and execute.
 
 ### Implementation for User Story 1
 
 - [x] T008 [US1] Apply target-specific pod integration fixes for test targets in `/Users/pengyu.gou@newsbreak.com/Downloads/WorkSpace/msp-ios-sdk/Podfile`
 - [x] T009 [US1] Update test target configuration inputs for XcodeGen in `/Users/pengyu.gou@newsbreak.com/Downloads/WorkSpace/msp-ios-sdk/Examples/MSPDemoApp/project.yml.template`
 - [x] T010 [US1] Regenerate the workspace using `/Users/pengyu.gou@newsbreak.com/Downloads/WorkSpace/msp-ios-sdk/Scripts/target-switching/generate_workspace.sh`
-- [x] T011 [US1] Validate unit test execution via AllTests scheme using `/Users/pengyu.gou@newsbreak.com/Downloads/WorkSpace/msp-ios-sdk/msp-ios-sdk.xcworkspace`
+- [x] T011 [US1] Validate unit test execution via MSPTests scheme using `/Users/pengyu.gou@newsbreak.com/Downloads/WorkSpace/msp-ios-sdk/msp-ios-sdk.xcworkspace`
 
 **Checkpoint**: User Story 1 should be fully functional and testable independently
 
@@ -138,7 +138,7 @@ Task: "Update test target configuration inputs for XcodeGen in /Users/pengyu.gou
 1. Complete Phase 1: Setup
 2. Complete Phase 2: Foundational (CRITICAL - blocks all stories)
 3. Complete Phase 3: User Story 1
-4. **STOP and VALIDATE**: Run AllTests scheme successfully
+4. **STOP and VALIDATE**: Run MSPTests scheme successfully
 
 ### Incremental Delivery
 

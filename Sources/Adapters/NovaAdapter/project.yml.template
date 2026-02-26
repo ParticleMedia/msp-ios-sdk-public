@@ -35,14 +35,8 @@ targets:
         embed: false
       - framework: ../../../Build/ReleaseArtifacts/XCFrameworks/NovaCore.xcframework
         embed: false
-      - framework: ../../../Build/ReleaseArtifacts/XCFrameworks/Kingfisher.xcframework
-        embed: false
-      - framework: ../../../Build/ReleaseArtifacts/XCFrameworks/MSPSnapKit.xcframework
-        embed: false
-      - framework: ../../../Build/ReleaseArtifacts/XCFrameworks/Lottie.xcframework
-        embed: false
-      - framework: ../../../Build/ReleaseArtifacts/XCFrameworks/Shimmer.xcframework
-        embed: false
+      # Kingfisher, SnapKit, Lottie, Shimmer are statically linked into NovaCore.xcframework
+      # and hidden via UNEXPORTED_SYMBOLS_FILE. NovaAdapter does not import them directly.
     settings:
       base:
         BUILD_LIBRARY_FOR_DISTRIBUTION: YES

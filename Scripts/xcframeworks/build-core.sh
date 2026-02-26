@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # --- MSP Worktree Safety Guard (Patch L, shared) ---
 # shellcheck source=/dev/null
 . "$(git rev-parse --show-toplevel 2>/dev/null)/Scripts/lib/worktree_guard.sh"
@@ -13,7 +13,6 @@ msp_enforce_main_repo_or_exit
 
 set -euo pipefail
 
-# Source common functions
 XCFRAMEWORKS_SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT_DIR="$(cd "$XCFRAMEWORKS_SCRIPT_DIR/../.." && pwd)"
 
@@ -21,17 +20,30 @@ ROOT_DIR="$(cd "$XCFRAMEWORKS_SCRIPT_DIR/../.." && pwd)"
 # shellcheck source=Scripts/target-switching/common.sh
 source "$XCFRAMEWORKS_SCRIPT_DIR/../target-switching/common.sh"
 
-# Load process utilities for timeout protection
+# Ensure logger functions are available in subprocess
+# (Force reload by unsetting the guard variable, as parent may have already sourced)
+if [[ -f "$ROOT_DIR/Scripts/release/utils/logger.sh" ]]; then
+    unset MSP_LOGGER_LOADED
+    # shellcheck source=Scripts/release/utils/logger.sh
+    source "$ROOT_DIR/Scripts/release/utils/logger.sh" 2>/dev/null || true
+fi
+
 if [[ -f "$ROOT_DIR/Scripts/lib/process_utils.sh" ]]; then
     # shellcheck source=Scripts/lib/process_utils.sh
     source "$ROOT_DIR/Scripts/lib/process_utils.sh"
+fi
+
+# R029f: Source xcodegen module for unified generation
+if [[ -f "$ROOT_DIR/Scripts/lib/xcodegen.sh" ]]; then
+    # shellcheck source=Scripts/lib/xcodegen.sh
+    source "$ROOT_DIR/Scripts/lib/xcodegen.sh" 2>/dev/null || true
 fi
 
 ensure_repo_root
 
 BUILD_MODULE_SCRIPT="$XCFRAMEWORKS_SCRIPT_DIR/build_module.sh"
 if [[ ! -f "$BUILD_MODULE_SCRIPT" ]]; then
-    log_error "build_module.sh not found: $BUILD_MODULE_SCRIPT"
+    log::error "XCFW" "build_module.sh not found: $BUILD_MODULE_SCRIPT"
     exit 1
 fi
 
@@ -45,13 +57,13 @@ log_section "Building third-party XCFrameworks"
 THIRDPARTY_BUILD_SCRIPT="$XCFRAMEWORKS_SCRIPT_DIR/build-thirdparty.sh"
 if [[ -f "$THIRDPARTY_BUILD_SCRIPT" ]] && [[ -x "$THIRDPARTY_BUILD_SCRIPT" ]]; then
     if ! bash "$THIRDPARTY_BUILD_SCRIPT"; then
-        log_error "Failed to build third-party XCFrameworks"
+        log::error "XCFW" "Failed to build third-party XCFrameworks"
         exit 1
     fi
-    log_success "Third-party XCFrameworks built successfully"
+    log::success "XCFW" "Third-party XCFrameworks built successfully"
 else
-    log_warn "build-thirdparty.sh not found or not executable, skipping third-party build"
-    log_warn "Core modules may fail if required third-party XCFrameworks are missing"
+    log::warn "XCFW" "build-thirdparty.sh not found or not executable, skipping third-party build"
+    log::warn "XCFW" "Core modules may fail if required third-party XCFrameworks are missing"
 fi
 
 # -----------------------------------------------------------
@@ -62,7 +74,7 @@ log_section "Generating project.yml from templates"
 if [[ -x "$ROOT_DIR/Scripts/target-switching/generate_project_templates.sh" ]]; then
     "$ROOT_DIR/Scripts/target-switching/generate_project_templates.sh"
 else
-    log_warn "generate_project_templates.sh not found or not executable"
+    log::warn "XCFW" "generate_project_templates.sh not found or not executable"
 fi
 
 # -----------------------------------------------------------
@@ -73,13 +85,22 @@ fi
 WORKSPACE_FILE="$ROOT_DIR/msp-ios-sdk.xcworkspace"
 
 if [[ ! -d "$WORKSPACE_FILE" ]]; then
-    log_error "Workspace not found: $WORKSPACE_FILE"
-    log_error "Core modules require workspace for Pod dependencies (MSPPrebidAdapter, MSPKingfisher, etc.)"
+    log::error "XCFW" "Workspace not found: $WORKSPACE_FILE"
+    log::error "XCFW" "Core modules require workspace for Pod dependencies (MSPPrebidAdapter, MSPKingfisher, etc.)"
     exit 1
 fi
 
-log_info "Using workspace: $WORKSPACE_FILE"
-log_info "Core modules will resolve Pod dependencies (MSPPrebidAdapter, MSPKingfisher, MSPSnapKit, etc.) via workspace"
+if ! xcodebuild -workspace "$WORKSPACE_FILE" -list 2>/dev/null | grep -q "Schemes:"; then
+    log::info "XCFW" "Workspace has no schemes, running pod install..."
+    if ! pod install --project-directory="$ROOT_DIR" 2>&1; then
+        log::error "XCFW" "pod install failed"
+        exit 1
+    fi
+    log::success "XCFW" "pod install completed"
+fi
+
+log::info "XCFW" "Using workspace: $WORKSPACE_FILE"
+log::info "XCFW" "Core modules will resolve Pod dependencies (MSPPrebidAdapter, MSPKingfisher, MSPSnapKit, etc.) via workspace"
 
 # -----------------------------------------------------------
 # Step 1 — Pre-build Pod dependencies that Core modules need
@@ -89,7 +110,7 @@ log_info "Core modules will resolve Pod dependencies (MSPPrebidAdapter, MSPKingf
 SHARED_DERIVED_DATA="$ROOT_DIR/.generated/DerivedData/build-shared"
 mkdir -p "$SHARED_DERIVED_DATA"
 
-log_step "Pre-building Pod dependencies for Core modules"
+log::step "XCFW" "Pre-building Pod dependencies for Core modules"
 
 # List of Pod schemes to pre-build for Core module compilation
 # These Pods provide Swift modules needed by Core modules:
@@ -102,7 +123,7 @@ log_step "Pre-building Pod dependencies for Core modules"
 POD_SCHEMES_TO_PREBUILD=("MSPKingfisher" "MSPSnapKit" "lottie-ios" "SwiftProtobuf")
 
 for pod_scheme in "${POD_SCHEMES_TO_PREBUILD[@]}"; do
-    log_info "Pre-building $pod_scheme for iOS..."
+    log::info "XCFW" "Pre-building $pod_scheme for iOS..."
     if xcodebuild -workspace "$WORKSPACE_FILE" \
         -scheme "$pod_scheme" \
         -configuration Release \
@@ -110,22 +131,22 @@ for pod_scheme in "${POD_SCHEMES_TO_PREBUILD[@]}"; do
         -derivedDataPath "$SHARED_DERIVED_DATA" \
         build 2>&1 | tee "/tmp/build_${pod_scheme}.log"; then
         if grep -q "BUILD SUCCEEDED" "/tmp/build_${pod_scheme}.log"; then
-            log_success "$pod_scheme (iOS) built successfully"
+            log::success "XCFW" "$pod_scheme (iOS) built successfully"
         else
-            log_error "$pod_scheme (iOS) build failed"
+            log::error "XCFW" "$pod_scheme (iOS) build failed"
             exit 1
         fi
     else
-        log_warn "$pod_scheme (iOS) build had issues, checking log..."
+        log::warn "XCFW" "$pod_scheme (iOS) build had issues, checking log..."
         if grep -q "BUILD SUCCEEDED" "/tmp/build_${pod_scheme}.log"; then
-            log_success "$pod_scheme (iOS) built successfully (despite warnings)"
+            log::success "XCFW" "$pod_scheme (iOS) built successfully (despite warnings)"
         else
-            log_error "$pod_scheme (iOS) build failed - Core modules cannot resolve module"
+            log::error "XCFW" "$pod_scheme (iOS) build failed - Core modules cannot resolve module"
             exit 1
         fi
     fi
     
-    log_info "Pre-building $pod_scheme for Simulator..."
+    log::info "XCFW" "Pre-building $pod_scheme for Simulator..."
     if xcodebuild -workspace "$WORKSPACE_FILE" \
         -scheme "$pod_scheme" \
         -configuration Release \
@@ -133,15 +154,15 @@ for pod_scheme in "${POD_SCHEMES_TO_PREBUILD[@]}"; do
         -derivedDataPath "$SHARED_DERIVED_DATA" \
         build 2>&1 | tee "/tmp/build_${pod_scheme}_sim.log"; then
         if grep -q "BUILD SUCCEEDED" "/tmp/build_${pod_scheme}_sim.log"; then
-            log_success "$pod_scheme (Simulator) built successfully"
+            log::success "XCFW" "$pod_scheme (Simulator) built successfully"
         else
-            log_warn "$pod_scheme (Simulator) build had issues, continuing..."
+            log::warn "XCFW" "$pod_scheme (Simulator) build had issues, continuing..."
         fi
     fi
 done
 
-log_success "All Pod dependencies pre-built successfully"
-log_info "Pod modules available at: $SHARED_DERIVED_DATA/Build/Products/Release-iphoneos/"
+log::success "XCFW" "All Pod dependencies pre-built successfully"
+log::info "XCFW" "Pod modules available at: $SHARED_DERIVED_DATA/Build/Products/Release-iphoneos/"
 
 # -----------------------------------------------------------
 # Build core modules in dependency order
@@ -149,7 +170,6 @@ log_info "Pod modules available at: $SHARED_DERIVED_DATA/Build/Products/Release-
 # Note: MSPKingfisher is pre-built above, so Kingfisher module is available
 # -----------------------------------------------------------
 
-# Output directories
 ARCHIVES_DIR="$ROOT_DIR/Build/ReleaseArtifacts/Archives"
 XCFRAMEWORKS_DIR="$ROOT_DIR/Build/ReleaseArtifacts/XCFrameworks"
 LOGS_DIR="$ROOT_DIR/Build/Logs"
@@ -162,18 +182,17 @@ mkdir -p "$ARCHIVES_DIR" "$XCFRAMEWORKS_DIR" "$LOGS_DIR"
 # MSPiOSCore.xcframework (binary) instead of Pod source version.
 # -----------------------------------------------------------
 build_msp_prebid_adapter_xcframework() {
-    log_step "Building MSPPrebidAdapter.xcframework (post-MSPiOSCore)"
-    log_info "Using XcodeGen standalone project to link against MSPiOSCore.xcframework"
+    log::step "XCFW" "Building MSPPrebidAdapter.xcframework (post-MSPiOSCore)"
+    log::info "XCFW" "Using XcodeGen standalone project to link against MSPiOSCore.xcframework"
 
-    # Clean old XCFramework
     rm -rf "$XCFRAMEWORKS_DIR/MSPPrebidAdapter.xcframework"
 
     # Use build_module.sh which uses XcodeGen project (links XCFrameworks, not Pod sources)
     if "$BUILD_MODULE_SCRIPT" "MSPPrebidAdapter"; then
-        log_success "MSPPrebidAdapter.xcframework built successfully"
+        log::success "XCFW" "MSPPrebidAdapter.xcframework built successfully"
         return 0
     else
-        log_error "MSPPrebidAdapter.xcframework build failed"
+        log::error "XCFW" "MSPPrebidAdapter.xcframework build failed"
         return 1
     fi
 }
@@ -183,7 +202,7 @@ build_msp_prebid_adapter_xcframework() {
 # Purpose: Fix absolute paths in Pod modulemaps to use relative paths
 # -----------------------------------------------------------
 fix_pod_modulemaps() {
-    log_info "Fixing Pod modulemaps (converting absolute paths to relative)"
+    log::info "XCFW" "Fixing Pod modulemaps (converting absolute paths to relative)"
     for plat in iphoneos iphonesimulator; do
         # Note: MSPPrebidAdapter is now an XCFramework, only SwiftProtobuf needs modulemap fix
         for pod in SwiftProtobuf; do
@@ -203,7 +222,7 @@ module $pod.Swift {
   requires objc
 }
 EOF
-                log_info "Fixed modulemap: $plat/$pod"
+                log::info "XCFW" "Fixed modulemap: $plat/$pod"
             fi
         done
     done
@@ -218,31 +237,32 @@ EOF
 build_mspcore_with_modulemaps() {
     local MODULE_NAME="MSPCore"
     
-    log_info "Building $MODULE_NAME via XcodeGen project with modulemap injection"
+    log::info "XCFW" "Building $MODULE_NAME via XcodeGen project with modulemap injection"
     
-    # Fix Pod modulemaps first
     fix_pod_modulemaps
-    
-    # Clean up any placeholder XCFramework
+
     rm -rf "$XCFRAMEWORKS_DIR/$MODULE_NAME.xcframework"
-    
-    # Archive paths
+
     local IOS_ARCHIVE="$ARCHIVES_DIR/$MODULE_NAME-iOS.xcarchive"
     local SIM_ARCHIVE="$ARCHIVES_DIR/$MODULE_NAME-Simulator.xcarchive"
     local PROJECT_FILE="$ROOT_DIR/Sources/Core/$MODULE_NAME/$MODULE_NAME.xcodeproj"
     local SCHEME_NAME="$MODULE_NAME-XCFramework"
     
-    # Regenerate project
-    log_step "Regenerating $MODULE_NAME project"
-    cd "$ROOT_DIR/Sources/Core/$MODULE_NAME" && xcodegen generate 2>&1 && cd "$ROOT_DIR"
+    log::step "XCFW" "Regenerating $MODULE_NAME project"
+    # R029f: Use xcodegen.sh module if available, fallback to direct call
+    local module_dir="$ROOT_DIR/Sources/Core/$MODULE_NAME"
+    if command -v xcodegen_generate &>/dev/null; then
+        xcodegen_generate "$module_dir/project.yml" "$module_dir" 2>&1
+    else
+        (cd "$module_dir" && xcodegen generate 2>&1)
+    fi
     
-    # Clean previous archives
     rm -rf "$IOS_ARCHIVE" "$SIM_ARCHIVE"
     
     # Build iOS archive with explicit modulemap paths
     # Use standalone project to link against XCFramework versions of dependencies.
     # MSPPrebidAdapter.xcframework is built earlier in the pipeline.
-    log_step "Building $MODULE_NAME iOS archive"
+    log::step "XCFW" "Building $MODULE_NAME iOS archive"
     local POD_BASE_IOS="$SHARED_DERIVED_DATA/Build/Products/Release-iphoneos"
     local SWIFT_FLAGS_IOS="-no-verify-emitted-module-interface -Xcc -fmodule-map-file=$POD_BASE_IOS/SwiftProtobuf/SwiftProtobuf.modulemap"
 
@@ -259,24 +279,23 @@ build_mspcore_with_modulemaps() {
         "OTHER_SWIFT_FLAGS=$SWIFT_FLAGS_IOS" \
         2>&1 | tee "$LOGS_DIR/$MODULE_NAME-iOS.log"; then
         if ! grep -q "ARCHIVE SUCCEEDED" "$LOGS_DIR/$MODULE_NAME-iOS.log"; then
-            log_error "$MODULE_NAME iOS archive failed"
+            log::error "XCFW" "$MODULE_NAME iOS archive failed"
             return 1
         fi
     fi
     
     if ! grep -q "ARCHIVE SUCCEEDED" "$LOGS_DIR/$MODULE_NAME-iOS.log"; then
-        log_error "$MODULE_NAME iOS archive failed"
+        log::error "XCFW" "$MODULE_NAME iOS archive failed"
         return 1
     fi
     
     if [[ ! -d "$IOS_ARCHIVE" ]]; then
-        log_error "$MODULE_NAME iOS archive not created"
+        log::error "XCFW" "$MODULE_NAME iOS archive not created"
         return 1
     fi
-    log_success "$MODULE_NAME iOS archive succeeded"
+    log::success "XCFW" "$MODULE_NAME iOS archive succeeded"
     
-    # Build Simulator archive
-    log_step "Building $MODULE_NAME Simulator archive"
+    log::step "XCFW" "Building $MODULE_NAME Simulator archive"
     local POD_BASE_SIM="$SHARED_DERIVED_DATA/Build/Products/Release-iphonesimulator"
     local SWIFT_FLAGS_SIM="-no-verify-emitted-module-interface -Xcc -fmodule-map-file=$POD_BASE_SIM/SwiftProtobuf/SwiftProtobuf.modulemap"
 
@@ -296,53 +315,52 @@ build_mspcore_with_modulemaps() {
     # Build with timeout protection (3600 seconds = 1 hour)
     local build_timeout=3600
     if command -v run_with_timeout >/dev/null 2>&1 && [[ -n "${TIMEOUT_CMD:-}" ]]; then
-        log_info "Using timeout protection (${build_timeout}s) for Simulator archive build"
+        log::info "XCFW" "Using timeout protection (${build_timeout}s) for Simulator archive build"
         if ! run_with_timeout $build_timeout bash -c "$build_cmd" 2>&1 | tee "$LOGS_DIR/$MODULE_NAME-Simulator.log"; then
             if ! grep -q "ARCHIVE SUCCEEDED" "$LOGS_DIR/$MODULE_NAME-Simulator.log"; then
-                log_error "$MODULE_NAME Simulator archive failed or timed out"
+                log::error "XCFW" "$MODULE_NAME Simulator archive failed or timed out"
                 return 1
             fi
         fi
     else
         # Fallback: build without timeout (original behavior)
-        log_warn "timeout wrapper not available, building without timeout protection"
+        log::warn "XCFW" "timeout wrapper not available, building without timeout protection"
         if ! bash -c "$build_cmd" 2>&1 | tee "$LOGS_DIR/$MODULE_NAME-Simulator.log"; then
             if ! grep -q "ARCHIVE SUCCEEDED" "$LOGS_DIR/$MODULE_NAME-Simulator.log"; then
-                log_error "$MODULE_NAME Simulator archive failed"
+                log::error "XCFW" "$MODULE_NAME Simulator archive failed"
                 return 1
             fi
         fi
     fi
     
     if ! grep -q "ARCHIVE SUCCEEDED" "$LOGS_DIR/$MODULE_NAME-Simulator.log"; then
-        log_error "$MODULE_NAME Simulator archive failed"
+        log::error "XCFW" "$MODULE_NAME Simulator archive failed"
         return 1
     fi
     
     if [[ ! -d "$SIM_ARCHIVE" ]]; then
-        log_error "$MODULE_NAME Simulator archive not created"
+        log::error "XCFW" "$MODULE_NAME Simulator archive not created"
         return 1
     fi
-    log_success "$MODULE_NAME Simulator archive succeeded"
+    log::success "XCFW" "$MODULE_NAME Simulator archive succeeded"
     
-    # Create XCFramework
-    log_step "Creating $MODULE_NAME.xcframework"
+    log::step "XCFW" "Creating $MODULE_NAME.xcframework"
     local XCFRAMEWORK_OUTPUT="$XCFRAMEWORKS_DIR/$MODULE_NAME.xcframework"
     
     if ! xcodebuild -create-xcframework \
         -framework "$IOS_ARCHIVE/Products/Library/Frameworks/$MODULE_NAME.framework" \
         -framework "$SIM_ARCHIVE/Products/Library/Frameworks/$MODULE_NAME.framework" \
         -output "$XCFRAMEWORK_OUTPUT"; then
-        log_error "Failed to create $MODULE_NAME.xcframework"
+        log::error "XCFW" "Failed to create $MODULE_NAME.xcframework"
         return 1
     fi
     
     if [[ ! -d "$XCFRAMEWORK_OUTPUT" ]]; then
-        log_error "XCFramework not created: $XCFRAMEWORK_OUTPUT"
+        log::error "XCFW" "XCFramework not created: $XCFRAMEWORK_OUTPUT"
         return 1
     fi
     
-    log_success "$MODULE_NAME.xcframework created successfully"
+    log::success "XCFW" "$MODULE_NAME.xcframework created successfully"
     return 0
 }
 
@@ -380,39 +398,39 @@ for module in "${CORE_MODULES[@]}"; do
             # MSPPrebidAdapter: Build using XcodeGen standalone project
             # This links against MSPiOSCore.xcframework (built earlier), ensuring ABI compatibility
             if build_msp_prebid_adapter_xcframework; then
-                ((SUCCESS_COUNT++)) || true
-                log_success "$module: BUILD SUCCEEDED (xcodegen mode)"
+                ((SUCCESS_COUNT++))
+                log::success "XCFW" "$module: BUILD SUCCEEDED (xcodegen mode)"
             else
                 ((FAIL_COUNT++)) || true
                 FAILED_MODULES+=("$module")
-                log_error "$module: BUILD FAILED (xcodegen mode)"
-                log_error "Aborting core module build pipeline"
+                log::error "XCFW" "$module: BUILD FAILED (xcodegen mode)"
+                log::error "XCFW" "Aborting core module build pipeline"
                 exit 1
             fi
             ;;
         MSPCore)
             # MSPCore needs explicit modulemap injection for MSPPrebidAdapter and SwiftProtobuf
             if build_mspcore_with_modulemaps; then
-                ((SUCCESS_COUNT++)) || true
-                log_success "$module: BUILD SUCCEEDED (xcodegen + modulemap mode)"
+                ((SUCCESS_COUNT++))
+                log::success "XCFW" "$module: BUILD SUCCEEDED (xcodegen + modulemap mode)"
             else
                 ((FAIL_COUNT++)) || true
                 FAILED_MODULES+=("$module")
-                log_error "$module: BUILD FAILED (xcodegen + modulemap mode)"
-                log_error "Aborting core module build pipeline"
+                log::error "XCFW" "$module: BUILD FAILED (xcodegen + modulemap mode)"
+                log::error "XCFW" "Aborting core module build pipeline"
                 exit 1
             fi
             ;;
         *)
             # Other modules: Build via XcodeGen project + build_module.sh
             if "$BUILD_MODULE_SCRIPT" "$module"; then
-                ((SUCCESS_COUNT++)) || true
-                log_success "$module: BUILD SUCCEEDED (xcodegen mode)"
+                ((SUCCESS_COUNT++))
+                log::success "XCFW" "$module: BUILD SUCCEEDED (xcodegen mode)"
             else
                 ((FAIL_COUNT++)) || true
                 FAILED_MODULES+=("$module")
-                log_error "$module: BUILD FAILED (xcodegen mode)"
-                log_error "Aborting core module build pipeline"
+                log::error "XCFW" "$module: BUILD FAILED (xcodegen mode)"
+                log::error "XCFW" "Aborting core module build pipeline"
                 exit 1
             fi
             ;;
@@ -420,15 +438,15 @@ for module in "${CORE_MODULES[@]}"; do
 done
 
 log_title "Core Modules Build Complete"
-log_success "Successfully built $SUCCESS_COUNT core module(s)"
+log::success "XCFW" "Successfully built $SUCCESS_COUNT core module(s)"
 if [[ $FAIL_COUNT -gt 0 ]]; then
-    log_error "Failed to build $FAIL_COUNT core module(s): ${FAILED_MODULES[*]}"
+    log::error "XCFW" "Failed to build $FAIL_COUNT core module(s): ${FAILED_MODULES[*]}"
     exit 1
 fi
 
 # Task 2: Cleanup generated project.yml files after build
 # Ensure workspace remains clean - project.yml should only exist during build
-log_step "Cleaning up generated project.yml files"
+log::step "XCFW" "Cleaning up generated project.yml files"
 CLEANED_COUNT=0
 while IFS= read -r project_yml; do
     [[ -z "$project_yml" ]] && continue
@@ -439,9 +457,9 @@ while IFS= read -r project_yml; do
 done < <(find "$ROOT_DIR/Sources" "$ROOT_DIR/Examples" -name "project.yml" -type f 2>/dev/null | grep -v ".generated" | grep -v "DerivedData" || true)
 
 if [[ $CLEANED_COUNT -gt 0 ]]; then
-    log_info "  Cleaned up $CLEANED_COUNT project.yml file(s)"
+    log::info "XCFW" "  Cleaned up $CLEANED_COUNT project.yml file(s)"
 else
-    log_info "  No project.yml files to clean up"
+    log::info "XCFW" "  No project.yml files to clean up"
 fi
 
 # Explicit success exit to ensure correct exit code under set -e

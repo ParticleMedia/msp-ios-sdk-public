@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # --- MSP Worktree Safety Guard (Patch L, shared) ---
 # shellcheck source=/dev/null
 . "$(git rev-parse --show-toplevel 2>/dev/null)/Scripts/lib/worktree_guard.sh"
@@ -10,42 +10,16 @@ msp_enforce_main_repo_or_exit
 
 set +e  # Disabled to allow graceful error handling
 
-# Source the common library
+# shellcheck source=Scripts/lib/path-helpers.sh
+source "$(git rev-parse --show-toplevel 2>/dev/null)/Scripts/lib/path-helpers.sh"
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-# ============================================
-# Unified ROOT_DIR resolution (final version)
-# ============================================
-if [[ -z "${ROOT_DIR:-}" ]]; then
-    # First try Git repo root (most reliable)
-    if command -v git >/dev/null 2>&1; then
-        git_root="$(git rev-parse --show-toplevel 2>/dev/null || echo "")"
-        if [[ -n "$git_root" ]]; then
-            ROOT_DIR="$git_root"
-        fi
-    fi
-
-    # Fallback to walking up from SCRIPT_DIR
-    if [[ -z "${ROOT_DIR:-}" ]]; then
-        ROOT_DIR="$SCRIPT_DIR"
-        while [[ "$ROOT_DIR" != "/" ]] && [[ "${ROOT_DIR##*/}" != "Scripts" ]]; do
-            ROOT_DIR="$(dirname "$ROOT_DIR")"
-        done
-        if [[ "${ROOT_DIR##*/}" == "Scripts" ]]; then
-            ROOT_DIR="$(dirname "$ROOT_DIR")"
-        fi
-    fi
-fi
-
-export ROOT_DIR
 source "$ROOT_DIR/Scripts/lib/release-common.sh"
 
-# Default values
 VERSION=""
-BASE_BRANCH="newsbreak_msp_migration_spm_dist"
+BASE_BRANCH="${BASE_BRANCH:-}"
 RELEASE_BRANCH=""
 DRY_RUN="false"
 
-# Parse command line arguments
 parse_arguments() {
     while [[ $# -gt 0 ]]; do
         case $1 in
@@ -69,7 +43,7 @@ parse_arguments() {
                 if [[ -z "$VERSION" ]]; then
                     VERSION="$1"
                 else
-                    log_error "Unknown argument: $1"
+                    log::error "BRANCH" "Unknown argument: $1"
                     show_help
                     exit 1
                 fi
@@ -79,7 +53,6 @@ parse_arguments() {
     done
 }
 
-# Show help
 show_help() {
     echo "Usage: $0 [OPTIONS] <VERSION>"
     echo ""
@@ -87,122 +60,125 @@ show_help() {
     echo "  VERSION                 Version to release (e.g., 0.0.2-migration-spm)"
     echo ""
     echo "Options:"
-    echo "  --base-branch BRANCH    Base branch to create release from (default: newsbreak_msp_migration_spm_dist)"
+    echo "  --base-branch BRANCH    Base branch to create release from (default: current branch)"
     echo "  --dry-run               Show what would be done without executing"
     echo "  --help, -h              Show this help message"
     echo "  --version, -v           Show version information"
     echo ""
     echo "Examples:"
     echo "  $0 0.0.2-migration-spm"
-    echo "  $0 --base-branch main 0.0.2-migration-spm"
+    echo "  $0 --base-branch develop 0.0.2-migration-spm"
     echo "  $0 --dry-run 0.0.2-migration-spm"
 }
 
-# Validate inputs
 validate_inputs() {
     if [[ -z "$VERSION" ]]; then
-        log_error "Version is required"
+        log::error "BRANCH" "Version is required"
         show_help
         exit 1
     fi
     
-    # Set release branch name
+    if [[ -z "$BASE_BRANCH" ]]; then
+        BASE_BRANCH="$(git branch --show-current)"
+        if [[ -z "$BASE_BRANCH" ]]; then
+            log::error "BRANCH" "Could not determine current branch. Please specify --base-branch"
+            exit 1
+        fi
+    fi
+
     RELEASE_BRANCH="release/$VERSION"
     
-    log_info "Release configuration:"
-    log_info "  Version: $VERSION"
-    log_info "  Base Branch: $BASE_BRANCH"
-    log_info "  Release Branch: $RELEASE_BRANCH"
+    log::info "BRANCH" "Release configuration:"
+    log::info "BRANCH" "  Version: $VERSION"
+    log::info "BRANCH" "  Base Branch: $BASE_BRANCH"
+    log::info "BRANCH" "  Release Branch: $RELEASE_BRANCH"
 }
 
-# Check if base branch exists
 check_base_branch() {
-    log_step "Checking base branch: $BASE_BRANCH"
+    log::step "BRANCH" "Checking base branch: $BASE_BRANCH"
     
     if ! git show-ref --verify --quiet "refs/heads/$BASE_BRANCH"; then
         if [[ "$DRY_RUN" == "true" ]]; then
-            log_warn "DRY RUN: Base branch '$BASE_BRANCH' does not exist locally (continuing)"
+            log::warn "BRANCH" "DRY RUN: Base branch '$BASE_BRANCH' does not exist locally (continuing)"
         else
-            log_error "Base branch '$BASE_BRANCH' does not exist locally"
+            log::error "BRANCH" "Base branch '$BASE_BRANCH' does not exist locally"
             exit 1
         fi
     fi
     
     if ! git show-ref --verify --quiet "refs/remotes/origin/$BASE_BRANCH"; then
         if [[ "$DRY_RUN" == "true" ]]; then
-            log_warn "DRY RUN: Base branch '$BASE_BRANCH' does not exist on remote (continuing)"
+            log::warn "BRANCH" "DRY RUN: Base branch '$BASE_BRANCH' does not exist on remote (continuing)"
         else
-            log_error "Base branch '$BASE_BRANCH' does not exist on remote"
+            log::error "BRANCH" "Base branch '$BASE_BRANCH' does not exist on remote"
             exit 1
         fi
     fi
     
     if [[ "$DRY_RUN" != "true" ]]; then
-        log_success "Base branch '$BASE_BRANCH' exists"
+        log::success "BRANCH" "Base branch '$BASE_BRANCH' exists"
     else
-        log_info "DRY RUN: Skipping base branch validation"
+        log::info "BRANCH" "DRY RUN: Skipping base branch validation"
     fi
 }
 
-# Check if release branch already exists
 check_release_branch() {
-    log_step "Checking if release branch already exists: $RELEASE_BRANCH"
+    log::step "BRANCH" "Checking if release branch already exists: $RELEASE_BRANCH"
     
     # In resume mode, don't delete existing branches - just use them
     if [[ "${MSP_RESUME_MODE:-0}" == "1" ]]; then
         if git show-ref --verify --quiet "refs/heads/$RELEASE_BRANCH"; then
-            log_info "Release branch '$RELEASE_BRANCH' already exists locally (resume mode: keeping it)"
+            log::info "BRANCH" "Release branch '$RELEASE_BRANCH' already exists locally (resume mode: keeping it)"
             return 0
         fi
         if git show-ref --verify --quiet "refs/remotes/origin/$RELEASE_BRANCH"; then
-            log_info "Release branch '$RELEASE_BRANCH' already exists on remote (resume mode: keeping it)"
+            log::info "BRANCH" "Release branch '$RELEASE_BRANCH' already exists on remote (resume mode: keeping it)"
             return 0
         fi
     fi
     
     # Normal mode: delete existing branches to recreate fresh
     if git show-ref --verify --quiet "refs/heads/$RELEASE_BRANCH"; then
-        log_warning "Release branch '$RELEASE_BRANCH' already exists locally"
+        log::warn "BRANCH" "Release branch '$RELEASE_BRANCH' already exists locally"
         if [[ "$DRY_RUN" != "true" ]]; then
-            log_info "Automatically deleting existing local release branch"
+            log::info "BRANCH" "Automatically deleting existing local release branch"
             git branch -D "$RELEASE_BRANCH"
-            log_success "Deleted existing local release branch"
+            log::success "BRANCH" "Deleted existing local release branch"
         fi
     fi
     
     if git show-ref --verify --quiet "refs/remotes/origin/$RELEASE_BRANCH"; then
-        log_warning "Release branch '$RELEASE_BRANCH' already exists on remote"
+        log::warn "BRANCH" "Release branch '$RELEASE_BRANCH' already exists on remote"
         if [[ "$DRY_RUN" != "true" ]]; then
-            log_info "Automatically deleting existing remote release branch"
+            log::info "BRANCH" "Automatically deleting existing remote release branch"
             git push origin --delete "$RELEASE_BRANCH"
-            log_success "Deleted existing remote release branch"
+            log::success "BRANCH" "Deleted existing remote release branch"
         fi
     fi
 }
 
-# Create release branch
 create_release_branch() {
-    log_step "Creating release branch: $RELEASE_BRANCH"
+    log::step "BRANCH" "Creating release branch: $RELEASE_BRANCH"
     
     if [[ "$DRY_RUN" == "true" ]]; then
-        log_info "DRY RUN: Would create branch '$RELEASE_BRANCH' from '$BASE_BRANCH'"
+        log::info "BRANCH" "DRY RUN: Would create branch '$RELEASE_BRANCH' from '$BASE_BRANCH'"
         return 0
     fi
     
     # In resume mode, if branch already exists, just checkout to it
     if [[ "${MSP_RESUME_MODE:-0}" == "1" ]]; then
         if git show-ref --verify --quiet "refs/heads/$RELEASE_BRANCH"; then
-            log_info "Release branch '$RELEASE_BRANCH' already exists (resume mode: checking out)"
+            log::info "BRANCH" "Release branch '$RELEASE_BRANCH' already exists (resume mode: checking out)"
             git checkout "$RELEASE_BRANCH"
-            log_success "Checked out existing release branch: $RELEASE_BRANCH"
+            log::success "BRANCH" "Checked out existing release branch: $RELEASE_BRANCH"
             return 0
         fi
         # If branch exists on remote but not locally, fetch and checkout
         if git show-ref --verify --quiet "refs/remotes/origin/$RELEASE_BRANCH"; then
-            log_info "Release branch '$RELEASE_BRANCH' exists on remote (resume mode: fetching and checking out)"
+            log::info "BRANCH" "Release branch '$RELEASE_BRANCH' exists on remote (resume mode: fetching and checking out)"
             git fetch origin "$RELEASE_BRANCH"
             git checkout -b "$RELEASE_BRANCH" "origin/$RELEASE_BRANCH" || git checkout "$RELEASE_BRANCH"
-            log_success "Checked out existing release branch from remote: $RELEASE_BRANCH"
+            log::success "BRANCH" "Checked out existing release branch from remote: $RELEASE_BRANCH"
             return 0
         fi
     fi
@@ -220,57 +196,43 @@ create_release_branch() {
     # Create and checkout release branch
     git checkout -b "$RELEASE_BRANCH"
     
-    log_success "Created release branch: $RELEASE_BRANCH"
+    log::success "BRANCH" "Created release branch: $RELEASE_BRANCH"
 }
 
-# Push release branch
 push_release_branch() {
-    log_step "Pushing release branch to remote"
+    log::step "BRANCH" "Pushing release branch to remote"
     
     if [[ "$DRY_RUN" == "true" ]]; then
-        log_info "DRY RUN: Would push branch '$RELEASE_BRANCH' to origin"
+        log::info "BRANCH" "DRY RUN: Would push branch '$RELEASE_BRANCH' to origin"
         return 0
     fi
     
     git push origin "$RELEASE_BRANCH"
     
-    log_success "Pushed release branch to remote"
+    log::success "BRANCH" "Pushed release branch to remote"
 }
 
-# Main function
 main() {
-    # Parse arguments
     parse_arguments "$@"
-    
-    # Validate inputs
     validate_inputs
-    
-    # Ensure we're in the project root
     ensure_project_root
-    
-    # Check prerequisites
     check_base_branch
     check_release_branch
     
-    # Create release branch
     create_release_branch
-    
-    # Push release branch
     push_release_branch
     
     print_section "Release Branch Created Successfully"
-    log_success "Release branch '$RELEASE_BRANCH' is ready for version '$VERSION'"
-    log_info "Next steps:"
-    log_info "  1. Run CocoaPods release: ./Scripts/release-cocoapods-modular.sh $VERSION"
-    log_info "  2. Run SPM release: ./Scripts/release-spm-modular.sh $VERSION"
-    log_info "  3. Push final release: git push origin $RELEASE_BRANCH"
+    log::success "BRANCH" "Release branch '$RELEASE_BRANCH' is ready for version '$VERSION'"
+    log::info "BRANCH" "Next steps:"
+    log::info "BRANCH" "  1. Run CocoaPods release: ./Scripts/release-cocoapods-modular.sh $VERSION"
+    log::info "BRANCH" "  2. Run SPM release: ./Scripts/release-spm-modular.sh $VERSION"
+    log::info "BRANCH" "  3. Push final release: git push origin $RELEASE_BRANCH"
 }
 
-# Show usage if no arguments provided
 if [[ $# -eq 0 ]]; then
     show_help
     exit 1
 fi
 
-# Run main function with all arguments
 main "$@"

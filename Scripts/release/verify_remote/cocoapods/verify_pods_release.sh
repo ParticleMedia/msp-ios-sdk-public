@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # --- MSP Worktree Safety Guard (Patch L, shared) ---
 # shellcheck source=/dev/null
 . "$(git rev-parse --show-toplevel 2>/dev/null)/Scripts/lib/worktree_guard.sh"
@@ -15,7 +15,6 @@ msp_enforce_main_repo_or_exit
 
 set -euo pipefail
 
-# Source common utilities
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 # shellcheck source=Scripts/release/verify_remote/common/utils.sh
 source "$SCRIPT_DIR/../common/utils.sh"
@@ -33,20 +32,17 @@ source "$SCRIPT_DIR/build_demoapp.sh"
 # ============================================================================
 
 verify_pods_release() {
-    # Read configuration from environment
     local remote_url="${MSP_VERIFY_PODS_URL:-}"
     local remote_version="${MSP_VERIFY_PODS_VERSION:-}"
     
-    # Check if required environment variables are set
     if [[ -z "$remote_url" ]] || [[ -z "$remote_version" ]]; then
-        vr_log_warn "Pods remote verification skipped (missing MSP_VERIFY_PODS_URL / MSP_VERIFY_PODS_VERSION)"
+        vr_log::warn "PODS" "Pods remote verification skipped (missing MSP_VERIFY_PODS_URL / MSP_VERIFY_PODS_VERSION)"
         return 0
     fi
     
-    # Create sandbox
     local SANDBOX_DIR
     SANDBOX_DIR="$(vr_create_sandbox "pods")" || {
-        vr_log_error "Failed to create sandbox"
+        vr_log::error "PODS" "Failed to create sandbox"
         return 1
     }
     
@@ -54,35 +50,33 @@ verify_pods_release() {
     local cleanup_sandbox_path="$SANDBOX_DIR"
     trap "vr_cleanup_sandbox '$cleanup_sandbox_path'" EXIT
     
-    # Call scripts in order
-    vr_log_info "Starting Pods remote verification (URL=$remote_url, version=$remote_version)"
+    vr_log::info "PODS" "Starting Pods remote verification (URL=$remote_url, version=$remote_version)"
     
     # Step 1: Prepare DemoApp
     if ! "$SCRIPT_DIR/prepare_demoapp.sh" "$SANDBOX_DIR"; then
-        vr_log_error "Failed to prepare DemoApp"
+        vr_log::error "PODS" "Failed to prepare DemoApp"
         return 1
     fi
     
     # Step 2: Patch Podfile
     if ! "$SCRIPT_DIR/patch_podfile.sh" "$SANDBOX_DIR"; then
-        vr_log_error "Failed to patch Podfile"
+        vr_log::error "PODS" "Failed to patch Podfile"
         return 1
     fi
     
     # Step 3: Run pod install
     if ! "$SCRIPT_DIR/pod_install.sh" "$SANDBOX_DIR"; then
-        vr_log_error "Failed to run pod install"
+        vr_log::error "PODS" "Failed to run pod install"
         return 1
     fi
     
     # Step 4: Build DemoApp
     if ! "$SCRIPT_DIR/build_demoapp.sh" "$SANDBOX_DIR"; then
-        vr_log_error "Failed to build DemoApp"
+        vr_log::error "PODS" "Failed to build DemoApp"
         return 1
     fi
     
-    # On success, log completion
-    vr_log_info "Pods remote verification (URL=$remote_url, version=$remote_version) completed successfully."
+    vr_log::info "PODS" "Pods remote verification (URL=$remote_url, version=$remote_version) completed successfully."
     
     return 0
 }
