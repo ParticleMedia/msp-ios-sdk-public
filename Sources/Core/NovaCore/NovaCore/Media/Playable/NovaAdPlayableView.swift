@@ -161,8 +161,7 @@ class NovaAdPlayableView: UIView {
     private lazy var consoleLoggerSource: String = NovaJavaScriptResourceLoader.loadScript(named: "consoleLogger")
     private lazy var mraidController = MraidController(
         webView: playableWebView,
-        mraidDelegate: self,
-        calendarEventTitle: "Playable Event"
+        mraidDelegate: self
     )
 }
 

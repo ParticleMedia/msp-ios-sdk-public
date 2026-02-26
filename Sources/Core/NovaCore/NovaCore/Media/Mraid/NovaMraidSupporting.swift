@@ -7,14 +7,11 @@
 
 // Protocol extensions cannot declare nested types; keep associated-object keys at file scope.
 import AVKit
-import EventKit
 import ObjectiveC
-import Photos
 import UIKit
 import WebKit
 
 private enum NovaMraidAssociatedKeys {
-    static var eventStore: UInt8 = 0
     static var shimSource: UInt8 = 0
     static var hookSource: UInt8 = 0
     static var initSource: UInt8 = 0
@@ -32,8 +29,6 @@ protocol NovaMraidSupporting: AnyObject {
     var hasRequestedMraidJs: Bool { get set }
     var hasInjectedMraidShim: Bool { get set }
     var hasFinishedLoad: Bool { get set }
-    var eventStore: EKEventStore { get }
-    var mraidCalendarEventDefaultTitle: String { get }
 
     func handleMraidOpen(params: [String: Any])
     func handleMraidOpen(url: URL)
@@ -44,16 +39,6 @@ protocol NovaMraidSupporting: AnyObject {
 }
 
 extension NovaMraidSupporting {
-    var mraidCalendarEventDefaultTitle: String { "Event" }
-    var eventStore: EKEventStore {
-        if let store = objc_getAssociatedObject(self, &NovaMraidAssociatedKeys.eventStore) as? EKEventStore {
-            return store
-        }
-        let store = EKEventStore()
-        objc_setAssociatedObject(self, &NovaMraidAssociatedKeys.eventStore, store, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
-        return store
-    }
-
     var mraidShimSource: String {
         cachedString(key: &NovaMraidAssociatedKeys.shimSource) {
             loadJavaScriptResource(named: "novaMraid")
@@ -195,125 +180,6 @@ extension NovaMraidSupporting {
         }
     }
 
-    func defaultHandleMraidStorePicture(params: [String: Any]) {
-        let hasReadWriteKey = Bundle.main.object(forInfoDictionaryKey: "NSPhotoLibraryUsageDescription") != nil
-        let hasAddOnlyKey = Bundle.main.object(forInfoDictionaryKey: "NSPhotoLibraryAddUsageDescription") != nil
-        guard hasReadWriteKey || hasAddOnlyKey else {
-            mraidLogError("[MRAID Native] App does not set photo library related keys in info.plist")
-            return
-        }
-        guard let uri = params["uri"] as? String ?? params["url"] as? String,
-            let url = URL(string: uri),
-            let scheme = url.scheme?.lowercased(),
-            scheme == "http" || scheme == "https"
-        else {
-            mraidLogError("[MRAID Native] storePicture invalid or missing uri")
-            return
-        }
-        mraidLogInfo("[MRAID Native] Downloading image from: \(url)")
-        URLSession.shared.dataTask(with: url) { data, _, error in
-            if let error = error {
-                self.mraidLogError("[MRAID Native] storePicture download failed: \(error)")
-                return
-            }
-            guard let data = data, let image = UIImage(data: data) else {
-                self.mraidLogError("[MRAID Native] storePicture invalid data")
-                return
-            }
-
-            PHPhotoLibrary.requestAuthorization(for: .addOnly) { status in
-                let authorized = status == .authorized || status == .limited
-                guard authorized else {
-                    self.mraidLogError("[MRAID Native] storePicture not authorized")
-                    return
-                }
-                PHPhotoLibrary.shared().performChanges({
-                    PHAssetChangeRequest.creationRequestForAsset(from: image)
-                }) { success, error in
-                    if let error = error {
-                        self.mraidLogError("[MRAID Native] storePicture save failed: \(error)")
-                    } else {
-                        self.mraidLogInfo("[MRAID Native] storePicture success: \(success)")
-                    }
-                }
-            }
-        }.resume()
-    }
-
-    func defaultHandleMraidCreateCalendarEvent(params: [String: Any]) {
-        let hasOldFullAccessKey = Bundle.main.object(forInfoDictionaryKey: "NSCalendarsUsageDescription") != nil
-        let hasReadWriteKey = Bundle.main.object(forInfoDictionaryKey: "NSCalendarsFullAccessUsageDescription") != nil
-        let hasWriteOnlyKey =
-            Bundle.main.object(forInfoDictionaryKey: "NSCalendarsWriteOnlyAccessUsageDescription") != nil
-        guard hasOldFullAccessKey || hasReadWriteKey || hasWriteOnlyKey else {
-            mraidLogError("[MRAID Native] App does not set calendar related keys in info.plist")
-            return
-        }
-
-        mraidLogInfo("[MRAID Native] createCalendarEvent params: \(params)")
-        requestCalendarAccess { [weak self] granted in
-            guard let self = self else { return }
-            guard granted else {
-                self.mraidLogError("[MRAID Native] Calendar access denied")
-                return
-            }
-            let event = EKEvent(eventStore: self.eventStore)
-            event.title = params["description"] as? String ?? self.mraidCalendarEventDefaultTitle
-            event.location = params["location"] as? String
-            event.startDate = self.timestamp(from: params["start"]) ?? Date()
-            event.endDate = self.timestamp(from: params["end"]) ?? event.startDate.addingTimeInterval(3600)
-            self.mraidLogInfo(
-                "[MRAID Native] Calendar event time: start=\(self.formatDate(event.startDate)), end=\(self.formatDate(event.endDate))"
-            )
-            event.calendar =
-                self.eventStore.defaultCalendarForNewEvents
-                ?? self.eventStore.calendars(for: .event).first
-            do {
-                try self.eventStore.save(event, span: .thisEvent)
-                self.mraidLogInfo("[MRAID Native] Calendar event saved: \(event.eventIdentifier ?? "")")
-            } catch {
-                self.mraidLogError("[MRAID Native] Failed to save calendar event: \(error)")
-            }
-        }
-    }
-
-    func requestCalendarAccess(completion: @escaping (Bool) -> Void) {
-        if #available(iOS 17, *) {
-            switch EKEventStore.authorizationStatus(for: .event) {
-            case .fullAccess, .writeOnly:
-                completion(true)
-            case .notDetermined:
-                eventStore.requestWriteOnlyAccessToEvents { granted, error in
-                    completion(granted && error == nil)
-                }
-            case .restricted, .denied:
-                completion(false)
-            @unknown default:
-                completion(false)
-            }
-        } else {
-            switch EKEventStore.authorizationStatus(for: .event) {
-            case .authorized:
-                completion(true)
-            case .notDetermined:
-                eventStore.requestAccess(to: .event) { granted, _ in
-                    completion(granted)
-                }
-            default:
-                completion(false)
-            }
-        }
-    }
-
-    func timestamp(from value: Any?) -> Date? {
-        if let doubleValue = value as? Double {
-            return Date(timeIntervalSince1970: doubleValue / 1000)
-        } else if let intValue = value as? Int {
-            return Date(timeIntervalSince1970: Double(intValue) / 1000)
-        }
-        return nil
-    }
-
     func updateMraidState(_ newState: String) {
         guard let jsonData = try? JSONEncoder().encode(newState),
             let jsonString = String(data: jsonData, encoding: .utf8)
@@ -357,14 +223,6 @@ extension NovaMraidSupporting {
                 }
             }
         }
-    }
-
-    func formatDate(_ date: Date) -> String {
-        let formatter = DateFormatter()
-        formatter.locale = Locale(identifier: "en_US_POSIX")
-        formatter.timeZone = TimeZone.current
-        formatter.dateFormat = "yyyy-MM-dd HH:mm:ss ZZZZZ"
-        return formatter.string(from: date)
     }
 
     var hasRequestedMraidJs: Bool {
